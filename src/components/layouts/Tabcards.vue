@@ -19,14 +19,15 @@
             </div>
 
             <div class="text-overline">
-              {{ getHost(tab.chromeTab?.url || tab.url, true) }}
+              {{ getHost(tab.chromeTab?.url || tab.url, true) }} {{ tab.activatedCount }}/{{ tab.lastActive }}
               <q-tooltip>
                 {{ getHost(tab.chromeTab?.url || tab.url, false) }}
               </q-tooltip>
             </div>
             <div class="text-body1 q-mt-sm q-mb-xs">{{ maxChar(20, tab.chromeTab?.title || tab.title) }}</div>
             <div class="text-caption text-grey wrap" style="overflow:hidden;">
-              <q-item-label lines="1" class="q-mt-xs text-body2 text-primary" @click="Navigation.openOrCreateTab(tab.chromeTab?.url || tab.url)">
+              <q-item-label lines="1" class="q-mt-xs text-body2 text-primary"
+                            @click="Navigation.openOrCreateTab(tab.chromeTab?.url || tab.url)">
                 <span class="cursor-pointer">{{ maxChar(30, withoutHostname(tab.chromeTab?.url || tab.url)) }}</span>
                 <q-tooltip>
                   {{ tab.chromeTab?.url || tab.url }}
@@ -91,7 +92,6 @@ function maxChar(max: number, t: string): string {
   }
   return t;
 }
-
 
 
 function closeTab(id: number) {

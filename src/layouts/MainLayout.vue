@@ -2,14 +2,6 @@
   <q-layout view="hHh lpR fFf">
     <q-header elevated>
       <q-toolbar>
-        <q-btn
-          flat
-          dense
-          round
-          icon="menu"
-          aria-label="Menu"
-          @click="toggleLeftDrawer"
-        />
 
         <q-toolbar-title>
           <q-btn stretch flat label="Tabsets" to="/"/>
@@ -25,70 +17,12 @@
         </q-input>
 
         <q-space/>
-
+        <q-btn label="New Tabset..."/>
+        <q-space/>
         <div>{{ appVersion }}</div>
       </q-toolbar>
     </q-header>
 
-    <q-drawer
-      v-model="leftDrawerOpen"
-
-      bordered>
-
-      <div class="q-pa-sm" style="max-width: 350px">
-
-        <!--        <q-btn @click="saveTabset">Save</q-btn>-->
-        <!--        <q-btn to="login">Login</q-btn>-->
-
-        <div class="row">
-          <div class="col-10">
-            <q-input v-model="contextname" label="currentContext"></q-input>
-          </div>
-          <div class="col-2">
-            <q-btn @click="saveTabset">
-              <q-icon name="save"/>
-            </q-btn>
-          </div>
-        </div>
-
-        <div>
-          <q-btn label="current" to="/tabset"/>
-        </div>
-
-        <q-list bordered class="rounded-borders">
-
-          <q-expansion-item
-            default-opened
-            expand-separator
-            icon="push_pin"
-            :label="'Tabsets (' +  tabsets().length + ')'"
-            caption="John Doe"
-          >
-            <q-card>
-              <q-card-section>
-                <Tabsets
-                  v-for="link in tabsets()"
-                  :key="link.id"
-                  v-bind="link"
-                />
-              </q-card-section>
-            </q-card>
-          </q-expansion-item>
-
-        </q-list>
-
-      </div>
-
-      <q-list>
-        <q-item-label
-          header
-        >
-          Count - {{ tabsStore.tabsCount }}
-        </q-item-label>
-
-
-      </q-list>
-    </q-drawer>
 
     <q-page-container>
       <router-view/>
@@ -134,11 +68,6 @@ function saveTabset() {
   //}
 }
 
-const leftDrawerOpen = ref(false)
-
-function toggleLeftDrawer() {
-  leftDrawerOpen.value = !leftDrawerOpen.value
-}
 
 function tabsForGroup(groupId: number): chrome.tabs.Tab[] {
   return tabsStore.tabsForGroup(groupId)

@@ -20,6 +20,12 @@
         </div>
       </q-toolbar-title>
       <q-btn flat round dense icon="save" @click="saveDialog"/>
+      <q-btn flat round dense icon="restore_page"
+             color="green"
+             @click="restoreDialog" v-if="tabsStore.currentTabset.name !== 'current'"/>
+      <q-btn flat round dense icon="delete"
+             color="red"
+             @click="deleteDialog" v-if="tabsStore.currentTabset.name !== 'current'"/>
     </q-toolbar>
     <q-list class="rounded-borders">
       <q-expansion-item
@@ -105,7 +111,6 @@
     </q-list>
   </q-page>
 
-
 </template>
 
 <script setup lang="ts">
@@ -150,21 +155,54 @@ const saveDialog = () => {
     title: 'Save current Tabset',
     message: 'Please provide a name for the new (or updated) tabset',
     prompt: {
-      model: '',
+      isValid: val => val != 'Current',
+      model: tabsetname.value === 'Current' ? '' : tabsetname.value,
       type: 'text' // optional
     },
     cancel: true,
     persistent: true
-  }).onOk((data:any) => {
-     console.log('>>>> OK, received', data)
+  }).onOk((data: any) => {
+    console.log('>>>> saving', data)
+    new TabsetApi(localStorage).saveOrReplace(data, tabsStore.tabs)
   }).onCancel(() => {
-     console.log('>>>> Cancel')
+    //console.log('>>>> Cancel')
   }).onDismiss(() => {
-     console.log('I am triggered on both OK and Cancel')
+    //console.log('I am triggered on both OK and Cancel')
   })
 
 
 }
 
+const deleteDialog = () => {
+  $q.dialog({
+    title: 'Deleting Tabset',
+    message: 'Would you like to delete this tabset?',
+    cancel: true,
+    persistent: true
+  }).onOk((data: any) => {
+    console.log('>>>> deleting', data)
+    //new TabsetApi(localStorage).saveOrReplace(data, tabsStore.tabs)
+  }).onCancel(() => {
+  }).onDismiss(() => {
+  })
+
+
+}
+
+const restoreDialog = () => {
+  $q.dialog({
+    title: 'Restore Tabset',
+    message: 'Would you like to restore this tabset? All current tabs will be closed before.',
+    cancel: true,
+    persistent: true
+  }).onOk((data: any) => {
+    console.log('>>>> restoring', data)
+    //new TabsetApi(localStorage).saveOrReplace(data, tabsStore.tabs)
+  }).onCancel(() => {
+  }).onDismiss(() => {
+  })
+
+
+}
 
 </script>

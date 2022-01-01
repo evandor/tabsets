@@ -117,13 +117,13 @@ export const useTabsStore = defineStore('tabs', {
         this.logStore.add(msg, [])
         //this.loadTabs('onActivated');
         chrome.tabs.get(info.tabId, tab => {
-          console.log("got tab", tab)
+          //console.log("got tab", tab)
           const url = tab.url
           _.forEach([...this.tabsets.keys()], key => {
             const ts = this.tabsets.get(key) || new Tabset("", "", [])
             const hits = _.filter(ts.tabs, (t: Tab) => t.chromeTab.url === url)
             _.forEach(hits, h => {
-              h.activatedCount += h.activatedCount
+              h.activatedCount = 1 + h.activatedCount
               h.lastActive += new Date().getTime()
             })
             new TabsetApi(this.localStorage).saveTabset(ts)
