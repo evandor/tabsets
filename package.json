@@ -6,6 +6,8 @@
   "author": "evandor <evandor@gmail.com>",
   "private": true,
   "scripts": {
+    "dev": "quasar dev -m bex",
+    "build": "quasar build -m bex",
     "test": "echo \"No test specified\" && exit 0"
   },
   "dependencies": {
