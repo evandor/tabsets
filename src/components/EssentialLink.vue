@@ -1,15 +1,13 @@
 <template>
   <q-item
     clickable
-    tag="a"
-    target="_blank"
-    :href="link"
+    @click="jumpToTab(link)"
   >
     <q-item-section
       v-if="icon"
       avatar
     >
-      <q-icon :name="icon" />
+      <q-img :src="icon" height="20px" width="20px"/>
     </q-item-section>
 
     <q-item-section>
@@ -26,9 +24,22 @@ export interface EssentialLinkProps {
   link?: string;
   icon?: string;
 }
+
 withDefaults(defineProps<EssentialLinkProps>(), {
   caption: '',
   link: '#',
   icon: '',
 });
+
+function jumpToTab(withUrl: string) {
+  console.log("hier", withUrl)
+  chrome.tabs.query({currentWindow: true}, (t: chrome.tabs.Tab[]) => {
+    t.filter(r => !r.url.startsWith("chrome"))
+      .map(r => {
+        if (withUrl === r.url) {
+          chrome.tabs.highlight({tabs: r.index});
+        }
+      });
+  });
+}
 </script>

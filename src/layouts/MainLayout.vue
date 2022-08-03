@@ -28,7 +28,7 @@
         <q-item-label
           header
         >
-          Essential Bookmarks
+          Essential Bookmarks - {{bookmrkx.length}}
         </q-item-label>
 
         <EssentialLink
@@ -56,12 +56,10 @@ chrome.tabs.query({currentWindow: true}, (ts: chrome.tabs.Tab[]) => {
     bookmrkx.value.push({
       title: t.title,
       caption: 'quasar.dev',
-      icon: 'school',
+      icon: t.favIconUrl,
       link: t.url
     }))
 });
-
-console.log("bookmrkx", bookmrkx.value)
 
 const essentialLinks: EssentialLinkProps[] = [
   {
