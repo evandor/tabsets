@@ -28,9 +28,10 @@
         <q-item-label
           header
         >
-          Essential Bookmarks - {{bookmrkx.length}}
+          Essential Bookmarks - {{ bookmrkx.length }}
         </q-item-label>
 
+        <q-btn @click="saveTabset">Save</q-btn>
         <EssentialLink
           v-for="link in bookmrkx"
           :key="link.title"
@@ -48,6 +49,7 @@
 <script setup lang="ts">
 import {ref} from 'vue';
 import EssentialLink, {EssentialLinkProps} from 'components/EssentialLink.vue';
+import {initializeBackendApi} from "src/services/BackendApi";
 
 const bookmrkx = ref<EssentialLinkProps[]>([])
 chrome.tabs.query({currentWindow: true}, (ts: chrome.tabs.Tab[]) => {
@@ -61,20 +63,15 @@ chrome.tabs.query({currentWindow: true}, (ts: chrome.tabs.Tab[]) => {
     }))
 });
 
-const essentialLinks: EssentialLinkProps[] = [
-  {
-    title: 'Docs',
-    caption: 'quasar.dev',
-    icon: 'school',
-    link: 'https://quasar.dev'
-  },
-  {
-    title: 'Github',
-    caption: 'github.com/quasarframework',
-    icon: 'code',
-    link: 'https://github.com/quasarframework'
-  }
-];
+console.log("meta.env.BASE_URL", import.meta.env.MODE);
+console.log("meta.env.BASE_URL", process.env.BACKEND_URL);
+
+
+function saveTabset() {
+  console.log("saving tabset");
+  const backend = initializeBackendApi(process.env.BACKEND_URL || "unknown", null)
+  backend.saveTabset(bookmrkx.value)
+}
 
 const leftDrawerOpen = ref(false)
 

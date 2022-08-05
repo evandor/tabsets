@@ -14,7 +14,7 @@ const path = require('path');
 
 module.exports = configure(function (/* ctx */) {
   return {
-    
+
 
     // https://v2.quasar.dev/quasar-cli-vite/prefetch-feature
     // preFetch: true,
@@ -62,7 +62,10 @@ module.exports = configure(function (/* ctx */) {
 
       // publicPath: '/',
       // analyze: true,
-      // env: {},
+      env: require('dotenv').config({
+        path: (process.env.stage) ? 'config/.env.' + process.env.stage : 'config/.env',
+        BACKEND_URL: process.env.BACKEND_URL
+      }).parsed,
       // rawDefine: {}
       // ignorePublicFolder: true,
       // minify: false,
