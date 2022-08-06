@@ -55,12 +55,7 @@ const bookmrkx = ref<EssentialLinkProps[]>([])
 chrome.tabs.query({currentWindow: true}, (ts: chrome.tabs.Tab[]) => {
   console.log("tabs", ts)
   ts.forEach(t =>
-    bookmrkx.value.push({
-      title: t.title,
-      caption: 'quasar.dev',
-      icon: t.favIconUrl,
-      link: t.url
-    }))
+    bookmrkx.value.push(t))
 });
 
 console.log("meta.env.BASE_URL", import.meta.env.MODE);
