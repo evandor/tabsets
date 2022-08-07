@@ -64,8 +64,8 @@ module.exports = configure(function (/* ctx */) {
       // publicPath: '/',
       // analyze: true,
       env: require('dotenv').config({
-        path: (process.env.stage) ? 'config/.env.' + process.env.stage : 'config/.env',
-        BACKEND_URL: process.env.BACKEND_URL
+        //path: (process.env.stage) ? 'config/.env.' + process.env.stage : 'config/.env',
+        //BACKEND_URL: process.env.BACKEND_URL
       }).parsed,
       // rawDefine: {}
       // ignorePublicFolder: true,
