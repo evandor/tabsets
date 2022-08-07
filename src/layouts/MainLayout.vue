@@ -32,9 +32,10 @@
         </q-item-label>
 
         <q-btn @click="saveTabset">Save</q-btn>
-        <EssentialLink
+        <q-btn to="login">Login</q-btn>
+        <Tabs
           v-for="link in bookmrkx"
-          :key="link.title"
+          :key="link.id"
           v-bind="link"
         />
       </q-list>
@@ -48,18 +49,18 @@
 
 <script setup lang="ts">
 import {ref} from 'vue';
-import EssentialLink, {EssentialLinkProps} from 'components/EssentialLink.vue';
+import Tabs, {TabProps} from 'components/Tabs.vue';
 import {initializeBackendApi} from "src/services/BackendApi";
 
-const bookmrkx = ref<EssentialLinkProps[]>([])
+const bookmrkx = ref<TabProps[]>([])
 chrome.tabs.query({currentWindow: true}, (ts: chrome.tabs.Tab[]) => {
-  console.log("tabs", ts)
+  //console.log("tabs", ts)
   ts.forEach(t =>
     bookmrkx.value.push(t))
 });
 
-console.log("meta.env.BASE_URL", import.meta.env.MODE);
-console.log("meta.env.BASE_URL", process.env.BACKEND_URL);
+//console.log("meta.env.BASE_URL", import.meta.env.MODE);
+console.log("Backend URL", process.env.BACKEND_URL);
 
 
 function saveTabset() {

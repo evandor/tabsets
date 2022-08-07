@@ -1,0 +1,33 @@
+import { defineStore } from 'pinia';
+import firebase from "firebase/compat";
+import User = firebase.User;
+
+export const useAuthStore = defineStore('auth', {
+  state: () => ({
+    authenticated: false,
+    user: null as unknown as User
+  }),
+
+  getters: {
+    isAuthenticated(): boolean {
+      return this.authenticated;
+    },
+    getUsername(): string {
+      if (this.authenticated) {
+        return this.user.displayName || "undefined";
+      }
+      return "anonymous"
+    }
+  },
+
+  actions: {
+    setUser(user: User) {
+      console.log("authStore: setting user")
+      this.authenticated = true;
+      this.user = user;
+    },
+    increment () {
+      //this.counter++;
+    }
+  }
+});
