@@ -13,11 +13,13 @@
   },
   "dependencies": {
     "@quasar/extras": "^1.0.0",
+    "@types/lodash": "^4.14.182",
     "axios": "^0.21.1",
     "dotenv": "^16.0.1",
     "events": "^3.3.0",
     "firebase": "^9.9.2",
     "firebaseui": "^6.0.1",
+    "lodash": "^4.17.21",
     "pinia": "^2.0.11",
     "quasar": "^2.6.0",
     "vue": "^3.0.0",
