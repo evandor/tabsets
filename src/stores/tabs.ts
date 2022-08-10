@@ -21,7 +21,7 @@ export const useTabsStore = defineStore('tabs', {
     getTabs() {
       this.tabs = []
       chrome.tabs.query({currentWindow: true}, (ts: chrome.tabs.Tab[]) => {
-        console.log("tabs", ts);
+        //console.log("tabs", ts);
         ts.forEach(t => {
           if (!t.url?.startsWith("chrome"))  {
             this.tabs.push(t)

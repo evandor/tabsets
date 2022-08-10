@@ -18,7 +18,7 @@ export const useTabGroupsStore = defineStore('tabGroups', {
       try {
         chrome.tabGroups.query({}, (ts: chrome.tabGroups.TabGroup[]) => {
           ts.forEach(t => {
-            console.log("ts", ts)
+            //console.log("ts", ts)
             this.tabGroups.push(t)
           })
         });

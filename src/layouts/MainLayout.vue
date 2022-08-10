@@ -29,6 +29,17 @@
         <q-btn @click="saveTabset">Save</q-btn>
         <q-btn to="login">Login</q-btn>
 
+        <div class="row">
+          <div class="col-10">
+            <q-input v-model="contextname" label="currentContext"></q-input>
+          </div>
+          <div class="col-2">
+            <q-btn @click="saveTabset">
+              <q-icon name="save" />
+            </q-btn>
+          </div>
+        </div>
+
         <q-list bordered class="rounded-borders">
           <q-expansion-item
             expand-separator
@@ -51,11 +62,11 @@
                             expand-separator>
             <template v-slot:header>
               <q-item-section avatar>
-                <q-icon :color="group.color" name="tab" />
+                <q-icon :color="group.color" name="tab"/>
               </q-item-section>
 
               <q-item-section>
-                {{ group.title + ' (' +  tabsForGroup(group.id).length + ')' }}
+                {{ group.title + ' (' + tabsForGroup(group.id).length + ')' }}
               </q-item-section>
             </template>
 
@@ -80,6 +91,23 @@
               <q-card-section>
                 <Tabs
                   v-for="link in otherTabs()"
+                  :key="link.id"
+                  v-bind="link"
+                />
+              </q-card-section>
+            </q-card>
+          </q-expansion-item>
+
+          <q-expansion-item
+            expand-separator
+            icon="push_pin"
+            :label="'Tabsets (' +  tabsets().length + ')'"
+            caption="John Doe"
+          >
+            <q-card>
+              <q-card-section>
+                <Tabs
+                  v-for="link in tabsets()"
                   :key="link.id"
                   v-bind="link"
                 />
@@ -115,14 +143,29 @@ import {initializeBackendApi} from "src/services/BackendApi";
 import _ from "lodash"
 import {useTabsStore} from "stores/tabs";
 import {useTabGroupsStore} from "stores/tabGroups";
+import {useAuthStore} from "stores/auth";
+import {useQuasar} from "quasar";
 
-const tabsStore = useTabsStore();
-const tabGroupsStore = useTabGroupsStore();
+const authStore = useAuthStore()
+const tabsStore = useTabsStore()
+const tabGroupsStore = useTabGroupsStore()
+
+const contextname = ref('default')
+
+const localStorage = useQuasar().localStorage
 
 function saveTabset() {
-  console.log("saving tabset");
-  const backend = initializeBackendApi(process.env.BACKEND_URL || "unknown", null)
-  backend.saveTabset(tabsStore.getTabs())
+  if (authStore.isAuthenticated)  {
+    console.log("saving tabset @ backend");
+    const backend = initializeBackendApi(process.env.BACKEND_URL || "unknown", null)
+    backend.saveTabset(tabsStore.getTabs())
+  } else {
+    console.log("saving tabset @ localstorage");
+    localStorage.set("bookmrkx.tabsContexts." +  contextname.value, {
+      date: new Date().getDate(),
+      tabs: tabsStore.tabs
+    })
+  }
 }
 
 const leftDrawerOpen = ref(false)
@@ -142,7 +185,19 @@ function tabsForGroup(groupId: number): chrome.tabs.Tab[] {
 function getTabGroups(): chrome.tabGroups.TabGroup[] {
   return tabGroupsStore.data
 }
+
 function otherTabs(): chrome.tabs.Tab[] {
   return tabsStore.unpinnedTabsWithoutGroup()
+}
+
+function tabsets(): object[] {
+  console.log("localStorage.getAllKeys()", localStorage.getAllKeys())
+  var tabsets = _.map(_.filter(localStorage.getAllKeys(), (t: string) => t.startsWith("bookmrkx.tabsContexts.")), key => {
+    //var tabset = localStorage.getItem(key)
+    return {
+      title: key.substring(22)
+    }
+  })
+  return tabsets
 }
 </script>
