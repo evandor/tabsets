@@ -111,7 +111,7 @@ function saveTabset() {
     backend.saveTabset(tabsStore.getTabs())
   } else {
     console.log("saving tabset @ localstorage");
-    tabsetApi.saveOrReplace(contextname.value)
+    tabsetApi.saveOrReplace(contextname.value, tabsStore.tabs)
   }
 }
 
@@ -121,21 +121,10 @@ function toggleLeftDrawer() {
   leftDrawerOpen.value = !leftDrawerOpen.value
 }
 
-function pinnedBookmarks(): chrome.tabs.Tab[] {
-  return tabsStore.pinnedTabs
-}
-
 function tabsForGroup(groupId: number): chrome.tabs.Tab[] {
   return tabsStore.tabsForGroup(groupId)
 }
 
-function getTabGroups(): chrome.tabGroups.TabGroup[] {
-  return tabGroupsStore.data
-}
-
-function otherTabs(): chrome.tabs.Tab[] {
-  return tabsStore.unpinnedTabsWithoutGroup()
-}
 
 function tabsets(): object[] {
   const ts = tabsetApi.getTabsetInfo()

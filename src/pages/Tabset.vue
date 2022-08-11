@@ -1,11 +1,11 @@
 <template>
   <q-page padding>
 
-    <div class="text-h6">{{tabset.name}}</div>
-    <div class="text-caption">{{tabset.date}}</div>
+    <div class="text-h6">{{ tabset.name }}</div>
+    <div class="text-caption">{{ tabset.date }}</div>
 
     <div>
-      <q-btn label="restore"  @click="restore()"/>
+      <q-btn label="restore" @click="restore()"/>
     </div>
 
     <q-list bordered class="rounded-borders">
@@ -26,13 +26,16 @@
         <q-expansion-item
           v-if="tabsForGroup(tabs, group.id).length > 0"
           expand-separator>
-          <template v-slot:header>
+          <template v-slot:header="{ expanded }">
             <q-item-section avatar>
               <q-icon :color="group.color" name="tab"/>
             </q-item-section>
 
             <q-item-section>
-              {{ group.title + ' (' + tabsForGroup(tabs, group.id).length + ')' }}
+              <div>
+                {{ group.title + ' (' + tabsForGroup(tabs, group.id).length + ')' }}
+                <q-btn label="create new tabset" v-if="expanded" @click="newTabsetFrom(group.title, group.id)"/>
+              </div>
             </q-item-section>
           </template>
           <q-card>
@@ -107,6 +110,7 @@ function unpinnedNoGroup(tabs: chrome.tabs.Tab[]) {
 function getTabGroups(): chrome.tabGroups.TabGroup[] {
   return tabGroupsStore.data
 }
+
 function tabsForGroup(tabs: chrome.tabs.Tab[], groupId: number): chrome.tabs.Tab[] {
   return _.filter(tabs, (t: chrome.tabs.Tab) => t.groupId === groupId)
 }
@@ -114,5 +118,10 @@ function tabsForGroup(tabs: chrome.tabs.Tab[], groupId: number): chrome.tabs.Tab
 function restore() {
   console.log("restoring tabset", tabset.value.id)
   tabsetApi.restore(tabset.value.id)
+}
+
+function newTabsetFrom(title: string, groupId: number) {
+  console.log("creating tabset from group", groupId)
+  tabsetApi.createFromGroup(tabset.value.id, title, groupId)
 }
 </script>

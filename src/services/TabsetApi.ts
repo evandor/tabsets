@@ -15,7 +15,7 @@ export class TabsetApi {
     this.localStorage = localStorage;
   }
 
-  saveOrReplace(tabsetName: UnwrapRef<string>) {
+  saveOrReplace(tabsetName: UnwrapRef<string>, tabs: chrome.tabs.Tab[]) {
     console.log("saving or replacing tabset " + tabsetName)
     var existingId =
       _.first(
@@ -36,7 +36,7 @@ export class TabsetApi {
     console.log("found existing", existingId)
     const useId = (existingId) ? existingId : uid()
 
-    const ts = new Tabset(useId, tabsetName, tabsStore.tabs);
+    const ts = new Tabset(useId, tabsetName, tabs);
     this.localStorage.set("bookmrkx.tabsContexts." + useId, ts)
   }
 
@@ -59,6 +59,7 @@ export class TabsetApi {
     const tabset = this.getTabset(id)
     if (tabset) {
       chrome.tabs.query({currentWindow: true}, (t: chrome.tabs.Tab[]) => {
+        // @ts-ignore
         const ids: number[] = t.filter((r: chrome.tabs.Tab) => !r.url.startsWith('chrome'))
           .filter(r => r.id !== undefined)
           .map(r => r.id || 0);
@@ -77,6 +78,15 @@ export class TabsetApi {
             })
         });
       });
+    }
+  }
+
+  createFromGroup(tabsetId: string, title: string, groupId: number) {
+    const tabset = this.getTabset(tabsetId)
+    if (tabset) {
+      console.log("got tabset", tabset.id)
+      const tabs = _.filter(tabset.tabs, (t: chrome.tabs.Tab) => t.groupId === groupId)
+      this.saveOrReplace(title, tabs)
     }
   }
 }
