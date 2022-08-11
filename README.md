@@ -1,6 +1,6 @@
-# Bookmrkx Extension (bookmrkx)
+# Tabsets Extension
 
-Browser Extension to manage bookmarks
+Browser Extension to manage tabsets
 
 ## Install the dependencies
 ```bash
@@ -9,16 +9,11 @@ yarn
 npm install
 ```
 
-### Start the app in development mode (hot-code reloading, error reporting, etc.)
+### Start the app in development mode
 ```bash
 quasar dev
 ```
 
+### Add to chrome as local extension:
 
-### Build the app for production
-```bash
-quasar build
-```
-
-### Customize the configuration
-See [Configuring quasar.config.js](https://v2.quasar.dev/quasar-cli-vite/quasar-config-js).
+see https://quasar.dev/quasar-cli-vite/developing-browser-extensions/build-commands#chrome

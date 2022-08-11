@@ -1,6 +1,6 @@
 {
   "name": "tabsets",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Browser Extension to manage your tabs by grouping them into re-storable sets",
   "productName": "Tabsets Extension",
   "author": "evandor <evandor@gmail.com>",
@@ -9,6 +9,7 @@
     "dev": "quasar dev -m bex",
     "dev stage prod": "stage=production quasar dev -m bex",
     "build": "quasar build -m bex",
+    "icon": "icongenie generate -i src/assets/icon.png",
     "test": "echo \"No test specified\" && exit 0"
   },
   "dependencies": {

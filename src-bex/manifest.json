@@ -9,12 +9,10 @@
 
   "permissions": [
     "tabGroups",
-    "storage",
-    "tabs",
-    "activeTab"
+    "tabs"
   ],
   "host_permissions": [
-    "*://*/*"
+
   ],
 
   "action": {},

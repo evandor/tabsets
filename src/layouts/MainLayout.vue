@@ -12,10 +12,10 @@
         />
 
         <q-toolbar-title>
-          <q-btn stretch flat label="Bookmrkx" to="/"/>
+          <q-btn stretch flat label="Tabsets" to="/"/>
         </q-toolbar-title>
 
-        <div>Quasar v{{ $q.version }}</div>
+        <div>0.0.1</div>
       </q-toolbar>
     </q-header>
 
@@ -26,8 +26,8 @@
 
       <div class="q-pa-sm" style="max-width: 350px">
 
-        <q-btn @click="saveTabset">Save</q-btn>
-        <q-btn to="login">Login</q-btn>
+<!--        <q-btn @click="saveTabset">Save</q-btn>-->
+<!--        <q-btn to="login">Login</q-btn>-->
 
         <div class="row">
           <div class="col-10">
