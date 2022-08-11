@@ -3,6 +3,7 @@ import {boot} from 'quasar/wrappers'
 
 import {initializeApp} from "firebase/app";
 import {getAuth} from "firebase/auth";
+// import 'firebase/auth';
 
 import * as firebaseui from 'firebaseui'
 

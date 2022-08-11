@@ -12,4 +12,6 @@ const tabGroupsStore = useTabGroupsStore()
 tabsStore.getTabs();
 tabGroupsStore.loadTabGroups();
 
+
+
 </script>

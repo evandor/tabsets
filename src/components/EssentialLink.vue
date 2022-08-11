@@ -32,7 +32,6 @@ withDefaults(defineProps<EssentialLinkProps>(), {
 });
 
 function jumpToTab(withUrl: string) {
-  console.log("hier", withUrl)
   chrome.tabs.query({currentWindow: true}, (t: chrome.tabs.Tab[]) => {
     t.filter(r => !r.url.startsWith("chrome"))
       .map(r => {

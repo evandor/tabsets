@@ -12,7 +12,7 @@
         />
 
         <q-toolbar-title>
-          Quasar App
+          <q-btn stretch flat label="Bookmrkx" to="/"/>
         </q-toolbar-title>
 
         <div>Quasar v{{ $q.version }}</div>
@@ -35,7 +35,7 @@
           </div>
           <div class="col-2">
             <q-btn @click="saveTabset">
-              <q-icon name="save" />
+              <q-icon name="save"/>
             </q-btn>
           </div>
         </div>
@@ -106,7 +106,7 @@
           >
             <q-card>
               <q-card-section>
-                <Tabs
+                <Tabsets
                   v-for="link in tabsets()"
                   :key="link.id"
                   v-bind="link"
@@ -139,12 +139,16 @@
 <script setup lang="ts">
 import {ref} from 'vue';
 import Tabs, {TabProps} from 'components/Tabs.vue';
+import Tabsets, {TabsetProps} from 'components/Tabsets.vue'
 import {initializeBackendApi} from "src/services/BackendApi";
 import _ from "lodash"
 import {useTabsStore} from "stores/tabs";
 import {useTabGroupsStore} from "stores/tabGroups";
 import {useAuthStore} from "stores/auth";
 import {useQuasar} from "quasar";
+import {uid} from 'quasar'
+import {TabsetApi} from "src/services/TabsetApi";
+import {Tabset} from "src/models/Tabset";
 
 const authStore = useAuthStore()
 const tabsStore = useTabsStore()
@@ -153,18 +157,16 @@ const tabGroupsStore = useTabGroupsStore()
 const contextname = ref('default')
 
 const localStorage = useQuasar().localStorage
+const tabsetApi = new TabsetApi(localStorage)
 
 function saveTabset() {
-  if (authStore.isAuthenticated)  {
+  if (authStore.isAuthenticated) {
     console.log("saving tabset @ backend");
     const backend = initializeBackendApi(process.env.BACKEND_URL || "unknown", null)
     backend.saveTabset(tabsStore.getTabs())
   } else {
     console.log("saving tabset @ localstorage");
-    localStorage.set("bookmrkx.tabsContexts." +  contextname.value, {
-      date: new Date().getDate(),
-      tabs: tabsStore.tabs
-    })
+    tabsetApi.saveOrReplace(contextname.value)
   }
 }
 
@@ -191,13 +193,6 @@ function otherTabs(): chrome.tabs.Tab[] {
 }
 
 function tabsets(): object[] {
-  console.log("localStorage.getAllKeys()", localStorage.getAllKeys())
-  var tabsets = _.map(_.filter(localStorage.getAllKeys(), (t: string) => t.startsWith("bookmrkx.tabsContexts.")), key => {
-    //var tabset = localStorage.getItem(key)
-    return {
-      title: key.substring(22)
-    }
-  })
-  return tabsets
+  return tabsetApi.getTabsetInfo()
 }
 </script>

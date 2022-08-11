@@ -1,0 +1,61 @@
+import axios, {AxiosResponse} from 'axios';
+import {UnwrapRef} from "vue";
+import {LocalStorage, uid, useQuasar} from "quasar";
+import {useTabsStore} from "stores/tabs";
+import _ from "lodash";
+import {Tabset} from "src/models/Tabset";
+
+const tabsStore = useTabsStore()
+
+export class TabsetApi {
+
+  private localStorage: LocalStorage;
+
+  constructor(localStorage: LocalStorage) {
+    this.localStorage = localStorage;
+  }
+
+  saveOrReplace(tabsetName: UnwrapRef<string>) {
+    console.log("saving or replacing tabset " + tabsetName)
+    var existingId =
+      _.first(
+        _.map(
+          _.filter(
+            _.map(
+              _.filter(this.localStorage.getAllKeys(), (t: string) => t.startsWith("bookmrkx.tabsContexts.")),
+              (key: string) => {
+                console.log("key", key)
+                return this.localStorage.getItem(key)
+              }), (ts: Tabset) => {
+              console.log("ts", ts.name, tabsetName)
+              return ts.name === tabsetName
+            }), (ts: any) => {
+            console.log("mapping to", ts.id)
+            return ts.id as string
+          }))
+    console.log("found existing", existingId)
+    const useId = (existingId) ? existingId : uid()
+
+    const ts = new Tabset(useId, tabsetName, tabsStore.tabs);
+    this.localStorage.set("bookmrkx.tabsContexts." + useId, ts)
+  }
+
+  getTabsetInfo() {
+    return _.map(
+      _.filter(this.localStorage.getAllKeys(), (t: string) => t.startsWith("bookmrkx.tabsContexts.")), key => {
+        const tabset: Tabset | null = this.localStorage.getItem(key)
+        return {
+          title: tabset ? tabset.name : 'unknown',
+          id: tabset ? tabset.id : 'unknown',
+        }
+      })
+  }
+
+  getTabset(tabsetId: string): Tabset | null {
+    return this.localStorage.getItem<Tabset>("bookmrkx.tabsContexts." + tabsetId);
+  }
+}
+
+
+
+
