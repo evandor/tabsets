@@ -41,62 +41,7 @@
         </div>
 
         <q-list bordered class="rounded-borders">
-          <q-expansion-item
-            expand-separator
-            icon="push_pin"
-            :label="'Pinned Tabs (' +  pinnedBookmarks().length + ')'"
-            caption="John Doe"
-          >
-            <q-card>
-              <q-card-section>
-                <Tabs
-                  v-for="link in pinnedBookmarks()"
-                  :key="link.id"
-                  v-bind="link"
-                />
-              </q-card-section>
-            </q-card>
-          </q-expansion-item>
 
-          <q-expansion-item v-for="group in getTabGroups()"
-                            expand-separator>
-            <template v-slot:header>
-              <q-item-section avatar>
-                <q-icon :color="group.color" name="tab"/>
-              </q-item-section>
-
-              <q-item-section>
-                {{ group.title + ' (' + tabsForGroup(group.id).length + ')' }}
-              </q-item-section>
-            </template>
-
-            <q-card>
-              <q-card-section>
-                <Tabs
-                  v-for="link in tabsForGroup(group.id)"
-                  :key="link.id"
-                  v-bind="link"
-                />
-              </q-card-section>
-            </q-card>
-          </q-expansion-item>
-
-          <q-expansion-item
-            expand-separator
-            icon="push_pin"
-            :label="'Other Tabs (' +  otherTabs().length + ')'"
-            caption="John Doe"
-          >
-            <q-card>
-              <q-card-section>
-                <Tabs
-                  v-for="link in otherTabs()"
-                  :key="link.id"
-                  v-bind="link"
-                />
-              </q-card-section>
-            </q-card>
-          </q-expansion-item>
 
           <q-expansion-item
             expand-separator
@@ -123,7 +68,7 @@
         <q-item-label
           header
         >
-          Essential Bookmarks - {{ tabsStore.tabsCount }}
+          Count - {{ tabsStore.tabsCount }}
         </q-item-label>
 
 
@@ -193,6 +138,11 @@ function otherTabs(): chrome.tabs.Tab[] {
 }
 
 function tabsets(): object[] {
-  return tabsetApi.getTabsetInfo()
+  const ts = tabsetApi.getTabsetInfo()
+  ts.push({
+    title: 'current',
+    id: ''
+  })
+  return ts
 }
 </script>

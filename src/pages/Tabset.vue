@@ -1,42 +1,59 @@
 <template>
   <q-page padding>
 
-    <div class="row items-start">
-      <div class="col-xs-12 col-sm-4 col-md-3 col-lg-2 q-ma-xs" v-for="tab in tabset.tabs">
-        <q-card class="my-card" flat bordered style="height: 200px;max-height:200px; min-height: 200px;">
-          <q-card-section horizontal>
-            <q-card-section class="q-pt-xs">
-              <div>
-                <q-img
-                  class="rounded-borders"
-                  width="20px"
-                  height="20px"
-                  :src="tab.favIconUrl"
-                />
-              </div>
-              <div class="text-overline">{{ getHost(tab.url) }}</div>
-              <div class="text-h6 q-mt-sm q-mb-xs">{{ maxChar(20, tab.title) }}</div>
-              <div class="text-caption text-grey wrap" style="overflow:hidden;">
-                {{ maxChar(30, tab.url) }}
-              </div>
-            </q-card-section>
+    <div class="text-h6">{{tabset.name}}</div>
+    <div class="text-caption">{{tabset.date}}</div>
 
+    <q-list bordered class="rounded-borders">
+      <q-expansion-item
+        expand-separator
+        icon="push_pin"
+        label="Pinned Tabs"
+        caption="John Doe"
+      >
+        <q-card>
+          <q-card-section>
+            <Tabcards :tabs="pinned(tabs)"/>
           </q-card-section>
-
-          <q-separator/>
-
-          <q-card-actions style="min-height:50px;max-height:50px">
-            <q-btn flat round icon="event"/>
-            <!--<q-btn flat>
-              7:30PM
-            </q-btn>
-            <q-btn flat color="primary">
-              Reserve
-            </q-btn>-->
-          </q-card-actions>
         </q-card>
+      </q-expansion-item>
+
+      <div v-for="group in getTabGroups()">
+        <q-expansion-item
+          v-if="tabsForGroup(tabs, group.id).length > 0"
+          expand-separator>
+          <template v-slot:header>
+            <q-item-section avatar>
+              <q-icon :color="group.color" name="tab"/>
+            </q-item-section>
+
+            <q-item-section>
+              {{ group.title + ' (' + tabsForGroup(tabs, group.id).length + ')' }}
+            </q-item-section>
+          </template>
+          <q-card>
+            <q-card-section>
+              <Tabcards :tabs="tabsForGroup(tabs, group.id)"/>
+            </q-card-section>
+          </q-card>
+        </q-expansion-item>
       </div>
-    </div>
+
+
+      <q-expansion-item
+        expand-separator
+        icon="push_pin"
+        label="Other Tabs"
+        caption="John Doe"
+      >
+        <q-card>
+          <q-card-section>
+            <Tabcards :tabs="unpinnedNoGroup(tabs)"/>
+          </q-card-section>
+        </q-card>
+      </q-expansion-item>
+    </q-list>
+
   </q-page>
 </template>
 
@@ -46,6 +63,10 @@ import {useRoute} from "vue-router";
 import {TabsetApi} from "src/services/TabsetApi";
 import {useQuasar} from "quasar";
 import {Tabset} from "src/models/Tabset";
+import Tabcards from "src/components/layouts/Tabcards.vue";
+import _ from "lodash"
+import {useTabGroupsStore} from "stores/tabGroups";
+import {useTabsStore} from "stores/tabs";
 
 const route = useRoute();
 const localStorage = useQuasar().localStorage
@@ -53,10 +74,16 @@ const tabsetApi = new TabsetApi(localStorage);
 
 const tabsetId = ref('')
 const tabset = ref<Tabset>(null as unknown as Tabset)
+const tabs = ref<chrome.tabs.Tab[]>(null as unknown as chrome.tabs.Tab[])
+
+const tabGroupsStore = useTabGroupsStore()
+const tabsStore = useTabsStore()
 
 function init() {
+  console.log("updating tabset", route.params.tabsetId)
   tabsetId.value = route.params.tabsetId as string
   tabset.value = tabsetApi.getTabset(tabsetId.value) || new Tabset("", "", [])
+  tabs.value = tabset.value.tabs
 }
 
 init()
@@ -65,21 +92,18 @@ onUpdated(() => {
   init()
 })
 
-function getHost(urlAsString: string): string {
-  const url = new URL(urlAsString)
-  return url.host
+function pinned(tabs: chrome.tabs.Tab[]) {
+  return _.filter(tabs, (t: chrome.tabs.Tab) => t.pinned)
 }
 
-function maxChar(max: number, t: string): string {
-  if (t.length > max - 3) {
-    return t.substring(0, max-3) + "..."
-  }
-  return t;
+function unpinnedNoGroup(tabs: chrome.tabs.Tab[]) {
+  return _.filter(tabs, (t: chrome.tabs.Tab) => !t.pinned && t.groupId === -1)
 }
 
-// onMounted(() => {
-//   console.log("mounting Tabset")
-//   tabsetId = route.params.tabsetId || undefined
-// })
-
+function getTabGroups(): chrome.tabGroups.TabGroup[] {
+  return tabGroupsStore.data
+}
+function tabsForGroup(tabs: chrome.tabs.Tab[], groupId: number): chrome.tabs.Tab[] {
+  return _.filter(tabs, (t: chrome.tabs.Tab) => t.groupId === groupId)
+}
 </script>
