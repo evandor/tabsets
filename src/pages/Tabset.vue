@@ -4,6 +4,10 @@
     <div class="text-h6">{{tabset.name}}</div>
     <div class="text-caption">{{tabset.date}}</div>
 
+    <div>
+      <q-btn label="restore"  @click="restore()"/>
+    </div>
+
     <q-list bordered class="rounded-borders">
       <q-expansion-item
         expand-separator
@@ -105,5 +109,10 @@ function getTabGroups(): chrome.tabGroups.TabGroup[] {
 }
 function tabsForGroup(tabs: chrome.tabs.Tab[], groupId: number): chrome.tabs.Tab[] {
   return _.filter(tabs, (t: chrome.tabs.Tab) => t.groupId === groupId)
+}
+
+function restore() {
+  console.log("restoring tabset", tabset.value.id)
+  tabsetApi.restore(tabset.value.id)
 }
 </script>

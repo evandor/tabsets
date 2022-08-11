@@ -54,6 +54,31 @@ export class TabsetApi {
   getTabset(tabsetId: string): Tabset | null {
     return this.localStorage.getItem<Tabset>("bookmrkx.tabsContexts." + tabsetId);
   }
+
+  restore(id: string) {
+    const tabset = this.getTabset(id)
+    if (tabset) {
+      chrome.tabs.query({currentWindow: true}, (t: chrome.tabs.Tab[]) => {
+        const ids: number[] = t.filter((r: chrome.tabs.Tab) => !r.url.startsWith('chrome'))
+          .filter(r => r.id !== undefined)
+          .map(r => r.id || 0);
+        console.log("ids to close", ids)
+        chrome.tabs.remove(ids)
+        tabset.tabs.forEach(t => {
+          //console.log("creating tab", t)
+          chrome.tabs.create({
+            active: false,
+            index: t.index,
+            pinned: t.pinned,
+            url: t.url
+          })
+            .catch(e => {
+              console.log("got error", e)
+            })
+        });
+      });
+    }
+  }
 }
 
 
