@@ -89,8 +89,13 @@ const tabsStore = useTabsStore()
 function init() {
   console.log("updating tabset", route.params.tabsetId)
   tabsetId.value = route.params.tabsetId as string
-  tabset.value = tabsetApi.getTabset(tabsetId.value) || new Tabset("", "", [])
-  tabs.value = tabset.value.tabs
+  if (tabsetId.value === 'current') {
+    tabset.value = new Tabset("current", "current", [])
+    tabs.value = tabsStore.tabs
+  } else {
+    tabset.value = tabsetApi.getTabset(tabsetId.value) || new Tabset("", "", [])
+    tabs.value = tabset.value.tabs
+  }
 }
 
 init()

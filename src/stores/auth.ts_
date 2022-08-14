@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia';
 import firebase from "firebase/compat";
+import "firebase/auth";
 import User = firebase.User;
 
 export const useAuthStore = defineStore('auth', {

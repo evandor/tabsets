@@ -10,7 +10,7 @@
 import {defineComponent} from "vue";
 import {EmailAuthProvider, GoogleAuthProvider} from "firebase/auth";
 import {ui} from "boot/firebase";
-import {useAuthStore} from "stores/auth";
+//import {useAuthStore} from "stores/auth";
 //import {auth} from "src/store/auth";
 //import {useQuasar} from "quasar";
 //import {cmsCore} from "src/store/cmsCore";
@@ -19,9 +19,9 @@ export default defineComponent({
   // name: 'PageName',
   setup() {
     //const localStorage = useQuasar().localStorage
-    const authStore = useAuthStore()
+    //const authStore = useAuthStore()
     return {
-      authStore
+      //authStore
       //auth, localStorage
     }
   },

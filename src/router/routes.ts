@@ -6,12 +6,12 @@ const routes: RouteRecordRaw[] = [
     component: () => import('layouts/MainLayout.vue'),
     children: [{ path: '', component: () => import('pages/IndexPage.vue') }],
   },
-  {
+  /*{
     path: '/login',
     component: () => import('layouts/MainLayout.vue'),
     children: [{ path: '', component: () => import('pages/Login.vue') }],
     //children: [{ path: '', component: () => import('pages/Login.vue') }],
-  },
+  },*/
   {
     path: '/tabset/:tabsetId',
     component: () => import('layouts/MainLayout.vue'),

@@ -2955,6 +2955,11 @@ vary@~1.1.2:
   resolved "https://registry.yarnpkg.com/vary/-/vary-1.1.2.tgz#2299f02c6ded30d4a5961b0b9f74524a18f634fc"
   integrity sha512-BNGbWLfd0eUPabhkXUVm0j8uuvREyTh5ovRa/dyow/BqAbZJyC+5fU+IzQOzmAKzYqYRAISoRhdQr3eIZ/PXqg==
 
+vite-plugin-package-version@^1.0.2:
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/vite-plugin-package-version/-/vite-plugin-package-version-1.0.2.tgz#72b9919f6022eac093fd04533dc0e26dffe22771"
+  integrity sha512-xCJMR0KD4rqSUwINyHJlLizio2VzYzaMrRkqC9xWaVGXgw1lIrzdD+wBUf1XDM8EhL1JoQ7aykLOfKrlZd1SoQ==
+
 vite@^2.9.13:
   version "2.9.14"
   resolved "https://registry.yarnpkg.com/vite/-/vite-2.9.14.tgz#c438324c6594afd1050df3777da981dee988bb1b"

@@ -15,7 +15,7 @@
           <q-btn stretch flat label="Tabsets" to="/"/>
         </q-toolbar-title>
 
-        <div>0.0.1</div>
+        <div>{{  appVersion }}</div>
       </q-toolbar>
     </q-header>
 
@@ -44,6 +44,7 @@
 
 
           <q-expansion-item
+            default-opened
             expand-separator
             icon="push_pin"
             :label="'Tabsets (' +  tabsets().length + ')'"
@@ -89,13 +90,13 @@ import {initializeBackendApi} from "src/services/BackendApi";
 import _ from "lodash"
 import {useTabsStore} from "stores/tabs";
 import {useTabGroupsStore} from "stores/tabGroups";
-import {useAuthStore} from "stores/auth";
+//import {useAuthStore} from "stores/auth";
 import {useQuasar} from "quasar";
 import {uid} from 'quasar'
 import {TabsetApi} from "src/services/TabsetApi";
 import {Tabset} from "src/models/Tabset";
 
-const authStore = useAuthStore()
+//const authStore = useAuthStore()
 const tabsStore = useTabsStore()
 const tabGroupsStore = useTabGroupsStore()
 
@@ -103,16 +104,18 @@ const contextname = ref('default')
 
 const localStorage = useQuasar().localStorage
 const tabsetApi = new TabsetApi(localStorage)
+// const appVersion = process.env.PUBLIC_ENV_PACKAGE_VERSION
+const appVersion = import.meta.env.PACKAGE_VERSION
 
 function saveTabset() {
-  if (authStore.isAuthenticated) {
+  /*if (authStore.isAuthenticated) {
     console.log("saving tabset @ backend");
     const backend = initializeBackendApi(process.env.BACKEND_URL || "unknown", null)
     backend.saveTabset(tabsStore.getTabs())
-  } else {
+  } else {*/
     console.log("saving tabset @ localstorage");
     tabsetApi.saveOrReplace(contextname.value, tabsStore.tabs)
-  }
+  //}
 }
 
 const leftDrawerOpen = ref(false)
@@ -130,7 +133,7 @@ function tabsets(): object[] {
   const ts = tabsetApi.getTabsetInfo()
   ts.push({
     title: 'current',
-    id: ''
+    id: 'current'
   })
   return ts
 }
