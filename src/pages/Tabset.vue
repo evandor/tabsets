@@ -5,7 +5,7 @@
     <div class="text-caption">{{ tabset.date }}</div>
 
     <div>
-      <q-btn label="restore" @click="restore()"/>
+      <q-btn label="restore" @click="restore()" v-show="tabset.name !== 'current'"/>
     </div>
 
     <q-list bordered class="rounded-borders">

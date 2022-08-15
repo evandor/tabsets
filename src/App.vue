@@ -9,7 +9,7 @@ import {useTabGroupsStore} from "stores/tabGroups";
 const tabsStore = useTabsStore()
 const tabGroupsStore = useTabGroupsStore()
 
-tabsStore.getTabs();
+tabsStore.loadTabs();
 tabGroupsStore.loadTabGroups();
 
 

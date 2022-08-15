@@ -18,7 +18,8 @@ export const useTabsStore = defineStore('tabs', {
   },
 
   actions: {
-    getTabs() {
+    loadTabs() {
+      console.log("loading tabs")
       this.tabs = []
       chrome.tabs.query({currentWindow: true}, (ts: chrome.tabs.Tab[]) => {
         //console.log("tabs", ts);
@@ -28,6 +29,10 @@ export const useTabsStore = defineStore('tabs', {
           }
         })
       });
+      chrome.tabs.onCreated.addListener(()=> {
+        console.log("onCreated event")
+        this.loadTabs();
+      })
     },
     tabsForGroup(groupId:number): chrome.tabs.Tab[] {
       return _.filter(this.tabs, (t: chrome.tabs.Tab) => t.groupId === groupId)
