@@ -1,11 +1,9 @@
 import axios, {AxiosResponse} from 'axios';
 import {UnwrapRef} from "vue";
 import {LocalStorage, uid, useQuasar} from "quasar";
-import {useTabsStore} from "stores/tabs";
 import _ from "lodash";
 import {Tabset} from "src/models/Tabset";
 
-const tabsStore = useTabsStore()
 
 export class TabsetApi {
 

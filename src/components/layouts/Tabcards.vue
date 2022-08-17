@@ -53,8 +53,12 @@ const props = defineProps({
 const tabsetApi = new TabsetApi(null as unknown as LocalStorage)
 
 function getHost(urlAsString: string): string {
-  const url = new URL(urlAsString)
-  return url.host
+  try {
+    const url = new URL(urlAsString)
+    return url.host
+  } catch (e) {
+    return "---";
+  }
 }
 
 function maxChar(max: number, t: string): string {

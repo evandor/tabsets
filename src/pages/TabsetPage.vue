@@ -65,15 +65,15 @@
 </template>
 
 <script setup lang="ts">
-import {defineComponent, onMounted, onUpdated, ref} from 'vue'
+import {defineComponent, onMounted, onUpdated, ref, watchEffect} from 'vue'
 import {useRoute} from "vue-router";
 import {TabsetApi} from "src/services/TabsetApi";
 import {useQuasar} from "quasar";
 import {Tabset} from "src/models/Tabset";
 import Tabcards from "src/components/layouts/Tabcards.vue";
 import _ from "lodash"
-import {useTabGroupsStore} from "stores/tabGroups";
-import {useTabsStore} from "stores/tabs";
+import {useTabsStore} from "stores/tabsStore";
+import {useTabGroupsStore} from "stores/tabGroupsStore";
 
 const route = useRoute();
 const localStorage = useQuasar().localStorage
@@ -102,6 +102,10 @@ init()
 
 onUpdated(() => {
   init()
+})
+
+watchEffect(() => {
+  console.log("change in ", tabset.value)
 })
 
 function pinned(tabs: chrome.tabs.Tab[]) {

@@ -39,7 +39,7 @@ withDefaults(defineProps<TabsetProps>(), {
 });
 
 function openTabsetPage(id: string) {
-  console.log("hier", id)
-  router.push('/tabset/' + id)
+  // console.log("hier", id)
+  router.push('/tabsets/' + id)
 }
 </script>

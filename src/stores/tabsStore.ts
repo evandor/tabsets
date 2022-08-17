@@ -14,25 +14,42 @@ export const useTabsStore = defineStore('tabs', {
 
     tabsCount(): number {
       return this.tabs.length
-    }
+    },
+    getTabs: (state) => state.tabs
   },
 
   actions: {
-    loadTabs() {
-      console.log("loading tabs")
+    loadTabs(eventName?: string) {
+      console.log("loading tabs", eventName)
       this.tabs = []
       chrome.tabs.query({currentWindow: true}, (ts: chrome.tabs.Tab[]) => {
-        //console.log("tabs", ts);
         ts.forEach(t => {
           if (!t.url?.startsWith("chrome"))  {
             this.tabs.push(t)
           }
         })
+        console.log(`found ${this.tabs.length} tabs`)
       });
-      chrome.tabs.onCreated.addListener(()=> {
-        console.log("onCreated event")
-        this.loadTabs();
+    },
+    initListeners() {
+      chrome.tabs.onCreated.addListener((tab)=> {
+        console.log("created new tab", tab)
+        this.loadTabs('onCreated');
       })
+      chrome.tabs.onUpdated.addListener(()=> {
+        this.loadTabs('onUpdated');
+      })
+      chrome.tabs.onMoved.addListener(()=> {
+        this.loadTabs('onMoved');
+      })
+      chrome.tabs.onRemoved.addListener(()=> {
+        this.loadTabs('onRemoved');
+      })
+      chrome.tabs.onReplaced.addListener(()=> {
+        this.loadTabs('onReplaced');
+      })
+
+
     },
     tabsForGroup(groupId:number): chrome.tabs.Tab[] {
       return _.filter(this.tabs, (t: chrome.tabs.Tab) => t.groupId === groupId)

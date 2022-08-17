@@ -3,14 +3,17 @@
 </template>
 
 <script setup lang="ts">
-import {useTabsStore} from "stores/tabs";
-import {useTabGroupsStore} from "stores/tabGroups";
+import {useTabsStore} from "stores/tabsStore";
+import {useTabGroupsStore} from "stores/tabGroupsStore";
 
 const tabsStore = useTabsStore()
 const tabGroupsStore = useTabGroupsStore()
 
 tabsStore.loadTabs();
+tabsStore.initListeners();
+
 tabGroupsStore.loadTabGroups();
+tabGroupsStore.initListeners();
 
 
 

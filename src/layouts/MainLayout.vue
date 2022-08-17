@@ -40,8 +40,11 @@
           </div>
         </div>
 
-        <q-list bordered class="rounded-borders">
+        <div>
+          <q-btn label="current" to="/tabset" />
+        </div>
 
+        <q-list bordered class="rounded-borders">
 
           <q-expansion-item
             default-opened
@@ -88,13 +91,13 @@ import Tabs, {TabProps} from 'components/Tabs.vue';
 import Tabsets, {TabsetProps} from 'components/Tabsets.vue'
 import {initializeBackendApi} from "src/services/BackendApi";
 import _ from "lodash"
-import {useTabsStore} from "stores/tabs";
-import {useTabGroupsStore} from "stores/tabGroups";
 //import {useAuthStore} from "stores/auth";
 import {useQuasar} from "quasar";
 import {uid} from 'quasar'
 import {TabsetApi} from "src/services/TabsetApi";
 import {Tabset} from "src/models/Tabset";
+import {useTabsStore} from "stores/tabsStore";
+import {useTabGroupsStore} from "stores/tabGroupsStore";
 
 //const authStore = useAuthStore()
 const tabsStore = useTabsStore()
@@ -133,7 +136,7 @@ function tabsets(): object[] {
   const ts = tabsetApi.getTabsetInfo()
   ts.push({
     title: 'current',
-    id: 'current'
+      id: 'current'
   })
   return ts
 }

@@ -12,9 +12,9 @@ export const useTabGroupsStore = defineStore('tabGroups', {
   },
 
   actions: {
-    loadTabGroups() {
+    loadTabGroups(eventName?: string) {
       this.tabGroups = []
-      console.log("loading tabGroups")
+      console.log("loading tabGroups", eventName)
       try {
         chrome.tabGroups.query({}, (ts: chrome.tabGroups.TabGroup[]) => {
           ts.forEach(t => {
@@ -25,6 +25,21 @@ export const useTabGroupsStore = defineStore('tabGroups', {
       } catch (e) {
         console.log("error", e);
       }
+    },
+    initListeners() {
+      chrome.tabGroups.onCreated.addListener(() => {
+        this.loadTabGroups('onCreated');
+      })
+      chrome.tabGroups.onUpdated.addListener(() => {
+        this.loadTabGroups('onUpdated');
+      })
+      chrome.tabGroups.onRemoved.addListener(() => {
+        this.loadTabGroups('onRemoved');
+      })
+      chrome.tabGroups.onMoved.addListener(() => {
+        this.loadTabGroups('onMoved');
+      })
+
     }
   }
 });
