@@ -2,16 +2,22 @@
   <div class="row items-start">
     <div class="col-xs-12 col-sm-4 col-md-3 col-lg-2 q-pa-xs" v-for="tab in props.tabs">
       <q-card class="my-card" flat bordered style="height: 200px;max-height:200px; min-height: 200px;">
-        <q-card-section horizontal>
-          <q-card-section class="q-pt-xs">
-            <div>
-              <q-img
-                class="rounded-borders"
-                width="20px"
-                height="20px"
-                :src="tab.favIconUrl"
-              />
+        <q-card-section horizontal class="bg-amber-1">
+          <q-card-section class="q-pt-xs"  style="width:100%">
+            <div class="row">
+              <div class="col-11">
+                <q-img
+                  class="rounded-borders"
+                  width="20px"
+                  height="20px"
+                  :src="tab.favIconUrl"
+                />
+              </div>
+              <div class="col-1">
+                <q-icon name="close" class="cursor-pointer" @click="closeTab(tab.id)" />
+              </div>
             </div>
+
             <div class="text-overline">{{ getHost(tab.url) }}</div>
             <div class="text-h6 q-mt-sm q-mb-xs">{{ maxChar(20, tab.title) }}</div>
             <div class="text-caption text-grey wrap" style="overflow:hidden;">
@@ -25,7 +31,7 @@
 
         <q-separator/>
 
-        <q-card-actions style="min-height:50px;max-height:50px">
+        <q-card-actions class="bg-amber-2" style="min-height:50px;max-height:50px">
           <q-btn flat round icon="event"/>
           <!--<q-btn flat>
             7:30PM
@@ -91,5 +97,9 @@ function openOrCreateTab(withUrl: string) {
         console.log("got error", e)
       })
   }
+}
+
+function closeTab(id: number) {
+  chrome.tabs.remove(id)
 }
 </script>

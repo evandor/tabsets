@@ -3,6 +3,19 @@ import {defineStore} from 'pinia';
 import _ from 'lodash'
 import {useLogStore} from "stores/logStore";
 
+async function queryTabs(): Promise<chrome.tabs.Tab[]> {
+  let ts = await chrome.tabs.query({currentWindow: true})
+  //console.log("found", ts.length)
+  return ts;
+}
+
+async function getCurrentTab() {
+  let queryOptions = { active: true, lastFocusedWindow: true };
+  // `tab` will either be a `tabs.Tab` instance or `undefined`.
+  let [tab] = await chrome.tabs.query(queryOptions);
+  return tab;
+}
+
 export const useTabsStore = defineStore('tabs', {
   state: () => ({
     tabs: [] as unknown as chrome.tabs.Tab[],
@@ -21,27 +34,23 @@ export const useTabsStore = defineStore('tabs', {
   },
 
   actions: {
-    loadTabs(eventName = '') {
+    async loadTabs(eventName = '') {
       console.log("loading tabs", eventName)
       this.logStore.add("loading tabs", [])
-      this.tabs = []
-      chrome.tabs.query({currentWindow: true}, (ts: chrome.tabs.Tab[]) => {
-        ts.forEach(t => {
-          if (!t.url?.startsWith("chrome")) {
-            this.tabs.push(t)
-          }
-        })
-        console.log(`found ${this.tabs.length} tabs`)
-      });
+      queryTabs().then(ts => this.tabs = ts);
     },
     initListeners() {
       chrome.tabs.onCreated.addListener((tab) => {
         this.logStore.add("new tab created", [tab.url || '?'])
         this.loadTabs('onCreated');
       })
-      chrome.tabs.onUpdated.addListener((number, info) => {
-        this.logStore.add(`tab ${number} updated: ${JSON.stringify(info)}`, [info.url || '?'])
-        this.loadTabs('onUpdated');
+      chrome.tabs.onUpdated.addListener((number, info, tab) => {
+        if (!info.status) {
+          let msg = `tab ${number} updated: ${JSON.stringify(info)}`
+          console.log('onUpdated', msg)
+          this.logStore.add(msg, [info.url || '?'])
+          this.loadTabs('onUpdated');
+        }
       })
       chrome.tabs.onMoved.addListener((n, info) => {
         this.logStore.add(`tab ${n} moved: ${JSON.stringify(info)}`, [])
