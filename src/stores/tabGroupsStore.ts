@@ -12,7 +12,7 @@ export const useTabGroupsStore = defineStore('tabGroups', {
   },
 
   actions: {
-    loadTabGroups(eventName?: string) {
+    loadTabGroups(eventName = '') {
       this.tabGroups = []
       console.log("loading tabGroups", eventName)
       try {
