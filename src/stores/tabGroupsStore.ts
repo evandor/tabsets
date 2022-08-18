@@ -1,42 +1,53 @@
 import {defineStore} from 'pinia';
+import {useLogStore} from "stores/logStore";
+
+async function queryTabGroups(): Promise<chrome.tabGroups.TabGroup[]> {
+  let ts = await chrome.tabGroups.query({})
+  console.log("found", ts.length)
+  return ts;
+}
 
 export const useTabGroupsStore = defineStore('tabGroups', {
   state: () => ({
-    tabGroups: [] as unknown as chrome.tabGroups.TabGroup[]
+    tabGroups: [] as unknown as chrome.tabGroups.TabGroup[],
+    logStore: useLogStore()
   }),
 
   getters: {
-    data(): chrome.tabGroups.TabGroup[] {
-      return this.tabGroups
-    }
+    // data(): chrome.tabGroups.TabGroup[] {
+    //   return this.tabGroups
+    // }
   },
 
   actions: {
     loadTabGroups(eventName = '') {
-      this.tabGroups = []
-      console.log("loading tabGroups", eventName)
-      try {
-        chrome.tabGroups.query({}, (ts: chrome.tabGroups.TabGroup[]) => {
-          ts.forEach(t => {
-            //console.log("ts", ts)
-            this.tabGroups.push(t)
-          })
-        });
-      } catch (e) {
-        console.log("error", e);
-      }
+      console.log("loading tabgroups", eventName)
+      this.logStore.add("loading tabgroups", [])
+      queryTabGroups().then(tgs => this.tabGroups = tgs);
     },
     initListeners() {
-      chrome.tabGroups.onCreated.addListener(() => {
+      chrome.tabGroups.onCreated.addListener((tg) => {
+        let msg = `tabGroup ${tg.title} created`
+        console.log('onCreated', msg)
+        this.logStore.add(msg, [])
         this.loadTabGroups('onCreated');
       })
-      chrome.tabGroups.onUpdated.addListener(() => {
+      chrome.tabGroups.onUpdated.addListener((tg) => {
+        let msg = `tabGroup ${tg.title} updated`
+        console.log('onUpdated', msg)
+        this.logStore.add(msg, [])
         this.loadTabGroups('onUpdated');
       })
-      chrome.tabGroups.onRemoved.addListener(() => {
+      chrome.tabGroups.onRemoved.addListener((tg) => {
+        let msg = `tabGroup ${tg.title} removed`
+        console.log('onRemoved', msg)
+        this.logStore.add(msg, [])
         this.loadTabGroups('onRemoved');
       })
-      chrome.tabGroups.onMoved.addListener(() => {
+      chrome.tabGroups.onMoved.addListener((tg) => {
+        let msg = `tabGroup ${tg.title} moved`
+        console.log('onMoved', msg)
+        this.logStore.add(msg, [])
         this.loadTabGroups('onMoved');
       })
 

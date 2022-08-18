@@ -4,7 +4,7 @@
     <q-toolbar class="text-primary">
       <q-btn flat round dense icon="tabs"/>
       <q-toolbar-title>
-        Tabset: Current
+        Tabset:  <q-select borderless v-model="tabsetname" :options="tabsetNameOptions" label="Tabset Name" />
       </q-toolbar-title>
       <q-btn flat round dense icon="save"/>
     </q-toolbar>
@@ -12,11 +12,22 @@
     <q-list class="rounded-borders">
       <q-expansion-item
         v-if="tabsStore.pinnedTabs.length > 0"
+        header-class="bg-amber-2 text-black"
+        expand-icon-class="text-black"
         expand-separator
-        icon="push_pin"
-        label="Pinned Tabs"
-        caption="John Doe"
-      >
+        default-opened>
+        <template v-slot:header="{ expanded }">
+          <q-item-section avatar>
+            <q-icon name="push_pin"/>
+          </q-item-section>
+          <q-item-section>
+            <div>
+              <span class="text-weight-bold">Pinned Tabs</span>
+              <div class="text-caption">this browser's window's tabs which are pinned right now</div>
+            </div>
+          </q-item-section>
+          <q-item-section>{{ tabsStore.pinnedTabs.length }} tab(s)</q-item-section>
+        </template>
         <q-card>
           <q-card-section>
             <Tabcards :tabs="tabsStore.pinnedTabs"/>
@@ -24,17 +35,58 @@
         </q-card>
       </q-expansion-item>
 
+      <div v-for="group in tabGroupsStore.tabGroups">
+        <q-expansion-item
+          v-if="tabsForGroup(group.id).length > 0"
+          header-class="bg-amber-2 text-black"
+          expand-icon-class="text-black"
+          expand-separator
+          default-opened>
+          <template v-slot:header="{ expanded }">
+            <q-item-section avatar>
+              <q-icon :color="group.color" name="tab"/>
+            </q-item-section>
+
+            <q-item-section>
+              <div>
+                <span class="text-weight-bold">{{ group.title }}</span>
+                <div class="text-caption">chrome browser's group of tabs</div>
+                <!--                <q-btn label="create new tabset" v-if="expanded" @click="newTabsetFrom(group.title, group.id)"/>-->
+
+              </div>
+            </q-item-section>
+            <q-item-section>{{ tabsForGroup(group.id).length }} tab(s)</q-item-section>
+          </template>
+          <q-card>
+            <q-card-section>
+              <Tabcards :tabs="tabsForGroup( group.id)"/>
+            </q-card-section>
+          </q-card>
+        </q-expansion-item>
+      </div>
 
       <q-expansion-item
-        expand-separator
         icon="tabs"
-        label="Other Tabs"
         default-opened
-        :caption="unpinnedNoGroup(tabs).length + ' tabs'"
-      >
+        header-class="bg-amber-2 text-black"
+        expand-icon-class="text-black">
+        <template v-slot:header="{ expanded }">
+          <q-item-section avatar>
+            <q-icon name="tab"/>
+          </q-item-section>
+
+          <q-item-section>
+            <div>
+              <span class="text-weight-bold">Other Tabs</span>
+              <div class="text-caption">current tabs, neither pinned nor grouped</div>
+              <!--                <q-btn label="create new tabset" v-if="expanded" @click="newTabsetFrom(group.title, group.id)"/>-->
+            </div>
+          </q-item-section>
+          <q-item-section>{{ unpinnedNoGroup(tabsStore.tabs).length }} tab(s)</q-item-section>
+        </template>
         <q-card>
           <q-card-section>
-            <Tabcards :tabs="unpinnedNoGroup(tabs)"/>
+            <Tabcards :tabs="unpinnedNoGroup()"/>
           </q-card-section>
         </q-card>
       </q-expansion-item>
@@ -59,21 +111,20 @@ const tabsetApi = new TabsetApi(localStorage);
 
 const tabsStore = useTabsStore()
 
-const tabs = ref<chrome.tabs.Tab[]>(tabsStore.getTabs)
-
 const tabGroupsStore = useTabGroupsStore()
 
+const tabsetname = ref('name')
 
-function unpinnedNoGroup(tabs: chrome.tabs.Tab[]) {
+const tabsetNameOptions = [
+  'Google', 'Facebook', 'Twitter', 'Apple', 'Oracle'
+]
+
+function unpinnedNoGroup() {
   return _.filter(tabsStore.tabs, (t: chrome.tabs.Tab) => !t.pinned && t.groupId === -1)
 }
 
-function getTabGroups(): chrome.tabGroups.TabGroup[] {
-  return tabGroupsStore.data
-}
-
-function tabsForGroup(tabs: chrome.tabs.Tab[], groupId: number): chrome.tabs.Tab[] {
-  return _.filter(tabs, (t: chrome.tabs.Tab) => t.groupId === groupId)
+function tabsForGroup(groupId: number): chrome.tabs.Tab[] {
+  return _.filter(tabsStore.tabs, (t: chrome.tabs.Tab) => t.groupId === groupId)
 }
 
 
