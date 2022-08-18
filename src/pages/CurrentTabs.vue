@@ -1,11 +1,17 @@
 <template>
   <q-page padding>
 
-    <div class="text-h6">Current</div>
-    <div class="text-caption">now</div>
+    <q-toolbar class="text-primary">
+      <q-btn flat round dense icon="tabs"/>
+      <q-toolbar-title>
+        Tabset: Current
+      </q-toolbar-title>
+      <q-btn flat round dense icon="save"/>
+    </q-toolbar>
 
-    <q-list bordered class="rounded-borders">
+    <q-list class="rounded-borders">
       <q-expansion-item
+        v-if="tabsStore.pinnedTabs.length > 0"
         expand-separator
         icon="push_pin"
         label="Pinned Tabs"
@@ -18,20 +24,21 @@
         </q-card>
       </q-expansion-item>
 
-    </q-list>
 
-    <q-expansion-item
-      expand-separator
-      icon="tabs"
-      label="Other Tabs"
-      :caption="unpinnedNoGroup(tabs).length + ' tabs'"
-    >
-      <q-card>
-        <q-card-section>
-          <Tabcards :tabs="unpinnedNoGroup(tabs)"/>
-        </q-card-section>
-      </q-card>
-    </q-expansion-item>
+      <q-expansion-item
+        expand-separator
+        icon="tabs"
+        label="Other Tabs"
+        default-opened
+        :caption="unpinnedNoGroup(tabs).length + ' tabs'"
+      >
+        <q-card>
+          <q-card-section>
+            <Tabcards :tabs="unpinnedNoGroup(tabs)"/>
+          </q-card-section>
+        </q-card>
+      </q-expansion-item>
+    </q-list>
   </q-page>
 </template>
 
