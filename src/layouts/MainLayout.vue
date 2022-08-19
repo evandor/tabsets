@@ -21,7 +21,7 @@
 
     <q-drawer
       v-model="leftDrawerOpen"
-      show-if-above
+
       bordered>
 
       <div class="q-pa-sm" style="max-width: 350px">

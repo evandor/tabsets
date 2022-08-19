@@ -4,7 +4,15 @@
     <q-toolbar class="text-primary">
       <q-btn flat round dense icon="tabs"/>
       <q-toolbar-title>
-        Tabset:  <q-select borderless v-model="tabsetname" :options="tabsetNameOptions" label="Tabset Name" />
+        <div class="row">
+          <div class="col-2">
+            Tabset:<q-select borderless v-model="tabsetname" :options="tabsetNameOptions" />
+          </div>
+          <div class="col-2">
+            <q-select borderless v-model="tabsetname" :options="tabsetNameOptions" />
+          </div>
+          <div class="col">&nbsp;</div>
+        </div>
       </q-toolbar-title>
       <q-btn flat round dense icon="save"/>
     </q-toolbar>
@@ -113,10 +121,10 @@ const tabsStore = useTabsStore()
 
 const tabGroupsStore = useTabGroupsStore()
 
-const tabsetname = ref('name')
+const tabsetname = ref('Current')
 
 const tabsetNameOptions = [
-  'Google', 'Facebook', 'Twitter', 'Apple', 'Oracle'
+  'Current', 'Facebook', 'Twitter', 'Apple', 'Oracle'
 ]
 
 function unpinnedNoGroup() {
