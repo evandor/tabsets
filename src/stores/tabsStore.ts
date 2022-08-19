@@ -2,6 +2,7 @@ import {defineStore} from 'pinia';
 // @ts-ignore
 import _ from 'lodash'
 import {useLogStore} from "stores/logStore";
+import {TabsetApi} from "src/services/TabsetApi";
 
 async function queryTabs(): Promise<chrome.tabs.Tab[]> {
   let ts = await chrome.tabs.query({currentWindow: true})
@@ -19,6 +20,7 @@ async function getCurrentTab() {
 export const useTabsStore = defineStore('tabs', {
   state: () => ({
     tabs: [] as unknown as chrome.tabs.Tab[],
+    tabsets: new Map<string, chrome.tabs.Tab[]>(),
     logStore: useLogStore()
   }),
 
@@ -38,6 +40,7 @@ export const useTabsStore = defineStore('tabs', {
       console.log("loading tabs", eventName)
       this.logStore.add("loading tabs", [])
       queryTabs().then(ts => this.tabs = ts);
+      new TabsetApi(null).getTabsetInfo()
     },
     initListeners() {
       chrome.tabs.onCreated.addListener((tab) => {

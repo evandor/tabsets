@@ -4,14 +4,17 @@
     <q-toolbar class="text-primary">
       <q-btn flat round dense icon="tabs"/>
       <q-toolbar-title>
-        <div class="row">
-          <div class="col-2">
-            Tabset:<q-select borderless v-model="tabsetname" :options="tabsetNameOptions" />
+        <div class="row justify-start items-baseline">
+          <div class="col-1" style="width:80px">Tabset</div>
+          <div class="col" style="color:#000066">
+            <q-select
+              borderless
+              bg-color="white"
+              class="text-h6"
+              style="width:200px;"
+              v-model="tabsetname" :options="tabsetNameOptions">
+            </q-select>
           </div>
-          <div class="col-2">
-            <q-select borderless v-model="tabsetname" :options="tabsetNameOptions" />
-          </div>
-          <div class="col">&nbsp;</div>
         </div>
       </q-toolbar-title>
       <q-btn flat round dense icon="save"/>

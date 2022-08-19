@@ -15,7 +15,16 @@
           <q-btn stretch flat label="Tabsets" to="/"/>
         </q-toolbar-title>
 
-        <div>{{  appVersion }}</div>
+        <q-input dark dense standout v-model="search" input-class="text-right" class="q-ml-md">
+          <template v-slot:append>
+            <q-icon v-if="search === ''" name="search"/>
+            <q-icon v-else name="clear" class="cursor-pointer" @click="search = ''"/>
+          </template>
+        </q-input>
+
+        <q-space/>
+
+        <div>{{ appVersion }}</div>
       </q-toolbar>
     </q-header>
 
@@ -26,8 +35,8 @@
 
       <div class="q-pa-sm" style="max-width: 350px">
 
-<!--        <q-btn @click="saveTabset">Save</q-btn>-->
-<!--        <q-btn to="login">Login</q-btn>-->
+        <!--        <q-btn @click="saveTabset">Save</q-btn>-->
+        <!--        <q-btn to="login">Login</q-btn>-->
 
         <div class="row">
           <div class="col-10">
@@ -41,7 +50,7 @@
         </div>
 
         <div>
-          <q-btn label="current" to="/tabset" />
+          <q-btn label="current" to="/tabset"/>
         </div>
 
         <q-list bordered class="rounded-borders">
@@ -104,6 +113,7 @@ const tabsStore = useTabsStore()
 const tabGroupsStore = useTabGroupsStore()
 
 const contextname = ref('default')
+const search = ref('')
 
 const localStorage = useQuasar().localStorage
 const tabsetApi = new TabsetApi(localStorage)
@@ -116,8 +126,8 @@ function saveTabset() {
     const backend = initializeBackendApi(process.env.BACKEND_URL || "unknown", null)
     backend.saveTabset(tabsStore.getTabs())
   } else {*/
-    console.log("saving tabset @ localstorage");
-    tabsetApi.saveOrReplace(contextname.value, tabsStore.tabs)
+  console.log("saving tabset @ localstorage");
+  tabsetApi.saveOrReplace(contextname.value, tabsStore.tabs)
   //}
 }
 
@@ -136,7 +146,7 @@ function tabsets(): object[] {
   const ts = tabsetApi.getTabsetInfo()
   ts.push({
     title: 'current',
-      id: 'current'
+    id: 'current'
   })
   return ts
 }
