@@ -12,14 +12,15 @@
               bg-color="white"
               class="text-h6"
               style="width:200px;"
-              v-model="tabsetname" :options="tabsetNameOptions">
+              :model-value="tabsetname"
+              @update:model-value="val => update(val)"
+              :options="['Current'].concat(tabsStore.tabsetNames)">
             </q-select>
           </div>
         </div>
       </q-toolbar-title>
       <q-btn flat round dense icon="save"/>
     </q-toolbar>
-
     <q-list class="rounded-borders">
       <q-expansion-item
         v-if="tabsStore.pinnedTabs.length > 0"
@@ -46,7 +47,7 @@
         </q-card>
       </q-expansion-item>
 
-      <div v-for="group in tabGroupsStore.tabGroups">
+      <div v-for="group in tabGroupsStore.tabGroups" v-if="false">
         <q-expansion-item
           v-if="tabsForGroup(group.id).length > 0"
           header-class="bg-amber-2 text-black"
@@ -93,7 +94,7 @@
               <!--                <q-btn label="create new tabset" v-if="expanded" @click="newTabsetFrom(group.title, group.id)"/>-->
             </div>
           </q-item-section>
-          <q-item-section>{{ unpinnedNoGroup(tabsStore.tabs).length }} tab(s)</q-item-section>
+          <q-item-section>{{ unpinnedNoGroup().length }} tab(s)</q-item-section>
         </template>
         <q-card>
           <q-card-section>
@@ -120,24 +121,24 @@ import {useTabGroupsStore} from "stores/tabGroupsStore";
 
 const route = useRoute();
 const localStorage = useQuasar().localStorage
-const tabsetApi = new TabsetApi(localStorage);
-
 const tabsStore = useTabsStore()
-
 const tabGroupsStore = useTabGroupsStore()
-
 const tabsetname = ref('Current')
 
-const tabsetNameOptions = [
-  'Current', 'Facebook', 'Twitter', 'Apple', 'Oracle'
-]
-
 function unpinnedNoGroup() {
-  return _.filter(tabsStore.tabs, (t: chrome.tabs.Tab) => !t.pinned && t.groupId === -1)
+  return _.filter(
+    _.map(tabsStore.currentTabset.tabs, t => t.chromeTab),
+    (t: chrome.tabs.Tab) => !t.pinned && t.groupId === -1)
 }
 
 function tabsForGroup(groupId: number): chrome.tabs.Tab[] {
   return _.filter(tabsStore.tabs, (t: chrome.tabs.Tab) => t.groupId === groupId)
+}
+
+const update = (newValue: string) => {
+  console.log("new tabset", newValue)
+  tabsetname.value = newValue
+  tabsStore.selectCurrentTabset(newValue)
 }
 
 

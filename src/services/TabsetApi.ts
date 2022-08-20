@@ -3,6 +3,7 @@ import {UnwrapRef} from "vue";
 import {LocalStorage, uid, useQuasar} from "quasar";
 import _ from "lodash";
 import {Tabset} from "src/models/Tabset";
+import {Tab} from "src/models/Tab";
 
 
 export class TabsetApi {
@@ -13,7 +14,7 @@ export class TabsetApi {
     this.localStorage = localStorage;
   }
 
-  saveOrReplace(tabsetName: UnwrapRef<string>, tabs: chrome.tabs.Tab[]) {
+  saveOrReplace(tabsetName: UnwrapRef<string>, chromeTabs: chrome.tabs.Tab[]) {
     console.log("saving or replacing tabset " + tabsetName)
     var existingId =
       _.first(
@@ -34,19 +35,30 @@ export class TabsetApi {
     console.log("found existing", existingId)
     const useId = (existingId) ? existingId : uid()
 
+    const tabs = _.map(chromeTabs, t => {
+      return new Tab(t)
+    })
     const ts = new Tabset(useId, tabsetName, tabs);
-    this.localStorage.set("bookmrkx.tabsContexts." + useId, ts)
+    this.localStorage.set("tabsets.tabset." + useId, ts)
   }
 
   getTabsetInfo() {
-    return _.map(
-      _.filter(this.localStorage.getAllKeys(), (t: string) => t.startsWith("bookmrkx.tabsContexts.")), key => {
+    const newApproach = _.map(
+      _.filter(this.localStorage.getAllKeys(), (t: string) => t.startsWith("tabsets.tabset.")), key => {
         const tabset: Tabset | null = this.localStorage.getItem(key)
         return {
           title: tabset ? tabset.name : 'unknown',
           id: tabset ? tabset.id : 'unknown',
         }
       })
+    return newApproach.concat( _.map(
+      _.filter(this.localStorage.getAllKeys(), (t: string) => t.startsWith("bookmrkx.tabsContexts.")), key => {
+        const tabset: Tabset | null = this.localStorage.getItem(key)
+        return {
+          title: tabset ? tabset.name : 'unknown',
+          id: tabset ? tabset.id : 'unknown',
+        }
+      }))
   }
 
   getTabset(tabsetId: string): Tabset | null {

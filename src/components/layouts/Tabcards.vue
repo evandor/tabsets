@@ -10,26 +10,26 @@
                   class="rounded-borders"
                   width="20px"
                   height="20px"
-                  :src="tab.favIconUrl"
+                  :src="tab.chromeTab.favIconUrl"
                 />
               </div>
               <div class="col-1">
-                <q-icon name="close" class="cursor-pointer" @click="closeTab(tab.id)"/>
+                <q-icon name="close" class="cursor-pointer" @click="closeTab(tab.chromeTab.id)"/>
               </div>
             </div>
 
             <div class="text-overline">
-              {{ getHost(tab.url, true) }}
+              {{ getHost(tab.chromeTab.url, true) }}
               <q-tooltip>
-                {{ getHost(tab.url, false) }}
+                {{ getHost(tab.chromeTab.url, false) }}
               </q-tooltip>
             </div>
-            <div class="text-body1 q-mt-sm q-mb-xs">{{ maxChar(20, tab.title) }}</div>
+            <div class="text-body1 q-mt-sm q-mb-xs">{{ maxChar(20, tab.chromeTab.title) }}</div>
             <div class="text-caption text-grey wrap" style="overflow:hidden;">
               <q-item-label lines="1" class="q-mt-xs text-body2 text-primary" @click="openOrCreateTab(tab.url)">
-                <span class="cursor-pointer">{{ maxChar(30, withoutHostname(tab.url)) }}</span>
+                <span class="cursor-pointer">{{ maxChar(30, withoutHostname(tab.chromeTab.url)) }}</span>
                 <q-tooltip>
-                  {{ tab.url }}
+                  {{ tab.chromeTab.url }}
                 </q-tooltip>
               </q-item-label>
             </div>

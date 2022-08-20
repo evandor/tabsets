@@ -10,7 +10,7 @@ import {useQuasar} from "quasar";
 const tabsStore = useTabsStore()
 const tabGroupsStore = useTabGroupsStore()
 
-tabsStore.loadTabs("init", useQuasar().localStorage);
+tabsStore.initialize(useQuasar().localStorage);
 tabsStore.initListeners();
 
 tabGroupsStore.loadTabGroups();

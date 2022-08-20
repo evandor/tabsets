@@ -5,13 +5,10 @@ import {useLogStore} from "stores/logStore";
 import {TabsetApi} from "src/services/TabsetApi";
 import {LocalStorage, useQuasar} from "quasar";
 import {Tabset} from "src/models/Tabset";
-
-//const localStorage = useQuasar().localStorage
+import {Tab} from "src/models/Tab";
 
 async function queryTabs(): Promise<chrome.tabs.Tab[]> {
-  let ts = await chrome.tabs.query({currentWindow: true})
-  //console.log("found", ts.length)
-  return ts;
+  return await chrome.tabs.query({currentWindow: true})
 }
 
 async function getCurrentTab() {
@@ -23,39 +20,64 @@ async function getCurrentTab() {
 
 export const useTabsStore = defineStore('tabs', {
   state: () => ({
+    // chrome's current's windows tabs, reloaded on various events
     tabs: [] as unknown as chrome.tabs.Tab[],
+    // a named list of tabsets managed by this extension
     tabsets: new Map<string, Tabset>(),
+    // which tabset should be shown in the extension?
+    currentTabset: new Tabset("", "", []),
+    // audit
     logStore: useLogStore()
   }),
 
   getters: {
-    pinnedTabs(): chrome.tabs.Tab[] {
-      return _.filter(this.tabs, (t: chrome.tabs.Tab) => t.pinned)
+    pinnedTabs(state): Tab[] { //chrome.tabs.Tab[] {
+      //return _.filter(this.tabs, (t: chrome.tabs.Tab) => t.pinned)
+      return _.filter(state.currentTabset.tabs, (t: Tab) => {
+        //console.log("t.chromeTab", t.chromeTab)
+        return t.chromeTab?.pinned
+      })
     },
 
     tabsCount(): number {
       return this.tabs.length
     },
-    getTabs: (state) => state.tabs
+    getTabs: (state) => state.tabs,
+    tabsetNames: (state) => _.map([...state.tabsets.keys()], key => {
+      const tabset = state.tabsets.get(key)
+      return tabset?.name || 'unknown'
+    })
   },
 
   actions: {
-    async loadTabs(eventName: string, localStorage?: LocalStorage) {
+    async initialize(localStorage: LocalStorage) {
+      console.log("initializing tabsStore")
+      this.logStore.add("loading tabs", [])
+      queryTabs().then(ts => {
+        this.tabs = ts
+        // @ts-ignore
+        this.currentTabset = new Tabset("current", "current",
+          _.map(this.tabs, t => {
+            return new Tab(t)
+          }))
+      });
+      _.forEach(
+        _.filter(localStorage.getAllKeys(),
+          (t: string) => t.startsWith("bookmrkx.tabsContexts.")),
+        key => {
+          const tabset: Tabset | null = localStorage.getItem(key)
+          if (tabset) {
+            console.log("setting tabset", key)
+            this.tabsets.set(key, tabset)
+          }
+        })
+    },
+    async loadTabs(eventName: string) {
       console.log("loading tabs", eventName)
       this.logStore.add("loading tabs", [])
       queryTabs().then(ts => this.tabs = ts);
 
-      if (localStorage) {
-        _.forEach(
-          _.filter(localStorage.getAllKeys(),
-            (t: string) => t.startsWith("bookmrkx.tabsContexts.")),
-          key => {
-            const tabset: Tabset | null = localStorage.getItem(key)
-            if (tabset) {
-              this.tabsets.set(key, tabset)
-            }
-          })
-      }
+
     },
     initListeners() {
       chrome.tabs.onCreated.addListener((tab) => {
@@ -92,5 +114,25 @@ export const useTabsStore = defineStore('tabs', {
     unpinnedTabsWithoutGroup(): chrome.tabs.Tab[] {
       return _.filter(this.tabs, (t: chrome.tabs.Tab) => t.groupId === -1 && !t.pinned)
     },
+    selectCurrentTabset(name: string): void {
+      if ("Current" === name) {
+        console.log("setting tabs from chrome")
+        this.currentTabset = new Tabset("current", "current",
+          _.map(this.tabs, t => {
+            return new Tab(t)
+          }))
+        return
+      }
+      const found = _.find([...this.tabsets.keys()], k => {
+        const ts = this.tabsets.get(k) || new Tabset("", "", [])
+        return ts.name === name
+      })
+      if (found) {
+        console.log("found", found)
+        this.currentTabset = this.tabsets.get(found) || new Tabset("", "", [])
+      } else {
+        console.error("not found", name)
+      }
+    }
   }
 });

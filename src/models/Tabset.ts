@@ -1,11 +1,11 @@
-import {uid} from "quasar";
+import {Tab} from "src/models/Tab";
 
 export class Tabset {
   id: string
   name: string
   created: number
   updated: number
-  tabs: chrome.tabs.Tab[]
+  tabs: Tab[]
 
   constructor(id: string, name: string, tabs: Tab[]) {
     this.id = id
