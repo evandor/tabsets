@@ -15,7 +15,9 @@
           <q-btn stretch flat label="Tabsets" to="/"/>
         </q-toolbar-title>
 
-        <q-input dark dense standout v-model="search" input-class="text-right" class="q-ml-md">
+        <q-input dark dense standout v-model="search" input-class="text-right"
+                 @keydown.enter.prevent="submitSearch()"
+                 class="q-ml-md">
           <template v-slot:append>
             <q-icon v-if="search === ''" name="search"/>
             <q-icon v-else name="clear" class="cursor-pointer" @click="search = ''"/>
@@ -96,7 +98,6 @@
 
 <script setup lang="ts">
 import {ref} from 'vue';
-import Tabs, {TabProps} from 'components/Tabs.vue';
 import Tabsets, {TabsetProps} from 'components/Tabsets.vue'
 import {initializeBackendApi} from "src/services/BackendApi";
 import _ from "lodash"
@@ -107,7 +108,9 @@ import {TabsetApi} from "src/services/TabsetApi";
 import {Tabset} from "src/models/Tabset";
 import {useTabsStore} from "stores/tabsStore";
 import {useTabGroupsStore} from "stores/tabGroupsStore";
+import {useRouter} from "vue-router";
 
+const router = useRouter()
 //const authStore = useAuthStore()
 const tabsStore = useTabsStore()
 const tabGroupsStore = useTabGroupsStore()
@@ -149,5 +152,10 @@ function tabsets(): object[] {
     id: 'current'
   })
   return ts
+}
+
+function submitSearch() {
+  console.log("s", search.value)
+  router.push("/search/" + search.value)
 }
 </script>

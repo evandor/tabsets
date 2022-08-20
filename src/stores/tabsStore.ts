@@ -3,6 +3,10 @@ import {defineStore} from 'pinia';
 import _ from 'lodash'
 import {useLogStore} from "stores/logStore";
 import {TabsetApi} from "src/services/TabsetApi";
+import {LocalStorage, useQuasar} from "quasar";
+import {Tabset} from "src/models/Tabset";
+
+//const localStorage = useQuasar().localStorage
 
 async function queryTabs(): Promise<chrome.tabs.Tab[]> {
   let ts = await chrome.tabs.query({currentWindow: true})
@@ -11,7 +15,7 @@ async function queryTabs(): Promise<chrome.tabs.Tab[]> {
 }
 
 async function getCurrentTab() {
-  let queryOptions = { active: true, lastFocusedWindow: true };
+  let queryOptions = {active: true, lastFocusedWindow: true};
   // `tab` will either be a `tabs.Tab` instance or `undefined`.
   let [tab] = await chrome.tabs.query(queryOptions);
   return tab;
@@ -20,7 +24,7 @@ async function getCurrentTab() {
 export const useTabsStore = defineStore('tabs', {
   state: () => ({
     tabs: [] as unknown as chrome.tabs.Tab[],
-    tabsets: new Map<string, chrome.tabs.Tab[]>(),
+    tabsets: new Map<string, Tabset>(),
     logStore: useLogStore()
   }),
 
@@ -36,11 +40,22 @@ export const useTabsStore = defineStore('tabs', {
   },
 
   actions: {
-    async loadTabs(eventName = '') {
+    async loadTabs(eventName: string, localStorage?: LocalStorage) {
       console.log("loading tabs", eventName)
       this.logStore.add("loading tabs", [])
       queryTabs().then(ts => this.tabs = ts);
-      new TabsetApi(null).getTabsetInfo()
+
+      if (localStorage) {
+        _.forEach(
+          _.filter(localStorage.getAllKeys(),
+            (t: string) => t.startsWith("bookmrkx.tabsContexts.")),
+          key => {
+            const tabset: Tabset | null = localStorage.getItem(key)
+            if (tabset) {
+              this.tabsets.set(key, tabset)
+            }
+          })
+      }
     },
     initListeners() {
       chrome.tabs.onCreated.addListener((tab) => {
