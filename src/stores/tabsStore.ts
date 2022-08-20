@@ -82,6 +82,7 @@ export const useTabsStore = defineStore('tabs', {
         this.logStore.add(`tab ${n1} replaced ${n2}`, [])
         this.loadTabs('onReplaced');
       })
+      //chrome.tabs.onActivated
 
 
     },

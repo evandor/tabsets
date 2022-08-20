@@ -8,14 +8,14 @@
     <div class="row">
       <div class="col">
         <div class="text-body1">
-          To get started, click on "current" on the left. This will
-          open your current set of tabs on a new page where you can
-          organize them and store them, giving this set of tabs a name.
+          Search Results for term '{{term}}'
         </div>
       </div>
     </div>
-    <div class="row">
-      {{ result }}
+    <div class="row" v-for="key in result.keys()">
+      <div class="col cursor-pointer" @click="openTab(key)" >{{key}}</div>
+<!--      <div class="col">{{r.tabsetName}}</div>-->
+<!--      <div class="col">{{r.tabsetId}}</div>-->
     </div>
   </q-page>
 </template>
@@ -25,13 +25,14 @@ import { ref } from 'vue';
 import {useRoute} from "vue-router";
 import {useTabsStore} from "stores/tabsStore";
 import _ from "lodash"
+import Navigation from "src/services/Navigation";
 
 const route = useRoute()
 const tabStore = useTabsStore()
 
 const term = route.params.term as string
 console.log("term", term)
-const result = ref<any[]>([])
+const result = ref<Map<string, object>>(new Map())
 
 
 for (let [key, value] of tabStore.tabsets) {
@@ -42,12 +43,28 @@ for (let [key, value] of tabStore.tabsets) {
     }
     return false;
   })
+  // const rs: object[] = []
   _.forEach(hits, h => {
-    result.value.push(h.url)
+    // rs.push({
+    //   url:  h.url,
+    //   tabsetName: value.name,
+    //   tabsetId: key.replace("bookmrkx.tabsContexts.", "")
+    // })
+    if (result.value.has(h.url || '')) {
+
+    } else {
+      result.value.set(h.url || '???', {tabsetName: value.name})
+    }
   })
+
+
   //console.log("found", key, hits);
 }
 
+function openTab(url: string) {
+  console.log("opening", url)
+  Navigation.openOrCreateTab(url)
+}
 
 
 //const authStore = useAuthStore()
