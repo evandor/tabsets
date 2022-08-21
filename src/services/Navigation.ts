@@ -1,5 +1,8 @@
+import {useTabsStore} from "stores/tabsStore";
 
 class Navigation {
+
+  tabsStore = useTabsStore()
 
   openOrCreateTab(withUrl: string) {
     //console.log("hier", withUrl)
@@ -27,6 +30,15 @@ class Navigation {
   }
 
 
+  closeTab(tabId: number) {
+    //console.log("tabsStore", this.tabsStore)
+    if ("current" === this.tabsStore.currentTabset.name) {
+      console.log("closing tab with id", tabId)
+      chrome.tabs.remove(tabId)
+    } else {
+      this.tabsStore.removeTab(tabId)
+    }
+  }
 }
 
 export default new Navigation();

@@ -18,6 +18,7 @@ async function getCurrentTab() {
   return tab;
 }
 
+
 export const useTabsStore = defineStore('tabs', {
   state: () => ({
     // chrome's current's windows tabs, reloaded on various events
@@ -27,14 +28,13 @@ export const useTabsStore = defineStore('tabs', {
     // which tabset should be shown in the extension?
     currentTabset: new Tabset("", "", []),
     // audit
-    logStore: useLogStore()
+    logStore: useLogStore(),
+    localStorage: undefined as unknown as LocalStorage
   }),
 
   getters: {
     pinnedTabs(state): Tab[] { //chrome.tabs.Tab[] {
-      //return _.filter(this.tabs, (t: chrome.tabs.Tab) => t.pinned)
       return _.filter(state.currentTabset.tabs, (t: Tab) => {
-        //console.log("t.chromeTab", t.chromeTab)
         return t.chromeTab?.pinned
       })
     },
@@ -52,6 +52,7 @@ export const useTabsStore = defineStore('tabs', {
   actions: {
     async initialize(localStorage: LocalStorage) {
       console.log("initializing tabsStore")
+      this.localStorage = localStorage
       this.logStore.add("loading tabs", [])
       queryTabs().then(ts => {
         this.tabs = ts
@@ -63,7 +64,7 @@ export const useTabsStore = defineStore('tabs', {
       });
       _.forEach(
         _.filter(localStorage.getAllKeys(),
-          (t: string) => t.startsWith("bookmrkx.tabsContexts.")),
+          (t: string) => t.startsWith("tabsets.tabset.")),
         key => {
           const tabset: Tabset | null = localStorage.getItem(key)
           if (tabset) {
@@ -73,11 +74,17 @@ export const useTabsStore = defineStore('tabs', {
         })
     },
     async loadTabs(eventName: string) {
-      console.log("loading tabs", eventName)
+      console.log("loading tabs", eventName, this.currentTabset.id)
       this.logStore.add("loading tabs", [])
-      queryTabs().then(ts => this.tabs = ts);
-
-
+      queryTabs().then(ts => {
+        this.tabs = ts
+        if ("current" === this.currentTabset.id) {
+          this.currentTabset = new Tabset("current", "current",
+            _.map(this.tabs, t => {
+              return new Tab(t)
+            }))
+        }
+      });
     },
     initListeners() {
       chrome.tabs.onCreated.addListener((tab) => {
@@ -104,7 +111,26 @@ export const useTabsStore = defineStore('tabs', {
         this.logStore.add(`tab ${n1} replaced ${n2}`, [])
         this.loadTabs('onReplaced');
       })
-      //chrome.tabs.onActivated
+      chrome.tabs.onActivated.addListener((info) => {
+        const msg = `tab ${info.tabId} activated`
+        console.log("msg", msg)
+        this.logStore.add(msg, [])
+        //this.loadTabs('onActivated');
+        chrome.tabs.get(info.tabId, tab => {
+          console.log("got tab", tab)
+          const url = tab.url
+          _.forEach([...this.tabsets.keys()], key => {
+            const ts = this.tabsets.get(key) || new Tabset("", "", [])
+            const hits = _.filter(ts.tabs, (t: Tab) => t.chromeTab.url === url)
+            _.forEach(hits, h => {
+              h.activatedCount += h.activatedCount
+              h.lastActive += new Date().getTime()
+            })
+            new TabsetApi(this.localStorage).saveTabset(ts)
+          })
+        })
+        //new TabsetApi(this.localStorage).saveTabset(this.currentTabset)
+      })
 
 
     },
@@ -133,6 +159,10 @@ export const useTabsStore = defineStore('tabs', {
       } else {
         console.error("not found", name)
       }
+    },
+    removeTab(tabId: number) {
+      this.currentTabset.tabs = _.filter(this.currentTabset.tabs, (t:Tab) => (t.chromeTab?.id || t.id) !== tabId)
+      new TabsetApi(this.localStorage).saveTabset(this.currentTabset)
     }
   }
 });

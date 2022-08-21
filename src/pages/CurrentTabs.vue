@@ -19,7 +19,7 @@
           </div>
         </div>
       </q-toolbar-title>
-      <q-btn flat round dense icon="save"/>
+      <q-btn flat round dense icon="save" @click="saveDialog"/>
     </q-toolbar>
     <q-list class="rounded-borders">
       <q-expansion-item
@@ -47,7 +47,7 @@
         </q-card>
       </q-expansion-item>
 
-      <div v-for="group in tabGroupsStore.tabGroups" v-if="false">
+      <div v-for="group in tabGroupsStore.tabGroups">
         <q-expansion-item
           v-if="tabsForGroup(group.id).length > 0"
           header-class="bg-amber-2 text-black"
@@ -124,21 +124,46 @@ const localStorage = useQuasar().localStorage
 const tabsStore = useTabsStore()
 const tabGroupsStore = useTabGroupsStore()
 const tabsetname = ref('Current')
+const $q = useQuasar()
 
 function unpinnedNoGroup() {
   return _.filter(
-    _.map(tabsStore.currentTabset.tabs, t => t.chromeTab),
-    (t: chrome.tabs.Tab) => !t.pinned && t.groupId === -1)
+    _.map(tabsStore.currentTabset.tabs, t => t.chromeTab || t),
+    (t: any) => !t.pinned && t.groupId === -1)
 }
 
-function tabsForGroup(groupId: number): chrome.tabs.Tab[] {
-  return _.filter(tabsStore.tabs, (t: chrome.tabs.Tab) => t.groupId === groupId)
+function tabsForGroup(groupId: number) {
+  console.log("tabsforGroup", groupId)
+  return _.filter(
+    _.map(tabsStore.currentTabset.tabs, t => t.chromeTab || t),
+    (t: any) => t.groupId === groupId)
 }
 
 const update = (newValue: string) => {
   console.log("new tabset", newValue)
   tabsetname.value = newValue
   tabsStore.selectCurrentTabset(newValue)
+}
+
+const saveDialog = () => {
+  $q.dialog({
+    title: 'Save current Tabset',
+    message: 'Please provide a name for the new (or updated) tabset',
+    prompt: {
+      model: '',
+      type: 'text' // optional
+    },
+    cancel: true,
+    persistent: true
+  }).onOk((data:any) => {
+     console.log('>>>> OK, received', data)
+  }).onCancel(() => {
+     console.log('>>>> Cancel')
+  }).onDismiss(() => {
+     console.log('I am triggered on both OK and Cancel')
+  })
+
+
 }
 
 

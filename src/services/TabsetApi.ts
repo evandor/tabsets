@@ -16,22 +16,7 @@ export class TabsetApi {
 
   saveOrReplace(tabsetName: UnwrapRef<string>, chromeTabs: chrome.tabs.Tab[]) {
     console.log("saving or replacing tabset " + tabsetName)
-    var existingId =
-      _.first(
-        _.map(
-          _.filter(
-            _.map(
-              _.filter(this.localStorage.getAllKeys(), (t: string) => t.startsWith("bookmrkx.tabsContexts.")),
-              (key: string) => {
-                console.log("key", key)
-                return this.localStorage.getItem(key)
-              }), (ts: Tabset) => {
-              console.log("ts", ts.name, tabsetName)
-              return ts.name === tabsetName
-            }), (ts: any) => {
-            console.log("mapping to", ts.id)
-            return ts.id as string
-          }))
+    const existingId = this.findInLocalStorage(tabsetName)
     console.log("found existing", existingId)
     const useId = (existingId) ? existingId : uid()
 
@@ -40,6 +25,17 @@ export class TabsetApi {
     })
     const ts = new Tabset(useId, tabsetName, tabs);
     this.localStorage.set("tabsets.tabset." + useId, ts)
+  }
+
+  saveTabset(tabset: Tabset) {
+    const existingId = this.findInLocalStorage(tabset.name)
+    if (existingId) {
+      console.log("updating ", tabset)
+      this.localStorage.set("tabsets.tabset." + existingId, tabset)
+    } else {
+      console.error("did not find id for tabset", tabset.name)
+    }
+
   }
 
   getTabsetInfo() {
@@ -51,7 +47,7 @@ export class TabsetApi {
           id: tabset ? tabset.id : 'unknown',
         }
       })
-    return newApproach.concat( _.map(
+    return newApproach.concat(_.map(
       _.filter(this.localStorage.getAllKeys(), (t: string) => t.startsWith("bookmrkx.tabsContexts.")), key => {
         const tabset: Tabset | null = this.localStorage.getItem(key)
         return {
@@ -98,6 +94,26 @@ export class TabsetApi {
       const tabs = _.filter(tabset.tabs, (t: chrome.tabs.Tab) => t.groupId === groupId)
       this.saveOrReplace(title, tabs)
     }
+  }
+
+
+  private findInLocalStorage(tabsetName: string):string | undefined {
+    return _.first(
+      _.map(
+        _.filter(
+          _.map(
+            _.filter(this.localStorage.getAllKeys(), (t: string) =>
+              t.startsWith("bookmrkx.tabsContexts.") || t.startsWith("tabsets.tabset.")),
+            (key: string) => {
+              //console.log("key", key)
+              return this.localStorage.getItem(key)
+            }), (ts: Tabset) => {
+            //console.log("ts", ts.name, tabsetName)
+            return ts.name === tabsetName
+          }), (ts: any) => {
+          console.log("mapping to", ts.id)
+          return ts.id as string
+        }))
   }
 }
 

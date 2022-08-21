@@ -10,26 +10,26 @@
                   class="rounded-borders"
                   width="20px"
                   height="20px"
-                  :src="tab.chromeTab.favIconUrl"
+                  :src="tab.chromeTab?.favIconUrl || tab.favIconUrl"
                 />
               </div>
               <div class="col-1">
-                <q-icon name="close" class="cursor-pointer" @click="closeTab(tab.chromeTab.id)"/>
+                <q-icon name="close" class="cursor-pointer" @click="closeTab(tab.chromeTab?.id || tab.id)"/>
               </div>
             </div>
 
             <div class="text-overline">
-              {{ getHost(tab.chromeTab.url, true) }}
+              {{ getHost(tab.chromeTab?.url || tab.url, true) }}
               <q-tooltip>
-                {{ getHost(tab.chromeTab.url, false) }}
+                {{ getHost(tab.chromeTab?.url || tab.url, false) }}
               </q-tooltip>
             </div>
-            <div class="text-body1 q-mt-sm q-mb-xs">{{ maxChar(20, tab.chromeTab.title) }}</div>
+            <div class="text-body1 q-mt-sm q-mb-xs">{{ maxChar(20, tab.chromeTab?.title || tab.title) }}</div>
             <div class="text-caption text-grey wrap" style="overflow:hidden;">
-              <q-item-label lines="1" class="q-mt-xs text-body2 text-primary" @click="openOrCreateTab(tab.url)">
-                <span class="cursor-pointer">{{ maxChar(30, withoutHostname(tab.chromeTab.url)) }}</span>
+              <q-item-label lines="1" class="q-mt-xs text-body2 text-primary" @click="Navigation.openOrCreateTab(tab.chromeTab?.url || tab.url)">
+                <span class="cursor-pointer">{{ maxChar(30, withoutHostname(tab.chromeTab?.url || tab.url)) }}</span>
                 <q-tooltip>
-                  {{ tab.chromeTab.url }}
+                  {{ tab.chromeTab?.url || tab.url }}
                 </q-tooltip>
               </q-item-label>
             </div>
@@ -46,6 +46,7 @@
 <script setup lang="ts">
 import {TabsetApi} from "src/services/TabsetApi";
 import {LocalStorage} from "quasar";
+import Navigation from "src/services/Navigation";
 
 const props = defineProps({
   tabs: {
@@ -77,15 +78,15 @@ function getHost(urlAsString: string, shorten: Boolean = true): string {
 }
 
 function withoutHostname(url: string) {
-  const splits = url.split(getHost(url))
-  if (splits.length > 1) {
+  const splits = url?.split(getHost(url))
+  if (splits?.length > 1) {
     return "..." + splits[1]
   }
   return "---"
 }
 
 function maxChar(max: number, t: string): string {
-  if (t.length > max - 3) {
+  if (t?.length > max - 3) {
     return t.substring(0, max - 3) + "..."
   }
   return t;
@@ -94,6 +95,7 @@ function maxChar(max: number, t: string): string {
 
 
 function closeTab(id: number) {
-  chrome.tabs.remove(id)
+  Navigation.closeTab(id)
+  //chrome.tabs.remove(id)
 }
 </script>
