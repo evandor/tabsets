@@ -74,6 +74,7 @@ import Tabcards from "src/components/layouts/Tabcards.vue";
 import _ from "lodash"
 import {useTabsStore} from "stores/tabsStore";
 import {useTabGroupsStore} from "stores/tabGroupsStore";
+import TabsetService from "src/services/TabsetService";
 
 const route = useRoute();
 const localStorage = useQuasar().localStorage
@@ -126,7 +127,8 @@ function tabsForGroup(tabs: chrome.tabs.Tab[], groupId: number): chrome.tabs.Tab
 
 function restore() {
   console.log("restoring tabset", tabset.value.id)
-  tabsetApi.restore(tabset.value.id)
+  //tabsetApi.restore(tabset.value.id)
+  TabsetService.restore(tabset.value.id)
 }
 
 function newTabsetFrom(title: string, groupId: number) {

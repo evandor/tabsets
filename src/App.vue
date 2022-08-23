@@ -6,6 +6,7 @@
 import {useTabsStore} from "stores/tabsStore";
 import {useTabGroupsStore} from "stores/tabGroupsStore";
 import {useQuasar} from "quasar";
+import tabsetService from "src/services/TabsetService";
 
 const tabsStore = useTabsStore()
 const tabGroupsStore = useTabGroupsStore()
@@ -16,6 +17,6 @@ tabsStore.initListeners();
 tabGroupsStore.loadTabGroups();
 tabGroupsStore.initListeners();
 
-
+tabsetService.setLocalStorage(useQuasar().localStorage)
 
 </script>

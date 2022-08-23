@@ -115,7 +115,7 @@
 
 <script setup lang="ts">
 import {defineComponent, onMounted, onUpdated, ref, watchEffect} from 'vue'
-import {useRoute} from "vue-router";
+import {useRoute, useRouter} from "vue-router";
 import {TabsetApi} from "src/services/TabsetApi";
 import {useQuasar} from "quasar";
 import {Tabset} from "src/models/Tabset";
@@ -123,12 +123,14 @@ import Tabcards from "src/components/layouts/Tabcards.vue";
 import _ from "lodash"
 import {useTabsStore} from "stores/tabsStore";
 import {useTabGroupsStore} from "stores/tabGroupsStore";
+import TabsetService from "src/services/TabsetService";
 
 const route = useRoute();
+const router = useRouter();
 const localStorage = useQuasar().localStorage
 const tabsStore = useTabsStore()
 const tabGroupsStore = useTabGroupsStore()
-const tabsetname = ref('Current')
+const tabsetname = ref(tabsStore.context || 'Current')
 const $q = useQuasar()
 
 function unpinnedNoGroup() {
@@ -163,7 +165,7 @@ const saveDialog = () => {
     persistent: true
   }).onOk((data: any) => {
     console.log('>>>> saving', data)
-    new TabsetApi(localStorage).saveOrReplace(data, tabsStore.tabs)
+    TabsetService.saveOrReplace(data, tabsStore.tabs)
   }).onCancel(() => {
     //console.log('>>>> Cancel')
   }).onDismiss(() => {
@@ -180,8 +182,8 @@ const deleteDialog = () => {
     cancel: true,
     persistent: true
   }).onOk((data: any) => {
-    console.log('>>>> deleting', data)
-    //new TabsetApi(localStorage).saveOrReplace(data, tabsStore.tabs)
+    TabsetService.delete(tabsStore.currentTabset.id)
+    router.push("/")
   }).onCancel(() => {
   }).onDismiss(() => {
   })
@@ -196,8 +198,7 @@ const restoreDialog = () => {
     cancel: true,
     persistent: true
   }).onOk((data: any) => {
-    console.log('>>>> restoring', data)
-    //new TabsetApi(localStorage).saveOrReplace(data, tabsStore.tabs)
+    TabsetService.restore(tabsStore.currentTabset.id)
   }).onCancel(() => {
   }).onDismiss(() => {
   })

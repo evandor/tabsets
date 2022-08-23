@@ -6,6 +6,7 @@ import {TabsetApi} from "src/services/TabsetApi";
 import {LocalStorage, useQuasar} from "quasar";
 import {Tabset} from "src/models/Tabset";
 import {Tab} from "src/models/Tab";
+import TabsetService from "src/services/TabsetService";
 
 async function queryTabs(): Promise<chrome.tabs.Tab[]> {
   return await chrome.tabs.query({currentWindow: true})
@@ -21,6 +22,8 @@ async function getCurrentTab() {
 
 export const useTabsStore = defineStore('tabs', {
   state: () => ({
+    // current context (one of the tabsets names)
+    context: null as unknown as string,
     // chrome's current's windows tabs, reloaded on various events
     tabs: [] as unknown as chrome.tabs.Tab[],
     // a named list of tabsets managed by this extension
@@ -62,14 +65,21 @@ export const useTabsStore = defineStore('tabs', {
             return new Tab(t)
           }))
       });
+      const currentContext = localStorage.getItem("tabsets.context") as string
       _.forEach(
         _.filter(localStorage.getAllKeys(),
           (t: string) => t.startsWith("tabsets.tabset.")),
         key => {
           const tabset: Tabset | null = localStorage.getItem(key)
           if (tabset) {
-            console.log("setting tabset", key)
+            //console.log("setting tabset", key)
             this.tabsets.set(key, tabset)
+            if (currentContext && currentContext === key.replace("tabsets.tabset.","")) {
+              console.log("setting current context", currentContext)
+              this.context = tabset.name
+              this.currentTabset = tabset
+            }
+
           }
         })
     },
@@ -126,7 +136,7 @@ export const useTabsStore = defineStore('tabs', {
               h.activatedCount = 1 + h.activatedCount
               h.lastActive += new Date().getTime()
             })
-            new TabsetApi(this.localStorage).saveTabset(ts)
+            TabsetService.saveTabset(ts)
           })
         })
         //new TabsetApi(this.localStorage).saveTabset(this.currentTabset)
@@ -162,7 +172,10 @@ export const useTabsStore = defineStore('tabs', {
     },
     removeTab(tabId: number) {
       this.currentTabset.tabs = _.filter(this.currentTabset.tabs, (t:Tab) => (t.chromeTab?.id || t.id) !== tabId)
-      new TabsetApi(this.localStorage).saveTabset(this.currentTabset)
+      TabsetService.saveTabset(this.currentTabset)
+    },
+    deleteTabset(tabsetId: string) {
+
     }
   }
 });
