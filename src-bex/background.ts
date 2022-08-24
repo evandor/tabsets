@@ -1,6 +1,8 @@
 import { bexBackground } from 'quasar/wrappers';
+import {Tab} from "src/models/Tab";
 
 chrome.runtime.onInstalled.addListener(() => {
+  console.log("adding listener in background.ts")
   chrome.action.onClicked.addListener((/* tab */) => {
     // Opens our extension in a new browser window.
     // Only if a popup isn't defined in the manifest.
@@ -8,8 +10,9 @@ chrome.runtime.onInstalled.addListener(() => {
       {
         url: chrome.runtime.getURL('www/index.html'),
       },
-      (/* newTab */) => {
+      ( newTab ) => {
         // Tab opened.
+        console.log("newTab", newTab)
       }
     );
   });

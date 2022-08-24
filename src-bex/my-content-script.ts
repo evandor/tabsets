@@ -5,7 +5,10 @@ import { bexContent } from 'quasar/wrappers'
 
 export default bexContent((/* bridge */) => {
   // Hook into the bridge to listen for events sent from the client BEX.
+
+  console.log("hier!!!")
   /*
+
   bridge.on('some.event', event => {
     if (event.data.yourProp) {
       // Access a DOM element from here.

@@ -1,5 +1,5 @@
 try {
-  console.log("hier")
+  console.log("hier---")
   importScripts("./background.js");
 } catch (e) {
   console.error(e);
