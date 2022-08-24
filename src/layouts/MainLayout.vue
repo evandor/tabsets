@@ -27,6 +27,9 @@
       </q-toolbar>
     </q-header>
 
+    <q-drawer :model-value="drawerIsOpen" @update:model-value="drawerToggled">
+      <div @click="drawerToggled">Some Content</div>
+    </q-drawer>
 
     <q-page-container>
       <router-view/>
@@ -86,6 +89,19 @@ const localStorage = useQuasar().localStorage
 const tabsetApi = new TabsetApi(localStorage)
 // const appVersion = process.env.PUBLIC_ENV_PACKAGE_VERSION
 const appVersion = import.meta.env.PACKAGE_VERSION
+
+const drawerIsOpen = ref(true)
+const $q = useQuasar()
+async function drawerToggled () {
+  console.log("here!!!")
+  await $q.bex.send('wb.drawer.toggle', {
+    open: drawerIsOpen.value // So it knows to make it bigger / smaller
+  })
+
+  // Only set this once the promise has resolved so we can see the entire slide animation.
+  drawerIsOpen.value = !drawerIsOpen.value
+}
+
 
 function saveTabset() {
   /*if (authStore.isAuthenticated) {

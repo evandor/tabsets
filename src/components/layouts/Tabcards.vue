@@ -1,20 +1,28 @@
 <template>
   <div class="row items-start">
     <div class="col-xs-12 col-sm-4 col-md-3 col-lg-2 q-pa-xs" v-for="tab in props.tabs">
-      <q-card class="my-card bg-amber-1" flat bordered style="height: 150px;max-height:150px; min-height: 150px;">
+      <q-card class="my-card" flat bordered
+              :style="cardStyle(tab)">
         <q-card-section horizontal>
-          <q-card-section class="q-pt-xs" style="width:100%">
+          <q-card-section class="q-pt-xs" style="width:100%;">
             <div class="row">
-              <div class="col-11">
+              <div class="col-10">
                 <q-img
                   class="rounded-borders"
                   width="20px"
                   height="20px"
-                  :src="tab.chromeTab?.favIconUrl || tab.favIconUrl"
-                />
+                  :src="tab.chromeTab?.favIconUrl || tab.favIconUrl">
+                  <q-tooltip>{{ tab.id }}</q-tooltip>
+                </q-img>
               </div>
               <div class="col-1">
-                <q-icon name="close" class="cursor-pointer" @click="closeTab(tab.chromeTab?.id || tab.id)"/>
+                <q-icon name="save" class="cursor-pointer"
+                        v-if="tab.status !== TabStatus.DEFAULT"
+                        @click="saveTab(tab.chromeTab.id)"/>
+              </div>
+              <div class="col-1">
+                <q-icon name="close" class="cursor-pointer"
+                        @click="closeTab(tab.chromeTab.id)"/>
               </div>
             </div>
 
@@ -48,6 +56,8 @@
 import {TabsetApi} from "src/services/TabsetApi";
 import {LocalStorage} from "quasar";
 import Navigation from "src/services/Navigation";
+import {Tab, TabStatus} from "src/models/Tab";
+import TabsetService from "src/services/TabsetService";
 
 const props = defineProps({
   tabs: {
@@ -97,5 +107,21 @@ function maxChar(max: number, t: string): string {
 function closeTab(id: number) {
   Navigation.closeTab(id)
   //chrome.tabs.remove(id)
+}
+
+function saveTab(id: number) {
+  console.log("saving tab", id)
+  TabsetService.setStatus(id, TabStatus.DEFAULT)
+}
+
+function cardStyle(tab: Tab) {
+  const height = "150px";
+  let borderColor = ""
+  if (TabStatus.CREATED === tab.status) {
+    borderColor = "border-color:green";
+  } else if (TabStatus.DELETED === tab.status) {
+    borderColor = "border-color:#EF9A9A"
+  }
+  return `height: ${height};max-height:${height}; min-height: ${height};${borderColor}`
 }
 </script>

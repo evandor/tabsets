@@ -1,11 +1,9 @@
 import {useTabsStore} from "stores/tabsStore";
 import {LocalStorage, uid} from "quasar";
 import ChromeApi from "src/services/ChromeApi";
-import {UnwrapRef} from "vue";
 import _ from "lodash";
-import {Tab} from "src/models/Tab";
+import {Tab, TabStatus} from "src/models/Tab";
 import {Tabset} from "src/models/Tabset";
-import {Store} from "pinia";
 
 class TabsetService {
 
@@ -52,12 +50,15 @@ class TabsetService {
   }
 
   saveTabset(tabset: Tabset) {
+    if ("current" === tabset.id) {
+      return
+    }
     const existingId = this.findInLocalStorage(tabset.name)
     if (existingId) {
-      console.log("updating ", tabset)
+      console.log("updating tabset", existingId)
       this.localStorage.set("tabsets.tabset." + existingId, tabset)
     } else {
-      console.error("did not find id for tabset", tabset.name)
+      console.error(`did not find id for tabset '${tabset.name}'`)
     }
   }
 
@@ -93,12 +94,20 @@ class TabsetService {
             //console.log("ts", ts.name, tabsetName)
             return ts.name === tabsetName
           }), (ts: any) => {
-          console.log("mapping to", ts.id)
+          //console.log("mapping to", ts.id)
           return ts.id as string
         }))
   }
 
 
+  setStatus(tabId: number, status: TabStatus) {
+    const tabsStore = useTabsStore()
+    const currentTabset: Tabset = tabsStore.tabsets.get(tabsStore.currentTabsetId) || new Tabset("", "", [])
+    _.forEach(
+      _.filter(currentTabset.tabs, (t: Tab) => t.chromeTab.id === tabId),
+      r => r.status = status)
+    this.saveTabset(currentTabset)
+  }
 }
 
 export default new TabsetService();

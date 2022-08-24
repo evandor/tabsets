@@ -9,7 +9,7 @@ chrome.runtime.onInstalled.addListener(() => {
         url: chrome.runtime.getURL('www/index.html'),
       },
       (/* newTab */) => {
-        // Tab opened.
+         ("tabsets extension loaded...")
       }
     );
   });

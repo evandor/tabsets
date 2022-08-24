@@ -1,14 +1,21 @@
 import {uid} from "quasar";
 
+export enum TabStatus {
+  CREATED = "CREATED",
+  DELETED = "DELETED",
+  DEFAULT = "DEFAULT"
+}
+
 export class Tab {
-  id: string
-  created: number
+  private id: string
+  private created: number
   updated: number
   lastActive: number
   activatedCount: number
   lastLoaded: number
   loadedCount: number
   chromeTab: chrome.tabs.Tab
+  status: TabStatus
 
   constructor(chromeTab: chrome.tabs.Tab) {
     this.id = uid()
@@ -19,5 +26,6 @@ export class Tab {
     this.lastLoaded = 0
     this.loadedCount = 0
     this.chromeTab = chromeTab
+    this.status = TabStatus.DEFAULT
   }
 }
