@@ -1,5 +1,4 @@
 import { bexBackground } from 'quasar/wrappers';
-import {Tab} from "src/models/Tab";
 
 chrome.runtime.onInstalled.addListener(() => {
   console.log("adding listener in background.ts")

@@ -14,7 +14,7 @@
               style="width:200px;"
               :model-value="tabsetname"
               @update:model-value="val => update(val)"
-              :options="['Current'].concat(tabsStore.tabsetNames)">
+              :options="tabsetOptions()">
             </q-select>
           </div>
         </div>
@@ -22,12 +22,40 @@
       <q-btn flat round dense icon="save" @click="saveDialog"/>
       <q-btn flat round dense icon="restore_page"
              color="green"
-             @click="restoreDialog" v-if="tabsStore.currentTabset.name !== 'current'"/>
+             @click="restoreDialog" v-if="tabsStore.currentTabsetId !== 'current'"/>
       <q-btn flat round dense icon="delete"
              color="red"
-             @click="deleteDialog" v-if="tabsStore.currentTabset.name !== 'current'"/>
+             @click="deleteDialog" v-if="tabsStore.currentTabsetId !== 'current'"/>
     </q-toolbar>
+
     <q-list class="rounded-borders">
+
+      <!-- pending tabs -->
+      <q-expansion-item
+        v-if="tabsStore.pendingTabs.length > 0"
+        header-class="bg-amber-2 text-black"
+        expand-icon-class="text-black"
+        expand-separator
+        default-opened>
+        <template v-slot:header="{ expanded }">
+          <q-item-section avatar>
+            <q-icon name="push_pin"/>
+          </q-item-section>
+          <q-item-section>
+            <div>
+              <span class="text-weight-bold">Pending Tabs</span>
+              <div class="text-caption">These tabs have been used in the current context but have not been saved yet</div>
+            </div>
+          </q-item-section>
+          <q-item-section>{{ tabsStore.pendingTabs.length }} tab(s)</q-item-section>
+        </template>
+<!--        <q-card style="background: radial-gradient(circle, #35a2ff 0%, #014a88 100%)">-->
+        <q-card>
+          <q-card-section>
+            <Tabcards :tabs="tabsStore.pendingTabs"/>
+          </q-card-section>
+        </q-card>
+      </q-expansion-item>
       <q-expansion-item
         v-if="tabsStore.pinnedTabs.length > 0"
         header-class="bg-amber-2 text-black"
@@ -53,6 +81,7 @@
         </q-card>
       </q-expansion-item>
 
+      <!-- chrome groups -->
       <div v-for="group in tabGroupsStore.tabGroups">
         <q-expansion-item
           v-if="tabsForGroup(group.id).length > 0"
@@ -83,6 +112,7 @@
         </q-expansion-item>
       </div>
 
+      <!-- rest: neither pinned, grouped, or pending -->
       <q-expansion-item
         icon="tabs"
         default-opened
@@ -114,16 +144,15 @@
 </template>
 
 <script setup lang="ts">
-import {defineComponent, onMounted, onUpdated, ref, watchEffect} from 'vue'
+import {ref} from 'vue'
 import {useRoute, useRouter} from "vue-router";
-import {TabsetApi} from "src/services/TabsetApi";
 import {useQuasar} from "quasar";
-import {Tabset} from "src/models/Tabset";
 import Tabcards from "src/components/layouts/Tabcards.vue";
 import _ from "lodash"
 import {useTabsStore} from "stores/tabsStore";
 import {useTabGroupsStore} from "stores/tabGroupsStore";
 import TabsetService from "src/services/TabsetService";
+import {Tab, TabStatus} from "src/models/Tab";
 
 const route = useRoute();
 const router = useRouter();
@@ -135,21 +164,36 @@ const $q = useQuasar()
 
 function unpinnedNoGroup() {
   return _.filter(
-    _.map(tabsStore.currentTabset.tabs, t => t.chromeTab || t),
-    (t: any) => !t.pinned && t.groupId === -1)
+    _.map(tabsStore.getCurrentTabs, t =>  t),
+    (t: Tab) => !t.chromeTab.pinned && t.chromeTab.groupId === -1 && (t.status === TabStatus.DEFAULT || !t.status))
 }
 
 function tabsForGroup(groupId: number) {
   console.log("tabsforGroup", groupId)
   return _.filter(
-    _.map(tabsStore.currentTabset.tabs, t => t.chromeTab || t),
+    _.map(tabsStore.getCurrentTabs, t => t.chromeTab || t),
     (t: any) => t.groupId === groupId)
 }
 
-const update = (newValue: string) => {
-  console.log("new tabset", newValue)
-  tabsetname.value = newValue
-  tabsStore.selectCurrentTabset(newValue)
+const update = (tabsetIdent: object) => {
+   console.log("selected tabset now: ", tabsetIdent)
+   tabsetname.value = tabsetIdent['label' as keyof object]
+   tabsStore.selectCurrentTabset(tabsetIdent['value' as keyof object])
+}
+
+const tabsetOptions = () => {
+  const tabsets = _.map([...tabsStore.tabsets.values()], ts => {
+    return {
+      label: ts.name,
+      value: ts.id
+    }
+  })
+  return [
+    {
+      label: 'Current',
+      value: 'current'
+    }
+  ].concat(tabsets)
 }
 
 const saveDialog = () => {
@@ -182,7 +226,7 @@ const deleteDialog = () => {
     cancel: true,
     persistent: true
   }).onOk((data: any) => {
-    TabsetService.delete(tabsStore.currentTabset.id)
+    TabsetService.delete(tabsStore.currentTabsetId)
     router.push("/")
   }).onCancel(() => {
   }).onDismiss(() => {
@@ -198,7 +242,7 @@ const restoreDialog = () => {
     cancel: true,
     persistent: true
   }).onOk((data: any) => {
-    TabsetService.restore(tabsStore.currentTabset.id)
+    TabsetService.restore(tabsStore.currentTabsetId)
   }).onCancel(() => {
   }).onDismiss(() => {
   })

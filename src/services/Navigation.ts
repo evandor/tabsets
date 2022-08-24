@@ -5,9 +5,10 @@ class Navigation {
   tabsStore = useTabsStore()
 
   openOrCreateTab(withUrl: string) {
-    //console.log("hier", withUrl)
-    let found = false;
+    console.log("hier", withUrl)
+
     chrome.tabs.query({currentWindow: true}, (t: chrome.tabs.Tab[]) => {
+      let found = false;
       t.filter(r => r.url && !r.url.startsWith("chrome"))
         .map(r => {
           if (withUrl === r.url) {
@@ -15,24 +16,25 @@ class Navigation {
             chrome.tabs.highlight({tabs: r.index});
           }
         });
-    });
-    console.log("found", found)
-    if (!found) {
-      chrome.tabs.create({
-        active: false,
-        pinned: false,
-        url: withUrl
-      })
-        .catch(e => {
-          console.log("got error", e)
+      console.log("found", found)
+      if (!found) {
+        chrome.tabs.create({
+          active: false,
+          pinned: false,
+          url: withUrl
         })
-    }
+          .catch(e => {
+            console.log("got error", e)
+          })
+      }
+    });
+
   }
 
 
   closeTab(tabId: number) {
     //console.log("tabsStore", this.tabsStore)
-    if ("current" === this.tabsStore.currentTabset.name) {
+    if ("current" === this.tabsStore.currentTabsetId) {
       console.log("closing tab with id", tabId)
       chrome.tabs.remove(tabId)
     } else {

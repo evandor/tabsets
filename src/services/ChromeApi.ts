@@ -22,9 +22,12 @@ class ChromeApi {
   }
 
   restore(tabset: Tabset) {
+    console.log("restoring tabset ", tabset)
     chrome.tabs.query({currentWindow: true}, (t: chrome.tabs.Tab[]) => {
       // @ts-ignore
-      const ids: number[] = t.filter((r: Tab) => !r.chromeTab.url.startsWith('chrome'))
+      console.log("callback", t)
+      // @ts-ignore
+      const ids: number[] = t.filter((r: chrome.tabs.Tab) => !r.url.startsWith('chrome'))
         .filter(r => r.id !== undefined)
         .map(r => r.id || 0);
       console.log("ids to close", ids)
