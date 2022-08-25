@@ -2,6 +2,14 @@
   <q-layout view="hHh lpR fFf">
     <q-header elevated>
       <q-toolbar>
+        <q-btn
+          flat
+          dense
+          round
+          icon="menu"
+          aria-label="Menu"
+          @click="drawerToggled"
+        />
 
         <q-toolbar-title>
           <q-btn stretch flat label="Tabsets" to="/"/>
@@ -28,7 +36,7 @@
     </q-header>
 
     <q-drawer :model-value="drawerIsOpen" @update:model-value="drawerToggled">
-      <div @click="drawerToggled">Some Content</div>
+      <div @click="drawerToggled">Some Content!</div>
     </q-drawer>
 
     <q-page-container>
@@ -93,7 +101,11 @@ const appVersion = import.meta.env.PACKAGE_VERSION
 const drawerIsOpen = ref(true)
 const $q = useQuasar()
 async function drawerToggled () {
-  console.log("here!!!")
+  console.log("here!!!", $q.bex)
+  //const { data } = await $q.bex.send('some.event', { someKey: 'aValue' })
+  $q.bex.send('some.event', { someKey: 'aValue' })
+    .then( data =>   console.log('??? Some response from the other side <<<', data))
+    .catch(ex => console.error("ex", ex))
   await $q.bex.send('wb.drawer.toggle', {
     open: drawerIsOpen.value // So it knows to make it bigger / smaller
   })
@@ -114,6 +126,11 @@ function saveTabset() {
   //}
 }
 
+const leftDrawerOpen = ref(false)
+
+function toggleLeftDrawer() {
+  leftDrawerOpen.value = !leftDrawerOpen.value
+}
 
 function tabsForGroup(groupId: number): chrome.tabs.Tab[] {
   return tabsStore.tabsForGroup(groupId)
@@ -129,8 +146,11 @@ function tabsets(): object[] {
   return ts
 }
 
-function submitSearch() {
+async function submitSearch() {
   console.log("s", search.value)
+  console.log("here***", $q.bex)
+  const { data } = await $q.bex.send('some.event', { someKey: 'aValue' })
+  console.log('>>> Some response from the other side <<<', data)
   router.push("/search/" + search.value)
 }
 

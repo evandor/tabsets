@@ -6,9 +6,11 @@
 // More info: https://quasar.dev/quasar-cli/developing-browser-extensions/content-hooks
 import { bexContent } from 'quasar/wrappers'
 
+console.log("in bexContext11")
+
 const
   iFrame = document.createElement('iframe'),
-  defaultFrameHeight = '62px'
+  defaultFrameHeight = '82px'
 
 /**
  * Set the height of our iFrame housing our BEX
@@ -52,18 +54,30 @@ Object.assign(iFrame.style, {
 })()
 
 export default bexContent((bridge) => {
-  console.log("bridge", bridge)
+  console.log("bexContentBridge", bridge)
   /**
    * When the drawer is toggled set the iFrame height to take the whole page.
    * Reset when the drawer is closed.
    */
-  bridge.on('wb.drawer.toggle', ({ data, respond }) => {
-    console.log("there!!!")
-    if (data.open) {
-      setIFrameHeight('100%')
-    } else {
-      resetIFrameHeight()
-    }
-    respond()
+  // bridge.on('wb.drawer.toggle', ({ data, respond }) => {
+  //   console.log("there!!!", data, respond)
+  //   // if (data.open) {
+  //   //   setIFrameHeight('100%')
+  //   // } else {
+  //   //   resetIFrameHeight()
+  //   // }
+  //   respond('yeah')
+  // })
+
+  bridge.on('some.event', ({ data, respond }) => {
+    console.log('Event receieved, responding...')
+    respond(data.someKey + ' hey!')
   })
+
+  bridge.on('*', ({ data, respond }) => {
+    console.log('Gotya, responding...')
+    respond(data.someKey + ' hey!')
+  })
+
+
 })
