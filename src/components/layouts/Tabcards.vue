@@ -11,8 +11,8 @@
                   class="rounded-borders"
                   width="20px"
                   height="20px"
-                  :src="tab.chromeTab?.favIconUrl || tab.favIconUrl">
-                  <q-tooltip>{{ tab.id }}</q-tooltip>
+                  :src="tab.chromeTab.favIconUrl">
+                  <q-tooltip>{{ tab.chromeTab.id }}</q-tooltip>
                 </q-img>
               </div>
               <div class="col-1">
@@ -122,6 +122,11 @@ function cardStyle(tab: Tab) {
   } else if (TabStatus.DELETED === tab.status) {
     borderColor = "border-color:#EF9A9A"
   }
-  return `height: ${height};max-height:${height}; min-height: ${height};${borderColor}`
+  let background = ''
+  if (tab.isDuplicate) {
+    background = "background: radial-gradient(circle, #FFFFFF 0%, #FFECB3 100%)"
+  }
+  // style=""
+  return `height: ${height};max-height:${height}; min-height: ${height};${borderColor};${background}`
 }
 </script>

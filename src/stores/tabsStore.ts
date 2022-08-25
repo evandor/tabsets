@@ -1,7 +1,7 @@
 import {defineStore} from 'pinia';
 // @ts-ignore
 import _ from 'lodash'
-import {LocalStorage} from "quasar";
+import {LocalStorage, uid} from "quasar";
 import {Tabset} from "src/models/Tabset";
 import {Tab, TabStatus} from "src/models/Tab";
 import TabsetService from "src/services/TabsetService";
@@ -17,6 +17,25 @@ async function getCurrentTab() {
   return tab;
 }
 
+
+function markDuplicates(tabset: Tabset) {
+  console.log("marking duplicates in tabset", tabset.id)
+  const urls = new Set<string>()
+  const duplicates = new Set<string>()
+  _.forEach(tabset.tabs, t => {
+    if (urls.has(t.chromeTab.url || 'undefined')) {
+      duplicates.add(t.chromeTab.url || 'undefined')
+    } else {
+      urls.add(t.chromeTab.url || 'undefined')
+    }
+  })
+  console.log("found duplicates", urls, duplicates)
+  _.forEach(tabset.tabs, t => {
+    if (duplicates.has(t.chromeTab.url || 'undefined')) {
+      t.isDuplicate = true
+    }
+  })
+}
 
 export const useTabsStore = defineStore('tabs', {
   state: () => ({
@@ -75,16 +94,17 @@ export const useTabsStore = defineStore('tabs', {
     async initialize(localStorage: LocalStorage) {
       console.log("initializing tabsStore")
       this.localStorage = localStorage
-      queryTabs().then(ts => {
-        this.tabs = ts
-        // @ts-ignore
-        const tabsFromBrowser = new Tabset("current", "current",
-          _.map(this.tabs, t => {
-            return new Tab(t)
-          }))
-        this.tabsets.set("current", tabsFromBrowser)
-        //console.log("tabsets", this.tabsets)
-      });
+
+      // setting current tabs
+      this.tabs = await queryTabs()
+      // @ts-ignore
+      const tabsFromBrowser = new Tabset("current", "current",
+        _.map(this.tabs, t => {
+          return new Tab(t)
+        }))
+      this.tabsets.set("current", tabsFromBrowser)
+
+      // setting all tabs from local storage tabsets
       const currentContext = localStorage.getItem("tabsets.context") as string
       _.forEach(
         _.filter(localStorage.getAllKeys(),
@@ -100,22 +120,26 @@ export const useTabsStore = defineStore('tabs', {
               this.context = tabset.name
               this.currentTabsetId = tabset.id
             }
-
           }
         })
+
+      // marking duplicates (inside each tabset)
+      _.forEach([...this.tabsets.values()], tabset => markDuplicates(tabset))
     },
     async loadTabs(eventName: string) {
       console.log(`${eventName}: loading tabs with current tabset '${this.currentTabsetId}'`)
-      queryTabs().then(ts => {
-        this.tabs = ts
-        //if ("current" === this.currentTabsetId) {
-        const current = new Tabset("current", "current",
-          _.map(this.tabs, t => {
-            return new Tab(t)
-          }))
-        this.tabsets.set("current", current)
-        //}
-      });
+      const ts = await queryTabs()//.then(ts => {
+      this.tabs = ts
+      //if ("current" === this.currentTabsetId) {
+      const current = new Tabset("current", "current",
+        _.map(this.tabs, t => {
+          return new Tab(t)
+        }))
+      markDuplicates(current)
+      this.tabsets.set("current", current)
+      //}
+      //});
+      //_.forEach([...this.tabsets.values()], tabset => markDuplicates(tabset))
     },
     initListeners() {
       chrome.tabs.onCreated.addListener((tab: chrome.tabs.Tab) => {
@@ -148,6 +172,10 @@ export const useTabsStore = defineStore('tabs', {
       })
       chrome.tabs.onRemoved.addListener((number, info) => {
         console.log(`onRemoved: tab ${number} removed: ${JSON.stringify(info)}`)
+        if ("current" === this.currentTabsetId) {
+          this.loadTabs('onRemoved')
+          return
+        }
         const currentTabset: Tabset = this.tabsets.get(this.currentTabsetId) || new Tabset("", "", [])
         var index = _.findIndex(currentTabset.tabs, t => t.chromeTab.id === number);
         console.log("found index", index)
@@ -228,8 +256,23 @@ export const useTabsStore = defineStore('tabs', {
     },
     removeTab(tabId: number) {
       const currentTabset: Tabset = this.tabsets.get(this.currentTabsetId) || new Tabset("", "", [])
-      currentTabset.tabs = _.filter(currentTabset.tabs, (t:Tab) => t.chromeTab.id !== tabId)
+      currentTabset.tabs = _.filter(currentTabset.tabs, (t: Tab) => t.chromeTab.id !== tabId)
       TabsetService.saveTabset(currentTabset)
+    },
+    saveOrCreateTabset(tabsetName: string) {
+      const found = _.find([...this.tabsets.values()], ts => ts.name === "tabsetName")
+      if (found) {
+        console.log("found existing tabset " + found.id + ", replacing...")
+        const ts = new Tabset(found.id, tabsetName, _.map(this.tabs, t => new Tab(t)));
+        this.tabsets.set(found.id, ts)
+        TabsetService.saveTabset(ts)
+      } else {
+        console.log("didn't find existing tabset, creating new...")
+        const useId = uid()
+        const ts = new Tabset(useId, tabsetName, _.map(this.tabs, t => new Tab(t)));
+        this.tabsets.set(useId, ts)
+        TabsetService.saveTabset(ts)
+      }
     },
     deleteTabset(tabsetId: string) {
 

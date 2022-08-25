@@ -159,7 +159,7 @@ const router = useRouter();
 const localStorage = useQuasar().localStorage
 const tabsStore = useTabsStore()
 const tabGroupsStore = useTabGroupsStore()
-const tabsetname = ref(tabsStore.context || 'Current')
+const tabsetname = ref(tabsStore.context || 'current')
 const $q = useQuasar()
 
 function unpinnedNoGroup() {

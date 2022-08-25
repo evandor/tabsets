@@ -2,14 +2,6 @@
   <q-layout view="hHh lpR fFf">
     <q-header elevated>
       <q-toolbar>
-        <q-btn
-          flat
-          dense
-          round
-          icon="menu"
-          aria-label="Menu"
-          @click="drawerToggled"
-        />
 
         <q-toolbar-title>
           <q-btn stretch flat label="Tabsets" to="/"/>
@@ -35,9 +27,9 @@
       </q-toolbar>
     </q-header>
 
-    <q-drawer :model-value="drawerIsOpen" @update:model-value="drawerToggled">
-      <div @click="drawerToggled">Some Content!</div>
-    </q-drawer>
+<!--    <q-drawer :model-value="drawerIsOpen" @update:model-value="drawerToggled">-->
+<!--      <div @click="drawerToggled">Some Content!</div>-->
+<!--    </q-drawer>-->
 
     <q-page-container>
       <router-view/>
@@ -98,21 +90,21 @@ const tabsetApi = new TabsetApi(localStorage)
 // const appVersion = process.env.PUBLIC_ENV_PACKAGE_VERSION
 const appVersion = import.meta.env.PACKAGE_VERSION
 
-const drawerIsOpen = ref(true)
-const $q = useQuasar()
-async function drawerToggled () {
-  console.log("here!!!", $q.bex)
-  //const { data } = await $q.bex.send('some.event', { someKey: 'aValue' })
-  $q.bex.send('some.event', { someKey: 'aValue' })
-    .then( data =>   console.log('??? Some response from the other side <<<', data))
-    .catch(ex => console.error("ex", ex))
-  await $q.bex.send('wb.drawer.toggle', {
-    open: drawerIsOpen.value // So it knows to make it bigger / smaller
-  })
-
-  // Only set this once the promise has resolved so we can see the entire slide animation.
-  drawerIsOpen.value = !drawerIsOpen.value
-}
+// const drawerIsOpen = ref(true)
+// const $q = useQuasar()
+// async function drawerToggled () {
+//   console.log("here!!!", $q.bex)
+//   //const { data } = await $q.bex.send('some.event', { someKey: 'aValue' })
+//   $q.bex.send('some.event', { someKey: 'aValue' })
+//     .then( data =>   console.log('??? Some response from the other side <<<', data))
+//     .catch(ex => console.error("ex", ex))
+//   await $q.bex.send('wb.drawer.toggle', {
+//     open: drawerIsOpen.value // So it knows to make it bigger / smaller
+//   })
+//
+//   // Only set this once the promise has resolved so we can see the entire slide animation.
+//   drawerIsOpen.value = !drawerIsOpen.value
+// }
 
 
 function saveTabset() {
@@ -148,9 +140,6 @@ function tabsets(): object[] {
 
 async function submitSearch() {
   console.log("s", search.value)
-  console.log("here***", $q.bex)
-  const { data } = await $q.bex.send('some.event', { someKey: 'aValue' })
-  console.log('>>> Some response from the other side <<<', data)
   router.push("/search/" + search.value)
 }
 

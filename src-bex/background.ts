@@ -11,7 +11,7 @@ chrome.runtime.onInstalled.addListener(() => {
       },
       ( newTab ) => {
         // Tab opened.
-        console.log("newTab", newTab)
+        //console.log("newTab", newTab)
       }
     );
   });
@@ -31,7 +31,7 @@ declare module '@quasar/app-vite' {
 }
 
 export default bexBackground((bridge /* , allActiveConnections */) => {
-  console.log("bexBackgroundBridge", bridge)
+  //console.log("bexBackgroundBridge", bridge)
   // bridge.on('log', ({ data, respond }) => {
   //   console.log(`[BEX] ${data.message}`, ...(data.data || []));
   //   respond();

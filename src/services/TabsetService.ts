@@ -21,7 +21,8 @@ class TabsetService {
       console.log("calling chromeApi: closeAllTabs - finished")
     }
     const tabsStore = useTabsStore()
-    this.saveOrReplace(tabsetName, tabsStore.tabs)
+    //this.saveOrReplace(tabsetName, tabsStore.tabs)
+    tabsStore.saveOrCreateTabset(tabsetName)
   }
 
   restore(tabsetId: string) {
@@ -36,18 +37,28 @@ class TabsetService {
     }
   }
 
-  saveOrReplace(tabsetName: string, chromeTabs: chrome.tabs.Tab[]) {
-    console.log("saving or replacing tabset " + tabsetName)
-    const existingId = this.findInLocalStorage(tabsetName)
-    console.log("found existing", existingId)
-    const useId = (existingId) ? existingId : uid()
-
-    const tabs = _.map(chromeTabs, t => {
-      return new Tab(t)
-    })
-    const ts = new Tabset(useId, tabsetName, tabs);
-    this.localStorage.set("tabsets.tabset." + useId, ts)
-  }
+  // saveOrReplace(tabsetName: string, chromeTabs: chrome.tabs.Tab[]) {
+  //   console.log("saving or replacing tabset " + tabsetName)
+  //   const tabsStore = useTabsStore()
+  //
+  //   // const existingId = this.findInLocalStorage(tabsetName)
+  //   // console.log("found existing", existingId)
+  //   // if (existingId) {
+  //   //   const tabs = _.map(chromeTabs, t => {
+  //   //     return new Tab(t)
+  //   //   })
+  //   //   //const ts = new Tabset(useId, tabsetName, tabs);
+  //   //   //this.localStorage.set("tabsets.tabset." + useId, ts)
+  //   // } else {
+  //   //   console.log("creating new tabset")
+  //   //   const tabsStore = useTabsStore()
+  //   //   tabsStore
+  //   // }
+  //   //const useId = (existingId) ? existingId : uid()
+  //
+  //   //const tabsStore = useTabsStore()
+  //   //tabsStore.
+  // }
 
   saveTabset(tabset: Tabset) {
     if ("current" === tabset.id) {

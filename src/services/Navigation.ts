@@ -37,7 +37,10 @@ class Navigation {
     if ("current" === this.tabsStore.currentTabsetId) {
       console.log("closing tab with id", tabId)
       chrome.tabs.remove(tabId)
+        .then(res => this.tabsStore.removeTab(tabId))
+        .catch(ex => console.error("ex", ex))
     } else {
+      console.log("removing tab", tabId)
       this.tabsStore.removeTab(tabId)
     }
   }
