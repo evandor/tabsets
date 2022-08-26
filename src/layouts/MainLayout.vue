@@ -23,6 +23,15 @@
         <q-space/>
         <q-btn label="New Tabset..." @click="showNewTabsetDialog = true"/>
         <q-space/>
+        <div>
+          <q-icon name="circle" color="green" v-if="tabsStore.listenersOn">
+            <q-tooltip>Listeners are ON</q-tooltip>
+          </q-icon>
+          <q-icon name="circle" color="red" v-else>
+            <q-tooltip>Listeners are OFF</q-tooltip>
+          </q-icon>
+        </div>
+        <q-space/>
         <div>{{ appVersion }}</div>
       </q-toolbar>
     </q-header>

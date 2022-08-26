@@ -55,6 +55,9 @@ export const useTabsStore = defineStore('tabs', {
     // which tabset should be shown in the extension?
     currentTabsetId: 'current', //new Tabset("", "", []),
 
+    // use listeners? Might make sense to turn them off when restoring old tabset for example
+    listenersOn: true,
+
     localStorage: undefined as unknown as LocalStorage
   }),
 
@@ -84,9 +87,17 @@ export const useTabsStore = defineStore('tabs', {
       return tabset?.name || 'unknown'
     }),
     getCurrentTabs: (state) => {
-      console.log("getCurrentTabs called for", state.currentTabsetId)
+      //console.log("getCurrentTabs called for", state.currentTabsetId)
       //console.log("2", state.tabsets.get(state.currentTabset))
       return state.tabsets.get(state.currentTabsetId)?.tabs || []
+    },
+    currentTabsetName: (state) => {
+      console.log("here!", state.currentTabsetId)
+      if (state.currentTabsetId !== 'current') {
+        const tabset = _.head(_.filter([...state.tabsets.values()], ts => ts.id === state.currentTabsetId)) || new Tabset("", "undefined", [])
+        return tabset.name
+      }
+      return 'current'
     }
   },
 
@@ -143,6 +154,9 @@ export const useTabsStore = defineStore('tabs', {
     },
     initListeners() {
       chrome.tabs.onCreated.addListener((tab: chrome.tabs.Tab) => {
+        if (!this.listenersOn) {
+          return
+        }
         console.log(`onCreated: tab ${tab.id} created: ${JSON.stringify(tab)}`)
         // add to current tabset
         const currentTabset: Tabset = this.tabsets.get(this.currentTabsetId) || new Tabset("", "", [])
@@ -153,6 +167,9 @@ export const useTabsStore = defineStore('tabs', {
         this.loadTabs('onCreated');
       })
       chrome.tabs.onUpdated.addListener((number, info, tab) => {
+        if (!this.listenersOn) {
+          return
+        }
         console.log(`onUpdated: tab ${number} updated: ${JSON.stringify(info)}`)
         if (!info.status || (Object.keys(info).length > 1)) {
           const currentTabset: Tabset = this.tabsets.get(this.currentTabsetId) || new Tabset("", "", [])
@@ -171,6 +188,10 @@ export const useTabsStore = defineStore('tabs', {
         this.loadTabs('onMoved');
       })
       chrome.tabs.onRemoved.addListener((number, info) => {
+        if (!this.listenersOn) {
+          return
+        }
+
         console.log(`onRemoved: tab ${number} removed: ${JSON.stringify(info)}`)
         if ("current" === this.currentTabsetId) {
           this.loadTabs('onRemoved')
@@ -196,6 +217,10 @@ export const useTabsStore = defineStore('tabs', {
         this.loadTabs('onReplaced');
       })
       chrome.tabs.onActivated.addListener((info) => {
+        if (!this.listenersOn) {
+          return
+        }
+
         const msg = `tab ${info.tabId} activated`
         console.log("msg", msg)
 
@@ -272,8 +297,9 @@ export const useTabsStore = defineStore('tabs', {
         const useId = uid()
         const ts = new Tabset(useId, tabsetName, _.map(this.tabs, t => new Tab(t)));
         this.tabsets.set(useId, ts)
-        TabsetService.saveTabset(ts)
         this.currentTabsetId = ts.id
+        this.context = tabsetName
+        TabsetService.saveTabset(ts)
       }
     },
     deleteTabset(tabsetId: string) {

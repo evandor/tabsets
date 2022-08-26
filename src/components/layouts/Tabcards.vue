@@ -6,7 +6,7 @@
         <q-card-section horizontal>
           <q-card-section class="q-pt-xs" style="width:100%;">
             <div class="row">
-              <div class="col-10">
+              <div class="col-9">
                 <q-img
                   class="rounded-borders"
                   width="20px"
@@ -16,9 +16,21 @@
                 </q-img>
               </div>
               <div class="col-1">
-                <q-icon name="save" class="cursor-pointer"
-                        v-if="tab.status !== TabStatus.DEFAULT"
-                        @click="saveTab(tab.chromeTab.id)"/>
+                <div class="row">
+                  <div class="col">
+                    <q-icon name="save" class="cursor-pointer"
+                            v-if="tab.status !== TabStatus.DEFAULT"
+                            @click="saveTab(tab.chromeTab.id)"/>
+                  </div>
+                  <div class="col">
+                    <q-icon :name="tab.chromeTab.pinned ? 'o_push_pin' : 'push_pin'" class="cursor-pointer"
+                            @click="togglePin(tab.chromeTab.id)">
+                      <q-tooltip v-text="tab.chromeTab.pinned ? 'Unpin this tab' : 'Pin this tab'" />
+                    </q-icon>
+                  </div>
+                </div>
+              </div>
+              <div class="col-1">
               </div>
               <div class="col-1">
                 <q-icon name="close" class="cursor-pointer"
@@ -113,6 +125,12 @@ function saveTab(id: number) {
   console.log("saving tab", id)
   TabsetService.setStatus(id, TabStatus.DEFAULT)
 }
+
+function togglePin(tabId: number) {
+  console.log("toggling pin", tabId)
+  TabsetService.togglePin(tabId)
+}
+
 
 function cardStyle(tab: Tab) {
   const height = "150px";

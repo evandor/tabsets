@@ -1,8 +1,30 @@
 <template>
   <q-page padding>
 
+    <q-banner rounded class="bg-orange-1 text-blue">
+
+      <div class="text-body1" v-if="!tabsStore.context && tabsStore.currentTabsetId==='current'">
+        You can save your current tabs and give the new set a name. Or you can start a new tabset from scratch by closing all open tabs.
+      </div>
+      <div class="text-body1" v-else-if="!tabsStore.context && tabsStore.currentTabsetId!=='current'">
+        You are watching a tabset different from your current tabs!<br>
+        If you want, you can restore this tabset
+      </div>
+      <div class="text-body1" v-else-if="tabsStore.context && tabsStore.currentTabsetName===tabsStore.context">
+        You are editing in your context
+      </div>
+      <div class="text-body1" v-else>
+        Context is '{{ tabsStore.context }}', selected tabstore is '{{ tabsStore.currentTabsetId }} (={{tabsStore.currentTabsetName}})'
+      </div>
+      <template v-slot:action>
+        <!--          <q-btn flat color="black" label="Continue as a Guest"/>-->
+        <!--          <q-btn flat color="black" label="Sign in"/>-->
+      </template>
+    </q-banner>
+
     <q-toolbar class="text-primary">
       <q-btn flat round dense icon="tabs"/>
+
       <q-toolbar-title>
         <div class="row justify-start items-baseline">
           <div class="col-1" style="width:80px">Tabset</div>
@@ -12,7 +34,7 @@
               bg-color="white"
               class="text-h6"
               style="width:200px;"
-              :model-value="tabsetname"
+              :model-value="tabsStore.currentTabsetName"
               @update:model-value="val => update(val)"
               :options="tabsetOptions()">
             </q-select>
@@ -44,12 +66,13 @@
           <q-item-section>
             <div>
               <span class="text-weight-bold">Pending Tabs</span>
-              <div class="text-caption">These tabs have been used in the current context but have not been saved yet</div>
+              <div class="text-caption">These tabs have been used in the current context but have not been saved yet
+              </div>
             </div>
           </q-item-section>
-          <q-item-section>{{ tabsStore.pendingTabs.length }} tab(s)</q-item-section>
+          <q-item-section>{{ formatLength(tabsStore.pendingTabs.length, 'tab', 'tabs') }}</q-item-section>
         </template>
-<!--        <q-card style="background: radial-gradient(circle, #35a2ff 0%, #014a88 100%)">-->
+        <!--        <q-card style="background: radial-gradient(circle, #35a2ff 0%, #014a88 100%)">-->
         <q-card>
           <q-card-section>
             <Tabcards :tabs="tabsStore.pendingTabs"/>
@@ -72,7 +95,7 @@
               <div class="text-caption">this browser's window's tabs which are pinned right now</div>
             </div>
           </q-item-section>
-          <q-item-section>{{ tabsStore.pinnedTabs.length }} tab(s)</q-item-section>
+          <q-item-section>{{ formatLength(tabsStore.pinnedTabs.length, 'tab', 'tabs') }}</q-item-section>
         </template>
         <q-card>
           <q-card-section>
@@ -102,7 +125,7 @@
 
               </div>
             </q-item-section>
-            <q-item-section>{{ tabsForGroup(group.id).length }} tab(s)</q-item-section>
+            <q-item-section>{{ formatLength(tabsForGroup(group.id).length, 'tab', 'tabs') }}</q-item-section>
           </template>
           <q-card>
             <q-card-section>
@@ -130,7 +153,7 @@
               <!--                <q-btn label="create new tabset" v-if="expanded" @click="newTabsetFrom(group.title, group.id)"/>-->
             </div>
           </q-item-section>
-          <q-item-section>{{ unpinnedNoGroup().length }} tab(s)</q-item-section>
+          <q-item-section>{{ formatLength(unpinnedNoGroup().length, 'tab', 'tabs') }}</q-item-section>
         </template>
         <q-card>
           <q-card-section>
@@ -144,7 +167,7 @@
 </template>
 
 <script setup lang="ts">
-import {ref} from 'vue'
+import {ref, watchEffect} from 'vue'
 import {useRoute, useRouter} from "vue-router";
 import {useQuasar} from "quasar";
 import Tabcards from "src/components/layouts/Tabcards.vue";
@@ -159,12 +182,17 @@ const router = useRouter();
 const localStorage = useQuasar().localStorage
 const tabsStore = useTabsStore()
 const tabGroupsStore = useTabGroupsStore()
-const tabsetname = ref(tabsStore.context || 'current')
+const tabsetname = ref(tabsStore.currentTabsetName)
 const $q = useQuasar()
+
+watchEffect(() => {
+  console.log("context changed", tabsStore.context)
+  console.log("tabset changed", tabsStore.context)
+})
 
 function unpinnedNoGroup() {
   return _.filter(
-    _.map(tabsStore.getCurrentTabs, t =>  t),
+    _.map(tabsStore.getCurrentTabs, t => t),
     (t: Tab) => !t.chromeTab.pinned && t.chromeTab.groupId === -1 && (t.status === TabStatus.DEFAULT || !t.status))
 }
 
@@ -176,9 +204,9 @@ function tabsForGroup(groupId: number) {
 }
 
 const update = (tabsetIdent: object) => {
-   console.log("selected tabset now: ", tabsetIdent)
-   tabsetname.value = tabsetIdent['label' as keyof object]
-   tabsStore.selectCurrentTabset(tabsetIdent['value' as keyof object])
+  console.log("selected tabset now: ", tabsetIdent)
+  tabsetname.value = tabsetIdent['label' as keyof object]
+  tabsStore.selectCurrentTabset(tabsetIdent['value' as keyof object])
 }
 
 const tabsetOptions = () => {
@@ -188,6 +216,10 @@ const tabsetOptions = () => {
       value: ts.id
     }
   })
+}
+
+const formatLength = (length: number, singular: string, plural: string) => {
+  return length > 1 ? length + ' ' + plural : length + ' ' + singular
 }
 
 const saveDialog = () => {

@@ -18,10 +18,9 @@ class TabsetService {
     if (closeTabs) {
       console.log("calling chromeApi: closeAllTabs")
       await ChromeApi.closeAllTabs()
-      console.log("calling chromeApi: closeAllTabs - finished")
+      //console.log("calling chromeApi: closeAllTabs - finished")
     }
     const tabsStore = useTabsStore()
-    //this.saveOrReplace(tabsetName, tabsStore.tabs)
     tabsStore.saveOrCreateTabset(tabsetName)
   }
 
@@ -37,31 +36,13 @@ class TabsetService {
     }
   }
 
-  // saveOrReplace(tabsetName: string, chromeTabs: chrome.tabs.Tab[]) {
-  //   console.log("saving or replacing tabset " + tabsetName)
-  //   const tabsStore = useTabsStore()
-  //
-  //   // const existingId = this.findInLocalStorage(tabsetName)
-  //   // console.log("found existing", existingId)
-  //   // if (existingId) {
-  //   //   const tabs = _.map(chromeTabs, t => {
-  //   //     return new Tab(t)
-  //   //   })
-  //   //   //const ts = new Tabset(useId, tabsetName, tabs);
-  //   //   //this.localStorage.set("tabsets.tabset." + useId, ts)
-  //   // } else {
-  //   //   console.log("creating new tabset")
-  //   //   const tabsStore = useTabsStore()
-  //   //   tabsStore
-  //   // }
-  //   //const useId = (existingId) ? existingId : uid()
-  //
-  //   //const tabsStore = useTabsStore()
-  //   //tabsStore.
-  // }
-
   saveTabset(tabset: Tabset) {
     if ("current" === tabset.id) {
+      return
+    }
+    if (tabset.id) {
+      this.localStorage.set("tabsets.tabset." + tabset.id, tabset)
+      //localStorage.setItem("tabsets.context", tabset.id)
       return
     }
     const existingId = this.findInLocalStorage(tabset.name)
@@ -125,6 +106,16 @@ class TabsetService {
   saveOrReplace(name: string, tabs: chrome.tabs.Tab[]) {
     const tabsStore = useTabsStore()
     tabsStore.saveOrCreateTabset(name)
+  }
+
+  togglePin(tabId: number) {
+    const tabsStore = useTabsStore()
+    const currentTabset: Tabset = tabsStore.tabsets.get(tabsStore.currentTabsetId) || new Tabset("", "", [])
+    _.filter(currentTabset.tabs, t => t.chromeTab.id === tabId)
+      .forEach(t => {
+        t.chromeTab.pinned = !t.chromeTab.pinned
+        chrome.tabs.update(tabId, {pinned: t.chromeTab.pinned})
+      })
   }
 }
 

@@ -8,8 +8,9 @@ class ChromeApi {
 
   async closeAllTabs() {
     chrome.tabs.query({currentWindow: true}, (t: chrome.tabs.Tab[]) => {
+      console.log("checking tabs for closing", t)
       // @ts-ignore
-      const ids: number[] = t.filter((r: chrome.tabs.Tab) => !r.url.startsWith('chrome'))
+      const ids: number[] = t.filter((r: chrome.tabs.Tab) => !(r.title === "Tabsets Extension"))
         .filter(r => r.id !== undefined)
         .map(r => r.id || 0);
       console.log("ids to close", ids)
