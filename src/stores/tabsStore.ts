@@ -19,7 +19,7 @@ async function getCurrentTab() {
 
 
 function markDuplicates(tabset: Tabset) {
-  console.log("marking duplicates in tabset", tabset.id)
+  //console.log("marking duplicates in tabset", tabset.id)
   const urls = new Set<string>()
   const duplicates = new Set<string>()
   _.forEach(tabset.tabs, t => {
@@ -29,7 +29,7 @@ function markDuplicates(tabset: Tabset) {
       urls.add(t.chromeTab.url || 'undefined')
     }
   })
-  console.log("found duplicates", urls, duplicates)
+  //console.log("found duplicates", urls, duplicates)
   _.forEach(tabset.tabs, t => {
     if (duplicates.has(t.chromeTab.url || 'undefined')) {
       t.isDuplicate = true
@@ -266,12 +266,14 @@ export const useTabsStore = defineStore('tabs', {
         const ts = new Tabset(found.id, tabsetName, _.map(this.tabs, t => new Tab(t)));
         this.tabsets.set(found.id, ts)
         TabsetService.saveTabset(ts)
+        this.currentTabsetId = ts.id
       } else {
         console.log("didn't find existing tabset, creating new...")
         const useId = uid()
         const ts = new Tabset(useId, tabsetName, _.map(this.tabs, t => new Tab(t)));
         this.tabsets.set(useId, ts)
         TabsetService.saveTabset(ts)
+        this.currentTabsetId = ts.id
       }
     },
     deleteTabset(tabsetId: string) {

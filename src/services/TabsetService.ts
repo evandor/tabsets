@@ -69,7 +69,8 @@ class TabsetService {
       console.log("updating tabset", existingId)
       this.localStorage.set("tabsets.tabset." + existingId, tabset)
     } else {
-      console.error(`did not find id for tabset '${tabset.name}'`)
+      console.log(`did not find id for tabset '${tabset.name}', creating new`)
+      this.localStorage.set("tabset.tabset." + uid(), tabset)
     }
   }
 
@@ -118,6 +119,12 @@ class TabsetService {
       _.filter(currentTabset.tabs, (t: Tab) => t.chromeTab.id === tabId),
       r => r.status = status)
     this.saveTabset(currentTabset)
+  }
+
+
+  saveOrReplace(name: string, tabs: chrome.tabs.Tab[]) {
+    const tabsStore = useTabsStore()
+    tabsStore.saveOrCreateTabset(name)
   }
 }
 

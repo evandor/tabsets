@@ -90,22 +90,6 @@ const tabsetApi = new TabsetApi(localStorage)
 // const appVersion = process.env.PUBLIC_ENV_PACKAGE_VERSION
 const appVersion = import.meta.env.PACKAGE_VERSION
 
-// const drawerIsOpen = ref(true)
-// const $q = useQuasar()
-// async function drawerToggled () {
-//   console.log("here!!!", $q.bex)
-//   //const { data } = await $q.bex.send('some.event', { someKey: 'aValue' })
-//   $q.bex.send('some.event', { someKey: 'aValue' })
-//     .then( data =>   console.log('??? Some response from the other side <<<', data))
-//     .catch(ex => console.error("ex", ex))
-//   await $q.bex.send('wb.drawer.toggle', {
-//     open: drawerIsOpen.value // So it knows to make it bigger / smaller
-//   })
-//
-//   // Only set this once the promise has resolved so we can see the entire slide animation.
-//   drawerIsOpen.value = !drawerIsOpen.value
-// }
-
 
 function saveTabset() {
   /*if (authStore.isAuthenticated) {
@@ -131,10 +115,6 @@ function tabsForGroup(groupId: number): chrome.tabs.Tab[] {
 
 function tabsets(): object[] {
   const ts = tabsetApi.getTabsetInfo()
-  ts.push({
-    title: 'current',
-    id: 'current'
-  })
   return ts
 }
 

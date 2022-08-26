@@ -182,18 +182,12 @@ const update = (tabsetIdent: object) => {
 }
 
 const tabsetOptions = () => {
-  const tabsets = _.map([...tabsStore.tabsets.values()], ts => {
+  return _.map([...tabsStore.tabsets.values()], ts => {
     return {
       label: ts.name,
       value: ts.id
     }
   })
-  return [
-    {
-      label: 'Current',
-      value: 'current'
-    }
-  ].concat(tabsets)
 }
 
 const saveDialog = () => {
@@ -201,15 +195,16 @@ const saveDialog = () => {
     title: 'Save current Tabset',
     message: 'Please provide a name for the new (or updated) tabset',
     prompt: {
-      isValid: val => val != 'Current',
-      model: tabsetname.value === 'Current' ? '' : tabsetname.value,
+      isValid: val => val != 'current',
+      model: tabsetname.value === 'current' ? '' : tabsetname.value,
       type: 'text' // optional
     },
     cancel: true,
     persistent: true
-  }).onOk((data: any) => {
-    console.log('>>>> saving', data)
-    TabsetService.saveOrReplace(data, tabsStore.tabs)
+  }).onOk((name: string) => {
+    console.log('>>>> saving', name)
+    TabsetService.saveOrReplace(name, tabsStore.tabs)
+
   }).onCancel(() => {
     //console.log('>>>> Cancel')
   }).onDismiss(() => {
