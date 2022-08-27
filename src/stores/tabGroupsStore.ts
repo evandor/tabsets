@@ -2,7 +2,7 @@ import {defineStore} from 'pinia';
 
 async function queryTabGroups(): Promise<chrome.tabGroups.TabGroup[]> {
   let ts = await chrome.tabGroups.query({})
-  console.log("found", ts.length)
+  //console.log("found", ts.length)
   return ts;
 }
 

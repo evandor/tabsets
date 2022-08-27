@@ -24,16 +24,24 @@ class TabsetService {
     tabsStore.saveOrCreateTabset(tabsetName)
   }
 
-  restore(tabsetId: string) {
+  async restore(tabsetId: string) {
     console.log("restoring from tabset", tabsetId)
-    const tabset = this.getTabset(tabsetId)
-    if (tabset) {
-      console.log("found tabset for id", tabsetId)
-      const tabsStore = useTabsStore()
-      ChromeApi.restore(tabset)
-      tabsStore.context = tabset.name
-      localStorage.setItem("tabsets.context", tabsetId)
+    const tabsStore = useTabsStore()
+    try {
+      tabsStore.deactivateListeners()
+      const tabset = this.getTabset(tabsetId)
+      if (tabset) {
+        console.log("found tabset for id", tabsetId)
+        await ChromeApi.restore(tabset)
+        tabsStore.context = tabset.name
+        localStorage.setItem("tabsets.context", tabsetId)
+      }
+    } catch (ex) {
+      console.log("ex", ex)
+    } finally {
+      tabsStore.activateListeners()
     }
+
   }
 
   saveTabset(tabset: Tabset) {

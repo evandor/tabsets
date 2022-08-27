@@ -92,7 +92,7 @@ export const useTabsStore = defineStore('tabs', {
       return state.tabsets.get(state.currentTabsetId)?.tabs || []
     },
     currentTabsetName: (state) => {
-      console.log("here!", state.currentTabsetId)
+      //console.log("here!", state.currentTabsetId)
       if (state.currentTabsetId !== 'current') {
         const tabset = _.head(_.filter([...state.tabsets.values()], ts => ts.id === state.currentTabsetId)) || new Tabset("", "undefined", [])
         return tabset.name
@@ -138,7 +138,7 @@ export const useTabsStore = defineStore('tabs', {
       _.forEach([...this.tabsets.values()], tabset => markDuplicates(tabset))
     },
     async loadTabs(eventName: string) {
-      console.log(`${eventName}: loading tabs with current tabset '${this.currentTabsetId}'`)
+      console.log(`${eventName}: loading tabs for tabset '${this.currentTabsetId}'`)
       const ts = await queryTabs()//.then(ts => {
       this.tabs = ts
       //if ("current" === this.currentTabsetId) {
@@ -157,7 +157,8 @@ export const useTabsStore = defineStore('tabs', {
         if (!this.listenersOn) {
           return
         }
-        console.log(`onCreated: tab ${tab.id} created: ${JSON.stringify(tab)}`)
+        //console.log(`onCreated: tab ${tab.id} created: ${JSON.stringify(tab)}`)
+        console.log(`onCreated: tab ${tab.id} created: ${tab.pendingUrl}`)
         // add to current tabset
         const currentTabset: Tabset = this.tabsets.get(this.currentTabsetId) || new Tabset("", "", [])
         const newTab = new Tab(tab)
@@ -174,7 +175,7 @@ export const useTabsStore = defineStore('tabs', {
         if (!info.status || (Object.keys(info).length > 1)) {
           const currentTabset: Tabset = this.tabsets.get(this.currentTabsetId) || new Tabset("", "", [])
           var index = _.findIndex(currentTabset.tabs, t => t.chromeTab.id === tab.id);
-          console.log("found index", index)
+          //console.log("found index", index)
           const updatedTab = new Tab(tab)
           updatedTab.status = TabStatus.CREATED
           currentTabset.tabs.splice(index, 1, updatedTab);
@@ -199,7 +200,7 @@ export const useTabsStore = defineStore('tabs', {
         }
         const currentTabset: Tabset = this.tabsets.get(this.currentTabsetId) || new Tabset("", "", [])
         var index = _.findIndex(currentTabset.tabs, t => t.chromeTab.id === number);
-        console.log("found index", index)
+        //console.log("found index", index)
         const updatedTab = currentTabset.tabs.at(index)
         if (updatedTab) {
           updatedTab.status = TabStatus.DELETED
@@ -249,7 +250,7 @@ export const useTabsStore = defineStore('tabs', {
         console.log(`onHighlighted: tab ${info.tabIds} highlighted: ${JSON.stringify(info)}`)
       })
       chrome.tabs.onZoomChange.addListener((info) => {
-        console.log(`onZoomChange: tab ${info.tabId} zoom change: ${JSON.stringify(info)}`)
+        //console.log(`onZoomChange: tab ${info.tabId} zoom change: ${JSON.stringify(info)}`)
       })
 
     },
@@ -304,6 +305,15 @@ export const useTabsStore = defineStore('tabs', {
     },
     deleteTabset(tabsetId: string) {
 
+    },
+    deactivateListeners() {
+      console.log("setting listeners to false")
+      this.listenersOn = false
+    },
+    activateListeners() {
+      console.log("setting listeners to true")
+      this.listenersOn = true
     }
+
   }
 });
