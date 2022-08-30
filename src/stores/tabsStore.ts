@@ -10,12 +10,12 @@ async function queryTabs(): Promise<chrome.tabs.Tab[]> {
   return await chrome.tabs.query({currentWindow: true})
 }
 
-async function getCurrentTab() {
-  let queryOptions = {active: true, lastFocusedWindow: true};
-  // `tab` will either be a `tabs.Tab` instance or `undefined`.
-  let [tab] = await chrome.tabs.query(queryOptions);
-  return tab;
-}
+// async function getCurrentTab() {
+//   let queryOptions = {active: true, lastFocusedWindow: true};
+//   // `tab` will either be a `tabs.Tab` instance or `undefined`.
+//   let [tab] = await chrome.tabs.query(queryOptions);
+//   return tab;
+// }
 
 
 function markDuplicates(tabset: Tabset) {
@@ -40,8 +40,8 @@ function markDuplicates(tabset: Tabset) {
 export const useTabsStore = defineStore('tabs', {
   state: () => ({
 
-    // current context (one of the tabsets names)
-    context: null as unknown as string,
+    // current context id (one of the tabsets ids, null if not set)
+    contextId: null as unknown as string,
 
     // chrome's current's windows tabs, reloaded on various events
     tabs: [] as unknown as chrome.tabs.Tab[],
@@ -53,10 +53,13 @@ export const useTabsStore = defineStore('tabs', {
     tabsets: new Map<string, Tabset>(),
 
     // which tabset should be shown in the extension?
-    currentTabsetId: 'current', //new Tabset("", "", []),
+    currentTabsetId: 'current',
 
     // use listeners? Might make sense to turn them off when restoring old tabset for example
     listenersOn: true,
+
+    // extension title
+    title: 'Tabset Extension',
 
     localStorage: undefined as unknown as LocalStorage
   }),
@@ -98,6 +101,12 @@ export const useTabsStore = defineStore('tabs', {
         return tabset.name
       }
       return 'current'
+    },
+    getNameForContext: (state): string => {
+      return _.first(_.map(
+        _.filter([...state.tabsets.values()],
+          ts => ts.id === state.contextId),
+        ts => ts.name)) || 'undefined'
     }
   },
 
@@ -128,7 +137,7 @@ export const useTabsStore = defineStore('tabs', {
             this.tabsets.set(tabsetId, tabset)
             if (currentContext && currentContext === tabsetId) {
               console.log("setting current context", currentContext)
-              this.context = tabset.name
+              this.contextId = tabset.id
               this.currentTabsetId = tabset.id
             }
           }
@@ -159,13 +168,21 @@ export const useTabsStore = defineStore('tabs', {
         }
         //console.log(`onCreated: tab ${tab.id} created: ${JSON.stringify(tab)}`)
         console.log(`onCreated: tab ${tab.id} created: ${tab.pendingUrl}`)
-        // add to current tabset
+
+        if ('current' === this.currentTabsetId) {
+          this.loadTabs('onCreated');
+          return
+        }
+        // add to current tabset if not there yet
         const currentTabset: Tabset = this.tabsets.get(this.currentTabsetId) || new Tabset("", "", [])
-        const newTab = new Tab(tab)
-        newTab.status = TabStatus.CREATED
-        currentTabset.tabs.push(newTab)
-        // reload tabs (to be sure?!)
-        this.loadTabs('onCreated');
+        const found = _.find(currentTabset.tabs, t => t.chromeTab.url === tab.url)
+        if (!found) {
+          const newTab = new Tab(tab)
+          newTab.status = TabStatus.CREATED
+          currentTabset.tabs.push(newTab)
+          // reload tabs (to be sure?!)
+          this.loadTabs('onCreated');
+        }
       })
       chrome.tabs.onUpdated.addListener((number, info, tab) => {
         if (!this.listenersOn) {
@@ -286,22 +303,24 @@ export const useTabsStore = defineStore('tabs', {
       TabsetService.saveTabset(currentTabset)
     },
     saveOrCreateTabset(tabsetName: string) {
-      const found = _.find([...this.tabsets.values()], ts => ts.name === "tabsetName")
+      const found = _.find([...this.tabsets.values()], ts => ts.name === tabsetName)
+      let ts: Tabset = null as unknown as Tabset
       if (found) {
         console.log("found existing tabset " + found.id + ", replacing...")
-        const ts = new Tabset(found.id, tabsetName, _.map(this.tabs, t => new Tab(t)));
+        ts = new Tabset(found.id, tabsetName, _.map(this.tabs, t => new Tab(t)));
         this.tabsets.set(found.id, ts)
         TabsetService.saveTabset(ts)
-        this.currentTabsetId = ts.id
+
       } else {
         console.log("didn't find existing tabset, creating new...")
         const useId = uid()
-        const ts = new Tabset(useId, tabsetName, _.map(this.tabs, t => new Tab(t)));
+        ts = new Tabset(useId, tabsetName, _.map(this.tabs, t => new Tab(t)));
         this.tabsets.set(useId, ts)
-        this.currentTabsetId = ts.id
-        this.context = tabsetName
-        TabsetService.saveTabset(ts)
       }
+      this.currentTabsetId = ts.id
+      this.contextId = ts.id
+      TabsetService.saveTabset(ts)
+      this.localStorage.set("tabsets.context", this.contextId)
     },
     deleteTabset(tabsetId: string) {
 

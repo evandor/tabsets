@@ -1,10 +1,6 @@
-import axios, {AxiosResponse} from 'axios';
-import {UnwrapRef} from "vue";
-import {LocalStorage, uid, useQuasar} from "quasar";
+import {LocalStorage} from "quasar";
 import _ from "lodash";
 import {Tabset} from "src/models/Tabset";
-import {Tab} from "src/models/Tab";
-import TabsetService from "src/services/TabsetService";
 
 
 export class TabsetApi {
@@ -14,7 +10,6 @@ export class TabsetApi {
   constructor(localStorage: LocalStorage) {
     this.localStorage = localStorage;
   }
-
 
 
   getTabsetInfo() {
@@ -37,7 +32,6 @@ export class TabsetApi {
     //   //TabsetService.saveOrReplace(title, tabs)
     // }
   }
-
 
 
 }

@@ -33,7 +33,7 @@ class TabsetService {
       if (tabset) {
         console.log("found tabset for id", tabsetId)
         await ChromeApi.restore(tabset)
-        tabsStore.context = tabset.name
+        tabsStore.contextId = tabset.name
         localStorage.setItem("tabsets.context", tabsetId)
       }
     } catch (ex) {
@@ -68,7 +68,7 @@ class TabsetService {
     const tabset = this.getTabset(tabsetId)
     if (tabset) {
       const tabsStore = useTabsStore()
-      if (tabset.name === tabsStore.context) {
+      if (tabset.name === tabsStore.contextId) {
         console.log("cannot delete currently active context")
         return
       }
@@ -124,6 +124,33 @@ class TabsetService {
         t.chromeTab.pinned = !t.chromeTab.pinned
         chrome.tabs.update(tabId, {pinned: t.chromeTab.pinned})
       })
+  }
+
+  unsetContext() {
+    const tabsStore = useTabsStore()
+    this.localStorage.remove("tabsets.context")
+    tabsStore.contextId = null as unknown as string
+  }
+
+  setContext(currentTabsetId: string) {
+    const tabsStore = useTabsStore()
+    this.localStorage.set("tabsets.context", currentTabsetId)
+    tabsStore.contextId = currentTabsetId
+  }
+
+  isOpen(tabUrl: string): boolean {
+    const tabsStore = useTabsStore()
+    //console.log("checking tabUrl", tabUrl)
+    return _.filter(tabsStore.tabs, t => { return t?.url === tabUrl}).length > 0
+  }
+
+  selectTabset  (tabsetId: string): void {
+    const tabsStore = useTabsStore()
+    tabsStore.currentTabsetId = tabsetId;
+  }
+
+  closeAllTabs() {
+    ChromeApi.closeAllTabs()
   }
 }
 

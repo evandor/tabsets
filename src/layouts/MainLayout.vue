@@ -3,13 +3,11 @@
     <q-header elevated>
       <q-toolbar>
 
-        <q-toolbar-title>
-          <q-btn stretch flat label="Tabsets" to="/"/>
-        </q-toolbar-title>
+        <q-btn dense flat round icon="menu" @click="toggleLeftDrawer"/>
 
-        <q-space />
-        context: {{tabsStore.context}}
-        <q-space />
+        <q-toolbar-title>
+          <q-btn stretch flat :label="toolbarTitle()" to="/"/>
+        </q-toolbar-title>
 
         <q-input dark dense standout v-model="search" input-class="text-right"
                  @keydown.enter.prevent="submitSearch()"
@@ -21,8 +19,7 @@
         </q-input>
 
         <q-space/>
-        <q-btn label="New Tabset..." @click="showNewTabsetDialog = true"/>
-        <q-space/>
+
         <div>
           <q-icon name="circle" color="green" v-if="tabsStore.listenersOn">
             <q-tooltip>Listeners are ON</q-tooltip>
@@ -36,9 +33,51 @@
       </q-toolbar>
     </q-header>
 
-<!--    <q-drawer :model-value="drawerIsOpen" @update:model-value="drawerToggled">-->
-<!--      <div @click="drawerToggled">Some Content!</div>-->
-<!--    </q-drawer>-->
+    <q-drawer show-if-above v-model="leftDrawerOpen" side="left" bordered>
+      <div class="q-pa-md q-gutter-sm">
+        <div class="text-body1">Actions</div>
+        <div>
+          <q-btn color="amber-1" text-color="black" label="New Tabset..." @click="showNewTabsetDialog = true"
+                 style="width:100%"/>
+        </div>
+        <div>
+          <q-btn color="amber-1" text-color="black" label="Close all open tabs..." @click="showCloseTabsDialog = true"
+                 style="width:100%"/>
+        </div>
+
+        <div class="text-body1 q-mt-lg" v-if="tabsStore.contextId">Current Context</div>
+        <div>
+          <q-btn v-if="tabsStore.contextId"
+                 text-color="black"
+                 :color="tabsStore.contextId === tabsStore.currentTabsetId ? 'info' : 'white'"
+                 :label="tabsStore.getNameForContext + ' (?)'"
+                 @click="selectTabset(tabsStore.contextId)"
+                 style="width:100%"/>
+        </div>
+
+        <div class="text-body1 q-mt-lg" v-if="tabsStore.tabsets.size > 1"
+             v-text="tabsStore.contextId ? 'Other Tabsets' : 'Tabsets'"/>
+        <div v-for="tabset in tabsStore.tabsets.values()">
+          <q-btn v-if="tabset.name !== 'current' && tabset.id !== tabsStore.contextId"
+                 text-color="black"
+                 :color="tabset.id === tabsStore.currentTabsetId ? 'info' : 'white'"
+                 :label="tabset.name + ' ('+tabset.tabs.length+')'"
+                 @click="selectTabset(tabset.id)"
+                 style="width:100%"/>
+        </div>
+
+        <div class="text-body1 q-mt-lg">Current Browser Tabs</div>
+        <div v-for="tabset in tabsStore.tabsets.values()">
+          <q-btn
+            v-if="tabset.name === 'current'"
+            text-color="black"
+            :color="tabset.id === tabsStore.currentTabsetId ? 'info' : 'white'"
+            :label="'Browser ('+tabset.tabs.length+')'"
+            @click="selectTabset(tabset.id)"
+            style="width:100%"/>
+        </div>
+      </div>
+    </q-drawer>
 
     <q-page-container>
       <router-view/>
@@ -55,36 +94,50 @@
 
         <q-card-section class="q-pt-none">
           <div class="text-body">New Tabset's name:</div>
-          <q-input dense v-model="newTabsetName" autofocus @keyup.enter="prompt = false" />
-          <q-checkbox v-model="clearTabsets" label="close current Tabs" />
+          <q-input dense v-model="newTabsetName" autofocus @keyup.enter="prompt = false"/>
+          <q-checkbox v-model="clearTabsets" label="close current Tabs"/>
         </q-card-section>
 
         <q-card-actions align="right" class="text-primary">
-          <q-btn flat label="Cancel" v-close-popup />
-          <q-btn flat label="Create new Tabset" :disable="newTabsetName.trim().length === 0" v-close-popup @click="createNewTabset()"/>
+          <q-btn flat label="Cancel" v-close-popup/>
+          <q-btn flat label="Create new Tabset" :disable="newTabsetName.trim().length === 0" v-close-popup
+                 @click="createNewTabset()"/>
         </q-card-actions>
       </q-card>
     </q-dialog>
+
+    <q-dialog v-model="showCloseTabsDialog">
+      <q-card style="min-width: 350px">
+        <q-card-section>
+          <div class="text-h6">Closing all Tabs</div>
+        </q-card-section>
+        <q-card-section>
+          <div class="text-body">Clicking on close will remove all currently open tabs.</div>
+        </q-card-section>
+
+        <q-card-actions align="right" class="text-primary">
+          <q-btn flat label="Cancel" v-close-popup/>
+          <q-btn flat label="Close all tabs" v-close-popup @click="closeAllTabs()"/>
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
+
   </q-layout>
 </template>
 
 <script setup lang="ts">
 import {ref} from 'vue';
 import Tabsets, {TabsetProps} from 'components/Tabsets.vue'
-import {initializeBackendApi} from "src/services/BackendApi";
-import _ from "lodash"
-//import {useAuthStore} from "stores/auth";
 import {useQuasar} from "quasar";
-import {uid} from 'quasar'
 import {TabsetApi} from "src/services/TabsetApi";
-import {Tabset} from "src/models/Tabset";
 import {useTabsStore} from "stores/tabsStore";
 import {useTabGroupsStore} from "stores/tabGroupsStore";
 import {useRouter} from "vue-router";
 import tabsetService from "src/services/TabsetService";
+import TabsetService from "src/services/TabsetService";
+import {Tabset} from "src/models/Tabset";
 
 const router = useRouter()
-//const authStore = useAuthStore()
 const tabsStore = useTabsStore()
 const tabGroupsStore = useTabGroupsStore()
 
@@ -92,13 +145,22 @@ const contextname = ref('default')
 const newTabsetName = ref('')
 const search = ref('')
 const showNewTabsetDialog = ref(false)
+const showCloseTabsDialog = ref(false)
 const clearTabsets = ref(false)
 
 const localStorage = useQuasar().localStorage
 const tabsetApi = new TabsetApi(localStorage)
 // const appVersion = process.env.PUBLIC_ENV_PACKAGE_VERSION
 const appVersion = import.meta.env.PACKAGE_VERSION
+const leftDrawerOpen = ref(true)
 
+import {useMeta} from 'quasar'
+
+useMeta(() => {
+  return {
+    title: tabsStore.title
+  }
+})
 
 function saveTabset() {
   /*if (authStore.isAuthenticated) {
@@ -107,11 +169,9 @@ function saveTabset() {
     backend.saveTabset(tabsStore.getTabs())
   } else {*/
   console.log("saving tabset @ localstorage");
-  tabsetApi.saveOrReplace(contextname.value, tabsStore.tabs)
+  //tabsetApi.saveOrReplace(contextname.value, tabsStore.tabs)
   //}
 }
-
-const leftDrawerOpen = ref(false)
 
 function toggleLeftDrawer() {
   leftDrawerOpen.value = !leftDrawerOpen.value
@@ -135,4 +195,16 @@ async function submitSearch() {
 function createNewTabset() {
   tabsetService.createNewTabset(newTabsetName.value, clearTabsets.value)
 }
+
+const toolbarTitle = () => tabsStore.getNameForContext !== 'undefined' ?
+  "Context: " + tabsStore.getNameForContext + " (Tracking: active)" :
+  "Tabsets (No Tracking of tabs)"
+
+const selectTabset = (tabsetId: string) => {
+  TabsetService.selectTabset(tabsetId)
+  router.push("/tabset")
+}
+
+const closeAllTabs = () => TabsetService.closeAllTabs()
+
 </script>

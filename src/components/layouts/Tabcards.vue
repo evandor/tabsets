@@ -6,26 +6,33 @@
         <q-card-section horizontal>
           <q-card-section class="q-pt-xs" style="width:100%;">
             <div class="row">
-              <div class="col-9">
+              <div class="col-5">
                 <q-img
                   class="rounded-borders"
                   width="20px"
                   height="20px"
-                  :src="tab.chromeTab.favIconUrl">
-                  <q-tooltip>{{ tab.chromeTab.id }}</q-tooltip>
+                  :src="tab.chromeTab?.favIconUrl">
+                  <q-tooltip>{{ tab.chromeTab?.id }}</q-tooltip>
                 </q-img>
               </div>
-              <div class="col-1">
+              <div class="col-5">
                 <div class="row">
+                  <div class="col">
+                    <q-icon name="done" color="green" class="cursor-pointer" v-if="isOpen(tab)">
+                      <q-tooltip>This url is open in one of your tabs</q-tooltip>
+                    </q-icon>
+                  </div>
                   <div class="col">
                     <q-icon name="save" class="cursor-pointer"
                             v-if="tab.status !== TabStatus.DEFAULT"
-                            @click="saveTab(tab.chromeTab.id)"/>
+                            @click="saveTab(tab.chromeTab.id)">
+                      <q-tooltip>Save this tab to your current context</q-tooltip>
+                    </q-icon>
                   </div>
                   <div class="col">
-                    <q-icon :name="tab.chromeTab.pinned ? 'o_push_pin' : 'push_pin'" class="cursor-pointer"
+                    <q-icon :name="tab.chromeTab?.pinned ? 'o_push_pin' : 'push_pin'" class="cursor-pointer"
                             @click="togglePin(tab.chromeTab.id)">
-                      <q-tooltip v-text="tab.chromeTab.pinned ? 'Unpin this tab' : 'Pin this tab'" />
+                      <q-tooltip v-text="tab.chromeTab?.pinned ? 'Unpin this tab' : 'Pin this tab'"/>
                     </q-icon>
                   </div>
                 </div>
@@ -34,14 +41,14 @@
               </div>
               <div class="col-1">
                 <q-icon name="close" class="cursor-pointer"
-                        @click="closeTab(tab.chromeTab.id)"/>
+                        @click="closeTab(tab.chromeTab)"/>
               </div>
             </div>
 
             <div class="text-overline">
-              {{ getHost(tab.chromeTab?.url || tab.url, true) }} {{ tab.activatedCount }}/{{ tab.lastActive }}
+              {{ getHost(tab.chromeTab.url, true) }} {{ tab.activatedCount }}/{{ tab.lastActive }}
               <q-tooltip>
-                {{ getHost(tab.chromeTab?.url || tab.url, false) }}
+                {{ getHost(tab.chromeTab.url, false) }}
               </q-tooltip>
             </div>
             <div class="text-body1 q-mt-sm q-mb-xs">{{ maxChar(20, tab.chromeTab?.title || tab.title) }}</div>
@@ -116,8 +123,8 @@ function maxChar(max: number, t: string): string {
 }
 
 
-function closeTab(id: number) {
-  Navigation.closeTab(id)
+function closeTab(chromeTab: chrome.tabs.Tab) {
+  Navigation.closeTab(chromeTab)
   //chrome.tabs.remove(id)
 }
 
@@ -136,7 +143,7 @@ function cardStyle(tab: Tab) {
   const height = "150px";
   let borderColor = ""
   if (TabStatus.CREATED === tab.status) {
-    borderColor = "border-color:green";
+    borderColor = "";
   } else if (TabStatus.DELETED === tab.status) {
     borderColor = "border-color:#EF9A9A"
   }
@@ -147,4 +154,10 @@ function cardStyle(tab: Tab) {
   // style=""
   return `height: ${height};max-height:${height}; min-height: ${height};${borderColor};${background}`
 }
+
+function isOpen(tab: Tab): boolean {
+  //console.log("tabUrl", tab.chromeTab?.url);
+  return TabsetService.isOpen(tab?.chromeTab?.url || '')
+}
+
 </script>

@@ -1,10 +1,6 @@
-import {useTabsStore} from "stores/tabsStore";
-import {LocalStorage} from "quasar";
 import {Tabset} from "src/models/Tabset";
 
 class ChromeApi {
-
-  // tabsStore = useTabsStore()
 
   async closeAllTabs() {
     chrome.tabs.query({currentWindow: true}, (t: chrome.tabs.Tab[]) => {
@@ -26,7 +22,7 @@ class ChromeApi {
     console.log("restoring tabset ", tabset.id)
     const t = await chrome.tabs.query({currentWindow: true})//, (t: chrome.tabs.Tab[]) => {
     // @ts-ignore
-    const ids: number[] = t.filter((r: chrome.tabs.Tab) => !r.url.startsWith('chrome'))
+    const ids: number[] = t.filter((r: chrome.tabs.Tab) => !(r.title === 'Tabsets Extension'))
       .filter(r => r.id !== undefined)
       .map(r => r.id || 0);
     console.log("ids to close", ids)
