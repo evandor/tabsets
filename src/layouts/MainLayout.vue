@@ -38,32 +38,32 @@
         <div class="text-body1">Actions</div>
         <div>
           <q-btn color="amber-1" text-color="black" label="New Tabset..." @click="showNewTabsetDialog = true"
-                 style="width:100%"/>
+                 class="full-width"/>
         </div>
         <div>
           <q-btn color="amber-1" text-color="black" label="Close all open tabs..." @click="showCloseTabsDialog = true"
-                 style="width:100%"/>
+                 class="full-width"/>
         </div>
 
         <div class="text-body1 q-mt-lg" v-if="tabsStore.contextId">Current Context</div>
         <div>
           <q-btn v-if="tabsStore.contextId"
                  text-color="black"
-                 :color="tabsStore.contextId === tabsStore.currentTabsetId ? 'info' : 'white'"
                  :label="tabsStore.getNameForContext + ' (?)'"
                  @click="selectTabset(tabsStore.contextId)"
-                 style="width:100%"/>
+                 class="full-width"
+                 :style="tabsStore.contextId === tabsStore.currentTabsetId ? 'border:1px solid blue' : 'border:1px solid #bfbfbf'"/>
         </div>
 
-        <div class="text-body1 q-mt-lg" v-if="tabsStore.tabsets.size > 1"
+        <div class="text-body1 q-mt-lg" v-if="tabsStore.contextId ? tabsStore.tabsets.size > 2 : tabsStore.tabsets.size > 1"
              v-text="tabsStore.contextId ? 'Other Tabsets' : 'Tabsets'"/>
         <div v-for="tabset in tabsStore.tabsets.values()">
           <q-btn v-if="tabset.name !== 'current' && tabset.id !== tabsStore.contextId"
                  text-color="black"
-                 :color="tabset.id === tabsStore.currentTabsetId ? 'info' : 'white'"
                  :label="tabset.name + ' ('+tabset.tabs.length+')'"
                  @click="selectTabset(tabset.id)"
-                 style="width:100%"/>
+                 class="full-width"
+                 :style="tabset.id === tabsStore.currentTabsetId ? 'border:1px solid blue' : 'border:1px solid #bfbfbf'"/>
         </div>
 
         <div class="text-body1 q-mt-lg">Current Browser Tabs</div>
@@ -71,10 +71,10 @@
           <q-btn
             v-if="tabset.name === 'current'"
             text-color="black"
-            :color="tabset.id === tabsStore.currentTabsetId ? 'info' : 'white'"
             :label="'Browser ('+tabset.tabs.length+')'"
             @click="selectTabset(tabset.id)"
-            style="width:100%"/>
+            class="full-width"
+            :style="tabset.id === tabsStore.currentTabsetId ? 'border:1px solid blue' : 'border:1px solid #bfbfbf'"/>
         </div>
       </div>
     </q-drawer>
@@ -112,7 +112,8 @@
           <div class="text-h6">Closing all Tabs</div>
         </q-card-section>
         <q-card-section>
-          <div class="text-body">Clicking on close will remove all currently open tabs.</div>
+          <div class="text-body1">Clicking on close will remove all currently open tabs.</div>
+          <div class="text-body1">That is, apart from this extension.</div>
         </q-card-section>
 
         <q-card-actions align="right" class="text-primary">

@@ -1,21 +1,12 @@
 <template>
 
 
-  <q-banner rounded class="bg-orange-1 text-blue">
-
-
-    <div class="text-body1">
-      B: You are watching a tabset different from your current tabs!<br>
-      If you want, you can restore this tabset
-
+  <q-banner rounded class="bg-amber-1 text-black">
+    <div class="text-body2" v-if="tabsStore.getCurrentTabs.length === 0">
+      Currently, your <b>browser tabs</b> are <b>not tracked</b> by this extension and you do not have any tabs associated with
+      this tabset.<br> To start tracking, you can set this tabset as your 'context' by clicking on <q-icon color="blue" name="center_focus_strong" />
+      and <b>start opening new tabs</b>.
     </div>
-
-    <template v-slot:action>
-      <!--          <q-btn flat color="black" label="Continue as a Guest"/>-->
-      <q-btn flat color="black" label="Unset context" @click="unsetContext()" v-if="tabsStore.contextId"/>
-      <q-btn flat color="black" label="Set as context" @click="setAsContext()"
-             v-if="!tabsStore.contextId && tabsStore.currentTabsetId !== 'current'"/>
-    </template>
   </q-banner>
 
   <q-toolbar class="text-primary">
@@ -23,7 +14,7 @@
 
     <q-toolbar-title>
       <div class="row justify-start items-baseline">
-        <div class="col-1" style="width:80px">Tabset</div>
+        <div class="col-1" style="width:80px" v-text="'Tabset \'' + tabsStore.currentTabsetName +  '\''"></div>
         <div class="col" style="color:#000066">
 
         </div>

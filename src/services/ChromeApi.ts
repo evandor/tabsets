@@ -1,17 +1,21 @@
 import {Tabset} from "src/models/Tabset";
+import {useTabsStore} from "stores/tabsStore";
 
 class ChromeApi {
 
   async closeAllTabs() {
-    chrome.tabs.query({currentWindow: true}, (t: chrome.tabs.Tab[]) => {
-      console.log("checking tabs for closing", t)
-      // @ts-ignore
-      const ids: number[] = t.filter((r: chrome.tabs.Tab) => !(r.title === "Tabsets Extension"))
-        .filter(r => r.id !== undefined)
-        .map(r => r.id || 0);
-      console.log("ids to close", ids)
-      chrome.tabs.remove(ids)
-    });
+    console.log(" --- closing all tabs: start ---")
+    const currentTab = await this.getCurrentTab()
+    const t = await chrome.tabs.query({currentWindow: true})//, (t: chrome.tabs.Tab[]) => {
+    console.log("checking tabs for closing", t)
+    const ids: number[] = t.filter((r: chrome.tabs.Tab) => r.id !== currentTab.id)
+      .filter(r => r.id !== undefined)
+      .map(r => r.id || 0);
+    console.log("ids to close", ids)
+    if (ids.length > 0) {
+      await chrome.tabs.remove(ids)
+    }
+    console.log(" --- closing all tabs: end ---")
   }
 
   getTabs() {
@@ -20,13 +24,16 @@ class ChromeApi {
 
   async restore(tabset: Tabset) {
     console.log("restoring tabset ", tabset.id)
-    const t = await chrome.tabs.query({currentWindow: true})//, (t: chrome.tabs.Tab[]) => {
-    // @ts-ignore
-    const ids: number[] = t.filter((r: chrome.tabs.Tab) => !(r.title === 'Tabsets Extension'))
-      .filter(r => r.id !== undefined)
-      .map(r => r.id || 0);
-    console.log("ids to close", ids)
-    await chrome.tabs.remove(ids)
+    await this.closeAllTabs()
+    console.log("proceeding...")
+
+    // const t = await chrome.tabs.query({currentWindow: true})//, (t: chrome.tabs.Tab[]) => {
+    // // @ts-ignore
+    // const ids: number[] = t.filter((r: chrome.tabs.Tab) => !(r.title === 'Tabsets Extension'))
+    //   .filter(r => r.id !== undefined)
+    //   .map(r => r.id || 0);
+    // console.log("ids to close", ids)
+    // await chrome.tabs.remove(ids)
     await tabset.tabs.forEach(async t => {
       console.log("creating tab", t.chromeTab.id)
       await chrome.tabs.create({
@@ -35,12 +42,19 @@ class ChromeApi {
         pinned: t.chromeTab.pinned,
         url: t.chromeTab.url
       })
-       /* .catch(e => {
-          console.log("got error", e)
-        })*/
+      /* .catch(e => {
+         console.log("got error", e)
+       })*/
     });
     //  });
   }
+
+  async getCurrentTab(): Promise<chrome.tabs.Tab> {
+    let queryOptions = {active: true, lastFocusedWindow: true};
+    let [tab] = await chrome.tabs.query(queryOptions);
+    return tab;
+  }
+
 }
 
 export default new ChromeApi();

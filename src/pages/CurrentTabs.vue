@@ -1,17 +1,32 @@
 <template>
   <q-page padding>
-
+    contextId: {{tabsStore.contextId}}, Current TabsetId {{tabsStore.currentTabsetId}}
     <div v-if="tabsStore.contextId && tabsStore.currentTabsetId===tabsStore.contextId">
+      <!-- "D" in overview.excalidraw -->
+      <div>Context</div>
       <context-component></context-component>
     </div>
-    <div class="text-body1" v-else-if="!tabsStore.contextId && tabsStore.currentTabsetId!=='current'">
+    <div class="text-body1" v-else-if="tabsStore.contextId && tabsStore.currentTabsetId==='current'">
+      <div>chrome</div>
+      <chrome-tabset></chrome-tabset>
+    </div>
+    <div v-else-if="tabsStore.contextId && tabsStore.currentTabsetId!==tabsStore.contextId">
+      <div>Edit 1</div>
       <edit-tabset-component></edit-tabset-component>
     </div>
+    <div class="text-body1" v-else-if="!tabsStore.contextId && tabsStore.currentTabsetId!=='current'">
+      <!-- "B" in overview.excalidraw -->
+      <div>Edit 2</div>
+      <edit-tabset-component></edit-tabset-component>
+    </div>
+
     <div class="text-body1" v-else-if="!tabsStore.contextId && tabsStore.currentTabsetId==='current'">
+      <div>chrome</div>
       <chrome-tabset></chrome-tabset>
     </div>
     <div v-else>
-      <chrome-tabset></chrome-tabset>
+      <div>ELSE</div>
+      {{tabsStore.contextId}}--{{tabsStore.currentTabsetId}}???
     </div>
 
   </q-page>

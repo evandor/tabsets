@@ -19,10 +19,14 @@
     </q-btn>
     <q-btn flat round dense icon="restore_page"
            color="green"
-           @click="restoreDialog" v-if="tabsStore.currentTabsetId !== 'current'"/>
+           @click="restoreDialog" v-if="tabsStore.currentTabsetId !== 'current'">
+      <q-tooltip>Replace all current tabs with this tabset</q-tooltip>
+    </q-btn>
     <q-btn flat round dense icon="delete"
            color="red"
-           @click="deleteDialog" v-if="tabsStore.currentTabsetId !== 'current'"/>
+           @click="deleteDialog" v-if="tabsStore.currentTabsetId !== 'current'">
+      <q-tooltip>Delete this tabset</q-tooltip>
+    </q-btn>
   </q-toolbar>
 
   <q-list class="rounded-borders">
@@ -49,7 +53,8 @@
       </template>
       <!--        <q-card style="background: radial-gradient(circle, #35a2ff 0%, #014a88 100%)">-->
       <div>
-        xxx
+        <span class="cursor-pointer" @click="removeClosedTabs()" v-if="_.filter(tabsStore.pendingTabs, t => t.status === TabStatus.DELETED).length > 1">[remove all closed tabs]</span>
+        <span class="cursor-pointer" @click="saveAllPendingTabs()" v-if="tabsStore.pendingTabs.length > 1 ">[save all]</span>
       </div>
       <q-card>
         <q-card-section>
@@ -194,14 +199,14 @@ const update = (tabsetIdent: object) => {
   tabsStore.selectCurrentTabset(tabsetIdent['value' as keyof object])
 }
 
-const tabsetOptions = () => {
-  return _.map([...tabsStore.tabsets.values()], ts => {
-    return {
-      label: ts.name,
-      value: ts.id
-    }
-  })
-}
+// const tabsetOptions = () => {
+//   return _.map([...tabsStore.tabsets.values()], ts => {
+//     return {
+//       label: ts.name,
+//       value: ts.id
+//     }
+//   })
+// }
 
 const unsetContext = () => TabsetService.unsetContext()
 const setAsContext = () => TabsetService.setContext(tabsStore.currentTabsetId)
@@ -209,6 +214,9 @@ const setAsContext = () => TabsetService.setContext(tabsStore.currentTabsetId)
 const formatLength = (length: number, singular: string, plural: string) => {
   return length > 1 ? length + ' ' + plural : length + ' ' + singular
 }
+
+const removeClosedTabs = () => TabsetService.removeClosedTabs()
+const saveAllPendingTabs = () => TabsetService.saveAllPendingTabs()
 
 const saveDialog = () => {
   $q.dialog({

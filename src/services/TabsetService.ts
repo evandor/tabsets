@@ -141,16 +141,46 @@ class TabsetService {
   isOpen(tabUrl: string): boolean {
     const tabsStore = useTabsStore()
     //console.log("checking tabUrl", tabUrl)
-    return _.filter(tabsStore.tabs, t => { return t?.url === tabUrl}).length > 0
+    return _.filter(tabsStore.tabs, t => {
+      return t?.url === tabUrl
+    }).length > 0
   }
 
-  selectTabset  (tabsetId: string): void {
+  selectTabset(tabsetId: string): void {
     const tabsStore = useTabsStore()
     tabsStore.currentTabsetId = tabsetId;
   }
 
   closeAllTabs() {
+    // all but 'self'
     ChromeApi.closeAllTabs()
+  }
+
+  removeClosedTabs() {
+    const tabsStore = useTabsStore()
+    // console.log("removing closed tabs", tabsStore.pendingTabs)
+    _.forEach(
+      _.filter(
+        tabsStore.pendingTabs,
+        t => t.status === TabStatus.DELETED),
+      deletedTab => tabsStore.removeTab(deletedTab.chromeTab.id || 0))
+
+//    this.tabsStore.removeTab(tab.id)
+  }
+
+  saveAllPendingTabs() {
+    const tabsStore = useTabsStore()
+    // console.log("removing closed tabs", tabsStore.pendingTabs)
+    _.forEach(
+      tabsStore.pendingTabs,
+      t => {
+        if (t.chromeTab?.id) {
+          this.setStatus(t.chromeTab.id, TabStatus.DEFAULT)
+        }
+      })
+
+
+//    this.tabsStore.removeTab(tab.id)
   }
 }
 

@@ -5,18 +5,11 @@ import {LocalStorage, uid} from "quasar";
 import {Tabset} from "src/models/Tabset";
 import {Tab, TabStatus} from "src/models/Tab";
 import TabsetService from "src/services/TabsetService";
+import ChromeListeners from "src/services/ChromeListeners";
 
 async function queryTabs(): Promise<chrome.tabs.Tab[]> {
   return await chrome.tabs.query({currentWindow: true})
 }
-
-// async function getCurrentTab() {
-//   let queryOptions = {active: true, lastFocusedWindow: true};
-//   // `tab` will either be a `tabs.Tab` instance or `undefined`.
-//   let [tab] = await chrome.tabs.query(queryOptions);
-//   return tab;
-// }
-
 
 function markDuplicates(tabset: Tabset) {
   //console.log("marking duplicates in tabset", tabset.id)
@@ -59,12 +52,19 @@ export const useTabsStore = defineStore('tabs', {
     listenersOn: true,
 
     // extension title
-    title: 'Tabset Extension',
+    //title: 'Tabset Extension',
 
     localStorage: undefined as unknown as LocalStorage
   }),
 
   getters: {
+    title: (state) => {
+      if (state.contextId) {
+        const tabset = _.head(_.filter([...state.tabsets.values()], ts => ts.id === state.contextId)) || new Tabset("", "undefined", [])
+        return "Tabset: " + tabset.name
+      }
+      return "Tabset Extension"
+    },
     pinnedTabs(state): Tab[] { //chrome.tabs.Tab[] {
       //console.log("state", state.currentTabsetId)
       //console.log("state", state.tabsets.get(state.currentTabsetId))
@@ -162,114 +162,16 @@ export const useTabsStore = defineStore('tabs', {
       //_.forEach([...this.tabsets.values()], tabset => markDuplicates(tabset))
     },
     initListeners() {
-      chrome.tabs.onCreated.addListener((tab: chrome.tabs.Tab) => {
-        if (!this.listenersOn) {
-          return
-        }
-        //console.log(`onCreated: tab ${tab.id} created: ${JSON.stringify(tab)}`)
-        console.log(`onCreated: tab ${tab.id} created: ${tab.pendingUrl}`)
-
-        if ('current' === this.currentTabsetId) {
-          this.loadTabs('onCreated');
-          return
-        }
-        // add to current tabset if not there yet
-        const currentTabset: Tabset = this.tabsets.get(this.currentTabsetId) || new Tabset("", "", [])
-        const found = _.find(currentTabset.tabs, t => t.chromeTab.url === tab.url)
-        if (!found) {
-          const newTab = new Tab(tab)
-          newTab.status = TabStatus.CREATED
-          currentTabset.tabs.push(newTab)
-          // reload tabs (to be sure?!)
-          this.loadTabs('onCreated');
-        }
-      })
-      chrome.tabs.onUpdated.addListener((number, info, tab) => {
-        if (!this.listenersOn) {
-          return
-        }
-        console.log(`onUpdated: tab ${number} updated: ${JSON.stringify(info)}`)
-        if (!info.status || (Object.keys(info).length > 1)) {
-          const currentTabset: Tabset = this.tabsets.get(this.currentTabsetId) || new Tabset("", "", [])
-          var index = _.findIndex(currentTabset.tabs, t => t.chromeTab.id === tab.id);
-          //console.log("found index", index)
-          const updatedTab = new Tab(tab)
-          updatedTab.status = TabStatus.CREATED
-          currentTabset.tabs.splice(index, 1, updatedTab);
-          // save tabset?
-          // reload tabs (to be sure?!)
-          this.loadTabs('onUpdated');
-        }
-      })
-      chrome.tabs.onMoved.addListener((number, info) => {
-        console.log(`onMoved: tab ${number} moved: ${JSON.stringify(info)}`)
-        this.loadTabs('onMoved');
-      })
-      chrome.tabs.onRemoved.addListener((number, info) => {
-        if (!this.listenersOn) {
-          return
-        }
-
-        console.log(`onRemoved: tab ${number} removed: ${JSON.stringify(info)}`)
-        if ("current" === this.currentTabsetId) {
-          this.loadTabs('onRemoved')
-          return
-        }
-        const currentTabset: Tabset = this.tabsets.get(this.currentTabsetId) || new Tabset("", "", [])
-        var index = _.findIndex(currentTabset.tabs, t => t.chromeTab.id === number);
-        //console.log("found index", index)
-        const updatedTab = currentTabset.tabs.at(index)
-        if (updatedTab) {
-          updatedTab.status = TabStatus.DELETED
-          console.log("updated tab", updatedTab)
-          //currentTabset.tabs.splice(index, 1, updatedTab);
-        }
-        // save tabset?
-        // reload tabs (to be sure?!)
-
-
-        //this.loadTabs('onRemoved');
-      })
-      chrome.tabs.onReplaced.addListener((n1, n2) => {
-        console.log(`onReplaced: tab ${n1} replaced with ${n2}`)
-        this.loadTabs('onReplaced');
-      })
-      chrome.tabs.onActivated.addListener((info) => {
-        if (!this.listenersOn) {
-          return
-        }
-
-        const msg = `tab ${info.tabId} activated`
-        console.log("msg", msg)
-
-        chrome.tabs.get(info.tabId, tab => {
-          //console.log("got tab", tab)
-          const url = tab.url
-          _.forEach([...this.tabsets.keys()], key => {
-            const ts = this.tabsets.get(key) || new Tabset("", "", [])
-            const hits = _.filter(ts.tabs, (t: Tab) => t.chromeTab.url === url)
-            _.forEach(hits, h => {
-              h.activatedCount = 1 + h.activatedCount
-              h.lastActive += new Date().getTime()
-            })
-            TabsetService.saveTabset(ts)
-          })
-        })
-        //new TabsetApi(this.localStorage).saveTabset(this.currentTabset)
-      })
-      chrome.tabs.onAttached.addListener((number, info) => {
-        console.log(`onAttached: tab ${number} attached: ${JSON.stringify(info)}`)
-      })
-      chrome.tabs.onDetached.addListener((number, info) => {
-        console.log(`onDetached: tab ${number} detached: ${JSON.stringify(info)}`)
-      })
-      chrome.tabs.onHighlighted.addListener((info) => {
-        console.log(`onHighlighted: tab ${info.tabIds} highlighted: ${JSON.stringify(info)}`)
-      })
-      chrome.tabs.onZoomChange.addListener((info) => {
-        //console.log(`onZoomChange: tab ${info.tabId} zoom change: ${JSON.stringify(info)}`)
-      })
-
+      chrome.tabs.onCreated.addListener((tab: chrome.tabs.Tab) => ChromeListeners.onCreated(tab))
+      chrome.tabs.onUpdated.addListener((number, info, tab) => ChromeListeners.onUpdated(number, info, tab))
+      chrome.tabs.onMoved.addListener((number, info) => ChromeListeners.onMoved(number, info))
+      chrome.tabs.onRemoved.addListener((number, info) => ChromeListeners.onRemoved(number, info))
+      chrome.tabs.onReplaced.addListener((n1, n2) => ChromeListeners.onReplaced(n1, n2))
+      chrome.tabs.onActivated.addListener((info) => ChromeListeners.onActivated(info))
+      chrome.tabs.onAttached.addListener((number, info) => ChromeListeners.onAttached(number, info))
+      chrome.tabs.onDetached.addListener((number, info) => ChromeListeners.onDetached(number, info))
+      chrome.tabs.onHighlighted.addListener((info) => ChromeListeners.onHighlighted(info))
+      chrome.tabs.onZoomChange.addListener((info) => ChromeListeners.onZoomChange(info))
     },
     tabsForGroup(groupId: number): chrome.tabs.Tab[] {
       return _.filter(this.tabs, (t: chrome.tabs.Tab) => t.groupId === groupId)
