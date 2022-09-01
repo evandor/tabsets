@@ -147,19 +147,15 @@ export const useTabsStore = defineStore('tabs', {
       _.forEach([...this.tabsets.values()], tabset => markDuplicates(tabset))
     },
     async loadTabs(eventName: string) {
-      console.log(`${eventName}: loading tabs for tabset '${this.currentTabsetId}'`)
-      const ts = await queryTabs()//.then(ts => {
-      this.tabs = ts
-      //if ("current" === this.currentTabsetId) {
+      // potentially expansive method
+      console.log(`${eventName}: -- loading tabs for tabset '${this.currentTabsetId}'`)
+      this.tabs = await queryTabs()
       const current = new Tabset("current", "current",
         _.map(this.tabs, t => {
           return new Tab(t)
         }))
       markDuplicates(current)
       this.tabsets.set("current", current)
-      //}
-      //});
-      //_.forEach([...this.tabsets.values()], tabset => markDuplicates(tabset))
     },
     initListeners() {
       chrome.tabs.onCreated.addListener((tab: chrome.tabs.Tab) => ChromeListeners.onCreated(tab))

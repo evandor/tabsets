@@ -176,11 +176,6 @@ const tabGroupsStore = useTabGroupsStore()
 const tabsetname = ref(tabsStore.currentTabsetName)
 const $q = useQuasar()
 
-watchEffect(() => {
-  console.log("context changed", tabsStore.contextId)
-  console.log("tabset changed", tabsStore.contextId)
-})
-
 function unpinnedNoGroup() {
   return _.filter(
     _.map(tabsStore.getCurrentTabs, t => t),
