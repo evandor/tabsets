@@ -62,10 +62,13 @@ module.exports = {
     '^components/(.*)$': '<rootDir>/src/components/$1',
     '^layouts/(.*)$': '<rootDir>/src/layouts/$1',
     '^pages/(.*)$': '<rootDir>/src/pages/$1',
+    '^store/(.*)$': '<rootDir>/src/store/$1',
+    '^services/(.*)$': '<rootDir>/src/services/$1',
     '^assets/(.*)$': '<rootDir>/src/assets/$1',
     '^boot/(.*)$': '<rootDir>/src/boot/$1',
     '.*css$': '@quasar/quasar-app-extension-testing-unit-jest/stub.css',
   },
+  "resolver": undefined,
   transform: {
     // See https://jestjs.io/docs/en/configuration.html#transformignorepatterns-array-string
     [`^(${esModules}).+\\.js$`]: 'babel-jest',

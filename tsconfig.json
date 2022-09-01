@@ -1,6 +1,17 @@
 {
-  "extends": "@quasar/app-vite/tsconfig-preset",
+  "extends": "@quasar/app-webpack/tsconfig-preset",
+  "sourceMap": true,
   "compilerOptions": {
-    "baseUrl": "."
-  }
+    "baseUrl": ".",
+    "types": [
+      "jest"
+    ]
+  },
+  "exclude": [
+    "test/cypress",
+    "/dist",
+    ".quasar",
+    "node_modules"
+  ],
+  "memoryLimit": 8096
 }
