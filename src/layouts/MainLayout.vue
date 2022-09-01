@@ -45,11 +45,11 @@
                  class="full-width"/>
         </div>
 
-        <div class="text-body1 q-mt-lg" v-if="tabsStore.contextId">Current Context</div>
-        <div>
-          <q-btn v-if="tabsStore.contextId"
+        <div class="text-body1 q-mt-lg" v-if="tabsStore.contextId"><b>Current Context</b></div>
+        <div v-for="tabset in tabsStore.tabsets.values()">
+          <q-btn v-if="tabsStore.contextId === tabset.id"
                  text-color="black"
-                 :label="tabsStore.getNameForContext + ' (?)'"
+                 :label="tabsStore.getNameForContext + ' ('+tabset.tabs.length+')'"
                  @click="selectTabset(tabsStore.contextId)"
                  class="full-width"
                  :style="tabsStore.contextId === tabsStore.currentTabsetId ? 'border:1px solid blue' : 'border:1px solid #bfbfbf'"/>
@@ -60,7 +60,7 @@
         <div v-for="tabset in tabsStore.tabsets.values()">
           <q-btn v-if="tabset.name !== 'current' && tabset.id !== tabsStore.contextId"
                  text-color="black"
-                 :label="tabset.name + ' ('+tabset.tabs.length+')'"
+                 :label="tabset.name + ' ('+tabset.tabs.length+', ' + nonDefaultCount(tabset.tabs) + ')'"
                  @click="selectTabset(tabset.id)"
                  class="full-width"
                  :style="tabset.id === tabsStore.currentTabsetId ? 'border:1px solid blue' : 'border:1px solid #bfbfbf'"/>
@@ -137,6 +137,7 @@ import {useRouter} from "vue-router";
 import tabsetService from "src/services/TabsetService";
 import TabsetService from "src/services/TabsetService";
 import {Tabset} from "src/models/Tabset";
+import _ from "lodash"
 
 const router = useRouter()
 const tabsStore = useTabsStore()
@@ -155,7 +156,9 @@ const tabsetApi = new TabsetApi(localStorage)
 const appVersion = import.meta.env.PACKAGE_VERSION
 const leftDrawerOpen = ref(true)
 
+
 import {useMeta} from 'quasar'
+import {Tab, TabStatus} from "src/models/Tab";
 
 useMeta(() => {
   return {
@@ -207,5 +210,7 @@ const selectTabset = (tabsetId: string) => {
 }
 
 const closeAllTabs = () => TabsetService.closeAllTabs()
+
+const nonDefaultCount = (tabs: Tab[]) => _.filter(tabs, t => t.status !== TabStatus.DEFAULT).length
 
 </script>

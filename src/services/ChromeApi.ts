@@ -24,6 +24,7 @@ class ChromeApi {
 
   async restore(tabset: Tabset) {
     console.log("restoring tabset ", tabset.id)
+    const currentTab = await this.getCurrentTab()
     await this.closeAllTabs()
     console.log("proceeding...")
 
@@ -35,13 +36,17 @@ class ChromeApi {
     // console.log("ids to close", ids)
     // await chrome.tabs.remove(ids)
     await tabset.tabs.forEach(async t => {
-      console.log("creating tab", t.chromeTab.id)
-      await chrome.tabs.create({
-        active: false,
-        index: t.chromeTab.index,
-        pinned: t.chromeTab.pinned,
-        url: t.chromeTab.url
-      })
+      if (t.chromeTab.url !== currentTab.url) {
+        console.log("creating tab", t.chromeTab.id)
+        await chrome.tabs.create({
+          active: false,
+          index: t.chromeTab.index,
+          pinned: t.chromeTab.pinned,
+          url: t.chromeTab.url
+        })
+      } else {
+        console.log("omitting opening current tab again")
+      }
       /* .catch(e => {
          console.log("got error", e)
        })*/
