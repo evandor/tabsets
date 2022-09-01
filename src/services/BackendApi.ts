@@ -15,6 +15,11 @@ export class BackendApi {
     console.log("posting to backend @ url", this.backendUrl)
     return axios.post(`${this.backendUrl}/saveTabset`, data, {})
   }
+
+  getTabsets(username: string) {
+    console.log("querying backend @ url", this.backendUrl)
+    return axios.get(`${this.backendUrl}/tabsets`,  {})
+  }
 }
 
 

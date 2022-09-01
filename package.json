@@ -10,7 +10,15 @@
     "dev stage prod": "stage=production quasar dev -m bex",
     "build": "quasar build -m bex",
     "icon": "icongenie generate -i src/assets/icon.png",
-    "test": "echo \"No test specified\" && exit 0"
+    "test": "echo \"See package.json => scripts for available tests.\" && exit 0",
+    "test:unit:ui": "majestic",
+    "test:unit": "jest --updateSnapshot",
+    "test:unit:ci": "jest --ci",
+    "test:unit:coverage": "jest --coverage",
+    "test:unit:watch": "jest --watch",
+    "test:unit:watchAll": "jest --watchAll",
+    "serve:test:coverage": "quasar serve test/jest/coverage/lcov-report/ --port 8788",
+    "concurrently:dev:jest": "concurrently \"quasar dev\" \"jest --watch\""
   },
   "dependencies": {
     "@quasar/extras": "^1.0.0",
@@ -31,9 +39,13 @@
   "devDependencies": {
     "@intlify/vite-plugin-vue-i18n": "^3.3.1",
     "@quasar/app-vite": "^1.0.0",
+    "@quasar/quasar-app-extension-testing": "^2.0.4",
+    "@quasar/quasar-app-extension-testing-unit-jest": "^3.0.0-alpha.10",
     "@types/node": "^12.20.21",
     "autoprefixer": "^10.4.2",
-    "typescript": "^4.5.4"
+    "typescript": "^4.5.4",
+    "eslint-plugin-jest": "^25.2.2",
+    "majestic": "^1.7.0"
   },
   "engines": {
     "node": "^18 || ^16 || ^14.19",
