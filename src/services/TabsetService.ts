@@ -4,6 +4,7 @@ import ChromeApi from "src/services/ChromeApi";
 import _ from "lodash";
 import {Tab, TabStatus} from "src/models/Tab";
 import {Tabset} from "src/models/Tabset";
+import Navigation from "src/services/Navigation";
 
 class TabsetService {
 
@@ -110,10 +111,15 @@ class TabsetService {
     this.saveTabset(currentTabset)
   }
 
-
+  /**
+   * Will create a new tabset (or update an existing one with matching name) with
+   * the provided Chrome tabs.
+   *
+   * @param name the tabset's name (TODO: validation)
+   * @param tabs an array of Chrome tabs.
+   */
   saveOrReplace(name: string, tabs: chrome.tabs.Tab[]) {
-    const tabsStore = useTabsStore()
-    tabsStore.saveOrCreateTabset(name)
+    useTabsStore().saveOrCreateTabset(name)
   }
 
   togglePin(tabId: number) {
@@ -170,7 +176,6 @@ class TabsetService {
 
   saveAllPendingTabs() {
     const tabsStore = useTabsStore()
-    // console.log("removing closed tabs", tabsStore.pendingTabs)
     _.forEach(
       tabsStore.pendingTabs,
       t => {
@@ -178,9 +183,17 @@ class TabsetService {
           this.setStatus(t.chromeTab.id, TabStatus.DEFAULT)
         }
       })
+  }
 
-
-//    this.tabsStore.removeTab(tab.id)
+  removeAllPendingTabs() {
+    const tabsStore = useTabsStore()
+    _.forEach(
+      tabsStore.pendingTabs,
+      t => {
+        if (t.chromeTab?.id) {
+          Navigation.closeTab(t.chromeTab)
+        }
+      })
   }
 }
 

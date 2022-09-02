@@ -30,7 +30,7 @@
   </q-toolbar>
 
   <q-list class="rounded-borders">
-
+{{tabsStore.getCurrentTabs}}
     <!-- pending tabs -->
     <q-expansion-item
       v-if="tabsStore.pendingTabs.length > 0"
@@ -53,8 +53,9 @@
       </template>
       <!--        <q-card style="background: radial-gradient(circle, #35a2ff 0%, #014a88 100%)">-->
       <div>
-        <span class="cursor-pointer" @click="removeClosedTabs()" v-if="_.filter(tabsStore.pendingTabs, t => t.status === TabStatus.DELETED).length > 1">[remove all closed tabs]</span>
-        <span class="cursor-pointer" @click="saveAllPendingTabs()" v-if="tabsStore.pendingTabs.length > 1 ">[save all]</span>
+        <span class="cursor-pointer" @click="removeClosedTabs()" v-if="_.filter(tabsStore.pendingTabs, t => t.status === TabStatus.DELETED).length > 1">[remove all closed tabs]</span>&nbsp;
+        <span class="cursor-pointer" @click="saveAllPendingTabs()" v-if="tabsStore.pendingTabs.length > 1 ">[save all]</span>&nbsp;
+        <span class="cursor-pointer" @click="removeAllPendingTabs()" v-if="tabsStore.pendingTabs.length > 1 ">[remove all]</span>&nbsp;
       </div>
       <q-card>
         <q-card-section>
@@ -212,6 +213,7 @@ const formatLength = (length: number, singular: string, plural: string) => {
 
 const removeClosedTabs = () => TabsetService.removeClosedTabs()
 const saveAllPendingTabs = () => TabsetService.saveAllPendingTabs()
+const removeAllPendingTabs = () => TabsetService.removeAllPendingTabs()
 
 const saveDialog = () => {
   $q.dialog({

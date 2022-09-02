@@ -2,8 +2,6 @@ import {useTabsStore} from "stores/tabsStore";
 
 class Navigation {
 
-  tabsStore = useTabsStore()
-
   openOrCreateTab(withUrl: string) {
     console.log("hier", withUrl)
 
@@ -33,14 +31,15 @@ class Navigation {
 
 
   closeTab(tab: chrome.tabs.Tab) {
+    const tabsStore = useTabsStore()
     //console.log("tabsStore", this.tabsStore)
-    if ("current" === this.tabsStore.currentTabsetId) {
+    if ("current" === tabsStore.currentTabsetId) {
       console.log("closing tab with id", tab.id)
 
       if (tab.id) {
         const tabId = tab.id
         chrome.tabs.remove(tabId)
-          .then(res => this.tabsStore.removeTab(tabId))
+          .then(res => tabsStore.removeTab(tabId))
           .catch(ex => console.error("ex", ex))
       }
     } else {
@@ -51,13 +50,13 @@ class Navigation {
             if (r.id) {
               const tabId = r.id
               chrome.tabs.remove(tabId)
-                .then(res2 => this.tabsStore.removeTab(tabId))
+                .then(res2 => tabsStore.removeTab(tabId))
                 .catch(ex => console.error("ex", ex))
             }
           })
         })
       if (tab.id) {
-        this.tabsStore.removeTab(tab.id)
+        tabsStore.removeTab(tab.id)
       }
     }
   }
