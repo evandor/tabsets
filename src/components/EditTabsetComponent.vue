@@ -57,6 +57,10 @@
         <q-item-section>{{ formatLength(tabsStore.pendingTabs.length, 'tab', 'tabs') }}</q-item-section>
       </template>
       <!--        <q-card style="background: radial-gradient(circle, #35a2ff 0%, #014a88 100%)">-->
+      <div>
+        <span class="cursor-pointer" @click="removeClosedTabs()" v-if="_.filter(tabsStore.pendingTabs, t => t.status === TabStatus.DELETED).length > 1">[remove all closed tabs]</span>
+        <span class="cursor-pointer" @click="saveAllPendingTabs()" v-if="tabsStore.pendingTabs.length > 1 ">[save all]</span>
+      </div>
       <q-card>
         <q-card-section>
           <Tabcards :tabs="tabsStore.pendingTabs"/>
@@ -210,6 +214,9 @@ const setAsContext = () => TabsetService.setContext(tabsStore.currentTabsetId)
 const formatLength = (length: number, singular: string, plural: string) => {
   return length > 1 ? length + ' ' + plural : length + ' ' + singular
 }
+
+const removeClosedTabs = () => TabsetService.removeClosedTabs()
+const saveAllPendingTabs = () => TabsetService.saveAllPendingTabs()
 
 const saveDialog = () => {
   $q.dialog({
