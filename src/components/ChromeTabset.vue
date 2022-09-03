@@ -143,7 +143,10 @@ watchEffect(() => {
 
 function unpinnedNoGroup() {
   return _.filter(
-    _.map(tabsStore.getCurrentTabs, t => t),
+    _.map(tabsStore.getCurrentTabs, t => {
+      //console.log("t", t)
+      return t
+    }),
     (t: Tab) => !t.chromeTab.pinned && t.chromeTab.groupId === -1 && (t.status === TabStatus.DEFAULT || !t.status))
 }
 

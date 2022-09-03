@@ -114,7 +114,7 @@ export const useTabsStore = defineStore('tabs', {
 
   actions: {
     async initialize(localStorage: LocalStorage) {
-      console.log("initializing tabsStore!")
+      console.log("initializing tabsStore")
       this.localStorage = localStorage
 
       // setting current tabs
@@ -122,7 +122,7 @@ export const useTabsStore = defineStore('tabs', {
       // @ts-ignore
       const tabsFromBrowser = new Tabset("current", "current",
         _.map(this.tabs, t => {
-          return new Tab(t)
+          return new Tab(uid(), t)
         }))
       this.tabsets.set("current", tabsFromBrowser)
 
@@ -155,7 +155,7 @@ export const useTabsStore = defineStore('tabs', {
       this.tabs = await queryTabs()
       const current = new Tabset("current", "current",
         _.map(this.tabs, t => {
-          return new Tab(t)
+          return new Tab(uid(),t)
         }))
       markDuplicates(current)
       this.tabsets.set("current", current)
@@ -208,10 +208,10 @@ export const useTabsStore = defineStore('tabs', {
       console.log("--- saveOrCreateTabset start -------------")
       const found = _.find([...this.tabsets.values()], ts => ts.name === tabsetName)
       let ts: Tabset = null as unknown as Tabset
-      //const tabsetExtensionTab = await ChromeApi.getCurrentTab()
+      const tabsetExtensionTab = await ChromeApi.getCurrentTab()
       if (found) {
         console.log("found existing tabset " + found.id + ", replacing...")
-        ts = new Tabset(found.id, tabsetName, _.map(this.tabs, t => new Tab(t)));
+        ts = new Tabset(found.id, tabsetName, _.map(this.tabs, t => new Tab(uid(),t)));
         this.tabsets.set(found.id, ts)
         TabsetService.saveTabset(ts)
 
@@ -221,10 +221,10 @@ export const useTabsStore = defineStore('tabs', {
         ts = new Tabset(useId, tabsetName, _.map(
           _.filter(
             this.tabs, t => {
-              //console.log("comparing", t.url, tabsetExtensionTab.url, t.url !== tabsetExtensionTab.url)
-              return t.url !== "xxx"//tabsetExtensionTab.url
+              console.log("comparing", t.url, tabsetExtensionTab.url, t.url !== tabsetExtensionTab.url)
+              return t.url !== tabsetExtensionTab.url
             }),
-            t => new Tab(t)));
+            t => new Tab(uid(),t)));
         console.log("got ts", ts)
         this.tabsets.set(useId, ts)
       }
