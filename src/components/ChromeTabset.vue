@@ -1,5 +1,15 @@
 <template>
 
+  <q-banner rounded class="bg-amber-1 text-black q-mb-lg" v-if="tabsStore.tabsets.size <= 1">
+    <div class="text-body2" >
+      Currently, your <b>browser tabs</b> are <b>not tracked</b> by this extension and you do not have any tabsets defined.<br>
+      Below, you see <b>all your open tabs</b> in this browser's window right now. Open a new tab, and you will see the new tab
+      appearing here as well.
+      <br><br>
+      <b>Click on</b> <q-icon color="primary" name="save" /> to <b>create your first tabset</b> and start tracking tab changes.
+    </div>
+  </q-banner>
+
   <q-toolbar class="text-primary">
     <q-btn flat round dense icon="tabs"/>
 
@@ -136,11 +146,6 @@ const tabGroupsStore = useTabGroupsStore()
 const tabsetname = ref(tabsStore.currentTabsetName)
 const $q = useQuasar()
 
-watchEffect(() => {
-  //console.log("context changed", tabsStore.contextId)
-  //console.log("tabset changed", tabsStore.contextId)
-})
-
 function unpinnedNoGroup() {
   return _.filter(
     _.map(tabsStore.getCurrentTabs, t => {
@@ -163,18 +168,6 @@ const update = (tabsetIdent: object) => {
   tabsStore.selectCurrentTabset(tabsetIdent['value' as keyof object])
 }
 
-const tabsetOptions = () => {
-  return _.map([...tabsStore.tabsets.values()], ts => {
-    return {
-      label: ts.name,
-      value: ts.id
-    }
-  })
-}
-
-const unsetContext = () => TabsetService.unsetContext()
-const setAsContext = () => TabsetService.setContext(tabsStore.currentTabsetId)
-
 const formatLength = (length: number, singular: string, plural: string) => {
   return length > 1 ? length + ' ' + plural : length + ' ' + singular
 }
@@ -194,43 +187,11 @@ const saveDialog = () => {
     console.log('>>>> saving', name)
     TabsetService.saveOrReplace(name, tabsStore.tabs)
   }).onCancel(() => {
-    //console.log('>>>> Cancel')
-  }).onDismiss(() => {
-    //console.log('I am triggered on both OK and Cancel')
-  })
-
-
-}
-
-const deleteDialog = () => {
-  $q.dialog({
-    title: 'Deleting Tabset',
-    message: 'Would you like to delete this tabset?',
-    cancel: true,
-    persistent: true
-  }).onOk((data: any) => {
-    TabsetService.delete(tabsStore.currentTabsetId)
-    router.push("/")
-  }).onCancel(() => {
   }).onDismiss(() => {
   })
 
 
 }
 
-const restoreDialog = () => {
-  $q.dialog({
-    title: 'Restore Tabset',
-    message: 'Would you like to restore this tabset? All current tabs will be closed before.',
-    cancel: true,
-    persistent: true
-  }).onOk((data: any) => {
-    TabsetService.restore(tabsStore.currentTabsetId)
-  }).onCancel(() => {
-  }).onDismiss(() => {
-  })
-
-
-}
 
 </script>

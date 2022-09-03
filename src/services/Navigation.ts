@@ -1,4 +1,5 @@
 import {useTabsStore} from "stores/tabsStore";
+import {Tab} from "src/models/Tab";
 
 class Navigation {
 
@@ -30,21 +31,28 @@ class Navigation {
   }
 
 
-  closeTab(tab: chrome.tabs.Tab) {
+  closeTab(tab: Tab) {
     const tabsStore = useTabsStore()
-    //console.log("tabsStore", this.tabsStore)
-    if ("current" === tabsStore.currentTabsetId) {
-      console.log("closing tab with id", tab.id)
 
-      if (tab.id) {
-        const tabId = tab.id
-        chrome.tabs.remove(tabId)
-          .then(res => tabsStore.removeTab(tabId))
-          .catch(ex => console.error("ex", ex))
+    if (tabsStore.isContextMode) {
+      console.log("closing tab", tab.id)
+      // chrome.tabs.query({url: tab.chromeTab.url})
+      //   .then(res => {
+      //     res.forEach(r => {
+      //       if (r.id) {
+      //         const tabId = r.id
+      //         chrome.tabs.remove(tabId)
+      //           .then(res2 => tabsStore.removeTab(tabId))
+      //           .catch(ex => console.error("ex", ex))
+      //       }
+      //     })
+      //   })
+      if (tab.chromeTab?.id) {
+        tabsStore.removeTab(tab.chromeTab.id)
       }
-    } else {
-      console.log("removing tab", tab.id)
-      chrome.tabs.query({url: tab.url})
+    } else if (tabsStore.isLiveMode) {
+      console.log("closing tab (live mode)", tab.id)
+      chrome.tabs.query({url: tab.chromeTab.url})
         .then(res => {
           res.forEach(r => {
             if (r.id) {
@@ -55,9 +63,24 @@ class Navigation {
             }
           })
         })
-      if (tab.id) {
-        tabsStore.removeTab(tab.id)
+      if (tab.chromeTab?.id) {
+        tabsStore.removeTab(tab.chromeTab.id)
       }
+    } else {
+
+    }
+
+    if ("current" === tabsStore.currentTabsetId) {
+      // console.log("closing tab with id", tab.id)
+      //
+      // if (tab.chromeTab) {
+      //   const tabId = tab.chromeTab.id
+      //   chrome.tabs.remove(tabId)
+      //     .then(res => tabsStore.removeTab(tabId))
+      //     .catch(ex => console.error("ex", ex))
+      // }
+    } else {
+
     }
   }
 }

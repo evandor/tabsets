@@ -5,7 +5,7 @@ export enum TabStatus {
 }
 
 export class Tab {
-  id: string
+  id: string // internal id, do not want to rely on chromeTab.id
   private created: number
   updated: number
   lastActive: number

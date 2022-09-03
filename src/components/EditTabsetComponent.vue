@@ -1,8 +1,17 @@
 <template>
 
 
-  <q-banner rounded class="bg-amber-1 text-black">
-    <div class="text-body2" v-if="tabsStore.getCurrentTabs.length === 0">
+  <q-banner rounded class="bg-amber-1 text-black q-mb-lg" v-if="tabsStore.tabsets.size === 2">
+    <div class="text-body2" >
+      This is a tabset, but it is not your active context. No changes will be tracked here.
+      <br><br>
+      <b>Click on</b> <q-icon color="green" name="restore_page" /> to <b>restore all the tabs of this tabset in your browser</b>. This will
+      close all open tabs and replace them with the tabs from this tabset.
+    </div>
+  </q-banner>
+
+  <q-banner rounded class="bg-amber-1 text-black" v-if="tabsStore.getCurrentTabs.length === 0">
+    <div class="text-body2" >
       Currently, your <b>browser tabs</b> are <b>not tracked</b> by this extension and you do not have any tabs associated with
       this tabset.<br> To start tracking, you can set this tabset as your 'context' by clicking on <q-icon color="blue" name="center_focus_strong" />
       and <b>start opening new tabs</b>.
@@ -10,11 +19,11 @@
   </q-banner>
 
   <q-toolbar class="text-primary">
-    <q-btn flat round dense icon="tabs"/>
+    <q-icon name="tabs"/>
 
     <q-toolbar-title>
       <div class="row justify-start items-baseline">
-        <div class="col-1" style="width:80px" v-text="'Tabset \'' + tabsStore.currentTabsetName +  '\''"></div>
+        <div class="col-1" style="width:80px" v-text="'Editing Tabset \'' + tabsStore.currentTabsetName +  '\''"></div>
         <div class="col" style="color:#000066">
 
         </div>
@@ -28,10 +37,14 @@
     </q-btn>
     <q-btn flat round dense icon="restore_page"
            color="green"
-           @click="restoreDialog" v-if="tabsStore.currentTabsetId !== 'current'"/>
+           @click="restoreDialog">
+      <q-tooltip>Replace your current tabs with all the tabs from this tabset</q-tooltip>
+    </q-btn>
     <q-btn flat round dense icon="delete"
            color="red"
-           @click="deleteDialog" v-if="tabsStore.currentTabsetId !== 'current'"/>
+           @click="deleteDialog">
+      <q-tooltip>Delete this tabset</q-tooltip>
+    </q-btn>
   </q-toolbar>
 
   <q-list class="rounded-borders">

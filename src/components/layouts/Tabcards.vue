@@ -12,7 +12,7 @@
                   width="20px"
                   height="20px"
                   :src="tab.chromeTab?.favIconUrl">
-                  <q-tooltip>{{ tab.chromeTab?.id }}</q-tooltip>
+                  <q-tooltip>{{ tab.chromeTab?.id }} / {{tab.id}}</q-tooltip>
                 </q-img>
               </div>
               <div class="col-5">
@@ -41,7 +41,7 @@
               </div>
               <div class="col-1">
                 <q-icon name="close" class="cursor-pointer"
-                        @click="closeTab(tab.chromeTab)"/>
+                        @click="closeTab(tab)"/>
               </div>
             </div>
 
@@ -123,8 +123,8 @@ function maxChar(max: number, t: string): string {
 }
 
 
-function closeTab(chromeTab: chrome.tabs.Tab) {
-  Navigation.closeTab(chromeTab)
+function closeTab(tab: Tab) {
+  Navigation.closeTab(tab)
   //chrome.tabs.remove(id)
 }
 

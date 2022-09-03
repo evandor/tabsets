@@ -59,6 +59,9 @@ export const useTabsStore = defineStore('tabs', {
   }),
 
   getters: {
+    isContextMode: (state) => state.contextId && state.currentTabsetId === state.contextId,
+    isLiveMode: (state) => (state.contextId && state.currentTabsetId === 'current') || (!state.contextId && state.currentTabsetId === 'current'),
+    isEditMode: (state) => (state.contextId && state.currentTabsetId !== state.contextId) || (!state.contextId && state.currentTabsetId !== 'current'),
     title: (state) => {
       if (state.contextId) {
         const tabset = _.head(_.filter([...state.tabsets.values()], ts => ts.id === state.contextId)) || new Tabset("", "undefined", [])
@@ -85,15 +88,15 @@ export const useTabsStore = defineStore('tabs', {
     tabsCount(): number {
       return this.tabs.length
     },
-    getTabs: (state) => state.tabs,
+    getChromeTabs: (state): chrome.tabs.Tab[] => state.tabs,
     tabsetNames: (state) => _.map([...state.tabsets.keys()], key => {
       const tabset = state.tabsets.get(key)
       return tabset?.name || 'unknown'
     }),
     getCurrentTabs: (state) => {
-      console.log("getCurrentTabs called for", state.currentTabsetId)
-      console.log("2", state.tabsets.get(state.currentTabsetId))
-      console.log("3", state.tabsets)
+      // console.log("getCurrentTabs called for", state.currentTabsetId)
+      // console.log("2", state.tabsets.get(state.currentTabsetId))
+      // console.log("3", state.tabsets)
       return state.tabsets.get(state.currentTabsetId)?.tabs || []
     },
     currentTabsetName: (state) => {
@@ -109,6 +112,14 @@ export const useTabsStore = defineStore('tabs', {
         _.filter([...state.tabsets.values()],
           ts => ts.id === state.contextId),
         ts => ts.name)) || 'undefined'
+    },
+    tabForUrlInContextTabset: (state): (url: string) => Tab | undefined => {
+      const tabs: Tab[] = state.tabsets.get(state.contextId)?.tabs || []
+      return (url: string) => _.find(tabs, t => t.chromeTab.url === url)
+    },
+    tabIdExistsInContextTabset: (state) => {
+      const tabs: Tab[] = state.tabsets.get(state.contextId)?.tabs || []
+      return (tabId: number) => _.find(tabs, t => t.chromeTab.id === tabId)
     }
   },
 
@@ -144,9 +155,9 @@ export const useTabsStore = defineStore('tabs', {
             }
           }
         })
-
-      // marking duplicates (inside each tabset)
-      _.forEach([...this.tabsets.values()], tabset => markDuplicates(tabset))
+      //
+      // // marking duplicates (inside each tabset)
+      // _.forEach([...this.tabsets.values()], tabset => markDuplicates(tabset))
     },
     async loadTabs(eventName: string) {
       // potentially expansive method
@@ -155,7 +166,7 @@ export const useTabsStore = defineStore('tabs', {
       this.tabs = await queryTabs()
       const current = new Tabset("current", "current",
         _.map(this.tabs, t => {
-          return new Tab(uid(),t)
+          return new Tab(uid(), t)
         }))
       markDuplicates(current)
       this.tabsets.set("current", current)
@@ -163,14 +174,14 @@ export const useTabsStore = defineStore('tabs', {
     initListeners() {
       chrome.tabs.onCreated.addListener((tab: chrome.tabs.Tab) => ChromeListeners.onCreated(tab))
       chrome.tabs.onUpdated.addListener((number, info, tab) => ChromeListeners.onUpdated(number, info, tab))
-      chrome.tabs.onMoved.addListener((number, info) => ChromeListeners.onMoved(number, info))
+      // chrome.tabs.onMoved.addListener((number, info) => ChromeListeners.onMoved(number, info))
       chrome.tabs.onRemoved.addListener((number, info) => ChromeListeners.onRemoved(number, info))
-      chrome.tabs.onReplaced.addListener((n1, n2) => ChromeListeners.onReplaced(n1, n2))
+      // chrome.tabs.onReplaced.addListener((n1, n2) => ChromeListeners.onReplaced(n1, n2))
       chrome.tabs.onActivated.addListener((info) => ChromeListeners.onActivated(info))
-      chrome.tabs.onAttached.addListener((number, info) => ChromeListeners.onAttached(number, info))
-      chrome.tabs.onDetached.addListener((number, info) => ChromeListeners.onDetached(number, info))
-      chrome.tabs.onHighlighted.addListener((info) => ChromeListeners.onHighlighted(info))
-      chrome.tabs.onZoomChange.addListener((info) => ChromeListeners.onZoomChange(info))
+      // chrome.tabs.onAttached.addListener((number, info) => ChromeListeners.onAttached(number, info))
+      // chrome.tabs.onDetached.addListener((number, info) => ChromeListeners.onDetached(number, info))
+      // chrome.tabs.onHighlighted.addListener((info) => ChromeListeners.onHighlighted(info))
+      // chrome.tabs.onZoomChange.addListener((info) => ChromeListeners.onZoomChange(info))
     },
     tabsForGroup(groupId: number): chrome.tabs.Tab[] {
       return _.filter(this.tabs, (t: chrome.tabs.Tab) => t.groupId === groupId)
@@ -211,7 +222,7 @@ export const useTabsStore = defineStore('tabs', {
       const tabsetExtensionTab = await ChromeApi.getCurrentTab()
       if (found) {
         console.log("found existing tabset " + found.id + ", replacing...")
-        ts = new Tabset(found.id, tabsetName, _.map(this.tabs, t => new Tab(uid(),t)));
+        ts = new Tabset(found.id, tabsetName, _.map(this.tabs, t => new Tab(uid(), t)));
         this.tabsets.set(found.id, ts)
         TabsetService.saveTabset(ts)
 
@@ -224,7 +235,7 @@ export const useTabsStore = defineStore('tabs', {
               console.log("comparing", t.url, tabsetExtensionTab.url, t.url !== tabsetExtensionTab.url)
               return t.url !== tabsetExtensionTab.url
             }),
-            t => new Tab(uid(),t)));
+          t => new Tab(uid(), t)));
         console.log("got ts", ts)
         this.tabsets.set(useId, ts)
       }

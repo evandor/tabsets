@@ -3,6 +3,7 @@ import TabsetService from "src/services/TabsetService";
 import {useTabsStore} from "stores/tabsStore";
 import _ from "lodash";
 import {Tab, TabStatus} from "src/models/Tab";
+import {uid} from "quasar";
 
 
 class ChromeListeners {
@@ -30,24 +31,32 @@ class ChromeListeners {
     if (!tabsStore.listenersOn) {
       return
     }
-    console.log(`onCreated: tab ${tab.id} created: ${tab.pendingUrl}`)
+    if (tabsStore.isContextMode) {
+      console.log(`onCreated: tab ${tab.id}: >>> ${tab.pendingUrl}`)
+      const maybeTab = tabsStore.tabForUrlInContextTabset(tab.pendingUrl || '')
+      if (maybeTab) {
+        console.log(`onCreated: tab ${tab.id}: updating existing chromeTab.id: ${maybeTab.chromeTab.id} -> ${tab.id}`)
+        maybeTab.chromeTab.id = tab.id
+        return
+      }
 
-    if ('current' === tabsStore.currentTabsetId) {
-      tabsStore.loadTabs('onCreated');
-      return
-    }
-    if (!tabsStore.contextId) {
-      return
-    }
-    // add to current tabset if not there yet
-    const currentTabset: Tabset = tabsStore.tabsets.get(tabsStore.currentTabsetId) || new Tabset("", "", [])
-    const found = _.find(currentTabset.tabs, t => t.chromeTab.url === tab.url)
-    if (!found) {
-      const newTab = new Tab(tab)
-      newTab.status = TabStatus.CREATED
-      currentTabset.tabs.push(newTab)
-      if (!this.inProgress) {
-        tabsStore.loadTabs('onCreated');
+      // if ('current' === tabsStore.currentTabsetId) {
+      //   tabsStore.loadTabs('onCreated');
+      //   return
+      // }
+      // if (!tabsStore.contextId) {
+      //   return
+      // }
+      // add to current tabset if not there yet
+      const currentTabset: Tabset = tabsStore.tabsets.get(tabsStore.currentTabsetId) || new Tabset("", "", [])
+      const found = _.find(currentTabset.tabs, t => t.chromeTab.url === tab.url)
+      if (!found) {
+        const newTab = new Tab(uid(), tab)
+        newTab.status = TabStatus.CREATED
+        currentTabset.tabs.push(newTab)
+        if (!this.inProgress) {
+          tabsStore.loadTabs('onCreated');
+        }
       }
     }
   }
@@ -59,26 +68,51 @@ class ChromeListeners {
       return
     }
     if (tabsStore.contextId && (!info.status || (Object.keys(info).length > 1))) {
-      console.log(`onUpdated: tab ${number} updated: ${JSON.stringify(info)}`)
-      const currentTabset = tabsStore.tabsets.get(tabsStore.currentTabsetId) //|| new Tabset("", "", [])
+      console.log(`onUpdated: tab ${number}: >>> ${JSON.stringify(info)} <<<`)
+      const currentTabset = tabsStore.tabsets.get(tabsStore.currentTabsetId)
       if (currentTabset) {
-        console.log(`onUpdated: tab ${number}: found current tabset`)
-        const index = _.findIndex(currentTabset.tabs, t => t.chromeTab.id === tab.id);
-        //console.log(`onUpdated: tab ${number}: got index ${index}`)
-        //if (index < 0) {
-        const updatedTab = new Tab(tab)
-        if (!tab.title?.startsWith("Tabset")) {
-          console.log(`onUpdated: tab ${number} updated: setting status CREATED`)
-          updatedTab.status = TabStatus.CREATED
+        if (tabsStore.isContextMode) {
+          console.log(`onUpdated: tab ${number}:     context mode`)
+          console.log(`onUpdated: tab ${number}:     found current tabset ${currentTabset.id}`)
+          const maybeTab = tabsStore.tabForUrlInContextTabset(tab.url || '')
+          if (maybeTab) {
+            return
+          }
+          //console.log("currentTabset", currentTabset)
+          const index = _.findIndex(currentTabset.tabs, t => t.chromeTab.id === tab.id);
+          console.log(`onUpdated: tab ${number}:     got index ${index}`)
+          if (index >= 0) {
+            // //TODO reuse old tab id?
+            const updatedTab = new Tab(uid(), tab)
+            if (!tab.title?.startsWith("Tabset")) {
+              console.log(`onUpdated: tab ${number}:     setting status CREATED`)
+              updatedTab.status = TabStatus.CREATED
+            }
+            currentTabset.tabs.splice(index, 1, updatedTab);
+            //console.log(`onUpdated: tab ${number}:     tabs`, currentTabset.tabs)
+            // reload tabs (to be sure?!)
+            if (!this.inProgress) {
+              tabsStore.loadTabs('onUpdated');
+            }
+          } else {
+            if (!tab.title?.startsWith("Tabset")) {
+              const newTab = new Tab(uid(), tab)
+              console.log(`onUpdated: tab ${number}:     setting status CREATED`)
+              newTab.status = TabStatus.CREATED
+              currentTabset.tabs.push(newTab)
+              if (!this.inProgress) {
+                tabsStore.loadTabs('onUpdated');
+              }
+            }
+          }
+        } else if (tabsStore.isLiveMode) {
+          console.log(`onUpdated: tab ${number}:     live mode`)
+
+        } else {
+          // assuming Edit mode
+          console.log(`onUpdated: tab ${number}:     edit mode`)
         }
-        currentTabset.tabs.splice(index, 1, updatedTab);
-        console.log(`onUpdated: tab ${number} updated: tabs`, currentTabset.tabs)
-        // save tabset?
-        // reload tabs (to be sure?!)
-        if (!this.inProgress) {
-          tabsStore.loadTabs('onUpdated');
-        }
-        //}
+
       }
     }
   }
@@ -90,20 +124,30 @@ class ChromeListeners {
       return
     }
 
-    console.log(`onRemoved: tab ${number} removed: ${JSON.stringify(info)}`)
+    console.log(`onRemoved: tab ${number}: >>> ${JSON.stringify(info)}`)
+
+    if (tabsStore.tabIdExistsInContextTabset(number)) {
+      return
+    }
+
     if ("current" === tabsStore.currentTabsetId && !this.inProgress) {
       tabsStore.loadTabs('onRemoved')
       return
     }
-    if (tabsStore.contextId) {
+    if (tabsStore.isContextMode) {
       const currentTabset: Tabset = tabsStore.tabsets.get(tabsStore.currentTabsetId) || new Tabset("", "", [])
       var index = _.findIndex(currentTabset.tabs, t => t.chromeTab.id === number);
-      //console.log("found index", index)
-      const updatedTab = currentTabset.tabs.at(index)
-      if (updatedTab) {
-        updatedTab.status = TabStatus.DELETED
-        console.log(`onRemoved: tab ${number} updated: setting status DELETED`)
-        //currentTabset.tabs.splice(index, 1, updatedTab);
+      if (index >= 0) {
+        console.log(`onRemoved: tab ${number}:     found index ${index}`)
+        const updatedTab = currentTabset.tabs.at(index)
+        if (updatedTab) {
+          updatedTab.status = TabStatus.DELETED
+          console.log(`onRemoved: tab ${number}:     setting status DELETED`)
+          //currentTabset.tabs.splice(index, 1, updatedTab);
+        }
+
+      } else {
+
       }
     }
   }
@@ -120,21 +164,21 @@ class ChromeListeners {
     if (!tabsStore.listenersOn) {
       return
     }
-    console.log(`onActivated: tab ${info.tabId} activated: ${JSON.stringify(info)}`)
-    chrome.tabs.get(info.tabId, tab => {
-      //console.log("got tab", tab)
-      const url = tab.url
-      _.forEach([...tabsStore.tabsets.keys()], key => {
-        const ts = tabsStore.tabsets.get(key) || new Tabset("", "", [])
-        const hits = _.filter(ts.tabs, (t: Tab) => t.chromeTab.url === url)
-        _.forEach(hits, h => {
-          h.activatedCount = 1 + h.activatedCount
-          h.lastActive += new Date().getTime()
-          console.log(`onActivated: tab ${info.tabId} removed:updating hits`, h)
-        })
-        TabsetService.saveTabset(ts)
-      })
-    })
+    console.log(`onActivated: tab ${info.tabId} activated: >>> ${JSON.stringify(info)}`)
+    // chrome.tabs.get(info.tabId, tab => {
+    //   //console.log("got tab", tab)
+    //   const url = tab.url
+    //   _.forEach([...tabsStore.tabsets.keys()], key => {
+    //     const ts = tabsStore.tabsets.get(key) || new Tabset("", "", [])
+    //     const hits = _.filter(ts.tabs, (t: Tab) => t.chromeTab.url === url)
+    //     _.forEach(hits, h => {
+    //       h.activatedCount = 1 + h.activatedCount
+    //       h.lastActive += new Date().getTime()
+    //       console.log(`onActivated: tab ${info.tabId} removed:updating hits`, h)
+    //     })
+    //     TabsetService.saveTabset(ts)
+    //   })
+    // })
     //new TabsetApi(this.localStorage).saveTabset(this.currentTabset)
   }
 

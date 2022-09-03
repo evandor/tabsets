@@ -1,11 +1,20 @@
 <template>
 
+  <q-banner rounded class="bg-amber-1 text-black q-mb-lg" v-if="tabsStore.tabsets.size === 2">
+    <div class="text-body2" >
+      The current tabset is your <b>'context'</b> - this means that if you <b>open a new tab</b> for example, this will be <b>tracked</b>.<br>
+      You can check all your changes and add them to the context so that it's going to be easy to restore this tabset later if you wish.
+      <br><br>
+      <b>Click on</b> <q-icon color="primary" name="center_focus_strong" /> to <b>unset</b> the context so that the <b>tracking will be stopped</b>.
+    </div>
+  </q-banner>
+
   <q-toolbar class="text-primary">
     <q-btn flat round dense icon="tabs"/>
 
     <q-toolbar-title>
       <div class="row justify-start items-baseline">
-        <div class="col-1" style="width:80px" v-text="'Tabset \'' + tabsetname +  '\''"></div>
+        <div class="col-1" style="width:80px" v-text="'Context \'' + tabsetname +  '\' active'"></div>
         <div class="col" style="color:#000066">
 
         </div>
@@ -30,7 +39,7 @@
   </q-toolbar>
 
   <q-list class="rounded-borders">
-{{tabsStore.getCurrentTabs}}
+
     <!-- pending tabs -->
     <q-expansion-item
       v-if="tabsStore.pendingTabs.length > 0"
@@ -179,7 +188,7 @@ const $q = useQuasar()
 function unpinnedNoGroup() {
   return _.filter(
     _.map(tabsStore.getCurrentTabs, t => t),
-    (t: Tab) => !t.chromeTab.pinned && t.chromeTab.groupId === -1 && (t.status === TabStatus.DEFAULT || !t.status))
+    (t: Tab) => !t.chromeTab?.pinned && t.chromeTab?.groupId === -1 && (t.status === TabStatus.DEFAULT || !t.status))
 }
 
 function tabsForGroup(groupId: number) {

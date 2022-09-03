@@ -35,42 +35,63 @@
 
     <q-drawer show-if-above v-model="leftDrawerOpen" side="left" bordered>
       <div class="q-pa-md q-gutter-sm">
-        <div class="text-body1">Actions</div>
-        <div>
-          <q-btn color="amber-1" text-color="black" label="New Tabset..." @click="showNewTabsetDialog = true"
-                 class="full-width"/>
-        </div>
-        <div>
-          <q-btn color="amber-1" text-color="black" label="Close all open tabs..." @click="showCloseTabsDialog = true"
-                 class="full-width"/>
-        </div>
 
-        <div class="text-body1 q-mt-lg" v-if="tabsStore.contextId"><b>Current Context</b></div>
+        <div class="text-body1 q-mt-lg"><b>Current Context</b></div>
         <div v-for="tabset in tabsStore.tabsets.values()">
           <q-btn v-if="tabsStore.contextId === tabset.id"
                  text-color="black"
+                 color="white"
                  :label="tabsStore.getNameForContext + ' ('+tabset.tabs.length+')'"
                  @click="selectTabset(tabsStore.contextId)"
                  class="full-width"
                  :style="tabsStore.contextId === tabsStore.currentTabsetId ? 'border:1px solid blue' : 'border:1px solid #bfbfbf'"/>
         </div>
+        <div v-if="!tabsStore.contextId">
+          <q-btn
+            text-color="black"
+            label="no context active"
+            disable
+            class="full-width"
+            style="border:1px solid #bfbfbf"/>
+        </div>
 
-        <div class="text-body1 q-mt-lg" v-if="tabsStore.contextId ? tabsStore.tabsets.size > 2 : tabsStore.tabsets.size > 1"
-             v-text="tabsStore.contextId ? 'Other Tabsets' : 'Tabsets'"/>
+        <div class="text-body1 q-mt-lg"><b>Actions</b></div>
+        <div>
+          <q-btn color="amber-1" text-color="black" label="New Tabset from open tabs" @click="showNewTabsetDialog = true"
+                 class="full-width"/>
+        </div>
+        <div>
+          <q-btn color="amber-1" text-color="black" label="Close all open tabs..."
+                 :disable="tabsStore.tabs.length < 2"
+                 @click="showCloseTabsDialog = true"
+                 class="full-width"/>
+        </div>
+
+        <div class="q-mt-lg" v-if="tabsStore.contextId ? tabsStore.tabsets.size > 2 : tabsStore.tabsets.size > 1">
+            <span class="text-body1" v-if="tabsStore.contextId">
+              <b>Other Tabsets</b>
+            </span>
+            <span class="text-body1" v-else>
+              <b>Tabsets</b>
+            </span>
+        </div>
+
         <div v-for="tabset in tabsStore.tabsets.values()">
           <q-btn v-if="tabset.name !== 'current' && tabset.id !== tabsStore.contextId"
                  text-color="black"
+                 color="white"
                  :label="tabset.name + ' ('+tabset.tabs.length+', ' + nonDefaultCount(tabset.tabs) + ')'"
                  @click="selectTabset(tabset.id)"
                  class="full-width"
                  :style="tabset.id === tabsStore.currentTabsetId ? 'border:1px solid blue' : 'border:1px solid #bfbfbf'"/>
         </div>
 
-        <div class="text-body1 q-mt-lg">Current Browser Tabs</div>
+        <div class="text-body1 q-mt-lg"><b>Current Browser Tabs</b></div>
         <div v-for="tabset in tabsStore.tabsets.values()">
           <q-btn
             v-if="tabset.name === 'current'"
             text-color="black"
+            color="white"
             :label="'Browser ('+tabset.tabs.length+')'"
             @click="selectTabset(tabset.id)"
             class="full-width"
