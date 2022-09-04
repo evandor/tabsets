@@ -36,7 +36,7 @@
     <q-drawer show-if-above v-model="leftDrawerOpen" side="left" bordered>
       <div class="q-pa-md q-gutter-sm">
 
-        <div class="text-body1 q-mt-lg"><b>Current Context</b></div>
+        <div class="text-body1 q-mt-lg"><b>Active Tabset</b></div>
         <div v-for="tabset in tabsStore.tabsets.values()">
           <q-btn v-if="tabsStore.contextId === tabset.id"
                  text-color="black"
@@ -49,22 +49,15 @@
         <div v-if="!tabsStore.contextId">
           <q-btn
             text-color="black"
-            label="no context active"
+            label="no tabset selected"
             disable
             class="full-width"
-            style="border:1px solid #bfbfbf"/>
-        </div>
+            style="border:1px solid #bfbfbf">
 
-        <div class="text-body1 q-mt-lg"><b>Actions</b></div>
-        <div>
-          <q-btn color="amber-1" text-color="black" label="New Tabset from open tabs" @click="showNewTabsetDialog = true"
-                 class="full-width"/>
-        </div>
-        <div>
-          <q-btn color="amber-1" text-color="black" label="Close all open tabs..."
-                 :disable="tabsStore.tabs.length < 2"
-                 @click="showCloseTabsDialog = true"
-                 class="full-width"/>
+          </q-btn>
+          <q-tooltip>if you define one of your tabsets to be your 'context',<br>
+            all subsequent changes of your tabs will be tracked.
+          </q-tooltip>
         </div>
 
         <div class="q-mt-lg" v-if="tabsStore.contextId ? tabsStore.tabsets.size > 2 : tabsStore.tabsets.size > 1">
@@ -127,29 +120,11 @@
       </q-card>
     </q-dialog>
 
-    <q-dialog v-model="showCloseTabsDialog">
-      <q-card style="min-width: 350px">
-        <q-card-section>
-          <div class="text-h6">Closing all Tabs</div>
-        </q-card-section>
-        <q-card-section>
-          <div class="text-body1">Clicking on close will remove all currently open tabs.</div>
-          <div class="text-body1">That is, apart from this extension.</div>
-        </q-card-section>
-
-        <q-card-actions align="right" class="text-primary">
-          <q-btn flat label="Cancel" v-close-popup/>
-          <q-btn flat label="Close all tabs" v-close-popup @click="closeAllTabs()"/>
-        </q-card-actions>
-      </q-card>
-    </q-dialog>
-
   </q-layout>
 </template>
 
 <script setup lang="ts">
 import {ref} from 'vue';
-import Tabsets, {TabsetProps} from 'components/Tabsets.vue'
 import {useQuasar} from "quasar";
 import {TabsetApi} from "src/services/TabsetApi";
 import {useTabsStore} from "stores/tabsStore";
@@ -157,14 +132,14 @@ import {useTabGroupsStore} from "stores/tabGroupsStore";
 import {useRouter} from "vue-router";
 import tabsetService from "src/services/TabsetService";
 import TabsetService from "src/services/TabsetService";
-import {Tabset} from "src/models/Tabset";
 import _ from "lodash"
+import {useMeta} from 'quasar'
+import {Tab, TabStatus} from "src/models/Tab";
 
 const router = useRouter()
 const tabsStore = useTabsStore()
 const tabGroupsStore = useTabGroupsStore()
 
-const contextname = ref('default')
 const newTabsetName = ref('')
 const search = ref('')
 const showNewTabsetDialog = ref(false)
@@ -173,13 +148,8 @@ const clearTabsets = ref(false)
 
 const localStorage = useQuasar().localStorage
 const tabsetApi = new TabsetApi(localStorage)
-// const appVersion = process.env.PUBLIC_ENV_PACKAGE_VERSION
 const appVersion = import.meta.env.PACKAGE_VERSION
 const leftDrawerOpen = ref(true)
-
-
-import {useMeta} from 'quasar'
-import {Tab, TabStatus} from "src/models/Tab";
 
 useMeta(() => {
   return {
@@ -206,7 +176,6 @@ function tabsForGroup(groupId: number): chrome.tabs.Tab[] {
   return tabsStore.tabsForGroup(groupId)
 }
 
-
 function tabsets(): object[] {
   const ts = tabsetApi.getTabsetInfo()
   return ts
@@ -229,8 +198,6 @@ const selectTabset = (tabsetId: string) => {
   TabsetService.selectTabset(tabsetId)
   router.push("/tabset")
 }
-
-const closeAllTabs = () => TabsetService.closeAllTabs()
 
 const nonDefaultCount = (tabs: Tab[]) => _.filter(tabs, t => t.status !== TabStatus.DEFAULT).length
 

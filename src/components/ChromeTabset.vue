@@ -53,7 +53,7 @@
       </template>
       <q-card>
         <q-card-section>
-          <Tabcards :tabs="tabsStore.pinnedTabs"/>
+          <TabcardsSmall :tabs="tabsStore.pinnedTabs"/>
         </q-card-section>
       </q-card>
     </q-expansion-item>
@@ -83,7 +83,7 @@
         </template>
         <q-card>
           <q-card-section>
-            <Tabcards :tabs="tabsForGroup( group.id)"/>
+            <TabcardsSmall :tabs="tabsForGroup( group.id)"/>
           </q-card-section>
         </q-card>
       </q-expansion-item>
@@ -112,14 +112,14 @@
       </template>
       <q-card>
         <q-card-section>
-          <Tabcards :tabs="unpinnedNoGroup()"/>
+          <TabcardsSmall :tabs="unpinnedNoGroup()"/>
         </q-card-section>
       </q-card>
     </q-expansion-item>
     <div v-else>
       <q-card>
         <q-card-section>
-          <Tabcards :tabs="unpinnedNoGroup()"/>
+          <TabcardsSmall :tabs="unpinnedNoGroup()"/>
         </q-card-section>
       </q-card>
     </div>
@@ -131,7 +131,7 @@
 import {ref, watchEffect} from 'vue'
 import {useRoute, useRouter} from "vue-router";
 import {useQuasar} from "quasar";
-import Tabcards from "src/components/layouts/Tabcards.vue";
+import TabcardsSmall from "src/components/layouts/TabcardsSmall.vue";
 import _ from "lodash"
 import {useTabsStore} from "stores/tabsStore";
 import {useTabGroupsStore} from "stores/tabGroupsStore";

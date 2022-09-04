@@ -157,11 +157,6 @@ class TabsetService {
     tabsStore.currentTabsetId = tabsetId;
   }
 
-  closeAllTabs() {
-    // all but 'self'
-    ChromeApi.closeAllTabs()
-  }
-
   removeClosedTabs() {
     const tabsStore = useTabsStore()
     // console.log("removing closed tabs", tabsStore.pendingTabs)
