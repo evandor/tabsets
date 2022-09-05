@@ -118,8 +118,8 @@ class TabsetService {
    * @param name the tabset's name (TODO: validation)
    * @param tabs an array of Chrome tabs.
    */
-  saveOrReplace(name: string, tabs: chrome.tabs.Tab[]) {
-    useTabsStore().saveOrCreateTabset(name)
+  saveOrReplace(name: string, tabs: chrome.tabs.Tab[]):Promise<boolean> {
+    return useTabsStore().saveOrCreateTabset(name)
   }
 
   togglePin(tabId: number) {
@@ -186,7 +186,7 @@ class TabsetService {
       tabsStore.pendingTabs,
       t => {
         if (t.chromeTab?.id) {
-          Navigation.closeTab(t.chromeTab)
+         // Navigation.closeTab(t.chromeTab)
         }
       })
   }

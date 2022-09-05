@@ -120,7 +120,8 @@ export const useTabsStore = defineStore('tabs', {
     tabIdExistsInContextTabset: (state) => {
       const tabs: Tab[] = state.tabsets.get(state.contextId)?.tabs || []
       return (tabId: number) => _.find(tabs, t => t.chromeTab.id === tabId)
-    }
+    },
+    tabsetsWithoutCurrent: (state) => _.filter([...state.tabsets.values()], ts => ts.id !== 'current')
   },
 
   actions: {
@@ -176,7 +177,7 @@ export const useTabsStore = defineStore('tabs', {
       chrome.tabs.onUpdated.addListener((number, info, tab) => ChromeListeners.onUpdated(number, info, tab))
       // chrome.tabs.onMoved.addListener((number, info) => ChromeListeners.onMoved(number, info))
       chrome.tabs.onRemoved.addListener((number, info) => ChromeListeners.onRemoved(number, info))
-      // chrome.tabs.onReplaced.addListener((n1, n2) => ChromeListeners.onReplaced(n1, n2))
+      chrome.tabs.onReplaced.addListener((n1, n2) => ChromeListeners.onReplaced(n1, n2))
       chrome.tabs.onActivated.addListener((info) => ChromeListeners.onActivated(info))
       // chrome.tabs.onAttached.addListener((number, info) => ChromeListeners.onAttached(number, info))
       // chrome.tabs.onDetached.addListener((number, info) => ChromeListeners.onDetached(number, info))
@@ -215,7 +216,7 @@ export const useTabsStore = defineStore('tabs', {
       TabsetService.saveTabset(currentTabset)
     },
 
-    async saveOrCreateTabset(tabsetName: string) {
+    async saveOrCreateTabset(tabsetName: string): Promise<boolean> {
       console.log("--- saveOrCreateTabset start -------------")
       const found = _.find([...this.tabsets.values()], ts => ts.name === tabsetName)
       let ts: Tabset = null as unknown as Tabset
@@ -244,6 +245,7 @@ export const useTabsStore = defineStore('tabs', {
       await TabsetService.saveTabset(ts)
       await this.localStorage.set("tabsets.context", this.contextId)
       console.log("--- saveOrCreateTabset end -------------")
+      return found !== undefined;
     },
 
     deleteTabset(tabsetId: string) {

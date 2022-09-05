@@ -1,29 +1,31 @@
 <template>
   <div class="row items-start">
-    <div class="col-xs-12 col-sm-4 col-md-3 col-lg-2 q-pa-none" v-for="tab in props.tabs">
-      <q-card class="my-card" flat bordered
+    <div class="col-xs-12 col-sm-4 col-md-3 col-lg-2 q-pa-xs" v-for="tab in props.tabs"
+         style="border-bottom: 2px solid grey;">
+      <q-card class="my-card" flat bordered square
               :style="cardStyle(tab)">
-        <q-card-section horizontal>
-          <q-card-section class="q-pt-xs" style="width:100%;">
-            <div class="row items-baseline">
-              <div class="col-2">
-                <q-img
-                  class="rounded-borders"
-                  width="20px"
-                  height="20px"
-                  :src="tab.chromeTab?.favIconUrl">
-                </q-img>
-              </div>
-              <div class="col-10 text-body2 ellipsis">
-                {{ maxChar(20, tab.chromeTab?.title) }}
-              </div>
-              <q-tooltip>
-                {{ getHost(tab.chromeTab.url, true) }}
-              </q-tooltip>
-
+        <q-card-section class="q-pt-xs cursor-pointer" style="width:100%;">
+          <div class="row items-baseline">
+            <div class="col-2">
+              <q-img
+                class="rounded-borders"
+                width="20px"
+                height="20px"
+                :src="tab.chromeTab?.favIconUrl">
+              </q-img>
             </div>
+            <div class="col-9 text-body2 ellipsis">
+              {{ maxChar(20, tab.chromeTab?.title) }}
+            </div>
+            <div class="col-1">
+              <q-icon name="close" @click="closeTab(tab)"/>
+            </div>
+            <q-tooltip>
+              {{ getHost(tab.chromeTab.url, true) }}
+            </q-tooltip>
 
-          </q-card-section>
+          </div>
+
 
         </q-card-section>
 
@@ -98,7 +100,7 @@ function cardStyle(tab: Tab) {
     background = "background: radial-gradient(circle, #FFFFFF 0%, #FFECB3 100%)"
   }
   // style=""
-  return `height: ${height};max-height:${height}; min-height: ${height};${borderColor};${background}`
+  return `height: ${height};max-height:${height}; min-height: ${height};border:1px solid grey;border-bottom: 0px;position:relative; top:5px;${background}`
 }
 
 function isOpen(tab: Tab): boolean {

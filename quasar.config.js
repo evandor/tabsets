@@ -114,7 +114,8 @@ module.exports = configure(function (/* ctx */) {
       plugins: [
         'LocalStorage',
         'Dialog',
-        'Meta'
+        'Meta',
+        'Notify'
       ]
     },
 

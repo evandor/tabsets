@@ -1,41 +1,79 @@
 <template>
 
-  <q-banner rounded class="bg-amber-1 text-black q-mb-lg" v-if="tabsStore.tabsets.size === 2">
-    <div class="text-body2" >
-      The current tabset is your <b>'context'</b> - this means that if you <b>open a new tab</b> for example, this will be <b>tracked</b>.<br>
-      You can check all your changes and add them to the context so that it's going to be easy to restore this tabset later if you wish.
-      <br><br>
-      <b>Click on</b> <q-icon color="primary" name="center_focus_strong" /> to <b>unset</b> the context so that the <b>tracking will be stopped</b>.
-    </div>
-  </q-banner>
+<!--  <q-banner rounded class="bg-amber-1 text-black q-mb-lg" v-if="tabsStore.tabsets.size === 2">-->
+<!--    <div class="text-body2" >-->
+<!--      The current tabset is your <b>'context'</b> - this means that if you <b>open a new tab</b> for example, this will be <b>tracked</b>.<br>-->
+<!--      You can check all your changes and add them to the context so that it's going to be easy to restore this tabset later if you wish.-->
+<!--      <br><br>-->
+<!--      <b>Click on</b> <q-icon color="primary" name="center_focus_strong" /> to <b>unset</b> the context so that the <b>tracking will be stopped</b>.-->
+<!--    </div>-->
+<!--  </q-banner>-->
+
+<!--  <q-toolbar class="text-primary">-->
+
+<!--    <q-toolbar-title>-->
+<!--      <div class="row justify-start items-baseline">-->
+<!--        <div class="col-1" style="width:80px" v-text="'Context \'' + tabsetname +  '\' active'"></div>-->
+<!--        <div class="col" style="color:#000066">-->
+
+<!--        </div>-->
+<!--      </div>-->
+<!--    </q-toolbar-title>-->
+
+<!--    <q-btn flat dense icon="save_as" label="Save or rename..." @click="saveDialog">-->
+<!--      <q-tooltip>Save tabset as...</q-tooltip>-->
+<!--    </q-btn>-->
+
+<!--    <q-btn flat dense icon="o_center_focus_strong" label="Unfocus" @click="unsetContext()">-->
+<!--      <q-tooltip>Unset Context</q-tooltip>-->
+<!--    </q-btn>-->
+
+<!--    <q-btn flat dense icon="restore_page" label="Restore Tabset..."-->
+<!--           color="green"-->
+<!--           @click="restoreDialog" v-if="tabsStore.currentTabsetId !== 'current'">-->
+<!--      <q-tooltip>Replace all current tabs with this tabset</q-tooltip>-->
+<!--    </q-btn>-->
+<!--    <q-btn flat dense icon="delete" label="Delete Tabset..."-->
+<!--           color="red"-->
+<!--           @click="deleteDialog" v-if="tabsStore.currentTabsetId !== 'current'">-->
+<!--      <q-tooltip>Delete this tabset</q-tooltip>-->
+<!--    </q-btn>-->
+<!--  </q-toolbar>-->
 
   <q-toolbar class="text-primary">
-    <q-btn flat round dense icon="tabs"/>
-
-    <q-toolbar-title>
-      <div class="row justify-start items-baseline">
-        <div class="col-1" style="width:80px" v-text="'Context \'' + tabsetname +  '\' active'"></div>
-        <div class="col" style="color:#000066">
-
-        </div>
+    <div class="row fit">
+      <div class="col-xs-12 col-md-3">
+        <q-toolbar-title>
+          <div class="row justify-start items-baseline">
+            <div class="col-1" style="width:80px"
+                 v-text="'Active Tabset \'' + tabsStore.currentTabsetName +  '\''"></div>
+          </div>
+        </q-toolbar-title>
       </div>
-    </q-toolbar-title>
-    <q-btn flat round dense icon="save_as" @click="saveDialog">
-      <q-tooltip>Save tabset as...</q-tooltip>
-    </q-btn>
-    <q-btn flat round dense icon="o_center_focus_strong" @click="unsetContext()">
-      <q-tooltip>Unset Context</q-tooltip>
-    </q-btn>
-    <q-btn flat round dense icon="restore_page"
-           color="green"
-           @click="restoreDialog" v-if="tabsStore.currentTabsetId !== 'current'">
-      <q-tooltip>Replace all current tabs with this tabset</q-tooltip>
-    </q-btn>
-    <q-btn flat round dense icon="delete"
-           color="red"
-           @click="deleteDialog" v-if="tabsStore.currentTabsetId !== 'current'">
-      <q-tooltip>Delete this tabset</q-tooltip>
-    </q-btn>
+      <div class="col-xs-12 col-md-9 text-right">
+        <q-btn flat dense icon="save_as" label="Save or Rename..."
+               class="q-mr-md"
+               @click="saveDialog">
+          <q-tooltip>Save tabset as...</q-tooltip>
+        </q-btn>
+        <q-btn flat dense icon="o_center_focus_strong" label="Un-Focus"
+               class="q-mr-md"
+               @click="unsetContext()">
+          <q-tooltip>Stop tracking in this tabset</q-tooltip>
+        </q-btn>
+        <q-btn flat dense icon="restore_page"
+               color="green" label="Restore Tabset..."
+               class="q-mr-md"
+               @click="restoreDialog">
+          <q-tooltip>Replace your current tabs with all the tabs from this tabset</q-tooltip>
+        </q-btn>
+        <q-btn flat dense icon="delete"
+               color="red" label="Delete Tabset..."
+               @click="deleteDialog">
+          <q-tooltip>Delete this tabset</q-tooltip>
+        </q-btn>
+      </div>
+    </div>
   </q-toolbar>
 
   <q-list class="rounded-borders">

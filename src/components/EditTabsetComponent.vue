@@ -2,49 +2,60 @@
 
 
   <q-banner rounded class="bg-amber-1 text-black q-mb-lg" v-if="tabsStore.tabsets.size === 2">
-    <div class="text-body2" >
+    <div class="text-body2">
       This is a tabset, but it is not your active context. No changes will be tracked here.
       <br><br>
-      <b>Click on</b> <q-icon color="green" name="restore_page" /> to <b>restore all the tabs of this tabset in your browser</b>. This will
+      <b>Click on</b>
+      <q-icon color="green" name="restore_page"/>
+      to <b>restore all the tabs of this tabset in your browser</b>. This will
       close all open tabs and replace them with the tabs from this tabset.
     </div>
   </q-banner>
 
   <q-banner rounded class="bg-amber-1 text-black" v-if="tabsStore.getCurrentTabs.length === 0">
-    <div class="text-body2" >
-      Currently, your <b>browser tabs</b> are <b>not tracked</b> by this extension and you do not have any tabs associated with
-      this tabset.<br> To start tracking, you can set this tabset as your 'context' by clicking on <q-icon color="blue" name="center_focus_strong" />
+    <div class="text-body2">
+      Currently, your <b>browser tabs</b> are <b>not tracked</b> by this extension and you do not have any tabs
+      associated with
+      this tabset.<br> To start tracking, you can set this tabset as your 'context' by clicking on
+      <q-icon color="blue" name="center_focus_strong"/>
       and <b>start opening new tabs</b>.
     </div>
   </q-banner>
 
   <q-toolbar class="text-primary">
-    <q-icon name="tabs"/>
-
-    <q-toolbar-title>
-      <div class="row justify-start items-baseline">
-        <div class="col-1" style="width:80px" v-text="'Editing Tabset \'' + tabsStore.currentTabsetName +  '\''"></div>
-        <div class="col" style="color:#000066">
-
-        </div>
+    <div class="row fit">
+      <div class="col-xs-12 col-md-3">
+        <q-toolbar-title>
+          <div class="row justify-start items-baseline">
+            <div class="col-1" style="width:80px"
+                 v-text="'Editing Tabset \'' + tabsStore.currentTabsetName +  '\''"></div>
+          </div>
+        </q-toolbar-title>
       </div>
-    </q-toolbar-title>
-    <q-btn flat round dense icon="save_as" @click="saveDialog">
-      <q-tooltip>Save tabset as...</q-tooltip>
-    </q-btn>
-    <q-btn flat round dense icon="center_focus_strong" @click="setAsContext()">
-      <q-tooltip>Set as Context</q-tooltip>
-    </q-btn>
-    <q-btn flat round dense icon="restore_page"
-           color="green"
-           @click="restoreDialog">
-      <q-tooltip>Replace your current tabs with all the tabs from this tabset</q-tooltip>
-    </q-btn>
-    <q-btn flat round dense icon="delete"
-           color="red"
-           @click="deleteDialog">
-      <q-tooltip>Delete this tabset</q-tooltip>
-    </q-btn>
+      <div class="col-xs-12 col-md-9 text-right">
+        <q-btn flat dense icon="save_as" label="Save or Rename..."
+               class="q-mr-md"
+               @click="saveDialog">
+          <q-tooltip>Save tabset as...</q-tooltip>
+        </q-btn>
+        <q-btn flat dense icon="center_focus_strong" label="Focus"
+               class="q-mr-md"
+               @click="setAsContext()">
+          <q-tooltip>Set as Context</q-tooltip>
+        </q-btn>
+        <q-btn flat dense icon="restore_page"
+               color="green" label="Restore Tabset..."
+               class="q-mr-md"
+               @click="restoreDialog">
+          <q-tooltip>Replace your current tabs with all the tabs from this tabset</q-tooltip>
+        </q-btn>
+        <q-btn flat dense icon="delete"
+               color="red" label="Delete Tabset..."
+               @click="deleteDialog">
+          <q-tooltip>Delete this tabset</q-tooltip>
+        </q-btn>
+      </div>
+    </div>
   </q-toolbar>
 
   <q-list class="rounded-borders">
@@ -71,8 +82,10 @@
       </template>
       <!--        <q-card style="background: radial-gradient(circle, #35a2ff 0%, #014a88 100%)">-->
       <div>
-        <span class="cursor-pointer" @click="removeClosedTabs()" v-if="_.filter(tabsStore.pendingTabs, t => t.status === TabStatus.DELETED).length > 1">[remove all closed tabs]</span>
-        <span class="cursor-pointer" @click="saveAllPendingTabs()" v-if="tabsStore.pendingTabs.length > 1 ">[save all]</span>
+        <span class="cursor-pointer" @click="removeClosedTabs()"
+              v-if="_.filter(tabsStore.pendingTabs, t => t.status === TabStatus.DELETED).length > 1">[remove all closed tabs]</span>
+        <span class="cursor-pointer" @click="saveAllPendingTabs()"
+              v-if="tabsStore.pendingTabs.length > 1 ">[save all]</span>
       </div>
       <q-card>
         <q-card-section>
