@@ -24,7 +24,7 @@
 
   <q-toolbar class="text-primary">
     <div class="row fit">
-      <div class="col-xs-12 col-md-3">
+      <div class="col-xs-12 col-md-5">
         <q-toolbar-title>
           <div class="row justify-start items-baseline">
             <div class="col-1" style="width:80px"
@@ -32,25 +32,25 @@
           </div>
         </q-toolbar-title>
       </div>
-      <div class="col-xs-12 col-md-9 text-right">
-        <q-btn flat dense icon="save_as" label="Save or Rename..."
+      <div class="col-xs-12 col-md-7 text-right">
+        <q-btn flat dense icon="save_as" :label="$q.screen.gt.sm ? 'Save or Rename...' : ''"
                class="q-mr-md"
                @click="saveDialog">
           <q-tooltip>Save tabset as...</q-tooltip>
         </q-btn>
-        <q-btn flat dense icon="center_focus_strong" label="Focus"
+        <q-btn flat dense icon="center_focus_strong" :label="$q.screen.gt.sm ? 'Focus' : ''"
                class="q-mr-md"
                @click="setAsContext()">
           <q-tooltip>Set as Context</q-tooltip>
         </q-btn>
         <q-btn flat dense icon="restore_page"
-               color="green" label="Restore Tabset..."
+               color="green" :label="$q.screen.gt.sm ? 'Restore Tabset...' : ''"
                class="q-mr-md"
                @click="restoreDialog">
           <q-tooltip>Replace your current tabs with all the tabs from this tabset</q-tooltip>
         </q-btn>
         <q-btn flat dense icon="delete"
-               color="red" label="Delete Tabset..."
+               color="red" :label="$q.screen.gt.sm ? 'Delete Tabset...' : ''"
                @click="deleteDialog">
           <q-tooltip>Delete this tabset</q-tooltip>
         </q-btn>

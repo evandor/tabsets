@@ -1,5 +1,5 @@
 <template>
-  <q-layout view="hHh lpR fFf">
+  <q-layout view="hHh lpR lFf">
     <q-header elevated>
       <q-toolbar>
 
@@ -46,7 +46,8 @@
           default-opened
         >
 
-          <q-item clickable v-ripple v-for="tabset in tabsStore.tabsetsWithoutCurrent" @click="selectTabset(tabset.id)">
+          <q-item clickable v-ripple v-for="tabset in tabsStore.tabsetsWithoutCurrent" @click="selectTabset(tabset.id)"
+                  :style="tabset.id === tabsStore.currentTabsetId ? 'background-color:#efefef' : 'border:0px solid #bfbfbf'">
             <q-item-section>
               <q-item-label overline :class="tabsStore.contextId === tabset.id ? 'text-blue-9' : ''"
                             v-text="tabset.tabs.length > 1 ? tabset.name + ' (' + tabset.tabs.length + ' tabs)' : tabset.name + ' (' + tabset.tabs.length + ' tab)'"/>
@@ -65,32 +66,15 @@
 
     </q-drawer>
 
-    <q-page-container>
-      <router-view/>
+    <q-page-container >
+      <router-view />
     </q-page-container>
 
-    <!--    <q-dialog v-model="showNewTabsetDialog">-->
-    <!--      <q-card style="min-width: 350px">-->
-    <!--        <q-card-section>-->
-    <!--          <div class="text-h6">Create a new tabset...</div>-->
-    <!--        </q-card-section>-->
-    <!--        <q-card-section>-->
-    <!--          <div class="text-body">You can keep the currently open tabs or close them all.</div>-->
-    <!--        </q-card-section>-->
-
-    <!--        <q-card-section class="q-pt-none">-->
-    <!--          <div class="text-body">New Tabset's name:</div>-->
-    <!--          <q-input dense v-model="newTabsetName" autofocus @keyup.enter="prompt = false"/>-->
-    <!--          <q-checkbox v-model="clearTabsets" label="close current Tabs"/>-->
-    <!--        </q-card-section>-->
-
-    <!--        <q-card-actions align="right" class="text-primary">-->
-    <!--          <q-btn flat label="Cancel" v-close-popup/>-->
-    <!--          <q-btn flat label="Create new Tabset" :disable="newTabsetName.trim().length === 0" v-close-popup-->
-    <!--                 @click="createNewTabset()"/>-->
-    <!--        </q-card-actions>-->
-    <!--      </q-card>-->
-    <!--    </q-dialog>-->
+    <q-footer class="bg-white text-black">
+      <div class="q-ma-sm">
+        {{notificationsStore.info}}
+      </div>
+    </q-footer>
 
   </q-layout>
 </template>
@@ -107,12 +91,16 @@ import TabsetService from "src/services/TabsetService";
 import _ from "lodash"
 import {useMeta} from 'quasar'
 import {Tab, TabStatus} from "src/models/Tab";
+import {useNotificationsStore} from "stores/notificationsStore";
 
 const router = useRouter()
 const tabsStore = useTabsStore()
 const tabGroupsStore = useTabGroupsStore()
+const notificationsStore = useNotificationsStore()
+
 
 const newTabsetName = ref('')
+const caption = ref('yyy')
 const search = ref('')
 const showNewTabsetDialog = ref(false)
 const showCloseTabsDialog = ref(false)
@@ -172,5 +160,6 @@ const selectTabset = (tabsetId: string) => {
 }
 
 const nonDefaultCount = (tabs: Tab[]) => _.filter(tabs, t => t.status !== TabStatus.DEFAULT).length
+const captionMessage = (msg: string) => console.log("msg", msg)
 
 </script>

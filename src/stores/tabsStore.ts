@@ -181,7 +181,7 @@ export const useTabsStore = defineStore('tabs', {
       chrome.tabs.onActivated.addListener((info) => ChromeListeners.onActivated(info))
       // chrome.tabs.onAttached.addListener((number, info) => ChromeListeners.onAttached(number, info))
       // chrome.tabs.onDetached.addListener((number, info) => ChromeListeners.onDetached(number, info))
-      // chrome.tabs.onHighlighted.addListener((info) => ChromeListeners.onHighlighted(info))
+      chrome.tabs.onHighlighted.addListener((info) => ChromeListeners.onHighlighted(info))
       // chrome.tabs.onZoomChange.addListener((info) => ChromeListeners.onZoomChange(info))
     },
     tabsForGroup(groupId: number): chrome.tabs.Tab[] {
@@ -233,7 +233,7 @@ export const useTabsStore = defineStore('tabs', {
         ts = new Tabset(useId, tabsetName, _.map(
           _.filter(
             this.tabs, t => {
-              console.log("comparing", t.url, tabsetExtensionTab.url, t.url !== tabsetExtensionTab.url)
+              //console.log("comparing", t.url, tabsetExtensionTab.url, t.url !== tabsetExtensionTab.url)
               return t.url !== tabsetExtensionTab.url
             }),
           t => new Tab(uid(), t)));

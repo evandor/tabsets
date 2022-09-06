@@ -42,7 +42,7 @@
 
   <q-toolbar class="text-primary">
     <div class="row fit">
-      <div class="col-xs-12 col-md-3">
+      <div class="col-xs-12 col-md-5">
         <q-toolbar-title>
           <div class="row justify-start items-baseline">
             <div class="col-1" style="width:80px"
@@ -50,25 +50,25 @@
           </div>
         </q-toolbar-title>
       </div>
-      <div class="col-xs-12 col-md-9 text-right">
-        <q-btn flat dense icon="save_as" label="Save or Rename..."
+      <div class="col-xs-12 col-md-7 text-right">
+        <q-btn flat dense icon="save_as" :label="$q.screen.gt.sm ? 'Save or Rename...' : ''"
                class="q-mr-md"
                @click="saveDialog">
           <q-tooltip>Save tabset as...</q-tooltip>
         </q-btn>
-        <q-btn flat dense icon="o_center_focus_strong" label="Un-Focus"
+        <q-btn flat dense icon="o_center_focus_strong" :label="$q.screen.gt.sm ? 'Un-Focus' : ''"
                class="q-mr-md"
                @click="unsetContext()">
           <q-tooltip>Stop tracking in this tabset</q-tooltip>
         </q-btn>
         <q-btn flat dense icon="restore_page"
-               color="green" label="Restore Tabset..."
+               color="green" :label="$q.screen.gt.sm ? 'Restore Tabset...' : ''"
                class="q-mr-md"
                @click="restoreDialog">
           <q-tooltip>Replace your current tabs with all the tabs from this tabset</q-tooltip>
         </q-btn>
         <q-btn flat dense icon="delete"
-               color="red" label="Delete Tabset..."
+               color="red" :label="$q.screen.gt.sm ? 'Delete Tabset...' : ''"
                @click="deleteDialog">
           <q-tooltip>Delete this tabset</q-tooltip>
         </q-btn>
@@ -160,7 +160,7 @@
         </template>
         <q-card>
           <q-card-section>
-            <Tabcards :tabs="tabsForGroup( group.id)"/>
+            <Tabcards :tabs="tabsForGroup( group.id)"  v-on:sendCaption="setGroupedTabsCaption"/>
           </q-card-section>
         </q-card>
       </q-expansion-item>
@@ -171,7 +171,7 @@
       v-if="tabsStore.pinnedTabs.length > 0 || tabGroupsStore.tabGroups.length > 0 || tabsStore.pendingTabs.length > 0"
       icon="tabs"
       default-opened
-      header-class="bg-amber-2 text-black"
+      header-class="bg-amber-1 text-black"
       expand-icon-class="text-black">
       <template v-slot:header="{ expanded }">
         <q-item-section avatar>
@@ -180,16 +180,17 @@
 
         <q-item-section>
           <div>
-            <span class="text-weight-bold">Other Tabs</span>
-            <div class="text-caption">current tabs, neither pinned nor grouped</div>
+            <span class="text-weight-bold">Other Tabs ({{ formatLength(unpinnedNoGroup().length, 'tab', 'tabs') }})</span>
+            <div class="text-caption ellipsis" v-text="otherTabsCaption"></div>
             <!--                <q-btn label="create new tabset" v-if="expanded" @click="newTabsetFrom(group.title, group.id)"/>-->
           </div>
         </q-item-section>
-        <q-item-section>{{ formatLength(unpinnedNoGroup().length, 'tab', 'tabs') }}</q-item-section>
+        <q-item-section></q-item-section>
       </template>
+
       <q-card>
         <q-card-section>
-          <Tabcards :tabs="unpinnedNoGroup()"/>
+          <Tabcards :tabs="unpinnedNoGroup()" v-on:sendCaption="setOtherTabsCaption"/>
         </q-card-section>
       </q-card>
     </q-expansion-item>
@@ -221,6 +222,10 @@ const localStorage = useQuasar().localStorage
 const tabsStore = useTabsStore()
 const tabGroupsStore = useTabGroupsStore()
 const tabsetname = ref(tabsStore.currentTabsetName)
+
+const otherTabsCaption = ref('current tabs, neither pinned nor grouped...')
+const groupedTabsCaption = ref('current tabs, neither pinned nor grouped')
+
 const $q = useQuasar()
 
 function unpinnedNoGroup() {
@@ -261,6 +266,9 @@ const formatLength = (length: number, singular: string, plural: string) => {
 const removeClosedTabs = () => TabsetService.removeClosedTabs()
 const saveAllPendingTabs = () => TabsetService.saveAllPendingTabs()
 const removeAllPendingTabs = () => TabsetService.removeAllPendingTabs()
+
+const setOtherTabsCaption = (msg: string) => otherTabsCaption.value = msg
+const setGroupedTabsCaption = (msg: string) => groupedTabsCaption.value = msg
 
 const saveDialog = () => {
   $q.dialog({

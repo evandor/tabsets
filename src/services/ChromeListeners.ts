@@ -72,13 +72,12 @@ class ChromeListeners {
       const currentTabset = tabsStore.tabsets.get(tabsStore.currentTabsetId)
       if (currentTabset) {
         if (tabsStore.isContextMode) {
-          console.log(`onUpdated: tab ${number}:     context mode`)
-          console.log(`onUpdated: tab ${number}:     found current tabset ${currentTabset.id}`)
+          // console.log(`onUpdated: tab ${number}:     context mode`)
+          // console.log(`onUpdated: tab ${number}:     found current tabset ${currentTabset.id}`)
           const maybeTab = tabsStore.tabForUrlInContextTabset(tab.url || '')
           if (maybeTab) {
             return
           }
-          //console.log("currentTabset", currentTabset)
           const index = _.findIndex(currentTabset.tabs, t => t.chromeTab.id === tab.id);
           console.log(`onUpdated: tab ${number}:     got index ${index}`)
           if (index >= 0) {
@@ -110,7 +109,7 @@ class ChromeListeners {
 
         } else {
           // assuming Edit mode
-          console.log(`onUpdated: tab ${number}:     edit mode`)
+          //console.log(`onUpdated: tab ${number}:     edit mode`)
         }
 
       }
@@ -197,7 +196,7 @@ class ChromeListeners {
     console.log(`onDetached: tab ${number} detached: ${JSON.stringify(info)}`)
   }
 
-  onHighlighted(info: chrome.tabs.TabHighlightInfo) {
+   onHighlighted(info: chrome.tabs.TabHighlightInfo) {
     console.log(`onHighlighted: tab ${info.tabIds} highlighted: ${JSON.stringify(info)}`)
   }
 

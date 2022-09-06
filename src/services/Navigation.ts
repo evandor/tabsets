@@ -67,7 +67,10 @@ class Navigation {
         tabsStore.removeTab(tab.chromeTab.id)
       }
     } else {
-
+      console.log("closing tab (edit mode)", tab.id)
+      if (tab.chromeTab?.id) {
+        tabsStore.removeTab(tab.chromeTab.id)
+      }
     }
 
     if ("current" === tabsStore.currentTabsetId) {

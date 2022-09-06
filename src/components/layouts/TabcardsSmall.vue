@@ -4,7 +4,7 @@
          style="border-bottom: 2px solid grey;">
       <q-card class="my-card" flat bordered square
               :style="cardStyle(tab)">
-        <q-card-section class="q-pt-xs cursor-pointer" style="width:100%;">
+        <q-card-section class="q-pt-xs cursor-pointer" style="width:100%;" @click="hightlightTab(tab)">
           <div class="row items-baseline">
             <div class="col-2">
               <q-img
@@ -39,6 +39,7 @@
 import Navigation from "src/services/Navigation";
 import {Tab, TabStatus} from "src/models/Tab";
 import TabsetService from "src/services/TabsetService";
+import ChromeApi from "src/services/ChromeApi";
 
 const props = defineProps({
   tabs: {
@@ -106,6 +107,10 @@ function cardStyle(tab: Tab) {
 function isOpen(tab: Tab): boolean {
   //console.log("tabUrl", tab.chromeTab?.url);
   return TabsetService.isOpen(tab?.chromeTab?.url || '')
+}
+
+const hightlightTab = (tab: Tab) => {
+  ChromeApi.highlight(tab.chromeTab.index)
 }
 
 </script>
