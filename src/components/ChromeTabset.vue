@@ -1,31 +1,33 @@
 <template>
 
-  <q-toolbar class="text-primary">
-    <q-btn flat round dense icon="tabs"/>
+  <!--  <q-banner rounded class="bg-amber-1 text-black q-mb-lg" v-if="tabsStore.tabsets.size <= 1">-->
+  <!--    <div class="text-body2" >-->
+  <!--      Currently, your <b>browser tabs</b> are <b>not tracked</b> by this extension and you do not have any tabsets defined.<br>-->
+  <!--      Below, you see <b>all your open tabs</b> in this browser's window right now. Open a new tab, and you will see the new tab-->
+  <!--      appearing here as well.-->
+  <!--      <br><br>-->
+  <!--      <b>Click on</b> <q-icon color="primary" name="save" /> to <b>create your first tabset</b> and start tracking tab changes.-->
+  <!--    </div>-->
+  <!--  </q-banner>-->
+
+  <q-toolbar class="text-primary q-mb-lg">
 
     <q-toolbar-title>
       <div class="row justify-start items-baseline">
-        <div class="col-1 text-black">Current tabs of this browser's window</div>
+        <div class="col-1 text-black">Open tabs</div>
       </div>
-      <div class="row justify-start items-baseline">
-        <div class="text-caption">You can save your current tabs and give the new set a name. Or you can start a new tabset from scratch by
-          closing all open tabs</div>
-      </div>
+      <!--      <div class="row justify-start items-baseline">-->
+      <!--        <div class="text-caption">You can save your current tabs and give the new set a name</div>-->
+      <!--      </div>-->
     </q-toolbar-title>
-    <q-btn flat round dense icon="save" @click="saveDialog"/>
-    <q-btn flat round dense icon="restore_page"
-           color="green"
-           @click="restoreDialog" v-if="tabsStore.currentTabsetId !== 'current'"/>
-    <q-btn flat round dense icon="delete"
-           color="red"
-           @click="deleteDialog" v-if="tabsStore.currentTabsetId !== 'current'"/>
+    <q-btn flat dense icon="save" label="Save as Tabset..." @click="showNewTabsetDialog = true"/>
   </q-toolbar>
 
   <q-list class="rounded-borders">
 
     <q-expansion-item
       v-if="tabsStore.pinnedTabs.length > 0"
-      header-class="bg-amber-2 text-black"
+      header-class="bg-amber-1 text-black"
       expand-icon-class="text-black"
       expand-separator
       default-opened>
@@ -42,8 +44,8 @@
         <q-item-section>{{ formatLength(tabsStore.pinnedTabs.length, 'tab', 'tabs') }}</q-item-section>
       </template>
       <q-card>
-        <q-card-section>
-          <Tabcards :tabs="tabsStore.pinnedTabs"/>
+        <q-card-section style="background-color:#efefef">
+          <TabcardsSmall :tabs="tabsStore.pinnedTabs"/>
         </q-card-section>
       </q-card>
     </q-expansion-item>
@@ -52,7 +54,7 @@
     <div v-for="group in tabGroupsStore.tabGroups">
       <q-expansion-item
         v-if="tabsForGroup(group.id).length > 0"
-        header-class="bg-amber-2 text-black"
+        header-class="bg-amber-1 text-black"
         expand-icon-class="text-black"
         expand-separator
         default-opened>
@@ -72,8 +74,8 @@
           <q-item-section>{{ formatLength(tabsForGroup(group.id).length, 'tab', 'tabs') }}</q-item-section>
         </template>
         <q-card>
-          <q-card-section>
-            <Tabcards :tabs="tabsForGroup( group.id)"/>
+          <q-card-section style="background-color:#efefef">
+            <TabcardsSmall :tabs="tabsForGroup( group.id)"/>
           </q-card-section>
         </q-card>
       </q-expansion-item>
@@ -84,7 +86,7 @@
       v-if="tabsStore.pinnedTabs.length > 0 || tabGroupsStore.tabGroups.length > 0"
       icon="tabs"
       default-opened
-      header-class="bg-amber-2 text-black"
+      header-class="bg-amber-1 text-black"
       expand-icon-class="text-black">
       <template v-slot:header="{ expanded }">
         <q-item-section avatar>
@@ -101,19 +103,44 @@
         <q-item-section>{{ formatLength(unpinnedNoGroup().length, 'tab', 'tabs') }}</q-item-section>
       </template>
       <q-card>
-        <q-card-section>
-          <Tabcards :tabs="unpinnedNoGroup()"/>
+        <q-card-section style="background-color:#efefef">
+          <TabcardsSmall :tabs="unpinnedNoGroup()"/>
         </q-card-section>
       </q-card>
     </q-expansion-item>
     <div v-else>
       <q-card>
-        <q-card-section>
-          <Tabcards :tabs="unpinnedNoGroup()"/>
+        <q-card-section style="background-color:#efefef">
+          <TabcardsSmall :tabs="unpinnedNoGroup()"/>
         </q-card-section>
       </q-card>
     </div>
   </q-list>
+
+  <q-dialog v-model="showNewTabsetDialog">
+    <q-card style="min-width: 350px">
+      <q-card-section>
+        <div class="text-h6">Save open Tabs as Tabset</div>
+      </q-card-section>
+      <q-card-section>
+        <div class="text-body">Please provide a name for the new tabset</div>
+      </q-card-section>
+
+      <q-card-section class="q-pt-none">
+        <div class="text-body">New Tabset's name:</div>
+        <q-input dense v-model="newTabsetName" autofocus @keyup.enter="prompt = false"/>
+        <!--        <q-checkbox v-model="clearTabs" label="close current Tabs"/>-->
+        <div class="text-body2 text-warning">{{ newTabsetDialogWarning() }}</div>
+      </q-card-section>
+
+      <q-card-actions align="right" class="text-primary">
+        <q-btn flat label="Cancel" v-close-popup/>
+        <q-btn flat label="Create new Tabset"
+               :disable="newTabsetName.trim().length === 0 || newTabsetName.trim() === 'current'" v-close-popup
+               @click="saveTabset()"/>
+      </q-card-actions>
+    </q-card>
+  </q-dialog>
 
 </template>
 
@@ -121,7 +148,7 @@
 import {ref, watchEffect} from 'vue'
 import {useRoute, useRouter} from "vue-router";
 import {useQuasar} from "quasar";
-import Tabcards from "src/components/layouts/Tabcards.vue";
+import TabcardsSmall from "src/components/layouts/TabcardsSmall.vue";
 import _ from "lodash"
 import {useTabsStore} from "stores/tabsStore";
 import {useTabGroupsStore} from "stores/tabGroupsStore";
@@ -134,16 +161,21 @@ const localStorage = useQuasar().localStorage
 const tabsStore = useTabsStore()
 const tabGroupsStore = useTabGroupsStore()
 const tabsetname = ref(tabsStore.currentTabsetName)
+
 const $q = useQuasar()
 
-watchEffect(() => {
-  //console.log("context changed", tabsStore.contextId)
-  //console.log("tabset changed", tabsStore.contextId)
-})
+// --- new tabset dialog
+const showNewTabsetDialog = ref(false)
+const newTabsetName = ref('')
+
+// const clearTabs = ref(false)
 
 function unpinnedNoGroup() {
   return _.filter(
-    _.map(tabsStore.getCurrentTabs, t => t),
+    _.map(tabsStore.getCurrentTabs, t => {
+      //console.log("t", t)
+      return t
+    }),
     (t: Tab) => !t.chromeTab.pinned && t.chromeTab.groupId === -1 && (t.status === TabStatus.DEFAULT || !t.status))
 }
 
@@ -160,73 +192,36 @@ const update = (tabsetIdent: object) => {
   tabsStore.selectCurrentTabset(tabsetIdent['value' as keyof object])
 }
 
-const tabsetOptions = () => {
-  return _.map([...tabsStore.tabsets.values()], ts => {
-    return {
-      label: ts.name,
-      value: ts.id
-    }
-  })
-}
-
-const unsetContext = () => TabsetService.unsetContext()
-const setAsContext = () => TabsetService.setContext(tabsStore.currentTabsetId)
-
 const formatLength = (length: number, singular: string, plural: string) => {
   return length > 1 ? length + ' ' + plural : length + ' ' + singular
 }
 
-const saveDialog = () => {
-  $q.dialog({
-    title: 'Save open Tabs as Tabset',
-    message: 'Please provide a name for the new (or updated) tabset',
-    prompt: {
-      isValid: val => val != 'current',
-      model: tabsetname.value === 'current' ? '' : tabsetname.value,
-      type: 'text' // optional
-    },
-    cancel: true,
-    persistent: true
-  }).onOk((name: string) => {
-    console.log('>>>> saving', name)
-    TabsetService.saveOrReplace(name, tabsStore.tabs)
-  }).onCancel(() => {
-    //console.log('>>>> Cancel')
-  }).onDismiss(() => {
-    //console.log('I am triggered on both OK and Cancel')
-  })
-
-
+const newTabsetDialogWarning = () => {
+  if (newTabsetName.value.trim() === 'current') {
+    return "Please use a different name, 'current' is reserved"
+  }
+  const existingNames = _.map([...tabsStore.tabsets.values()], ts => ts.name)
+  if (_.find(existingNames, name => name === newTabsetName.value.trim())) {
+    return "Tabset " + newTabsetName.value + " already exists and will be overwritten."
+  }
+  return ""
 }
 
-const deleteDialog = () => {
-  $q.dialog({
-    title: 'Deleting Tabset',
-    message: 'Would you like to delete this tabset?',
-    cancel: true,
-    persistent: true
-  }).onOk((data: any) => {
-    TabsetService.delete(tabsStore.currentTabsetId)
-    router.push("/")
-  }).onCancel(() => {
-  }).onDismiss(() => {
+const saveTabset = () => {
+  const tsName = newTabsetName.value
+  TabsetService.saveOrReplace(tsName, tabsStore.tabs)
+    .then(wasNew => {
+      $q.notify({
+        message: wasNew ? 'Tabset ' + tsName + ' created successfully' : 'Tabset ' + tsName + 'was overwritten',
+        type: 'positive'
+      })
+    }).catch(ex => {
+    console.error("ex", ex)
+    $q.notify({
+      message: 'There was a problem creating the tabset ' + tsName,
+      type: 'warning',
+    })
   })
-
-
-}
-
-const restoreDialog = () => {
-  $q.dialog({
-    title: 'Restore Tabset',
-    message: 'Would you like to restore this tabset? All current tabs will be closed before.',
-    cancel: true,
-    persistent: true
-  }).onOk((data: any) => {
-    TabsetService.restore(tabsStore.currentTabsetId)
-  }).onCancel(() => {
-  }).onDismiss(() => {
-  })
-
 
 }
 

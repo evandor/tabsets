@@ -60,6 +60,11 @@ class ChromeApi {
     return tab;
   }
 
+  highlight(tabIndex: number | undefined) {
+    if (tabIndex) {
+      chrome.tabs.highlight({tabs: tabIndex})
+    }
+  }
 }
 
 export default new ChromeApi();

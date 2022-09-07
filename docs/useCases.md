@@ -4,7 +4,7 @@
 
 #### Displaying currently open tabs
 
-##### current mode
+##### current mode ("Browser")
 
 When in 'current' mode, the browser's window's open tabs are displayed, grouped by
 
@@ -14,7 +14,7 @@ When in 'current' mode, the browser's window's open tabs are displayed, grouped 
 
 Duplicates (tabs of the same tabset with the same url) are highlighted.
 
-##### non-current mode
+##### non-current mode (tabset selected)
 
 When in non-current mode (i.e. displaying a tabset), the browser's window's open tabs are displayed, grouped by
 
@@ -32,7 +32,7 @@ The unsaved tabs can have a
 
 #### Closing browser tabs
 
-##### current mode
+##### current mode ("Browser")
 
 When closing a browser's tab, this is reflected in the 'current' tabset immediately.
 
@@ -42,7 +42,7 @@ Todo
 
 #### Creating a new tabset
 
-##### current mode
+##### current mode ("Browser")
 
 ###### 'New Tabset...' button
 

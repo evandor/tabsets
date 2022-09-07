@@ -1,59 +1,39 @@
 <template>
   <div class="row items-start">
     <div class="col-xs-12 col-sm-4 col-md-3 col-lg-2 q-pa-xs" v-for="tab in props.tabs">
-      <q-card class="my-card" flat bordered
-              :style="cardStyle(tab)">
+      <q-card class="my-card" flat bordered :style="cardStyle(tab)" @mouseover="setInfo(tab)">
         <q-card-section horizontal>
-          <q-card-section class="q-pt-xs" style="width:100%;">
-            <div class="row">
-              <div class="col-5">
+          <q-card-section class="q-pt-xs cursor-pointer" style="width:100%;">
+            <div class="row items-baseline">
+              <div class="col-2">
                 <q-img
                   class="rounded-borders"
                   width="20px"
                   height="20px"
                   :src="tab.chromeTab?.favIconUrl">
-                  <q-tooltip>{{ tab.chromeTab?.id }}</q-tooltip>
+                  <q-tooltip>{{ tab.chromeTab?.id }} / {{ tab.id }}</q-tooltip>
                 </q-img>
               </div>
-              <div class="col-5">
-                <div class="row">
-                  <div class="col">
-                    <q-icon name="done" color="green" class="cursor-pointer" v-if="isOpen(tab)">
-                      <q-tooltip>This url is open in one of your tabs</q-tooltip>
-                    </q-icon>
-                  </div>
-                  <div class="col">
-                    <q-icon name="save" class="cursor-pointer"
-                            v-if="tab.status !== TabStatus.DEFAULT"
-                            @click="saveTab(tab.chromeTab.id)">
-                      <q-tooltip>Save this tab to your current context</q-tooltip>
-                    </q-icon>
-                  </div>
-                  <div class="col">
-                    <q-icon :name="tab.chromeTab?.pinned ? 'o_push_pin' : 'push_pin'" class="cursor-pointer"
-                            @click="togglePin(tab.chromeTab.id)">
-                      <q-tooltip v-text="tab.chromeTab?.pinned ? 'Unpin this tab' : 'Pin this tab'"/>
-                    </q-icon>
-                  </div>
-                </div>
+              <div class="col-9 text-body2 ellipsis">
+                {{ maxChar(20, tab.chromeTab?.title) }}
               </div>
               <div class="col-1">
+                <q-icon name="close" @click="closeTab(tab)"/>
               </div>
-              <div class="col-1">
-                <q-icon name="close" class="cursor-pointer"
-                        @click="closeTab(tab.chromeTab)"/>
-              </div>
+              <q-tooltip>
+                {{ getHost(tab.chromeTab.url, true) }}
+              </q-tooltip>
             </div>
 
-            <div class="text-overline">
-              {{ getHost(tab.chromeTab.url, true) }} {{ tab.activatedCount }}/{{ tab.lastActive }}
+            <div class="text-overline ellipsis">
+              {{ getHost(tab.chromeTab.url, true) }}
               <q-tooltip>
                 {{ getHost(tab.chromeTab.url, false) }}
               </q-tooltip>
             </div>
-            <div class="text-body1 q-mt-sm q-mb-xs">{{ maxChar(20, tab.chromeTab?.title || tab.title) }}</div>
+
             <div class="text-caption text-grey wrap" style="overflow:hidden;">
-              <q-item-label lines="1" class="q-mt-xs text-body2 text-primary"
+              <q-item-label lines="1" class="q-mt-xs text-caption text-primary"
                             @click="Navigation.openOrCreateTab(tab.chromeTab?.url || tab.url)">
                 <span class="cursor-pointer">{{ maxChar(30, withoutHostname(tab.chromeTab?.url || tab.url)) }}</span>
                 <q-tooltip>
@@ -61,6 +41,30 @@
                 </q-tooltip>
               </q-item-label>
             </div>
+
+            <div class="row q-mt-md">
+
+              <div class="col">
+                <q-icon name="done" color="green" class="cursor-pointer q-mr-md" v-if="isOpen(tab)">
+                  <q-tooltip>This url is open in one of your tabs</q-tooltip>
+                </q-icon>
+
+                <q-icon name="save" class="cursor-pointer q-mr-md"
+                        v-if="tab.status !== TabStatus.DEFAULT"
+                        @click="saveTab(tab.chromeTab.id)">
+                  <q-tooltip>Save this tab to your current context</q-tooltip>
+                </q-icon>
+
+                <q-icon :name="tab.chromeTab?.pinned ? 'o_push_pin' : 'push_pin'" class="cursor-pointer"
+                        @click="togglePin(tab.chromeTab.id)">
+                  <q-tooltip v-text="tab.chromeTab?.pinned ? 'Unpin this tab' : 'Pin this tab'"/>
+                </q-icon>
+              </div>
+            </div>
+
+
+            <!--            <div class="text-body1 q-mt-sm q-mb-xs">{{ maxChar(20, tab.chromeTab?.title || tab.title) }}</div>-->
+
           </q-card-section>
 
         </q-card-section>
@@ -73,10 +77,11 @@
 
 <script setup lang="ts">
 import {TabsetApi} from "src/services/TabsetApi";
-import {LocalStorage} from "quasar";
+import {date, LocalStorage} from "quasar";
 import Navigation from "src/services/Navigation";
 import {Tab, TabStatus} from "src/models/Tab";
 import TabsetService from "src/services/TabsetService";
+import {notificationsStore, useNotificationsStore} from "stores/notificationsStore";
 
 const props = defineProps({
   tabs: {
@@ -84,6 +89,8 @@ const props = defineProps({
     required: true
   }
 })
+
+const emits = defineEmits(['sendCaption'])
 
 const tabsetApi = new TabsetApi(null as unknown as LocalStorage)
 
@@ -123,9 +130,8 @@ function maxChar(max: number, t: string): string {
 }
 
 
-function closeTab(chromeTab: chrome.tabs.Tab) {
-  Navigation.closeTab(chromeTab)
-  //chrome.tabs.remove(id)
+function closeTab(tab: Tab) {
+  Navigation.closeTab(tab)
 }
 
 function saveTab(id: number) {
@@ -140,7 +146,7 @@ function togglePin(tabId: number) {
 
 
 function cardStyle(tab: Tab) {
-  const height = "150px";
+  const height = "120px";
   let borderColor = ""
   if (TabStatus.CREATED === tab.status) {
     borderColor = "";
@@ -158,6 +164,17 @@ function cardStyle(tab: Tab) {
 function isOpen(tab: Tab): boolean {
   //console.log("tabUrl", tab.chromeTab?.url);
   return TabsetService.isOpen(tab?.chromeTab?.url || '')
+}
+
+const setInfo = (tab: Tab) => {
+  const notificationsStore = useNotificationsStore()
+  const parts = (tab.chromeTab.url || '').split('?')
+  if (parts.length > 1) {
+    emits('sendCaption', parts[0] + "[... params omitted....]")
+  } else if (parts.length === 1) {
+    emits('sendCaption', parts[0].toString());
+  }
+  notificationsStore.setInfo(`created: ${date.formatDate(tab.created, 'DD.MM.YYYY HH:mm')}`)
 }
 
 </script>

@@ -1,31 +1,17 @@
 <template>
   <q-page padding>
-    contextId: {{tabsStore.contextId}}, Current TabsetId {{tabsStore.currentTabsetId}}
-    <div v-if="tabsStore.contextId && tabsStore.currentTabsetId===tabsStore.contextId">
-      <!-- "D" in overview.excalidraw -->
-      <div>Context</div>
+
+    <div v-if="tabsStore.isContextMode">
       <context-component></context-component>
     </div>
-    <div class="text-body1" v-else-if="tabsStore.contextId && tabsStore.currentTabsetId==='current'">
-      <div>chrome</div>
+    <div class="text-body1" v-else-if="tabsStore.isLiveMode">
       <chrome-tabset></chrome-tabset>
     </div>
-    <div v-else-if="tabsStore.contextId && tabsStore.currentTabsetId!==tabsStore.contextId">
-      <div>Edit 1</div>
+    <div v-else-if="tabsStore.isEditMode">
       <edit-tabset-component></edit-tabset-component>
-    </div>
-    <div class="text-body1" v-else-if="!tabsStore.contextId && tabsStore.currentTabsetId!=='current'">
-      <!-- "B" in overview.excalidraw -->
-      <div>Edit 2</div>
-      <edit-tabset-component></edit-tabset-component>
-    </div>
-
-    <div class="text-body1" v-else-if="!tabsStore.contextId && tabsStore.currentTabsetId==='current'">
-      <div>chrome</div>
-      <chrome-tabset></chrome-tabset>
     </div>
     <div v-else>
-      <div>ELSE</div>
+      <div>???</div>
       {{tabsStore.contextId}}--{{tabsStore.currentTabsetId}}???
     </div>
 
@@ -53,11 +39,6 @@ const tabsStore = useTabsStore()
 const tabGroupsStore = useTabGroupsStore()
 const tabsetname = ref(tabsStore.currentTabsetName)
 const $q = useQuasar()
-
-watchEffect(() => {
-  //console.log("context changed", tabsStore.contextId)
-  //console.log("tabset changed", tabsStore.contextId)
-})
 
 function unpinnedNoGroup() {
   return _.filter(

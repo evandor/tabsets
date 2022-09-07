@@ -5,7 +5,8 @@ export enum TabStatus {
 }
 
 export class Tab {
-  private created: number
+  id: string // internal id, do not want to rely on chromeTab.id
+  created: number
   updated: number
   lastActive: number
   activatedCount: number
@@ -15,7 +16,8 @@ export class Tab {
   status: TabStatus
   isDuplicate: boolean
 
-  constructor(chromeTab: chrome.tabs.Tab) {
+  constructor(id: string, chromeTab: chrome.tabs.Tab) {
+    this.id = id
     this.created = new Date().getTime()
     this.updated = new Date().getTime()
     this.lastActive = 0
