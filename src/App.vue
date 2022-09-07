@@ -3,8 +3,8 @@
 </template>
 
 <script setup lang="ts">
-import {useTabsStore} from "stores/tabsStore";
-import {useTabGroupsStore} from "stores/tabGroupsStore";
+import {useTabsStore} from "src/stores/tabsStore";
+import {useTabGroupsStore} from "src/stores/tabGroupsStore";
 import {useQuasar} from "quasar";
 import tabsetService from "src/services/TabsetService";
 

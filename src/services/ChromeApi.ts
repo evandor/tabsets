@@ -1,5 +1,5 @@
 import {Tabset} from "src/models/Tabset";
-import {useTabsStore} from "stores/tabsStore";
+import {useTabsStore} from "src/stores/tabsStore";
 
 class ChromeApi {
 

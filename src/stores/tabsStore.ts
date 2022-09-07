@@ -9,7 +9,8 @@ import ChromeListeners from "src/services/ChromeListeners";
 import ChromeApi from "src/services/ChromeApi";
 
 async function queryTabs(): Promise<chrome.tabs.Tab[]> {
-  return await chrome.tabs.query({currentWindow: true})
+  // @ts-ignore
+  return await chrome.tabs.query({currentWindow: true});
 }
 
 function markDuplicates(tabset: Tabset) {
@@ -125,12 +126,14 @@ export const useTabsStore = defineStore('tabs', {
   },
 
   actions: {
-    async initialize(localStorage: LocalStorage) {
+    async initialize(localStorage: any) {
       console.log("initializing tabsStore")
       this.localStorage = localStorage
 
       // setting current tabs
       this.tabs = await queryTabs()
+      console.log("tabs", this.tabs)
+
       // @ts-ignore
       const tabsFromBrowser = new Tabset("current", "current",
         _.map(this.tabs, t => {
@@ -185,9 +188,11 @@ export const useTabsStore = defineStore('tabs', {
       // chrome.tabs.onZoomChange.addListener((info) => ChromeListeners.onZoomChange(info))
     },
     tabsForGroup(groupId: number): chrome.tabs.Tab[] {
+      // @ts-ignore
       return _.filter(this.tabs, (t: chrome.tabs.Tab) => t.groupId === groupId)
     },
     unpinnedTabsWithoutGroup(): chrome.tabs.Tab[] {
+      // @ts-ignore
       return _.filter(this.tabs, (t: chrome.tabs.Tab) => t.groupId === -1 && !t.pinned)
     },
     selectCurrentTabset(tabsetId: string): void {

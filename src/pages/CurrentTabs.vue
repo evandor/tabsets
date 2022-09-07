@@ -24,8 +24,8 @@ import {ref, watchEffect} from 'vue'
 import {useRoute, useRouter} from "vue-router";
 import {useQuasar} from "quasar";
 import _ from "lodash"
-import {useTabsStore} from "stores/tabsStore";
-import {useTabGroupsStore} from "stores/tabGroupsStore";
+import {useTabsStore} from "src/stores/tabsStore";
+import {useTabGroupsStore} from "src/stores/tabGroupsStore";
 import TabsetService from "src/services/TabsetService";
 import {Tab, TabStatus} from "src/models/Tab";
 import ContextComponent from "src/components/ContextComponent.vue"

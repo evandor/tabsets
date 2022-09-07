@@ -1,6 +1,6 @@
 import {Tabset} from "src/models/Tabset";
 import TabsetService from "src/services/TabsetService";
-import {useTabsStore} from "stores/tabsStore";
+import {useTabsStore} from "src/stores/tabsStore";
 import _ from "lodash";
 import {Tab, TabStatus} from "src/models/Tab";
 import {uid} from "quasar";

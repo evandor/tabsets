@@ -150,7 +150,7 @@ import {useRoute, useRouter} from "vue-router";
 import {useQuasar} from "quasar";
 import TabcardsSmall from "src/components/layouts/TabcardsSmall.vue";
 import _ from "lodash"
-import {useTabsStore} from "stores/tabsStore";
+import {useTabsStore} from "src/stores/tabsStore";
 import {useTabGroupsStore} from "stores/tabGroupsStore";
 import TabsetService from "src/services/TabsetService";
 import {Tab, TabStatus} from "src/models/Tab";

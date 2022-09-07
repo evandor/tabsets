@@ -23,7 +23,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import {useRoute} from "vue-router";
-import {useTabsStore} from "stores/tabsStore";
+import {useTabsStore} from "src/stores/tabsStore";
 import _ from "lodash"
 import Navigation from "src/services/Navigation";
 
