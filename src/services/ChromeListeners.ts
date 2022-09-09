@@ -12,7 +12,7 @@ class ChromeListeners {
 
   clearWorking() {
     if (this.inProgress) {
-      console.log("resetting 'inProgress' to false")
+      //console.log("resetting 'inProgress' to false")
       const tabsStore = useTabsStore()
       tabsStore.loadTabs('onProgressStopped')
     }
@@ -39,14 +39,6 @@ class ChromeListeners {
         maybeTab.chromeTab.id = tab.id
         return
       }
-
-      // if ('current' === tabsStore.currentTabsetId) {
-      //   tabsStore.loadTabs('onCreated');
-      //   return
-      // }
-      // if (!tabsStore.contextId) {
-      //   return
-      // }
       // add to current tabset if not there yet
       const currentTabset: Tabset = tabsStore.tabsets.get(tabsStore.currentTabsetId) || new Tabset("", "", [])
       const found = _.find(currentTabset.tabs, t => t.chromeTab.url === tab.url)
@@ -105,7 +97,7 @@ class ChromeListeners {
             }
           }
         } else if (tabsStore.isLiveMode) {
-          console.log(`onUpdated: tab ${number}:     live mode`)
+          //console.log(`onUpdated: tab ${number}:     live mode`)
 
         } else {
           // assuming Edit mode
@@ -189,15 +181,15 @@ class ChromeListeners {
   }
 
   onAttached(number: number, info: chrome.tabs.TabAttachInfo) {
-    console.log(`onAttached: tab ${number} attached: ${JSON.stringify(info)}`)
+    console.debug(`onAttached: tab ${number} attached: ${JSON.stringify(info)}`)
   }
 
   onDetached(number: number, info: chrome.tabs.TabDetachInfo) {
-    console.log(`onDetached: tab ${number} detached: ${JSON.stringify(info)}`)
+    console.debug(`onDetached: tab ${number} detached: ${JSON.stringify(info)}`)
   }
 
    onHighlighted(info: chrome.tabs.TabHighlightInfo) {
-    console.log(`onHighlighted: tab ${info.tabIds} highlighted: ${JSON.stringify(info)}`)
+    console.debug(`onHighlighted: tab ${info.tabIds} highlighted: ${JSON.stringify(info)}`)
   }
 
   onZoomChange(info: chrome.tabs.ZoomChangeInfo) {

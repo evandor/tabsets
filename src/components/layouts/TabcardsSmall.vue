@@ -2,7 +2,9 @@
   <div class="row items-start">
     <div class="col-xs-12 col-sm-4 col-md-3 col-lg-2 q-pa-xs" v-for="tab in props.tabs"
          style="border-bottom: 2px solid grey;">
-      <q-card class="my-card" flat bordered square
+      <q-card class="my-card" flat
+              @mouseover="setInfo(tab)"
+              @mouseout="resetInfo()"
               :style="cardStyle(tab)">
         <q-card-section class="q-pt-xs cursor-pointer" style="width:100%;" @click="hightlightTab(tab)">
           <div class="row items-baseline">
@@ -21,7 +23,7 @@
               <q-icon name="close" @click="closeTab(tab)"/>
             </div>
             <q-tooltip>
-              {{ getHost(tab.chromeTab.url, true) }}
+              {{ getHost(tab.chromeTab?.url, true) }}
             </q-tooltip>
 
           </div>
@@ -40,6 +42,8 @@ import Navigation from "src/services/Navigation";
 import {Tab, TabStatus} from "src/models/Tab";
 import TabsetService from "src/services/TabsetService";
 import ChromeApi from "src/services/ChromeApi";
+import {useNotificationsStore} from "stores/notificationsStore";
+import {date} from "quasar";
 
 const props = defineProps({
   tabs: {
@@ -47,6 +51,8 @@ const props = defineProps({
     required: true
   }
 })
+
+const emits = defineEmits(['sendCaption'])
 
 function getShortHostname(host: string) {
   const nrOfDots = (host.match(/\./g) || []).length
@@ -101,16 +107,24 @@ function cardStyle(tab: Tab) {
     background = "background: radial-gradient(circle, #FFFFFF 0%, #FFECB3 100%)"
   }
   // style=""
-  return `height: ${height};max-height:${height}; min-height: ${height};border:1px solid grey;border-bottom: 0px;position:relative; top:5px;${background}`
+  return `height: ${height};max-height:${height}; min-height: ${height};border:1px solid grey;border-bottom: 0px;position:relative; top:5px;border-radius: 5px 5px 0 0;${background}`
 }
 
 function isOpen(tab: Tab): boolean {
-  //console.log("tabUrl", tab.chromeTab?.url);
   return TabsetService.isOpen(tab?.chromeTab?.url || '')
 }
 
 const hightlightTab = (tab: Tab) => {
-  ChromeApi.highlight(tab.chromeTab.index)
+  //ChromeApi.highlight(tab.chromeTab.index)
+}
+
+const setInfo = (tab: Tab) => {
+  const notificationsStore = useNotificationsStore()
+  notificationsStore.setInfo(`${tab.chromeTab.url}`)
+}
+
+const resetInfo = () => {
+  useNotificationsStore().setInfo('')
 }
 
 </script>

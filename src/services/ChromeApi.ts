@@ -6,7 +6,8 @@ class ChromeApi {
   async closeAllTabs() {
     console.log(" --- closing all tabs: start ---")
     const currentTab = await this.getCurrentTab()
-    const t = await chrome.tabs.query({currentWindow: true})//, (t: chrome.tabs.Tab[]) => {
+    // @ts-ignore
+    const t:chrome.tabs.Tab[] = await chrome.tabs.query({currentWindow: true})//, (t: chrome.tabs.Tab[]) => {
     console.log("checking tabs for closing", t)
     const ids: number[] = t.filter((r: chrome.tabs.Tab) => r.id !== currentTab.id)
       .filter(r => r.id !== undefined)
@@ -56,6 +57,7 @@ class ChromeApi {
 
   async getCurrentTab(): Promise<chrome.tabs.Tab> {
     let queryOptions = {active: true, lastFocusedWindow: true};
+    // @ts-ignore
     let [tab] = await chrome.tabs.query(queryOptions);
     return tab;
   }

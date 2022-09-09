@@ -32,6 +32,9 @@ function markDuplicates(tabset: Tabset) {
   })
 }
 
+const TABSETS_CONTEXT_IDENT = "tabsets.context";
+const TABSETS_TABSET_IDENT = "tabsets.tabset";
+
 export const useTabsStore = defineStore('tabs', {
   state: () => ({
 
@@ -130,10 +133,8 @@ export const useTabsStore = defineStore('tabs', {
       console.log("initializing tabsStore")
       this.localStorage = localStorage
 
-      // setting current tabs
+      // --- setting current tabs
       this.tabs = await queryTabs()
-      console.log("tabs", this.tabs)
-
       // @ts-ignore
       const tabsFromBrowser = new Tabset("current", "current",
         _.map(this.tabs, t => {
@@ -141,13 +142,13 @@ export const useTabsStore = defineStore('tabs', {
         }))
       this.tabsets.set("current", tabsFromBrowser)
 
-      // setting all tabs from local storage tabsets
-      const currentContext = localStorage.getItem("tabsets.context") as string
+      // --- setting all tabs from local storage tabsets
+      const currentContext = localStorage.getItem(TABSETS_CONTEXT_IDENT) as string
       _.forEach(
         _.filter(localStorage.getAllKeys(),
-          (t: string) => t.startsWith("tabsets.tabset.")),
+          (t: string) => t.startsWith(TABSETS_TABSET_IDENT + ".")),
         key => {
-          const tabsetId = key.replace("tabsets.tabset.", "")
+          const tabsetId = key.replace(TABSETS_TABSET_IDENT + ".", "")
           const tabset: Tabset | null = localStorage.getItem(key)
           if (tabset) {
             console.log("setting tabset", key)
@@ -159,7 +160,7 @@ export const useTabsStore = defineStore('tabs', {
             }
           }
         })
-      //
+
       // // marking duplicates (inside each tabset)
       // _.forEach([...this.tabsets.values()], tabset => markDuplicates(tabset))
     },
@@ -178,14 +179,14 @@ export const useTabsStore = defineStore('tabs', {
     initListeners() {
       chrome.tabs.onCreated.addListener((tab: chrome.tabs.Tab) => ChromeListeners.onCreated(tab))
       chrome.tabs.onUpdated.addListener((number, info, tab) => ChromeListeners.onUpdated(number, info, tab))
-      // chrome.tabs.onMoved.addListener((number, info) => ChromeListeners.onMoved(number, info))
+      chrome.tabs.onMoved.addListener((number, info) => ChromeListeners.onMoved(number, info))
       chrome.tabs.onRemoved.addListener((number, info) => ChromeListeners.onRemoved(number, info))
       chrome.tabs.onReplaced.addListener((n1, n2) => ChromeListeners.onReplaced(n1, n2))
       chrome.tabs.onActivated.addListener((info) => ChromeListeners.onActivated(info))
-      // chrome.tabs.onAttached.addListener((number, info) => ChromeListeners.onAttached(number, info))
-      // chrome.tabs.onDetached.addListener((number, info) => ChromeListeners.onDetached(number, info))
+      chrome.tabs.onAttached.addListener((number, info) => ChromeListeners.onAttached(number, info))
+      chrome.tabs.onDetached.addListener((number, info) => ChromeListeners.onDetached(number, info))
       chrome.tabs.onHighlighted.addListener((info) => ChromeListeners.onHighlighted(info))
-      // chrome.tabs.onZoomChange.addListener((info) => ChromeListeners.onZoomChange(info))
+      chrome.tabs.onZoomChange.addListener((info) => ChromeListeners.onZoomChange(info))
     },
     tabsForGroup(groupId: number): chrome.tabs.Tab[] {
       // @ts-ignore
@@ -196,14 +197,6 @@ export const useTabsStore = defineStore('tabs', {
       return _.filter(this.tabs, (t: chrome.tabs.Tab) => t.groupId === -1 && !t.pinned)
     },
     selectCurrentTabset(tabsetId: string): void {
-      // if ("current" === name) {
-      //   console.log("setting tabs from chrome")
-      //   // this.currentTabset = new Tabset("current", "current",
-      //   //   _.map(this.tabs, t => {
-      //   //     return new Tab(t)
-      //   //   }))
-      //   return
-      // }
       const found = _.find([...this.tabsets.values()], k => {
         const ts = k || new Tabset("", "", [])
         return ts.id === tabsetId
@@ -221,17 +214,27 @@ export const useTabsStore = defineStore('tabs', {
       TabsetService.saveTabset(currentTabset)
     },
 
-    async saveOrCreateTabset(tabsetName: string): Promise<boolean> {
+    async saveOrCreateTabset(tabsetName: string, merge:boolean = false): Promise<boolean> {
       console.log("--- saveOrCreateTabset start -------------")
       const found = _.find([...this.tabsets.values()], ts => ts.name === tabsetName)
       let ts: Tabset = null as unknown as Tabset
       const tabsetExtensionTab = await ChromeApi.getCurrentTab()
       if (found) {
-        console.log("found existing tabset " + found.id + ", replacing...")
-        ts = new Tabset(found.id, tabsetName, _.map(this.tabs, t => new Tab(uid(), t)));
-        this.tabsets.set(found.id, ts)
-        TabsetService.saveTabset(ts)
-
+        if (merge) {
+          console.log("found existing tabset " + found.id + ", merging...")
+          _.forEach(this.tabs, t => {
+            const exists = _.find(found.tabs, existing => existing.chromeTab.url === t.url)
+            if (!exists) {
+              found.tabs.push(new Tab(uid(), t))
+            }
+          })
+          ts = found
+        } else {
+          console.log("found existing tabset " + found.id + ", replacing...")
+          ts = new Tabset(found.id, tabsetName, _.map(this.tabs, t => new Tab(uid(), t)));
+          this.tabsets.set(found.id, ts)
+          TabsetService.saveTabset(ts)
+        }
       } else {
         console.log("didn't find existing tabset, creating new...")
         const useId = uid()
@@ -248,7 +251,7 @@ export const useTabsStore = defineStore('tabs', {
       this.currentTabsetId = ts.id
       this.contextId = ts.id
       await TabsetService.saveTabset(ts)
-      await this.localStorage.set("tabsets.context", this.contextId)
+      await this.localStorage.set(TABSETS_CONTEXT_IDENT, this.contextId)
       console.log("--- saveOrCreateTabset end -------------")
       return found !== undefined;
     },

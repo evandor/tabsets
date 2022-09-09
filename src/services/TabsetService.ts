@@ -10,7 +10,7 @@ class TabsetService {
 
   private localStorage: LocalStorage = null as unknown as LocalStorage
 
-  setLocalStorage(localStorage: LocalStorage) {
+  setLocalStorage(localStorage: any) {
     this.localStorage = localStorage;
   }
 

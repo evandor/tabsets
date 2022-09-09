@@ -170,20 +170,22 @@ const newTabsetName = ref('')
 
 // const clearTabs = ref(false)
 
-function unpinnedNoGroup() {
+function unpinnedNoGroup(): Tab[] {
   return _.filter(
     _.map(tabsStore.getCurrentTabs, t => {
       //console.log("t", t)
       return t
     }),
+    //@ts-ignore
     (t: Tab) => !t.chromeTab.pinned && t.chromeTab.groupId === -1 && (t.status === TabStatus.DEFAULT || !t.status))
 }
 
-function tabsForGroup(groupId: number) {
-  console.log("tabsforGroup", groupId)
-  return _.filter(
-    _.map(tabsStore.getCurrentTabs, t => t.chromeTab || t),
-    (t: any) => t.groupId === groupId)
+function tabsForGroup(groupId: number): Tab[] {
+  //console.log("tabsforGroup", groupId)
+  return _.filter(tabsStore.getCurrentTabs,
+    //_.map(tabsStore.getCurrentTabs, t => t.chromeTab),
+    //@ts-ignore
+    (t: Tab) => t.chromeTab.groupId === groupId)
 }
 
 const update = (tabsetIdent: object) => {
