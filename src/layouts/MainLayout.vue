@@ -73,6 +73,7 @@
     <q-footer class="bg-white text-black">
       <div class="q-ma-sm">
         {{notificationsStore.info}}
+        <TabInfo></TabInfo>
       </div>
     </q-footer>
 
@@ -92,6 +93,7 @@ import _ from "lodash"
 import {useMeta} from 'quasar'
 import {Tab, TabStatus} from "src/models/Tab";
 import {useNotificationsStore} from "stores/notificationsStore";
+import TabInfo from "src/components/layouts/TabInfo.vue"
 
 const router = useRouter()
 const tabsStore = useTabsStore()

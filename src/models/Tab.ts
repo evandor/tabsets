@@ -5,7 +5,7 @@ export enum TabStatus {
 }
 
 export class Tab {
-  id: string // internal id, do not want to rely on chromeTab.id
+  // id: string // internal id, do not want to rely on chromeTab.id
   created: number
   updated: number
   lastActive: number
@@ -15,9 +15,11 @@ export class Tab {
   chromeTab: chrome.tabs.Tab
   status: TabStatus
   isDuplicate: boolean
+  history: string[] = []
+  selected: boolean = false
 
-  constructor(id: string, chromeTab: chrome.tabs.Tab) {
-    this.id = id
+  constructor(public id: string, chromeTab: chrome.tabs.Tab) {
+
     this.created = new Date().getTime()
     this.updated = new Date().getTime()
     this.lastActive = 0
@@ -27,5 +29,35 @@ export class Tab {
     this.chromeTab = chromeTab
     this.status = TabStatus.DEFAULT
     this.isDuplicate = false
+    this.history = []
+  }
+
+  setHistoryFrom(existingTab: Tab) {
+    if (existingTab.history) {
+      this.history = existingTab.history
+    } else {
+      this.history = []
+    }
+
+  }
+
+  addToHistory(url: string) {
+    if (!this.history) {
+      this.history = [] as unknown as string[]
+    }
+    this.history.push(url)
+  }
+
+  hasHistory(): boolean {
+    // console.log("has", this.history)
+    return true //this.history && this.history.length > 0
+  }
+
+  setOnlySelected() {
+
   }
 }
+
+// constructor(public ip: string) {
+//   // note no explicit assignment
+// }

@@ -28,6 +28,7 @@
     "events": "^3.3.0",
     "firebase": "^9.9.2",
     "firebaseui": "^6.0.1",
+    "html2canvas": "^1.4.1",
     "lodash": "^4.17.21",
     "pinia": "^2.0.11",
     "quasar": "^2.6.0",

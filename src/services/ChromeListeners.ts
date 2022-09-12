@@ -60,7 +60,7 @@ class ChromeListeners {
       return
     }
     if (tabsStore.contextId && (!info.status || (Object.keys(info).length > 1))) {
-      console.log(`onUpdated: tab ${number}: >>> ${JSON.stringify(info)} <<<`)
+      console.log(`onUpdated:   tab ${number}: >>> ${JSON.stringify(info)} <<<`)
       const currentTabset = tabsStore.tabsets.get(tabsStore.currentTabsetId)
       if (currentTabset) {
         if (tabsStore.isContextMode) {
@@ -71,12 +71,19 @@ class ChromeListeners {
             return
           }
           const index = _.findIndex(currentTabset.tabs, t => t.chromeTab.id === tab.id);
-          console.log(`onUpdated: tab ${number}:     got index ${index}`)
+          console.log(`onUpdated:   tab ${number}:     got index ${index}`)
           if (index >= 0) {
-            // //TODO reuse old tab id?
+            const existingTab = currentTabset.tabs[index]
             const updatedTab = new Tab(uid(), tab)
+            if (existingTab.chromeTab.url !== updatedTab.chromeTab.url && existingTab.chromeTab.url !== 'chrome://newtab/') {
+              console.log(`onUpdated:   tab ${number}:     updating tab url ${updatedTab.chromeTab.url}`, existingTab, updatedTab)
+              updatedTab.setHistoryFrom(existingTab)
+              if (existingTab.chromeTab.url) {
+                updatedTab.addToHistory(existingTab.chromeTab.url)
+              }
+            }
             if (!tab.title?.startsWith("Tabset")) {
-              console.log(`onUpdated: tab ${number}:     setting status CREATED`)
+              console.log(`onUpdated:   tab ${number}:     setting status CREATED`)
               updatedTab.status = TabStatus.CREATED
             }
             currentTabset.tabs.splice(index, 1, updatedTab);
@@ -88,7 +95,7 @@ class ChromeListeners {
           } else {
             if (!tab.title?.startsWith("Tabset")) {
               const newTab = new Tab(uid(), tab)
-              console.log(`onUpdated: tab ${number}:     setting status CREATED`)
+              console.log(`onUpdated:   tab ${number}:     setting status CREATED`)
               newTab.status = TabStatus.CREATED
               currentTabset.tabs.push(newTab)
               if (!this.inProgress) {
@@ -96,6 +103,7 @@ class ChromeListeners {
               }
             }
           }
+          TabsetService.saveTabset(currentTabset)
         } else if (tabsStore.isLiveMode) {
           //console.log(`onUpdated: tab ${number}:     live mode`)
 
@@ -156,6 +164,9 @@ class ChromeListeners {
       return
     }
     console.log(`onActivated: tab ${info.tabId} activated: >>> ${JSON.stringify(info)}`)
+    // chrome.tabs.captureVisibleTab( function (stream) {
+    //   console.log("stream onActivated", stream)
+    // })
     // chrome.tabs.get(info.tabId, tab => {
     //   //console.log("got tab", tab)
     //   const url = tab.url
@@ -188,12 +199,68 @@ class ChromeListeners {
     console.debug(`onDetached: tab ${number} detached: ${JSON.stringify(info)}`)
   }
 
-   onHighlighted(info: chrome.tabs.TabHighlightInfo) {
+  onHighlighted(info: chrome.tabs.TabHighlightInfo) {
     console.debug(`onHighlighted: tab ${info.tabIds} highlighted: ${JSON.stringify(info)}`)
   }
 
   onZoomChange(info: chrome.tabs.ZoomChangeInfo) {
     //console.log(`onZoomChange: tab ${info.tabId} zoom change: ${JSON.stringify(info)}`)
+  }
+
+  onMessage(request: any, sender: chrome.runtime.MessageSender, sendResponse: any) {
+    // Variant One (hmtl2canvas)
+    /*console.log("got message", sender.tab)
+    console.log("got message", request)
+    console.log(sender.tab ?
+      "from a content script:" + sender.tab.url :
+      "from the extension");
+    //if (request.greeting === "hello")
+    TabsetService.saveThumbnailFor(sender.tab, request.thumbnail)
+    sendResponse({farewell: "cheers"});*/
+
+    // Variant Two
+    chrome.tabs.captureVisibleTab(
+      {},
+      function (dataUrl) {
+        console.log("capturing thumbnail for ", sender.tab?.id, Math.round(dataUrl.length / 1024) + "kB")
+
+        let img = new Image()
+        img.src = dataUrl
+        img.onload = () => {
+          let canvas = document.createElement('canvas')
+          let width = img.width
+          let height = img.height
+          const MAX_WIDTH = 300
+          const MAX_HEIGHT = 200
+
+          if (width > height) {
+            if (width > MAX_WIDTH) {
+              height *= MAX_WIDTH / width
+              width = MAX_WIDTH
+            }
+          } else {
+            if (height > MAX_HEIGHT) {
+              width *= MAX_HEIGHT / height
+              height = MAX_HEIGHT
+            }
+          }
+          let ctx = canvas.getContext('2d')
+          // @ts-ignore
+          ctx.drawImage(img, 0, 0, width,height)
+          //resolve(canvas.toDataURL()) // this will return base64 image results after resize
+
+          console.log("capturing thumbnail for ", sender.tab?.id, Math.round(canvas.toDataURL().length / 1024) + "kB")
+          TabsetService.saveThumbnailFor(sender.tab, canvas.toDataURL())
+          sendResponse({imgSrc: dataUrl});
+
+        }
+
+
+
+      }
+    );
+
+    return true;
   }
 }
 

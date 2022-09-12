@@ -6,12 +6,16 @@ import TabsetService from "src/services/TabsetService";
 
 export const useNotificationsStore = defineStore('notifications', {
     state: () => ({
-      info: 'Welcome to Tabset Extension'
+      info: '',
+      selectedTab: null as unknown as Tab
     }),
     getters: {},
     actions: {
       setInfo(msg: string) {
         this.info = msg
+      },
+      setSelectedTab(tab: Tab) {
+        this.selectedTab = tab
       }
     }
   }

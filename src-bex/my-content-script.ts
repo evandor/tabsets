@@ -4,7 +4,8 @@
 
 // Hooks added here have a bridge allowing communication between the BEX Content Script and the Quasar Application.
 // More info: https://quasar.dev/quasar-cli/developing-browser-extensions/content-hooks
-import { bexContent } from 'quasar/wrappers'
+import {bexContent} from 'quasar/wrappers'
+import html2canvas from "html2canvas";
 
 // console.log("in bexContext11")
 
@@ -54,7 +55,33 @@ import { bexContent } from 'quasar/wrappers'
 // })()
 
 export default bexContent((bridge) => {
-  console.log("bexContentBridge", bridge)
+  console.log("bexContentBridge1", bridge)
+  console.log("bexContentBridge2", document.body)
+
+
+  chrome.runtime.sendMessage({msg: "capture"}, function(response) {
+    console.log("response")
+  });
+
+  // @ts-ignore
+  // html2canvas(document.body, {width: 600, height: 400})
+  //   .then(canvas => {
+  //     console.log("xxxx", canvas)
+  //     var image = canvas.toDataURL("image/png").replace("image/png", "image/octet-stream");
+  //     console.log("image", image)
+  //
+  //     chrome.runtime.sendMessage({thumbnail: image}, function (response) {
+  //       console.log("yyyy", response);
+  //     });
+  //
+  //     // document.body.appendChild(canvas)
+  //   })
+  //   .catch(err => {
+  //     console.log("error", err)
+  //   })
+
+
+
   /**
    * When the drawer is toggled set the iFrame height to take the whole page.
    * Reset when the drawer is closed.

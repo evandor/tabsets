@@ -5,6 +5,7 @@ import _ from "lodash";
 import {Tab, TabStatus} from "src/models/Tab";
 import {Tabset} from "src/models/Tabset";
 import Navigation from "src/services/Navigation";
+import {useNotificationsStore} from "stores/notificationsStore";
 
 class TabsetService {
 
@@ -101,10 +102,15 @@ class TabsetService {
         }))
   }
 
+  getCurrentTabset(): Tabset | undefined {
+    const tabsStore = useTabsStore()
+    return tabsStore.tabsets.get(tabsStore.currentTabsetId)
+  }
+
 
   setStatus(tabId: number, status: TabStatus) {
     const tabsStore = useTabsStore()
-    const currentTabset: Tabset = tabsStore.tabsets.get(tabsStore.currentTabsetId) || new Tabset("", "", [])
+    const currentTabset: Tabset = this.getCurrentTabset() || new Tabset("", "", [])
     _.forEach(
       _.filter(currentTabset.tabs, (t: Tab) => t.chromeTab.id === tabId),
       r => r.status = status)
@@ -118,13 +124,14 @@ class TabsetService {
    * @param name the tabset's name (TODO: validation)
    * @param tabs an array of Chrome tabs.
    */
-  saveOrReplace(name: string, tabs: chrome.tabs.Tab[]):Promise<boolean> {
-    return useTabsStore().saveOrCreateTabset(name)
+  saveOrReplace(name: string, tabs: chrome.tabs.Tab[], merge: boolean = false): Promise<boolean> {
+    console.log("merge", merge)
+    return useTabsStore().saveOrCreateTabset(name, merge)
   }
 
   togglePin(tabId: number) {
     const tabsStore = useTabsStore()
-    const currentTabset: Tabset = tabsStore.tabsets.get(tabsStore.currentTabsetId) || new Tabset("", "", [])
+    const currentTabset: Tabset = this.getCurrentTabset() || new Tabset("", "", [])
     _.filter(currentTabset.tabs, t => t.chromeTab.id === tabId)
       .forEach(t => {
         t.chromeTab.pinned = !t.chromeTab.pinned
@@ -153,7 +160,9 @@ class TabsetService {
   }
 
   selectTabset(tabsetId: string): void {
+    console.log("selecting tabset", tabsetId)
     const tabsStore = useTabsStore()
+    this.resetSelectedTabs()
     tabsStore.currentTabsetId = tabsetId;
   }
 
@@ -186,9 +195,38 @@ class TabsetService {
       tabsStore.pendingTabs,
       t => {
         if (t.chromeTab?.id) {
-         // Navigation.closeTab(t.chromeTab)
+          // Navigation.closeTab(t.chromeTab)
         }
       })
+  }
+
+  setOnlySelectedTab(tab: Tab) {
+    const currentTabset = this.getCurrentTabset()
+    if (currentTabset) {
+      _.forEach(currentTabset.tabs, (t: Tab) => {
+        t.selected = t.id === tab.id;
+      })
+    }
+  }
+
+  resetSelectedTabs() {
+    const currentTabset = this.getCurrentTabset()
+    if (currentTabset) {
+      _.forEach(currentTabset.tabs, (t: Tab) => t.selected = false)
+    }
+    useNotificationsStore().setSelectedTab(null as unknown as Tab)
+  }
+
+  saveThumbnailFor(tab: chrome.tabs.Tab | undefined, thumbnail: string) {
+    const currentTabset = this.getCurrentTabset()
+    if (tab && currentTabset) {
+      _.forEach(currentTabset.tabs, t => {
+        if (t.chromeTab.id === tab.id) {
+          localStorage.setItem("tabsets.tab." + t.id, thumbnail)
+        }
+      })
+    }
+
   }
 }
 

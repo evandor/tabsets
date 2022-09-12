@@ -131,6 +131,8 @@
         <q-input dense v-model="newTabsetName" autofocus @keyup.enter="prompt = false"/>
         <!--        <q-checkbox v-model="clearTabs" label="close current Tabs"/>-->
         <div class="text-body2 text-warning">{{ newTabsetDialogWarning() }}</div>
+        <q-radio v-model="merge" val="true" label="Merge" v-if="tabNameExists()"></q-radio>
+        <q-radio v-model="merge" val="false" label="Overwrite" v-if="tabNameExists()"></q-radio>
       </q-card-section>
 
       <q-card-actions align="right" class="text-primary">
@@ -161,6 +163,7 @@ const localStorage = useQuasar().localStorage
 const tabsStore = useTabsStore()
 const tabGroupsStore = useTabGroupsStore()
 const tabsetname = ref(tabsStore.currentTabsetName)
+const merge = ref("false")
 
 const $q = useQuasar()
 
@@ -202,16 +205,15 @@ const newTabsetDialogWarning = () => {
   if (newTabsetName.value.trim() === 'current') {
     return "Please use a different name, 'current' is reserved"
   }
-  const existingNames = _.map([...tabsStore.tabsets.values()], ts => ts.name)
-  if (_.find(existingNames, name => name === newTabsetName.value.trim())) {
-    return "Tabset " + newTabsetName.value + " already exists and will be overwritten."
+  if (tabsStore.nameExistsInContextTabset(newTabsetName.value)) {
+    return "Tabset " + newTabsetName.value + " already exists. Please choose:"
   }
   return ""
 }
 
 const saveTabset = () => {
   const tsName = newTabsetName.value
-  TabsetService.saveOrReplace(tsName, tabsStore.tabs)
+  TabsetService.saveOrReplace(tsName, tabsStore.tabs, merge.value == 'true')
     .then(wasNew => {
       $q.notify({
         message: wasNew ? 'Tabset ' + tsName + ' created successfully' : 'Tabset ' + tsName + 'was overwritten',
@@ -226,5 +228,7 @@ const saveTabset = () => {
   })
 
 }
+
+const tabNameExists = () => tabsStore.nameExistsInContextTabset(newTabsetName.value)
 
 </script>

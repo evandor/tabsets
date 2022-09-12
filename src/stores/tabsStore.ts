@@ -125,6 +125,12 @@ export const useTabsStore = defineStore('tabs', {
       const tabs: Tab[] = state.tabsets.get(state.contextId)?.tabs || []
       return (tabId: number) => _.find(tabs, t => t.chromeTab.id === tabId)
     },
+    nameExistsInContextTabset: (state) => {
+      return (searchName: string) => {
+        const existingNames = _.map([...state.tabsets.values()], ts => ts.name)
+        return _.find(existingNames, name => name === searchName.trim())
+      }
+    },
     tabsetsWithoutCurrent: (state) => _.filter([...state.tabsets.values()], ts => ts.id !== 'current')
   },
 
@@ -167,7 +173,7 @@ export const useTabsStore = defineStore('tabs', {
     async loadTabs(eventName: string) {
       // potentially expansive method
       // console.log(`${eventName}: -- loading tabs for tabset '${this.currentTabsetId}'`)
-      console.log(`${eventName}: -- loading tabs for tabset 'current'`)
+      //console.log(`${eventName}: -- loading tabs for tabset 'current'`)
       this.tabs = await queryTabs()
       const current = new Tabset("current", "current",
         _.map(this.tabs, t => {
@@ -187,6 +193,20 @@ export const useTabsStore = defineStore('tabs', {
       chrome.tabs.onDetached.addListener((number, info) => ChromeListeners.onDetached(number, info))
       chrome.tabs.onHighlighted.addListener((info) => ChromeListeners.onHighlighted(info))
       chrome.tabs.onZoomChange.addListener((info) => ChromeListeners.onZoomChange(info))
+
+      chrome.runtime.onMessage.addListener((request, sender, sendResponse) => ChromeListeners.onMessage(request, sender, sendResponse))
+
+      // chrome.runtime.onMessage.addListener(
+      //   function(request, sender, sendResponse) {
+      //
+      //   }
+      // );
+      // chrome.runtime.onMessage.addListener(
+      //   function (request, sender, sendResponse) {
+      //
+      //   }
+      // );
+
     },
     tabsForGroup(groupId: number): chrome.tabs.Tab[] {
       // @ts-ignore
@@ -214,7 +234,7 @@ export const useTabsStore = defineStore('tabs', {
       TabsetService.saveTabset(currentTabset)
     },
 
-    async saveOrCreateTabset(tabsetName: string, merge:boolean = false): Promise<boolean> {
+    async saveOrCreateTabset(tabsetName: string, merge: boolean = false): Promise<boolean> {
       console.log("--- saveOrCreateTabset start -------------")
       const found = _.find([...this.tabsets.values()], ts => ts.name === tabsetName)
       let ts: Tabset = null as unknown as Tabset

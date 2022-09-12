@@ -1,7 +1,9 @@
 <template>
+
   <div class="row items-start">
     <div class="col-xs-12 col-sm-4 col-md-3 col-lg-2 q-pa-xs" v-for="tab in props.tabs">
-      <q-card class="my-card" flat bordered :style="cardStyle(tab)" @mouseover="setInfo(tab)">
+
+      <q-card class="my-card" flat bordered :style="cardStyle(tab)" @mouseover="setInfo(tab)" @click="selectTab(tab)">
         <q-card-section horizontal>
           <q-card-section class="q-pt-xs cursor-pointer" style="width:100%;">
             <div class="row items-baseline">
@@ -21,23 +23,23 @@
                 <q-icon name="close" @click="closeTab(tab)"/>
               </div>
               <q-tooltip>
-                {{ getHost(tab.chromeTab.url, true) }}
+                {{ getHost(tab.chromeTab?.url, true) }}
               </q-tooltip>
             </div>
 
             <div class="text-overline ellipsis">
-              {{ getHost(tab.chromeTab.url, true) }}
+              {{ getHost(tab.chromeTab?.url, true) }}
               <q-tooltip>
-                {{ getHost(tab.chromeTab.url, false) }}
+                {{ getHost(tab.chromeTab?.url, false) }}
               </q-tooltip>
             </div>
 
             <div class="text-caption text-grey wrap" style="overflow:hidden;">
               <q-item-label lines="1" class="q-mt-xs text-caption text-primary"
-                            @click="Navigation.openOrCreateTab(tab.chromeTab?.url || tab.url)">
-                <span class="cursor-pointer">{{ maxChar(30, withoutHostname(tab.chromeTab?.url || tab.url)) }}</span>
+                            @click="Navigation.openOrCreateTab(tab.chromeTab?.url )">
+                <span class="cursor-pointer">{{ maxChar(30, withoutHostname(tab.chromeTab?.url )) }}</span>
                 <q-tooltip>
-                  {{ tab.chromeTab?.url || tab.url }}
+                  {{ tab.chromeTab?.url  }}
                 </q-tooltip>
               </q-item-label>
             </div>
@@ -59,6 +61,15 @@
                         @click="togglePin(tab.chromeTab.id)">
                   <q-tooltip v-text="tab.chromeTab?.pinned ? 'Unpin this tab' : 'Pin this tab'"/>
                 </q-icon>
+
+                <q-icon name="keyboard_arrow_left" class="cursor-pointer" v-if="tab.history?.length > 0">
+                  <q-tooltip>{{tab.history}}</q-tooltip>
+
+                </q-icon>
+                <q-icon name="keyboard_arrow_right" class="cursor-pointer" v-if="tab.history?.length > 0">
+
+
+                </q-icon>
               </div>
             </div>
 
@@ -76,12 +87,11 @@
 </template>
 
 <script setup lang="ts">
-import {TabsetApi} from "src/services/TabsetApi";
 import {date, LocalStorage} from "quasar";
 import Navigation from "src/services/Navigation";
 import {Tab, TabStatus} from "src/models/Tab";
 import TabsetService from "src/services/TabsetService";
-import {notificationsStore, useNotificationsStore} from "stores/notificationsStore";
+import {useNotificationsStore} from "stores/notificationsStore";
 
 const props = defineProps({
   tabs: {
@@ -91,8 +101,6 @@ const props = defineProps({
 })
 
 const emits = defineEmits(['sendCaption'])
-
-const tabsetApi = new TabsetApi(null as unknown as LocalStorage)
 
 function getShortHostname(host: string) {
   const nrOfDots = (host.match(/\./g) || []).length
@@ -153,6 +161,10 @@ function cardStyle(tab: Tab) {
   } else if (TabStatus.DELETED === tab.status) {
     borderColor = "border-color:#EF9A9A"
   }
+  if (tab.selected) {
+    borderColor = "border-color:#000066"
+  }
+
   let background = ''
   if (tab.isDuplicate) {
     background = "background: radial-gradient(circle, #FFFFFF 0%, #FFECB3 100%)"
@@ -168,13 +180,20 @@ function isOpen(tab: Tab): boolean {
 
 const setInfo = (tab: Tab) => {
   const notificationsStore = useNotificationsStore()
-  const parts = (tab.chromeTab.url || '').split('?')
+  const parts = (tab.chromeTab?.url || '').split('?')
   if (parts.length > 1) {
     emits('sendCaption', parts[0] + "[... params omitted....]")
   } else if (parts.length === 1) {
     emits('sendCaption', parts[0].toString());
   }
-  notificationsStore.setInfo(`created: ${date.formatDate(tab.created, 'DD.MM.YYYY HH:mm')}`)
+//  notificationsStore.setInfo(`created: ${date.formatDate(tab.created, 'DD.MM.YYYY HH:mm')}`)
+}
+
+const selectTab = (tab: Tab) => {
+  console.log("tab selected", tab)
+  TabsetService.setOnlySelectedTab(tab)
+  const notificationStore = useNotificationsStore()
+  notificationStore.setSelectedTab(tab)
 }
 
 </script>
