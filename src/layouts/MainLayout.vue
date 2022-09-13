@@ -3,7 +3,7 @@
     <q-header elevated>
       <q-toolbar>
 
-<!--        <q-btn dense flat round icon="menu" v-if="!toggleLeftDrawer" @click="toggleLeftDrawer"/>-->
+        <!--        <q-btn dense flat round icon="menu" v-if="!toggleLeftDrawer" @click="toggleLeftDrawer"/>-->
 
         <q-input dark dense standout v-model="search" input-class="text-right"
                  style="width:260px;"
@@ -17,26 +17,63 @@
         </q-input>
 
         <q-toolbar-title style="position:absolute;left:300px;">
+          <q-icon name="circle" :color="tabsStore.active ? 'green' : 'red'">
+            <q-tooltip v-if="tabsStore.active">Your tabs are being monitored, changes are logged in this extension.
+            </q-tooltip>
+            <q-tooltip v-if="!tabsStore.active">Your tabs are not being tracked right now.</q-tooltip>
+          </q-icon>
           <q-btn stretch flat :label="toolbarTitle()" to="/"/>
         </q-toolbar-title>
 
 
         <q-space/>
 
-        <div>
-          <!--          <q-icon name="circle" color="green" v-if="tabsStore.listenersOn">-->
-          <!--            <q-tooltip>Listeners are ON</q-tooltip>-->
-          <!--          </q-icon>-->
-          <!--          <q-icon name="circle" color="red" v-else>-->
-          <!--            <q-tooltip>Listeners are OFF</q-tooltip>-->
-          <!--          </q-icon>-->
-        </div>
         <q-space/>
+        <q-toggle
+          left-label
+          v-model="tabsStore.active"
+          label="Tracking active"
+        />
+        &nbsp;
         <div>{{ appVersion }}</div>
       </q-toolbar>
     </q-header>
 
     <q-drawer show-if-above v-model="leftDrawerOpen" side="left" bordered>
+
+      <q-list style="max-width: 318px" class="q-mt-md">
+        <q-expansion-item
+          expand-separator
+          icon="home"
+          label="Browser"
+          default-opened
+        >
+          <q-item clickable v-ripple>
+            <q-item-section>
+              <q-item clickable v-ripple @click="selectTabset('current')"
+                      :style="'current' === tabsStore.currentTabsetId ? 'background-color:#efefef' : 'border:0px solid #bfbfbf'">
+                <q-item-section>
+                  <q-item-label overline
+                                v-text="tabsStore.tabs.length > 1 ? 'Open tabs (' + tabsStore.tabs.length + ' tabs)' : 'Open tabs (' + tabsStore.tabs.length + ' tab)'"/>
+                </q-item-section>
+              </q-item>
+            </q-item-section>
+          </q-item>
+
+          <q-item clickable v-ripple>
+            <q-item-section>
+              <q-item clickable v-ripple @click="selectTabset('pending')"
+                      :style="'current' === tabsStore.currentTabsetId ? 'background-color:#efefef' : 'border:0px solid #bfbfbf'">
+                <q-item-section>
+                  <q-item-label overline
+                                v-text="tabsStore.tabs.length > 1 ? 'Pending tabs (' + tabsStore.tabs.length + ' tabs)' : 'Pending tabs (' + tabsStore.tabs.length + ' tab)'"/>
+                </q-item-section>
+              </q-item>
+            </q-item-section>
+          </q-item>
+
+        </q-expansion-item>
+      </q-list>
 
       <q-list style="max-width: 318px" class="q-mt-md">
         <q-expansion-item
@@ -66,13 +103,13 @@
 
     </q-drawer>
 
-    <q-page-container >
-      <router-view />
+    <q-page-container>
+      <router-view/>
     </q-page-container>
 
     <q-footer class="bg-white text-black">
       <div class="q-ma-sm">
-        {{notificationsStore.info}}
+        {{ notificationsStore.info }}
         <TabInfo></TabInfo>
       </div>
     </q-footer>
@@ -81,7 +118,7 @@
 </template>
 
 <script setup lang="ts">
-import {ref} from 'vue';
+import {ref, watchEffect} from 'vue';
 import {useQuasar} from "quasar";
 import {TabsetApi} from "src/services/TabsetApi";
 import {useTabsStore} from "src/stores/tabsStore";
@@ -110,12 +147,21 @@ const clearTabsets = ref(false)
 
 const localStorage = useQuasar().localStorage
 const tabsetApi = new TabsetApi(localStorage)
+//@ts-ignore
 const appVersion = import.meta.env.PACKAGE_VERSION
 const leftDrawerOpen = ref(true)
 
 useMeta(() => {
   return {
     title: tabsStore.title
+  }
+})
+
+watchEffect(() => {
+  console.log("tabsStore.active", tabsStore.active)
+  if (tabsStore.active !== null) {
+    console.log("tabsStore.active", tabsStore.active)
+    localStorage.set("active", tabsStore.active)
   }
 })
 
@@ -148,9 +194,9 @@ async function submitSearch() {
   router.push("/search/" + search.value)
 }
 
-function createNewTabset() {
-  tabsetService.createNewTabset(newTabsetName.value, clearTabsets.value)
-}
+// function createNewTabset() {
+//   tabsetService.createNewTabset(newTabsetName.value, clearTabsets.value)
+// }
 
 const toolbarTitle = () => tabsStore.getNameForContext !== 'undefined' ?
   'Tabset: ' + tabsStore.getNameForContext :

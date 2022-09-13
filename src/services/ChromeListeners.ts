@@ -28,7 +28,7 @@ class ChromeListeners {
   onCreated(tab: chrome.tabs.Tab) {
     this.eventTriggered()
     const tabsStore = useTabsStore()
-    if (!tabsStore.listenersOn) {
+    if (!tabsStore.active) {
       return
     }
     if (tabsStore.isContextMode) {

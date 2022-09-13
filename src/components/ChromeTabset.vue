@@ -214,9 +214,19 @@ const newTabsetDialogWarning = () => {
 const saveTabset = () => {
   const tsName = newTabsetName.value
   TabsetService.saveOrReplace(tsName, tabsStore.tabs, merge.value == 'true')
-    .then(wasNew => {
+    .then(result => {
+      //@ts-ignore
+      const replaced = result.replaced
+      //@ts-ignore
+      const merged = result.merged
+      let message = 'Tabset ' + tsName + ' created successfully'
+      if (replaced && merged) {
+        message = 'Tabset ' + tsName + ' was updated'
+      } else if (replaced) {
+        message = 'Tabset ' + tsName + ' was overwritten'
+      }
       $q.notify({
-        message: wasNew ? 'Tabset ' + tsName + ' created successfully' : 'Tabset ' + tsName + 'was overwritten',
+        message: message,
         type: 'positive'
       })
     }).catch(ex => {

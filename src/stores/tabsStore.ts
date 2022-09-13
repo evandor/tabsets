@@ -7,6 +7,7 @@ import {Tab, TabStatus} from "src/models/Tab";
 import TabsetService from "src/services/TabsetService";
 import ChromeListeners from "src/services/ChromeListeners";
 import ChromeApi from "src/services/ChromeApi";
+import {NewOrReplacedTabset} from "src/models/NewOrReplacedTabset";
 
 async function queryTabs(): Promise<chrome.tabs.Tab[]> {
   // @ts-ignore
@@ -39,7 +40,10 @@ export const useTabsStore = defineStore('tabs', {
   state: () => ({
 
     // current context id (one of the tabsets ids, null if not set)
-    contextId: null as unknown as string,
+    contextId: null as unknown as string, // deprecated, use 'active'
+
+    // active means: tabs(-sets) are trackend
+    active: null as unknown as boolean,
 
     // chrome's current's windows tabs, reloaded on various events
     tabs: [] as unknown as chrome.tabs.Tab[],
@@ -98,9 +102,6 @@ export const useTabsStore = defineStore('tabs', {
       return tabset?.name || 'unknown'
     }),
     getCurrentTabs: (state) => {
-      // console.log("getCurrentTabs called for", state.currentTabsetId)
-      // console.log("2", state.tabsets.get(state.currentTabsetId))
-      // console.log("3", state.tabsets)
       return state.tabsets.get(state.currentTabsetId)?.tabs || []
     },
     currentTabsetName: (state) => {
@@ -148,24 +149,7 @@ export const useTabsStore = defineStore('tabs', {
         }))
       this.tabsets.set("current", tabsFromBrowser)
 
-      // --- setting all tabs from local storage tabsets
-      const currentContext = localStorage.getItem(TABSETS_CONTEXT_IDENT) as string
-      _.forEach(
-        _.filter(localStorage.getAllKeys(),
-          (t: string) => t.startsWith(TABSETS_TABSET_IDENT + ".")),
-        key => {
-          const tabsetId = key.replace(TABSETS_TABSET_IDENT + ".", "")
-          const tabset: Tabset | null = localStorage.getItem(key)
-          if (tabset) {
-            console.log("setting tabset", key)
-            this.tabsets.set(tabsetId, tabset)
-            if (currentContext && currentContext === tabsetId) {
-              console.log("setting current context", currentContext)
-              this.contextId = tabset.id
-              this.currentTabsetId = tabset.id
-            }
-          }
-        })
+      this.tabsets.set("pending", new Tabset("pending", "pending", []))
 
       // // marking duplicates (inside each tabset)
       // _.forEach([...this.tabsets.values()], tabset => markDuplicates(tabset))
@@ -234,7 +218,7 @@ export const useTabsStore = defineStore('tabs', {
       TabsetService.saveTabset(currentTabset)
     },
 
-    async saveOrCreateTabset(tabsetName: string, merge: boolean = false): Promise<boolean> {
+    async updateOrCreateTabset(tabsetName: string, merge: boolean = false): Promise<NewOrReplacedTabset> {
       console.log("--- saveOrCreateTabset start -------------")
       const found = _.find([...this.tabsets.values()], ts => ts.name === tabsetName)
       let ts: Tabset = null as unknown as Tabset
@@ -253,7 +237,7 @@ export const useTabsStore = defineStore('tabs', {
           console.log("found existing tabset " + found.id + ", replacing...")
           ts = new Tabset(found.id, tabsetName, _.map(this.tabs, t => new Tab(uid(), t)));
           this.tabsets.set(found.id, ts)
-          TabsetService.saveTabset(ts)
+          //TabsetService.saveTabset(ts)
         }
       } else {
         console.log("didn't find existing tabset, creating new...")
@@ -268,12 +252,9 @@ export const useTabsStore = defineStore('tabs', {
         console.log("got ts", ts)
         this.tabsets.set(useId, ts)
       }
-      this.currentTabsetId = ts.id
-      this.contextId = ts.id
-      await TabsetService.saveTabset(ts)
-      await this.localStorage.set(TABSETS_CONTEXT_IDENT, this.contextId)
+
       console.log("--- saveOrCreateTabset end -------------")
-      return found !== undefined;
+      return new NewOrReplacedTabset(found !== undefined, ts)
     },
 
     deleteTabset(tabsetId: string) {
@@ -286,7 +267,10 @@ export const useTabsStore = defineStore('tabs', {
     activateListeners() {
       console.log("setting listeners to true")
       this.listenersOn = true
+    },
+    addTabset(ts: Tabset) {
+      console.log("adding tabset", ts)
+      this.tabsets.set(ts.id, ts)
     }
-
   }
 });

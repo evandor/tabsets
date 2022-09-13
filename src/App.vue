@@ -18,5 +18,6 @@ tabGroupsStore.loadTabGroups();
 tabGroupsStore.initListeners();
 
 tabsetService.setLocalStorage(useQuasar().localStorage)
+tabsetService.init()
 
 </script>

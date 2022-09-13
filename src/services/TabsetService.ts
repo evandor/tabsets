@@ -5,9 +5,14 @@ import _ from "lodash";
 import {Tab, TabStatus} from "src/models/Tab";
 import {Tabset} from "src/models/Tabset";
 import Navigation from "src/services/Navigation";
-import {useNotificationsStore} from "stores/notificationsStore";
+import {useNotificationsStore} from "src/stores/notificationsStore";
+import {IDBPDatabase, openDB} from "idb";
+
+//import {Localbase} from 'localbase'
 
 class TabsetService {
+
+  private db: IDBPDatabase = null as unknown as IDBPDatabase
 
   private localStorage: LocalStorage = null as unknown as LocalStorage
 
@@ -15,16 +20,110 @@ class TabsetService {
     this.localStorage = localStorage;
   }
 
-  async createNewTabset(tabsetName: string, closeTabs: boolean) {
-    console.log("creating new tabset", tabsetName, closeTabs)
-    if (closeTabs) {
-      console.log("calling chromeApi: closeAllTabs")
-      await ChromeApi.closeAllTabs()
-      //console.log("calling chromeApi: closeAllTabs - finished")
+  async init() {
+    this.db = await openDB('db', 1, {
+      upgrade(db) {
+        console.log("creating db-tabsets")
+        db.createObjectStore('tabsets');
+      },
+    });
+
+    const active = localStorage.getItem("active")
+    console.log("---active---", active)
+    if (active) {
+      useTabsStore().active = active === "__q_bool|1"
     }
+
+
+    // --- setting all tabs from local storage tabsets
     const tabsStore = useTabsStore()
-    tabsStore.saveOrCreateTabset(tabsetName)
+    const keys: IDBValidKey[] = await this.db.getAllKeys('tabsets')
+    console.log("keys", keys)
+    _.forEach(keys, k => {
+      this.db.get('tabsets', k)
+        .then(ts => tabsStore.addTabset(JSON.parse(ts)))
+        .catch(err => console.log("err", err))
+      //this.tabsets.set(tabsetId, tabset)
+    })
+    // const currentContext = localStorage.getItem(TABSETS_CONTEXT_IDENT) as string
+    // _.forEach(
+    //   _.filter(localStorage.getAllKeys(),
+    //     (t: string) => t.startsWith(TABSETS_TABSET_IDENT + ".")),
+    //   key => {
+    //     const tabsetId = key.replace(TABSETS_TABSET_IDENT + ".", "")
+    //     const tabset: Tabset | null = localStorage.getItem(key)
+    //     if (tabset) {
+    //       console.log("setting tabset", key)
+    //       this.tabsets.set(tabsetId, tabset)
+    //       if (currentContext && currentContext === tabsetId) {
+    //         console.log("setting current context", currentContext)
+    //         this.contextId = tabset.id
+    //         this.currentTabsetId = tabset.id
+    //       }
+    //     }
+    //   })
+
   }
+
+  /**
+   * Will create a new tabset (or update an existing one with matching name) with
+   * the provided Chrome tabs.
+   *
+   * The tabset is created or updated in the store, and the new data is persisted.
+   *
+   * @param name the tabset's name (TODO: validation)
+   * @param tabs an array of Chrome tabs.
+   * @param merge if true, the old values and the new ones will be merged.
+   */
+  async saveOrReplace(name: string, tabs: chrome.tabs.Tab[], merge: boolean = false): Promise<object> {
+    const tabsStore = useTabsStore()
+    const result = await tabsStore.updateOrCreateTabset(name, merge)
+    if (result && result.tabset) {
+      await this.saveTabset(result.tabset)
+      tabsStore.currentTabsetId = result.tabset.id
+      tabsStore.contextId = result.tabset.id
+      //await TabsetService.saveTabset(ts)
+      await this.localStorage.set("tabsets.context", result.tabset.id)
+
+    }
+    return {
+      replaced: result.replaced,
+      merged: merge
+    }
+  }
+
+  async saveTabset(tabset: Tabset) {
+    if ("current" === tabset.id) {
+      return
+    }
+    if (tabset.id) {
+      this.localStorage.set("tabsets.tabset." + tabset.id, tabset)
+      await this.db.put('tabsets', JSON.stringify(tabset), tabset.id);
+      //localStorage.setItem("tabsets.context", tabset.id)
+      return
+    }
+    const existingId = this.findInLocalStorage(tabset.name)
+    if (existingId) {
+      console.log("updating tabset", existingId)
+      this.localStorage.set("tabsets.tabset." + existingId, tabset)
+      await this.db.put('tabsets', JSON.stringify(tabset), existingId);
+    } else {
+      console.log(`did not find id for tabset '${tabset.name}', creating new`)
+      this.localStorage.set("tabset.tabset." + uid(), tabset)
+      await this.db.put('tabsets', JSON.stringify(tabset), uid());
+    }
+  }
+
+  // async createNewTabset(tabsetName: string, closeTabs: boolean) {
+  //   console.log("creating new tabset", tabsetName, closeTabs)
+  //   if (closeTabs) {
+  //     console.log("calling chromeApi: closeAllTabs")
+  //     await ChromeApi.closeAllTabs()
+  //     //console.log("calling chromeApi: closeAllTabs - finished")
+  //   }
+  //   const tabsStore = useTabsStore()
+  //   tabsStore.saveOrCreateTabset(tabsetName)
+  // }
 
   async restore(tabsetId: string) {
     console.log("restoring from tabset", tabsetId)
@@ -46,36 +145,18 @@ class TabsetService {
 
   }
 
-  saveTabset(tabset: Tabset) {
-    if ("current" === tabset.id) {
-      return
-    }
-    if (tabset.id) {
-      this.localStorage.set("tabsets.tabset." + tabset.id, tabset)
-      //localStorage.setItem("tabsets.context", tabset.id)
-      return
-    }
-    const existingId = this.findInLocalStorage(tabset.name)
-    if (existingId) {
-      console.log("updating tabset", existingId)
-      this.localStorage.set("tabsets.tabset." + existingId, tabset)
-    } else {
-      console.log(`did not find id for tabset '${tabset.name}', creating new`)
-      this.localStorage.set("tabset.tabset." + uid(), tabset)
-    }
-  }
 
   delete(tabsetId: string) {
     console.log("deleting tabset ", tabsetId)
     const tabset = this.getTabset(tabsetId)
     if (tabset) {
       const tabsStore = useTabsStore()
-      if (tabset.name === tabsStore.contextId) {
-        console.log("cannot delete currently active context")
-        return
-      }
+      // if (tabset.name === tabsStore.contextId) {
+      //   console.log("cannot delete currently active context")
+      //   return
+      // }
       //tabsStore.deleteTabset(tabsetId)
-      this.localStorage.remove("tabsets.tabset." + tabsetId)
+      //this.localStorage.remove("tabsets.tabset." + tabsetId)
       tabsStore.loadTabs('delete tabset event')
     }
   }
@@ -115,18 +196,6 @@ class TabsetService {
       _.filter(currentTabset.tabs, (t: Tab) => t.chromeTab.id === tabId),
       r => r.status = status)
     this.saveTabset(currentTabset)
-  }
-
-  /**
-   * Will create a new tabset (or update an existing one with matching name) with
-   * the provided Chrome tabs.
-   *
-   * @param name the tabset's name (TODO: validation)
-   * @param tabs an array of Chrome tabs.
-   */
-  saveOrReplace(name: string, tabs: chrome.tabs.Tab[], merge: boolean = false): Promise<boolean> {
-    console.log("merge", merge)
-    return useTabsStore().saveOrCreateTabset(name, merge)
   }
 
   togglePin(tabId: number) {

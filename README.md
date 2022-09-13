@@ -17,3 +17,7 @@ quasar dev
 ### Add to chrome as local extension:
 
 see https://quasar.dev/quasar-cli-vite/developing-browser-extensions/build-commands#chrome
+
+### current flaws
+
+https://github.com/dannyconnell/localbase/issues/57
