@@ -5,7 +5,7 @@
       <context-component></context-component>
     </div>
     <div class="text-body1" v-else-if="tabsStore.isLiveMode">
-      <chrome-tabset></chrome-tabset>
+      chrome tabset
     </div>
     <div v-else-if="tabsStore.isEditMode">
       <edit-tabset-component></edit-tabset-component>
@@ -30,7 +30,6 @@ import TabsetService from "src/services/TabsetService";
 import {Tab, TabStatus} from "src/models/Tab";
 import ContextComponent from "src/components/ContextComponent.vue"
 import EditTabsetComponent from "components/EditTabsetComponent.vue";
-import ChromeTabset from "components/ChromeTabset.vue";
 
 const route = useRoute();
 const router = useRouter();

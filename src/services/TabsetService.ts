@@ -4,7 +4,6 @@ import ChromeApi from "src/services/ChromeApi";
 import _ from "lodash";
 import {Tab, TabStatus} from "src/models/Tab";
 import {Tabset} from "src/models/Tabset";
-import Navigation from "src/services/Navigation";
 import {useNotificationsStore} from "src/stores/notificationsStore";
 import {IDBPDatabase, openDB} from "idb";
 
@@ -35,33 +34,15 @@ class TabsetService {
     }
 
 
-    // --- setting all tabs from local storage tabsets
+    // --- setting all tabs from storage
     const tabsStore = useTabsStore()
     const keys: IDBValidKey[] = await this.db.getAllKeys('tabsets')
-    console.log("keys", keys)
     _.forEach(keys, k => {
       this.db.get('tabsets', k)
         .then(ts => tabsStore.addTabset(JSON.parse(ts)))
         .catch(err => console.log("err", err))
-      //this.tabsets.set(tabsetId, tabset)
     })
-    // const currentContext = localStorage.getItem(TABSETS_CONTEXT_IDENT) as string
-    // _.forEach(
-    //   _.filter(localStorage.getAllKeys(),
-    //     (t: string) => t.startsWith(TABSETS_TABSET_IDENT + ".")),
-    //   key => {
-    //     const tabsetId = key.replace(TABSETS_TABSET_IDENT + ".", "")
-    //     const tabset: Tabset | null = localStorage.getItem(key)
-    //     if (tabset) {
-    //       console.log("setting tabset", key)
-    //       this.tabsets.set(tabsetId, tabset)
-    //       if (currentContext && currentContext === tabsetId) {
-    //         console.log("setting current context", currentContext)
-    //         this.contextId = tabset.id
-    //         this.currentTabsetId = tabset.id
-    //       }
-    //     }
-    //   })
+
 
   }
 
@@ -198,6 +179,22 @@ class TabsetService {
     this.saveTabset(currentTabset)
   }
 
+  saveToTabset(tab: Tab) {
+    const tabsStore = useTabsStore()
+    const currentTabset: Tabset = this.getCurrentTabset() || new Tabset("", "", [])
+    console.log("got tabset", currentTabset)
+    tab.status = TabStatus.DEFAULT
+    currentTabset.tabs.push(tab)
+
+    const index = _.findIndex(tabsStore.pendingTabset.tabs, t => t.id === tab.id)
+    console.log("found", index)
+    tabsStore.pendingTabset.tabs.splice(index, 1);
+    // _.forEach(
+    //   _.filter(currentTabset.tabs, (t: Tab) => t.chromeTab.id === tabId),
+    //   r => r.status = status)
+    this.saveTabset(currentTabset)
+  }
+
   togglePin(tabId: number) {
     const tabsStore = useTabsStore()
     const currentTabset: Tabset = this.getCurrentTabset() || new Tabset("", "", [])
@@ -208,17 +205,17 @@ class TabsetService {
       })
   }
 
-  unsetContext() {
-    const tabsStore = useTabsStore()
-    this.localStorage.remove("tabsets.context")
-    tabsStore.contextId = null as unknown as string
-  }
-
-  setContext(currentTabsetId: string) {
-    const tabsStore = useTabsStore()
-    this.localStorage.set("tabsets.context", currentTabsetId)
-    tabsStore.contextId = currentTabsetId
-  }
+  // unsetContext() {
+  //   const tabsStore = useTabsStore()
+  //   this.localStorage.remove("tabsets.context")
+  //   tabsStore.contextId = null as unknown as string
+  // }
+  //
+  // setContext(currentTabsetId: string) {
+  //   const tabsStore = useTabsStore()
+  //   this.localStorage.set("tabsets.context", currentTabsetId)
+  //   tabsStore.contextId = currentTabsetId
+  // }
 
   isOpen(tabUrl: string): boolean {
     const tabsStore = useTabsStore()

@@ -23,6 +23,11 @@ const routes: RouteRecordRaw[] = [
     children: [{ path: '', component: () => import('pages/CurrentTabs.vue') }],
   },
   {
+    path: '/browser',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [{ path: '', component: () => import('pages/ChromeTabset.vue') }],
+  },
+  {
     path: '/search/:term',
     component: () => import('layouts/MainLayout.vue'),
     children: [{ path: '', component: () => import('pages/SearchPage.vue') }],

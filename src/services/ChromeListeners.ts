@@ -31,88 +31,79 @@ class ChromeListeners {
     if (!tabsStore.active) {
       return
     }
-    if (tabsStore.isContextMode) {
-      console.log(`onCreated: tab ${tab.id}: >>> ${tab.pendingUrl}`)
-      const maybeTab = tabsStore.tabForUrlInContextTabset(tab.pendingUrl || '')
-      if (maybeTab) {
-        console.log(`onCreated: tab ${tab.id}: updating existing chromeTab.id: ${maybeTab.chromeTab.id} -> ${tab.id}`)
-        maybeTab.chromeTab.id = tab.id
-        return
-      }
-      // add to current tabset if not there yet
-      const currentTabset: Tabset = tabsStore.tabsets.get(tabsStore.currentTabsetId) || new Tabset("", "", [])
-      const found = _.find(currentTabset.tabs, t => t.chromeTab.url === tab.url)
-      if (!found) {
-        const newTab = new Tab(uid(), tab)
-        newTab.status = TabStatus.CREATED
-        currentTabset.tabs.push(newTab)
-        if (!this.inProgress) {
-          tabsStore.loadTabs('onCreated');
-        }
-      }
+
+    console.log(`onCreated: tab ${tab.id}: >>> ${tab.pendingUrl}`)
+    const maybeTab = tabsStore.tabForUrlInContextTabset(tab.pendingUrl || '')
+    if (maybeTab) {
+      console.log(`onCreated: tab ${tab.id}: updating existing chromeTab.id: ${maybeTab.chromeTab.id} -> ${tab.id}`)
+      maybeTab.chromeTab.id = tab.id
+      return
     }
+    // add to current tabset if not there yet
+    // const currentTabset: Tabset = tabsStore.tabsets.get(tabsStore.currentTabsetId) || new Tabset("", "", [])
+    // const found = _.find(currentTabset.tabs, t => t.chromeTab.url === tab.url)
+    // if (!found) {
+    //   const newTab = new Tab(uid(), tab)
+    //   newTab.status = TabStatus.CREATED
+    //   currentTabset.tabs.push(newTab)
+    //   if (!this.inProgress) {
+    //     tabsStore.loadTabs('onCreated');
+    //   }
+    // }
+    tabsStore.pendingTabset.tabs.push(new Tab(uid(), tab))
   }
 
   onUpdated(number: number, info: chrome.tabs.TabChangeInfo, tab: chrome.tabs.Tab) {
     this.eventTriggered()
     const tabsStore = useTabsStore()
-    if (!tabsStore.listenersOn) {
+    if (!tabsStore.active) {
       return
     }
-    if (tabsStore.contextId && (!info.status || (Object.keys(info).length > 1))) {
+    if (!info.status || (Object.keys(info).length > 1)) {
       console.log(`onUpdated:   tab ${number}: >>> ${JSON.stringify(info)} <<<`)
       const currentTabset = tabsStore.tabsets.get(tabsStore.currentTabsetId)
-      if (currentTabset) {
-        if (tabsStore.isContextMode) {
-          // console.log(`onUpdated: tab ${number}:     context mode`)
-          // console.log(`onUpdated: tab ${number}:     found current tabset ${currentTabset.id}`)
-          const maybeTab = tabsStore.tabForUrlInContextTabset(tab.url || '')
-          if (maybeTab) {
-            return
-          }
-          const index = _.findIndex(currentTabset.tabs, t => t.chromeTab.id === tab.id);
-          console.log(`onUpdated:   tab ${number}:     got index ${index}`)
-          if (index >= 0) {
-            const existingTab = currentTabset.tabs[index]
-            const updatedTab = new Tab(uid(), tab)
-            if (existingTab.chromeTab.url !== updatedTab.chromeTab.url && existingTab.chromeTab.url !== 'chrome://newtab/') {
-              console.log(`onUpdated:   tab ${number}:     updating tab url ${updatedTab.chromeTab.url}`, existingTab, updatedTab)
-              updatedTab.setHistoryFrom(existingTab)
-              if (existingTab.chromeTab.url) {
-                updatedTab.addToHistory(existingTab.chromeTab.url)
-              }
-            }
-            if (!tab.title?.startsWith("Tabset")) {
-              console.log(`onUpdated:   tab ${number}:     setting status CREATED`)
-              updatedTab.status = TabStatus.CREATED
-            }
-            currentTabset.tabs.splice(index, 1, updatedTab);
-            //console.log(`onUpdated: tab ${number}:     tabs`, currentTabset.tabs)
-            // reload tabs (to be sure?!)
-            if (!this.inProgress) {
-              tabsStore.loadTabs('onUpdated');
-            }
-          } else {
-            if (!tab.title?.startsWith("Tabset")) {
-              const newTab = new Tab(uid(), tab)
-              console.log(`onUpdated:   tab ${number}:     setting status CREATED`)
-              newTab.status = TabStatus.CREATED
-              currentTabset.tabs.push(newTab)
-              if (!this.inProgress) {
-                tabsStore.loadTabs('onUpdated');
-              }
-            }
-          }
-          TabsetService.saveTabset(currentTabset)
-        } else if (tabsStore.isLiveMode) {
-          //console.log(`onUpdated: tab ${number}:     live mode`)
-
-        } else {
-          // assuming Edit mode
-          //console.log(`onUpdated: tab ${number}:     edit mode`)
-        }
-
+      //if (currentTabset) {
+      //if (tabsStore.isContextMode) {
+      // console.log(`onUpdated: tab ${number}:     context mode`)
+      // console.log(`onUpdated: tab ${number}:     found current tabset ${currentTabset.id}`)
+      const maybeTab = tabsStore.tabForUrlInContextTabset(tab.url || '')
+      if (maybeTab) {
+        return
       }
+      const index = _.findIndex(tabsStore.pendingTabset.tabs, t => t.chromeTab.id === tab.id);
+      console.log(`onUpdated:   tab ${number}:     got index ${index}`)
+      if (index >= 0) {
+        const existingTab = tabsStore.pendingTabset.tabs[index]
+        const updatedTab = new Tab(uid(), tab)
+        if (existingTab.chromeTab.url !== updatedTab.chromeTab.url && existingTab.chromeTab.url !== 'chrome://newtab/') {
+          console.log(`onUpdated:   tab ${number}:     updating tab url ${updatedTab.chromeTab.url}`, existingTab, updatedTab)
+          updatedTab.setHistoryFrom(existingTab)
+          if (existingTab.chromeTab.url) {
+            updatedTab.addToHistory(existingTab.chromeTab.url)
+          }
+        }
+        if (!tab.title?.startsWith("Tabset")) {
+          console.log(`onUpdated:   tab ${number}:     setting status CREATED`)
+          updatedTab.status = TabStatus.CREATED
+        }
+        tabsStore.pendingTabset.tabs.splice(index, 1, updatedTab);
+        //console.log(`onUpdated: tab ${number}:     tabs`, currentTabset.tabs)
+        // reload tabs (to be sure?!)
+        if (!this.inProgress) {
+          tabsStore.loadTabs('onUpdated');
+        }
+      } else {
+        if (!tab.title?.startsWith("Tabset")) {
+          const newTab = new Tab(uid(), tab)
+          console.log(`onUpdated:   tab ${number}:     setting status CREATED`)
+          newTab.status = TabStatus.CREATED
+          tabsStore.pendingTabset.tabs.push(newTab)
+          if (!this.inProgress) {
+            tabsStore.loadTabs('onUpdated');
+          }
+        }
+      }
+      // TabsetService.saveTabset(currentTabset)
     }
   }
 
@@ -246,7 +237,7 @@ class ChromeListeners {
           }
           let ctx = canvas.getContext('2d')
           // @ts-ignore
-          ctx.drawImage(img, 0, 0, width,height)
+          ctx.drawImage(img, 0, 0, width, height)
           //resolve(canvas.toDataURL()) // this will return base64 image results after resize
 
           console.log("capturing thumbnail for ", sender.tab?.id, Math.round(canvas.toDataURL().length / 1024) + "kB")
@@ -254,7 +245,6 @@ class ChromeListeners {
           sendResponse({imgSrc: dataUrl});
 
         }
-
 
 
       }

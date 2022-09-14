@@ -40,7 +40,8 @@ export const useTabsStore = defineStore('tabs', {
   state: () => ({
 
     // current context id (one of the tabsets ids, null if not set)
-    contextId: null as unknown as string, // deprecated, use 'active'
+    // deprecated, use 'active'
+    contextId: null as unknown as string,
 
     // active means: tabs(-sets) are trackend
     active: null as unknown as boolean,
@@ -53,6 +54,12 @@ export const useTabsStore = defineStore('tabs', {
      * key 'current' which references the current state of the chrome tabs (see 'tabs' above)
      */
     tabsets: new Map<string, Tabset>(),
+
+    pendingTabset: null as unknown as Tabset,
+
+    browserTabset: null as unknown as Tabset,
+
+    selectedTabset: null as unknown as Tabset,
 
     // which tabset should be shown in the extension?
     currentTabsetId: 'current',
@@ -131,8 +138,8 @@ export const useTabsStore = defineStore('tabs', {
         const existingNames = _.map([...state.tabsets.values()], ts => ts.name)
         return _.find(existingNames, name => name === searchName.trim())
       }
-    },
-    tabsetsWithoutCurrent: (state) => _.filter([...state.tabsets.values()], ts => ts.id !== 'current')
+    }
+   // tabsetsWithoutCurrent: (state) => _.filter([...state.tabsets.values()], ts => ts.id !== 'current')
   },
 
   actions: {
@@ -147,9 +154,12 @@ export const useTabsStore = defineStore('tabs', {
         _.map(this.tabs, t => {
           return new Tab(uid(), t)
         }))
-      this.tabsets.set("current", tabsFromBrowser)
+      //this.tabsets.set("current", tabsFromBrowser)
 
-      this.tabsets.set("pending", new Tabset("pending", "pending", []))
+      this.browserTabset = tabsFromBrowser
+
+      this.pendingTabset = new Tabset("pending", "pending", [])
+
 
       // // marking duplicates (inside each tabset)
       // _.forEach([...this.tabsets.values()], tabset => markDuplicates(tabset))
@@ -164,7 +174,8 @@ export const useTabsStore = defineStore('tabs', {
           return new Tab(uid(), t)
         }))
       markDuplicates(current)
-      this.tabsets.set("current", current)
+      //this.tabsets.set("current", current)
+      this.browserTabset = current
     },
     initListeners() {
       chrome.tabs.onCreated.addListener((tab: chrome.tabs.Tab) => ChromeListeners.onCreated(tab))
@@ -216,6 +227,7 @@ export const useTabsStore = defineStore('tabs', {
       const currentTabset: Tabset = this.tabsets.get(this.currentTabsetId) || new Tabset("", "", [])
       currentTabset.tabs = _.filter(currentTabset.tabs, (t: Tab) => t.chromeTab.id !== tabId)
       TabsetService.saveTabset(currentTabset)
+      this.pendingTabset.tabs = _.filter(this.pendingTabset.tabs, (t:Tab) => t.chromeTab.id !== tabId)
     },
 
     async updateOrCreateTabset(tabsetName: string, merge: boolean = false): Promise<NewOrReplacedTabset> {
@@ -269,7 +281,7 @@ export const useTabsStore = defineStore('tabs', {
       this.listenersOn = true
     },
     addTabset(ts: Tabset) {
-      console.log("adding tabset", ts)
+      //console.log("adding tabset", ts)
       this.tabsets.set(ts.id, ts)
     }
   }

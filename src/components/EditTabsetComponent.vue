@@ -1,16 +1,7 @@
 <template>
 
 
-  <q-banner rounded class="bg-amber-1 text-black q-mb-lg" v-if="tabsStore.tabsets.size === 2">
-    <div class="text-body2">
-      This is a tabset, but it is not your active context. No changes will be tracked here.
-      <br><br>
-      <b>Click on</b>
-      <q-icon color="green" name="restore_page"/>
-      to <b>restore all the tabs of this tabset in your browser</b>. This will
-      close all open tabs and replace them with the tabs from this tabset.
-    </div>
-  </q-banner>
+
 
   <q-banner rounded class="bg-amber-1 text-black" v-if="tabsStore.getCurrentTabs.length === 0">
     <div class="text-body2">
@@ -28,7 +19,7 @@
         <q-toolbar-title>
           <div class="row justify-start items-baseline">
             <div class="col-1" style="width:80px"
-                 v-text="'Editing Tabset \'' + tabsStore.currentTabsetName +  '\''"></div>
+                 v-text="'Tabset \'' + tabsStore.currentTabsetName +  '\''"></div>
           </div>
         </q-toolbar-title>
       </div>
@@ -38,11 +29,7 @@
                @click="saveDialog">
           <q-tooltip>Save tabset as...</q-tooltip>
         </q-btn>
-        <q-btn flat dense icon="center_focus_strong" :label="$q.screen.gt.sm ? 'Focus' : ''"
-               class="q-mr-md"
-               @click="setAsContext()">
-          <q-tooltip>Set as Context</q-tooltip>
-        </q-btn>
+
         <q-btn flat dense icon="restore_page"
                color="green" :label="$q.screen.gt.sm ? 'Restore Tabset...' : ''"
                class="q-mr-md"
@@ -62,7 +49,7 @@
 
     <!-- pending tabs -->
     <q-expansion-item
-      v-if="tabsStore.pendingTabs.length > 0"
+      v-if="tabsStore.pendingTabset.tabs.length > 0"
       header-class="bg-amber-2 text-black"
       expand-icon-class="text-black"
       expand-separator
@@ -78,7 +65,7 @@
             </div>
           </div>
         </q-item-section>
-        <q-item-section>{{ formatLength(tabsStore.pendingTabs.length, 'tab', 'tabs') }}</q-item-section>
+        <q-item-section>{{ formatLength(tabsStore.pendingTabset.tabs.length, 'tab', 'tabs') }}</q-item-section>
       </template>
       <!--        <q-card style="background: radial-gradient(circle, #35a2ff 0%, #014a88 100%)">-->
       <div>
@@ -89,7 +76,7 @@
       </div>
       <q-card>
         <q-card-section>
-          <Tabcards :tabs="tabsStore.pendingTabs"/>
+          <Tabcards :tabs="tabsStore.pendingTabset.tabs"/>
         </q-card-section>
       </q-card>
     </q-expansion-item>
@@ -143,7 +130,7 @@
         </template>
         <q-card>
           <q-card-section>
-            <Tabcards :tabs="tabsForGroup( group.id)"/>
+            <Tabcards :tabs="tabsForGroup( group.id)"  v-on:sendCaption="setGroupedTabsCaption"/>
           </q-card-section>
         </q-card>
       </q-expansion-item>
@@ -154,7 +141,7 @@
       v-if="tabsStore.pinnedTabs.length > 0 || tabGroupsStore.tabGroups.length > 0 || tabsStore.pendingTabs.length > 0"
       icon="tabs"
       default-opened
-      header-class="bg-amber-2 text-black"
+      header-class="bg-amber-1 text-black"
       expand-icon-class="text-black">
       <template v-slot:header="{ expanded }">
         <q-item-section avatar>
@@ -163,16 +150,17 @@
 
         <q-item-section>
           <div>
-            <span class="text-weight-bold">Other Tabs</span>
-            <div class="text-caption">current tabs, neither pinned nor grouped</div>
+            <span class="text-weight-bold">Other Tabs ({{ formatLength(unpinnedNoGroup().length, 'tab', 'tabs') }})</span>
+            <div class="text-caption ellipsis" v-text="otherTabsCaption"></div>
             <!--                <q-btn label="create new tabset" v-if="expanded" @click="newTabsetFrom(group.title, group.id)"/>-->
           </div>
         </q-item-section>
-        <q-item-section>{{ formatLength(unpinnedNoGroup().length, 'tab', 'tabs') }}</q-item-section>
+        <q-item-section></q-item-section>
       </template>
+
       <q-card>
         <q-card-section>
-          <Tabcards :tabs="unpinnedNoGroup()"/>
+          <Tabcards :tabs="unpinnedNoGroup()" v-on:sendCaption="setOtherTabsCaption"/>
         </q-card-section>
       </q-card>
     </q-expansion-item>
@@ -204,6 +192,10 @@ const localStorage = useQuasar().localStorage
 const tabsStore = useTabsStore()
 const tabGroupsStore = useTabGroupsStore()
 const tabsetname = ref(tabsStore.currentTabsetName)
+
+const otherTabsCaption = ref('current tabs, neither pinned nor grouped...')
+const groupedTabsCaption = ref('current tabs, neither pinned nor grouped')
+
 const $q = useQuasar()
 
 function unpinnedNoGroup() {
@@ -225,17 +217,14 @@ const update = (tabsetIdent: object) => {
   tabsStore.selectCurrentTabset(tabsetIdent['value' as keyof object])
 }
 
-const tabsetOptions = () => {
-  return _.map([...tabsStore.tabsets.values()], ts => {
-    return {
-      label: ts.name,
-      value: ts.id
-    }
-  })
-}
-
-const unsetContext = () => TabsetService.unsetContext()
-const setAsContext = () => TabsetService.setContext(tabsStore.currentTabsetId)
+// const tabsetOptions = () => {
+//   return _.map([...tabsStore.tabsets.values()], ts => {
+//     return {
+//       label: ts.name,
+//       value: ts.id
+//     }
+//   })
+// }
 
 const formatLength = (length: number, singular: string, plural: string) => {
   return length > 1 ? length + ' ' + plural : length + ' ' + singular
@@ -243,6 +232,10 @@ const formatLength = (length: number, singular: string, plural: string) => {
 
 const removeClosedTabs = () => TabsetService.removeClosedTabs()
 const saveAllPendingTabs = () => TabsetService.saveAllPendingTabs()
+const removeAllPendingTabs = () => TabsetService.removeAllPendingTabs()
+
+const setOtherTabsCaption = (msg: string) => otherTabsCaption.value = msg
+const setGroupedTabsCaption = (msg: string) => groupedTabsCaption.value = msg
 
 const saveDialog = () => {
   $q.dialog({

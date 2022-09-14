@@ -17,11 +17,11 @@
         </q-input>
 
         <q-toolbar-title style="position:absolute;left:300px;">
-          <q-icon name="circle" :color="tabsStore.active ? 'green' : 'red'">
-            <q-tooltip v-if="tabsStore.active">Your tabs are being monitored, changes are logged in this extension.
-            </q-tooltip>
-            <q-tooltip v-if="!tabsStore.active">Your tabs are not being tracked right now.</q-tooltip>
-          </q-icon>
+          <!--          <q-icon name="circle" :color="tabsStore.active ? 'green' : 'red'">-->
+          <!--            <q-tooltip v-if="tabsStore.active">Your tabs are being monitored, changes are logged in this extension.-->
+          <!--            </q-tooltip>-->
+          <!--            <q-tooltip v-if="!tabsStore.active">Your tabs are not being tracked right now.</q-tooltip>-->
+          <!--          </q-icon>-->
           <q-btn stretch flat :label="toolbarTitle()" to="/"/>
         </q-toolbar-title>
 
@@ -29,77 +29,37 @@
         <q-space/>
 
         <q-space/>
+
+
         <q-toggle
           left-label
+          color="green"
           v-model="tabsStore.active"
-          label="Tracking active"
+          label=""
         />
-        &nbsp;
-        <div>{{ appVersion }}</div>
+
+        <div v-if="tabsStore.active" class="q-mr-lg">Tracking active&nbsp;
+          <q-badge v-if="tabsStore.pendingTabset?.tabs.length > 0"
+                   align="top" color="red" class="q-mr-lg">{{ tabsStore.pendingTabset?.tabs.length }}
+            <q-tooltip>There are pending tabs, which can be assigned to a tabset</q-tooltip>
+          </q-badge>
+        </div>
+        <div v-if="!tabsStore.active" class="q-mr-lg">Tracking stopped
+          <q-badge v-if="tabsStore.pendingTabset?.tabs.length > 0"
+                   align="top" color="grey" class="q-mr-lg">{{ tabsStore.pendingTabset?.tabs.length }}
+            <q-tooltip>Tracking has stopped, but there are some pending tabs which can be assigned to a tabset</q-tooltip>
+          </q-badge>
+        </div>
+        <div>
+          <q-badge outline align="middle" color="white">
+            v{{ appVersion }}
+          </q-badge>
+        </div>
       </q-toolbar>
     </q-header>
 
     <q-drawer show-if-above v-model="leftDrawerOpen" side="left" bordered>
-
-      <q-list style="max-width: 318px" class="q-mt-md">
-        <q-expansion-item
-          expand-separator
-          icon="home"
-          label="Browser"
-          default-opened
-        >
-          <q-item clickable v-ripple>
-            <q-item-section>
-              <q-item clickable v-ripple @click="selectTabset('current')"
-                      :style="'current' === tabsStore.currentTabsetId ? 'background-color:#efefef' : 'border:0px solid #bfbfbf'">
-                <q-item-section>
-                  <q-item-label overline
-                                v-text="tabsStore.tabs.length > 1 ? 'Open tabs (' + tabsStore.tabs.length + ' tabs)' : 'Open tabs (' + tabsStore.tabs.length + ' tab)'"/>
-                </q-item-section>
-              </q-item>
-            </q-item-section>
-          </q-item>
-
-          <q-item clickable v-ripple>
-            <q-item-section>
-              <q-item clickable v-ripple @click="selectTabset('pending')"
-                      :style="'current' === tabsStore.currentTabsetId ? 'background-color:#efefef' : 'border:0px solid #bfbfbf'">
-                <q-item-section>
-                  <q-item-label overline
-                                v-text="tabsStore.tabs.length > 1 ? 'Pending tabs (' + tabsStore.tabs.length + ' tabs)' : 'Pending tabs (' + tabsStore.tabs.length + ' tab)'"/>
-                </q-item-section>
-              </q-item>
-            </q-item-section>
-          </q-item>
-
-        </q-expansion-item>
-      </q-list>
-
-      <q-list style="max-width: 318px" class="q-mt-md">
-        <q-expansion-item
-          expand-separator
-          icon="tabs"
-          label="Tabsets"
-          default-opened
-        >
-
-          <q-item clickable v-ripple v-for="tabset in tabsStore.tabsetsWithoutCurrent" @click="selectTabset(tabset.id)"
-                  :style="tabset.id === tabsStore.currentTabsetId ? 'background-color:#efefef' : 'border:0px solid #bfbfbf'">
-            <q-item-section>
-              <q-item-label overline :class="tabsStore.contextId === tabset.id ? 'text-blue-9' : ''"
-                            v-text="tabset.tabs.length > 1 ? tabset.name + ' (' + tabset.tabs.length + ' tabs)' : tabset.name + ' (' + tabset.tabs.length + ' tab)'"/>
-            </q-item-section>
-          </q-item>
-
-          <q-item clickable v-ripple @click="selectTabset('current')"
-                  :style="'current' === tabsStore.currentTabsetId ? 'background-color:#efefef' : 'border:0px solid #bfbfbf'">
-            <q-item-section>
-              <q-item-label overline
-                            v-text="tabsStore.tabs.length > 1 ? 'Open tabs (' + tabsStore.tabs.length + ' tabs)' : 'Open tabs (' + tabsStore.tabs.length + ' tab)'"/>
-            </q-item-section>
-          </q-item>
-        </q-expansion-item>
-      </q-list>
+      <Navigation></Navigation>
 
     </q-drawer>
 
@@ -124,13 +84,12 @@ import {TabsetApi} from "src/services/TabsetApi";
 import {useTabsStore} from "src/stores/tabsStore";
 import {useTabGroupsStore} from "stores/tabGroupsStore";
 import {useRouter} from "vue-router";
-import tabsetService from "src/services/TabsetService";
-import TabsetService from "src/services/TabsetService";
 import _ from "lodash"
 import {useMeta} from 'quasar'
 import {Tab, TabStatus} from "src/models/Tab";
 import {useNotificationsStore} from "stores/notificationsStore";
 import TabInfo from "src/components/layouts/TabInfo.vue"
+import Navigation from "src/components/Navigation.vue"
 
 const router = useRouter()
 const tabsStore = useTabsStore()
@@ -158,9 +117,7 @@ useMeta(() => {
 })
 
 watchEffect(() => {
-  console.log("tabsStore.active", tabsStore.active)
   if (tabsStore.active !== null) {
-    console.log("tabsStore.active", tabsStore.active)
     localStorage.set("active", tabsStore.active)
   }
 })
@@ -202,10 +159,6 @@ const toolbarTitle = () => tabsStore.getNameForContext !== 'undefined' ?
   'Tabset: ' + tabsStore.getNameForContext :
   "Tabsets"
 
-const selectTabset = (tabsetId: string) => {
-  TabsetService.selectTabset(tabsetId)
-  router.push("/tabset")
-}
 
 const nonDefaultCount = (tabs: Tab[]) => _.filter(tabs, t => t.status !== TabStatus.DEFAULT).length
 const captionMessage = (msg: string) => console.log("msg", msg)

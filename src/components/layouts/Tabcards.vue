@@ -53,7 +53,7 @@
 
                 <q-icon name="save" class="cursor-pointer q-mr-md"
                         v-if="tab.status !== TabStatus.DEFAULT"
-                        @click="saveTab(tab.chromeTab.id)">
+                        @click="saveTab(tab)">
                   <q-tooltip>Save this tab to your current context</q-tooltip>
                 </q-icon>
 
@@ -142,9 +142,9 @@ function closeTab(tab: Tab) {
   Navigation.closeTab(tab)
 }
 
-function saveTab(id: number) {
-  console.log("saving tab", id)
-  TabsetService.setStatus(id, TabStatus.DEFAULT)
+function saveTab(tab: Tab) {
+  console.log("saving tab", tab)
+  TabsetService.saveToTabset(tab)
 }
 
 function togglePin(tabId: number) {

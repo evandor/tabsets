@@ -216,8 +216,6 @@ const update = (tabsetIdent: object) => {
 //   })
 // }
 
-const unsetContext = () => TabsetService.unsetContext()
-const setAsContext = () => TabsetService.setContext(tabsStore.currentTabsetId)
 
 const formatLength = (length: number, singular: string, plural: string) => {
   return length > 1 ? length + ' ' + plural : length + ' ' + singular
