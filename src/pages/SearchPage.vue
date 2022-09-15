@@ -28,21 +28,23 @@ import _ from "lodash"
 import Navigation from "src/services/Navigation";
 
 const route = useRoute()
-const tabStore = useTabsStore()
+const tabsStore = useTabsStore()
 
 const term = route.params.term as string
 console.log("term", term)
 const result = ref<Map<string, object>>(new Map())
 
-
-for (let [key, value] of tabStore.tabsets) {
-
+console.log("tabsStore.tabsets", tabsStore.tabsets)
+for (let [key, value] of tabsStore.tabsets) {
+  console.log("searching in key", key)
   const hits = _.filter(value.tabs, t => {
-    if (t.url) {
-      return t.url.indexOf(term) >= 0
+    if (t.chromeTab.url) {
+      console.log("checking ", t.chromeTab.url)
+      return t.chromeTab.url.indexOf(term) >= 0
     }
     return false;
   })
+  console.log("hits", hits)
   // const rs: object[] = []
   _.forEach(hits, h => {
     // rs.push({
@@ -50,10 +52,10 @@ for (let [key, value] of tabStore.tabsets) {
     //   tabsetName: value.name,
     //   tabsetId: key.replace("bookmrkx.tabsContexts.", "")
     // })
-    if (result.value.has(h.url || '')) {
+    if (result.value.has(h.chromeTab.url || '')) {
 
     } else {
-      result.value.set(h.url || '???', {tabsetName: value.name})
+      result.value.set(h.chromeTab.url || '???', {tabsetName: value.name})
     }
   })
 

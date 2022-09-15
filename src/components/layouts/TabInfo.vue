@@ -66,20 +66,16 @@
 import {date, useQuasar} from "quasar";
 import {useNotificationsStore} from "stores/notificationsStore";
 import {ref, watchEffect} from "vue";
+import TabsetService from "src/services/TabsetService";
 
 const notificationStore = useNotificationsStore()
 const thumbnail = ref('')
 
 watchEffect(() => {
-  console.log("notificationStore.selectedTab", notificationStore.selectedTab)
   if (notificationStore.selectedTab) {
-
-    const tabId = notificationStore.selectedTab.id
-    const data = localStorage.getItem("tabsets.tab." + tabId)
-    // console.log("data", data)
-    if (data) {
-      thumbnail.value = data
-    }
+    TabsetService.getThumbnailFor(notificationStore.selectedTab)
+      .then(data => thumbnail.value = data)
+      .catch(err => console.log("err", err))
   }
 })
 

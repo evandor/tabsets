@@ -17,6 +17,7 @@ export class Tab {
   isDuplicate: boolean
   history: string[] = []
   selected: boolean = false
+  name: string | undefined
 
   constructor(public id: string, chromeTab: chrome.tabs.Tab) {
 
@@ -30,6 +31,7 @@ export class Tab {
     this.status = TabStatus.DEFAULT
     this.isDuplicate = false
     this.history = []
+    this.name = undefined
   }
 
   setHistoryFrom(existingTab: Tab) {
@@ -38,7 +40,6 @@ export class Tab {
     } else {
       this.history = []
     }
-
   }
 
   addToHistory(url: string) {
@@ -55,6 +56,11 @@ export class Tab {
 
   setOnlySelected() {
 
+  }
+
+  public setName(newName: string): void {
+    // TODO validate
+    this.name = newName
   }
 }
 

@@ -1,10 +1,7 @@
 <template>
   <q-page padding>
 
-    <div v-if="tabsStore.isContextMode">
-      <context-component></context-component>
-    </div>
-    <div class="text-body1" v-else-if="tabsStore.isLiveMode">
+    <div class="text-body1" v-if="tabsStore.isLiveMode">
       chrome tabset
     </div>
     <div v-else-if="tabsStore.isEditMode">

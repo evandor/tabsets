@@ -11,11 +11,11 @@
         </q-toolbar-title>
       </div>
       <div class="col-xs-12 col-md-7 text-right">
-        <q-btn flat dense icon="save_as" :label="$q.screen.gt.sm ? 'Save or Rename...' : ''"
-               class="q-mr-md"
-               @click="saveDialog">
-          <q-tooltip>Save tabset as...</q-tooltip>
-        </q-btn>
+<!--        <q-btn flat dense icon="save_as" :label="$q.screen.gt.sm ? 'Save or Rename...' : ''"-->
+<!--               class="q-mr-md"-->
+<!--               @click="saveDialog">-->
+<!--          <q-tooltip>Save tabset as...</q-tooltip>-->
+<!--        </q-btn>-->
         <q-btn flat dense icon="o_center_focus_strong" :label="$q.screen.gt.sm ? 'Un-Focus' : ''"
                class="q-mr-md"
                @click="unsetContext()">

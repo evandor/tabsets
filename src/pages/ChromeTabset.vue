@@ -1,14 +1,5 @@
 <template>
   <q-page padding>
-    <!--  <q-banner rounded class="bg-amber-1 text-black q-mb-lg" v-if="tabsStore.tabsets.size <= 1">-->
-    <!--    <div class="text-body2" >-->
-    <!--      Currently, your <b>browser tabs</b> are <b>not tracked</b> by this extension and you do not have any tabsets defined.<br>-->
-    <!--      Below, you see <b>all your open tabs</b> in this browser's window right now. Open a new tab, and you will see the new tab-->
-    <!--      appearing here as well.-->
-    <!--      <br><br>-->
-    <!--      <b>Click on</b> <q-icon color="primary" name="save" /> to <b>create your first tabset</b> and start tracking tab changes.-->
-    <!--    </div>-->
-    <!--  </q-banner>-->
 
     <q-toolbar class="text-primary q-mb-lg">
 
@@ -26,7 +17,7 @@
     <q-list class="rounded-borders">
 
       <q-expansion-item
-        v-if="tabsStore.pinnedTabs.length > 0"
+        v-if="pinnedTabs().length > 0"
         header-class="bg-amber-1 text-black"
         expand-icon-class="text-black"
         expand-separator
@@ -41,11 +32,11 @@
               <div class="text-caption">this browser's window's tabs which are pinned right now</div>
             </div>
           </q-item-section>
-          <q-item-section>{{ formatLength(tabsStore.pinnedTabs.length, 'tab', 'tabs') }}</q-item-section>
+          <q-item-section>{{ formatLength(pinnedTabs().length, 'tab', 'tabs') }}</q-item-section>
         </template>
         <q-card>
           <q-card-section style="background-color:#efefef">
-            <TabcardsSmall :tabs="tabsStore.pinnedTabs"/>
+            <TabcardsSmall :tabs="pinnedTabs()"/>
           </q-card-section>
         </q-card>
       </q-expansion-item>
@@ -83,7 +74,7 @@
 
       <!-- rest: neither pinned, grouped, or pending -->
       <q-expansion-item
-        v-if="tabsStore.pinnedTabs.length > 0 || tabGroupsStore.tabGroups.length > 0"
+        v-if="tabsStore.browserTabset?.tabs.length > 0 || tabGroupsStore.tabGroups.length > 0"
         icon="tabs"
         default-opened
         header-class="bg-amber-1 text-black"
@@ -175,17 +166,14 @@ const newTabsetName = ref('')
 
 function unpinnedNoGroup(): Tab[] {
   return _.filter(
-    _.map(tabsStore.getCurrentTabs, t => {
-      //console.log("t", t)
-      return t
-    }),
+    tabsStore.browserTabset?.tabs,
     //@ts-ignore
-    (t: Tab) => !t.chromeTab.pinned && t.chromeTab.groupId === -1 && (t.status === TabStatus.DEFAULT || !t.status))
+    (t: Tab) => !t.chromeTab.pinned && t.chromeTab.groupId === -1)
 }
 
 function tabsForGroup(groupId: number): Tab[] {
   //console.log("tabsforGroup", groupId)
-  return _.filter(tabsStore.getCurrentTabs,
+  return _.filter(tabsStore.browserTabset?.tabs,
     //_.map(tabsStore.getCurrentTabs, t => t.chromeTab),
     //@ts-ignore
     (t: Tab) => t.chromeTab.groupId === groupId)
@@ -225,6 +213,7 @@ const saveTabset = () => {
       } else if (replaced) {
         message = 'Tabset ' + tsName + ' was overwritten'
       }
+      router.push("/tabset")
       $q.notify({
         message: message,
         type: 'positive'
@@ -240,5 +229,9 @@ const saveTabset = () => {
 }
 
 const tabNameExists = () => tabsStore.nameExistsInContextTabset(newTabsetName.value)
+
+const pinnedTabs = (): Tab[] => {
+  return _.filter(tabsStore.browserTabset?.tabs, (t: Tab) => t.chromeTab.pinned)
+}
 
 </script>

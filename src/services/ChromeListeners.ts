@@ -33,7 +33,7 @@ class ChromeListeners {
     }
 
     console.log(`onCreated: tab ${tab.id}: >>> ${tab.pendingUrl}`)
-    const maybeTab = tabsStore.tabForUrlInContextTabset(tab.pendingUrl || '')
+    const maybeTab = tabsStore.tabForUrlInSelectedTabset(tab.pendingUrl || '')
     if (maybeTab) {
       console.log(`onCreated: tab ${tab.id}: updating existing chromeTab.id: ${maybeTab.chromeTab.id} -> ${tab.id}`)
       maybeTab.chromeTab.id = tab.id
@@ -66,12 +66,12 @@ class ChromeListeners {
       //if (tabsStore.isContextMode) {
       // console.log(`onUpdated: tab ${number}:     context mode`)
       // console.log(`onUpdated: tab ${number}:     found current tabset ${currentTabset.id}`)
-      const maybeTab = tabsStore.tabForUrlInContextTabset(tab.url || '')
+      const maybeTab = tabsStore.tabForUrlInSelectedTabset(tab.url || '')
       if (maybeTab) {
         return
       }
       const index = _.findIndex(tabsStore.pendingTabset.tabs, t => t.chromeTab.id === tab.id);
-      console.log(`onUpdated:   tab ${number}:     got index ${index}`)
+      //console.log(`onUpdated:   tab ${number}:     got index ${index}`)
       if (index >= 0) {
         const existingTab = tabsStore.pendingTabset.tabs[index]
         const updatedTab = new Tab(uid(), tab)
@@ -110,40 +110,41 @@ class ChromeListeners {
   onRemoved(number: number, info: chrome.tabs.TabRemoveInfo) {
     this.eventTriggered()
     const tabsStore = useTabsStore()
-    if (!tabsStore.listenersOn) {
+    if (!tabsStore.active) {
       return
     }
 
     console.log(`onRemoved: tab ${number}: >>> ${JSON.stringify(info)}`)
 
-    if (tabsStore.tabIdExistsInContextTabset(number)) {
-      return
-    }
+    // if (tabsStore.tabIdExistsInContextTabset(number)) {
+    //   return
+    // }
 
     if ("current" === tabsStore.currentTabsetId && !this.inProgress) {
       tabsStore.loadTabs('onRemoved')
       return
     }
-    if (tabsStore.isContextMode) {
-      const currentTabset: Tabset = tabsStore.tabsets.get(tabsStore.currentTabsetId) || new Tabset("", "", [])
-      var index = _.findIndex(currentTabset.tabs, t => t.chromeTab.id === number);
-      if (index >= 0) {
-        console.log(`onRemoved: tab ${number}:     found index ${index}`)
-        const updatedTab = currentTabset.tabs.at(index)
-        if (updatedTab) {
-          updatedTab.status = TabStatus.DELETED
-          console.log(`onRemoved: tab ${number}:     setting status DELETED`)
-          //currentTabset.tabs.splice(index, 1, updatedTab);
-        }
-
-      } else {
-
+    const currentTabset: Tabset = tabsStore.tabsets.get(tabsStore.currentTabsetId) || new Tabset("", "", [])
+    var index = _.findIndex(currentTabset.tabs, t => t.chromeTab.id === number);
+    if (index >= 0) {
+      console.log(`onRemoved: tab ${number}:     found index ${index}`)
+      const updatedTab = currentTabset.tabs.at(index)
+      if (updatedTab) {
+        updatedTab.status = TabStatus.DELETED
+        console.log(`onRemoved: tab ${number}:     setting status DELETED`)
+        //currentTabset.tabs.splice(index, 1, updatedTab);
       }
+
+    } else {
+
     }
   }
 
   onReplaced(n1: number, n2: number) {
     const tabsStore = useTabsStore()
+    if (!tabsStore.active) {
+      return
+    }
     console.log(`onReplaced: tab ${n1} replaced with ${n2}`)
     tabsStore.loadTabs('onReplaced');
   }
@@ -151,7 +152,7 @@ class ChromeListeners {
   onActivated(info: chrome.tabs.TabActiveInfo) {
     this.eventTriggered()
     const tabsStore = useTabsStore()
-    if (!tabsStore.listenersOn) {
+    if (!tabsStore.active) {
       return
     }
     console.log(`onActivated: tab ${info.tabId} activated: >>> ${JSON.stringify(info)}`)
@@ -178,19 +179,34 @@ class ChromeListeners {
   onMoved(number: number, info: chrome.tabs.TabMoveInfo) {
     this.eventTriggered()
     const tabsStore = useTabsStore()
+    if (!tabsStore.active) {
+      return
+    }
     console.log(`onMoved: tab ${number} moved: ${JSON.stringify(info)}`)
     tabsStore.loadTabs('onMoved');
   }
 
   onAttached(number: number, info: chrome.tabs.TabAttachInfo) {
+    const tabsStore = useTabsStore()
+    if (!tabsStore.active) {
+      return
+    }
     console.debug(`onAttached: tab ${number} attached: ${JSON.stringify(info)}`)
   }
 
   onDetached(number: number, info: chrome.tabs.TabDetachInfo) {
+    const tabsStore = useTabsStore()
+    if (!tabsStore.active) {
+      return
+    }
     console.debug(`onDetached: tab ${number} detached: ${JSON.stringify(info)}`)
   }
 
   onHighlighted(info: chrome.tabs.TabHighlightInfo) {
+    const tabsStore = useTabsStore()
+    if (!tabsStore.active) {
+      return
+    }
     console.debug(`onHighlighted: tab ${info.tabIds} highlighted: ${JSON.stringify(info)}`)
   }
 
@@ -208,7 +224,10 @@ class ChromeListeners {
     //if (request.greeting === "hello")
     TabsetService.saveThumbnailFor(sender.tab, request.thumbnail)
     sendResponse({farewell: "cheers"});*/
-
+    const tabsStore = useTabsStore()
+    if (!tabsStore.active) {
+      return
+    }
     // Variant Two
     chrome.tabs.captureVisibleTab(
       {},

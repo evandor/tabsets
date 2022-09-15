@@ -155,9 +155,7 @@ async function submitSearch() {
 //   tabsetService.createNewTabset(newTabsetName.value, clearTabsets.value)
 // }
 
-const toolbarTitle = () => tabsStore.getNameForContext !== 'undefined' ?
-  'Tabset: ' + tabsStore.getNameForContext :
-  "Tabsets"
+const toolbarTitle = () => "Tabsets"
 
 
 const nonDefaultCount = (tabs: Tab[]) => _.filter(tabs, t => t.status !== TabStatus.DEFAULT).length

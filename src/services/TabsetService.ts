@@ -20,15 +20,20 @@ class TabsetService {
   }
 
   async init() {
-    this.db = await openDB('db', 1, {
+    this.db = await openDB('db', 2, {
       upgrade(db) {
-        console.log("creating db-tabsets")
-        db.createObjectStore('tabsets');
+        if (!db.objectStoreNames.contains('tabsets')) {
+          console.log("creating db tabsets")
+          db.createObjectStore('tabsets');
+        }
+        if (!db.objectStoreNames.contains('thumbnails')) {
+          console.log("creating db thumbnails")
+          db.createObjectStore('thumbnails');
+        }
       },
     });
 
     const active = localStorage.getItem("active")
-    console.log("---active---", active)
     if (active) {
       useTabsStore().active = active === "__q_bool|1"
     }
@@ -62,9 +67,9 @@ class TabsetService {
     if (result && result.tabset) {
       await this.saveTabset(result.tabset)
       tabsStore.currentTabsetId = result.tabset.id
-      tabsStore.contextId = result.tabset.id
+      //tabsStore.contextId = result.tabset.id
       //await TabsetService.saveTabset(ts)
-      await this.localStorage.set("tabsets.context", result.tabset.id)
+      //await this.localStorage.set("tabsets.context", result.tabset.id)
 
     }
     return {
@@ -78,20 +83,29 @@ class TabsetService {
       return
     }
     if (tabset.id) {
-      this.localStorage.set("tabsets.tabset." + tabset.id, tabset)
+      //this.localStorage.set("tabsets.tabset." + tabset.id, tabset)
       await this.db.put('tabsets', JSON.stringify(tabset), tabset.id);
       //localStorage.setItem("tabsets.context", tabset.id)
       return
     }
+    console.error("error - why here?")
     const existingId = this.findInLocalStorage(tabset.name)
     if (existingId) {
       console.log("updating tabset", existingId)
-      this.localStorage.set("tabsets.tabset." + existingId, tabset)
+      //this.localStorage.set("tabsets.tabset." + existingId, tabset)
       await this.db.put('tabsets', JSON.stringify(tabset), existingId);
     } else {
       console.log(`did not find id for tabset '${tabset.name}', creating new`)
       this.localStorage.set("tabset.tabset." + uid(), tabset)
       await this.db.put('tabsets', JSON.stringify(tabset), uid());
+    }
+  }
+
+  saveCurrentTabset() {
+    const tabsStore = useTabsStore()
+    const currentTabset = tabsStore.getCurrentTabset
+    if (currentTabset) {
+      this.saveTabset(currentTabset)
     }
   }
 
@@ -115,8 +129,8 @@ class TabsetService {
       if (tabset) {
         console.log("found tabset for id", tabsetId)
         await ChromeApi.restore(tabset)
-        tabsStore.contextId = tabset.name
-        localStorage.setItem("tabsets.context", tabsetId)
+        //tabsStore.contextId = tabset.name
+        //localStorage.setItem("tabsets.context", tabsetId)
       }
     } catch (ex) {
       console.log("ex", ex)
@@ -132,18 +146,18 @@ class TabsetService {
     const tabset = this.getTabset(tabsetId)
     if (tabset) {
       const tabsStore = useTabsStore()
-      // if (tabset.name === tabsStore.contextId) {
-      //   console.log("cannot delete currently active context")
-      //   return
-      // }
       //tabsStore.deleteTabset(tabsetId)
+      this.db.delete('tabsets', tabsetId)
+      this.selectTabset('current')
       //this.localStorage.remove("tabsets.tabset." + tabsetId)
-      tabsStore.loadTabs('delete tabset event')
+      //tabsStore.loadTabs('delete tabset event')
     }
   }
 
-  private getTabset(tabsetId: string): Tabset | null {
-    return this.localStorage.getItem<Tabset>("tabsets.tabset." + tabsetId);
+  private getTabset(tabsetId: string): Tabset | undefined {
+    //return this.localStorage.getItem<Tabset>("tabsets.tabset." + tabsetId);
+    const tabsStore = useTabsStore()
+    return _.find([...tabsStore.tabsets.values()], ts => ts.id === tabsetId)
   }
 
   private findInLocalStorage(tabsetName: string): string | undefined {
@@ -284,15 +298,39 @@ class TabsetService {
   }
 
   saveThumbnailFor(tab: chrome.tabs.Tab | undefined, thumbnail: string) {
-    const currentTabset = this.getCurrentTabset()
-    if (tab && currentTabset) {
-      _.forEach(currentTabset.tabs, t => {
-        if (t.chromeTab.id === tab.id) {
-          localStorage.setItem("tabsets.tab." + t.id, thumbnail)
-        }
-      })
+    if (tab && tab.url) {
+      const encodedTabUrl = btoa(tab.url)
+      //localStorage.setItem("tabsets.tab.xxx", thumbnail)
+      this.db.put('thumbnails', thumbnail, encodedTabUrl)
+        .then(ts => console.log("added thumbnail"))
+        .catch(err => console.log("err", err))
     }
+    // const currentTabset = this.getCurrentTabset()
+    // console.log("saving thumbnail", tab, currentTabset)
+    // if (tab && currentTabset) {
+    //   _.forEach(currentTabset.tabs, t => {
+    //     if (t.chromeTab.id === tab.id) {
+    //       localStorage.setItem("tabsets.tab." + t.id, thumbnail)
+    //       this.db.put('thumbnails', t.id, thumbnail)
+    //         .then(ts => console.log("added thumbnail"))
+    //         .catch(err => console.log("err", err))
+    //     }
+    //   })
+    // }
 
+  }
+
+  async getThumbnailFor(selectedTab: Tab): Promise<any> {
+    if (selectedTab.chromeTab.url) {
+      const encodedUrl = btoa(selectedTab.chromeTab.url)
+      return await this.db.get('thumbnails', encodedUrl)
+    }
+    return Promise.reject("url not provided");
+  }
+
+  setCustomTitle(tab: Tab, title: string) {
+    tab.name = title
+    this.saveCurrentTabset()
   }
 }
 

@@ -17,39 +17,44 @@
                 </q-img>
               </div>
               <div class="col-9 text-body2 ellipsis">
-                {{ maxChar(20, tab.chromeTab?.title) }}
+                {{nameOrTitle(tab)}}
+                <q-popup-edit :model-value="dynamicNameOrTitleModel(tab)" v-slot="scope"
+                              @update:model-value="val => setCustomTitle( tab, val)">
+                  <q-input v-model="scope.value" dense autofocus counter @keyup.enter="scope.set" />
+                </q-popup-edit>
               </div>
               <div class="col-1">
-                <q-icon name="close" @click="closeTab(tab)"/>
+                <q-icon name="close" @click.stop="closeTab(tab)"/>
               </div>
               <q-tooltip>
-                {{ getHost(tab.chromeTab?.url, true) }}
+                {{ tab.chromeTab?.title }}
               </q-tooltip>
             </div>
 
             <div class="text-overline ellipsis">
               {{ getHost(tab.chromeTab?.url, true) }}
+              <q-icon name="launch" color="primary" @click.stop="Navigation.openOrCreateTab(tab.chromeTab?.url )"></q-icon>
               <q-tooltip>
                 {{ getHost(tab.chromeTab?.url, false) }}
               </q-tooltip>
             </div>
 
-            <div class="text-caption text-grey wrap" style="overflow:hidden;">
-              <q-item-label lines="1" class="q-mt-xs text-caption text-primary"
-                            @click="Navigation.openOrCreateTab(tab.chromeTab?.url )">
-                <span class="cursor-pointer">{{ maxChar(30, withoutHostname(tab.chromeTab?.url )) }}</span>
-                <q-tooltip>
-                  {{ tab.chromeTab?.url  }}
-                </q-tooltip>
-              </q-item-label>
-            </div>
+<!--            <div class="text-caption text-grey wrap" style="overflow:hidden;">-->
+<!--              <q-item-label lines="1" class="q-mt-xs text-caption text-primary"-->
+<!--                            @click="Navigation.openOrCreateTab(tab.chromeTab?.url )">-->
+<!--                <span class="cursor-pointer">{{ maxChar(30, withoutHostname(tab.chromeTab?.url )) }}</span>-->
+<!--                <q-tooltip>-->
+<!--                  {{ tab.chromeTab?.url  }}-->
+<!--                </q-tooltip>-->
+<!--              </q-item-label>-->
+<!--            </div>-->
 
-            <div class="row q-mt-md">
+            <div class="row q-mt-md" v-if="props.showActions">
 
               <div class="col">
-                <q-icon name="done" color="green" class="cursor-pointer q-mr-md" v-if="isOpen(tab)">
-                  <q-tooltip>This url is open in one of your tabs</q-tooltip>
-                </q-icon>
+<!--                <q-icon name="done" color="green" class="cursor-pointer q-mr-md" v-if="isOpen(tab)">-->
+<!--                  <q-tooltip>This url is open in one of your tabs</q-tooltip>-->
+<!--                </q-icon>-->
 
                 <q-icon name="save" class="cursor-pointer q-mr-md"
                         v-if="tab.status !== TabStatus.DEFAULT"
@@ -57,10 +62,10 @@
                   <q-tooltip>Save this tab to your current context</q-tooltip>
                 </q-icon>
 
-                <q-icon :name="tab.chromeTab?.pinned ? 'o_push_pin' : 'push_pin'" class="cursor-pointer"
-                        @click="togglePin(tab.chromeTab.id)">
-                  <q-tooltip v-text="tab.chromeTab?.pinned ? 'Unpin this tab' : 'Pin this tab'"/>
-                </q-icon>
+<!--                <q-icon :name="tab.chromeTab?.pinned ? 'o_push_pin' : 'push_pin'" class="cursor-pointer"-->
+<!--                        @click="togglePin(tab.chromeTab.id)">-->
+<!--                  <q-tooltip v-text="tab.chromeTab?.pinned ? 'Unpin this tab' : 'Pin this tab'"/>-->
+<!--                </q-icon>-->
 
                 <q-icon name="keyboard_arrow_left" class="cursor-pointer" v-if="tab.history?.length > 0">
                   <q-tooltip>{{tab.history}}</q-tooltip>
@@ -87,7 +92,6 @@
 </template>
 
 <script setup lang="ts">
-import {date, LocalStorage} from "quasar";
 import Navigation from "src/services/Navigation";
 import {Tab, TabStatus} from "src/models/Tab";
 import TabsetService from "src/services/TabsetService";
@@ -97,6 +101,10 @@ const props = defineProps({
   tabs: {
     type: Array,
     required: true
+  },
+  showActions: {
+    type: Boolean,
+    default: false
   }
 })
 
@@ -154,12 +162,15 @@ function togglePin(tabId: number) {
 
 
 function cardStyle(tab: Tab) {
-  const height = "120px";
+  const height = props.showActions ? "100px" : "66px"
   let borderColor = ""
-  if (TabStatus.CREATED === tab.status) {
-    borderColor = "";
-  } else if (TabStatus.DELETED === tab.status) {
-    borderColor = "border-color:#EF9A9A"
+  // if (TabStatus.CREATED === tab.status) {
+  //   borderColor = "";
+  // } else if (TabStatus.DELETED === tab.status) {
+  //   borderColor = "border-color:#EF9A9A"
+  // }
+  if (isOpen(tab)) {
+    borderColor = "border-color:#8f8f8f"
   }
   if (tab.selected) {
     borderColor = "border-color:#000066"
@@ -190,10 +201,18 @@ const setInfo = (tab: Tab) => {
 }
 
 const selectTab = (tab: Tab) => {
-  console.log("tab selected", tab)
+  //console.log("tab selected", tab)
   TabsetService.setOnlySelectedTab(tab)
   const notificationStore = useNotificationsStore()
   notificationStore.setSelectedTab(tab)
 }
+
+const setCustomTitle = (tab: Tab, newValue: string) => {
+  console.log(" -> ", newValue)
+  TabsetService.setCustomTitle(tab, newValue)
+}
+
+const nameOrTitle = (tab: Tab) => tab.name ? tab.name : tab.chromeTab?.title
+const dynamicNameOrTitleModel = (tab:Tab) => tab.name ? tab.name : tab.chromeTab.title
 
 </script>

@@ -1,31 +1,29 @@
 <template>
-  <q-list style="max-width: 318px" class="q-mt-md">
+  <q-list  class="q-mt-md">
     <q-expansion-item
       expand-separator
-      icon="home"
+      icon="window"
+      header-class="text-primary"
       label="Browser"
       default-opened
     >
-      <q-item clickable v-ripple>
+      <q-item clickable v-ripple @click="selectTabset('current')"
+              :style="'current' === tabsStore.currentTabsetId ? 'background-color:#efefef' : 'border:0px solid #bfbfbf'">
         <q-item-section>
-          <q-item clickable v-ripple @click="selectTabset('current')"
-                  :style="'current' === tabsStore.currentTabsetId ? 'background-color:#efefef' : 'border:0px solid #bfbfbf'">
-            <q-item-section>
-              <q-item-label overline
-                            v-text="tabsStore.tabs.length > 1 ? 'Open tabs (' + tabsStore.tabs.length + ' tabs)' : 'Open tabs (' + tabsStore.tabs.length + ' tab)'"/>
-            </q-item-section>
-          </q-item>
+          <q-item-label overline
+                        v-text="tabsStore.tabs.length > 1 ? 'Open tabs (' + tabsStore.tabs.length + ' tabs)' : 'Open tabs (' + tabsStore.tabs.length + ' tab)'"/>
         </q-item-section>
       </q-item>
 
     </q-expansion-item>
   </q-list>
 
-  <q-list style="max-width: 318px" class="q-mt-md">
+  <q-list  class="q-mt-md">
     <q-expansion-item
       expand-separator
       icon="tabs"
       label="Tabsets"
+      header-class="text-primary"
       default-opened
     >
 
@@ -37,6 +35,23 @@
         </q-item-section>
       </q-item>
 
+      <q-separator/>
+
+      <q-item clickable v-ripple>
+        <q-item-section avatar>
+          <q-icon color="primary" name="add"/>
+        </q-item-section>
+
+        <q-item-section>
+          <q-item-label overline v-text="'new tabset'"/>
+          <q-popup-edit :model-value="newTabsetName" v-slot="scope" buttons
+                        @update:model-value="val => createNewTabset( val)">
+            <q-input v-model="scope.value" dense autofocus counter @keyup.enter="scope.set"/>
+          </q-popup-edit>
+        </q-item-section>
+      </q-item>
+
+    <q-separator />
 
     </q-expansion-item>
   </q-list>
@@ -49,11 +64,14 @@ import TabsetService from "src/services/TabsetService";
 import {useRouter} from "vue-router";
 import {useTabsStore} from "stores/tabsStore";
 import _ from "lodash"
+import {ref} from "vue";
 
 const router = useRouter()
 const tabsStore = useTabsStore()
+const newTabsetName = ref('new name')
 
 const selectTabset = (tabsetId: string) => {
+  TabsetService.selectTabset(tabsetId)
   if ('current' === tabsetId) {
     router.push("/browser")
     return
@@ -62,12 +80,15 @@ const selectTabset = (tabsetId: string) => {
     router.push("/pending")
     return
   }
-  TabsetService.selectTabset(tabsetId)
   router.push("/tabset")
 }
 
 const tabsets = () => {
   return _.sortBy([...tabsStore.tabsets.values()], ['name'])
+}
+
+const createNewTabset = (newName: string) => {
+  TabsetService.saveOrReplace(newName, [], true)
 }
 
 </script>

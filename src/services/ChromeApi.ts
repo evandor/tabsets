@@ -67,6 +67,14 @@ class ChromeApi {
       chrome.tabs.highlight({tabs: tabIndex})
     }
   }
+
+  async tabsForUrl(url: string | undefined): Promise<Array<any>> {
+    if (url) {
+      // @ts-ignore
+      return await chrome.tabs.query({url: url})
+    }
+    return Promise.reject("url not defined")
+  }
 }
 
 export default new ChromeApi();

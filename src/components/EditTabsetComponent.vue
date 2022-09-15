@@ -3,13 +3,16 @@
 
 
 
-  <q-banner rounded class="bg-amber-1 text-black" v-if="tabsStore.getCurrentTabs.length === 0">
+  <q-banner rounded class="bg-amber-1 text-black" v-if="!tabsStore.active">
     <div class="text-body2">
-      Currently, your <b>browser tabs</b> are <b>not tracked</b> by this extension and you do not have any tabs
-      associated with
-      this tabset.<br> To start tracking, you can set this tabset as your 'context' by clicking on
-      <q-icon color="blue" name="center_focus_strong"/>
-      and <b>start opening new tabs</b>.
+      Currently, your <b>browser tabs</b> are <b>not tracked</b> by this extension.
+    </div>
+  </q-banner>
+
+  <q-banner rounded class="bg-amber-1 text-black" v-if="tabsStore.active && tabsStore.getCurrentTabs.length === 0">
+    <div class="text-body2">
+      To start adding new tabs to this empty tabset, open new browser tabs and come back to this extension to
+      associate them with a tabset.
     </div>
   </q-banner>
 
@@ -24,11 +27,11 @@
         </q-toolbar-title>
       </div>
       <div class="col-xs-12 col-md-7 text-right">
-        <q-btn flat dense icon="save_as" :label="$q.screen.gt.sm ? 'Save or Rename...' : ''"
-               class="q-mr-md"
-               @click="saveDialog">
-          <q-tooltip>Save tabset as...</q-tooltip>
-        </q-btn>
+<!--        <q-btn flat dense icon="save_as" :label="$q.screen.gt.sm ? 'Save or Rename...' : ''"-->
+<!--               class="q-mr-md"-->
+<!--               @click="saveDialog">-->
+<!--          <q-tooltip>Save tabset as...</q-tooltip>-->
+<!--        </q-btn>-->
 
         <q-btn flat dense icon="restore_page"
                color="green" :label="$q.screen.gt.sm ? 'Restore Tabset...' : ''"
@@ -76,7 +79,7 @@
       </div>
       <q-card>
         <q-card-section>
-          <Tabcards :tabs="tabsStore.pendingTabset.tabs"/>
+          <Tabcards :tabs="tabsStore.pendingTabset.tabs" show-actions />
         </q-card-section>
       </q-card>
     </q-expansion-item>
@@ -138,7 +141,7 @@
 
     <!-- rest: neither pinned, grouped, or pending -->
     <q-expansion-item
-      v-if="tabsStore.pinnedTabs.length > 0 || tabGroupsStore.tabGroups.length > 0 || tabsStore.pendingTabs.length > 0"
+      v-if="unpinnedNoGroup().length > 0"
       icon="tabs"
       default-opened
       header-class="bg-amber-1 text-black"
@@ -269,7 +272,7 @@ const deleteDialog = () => {
     persistent: true
   }).onOk((data: any) => {
     TabsetService.delete(tabsStore.currentTabsetId)
-    router.push("/")
+    router.push("/browser")
   }).onCancel(() => {
   }).onDismiss(() => {
   })
