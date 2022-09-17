@@ -9,11 +9,19 @@
       Currently, you do not have any tabsets defined. Click on "new tabset" to get started.
     </div>
 
-    <q-item clickable v-ripple v-for="tabset in tabsets()" @click="selectTabset(tabset.id)"
+    <q-item clickable v-ripple v-for="tabset in tabsets()"
+            @click="selectTabset(tabset.id)"
+            @mouseover="showDeleteButton.set(tabset.id, true)"
+            @mouseleave="showDeleteButton.set(tabset.id, false)"
             :style="tabset.id === tabsStore.currentTabsetId ? 'background-color:#efefef' : 'border:0px solid #bfbfbf'">
       <q-item-section>
         <q-item-label
           v-text="tabset.tabs?.length > 1 ? tabset.name + ' (' + tabset.tabs?.length + ' tabs)' : tabset.name + ' (' + tabset.tabs?.length + ' tab)'"/>
+      </q-item-section>
+      <q-item-section avatar v-if="showDeleteButton.get(tabset.id)">
+        <q-icon name="delete_outline" color="negative" size="2em" @click="deleteDialog">
+          <q-tooltip>Delete this tabset</q-tooltip>
+        </q-icon>
       </q-item-section>
     </q-item>
 
@@ -34,6 +42,7 @@ import {useQuasar} from "quasar";
 const router = useRouter()
 const tabsStore = useTabsStore()
 const newTabsetName = ref('new name')
+const showDeleteButton = ref<Map<string,boolean>>(new Map())
 const $q = useQuasar();
 
 const selectTabset = (tabsetId: string) => {
@@ -79,6 +88,22 @@ const createNewTabset = (newName: string) => {
     })
 
   })
+}
+
+const deleteDialog = () => {
+  $q.dialog({
+    title: 'Deleting Tabset',
+    message: 'Would you like to delete this tabset?',
+    cancel: true,
+    persistent: true
+  }).onOk((data: any) => {
+    TabsetService.delete(tabsStore.currentTabsetId)
+    router.push("/browser")
+  }).onCancel(() => {
+  }).onDismiss(() => {
+  })
+
+
 }
 
 </script>

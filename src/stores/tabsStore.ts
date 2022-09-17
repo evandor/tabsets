@@ -1,5 +1,4 @@
 import {defineStore} from 'pinia';
-// @ts-ignore
 import _ from 'lodash'
 import {LocalStorage, uid} from "quasar";
 import {Tabset} from "src/models/Tabset";
@@ -38,11 +37,7 @@ function markDuplicates(tabset: Tabset) {
 export const useTabsStore = defineStore('tabs', {
   state: () => ({
 
-    // current context id (one of the tabsets ids, null if not set)
-    // deprecated, use 'active'
-    //contextId: null as unknown as string,
-
-    // active means: tabs(-sets) are trackend
+    // active means: tabs(-sets) are tracked
     active: null as unknown as boolean,
 
     // chrome's current's windows tabs, reloaded on various events
@@ -57,8 +52,6 @@ export const useTabsStore = defineStore('tabs', {
     pendingTabset: null as unknown as Tabset,
 
     browserTabset: null as unknown as Tabset,
-
-    //selectedTabset: null as unknown as Tabset,
 
     // which tabset should be shown in the extension?
     currentTabsetId: 'current',
@@ -80,12 +73,6 @@ export const useTabsStore = defineStore('tabs', {
       return _.filter(currentTabset.tabs, (t: Tab) => {
         //console.log("t", t.chromeTab, t)
         return t.chromeTab?.pinned
-      })
-    },
-    pendingTabs(state): Tab[] {
-      const currentTabset: Tabset = state.tabsets.get(state.currentTabsetId) || new Tabset("", "", [], [])
-      return _.filter(currentTabset.tabs, (t: Tab) => {
-        return t.status !== TabStatus.DEFAULT
       })
     },
 
@@ -148,9 +135,7 @@ export const useTabsStore = defineStore('tabs', {
 
       // @ts-ignore
       this.browserTabset = new Tabset("current", "current",
-        _.map(this.tabs, t => {
-          return new Tab(uid(), t)
-        }))
+        _.map(this.tabs, t => new Tab(uid(), t)))
 
       this.pendingTabset = new Tabset("pending", "pending", [], [])
 
@@ -261,6 +246,7 @@ export const useTabsStore = defineStore('tabs', {
     },
 
     deleteTabset(tabsetId: string) {
+      this.tabsets.delete(tabsetId)
     },
     deactivateListeners() {
       console.log("setting listeners to false")

@@ -7,7 +7,7 @@
 
 
         <!--        <q-toolbar-title style="position:absolute;left:300px;">-->
-        <q-toolbar-title>
+        <q-toolbar-title @click="goHome()" class="cursor-pointer">
             Tabsets
         </q-toolbar-title>
 
@@ -88,9 +88,7 @@
 
 
         <div>
-          <q-badge outline align="middle" color="white">
             v{{ appVersion }}
-          </q-badge>
         </div>
       </q-toolbar>
     </q-header>
@@ -184,6 +182,7 @@ async function submitSearch() {
 }
 
 const toolbarTitle = () => "Tabsets Extension"
+const goHome = () => router.push("/tabset")
 
 const createNewTabset = (newName: string) => {
   TabsetService.saveOrReplace(newName, [], true)

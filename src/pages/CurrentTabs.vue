@@ -43,7 +43,6 @@ if (tabsStore.tabsets.size < 1) {
 const layout = ref('grid')
 
 const layoutFromStorage = localStorage.getItem("layout")
-console.log("lfs", layoutFromStorage)
 if (layoutFromStorage) {
   layout.value = layoutFromStorage.toString()
 }
@@ -93,7 +92,7 @@ const deleteDialog = () => {
     persistent: true
   }).onOk((data: any) => {
     TabsetService.delete(tabsStore.currentTabsetId)
-    router.push("/")
+    router.push("/tabset")
   }).onCancel(() => {
   }).onDismiss(() => {
   })

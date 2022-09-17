@@ -40,23 +40,16 @@
 
   <!-- "Arrows" part -->
   <div class="justify-center row" v-if="tabsStore.pendingTabset?.tabs.length > 0">
-    <q-icon name="arrow_downward" color="positive" size="3em">
-      <q-tooltip>Select the tabs you want to keep in your tabset and save them.</q-tooltip>
-    </q-icon>
-    <span v-if="TabsetService.getSelectedPendingTabs().length === 0">
-      <q-btn label="Save all" class="q-mx-lg" @click="saveAllPendingTabs()"></q-btn>
 
+    <span v-if="TabsetService.getSelectedPendingTabs().length === 0">
+      <q-btn icon="arrow_downward" label="Save all" class="q-mx-lg" color="positive"
+             @click="saveAllPendingTabs()"></q-btn>
+      <q-btn icon="clear" label="Remove all" class="q-mx-lg" color="negative" @click="removeAllPendingTabs()"></q-btn>
     </span>
     <span v-else>
       <q-btn label="save selected" class="q-mx-lg" @click="saveSelectedPendingTabs()"></q-btn>
        <q-btn label="remove selected" class="q-mx-lg" @click="removeSelectedPendingTabs()"></q-btn>
     </span>
-    <q-icon
-      :name="TabsetService.getSelectedPendingTabs().length === 0 ? 'arrow_downward' : 'clear'"
-      :color="TabsetService.getSelectedPendingTabs().length === 0 ? 'positive' : 'negative'"
-      size="3em">
-
-    </q-icon>
   </div>
 
 
@@ -78,11 +71,7 @@
                @click="restoreDialog">
           <q-tooltip>Replace your current tabs with all the tabs from this tabset</q-tooltip>
         </q-btn>
-        <q-btn flat dense icon="delete"
-               color="red" :label="$q.screen.gt.sm ? 'Delete Tabset...' : ''"
-               @click="deleteDialog">
-          <q-tooltip>Delete this tabset</q-tooltip>
-        </q-btn>
+
       </div>
     </div>
   </q-toolbar>
@@ -209,7 +198,7 @@ const $q = useQuasar()
 function unpinnedNoGroup() {
   return _.filter(
     _.map(tabsStore.getCurrentTabs, t => t),
-    (t: Tab) => !t.chromeTab.pinned && t.chromeTab.groupId === -1 && (t.status === TabStatus.DEFAULT || !t.status))
+    (t: Tab) => !t.chromeTab.pinned && t.chromeTab.groupId === -1)
 }
 
 function tabsForGroup(groupId: number): Tab[] {
@@ -272,21 +261,6 @@ const saveDialog = () => {
 
 }
 
-const deleteDialog = () => {
-  $q.dialog({
-    title: 'Deleting Tabset',
-    message: 'Would you like to delete this tabset?',
-    cancel: true,
-    persistent: true
-  }).onOk((data: any) => {
-    TabsetService.delete(tabsStore.currentTabsetId)
-    router.push("/browser")
-  }).onCancel(() => {
-  }).onDismiss(() => {
-  })
-
-
-}
 
 const restoreDialog = () => {
   $q.dialog({

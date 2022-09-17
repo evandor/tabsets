@@ -21,7 +21,7 @@ class TabsetService {
   }
 
   async init() {
-    this.db = await openDB('db-0.1.0', 2, {
+    this.db = await openDB('db', 2, {
       upgrade(db) {
         if (!db.objectStoreNames.contains('tabsets')) {
           console.log("creating db tabsets")
@@ -142,9 +142,11 @@ class TabsetService {
     const tabset = this.getTabset(tabsetId)
     if (tabset) {
       const tabsStore = useTabsStore()
-      //tabsStore.deleteTabset(tabsetId)
+      tabsStore.deleteTabset(tabsetId)
       this.db.delete('tabsets', tabsetId)
-      this.selectTabset('current')
+      const nextKey:string = tabsStore.tabsets.keys().next().value
+      console.log("setting next key to", nextKey)
+      this.selectTabset(nextKey)
       //this.localStorage.remove("tabsets.tabset." + tabsetId)
       //tabsStore.loadTabs('delete tabset event')
     }
@@ -242,17 +244,17 @@ class TabsetService {
     tabsStore.currentTabsetId = tabsetId;
   }
 
-  removeClosedTabs() {
-    const tabsStore = useTabsStore()
-    // console.log("removing closed tabs", tabsStore.pendingTabs)
-    _.forEach(
-      _.filter(
-        tabsStore.pendingTabs,
-        t => t.status === TabStatus.DELETED),
-      deletedTab => tabsStore.removeTab(deletedTab.chromeTab.id || 0))
-
-//    this.tabsStore.removeTab(tab.id)
-  }
+//   removeClosedTabs() {
+//     const tabsStore = useTabsStore()
+//     // console.log("removing closed tabs", tabsStore.pendingTabs)
+//     _.forEach(
+//       _.filter(
+//         tabsStore.pendingTabs,
+//         t => t.status === TabStatus.DELETED),
+//       deletedTab => tabsStore.removeTab(deletedTab.chromeTab.id || 0))
+//
+// //    this.tabsStore.removeTab(tab.id)
+//   }
 
   saveAllPendingTabs(onlySelected: boolean = false) {
     const tabsStore = useTabsStore()
@@ -283,18 +285,13 @@ class TabsetService {
   }
 
   removeSelectedPendingTabs() {
-
+    const tabsStore = useTabsStore()
+    tabsStore.pendingTabset.tabs = []
   }
 
   removeAllPendingTabs() {
     const tabsStore = useTabsStore()
-    _.forEach(
-      tabsStore.pendingTabs,
-      t => {
-        if (t.chromeTab?.id) {
-          // Navigation.closeTab(t.chromeTab)
-        }
-      })
+    tabsStore.pendingTabset.tabs = []
   }
 
   setOnlySelectedTab(tab: Tab) {
