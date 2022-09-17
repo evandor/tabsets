@@ -1,15 +1,14 @@
 <template>
   <q-page padding>
 
-    <div class="text-body1" v-if="tabsStore.isLiveMode">
-      chrome tabset
+    <div v-if="layout === 'list'">
+      <tabset-list></tabset-list>
     </div>
-    <div v-else-if="tabsStore.isEditMode">
-      <edit-tabset-component></edit-tabset-component>
+    <div v-else-if="layout === 'thumbnails'">
+      <tabset-thumbnails></tabset-thumbnails>
     </div>
     <div v-else>
-      <div>???</div>
-      {{tabsStore.contextId}}--{{tabsStore.currentTabsetId}}???
+      <edit-tabset-component></edit-tabset-component>
     </div>
 
   </q-page>
@@ -25,8 +24,9 @@ import {useTabsStore} from "src/stores/tabsStore";
 import {useTabGroupsStore} from "src/stores/tabGroupsStore";
 import TabsetService from "src/services/TabsetService";
 import {Tab, TabStatus} from "src/models/Tab";
-import ContextComponent from "src/components/ContextComponent.vue"
 import EditTabsetComponent from "components/EditTabsetComponent.vue";
+import TabsetList from "components/TabsetList.vue";
+import TabsetThumbnails from "components/TabsetThumbnails.vue";
 
 const route = useRoute();
 const router = useRouter();
@@ -35,6 +35,18 @@ const tabsStore = useTabsStore()
 const tabGroupsStore = useTabGroupsStore()
 const tabsetname = ref(tabsStore.currentTabsetName)
 const $q = useQuasar()
+
+if (tabsStore.tabsets.size < 1) {
+  router.push("/about")
+}
+
+const layout = ref('grid')
+
+const layoutFromStorage = localStorage.getItem("layout")
+console.log("lfs", layoutFromStorage)
+if (layoutFromStorage) {
+  layout.value = layoutFromStorage.toString()
+}
 
 function unpinnedNoGroup() {
   return _.filter(

@@ -1,59 +1,23 @@
 <template>
-  <q-list  class="q-mt-md">
-    <q-expansion-item
-      expand-separator
-      icon="window"
-      header-class="text-primary"
-      label="Browser"
-      default-opened
-    >
-      <q-item clickable v-ripple @click="selectTabset('current')"
-              :style="'current' === tabsStore.currentTabsetId ? 'background-color:#efefef' : 'border:0px solid #bfbfbf'">
-        <q-item-section>
-          <q-item-label overline
-                        v-text="tabsStore.tabs.length > 1 ? 'Open tabs (' + tabsStore.tabs.length + ' tabs)' : 'Open tabs (' + tabsStore.tabs.length + ' tab)'"/>
-        </q-item-section>
-      </q-item>
 
-    </q-expansion-item>
-  </q-list>
 
-  <q-list  class="q-mt-md">
-    <q-expansion-item
-      expand-separator
-      icon="tabs"
-      label="Tabsets"
-      header-class="text-primary"
-      default-opened
-    >
+  <q-list class="q-mt-md">
 
-      <q-item clickable v-ripple v-for="tabset in tabsets()" @click="selectTabset(tabset.id)"
-              :style="tabset.id === tabsStore.currentTabsetId ? 'background-color:#efefef' : 'border:0px solid #bfbfbf'">
-        <q-item-section>
-          <q-item-label overline :class="tabsStore.contextId === tabset.id ? 'text-blue-9' : ''"
-                        v-text="tabset.tabs?.length > 1 ? tabset.name + ' (' + tabset.tabs?.length + ' tabs)' : tabset.name + ' (' + tabset.tabs?.length + ' tab)'"/>
-        </q-item-section>
-      </q-item>
+    <q-item-label header>Tabsets</q-item-label>
 
-      <q-separator/>
+    <div class="text-body2 q-pa-lg" v-if="tabsStore.tabsets.size === 0">
+      Currently, you do not have any tabsets defined. Click on "new tabset" to get started.
+    </div>
 
-      <q-item clickable v-ripple>
-        <q-item-section avatar>
-          <q-icon color="primary" name="add"/>
-        </q-item-section>
+    <q-item clickable v-ripple v-for="tabset in tabsets()" @click="selectTabset(tabset.id)"
+            :style="tabset.id === tabsStore.currentTabsetId ? 'background-color:#efefef' : 'border:0px solid #bfbfbf'">
+      <q-item-section>
+        <q-item-label
+          v-text="tabset.tabs?.length > 1 ? tabset.name + ' (' + tabset.tabs?.length + ' tabs)' : tabset.name + ' (' + tabset.tabs?.length + ' tab)'"/>
+      </q-item-section>
+    </q-item>
 
-        <q-item-section>
-          <q-item-label overline v-text="'new tabset'"/>
-          <q-popup-edit :model-value="newTabsetName" v-slot="scope" buttons
-                        @update:model-value="val => createNewTabset( val)">
-            <q-input v-model="scope.value" dense autofocus counter @keyup.enter="scope.set"/>
-          </q-popup-edit>
-        </q-item-section>
-      </q-item>
 
-    <q-separator />
-
-    </q-expansion-item>
   </q-list>
 
 </template>
@@ -65,10 +29,12 @@ import {useRouter} from "vue-router";
 import {useTabsStore} from "stores/tabsStore";
 import _ from "lodash"
 import {ref} from "vue";
+import {useQuasar} from "quasar";
 
 const router = useRouter()
 const tabsStore = useTabsStore()
 const newTabsetName = ref('new name')
+const $q = useQuasar();
 
 const selectTabset = (tabsetId: string) => {
   TabsetService.selectTabset(tabsetId)
@@ -89,6 +55,30 @@ const tabsets = () => {
 
 const createNewTabset = (newName: string) => {
   TabsetService.saveOrReplace(newName, [], true)
+    .then((result: object) => {
+      //@ts-ignore
+      const replaced = result.replaced
+      //@ts-ignore
+      const merged = result.merged
+      let message = 'Tabset ' + newName + ' created successfully'
+      if (replaced && merged) {
+        message = 'Tabset ' + newName + ' was updated'
+      } else if (replaced) {
+        message = 'Tabset ' + newName + ' was overwritten'
+      }
+      router.push("/tabset")
+      $q.notify({
+        message: message,
+        type: 'positive'
+      })
+    }).catch((ex: any) => {
+    console.error("ex", ex)
+    $q.notify({
+      message: 'There was a problem creating the tabset ' + newName,
+      type: 'warning',
+    })
+
+  })
 }
 
 </script>

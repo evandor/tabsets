@@ -1,4 +1,5 @@
 import {defineStore} from 'pinia';
+import ChromeTabGroupsListeners from "src/services/ChromeTabGroupsListeners";
 
 // @ts-ignore
 async function queryTabGroups(): Promise<chrome.tabGroups.TabGroup[]> {
@@ -21,36 +22,22 @@ export const useTabGroupsStore = defineStore('tabGroups', {
   },
 
   actions: {
-    loadTabGroups(eventName = '') {
+    initialize(eventName = '') {
       console.log("loading tabgroups", eventName)
+      this.loadTabGroups()
+    },
+    loadTabGroups() {
       queryTabGroups().then(tgs => this.tabGroups = tgs);
     },
     initListeners() {
       // @ts-ignore
-      chrome.tabGroups.onCreated.addListener((tg) => {
-        let msg = `tabGroup ${tg.title} created`
-        console.log('onCreated', msg)
-        this.loadTabGroups('onCreated');
-      })
+      chrome.tabGroups.onCreated.addListener((tabGroup: chrome.tabGroups.TabGroup) => ChromeTabGroupsListeners.onCreated(tabGroup))
       // @ts-ignore
-      chrome.tabGroups.onUpdated.addListener((tg) => {
-        let msg = `tabGroup ${tg.title} updated`
-        console.log('onUpdated', msg)
-        this.loadTabGroups('onUpdated');
-      })
+      chrome.tabGroups.onUpdated.addListener((tabGroup: chrome.tabGroups.TabGroup) => ChromeTabGroupsListeners.onUpdated(tabGroup))
       // @ts-ignore
-      chrome.tabGroups.onRemoved.addListener((tg) => {
-        let msg = `tabGroup ${tg.title} removed`
-        console.log('onRemoved', msg)
-        this.loadTabGroups('onRemoved');
-      })
+      chrome.tabGroups.onRemoved.addListener((tabGroup: chrome.tabGroups.TabGroup) => ChromeTabGroupsListeners.onRemoved(tabGroup))
       // @ts-ignore
-      chrome.tabGroups.onMoved.addListener((tg) => {
-        let msg = `tabGroup ${tg.title} moved`
-        console.log('onMoved', msg)
-        this.loadTabGroups('onMoved');
-      })
-
+      chrome.tabGroups.onMoved.addListener((tabGroup: chrome.tabGroups.TabGroup) => ChromeTabGroupsListeners.onMoved(tabGroup))
     }
   }
 });

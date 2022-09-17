@@ -1,20 +1,64 @@
 <template>
 
-
-
-
   <q-banner rounded class="bg-amber-1 text-black" v-if="!tabsStore.active">
     <div class="text-body2">
       Currently, your <b>browser tabs</b> are <b>not tracked</b> by this extension.
     </div>
   </q-banner>
 
-  <q-banner rounded class="bg-amber-1 text-black" v-if="tabsStore.active && tabsStore.getCurrentTabs.length === 0">
-    <div class="text-body2">
-      To start adding new tabs to this empty tabset, open new browser tabs and come back to this extension to
-      associate them with a tabset.
+  <!-- pending tabs -->
+  <q-expansion-item v-if="tabsStore.pendingTabset?.tabs.length > 0"
+                    header-class="bg-amber-2 text-black"
+                    expand-icon-class="text-black"
+                    default-opened>
+    <template v-slot:header="{ expanded }">
+      <q-item-section avatar>
+        <q-icon name="push_pin"/>
+      </q-item-section>
+      <q-item-section>
+        <div>
+          <span class="text-weight-bold">Open Tabs</span>
+          <div class="text-caption">Decide which tabs you want to put into your tabset
+          </div>
+        </div>
+      </q-item-section>
+      <q-item-section>{{ formatLength(tabsStore.pendingTabset?.tabs.length, 'tab', 'tabs') }}</q-item-section>
+    </template>
+
+    <!--        <q-card style="background: radial-gradient(circle, #35a2ff 0%, #014a88 100%)">-->
+    <div>
+        <span class="cursor-pointer" @click="removeClosedTabs()"
+              v-if="_.filter(tabsStore.pendingTabset.tabs, t => t.status === TabStatus.DELETED).length > 1">[remove all closed tabs]</span>
     </div>
-  </q-banner>
+    <q-card>
+      <q-card-section>
+        <TabcardsPending :tabs="tabsStore.pendingTabset?.tabs" v-on:selectionChanged="updateSelectionCount"/>
+      </q-card-section>
+    </q-card>
+  </q-expansion-item>
+
+
+  <!-- "Arrows" part -->
+  <div class="justify-center row" v-if="tabsStore.pendingTabset?.tabs.length > 0">
+    <q-icon name="arrow_downward" color="positive" size="3em">
+      <q-tooltip>Select the tabs you want to keep in your tabset and save them.</q-tooltip>
+    </q-icon>
+    <span v-if="TabsetService.getSelectedPendingTabs().length === 0">
+      <q-btn label="Save all" class="q-mx-lg" @click="saveAllPendingTabs()"></q-btn>
+
+    </span>
+    <span v-else>
+      <q-btn label="save selected" class="q-mx-lg" @click="saveSelectedPendingTabs()"></q-btn>
+       <q-btn label="remove selected" class="q-mx-lg" @click="removeSelectedPendingTabs()"></q-btn>
+    </span>
+    <q-icon
+      :name="TabsetService.getSelectedPendingTabs().length === 0 ? 'arrow_downward' : 'clear'"
+      :color="TabsetService.getSelectedPendingTabs().length === 0 ? 'positive' : 'negative'"
+      size="3em">
+
+    </q-icon>
+  </div>
+
 
   <q-toolbar class="text-primary">
     <div class="row fit">
@@ -22,19 +66,14 @@
         <q-toolbar-title>
           <div class="row justify-start items-baseline">
             <div class="col-1" style="width:80px"
-                 v-text="'Tabset \'' + tabsStore.currentTabsetName +  '\''"></div>
+                 v-text="'Tabset ' + tabsStore.currentTabsetName"></div>
           </div>
         </q-toolbar-title>
       </div>
       <div class="col-xs-12 col-md-7 text-right">
-<!--        <q-btn flat dense icon="save_as" :label="$q.screen.gt.sm ? 'Save or Rename...' : ''"-->
-<!--               class="q-mr-md"-->
-<!--               @click="saveDialog">-->
-<!--          <q-tooltip>Save tabset as...</q-tooltip>-->
-<!--        </q-btn>-->
-
-        <q-btn flat dense icon="restore_page"
-               color="green" :label="$q.screen.gt.sm ? 'Restore Tabset...' : ''"
+        <q-btn v-if="tabsStore.getCurrentTabset?.tabs.length > 0"
+               flat dense icon="restore_page"
+               color="green" :label="$q.screen.gt.sm ? 'Open Tabset...' : ''"
                class="q-mr-md"
                @click="restoreDialog">
           <q-tooltip>Replace your current tabs with all the tabs from this tabset</q-tooltip>
@@ -48,133 +87,98 @@
     </div>
   </q-toolbar>
 
-  <q-list class="rounded-borders">
+  <q-expansion-item v-if="tabsStore.pinnedTabs.length > 0"
+                    header-class="text-black"
+                    expand-icon-class="text-black"
+                    expand-separator
+                    default-opened>
+    <template v-slot:header="{ expanded }">
+      <q-item-section avatar>
+        <q-icon name="push_pin"/>
+      </q-item-section>
+      <q-item-section>
+        <div>
+          <span class="text-weight-bold">Pinned Tabs</span>
+          <div class="text-caption">this browser's window's tabs which are pinned right now</div>
+        </div>
+      </q-item-section>
+      <q-item-section>{{ formatLength(tabsStore.pinnedTabs.length, 'tab', 'tabs') }}</q-item-section>
+    </template>
+    <q-card>
+      <q-card-section>
+        <Tabcards :tabs="tabsStore.pinnedTabs"/>
+      </q-card-section>
+    </q-card>
+  </q-expansion-item>
 
-    <!-- pending tabs -->
+  <!-- chrome groups -->
+  <template v-for="group in tabGroupsStore.tabGroups">
     <q-expansion-item
-      v-if="tabsStore.pendingTabset.tabs.length > 0"
-      header-class="bg-amber-2 text-black"
-      expand-icon-class="text-black"
-      expand-separator
-      default-opened>
-      <template v-slot:header="{ expanded }">
-        <q-item-section avatar>
-          <q-icon name="push_pin"/>
-        </q-item-section>
-        <q-item-section>
-          <div>
-            <span class="text-weight-bold">Pending Tabs</span>
-            <div class="text-caption">These tabs have been used in the current context but have not been saved yet
-            </div>
-          </div>
-        </q-item-section>
-        <q-item-section>{{ formatLength(tabsStore.pendingTabset.tabs.length, 'tab', 'tabs') }}</q-item-section>
-      </template>
-      <!--        <q-card style="background: radial-gradient(circle, #35a2ff 0%, #014a88 100%)">-->
-      <div>
-        <span class="cursor-pointer" @click="removeClosedTabs()"
-              v-if="_.filter(tabsStore.pendingTabs, t => t.status === TabStatus.DELETED).length > 1">[remove all closed tabs]</span>
-        <span class="cursor-pointer" @click="saveAllPendingTabs()"
-              v-if="tabsStore.pendingTabs.length > 1 ">[save all]</span>
-      </div>
-      <q-card>
-        <q-card-section>
-          <Tabcards :tabs="tabsStore.pendingTabset.tabs" show-actions />
-        </q-card-section>
-      </q-card>
-    </q-expansion-item>
-    <q-expansion-item
-      v-if="tabsStore.pinnedTabs.length > 0"
-      header-class="bg-amber-2 text-black"
-      expand-icon-class="text-black"
-      expand-separator
-      default-opened>
-      <template v-slot:header="{ expanded }">
-        <q-item-section avatar>
-          <q-icon name="push_pin"/>
-        </q-item-section>
-        <q-item-section>
-          <div>
-            <span class="text-weight-bold">Pinned Tabs</span>
-            <div class="text-caption">this browser's window's tabs which are pinned right now</div>
-          </div>
-        </q-item-section>
-        <q-item-section>{{ formatLength(tabsStore.pinnedTabs.length, 'tab', 'tabs') }}</q-item-section>
-      </template>
-      <q-card>
-        <q-card-section>
-          <Tabcards :tabs="tabsStore.pinnedTabs"/>
-        </q-card-section>
-      </q-card>
-    </q-expansion-item>
-
-    <!-- chrome groups -->
-    <div v-for="group in tabGroupsStore.tabGroups">
-      <q-expansion-item
-        v-if="tabsForGroup(group.id).length > 0"
-        header-class="bg-amber-2 text-black"
-        expand-icon-class="text-black"
-        expand-separator
-        default-opened>
-        <template v-slot:header="{ expanded }">
-          <q-item-section avatar>
-            <q-icon :color="group.color" name="tab"/>
-          </q-item-section>
-
-          <q-item-section>
-            <div>
-              <span class="text-weight-bold">{{ group.title }}</span>
-              <div class="text-caption">chrome browser's group of tabs</div>
-              <!--                <q-btn label="create new tabset" v-if="expanded" @click="newTabsetFrom(group.title, group.id)"/>-->
-
-            </div>
-          </q-item-section>
-          <q-item-section>{{ formatLength(tabsForGroup(group.id).length, 'tab', 'tabs') }}</q-item-section>
-        </template>
-        <q-card>
-          <q-card-section>
-            <Tabcards :tabs="tabsForGroup( group.id)"  v-on:sendCaption="setGroupedTabsCaption"/>
-          </q-card-section>
-        </q-card>
-      </q-expansion-item>
-    </div>
-
-    <!-- rest: neither pinned, grouped, or pending -->
-    <q-expansion-item
-      v-if="unpinnedNoGroup().length > 0"
-      icon="tabs"
+      v-if="tabsForGroup(group.id).length > 0"
       default-opened
-      header-class="bg-amber-1 text-black"
-      expand-icon-class="text-black">
+      header-class="text-black"
+      expand-icon-class="text-black"
+      expand-separator>
       <template v-slot:header="{ expanded }">
         <q-item-section avatar>
-          <q-icon name="tab"/>
+          <q-icon :color="group.color" name="tab"/>
         </q-item-section>
 
         <q-item-section>
           <div>
-            <span class="text-weight-bold">Other Tabs ({{ formatLength(unpinnedNoGroup().length, 'tab', 'tabs') }})</span>
-            <div class="text-caption ellipsis" v-text="otherTabsCaption"></div>
-            <!--                <q-btn label="create new tabset" v-if="expanded" @click="newTabsetFrom(group.title, group.id)"/>-->
+            <span class="text-weight-bold">{{ group.title }}</span>
+            <div class="text-caption">chrome browser's group of tabs</div>
           </div>
         </q-item-section>
-        <q-item-section></q-item-section>
+        <q-item-section>{{ formatLength(tabsForGroup(group.id).length, 'tab', 'tabs') }}</q-item-section>
       </template>
-
       <q-card>
         <q-card-section>
-          <Tabcards :tabs="unpinnedNoGroup()" v-on:sendCaption="setOtherTabsCaption"/>
+          <Tabcards :tabs="tabsForGroup( group.id)" v-on:sendCaption="setGroupedTabsCaption"/>
         </q-card-section>
       </q-card>
     </q-expansion-item>
-    <div v-else>
-      <q-card>
-        <q-card-section>
-          <Tabcards :tabs="unpinnedNoGroup()"/>
-        </q-card-section>
-      </q-card>
-    </div>
-  </q-list>
+  </template>
+
+  <!-- rest: neither pinned, grouped, or pending -->
+  <q-expansion-item
+    icon="tabs"
+    default-opened
+    header-class="text-black"
+    expand-icon-class="text-black"
+    expand-separator
+  >
+    <template v-slot:header="{ expanded }">
+      <q-item-section avatar>
+        <q-icon name="tab"/>
+      </q-item-section>
+
+      <q-item-section>
+        <div>
+            <span class="text-weight-bold">Other Tabs ({{
+                formatLength(unpinnedNoGroup().length, 'tab', 'tabs')
+              }})</span>
+          <div class="text-caption ellipsis" v-text="otherTabsCaption"></div>
+          <!--                <q-btn label="create new tabset" v-if="expanded" @click="newTabsetFrom(group.title, group.id)"/>-->
+        </div>
+      </q-item-section>
+      <q-item-section></q-item-section>
+    </template>
+
+    <q-banner rounded class="bg-amber-1 text-black" v-if="tabsStore.getCurrentTabs.length === 0">
+      <div class="text-body2">
+        To start adding new tabs to this empty tabset, open new browser tabs and come back to this extension to
+        associate them with a tabset.
+      </div>
+    </q-banner>
+
+    <q-card>
+      <q-card-section>
+        <Tabcards :tabs="unpinnedNoGroup()" v-on:sendCaption="setOtherTabsCaption"/>
+      </q-card-section>
+    </q-card>
+  </q-expansion-item>
+
 
 </template>
 
@@ -183,6 +187,7 @@ import {ref, watchEffect} from 'vue'
 import {useRoute, useRouter} from "vue-router";
 import {useQuasar} from "quasar";
 import Tabcards from "src/components/layouts/Tabcards.vue";
+import TabcardsPending from "src/components/layouts/TabcardsPending.vue";
 import _ from "lodash"
 import {useTabsStore} from "src/stores/tabsStore";
 import {useTabGroupsStore} from "src/stores/tabGroupsStore";
@@ -207,11 +212,10 @@ function unpinnedNoGroup() {
     (t: Tab) => !t.chromeTab.pinned && t.chromeTab.groupId === -1 && (t.status === TabStatus.DEFAULT || !t.status))
 }
 
-function tabsForGroup(groupId: number) {
-  console.log("tabsforGroup", groupId)
-  return _.filter(
-    _.map(tabsStore.getCurrentTabs, t => t.chromeTab || t),
-    (t: any) => t.groupId === groupId)
+function tabsForGroup(groupId: number): Tab[] {
+  return _.filter(tabsStore.getCurrentTabs,
+    //@ts-ignore
+    (t: Tab) => t.chromeTab.groupId === groupId)
 }
 
 const update = (tabsetIdent: object) => {
@@ -220,25 +224,29 @@ const update = (tabsetIdent: object) => {
   tabsStore.selectCurrentTabset(tabsetIdent['value' as keyof object])
 }
 
-// const tabsetOptions = () => {
-//   return _.map([...tabsStore.tabsets.values()], ts => {
-//     return {
-//       label: ts.name,
-//       value: ts.id
-//     }
-//   })
-// }
-
 const formatLength = (length: number, singular: string, plural: string) => {
   return length > 1 ? length + ' ' + plural : length + ' ' + singular
 }
 
 const removeClosedTabs = () => TabsetService.removeClosedTabs()
 const saveAllPendingTabs = () => TabsetService.saveAllPendingTabs()
+const saveSelectedPendingTabs = () => TabsetService.saveSelectedPendingTabs()
+const removeSelectedPendingTabs = () => TabsetService.removeSelectedPendingTabs()
 const removeAllPendingTabs = () => TabsetService.removeAllPendingTabs()
 
 const setOtherTabsCaption = (msg: string) => otherTabsCaption.value = msg
 const setGroupedTabsCaption = (msg: string) => groupedTabsCaption.value = msg
+
+const selectedCount = ref(0)
+
+const showTabGroup = (group: chrome.tabGroups.TabGroup) => tabsForGroup(group.id).length > 0
+const showOtherTabs = () => tabsStore.browserTabset?.tabs.length > 0 || tabGroupsStore.tabGroups.length > 0
+
+const updateSelectionCount = (val: any) => {
+  console.log("hier", val, TabsetService.getSelectedPendingTabs().length)
+  selectedCount.value = TabsetService.getSelectedPendingTabs().length
+}
+const noTabSelected = () => selectedCount.value === 0
 
 const saveDialog = () => {
   $q.dialog({

@@ -6,6 +6,7 @@ import {Tab, TabStatus} from "src/models/Tab";
 import {Tabset} from "src/models/Tabset";
 import {useNotificationsStore} from "src/stores/notificationsStore";
 import {IDBPDatabase, openDB} from "idb";
+import {useTabGroupsStore} from "stores/tabGroupsStore";
 
 //import {Localbase} from 'localbase'
 
@@ -20,7 +21,7 @@ class TabsetService {
   }
 
   async init() {
-    this.db = await openDB('db', 2, {
+    this.db = await openDB('db-0.1.0', 2, {
       upgrade(db) {
         if (!db.objectStoreNames.contains('tabsets')) {
           console.log("creating db tabsets")
@@ -37,7 +38,6 @@ class TabsetService {
     if (active) {
       useTabsStore().active = active === "__q_bool|1"
     }
-
 
     // --- setting all tabs from storage
     const tabsStore = useTabsStore()
@@ -63,14 +63,10 @@ class TabsetService {
    */
   async saveOrReplace(name: string, tabs: chrome.tabs.Tab[], merge: boolean = false): Promise<object> {
     const tabsStore = useTabsStore()
-    const result = await tabsStore.updateOrCreateTabset(name, merge)
+    const result = await tabsStore.updateOrCreateTabset(name, tabs, merge)
     if (result && result.tabset) {
       await this.saveTabset(result.tabset)
       tabsStore.currentTabsetId = result.tabset.id
-      //tabsStore.contextId = result.tabset.id
-      //await TabsetService.saveTabset(ts)
-      //await this.localStorage.set("tabsets.context", result.tabset.id)
-
     }
     return {
       replaced: result.replaced,
@@ -186,7 +182,7 @@ class TabsetService {
 
   setStatus(tabId: number, status: TabStatus) {
     const tabsStore = useTabsStore()
-    const currentTabset: Tabset = this.getCurrentTabset() || new Tabset("", "", [])
+    const currentTabset: Tabset = this.getCurrentTabset() || new Tabset("", "", [], [])
     _.forEach(
       _.filter(currentTabset.tabs, (t: Tab) => t.chromeTab.id === tabId),
       r => r.status = status)
@@ -195,7 +191,7 @@ class TabsetService {
 
   saveToTabset(tab: Tab) {
     const tabsStore = useTabsStore()
-    const currentTabset: Tabset = this.getCurrentTabset() || new Tabset("", "", [])
+    const currentTabset: Tabset = this.getCurrentTabset() || new Tabset("", "", [], [])
     console.log("got tabset", currentTabset)
     tab.status = TabStatus.DEFAULT
     currentTabset.tabs.push(tab)
@@ -211,7 +207,7 @@ class TabsetService {
 
   togglePin(tabId: number) {
     const tabsStore = useTabsStore()
-    const currentTabset: Tabset = this.getCurrentTabset() || new Tabset("", "", [])
+    const currentTabset: Tabset = this.getCurrentTabset() || new Tabset("", "", [], [])
     _.filter(currentTabset.tabs, t => t.chromeTab.id === tabId)
       .forEach(t => {
         t.chromeTab.pinned = !t.chromeTab.pinned
@@ -258,15 +254,36 @@ class TabsetService {
 //    this.tabsStore.removeTab(tab.id)
   }
 
-  saveAllPendingTabs() {
+  saveAllPendingTabs(onlySelected: boolean = false) {
     const tabsStore = useTabsStore()
-    _.forEach(
-      tabsStore.pendingTabs,
-      t => {
-        if (t.chromeTab?.id) {
-          this.setStatus(t.chromeTab.id, TabStatus.DEFAULT)
-        }
-      })
+    const currentTabset = tabsStore.getCurrentTabset
+
+    if (currentTabset) {
+      _.forEach(
+        tabsStore.pendingTabset.tabs,
+        t => {
+          if (t.chromeTab?.id) {
+            if (!onlySelected || (onlySelected && t.selected)) {
+              currentTabset.tabs.push(t)
+            }
+          }
+        })
+
+      if (!onlySelected) {
+        tabsStore.pendingTabset.tabs = []
+      } else {
+        _.remove(tabsStore.pendingTabset.tabs, {selected: true});
+      }
+      this.saveTabset(currentTabset)
+    }
+  }
+
+  saveSelectedPendingTabs() {
+    this.saveAllPendingTabs(true)
+  }
+
+  removeSelectedPendingTabs() {
+
   }
 
   removeAllPendingTabs() {
@@ -321,8 +338,10 @@ class TabsetService {
   }
 
   async getThumbnailFor(selectedTab: Tab): Promise<any> {
+    console.log("checking thumbnail for", selectedTab.chromeTab.url)
     if (selectedTab.chromeTab.url) {
       const encodedUrl = btoa(selectedTab.chromeTab.url)
+      console.log("encoded", encodedUrl)
       return await this.db.get('thumbnails', encodedUrl)
     }
     return Promise.reject("url not provided");
@@ -331,6 +350,29 @@ class TabsetService {
   setCustomTitle(tab: Tab, title: string) {
     tab.name = title
     this.saveCurrentTabset()
+  }
+
+  createPendingFromBrowserTabs() {
+    console.log(`createPendingFromBrowserTabs`)
+    const tabsStore = useTabsStore()
+    // const maybeTab = tabsStore.tabForUrlInSelectedTabset(tab.pendingUrl || '')
+    // if (maybeTab) {
+    //   console.log(`onCreated: tab ${tab.id}: updating existing chromeTab.id: ${maybeTab.chromeTab.id} -> ${tab.id}`)
+    //   maybeTab.chromeTab.id = tab.id
+    //   return
+    // }
+    _.forEach(tabsStore.tabs, t => {
+      tabsStore.pendingTabset.tabs.push(new Tab(uid(), t))
+    })
+  }
+
+  getSelectedPendingTabs(): Tab[] {
+    const tabsStore = useTabsStore()
+    const ts = tabsStore.pendingTabset
+    if (ts) {
+      return _.filter(ts.tabs, t => t.selected)
+    }
+    return []
   }
 }
 

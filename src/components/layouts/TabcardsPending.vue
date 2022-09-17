@@ -1,102 +1,68 @@
 <template>
-
   <div class="row items-start">
     <div class="col-xs-12 col-sm-4 col-md-3 col-lg-2 q-pa-xs" v-for="tab in props.tabs">
+      <q-card class="my-card" bordered @mouseover="setInfo(tab)" @click="selectTab(tab)">
+        <q-card-section class="bg-primary text-white cursor-pointer">
 
-      <q-card class="my-card" flat bordered :style="cardStyle(tab)" @mouseover="setInfo(tab)" @click="selectTab(tab)">
-
-        <q-card-section class="q-pt-xs cursor-pointer bg-primary text-white" style="width:100%;">
           <div class="row items-baseline">
 
             <!-- favicon -->
             <div class="col-2">
               <q-img
                 class="rounded-borders"
-                width="20px"
-                height="20px"
+                width="24px"
+                height="24px"
                 :src="tab.chromeTab?.favIconUrl">
                 <q-tooltip>{{ tab.chromeTab?.id }} / {{ tab.id }}</q-tooltip>
               </q-img>
             </div>
 
             <!-- title or name if given -->
-            <div class="col-9 text-body2 ellipsis">
-              {{nameOrTitle(tab)}}
+            <div class="col-10 text-h6 ellipsis">
+              {{ nameOrTitle(tab) }}
               <q-popup-edit :model-value="dynamicNameOrTitleModel(tab)" v-slot="scope"
                             @update:model-value="val => setCustomTitle( tab, val)">
                 <q-input v-model="scope.value" dense autofocus counter @keyup.enter="scope.set"/>
               </q-popup-edit>
+              <q-tooltip>{{ tab.chromeTab.title }}</q-tooltip>
             </div>
-
-            <!-- close button -->
-            <div class="col-1">
-              <q-icon name="close" @click.stop="closeTab(tab)"/>
-            </div>
-            <q-tooltip>
-              {{ tab.chromeTab?.title }}
-            </q-tooltip>
 
           </div>
 
-          <div class="text-overline ellipsis text-secondary">
+
+          <div class="text-subtitle2 ellipsis text-secondary">
             {{ getHost(tab.chromeTab?.url, true) }}
-            <q-icon name="launch" color="primary"
+            <q-icon name="launch" color="secondary"
                     @click.stop="Navigation.openOrCreateTab(tab.chromeTab?.url )"></q-icon>
             <q-tooltip>
               {{ tab.chromeTab?.url }}
             </q-tooltip>
           </div>
 
-          <!--            <div class="text-caption text-grey wrap" style="overflow:hidden;">-->
-          <!--              <q-item-label lines="1" class="q-mt-xs text-caption text-primary"-->
-          <!--                            @click="Navigation.openOrCreateTab(tab.chromeTab?.url )">-->
-          <!--                <span class="cursor-pointer">{{ maxChar(30, withoutHostname(tab.chromeTab?.url )) }}</span>-->
-          <!--                <q-tooltip>-->
-          <!--                  {{ tab.chromeTab?.url  }}-->
-          <!--                </q-tooltip>-->
-          <!--              </q-item-label>-->
-          <!--            </div>-->
-
-
-          <!--            <div class="text-body1 q-mt-sm q-mb-xs">{{ maxChar(20, tab.chromeTab?.title || tab.title) }}</div>-->
-
         </q-card-section>
 
 
-        <q-card-actions align="right" v-if="props.showActions">
-          <div class="row q-mt-md">
+        <q-card-actions align="right">
+          <q-checkbox
+            v-model="tab.selected"
+            checked-icon="task_alt"
+            @update:model-value="val => selectionChanged(val)"
+            unchecked-icon="check_box_outline_blank"
+          />
+          <q-btn flat round color="positive" icon="save" @click="saveTab(tab)">
+            <q-tooltip>Save this tab to your current context</q-tooltip>
+          </q-btn>
+          <q-btn flat round color="red" icon="delete" @click.stop="closeTab(tab)">
+            <q-tooltip>Delete this tab from this list</q-tooltip>
+          </q-btn>
 
-            <div class="col">
-              <!--                <q-icon name="done" color="green" class="cursor-pointer q-mr-md" v-if="isOpen(tab)">-->
-              <!--                  <q-tooltip>This url is open in one of your tabs</q-tooltip>-->
-              <!--                </q-icon>-->
-
-              <!--                        v-if="tab.status !== TabStatus.DEFAULT"-->
-              <q-icon name="save" class="cursor-pointer q-mr-md"
-                      @click="saveTab(tab)">
-                <q-tooltip>Save this tab to your current context</q-tooltip>
-              </q-icon>
-
-              <!--                <q-icon :name="tab.chromeTab?.pinned ? 'o_push_pin' : 'push_pin'" class="cursor-pointer"-->
-              <!--                        @click="togglePin(tab.chromeTab.id)">-->
-              <!--                  <q-tooltip v-text="tab.chromeTab?.pinned ? 'Unpin this tab' : 'Pin this tab'"/>-->
-              <!--                </q-icon>-->
-
-              <q-icon name="keyboard_arrow_left" class="cursor-pointer" v-if="tab.history?.length > 0">
-                <q-tooltip>{{tab.history}}</q-tooltip>
-
-              </q-icon>
-              <q-icon name="keyboard_arrow_right" class="cursor-pointer" v-if="tab.history?.length > 0">
-
-
-              </q-icon>
-            </div>
-          </div>
         </q-card-actions>
 
       </q-card>
     </div>
   </div>
+
+
 </template>
 
 <script setup lang="ts">
@@ -109,14 +75,10 @@ const props = defineProps({
   tabs: {
     type: Array,
     required: true
-  },
-  showActions: {
-    type: Boolean,
-    default: false
   }
 })
 
-const emits = defineEmits(['sendCaption'])
+const emits = defineEmits(['sendCaption', 'selectionChanged'])
 
 function getShortHostname(host: string) {
   const nrOfDots = (host.match(/\./g) || []).length
@@ -170,7 +132,7 @@ function togglePin(tabId: number) {
 
 
 function cardStyle(tab: Tab) {
-  const height = props.showActions ? "130px" : "96px"
+  //const height = props.showActions ? "130px" : "96px"
   let borderColor = ""
   // if (TabStatus.CREATED === tab.status) {
   //   borderColor = "";
@@ -189,7 +151,7 @@ function cardStyle(tab: Tab) {
     background = "background: radial-gradient(circle, #FFFFFF 0%, #FFECB3 100%)"
   }
   // style=""
-  return `height: ${height};max-height:${height}; min-height: ${height};${borderColor};${background}`
+  return `${borderColor};${background}`
 }
 
 function isOpen(tab: Tab): boolean {
@@ -209,7 +171,7 @@ const setInfo = (tab: Tab) => {
 }
 
 const selectTab = (tab: Tab) => {
-  //console.log("tab selected", tab)
+  console.log("tab selected", tab)
   TabsetService.setOnlySelectedTab(tab)
   const notificationStore = useNotificationsStore()
   notificationStore.setSelectedTab(tab)
@@ -223,4 +185,12 @@ const setCustomTitle = (tab: Tab, newValue: string) => {
 const nameOrTitle = (tab: Tab) => tab.name ? tab.name : tab.chromeTab?.title
 const dynamicNameOrTitleModel = (tab: Tab) => tab.name ? tab.name : tab.chromeTab?.title
 
+const selectionChanged = (val: any) => emits('selectionChanged', val)
+
 </script>
+
+<style lang="sass" scoped>
+.my-card
+  width: 100%
+  max-width: 250px
+</style>

@@ -39,7 +39,7 @@ for (let [key, value] of tabsStore.tabsets) {
   console.log("searching in key", key)
   const hits = _.filter(value.tabs, t => {
     if (t.chromeTab.url) {
-      console.log("checking ", t.chromeTab.url)
+      //console.log("checking ", t.chromeTab.url)
       return t.chromeTab.url.indexOf(term) >= 0
     }
     return false;

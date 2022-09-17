@@ -18,6 +18,11 @@ const routes: RouteRecordRaw[] = [
     //children: [{ path: '', component: () => import('pages/Login.vue') }],
   },*/
   {
+    path: '/about',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [{ path: '', component: () => import('pages/About.vue') }],
+  },
+  {
     path: '/tabset',
     component: () => import('layouts/MainLayout.vue'),
     children: [{ path: '', component: () => import('pages/CurrentTabs.vue') }],

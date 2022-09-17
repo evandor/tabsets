@@ -14,7 +14,7 @@ const tabGroupsStore = useTabGroupsStore()
 tabsStore.initialize(useQuasar().localStorage);
 tabsStore.initListeners();
 
-tabGroupsStore.loadTabGroups();
+tabGroupsStore.initialize();
 tabGroupsStore.initListeners();
 
 tabsetService.setLocalStorage(useQuasar().localStorage)

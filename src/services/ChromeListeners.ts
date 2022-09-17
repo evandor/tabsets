@@ -124,7 +124,7 @@ class ChromeListeners {
       tabsStore.loadTabs('onRemoved')
       return
     }
-    const currentTabset: Tabset = tabsStore.tabsets.get(tabsStore.currentTabsetId) || new Tabset("", "", [])
+    const currentTabset: Tabset = tabsStore.tabsets.get(tabsStore.currentTabsetId) || new Tabset("", "", [], [])
     var index = _.findIndex(currentTabset.tabs, t => t.chromeTab.id === number);
     if (index >= 0) {
       console.log(`onRemoved: tab ${number}:     found index ${index}`)

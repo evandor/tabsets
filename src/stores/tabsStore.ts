@@ -8,6 +8,8 @@ import TabsetService from "src/services/TabsetService";
 import ChromeListeners from "src/services/ChromeListeners";
 import ChromeApi from "src/services/ChromeApi";
 import {NewOrReplacedTabset} from "src/models/NewOrReplacedTabset";
+import {useTabGroupsStore} from "stores/tabGroupsStore";
+import {Group} from "src/models/Group";
 
 async function queryTabs(): Promise<chrome.tabs.Tab[]> {
   // @ts-ignore
@@ -68,20 +70,20 @@ export const useTabsStore = defineStore('tabs', {
   }),
 
   getters: {
-    isLiveMode: (state) => ( state.currentTabsetId === 'current') ,
-    isEditMode: (state) =>  ( state.currentTabsetId !== 'current'),
+    isLiveMode: (state) => (state.currentTabsetId === 'current'),
+    isEditMode: (state) => (state.currentTabsetId !== 'current'),
 
     pinnedTabs(state): Tab[] { //chrome.tabs.Tab[] {
       //console.log("state", state.currentTabsetId)
       //console.log("state", state.tabsets.get(state.currentTabsetId))
-      const currentTabset: Tabset = state.tabsets.get(state.currentTabsetId) || new Tabset("", "", [])
+      const currentTabset: Tabset = state.tabsets.get(state.currentTabsetId) || new Tabset("", "", [], [])
       return _.filter(currentTabset.tabs, (t: Tab) => {
         //console.log("t", t.chromeTab, t)
         return t.chromeTab?.pinned
       })
     },
     pendingTabs(state): Tab[] {
-      const currentTabset: Tabset = state.tabsets.get(state.currentTabsetId) || new Tabset("", "", [])
+      const currentTabset: Tabset = state.tabsets.get(state.currentTabsetId) || new Tabset("", "", [], [])
       return _.filter(currentTabset.tabs, (t: Tab) => {
         return t.status !== TabStatus.DEFAULT
       })
@@ -104,7 +106,7 @@ export const useTabsStore = defineStore('tabs', {
     currentTabsetName: (state) => {
       //console.log("here!", state.currentTabsetId)
       if (state.currentTabsetId !== 'current') {
-        const tabset = _.head(_.filter([...state.tabsets.values()], ts => ts.id === state.currentTabsetId)) || new Tabset("", "undefined", [])
+        const tabset = _.head(_.filter([...state.tabsets.values()], ts => ts.id === state.currentTabsetId)) || new Tabset("", "undefined", [], [])
         return tabset.name
       }
       return 'current'
@@ -129,7 +131,7 @@ export const useTabsStore = defineStore('tabs', {
         return _.find(existingNames, name => name === searchName.trim())
       }
     }
-   // tabsetsWithoutCurrent: (state) => _.filter([...state.tabsets.values()], ts => ts.id !== 'current')
+    // tabsetsWithoutCurrent: (state) => _.filter([...state.tabsets.values()], ts => ts.id !== 'current')
   },
 
   actions: {
@@ -137,9 +139,12 @@ export const useTabsStore = defineStore('tabs', {
       console.log("initializing tabsStore")
       this.localStorage = localStorage
 
+      // --- tracking active ? ---
+      const active = localStorage.getItem("active")
+      this.active = active === null || active
+
       // --- setting current tabs
       this.tabs = await queryTabs()
-      console.log(`got ${this.tabs.length} browser tabs`)
 
       // @ts-ignore
       this.browserTabset = new Tabset("current", "current",
@@ -147,7 +152,7 @@ export const useTabsStore = defineStore('tabs', {
           return new Tab(uid(), t)
         }))
 
-      this.pendingTabset = new Tabset("pending", "pending", [])
+      this.pendingTabset = new Tabset("pending", "pending", [], [])
 
 
       // // marking duplicates (inside each tabset)
@@ -161,7 +166,7 @@ export const useTabsStore = defineStore('tabs', {
       const current = new Tabset("current", "current",
         _.map(this.tabs, t => {
           return new Tab(uid(), t)
-        }))
+        }), [])
       markDuplicates(current)
       //this.tabsets.set("current", current)
       this.browserTabset = current
@@ -191,7 +196,7 @@ export const useTabsStore = defineStore('tabs', {
     },
     selectCurrentTabset(tabsetId: string): void {
       const found = _.find([...this.tabsets.values()], k => {
-        const ts = k || new Tabset("", "", [])
+        const ts = k || new Tabset("", "", [], [])
         return ts.id === tabsetId
       })
       if (found) {
@@ -202,31 +207,39 @@ export const useTabsStore = defineStore('tabs', {
       }
     },
     removeTab(tabId: number) {
-      const currentTabset: Tabset = this.tabsets.get(this.currentTabsetId) || new Tabset("", "", [])
+      const currentTabset: Tabset = this.tabsets.get(this.currentTabsetId) || new Tabset("", "", [], [])
       currentTabset.tabs = _.filter(currentTabset.tabs, (t: Tab) => t.chromeTab.id !== tabId)
       TabsetService.saveTabset(currentTabset)
-      this.pendingTabset.tabs = _.filter(this.pendingTabset.tabs, (t:Tab) => t.chromeTab.id !== tabId)
+      this.pendingTabset.tabs = _.filter(this.pendingTabset.tabs, (t: Tab) => t.chromeTab.id !== tabId)
     },
 
-    async updateOrCreateTabset(tabsetName: string, merge: boolean = false): Promise<NewOrReplacedTabset> {
+    async updateOrCreateTabset(tabsetName: string, tabs: chrome.tabs.Tab[], merge: boolean = false): Promise<NewOrReplacedTabset> {
       console.log("--- saveOrCreateTabset start -------------")
-      const found = _.find([...this.tabsets.values()], ts => ts.name === tabsetName)
+      const foundTS: Tabset | undefined = _.find([...this.tabsets.values()], ts => ts.name === tabsetName)
       let ts: Tabset = null as unknown as Tabset
       const tabsetExtensionTab = await ChromeApi.getCurrentTab()
-      if (found) {
+      const tabGroupsStore = useTabGroupsStore()
+      if (foundTS) {
         if (merge) {
-          console.log("found existing tabset " + found.id + ", merging...")
-          _.forEach(this.tabs, t => {
-            const exists = _.find(found.tabs, existing => existing.chromeTab.url === t.url)
+          console.log("found existing tabset " + foundTS.id + ", merging...")
+          _.forEach(tabs, t => {
+            const exists = _.find(foundTS.tabs, existing => existing.chromeTab.url === t.url)
             if (!exists) {
-              found.tabs.push(new Tab(uid(), t))
+              foundTS.tabs.push(new Tab(uid(), t))
             }
           })
-          ts = found
+          ts = foundTS
+          console.log("merging groups", tabGroupsStore.tabGroups)
+          _.forEach(tabGroupsStore.tabGroups, tg => {
+            const exists = _.find(foundTS.groups, existing => existing.chromeGroup.title === tg.title)
+            if (!exists) {
+              foundTS.groups.push(new Group(uid(), tg))
+            }
+          })
         } else {
-          console.log("found existing tabset " + found.id + ", replacing...")
-          ts = new Tabset(found.id, tabsetName, _.map(this.tabs, t => new Tab(uid(), t)));
-          this.tabsets.set(found.id, ts)
+          console.log("found existing tabset " + foundTS.id + ", replacing...")
+          ts = new Tabset(foundTS.id, tabsetName, _.map(tabs, t => new Tab(uid(), t)), _.map(tabGroupsStore.tabGroups, tg => new Group(uid(), tg)))
+          this.tabsets.set(foundTS.id, ts)
           //TabsetService.saveTabset(ts)
         }
       } else {
@@ -234,17 +247,17 @@ export const useTabsStore = defineStore('tabs', {
         const useId = uid()
         ts = new Tabset(useId, tabsetName, _.map(
           _.filter(
-            this.tabs, t => {
+            tabs, t => {
               //console.log("comparing", t.url, tabsetExtensionTab.url, t.url !== tabsetExtensionTab.url)
               return t.url !== tabsetExtensionTab.url
             }),
-          t => new Tab(uid(), t)));
+          t => new Tab(uid(), t)), _.map(tabGroupsStore.tabGroups, tg => new Group(uid(), tg)))
         console.log("got ts", ts)
         this.tabsets.set(useId, ts)
       }
 
       console.log("--- saveOrCreateTabset end -------------")
-      return new NewOrReplacedTabset(found !== undefined, ts)
+      return new NewOrReplacedTabset(foundTS !== undefined, ts)
     },
 
     deleteTabset(tabsetId: string) {

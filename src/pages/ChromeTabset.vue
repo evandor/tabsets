@@ -17,7 +17,7 @@
     <q-list class="rounded-borders">
 
       <q-expansion-item
-        v-if="pinnedTabs().length > 0"
+        v-if="showPinnedTabs()"
         header-class="bg-amber-1 text-black"
         expand-icon-class="text-black"
         expand-separator
@@ -44,7 +44,7 @@
       <!-- chrome groups -->
       <div v-for="group in tabGroupsStore.tabGroups">
         <q-expansion-item
-          v-if="tabsForGroup(group.id).length > 0"
+          v-if="showTabGroup(group)"
           header-class="bg-amber-1 text-black"
           expand-icon-class="text-black"
           expand-separator
@@ -56,13 +56,13 @@
 
             <q-item-section>
               <div>
-                <span class="text-weight-bold">{{ group.title }}</span>
-                <div class="text-caption">chrome browser's group of tabs</div>
+                <span class="text-weight-bold">{{ group.title }} ({{formatLength(tabsForGroup(group.id).length, 'tab', 'tabs')}})</span>
+                <div class="text-caption">custom group of tabs</div>
                 <!--                <q-btn label="create new tabset" v-if="expanded" @click="newTabsetFrom(group.title, group.id)"/>-->
 
               </div>
             </q-item-section>
-            <q-item-section>{{ formatLength(tabsForGroup(group.id).length, 'tab', 'tabs') }}</q-item-section>
+
           </template>
           <q-card>
             <q-card-section style="background-color:#efefef">
@@ -74,7 +74,7 @@
 
       <!-- rest: neither pinned, grouped, or pending -->
       <q-expansion-item
-        v-if="tabsStore.browserTabset?.tabs.length > 0 || tabGroupsStore.tabGroups.length > 0"
+        v-if="showOtherTabs()"
         icon="tabs"
         default-opened
         header-class="bg-amber-1 text-black"
@@ -86,12 +86,11 @@
 
           <q-item-section>
             <div>
-              <span class="text-weight-bold">Other Tabs</span>
-              <div class="text-caption">current tabs, neither pinned nor grouped</div>
+              <span class="text-weight-bold" v-text="otherTabsTitle()"/>
+              <div class="text-caption" v-text="otherTabsCaption()"/>
               <!--                <q-btn label="create new tabset" v-if="expanded" @click="newTabsetFrom(group.title, group.id)"/>-->
             </div>
           </q-item-section>
-          <q-item-section>{{ formatLength(unpinnedNoGroup().length, 'tab', 'tabs') }}</q-item-section>
         </template>
         <q-card>
           <q-card-section style="background-color:#efefef">
@@ -107,6 +106,8 @@
         </q-card>
       </div>
     </q-list>
+
+    {{tabGroupsStore.tabGroups}}
 
     <q-dialog v-model="showNewTabsetDialog">
       <q-card style="min-width: 350px">
@@ -233,5 +234,12 @@ const tabNameExists = () => tabsStore.nameExistsInContextTabset(newTabsetName.va
 const pinnedTabs = (): Tab[] => {
   return _.filter(tabsStore.browserTabset?.tabs, (t: Tab) => t.chromeTab.pinned)
 }
+
+const showPinnedTabs = () => pinnedTabs().length > 0
+//@ts-ignore
+const showTabGroup = (group: chrome.tabGroups.TabGroup) => tabsForGroup(group.id).length > 0
+const showOtherTabs = () => tabsStore.browserTabset?.tabs.length > 0 || tabGroupsStore.tabGroups.length > 0
+const otherTabsTitle = () => ((showPinnedTabs() || tabGroupsStore.tabGroups.length > 0) ? "Other Tabs" : "Tabs") + ' (' + formatLength(unpinnedNoGroup().length, 'tab', 'tabs') + ')'
+const otherTabsCaption = () => (showPinnedTabs() || tabGroupsStore.tabGroups.length > 0) ? "current tabs, neither pinned nor grouped" : "your open tabs"
 
 </script>

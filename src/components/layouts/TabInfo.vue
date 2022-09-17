@@ -49,6 +49,12 @@
             {{ notificationStore.selectedTab.activatedCount }}
           </div>
           <div class="col-2">
+            selected
+          </div>
+          <div class="col-10">
+            {{ notificationStore.selectedTab.selected }}
+          </div>
+          <div class="col-2">
             HIstory
           </div>
           <div class="col-10">
