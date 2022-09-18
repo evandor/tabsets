@@ -3,16 +3,13 @@
     <q-header elevated>
       <q-toolbar>
 
-        <!--        <q-btn dense flat round icon="menu" v-if="!toggleLeftDrawer" @click="toggleLeftDrawer"/>-->
-
-
-        <!--        <q-toolbar-title style="position:absolute;left:300px;">-->
         <q-toolbar-title @click="goHome()" class="cursor-pointer">
             Tabsets
         </q-toolbar-title>
 
         <q-input dark dense standout v-model="search"
-                 style="width:260px;"
+                 ref="searchBox"
+                 style="width:360px;"
                  v-if="tabsStore.tabsets.size > 0"
                  @keydown.enter.prevent="submitSearch()"
                  class="q-ml-md">
@@ -115,7 +112,7 @@
 </template>
 
 <script setup lang="ts">
-import {ref, watchEffect} from 'vue';
+import {onMounted, onUnmounted, ref, watchEffect} from 'vue';
 import {useQuasar} from "quasar";
 import {useTabsStore} from "src/stores/tabsStore";
 import {useTabGroupsStore} from "stores/tabGroupsStore";
@@ -125,10 +122,13 @@ import {useNotificationsStore} from "stores/notificationsStore";
 import TabInfo from "src/components/layouts/TabInfo.vue"
 import Navigation from "src/components/Navigation.vue"
 import TabsetService from "src/services/TabsetService";
+import {useSearchStore} from "stores/searchStore";
 
 const router = useRouter()
 const tabsStore = useTabsStore()
 const tabGroupsStore = useTabGroupsStore()
+const searchStore = useSearchStore()
+
 const notificationsStore = useNotificationsStore()
 
 const $q = useQuasar()
@@ -136,14 +136,12 @@ const $q = useQuasar()
 const newTabsetName = ref('')
 const caption = ref('yyy')
 const search = ref('')
-const showNewTabsetDialog = ref(false)
-const showCloseTabsDialog = ref(false)
-const clearTabsets = ref(false)
 
 const localStorage = useQuasar().localStorage
 //@ts-ignore
 const appVersion = import.meta.env.PACKAGE_VERSION
 const leftDrawerOpen = ref(true)
+const searchBox = ref(null)
 
 useMeta(() => {
   return {
@@ -157,31 +155,34 @@ watchEffect(() => {
   }
 })
 
-function saveTabset() {
-  /*if (authStore.isAuthenticated) {
-    console.log("saving tabset @ backend");
-    const backend = initializeBackendApi(process.env.BACKEND_URL || "unknown", null)
-    backend.saveTabset(tabsStore.getTabs())
-  } else {*/
-  console.log("saving tabset @ localstorage");
-  //tabsetApi.saveOrReplace(contextname.value, tabsStore.tabs)
-  //}
+function checkKeystroke(e:any ) {
+  if (e.key === '/') {
+    console.log("e", e, searchBox, search.value)
+    // @ts-ignore
+    searchBox.value.focus()
+    search.value = ''
+    console.log("e2", search.value)
+  }
 }
 
-function toggleLeftDrawer() {
-  leftDrawerOpen.value = !leftDrawerOpen.value
-}
+onMounted(() => {
+  window.addEventListener('keypress', checkKeystroke);
+})
+
+onUnmounted(() => {
+  window.removeEventListener('keypress', checkKeystroke);
+})
 
 function tabsForGroup(groupId: number): chrome.tabs.Tab[] {
   return tabsStore.tabsForGroup(groupId)
 }
 
-async function submitSearch() {
+function submitSearch() {
   console.log("s", search.value)
+  searchStore.term = search.value
   router.push("/search/" + search.value)
 }
 
-const toolbarTitle = () => "Tabsets Extension"
 const goHome = () => router.push("/tabset")
 
 const createNewTabset = (newName: string) => {
@@ -215,5 +216,7 @@ const createNewTabset = (newName: string) => {
 
   })
 }
+
+
 
 </script>

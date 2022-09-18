@@ -6,9 +6,6 @@ import {Tab, TabStatus} from "src/models/Tab";
 import {Tabset} from "src/models/Tabset";
 import {useNotificationsStore} from "src/stores/notificationsStore";
 import {IDBPDatabase, openDB} from "idb";
-import {useTabGroupsStore} from "stores/tabGroupsStore";
-
-//import {Localbase} from 'localbase'
 
 class TabsetService {
 
@@ -125,17 +122,13 @@ class TabsetService {
       if (tabset) {
         console.log("found tabset for id", tabsetId)
         await ChromeApi.restore(tabset)
-        //tabsStore.contextId = tabset.name
-        //localStorage.setItem("tabsets.context", tabsetId)
       }
     } catch (ex) {
       console.log("ex", ex)
     } finally {
       tabsStore.activateListeners()
     }
-
   }
-
 
   delete(tabsetId: string) {
     console.log("deleting tabset ", tabsetId)
@@ -147,8 +140,6 @@ class TabsetService {
       const nextKey:string = tabsStore.tabsets.keys().next().value
       console.log("setting next key to", nextKey)
       this.selectTabset(nextKey)
-      //this.localStorage.remove("tabsets.tabset." + tabsetId)
-      //tabsStore.loadTabs('delete tabset event')
     }
   }
 
@@ -216,18 +207,6 @@ class TabsetService {
         chrome.tabs.update(tabId, {pinned: t.chromeTab.pinned})
       })
   }
-
-  // unsetContext() {
-  //   const tabsStore = useTabsStore()
-  //   this.localStorage.remove("tabsets.context")
-  //   tabsStore.contextId = null as unknown as string
-  // }
-  //
-  // setContext(currentTabsetId: string) {
-  //   const tabsStore = useTabsStore()
-  //   this.localStorage.set("tabsets.context", currentTabsetId)
-  //   tabsStore.contextId = currentTabsetId
-  // }
 
   isOpen(tabUrl: string): boolean {
     const tabsStore = useTabsStore()
@@ -319,19 +298,6 @@ class TabsetService {
         .then(ts => console.log("added thumbnail"))
         .catch(err => console.log("err", err))
     }
-    // const currentTabset = this.getCurrentTabset()
-    // console.log("saving thumbnail", tab, currentTabset)
-    // if (tab && currentTabset) {
-    //   _.forEach(currentTabset.tabs, t => {
-    //     if (t.chromeTab.id === tab.id) {
-    //       localStorage.setItem("tabsets.tab." + t.id, thumbnail)
-    //       this.db.put('thumbnails', t.id, thumbnail)
-    //         .then(ts => console.log("added thumbnail"))
-    //         .catch(err => console.log("err", err))
-    //     }
-    //   })
-    // }
-
   }
 
   async getThumbnailFor(selectedTab: Tab): Promise<any> {

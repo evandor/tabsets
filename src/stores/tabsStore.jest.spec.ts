@@ -79,14 +79,13 @@ describe('TabsStore', () => {
   it('tabsets are initialized from local storage when there is no contextId', async () => {
     const tabsStore = useTabsStore()
     chrome.tabs.query.mockImplementation(async (o: object) => [])
-    localStorageMock.setItem("tabsets.tabset.A", new Tabset("tsIdA", "tsNameA", []))
-    localStorageMock.setItem("tabsets.tabset.B", new Tabset("tsIdB", "tsNameB", []))
+    localStorageMock.setItem("tabsets.tabset.A", new Tabset("tsIdA", "tsNameA", [], []))
+    localStorageMock.setItem("tabsets.tabset.B", new Tabset("tsIdB", "tsNameB", [], []))
 
     await tabsStore.initialize(localStorageMock)
 
     expect(tabsStore.tabs.length).toBe(0)
     expect(tabsStore.tabsets.size).toBe(3)
-    expect(tabsStore.contextId).toBe(null)
     expect(tabsStore.currentTabsetId).toBe("current")
   });
 
@@ -94,14 +93,13 @@ describe('TabsStore', () => {
     const tabsStore = useTabsStore()
     chrome.tabs.query.mockImplementation(async (o: object) => [])
     localStorageMock.setItem("tabsets.context", "A")
-    localStorageMock.setItem("tabsets.tabset.A", new Tabset("tsIdA", "tsNameA", []))
-    localStorageMock.setItem("tabsets.tabset.B", new Tabset("tsIdB", "tsNameB", []))
+    localStorageMock.setItem("tabsets.tabset.A", new Tabset("tsIdA", "tsNameA", [], []))
+    localStorageMock.setItem("tabsets.tabset.B", new Tabset("tsIdB", "tsNameB", [], []))
 
     await tabsStore.initialize(localStorageMock)
 
     expect(tabsStore.tabs.length).toBe(0)
     expect(tabsStore.tabsets.size).toBe(3)
-    expect(tabsStore.contextId).toBe("tsIdA")
     expect(tabsStore.currentTabsetId).toBe("tsIdA")
   });
 
@@ -111,7 +109,7 @@ describe('TabsStore', () => {
     await tabsStore.initialize(localStorageMock)
     TabsetService.setLocalStorage(localStorageMock)
 
-    await tabsStore.updateOrCreateTabset("newTabset")
+    await tabsStore.updateOrCreateTabset("newTabset", [])
 
     expect(tabsStore.tabsets.size).toBe(2) // the new one plus 'current'
     //expect(tabsStore.contextId.length).toBe(36) // an uid
@@ -122,11 +120,11 @@ describe('TabsStore', () => {
     const tabsStore = useTabsStore()
     chrome.tabs.query.mockImplementation(async (o: object) => [])
 
-    localStorageMock.setItem("tabsets.tabset.existingTsId", new Tabset("existingTsId", "existingTsName", []))
+    localStorageMock.setItem("tabsets.tabset.existingTsId", new Tabset("existingTsId", "existingTsName", [], []))
     await tabsStore.initialize(localStorageMock)
     TabsetService.setLocalStorage(localStorageMock)
 
-    await tabsStore.updateOrCreateTabset("existingTsName")
+    await tabsStore.updateOrCreateTabset("existingTsName", [])
 
     expect(tabsStore.tabsets.size).toBe(2) // the new one plus 'current'
     //expect(tabsStore.contextId).toBe('existingTsId') // an uid
@@ -143,11 +141,11 @@ describe('TabsStore', () => {
     localStorageMock.setItem("tabsets.tabset.existingTsId", new Tabset("existingTsId", "existingTsName", [
       createTab(1, 'https://www.skysail.io'),
       createTab(2, 'https://www.test.de')
-    ]))
+    ], []))
     await tabsStore.initialize(localStorageMock)
     TabsetService.setLocalStorage(localStorageMock)
 
-    await tabsStore.updateOrCreateTabset("existingTsName", true)
+    await tabsStore.updateOrCreateTabset("existingTsName", [], true)
 
     expect(tabsStore.tabsets.size).toBe(2) // the new one plus 'current'
     //expect(tabsStore.contextId).toBe('existingTsId') // an uid

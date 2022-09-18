@@ -18,6 +18,11 @@
         <q-item-label
           v-text="tabset.tabs?.length > 1 ? tabset.name + ' (' + tabset.tabs?.length + ' tabs)' : tabset.name + ' (' + tabset.tabs?.length + ' tab)'"/>
       </q-item-section>
+<!--      <q-item-section avatar v-if="showDeleteButton.get(tabset.id)">-->
+<!--        <q-icon name="arrow_downward" color="positive" size="2em" @click.stop="showTabset(tabset)" >-->
+<!--          <q-tooltip>Show Tabs...</q-tooltip>-->
+<!--        </q-icon>-->
+<!--      </q-item-section>-->
       <q-item-section avatar v-if="showDeleteButton.get(tabset.id)">
         <q-icon name="delete_outline" color="negative" size="2em" @click="deleteDialog">
           <q-tooltip>Delete this tabset</q-tooltip>
@@ -25,8 +30,9 @@
       </q-item-section>
     </q-item>
 
-
   </q-list>
+
+
 
 </template>
 
@@ -38,12 +44,15 @@ import {useTabsStore} from "stores/tabsStore";
 import _ from "lodash"
 import {ref} from "vue";
 import {useQuasar} from "quasar";
+import {Tabset} from "src/models/Tabset";
+import {Tab} from "src/models/Tab";
 
 const router = useRouter()
 const tabsStore = useTabsStore()
 const newTabsetName = ref('new name')
 const showDeleteButton = ref<Map<string,boolean>>(new Map())
 const $q = useQuasar();
+const tabsetToShow = ref<Tabset>(null as unknown as Tabset)
 
 const selectTabset = (tabsetId: string) => {
   TabsetService.selectTabset(tabsetId)
@@ -62,32 +71,9 @@ const tabsets = () => {
   return _.sortBy([...tabsStore.tabsets.values()], ['name'])
 }
 
-const createNewTabset = (newName: string) => {
-  TabsetService.saveOrReplace(newName, [], true)
-    .then((result: object) => {
-      //@ts-ignore
-      const replaced = result.replaced
-      //@ts-ignore
-      const merged = result.merged
-      let message = 'Tabset ' + newName + ' created successfully'
-      if (replaced && merged) {
-        message = 'Tabset ' + newName + ' was updated'
-      } else if (replaced) {
-        message = 'Tabset ' + newName + ' was overwritten'
-      }
-      router.push("/tabset")
-      $q.notify({
-        message: message,
-        type: 'positive'
-      })
-    }).catch((ex: any) => {
-    console.error("ex", ex)
-    $q.notify({
-      message: 'There was a problem creating the tabset ' + newName,
-      type: 'warning',
-    })
-
-  })
+const showTabset = (tabset: Tabset) => {
+  console.log("showingTabset", tabset)
+  tabsetToShow.value = tabset
 }
 
 const deleteDialog = () => {

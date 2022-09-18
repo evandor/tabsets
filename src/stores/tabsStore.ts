@@ -117,6 +117,18 @@ export const useTabsStore = defineStore('tabs', {
         const existingNames = _.map([...state.tabsets.values()], ts => ts.name)
         return _.find(existingNames, name => name === searchName.trim())
       }
+    },
+    getTab: (state) => {
+      return (tabId: string): Tab | undefined => {
+
+        for (const [key, value] of state.tabsets) {
+          const found: Tab | undefined = _.find(value.tabs, t => t.id === tabId)
+          if (found) {
+            return found
+          }
+        }
+        return undefined
+      }
     }
     // tabsetsWithoutCurrent: (state) => _.filter([...state.tabsets.values()], ts => ts.id !== 'current')
   },
