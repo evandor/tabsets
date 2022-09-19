@@ -240,8 +240,8 @@ class ChromeListeners {
           let canvas = document.createElement('canvas')
           let width = img.width
           let height = img.height
-          const MAX_WIDTH = 300
-          const MAX_HEIGHT = 200
+          const MAX_WIDTH = 265 * 2
+          const MAX_HEIGHT = 200 * 2
 
           if (width > height) {
             if (width > MAX_WIDTH) {

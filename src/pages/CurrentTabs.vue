@@ -36,15 +36,20 @@ const tabGroupsStore = useTabGroupsStore()
 const tabsetname = ref(tabsStore.currentTabsetName)
 const $q = useQuasar()
 
-if (tabsStore.tabsets.size < 1) {
-  router.push("/about")
-}
+// if (tabsStore.tabsets.size < 1) {
+//   router.push("/about")
+// }
 
 const layout = ref('grid')
 
 const layoutFromStorage = localStorage.getItem("layout")
 if (layoutFromStorage) {
   layout.value = layoutFromStorage.toString()
+}
+
+const selectedTabsetFromStorage = localStorage.getItem("selectedTabset") as unknown as string
+if (selectedTabsetFromStorage) {
+  TabsetService.selectTabset(selectedTabsetFromStorage)
 }
 
 function unpinnedNoGroup() {

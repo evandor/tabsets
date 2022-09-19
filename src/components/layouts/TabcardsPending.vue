@@ -42,19 +42,29 @@
         </q-card-section>
 
 
-        <q-card-actions align="right">
-          <q-checkbox
-            v-model="tab.selected"
-            checked-icon="task_alt"
-            @update:model-value="val => selectionChanged(val)"
-            unchecked-icon="check_box_outline_blank"
-          />
-          <q-btn flat round color="positive" icon="save" @click="saveTab(tab)">
-            <q-tooltip>Save this tab to your current context</q-tooltip>
-          </q-btn>
-          <q-btn flat round color="red" icon="delete" @click.stop="closeTab(tab)">
-            <q-tooltip>Delete this tab from this list</q-tooltip>
-          </q-btn>
+        <q-card-actions>
+
+          <div class="row fit">
+            <div class="col-6">
+              <q-checkbox
+                v-model="tab.selected"
+                checked-icon="task_alt"
+                @update:model-value="val => selectionChanged(val)"
+                unchecked-icon="check_box_outline_blank"
+              />
+              <q-btn flat round color="positive" icon="save" @click="saveTab(tab)">
+                <q-tooltip>Save this tab to your current context</q-tooltip>
+              </q-btn>
+            </div>
+            <div class="col-6 text-right">
+              <q-btn flat round color="warning" icon="highlight_off" >
+                <q-tooltip>Ignore this url from now on</q-tooltip>
+              </q-btn>
+              <q-btn flat round color="red" icon="delete_outline" @click.stop="closeTab(tab)">
+                <q-tooltip>Delete this tab from this list</q-tooltip>
+              </q-btn>
+            </div>
+          </div>
 
         </q-card-actions>
 

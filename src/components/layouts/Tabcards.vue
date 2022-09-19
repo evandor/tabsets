@@ -1,7 +1,11 @@
 <template>
 
   <div class="row items-start">
-    <div class="col-xs-12 col-sm-4 col-md-3 col-lg-2 q-pa-xs" v-for="tab in props.tabs">
+    <div v-for="tab in props.tabs"
+         :key="tab.id"
+         draggable="true"
+         @dragstart="startDrag($event, tab)"
+         class="col-xs-12 col-sm-4 col-md-3 col-lg-2 q-pa-xs">
 
       <q-card class="my-card" flat bordered :style="cardStyle(tab)" @mouseover="setInfo(tab)" @click="selectTab(tab)">
 
@@ -45,15 +49,15 @@
 
 
         <q-card-actions align="right">
-<!--          <q-checkbox-->
-<!--            v-model="tab.selected"-->
-<!--            checked-icon="task_alt"-->
-<!--            @update:model-value="val => selectionChanged(val)"-->
-<!--            unchecked-icon="check_box_outline_blank"-->
-<!--          />-->
-<!--          <q-btn flat round color="positive" icon="save" @click="saveTab(tab)">-->
-<!--            <q-tooltip>Save this tab to your current context</q-tooltip>-->
-<!--          </q-btn>-->
+          <!--          <q-checkbox-->
+          <!--            v-model="tab.selected"-->
+          <!--            checked-icon="task_alt"-->
+          <!--            @update:model-value="val => selectionChanged(val)"-->
+          <!--            unchecked-icon="check_box_outline_blank"-->
+          <!--          />-->
+          <!--          <q-btn flat round color="positive" icon="save" @click="saveTab(tab)">-->
+          <!--            <q-tooltip>Save this tab to your current context</q-tooltip>-->
+          <!--          </q-btn>-->
           <q-btn flat round color="red" icon="delete_outline" @click.stop="closeTab(tab)">
             <q-tooltip>Delete this tab from this list</q-tooltip>
           </q-btn>
@@ -148,12 +152,12 @@ function cardStyle(tab: Tab) {
   if (isOpen(tab)) {
     borderColor = "border-color:#8f8f8f"
   }
-  if (tab.selected) {
+  if (tab?.selected) {
     borderColor = "border-color:#000066"
   }
 
   let background = ''
-  if (tab.isDuplicate) {
+  if (tab?.isDuplicate) {
     background = "background: radial-gradient(circle, #FFFFFF 0%, #FFECB3 100%)"
   }
   // style=""
@@ -191,10 +195,19 @@ const setCustomTitle = (tab: Tab, newValue: string) => {
 const nameOrTitle = (tab: Tab) => tab.name ? tab.name : tab.chromeTab?.title
 const dynamicNameOrTitleModel = (tab: Tab) => tab.name ? tab.name : tab.chromeTab?.title
 
+const startDrag = (evt: DragEvent, tab: Tab) => {
+  console.log("drag started", evt, tab.id)
+  if (evt.dataTransfer) {
+    evt.dataTransfer.dropEffect = 'move'
+    evt.dataTransfer.effectAllowed = 'move'
+    evt.dataTransfer.setData('text/plain', tab.id)
+  }
+}
+
+
 </script>
 
 <style lang="sass" scoped>
 .my-card
   width: 100%
-  max-width: 250px
 </style>

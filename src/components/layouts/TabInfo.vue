@@ -1,63 +1,65 @@
 <template>
   <div v-if="notificationStore.selectedTab">
-    <div class="row items-baseline q-ma-xs" style="border:1px solid red">
-      <div class="col-1">
+    <div class="row items-baseline q-mx-md q-pa-none" style="width:265px;border-top:1px dotted grey">
+      <div class="col-12">&nbsp;</div>
+    </div>
+    <div class="row items-baseline q-mx-md q-my-none" style="width:265px">
+      <div class="col-2">
         <q-img
           class="rounded-borders"
-          width="20px"
-          height="20px"
+          width="24px"
+          height="24px"
           :src="notificationStore.selectedTab.chromeTab?.favIconUrl">
         </q-img>
       </div>
-      <div class="col-2 text-caption ellipsis">
+      <div class="col-10 text-body1 ellipsis">
         {{ getHost(notificationStore.selectedTab.chromeTab?.url, true) }}
       </div>
-      <div class="col-9 text-body2 ellipsis">
+      <div class="col-12 text-body2 ellipsis">
         {{ notificationStore.selectedTab.chromeTab?.title }}
       </div>
 
-      <div class="col-3"></div>
-      <div class="col-9">
-        <div class="text-overline ellipsis" >
+      <div class="col-12">
+        <div class="text-overline ellipsis">
           {{ notificationStore.selectedTab.chromeTab.url }}
         </div>
       </div>
     </div>
-    <div class="row q-ma-xs" style="border:1px solid yellow">
-      <div class="col-3">
-        <q-img :src="thumbnail" width="300px"  />
+    <div class="row q-mx-md q-my-none" style="width:265px;border:0px solid yellow">
+      <div class="col-12">
+        <q-img :src="thumbnail" width="265px" style="border:1px solid grey" />
       </div>
-      <div class="col-9">
+      <div class="col-12">
         <div class="row q-ma-lg">
-          <div class="col-2">
+          <div class="col-5">
             created / updated
           </div>
-          <div class="col-10">
+          <div class="col-7">
             {{ date.formatDate(notificationStore.selectedTab.created, 'DD.MM.YYYY HH:mm') }} /
             {{ date.formatDate(notificationStore.selectedTab.updated, 'DD.MM.YYYY HH:mm') }}
           </div>
-          <div class="col-2">
+          <div class="col-5">
             last Active
           </div>
-          <div class="col-10">
+          <div class="col-7">
             {{ notificationStore.selectedTab.lastActive }}
           </div>
-          <div class="col-2">
+          <div class="col-5">
             activated count
           </div>
-          <div class="col-10">
+          <div class="col-7">
             {{ notificationStore.selectedTab.activatedCount }}
           </div>
-          <div class="col-2">
+          <div class="col-5">
             selected
           </div>
-          <div class="col-10">
+          <div class="col-7">
             {{ notificationStore.selectedTab.selected }}
           </div>
-          <div class="col-2">
+          <div class="col-5">
             HIstory
           </div>
-          <div class="col-10">
+          <div class="col-7">
             {{ notificationStore.selectedTab.history }}
           </div>
         </div>

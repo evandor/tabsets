@@ -221,19 +221,8 @@ class TabsetService {
     const tabsStore = useTabsStore()
     this.resetSelectedTabs()
     tabsStore.currentTabsetId = tabsetId;
+    localStorage.setItem("selectedTabset", tabsetId)
   }
-
-//   removeClosedTabs() {
-//     const tabsStore = useTabsStore()
-//     // console.log("removing closed tabs", tabsStore.pendingTabs)
-//     _.forEach(
-//       _.filter(
-//         tabsStore.pendingTabs,
-//         t => t.status === TabStatus.DELETED),
-//       deletedTab => tabsStore.removeTab(deletedTab.chromeTab.id || 0))
-//
-// //    this.tabsStore.removeTab(tab.id)
-//   }
 
   saveAllPendingTabs(onlySelected: boolean = false) {
     const tabsStore = useTabsStore()
@@ -301,10 +290,10 @@ class TabsetService {
   }
 
   async getThumbnailFor(selectedTab: Tab): Promise<any> {
-    console.log("checking thumbnail for", selectedTab.chromeTab.url)
+    //console.log("checking thumbnail for", selectedTab.chromeTab.url)
     if (selectedTab.chromeTab.url) {
       const encodedUrl = btoa(selectedTab.chromeTab.url)
-      console.log("encoded", encodedUrl)
+      //console.log("encoded", encodedUrl)
       return await this.db.get('thumbnails', encodedUrl)
     }
     return Promise.reject("url not provided");
@@ -336,6 +325,20 @@ class TabsetService {
       return _.filter(ts.tabs, t => t.selected)
     }
     return []
+  }
+
+  moveToTabset(tabId: string, tabsetId: string) {
+    const tabsStore = useTabsStore()
+    const tabIndex = _.findIndex(tabsStore.getCurrentTabs, {id: tabId})
+      const targetTabset = tabsStore.getTabset(tabsetId)
+    if (tabIndex >= 0 && targetTabset) {
+      console.log("found tabIndex", tabIndex)
+      console.log("found targetTabset", targetTabset)
+      targetTabset.tabs.push(tabsStore.getCurrentTabs[tabIndex])
+      tabsStore.getCurrentTabs.splice(tabIndex, 1)
+    } else {
+      console.error("could not find tab/tabset", tabId, tabsetId)
+    }
   }
 }
 

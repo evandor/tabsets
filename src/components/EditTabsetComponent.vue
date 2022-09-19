@@ -8,7 +8,7 @@
 
   <!-- pending tabs -->
   <q-expansion-item v-if="tabsStore.pendingTabset?.tabs.length > 0"
-                    header-class="bg-amber-2 text-black"
+                    header-class="bg-amber-1 text-black"
                     expand-icon-class="text-black"
                     default-opened>
     <template v-slot:header="{ expanded }">
@@ -26,10 +26,7 @@
     </template>
 
     <!--        <q-card style="background: radial-gradient(circle, #35a2ff 0%, #014a88 100%)">-->
-    <div>
-        <span class="cursor-pointer" @click="removeClosedTabs()"
-              v-if="_.filter(tabsStore.pendingTabset.tabs, t => t.status === TabStatus.DELETED).length > 1">[remove all closed tabs]</span>
-    </div>
+
     <q-card>
       <q-card-section>
         <TabcardsPending :tabs="tabsStore.pendingTabset?.tabs" v-on:selectionChanged="updateSelectionCount"/>
@@ -217,7 +214,7 @@ const formatLength = (length: number, singular: string, plural: string) => {
   return length > 1 ? length + ' ' + plural : length + ' ' + singular
 }
 
-const removeClosedTabs = () => TabsetService.removeClosedTabs()
+//const removeClosedTabs = () => TabsetService.removeClosedTabs()
 const saveAllPendingTabs = () => TabsetService.saveAllPendingTabs()
 const saveSelectedPendingTabs = () => TabsetService.saveSelectedPendingTabs()
 const removeSelectedPendingTabs = () => TabsetService.removeSelectedPendingTabs()
@@ -232,7 +229,7 @@ const showTabGroup = (group: chrome.tabGroups.TabGroup) => tabsForGroup(group.id
 const showOtherTabs = () => tabsStore.browserTabset?.tabs.length > 0 || tabGroupsStore.tabGroups.length > 0
 
 const updateSelectionCount = (val: any) => {
-  console.log("hier", val, TabsetService.getSelectedPendingTabs().length)
+  //console.log("hier", val, TabsetService.getSelectedPendingTabs().length)
   selectedCount.value = TabsetService.getSelectedPendingTabs().length
 }
 const noTabSelected = () => selectedCount.value === 0

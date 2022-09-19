@@ -84,11 +84,16 @@ export const useTabsStore = defineStore('tabs', {
       const tabset = state.tabsets.get(key)
       return tabset?.name || 'unknown'
     }),
-    getCurrentTabs: (state) => {
+    getCurrentTabs: (state): Tab[] => {
       return state.tabsets.get(state.currentTabsetId)?.tabs || []
     },
     getCurrentTabset: (state): Tabset | undefined => {
       return state.tabsets.get(state.currentTabsetId)
+    },
+    getTabset: (state) => {
+      return (tabsetId: string): Tabset | undefined => {
+        return state.tabsets.get(tabsetId)
+      }
     },
     currentTabsetName: (state) => {
       //console.log("here!", state.currentTabsetId)
@@ -98,20 +103,12 @@ export const useTabsStore = defineStore('tabs', {
       }
       return 'current'
     },
-    // getNameForContext: (state): string => {
-    //   return _.first(_.map(
-    //     _.filter([...state.tabsets.values()],
-    //       ts => ts.id === state.contextId),
-    //     ts => ts.name)) || 'undefined'
-    // },
+
     tabForUrlInSelectedTabset: (state): (url: string) => Tab | undefined => {
       const tabs: Tab[] = state.tabsets.get(state.currentTabsetId)?.tabs || []
       return (url: string) => _.find(tabs, t => t.chromeTab.url === url)
     },
-    // tabIdExistsInContextTabset: (state) => {
-    //   const tabs: Tab[] = state.tabsets.get(state.contextId)?.tabs || []
-    //   return (tabId: number) => _.find(tabs, t => t.chromeTab.id === tabId)
-    // },
+
     nameExistsInContextTabset: (state) => {
       return (searchName: string) => {
         const existingNames = _.map([...state.tabsets.values()], ts => ts.name)
@@ -129,8 +126,15 @@ export const useTabsStore = defineStore('tabs', {
         }
         return undefined
       }
+    },
+    allTabsCount: (state) => {
+      var count = 0
+      for (const [key, value] of state.tabsets) {
+        const nr = value.tabs.length
+        count = count + nr
+      }
+      return count;
     }
-    // tabsetsWithoutCurrent: (state) => _.filter([...state.tabsets.values()], ts => ts.id !== 'current')
   },
 
   actions: {

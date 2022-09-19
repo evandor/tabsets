@@ -20,7 +20,7 @@ class Navigation {
       if (!found) {
 
         chrome.tabs.create({
-          active: false,
+          active: true,
           pinned: false,
           url: withUrl
         })// @ts-ignore

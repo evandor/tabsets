@@ -94,10 +94,10 @@
       <Navigation></Navigation>
 
       <q-footer class="bg-white text-black">
-        <div class="q-ma-sm">
-          {{ notificationsStore.info }}
+
+<!--          { { notificationsStore.info } }-->
           <TabInfo></TabInfo>
-        </div>
+
       </q-footer>
 
 
@@ -183,7 +183,7 @@ function submitSearch() {
   router.push("/search/" + search.value)
 }
 
-const goHome = () => router.push("/tabset")
+const goHome = () => router.push("/about")
 
 const createNewTabset = (newName: string) => {
   TabsetService.saveOrReplace(newName, [], true)
