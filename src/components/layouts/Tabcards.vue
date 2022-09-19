@@ -196,7 +196,7 @@ const nameOrTitle = (tab: Tab) => tab.name ? tab.name : tab.chromeTab?.title
 const dynamicNameOrTitleModel = (tab: Tab) => tab.name ? tab.name : tab.chromeTab?.title
 
 const startDrag = (evt: DragEvent, tab: Tab) => {
-  console.log("drag started", evt, tab.id)
+  //console.log("drag started", evt, tab.id)
   if (evt.dataTransfer) {
     evt.dataTransfer.dropEffect = 'move'
     evt.dataTransfer.effectAllowed = 'move'

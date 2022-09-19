@@ -68,38 +68,46 @@ class ChromeListeners {
       // console.log(`onUpdated: tab ${number}:     found current tabset ${currentTabset.id}`)
       const maybeTab = tabsStore.tabForUrlInSelectedTabset(tab.url || '')
       if (maybeTab) {
+        console.log(`onUpdated:   tab ${number}: in selected Tabset, returning`)
         return
       }
       const index = _.findIndex(tabsStore.pendingTabset.tabs, t => t.chromeTab.id === tab.id);
-      //console.log(`onUpdated:   tab ${number}:     got index ${index}`)
+
       if (index >= 0) {
-        const existingTab = tabsStore.pendingTabset.tabs[index]
-        const updatedTab = new Tab(uid(), tab)
-        if (existingTab.chromeTab.url !== updatedTab.chromeTab.url && existingTab.chromeTab.url !== 'chrome://newtab/') {
-          console.log(`onUpdated:   tab ${number}:     updating tab url ${updatedTab.chromeTab.url}`, existingTab, updatedTab)
-          updatedTab.setHistoryFrom(existingTab)
-          if (existingTab.chromeTab.url) {
-            updatedTab.addToHistory(existingTab.chromeTab.url)
+        if (!this.isIgnored(tab)) {
+          const existingTab = tabsStore.pendingTabset.tabs[index]
+          const updatedTab = new Tab(uid(), tab)
+          if (existingTab.chromeTab.url !== updatedTab.chromeTab.url && existingTab.chromeTab.url !== 'chrome://newtab/') {
+            console.log(`onUpdated:   tab ${number}:     updating tab url ${updatedTab.chromeTab.url}`)
+            updatedTab.setHistoryFrom(existingTab)
+            if (existingTab.chromeTab.url) {
+              updatedTab.addToHistory(existingTab.chromeTab.url)
+            }
           }
-        }
-        if (!tab.title?.startsWith("Tabset")) {
-          console.log(`onUpdated:   tab ${number}:     setting status CREATED`)
-          updatedTab.status = TabStatus.CREATED
-        }
-        tabsStore.pendingTabset.tabs.splice(index, 1, updatedTab);
-        //console.log(`onUpdated: tab ${number}:     tabs`, currentTabset.tabs)
-        // reload tabs (to be sure?!)
-        if (!this.inProgress) {
-          tabsStore.loadTabs('onUpdated');
-        }
-      } else {
-        if (!tab.title?.startsWith("Tabset")) {
-          const newTab = new Tab(uid(), tab)
-          console.log(`onUpdated:   tab ${number}:     setting status CREATED`)
-          newTab.status = TabStatus.CREATED
-          tabsStore.pendingTabset.tabs.push(newTab)
+          // if (!tab.title?.startsWith("Tabset")) {
+          //   console.log(`onUpdated:   tab ${number}:     setting status CREATED`)
+          //   updatedTab.status = TabStatus.CREATED
+          // }
+          tabsStore.pendingTabset.tabs.splice(index, 1, updatedTab);
+          //console.log(`onUpdated: tab ${number}:     tabs`, currentTabset.tabs)
+          // reload tabs (to be sure?!)
           if (!this.inProgress) {
             tabsStore.loadTabs('onUpdated');
+          }
+        } else {
+          tabsStore.pendingTabset.tabs.splice(index, 1)
+        }
+      } else {
+        // realistic at all? onCreate creates the new tab, so we should be able to find it
+        if (!tab.title?.startsWith("Tabset")) {
+          if (!this.isIgnored(tab)) {
+            const newTab = new Tab(uid(), tab)
+            console.log(`onUpdated:   tab ${number}:     setting status CREATED`)
+            newTab.status = TabStatus.CREATED
+            tabsStore.pendingTabset.tabs.push(newTab)
+            if (!this.inProgress) {
+              tabsStore.loadTabs('onUpdated');
+            }
           }
         }
       }
@@ -155,7 +163,7 @@ class ChromeListeners {
     if (!tabsStore.active) {
       return
     }
-    console.log(`onActivated: tab ${info.tabId} activated: >>> ${JSON.stringify(info)}`)
+    console.debug(`onActivated: tab ${info.tabId} activated: >>> ${JSON.stringify(info)}`)
     // chrome.tabs.captureVisibleTab( function (stream) {
     //   console.log("stream onActivated", stream)
     // })
@@ -270,6 +278,20 @@ class ChromeListeners {
     );
 
     return true;
+  }
+
+  private isIgnored(tab: chrome.tabs.Tab) {
+    const tabsStore = useTabsStore()
+    const ignoreIndex = _.findIndex(tabsStore.ignoredTabset.tabs, (ignoredTab: Tab) => {
+      if (ignoredTab.chromeTab.url && tab.url) {
+        if (tab.url.startsWith(ignoredTab.chromeTab.url)) {
+          console.log("ignoring tab with url", tab.url)
+          return true
+        }
+      }
+      return false
+    })
+    return ignoreIndex >= 0
   }
 }
 

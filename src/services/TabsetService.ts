@@ -41,11 +41,15 @@ class TabsetService {
     const keys: IDBValidKey[] = await this.db.getAllKeys('tabsets')
     _.forEach(keys, k => {
       this.db.get('tabsets', k)
-        .then(ts => tabsStore.addTabset(JSON.parse(ts)))
+        .then(ts => {
+          if ('ignored' === k) {
+            tabsStore.ignoredTabset = JSON.parse(ts)
+          } else {
+            tabsStore.addTabset(JSON.parse(ts))
+          }
+        })
         .catch(err => console.log("err", err))
     })
-
-
   }
 
   /**
@@ -102,17 +106,6 @@ class TabsetService {
     }
   }
 
-  // async createNewTabset(tabsetName: string, closeTabs: boolean) {
-  //   console.log("creating new tabset", tabsetName, closeTabs)
-  //   if (closeTabs) {
-  //     console.log("calling chromeApi: closeAllTabs")
-  //     await ChromeApi.closeAllTabs()
-  //     //console.log("calling chromeApi: closeAllTabs - finished")
-  //   }
-  //   const tabsStore = useTabsStore()
-  //   tabsStore.saveOrCreateTabset(tabsetName)
-  // }
-
   async restore(tabsetId: string) {
     console.log("restoring from tabset", tabsetId)
     const tabsStore = useTabsStore()
@@ -137,7 +130,7 @@ class TabsetService {
       const tabsStore = useTabsStore()
       tabsStore.deleteTabset(tabsetId)
       this.db.delete('tabsets', tabsetId)
-      const nextKey:string = tabsStore.tabsets.keys().next().value
+      const nextKey: string = tabsStore.tabsets.keys().next().value
       console.log("setting next key to", nextKey)
       this.selectTabset(nextKey)
     }
@@ -330,7 +323,7 @@ class TabsetService {
   moveToTabset(tabId: string, tabsetId: string) {
     const tabsStore = useTabsStore()
     const tabIndex = _.findIndex(tabsStore.getCurrentTabs, {id: tabId})
-      const targetTabset = tabsStore.getTabset(tabsetId)
+    const targetTabset = tabsStore.getTabset(tabsetId)
     if (tabIndex >= 0 && targetTabset) {
       console.log("found tabIndex", tabIndex)
       console.log("found targetTabset", targetTabset)
@@ -339,6 +332,13 @@ class TabsetService {
     } else {
       console.error("could not find tab/tabset", tabId, tabsetId)
     }
+  }
+
+  ignoreTab(tab: Tab) {
+    const tabsStore = useTabsStore()
+    tabsStore.ignoredTabset.tabs.push(tab)
+    const ignoredTS: Tabset = tabsStore.ignoredTabset as Tabset
+    this.saveTabset(ignoredTS)
   }
 }
 

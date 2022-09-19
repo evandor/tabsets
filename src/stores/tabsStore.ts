@@ -16,7 +16,7 @@ async function queryTabs(): Promise<chrome.tabs.Tab[]> {
 }
 
 function markDuplicates(tabset: Tabset) {
-  //console.log("marking duplicates in tabset", tabset.id)
+  console.log("marking duplicates in tabset", tabset.id)
   const urls = new Set<string>()
   const duplicates = new Set<string>()
   _.forEach(tabset.tabs, t => {
@@ -30,6 +30,8 @@ function markDuplicates(tabset: Tabset) {
   _.forEach(tabset.tabs, t => {
     if (duplicates.has(t.chromeTab.url || 'undefined')) {
       t.isDuplicate = true
+    } else {
+      t.isDuplicate = false
     }
   })
 }
@@ -44,14 +46,24 @@ export const useTabsStore = defineStore('tabs', {
     tabs: [] as unknown as chrome.tabs.Tab[],
 
     /**
-     * a named list of tabsets managed by this extension. There's a special
-     * key 'current' which references the current state of the chrome tabs (see 'tabs' above)
+     * a named list of tabsets managed by this extension.
      */
     tabsets: new Map<string, Tabset>(),
 
+    /**
+     * if the user opens a new tab, this will be stored here
+     */
     pendingTabset: null as unknown as Tabset,
 
+    /**
+     * the browsers tabs as a tabset
+     */
     browserTabset: null as unknown as Tabset,
+
+    /**
+     * tabs the extension should ignore
+     */
+    ignoredTabset: null as unknown as Tabset,
 
     // which tabset should be shown in the extension?
     currentTabsetId: 'current',
@@ -66,9 +78,7 @@ export const useTabsStore = defineStore('tabs', {
     isLiveMode: (state) => (state.currentTabsetId === 'current'),
     isEditMode: (state) => (state.currentTabsetId !== 'current'),
 
-    pinnedTabs(state): Tab[] { //chrome.tabs.Tab[] {
-      //console.log("state", state.currentTabsetId)
-      //console.log("state", state.tabsets.get(state.currentTabsetId))
+    pinnedTabs(state): Tab[] {
       const currentTabset: Tabset = state.tabsets.get(state.currentTabsetId) || new Tabset("", "", [], [])
       return _.filter(currentTabset.tabs, (t: Tab) => {
         //console.log("t", t.chromeTab, t)
@@ -155,9 +165,11 @@ export const useTabsStore = defineStore('tabs', {
 
       this.pendingTabset = new Tabset("pending", "pending", [], [])
 
+      this.ignoredTabset = new Tabset("ignored", "ignored", [], [])
+
 
       // // marking duplicates (inside each tabset)
-      // _.forEach([...this.tabsets.values()], tabset => markDuplicates(tabset))
+      //_.forEach([...this.tabsets.values()], tabset => markDuplicates(tabset))
     },
     async loadTabs(eventName: string) {
       // potentially expansive method
@@ -210,6 +222,7 @@ export const useTabsStore = defineStore('tabs', {
     removeTab(tabId: number) {
       const currentTabset: Tabset = this.tabsets.get(this.currentTabsetId) || new Tabset("", "", [], [])
       currentTabset.tabs = _.filter(currentTabset.tabs, (t: Tab) => t.chromeTab.id !== tabId)
+      markDuplicates(currentTabset)
       TabsetService.saveTabset(currentTabset)
       this.pendingTabset.tabs = _.filter(this.pendingTabset.tabs, (t: Tab) => t.chromeTab.id !== tabId)
     },
@@ -275,6 +288,7 @@ export const useTabsStore = defineStore('tabs', {
     addTabset(ts: Tabset) {
       //console.log("adding tabset", ts)
       this.tabsets.set(ts.id, ts)
+      markDuplicates(ts)
     }
   }
 });

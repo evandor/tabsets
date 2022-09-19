@@ -57,7 +57,7 @@
               </q-btn>
             </div>
             <div class="col-6 text-right">
-              <q-btn flat round color="warning" icon="highlight_off" >
+              <q-btn flat round color="warning" icon="highlight_off" @click.stop="ignoreTab(tab)">
                 <q-tooltip>Ignore this url from now on</q-tooltip>
               </q-btn>
               <q-btn flat round color="red" icon="delete_outline" @click.stop="closeTab(tab)">
@@ -127,6 +127,12 @@ function maxChar(max: number, t: string): string {
 
 
 function closeTab(tab: Tab) {
+  Navigation.closeTab(tab)
+}
+
+function ignoreTab(tab: Tab) {
+  console.log("ignoring tab", tab)
+  TabsetService.ignoreTab(tab)
   Navigation.closeTab(tab)
 }
 

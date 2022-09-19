@@ -16,6 +16,9 @@ export const useNotificationsStore = defineStore('notifications', {
       },
       setSelectedTab(tab: Tab) {
         this.selectedTab = tab
+      },
+      unsetSelectedTab() {
+        this.selectedTab = null as unknown as Tab
       }
     }
   }

@@ -1,8 +1,13 @@
 <template>
   <div v-if="notificationStore.selectedTab">
     <div class="row items-baseline q-mx-md q-pa-none" style="width:265px;border-top:1px dotted grey">
-      <div class="col-12">&nbsp;</div>
+      <div class="col-12 q-mb-md">&nbsp;
+        <q-banner v-if="notificationStore.selectedTab.isDuplicate"
+                  rounded class="bg-amber-1 text-black">This tab has duplicates in this tabset
+        </q-banner>
+      </div>
     </div>
+
     <div class="row items-baseline q-mx-md q-my-none" style="width:265px">
       <div class="col-2">
         <q-img
@@ -27,7 +32,7 @@
     </div>
     <div class="row q-mx-md q-my-none" style="width:265px;border:0px solid yellow">
       <div class="col-12">
-        <q-img :src="thumbnail" width="265px" style="border:1px solid grey" />
+        <q-img :src="thumbnail" width="265px" style="border:1px solid grey"/>
       </div>
       <div class="col-12">
         <div class="row q-ma-lg">

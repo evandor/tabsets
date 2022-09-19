@@ -83,6 +83,10 @@
         <!--          </q-badge>-->
         <!--        </div>-->
 
+        <q-icon name="settings" size="2em"
+                class="q-mr-md cursor-pointer"
+                @click="openSettingsPage()"
+                v-if="featuresStore.settingsEnabled"></q-icon>
 
         <div>
             v{{ appVersion }}
@@ -123,6 +127,7 @@ import TabInfo from "src/components/layouts/TabInfo.vue"
 import Navigation from "src/components/Navigation.vue"
 import TabsetService from "src/services/TabsetService";
 import {useSearchStore} from "stores/searchStore";
+import {useFeatureTogglesStore} from "stores/featureTogglesStore";
 
 const router = useRouter()
 const tabsStore = useTabsStore()
@@ -130,6 +135,7 @@ const tabGroupsStore = useTabGroupsStore()
 const searchStore = useSearchStore()
 
 const notificationsStore = useNotificationsStore()
+const featuresStore = useFeatureTogglesStore()
 
 const $q = useQuasar()
 
@@ -184,6 +190,7 @@ function submitSearch() {
 }
 
 const goHome = () => router.push("/about")
+const openSettingsPage = () => router.push("/settings")
 
 const createNewTabset = (newName: string) => {
   TabsetService.saveOrReplace(newName, [], true)

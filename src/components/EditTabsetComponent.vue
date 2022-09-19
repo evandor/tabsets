@@ -55,8 +55,7 @@
       <div class="col-xs-12 col-md-5">
         <q-toolbar-title>
           <div class="row justify-start items-baseline">
-            <div class="col-1" style="width:80px"
-                 v-text="'Tabset ' + tabsStore.currentTabsetName"></div>
+            <div class="col-1"><span class="text-dark">Tabset</span> <span class="text-primary">{{tabsStore.currentTabsetName}}</span></div>
           </div>
         </q-toolbar-title>
       </div>

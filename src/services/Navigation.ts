@@ -1,6 +1,7 @@
 import {useTabsStore} from "src/stores/tabsStore";
 import {Tab} from "src/models/Tab";
 import ChromeApi from "src/services/ChromeApi";
+import {useNotificationsStore} from "stores/notificationsStore";
 
 class Navigation {
 
@@ -74,6 +75,7 @@ class Navigation {
       console.log("closing tab (edit mode)", tab.id, tab.chromeTab?.id)
       if (tab.chromeTab?.id) {
         tabsStore.removeTab(tab.chromeTab.id)
+        useNotificationsStore().unsetSelectedTab()
       }
     }
 
