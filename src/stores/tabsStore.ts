@@ -16,7 +16,7 @@ async function queryTabs(): Promise<chrome.tabs.Tab[]> {
 }
 
 function markDuplicates(tabset: Tabset) {
-  console.log("marking duplicates in tabset", tabset.id)
+  //console.log("marking duplicates in tabset", tabset.id)
   const urls = new Set<string>()
   const duplicates = new Set<string>()
   _.forEach(tabset.tabs, t => {

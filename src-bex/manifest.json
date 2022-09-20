@@ -8,7 +8,8 @@
   "permissions": [
     "tabGroups",
     "tabs",
-    "activeTab"
+    "activeTab",
+    "bookmarks"
   ],
   "host_permissions": [
     "<all_urls>"

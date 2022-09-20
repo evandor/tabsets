@@ -55,11 +55,22 @@
       <div class="col-xs-12 col-md-5">
         <q-toolbar-title>
           <div class="row justify-start items-baseline">
-            <div class="col-1"><span class="text-dark">Tabset</span> <span class="text-primary">{{tabsStore.currentTabsetName}}</span></div>
+            <div class="col-1"><span class="text-dark">Tabset</span> <span
+              class="text-primary">{{ tabsStore.currentTabsetName }}</span></div>
           </div>
         </q-toolbar-title>
       </div>
       <div class="col-xs-12 col-md-7 text-right">
+
+        <q-btn v-if="tabsStore.getCurrentTabset?.tabs.length > 0 && featuresStore.firebaseEnabled &&
+          (!tabsStore.getCurrentTabset.persistence || tabsStore.getCurrentTabset.persistence === TabsetPersistence.INDEX_DB)"
+               flat dense icon="restore_page"
+               color="warning" :label="$q.screen.gt.sm ? 'Sync Tabset...' : ''"
+               class="q-mr-md"
+               @click="syncTabset()">
+          <q-tooltip>This tabset is stored locally. To use it on different devices, click 'Sync Tabset'</q-tooltip>
+        </q-btn>
+
         <q-btn v-if="tabsStore.getCurrentTabset?.tabs.length > 0"
                flat dense icon="restore_page"
                color="green" :label="$q.screen.gt.sm ? 'Open Tabset...' : ''"
@@ -168,7 +179,7 @@
 </template>
 
 <script setup lang="ts">
-import {ref, watchEffect} from 'vue'
+import {ref} from 'vue'
 import {useRoute, useRouter} from "vue-router";
 import {useQuasar} from "quasar";
 import Tabcards from "src/components/layouts/Tabcards.vue";
@@ -177,13 +188,17 @@ import _ from "lodash"
 import {useTabsStore} from "src/stores/tabsStore";
 import {useTabGroupsStore} from "src/stores/tabGroupsStore";
 import TabsetService from "src/services/TabsetService";
-import {Tab, TabStatus} from "src/models/Tab";
+import {Tab} from "src/models/Tab";
+import {useFeatureTogglesStore} from "stores/featureTogglesStore";
+import {TabsetPersistence} from "src/models/Tabset"
 
 const route = useRoute();
 const router = useRouter();
 const localStorage = useQuasar().localStorage
 const tabsStore = useTabsStore()
 const tabGroupsStore = useTabGroupsStore()
+const featuresStore = useFeatureTogglesStore()
+
 const tabsetname = ref(tabsStore.currentTabsetName)
 
 const otherTabsCaption = ref('current tabs, neither pinned nor grouped...')
@@ -232,6 +247,11 @@ const updateSelectionCount = (val: any) => {
   selectedCount.value = TabsetService.getSelectedPendingTabs().length
 }
 const noTabSelected = () => selectedCount.value === 0
+
+const syncTabset = () => {
+  console.log("syncing tabset", tabsStore.currentTabsetId)
+  TabsetService.syncTabset(tabsStore.currentTabsetId)
+}
 
 const saveDialog = () => {
   $q.dialog({

@@ -36,12 +36,29 @@ exports.makeUppercase = functions.firestore.document('/messages/{documentId}')
 
 exports.saveTabset = functions.https.onRequest(async (req, res) => {
   console.log("call to saveTabset", req.body)
-  const writeResult = await admin.firestore()
-    .collection('123').add(
-      {
-        name: 'first tabset3',
-        tabs: req.body
-      }
-    );
-  res.json({result: `Message with ID: ${writeResult.id} added.`});
+
+  const usersTss = await admin.firestore()
+    .collection('users')
+    .doc('userid1')
+  console.log("useersTss", usersTss)
+  const result = await usersTss.set({userId: 'abc'})
+    .catch(err => {
+      console.log("err", err)
+      res.json({result: `got error: ${err}`});
+    });
+  console.log("result", result)
+
+  // const writeResult = await admin.firestore()
+  //   .collection('users')
+  //   .doc()
+  //   .set({userId: 'abc'})
+  //   .then(res => {
+  //     console.log("res", res)
+  //     res.json({result: `Message with ID: ${writeResult.id} added.`});
+  //   })
+  //   .catch(err => {
+  //     console.log("err", err)
+  //     res.json({result: `got error: ${err}`});
+  //   });
+  res.json({result: `Message with ID: ... added.`});
 });

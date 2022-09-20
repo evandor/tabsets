@@ -3,9 +3,10 @@ import {LocalStorage, uid} from "quasar";
 import ChromeApi from "src/services/ChromeApi";
 import _ from "lodash";
 import {Tab, TabStatus} from "src/models/Tab";
-import {Tabset} from "src/models/Tabset";
+import {Tabset, TabsetPersistence} from "src/models/Tabset";
 import {useNotificationsStore} from "src/stores/notificationsStore";
 import {IDBPDatabase, openDB} from "idb";
+import {initializeBackendApi} from "src/services/BackendApi";
 
 class TabsetService {
 
@@ -178,7 +179,7 @@ class TabsetService {
   saveToTabset(tab: Tab) {
     const tabsStore = useTabsStore()
     const currentTabset: Tabset = this.getCurrentTabset() || new Tabset("", "", [], [])
-    console.log("got tabset", currentTabset)
+    //console.log("got tabset", currentTabset)
     tab.status = TabStatus.DEFAULT
     currentTabset.tabs.push(tab)
 
@@ -339,6 +340,23 @@ class TabsetService {
     tabsStore.ignoredTabset.tabs.push(tab)
     const ignoredTS: Tabset = tabsStore.ignoredTabset as Tabset
     this.saveTabset(ignoredTS)
+  }
+
+  syncTabset(tabsetId: string) {
+    const tabsStore = useTabsStore()
+    const ts = tabsStore.getTabset(tabsetId)
+    if (ts) {
+      const backend = initializeBackendApi(process.env.BACKEND_URL || "unknown", null)
+      console.log("hier2")
+      backend.saveTabset(ts)
+        .then(res => {
+          ts.persistence = TabsetPersistence.FIREBASE
+        })
+        .catch(err => {
+          console.error("err", err)
+        })
+    }
+
   }
 }
 
