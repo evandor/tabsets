@@ -3,11 +3,11 @@ import { RouteRecordRaw } from 'vue-router';
 const routes: RouteRecordRaw[] = [
   {
     path: '/',
-    redirect: '/tabset'
+    redirect: '/start'
   },
   {
     path: '/login',
-    component: () => import('layouts/MainLayout.vue'),
+    component: () => import('layouts/PlainLayout.vue'),
     children: [{ path: '', component: () => import('pages/Login.vue') }],
     //children: [{ path: '', component: () => import('pages/Login.vue') }],
   },
@@ -17,6 +17,11 @@ const routes: RouteRecordRaw[] = [
     children: [{ path: '', component: () => import('pages/TabsetPage.vue') }],
     //children: [{ path: '', component: () => import('pages/Login.vue') }],
   },*/
+  {
+    path: '/start',
+    component: () => import('layouts/PlainLayout.vue'),
+    children: [{ path: '', component: () => import('pages/Start.vue') }],
+  },
   {
     path: '/about',
     component: () => import('layouts/MainLayout.vue'),

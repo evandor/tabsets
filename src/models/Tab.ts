@@ -20,7 +20,6 @@ export class Tab {
   name: string | undefined
 
   constructor(public id: string, chromeTab: chrome.tabs.Tab) {
-
     this.created = new Date().getTime()
     this.updated = new Date().getTime()
     this.lastActive = 0
@@ -33,6 +32,21 @@ export class Tab {
     this.history = []
     this.name = undefined
   }
+
+  // public equalForSync(other: Tab) : boolean {
+  //   if (this.id !== other.id) {
+  //     return false;
+  //   }
+  //   if (this.chromeTab !== other.chromeTab) {
+  //     console.log("mismatch", this.chromeTab, other.chromeTab)
+  //     return false
+  //   }
+  //   if (this.history !== other.history) {
+  //     return false
+  //
+  //   }
+  //   return true
+  // }
 
   setHistoryFrom(existingTab: Tab) {
     if (existingTab.history) {

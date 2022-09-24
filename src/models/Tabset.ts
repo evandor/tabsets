@@ -6,6 +6,10 @@ export enum TabsetPersistence {
   FIREBASE = "FIREBASE"
 }
 
+export enum TabsetStatus {
+  DEFAULT = "DEFAULT",
+  UNMOUNTED = "UNMOUNTED"
+}
 
 export class Tabset {
   id: string
@@ -13,6 +17,7 @@ export class Tabset {
   created: number
   updated: number
   persistence: TabsetPersistence = TabsetPersistence.INDEX_DB
+  status: TabsetStatus = TabsetStatus.DEFAULT
   tabs: Tab[]
   groups: Group[]
 
@@ -25,4 +30,5 @@ export class Tabset {
     this.tabs = tabs
     this.groups = groups
   }
+
 }

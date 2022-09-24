@@ -10,7 +10,8 @@
 import {defineComponent} from "vue";
 import {EmailAuthProvider, GoogleAuthProvider} from "firebase/auth";
 import {ui} from "boot/firebase";
-//import {useAuthStore} from "stores/auth";
+import {useAuthStore} from "stores/auth";
+import TabsetService from "src/services/TabsetService";
 //import {auth} from "src/store/auth";
 //import {useQuasar} from "quasar";
 //import {cmsCore} from "src/store/cmsCore";
@@ -19,9 +20,9 @@ export default defineComponent({
   // name: 'PageName',
   setup() {
     //const localStorage = useQuasar().localStorage
-    //const authStore = useAuthStore()
+    const authStore = useAuthStore()
     return {
-      //authStore
+      authStore
       //auth, localStorage
     }
   },
@@ -50,14 +51,10 @@ export default defineComponent({
   },
   methods: {
     signInAttempSuccessful(authResult: any, redirectUrl: any): boolean {
-      //alert('Sign in successfull. See dev console for authorization response')
-      //console.log('authResult', authResult.user)
-      //this.auth.setUser(authResult.user)
+      //alert('Sign in successful. See dev console for authorization response')
       this.authStore.setUser(authResult.user)
-      //cmsCore.cmsCore.setUser(authResult.user)
-      //this.localStorage.set("skysailcms.uid", authResult.user['uid'])
+      TabsetService.loadTabsetsFromFirebase()
       return true;
-      // Do what you wish with authResult... save to session, cookie, etc.
     },
     // Note, bad credentials is not a sign-in failure
     signInAttempFailure(error: any) {

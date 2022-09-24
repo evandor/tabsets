@@ -21,7 +21,7 @@
     "concurrently:dev:jest": "concurrently \"quasar dev\" \"jest --watch\""
   },
   "dependencies": {
-    "@quasar/extras": "^1.0.0",
+    "@quasar/extras": "^1.15.3",
     "@types/lodash": "^4.14.182",
     "axios": "^0.21.1",
     "dotenv": "^16.0.1",
@@ -31,7 +31,8 @@
     "idb": "^7.0.2",
     "lodash": "^4.17.21",
     "pinia": "^2.0.11",
-    "quasar": "^2.6.0",
+    "quasar": "^2.8.4",
+    "throttled-queue": "^2.1.4",
     "vite-plugin-package-version": "^1.0.2",
     "vue": "^3.0.0",
     "vue-i18n": "^9.0.0",
@@ -40,7 +41,7 @@
   "devDependencies": {
     "@babel/preset-env": "^7.19.0",
     "@intlify/vite-plugin-vue-i18n": "^3.3.1",
-    "@quasar/app-vite": "^1.0.0",
+    "@quasar/app-vite": "^1.1.2",
     "@quasar/babel-preset-app": "^2.0.1",
     "@quasar/quasar-app-extension-testing": "^2.0.4",
     "@quasar/quasar-app-extension-testing-unit-jest": "^3.0.0-alpha.10",

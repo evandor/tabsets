@@ -1,6 +1,6 @@
 <template>
   <div class="row items-start">
-    <div class="col-xs-12 col-sm-4 col-md-3 col-lg-2 q-pa-xs" v-for="tab in props.tabs">
+    <div class="col-xs-12 col-sm-4 col-md-3 col-lg-2 q-pa-xs" v-for="(tab,index) in tabsWithLimit()">
       <q-card class="my-card" bordered @mouseover="setInfo(tab)" @click="selectTab(tab)">
         <q-card-section class="bg-primary text-white cursor-pointer">
 
@@ -70,6 +70,45 @@
 
       </q-card>
     </div>
+    <div class="col-xs-12 col-sm-4 col-md-3 col-lg-2 q-pa-xs">
+      <q-card class="my-card" bordered v-if="props.tabs.length >= 1+MAX_TABS_TO_SHOW">
+        <q-card-section class="bg-grey-1 text-black cursor-pointer">
+
+          <div class="row items-baseline">
+
+            <!-- favicon -->
+            <div class="col-2 text-body1">
+              &gt;&gt;&gt;
+            </div>
+
+            <!-- title or name if given -->
+            <div class="col-10 text-h6 ellipsis">
+              more tabs...
+            </div>
+
+          </div>
+
+
+          <div class="text-subtitle2 ellipsis text-secondary">
+            {{ 1 + props.tabs.length - MAX_TABS_TO_SHOW }} more tabs to show
+
+          </div>
+
+        </q-card-section>
+
+
+        <q-card-actions>
+          <div class="row fit">
+            <div class="col-12 text-right">
+              <q-btn flat round color="positive" icon="double_arrow">
+                <q-tooltip>Show All</q-tooltip>
+              </q-btn>
+            </div>
+          </div>
+        </q-card-actions>
+
+      </q-card>
+    </div>
   </div>
 
 
@@ -77,9 +116,10 @@
 
 <script setup lang="ts">
 import Navigation from "src/services/Navigation";
-import {Tab, TabStatus} from "src/models/Tab";
+import {Tab} from "src/models/Tab";
 import TabsetService from "src/services/TabsetService";
 import {useNotificationsStore} from "stores/notificationsStore";
+import {MAX_TABS_TO_SHOW} from 'boot/constants'
 
 const props = defineProps({
   tabs: {
@@ -202,6 +242,16 @@ const nameOrTitle = (tab: Tab) => tab.name ? tab.name : tab.chromeTab?.title
 const dynamicNameOrTitleModel = (tab: Tab) => tab.name ? tab.name : tab.chromeTab?.title
 
 const selectionChanged = (val: any) => emits('selectionChanged', val)
+
+const tabsWithLimit = () => {
+  const allTabs = props.tabs
+  if (allTabs.length > MAX_TABS_TO_SHOW) {
+    const firstTabs = allTabs.slice(0, MAX_TABS_TO_SHOW - 1)
+    //firstTabs.push(new Tab(uid(), null as unknown as chrome.tabs.Tab))
+    return firstTabs
+  }
+  return allTabs
+}
 
 </script>
 

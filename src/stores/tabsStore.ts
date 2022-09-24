@@ -42,6 +42,9 @@ export const useTabsStore = defineStore('tabs', {
     // active means: tabs(-sets) are tracked
     active: null as unknown as boolean,
 
+    // tabset extension id, set at init
+    ownTabId: null as unknown as number,
+
     // chrome's current's windows tabs, reloaded on various events
     tabs: [] as unknown as chrome.tabs.Tab[],
 
@@ -156,6 +159,13 @@ export const useTabsStore = defineStore('tabs', {
       const active = localStorage.getItem("active")
       this.active = active === null || active
 
+      // own tab id
+      const ownTab = await ChromeApi.getCurrentTab()
+      if (ownTab && ownTab.id) {
+        console.log("setting extension tab id to ", ownTab.id)
+        this.ownTabId = ownTab.id
+      }
+
       // --- setting current tabs
       this.tabs = await queryTabs()
 
@@ -228,7 +238,7 @@ export const useTabsStore = defineStore('tabs', {
     },
 
     async updateOrCreateTabset(tabsetName: string, tabs: chrome.tabs.Tab[], merge: boolean = false): Promise<NewOrReplacedTabset> {
-      console.log("--- saveOrCreateTabset start -------------")
+      console.log("--- updateOrCreateTabset start -------------")
       const foundTS: Tabset | undefined = _.find([...this.tabsets.values()], ts => ts.name === tabsetName)
       let ts: Tabset = null as unknown as Tabset
       const tabsetExtensionTab = await ChromeApi.getCurrentTab()
@@ -262,7 +272,7 @@ export const useTabsStore = defineStore('tabs', {
         ts = new Tabset(useId, tabsetName, _.map(
           _.filter(
             tabs, t => {
-              //console.log("comparing", t.url, tabsetExtensionTab.url, t.url !== tabsetExtensionTab.url)
+              console.log("comparing", t.url, tabsetExtensionTab.url, t.url !== tabsetExtensionTab.url)
               return t.url !== tabsetExtensionTab.url
             }),
           t => new Tab(uid(), t)), _.map(tabGroupsStore.tabGroups, tg => new Group(uid(), tg)))
@@ -270,7 +280,7 @@ export const useTabsStore = defineStore('tabs', {
         this.tabsets.set(useId, ts)
       }
 
-      console.log("--- saveOrCreateTabset end -------------")
+      console.log("--- updateOrCreateTabset end -------------")
       return new NewOrReplacedTabset(foundTS !== undefined, ts)
     },
 

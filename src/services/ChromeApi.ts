@@ -68,13 +68,19 @@ class ChromeApi {
     }
   }
 
-  async tabsForUrl(url: string | undefined): Promise<Array<any>> {
+  async tabsForUrl(url: string | undefined): Promise<chrome.tabs.Tab[]> {
     if (url) {
       // @ts-ignore
       return await chrome.tabs.query({url: url})
     }
     return Promise.reject("url not defined")
   }
+
+  async childrenFor(bookmarkFolderId: string): Promise<chrome.bookmarks.BookmarkTreeNode[]> {
+    // @ts-ignore
+    return await chrome.bookmarks.getChildren(bookmarkFolderId)
+  }
+
 }
 
 export default new ChromeApi();

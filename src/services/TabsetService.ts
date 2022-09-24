@@ -3,10 +3,13 @@ import {LocalStorage, uid} from "quasar";
 import ChromeApi from "src/services/ChromeApi";
 import _ from "lodash";
 import {Tab, TabStatus} from "src/models/Tab";
-import {Tabset, TabsetPersistence} from "src/models/Tabset";
+import {Tabset, TabsetPersistence, TabsetStatus} from "src/models/Tabset";
 import {useNotificationsStore} from "src/stores/notificationsStore";
 import {IDBPDatabase, openDB} from "idb";
-import {initializeBackendApi} from "src/services/BackendApi";
+import backendApi from "src/services/BackendApi";
+import {useFeatureTogglesStore} from "stores/featureTogglesStore";
+import {useAuthStore} from "stores/auth";
+import {INDEX_DB_NAME} from "boot/constants";
 
 class TabsetService {
 
@@ -19,7 +22,9 @@ class TabsetService {
   }
 
   async init() {
-    this.db = await openDB('db', 2, {
+
+    // init db
+    this.db = await openDB(INDEX_DB_NAME, 2, {
       upgrade(db) {
         if (!db.objectStoreNames.contains('tabsets')) {
           console.log("creating db tabsets")
@@ -51,6 +56,10 @@ class TabsetService {
         })
         .catch(err => console.log("err", err))
     })
+
+    // get tabsets from firebase
+    this.loadTabsetsFromFirebase()
+
   }
 
   /**
@@ -68,7 +77,9 @@ class TabsetService {
     const result = await tabsStore.updateOrCreateTabset(name, tabs, merge)
     if (result && result.tabset) {
       await this.saveTabset(result.tabset)
-      tabsStore.currentTabsetId = result.tabset.id
+      console.log("setting current tabset to ", result.tabset.id)
+      // tabsStore.currentTabsetId = result.tabset.id
+      this.selectTabset(result.tabset.id)
     }
     return {
       replaced: result.replaced,
@@ -83,6 +94,10 @@ class TabsetService {
     if (tabset.id) {
       //this.localStorage.set("tabsets.tabset." + tabset.id, tabset)
       await this.db.put('tabsets', JSON.stringify(tabset), tabset.id);
+
+      if (useFeatureTogglesStore().firebaseEnabled) {
+        backendApi.saveTabset(tabset)
+      }
       //localStorage.setItem("tabsets.context", tabset.id)
       return
     }
@@ -346,17 +361,45 @@ class TabsetService {
     const tabsStore = useTabsStore()
     const ts = tabsStore.getTabset(tabsetId)
     if (ts) {
-      const backend = initializeBackendApi(process.env.BACKEND_URL || "unknown", null)
-      console.log("hier2")
-      backend.saveTabset(ts)
+      // const backend = initializeBackendApi(process.env.BACKEND_URL || "unknown", null)
+
+      //const clonedTs = JSON.parse(JSON.stringify(ts))
+      // console.log("cloned ts", ts, clonedTs)
+      // clonedTs.status = TabsetStatus.DEFAULT
+      // clonedTs.persistence = TabsetPersistence.FIREBASE
+      backendApi.saveTabset(ts)
         .then(res => {
-          ts.persistence = TabsetPersistence.FIREBASE
+          //ts.persistence = TabsetPersistence.FIREBASE
+          // ts.status = TabsetStatus.UNMOUNTED
+          // ts.persistence = TabsetPersistence.FIREBASE
+          this.delete(ts.id)
+          this.loadTabsetsFromFirebase()
+          console.log("got backend answer: ", res)
         })
         .catch(err => {
           console.error("err", err)
         })
     }
 
+  }
+
+  loadTabsetsFromFirebase() {
+    const firebaseEnabled = useFeatureTogglesStore().firebaseEnabled
+    const authenticated = useAuthStore().isAuthenticated
+    if (firebaseEnabled && authenticated) {
+      backendApi.getTabsets()
+        .then(ts => {
+          console.log("tabsets from firebase", ts.data)
+
+          _.forEach(ts.data, (ts: Tabset) => {
+            console.log("got tabset", ts)
+            ts.persistence = TabsetPersistence.FIREBASE
+            ts.status = TabsetStatus.DEFAULT
+            useTabsStore().addTabset(ts)
+          })
+        })
+        .catch(err => console.log("error", err))
+    }
   }
 }
 

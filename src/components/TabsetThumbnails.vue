@@ -250,7 +250,7 @@ const deleteDialog = () => {
     persistent: true
   }).onOk((data: any) => {
     TabsetService.delete(tabsStore.currentTabsetId)
-    router.push("/browser")
+    //router.push("/browser")
   }).onCancel(() => {
   }).onDismiss(() => {
   })

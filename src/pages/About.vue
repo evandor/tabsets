@@ -35,7 +35,7 @@
       </div>
 
       <div class="text-body1 q-ma-md">
-        Click on '<b>Open tabs</b>' in the left menu and then '<b>Save as tabset...</b>'"
+        Click on 'NEW TABSET' in the upper right page.
       </div>
     </div>
   </q-page>

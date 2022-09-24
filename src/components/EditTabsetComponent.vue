@@ -22,7 +22,7 @@
           </div>
         </div>
       </q-item-section>
-      <q-item-section>{{ formatLength(tabsStore.pendingTabset?.tabs.length, 'tab', 'tabs') }}</q-item-section>
+      <q-item-section>{{ pendingTabsCount() }}</q-item-section>
     </template>
 
     <!--        <q-card style="background: radial-gradient(circle, #35a2ff 0%, #014a88 100%)">-->
@@ -56,13 +56,16 @@
         <q-toolbar-title>
           <div class="row justify-start items-baseline">
             <div class="col-1"><span class="text-dark">Tabset</span> <span
-              class="text-primary">{{ tabsStore.currentTabsetName }}</span></div>
+              class="text-primary">
+              {{tabsStore.currentTabsetName}}
+              <q-tooltip v-if="featuresStore.debugEnabled">ID: {{tabsStore.getCurrentTabset.id}} Status: {{tabsStore.getCurrentTabset.status}} Pers: {{tabsStore.getCurrentTabset.persistence}}</q-tooltip>
+            </span></div>
           </div>
         </q-toolbar-title>
       </div>
       <div class="col-xs-12 col-md-7 text-right">
 
-        <q-btn v-if="tabsStore.getCurrentTabset?.tabs.length > 0 && featuresStore.firebaseEnabled &&
+        <q-btn v-if="tabsStore.getCurrentTabset?.tabs.length > 0 && featuresStore.firebaseEnabled && auth.isAuthenticated &&
           (!tabsStore.getCurrentTabset.persistence || tabsStore.getCurrentTabset.persistence === TabsetPersistence.INDEX_DB)"
                flat dense icon="restore_page"
                color="warning" :label="$q.screen.gt.sm ? 'Sync Tabset...' : ''"
@@ -146,7 +149,7 @@
   >
     <template v-slot:header="{ expanded }">
       <q-item-section avatar>
-        <q-icon name="tab"/>
+        <q-icon name="tab" />
       </q-item-section>
 
       <q-item-section>
@@ -191,6 +194,8 @@ import TabsetService from "src/services/TabsetService";
 import {Tab} from "src/models/Tab";
 import {useFeatureTogglesStore} from "stores/featureTogglesStore";
 import {TabsetPersistence} from "src/models/Tabset"
+import {useAuthStore} from "stores/auth";
+import {MAX_TABS_TO_SHOW} from 'boot/constants'
 
 const route = useRoute();
 const router = useRouter();
@@ -198,6 +203,7 @@ const localStorage = useQuasar().localStorage
 const tabsStore = useTabsStore()
 const tabGroupsStore = useTabGroupsStore()
 const featuresStore = useFeatureTogglesStore()
+const auth = useAuthStore()
 
 const tabsetname = ref(tabsStore.currentTabsetName)
 
@@ -225,7 +231,7 @@ const update = (tabsetIdent: object) => {
 }
 
 const formatLength = (length: number, singular: string, plural: string) => {
-  return length > 1 ? length + ' ' + plural : length + ' ' + singular
+  return (length > 1 || length === 0) ? length + ' ' + plural : length + ' ' + singular
 }
 
 //const removeClosedTabs = () => TabsetService.removeClosedTabs()
@@ -251,6 +257,14 @@ const noTabSelected = () => selectedCount.value === 0
 const syncTabset = () => {
   console.log("syncing tabset", tabsStore.currentTabsetId)
   TabsetService.syncTabset(tabsStore.currentTabsetId)
+}
+
+const pendingTabsCount = () => {
+  if (tabsStore.pendingTabset?.tabs.length > MAX_TABS_TO_SHOW) {
+    return formatLength(tabsStore.pendingTabset?.tabs.length, 'tab', 'tabs') + ", with " +
+    (1 + tabsStore.pendingTabset?.tabs.length - MAX_TABS_TO_SHOW) + " hidden"
+  }
+  return formatLength(tabsStore.pendingTabset?.tabs.length, 'tab', 'tabs')
 }
 
 const saveDialog = () => {

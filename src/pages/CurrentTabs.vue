@@ -49,6 +49,7 @@ if (layoutFromStorage) {
 
 const selectedTabsetFromStorage = localStorage.getItem("selectedTabset") as unknown as string
 if (selectedTabsetFromStorage) {
+  console.log("selecting tabset from storage")
   TabsetService.selectTabset(selectedTabsetFromStorage)
 }
 

@@ -83,6 +83,33 @@
         <!--          </q-badge>-->
         <!--        </div>-->
 
+        <span class="q-pr-lg" style="cursor: pointer" v-if="featuresStore.firebaseEnabled && auth.user">
+          <q-icon name="person" class="q-mr-md" size="28px"></q-icon>
+          <span>{{ auth.user?.email }}</span>
+          <q-menu
+            touch-position
+          >
+            <q-list dense style="min-width: 100px">
+<!--              <q-item clickable v-close-popup>-->
+<!--                <q-item-section>Account Settings...</q-item-section>-->
+<!--              </q-item>-->
+<!--              <q-item clickable v-close-popup>-->
+<!--                <q-item-section>Installation Settings...</q-item-section>-->
+<!--              </q-item>-->
+<!--              <q-separator/>-->
+              <q-item clickable v-close-popup>
+                <q-item-section @click="logout()">Logout</q-item-section>
+              </q-item>
+            </q-list>
+
+          </q-menu>
+        </span>
+
+        <span class="q-pr-lg" style="cursor: pointer" v-if="featuresStore.firebaseEnabled && !auth.user">
+          <q-icon name="person" class="q-mr-md" size="28px"></q-icon>
+          <span @click="router.push('/login')">Login</span>
+        </span>
+
         <q-icon name="settings" size="2em"
                 class="q-mr-md cursor-pointer"
                 @click="openSettingsPage()"
@@ -128,11 +155,13 @@ import Navigation from "src/components/Navigation.vue"
 import TabsetService from "src/services/TabsetService";
 import {useSearchStore} from "stores/searchStore";
 import {useFeatureTogglesStore} from "stores/featureTogglesStore";
+import {useAuthStore} from "src/stores/auth"
 
 const router = useRouter()
 const tabsStore = useTabsStore()
 const tabGroupsStore = useTabGroupsStore()
 const searchStore = useSearchStore()
+const auth = useAuthStore()
 
 const notificationsStore = useNotificationsStore()
 const featuresStore = useFeatureTogglesStore()
@@ -224,6 +253,18 @@ const createNewTabset = (newName: string) => {
   })
 }
 
+const  logout = () => {
+  console.log("logout!")
 
+  auth.logout()
+    .then((res:any) => {
+      //this.localStorage.remove("skysailcms.uid")
+      //this.byeNotification()
+      this.router.push("/about")
+    })
+    .catch(error => {
+      //this.handleError(error)
+    })
+}
 
 </script>

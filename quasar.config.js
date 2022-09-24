@@ -25,6 +25,7 @@ module.exports = configure(function (/* ctx */) {
     // https://v2.quasar.dev/quasar-cli-vite/boot-files
     boot: [
       'i18n',
+      'constants'
      // 'axios',
      // 'firebase'
     ],
@@ -115,7 +116,9 @@ module.exports = configure(function (/* ctx */) {
         'LocalStorage',
         'Dialog',
         'Meta',
-        'Notify'
+        'Notify',
+        'Loading',
+        'LoadingBar'
       ]
     },
 
