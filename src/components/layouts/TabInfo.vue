@@ -15,6 +15,9 @@
           width="24px"
           height="24px"
           :src="notificationStore.selectedTab.chromeTab?.favIconUrl">
+          <q-tooltip v-if="featuresStore.debugEnabled">
+            {{ notificationStore.selectedTab.chromeTab.favIconUrl }} / {{ notificationStore.selectedTab.chromeTab.id }}  / {{ notificationStore.selectedTab.id }}
+          </q-tooltip>
         </q-img>
       </div>
       <div class="col-10 text-body1 ellipsis">
@@ -37,10 +40,15 @@
       <div class="col-12">
         <div class="row q-ma-lg">
           <div class="col-5">
-            created / updated
+            created
           </div>
           <div class="col-7">
-            {{ date.formatDate(notificationStore.selectedTab.created, 'DD.MM.YYYY HH:mm') }} /
+            {{ date.formatDate(notificationStore.selectedTab.created, 'DD.MM.YYYY HH:mm') }}
+          </div>
+          <div class="col-5">
+            updated
+          </div>
+          <div class="col-7">
             {{ date.formatDate(notificationStore.selectedTab.updated, 'DD.MM.YYYY HH:mm') }}
           </div>
           <div class="col-5">
@@ -62,10 +70,22 @@
             {{ notificationStore.selectedTab.selected }}
           </div>
           <div class="col-5">
-            HIstory
+            History
           </div>
           <div class="col-7">
             {{ notificationStore.selectedTab.history }}
+          </div>
+          <div class="col-5" v-if="notificationStore.selectedTab.bookmarkId">
+            Bookmark ID
+          </div>
+          <div class="col-7" v-if="notificationStore.selectedTab.bookmarkId">
+            {{ notificationStore.selectedTab.bookmarkId }}
+          </div>
+          <div class="col-5" v-if="notificationStore.selectedTab.bookmarkUrl">
+            Bookmark URL
+          </div>
+          <div class="col-7" v-if="notificationStore.selectedTab.bookmarkUrl">
+            {{ notificationStore.selectedTab.bookmarkUrl }}
           </div>
         </div>
       </div>
@@ -80,8 +100,11 @@ import {date, useQuasar} from "quasar";
 import {useNotificationsStore} from "stores/notificationsStore";
 import {ref, watchEffect} from "vue";
 import TabsetService from "src/services/TabsetService";
+import {useFeatureTogglesStore} from "stores/featureTogglesStore";
 
 const notificationStore = useNotificationsStore()
+const featuresStore = useFeatureTogglesStore()
+
 const thumbnail = ref('')
 
 watchEffect(() => {

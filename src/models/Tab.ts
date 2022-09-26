@@ -18,6 +18,8 @@ export class Tab {
   history: string[] = []
   selected: boolean = false
   name: string | undefined
+  bookmarkUrl: string | undefined
+  bookmarkId: string | undefined
 
   constructor(public id: string, chromeTab: chrome.tabs.Tab) {
     this.created = new Date().getTime()
@@ -32,21 +34,6 @@ export class Tab {
     this.history = []
     this.name = undefined
   }
-
-  // public equalForSync(other: Tab) : boolean {
-  //   if (this.id !== other.id) {
-  //     return false;
-  //   }
-  //   if (this.chromeTab !== other.chromeTab) {
-  //     console.log("mismatch", this.chromeTab, other.chromeTab)
-  //     return false
-  //   }
-  //   if (this.history !== other.history) {
-  //     return false
-  //
-  //   }
-  //   return true
-  // }
 
   setHistoryFrom(existingTab: Tab) {
     if (existingTab.history) {
@@ -68,16 +55,8 @@ export class Tab {
     return true //this.history && this.history.length > 0
   }
 
-  setOnlySelected() {
-
-  }
-
   public setName(newName: string): void {
     // TODO validate
     this.name = newName
   }
 }
-
-// constructor(public ip: string) {
-//   // note no explicit assignment
-// }

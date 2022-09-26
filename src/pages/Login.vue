@@ -2,7 +2,7 @@
   <q-page padding class="window-height window-width column justify-center items-center fullimageBackground">
     <h6>Skysail CMS</h6>
     <div id="firebaseui-auth-container"></div>
-    <div id="loader">Loading...</div>
+    <div id="loader"></div>
   </q-page>
 </template>
 
@@ -42,7 +42,7 @@ export default defineComponent({
         EmailAuthProvider.PROVIDER_ID,
         GoogleAuthProvider.PROVIDER_ID
       ],
-      signInSuccessUrl: '/www/index.html#/',
+      signInSuccessUrl:  (process.env.MODE === 'bex') ? '/www/index.html#/' : "#/tabset",
       callbacks: {
         signInSuccessWithAuthResult: this.signInAttempSuccessful,
       },
@@ -51,6 +51,8 @@ export default defineComponent({
   },
   methods: {
     signInAttempSuccessful(authResult: any, redirectUrl: any): boolean {
+      console.log("success...", authResult.user)
+      console.log("success...", redirectUrl)
       //alert('Sign in successful. See dev console for authorization response')
       this.authStore.setUser(authResult.user)
       TabsetService.loadTabsetsFromFirebase()

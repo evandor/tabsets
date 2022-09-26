@@ -280,7 +280,7 @@ const saveDialog = () => {
     persistent: true
   }).onOk((name: string) => {
     console.log('>>>> saving', name)
-    TabsetService.saveOrReplace(name, tabsStore.tabs)
+    TabsetService.saveOrReplaceFromChromeTabs(name, tabsStore.tabs)
 
   }).onCancel(() => {
     //console.log('>>>> Cancel')

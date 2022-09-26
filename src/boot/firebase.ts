@@ -11,6 +11,7 @@ import * as firebaseui from 'firebaseui'
 // more info on params: https://v2.quasar.dev/quasar-cli/boot-files
 //export default boot(async (/* { app, router, ... } */) => {
 const firebaseConfig = {
+  projectId: process.env.FIREBASE_PROJECT_ID,
   apiKey: process.env.FIREBASE_API_KEY,
   authDomain: process.env.FIREBASE_AUTH_DOMAIN
 };

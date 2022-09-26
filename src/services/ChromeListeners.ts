@@ -46,22 +46,10 @@ class ChromeListeners {
     if (maybeTab) {
       console.log(`onCreated: tab ${tab.id}: updating existing chromeTab.id: ${maybeTab.chromeTab.id} -> ${tab.id}`)
       maybeTab.chromeTab.id = tab.id
+      maybeTab.chromeTab.windowId = tab.windowId
+      TabsetService.saveCurrentTabset()
       return
     }
-    // if (tab.openerTabId === tabsStore.ownTabId) {
-    //   return
-    // }
-    // add to current tabset if not there yet
-    // const currentTabset: Tabset = tabsStore.tabsets.get(tabsStore.currentTabsetId) || new Tabset("", "", [])
-    // const found = _.find(currentTabset.tabs, t => t.chromeTab.url === tab.url)
-    // if (!found) {
-    //   const newTab = new Tab(uid(), tab)
-    //   newTab.status = TabStatus.CREATED
-    //   currentTabset.tabs.push(newTab)
-    //   if (!this.inProgress) {
-    //     tabsStore.loadTabs('onCreated');
-    //   }
-    // }
     tabsStore.pendingTabset.tabs.push(new Tab(uid(), tab))
   }
 

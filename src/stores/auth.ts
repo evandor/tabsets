@@ -26,7 +26,7 @@ export const useAuthStore = defineStore('auth', {
       console.log("currentUser", currentUser)
       if (currentUser) {
         try {
-          const t = await currentUser.getIdToken(true)
+          const t = await currentUser.getIdToken(  true)
           //this.token = t
           return t
         } catch (error) {

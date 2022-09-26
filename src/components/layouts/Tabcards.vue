@@ -58,7 +58,7 @@
           <!--          <q-btn flat round color="positive" icon="save" @click="saveTab(tab)">-->
           <!--            <q-tooltip>Save this tab to your current context</q-tooltip>-->
           <!--          </q-btn>-->
-          <q-btn flat round color="red" icon="delete_outline" @click.stop="closeTab(tab)">
+          <q-btn flat round color="red" size="11px" icon="delete_outline" @click.stop="closeTab(tab)">
             <q-tooltip>Delete this tab from this list</q-tooltip>
           </q-btn>
 

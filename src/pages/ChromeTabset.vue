@@ -202,7 +202,7 @@ const newTabsetDialogWarning = () => {
 
 const saveTabset = () => {
   const tsName = newTabsetName.value
-  TabsetService.saveOrReplace(tsName, tabsStore.tabs, merge.value == 'true')
+  TabsetService.saveOrReplaceFromChromeTabs(tsName, tabsStore.tabs, merge.value == 'true')
     .then(result => {
       //@ts-ignore
       const replaced = result.replaced

@@ -9,12 +9,16 @@ import {useQuasar} from "quasar";
 import tabsetService from "src/services/TabsetService";
 import backendApi from "src/services/BackendApi";
 import {useFeatureTogglesStore} from "stores/featureTogglesStore";
+import {useBookmarksStore} from "stores/bookmarksStore";
+import {useSyncStore} from "stores/syncStore";
 
 backendApi.init(process.env.BACKEND_URL || "unknown", null)
 
 const tabsStore = useTabsStore()
 const tabGroupsStore = useTabGroupsStore()
 const featureTogglesStore = useFeatureTogglesStore()
+const bookmarksStore = useBookmarksStore()
+const syncStore = useSyncStore()
 
 featureTogglesStore.initialize(useQuasar().localStorage);
 
@@ -23,6 +27,10 @@ tabsStore.initListeners();
 
 tabGroupsStore.initialize();
 tabGroupsStore.initListeners();
+
+bookmarksStore.init()
+
+syncStore.init()
 
 tabsetService.setLocalStorage(useQuasar().localStorage)
 tabsetService.init()

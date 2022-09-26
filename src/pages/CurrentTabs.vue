@@ -27,6 +27,7 @@ import {Tab, TabStatus} from "src/models/Tab";
 import EditTabsetComponent from "components/EditTabsetComponent.vue";
 import TabsetList from "components/TabsetList.vue";
 import TabsetThumbnails from "components/TabsetThumbnails.vue";
+import {useAuthStore} from "stores/auth";
 
 const route = useRoute();
 const router = useRouter();
@@ -36,10 +37,6 @@ const tabGroupsStore = useTabGroupsStore()
 const tabsetname = ref(tabsStore.currentTabsetName)
 const $q = useQuasar()
 
-// if (tabsStore.tabsets.size < 1) {
-//   router.push("/about")
-// }
-
 const layout = ref('grid')
 
 const layoutFromStorage = localStorage.getItem("layout")
@@ -47,10 +44,19 @@ if (layoutFromStorage) {
   layout.value = layoutFromStorage.toString()
 }
 
-const selectedTabsetFromStorage = localStorage.getItem("selectedTabset") as unknown as string
-if (selectedTabsetFromStorage) {
-  console.log("selecting tabset from storage")
-  TabsetService.selectTabset(selectedTabsetFromStorage)
+const auth = useAuthStore()
+if (auth.isAuthenticated && auth.user) {
+  const selectedTabsetFromStorage = localStorage.getItem(auth.user['uid'] + ".selectedTabset") as unknown as string
+  if (selectedTabsetFromStorage) {
+    console.log("selecting tabset from storage")
+    TabsetService.selectTabset(selectedTabsetFromStorage)
+  }
+} else {
+  const selectedTabsetFromStorage = localStorage.getItem("selectedTabset") as unknown as string
+  if (selectedTabsetFromStorage) {
+    console.log("selecting tabset from storage")
+    TabsetService.selectTabset(selectedTabsetFromStorage)
+  }
 }
 
 function unpinnedNoGroup() {
@@ -87,7 +93,6 @@ const setAsContext = () => TabsetService.setContext(tabsStore.currentTabsetId)
 const formatLength = (length: number, singular: string, plural: string) => {
   return length > 1 ? length + ' ' + plural : length + ' ' + singular
 }
-
 
 
 const deleteDialog = () => {

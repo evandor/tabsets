@@ -91,7 +91,7 @@ const goHome = () => router.push("/about")
 const openSettingsPage = () => router.push("/settings")
 
 const createNewTabset = (newName: string) => {
-  TabsetService.saveOrReplace(newName, [], true)
+  TabsetService.saveOrReplaceFromChromeTabs(newName, [], true)
     .then((result: object) => {
       // populate pending set
       TabsetService.createPendingFromBrowserTabs()

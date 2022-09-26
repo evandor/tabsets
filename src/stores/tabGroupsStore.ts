@@ -27,17 +27,21 @@ export const useTabGroupsStore = defineStore('tabGroups', {
       this.loadTabGroups()
     },
     loadTabGroups() {
-      queryTabGroups().then(tgs => this.tabGroups = tgs);
+      if (process.env.MODE === 'bex') {
+        queryTabGroups().then(tgs => this.tabGroups = tgs);
+      }
     },
     initListeners() {
-      // @ts-ignore
-      chrome.tabGroups.onCreated.addListener((tabGroup: chrome.tabGroups.TabGroup) => ChromeTabGroupsListeners.onCreated(tabGroup))
-      // @ts-ignore
-      chrome.tabGroups.onUpdated.addListener((tabGroup: chrome.tabGroups.TabGroup) => ChromeTabGroupsListeners.onUpdated(tabGroup))
-      // @ts-ignore
-      chrome.tabGroups.onRemoved.addListener((tabGroup: chrome.tabGroups.TabGroup) => ChromeTabGroupsListeners.onRemoved(tabGroup))
-      // @ts-ignore
-      chrome.tabGroups.onMoved.addListener((tabGroup: chrome.tabGroups.TabGroup) => ChromeTabGroupsListeners.onMoved(tabGroup))
+      if (process.env.MODE === 'bex') {
+        // @ts-ignore
+        chrome.tabGroups.onCreated.addListener((tabGroup: chrome.tabGroups.TabGroup) => ChromeTabGroupsListeners.onCreated(tabGroup))
+        // @ts-ignore
+        chrome.tabGroups.onUpdated.addListener((tabGroup: chrome.tabGroups.TabGroup) => ChromeTabGroupsListeners.onUpdated(tabGroup))
+        // @ts-ignore
+        chrome.tabGroups.onRemoved.addListener((tabGroup: chrome.tabGroups.TabGroup) => ChromeTabGroupsListeners.onRemoved(tabGroup))
+        // @ts-ignore
+        chrome.tabGroups.onMoved.addListener((tabGroup: chrome.tabGroups.TabGroup) => ChromeTabGroupsListeners.onMoved(tabGroup))
+      }
     }
   }
 });

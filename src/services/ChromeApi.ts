@@ -56,6 +56,9 @@ class ChromeApi {
   }
 
   async getCurrentTab(): Promise<chrome.tabs.Tab> {
+    if (process.env.MODE !== 'bex') {
+      return Promise.reject("not in bex mode")
+    }
     let queryOptions = {active: true, lastFocusedWindow: true};
     // @ts-ignore
     let [tab] = await chrome.tabs.query(queryOptions);

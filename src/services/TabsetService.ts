@@ -10,6 +10,8 @@ import backendApi from "src/services/BackendApi";
 import {useFeatureTogglesStore} from "stores/featureTogglesStore";
 import {useAuthStore} from "stores/auth";
 import {INDEX_DB_NAME} from "boot/constants";
+import {AxiosResponse} from "axios";
+import {SyncMode, useSyncStore} from "stores/syncStore";
 
 class TabsetService {
 
@@ -72,8 +74,46 @@ class TabsetService {
    * @param tabs an array of Chrome tabs.
    * @param merge if true, the old values and the new ones will be merged.
    */
-  async saveOrReplace(name: string, tabs: chrome.tabs.Tab[], merge: boolean = false): Promise<object> {
+  async saveOrReplaceFromChromeTabs(name: string, chromeTabs: chrome.tabs.Tab[], merge: boolean = false): Promise<object> {
     const tabsStore = useTabsStore()
+    const tabs = _.map(chromeTabs, t => new Tab(uid(), t))
+    const result = await tabsStore.updateOrCreateTabset(name, tabs, merge)
+    if (result && result.tabset) {
+      await this.saveTabset(result.tabset)
+      console.log("setting current tabset to ", result.tabset.id)
+      // tabsStore.currentTabsetId = result.tabset.id
+      this.selectTabset(result.tabset.id)
+    }
+    return {
+      replaced: result.replaced,
+      merged: merge
+    }
+  }
+
+  async saveOrReplaceFromBookmarks(name: string, bms: chrome.bookmarks.BookmarkTreeNode[], merge: boolean = false): Promise<object> {
+    const tabsStore = useTabsStore()
+    const tabs = _.map(bms, c => {
+      const tab = new Tab(uid(), null as unknown as chrome.tabs.Tab)
+      tab.bookmarkUrl = c.url
+      tab.bookmarkId = c.id
+      tab.created = c.dateAdded || 0
+      tab.chromeTab = {
+        active: false,
+        discarded: true,
+        // @ts-ignore
+        groupId: -1,
+        autoDiscardable: true,
+        index: 0,
+        highlighted: false,
+        title: c.title,
+        pinned: false,
+        url: c.url,
+        windowId: 0,
+        incognito: false,
+        selected: false
+      }
+      return tab
+    })
     const result = await tabsStore.updateOrCreateTabset(name, tabs, merge)
     if (result && result.tabset) {
       await this.saveTabset(result.tabset)
@@ -95,7 +135,8 @@ class TabsetService {
       //this.localStorage.set("tabsets.tabset." + tabset.id, tabset)
       await this.db.put('tabsets', JSON.stringify(tabset), tabset.id);
 
-      if (useFeatureTogglesStore().firebaseEnabled) {
+      if (useFeatureTogglesStore().firebaseEnabled && useSyncStore().syncMode === SyncMode.ACTIVE) {
+        console.log("saving tabset to firebase")
         backendApi.saveTabset(tabset)
       }
       //localStorage.setItem("tabsets.context", tabset.id)
@@ -230,7 +271,12 @@ class TabsetService {
     const tabsStore = useTabsStore()
     this.resetSelectedTabs()
     tabsStore.currentTabsetId = tabsetId;
-    localStorage.setItem("selectedTabset", tabsetId)
+    const auth = useAuthStore()
+    if (auth.isAuthenticated && auth.user) {
+      localStorage.setItem(auth.user['uid'] + ".selectedTabset", tabsetId)
+    } else {
+      localStorage.setItem("selectedTabset", tabsetId)
+    }
   }
 
   saveAllPendingTabs(onlySelected: boolean = false) {
@@ -357,7 +403,7 @@ class TabsetService {
     this.saveTabset(ignoredTS)
   }
 
-  syncTabset(tabsetId: string) {
+  syncTabset(tabsetId: string): Promise<AxiosResponse<string>> {
     const tabsStore = useTabsStore()
     const ts = tabsStore.getTabset(tabsetId)
     if (ts) {
@@ -367,7 +413,7 @@ class TabsetService {
       // console.log("cloned ts", ts, clonedTs)
       // clonedTs.status = TabsetStatus.DEFAULT
       // clonedTs.persistence = TabsetPersistence.FIREBASE
-      backendApi.saveTabset(ts)
+      return backendApi.saveTabset(ts)
         .then(res => {
           //ts.persistence = TabsetPersistence.FIREBASE
           // ts.status = TabsetStatus.UNMOUNTED
@@ -375,11 +421,43 @@ class TabsetService {
           this.delete(ts.id)
           this.loadTabsetsFromFirebase()
           console.log("got backend answer: ", res)
+          return res
         })
-        .catch(err => {
-          console.error("err", err)
-        })
+        // .catch(err => {
+        //   console.error("err", err)
+        // })
     }
+    return Promise.reject("tabset '" + tabsetId + "' not found")
+
+  }
+
+  unsyncTabset(tabsetId: string): Promise<AxiosResponse<string>> {
+    const tabsStore = useTabsStore()
+    const ts = tabsStore.getTabset(tabsetId)
+    if (ts) {
+      ts.persistence = TabsetPersistence.INDEX_DB
+      this.saveTabset(ts)
+      // const backend = initializeBackendApi(process.env.BACKEND_URL || "unknown", null)
+
+      //const clonedTs = JSON.parse(JSON.stringify(ts))
+      // console.log("cloned ts", ts, clonedTs)
+      // clonedTs.status = TabsetStatus.DEFAULT
+      // clonedTs.persistence = TabsetPersistence.FIREBASE
+      return backendApi.deleteTabset(tabsetId)
+        .then(res => {
+          //ts.persistence = TabsetPersistence.FIREBASE
+          // ts.status = TabsetStatus.UNMOUNTED
+          // ts.persistence = TabsetPersistence.FIREBASE
+          //this.delete(ts.id)
+          this.loadTabsetsFromFirebase()
+          console.log("got backend answer: ", res)
+          return res
+        })
+      // .catch(err => {
+      //   console.error("err", err)
+      // })
+    }
+    return Promise.reject("tabset '" + tabsetId + "' not found")
 
   }
 
