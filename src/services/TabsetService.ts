@@ -132,27 +132,26 @@ class TabsetService {
       return
     }
     if (tabset.id) {
-      //this.localStorage.set("tabsets.tabset." + tabset.id, tabset)
-      await this.db.put('tabsets', JSON.stringify(tabset), tabset.id);
-
-      if (useFeatureTogglesStore().firebaseEnabled && useSyncStore().syncMode === SyncMode.ACTIVE) {
+      if (useFeatureTogglesStore().firebaseEnabled && useAuthStore().isAuthenticated && useSyncStore().syncMode === SyncMode.ACTIVE) {
         console.log("saving tabset to firebase")
         backendApi.saveTabset(tabset)
+      } else {
+        await this.db.put('tabsets', JSON.stringify(tabset), tabset.id);
       }
       //localStorage.setItem("tabsets.context", tabset.id)
       return
     }
     console.error("error - why here?")
-    const existingId = this.findInLocalStorage(tabset.name)
-    if (existingId) {
-      console.log("updating tabset", existingId)
-      //this.localStorage.set("tabsets.tabset." + existingId, tabset)
-      await this.db.put('tabsets', JSON.stringify(tabset), existingId);
-    } else {
-      console.log(`did not find id for tabset '${tabset.name}', creating new`)
-      this.localStorage.set("tabset.tabset." + uid(), tabset)
-      await this.db.put('tabsets', JSON.stringify(tabset), uid());
-    }
+    // const existingId = this.findInLocalStorage(tabset.name)
+    // if (existingId) {
+    //   console.log("updating tabset", existingId)
+    //   //this.localStorage.set("tabsets.tabset." + existingId, tabset)
+    //   await this.db.put('tabsets', JSON.stringify(tabset), existingId);
+    // } else {
+    //   console.log(`did not find id for tabset '${tabset.name}', creating new`)
+    //   this.localStorage.set("tabset.tabset." + uid(), tabset)
+    //   await this.db.put('tabsets', JSON.stringify(tabset), uid());
+    // }
   }
 
   saveCurrentTabset() {
