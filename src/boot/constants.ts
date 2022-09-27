@@ -1,7 +1,7 @@
 import { boot } from 'quasar/wrappers'
 
 const MAX_TABS_TO_SHOW = 12
-const INDEX_DB_NAME= 'db-0.1.0'
+const INDEX_DB_NAME= 'db'
 
 export default boot(({app}) => {
   //app.config.globalProperties.$

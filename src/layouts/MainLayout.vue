@@ -288,7 +288,7 @@ const searchBox = ref(null)
 useMeta(() => {
   return {
     // @ts-ignore
-    title: tabsStore.title
+    title: 'Tabsets Extension ' + appVersion
   }
 })
 

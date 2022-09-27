@@ -1,4 +1,9 @@
+check tabsets-backend
+
+check db version in constants.ts (should be "db")
+
 build
+
 
 mv zip to releases folder
 
