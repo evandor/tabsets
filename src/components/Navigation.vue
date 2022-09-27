@@ -40,9 +40,9 @@
     </q-item-label>
 
     <div class="text-body2 q-pa-lg" v-if="tabsStore.tabsets.size === 0">
-      <transition>
-        No Tabsets
-      </transition>
+      <q-banner rounded dense class="bg-amber-1">
+        No Tabsets (yet)
+      </q-banner>
     </div>
 
     <q-item

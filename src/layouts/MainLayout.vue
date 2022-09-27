@@ -349,6 +349,7 @@ const createNewTabset = () => {
       // populate pending set
       TabsetService.createPendingFromBrowserTabs()
 
+      newTabsetName.value = ''
 
       //@ts-ignore
       const replaced = result.replaced
