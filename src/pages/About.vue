@@ -35,15 +35,18 @@
       </div>
 
       <div class="text-body1 q-ma-md">
-        Click on 'NEW TABSET' in the upper right page.
+        Click on the plus sign on the lower right page.
       </div>
     </div>
+
+    <fab></fab>
   </q-page>
 
 </template>
 
 <script setup lang="ts">
 import {useTabsStore} from "src/stores/tabsStore"
+import Fab from "src/components/Fab.vue"
 
 const tabsStore = useTabsStore()
 </script>

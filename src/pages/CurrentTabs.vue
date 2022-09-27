@@ -11,7 +11,13 @@
       <edit-tabset-component></edit-tabset-component>
     </div>
 
+    <fab></fab>
+
+
+
   </q-page>
+
+
 
 </template>
 
@@ -25,6 +31,7 @@ import {useTabGroupsStore} from "src/stores/tabGroupsStore";
 import TabsetService from "src/services/TabsetService";
 import {Tab, TabStatus} from "src/models/Tab";
 import EditTabsetComponent from "components/EditTabsetComponent.vue";
+import Fab from "components/Fab.vue";
 import TabsetList from "components/TabsetList.vue";
 import TabsetThumbnails from "components/TabsetThumbnails.vue";
 import {useAuthStore} from "src/stores/auth";
@@ -34,7 +41,8 @@ const router = useRouter();
 const localStorage = useQuasar().localStorage
 const tabsStore = useTabsStore()
 const tabGroupsStore = useTabGroupsStore()
-const tabsetname = ref(tabsStore.currentTabsetName)
+
+
 const $q = useQuasar()
 
 const layout = ref('grid')
@@ -72,11 +80,13 @@ function tabsForGroup(groupId: number) {
     (t: any) => t.groupId === groupId)
 }
 
-const update = (tabsetIdent: object) => {
-  console.log("selected tabset now: ", tabsetIdent)
-  tabsetname.value = tabsetIdent['label' as keyof object]
-  tabsStore.selectCurrentTabset(tabsetIdent['value' as keyof object])
-}
+// const update = (tabsetIdent: object) => {
+//   console.log("selected tabset now: ", tabsetIdent)
+//   tabsetname.value = tabsetIdent['label' as keyof object]
+//   tabsStore.selectCurrentTabset(tabsetIdent['value' as keyof object])
+// }
+
+
 
 const tabsetOptions = () => {
   return _.map([...tabsStore.tabsets.values()], ts => {
@@ -86,9 +96,6 @@ const tabsetOptions = () => {
     }
   })
 }
-
-const unsetContext = () => TabsetService.unsetContext()
-const setAsContext = () => TabsetService.setContext(tabsStore.currentTabsetId)
 
 const formatLength = (length: number, singular: string, plural: string) => {
   return length > 1 ? length + ' ' + plural : length + ' ' + singular

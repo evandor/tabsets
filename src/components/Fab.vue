@@ -1,0 +1,93 @@
+<template>
+  <q-page-sticky position="bottom-right" :offset="[60, 60]">
+    <q-fab
+      icon="add"
+      direction="up"
+      color="accent"
+    >
+      <q-fab-action @click="showNewTabsetDialog = true" style="width:170px" color="primary" icon="tabs" label="New Tabset">
+        <q-tooltip>Start a new tabset by assigning your open tabs</q-tooltip>
+      </q-fab-action>
+    </q-fab>
+  </q-page-sticky>
+
+  <q-dialog v-model="showNewTabsetDialog">
+    <q-card style="min-width: 350px">
+      <q-card-section>
+        <div class="text-h6">Save open Tabs as Tabset</div>
+      </q-card-section>
+      <q-card-section>
+        <div class="text-body">Please provide a name for the new tabset</div>
+      </q-card-section>
+
+      <q-card-section class="q-pt-none">
+        <div class="text-body">New Tabset's name:</div>
+        <q-input dense v-model="newTabsetName" autofocus @keyup.enter="prompt = false"/>
+        <div class="text-body2 text-warning">{{ newTabsetDialogWarning() }}</div>
+      </q-card-section>
+
+      <q-card-actions align="right" class="text-primary">
+        <q-btn flat label="Cancel" v-close-popup/>
+        <q-btn flat :label="newTabsetNameExists ? 'Alter Tabset' : 'Create new Tabset'"
+               :disable="newTabsetName.trim().length === 0 || newTabsetName.trim() === 'current'" v-close-popup
+               @click="createNewTabset()"/>
+      </q-card-actions>
+    </q-card>
+  </q-dialog>
+
+</template>
+
+<script setup lang="ts">
+
+import {ref} from "vue";
+import TabsetService from "src/services/TabsetService";
+import {useTabsStore} from "stores/tabsStore";
+import {useQuasar} from "quasar";
+import {useRouter} from "vue-router";
+
+const tabsStore = useTabsStore()
+const router = useRouter()
+const $q = useQuasar()
+
+const newTabsetName = ref('')
+const showNewTabsetDialog = ref(false)
+const newTabsetNameExists = ref(false)
+
+const createNewTabset = () => {
+  TabsetService.saveOrReplaceFromChromeTabs(newTabsetName.value, [], true)
+    .then((result: object) => {
+      // populate pending set
+      TabsetService.createPendingFromBrowserTabs()
+
+      newTabsetName.value = ''
+
+      //@ts-ignore
+      const replaced = result.replaced
+      //@ts-ignore
+      const merged = result.merged
+      let message = 'Tabset ' + newTabsetName.value + ' created successfully'
+      if (replaced && merged) {
+        message = 'Tabset ' + newTabsetName.value + ' was updated'
+      } else if (replaced) {
+        message = 'Tabset ' + newTabsetName.value + ' was overwritten'
+      }
+      router.push("/tabset")
+      $q.notify({
+        message: message,
+        type: 'positive'
+      })
+    }).catch((ex: any) => {
+    console.error("ex", ex)
+    $q.notify({
+      message: 'There was a problem creating the tabset ' + newTabsetName.value,
+      type: 'warning',
+    })
+
+  })
+}
+
+const newTabsetDialogWarning = () => {
+  return (tabsStore.nameExistsInContextTabset(newTabsetName.value)) ?
+    "Tabset already exists" : ""
+}
+</script>

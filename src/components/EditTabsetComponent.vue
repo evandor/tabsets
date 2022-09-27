@@ -33,13 +33,13 @@
   <div class="justify-center row" v-if="tabsStore.pendingTabset?.tabs.length > 0">
 
     <span v-if="TabsetService.getSelectedPendingTabs().length === 0">
-      <q-btn icon="arrow_downward" label="Save all" class="q-mx-lg" color="positive"
+      <q-btn icon="file_download" label="Save all" class="q-mx-lg" color="positive"
              @click="saveAllPendingTabs()"></q-btn>
-      <q-btn icon="clear" label="Remove all" class="q-mx-lg" color="negative" @click="removeAllPendingTabs()"></q-btn>
+      <q-btn icon="delete_outline" label="Remove all" class="q-mx-lg" color="negative" @click="removeAllPendingTabs()"></q-btn>
     </span>
     <span v-else>
-      <q-btn label="save selected" class="q-mx-lg" @click="saveSelectedPendingTabs()"></q-btn>
-       <q-btn label="remove selected" class="q-mx-lg" @click="removeSelectedPendingTabs()"></q-btn>
+      <q-btn icon="file_download" label="save selected" class="q-mx-lg" @click="saveSelectedPendingTabs()"></q-btn>
+       <q-btn icon="delete_outline" label="remove selected" class="q-mx-lg" @click="removeSelectedPendingTabs()"></q-btn>
     </span>
   </div>
 

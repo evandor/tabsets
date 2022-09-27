@@ -191,7 +191,7 @@ function togglePin(tabId: number) {
 
 
 function cardStyle(tab: Tab) {
-  console.log("styling tab", tab)
+  //console.log("styling tab", tab)
   //const height = props.showActions ? "130px" : "96px"
   let borderColor = ""
   // if (TabStatus.CREATED === tab.status) {

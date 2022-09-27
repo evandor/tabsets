@@ -23,10 +23,6 @@
 
         <q-space/>
 
-        <!--        <q-space/>-->
-        <!--        <div v-if="tabsStore.active" class="q-mr-md">Layout</div>-->
-        <!--        <q-icon name="grid_on" class="q-mr-md"></q-icon>&nbsp;-->
-        <!--        <q-icon name="list"></q-icon>-->
 
         <q-space/>
 
@@ -42,36 +38,9 @@
           {{ tabsStore.pendingTabset?.tabs.length }} unassigned tab(s)
         </div>
 
-<!--        <q-btn outline rounded color="secondary" label="new tabset" class="q-mr-lg">-->
-<!--          <q-popup-edit-->
-<!--            :model-value="newTabsetName"-->
-<!--            v-slot="scope"-->
-<!--            :validate="val => val.trim().length > 0"-->
-<!--            @update:model-value="val => createNewTabset( val)">-->
-<!--            <q-input-->
-<!--              v-model="scope.value"-->
-<!--              dense autofocus-->
-<!--              hint="new tabset's name"-->
-<!--              @keyup.enter="scope.set"-->
-<!--              :rules="[val => scope.validate(val) || 'More than 1 character required']">-->
-<!--              <template v-slot:after>-->
-<!--                <q-btn-->
-<!--                  flat dense color="negative" icon="cancel"-->
-<!--                  @click.stop.prevent="scope.cancel"-->
-<!--                />-->
-
-<!--                <q-btn-->
-<!--                  flat dense color="positive" icon="check_circle"-->
-<!--                  @click.stop.prevent="scope.set"-->
-<!--                  :disable="scope.validate(scope.value) === false || scope.initialValue === scope.value"-->
-<!--                />-->
-<!--              </template>-->
-<!--            </q-input>-->
-<!--          </q-popup-edit>-->
+<!--        <q-btn outline rounded color="secondary" label="new tabset" class="q-mr-lg" @click="showNewTabsetDialog = true">-->
+<!--          <q-tooltip>Start a new tabset by assigning your open tabs</q-tooltip>-->
 <!--        </q-btn>-->
-        <q-btn outline rounded color="secondary" label="new tabset" class="q-mr-lg" @click="showNewTabsetDialog = true">
-          <q-tooltip>Start a new tabset by assigning your open tabs</q-tooltip>
-        </q-btn>
 
         <q-toggle
           v-if="syncStore.showSyncMode"
@@ -96,13 +65,6 @@
             touch-position
           >
             <q-list dense style="min-width: 100px">
-<!--              <q-item clickable v-close-popup>-->
-              <!--                <q-item-section>Account Settings...</q-item-section>-->
-              <!--              </q-item>-->
-              <!--              <q-item clickable v-close-popup>-->
-              <!--                <q-item-section>Installation Settings...</q-item-section>-->
-              <!--              </q-item>-->
-              <!--              <q-separator/>-->
               <q-item clickable v-close-popup>
                 <q-item-section @click="logout()">Logout</q-item-section>
               </q-item>
@@ -146,33 +108,6 @@
 
 
   </q-layout>
-
-  <q-dialog v-model="showNewTabsetDialog">
-    <q-card style="min-width: 350px">
-      <q-card-section>
-        <div class="text-h6">Save open Tabs as Tabset</div>
-      </q-card-section>
-      <q-card-section>
-        <div class="text-body">Please provide a name for the new tabset</div>
-      </q-card-section>
-
-      <q-card-section class="q-pt-none">
-        <div class="text-body">New Tabset's name:</div>
-        <q-input dense v-model="newTabsetName" autofocus @keyup.enter="prompt = false"/>
-        <!--        <q-checkbox v-model="clearTabs" label="close current Tabs"/>-->
-        <div class="text-body2 text-warning">{{ newTabsetDialogWarning() }}</div>
-<!--        <q-radio v-model="merge" val="true" label="Merge" v-if="tabNameExists()"></q-radio>-->
-<!--        <q-radio v-model="merge" val="false" label="Overwrite" v-if="tabNameExists()"></q-radio>-->
-      </q-card-section>
-
-      <q-card-actions align="right" class="text-primary">
-        <q-btn flat label="Cancel" v-close-popup/>
-        <q-btn flat :label="newTabsetNameExists ? 'Alter Tabset' : 'Create new Tabset'"
-               :disable="newTabsetName.trim().length === 0 || newTabsetName.trim() === 'current'" v-close-popup
-               @click="createNewTabset()"/>
-      </q-card-actions>
-    </q-card>
-  </q-dialog>
 
   <q-dialog v-model="syncTabsetsDialog">
     <q-card style="min-width: 350px">
@@ -255,7 +190,7 @@ const showBookmarksDrawer = ref(false)
 
 const syncTabsetsDialog = ref(false)
 const unsyncTabsetsDialog = ref(false)
-const showNewTabsetDialog = ref(false)
+// const showNewTabsetDialog = ref(false)
 const syncModel = ref(false)
 
 const notificationsStore = useNotificationsStore()
@@ -340,47 +275,6 @@ const goHome = () => router.push("/about")
 const openSettingsPage = () => router.push("/settings")
 
 const tabNameExists = () => tabsStore.nameExistsInContextTabset(newTabsetName.value)
-
-
-
-const createNewTabset = () => {
-  TabsetService.saveOrReplaceFromChromeTabs(newTabsetName.value, [], true)
-    .then((result: object) => {
-      // populate pending set
-      TabsetService.createPendingFromBrowserTabs()
-
-      newTabsetName.value = ''
-
-      //@ts-ignore
-      const replaced = result.replaced
-      //@ts-ignore
-      const merged = result.merged
-      let message = 'Tabset ' + newTabsetName.value + ' created successfully'
-      if (replaced && merged) {
-        message = 'Tabset ' + newTabsetName.value + ' was updated'
-      } else if (replaced) {
-        message = 'Tabset ' + newTabsetName.value + ' was overwritten'
-      }
-      router.push("/tabset")
-      $q.notify({
-        message: message,
-        type: 'positive'
-      })
-    }).catch((ex: any) => {
-    console.error("ex", ex)
-    $q.notify({
-      message: 'There was a problem creating the tabset ' + newTabsetName.value,
-      type: 'warning',
-    })
-
-  })
-}
-
-const newTabsetDialogWarning = () => {
-  return (tabsStore.nameExistsInContextTabset(newTabsetName.value)) ?
-     "Tabset already exists" : ""
-}
-
 
 const startSync = () => {
   $q.loadingBar.start()
