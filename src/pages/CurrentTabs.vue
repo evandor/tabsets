@@ -27,7 +27,7 @@ import {Tab, TabStatus} from "src/models/Tab";
 import EditTabsetComponent from "components/EditTabsetComponent.vue";
 import TabsetList from "components/TabsetList.vue";
 import TabsetThumbnails from "components/TabsetThumbnails.vue";
-import {useAuthStore} from "stores/auth";
+import {useAuthStore} from "src/stores/auth";
 
 const route = useRoute();
 const router = useRouter();

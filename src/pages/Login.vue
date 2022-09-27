@@ -10,7 +10,7 @@
 import {defineComponent} from "vue";
 import {EmailAuthProvider, GoogleAuthProvider} from "firebase/auth";
 import {ui} from "boot/firebase";
-import {useAuthStore} from "stores/auth";
+import {useAuthStore} from "src/stores/auth";
 import TabsetService from "src/services/TabsetService";
 //import {auth} from "src/store/auth";
 //import {useQuasar} from "quasar";

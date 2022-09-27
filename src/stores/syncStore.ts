@@ -1,10 +1,5 @@
 import {defineStore} from 'pinia';
-import ChromeBookmarkListeners from "src/services/ChromeBookmarkListeners";
-import {useFeatureTogglesStore} from "stores/featureTogglesStore";
-import _ from "lodash";
-import {TreeNode} from "src/models/Tree";
-import {Tab} from "src/models/Tab";
-import {useAuthStore} from "stores/auth";
+import {useAuthStore} from "src/stores/auth";
 
 
 export enum SyncMode {
@@ -17,10 +12,10 @@ export enum SyncMode {
 function getSyncMode() {
   const auth = useAuthStore()
   if (auth.isAuthenticated && auth.user) {
-    console.log("reading syncMode for user", auth.user['uid'])
+    //console.log("reading syncMode for user", auth.user['uid'])
     return localStorage.getItem(auth.user['uid'] + ".syncMode");
   }
-  console.log("reading syncMode")
+  //console.log("reading syncMode")
   return localStorage.getItem("syncMode");
 }
 
@@ -39,7 +34,7 @@ export const useSyncStore = defineStore('sync', {
     showSyncMode(state): boolean {
       const isAuthenticated = useAuthStore().isAuthenticated
       const syncMode = getSyncMode()
-      console.log("got syncMode", syncMode)
+      //console.log("got syncMode", syncMode)
       return isAuthenticated && (syncMode !== undefined && syncMode !== null)
     }
   },

@@ -1,11 +1,5 @@
 <template>
 
-  <q-banner rounded class="bg-amber-1 text-black" v-if="!tabsStore.active">
-    <div class="text-body2">
-      Currently, your <b>browser tabs</b> are <b>not tracked</b> by this extension.
-    </div>
-  </q-banner>
-
   <!-- pending tabs -->
   <q-expansion-item v-if="tabsStore.pendingTabset?.tabs.length > 0"
                     header-class="bg-amber-1 text-black"
@@ -192,9 +186,9 @@ import {useTabsStore} from "src/stores/tabsStore";
 import {useTabGroupsStore} from "src/stores/tabGroupsStore";
 import TabsetService from "src/services/TabsetService";
 import {Tab} from "src/models/Tab";
-import {useFeatureTogglesStore} from "stores/featureTogglesStore";
+import {useFeatureTogglesStore} from "src/stores/featureTogglesStore";
 import {TabsetPersistence} from "src/models/Tabset"
-import {useAuthStore} from "stores/auth";
+import {useAuthStore} from "src/stores/auth";
 import {MAX_TABS_TO_SHOW} from 'boot/constants'
 
 const route = useRoute();

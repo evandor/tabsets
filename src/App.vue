@@ -8,9 +8,9 @@ import {useTabGroupsStore} from "src/stores/tabGroupsStore";
 import {useQuasar} from "quasar";
 import tabsetService from "src/services/TabsetService";
 import backendApi from "src/services/BackendApi";
-import {useFeatureTogglesStore} from "stores/featureTogglesStore";
-import {useBookmarksStore} from "stores/bookmarksStore";
-import {useSyncStore} from "stores/syncStore";
+import {useFeatureTogglesStore} from "src/stores/featureTogglesStore";
+import {useBookmarksStore} from "src/stores/bookmarksStore";
+import {useSyncStore} from "src/stores/syncStore";
 
 backendApi.init(process.env.BACKEND_URL || "unknown", null)
 

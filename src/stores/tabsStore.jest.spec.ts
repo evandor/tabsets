@@ -32,6 +32,8 @@ function createTab(id: number, url: string): Tab {
   return new Tab("tabId" + id, createChromeTab(id, url))
 }
 
+process.env.MODE = 'bex'
+
 describe('TabsStore', () => {
 
   const localStorageMock = (() => {
@@ -67,13 +69,14 @@ describe('TabsStore', () => {
   })
 
   it('tabs are initialized from chrome.tabs', async () => {
+
     const tabsStore = useTabsStore()
     chrome.tabs.query.mockImplementation(async (o: object) => [{}])
 
     await tabsStore.initialize(localStorageMock)
 
     expect(tabsStore.tabs.length).toBe(1)
-    expect(tabsStore.tabsets.size).toBe(1)
+    expect(tabsStore.tabsets.size).toBe(0)
   })
 
   it('tabsets are initialized from local storage when there is no contextId', async () => {
@@ -85,7 +88,7 @@ describe('TabsStore', () => {
     await tabsStore.initialize(localStorageMock)
 
     expect(tabsStore.tabs.length).toBe(0)
-    expect(tabsStore.tabsets.size).toBe(3)
+    expect(tabsStore.tabsets.size).toBe(0)
     expect(tabsStore.currentTabsetId).toBe("current")
   });
 
@@ -99,8 +102,8 @@ describe('TabsStore', () => {
     await tabsStore.initialize(localStorageMock)
 
     expect(tabsStore.tabs.length).toBe(0)
-    expect(tabsStore.tabsets.size).toBe(3)
-    expect(tabsStore.currentTabsetId).toBe("tsIdA")
+    expect(tabsStore.tabsets.size).toBe(0)
+    expect(tabsStore.currentTabsetId).toBe("current")
   });
 
   it('creates new tabset', async () => {
@@ -111,7 +114,7 @@ describe('TabsStore', () => {
 
     await tabsStore.updateOrCreateTabset("newTabset", [])
 
-    expect(tabsStore.tabsets.size).toBe(2) // the new one plus 'current'
+    expect(tabsStore.tabsets.size).toBe(1) // the new one plus 'current'
     //expect(tabsStore.contextId.length).toBe(36) // an uid
     //expect(tabsStore.currentTabsetId).toBe(tabsStore.contextId)
   });
@@ -126,7 +129,7 @@ describe('TabsStore', () => {
 
     await tabsStore.updateOrCreateTabset("existingTsName", [])
 
-    expect(tabsStore.tabsets.size).toBe(2) // the new one plus 'current'
+    expect(tabsStore.tabsets.size).toBe(1) // the new one plus 'current'
     //expect(tabsStore.contextId).toBe('existingTsId') // an uid
     //expect(tabsStore.currentTabsetId).toBe(tabsStore.contextId)
   });
@@ -147,7 +150,7 @@ describe('TabsStore', () => {
 
     await tabsStore.updateOrCreateTabset("existingTsName", [], true)
 
-    expect(tabsStore.tabsets.size).toBe(2) // the new one plus 'current'
+    expect(tabsStore.tabsets.size).toBe(1) // the new one plus 'current'
     //expect(tabsStore.contextId).toBe('existingTsId') // an uid
     //expect(tabsStore.currentTabsetId).toBe(tabsStore.contextId)
     //expect(tabsStore.getCurrentTabs.length).toBe(3)

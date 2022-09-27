@@ -38,7 +38,7 @@
         <q-img :src="thumbnail" width="265px" style="border:1px solid grey"/>
       </div>
       <div class="col-12">
-        <div class="row q-ma-lg">
+        <div class="row q-ma-sm">
           <div class="col-5">
             created
           </div>
@@ -55,32 +55,29 @@
             last Active
           </div>
           <div class="col-7">
-            {{ notificationStore.selectedTab.lastActive }}
+            {{ date.formatDate(notificationStore.selectedTab.lastActive, 'DD.MM.YYYY HH:mm') }}
           </div>
           <div class="col-5">
-            activated count
+            activated#
           </div>
           <div class="col-7">
             {{ notificationStore.selectedTab.activatedCount }}
           </div>
-          <div class="col-5">
-            selected
-          </div>
-          <div class="col-7">
-            {{ notificationStore.selectedTab.selected }}
-          </div>
+
           <div class="col-5">
             History
           </div>
           <div class="col-7">
             {{ notificationStore.selectedTab.history }}
           </div>
+
           <div class="col-5" v-if="notificationStore.selectedTab.bookmarkId">
             Bookmark ID
           </div>
           <div class="col-7" v-if="notificationStore.selectedTab.bookmarkId">
             {{ notificationStore.selectedTab.bookmarkId }}
           </div>
+
           <div class="col-5" v-if="notificationStore.selectedTab.bookmarkUrl">
             Bookmark URL
           </div>
@@ -100,7 +97,7 @@ import {date, useQuasar} from "quasar";
 import {useNotificationsStore} from "stores/notificationsStore";
 import {ref, watchEffect} from "vue";
 import TabsetService from "src/services/TabsetService";
-import {useFeatureTogglesStore} from "stores/featureTogglesStore";
+import {useFeatureTogglesStore} from "src/stores/featureTogglesStore";
 
 const notificationStore = useNotificationsStore()
 const featuresStore = useFeatureTogglesStore()

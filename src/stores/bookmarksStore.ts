@@ -1,6 +1,6 @@
 import {defineStore} from 'pinia';
 import ChromeBookmarkListeners from "src/services/ChromeBookmarkListeners";
-import {useFeatureTogglesStore} from "stores/featureTogglesStore";
+import {useFeatureTogglesStore} from "src/stores/featureTogglesStore";
 import _ from "lodash";
 import {TreeNode} from "src/models/Tree";
 

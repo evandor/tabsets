@@ -1,11 +1,5 @@
 <template>
 
-  <q-banner rounded class="bg-amber-1 text-black" v-if="!tabsStore.active">
-    <div class="text-body2">
-      Currently, your <b>browser tabs</b> are <b>not tracked</b> by this extension.
-    </div>
-  </q-banner>
-
   <q-banner rounded class="bg-amber-1 text-black" v-if="tabsStore.active && tabsStore.getCurrentTabs.length === 0">
     <div class="text-body2">
       To start adding new tabs to this empty tabset, open new browser tabs and come back to this extension to

@@ -7,11 +7,11 @@ import {Tabset, TabsetPersistence, TabsetStatus} from "src/models/Tabset";
 import {useNotificationsStore} from "src/stores/notificationsStore";
 import {IDBPDatabase, openDB} from "idb";
 import backendApi from "src/services/BackendApi";
-import {useFeatureTogglesStore} from "stores/featureTogglesStore";
-import {useAuthStore} from "stores/auth";
+import {useFeatureTogglesStore} from "src/stores/featureTogglesStore";
+import {useAuthStore} from "src/stores/auth";
 import {INDEX_DB_NAME} from "boot/constants";
 import {AxiosResponse} from "axios";
-import {SyncMode, useSyncStore} from "stores/syncStore";
+import {SyncMode, useSyncStore} from "src/stores/syncStore";
 
 class TabsetService {
 
@@ -38,11 +38,6 @@ class TabsetService {
         }
       },
     });
-
-    const active = localStorage.getItem("active")
-    if (active) {
-      useTabsStore().active = active === "__q_bool|1"
-    }
 
     // --- setting all tabs from storage
     const tabsStore = useTabsStore()
@@ -184,6 +179,7 @@ class TabsetService {
     const tabset = this.getTabset(tabsetId)
     if (tabset) {
       const tabsStore = useTabsStore()
+      _.forEach(tabsStore.getTabset(tabsetId)?.tabs, t => this.removeThumbnailsFor(t.chromeTab.url || ''))
       tabsStore.deleteTabset(tabsetId)
       this.db.delete('tabsets', tabsetId)
       const nextKey: string = tabsStore.tabsets.keys().next().value
@@ -353,6 +349,10 @@ class TabsetService {
     return Promise.reject("url not provided");
   }
 
+  removeThumbnailsFor(url: string): Promise<any> {
+    return this.db.delete('thumbnails', btoa(url))
+  }
+
   setCustomTitle(tab: Tab, title: string) {
     tab.name = title
     this.saveCurrentTabset()
@@ -422,9 +422,9 @@ class TabsetService {
           console.log("got backend answer: ", res)
           return res
         })
-        // .catch(err => {
-        //   console.error("err", err)
-        // })
+      // .catch(err => {
+      //   console.error("err", err)
+      // })
     }
     return Promise.reject("tabset '" + tabsetId + "' not found")
 

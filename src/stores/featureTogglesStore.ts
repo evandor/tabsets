@@ -5,10 +5,7 @@ import {Tabset} from "src/models/Tabset";
 import {Tab, TabStatus} from "src/models/Tab";
 import TabsetService from "src/services/TabsetService";
 import ChromeListeners from "src/services/ChromeListeners";
-import ChromeApi from "src/services/ChromeApi";
-import {NewOrReplacedTabset} from "src/models/NewOrReplacedTabset";
-import {useTabGroupsStore} from "stores/tabGroupsStore";
-import {Group} from "src/models/Group";
+
 
 
 export const useFeatureTogglesStore = defineStore('featureToggles', {

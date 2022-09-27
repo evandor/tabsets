@@ -78,7 +78,7 @@ import _ from "lodash"
 import {ref} from "vue";
 import {useQuasar} from "quasar";
 import {Tabset} from "src/models/Tabset";
-import {useFeatureTogglesStore} from "stores/featureTogglesStore";
+import {useFeatureTogglesStore} from "src/stores/featureTogglesStore";
 import {TreeNode} from "src/models/Tree";
 import ChromeApi from "src/services/ChromeApi";
 import {useBookmarksStore} from "stores/bookmarksStore";

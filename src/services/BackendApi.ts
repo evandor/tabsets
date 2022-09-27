@@ -1,7 +1,5 @@
 import axios, {AxiosResponse} from 'axios';
-import {useAuthStore} from "stores/auth";
-import {useFeatureTogglesStore} from "stores/featureTogglesStore";
-
+import {useAuthStore} from "src/stores/auth";
 
 export class BackendApi {
 

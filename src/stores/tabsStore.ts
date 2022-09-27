@@ -7,7 +7,7 @@ import TabsetService from "src/services/TabsetService";
 import ChromeListeners from "src/services/ChromeListeners";
 import ChromeApi from "src/services/ChromeApi";
 import {NewOrReplacedTabset} from "src/models/NewOrReplacedTabset";
-import {useTabGroupsStore} from "stores/tabGroupsStore";
+import {useTabGroupsStore} from "src/stores/tabGroupsStore";
 import {Group} from "src/models/Group";
 
 async function queryTabs(): Promise<chrome.tabs.Tab[]> {
@@ -40,7 +40,7 @@ export const useTabsStore = defineStore('tabs', {
   state: () => ({
 
     // active means: tabs(-sets) are tracked
-    active: null as unknown as boolean,
+    // active: null as unknown as boolean,
 
     // tabset extension id, set at init
     ownTabId: null as unknown as number,
@@ -156,8 +156,8 @@ export const useTabsStore = defineStore('tabs', {
       this.localStorage = localStorage
 
       // --- tracking active ? ---
-      const active = localStorage.getItem("active")
-      this.active = active === null || active
+      // const active = localStorage.getItem("active")
+      // this.active = active === null || active
 
       // own tab id
       const ownTab = await ChromeApi.getCurrentTab()

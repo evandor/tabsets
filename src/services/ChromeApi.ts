@@ -1,5 +1,4 @@
 import {Tabset} from "src/models/Tabset";
-import {useTabsStore} from "src/stores/tabsStore";
 
 class ChromeApi {
 
@@ -14,6 +13,7 @@ class ChromeApi {
       .map(r => r.id || 0);
     console.log("ids to close", ids)
     if (ids.length > 0) {
+      // @ts-ignore
       await chrome.tabs.remove(ids)
     }
     console.log(" --- closing all tabs: end ---")

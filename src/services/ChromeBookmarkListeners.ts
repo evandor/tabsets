@@ -1,5 +1,3 @@
-import {useTabsStore} from "src/stores/tabsStore";
-import {useTabGroupsStore} from "stores/tabGroupsStore";
 import {useBookmarksStore} from "stores/bookmarksStore";
 
 

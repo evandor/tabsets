@@ -39,7 +39,7 @@
 
 <script setup lang="ts">
 import {useTabsStore} from "src/stores/tabsStore"
-import {useFeatureTogglesStore} from "stores/featureTogglesStore";
+import {useFeatureTogglesStore} from "src/stores/featureTogglesStore";
 import {useRouter} from "vue-router";
 import {ref, watchEffect} from "vue";
 import {useQuasar} from "quasar";

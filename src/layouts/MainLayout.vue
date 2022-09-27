@@ -200,7 +200,7 @@
 import {onMounted, onUnmounted, ref, watchEffect} from 'vue';
 import {useQuasar} from "quasar";
 import {useTabsStore} from "src/stores/tabsStore";
-import {useTabGroupsStore} from "stores/tabGroupsStore";
+import {useTabGroupsStore} from "src/stores/tabGroupsStore";
 import {useRouter} from "vue-router";
 import {useMeta} from 'quasar'
 import {useNotificationsStore} from "stores/notificationsStore";
@@ -209,9 +209,9 @@ import Navigation from "src/components/Navigation.vue"
 import BookmarksTree from "src/components/BookmarksTree.vue"
 import TabsetService from "src/services/TabsetService";
 import {useSearchStore} from "stores/searchStore";
-import {useFeatureTogglesStore} from "stores/featureTogglesStore";
+import {useFeatureTogglesStore} from "src/stores/featureTogglesStore";
 import {useAuthStore} from "src/stores/auth"
-import {useSyncStore, SyncMode} from "stores/syncStore";
+import {useSyncStore, SyncMode} from "src/stores/syncStore";
 import _ from "lodash"
 
 const router = useRouter()
@@ -261,13 +261,7 @@ useMeta(() => {
 })
 
 watchEffect(() => {
-  if (tabsStore.active !== null) {
-    localStorage.set("active", tabsStore.active)
-  }
-})
-
-watchEffect(() => {
-  console.log(" > watchEffect", syncStore.syncMode)
+  // console.log(" > watchEffect", syncStore.syncMode)
   if (syncStore.syncMode !== SyncMode.INACTIVE) {
     syncModel.value = true
   } else {

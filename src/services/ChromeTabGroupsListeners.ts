@@ -1,5 +1,5 @@
 import {useTabsStore} from "src/stores/tabsStore";
-import {useTabGroupsStore} from "stores/tabGroupsStore";
+import {useTabGroupsStore} from "src/stores/tabGroupsStore";
 
 
 class ChromeTabGroupsListeners {

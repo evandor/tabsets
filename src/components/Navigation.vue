@@ -41,7 +41,7 @@
 
     <div class="text-body2 q-pa-lg" v-if="tabsStore.tabsets.size === 0">
       <transition>
-        Currently, you do not have any tabsets defined. Click on "NEW TABSET" to get started.
+        No Tabsets
       </transition>
     </div>
 
@@ -92,7 +92,7 @@ import {ref, watchEffect} from "vue";
 import {uid, useQuasar} from "quasar";
 import {Tabset, TabsetPersistence, TabsetStatus} from "src/models/Tabset";
 import {Tab} from "src/models/Tab";
-import {useFeatureTogglesStore} from "stores/featureTogglesStore";
+import {useFeatureTogglesStore} from "src/stores/featureTogglesStore";
 import {TreeNode} from "src/models/Tree";
 import ChromeApi from "src/services/ChromeApi";
 
@@ -218,7 +218,7 @@ const deleteDialog = () => {
     persistent: true
   }).onOk((data: any) => {
     TabsetService.delete(tabsStore.currentTabsetId)
-    router.push("/browser")
+    router.push("/about")
   }).onCancel(() => {
   }).onDismiss(() => {
   })

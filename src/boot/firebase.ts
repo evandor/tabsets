@@ -6,6 +6,7 @@ import {getAuth} from "firebase/auth";
 // import 'firebase/auth';
 
 import * as firebaseui from 'firebaseui'
+import {useFeatureTogglesStore} from "src/stores/featureTogglesStore";
 
 // "async" is optional;
 // more info on params: https://v2.quasar.dev/quasar-cli/boot-files
@@ -19,13 +20,17 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 
+let firebaseAuth
+let ui
 
-// Initialize Firebase Authentication and get a reference to the service
-const firebaseAuth = getAuth(app);
+try {
+  firebaseAuth = getAuth(app);
 
-var ui = new firebaseui.auth.AuthUI(firebaseAuth);
+  ui = new firebaseui.auth.AuthUI(firebaseAuth);
 
+} catch (err) {
+ console.log("firebase not active")
+}
 
-//})
 
 export {firebaseAuth, ui}
