@@ -230,7 +230,6 @@ const saveTabset = () => {
 }
 
 const tabNameExists = () => tabsStore.nameExistsInContextTabset(newTabsetName.value)
-
 const pinnedTabs = (): Tab[] => {
   return _.filter(tabsStore.browserTabset?.tabs, (t: Tab) => t.chromeTab.pinned)
 }

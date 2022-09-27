@@ -23,7 +23,7 @@
 
     <q-card>
       <q-card-section>
-        <TabcardsPending :tabs="tabsStore.pendingTabset?.tabs" v-on:selectionChanged="updateSelectionCount"/>
+        <TabcardsPending :tabs="_.filter(tabsStore.pendingTabset?.tabs, (t: Tab) => !t.isDuplicate)" v-on:selectionChanged="updateSelectionCount"/>
       </q-card-section>
     </q-card>
   </q-expansion-item>
@@ -51,8 +51,9 @@
           <div class="row justify-start items-baseline">
             <div class="col-1"><span class="text-dark">Tabset</span> <span
               class="text-primary">
-              {{tabsStore.currentTabsetName}}
-              <q-tooltip v-if="featuresStore.debugEnabled">ID: {{tabsStore.getCurrentTabset.id}} Status: {{tabsStore.getCurrentTabset.status}} Pers: {{tabsStore.getCurrentTabset.persistence}}</q-tooltip>
+              {{ tabsStore.currentTabsetName }}
+              <q-tooltip
+                v-if="featuresStore.debugEnabled">ID: {{ tabsStore.getCurrentTabset.id }} Status: {{ tabsStore.getCurrentTabset.status }} Pers: {{ tabsStore.getCurrentTabset.persistence }}</q-tooltip>
             </span></div>
           </div>
         </q-toolbar-title>
@@ -143,7 +144,7 @@
   >
     <template v-slot:header="{ expanded }">
       <q-item-section avatar>
-        <q-icon name="tab" />
+        <q-icon name="tab"/>
       </q-item-section>
 
       <q-item-section>
@@ -176,7 +177,7 @@
 </template>
 
 <script setup lang="ts">
-import {ref} from 'vue'
+import {ref, watchEffect} from 'vue'
 import {useRoute, useRouter} from "vue-router";
 import {useQuasar} from "quasar";
 import Tabcards from "src/components/layouts/Tabcards.vue";
@@ -187,7 +188,7 @@ import {useTabGroupsStore} from "src/stores/tabGroupsStore";
 import TabsetService from "src/services/TabsetService";
 import {Tab} from "src/models/Tab";
 import {useFeatureTogglesStore} from "src/stores/featureTogglesStore";
-import {TabsetPersistence} from "src/models/Tabset"
+import {Tabset, TabsetPersistence} from "src/models/Tabset"
 import {useAuthStore} from "src/stores/auth";
 import {MAX_TABS_TO_SHOW} from 'boot/constants'
 
@@ -203,8 +204,22 @@ const tabsetname = ref(tabsStore.currentTabsetName)
 
 const otherTabsCaption = ref('current tabs, neither pinned nor grouped...')
 const groupedTabsCaption = ref('current tabs, neither pinned nor grouped')
+const duplicatesCount = ref(0)
 
 const $q = useQuasar()
+
+watchEffect(() => {
+  const currentTabs: Tab[] = tabsStore.getCurrentTabs
+  duplicatesCount.value = 0
+  _.forEach(tabsStore.pendingTabset?.tabs, pendingTab => {
+    if (_.find(currentTabs, t => t.chromeTab.url === pendingTab.chromeTab.url)) {
+      pendingTab.isDuplicate = true
+      duplicatesCount.value += 1
+    } else {
+      pendingTab.isDuplicate = false
+    }
+  })
+})
 
 function unpinnedNoGroup() {
   return _.filter(
@@ -254,11 +269,15 @@ const syncTabset = () => {
 }
 
 const pendingTabsCount = () => {
-  if (tabsStore.pendingTabset?.tabs.length > MAX_TABS_TO_SHOW) {
-    return formatLength(tabsStore.pendingTabset?.tabs.length, 'tab', 'tabs') + ", with " +
-    (1 + tabsStore.pendingTabset?.tabs.length - MAX_TABS_TO_SHOW) + " hidden"
+  const l = formatLength(tabsStore.pendingTabset?.tabs.length - duplicatesCount.value, 'tab', 'tabs')
+  let label = l
+  if (tabsStore.pendingTabset?.tabs.length - duplicatesCount.value > MAX_TABS_TO_SHOW) {
+    label += ", with " + (1 + tabsStore.pendingTabset?.tabs.length - MAX_TABS_TO_SHOW) + " hidden"
   }
-  return formatLength(tabsStore.pendingTabset?.tabs.length, 'tab', 'tabs')
+  if (duplicatesCount.value > 0) {
+    label += ", not showing " + duplicatesCount.value + " duplicates"
+  }
+  return label
 }
 
 const saveDialog = () => {

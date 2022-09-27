@@ -125,7 +125,7 @@ export const useTabsStore = defineStore('tabs', {
     nameExistsInContextTabset: (state) => {
       return (searchName: string) => {
         const existingNames = _.map([...state.tabsets.values()], ts => ts.name)
-        return _.find(existingNames, name => name === searchName.trim())
+        return _.find(existingNames, name => name === searchName?.trim())
       }
     },
     getTab: (state) => {

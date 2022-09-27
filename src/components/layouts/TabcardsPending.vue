@@ -1,7 +1,7 @@
 <template>
   <div class="row items-start">
     <div class="col-xs-12 col-sm-4 col-md-3 col-lg-2 q-pa-xs" v-for="(tab,index) in tabsWithLimit()">
-      <q-card class="my-card" bordered @mouseover="setInfo(tab)" @click="selectTab(tab)">
+      <q-card class="my-card" bordered :style="cardStyle(tab)" @mouseover="setInfo(tab)" @click="selectTab(tab)">
         <q-card-section class="bg-primary text-white cursor-pointer">
 
           <div class="row items-baseline">
@@ -131,6 +131,8 @@ const props = defineProps({
 
 const emits = defineEmits(['sendCaption', 'selectionChanged'])
 
+
+
 function getShortHostname(host: string) {
   const nrOfDots = (host.match(/\./g) || []).length
   if (nrOfDots >= 2) {
@@ -189,6 +191,7 @@ function togglePin(tabId: number) {
 
 
 function cardStyle(tab: Tab) {
+  console.log("styling tab", tab)
   //const height = props.showActions ? "130px" : "96px"
   let borderColor = ""
   // if (TabStatus.CREATED === tab.status) {
