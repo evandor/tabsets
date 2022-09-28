@@ -69,7 +69,7 @@ export const useTabsStore = defineStore('tabs', {
     ignoredTabset: null as unknown as Tabset,
 
     // which tabset should be shown in the extension?
-    currentTabsetId: 'current',
+    currentTabsetId: null as unknown as string,
 
     // use listeners? Might make sense to turn them off when restoring old tabset for example
     listenersOn: true,
@@ -78,8 +78,8 @@ export const useTabsStore = defineStore('tabs', {
   }),
 
   getters: {
-    isLiveMode: (state) => (state.currentTabsetId === 'current'),
-    isEditMode: (state) => (state.currentTabsetId !== 'current'),
+    //isLiveMode: (state) => (state.currentTabsetId === 'current'),
+    //isEditMode: (state) => (state.currentTabsetId !== 'current'),
 
     pinnedTabs(state): Tab[] {
       const currentTabset: Tabset = state.tabsets.get(state.currentTabsetId) || new Tabset("", "", [], [])

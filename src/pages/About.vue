@@ -35,7 +35,7 @@
       </div>
 
       <div class="text-body1 q-ma-md">
-        Click on the plus sign on the lower right page.
+        Click on the plus sign <q-icon name="add" color="accent"></q-icon> on the lower right page.
       </div>
     </div>
 

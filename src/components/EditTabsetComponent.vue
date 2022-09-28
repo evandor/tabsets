@@ -30,7 +30,7 @@
 
 
   <!-- "Arrows" part -->
-  <div class="justify-center row" v-if="tabsStore.pendingTabset?.tabs.length > 0">
+  <div class="justify-center row q-ma-md q-pa-xl" style="border: 3px dotted grey; border-radius:8px;" v-if="tabsStore.pendingTabset?.tabs.length > 0">
 
     <span v-if="TabsetService.getSelectedPendingTabs().length === 0">
       <q-btn icon="file_download" label="Save all" class="q-mx-lg" color="positive"
@@ -43,8 +43,15 @@
     </span>
   </div>
 
+  <!-- banners -->
+  <q-banner rounded class="bg-amber-1 text-black q-ma-md" v-if="!tabsStore.currentTabsetId">
+    <div class="text-body2">
+      To get started, add a new tabset by clicking on the plus sign at the lower right page.
+    </div>
+  </q-banner>
 
-  <q-toolbar class="text-primary">
+  <!-- toolbar -->
+  <q-toolbar class="text-primary" v-if="tabsStore.currentTabsetId">
     <div class="row fit">
       <div class="col-xs-12 col-md-5">
         <q-toolbar-title>
@@ -134,14 +141,24 @@
     </q-expansion-item>
   </template>
 
+  <q-banner rounded class="bg-amber-1 text-black q-ma-md" v-if="tabsStore.currentTabsetId && tabsStore.getCurrentTabs.length === 0 && tabsStore.pendingTabset?.tabs.length > 0">
+    <div class="text-body2">
+      To start adding new tabs to this empty tabset, select the tabs you want to use from above and click save.
+    </div>
+  </q-banner>
+  <q-banner v-else-if="tabsStore.currentTabsetId && tabsStore.getCurrentTabs.length === 0">
+    To start adding new tabs to this empty tabset, open new browser tabs and come back to this extension to
+    associate them with a tabset.<br><br>
+    If you want to assign your open tabs straight away, click <span class="cursor-pointer text-blue" @click="addOpenTabs()"><u>here</u></span>.
+  </q-banner>
+
   <!-- rest: neither pinned, grouped, or pending -->
-  <q-expansion-item
+  <q-expansion-item v-if="unpinnedNoGroup().length > 0"
     icon="tabs"
     default-opened
     header-class="text-black"
     expand-icon-class="text-black"
-    expand-separator
-  >
+    expand-separator>
     <template v-slot:header="{ expanded }">
       <q-item-section avatar>
         <q-icon name="tab"/>
@@ -158,13 +175,6 @@
       </q-item-section>
       <q-item-section></q-item-section>
     </template>
-
-    <q-banner rounded class="bg-amber-1 text-black" v-if="tabsStore.getCurrentTabs.length === 0">
-      <div class="text-body2">
-        To start adding new tabs to this empty tabset, open new browser tabs and come back to this extension to
-        associate them with a tabset.
-      </div>
-    </q-banner>
 
     <q-card>
       <q-card-section>
@@ -191,6 +201,7 @@ import {useFeatureTogglesStore} from "src/stores/featureTogglesStore";
 import {Tabset, TabsetPersistence} from "src/models/Tabset"
 import {useAuthStore} from "src/stores/auth";
 import {MAX_TABS_TO_SHOW} from 'boot/constants'
+import ChromeApi from "src/services/ChromeApi";
 
 const route = useRoute();
 const router = useRouter();
@@ -278,6 +289,11 @@ const pendingTabsCount = () => {
     label += ", not showing " + duplicatesCount.value + " duplicates"
   }
   return label
+}
+
+const addOpenTabs = () => {
+  const tabs = ChromeApi.getTabs()
+  TabsetService.saveOrReplaceFromChromeTabs(tabsStore.currentTabsetName, tabs, true )
 }
 
 const saveDialog = () => {

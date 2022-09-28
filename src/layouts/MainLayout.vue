@@ -73,10 +73,15 @@
           </q-menu>
         </span>
 
-        <span class="q-pr-lg" style="cursor: pointer" v-if="featuresStore.firebaseEnabled && !auth.user">
+        <span class="q-pr-lg" style="cursor: pointer" v-if="featuresStore.firebaseEnabled && !auth.user && syncStore.subscription === Subscription.PRO">
           <q-icon name="person" class="q-mr-md" size="28px"></q-icon>
           <span @click="router.push('/login')">Login</span>
         </span>
+
+        <q-btn v-if="featuresStore.firebaseEnabled && !auth.user && syncStore.subscription === Subscription.UNKNOWN"
+          outline rounded color="warning" label="Check out Tabsets Pro..." class="q-mr-lg" @click="router.push('/pro')">
+          <q-tooltip>Tabsets Pro let's you synchronize your tabsets across devices</q-tooltip>
+        </q-btn>
 
         <q-icon name="settings" size="2em"
                 class="q-mr-md cursor-pointer"
@@ -175,7 +180,7 @@ import TabsetService from "src/services/TabsetService";
 import {useSearchStore} from "stores/searchStore";
 import {useFeatureTogglesStore} from "src/stores/featureTogglesStore";
 import {useAuthStore} from "src/stores/auth"
-import {useSyncStore, SyncMode} from "src/stores/syncStore";
+import {useSyncStore, SyncMode, Subscription} from "src/stores/syncStore";
 import _ from "lodash"
 
 const router = useRouter()

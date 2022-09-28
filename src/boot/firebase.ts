@@ -2,7 +2,7 @@
 import {boot} from 'quasar/wrappers'
 
 import {initializeApp} from "firebase/app";
-import {getAuth} from "firebase/auth";
+import {getAuth, connectAuthEmulator} from "firebase/auth";
 // import 'firebase/auth';
 
 import * as firebaseui from 'firebaseui'
@@ -25,11 +25,17 @@ let ui
 
 try {
   firebaseAuth = getAuth(app);
+  //firebaseAuth.useEmulator("http://localhost:9099");
 
+  // https://firebase.google.com/docs/emulator-suite/connect_auth#web-version-9
+  // export FIREBASE_AUTH_EMULATOR_HOST="localhost:9099" does not seem to work...
+  console.log("location.hostname", location.hostname)
+  //if (location.hostname === "localhost") {
+    connectAuthEmulator(firebaseAuth, "http://localhost:9099");
+  //}
   ui = new firebaseui.auth.AuthUI(firebaseAuth);
-
 } catch (err) {
- console.log("firebase not active")
+  console.log("firebase not active")
 }
 
 

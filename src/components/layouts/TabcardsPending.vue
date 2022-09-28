@@ -12,7 +12,7 @@
                 class="rounded-borders"
                 width="24px"
                 height="24px"
-                :src="tab.chromeTab?.favIconUrl">
+                :src="getFaviconUrl(tab.chromeTab)">
                 <q-tooltip>{{ tab.chromeTab?.id }} / {{ tab.id }}</q-tooltip>
               </q-img>
             </div>
@@ -255,6 +255,13 @@ const tabsWithLimit = () => {
     return firstTabs
   }
   return allTabs
+}
+
+const getFaviconUrl = (chromeTab: chrome.tabs.Tab | undefined) => {
+  if (chromeTab && chromeTab.favIconUrl && !chromeTab.favIconUrl.startsWith("chrome")) {
+    return chromeTab.favIconUrl
+  }
+  return ''
 }
 
 </script>

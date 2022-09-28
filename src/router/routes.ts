@@ -28,6 +28,11 @@ const routes: RouteRecordRaw[] = [
     children: [{ path: '', component: () => import('pages/About.vue') }],
   },
   {
+    path: '/pro',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [{ path: '', component: () => import('pages/Pro.vue') }],
+  },
+  {
     path: '/settings',
     component: () => import('layouts/MainLayout.vue'),
     children: [{ path: '', component: () => import('pages/Settings.vue') }],

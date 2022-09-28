@@ -2,6 +2,8 @@ check tabsets-backend
 
 check db version in constants.ts (should be "db")
 
+check connectAuthEmulator in firebase.ts
+
 build
 
 

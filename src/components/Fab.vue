@@ -3,10 +3,13 @@
     <q-fab
       icon="add"
       direction="up"
-      color="accent"
-    >
+      color="accent">
       <q-fab-action @click="showNewTabsetDialog = true" style="width:170px" color="primary" icon="tabs" label="New Tabset">
         <q-tooltip>Start a new tabset by assigning your open tabs</q-tooltip>
+      </q-fab-action>
+      <q-fab-action v-if="tabsStore.currentTabsetId !== '' && tabsStore.getTabset(tabsStore.currentTabsetId)"
+        @click="showNewUrlDialog = true" style="width:170px" color="primary" icon="link" label="Add Url">
+        <q-tooltip>Add a Url to the current tabset manually '{{tabsStore.currentTabsetId}}'</q-tooltip>
       </q-fab-action>
     </q-fab>
   </q-page-sticky>
@@ -35,6 +38,30 @@
     </q-card>
   </q-dialog>
 
+  <q-dialog v-model="showNewUrlDialog">
+    <q-card style="min-width: 350px">
+      <q-card-section>
+        <div class="text-h6">Add Url to current tabset</div>
+      </q-card-section>
+      <q-card-section>
+        <div class="text-body">Please provide the url to be added</div>
+      </q-card-section>
+
+      <q-card-section class="q-pt-none">
+        <div class="text-body">Url:</div>
+        <q-input dense v-model="url" autofocus @keyup.enter="prompt = false"/>
+        <div class="text-body2 text-warning">{{ newUrlDialogWarning() }}</div>
+      </q-card-section>
+
+      <q-card-actions align="right" class="text-primary">
+        <q-btn flat label="Cancel" v-close-popup/>
+        <q-btn flat label="Add URL"
+               :disable="url.trim().length === 0" v-close-popup
+               @click="createNewUrl()"/>
+      </q-card-actions>
+    </q-card>
+  </q-dialog>
+
 </template>
 
 <script setup lang="ts">
@@ -42,15 +69,19 @@
 import {ref} from "vue";
 import TabsetService from "src/services/TabsetService";
 import {useTabsStore} from "stores/tabsStore";
-import {useQuasar} from "quasar";
+import {uid, useQuasar} from "quasar";
 import {useRouter} from "vue-router";
+import {Tab} from "src/models/Tab";
+import ChromeApi from "src/services/ChromeApi";
 
 const tabsStore = useTabsStore()
 const router = useRouter()
 const $q = useQuasar()
 
 const newTabsetName = ref('')
+const url = ref('')
 const showNewTabsetDialog = ref(false)
+const showNewUrlDialog = ref(false)
 const newTabsetNameExists = ref(false)
 
 const createNewTabset = () => {
@@ -86,8 +117,26 @@ const createNewTabset = () => {
   })
 }
 
+const createNewUrl = () => {
+  console.log("new url", url.value)
+  const tab = new Tab(uid(), null as unknown as chrome.tabs.Tab)
+  tab.created = new Date().getTime()
+  tab.chromeTab = ChromeApi.createChromeTabObject(url.value, url.value)
+  TabsetService.saveToTabset(tab)
+}
+
 const newTabsetDialogWarning = () => {
   return (tabsStore.nameExistsInContextTabset(newTabsetName.value)) ?
     "Tabset already exists" : ""
+}
+
+
+const newUrlDialogWarning = () => {
+  try {
+    new URL(url.value)
+    return ''
+  } catch (err) {
+    return 'not a proper URL'
+  }
 }
 </script>

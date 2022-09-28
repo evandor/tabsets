@@ -84,6 +84,23 @@ class ChromeApi {
     return await chrome.bookmarks.getChildren(bookmarkFolderId)
   }
 
+  createChromeTabObject(title: string, url: string) {
+    return {
+      active: false,
+      discarded: true,
+      // @ts-ignore
+      groupId: -1,
+      autoDiscardable: true,
+      index: 0,
+      highlighted: false,
+      title: title,
+      pinned: false,
+      url: url,
+      windowId: 0,
+      incognito: false,
+      selected: false
+    }
+  }
 }
 
 export default new ChromeApi();

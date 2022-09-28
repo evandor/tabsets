@@ -144,7 +144,7 @@ const importBookmarks = async () => {
   // $q.loadingBar.increment(value)
   if (featuresStore.bookmarksEnabled) {
     const candidates: chrome.bookmarks.BookmarkTreeNode[] = await ChromeApi.childrenFor(bookmarkFolderForImport.value)
-    console.log("got candidates", candidates)
+    //console.log("got candidates", candidates)
     // ChromeListeners.createThumbnails(false)
 
 

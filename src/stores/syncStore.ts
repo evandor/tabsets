@@ -8,6 +8,12 @@ export enum SyncMode {
   PARTIAL = "PARTIAL"
 }
 
+export enum Subscription {
+  UNKNOWN = "UNKNOWN",
+  FREE="FREE",
+  PRO= "PRO"
+}
+
 
 function getSyncMode() {
   const auth = useAuthStore()
@@ -22,7 +28,10 @@ function getSyncMode() {
 export const useSyncStore = defineStore('sync', {
   state: () => ({
     // bookmarksTree: [] as unknown as object[]
-    syncMode: SyncMode.INACTIVE
+    syncMode: SyncMode.INACTIVE,
+
+    // "pro" user?
+    subscription: Subscription.UNKNOWN
   }),
 
   getters: {

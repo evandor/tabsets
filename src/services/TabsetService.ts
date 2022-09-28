@@ -92,21 +92,22 @@ class TabsetService {
       tab.bookmarkUrl = c.url
       tab.bookmarkId = c.id
       tab.created = c.dateAdded || 0
-      tab.chromeTab = {
-        active: false,
-        discarded: true,
-        // @ts-ignore
-        groupId: -1,
-        autoDiscardable: true,
-        index: 0,
-        highlighted: false,
-        title: c.title,
-        pinned: false,
-        url: c.url,
-        windowId: 0,
-        incognito: false,
-        selected: false
-      }
+      tab.chromeTab = ChromeApi.createChromeTabObject(c.title || '', c.url || '')
+      // tab.chromeTab = {
+      //   active: false,
+      //   discarded: true,
+      //   // @ts-ignore
+      //   groupId: -1,
+      //   autoDiscardable: true,
+      //   index: 0,
+      //   highlighted: false,
+      //   title: c.title,
+      //   pinned: false,
+      //   url: c.url,
+      //   windowId: 0,
+      //   incognito: false,
+      //   selected: false
+      // }
       return tab
     })
     const result = await tabsStore.updateOrCreateTabset(name, tabs, merge)

@@ -1,6 +1,6 @@
 <template>
   <q-page padding class="window-height window-width column justify-center items-center fullimageBackground">
-    <h6>Skysail CMS</h6>
+    <div class="text-h4">Tabsets Browser Extension</div>
     <div id="firebaseui-auth-container"></div>
     <div id="loader"></div>
   </q-page>
@@ -12,9 +12,6 @@ import {EmailAuthProvider, GoogleAuthProvider} from "firebase/auth";
 import {ui} from "boot/firebase";
 import {useAuthStore} from "src/stores/auth";
 import TabsetService from "src/services/TabsetService";
-//import {auth} from "src/store/auth";
-//import {useQuasar} from "quasar";
-//import {cmsCore} from "src/store/cmsCore";
 
 export default defineComponent({
   // name: 'PageName',
