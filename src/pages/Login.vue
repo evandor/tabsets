@@ -12,6 +12,8 @@ import {EmailAuthProvider, GoogleAuthProvider} from "firebase/auth";
 import {ui} from "boot/firebase";
 import {useAuthStore} from "src/stores/auth";
 import TabsetService from "src/services/TabsetService";
+import { Subscription } from "src/stores/syncStore";
+import backendApi from "src/services/BackendApi";
 
 export default defineComponent({
   // name: 'PageName',
@@ -48,16 +50,26 @@ export default defineComponent({
   },
   methods: {
     signInAttempSuccessful(authResult: any, redirectUrl: any): boolean {
-      console.log("success...", authResult.user)
-      console.log("success...", redirectUrl)
+      const subscription = localStorage.getItem(authResult.user.uid + ".subscription")
+      if (!subscription) {
+        localStorage.setItem(authResult.user.uid + ".subscription", Subscription.FREE)
+      }
       //alert('Sign in successful. See dev console for authorization response')
       this.authStore.setUser(authResult.user)
+
+      backendApi.getUserSubscription()
+        .then(sub => this.authStore.setSubscription(sub.data))
+        .catch(err => {
+          console.log("got error getting subscription, assuming trial starting now", err)
+          this.authStore.setSubscription({ created: new Date().getTime(), account: "TRIAL" })
+        })
+
       TabsetService.loadTabsetsFromFirebase()
       return true;
     },
     // Note, bad credentials is not a sign-in failure
     signInAttempFailure(error: any) {
-      alert('Sign in failed. See dev console for error response')
+      //alert('Sign in failed. See dev console for error response')
       console.log('error', error)
     }
   }

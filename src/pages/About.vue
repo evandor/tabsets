@@ -35,7 +35,7 @@
       </div>
 
       <div class="text-body1 q-ma-md">
-        Click on the plus sign <q-icon name="add" color="accent"></q-icon> on the lower right page.
+        Click on the plus sign <q-icon name="add_circle_outline" size="24px" color="accent" class="cursor-pointer" @click="animateFab()"></q-icon> on the lower right page.
       </div>
     </div>
 
@@ -47,6 +47,10 @@
 <script setup lang="ts">
 import {useTabsStore} from "src/stores/tabsStore"
 import Fab from "src/components/Fab.vue"
+import {useNotificationsStore} from "stores/notificationsStore";
 
 const tabsStore = useTabsStore()
+
+const animateFab = () => useNotificationsStore().animateFab()
+
 </script>

@@ -6,18 +6,6 @@ const routes: RouteRecordRaw[] = [
     redirect: '/start'
   },
   {
-    path: '/login',
-    component: () => import('layouts/PlainLayout.vue'),
-    children: [{ path: '', component: () => import('pages/Login.vue') }],
-    //children: [{ path: '', component: () => import('pages/Login.vue') }],
-  },
-  /*{
-    path: '/tabsets/:tabsetId',
-    component: () => import('layouts/MainLayout.vue'),
-    children: [{ path: '', component: () => import('pages/TabsetPage.vue') }],
-    //children: [{ path: '', component: () => import('pages/Login.vue') }],
-  },*/
-  {
     path: '/start',
     component: () => import('layouts/PlainLayout.vue'),
     children: [{ path: '', component: () => import('pages/Start.vue') }],
@@ -31,6 +19,17 @@ const routes: RouteRecordRaw[] = [
     path: '/pro',
     component: () => import('layouts/MainLayout.vue'),
     children: [{ path: '', component: () => import('pages/Pro.vue') }],
+  },
+  {
+    path: '/login',
+    component: () => import('layouts/PlainLayout.vue'),
+    children: [{ path: '', component: () => import('pages/Login.vue') }],
+    //children: [{ path: '', component: () => import('pages/Login.vue') }],
+  },
+  {
+    path: '/subscription',
+    component: () => import('layouts/SimpleLayout.vue'),
+    children: [{ path: '', component: () => import('pages/Subscription.vue') }],
   },
   {
     path: '/settings',

@@ -17,28 +17,35 @@ import {useQuasar} from "quasar";
 import {useTabsStore} from "stores/tabsStore";
 import {useRouter} from "vue-router";
 import {ref} from "vue";
-
+import {useAuthStore} from "stores/auth";
 
 const $q = useQuasar()
+const router = useRouter()
+const auth = useAuthStore()
 
 $q.loading.show({
   message: 'Initializing tabsets. Please hang on...'
 })
 
-const router = useRouter()
-
 let timer
 
 timer = setTimeout(() => {
   const tabsStore = useTabsStore()
-  console.log("size", tabsStore.tabsets.size)
-  if (tabsStore.tabsets.size === 0) {
-    router.push("/about")
+
+  if (auth.isAuthenticated) {
+    router.push("/subscription")
   } else {
-    router.push("/tabset")
+    if (tabsStore.tabsets.size === 0) {
+      router.push("/about")
+    } else {
+      router.push("/tabset")
+    }
   }
 
-  setTimeout(() => {$q.loading.hide()}, 500)
+
+  setTimeout(() => {
+    $q.loading.hide()
+  }, 500)
   timer = void 0
 }, 2000)
 

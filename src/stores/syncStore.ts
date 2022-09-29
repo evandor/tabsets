@@ -19,9 +19,11 @@ function getSyncMode() {
   const auth = useAuthStore()
   if (auth.isAuthenticated && auth.user) {
     //console.log("reading syncMode for user", auth.user['uid'])
-    return localStorage.getItem(auth.user['uid'] + ".syncMode");
+    const res = localStorage.getItem(auth.user['uid'] + ".syncMode");
+    //console.log("res", res)
+    return res
   }
-  //console.log("reading syncMode")
+ //console.log("reading syncMode")
   return localStorage.getItem("syncMode");
 }
 
@@ -52,7 +54,9 @@ export const useSyncStore = defineStore('sync', {
     init() {
       const syncMode: string | null = getSyncMode()
       if (syncMode !== null) {
+        console.log("got syncMode", syncMode)
         this.syncMode = SyncMode[syncMode as keyof typeof SyncMode]
+        console.log("this.syncMode", this.syncMode)
       }
     },
     setSyncMode(mode: SyncMode) {

@@ -1,6 +1,10 @@
 <template>
   <q-page-sticky position="bottom-right" :offset="[60, 60]">
     <q-fab
+      :class="{
+        'heartBeat animated': useNotificationsStore().fabHasElementAnimation,
+        'rotateIn animated': useNotificationsStore().fabHasElementAnimation
+      }"
       icon="add"
       direction="up"
       color="accent">
@@ -73,6 +77,7 @@ import {uid, useQuasar} from "quasar";
 import {useRouter} from "vue-router";
 import {Tab} from "src/models/Tab";
 import ChromeApi from "src/services/ChromeApi";
+import {useNotificationsStore} from "src/stores/notificationsStore"
 
 const tabsStore = useTabsStore()
 const router = useRouter()

@@ -18,7 +18,12 @@
     </div>
 
     <div class="text-h5 q-ma-md">
-      Cloud Storage
+      <ul>
+        <li>Cloud Storage</li>
+        <li>Tabsets Sharing (Planned)</li>
+        <li>Bookmarks Integration (Planned)</li>
+        <li>Advanced Search (Planned)</li>
+      </ul>
     </div>
 
     <div class="text-body1 q-ma-md">

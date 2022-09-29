@@ -45,15 +45,15 @@ export class BackendApi {
         return axios.get(`${this.backendUrl}/tabsets`, {headers: {'AuthToken': token}})
       })
   }
+
+  getUserSubscription(): Promise<AxiosResponse<object>> {
+    const auth = useAuthStore()
+    return auth.getToken
+      .then(token => {
+        console.log("getting backend user @ url", this.backendUrl)
+        return axios.get(`${this.backendUrl}/users/current`, {headers: {'AuthToken': token}})
+      })
+  }
 }
-
-
-// function initializeBackendApi(url: string, auth: any): BackendApi {
-//   return new BackendApi(url, auth)
-// }
-
-// export {
-//   initializeBackendApi
-// }
 
 export default new BackendApi();

@@ -27,7 +27,8 @@
         <q-space/>
 
         <q-btn v-if="syncStore.showSyncButton"
-               flat dense icon="restore_page"
+               outline rounded
+               flat dense icon="cloud_upload"
                color="warning" label="Sync Tabsets..."
                class="q-mr-md"
                @click="syncTabsetsDialog = true">
@@ -38,25 +39,25 @@
           {{ tabsStore.pendingTabset?.tabs.length }} unassigned tab(s)
         </div>
 
-<!--        <q-btn outline rounded color="secondary" label="new tabset" class="q-mr-lg" @click="showNewTabsetDialog = true">-->
-<!--          <q-tooltip>Start a new tabset by assigning your open tabs</q-tooltip>-->
-<!--        </q-btn>-->
+        <!--        <q-btn outline rounded color="secondary" label="new tabset" class="q-mr-lg" @click="showNewTabsetDialog = true">-->
+        <!--          <q-tooltip>Start a new tabset by assigning your open tabs</q-tooltip>-->
+        <!--        </q-btn>-->
 
-        <q-toggle
-          v-if="syncStore.showSyncMode"
-          left-label
-          color="green"
-          v-model="syncModel"
-          @update:model-value="val => syncModeToggled(val)"
-          label=""
-        />
+<!--        <q-toggle-->
+<!--          v-if="syncStore.showSyncMode"-->
+<!--          left-label-->
+<!--          color="green"-->
+<!--          v-model="syncModel"-->
+<!--          @update:model-value="val => syncModeToggled(val)"-->
+<!--          label=""-->
+<!--        />-->
 
-        <div v-if="syncStore.showSyncMode && syncStore.syncMode !== SyncMode.INACTIVE" class="q-mr-lg">Syncing active&nbsp;
+<!--        <div v-if="auth.isAuthenticated && syncingActive" class="q-mr-lg">Syncing active&nbsp;-->
 
-        </div>
-        <div v-if="syncStore.showSyncMode && syncStore.syncMode === SyncMode.INACTIVE" class="q-mr-lg">Syncing stopped
+<!--        </div>-->
+<!--        <div v-if="auth.isAuthenticated && !syncingActive" class="q-mr-lg">Syncing stopped-->
 
-        </div>
+<!--        </div>-->
 
         <span class="q-pr-lg" style="cursor: pointer" v-if="featuresStore.firebaseEnabled && auth.user">
           <q-icon name="person" class="q-mr-md" size="28px"></q-icon>
@@ -73,13 +74,15 @@
           </q-menu>
         </span>
 
-        <span class="q-pr-lg" style="cursor: pointer" v-if="featuresStore.firebaseEnabled && !auth.user && syncStore.subscription === Subscription.PRO">
+        <span class="q-pr-lg" style="cursor: pointer"
+              v-if="featuresStore.firebaseEnabled && !auth.user && someoneSubscribed()">
           <q-icon name="person" class="q-mr-md" size="28px"></q-icon>
           <span @click="router.push('/login')">Login</span>
         </span>
 
-        <q-btn v-if="featuresStore.firebaseEnabled && !auth.user && syncStore.subscription === Subscription.UNKNOWN"
-          outline rounded color="warning" label="Check out Tabsets Pro..." class="q-mr-lg" @click="router.push('/pro')">
+        <q-btn v-if="featuresStore.firebaseEnabled && !auth.user && tabsStore.tabsets.size > 1 && !someoneSubscribed()"
+               outline rounded color="warning" :disable="onProPage()" label="Check out Tabsets Pro..." class="q-mr-lg"
+               @click="router.push('/pro')">
           <q-tooltip>Tabsets Pro let's you synchronize your tabsets across devices</q-tooltip>
         </q-btn>
 
@@ -170,7 +173,7 @@ import {onMounted, onUnmounted, ref, watchEffect} from 'vue';
 import {useQuasar} from "quasar";
 import {useTabsStore} from "src/stores/tabsStore";
 import {useTabGroupsStore} from "src/stores/tabGroupsStore";
-import {useRouter} from "vue-router";
+import {useRoute, useRouter} from "vue-router";
 import {useMeta} from 'quasar'
 import {useNotificationsStore} from "stores/notificationsStore";
 import TabInfo from "src/components/layouts/TabInfo.vue"
@@ -200,6 +203,7 @@ const syncModel = ref(false)
 
 const notificationsStore = useNotificationsStore()
 const featuresStore = useFeatureTogglesStore()
+const route = useRoute()
 
 if (featuresStore.bookmarksEnabled) {
   showBookmarksDrawer.value = true
@@ -225,6 +229,8 @@ const appVersion = import.meta.env.PACKAGE_VERSION
 
 const searchBox = ref(null)
 
+const syncingActive = ref(false)
+
 useMeta(() => {
   return {
     // @ts-ignore
@@ -233,12 +239,13 @@ useMeta(() => {
 })
 
 watchEffect(() => {
-  // console.log(" > watchEffect", syncStore.syncMode)
+  console.log(" > watchEffect", syncStore.syncMode)
   if (syncStore.syncMode !== SyncMode.INACTIVE) {
     syncModel.value = true
   } else {
     syncModel.value = false
   }
+  syncingActive.value = syncStore.showSyncMode && syncStore.syncMode !== SyncMode.INACTIVE
 })
 
 watchEffect(() => {
@@ -276,10 +283,17 @@ function submitSearch() {
 const title = () => {
   return auth.isAuthenticated ? 'TabsetsPro' : 'Tabsets'
 }
-const goHome = () => router.push("/about")
+const goHome = () => router.push("/")
 const openSettingsPage = () => router.push("/settings")
 
 const tabNameExists = () => tabsStore.nameExistsInContextTabset(newTabsetName.value)
+
+const someoneSubscribed = () => {
+  return _.find(localStorage.getAllKeys(), (k: string) => k.indexOf(".subscription") >= 0)
+}
+
+const onProPage = () => useRouter().currentRoute.value.fullPath === "/pro"
+
 
 const startSync = () => {
   $q.loadingBar.start()
@@ -337,7 +351,7 @@ const stopSync = () => {
   $q.loadingBar.stop()
 }
 
-const syncModeToggled =  (val: boolean) => {
+const syncModeToggled = (val: boolean) => {
   console.log("syncmode toggled", val)
   if (!val) {
     console.log("setting back to true...")

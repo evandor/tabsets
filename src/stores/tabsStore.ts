@@ -1,8 +1,8 @@
 import {defineStore} from 'pinia';
 import _ from 'lodash'
 import {LocalStorage, uid} from "quasar";
-import {Tabset} from "src/models/Tabset";
-import {Tab, TabStatus} from "src/models/Tab";
+import {Tabset, TabsetPersistence} from "src/models/Tabset";
+import {Tab} from "src/models/Tab";
 import TabsetService from "src/services/TabsetService";
 import ChromeListeners from "src/services/ChromeListeners";
 import ChromeApi from "src/services/ChromeApi";
@@ -144,6 +144,14 @@ export const useTabsStore = defineStore('tabs', {
       var count = 0
       for (const [key, value] of state.tabsets) {
         const nr = value.tabs.length
+        count = count + nr
+      }
+      return count;
+    },
+    localTabsCount: (state) => {
+      var count = 0
+      for (const val of _.filter([...state.tabsets.values()], (ts:Tabset) => ts.persistence === TabsetPersistence.INDEX_DB)) {
+        const nr = val.tabs.length
         count = count + nr
       }
       return count;
