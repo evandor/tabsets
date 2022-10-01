@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia';
 import firebase from "firebase/app";
 import "firebase/auth";
+// @ts-ignore
 import {firebaseAuth} from "boot/firebase";
 import {Subscription} from "src/models/Subscription";
 
@@ -24,6 +25,7 @@ export const useAuthStore = defineStore('auth', {
     },
     async getToken(): Promise<string> {
       console.log("getting token")
+      // @ts-ignore
       const currentUser = firebaseAuth.currentUser
       console.log("currentUser", currentUser)
       if (currentUser) {

@@ -29,10 +29,7 @@ try {
 
   // https://firebase.google.com/docs/emulator-suite/connect_auth#web-version-9
   // export FIREBASE_AUTH_EMULATOR_HOST="localhost:9099" does not seem to work...
-  console.log("location.hostname", location.hostname)
-  //if (location.hostname === "localhost") {
-    connectAuthEmulator(firebaseAuth, "http://localhost:9099");
-  //}
+  //connectAuthEmulator(firebaseAuth, "http://localhost:9099");
   ui = new firebaseui.auth.AuthUI(firebaseAuth);
 } catch (err) {
   console.log("firebase not active")
