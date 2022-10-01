@@ -86,10 +86,10 @@
 <!--          <q-tooltip>Tabsets Pro let's you synchronize your tabsets across devices</q-tooltip>-->
 <!--        </q-btn>-->
 
-        <q-icon name="settings" size="2em"
-                class="q-mr-md cursor-pointer"
-                @click="openSettingsPage()"
-                v-if="featuresStore.settingsEnabled"></q-icon>
+<!--        <q-icon name="settings" size="2em"-->
+<!--                class="q-mr-md cursor-pointer"-->
+<!--                @click="openSettingsPage()"-->
+<!--                v-if="featuresStore.settingsEnabled"></q-icon>-->
 
         <q-btn label="Actions" style="width:200px" class="q-mr-lg">
           <q-menu fit>
@@ -99,6 +99,9 @@
               </q-item>
               <q-item clickable>
                 <q-item-section @click="showExportDialog()">Export</q-item-section>
+              </q-item>
+              <q-item clickable>
+                <q-item-section @click="router.push('/settings')">Settings</q-item-section>
               </q-item>
               <q-separator />
 
@@ -111,7 +114,7 @@
                 <q-item-section @click="router.push('/trypro')">Check out Tabsets Pro...</q-item-section>
               </q-item>
               <q-separator />
-              <q-item clickable @click="router.push('/about')">
+              <q-item clickable v-if="useRouter().currentRoute.value.fullPath !== '/about'" @click="router.push('/about')">
                 <q-item-section>About tabsets</q-item-section>
               </q-item>
             </q-list>
@@ -132,7 +135,7 @@
               content-class="column justify-between no-wrap bg-grey-1">
       <Navigation></Navigation>
 
-      <TabInfo style="position: absolute;bottom:0px"/>
+      <TabInfo style="position: absolute;bottom:0"/>
 
 
     </q-drawer>
@@ -210,7 +213,7 @@ import TabsetService from "src/services/TabsetService";
 import {useSearchStore} from "stores/searchStore";
 import {useFeatureTogglesStore} from "src/stores/featureTogglesStore";
 import {useAuthStore} from "src/stores/auth"
-import {useSyncStore, Subscription} from "src/stores/syncStore";
+import {useSyncStore} from "src/stores/syncStore";
 import _ from "lodash"
 import {SyncMode} from "src/models/Subscription";
 import NewTabset from "components/dialogues/NewTabset.vue";

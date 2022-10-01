@@ -25,8 +25,22 @@
         <li>Edit <span class="text-body1 text-dark">tabsets</span></li>
         <li>Search for keywords in your <span class="text-body1 text-dark">tabsets</span></li>
         <li>Drag & drop tabs into tabsets</li>
+        <li>Keep pinned and grouped tabsets (experimental)</li>
+        <li>Thumbnails Preview (experimental)</li>
+        <li>Dark Mode (experimental)</li>
         <li>All data remains on your computer - no backend communication whatsoever</li>
         <li>Open source: see <a href="https://www.github.com/evandor/tabsets" target="_blank">github project</a></li>
+      </ul>
+    </div>
+
+    <div class="text-h5 q-ma-md">
+      Supported Browsers
+    </div>
+
+    <div class="text-body1 q-ma-md">
+      <ul>
+        <li>Chrome</li>
+        <li>Brave</li>
       </ul>
     </div>
 

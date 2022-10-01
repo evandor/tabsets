@@ -20,6 +20,8 @@ const featureTogglesStore = useFeatureTogglesStore()
 const bookmarksStore = useBookmarksStore()
 const syncStore = useSyncStore()
 
+const $q = useQuasar()
+
 featureTogglesStore.initialize(useQuasar().localStorage);
 
 tabsStore.initialize(useQuasar().localStorage);
@@ -34,6 +36,8 @@ syncStore.init()
 
 tabsetService.setLocalStorage(useQuasar().localStorage)
 tabsetService.init()
+
+$q.dark.set($q.localStorage.getItem('darkMode') || false)
 
 
 </script>

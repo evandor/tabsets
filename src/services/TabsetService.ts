@@ -11,7 +11,6 @@ import {useFeatureTogglesStore} from "src/stores/featureTogglesStore";
 import {useAuthStore} from "src/stores/auth";
 import {INDEX_DB_NAME} from "boot/constants";
 import {AxiosResponse} from "axios";
-import {useSyncStore} from "src/stores/syncStore";
 import {SyncMode} from "src/models/Subscription";
 
 class TabsetService {
@@ -221,7 +220,6 @@ class TabsetService {
 
 
   setStatus(tabId: number, status: TabStatus) {
-    const tabsStore = useTabsStore()
     const currentTabset: Tabset = this.getCurrentTabset() || new Tabset("", "", [], [])
     _.forEach(
       _.filter(currentTabset.tabs, (t: Tab) => t.chromeTab.id === tabId),
@@ -232,16 +230,12 @@ class TabsetService {
   saveToTabset(tab: Tab) {
     const tabsStore = useTabsStore()
     const currentTabset: Tabset = this.getCurrentTabset() || new Tabset("", "", [], [])
-    //console.log("got tabset", currentTabset)
     tab.status = TabStatus.DEFAULT
     currentTabset.tabs.push(tab)
 
     const index = _.findIndex(tabsStore.pendingTabset.tabs, t => t.id === tab.id)
     console.log("found", index)
     tabsStore.pendingTabset.tabs.splice(index, 1);
-    // _.forEach(
-    //   _.filter(currentTabset.tabs, (t: Tab) => t.chromeTab.id === tabId),
-    //   r => r.status = status)
     this.saveTabset(currentTabset)
   }
 
@@ -485,13 +479,19 @@ class TabsetService {
     console.log("exporting as ", exportAs)
 
     const tabsStore = useTabsStore()
-    const data = JSON.stringify([...tabsStore.tabsets.values()])
+    let data = ''
+    let filename = 'tabsets.json'
+    if (exportAs === 'json') {
+      data = JSON.stringify([...tabsStore.tabsets.values()])
+    } else if (exportAs === 'csv') {
+      data = "not implemented yet"
+      filename = "tabsets.csv"
+    }
 
-    var FILE = window.URL.createObjectURL(new Blob([data]));
-
+    var file = window.URL.createObjectURL(new Blob([data]));
     var docUrl = document.createElement('a');
-    docUrl.href = FILE;
-    docUrl.setAttribute('download', 'file.json');
+    docUrl.href = file;
+    docUrl.setAttribute('download', filename);
     document.body.appendChild(docUrl);
     docUrl.click();
     return Promise.resolve('done')

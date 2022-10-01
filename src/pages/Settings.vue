@@ -10,8 +10,14 @@
       {{ t.chromeTab.url }}
     </div>
 
-    <div class="text-h6">Views</div>
-    <div class="row">
+    <div class="text-h6">Dark Mode</div>
+    <div>
+      <q-radio v-model="darkMode" :val="true" label="Enabled"/>
+      <q-radio v-model="darkMode" :val="false" label="Disabled"/>
+    </div>
+
+    <div class="text-h6" v-if="featuresStore.debugEnabled">Views</div>
+    <div class="row" v-if="featuresStore.debugEnabled">
       <div class="col-3">
         Select the tabset view style
       </div>
@@ -24,8 +30,8 @@
         <!--        <q-radio v-model="shape" val="polygon" label="Polygon" />-->
       </div>
     </div>
-    <div class="text-h6">Index DB</div>
-    <div class="row">
+    <div class="text-h6" v-if="featuresStore.debugEnabled">Index DB</div>
+    <div class="row" v-if="featuresStore.debugEnabled">
       <div class="col-3">
         DB Name
       </div>
@@ -49,8 +55,16 @@ const tabsStore = useTabsStore()
 const featuresStore = useFeatureTogglesStore()
 const router = useRouter()
 const localStorage = useQuasar().localStorage
+const $q = useQuasar()
 
 const view = ref('grid')
+const darkMode = ref<boolean>(localStorage.getItem('darkMode') || false)
+
+watchEffect(() => {
+  console.log("darkMode", darkMode.value, typeof darkMode.value)
+  $q.dark.set(darkMode.value)
+  localStorage.set('darkMode', darkMode.value)
+})
 
 watchEffect(() => {
   localStorage.set("layout", view.value)
