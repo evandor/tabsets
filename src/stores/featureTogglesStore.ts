@@ -16,7 +16,6 @@ export const useFeatureTogglesStore = defineStore('featureToggles', {
   }),
 
   getters: {
-    //isLiveMode: (state) => (state.currentTabsetId === 'current'),
     debugEnabled: (state) => _.find(state.activeToggles, e => e === "debug"),
     settingsEnabled: (state) => _.find(state.activeToggles, e => e === "settings"),
     listviewEnabled: (state) => _.find(state.activeToggles, e => e === "listview"),

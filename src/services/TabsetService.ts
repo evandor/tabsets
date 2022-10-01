@@ -11,7 +11,8 @@ import {useFeatureTogglesStore} from "src/stores/featureTogglesStore";
 import {useAuthStore} from "src/stores/auth";
 import {INDEX_DB_NAME} from "boot/constants";
 import {AxiosResponse} from "axios";
-import {SyncMode, useSyncStore} from "src/stores/syncStore";
+import {useSyncStore} from "src/stores/syncStore";
+import {SyncMode} from "src/models/Subscription";
 
 class TabsetService {
 
@@ -128,7 +129,7 @@ class TabsetService {
       return
     }
     if (tabset.id) {
-      if (useFeatureTogglesStore().firebaseEnabled && useAuthStore().isAuthenticated && useSyncStore().syncMode === SyncMode.ACTIVE) {
+      if (useFeatureTogglesStore().firebaseEnabled && useAuthStore().isAuthenticated && useAuthStore().subscription.syncMode === SyncMode.ACTIVE) {
         console.log("saving tabset to firebase")
         backendApi.saveTabset(tabset)
       } else {
@@ -478,6 +479,23 @@ class TabsetService {
         })
         .catch(err => console.log("error", err))
     }
+  }
+
+  exportData(exportAs: string): Promise<any> {
+    console.log("exporting as ", exportAs)
+
+    const tabsStore = useTabsStore()
+    const data = JSON.stringify([...tabsStore.tabsets.values()])
+
+    var FILE = window.URL.createObjectURL(new Blob([data]));
+
+    var docUrl = document.createElement('a');
+    docUrl.href = FILE;
+    docUrl.setAttribute('download', 'file.json');
+    document.body.appendChild(docUrl);
+    docUrl.click();
+    return Promise.resolve('done')
+
   }
 }
 

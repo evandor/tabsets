@@ -2,13 +2,13 @@
 
   <!-- pending tabs -->
   <q-expansion-item v-if="tabsStore.pendingTabset?.tabs.length > 0"
-                    header-class="bg-amber-1 text-black"
+                    header-class="text-black"
                     expand-icon-class="text-black"
                     default-opened>
     <template v-slot:header="{ expanded }">
-      <q-item-section avatar>
-        <q-icon name="push_pin"/>
-      </q-item-section>
+<!--      <q-item-section avatar>-->
+<!--        <q-icon name="tabs"/>-->
+<!--      </q-item-section>-->
       <q-item-section>
         <div>
           <span class="text-weight-bold">Open Tabs</span>
@@ -155,7 +155,7 @@
   <q-banner v-else-if="tabsStore.currentTabsetId && tabsStore.getCurrentTabs.length === 0">
     To start adding new tabs to this empty tabset, open new browser tabs and come back to this extension to
     associate them with a tabset.<br><br>
-    If you want to assign your open tabs straight away, click <span class="cursor-pointer text-blue" @click="addOpenTabs()"><u>here</u></span>.
+    <!--If you want to assign your open tabs straight away, click <span class="cursor-pointer text-blue" @click="addOpenTabs()"><u>here</u></span>.-->
   </q-banner>
 
   <!-- rest: neither pinned, grouped, or pending -->

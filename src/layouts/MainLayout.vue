@@ -80,18 +80,45 @@
           <span @click="router.push('/login')">Login</span>
         </span>
 
-        <q-btn v-if="featuresStore.firebaseEnabled && !auth.user && tabsStore.tabsets.size > 1 && !someoneSubscribed()"
-               outline rounded color="warning" :disable="onProPage()" label="Check out Tabsets Pro..." class="q-mr-lg"
-               @click="router.push('/pro')">
-          <q-tooltip>Tabsets Pro let's you synchronize your tabsets across devices</q-tooltip>
-        </q-btn>
+<!--        <q-btn v-if="featuresStore.firebaseEnabled && !auth.user && tabsStore.tabsets.size > 1 && !someoneSubscribed()"-->
+<!--               outline rounded color="warning" :disable="onProPage()" label="Check out Tabsets Pro..." class="q-mr-lg"-->
+<!--               @click="router.push('/trypro')">-->
+<!--          <q-tooltip>Tabsets Pro let's you synchronize your tabsets across devices</q-tooltip>-->
+<!--        </q-btn>-->
 
         <q-icon name="settings" size="2em"
                 class="q-mr-md cursor-pointer"
                 @click="openSettingsPage()"
                 v-if="featuresStore.settingsEnabled"></q-icon>
 
-        <div>
+        <q-btn label="Actions" style="width:200px" class="q-mr-lg">
+          <q-menu fit>
+            <q-list style="min-width: 100px">
+              <q-item clickable>
+                <q-item-section @click="addTabset()">Add Tabset</q-item-section>
+              </q-item>
+              <q-item clickable>
+                <q-item-section @click="showExportDialog()">Export</q-item-section>
+              </q-item>
+              <q-separator />
+
+<!--              <q-separator />-->
+<!--              <q-item clickable>-->
+<!--                <q-item-section>Help &amp; Feedback</q-item-section>-->
+<!--              </q-item>-->
+              <q-separator v-if="featuresStore.firebaseEnabled && !auth.user && tabsStore.tabsets.size > 1 && !someoneSubscribed()"/>
+              <q-item clickable v-if="featuresStore.firebaseEnabled && !auth.user && tabsStore.tabsets.size > 1 && !someoneSubscribed()">
+                <q-item-section @click="router.push('/trypro')">Check out Tabsets Pro...</q-item-section>
+              </q-item>
+              <q-separator />
+              <q-item clickable @click="router.push('/about')">
+                <q-item-section>About tabsets</q-item-section>
+              </q-item>
+            </q-list>
+          </q-menu>
+        </q-btn>
+
+        <div class="cursor-pointer" @click="router.push('/about')">
           v{{ appVersion }}
         </div>
       </q-toolbar>
@@ -183,8 +210,11 @@ import TabsetService from "src/services/TabsetService";
 import {useSearchStore} from "stores/searchStore";
 import {useFeatureTogglesStore} from "src/stores/featureTogglesStore";
 import {useAuthStore} from "src/stores/auth"
-import {useSyncStore, SyncMode, Subscription} from "src/stores/syncStore";
+import {useSyncStore, Subscription} from "src/stores/syncStore";
 import _ from "lodash"
+import {SyncMode} from "src/models/Subscription";
+import NewTabset from "components/dialogues/NewTabset.vue";
+import ExportDialog from "components/dialogues/ExportDialog.vue";
 
 const router = useRouter()
 const tabsStore = useTabsStore()
@@ -221,7 +251,6 @@ const newTabsetName = ref('')
 const caption = ref('yyy')
 const search = ref('')
 const merge = ref("false")
-const newTabsetNameExists = ref(false)
 
 const localStorage = useQuasar().localStorage
 //@ts-ignore
@@ -239,18 +268,18 @@ useMeta(() => {
 })
 
 watchEffect(() => {
-  console.log(" > watchEffect", syncStore.syncMode)
-  if (syncStore.syncMode !== SyncMode.INACTIVE) {
-    syncModel.value = true
-  } else {
-    syncModel.value = false
-  }
-  syncingActive.value = syncStore.showSyncMode && syncStore.syncMode !== SyncMode.INACTIVE
+  console.log(" > watchEffect", auth.subscription)
+  // if (syncStore.syncMode !== SyncMode.INACTIVE) {
+  //   syncModel.value = true
+  // } else {
+  //   syncModel.value = false
+  // }
+  syncingActive.value = syncStore.showSyncMode && auth.subscription.syncMode !== SyncMode.INACTIVE
 })
 
-watchEffect(() => {
-  newTabsetNameExists.value = !!tabsStore.nameExistsInContextTabset(newTabsetName.value);
-})
+// watchEffect(() => {
+//   newTabsetNameExists.value = !!tabsStore.nameExistsInContextTabset(newTabsetName.value);
+// })
 
 function checkKeystroke(e: any) {
   if (e.key === '/') {
@@ -286,14 +315,22 @@ const title = () => {
 const goHome = () => router.push("/")
 const openSettingsPage = () => router.push("/settings")
 
-const tabNameExists = () => tabsStore.nameExistsInContextTabset(newTabsetName.value)
+// const tabNameExists = () => tabsStore.nameExistsInContextTabset(newTabsetName.value)
 
 const someoneSubscribed = () => {
   return _.find(localStorage.getAllKeys(), (k: string) => k.indexOf(".subscription") >= 0)
 }
 
-const onProPage = () => useRouter().currentRoute.value.fullPath === "/pro"
+const onProPage = () => useRouter().currentRoute.value.fullPath === "/trypro"
 
+const showNewTabsetDialog = ref(false)
+const addTabset = () => {
+  $q.dialog({
+    component: NewTabset
+  }).onDismiss(() => {
+    showNewTabsetDialog.value = false
+  })
+}
 
 const startSync = () => {
   $q.loadingBar.start()
@@ -310,7 +347,7 @@ const startSync = () => {
         .then(res => {
           count++
           successCount++
-          syncStore.setSyncMode(SyncMode.ACTIVE)
+          //syncStore.setSyncMode(SyncMode.ACTIVE)
         })
         .catch(err => {
           console.log("error", err)
@@ -325,7 +362,7 @@ const stopSync = () => {
   $q.loadingBar.start()
   if (featuresStore.firebaseEnabled) {
     console.log("stop syncing...")
-    syncStore.setSyncMode(SyncMode.INACTIVE)
+    //syncStore.setSyncMode(SyncMode.INACTIVE)
     syncModel.value = false
     const keys = [...tabsStore.tabsets.keys()]
     let count = 0
@@ -374,6 +411,14 @@ const logout = () => {
     .catch(error => {
       //this.handleError(error)
     })
+}
+
+const showExportDialog = () => {
+  $q.dialog({
+    component: ExportDialog
+  }).onDismiss(() => {
+    //showNewTabsetDialog.value = false
+  })
 }
 
 </script>

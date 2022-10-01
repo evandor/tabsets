@@ -1,12 +1,7 @@
 import {defineStore} from 'pinia';
 import {useAuthStore} from "src/stores/auth";
+import {SyncMode} from "src/models/Subscription";
 
-
-export enum SyncMode {
-  ACTIVE= "ACTIVE",
-  INACTIVE = "INACTIVE",
-  PARTIAL = "PARTIAL"
-}
 
 export enum Subscription {
   UNKNOWN = "UNKNOWN",
@@ -15,22 +10,18 @@ export enum Subscription {
 }
 
 
-function getSyncMode() {
+function getSyncMode(): SyncMode {
   const auth = useAuthStore()
   if (auth.isAuthenticated && auth.user) {
-    //console.log("reading syncMode for user", auth.user['uid'])
-    const res = localStorage.getItem(auth.user['uid'] + ".syncMode");
-    //console.log("res", res)
-    return res
+    return auth.subscription.syncMode || SyncMode.UNKNOWN
   }
- //console.log("reading syncMode")
-  return localStorage.getItem("syncMode");
+  return SyncMode.UNKNOWN
 }
 
 export const useSyncStore = defineStore('sync', {
   state: () => ({
     // bookmarksTree: [] as unknown as object[]
-    syncMode: SyncMode.INACTIVE,
+    //syncMode: SyncMode.INACTIVE,
 
     // "pro" user?
     subscription: Subscription.UNKNOWN
@@ -55,21 +46,21 @@ export const useSyncStore = defineStore('sync', {
       const syncMode: string | null = getSyncMode()
       if (syncMode !== null) {
         console.log("got syncMode", syncMode)
-        this.syncMode = SyncMode[syncMode as keyof typeof SyncMode]
-        console.log("this.syncMode", this.syncMode)
-      }
-    },
-    setSyncMode(mode: SyncMode) {
-      this.syncMode = mode
-      const auth = useAuthStore()
-      if (auth.isAuthenticated && auth.user) {
-        console.log("setting syncMode for user", auth.user['uid'], mode)
-        localStorage.setItem(auth.user['uid'] + ".syncMode",mode.toString());
-      } else {
-        console.log("setting syncMode", mode)
-        localStorage.setItem("syncMode", mode.toString())
+        //this.syncMode = SyncMode[syncMode as keyof typeof SyncMode]
+        //console.log("this.syncMode", this.syncMode)
       }
     }
+    // setSyncMode(mode: SyncMode) {
+    //   this.syncMode = mode
+    //   const auth = useAuthStore()
+    //   if (auth.isAuthenticated && auth.user) {
+    //     console.log("setting syncMode for user", auth.user['uid'], mode)
+    //     localStorage.setItem(auth.user['uid'] + ".syncMode",mode.toString());
+    //   } else {
+    //     console.log("setting syncMode", mode)
+    //     localStorage.setItem("syncMode", mode.toString())
+    //   }
+    // }
 
   }
 });

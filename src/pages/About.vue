@@ -15,7 +15,7 @@
     </div>
 
     <div class="text-h5 q-ma-md">
-      Basic Features
+      Basic Features (Tabsets Free)
     </div>
 
     <div class="text-body1 q-ma-md">
@@ -25,6 +25,8 @@
         <li>Edit <span class="text-body1 text-dark">tabsets</span></li>
         <li>Search for keywords in your <span class="text-body1 text-dark">tabsets</span></li>
         <li>Drag & drop tabs into tabsets</li>
+        <li>All data remains on your computer - no backend communication whatsoever</li>
+        <li>Open source: see <a href="https://www.github.com/evandor/tabsets" target="_blank">github project</a></li>
       </ul>
     </div>
 

@@ -5,15 +5,27 @@
       Welcome to Tabsets Pro
     </div>
 
-    <div class="text-body1 q-ma-md" v-if="tabsStore.tabsets.size === 0">
+    <div class="text-body1 q-ma-md">
       Tabsets is a browser extension which helps you organize your tabs.<br><br>
-      A <span class="text-body1 text-dark">tabset</span> is just a collection of tabs you can give a name to.
+      Tabsets Pro adds some additional features like synchronization across devices.
     </div>
-    <div class="text-body1 q-ma-md" v-else>
-      Tabsets is a browser extension which helps you organize your tabs.<br><br>
+
+    <div class="text-h5 q-ma-md">
+      Status
+    </div>
+
+    <div class="text-body1 q-ma-md">
       You are managing <b>{{ tabsStore.allTabsCount }} tabs</b> in <b>{{ tabsStore.tabsets.size }} Tabsets</b> already.<br><br>
       <b>{{tabsStore.localTabsCount}}</b> of those tabs are stored <b>only locally in this browser</b>.
     </div>
+
+<!--    <div class="text-h5 q-ma-md">-->
+<!--      Subscription-->
+<!--    </div>-->
+
+<!--    <div class="text-body1 q-ma-md" v-if="auth.subscription.account === Subscription.FREE">-->
+<!--      You are on the free tier of Tabsets Pro and can try out its features for another x days.-->
+<!--    </div>-->
 
     <div class="text-h5 q-ma-md">
       Pro Features
@@ -53,7 +65,7 @@
         size="12px"
         color="bg-grey-6" label="or... stay offline"
         class="q-mr-md"
-        @click="router.push('/tabset')">
+        @click="stayOffline()">
         <q-tooltip>Keep using tabsets as before with locally stored tabsets</q-tooltip>
       </q-btn>
     </div>
@@ -89,23 +101,30 @@
 
 <script setup lang="ts">
 import {useTabsStore} from "src/stores/tabsStore"
-import Fab from "src/components/Fab.vue"
-import {useNotificationsStore} from "stores/notificationsStore";
 import {ref} from "vue";
 import _ from "lodash";
 import TabsetService from "src/services/TabsetService";
-import {SyncMode} from "stores/syncStore";
 import {useFeatureTogglesStore} from "stores/featureTogglesStore";
 import {useQuasar} from "quasar";
 import {useRouter} from "vue-router";
+import {useAuthStore} from "stores/auth";
+import {SyncMode} from "src/models/Subscription";
+import backendApi from "src/services/BackendApi";
 
 const featuresStore = useFeatureTogglesStore()
 const tabsStore = useTabsStore()
 const router = useRouter()
+const auth = useAuthStore()
 const $q = useQuasar()
 
 
 const syncTabsetsDialog = ref(false)
+
+const stayOffline = () => {
+  auth.subscription.syncMode = SyncMode.DECLINED
+  backendApi.updateUser()
+  router.push('/tabset')
+}
 
 const startSync = () => {
   $q.loadingBar.start()

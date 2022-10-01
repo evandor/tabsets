@@ -1,8 +1,12 @@
 <template>
-  <q-page padding class="window-height window-width column justify-center items-center fullimageBackground">
-    <div class="text-h4 q-ma-xl">Tabsets Browser Extension</div>
+  <q-page padding class="window-height window-width column justify-center items-center">
+    <div class="text-h4 q-ma-md">Register @ Tabsets</div>
+    <div class="text-body2 q-ma-md cursor-pointer text-grey-6" @click="router.push('/about')">or: take me back</div>
     <div id="firebaseui-auth-container"></div>
     <div id="loader"></div>
+    <div>&nbsp;</div>
+    <div>&nbsp;</div>
+    <div>&nbsp;</div>
   </q-page>
 </template>
 
@@ -14,14 +18,17 @@ import {useAuthStore} from "src/stores/auth";
 import TabsetService from "src/services/TabsetService";
 import { Subscription } from "src/stores/syncStore";
 import backendApi from "src/services/BackendApi";
+import { useRouter } from "vue-router";
 
 export default defineComponent({
   // name: 'PageName',
   setup() {
     //const localStorage = useQuasar().localStorage
     const authStore = useAuthStore()
+    const router = useRouter()
     return {
-      authStore
+      authStore,
+      router
       //auth, localStorage
     }
   },
@@ -31,6 +38,8 @@ export default defineComponent({
         EmailAuthProvider.PROVIDER_ID,
         GoogleAuthProvider.PROVIDER_ID
       ],
+      tosUrl: '/www/index.html#/tos',
+      privacyPolicyUrl: '/www/index.html#/privacy',
       signInSuccessUrl:  (process.env.MODE === 'bex') ? '/www/index.html#/' : "#/tabset",
       callbacks: {
         signInSuccessWithAuthResult: this.signInAttempSuccessful,

@@ -54,6 +54,15 @@ export class BackendApi {
         return axios.get(`${this.backendUrl}/users/current`, {headers: {'AuthToken': token}})
       })
   }
+
+  updateUser() {
+    const auth = useAuthStore()
+    return auth.getToken
+      .then(token => {
+        console.log("putting backend user @ url", this.backendUrl)
+        return axios.put(`${this.backendUrl}/users/current`, auth.subscription, {headers: {'AuthToken': token}})
+      })
+  }
 }
 
 export default new BackendApi();

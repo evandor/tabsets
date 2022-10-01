@@ -16,15 +16,19 @@ const routes: RouteRecordRaw[] = [
     children: [{ path: '', component: () => import('pages/About.vue') }],
   },
   {
-    path: '/pro',
+    path: '/trypro',
     component: () => import('layouts/MainLayout.vue'),
-    children: [{ path: '', component: () => import('pages/Pro.vue') }],
+    children: [{ path: '', component: () => import('pages/TryPro.vue') }],
+  },
+  {
+    path: '/register',
+    component: () => import('layouts/PlainLayout.vue'),
+    children: [{ path: '', component: () => import('pages/Register.vue') }],
   },
   {
     path: '/login',
     component: () => import('layouts/PlainLayout.vue'),
     children: [{ path: '', component: () => import('pages/Login.vue') }],
-    //children: [{ path: '', component: () => import('pages/Login.vue') }],
   },
   {
     path: '/subscription',
