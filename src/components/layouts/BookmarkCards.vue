@@ -1,7 +1,7 @@
 <template>
 
   <div class="row items-start">
-    <div v-for="tab in props.tabs"
+    <div v-for="tab in props.bookmarks"
          :key="tab.id"
          draggable="true"
          @dragstart="startDrag($event, tab)"
@@ -9,18 +9,12 @@
 
       <q-card class="my-card" flat bordered :style="cardStyle(tab)" @mouseover="setInfo(tab)" @click="selectTab(tab)">
 
-        <q-card-section class="q-pt-xs cursor-pointer bg-primary text-white" style="width:100%;">
+        <q-card-section class="q-pt-xs cursor-pointer bg-amber-1 text-black" style="width:100%;">
           <div class="row items-baseline">
 
             <!-- favicon -->
             <div class="col-2">
-              <q-img
-                class="rounded-borders"
-                width="24px"
-                height="24px"
-                :src="getFaviconUrl(tab.chromeTab)">
-                <q-tooltip>{{ tab.chromeTab?.id }} / {{ tab.id }}</q-tooltip>
-              </q-img>
+              <q-icon name="bookmark_border" size="24px"></q-icon>
             </div>
 
             <!-- title or name if given -->
@@ -49,19 +43,9 @@
 
 
         <q-card-actions align="right">
-          <!--          <q-checkbox-->
-          <!--            v-model="tab.selected"-->
-          <!--            checked-icon="task_alt"-->
-          <!--            @update:model-value="val => selectionChanged(val)"-->
-          <!--            unchecked-icon="check_box_outline_blank"-->
-          <!--          />-->
-          <!--          <q-btn flat round color="positive" icon="save" @click="saveTab(tab)">-->
-          <!--            <q-tooltip>Save this tab to your current context</q-tooltip>-->
-          <!--          </q-btn>-->
           <q-btn flat round color="red" size="11px" icon="delete_outline" @click.stop="closeTab(tab)">
             <q-tooltip>Delete this tab from this list</q-tooltip>
           </q-btn>
-
         </q-card-actions>
 
       </q-card>
@@ -78,7 +62,7 @@ import TabsetService from "src/services/TabsetService";
 import {useNotificationsStore} from "stores/notificationsStore";
 
 const props = defineProps({
-  tabs: {
+  bookmarks: {
     type: Array,
     required: true
   },
@@ -142,13 +126,7 @@ function togglePin(tabId: number) {
 
 
 function cardStyle(tab: Tab) {
-  //const height = props.showActions ? "130px" : "96px"
   let borderColor = ""
-  // if (TabStatus.CREATED === tab.status) {
-  //   borderColor = "";
-  // } else if (TabStatus.DELETED === tab.status) {
-  //   borderColor = "border-color:#EF9A9A"
-  // }
   if (isOpen(tab)) {
     borderColor = "border-color:#8f8f8f"
   }

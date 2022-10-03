@@ -8,6 +8,8 @@ export const useNotificationsStore = defineStore('notifications', {
     state: () => ({
       info: '',
       selectedTab: null as unknown as Tab,
+      showBookmarks: false,
+      bookmarksActive: false,
       fabHasElementAnimation: false
     }),
     getters: {},

@@ -1,6 +1,6 @@
 {
   "name": "tabsets",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Browser Extension to manage your tabs by grouping them into re-storable sets",
   "productName": "Tabsets Extension",
   "author": "evandor <evandor@gmail.com>",
@@ -31,6 +31,8 @@
     "events": "^3.3.0",
     "firebase": "^9.9.2",
     "firebaseui": "^6.0.1",
+    "fuse.js": "^6.6.2",
+    "html-to-text": "^8.2.1",
     "idb": "^7.0.2",
     "lodash": "^4.17.21",
     "pinia": "^2.0.11",

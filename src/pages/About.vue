@@ -25,6 +25,7 @@
         <li>Edit <span class="text-body1 text-dark">tabsets</span></li>
         <li>Search for keywords in your <span class="text-body1 text-dark">tabsets</span></li>
         <li>Drag & drop tabs into tabsets</li>
+        <li>Search in Tabs (experimental)</li>
         <li>Keep pinned and grouped tabsets (experimental)</li>
         <li>Thumbnails Preview (experimental)</li>
         <li>Dark Mode (experimental)</li>

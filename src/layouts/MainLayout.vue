@@ -52,12 +52,6 @@
 <!--          label=""-->
 <!--        />-->
 
-<!--        <div v-if="auth.isAuthenticated && syncingActive" class="q-mr-lg">Syncing active&nbsp;-->
-
-<!--        </div>-->
-<!--        <div v-if="auth.isAuthenticated && !syncingActive" class="q-mr-lg">Syncing stopped-->
-
-<!--        </div>-->
 
         <span class="q-pr-lg" style="cursor: pointer" v-if="featuresStore.firebaseEnabled && auth.user">
           <q-icon name="person" class="q-mr-md" size="28px"></q-icon>
@@ -97,9 +91,19 @@
               <q-item clickable>
                 <q-item-section @click="addTabset()">Add Tabset</q-item-section>
               </q-item>
+              <q-item clickable v-if="useNotificationsStore().bookmarksActive">
+                <q-item-section v-close-popup @click="useNotificationsStore().showBookmarks = !useNotificationsStore().showBookmarks">
+                  {{useNotificationsStore().showBookmarks ? 'Hide Bookmarks' : 'Show Bookmarks'}}
+                </q-item-section>
+              </q-item>
+              <q-separator />
               <q-item clickable>
                 <q-item-section @click="showExportDialog()">Export</q-item-section>
               </q-item>
+              <q-item clickable>
+                <q-item-section @click="showImportDialog()">Import (Json)</q-item-section>
+              </q-item>
+              <q-separator />
               <q-item clickable>
                 <q-item-section @click="router.push('/settings')">Settings</q-item-section>
               </q-item>
@@ -127,7 +131,7 @@
       </q-toolbar>
     </q-header>
 
-    <q-drawer show-if-above :v-model="true" v-if="featuresStore.bookmarksEnabled" side="left" bordered>
+    <q-drawer v-model="leftDrawerOpen" side="left" bordered>
       <BookmarksTree/>
     </q-drawer>
 
@@ -213,11 +217,13 @@ import TabsetService from "src/services/TabsetService";
 import {useSearchStore} from "stores/searchStore";
 import {useFeatureTogglesStore} from "src/stores/featureTogglesStore";
 import {useAuthStore} from "src/stores/auth"
+import {} from "src/stores/notificationsStore"
 import {useSyncStore} from "src/stores/syncStore";
 import _ from "lodash"
 import {SyncMode} from "src/models/Subscription";
 import NewTabset from "components/dialogues/NewTabset.vue";
 import ExportDialog from "components/dialogues/ExportDialog.vue";
+import ImportDialog from "components/dialogues/ImportDialog.vue";
 
 const router = useRouter()
 const tabsStore = useTabsStore()
@@ -227,6 +233,7 @@ const auth = useAuthStore()
 const syncStore = useSyncStore()
 
 const rightDrawerOpen = ref(true)
+const leftDrawerOpen = ref(false)
 const showBookmarksDrawer = ref(false)
 
 const syncTabsetsDialog = ref(false)
@@ -250,7 +257,6 @@ $q.loadingBar.setDefaults({
   position: 'top'
 })
 
-const newTabsetName = ref('')
 const caption = ref('yyy')
 const search = ref('')
 const merge = ref("false")
@@ -271,18 +277,14 @@ useMeta(() => {
 })
 
 watchEffect(() => {
-  console.log(" > watchEffect", auth.subscription)
-  // if (syncStore.syncMode !== SyncMode.INACTIVE) {
-  //   syncModel.value = true
-  // } else {
-  //   syncModel.value = false
-  // }
-  syncingActive.value = syncStore.showSyncMode && auth.subscription.syncMode !== SyncMode.INACTIVE
+  console.log("notificationsStore.showBookmarks", notificationsStore.showBookmarks)
+  leftDrawerOpen.value = notificationsStore.showBookmarks
 })
 
-// watchEffect(() => {
-//   newTabsetNameExists.value = !!tabsStore.nameExistsInContextTabset(newTabsetName.value);
-// })
+watchEffect(() => {
+  console.log(" > watchEffect", auth.subscription)
+  syncingActive.value = syncStore.showSyncMode && auth.subscription.syncMode !== SyncMode.INACTIVE
+})
 
 function checkKeystroke(e: any) {
   if (e.key === '/') {
@@ -417,11 +419,11 @@ const logout = () => {
 }
 
 const showExportDialog = () => {
-  $q.dialog({
-    component: ExportDialog
-  }).onDismiss(() => {
-    //showNewTabsetDialog.value = false
-  })
+  $q.dialog({component: ExportDialog})
+}
+
+const showImportDialog = () => {
+  $q.dialog({component: ImportDialog})
 }
 
 </script>

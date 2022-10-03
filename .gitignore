@@ -36,3 +36,4 @@ yarn-error.log*
 /.env
 /releases/0.1.0/Packaged.tabsets.zip
 /releases/0.1.0/Packaged.tabsets/
+/releases/0.1.1/

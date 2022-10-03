@@ -10,14 +10,15 @@ import {bexContent} from 'quasar/wrappers'
 
 export default bexContent((bridge) => {
   //console.log("bexContentBridge1", bridge)
-  //console.log("bexContentBridge2", document.body)
-
+  // console.log("bexContentBridge2", typeof document.body, document.body.toString())
 
   chrome.runtime.sendMessage({msg: "capture"}, function(response) {
     console.log("created thumbnail for tabsets")
   });
 
-
+  chrome.runtime.sendMessage({msg: "html2text", html:document.documentElement.outerHTML}, function(response) {
+    console.log("created text excerpt for tabsets")
+  });
 
 
 })

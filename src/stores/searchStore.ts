@@ -1,12 +1,7 @@
 import {defineStore} from 'pinia';
-import _ from 'lodash'
-import {LocalStorage, uid} from "quasar";
-import {Tabset} from "src/models/Tabset";
-import {Tab, TabStatus} from "src/models/Tab";
+import Fuse from 'fuse.js'
+import FuseIndex = Fuse.FuseIndex;
 import TabsetService from "src/services/TabsetService";
-import ChromeListeners from "src/services/ChromeListeners";
-
-
 
 export const useSearchStore = defineStore('search', {
   state: () => ({
@@ -15,18 +10,43 @@ export const useSearchStore = defineStore('search', {
 
     history: [] as unknown as string[],
 
+    searchIndex: null as unknown as any,
+
+    fuse: null as unknown as any,
+
+    options: {keys: ['title', 'url', 'content']}
+
   }),
 
   getters: {
-    //isLiveMode: (state) => (state.currentTabsetId === 'current'),
-
 
   },
 
   actions: {
-    async initialize(localStorage: any) {
+    async init() {
+
+      this.searchIndex = Fuse.createIndex(this.options.keys, [])
+      this.fuse = new Fuse([], this.options, this.searchIndex)
 
     },
+    addToIndex(id: string, title: string, url: string, content: string) {
+      const doc = {
+        id, title, url, content
+      }
+      this.fuse.add(doc)
+      console.log(this.fuse.getIndex().size())
+      //this.searchIndex.add(id, content)
+    },
+    populate (contentPromise: Promise<any[]>) {
+      contentPromise
+        .then(content => {
+          console.log("savedContent", content)
+          this.searchIndex = Fuse.createIndex(this.options.keys, content)
+          this.fuse = new Fuse(content, this.options, this.searchIndex)
+          console.log("index size", this.fuse.getIndex().size())
+        })
+
+    }
 
   }
 });

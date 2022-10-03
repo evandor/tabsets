@@ -12,6 +12,7 @@ import {useAuthStore} from "src/stores/auth";
 import {INDEX_DB_NAME} from "boot/constants";
 import {AxiosResponse} from "axios";
 import {SyncMode} from "src/models/Subscription";
+import {useSearchStore} from "stores/searchStore";
 
 class TabsetService {
 
@@ -36,8 +37,18 @@ class TabsetService {
           console.log("creating db thumbnails")
           db.createObjectStore('thumbnails');
         }
+        if (!db.objectStoreNames.contains('content')) {
+          console.log("creating db content")
+          db.createObjectStore('content');
+        }
       },
     });
+
+    if (this.db) {
+      useSearchStore().populate(this.db.getAll('content'))
+    } else {
+      console.log("error could not populate search index")
+    }
 
     // --- setting all tabs from storage
     const tabsStore = useTabsStore()
@@ -349,6 +360,19 @@ class TabsetService {
     return this.db.delete('thumbnails', btoa(url))
   }
 
+  saveText(tab: chrome.tabs.Tab | undefined, text: string) {
+    if (tab && tab.url) {
+      const encodedTabUrl = btoa(tab.url)
+      const title = tab.title || ''
+      const url = tab.url
+      //localStorage.setItem("tabsets.tab.xxx", thumbnail)
+      this.db.put('content', {id: encodedTabUrl, title, url, content: text}, encodedTabUrl)
+        .then(ts => console.log("added content"))
+        .catch(err => console.log("err", err))
+      useSearchStore().addToIndex(encodedTabUrl, tab.title || '', tab.url, text)
+    }
+  }
+
   setCustomTitle(tab: Tab, title: string) {
     tab.name = title
     this.saveCurrentTabset()
@@ -496,6 +520,10 @@ class TabsetService {
     docUrl.click();
     return Promise.resolve('done')
 
+  }
+
+  getContents(): Promise<any[]> {
+    return Promise.reject()//this.db.getAll('content')
   }
 }
 

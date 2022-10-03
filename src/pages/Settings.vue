@@ -16,6 +16,12 @@
       <q-radio v-model="darkMode" :val="false" label="Disabled"/>
     </div>
 
+    <div class="text-h6">Activate Bookmarks Feature (experimental)</div>
+    <div>
+      <q-radio v-model="bookmarks" :val="true" label="Enabled"/>
+      <q-radio v-model="bookmarks" :val="false" label="Disabled"/>
+    </div>
+
     <div class="text-h6" v-if="featuresStore.debugEnabled">Views</div>
     <div class="row" v-if="featuresStore.debugEnabled">
       <div class="col-3">
@@ -50,6 +56,7 @@ import {useRouter} from "vue-router";
 import {ref, watchEffect} from "vue";
 import {useQuasar} from "quasar";
 import {INDEX_DB_NAME} from "boot/constants"
+import {useNotificationsStore} from "stores/notificationsStore";
 
 const tabsStore = useTabsStore()
 const featuresStore = useFeatureTogglesStore()
@@ -59,11 +66,19 @@ const $q = useQuasar()
 
 const view = ref('grid')
 const darkMode = ref<boolean>(localStorage.getItem('darkMode') || false)
+const bookmarks = ref<boolean>(localStorage.getItem('bookmarks') || false)
 
 watchEffect(() => {
   console.log("darkMode", darkMode.value, typeof darkMode.value)
   $q.dark.set(darkMode.value)
   localStorage.set('darkMode', darkMode.value)
+})
+
+watchEffect(() => {
+  console.log("bookmarks", bookmarks.value)
+  useNotificationsStore().showBookmarks  = bookmarks.value
+  useNotificationsStore().bookmarksActive  = bookmarks.value
+  localStorage.set('bookmarks', bookmarks.value)
 })
 
 watchEffect(() => {

@@ -6,6 +6,9 @@ import {Tab, TabStatus} from "src/models/Tab";
 import {uid} from "quasar";
 import throttledQueue from 'throttled-queue';
 
+// @ts-ignore
+import {convert} from "html-to-text"
+
 class ChromeListeners {
 
   inProgress = false;
@@ -189,13 +192,46 @@ class ChromeListeners {
   }
 
   onMessage(request: any, sender: chrome.runtime.MessageSender, sendResponse: any) {
+    console.log("got message", request.msg)
+    if (request.msg === 'capture') {
+      this.handleCapture(sender, sendResponse)
+    } else if (request.msg === 'html2text') {
+      this.handleHtml2Text(request, sender, sendResponse)
+    }
+    return true;
+  }
 
+  private isIgnored(tab: chrome.tabs.Tab) {
     const tabsStore = useTabsStore()
+    const ignoreIndex = _.findIndex(tabsStore.ignoredTabset.tabs, (ignoredTab: Tab) => {
+      if (ignoredTab.chromeTab.url && tab.url) {
+        if (tab.url.startsWith(ignoredTab.chromeTab.url)) {
+          console.log("ignoring tab with url", tab.url)
+          return true
+        }
+      }
+      return false
+    })
+    return ignoreIndex >= 0
+  }
 
+  private handleHtml2Text(request: any, sender: chrome.runtime.MessageSender, sendResponse: any) {
+    // if (!this.thumbnailsActive) {
+    //   return
+    // }
+    const html = document.documentElement.innerHTML
+    //console.log("html", html)
+    const text = convert(request.html, {
+      wordwrap: 130
+    });
+    TabsetService.saveText(sender.tab, text)
+    sendResponse({html2text: 'done'});
+  }
+
+  private handleCapture(sender: chrome.runtime.MessageSender, sendResponse: any) {
     if (!this.thumbnailsActive) {
       return
     }
-
 
     this.throttleOnePerSecond(() => {
       console.log("capturing tab...")
@@ -243,22 +279,6 @@ class ChromeListeners {
       );
     })
 
-
-    return true;
-  }
-
-  private isIgnored(tab: chrome.tabs.Tab) {
-    const tabsStore = useTabsStore()
-    const ignoreIndex = _.findIndex(tabsStore.ignoredTabset.tabs, (ignoredTab: Tab) => {
-      if (ignoredTab.chromeTab.url && tab.url) {
-        if (tab.url.startsWith(ignoredTab.chromeTab.url)) {
-          console.log("ignoring tab with url", tab.url)
-          return true
-        }
-      }
-      return false
-    })
-    return ignoreIndex >= 0
   }
 }
 

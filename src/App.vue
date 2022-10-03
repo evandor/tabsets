@@ -11,6 +11,7 @@ import backendApi from "src/services/BackendApi";
 import {useFeatureTogglesStore} from "src/stores/featureTogglesStore";
 import {useBookmarksStore} from "src/stores/bookmarksStore";
 import {useSyncStore} from "src/stores/syncStore";
+import {useSearchStore} from "stores/searchStore";
 
 backendApi.init(process.env.BACKEND_URL || "unknown", null)
 
@@ -18,6 +19,7 @@ const tabsStore = useTabsStore()
 const tabGroupsStore = useTabGroupsStore()
 const featureTogglesStore = useFeatureTogglesStore()
 const bookmarksStore = useBookmarksStore()
+const searchStore = useSearchStore()
 const syncStore = useSyncStore()
 
 const $q = useQuasar()
@@ -32,6 +34,7 @@ tabGroupsStore.initListeners();
 
 bookmarksStore.init()
 
+searchStore.init()
 syncStore.init()
 
 tabsetService.setLocalStorage(useQuasar().localStorage)

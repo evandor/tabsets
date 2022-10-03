@@ -45,6 +45,11 @@ const routes: RouteRecordRaw[] = [
     component: () => import('layouts/MainLayout.vue'),
     children: [{ path: '', component: () => import('pages/CurrentTabs.vue') }],
   },
+  {
+    path: '/bookmarks/:id',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [{ path: '', component: () => import('pages/Bookmarks.vue') }],
+  },
   // {
   //   path: '/browser',
   //   component: () => import('layouts/MainLayout.vue'),
@@ -54,10 +59,7 @@ const routes: RouteRecordRaw[] = [
     path: '/search/:term',
     component: () => import('layouts/MainLayout.vue'),
     children: [{ path: '', component: () => import('pages/SearchPage.vue') }],
-    //children: [{ path: '', component: () => import('pages/Login.vue') }],
   },
-  // Always leave this as last one,
-  // but you can also remove it
   {
     path: '/:catchAll(.*)*',
     component: () => import('pages/ErrorNotFound.vue'),

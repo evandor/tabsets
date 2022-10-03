@@ -5,35 +5,38 @@
     <q-item-label header>Bookmarks</q-item-label>
 
     <q-tree
-      :nodes="bookmarksStore.bookmarksTree"
+      :nodes="bookmarksStore.bookmarksNodes"
       node-key="id"
       v-model:expanded="expanded"
     >
       <template v-slot:header-node="prop">
         <q-icon name="o_folder" class="q-mr-sm"/>
-        {{ prop.node.label }}
+        <span class="cursor-pointer">{{ prop.node.label }}</span>
         <q-menu :v-model="false" context-menu>
           <q-list style="min-width: 100px">
+            <q-item clickable v-close-popup>
+              <q-item-section @click="router.push('/bookmarks/' + prop.node.id)">Open</q-item-section>
+            </q-item>
             <q-item clickable v-close-popup>
               <q-item-section @click="importFromBookmarks(prop)">Import as tabset</q-item-section>
             </q-item>
           </q-list>
         </q-menu>
       </template>
-      <template v-slot:header-leaf="prop">
-        <q-icon name="o_article" class="q-mr-sm"/>
-        {{ prop.node.label }}/{{ prop.node.menuShowing }}
-        <q-menu :v-model="false" context-menu>
-          <q-list style="min-width: 100px">
-            <q-item clickable v-close-popup>
-              <q-item-section>{{ prop.node.label }}/{{ prop.key }}</q-item-section>
-            </q-item>
-            <q-item clickable v-close-popup>
-              <q-item-section>ID: {{ prop.node.id }}</q-item-section>
-            </q-item>
-          </q-list>
-        </q-menu>
-      </template>
+<!--      <template v-slot:header-leaf="prop">-->
+<!--        <q-icon name="o_article" class="q-mr-sm"/>-->
+<!--        {{ prop.node.label }}/{{ prop.node.menuShowing }}-->
+<!--        <q-menu :v-model="false" context-menu>-->
+<!--          <q-list style="min-width: 100px">-->
+<!--            <q-item clickable v-close-popup>-->
+<!--              <q-item-section>{{ prop.node.label }}/{{ prop.key }}</q-item-section>-->
+<!--            </q-item>-->
+<!--            <q-item clickable v-close-popup>-->
+<!--              <q-item-section>ID: {{ prop.node.id }}</q-item-section>-->
+<!--            </q-item>-->
+<!--          </q-list>-->
+<!--        </q-menu>-->
+<!--      </template>-->
     </q-tree>
 
 

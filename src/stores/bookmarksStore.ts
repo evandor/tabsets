@@ -4,19 +4,24 @@ import {useFeatureTogglesStore} from "src/stores/featureTogglesStore";
 import _ from "lodash";
 import {TreeNode} from "src/models/Tree";
 
-function getChildren(parent: chrome.bookmarks.BookmarkTreeNode, level: number = 1): TreeNode[] {
+function getChildren(
+  parent: chrome.bookmarks.BookmarkTreeNode,
+  predicate: (x:chrome.bookmarks.BookmarkTreeNode) => boolean = x => true,
+  level: number = 1): TreeNode[] {
+
   if (parent && parent.children) {
-    const children = _.map(parent.children, c => {
-      const children = getChildren(c)
+    //let predicate: x: chrome.bookmarks.BookmarkTreeNode => string = (x:chrome.bookmarks.BookmarkTreeNode) => !x.url;
+    return _.map(_.filter(parent.children, predicate), c => {
+      const childrenWithoutPredicate = getChildren(c)
+      const children = getChildren(c, predicate)
       return new TreeNode(
         c.id,
         c.title,
-        c.url ? c.title : c.title + ' (' + children.length + ')',
+        c.url ? c.title : c.title + ' (' + childrenWithoutPredicate.length + ')',
         c.url,
         c.url ? 'o_article' : 'o_folder',
         children)
     })
-    return children
   } else {
     return [];
   }
@@ -24,13 +29,12 @@ function getChildren(parent: chrome.bookmarks.BookmarkTreeNode, level: number = 
 
 export const useBookmarksStore = defineStore('bookmarks', {
   state: () => ({
-    bookmarksTree: [] as unknown as object[]
+    bookmarksTree: [] as unknown as object[],
+    bookmarksNodes: [] as unknown as object[],
+    bookmarksLeaves: [] as unknown as object[]
   }),
 
-  getters: {
-
-
-  },
+  getters: {},
 
   actions: {
     init() {
@@ -42,24 +46,33 @@ export const useBookmarksStore = defineStore('bookmarks', {
     },
     loadBookmarks() {
       this.bookmarksTree = []
+      this.bookmarksNodes = []
       chrome.bookmarks.getTree(
         (a: chrome.bookmarks.BookmarkTreeNode[]) => {
           //console.log("a[0].children", a[0].children)
           _.forEach(a[0].children, parent => {
             const children: TreeNode[] = getChildren(parent)
-            const treeNode = new TreeNode(parent.id, parent.title, parent.title, parent.url,'o_folder', children)
+            const treeNode = new TreeNode(parent.id, parent.title, parent.title, parent.url, 'o_folder', children)
             this.bookmarksTree.push(treeNode)
+
+            const childrenNodes: TreeNode[] = getChildren(parent, x => !x.url)
+            this.bookmarksNodes.push(new TreeNode(parent.id, parent.title, parent.title, parent.url, 'o_folder', childrenNodes))
           })
-          // console.log("bookmarksTree.value", bookmarksTree.value)
         }
       )
     },
+    bookmarksLeavesFor(bookmarkId: string) {
+      chrome.bookmarks.getChildren(bookmarkId, (a: chrome.bookmarks.BookmarkTreeNode[]) => {
+        //console.log("found", a)
+        this.bookmarksLeaves.push(a)
+      })
+    },
     initListeners() {
-      chrome.bookmarks.onCreated.addListener((name: string, bm:any) => ChromeBookmarkListeners.onCreated(bm))
+      chrome.bookmarks.onCreated.addListener((name: string, bm: any) => ChromeBookmarkListeners.onCreated(bm))
       chrome.bookmarks.onMoved.addListener((id: string, info: any) => ChromeBookmarkListeners.reload())
       chrome.bookmarks.onRemoved.addListener((id: string, info: any) => ChromeBookmarkListeners.reload())
-      chrome.bookmarks.onChanged.addListener((id: string, info:any) => ChromeBookmarkListeners.reload())
-      chrome.bookmarks.onChildrenReordered.addListener((id:string, info:any) => ChromeBookmarkListeners.reload())
+      chrome.bookmarks.onChanged.addListener((id: string, info: any) => ChromeBookmarkListeners.reload())
+      chrome.bookmarks.onChildrenReordered.addListener((id: string, info: any) => ChromeBookmarkListeners.reload())
     }
 
   }
