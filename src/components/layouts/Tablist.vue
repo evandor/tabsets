@@ -1,7 +1,8 @@
 <template>
 
   <q-list bordered separator>
-    <q-item clickable v-ripple v-for="tab in props.tabs" @click="selectTab(tab)">
+    <!-- manual-focus :focused="selected === index" :active="selected === index" -->
+    <q-item clickable v-ripple v-for="(tab,index) in props.tabs" @click="selectTab(tab, index)" autofocus>
       <q-item-section avatar>
 
           <q-img
@@ -30,6 +31,7 @@ import Navigation from "src/services/Navigation";
 import {Tab, TabStatus} from "src/models/Tab";
 import TabsetService from "src/services/TabsetService";
 import {useNotificationsStore} from "stores/notificationsStore";
+import {onMounted, ref, unref, watchEffect} from "vue";
 
 const props = defineProps({
   tabs: {
@@ -44,7 +46,16 @@ const props = defineProps({
 
 const emits = defineEmits(['sendCaption'])
 
+const line = ref(null);
+
+// onMounted(() => {
+//   if (line.value && line.value[0]) {
+//     line.value[0].focus()
+//   }
+// })
+
 function getShortHostname(host: string) {
+
   const nrOfDots = (host.match(/\./g) || []).length
   if (nrOfDots >= 2) {
     return host.substring(host.indexOf(".", nrOfDots - 2) + 1)
@@ -72,21 +83,8 @@ function withoutHostname(url: string) {
   return "---"
 }
 
-function maxChar(max: number, t: string): string {
-  if (t?.length > max - 3) {
-    return t.substring(0, max - 3) + "..."
-  }
-  return t;
-}
-
-
 function closeTab(tab: Tab) {
   Navigation.closeTab(tab)
-}
-
-function saveTab(tab: Tab) {
-  //console.log("saving tab", tab)
-  TabsetService.saveToTabset(tab)
 }
 
 function togglePin(tabId: number) {
@@ -134,8 +132,9 @@ const setInfo = (tab: Tab) => {
 //  notificationsStore.setInfo(`created: ${date.formatDate(tab.created, 'DD.MM.YYYY HH:mm')}`)
 }
 
-const selectTab = (tab: Tab) => {
-  console.log("tab selected", tab)
+const selectTab = (tab: Tab, index: number) => {
+  console.log("tab selected",  tab)
+
   TabsetService.setOnlySelectedTab(tab)
   const notificationStore = useNotificationsStore()
   notificationStore.setSelectedTab(tab)
@@ -146,7 +145,8 @@ const setCustomTitle = (tab: Tab, newValue: string) => {
   TabsetService.setCustomTitle(tab, newValue)
 }
 
-const nameOrTitle = (tab: Tab) => tab.name ? tab.name : tab.chromeTab?.title
-const dynamicNameOrTitleModel = (tab:Tab) => tab.name ? tab.name : tab.chromeTab?.title
+const tabClicked = () => {
+  console.log("clicked tab")
+}
 
 </script>

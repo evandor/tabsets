@@ -1,41 +1,88 @@
 <template>
 
-  <div class="row items-start">
-    <div v-for="tab in props.bookmarks"
-         :key="tab.id"
+  <div class="row items-start q-mb-xl">
+    <div v-for="bm in _.filter(props.bookmarks, (bm:Bookmark) => !bm.chromeBookmark.url)"
+         :key="bm.id"
          draggable="true"
-         @dragstart="startDrag($event, tab)"
+         @dragstart="startDrag($event, bm)"
          class="col-xs-12 col-sm-4 col-md-3 col-lg-2 q-pa-xs">
 
-      <q-card class="my-card" flat bordered :style="cardStyle(tab)" @mouseover="setInfo(tab)" @click="selectTab(tab)">
+      <q-card class="my-card" flat bordered :style="cardStyle(bm)" @mouseover="setInfo(bm)" @click="selectBookmark(bm)">
 
-        <q-card-section class="q-pt-xs cursor-pointer bg-amber-1 text-black" style="width:100%;">
+        <q-card-section class="q-pt-xs cursor-pointer bg-amber-2 text-black">
           <div class="row items-baseline">
 
-            <!-- favicon -->
+            <!-- icon -->
             <div class="col-2">
-              <q-icon name="bookmark_border" size="24px"></q-icon>
+              <q-icon name="folder_open" size="24px"></q-icon>
             </div>
 
             <!-- title or name if given -->
-            <div class="col-10 text-h6 ellipsis">
-              {{ nameOrTitle(tab) }}
-              <q-popup-edit :model-value="dynamicNameOrTitleModel(tab)" v-slot="scope"
-                            @update:model-value="val => setCustomTitle( tab, val)">
+            <div class="col-10 text-subtitle1 ellipsis">
+              {{ nameOrTitle(bm) }}
+              <q-popup-edit :model-value="dynamicNameOrTitleModel(bm)" v-slot="scope"
+                            @update:model-value="val => setCustomTitle( bm, val)">
                 <q-input v-model="scope.value" dense autofocus counter @keyup.enter="scope.set"/>
               </q-popup-edit>
-              <q-tooltip>{{ tab.chromeTab.title }}</q-tooltip>
+              <q-tooltip>{{ bm.chromeBookmark.title }}</q-tooltip>
             </div>
 
           </div>
 
 
           <div class="text-subtitle2 ellipsis text-secondary">
-            {{ getHost(tab.chromeTab?.url, true) }}
+            {{ bm.chromeBookmark?.dateAdded }}
+          </div>
+
+        </q-card-section>
+
+
+        <q-card-actions align="right">
+          <!--          <q-btn flat round color="red" size="11px" icon="delete_outline" @click.stop="closeTab(tab)">-->
+          <!--            <q-tooltip>Delete this tab from this list</q-tooltip>-->
+          <!--          </q-btn>-->
+        </q-card-actions>
+
+      </q-card>
+    </div>
+  </div>
+
+  <div class="row items-start">
+    <div v-for="bm in _.filter(props.bookmarks, (bm:Bookmark) => bm.chromeBookmark.url)"
+         :key="bm.id"
+         draggable="true"
+         @dragstart="startDrag($event, bm)"
+         class="col-xs-12 col-sm-4 col-md-3 col-lg-2 q-pa-xs">
+
+      <q-card class="my-card" flat bordered :style="cardStyle(bm)" @mouseover="setInfo(bm)" @click="selectTab(bm)">
+
+        <q-card-section class="q-pt-xs cursor-pointer bg-amber-1 text-black">
+          <div class="row items-baseline">
+
+            <!-- icon -->
+            <div class="col-2">
+              <q-icon name="bookmark_border" size="24px"></q-icon>
+            </div>
+
+            <!-- title or name if given -->
+            <div class="col-10 text-subtitle1 ellipsis">
+              {{ nameOrTitle(bm) }}
+              <q-popup-edit :model-value="dynamicNameOrTitleModel(bm)" v-slot="scope"
+                            @update:model-value="val => setCustomTitle( bm, val)">
+                <q-input v-model="scope.value" dense autofocus counter @keyup.enter="scope.set"/>
+              </q-popup-edit>
+              <q-tooltip>{{ bm.chromeBookmark.title }}</q-tooltip>
+            </div>
+
+          </div>
+
+
+          <div class="text-subtitle2 ellipsis text-secondary">
+            {{ getHost(bm.chromeBookmark?.url, true) }}
             <q-icon name="launch" color="secondary"
-                    @click.stop="Navigation.openOrCreateTab(tab.chromeTab?.url )"></q-icon>
+                    @click.stop="Navigation.openOrCreateTab(bm.chromeBookmark?.url )"></q-icon>
             <q-tooltip>
-              {{ tab.chromeTab?.url }}
+              {{ bm.chromeBookmark?.url }}
             </q-tooltip>
           </div>
 
@@ -43,9 +90,9 @@
 
 
         <q-card-actions align="right">
-          <q-btn flat round color="red" size="11px" icon="delete_outline" @click.stop="closeTab(tab)">
-            <q-tooltip>Delete this tab from this list</q-tooltip>
-          </q-btn>
+<!--          <q-btn flat round color="red" size="11px" icon="delete_outline" @click.stop="closeTab(tab)">-->
+<!--            <q-tooltip>Delete this tab from this list</q-tooltip>-->
+<!--          </q-btn>-->
         </q-card-actions>
 
       </q-card>
@@ -57,9 +104,12 @@
 
 <script setup lang="ts">
 import Navigation from "src/services/Navigation";
-import {Tab, TabStatus} from "src/models/Tab";
+import {Tab} from "src/models/Tab";
 import TabsetService from "src/services/TabsetService";
 import {useNotificationsStore} from "stores/notificationsStore";
+import {Bookmark} from "src/models/Bookmark";
+import _ from "lodash"
+import {useRouter} from "vue-router";
 
 const props = defineProps({
   bookmarks: {
@@ -73,6 +123,8 @@ const props = defineProps({
 })
 
 const emits = defineEmits(['sendCaption'])
+
+const router = useRouter()
 
 function getShortHostname(host: string) {
   const nrOfDots = (host.match(/\./g) || []).length
@@ -119,32 +171,16 @@ function saveTab(tab: Tab) {
   TabsetService.saveToTabset(tab)
 }
 
-function togglePin(tabId: number) {
-  console.log("toggling pin", tabId)
-  TabsetService.togglePin(tabId)
-}
-
-
-function cardStyle(tab: Tab) {
+function cardStyle(bm: Bookmark) {
   let borderColor = ""
-  if (isOpen(tab)) {
-    borderColor = "border-color:#8f8f8f"
-  }
-  if (tab?.selected) {
+
+  if (bm?.selected) {
     borderColor = "border-color:#000066"
   }
 
   let background = ''
-  if (tab?.isDuplicate) {
-    background = "background: radial-gradient(circle, #FFFFFF 0%, #FFECB3 100%)"
-  }
   // style=""
   return `${borderColor};${background}`
-}
-
-function isOpen(tab: Tab): boolean {
-  //console.log("tabUrl", tab.chromeTab?.url);
-  return TabsetService.isOpen(tab?.chromeTab?.url || '')
 }
 
 const setInfo = (tab: Tab) => {
@@ -158,11 +194,8 @@ const setInfo = (tab: Tab) => {
 //  notificationsStore.setInfo(`created: ${date.formatDate(tab.created, 'DD.MM.YYYY HH:mm')}`)
 }
 
-const selectTab = (tab: Tab) => {
-  //console.log("tab selected", tab)
-  TabsetService.setOnlySelectedTab(tab)
-  const notificationStore = useNotificationsStore()
-  notificationStore.setSelectedTab(tab)
+const selectBookmark = (bm: Bookmark) => {
+  router.push("/bookmarks/" + bm.chromeBookmark.id)
 }
 
 const setCustomTitle = (tab: Tab, newValue: string) => {
@@ -170,23 +203,15 @@ const setCustomTitle = (tab: Tab, newValue: string) => {
   TabsetService.setCustomTitle(tab, newValue)
 }
 
-const getFaviconUrl = (chromeTab: chrome.tabs.Tab | undefined) => {
-  if (chromeTab && chromeTab.favIconUrl && !chromeTab.favIconUrl.startsWith("chrome")) {
-    //console.log("chromeTab.favIconUrl", chromeTab.favIconUrl)
-    return chromeTab.favIconUrl
-  }
-  return ''
-}
+const nameOrTitle = (bm: Bookmark) => bm?.chromeBookmark?.title
+const dynamicNameOrTitleModel = (bm: Bookmark) => bm?.chromeBookmark?.title
 
-const nameOrTitle = (tab: Tab) => tab.name ? tab.name : tab.chromeTab?.title
-const dynamicNameOrTitleModel = (tab: Tab) => tab.name ? tab.name : tab.chromeTab?.title
-
-const startDrag = (evt: DragEvent, tab: Tab) => {
+const startDrag = (evt: DragEvent, bm: Bookmark) => {
   //console.log("drag started", evt, tab.id)
   if (evt.dataTransfer) {
     evt.dataTransfer.dropEffect = 'move'
     evt.dataTransfer.effectAllowed = 'move'
-    evt.dataTransfer.setData('text/plain', tab.id)
+    evt.dataTransfer.setData('text/plain', bm.id)
   }
 }
 

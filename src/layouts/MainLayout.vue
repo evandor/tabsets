@@ -9,7 +9,7 @@
 
         <q-input dark dense standout v-model="search"
                  ref="searchBox"
-                 style="width:360px;"
+                 style="width:460px;"
                  v-if="tabsStore.tabsets.size > 0"
                  @keydown.enter.prevent="submitSearch()"
                  class="q-ml-md">
@@ -38,10 +38,6 @@
         <div v-if="tabsStore.pendingTabset?.tabs.length > 0 && tabsStore.tabsets.size > 1" class="q-mr-lg">
           {{ tabsStore.pendingTabset?.tabs.length }} unassigned tab(s)
         </div>
-
-        <!--        <q-btn outline rounded color="secondary" label="new tabset" class="q-mr-lg" @click="showNewTabsetDialog = true">-->
-        <!--          <q-tooltip>Start a new tabset by assigning your open tabs</q-tooltip>-->
-        <!--        </q-btn>-->
 
 <!--        <q-toggle-->
 <!--          v-if="syncStore.showSyncMode"-->
@@ -89,7 +85,7 @@
           <q-menu fit>
             <q-list style="min-width: 100px">
               <q-item clickable>
-                <q-item-section @click="addTabset()">Add Tabset</q-item-section>
+                <q-item-section @click="addTabset()" v-close-popup>Add Tabset</q-item-section>
               </q-item>
               <q-item clickable v-if="useNotificationsStore().bookmarksActive">
                 <q-item-section v-close-popup @click="useNotificationsStore().showBookmarks = !useNotificationsStore().showBookmarks">

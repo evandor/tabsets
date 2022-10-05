@@ -40,7 +40,7 @@ export const useSearchStore = defineStore('search', {
     populate (contentPromise: Promise<any[]>) {
       contentPromise
         .then(content => {
-          console.log("savedContent", content)
+          //console.log("savedContent", content)
           this.searchIndex = Fuse.createIndex(this.options.keys, content)
           this.fuse = new Fuse(content, this.options, this.searchIndex)
           console.log("index size", this.fuse.getIndex().size())

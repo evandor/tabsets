@@ -1,8 +1,5 @@
 import {defineStore} from "pinia";
-import {Tabset} from "src/models/Tabset";
-import _ from "lodash";
 import {Tab} from "src/models/Tab";
-import TabsetService from "src/services/TabsetService";
 
 export const useNotificationsStore = defineStore('notifications', {
     state: () => ({
@@ -10,6 +7,7 @@ export const useNotificationsStore = defineStore('notifications', {
       selectedTab: null as unknown as Tab,
       showBookmarks: false,
       bookmarksActive: false,
+      bookmarksExpanded: [] as unknown as string[],
       fabHasElementAnimation: false
     }),
     getters: {},

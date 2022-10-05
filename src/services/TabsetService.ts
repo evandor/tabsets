@@ -1,7 +1,7 @@
 import {useTabsStore} from "src/stores/tabsStore";
 import {LocalStorage, uid} from "quasar";
 import ChromeApi from "src/services/ChromeApi";
-import _ from "lodash";
+import _, {forEach} from "lodash";
 import {Tab, TabStatus} from "src/models/Tab";
 import {Tabset, TabsetPersistence, TabsetStatus} from "src/models/Tabset";
 import {useNotificationsStore} from "src/stores/notificationsStore";
@@ -13,6 +13,7 @@ import {INDEX_DB_NAME} from "boot/constants";
 import {AxiosResponse} from "axios";
 import {SyncMode} from "src/models/Subscription";
 import {useSearchStore} from "stores/searchStore";
+import {useBookmarksStore} from "stores/bookmarksStore";
 
 class TabsetService {
 
@@ -245,7 +246,6 @@ class TabsetService {
     currentTabset.tabs.push(tab)
 
     const index = _.findIndex(tabsStore.pendingTabset.tabs, t => t.id === tab.id)
-    console.log("found", index)
     tabsStore.pendingTabset.tabs.splice(index, 1);
     this.saveTabset(currentTabset)
   }
@@ -507,11 +507,43 @@ class TabsetService {
     let filename = 'tabsets.json'
     if (exportAs === 'json') {
       data = JSON.stringify([...tabsStore.tabsets.values()])
+      return this.createFile(data, filename);
     } else if (exportAs === 'csv') {
       data = "not implemented yet"
       filename = "tabsets.csv"
-    }
+      return this.createFile(data, filename);
+    } else if (exportAs === 'bookmarks') {
+      console.log("creating bookmarks...")
 
+      chrome.bookmarks.getChildren("1", (results: chrome.bookmarks.BookmarkTreeNode[]) => {
+        _.forEach(results, r => {
+          if (r.title === "tabsetsBackup") {
+            console.log("deleting folder", r.id)
+            chrome.bookmarks.removeTree(r.id)
+          }
+        })
+      })
+
+      chrome.bookmarks.create({title: 'tabsetsBackup', parentId: '1'}, (result: chrome.bookmarks.BookmarkTreeNode) => {
+        console.log("res", result)
+        _.forEach([...tabsStore.tabsets.values()], ts => {
+          console.log("ts", ts)
+          chrome.bookmarks.create({title: ts.name, parentId: result.id}, (folder: chrome.bookmarks.BookmarkTreeNode) => {
+            _.forEach(ts.tabs, tab => {
+              chrome.bookmarks.create({title: tab.name || tab.chromeTab.title, parentId: folder.id, url: tab.chromeTab.url})
+            })
+          })
+        })
+      })
+
+      useBookmarksStore().loadBookmarks()
+        .then(() => console.log("loaded in service"))
+
+    }
+    return Promise.resolve('done')
+  }
+
+  private createFile(data: string, filename: string) {
     var file = window.URL.createObjectURL(new Blob([data]));
     var docUrl = document.createElement('a');
     docUrl.href = file;
@@ -519,12 +551,8 @@ class TabsetService {
     document.body.appendChild(docUrl);
     docUrl.click();
     return Promise.resolve('done')
-
   }
 
-  getContents(): Promise<any[]> {
-    return Promise.reject()//this.db.getAll('content')
-  }
 }
 
 export default new TabsetService();

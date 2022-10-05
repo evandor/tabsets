@@ -2,7 +2,7 @@
   <div class="row items-start">
     <div class="col-xs-12 col-sm-4 col-md-3 col-lg-2 q-pa-xs" v-for="(tab,index) in tabsWithLimit()">
       <q-card class="my-card" bordered :style="cardStyle(tab)" @mouseover="setInfo(tab)" @click="selectTab(tab)">
-        <q-card-section class="bg-primary text-white cursor-pointer">
+        <q-card-section class="bg-grey-1 text-black cursor-pointer">
 
           <div class="row items-baseline">
 
@@ -18,7 +18,7 @@
             </div>
 
             <!-- title or name if given -->
-            <div class="col-10 text-h6 ellipsis">
+            <div class="col-10 text-subtitle1 text-black ellipsis">
               {{ nameOrTitle(tab) }}
               <q-popup-edit :model-value="dynamicNameOrTitleModel(tab)" v-slot="scope"
                             @update:model-value="val => setCustomTitle( tab, val)">
@@ -31,18 +31,13 @@
 
 
           <div class="text-subtitle2 ellipsis text-secondary">
-            {{ getHost(tab.chromeTab?.url, true) }}
+            {{ tab.chromeTab?.url }}
             <q-icon name="launch" color="secondary"
                     @click.stop="Navigation.openOrCreateTab(tab.chromeTab?.url )"></q-icon>
             <q-tooltip>
               {{ tab.chromeTab?.url }}
             </q-tooltip>
           </div>
-
-        </q-card-section>
-
-
-        <q-card-actions>
 
           <div class="row fit">
             <div class="col-6">
@@ -67,7 +62,7 @@
             </div>
           </div>
 
-        </q-card-actions>
+        </q-card-section>
 
       </q-card>
     </div>
@@ -83,7 +78,7 @@
             </div>
 
             <!-- title or name if given -->
-            <div class="col-10 text-h6 ellipsis">
+            <div class="col-10 text-subtitle1 ellipsis">
               more tabs...
             </div>
 
@@ -191,14 +186,7 @@ function togglePin(tabId: number) {
 
 
 function cardStyle(tab: Tab) {
-  //console.log("styling tab", tab)
-  //const height = props.showActions ? "130px" : "96px"
   let borderColor = ""
-  // if (TabStatus.CREATED === tab.status) {
-  //   borderColor = "";
-  // } else if (TabStatus.DELETED === tab.status) {
-  //   borderColor = "border-color:#EF9A9A"
-  // }
   if (isOpen(tab)) {
     borderColor = "border-color:#8f8f8f"
   }

@@ -64,7 +64,7 @@ class ChromeListeners {
         console.debug(`onUpdated:   tab ${number}: in selected Tabset, returning`)
         return
       }
-      const index = _.findIndex(tabsStore.pendingTabset.tabs, t => t.chromeTab.id === tab.id);
+      const index = _.findIndex(tabsStore.pendingTabset?.tabs, t => t.chromeTab.id === tab.id);
 
       if (index >= 0) {
         if (!this.isIgnored(tab)) {

@@ -2,16 +2,16 @@
 
   <!-- pending tabs -->
   <q-expansion-item v-if="tabsStore.pendingTabset?.tabs.length > 0"
+                    class="q-mb-lg"
+                    style="border: 3px dotted grey; border-radius:8px;"
                     header-class="text-black"
                     expand-icon-class="text-black"
                     default-opened>
     <template v-slot:header="{ expanded }">
-<!--      <q-item-section avatar>-->
-<!--        <q-icon name="tabs"/>-->
-<!--      </q-item-section>-->
+
       <q-item-section>
         <div>
-          <span class="text-weight-bold">Open Tabs</span>
+          <span class="text-weight-bold">Changed Tabs</span>
           <div class="text-caption">Decide which tabs you want to put into your tabset
           </div>
         </div>
@@ -19,38 +19,58 @@
       <q-item-section>{{ pendingTabsCount() }}</q-item-section>
     </template>
 
-    <!--        <q-card style="background: radial-gradient(circle, #35a2ff 0%, #014a88 100%)">-->
-
     <q-card>
       <q-card-section>
-        <TabcardsPending :tabs="_.filter(tabsStore.pendingTabset?.tabs, (t: Tab) => !t.isDuplicate)" v-on:selectionChanged="updateSelectionCount"/>
+        <TabcardsPending :tabs="_.filter(tabsStore.pendingTabset?.tabs, (t: Tab) => !t.isDuplicate)"
+                         v-on:selectionChanged="updateSelectionCount"/>
       </q-card-section>
     </q-card>
-  </q-expansion-item>
 
-
-  <!-- "Arrows" part -->
-  <div class="justify-center row q-ma-md q-pa-xl" style="border: 3px dotted grey; border-radius:8px;" v-if="tabsStore.pendingTabset?.tabs.length > 0">
+    <div class="justify-center row q-ma-none q-pa-xl">
 
     <span v-if="TabsetService.getSelectedPendingTabs().length === 0">
       <q-btn icon="file_download" label="Save all" class="q-mx-lg" color="positive"
              @click="saveAllPendingTabs()"></q-btn>
-      <q-btn icon="delete_outline" label="Remove all" class="q-mx-lg" color="negative" @click="removeAllPendingTabs()"></q-btn>
+      <q-btn icon="delete_outline" label="Remove all" class="q-mx-lg" color="negative"
+             @click="removeAllPendingTabs()"></q-btn>
     </span>
-    <span v-else>
+      <span v-else>
       <q-btn icon="file_download" label="save selected" class="q-mx-lg" @click="saveSelectedPendingTabs()"></q-btn>
-       <q-btn icon="delete_outline" label="remove selected" class="q-mx-lg" @click="removeSelectedPendingTabs()"></q-btn>
+       <q-btn icon="delete_outline" label="remove selected" class="q-mx-lg"
+              @click="removeSelectedPendingTabs()"></q-btn>
     </span>
-  </div>
+    </div>
+
+  </q-expansion-item>
+
+
+  <!-- "Arrows" part -->
+<!--  <div class="justify-center row q-ma-md q-pa-xl" style="border: 3px dotted grey; border-radius:8px;"-->
+<!--       v-if="tabsStore.pendingTabset?.tabs.length > 0">-->
+
+<!--    <span v-if="TabsetService.getSelectedPendingTabs().length === 0">-->
+<!--      <q-btn icon="file_download" label="Save all" class="q-mx-lg" color="positive"-->
+<!--             @click="saveAllPendingTabs()"></q-btn>-->
+<!--      <q-btn icon="delete_outline" label="Remove all" class="q-mx-lg" color="negative"-->
+<!--             @click="removeAllPendingTabs()"></q-btn>-->
+<!--    </span>-->
+<!--    <span v-else>-->
+<!--      <q-btn icon="file_download" label="save selected" class="q-mx-lg" @click="saveSelectedPendingTabs()"></q-btn>-->
+<!--       <q-btn icon="delete_outline" label="remove selected" class="q-mx-lg"-->
+<!--              @click="removeSelectedPendingTabs()"></q-btn>-->
+<!--    </span>-->
+<!--  </div>-->
 
   <!-- banners -->
-  <q-banner rounded class="bg-amber-1 text-black q-ma-md" v-if="!tabsStore.currentTabsetId && tabsStore.tabsets.size === 0">
+  <q-banner rounded class="bg-amber-1 text-black q-ma-md"
+            v-if="!tabsStore.currentTabsetId && tabsStore.tabsets.size === 0">
     <div class="text-body2">
       To get started, add a new tabset by clicking on the plus sign at the lower right page.
     </div>
   </q-banner>
 
-  <q-banner rounded class="bg-amber-1 text-black q-ma-md" v-if="!tabsStore.currentTabsetId && tabsStore.tabsets.size > 0">
+  <q-banner rounded class="bg-amber-1 text-black q-ma-md"
+            v-if="!tabsStore.currentTabsetId && tabsStore.tabsets.size > 0">
     <div class="text-body2">
       Select an existing tabset from the right or add a new tabset by clicking on the plus sign at the lower right page.
     </div>
@@ -66,7 +86,11 @@
               class="text-primary">
               {{ tabsStore.currentTabsetName }}
               <q-tooltip
-                v-if="featuresStore.debugEnabled">ID: {{ tabsStore.getCurrentTabset.id }} Status: {{ tabsStore.getCurrentTabset.status }} Pers: {{ tabsStore.getCurrentTabset.persistence }}</q-tooltip>
+                v-if="featuresStore.debugEnabled">ID: {{
+                  tabsStore.getCurrentTabset.id
+                }} Status: {{ tabsStore.getCurrentTabset.status }} Pers: {{
+                  tabsStore.getCurrentTabset.persistence
+                }}</q-tooltip>
             </span></div>
           </div>
         </q-toolbar-title>
@@ -147,7 +171,8 @@
     </q-expansion-item>
   </template>
 
-  <q-banner rounded class="bg-amber-1 text-black q-ma-md" v-if="tabsStore.currentTabsetId && tabsStore.getCurrentTabs.length === 0 && tabsStore.pendingTabset?.tabs.length > 0">
+  <q-banner rounded class="bg-amber-1 text-black q-ma-md"
+            v-if="tabsStore.currentTabsetId && tabsStore.getCurrentTabs.length === 0 && tabsStore.pendingTabset?.tabs.length > 0">
     <div class="text-body2">
       To start adding new tabs to this empty tabset, select the tabs you want to use from above and click save.
     </div>
@@ -160,11 +185,11 @@
 
   <!-- rest: neither pinned, grouped, or pending -->
   <q-expansion-item v-if="unpinnedNoGroup().length > 0"
-    icon="tabs"
-    default-opened
-    header-class="text-black"
-    expand-icon-class="text-black"
-    expand-separator>
+                    icon="tabs"
+                    default-opened
+                    header-class="text-black"
+                    expand-icon-class="text-black"
+                    expand-separator>
     <template v-slot:header="{ expanded }">
       <q-item-section avatar>
         <q-icon name="tab"/>
@@ -299,7 +324,7 @@ const pendingTabsCount = () => {
 
 const addOpenTabs = () => {
   const tabs = ChromeApi.getTabs()
-  TabsetService.saveOrReplaceFromChromeTabs(tabsStore.currentTabsetName, tabs, true )
+  TabsetService.saveOrReplaceFromChromeTabs(tabsStore.currentTabsetName, tabs, true)
 }
 
 const saveDialog = () => {

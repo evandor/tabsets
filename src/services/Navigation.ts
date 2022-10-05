@@ -17,7 +17,6 @@ class Navigation {
             chrome.tabs.highlight({tabs: r.index});
           }
         });
-      console.log("found", found)
       if (!found) {
 
         chrome.tabs.create({

@@ -7,7 +7,9 @@
     <q-tree
       :nodes="bookmarksStore.bookmarksNodes"
       node-key="id"
-      v-model:expanded="expanded"
+      selected-color="dark"
+      v-model:selected="selected"
+      v-model:expanded="useNotificationsStore().bookmarksExpanded"
     >
       <template v-slot:header-node="prop">
         <q-icon name="o_folder" class="q-mr-sm"/>
@@ -78,29 +80,50 @@ import TabsetService from "src/services/TabsetService";
 import {useRouter} from "vue-router";
 import {useTabsStore} from "stores/tabsStore";
 import _ from "lodash"
-import {ref} from "vue";
+import {ref, watch, watchEffect} from "vue";
 import {useQuasar} from "quasar";
 import {Tabset} from "src/models/Tabset";
 import {useFeatureTogglesStore} from "src/stores/featureTogglesStore";
 import {TreeNode} from "src/models/Tree";
 import ChromeApi from "src/services/ChromeApi";
 import {useBookmarksStore} from "stores/bookmarksStore";
+import {useNotificationsStore} from "stores/notificationsStore";
 
 const router = useRouter()
 const tabsStore = useTabsStore()
 const featuresStore = useFeatureTogglesStore()
 const bookmarksStore = useBookmarksStore()
 
-const showDeleteButton = ref<Map<string, boolean>>(new Map())
 const $q = useQuasar();
+const localStorage = useQuasar().localStorage
 
-const tabsetDiff = ref<Map<string, object>>(new Map())
 
 const showImportTabsetDialog = ref(false)
 const bookmarkFolderForImport = ref<string>('')
+const selected = ref('1')
 
 const newTabsetName = ref('')
 const merge = ref(false)
+//const expanded = ref<string[]>([] as unknown as string[])
+const bookmarksTree = ref<object[]>([])
+
+// watchEffect(() => {
+//   console.log("selected", selected.value)
+//   router.push("/bookmarks/" + selected.value)
+// })
+
+watch (() => selected.value, (currentValue, oldValue) => {
+  console.log("selected", selected.value, currentValue, oldValue)
+  if(currentValue !== oldValue) {
+    router.push("/bookmarks/" + selected.value)
+  }
+})
+
+watchEffect(() => {
+  console.log("expanded", useNotificationsStore().bookmarksExpanded)
+  localStorage.set("bookmarks.expanded", useNotificationsStore().bookmarksExpanded)
+  //useNotificationsStore().bookmarksExpanded = expanded.value
+})
 
 $q.loadingBar.setDefaults({
   color: 'positive',
@@ -118,9 +141,6 @@ const tabsetLabel = (tabset: Tabset) => {
   return tabset.tabs?.length > 1 ? tabset.name + ' (' + tabset.tabs?.length + ' tabs)' : tabset.name + ' (' + tabset.tabs?.length + ' tab)'
 }
 
-const expanded = ref([])
-
-const bookmarksTree = ref<object[]>([])
 
 
 

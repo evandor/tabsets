@@ -59,7 +59,6 @@ const newSearch = (term: string) => {
   const results = searchStore.fuse.search(term)
   const resultTs = new Tabset(uid(), 'results', [], [])
   _.forEach(results, h => {
-    console.log("found", h, h.item)
     resultTs.tabs.push(new Tab(uid(), ChromeApi.createChromeTabObject(h.item.title, h.item.url)))
   })
   tabsetHits.value.push(resultTs)

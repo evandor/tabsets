@@ -24,7 +24,7 @@
             </div>
 
             <!-- title or name if given -->
-            <div class="col-10 text-h6 ellipsis">
+            <div class="col-10 text-subtitle1 ellipsis">
               {{ nameOrTitle(tab) }}
               <q-popup-edit :model-value="dynamicNameOrTitleModel(tab)" v-slot="scope"
                             @update:model-value="val => setCustomTitle( tab, val)">

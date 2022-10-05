@@ -18,8 +18,8 @@
 
     <div class="text-h6">Activate Bookmarks Feature (experimental)</div>
     <div>
-      <q-radio v-model="bookmarks" :val="true" label="Enabled"/>
-      <q-radio v-model="bookmarks" :val="false" label="Disabled"/>
+      <q-radio v-model="bookmarksActive" :val="true" label="Enabled"/>
+      <q-radio v-model="bookmarksActive" :val="false" label="Disabled"/>
     </div>
 
     <div class="text-h6" v-if="featuresStore.debugEnabled">Views</div>
@@ -66,7 +66,8 @@ const $q = useQuasar()
 
 const view = ref('grid')
 const darkMode = ref<boolean>(localStorage.getItem('darkMode') || false)
-const bookmarks = ref<boolean>(localStorage.getItem('bookmarks') || false)
+const showBookmarks = ref<boolean>(localStorage.getItem('showBookmarks') || false)
+const bookmarksActive = ref<boolean>(localStorage.getItem('bookmarksActive') || false)
 
 watchEffect(() => {
   console.log("darkMode", darkMode.value, typeof darkMode.value)
@@ -75,10 +76,11 @@ watchEffect(() => {
 })
 
 watchEffect(() => {
-  console.log("bookmarks", bookmarks.value)
-  useNotificationsStore().showBookmarks  = bookmarks.value
-  useNotificationsStore().bookmarksActive  = bookmarks.value
-  localStorage.set('bookmarks', bookmarks.value)
+  console.log("bookmarks", bookmarksActive.value)
+  useNotificationsStore().showBookmarks  = bookmarksActive.value
+  useNotificationsStore().bookmarksActive  = bookmarksActive.value
+  localStorage.set('bookmarksActive', bookmarksActive.value)
+  localStorage.set('showBookmarks', bookmarksActive.value)
 })
 
 watchEffect(() => {

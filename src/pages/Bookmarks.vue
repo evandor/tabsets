@@ -4,20 +4,32 @@
     <!-- toolbar -->
     <q-toolbar class="text-primary">
       <div class="row fit">
-        <div class="col-xs-12 col-md-5">
+        <div class="col-xs-12 col-md-7">
           <q-toolbar-title>
             <div class="row justify-start items-baseline">
-              <div class="col-1"><span class="text-dark">Bookmarks</span> <span
-                class="text-primary">
-              {{ tabsStore.currentTabsetName }}
-
-            </span></div>
+              <div class="col-12">
+                <span class="text-primary">
+                  <q-breadcrumbs separator=">">
+                        <q-breadcrumbs-el label="Bookmarks"/>
+                        <q-breadcrumbs-el v-for="bm in bookmarksForBreadcrumb"
+                                          :label="bm.chromeBookmark.title"
+                                          class="cursor-pointer"
+                                          @click="router.push('/bookmarks/' + bm.chromeBookmark.id)"
+                        />
+                      </q-breadcrumbs>
+                </span>
+              </div>
             </div>
           </q-toolbar-title>
         </div>
-        <div class="col-xs-12 col-md-7 text-right">
-
-
+        <div class="col-xs-12 col-md-5 text-right">
+          <q-btn
+            flat dense icon="delete_outline"
+            color="negative" :label="$q.screen.gt.sm ? 'Delete Bookmark Folder...' : ''"
+            class="q-mr-md"
+            @click="deleteBookmarkFolder">
+            <q-tooltip>Delete this Bookmark</q-tooltip>
+          </q-btn>
 
         </div>
       </div>
@@ -25,16 +37,15 @@
 
     <q-card>
       <q-card-section>
-        <BookmarkCards :bookmarks="bookmarksForParent()"  />
+        <BookmarkCards
+          :bookmarks="bookmarksForFolder"/>
       </q-card-section>
     </q-card>
 
     <fab></fab>
 
 
-
   </q-page>
-
 
 
 </template>
@@ -45,10 +56,11 @@ import {uid, useQuasar} from "quasar";
 import _ from "lodash"
 import {useTabsStore} from "src/stores/tabsStore";
 import BookmarkCards from "src/components/layouts/BookmarkCards.vue";
-import {Tab, TabStatus} from "src/models/Tab";
 import Fab from "components/Fab.vue";
 import {useAuthStore} from "src/stores/auth";
 import {useBookmarksStore} from "stores/bookmarksStore";
+import {Bookmark} from "src/models/Bookmark";
+import {ref, watchEffect} from "vue";
 
 const route = useRoute();
 const router = useRouter();
@@ -60,15 +72,77 @@ const auth = useAuthStore()
 
 const $q = useQuasar()
 
-const bookmarkId = route.params.id as string
-console.log("bookmarkId", bookmarkId)
-bookmarksStore.bookmarksLeavesFor(bookmarkId)
+const bookmarksForFolder = ref<Bookmark[]>([])
+const bookmarksForBreadcrumb = ref<Bookmark[]>([])
 
-const bookmarksForParent = () => {
-  console.log("bookmarksStore.bookmarksLeafes", bookmarksStore.bookmarksLeaves[0])
-  return _.map(bookmarksStore.bookmarksLeaves[0], l => {
-    //console.log("l", l)
-    return new Tab(uid(), l)
+async function getParentChain(bookmarkId: string, chain: Bookmark[] = []): Promise<Bookmark[]> {
+  console.log("getParentChain", chain)
+  // @ts-ignore
+  const results = await chrome.bookmarks.get(bookmarkId)
+  // @ts-ignore
+  if (results && results[0]) {
+    chain.push(new Bookmark(uid(), results[0]))
+    // @ts-ignore
+    const parentId = results[0].parentId
+    if (parentId && parentId !== "0") {
+      // @ts-ignore
+      chain = getParentChain(parentId, chain)
+    }
+  }
+  return Promise.resolve(chain)
+}
+
+watchEffect(() => {
+  const bookmarkId = route.params.id as string
+  if (bookmarkId) {
+    chrome.bookmarks.get(bookmarkId, results => {
+      // console.log("resul", results)
+      if (results && results[0]) {
+        bookmarksStore.currentBookmark = new Bookmark(uid(), results[0])
+
+        getParentChain(bookmarkId)
+          .then(res => {
+            console.log("res", res)
+            bookmarksForBreadcrumb.value = res.reverse()
+          })
+
+        // bookmarksForBreadcrumb.value.push(bookmarksStore.currentBookmark)
+        // if (bookmarksStore.currentBookmark.chromeBookmark.parentId) {
+        //   chrome.bookmarks.get(bookmarksStore.currentBookmark.chromeBookmark.parentId, results => {
+        //     if (results && results[0]) {
+        //       bookmarksForBreadcrumb.value.push(new Bookmark(uid(), results[0]))
+        //     }
+        //   })
+        // }
+      }
+    })
+    chrome.bookmarks.getChildren(bookmarkId, (bms: chrome.bookmarks.BookmarkTreeNode[]) => {
+      bookmarksForFolder.value = _.map(bms, (l: chrome.bookmarks.BookmarkTreeNode) => new Bookmark(uid(), l))
+    })
+
+
+  }
+})
+
+const deleteBookmarkFolder = () => {
+
+  $q.dialog({
+    title: 'Please Confirm Deleting of Bookmarks Folder',
+    message: 'Do you really want to delete this folder (and potentially all its subfolders and bookmarks)? This cannot be undone.',
+    cancel: true,
+    persistent: true
+  }).onOk(() => {
+    const folderId = bookmarksStore.currentBookmark.chromeBookmark.id
+    const parentId = bookmarksStore.currentBookmark.chromeBookmark.parentId
+    console.log("deleting", folderId)
+    chrome.bookmarks.removeTree(bookmarksStore.currentBookmark.chromeBookmark.id)
+    if (parentId) {
+      router.push("/bookmarks/" + parentId)
+    }
+  }).onCancel(() => {
+  }).onDismiss(() => {
   })
+
+
 }
 </script>
