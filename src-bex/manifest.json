@@ -9,7 +9,8 @@
     "tabGroups",
     "tabs",
     "activeTab",
-    "bookmarks"
+    "bookmarks",
+    "alarms"
   ],
   "host_permissions": [
     "<all_urls>"

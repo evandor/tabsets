@@ -13,6 +13,7 @@ import {useBookmarksStore} from "src/stores/bookmarksStore";
 import {useSyncStore} from "src/stores/syncStore";
 import {useSearchStore} from "stores/searchStore";
 import {useNotificationsStore} from "stores/notificationsStore";
+import ChromeApi from "src/services/ChromeApi";
 
 backendApi.init(process.env.BACKEND_URL || "unknown", null)
 
@@ -45,5 +46,7 @@ $q.dark.set($q.localStorage.getItem('darkMode') || false)
 useNotificationsStore().bookmarksActive = $q.localStorage.getItem('bookmarksActive') || false
 useNotificationsStore().showBookmarks = $q.localStorage.getItem('showBookmarks') || false
 useNotificationsStore().bookmarksExpanded = $q.localStorage.getItem("bookmarks.expanded") || []
+
+ChromeApi.init()
 
 </script>

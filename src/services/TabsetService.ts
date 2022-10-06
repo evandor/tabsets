@@ -28,7 +28,7 @@ class TabsetService {
   async init() {
 
     // init db
-    this.db = await openDB(INDEX_DB_NAME, 2, {
+    this.db = await openDB(INDEX_DB_NAME, 1, {
       upgrade(db) {
         if (!db.objectStoreNames.contains('tabsets')) {
           console.log("creating db tabsets")
@@ -36,7 +36,8 @@ class TabsetService {
         }
         if (!db.objectStoreNames.contains('thumbnails')) {
           console.log("creating db thumbnails")
-          db.createObjectStore('thumbnails');
+          let store = db.createObjectStore('thumbnails');
+          store.createIndex("expires", "expires", {unique: false});
         }
         if (!db.objectStoreNames.contains('content')) {
           console.log("creating db content")
@@ -340,7 +341,7 @@ class TabsetService {
     if (tab && tab.url) {
       const encodedTabUrl = btoa(tab.url)
       //localStorage.setItem("tabsets.tab.xxx", thumbnail)
-      this.db.put('thumbnails', thumbnail, encodedTabUrl)
+      this.db.put('thumbnails', {expires: new Date().getTime() + 1000 * 60 * 60, thumbnail: thumbnail}, encodedTabUrl)
         .then(ts => console.log("added thumbnail"))
         .catch(err => console.log("err", err))
     }
@@ -528,9 +529,16 @@ class TabsetService {
         console.log("res", result)
         _.forEach([...tabsStore.tabsets.values()], ts => {
           console.log("ts", ts)
-          chrome.bookmarks.create({title: ts.name, parentId: result.id}, (folder: chrome.bookmarks.BookmarkTreeNode) => {
+          chrome.bookmarks.create({
+            title: ts.name,
+            parentId: result.id
+          }, (folder: chrome.bookmarks.BookmarkTreeNode) => {
             _.forEach(ts.tabs, tab => {
-              chrome.bookmarks.create({title: tab.name || tab.chromeTab.title, parentId: folder.id, url: tab.chromeTab.url})
+              chrome.bookmarks.create({
+                title: tab.name || tab.chromeTab.title,
+                parentId: folder.id,
+                url: tab.chromeTab.url
+              })
             })
           })
         })
@@ -552,6 +560,48 @@ class TabsetService {
     docUrl.click();
     return Promise.resolve('done')
   }
+
+  async housekeeping() {
+    const objectStore = this.db.transaction("thumbnails", "readwrite").objectStore("thumbnails");
+    // const cursor = objectStore.openCursor()
+    // cursor.onsuccess = function (event) {
+    //   var cursor = event.target.result;
+    // }
+    let cursor = await objectStore.openCursor()
+    //   .then((cursor: any) => {
+    //console.log("got event ", cursor)
+    while (cursor) {
+      //console.log(cursor.key, cursor.value);
+      if (cursor.value.expires === 0) {
+
+      } else {
+        //console.log("timediff", new Date().getTime() - cursor.value.expires)
+        const exists: boolean = this.urlExistsInATabset(atob(cursor.key.toString()))
+        //console.log("exists", exists)
+        if (exists) {
+          objectStore.put({expires: 0, thumbnail: cursor.value.thumbnail}, cursor.key)
+        } else {
+          if (cursor.value.expires < new Date().getTime()) {
+            console.log("deleting entry", cursor.key)
+            objectStore.delete(cursor.key)
+          }
+        }
+      }
+      cursor = await cursor.continue();
+    }
+
+  }
+
+  urlExistsInATabset(url: string): boolean {
+    //console.log("checking url", url)
+    for(let ts of [...useTabsStore().tabsets.values()]) {
+      if (_.find(ts.tabs, t => t.chromeTab.url === url)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
 
 }
 

@@ -1,12 +1,28 @@
 import {Tabset} from "src/models/Tabset";
+import TabsetService from "src/services/TabsetService";
+
+function runHousekeeping(alarm: chrome.alarms.Alarm) {
+  console.log("got alarm", alarm)
+  if (alarm.name === "housekeeping") {
+    TabsetService.housekeeping()
+  }
+}
 
 class ChromeApi {
+
+  init() {
+    chrome.alarms.create("housekeeping", {periodInMinutes: 1})
+
+    chrome.alarms.onAlarm.addListener(
+      (alarm: chrome.alarms.Alarm) => runHousekeeping(alarm)
+    )
+  }
 
   async closeAllTabs() {
     console.log(" --- closing all tabs: start ---")
     const currentTab = await this.getCurrentTab()
     // @ts-ignore
-    const t:chrome.tabs.Tab[] = await chrome.tabs.query({currentWindow: true})//, (t: chrome.tabs.Tab[]) => {
+    const t: chrome.tabs.Tab[] = await chrome.tabs.query({currentWindow: true})//, (t: chrome.tabs.Tab[]) => {
     console.log("checking tabs for closing", t)
     const ids: number[] = t.filter((r: chrome.tabs.Tab) => r.id !== currentTab.id)
       .filter(r => r.id !== undefined)

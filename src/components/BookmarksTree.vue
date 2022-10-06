@@ -120,9 +120,7 @@ watch (() => selected.value, (currentValue, oldValue) => {
 })
 
 watchEffect(() => {
-  console.log("expanded", useNotificationsStore().bookmarksExpanded)
   localStorage.set("bookmarks.expanded", useNotificationsStore().bookmarksExpanded)
-  //useNotificationsStore().bookmarksExpanded = expanded.value
 })
 
 $q.loadingBar.setDefaults({

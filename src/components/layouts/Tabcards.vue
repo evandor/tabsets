@@ -8,7 +8,7 @@
          class="col-xs-12 col-sm-4 col-md-3 col-lg-2 q-pa-xs">
 
       <q-card class="my-card" flat bordered :style="cardStyle(tab)" @mouseover="setInfo(tab)" @click="selectTab(tab)">
-
+        {{ loadThumbnail(tab) }}
         <q-card-section class="q-pt-xs cursor-pointer bg-primary text-white" style="width:100%;">
           <div class="row items-baseline">
 
@@ -47,22 +47,20 @@
 
         </q-card-section>
 
+        <q-card-section class="q-ma-none q-pa-xs">
 
-        <q-card-actions align="right">
-          <!--          <q-checkbox-->
-          <!--            v-model="tab.selected"-->
-          <!--            checked-icon="task_alt"-->
-          <!--            @update:model-value="val => selectionChanged(val)"-->
-          <!--            unchecked-icon="check_box_outline_blank"-->
-          <!--          />-->
-          <!--          <q-btn flat round color="positive" icon="save" @click="saveTab(tab)">-->
-          <!--            <q-tooltip>Save this tab to your current context</q-tooltip>-->
-          <!--          </q-btn>-->
-          <q-btn flat round color="red" size="11px" icon="delete_outline" @click.stop="closeTab(tab)">
-            <q-tooltip>Delete this tab from this list</q-tooltip>
-          </q-btn>
+          <div class="row fit">
+            <div class="col-6">
+              <q-img :src="thumbnailFor(tab)" width="48px" height="32px" no-spinner style="border:1px solid #efefef; border-right: 3px;"></q-img>
+            </div>
+            <div class="col-6 text-right">
+              <q-btn flat round color="red" size="11px" icon="delete_outline" @click.stop="closeTab(tab)">
+                <q-tooltip>Delete this tab from this list</q-tooltip>
+              </q-btn>
+            </div>
+          </div>
 
-        </q-card-actions>
+        </q-card-section>
 
       </q-card>
     </div>
@@ -76,6 +74,7 @@ import Navigation from "src/services/Navigation";
 import {Tab, TabStatus} from "src/models/Tab";
 import TabsetService from "src/services/TabsetService";
 import {useNotificationsStore} from "stores/notificationsStore";
+import {onMounted, ref} from "vue";
 
 const props = defineProps({
   tabs: {
@@ -89,6 +88,27 @@ const props = defineProps({
 })
 
 const emits = defineEmits(['sendCaption'])
+
+const thumbnails = ref<Map<string, string>>(new Map())
+
+const thumbnailFor = (tab: Tab): string => {
+  const key = btoa(tab.chromeTab.url || '')
+  return thumbnails.value.get(key) || "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+ip1sAAAAASUVORK5CYII="
+  //return "https://placeimg.com/500/300/nature"
+}
+
+const loadThumbnail = (tab: Tab) => {
+  TabsetService.getThumbnailFor(tab)
+    .then(data => {
+      //console.log("loading tn for ", tab.chromeTab.url)
+      const key = btoa(tab.chromeTab.url || '')
+      if (data && data.thumbnail) {
+        //console.log("found key", key, data)
+        thumbnails.value.set(key, data.thumbnail)
+      }
+    })
+    .catch(err => console.log("err", err))
+}
 
 function getShortHostname(host: string) {
   const nrOfDots = (host.match(/\./g) || []).length
@@ -211,6 +231,8 @@ const startDrag = (evt: DragEvent, tab: Tab) => {
     evt.dataTransfer.setData('text/plain', tab.id)
   }
 }
+
+
 
 
 </script>

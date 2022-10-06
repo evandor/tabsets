@@ -107,7 +107,7 @@ const thumbnail = ref('')
 watchEffect(() => {
   if (notificationStore.selectedTab) {
     TabsetService.getThumbnailFor(notificationStore.selectedTab)
-      .then(data => thumbnail.value = data)
+      .then(data => thumbnail.value = data.thumbnail)
       .catch(err => console.log("err", err))
   }
 })
