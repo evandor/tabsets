@@ -1,8 +1,9 @@
 import {Tabset} from "src/models/Tabset";
 import TabsetService from "src/services/TabsetService";
+import {CLEANUP_PERIOD_IN_MINUTES} from "boot/constants";
 
 function runHousekeeping(alarm: chrome.alarms.Alarm) {
-  console.log("got alarm", alarm)
+  //console.log("got alarm", alarm)
   if (alarm.name === "housekeeping") {
     TabsetService.housekeeping()
   }
@@ -11,11 +12,45 @@ function runHousekeeping(alarm: chrome.alarms.Alarm) {
 class ChromeApi {
 
   init() {
-    chrome.alarms.create("housekeeping", {periodInMinutes: 1})
+    chrome.alarms.create("housekeeping", {periodInMinutes: CLEANUP_PERIOD_IN_MINUTES})
 
     chrome.alarms.onAlarm.addListener(
       (alarm: chrome.alarms.Alarm) => runHousekeeping(alarm)
     )
+
+    chrome.management.getSelf(
+      (self:chrome.management.ExtensionInfo) => {
+        //console.log("self", self)
+        localStorage.setItem("selfId", self.id)
+      }
+    )
+
+    chrome.contextMenus.removeAll(
+      () => {
+        chrome.contextMenus.create({id: 'open_tabsets_page', title: 'Open Tabsets Extension', contexts: ['all']})
+      }
+    )
+
+    chrome.contextMenus.onClicked.addListener(
+      (e: chrome.contextMenus.OnClickData, tab: chrome.tabs.Tab | undefined) => {
+        //console.log("e", e, tab)
+        if (e.menuItemId === "open_tabsets_page") {
+          chrome.tabs.query({title: `Tabsets Extension ${import.meta.env.PACKAGE_VERSION}`}, (result: chrome.tabs.Tab[]) => {
+            if (result && result[0]) {
+              chrome.tabs.highlight({tabs: result[0].index});
+            } else {
+              const selfId = localStorage.getItem("selfId")
+              if (selfId) {
+                chrome.tabs.create({
+                  active: true,
+                  pinned: false,
+                  url: "chrome-extension://"+selfId+"/www/index.html#/start"
+                })
+              }
+            }
+          })
+        }
+      })
   }
 
   async closeAllTabs() {
@@ -42,16 +77,9 @@ class ChromeApi {
   async restore(tabset: Tabset) {
     console.log("restoring tabset ", tabset.id)
     const currentTab = await this.getCurrentTab()
-    await this.closeAllTabs()
-    console.log("proceeding...")
+    //await this.closeAllTabs()
+    //console.log("proceeding...")
 
-    // const t = await chrome.tabs.query({currentWindow: true})//, (t: chrome.tabs.Tab[]) => {
-    // // @ts-ignore
-    // const ids: number[] = t.filter((r: chrome.tabs.Tab) => !(r.title === 'Tabsets Extension'))
-    //   .filter(r => r.id !== undefined)
-    //   .map(r => r.id || 0);
-    // console.log("ids to close", ids)
-    // await chrome.tabs.remove(ids)
     await tabset.tabs.forEach(async t => {
       if (t.chromeTab.url !== currentTab.url) {
         console.log("creating tab", t.chromeTab.id)
@@ -64,11 +92,7 @@ class ChromeApi {
       } else {
         console.log("omitting opening current tab again")
       }
-      /* .catch(e => {
-         console.log("got error", e)
-       })*/
     });
-    //  });
   }
 
   async getCurrentTab(): Promise<chrome.tabs.Tab> {

@@ -29,6 +29,7 @@ class TabsetService {
 
     // init db
     this.db = await openDB(INDEX_DB_NAME, 1, {
+      // upgrading see https://stackoverflow.com/questions/50193906/create-index-on-already-existing-objectstore
       upgrade(db) {
         if (!db.objectStoreNames.contains('tabsets')) {
           console.log("creating db tabsets")
@@ -41,7 +42,8 @@ class TabsetService {
         }
         if (!db.objectStoreNames.contains('content')) {
           console.log("creating db content")
-          db.createObjectStore('content');
+          let store = db.createObjectStore('content');
+          store.createIndex("expires", "expires", {unique: false});
         }
       },
     });
@@ -106,21 +108,7 @@ class TabsetService {
       tab.bookmarkId = c.id
       tab.created = c.dateAdded || 0
       tab.chromeTab = ChromeApi.createChromeTabObject(c.title || '', c.url || '')
-      // tab.chromeTab = {
-      //   active: false,
-      //   discarded: true,
-      //   // @ts-ignore
-      //   groupId: -1,
-      //   autoDiscardable: true,
-      //   index: 0,
-      //   highlighted: false,
-      //   title: c.title,
-      //   pinned: false,
-      //   url: c.url,
-      //   windowId: 0,
-      //   incognito: false,
-      //   selected: false
-      // }
+
       return tab
     })
     const result = await tabsStore.updateOrCreateTabset(name, tabs, merge)
@@ -137,9 +125,6 @@ class TabsetService {
   }
 
   async saveTabset(tabset: Tabset) {
-    if ("current" === tabset.id) {
-      return
-    }
     if (tabset.id) {
       if (useFeatureTogglesStore().firebaseEnabled && useAuthStore().isAuthenticated && useAuthStore().subscription.syncMode === SyncMode.ACTIVE) {
         console.log("saving tabset to firebase")
@@ -150,17 +135,6 @@ class TabsetService {
       //localStorage.setItem("tabsets.context", tabset.id)
       return
     }
-    console.error("error - why here?")
-    // const existingId = this.findInLocalStorage(tabset.name)
-    // if (existingId) {
-    //   console.log("updating tabset", existingId)
-    //   //this.localStorage.set("tabsets.tabset." + existingId, tabset)
-    //   await this.db.put('tabsets', JSON.stringify(tabset), existingId);
-    // } else {
-    //   console.log(`did not find id for tabset '${tabset.name}', creating new`)
-    //   this.localStorage.set("tabset.tabset." + uid(), tabset)
-    //   await this.db.put('tabsets', JSON.stringify(tabset), uid());
-    // }
   }
 
   saveCurrentTabset() {
@@ -171,11 +145,14 @@ class TabsetService {
     }
   }
 
-  async restore(tabsetId: string) {
+  async restore(tabsetId: string, closeOldTabs: boolean = true) {
     console.log("restoring from tabset", tabsetId)
     const tabsStore = useTabsStore()
     try {
       tabsStore.deactivateListeners()
+      if (closeOldTabs) {
+        await ChromeApi.closeAllTabs()
+      }
       const tabset = this.getTabset(tabsetId)
       if (tabset) {
         console.log("found tabset for id", tabsetId)
@@ -361,13 +338,23 @@ class TabsetService {
     return this.db.delete('thumbnails', btoa(url))
   }
 
+  removeContentFor(url: string): Promise<any> {
+    return this.db.delete('content', btoa(url))
+  }
+
   saveText(tab: chrome.tabs.Tab | undefined, text: string) {
     if (tab && tab.url) {
       const encodedTabUrl = btoa(tab.url)
       const title = tab.title || ''
       const url = tab.url
       //localStorage.setItem("tabsets.tab.xxx", thumbnail)
-      this.db.put('content', {id: encodedTabUrl, title, url, content: text}, encodedTabUrl)
+      this.db.put('content', {
+        id: encodedTabUrl,
+        expires: new Date().getTime() + 1000 * 60 * 60,
+        title,
+        url,
+        content: text
+      }, encodedTabUrl)
         .then(ts => console.log("added content"))
         .catch(err => console.log("err", err))
       useSearchStore().addToIndex(encodedTabUrl, tab.title || '', tab.url, text)
@@ -562,39 +549,51 @@ class TabsetService {
   }
 
   async housekeeping() {
+    // clean up thumbnails
     const objectStore = this.db.transaction("thumbnails", "readwrite").objectStore("thumbnails");
-    // const cursor = objectStore.openCursor()
-    // cursor.onsuccess = function (event) {
-    //   var cursor = event.target.result;
-    // }
     let cursor = await objectStore.openCursor()
-    //   .then((cursor: any) => {
-    //console.log("got event ", cursor)
     while (cursor) {
-      //console.log(cursor.key, cursor.value);
-      if (cursor.value.expires === 0) {
-
-      } else {
-        //console.log("timediff", new Date().getTime() - cursor.value.expires)
+      if (cursor.value.expires !== 0) {
         const exists: boolean = this.urlExistsInATabset(atob(cursor.key.toString()))
-        //console.log("exists", exists)
         if (exists) {
           objectStore.put({expires: 0, thumbnail: cursor.value.thumbnail}, cursor.key)
         } else {
           if (cursor.value.expires < new Date().getTime()) {
-            console.log("deleting entry", cursor.key)
             objectStore.delete(cursor.key)
           }
         }
       }
       cursor = await cursor.continue();
     }
-
+    // clean up contents
+    const contentObjectStore = this.db.transaction("content", "readwrite").objectStore("content");
+    let contentCursor = await contentObjectStore.openCursor()
+    while (contentCursor) {
+      if (contentCursor.value.expires !== 0) {
+        const exists: boolean = this.urlExistsInATabset(atob(contentCursor.key.toString()))
+        if (exists) {
+          const data = contentCursor.value
+          contentObjectStore.put({
+              id: data.id,
+              expires: 0,
+              content: data.content,
+              title: data.title,
+              url: data.url
+            },
+            contentCursor.key)
+        } else {
+          if (contentCursor.value.expires < new Date().getTime()) {
+            contentObjectStore.delete(contentCursor.key)
+          }
+        }
+      }
+      contentCursor = await contentCursor.continue();
+    }
   }
 
   urlExistsInATabset(url: string): boolean {
     //console.log("checking url", url)
-    for(let ts of [...useTabsStore().tabsets.values()]) {
+    for (let ts of [...useTabsStore().tabsets.values()]) {
       if (_.find(ts.tabs, t => t.chromeTab.url === url)) {
         return true;
       }

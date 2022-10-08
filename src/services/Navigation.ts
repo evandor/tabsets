@@ -2,6 +2,7 @@ import {useTabsStore} from "src/stores/tabsStore";
 import {Tab} from "src/models/Tab";
 import ChromeApi from "src/services/ChromeApi";
 import {useNotificationsStore} from "stores/notificationsStore";
+import TabsetService from "src/services/TabsetService";
 
 class Navigation {
 
@@ -36,60 +37,47 @@ class Navigation {
   closeTab(tab: Tab) {
     const tabsStore = useTabsStore()
 
-    if (tabsStore.isLiveMode) {
-      console.log("closing tab (live mode)", tab.id)
-      ChromeApi.tabsForUrl(tab.chromeTab.url)
-        .then(res => {
-          const length = res.length
-          let counter = 0
-          res.forEach(r => {
-            const tabId = r.id
-            counter += 1
-            if (counter < length) {
-              chrome.tabs.remove(tabId)
-                // @ts-ignore
-                .then(res2 => {
-                  tabsStore.removeTab(tabId)
-                })
-            }
-          })
-        })
-        .catch(ex => console.error("ex", ex))
-      // @ts-ignore
-      // chrome.tabs.query({url: tab.chromeTab.url})
-      //   .then(res => {
-      //     res.forEach(r => {
-      //       if (r.id) {
-      //         const tabId = r.id
-      //         chrome.tabs.remove(tabId)
-      //           .then(res2 => tabsStore.removeTab(tabId))
-      //           .catch(ex => console.error("ex", ex))
-      //       }
-      //     })
-      //   })
-      if (tab.chromeTab?.id) {
-        tabsStore.removeTab(tab.chromeTab.id)
-      }
-    } else {
-      console.log("closing tab (edit mode)", tab.id, tab.chromeTab?.id)
-      if (tab.chromeTab?.id) {
-        tabsStore.removeTab(tab.chromeTab.id)
-        useNotificationsStore().unsetSelectedTab()
-      }
-    }
+    // if (tabsStore.isLiveMode) {
+    //   console.log("closing tab (live mode)", tab.id)
+    //   ChromeApi.tabsForUrl(tab.chromeTab.url)
+    //     .then(res => {
+    //       const length = res.length
+    //       let counter = 0
+    //       res.forEach(r => {
+    //         const tabId = r.id
+    //         counter += 1
+    //         if (counter < length) {
+    //           chrome.tabs.remove(tabId)
+    //             // @ts-ignore
+    //             .then(res2 => {
+    //               tabsStore.removeTab(tabId)
+    //             })
+    //         }
+    //       })
+    //     })
+    //     .catch(ex => console.error("ex", ex))
+    //
+    //   if (tab.chromeTab?.id) {
+    //     tabsStore.removeTab(tab.chromeTab.id)
+    //   }
+    // } else {
+    console.log("closing tab", tab.id, tab.chromeTab?.id)
 
-    if ("current" === tabsStore.currentTabsetId) {
-      // console.log("closing tab with id", tab.id)
-      //
-      // if (tab.chromeTab) {
-      //   const tabId = tab.chromeTab.id
-      //   chrome.tabs.remove(tabId)
-      //     .then(res => tabsStore.removeTab(tabId))
-      //     .catch(ex => console.error("ex", ex))
-      // }
-    } else {
+    TabsetService.removeThumbnailsFor(tab.chromeTab?.url || '')
+      .then(res => console.log("deleting thumbnail for ", tab.chromeTab.url))
+      .catch(err => console.log("error deleting thumbnail", err))
 
+    TabsetService.removeContentFor(tab.chromeTab?.url || '')
+      .then(res => console.log("deleting content for ", tab.chromeTab.url))
+      .catch(err => console.log("error deleting content", err))
+
+    if (tab.chromeTab?.id) {
+      tabsStore.removeTab(tab.chromeTab.id)
+      useNotificationsStore().unsetSelectedTab()
     }
+    // }
+
+
   }
 }
 

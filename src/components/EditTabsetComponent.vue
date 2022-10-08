@@ -6,6 +6,7 @@
                     style="border: 3px dotted grey; border-radius:8px;"
                     header-class="text-black"
                     expand-icon-class="text-black"
+                    expand-icon-toggle
                     default-opened>
     <template v-slot:header="{ expanded }">
 
@@ -16,12 +17,30 @@
           </div>
         </div>
       </q-item-section>
+      <q-item-section>
+        <q-item-label lines="2">
+          <div class="text-weight-bold">{{ filter ? filter : '&nbsp;' }}</div>
+          <div class="text-caption">
+            {{ filter ? '' : 'not filtering' }}
+            <q-icon :name="filter ? 'o_filter_alt' : 'filter_alt_off'" size="16px">
+              <q-tooltip>Filter shown tabs</q-tooltip>
+            </q-icon>
+            <q-popup-edit
+              :model-value="filter"
+              v-slot="scope"
+              @update:model-value="val => setFilter( val)">
+              <q-input v-model="scope.value" dense autofocus counter @keypress.enter="scope.set"/>
+            </q-popup-edit>
+          </div>
+        </q-item-label>
+      </q-item-section>
       <q-item-section>{{ pendingTabsCount() }}</q-item-section>
+
     </template>
 
     <q-card>
       <q-card-section>
-        <TabcardsPending :tabs="_.filter(tabsStore.pendingTabset?.tabs, (t: Tab) => !t.isDuplicate)"
+        <TabcardsPending :tabs="filteredTabs()"
                          v-on:selectionChanged="updateSelectionCount"/>
       </q-card-section>
     </q-card>
@@ -42,24 +61,6 @@
     </div>
 
   </q-expansion-item>
-
-
-  <!-- "Arrows" part -->
-<!--  <div class="justify-center row q-ma-md q-pa-xl" style="border: 3px dotted grey; border-radius:8px;"-->
-<!--       v-if="tabsStore.pendingTabset?.tabs.length > 0">-->
-
-<!--    <span v-if="TabsetService.getSelectedPendingTabs().length === 0">-->
-<!--      <q-btn icon="file_download" label="Save all" class="q-mx-lg" color="positive"-->
-<!--             @click="saveAllPendingTabs()"></q-btn>-->
-<!--      <q-btn icon="delete_outline" label="Remove all" class="q-mx-lg" color="negative"-->
-<!--             @click="removeAllPendingTabs()"></q-btn>-->
-<!--    </span>-->
-<!--    <span v-else>-->
-<!--      <q-btn icon="file_download" label="save selected" class="q-mx-lg" @click="saveSelectedPendingTabs()"></q-btn>-->
-<!--       <q-btn icon="delete_outline" label="remove selected" class="q-mx-lg"-->
-<!--              @click="removeSelectedPendingTabs()"></q-btn>-->
-<!--    </span>-->
-<!--  </div>-->
 
   <!-- banners -->
   <q-banner rounded class="bg-amber-1 text-black q-ma-md"
@@ -229,10 +230,11 @@ import {useTabGroupsStore} from "src/stores/tabGroupsStore";
 import TabsetService from "src/services/TabsetService";
 import {Tab} from "src/models/Tab";
 import {useFeatureTogglesStore} from "src/stores/featureTogglesStore";
-import {Tabset, TabsetPersistence} from "src/models/Tabset"
+import {TabsetPersistence} from "src/models/Tabset"
 import {useAuthStore} from "src/stores/auth";
 import {MAX_TABS_TO_SHOW} from 'boot/constants'
 import ChromeApi from "src/services/ChromeApi";
+import RestoreTabsetDialog from "components/dialogues/RestoreTabsetDialog.vue";
 
 const route = useRoute();
 const router = useRouter();
@@ -243,6 +245,7 @@ const featuresStore = useFeatureTogglesStore()
 const auth = useAuthStore()
 
 const tabsetname = ref(tabsStore.currentTabsetName)
+const filter = ref('')
 
 const otherTabsCaption = ref('current tabs, neither pinned nor grouped...')
 const groupedTabsCaption = ref('current tabs, neither pinned nor grouped')
@@ -266,6 +269,7 @@ watchEffect(() => {
 function unpinnedNoGroup() {
   return _.filter(
     _.map(tabsStore.getCurrentTabs, t => t),
+    // @ts-ignore
     (t: Tab) => !t.chromeTab.pinned && t.chromeTab.groupId === -1)
 }
 
@@ -296,8 +300,8 @@ const setGroupedTabsCaption = (msg: string) => groupedTabsCaption.value = msg
 
 const selectedCount = ref(0)
 
-const showTabGroup = (group: chrome.tabGroups.TabGroup) => tabsForGroup(group.id).length > 0
-const showOtherTabs = () => tabsStore.browserTabset?.tabs.length > 0 || tabGroupsStore.tabGroups.length > 0
+// const showTabGroup = (group: chrome.tabGroups.TabGroup) => tabsForGroup(group.id).length > 0
+// const showOtherTabs = () => tabsStore.browserTabset?.tabs.length > 0 || tabGroupsStore.tabGroups.length > 0
 
 const updateSelectionCount = (val: any) => {
   //console.log("hier", val, TabsetService.getSelectedPendingTabs().length)
@@ -327,44 +331,47 @@ const addOpenTabs = () => {
   TabsetService.saveOrReplaceFromChromeTabs(tabsStore.currentTabsetName, tabs, true)
 }
 
-const saveDialog = () => {
-  $q.dialog({
-    title: 'Save current Tabset',
-    message: 'Please provide a name for the new (or updated) tabset',
-    prompt: {
-      isValid: val => val != 'current',
-      model: tabsetname.value === 'current' ? '' : tabsetname.value,
-      type: 'text' // optional
-    },
-    cancel: true,
-    persistent: true
-  }).onOk((name: string) => {
-    console.log('>>>> saving', name)
-    TabsetService.saveOrReplaceFromChromeTabs(name, tabsStore.tabs)
-
-  }).onCancel(() => {
-    //console.log('>>>> Cancel')
-  }).onDismiss(() => {
-    //console.log('I am triggered on both OK and Cancel')
-  })
-
-
+const setFilter = (val: string) => {
+  console.log("filter", val, filter.value)
+  filter.value = val
 }
 
+const filteredTabs = () => {
+  const noDupliatesTabs = _.filter(tabsStore.pendingTabset?.tabs, (t: Tab) => !t.isDuplicate)
+  if (filter.value && filter.value.trim() !== '') {
+    return _.filter(noDupliatesTabs, (t: Tab) =>
+      (t.chromeTab.url && t.chromeTab.url.indexOf(filter.value) >= 0) ||
+      (t.chromeTab.title && t.chromeTab.title.indexOf(filter.value) >= 0))
+  }
+  return noDupliatesTabs
+}
+//
+// const saveDialog = () => {
+//   $q.dialog({
+//     title: 'Save current Tabset',
+//     message: 'Please provide a name for the new (or updated) tabset',
+//     prompt: {
+//       isValid: val => val != 'current',
+//       model: tabsetname.value === 'current' ? '' : tabsetname.value,
+//       type: 'text' // optional
+//     },
+//     cancel: true,
+//     persistent: true
+//   }).onOk((name: string) => {
+//     console.log('>>>> saving', name)
+//     TabsetService.saveOrReplaceFromChromeTabs(name, tabsStore.tabs)
+//
+//   }).onCancel(() => {
+//     //console.log('>>>> Cancel')
+//   }).onDismiss(() => {
+//     //console.log('I am triggered on both OK and Cancel')
+//   })
+//
+//
+// }
 
 const restoreDialog = () => {
-  $q.dialog({
-    title: 'Restore Tabset',
-    message: 'Would you like to restore this tabset? All current tabs will be closed before.',
-    cancel: true,
-    persistent: true
-  }).onOk((data: any) => {
-    TabsetService.restore(tabsStore.currentTabsetId)
-  }).onCancel(() => {
-  }).onDismiss(() => {
-  })
-
-
+  $q.dialog({component: RestoreTabsetDialog})
 }
 
 </script>

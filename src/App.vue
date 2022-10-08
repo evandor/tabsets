@@ -43,6 +43,7 @@ tabsetService.setLocalStorage(useQuasar().localStorage)
 tabsetService.init()
 
 $q.dark.set($q.localStorage.getItem('darkMode') || false)
+
 useNotificationsStore().bookmarksActive = $q.localStorage.getItem('bookmarksActive') || false
 useNotificationsStore().showBookmarks = $q.localStorage.getItem('showBookmarks') || false
 useNotificationsStore().bookmarksExpanded = $q.localStorage.getItem("bookmarks.expanded") || []

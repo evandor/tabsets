@@ -20,5 +20,12 @@ export default bexContent((bridge) => {
     console.log("created text excerpt for tabsets")
   });
 
+  // chrome.contextMenus.removeAll(
+  //   () => {
+  //     console.log("removed context menus")
+  //     chrome.contextMenus.create({id: 'open_tabsets_page2', title: 'Open Tabsets Extension2', contexts: ['all']})
+  //   }
+  // )
+
 
 })

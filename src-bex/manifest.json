@@ -10,7 +10,8 @@
     "tabs",
     "activeTab",
     "bookmarks",
-    "alarms"
+    "alarms",
+    "contextMenus"
   ],
   "host_permissions": [
     "<all_urls>"

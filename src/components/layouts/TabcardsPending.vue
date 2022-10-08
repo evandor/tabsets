@@ -1,7 +1,9 @@
 <template>
   <div class="row items-start">
     <div class="col-xs-12 col-sm-4 col-md-3 col-lg-2 q-pa-xs" v-for="(tab,index) in tabsWithLimit()">
+
       <q-card class="my-card" bordered :style="cardStyle(tab)" @mouseover="setInfo(tab)" @click="selectTab(tab)">
+
         <q-card-section class="bg-grey-1 text-black cursor-pointer">
 
           <div class="row items-baseline">
@@ -13,7 +15,9 @@
                 width="24px"
                 height="24px"
                 :src="getFaviconUrl(tab.chromeTab)">
-                <q-tooltip>{{ tab.chromeTab?.id }} / {{ tab.id }}</q-tooltip>
+                <q-tooltip v-if="featureToggles.debugEnabled">{{ tab.chromeTab?.id }} / {{ tab.id }} /
+                  {{ tab.chromeTab.pinned }}
+                </q-tooltip>
               </q-img>
             </div>
 
@@ -26,6 +30,18 @@
               </q-popup-edit>
               <q-tooltip>{{ tab.chromeTab.title }}</q-tooltip>
             </div>
+
+            <q-badge color="warning" v-if="tab.chromeTab.pinned" floating>
+              <q-icon name="push_pin" size="16px" color="white">
+                <q-tooltip>This tab is pinned</q-tooltip>
+              </q-icon>
+            </q-badge>
+
+            <q-badge color="warning" v-if="tab.chromeTab.groupId !== -1" floating>
+              <q-icon name="content_copy" size="16px" color="white">
+                <q-tooltip>This tab is part of a group</q-tooltip>
+              </q-icon>
+            </q-badge>
 
           </div>
 
@@ -64,7 +80,9 @@
 
         </q-card-section>
 
+
       </q-card>
+
     </div>
     <div class="col-xs-12 col-sm-4 col-md-3 col-lg-2 q-pa-xs">
       <q-card class="my-card" bordered v-if="props.tabs.length >= 1+MAX_TABS_TO_SHOW">
@@ -116,6 +134,7 @@ import {Tab} from "src/models/Tab";
 import TabsetService from "src/services/TabsetService";
 import {useNotificationsStore} from "stores/notificationsStore";
 import {MAX_TABS_TO_SHOW} from 'boot/constants'
+import {useFeatureTogglesStore} from "stores/featureTogglesStore";
 
 const props = defineProps({
   tabs: {
@@ -126,7 +145,7 @@ const props = defineProps({
 
 const emits = defineEmits(['sendCaption', 'selectionChanged'])
 
-
+const featureToggles = useFeatureTogglesStore()
 
 function getShortHostname(host: string) {
   const nrOfDots = (host.match(/\./g) || []).length
