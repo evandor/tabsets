@@ -14,7 +14,7 @@ export const useSearchStore = defineStore('search', {
 
     fuse: null as unknown as any,
 
-    options: {keys: ['title', 'url', 'content']}
+    options: {keys: ['title', 'url', 'content'], includeScore: true, includeMatches: true, minMatchCharLength: 3}
 
   }),
 
@@ -29,18 +29,19 @@ export const useSearchStore = defineStore('search', {
       this.fuse = new Fuse([], this.options, this.searchIndex)
 
     },
-    addToIndex(id: string, title: string, url: string, content: string) {
+    addToIndex(id: string, title: string, url: string, content: string, tabsets: string[], favIconUrl: string) {
       const doc = {
-        id, title, url, content
+        id, title, url, content, tabsets, favIconUrl
       }
       this.fuse.add(doc)
-      console.log(this.fuse.getIndex().size())
+      //console.log(this.fuse.getIndex().size())
       //this.searchIndex.add(id, content)
     },
     populate (contentPromise: Promise<any[]>) {
+      console.log("populating searchstore")
       contentPromise
         .then(content => {
-          //console.log("savedContent", content)
+          console.log("savedContent", content)
           this.searchIndex = Fuse.createIndex(this.options.keys, content)
           this.fuse = new Fuse(content, this.options, this.searchIndex)
           console.log("index size", this.fuse.getIndex().size())

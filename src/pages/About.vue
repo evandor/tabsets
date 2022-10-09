@@ -1,9 +1,10 @@
 <template>
   <q-page padding>
 
-    <div class="text-h5 q-ma-md">
+    <div class="text-h5 q-ml-md">
       Welcome to Tabsets
     </div>
+    <div class="text-caption q-ml-md q-mb-md">Version {{appVersion}}</div>
 
     <div class="text-body1 q-ma-md" v-if="tabsStore.tabsets.size === 0">
       Tabsets is a browser extension which helps you organize your tabs.<br><br>
@@ -21,10 +22,11 @@
     <div class="text-body1 q-ma-md">
       <ul>
         <li>Turn your open tabs into a <span class="text-body1 text-dark">tabset</span></li>
-        <li>Re-open your <span class="text-body1 text-dark">tabsets</span> whenever you need them</li>
+        <li>Re-open your <span class="text-body1 text-dark">tabsets</span> or tabs whenever you need them</li>
         <li>Edit <span class="text-body1 text-dark">tabsets</span></li>
         <li>Search for keywords in your <span class="text-body1 text-dark">tabsets</span></li>
         <li>Drag & drop tabs into tabsets</li>
+        <li>Export and Import Tabsets Data</li>
         <li>Search in Tabs (experimental)</li>
         <li>Keep pinned and grouped tabsets (experimental)</li>
         <li>Thumbnails Preview (experimental)</li>
@@ -65,6 +67,9 @@
 import {useTabsStore} from "src/stores/tabsStore"
 import Fab from "src/components/Fab.vue"
 import {useNotificationsStore} from "stores/notificationsStore";
+
+//@ts-ignore
+const appVersion = import.meta.env.PACKAGE_VERSION
 
 const tabsStore = useTabsStore()
 

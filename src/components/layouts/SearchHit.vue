@@ -1,31 +1,35 @@
 <template>
 
-  <q-list bordered separator>
-    <!-- manual-focus :focused="selected === index" :active="selected === index" -->
-    <q-item clickable v-ripple v-for="(tab,index) in props.tabs" @click="selectTab(tab, index)" autofocus>
-      <q-item-section avatar>
 
-        <q-img
-          class="rounded-borders"
-          width="20px"
-          height="20px"
-          :src="tab.chromeTab?.favIconUrl">
-          <q-tooltip>{{ tab.chromeTab?.id }} / {{ tab.id }}</q-tooltip>
-        </q-img>
+  <q-item clickable v-ripple autofocus>
+    <q-item-section avatar>
 
-      </q-item-section>
-      <q-item-section>
-        <q-item-label>{{ tab.chromeTab?.title }}</q-item-label>
-        <q-item-label caption>{{ tab.chromeTab?.url }}</q-item-label>
-      </q-item-section>
-      <q-item-section avatar>
-        <q-icon name="launch" color="primary" @click.stop="Navigation.openOrCreateTab(tab.chromeTab?.url )"></q-icon>
-      </q-item-section>
-<!--      <q-item-section avatar>-->
-<!--        <q-icon name="close" @click.stop="closeTab(tab)"/>-->
-<!--      </q-item-section>-->
-    </q-item>
-  </q-list>
+      <q-img
+        class="rounded-borders"
+        width="20px"
+        height="20px"
+        :src="hit.chromeTab?.favIconUrl">
+        <q-tooltip>{{ hit.chromeTab?.id }} / {{ hit.id }}</q-tooltip>
+      </q-img>
+
+    </q-item-section>
+    <q-item-section avatar>
+
+      {{ hit.score }}%
+
+    </q-item-section>
+    <q-item-section>
+      <q-item-label class="ellipsis bg-green-1">{{ hit.chromeTab?.title }}
+        <template v-for="badge in tabsetBadges(hit)">
+          <q-chip icon="event">{{ badge.label }}</q-chip>
+        </template>
+      </q-item-label>
+      <q-item-label class="ellipsis" caption>{{ hit.chromeTab?.url }}</q-item-label>
+    </q-item-section>
+    <q-item-section avatar>
+      <q-icon name="launch" color="primary" @click.stop="Navigation.openOrCreateTab(hit.chromeTab?.url )"></q-icon>
+    </q-item-section>
+  </q-item>
 
 
 </template>
@@ -36,27 +40,19 @@ import {Tab, TabStatus} from "src/models/Tab";
 import TabsetService from "src/services/TabsetService";
 import {useNotificationsStore} from "stores/notificationsStore";
 import {onMounted, ref, unref, watchEffect} from "vue";
+import {Hit} from "src/models/Hit";
+import _ from "lodash"
 
 const props = defineProps({
-  tabs: {
-    type: Array,
+  hit: {
+    type: Hit,
     required: true
-  },
-  showActions: {
-    type: Boolean,
-    default: false
   }
 })
 
 const emits = defineEmits(['sendCaption'])
 
 const line = ref(null);
-
-// onMounted(() => {
-//   if (line.value && line.value[0]) {
-//     line.value[0].focus()
-//   }
-// })
 
 function getShortHostname(host: string) {
 
@@ -98,13 +94,8 @@ function togglePin(tabId: number) {
 
 
 function cardStyle(tab: Tab) {
-  const height = props.showActions ? "100px" : "66px"
+  const height = "100px"
   let borderColor = ""
-  // if (TabStatus.CREATED === tab.status) {
-  //   borderColor = "";
-  // } else if (TabStatus.DELETED === tab.status) {
-  //   borderColor = "border-color:#EF9A9A"
-  // }
   if (isOpen(tab)) {
     borderColor = "border-color:#8f8f8f"
   }
@@ -136,21 +127,28 @@ const setInfo = (tab: Tab) => {
 //  notificationsStore.setInfo(`created: ${date.formatDate(tab.created, 'DD.MM.YYYY HH:mm')}`)
 }
 
-const selectTab = (tab: Tab, index: number) => {
-  console.log("tab selected", tab)
-
-  TabsetService.setOnlySelectedTab(tab)
-  const notificationStore = useNotificationsStore()
-  notificationStore.setSelectedTab(tab)
-}
+// const selectHit = (hit: Hit, index: number) => {
+//   console.log("hit selected", hit)
+//
+//   TabsetService.setOnlySelectedTab(hit)
+//   const notificationStore = useNotificationsStore()
+//   notificationStore.setSelectedTab(hit)
+// }
 
 const setCustomTitle = (tab: Tab, newValue: string) => {
   console.log(" -> ", newValue)
   TabsetService.setCustomTitle(tab, newValue)
 }
 
-const tabClicked = () => {
-  console.log("clicked tab")
+const tabsetBadges = (hit:Hit): object[] => {
+  const badges: object[] = []
+  console.log("badges for", hit)
+  _.forEach(hit.tabsets, ts => badges.push({
+    label: TabsetService.nameForTabsetId(ts)
+  }))
+  return badges;
 }
+
+
 
 </script>

@@ -2,32 +2,15 @@
   <q-page class="q-ma-lg">
     <div class="row">
       <div class="col">
-        <div class="text-h6">Search Results for term '{{ searchStore.term }}'</div>
+        <div class="text-h6">Search Results for '{{ searchStore.term }}': {{ tabsetHits.length }} hit(s)</div>
       </div>
     </div>
 
 
-    <template v-for="ts in tabsetHits">
-      <q-expansion-item
-
-        default-opened
-        header-class="text-black"
-        expand-icon-class="text-black"
-        expand-separator>
-        <template v-slot:header="{ expanded }">
-          <q-item-section>
-            <div>
-              <span class="text-weight-bold"> &gt; {{ ts.name }}</span>
-            </div>
-          </q-item-section>
-          <q-item-section>{{ ts.tabs.length }} hit(s)</q-item-section>
-        </template>
-        <q-card>
-          <q-card-section>
-            <Tablist :tabs="ts.tabs"/>
-          </q-card-section>
-        </q-card>
-      </q-expansion-item>
+    <template v-for="hit in tabsetHits">
+      <q-list bordered separator>
+        <SearchHit :hit="hit"/>
+      </q-list>
     </template>
 
   </q-page>
@@ -41,9 +24,9 @@ import _ from "lodash"
 import {useSearchStore} from "stores/searchStore";
 import {Tabset} from "src/models/Tabset";
 import {uid} from "quasar";
-import {Tab} from "src/models/Tab";
-import Tablist from "src/components/layouts/Tablist.vue"
+import SearchHit from "src/components/layouts/SearchHit.vue"
 import ChromeApi from "src/services/ChromeApi";
+import {Hit} from "src/models/Hit";
 
 const route = useRoute()
 const tabsStore = useTabsStore()
@@ -51,17 +34,23 @@ const searchStore = useSearchStore()
 
 const term = route.params.term as string
 
-const tabsetHits = ref<Tabset[]>([])
+const tabsetHits = ref<Hit[]>([])
 
 const newSearch = (term: string) => {
   tabsetHits.value = []
 
   const results = searchStore.fuse.search(term)
+  console.log("search results", results)
   const resultTs = new Tabset(uid(), 'results', [], [])
   _.forEach(results, h => {
-    resultTs.tabs.push(new Tab(uid(), ChromeApi.createChromeTabObject(h.item.title, h.item.url)))
+    //resultTs.tabs.push(new Hit(uid(), ChromeApi.createChromeTabObject(h.item.title, h.item.url), 0, 0, h.score ))
+    tabsetHits.value.push(new Hit(
+      uid(),
+      ChromeApi.createChromeTabObject(h.item.title, h.item.url, h.item.favIconUrl), 0, 0,
+      Math.round(100 - (100 * h.score)),
+      h.item.tabsets
+    ))
   })
-  tabsetHits.value.push(resultTs)
 }
 
 console.log("term", term)

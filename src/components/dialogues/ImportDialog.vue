@@ -10,11 +10,11 @@
 
       <q-card-section class="q-pt-none">
 
-        <q-uploader
-          url="."
-          label="skysail cms file"
-          style="max-width: 300px"
-        />
+<!--        <q-uploader-->
+<!--          url="."-->
+<!--          label="skysail cms file"-->
+<!--          style="max-width: 300px"-->
+<!--        />-->
 
         <input id="json2import" type="file" />
 
@@ -60,8 +60,20 @@ const hideWarning = ref(false)
 
 const importData = () => {
   // @ts-ignore
-  const json = document.getElementById("json2import")?.value
-  console.log("json", json)
+  // const json = document.getElementById("json2import")
+  // console.log("json", json)
+
+
+  var file = document.getElementById("json2import").files[0];
+  var reader = new FileReader();
+  reader.onload = function(e){
+    // @ts-ignore
+    const json = e.target.result
+    TabsetService.importData(json as unknown as string)
+
+  }
+  reader.readAsText(file);
+
   // TabsetService.exportData(exportAs.value)
   //   .then((result: object) => {
   //     // populate pending set

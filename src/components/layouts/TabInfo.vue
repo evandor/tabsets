@@ -71,6 +71,14 @@
             {{ notificationStore.selectedTab.history }}
           </div>
 
+          <div class="col-5">
+            Content
+          </div>
+          <div class="col-7 ellipsis">
+            {{ content }}
+            <q-tooltip>{{ content }}</q-tooltip>
+          </div>
+
           <div class="col-5" v-if="notificationStore.selectedTab.bookmarkId">
             Bookmark ID
           </div>
@@ -103,11 +111,15 @@ const notificationStore = useNotificationsStore()
 const featuresStore = useFeatureTogglesStore()
 
 const thumbnail = ref('')
+const content = ref('')
 
 watchEffect(() => {
   if (notificationStore.selectedTab) {
     TabsetService.getThumbnailFor(notificationStore.selectedTab)
       .then(data => thumbnail.value = data.thumbnail)
+      .catch(err => console.log("err", err))
+    TabsetService.getContentFor(notificationStore.selectedTab)
+      .then(data => content.value = data.content)
       .catch(err => console.log("err", err))
   }
 })

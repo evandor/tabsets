@@ -107,7 +107,7 @@ class TabsetService {
       tab.bookmarkUrl = c.url
       tab.bookmarkId = c.id
       tab.created = c.dateAdded || 0
-      tab.chromeTab = ChromeApi.createChromeTabObject(c.title || '', c.url || '')
+      tab.chromeTab = ChromeApi.createChromeTabObject(c.title || '', c.url || '', '')
 
       return tab
     })
@@ -334,6 +334,15 @@ class TabsetService {
     return Promise.reject("url not provided");
   }
 
+  async getContentFor(selectedTab: Tab): Promise<any> {
+    if (selectedTab.chromeTab.url) {
+      const encodedUrl = btoa(selectedTab.chromeTab.url)
+      // console.log("encodedUrl",encodedUrl)
+      return await this.db.get('content', encodedUrl)
+    }
+    return Promise.reject("url not provided");
+  }
+
   removeThumbnailsFor(url: string): Promise<any> {
     return this.db.delete('thumbnails', btoa(url))
   }
@@ -347,17 +356,21 @@ class TabsetService {
       const encodedTabUrl = btoa(tab.url)
       const title = tab.title || ''
       const url = tab.url
+      const tabsetIds: string[] = this.tabsetsFor(tab.url)
       //localStorage.setItem("tabsets.tab.xxx", thumbnail)
       this.db.put('content', {
         id: encodedTabUrl,
         expires: new Date().getTime() + 1000 * 60 * 60,
         title,
         url,
-        content: text
+        content: text,
+        tabsets: tabsetIds,
+        favIconUrl: tab.favIconUrl
       }, encodedTabUrl)
         .then(ts => console.log("added content"))
         .catch(err => console.log("err", err))
-      useSearchStore().addToIndex(encodedTabUrl, tab.title || '', tab.url, text)
+
+      useSearchStore().addToIndex(encodedTabUrl, tab.title || '', tab.url, text, tabsetIds, tab.favIconUrl || '')
     }
   }
 
@@ -538,6 +551,16 @@ class TabsetService {
     return Promise.resolve('done')
   }
 
+  importData(json: string) {
+    console.log("importing from json")
+    const tabsStore = useTabsStore()
+    let tabsets = JSON.parse(json)
+    _.forEach(tabsets, tabset => {
+      tabsStore.addTabset(tabset)
+      this.saveTabset(tabset)
+    })
+  }
+
   private createFile(data: string, filename: string) {
     var file = window.URL.createObjectURL(new Blob([data]));
     var docUrl = document.createElement('a');
@@ -578,7 +601,9 @@ class TabsetService {
               expires: 0,
               content: data.content,
               title: data.title,
-              url: data.url
+              url: data.url,
+              tabsets: data.tabsets,
+              favIconUrl: data.favIconUrl
             },
             contentCursor.key)
         } else {
@@ -601,7 +626,20 @@ class TabsetService {
     return false;
   }
 
+  tabsetsFor(url: string): string[] {
+    const tabsets: string[] = []
+    for (let ts of [...useTabsStore().tabsets.values()]) {
+      if (_.find(ts.tabs, t => t.chromeTab.url === url)) {
+        tabsets.push(ts.id)
+      }
+    }
+    return tabsets;
+  }
 
+
+  nameForTabsetId(tsId: string): string {
+    return useTabsStore().tabsets.get(tsId)?.name || 'unknown'
+  }
 }
 
 export default new TabsetService();

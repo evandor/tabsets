@@ -124,13 +124,14 @@ class ChromeApi {
     return await chrome.bookmarks.getChildren(bookmarkFolderId)
   }
 
-  createChromeTabObject(title: string, url: string) {
+  createChromeTabObject(title: string, url: string, favIconUrl: string) {
     return {
       active: false,
       discarded: true,
       // @ts-ignore
       groupId: -1,
       autoDiscardable: true,
+      favIconUrl: favIconUrl,
       index: 0,
       highlighted: false,
       title: title,

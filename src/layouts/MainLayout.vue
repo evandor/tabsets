@@ -94,10 +94,10 @@
               </q-item>
               <q-separator />
               <q-item clickable>
-                <q-item-section @click="showExportDialog()">Export</q-item-section>
+                <q-item-section @click="showExportDialog()" v-close-popup>Export</q-item-section>
               </q-item>
               <q-item clickable>
-                <q-item-section @click="showImportDialog()">Import (Json)</q-item-section>
+                <q-item-section @click="showImportDialog()" v-close-popup>Import (Json)</q-item-section>
               </q-item>
               <q-separator />
               <q-item clickable>
