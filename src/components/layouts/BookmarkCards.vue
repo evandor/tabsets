@@ -47,6 +47,26 @@
     </div>
   </div>
 
+  <q-toolbar class="text-primary">
+    <div class="row fit">
+      <div class="col-xs-12 col-md-7">
+        <q-toolbar-title>
+
+        </q-toolbar-title>
+      </div>
+      <div class="col-xs-12 col-md-5 text-right">
+        <q-btn
+          flat dense icon="upload_file"
+          color="positive" :label="$q.screen.gt.sm ? 'Import as Tabset...' : ''"
+          class="q-mr-md"
+          @click="importBookmarks">
+          <q-tooltip>Import these bookmarks as Tabset</q-tooltip>
+        </q-btn>
+
+      </div>
+    </div>
+  </q-toolbar>
+
   <div class="row items-start">
     <div v-for="bm in _.filter(props.bookmarks, (bm:Bookmark) => bm.chromeBookmark.url)"
          :key="bm.id"
@@ -90,9 +110,9 @@
 
 
         <q-card-actions align="right">
-<!--          <q-btn flat round color="red" size="11px" icon="delete_outline" @click.stop="closeTab(tab)">-->
-<!--            <q-tooltip>Delete this tab from this list</q-tooltip>-->
-<!--          </q-btn>-->
+          <!--          <q-btn flat round color="red" size="11px" icon="delete_outline" @click.stop="closeTab(tab)">-->
+          <!--            <q-tooltip>Delete this tab from this list</q-tooltip>-->
+          <!--          </q-btn>-->
         </q-card-actions>
 
       </q-card>
@@ -110,21 +130,20 @@ import {useNotificationsStore} from "stores/notificationsStore";
 import {Bookmark} from "src/models/Bookmark";
 import _ from "lodash"
 import {useRouter} from "vue-router";
+import {useQuasar} from "quasar";
+import ImportFromBookmarks from "components/dialogues/ImportFromBookmarks.vue";
 
 const props = defineProps({
   bookmarks: {
     type: Array,
     required: true
-  },
-  showActions: {
-    type: Boolean,
-    default: false
   }
 })
 
 const emits = defineEmits(['sendCaption'])
 
 const router = useRouter()
+const $q = useQuasar()
 
 function getShortHostname(host: string) {
   const nrOfDots = (host.match(/\./g) || []).length
@@ -213,6 +232,10 @@ const startDrag = (evt: DragEvent, bm: Bookmark) => {
     evt.dataTransfer.effectAllowed = 'move'
     evt.dataTransfer.setData('text/plain', bm.id)
   }
+}
+
+const importBookmarks = () => {
+  $q.dialog({component: ImportFromBookmarks})
 }
 
 

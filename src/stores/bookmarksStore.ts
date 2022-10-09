@@ -52,7 +52,7 @@ export const useBookmarksStore = defineStore('bookmarks', {
 
       // @ts-ignore
       const tree: chrome.bookmarks.BookmarkTreeNode[] = await chrome.bookmarks.getTree()
-      console.log("tree", tree)
+      //console.log("tree", tree)
 
       _.forEach(tree[0].children, parent => {
         const children: TreeNode[] = getChildren(parent)

@@ -25,7 +25,7 @@
         <div class="col-xs-12 col-md-5 text-right">
           <q-btn
             flat dense icon="delete_outline"
-            color="negative" :label="$q.screen.gt.sm ? 'Delete Bookmark Folder...' : ''"
+            color="negative" :label="$q.screen.gt.sm ? 'Delete Folder...' : ''"
             class="q-mr-md"
             @click="deleteBookmarkFolder">
             <q-tooltip>Delete this Bookmark</q-tooltip>
@@ -37,8 +37,7 @@
 
     <q-card>
       <q-card-section>
-        <BookmarkCards
-          :bookmarks="bookmarksForFolder"/>
+        <BookmarkCards :bookmarks="bookmarksForFolder" />
       </q-card-section>
     </q-card>
 
@@ -74,6 +73,7 @@ const $q = useQuasar()
 
 const bookmarksForFolder = ref<Bookmark[]>([])
 const bookmarksForBreadcrumb = ref<Bookmark[]>([])
+const bookmarkId = ref('')
 
 async function getParentChain(bookmarkId: string, chain: Bookmark[] = []): Promise<Bookmark[]> {
   console.log("getParentChain", chain)
@@ -93,14 +93,14 @@ async function getParentChain(bookmarkId: string, chain: Bookmark[] = []): Promi
 }
 
 watchEffect(() => {
-  const bookmarkId = route.params.id as string
-  if (bookmarkId) {
-    chrome.bookmarks.get(bookmarkId, results => {
+  bookmarkId.value = route.params.id as string
+  if (bookmarkId.value) {
+    chrome.bookmarks.get(bookmarkId.value, results => {
       // console.log("resul", results)
       if (results && results[0]) {
         bookmarksStore.currentBookmark = new Bookmark(uid(), results[0])
 
-        getParentChain(bookmarkId)
+        getParentChain(bookmarkId.value)
           .then(res => {
             console.log("res", res)
             bookmarksForBreadcrumb.value = res.reverse()
@@ -116,7 +116,7 @@ watchEffect(() => {
         // }
       }
     })
-    chrome.bookmarks.getChildren(bookmarkId, (bms: chrome.bookmarks.BookmarkTreeNode[]) => {
+    chrome.bookmarks.getChildren(bookmarkId.value, (bms: chrome.bookmarks.BookmarkTreeNode[]) => {
       bookmarksForFolder.value = _.map(bms, (l: chrome.bookmarks.BookmarkTreeNode) => new Bookmark(uid(), l))
     })
 

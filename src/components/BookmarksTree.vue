@@ -1,6 +1,6 @@
 <template>
 
-  <q-list class="q-mt-md" v-if="featuresStore.bookmarksEnabled">
+  <q-list class="q-mt-md">
 
     <q-item-label header>Bookmarks</q-item-label>
 
@@ -10,35 +10,46 @@
       selected-color="dark"
       v-model:selected="selected"
       v-model:expanded="useNotificationsStore().bookmarksExpanded"
+      @mouseout="selectDeleteButton('')"
     >
       <template v-slot:header-node="prop">
+
         <q-icon name="o_folder" class="q-mr-sm"/>
-        <span class="cursor-pointer">{{ prop.node.label }}</span>
-        <q-menu :v-model="false" context-menu>
-          <q-list style="min-width: 100px">
-            <q-item clickable v-close-popup>
-              <q-item-section @click="router.push('/bookmarks/' + prop.node.id)">Open</q-item-section>
-            </q-item>
-            <q-item clickable v-close-popup>
-              <q-item-section @click="importFromBookmarks(prop)">Import as tabset</q-item-section>
-            </q-item>
-          </q-list>
-        </q-menu>
+        <span class="cursor-pointer fit no-wrap"
+              @mouseover="selectDeleteButton(prop.node.id)">{{ prop.node.label }}</span>
+
+        <span class="text-right fit" v-show="showDeleteButton.get(prop.node.id)">
+            <q-icon name="delete_outline" color="negative" size="18px" @click="deleteDialog">
+              <q-tooltip>Delete this folder</q-tooltip>
+            </q-icon>
+          </span>
+
+
+        <!--        <q-menu :v-model="false" context-menu>-->
+        <!--          <q-list style="min-width: 100px">-->
+        <!--            <q-item clickable v-close-popup>-->
+        <!--              <q-item-section @click="router.push('/bookmarks/' + prop.node.id)">Open</q-item-section>-->
+        <!--            </q-item>-->
+        <!--            <q-item clickable v-close-popup>-->
+        <!--              <q-item-section @click="importFromBookmarks(prop)">Import as tabset</q-item-section>-->
+        <!--            </q-item>-->
+        <!--          </q-list>-->
+        <!--        </q-menu>-->
       </template>
-<!--      <template v-slot:header-leaf="prop">-->
-<!--        <q-icon name="o_article" class="q-mr-sm"/>-->
-<!--        {{ prop.node.label }}/{{ prop.node.menuShowing }}-->
-<!--        <q-menu :v-model="false" context-menu>-->
-<!--          <q-list style="min-width: 100px">-->
-<!--            <q-item clickable v-close-popup>-->
-<!--              <q-item-section>{{ prop.node.label }}/{{ prop.key }}</q-item-section>-->
-<!--            </q-item>-->
-<!--            <q-item clickable v-close-popup>-->
-<!--              <q-item-section>ID: {{ prop.node.id }}</q-item-section>-->
-<!--            </q-item>-->
-<!--          </q-list>-->
-<!--        </q-menu>-->
-<!--      </template>-->
+      <!--      <template v-slot:header-leaf="prop">-->
+      <!--        <q-icon name="o_article" class="q-mr-sm"/>-->
+      <!--        {{ prop.node.label }}/{{ prop.node.menuShowing }}-->
+      <!--        <q-menu :v-model="false" context-menu>-->
+      <!--          <q-list style="min-width: 100px">-->
+      <!--            <q-item clickable v-close-popup>-->
+      <!--              <q-item-section>{{ prop.node.label }}/{{ prop.key }}</q-item-section>-->
+      <!--            </q-item>-->
+      <!--            <q-item clickable v-close-popup>-->
+      <!--              <q-item-section>ID: {{ prop.node.id }}</q-item-section>-->
+      <!--            </q-item>-->
+      <!--          </q-list>-->
+      <!--        </q-menu>-->
+      <!--      </template>-->
     </q-tree>
 
 
@@ -101,20 +112,16 @@ const localStorage = useQuasar().localStorage
 const showImportTabsetDialog = ref(false)
 const bookmarkFolderForImport = ref<string>('')
 const selected = ref('1')
+const showDeleteButton = ref<Map<string, boolean>>(new Map())
 
 const newTabsetName = ref('')
 const merge = ref(false)
-//const expanded = ref<string[]>([] as unknown as string[])
 const bookmarksTree = ref<object[]>([])
 
-// watchEffect(() => {
-//   console.log("selected", selected.value)
-//   router.push("/bookmarks/" + selected.value)
-// })
 
-watch (() => selected.value, (currentValue, oldValue) => {
+watch(() => selected.value, (currentValue, oldValue) => {
   console.log("selected", selected.value, currentValue, oldValue)
-  if(currentValue !== oldValue) {
+  if (currentValue !== oldValue) {
     router.push("/bookmarks/" + selected.value)
   }
 })
@@ -122,6 +129,8 @@ watch (() => selected.value, (currentValue, oldValue) => {
 watchEffect(() => {
   localStorage.set("bookmarks.expanded", useNotificationsStore().bookmarksExpanded)
 })
+
+// watchEffect(() => console.log(showDeleteButton.value))
 
 $q.loadingBar.setDefaults({
   color: 'positive',
@@ -135,85 +144,11 @@ const tabsets = () => {
 }
 
 
-const tabsetLabel = (tabset: Tabset) => {
-  return tabset.tabs?.length > 1 ? tabset.name + ' (' + tabset.tabs?.length + ' tabs)' : tabset.name + ' (' + tabset.tabs?.length + ' tab)'
-}
-
-
-
-
-const importFromBookmarks = (prop: any) => {
-  console.log("import from bookmarks", prop)
-  showImportTabsetDialog.value = true
-  newTabsetName.value = prop.node.title
-  bookmarkFolderForImport.value = prop.key
-}
-
-
 const tabNameExists = () => tabsStore.nameExistsInContextTabset(newTabsetName.value)
 
-const createChromeTab = async (openerId: number, url: string): Promise<chrome.tabs.Tab> => {
-  // @ts-ignore
-  const chromeTab: chrome.tabs.Tab = await chrome.tabs.create({url: url, openerTabId: openerId, active: false})
-  return chromeTab
-}
-
-const importBookmarks = async () => {
-  console.log("importing bookmarks", bookmarkFolderForImport.value)
-  $q.loadingBar.start()
-  //
-  // $q.loadingBar.increment(value)
-  if (featuresStore.bookmarksEnabled) {
-    const candidates: chrome.bookmarks.BookmarkTreeNode[] = await ChromeApi.childrenFor(bookmarkFolderForImport.value)
-    //console.log("got candidates", candidates)
-    // ChromeListeners.createThumbnails(false)
-
-
-    // Promise.all(tabsPromises)
-    //   .then((tabs: chrome.tabs.Tab[]) => {
-    //       console.log("got tabs", tabs)
-    TabsetService.saveOrReplaceFromBookmarks(newTabsetName.value, candidates, true)
-      .then((result: object) => {
-        //@ts-ignore
-        const replaced = result.replaced
-        //@ts-ignore
-        const merged = result.merged
-        let message = 'Tabset ' + newTabsetName.value + ' created successfully'
-        if (replaced && merged) {
-          message = 'Tabset ' + newTabsetName.value + ' was updated'
-        } else if (replaced) {
-          message = 'Tabset ' + newTabsetName.value + ' was overwritten'
-        }
-        router.push("/tabset")
-        $q.notify({
-          message: message,
-          type: 'positive'
-        })
-      }).catch((ex: any) => {
-      console.error("ex", ex)
-      $q.notify({
-        message: 'There was a problem creating the tabset ' + newTabsetName.value,
-        type: 'warning',
-      })
-
-    }).finally(() => {
-      $q.loadingBar.stop()
-    })
-    //   }
-    // )
-
-    bookmarkFolderForImport.value = ''
-  }
-}
-
-const newTabsetDialogWarning = () => {
-  if (newTabsetName.value.trim() === 'current') {
-    return "Please use a different name, 'current' is reserved"
-  }
-  if (tabsStore.nameExistsInContextTabset(newTabsetName.value)) {
-    return "Tabset " + newTabsetName.value + " already exists. Please choose:"
-  }
-  return ""
+const selectDeleteButton = (id: string) => {
+  showDeleteButton.value = new Map()
+  showDeleteButton.value.set(id, true)
 }
 
 const deleteDialog = () => {
