@@ -640,6 +640,25 @@ class TabsetService {
   nameForTabsetId(tsId: string): string {
     return useTabsStore().tabsets.get(tsId)?.name || 'unknown'
   }
+
+  async closeTrackedTabs() {
+    // TODO long-Running action
+    const currentTab = await ChromeApi.getCurrentTab()
+    chrome.tabs.query({}, (result: chrome.tabs.Tab[]) => {
+      const tabsToClose: chrome.tabs.Tab[] = []
+      _.forEach(result, (tab: chrome.tabs.Tab) => {
+        if (tab && tab.url && tab.url !== currentTab.url && this.tabsetsFor(tab.url).length > 0) {
+          tabsToClose.push(tab)
+        }
+      })
+      console.log("tabsToClose", tabsToClose)
+      _.forEach(tabsToClose, (t: chrome.tabs.Tab) => {
+        if (t.id) {
+          chrome.tabs.remove(t.id)
+        }
+      })
+    })
+  }
 }
 
 export default new TabsetService();

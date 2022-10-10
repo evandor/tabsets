@@ -87,6 +87,9 @@
               <q-item clickable>
                 <q-item-section @click="addTabset()" v-close-popup>Add Tabset</q-item-section>
               </q-item>
+              <q-item clickable>
+                <q-item-section @click="closeTrackedTabs()" v-close-popup>Close all tracked tabs</q-item-section>
+              </q-item>
               <q-item clickable v-if="useNotificationsStore().bookmarksActive">
                 <q-item-section v-close-popup @click="useNotificationsStore().showBookmarks = !useNotificationsStore().showBookmarks">
                   {{useNotificationsStore().showBookmarks ? 'Hide Bookmarks' : 'Show Bookmarks'}}
@@ -103,8 +106,6 @@
               <q-item clickable>
                 <q-item-section @click="router.push('/settings')">Settings</q-item-section>
               </q-item>
-              <q-separator />
-
 <!--              <q-separator />-->
 <!--              <q-item clickable>-->
 <!--                <q-item-section>Help &amp; Feedback</q-item-section>-->
@@ -331,6 +332,10 @@ const addTabset = () => {
   }).onDismiss(() => {
     showNewTabsetDialog.value = false
   })
+}
+
+const closeTrackedTabs = () => {
+  TabsetService.closeTrackedTabs()
 }
 
 const startSync = () => {
