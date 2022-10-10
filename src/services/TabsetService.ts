@@ -659,6 +659,14 @@ class TabsetService {
       })
     })
   }
+
+  rename(tabsetId: string, tabsetName: string) {
+    const tabset = this.getTabset(tabsetId)
+    if (tabset) {
+      tabset.name = tabsetName
+      this.saveTabset(tabset)
+    }
+  }
 }
 
 export default new TabsetService();

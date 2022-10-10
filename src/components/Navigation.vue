@@ -10,8 +10,8 @@
             :key="'fb_' + tabset.id"
             clickable v-ripple
             @click="selectTabset(tabset.id)"
-            @mouseover="showDeleteButton.set(tabset.id, true)"
-            @mouseleave="showDeleteButton.set(tabset.id, false)"
+            @mouseover="showButtons(tabset.id, true)"
+            @mouseleave="showButtons(tabset.id, false)"
             :style="tabset.id === tabsStore.currentTabsetId ? 'background-color:#efefef' : 'border:0px solid #bfbfbf'">
 
       <q-item-section avatar v-if="remoteAndLocalTabsets">
@@ -27,9 +27,14 @@
         @dragenter.prevent>
         <q-item-label v-text="tabsetLabel(tabset)"/>
       </q-item-section>
+      <q-item-section avatar v-if="showEditButton.get(tabset.id)">
+        <q-icon name="edit" color="positive" size="2em" @click="editDialog(tabset)">
+          <q-tooltip>Edit the tabset's name...</q-tooltip>
+        </q-icon>
+      </q-item-section>
       <q-item-section avatar v-if="showDeleteButton.get(tabset.id)">
         <q-icon name="delete_outline" color="negative" size="2em" @click="deleteDialog">
-          <q-tooltip>Delete this tabset</q-tooltip>
+          <q-tooltip>Delete this tabset...</q-tooltip>
         </q-icon>
       </q-item-section>
     </q-item>
@@ -50,8 +55,8 @@
       :key="'local_' + tabset.id"
       clickable v-ripple
       @click="selectTabset(tabset.id)"
-      @mouseover="showDeleteButton.set(tabset.id, true)"
-      @mouseleave="showDeleteButton.set(tabset.id, false)"
+      @mouseover="showButtons(tabset.id, true)"
+      @mouseleave="showButtons(tabset.id, false)"
       :style="tabset.id === tabsStore.currentTabsetId ? 'background-color:#efefef' : 'border:0px solid #bfbfbf'">
 
       <q-item-section avatar v-if="remoteAndLocalTabsets">
@@ -70,9 +75,14 @@
         <q-item-label v-text="tabsetLabel(tabset)"/>
       </q-item-section>
 
+      <q-item-section avatar v-if="showEditButton.get(tabset.id)">
+        <q-icon name="edit" color="positive" size="2em" @click="editDialog(tabset)">
+          <q-tooltip>Edit the tabset's name...</q-tooltip>
+        </q-icon>
+      </q-item-section>
       <q-item-section avatar v-show="showDeleteButton.get(tabset.id)">
         <q-icon name="delete_outline" color="negative" size="2em" @click="deleteDialog">
-          <q-tooltip>Delete this tabset</q-tooltip>
+          <q-tooltip>Delete this tabset...</q-tooltip>
         </q-icon>
       </q-item-section>
     </q-item>
@@ -93,21 +103,18 @@ import {uid, useQuasar} from "quasar";
 import {Tabset, TabsetPersistence, TabsetStatus} from "src/models/Tabset";
 import {Tab} from "src/models/Tab";
 import {useFeatureTogglesStore} from "src/stores/featureTogglesStore";
-import {TreeNode} from "src/models/Tree";
-import ChromeApi from "src/services/ChromeApi";
+import EditTabset from "src/components/dialogues/EditTabset.vue"
 
 const router = useRouter()
 const tabsStore = useTabsStore()
 const featuresStore = useFeatureTogglesStore()
 
 const showDeleteButton = ref<Map<string, boolean>>(new Map())
+const showEditButton = ref<Map<string, boolean>>(new Map())
 const $q = useQuasar();
 const tabsetToShow = ref<Tabset>(null as unknown as Tabset)
 
 const tabsetDiff = ref<Map<string, object>>(new Map())
-
-const showImportTabsetDialog = ref(false)
-const bookmarkFolderForImport = ref<string>('')
 
 const newTabsetName = ref('')
 const merge = ref(false)
@@ -210,6 +217,11 @@ const createChromeTab = async (openerId: number, url: string): Promise<chrome.ta
   return chromeTab
 }
 
+const showButtons = (tabsetId: string, show: boolean) => {
+  showDeleteButton.value.set(tabsetId, show)
+  showEditButton.value.set(tabsetId, show)
+}
+
 const deleteDialog = () => {
   $q.dialog({
     title: 'Deleting Tabset',
@@ -223,6 +235,14 @@ const deleteDialog = () => {
   }).onDismiss(() => {
   })
 }
+
+const editDialog = (tabset: Tabset) =>
+  $q.dialog({
+    component: EditTabset,
+    componentProps: {
+      tabsetId: tabset.id,
+      tabsetName: tabset.name
+    }})
 
 
 </script>
