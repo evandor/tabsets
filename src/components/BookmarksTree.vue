@@ -1,6 +1,6 @@
 <template>
-
-  <q-list class="q-mt-md">
+<!--  @mouseout="clearDeleteButton()"-->
+  <q-list class="q-mt-md" >
 
     <q-item-label header>Bookmarks</q-item-label>
 
@@ -8,21 +8,22 @@
       :nodes="bookmarksStore.bookmarksNodes"
       node-key="id"
       selected-color="dark"
+      @mouseenter="entered(true)"
+      @mouseleave="entered(false)"
       v-model:selected="selected"
-      v-model:expanded="useNotificationsStore().bookmarksExpanded"
-      @mouseout="selectDeleteButton('')"
-    >
+      v-model:expanded="useNotificationsStore().bookmarksExpanded">
       <template v-slot:header-node="prop">
+<!--        <div class="row">-->
+          <q-icon name="o_folder" class="q-mr-sm"/>
+          <span class="cursor-pointer fit no-wrap"
+          >{{ prop.node.label }}</span>
 
-        <q-icon name="o_folder" class="q-mr-sm"/>
-        <span class="cursor-pointer fit no-wrap"
-              @mouseover="selectDeleteButton(prop.node.id)">{{ prop.node.label }}</span>
-
-        <span class="text-right fit" v-show="showDeleteButton.get(prop.node.id)">
-            <q-icon name="delete_outline" color="negative" size="18px" @click="deleteDialog">
+          <span class="text-right fit" v-show="mouseHover && prop.node.id === deleteButtonId">
+            <q-icon name="delete_outline" color="negative" size="18px" @click.stop="deleteBookmarksFolderDialog">
               <q-tooltip>Delete this folder</q-tooltip>
             </q-icon>
           </span>
+<!--        </div>-->
 
 
         <!--        <q-menu :v-model="false" context-menu>-->
@@ -55,32 +56,32 @@
 
   </q-list>
 
-  <q-dialog v-model="showImportTabsetDialog">
-    <q-card style="min-width: 350px">
-      <q-card-section>
-        <div class="text-h6">Import this Bookmarks Folder as Tabset</div>
-      </q-card-section>
-      <q-card-section>
-        <div class="text-body">Please provide a name for the new tabset</div>
-      </q-card-section>
+<!--  <q-dialog v-model="showImportTabsetDialog">-->
+<!--    <q-card style="min-width: 350px">-->
+<!--      <q-card-section>-->
+<!--        <div class="text-h6">Import this Bookmarks Folder as Tabset</div>-->
+<!--      </q-card-section>-->
+<!--      <q-card-section>-->
+<!--        <div class="text-body">Please provide a name for the new tabset</div>-->
+<!--      </q-card-section>-->
 
-      <q-card-section class="q-pt-none">
-        <div class="text-body">New Tabset's name:</div>
-        <q-input dense v-model="newTabsetName" autofocus @keyup.enter="prompt = false"/>
-        <!--        <q-checkbox v-model="clearTabs" label="close current Tabs"/>-->
-        <div class="text-body2 text-warning"> {{ newTabsetDialogWarning() }}</div>
-        <q-radio v-model="merge" val="true" label="Merge" v-if="tabNameExists()"></q-radio>
-        <q-radio v-model="merge" val="false" label="Overwrite" v-if="tabNameExists()"></q-radio>
-      </q-card-section>
+<!--      <q-card-section class="q-pt-none">-->
+<!--        <div class="text-body">New Tabset's name:</div>-->
+<!--        <q-input dense v-model="newTabsetName" autofocus @keyup.enter="prompt = false"/>-->
+<!--        &lt;!&ndash;        <q-checkbox v-model="clearTabs" label="close current Tabs"/>&ndash;&gt;-->
+<!--        <div class="text-body2 text-warning"> {{ newTabsetDialogWarning() }}</div>-->
+<!--        <q-radio v-model="merge" val="true" label="Merge" v-if="tabNameExists()"></q-radio>-->
+<!--        <q-radio v-model="merge" val="false" label="Overwrite" v-if="tabNameExists()"></q-radio>-->
+<!--      </q-card-section>-->
 
-      <q-card-actions align="right" class="text-primary">
-        <q-btn flat label="Cancel" v-close-popup/>
-        <q-btn flat label="Create new Tabset"
-               :disable="newTabsetName.trim().length === 0 || newTabsetName.trim() === 'current'" v-close-popup
-               @click="importBookmarks()"/>
-      </q-card-actions>
-    </q-card>
-  </q-dialog>
+<!--      <q-card-actions align="right" class="text-primary">-->
+<!--        <q-btn flat label="Cancel" v-close-popup/>-->
+<!--        <q-btn flat label="Create new Tabset"-->
+<!--               :disable="newTabsetName.trim().length === 0 || newTabsetName.trim() === 'current'" v-close-popup-->
+<!--               @click="importBookmarks()"/>-->
+<!--      </q-card-actions>-->
+<!--    </q-card>-->
+<!--  </q-dialog>-->
 
 
 </template>
@@ -99,6 +100,7 @@ import {TreeNode} from "src/models/Tree";
 import ChromeApi from "src/services/ChromeApi";
 import {useBookmarksStore} from "stores/bookmarksStore";
 import {useNotificationsStore} from "stores/notificationsStore";
+import BookmarksService from "src/services/BookmarksService";
 
 const router = useRouter()
 const tabsStore = useTabsStore()
@@ -110,17 +112,16 @@ const localStorage = useQuasar().localStorage
 
 
 const showImportTabsetDialog = ref(false)
-const bookmarkFolderForImport = ref<string>('')
-const selected = ref('1')
-const showDeleteButton = ref<Map<string, boolean>>(new Map())
-
+const mouseHover = ref(false)
+const selected = ref('')
+const deleteButtonId = ref('')
 const newTabsetName = ref('')
 const merge = ref(false)
 const bookmarksTree = ref<object[]>([])
 
 
 watch(() => selected.value, (currentValue, oldValue) => {
-  console.log("selected", selected.value, currentValue, oldValue)
+  //console.log("selected", selected.value, currentValue, oldValue)
   if (currentValue !== oldValue) {
     router.push("/bookmarks/" + selected.value)
   }
@@ -130,7 +131,9 @@ watchEffect(() => {
   localStorage.set("bookmarks.expanded", useNotificationsStore().bookmarksExpanded)
 })
 
-// watchEffect(() => console.log(showDeleteButton.value))
+watchEffect(() => {
+  deleteButtonId.value = selected.value
+})
 
 $q.loadingBar.setDefaults({
   color: 'positive',
@@ -139,31 +142,27 @@ $q.loadingBar.setDefaults({
 })
 
 const tabsets = () => {
-  //console.log("tabsets", [...tabsStore.tabsets.values()])
   return _.sortBy([...tabsStore.tabsets.values()], ['name'])
 }
 
 
 const tabNameExists = () => tabsStore.nameExistsInContextTabset(newTabsetName.value)
 
-const selectDeleteButton = (id: string) => {
-  showDeleteButton.value = new Map()
-  showDeleteButton.value.set(id, true)
-}
-
-const deleteDialog = () => {
+const deleteBookmarksFolderDialog = () => {
   $q.dialog({
-    title: 'Deleting Tabset',
-    message: 'Would you like to delete this tabset?',
+    title: 'Delete Bookmark Folder',
+    message: 'Would you like to delete this folder and its subfolders and bookmarks? This cannot be undone',
     cancel: true,
     persistent: true
   }).onOk((data: any) => {
-    TabsetService.delete(tabsStore.currentTabsetId)
-    router.push("/browser")
+    BookmarksService.deleteBookmarksFolder(selected.value)
+    router.push("/start")
   }).onCancel(() => {
   }).onDismiss(() => {
   })
 }
+
+const entered = (b: boolean) => mouseHover.value = b
 
 
 </script>

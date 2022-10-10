@@ -120,6 +120,7 @@ class ChromeApi {
   }
 
   async childrenFor(bookmarkFolderId: string): Promise<chrome.bookmarks.BookmarkTreeNode[]> {
+    console.log("bookmarkFolderId", bookmarkFolderId)
     // @ts-ignore
     return await chrome.bookmarks.getChildren(bookmarkFolderId)
   }

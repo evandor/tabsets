@@ -76,7 +76,7 @@ const bookmarksForBreadcrumb = ref<Bookmark[]>([])
 const bookmarkId = ref('')
 
 async function getParentChain(bookmarkId: string, chain: Bookmark[] = []): Promise<Bookmark[]> {
-  console.log("getParentChain", chain)
+  console.log("bookmarkId", bookmarkId)
   // @ts-ignore
   const results = await chrome.bookmarks.get(bookmarkId)
   // @ts-ignore
@@ -102,7 +102,6 @@ watchEffect(() => {
 
         getParentChain(bookmarkId.value)
           .then(res => {
-            console.log("res", res)
             bookmarksForBreadcrumb.value = res.reverse()
           })
 
