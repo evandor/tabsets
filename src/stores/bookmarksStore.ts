@@ -40,11 +40,9 @@ export const useBookmarksStore = defineStore('bookmarks', {
 
   actions: {
     init() {
-      if (useFeatureTogglesStore().bookmarksEnabled) {
-        console.log("initializing bookmark Listeners")
-        this.loadBookmarks()
-        this.initListeners()
-      }
+      console.log("initializing bookmark Listeners")
+      this.loadBookmarks()
+      this.initListeners()
     },
     async loadBookmarks(): Promise<void> {
       this.bookmarksTree = []

@@ -28,19 +28,12 @@ function markDuplicates(tabset: Tabset) {
   })
   //console.log("found duplicates", urls, duplicates)
   _.forEach(tabset.tabs, t => {
-    if (duplicates.has(t.chromeTab.url || 'undefined')) {
-      t.isDuplicate = true
-    } else {
-      t.isDuplicate = false
-    }
+    t.isDuplicate = duplicates.has(t.chromeTab.url || 'undefined');
   })
 }
 
 export const useTabsStore = defineStore('tabs', {
   state: () => ({
-
-    // active means: tabs(-sets) are tracked
-    // active: null as unknown as boolean,
 
     // tabset extension id, set at init
     ownTabId: null as unknown as number,
@@ -59,11 +52,6 @@ export const useTabsStore = defineStore('tabs', {
     pendingTabset: null as unknown as Tabset,
 
     /**
-     * the browsers tabs as a tabset
-     */
-    browserTabset: null as unknown as Tabset,
-
-    /**
      * tabs the extension should ignore
      */
     ignoredTabset: null as unknown as Tabset,
@@ -78,8 +66,6 @@ export const useTabsStore = defineStore('tabs', {
   }),
 
   getters: {
-    //isLiveMode: (state) => (state.currentTabsetId === 'current'),
-    //isEditMode: (state) => (state.currentTabsetId !== 'current'),
 
     pinnedTabs(state): Tab[] {
       const currentTabset: Tabset = state.tabsets.get(state.currentTabsetId) || new Tabset("", "", [], [])
@@ -163,11 +149,7 @@ export const useTabsStore = defineStore('tabs', {
       console.log("initializing tabsStore")
       this.localStorage = localStorage
 
-      // --- tracking active ? ---
-      // const active = localStorage.getItem("active")
-      // this.active = active === null || active
-
-      // own tab id
+      // --- own tab id ---
       const ownTab = await ChromeApi.getCurrentTab()
       if (ownTab && ownTab.id) {
         console.log("setting extension tab id to ", ownTab.id)
@@ -178,17 +160,14 @@ export const useTabsStore = defineStore('tabs', {
       this.tabs = await queryTabs()
 
       // @ts-ignore
-      this.browserTabset = new Tabset("current", "current",
-        _.map(this.tabs, t => new Tab(uid(), t)))
+      // this.browserTabset = new Tabset("current", "current",
+      //   _.map(this.tabs, t => new Tab(uid(), t)))
 
       this.pendingTabset = new Tabset("pending", "pending", [], [])
 
       this.ignoredTabset = new Tabset("ignored", "ignored", [], [])
-
-
-      // // marking duplicates (inside each tabset)
-      //_.forEach([...this.tabsets.values()], tabset => markDuplicates(tabset))
     },
+
     async loadTabs(eventName: string) {
       // potentially expansive method
       // console.log(`${eventName}: -- loading tabs for tabset '${this.currentTabsetId}'`)
@@ -200,7 +179,7 @@ export const useTabsStore = defineStore('tabs', {
         }), [])
       markDuplicates(current)
       //this.tabsets.set("current", current)
-      this.browserTabset = current
+      //this.browserTabset = current
     },
     initListeners() {
       if (process.env.MODE === 'bex') {

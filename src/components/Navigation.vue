@@ -33,7 +33,7 @@
         </q-icon>
       </q-item-section>
       <q-item-section avatar v-if="showDeleteButton.get(tabset.id)">
-        <q-icon name="delete_outline" color="negative" size="2em" @click="deleteDialog">
+        <q-icon name="delete_outline" color="negative" size="18px" @click="deleteDialog">
           <q-tooltip>Delete this tabset...</q-tooltip>
         </q-icon>
       </q-item-section>
@@ -81,7 +81,7 @@
         </q-icon>
       </q-item-section>
       <q-item-section avatar v-show="showDeleteButton.get(tabset.id)">
-        <q-icon name="delete_outline" color="negative" size="2em" @click="deleteDialog">
+        <q-icon name="delete_outline" color="negative" size="18px" @click="deleteDialog">
           <q-tooltip>Delete this tabset...</q-tooltip>
         </q-icon>
       </q-item-section>

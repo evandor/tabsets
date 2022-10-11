@@ -87,9 +87,5 @@ watchEffect(() => {
   localStorage.set("layout", view.value)
 })
 
-if (!featuresStore.settingsEnabled) {
-  router.push("/about")
-}
-
 
 </script>

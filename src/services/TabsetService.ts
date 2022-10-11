@@ -1,7 +1,7 @@
 import {useTabsStore} from "src/stores/tabsStore";
 import {LocalStorage, uid} from "quasar";
 import ChromeApi from "src/services/ChromeApi";
-import _, {forEach} from "lodash";
+import _ from "lodash";
 import {Tab, TabStatus} from "src/models/Tab";
 import {Tabset, TabsetPersistence, TabsetStatus} from "src/models/Tabset";
 import {useNotificationsStore} from "src/stores/notificationsStore";
@@ -12,8 +12,8 @@ import {useAuthStore} from "src/stores/auth";
 import {INDEX_DB_NAME} from "boot/constants";
 import {AxiosResponse} from "axios";
 import {SyncMode} from "src/models/Subscription";
-import {useSearchStore} from "stores/searchStore";
-import {useBookmarksStore} from "stores/bookmarksStore";
+import {useSearchStore} from "src/stores/searchStore";
+import {useBookmarksStore} from "src/stores/bookmarksStore";
 
 class TabsetService {
 
@@ -25,57 +25,18 @@ class TabsetService {
     this.localStorage = localStorage;
   }
 
+  /**
+   * Init, called when extension is loaded (via App.vue)
+   */
   async init() {
-
-    // init db
-    this.db = await openDB(INDEX_DB_NAME, 1, {
-      // upgrading see https://stackoverflow.com/questions/50193906/create-index-on-already-existing-objectstore
-      upgrade(db) {
-        if (!db.objectStoreNames.contains('tabsets')) {
-          console.log("creating db tabsets")
-          db.createObjectStore('tabsets');
-        }
-        if (!db.objectStoreNames.contains('thumbnails')) {
-          console.log("creating db thumbnails")
-          let store = db.createObjectStore('thumbnails');
-          store.createIndex("expires", "expires", {unique: false});
-        }
-        if (!db.objectStoreNames.contains('content')) {
-          console.log("creating db content")
-          let store = db.createObjectStore('content');
-          store.createIndex("expires", "expires", {unique: false});
-        }
-      },
-    });
-
-    if (this.db) {
-      useSearchStore().populate(this.db.getAll('content'))
-    } else {
-      console.log("error could not populate search index")
-    }
-
-    // --- setting all tabs from storage
-    const tabsStore = useTabsStore()
-    const keys: IDBValidKey[] = await this.db.getAllKeys('tabsets')
-    _.forEach(keys, k => {
-      this.db.get('tabsets', k)
-        .then(ts => {
-          if ('ignored' === k) {
-            tabsStore.ignoredTabset = JSON.parse(ts)
-          } else {
-            tabsStore.addTabset(JSON.parse(ts))
-          }
-        })
-        .catch(err => console.log("err", err))
-    })
-
-    // get tabsets from firebase
+    this.db = await this.initDatabase();
+    useSearchStore().populate(this.db.getAll('content'))
+    await this.loadTabsetsFromIndexDb();
     this.loadTabsetsFromFirebase()
-
   }
 
   /**
-   * Will create a new tabset (or update an existing one with matching name) with
+   * Will create a new tabset (or update an existing one with matching name) from
    * the provided Chrome tabs.
    *
    * The tabset is created or updated in the store, and the new data is persisted.
@@ -90,8 +51,6 @@ class TabsetService {
     const result = await tabsStore.updateOrCreateTabset(name, tabs, merge)
     if (result && result.tabset) {
       await this.saveTabset(result.tabset)
-      console.log("setting current tabset to ", result.tabset.id)
-      // tabsStore.currentTabsetId = result.tabset.id
       this.selectTabset(result.tabset.id)
     }
     return {
@@ -100,6 +59,16 @@ class TabsetService {
     }
   }
 
+  /**
+   * Will create a new tabset (or update an existing one with matching name) from
+   * the provided bookmarks.
+   *
+   * The tabset is created or updated in the store, and the new data is persisted.
+   *
+   * @param name the tabset's name (TODO: validation)
+   * @param bms an array of Chrome bookmarks.
+   * @param merge if true, the old values and the new ones will be merged.
+   */
   async saveOrReplaceFromBookmarks(name: string, bms: chrome.bookmarks.BookmarkTreeNode[], merge: boolean = false): Promise<object> {
     const tabsStore = useTabsStore()
     const tabs = _.map(bms, c => {
@@ -108,14 +77,11 @@ class TabsetService {
       tab.bookmarkId = c.id
       tab.created = c.dateAdded || 0
       tab.chromeTab = ChromeApi.createChromeTabObject(c.title || '', c.url || '', '')
-
       return tab
     })
     const result = await tabsStore.updateOrCreateTabset(name, tabs, merge)
     if (result && result.tabset) {
       await this.saveTabset(result.tabset)
-      console.log("setting current tabset to ", result.tabset.id)
-      // tabsStore.currentTabsetId = result.tabset.id
       this.selectTabset(result.tabset.id)
     }
     return {
@@ -185,23 +151,23 @@ class TabsetService {
     return _.find([...tabsStore.tabsets.values()], ts => ts.id === tabsetId)
   }
 
-  private findInLocalStorage(tabsetName: string): string | undefined {
-    return _.first(
-      _.map(
-        _.filter(
-          _.map(
-            _.filter(this.localStorage.getAllKeys(), (t: string) => t.startsWith("tabsets.tabset.")),
-            (key: string) => {
-              //console.log("key", key)
-              return this.localStorage.getItem(key)
-            }), (ts: Tabset) => {
-            //console.log("ts", ts.name, tabsetName)
-            return ts.name === tabsetName
-          }), (ts: any) => {
-          //console.log("mapping to", ts.id)
-          return ts.id as string
-        }))
-  }
+  // private findInLocalStorage(tabsetName: string): string | undefined {
+  //   return _.first(
+  //     _.map(
+  //       _.filter(
+  //         _.map(
+  //           _.filter(this.localStorage.getAllKeys(), (t: string) => t.startsWith("tabsets.tabset.")),
+  //           (key: string) => {
+  //             //console.log("key", key)
+  //             return this.localStorage.getItem(key)
+  //           }), (ts: Tabset) => {
+  //           //console.log("ts", ts.name, tabsetName)
+  //           return ts.name === tabsetName
+  //         }), (ts: any) => {
+  //         //console.log("mapping to", ts.id)
+  //         return ts.id as string
+  //       }))
+  // }
 
   getCurrentTabset(): Tabset | undefined {
     const tabsStore = useTabsStore()
@@ -667,6 +633,45 @@ class TabsetService {
       this.saveTabset(tabset)
     }
   }
+
+  private async initDatabase(): Promise<IDBPDatabase> {
+    return await openDB(INDEX_DB_NAME, 1, {
+      // upgrading see https://stackoverflow.com/questions/50193906/create-index-on-already-existing-objectstore
+      upgrade(db) {
+        if (!db.objectStoreNames.contains('tabsets')) {
+          console.log("creating db tabsets")
+          db.createObjectStore('tabsets');
+        }
+        if (!db.objectStoreNames.contains('thumbnails')) {
+          console.log("creating db thumbnails")
+          let store = db.createObjectStore('thumbnails');
+          store.createIndex("expires", "expires", {unique: false});
+        }
+        if (!db.objectStoreNames.contains('content')) {
+          console.log("creating db content")
+          let store = db.createObjectStore('content');
+          store.createIndex("expires", "expires", {unique: false});
+        }
+      },
+    });
+  }
+
+  private async loadTabsetsFromIndexDb() {
+    const tabsStore = useTabsStore()
+    const keys: IDBValidKey[] = await this.db.getAllKeys('tabsets')
+    _.forEach(keys, key => {
+      this.db.get('tabsets', key)
+        .then(ts => {
+          if ('ignored' === key) {
+            tabsStore.ignoredTabset = JSON.parse(ts)
+          } else {
+            tabsStore.addTabset(JSON.parse(ts))
+          }
+        })
+        .catch(err => console.log("err", err))
+    })
+  }
+
 }
 
 export default new TabsetService();

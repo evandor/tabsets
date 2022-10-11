@@ -1,15 +1,10 @@
 import {beforeEach, describe, expect, it, jest} from "@jest/globals";
-import {mount} from "@vue/test-utils";
-import MyButton from "app/test/jest/__tests__/demo/MyButton.vue";
 import {setActivePinia, createPinia} from 'pinia'
 import {useTabsStore} from "src/stores/tabsStore";
-import {LocalStorage, useQuasar} from "quasar";
 import {chrome} from 'jest-chrome'
 import {Tabset} from "src/models/Tabset";
 import TabsetService from "src/services/TabsetService";
 import {Tab} from "src/models/Tab";
-
-import _ from "lodash"
 
 function createChromeTab(id: number, url: string) {
   return {
@@ -43,11 +38,9 @@ describe('TabsStore', () => {
         return store.get(key)
       },
       setItem(key: string, value: any) {
-        //console.log("setItem", key)
         store.set(key, value)
       },
       set(key: string, value: any) {
-        //console.log("set", key)
         store.set(key, value)
       },
       clear() {
@@ -57,7 +50,6 @@ describe('TabsStore', () => {
         store.delete(key)
       },
       getAllKeys(): string[] {
-        //console.log("getting keys of", store.keys())
         return [...store.keys()]
       }
     };
@@ -71,7 +63,7 @@ describe('TabsStore', () => {
   it('tabs are initialized from chrome.tabs', async () => {
 
     const tabsStore = useTabsStore()
-    chrome.tabs.query.mockImplementation(async (o: object) => [{}])
+    chrome.tabs.query.mockImplementation(async (o: object) => [{id: 1}])
 
     await tabsStore.initialize(localStorageMock)
 
@@ -79,31 +71,18 @@ describe('TabsStore', () => {
     expect(tabsStore.tabsets.size).toBe(0)
   })
 
-  it('tabsets are initialized from local storage when there is no contextId', async () => {
+  it('tabsets are initialized empty', async () => {
     const tabsStore = useTabsStore()
     chrome.tabs.query.mockImplementation(async (o: object) => [])
-    localStorageMock.setItem("tabsets.tabset.A", new Tabset("tsIdA", "tsNameA", [], []))
-    localStorageMock.setItem("tabsets.tabset.B", new Tabset("tsIdB", "tsNameB", [], []))
+    //localStorageMock.setItem("tabsets.tabset.A", new Tabset("tsIdA", "tsNameA", [], []))
+    //localStorageMock.setItem("tabsets.tabset.B", new Tabset("tsIdB", "tsNameB", [], []))
 
     await tabsStore.initialize(localStorageMock)
 
     expect(tabsStore.tabs.length).toBe(0)
     expect(tabsStore.tabsets.size).toBe(0)
-    expect(tabsStore.currentTabsetId).toBe("current")
-  });
-
-  it('tabsets are initialized from local storage when there is a contextId', async () => {
-    const tabsStore = useTabsStore()
-    chrome.tabs.query.mockImplementation(async (o: object) => [])
-    localStorageMock.setItem("tabsets.context", "A")
-    localStorageMock.setItem("tabsets.tabset.A", new Tabset("tsIdA", "tsNameA", [], []))
-    localStorageMock.setItem("tabsets.tabset.B", new Tabset("tsIdB", "tsNameB", [], []))
-
-    await tabsStore.initialize(localStorageMock)
-
-    expect(tabsStore.tabs.length).toBe(0)
-    expect(tabsStore.tabsets.size).toBe(0)
-    expect(tabsStore.currentTabsetId).toBe("current")
+    expect(tabsStore.pendingTabset.tabs.length).toBe(0)
+    expect(tabsStore.ignoredTabset.tabs.length).toBe(0)
   });
 
   it('creates new tabset', async () => {
@@ -114,9 +93,13 @@ describe('TabsStore', () => {
 
     await tabsStore.updateOrCreateTabset("newTabset", [])
 
-    expect(tabsStore.tabsets.size).toBe(1) // the new one plus 'current'
-    //expect(tabsStore.contextId.length).toBe(36) // an uid
-    //expect(tabsStore.currentTabsetId).toBe(tabsStore.contextId)
+    expect(tabsStore.tabsets.size).toBe(1)
+    const keys:string[] = [...tabsStore.tabsets.keys()]
+    expect(tabsStore.tabsets.get(keys[0])?.name).toBe("newTabset")
+    expect(tabsStore.tabsets.get(keys[0])?.created).toBeGreaterThan(1665423627325)
+    expect(tabsStore.tabsets.get(keys[0])?.updated).toBeGreaterThan(1665423627325)
+    expect(tabsStore.tabsets.get(keys[0])?.persistence).toBe("INDEX_DB")
+    expect(tabsStore.tabsets.get(keys[0])?.status).toBe("DEFAULT") // TODO status used?
   });
 
   it('saves existing tabset with overwrite', async () => {

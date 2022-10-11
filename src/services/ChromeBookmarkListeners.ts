@@ -1,6 +1,5 @@
-import {useBookmarksStore} from "stores/bookmarksStore";
-import throttledQueue from "throttled-queue";
-import {useTabsStore} from "stores/tabsStore";
+import {useBookmarksStore} from "src/stores/bookmarksStore";
+import {useTabsStore} from "src/stores/tabsStore";
 
 
 class ChromeBookmarkListeners {

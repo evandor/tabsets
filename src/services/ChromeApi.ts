@@ -35,7 +35,7 @@ class ChromeApi {
       (e: chrome.contextMenus.OnClickData, tab: chrome.tabs.Tab | undefined) => {
         //console.log("e", e, tab)
         if (e.menuItemId === "open_tabsets_page") {
-          chrome.tabs.query({title: `Tabsets Extension ${import.meta.env.PACKAGE_VERSION}`}, (result: chrome.tabs.Tab[]) => {
+          chrome.tabs.query({title: `Tabsets Extension`}, (result: chrome.tabs.Tab[]) => {
             if (result && result[0]) {
               chrome.tabs.highlight({tabs: result[0].index});
             } else {

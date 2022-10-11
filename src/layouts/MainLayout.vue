@@ -242,9 +242,7 @@ const notificationsStore = useNotificationsStore()
 const featuresStore = useFeatureTogglesStore()
 const route = useRoute()
 
-if (featuresStore.bookmarksEnabled) {
-  showBookmarksDrawer.value = true
-}
+showBookmarksDrawer.value = true
 
 const $q = useQuasar()
 
@@ -269,7 +267,7 @@ const syncingActive = ref(false)
 useMeta(() => {
   return {
     // @ts-ignore
-    title: 'Tabsets Extension ' + appVersion
+    title: 'Tabsets Extension' //+ appVersion
   }
 })
 

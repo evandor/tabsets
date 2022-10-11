@@ -76,7 +76,6 @@ const bookmarksForBreadcrumb = ref<Bookmark[]>([])
 const bookmarkId = ref('')
 
 async function getParentChain(bookmarkId: string, chain: Bookmark[] = []): Promise<Bookmark[]> {
-  console.log("bookmarkId", bookmarkId)
   // @ts-ignore
   const results = await chrome.bookmarks.get(bookmarkId)
   // @ts-ignore
