@@ -42,7 +42,7 @@ class TabsetService {
    * The tabset is created or updated in the store, and the new data is persisted.
    *
    * @param name the tabset's name (TODO: validation)
-   * @param tabs an array of Chrome tabs.
+   * @param chromeTabs an array of Chrome tabs.
    * @param merge if true, the old values and the new ones will be merged.
    */
   async saveOrReplaceFromChromeTabs(name: string, chromeTabs: chrome.tabs.Tab[], merge: boolean = false): Promise<object> {
@@ -96,7 +96,8 @@ class TabsetService {
         console.log("saving tabset to firebase")
         backendApi.saveTabset(tabset)
       } else {
-        await this.db.put('tabsets', JSON.stringify(tabset), tabset.id);
+        console.log("tabset", tabset)
+        await this.db.put('tabsets', JSON.parse(JSON.stringify(tabset)), tabset.id);
       }
       //localStorage.setItem("tabsets.context", tabset.id)
       return
@@ -195,7 +196,6 @@ class TabsetService {
   }
 
   togglePin(tabId: number) {
-    const tabsStore = useTabsStore()
     const currentTabset: Tabset = this.getCurrentTabset() || new Tabset("", "", [], [])
     _.filter(currentTabset.tabs, t => t.chromeTab.id === tabId)
       .forEach(t => {
@@ -663,9 +663,9 @@ class TabsetService {
       this.db.get('tabsets', key)
         .then(ts => {
           if ('ignored' === key) {
-            tabsStore.ignoredTabset = JSON.parse(ts)
+            tabsStore.ignoredTabset = ts//JSON.parse(ts)
           } else {
-            tabsStore.addTabset(JSON.parse(ts))
+            tabsStore.addTabset(ts)//JSON.parse(ts))
           }
         })
         .catch(err => console.log("err", err))
