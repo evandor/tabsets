@@ -96,10 +96,8 @@ class TabsetService {
         console.log("saving tabset to firebase")
         backendApi.saveTabset(tabset)
       } else {
-        console.log("tabset", tabset)
         await this.db.put('tabsets', JSON.parse(JSON.stringify(tabset)), tabset.id);
       }
-      //localStorage.setItem("tabsets.context", tabset.id)
       return
     }
   }

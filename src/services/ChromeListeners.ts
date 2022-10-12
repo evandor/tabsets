@@ -218,16 +218,9 @@ class ChromeListeners {
   }
 
   private handleTextCapture(request: any, sender: chrome.runtime.MessageSender, sendResponse: any) {
-    // chrome.tabs.executeScript( {
-    //   code: "window.getSelection().toString();"
-    // }, function(selection) {
-    //   alert(selection[0]);
-    // });
-    console.log("hier", request, sender)
     const xPath = request.xPath
     const selection = request.selection
     const tabId = sender.tab?.id || 0
-    //console.log("hier", window.getSelection()?.toString())
     TabsetService.saveTextReference(tabId, xPath, selection)
     sendResponse({tabId: sender.tab?.id});
   }

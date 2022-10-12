@@ -6,8 +6,10 @@ import TabsetService from "src/services/TabsetService";
 
 class Navigation {
 
-  openOrCreateTab(withUrl: string) {
-    console.log("hier", withUrl)
+  openOrCreateTab(tab: Tab) {
+    console.log("hier", tab.chromeTab?.url)
+    const withUrl = tab.chromeTab?.url
+    const refs = tab.references
 
     chrome.tabs.query({currentWindow: true}, (t: chrome.tabs.Tab[]) => {
       let found = false;
@@ -16,6 +18,49 @@ class Navigation {
           if (withUrl === r.url) {
             found = true
             chrome.tabs.highlight({tabs: r.index});
+            console.log("trying to highlight...")
+            // @ts-ignore
+            chrome.scripting.executeScript({
+              target: {tabId: r.id, allFrames: true},
+              args: [refs],
+              func: (refs: object) => {
+
+                const keys = Object.keys(refs)
+                console.log("keys", keys)
+
+                keys.forEach(key => {
+                  console.log("key", key)
+                  const xpathResult = document.evaluate(key, document.documentElement, null, XPathResult.ANY_TYPE, null);
+                  console.log("xxx", xpathResult)
+                  if (xpathResult.resultType === 4) { //UNORDERED_NODE_ITERATOR_TYPE)
+                    var node = xpathResult.iterateNext();
+                    if (node != null) {
+                      console.log("xxx1", node)
+                      var range = document.createRange();
+                      range.selectNodeContents(node);
+                      var span = document.createElement('span');
+                      span.className = 'highlight';
+                      range.surroundContents(span);
+                    }
+                  } else {
+                    var node = xpathResult.singleNodeValue;
+                    if (node != null) {
+                      console.log("xxx2", node)
+
+                      var range = document.createRange();
+                      range.selectNodeContents(node);
+                      var span = document.createElement('span');
+                      span.className = 'highlight';
+                      range.surroundContents(span);
+                    }
+                  }
+                })
+
+
+              }
+            })
+
+
           }
         });
       if (!found) {

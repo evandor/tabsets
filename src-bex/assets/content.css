@@ -1,1 +1,7 @@
 /* Global CSS used within your BEX. This is not preprocessed so this has to be pure CSS. */
+.highlight {
+  background-color: #bfbfbf;
+  border: 2px dotted red;
+  border-radius: 4px;
+  margin: -5px;
+}

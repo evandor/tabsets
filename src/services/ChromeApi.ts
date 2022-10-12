@@ -53,11 +53,10 @@ class ChromeApi {
             }
           })
         } else if (e.menuItemId === "capture_text") {
-          console.log("executing script1", e)
-          console.log("executing script2", tab)
-          console.log("text", e.selectionText)
-          console.log("tab", tab?.id)
-          console.log("window", window.getSelection()?.anchorNode)
+          // console.log("executing script1", e)
+          // console.log("executing script2", tab)
+          // console.log("text", e.selectionText)
+          // console.log("tab", tab?.id)
           const tabId = tab?.id || 0
           const selection = e.selectionText
 
@@ -66,7 +65,6 @@ class ChromeApi {
             target: {tabId: tab?.id, allFrames: true},
             args: [tabId, selection],
             func: (tabId: number, selection: string) => {
-              //console.log("hier!!!!",window.getSelection())
 
               function getDomPath(el: Node ) {
                 let stack = [];
@@ -75,6 +73,7 @@ class ChromeApi {
                   let sibIndex = 0;
                   for ( var i = 0; i < el.parentNode.childNodes.length; i++ ) {
                     var sib = el.parentNode.childNodes[i];
+                    console.log("sib", sib)
                     if ( sib.nodeName == el.nodeName ) {
                       if ( sib === el ) {
                         sibIndex = sibCount;
@@ -82,8 +81,13 @@ class ChromeApi {
                       sibCount++;
                     }
                   }
-                  if ( sibCount > 1 ) {
-                    stack.unshift("/" + el.nodeName.toLowerCase() + '[' + sibIndex + ']');
+                  //const element = (<Element>el)
+                  // @ts-ignore
+                  if ( el.id && el.id != '' ) {
+                    // @ts-ignore
+                    stack.unshift('/' + el.nodeName.toLowerCase() + '[@id=\''+el.id+'\']');
+                  } else if ( sibCount > 1 ) {
+                    stack.unshift("/" + el.nodeName.toLowerCase() + '[' + (sibIndex+1) + ']');
                   } else {
                     stack.unshift('/' + el.nodeName.toLowerCase());
                   }
