@@ -1,9 +1,9 @@
 import {Tabset} from "src/models/Tabset";
 import TabsetService from "src/services/TabsetService";
 import {CLEANUP_PERIOD_IN_MINUTES} from "boot/constants";
+// import getXPath from 'get-xpath'
 
 function runHousekeeping(alarm: chrome.alarms.Alarm) {
-  //console.log("got alarm", alarm)
   if (alarm.name === "housekeeping") {
     TabsetService.housekeeping()
   }
@@ -27,13 +27,16 @@ class ChromeApi {
 
     chrome.contextMenus.removeAll(
       () => {
-        chrome.contextMenus.create({id: 'open_tabsets_page', title: 'Open Tabsets Extension', contexts: ['all']})
+        chrome.contextMenus.create({id: 'tabset_extension', title: 'Tabset Extension', contexts: ['all']},
+          () => {
+            chrome.contextMenus.create({id: 'open_tabsets_page', parentId: 'tabset_extension', title: 'Open Tabsets Extension', contexts: ['all']})
+            chrome.contextMenus.create({id: 'capture_text', parentId: 'tabset_extension', title: 'Save as/to Tabset', contexts: ['all']})
+          })
       }
     )
 
     chrome.contextMenus.onClicked.addListener(
       (e: chrome.contextMenus.OnClickData, tab: chrome.tabs.Tab | undefined) => {
-        //console.log("e", e, tab)
         if (e.menuItemId === "open_tabsets_page") {
           chrome.tabs.query({title: `Tabsets Extension`}, (result: chrome.tabs.Tab[]) => {
             if (result && result[0]) {
@@ -44,11 +47,62 @@ class ChromeApi {
                 chrome.tabs.create({
                   active: true,
                   pinned: false,
-                  url: "chrome-extension://"+selfId+"/www/index.html#/start"
+                  url: "chrome-extension://" + selfId + "/www/index.html#/start"
                 })
               }
             }
           })
+        } else if (e.menuItemId === "capture_text") {
+          console.log("executing script1", e)
+          console.log("executing script2", tab)
+          console.log("text", e.selectionText)
+          console.log("tab", tab?.id)
+          console.log("window", window.getSelection()?.anchorNode)
+          const tabId = tab?.id || 0
+          const selection = e.selectionText
+
+          // @ts-ignore
+          chrome.scripting.executeScript({
+            target: {tabId: tab?.id, allFrames: true},
+            args: [tabId, selection],
+            func: (tabId: number, selection: string) => {
+              //console.log("hier!!!!",window.getSelection())
+
+              function getDomPath(el: Node ) {
+                let stack = [];
+                while ( el.parentNode != null ) {
+                  let sibCount = 0;
+                  let sibIndex = 0;
+                  for ( var i = 0; i < el.parentNode.childNodes.length; i++ ) {
+                    var sib = el.parentNode.childNodes[i];
+                    if ( sib.nodeName == el.nodeName ) {
+                      if ( sib === el ) {
+                        sibIndex = sibCount;
+                      }
+                      sibCount++;
+                    }
+                  }
+                  if ( sibCount > 1 ) {
+                    stack.unshift("/" + el.nodeName.toLowerCase() + '[' + sibIndex + ']');
+                  } else {
+                    stack.unshift('/' + el.nodeName.toLowerCase());
+                  }
+                  el = el.parentNode;
+                }
+                stack.pop()
+                return stack.join("");
+              }
+
+              if (window.getSelection()?.anchorNode && window.getSelection()?.anchorNode !== null) {
+                // @ts-ignore
+                const xPath = getDomPath(window.getSelection().anchorNode)
+                console.log("got xpath:",xPath)
+                chrome.runtime.sendMessage({msg: "textCapture", tabId:tabId, xPath: xPath, selection: selection }, function(response) {
+                  console.log("created xpath reference for tabsets:", response)
+                });
+              }
+            }
+          });
         }
       })
   }
@@ -123,6 +177,11 @@ class ChromeApi {
     console.log("bookmarkFolderId", bookmarkFolderId)
     // @ts-ignore
     return await chrome.bookmarks.getChildren(bookmarkFolderId)
+  }
+
+  async getTab(tabId: number):Promise<chrome.tabs.Tab> {
+    // @ts-ignore
+    return await chrome.tabs.get(tabId)
   }
 
   createChromeTabObject(title: string, url: string, favIconUrl: string) {

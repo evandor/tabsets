@@ -272,12 +272,11 @@ useMeta(() => {
 })
 
 watchEffect(() => {
-  console.log("notificationsStore.showBookmarks", notificationsStore.showBookmarks)
   leftDrawerOpen.value = notificationsStore.showBookmarks
 })
 
 watchEffect(() => {
-  console.log(" > watchEffect", auth.subscription)
+  //console.log(" > watchEffect", auth.subscription)
   syncingActive.value = syncStore.showSyncMode && auth.subscription.syncMode !== SyncMode.INACTIVE
 })
 

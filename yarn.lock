@@ -4777,6 +4777,11 @@ get-value@^2.0.3, get-value@^2.0.6:
   resolved "https://registry.yarnpkg.com/get-value/-/get-value-2.0.6.tgz#dc15ca1c672387ca76bd37ac0a395ba2042a2c28"
   integrity sha512-Ln0UQDlxH1BapMu3GPtf7CuYNwRZf2gwCuPqbyG6pB8WfmFpzqcy4xtAaAMUhnNqjMKTiCPZG2oMT3YSx8U2NA==
 
+get-xpath@^3.0.1:
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/get-xpath/-/get-xpath-3.0.1.tgz#8be182566d52d1494ac008d48b66a870b9f39cb0"
+  integrity sha512-GWG+RbJ7VE40rn4/NYYGojQbgN3Eha0s223ZSz1IhHFcGlMU+X7H5Iyrbuz6csiWqedAKplpS3udLw9X1nqX5Q==
+
 glob-parent@^5.1.2, glob-parent@~5.1.2:
   version "5.1.2"
   resolved "https://registry.yarnpkg.com/glob-parent/-/glob-parent-5.1.2.tgz#869832c58034fe68a4093c17dc15e8340d8401c4"

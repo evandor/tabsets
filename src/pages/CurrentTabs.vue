@@ -56,13 +56,13 @@ const auth = useAuthStore()
 if (auth.isAuthenticated && auth.user) {
   const selectedTabsetFromStorage = localStorage.getItem(auth.user['uid'] + ".selectedTabset") as unknown as string
   if (selectedTabsetFromStorage) {
-    console.log("selecting tabset from storage")
+    //console.log("selecting tabset from storage")
     TabsetService.selectTabset(selectedTabsetFromStorage)
   }
 } else {
   const selectedTabsetFromStorage = localStorage.getItem("selectedTabset") as unknown as string
   if (selectedTabsetFromStorage) {
-    console.log("selecting tabset from storage")
+    //console.log("selecting tabset from storage")
     TabsetService.selectTabset(selectedTabsetFromStorage)
   }
 }

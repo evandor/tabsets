@@ -185,7 +185,7 @@ class TabsetService {
 
   saveToTabset(tab: Tab) {
     const tabsStore = useTabsStore()
-    const currentTabset: Tabset = this.getCurrentTabset() || new Tabset("", "", [], [])
+    const currentTabset: Tabset = this.getCurrentTabset() || new Tabset(uid(), "undefined", [], [])
     tab.status = TabStatus.DEFAULT
     currentTabset.tabs.push(tab)
 
@@ -213,7 +213,7 @@ class TabsetService {
   }
 
   selectTabset(tabsetId: string): void {
-    console.log("selecting tabset", tabsetId)
+    //console.log("selecting tabset", tabsetId)
     const tabsStore = useTabsStore()
     this.resetSelectedTabs()
     tabsStore.currentTabsetId = tabsetId;
@@ -634,6 +634,27 @@ class TabsetService {
     }
   }
 
+  async saveTextReference(tabId: number, xPath: string, selection: any) {
+    if (tabId > 0) {
+      const chromeTab = await ChromeApi.getTab(tabId)
+      console.log("got tab", chromeTab)
+      const url = chromeTab.url
+      if (url) {
+        const tabs: Tab[] = this.tabsForUrl(url)
+        _.forEach(tabs, (tab:Tab) => {
+          console.log("tabs.ref", tab);
+          tab.references[xPath] = selection
+        })
+      } else {
+        const newTab = new Tab(uid(), chromeTab)
+        //useTabsStore().getCurrentTabs.push(newTab)
+        this.saveToTabset(newTab)
+      }
+
+      _.forEach([...useTabsStore().tabsets.values()], (ts: Tabset) => this.saveTabset(ts))
+    }
+  }
+
   private async initDatabase(): Promise<IDBPDatabase> {
     return await openDB(INDEX_DB_NAME, 1, {
       // upgrading see https://stackoverflow.com/questions/50193906/create-index-on-already-existing-objectstore
@@ -672,6 +693,19 @@ class TabsetService {
     })
   }
 
+
+  private tabsForUrl(url: string): Tab[] {
+    const tabsStore = useTabsStore()
+    const result: Tab[] = []
+    _.forEach([...tabsStore.tabsets.values()], (tabset: Tabset) => {
+      _.forEach(tabset.tabs, (tab: Tab) => {
+        if (tab.chromeTab.url === url) {
+          result.push(tab)
+        }
+      })
+    })
+    return result
+  }
 }
 
 export default new TabsetService();

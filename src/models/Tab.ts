@@ -20,6 +20,8 @@ export class Tab {
   name: string | undefined
   bookmarkUrl: string | undefined
   bookmarkId: string | undefined
+  // references: Map<string, string> = new Map()
+  references: {[k: string]: string}
 
   constructor(public id: string, chromeTab: chrome.tabs.Tab) {
     this.created = new Date().getTime()
@@ -33,6 +35,7 @@ export class Tab {
     this.isDuplicate = false
     this.history = []
     this.name = undefined
+    this.references = {}
   }
 
   setHistoryFrom(existingTab: Tab) {
@@ -59,4 +62,8 @@ export class Tab {
     // TODO validate
     this.name = newName
   }
+
+  // public addReference(key: string, value: string) {
+  //   this.references.set(key,value)
+  // }
 }

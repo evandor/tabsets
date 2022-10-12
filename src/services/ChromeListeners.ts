@@ -197,6 +197,8 @@ class ChromeListeners {
       this.handleCapture(sender, sendResponse)
     } else if (request.msg === 'html2text') {
       this.handleHtml2Text(request, sender, sendResponse)
+    } else if (request.msg === 'textCapture') {
+      this.handleTextCapture(request, sender, sendResponse)
     }
     return true;
   }
@@ -215,12 +217,23 @@ class ChromeListeners {
     return ignoreIndex >= 0
   }
 
+  private handleTextCapture(request: any, sender: chrome.runtime.MessageSender, sendResponse: any) {
+    // chrome.tabs.executeScript( {
+    //   code: "window.getSelection().toString();"
+    // }, function(selection) {
+    //   alert(selection[0]);
+    // });
+    console.log("hier", request, sender)
+    const xPath = request.xPath
+    const selection = request.selection
+    const tabId = sender.tab?.id || 0
+    //console.log("hier", window.getSelection()?.toString())
+    TabsetService.saveTextReference(tabId, xPath, selection)
+    sendResponse({tabId: sender.tab?.id});
+  }
+
   private handleHtml2Text(request: any, sender: chrome.runtime.MessageSender, sendResponse: any) {
-    // if (!this.thumbnailsActive) {
-    //   return
-    // }
     const html = document.documentElement.innerHTML
-    //console.log("html", html)
     const text = convert(request.html, {
       wordwrap: 130
     });
@@ -229,10 +242,6 @@ class ChromeListeners {
   }
 
   private handleCapture(sender: chrome.runtime.MessageSender, sendResponse: any) {
-    if (!this.thumbnailsActive) {
-      return
-    }
-
     this.throttleOnePerSecond(() => {
       console.log("capturing tab...")
       chrome.tabs.captureVisibleTab(
