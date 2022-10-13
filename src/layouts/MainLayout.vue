@@ -3,8 +3,10 @@
     <q-header elevated>
       <q-toolbar>
 
-        <q-toolbar-title @click="goHome()" class="cursor-pointer">
-          {{ title() }}
+        <q-btn dense flat round icon="menu" @click="toggleLeftDrawer"/>
+
+        <q-toolbar-title @click="goHome()" class="cursor-pointer" style="width:350px;">
+          {{ title() }} <span class="text-caption">Handle more tabs, with less tabs open</span>
         </q-toolbar-title>
 
         <q-input dark dense standout v-model="search"
@@ -18,10 +20,6 @@
             <q-icon v-else name="clear" class="cursor-pointer" @click="search = ''"/>
           </template>
         </q-input>
-
-        <q-space/>
-
-        <q-space/>
 
 
         <q-space/>
@@ -39,14 +37,14 @@
           {{ tabsStore.pendingTabset?.tabs.length }} unassigned tab(s)
         </div>
 
-<!--        <q-toggle-->
-<!--          v-if="syncStore.showSyncMode"-->
-<!--          left-label-->
-<!--          color="green"-->
-<!--          v-model="syncModel"-->
-<!--          @update:model-value="val => syncModeToggled(val)"-->
-<!--          label=""-->
-<!--        />-->
+        <!--        <q-toggle-->
+        <!--          v-if="syncStore.showSyncMode"-->
+        <!--          left-label-->
+        <!--          color="green"-->
+        <!--          v-model="syncModel"-->
+        <!--          @update:model-value="val => syncModeToggled(val)"-->
+        <!--          label=""-->
+        <!--        />-->
 
 
         <span class="q-pr-lg" style="cursor: pointer" v-if="featuresStore.firebaseEnabled && auth.user">
@@ -70,16 +68,16 @@
           <span @click="router.push('/login')">Login</span>
         </span>
 
-<!--        <q-btn v-if="featuresStore.firebaseEnabled && !auth.user && tabsStore.tabsets.size > 1 && !someoneSubscribed()"-->
-<!--               outline rounded color="warning" :disable="onProPage()" label="Check out Tabsets Pro..." class="q-mr-lg"-->
-<!--               @click="router.push('/trypro')">-->
-<!--          <q-tooltip>Tabsets Pro let's you synchronize your tabsets across devices</q-tooltip>-->
-<!--        </q-btn>-->
+        <!--        <q-btn v-if="featuresStore.firebaseEnabled && !auth.user && tabsStore.tabsets.size > 1 && !someoneSubscribed()"-->
+        <!--               outline rounded color="warning" :disable="onProPage()" label="Check out Tabsets Pro..." class="q-mr-lg"-->
+        <!--               @click="router.push('/trypro')">-->
+        <!--          <q-tooltip>Tabsets Pro let's you synchronize your tabsets across devices</q-tooltip>-->
+        <!--        </q-btn>-->
 
-<!--        <q-icon name="settings" size="2em"-->
-<!--                class="q-mr-md cursor-pointer"-->
-<!--                @click="openSettingsPage()"-->
-<!--                v-if="featuresStore.settingsEnabled"></q-icon>-->
+        <!--        <q-icon name="settings" size="2em"-->
+        <!--                class="q-mr-md cursor-pointer"-->
+        <!--                @click="openSettingsPage()"-->
+        <!--                v-if="featuresStore.settingsEnabled"></q-icon>-->
 
         <q-btn label="Actions" style="width:200px" class="q-mr-lg">
           <q-menu fit>
@@ -90,32 +88,31 @@
               <q-item clickable>
                 <q-item-section @click="closeTrackedTabs()" v-close-popup>Close all tracked tabs</q-item-section>
               </q-item>
-              <q-item clickable v-if="useNotificationsStore().bookmarksActive">
-                <q-item-section v-close-popup @click="useNotificationsStore().showBookmarks = !useNotificationsStore().showBookmarks">
-                  {{useNotificationsStore().showBookmarks ? 'Hide Bookmarks' : 'Show Bookmarks'}}
-                </q-item-section>
-              </q-item>
-              <q-separator />
+
+              <q-separator/>
               <q-item clickable>
                 <q-item-section @click="showExportDialog()" v-close-popup>Export</q-item-section>
               </q-item>
               <q-item clickable>
                 <q-item-section @click="showImportDialog()" v-close-popup>Import (Json)</q-item-section>
               </q-item>
-              <q-separator />
+              <q-separator/>
               <q-item clickable>
                 <q-item-section @click="router.push('/settings')">Settings</q-item-section>
               </q-item>
-<!--              <q-separator />-->
-<!--              <q-item clickable>-->
-<!--                <q-item-section>Help &amp; Feedback</q-item-section>-->
-<!--              </q-item>-->
-              <q-separator v-if="featuresStore.firebaseEnabled && !auth.user && tabsStore.tabsets.size > 1 && !someoneSubscribed()"/>
-              <q-item clickable v-if="featuresStore.firebaseEnabled && !auth.user && tabsStore.tabsets.size > 1 && !someoneSubscribed()">
+              <!--              <q-separator />-->
+              <!--              <q-item clickable>-->
+              <!--                <q-item-section>Help &amp; Feedback</q-item-section>-->
+              <!--              </q-item>-->
+              <q-separator
+                v-if="featuresStore.firebaseEnabled && !auth.user && tabsStore.tabsets.size > 1 && !someoneSubscribed()"/>
+              <q-item clickable
+                      v-if="featuresStore.firebaseEnabled && !auth.user && tabsStore.tabsets.size > 1 && !someoneSubscribed()">
                 <q-item-section @click="router.push('/trypro')">Check out Tabsets Pro...</q-item-section>
               </q-item>
-              <q-separator />
-              <q-item clickable v-if="useRouter().currentRoute.value.fullPath !== '/about'" @click="router.push('/about')">
+              <q-separator/>
+              <q-item clickable v-if="useRouter().currentRoute.value.fullPath !== '/about'"
+                      @click="router.push('/about')">
                 <q-item-section>About tabsets</q-item-section>
               </q-item>
             </q-list>
@@ -129,7 +126,7 @@
     </q-header>
 
     <q-drawer v-model="leftDrawerOpen" side="left" bordered>
-      <BookmarksTree/>
+      <DrawerLeft />
     </q-drawer>
 
     <q-drawer show-if-above v-model="rightDrawerOpen" side="right" bordered
@@ -209,12 +206,11 @@ import {useMeta} from 'quasar'
 import {useNotificationsStore} from "stores/notificationsStore";
 import TabInfo from "src/components/layouts/TabInfo.vue"
 import Navigation from "src/components/Navigation.vue"
-import BookmarksTree from "src/components/BookmarksTree.vue"
+import DrawerLeft from "src/components/DrawerLeft.vue"
 import TabsetService from "src/services/TabsetService";
 import {useSearchStore} from "stores/searchStore";
 import {useFeatureTogglesStore} from "src/stores/featureTogglesStore";
 import {useAuthStore} from "src/stores/auth"
-import {} from "src/stores/notificationsStore"
 import {useSyncStore} from "src/stores/syncStore";
 import _ from "lodash"
 import {SyncMode} from "src/models/Subscription";
@@ -231,18 +227,14 @@ const syncStore = useSyncStore()
 
 const rightDrawerOpen = ref(true)
 const leftDrawerOpen = ref(false)
-const showBookmarksDrawer = ref(false)
 
 const syncTabsetsDialog = ref(false)
 const unsyncTabsetsDialog = ref(false)
-// const showNewTabsetDialog = ref(false)
 const syncModel = ref(false)
 
 const notificationsStore = useNotificationsStore()
 const featuresStore = useFeatureTogglesStore()
 const route = useRoute()
-
-showBookmarksDrawer.value = true
 
 const $q = useQuasar()
 
@@ -271,10 +263,10 @@ useMeta(() => {
   }
 })
 
-watchEffect(() => {
-  console.log("notificationsStore.showBookmarks", notificationsStore.showBookmarks)
-  leftDrawerOpen.value = notificationsStore.showBookmarks
-})
+// watchEffect(() => {
+//   console.log("notificationsStore.showBookmarks", notificationsStore.showBookmarks)
+//   leftDrawerOpen.value = notificationsStore.showBookmarks
+// })
 
 watchEffect(() => {
   console.log(" > watchEffect", auth.subscription)
@@ -322,6 +314,8 @@ const someoneSubscribed = () => {
 }
 
 const onProPage = () => useRouter().currentRoute.value.fullPath === "/trypro"
+
+const toggleLeftDrawer = () => leftDrawerOpen.value = !leftDrawerOpen.value
 
 const showNewTabsetDialog = ref(false)
 const addTabset = () => {

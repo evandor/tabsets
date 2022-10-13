@@ -5,9 +5,9 @@
         'heartBeat animated': useNotificationsStore().fabHasElementAnimation,
         'rotateIn animated': useNotificationsStore().fabHasElementAnimation
       }"
-      icon="add"
+      icon="more_horiz"
       direction="up"
-      color="accent">
+      color="primary">
       <q-fab-action @click="showNewTabsetDialog = true" style="width:170px" color="primary" icon="tabs"
                     label="New Tabset">
         <q-tooltip>Start a new tabset by assigning your open tabs</q-tooltip>
@@ -16,32 +16,13 @@
                     @click="showNewUrlDialog = true" style="width:170px" color="primary" icon="link" label="Add Url">
         <q-tooltip>Add a Url to the current tabset manually '{{ tabsStore.currentTabsetId }}'</q-tooltip>
       </q-fab-action>
+      <q-fab-action
+                    @click="useNotificationsStore().showBookmarks = !useNotificationsStore().showBookmarks"
+                    style="width:170px" color="primary" icon="link" :label="useNotificationsStore().showBookmarks ? 'Hide Bookmarks' : 'Show Bookmarks'">
+        <q-tooltip>Add a Url to the current tabset manually '{{ tabsStore.currentTabsetId }}'</q-tooltip>
+      </q-fab-action>
     </q-fab>
   </q-page-sticky>
-
-  <!--  <q-dialog v-model="showNewTabsetDialog">-->
-  <!--    <q-card style="min-width: 350px">-->
-  <!--      <q-card-section>-->
-  <!--        <div class="text-h6">Save open Tabs as Tabset</div>-->
-  <!--      </q-card-section>-->
-  <!--      <q-card-section>-->
-  <!--        <div class="text-body">Please provide a name for the new tabset</div>-->
-  <!--      </q-card-section>-->
-
-  <!--      <q-card-section class="q-pt-none">-->
-  <!--        <div class="text-body">New Tabset's name:</div>-->
-  <!--        <q-input dense v-model="newTabsetName" autofocus @keyup.enter=""/>-->
-  <!--        <div class="text-body2 text-warning">{{ newTabsetDialogWarning() }}</div>-->
-  <!--      </q-card-section>-->
-
-  <!--      <q-card-actions align="right" class="text-primary">-->
-  <!--        <q-btn flat label="Cancel" v-close-popup/>-->
-  <!--        <q-btn flat :label="newTabsetNameExists ? 'Alter Tabset' : 'Create new Tabset'"-->
-  <!--               :disable="newTabsetName.trim().length === 0" v-close-popup-->
-  <!--               @click="createNewTabset()" />-->
-  <!--      </q-card-actions>-->
-  <!--    </q-card>-->
-  <!--  </q-dialog>-->
 
   <q-dialog v-model="showNewUrlDialog">
     <q-card style="min-width: 350px">
@@ -99,16 +80,13 @@ watchEffect(() => {
   }
 })
 
-
-
 const createNewUrl = () => {
   console.log("new url", url.value)
   const tab = new Tab(uid(), null as unknown as chrome.tabs.Tab)
   tab.created = new Date().getTime()
-  tab.chromeTab = ChromeApi.createChromeTabObject(url.value, url.value)
+  tab.chromeTab = ChromeApi.createChromeTabObject(url.value, url.value, null as unknown as string)
   TabsetService.saveToTabset(tab)
 }
-
 
 const newUrlDialogWarning = () => {
   try {

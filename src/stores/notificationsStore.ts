@@ -6,6 +6,7 @@ export const useNotificationsStore = defineStore('notifications', {
       info: '',
       selectedTab: null as unknown as Tab,
       showBookmarks: false,
+      showOpenTabs: false,
       bookmarksActive: false,
       bookmarksExpanded: [] as unknown as string[],
       fabHasElementAnimation: false
