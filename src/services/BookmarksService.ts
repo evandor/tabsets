@@ -1,3 +1,6 @@
+import {Bookmark} from "src/models/Bookmark";
+import {useBookmarksStore} from "stores/bookmarksStore";
+
 class BookmarksService {
 
 
@@ -11,6 +14,11 @@ class BookmarksService {
     if (folderId && folderId !== '1') {
       chrome.bookmarks.removeTree(folderId)
     }
+  }
+
+  deleteBookmark(bm: Bookmark) {
+    chrome.bookmarks.remove(bm.chromeBookmark.id)
+    useBookmarksStore().remove(bm)
   }
 }
 

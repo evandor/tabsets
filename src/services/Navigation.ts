@@ -33,7 +33,13 @@ class Navigation {
 
   }
 
-
+  /**
+   * https://skysail.atlassian.net/wiki/spaces/TAB/pages/800849921/Tab+Handling
+   *
+   * TODO move to TabsetService?
+   *
+   * @param tab to deal with
+   */
   closeTab(tab: Tab) {
     console.log("closing tab", tab.id, tab.chromeTab?.id)
     const tabUrl = tab.chromeTab?.url || ''
