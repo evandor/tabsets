@@ -14,13 +14,16 @@ export const useSearchStore = defineStore('search', {
 
     fuse: null as unknown as any,
 
-    options: {keys: ['title', 'url', 'content'], includeScore: true, includeMatches: true, minMatchCharLength: 3}
+    options: {
+      keys: [{name:'name', weight:10}, {name:'title', weight:5}, {name:'url', weight:2}, {name:'description', weight:3}, {name:'content', weight:1}],
+      includeScore: true,
+      includeMatches: true,
+      minMatchCharLength: 3
+    }
 
   }),
 
-  getters: {
-
-  },
+  getters: {},
 
   actions: {
     async init() {
@@ -29,16 +32,25 @@ export const useSearchStore = defineStore('search', {
       this.fuse = new Fuse([], this.options, this.searchIndex)
 
     },
-    addToIndex(id: string, title: string, url: string, content: string, tabsets: string[], favIconUrl: string) {
+    addToIndex(id: string, name: string, title: string, url: string, description: string, content: string, tabsets: string[], favIconUrl: string):number {
       const doc = {
-        id, title, url, content, tabsets, favIconUrl
+        id, name, title, url, description, content, tabsets, favIconUrl
       }
+      const indexLength = this.fuse.getIndex().size()
+      console.log("adding to index: ", indexLength, doc)
       this.fuse.add(doc)
-      //console.log(this.fuse.getIndex().size())
-      //this.searchIndex.add(id, content)
+      return indexLength
     },
-    populate (contentPromise: Promise<any[]>) {
-      console.log("populating searchstore")
+    updateDescription(id: number, description: string) {
+      const entries: any[] = this.fuse.remove((doc:any) => {doc.id === id})
+      console.log("updating description", entries)
+      if (entries && entries.length > 0) {
+        const old = entries[0]
+        this.addToIndex(old.id, old.name, old.title, old.url, description, old.content, old.tabsets, old.favIconUrl)
+      }
+    },
+    populate(contentPromise: Promise<any[]>) {
+      console.log("populating searchstore...")
       contentPromise
         .then(content => {
           //console.log("savedContent", content)

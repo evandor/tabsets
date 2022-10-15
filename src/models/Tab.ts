@@ -20,6 +20,8 @@ export class Tab {
   name: string | undefined
   bookmarkUrl: string | undefined
   bookmarkId: string | undefined
+  metas: object
+  searchIndexId: number | undefined
 
   constructor(public id: string, chromeTab: chrome.tabs.Tab) {
     this.created = new Date().getTime()
@@ -33,6 +35,7 @@ export class Tab {
     this.isDuplicate = false
     this.history = []
     this.name = undefined
+    this.metas = {}
   }
 
   setHistoryFrom(existingTab: Tab) {

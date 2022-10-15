@@ -197,6 +197,8 @@ class ChromeListeners {
       this.handleCapture(sender, sendResponse)
     } else if (request.msg === 'html2text') {
       this.handleHtml2Text(request, sender, sendResponse)
+    } else if (request.msg === 'htmlmeta') {
+      this.handleMetaData(request, sender, sendResponse)
     }
     return true;
   }
@@ -216,17 +218,31 @@ class ChromeListeners {
   }
 
   private handleHtml2Text(request: any, sender: chrome.runtime.MessageSender, sendResponse: any) {
-    // if (!this.thumbnailsActive) {
-    //   return
-    // }
-    const html = document.documentElement.innerHTML
-    //console.log("html", html)
     const text = convert(request.html, {
       wordwrap: 130
     });
-    TabsetService.saveText(sender.tab, text)
+    const tokens = text.split(" ")
+    let res = ""
+    tokens.forEach((t:string) => {
+      if (t.length >= 3) {
+        res += t + " "
+      }
+    })
+    console.log("res", res)
+    TabsetService.saveText(sender.tab, res)
     sendResponse({html2text: 'done'});
   }
+
+  private handleMetaData(request: any, sender: chrome.runtime.MessageSender, sendResponse: any) {
+    console.log("metaDesc", request)
+    console.log("metaDesc", sender)
+    // _.forEach(request.metas, m => {
+    //   console.log("m", m)
+    // })
+    TabsetService.saveMetas(sender.tab, request.metas)
+    sendResponse({metaDesc: 'done'});
+  }
+
 
   private handleCapture(sender: chrome.runtime.MessageSender, sendResponse: any) {
     if (!this.thumbnailsActive) {

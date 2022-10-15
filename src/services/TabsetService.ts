@@ -336,7 +336,48 @@ class TabsetService {
         .then(ts => console.log("added content"))
         .catch(err => console.log("err", err))
 
-      useSearchStore().addToIndex(encodedTabUrl, tab.title || '', tab.url, text, tabsetIds, tab.favIconUrl || '')
+      const searchIndexId = useSearchStore()
+        .addToIndex(encodedTabUrl, '', tab.title || '', tab.url, '', text, tabsetIds, tab.favIconUrl || '')
+
+      _.forEach(tabsetIds, tsId => {
+        const tabset = useTabsStore().tabsets.get(tsId)
+        if (tabset) {
+          _.forEach(tabset.tabs, t => {
+            if (t.chromeTab.url === tab.url) {
+              t.searchIndexId = searchIndexId
+            }
+          })
+          this.saveTabset(tabset)
+        }
+      })
+    }
+  }
+
+  saveMetas(chromeTab: chrome.tabs.Tab | undefined, metas: object) {
+    if (chromeTab && chromeTab.url) {
+
+      let searchIndexId:number | undefined = undefined
+      const tabsetIds: string[] = this.tabsetsFor(chromeTab.url)
+      _.forEach(tabsetIds, tsId => {
+        const tabset = useTabsStore().tabsets.get(tsId)
+        if (tabset) {
+          _.forEach(tabset.tabs, t => {
+            if (t.chromeTab.url === chromeTab.url) {
+              t.metas = metas
+              console.log("tab", t)
+              if (t.searchIndexId) {
+                searchIndexId = t.searchIndexId
+              }
+            }
+          })
+          this.saveTabset(tabset)
+        }
+      })
+
+      if (searchIndexId) {
+        useSearchStore().updateDescription(searchIndexId, metas['description' as keyof object])
+      }
+      //useSearchStore().addToIndex(encodedTabUrl, tab.title || '', tab.url, tab.text, tab.tabsetIds, tab.favIconUrl || '')
     }
   }
 

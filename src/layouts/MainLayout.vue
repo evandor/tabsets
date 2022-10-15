@@ -6,7 +6,7 @@
         <q-btn dense flat round icon="menu" @click="toggleLeftDrawer"/>
 
         <q-toolbar-title @click="goHome()" class="cursor-pointer" style="width:350px;">
-          {{ title() }} <span class="text-caption">Handle more tabs, with less tabs open</span>
+          {{ title() }} <span class="text-caption">Handle more links, with less tabs open</span>
         </q-toolbar-title>
 
         <q-input dark dense standout v-model="search"
