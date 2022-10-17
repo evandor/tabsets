@@ -48,6 +48,14 @@
       </ul>
     </div>
 
+    <div class="text-h5 q-ma-md">
+      Official Extension Website
+    </div>
+
+    <div class="text-body1 q-ma-md">
+      <a href="https://tabsets.web.app" target="_blank">https://tabsets.web.app</a>
+    </div>
+
     <div v-if="tabsStore.tabsets.size === 0">
 
       <div class="text-h5 q-ma-md">
