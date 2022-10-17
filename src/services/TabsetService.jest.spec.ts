@@ -38,11 +38,12 @@ describe('TabsetService', () => {
 
   beforeEach(() => {
     setActivePinia(createPinia())
-    const request = indexedDB.open('db', 1);
+    const request = indexedDB.open('db', 2);
     request.onupgradeneeded = async function () {
       const db = request.result;
       tabsetsDbStore = db.createObjectStore("tabsets");
       db.createObjectStore("content");
+      db.createObjectStore("thumbnails");
       // store.createIndex("by_title", "title", {unique: true});
       // store.put({title: "Quarry Memories", author: "Fred", isbn: 123456});
     }

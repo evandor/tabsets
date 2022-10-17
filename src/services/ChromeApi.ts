@@ -1,7 +1,7 @@
 import {Tabset} from "src/models/Tabset";
 import TabsetService from "src/services/TabsetService";
 import {CLEANUP_PERIOD_IN_MINUTES} from "boot/constants";
-import {useTabsStore} from "stores/tabsStore";
+import {useTabsStore} from "src/stores/tabsStore";
 import _ from "lodash"
 
 function runHousekeeping(alarm: chrome.alarms.Alarm) {

@@ -26,6 +26,7 @@
         <li>Edit <span class="text-body1 text-dark">tabsets</span></li>
         <li>Search for keywords in your <span class="text-body1 text-dark">tabsets</span></li>
         <li>Drag & drop tabs into tabsets</li>
+        <li>Bookmarks integration</li>
         <li>Export and Import Tabsets Data</li>
         <li>Search in Tabs (experimental)</li>
         <li>Keep pinned and grouped tabsets (experimental)</li>
