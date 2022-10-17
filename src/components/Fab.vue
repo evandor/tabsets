@@ -85,7 +85,7 @@ const createNewUrl = () => {
   const tab = new Tab(uid(), null as unknown as chrome.tabs.Tab)
   tab.created = new Date().getTime()
   tab.chromeTab = ChromeApi.createChromeTabObject(url.value, url.value, null as unknown as string)
-  TabsetService.saveToTabset(tab)
+  TabsetService.saveToCurrentTabset(tab)
 }
 
 const newUrlDialogWarning = () => {

@@ -39,6 +39,7 @@ const tabsetHits = ref<Hit[]>([])
 const newSearch = (term: string) => {
   tabsetHits.value = []
 
+  console.log("searching in ", searchStore.fuse.getIndex())
   const results = searchStore.fuse.search(term)
   console.log("search results", results)
   const resultTs = new Tabset(uid(), 'results', [], [])
@@ -48,7 +49,8 @@ const newSearch = (term: string) => {
       uid(),
       ChromeApi.createChromeTabObject(h.item.title, h.item.url, h.item.favIconUrl), 0, 0,
       Math.round(100 - (100 * h.score)),
-      h.item.tabsets
+      h.item.tabsets,
+      _.map(h['matches' as keyof object], m => m['key' as keyof object])
     ))
   })
 }

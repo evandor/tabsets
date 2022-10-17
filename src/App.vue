@@ -41,6 +41,9 @@ syncStore.init()
 
 tabsetService.setLocalStorage(useQuasar().localStorage)
 tabsetService.init()
+  .then(() => {
+    ChromeApi.init()
+  })
 
 $q.dark.set($q.localStorage.getItem('darkMode') || false)
 
@@ -48,6 +51,6 @@ useNotificationsStore().bookmarksActive = $q.localStorage.getItem('bookmarksActi
 useNotificationsStore().showBookmarks = $q.localStorage.getItem('showBookmarks') || false
 useNotificationsStore().bookmarksExpanded = $q.localStorage.getItem("bookmarks.expanded") || []
 
-ChromeApi.init()
+
 
 </script>

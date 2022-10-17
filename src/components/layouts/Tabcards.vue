@@ -152,7 +152,7 @@ function closeTab(tab: Tab) {
 
 function saveTab(tab: Tab) {
   //console.log("saving tab", tab)
-  TabsetService.saveToTabset(tab)
+  TabsetService.saveToCurrentTabset(tab)
 }
 
 function togglePin(tabId: number) {

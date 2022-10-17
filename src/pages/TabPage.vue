@@ -12,22 +12,22 @@
           class="rounded-borders"
           width="32px"
           height="32px"
-          :src="notificationStore.selectedTab.chromeTab?.favIconUrl">
+          :src="notificationStore.selectedTab?.chromeTab?.favIconUrl">
           <q-tooltip>
-            {{ notificationStore.selectedTab.chromeTab?.favIconUrl }} / {{ notificationStore.selectedTab.chromeTab?.id }}  / {{ notificationStore.selectedTab.id }}
+            {{ notificationStore.selectedTab?.chromeTab?.favIconUrl }} / {{ notificationStore.selectedTab?.chromeTab?.id }}  / {{ notificationStore.selectedTab.id }}
           </q-tooltip>
         </q-img>
       </div>
       <div class="col-10 text-body1 ellipsis">
-        {{ getHost(notificationStore.selectedTab.chromeTab?.url, true) }}
+        {{ getHost(notificationStore.selectedTab?.chromeTab?.url, true) }}
       </div>
       <div class="col-12 text-body2 ellipsis">
-        {{ notificationStore.selectedTab.chromeTab?.title }}
+        {{ notificationStore.selectedTab?.chromeTab?.title }}
       </div>
 
       <div class="col-12">
         <div class="text-overline ellipsis">
-          {{ notificationStore.selectedTab.chromeTab?.url }}&nbsp;<q-icon name="launch" color="secondary"
+          {{ notificationStore.selectedTab?.chromeTab?.url }}&nbsp;<q-icon name="launch" color="secondary"
                                                                          @click.stop="Navigation.openOrCreateTab(tab.chromeTab?.url )"></q-icon>
         </div>
       </div>
@@ -85,10 +85,10 @@
           </div>
 
           <div class="col-5">
-            Meta
+            Meta Info
           </div>
           <div class="col-7">
-            {{ notificationStore.selectedTab.metas }}
+            {{ metas }}
           </div>
 
           <div class="col-5">
@@ -124,6 +124,7 @@ const router = useRouter()
 
 const thumbnail = ref('')
 const content = ref('')
+const metas = ref({})
 
 watchEffect(() => {
   if (notificationStore.selectedTab) {
@@ -131,7 +132,10 @@ watchEffect(() => {
       .then(data => thumbnail.value = data.thumbnail)
       .catch(err => console.log("err", err))
     TabsetService.getContentFor(notificationStore.selectedTab)
-      .then(data => content.value = data.content)
+      .then(data => {
+        content.value = data.content
+        metas.value = data.metas
+      })
       .catch(err => console.log("err", err))
   }
 })

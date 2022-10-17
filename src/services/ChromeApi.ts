@@ -1,9 +1,10 @@
 import {Tabset} from "src/models/Tabset";
 import TabsetService from "src/services/TabsetService";
 import {CLEANUP_PERIOD_IN_MINUTES} from "boot/constants";
+import {useTabsStore} from "stores/tabsStore";
+import _ from "lodash"
 
 function runHousekeeping(alarm: chrome.alarms.Alarm) {
-  //console.log("got alarm", alarm)
   if (alarm.name === "housekeeping") {
     TabsetService.housekeeping()
   }
@@ -19,21 +20,17 @@ class ChromeApi {
     )
 
     chrome.management.getSelf(
-      (self:chrome.management.ExtensionInfo) => {
+      (self: chrome.management.ExtensionInfo) => {
         //console.log("self", self)
         localStorage.setItem("selfId", self.id)
       }
     )
 
-    chrome.contextMenus.removeAll(
-      () => {
-        chrome.contextMenus.create({id: 'open_tabsets_page', title: 'Open Tabsets Extension', contexts: ['all']})
-      }
-    )
+    this.buildContextMenu();
 
     chrome.contextMenus.onClicked.addListener(
       (e: chrome.contextMenus.OnClickData, tab: chrome.tabs.Tab | undefined) => {
-        //console.log("e", e, tab)
+        //console.log("listening to", e, tab)
         if (e.menuItemId === "open_tabsets_page") {
           chrome.tabs.query({title: `Tabsets Extension`}, (result: chrome.tabs.Tab[]) => {
             if (result && result[0]) {
@@ -44,13 +41,67 @@ class ChromeApi {
                 chrome.tabs.create({
                   active: true,
                   pinned: false,
-                  url: "chrome-extension://"+selfId+"/www/index.html#/start"
+                  url: "chrome-extension://" + selfId + "/www/index.html#/start"
                 })
               }
             }
           })
+        } else if (e.menuItemId.startsWith("save_as_tab|")) {
+          //console.log("got", e, e.menuItemId.split("|"))
+          const tabId = tab?.id || 0
+          const tabsetId = e.menuItemId.split("|")[1]
+          console.log("got tabsetId", tabsetId, e.menuItemId)
+
+          // @ts-ignore
+          chrome.scripting.executeScript({
+            target: {tabId: tab?.id, allFrames: true},
+            args: [tabId, tabsetId],
+            func: (tabId: number, tabsetId: string) => {
+
+              if (window.getSelection()?.anchorNode && window.getSelection()?.anchorNode !== null) {
+                const msg = {
+                  msg: "addTabToTabset",
+                  tabId: tabId,
+                  tabsetId: tabsetId
+                }
+                console.log("sending message", msg)
+                chrome.runtime.sendMessage(msg, function (response) {
+                  console.log("created new tab in current tabset:", response)
+                });
+              }
+            }
+          });
         }
       })
+  }
+
+  buildContextMenu() {
+    const tabsStore = useTabsStore()
+    chrome.contextMenus.removeAll(
+      () => {
+        chrome.contextMenus.create({id: 'tabset_extension', title: 'Tabset Extension', contexts: ['all']},
+          () => {
+            chrome.contextMenus.create({
+              id: 'open_tabsets_page',
+              parentId: 'tabset_extension',
+              title: 'Open Tabsets Extension',
+              contexts: ['all']
+            })
+            //console.log("building context menu from ", tabsStore.tabsets)
+            _.forEach([...tabsStore.tabsets.values()], (ts: Tabset) => {
+              console.log("new submenu from", ts.id)
+              chrome.contextMenus.create({
+                id: 'save_as_tab|' + ts.id,
+                parentId: 'tabset_extension',
+                title: 'Save to Tabset ' + ts.name,
+                contexts: ['page']
+              })
+            })
+            //chrome.contextMenus.create({id: 'capture_text', parentId: 'tabset_extension', title: 'Save selection as/to Tabset', contexts: ['all']})
+
+          })
+      }
+    )
   }
 
   async closeAllTabs() {
@@ -123,6 +174,11 @@ class ChromeApi {
     console.log("bookmarkFolderId", bookmarkFolderId)
     // @ts-ignore
     return await chrome.bookmarks.getChildren(bookmarkFolderId)
+  }
+
+  async getTab(tabId: number): Promise<chrome.tabs.Tab> {
+    // @ts-ignore
+    return await chrome.tabs.get(tabId)
   }
 
   createChromeTabObject(title: string, url: string, favIconUrl: string) {
