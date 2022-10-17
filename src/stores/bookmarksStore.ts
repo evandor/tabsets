@@ -1,9 +1,9 @@
 import {defineStore} from 'pinia';
 import ChromeBookmarkListeners from "src/services/ChromeBookmarkListeners";
-import {useFeatureTogglesStore} from "src/stores/featureTogglesStore";
 import _ from "lodash";
 import {TreeNode} from "src/models/Tree";
 import {Bookmark} from "src/models/Bookmark";
+import {Tab} from "src/models/Tab";
 
 function getChildren(
   parent: chrome.bookmarks.BookmarkTreeNode,
@@ -33,7 +33,10 @@ export const useBookmarksStore = defineStore('bookmarks', {
     bookmarksTree: [] as unknown as object[],
     bookmarksNodes: [] as unknown as object[],
     bookmarksLeaves: [] as unknown as object[],
-    currentBookmark: null as unknown as Bookmark
+    currentBookmark: null as unknown as Bookmark,
+
+    // the bookmarks (nodes and leaves) for the selected parent id
+    bookmarksForFolder: null as unknown as Bookmark[]
   }),
 
   getters: {},
@@ -91,6 +94,9 @@ export const useBookmarksStore = defineStore('bookmarks', {
       // @ts-ignore
       return res
     },
+    remove(bm: Bookmark) {
+      this.bookmarksForFolder = _.filter(this.bookmarksForFolder, (e: Bookmark) => e.id !== bm.id)
+    },
     initListeners() {
       chrome.bookmarks.onCreated.addListener((name: string, bm: any) => ChromeBookmarkListeners.onCreated(bm))
       chrome.bookmarks.onMoved.addListener((id: string, info: any) => ChromeBookmarkListeners.reload())
@@ -98,6 +104,5 @@ export const useBookmarksStore = defineStore('bookmarks', {
       chrome.bookmarks.onChanged.addListener((id: string, info: any) => ChromeBookmarkListeners.reload())
       chrome.bookmarks.onChildrenReordered.addListener((id: string, info: any) => ChromeBookmarkListeners.reload())
     }
-
   }
 });

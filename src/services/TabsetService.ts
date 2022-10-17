@@ -30,7 +30,7 @@ class TabsetService {
    */
   async init() {
     this.db = await this.initDatabase();
-    useSearchStore().populate(this.db.getAll('content'))
+    useSearchStore().populate(this.db.getAll('content',))
     await this.loadTabsetsFromIndexDb();
     this.loadTabsetsFromFirebase()
   }
@@ -96,6 +96,7 @@ class TabsetService {
         console.log("saving tabset to firebase")
         backendApi.saveTabset(tabset)
       } else {
+        //console.log("tabset", tabset)
         await this.db.put('tabsets', JSON.parse(JSON.stringify(tabset)), tabset.id);
       }
       return
@@ -182,15 +183,97 @@ class TabsetService {
     this.saveTabset(currentTabset)
   }
 
-  saveToTabset(tab: Tab) {
-    const tabsStore = useTabsStore()
-    const currentTabset: Tabset = this.getCurrentTabset() || new Tabset(uid(), "undefined", [], [])
-    tab.status = TabStatus.DEFAULT
-    currentTabset.tabs.push(tab)
+  async saveToCurrentTabset(tab: Tab):Promise<number>  {
+    return this.saveToTabset(this.getCurrentTabset() || new Tabset(uid(), "unknown", [], []), tab)
+  }
 
-    const index = _.findIndex(tabsStore.pendingTabset.tabs, t => t.id === tab.id)
-    tabsStore.pendingTabset.tabs.splice(index, 1);
-    this.saveTabset(currentTabset)
+  async saveToTabsetId(tsId: string, tab: Tab):Promise<number>  {
+    const ts = this.getTabset(tsId)
+    if (ts) {
+      return this.saveToTabset(ts, tab)
+    }
+    return Promise.reject("no tabset for give id " + tsId)
+  }
+
+  async saveToTabset(ts: Tabset, tab: Tab):Promise<number> {
+    console.log("saving to tabset", ts, tab)
+    if (tab.chromeTab.url) {
+      const tabsStore = useTabsStore()
+
+      const indexInTabset = _.findIndex(ts.tabs, t => t.chromeTab.url === tab.chromeTab.url)
+      if (indexInTabset >= 0) {
+        return Promise.reject("tab exists already")
+      }
+
+      tab.status = TabStatus.DEFAULT
+      ts.tabs.push(tab)
+
+      const index = _.findIndex(tabsStore.pendingTabset.tabs, t => t.id === tab.id)
+      tabsStore.pendingTabset.tabs.splice(index, 1);
+      this.saveTabset(ts)
+
+      const encodedUrl = btoa(tab.chromeTab.url)
+      let content = ''
+      let description = ''
+
+      // --- update content store ---
+      const objectStore = this.db.transaction("content", "readwrite").objectStore("content");
+      let cursor = await objectStore.openCursor()
+      while (cursor) {
+        //console.log("cursor", cursor.value, encodedUrl)
+        if (cursor.value.expires !== 0 && cursor.value.id === encodedUrl) {
+          const data = cursor.value
+          objectStore.put({
+              id: data.id,
+              expires: 0,
+              content: data.content,
+              metas: data.metas,
+              title: data.title,
+              url: data.url,
+              tabsets: data.tabsets,
+              favIconUrl: data.favIconUrl
+            },
+            cursor.key)
+
+          content = data.content
+          Object.keys(data.metas).forEach((key:string) => {
+            if (key.indexOf("description") >= 0 && data.metas[key] && data.metas[key].trim().length > description.length) {
+              //console.log("updating description to ", data.metas[key].trim())
+              description = data.metas[key].trim()
+            }
+          })
+        }
+        cursor = await cursor.continue();
+      }
+
+      // --- update thumbnail store ---
+      const tnObjectStore = this.db.transaction("thumbnails", "readwrite").objectStore("thumbnails");
+      let tnCursor = await tnObjectStore.openCursor()
+      while (tnCursor) {
+        //console.log("cursor", tnCursor.value, encodedUrl)
+        if (tnCursor.value.expires !== 0 && tnCursor.key === encodedUrl) {
+          const data = tnCursor.value
+          tnObjectStore.put({
+              expires: 0,
+              thumbnail: data.thumbnail
+            },
+            tnCursor.key)
+        }
+        tnCursor = await tnCursor.continue();
+      }
+
+      // update fuse index
+      return useSearchStore().addToIndex(
+        tab.id,
+        tab.chromeTab.title || '',
+        tab.chromeTab.title || '',
+        tab.chromeTab.url || '',
+        description,
+        content,
+        [ts.id],
+        tab.chromeTab.favIconUrl || '')
+    }
+    return Promise.reject("tab.chromeTab.url undefined")
   }
 
   togglePin(tabId: number) {
@@ -233,7 +316,8 @@ class TabsetService {
         t => {
           if (t.chromeTab?.id) {
             if (!onlySelected || (onlySelected && t.selected)) {
-              currentTabset.tabs.push(t)
+              //currentTabset.tabs.push(t)
+              this.saveToCurrentTabset(t)
             }
           }
         })
@@ -315,28 +399,58 @@ class TabsetService {
     return this.db.delete('content', btoa(url))
   }
 
-  saveText(tab: chrome.tabs.Tab | undefined, text: string) {
+  saveText(tab: chrome.tabs.Tab | undefined, text: string, metas: object) {
     if (tab && tab.url) {
       const encodedTabUrl = btoa(tab.url)
       const title = tab.title || ''
       const url = tab.url
+      //let searchIndexId: number | undefined = undefined
       const tabsetIds: string[] = this.tabsetsFor(tab.url)
-      //localStorage.setItem("tabsets.tab.xxx", thumbnail)
+
       this.db.put('content', {
         id: encodedTabUrl,
         expires: new Date().getTime() + 1000 * 60 * 60,
         title,
         url,
         content: text,
+        metas: metas,
         tabsets: tabsetIds,
         favIconUrl: tab.favIconUrl
       }, encodedTabUrl)
         .then(ts => console.log("added content"))
         .catch(err => console.log("err", err))
 
-      useSearchStore().addToIndex(encodedTabUrl, tab.title || '', tab.url, text, tabsetIds, tab.favIconUrl || '')
+
     }
   }
+
+  // saveMetas(chromeTab: chrome.tabs.Tab | undefined, metas: object) {
+  //   if (chromeTab && chromeTab.url) {
+  //
+  //     let searchIndexId: number | undefined = undefined
+  //     const tabsetIds: string[] = this.tabsetsFor(chromeTab.url)
+  //     _.forEach(tabsetIds, tsId => {
+  //       const tabset = useTabsStore().tabsets.get(tsId)
+  //       if (tabset) {
+  //         _.forEach(tabset.tabs, t => {
+  //           if (t.chromeTab.url === chromeTab.url) {
+  //             t.metas = metas
+  //             console.log("tab", t)
+  //             if (t.searchIndexId) {
+  //               searchIndexId = t.searchIndexId
+  //             }
+  //           }
+  //         })
+  //         this.saveTabset(tabset)
+  //       }
+  //     })
+  //
+  //     // if (searchIndexId) {
+  //     //   useSearchStore().updateDescription(searchIndexId, metas['description' as keyof object])
+  //     // }
+  //     //useSearchStore().addToIndex(encodedTabUrl, tab.title || '', tab.url, tab.text, tab.tabsetIds, tab.favIconUrl || '')
+  //   }
+  // }
 
   setCustomTitle(tab: Tab, title: string) {
     tab.name = title
@@ -654,7 +768,7 @@ class TabsetService {
   }
 
   private async initDatabase(): Promise<IDBPDatabase> {
-    return await openDB(INDEX_DB_NAME, 1, {
+    return await openDB(INDEX_DB_NAME, 2, {
       // upgrading see https://stackoverflow.com/questions/50193906/create-index-on-already-existing-objectstore
       upgrade(db) {
         if (!db.objectStoreNames.contains('tabsets')) {
@@ -669,6 +783,11 @@ class TabsetService {
         if (!db.objectStoreNames.contains('content')) {
           console.log("creating db content")
           let store = db.createObjectStore('content');
+          store.createIndex("expires", "expires", {unique: false});
+        }
+        if (!db.objectStoreNames.contains('searchIndex')) {
+          console.log("creating db searchIndex")
+          let store = db.createObjectStore('searchIndex');
           store.createIndex("expires", "expires", {unique: false});
         }
       },
@@ -707,4 +826,3 @@ class TabsetService {
 }
 
 export default new TabsetService();
-

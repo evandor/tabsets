@@ -46,6 +46,11 @@ const routes: RouteRecordRaw[] = [
     children: [{ path: '', component: () => import('pages/CurrentTabs.vue') }],
   },
   {
+    path: '/tab/:id',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [{ path: '', component: () => import('pages/TabPage.vue') }],
+  },
+  {
     path: '/bookmarks/:id',
     component: () => import('layouts/MainLayout.vue'),
     children: [{ path: '', component: () => import('pages/Bookmarks.vue') }],

@@ -12,7 +12,8 @@
     "bookmarks",
     "alarms",
     "contextMenus",
-    "scripting"
+    "scripting",
+    "notifications"
   ],
   "host_permissions": [
     "<all_urls>"

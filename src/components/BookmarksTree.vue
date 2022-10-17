@@ -1,8 +1,6 @@
 <template>
-<!--  @mouseout="clearDeleteButton()"-->
-  <q-list class="q-mt-md" >
 
-    <q-item-label header>Bookmarks</q-item-label>
+  <q-list class="q-mt-md" >
 
     <q-tree
       :nodes="bookmarksStore.bookmarksNodes"
@@ -110,8 +108,6 @@ const bookmarksStore = useBookmarksStore()
 const $q = useQuasar();
 const localStorage = useQuasar().localStorage
 
-
-const showImportTabsetDialog = ref(false)
 const mouseHover = ref(false)
 const selected = ref('')
 const deleteButtonId = ref('')

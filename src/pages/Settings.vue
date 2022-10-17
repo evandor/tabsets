@@ -5,11 +5,6 @@
       Tabset Settings
     </div>
 
-    <div class="text-h6">Ignored Urls</div>
-    <div v-for="t in tabsStore.ignoredTabset?.tabs">
-      {{ t.chromeTab.url }}
-    </div>
-
     <div class="text-h6">Dark Mode</div>
     <div>
       <q-radio v-model="darkMode" :val="true" label="Enabled"/>
@@ -36,6 +31,12 @@
         <!--        <q-radio v-model="shape" val="polygon" label="Polygon" />-->
       </div>
     </div>
+
+    <div class="text-h6">Ignored Urls</div>
+    <div v-for="t in tabsStore.ignoredTabset?.tabs">
+      {{ t.chromeTab.url }}
+    </div>
+
     <div class="text-h6" v-if="featuresStore.debugEnabled">Index DB</div>
     <div class="row" v-if="featuresStore.debugEnabled">
       <div class="col-3">
@@ -43,6 +44,19 @@
       </div>
       <div class="col-3">
         {{ INDEX_DB_NAME }}
+      </div>
+    </div>
+
+    <div class="text-h6" v-if="featuresStore.debugEnabled">Search Index</div>
+    <div class="row" v-if="featuresStore.debugEnabled">
+      <div class="col-3">
+        Search Index
+      </div>
+      <div class="col-3">
+        {{ searchStore.fuse.getIndex().length }} entries in index
+      </div>
+      <div class="col-3">
+        {{ searchStore.fuse.getIndex() }}
       </div>
     </div>
   </q-page>
@@ -57,9 +71,12 @@ import {ref, watchEffect} from "vue";
 import {useQuasar} from "quasar";
 import {INDEX_DB_NAME} from "boot/constants"
 import {useNotificationsStore} from "stores/notificationsStore";
+import {useSearchStore} from "stores/searchStore";
 
 const tabsStore = useTabsStore()
 const featuresStore = useFeatureTogglesStore()
+const searchStore = useSearchStore()
+
 const router = useRouter()
 const localStorage = useQuasar().localStorage
 const $q = useQuasar()

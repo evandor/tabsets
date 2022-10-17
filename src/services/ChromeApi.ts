@@ -1,7 +1,8 @@
 import {Tabset} from "src/models/Tabset";
 import TabsetService from "src/services/TabsetService";
 import {CLEANUP_PERIOD_IN_MINUTES} from "boot/constants";
-// import getXPath from 'get-xpath'
+import {useTabsStore} from "src/stores/tabsStore";
+import _ from "lodash"
 
 function runHousekeeping(alarm: chrome.alarms.Alarm) {
   if (alarm.name === "housekeeping") {
@@ -19,24 +20,17 @@ class ChromeApi {
     )
 
     chrome.management.getSelf(
-      (self:chrome.management.ExtensionInfo) => {
+      (self: chrome.management.ExtensionInfo) => {
         //console.log("self", self)
         localStorage.setItem("selfId", self.id)
       }
     )
 
-    chrome.contextMenus.removeAll(
-      () => {
-        chrome.contextMenus.create({id: 'tabset_extension', title: 'Tabset Extension', contexts: ['all']},
-          () => {
-            chrome.contextMenus.create({id: 'open_tabsets_page', parentId: 'tabset_extension', title: 'Open Tabsets Extension', contexts: ['all']})
-            chrome.contextMenus.create({id: 'capture_text', parentId: 'tabset_extension', title: 'Save as/to Tabset', contexts: ['all']})
-          })
-      }
-    )
+    this.buildContextMenu();
 
     chrome.contextMenus.onClicked.addListener(
       (e: chrome.contextMenus.OnClickData, tab: chrome.tabs.Tab | undefined) => {
+        //console.log("e", e, tab)
         if (e.menuItemId === "open_tabsets_page") {
           chrome.tabs.query({title: `Tabsets Extension`}, (result: chrome.tabs.Tab[]) => {
             if (result && result[0]) {
@@ -52,6 +46,31 @@ class ChromeApi {
               }
             }
           })
+        } else if (e.menuItemId.startsWith("save_as_tab|")) {
+          //console.log("got", e, e.menuItemId.split("|"))
+          const tabId = tab?.id || 0
+          const tabsetId = e.menuItemId.split("|")[1]
+          console.log("got tabsetId", tabsetId, e.menuItemId)
+
+          // @ts-ignore
+          chrome.scripting.executeScript({
+            target: {tabId: tab?.id, allFrames: true},
+            args: [tabId, tabsetId],
+            func: (tabId: number, tabsetId: string) => {
+
+              if (window.getSelection()?.anchorNode && window.getSelection()?.anchorNode !== null) {
+                const msg = {
+                  msg: "addTabToTabset",
+                  tabId: tabId,
+                  tabsetId: tabsetId
+                }
+                console.log("sending message", msg)
+                chrome.runtime.sendMessage(msg, function (response) {
+                  console.log("created new tab in current tabset:", response)
+                });
+              }
+            }
+          });
         } else if (e.menuItemId === "capture_text") {
           // console.log("executing script1", e)
           // console.log("executing script2", tab)
@@ -109,6 +128,37 @@ class ChromeApi {
           });
         }
       })
+  }
+
+  buildContextMenu() {
+    const tabsStore = useTabsStore()
+    chrome.contextMenus.removeAll(
+      () => {
+        chrome.contextMenus.create({id: 'tabset_extension', title: 'Tabset Extension', contexts: ['all']},
+          () => {
+            chrome.contextMenus.create({id: 'capture_text', parentId: 'tabset_extension', title: 'Save as/to Tabset', contexts: ['all']})
+
+            chrome.contextMenus.create({
+              id: 'open_tabsets_page',
+              parentId: 'tabset_extension',
+              title: 'Open Tabsets Extension',
+              contexts: ['all']
+            })
+            //console.log("building context menu from ", tabsStore.tabsets)
+            _.forEach([...tabsStore.tabsets.values()], (ts: Tabset) => {
+              console.log("new submenu from", ts.id)
+              chrome.contextMenus.create({
+                id: 'save_as_tab|' + ts.id,
+                parentId: 'tabset_extension',
+                title: 'Save to Tabset ' + ts.name,
+                contexts: ['page']
+              })
+            })
+            //chrome.contextMenus.create({id: 'capture_text', parentId: 'tabset_extension', title: 'Save selection as/to Tabset', contexts: ['all']})
+
+          })
+      }
+    )
   }
 
   async closeAllTabs() {
@@ -183,7 +233,7 @@ class ChromeApi {
     return await chrome.bookmarks.getChildren(bookmarkFolderId)
   }
 
-  async getTab(tabId: number):Promise<chrome.tabs.Tab> {
+  async getTab(tabId: number): Promise<chrome.tabs.Tab> {
     // @ts-ignore
     return await chrome.tabs.get(tabId)
   }

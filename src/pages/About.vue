@@ -26,6 +26,7 @@
         <li>Edit <span class="text-body1 text-dark">tabsets</span></li>
         <li>Search for keywords in your <span class="text-body1 text-dark">tabsets</span></li>
         <li>Drag & drop tabs into tabsets</li>
+        <li>Bookmarks integration</li>
         <li>Export and Import Tabsets Data</li>
         <li>Search in Tabs (experimental)</li>
         <li>Keep pinned and grouped tabsets (experimental)</li>
@@ -45,6 +46,14 @@
         <li>Chrome</li>
         <li>Brave</li>
       </ul>
+    </div>
+
+    <div class="text-h5 q-ma-md">
+      Official Extension Website
+    </div>
+
+    <div class="text-body1 q-ma-md">
+      <a href="https://tabsets.web.app" target="_blank">https://tabsets.web.app</a>
     </div>
 
     <div v-if="tabsStore.tabsets.size === 0">

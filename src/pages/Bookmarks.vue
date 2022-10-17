@@ -37,7 +37,7 @@
 
     <q-card>
       <q-card-section>
-        <BookmarkCards :bookmarks="bookmarksForFolder" />
+        <BookmarkCards />
       </q-card-section>
     </q-card>
 
@@ -116,6 +116,8 @@ watchEffect(() => {
     })
     chrome.bookmarks.getChildren(bookmarkId.value, (bms: chrome.bookmarks.BookmarkTreeNode[]) => {
       bookmarksForFolder.value = _.map(bms, (l: chrome.bookmarks.BookmarkTreeNode) => new Bookmark(uid(), l))
+
+      useBookmarksStore().bookmarksForFolder = bookmarksForFolder.value
     })
 
 

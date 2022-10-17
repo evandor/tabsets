@@ -19,12 +19,13 @@
 
     </q-item-section>
     <q-item-section>
-      <q-item-label class="ellipsis bg-green-1">{{ hit.chromeTab?.title }}
+      <q-item-label class="ellipsis">{{ hit.chromeTab?.title }}
         <template v-for="badge in tabsetBadges(hit)">
           <q-chip icon="event">{{ badge.label }}</q-chip>
         </template>
       </q-item-label>
       <q-item-label class="ellipsis" caption>{{ hit.chromeTab?.url }}</q-item-label>
+      <q-item-label class="text-blue-2" v-if="featureToggles.debugEnabled">Match in: {{ hit['matches'].join(", ")}}</q-item-label>
     </q-item-section>
     <q-item-section avatar>
       <q-icon name="launch" color="primary" @click.stop="Navigation.openOrCreateTab(hit.chromeTab?.url )"></q-icon>
@@ -42,6 +43,7 @@ import {useNotificationsStore} from "stores/notificationsStore";
 import {onMounted, ref, unref, watchEffect} from "vue";
 import {Hit} from "src/models/Hit";
 import _ from "lodash"
+import {useFeatureTogglesStore} from "stores/featureTogglesStore";
 
 const props = defineProps({
   hit: {
@@ -52,6 +54,7 @@ const props = defineProps({
 
 const emits = defineEmits(['sendCaption'])
 
+const featureToggles = useFeatureTogglesStore()
 const line = ref(null);
 
 function getShortHostname(host: string) {
@@ -117,23 +120,13 @@ function isOpen(tab: Tab): boolean {
 }
 
 const setInfo = (tab: Tab) => {
-  const notificationsStore = useNotificationsStore()
   const parts = (tab.chromeTab?.url || '').split('?')
   if (parts.length > 1) {
     emits('sendCaption', parts[0] + "[... params omitted....]")
   } else if (parts.length === 1) {
     emits('sendCaption', parts[0].toString());
   }
-//  notificationsStore.setInfo(`created: ${date.formatDate(tab.created, 'DD.MM.YYYY HH:mm')}`)
 }
-
-// const selectHit = (hit: Hit, index: number) => {
-//   console.log("hit selected", hit)
-//
-//   TabsetService.setOnlySelectedTab(hit)
-//   const notificationStore = useNotificationsStore()
-//   notificationStore.setSelectedTab(hit)
-// }
 
 const setCustomTitle = (tab: Tab, newValue: string) => {
   console.log(" -> ", newValue)

@@ -192,11 +192,16 @@ class ChromeListeners {
   }
 
   onMessage(request: any, sender: chrome.runtime.MessageSender, sendResponse: any) {
-    console.log("got message", request.msg)
     if (request.msg === 'capture') {
       this.handleCapture(sender, sendResponse)
     } else if (request.msg === 'html2text') {
       this.handleHtml2Text(request, sender, sendResponse)
+      // } else if (request.msg === 'htmlmeta') {
+      //   this.handleMetaData(request, sender, sendResponse)
+    } else if (request.msg === 'addTabToTabset') {
+      this.handleAddTabToTabset(request, sender, sendResponse)
+    } else {
+      console.log("got unknown message", request.msg)
     } else if (request.msg === 'textCapture') {
       this.handleTextCapture(request, sender, sendResponse)
     }
@@ -226,15 +231,67 @@ class ChromeListeners {
   }
 
   private handleHtml2Text(request: any, sender: chrome.runtime.MessageSender, sendResponse: any) {
-    const html = document.documentElement.innerHTML
     const text = convert(request.html, {
       wordwrap: 130
     });
-    TabsetService.saveText(sender.tab, text)
+    const tokens = text
+      .replaceAll("\\n", " ")
+      .replaceAll("\n", " ")
+      .replace(/[`~!@#$%^&*()_|+\-=?;:'",.<>\{\}\[\]\\\/]/gi, ' ')
+      .split(" ")
+    //console.log("tokens", tokens)
+    let res = ""
+    const tokenSet = new Set()
+    tokens.forEach((t: string) => {
+      if (t.length >= 3) {
+        res += t + " "
+        tokenSet.add(t.toLowerCase())
+      }
+    })
+    //console.log("res", res)
+    // console.log("tokenSet", tokenSet)
+    // console.log("tokenSet", [...tokenSet].join(" "))
+    TabsetService.saveText(sender.tab, [...tokenSet].join(" "), request.metas)
     sendResponse({html2text: 'done'});
   }
 
+  private handleAddTabToTabset(request: any, sender: chrome.runtime.MessageSender, sendResponse: any) {
+    console.log("sender", sender)
+    console.log("request", request)
+    if (sender.tab) {
+      TabsetService.saveToTabsetId(request.tabsetId, new Tab(uid(), sender.tab))
+        .then(() => {
+          chrome.notifications.create(
+            {
+              title: "Tabset Extension Message",
+              type: "basic",
+              iconUrl: "chrome-extension://agphkldbejefifhmgpgmiphlnijklnol/www/favicon.ico",
+              message: "the tab has been created successfully"
+            }
+          )
+        })
+        .catch((err:any) => {
+          console.log("catching rejection", err)
+          chrome.notifications.create(
+            {
+              title: "Tabset Extension Message",
+              type: "basic",
+              iconUrl: "chrome-extension://agphkldbejefifhmgpgmiphlnijklnol/www/favicon.ico",
+              message: "tab could not be added: " + err
+            }
+          )
+
+        })
+    }
+    sendResponse({addTabToCurrent: 'done'});
+  }
+
+
   private handleCapture(sender: chrome.runtime.MessageSender, sendResponse: any) {
+    if (!this.thumbnailsActive) {
+      return
+    }
+
     this.throttleOnePerSecond(() => {
       console.log("capturing tab...")
       chrome.tabs.captureVisibleTab(

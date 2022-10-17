@@ -192,13 +192,13 @@
                     expand-icon-class="text-black"
                     expand-separator>
     <template v-slot:header="{ expanded }">
-      <q-item-section avatar>
-        <q-icon name="tab"/>
-      </q-item-section>
+<!--      <q-item-section avatar>-->
+<!--        <q-icon name="tab"/>-->
+<!--      </q-item-section>-->
 
       <q-item-section>
         <div>
-            <span class="text-weight-bold">Other Tabs ({{
+            <span class="text-weight-bold">Tabs ({{
                 formatLength(unpinnedNoGroup().length, 'tab', 'tabs')
               }})</span>
           <div class="text-caption ellipsis" v-text="otherTabsCaption"></div>

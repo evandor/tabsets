@@ -1,23 +1,43 @@
 # Tabsets Extension
 
-Browser Extension to manage tabsets
+Browser Extension to manage tabsets:
+
+# Features
+
+* Turn your open tabs into a tabset
+* Re-open your tabsets or tabs whenever you need them
+* Edit tabsets
+* Search for keywords in your tabsets
+* Drag & drop tabs into tabsets
+* Export and Import Tabsets Data
+* Search in Tabs (experimental)
+* Keep pinned and grouped tabsets (experimental)
+* Thumbnails Preview (experimental)
+* Dark Mode (experimental)
+* All data remains on your computer - no backend communication whatsoever
+* Open source
 
 ## Install the dependencies
 ```bash
-yarn
-# or
+yarn install
+```
+or
+```bash
 npm install
 ```
 
 ### Start the app in development mode
 ```bash
-quasar dev
+quasar dev -m bex
 ```
 
-### Add to chrome as local extension:
+and add to chrome as local extension:
 
 see https://quasar.dev/quasar-cli-vite/developing-browser-extensions/build-commands#chrome
 
-### current flaws
+### chrome extension link
 
-https://github.com/dannyconnell/localbase/issues/57
+You can try the current version directly at
+
+https://chrome.google.com/webstore/detail/tabsets-extension/afkknkdbgondbbfjehipnjmojndnjhjg
+

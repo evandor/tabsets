@@ -1,7 +1,7 @@
 <template>
 
   <div class="row items-start q-mb-xl">
-    <div v-for="bm in _.filter(props.bookmarks, (bm:Bookmark) => !bm.chromeBookmark.url)"
+    <div v-for="bm in _.filter(bookmarksStore.bookmarksForFolder, (bm:Bookmark) => !bm.chromeBookmark.url)"
          :key="bm.id"
          draggable="true"
          @dragstart="startDrag($event, bm)"
@@ -38,9 +38,9 @@
 
 
         <q-card-actions align="right">
-          <!--          <q-btn flat round color="red" size="11px" icon="delete_outline" @click.stop="closeTab(tab)">-->
-          <!--            <q-tooltip>Delete this tab from this list</q-tooltip>-->
-          <!--          </q-btn>-->
+<!--          <q-btn flat round color="red" size="11px" icon="delete_outline" @click.stop="deleteBookmark(bm)">-->
+<!--            <q-tooltip>Delete this bookmark</q-tooltip>-->
+<!--          </q-btn>-->
         </q-card-actions>
 
       </q-card>
@@ -68,7 +68,7 @@
   </q-toolbar>
 
   <div class="row items-start">
-    <div v-for="bm in _.filter(props.bookmarks, (bm:Bookmark) => bm.chromeBookmark.url)"
+    <div v-for="bm in _.filter(bookmarksStore.bookmarksForFolder, (bm:Bookmark) => bm.chromeBookmark.url)"
          :key="bm.id"
          draggable="true"
          @dragstart="startDrag($event, bm)"
@@ -110,9 +110,9 @@
 
 
         <q-card-actions align="right">
-          <!--          <q-btn flat round color="red" size="11px" icon="delete_outline" @click.stop="closeTab(tab)">-->
-          <!--            <q-tooltip>Delete this tab from this list</q-tooltip>-->
-          <!--          </q-btn>-->
+          <q-btn flat round color="red" size="11px" icon="delete_outline" @click.stop="deleteBookmark(bm)">
+            <q-tooltip>Delete this bookmark</q-tooltip>
+          </q-btn>
         </q-card-actions>
 
       </q-card>
@@ -132,16 +132,19 @@ import _ from "lodash"
 import {useRouter} from "vue-router";
 import {useQuasar} from "quasar";
 import ImportFromBookmarks from "components/dialogues/ImportFromBookmarks.vue";
+import BookmarksService from "src/services/BookmarksService";
+import {useBookmarksStore} from "stores/bookmarksStore";
 
-const props = defineProps({
-  bookmarks: {
-    type: Array,
-    required: true
-  }
-})
+// const props = defineProps({
+//   bookmarks: {
+//     type: Array,
+//     required: true
+//   }
+// })
 
 const emits = defineEmits(['sendCaption'])
 
+const bookmarksStore = useBookmarksStore()
 const router = useRouter()
 const $q = useQuasar()
 
@@ -181,13 +184,13 @@ function maxChar(max: number, t: string): string {
 }
 
 
-function closeTab(tab: Tab) {
-  Navigation.closeTab(tab)
+function deleteBookmark(bm: Bookmark) {
+  BookmarksService.deleteBookmark(bm)
 }
 
 function saveTab(tab: Tab) {
   //console.log("saving tab", tab)
-  TabsetService.saveToTabset(tab)
+  TabsetService.saveToCurrentTabset(tab)
 }
 
 function cardStyle(bm: Bookmark) {

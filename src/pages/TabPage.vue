@@ -1,42 +1,40 @@
 <template>
-  <div v-if="notificationStore.selectedTab">
-    <div class="row items-baseline q-mx-md q-pa-none" style="width:265px;border-top:1px dotted grey">
-      <div class="col-12 q-mb-md">&nbsp;
-        <q-banner v-if="notificationStore.selectedTab.isDuplicate"
-                  rounded class="bg-amber-1 text-black">This tab has duplicates in this tabset
-        </q-banner>
-      </div>
+  <q-page padding>
+
+    <div class="text-h5 q-ml-md">
+      Tab Details
     </div>
 
-    <div class="row items-baseline q-mx-md q-my-none" style="width:265px">
+
+    <div class="row items-baseline q-mx-md q-my-none">
       <div class="col-2">
         <q-img
           class="rounded-borders"
-          width="24px"
-          height="24px"
-          :src="notificationStore.selectedTab.chromeTab?.favIconUrl">
-          <q-tooltip v-if="featuresStore.debugEnabled">
-            {{ notificationStore.selectedTab.chromeTab.favIconUrl }} / {{ notificationStore.selectedTab.chromeTab.id }}  / {{ notificationStore.selectedTab.id }}
+          width="32px"
+          height="32px"
+          :src="notificationStore.selectedTab?.chromeTab?.favIconUrl">
+          <q-tooltip>
+            {{ notificationStore.selectedTab?.chromeTab?.favIconUrl }} / {{ notificationStore.selectedTab?.chromeTab?.id }}  / {{ notificationStore.selectedTab.id }}
           </q-tooltip>
         </q-img>
       </div>
       <div class="col-10 text-body1 ellipsis">
-        {{ getHost(notificationStore.selectedTab.chromeTab?.url, true) }}
+        {{ getHost(notificationStore.selectedTab?.chromeTab?.url, true) }}
       </div>
       <div class="col-12 text-body2 ellipsis">
-        {{ notificationStore.selectedTab.chromeTab?.title }}
+        {{ notificationStore.selectedTab?.chromeTab?.title }}
       </div>
 
       <div class="col-12">
         <div class="text-overline ellipsis">
-          {{ notificationStore.selectedTab.chromeTab.url }}&nbsp;<q-icon name="launch" color="secondary"
-                                                                   @click.stop="Navigation.openOrCreateTab(tab.chromeTab?.url )"></q-icon>
+          {{ notificationStore.selectedTab?.chromeTab?.url }}&nbsp;<q-icon name="launch" color="secondary"
+                                                                         @click.stop="Navigation.openOrCreateTab(tab.chromeTab?.url )"></q-icon>
         </div>
       </div>
     </div>
-    <div class="row q-mx-md q-my-none" style="width:265px;border:0px solid yellow">
+    <div class="row q-mx-md q-my-none" style="border:0px solid yellow">
       <div class="col-12">
-        <q-img :src="thumbnail" width="265px" style="border:1px solid grey" @click="showTabDetails"/>
+        <q-img :src="thumbnail" width="512px" style="border:1px solid grey" />
       </div>
       <div class="col-12">
         <div class="row q-ma-sm">
@@ -85,29 +83,48 @@
           <div class="col-7" v-if="notificationStore.selectedTab.bookmarkUrl">
             {{ notificationStore.selectedTab.bookmarkUrl }}
           </div>
+
+          <div class="col-5">
+            Meta Info
+          </div>
+          <div class="col-7">
+            {{ metas }}
+          </div>
+
+          <div class="col-5">
+            Content
+          </div>
+          <div class="col-7">
+            {{ content }}
+          </div>
         </div>
       </div>
     </div>
-  </div>
 
+    <fab></fab>
+  </q-page>
 
 </template>
 
 <script setup lang="ts">
-import {date} from "quasar";
+import {useTabsStore} from "src/stores/tabsStore"
+import Fab from "src/components/Fab.vue"
 import {useNotificationsStore} from "stores/notificationsStore";
+import {useFeatureTogglesStore} from "stores/featureTogglesStore";
+import {useRouter} from "vue-router";
 import {ref, watchEffect} from "vue";
 import TabsetService from "src/services/TabsetService";
-import {useFeatureTogglesStore} from "src/stores/featureTogglesStore";
-import Navigation from "src/services/Navigation"
-import {useRouter} from "vue-router";
+import Navigation from "src/services/Navigation";
+import {date} from "quasar";
 
+const tabsStore = useTabsStore()
 const notificationStore = useNotificationsStore()
 const featuresStore = useFeatureTogglesStore()
 const router = useRouter()
 
 const thumbnail = ref('')
 const content = ref('')
+const metas = ref({})
 
 watchEffect(() => {
   if (notificationStore.selectedTab) {
@@ -115,10 +132,14 @@ watchEffect(() => {
       .then(data => thumbnail.value = data.thumbnail)
       .catch(err => console.log("err", err))
     TabsetService.getContentFor(notificationStore.selectedTab)
-      .then(data => content.value = data.content)
+      .then(data => {
+        content.value = data.content
+        metas.value = data.metas
+      })
       .catch(err => console.log("err", err))
   }
 })
+
 
 function getShortHostname(host: string) {
   const nrOfDots = (host.match(/\./g) || []).length
@@ -140,17 +161,4 @@ function getHost(urlAsString: string, shorten: Boolean = true): string {
   }
 }
 
-function withoutHostname(url: string) {
-  const splits = url?.split(getHost(url))
-  if (splits?.length > 1) {
-    return "..." + splits[1]
-  }
-  return "---"
-}
-
-const showTabDetails = () => {
-  if (useFeatureTogglesStore().debugEnabled) {
-    router.push("/tab/" + notificationStore.selectedTab.id)
-  }
-}
 </script>

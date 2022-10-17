@@ -52,6 +52,11 @@ export const useTabsStore = defineStore('tabs', {
     pendingTabset: null as unknown as Tabset,
 
     /**
+     * the browsers tabs as a tabset
+     */
+    browserTabset: null as unknown as Tabset,
+
+    /**
      * tabs the extension should ignore
      */
     ignoredTabset: null as unknown as Tabset,
@@ -160,8 +165,8 @@ export const useTabsStore = defineStore('tabs', {
       this.tabs = await queryTabs()
 
       // @ts-ignore
-      // this.browserTabset = new Tabset("current", "current",
-      //   _.map(this.tabs, t => new Tab(uid(), t)))
+      this.browserTabset = new Tabset("current", "current",
+        _.map(this.tabs, t => new Tab(uid(), t)))
 
       this.pendingTabset = new Tabset("pending", "pending", [], [])
 
@@ -179,7 +184,7 @@ export const useTabsStore = defineStore('tabs', {
         }), [])
       markDuplicates(current)
       //this.tabsets.set("current", current)
-      //this.browserTabset = current
+      this.browserTabset = current
     },
     initListeners() {
       if (process.env.MODE === 'bex') {
@@ -218,12 +223,12 @@ export const useTabsStore = defineStore('tabs', {
         console.error("not found", name)
       }
     },
-    removeTab(tabId: number) {
+    removeTab(tabId: string) {
       const currentTabset: Tabset = this.tabsets.get(this.currentTabsetId) || new Tabset("", "", [], [])
-      currentTabset.tabs = _.filter(currentTabset.tabs, (t: Tab) => t.chromeTab.id !== tabId)
+      currentTabset.tabs = _.filter(currentTabset.tabs, (t: Tab) => t.id !== tabId)
       markDuplicates(currentTabset)
       TabsetService.saveTabset(currentTabset)
-      this.pendingTabset.tabs = _.filter(this.pendingTabset.tabs, (t: Tab) => t.chromeTab.id !== tabId)
+      this.pendingTabset.tabs = _.filter(this.pendingTabset.tabs, (t: Tab) => t.id !== tabId)
     },
 
     // async updateOrCreateTabset(tabsetName: string, tabs: chrome.tabs.Tab[], merge: boolean = false): Promise<NewOrReplacedTabset> {

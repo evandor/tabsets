@@ -20,6 +20,8 @@ export class Tab {
   name: string | undefined
   bookmarkUrl: string | undefined
   bookmarkId: string | undefined
+  metas: object
+  searchIndexId: number | undefined
   // references: Map<string, string> = new Map()
   references: {[k: string]: string}
 
@@ -36,6 +38,7 @@ export class Tab {
     this.history = []
     this.name = undefined
     this.references = {}
+    this.metas = {}
   }
 
   setHistoryFrom(existingTab: Tab) {
