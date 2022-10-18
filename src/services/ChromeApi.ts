@@ -3,6 +3,7 @@ import TabsetService from "src/services/TabsetService";
 import {CLEANUP_PERIOD_IN_MINUTES} from "boot/constants";
 import {useTabsStore} from "src/stores/tabsStore";
 import _ from "lodash"
+import {Tab} from "src/models/Tab";
 
 function runHousekeeping(alarm: chrome.alarms.Alarm) {
   if (alarm.name === "housekeeping") {
@@ -125,25 +126,34 @@ class ChromeApi {
     return [];
   }
 
-  async restore(tabset: Tabset) {
+  restore(tabset: Tabset) {
     console.log("restoring tabset ", tabset.id)
-    const currentTab = await this.getCurrentTab()
-    //await this.closeAllTabs()
-    //console.log("proceeding...")
+    this.getCurrentTab()
+      .then((currentTab: chrome.tabs.Tab) => {
+        console.log("proceeding...")
 
-    await tabset.tabs.forEach(async t => {
-      if (t.chromeTab.url !== currentTab.url) {
-        console.log("creating tab", t.chromeTab.id)
-        await chrome.tabs.create({
-          active: false,
-          index: t.chromeTab.index,
-          pinned: t.chromeTab.pinned,
-          url: t.chromeTab.url
-        })
-      } else {
-        console.log("omitting opening current tab again")
-      }
-    });
+        const promisedTabs: Promise<chrome.tabs.Tab>[] = []
+
+        tabset.tabs.forEach(async t => {
+
+          if (t.chromeTab.url !== currentTab.url) {
+            //console.log("creating tab", t.chromeTab.id)
+            const newTabPromise:Promise<chrome.tabs.Tab> = this.chromeTabsCreateAsync({
+              active: false,
+              index: t.chromeTab.index,
+              pinned: t.chromeTab.pinned,
+              url: t.chromeTab.url
+            })
+            //console.log("got new tab", newTabPromise)
+            promisedTabs.push(newTabPromise)
+          } else {
+            console.log("omitting opening current tab again")
+          }
+        });
+
+        Promise.all(promisedTabs)
+          .then((tabs: chrome.tabs.Tab[]) => useTabsStore().activateListeners())
+      })
   }
 
   async getCurrentTab(): Promise<chrome.tabs.Tab> {
@@ -198,6 +208,18 @@ class ChromeApi {
       incognito: false,
       selected: false
     }
+  }
+
+  private chromeTabsCreateAsync(createProperties: object): Promise<chrome.tabs.Tab> {
+    return new Promise((resolve, reject) => {
+      chrome.tabs.create(createProperties, tab => {
+        if (chrome.runtime.lastError) {
+          reject(chrome.runtime.lastError)
+        } else {
+          resolve(tab);
+        }
+      });
+    });
   }
 }
 

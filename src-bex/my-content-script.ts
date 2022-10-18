@@ -39,10 +39,6 @@ export default bexContent((bridge:any) => {
     return result
   }
 
-  // chrome.runtime.sendMessage({msg: "htmlmeta", metas: getMetas(document)}, function (response) {
-  //   console.log("got htmlmeta")
-  // });
-
   chrome.runtime.sendMessage({msg: "html2text", html: document.documentElement.outerHTML, metas: getMetas(document)}, function (response) {
     console.log("created text excerpt for tabsets")
   });

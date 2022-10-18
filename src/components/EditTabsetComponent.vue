@@ -48,13 +48,13 @@
     <div class="justify-center row q-ma-none q-pa-xl">
 
     <span v-if="TabsetService.getSelectedPendingTabs().length === 0">
-      <q-btn icon="file_download" label="Save all" class="q-mx-lg" color="positive"
+      <q-btn icon="file_download" label="Add all" class="q-mx-lg" color="positive"
              @click="saveAllPendingTabs()"></q-btn>
       <q-btn icon="delete_outline" label="Remove all" class="q-mx-lg" color="negative"
              @click="removeAllPendingTabs()"></q-btn>
     </span>
       <span v-else>
-      <q-btn icon="file_download" label="save selected" class="q-mx-lg" @click="saveSelectedPendingTabs()"></q-btn>
+      <q-btn icon="file_download" label="add selected" class="q-mx-lg" @click="saveSelectedPendingTabs()"></q-btn>
        <q-btn icon="delete_outline" label="remove selected" class="q-mx-lg"
               @click="removeSelectedPendingTabs()"></q-btn>
     </span>
@@ -192,9 +192,9 @@
                     expand-icon-class="text-black"
                     expand-separator>
     <template v-slot:header="{ expanded }">
-<!--      <q-item-section avatar>-->
-<!--        <q-icon name="tab"/>-->
-<!--      </q-item-section>-->
+      <!--      <q-item-section avatar>-->
+      <!--        <q-icon name="tab"/>-->
+      <!--      </q-item-section>-->
 
       <q-item-section>
         <div>
@@ -290,7 +290,17 @@ const formatLength = (length: number, singular: string, plural: string) => {
 }
 
 //const removeClosedTabs = () => TabsetService.removeClosedTabs()
-const saveAllPendingTabs = () => TabsetService.saveAllPendingTabs()
+const saveAllPendingTabs = () => {
+  TabsetService.saveAllPendingTabs()
+    .then(() => $q.notify({
+      message: 'The tabs have been saved',
+      type: 'positive'
+    }))
+    .catch(() => $q.notify({
+      message: 'There was a problem saving (all) the tabs',
+      type: 'negative'
+    }))
+}
 const saveSelectedPendingTabs = () => TabsetService.saveSelectedPendingTabs()
 const removeSelectedPendingTabs = () => TabsetService.removeSelectedPendingTabs()
 const removeAllPendingTabs = () => TabsetService.removeAllPendingTabs()

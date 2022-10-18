@@ -10,7 +10,7 @@
 
       <q-card-section class="q-pt-none">
 
-        <q-radio v-model="closeOld" val="true" label="Close existing Tabsets"></q-radio>
+        <q-radio v-model="closeOld" val="true" label="Close open Tabs"></q-radio>
         <q-radio v-model="closeOld" val="false" label="Keep them open"></q-radio>
 
       </q-card-section>

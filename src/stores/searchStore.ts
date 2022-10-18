@@ -45,7 +45,7 @@ export const useSearchStore = defineStore('search', {
       )
       // @ts-ignore
       const indexLength = this.fuse.getIndex().size()
-      console.log("adding to index: ", indexLength, doc)
+      //console.log("adding to index: ", indexLength, doc)
       this.fuse.add(doc)
       return indexLength
     },

@@ -8,6 +8,7 @@ import throttledQueue from 'throttled-queue';
 
 // @ts-ignore
 import {convert} from "html-to-text"
+import ChromeApi from "src/services/ChromeApi";
 
 class ChromeListeners {
 
@@ -38,6 +39,9 @@ class ChromeListeners {
   }
 
   onCreated(tab: chrome.tabs.Tab) {
+    if (!useTabsStore().listenersOn) {
+      return
+    }
     this.eventTriggered()
     const tabsStore = useTabsStore()
     console.log(`onCreated: tab ${tab.id}: >>> ${tab.pendingUrl}`)
@@ -53,6 +57,9 @@ class ChromeListeners {
   }
 
   onUpdated(number: number, info: chrome.tabs.TabChangeInfo, tab: chrome.tabs.Tab) {
+    if (!useTabsStore().listenersOn) {
+      return
+    }
     this.eventTriggered()
     const tabsStore = useTabsStore()
 
@@ -282,8 +289,13 @@ class ChromeListeners {
       return
     }
 
-    this.throttleOnePerSecond(() => {
-      console.log("capturing tab...")
+    this.throttleOnePerSecond(async () => {
+      const current = await ChromeApi.getCurrentTab()
+      const selfId = localStorage.getItem("selfId")
+      if (current && current.url && selfId && current.url.indexOf(selfId) >= 0) {
+        return // no screenshot of extension itself
+      }
+      console.log("capturing tab...", current.url, selfId)
       chrome.tabs.captureVisibleTab(
         {},
         function (dataUrl) {

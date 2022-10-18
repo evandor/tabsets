@@ -123,12 +123,16 @@ class TabsetService {
       const tabset = this.getTabset(tabsetId)
       if (tabset) {
         console.log("found tabset for id", tabsetId)
-        await ChromeApi.restore(tabset)
+        ChromeApi.restore(tabset)
+          // .then((res: any) => {
+          //   console.log("res", res)
+          //   tabsStore.activateListeners()
+          // })
       }
     } catch (ex) {
       console.log("ex", ex)
     } finally {
-      tabsStore.activateListeners()
+      //tabsStore.activateListeners()
     }
   }
 
@@ -184,11 +188,11 @@ class TabsetService {
     this.saveTabset(currentTabset)
   }
 
-  async saveToCurrentTabset(tab: Tab):Promise<number>  {
+  async saveToCurrentTabset(tab: Tab): Promise<number> {
     return this.saveToTabset(this.getCurrentTabset() || new Tabset(uid(), "unknown", [], []), tab)
   }
 
-  async saveToTabsetId(tsId: string, tab: Tab):Promise<number>  {
+  async saveToTabsetId(tsId: string, tab: Tab): Promise<number> {
     const ts = this.getTabset(tsId)
     if (ts) {
       return this.saveToTabset(ts, tab)
@@ -196,8 +200,8 @@ class TabsetService {
     return Promise.reject("no tabset for give id " + tsId)
   }
 
-  async saveToTabset(ts: Tabset, tab: Tab):Promise<number> {
-    console.log("saving to tabset", ts, tab)
+  async saveToTabset(ts: Tabset, tab: Tab): Promise<number> {
+    //console.log("saving to tabset", ts, tab)
     if (tab.chromeTab.url) {
       const tabsStore = useTabsStore()
 
@@ -237,7 +241,7 @@ class TabsetService {
             cursor.key)
 
           content = data.content
-          Object.keys(data.metas).forEach((key:string) => {
+          Object.keys(data.metas).forEach((key: string) => {
             if (key.indexOf("description") >= 0 && data.metas[key] && data.metas[key].trim().length > description.length) {
               //console.log("updating description to ", data.metas[key].trim())
               description = data.metas[key].trim()
@@ -307,19 +311,25 @@ class TabsetService {
     }
   }
 
-  saveAllPendingTabs(onlySelected: boolean = false) {
+  saveAllPendingTabs(onlySelected: boolean = false): Promise<void> {
     const tabsStore = useTabsStore()
     const currentTabset = tabsStore.getCurrentTabset
+    let successful = 0
+    let failed = 0
 
     if (currentTabset) {
       _.forEach(
         tabsStore.pendingTabset.tabs,
         t => {
-          if (t.chromeTab?.id) {
+          if (t?.chromeTab?.id) {
             if (!onlySelected || (onlySelected && t.selected)) {
               //currentTabset.tabs.push(t)
               this.saveToCurrentTabset(t)
+                .then(() => successful += 1)
+                .catch((err: any) => failed += 1)
             }
+          } else {
+            console.log("got tab with missing data", t)
           }
         })
 
@@ -328,8 +338,9 @@ class TabsetService {
       } else {
         _.remove(tabsStore.pendingTabset.tabs, {selected: true});
       }
-      this.saveTabset(currentTabset)
+      return this.saveTabset(currentTabset)
     }
+    return Promise.reject("no current tabset set")
   }
 
   saveSelectedPendingTabs() {
