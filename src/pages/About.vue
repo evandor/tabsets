@@ -63,7 +63,7 @@
       </div>
 
       <div class="text-body1 q-ma-md">
-        Click on the plus sign <q-icon name="add_circle_outline" size="24px" color="accent" class="cursor-pointer" @click="animateFab()"></q-icon> on the lower right page.
+        Click on the 'more' sign <q-icon name="more_horiz" size="24px" color="accent" class="cursor-pointer" @click="animateFab()"></q-icon> on the lower right page.
       </div>
     </div>
 

@@ -124,10 +124,10 @@ class TabsetService {
       if (tabset) {
         console.log("found tabset for id", tabsetId)
         ChromeApi.restore(tabset)
-          // .then((res: any) => {
-          //   console.log("res", res)
-          //   tabsStore.activateListeners()
-          // })
+        // .then((res: any) => {
+        //   console.log("res", res)
+        //   tabsStore.activateListeners()
+        // })
       }
     } catch (ex) {
       console.log("ex", ex)
@@ -472,14 +472,15 @@ class TabsetService {
   createPendingFromBrowserTabs() {
     console.log(`createPendingFromBrowserTabs`)
     const tabsStore = useTabsStore()
-    // const maybeTab = tabsStore.tabForUrlInSelectedTabset(tab.pendingUrl || '')
-    // if (maybeTab) {
-    //   console.log(`onCreated: tab ${tab.id}: updating existing chromeTab.id: ${maybeTab.chromeTab.id} -> ${tab.id}`)
-    //   maybeTab.chromeTab.id = tab.id
-    //   return
-    // }
+    tabsStore.pendingTabset.tabs = []
+    const urlSet = new Set<string>()
     _.forEach(tabsStore.tabs, t => {
-      tabsStore.pendingTabset.tabs.push(new Tab(uid(), t))
+      if (t.url) {
+        if (!urlSet.has(t.url) && !t.url.startsWith("chrome")) {
+          urlSet.add(t.url)
+          tabsStore.pendingTabset.tabs.push(new Tab(uid(), t))
+        }
+      }
     })
   }
 

@@ -45,22 +45,11 @@ export const useSyncStore = defineStore('sync', {
     init() {
       const syncMode: string | null = getSyncMode()
       if (syncMode !== null) {
-        console.log("got syncMode", syncMode)
+        //console.log("got syncMode", syncMode)
         //this.syncMode = SyncMode[syncMode as keyof typeof SyncMode]
         //console.log("this.syncMode", this.syncMode)
       }
     }
-    // setSyncMode(mode: SyncMode) {
-    //   this.syncMode = mode
-    //   const auth = useAuthStore()
-    //   if (auth.isAuthenticated && auth.user) {
-    //     console.log("setting syncMode for user", auth.user['uid'], mode)
-    //     localStorage.setItem(auth.user['uid'] + ".syncMode",mode.toString());
-    //   } else {
-    //     console.log("setting syncMode", mode)
-    //     localStorage.setItem("syncMode", mode.toString())
-    //   }
-    // }
 
   }
 });
