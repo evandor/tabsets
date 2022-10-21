@@ -75,7 +75,7 @@ const logout = () => {
   console.log("logout!")
 
   auth.logout()
-    .then((res: any) => {
+    .then(() => {
       router.push("/about")
     })
     .catch(error => {

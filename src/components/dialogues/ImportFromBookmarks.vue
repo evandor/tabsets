@@ -37,7 +37,7 @@
 
 <script lang="ts" setup>
 
-import {ref, watchEffect} from "vue";
+import {ref} from "vue";
 import TabsetService from "src/services/TabsetService";
 import {useQuasar} from "quasar";
 import {useRoute, useRouter} from "vue-router";
@@ -62,7 +62,7 @@ const props = defineProps({
   // }
 })
 
-const {dialogRef, onDialogHide, onDialogOK, onDialogCancel} = useDialogPluginComponent()
+const {dialogRef, onDialogHide, onDialogCancel} = useDialogPluginComponent()
 
 const bookmarksStore = useBookmarksStore()
 const tabsStore = useTabsStore()

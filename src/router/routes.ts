@@ -21,21 +21,6 @@ const routes: RouteRecordRaw[] = [
     children: [{ path: '', component: () => import('pages/TryPro.vue') }],
   },
   {
-    path: '/register',
-    component: () => import('layouts/PlainLayout.vue'),
-    children: [{ path: '', component: () => import('pages/Register.vue') }],
-  },
-  {
-    path: '/login',
-    component: () => import('layouts/PlainLayout.vue'),
-    children: [{ path: '', component: () => import('pages/Login.vue') }],
-  },
-  {
-    path: '/subscription',
-    component: () => import('layouts/SimpleLayout.vue'),
-    children: [{ path: '', component: () => import('pages/Subscription.vue') }],
-  },
-  {
     path: '/settings',
     component: () => import('layouts/MainLayout.vue'),
     children: [{ path: '', component: () => import('pages/Settings.vue') }],

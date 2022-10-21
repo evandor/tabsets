@@ -10,8 +10,7 @@ export const useFeatureTogglesStore = defineStore('featureToggles', {
 
   getters: {
     debugEnabled: (state) => _.find(state.activeToggles, e => e === "debug"),
-    listviewEnabled: (state) => _.find(state.activeToggles, e => e === "listview"),
-    firebaseEnabled: (state) => _.find(state.activeToggles, e => e === "firebase"),
+    listviewEnabled: (state) => _.find(state.activeToggles, e => e === "listview")
   },
 
   actions: {

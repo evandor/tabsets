@@ -47,14 +47,13 @@ defineEmits([
   ...useDialogPluginComponent.emits
 ])
 
-const {dialogRef, onDialogHide, onDialogOK, onDialogCancel} = useDialogPluginComponent()
+const {dialogRef, onDialogHide, onDialogCancel} = useDialogPluginComponent()
 
 const tabsStore = useTabsStore()
 const router = useRouter()
 const $q = useQuasar()
 
 const exportAs = ref('json')
-const newTabsetNameExists = ref(false)
 const hideWarning = ref(false)
 const warning = ref('')
 
@@ -69,9 +68,7 @@ watchEffect(() => {
 const exportData = () => {
   hideWarning.value = true
   TabsetService.exportData(exportAs.value)
-    .then((result: object) => {
-      // populate pending set
-
+    .then(() => {
       router.push("/tabset")
       $q.notify({
         message: 'export successful',

@@ -37,10 +37,9 @@
 
 <script setup lang="ts">
 import Navigation from "src/services/Navigation";
-import {Tab, TabStatus} from "src/models/Tab";
+import {Tab} from "src/models/Tab";
 import TabsetService from "src/services/TabsetService";
-import {useNotificationsStore} from "stores/notificationsStore";
-import {onMounted, ref, unref, watchEffect} from "vue";
+import {ref} from "vue";
 import {Hit} from "src/models/Hit";
 import _ from "lodash"
 import {useFeatureTogglesStore} from "stores/featureTogglesStore";
@@ -78,23 +77,9 @@ function getHost(urlAsString: string, shorten: Boolean = true): string {
   }
 }
 
-function withoutHostname(url: string) {
-  const splits = url?.split(getHost(url))
-  if (splits?.length > 1) {
-    return "..." + splits[1]
-  }
-  return "---"
-}
-
 function closeTab(tab: Tab) {
   Navigation.closeTab(tab)
 }
-
-function togglePin(tabId: number) {
-  console.log("toggling pin", tabId)
-  TabsetService.togglePin(tabId)
-}
-
 
 function cardStyle(tab: Tab) {
   const height = "100px"
@@ -126,11 +111,6 @@ const setInfo = (tab: Tab) => {
   } else if (parts.length === 1) {
     emits('sendCaption', parts[0].toString());
   }
-}
-
-const setCustomTitle = (tab: Tab, newValue: string) => {
-  console.log(" -> ", newValue)
-  TabsetService.setCustomTitle(tab, newValue)
 }
 
 const tabsetBadges = (hit:Hit): object[] => {

@@ -3,7 +3,7 @@ import {LocalStorage, uid} from "quasar";
 import ChromeApi from "src/services/ChromeApi";
 import _ from "lodash";
 import {Tab, TabStatus} from "src/models/Tab";
-import {Tabset, TabsetPersistence, TabsetStatus} from "src/models/Tabset";
+import {Tabset} from "src/models/Tabset";
 import {useNotificationsStore} from "src/stores/notificationsStore";
 import {IDBPDatabase, openDB} from "idb";
 import backendApi from "src/services/BackendApi";
@@ -522,13 +522,8 @@ class TabsetService {
 
       //const clonedTs = JSON.parse(JSON.stringify(ts))
       // console.log("cloned ts", ts, clonedTs)
-      // clonedTs.status = TabsetStatus.DEFAULT
-      // clonedTs.persistence = TabsetPersistence.FIREBASE
       return backendApi.saveTabset(ts)
         .then(res => {
-          //ts.persistence = TabsetPersistence.FIREBASE
-          // ts.status = TabsetStatus.UNMOUNTED
-          // ts.persistence = TabsetPersistence.FIREBASE
           this.delete(ts.id)
           this.loadTabsetsFromFirebase()
           console.log("got backend answer: ", res)
@@ -546,19 +541,13 @@ class TabsetService {
     const tabsStore = useTabsStore()
     const ts = tabsStore.getTabset(tabsetId)
     if (ts) {
-      ts.persistence = TabsetPersistence.INDEX_DB
       this.saveTabset(ts)
       // const backend = initializeBackendApi(process.env.BACKEND_URL || "unknown", null)
 
       //const clonedTs = JSON.parse(JSON.stringify(ts))
       // console.log("cloned ts", ts, clonedTs)
-      // clonedTs.status = TabsetStatus.DEFAULT
-      // clonedTs.persistence = TabsetPersistence.FIREBASE
       return backendApi.deleteTabset(tabsetId)
         .then(res => {
-          //ts.persistence = TabsetPersistence.FIREBASE
-          // ts.status = TabsetStatus.UNMOUNTED
-          // ts.persistence = TabsetPersistence.FIREBASE
           //this.delete(ts.id)
           this.loadTabsetsFromFirebase()
           console.log("got backend answer: ", res)
@@ -582,8 +571,6 @@ class TabsetService {
 
           _.forEach(ts.data, (ts: Tabset) => {
             console.log("got tabset", ts)
-            ts.persistence = TabsetPersistence.FIREBASE
-            ts.status = TabsetStatus.DEFAULT
             useTabsStore().addTabset(ts)
           })
         })

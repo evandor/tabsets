@@ -89,17 +89,14 @@
               <q-tooltip
                 v-if="featuresStore.debugEnabled">ID: {{
                   tabsStore.getCurrentTabset.id
-                }} Status: {{ tabsStore.getCurrentTabset.status }} Pers: {{
-                  tabsStore.getCurrentTabset.persistence
-                }}</q-tooltip>
+                }} </q-tooltip>
             </span></div>
           </div>
         </q-toolbar-title>
       </div>
       <div class="col-xs-12 col-md-7 text-right">
 
-        <q-btn v-if="tabsStore.getCurrentTabset?.tabs.length > 0 && featuresStore.firebaseEnabled && auth.isAuthenticated &&
-          (!tabsStore.getCurrentTabset.persistence || tabsStore.getCurrentTabset.persistence === TabsetPersistence.INDEX_DB)"
+        <q-btn v-if="tabsStore.getCurrentTabset?.tabs.length > 0 && featuresStore.firebaseEnabled && auth.isAuthenticated"
                flat dense icon="restore_page"
                color="warning" :label="$q.screen.gt.sm ? 'Sync Tabset...' : ''"
                class="q-mr-md"
@@ -230,7 +227,6 @@ import {useTabGroupsStore} from "src/stores/tabGroupsStore";
 import TabsetService from "src/services/TabsetService";
 import {Tab} from "src/models/Tab";
 import {useFeatureTogglesStore} from "src/stores/featureTogglesStore";
-import {TabsetPersistence} from "src/models/Tabset"
 import {useAuthStore} from "src/stores/auth";
 import {MAX_TABS_TO_SHOW} from 'boot/constants'
 import ChromeApi from "src/services/ChromeApi";
@@ -313,11 +309,10 @@ const selectedCount = ref(0)
 // const showTabGroup = (group: chrome.tabGroups.TabGroup) => tabsForGroup(group.id).length > 0
 // const showOtherTabs = () => tabsStore.browserTabset?.tabs.length > 0 || tabGroupsStore.tabGroups.length > 0
 
-const updateSelectionCount = (val: any) => {
+const updateSelectionCount = () => {
   //console.log("hier", val, TabsetService.getSelectedPendingTabs().length)
   selectedCount.value = TabsetService.getSelectedPendingTabs().length
 }
-const noTabSelected = () => selectedCount.value === 0
 
 const syncTabset = () => {
   console.log("syncing tabset", tabsStore.currentTabsetId)
@@ -325,8 +320,7 @@ const syncTabset = () => {
 }
 
 const pendingTabsCount = () => {
-  const l = formatLength(tabsStore.pendingTabset?.tabs.length - duplicatesCount.value, 'tab', 'tabs')
-  let label = l
+  let label = formatLength(tabsStore.pendingTabset?.tabs.length - duplicatesCount.value, 'tab', 'tabs')
   if (tabsStore.pendingTabset?.tabs.length - duplicatesCount.value > MAX_TABS_TO_SHOW) {
     label += ", with " + (1 + tabsStore.pendingTabset?.tabs.length - MAX_TABS_TO_SHOW) + " hidden"
   }

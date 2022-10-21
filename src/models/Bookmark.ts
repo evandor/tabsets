@@ -22,8 +22,4 @@ export class Bookmark {
     this.name = undefined
   }
 
-  public setName(newName: string): void {
-    // TODO validate
-    this.name = newName
-  }
 }

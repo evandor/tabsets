@@ -35,7 +35,7 @@
 
 <script setup lang="ts">
 
-import {Tab, TabStatus} from "src/models/Tab";
+import {Tab} from "src/models/Tab";
 import Navigation from "src/services/Navigation";
 
 const props = defineProps({

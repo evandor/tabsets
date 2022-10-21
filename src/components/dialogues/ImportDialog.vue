@@ -33,9 +33,7 @@
 
 <script lang="ts" setup>
 
-import {ref, watchEffect} from "vue";
 import TabsetService from "src/services/TabsetService";
-import {useQuasar} from "quasar";
 import {useRouter} from "vue-router";
 import {useTabsStore} from "stores/tabsStore";
 
@@ -47,23 +45,13 @@ defineEmits([
   ...useDialogPluginComponent.emits
 ])
 
-const {dialogRef, onDialogHide, onDialogOK, onDialogCancel} = useDialogPluginComponent()
+const {dialogRef, onDialogHide, onDialogCancel} = useDialogPluginComponent()
 
 const tabsStore = useTabsStore()
 const router = useRouter()
-const $q = useQuasar()
-
-const exportAs = ref('json')
-const newTabsetNameExists = ref(false)
-const hideWarning = ref(false)
-
 
 const importData = () => {
   // @ts-ignore
-  // const json = document.getElementById("json2import")
-  // console.log("json", json)
-
-
   var file = document.getElementById("json2import").files[0];
   var reader = new FileReader();
   reader.onload = function(e){
@@ -73,31 +61,6 @@ const importData = () => {
 
   }
   reader.readAsText(file);
-
-  // TabsetService.exportData(exportAs.value)
-  //   .then((result: object) => {
-  //     // populate pending set
-  //
-  //     router.push("/tabset")
-  //     $q.notify({
-  //       message: 'export successful',
-  //       type: 'positive'
-  //     })
-  //   }).catch((ex: any) => {
-  //   console.error("ex", ex)
-  //   hideWarning.value = false
-  //   $q.notify({
-  //     message: 'Sorry, there was a problem exporting your data' ,
-  //     type: 'warning',
-  //   })
-  //
-  // })
-}
-const uploadUrl = () => {
-  return `${process.env.backendUrl}/import`
-}
-const additionalFields = () => {
-  return [{name: 'name', value: 'imported'}, {name: 'user', value: 'auth.user.uid'}]
 }
 
 

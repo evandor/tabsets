@@ -10,14 +10,15 @@
 
       <q-card-section class="q-pt-none">
         <div class="text-body">Tabset's name:</div>
-        <q-input dense v-model="newTabsetName" autofocus @keydown.enter="updateTabset()" />
+        <q-input dense v-model="newTabsetName" autofocus @keydown.enter="updateTabset()"/>
         <div class="text-body2 text-warning">{{ newTabsetDialogWarning() }}</div>
       </q-card-section>
 
       <q-card-actions align="right" class="text-primary">
         <q-btn flat label="Cancel" @click="onDialogCancel"/>
         <q-btn flat label="Rename Tabset"
-               :disable="newTabsetName.trim().length === 0 || newTabsetName.trim() === props.tabsetName || newTabsetDialogWarning() !== ''" v-close-popup
+               :disable="newTabsetName.trim().length === 0 || newTabsetName.trim() === props.tabsetName || newTabsetDialogWarning() !== ''"
+               v-close-popup
                @click="updateTabset()"/>
       </q-card-actions>
 
@@ -52,7 +53,7 @@ const props = defineProps({
   }
 })
 
-const {dialogRef, onDialogHide, onDialogOK, onDialogCancel} = useDialogPluginComponent()
+const {dialogRef, onDialogHide, onDialogCancel} = useDialogPluginComponent()
 
 const tabsStore = useTabsStore()
 const router = useRouter()

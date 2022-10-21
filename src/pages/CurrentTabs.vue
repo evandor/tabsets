@@ -114,8 +114,6 @@ const deleteDialog = () => {
   }).onCancel(() => {
   }).onDismiss(() => {
   })
-
-
 }
 
 const restoreDialog = () => {

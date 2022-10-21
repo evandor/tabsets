@@ -4,9 +4,7 @@ import ChromeTabGroupsListeners from "src/services/ChromeTabGroupsListeners";
 // @ts-ignore
 async function queryTabGroups(): Promise<chrome.tabGroups.TabGroup[]> {
   // @ts-ignore
-  let ts = await chrome.tabGroups.query({})
-  //console.log("found", ts.length)
-  return ts;
+  return await chrome.tabGroups.query({})
 }
 
 export const useTabGroupsStore = defineStore('tabGroups', {

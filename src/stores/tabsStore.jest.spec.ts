@@ -98,8 +98,6 @@ describe('TabsStore', () => {
     expect(tabsStore.tabsets.get(keys[0])?.name).toBe("newTabset")
     expect(tabsStore.tabsets.get(keys[0])?.created).toBeGreaterThan(1665423627325)
     expect(tabsStore.tabsets.get(keys[0])?.updated).toBeGreaterThan(1665423627325)
-    expect(tabsStore.tabsets.get(keys[0])?.persistence).toBe("INDEX_DB")
-    expect(tabsStore.tabsets.get(keys[0])?.status).toBe("DEFAULT") // TODO status used?
   });
 
   it('saves existing tabset with overwrite', async () => {

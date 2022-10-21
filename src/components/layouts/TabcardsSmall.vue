@@ -41,9 +41,7 @@
 import Navigation from "src/services/Navigation";
 import {Tab, TabStatus} from "src/models/Tab";
 import TabsetService from "src/services/TabsetService";
-import ChromeApi from "src/services/ChromeApi";
 import {useNotificationsStore} from "stores/notificationsStore";
-import {date} from "quasar";
 
 const props = defineProps({
   tabs: {
@@ -72,14 +70,6 @@ function getHost(urlAsString: string, shorten: Boolean = true): string {
   } catch (e) {
     return "---";
   }
-}
-
-function withoutHostname(url: string) {
-  const splits = url?.split(getHost(url))
-  if (splits?.length > 1) {
-    return "..." + splits[1]
-  }
-  return "---"
 }
 
 function maxChar(max: number, t: string): string {

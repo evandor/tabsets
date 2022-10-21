@@ -86,16 +86,12 @@
 
 <script setup lang="ts">
 
-import TabsetService from "src/services/TabsetService";
 import {useRouter} from "vue-router";
 import {useTabsStore} from "stores/tabsStore";
 import _ from "lodash"
 import {ref, watch, watchEffect} from "vue";
 import {useQuasar} from "quasar";
-import {Tabset} from "src/models/Tabset";
 import {useFeatureTogglesStore} from "src/stores/featureTogglesStore";
-import {TreeNode} from "src/models/Tree";
-import ChromeApi from "src/services/ChromeApi";
 import {useBookmarksStore} from "stores/bookmarksStore";
 import {useNotificationsStore} from "stores/notificationsStore";
 import BookmarksService from "src/services/BookmarksService";
@@ -113,7 +109,6 @@ const selected = ref('')
 const deleteButtonId = ref('')
 const newTabsetName = ref('')
 const merge = ref(false)
-const bookmarksTree = ref<object[]>([])
 
 
 watch(() => selected.value, (currentValue, oldValue) => {
@@ -150,7 +145,7 @@ const deleteBookmarksFolderDialog = () => {
     message: 'Would you like to delete this folder and its subfolders and bookmarks? This cannot be undone',
     cancel: true,
     persistent: true
-  }).onOk((data: any) => {
+  }).onOk(() => {
     BookmarksService.deleteBookmarksFolder(selected.value)
     router.push("/start")
   }).onCancel(() => {

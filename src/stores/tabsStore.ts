@@ -1,7 +1,7 @@
 import {defineStore} from 'pinia';
 import _ from 'lodash'
 import {LocalStorage, uid} from "quasar";
-import {Tabset, TabsetPersistence} from "src/models/Tabset";
+import {Tabset} from "src/models/Tabset";
 import {Tab} from "src/models/Tab";
 import TabsetService from "src/services/TabsetService";
 import ChromeListeners from "src/services/ChromeListeners";
@@ -141,7 +141,7 @@ export const useTabsStore = defineStore('tabs', {
     },
     localTabsCount: (state) => {
       var count = 0
-      for (const val of _.filter([...state.tabsets.values()], (ts:Tabset) => ts.persistence === TabsetPersistence.INDEX_DB)) {
+      for (const val of [...state.tabsets.values()]) {
         const nr = val.tabs.length
         count = count + nr
       }
@@ -206,10 +206,6 @@ export const useTabsStore = defineStore('tabs', {
     tabsForGroup(groupId: number): chrome.tabs.Tab[] {
       // @ts-ignore
       return _.filter(this.tabs, (t: chrome.tabs.Tab) => t.groupId === groupId)
-    },
-    unpinnedTabsWithoutGroup(): chrome.tabs.Tab[] {
-      // @ts-ignore
-      return _.filter(this.tabs, (t: chrome.tabs.Tab) => t.groupId === -1 && !t.pinned)
     },
     selectCurrentTabset(tabsetId: string): void {
       const found = _.find([...this.tabsets.values()], k => {

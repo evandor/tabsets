@@ -32,10 +32,10 @@
 
 <script setup lang="ts">
 import Navigation from "src/services/Navigation";
-import {Tab, TabStatus} from "src/models/Tab";
+import {Tab} from "src/models/Tab";
 import TabsetService from "src/services/TabsetService";
 import {useNotificationsStore} from "stores/notificationsStore";
-import {onMounted, ref, unref, watchEffect} from "vue";
+import {ref} from "vue";
 
 const props = defineProps({
   tabs: {
@@ -79,23 +79,9 @@ function getHost(urlAsString: string, shorten: Boolean = true): string {
   }
 }
 
-function withoutHostname(url: string) {
-  const splits = url?.split(getHost(url))
-  if (splits?.length > 1) {
-    return "..." + splits[1]
-  }
-  return "---"
-}
-
 function closeTab(tab: Tab) {
   Navigation.closeTab(tab)
 }
-
-function togglePin(tabId: number) {
-  console.log("toggling pin", tabId)
-  TabsetService.togglePin(tabId)
-}
-
 
 function cardStyle(tab: Tab) {
   const height = props.showActions ? "100px" : "66px"
@@ -126,17 +112,15 @@ function isOpen(tab: Tab): boolean {
 }
 
 const setInfo = (tab: Tab) => {
-  const notificationsStore = useNotificationsStore()
   const parts = (tab.chromeTab?.url || '').split('?')
   if (parts.length > 1) {
     emits('sendCaption', parts[0] + "[... params omitted....]")
   } else if (parts.length === 1) {
     emits('sendCaption', parts[0].toString());
   }
-//  notificationsStore.setInfo(`created: ${date.formatDate(tab.created, 'DD.MM.YYYY HH:mm')}`)
 }
 
-const selectTab = (tab: Tab, index: number) => {
+const selectTab = (tab: Tab) => {
   console.log("tab selected", tab)
 
   TabsetService.setOnlySelectedTab(tab)
@@ -147,10 +131,6 @@ const selectTab = (tab: Tab, index: number) => {
 const setCustomTitle = (tab: Tab, newValue: string) => {
   console.log(" -> ", newValue)
   TabsetService.setCustomTitle(tab, newValue)
-}
-
-const tabClicked = () => {
-  console.log("clicked tab")
 }
 
 </script>

@@ -34,7 +34,7 @@
         </div>
       </div>
     </div>
-    <div class="row q-mx-md q-my-none" style="width:265px;border:0px solid yellow">
+    <div class="row q-mx-md q-my-none" style="width:265px;border:0 solid yellow">
       <div class="col-12">
         <q-img :src="thumbnail" width="265px" style="border:1px solid grey" @click="showTabDetails"/>
       </div>
@@ -138,14 +138,6 @@ function getHost(urlAsString: string, shorten: Boolean = true): string {
   } catch (e) {
     return "---";
   }
-}
-
-function withoutHostname(url: string) {
-  const splits = url?.split(getHost(url))
-  if (splits?.length > 1) {
-    return "..." + splits[1]
-  }
-  return "---"
 }
 
 const showTabDetails = () => {

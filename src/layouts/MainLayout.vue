@@ -211,7 +211,6 @@ import TabsetService from "src/services/TabsetService";
 import {useSearchStore} from "stores/searchStore";
 import {useFeatureTogglesStore} from "src/stores/featureTogglesStore";
 import {useAuthStore} from "src/stores/auth"
-import {useSyncStore} from "src/stores/syncStore";
 import _ from "lodash"
 import {SyncMode} from "src/models/Subscription";
 import NewTabset from "components/dialogues/NewTabset.vue";
@@ -223,7 +222,6 @@ const tabsStore = useTabsStore()
 const tabGroupsStore = useTabGroupsStore()
 const searchStore = useSearchStore()
 const auth = useAuthStore()
-const syncStore = useSyncStore()
 
 const rightDrawerOpen = ref(true)
 const leftDrawerOpen = ref(false)
@@ -244,9 +242,7 @@ $q.loadingBar.setDefaults({
   position: 'top'
 })
 
-const caption = ref('yyy')
 const search = ref('')
-const merge = ref("false")
 
 const localStorage = useQuasar().localStorage
 //@ts-ignore
@@ -261,16 +257,6 @@ useMeta(() => {
     // @ts-ignore
     title: 'Tabsets Extension' //+ appVersion
   }
-})
-
-// watchEffect(() => {
-//   console.log("notificationsStore.showBookmarks", notificationsStore.showBookmarks)
-//   leftDrawerOpen.value = notificationsStore.showBookmarks
-// })
-
-watchEffect(() => {
-  console.log(" > watchEffect", auth.subscription)
-  syncingActive.value = syncStore.showSyncMode && auth.subscription.syncMode !== SyncMode.INACTIVE
 })
 
 function checkKeystroke(e: any) {
@@ -291,10 +277,6 @@ onUnmounted(() => {
   window.removeEventListener('keypress', checkKeystroke);
 })
 
-function tabsForGroup(groupId: number): chrome.tabs.Tab[] {
-  return tabsStore.tabsForGroup(groupId)
-}
-
 function submitSearch() {
   console.log("s", search.value)
   searchStore.term = search.value
@@ -305,15 +287,10 @@ const title = () => {
   return auth.isAuthenticated ? 'TabsetsPro' : 'Tabsets'
 }
 const goHome = () => router.push("/")
-const openSettingsPage = () => router.push("/settings")
-
-// const tabNameExists = () => tabsStore.nameExistsInContextTabset(newTabsetName.value)
 
 const someoneSubscribed = () => {
   return _.find(localStorage.getAllKeys(), (k: string) => k.indexOf(".subscription") >= 0)
 }
-
-const onProPage = () => useRouter().currentRoute.value.fullPath === "/trypro"
 
 const toggleLeftDrawer = () => leftDrawerOpen.value = !leftDrawerOpen.value
 
@@ -330,80 +307,11 @@ const closeTrackedTabs = () => {
   TabsetService.closeTrackedTabs()
 }
 
-const startSync = () => {
-  $q.loadingBar.start()
-  if (featuresStore.firebaseEnabled) {
-    console.log("start syncing...")
-    const keys = [...tabsStore.tabsets.keys()]
-    let count = 0
-    let successCount = 0
-    _.forEach(keys, key => {
-      const increment = Math.round(100 / keys.length)
-      console.log("incrementing loadingbar by ", increment)
-      $q.loadingBar.increment(increment)
-      TabsetService.syncTabset(key)
-        .then(res => {
-          count++
-          successCount++
-          //syncStore.setSyncMode(SyncMode.ACTIVE)
-        })
-        .catch(err => {
-          console.log("error", err)
-          count++
-        })
-    })
-  }
-  $q.loadingBar.stop()
-}
-
-const stopSync = () => {
-  $q.loadingBar.start()
-  if (featuresStore.firebaseEnabled) {
-    console.log("stop syncing...")
-    //syncStore.setSyncMode(SyncMode.INACTIVE)
-    syncModel.value = false
-    const keys = [...tabsStore.tabsets.keys()]
-    let count = 0
-    let successCount = 0
-    _.forEach(keys, key => {
-      console.log("got keys", key, tabsStore.tabsets.get(key))
-      const increment = Math.round(100 / keys.length)
-      console.log("incrementing loadingbar by ", increment)
-      $q.loadingBar.increment(increment)
-      TabsetService.unsyncTabset(key)
-        .then(res => {
-          console.log("unsyncing got result " + res)
-          count++
-          successCount++
-
-        })
-        .catch(err => {
-          console.log("error", err)
-          count++
-        })
-    })
-  }
-  $q.loadingBar.stop()
-}
-
-const syncModeToggled = (val: boolean) => {
-  console.log("syncmode toggled", val)
-  if (!val) {
-    console.log("setting back to true...")
-    syncModel.value = true
-    unsyncTabsetsDialog.value = true
-  } else {
-    syncModel.value = true
-  }
-}
-
 const logout = () => {
   console.log("logout!")
 
   auth.logout()
-    .then((res: any) => {
-      //this.localStorage.remove("skysailcms.uid")
-      //this.byeNotification()
+    .then(() => {
       router.push("/about")
     })
     .catch(error => {

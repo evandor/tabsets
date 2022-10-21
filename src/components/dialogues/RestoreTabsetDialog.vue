@@ -40,11 +40,10 @@ defineEmits([
   ...useDialogPluginComponent.emits
 ])
 
-const {dialogRef, onDialogHide, onDialogOK, onDialogCancel} = useDialogPluginComponent()
+const {dialogRef, onDialogHide, onDialogCancel} = useDialogPluginComponent()
 
 const tabsStore = useTabsStore()
 const router = useRouter()
-const $q = useQuasar()
 
 const closeOld = ref("false")
 const warning = ref('')

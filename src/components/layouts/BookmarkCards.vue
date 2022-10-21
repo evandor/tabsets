@@ -168,29 +168,8 @@ function getHost(urlAsString: string, shorten: Boolean = true): string {
   }
 }
 
-function withoutHostname(url: string) {
-  const splits = url?.split(getHost(url))
-  if (splits?.length > 1) {
-    return "..." + splits[1]
-  }
-  return "---"
-}
-
-function maxChar(max: number, t: string): string {
-  if (t?.length > max - 3) {
-    return t.substring(0, max - 3) + "..."
-  }
-  return t;
-}
-
-
 function deleteBookmark(bm: Bookmark) {
   BookmarksService.deleteBookmark(bm)
-}
-
-function saveTab(tab: Tab) {
-  //console.log("saving tab", tab)
-  TabsetService.saveToCurrentTabset(tab)
 }
 
 function cardStyle(bm: Bookmark) {
@@ -206,7 +185,6 @@ function cardStyle(bm: Bookmark) {
 }
 
 const setInfo = (tab: Tab) => {
-  const notificationsStore = useNotificationsStore()
   const parts = (tab.chromeTab?.url || '').split('?')
   if (parts.length > 1) {
     emits('sendCaption', parts[0] + "[... params omitted....]")

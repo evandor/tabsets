@@ -1,6 +1,6 @@
 <template>
   <div class="row items-start">
-    <div class="col-xs-12 col-sm-4 col-md-3 col-lg-2 q-pa-xs" v-for="(tab,index) in tabsWithLimit()">
+    <div class="col-xs-12 col-sm-4 col-md-3 col-lg-2 q-pa-xs" v-for="tab in tabsWithLimit()">
 
       <q-card class="my-card" bordered :style="cardStyle(tab)" @mouseover="setInfo(tab)" @click="selectTab(tab)">
 
@@ -167,22 +167,6 @@ function getHost(urlAsString: string, shorten: Boolean = true): string {
   }
 }
 
-function withoutHostname(url: string) {
-  const splits = url?.split(getHost(url))
-  if (splits?.length > 1) {
-    return "..." + splits[1]
-  }
-  return "---"
-}
-
-function maxChar(max: number, t: string): string {
-  if (t?.length > max - 3) {
-    return t.substring(0, max - 3) + "..."
-  }
-  return t;
-}
-
-
 function closeTab(tab: Tab) {
   Navigation.closeTab(tab)
 }
@@ -197,12 +181,6 @@ function saveTab(tab: Tab) {
   //console.log("saving tab", tab)
   TabsetService.saveToCurrentTabset(tab)
 }
-
-function togglePin(tabId: number) {
-  console.log("toggling pin", tabId)
-  TabsetService.togglePin(tabId)
-}
-
 
 function cardStyle(tab: Tab) {
   let borderColor = ""
@@ -227,14 +205,12 @@ function isOpen(tab: Tab): boolean {
 }
 
 const setInfo = (tab: Tab) => {
-  const notificationsStore = useNotificationsStore()
   const parts = (tab.chromeTab?.url || '').split('?')
   if (parts.length > 1) {
     emits('sendCaption', parts[0] + "[... params omitted....]")
   } else if (parts.length === 1) {
     emits('sendCaption', parts[0].toString());
   }
-//  notificationsStore.setInfo(`created: ${date.formatDate(tab.created, 'DD.MM.YYYY HH:mm')}`)
 }
 
 const selectTab = (tab: Tab) => {
@@ -257,9 +233,7 @@ const selectionChanged = (val: any) => emits('selectionChanged', val)
 const tabsWithLimit = () => {
   const allTabs = props.tabs
   if (allTabs.length > MAX_TABS_TO_SHOW) {
-    const firstTabs = allTabs.slice(0, MAX_TABS_TO_SHOW - 1)
-    //firstTabs.push(new Tab(uid(), null as unknown as chrome.tabs.Tab))
-    return firstTabs
+    return allTabs.slice(0, MAX_TABS_TO_SHOW - 1)
   }
   return allTabs
 }
