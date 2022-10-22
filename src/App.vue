@@ -7,14 +7,11 @@ import {useTabsStore} from "src/stores/tabsStore";
 import {useTabGroupsStore} from "src/stores/tabGroupsStore";
 import {useQuasar} from "quasar";
 import tabsetService from "src/services/TabsetService";
-import backendApi from "src/services/BackendApi";
 import {useFeatureTogglesStore} from "src/stores/featureTogglesStore";
 import {useBookmarksStore} from "src/stores/bookmarksStore";
 import {useSearchStore} from "stores/searchStore";
 import {useNotificationsStore} from "stores/notificationsStore";
 import ChromeApi from "src/services/ChromeApi";
-
-backendApi.init(process.env.BACKEND_URL || "unknown", null)
 
 const tabsStore = useTabsStore()
 const tabGroupsStore = useTabGroupsStore()

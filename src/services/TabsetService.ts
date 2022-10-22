@@ -5,9 +5,6 @@ import _ from "lodash";
 import {Tab, TabStatus} from "src/models/Tab";
 import {Tabset} from "src/models/Tabset";
 import {useNotificationsStore} from "src/stores/notificationsStore";
-import {useAuthStore} from "src/stores/auth";
-import {AxiosResponse} from "axios";
-import {SyncMode} from "src/models/Subscription";
 import {useSearchStore} from "src/stores/searchStore";
 import {useBookmarksStore} from "src/stores/bookmarksStore";
 import IndexedDbPersistenceService from "src/services/IndexedDbPersistenceService"
@@ -92,7 +89,7 @@ class TabsetService {
       //   console.log("saving tabset to firebase")
       //   backendApi.saveTabset(tabset)
       // } else {
-        await this.persistenceService.saveTabset(tabset)
+      await this.persistenceService.saveTabset(tabset)
       //}
       return
     }
@@ -237,12 +234,9 @@ class TabsetService {
     const tabsStore = useTabsStore()
     this.resetSelectedTabs()
     tabsStore.currentTabsetId = tabsetId;
-    const auth = useAuthStore()
-    if (auth.isAuthenticated && auth.user) {
-      localStorage.setItem(auth.user['uid'] + ".selectedTabset", tabsetId)
-    } else {
-      localStorage.setItem("selectedTabset", tabsetId)
-    }
+
+    localStorage.setItem("selectedTabset", tabsetId)
+
   }
 
   saveAllPendingTabs(onlySelected: boolean = false): Promise<void> {

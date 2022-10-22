@@ -227,7 +227,6 @@ import {useTabGroupsStore} from "src/stores/tabGroupsStore";
 import TabsetService from "src/services/TabsetService";
 import {Tab} from "src/models/Tab";
 import {useFeatureTogglesStore} from "src/stores/featureTogglesStore";
-import {useAuthStore} from "src/stores/auth";
 import {MAX_TABS_TO_SHOW} from 'boot/constants'
 import ChromeApi from "src/services/ChromeApi";
 import RestoreTabsetDialog from "components/dialogues/RestoreTabsetDialog.vue";
@@ -238,7 +237,6 @@ const localStorage = useQuasar().localStorage
 const tabsStore = useTabsStore()
 const tabGroupsStore = useTabGroupsStore()
 const featuresStore = useFeatureTogglesStore()
-const auth = useAuthStore()
 
 const tabsetname = ref(tabsStore.currentTabsetName)
 const filter = ref('')
@@ -314,10 +312,10 @@ const updateSelectionCount = () => {
   selectedCount.value = TabsetService.getSelectedPendingTabs().length
 }
 
-const syncTabset = () => {
-  console.log("syncing tabset", tabsStore.currentTabsetId)
-  TabsetService.syncTabset(tabsStore.currentTabsetId)
-}
+// const syncTabset = () => {
+//   console.log("syncing tabset", tabsStore.currentTabsetId)
+//   TabsetService.syncTabset(tabsStore.currentTabsetId)
+// }
 
 const pendingTabsCount = () => {
   let label = formatLength(tabsStore.pendingTabset?.tabs.length - duplicatesCount.value, 'tab', 'tabs')
@@ -330,10 +328,6 @@ const pendingTabsCount = () => {
   return label
 }
 
-const addOpenTabs = () => {
-  const tabs = ChromeApi.getTabs()
-  TabsetService.saveOrReplaceFromChromeTabs(tabsStore.currentTabsetName, tabs, true)
-}
 
 const setFilter = (val: string) => {
   console.log("filter", val, filter.value)

@@ -188,7 +188,7 @@
 </template>
 
 <script setup lang="ts">
-import {onMounted, onUnmounted, ref, watchEffect} from 'vue';
+import {onMounted, onUnmounted, ref} from 'vue';
 import {useQuasar} from "quasar";
 import {useTabsStore} from "src/stores/tabsStore";
 import {useTabGroupsStore} from "src/stores/tabGroupsStore";
@@ -201,9 +201,7 @@ import DrawerLeft from "src/components/DrawerLeft.vue"
 import TabsetService from "src/services/TabsetService";
 import {useSearchStore} from "stores/searchStore";
 import {useFeatureTogglesStore} from "src/stores/featureTogglesStore";
-import {useAuthStore} from "src/stores/auth"
 import _ from "lodash"
-import {SyncMode} from "src/models/Subscription";
 import NewTabset from "components/dialogues/NewTabset.vue";
 import ExportDialog from "components/dialogues/ExportDialog.vue";
 import ImportDialog from "components/dialogues/ImportDialog.vue";
@@ -212,7 +210,6 @@ const router = useRouter()
 const tabsStore = useTabsStore()
 const tabGroupsStore = useTabGroupsStore()
 const searchStore = useSearchStore()
-const auth = useAuthStore()
 
 const rightDrawerOpen = ref(true)
 const leftDrawerOpen = ref(false)
@@ -275,7 +272,7 @@ function submitSearch() {
 }
 
 const title = () => {
-  return auth.isAuthenticated ? 'TabsetsPro' : 'Tabsets'
+  return 'Tabsets'
 }
 const goHome = () => router.push("/")
 
@@ -298,17 +295,6 @@ const closeTrackedTabs = () => {
   TabsetService.closeTrackedTabs()
 }
 
-const logout = () => {
-  console.log("logout!")
-
-  auth.logout()
-    .then(() => {
-      router.push("/about")
-    })
-    .catch(error => {
-      //this.handleError(error)
-    })
-}
 
 const showExportDialog = () => {
   $q.dialog({component: ExportDialog})

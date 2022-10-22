@@ -14,9 +14,7 @@
     <fab></fab>
 
 
-
   </q-page>
-
 
 
 </template>
@@ -34,13 +32,11 @@ import EditTabsetComponent from "components/EditTabsetComponent.vue";
 import Fab from "components/Fab.vue";
 import TabsetList from "components/TabsetList.vue";
 import TabsetThumbnails from "components/TabsetThumbnails.vue";
-import {useAuthStore} from "src/stores/auth";
 
 const route = useRoute();
 const router = useRouter();
 const localStorage = useQuasar().localStorage
 const tabsStore = useTabsStore()
-const tabGroupsStore = useTabGroupsStore()
 
 
 const $q = useQuasar()
@@ -52,20 +48,13 @@ if (layoutFromStorage) {
   layout.value = layoutFromStorage.toString()
 }
 
-const auth = useAuthStore()
-if (auth.isAuthenticated && auth.user) {
-  const selectedTabsetFromStorage = localStorage.getItem(auth.user['uid'] + ".selectedTabset") as unknown as string
-  if (selectedTabsetFromStorage) {
-    console.log("selecting tabset from storage")
-    TabsetService.selectTabset(selectedTabsetFromStorage)
-  }
-} else {
-  const selectedTabsetFromStorage = localStorage.getItem("selectedTabset") as unknown as string
-  if (selectedTabsetFromStorage) {
-    console.log("selecting tabset from storage")
-    TabsetService.selectTabset(selectedTabsetFromStorage)
-  }
+
+const selectedTabsetFromStorage = localStorage.getItem("selectedTabset") as unknown as string
+if (selectedTabsetFromStorage) {
+  console.log("selecting tabset from storage")
+  TabsetService.selectTabset(selectedTabsetFromStorage)
 }
+
 
 function unpinnedNoGroup() {
   return _.filter(
@@ -85,7 +74,6 @@ function tabsForGroup(groupId: number) {
 //   tabsetname.value = tabsetIdent['label' as keyof object]
 //   tabsStore.selectCurrentTabset(tabsetIdent['value' as keyof object])
 // }
-
 
 
 const tabsetOptions = () => {
