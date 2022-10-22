@@ -24,15 +24,6 @@
 
         <q-space/>
 
-        <q-btn v-if="syncStore.showSyncButton"
-               outline rounded
-               flat dense icon="cloud_upload"
-               color="warning" label="Sync Tabsets..."
-               class="q-mr-md"
-               @click="syncTabsetsDialog = true">
-          <q-tooltip>Synchronizing Tabsets allows you to use tabsets across multiple browsers and computers</q-tooltip>
-        </q-btn>
-
         <div v-if="tabsStore.pendingTabset?.tabs.length > 0 && tabsStore.tabsets.size > 1" class="q-mr-lg">
           {{ tabsStore.pendingTabset?.tabs.length }} unassigned tab(s)
         </div>

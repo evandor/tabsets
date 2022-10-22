@@ -1,6 +1,5 @@
 import {useTabsStore} from "src/stores/tabsStore";
 import {Tab} from "src/models/Tab";
-import ChromeApi from "src/services/ChromeApi";
 import {useNotificationsStore} from "stores/notificationsStore";
 import TabsetService from "src/services/TabsetService";
 

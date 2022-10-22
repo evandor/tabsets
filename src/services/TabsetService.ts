@@ -14,8 +14,11 @@ import {AxiosResponse} from "axios";
 import {SyncMode} from "src/models/Subscription";
 import {useSearchStore} from "src/stores/searchStore";
 import {useBookmarksStore} from "src/stores/bookmarksStore";
+import IndexedDbPersistenceService from "src/services/IndexedDbPersistenceService"
 
 class TabsetService {
+
+  private persistenceService = IndexedDbPersistenceService
 
   private db: IDBPDatabase = null as unknown as IDBPDatabase
 
@@ -30,7 +33,8 @@ class TabsetService {
    */
   async init() {
     this.db = await this.initDatabase();
-    useSearchStore().populate(this.db.getAll('content',))
+    useSearchStore().populate(this.db.getAll('content'))
+    this.persistenceService.loadTabsets()
     await this.loadTabsetsFromIndexDb();
     this.loadTabsetsFromFirebase()
   }
@@ -92,7 +96,7 @@ class TabsetService {
 
   async saveTabset(tabset: Tabset) {
     if (tabset.id) {
-      if (useFeatureTogglesStore().firebaseEnabled && useAuthStore().isAuthenticated && useAuthStore().subscription.syncMode === SyncMode.ACTIVE) {
+      if (useAuthStore().isAuthenticated && useAuthStore().subscription.syncMode === SyncMode.ACTIVE) {
         console.log("saving tabset to firebase")
         backendApi.saveTabset(tabset)
       } else {
@@ -562,9 +566,9 @@ class TabsetService {
   }
 
   loadTabsetsFromFirebase() {
-    const firebaseEnabled = useFeatureTogglesStore().firebaseEnabled
+    //const firebaseEnabled = useFeatureTogglesStore().firebaseEnabled
     const authenticated = useAuthStore().isAuthenticated
-    if (firebaseEnabled && authenticated) {
+    if (authenticated) {
       backendApi.getTabsets()
         .then(ts => {
           console.log("tabsets from firebase", ts.data)
