@@ -20,9 +20,9 @@ class IndexedDbPersistenceService implements PersistenceService {
       this.db.get('tabsets', key)
         .then(ts => {
           if ('ignored' === key) {
-            tabsStore.ignoredTabset = ts//JSON.parse(ts)
+            tabsStore.ignoredTabset = ts
           } else {
-            tabsStore.addTabset(ts)//JSON.parse(ts))
+            tabsStore.addTabset(ts)
           }
         })
         .catch(err => console.log("err", err))
@@ -37,35 +37,7 @@ class IndexedDbPersistenceService implements PersistenceService {
     return this.db.delete('tabsets', tabsetId)
   }
 
-  private async initDatabase(): Promise<IDBPDatabase> {
-    return await openDB(INDEX_DB_NAME, 2, {
-      // upgrading see https://stackoverflow.com/questions/50193906/create-index-on-already-existing-objectstore
-      upgrade(db) {
-        if (!db.objectStoreNames.contains('tabsets')) {
-          console.log("creating db tabsets")
-          db.createObjectStore('tabsets');
-        }
-        if (!db.objectStoreNames.contains('thumbnails')) {
-          console.log("creating db thumbnails")
-          let store = db.createObjectStore('thumbnails');
-          store.createIndex("expires", "expires", {unique: false});
-        }
-        if (!db.objectStoreNames.contains('content')) {
-          console.log("creating db content")
-          let store = db.createObjectStore('content');
-          store.createIndex("expires", "expires", {unique: false});
-        }
-        if (!db.objectStoreNames.contains('searchIndex')) {
-          console.log("creating db searchIndex")
-          let store = db.createObjectStore('searchIndex');
-          store.createIndex("expires", "expires", {unique: false});
-        }
-      },
-    });
-  }
-
-
-  async updateContent(url: string) {
+  async updateContent(url: string):Promise<void> {
     let content = ''
     let description = ''
     const encodedUrl = btoa(url)
@@ -100,7 +72,7 @@ class IndexedDbPersistenceService implements PersistenceService {
     }
   }
 
-  async updateThumbnail(url: string) {
+  async updateThumbnail(url: string):Promise<void> {
     const encodedUrl = btoa(url)
     const tnObjectStore = this.db.transaction("thumbnails", "readwrite").objectStore("thumbnails");
     let tnCursor = await tnObjectStore.openCursor()
@@ -118,32 +90,32 @@ class IndexedDbPersistenceService implements PersistenceService {
     }
   }
 
-  saveThumbnail(url: string, thumbnail: string) {
+  saveThumbnail(url: string, thumbnail: string):Promise<void> {
     const encodedTabUrl = btoa(url)
     return this.db.put('thumbnails', {expires: new Date().getTime() + 1000 * 60 * 60, thumbnail: thumbnail}, encodedTabUrl)
       .then(ts => console.log("added thumbnail"))
       .catch(err => console.log("err", err))
   }
 
-  async getThumbnail(url: string) {
+  async getThumbnail(url: string):Promise<string> {
     const encodedUrl = btoa(url)
     return await this.db.get('thumbnails', encodedUrl)
   }
 
-  async getContent(url: string) {
+  async getContent(url: string):Promise<string> {
     const encodedUrl = btoa(url)
     return await this.db.get('content', encodedUrl)
   }
 
-  deleteThumbnail(url: string) {
+  deleteThumbnail(url: string):Promise<void> {
     return this.db.delete('thumbnails', btoa(url))
   }
 
-  deleteContent(url: string) {
+  deleteContent(url: string):Promise<void> {
     return this.db.delete('content', btoa(url))
   }
 
-  saveContent(tab: chrome.tabs.Tab, text: string, metas: object, title: string, tabsetIds: string[]) {
+  saveContent(tab: chrome.tabs.Tab, text: string, metas: object, title: string, tabsetIds: string[]):Promise<IDBValidKey> {
     if (tab.url) {
       const encodedTabUrl = btoa(tab.url)
       return this.db.put('content', {
@@ -160,7 +132,7 @@ class IndexedDbPersistenceService implements PersistenceService {
     return Promise.reject("tab.url missing")
   }
 
-  async cleanUpThumbnails() {
+  async cleanUpThumbnails():Promise<void> {
     const objectStore = this.db.transaction("thumbnails", "readwrite").objectStore("thumbnails");
     let cursor = await objectStore.openCursor()
     while (cursor) {
@@ -178,17 +150,7 @@ class IndexedDbPersistenceService implements PersistenceService {
     }
   }
 
-  private urlExistsInATabset(url: string): boolean {
-    //console.log("checking url", url)
-    for (let ts of [...useTabsStore().tabsets.values()]) {
-      if (_.find(ts.tabs, t => t.chromeTab.url === url)) {
-        return true;
-      }
-    }
-    return false;
-  }
-
-  async cleanUpContent() {
+  async cleanUpContent(): Promise<void> {
     const contentObjectStore = this.db.transaction("content", "readwrite").objectStore("content");
     let contentCursor = await contentObjectStore.openCursor()
     while (contentCursor) {
@@ -216,9 +178,47 @@ class IndexedDbPersistenceService implements PersistenceService {
     }
   }
 
-  getContents() {
+  getContents(): Promise<any[]> {
     return this.db.getAll('content')
   }
+
+  private async initDatabase(): Promise<IDBPDatabase> {
+    return await openDB(INDEX_DB_NAME, 2, {
+      // upgrading see https://stackoverflow.com/questions/50193906/create-index-on-already-existing-objectstore
+      upgrade(db) {
+        if (!db.objectStoreNames.contains('tabsets')) {
+          console.log("creating db tabsets")
+          db.createObjectStore('tabsets');
+        }
+        if (!db.objectStoreNames.contains('thumbnails')) {
+          console.log("creating db thumbnails")
+          let store = db.createObjectStore('thumbnails');
+          store.createIndex("expires", "expires", {unique: false});
+        }
+        if (!db.objectStoreNames.contains('content')) {
+          console.log("creating db content")
+          let store = db.createObjectStore('content');
+          store.createIndex("expires", "expires", {unique: false});
+        }
+        if (!db.objectStoreNames.contains('searchIndex')) {
+          console.log("creating db searchIndex")
+          let store = db.createObjectStore('searchIndex');
+          store.createIndex("expires", "expires", {unique: false});
+        }
+      },
+    });
+  }
+
+  private urlExistsInATabset(url: string): boolean {
+    //console.log("checking url", url)
+    for (let ts of [...useTabsStore().tabsets.values()]) {
+      if (_.find(ts.tabs, t => t.chromeTab.url === url)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
 }
 
 export default new IndexedDbPersistenceService()

@@ -5,11 +5,8 @@ import _ from "lodash";
 import {Tab, TabStatus} from "src/models/Tab";
 import {Tabset} from "src/models/Tabset";
 import {useNotificationsStore} from "src/stores/notificationsStore";
-import {IDBPDatabase, openDB} from "idb";
 import backendApi from "src/services/BackendApi";
-import {useFeatureTogglesStore} from "src/stores/featureTogglesStore";
 import {useAuthStore} from "src/stores/auth";
-import {INDEX_DB_NAME} from "boot/constants";
 import {AxiosResponse} from "axios";
 import {SyncMode} from "src/models/Subscription";
 import {useSearchStore} from "src/stores/searchStore";
@@ -19,8 +16,6 @@ import IndexedDbPersistenceService from "src/services/IndexedDbPersistenceServic
 class TabsetService {
 
   private persistenceService = IndexedDbPersistenceService
-
-  private db: IDBPDatabase = null as unknown as IDBPDatabase
 
   private localStorage: LocalStorage = null as unknown as LocalStorage
 
@@ -32,12 +27,9 @@ class TabsetService {
    * Init, called when extension is loaded (via App.vue)
    */
   async init() {
-    //this.db = await this.initDatabase();
     await this.persistenceService.init();
     useSearchStore().populate(this.persistenceService.getContents())
     await this.persistenceService.loadTabsets()
-    //await this.loadTabsetsFromIndexDb();
-    //this.loadTabsetsFromFirebase()
   }
 
   /**
@@ -101,11 +93,8 @@ class TabsetService {
         console.log("saving tabset to firebase")
         backendApi.saveTabset(tabset)
       } else {
-        //console.log("tabset", tabset)
         await this.persistenceService.saveTabset(tabset)
-        //await this.db.put('tabsets', JSON.parse(JSON.stringify(tabset)), tabset.id);
       }
-      //localStorage.setItem("tabsets.context", tabset.id)
       return
     }
   }
@@ -163,29 +152,10 @@ class TabsetService {
     return _.find([...tabsStore.tabsets.values()], ts => ts.id === tabsetId)
   }
 
-  // private findInLocalStorage(tabsetName: string): string | undefined {
-  //   return _.first(
-  //     _.map(
-  //       _.filter(
-  //         _.map(
-  //           _.filter(this.localStorage.getAllKeys(), (t: string) => t.startsWith("tabsets.tabset.")),
-  //           (key: string) => {
-  //             //console.log("key", key)
-  //             return this.localStorage.getItem(key)
-  //           }), (ts: Tabset) => {
-  //           //console.log("ts", ts.name, tabsetName)
-  //           return ts.name === tabsetName
-  //         }), (ts: any) => {
-  //         //console.log("mapping to", ts.id)
-  //         return ts.id as string
-  //       }))
-  // }
-
   getCurrentTabset(): Tabset | undefined {
     const tabsStore = useTabsStore()
     return tabsStore.tabsets.get(tabsStore.currentTabsetId)
   }
-
 
   setStatus(tabId: number, status: TabStatus) {
     const currentTabset: Tabset = this.getCurrentTabset() || new Tabset("", "", [], [])
@@ -228,53 +198,9 @@ class TabsetService {
       let content = ''
       let description = ''
 
-      // --- update content store ---
       this.persistenceService.updateContent(tab.chromeTab.url)
-      // const objectStore = this.db.transaction("content", "readwrite").objectStore("content");
-      // let cursor = await objectStore.openCursor()
-      // while (cursor) {
-      //   //console.log("cursor", cursor.value, encodedUrl)
-      //   if (cursor.value.expires !== 0 && cursor.value.id === encodedUrl) {
-      //     const data = cursor.value
-      //     objectStore.put({
-      //         id: data.id,
-      //         expires: 0,
-      //         content: data.content,
-      //         metas: data.metas,
-      //         title: data.title,
-      //         url: data.url,
-      //         tabsets: data.tabsets,
-      //         favIconUrl: data.favIconUrl
-      //       },
-      //       cursor.key)
-      //
-      //     content = data.content
-      //     Object.keys(data.metas).forEach((key: string) => {
-      //       if (key.indexOf("description") >= 0 && data.metas[key] && data.metas[key].trim().length > description.length) {
-      //         //console.log("updating description to ", data.metas[key].trim())
-      //         description = data.metas[key].trim()
-      //       }
-      //     })
-      //   }
-      //   cursor = await cursor.continue();
-      // }
 
-      // --- update thumbnail store ---
       this.persistenceService.updateThumbnail(tab.chromeTab.url)
-      // const tnObjectStore = this.db.transaction("thumbnails", "readwrite").objectStore("thumbnails");
-      // let tnCursor = await tnObjectStore.openCursor()
-      // while (tnCursor) {
-      //   //console.log("cursor", tnCursor.value, encodedUrl)
-      //   if (tnCursor.value.expires !== 0 && tnCursor.key === encodedUrl) {
-      //     const data = tnCursor.value
-      //     tnObjectStore.put({
-      //         expires: 0,
-      //         thumbnail: data.thumbnail
-      //       },
-      //       tnCursor.key)
-      //   }
-      //   tnCursor = await tnCursor.continue();
-      // }
 
       // update fuse index
       return useSearchStore().addToIndex(
@@ -390,9 +316,6 @@ class TabsetService {
       this.persistenceService.saveThumbnail(tab.url, thumbnail)
         .then(ts => console.log("added thumbnail"))
         .catch(err => console.log("err", err))
-      // this.db.put('thumbnails', {expires: new Date().getTime() + 1000 * 60 * 60, thumbnail: thumbnail}, encodedTabUrl)
-      //   .then(ts => console.log("added thumbnail"))
-      //   .catch(err => console.log("err", err))
     }
   }
 
@@ -433,50 +356,8 @@ class TabsetService {
         .then(ts => console.log("added content"))
         .catch(err => console.log("err", err))
 
-      // this.db.put('content', {
-      //   id: encodedTabUrl,
-      //   expires: new Date().getTime() + 1000 * 60 * 60,
-      //   title,
-      //   url,
-      //   content: text,
-      //   metas: metas,
-      //   tabsets: tabsetIds,
-      //   favIconUrl: tab.favIconUrl
-      // }, encodedTabUrl)
-      //   .then(ts => console.log("added content"))
-      //   .catch(err => console.log("err", err))
-
-
     }
   }
-
-  // saveMetas(chromeTab: chrome.tabs.Tab | undefined, metas: object) {
-  //   if (chromeTab && chromeTab.url) {
-  //
-  //     let searchIndexId: number | undefined = undefined
-  //     const tabsetIds: string[] = this.tabsetsFor(chromeTab.url)
-  //     _.forEach(tabsetIds, tsId => {
-  //       const tabset = useTabsStore().tabsets.get(tsId)
-  //       if (tabset) {
-  //         _.forEach(tabset.tabs, t => {
-  //           if (t.chromeTab.url === chromeTab.url) {
-  //             t.metas = metas
-  //             console.log("tab", t)
-  //             if (t.searchIndexId) {
-  //               searchIndexId = t.searchIndexId
-  //             }
-  //           }
-  //         })
-  //         this.saveTabset(tabset)
-  //       }
-  //     })
-  //
-  //     // if (searchIndexId) {
-  //     //   useSearchStore().updateDescription(searchIndexId, metas['description' as keyof object])
-  //     // }
-  //     //useSearchStore().addToIndex(encodedTabUrl, tab.title || '', tab.url, tab.text, tab.tabsetIds, tab.favIconUrl || '')
-  //   }
-  // }
 
   setCustomTitle(tab: Tab, title: string) {
     tab.name = title
@@ -528,14 +409,11 @@ class TabsetService {
     this.saveTabset(ignoredTS)
   }
 
+  // deprecated
   syncTabset(tabsetId: string): Promise<AxiosResponse<string>> {
     const tabsStore = useTabsStore()
     const ts = tabsStore.getTabset(tabsetId)
     if (ts) {
-      // const backend = initializeBackendApi(process.env.BACKEND_URL || "unknown", null)
-
-      //const clonedTs = JSON.parse(JSON.stringify(ts))
-      // console.log("cloned ts", ts, clonedTs)
       return backendApi.saveTabset(ts)
         .then(res => {
           this.delete(ts.id)
@@ -543,14 +421,12 @@ class TabsetService {
           console.log("got backend answer: ", res)
           return res
         })
-      // .catch(err => {
-      //   console.error("err", err)
-      // })
     }
     return Promise.reject("tabset '" + tabsetId + "' not found")
 
   }
 
+  // deprecated
   unsyncTabset(tabsetId: string): Promise<AxiosResponse<string>> {
     const tabsStore = useTabsStore()
     const ts = tabsStore.getTabset(tabsetId)
@@ -567,9 +443,6 @@ class TabsetService {
           console.log("got backend answer: ", res)
           return res
         })
-      // .catch(err => {
-      //   console.error("err", err)
-      // })
     }
     return Promise.reject("tabset '" + tabsetId + "' not found")
 
@@ -666,48 +539,8 @@ class TabsetService {
   async housekeeping() {
     // clean up thumbnails
     this.persistenceService.cleanUpThumbnails()
-    // const objectStore = this.db.transaction("thumbnails", "readwrite").objectStore("thumbnails");
-    // let cursor = await objectStore.openCursor()
-    // while (cursor) {
-    //   if (cursor.value.expires !== 0) {
-    //     const exists: boolean = this.urlExistsInATabset(atob(cursor.key.toString()))
-    //     if (exists) {
-    //       objectStore.put({expires: 0, thumbnail: cursor.value.thumbnail}, cursor.key)
-    //     } else {
-    //       if (cursor.value.expires < new Date().getTime()) {
-    //         objectStore.delete(cursor.key)
-    //       }
-    //     }
-    //   }
-    //   cursor = await cursor.continue();
-    // }
-    // clean up contents
+
     this.persistenceService.cleanUpContent()
-    // const contentObjectStore = this.db.transaction("content", "readwrite").objectStore("content");
-    // let contentCursor = await contentObjectStore.openCursor()
-    // while (contentCursor) {
-    //   if (contentCursor.value.expires !== 0) {
-    //     const exists: boolean = this.urlExistsInATabset(atob(contentCursor.key.toString()))
-    //     if (exists) {
-    //       const data = contentCursor.value
-    //       contentObjectStore.put({
-    //           id: data.id,
-    //           expires: 0,
-    //           content: data.content,
-    //           title: data.title,
-    //           url: data.url,
-    //           tabsets: data.tabsets,
-    //           favIconUrl: data.favIconUrl
-    //         },
-    //         contentCursor.key)
-    //     } else {
-    //       if (contentCursor.value.expires < new Date().getTime()) {
-    //         contentObjectStore.delete(contentCursor.key)
-    //       }
-    //     }
-    //   }
-    //   contentCursor = await contentCursor.continue();
-    // }
   }
 
   urlExistsInATabset(url: string): boolean {
@@ -761,33 +594,6 @@ class TabsetService {
       this.saveTabset(tabset)
     }
   }
-
-  // private async initDatabase(): Promise<IDBPDatabase> {
-  //   return await openDB(INDEX_DB_NAME, 2, {
-  //     // upgrading see https://stackoverflow.com/questions/50193906/create-index-on-already-existing-objectstore
-  //     upgrade(db) {
-  //       if (!db.objectStoreNames.contains('tabsets')) {
-  //         console.log("creating db tabsets")
-  //         db.createObjectStore('tabsets');
-  //       }
-  //       if (!db.objectStoreNames.contains('thumbnails')) {
-  //         console.log("creating db thumbnails")
-  //         let store = db.createObjectStore('thumbnails');
-  //         store.createIndex("expires", "expires", {unique: false});
-  //       }
-  //       if (!db.objectStoreNames.contains('content')) {
-  //         console.log("creating db content")
-  //         let store = db.createObjectStore('content');
-  //         store.createIndex("expires", "expires", {unique: false});
-  //       }
-  //       if (!db.objectStoreNames.contains('searchIndex')) {
-  //         console.log("creating db searchIndex")
-  //         let store = db.createObjectStore('searchIndex');
-  //         store.createIndex("expires", "expires", {unique: false});
-  //       }
-  //     },
-  //   });
-  // }
 
 }
 
