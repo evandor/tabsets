@@ -5,7 +5,6 @@ import _ from "lodash";
 import {Tab, TabStatus} from "src/models/Tab";
 import {Tabset} from "src/models/Tabset";
 import {useNotificationsStore} from "src/stores/notificationsStore";
-import backendApi from "src/services/BackendApi";
 import {useAuthStore} from "src/stores/auth";
 import {AxiosResponse} from "axios";
 import {SyncMode} from "src/models/Subscription";
@@ -89,12 +88,12 @@ class TabsetService {
 
   async saveTabset(tabset: Tabset) {
     if (tabset.id) {
-      if (useAuthStore().isAuthenticated && useAuthStore().subscription.syncMode === SyncMode.ACTIVE) {
-        console.log("saving tabset to firebase")
-        backendApi.saveTabset(tabset)
-      } else {
+      // if (useAuthStore().isAuthenticated && useAuthStore().subscription.syncMode === SyncMode.ACTIVE) {
+      //   console.log("saving tabset to firebase")
+      //   backendApi.saveTabset(tabset)
+      // } else {
         await this.persistenceService.saveTabset(tabset)
-      }
+      //}
       return
     }
   }
@@ -410,60 +409,60 @@ class TabsetService {
   }
 
   // deprecated
-  syncTabset(tabsetId: string): Promise<AxiosResponse<string>> {
-    const tabsStore = useTabsStore()
-    const ts = tabsStore.getTabset(tabsetId)
-    if (ts) {
-      return backendApi.saveTabset(ts)
-        .then(res => {
-          this.delete(ts.id)
-          this.loadTabsetsFromFirebase()
-          console.log("got backend answer: ", res)
-          return res
-        })
-    }
-    return Promise.reject("tabset '" + tabsetId + "' not found")
-
-  }
+  // syncTabset(tabsetId: string): Promise<AxiosResponse<string>> {
+  //   const tabsStore = useTabsStore()
+  //   const ts = tabsStore.getTabset(tabsetId)
+  //   if (ts) {
+  //     return backendApi.saveTabset(ts)
+  //       .then(res => {
+  //         this.delete(ts.id)
+  //         this.loadTabsetsFromFirebase()
+  //         console.log("got backend answer: ", res)
+  //         return res
+  //       })
+  //   }
+  //   return Promise.reject("tabset '" + tabsetId + "' not found")
+  //
+  // }
 
   // deprecated
-  unsyncTabset(tabsetId: string): Promise<AxiosResponse<string>> {
-    const tabsStore = useTabsStore()
-    const ts = tabsStore.getTabset(tabsetId)
-    if (ts) {
-      this.saveTabset(ts)
-      // const backend = initializeBackendApi(process.env.BACKEND_URL || "unknown", null)
+  // unsyncTabset(tabsetId: string): Promise<AxiosResponse<string>> {
+  //   const tabsStore = useTabsStore()
+  //   const ts = tabsStore.getTabset(tabsetId)
+  //   if (ts) {
+  //     this.saveTabset(ts)
+  //     // const backend = initializeBackendApi(process.env.BACKEND_URL || "unknown", null)
+  //
+  //     //const clonedTs = JSON.parse(JSON.stringify(ts))
+  //     // console.log("cloned ts", ts, clonedTs)
+  //     return backendApi.deleteTabset(tabsetId)
+  //       .then(res => {
+  //         //this.delete(ts.id)
+  //         this.loadTabsetsFromFirebase()
+  //         console.log("got backend answer: ", res)
+  //         return res
+  //       })
+  //   }
+  //   return Promise.reject("tabset '" + tabsetId + "' not found")
+  //
+  // }
 
-      //const clonedTs = JSON.parse(JSON.stringify(ts))
-      // console.log("cloned ts", ts, clonedTs)
-      return backendApi.deleteTabset(tabsetId)
-        .then(res => {
-          //this.delete(ts.id)
-          this.loadTabsetsFromFirebase()
-          console.log("got backend answer: ", res)
-          return res
-        })
-    }
-    return Promise.reject("tabset '" + tabsetId + "' not found")
-
-  }
-
-  loadTabsetsFromFirebase() {
-    //const firebaseEnabled = useFeatureTogglesStore().firebaseEnabled
-    const authenticated = useAuthStore().isAuthenticated
-    if (authenticated) {
-      backendApi.getTabsets()
-        .then(ts => {
-          console.log("tabsets from firebase", ts.data)
-
-          _.forEach(ts.data, (ts: Tabset) => {
-            console.log("got tabset", ts)
-            useTabsStore().addTabset(ts)
-          })
-        })
-        .catch(err => console.log("error", err))
-    }
-  }
+  // loadTabsetsFromFirebase() {
+  //   //const firebaseEnabled = useFeatureTogglesStore().firebaseEnabled
+  //   const authenticated = useAuthStore().isAuthenticated
+  //   if (authenticated) {
+  //     backendApi.getTabsets()
+  //       .then(ts => {
+  //         console.log("tabsets from firebase", ts.data)
+  //
+  //         _.forEach(ts.data, (ts: Tabset) => {
+  //           console.log("got tabset", ts)
+  //           useTabsStore().addTabset(ts)
+  //         })
+  //       })
+  //       .catch(err => console.log("error", err))
+  //   }
+  // }
 
   exportData(exportAs: string): Promise<any> {
     console.log("exporting as ", exportAs)
