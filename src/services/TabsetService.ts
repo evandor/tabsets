@@ -32,11 +32,12 @@ class TabsetService {
    * Init, called when extension is loaded (via App.vue)
    */
   async init() {
-    this.db = await this.initDatabase();
-    useSearchStore().populate(this.db.getAll('content'))
-    this.persistenceService.loadTabsets()
-    await this.loadTabsetsFromIndexDb();
-    this.loadTabsetsFromFirebase()
+    //this.db = await this.initDatabase();
+    await this.persistenceService.init();
+    useSearchStore().populate(this.persistenceService.getContents())
+    await this.persistenceService.loadTabsets()
+    //await this.loadTabsetsFromIndexDb();
+    //this.loadTabsetsFromFirebase()
   }
 
   /**
@@ -101,7 +102,8 @@ class TabsetService {
         backendApi.saveTabset(tabset)
       } else {
         //console.log("tabset", tabset)
-        await this.db.put('tabsets', JSON.parse(JSON.stringify(tabset)), tabset.id);
+        await this.persistenceService.saveTabset(tabset)
+        //await this.db.put('tabsets', JSON.parse(JSON.stringify(tabset)), tabset.id);
       }
       //localStorage.setItem("tabsets.context", tabset.id)
       return
@@ -147,7 +149,8 @@ class TabsetService {
       const tabsStore = useTabsStore()
       _.forEach(tabsStore.getTabset(tabsetId)?.tabs, t => this.removeThumbnailsFor(t.chromeTab.url || ''))
       tabsStore.deleteTabset(tabsetId)
-      this.db.delete('tabsets', tabsetId)
+      this.persistenceService.deleteTabset(tabsetId)
+      //this.db.delete('tabsets', tabsetId)
       const nextKey: string = tabsStore.tabsets.keys().next().value
       console.log("setting next key to", nextKey)
       this.selectTabset(nextKey)
@@ -226,50 +229,52 @@ class TabsetService {
       let description = ''
 
       // --- update content store ---
-      const objectStore = this.db.transaction("content", "readwrite").objectStore("content");
-      let cursor = await objectStore.openCursor()
-      while (cursor) {
-        //console.log("cursor", cursor.value, encodedUrl)
-        if (cursor.value.expires !== 0 && cursor.value.id === encodedUrl) {
-          const data = cursor.value
-          objectStore.put({
-              id: data.id,
-              expires: 0,
-              content: data.content,
-              metas: data.metas,
-              title: data.title,
-              url: data.url,
-              tabsets: data.tabsets,
-              favIconUrl: data.favIconUrl
-            },
-            cursor.key)
-
-          content = data.content
-          Object.keys(data.metas).forEach((key: string) => {
-            if (key.indexOf("description") >= 0 && data.metas[key] && data.metas[key].trim().length > description.length) {
-              //console.log("updating description to ", data.metas[key].trim())
-              description = data.metas[key].trim()
-            }
-          })
-        }
-        cursor = await cursor.continue();
-      }
+      this.persistenceService.updateContent(tab.chromeTab.url)
+      // const objectStore = this.db.transaction("content", "readwrite").objectStore("content");
+      // let cursor = await objectStore.openCursor()
+      // while (cursor) {
+      //   //console.log("cursor", cursor.value, encodedUrl)
+      //   if (cursor.value.expires !== 0 && cursor.value.id === encodedUrl) {
+      //     const data = cursor.value
+      //     objectStore.put({
+      //         id: data.id,
+      //         expires: 0,
+      //         content: data.content,
+      //         metas: data.metas,
+      //         title: data.title,
+      //         url: data.url,
+      //         tabsets: data.tabsets,
+      //         favIconUrl: data.favIconUrl
+      //       },
+      //       cursor.key)
+      //
+      //     content = data.content
+      //     Object.keys(data.metas).forEach((key: string) => {
+      //       if (key.indexOf("description") >= 0 && data.metas[key] && data.metas[key].trim().length > description.length) {
+      //         //console.log("updating description to ", data.metas[key].trim())
+      //         description = data.metas[key].trim()
+      //       }
+      //     })
+      //   }
+      //   cursor = await cursor.continue();
+      // }
 
       // --- update thumbnail store ---
-      const tnObjectStore = this.db.transaction("thumbnails", "readwrite").objectStore("thumbnails");
-      let tnCursor = await tnObjectStore.openCursor()
-      while (tnCursor) {
-        //console.log("cursor", tnCursor.value, encodedUrl)
-        if (tnCursor.value.expires !== 0 && tnCursor.key === encodedUrl) {
-          const data = tnCursor.value
-          tnObjectStore.put({
-              expires: 0,
-              thumbnail: data.thumbnail
-            },
-            tnCursor.key)
-        }
-        tnCursor = await tnCursor.continue();
-      }
+      this.persistenceService.updateThumbnail(tab.chromeTab.url)
+      // const tnObjectStore = this.db.transaction("thumbnails", "readwrite").objectStore("thumbnails");
+      // let tnCursor = await tnObjectStore.openCursor()
+      // while (tnCursor) {
+      //   //console.log("cursor", tnCursor.value, encodedUrl)
+      //   if (tnCursor.value.expires !== 0 && tnCursor.key === encodedUrl) {
+      //     const data = tnCursor.value
+      //     tnObjectStore.put({
+      //         expires: 0,
+      //         thumbnail: data.thumbnail
+      //       },
+      //       tnCursor.key)
+      //   }
+      //   tnCursor = await tnCursor.continue();
+      // }
 
       // update fuse index
       return useSearchStore().addToIndex(
@@ -382,37 +387,38 @@ class TabsetService {
     if (tab && tab.url) {
       const encodedTabUrl = btoa(tab.url)
       //localStorage.setItem("tabsets.tab.xxx", thumbnail)
-      this.db.put('thumbnails', {expires: new Date().getTime() + 1000 * 60 * 60, thumbnail: thumbnail}, encodedTabUrl)
+      this.persistenceService.saveThumbnail(tab.url, thumbnail)
         .then(ts => console.log("added thumbnail"))
         .catch(err => console.log("err", err))
+      // this.db.put('thumbnails', {expires: new Date().getTime() + 1000 * 60 * 60, thumbnail: thumbnail}, encodedTabUrl)
+      //   .then(ts => console.log("added thumbnail"))
+      //   .catch(err => console.log("err", err))
     }
   }
 
   async getThumbnailFor(selectedTab: Tab): Promise<any> {
     //console.log("checking thumbnail for", selectedTab.chromeTab.url)
     if (selectedTab.chromeTab.url) {
-      const encodedUrl = btoa(selectedTab.chromeTab.url)
-      //console.log("encoded", encodedUrl)
-      return await this.db.get('thumbnails', encodedUrl)
+      return await this.persistenceService.getThumbnail(selectedTab.chromeTab.url)
+
     }
     return Promise.reject("url not provided");
   }
 
   async getContentFor(selectedTab: Tab): Promise<any> {
     if (selectedTab.chromeTab.url) {
-      const encodedUrl = btoa(selectedTab.chromeTab.url)
-      // console.log("encodedUrl",encodedUrl)
-      return await this.db.get('content', encodedUrl)
+      return this.persistenceService.getContent(selectedTab.chromeTab.url)
     }
     return Promise.reject("url not provided");
   }
 
   removeThumbnailsFor(url: string): Promise<any> {
-    return this.db.delete('thumbnails', btoa(url))
+    return this.persistenceService.deleteThumbnail(url)
   }
 
   removeContentFor(url: string): Promise<any> {
-    return this.db.delete('content', btoa(url))
+    return this.persistenceService.deleteContent(url)
+
   }
 
   saveText(tab: chrome.tabs.Tab | undefined, text: string, metas: object) {
@@ -423,18 +429,22 @@ class TabsetService {
       //let searchIndexId: number | undefined = undefined
       const tabsetIds: string[] = this.tabsetsFor(tab.url)
 
-      this.db.put('content', {
-        id: encodedTabUrl,
-        expires: new Date().getTime() + 1000 * 60 * 60,
-        title,
-        url,
-        content: text,
-        metas: metas,
-        tabsets: tabsetIds,
-        favIconUrl: tab.favIconUrl
-      }, encodedTabUrl)
+      this.persistenceService.saveContent(tab, text, metas, title, tabsetIds)
         .then(ts => console.log("added content"))
         .catch(err => console.log("err", err))
+
+      // this.db.put('content', {
+      //   id: encodedTabUrl,
+      //   expires: new Date().getTime() + 1000 * 60 * 60,
+      //   title,
+      //   url,
+      //   content: text,
+      //   metas: metas,
+      //   tabsets: tabsetIds,
+      //   favIconUrl: tab.favIconUrl
+      // }, encodedTabUrl)
+      //   .then(ts => console.log("added content"))
+      //   .catch(err => console.log("err", err))
 
 
     }
@@ -655,47 +665,49 @@ class TabsetService {
 
   async housekeeping() {
     // clean up thumbnails
-    const objectStore = this.db.transaction("thumbnails", "readwrite").objectStore("thumbnails");
-    let cursor = await objectStore.openCursor()
-    while (cursor) {
-      if (cursor.value.expires !== 0) {
-        const exists: boolean = this.urlExistsInATabset(atob(cursor.key.toString()))
-        if (exists) {
-          objectStore.put({expires: 0, thumbnail: cursor.value.thumbnail}, cursor.key)
-        } else {
-          if (cursor.value.expires < new Date().getTime()) {
-            objectStore.delete(cursor.key)
-          }
-        }
-      }
-      cursor = await cursor.continue();
-    }
+    this.persistenceService.cleanUpThumbnails()
+    // const objectStore = this.db.transaction("thumbnails", "readwrite").objectStore("thumbnails");
+    // let cursor = await objectStore.openCursor()
+    // while (cursor) {
+    //   if (cursor.value.expires !== 0) {
+    //     const exists: boolean = this.urlExistsInATabset(atob(cursor.key.toString()))
+    //     if (exists) {
+    //       objectStore.put({expires: 0, thumbnail: cursor.value.thumbnail}, cursor.key)
+    //     } else {
+    //       if (cursor.value.expires < new Date().getTime()) {
+    //         objectStore.delete(cursor.key)
+    //       }
+    //     }
+    //   }
+    //   cursor = await cursor.continue();
+    // }
     // clean up contents
-    const contentObjectStore = this.db.transaction("content", "readwrite").objectStore("content");
-    let contentCursor = await contentObjectStore.openCursor()
-    while (contentCursor) {
-      if (contentCursor.value.expires !== 0) {
-        const exists: boolean = this.urlExistsInATabset(atob(contentCursor.key.toString()))
-        if (exists) {
-          const data = contentCursor.value
-          contentObjectStore.put({
-              id: data.id,
-              expires: 0,
-              content: data.content,
-              title: data.title,
-              url: data.url,
-              tabsets: data.tabsets,
-              favIconUrl: data.favIconUrl
-            },
-            contentCursor.key)
-        } else {
-          if (contentCursor.value.expires < new Date().getTime()) {
-            contentObjectStore.delete(contentCursor.key)
-          }
-        }
-      }
-      contentCursor = await contentCursor.continue();
-    }
+    this.persistenceService.cleanUpContent()
+    // const contentObjectStore = this.db.transaction("content", "readwrite").objectStore("content");
+    // let contentCursor = await contentObjectStore.openCursor()
+    // while (contentCursor) {
+    //   if (contentCursor.value.expires !== 0) {
+    //     const exists: boolean = this.urlExistsInATabset(atob(contentCursor.key.toString()))
+    //     if (exists) {
+    //       const data = contentCursor.value
+    //       contentObjectStore.put({
+    //           id: data.id,
+    //           expires: 0,
+    //           content: data.content,
+    //           title: data.title,
+    //           url: data.url,
+    //           tabsets: data.tabsets,
+    //           favIconUrl: data.favIconUrl
+    //         },
+    //         contentCursor.key)
+    //     } else {
+    //       if (contentCursor.value.expires < new Date().getTime()) {
+    //         contentObjectStore.delete(contentCursor.key)
+    //       }
+    //     }
+    //   }
+    //   contentCursor = await contentCursor.continue();
+    // }
   }
 
   urlExistsInATabset(url: string): boolean {
@@ -750,48 +762,32 @@ class TabsetService {
     }
   }
 
-  private async initDatabase(): Promise<IDBPDatabase> {
-    return await openDB(INDEX_DB_NAME, 2, {
-      // upgrading see https://stackoverflow.com/questions/50193906/create-index-on-already-existing-objectstore
-      upgrade(db) {
-        if (!db.objectStoreNames.contains('tabsets')) {
-          console.log("creating db tabsets")
-          db.createObjectStore('tabsets');
-        }
-        if (!db.objectStoreNames.contains('thumbnails')) {
-          console.log("creating db thumbnails")
-          let store = db.createObjectStore('thumbnails');
-          store.createIndex("expires", "expires", {unique: false});
-        }
-        if (!db.objectStoreNames.contains('content')) {
-          console.log("creating db content")
-          let store = db.createObjectStore('content');
-          store.createIndex("expires", "expires", {unique: false});
-        }
-        if (!db.objectStoreNames.contains('searchIndex')) {
-          console.log("creating db searchIndex")
-          let store = db.createObjectStore('searchIndex');
-          store.createIndex("expires", "expires", {unique: false});
-        }
-      },
-    });
-  }
-
-  private async loadTabsetsFromIndexDb() {
-    const tabsStore = useTabsStore()
-    const keys: IDBValidKey[] = await this.db.getAllKeys('tabsets')
-    _.forEach(keys, key => {
-      this.db.get('tabsets', key)
-        .then(ts => {
-          if ('ignored' === key) {
-            tabsStore.ignoredTabset = ts//JSON.parse(ts)
-          } else {
-            tabsStore.addTabset(ts)//JSON.parse(ts))
-          }
-        })
-        .catch(err => console.log("err", err))
-    })
-  }
+  // private async initDatabase(): Promise<IDBPDatabase> {
+  //   return await openDB(INDEX_DB_NAME, 2, {
+  //     // upgrading see https://stackoverflow.com/questions/50193906/create-index-on-already-existing-objectstore
+  //     upgrade(db) {
+  //       if (!db.objectStoreNames.contains('tabsets')) {
+  //         console.log("creating db tabsets")
+  //         db.createObjectStore('tabsets');
+  //       }
+  //       if (!db.objectStoreNames.contains('thumbnails')) {
+  //         console.log("creating db thumbnails")
+  //         let store = db.createObjectStore('thumbnails');
+  //         store.createIndex("expires", "expires", {unique: false});
+  //       }
+  //       if (!db.objectStoreNames.contains('content')) {
+  //         console.log("creating db content")
+  //         let store = db.createObjectStore('content');
+  //         store.createIndex("expires", "expires", {unique: false});
+  //       }
+  //       if (!db.objectStoreNames.contains('searchIndex')) {
+  //         console.log("creating db searchIndex")
+  //         let store = db.createObjectStore('searchIndex');
+  //         store.createIndex("expires", "expires", {unique: false});
+  //       }
+  //     },
+  //   });
+  // }
 
 }
 
