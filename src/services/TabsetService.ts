@@ -41,14 +41,19 @@ class TabsetService {
   async saveOrReplaceFromChromeTabs(name: string, chromeTabs: chrome.tabs.Tab[], merge: boolean = false): Promise<object> {
     const tabsStore = useTabsStore()
     const tabs = _.map(chromeTabs, t => new Tab(uid(), t))
-    const result = await tabsStore.updateOrCreateTabset(name, tabs, merge)
-    if (result && result.tabset) {
-      await this.saveTabset(result.tabset)
-      this.selectTabset(result.tabset.id)
+    try {
+      const result = await tabsStore.updateOrCreateTabset(name, tabs, merge)
+      if (result && result.tabset) {
+        const r2 = await this.saveTabset(result.tabset)
+        this.selectTabset(result.tabset.id)
+      }
+      return {
+        replaced: result.replaced,
+        merged: merge
+      }
     }
-    return {
-      replaced: result.replaced,
-      merged: merge
+    catch(err) {
+      return Promise.reject("problem updating or creating tabset")
     }
   }
 
@@ -83,16 +88,11 @@ class TabsetService {
     }
   }
 
-  async saveTabset(tabset: Tabset) {
+  async saveTabset(tabset: Tabset): Promise<IDBValidKey> {
     if (tabset.id) {
-      // if (useAuthStore().isAuthenticated && useAuthStore().subscription.syncMode === SyncMode.ACTIVE) {
-      //   console.log("saving tabset to firebase")
-      //   backendApi.saveTabset(tabset)
-      // } else {
-      await this.persistenceService.saveTabset(tabset)
-      //}
-      return
+      return this.persistenceService.saveTabset(tabset)
     }
+    return Promise.reject("tabset id not set")
   }
 
   saveCurrentTabset() {
