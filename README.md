@@ -17,6 +17,8 @@ Browser Extension to manage tabsets:
 * All data remains on your computer - no backend communication whatsoever
 * Open source
 
+There will be a pro tabsets extension with some advanced features as well.
+
 ## Install the dependencies
 ```bash
 yarn install
