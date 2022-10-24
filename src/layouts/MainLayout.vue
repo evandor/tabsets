@@ -249,11 +249,11 @@ useMeta(() => {
 
 function checkKeystroke(e: any) {
   if (e.key === '/') {
-    console.log("e", e, searchBox, search.value)
+    //console.log("e", e, searchBox, search.value)
     // @ts-ignore
     searchBox.value.focus()
     search.value = ''
-    console.log("e2", search.value)
+    //console.log("e2", search.value)
   }
 }
 
