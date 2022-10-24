@@ -10,13 +10,15 @@
 
       <q-card-section class="q-pt-none">
         <div class="text-body">New Tabset's name:</div>
-        <q-input dense v-model="newTabsetName" autofocus @keydown.enter="createNewTabset()" v-close-popup/>
+        <q-input data-testid="newTabsetName" dense v-model="newTabsetName" autofocus @keydown.enter="createNewTabset()" v-close-popup/>
         <div class="text-body2 text-warning">{{ newTabsetDialogWarning() }}</div>
       </q-card-section>
 
       <q-card-actions align="right" class="text-primary">
         <q-btn flat label="Cancel" @click="onDialogCancel"/>
-        <q-btn flat :label="newTabsetNameExists ? 'Alter Tabset' : 'Create new Tabset'"
+        <q-btn flat
+               data-testid="newTabsetNameSubmit"
+               :label="newTabsetNameExists ? 'Alter Tabset' : 'Create new Tabset'"
                :disable="newTabsetName.trim().length === 0" v-close-popup
                @click="createNewTabset()"/>
       </q-card-actions>

@@ -1,40 +1,16 @@
 import {test as base, expect, BrowserContext, chromium} from "@playwright/test";
 import path from "path";
 
-let serviceWorker: Worker = null as unknown as Worker
-
 export const test = base.extend<{
   context: BrowserContext;
   extensionId: string;
 }>({
-  context: async ({ }, use) => {
+  context: async ({}, use) => {
     const pathToExtension = path.join(__dirname, "../dist/bex");
     console.log("using path", pathToExtension)
-
     const userDataDir = '/tmp';
-    // const browserContext = await chromium.launchPersistentContext(userDataDir,{
-    //   headless: false,
-    //   args: [
-    //     `--disable-extensions-except=${pathToExtension}`,
-    //     `--load-extension=${pathToExtension}`
-    //   ]
-    // });
-    // await use(browserContext)
-    // //console.log("browserContext", browserContext)
-    //
-    // let [serviceWorker] = browserContext.serviceWorkers()
-    // //console.log("serviceWorker", serviceWorker)
-    //
-    // let [backgroundPage] = browserContext.backgroundPages();
-    //
-    // console.log("backgroundPage", backgroundPage)
-    // if (!backgroundPage)
-    //   backgroundPage = await browserContext.waitForEvent('backgroundpage');
-    //
-    // // Test the background page as you would any other page.
-    // await browserContext.close();
 
-    const context = await chromium.launchPersistentContext(userDataDir, {
+    const context = await chromium.launchPersistentContext("", {
       headless: false,
       args: [
         `--disable-extensions-except=${pathToExtension}`,
@@ -42,35 +18,40 @@ export const test = base.extend<{
       ],
     });
     // @ts-ignore
-    serviceWorker = context.serviceWorkers()[0]
-    //console.log("serviceWorker1", serviceWorker)
     await use(context);
     await context.close();
   },
-  extensionId: async ({ context }, use) => {
+  extensionId: async ({context}, use) => {
     let [background] = context.serviceWorkers();
     if (!background)
       background = await context.waitForEvent("serviceworker");
     const extensionId = background.url().split("/")[2];
-    console.log("hier!!!", extensionId)
     await use(extensionId);
   },
 });
 
-test("example test1", async ({ page }) => {
-  await page.goto("chrome-extension://agphkldbejefifhmgpgmiphlnijklnol/www/index.html");
+test("actions button has 'add tabset' entry", async ({page, extensionId}) => {
+  await page.goto(`chrome-extension://${extensionId}/www/index.html`);
   await page.waitForSelector('text=Actions')
-  // page.locator("html").innerHTML({timeout: 20000})
-  //   .then((r) => console.log("r", r))
-  await expect(page.locator("html")).toContainText("Tabsets");
+  await expect(page.locator('text=Add Tabset')).not.toBeVisible()
+  await page.locator('text=Actions').click()
+  await expect(page.locator('text=Add Tabset')).toBeVisible()
 });
 
-// test("popup page", async ({ page, extensionId }) => {
-//   await page.goto(`chrome-extension://${extensionId}/popup.html`);
-//   await expect(page.locator("body")).toHaveText("my-extension popup");
-// });
+test("add first tabset", async ({page, extensionId}) => {
+  await page.goto(`chrome-extension://${extensionId}/www/index.html`);
+  await page.waitForSelector('text=Actions')
+  await page.locator('text=Actions').click()
+  await page.waitForSelector('text=Add Tabset')
+  await page.locator('text=Add Tabset').click()
+  await page.waitForSelector('[data-testid=newTabsetName]')
+  await page.locator('[data-testid=newTabsetName]').fill('first tabset')
+  await page.locator('[data-testid=newTabsetNameSubmit]').click()
+  await expect(page.locator('text=Add Tabset')).not.toBeVisible()
+});
 
-test("example test", async ({ page }) => {
+
+test("example test", async ({page}) => {
   await page.goto("https://tabsets-spa.web.app/#");
   //console.log("serviceWorker2", serviceWorker)
   //serviceWorker.
