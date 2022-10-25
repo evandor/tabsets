@@ -39,10 +39,8 @@ yarn-error.log*
 /releases/0.1.1/
 /releases/0.1.2/
 /releases/0.2.0/
-/test-results/
-/playwright-report/
-/playwright/.cache/
-/test-results/
-/playwright-report/
-/playwright/.cache/
 /releases/0.2.1/
+/test-results/
+/test-results/
+/playwright-report/
+/playwright/.cache/
