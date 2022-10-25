@@ -126,14 +126,14 @@
 import Navigation from "src/services/Navigation";
 import {Tab} from "src/models/Tab";
 import TabsetService from "src/services/TabsetService";
-import {useNotificationsStore} from "stores/notificationsStore";
+import {useNotificationsStore} from "src/stores/notificationsStore";
 import {Bookmark} from "src/models/Bookmark";
 import _ from "lodash"
 import {useRouter} from "vue-router";
 import {useQuasar} from "quasar";
 import ImportFromBookmarks from "components/dialogues/ImportFromBookmarks.vue";
 import BookmarksService from "src/services/BookmarksService";
-import {useBookmarksStore} from "stores/bookmarksStore";
+import {useBookmarksStore} from "src/stores/bookmarksStore";
 
 // const props = defineProps({
 //   bookmarks: {

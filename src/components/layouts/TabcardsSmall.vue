@@ -41,7 +41,7 @@
 import Navigation from "src/services/Navigation";
 import {Tab, TabStatus} from "src/models/Tab";
 import TabsetService from "src/services/TabsetService";
-import {useNotificationsStore} from "stores/notificationsStore";
+import {useNotificationsStore} from "src/stores/notificationsStore";
 
 const props = defineProps({
   tabs: {

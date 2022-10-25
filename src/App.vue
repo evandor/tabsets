@@ -9,8 +9,8 @@ import {useQuasar} from "quasar";
 import tabsetService from "src/services/TabsetService";
 import {useFeatureTogglesStore} from "src/stores/featureTogglesStore";
 import {useBookmarksStore} from "src/stores/bookmarksStore";
-import {useSearchStore} from "stores/searchStore";
-import {useNotificationsStore} from "stores/notificationsStore";
+import {useSearchStore} from "src/stores/searchStore";
+import {useNotificationsStore} from "src/stores/notificationsStore";
 import ChromeApi from "src/services/ChromeApi";
 
 const tabsStore = useTabsStore()

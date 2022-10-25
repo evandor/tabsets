@@ -42,7 +42,7 @@ import TabsetService from "src/services/TabsetService";
 import {ref} from "vue";
 import {Hit} from "src/models/Hit";
 import _ from "lodash"
-import {useFeatureTogglesStore} from "stores/featureTogglesStore";
+import {useFeatureTogglesStore} from "src/stores/featureTogglesStore";
 
 const props = defineProps({
   hit: {

@@ -16,7 +16,7 @@
 import {Tab} from "src/models/Tab";
 import TabCard from "src/components/layouts/TabCard.vue"
 import _ from "lodash"
-import {useTabsStore} from "stores/tabsStore";
+import {useTabsStore} from "src/stores/tabsStore";
 
 const tabsStore = useTabsStore()
 

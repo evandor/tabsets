@@ -1,6 +1,6 @@
 {
   "name": "tabsets",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Browser Extension to manage your tabs by grouping them into re-storable sets",
   "productName": "Tabsets Extension",
   "author": "evandor <evandor@gmail.com>",
@@ -8,8 +8,6 @@
   "scripts": {
     "dev": "quasar dev -m bex",
     "dev stage prod": "stage=production quasar dev -m bex",
-    "dev spa": "quasar dev",
-    "dev electron": "quasar dev -m electron",
     "build": "quasar build -m bex",
     "build electron": "quasar build -m electron",
     "icon": "icongenie generate -i src/assets/icon.png",
@@ -20,6 +18,8 @@
     "test:unit:coverage": "jest --coverage",
     "test:unit:watch": "jest --watch",
     "test:unit:watchAll": "jest --watchAll",
+    "test:e2e": "npx playwright test",
+    "test:e2e:showReport": "npx playwright show-report",
     "serve:test:coverage": "quasar serve test/jest/coverage/lcov-report/ --port 8788",
     "concurrently:dev:jest": "concurrently \"quasar dev\" \"jest --watch\""
   },
@@ -46,6 +46,7 @@
   "devDependencies": {
     "@babel/preset-env": "^7.19.0",
     "@intlify/vite-plugin-vue-i18n": "^3.3.1",
+    "@playwright/test": "^1.27.1",
     "@quasar/app-vite": "^1.1.2",
     "@quasar/babel-preset-app": "^2.0.1",
     "@quasar/quasar-app-extension-testing": "^2.0.4",

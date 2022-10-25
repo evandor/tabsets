@@ -41,11 +41,11 @@ import {ref} from "vue";
 import TabsetService from "src/services/TabsetService";
 import {useQuasar} from "quasar";
 import {useRoute, useRouter} from "vue-router";
-import {useTabsStore} from "stores/tabsStore";
+import {useTabsStore} from "src/stores/tabsStore";
 
 import {useDialogPluginComponent} from 'quasar'
 import ChromeApi from "src/services/ChromeApi";
-import {useBookmarksStore} from "stores/bookmarksStore";
+import {useBookmarksStore} from "src/stores/bookmarksStore";
 
 defineEmits([
   ...useDialogPluginComponent.emits

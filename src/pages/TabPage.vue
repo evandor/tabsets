@@ -109,8 +109,8 @@
 <script setup lang="ts">
 import {useTabsStore} from "src/stores/tabsStore"
 import Fab from "src/components/Fab.vue"
-import {useNotificationsStore} from "stores/notificationsStore";
-import {useFeatureTogglesStore} from "stores/featureTogglesStore";
+import {useNotificationsStore} from "src/stores/notificationsStore";
+import {useFeatureTogglesStore} from "src/stores/featureTogglesStore";
 import {useRouter} from "vue-router";
 import {ref, watchEffect} from "vue";
 import TabsetService from "src/services/TabsetService";

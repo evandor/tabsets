@@ -64,8 +64,7 @@ import {useRouter} from "vue-router";
 import {ref, watchEffect} from "vue";
 import {useQuasar} from "quasar";
 import {INDEX_DB_NAME} from "boot/constants"
-import {useNotificationsStore} from "stores/notificationsStore";
-import {useSearchStore} from "stores/searchStore";
+import {useSearchStore} from "src/stores/searchStore";
 
 const tabsStore = useTabsStore()
 const featuresStore = useFeatureTogglesStore()
