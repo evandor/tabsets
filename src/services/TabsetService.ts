@@ -8,6 +8,7 @@ import {useNotificationsStore} from "src/stores/notificationsStore";
 import {useSearchStore} from "src/stores/searchStore";
 import {useBookmarksStore} from "src/stores/bookmarksStore";
 import IndexedDbPersistenceService from "src/services/IndexedDbPersistenceService"
+import {STRIP_CHARS_IN_USER_INPUT} from "boot/constants";
 
 class TabsetService {
 
@@ -39,10 +40,11 @@ class TabsetService {
    * @param merge if true, the old values and the new ones will be merged.
    */
   async saveOrReplaceFromChromeTabs(name: string, chromeTabs: chrome.tabs.Tab[], merge: boolean = false): Promise<object> {
+    const trustedName = name.replace(STRIP_CHARS_IN_USER_INPUT, '')
     const tabsStore = useTabsStore()
     const tabs = _.map(chromeTabs, t => new Tab(uid(), t))
     try {
-      const result = await tabsStore.updateOrCreateTabset(name, tabs, merge)
+      const result = await tabsStore.updateOrCreateTabset(trustedName, tabs, merge)
       if (result && result.tabset) {
         const r2 = await this.saveTabset(result.tabset)
         this.selectTabset(result.tabset.id)
