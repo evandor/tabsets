@@ -1,5 +1,5 @@
 import {Bookmark} from "src/models/Bookmark";
-import {useBookmarksStore} from "stores/bookmarksStore";
+import {useBookmarksStore} from "src/stores/bookmarksStore";
 
 class BookmarksService {
 

@@ -72,7 +72,7 @@
 import Navigation from "src/services/Navigation";
 import {Tab} from "src/models/Tab";
 import TabsetService from "src/services/TabsetService";
-import {useNotificationsStore} from "stores/notificationsStore";
+import {useNotificationsStore} from "src/stores/notificationsStore";
 import {ref} from "vue";
 
 const props = defineProps({

@@ -54,8 +54,7 @@
 </template>
 
 <script setup lang="ts">
-import {useFeatureTogglesStore} from "stores/featureTogglesStore";
-import {useAuthStore} from "stores/auth";
+import {useFeatureTogglesStore} from "src/stores/featureTogglesStore";
 import {useRouter} from "vue-router";
 
 const featuresStore = useFeatureTogglesStore()

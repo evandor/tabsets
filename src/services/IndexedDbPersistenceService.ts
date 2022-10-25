@@ -1,5 +1,5 @@
 import {IDBPDatabase, openDB} from "idb";
-import {useTabsStore} from "stores/tabsStore";
+import {useTabsStore} from "src/stores/tabsStore";
 import _ from "lodash";
 import {INDEX_DB_NAME} from "boot/constants";
 import PersistenceService from "src/services/PersistenceService";

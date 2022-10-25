@@ -194,12 +194,12 @@ import {useTabsStore} from "src/stores/tabsStore";
 import {useTabGroupsStore} from "src/stores/tabGroupsStore";
 import {useRoute, useRouter} from "vue-router";
 import {useMeta} from 'quasar'
-import {useNotificationsStore} from "stores/notificationsStore";
+import {useNotificationsStore} from "src/stores/notificationsStore";
 import TabInfo from "src/components/layouts/TabInfo.vue"
 import Navigation from "src/components/Navigation.vue"
 import DrawerLeft from "src/components/DrawerLeft.vue"
 import TabsetService from "src/services/TabsetService";
-import {useSearchStore} from "stores/searchStore";
+import {useSearchStore} from "src/stores/searchStore";
 import {useFeatureTogglesStore} from "src/stores/featureTogglesStore";
 import _ from "lodash"
 import NewTabset from "components/dialogues/NewTabset.vue";

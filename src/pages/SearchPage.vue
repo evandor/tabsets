@@ -21,7 +21,7 @@ import {ref, watchEffect} from 'vue';
 import {useRoute} from "vue-router";
 import {useTabsStore} from "src/stores/tabsStore";
 import _ from "lodash"
-import {useSearchStore} from "stores/searchStore";
+import {useSearchStore} from "src/stores/searchStore";
 import {Tabset} from "src/models/Tabset";
 import {uid} from "quasar";
 import SearchHit from "src/components/layouts/SearchHit.vue"

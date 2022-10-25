@@ -87,13 +87,13 @@
 <script setup lang="ts">
 
 import {useRouter} from "vue-router";
-import {useTabsStore} from "stores/tabsStore";
+import {useTabsStore} from "src/stores/tabsStore";
 import _ from "lodash"
 import {ref, watch, watchEffect} from "vue";
 import {useQuasar} from "quasar";
 import {useFeatureTogglesStore} from "src/stores/featureTogglesStore";
-import {useBookmarksStore} from "stores/bookmarksStore";
-import {useNotificationsStore} from "stores/notificationsStore";
+import {useBookmarksStore} from "src/stores/bookmarksStore";
+import {useNotificationsStore} from "src/stores/notificationsStore";
 import BookmarksService from "src/services/BookmarksService";
 
 const router = useRouter()

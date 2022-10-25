@@ -269,6 +269,7 @@ class TabsetService {
         _.remove(tabsStore.pendingTabset.tabs, {selected: true});
       }
       return this.saveTabset(currentTabset)
+        .then(() => Promise.resolve())
     }
     return Promise.reject("no current tabset set")
   }

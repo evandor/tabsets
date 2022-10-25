@@ -75,7 +75,7 @@
 <script setup lang="ts">
 import {useTabsStore} from "src/stores/tabsStore"
 import Fab from "src/components/Fab.vue"
-import {useNotificationsStore} from "stores/notificationsStore";
+import {useNotificationsStore} from "src/stores/notificationsStore";
 
 //@ts-ignore
 const appVersion = import.meta.env.PACKAGE_VERSION

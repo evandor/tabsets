@@ -95,7 +95,7 @@
 
 <script setup lang="ts">
 import {date} from "quasar";
-import {useNotificationsStore} from "stores/notificationsStore";
+import {useNotificationsStore} from "src/stores/notificationsStore";
 import {ref, watchEffect} from "vue";
 import TabsetService from "src/services/TabsetService";
 import {useFeatureTogglesStore} from "src/stores/featureTogglesStore";

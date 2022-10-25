@@ -40,7 +40,7 @@ import {computed, ref, watchEffect} from "vue";
 import TabsetService from "src/services/TabsetService";
 import {useQuasar} from "quasar";
 import {useRouter} from "vue-router";
-import {useTabsStore} from "stores/tabsStore";
+import {useTabsStore} from "src/stores/tabsStore";
 
 import {useDialogPluginComponent} from 'quasar'
 import {STRIP_CHARS_IN_USER_INPUT} from "boot/constants";

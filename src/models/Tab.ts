@@ -4,6 +4,8 @@ export enum TabStatus {
   DEFAULT = "DEFAULT"
 }
 
+//export type TabStatusType = keyof typeof TabStatus
+
 export class Tab {
   // id: string // internal id, do not want to rely on chromeTab.id
   created: number
