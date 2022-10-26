@@ -134,7 +134,7 @@ export const useTabsStore = defineStore('tabs', {
     allTabsCount: (state) => {
       var count = 0
       for (const [key, value] of state.tabsets) {
-        const nr = value.tabs.length
+        const nr = value.tabs?.length
         count = count + nr
       }
       return count;

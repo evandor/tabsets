@@ -231,16 +231,18 @@ class ChromeListeners {
     const text = convert(request.html, {
       wordwrap: 130
     });
-    const tokens = text
+    const text2 = text.replace(/\[[^\]].*/g, '').replace('*','')
+    //console.log("text2", text2)
+    const tokens = text2
       .replaceAll("\\n", " ")
       .replaceAll("\n", " ")
-      .replace(/[`~!@#$%^&*()_|+\-=?;:'",.<>\{\}\[\]\\\/]/gi, ' ')
+      .replace(/[`~!@#$%^&*()_|+\-=?;:'",.<>»«{}\[\]\\\/]/gi, ' ')
       .split(" ")
     //console.log("tokens", tokens)
     let res = ""
     const tokenSet = new Set()
     tokens.forEach((t: string) => {
-      if (t.length >= 3) {
+      if (t.length >= 4) {
         res += t + " "
         tokenSet.add(t.toLowerCase())
       }

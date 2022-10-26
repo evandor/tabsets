@@ -2,11 +2,11 @@ import { boot } from 'quasar/wrappers'
 
 const MAX_TABS_TO_SHOW = 12
 const INDEX_DB_NAME= 'db'
-const CLEANUP_PERIOD_IN_MINUTES = 10
+const CLEANUP_PERIOD_IN_MINUTES = 5
 
 const STRIP_CHARS_IN_USER_INPUT = /[`@#$%^&*()=\[\]{};':"\\|<>\/~]/;
 
-export default boot(({app}) => {
+export default boot(({}) => {
   //app.config.globalProperties.$
 })
 

@@ -32,7 +32,7 @@
         </div>
       </div>
     </div>
-    <div class="row q-mx-md q-my-none" style="border:0px solid yellow">
+    <div class="row q-mx-md q-my-none" style="border:0 solid yellow">
       <div class="col-12">
         <q-img :src="thumbnail" width="512px" style="border:1px solid grey" />
       </div>
@@ -42,53 +42,63 @@
             created
           </div>
           <div class="col-7">
-            {{ date.formatDate(notificationStore.selectedTab.created, 'DD.MM.YYYY HH:mm') }}
+            {{ date.formatDate(notificationStore.selectedTab?.created, 'DD.MM.YYYY HH:mm') }}
           </div>
           <div class="col-5">
             updated
           </div>
           <div class="col-7">
-            {{ date.formatDate(notificationStore.selectedTab.updated, 'DD.MM.YYYY HH:mm') }}
+            {{ date.formatDate(notificationStore.selectedTab?.updated, 'DD.MM.YYYY HH:mm') }}
           </div>
           <div class="col-5">
             last Active
           </div>
           <div class="col-7">
-            {{ date.formatDate(notificationStore.selectedTab.lastActive, 'DD.MM.YYYY HH:mm') }}
+            {{ date.formatDate(notificationStore.selectedTab?.lastActive, 'DD.MM.YYYY HH:mm') }}
           </div>
           <div class="col-5">
             activated#
           </div>
           <div class="col-7">
-            {{ notificationStore.selectedTab.activatedCount }}
+            {{ notificationStore.selectedTab?.activatedCount }}
+          </div>
+
+          <div class="col-5">
+            Description
+          </div>
+          <div class="col-7">
+            {{ notificationStore.selectedTab?.description }}
           </div>
 
           <div class="col-5">
             History
           </div>
           <div class="col-7">
-            {{ notificationStore.selectedTab.history }}
+            {{ notificationStore.selectedTab?.history }}
           </div>
 
-          <div class="col-5" v-if="notificationStore.selectedTab.bookmarkId">
+          <div class="col-5" v-if="notificationStore.selectedTab?.bookmarkId">
             Bookmark ID
           </div>
-          <div class="col-7" v-if="notificationStore.selectedTab.bookmarkId">
-            {{ notificationStore.selectedTab.bookmarkId }}
+          <div class="col-7" v-if="notificationStore.selectedTab?.bookmarkId">
+            {{ notificationStore.selectedTab?.bookmarkId }}
           </div>
 
-          <div class="col-5" v-if="notificationStore.selectedTab.bookmarkUrl">
+          <div class="col-5" v-if="notificationStore.selectedTab?.bookmarkUrl">
             Bookmark URL
           </div>
-          <div class="col-7" v-if="notificationStore.selectedTab.bookmarkUrl">
-            {{ notificationStore.selectedTab.bookmarkUrl }}
+          <div class="col-7" v-if="notificationStore.selectedTab?.bookmarkUrl">
+            {{ notificationStore.selectedTab?.bookmarkUrl }}
           </div>
 
           <div class="col-5">
             Meta Info
           </div>
           <div class="col-7">
-            {{ metas }}
+            <div class="row" v-for="key in Object.keys(metas)">
+              <div class="col-6">{{key}}</div>
+              <div class="col-6">{{ metas[key] }}</div>
+            </div>
           </div>
 
           <div class="col-5">
@@ -137,6 +147,8 @@ watchEffect(() => {
         metas.value = data.metas
       })
       .catch(err => console.log("err", err))
+  } else {
+    router.push("/tabset")
   }
 })
 

@@ -46,7 +46,7 @@ class TabsetService {
     try {
       const result = await tabsStore.updateOrCreateTabset(trustedName, tabs, merge)
       if (result && result.tabset) {
-        const r2 = await this.saveTabset(result.tabset)
+        await this.saveTabset(result.tabset)
         this.selectTabset(result.tabset.id)
       }
       return {
@@ -176,7 +176,7 @@ class TabsetService {
   }
 
   async saveToTabset(ts: Tabset, tab: Tab): Promise<number> {
-    //console.log("saving to tabset", ts, tab)
+    console.log("adding to tabset", ts, tab)
     if (tab.chromeTab.url) {
       const tabsStore = useTabsStore()
 
@@ -193,10 +193,15 @@ class TabsetService {
       this.saveTabset(ts)
 
       const encodedUrl = btoa(tab.chromeTab.url)
-      let content = ''
+      //let content = ''
       let description = ''
 
-      this.persistenceService.updateContent(tab.chromeTab.url)
+      // const content:object =  await this.getContentFor(tab)
+      // if (content && content['description' as keyof object]) {
+      //   description = content['description' as keyof object]
+      // }
+
+      const dataFromStore:object = await this.persistenceService.updateContent(tab.chromeTab.url)
 
       this.persistenceService.updateThumbnail(tab.chromeTab.url)
 
@@ -206,8 +211,8 @@ class TabsetService {
         tab.chromeTab.title || '',
         tab.chromeTab.title || '',
         tab.chromeTab.url || '',
-        description,
-        content,
+        dataFromStore['description' as keyof object],
+        dataFromStore['content' as keyof object],
         [ts.id],
         tab.chromeTab.favIconUrl || '')
     }
@@ -324,7 +329,7 @@ class TabsetService {
     return Promise.reject("url not provided");
   }
 
-  async getContentFor(selectedTab: Tab): Promise<any> {
+  async getContentFor(selectedTab: Tab): Promise<object> {
     if (selectedTab.chromeTab.url) {
       return this.persistenceService.getContent(selectedTab.chromeTab.url)
     }
@@ -342,16 +347,37 @@ class TabsetService {
 
   saveText(tab: chrome.tabs.Tab | undefined, text: string, metas: object) {
     if (tab && tab.url) {
-      const encodedTabUrl = btoa(tab.url)
       const title = tab.title || ''
-      const url = tab.url
-      //let searchIndexId: number | undefined = undefined
       const tabsetIds: string[] = this.tabsetsFor(tab.url)
 
-      this.persistenceService.saveContent(tab, text, metas, title, tabsetIds)
+      let description: string = null as unknown as string
+      Object.keys(metas).forEach((key: string) => {
+        //console.log("checking meta", key, metas[key as keyof object])
+        let value:string = metas[key as keyof object]
+        if (key.indexOf("description") >= 0 && value && value.trim().length > 0) {
+          description = value.trim()
+        }
+      })
+
+      this.persistenceService.saveContent(tab, text, metas, title, description, tabsetIds)
         .then(ts => console.log("added content"))
         .catch(err => console.log("err", err))
 
+      if (description && tabsetIds.length > 0) {
+        console.log("updating description for ", tab.url, description)
+        tabsetIds.forEach((tsId:string) => {
+          const tabset = useTabsStore().getTabset(tsId)
+          if (tabset) {
+            _.forEach(tabset.tabs, (t: Tab) => {
+              if (t.chromeTab.url === tab.url) {
+                console.log(" ... in tab", tab.id)
+                t.description = description
+              }
+            })
+            this.saveTabset(tabset)
+          }
+        })
+      }
     }
   }
 

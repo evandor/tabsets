@@ -22,6 +22,7 @@ export class Tab {
   name: string | undefined
   bookmarkUrl: string | undefined
   bookmarkId: string | undefined
+  description: string
   metas: object
   searchIndexId: number | undefined
 
@@ -37,6 +38,7 @@ export class Tab {
     this.isDuplicate = false
     this.history = []
     this.name = undefined
+    this.description = ''
     this.metas = {}
   }
 

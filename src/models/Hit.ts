@@ -9,7 +9,16 @@ export class Hit {
   bookmarkUrl: string | undefined
   bookmarkId: string | undefined
 
-  constructor(public id: string, public chromeTab: chrome.tabs.Tab, public created: number, public updated: number, public score: number, public tabsets: string[], public matches: string[]) {
+  constructor(
+    public id: string,
+    public chromeTab: chrome.tabs.Tab,
+    public created: number,
+    public updated: number,
+    public score: number,
+    public tabsets: string[],
+    public matches: string[],
+    public description: string) {
+
     this.updated = new Date().getTime()
     this.lastActive = 0
     this.activatedCount = 0

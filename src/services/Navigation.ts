@@ -6,8 +6,6 @@ import TabsetService from "src/services/TabsetService";
 class Navigation {
 
   openOrCreateTab(withUrl: string) {
-    console.log("hier", withUrl)
-
     chrome.tabs.query({currentWindow: true}, (t: chrome.tabs.Tab[]) => {
       let found = false;
       t.filter(r => r.url && !r.url.startsWith("chrome"))

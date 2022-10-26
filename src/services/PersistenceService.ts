@@ -12,10 +12,10 @@ interface PersistenceService {
   deleteThumbnail(url: string):Promise<void>
   cleanUpThumbnails():Promise<void>
 
-  getContent(url: string):Promise<string>
-  updateContent(url: string):Promise<void>
+  getContent(url: string):Promise<object>
+  updateContent(url: string):Promise<object>
   deleteContent(url: string):Promise<void>
-  saveContent(tab: chrome.tabs.Tab, text: string, metas: object, title: string, tabsetIds: string[]):Promise<IDBValidKey>
+  saveContent(tab: chrome.tabs.Tab, text: string, metas: object, title: string, description: string, tabsetIds: string[]):Promise<IDBValidKey>
   cleanUpContent(): Promise<void>
   getContents(): Promise<any[]>
 

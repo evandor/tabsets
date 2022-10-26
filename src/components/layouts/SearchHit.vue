@@ -25,6 +25,7 @@
         </template>
       </q-item-label>
       <q-item-label class="ellipsis" caption>{{ hit.chromeTab?.url }}</q-item-label>
+      <q-item-label class="ellipsis" caption>{{ hit.description }}</q-item-label>
       <q-item-label class="text-blue-2" v-if="featureToggles.debugEnabled">Match in: {{ hit['matches'].join(", ")}}</q-item-label>
     </q-item-section>
     <q-item-section avatar>

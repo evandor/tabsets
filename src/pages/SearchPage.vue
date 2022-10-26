@@ -50,7 +50,8 @@ const newSearch = (term: string) => {
       ChromeApi.createChromeTabObject(h.item.title, h.item.url, h.item.favIconUrl), 0, 0,
       Math.round(100 - (100 * h.score)),
       h.item.tabsets,
-      _.map(h['matches' as keyof object], m => m['key' as keyof object])
+      _.map(h['matches' as keyof object], m => m['key' as keyof object]),
+      h.item.description
     ))
   })
 }

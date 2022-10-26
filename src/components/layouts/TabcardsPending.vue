@@ -178,7 +178,7 @@ function ignoreTab(tab: Tab) {
 }
 
 function saveTab(tab: Tab) {
-  //console.log("saving tab", tab)
+  console.log("saving tab", tab)
   TabsetService.saveToCurrentTabset(tab)
 }
 

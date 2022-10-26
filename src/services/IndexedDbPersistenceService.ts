@@ -37,42 +37,36 @@ class IndexedDbPersistenceService implements PersistenceService {
     return this.db.delete('tabsets', tabsetId)
   }
 
-  async updateContent(url: string):Promise<void> {
+  async updateContent(url: string):Promise<object> {
     let content = ''
     let description = ''
     const encodedUrl = btoa(url)
 
     const objectStore = this.db.transaction("content", "readwrite").objectStore("content");
     let cursor = await objectStore.openCursor()
+    let data = null
     while (cursor) {
       //console.log("cursor", cursor.value, encodedUrl)
-      if (cursor.value.expires !== 0 && cursor.value.id === encodedUrl) {
-        const data = cursor.value
-        objectStore.put({
-            id: data.id,
-            expires: 0,
-            content: data.content,
-            metas: data.metas,
-            title: data.title,
-            url: data.url,
-            tabsets: data.tabsets,
-            favIconUrl: data.favIconUrl
-          },
-          cursor.key)
+      if (cursor.value.id === encodedUrl) {
+        data = cursor.value
+        data['expires'] = 0
+        console.log("objectStore tata", data)
+        objectStore.put(data, cursor.key)
 
-        content = data.content
-        Object.keys(data.metas).forEach((key: string) => {
-          if (key.indexOf("description") >= 0 && data.metas[key] && data.metas[key].trim().length > description.length) {
-            //console.log("updating description to ", data.metas[key].trim())
-            description = data.metas[key].trim()
-          }
-        })
+        // content = data.content
+        // Object.keys(data.metas).forEach((key: string) => {
+        //   if (key.indexOf("description") >= 0 && data.metas[key] && data.metas[key].trim().length > description.length) {
+        //     console.log("updating description to ", data.metas[key].trim())
+        //     description = data.metas[key].trim()
+        //   }
+        // })
       }
       cursor = await cursor.continue();
     }
+    return Promise.resolve(data)
   }
 
-  async updateThumbnail(url: string):Promise<void> {
+  async updateThumbnail(url: string): Promise<void> {
     const encodedUrl = btoa(url)
     const tnObjectStore = this.db.transaction("thumbnails", "readwrite").objectStore("thumbnails");
     let tnCursor = await tnObjectStore.openCursor()
@@ -90,38 +84,42 @@ class IndexedDbPersistenceService implements PersistenceService {
     }
   }
 
-  saveThumbnail(url: string, thumbnail: string):Promise<void> {
+  saveThumbnail(url: string, thumbnail: string): Promise<void> {
     const encodedTabUrl = btoa(url)
-    return this.db.put('thumbnails', {expires: new Date().getTime() + 1000 * 60 * 60, thumbnail: thumbnail}, encodedTabUrl)
+    return this.db.put('thumbnails', {
+      expires: new Date().getTime() + 1000 * 60 * 60,
+      thumbnail: thumbnail
+    }, encodedTabUrl)
       .then(ts => console.log("added thumbnail"))
       .catch(err => console.log("err", err))
   }
 
-  async getThumbnail(url: string):Promise<string> {
+  async getThumbnail(url: string): Promise<string> {
     const encodedUrl = btoa(url)
     return await this.db.get('thumbnails', encodedUrl)
   }
 
-  async getContent(url: string):Promise<string> {
+  async getContent(url: string): Promise<object> {
     const encodedUrl = btoa(url)
     return await this.db.get('content', encodedUrl)
   }
 
-  deleteThumbnail(url: string):Promise<void> {
+  deleteThumbnail(url: string): Promise<void> {
     return this.db.delete('thumbnails', btoa(url))
   }
 
-  deleteContent(url: string):Promise<void> {
+  deleteContent(url: string): Promise<void> {
     return this.db.delete('content', btoa(url))
   }
 
-  saveContent(tab: chrome.tabs.Tab, text: string, metas: object, title: string, tabsetIds: string[]):Promise<IDBValidKey> {
+  saveContent(tab: chrome.tabs.Tab, text: string, metas: object, title: string, description: string, tabsetIds: string[]): Promise<IDBValidKey> {
     if (tab.url) {
       const encodedTabUrl = btoa(tab.url)
       return this.db.put('content', {
         id: encodedTabUrl,
         expires: new Date().getTime() + 1000 * 60 * 60,
         title,
+        description,
         url: tab.url,
         content: text,
         metas: metas,
@@ -132,7 +130,7 @@ class IndexedDbPersistenceService implements PersistenceService {
     return Promise.reject("tab.url missing")
   }
 
-  async cleanUpThumbnails():Promise<void> {
+  async cleanUpThumbnails(): Promise<void> {
     const objectStore = this.db.transaction("thumbnails", "readwrite").objectStore("thumbnails");
     let cursor = await objectStore.openCursor()
     while (cursor) {
@@ -165,6 +163,8 @@ class IndexedDbPersistenceService implements PersistenceService {
               title: data.title,
               url: data.url,
               tabsets: data.tabsets,
+              description: data.description,
+              metas: data.metas,
               favIconUrl: data.favIconUrl
             },
             contentCursor.key)
