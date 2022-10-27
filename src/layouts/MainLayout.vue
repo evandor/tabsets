@@ -202,7 +202,7 @@ import TabsetService from "src/services/TabsetService";
 import {useSearchStore} from "src/stores/searchStore";
 import {useFeatureTogglesStore} from "src/stores/featureTogglesStore";
 import _ from "lodash"
-import NewTabset from "components/dialogues/NewTabset.vue";
+import NewTabset from "components/dialogues/NewTabsetDialog.vue";
 import ExportDialog from "components/dialogues/ExportDialog.vue";
 import ImportDialog from "components/dialogues/ImportDialog.vue";
 

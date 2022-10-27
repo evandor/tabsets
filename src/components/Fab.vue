@@ -60,7 +60,7 @@ import {useRouter} from "vue-router";
 import {Tab} from "src/models/Tab";
 import ChromeApi from "src/services/ChromeApi";
 import {useNotificationsStore} from "src/stores/notificationsStore"
-import NewTabset from "src/components/dialogues/NewTabset.vue"
+import NewTabset from "components/dialogues/NewTabsetDialog.vue"
 
 const tabsStore = useTabsStore()
 const router = useRouter()

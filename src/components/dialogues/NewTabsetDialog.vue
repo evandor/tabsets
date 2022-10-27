@@ -2,7 +2,7 @@
   <q-dialog ref="dialogRef" @hide="onDialogHide">
     <q-card class="q-dialog-plugin">
       <q-card-section>
-        <div class="text-h6">Save open Tabs as Tabset</div>
+        <div class="text-h6">Add new Tabset</div>
       </q-card-section>
       <q-card-section>
         <div class="text-body">Please provide a name for the new tabset</div>
@@ -11,12 +11,19 @@
       <q-card-section class="q-pt-none">
         <div class="text-body">New Tabset's name:</div>
         <q-input v-model="newTabsetName"
+                 class="q-mb-none q-pb-none"
                  dense autofocus
                  error-message="Please do not use special Characters, maximum length is 32"
                  :error="!newTabsetNameIsValid"
                  data-testid="newTabsetName"
                  @keydown.enter="createNewTabset()"/>
-        <div class="text-body2 text-warning">{{ newTabsetDialogWarning() }}</div>
+        <div class="text-caption text-negative q-mt-none q-pt-none">{{ newTabsetDialogWarning() }}</div>
+        <q-checkbox v-model="addAutomatically" label="Add open tabs automatically" />&nbsp;
+        <q-icon name="help" color="primary" size="1em">
+          <q-tooltip>When checked, this will add all your browsers open tabs automatically to the new tabset.<br>
+            Otherwise, you have the chance to add all (or selected) tabs yourself later.
+          </q-tooltip>
+      </q-icon>
       </q-card-section>
 
       <q-card-actions align="right" class="text-primary">
@@ -60,6 +67,7 @@ const $q = useQuasar()
 const newTabsetName = ref('')
 const newTabsetNameExists = ref(false)
 const hideWarning = ref(false)
+const addAutomatically = ref(false)
 
 const newTabsetNameIsValid = computed(() => {
   return newTabsetName.value.length <= 32 && !STRIP_CHARS_IN_USER_INPUT.test(newTabsetName.value)
@@ -71,10 +79,13 @@ watchEffect(() => {
 
 const createNewTabset = () => {
   hideWarning.value = true
-  TabsetService.saveOrReplaceFromChromeTabs(newTabsetName.value, [], true)
+  const tabsToUse = addAutomatically.value ? tabsStore.tabs : []
+  TabsetService.saveOrReplaceFromChromeTabs(newTabsetName.value, tabsToUse, true)
     .then((result: object) => {
-      // populate pending set
-      TabsetService.createPendingFromBrowserTabs()
+
+      if (!addAutomatically.value) {
+        TabsetService.createPendingFromBrowserTabs()
+      }
 
       newTabsetName.value = ''
 
@@ -107,7 +118,7 @@ const createNewTabset = () => {
 
 const newTabsetDialogWarning = () => {
   return (!hideWarning.value && tabsStore.nameExistsInContextTabset(newTabsetName.value)) ?
-    "Tabset already exists" : ""
+    "Hint: Tabset exists, but you can add tabs" : ""
 }
 
 

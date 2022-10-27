@@ -3,7 +3,6 @@ import TabsetService from "src/services/TabsetService";
 import {CLEANUP_PERIOD_IN_MINUTES} from "boot/constants";
 import {useTabsStore} from "src/stores/tabsStore";
 import _ from "lodash"
-import {Tab} from "src/models/Tab";
 
 function runHousekeeping(alarm: chrome.alarms.Alarm) {
   if (alarm.name === "housekeeping") {
@@ -120,10 +119,6 @@ class ChromeApi {
       await chrome.tabs.remove(ids)
     }
     console.log(" --- closing all tabs: end ---")
-  }
-
-  getTabs() {
-    return [];
   }
 
   restore(tabset: Tabset) {

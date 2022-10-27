@@ -34,6 +34,9 @@ class TabsetService {
    * the provided Chrome tabs.
    *
    * The tabset is created or updated in the store, and the new data is persisted.
+   * If addAutomatically is true, the currently open tabs will be added to the tabset
+   * immediately.
+   * If merge is false, potentially existing tabs will be removed first.
    *
    * @param name the tabset's name (TODO: validation)
    * @param chromeTabs an array of Chrome tabs.
@@ -191,15 +194,6 @@ class TabsetService {
       const index = _.findIndex(tabsStore.pendingTabset.tabs, t => t.id === tab.id)
       tabsStore.pendingTabset.tabs.splice(index, 1);
       this.saveTabset(ts)
-
-      const encodedUrl = btoa(tab.chromeTab.url)
-      //let content = ''
-      let description = ''
-
-      // const content:object =  await this.getContentFor(tab)
-      // if (content && content['description' as keyof object]) {
-      //   description = content['description' as keyof object]
-      // }
 
       const dataFromStore:object = await this.persistenceService.updateContent(tab.chromeTab.url)
 
