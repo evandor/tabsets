@@ -12,12 +12,14 @@ import {useBookmarksStore} from "src/stores/bookmarksStore";
 import {useSearchStore} from "src/stores/searchStore";
 import {useNotificationsStore} from "src/stores/notificationsStore";
 import ChromeApi from "src/services/ChromeApi";
+import {useWindowsStore} from "stores/windowsStores";
 
 const tabsStore = useTabsStore()
 const tabGroupsStore = useTabGroupsStore()
 const featureTogglesStore = useFeatureTogglesStore()
 const bookmarksStore = useBookmarksStore()
 const searchStore = useSearchStore()
+const windowsStore = useWindowsStore()
 
 const $q = useQuasar()
 
@@ -31,6 +33,7 @@ tabGroupsStore.initListeners();
 
 bookmarksStore.init()
 searchStore.init()
+windowsStore.init()
 
 tabsetService.setLocalStorage(useQuasar().localStorage)
 tabsetService.init()

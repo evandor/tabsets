@@ -3,6 +3,7 @@
     <div class="row">
       <div class="col">
         <div class="text-h6">Search Results for '{{ searchStore.term }}': {{ tabsetHits.length }} hit(s)</div>
+        <div class="text-caption q-mb-md">Not happy with the search results? Try <span class="text-blue-9 cursor-pointer" @click="showReindexDialog = true"><u>re-indexing</u></span>.</div>
       </div>
     </div>
 
@@ -23,10 +24,11 @@ import {useTabsStore} from "src/stores/tabsStore";
 import _ from "lodash"
 import {useSearchStore} from "src/stores/searchStore";
 import {Tabset} from "src/models/Tabset";
-import {uid} from "quasar";
+import {uid, useQuasar} from "quasar";
 import SearchHit from "src/components/layouts/SearchHit.vue"
 import ChromeApi from "src/services/ChromeApi";
 import {Hit} from "src/models/Hit";
+import ReindexDialog from "components/dialogues/ReindexDialog.vue";
 
 const route = useRoute()
 const tabsStore = useTabsStore()
@@ -34,7 +36,9 @@ const searchStore = useSearchStore()
 
 const term = route.params.term as string
 
+const $q = useQuasar()
 const tabsetHits = ref<Hit[]>([])
+const showReindexDialog = ref(false)
 
 const newSearch = (term: string) => {
   tabsetHits.value = []
@@ -67,6 +71,16 @@ watchEffect(() => {
   console.log("searchStore.term", searchStore.term)
   if (searchStore.term?.trim() !== '') {
     newSearch(searchStore.term)
+  }
+})
+
+watchEffect(() => {
+  if (showReindexDialog.value) {
+    $q.dialog({
+      component: ReindexDialog
+    }).onDismiss(() => {
+      showReindexDialog.value = false
+    })
   }
 })
 

@@ -28,48 +28,6 @@
           {{ tabsStore.pendingTabset?.tabs.length }} unassigned tab(s)
         </div>
 
-        <!--        <q-toggle-->
-        <!--          v-if="syncStore.showSyncMode"-->
-        <!--          left-label-->
-        <!--          color="green"-->
-        <!--          v-model="syncModel"-->
-        <!--          @update:model-value="val => syncModeToggled(val)"-->
-        <!--          label=""-->
-        <!--        />-->
-
-
-        <span class="q-pr-lg" style="cursor: pointer" v-if="featuresStore.firebaseEnabled && auth.user">
-          <q-icon name="person" class="q-mr-md" size="28px"></q-icon>
-          <span>{{ auth.user?.email }}</span>
-          <q-menu
-            touch-position
-          >
-            <q-list dense style="min-width: 100px">
-              <q-item clickable v-close-popup>
-                <q-item-section @click="logout()">Logout</q-item-section>
-              </q-item>
-            </q-list>
-
-          </q-menu>
-        </span>
-
-        <span class="q-pr-lg" style="cursor: pointer"
-              v-if="featuresStore.firebaseEnabled && !auth.user && someoneSubscribed()">
-          <q-icon name="person" class="q-mr-md" size="28px"></q-icon>
-          <span @click="router.push('/login')">Login</span>
-        </span>
-
-        <!--        <q-btn v-if="featuresStore.firebaseEnabled && !auth.user && tabsStore.tabsets.size > 1 && !someoneSubscribed()"-->
-        <!--               outline rounded color="warning" :disable="onProPage()" label="Check out Tabsets Pro..." class="q-mr-lg"-->
-        <!--               @click="router.push('/trypro')">-->
-        <!--          <q-tooltip>Tabsets Pro let's you synchronize your tabsets across devices</q-tooltip>-->
-        <!--        </q-btn>-->
-
-        <!--        <q-icon name="settings" size="2em"-->
-        <!--                class="q-mr-md cursor-pointer"-->
-        <!--                @click="openSettingsPage()"-->
-        <!--                v-if="featuresStore.settingsEnabled"></q-icon>-->
-
         <q-btn label="Actions" style="width:200px" class="q-mr-lg">
           <q-menu fit>
             <q-list style="min-width: 100px">
@@ -79,7 +37,6 @@
               <q-item clickable>
                 <q-item-section @click="closeTrackedTabs()" v-close-popup>Close all tracked tabs</q-item-section>
               </q-item>
-
               <q-separator/>
               <q-item clickable>
                 <q-item-section @click="showExportDialog()" v-close-popup>Export</q-item-section>
@@ -91,16 +48,12 @@
               <q-item clickable>
                 <q-item-section @click="router.push('/settings')">Settings</q-item-section>
               </q-item>
-              <!--              <q-separator />-->
-              <!--              <q-item clickable>-->
-              <!--                <q-item-section>Help &amp; Feedback</q-item-section>-->
+<!--              <q-separator-->
+<!--                v-if="featuresStore.firebaseEnabled && !auth.user && tabsStore.tabsets.size > 1 && !someoneSubscribed()"/>-->
+              <!--              <q-item clickable-->
+              <!--                      v-if="featuresStore.firebaseEnabled && !auth.user && tabsStore.tabsets.size > 1 && !someoneSubscribed()">-->
+              <!--                <q-item-section @click="router.push('/trypro')">Check out Tabsets Pro...</q-item-section>-->
               <!--              </q-item>-->
-              <q-separator
-                v-if="featuresStore.firebaseEnabled && !auth.user && tabsStore.tabsets.size > 1 && !someoneSubscribed()"/>
-              <q-item clickable
-                      v-if="featuresStore.firebaseEnabled && !auth.user && tabsStore.tabsets.size > 1 && !someoneSubscribed()">
-                <q-item-section @click="router.push('/trypro')">Check out Tabsets Pro...</q-item-section>
-              </q-item>
               <q-separator/>
               <q-item clickable v-if="useRouter().currentRoute.value.fullPath !== '/about'"
                       @click="router.push('/about')">
@@ -117,7 +70,7 @@
     </q-header>
 
     <q-drawer v-model="leftDrawerOpen" side="left" bordered>
-      <DrawerLeft />
+      <DrawerLeft/>
     </q-drawer>
 
     <q-drawer show-if-above v-model="rightDrawerOpen" side="right" bordered
@@ -136,55 +89,6 @@
 
   </q-layout>
 
-  <q-dialog v-model="syncTabsetsDialog">
-    <q-card style="min-width: 350px">
-      <q-card-section>
-        <div class="text-h6">Synchronize tabsets</div>
-      </q-card-section>
-      <q-card-section>
-        <div class="text-body">
-          Once you start synchronization of your tabsets, the data will not be stored
-          locally any more so that you can access it from any device once logged in.
-        </div>
-      </q-card-section>
-
-      <q-card-section class="q-pt-none">
-
-      </q-card-section>
-
-      <q-card-actions align="right" class="text-primary">
-        <q-btn flat label="Cancel" v-close-popup/>
-        <q-btn flat label="Start synchronizing tabsets" v-close-popup
-               @click="startSync()"/>
-      </q-card-actions>
-    </q-card>
-  </q-dialog>
-
-  <q-dialog v-model="unsyncTabsetsDialog">
-    <q-card style="min-width: 350px">
-      <q-card-section>
-        <div class="text-h6">Stop syncing Tabsets</div>
-      </q-card-section>
-      <q-card-section>
-        <div class="text-body">
-          If you click on 'stop synchronizing tabsets', all your remote tabsets are
-          exported to this browser, stored locally and then deleted from your account.<br><br>
-          You can keep using them in this browser only.
-        </div>
-      </q-card-section>
-
-      <q-card-section class="q-pt-none">
-
-      </q-card-section>
-
-      <q-card-actions align="right" class="text-primary">
-        <q-btn flat label="Cancel" v-close-popup/>
-        <q-btn flat label="Stop synchronizing tabsets" v-close-popup
-               @click="stopSync()"/>
-      </q-card-actions>
-    </q-card>
-  </q-dialog>
-
 </template>
 
 <script setup lang="ts">
@@ -202,7 +106,7 @@ import TabsetService from "src/services/TabsetService";
 import {useSearchStore} from "src/stores/searchStore";
 import {useFeatureTogglesStore} from "src/stores/featureTogglesStore";
 import _ from "lodash"
-import NewTabset from "components/dialogues/NewTabsetDialog.vue";
+import NewTabsetDialog from "components/dialogues/NewTabsetDialog.vue";
 import ExportDialog from "components/dialogues/ExportDialog.vue";
 import ImportDialog from "components/dialogues/ImportDialog.vue";
 
@@ -213,10 +117,6 @@ const searchStore = useSearchStore()
 
 const rightDrawerOpen = ref(true)
 const leftDrawerOpen = ref(false)
-
-const syncTabsetsDialog = ref(false)
-const unsyncTabsetsDialog = ref(false)
-const syncModel = ref(false)
 
 const notificationsStore = useNotificationsStore()
 const featuresStore = useFeatureTogglesStore()
@@ -237,8 +137,6 @@ const localStorage = useQuasar().localStorage
 const appVersion = import.meta.env.PACKAGE_VERSION
 
 const searchBox = ref(null)
-
-const syncingActive = ref(false)
 
 useMeta(() => {
   return {
@@ -285,7 +183,7 @@ const toggleLeftDrawer = () => leftDrawerOpen.value = !leftDrawerOpen.value
 const showNewTabsetDialog = ref(false)
 const addTabset = () => {
   $q.dialog({
-    component: NewTabset
+    component: NewTabsetDialog
   }).onDismiss(() => {
     showNewTabsetDialog.value = false
   })
@@ -294,7 +192,6 @@ const addTabset = () => {
 const closeTrackedTabs = () => {
   TabsetService.closeTrackedTabs()
 }
-
 
 const showExportDialog = () => {
   $q.dialog({component: ExportDialog})

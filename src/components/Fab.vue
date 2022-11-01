@@ -60,7 +60,7 @@ import {useRouter} from "vue-router";
 import {Tab} from "src/models/Tab";
 import ChromeApi from "src/services/ChromeApi";
 import {useNotificationsStore} from "src/stores/notificationsStore"
-import NewTabset from "components/dialogues/NewTabsetDialog.vue"
+import NewTabsetDialog from "components/dialogues/NewTabsetDialog.vue"
 
 const tabsStore = useTabsStore()
 const router = useRouter()
@@ -73,7 +73,7 @@ const showNewUrlDialog = ref(false)
 watchEffect(() => {
   if (showNewTabsetDialog.value) {
     $q.dialog({
-      component: NewTabset
+      component: NewTabsetDialog
     }).onDismiss(() => {
       showNewTabsetDialog.value = false
     })

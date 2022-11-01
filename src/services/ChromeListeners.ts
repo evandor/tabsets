@@ -9,6 +9,7 @@ import throttledQueue from 'throttled-queue';
 // @ts-ignore
 import {convert} from "html-to-text"
 import ChromeApi from "src/services/ChromeApi";
+import {useWindowsStore} from "stores/windowsStores";
 
 class ChromeListeners {
 
@@ -16,11 +17,10 @@ class ChromeListeners {
 
   thumbnailsActive = true
 
-  throttleOnePerSecond = throttledQueue(1, 1000)
+  throttleOnePerSecond = throttledQueue(1, 1000, true)
 
   clearWorking() {
     if (this.inProgress) {
-      //console.log("resetting 'inProgress' to false")
       const tabsStore = useTabsStore()
       tabsStore.loadTabs('onProgressStopped')
     }
@@ -200,7 +200,8 @@ class ChromeListeners {
 
   onMessage(request: any, sender: chrome.runtime.MessageSender, sendResponse: any) {
     if (request.msg === 'capture') {
-      this.handleCapture(sender, sendResponse)
+      const screenShotWindow = useWindowsStore().screenshotWindow
+      this.handleCapture(sender, screenShotWindow, sendResponse)
     } else if (request.msg === 'html2text') {
       this.handleHtml2Text(request, sender, sendResponse)
       // } else if (request.msg === 'htmlmeta') {
@@ -286,7 +287,7 @@ class ChromeListeners {
   }
 
 
-  private handleCapture(sender: chrome.runtime.MessageSender, sendResponse: any) {
+  private handleCapture(sender: chrome.runtime.MessageSender, windowId: number, sendResponse: any) {
     if (!this.thumbnailsActive) {
       return
     }
@@ -298,51 +299,53 @@ class ChromeListeners {
         return // no screenshot of extension itself
       }
       console.log("capturing tab...", current.url, selfId)
-      chrome.tabs.captureVisibleTab(
-        {},
-        function (dataUrl) {
-          if (dataUrl === undefined) {
-            return
-          }
-          //console.log("capturing thumbnail for ", sender.tab?.id, Math.round(dataUrl.length / 1024) + "kB")
-
-          let img = new Image()
-          img.src = dataUrl
-          img.onload = () => {
-            let canvas = document.createElement('canvas')
-            let width = img.width
-            let height = img.height
-            console.log("original width/height", img.width, img.height)
-            const MAX_WIDTH = 265 * 1.3
-            const MAX_HEIGHT = 200 * 1.3
-
-            if (width > height) {
-              if (width > MAX_WIDTH) {
-                height *= MAX_WIDTH / width
-                height = Math.round(height)
-                width = MAX_WIDTH
-              }
-            } else {
-              if (height > MAX_HEIGHT) {
-                width *= MAX_HEIGHT / height
-                width = Math.round(width)
-                height = MAX_HEIGHT
-              }
+      setTimeout(() => {
+        chrome.tabs.captureVisibleTab(
+          windowId,
+          {},
+          function (dataUrl) {
+            if (dataUrl === undefined) {
+              return
             }
-            let ctx = canvas.getContext('2d')
-            // @ts-ignore
-            ctx.drawImage(img, 0, 0, width, height)
-            //resolve(canvas.toDataURL()) // this will return base64 image results after resize
+            //console.log("capturing thumbnail for ", sender.tab?.id, Math.round(dataUrl.length / 1024) + "kB")
 
-            console.log(`capturing ${width}x${height} thumbnail for ${sender.tab?.id}, ${Math.round(canvas.toDataURL().length / 1024)}kB`)
-            TabsetService.saveThumbnailFor(sender.tab, canvas.toDataURL())
-            sendResponse({imgSrc: dataUrl});
+            let img = new Image()
+            img.src = dataUrl
+            img.onload = () => {
+              let canvas = document.createElement('canvas')
+              let width = img.width
+              let height = img.height
+              console.log("original width/height", img.width, img.height)
+              const MAX_WIDTH = 265 * 1.3
+              const MAX_HEIGHT = 200 * 1.3
 
+              if (width > height) {
+                if (width > MAX_WIDTH) {
+                  height *= MAX_WIDTH / width
+                  height = Math.round(height)
+                  width = MAX_WIDTH
+                }
+              } else {
+                if (height > MAX_HEIGHT) {
+                  width *= MAX_HEIGHT / height
+                  width = Math.round(width)
+                  height = MAX_HEIGHT
+                }
+              }
+              let ctx = canvas.getContext('2d')
+              // @ts-ignore
+              ctx.drawImage(img, 0, 0, width, height)
+              //resolve(canvas.toDataURL()) // this will return base64 image results after resize
+
+              console.log(`capturing ${width}x${height} thumbnail for ${sender.tab?.id}, ${Math.round(canvas.toDataURL().length / 1024)}kB`)
+              TabsetService.saveThumbnailFor(sender.tab, canvas.toDataURL())
+              sendResponse({imgSrc: dataUrl});
+
+            }
           }
+        );
+      },1000 )
 
-
-        }
-      );
     })
 
   }

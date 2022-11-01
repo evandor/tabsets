@@ -2,6 +2,21 @@ import {defineStore} from 'pinia';
 import Fuse from 'fuse.js'
 import _ from "lodash"
 import {SearchDoc} from "src/models/SearchDoc";
+import throttledQueue from "throttled-queue";
+import {useWindowsStore} from "stores/windowsStores";
+import {Tabset} from "src/models/Tabset";
+import {useTabsStore} from "stores/tabsStore";
+
+function dummyPromise(timeout: number, tabToCloseId: number | undefined = undefined) {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      if (tabToCloseId) {
+        chrome.tabs.remove(tabToCloseId)
+      }
+      resolve("Success!");
+    }, timeout);
+  });
+}
 
 export const useSearchStore = defineStore('search', {
   state: () => ({
@@ -48,6 +63,39 @@ export const useSearchStore = defineStore('search', {
       //console.log("adding to index: ", indexLength, doc)
       this.fuse.add(doc)
       return indexLength
+    },
+
+    reindexAll() {
+      const throttleOnePerXSeconds = throttledQueue(1, 3000, true)
+      chrome.windows.create({focused: true}, (window: any) => {
+        console.log("window", window)
+        useWindowsStore().screenshotWindow = window.id
+        let tabToClose: number | undefined = undefined
+        const values = Array.from(useTabsStore().tabsets.values())
+
+        const res:Promise<any>[] = values.flatMap((ts:Tabset) => {
+          return ts.tabs.map((t) => {
+            return throttleOnePerXSeconds(async () => {
+              chrome.tabs.create({windowId: window.id, url: t.chromeTab.url}, (tab: chrome.tabs.Tab) => {
+                tabToClose = tab.id
+                dummyPromise(3000, tab.id)
+              })
+              return dummyPromise(3000)
+            })
+          })
+        })
+
+        Promise.all(res)
+          .then(() => {
+            chrome.windows.remove(window.id)
+            useWindowsStore().screenshotWindow = null as unknown as number
+          })
+
+      })
+
+
+
+
     },
 
     populate(contentPromise: Promise<any[]>) {
