@@ -70,7 +70,7 @@
     </q-header>
 
     <q-drawer v-model="leftDrawerOpen" side="left" bordered>
-      <DrawerLeft/>
+      <DrawerLeft />
     </q-drawer>
 
     <q-drawer show-if-above v-model="rightDrawerOpen" side="right" bordered
@@ -92,10 +92,9 @@
 </template>
 
 <script setup lang="ts">
-import {onMounted, onUnmounted, ref} from 'vue';
+import {onMounted, onUnmounted, ref, watchEffect} from 'vue';
 import {useQuasar} from "quasar";
 import {useTabsStore} from "src/stores/tabsStore";
-import {useTabGroupsStore} from "src/stores/tabGroupsStore";
 import {useRoute, useRouter} from "vue-router";
 import {useMeta} from 'quasar'
 import {useNotificationsStore} from "src/stores/notificationsStore";
@@ -112,7 +111,6 @@ import ImportDialog from "components/dialogues/ImportDialog.vue";
 
 const router = useRouter()
 const tabsStore = useTabsStore()
-const tabGroupsStore = useTabGroupsStore()
 const searchStore = useSearchStore()
 
 const rightDrawerOpen = ref(true)
@@ -174,11 +172,13 @@ const title = () => {
 }
 const goHome = () => router.push("/")
 
-const someoneSubscribed = () => {
-  return _.find(localStorage.getAllKeys(), (k: string) => k.indexOf(".subscription") >= 0)
-}
-
 const toggleLeftDrawer = () => leftDrawerOpen.value = !leftDrawerOpen.value
+
+watchEffect(()=> {
+  if (notificationsStore.showBookmarks) {
+    leftDrawerOpen.value = true
+  }
+})
 
 const showNewTabsetDialog = ref(false)
 const addTabset = () => {
