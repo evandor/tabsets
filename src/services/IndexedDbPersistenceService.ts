@@ -38,28 +38,16 @@ class IndexedDbPersistenceService implements PersistenceService {
   }
 
   async updateContent(url: string):Promise<object> {
-    let content = ''
-    let description = ''
     const encodedUrl = btoa(url)
 
     const objectStore = this.db.transaction("content", "readwrite").objectStore("content");
     let cursor = await objectStore.openCursor()
     let data = null
     while (cursor) {
-      //console.log("cursor", cursor.value, encodedUrl)
       if (cursor.value.id === encodedUrl) {
         data = cursor.value
         data['expires'] = 0
-        console.log("objectStore tata", data)
         objectStore.put(data, cursor.key)
-
-        // content = data.content
-        // Object.keys(data.metas).forEach((key: string) => {
-        //   if (key.indexOf("description") >= 0 && data.metas[key] && data.metas[key].trim().length > description.length) {
-        //     console.log("updating description to ", data.metas[key].trim())
-        //     description = data.metas[key].trim()
-        //   }
-        // })
       }
       cursor = await cursor.continue();
     }
@@ -90,7 +78,7 @@ class IndexedDbPersistenceService implements PersistenceService {
       expires: new Date().getTime() + 1000 * 60 * 60,
       thumbnail: thumbnail
     }, encodedTabUrl)
-      .then(ts => console.log("added thumbnail"))
+      .then(() => console.log("added thumbnail"))
       .catch(err => console.log("err", err))
   }
 

@@ -228,7 +228,6 @@ import TabsetService from "src/services/TabsetService";
 import {Tab} from "src/models/Tab";
 import {useFeatureTogglesStore} from "src/stores/featureTogglesStore";
 import {MAX_TABS_TO_SHOW} from 'boot/constants'
-import ChromeApi from "src/services/ChromeApi";
 import RestoreTabsetDialog from "components/dialogues/RestoreTabsetDialog.vue";
 
 const route = useRoute();
@@ -304,18 +303,19 @@ const setGroupedTabsCaption = (msg: string) => groupedTabsCaption.value = msg
 
 const selectedCount = ref(0)
 
-// const showTabGroup = (group: chrome.tabGroups.TabGroup) => tabsForGroup(group.id).length > 0
-// const showOtherTabs = () => tabsStore.browserTabset?.tabs.length > 0 || tabGroupsStore.tabGroups.length > 0
-
 const updateSelectionCount = () => {
-  //console.log("hier", val, TabsetService.getSelectedPendingTabs().length)
   selectedCount.value = TabsetService.getSelectedPendingTabs().length
 }
 
-// const syncTabset = () => {
-//   console.log("syncing tabset", tabsStore.currentTabsetId)
-//   TabsetService.syncTabset(tabsStore.currentTabsetId)
-// }
+const onDrop = (evt: DragEvent, tabsetId: string) => {
+  console.log("evt", evt, tabsetId)
+  if (evt.dataTransfer && tabsetId) {
+    //const tabId = evt.dataTransfer.getData('text/plain')
+    //TabsetService.moveToTabset(tabId, tabsetId)
+  } else {
+    console.log("got error dropping tab", tabsetId)
+  }
+}
 
 const pendingTabsCount = () => {
   let label = formatLength(tabsStore.pendingTabset?.tabs.length - duplicatesCount.value, 'tab', 'tabs')
@@ -370,6 +370,30 @@ const filteredTabs = () => {
 
 const restoreDialog = () => {
   $q.dialog({component: RestoreTabsetDialog})
+}
+
+const list2 = [
+  {name: 'Juan', id: 5},
+  {name: 'Edgard', id: 6},
+  {name: 'Johnson', id: 7},
+]
+
+const log = (event: any) => {
+  console.log("egent1", event)
+  const {moved, added} = event
+  if (moved) console.log('moved', moved)
+  if (added) console.log('added', added, added.element)
+}
+
+const add = () => {
+  console.log('add')
+}
+const replace = () => {
+  console.log('replace')
+}
+const checkMove = (event:any) => {
+  console.log('checkMove', event.draggedContext)
+  console.log('Future index: ' + event.draggedContext.futureIndex)
 }
 
 </script>

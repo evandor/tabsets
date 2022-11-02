@@ -21,15 +21,6 @@
       @mouseleave="showButtons(tabset.id, false)"
       :style="tabset.id === tabsStore.currentTabsetId ? 'background-color:#efefef' : 'border:0px solid #bfbfbf'">
 
-      <q-item-section avatar v-if="remoteAndLocalTabsets">
-        <q-icon name="cloud_queue" color="red">
-          <q-tooltip>
-            This tabset is stored only locally and cannot be accessed from anywhere.<br>
-            You might want to synchronize it to add it to your cloud storage.
-          </q-tooltip>
-        </q-icon>
-      </q-item-section>
-
       <q-item-section
         @drop="onDrop($event, tabset.id)"
         @dragover.prevent

@@ -56,8 +56,7 @@ class TabsetService {
         replaced: result.replaced,
         merged: merge
       }
-    }
-    catch(err) {
+    } catch (err) {
       return Promise.reject("problem updating or creating tabset")
     }
   }
@@ -166,8 +165,8 @@ class TabsetService {
     this.saveTabset(currentTabset)
   }
 
-  async saveToCurrentTabset(tab: Tab): Promise<number> {
-    return this.saveToTabset(this.getCurrentTabset() || new Tabset(uid(), "unknown", [], []), tab)
+  async saveToCurrentTabset(tab: Tab, index: number | undefined = undefined): Promise<number> {
+    return this.saveToTabset(this.getCurrentTabset() || new Tabset(uid(), "unknown", [], []), tab, index)
   }
 
   async saveToTabsetId(tsId: string, tab: Tab): Promise<number> {
@@ -178,8 +177,8 @@ class TabsetService {
     return Promise.reject("no tabset for give id " + tsId)
   }
 
-  async saveToTabset(ts: Tabset, tab: Tab): Promise<number> {
-    console.log("adding to tabset", ts, tab)
+  async saveToTabset(ts: Tabset, tab: Tab, addAt: number | undefined = undefined): Promise<number> {
+    console.log("adding to tabset", ts, tab, addAt)
     if (tab.chromeTab.url) {
       const tabsStore = useTabsStore()
 
@@ -189,13 +188,17 @@ class TabsetService {
       }
 
       tab.status = TabStatus.DEFAULT
-      ts.tabs.push(tab)
+      if (addAt && addAt >= 0) {
+        ts.tabs.splice(addAt, 0, tab)
+      } else {
+        ts.tabs.push(tab)
+      }
 
       const index = _.findIndex(tabsStore.pendingTabset.tabs, t => t.id === tab.id)
       tabsStore.pendingTabset.tabs.splice(index, 1);
       this.saveTabset(ts)
 
-      const dataFromStore:object = await this.persistenceService.updateContent(tab.chromeTab.url)
+      const dataFromStore: object = await this.persistenceService.updateContent(tab.chromeTab.url)
 
       this.persistenceService.updateThumbnail(tab.chromeTab.url)
 
@@ -205,8 +208,8 @@ class TabsetService {
         tab.chromeTab.title || '',
         tab.chromeTab.title || '',
         tab.chromeTab.url || '',
-        dataFromStore['description' as keyof object],
-        dataFromStore['content' as keyof object],
+        dataFromStore ? dataFromStore['description' as keyof object] : '',
+        dataFromStore ? dataFromStore['content' as keyof object] : '',
         [ts.id],
         tab.chromeTab.favIconUrl || '')
     }
@@ -255,7 +258,7 @@ class TabsetService {
               //currentTabset.tabs.push(t)
               this.saveToCurrentTabset(t)
                 .then(() => successful += 1)
-                .catch((err: any) => failed += 1)
+                .catch(() => failed += 1)
             }
           } else {
             console.log("got tab with missing data", t)
@@ -306,10 +309,8 @@ class TabsetService {
 
   saveThumbnailFor(tab: chrome.tabs.Tab | undefined, thumbnail: string) {
     if (tab && tab.url) {
-      const encodedTabUrl = btoa(tab.url)
-      //localStorage.setItem("tabsets.tab.xxx", thumbnail)
       this.persistenceService.saveThumbnail(tab.url, thumbnail)
-        .then(ts => console.log("added thumbnail"))
+        .then(() => console.log("added thumbnail"))
         .catch(err => console.log("err", err))
     }
   }
@@ -347,19 +348,19 @@ class TabsetService {
       let description: string = null as unknown as string
       Object.keys(metas).forEach((key: string) => {
         //console.log("checking meta", key, metas[key as keyof object])
-        let value:string = metas[key as keyof object]
+        let value: string = metas[key as keyof object]
         if (key.indexOf("description") >= 0 && value && value.trim().length > 0) {
           description = value.trim()
         }
       })
 
       this.persistenceService.saveContent(tab, text, metas, title, description, tabsetIds)
-        .then(ts => console.log("added content"))
+        .then(() => console.log("added content"))
         .catch(err => console.log("err", err))
 
       if (description && tabsetIds.length > 0) {
         console.log("updating description for ", tab.url, description)
-        tabsetIds.forEach((tsId:string) => {
+        tabsetIds.forEach((tsId: string) => {
           const tabset = useTabsStore().getTabset(tsId)
           if (tabset) {
             _.forEach(tabset.tabs, (t: Tab) => {
@@ -611,6 +612,18 @@ class TabsetService {
     }
   }
 
+  moveTo(tabId: string, newIndex: number) {
+    console.log("moving", tabId, newIndex)
+    let tabs = useTabsStore().getCurrentTabs
+    const oldIndex =_.findIndex(tabs, t => t.id === tabId)
+    console.log("oldIncex", oldIndex,tabs)
+    if (oldIndex >= 0) {
+      const tab = tabs.splice(oldIndex, 1)[0];
+      console.log("foudn tab", tab)
+      tabs = tabs.splice(newIndex, 0, tab);
+      this.saveCurrentTabset()
+    }
+  }
 }
 
 export default new TabsetService();

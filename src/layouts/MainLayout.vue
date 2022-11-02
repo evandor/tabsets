@@ -48,8 +48,8 @@
               <q-item clickable>
                 <q-item-section @click="router.push('/settings')">Settings</q-item-section>
               </q-item>
-<!--              <q-separator-->
-<!--                v-if="featuresStore.firebaseEnabled && !auth.user && tabsStore.tabsets.size > 1 && !someoneSubscribed()"/>-->
+              <!--              <q-separator-->
+              <!--                v-if="featuresStore.firebaseEnabled && !auth.user && tabsStore.tabsets.size > 1 && !someoneSubscribed()"/>-->
               <!--              <q-item clickable-->
               <!--                      v-if="featuresStore.firebaseEnabled && !auth.user && tabsStore.tabsets.size > 1 && !someoneSubscribed()">-->
               <!--                <q-item-section @click="router.push('/trypro')">Check out Tabsets Pro...</q-item-section>-->
@@ -70,7 +70,7 @@
     </q-header>
 
     <q-drawer v-model="leftDrawerOpen" side="left" bordered>
-      <DrawerLeft />
+      <DrawerLeft/>
     </q-drawer>
 
     <q-drawer show-if-above v-model="rightDrawerOpen" side="right" bordered
@@ -104,7 +104,6 @@ import DrawerLeft from "src/components/DrawerLeft.vue"
 import TabsetService from "src/services/TabsetService";
 import {useSearchStore} from "src/stores/searchStore";
 import {useFeatureTogglesStore} from "src/stores/featureTogglesStore";
-import _ from "lodash"
 import NewTabsetDialog from "components/dialogues/NewTabsetDialog.vue";
 import ExportDialog from "components/dialogues/ExportDialog.vue";
 import ImportDialog from "components/dialogues/ImportDialog.vue";
@@ -113,8 +112,10 @@ const router = useRouter()
 const tabsStore = useTabsStore()
 const searchStore = useSearchStore()
 
+const localStorage = useQuasar().localStorage
+
 const rightDrawerOpen = ref(true)
-const leftDrawerOpen = ref(false)
+const leftDrawerOpen = ref(localStorage.getItem<boolean>("showBookmarks"))
 
 const notificationsStore = useNotificationsStore()
 const featuresStore = useFeatureTogglesStore()
@@ -130,7 +131,7 @@ $q.loadingBar.setDefaults({
 
 const search = ref('')
 
-const localStorage = useQuasar().localStorage
+
 //@ts-ignore
 const appVersion = import.meta.env.PACKAGE_VERSION
 
@@ -174,10 +175,9 @@ const goHome = () => router.push("/")
 
 const toggleLeftDrawer = () => leftDrawerOpen.value = !leftDrawerOpen.value
 
-watchEffect(()=> {
-  if (notificationsStore.showBookmarks) {
-    leftDrawerOpen.value = true
-  }
+watchEffect(() => {
+  leftDrawerOpen.value = !!notificationsStore.showBookmarks
+  localStorage.set("showBookmarks", leftDrawerOpen.value)
 })
 
 const showNewTabsetDialog = ref(false)
