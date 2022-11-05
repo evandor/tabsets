@@ -201,31 +201,6 @@
     </q-card>
   </q-expansion-item>
 
-  <q-expansion-item
-    icon="tabs"
-    default-opened
-    header-class="text-black"
-    expand-icon-class="text-black"
-    expand-separator>
-    <template v-slot:header="{ expanded }">
-
-      <q-item-section>
-        <div>
-          <span class="text-weight-bold">ALL</span>
-          <div class="text-caption ellipsis">all</div>
-        </div>
-      </q-item-section>
-      <q-item-section></q-item-section>
-    </template>
-
-    <q-card>
-      <q-card-section>
-        <Tabcards :tabs="tabsStore.getCurrentTabs" group="all" />
-      </q-card-section>
-    </q-card>
-  </q-expansion-item>
-
-
 </template>
 
 <script setup lang="ts">
