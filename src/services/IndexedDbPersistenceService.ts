@@ -82,14 +82,14 @@ class IndexedDbPersistenceService implements PersistenceService {
       .catch(err => console.log("err", err))
   }
 
-  async getThumbnail(url: string): Promise<string> {
+  getThumbnail(url: string): Promise<string> {
     const encodedUrl = btoa(url)
-    return await this.db.get('thumbnails', encodedUrl)
+    return this.db.get('thumbnails', encodedUrl)
   }
 
-  async getContent(url: string): Promise<object> {
+  getContent(url: string): Promise<object> {
     const encodedUrl = btoa(url)
-    return await this.db.get('content', encodedUrl)
+    return this.db.get('content', encodedUrl)
   }
 
   deleteThumbnail(url: string): Promise<void> {

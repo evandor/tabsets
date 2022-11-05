@@ -99,12 +99,13 @@ class TabsetService {
     return Promise.reject("tabset id not set")
   }
 
-  saveCurrentTabset() {
+  saveCurrentTabset():Promise<any> {
     const tabsStore = useTabsStore()
     const currentTabset = tabsStore.getCurrentTabset
     if (currentTabset) {
-      this.saveTabset(currentTabset)
+      return this.saveTabset(currentTabset)
     }
+    return Promise.reject("current tabset could not be found")
   }
 
   async restore(tabsetId: string, closeOldTabs: boolean = true) {
@@ -136,7 +137,7 @@ class TabsetService {
     const tabset = this.getTabset(tabsetId)
     if (tabset) {
       const tabsStore = useTabsStore()
-      _.forEach(tabsStore.getTabset(tabsetId)?.tabs, t => this.removeThumbnailsFor(t.chromeTab.url || ''))
+      _.forEach(tabsStore.getTabset(tabsetId)?.tabs, t => this.removeThumbnailsFor(t?.chromeTab.url || ''))
       tabsStore.deleteTabset(tabsetId)
       this.persistenceService.deleteTabset(tabsetId)
       //this.db.delete('tabsets', tabsetId)
@@ -165,8 +166,8 @@ class TabsetService {
     this.saveTabset(currentTabset)
   }
 
-  async saveToCurrentTabset(tab: Tab, index: number | undefined = undefined): Promise<number> {
-    return this.saveToTabset(this.getCurrentTabset() || new Tabset(uid(), "unknown", [], []), tab, index)
+  async saveToCurrentTabset(tab: Tab): Promise<number> {
+    return this.saveToTabset(this.getCurrentTabset() || new Tabset(uid(), "unknown", [], []), tab)
   }
 
   async saveToTabsetId(tsId: string, tab: Tab): Promise<number> {
@@ -177,8 +178,8 @@ class TabsetService {
     return Promise.reject("no tabset for give id " + tsId)
   }
 
-  async saveToTabset(ts: Tabset, tab: Tab, addAt: number | undefined = undefined): Promise<number> {
-    console.log("adding to tabset", ts, tab, addAt)
+  async saveToTabset(ts: Tabset, tab: Tab): Promise<number> {
+    console.log("adding to tabset", ts, tab)
     if (tab.chromeTab.url) {
       const tabsStore = useTabsStore()
 
@@ -188,11 +189,7 @@ class TabsetService {
       }
 
       tab.status = TabStatus.DEFAULT
-      if (addAt && addAt >= 0) {
-        ts.tabs.splice(addAt, 0, tab)
-      } else {
-        ts.tabs.push(tab)
-      }
+
 
       const index = _.findIndex(tabsStore.pendingTabset.tabs, t => t.id === tab.id)
       tabsStore.pendingTabset.tabs.splice(index, 1);
@@ -318,13 +315,12 @@ class TabsetService {
   async getThumbnailFor(selectedTab: Tab): Promise<any> {
     //console.log("checking thumbnail for", selectedTab.chromeTab.url)
     if (selectedTab.chromeTab.url) {
-      return await this.persistenceService.getThumbnail(selectedTab.chromeTab.url)
-
+      return this.persistenceService.getThumbnail(selectedTab.chromeTab.url)
     }
     return Promise.reject("url not provided");
   }
 
-  async getContentFor(selectedTab: Tab): Promise<object> {
+  async getContentFor(selectedTab: Tab): Promise<any> {
     if (selectedTab.chromeTab.url) {
       return this.persistenceService.getContent(selectedTab.chromeTab.url)
     }
@@ -615,8 +611,9 @@ class TabsetService {
   moveTo(tabId: string, newIndex: number) {
     console.log("moving", tabId, newIndex)
     let tabs = useTabsStore().getCurrentTabs
-    const oldIndex =_.findIndex(tabs, t => t.id === tabId)
-    console.log("oldIncex", oldIndex,tabs)
+    console.log("tabs", tabs)
+    const oldIndex = _.findIndex(tabs, t => t.id === tabId)
+    console.log("oldIncex", oldIndex, tabs)
     if (oldIndex >= 0) {
       const tab = tabs.splice(oldIndex, 1)[0];
       console.log("foudn tab", tab)

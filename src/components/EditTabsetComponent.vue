@@ -48,13 +48,15 @@
     <div class="justify-center row q-ma-none q-pa-xl">
 
     <span v-if="TabsetService.getSelectedPendingTabs().length === 0">
-      <q-btn icon="file_download" :label="'Add all to Tabset  ' + tabsStore.currentTabsetName" class="q-mx-lg" color="positive"
+      <q-btn icon="file_download" :label="'Add all to Tabset  ' + tabsStore.currentTabsetName" class="q-mx-lg"
+             color="positive"
              @click="saveAllPendingTabs()"></q-btn>
       <q-btn icon="delete_outline" label="Remove all" class="q-mx-lg" color="negative"
              @click="removeAllPendingTabs()"></q-btn>
     </span>
       <span v-else>
-      <q-btn icon="file_download" label="add selected" color="positive" class="q-mx-lg" @click="saveSelectedPendingTabs()"></q-btn>
+      <q-btn icon="file_download" label="add selected" color="positive" class="q-mx-lg"
+             @click="saveSelectedPendingTabs()"></q-btn>
        <q-btn icon="delete_outline" label="remove selected" class="q-mx-lg" color="negative"
               @click="removeSelectedPendingTabs()"></q-btn>
     </span>
@@ -96,14 +98,6 @@
       </div>
       <div class="col-xs-12 col-md-7 text-right">
 
-        <q-btn v-if="tabsStore.getCurrentTabset?.tabs.length > 0 && featuresStore.firebaseEnabled && auth.isAuthenticated"
-               flat dense icon="restore_page"
-               color="warning" :label="$q.screen.gt.sm ? 'Sync Tabset...' : ''"
-               class="q-mr-md"
-               @click="syncTabset()">
-          <q-tooltip>This tabset is stored locally. To use it on different devices, click 'Sync Tabset'</q-tooltip>
-        </q-btn>
-
         <q-btn v-if="tabsStore.getCurrentTabset?.tabs.length > 0"
                flat dense icon="restore_page"
                color="green" :label="$q.screen.gt.sm ? 'Open Tabset...' : ''"
@@ -116,26 +110,25 @@
     </div>
   </q-toolbar>
 
+  <!-- pinned tabs -->
   <q-expansion-item v-if="tabsStore.pinnedTabs.length > 0"
                     header-class="text-black"
                     expand-icon-class="text-black"
                     expand-separator
                     default-opened>
     <template v-slot:header="{ expanded }">
-      <q-item-section avatar>
-        <q-icon name="push_pin"/>
-      </q-item-section>
       <q-item-section>
         <div>
-          <span class="text-weight-bold">Pinned Tabs</span>
-          <div class="text-caption">this browser's window's tabs which are pinned right now</div>
+          <span class="text-weight-bold">Pinned Tabs ({{ formatLength(tabsStore.pinnedTabs.length, 'tab', 'tabs') }})</span>
+          <div class="text-caption ellipsis">this browser's window's tabs to be pinned</div>
         </div>
       </q-item-section>
-      <q-item-section>{{ formatLength(tabsStore.pinnedTabs.length, 'tab', 'tabs') }}</q-item-section>
     </template>
     <q-card>
       <q-card-section>
-        <Tabcards :tabs="tabsStore.pinnedTabs"/>
+
+        <Tabcards key="pinnedTabs" :tabs="tabsStore.pinnedTabs" group="pinnedTabs" />
+
       </q-card-section>
     </q-card>
   </q-expansion-item>
@@ -163,7 +156,7 @@
       </template>
       <q-card>
         <q-card-section>
-          <Tabcards :tabs="tabsForGroup( group.id)" v-on:sendCaption="setGroupedTabsCaption"/>
+          <Tabcards :tabs="tabsForGroup( group.id)" :key="'groupedTabs_'+group.id" :group="'groupedTabs_'+group.id"  />
         </q-card-section>
       </q-card>
     </q-expansion-item>
@@ -182,24 +175,18 @@
   </q-banner>
 
   <!-- rest: neither pinned, grouped, or pending -->
-  <q-expansion-item v-if="unpinnedNoGroup().length > 0"
+  <q-expansion-item
                     icon="tabs"
                     default-opened
                     header-class="text-black"
                     expand-icon-class="text-black"
                     expand-separator>
     <template v-slot:header="{ expanded }">
-      <!--      <q-item-section avatar>-->
-      <!--        <q-icon name="tab"/>-->
-      <!--      </q-item-section>-->
 
       <q-item-section>
         <div>
-            <span class="text-weight-bold">Tabs ({{
-                formatLength(unpinnedNoGroup().length, 'tab', 'tabs')
-              }})</span>
-          <div class="text-caption ellipsis" v-text="otherTabsCaption"></div>
-          <!--                <q-btn label="create new tabset" v-if="expanded" @click="newTabsetFrom(group.title, group.id)"/>-->
+          <span class="text-weight-bold">Tabs ({{ formatLength(unpinnedNoGroup().length, 'tab', 'tabs') }})</span>
+          <div class="text-caption ellipsis">other tabs</div>
         </div>
       </q-item-section>
       <q-item-section></q-item-section>
@@ -207,7 +194,33 @@
 
     <q-card>
       <q-card-section>
-        <Tabcards :tabs="unpinnedNoGroup()" v-on:sendCaption="setOtherTabsCaption"/>
+
+        <Tabcards :tabs="unpinnedNoGroup()" group="otherTabs" />
+
+      </q-card-section>
+    </q-card>
+  </q-expansion-item>
+
+  <q-expansion-item
+    icon="tabs"
+    default-opened
+    header-class="text-black"
+    expand-icon-class="text-black"
+    expand-separator>
+    <template v-slot:header="{ expanded }">
+
+      <q-item-section>
+        <div>
+          <span class="text-weight-bold">ALL</span>
+          <div class="text-caption ellipsis">all</div>
+        </div>
+      </q-item-section>
+      <q-item-section></q-item-section>
+    </template>
+
+    <q-card>
+      <q-card-section>
+        <Tabcards :tabs="tabsStore.getCurrentTabs" group="all" />
       </q-card-section>
     </q-card>
   </q-expansion-item>
@@ -240,7 +253,6 @@ const featuresStore = useFeatureTogglesStore()
 const tabsetname = ref(tabsStore.currentTabsetName)
 const filter = ref('')
 
-const otherTabsCaption = ref('current tabs, neither pinned nor grouped...')
 const groupedTabsCaption = ref('current tabs, neither pinned nor grouped')
 const duplicatesCount = ref(0)
 
@@ -250,7 +262,7 @@ watchEffect(() => {
   const currentTabs: Tab[] = tabsStore.getCurrentTabs
   duplicatesCount.value = 0
   _.forEach(tabsStore.pendingTabset?.tabs, pendingTab => {
-    if (_.find(currentTabs, t => t.chromeTab.url === pendingTab.chromeTab.url)) {
+    if (_.find(currentTabs, t => t?.chromeTab.url === pendingTab.chromeTab.url)) {
       pendingTab.isDuplicate = true
       duplicatesCount.value += 1
     } else {
@@ -263,13 +275,13 @@ function unpinnedNoGroup() {
   return _.filter(
     _.map(tabsStore.getCurrentTabs, t => t),
     // @ts-ignore
-    (t: Tab) => !t.chromeTab.pinned && t.chromeTab.groupId === -1)
+    (t: Tab) => !t?.chromeTab.pinned && t?.chromeTab.groupId === -1)
 }
 
 function tabsForGroup(groupId: number): Tab[] {
   return _.filter(tabsStore.getCurrentTabs,
     //@ts-ignore
-    (t: Tab) => t.chromeTab.groupId === groupId)
+    (t: Tab) => t?.chromeTab.groupId === groupId)
 }
 
 const update = (tabsetIdent: object) => {
@@ -298,23 +310,10 @@ const saveSelectedPendingTabs = () => TabsetService.saveSelectedPendingTabs()
 const removeSelectedPendingTabs = () => TabsetService.removeSelectedPendingTabs()
 const removeAllPendingTabs = () => TabsetService.removeAllPendingTabs()
 
-const setOtherTabsCaption = (msg: string) => otherTabsCaption.value = msg
-const setGroupedTabsCaption = (msg: string) => groupedTabsCaption.value = msg
-
 const selectedCount = ref(0)
 
 const updateSelectionCount = () => {
   selectedCount.value = TabsetService.getSelectedPendingTabs().length
-}
-
-const onDrop = (evt: DragEvent, tabsetId: string) => {
-  console.log("evt", evt, tabsetId)
-  if (evt.dataTransfer && tabsetId) {
-    //const tabId = evt.dataTransfer.getData('text/plain')
-    //TabsetService.moveToTabset(tabId, tabsetId)
-  } else {
-    console.log("got error dropping tab", tabsetId)
-  }
 }
 
 const pendingTabsCount = () => {
@@ -338,62 +337,15 @@ const filteredTabs = () => {
   const noDupliatesTabs = _.filter(tabsStore.pendingTabset?.tabs, (t: Tab) => !t.isDuplicate)
   if (filter.value && filter.value.trim() !== '') {
     return _.filter(noDupliatesTabs, (t: Tab) =>
-      (t.chromeTab.url && t.chromeTab.url.indexOf(filter.value) >= 0) ||
-      (t.chromeTab.title && t.chromeTab.title.indexOf(filter.value) >= 0))
+      (t?.chromeTab.url && t?.chromeTab.url.indexOf(filter.value) >= 0) ||
+      (t?.chromeTab.title && t?.chromeTab.title.indexOf(filter.value) >= 0))
   }
   return noDupliatesTabs
 }
-//
-// const saveDialog = () => {
-//   $q.dialog({
-//     title: 'Save current Tabset',
-//     message: 'Please provide a name for the new (or updated) tabset',
-//     prompt: {
-//       isValid: val => val != 'current',
-//       model: tabsetname.value === 'current' ? '' : tabsetname.value,
-//       type: 'text' // optional
-//     },
-//     cancel: true,
-//     persistent: true
-//   }).onOk((name: string) => {
-//     console.log('>>>> saving', name)
-//     TabsetService.saveOrReplaceFromChromeTabs(name, tabsStore.tabs)
-//
-//   }).onCancel(() => {
-//     //console.log('>>>> Cancel')
-//   }).onDismiss(() => {
-//     //console.log('I am triggered on both OK and Cancel')
-//   })
-//
-//
-// }
 
 const restoreDialog = () => {
   $q.dialog({component: RestoreTabsetDialog})
 }
 
-const list2 = [
-  {name: 'Juan', id: 5},
-  {name: 'Edgard', id: 6},
-  {name: 'Johnson', id: 7},
-]
-
-const log = (event: any) => {
-  console.log("egent1", event)
-  const {moved, added} = event
-  if (moved) console.log('moved', moved)
-  if (added) console.log('added', added, added.element)
-}
-
-const add = () => {
-  console.log('add')
-}
-const replace = () => {
-  console.log('replace')
-}
-const checkMove = (event:any) => {
-  console.log('checkMove', event.draggedContext)
-  console.log('Future index: ' + event.draggedContext.futureIndex)
-}
 
 </script>

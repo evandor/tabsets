@@ -112,10 +112,18 @@ const content = ref('')
 watchEffect(() => {
   if (notificationStore.selectedTab) {
     TabsetService.getThumbnailFor(notificationStore.selectedTab)
-      .then(data => thumbnail.value = data.thumbnail)
+      .then(data => {
+        if (data) {
+          thumbnail.value = data.thumbnail
+        }
+      })
       .catch(err => console.log("err", err))
     TabsetService.getContentFor(notificationStore.selectedTab)
-      .then(data => content.value = data.content)
+      .then(data => {
+        if (data) {
+          content.value = data.content
+        }
+      })
       .catch(err => console.log("err", err))
   }
 })

@@ -76,7 +76,7 @@ export const useTabsStore = defineStore('tabs', {
       const currentTabset: Tabset = state.tabsets.get(state.currentTabsetId) || new Tabset("", "", [], [])
       return _.filter(currentTabset.tabs, (t: Tab) => {
         //console.log("t", t.chromeTab, t)
-        return t.chromeTab?.pinned
+        return t?.chromeTab?.pinned
       })
     },
 
@@ -288,6 +288,7 @@ export const useTabsStore = defineStore('tabs', {
     },
     addTabset(ts: Tabset) {
       //console.log("adding tabset", ts)
+      ts.tabs = _.filter(ts.tabs, (t:Tab) => t !== null)
       this.tabsets.set(ts.id, ts)
       markDuplicates(ts)
     }

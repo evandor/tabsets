@@ -1,196 +1,159 @@
 <template>
 
-
   <vue-draggable-next
+    :key="props.group"
     class="row items-start"
     :list="props.tabs"
-    group="people"
-    @change="log"
-    :move="checkMove">
+    :group="{ name: 'tabs', pull: 'clone' }"
+    @change="handleDragAndDrop">
     <div
       class="col-xs-12 col-sm-4 col-md-3 col-lg-2 q-pa-xs"
       v-for="tab in props.tabs"
-      :key="tab.id">
-      <TabCardWidget :tab="tabAsTab(tab)"/>
+      :key="props.group + '_' + tab.id">
+
+      <TabCardWidget :key="props.group + '__' + tab.id" :tab="tabAsTab(tab)"/>
 
     </div>
   </vue-draggable-next>
-
-
-  <!--  <hr>-->
-
-  <!--  <div class="row items-start">-->
-
-
-  <!--    <div v-for="tab in props.tabs"-->
-  <!--         :key="tab.id"-->
-  <!--         draggable="true"-->
-  <!--         @dragstart="startDrag($event, tab)"-->
-  <!--         class="col-xs-12 col-sm-4 col-md-3 col-lg-2 q-pa-xs">-->
-
-  <!--      <q-card class="my-card" flat bordered :style="cardStyle(tab)" @mouseover="setInfo(tab)" @click="selectTab(tab)">-->
-  <!--        {{ loadThumbnail(tab) }}-->
-  <!--        <q-card-section class="q-pt-xs cursor-pointer bg-primary text-white" style="width:100%;">-->
-  <!--          <div class="row items-baseline">-->
-
-  <!--            &lt;!&ndash; favicon &ndash;&gt;-->
-  <!--            <div class="col-2">-->
-  <!--              <q-img-->
-  <!--                class="rounded-borders"-->
-  <!--                width="24px"-->
-  <!--                height="24px"-->
-  <!--                :src="getFaviconUrl(tab.chromeTab)">-->
-  <!--                <q-tooltip>{{ tab.chromeTab?.id }} / {{ tab.id }}</q-tooltip>-->
-  <!--              </q-img>-->
-  <!--            </div>-->
-
-  <!--            &lt;!&ndash; title or name if given &ndash;&gt;-->
-  <!--            <div class="col-10 text-subtitle1 ellipsis">-->
-  <!--              {{ nameOrTitle(tab) }}-->
-  <!--              <q-popup-edit :model-value="dynamicNameOrTitleModel(tab)" v-slot="scope"-->
-  <!--                            @update:model-value="val => setCustomTitle( tab, val)">-->
-  <!--                <q-input v-model="scope.value" dense autofocus counter @keyup.enter="scope.set"/>-->
-  <!--              </q-popup-edit>-->
-  <!--              <q-tooltip>{{ tab.chromeTab.title }}</q-tooltip>-->
-  <!--            </div>-->
-
-  <!--          </div>-->
-
-
-  <!--          <div class="text-subtitle2 ellipsis text-secondary"-->
-  <!--               @click.stop="Navigation.openOrCreateTab(tab.chromeTab?.url )">-->
-  <!--            {{ getHost(tab.chromeTab?.url, true) }}-->
-  <!--            <q-icon name="launch" color="secondary"></q-icon>-->
-  <!--            <q-tooltip>-->
-  <!--              {{ tab.chromeTab?.url }}-->
-  <!--            </q-tooltip>-->
-  <!--          </div>-->
-
-  <!--        </q-card-section>-->
-
-  <!--        <q-card-section class="q-ma-none q-pa-xs">-->
-
-  <!--          <div class="row fit">-->
-  <!--            <div class="col-6">-->
-  <!--              <q-img :src="thumbnailFor(tab)" width="48px" height="32px" no-spinner-->
-  <!--                     style="border:1px solid #efefef; border-right: 3px;"></q-img>-->
-  <!--            </div>-->
-  <!--            <div class="col-6 text-right">-->
-  <!--              <q-btn flat round color="red" size="11px" icon="delete_outline" @click.stop="closeTab(tab)">-->
-  <!--                <q-tooltip>Delete this tab from this list</q-tooltip>-->
-  <!--              </q-btn>-->
-  <!--            </div>-->
-  <!--          </div>-->
-
-  <!--        </q-card-section>-->
-
-  <!--      </q-card>-->
-  <!--    </div>-->
-  <!--  </div>-->
-
 
 </template>
 
 <script setup lang="ts">
 import {Tab} from "src/models/Tab";
 import TabsetService from "src/services/TabsetService";
-import {useNotificationsStore} from "src/stores/notificationsStore";
 import {PropType, ref} from "vue";
 import {VueDraggableNext} from 'vue-draggable-next'
 import TabCardWidget from "src/components/widgets/TabCardWidget.vue"
+import {useQuasar} from "quasar";
+import _ from "lodash"
+import {useTabsStore} from "stores/tabsStore";
+
+const $q = useQuasar()
+const tabsStore = useTabsStore()
 
 const props = defineProps({
   tabs: {
     type: Array as PropType<Array<Tab>>,
     required: true
   },
-  showActions: {
-    type: Boolean,
-    default: false
+  group: {
+    type: String,
+    required: true
   }
 })
-
-const emits = defineEmits(['sendCaption'])
 
 const thumbnails = ref<Map<string, string>>(new Map())
 const tabAsTab = (tab: Tab): Tab => tab as unknown as Tab
 
-const thumbnailFor = (tab: Tab): string => {
-  const key = btoa(tab.chromeTab.url || '')
-  return thumbnails.value.get(key) || "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+ip1sAAAAASUVORK5CYII="
-  //return "https://placeimg.com/500/300/nature"
-}
-
-const loadThumbnail = (tab: Tab) => {
-  TabsetService.getThumbnailFor(tab)
-    .then(data => {
-      //console.log("loading tn for ", tab.chromeTab.url)
-      const key = btoa(tab.chromeTab.url || '')
-      if (data && data.thumbnail) {
-        //console.log("found key", key, data)
-        thumbnails.value.set(key, data.thumbnail)
-      }
-    })
-    .catch(err => console.log("err", err))
-}
-
-
-const selectTab = (tab: Tab) => {
-  //console.log("tab selected", tab)
-  TabsetService.setOnlySelectedTab(tab)
-  const notificationStore = useNotificationsStore()
-  notificationStore.setSelectedTab(tab)
-}
-
-const setCustomTitle = (tab: Tab, newValue: string) => {
-  console.log(" -> ", newValue)
-  TabsetService.setCustomTitle(tab, newValue)
-}
-
-const getFaviconUrl = (chromeTab: chrome.tabs.Tab | undefined) => {
-  if (chromeTab && chromeTab.favIconUrl && !chromeTab.favIconUrl.startsWith("chrome")) {
-    //console.log("chromeTab.favIconUrl", chromeTab.favIconUrl)
-    return chromeTab.favIconUrl
-  }
-  return ''
-}
-
-const nameOrTitle = (tab: Tab) => tab.name ? tab.name : tab.chromeTab?.title
-const dynamicNameOrTitleModel = (tab: Tab) => tab.name ? tab.name : tab.chromeTab?.title
-
-const startDrag = (evt: DragEvent, tab: Tab) => {
-  //console.log("drag started", evt, tab.id)
-  if (evt.dataTransfer) {
-    evt.dataTransfer.dropEffect = 'move'
-    evt.dataTransfer.effectAllowed = 'move'
-    evt.dataTransfer.setData('text/plain', tab.id)
+function adjustIndex(element: any, tabs: Tab[]) {
+  console.log("filtered", tabs)
+  if (element.newIndex === 0) { // first element
+    console.log(" 0 - searching for ", tabs[0].id)
+    return _.findIndex(tabsStore.getCurrentTabs, t => t.id === tabs[0].id)
+  } else {
+    console.log(" 1 - searching for ", tabs[element.newIndex - 1].id)
+    return 1 + _.findIndex(tabsStore.getCurrentTabs, t => t.id === tabs[element.newIndex - 1].id)
   }
 }
 
-const log = (event: any) => {
-  console.log("egent", event)
+const handleDragAndDrop = (event: any) => {
+  console.log("event", event)
   const {moved, added} = event
   if (moved) {
-    console.log('moved', moved.newIndex, moved)
-    TabsetService.moveTo(moved.element.id, moved.newIndex)
+    console.log('d&d tabs moved', moved.element.id, moved.newIndex, props.group)
+    let useIndex = moved.newIndex
+    switch (props.group) {
+      case 'otherTabs':
+        const unpinnedNoGroup: Tab[] = _.filter(tabsStore.getCurrentTabs, (t: Tab) => !t.chromeTab.pinned && t.chromeTab.groupId === -1)
+        if (unpinnedNoGroup.length > 0) {
+          useIndex = adjustIndex(moved, unpinnedNoGroup);
+        }
+        break;
+      case 'pinnedTabs':
+        const filteredTabs: Tab[] = _.filter(tabsStore.getCurrentTabs, (t: Tab) => t.chromeTab.pinned)
+        if (filteredTabs.length > 0) {
+          useIndex = adjustIndex(moved, filteredTabs);
+        }
+        break
+      default:
+        if (props.group.startsWith('groupedTabs_')) {
+          const groupId = props.group.split('_')[1]
+          const filteredTabs: Tab[] = _.filter(tabsStore.getCurrentTabs, (t: Tab) => t.chromeTab.groupId === parseInt(groupId))
+          if (filteredTabs.length > 0) {
+            useIndex = adjustIndex(moved, filteredTabs);
+          }
+        }
+        break
+    }
+    TabsetService.moveTo(moved.element.id, useIndex)
   }
   if (added) {
-    console.log('added', added, added.element)
-    TabsetService.saveToCurrentTabset(added.element, added.newIndex)
+    console.log('d&d tabs added', added.element.id, added.newIndex, props.group)
+    console.log("tabs", tabsStore.getCurrentTabs)
+    const exists = _.findIndex(tabsStore.getCurrentTabs, t => t.chromeTab.url === added.element.chromeTab.url) >= 0
+
+    let useIndex = added.newIndex
+    switch (props.group) {
+      case 'otherTabs':
+        const unpinnedNoGroup: Tab[] = _.filter(tabsStore.getCurrentTabs, (t: Tab) => !t.chromeTab.pinned && t.chromeTab.groupId === -1)
+        if (unpinnedNoGroup.length > 0) {
+          useIndex = adjustIndex(added, unpinnedNoGroup);
+        }
+        added.element.chromeTab.groupId = -1
+        added.element.chromeTab.pinned = false
+        break;
+      case 'pinnedTabs':
+        const filteredTabs: Tab[] = _.filter(tabsStore.getCurrentTabs, (t: Tab) => t.chromeTab.pinned)
+        if (filteredTabs.length > 0) {
+          useIndex = adjustIndex(added, filteredTabs);
+        }
+        added.element.chromeTab.pinned = true
+        added.element.chromeTab.groupId = -1
+        break
+      default:
+        if (props.group.startsWith('groupedTabs_')) {
+          const groupId = props.group.split('_')[1]
+          console.log("got group id", groupId)
+          const filteredTabs: Tab[] = _.filter(tabsStore.getCurrentTabs, (t: Tab) => t.chromeTab.groupId === parseInt(groupId))
+          if (filteredTabs.length > 0) {
+            useIndex = adjustIndex(added, filteredTabs);
+          }
+          added.element.chromeTab.groupId = parseInt(groupId)
+        }
+        break
+    }
+
+    if (!exists) {
+      if (useIndex !== undefined && useIndex >= 0) {
+        tabsStore.getCurrentTabs.splice(useIndex, 0, added.element)
+      } else {
+        tabsStore.getCurrentTabs.push(added.element)
+      }
+    } else {
+      const oldIndex = _.findIndex(tabsStore.getCurrentTabs, t => t.id === added.element.id)
+      if (oldIndex >= 0) {
+        const tab = tabsStore.getCurrentTabs.splice(oldIndex, 1)[0];
+        tabsStore.getCurrentTabs.splice(useIndex, 0, tab);
+      }
+
+    }
+
+    TabsetService.saveCurrentTabset()
+      .then(() => {
+        $q.notify({
+          message: exists ? 'The tab has been moved' : 'The tab has been added',
+          type: 'positive'
+        })
+      })
+      .catch((err: any) => {
+        console.log("err", err)
+        $q.notify({
+          message: 'The tab already exists in this tabset',
+          type: 'negative'
+        })
+      })
   }
 }
-
-const add = () => {
-  console.log('add')
-}
-const replace = () => {
-  console.log('replace')
-}
-const checkMove = (event: any) => {
-  //console.log('checkMove', event.draggedContext)
-  //console.log('Future index: ' + event.draggedContext.futureIndex)
-}
-
 
 </script>
 
