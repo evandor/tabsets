@@ -64,16 +64,22 @@ export const useSearchStore = defineStore('search', {
       this.fuse.add(doc)
       return indexLength
     },
-
     reindexAll() {
+      const values = Array.from(useTabsStore().tabsets.values())
+      this.reindex(values)
+    },
+    reindexTabset(tabsetId: string) {
+      const ts = useTabsStore().getTabset(tabsetId)
+      const values: Tabset[] = ts ? [ts] : []
+      this.reindex(values)
+    },
+    reindex(values: Tabset[]) {
       const throttleOnePerXSeconds = throttledQueue(1, 3000, true)
       chrome.windows.create({focused: true}, (window: any) => {
-        console.log("window", window)
         useWindowsStore().screenshotWindow = window.id
         let tabToClose: number | undefined = undefined
-        const values = Array.from(useTabsStore().tabsets.values())
 
-        const res:Promise<any>[] = values.flatMap((ts:Tabset) => {
+        const res: Promise<any>[] = values.flatMap((ts: Tabset) => {
           return ts.tabs.map((t) => {
             return throttleOnePerXSeconds(async () => {
               chrome.tabs.create({windowId: window.id, url: t.chromeTab.url}, (tab: chrome.tabs.Tab) => {
@@ -92,10 +98,6 @@ export const useSearchStore = defineStore('search', {
           })
 
       })
-
-
-
-
     },
 
     populate(contentPromise: Promise<any[]>) {

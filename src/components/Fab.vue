@@ -1,5 +1,5 @@
 <template>
-  <q-page-sticky position="bottom-right" :offset="[60, 60]">
+  <q-page-sticky position="bottom-right" :offset="[80, 60]">
     <q-fab
       :class="{
         'heartBeat animated': useNotificationsStore().fabHasElementAnimation,
@@ -18,8 +18,16 @@
       </q-fab-action>
       <q-fab-action
                     @click="useNotificationsStore().showBookmarks = !useNotificationsStore().showBookmarks"
-                    style="width:170px" color="primary" icon="link" :label="useNotificationsStore().showBookmarks ? 'Hide Bookmarks' : 'Show Bookmarks'">
+                    style="width:170px" color="primary"
+                    :icon="useNotificationsStore().showBookmarks ? 'visibility_off' : 'visibility'"
+                    :label="useNotificationsStore().showBookmarks ? 'Hide Bookmarks' : 'Show Bookmarks'">
         <q-tooltip>Add a Url to the current tabset manually '{{ tabsStore.currentTabsetId }}'</q-tooltip>
+      </q-fab-action>
+      <q-fab-action
+        v-if="tabsStore.currentTabsetId !== '' && tabsStore.getTabset(tabsStore.currentTabsetId)"
+        @click="showReindexDialog = true"
+        style="width:200px" color="warning" icon="database" label="Re-Index Tabset...">
+        <q-tooltip>If you are not happy with the search result, you can try to re-index this tabset.</q-tooltip>
       </q-fab-action>
     </q-fab>
   </q-page-sticky>
@@ -61,6 +69,7 @@ import {Tab} from "src/models/Tab";
 import ChromeApi from "src/services/ChromeApi";
 import {useNotificationsStore} from "src/stores/notificationsStore"
 import NewTabsetDialog from "components/dialogues/NewTabsetDialog.vue"
+import ReindexDialog from "components/dialogues/ReindexDialog.vue";
 
 const tabsStore = useTabsStore()
 const router = useRouter()
@@ -69,6 +78,7 @@ const $q = useQuasar()
 const url = ref('')
 const showNewTabsetDialog = ref(false)
 const showNewUrlDialog = ref(false)
+const showReindexDialog = ref(false)
 
 watchEffect(() => {
   if (showNewTabsetDialog.value) {
@@ -76,6 +86,19 @@ watchEffect(() => {
       component: NewTabsetDialog
     }).onDismiss(() => {
       showNewTabsetDialog.value = false
+    })
+  }
+})
+
+watchEffect(() => {
+  if (showReindexDialog.value) {
+    $q.dialog({
+      component: ReindexDialog,
+      componentProps: {
+        tabsetId: tabsStore.currentTabsetId,
+      }
+    }).onDismiss(() => {
+      showReindexDialog.value = false
     })
   }
 })
@@ -96,6 +119,7 @@ const newUrlDialogWarning = () => {
     return 'not a proper URL'
   }
 }
+
 
 
 </script>
