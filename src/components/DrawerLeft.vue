@@ -15,9 +15,15 @@
 </template>
 
 <script lang="ts" setup>
-import {ref} from "vue";
+import {ref, watchEffect} from "vue";
 import BookmarksTree from "src/components/BookmarksTree.vue"
 import OpenTabs from "src/components/OpenTabs.vue"
+import {useNotificationsStore} from "stores/notificationsStore";
 
 const tab = ref('bookmarks')
+
+watchEffect(() => {
+  tab.value = useNotificationsStore().showOpenTabs ? 'openTabs' : 'bookmarks'
+})
+
 </script>

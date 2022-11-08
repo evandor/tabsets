@@ -16,13 +16,29 @@
                     @click="showNewUrlDialog = true" style="width:170px" color="primary" icon="link" label="Add Url">
         <q-tooltip>Add a Url to the current tabset manually '{{ tabsStore.currentTabsetId }}'</q-tooltip>
       </q-fab-action>
-      <q-fab-action
-                    @click="useNotificationsStore().showBookmarks = !useNotificationsStore().showBookmarks"
-                    style="width:170px" color="primary"
-                    :icon="useNotificationsStore().showBookmarks ? 'visibility_off' : 'visibility'"
-                    :label="useNotificationsStore().showBookmarks ? 'Hide Bookmarks' : 'Show Bookmarks'">
-        <q-tooltip>Add a Url to the current tabset manually '{{ tabsStore.currentTabsetId }}'</q-tooltip>
+
+      <q-fab-action v-if="!useNotificationsStore().showDrawer"
+        @click="showOpenTabs"
+        style="width:170px" color="accent"
+        icon="'visibility'"
+        label="Show Open Tabs">
+        <q-tooltip>Open the left drawer and show your browsers open tabs</q-tooltip>
       </q-fab-action>
+      <q-fab-action v-if="!useNotificationsStore().showDrawer"
+                    @click="showBookmarks"
+                    style="width:170px" color="accent"
+                    icon="'visibility'"
+                    label="Show Bookmarks">
+        <q-tooltip>Open the left drawer and show your browers bookmarks</q-tooltip>
+      </q-fab-action>
+      <q-fab-action v-if="useNotificationsStore().showDrawer"
+                    @click="useNotificationsStore().showDrawer = false"
+                    style="width:170px" color="accent"
+                    icon="visibility_off"
+                    label="Close left drawer">
+        <q-tooltip>Close the left navigation drawer</q-tooltip>
+      </q-fab-action>
+
       <q-fab-action
         v-if="tabsStore.currentTabsetId !== '' && tabsStore.getTabset(tabsStore.currentTabsetId)"
         @click="showReindexDialog = true"
@@ -120,6 +136,15 @@ const newUrlDialogWarning = () => {
   }
 }
 
+const showBookmarks = () => {
+  useNotificationsStore().showDrawer = true
+  useNotificationsStore().showBookmarks = true
+}
+
+const showOpenTabs = () => {
+  useNotificationsStore().showDrawer = true
+  useNotificationsStore().showOpenTabs = true
+}
 
 
 </script>

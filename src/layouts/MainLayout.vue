@@ -115,7 +115,7 @@ const searchStore = useSearchStore()
 const localStorage = useQuasar().localStorage
 
 const rightDrawerOpen = ref(true)
-const leftDrawerOpen = ref(localStorage.getItem<boolean>("showBookmarks"))
+const leftDrawerOpen = ref(false)
 
 const notificationsStore = useNotificationsStore()
 const featuresStore = useFeatureTogglesStore()
@@ -130,7 +130,6 @@ $q.loadingBar.setDefaults({
 })
 
 const search = ref('')
-
 
 //@ts-ignore
 const appVersion = import.meta.env.PACKAGE_VERSION
@@ -173,11 +172,29 @@ const title = () => {
 }
 const goHome = () => router.push("/")
 
-const toggleLeftDrawer = () => leftDrawerOpen.value = !leftDrawerOpen.value
+const toggleLeftDrawer = () => {
+  useNotificationsStore().showDrawer = !useNotificationsStore().showDrawer
+  console.log("toggleLeftDrawer", leftDrawerOpen.value)
+  localStorage.set("showLeftDrawer", useNotificationsStore().showDrawer)
+}
+
+onMounted(() => {
+  console.log("mounting", localStorage.getItem<boolean>("showLeftDrawer"))
+  leftDrawerOpen.value = localStorage.getItem<boolean>("showLeftDrawer") || false
+  useNotificationsStore().showDrawer = leftDrawerOpen.value
+})
 
 watchEffect(() => {
-  leftDrawerOpen.value = !!notificationsStore.showBookmarks
-  localStorage.set("showBookmarks", leftDrawerOpen.value)
+  console.log("watchEffect", leftDrawerOpen.value)
+    leftDrawerOpen.value = useNotificationsStore().showDrawer
+  console.log("watchEffect2", leftDrawerOpen.value)
+  // leftDrawerOpen.value = !!leftDrawerOpen.value
+//    leftDrawerOpen.value = localStorage.getItem<boolean>("showLeftDrawer")
+    //localStorage.set("showLeftDrawer", leftDrawerOpen.value)
+  // if (!leftDrawerOpen.value) {
+  //   useNotificationsStore().showBookmarks = false
+  //   useNotificationsStore().showOpenTabs = false
+  // }
 })
 
 const showNewTabsetDialog = ref(false)
