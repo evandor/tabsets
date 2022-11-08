@@ -30,7 +30,7 @@
 
       <div class="text-subtitle2 ellipsis text-secondary"
            @click.stop="Navigation.openOrCreateTab(tab.chromeTab?.url )">
-        {{ getHost(tab.chromeTab?.url, true) }}
+        {{ tab.chromeTab?.url.replace("https://www.", '').replace("https://",'') }}
         <q-icon name="launch" color="secondary"></q-icon>
         <q-tooltip>
           {{ tab.chromeTab?.url }}
