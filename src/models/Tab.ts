@@ -1,10 +1,3 @@
-export enum TabStatus {
-  CREATED = "CREATED",
-  DELETED = "DELETED",
-  DEFAULT = "DEFAULT"
-}
-
-//export type TabStatusType = keyof typeof TabStatus
 
 export class Tab {
   // id: string // internal id, do not want to rely on chromeTab.id
@@ -15,7 +8,6 @@ export class Tab {
   lastLoaded: number
   loadedCount: number
   chromeTab: chrome.tabs.Tab
-  status: TabStatus
   isDuplicate: boolean
   history: string[] = []
   selected: boolean = false
@@ -24,7 +16,6 @@ export class Tab {
   bookmarkId: string | undefined
   description: string
   metas: object
-  searchIndexId: number | undefined
 
   constructor(public id: string, chromeTab: chrome.tabs.Tab) {
     this.created = new Date().getTime()
@@ -34,7 +25,6 @@ export class Tab {
     this.lastLoaded = 0
     this.loadedCount = 0
     this.chromeTab = chromeTab
-    this.status = TabStatus.DEFAULT
     this.isDuplicate = false
     this.history = []
     this.name = undefined

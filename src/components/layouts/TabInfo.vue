@@ -117,14 +117,12 @@ watchEffect(() => {
           thumbnail.value = data.thumbnail
         }
       })
-      .catch(err => console.log("err", err))
     TabsetService.getContentFor(notificationStore.selectedTab)
       .then(data => {
         if (data) {
           content.value = data.content
         }
       })
-      .catch(err => console.log("err", err))
   }
 })
 

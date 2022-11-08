@@ -158,17 +158,16 @@
 </template>
 
 <script setup lang="ts">
-import {ref, watchEffect} from 'vue'
+import {ref} from 'vue'
 import {useRoute, useRouter} from "vue-router";
 import {useQuasar} from "quasar";
 import Tabcards from "src/components/layouts/Tabcards.vue";
-import Tablist from "src/components/layouts/Tablist.vue";
 import TabThumbs from "src/components/layouts/TabThumbs.vue";
 import _ from "lodash"
 import {useTabsStore} from "src/stores/tabsStore";
 import {useTabGroupsStore} from "src/stores/tabGroupsStore";
 import TabsetService from "src/services/TabsetService";
-import {Tab, TabStatus} from "src/models/Tab";
+import {Tab} from "src/models/Tab";
 
 const route = useRoute();
 const router = useRouter();

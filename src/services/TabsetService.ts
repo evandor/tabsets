@@ -2,7 +2,7 @@ import {useTabsStore} from "src/stores/tabsStore";
 import {LocalStorage, uid} from "quasar";
 import ChromeApi from "src/services/ChromeApi";
 import _ from "lodash";
-import {Tab, TabStatus} from "src/models/Tab";
+import {Tab} from "src/models/Tab";
 import {Tabset} from "src/models/Tabset";
 import {useNotificationsStore} from "src/stores/notificationsStore";
 import {useSearchStore} from "src/stores/searchStore";
@@ -99,7 +99,7 @@ class TabsetService {
     return Promise.reject("tabset id not set")
   }
 
-  saveCurrentTabset():Promise<any> {
+  saveCurrentTabset(): Promise<any> {
     const tabsStore = useTabsStore()
     const currentTabset = tabsStore.getCurrentTabset
     if (currentTabset) {
@@ -158,14 +158,6 @@ class TabsetService {
     return tabsStore.tabsets.get(tabsStore.currentTabsetId)
   }
 
-  setStatus(tabId: number, status: TabStatus) {
-    const currentTabset: Tabset = this.getCurrentTabset() || new Tabset("", "", [], [])
-    _.forEach(
-      _.filter(currentTabset.tabs, (t: Tab) => t.chromeTab.id === tabId),
-      r => r.status = status)
-    this.saveTabset(currentTabset)
-  }
-
   async saveToCurrentTabset(tab: Tab): Promise<number> {
     return this.saveToTabset(this.getCurrentTabset() || new Tabset(uid(), "unknown", [], []), tab)
   }
@@ -188,16 +180,13 @@ class TabsetService {
         return Promise.reject("tab exists already")
       }
 
-      tab.status = TabStatus.DEFAULT
-
-
       const index = _.findIndex(tabsStore.pendingTabset.tabs, t => t.id === tab.id)
       tabsStore.pendingTabset.tabs.splice(index, 1);
       this.saveTabset(ts)
 
       const dataFromStore: object = await this.persistenceService.updateContent(tab.chromeTab.url)
 
-      this.persistenceService.updateThumbnail(tab.chromeTab.url)
+      await this.persistenceService.updateThumbnail(tab.chromeTab.url)
 
       // update fuse index
       return useSearchStore().addToIndex(
@@ -540,8 +529,8 @@ class TabsetService {
   }
 
   createFile(data: string, filename: string) {
-    var file = window.URL.createObjectURL(new Blob([data]));
-    var docUrl = document.createElement('a');
+    const file = window.URL.createObjectURL(new Blob([data]));
+    const docUrl = document.createElement('a');
     docUrl.href = file;
     docUrl.setAttribute('download', filename);
     document.body.appendChild(docUrl);
@@ -617,7 +606,7 @@ class TabsetService {
     if (oldIndex >= 0) {
       const tab = tabs.splice(oldIndex, 1)[0];
       console.log("foudn tab", tab)
-      tabs = tabs.splice(newIndex, 0, tab);
+      tabs.splice(newIndex, 0, tab);
       this.saveCurrentTabset()
     }
   }

@@ -1,7 +1,7 @@
 <template>
 
 
-   <q-banner rounded class="bg-amber-1 text-black" v-if="tabsStore.active && tabsStore.getCurrentTabs.length === 0">
+  <q-banner rounded class="bg-amber-1 text-black" v-if="tabsStore.active && tabsStore.getCurrentTabs.length === 0">
     <div class="text-body2">
       To start adding new tabs to this empty tabset, open new browser tabs and come back to this extension to
       associate them with a tabset.
@@ -153,7 +153,7 @@
       </template>
 
 
-            <Tablist :tabs="unpinnedNoGroup()"/>
+      <Tablist :tabs="unpinnedNoGroup()"/>
     </q-expansion-item>
     <div v-else>
       <Tablist :tabs="unpinnedNoGroup()"/>
@@ -172,7 +172,7 @@ import _ from "lodash"
 import {useTabsStore} from "src/stores/tabsStore";
 import {useTabGroupsStore} from "src/stores/tabGroupsStore";
 import TabsetService from "src/services/TabsetService";
-import {Tab, TabStatus} from "src/models/Tab";
+import {Tab} from "src/models/Tab";
 
 const route = useRoute();
 const router = useRouter();
@@ -189,7 +189,7 @@ const $q = useQuasar()
 function unpinnedNoGroup() {
   return _.filter(
     _.map(tabsStore.getCurrentTabs, t => t),
-    (t: Tab) => !t.chromeTab.pinned && t.chromeTab.groupId === -1 && (t.status === TabStatus.DEFAULT || !t.status))
+    (t: Tab) => !t.chromeTab.pinned && t.chromeTab.groupId === -1)
 }
 
 function tabsForGroup(groupId: number): Tab[] {
@@ -209,7 +209,6 @@ const formatLength = (length: number, singular: string, plural: string) => {
   return length > 1 ? length + ' ' + plural : length + ' ' + singular
 }
 
-const removeClosedTabs = () => TabsetService.removeClosedTabs()
 const saveAllPendingTabs = () => TabsetService.saveAllPendingTabs()
 const removeAllPendingTabs = () => TabsetService.removeAllPendingTabs()
 

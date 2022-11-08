@@ -2,7 +2,7 @@ import {Tabset} from "src/models/Tabset";
 import TabsetService from "src/services/TabsetService";
 import {useTabsStore} from "src/stores/tabsStore";
 import _ from "lodash";
-import {Tab, TabStatus} from "src/models/Tab";
+import {Tab} from "src/models/Tab";
 import {uid} from "quasar";
 import throttledQueue from 'throttled-queue';
 
@@ -65,7 +65,6 @@ class ChromeListeners {
 
     if (!info.status || (Object.keys(info).length > 1)) {
       console.debug(`onUpdated:   tab ${number}: >>> ${JSON.stringify(info)} <<<`)
-      const currentTabset = tabsStore.tabsets.get(tabsStore.currentTabsetId)
       const maybeTab = tabsStore.tabForUrlInSelectedTabset(tab.url || '')
       if (maybeTab) {
         console.debug(`onUpdated:   tab ${number}: in selected Tabset, returning`)
@@ -98,7 +97,6 @@ class ChromeListeners {
           if (!this.isIgnored(tab)) {
             const newTab = new Tab(uid(), tab)
             console.log(`onUpdated:   tab ${number}:     setting status CREATED`)
-            newTab.status = TabStatus.CREATED
             tabsStore.pendingTabset.tabs.push(newTab)
             if (!this.inProgress) {
               tabsStore.loadTabs('onUpdated');
@@ -123,12 +121,11 @@ class ChromeListeners {
       return
     }
     const currentTabset: Tabset = tabsStore.tabsets.get(tabsStore.currentTabsetId) || new Tabset("", "", [], [])
-    var index = _.findIndex(currentTabset.tabs, t => t.chromeTab.id === number);
+    const index = _.findIndex(currentTabset.tabs, t => t.chromeTab.id === number);
     if (index >= 0) {
       console.log(`onRemoved: tab ${number}:     found index ${index}`)
       const updatedTab = currentTabset.tabs.at(index)
       if (updatedTab) {
-        updatedTab.status = TabStatus.DELETED
         console.log(`onRemoved: tab ${number}:     setting status DELETED`)
         //currentTabset.tabs.splice(index, 1, updatedTab);
       }
@@ -177,20 +174,14 @@ class ChromeListeners {
   }
 
   onAttached(number: number, info: chrome.tabs.TabAttachInfo) {
-    const tabsStore = useTabsStore()
-
     console.debug(`onAttached: tab ${number} attached: ${JSON.stringify(info)}`)
   }
 
   onDetached(number: number, info: chrome.tabs.TabDetachInfo) {
-    const tabsStore = useTabsStore()
-
     console.debug(`onDetached: tab ${number} detached: ${JSON.stringify(info)}`)
   }
 
   onHighlighted(info: chrome.tabs.TabHighlightInfo) {
-    const tabsStore = useTabsStore()
-
     console.debug(`onHighlighted: tab ${info.tabIds} highlighted: ${JSON.stringify(info)}`)
   }
 

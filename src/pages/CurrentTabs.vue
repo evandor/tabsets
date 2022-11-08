@@ -20,14 +20,13 @@
 </template>
 
 <script setup lang="ts">
-import {ref, watchEffect} from 'vue'
+import {ref} from 'vue'
 import {useRoute, useRouter} from "vue-router";
 import {useQuasar} from "quasar";
 import _ from "lodash"
 import {useTabsStore} from "src/stores/tabsStore";
-import {useTabGroupsStore} from "src/stores/tabGroupsStore";
 import TabsetService from "src/services/TabsetService";
-import {Tab, TabStatus} from "src/models/Tab";
+import {Tab} from "src/models/Tab";
 import EditTabsetComponent from "components/EditTabsetComponent.vue";
 import Fab from "components/Fab.vue";
 import TabsetList from "components/TabsetList.vue";
@@ -59,7 +58,7 @@ if (selectedTabsetFromStorage) {
 function unpinnedNoGroup() {
   return _.filter(
     _.map(tabsStore.getCurrentTabs, t => t),
-    (t: Tab) => !t.chromeTab.pinned && t.chromeTab.groupId === -1 && (t.status === TabStatus.DEFAULT || !t.status))
+    (t: Tab) => !t.chromeTab.pinned && t.chromeTab.groupId === -1)
 }
 
 function tabsForGroup(groupId: number) {
@@ -96,7 +95,7 @@ const deleteDialog = () => {
     message: 'Would you like to delete this tabset?',
     cancel: true,
     persistent: true
-  }).onOk((data: any) => {
+  }).onOk(() => {
     TabsetService.delete(tabsStore.currentTabsetId)
     router.push("/tabset")
   }).onCancel(() => {
@@ -110,7 +109,7 @@ const restoreDialog = () => {
     message: 'Would you like to restore this tabset? All current tabs will be closed before.',
     cancel: true,
     persistent: true
-  }).onOk((data: any) => {
+  }).onOk(() => {
     TabsetService.restore(tabsStore.currentTabsetId)
   }).onCancel(() => {
   }).onDismiss(() => {
