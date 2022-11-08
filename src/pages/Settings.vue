@@ -47,10 +47,11 @@
         Search Index
       </div>
       <div class="col-3">
-        {{ searchStore.fuse.getIndex().length }} entries in index
+        Current Size: {{ indexSize }} Entries
       </div>
       <div class="col-3">
-        {{ searchStore.fuse.getIndex() }}
+        <span class="text-blue cursor-pointer" @click="downloadIndex">[Download]</span>&nbsp;
+        <span class="text-blue cursor-pointer" @click="clearIndex">[clear Index]</span>&nbsp;
       </div>
     </div>
   </q-page>
@@ -65,6 +66,7 @@ import {ref, watchEffect} from "vue";
 import {useQuasar} from "quasar";
 import {INDEX_DB_NAME} from "boot/constants"
 import {useSearchStore} from "src/stores/searchStore";
+import TabsetService from "src/services/TabsetService";
 
 const tabsStore = useTabsStore()
 const featuresStore = useFeatureTogglesStore()
@@ -75,6 +77,7 @@ const localStorage = useQuasar().localStorage
 const $q = useQuasar()
 
 const view = ref('grid')
+const indexSize = ref(0)
 const darkMode = ref<boolean>(localStorage.getItem('darkMode') || false)
 const showBookmarks = ref<boolean>(localStorage.getItem('showBookmarks') || false)
 
@@ -87,6 +90,18 @@ watchEffect(() => {
 watchEffect(() => {
   localStorage.set("layout", view.value)
 })
+watchEffect(() => {
+  // @ts-ignore
+  indexSize.value = searchStore.fuse.getIndex().size()
+})
 
+const downloadIndex = () => {
+  const data = JSON.stringify(searchStore.fuse.getIndex())
+  return TabsetService.createFile(data, "tabsetIndex.json");
+}
+
+const clearIndex = () => {
+  searchStore.init()
+}
 
 </script>

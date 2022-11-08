@@ -539,7 +539,7 @@ class TabsetService {
     })
   }
 
-  private createFile(data: string, filename: string) {
+  createFile(data: string, filename: string) {
     var file = window.URL.createObjectURL(new Blob([data]));
     var docUrl = document.createElement('a');
     docUrl.href = file;
