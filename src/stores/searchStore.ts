@@ -3,9 +3,9 @@ import Fuse from 'fuse.js'
 import _ from "lodash"
 import {SearchDoc} from "src/models/SearchDoc";
 import throttledQueue from "throttled-queue";
-import {useWindowsStore} from "stores/windowsStores";
+import {useWindowsStore} from "src/stores/windowsStores";
 import {Tabset} from "src/models/Tabset";
-import {useTabsStore} from "stores/tabsStore";
+import {useTabsStore} from "src/stores/tabsStore";
 
 function dummyPromise(timeout: number, tabToCloseId: number | undefined = undefined) {
   return new Promise((resolve, reject) => {

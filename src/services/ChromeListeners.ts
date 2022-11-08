@@ -9,7 +9,7 @@ import throttledQueue from 'throttled-queue';
 // @ts-ignore
 import {convert} from "html-to-text"
 import ChromeApi from "src/services/ChromeApi";
-import {useWindowsStore} from "stores/windowsStores";
+import {useWindowsStore} from "src/stores/windowsStores";
 
 class ChromeListeners {
 

@@ -171,7 +171,6 @@ class TabsetService {
   }
 
   async saveToTabset(ts: Tabset, tab: Tab): Promise<number> {
-    console.log("adding to tabset", ts, tab)
     if (tab.chromeTab.url) {
       const tabsStore = useTabsStore()
 
@@ -410,62 +409,6 @@ class TabsetService {
     const ignoredTS: Tabset = tabsStore.ignoredTabset as Tabset
     this.saveTabset(ignoredTS)
   }
-
-  // deprecated
-  // syncTabset(tabsetId: string): Promise<AxiosResponse<string>> {
-  //   const tabsStore = useTabsStore()
-  //   const ts = tabsStore.getTabset(tabsetId)
-  //   if (ts) {
-  //     return backendApi.saveTabset(ts)
-  //       .then(res => {
-  //         this.delete(ts.id)
-  //         this.loadTabsetsFromFirebase()
-  //         console.log("got backend answer: ", res)
-  //         return res
-  //       })
-  //   }
-  //   return Promise.reject("tabset '" + tabsetId + "' not found")
-  //
-  // }
-
-  // deprecated
-  // unsyncTabset(tabsetId: string): Promise<AxiosResponse<string>> {
-  //   const tabsStore = useTabsStore()
-  //   const ts = tabsStore.getTabset(tabsetId)
-  //   if (ts) {
-  //     this.saveTabset(ts)
-  //     // const backend = initializeBackendApi(process.env.BACKEND_URL || "unknown", null)
-  //
-  //     //const clonedTs = JSON.parse(JSON.stringify(ts))
-  //     // console.log("cloned ts", ts, clonedTs)
-  //     return backendApi.deleteTabset(tabsetId)
-  //       .then(res => {
-  //         //this.delete(ts.id)
-  //         this.loadTabsetsFromFirebase()
-  //         console.log("got backend answer: ", res)
-  //         return res
-  //       })
-  //   }
-  //   return Promise.reject("tabset '" + tabsetId + "' not found")
-  //
-  // }
-
-  // loadTabsetsFromFirebase() {
-  //   //const firebaseEnabled = useFeatureTogglesStore().firebaseEnabled
-  //   const authenticated = useAuthStore().isAuthenticated
-  //   if (authenticated) {
-  //     backendApi.getTabsets()
-  //       .then(ts => {
-  //         console.log("tabsets from firebase", ts.data)
-  //
-  //         _.forEach(ts.data, (ts: Tabset) => {
-  //           console.log("got tabset", ts)
-  //           useTabsStore().addTabset(ts)
-  //         })
-  //       })
-  //       .catch(err => console.log("error", err))
-  //   }
-  // }
 
   exportData(exportAs: string): Promise<any> {
     console.log("exporting as ", exportAs)

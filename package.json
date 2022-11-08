@@ -26,7 +26,6 @@
   "dependencies": {
     "@quasar/extras": "^1.15.4",
     "@types/lodash": "^4.14.182",
-    "axios": "^0.21.1",
     "dotenv": "^16.0.1",
     "events": "^3.3.0",
     "firebase": "^9.9.2",

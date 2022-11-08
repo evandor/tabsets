@@ -9,7 +9,7 @@
 
 import {useRouter} from "vue-router";
 import {useFeatureTogglesStore} from "stores/featureTogglesStore";
-import {useTabsStore} from "stores/tabsStore";
+import {useTabsStore} from "src/stores/tabsStore";
 import {ref, watchEffect} from "vue"
 import _ from "lodash"
 

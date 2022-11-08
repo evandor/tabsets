@@ -12,7 +12,7 @@ import {useBookmarksStore} from "src/stores/bookmarksStore";
 import {useSearchStore} from "src/stores/searchStore";
 import {useNotificationsStore} from "src/stores/notificationsStore";
 import ChromeApi from "src/services/ChromeApi";
-import {useWindowsStore} from "stores/windowsStores";
+import {useWindowsStore} from "src/stores/windowsStores";
 
 const tabsStore = useTabsStore()
 const tabGroupsStore = useTabGroupsStore()
