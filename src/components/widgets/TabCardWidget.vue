@@ -70,6 +70,10 @@ const props = defineProps({
   tab: {
     type: Object,
     required: true
+  },
+  highlightUrl: {
+    type: String,
+    required: false
   }
 })
 
@@ -107,8 +111,9 @@ function cardStyle(tab: Tab) {
   let background = ''
   if (tab?.isDuplicate) {
     background = "background: radial-gradient(circle, #FFFFFF 0%, #FFECB3 100%)"
+  } else if (tab?.chromeTab.url ===  props.highlightUrl) {
+    background = "background: radial-gradient(circle, #FFBF46 0%, #FFBF46 100%)"
   }
-  // style=""
   return `${borderColor};${background}`
 }
 

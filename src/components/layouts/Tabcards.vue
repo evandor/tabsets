@@ -11,7 +11,7 @@
       v-for="tab in props.tabs"
       :key="props.group + '_' + tab.id">
 
-      <TabCardWidget :key="props.group + '__' + tab.id" :tab="tabAsTab(tab)"/>
+      <TabCardWidget :key="props.group + '__' + tab.id" :tab="tabAsTab(tab)" :highlightUrl="highlightUrl" />
 
     </div>
   </vue-draggable-next>
@@ -39,6 +39,10 @@ const props = defineProps({
   group: {
     type: String,
     required: true
+  },
+  highlightUrl: {
+    type: String,
+    required: false
   }
 })
 

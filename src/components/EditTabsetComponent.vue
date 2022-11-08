@@ -119,7 +119,9 @@
     <template v-slot:header="{ expanded }">
       <q-item-section>
         <div>
-          <span class="text-weight-bold">Pinned Tabs ({{ formatLength(tabsStore.pinnedTabs.length, 'tab', 'tabs') }})</span>
+          <span class="text-weight-bold">Pinned Tabs ({{
+              formatLength(tabsStore.pinnedTabs.length, 'tab', 'tabs')
+            }})</span>
           <div class="text-caption ellipsis">this browser's window's tabs to be pinned</div>
         </div>
       </q-item-section>
@@ -127,7 +129,7 @@
     <q-card>
       <q-card-section>
 
-        <Tabcards key="pinnedTabs" :tabs="tabsStore.pinnedTabs" group="pinnedTabs" />
+        <Tabcards key="pinnedTabs" :tabs="tabsStore.pinnedTabs" group="pinnedTabs" :highlightUrl="highlightUrl"/>
 
       </q-card-section>
     </q-card>
@@ -156,7 +158,8 @@
       </template>
       <q-card>
         <q-card-section>
-          <Tabcards :tabs="tabsForGroup( group.id)" :key="'groupedTabs_'+group.id" :group="'groupedTabs_'+group.id"  />
+          <Tabcards :tabs="tabsForGroup( group.id)" :key="'groupedTabs_'+group.id" :group="'groupedTabs_'+group.id"
+                    :highlightUrl="highlightUrl"/>
         </q-card-section>
       </q-card>
     </q-expansion-item>
@@ -176,11 +179,11 @@
 
   <!-- rest: neither pinned, grouped, or pending -->
   <q-expansion-item
-                    icon="tabs"
-                    default-opened
-                    header-class="text-black"
-                    expand-icon-class="text-black"
-                    expand-separator>
+    icon="tabs"
+    default-opened
+    header-class="text-black"
+    expand-icon-class="text-black"
+    expand-separator>
     <template v-slot:header="{ expanded }">
 
       <q-item-section>
@@ -195,7 +198,7 @@
     <q-card>
       <q-card-section>
 
-        <Tabcards :tabs="unpinnedNoGroup()" group="otherTabs" />
+        <Tabcards :tabs="unpinnedNoGroup()" group="otherTabs" :highlightUrl="highlightUrl"/>
 
       </q-card-section>
     </q-card>
@@ -227,11 +230,10 @@ const featuresStore = useFeatureTogglesStore()
 
 const tabsetname = ref(tabsStore.currentTabsetName)
 const filter = ref('')
-
-const groupedTabsCaption = ref('current tabs, neither pinned nor grouped')
 const duplicatesCount = ref(0)
-
 const $q = useQuasar()
+
+const highlightUrl = ref('')
 
 watchEffect(() => {
   const currentTabs: Tab[] = tabsStore.getCurrentTabs
@@ -244,6 +246,17 @@ watchEffect(() => {
       pendingTab.isDuplicate = false
     }
   })
+})
+
+watchEffect(() => {
+  const highlight = route.query['highlight'] as unknown as string
+  if (highlight && highlight.length > 0) {
+    try {
+      highlightUrl.value = atob(highlight)
+    } catch (e: any) {
+      console.error("highlight error", e)
+    }
+  }
 })
 
 function unpinnedNoGroup() {

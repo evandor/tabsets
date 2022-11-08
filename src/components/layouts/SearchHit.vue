@@ -1,7 +1,7 @@
 <template>
 
 
-  <q-item clickable v-ripple autofocus>
+  <q-item v-ripple autofocus>
     <q-item-section avatar>
 
       <q-img
@@ -21,7 +21,7 @@
     <q-item-section>
       <q-item-label class="ellipsis">{{ hit.chromeTab?.title }}
         <template v-for="badge in tabsetBadges(hit)">
-          <q-chip icon="event">{{ badge.label }}</q-chip>
+          <q-chip class="cursor-pointer" clickable icon="tab" @click="openTabset(badge)">{{ badge.label }}</q-chip>
         </template>
       </q-item-label>
       <q-item-label class="ellipsis" caption>{{ hit.chromeTab?.url }}</q-item-label>
@@ -44,6 +44,7 @@ import {ref} from "vue";
 import {Hit} from "src/models/Hit";
 import _ from "lodash"
 import {useFeatureTogglesStore} from "src/stores/featureTogglesStore";
+import {useRouter} from "vue-router";
 
 const props = defineProps({
   hit: {
@@ -54,6 +55,7 @@ const props = defineProps({
 
 const emits = defineEmits(['sendCaption'])
 
+const router = useRouter()
 const featureToggles = useFeatureTogglesStore()
 const line = ref(null);
 
@@ -116,13 +118,19 @@ const setInfo = (tab: Tab) => {
 
 const tabsetBadges = (hit:Hit): object[] => {
   const badges: object[] = []
-  //console.log("badges for", hit)
   _.forEach(hit.tabsets, ts => badges.push({
-    label: TabsetService.nameForTabsetId(ts)
+    label: TabsetService.nameForTabsetId(ts),
+    tabsetId: ts,
+    encodedUrl: btoa(hit.chromeTab.url || '')
   }))
   return badges;
 }
 
+const openTabset = (badge: any) => {
+  console.log("badge", badge)
+  TabsetService.selectTabset(badge.tabsetId)
+  router.push("/tabset?highlight="+badge.encodedUrl)
+}
 
 
 </script>
