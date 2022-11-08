@@ -111,15 +111,6 @@ class ChromeListeners {
     this.eventTriggered()
     const tabsStore = useTabsStore()
     console.log(`onRemoved: tab ${number}: >>> ${JSON.stringify(info)}`)
-
-    // if (tabsStore.tabIdExistsInContextTabset(number)) {
-    //   return
-    // }
-
-    if ("current" === tabsStore.currentTabsetId && !this.inProgress) {
-      tabsStore.loadTabs('onRemoved')
-      return
-    }
     const currentTabset: Tabset = tabsStore.tabsets.get(tabsStore.currentTabsetId) || new Tabset("", "", [], [])
     const index = _.findIndex(currentTabset.tabs, t => t.chromeTab.id === number);
     if (index >= 0) {
@@ -127,11 +118,7 @@ class ChromeListeners {
       const updatedTab = currentTabset.tabs.at(index)
       if (updatedTab) {
         console.log(`onRemoved: tab ${number}:     setting status DELETED`)
-        //currentTabset.tabs.splice(index, 1, updatedTab);
       }
-
-    } else {
-
     }
   }
 

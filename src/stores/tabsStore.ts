@@ -183,7 +183,6 @@ export const useTabsStore = defineStore('tabs', {
           return new Tab(uid(), t)
         }), [])
       markDuplicates(current)
-      //this.tabsets.set("current", current)
       this.browserTabset = current
     },
     initListeners() {
