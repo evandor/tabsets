@@ -171,6 +171,7 @@ class TabsetService {
   }
 
   async saveToTabset(ts: Tabset, tab: Tab): Promise<number> {
+    console.log("ts/tab", ts, tab)
     if (tab.chromeTab.url) {
       const tabsStore = useTabsStore()
 
@@ -178,6 +179,8 @@ class TabsetService {
       if (indexInTabset >= 0) {
         return Promise.reject("tab exists already")
       }
+
+      ts.tabs.push(tab)
 
       const index = _.findIndex(tabsStore.pendingTabset.tabs, t => t.id === tab.id)
       tabsStore.pendingTabset.tabs.splice(index, 1);
