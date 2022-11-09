@@ -42,11 +42,11 @@ class Navigation {
     const tabUrl = tab.chromeTab?.url || ''
     if (TabsetService.tabsetsFor(tabUrl).length <= 1) {
       TabsetService.removeThumbnailsFor(tabUrl)
-        .then(res => console.log("deleting thumbnail for ", tabUrl))
+        .then(() => console.log("deleting thumbnail for ", tabUrl))
         .catch(err => console.log("error deleting thumbnail", err))
 
       TabsetService.removeContentFor(tabUrl)
-        .then(res => console.log("deleting content for ", tabUrl))
+        .then(() => console.log("deleting content for ", tabUrl))
         .catch(err => console.log("error deleting content", err))
     }
     useTabsStore().removeTab(tab.id)
@@ -54,11 +54,15 @@ class Navigation {
   }
 
   closeChromeTab(tab: Tab) {
-    const tabsStore = useTabsStore()
     console.log("closing chrome tab", tab.id, tab.chromeTab?.id)
     if (tab.chromeTab?.id) {
       chrome.tabs.remove(tab.chromeTab.id)
     }
+  }
+
+  updateAvailable(details: any) {
+    console.log("details: UpdateAvailableDetails", details)
+    useNotificationsStore().updateAvailable(true, details.version)
   }
 }
 

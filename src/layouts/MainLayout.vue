@@ -63,8 +63,14 @@
           </q-menu>
         </q-btn>
 
-        <div class="cursor-pointer" @click="router.push('/about')">
+        <div class="cursor-pointer" @click="router.push('/about')" v-if="notificationsStore.updateToVersion === ''">
           v{{ appVersion }}
+        </div>
+        <div class="cursor-pointer" @click="router.push('/about')" v-else>
+          <q-btn
+            class="text-primary bg-warning"
+            @click="installNewVersion"
+            :label="'New Version ' + notificationsStore.updateToVersion + ' available. Click here to update'" />
         </div>
       </q-toolbar>
     </q-header>
@@ -174,27 +180,16 @@ const goHome = () => router.push("/")
 
 const toggleLeftDrawer = () => {
   useNotificationsStore().showDrawer = !useNotificationsStore().showDrawer
-  console.log("toggleLeftDrawer", leftDrawerOpen.value)
   localStorage.set("showLeftDrawer", useNotificationsStore().showDrawer)
 }
 
 onMounted(() => {
-  console.log("mounting", localStorage.getItem<boolean>("showLeftDrawer"))
   leftDrawerOpen.value = localStorage.getItem<boolean>("showLeftDrawer") || false
   useNotificationsStore().showDrawer = leftDrawerOpen.value
 })
 
 watchEffect(() => {
-  console.log("watchEffect", leftDrawerOpen.value)
     leftDrawerOpen.value = useNotificationsStore().showDrawer
-  console.log("watchEffect2", leftDrawerOpen.value)
-  // leftDrawerOpen.value = !!leftDrawerOpen.value
-//    leftDrawerOpen.value = localStorage.getItem<boolean>("showLeftDrawer")
-    //localStorage.set("showLeftDrawer", leftDrawerOpen.value)
-  // if (!leftDrawerOpen.value) {
-  //   useNotificationsStore().showBookmarks = false
-  //   useNotificationsStore().showOpenTabs = false
-  // }
 })
 
 const showNewTabsetDialog = ref(false)
@@ -216,6 +211,11 @@ const showExportDialog = () => {
 
 const showImportDialog = () => {
   $q.dialog({component: ImportDialog})
+}
+
+const installNewVersion = () => {
+  notificationsStore.updateAvailable(false)
+  chrome.runtime.reload()
 }
 
 

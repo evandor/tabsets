@@ -10,7 +10,8 @@ export const useNotificationsStore = defineStore('notifications', {
       showDrawer: false,
       bookmarksActive: false,
       bookmarksExpanded: [] as unknown as string[],
-      fabHasElementAnimation: false
+      fabHasElementAnimation: false,
+      updateToVersion: ''
     }),
     getters: {},
     actions: {
@@ -26,6 +27,9 @@ export const useNotificationsStore = defineStore('notifications', {
       animateFab() {
         this.fabHasElementAnimation = true;
         setTimeout(() => this.fabHasElementAnimation = false, 1000);
+      },
+      updateAvailable(available: boolean, version: string = '') {
+        this.updateToVersion = available ? version : '';
       }
     }
   }

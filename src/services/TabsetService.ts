@@ -468,6 +468,19 @@ class TabsetService {
     _.forEach(tabsets, tabset => {
       tabsStore.addTabset(tabset)
       this.saveTabset(tabset)
+
+      _.forEach(tabset.tabs, tab => {
+        console.log("adding to index", tab)
+        useSearchStore().addToIndex(
+          tab.id,
+          tab.chromeTab.title || '',
+          tab.chromeTab.title || '',
+          tab.chromeTab.url || '',
+          '',
+          '',
+          [tabset.id],
+          tab.chromeTab.favIconUrl || '')
+      })
     })
   }
 

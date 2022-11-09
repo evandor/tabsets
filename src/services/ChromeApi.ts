@@ -3,6 +3,7 @@ import TabsetService from "src/services/TabsetService";
 import {CLEANUP_PERIOD_IN_MINUTES} from "boot/constants";
 import {useTabsStore} from "src/stores/tabsStore";
 import _ from "lodash"
+import Navigation from "src/services/Navigation";
 
 function runHousekeeping(alarm: chrome.alarms.Alarm) {
   if (alarm.name === "housekeeping") {
@@ -24,6 +25,10 @@ class ChromeApi {
         //console.log("self", self)
         localStorage.setItem("selfId", self.id)
       }
+    )
+
+    chrome.runtime.onUpdateAvailable.addListener(
+      (details: any) => Navigation.updateAvailable(details)
     )
 
     this.buildContextMenu();
@@ -147,7 +152,7 @@ class ChromeApi {
         });
 
         Promise.all(promisedTabs)
-          .then((tabs: chrome.tabs.Tab[]) => useTabsStore().activateListeners())
+          .then(() => useTabsStore().activateListeners())
       })
   }
 

@@ -54,6 +54,20 @@
         <span class="text-blue cursor-pointer" @click="clearIndex">[clear Index]</span>&nbsp;
       </div>
     </div>
+
+    <div class="text-h6" v-if="featuresStore.debugEnabled">Simulate new Version</div>
+    <div class="row" v-if="featuresStore.debugEnabled">
+      <div class="col-3">
+        Version 0.1.2
+      </div>
+      <div class="col-3">
+
+      </div>
+      <div class="col-3">
+        <span class="text-blue cursor-pointer" @click="simulateNewVersion('0.1.2')">Simulate</span>&nbsp;
+
+      </div>
+    </div>
   </q-page>
 
 </template>
@@ -67,6 +81,7 @@ import {useQuasar} from "quasar";
 import {INDEX_DB_NAME} from "boot/constants"
 import {useSearchStore} from "src/stores/searchStore";
 import TabsetService from "src/services/TabsetService";
+import Navigation from "src/services/Navigation";
 
 const tabsStore = useTabsStore()
 const featuresStore = useFeatureTogglesStore()
@@ -100,8 +115,8 @@ const downloadIndex = () => {
   return TabsetService.createFile(data, "tabsetIndex.json");
 }
 
-const clearIndex = () => {
-  searchStore.init()
-}
+const clearIndex = () => searchStore.init()
+
+const simulateNewVersion = (version: string) => Navigation.updateAvailable({version: version})
 
 </script>
