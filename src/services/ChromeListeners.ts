@@ -77,7 +77,7 @@ class ChromeListeners {
           const existingTab = tabsStore.pendingTabset.tabs[index]
           const updatedTab = new Tab(uid(), tab)
           if (existingTab.chromeTab.url !== updatedTab.chromeTab.url && existingTab.chromeTab.url !== 'chrome://newtab/') {
-            console.log(`onUpdated:   tab ${number}:     updating tab url ${updatedTab.chromeTab.url}`)
+            //console.log(`onUpdated:   tab ${number}:     updating tab url ${updatedTab.chromeTab.url}`)
             updatedTab.setHistoryFrom(existingTab)
             if (existingTab.chromeTab.url) {
               updatedTab.addToHistory(existingTab.chromeTab.url)

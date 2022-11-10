@@ -38,9 +38,9 @@
 
 
         <q-card-actions align="right">
-<!--          <q-btn flat round color="red" size="11px" icon="delete_outline" @click.stop="deleteBookmark(bm)">-->
-<!--            <q-tooltip>Delete this bookmark</q-tooltip>-->
-<!--          </q-btn>-->
+          <!--          <q-btn flat round color="red" size="11px" icon="delete_outline" @click.stop="deleteBookmark(bm)">-->
+          <!--            <q-tooltip>Delete this bookmark</q-tooltip>-->
+          <!--          </q-btn>-->
         </q-card-actions>
 
       </q-card>
@@ -94,11 +94,17 @@
               <q-tooltip>{{ bm.chromeBookmark.title }}</q-tooltip>
             </div>
 
+            <q-badge color="warning" v-if="existsInTabset(bm.chromeBookmark.url)" floating>
+              <q-icon name="tab" size="16px" color="white">
+                <q-tooltip>This bookmark is saved in a tabset</q-tooltip>
+              </q-icon>
+            </q-badge>
+
           </div>
 
 
           <div class="text-subtitle2 ellipsis text-secondary">
-            {{ getHost(bm.chromeBookmark?.url, true) }}
+            {{ bm.chromeBookmark?.url.replace("https://www.", '').replace("https://", '') }}
             <q-icon name="launch" color="secondary"
                     @click.stop="Navigation.openOrCreateTab(bm.chromeBookmark?.url )"></q-icon>
             <q-tooltip>
@@ -126,7 +132,6 @@
 import Navigation from "src/services/Navigation";
 import {Tab} from "src/models/Tab";
 import TabsetService from "src/services/TabsetService";
-import {useNotificationsStore} from "src/stores/notificationsStore";
 import {Bookmark} from "src/models/Bookmark";
 import _ from "lodash"
 import {useRouter} from "vue-router";
@@ -135,38 +140,12 @@ import ImportFromBookmarks from "components/dialogues/ImportFromBookmarks.vue";
 import BookmarksService from "src/services/BookmarksService";
 import {useBookmarksStore} from "src/stores/bookmarksStore";
 
-// const props = defineProps({
-//   bookmarks: {
-//     type: Array,
-//     required: true
-//   }
-// })
-
 const emits = defineEmits(['sendCaption'])
 
 const bookmarksStore = useBookmarksStore()
 const router = useRouter()
 const $q = useQuasar()
 
-function getShortHostname(host: string) {
-  const nrOfDots = (host.match(/\./g) || []).length
-  if (nrOfDots >= 2) {
-    return host.substring(host.indexOf(".", nrOfDots - 2) + 1)
-  }
-  return host
-}
-
-function getHost(urlAsString: string, shorten: Boolean = true): string {
-  try {
-    const url = new URL(urlAsString)
-    if (!shorten) {
-      return url.protocol + "://" + url.host.toString()
-    }
-    return getShortHostname(url.host)
-  } catch (e) {
-    return "---";
-  }
-}
 
 function deleteBookmark(bm: Bookmark) {
   BookmarksService.deleteBookmark(bm)
@@ -207,7 +186,6 @@ const nameOrTitle = (bm: Bookmark) => bm?.chromeBookmark?.title
 const dynamicNameOrTitleModel = (bm: Bookmark) => bm?.chromeBookmark?.title
 
 const startDrag = (evt: DragEvent, bm: Bookmark) => {
-  //console.log("drag started", evt, tab.id)
   if (evt.dataTransfer) {
     evt.dataTransfer.dropEffect = 'move'
     evt.dataTransfer.effectAllowed = 'move'
@@ -219,6 +197,7 @@ const importBookmarks = () => {
   $q.dialog({component: ImportFromBookmarks})
 }
 
+const existsInTabset = (url: string) => TabsetService.tabsetsFor(url).length > 0
 
 </script>
 

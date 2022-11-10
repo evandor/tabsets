@@ -31,6 +31,10 @@ class ChromeApi {
       (details: any) => Navigation.updateAvailable(details)
     )
 
+    // chrome.runtime.getBackgroundPage(
+    //   (a: any) => console.log("chrome.runtime.getBackgroundPage(", a)
+    //   )
+
     this.buildContextMenu();
 
     chrome.contextMenus.onClicked.addListener(

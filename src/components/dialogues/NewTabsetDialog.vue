@@ -67,7 +67,7 @@ const $q = useQuasar()
 const newTabsetName = ref('')
 const newTabsetNameExists = ref(false)
 const hideWarning = ref(false)
-const addAutomatically = ref(false)
+const addAutomatically = ref(true)
 
 const newTabsetNameIsValid = computed(() => {
   return newTabsetName.value.length <= 32 && !STRIP_CHARS_IN_USER_INPUT.test(newTabsetName.value)

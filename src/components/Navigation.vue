@@ -13,8 +13,9 @@
     </div>
 
     <q-item
-      v-for="tabset in tabsets()"
+      v-for="(tabset,index) in tabsets()"
       :key="'local_' + tabset.id"
+      :data-testid="'navigation_tabset_' +  index"
       clickable v-ripple
       @click="selectTabset(tabset.id)"
       @mouseover="showButtons(tabset.id, true)"
@@ -33,7 +34,9 @@
           <q-tooltip>Edit the tabset's name...</q-tooltip>
         </q-icon>
       </q-item-section>
-      <q-item-section avatar v-show="showDeleteButton.get(tabset.id)">
+      <q-item-section
+        avatar v-if="showDeleteButton.get(tabset.id)"
+        :data-testid="'navigation_tabset_delete_' +  index">
         <q-icon name="delete_outline" color="negative" size="18px" @click="deleteDialog">
           <q-tooltip>Delete this tabset...</q-tooltip>
         </q-icon>
@@ -52,7 +55,7 @@ import {useRouter} from "vue-router";
 import {useTabsStore} from "src/stores/tabsStore";
 import _ from "lodash"
 import {ref} from "vue";
-import { useQuasar} from "quasar";
+import {useQuasar} from "quasar";
 import {Tabset} from "src/models/Tabset";
 import {useFeatureTogglesStore} from "src/stores/featureTogglesStore";
 import EditTabset from "src/components/dialogues/EditTabset.vue"
@@ -126,7 +129,8 @@ const editDialog = (tabset: Tabset) =>
     componentProps: {
       tabsetId: tabset.id,
       tabsetName: tabset.name
-    }})
+    }
+  })
 
 
 </script>

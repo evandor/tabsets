@@ -1,6 +1,7 @@
 <template>
   <q-page-sticky position="bottom-right" :offset="[80, 60]">
     <q-fab
+      data-testid="fab_widget"
       :class="{
         'heartBeat animated': useNotificationsStore().fabHasElementAnimation,
         'rotateIn animated': useNotificationsStore().fabHasElementAnimation
@@ -13,6 +14,7 @@
         <q-tooltip>Start a new tabset by assigning your open tabs</q-tooltip>
       </q-fab-action>
       <q-fab-action v-if="tabsStore.currentTabsetId !== '' && tabsStore.getTabset(tabsStore.currentTabsetId)"
+                    data-testid="fab_add_url"
                     @click="showNewUrlDialog = true" style="width:170px" color="primary" icon="link" label="Add Url">
         <q-tooltip>Add a Url to the current tabset manually '{{ tabsStore.currentTabsetId }}'</q-tooltip>
       </q-fab-action>
@@ -59,13 +61,16 @@
 
       <q-card-section class="q-pt-none">
         <div class="text-body">Url:</div>
-        <q-input dense v-model="url" autofocus @keyup.enter="prompt = false"/>
+        <q-input dense v-model="url"
+                 data-testid="fab_add_url_input"
+                 autofocus @keyup.enter="prompt = false"/>
         <div class="text-body2 text-warning">{{ newUrlDialogWarning() }}</div>
       </q-card-section>
 
       <q-card-actions align="right" class="text-primary">
         <q-btn flat label="Cancel" v-close-popup/>
         <q-btn flat label="Add URL"
+               data-testid="fab_add_url_submit"
                :disable="url.trim().length === 0" v-close-popup
                @click="createNewUrl()"/>
       </q-card-actions>

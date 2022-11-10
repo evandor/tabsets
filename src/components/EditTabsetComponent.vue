@@ -181,6 +181,7 @@
   <q-expansion-item
     icon="tabs"
     default-opened
+    data-testid="expansion_item_unpinnedNoGroup"
     header-class="text-black"
     expand-icon-class="text-black"
     expand-separator>
