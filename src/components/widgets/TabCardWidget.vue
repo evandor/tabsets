@@ -30,7 +30,7 @@
 
       <div class="text-subtitle2 ellipsis text-secondary"
            @click.stop="Navigation.openOrCreateTab(tab.chromeTab?.url )">
-        {{ tab.chromeTab?.url.replace("https://www.", '').replace("https://",'') }}
+        {{ tab.chromeTab?.url.replace("https://www.", '').replace("https://", '') }}
         <q-icon name="launch" color="secondary"></q-icon>
         <q-tooltip>
           {{ tab.chromeTab?.url }}
@@ -46,6 +46,9 @@
                  style="border:1px solid #efefef; border-right: 3px;"></q-img>
         </div>
         <div class="col-6 text-right">
+          <q-btn flat round color="positive" size="11px" icon="save" @click.stop="saveTab(tab)">
+            <q-tooltip>Save this tab</q-tooltip>
+          </q-btn>
           <q-btn flat round color="red" size="11px" icon="delete_outline" @click.stop="closeTab(tab)">
             <q-tooltip>Delete this tab from this list</q-tooltip>
           </q-btn>
@@ -65,6 +68,8 @@ import TabsetService from "src/services/TabsetService";
 import {useNotificationsStore} from "stores/notificationsStore";
 import {ref} from "vue";
 import Navigation from "src/services/Navigation";
+import PersistenceService from "src/services/PersistenceService";
+import IndexedDbPersistenceService from "src/services/IndexedDbPersistenceService";
 
 const props = defineProps({
   tab: {
@@ -111,7 +116,7 @@ function cardStyle(tab: Tab) {
   let background = ''
   if (tab?.isDuplicate) {
     background = "background: radial-gradient(circle, #FFFFFF 0%, #FFECB3 100%)"
-  } else if (tab?.chromeTab.url ===  props.highlightUrl) {
+  } else if (tab?.chromeTab.url === props.highlightUrl) {
     background = "background: radial-gradient(circle, #FFBF46 0%, #FFBF46 100%)"
   }
   return `${borderColor};${background}`
@@ -176,9 +181,21 @@ function getHost(urlAsString: string, shorten: Boolean = true): string {
 }
 
 
-
 function closeTab(tab: Tab) {
   Navigation.closeTab(tab)
+}
+
+const saveTab = (tab: Tab) => {
+  if (tab.chromeTab.id) {
+    console.log("capturing", tab.chromeTab)
+    chrome.pageCapture.saveAsMHTML(
+      {tabId: tab.chromeTab.id},
+      (html: any) => {
+        console.log("html", html)
+        IndexedDbPersistenceService.saveMhtml(tab.chromeTab, html)
+      }
+    )
+  }
 }
 
 </script>

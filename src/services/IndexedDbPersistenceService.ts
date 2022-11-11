@@ -4,6 +4,7 @@ import _ from "lodash";
 import {INDEX_DB_NAME} from "boot/constants";
 import PersistenceService from "src/services/PersistenceService";
 import {Tabset} from "src/models/Tabset";
+import mhtml2html from 'mhtml2html';
 
 class IndexedDbPersistenceService implements PersistenceService {
 
@@ -170,8 +171,102 @@ class IndexedDbPersistenceService implements PersistenceService {
     return this.db.getAll('content')
   }
 
+  saveMhtml(tab: chrome.tabs.Tab, mhtml: string): Promise<IDBValidKey> {
+    if (tab.url) {
+      const encodedTabUrl = btoa(tab.url)
+      return this.db.put('mhtml', {
+        id: encodedTabUrl,
+        url: tab.url,
+        content: mhtml
+      }, encodedTabUrl)
+    }
+    return Promise.reject("tab.url missing")
+  }
+
+  base64ToArrayBuffer(_base64Str: string) {
+    var binaryString = window.atob(_base64Str);
+    var binaryLen = binaryString.length;
+    var bytes = new Uint8Array(binaryLen);
+    for (var i = 0; i < binaryLen; i++) {
+      var ascii = binaryString.charCodeAt(i);
+      bytes[i] = ascii;
+    }
+    return bytes;
+  }
+
+  async getMhtml(url: string): Promise<any> {
+
+    const mhtml =  await this.db.get('mhtml', url)
+    console.log("got", mhtml.content, typeof mhtml.content)
+
+    const content:Blob = mhtml.content
+
+    const mhtmlString = await content.text()
+    console.log("mhtmlString", mhtmlString)
+    const html = mhtml2html.convert(mhtmlString)//,{ parseDOM: (html:any) => new JSDOM(html)    });
+    console.log("XXX1", html, typeof html);
+    console.log("XXX2", html.window);
+    console.log("XXX3", html.window.document);
+    const innerHtml = html.window.document.documentElement.innerHTML
+    console.log("XXX4", innerHtml);
+   //console.log("XXX4", html.window.document.innerHTML);
+    const res = "data:text/html," + innerHtml
+    console.log("res", res)
+
+    const blob2 = content.slice(0, content.size, "multipart/related")
+
+
+
+    let blob = new Blob([mhtml.content])
+    let img = "iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAApgAAAKYB3X3/OAAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAANCSURBVEiJtZZPbBtFFMZ/M7ubXdtdb1xSFyeilBapySVU8h8OoFaooFSqiihIVIpQBKci6KEg9Q6H9kovIHoCIVQJJCKE1ENFjnAgcaSGC6rEnxBwA04Tx43t2FnvDAfjkNibxgHxnWb2e/u992bee7tCa00YFsffekFY+nUzFtjW0LrvjRXrCDIAaPLlW0nHL0SsZtVoaF98mLrx3pdhOqLtYPHChahZcYYO7KvPFxvRl5XPp1sN3adWiD1ZAqD6XYK1b/dvE5IWryTt2udLFedwc1+9kLp+vbbpoDh+6TklxBeAi9TL0taeWpdmZzQDry0AcO+jQ12RyohqqoYoo8RDwJrU+qXkjWtfi8Xxt58BdQuwQs9qC/afLwCw8tnQbqYAPsgxE1S6F3EAIXux2oQFKm0ihMsOF71dHYx+f3NND68ghCu1YIoePPQN1pGRABkJ6Bus96CutRZMydTl+TvuiRW1m3n0eDl0vRPcEysqdXn+jsQPsrHMquGeXEaY4Yk4wxWcY5V/9scqOMOVUFthatyTy8QyqwZ+kDURKoMWxNKr2EeqVKcTNOajqKoBgOE28U4tdQl5p5bwCw7BWquaZSzAPlwjlithJtp3pTImSqQRrb2Z8PHGigD4RZuNX6JYj6wj7O4TFLbCO/Mn/m8R+h6rYSUb3ekokRY6f/YukArN979jcW+V/S8g0eT/N3VN3kTqWbQ428m9/8k0P/1aIhF36PccEl6EhOcAUCrXKZXXWS3XKd2vc/TRBG9O5ELC17MmWubD2nKhUKZa26Ba2+D3P+4/MNCFwg59oWVeYhkzgN/JDR8deKBoD7Y+ljEjGZ0sosXVTvbc6RHirr2reNy1OXd6pJsQ+gqjk8VWFYmHrwBzW/n+uMPFiRwHB2I7ih8ciHFxIkd/3Omk5tCDV1t+2nNu5sxxpDFNx+huNhVT3/zMDz8usXC3ddaHBj1GHj/As08fwTS7Kt1HBTmyN29vdwAw+/wbwLVOJ3uAD1wi/dUH7Qei66PfyuRj4Ik9is+hglfbkbfR3cnZm7chlUWLdwmprtCohX4HUtlOcQjLYCu+fzGJH2QRKvP3UNz8bWk1qMxjGTOMThZ3kvgLI5AzFfo379UAAAAASUVORK5CYII="
+    const src ="data:image/png;base64," +  img// +  mhtml.content
+
+    let base64data
+
+    var audioURL = window.URL.createObjectURL(new Blob([mhtml.content]));
+    //audio.src = audioURL;
+
+    //var blob2 = new Blob([src], { type: 'multipart/related' });
+   // window.open(URL.createObjectURL(blob2), "_blank");
+
+
+
+    var reader = new window.FileReader();
+    reader.readAsDataURL(blob2);
+    reader.onloadend = function () {
+      let base64data = reader.result as unknown as string
+      console.log(base64data);
+
+
+
+      base64data = base64data?.replace("data:application/octet-stream;base64,", "data:multipart/related;base64,")
+      var win = window.open();
+      if (win) {
+        win.document.write(res + "<br>")
+        win.document.write("<iframe style='width:100%;height:800px' src=" + res+ "><\/iframe>");
+      }
+    }
+    //const src ="data:multipart/related;base64," + base64data
+
+
+
+    // let blob = new Blob([mhtml.content])
+    // blob = blob.slice(0, blob.size, "multipart/related")
+    //
+    //  const file = window.URL.createObjectURL(new Blob([src]))
+    // console.log("file", file)
+    // const docUrl = document.createElement('a');
+    // docUrl.href = file;
+    // //docUrl.setAttribute('download', 'filename.mhtml');
+    // console.log("docUrl", docUrl)
+    // document.body.appendChild(docUrl);
+    // docUrl.click();
+
+    return Promise.resolve('done')
+  }
+
   private async initDatabase(): Promise<IDBPDatabase> {
-    return await openDB(INDEX_DB_NAME, 2, {
+    return await openDB(INDEX_DB_NAME, 3, {
       // upgrading see https://stackoverflow.com/questions/50193906/create-index-on-already-existing-objectstore
       upgrade(db) {
         if (!db.objectStoreNames.contains('tabsets')) {
@@ -192,6 +287,11 @@ class IndexedDbPersistenceService implements PersistenceService {
           console.log("creating db searchIndex")
           let store = db.createObjectStore('searchIndex');
           store.createIndex("expires", "expires", {unique: false});
+        }
+        if (!db.objectStoreNames.contains('mhtml')) {
+          console.log("creating db mhtml")
+          let store = db.createObjectStore('mhtml');
+          //store.createIndex("expires", "expires", {unique: false});
         }
       },
     });

@@ -34,6 +34,7 @@
     "html-to-text": "^8.2.1",
     "idb": "^7.0.2",
     "lodash": "^4.17.21",
+    "mhtml2html": "^3.0.0",
     "pinia": "^2.0.11",
     "quasar": "^2.10.1",
     "throttled-queue": "^2.1.4",

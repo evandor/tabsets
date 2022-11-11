@@ -19,6 +19,8 @@ interface PersistenceService {
   cleanUpContent(): Promise<void>
   getContents(): Promise<any[]>
 
+  saveMhtml(tab: chrome.tabs.Tab, mhtml: string): Promise<IDBValidKey>
+  getMhtml(url: string):Promise<object>
 }
 
 export default PersistenceService
