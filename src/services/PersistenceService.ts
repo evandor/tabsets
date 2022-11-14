@@ -1,4 +1,5 @@
 import {Tabset} from "src/models/Tabset";
+import {Space} from "src/models/Space";
 
 interface PersistenceService {
 
@@ -19,6 +20,7 @@ interface PersistenceService {
   cleanUpContent(): Promise<void>
   getContents(): Promise<any[]>
 
+  addSpace(space: Space): Promise<void>
 }
 
 export default PersistenceService

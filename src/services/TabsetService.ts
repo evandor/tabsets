@@ -9,6 +9,7 @@ import {useSearchStore} from "src/stores/searchStore";
 import {useBookmarksStore} from "src/stores/bookmarksStore";
 import IndexedDbPersistenceService from "src/services/IndexedDbPersistenceService"
 import {STRIP_CHARS_IN_USER_INPUT} from "boot/constants";
+import {NewOrReplacedTabset} from "src/models/NewOrReplacedTabset";
 
 class TabsetService {
 
@@ -24,7 +25,7 @@ class TabsetService {
    * Init, called when extension is loaded (via App.vue)
    */
   async init() {
-    await this.persistenceService.init();
+
     useSearchStore().populate(this.persistenceService.getContents())
     await this.persistenceService.loadTabsets()
   }
@@ -47,8 +48,9 @@ class TabsetService {
     const tabsStore = useTabsStore()
     const tabs = _.map(chromeTabs, t => new Tab(uid(), t))
     try {
-      const result = await tabsStore.updateOrCreateTabset(trustedName, tabs, merge)
+      const result: NewOrReplacedTabset = await tabsStore.updateOrCreateTabset(trustedName, tabs, merge)
       if (result && result.tabset) {
+        console.log("result", result)
         await this.saveTabset(result.tabset)
         this.selectTabset(result.tabset.id)
       }
