@@ -5,9 +5,29 @@
 
         <q-btn dense flat round icon="menu" @click="toggleLeftDrawer"/>
 
-        <q-toolbar-title @click="goHome()" class="cursor-pointer" style="width:350px;">
-          {{ title() }} <span class="text-caption">Handle more links, with less tabs open</span>
+        <q-toolbar-title @click.stop="goHome()" class="cursor-pointer" shrink>
+          Tabsets
+          <span class="text-caption" v-show="spacesStore.spaces.size === 0">Handle more links, with less tabs open</span>
         </q-toolbar-title>
+
+        <q-select
+                  bg-color="white"
+                  v-if="spacesStore.spaces.size > 0"
+                  filled v-model="spacesStore.space" :options="spacesOptions" dense options-dense>
+          <template v-slot:selected>
+            Space:
+            <q-chip
+              v-if="spacesStore.space"
+              dense
+              square
+              color="white"
+              text-color="primary"
+              class="q-my-none q-ml-xs q-mr-none">
+              {{ spacesStore.space.label }}
+            </q-chip>
+            <q-badge v-else>*none*</q-badge>
+          </template>
+        </q-select>
 
         <q-input dark dense standout v-model="search"
                  ref="searchBox"
@@ -70,7 +90,7 @@
           <q-btn
             class="text-primary bg-warning"
             @click="installNewVersion"
-            :label="'New Version ' + notificationsStore.updateToVersion + ' available. Click here to update'" />
+            :label="'New Version ' + notificationsStore.updateToVersion + ' available. Click here to update'"/>
         </div>
       </q-toolbar>
     </q-header>
@@ -98,7 +118,7 @@
 </template>
 
 <script setup lang="ts">
-import {onMounted, onUnmounted, ref, watchEffect} from 'vue';
+import {onMounted, onUnmounted, ref, watch, watchEffect} from 'vue';
 import {useQuasar} from "quasar";
 import {useTabsStore} from "src/stores/tabsStore";
 import {useRoute, useRouter} from "vue-router";
@@ -113,6 +133,8 @@ import {useFeatureTogglesStore} from "src/stores/featureTogglesStore";
 import NewTabsetDialog from "components/dialogues/NewTabsetDialog.vue";
 import ExportDialog from "components/dialogues/ExportDialog.vue";
 import ImportDialog from "components/dialogues/ImportDialog.vue";
+import _ from "lodash";
+import {useSpacesStore} from "stores/spacesStore";
 
 const router = useRouter()
 const tabsStore = useTabsStore()
@@ -125,8 +147,11 @@ const leftDrawerOpen = ref(false)
 
 const notificationsStore = useNotificationsStore()
 const featuresStore = useFeatureTogglesStore()
+const spacesStore = useSpacesStore()
 const route = useRoute()
 
+const spacesOptions = ref<object[]>([])
+const search = ref('')
 const $q = useQuasar()
 
 $q.loadingBar.setDefaults({
@@ -135,7 +160,13 @@ $q.loadingBar.setDefaults({
   position: 'top'
 })
 
-const search = ref('')
+watchEffect(() => {
+  spacesOptions.value = _.map([...spacesStore.spaces.keys()], key => {
+    const label = spacesStore.spaces.get(key)?.label || 'undef'
+    return {id: key, label: label}
+  })
+    .concat({id: '', label: '(unassigned)'})
+})
 
 //@ts-ignore
 const appVersion = import.meta.env.PACKAGE_VERSION
@@ -174,8 +205,9 @@ function submitSearch() {
 }
 
 const title = () => {
-  return 'Tabsets'
+  return spacesStore.spaces.size === 0 ? 'Tabsets' : 'Tabsets - Space: '
 }
+
 const goHome = () => router.push("/")
 
 const toggleLeftDrawer = () => {
@@ -189,7 +221,7 @@ onMounted(() => {
 })
 
 watchEffect(() => {
-    leftDrawerOpen.value = useNotificationsStore().showDrawer
+  leftDrawerOpen.value = useNotificationsStore().showDrawer
 })
 
 const showNewTabsetDialog = ref(false)

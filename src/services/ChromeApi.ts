@@ -31,10 +31,6 @@ class ChromeApi {
       (details: any) => Navigation.updateAvailable(details)
     )
 
-    // chrome.runtime.getBackgroundPage(
-    //   (a: any) => console.log("chrome.runtime.getBackgroundPage(", a)
-    //   )
-
     this.buildContextMenu();
 
     chrome.contextMenus.onClicked.addListener(
@@ -179,7 +175,7 @@ class ChromeApi {
   async tabsForUrl(url: string | undefined): Promise<chrome.tabs.Tab[]> {
     if (url) {
       // @ts-ignore
-      return await chrome.tabs.query({url: url})
+      return chrome.tabs.query({url: url});
     }
     return Promise.reject("url not defined")
   }
@@ -187,12 +183,12 @@ class ChromeApi {
   async childrenFor(bookmarkFolderId: string): Promise<chrome.bookmarks.BookmarkTreeNode[]> {
     console.log("bookmarkFolderId", bookmarkFolderId)
     // @ts-ignore
-    return await chrome.bookmarks.getChildren(bookmarkFolderId)
+    return chrome.bookmarks.getChildren(bookmarkFolderId)
   }
 
   async getTab(tabId: number): Promise<chrome.tabs.Tab> {
     // @ts-ignore
-    return await chrome.tabs.get(tabId)
+    return chrome.tabs.get(tabId)
   }
 
   createChromeTabObject(title: string, url: string, favIconUrl: string) {

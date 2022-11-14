@@ -40,6 +40,11 @@ const routes: RouteRecordRaw[] = [
     component: () => import('layouts/MainLayout.vue'),
     children: [{ path: '', component: () => import('pages/Bookmarks.vue') }],
   },
+  {
+    path: '/spaces',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [{ path: '', component: () => import('pages/Spaces.vue') }],
+  },
   // {
   //   path: '/browser',
   //   component: () => import('layouts/MainLayout.vue'),

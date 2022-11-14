@@ -1,4 +1,5 @@
 import {Tabset} from "src/models/Tabset";
+import {Space} from "src/models/Space";
 
 interface PersistenceService {
 
@@ -21,6 +22,7 @@ interface PersistenceService {
 
   saveMhtml(tab: chrome.tabs.Tab, mhtml: string): Promise<IDBValidKey>
   getMhtml(url: string):Promise<object>
+  addSpace(space: Space): Promise<void>
 }
 
 export default PersistenceService

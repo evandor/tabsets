@@ -2,9 +2,12 @@
 
   <q-list class="q-mt-md">
 
-    <q-item-label header>
-      Tabsets <span v-if="tabsStore.tabsets.size > 3">({{ tabsStore.tabsets.size }})</span>
-    </q-item-label>
+    <q-toolbar>
+      <q-toolbar-title style="font-size:16px">Tabsets <span v-if="tabsStore.tabsets.size > 3">({{
+          tabsStore.tabsets.size
+        }})</span>
+      </q-toolbar-title>
+    </q-toolbar>
 
     <div class="text-body2 q-pa-lg" v-if="tabsStore.tabsets.size === 0">
       <q-banner rounded class="bg-amber-1">
@@ -54,24 +57,25 @@ import TabsetService from "src/services/TabsetService";
 import {useRouter} from "vue-router";
 import {useTabsStore} from "src/stores/tabsStore";
 import _ from "lodash"
-import {ref} from "vue";
+import {ref, watchEffect, watch} from "vue";
 import {useQuasar} from "quasar";
 import {Tabset} from "src/models/Tabset";
 import {useFeatureTogglesStore} from "src/stores/featureTogglesStore";
 import EditTabset from "src/components/dialogues/EditTabset.vue"
+import {useSpacesStore} from "stores/spacesStore";
 
 const router = useRouter()
 const tabsStore = useTabsStore()
 const featuresStore = useFeatureTogglesStore()
+const spacesStore = useSpacesStore()
 
 const showDeleteButton = ref<Map<string, boolean>>(new Map())
 const showEditButton = ref<Map<string, boolean>>(new Map())
 const $q = useQuasar();
+const localStorage = $q.localStorage
 
 const newTabsetName = ref('')
 const merge = ref(false)
-
-const remoteAndLocalTabsets = ref(false)
 
 $q.loadingBar.setDefaults({
   color: 'green',
@@ -85,7 +89,15 @@ const selectTabset = (tabsetId: string) => {
 }
 
 const tabsets = () => {
-  return _.sortBy([...tabsStore.tabsets.values()], ['name'])
+  let tabsets = [...tabsStore.tabsets.values()]
+  if (spacesStore.spaces && spacesStore.spaces.size > 0) {
+    if (spacesStore.space && spacesStore.space.id && spacesStore.space.id.length > 0) {
+      tabsets = _.filter(tabsets, ts => ts.spaces && ts.spaces.indexOf(spacesStore.space.id) >= 0)
+    } else {
+      tabsets = _.filter(tabsets, ts => ts.spaces && ts.spaces.length === 0)
+    }
+  }
+  return _.sortBy(tabsets, ['name'])
 }
 
 const onDrop = (evt: DragEvent, tabsetId: string) => {

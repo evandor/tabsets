@@ -1,3 +1,4 @@
+// @ts-ignore
 import {beforeEach, describe, expect, it, jest} from "@jest/globals";
 import {setActivePinia, createPinia} from 'pinia'
 import {useTabsStore} from "src/stores/tabsStore";

@@ -5,6 +5,9 @@ import {INDEX_DB_NAME} from "boot/constants";
 import PersistenceService from "src/services/PersistenceService";
 import {Tabset} from "src/models/Tabset";
 import mhtml2html from 'mhtml2html';
+import {uid} from "quasar";
+import {useSpacesStore} from "stores/spacesStore";
+import {Space} from "src/models/Space";
 
 class IndexedDbPersistenceService implements PersistenceService {
 
@@ -29,6 +32,19 @@ class IndexedDbPersistenceService implements PersistenceService {
         .catch(err => console.log("err", err))
     })
   }
+
+  async loadSpaces(): Promise<void> {
+    const spacesStore = useSpacesStore()
+    const keys: IDBValidKey[] = await this.db.getAllKeys('spaces')
+    _.forEach(keys, key => {
+      this.db.get('spaces', key)
+        .then((space: Space) => {
+            spacesStore.putSpace(space)
+        })
+        .catch(err => console.log("err", err))
+    })
+  }
+
 
   async saveTabset(tabset: Tabset): Promise<IDBValidKey> {
     return await this.db.put('tabsets', JSON.parse(JSON.stringify(tabset)), tabset.id);
@@ -265,6 +281,11 @@ class IndexedDbPersistenceService implements PersistenceService {
     return Promise.resolve('done')
   }
 
+  async addSpace(space: Space): Promise<void> {
+    return await this.db.put('spaces', space, space.id)
+      .then(() => Promise.resolve())
+  }
+
   private async initDatabase(): Promise<IDBPDatabase> {
     return await openDB(INDEX_DB_NAME, 3, {
       // upgrading see https://stackoverflow.com/questions/50193906/create-index-on-already-existing-objectstore
@@ -283,10 +304,9 @@ class IndexedDbPersistenceService implements PersistenceService {
           let store = db.createObjectStore('content');
           store.createIndex("expires", "expires", {unique: false});
         }
-        if (!db.objectStoreNames.contains('searchIndex')) {
-          console.log("creating db searchIndex")
-          let store = db.createObjectStore('searchIndex');
-          store.createIndex("expires", "expires", {unique: false});
+        if (!db.objectStoreNames.contains('spaces')) {
+          console.log("creating db spaces")
+          let store = db.createObjectStore('spaces');
         }
         if (!db.objectStoreNames.contains('mhtml')) {
           console.log("creating db mhtml")
@@ -306,6 +326,7 @@ class IndexedDbPersistenceService implements PersistenceService {
     }
     return false;
   }
+
 
 }
 

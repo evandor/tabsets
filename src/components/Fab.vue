@@ -19,27 +19,35 @@
         <q-tooltip>Add a Url to the current tabset manually '{{ tabsStore.currentTabsetId }}'</q-tooltip>
       </q-fab-action>
 
-      <q-fab-action v-if="!useNotificationsStore().showDrawer"
-        @click="showOpenTabs"
-        style="width:170px" color="accent"
-        icon="'visibility'"
-        label="Show Open Tabs">
-        <q-tooltip>Open the left drawer and show your browsers open tabs</q-tooltip>
-      </q-fab-action>
-      <q-fab-action v-if="!useNotificationsStore().showDrawer"
-                    @click="showBookmarks"
-                    style="width:170px" color="accent"
-                    icon="'visibility'"
-                    label="Show Bookmarks">
-        <q-tooltip>Open the left drawer and show your browers bookmarks</q-tooltip>
-      </q-fab-action>
-      <q-fab-action v-if="useNotificationsStore().showDrawer"
-                    @click="useNotificationsStore().showDrawer = false"
-                    style="width:170px" color="accent"
-                    icon="visibility_off"
-                    label="Close left drawer">
-        <q-tooltip>Close the left navigation drawer</q-tooltip>
-      </q-fab-action>
+<!--      <q-fab-action v-if="!useNotificationsStore().showDrawer"-->
+<!--        @click="showOpenTabs"-->
+<!--        style="width:170px" color="accent"-->
+<!--        icon="'visibility'"-->
+<!--        label="Show Open Tabs">-->
+<!--        <q-tooltip>Open the left drawer and show your browsers open tabs</q-tooltip>-->
+<!--      </q-fab-action>-->
+<!--      <q-fab-action v-if="!useNotificationsStore().showDrawer"-->
+<!--                    @click="showBookmarks"-->
+<!--                    style="width:170px" color="accent"-->
+<!--                    icon="'visibility'"-->
+<!--                    label="Show Bookmarks">-->
+<!--        <q-tooltip>Open the left drawer and show your browers bookmarks</q-tooltip>-->
+<!--      </q-fab-action>-->
+<!--      <q-fab-action v-if="useNotificationsStore().showDrawer"-->
+<!--                    @click="useNotificationsStore().showDrawer = false"-->
+<!--                    style="width:170px" color="accent"-->
+<!--                    icon="visibility_off"-->
+<!--                    label="Close left drawer">-->
+<!--        <q-tooltip>Close the left navigation drawer</q-tooltip>-->
+<!--      </q-fab-action>-->
+
+            <q-fab-action v-if="tabsStore.getCurrentTabs.length > 0"
+                          @click="newSpaceDialog = true"
+                          style="width:170px" color="accent"
+                          icon="workspaces"
+                          label="Create a new Space">
+              <q-tooltip>Create a new Space to organize your tabsets</q-tooltip>
+            </q-fab-action>
 
       <q-fab-action
         v-if="tabsStore.currentTabsetId !== '' && tabsStore.getTabset(tabsStore.currentTabsetId)"
@@ -91,6 +99,7 @@ import ChromeApi from "src/services/ChromeApi";
 import {useNotificationsStore} from "src/stores/notificationsStore"
 import NewTabsetDialog from "components/dialogues/NewTabsetDialog.vue"
 import ReindexDialog from "components/dialogues/ReindexDialog.vue";
+import NewSpaceDialog from "components/dialogues/NewSpaceDialog.vue";
 
 const tabsStore = useTabsStore()
 const router = useRouter()
@@ -100,6 +109,7 @@ const url = ref('')
 const showNewTabsetDialog = ref(false)
 const showNewUrlDialog = ref(false)
 const showReindexDialog = ref(false)
+const newSpaceDialog = ref(false)
 
 watchEffect(() => {
   if (showNewTabsetDialog.value) {
@@ -124,6 +134,19 @@ watchEffect(() => {
   }
 })
 
+watchEffect(() => {
+  if (newSpaceDialog.value) {
+    $q.dialog({
+      component: NewSpaceDialog,
+      componentProps: {
+        tabsetId: tabsStore.currentTabsetId,
+      }
+    }).onDismiss(() => {
+      newSpaceDialog.value = false
+    })
+  }
+})
+
 const createNewUrl = () => {
   console.log("new url", url.value)
   const tab = new Tab(uid(), null as unknown as chrome.tabs.Tab)
@@ -141,15 +164,15 @@ const newUrlDialogWarning = () => {
   }
 }
 
-const showBookmarks = () => {
-  useNotificationsStore().showDrawer = true
-  useNotificationsStore().showBookmarks = true
-}
+// const showBookmarks = () => {
+//   useNotificationsStore().showDrawer = true
+//   useNotificationsStore().showBookmarks = true
+// }
 
-const showOpenTabs = () => {
-  useNotificationsStore().showDrawer = true
-  useNotificationsStore().showOpenTabs = true
-}
+// const showOpenTabs = () => {
+//   useNotificationsStore().showDrawer = true
+//   useNotificationsStore().showOpenTabs = true
+// }
 
 
 </script>
