@@ -46,8 +46,9 @@
                  style="border:1px solid #efefef; border-right: 3px;"></q-img>
         </div>
         <div class="col-6 text-right">
-          <q-btn flat round color="positive" size="11px" icon="save" @click.stop="saveTab(tab)">
-            <q-tooltip>Save this tab</q-tooltip>
+          <q-btn flat round color="positive" size="11px" icon="save" @click.stop="saveTab(tab)" :disabled="!isOpen(tab)">
+            <q-tooltip v-if="isOpen(tab)">Save this tab</q-tooltip>
+            <q-tooltip v-else>The tab must be open if you want to save it. Click on the link and come back here to save it.</q-tooltip>
           </q-btn>
           <q-btn flat round color="red" size="11px" icon="delete_outline" @click.stop="closeTab(tab)">
             <q-tooltip>Delete this tab from this list</q-tooltip>
@@ -70,6 +71,7 @@ import {ref} from "vue";
 import Navigation from "src/services/Navigation";
 import PersistenceService from "src/services/PersistenceService";
 import IndexedDbPersistenceService from "src/services/IndexedDbPersistenceService";
+import MHtmlService from "src/services/MHtmlService";
 
 const props = defineProps({
   tab: {
@@ -160,27 +162,6 @@ const getFaviconUrl = (chromeTab: chrome.tabs.Tab | undefined) => {
 const nameOrTitle = (tab: Tab) => tab.name ? tab.name : tab.chromeTab?.title
 const dynamicNameOrTitleModel = (tab: Tab) => tab.name ? tab.name : tab.chromeTab?.title
 
-function getShortHostname(host: string) {
-  const nrOfDots = (host.match(/\./g) || []).length
-  if (nrOfDots >= 2) {
-    return host.substring(host.indexOf(".", nrOfDots - 2) + 1)
-  }
-  return host
-}
-
-function getHost(urlAsString: string, shorten: Boolean = true): string {
-  try {
-    const url = new URL(urlAsString)
-    if (!shorten) {
-      return url.protocol + "://" + url.host.toString()
-    }
-    return getShortHostname(url.host)
-  } catch (e) {
-    return "---";
-  }
-}
-
-
 function closeTab(tab: Tab) {
   Navigation.closeTab(tab)
 }
@@ -191,8 +172,7 @@ const saveTab = (tab: Tab) => {
     chrome.pageCapture.saveAsMHTML(
       {tabId: tab.chromeTab.id},
       (html: any) => {
-        console.log("html", html)
-        IndexedDbPersistenceService.saveMhtml(tab.chromeTab, html)
+        MHtmlService.saveMHtml(tab, html)
       }
     )
   }

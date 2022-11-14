@@ -45,6 +45,11 @@ const routes: RouteRecordRaw[] = [
     component: () => import('layouts/MainLayout.vue'),
     children: [{ path: '', component: () => import('pages/Spaces.vue') }],
   },
+  {
+    path: '/mhtml/:encodedUrl',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [{ path: '', component: () => import('pages/MHtmlPage.vue') }],
+  },
   // {
   //   path: '/browser',
   //   component: () => import('layouts/MainLayout.vue'),

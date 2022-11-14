@@ -15,6 +15,7 @@ import {useNotificationsStore} from "src/stores/notificationsStore";
 import ChromeApi from "src/services/ChromeApi";
 import {useWindowsStore} from "src/stores/windowsStores";
 import {useSpacesStore} from "stores/spacesStore";
+import MHtmlService from "src/services/MHtmlService";
 
 const tabsStore = useTabsStore()
 const tabGroupsStore = useTabGroupsStore()
@@ -45,6 +46,7 @@ spacesService.init()
   .then(() => {
     tabsetService.init()
       .then(() => {
+        MHtmlService.init()
         ChromeApi.init()
       })
   })
