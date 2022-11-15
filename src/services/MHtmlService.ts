@@ -25,6 +25,14 @@ class MHtmlService {
     console.log("res", res)
     return res
   }
+
+  getMHtml(encodedUrl: string) {
+    return this.persistenceService.getMHtml(encodedUrl)
+  }
+
+  getMHtmlInline(encodedUrl: string) {
+    return this.persistenceService.getMHtmlInline(encodedUrl)
+  }
 }
 
 export default new MHtmlService();

@@ -38,8 +38,8 @@
 
 import {ref, watchEffect} from "vue";
 import {useRoute} from "vue-router";
-import IndexedDbPersistenceService from "src/services/IndexedDbPersistenceService";
 import {date} from "quasar"
+import MHtmlService from "src/services/MHtmlService";
 
 const route = useRoute()
 
@@ -51,7 +51,8 @@ const created = ref('')
 watchEffect(() => {
   encodedUrl.value = route.params.encodedUrl as string
   if (encodedUrl) {
-    IndexedDbPersistenceService.getMHtmlInline(encodedUrl.value)
+    MHtmlService.getMHtmlInline(encodedUrl.value)
+    //IndexedDbPersistenceService.getMHtmlInline(encodedUrl.value)
       .then((res: object) => {
         window.document?.getElementById('mhtmlframe')?.setAttribute("style", "overflow:hidden;height:" + (window.innerHeight - 50) + "px;width:100%;border:0px");
         window.document?.getElementById('mhtmlframe')?.setAttribute("srcdoc", res['html' as keyof object]);
@@ -64,7 +65,7 @@ watchEffect(() => {
   }
 })
 
-const openInNewTab = () => IndexedDbPersistenceService.getMHtml(encodedUrl.value)
+const openInNewTab = () => MHtmlService.getMHtml(encodedUrl.value)
 
 
 </script>
