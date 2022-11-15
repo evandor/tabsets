@@ -58,7 +58,7 @@ class TabsetService {
         merged: merge
       }
     } catch (err) {
-      return Promise.reject("problem updating or creating tabset")
+      return Promise.reject("problem updating or creating tabset: " + err)
     }
   }
 
