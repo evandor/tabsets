@@ -94,7 +94,6 @@ const importBookmarks = async () => {
     const candidates: chrome.bookmarks.BookmarkTreeNode[] = await ChromeApi.childrenFor(bookmarkId.value)
 
     const result = await TabsetService.saveOrReplaceFromBookmarks(newTabsetName.value, candidates, true)
-    //  .then((result: object) => {
     //@ts-ignore
     const replaced = result.replaced
     //@ts-ignore

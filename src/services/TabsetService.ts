@@ -74,7 +74,7 @@ class TabsetService {
    */
   async saveOrReplaceFromBookmarks(name: string, bms: chrome.bookmarks.BookmarkTreeNode[], merge: boolean = false): Promise<object> {
     const tabsStore = useTabsStore()
-    const tabs = _.map(bms, c => {
+    const tabs = _.map(_.filter(bms, bm => bm.url !== undefined), c => {
       const tab = new Tab(uid(), null as unknown as chrome.tabs.Tab)
       tab.bookmarkUrl = c.url
       tab.bookmarkId = c.id

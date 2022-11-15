@@ -1845,10 +1845,10 @@
   resolved "https://registry.yarnpkg.com/@quasar/fastclick/-/fastclick-1.1.5.tgz#948e79c44098cced6c3d1645315683ebc29ed834"
   integrity sha512-p3JKgTjRlJ1YQXbqTw3Bsa4j0mQdt5dq+WfYvyb7MgKGdephHCKdR/kxA5PCTAmJanGJuDKqRdyGYX/hYN4KGw==
 
-"@quasar/quasar-app-extension-testing-unit-jest@^3.0.0-beta.3":
-  version "3.0.0-beta.3"
-  resolved "https://registry.yarnpkg.com/@quasar/quasar-app-extension-testing-unit-jest/-/quasar-app-extension-testing-unit-jest-3.0.0-beta.3.tgz#183f20682090aa7d8161a62b11065a480cae02a5"
-  integrity sha512-oqmUCxNpENTtYKhmVxTh3uKHYSa6eW3Rkj7LOZfUt84IL5m0qr+AIAlRm9pvaWrBISc78ye7hyxI+LxfgIiWjw==
+"@quasar/quasar-app-extension-testing-unit-jest@^3.0.0-beta.5":
+  version "3.0.0-beta.5"
+  resolved "https://registry.yarnpkg.com/@quasar/quasar-app-extension-testing-unit-jest/-/quasar-app-extension-testing-unit-jest-3.0.0-beta.5.tgz#76dc254e29032b0e58f1c777542b8e8ecc6fc917"
+  integrity sha512-gp/7MwA+WlpSp9W937zEiXWbcDJZW8RrGlMOcZnmC1otI8Kf9QEIvAEq01dAPV7v4lf8KH6ipKE6LN02w+ytow==
   dependencies:
     "@vue/vue3-jest" "^29.0.0"
     alias-hq "^5.4.0"
@@ -1860,10 +1860,10 @@
     lodash-es "^4.17.21"
     ts-jest "^29.0.3"
 
-"@quasar/quasar-app-extension-testing@^2.0.4":
-  version "2.0.4"
-  resolved "https://registry.yarnpkg.com/@quasar/quasar-app-extension-testing/-/quasar-app-extension-testing-2.0.4.tgz#e9035b267ca73ac97edbb50e1a740b624337e45b"
-  integrity sha512-Lb68RFI94BrO6YvZGRG87QrEeKUkUQ21UDCTf4yXyrXGSwdtdCv9CiutblZHHHqdl9W0xS8rcZ+cF6yqAS5kJA==
+"@quasar/quasar-app-extension-testing@^2.0.5":
+  version "2.0.5"
+  resolved "https://registry.yarnpkg.com/@quasar/quasar-app-extension-testing/-/quasar-app-extension-testing-2.0.5.tgz#62d6f87a38225c896a5925ebccf8facbf7c18845"
+  integrity sha512-s8L2iry9AnrLVQ7Zbf3N+Un3MTuc3KQOstU6ixSVtA21cVpMoplo2Xbb2Q7x9NqBECU2qB+RUEkPXAwfr2MFUQ==
   dependencies:
     chalk "^4.1.1"
     execa "^5.1.1"
@@ -6925,10 +6925,10 @@ qs@~6.5.2:
   resolved "https://registry.yarnpkg.com/qs/-/qs-6.5.3.tgz#3aeeffc91967ef6e35c0e488ef46fb296ab76aad"
   integrity sha512-qxXIEh4pCGfHICj1mAJQ2/2XVZkjCDTcEgfoSQxc/fYivUZxTkk7L3bDBJSoNrEzXI17oUO5Dp07ktqE5KzczA==
 
-quasar@^2.10.1:
-  version "2.10.1"
-  resolved "https://registry.yarnpkg.com/quasar/-/quasar-2.10.1.tgz#843888c73d997a53b3808d7f4f358b1aee3a91f2"
-  integrity sha512-W0SEbTdfFS4xvO5OyTyuJent+11MpjBJUYLga69ZFigRh7SV6wFpGNfCuxAifM0L83bp4rWrL2KGoIjEoDsjOw==
+quasar@^2.10.2:
+  version "2.10.2"
+  resolved "https://registry.yarnpkg.com/quasar/-/quasar-2.10.2.tgz#0a35d654a645d33fbe7dc537ea3be52917fa543d"
+  integrity sha512-y6suu0f2hJKrnFPHzx+p2EBVGzDF6xHaqYGkDIsMNkhxsrO9Qi2+dZCjq1J6+48EJiqPEOn8t9X/gT7yLSSnLw==
 
 querystringify@^2.1.1:
   version "2.2.0"
