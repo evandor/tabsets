@@ -50,7 +50,6 @@ class TabsetService {
     try {
       const result: NewOrReplacedTabset = await tabsStore.updateOrCreateTabset(trustedName, tabs, merge)
       if (result && result.tabset) {
-        console.log("result", result)
         await this.saveTabset(result.tabset)
         this.selectTabset(result.tabset.id)
       }
@@ -173,7 +172,6 @@ class TabsetService {
   }
 
   async saveToTabset(ts: Tabset, tab: Tab): Promise<number> {
-    console.log("ts/tab", ts, tab)
     if (tab.chromeTab.url) {
       const tabsStore = useTabsStore()
 

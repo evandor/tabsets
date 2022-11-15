@@ -1,6 +1,6 @@
 {
   "name": "tabsets",
-  "version": "0.2.3",
+  "version": "0.2.4T",
   "description": "Browser Extension to manage your tabs by grouping them into re-storable sets",
   "productName": "Tabsets Extension",
   "author": "evandor <evandor@gmail.com>",

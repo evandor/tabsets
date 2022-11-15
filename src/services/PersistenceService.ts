@@ -6,7 +6,7 @@ import {Tab} from "src/models/Tab";
 interface PersistenceService {
 
   loadTabsets():Promise<void>
-  saveTabset(tabset: Tabset): Promise<IDBValidKey>
+  saveTabset(tabset: Tabset): Promise<any>
   deleteTabset(tabsetId: string):Promise<void>
 
   updateThumbnail(url: string):Promise<void>
@@ -18,11 +18,11 @@ interface PersistenceService {
   getContent(url: string):Promise<object>
   updateContent(url: string):Promise<object>
   deleteContent(url: string):Promise<void>
-  saveContent(tab: chrome.tabs.Tab, text: string, metas: object, title: string, description: string, tabsetIds: string[]):Promise<IDBValidKey>
+  saveContent(tab: chrome.tabs.Tab, text: string, metas: object, title: string, description: string, tabsetIds: string[]):Promise<any>
   cleanUpContent(): Promise<void>
   getContents(): Promise<any[]>
 
-  saveMHtml(tab: Tab, mhtml: string): Promise<IDBValidKey>
+  saveMHtml(tab: Tab, mhtml: string): Promise<any>
   getMHtml(url: string):Promise<object>
   getMHtmlInline(url: string): Promise<object>
   getMHtmls(): Promise<MHtml[]>
