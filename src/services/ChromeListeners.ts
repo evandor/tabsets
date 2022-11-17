@@ -65,44 +65,38 @@ class ChromeListeners {
 
     if (!info.status || (Object.keys(info).length > 1)) {
       console.debug(`onUpdated:   tab ${number}: >>> ${JSON.stringify(info)} <<<`)
-      const maybeTab = tabsStore.tabForUrlInSelectedTabset(tab.url || '')
-      if (maybeTab) {
-        console.debug(`onUpdated:   tab ${number}: in selected Tabset, returning`)
-        return
-      }
+
+      // find tab which was created by "onCreate" moments ago
       const index = _.findIndex(tabsStore.pendingTabset?.tabs, t => t.chromeTab.id === tab.id);
 
       if (index >= 0) {
         if (!this.isIgnored(tab)) {
-          const existingTab = tabsStore.pendingTabset.tabs[index]
+          const existingPendingTab = tabsStore.pendingTabset.tabs[index]
           const updatedTab = new Tab(uid(), tab)
-          if (existingTab.chromeTab.url !== updatedTab.chromeTab.url && existingTab.chromeTab.url !== 'chrome://newtab/') {
-            //console.log(`onUpdated:   tab ${number}:     updating tab url ${updatedTab.chromeTab.url}`)
-            updatedTab.setHistoryFrom(existingTab)
-            if (existingTab.chromeTab.url) {
-              updatedTab.addToHistory(existingTab.chromeTab.url)
+          if (existingPendingTab.chromeTab.url !== updatedTab.chromeTab.url && existingPendingTab.chromeTab.url !== 'chrome://newtab/') {
+            updatedTab.setHistoryFrom(existingPendingTab)
+            if (existingPendingTab.chromeTab.url) {
+              updatedTab.addToHistory(existingPendingTab.chromeTab.url)
             }
           }
-          tabsStore.pendingTabset.tabs.splice(index, 1, updatedTab);
-          // reload tabs (to be sure?!)
-          if (!this.inProgress) {
-            tabsStore.loadTabs('onUpdated');
+          const urlExistsAlready = _.filter(tabsStore.pendingTabset.tabs, pT => pT.chromeTab.url === tab.url).length >= 2
+          if (urlExistsAlready) {
+            console.log("deleting pending tab", tab)
+            tabsStore.pendingTabset.tabs.splice(index, 1);
+          } else {
+            console.log("updating pending tab", tab)
+            tabsStore.pendingTabset.tabs.splice(index, 1, updatedTab);
           }
+          // // reload tabs (to be sure?!)
+          // if (!this.inProgress) {
+          //   tabsStore.loadTabs('onUpdated');
+          // }
         } else {
+          console.log("deleting ignored tab", tab)
           tabsStore.pendingTabset.tabs.splice(index, 1)
         }
       } else {
-        // realistic at all? onCreate creates the new tab, so we should be able to find it
-        if (!tab.title?.startsWith("Tabset")) {
-          if (!this.isIgnored(tab)) {
-            const newTab = new Tab(uid(), tab)
-            console.log(`onUpdated:   tab ${number}:     setting status CREATED`)
-            tabsStore.pendingTabset.tabs.push(newTab)
-            if (!this.inProgress) {
-              tabsStore.loadTabs('onUpdated');
-            }
-          }
-        }
+        console.debug("ignoring, pending tab has been deleted", info, tab)
       }
     }
   }

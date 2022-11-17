@@ -3,7 +3,8 @@
     <q-header elevated>
       <q-toolbar>
 
-        <q-btn dense flat round icon="menu" @click="toggleLeftDrawer"/>
+        <q-btn v-if="tabsStore.tabsets.size > 0"
+          dense flat round icon="menu" @click="toggleLeftDrawer"/>
 
         <q-toolbar-title @click.stop="goHome()" class="cursor-pointer" shrink>
           Tabsets
@@ -48,7 +49,7 @@
           {{ tabsStore.pendingTabset?.tabs.length }} unassigned tab(s)
         </div>
 
-        <q-btn label="Actions" style="width:200px" class="q-mr-lg">
+        <q-btn label="Actions" style="width:200px" class="q-mr-lg" v-if="tabsStore.tabsets.size > 0">
           <q-menu fit>
             <q-list style="min-width: 100px">
               <q-item clickable>
@@ -224,12 +225,12 @@ watchEffect(() => {
   leftDrawerOpen.value = useNotificationsStore().showDrawer
 })
 
-const showNewTabsetDialog = ref(false)
+// const showNewTabsetDialog = ref(false)
 const addTabset = () => {
   $q.dialog({
     component: NewTabsetDialog
   }).onDismiss(() => {
-    showNewTabsetDialog.value = false
+    // showNewTabsetDialog.value = false
   })
 }
 

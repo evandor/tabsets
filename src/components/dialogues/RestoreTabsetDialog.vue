@@ -2,10 +2,15 @@
   <q-dialog ref="dialogRef" @hide="onDialogHide">
     <q-card class="q-dialog-plugin">
       <q-card-section>
-        <div class="text-h6">Restore Tabset</div>
+        <div class="text-h6">Open Tabset</div>
       </q-card-section>
       <q-card-section>
-        <div class="text-body">Would you like to restore this tabset?</div>
+        <div class="text-body">Would you like to open this tabset?</div>
+      </q-card-section>
+
+      <q-card-section>
+        <div class="text-body">This means opening all the tabset's tabs in this browser window, restoring
+        the tabset you want to work with. You can decide if you want to keep any currently open tabs.</div>
       </q-card-section>
 
       <q-card-section class="q-pt-none">

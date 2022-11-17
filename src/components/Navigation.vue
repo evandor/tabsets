@@ -3,17 +3,14 @@
   <q-list class="q-mt-md">
 
     <q-toolbar>
-      <q-toolbar-title style="font-size:16px">Tabsets <span v-if="tabsStore.tabsets.size > 3">({{
-          tabsStore.tabsets.size
-        }})</span>
+      <q-toolbar-title style="font-size:16px" v-if="tabsStore.tabsets.size > 0">
+        <span>Tabsets</span>
+        <span v-if="tabsStore.tabsets.size > 3">({{ tabsStore.tabsets.size }})</span>
+      </q-toolbar-title>
+      <q-toolbar-title style="font-size:16px" v-else>
+        <q-btn class="fit" outline @click="addTabset" label="create your first tabset"></q-btn>
       </q-toolbar-title>
     </q-toolbar>
-
-    <div class="text-body2 q-pa-lg" v-if="tabsStore.tabsets.size === 0">
-      <q-banner rounded class="bg-amber-1">
-        No Tabsets (yet)
-      </q-banner>
-    </div>
 
     <q-item
       v-for="(tabset,index) in tabsets()"
@@ -63,6 +60,7 @@ import {Tabset} from "src/models/Tabset";
 import {useFeatureTogglesStore} from "src/stores/featureTogglesStore";
 import EditTabset from "src/components/dialogues/EditTabset.vue"
 import {useSpacesStore} from "stores/spacesStore";
+import NewTabsetDialog from "components/dialogues/NewTabsetDialog.vue";
 
 const router = useRouter()
 const tabsStore = useTabsStore()
@@ -144,6 +142,14 @@ const editDialog = (tabset: Tabset) =>
     }
   })
 
+// const showNewTabsetDialog = ref(false)
+const addTabset = () => {
+  $q.dialog({
+    component: NewTabsetDialog
+  }).onDismiss(() => {
+    // showNewTabsetDialog.value = false
+  })
+}
 
 </script>
 

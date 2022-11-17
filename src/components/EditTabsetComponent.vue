@@ -231,23 +231,9 @@ const featuresStore = useFeatureTogglesStore()
 
 const tabsetname = ref(tabsStore.currentTabsetName)
 const filter = ref('')
-const duplicatesCount = ref(0)
 const $q = useQuasar()
 
 const highlightUrl = ref('')
-
-watchEffect(() => {
-  const currentTabs: Tab[] = tabsStore.getCurrentTabs
-  duplicatesCount.value = 0
-  _.forEach(tabsStore.pendingTabset?.tabs, pendingTab => {
-    if (_.find(currentTabs, t => t?.chromeTab.url === pendingTab.chromeTab.url)) {
-      pendingTab.isDuplicate = true
-      duplicatesCount.value += 1
-    } else {
-      pendingTab.isDuplicate = false
-    }
-  })
-})
 
 watchEffect(() => {
   const highlight = route.query['highlight'] as unknown as string
@@ -306,12 +292,9 @@ const updateSelectionCount = () => {
 }
 
 const pendingTabsCount = () => {
-  let label = formatLength(tabsStore.pendingTabset?.tabs.length - duplicatesCount.value, 'tab', 'tabs')
-  if (tabsStore.pendingTabset?.tabs.length - duplicatesCount.value > MAX_TABS_TO_SHOW) {
+  let label = formatLength(tabsStore.pendingTabset?.tabs.length, 'tab', 'tabs')
+  if (tabsStore.pendingTabset?.tabs.length > MAX_TABS_TO_SHOW) {
     label += ", with " + (1 + tabsStore.pendingTabset?.tabs.length - MAX_TABS_TO_SHOW) + " hidden"
-  }
-  if (duplicatesCount.value > 0) {
-    label += ", not showing " + duplicatesCount.value + " duplicates"
   }
   return label
 }
