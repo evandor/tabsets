@@ -2,13 +2,29 @@
 
   <q-list class="q-mt-md">
 
-    <q-toolbar>
-      <q-toolbar-title style="font-size:16px" v-if="tabsStore.tabsets.size > 0">
+<!--      <q-btn-->
+<!--        @click="addTabset"-->
+<!--        flat round dense icon="add" color="positive">-->
+<!--        <q-tooltip>Click here to add new tabsets</q-tooltip>-->
+<!--      </q-btn>-->
+
+    <q-toolbar v-if="tabsStore.tabsets.size > 0">
+      <q-toolbar-title style="font-size:16px">
         <span>Tabsets</span>
         <span v-if="tabsStore.tabsets.size > 3">({{ tabsStore.tabsets.size }})</span>
       </q-toolbar-title>
-      <q-toolbar-title style="font-size:16px" v-else>
-        <q-btn class="fit" outline @click="addTabset" label="create your first tabset"></q-btn>
+      <q-btn
+        @click="addTabset"
+        flat round dense icon="add" color="positive">
+        <q-tooltip>Click here to add new tabsets</q-tooltip>
+      </q-btn>
+    </q-toolbar>
+
+    <q-toolbar v-else>
+      <q-toolbar-title style="font-size:16px">
+        <Transition name="delayed-appear" appear>
+          <q-btn class="fit" outline @click="addTabset" label="create your first tabset"></q-btn>
+        </Transition>
       </q-toolbar-title>
     </q-toolbar>
 
@@ -54,11 +70,11 @@ import TabsetService from "src/services/TabsetService";
 import {useRouter} from "vue-router";
 import {useTabsStore} from "src/stores/tabsStore";
 import _ from "lodash"
-import {ref, watchEffect, watch} from "vue";
+import {ref} from "vue";
 import {useQuasar} from "quasar";
 import {Tabset} from "src/models/Tabset";
 import {useFeatureTogglesStore} from "src/stores/featureTogglesStore";
-import EditTabset from "src/components/dialogues/EditTabset.vue"
+import EditTabset from "src/components/dialogues/EditTabsetDialog.vue"
 import {useSpacesStore} from "stores/spacesStore";
 import NewTabsetDialog from "components/dialogues/NewTabsetDialog.vue";
 
@@ -154,17 +170,13 @@ const addTabset = () => {
 </script>
 
 <style lang="sass" scoped>
-.drop-zone
-  background-color: #eee
-  margin-bottom: 10px
-  padding: 10px
 
-.v-enter-active,
-.v-leave-active
-  transition: opacity 0.5s ease
+.delayed-appear-enter-active
+  transition: all 2s ease-in
+  transition-delay: 1s
 
-.v-enter-from,
-.v-leave-to
+.delayed-appear-enter-from,
+.delayed-appear-leave-to
   opacity: 0
 
 </style>

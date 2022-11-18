@@ -10,7 +10,10 @@
 
       <q-card-section class="q-pt-none">
         <div class="text-body">Tabset's name:</div>
-        <q-input dense v-model="newTabsetName" autofocus @keydown.enter="updateTabset()"/>
+        <q-input dense v-model="newTabsetName" autofocus @keydown.enter="updateTabset()"
+                 error-message="Please do not use special Characters, maximum length is 32"
+                 :error="!newTabsetNameIsValid"
+        />
         <div class="text-body2 text-warning">{{ newTabsetDialogWarning() }}</div>
       </q-card-section>
 
@@ -30,13 +33,14 @@
 
 <script lang="ts" setup>
 
-import {ref, watchEffect} from "vue";
+import {computed, ref, watchEffect} from "vue";
 import TabsetService from "src/services/TabsetService";
 import {useQuasar} from "quasar";
 import {useRouter} from "vue-router";
 import {useTabsStore} from "src/stores/tabsStore";
 
 import {useDialogPluginComponent} from 'quasar'
+import {STRIP_CHARS_IN_USER_INPUT} from "boot/constants";
 
 defineEmits([
   ...useDialogPluginComponent.emits
@@ -80,6 +84,8 @@ const newTabsetDialogWarning = () => {
   return (!hideWarning.value && newTabsetName.value !== props.tabsetName && tabsStore.nameExistsInContextTabset(newTabsetName.value)) ?
     "Tabset already exists" : ""
 }
+
+const newTabsetNameIsValid = computed(() => newTabsetName.value.length <= 32 && !STRIP_CHARS_IN_USER_INPUT.test(newTabsetName.value))
 
 
 </script>

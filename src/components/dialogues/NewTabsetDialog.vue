@@ -11,7 +11,7 @@
       <q-card-section class="q-pt-none">
         <div class="text-body">New Tabset's name:</div>
         <q-input v-model="newTabsetName"
-                 class="q-mb-none q-pb-none"
+                 class="q-mb-md q-pb-none"
                  dense autofocus
                  error-message="Please do not use special Characters, maximum length is 32"
                  :error="!newTabsetNameIsValid"
@@ -69,9 +69,7 @@ const newTabsetNameExists = ref(false)
 const hideWarning = ref(false)
 const addAutomatically = ref(true)
 
-const newTabsetNameIsValid = computed(() => {
-  return newTabsetName.value.length <= 32 && !STRIP_CHARS_IN_USER_INPUT.test(newTabsetName.value)
-})
+const newTabsetNameIsValid = computed(() => newTabsetName.value.length <= 32 && !STRIP_CHARS_IN_USER_INPUT.test(newTabsetName.value))
 
 watchEffect(() => {
   newTabsetNameExists.value = !!tabsStore.nameExistsInContextTabset(newTabsetName.value);

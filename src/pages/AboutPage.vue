@@ -12,7 +12,7 @@
     </div>
     <div class="text-body1 q-ma-md" v-else>
       Tabsets is a browser extension which helps you organize your tabs.<br><br>
-      You are managing <b>{{ tabsStore.allTabsCount }} tabs</b> in <b>{{ tabsStore.tabsets.size }} Tabsets</b> already.
+      You are managing <b>{{ tabsStore.allTabsCount }} tabs</b> in <b>{{ tabsStore.tabsets.size }} Tabset(s)</b> already.
     </div>
 
     <div class="text-h5 q-ma-md">
@@ -72,14 +72,12 @@
       <a href="https://tabsets.web.app" target="_blank">https://tabsets.web.app</a>
     </div>
 
-    <fab v-if="tabsStore.tabsets.size > 0"></fab>
   </q-page>
 
 </template>
 
 <script setup lang="ts">
 import {useTabsStore} from "src/stores/tabsStore"
-import Fab from "src/components/Fab.vue"
 import {useNotificationsStore} from "src/stores/notificationsStore";
 import {ref} from "vue";
 

@@ -1,7 +1,7 @@
 <template>
   <q-page padding>
 
-    <div class="text-h5 q-ma-md">
+    <div class="text-h5 q-mb-lg">
       Tabset Settings
     </div>
 
@@ -11,6 +11,7 @@
       <q-radio v-model="darkMode" :val="false" label="Disabled"/>
     </div>
 
+    <hr v-if="featuresStore.debugEnabled">
     <div class="text-h6" v-if="featuresStore.debugEnabled">Views</div>
     <div class="row" v-if="featuresStore.debugEnabled">
       <div class="col-3">
@@ -26,11 +27,13 @@
       </div>
     </div>
 
+    <hr>
     <div class="text-h6">Ignored Urls</div>
     <div v-for="t in tabsStore.ignoredTabset?.tabs">
       {{ t.chromeTab.url }}
     </div>
 
+    <hr v-if="featuresStore.debugEnabled">
     <div class="text-h6" v-if="featuresStore.debugEnabled">Index DB</div>
     <div class="row" v-if="featuresStore.debugEnabled">
       <div class="col-3">
@@ -41,6 +44,7 @@
       </div>
     </div>
 
+    <hr v-if="featuresStore.debugEnabled">
     <div class="text-h6" v-if="featuresStore.debugEnabled">Search Index</div>
     <div class="row" v-if="featuresStore.debugEnabled">
       <div class="col-3">
@@ -55,6 +59,7 @@
       </div>
     </div>
 
+    <hr v-if="featuresStore.debugEnabled">
     <div class="text-h6" v-if="featuresStore.debugEnabled">Simulate new Version</div>
     <div class="row" v-if="featuresStore.debugEnabled">
       <div class="col-3">
@@ -65,6 +70,43 @@
       </div>
       <div class="col-3">
         <span class="text-blue cursor-pointer" @click="simulateNewVersion('0.1.2')">Simulate</span>&nbsp;
+
+      </div>
+    </div>
+
+
+    <hr>
+    <div class="text-h6">Export Tabset Data</div>
+    <div class="row">
+      <div class="col-3">
+
+      </div>
+      <div class="col-3">
+        <q-btn
+          @click="showExportDialog"
+          flat round dense icon="file_download" color="primary">
+          <q-tooltip>Export your tabsets</q-tooltip>
+        </q-btn>
+      </div>
+      <div class="col-3">
+
+      </div>
+    </div>
+
+    <hr>
+    <div class="text-h6">Import Tabset Data</div>
+    <div class="row">
+      <div class="col-3">
+
+      </div>
+      <div class="col-3">
+        <q-btn
+          @click="showImportDialog"
+          flat round dense icon="file_upload" color="primary">
+          <q-tooltip>Import your tabsets backup</q-tooltip>
+        </q-btn>
+      </div>
+      <div class="col-3">
 
       </div>
     </div>
@@ -82,6 +124,8 @@ import {INDEX_DB_NAME} from "boot/constants"
 import {useSearchStore} from "src/stores/searchStore";
 import TabsetService from "src/services/TabsetService";
 import Navigation from "src/services/Navigation";
+import ExportDialog from "components/dialogues/ExportDialog.vue";
+import ImportDialog from "components/dialogues/ImportDialog.vue";
 
 const tabsStore = useTabsStore()
 const featuresStore = useFeatureTogglesStore()
@@ -118,5 +162,13 @@ const downloadIndex = () => {
 const clearIndex = () => searchStore.init()
 
 const simulateNewVersion = (version: string) => Navigation.updateAvailable({version: version})
+
+const showExportDialog = () => {
+  $q.dialog({component: ExportDialog})
+}
+
+const showImportDialog = () => {
+  $q.dialog({component: ImportDialog})
+}
 
 </script>

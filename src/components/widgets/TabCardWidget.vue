@@ -8,6 +8,7 @@
         <div class="col-2">
           <q-img
             class="rounded-borders"
+            style="cursor: move"
             width="24px"
             height="24px"
             :src="getFaviconUrl(tab.chromeTab)">
@@ -69,8 +70,6 @@ import TabsetService from "src/services/TabsetService";
 import {useNotificationsStore} from "stores/notificationsStore";
 import {ref} from "vue";
 import Navigation from "src/services/Navigation";
-import PersistenceService from "src/services/PersistenceService";
-import IndexedDbPersistenceService from "src/services/IndexedDbPersistenceService";
 import MHtmlService from "src/services/MHtmlService";
 
 const props = defineProps({

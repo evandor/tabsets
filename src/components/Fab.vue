@@ -9,39 +9,17 @@
       icon="more_horiz"
       direction="up"
       color="primary">
-      <q-fab-action @click="showNewTabsetDialog = true" style="width:170px" color="primary" icon="tabs"
-                    label="New Tabset">
-        <q-tooltip>Start a new tabset by assigning your open tabs</q-tooltip>
-      </q-fab-action>
+<!--      <q-fab-action @click="router.push('/settings')" style="width:170px" color="primary" icon="settings"-->
+<!--                    label="Settings">-->
+<!--        <q-tooltip>Customize Tabsets and utilize advanced features</q-tooltip>-->
+<!--      </q-fab-action>-->
       <q-fab-action v-if="tabsStore.currentTabsetId !== '' && tabsStore.getTabset(tabsStore.currentTabsetId)"
                     data-testid="fab_add_url"
                     @click="showNewUrlDialog = true" style="width:170px" color="primary" icon="link" label="Add Url">
         <q-tooltip>Add a Url to the current tabset manually '{{ tabsStore.currentTabsetId }}'</q-tooltip>
       </q-fab-action>
 
-<!--      <q-fab-action v-if="!useNotificationsStore().showDrawer"-->
-<!--        @click="showOpenTabs"-->
-<!--        style="width:170px" color="accent"-->
-<!--        icon="'visibility'"-->
-<!--        label="Show Open Tabs">-->
-<!--        <q-tooltip>Open the left drawer and show your browsers open tabs</q-tooltip>-->
-<!--      </q-fab-action>-->
-<!--      <q-fab-action v-if="!useNotificationsStore().showDrawer"-->
-<!--                    @click="showBookmarks"-->
-<!--                    style="width:170px" color="accent"-->
-<!--                    icon="'visibility'"-->
-<!--                    label="Show Bookmarks">-->
-<!--        <q-tooltip>Open the left drawer and show your browers bookmarks</q-tooltip>-->
-<!--      </q-fab-action>-->
-<!--      <q-fab-action v-if="useNotificationsStore().showDrawer"-->
-<!--                    @click="useNotificationsStore().showDrawer = false"-->
-<!--                    style="width:170px" color="accent"-->
-<!--                    icon="visibility_off"-->
-<!--                    label="Close left drawer">-->
-<!--        <q-tooltip>Close the left navigation drawer</q-tooltip>-->
-<!--      </q-fab-action>-->
-
-            <q-fab-action v-if="tabsStore.getCurrentTabs.length > 0"
+            <q-fab-action v-if="featureToggles.spacesEnabled && tabsStore.getCurrentTabs.length > 0"
                           @click="newSpaceDialog = true"
                           style="width:170px" color="accent"
                           icon="workspaces"
@@ -100,8 +78,11 @@ import {useNotificationsStore} from "src/stores/notificationsStore"
 import NewTabsetDialog from "components/dialogues/NewTabsetDialog.vue"
 import ReindexDialog from "components/dialogues/ReindexDialog.vue";
 import NewSpaceDialog from "components/dialogues/NewSpaceDialog.vue";
+import {useFeatureTogglesStore} from "stores/featureTogglesStore";
 
 const tabsStore = useTabsStore()
+const featureToggles = useFeatureTogglesStore()
+
 const router = useRouter()
 const $q = useQuasar()
 

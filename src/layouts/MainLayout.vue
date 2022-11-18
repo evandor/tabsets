@@ -49,40 +49,28 @@
           {{ tabsStore.pendingTabset?.tabs.length }} unassigned tab(s)
         </div>
 
-        <q-btn label="Actions" style="width:200px" class="q-mr-lg" v-if="tabsStore.tabsets.size > 0">
-          <q-menu fit>
-            <q-list style="min-width: 100px">
-              <q-item clickable>
-                <q-item-section @click="addTabset()" v-close-popup>Add Tabset</q-item-section>
-              </q-item>
-              <q-item clickable>
-                <q-item-section @click="closeTrackedTabs()" v-close-popup>Close all tracked tabs</q-item-section>
-              </q-item>
-              <q-separator/>
-              <q-item clickable>
-                <q-item-section @click="showExportDialog()" v-close-popup>Export</q-item-section>
-              </q-item>
-              <q-item clickable>
-                <q-item-section @click="showImportDialog()" v-close-popup>Import (Json)</q-item-section>
-              </q-item>
-              <q-separator/>
-              <q-item clickable>
-                <q-item-section @click="router.push('/settings')">Settings</q-item-section>
-              </q-item>
-              <!--              <q-separator-->
-              <!--                v-if="featuresStore.firebaseEnabled && !auth.user && tabsStore.tabsets.size > 1 && !someoneSubscribed()"/>-->
-              <!--              <q-item clickable-->
-              <!--                      v-if="featuresStore.firebaseEnabled && !auth.user && tabsStore.tabsets.size > 1 && !someoneSubscribed()">-->
-              <!--                <q-item-section @click="router.push('/trypro')">Check out Tabsets Pro...</q-item-section>-->
-              <!--              </q-item>-->
-              <q-separator/>
-              <q-item clickable v-if="useRouter().currentRoute.value.fullPath !== '/about'"
-                      @click="router.push('/about')">
-                <q-item-section>About tabsets</q-item-section>
-              </q-item>
-            </q-list>
-          </q-menu>
+        <q-btn class="q-mr-md" icon="o_settings" size="12px" style="width:24px" flat @click="router.push('/settings')">
+          <q-tooltip>Customize Tabsets and utilize advanced features</q-tooltip>
         </q-btn>
+
+        <q-btn class="q-mr-md"  icon="o_help" size="12px" style="width:24px" flat @click="router.push('/about')">
+          <q-tooltip>About tabsets browser extension</q-tooltip>
+        </q-btn>
+
+<!--        <q-btn label="Actions" style="width:200px" class="q-mr-lg" v-if="tabsStore.tabsets.size > 0">-->
+<!--          <q-menu fit>-->
+<!--            <q-list style="min-width: 100px">-->
+<!--              <q-item clickable>-->
+<!--                <q-item-section @click="closeTrackedTabs()" v-close-popup>Close all tracked tabs</q-item-section>-->
+<!--              </q-item>-->
+<!--              <q-separator/>-->
+<!--              <q-item clickable v-if="useRouter().currentRoute.value.fullPath !== '/about'"-->
+<!--                      @click="router.push('/about')">-->
+<!--                <q-item-section>About tabsets</q-item-section>-->
+<!--              </q-item>-->
+<!--            </q-list>-->
+<!--          </q-menu>-->
+<!--        </q-btn>-->
 
         <div class="cursor-pointer" @click="router.push('/about')" v-if="notificationsStore.updateToVersion === ''">
           v{{ appVersion }}
@@ -119,7 +107,7 @@
 </template>
 
 <script setup lang="ts">
-import {onMounted, onUnmounted, ref, watch, watchEffect} from 'vue';
+import {onMounted, onUnmounted, ref, watchEffect} from 'vue';
 import {useQuasar} from "quasar";
 import {useTabsStore} from "src/stores/tabsStore";
 import {useRoute, useRouter} from "vue-router";
@@ -131,9 +119,6 @@ import DrawerLeft from "src/components/DrawerLeft.vue"
 import TabsetService from "src/services/TabsetService";
 import {useSearchStore} from "src/stores/searchStore";
 import {useFeatureTogglesStore} from "src/stores/featureTogglesStore";
-import NewTabsetDialog from "components/dialogues/NewTabsetDialog.vue";
-import ExportDialog from "components/dialogues/ExportDialog.vue";
-import ImportDialog from "components/dialogues/ImportDialog.vue";
 import _ from "lodash";
 import {useSpacesStore} from "stores/spacesStore";
 
@@ -225,26 +210,10 @@ watchEffect(() => {
   leftDrawerOpen.value = useNotificationsStore().showDrawer
 })
 
-// const showNewTabsetDialog = ref(false)
-const addTabset = () => {
-  $q.dialog({
-    component: NewTabsetDialog
-  }).onDismiss(() => {
-    // showNewTabsetDialog.value = false
-  })
-}
-
 const closeTrackedTabs = () => {
   TabsetService.closeTrackedTabs()
 }
 
-const showExportDialog = () => {
-  $q.dialog({component: ExportDialog})
-}
-
-const showImportDialog = () => {
-  $q.dialog({component: ImportDialog})
-}
 
 const installNewVersion = () => {
   notificationsStore.updateAvailable(false)

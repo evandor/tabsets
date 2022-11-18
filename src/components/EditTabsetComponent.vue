@@ -51,13 +51,13 @@
       <q-btn icon="file_download" :label="'Add all to Tabset  ' + tabsStore.currentTabsetName" class="q-mx-lg"
              color="positive"
              @click="saveAllPendingTabs()"></q-btn>
-      <q-btn icon="delete_outline" label="Remove all" class="q-mx-lg" color="negative"
+      <q-btn icon="delete_outline" label="Clear changed tabs" class="q-mx-lg" color="negative"
              @click="removeAllPendingTabs()"></q-btn>
     </span>
       <span v-else>
       <q-btn icon="file_download" label="add selected" color="positive" class="q-mx-lg"
              @click="saveSelectedPendingTabs()"></q-btn>
-       <q-btn icon="delete_outline" label="remove selected" class="q-mx-lg" color="negative"
+       <q-btn icon="delete_outline" label="clear selected tabs" class="q-mx-lg" color="negative"
               @click="removeSelectedPendingTabs()"></q-btn>
     </span>
     </div>

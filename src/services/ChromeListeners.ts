@@ -81,10 +81,10 @@ class ChromeListeners {
           }
           const urlExistsAlready = _.filter(tabsStore.pendingTabset.tabs, pT => pT.chromeTab.url === tab.url).length >= 2
           if (urlExistsAlready) {
-            console.log("deleting pending tab", tab)
+            //console.log("deleting pending tab", tab)
             tabsStore.pendingTabset.tabs.splice(index, 1);
           } else {
-            console.log("updating pending tab", tab)
+            //console.log("updating pending tab", tab)
             tabsStore.pendingTabset.tabs.splice(index, 1, updatedTab);
           }
           // // reload tabs (to be sure?!)
