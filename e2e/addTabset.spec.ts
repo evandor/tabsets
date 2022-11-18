@@ -36,10 +36,10 @@ export const test = base.extend<{
 
 test("actions button has 'add tabset' entry", async ({page, extensionId}) => {
   await page.goto(`chrome-extension://${extensionId}/www/index.html`);
-  await page.waitForSelector('text=Actions')
-  await expect(page.locator('text=Add Tabset')).not.toBeVisible()
-  await page.locator('text=Actions').click()
-  await expect(page.locator('text=Add Tabset')).toBeVisible()
+  await page.waitForSelector('[data-testid=createFirstTabsetBtn]')
+  await expect(page.locator('text=Add new Tabset')).not.toBeVisible()
+  await page.locator('[data-testid=createFirstTabsetBtn]').click()
+  await expect(page.locator('text=Add new Tabset')).toBeVisible()
 });
 
 function clickByText(page: Page, strings: string[]) {
@@ -66,9 +66,9 @@ async function fillByTestId(page: Page, ident: string, text: string) {
 
 test("add a tabset with skysail url", async ({page, extensionId}) => {
   await page.goto(`chrome-extension://${extensionId}/www/index.html`);
-  await page.waitForSelector('text=Actions')
+  await page.waitForSelector('[data-testid=createFirstTabsetBtn]')
 
-  clickByText(page, ['Actions', 'Add Tabset'])
+  clickByTestId(page, ['createFirstTabsetBtn'])
   await fillByTestId(page, 'newTabsetName', 'first_tabset')
   clickByTestId(page, ['newTabsetNameSubmit'])
   clickByTestId(page, ['fab_widget', 'fab_add_url'])

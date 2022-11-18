@@ -23,7 +23,10 @@
     <q-toolbar v-else>
       <q-toolbar-title style="font-size:16px">
         <Transition name="delayed-appear" appear>
-          <q-btn class="fit" outline @click="addTabset" label="create your first tabset"></q-btn>
+          <q-btn class="fit" outline
+                 data-testid="createFirstTabsetBtn"
+                 @click="addTabset"
+                 label="create your first tabset"></q-btn>
         </Transition>
       </q-toolbar-title>
     </q-toolbar>
