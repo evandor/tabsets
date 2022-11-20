@@ -15,7 +15,7 @@
                 width="24px"
                 height="24px"
                 :src="getFaviconUrl(tab.chromeTab)">
-                <q-tooltip v-if="featureToggles.debugEnabled">{{ tab.chromeTab?.id }} / {{ tab.id }} /
+                <q-tooltip v-if="featureToggles.isEnabled('debug')">{{ tab.chromeTab?.id }} / {{ tab.id }} /
                   {{ tab.chromeTab.pinned }}
                 </q-tooltip>
               </q-img>

@@ -45,4 +45,4 @@ yarn-error.log*
 /test-results/
 /playwright-report/
 /playwright/.cache/
-/releases/0.2.3/
+/releases/0.2.4 (first public)/

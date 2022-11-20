@@ -15,7 +15,7 @@
           width="24px"
           height="24px"
           :src="notificationStore.selectedTab.chromeTab?.favIconUrl">
-          <q-tooltip v-if="featuresStore.debugEnabled">
+          <q-tooltip v-if="featuresStore.isEnabled('debug')">
             {{ notificationStore.selectedTab.chromeTab.favIconUrl }} / {{ notificationStore.selectedTab.chromeTab.id }}  / {{ notificationStore.selectedTab.id }}
           </q-tooltip>
         </q-img>
@@ -147,7 +147,7 @@ function getHost(urlAsString: string, shorten: Boolean = true): string {
 }
 
 const showTabDetails = () => {
-  if (useFeatureTogglesStore().debugEnabled) {
+  if (useFeatureTogglesStore().isEnabled('debug')) {
     router.push("/tab/" + notificationStore.selectedTab.id)
   }
 }

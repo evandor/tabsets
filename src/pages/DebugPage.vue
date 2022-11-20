@@ -17,7 +17,7 @@ const router = useRouter()
 const featureToggles = useFeatureTogglesStore()
 const tabsStore = useTabsStore()
 
-if (!featureToggles.debugEnabled) {
+if (!featureToggles.isEnabled('debug')) {
   router.push("/")
 }
 

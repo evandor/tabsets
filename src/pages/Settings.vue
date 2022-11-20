@@ -11,9 +11,9 @@
       <q-radio v-model="darkMode" :val="false" label="Disabled"/>
     </div>
 
-    <hr v-if="featuresStore.debugEnabled">
-    <div class="text-h6" v-if="featuresStore.debugEnabled">Views</div>
-    <div class="row" v-if="featuresStore.debugEnabled">
+    <hr v-if="featuresStore.isEnabled('debug')">
+    <div class="text-h6" v-if="featuresStore.isEnabled('debug')">Views</div>
+    <div class="row" v-if="featuresStore.isEnabled('debug')">
       <div class="col-3">
         Select the tabset view style
       </div>
@@ -33,9 +33,9 @@
       {{ t.chromeTab.url }}
     </div>
 
-    <hr v-if="featuresStore.debugEnabled">
-    <div class="text-h6" v-if="featuresStore.debugEnabled">Index DB</div>
-    <div class="row" v-if="featuresStore.debugEnabled">
+    <hr v-if="featuresStore.isEnabled('debug')">
+    <div class="text-h6" v-if="featuresStore.isEnabled('debug')">Index DB</div>
+    <div class="row" v-if="featuresStore.isEnabled('debug')">
       <div class="col-3">
         DB Name
       </div>
@@ -44,9 +44,9 @@
       </div>
     </div>
 
-    <hr v-if="featuresStore.debugEnabled">
-    <div class="text-h6" v-if="featuresStore.debugEnabled">Search Index</div>
-    <div class="row" v-if="featuresStore.debugEnabled">
+    <hr v-if="featuresStore.isEnabled('debug')">
+    <div class="text-h6" v-if="featuresStore.isEnabled('debug')">Search Index</div>
+    <div class="row" v-if="featuresStore.isEnabled('debug')">
       <div class="col-3">
         Search Index
       </div>
@@ -59,9 +59,9 @@
       </div>
     </div>
 
-    <hr v-if="featuresStore.debugEnabled">
-    <div class="text-h6" v-if="featuresStore.debugEnabled">Simulate new Version</div>
-    <div class="row" v-if="featuresStore.debugEnabled">
+    <hr v-if="featuresStore.isEnabled('debug')">
+    <div class="text-h6" v-if="featuresStore.isEnabled('debug')">Simulate new Version</div>
+    <div class="row" v-if="featuresStore.isEnabled('debug')">
       <div class="col-3">
         Version 0.1.2
       </div>
@@ -110,6 +110,56 @@
 
       </div>
     </div>
+
+    <hr>
+    <div class="text-h6">Feature Toggles</div>
+    <div class="row q-mb-lg">
+      <div class="col-3">
+        Switch on experimental features (or off)
+      </div>
+      <div class="col-3">
+
+      </div>
+      <div class="col-3">
+
+      </div>
+    </div>
+    <div class="row q-mb-md">
+      <div class="col-3">
+        debug
+      </div>
+      <div class="col-3">
+        add some information (mainly on tooltips) to help debugging
+      </div>
+      <div class="col-3">
+        <q-toggle v-model="debugEnabled" />
+      </div>
+    </div>
+
+    <div class="row q-mb-md">
+      <div class="col-3">
+        spaces
+      </div>
+      <div class="col-3">
+        spaces can be used to organize tabsets - a tabset can belong to zero, one or many spaces.
+        You decide first which space you want to work with.
+      </div>
+      <div class="col-3">
+        <q-toggle v-model="spacesEnabled" />
+      </div>
+    </div>
+
+    <div class="row q-mb-md">
+      <div class="col-3">
+        sidebar
+      </div>
+      <div class="col-3">
+        the sidebar shows the current tabs on the left and let's you open the tabs in an inline view.
+      </div>
+      <div class="col-3">
+        <q-toggle v-model="sidebarEnabled" />
+      </div>
+    </div>
   </q-page>
 
 </template>
@@ -137,6 +187,9 @@ const $q = useQuasar()
 
 const view = ref('grid')
 const indexSize = ref(0)
+const debugEnabled = ref<boolean>(featuresStore.isEnabled('debug'))
+const spacesEnabled = ref<boolean>(featuresStore.isEnabled('spaces'))
+const sidebarEnabled = ref<boolean>(featuresStore.isEnabled('sidebar'))
 const darkMode = ref<boolean>(localStorage.getItem('darkMode') || false)
 const showBookmarks = ref<boolean>(localStorage.getItem('showBookmarks') || false)
 
@@ -144,6 +197,12 @@ watchEffect(() => {
   console.log("darkMode", darkMode.value, typeof darkMode.value)
   $q.dark.set(darkMode.value)
   localStorage.set('darkMode', darkMode.value)
+})
+
+watchEffect(() => {
+  featuresStore.setFeatureToggle("debug", debugEnabled.value)
+  featuresStore.setFeatureToggle("spaces", spacesEnabled.value)
+  featuresStore.setFeatureToggle("sidebar", sidebarEnabled.value)
 })
 
 watchEffect(() => {

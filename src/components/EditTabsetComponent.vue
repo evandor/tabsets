@@ -89,7 +89,7 @@
               class="text-primary">
               {{ tabsStore.currentTabsetName }}
               <q-tooltip
-                v-if="featuresStore.debugEnabled">ID: {{
+                v-if="featuresStore.isEnabled('debug')">ID: {{
                   tabsStore.getCurrentTabset.id
                 }} </q-tooltip>
             </span></div>

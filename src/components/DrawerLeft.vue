@@ -13,13 +13,18 @@
     <q-tab name="savedTabs" icon="o_save">
       <q-tooltip>Your saved tabs</q-tooltip>
     </q-tab>
+    <q-tab name="tabset" icon="o_tab" v-if="featureToggles.isEnabled('sidebar')">
+      <q-tooltip>Your current tabset</q-tooltip>
+    </q-tab>
   </q-tabs>
 
   <BookmarksTree v-if="tab === 'bookmarks'"/>
 
   <OpenTabs v-else-if="tab === 'openTabs'" />
 
-  <SavedTabs v-else />
+  <SavedTabs v-else-if="tab === 'savedTabs'" />
+
+  <TabsetAsSidebar v-else />
 
 <!--  <div>-->
 <!--    <q-btn @click="openSavedTab" label="open" />-->
@@ -34,11 +39,14 @@ import {ref, watchEffect} from "vue";
 import BookmarksTree from "src/components/BookmarksTree.vue"
 import OpenTabs from "src/components/OpenTabs.vue"
 import SavedTabs from "src/components/SavedTabs.vue"
+import TabsetAsSidebar from "src/components/TabsetAsSidebar.vue"
 import {useNotificationsStore} from "stores/notificationsStore";
-import IndexedDbPersistenceService from "src/services/IndexedDbPersistenceService";
 import {useRouter} from "vue-router";
+import {useFeatureTogglesStore} from "stores/featureTogglesStore";
 
 const router = useRouter()
+
+const featureToggles = useFeatureTogglesStore()
 
 const tab = ref('bookmarks')
 
@@ -46,13 +54,5 @@ watchEffect(() => {
   tab.value = useNotificationsStore().showOpenTabs ? 'openTabs' : 'bookmarks'
 })
 
-const openSavedTab = () => {
-  IndexedDbPersistenceService.getMHtml("aHR0cHM6Ly9jc3NncmFkaWVudC5pby8=")
-}
-
-const openSavedTabInline = () => {
-  router.push("/mhtml/aHR0cHM6Ly9jc3NncmFkaWVudC5pby8=")
-
-}
 
 </script>

@@ -26,7 +26,7 @@
       </q-item-label>
       <q-item-label class="ellipsis" caption>{{ hit.chromeTab?.url }}</q-item-label>
       <q-item-label class="ellipsis" caption>{{ hit.description }}</q-item-label>
-      <q-item-label class="text-blue-2" v-if="featureToggles.debugEnabled">Match in: {{ hit['matches'].join(", ")}}</q-item-label>
+      <q-item-label class="text-blue-2" v-if="featureToggles.isEnabled('debug')">Match in: {{ hit['matches'].join(", ")}}</q-item-label>
     </q-item-section>
     <q-item-section avatar>
       <q-icon name="launch" color="primary" @click.stop="Navigation.openOrCreateTab(hit.chromeTab?.url )"></q-icon>

@@ -16,21 +16,6 @@
         <q-space/>
 
 
-        <span class="q-pr-lg" style="cursor: pointer" v-if="featuresStore.firebaseEnabled && auth.user">
-          <q-icon name="person" class="q-mr-md" size="28px"></q-icon>
-          <span>{{ auth.user?.email }}</span>
-          <q-menu
-            touch-position
-          >
-            <q-list dense style="min-width: 100px">
-              <q-item clickable v-close-popup>
-                <q-item-section @click="logout()">Logout</q-item-section>
-              </q-item>
-            </q-list>
-
-          </q-menu>
-        </span>
-
 
         <div>
           v{{ appVersion }}
@@ -77,7 +62,7 @@ const logout = () => {
     .then(() => {
       router.push("/about")
     })
-    .catch(error => {
+    .catch(() => {
       //this.handleError(error)
     })
 }
