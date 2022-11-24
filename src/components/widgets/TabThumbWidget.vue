@@ -1,29 +1,19 @@
 <template>
+
   <q-card class="my-card" flat bordered :style="cardStyle(tab)" @mouseover="setInfo(tab)" @click="selectTab(tab)">
     {{ loadThumbnail(tab) }}
     <q-card-section class="q-pt-xs cursor-pointer bg-primary text-white" style="width:100%;">
       <div class="row items-baseline">
 
-        <!-- favicon -->
-        <div class="col-2">
+        <div class="col-12">
           <q-img
             class="rounded-borders"
-            style="cursor: move"
-            width="24px"
-            height="24px"
-            :src="getFaviconUrl(tab.chromeTab)">
+            style="cursor: move; max-height:75px"
+            width="100%"
+
+            :src="thumbnailFor(tab)">
             <q-tooltip>{{ tab.chromeTab?.id }} / {{ tab.id }}</q-tooltip>
           </q-img>
-        </div>
-
-        <!-- title or name if given -->
-        <div class="col-10 text-subtitle1 ellipsis">
-          {{ nameOrTitle(tab) }}
-          <q-popup-edit :model-value="dynamicNameOrTitleModel(tab)" v-slot="scope"
-                        @update:model-value="val => setCustomTitle( tab, val)">
-            <q-input v-model="scope.value" dense autofocus counter @keyup.enter="scope.set"/>
-          </q-popup-edit>
-          <q-tooltip>{{ tab.chromeTab.title }}</q-tooltip>
         </div>
 
       </div>
@@ -36,32 +26,13 @@
         <q-tooltip>
           {{ tab.chromeTab?.url }}
         </q-tooltip>
+
+      </div>
+      <div class="text-subtitle2 ellipsis text-white">
+        {{ nameOrTitle(tab) }}
       </div>
 
     </q-card-section>
-    <q-card-section class="q-ma-none q-pa-xs">
-
-      <div class="row fit">
-        <div class="col-4">
-          <q-img :src="thumbnailFor(tab)" width="48px" height="32px" no-spinner
-                 style="border:1px solid #efefef; border-right: 3px;"></q-img>
-        </div>
-        <div class="col-8 text-right">
-          <q-btn flat round color="warning" size="11px" icon="edit_note" @click.stop="editNoteDialog(tab)" >
-            <q-tooltip>Add a note to this tab or edit it</q-tooltip>
-          </q-btn>
-          <q-btn flat round color="positive" size="11px" icon="save" @click.stop="saveTab(tab)" :disabled="!isOpen(tab)">
-            <q-tooltip v-if="isOpen(tab)">Save this tab</q-tooltip>
-            <q-tooltip v-else>The tab must be open if you want to save it. Click on the link and come back here to save it.</q-tooltip>
-          </q-btn>
-          <q-btn flat round color="red" size="11px" icon="delete_outline" @click.stop="closeTab(tab)">
-            <q-tooltip>Delete this tab from this list</q-tooltip>
-          </q-btn>
-        </div>
-      </div>
-
-    </q-card-section>
-
 
   </q-card>
 </template>
@@ -74,8 +45,6 @@ import {useNotificationsStore} from "stores/notificationsStore";
 import {ref} from "vue";
 import Navigation from "src/services/Navigation";
 import MHtmlService from "src/services/MHtmlService";
-import EditNoteDialog from "components/dialogues/EditNoteDialog.vue";
-import {useQuasar} from "quasar";
 
 const props = defineProps({
   tab: {
@@ -87,7 +56,7 @@ const props = defineProps({
     required: false
   }
 })
-const $q = useQuasar()
+
 const emits = defineEmits(['sendCaption'])
 const thumbnails = ref<Map<string, string>>(new Map())
 
@@ -180,10 +149,6 @@ const saveTab = (tab: Tab) => {
       }
     )
   }
-}
-
-const editNoteDialog = (tab: Tab) => {
-  $q.dialog({component: EditNoteDialog})
 }
 
 </script>

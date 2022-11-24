@@ -8,29 +8,38 @@
       }"
       icon="more_horiz"
       direction="up"
-      color="primary">
-<!--      <q-fab-action @click="router.push('/settings')" style="width:170px" color="primary" icon="settings"-->
-<!--                    label="Settings">-->
-<!--        <q-tooltip>Customize Tabsets and utilize advanced features</q-tooltip>-->
-<!--      </q-fab-action>-->
+      color="accent">
+
       <q-fab-action v-if="tabsStore.currentTabsetId !== '' && tabsStore.getTabset(tabsStore.currentTabsetId)"
                     data-testid="fab_add_url"
-                    @click="showNewUrlDialog = true" style="width:170px" color="primary" icon="link" label="Add Url">
+                    @click="showNewUrlDialog = true"
+                    style="width:190px" color="accent"
+                    icon="link"
+                    label="Add Url">
         <q-tooltip>Add a Url to the current tabset manually '{{ tabsStore.currentTabsetId }}'</q-tooltip>
       </q-fab-action>
 
-            <q-fab-action v-if="featureToggles.spacesEnabled && tabsStore.getCurrentTabs.length > 0"
-                          @click="newSpaceDialog = true"
-                          style="width:170px" color="accent"
-                          icon="workspaces"
-                          label="Create a new Space">
-              <q-tooltip>Create a new Space to organize your tabsets</q-tooltip>
-            </q-fab-action>
+      <q-fab-action v-if="featureToggles.isEnabled('spaces') && tabsStore.getCurrentTabs.length > 0"
+                    @click="newSpaceDialog = true"
+                    style="width:190px" color="accent"
+                    icon="workspaces"
+                    label="Create a new Space">
+        <q-tooltip>Create a new Space to organize your tabsets</q-tooltip>
+      </q-fab-action>
 
-      <q-fab-action
-        v-if="tabsStore.currentTabsetId !== '' && tabsStore.getTabset(tabsStore.currentTabsetId)"
-        @click="showReindexDialog = true"
-        style="width:200px" color="warning" icon="database" label="Re-Index Tabset...">
+      <q-fab-action v-if="tabsStore.tabs.length > 1"
+                    @click="closeTrackedTabs"
+                    style="width:190px" color="accent"
+                    icon="close"
+                    label="Close all tracked tabs">
+        <q-tooltip>All tabs which are stored in some tabset will be closed.</q-tooltip>
+      </q-fab-action>
+
+      <q-fab-action v-if="tabsStore.currentTabsetId !== '' && tabsStore.getTabset(tabsStore.currentTabsetId)"
+                    @click="showReindexDialog = true"
+                    style="width:190px" color="accent"
+                    icon="database"
+                    label="Re-Index Tabset...">
         <q-tooltip>If you are not happy with the search result, you can try to re-index this tabset.</q-tooltip>
       </q-fab-action>
     </q-fab>
@@ -145,15 +154,7 @@ const newUrlDialogWarning = () => {
   }
 }
 
-// const showBookmarks = () => {
-//   useNotificationsStore().showDrawer = true
-//   useNotificationsStore().showBookmarks = true
-// }
-
-// const showOpenTabs = () => {
-//   useNotificationsStore().showDrawer = true
-//   useNotificationsStore().showOpenTabs = true
-// }
+const closeTrackedTabs = () => TabsetService.closeTrackedTabs()
 
 
 </script>

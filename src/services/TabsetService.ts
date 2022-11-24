@@ -569,6 +569,14 @@ class TabsetService {
       this.saveCurrentTabset()
     }
   }
+
+  setView(tabsetId: string, view: string) {
+    const tabset = useTabsStore().getTabset(tabsetId)
+    if (tabset) {
+      tabset.view = view
+      this.saveTabset(tabset)
+    }
+  }
 }
 
 export default new TabsetService();

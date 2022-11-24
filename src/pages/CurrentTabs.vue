@@ -23,10 +23,7 @@
 import {ref} from 'vue'
 import {useRoute, useRouter} from "vue-router";
 import {useQuasar} from "quasar";
-import _ from "lodash"
 import {useTabsStore} from "src/stores/tabsStore";
-import TabsetService from "src/services/TabsetService";
-import {Tab} from "src/models/Tab";
 import EditTabsetComponent from "components/EditTabsetComponent.vue";
 import Fab from "components/Fab.vue";
 import TabsetList from "components/TabsetList.vue";
@@ -37,7 +34,6 @@ const router = useRouter();
 const localStorage = useQuasar().localStorage
 const tabsStore = useTabsStore()
 
-
 const $q = useQuasar()
 
 const layout = ref('grid')
@@ -46,76 +42,68 @@ const layoutFromStorage = localStorage.getItem("layout")
 if (layoutFromStorage) {
   layout.value = layoutFromStorage.toString()
 }
-
-
-const selectedTabsetFromStorage = localStorage.getItem("selectedTabset") as unknown as string
-if (selectedTabsetFromStorage) {
-  console.log("selecting tabset from storage")
-  TabsetService.selectTabset(selectedTabsetFromStorage)
-}
-
-
-function unpinnedNoGroup() {
-  return _.filter(
-    _.map(tabsStore.getCurrentTabs, t => t),
-    (t: Tab) => !t.chromeTab.pinned && t.chromeTab.groupId === -1)
-}
-
-function tabsForGroup(groupId: number) {
-  console.log("tabsforGroup", groupId)
-  return _.filter(
-    _.map(tabsStore.getCurrentTabs, t => t.chromeTab || t),
-    (t: any) => t.groupId === groupId)
-}
-
-// const update = (tabsetIdent: object) => {
-//   console.log("selected tabset now: ", tabsetIdent)
-//   tabsetname.value = tabsetIdent['label' as keyof object]
-//   tabsStore.selectCurrentTabset(tabsetIdent['value' as keyof object])
+//
+// const selectedTabsetFromStorage = localStorage.getItem("selectedTabset") as unknown as string
+// if (selectedTabsetFromStorage) {
+//   console.log("selecting tabset from storage")
+//   TabsetService.selectTabset(selectedTabsetFromStorage)
 // }
 
+//
+// function unpinnedNoGroup() {
+//   return _.filter(
+//     _.map(tabsStore.getCurrentTabs, t => t),
+//     (t: Tab) => !t.chromeTab.pinned && t.chromeTab.groupId === -1)
+// }
+//
+// function tabsForGroup(groupId: number) {
+//   console.log("tabsforGroup", groupId)
+//   return _.filter(
+//     _.map(tabsStore.getCurrentTabs, t => t.chromeTab || t),
+//     (t: any) => t.groupId === groupId)
+// }
+//
+// const tabsetOptions = () => {
+//   return _.map([...tabsStore.tabsets.values()], ts => {
+//     return {
+//       label: ts.name,
+//       value: ts.id
+//     }
+//   })
+// }
+//
+// const formatLength = (length: number, singular: string, plural: string) => {
+//   return length > 1 ? length + ' ' + plural : length + ' ' + singular
+// }
 
-const tabsetOptions = () => {
-  return _.map([...tabsStore.tabsets.values()], ts => {
-    return {
-      label: ts.name,
-      value: ts.id
-    }
-  })
-}
+//
+// const deleteDialog = () => {
+//   $q.dialog({
+//     title: 'Deleting Tabset',
+//     message: 'Would you like to delete this tabset?',
+//     cancel: true,
+//     persistent: true
+//   }).onOk(() => {
+//     TabsetService.delete(tabsStore.currentTabsetId)
+//     router.push("/tabset")
+//   }).onCancel(() => {
+//   }).onDismiss(() => {
+//   })
+// }
 
-const formatLength = (length: number, singular: string, plural: string) => {
-  return length > 1 ? length + ' ' + plural : length + ' ' + singular
-}
-
-
-const deleteDialog = () => {
-  $q.dialog({
-    title: 'Deleting Tabset',
-    message: 'Would you like to delete this tabset?',
-    cancel: true,
-    persistent: true
-  }).onOk(() => {
-    TabsetService.delete(tabsStore.currentTabsetId)
-    router.push("/tabset")
-  }).onCancel(() => {
-  }).onDismiss(() => {
-  })
-}
-
-const restoreDialog = () => {
-  $q.dialog({
-    title: 'Restore Tabset',
-    message: 'Would you like to restore this tabset? All current tabs will be closed before.',
-    cancel: true,
-    persistent: true
-  }).onOk(() => {
-    TabsetService.restore(tabsStore.currentTabsetId)
-  }).onCancel(() => {
-  }).onDismiss(() => {
-  })
-
-
-}
+// const restoreDialog = () => {
+//   $q.dialog({
+//     title: 'Restore Tabset',
+//     message: 'Would you like to restore this tabset? All current tabs will be closed before.',
+//     cancel: true,
+//     persistent: true
+//   }).onOk(() => {
+//     TabsetService.restore(tabsStore.currentTabsetId)
+//   }).onCancel(() => {
+//   }).onDismiss(() => {
+//   })
+//
+//
+// }
 
 </script>

@@ -102,7 +102,8 @@ $q.loadingBar.setDefaults({
 
 const selectTabset = (tabsetId: string) => {
   TabsetService.selectTabset(tabsetId)
-  router.push("/tabset")
+  // router.push("/tabset")
+  router.push("/tabsets/" + tabsetId)
 }
 
 const tabsets = () => {

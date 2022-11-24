@@ -19,9 +19,8 @@
       </div>
       <div class="col-3">
         <q-radio v-model="view" val="grid" label="Default (Grid)"/>
-        <q-radio :disable="!featuresStore.listviewEnabled" v-model="view" val="list" label="List View"/>
-        <!--        <q-radio v-model="shape" val="line" label="Line" />-->
-        <!--        <q-radio v-model="shape" val="rectangle" label="Rectangle" />-->
+        <q-radio v-model="view" val="list" label="List View"/>
+        <q-radio v-model="view" val="thumbnails" label="Thumbnails"/>
         <!--        <q-radio v-model="shape" val="ellipse" label="Ellipse" />-->
         <!--        <q-radio v-model="shape" val="polygon" label="Polygon" />-->
       </div>
@@ -132,7 +131,7 @@
         add some information (mainly on tooltips) to help debugging
       </div>
       <div class="col-3">
-        <q-toggle v-model="debugEnabled" />
+        <q-toggle v-model="debugEnabled"/>
       </div>
     </div>
 
@@ -145,7 +144,7 @@
         You decide first which space you want to work with.
       </div>
       <div class="col-3">
-        <q-toggle v-model="spacesEnabled" />
+        <q-toggle v-model="spacesEnabled"/>
       </div>
     </div>
 
@@ -157,7 +156,7 @@
         the sidebar shows the current tabs on the left and let's you open the tabs in an inline view.
       </div>
       <div class="col-3">
-        <q-toggle v-model="sidebarEnabled" />
+        <q-toggle v-model="sidebarEnabled"/>
       </div>
     </div>
   </q-page>

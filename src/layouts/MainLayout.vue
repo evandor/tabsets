@@ -54,28 +54,10 @@
         </q-btn>
 
         <q-btn class="q-mr-md"  icon="o_help" size="12px" style="width:24px" flat @click="router.push('/about')">
-          <q-tooltip>About tabsets browser extension</q-tooltip>
+          <q-tooltip>About tabsets browser extension v{{ appVersion }}</q-tooltip>
         </q-btn>
 
-<!--        <q-btn label="Actions" style="width:200px" class="q-mr-lg" v-if="tabsStore.tabsets.size > 0">-->
-<!--          <q-menu fit>-->
-<!--            <q-list style="min-width: 100px">-->
-<!--              <q-item clickable>-->
-<!--                <q-item-section @click="closeTrackedTabs()" v-close-popup>Close all tracked tabs</q-item-section>-->
-<!--              </q-item>-->
-<!--              <q-separator/>-->
-<!--              <q-item clickable v-if="useRouter().currentRoute.value.fullPath !== '/about'"-->
-<!--                      @click="router.push('/about')">-->
-<!--                <q-item-section>About tabsets</q-item-section>-->
-<!--              </q-item>-->
-<!--            </q-list>-->
-<!--          </q-menu>-->
-<!--        </q-btn>-->
-
-        <div class="cursor-pointer" @click="router.push('/about')" v-if="notificationsStore.updateToVersion === ''">
-          v{{ appVersion }}
-        </div>
-        <div class="cursor-pointer" @click="router.push('/about')" v-else>
+        <div class="cursor-pointer" @click="router.push('/about')" v-if="notificationsStore.updateToVersion !== ''">
           <q-btn
             class="text-primary bg-warning"
             @click="installNewVersion"

@@ -10,6 +10,7 @@ export class Tabset {
   tabs: Tab[]
   groups: Group[]
   spaces: string[] // got json problems with set<string>
+  view: string = 'grid'
 
   constructor(id: string, name: string, tabs: Tab[], groups: Group[] = [], spaces: string[] = []) {
     this.id = id
