@@ -10,14 +10,14 @@
       direction="up"
       color="accent">
 
-      <q-fab-action v-if="tabsStore.currentTabsetId !== '' && tabsStore.getTabset(tabsStore.currentTabsetId)"
-                    data-testid="fab_add_url"
-                    @click="showNewUrlDialog = true"
-                    style="width:190px" color="accent"
-                    icon="link"
-                    label="Add Url">
-        <q-tooltip>Add a Url to the current tabset manually '{{ tabsStore.currentTabsetId }}'</q-tooltip>
-      </q-fab-action>
+<!--      <q-fab-action v-if="tabsStore.currentTabsetId !== '' && tabsStore.getTabset(tabsStore.currentTabsetId)"-->
+<!--                    data-testid="fab_add_url"-->
+<!--                    @click="showNewUrlDialog = true"-->
+<!--                    style="width:190px" color="accent"-->
+<!--                    icon="link"-->
+<!--                    label="Add Url">-->
+<!--        <q-tooltip>Add a Url to the current tabset manually '{{ tabsStore.currentTabsetId }}'</q-tooltip>-->
+<!--      </q-fab-action>-->
 
       <q-fab-action v-if="featureToggles.isEnabled('spaces') && tabsStore.getCurrentTabs.length > 0"
                     @click="newSpaceDialog = true"
@@ -27,15 +27,15 @@
         <q-tooltip>Create a new Space to organize your tabsets</q-tooltip>
       </q-fab-action>
 
-      <q-fab-action v-if="tabsStore.tabs.length > 1"
-                    @click="closeTrackedTabs"
-                    style="width:190px" color="accent"
-                    icon="close"
-                    label="Close all tracked tabs">
-        <q-tooltip>All tabs which are stored in some tabset will be closed.</q-tooltip>
-      </q-fab-action>
+<!--      <q-fab-action v-if="tabsStore.tabs.length > 1"-->
+<!--                    @click="closeTrackedTabs"-->
+<!--                    style="width:190px" color="accent"-->
+<!--                    icon="close"-->
+<!--                    label="Close all tracked tabs">-->
+<!--        <q-tooltip>All tabs which are stored in some tabset will be closed.</q-tooltip>-->
+<!--      </q-fab-action>-->
 
-      <q-fab-action v-if="tabsStore.currentTabsetId !== '' && tabsStore.getTabset(tabsStore.currentTabsetId)"
+      <q-fab-action v-if="featureToggles.isEnabled('debug') && tabsStore.currentTabsetId !== '' && tabsStore.getTabset(tabsStore.currentTabsetId)"
                     @click="showReindexDialog = true"
                     style="width:190px" color="accent"
                     icon="database"
@@ -153,8 +153,5 @@ const newUrlDialogWarning = () => {
     return 'not a proper URL'
   }
 }
-
-const closeTrackedTabs = () => TabsetService.closeTrackedTabs()
-
 
 </script>

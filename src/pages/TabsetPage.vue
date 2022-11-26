@@ -125,7 +125,7 @@
           <q-tooltip>Use the thumbnail layout to visualize your tabs</q-tooltip>
         </q-btn>
 
-        <q-btn
+        <q-btn v-if="featuresStore.isEnabled('experimentalViews')"
           @click="setView('kanban')"
           style="width:14px"
           class="q-mr-sm" size="10px"
@@ -135,13 +135,35 @@
           <q-tooltip>Use the columns layout to visualize your tabs</q-tooltip>
         </q-btn>
 
+        <q-btn v-if="featuresStore.isEnabled('experimentalViews')"
+          @click="setView('canvas')"
+          style="width:14px"
+          class="q-mr-sm" size="10px"
+          :flat="tabsStore.getCurrentTabset?.view !== 'canvas'"
+          :outline="tabsStore.getCurrentTabset?.view === 'canvas'"
+          icon="o_shape_line" >
+          <q-tooltip>Use the canvas freestyle layout to visualize your tabs</q-tooltip>
+        </q-btn>
 
-        <q-btn v-if="tabsStore.getTabset(tabsetId.value)?.tabs.length > 0"
-               flat dense icon="restore_page"
-               color="green" :label="$q.screen.gt.sm ? 'Open Tabset...' : ''"
-               class="q-mr-md"
+<!--        <q-icon v-if="tabsStore.getCurrentTabs.length > 0"-->
+<!--                class="q-ml-none q-mr-md"-->
+<!--          name="more_vert"-->
+<!--        />-->
+
+        <q-btn v-if="tabsStore.getCurrentTabs.length > 0"
+               flat dense icon="o_restore_page"
+               color="primary" :label="$q.screen.gt.sm ? 'Open Tabset...' : ''"
+               class="q-ml-xl q-mr-none"
                @click="restoreDialog">
           <q-tooltip>Replace your current tabs with all the tabs from this tabset</q-tooltip>
+        </q-btn>
+
+        <q-btn v-if="tabsStore.currentTabsetId !== '' && tabsStore.getTabset(tabsStore.currentTabsetId)"
+               flat dense icon="o_add"
+               color="primary" :label="$q.screen.gt.sm ? 'Add Url...' : ''"
+               class="q-ml-md q-mr-md"
+               @click="addUrlDialog">
+          <q-tooltip>Copy and Paste or create a new Url for this tabset</q-tooltip>
         </q-btn>
 
       </div>
@@ -149,7 +171,7 @@
   </q-toolbar>
 
   <!-- pinned tabs -->
-  <q-expansion-item v-if="tabsStore.pinnedTabs.length > 0 && tabsStore.getCurrentTabset?.view !== 'kanban'"
+  <q-expansion-item v-if="tabsStore.pinnedTabs.length > 0 && !specialView()"
                     header-class="text-black"
                     expand-icon-class="text-black"
                     expand-separator
@@ -181,10 +203,10 @@
     </q-card>
   </q-expansion-item>
 
-  <!-- chrome groups -->
-  <template v-for="group in tabGroupsStore.tabGroups">
+  <!-- chrome groups new -->
+  <template v-for="group in tabsStore.getCurrentTabset?.groups">
     <q-expansion-item
-      v-if="tabsForGroup(group.id).length > 0 && tabsStore.getCurrentTabset?.view !== 'kanban'"
+      v-if="tabsForGroup(group.chromeGroup.id).length > 0 && !specialView()"
       default-opened
       header-class="text-black"
       expand-icon-class="text-black"
@@ -196,24 +218,24 @@
 
         <q-item-section>
           <div>
-            <span class="text-weight-bold">{{ group.title }}</span>
+            <span class="text-weight-bold">{{ group.chromeGroup.title }}</span>
             <div class="text-caption">chrome browser's group of tabs</div>
           </div>
         </q-item-section>
-        <q-item-section>{{ formatLength(tabsForGroup(group.id).length, 'tab', 'tabs') }}</q-item-section>
+        <q-item-section>{{ formatLength(tabsForGroup(group.chromeGroup.id).length, 'tab', 'tabs') }}</q-item-section>
       </template>
       <q-card>
         <q-card-section>
 
 
           <Tablist v-if="tabsStore.getCurrentTabset?.view === 'list'"
-                   :tabs="tabsForGroup( group.id)"/>
+                   :tabs="tabsForGroup( group.chromeGroup.id)"/>
 
           <TabThumbs v-else-if="tabsStore.getCurrentTabset?.view === 'thumbnails'"
-                     :tabs="tabsForGroup( group.id)" />
+                     :tabs="tabsForGroup( group.chromeGroup.id)" />
 
           <Tabcards v-else
-                    :tabs="tabsForGroup( group.id)" :key="'groupedTabs_'+group.id" :group="'groupedTabs_'+group.id"
+                    :tabs="tabsForGroup( group.chromeGroup.id)" :key="'groupedTabs_'+group.chromeGroup.id" :group="'groupedTabs_'+group.chromeGroup.id"
                     :highlightUrl="highlightUrl"/>
 
 
@@ -236,7 +258,7 @@
 
   <!-- rest: neither pinned, grouped, or pending -->
   <q-expansion-item
-    v-if="tabsStore.getCurrentTabset?.view !== 'kanban'"
+    v-if="!specialView()"
     icon="tabs"
     default-opened
     data-testid="expansion_item_unpinnedNoGroup"
@@ -279,10 +301,12 @@
   <q-card v-if="tabsStore.getCurrentTabset?.view === 'canvas'">
     <q-card-section>
 
-      <TabsCanvas />
+      <TabsCanvas :key="'tabCanvas_' + tabsStore.currentTabsetId" />
 
     </q-card-section>
   </q-card>
+
+  <Fab />
 
 </template>
 
@@ -290,10 +314,12 @@
 import {ref, watchEffect} from 'vue'
 import {useRoute, useRouter} from "vue-router";
 import {useQuasar} from "quasar";
+import Fab from "src/components/Fab.vue";
 import Tabcards from "src/components/layouts/Tabcards.vue";
 import TabThumbs from "src/components/layouts/TabThumbs.vue";
 import TabcardsPending from "src/components/layouts/TabcardsPending.vue";
 import TabColumns from "src/components/layouts/TabColumns.vue";
+import TabsCanvas from "src/components/layouts/TabsCanvas.vue";
 import Tablist from "src/components/layouts/Tablist.vue";
 import _ from "lodash"
 import {useTabsStore} from "src/stores/tabsStore";
@@ -303,6 +329,7 @@ import {Tab} from "src/models/Tab";
 import {useFeatureTogglesStore} from "src/stores/featureTogglesStore";
 import {MAX_TABS_TO_SHOW} from 'boot/constants'
 import RestoreTabsetDialog from "components/dialogues/RestoreTabsetDialog.vue";
+import AddUrlDialog from "components/dialogues/AddUrlDialog.vue";
 
 const route = useRoute();
 const router = useRouter();
@@ -407,13 +434,15 @@ const filteredTabs = () => {
   return noDupliatesTabs
 }
 
-const restoreDialog = () => {
-  $q.dialog({component: RestoreTabsetDialog})
-}
+const restoreDialog = () => $q.dialog({component: RestoreTabsetDialog})
+const addUrlDialog = () => $q.dialog({component: AddUrlDialog})
+
 
 const setView = (view: string) => {
   console.log("view set to", view)
   TabsetService.setView(tabsetId.value, view)
 }
+const specialView = (): boolean =>
+  tabsStore.getCurrentTabset?.view === 'kanban' || tabsStore.getCurrentTabset?.view === 'canvas'
 
 </script>

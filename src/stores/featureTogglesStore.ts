@@ -18,7 +18,7 @@ export const useFeatureTogglesStore = defineStore('featureToggles', () => {
   function initialize(localStorage: any) {
     const fts: string | undefined = localStorage.getItem("featureToggles")
     if (fts) {
-      activeToggles.value = _.map(fts.split(","), e => e.trim().toLowerCase())
+      activeToggles.value = _.map(fts.split(","), e => e.trim())
     }
   }
 

@@ -539,7 +539,7 @@ class TabsetService {
           tabsToClose.push(tab)
         }
       })
-      console.log("tabsToClose", tabsToClose)
+     // console.log("tabsToClose", tabsToClose)
       _.forEach(tabsToClose, (t: chrome.tabs.Tab) => {
         if (t.id) {
           chrome.tabs.remove(t.id)
@@ -548,7 +548,19 @@ class TabsetService {
     })
   }
 
+  async closeDuplictedOpenTabs() {
+
+  }
+
   rename(tabsetId: string, tabsetName: string) {
+    const tabset = this.getTabset(tabsetId)
+    if (tabset) {
+      tabset.name = tabsetName
+      this.saveTabset(tabset)
+    }
+  }
+
+  canvasPosition(tabsetId: string, tabsetName: string) {
     const tabset = this.getTabset(tabsetId)
     if (tabset) {
       tabset.name = tabsetName
@@ -575,6 +587,15 @@ class TabsetService {
     if (tabset) {
       tabset.view = view
       this.saveTabset(tabset)
+    }
+  }
+
+  setPosition(tabId: string, top: number, left: number) {
+    const tab = _.find(this.getCurrentTabset()?.tabs, t => t.id === tabId)
+    if (tab) {
+      tab.canvasLeft = left
+      tab.canvasTop = top
+      this.saveCurrentTabset()
     }
   }
 }

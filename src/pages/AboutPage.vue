@@ -49,6 +49,7 @@
       <ul>
         <li>All data remains on your computer - no backend communication whatsoever</li>
         <li>Open source: see <a href="https://www.github.com/evandor/tabsets" target="_blank">github project</a></li>
+        <li><a href="https://opensource.org/licenses/MIT" target="_blank">MIT</a> license</li>
       </ul>
     </div>
 
@@ -58,8 +59,8 @@
 
     <div class="text-body1 q-ma-md">
       <ul>
-        <li>Chrome</li>
-        <li>Brave</li>
+        <li>Chrome (<a href="https://chrome.google.com/webstore/detail/tabsets-extension/afkknkdbgondbbfjehipnjmojndnjhjg?hl=en&authuser=0'" target="_blank">webstore</a>)</li>
+        <li>Brave (<a href="https://chrome.google.com/webstore/detail/tabsets-extension/afkknkdbgondbbfjehipnjmojndnjhjg?hl=en&authuser=0'" target="_blank">webstore</a>)</li>
         <li class="text-grey-7">Firefox (once manifest v3 is supported)</li>
       </ul>
     </div>
@@ -93,7 +94,8 @@ const features = ref([
   {title: 'Tabsets', caption: 'Reuse', text: 'Re-open your tabsets or tabs whenever you need them'},
   {title: 'Tabsets', caption: 'Management', text: 'Edit Tabsets'},
   {title: 'Tabsets', caption: 'Persistence', text: 'Export and Import Tabsets Data'},
-  {title: 'Tabs', caption: 'Visualization', text: 'Thumbnails Preview'},
+  {title: 'Tabs', caption: 'Visualization', text: 'Thumbnails Preview (experimental)'},
+  {title: 'Tabs', caption: 'Visualization', text: 'List View (experimental)'},
   {title: 'Tabs', caption: 'Utilization', text: 'Search for keywords or content in your tabs and tabsets'},
   {title: 'Bookmarks', caption: 'Integration', text: 'Bookmarks integration: create tabsets from bookmark folders'},
   {title: 'Tabsets', caption: 'Visualization', text: 'Dark Mode (experimental)'},

@@ -4,17 +4,18 @@
       <q-toolbar>
 
         <q-btn v-if="tabsStore.tabsets.size > 0"
-          dense flat round icon="menu" @click="toggleLeftDrawer"/>
+               dense flat round icon="menu" @click="toggleLeftDrawer"/>
 
         <q-toolbar-title @click.stop="goHome()" class="cursor-pointer" shrink>
           Tabsets
-          <span class="text-caption" v-show="spacesStore.spaces.size === 0">Handle more links, with less tabs open</span>
+          <span class="text-caption"
+                v-show="spacesStore.spaces.size === 0">Handle more links, with less tabs open</span>
         </q-toolbar-title>
 
         <q-select
-                  bg-color="white"
-                  v-if="spacesStore.spaces.size > 0"
-                  filled v-model="spacesStore.space" :options="spacesOptions" dense options-dense>
+          bg-color="white"
+          v-if="spacesStore.spaces.size > 0"
+          filled v-model="spacesStore.space" :options="spacesOptions" dense options-dense>
           <template v-slot:selected>
             Space:
             <q-chip
@@ -45,6 +46,73 @@
 
         <q-space/>
 
+        <div>
+          <div class="cursor-pointer">
+            <q-badge v-if="showThresholdBar()"
+                     class="q-mr-sm"
+                     color="primary" text-color="white" :label="thresholdLabel()">
+            </q-badge>
+
+            <q-circular-progress
+              v-if="showThresholdBar()"
+              show-value
+              reverse
+              :value="openTabsCountRatio2"
+              size="20px"
+              :thickness="0.7"
+              :style="thresholdStyle()"
+              track-color="grey-3"
+              class="q-mr-lg">
+
+
+            </q-circular-progress>
+          </div>
+          <q-menu :offset="[60, 0]">
+            <q-list style="min-width: 200px">
+              <q-item clickable v-close-popup @click="showOpenTabs">
+                <q-item-section>Show open tabs</q-item-section>
+              </q-item>
+              <q-separator/>
+              <q-item disable>
+                Close some tabs:
+              </q-item>
+              <q-item clickable v-close-popup @click="TabsetService.closeTrackedTabs()">
+                <q-item-section>&bull; Close all tracked tabs</q-item-section>
+              </q-item>
+              <q-item clickable v-close-popup @click="TabsetService.closeDuplictedOpenTabs()">
+                <q-item-section>&bull; Close duplicated open tabs</q-item-section>
+              </q-item>
+              <q-separator/>
+              <q-item clickable v-close-popup @click="router.push('/settings')">
+                <q-item-section>Change Settings</q-item-section>
+              </q-item>
+            </q-list>
+          </q-menu>
+        </div>
+        <!--        <q-linear-progress v-if="showThresholdBar()"-->
+        <!--                           track-color="white"-->
+        <!--                           stripe rounded size="20px" :style="thresholdColor()"-->
+        <!--                           :value="openTabsCountRatio" class="q-mr-lg">-->
+        <!--          <div class="absolute-full flex flex-center">-->
+        <!--            <q-badge color="white" text-color="primary" :label="thresholdLabel()" />-->
+        <!--          </div>-->
+        <!--          <q-tooltip>-->
+        <!--            This indicates the amount of open tabs ({{ tabsStore.tabs.length }}) you have currently.-->
+        <!--          </q-tooltip>-->
+        <!--          <q-menu>-->
+        <!--            <q-list style="min-width: 200px">-->
+        <!--              <q-item clickable v-close-popup @click="TabsetService.closeTrackedTabs()">-->
+        <!--                <q-item-section>Close all tracked tabs</q-item-section>-->
+        <!--              </q-item>-->
+        <!--              <q-separator/>-->
+        <!--              <q-item clickable v-close-popup @click="router.push('/settings')">-->
+        <!--                <q-item-section>Change Settings</q-item-section>-->
+        <!--              </q-item>-->
+        <!--            </q-list>-->
+        <!--          </q-menu>-->
+
+        <!--        </q-linear-progress>-->
+
         <div v-if="tabsStore.pendingTabset?.tabs.length > 0 && tabsStore.tabsets.size > 1" class="q-mr-lg">
           {{ tabsStore.pendingTabset?.tabs.length }} unassigned tab(s)
         </div>
@@ -53,7 +121,7 @@
           <q-tooltip>Customize Tabsets and utilize advanced features</q-tooltip>
         </q-btn>
 
-        <q-btn class="q-mr-md"  icon="o_help" size="12px" style="width:24px" flat @click="router.push('/about')">
+        <q-btn class="q-mr-md" icon="o_help" size="12px" style="width:24px" flat @click="router.push('/about')">
           <q-tooltip>About tabsets browser extension v{{ appVersion }}</q-tooltip>
         </q-btn>
 
@@ -103,6 +171,7 @@ import {useSearchStore} from "src/stores/searchStore";
 import {useFeatureTogglesStore} from "src/stores/featureTogglesStore";
 import _ from "lodash";
 import {useSpacesStore} from "stores/spacesStore";
+import {useSettingsStore} from "stores/settingsStore";
 
 const router = useRouter()
 const tabsStore = useTabsStore()
@@ -112,9 +181,12 @@ const localStorage = useQuasar().localStorage
 
 const rightDrawerOpen = ref(true)
 const leftDrawerOpen = ref(false)
+const openTabsCountRatio2 = ref(0)
+const model = ref(85)
 
 const notificationsStore = useNotificationsStore()
 const featuresStore = useFeatureTogglesStore()
+const settingsStore = useSettingsStore()
 const spacesStore = useSpacesStore()
 const route = useRoute()
 
@@ -134,6 +206,11 @@ watchEffect(() => {
     return {id: key, label: label}
   })
     .concat({id: '', label: '(unassigned)'})
+})
+
+watchEffect(() => {
+ // openTabsCountRatio.value = Math.min(tabsStore.tabs.length / settingsStore.thresholds['max' as keyof object], 1)
+  openTabsCountRatio2.value = Math.round(100 * Math.min(tabsStore.tabs.length / settingsStore.thresholds['max' as keyof object], 1))
 })
 
 //@ts-ignore
@@ -202,5 +279,17 @@ const installNewVersion = () => {
   chrome.runtime.reload()
 }
 
+const showThresholdBar = () =>
+  tabsStore.tabs.length >= settingsStore.thresholds['min' as keyof object]
+
+// const thresholdStyle = () =>
+//   "color: hsl(" + (120 - Math.round(120 * openTabsCountRatio.value)) + " 80% 50%)"
+
+const thresholdLabel = () => tabsStore.tabs.length + " open tabs"
+
+const showOpenTabs = () => {
+  useNotificationsStore().showDrawer = true
+  useNotificationsStore().showOpenTabs = true
+}
 
 </script>

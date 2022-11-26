@@ -11,25 +11,30 @@
       <q-radio v-model="darkMode" :val="false" label="Disabled"/>
     </div>
 
-    <hr v-if="featuresStore.isEnabled('debug')">
-    <div class="text-h6" v-if="featuresStore.isEnabled('debug')">Views</div>
-    <div class="row" v-if="featuresStore.isEnabled('debug')">
-      <div class="col-3">
-        Select the tabset view style
-      </div>
-      <div class="col-3">
-        <q-radio v-model="view" val="grid" label="Default (Grid)"/>
-        <q-radio v-model="view" val="list" label="List View"/>
-        <q-radio v-model="view" val="thumbnails" label="Thumbnails"/>
-        <!--        <q-radio v-model="shape" val="ellipse" label="Ellipse" />-->
-        <!--        <q-radio v-model="shape" val="polygon" label="Polygon" />-->
-      </div>
-    </div>
-
     <hr>
     <div class="text-h6">Ignored Urls</div>
     <div v-for="t in tabsStore.ignoredTabset?.tabs">
       {{ t.chromeTab.url }}
+    </div>
+
+    <hr>
+    <div class="row q-mb-md">
+      <div class="col-3 text-h6">
+        Warning Thresholds
+      </div>
+      <div class="col-3">
+        warnings start when minimum open tabs count is reached<br>
+        Reaching the maximum will turn the bar red.
+      </div>
+      <div class="col-3">
+        <q-range
+          v-model="settingsStore.thresholds"
+          :step=5
+          marker-labels
+          :min=0
+          :max=100
+        />
+      </div>
     </div>
 
     <hr v-if="featuresStore.isEnabled('debug')">
@@ -159,6 +164,18 @@
         <q-toggle v-model="sidebarEnabled"/>
       </div>
     </div>
+
+    <div class="row q-mb-md">
+      <div class="col-3">
+        experimental views
+      </div>
+      <div class="col-3">
+        add the views 'kanban' (a column layout) and 'canvas' (a freestlye 2D layout) to the tabsets page.
+      </div>
+      <div class="col-3">
+        <q-toggle v-model="experimentalViewsEnabled"/>
+      </div>
+    </div>
   </q-page>
 
 </template>
@@ -171,6 +188,7 @@ import {ref, watchEffect} from "vue";
 import {useQuasar} from "quasar";
 import {INDEX_DB_NAME} from "boot/constants"
 import {useSearchStore} from "src/stores/searchStore";
+import {useSettingsStore} from "src/stores/settingsStore";
 import TabsetService from "src/services/TabsetService";
 import Navigation from "src/services/Navigation";
 import ExportDialog from "components/dialogues/ExportDialog.vue";
@@ -179,6 +197,7 @@ import ImportDialog from "components/dialogues/ImportDialog.vue";
 const tabsStore = useTabsStore()
 const featuresStore = useFeatureTogglesStore()
 const searchStore = useSearchStore()
+const settingsStore = useSettingsStore()
 
 const router = useRouter()
 const localStorage = useQuasar().localStorage
@@ -186,9 +205,16 @@ const $q = useQuasar()
 
 const view = ref('grid')
 const indexSize = ref(0)
+// const thresholds = ref(localStorage.getItem('thresholds') || {
+//   min: 10,
+//   max: 40
+// })
+
 const debugEnabled = ref<boolean>(featuresStore.isEnabled('debug'))
 const spacesEnabled = ref<boolean>(featuresStore.isEnabled('spaces'))
 const sidebarEnabled = ref<boolean>(featuresStore.isEnabled('sidebar'))
+const experimentalViewsEnabled = ref<boolean>(featuresStore.isEnabled('experimentalViews'))
+
 const darkMode = ref<boolean>(localStorage.getItem('darkMode') || false)
 const showBookmarks = ref<boolean>(localStorage.getItem('showBookmarks') || false)
 
@@ -202,11 +228,17 @@ watchEffect(() => {
   featuresStore.setFeatureToggle("debug", debugEnabled.value)
   featuresStore.setFeatureToggle("spaces", spacesEnabled.value)
   featuresStore.setFeatureToggle("sidebar", sidebarEnabled.value)
+  featuresStore.setFeatureToggle("experimentalViews", experimentalViewsEnabled.value)
 })
 
 watchEffect(() => {
   localStorage.set("layout", view.value)
 })
+
+watchEffect(() => {
+  //settingsStore.setThresholds(thresholds.value)
+})
+
 watchEffect(() => {
   // @ts-ignore
   indexSize.value = searchStore.fuse.getIndex().size()

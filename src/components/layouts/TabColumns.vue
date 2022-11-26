@@ -12,7 +12,7 @@
 
 <script setup lang="ts">
 import {Tab} from "src/models/Tab";
-import {PropType, ref, watchEffect} from "vue";
+import {ref, watchEffect} from "vue";
 import TabColumn from "src/components/layouts/TabColumn.vue"
 import {useQuasar} from "quasar";
 import _ from "lodash"

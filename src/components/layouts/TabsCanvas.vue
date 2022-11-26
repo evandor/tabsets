@@ -1,56 +1,99 @@
 <template>
 
   <div class="flex justify-center">
-    <TabColumn label="..." :tabs="unpinnedNoGroup()"/>
-    <TabColumn label="pinned" :tabs="tabsStore.pinnedTabs"/>
-    <TabColumn label="test"
-               v-for="group in tabGroupsStore.tabGroups"
-               :tabs="tabsForGroup( group.id)"/>
+    <canvas id="canvas" ref="canvas" width="500" height="500" :key="'canvas_' + tabsStore.currentTabsetId"/>
   </div>
 
 </template>
 
 <script setup lang="ts">
-import {Tab} from "src/models/Tab";
-import {PropType, ref, watchEffect} from "vue";
-import TabColumn from "src/components/layouts/TabColumn.vue"
-import {useQuasar} from "quasar";
+import {fabric} from "fabric"
 import _ from "lodash"
-import {useTabsStore} from "src/stores/tabsStore";
-import {useTabGroupsStore} from "stores/tabGroupsStore";
-import {useRoute} from "vue-router";
+import {onMounted, ref, watch, watchEffect} from "vue";
+import {useTabsStore} from "stores/tabsStore";
+import TabsetService from "src/services/TabsetService";
 
-const $q = useQuasar()
+const canvas = ref(null);
 const tabsStore = useTabsStore()
-const tabGroupsStore = useTabGroupsStore()
-const route = useRoute()
+const currentTabsetId = ref('')
+let c = null as unknown as fabric.Canvas
 
-const thumbnails = ref<Map<string, string>>(new Map())
+const setupCanvas = (caller: string) => {
+  // console.log("setting up canvas", tabsStore.currentTabsetId, caller)
+  // console.log("setting up canvas2", tabsStore.currentTabsetId, window.document?.getElementById('canvas'))
+  window.document?.getElementById('canvas')?.setAttribute("width", (window.innerWidth - 650).toString())
+  window.document?.getElementById('canvas')?.setAttribute("height", (window.innerHeight - 150).toString())
 
-const tabsetId = ref(null as unknown as string)
-
-watchEffect(() => {
-  tabsetId.value = route.params.tabsetId as string
-  if (tabsetId.value) {
-    console.log("got tabset id", tabsetId.value)
-    tabsStore.selectCurrentTabset(tabsetId.value)
+  if(c) {
+    console.log("clearing c")
+    c.clear()
   }
-})
 
-function unpinnedNoGroup() {
-  return _.filter(
-    _.map(tabsStore.getCurrentTabs, t => t),
+  c = new fabric.Canvas(canvas.value, {
+    isDrawingMode: false
+  })
+  // console.log("c is", c)
+
+  c.on('mouse:up', function (options) {
     // @ts-ignore
-    (t: Tab) => !t?.chromeTab.pinned && t?.chromeTab.groupId === -1)
+    if (options.transform && options.transform.target.data) {
+      const left = options.target?.left
+      const top = options.target?.top
+      // @ts-ignore
+      TabsetService.setPosition(options.transform.target.data, top || 0, left || 0)
+    }
+  });
+
+
+  let top = 0
+  _.forEach(tabsStore.getCurrentTabs, t => {
+    top += 60
+    //console.log("got", t)
+    var grp = new fabric.Group(
+      [
+        new fabric.Rect({
+          top: t.canvasTop ? t.canvasTop : top,
+          left: t.canvasLeft ? t.canvasLeft : 100,
+          width: 200,
+          height: 50,
+          fill: '#efefef',
+          strokeWidth: 2,
+          stroke: 'rgba(200,200,200,0.5)'
+        })
+      ], {data: t.id}
+    )
+    fabric.Image.fromURL(t.chromeTab.favIconUrl || '', (img) => {
+      img.set({left: -95, top: -30, angle: 0, width: 24, height: 24, data: t.id})
+      img.on('mouse:click', function() {
+        console.log('selected a rectangle', img);
+      });
+      grp.add(img)
+      grp.add(new fabric.Text(t.chromeTab.url?.replace("https://", "").replace("http://", "") || '?',
+        { left: -95, top: 0, fontSize: 12, fontFamily: 'Roboto' }))
+      c.add(
+        grp
+      );
+    })
+
+  })
 }
 
-function tabsForGroup(groupId: number): Tab[] {
-  return _.filter(tabsStore.getTabset(tabsetId.value)?.tabs,
-    //@ts-ignore
-    (t: Tab) => t?.chromeTab.groupId === groupId)
-}
+onMounted(() => setupCanvas('onMounted'))
+
+// watchEffect(() => {
+//   if (currentTabsetId.value !== tabsStore.currentTabsetId) {
+//     currentTabsetId.value = tabsStore.currentTabsetId
+//     setupCanvas('watchEffect')
+//   }
+// })
 
 </script>
 
 <style lang="sass" scoped>
+.fabric
+  height: 500px
+
+canvas
+  border: 1px solid #bfbfbf
+  border-radius: 5px
 </style>

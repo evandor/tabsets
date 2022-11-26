@@ -216,7 +216,7 @@ export const useTabsStore = defineStore('tabs', {
         //console.log("found", found)
         this.currentTabsetId = tabsetId //this.tabsets.get(found) || new Tabset("", "", [])
       } else {
-        console.error("not found", name)
+        console.debug("not found:", tabsetId, [...this.tabsets.values()])
       }
     },
     removeTab(tabId: string) {

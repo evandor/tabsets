@@ -17,6 +17,8 @@ export class Tab {
   description: string
   metas: object
   note: string
+  canvasLeft: number
+  canvasTop: number
 
   constructor(public id: string, chromeTab: chrome.tabs.Tab) {
     this.created = new Date().getTime()
@@ -32,6 +34,8 @@ export class Tab {
     this.description = ''
     this.metas = {}
     this.note = ''
+    this.canvasTop = 0
+    this.canvasLeft = 0
   }
 
   setHistoryFrom(existingTab: Tab) {
