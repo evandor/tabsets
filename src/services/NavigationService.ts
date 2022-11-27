@@ -3,7 +3,7 @@ import {Tab} from "src/models/Tab";
 import {useNotificationsStore} from "stores/notificationsStore";
 import TabsetService from "src/services/TabsetService";
 
-class Navigation {
+class NavigationService {
 
   openOrCreateTab(withUrl: string) {
     chrome.tabs.query({currentWindow: true}, (t: chrome.tabs.Tab[]) => {
@@ -28,6 +28,20 @@ class Navigation {
       }
     });
 
+  }
+
+  openTab(tabId: number) {
+    chrome.tabs.update(tabId, {active: true})
+  }
+
+  muteAll() {
+    chrome.tabs.query({audible: true}, (tabs: chrome.tabs.Tab[]) => {
+      tabs.forEach((t: chrome.tabs.Tab) => {
+        if (t && t.id) {
+          chrome.tabs.update(t.id, {muted: true})
+        }
+      })
+    })
   }
 
   /**
@@ -66,5 +80,5 @@ class Navigation {
   }
 }
 
-export default new Navigation();
+export default new NavigationService();
 

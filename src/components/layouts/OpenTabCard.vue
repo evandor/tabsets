@@ -36,7 +36,7 @@
 <script setup lang="ts">
 
 import {Tab} from "src/models/Tab";
-import Navigation from "src/services/Navigation";
+import NavigationService from "src/services/NavigationService";
 
 const props = defineProps({
   tab: {
@@ -45,7 +45,7 @@ const props = defineProps({
   }
 })
 
-const closeTab = (tab: Tab) => Navigation.closeChromeTab(tab)
+const closeTab = (tab: Tab) => NavigationService.closeChromeTab(tab)
 
 const  cardStyle = (tab: Tab) => {
   const height = "40px";

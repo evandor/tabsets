@@ -129,11 +129,9 @@
 </template>
 
 <script setup lang="ts">
-import Navigation from "src/services/Navigation";
 import {Tab} from "src/models/Tab";
 import TabsetService from "src/services/TabsetService";
 import {Bookmark} from "src/models/Bookmark";
-import _ from "lodash"
 import {useRouter} from "vue-router";
 import {useQuasar} from "quasar";
 import ImportFromBookmarks from "components/dialogues/ImportFromBookmarks.vue";

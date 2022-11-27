@@ -3,7 +3,7 @@ import TabsetService from "src/services/TabsetService";
 import {CLEANUP_PERIOD_IN_MINUTES} from "boot/constants";
 import {useTabsStore} from "src/stores/tabsStore";
 import _ from "lodash"
-import Navigation from "src/services/Navigation";
+import NavigationService from "src/services/NavigationService";
 
 function runHousekeeping(alarm: chrome.alarms.Alarm) {
   if (alarm.name === "housekeeping") {
@@ -28,7 +28,7 @@ class ChromeApi {
     )
 
     chrome.runtime.onUpdateAvailable.addListener(
-      (details: any) => Navigation.updateAvailable(details)
+      (details: any) => NavigationService.updateAvailable(details)
     )
 
     this.buildContextMenu();

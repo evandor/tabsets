@@ -29,7 +29,7 @@
       <q-item-label class="text-blue-2" v-if="featureToggles.isEnabled('debug')">Match in: {{ hit['matches'].join(", ")}}</q-item-label>
     </q-item-section>
     <q-item-section avatar>
-      <q-icon name="launch" color="primary" @click.stop="Navigation.openOrCreateTab(hit.chromeTab?.url )"></q-icon>
+      <q-icon name="launch" color="primary" @click.stop="NavigationService.openOrCreateTab(hit.chromeTab?.url )"></q-icon>
     </q-item-section>
   </q-item>
 
@@ -37,7 +37,7 @@
 </template>
 
 <script setup lang="ts">
-import Navigation from "src/services/Navigation";
+import NavigationService from "src/services/NavigationService";
 import {Tab} from "src/models/Tab";
 import TabsetService from "src/services/TabsetService";
 import {ref} from "vue";
@@ -81,7 +81,7 @@ function getHost(urlAsString: string, shorten: Boolean = true): string {
 }
 
 function closeTab(tab: Tab) {
-  Navigation.closeTab(tab)
+  NavigationService.closeTab(tab)
 }
 
 function cardStyle(tab: Tab) {

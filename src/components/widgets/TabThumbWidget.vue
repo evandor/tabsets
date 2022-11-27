@@ -43,7 +43,7 @@ import {Tab} from "src/models/Tab";
 import TabsetService from "src/services/TabsetService";
 import {useNotificationsStore} from "stores/notificationsStore";
 import {ref} from "vue";
-import Navigation from "src/services/Navigation";
+import NavigationService from "src/services/NavigationService";
 import MHtmlService from "src/services/MHtmlService";
 
 const props = defineProps({
@@ -136,7 +136,7 @@ const nameOrTitle = (tab: Tab) => tab.name ? tab.name : tab.chromeTab?.title
 const dynamicNameOrTitleModel = (tab: Tab) => tab.name ? tab.name : tab.chromeTab?.title
 
 function closeTab(tab: Tab) {
-  Navigation.closeTab(tab)
+  NavigationService.closeTab(tab)
 }
 
 const saveTab = (tab: Tab) => {

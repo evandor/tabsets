@@ -11,8 +11,13 @@
       <q-card-section class="q-pt-none">
 
         <div class="q-pa-md q-gutter-sm">
-          <q-editor v-model="editor" min-height="5rem" />
+<!--          <q-editor v-model="editor" min-height="5rem" />-->
 
+          <q-input
+            v-model="editor"
+            filled
+            type="textarea"
+          />
 <!--          <q-card flat bordered>-->
 <!--            <q-card-section>-->
 <!--              <pre style="white-space: pre-line">{{ editor }}</pre>-->
@@ -28,10 +33,9 @@
 
       <q-card-actions align="right" class="text-primary">
         <q-btn flat label="Cancel" @click="onDialogCancel"/>
-        <q-btn flat label="Rename Tabset"
-               :disable="newTabsetName.trim().length === 0 || newTabsetName.trim() === props.tabsetName || newTabsetDialogWarning() !== ''"
+        <q-btn flat label="Save Note"
                v-close-popup
-               @click="updateTabset()"/>
+               @click="saveNote()"/>
       </q-card-actions>
 
 
@@ -66,7 +70,7 @@ const props = defineProps({
   }
 })
 
-const editor = ref('What you see is <b>what</b> you get.')
+const editor = ref('')
 
 const {dialogRef, onDialogHide, onDialogCancel} = useDialogPluginComponent()
 
@@ -82,11 +86,11 @@ watchEffect(() => {
   newTabsetNameExists.value = !!tabsStore.nameExistsInContextTabset(newTabsetName.value);
 })
 
-const updateTabset = () => {
+const saveNote = () => {
   //hideWarning.value = true
-  TabsetService.rename(props.tabsetId, newTabsetName.value)
+  TabsetService.saveNote(props.tabsetId, editor.value)
   $q.notify({
-    message: 'The tabset has been renamed',
+    message: 'The note has been saved',
     type: 'positive'
   })
 }

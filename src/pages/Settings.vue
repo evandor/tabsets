@@ -190,7 +190,7 @@ import {INDEX_DB_NAME} from "boot/constants"
 import {useSearchStore} from "src/stores/searchStore";
 import {useSettingsStore} from "src/stores/settingsStore";
 import TabsetService from "src/services/TabsetService";
-import Navigation from "src/services/Navigation";
+import NavigationService from "src/services/NavigationService";
 import ExportDialog from "components/dialogues/ExportDialog.vue";
 import ImportDialog from "components/dialogues/ImportDialog.vue";
 
@@ -251,7 +251,7 @@ const downloadIndex = () => {
 
 const clearIndex = () => searchStore.init()
 
-const simulateNewVersion = (version: string) => Navigation.updateAvailable({version: version})
+const simulateNewVersion = (version: string) => NavigationService.updateAvailable({version: version})
 
 const showExportDialog = () => {
   $q.dialog({component: ExportDialog})

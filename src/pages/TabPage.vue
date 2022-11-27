@@ -126,7 +126,6 @@ import {useFeatureTogglesStore} from "src/stores/featureTogglesStore";
 import {useRouter} from "vue-router";
 import {ref, watchEffect} from "vue";
 import TabsetService from "src/services/TabsetService";
-import Navigation from "src/services/Navigation";
 import {date} from "quasar";
 
 const tabsStore = useTabsStore()

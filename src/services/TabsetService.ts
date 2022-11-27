@@ -598,6 +598,10 @@ class TabsetService {
       this.saveCurrentTabset()
     }
   }
+
+  saveNote(tabsetId: string, note: string) {
+    console.log("got", tabsetId, note)
+  }
 }
 
 export default new TabsetService();

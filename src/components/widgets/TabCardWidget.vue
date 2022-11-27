@@ -12,7 +12,7 @@
             width="24px"
             height="24px"
             :src="getFaviconUrl(tab.chromeTab)">
-            <q-tooltip>{{ tab.chromeTab?.id }} / {{ tab.id }}</q-tooltip>
+            <q-tooltip>{{ tab.chromeTab?.id }} / {{ tab.id }} / {{ tab.bookmarkId }}</q-tooltip>
           </q-img>
         </div>
 
@@ -25,6 +25,13 @@
           </q-popup-edit>
           <q-tooltip>{{ tab.chromeTab.title }}</q-tooltip>
         </div>
+
+        <q-badge v-if="tab.bookmarkId"
+                 color="info" floating>
+          <q-icon name="o_bookmark" size="12px" color="white">
+            <q-tooltip>You have a bookmark with this url</q-tooltip>
+          </q-icon>
+        </q-badge>
 
       </div>
 
@@ -47,12 +54,15 @@
                  style="border:1px solid #efefef; border-right: 3px;"></q-img>
         </div>
         <div class="col-8 text-right">
-          <q-btn flat round color="warning" size="11px" icon="edit_note" @click.stop="editNoteDialog(tab)" >
+          <q-btn flat round color="warning" size="11px" icon="edit_note" @click.stop="editNoteDialog(tab)">
             <q-tooltip>Add a note to this tab or edit it</q-tooltip>
           </q-btn>
-          <q-btn flat round color="positive" size="11px" icon="save" @click.stop="saveTab(tab)" :disabled="!isOpen(tab)">
+          <q-btn flat round color="positive" size="11px" icon="save" @click.stop="saveTab(tab)"
+                 :disabled="!isOpen(tab)">
             <q-tooltip v-if="isOpen(tab)">Save this tab</q-tooltip>
-            <q-tooltip v-else>The tab must be open if you want to save it. Click on the link and come back here to save it.</q-tooltip>
+            <q-tooltip v-else>The tab must be open if you want to save it. Click on the link and come back here to save
+              it.
+            </q-tooltip>
           </q-btn>
           <q-btn flat round color="red" size="11px" icon="delete_outline" @click.stop="closeTab(tab)">
             <q-tooltip>Delete this tab from this list</q-tooltip>
@@ -72,7 +82,7 @@ import {Tab} from "src/models/Tab";
 import TabsetService from "src/services/TabsetService";
 import {useNotificationsStore} from "stores/notificationsStore";
 import {ref} from "vue";
-import Navigation from "src/services/Navigation";
+import NavigationService from "src/services/NavigationService";
 import MHtmlService from "src/services/MHtmlService";
 import EditNoteDialog from "components/dialogues/EditNoteDialog.vue";
 import {useQuasar} from "quasar";
@@ -167,7 +177,7 @@ const nameOrTitle = (tab: Tab) => tab.name ? tab.name : tab.chromeTab?.title
 const dynamicNameOrTitleModel = (tab: Tab) => tab.name ? tab.name : tab.chromeTab?.title
 
 function closeTab(tab: Tab) {
-  Navigation.closeTab(tab)
+  NavigationService.closeTab(tab)
 }
 
 const saveTab = (tab: Tab) => {

@@ -129,7 +129,7 @@
 </template>
 
 <script setup lang="ts">
-import Navigation from "src/services/Navigation";
+import NavigationService from "src/services/NavigationService";
 import {Tab} from "src/models/Tab";
 import TabsetService from "src/services/TabsetService";
 import {useNotificationsStore} from "src/stores/notificationsStore";
@@ -168,13 +168,13 @@ function getHost(urlAsString: string, shorten: Boolean = true): string {
 }
 
 function closeTab(tab: Tab) {
-  Navigation.closeTab(tab)
+  NavigationService.closeTab(tab)
 }
 
 function ignoreTab(tab: Tab) {
   console.log("ignoring tab", tab)
   TabsetService.ignoreTab(tab)
-  Navigation.closeTab(tab)
+  NavigationService.closeTab(tab)
 }
 
 function saveTab(tab: Tab) {

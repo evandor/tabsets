@@ -99,7 +99,6 @@ import {useNotificationsStore} from "src/stores/notificationsStore";
 import {ref, watchEffect} from "vue";
 import TabsetService from "src/services/TabsetService";
 import {useFeatureTogglesStore} from "src/stores/featureTogglesStore";
-import Navigation from "src/services/Navigation"
 import {useRouter} from "vue-router";
 
 const notificationStore = useNotificationsStore()

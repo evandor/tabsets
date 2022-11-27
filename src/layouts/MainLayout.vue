@@ -67,7 +67,7 @@
 
             </q-circular-progress>
           </div>
-          <q-menu :offset="[60, 0]">
+          <q-menu :offset="[0, 15]">
             <q-list style="min-width: 200px">
               <q-item clickable v-close-popup @click="showOpenTabs">
                 <q-item-section>Show open tabs</q-item-section>
@@ -115,6 +115,25 @@
 
         <div v-if="tabsStore.pendingTabset?.tabs.length > 0 && tabsStore.tabsets.size > 1" class="q-mr-lg">
           {{ tabsStore.pendingTabset?.tabs.length }} unassigned tab(s)
+        </div>
+
+        <div v-if="tabsStore.audibleTabs.length > 0">
+          <span v-if="tabsStore.audibleTabs.length > 1">{{tabsStore.audibleTabs.length}}x</span>
+          <q-icon name="volume_up" size="22px" class="q-mr-md">
+<!--            <q-tooltip>{{tabsStore.audibleTabs}}</q-tooltip>-->
+          </q-icon>
+          <q-menu :offset="[0, 15]">
+            <q-list style="min-width: 200px">
+              <q-item v-for="tab in tabsStore.audibleTabs"
+                clickable v-close-popup @click="NavigationService.openTab(tab.id)">
+                <q-item-section>{{tab.title}}</q-item-section>
+              </q-item>
+<!--              <q-item-->
+<!--                      clickable v-close-popup @click="NavigationService.muteAll()">-->
+<!--                <q-item-section>Mute (all from window)</q-item-section>-->
+<!--              </q-item>-->
+            </q-list>
+          </q-menu>
         </div>
 
         <q-btn class="q-mr-md" icon="o_settings" size="12px" style="width:24px" flat @click="router.push('/settings')">
@@ -165,6 +184,7 @@ import {useMeta} from 'quasar'
 import {useNotificationsStore} from "src/stores/notificationsStore";
 import TabInfo from "src/components/layouts/TabInfo.vue"
 import Navigation from "src/components/Navigation.vue"
+import NavigationService from "src/services/NavigationService"
 import DrawerLeft from "src/components/DrawerLeft.vue"
 import TabsetService from "src/services/TabsetService";
 import {useSearchStore} from "src/stores/searchStore";
@@ -181,6 +201,7 @@ const localStorage = useQuasar().localStorage
 
 const rightDrawerOpen = ref(true)
 const leftDrawerOpen = ref(false)
+const openTabsCountRatio = ref(0)
 const openTabsCountRatio2 = ref(0)
 const model = ref(85)
 
@@ -209,7 +230,7 @@ watchEffect(() => {
 })
 
 watchEffect(() => {
- // openTabsCountRatio.value = Math.min(tabsStore.tabs.length / settingsStore.thresholds['max' as keyof object], 1)
+  openTabsCountRatio.value = Math.min(tabsStore.tabs.length / settingsStore.thresholds['max' as keyof object], 1)
   openTabsCountRatio2.value = Math.round(100 * Math.min(tabsStore.tabs.length / settingsStore.thresholds['max' as keyof object], 1))
 })
 
@@ -282,8 +303,8 @@ const installNewVersion = () => {
 const showThresholdBar = () =>
   tabsStore.tabs.length >= settingsStore.thresholds['min' as keyof object]
 
-// const thresholdStyle = () =>
-//   "color: hsl(" + (120 - Math.round(120 * openTabsCountRatio.value)) + " 80% 50%)"
+const thresholdStyle = () =>
+  "color: hsl(" + (120 - Math.round(120 * openTabsCountRatio.value)) + " 80% 50%)"
 
 const thresholdLabel = () => tabsStore.tabs.length + " open tabs"
 

@@ -81,6 +81,12 @@ export const useTabsStore = defineStore('tabs', {
       })
     },
 
+    audibleTabs(state): chrome.tabs.Tab[] {
+      const openTabs: chrome.tabs.Tab[] = state.tabs
+      // @ts-ignore
+      return _.filter(openTabs, (t: chrome.tabs.Tab) => t && t.audible)
+    },
+
     tabsCount(): number {
       return this.tabs.length
     },

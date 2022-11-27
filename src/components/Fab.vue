@@ -1,6 +1,7 @@
 <template>
   <q-page-sticky position="bottom-right" :offset="[80, 60]">
     <q-fab
+      v-if="showReindex() || showSpaces()"
       data-testid="fab_widget"
       :class="{
         'heartBeat animated': useNotificationsStore().fabHasElementAnimation,
@@ -19,7 +20,7 @@
 <!--        <q-tooltip>Add a Url to the current tabset manually '{{ tabsStore.currentTabsetId }}'</q-tooltip>-->
 <!--      </q-fab-action>-->
 
-      <q-fab-action v-if="featureToggles.isEnabled('spaces') && tabsStore.getCurrentTabs.length > 0"
+      <q-fab-action v-if="showSpaces()"
                     @click="newSpaceDialog = true"
                     style="width:190px" color="accent"
                     icon="workspaces"
@@ -35,7 +36,7 @@
 <!--        <q-tooltip>All tabs which are stored in some tabset will be closed.</q-tooltip>-->
 <!--      </q-fab-action>-->
 
-      <q-fab-action v-if="featureToggles.isEnabled('debug') && tabsStore.currentTabsetId !== '' && tabsStore.getTabset(tabsStore.currentTabsetId)"
+      <q-fab-action v-if="showReindex()"
                     @click="showReindexDialog = true"
                     style="width:190px" color="accent"
                     icon="database"
@@ -45,32 +46,32 @@
     </q-fab>
   </q-page-sticky>
 
-  <q-dialog v-model="showNewUrlDialog">
-    <q-card style="min-width: 350px">
-      <q-card-section>
-        <div class="text-h6">Add Url to current tabset</div>
-      </q-card-section>
-      <q-card-section>
-        <div class="text-body">Please provide the url to be added</div>
-      </q-card-section>
+<!--  <q-dialog v-model="showNewUrlDialog">-->
+<!--    <q-card style="min-width: 350px">-->
+<!--      <q-card-section>-->
+<!--        <div class="text-h6">Add Url to current tabset</div>-->
+<!--      </q-card-section>-->
+<!--      <q-card-section>-->
+<!--        <div class="text-body">Please provide the url to be added</div>-->
+<!--      </q-card-section>-->
 
-      <q-card-section class="q-pt-none">
-        <div class="text-body">Url:</div>
-        <q-input dense v-model="url"
-                 data-testid="fab_add_url_input"
-                 autofocus @keyup.enter="prompt = false"/>
-        <div class="text-body2 text-warning">{{ newUrlDialogWarning() }}</div>
-      </q-card-section>
+<!--      <q-card-section class="q-pt-none">-->
+<!--        <div class="text-body">Url:</div>-->
+<!--        <q-input dense v-model="url"-->
+<!--                 data-testid="fab_add_url_input"-->
+<!--                 autofocus @keyup.enter="prompt = false"/>-->
+<!--        <div class="text-body2 text-warning">{{ newUrlDialogWarning() }}</div>-->
+<!--      </q-card-section>-->
 
-      <q-card-actions align="right" class="text-primary">
-        <q-btn flat label="Cancel" v-close-popup/>
-        <q-btn flat label="Add URL"
-               data-testid="fab_add_url_submit"
-               :disable="url.trim().length === 0" v-close-popup
-               @click="createNewUrl()"/>
-      </q-card-actions>
-    </q-card>
-  </q-dialog>
+<!--      <q-card-actions align="right" class="text-primary">-->
+<!--        <q-btn flat label="Cancel" v-close-popup/>-->
+<!--        <q-btn flat label="Add URL"-->
+<!--               data-testid="fab_add_url_submit"-->
+<!--               :disable="url.trim().length === 0" v-close-popup-->
+<!--               @click="createNewUrl()"/>-->
+<!--      </q-card-actions>-->
+<!--    </q-card>-->
+<!--  </q-dialog>-->
 
 </template>
 
@@ -153,5 +154,8 @@ const newUrlDialogWarning = () => {
     return 'not a proper URL'
   }
 }
+
+const showSpaces = () => featureToggles.isEnabled('spaces') && tabsStore.getCurrentTabs.length > 0
+const showReindex = () => featureToggles.isEnabled('debug') && tabsStore.currentTabsetId !== '' && tabsStore.getTabset(tabsStore.currentTabsetId)
 
 </script>
