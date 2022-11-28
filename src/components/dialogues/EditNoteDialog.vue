@@ -11,22 +11,22 @@
       <q-card-section class="q-pt-none">
 
         <div class="q-pa-md q-gutter-sm">
-<!--          <q-editor v-model="editor" min-height="5rem" />-->
+          <!--          <q-editor v-model="editor" min-height="5rem" />-->
 
           <q-input
             v-model="editor"
             filled
             type="textarea"
           />
-<!--          <q-card flat bordered>-->
-<!--            <q-card-section>-->
-<!--              <pre style="white-space: pre-line">{{ editor }}</pre>-->
-<!--            </q-card-section>-->
-<!--          </q-card>-->
+          <!--          <q-card flat bordered>-->
+          <!--            <q-card-section>-->
+          <!--              <pre style="white-space: pre-line">{{ editor }}</pre>-->
+          <!--            </q-card-section>-->
+          <!--          </q-card>-->
 
-<!--          <q-card flat bordered>-->
-<!--            <q-card-section v-html="editor" />-->
-<!--          </q-card>-->
+          <!--          <q-card flat bordered>-->
+          <!--            <q-card-section v-html="editor" />-->
+          <!--          </q-card>-->
         </div>
 
       </q-card-section>
@@ -46,31 +46,30 @@
 
 <script lang="ts" setup>
 
-import {computed, ref, watchEffect} from "vue";
+import {ref, watchEffect} from "vue";
 import TabsetService from "src/services/TabsetService";
 import {useQuasar} from "quasar";
 import {useRouter} from "vue-router";
 import {useTabsStore} from "src/stores/tabsStore";
 
 import {useDialogPluginComponent} from 'quasar'
-import {STRIP_CHARS_IN_USER_INPUT} from "boot/constants";
 
 defineEmits([
   ...useDialogPluginComponent.emits
 ])
 
 const props = defineProps({
-  tabsetId: {
+  tabId: {
     type: String,
     required: true
   },
-  tabsetName: {
+  note: {
     type: String,
-    required: true
+    default: ''
   }
 })
 
-const editor = ref('')
+const editor = ref(props.note)
 
 const {dialogRef, onDialogHide, onDialogCancel} = useDialogPluginComponent()
 
@@ -87,20 +86,20 @@ watchEffect(() => {
 })
 
 const saveNote = () => {
-  //hideWarning.value = true
-  TabsetService.saveNote(props.tabsetId, editor.value)
-  $q.notify({
-    message: 'The note has been saved',
-    type: 'positive'
-  })
+  TabsetService.saveNote(props.tabId, editor.value)
+    .then(() => {
+      $q.notify({
+        message: 'The note has been saved',
+        type: 'positive'
+      })
+    })
+    .catch(() => {
+      $q.notify({
+        message: 'There was a problem saving the note',
+        type: 'negative'
+      })
+    })
 }
-
-const newTabsetDialogWarning = () => {
-  return (!hideWarning.value && newTabsetName.value !== props.tabsetName && tabsStore.nameExistsInContextTabset(newTabsetName.value)) ?
-    "Tabset already exists" : ""
-}
-
-const newTabsetNameIsValid = computed(() => newTabsetName.value.length <= 32 && !STRIP_CHARS_IN_USER_INPUT.test(newTabsetName.value))
 
 
 </script>

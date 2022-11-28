@@ -49,7 +49,7 @@
           <div class="text-subtitle2 ellipsis text-secondary">
             {{ tab.chromeTab?.url }}
             <q-icon name="launch" color="secondary"
-                    @click.stop="Navigation.openOrCreateTab(tab.chromeTab?.url )"></q-icon>
+                    @click.stop="NavigationService.openOrCreateTab(tab.chromeTab?.url )"></q-icon>
             <q-tooltip>
               {{ tab.chromeTab?.url }}
             </q-tooltip>

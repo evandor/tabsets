@@ -19,7 +19,7 @@
         <q-item-label caption>{{ tab.chromeTab?.url }}</q-item-label>
       </q-item-section>
       <q-item-section avatar>
-        <q-icon name="launch" color="primary" @click.stop="Navigation.openOrCreateTab(tab.chromeTab?.url )"></q-icon>
+        <q-icon name="launch" color="primary" @click.stop="NavigationService.openOrCreateTab(tab.chromeTab?.url )"></q-icon>
       </q-item-section>
 <!--      <q-item-section avatar>-->
 <!--        <q-icon name="close" @click.stop="closeTab(tab)"/>-->

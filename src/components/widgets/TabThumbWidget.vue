@@ -20,7 +20,7 @@
 
 
       <div class="text-subtitle2 ellipsis text-secondary"
-           @click.stop="Navigation.openOrCreateTab(tab.chromeTab?.url )">
+           @click.stop="NavigationService.openOrCreateTab(tab.chromeTab?.url )">
         {{ tab.chromeTab?.url.replace("https://www.", '').replace("https://", '') }}
         <q-icon name="launch" color="secondary"></q-icon>
         <q-tooltip>

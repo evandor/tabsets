@@ -50,12 +50,12 @@ const thumbnails = ref<Map<string, string>>(new Map())
 const tabAsTab = (tab: Tab): Tab => tab as unknown as Tab
 
 function adjustIndex(element: any, tabs: Tab[]) {
-  console.log("filtered", tabs)
+  //console.log("filtered", tabs)
   if (element.newIndex === 0) { // first element
-    console.log(" 0 - searching for ", tabs[0].id)
+    //console.log(" 0 - searching for ", tabs[0].id)
     return _.findIndex(tabsStore.getCurrentTabs, t => t.id === tabs[0].id)
   } else {
-    console.log(" 1 - searching for ", tabs[element.newIndex - 1].id)
+    //console.log(" 1 - searching for ", tabs[element.newIndex - 1].id)
     return 1 + _.findIndex(tabsStore.getCurrentTabs, t => t.id === tabs[element.newIndex - 1].id)
   }
 }

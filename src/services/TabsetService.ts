@@ -498,6 +498,7 @@ class TabsetService {
   }
 
   async housekeeping() {
+    console.log("housekeeping now...")
     // clean up thumbnails
     this.persistenceService.cleanUpThumbnails()
 
@@ -571,12 +572,9 @@ class TabsetService {
   moveTo(tabId: string, newIndex: number) {
     console.log("moving", tabId, newIndex)
     let tabs = useTabsStore().getCurrentTabs
-    console.log("tabs", tabs)
     const oldIndex = _.findIndex(tabs, t => t.id === tabId)
-    console.log("oldIncex", oldIndex, tabs)
     if (oldIndex >= 0) {
       const tab = tabs.splice(oldIndex, 1)[0];
-      console.log("foudn tab", tab)
       tabs.splice(newIndex, 0, tab);
       this.saveCurrentTabset()
     }
@@ -599,8 +597,14 @@ class TabsetService {
     }
   }
 
-  saveNote(tabsetId: string, note: string) {
-    console.log("got", tabsetId, note)
+  saveNote(tabId: string, note: string):Promise<void> {
+    console.log("got", tabId, note)
+    const tab = _.find(this.getCurrentTabset()?.tabs, (t:Tab) => t.id === tabId)
+    if (tab) {
+      tab.note = note
+      return this.saveCurrentTabset()
+    }
+    return Promise.reject("did not find tab with id " + tabId)
   }
 }
 

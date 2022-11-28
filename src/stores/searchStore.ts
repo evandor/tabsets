@@ -105,7 +105,7 @@ export const useSearchStore = defineStore('search', {
       contentPromise
         .then(content => {
           const permanentContent = _.filter(content, c => c.expires === 0)
-          console.log(`... with ${permanentContent.length} entries, rest of ${content.length} is filtered as it has an expiry date`)
+          console.log(`... with ${permanentContent.length} entries, ${content.length - permanentContent.length} is filtered as it has an expiry date`)
           this.searchIndex = Fuse.createIndex(this.options.keys, permanentContent)
           this.fuse = new Fuse(permanentContent, this.options, this.searchIndex)
         })

@@ -30,7 +30,7 @@
       <div class="col-12">
         <div class="text-overline ellipsis">
           {{ notificationStore.selectedTab.chromeTab.url }}&nbsp;<q-icon name="launch" color="secondary"
-                                                                   @click.stop="Navigation.openOrCreateTab(tab.chromeTab?.url )"></q-icon>
+                                                                   @click.stop="NavigationService.openOrCreateTab(tab.chromeTab?.url )"></q-icon>
         </div>
       </div>
     </div>

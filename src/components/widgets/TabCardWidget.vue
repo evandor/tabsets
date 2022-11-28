@@ -28,16 +28,22 @@
 
         <q-badge v-if="tab.bookmarkId"
                  color="info" floating>
-          <q-icon name="o_bookmark" size="12px" color="white">
+          <q-icon name="o_bookmark" size="14px" color="white">
             <q-tooltip>You have a bookmark with this url</q-tooltip>
           </q-icon>
         </q-badge>
+        <!--        <q-badge v-if="tab.note?.length > 0"-->
+        <!--                 color="warning" floating>-->
+        <!--          <q-icon name="o_note" size="14px" color="white">-->
+        <!--            <q-tooltip>You have a note attached to this tab</q-tooltip>-->
+        <!--          </q-icon>-->
+        <!--        </q-badge>-->
 
       </div>
 
 
       <div class="text-subtitle2 ellipsis text-secondary"
-           @click.stop="Navigation.openOrCreateTab(tab.chromeTab?.url )">
+           @click.stop="NavigationService.openOrCreateTab(tab.chromeTab?.url )">
         {{ tab.chromeTab?.url.replace("https://www.", '').replace("https://", '') }}
         <q-icon name="launch" color="secondary"></q-icon>
         <q-tooltip>
@@ -49,12 +55,19 @@
     <q-card-section class="q-ma-none q-pa-xs">
 
       <div class="row fit">
-        <div class="col-4">
+        <div class="col-4 cursor-pointer">
           <q-img :src="thumbnailFor(tab)" width="48px" height="32px" no-spinner
                  style="border:1px solid #efefef; border-right: 3px;"></q-img>
         </div>
         <div class="col-8 text-right">
-          <q-btn flat round color="warning" size="11px" icon="edit_note" @click.stop="editNoteDialog(tab)">
+
+<!--          :text-color="tab.note?.length > 0 ? 'warning' : 'white'"-->
+          <q-btn round size="11px"
+                 :color="tab.note && tab.note.length > 0 ? 'white' : 'warning'"
+                 :style="tab.note && tab.note.length > 0 ? 'background: #FFBF46' : 'background: #ffffff'"
+                 flat
+                 icon="edit_note"
+                 @click.stop="editNoteDialog(tab)">
             <q-tooltip>Add a note to this tab or edit it</q-tooltip>
           </q-btn>
           <q-btn flat round color="positive" size="11px" icon="save" @click.stop="saveTab(tab)"
@@ -193,7 +206,13 @@ const saveTab = (tab: Tab) => {
 }
 
 const editNoteDialog = (tab: Tab) => {
-  $q.dialog({component: EditNoteDialog})
+  $q.dialog({
+    component: EditNoteDialog,
+    componentProps: {
+      tabId: tab.id,
+      note: tab.note
+    }
+  })
 }
 
 </script>
