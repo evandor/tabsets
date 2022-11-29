@@ -121,34 +121,34 @@
           class="q-mr-sm" size="10px"
           :flat="tabsStore.getCurrentTabset?.view !== 'thumbnails'"
           :outline="tabsStore.getCurrentTabset?.view === 'thumbnails'"
-          icon="o_image" >
+          icon="o_image">
           <q-tooltip>Use the thumbnail layout to visualize your tabs</q-tooltip>
         </q-btn>
 
         <q-btn v-if="featuresStore.isEnabled('experimentalViews')"
-          @click="setView('kanban')"
-          style="width:14px"
-          class="q-mr-sm" size="10px"
-          :flat="tabsStore.getCurrentTabset?.view !== 'kanban'"
-          :outline="tabsStore.getCurrentTabset?.view === 'kanban'"
-          icon="o_view_kanban" >
+               @click="setView('kanban')"
+               style="width:14px"
+               class="q-mr-sm" size="10px"
+               :flat="tabsStore.getCurrentTabset?.view !== 'kanban'"
+               :outline="tabsStore.getCurrentTabset?.view === 'kanban'"
+               icon="o_view_kanban">
           <q-tooltip>Use the columns layout to visualize your tabs</q-tooltip>
         </q-btn>
 
         <q-btn v-if="featuresStore.isEnabled('experimentalViews')"
-          @click="setView('canvas')"
-          style="width:14px"
-          class="q-mr-sm" size="10px"
-          :flat="tabsStore.getCurrentTabset?.view !== 'canvas'"
-          :outline="tabsStore.getCurrentTabset?.view === 'canvas'"
-          icon="o_shape_line" >
+               @click="setView('canvas')"
+               style="width:14px"
+               class="q-mr-sm" size="10px"
+               :flat="tabsStore.getCurrentTabset?.view !== 'canvas'"
+               :outline="tabsStore.getCurrentTabset?.view === 'canvas'"
+               icon="o_shape_line">
           <q-tooltip>Use the canvas freestyle layout to visualize your tabs</q-tooltip>
         </q-btn>
 
-<!--        <q-icon v-if="tabsStore.getCurrentTabs.length > 0"-->
-<!--                class="q-ml-none q-mr-md"-->
-<!--          name="more_vert"-->
-<!--        />-->
+        <!--        <q-icon v-if="tabsStore.getCurrentTabs.length > 0"-->
+        <!--                class="q-ml-none q-mr-md"-->
+        <!--          name="more_vert"-->
+        <!--        />-->
 
         <q-btn v-if="tabsStore.getCurrentTabs.length > 0"
                flat dense icon="o_restore_page"
@@ -193,7 +193,7 @@
                  :tabs="tabsStore.pinnedTabs"/>
 
         <TabThumbs v-else-if="tabsStore.getCurrentTabset?.view === 'thumbnails'"
-                   :tabs="tabsStore.pinnedTabs" />
+                   :tabs="tabsStore.pinnedTabs"/>
 
 
         <Tabcards v-else
@@ -232,10 +232,11 @@
                    :tabs="tabsForGroup( group.chromeGroup.id)"/>
 
           <TabThumbs v-else-if="tabsStore.getCurrentTabset?.view === 'thumbnails'"
-                     :tabs="tabsForGroup( group.chromeGroup.id)" />
+                     :tabs="tabsForGroup( group.chromeGroup.id)"/>
 
           <Tabcards v-else
-                    :tabs="tabsForGroup( group.chromeGroup.id)" :key="'groupedTabs_'+group.chromeGroup.id" :group="'groupedTabs_'+group.chromeGroup.id"
+                    :tabs="tabsForGroup( group.chromeGroup.id)" :key="'groupedTabs_'+group.chromeGroup.id"
+                    :group="'groupedTabs_'+group.chromeGroup.id"
                     :highlightUrl="highlightUrl"/>
 
 
@@ -281,7 +282,7 @@
                  :tabs="unpinnedNoGroup()"/>
 
         <TabThumbs v-else-if="tabsStore.getCurrentTabset?.view === 'thumbnails'"
-                 :tabs="unpinnedNoGroup()" />
+                   :tabs="unpinnedNoGroup()"/>
 
         <Tabcards v-else
                   :tabs="unpinnedNoGroup()" group="otherTabs" :highlightUrl="highlightUrl"/>
@@ -293,7 +294,7 @@
   <q-card v-if="tabsStore.getCurrentTabset?.view === 'kanban'">
     <q-card-section>
 
-      <TabColumns />
+      <TabColumns/>
 
     </q-card-section>
   </q-card>
@@ -301,12 +302,12 @@
   <q-card v-if="tabsStore.getCurrentTabset?.view === 'canvas'">
     <q-card-section>
 
-      <TabsCanvas :key="'tabCanvas_' + tabsStore.currentTabsetId" />
+      <TabsCanvas :key="'tabCanvas_' + tabsStore.currentTabsetId"/>
 
     </q-card-section>
   </q-card>
 
-  <Fab />
+  <Fab/>
 
 </template>
 
@@ -438,10 +439,8 @@ const restoreDialog = () => $q.dialog({component: RestoreTabsetDialog})
 const addUrlDialog = () => $q.dialog({component: AddUrlDialog})
 
 
-const setView = (view: string) => {
-  console.log("view set to", view)
-  TabsetService.setView(tabsetId.value, view)
-}
+const setView = (view: string) => TabsetService.setView(tabsetId.value, view)
+
 const specialView = (): boolean =>
   tabsStore.getCurrentTabset?.view === 'kanban' || tabsStore.getCurrentTabset?.view === 'canvas'
 

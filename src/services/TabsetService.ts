@@ -10,6 +10,7 @@ import {useBookmarksStore} from "src/stores/bookmarksStore";
 import IndexedDbPersistenceService from "src/services/IndexedDbPersistenceService"
 import {STRIP_CHARS_IN_USER_INPUT} from "boot/constants";
 import {NewOrReplacedTabset} from "src/models/NewOrReplacedTabset";
+import {SearchDoc} from "src/models/SearchDoc";
 
 class TabsetService {
 
@@ -160,7 +161,11 @@ class TabsetService {
   }
 
   async saveToCurrentTabset(tab: Tab): Promise<number> {
-    return this.saveToTabset(this.getCurrentTabset() || new Tabset(uid(), "unknown", [], []), tab)
+    const currentTs = this.getCurrentTabset()
+    if (currentTs) {
+      return this.saveToTabset(currentTs, tab)
+    }
+    return Promise.reject("could not get current tabset")
   }
 
   async saveToTabsetId(tsId: string, tab: Tab): Promise<number> {
@@ -184,6 +189,7 @@ class TabsetService {
 
       const index = _.findIndex(tabsStore.pendingTabset.tabs, t => t.id === tab.id)
       tabsStore.pendingTabset.tabs.splice(index, 1);
+
       this.saveTabset(ts)
 
       const dataFromStore: object = await this.persistenceService.updateContent(tab.chromeTab.url)
@@ -191,6 +197,7 @@ class TabsetService {
       await this.persistenceService.updateThumbnail(tab.chromeTab.url)
 
       // update fuse index
+      console.log("in saveToTabset: indexing", tab)
       return useSearchStore().addToIndex(
         tab.id,
         tab.chromeTab.title || '',
@@ -503,6 +510,21 @@ class TabsetService {
     this.persistenceService.cleanUpThumbnails()
 
     this.persistenceService.cleanUpContent()
+      .then(searchDocs => {
+        _.forEach(searchDocs, d => {
+          console.log("got document", d)
+          useSearchStore().remove((doc:SearchDoc, idx: number) => {
+            if (doc.url === d.url) {
+              console.log("removing", doc)
+            }
+            return doc.url === d.url
+          })
+          useSearchStore().addToIndex(
+            d.id, d.name, d.title, d.url, d.description, d.content, d.tabsets, d.favIconUrl
+          )
+        })
+        //useSearchStore().addToIndex()
+      })
   }
 
   urlExistsInATabset(url: string): boolean {

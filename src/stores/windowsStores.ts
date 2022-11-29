@@ -1,6 +1,4 @@
 import {defineStore} from "pinia";
-import {Tab} from "src/models/Tab";
-import ChromeListeners from "src/services/ChromeListeners";
 
 export const useWindowsStore = defineStore('windows', {
   state: () => ({
@@ -13,25 +11,20 @@ export const useWindowsStore = defineStore('windows', {
 
     windows: [] as unknown as chrome.windows.Window[],
 
-
   }),
 
   getters: {
-
-    pinnedTabs(state): Tab[] {
-      return []
-    },
-
-
 
   },
 
   actions: {
     async init() {
-      chrome.windows.getAll((windows) => {
-        console.log("get windows", windows)
-        this.windows = windows
-      })
+      if (process.env.MODE === 'bex') {
+        chrome.windows.getAll((windows) => {
+          console.log("get windows", windows)
+          this.windows = windows
+        })
+      }
     },
     initListeners() {
       if (process.env.MODE === 'bex') {

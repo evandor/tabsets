@@ -9,6 +9,8 @@ import {useSpacesStore} from "stores/spacesStore";
 import {Space} from "src/models/Space";
 import {MHtml} from "src/models/MHtml";
 import {Tab} from "src/models/Tab";
+import {useSearchStore} from "stores/searchStore";
+import {SearchDoc} from "src/models/SearchDoc";
 
 class IndexedDbPersistenceService implements PersistenceService {
 
@@ -154,26 +156,34 @@ class IndexedDbPersistenceService implements PersistenceService {
     }
   }
 
-  async cleanUpContent(): Promise<void> {
+  async cleanUpContent(): Promise<SearchDoc[]> {
     const contentObjectStore = this.db.transaction("content", "readwrite").objectStore("content");
     let contentCursor = await contentObjectStore.openCursor()
+    let result: SearchDoc[] = []
     while (contentCursor) {
       if (contentCursor.value.expires !== 0) {
         const exists: boolean = this.urlExistsInATabset(atob(contentCursor.key.toString()))
         if (exists) {
           const data = contentCursor.value
-          contentObjectStore.put({
-              id: data.id,
-              expires: 0,
-              content: data.content,
-              title: data.title,
-              url: data.url,
-              tabsets: data.tabsets,
-              description: data.description,
-              metas: data.metas,
-              favIconUrl: data.favIconUrl
-            },
-            contentCursor.key)
+          data.expires = 0
+          // contentObjectStore.put({
+          //     id: data.id,
+          //     expires: 0,
+          //     content: data.content,
+          //     title: data.title,
+          //     url: data.url,
+          //     tabsets: data.tabsets,
+          //     description: data.description,
+          //     metas: data.metas,
+          //     favIconUrl: data.favIconUrl
+          //   },
+          //   contentCursor.key)
+          contentObjectStore.put(data, contentCursor.key)
+          result.push(new SearchDoc(
+            data.id, "", data.title, data.url, data.description, data.content, [], data.favIconUrl
+          ))
+
+
         } else {
           if (contentCursor.value.expires < new Date().getTime()) {
             contentObjectStore.delete(contentCursor.key)
@@ -182,6 +192,7 @@ class IndexedDbPersistenceService implements PersistenceService {
       }
       contentCursor = await contentCursor.continue();
     }
+    return Promise.resolve(result)
   }
 
   getContents(): Promise<any[]> {
@@ -253,7 +264,7 @@ class IndexedDbPersistenceService implements PersistenceService {
     })
   }
 
-  getMHtmls(): Promise<MHtml[]>  {
+  getMHtmls(): Promise<MHtml[]> {
     console.log("getMHtmls")
     return this.db.getAll('mhtml')
   }

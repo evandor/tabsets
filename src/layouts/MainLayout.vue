@@ -76,7 +76,9 @@
               <q-item disable>
                 Close some tabs:
               </q-item>
-              <q-item clickable v-close-popup @click="TabsetService.closeTrackedTabs()">
+              <q-item
+                :disable="tabsStore.tabsets?.size === 0"
+                clickable v-close-popup @click="TabsetService.closeTrackedTabs()">
                 <q-item-section>&bull; Close all tracked tabs</q-item-section>
               </q-item>
               <q-item clickable v-close-popup @click="TabsetService.closeDuplictedOpenTabs()">
@@ -89,29 +91,6 @@
             </q-list>
           </q-menu>
         </div>
-        <!--        <q-linear-progress v-if="showThresholdBar()"-->
-        <!--                           track-color="white"-->
-        <!--                           stripe rounded size="20px" :style="thresholdColor()"-->
-        <!--                           :value="openTabsCountRatio" class="q-mr-lg">-->
-        <!--          <div class="absolute-full flex flex-center">-->
-        <!--            <q-badge color="white" text-color="primary" :label="thresholdLabel()" />-->
-        <!--          </div>-->
-        <!--          <q-tooltip>-->
-        <!--            This indicates the amount of open tabs ({{ tabsStore.tabs.length }}) you have currently.-->
-        <!--          </q-tooltip>-->
-        <!--          <q-menu>-->
-        <!--            <q-list style="min-width: 200px">-->
-        <!--              <q-item clickable v-close-popup @click="TabsetService.closeTrackedTabs()">-->
-        <!--                <q-item-section>Close all tracked tabs</q-item-section>-->
-        <!--              </q-item>-->
-        <!--              <q-separator/>-->
-        <!--              <q-item clickable v-close-popup @click="router.push('/settings')">-->
-        <!--                <q-item-section>Change Settings</q-item-section>-->
-        <!--              </q-item>-->
-        <!--            </q-list>-->
-        <!--          </q-menu>-->
-
-        <!--        </q-linear-progress>-->
 
         <div v-if="tabsStore.pendingTabset?.tabs.length > 0 && tabsStore.tabsets.size > 1" class="q-mr-lg">
           {{ tabsStore.pendingTabset?.tabs.length }} unassigned tab(s)

@@ -2,7 +2,7 @@
   <q-dialog ref="dialogRef" @hide="onDialogHide">
     <q-card class="q-dialog-plugin">
       <q-card-section>
-        <div class="text-h6">Add new Tabset</div>
+        <div class="text-h6">Creat a new Tabset</div>
       </q-card-section>
       <q-card-section>
         <div class="text-body">Please provide a name for the new tabset</div>

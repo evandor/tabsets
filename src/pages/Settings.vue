@@ -241,11 +241,11 @@ watchEffect(() => {
 
 watchEffect(() => {
   // @ts-ignore
-  indexSize.value = searchStore.fuse.getIndex().size()
+  indexSize.value = searchStore.getIndex().size()
 })
 
 const downloadIndex = () => {
-  const data = JSON.stringify(searchStore.fuse.getIndex())
+  const data = JSON.stringify(searchStore.getIndex())
   return TabsetService.createFile(data, "tabsetIndex.json");
 }
 
@@ -253,12 +253,8 @@ const clearIndex = () => searchStore.init()
 
 const simulateNewVersion = (version: string) => NavigationService.updateAvailable({version: version})
 
-const showExportDialog = () => {
-  $q.dialog({component: ExportDialog})
-}
+const showExportDialog = () => $q.dialog({component: ExportDialog})
+const showImportDialog = () => $q.dialog({component: ImportDialog})
 
-const showImportDialog = () => {
-  $q.dialog({component: ImportDialog})
-}
 
 </script>

@@ -138,16 +138,18 @@
     <div v-else-if="tab === 'index'">
 
       <div v-for="k in keys">
-        ID: {{k.id}} - weight {{k.weight}}
+        ID: {{ k.id }} - weight {{ k.weight }}
       </div>
       <hr>
       <div v-for="key in Object.keys(keysMap)">
-        key: {{key}} - {{keysMap[key]}}<br>
-        {{index.$[keysMap[key]]}}<br><br>
+        <div v-if="keysMap.hasOwnProperty(key)">
+          <b>key: {{ key }} - {{ keysMap[key] }}</b><br>
+          {{ getForKey(key) }}
+          <!--          {{ index.$[keysMap[key]] }}<br><br>-->
+        </div>
       </div>
 
     </div>
-
 
   </q-page>
 
@@ -189,8 +191,10 @@ watchEffect(() => {
       })
     TabsetService.getContentFor(notificationStore.selectedTab)
       .then(data => {
-        content.value = data.content
-        metas.value = data.metas
+        if (data) {
+          content.value = data.content
+          metas.value = data.metas
+        }
       })
 
   } else {
@@ -199,13 +203,16 @@ watchEffect(() => {
 })
 
 watchEffect(() => {
-  const fuseIndex = searchStore.fuse.getIndex()
+  const fuseIndex = searchStore.getIndex()
+  // console.log("fuseIndex", fuseIndex)
+  // console.log("searchStore.fuse", searchStore.fuse)
   keys.value = fuseIndex['keys' as keyof object]
   keysMap.value = fuseIndex['_keysMap' as keyof object]
   const res = _.filter(fuseIndex['records' as keyof object], (r: any) => {
-    return notificationStore.selectedTab.chromeTab.url === r.$[3].v
+    return notificationStore.selectedTab?.chromeTab.url === r.$[3]?.v
   })
-  if (res && res[0]) {
+ // console.log("res", res, res.length)
+  if (res && res.length > 0) {
     index.value = res[0]
   }
 })
@@ -231,4 +238,15 @@ function getHost(urlAsString: string, shorten: Boolean = true): string {
   }
 }
 
+const getForKey = (key: any) => {
+  // console.log("key", key, keysMap.value)
+  // console.log("key2", keysMap.value[key as keyof object])
+  // console.log("key3", index.value['$' as keyof object])
+  if (keysMap.value[key as keyof object]
+    && index.value['$' as keyof object]) {
+    return index.value['$' as keyof object][keysMap.value[key as keyof object]]
+  }
+  //return index.$[keysMap[key]]
+  return ""
+}
 </script>

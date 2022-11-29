@@ -2,6 +2,7 @@ import {Tabset} from "src/models/Tabset";
 import {Space} from "src/models/Space";
 import {MHtml} from "src/models/MHtml";
 import {Tab} from "src/models/Tab";
+import {SearchDoc} from "src/models/SearchDoc";
 
 interface PersistenceService {
 
@@ -19,7 +20,7 @@ interface PersistenceService {
   updateContent(url: string):Promise<object>
   deleteContent(url: string):Promise<void>
   saveContent(tab: chrome.tabs.Tab, text: string, metas: object, title: string, description: string, tabsetIds: string[]):Promise<any>
-  cleanUpContent(): Promise<void>
+  cleanUpContent(): Promise<SearchDoc[]>
   getContents(): Promise<any[]>
 
   saveMHtml(tab: Tab, mhtml: string): Promise<any>
