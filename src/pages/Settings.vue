@@ -176,6 +176,17 @@
         <q-toggle v-model="experimentalViewsEnabled"/>
       </div>
     </div>
+    <div class="row q-mb-md">
+      <div class="col-3">
+        searchIndexWidget
+      </div>
+      <div class="col-3">
+
+      </div>
+      <div class="col-3">
+        <q-toggle v-model="searchIndexWidgetEnabled"/>
+      </div>
+    </div>
   </q-page>
 
 </template>
@@ -214,6 +225,7 @@ const debugEnabled = ref<boolean>(featuresStore.isEnabled('debug'))
 const spacesEnabled = ref<boolean>(featuresStore.isEnabled('spaces'))
 const sidebarEnabled = ref<boolean>(featuresStore.isEnabled('sidebar'))
 const experimentalViewsEnabled = ref<boolean>(featuresStore.isEnabled('experimentalViews'))
+const searchIndexWidgetEnabled = ref<boolean>(featuresStore.isEnabled('searchIndexWidget'))
 
 const darkMode = ref<boolean>(localStorage.getItem('darkMode') || false)
 const showBookmarks = ref<boolean>(localStorage.getItem('showBookmarks') || false)
@@ -229,6 +241,7 @@ watchEffect(() => {
   featuresStore.setFeatureToggle("spaces", spacesEnabled.value)
   featuresStore.setFeatureToggle("sidebar", sidebarEnabled.value)
   featuresStore.setFeatureToggle("experimentalViews", experimentalViewsEnabled.value)
+  featuresStore.setFeatureToggle("searchIndexWidget", searchIndexWidgetEnabled.value)
 })
 
 watchEffect(() => {

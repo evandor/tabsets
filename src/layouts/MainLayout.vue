@@ -47,49 +47,12 @@
         <q-space/>
 
         <div>
-          <div class="cursor-pointer">
-            <q-badge v-if="showThresholdBar()"
-                     class="q-mr-sm"
-                     color="primary" text-color="white" :label="thresholdLabel()">
-            </q-badge>
 
-            <q-circular-progress
-              v-if="showThresholdBar()"
-              show-value
-              reverse
-              :value="openTabsCountRatio2"
-              size="20px"
-              :thickness="0.7"
-              :style="thresholdStyle()"
-              track-color="grey-3"
-              class="q-mr-lg">
+          <OpenTabsThresholdWidget />
+          <SearchIndexThresholdWidget v-if="featuresStore.isEnabled('searchIndexWidget')"/>
+        </div>
+        <div>
 
-
-            </q-circular-progress>
-          </div>
-          <q-menu :offset="[0, 15]">
-            <q-list style="min-width: 200px">
-              <q-item clickable v-close-popup @click="showOpenTabs">
-                <q-item-section>Show open tabs</q-item-section>
-              </q-item>
-              <q-separator/>
-              <q-item disable>
-                Close some tabs:
-              </q-item>
-              <q-item
-                :disable="tabsStore.tabsets?.size === 0"
-                clickable v-close-popup @click="TabsetService.closeTrackedTabs()">
-                <q-item-section>&bull; Close all tracked tabs</q-item-section>
-              </q-item>
-              <q-item clickable v-close-popup @click="TabsetService.closeDuplictedOpenTabs()">
-                <q-item-section>&bull; Close duplicated open tabs</q-item-section>
-              </q-item>
-              <q-separator/>
-              <q-item clickable v-close-popup @click="router.push('/settings')">
-                <q-item-section>Change Settings</q-item-section>
-              </q-item>
-            </q-list>
-          </q-menu>
         </div>
 
         <div v-if="tabsStore.pendingTabset?.tabs.length > 0 && tabsStore.tabsets.size > 1" class="q-mr-lg">
@@ -169,8 +132,10 @@ import TabsetService from "src/services/TabsetService";
 import {useSearchStore} from "src/stores/searchStore";
 import {useFeatureTogglesStore} from "src/stores/featureTogglesStore";
 import _ from "lodash";
-import {useSpacesStore} from "stores/spacesStore";
-import {useSettingsStore} from "stores/settingsStore";
+import {useSpacesStore} from "stores/spacesStore"
+import {useSettingsStore} from "stores/settingsStore"
+import OpenTabsThresholdWidget from 'src/components/widgets/OpenTabsThresholdWidget.vue'
+import SearchIndexThresholdWidget from 'src/components/widgets/SearchIndexThresholdWidget.vue'
 
 const router = useRouter()
 const tabsStore = useTabsStore()
@@ -180,8 +145,6 @@ const localStorage = useQuasar().localStorage
 
 const rightDrawerOpen = ref(true)
 const leftDrawerOpen = ref(false)
-const openTabsCountRatio = ref(0)
-const openTabsCountRatio2 = ref(0)
 const model = ref(85)
 
 const notificationsStore = useNotificationsStore()
@@ -208,10 +171,6 @@ watchEffect(() => {
     .concat({id: '', label: '(unassigned)'})
 })
 
-watchEffect(() => {
-  openTabsCountRatio.value = Math.min(tabsStore.tabs.length / settingsStore.thresholds['max' as keyof object], 1)
-  openTabsCountRatio2.value = Math.round(100 * Math.min(tabsStore.tabs.length / settingsStore.thresholds['max' as keyof object], 1))
-})
 
 //@ts-ignore
 const appVersion = import.meta.env.PACKAGE_VERSION
@@ -279,17 +238,6 @@ const installNewVersion = () => {
   chrome.runtime.reload()
 }
 
-const showThresholdBar = () =>
-  tabsStore.tabs.length >= settingsStore.thresholds['min' as keyof object]
 
-const thresholdStyle = () =>
-  "color: hsl(" + (120 - Math.round(120 * openTabsCountRatio.value)) + " 80% 50%)"
-
-const thresholdLabel = () => tabsStore.tabs.length + " open tabs"
-
-const showOpenTabs = () => {
-  useNotificationsStore().showDrawer = true
-  useNotificationsStore().showOpenTabs = true
-}
 
 </script>
