@@ -119,5 +119,5 @@ export const useSearchStore = defineStore('search', () => {
       })
   }
 
-  return { init, populate, getIndex, addToIndex, remove }
+  return { init, populate, getIndex, addToIndex, remove, term }
 })

@@ -14,7 +14,8 @@
     "contextMenus",
     "scripting",
     "notifications",
-    "pageCapture"
+    "pageCapture",
+    "webRequest"
   ],
   "host_permissions": [
     "<all_urls>"
@@ -32,7 +33,7 @@
         "assets/content.css"
       ],
       "js": [
-        "my-content-script.js"
+        "tabsets-content-script.js"
       ]
     }
   ],

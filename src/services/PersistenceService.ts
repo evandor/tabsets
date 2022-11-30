@@ -29,6 +29,8 @@ interface PersistenceService {
   getMHtmls(): Promise<MHtml[]>
 
   addSpace(space: Space): Promise<void>
+
+  cleanUpRequests(): Promise<void>
 }
 
 export default PersistenceService

@@ -47,10 +47,13 @@
         <q-space/>
 
         <div>
-
           <OpenTabsThresholdWidget />
+        </div>
+
+        <div>
           <SearchIndexThresholdWidget v-if="featuresStore.isEnabled('searchIndexWidget')"/>
         </div>
+
         <div>
 
         </div>

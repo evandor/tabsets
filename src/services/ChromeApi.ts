@@ -4,6 +4,7 @@ import {CLEANUP_PERIOD_IN_MINUTES} from "boot/constants";
 import {useTabsStore} from "src/stores/tabsStore";
 import _ from "lodash"
 import NavigationService from "src/services/NavigationService";
+import {RequestInfo} from "src/models/RequestInfo";
 
 function runHousekeeping(alarm: chrome.alarms.Alarm) {
   if (alarm.name === "housekeeping") {
@@ -22,13 +23,25 @@ class ChromeApi {
 
     chrome.management.getSelf(
       (self: chrome.management.ExtensionInfo) => {
-        //console.log("self", self)
+        // TODO needed ?
         localStorage.setItem("selfId", self.id)
       }
     )
 
     chrome.runtime.onUpdateAvailable.addListener(
       (details: any) => NavigationService.updateAvailable(details)
+    )
+
+    chrome.webRequest.onHeadersReceived.addListener(
+      (details) => {
+        console.log("headerDetails", details)
+        TabsetService.saveRequestFor(
+          details.url,
+          new RequestInfo(details.statusCode,  [])
+        )
+      },
+      {urls: ['*://*/*'], types: ['main_frame']},
+      ['responseHeaders']
     )
 
     this.buildContextMenu();
@@ -138,7 +151,7 @@ class ChromeApi {
 
           if (t.chromeTab.url !== currentTab.url) {
             //console.log("creating tab", t.chromeTab.id)
-            const newTabPromise:Promise<chrome.tabs.Tab> = this.chromeTabsCreateAsync({
+            const newTabPromise: Promise<chrome.tabs.Tab> = this.chromeTabsCreateAsync({
               active: false,
               index: t.chromeTab.index,
               pinned: t.chromeTab.pinned,

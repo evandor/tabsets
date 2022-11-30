@@ -178,6 +178,10 @@ class ChromeListeners {
       this.handleHtml2Text(request, sender, sendResponse)
       // } else if (request.msg === 'htmlmeta') {
       //   this.handleMetaData(request, sender, sendResponse)
+    } else if (request.msg === 'headers') {
+      this.handleHeaders(request, sender, sendResponse)
+      // } else if (request.msg === 'htmlmeta') {
+      //   this.handleMetaData(request, sender, sendResponse)
     } else if (request.msg === 'addTabToTabset') {
       this.handleAddTabToTabset(request, sender, sendResponse)
     } else {
@@ -199,8 +203,13 @@ class ChromeListeners {
     })
     return ignoreIndex >= 0
   }
-
+  private handleHeaders(request: any, sender: chrome.runtime.MessageSender, sendResponse: any) {
+    console.log("request", request)
+    console.log("sender", sender)
+  }
   private handleHtml2Text(request: any, sender: chrome.runtime.MessageSender, sendResponse: any) {
+    console.log("request", request)
+    console.log("sender", sender)
     const text = convert(request.html, {
       wordwrap: 130
     });
@@ -220,7 +229,7 @@ class ChromeListeners {
         tokenSet.add(t.toLowerCase())
       }
     })
-    //console.log("res", res)
+    console.log("res", res)
     // console.log("tokenSet", tokenSet)
     // console.log("tokenSet", [...tokenSet].join(" "))
     TabsetService.saveText(sender.tab, [...tokenSet].join(" "), request.metas)

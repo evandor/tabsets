@@ -9,7 +9,6 @@ import {useSpacesStore} from "stores/spacesStore";
 import {Space} from "src/models/Space";
 import {MHtml} from "src/models/MHtml";
 import {Tab} from "src/models/Tab";
-import {useSearchStore} from "stores/searchStore";
 import {SearchDoc} from "src/models/SearchDoc";
 
 class IndexedDbPersistenceService implements PersistenceService {
@@ -102,6 +101,17 @@ class IndexedDbPersistenceService implements PersistenceService {
       .catch(err => console.log("err", err))
   }
 
+  saveRequest(url: string, requestInfo: RequestInfo): Promise<void> {
+    const encodedTabUrl = btoa(url)
+    return this.db.put('requests', {
+      expires: new Date().getTime() + 1000 * 60 * 60,
+      url: url,
+      requestInfo
+    }, encodedTabUrl)
+      .then(() => console.log("added request"))
+      .catch(err => console.log("err", err))
+  }
+
   getThumbnail(url: string): Promise<string> {
     const encodedUrl = btoa(url)
     return this.db.get('thumbnails', encodedUrl)
@@ -146,6 +156,26 @@ class IndexedDbPersistenceService implements PersistenceService {
         const exists: boolean = this.urlExistsInATabset(atob(cursor.key.toString()))
         if (exists) {
           objectStore.put({expires: 0, thumbnail: cursor.value.thumbnail}, cursor.key)
+        } else {
+          if (cursor.value.expires < new Date().getTime()) {
+            objectStore.delete(cursor.key)
+          }
+        }
+      }
+      cursor = await cursor.continue();
+    }
+  }
+
+  async cleanUpRequests(): Promise<void> {
+    const objectStore = this.db.transaction("requests", "readwrite").objectStore("requests");
+    let cursor = await objectStore.openCursor()
+    while (cursor) {
+      if (cursor.value.expires !== 0) {
+        const exists: boolean = this.urlExistsInATabset(atob(cursor.key.toString()))
+        if (exists) {
+          const data = cursor.value
+          data.expires = 0
+          objectStore.put(data, cursor.key)
         } else {
           if (cursor.value.expires < new Date().getTime()) {
             objectStore.delete(cursor.key)
@@ -276,7 +306,7 @@ class IndexedDbPersistenceService implements PersistenceService {
   }
 
   private async initDatabase(): Promise<IDBPDatabase> {
-    return await openDB(INDEX_DB_NAME, 3, {
+    return await openDB(INDEX_DB_NAME, 4, {
       // upgrading see https://stackoverflow.com/questions/50193906/create-index-on-already-existing-objectstore
       upgrade(db) {
         if (!db.objectStoreNames.contains('tabsets')) {
@@ -301,6 +331,11 @@ class IndexedDbPersistenceService implements PersistenceService {
           console.log("creating db mhtml")
           let store = db.createObjectStore('mhtml');
           //store.createIndex("expires", "expires", {unique: false});
+        }
+        if (!db.objectStoreNames.contains('requests')) {
+          console.log("creating db requests")
+          let store = db.createObjectStore('requests');
+          store.createIndex("expires", "expires", {unique: false});
         }
       },
     });

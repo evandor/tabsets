@@ -10,7 +10,7 @@
       v-if="showThresholdBar()"
       show-value
       reverse
-      :value="openTabsCountRatio2"
+      :value="openTabsCountRatio"
       size="20px"
       :thickness="0.7"
       :style="thresholdStyle()"
@@ -22,24 +22,21 @@
   </div>
   <q-menu :offset="[0, 15]">
     <q-list style="min-width: 200px">
-      <q-item clickable v-close-popup @click="showOpenTabs">
-        <q-item-section>Show open tabs</q-item-section>
-      </q-item>
-      <q-separator/>
       <q-item disable>
-        Close some tabs:
+        {{ searchStore.getIndex().size() }} (of {{ tabsStore.allTabsCount }}) tabs are indexed for search
+      </q-item>
+      <q-item disable>
+        (Re-)Index some tabs:
       </q-item>
       <q-item
         :disable="tabsStore.tabsets?.size === 0"
         clickable v-close-popup @click="TabsetService.closeTrackedTabs()">
-        <q-item-section>&bull; Close all tracked tabs</q-item-section>
+        <q-item-section>&bull; Reindex this tabset's tabs</q-item-section>
       </q-item>
-      <q-item clickable v-close-popup @click="TabsetService.closeDuplictedOpenTabs()">
-        <q-item-section>&bull; Close duplicated open tabs</q-item-section>
-      </q-item>
-      <q-separator/>
-      <q-item clickable v-close-popup @click="router.push('/settings')">
-        <q-item-section>Change Settings</q-item-section>
+      <q-item
+        :disable="tabsStore.tabsets?.size === 0"
+        clickable v-close-popup @click="TabsetService.closeTrackedTabs()">
+        <q-item-section>&bull; Reindex all tabs</q-item-section>
       </q-item>
     </q-list>
   </q-menu>
@@ -54,30 +51,31 @@ import TabsetService from "src/services/TabsetService"
 import {ref, watchEffect} from "vue";
 import {useRouter} from "vue-router";
 import {useNotificationsStore} from "stores/notificationsStore";
+import {useSearchStore} from "stores/searchStore";
 
 const tabsStore = useTabsStore()
 const settingsStore = useSettingsStore()
+const searchStore = useSearchStore()
 const router = useRouter()
 
 const openTabsCountRatio = ref(0)
-const openTabsCountRatio2 = ref(0)
 
 watchEffect(() => {
-  openTabsCountRatio.value = Math.min(tabsStore.tabs.length / settingsStore.thresholds['max' as keyof object], 1)
-  openTabsCountRatio2.value = Math.round(100 * Math.min(tabsStore.tabs.length / settingsStore.thresholds['max' as keyof object], 1))
+  openTabsCountRatio.value = 100 * Math.min(searchStore.getIndex().size() / (tabsStore.allTabsCount === 0 ? 1 : tabsStore.allTabsCount), 1)
 })
 
 const showThresholdBar = () =>
   tabsStore.tabs.length >= settingsStore.thresholds['min' as keyof object]
 
-const thresholdStyle = () =>
-  "color: hsl(" + (120 - Math.round(120 * openTabsCountRatio.value)) + " 80% 50%)"
-
-const thresholdLabel = () => tabsStore.tabs.length + " open tabs"
-
-const showOpenTabs = () => {
-  useNotificationsStore().showDrawer = true
-  useNotificationsStore().showOpenTabs = true
+const thresholdStyle = () => {
+  // console.log("r1", openTabsCountRatio.value)
+  // console.log("r2", 1.2 * Math.round(openTabsCountRatio.value))
+  // console.log("r3", 1.2 * Math.round(openTabsCountRatio.value) - 120)
+  return "color: hsl(" + (1.2 * Math.round(openTabsCountRatio.value)) + " 80% 50%)"
 }
+
+// @ts-ignore
+const thresholdLabel = () => searchStore.getIndex().size() + " tabs indexed"
+
 
 </script>

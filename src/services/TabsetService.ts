@@ -310,6 +310,14 @@ class TabsetService {
     }
   }
 
+  saveRequestFor(url: string, requestInfo: RequestInfo) {
+    if (url) {
+      this.persistenceService.saveRequest(url, requestInfo)
+        .then(() => console.log("added request"))
+        .catch(err => console.log("err", err))
+    }
+  }
+
   async getThumbnailFor(selectedTab: Tab): Promise<any> {
     //console.log("checking thumbnail for", selectedTab.chromeTab.url)
     if (selectedTab.chromeTab.url) {
@@ -509,6 +517,8 @@ class TabsetService {
     // clean up thumbnails
     this.persistenceService.cleanUpThumbnails()
 
+    this.persistenceService.cleanUpRequests()
+
     this.persistenceService.cleanUpContent()
       .then(searchDocs => {
         _.forEach(searchDocs, d => {
@@ -628,6 +638,8 @@ class TabsetService {
     }
     return Promise.reject("did not find tab with id " + tabId)
   }
+
+
 }
 
 export default new TabsetService();
