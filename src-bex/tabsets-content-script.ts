@@ -17,20 +17,6 @@ export default bexContent((bridge:any) => {
     console.log("created thumbnail for tabsets")
   });
 
-  chrome.runtime.sendMessage({msg: "headers"}, function (response) {
-    console.log("sending message for headers")
-  });
-
-
-  // document.addEventListener('fetch', function handler(event:any) {
-  //   console.log('[Content Script] fetch: ', event);
-  //
-  //   // var request = createRequestObject(event['request' as keyof object]);
-  //
-  //   console.log('[Content Script] Request sent', event['request' as keyof object]);
-  // })
-
-
   function getMetas(document: Document) {
     const result: { [k: string]: string } = {}
     const res: string[] = []

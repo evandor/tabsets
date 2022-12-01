@@ -73,8 +73,8 @@ const showReindexDialog = ref(false)
 const newSearch = (term: string) => {
   tabsetHits.value = []
 
-  console.log("searching in ", searchStore.fuse.getIndex())
-  const results = searchStore.fuse.search(term)
+  console.log("searching in ", searchStore.getIndex())
+  const results = searchStore.search(term)
   console.log("search results", results)
   _.forEach(results, h => {
     //resultTs.tabs.push(new Hit(uid(), ChromeApi.createChromeTabObject(h.item.title, h.item.url), 0, 0, h.score ))

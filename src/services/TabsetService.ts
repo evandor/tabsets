@@ -11,6 +11,7 @@ import IndexedDbPersistenceService from "src/services/IndexedDbPersistenceServic
 import {STRIP_CHARS_IN_USER_INPUT} from "boot/constants";
 import {NewOrReplacedTabset} from "src/models/NewOrReplacedTabset";
 import {SearchDoc} from "src/models/SearchDoc";
+import {RequestInfo} from "src/models/RequestInfo";
 
 class TabsetService {
 
@@ -26,9 +27,10 @@ class TabsetService {
    * Init, called when extension is loaded (via App.vue)
    */
   async init() {
-
+    console.log("initializing tabsetService")
+    const done = await this.persistenceService.loadTabsets()
+    console.log("done", done)
     useSearchStore().populate(this.persistenceService.getContents())
-    await this.persistenceService.loadTabsets()
   }
 
   /**
@@ -322,6 +324,14 @@ class TabsetService {
     //console.log("checking thumbnail for", selectedTab.chromeTab.url)
     if (selectedTab.chromeTab.url) {
       return this.persistenceService.getThumbnail(selectedTab.chromeTab.url)
+    }
+    return Promise.reject("url not provided");
+  }
+
+  async getRequestFor(selectedTab: Tab): Promise<any> {
+    console.log("checking request for", selectedTab.chromeTab.url)
+    if (selectedTab.chromeTab.url) {
+      return this.persistenceService.getRequest(selectedTab.chromeTab.url)
     }
     return Promise.reject("url not provided");
   }

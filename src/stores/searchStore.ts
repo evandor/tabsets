@@ -7,6 +7,7 @@ import {useWindowsStore} from "src/stores/windowsStores";
 import {Tabset} from "src/models/Tabset";
 import {useTabsStore} from "src/stores/tabsStore";
 import {ref} from "vue";
+import {Tab} from "src/models/Tab";
 
 function dummyPromise(timeout: number, tabToCloseId: number | undefined = undefined) {
   return new Promise((resolve, reject) => {
@@ -45,13 +46,22 @@ export const useSearchStore = defineStore('search', () => {
   })
 
   async function init() {
-    //console.log("initializing search index...")
+    console.log("initializing searchStore")
     searchIndex.value = Fuse.createIndex(options.value.keys, [])
     fuse.value = new Fuse([], options.value, searchIndex.value)
+
+
   }
 
   function getIndex() {
-    return fuse.value.getIndex()
+    if (fuse.value) {
+      return fuse.value.getIndex()
+    }
+    console.log("hierxxxx")
+  }
+
+  function search(term: string) {
+    return fuse.value.search(term)
   }
 
   function remove(f: any) {
@@ -108,16 +118,53 @@ export const useSearchStore = defineStore('search', () => {
     })
   }
 
+  /**
+   * Initial population of search index when the extension is reloaded (and when run the first time, which
+   * is more a no-op)
+   *
+   * @param contentPromise
+   */
   function populate(contentPromise: Promise<any[]>) {
     console.log("populating searchstore...")
+
+    const minimalIndex: SearchDoc[] = []
+    const urlSet: Set<string> = new Set()
+    _.forEach([...useTabsStore().tabsets.values()], (tabset: Tabset) => {
+        tabset.tabs.forEach((tab: Tab) => {
+          if (tab.chromeTab?.url) {
+            if (urlSet.has(tab.chromeTab.url)) {
+              const existingDocIndex = _.findIndex(minimalIndex, d => d.url === tab.chromeTab.title)
+              if (existingDocIndex >= 0) {
+                const existingDoc = minimalIndex[existingDocIndex]
+                existingDoc.tabsets = existingDoc.tabsets.concat([tabset.id])
+                minimalIndex.splice(existingDocIndex, 1,)
+              }
+            } else {
+              const doc = new SearchDoc("", "", tab.chromeTab.title || '', tab.chromeTab.url, "", "", [tabset.id], "")
+              minimalIndex.push(doc)
+              urlSet.add(tab.chromeTab.url)
+            }
+          }
+
+        })
+      }
+    )
+
+    minimalIndex.forEach((doc: SearchDoc) => fuse.value.add(doc))
+
     contentPromise
       .then(content => {
         const permanentContent = _.filter(content, c => c.expires === 0)
         console.log(`... with ${permanentContent.length} entries, ${content.length - permanentContent.length} is/are filtered due to expiry date`)
-        searchIndex.value = Fuse.createIndex(options.value.keys, permanentContent)
-        fuse.value = new Fuse(permanentContent, options.value, searchIndex.value)
+
+        permanentContent.forEach(c => {
+          fuse.value.remove((doc) => {
+            return doc.url === c.url
+          })
+          fuse.value.add(c)
+        })
       })
   }
 
-  return { init, populate, getIndex, addToIndex, remove, term }
+  return {init, populate, getIndex, addToIndex, remove, term, search}
 })

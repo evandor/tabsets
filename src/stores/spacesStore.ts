@@ -33,8 +33,7 @@ export const useSpacesStore = defineStore('spaces', () => {
   })
 
   function initialize() {
-    //console.log("initializing spacesStore")
-  }
+    console.log("initializing spacesStore")  }
 
   function addSpace(key: string, label: string): Space {
     console.log("adding space", key, label)

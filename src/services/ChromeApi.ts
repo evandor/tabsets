@@ -6,6 +6,7 @@ import _ from "lodash"
 import NavigationService from "src/services/NavigationService";
 import {RequestInfo} from "src/models/RequestInfo";
 
+
 function runHousekeeping(alarm: chrome.alarms.Alarm) {
   if (alarm.name === "housekeeping") {
     TabsetService.housekeeping()
@@ -15,6 +16,8 @@ function runHousekeeping(alarm: chrome.alarms.Alarm) {
 class ChromeApi {
 
   init() {
+    console.log("initializing ChromeApi")
+
     chrome.alarms.create("housekeeping", {periodInMinutes: CLEANUP_PERIOD_IN_MINUTES})
 
     chrome.alarms.onAlarm.addListener(
@@ -37,7 +40,7 @@ class ChromeApi {
         console.log("headerDetails", details)
         TabsetService.saveRequestFor(
           details.url,
-          new RequestInfo(details.statusCode,  [])
+          new RequestInfo(details.statusCode,  details.responseHeaders || [])
         )
       },
       {urls: ['*://*/*'], types: ['main_frame']},

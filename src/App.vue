@@ -48,6 +48,8 @@ spacesService.init()
       .then(() => {
         MHtmlService.init()
         ChromeApi.init()
+        //searchStore.init()
+
       })
   })
 

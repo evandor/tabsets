@@ -11,7 +11,7 @@ class MHtmlService {
    * Init, called when extension is loaded (via App.vue)
    */
   async init() {
-    console.log("init mhtml service")
+    console.log("init mhtmlService")
     await this.persistenceService.init();
   }
 

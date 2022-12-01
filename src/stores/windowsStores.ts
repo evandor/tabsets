@@ -20,6 +20,8 @@ export const useWindowsStore = defineStore('windows', {
   actions: {
     async init() {
       if (process.env.MODE === 'bex') {
+        console.log("initializing chrome windows listeners")
+
         chrome.windows.getAll((windows) => {
           console.log("get windows", windows)
           this.windows = windows

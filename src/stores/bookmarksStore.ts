@@ -43,7 +43,7 @@ export const useBookmarksStore = defineStore('bookmarks', {
 
   actions: {
     init() {
-      console.log("initializing bookmark Listeners")
+      console.log("initializing bookmarkStore")
       this.loadBookmarks()
       this.initListeners()
     },

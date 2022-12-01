@@ -194,6 +194,8 @@ export const useTabsStore = defineStore('tabs', {
     },
     initListeners() {
       if (process.env.MODE === 'bex') {
+        console.log("initializing chrome tab listeners")
+
         chrome.tabs.onCreated.addListener((tab: chrome.tabs.Tab) => ChromeListeners.onCreated(tab))
         chrome.tabs.onUpdated.addListener((number, info, tab) => ChromeListeners.onUpdated(number, info, tab))
         chrome.tabs.onMoved.addListener((number, info) => ChromeListeners.onMoved(number, info))

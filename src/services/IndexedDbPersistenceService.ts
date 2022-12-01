@@ -10,6 +10,9 @@ import {Space} from "src/models/Space";
 import {MHtml} from "src/models/MHtml";
 import {Tab} from "src/models/Tab";
 import {SearchDoc} from "src/models/SearchDoc";
+import {RequestInfo} from "src/models/RequestInfo";
+import {EXPIRE_DATA_PERIOD_IN_MINUTES} from "src/boot/constants"
+import {useSearchStore} from "stores/searchStore";
 
 class IndexedDbPersistenceService implements PersistenceService {
 
@@ -19,20 +22,26 @@ class IndexedDbPersistenceService implements PersistenceService {
     this.db = await this.initDatabase()
   }
 
-  async loadTabsets(): Promise<void> {
+  async loadTabsets(): Promise<any> {
     const tabsStore = useTabsStore()
     const keys: IDBValidKey[] = await this.db.getAllKeys('tabsets')
-    _.forEach(keys, key => {
-      this.db.get('tabsets', key)
+    console.log("got keys from db", keys)
+    const promises = []
+    const res:Promise<any>[] = _.map(keys, key => {
+      return this.db.get('tabsets', key)
         .then(ts => {
           if ('ignored' === key) {
             tabsStore.ignoredTabset = ts
           } else {
+            console.log("tabset added", ts)
             tabsStore.addTabset(ts)
           }
         })
         .catch(err => console.log("err", err))
     })
+    console.log("res1", res)
+    return Promise.all(res)
+    //useSearchStore().populate(this.getContents())
   }
 
   async loadSpaces(): Promise<void> {
@@ -94,7 +103,7 @@ class IndexedDbPersistenceService implements PersistenceService {
   saveThumbnail(url: string, thumbnail: string): Promise<void> {
     const encodedTabUrl = btoa(url)
     return this.db.put('thumbnails', {
-      expires: new Date().getTime() + 1000 * 60 * 60,
+      expires: new Date().getTime() + 1000 * 60 * EXPIRE_DATA_PERIOD_IN_MINUTES,
       thumbnail: thumbnail
     }, encodedTabUrl)
       .then(() => console.log("added thumbnail"))
@@ -104,7 +113,7 @@ class IndexedDbPersistenceService implements PersistenceService {
   saveRequest(url: string, requestInfo: RequestInfo): Promise<void> {
     const encodedTabUrl = btoa(url)
     return this.db.put('requests', {
-      expires: new Date().getTime() + 1000 * 60 * 60,
+      expires: new Date().getTime() + 1000 * 60 * EXPIRE_DATA_PERIOD_IN_MINUTES,
       url: url,
       requestInfo
     }, encodedTabUrl)
@@ -115,6 +124,11 @@ class IndexedDbPersistenceService implements PersistenceService {
   getThumbnail(url: string): Promise<string> {
     const encodedUrl = btoa(url)
     return this.db.get('thumbnails', encodedUrl)
+  }
+
+  getRequest(url: string): Promise<string> {
+    const encodedUrl = btoa(url)
+    return this.db.get('requests', encodedUrl)
   }
 
   getContent(url: string): Promise<object> {
@@ -135,7 +149,7 @@ class IndexedDbPersistenceService implements PersistenceService {
       const encodedTabUrl = btoa(tab.url)
       return this.db.put('content', {
         id: encodedTabUrl,
-        expires: new Date().getTime() + 1000 * 60 * 60,
+        expires: new Date().getTime() + 1000 * 60 * EXPIRE_DATA_PERIOD_IN_MINUTES,
         title,
         description,
         url: tab.url,
@@ -196,24 +210,10 @@ class IndexedDbPersistenceService implements PersistenceService {
         if (exists) {
           const data = contentCursor.value
           data.expires = 0
-          // contentObjectStore.put({
-          //     id: data.id,
-          //     expires: 0,
-          //     content: data.content,
-          //     title: data.title,
-          //     url: data.url,
-          //     tabsets: data.tabsets,
-          //     description: data.description,
-          //     metas: data.metas,
-          //     favIconUrl: data.favIconUrl
-          //   },
-          //   contentCursor.key)
           contentObjectStore.put(data, contentCursor.key)
           result.push(new SearchDoc(
             data.id, "", data.title, data.url, data.description, data.content, [], data.favIconUrl
           ))
-
-
         } else {
           if (contentCursor.value.expires < new Date().getTime()) {
             contentObjectStore.delete(contentCursor.key)

@@ -254,11 +254,11 @@ watchEffect(() => {
 
 watchEffect(() => {
   // @ts-ignore
-  indexSize.value = searchStore.getIndex().size()
+  indexSize.value = searchStore?.getIndex().size()
 })
 
 const downloadIndex = () => {
-  const data = JSON.stringify(searchStore.getIndex())
+  const data = JSON.stringify(searchStore?.getIndex())
   return TabsetService.createFile(data, "tabsetIndex.json");
 }
 
