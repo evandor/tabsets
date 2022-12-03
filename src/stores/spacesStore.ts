@@ -15,7 +15,6 @@ export const useSpacesStore = defineStore('spaces', () => {
   watch(
     space,
     (spaceVal: Space) => {
-      console.log("watched", spaceVal)
       if (spaceVal && spaceVal['id']) {
         localStorage.setItem("currentSpace", spaceVal['id'])
       } else {
@@ -33,7 +32,7 @@ export const useSpacesStore = defineStore('spaces', () => {
   })
 
   function initialize() {
-    console.log("initializing spacesStore")  }
+    console.debug("initializing spacesStore")  }
 
   function addSpace(key: string, label: string): Space {
     console.log("adding space", key, label)

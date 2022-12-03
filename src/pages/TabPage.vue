@@ -56,6 +56,46 @@
           {{ notificationStore.selectedTab?.description }}
         </div>
       </div>
+      <div class="row items-baseline q-ma-lg">
+        <div class="col-5">
+          Author
+        </div>
+        <div class="col-7">
+          {{ notificationStore.selectedTab?.author }}
+        </div>
+      </div>
+      <div class="row items-baseline q-ma-lg">
+        <div class="col-5">
+          Date
+        </div>
+        <div class="col-7">
+          {{ notificationStore.selectedTab?.date }}
+        </div>
+      </div>
+      <div class="row items-baseline q-ma-lg">
+        <div class="col-5">
+          Last Modified
+        </div>
+        <div class="col-7">
+          {{ notificationStore.selectedTab?.lastModified }}
+        </div>
+      </div>
+      <div class="row items-baseline q-ma-lg">
+        <div class="col-5">
+          Keywords
+        </div>
+        <div class="col-7">
+          {{ notificationStore.selectedTab?.keywords }}
+        </div>
+      </div>
+      <div class="row items-baseline q-ma-lg">
+        <div class="col-5">
+          Image
+        </div>
+        <div class="col-7">
+          {{ notificationStore.selectedTab?.image }}
+        </div>
+      </div>
 
       <div class="row items-baseline q-ma-lg">
         <div class="col-12">
@@ -90,6 +130,7 @@
         </div>
       </div>
     </div>
+
 
     <div v-else-if="tab === 'meta'">
 
@@ -164,6 +205,7 @@
           <!--          {{ index.$[keysMap[key]] }}<br><br>-->
         </div>
       </div>
+
 
     </div>
 
@@ -314,9 +356,9 @@ watchEffect(() => {
   keys.value = fuseIndex['keys' as keyof object]
   keysMap.value = fuseIndex['_keysMap' as keyof object]
   const res = _.filter(fuseIndex['records' as keyof object], (r: any) => {
-    return notificationStore.selectedTab?.chromeTab.url === r.$[3]?.v
+    return notificationStore.selectedTab?.chromeTab.url === r.$[2]?.v
   })
-  // console.log("res", res, res.length)
+ // console.log("res", res, res.length)
   if (res && res.length > 0) {
     index.value = res[0]
   }

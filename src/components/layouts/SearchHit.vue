@@ -1,36 +1,39 @@
 <template>
 
 
-  <q-item v-ripple autofocus>
-    <q-item-section avatar>
+  <q-item v-ripple autofocus class="q-mb-lg">
 
-      <q-img
-        class="rounded-borders"
-        width="20px"
-        height="20px"
-        :src="hit.chromeTab?.favIconUrl">
-        <q-tooltip>{{ hit.chromeTab?.id }} / {{ hit.id }}</q-tooltip>
-      </q-img>
-
-    </q-item-section>
-    <q-item-section avatar>
-
-      {{ hit.score }}%
-
-    </q-item-section>
     <q-item-section>
-      <q-item-label class="ellipsis">{{ hit.chromeTab?.title }}
+      <q-item-label class="ellipsis text-black" caption>{{ hit.chromeTab?.url }}</q-item-label>
+      <q-item-label class="text-blue-9 text-h6">
+
+        <q-img
+          class="rounded-borders"
+          width="20px"
+          height="20px"
+          :src="hit.chromeTab?.favIconUrl">
+          <q-tooltip>{{ hit.chromeTab?.id }} / {{ hit.id }}</q-tooltip>
+        </q-img>
+
+        <span class="cursor-pointer underline-on-hover q-ml-sm" style="font-weight:400"
+              @click="NavigationService.openOrCreateTab(hit.chromeTab?.url )">{{ hit.chromeTab?.title }}</span>
         <template v-for="badge in tabsetBadges(hit)">
-          <q-chip class="cursor-pointer" clickable icon="tab" @click="openTabset(badge)">{{ badge.label }}</q-chip>
+          <q-chip class="cursor-pointer q-ml-md" size="9px" clickable icon="tab" @click="openTabset(badge)">{{ badge.label }}</q-chip>
         </template>
       </q-item-label>
-      <q-item-label class="ellipsis" caption>{{ hit.chromeTab?.url }}</q-item-label>
-      <q-item-label class="ellipsis" caption>{{ hit.description }}</q-item-label>
-      <q-item-label class="text-blue-2" v-if="featureToggles.isEnabled('debug')">Match in: {{ hit['matches'].join(", ")}}</q-item-label>
+
+      <q-item-label caption>{{ hit.description }}</q-item-label>
+      <q-item-label class="text-blue-2 q-mb-sm" v-if="featureToggles.isEnabled('debug')">Match in: {{ hit['matches'].join(", ")}}</q-item-label>
+
+      <q-rating
+        v-model="scoreAsRating"
+        size="13px"
+        color="warning"
+        readonly
+      />
+
     </q-item-section>
-    <q-item-section avatar>
-      <q-icon name="launch" color="primary" @click.stop="NavigationService.openOrCreateTab(hit.chromeTab?.url )"></q-icon>
-    </q-item-section>
+
   </q-item>
 
 
@@ -58,6 +61,7 @@ const emits = defineEmits(['sendCaption'])
 const router = useRouter()
 const featureToggles = useFeatureTogglesStore()
 const line = ref(null);
+const scoreAsRating = ref(Math.round(props.hit.score / 18))
 
 function getShortHostname(host: string) {
 
@@ -134,3 +138,8 @@ const openTabset = (badge: any) => {
 
 
 </script>
+
+<style lang="sass">
+.underline-on-hover:hover
+  text-decoration: underline
+</style>

@@ -11,7 +11,7 @@ class MHtmlService {
    * Init, called when extension is loaded (via App.vue)
    */
   async init() {
-    console.log("init mhtmlService")
+    console.debug("init mhtmlService")
     await this.persistenceService.init();
   }
 
@@ -22,7 +22,7 @@ class MHtmlService {
   getMHtmls(): Promise<MHtml[]> {
     const res = this.persistenceService.getMHtmls()
       .then(mhtmls => _.map(mhtmls, mhtml => new MHtml(mhtml.id, mhtml.title, mhtml.favIconUrl)))
-    console.log("res", res)
+    //console.log("res", res)
     return res
   }
 

@@ -10,7 +10,7 @@ class SpacesService {
    * Init, called when extension is loaded (via App.vue)
    */
   async init() {
-    console.log("init spaces service")
+    console.debug("init spaces service")
     await this.persistenceService.init();
     await this.persistenceService.loadSpaces()
   }

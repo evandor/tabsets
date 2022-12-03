@@ -13,6 +13,18 @@ import {NewOrReplacedTabset} from "src/models/NewOrReplacedTabset";
 import {SearchDoc} from "src/models/SearchDoc";
 import {RequestInfo} from "src/models/RequestInfo";
 
+function getIfAvailable(metas: object, key: string): string | undefined {
+  let res = undefined
+  _.forEach(Object.keys(metas), k => {
+    const value = metas[k as keyof object] as string
+    if (k.endsWith(key) && value && value.trim().length > 0) {
+      //console.log("k>", k, value)
+      res = value
+    }
+  })
+  return res
+}
+
 class TabsetService {
 
   private persistenceService = IndexedDbPersistenceService
@@ -27,9 +39,8 @@ class TabsetService {
    * Init, called when extension is loaded (via App.vue)
    */
   async init() {
-    console.log("initializing tabsetService")
+    console.debug("initializing tabsetService")
     const done = await this.persistenceService.loadTabsets()
-    console.log("done", done)
     useSearchStore().populate(this.persistenceService.getContents())
   }
 
@@ -37,24 +48,25 @@ class TabsetService {
    * Will create a new tabset (or update an existing one with matching name) from
    * the provided Chrome tabs.
    *
+   * Use case: https://skysail.atlassian.net/wiki/spaces/TAB/pages/807927852/Creating+a+Tabset
+   *
    * The tabset is created or updated in the store, and the new data is persisted.
-   * If addAutomatically is true, the currently open tabs will be added to the tabset
-   * immediately.
    * If merge is false, potentially existing tabs will be removed first.
    *
-   * @param name the tabset's name (TODO: validation)
-   * @param chromeTabs an array of Chrome tabs.
-   * @param merge if true, the old values and the new ones will be merged.
+   * @param name the tabset's name
+   * @param chromeTabs an array of Chrome tabs
+   * @param merge if true, the old values (if existent) and the new ones will be merged.
    */
   async saveOrReplaceFromChromeTabs(name: string, chromeTabs: chrome.tabs.Tab[], merge: boolean = false): Promise<object> {
     const trustedName = name.replace(STRIP_CHARS_IN_USER_INPUT, '')
     const tabsStore = useTabsStore()
-    const tabs = _.map(chromeTabs, t => new Tab(uid(), t))
+    const tabs: Tab[] = _.map(chromeTabs, t => new Tab(uid(), t))
     try {
       const result: NewOrReplacedTabset = await tabsStore.updateOrCreateTabset(trustedName, tabs, merge)
       if (result && result.tabset) {
         await this.saveTabset(result.tabset)
         this.selectTabset(result.tabset.id)
+        useSearchStore().indexTabs(result.tabset.id, tabs)
       }
       return {
         replaced: result.replaced,
@@ -178,7 +190,17 @@ class TabsetService {
     return Promise.reject("no tabset for give id " + tsId)
   }
 
+  /**
+   * adds the (new) Tab 'tab' to the tabset given in 'ts'.
+   *
+   * proceeds only if tab.chromeTab.url exists and the tab is not already contained in the tabset.
+   * the tab is removed from the pending tabset if it exists there.
+   *
+   * @param ts
+   * @param tab
+   */
   async saveToTabset(ts: Tabset, tab: Tab): Promise<number> {
+    console.log("adding tab x to tabset y", tab.id, ts.id)
     if (tab.chromeTab.url) {
       const tabsStore = useTabsStore()
 
@@ -329,18 +351,25 @@ class TabsetService {
   }
 
   async getRequestFor(selectedTab: Tab): Promise<any> {
-    console.log("checking request for", selectedTab.chromeTab.url)
     if (selectedTab.chromeTab.url) {
-      return this.persistenceService.getRequest(selectedTab.chromeTab.url)
+      return this.getRequestForUrl(selectedTab.chromeTab.url)
     }
     return Promise.reject("url not provided");
   }
 
+  async getRequestForUrl(url: string): Promise<any> {
+      return this.persistenceService.getRequest(url)
+  }
+
   async getContentFor(selectedTab: Tab): Promise<any> {
     if (selectedTab.chromeTab.url) {
-      return this.persistenceService.getContent(selectedTab.chromeTab.url)
+      return this.getContentForUrl(selectedTab.chromeTab.url)
     }
     return Promise.reject("url not provided");
+  }
+
+  async getContentForUrl(url: string): Promise<any> {
+      return this.persistenceService.getContent(url)
   }
 
   removeThumbnailsFor(url: string): Promise<any> {
@@ -352,39 +381,60 @@ class TabsetService {
 
   }
 
+  /**
+   * called when we have a text excerpt from the background script
+   *
+   * @param tab
+   * @param text
+   * @param metas
+   */
   saveText(tab: chrome.tabs.Tab | undefined, text: string, metas: object) {
     if (tab && tab.url) {
       const title = tab.title || ''
       const tabsetIds: string[] = this.tabsetsFor(tab.url)
 
-      let description: string = null as unknown as string
-      Object.keys(metas).forEach((key: string) => {
-        //console.log("checking meta", key, metas[key as keyof object])
-        let value: string = metas[key as keyof object]
-        if (key.indexOf("description") >= 0 && value && value.trim().length > 0) {
-          description = value.trim()
-        }
-      })
-
-      this.persistenceService.saveContent(tab, text, metas, title, description, tabsetIds)
+      this.persistenceService.saveContent(tab, text, metas, title, tabsetIds)
         .then(() => console.log("added content"))
         .catch(err => console.log("err", err))
 
-      if (description && tabsetIds.length > 0) {
-        console.log("updating description for ", tab.url, description)
-        tabsetIds.forEach((tsId: string) => {
-          const tabset = useTabsStore().getTabset(tsId)
-          if (tabset) {
-            _.forEach(tabset.tabs, (t: Tab) => {
-              if (t.chromeTab.url === tab.url) {
-                console.log(" ... in tab", tab.id)
-                t.description = description
+      console.log("updating meta data for ", tabsetIds, tab.url)
+      const tabsets = [...useTabsStore().tabsets.values()]
+      tabsets.forEach((tabset: Tabset) => {
+        if (tabset) {
+          _.forEach(tabset.tabs, (t: Tab) => {
+            //console.log("comparing", t.chromeTab.url, tab.url)
+            if (t.chromeTab.url === tab.url) {
+              //console.log(" ... in tab", tab.id)
+              if (metas['description' as keyof object]) {
+                t.description = metas['description' as keyof object]
+                // @ts-ignore
+                useSearchStore().update(tab.url, 'description', t.description)
               }
-            })
-            this.saveTabset(tabset)
-          }
-        })
-      }
+              if (metas['keywords' as keyof object]) {
+                t.keywords = metas['keywords' as keyof object]
+              }
+              const author = getIfAvailable(metas, 'author')
+              if (author) {
+                t.author = author
+              }
+              const lastModified = getIfAvailable(metas, 'last-modified')
+              if (lastModified) {
+                t.lastModified = lastModified
+              }
+              const date = getIfAvailable(metas, 'date')
+              if (date) {
+                t.date = date
+              }
+              const image = getIfAvailable(metas, 'image')
+              if (image) {
+                t.image = image
+              }
+              console.log("updated", t)
+            }
+          })
+          this.saveTabset(tabset)
+        }
+      })
     }
   }
 
@@ -464,7 +514,7 @@ class TabsetService {
       })
 
       chrome.bookmarks.create({title: 'tabsetsBackup', parentId: '1'}, (result: chrome.bookmarks.BookmarkTreeNode) => {
-        console.log("res", result)
+       // console.log("res", result)
         _.forEach([...tabsStore.tabsets.values()], ts => {
           console.log("ts", ts)
           chrome.bookmarks.create({
@@ -533,7 +583,7 @@ class TabsetService {
       .then(searchDocs => {
         _.forEach(searchDocs, d => {
           console.log("got document", d)
-          useSearchStore().remove((doc:SearchDoc, idx: number) => {
+          useSearchStore().remove((doc: SearchDoc, idx: number) => {
             if (doc.url === d.url) {
               console.log("removing", doc)
             }
@@ -582,7 +632,7 @@ class TabsetService {
           tabsToClose.push(tab)
         }
       })
-     // console.log("tabsToClose", tabsToClose)
+      // console.log("tabsToClose", tabsToClose)
       _.forEach(tabsToClose, (t: chrome.tabs.Tab) => {
         if (t.id) {
           chrome.tabs.remove(t.id)
@@ -639,9 +689,9 @@ class TabsetService {
     }
   }
 
-  saveNote(tabId: string, note: string):Promise<void> {
+  saveNote(tabId: string, note: string): Promise<void> {
     console.log("got", tabId, note)
-    const tab = _.find(this.getCurrentTabset()?.tabs, (t:Tab) => t.id === tabId)
+    const tab = _.find(this.getCurrentTabset()?.tabs, (t: Tab) => t.id === tabId)
     if (tab) {
       tab.note = note
       return this.saveCurrentTabset()

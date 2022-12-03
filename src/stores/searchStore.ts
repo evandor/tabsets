@@ -2,23 +2,11 @@ import {defineStore} from 'pinia';
 import Fuse from 'fuse.js'
 import _ from "lodash"
 import {SearchDoc} from "src/models/SearchDoc";
-import throttledQueue from "throttled-queue";
-import {useWindowsStore} from "src/stores/windowsStores";
 import {Tabset} from "src/models/Tabset";
 import {useTabsStore} from "src/stores/tabsStore";
 import {ref} from "vue";
 import {Tab} from "src/models/Tab";
-
-function dummyPromise(timeout: number, tabToCloseId: number | undefined = undefined) {
-  return new Promise((resolve, reject) => {
-    setTimeout(() => {
-      if (tabToCloseId) {
-        chrome.tabs.remove(tabToCloseId)
-      }
-      resolve("Success!");
-    }, timeout);
-  });
-}
+import TabsetService from "src/services/TabsetService";
 
 export const useSearchStore = defineStore('search', () => {
 
@@ -32,10 +20,11 @@ export const useSearchStore = defineStore('search', () => {
 
   const options = ref({
     keys: [
-      {name: 'name', weight: 5},
-      {name: 'title', weight: 4},
+      {name: 'name', weight: 10},
+      {name: 'title', weight: 6},
+      {name: 'url', weight: 4},
       {name: 'description', weight: 3},
-      {name: 'url', weight: 3},
+      {name: 'keywords', weight: 2},
       {name: 'content', weight: 1}
     ],
     includeScore: true,
@@ -46,18 +35,13 @@ export const useSearchStore = defineStore('search', () => {
   })
 
   async function init() {
-    console.log("initializing searchStore")
+    console.debug("initializing searchStore")
     searchIndex.value = Fuse.createIndex(options.value.keys, [])
     fuse.value = new Fuse([], options.value, searchIndex.value)
-
-
   }
 
   function getIndex() {
-    if (fuse.value) {
-      return fuse.value.getIndex()
-    }
-    console.log("hierxxxx")
+    return fuse.value.getIndex()
   }
 
   function search(term: string) {
@@ -70,7 +54,7 @@ export const useSearchStore = defineStore('search', () => {
 
   function addToIndex(id: string, name: string, title: string, url: string, description: string, content: string, tabsets: string[], favIconUrl: string): number {
     const doc: SearchDoc = new SearchDoc(
-      id, name, title, url, description, content, tabsets, favIconUrl
+      id, name, title, url, description, '',content, tabsets, favIconUrl
     )
     console.log("adding to index", doc)
     // @ts-ignore
@@ -80,53 +64,72 @@ export const useSearchStore = defineStore('search', () => {
     return indexLength
   }
 
-  function reindexAll() {
-    const values = Array.from(useTabsStore().tabsets.values())
-    reindex(values)
+  function update(url: string, key: string, value: string) {
+    const removed:SearchDoc[] = fuse.value.remove((doc: SearchDoc) => doc.url === url)
+    if (removed && removed.length > 0) {
+      let newDoc:SearchDoc = removed[0]
+      switch (key) {
+        case 'description':
+          newDoc.description = value
+          break
+        case 'keywords':
+          newDoc.keywords = value
+          break
+        default:
+          console.log("could not update", key)
+      }
+      fuse.value.add(newDoc)
+    }
   }
 
-  function reindexTabset(tabsetId: string) {
-    const ts = useTabsStore().getTabset(tabsetId)
-    const values: Tabset[] = ts ? [ts] : []
-    reindex(values)
-  }
+  // function reindexAll() {
+  //   const values = Array.from(useTabsStore().tabsets.values())
+  //   reindex(values)
+  // }
+  //
+  // function reindexTabset(tabsetId: string) {
+  //   const ts = useTabsStore().getTabset(tabsetId)
+  //   const values: Tabset[] = ts ? [ts] : []
+  //   reindex(values)
+  // }
 
-  function reindex(values: Tabset[]) {
-    const throttleOnePerXSeconds = throttledQueue(1, 3000, true)
-    chrome.windows.create({focused: true}, (window: any) => {
-      useWindowsStore().screenshotWindow = window.id
-      let tabToClose: number | undefined = undefined
-
-      const res: Promise<any>[] = values.flatMap((ts: Tabset) => {
-        return ts.tabs.map((t) => {
-          return throttleOnePerXSeconds(async () => {
-            chrome.tabs.create({windowId: window.id, url: t.chromeTab.url}, (tab: chrome.tabs.Tab) => {
-              tabToClose = tab.id
-              dummyPromise(3000, tab.id)
-            })
-            return dummyPromise(3000)
-          })
-        })
-      })
-
-      Promise.all(res)
-        .then(() => {
-          chrome.windows.remove(window.id)
-          useWindowsStore().screenshotWindow = null as unknown as number
-        })
-
-    })
-  }
+  // function reindex(values: Tabset[]) {
+  //   const throttleOnePerXSeconds = throttledQueue(1, 3000, true)
+  //   chrome.windows.create({focused: true}, (window: any) => {
+  //     useWindowsStore().screenshotWindow = window.id
+  //     let tabToClose: number | undefined = undefined
+  //
+  //     const res: Promise<any>[] = values.flatMap((ts: Tabset) => {
+  //       return ts.tabs.map((t) => {
+  //         return throttleOnePerXSeconds(async () => {
+  //           chrome.tabs.create({windowId: window.id, url: t.chromeTab.url}, (tab: chrome.tabs.Tab) => {
+  //             tabToClose = tab.id
+  //             dummyPromise(3000, tab.id)
+  //           })
+  //           return dummyPromise(3000)
+  //         })
+  //       })
+  //     })
+  //
+  //     Promise.all(res)
+  //       .then(() => {
+  //         chrome.windows.remove(window.id)
+  //         useWindowsStore().screenshotWindow = null as unknown as number
+  //       })
+  //
+  //   })
+  // }
 
   /**
    * Initial population of search index when the extension is reloaded (and when run the first time, which
-   * is more a no-op)
+   * is more like a no-op)
    *
    * @param contentPromise
    */
   function populate(contentPromise: Promise<any[]>) {
-    console.log("populating searchstore...")
+    console.debug("populating searchstore...")
 
+    // --- add data from tabs directly, like url and title
     const minimalIndex: SearchDoc[] = []
     const urlSet: Set<string> = new Set()
     _.forEach([...useTabsStore().tabsets.values()], (tabset: Tabset) => {
@@ -137,34 +140,59 @@ export const useSearchStore = defineStore('search', () => {
               if (existingDocIndex >= 0) {
                 const existingDoc = minimalIndex[existingDocIndex]
                 existingDoc.tabsets = existingDoc.tabsets.concat([tabset.id])
-                minimalIndex.splice(existingDocIndex, 1,)
+                minimalIndex.splice(existingDocIndex, 1, existingDoc)
               }
             } else {
-              const doc = new SearchDoc("", "", tab.chromeTab.title || '', tab.chromeTab.url, "", "", [tabset.id], "")
+              const doc = new SearchDoc("", "", tab.chromeTab.title || '', tab.chromeTab.url, "", "","", [tabset.id], "")
               minimalIndex.push(doc)
               urlSet.add(tab.chromeTab.url)
             }
           }
-
         })
       }
     )
-
+    console.log(`populated from tabsets with ${minimalIndex.length} entries`)
     minimalIndex.forEach((doc: SearchDoc) => fuse.value.add(doc))
 
+    // add data from stored content
+    let count = 0
+    let countFiltered = 0
+    let overwritten = 0
     contentPromise
       .then(content => {
-        const permanentContent = _.filter(content, c => c.expires === 0)
-        console.log(`... with ${permanentContent.length} entries, ${content.length - permanentContent.length} is/are filtered due to expiry date`)
-
-        permanentContent.forEach(c => {
-          fuse.value.remove((doc) => {
-            return doc.url === c.url
-          })
-          fuse.value.add(c)
+        content.forEach(c => {
+          if (c.expires === 0 || TabsetService.urlExistsInATabset(c.url)) {
+            const searchDoc = new SearchDoc(c.id, c.name, c.title, c.url, c.description,c.keywords,c.content,c.tabsets,c.favIconUrl)
+            searchDoc.description = c.metas['description']
+            searchDoc.keywords = c.metas['keywords']
+            const removed = fuse.value.remove((doc) => {
+              return doc.url === searchDoc.url
+            })
+            overwritten += removed.length
+            fuse.value.add(searchDoc)
+            count++
+          } else {
+            countFiltered++
+          }
         })
+        console.log(`populated from content with ${count} entries (${overwritten} of which overwritten), ${countFiltered} is/are filtered (not in any tab)`)
       })
   }
 
-  return {init, populate, getIndex, addToIndex, remove, term, search}
+  function indexTabs(tsId: string, tabs: Tab[]) {
+    const minimalIndex: SearchDoc[] = []
+    const urlSet: Set<string> = new Set()
+    tabs.forEach((tab: Tab) => {
+      if (tab.chromeTab?.url) {
+        if (!urlSet.has(tab.chromeTab.url)) {
+          const doc = new SearchDoc("", "", tab.chromeTab.title || '', tab.chromeTab.url, "","", "", [tsId], "")
+          minimalIndex.push(doc)
+          urlSet.add(tab.chromeTab.url)
+        }
+      }
+    })
+    minimalIndex.forEach((doc: SearchDoc) => fuse.value.add(doc))
+  }
+
+  return {init, populate, getIndex, addToIndex, remove, term, search, indexTabs, update}
 })

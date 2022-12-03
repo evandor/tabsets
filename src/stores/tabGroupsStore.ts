@@ -21,7 +21,7 @@ export const useTabGroupsStore = defineStore('tabGroups', {
 
   actions: {
     initialize(eventName = '') {
-      console.log("initializing tabGroupsStore", eventName)
+      console.debug("initializing tabGroupsStore", eventName)
 
       this.loadTabGroups()
     },
@@ -32,7 +32,7 @@ export const useTabGroupsStore = defineStore('tabGroups', {
     },
     initListeners() {
       if (process.env.MODE === 'bex') {
-        console.log("initializing chrome tabGroups Listeners")
+        console.debug("initializing chrome tabGroups Listeners")
 
         // @ts-ignore
         chrome.tabGroups.onCreated.addListener((tabGroup: chrome.tabGroups.TabGroup) => ChromeTabGroupsListeners.onCreated(tabGroup))

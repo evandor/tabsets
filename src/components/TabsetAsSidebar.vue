@@ -39,6 +39,7 @@ import {useTabsStore} from "src/stores/tabsStore"
 import {ref, watchEffect} from "vue";
 import {useRouter} from "vue-router";
 import {Tab} from "src/models/Tab";
+import TabsetService from "src/services/TabsetService";
 
 const tabsStore = useTabsStore()
 const router = useRouter()
@@ -50,8 +51,8 @@ watchEffect(()=> {
 })
 
 
-const open = (id: string) => {
-  router.push("/iframe/" + id)
+const open = (tabId: string) => {
+  router.push("/iframe/" + tabId)
 }
 
 

@@ -18,12 +18,12 @@
                  data-testid="newTabsetName"
                  @keydown.enter="createNewTabset()"/>
         <div class="text-caption text-negative q-mt-none q-pt-none">{{ newTabsetDialogWarning() }}</div>
-        <q-checkbox v-model="addAutomatically" label="Add open tabs automatically" />&nbsp;
+        <q-checkbox v-model="addAutomatically" label="Add open tabs automatically"/>&nbsp;
         <q-icon name="help" color="primary" size="1em">
           <q-tooltip>When checked, this will add all your browsers open tabs automatically to the new tabset.<br>
             Otherwise, you have the chance to add all (or selected) tabs yourself later.
           </q-tooltip>
-      </q-icon>
+        </q-icon>
       </q-card-section>
 
       <q-card-actions align="right" class="text-primary">
@@ -91,7 +91,7 @@ const createNewTabset = () => {
       const replaced = result.replaced
       //@ts-ignore
       const merged = result.merged
-      let message = 'Empty Tabset ' + newTabsetName.value + ' created successfully'
+      let message = 'Tabset ' + newTabsetName.value + ' created successfully'
       if (replaced && merged) {
         message = 'Existing Tabset ' + newTabsetName.value + ' can be updated now'
       } else if (replaced) {
@@ -103,15 +103,16 @@ const createNewTabset = () => {
         message: message,
         type: 'positive'
       })
-    }).catch((ex: any) => {
-    console.error("ex", ex)
-    hideWarning.value = false
-    $q.notify({
-      message: 'There was a problem creating the tabset ' + newTabsetName.value,
-      type: 'warning',
     })
+    .catch((ex: any) => {
+      console.error("ex", ex)
+      hideWarning.value = false
+      $q.notify({
+        message: 'There was a problem creating the tabset ' + newTabsetName.value,
+        type: 'warning',
+      })
 
-  })
+    })
 }
 
 const newTabsetDialogWarning = () => {

@@ -1,13 +1,12 @@
 <template>
 
   <div class="cursor-pointer">
-    <q-badge v-if="showThresholdBar()"
+    <q-badge
              class="q-mr-sm"
              color="primary" text-color="white" :label="thresholdLabel()">
     </q-badge>
 
     <q-circular-progress
-      v-if="showThresholdBar()"
       show-value
       reverse
       :value="openTabsCountRatio"
@@ -63,9 +62,6 @@ const openTabsCountRatio = ref(0)
 watchEffect(() => {
   openTabsCountRatio.value = 100 * Math.min(searchStore.getIndex().size() / (tabsStore.allTabsCount === 0 ? 1 : tabsStore.allTabsCount), 1)
 })
-
-const showThresholdBar = () =>
-  tabsStore.tabs.length >= settingsStore.thresholds['min' as keyof object]
 
 const thresholdStyle = () => {
   // console.log("r1", openTabsCountRatio.value)

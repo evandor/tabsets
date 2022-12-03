@@ -215,29 +215,6 @@ const removeAllPendingTabs = () => TabsetService.removeAllPendingTabs()
 const setOtherTabsCaption = (msg: string) => otherTabsCaption.value = msg
 const setGroupedTabsCaption = (msg: string) => groupedTabsCaption.value = msg
 
-const saveDialog = () => {
-  $q.dialog({
-    title: 'Save current Tabset',
-    message: 'Please provide a name for the new (or updated) tabset',
-    prompt: {
-      isValid: val => val != 'current',
-      model: tabsetname.value === 'current' ? '' : tabsetname.value,
-      type: 'text' // optional
-    },
-    cancel: true,
-    persistent: true
-  }).onOk((name: string) => {
-    console.log('>>>> saving', name)
-    TabsetService.saveOrReplaceFromChromeTabs(name, tabsStore.tabs)
-
-  }).onCancel(() => {
-    //console.log('>>>> Cancel')
-  }).onDismiss(() => {
-    //console.log('I am triggered on both OK and Cancel')
-  })
-
-
-}
 
 const deleteDialog = () => {
   $q.dialog({
@@ -251,8 +228,6 @@ const deleteDialog = () => {
   }).onCancel(() => {
   }).onDismiss(() => {
   })
-
-
 }
 
 const restoreDialog = () => {

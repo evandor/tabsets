@@ -158,13 +158,13 @@ export const useTabsStore = defineStore('tabs', {
 
   actions: {
     async initialize(localStorage: any) {
-      console.log("initializing tabsStore")
+      console.debug("initializing tabsStore")
       this.localStorage = localStorage
 
       // --- own tab id ---
       const ownTab = await ChromeApi.getCurrentTab()
       if (ownTab && ownTab.id) {
-        console.log("setting extension tab id to ", ownTab.id)
+        //console.log("setting extension tab id to ", ownTab.id)
         this.ownTabId = ownTab.id
       }
 
@@ -194,7 +194,7 @@ export const useTabsStore = defineStore('tabs', {
     },
     initListeners() {
       if (process.env.MODE === 'bex') {
-        console.log("initializing chrome tab listeners")
+        console.debug("initializing chrome tab listeners")
 
         chrome.tabs.onCreated.addListener((tab: chrome.tabs.Tab) => ChromeListeners.onCreated(tab))
         chrome.tabs.onUpdated.addListener((number, info, tab) => ChromeListeners.onUpdated(number, info, tab))

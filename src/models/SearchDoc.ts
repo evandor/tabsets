@@ -1,7 +1,6 @@
 export class SearchDoc {
-  // id: string // internal id, do not want to rely on chromeTab.id
-  created: number
 
+  created: number
 
   constructor(
     public id: string,
@@ -9,6 +8,7 @@ export class SearchDoc {
     public title: string,
     public url: string,
     public description: string,
+    public keywords: string,
     public content: string,
     public tabsets: string[],
     public favIconUrl: string) {

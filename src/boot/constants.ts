@@ -2,8 +2,8 @@ import { boot } from 'quasar/wrappers'
 
 const MAX_TABS_TO_SHOW = 12
 const INDEX_DB_NAME= 'db'
-const CLEANUP_PERIOD_IN_MINUTES = 1 // in prod: 10
-const EXPIRE_DATA_PERIOD_IN_MINUTES = 2 // in prod: 60
+const CLEANUP_PERIOD_IN_MINUTES = 10 // in prod: 10
+const EXPIRE_DATA_PERIOD_IN_MINUTES = 60 // in prod: 60
 
 const STRIP_CHARS_IN_USER_INPUT = /[`@#$%^&*()=\[\]{};':"\\|<>\/~]/;
 

@@ -37,7 +37,7 @@
       </div>
     </q-toolbar>
 
-    <iframe id="tabIFrame" :src='src' frameBorder="0" :style="iFrameStyle" />
+    <iframe id="tabIFrame" :src='src' frameBorder="0" :style="iFrameStyle"/>
 
   </q-page>
 
@@ -50,6 +50,7 @@ import {useRoute, useRouter} from "vue-router";
 import {date} from "quasar"
 import {useTabsStore} from "stores/tabsStore";
 import _ from "lodash"
+import TabsetService from "src/services/TabsetService";
 
 const route = useRoute()
 const router = useRouter()
@@ -76,35 +77,24 @@ const created = ref('')
 //   alert("Error occurred while loading image");
 // };
 
-watchEffect(() => {
+watchEffect(async () => {
   tabId.value = route.params.tabId as string
-  console.log("watching", tabId.value)
   const found = _.find(useTabsStore().getCurrentTabs, t => t.id === route.params.tabId)
-  if (found) {
-    //console.log("tabIFrame", window.document?.getElementById('tabIFrame'))
+  if (found && found.chromeTab.url) {
+    const content = await TabsetService.getContentForUrl(found.chromeTab.url)
+    const request = await TabsetService.getRequestForUrl(found.chromeTab.url)
     const iFrame: HTMLIFrameElement = window.document?.getElementById('tabIFrame') as unknown as HTMLIFrameElement
-    if (iFrame) {
-      iFrame.setAttribute("style", "overflow:hidden;height:" + (window.innerHeight - 50) + "px;width:100%;border:0px");
-      // https://stackoverflow.com/questions/15273042/catch-error-if-iframe-src-fails-to-load-error-refused-to-display-http-ww
-      // iFrame.onerror = function (event: any) {
-      //   console.log("hier0", JSON.stringify(event))
-      //   var that = document.getElementById('tabIFrame');
-      //   console.log("hier1+", iFrame.title)
-      //   console.log("hier1-", that?.innerHTML.length)
-      //   const isLoaded = event.target.contentWindow.window.length // 0 or 1
-      //   console.log("hier1a", isLoaded)
-      //   //alert(isLoaded)
-      //   // try {
-      //   //   // @ts-ignore
-      //   //   (that?.contentWindow || that?.contentDocument).location.href;
-      //   //   console.log("hier3")
-      //   // } catch (err) {
-      //   //   console.log('err:' + err);
-      //   //   src.value = 'data:text/html,<p>' + err + '</p>'
-      //   // }
-      // }
-      src.value = found.chromeTab.url || 'data:text/html,<p>loading....</p>'
+    iFrame.setAttribute("style", "overflow:hidden;height:" + (window.innerHeight - 50) + "px;width:100%;border:0px");
+    if (_.find(Object.values(request.requestInfo.headers), (v: any) => v.name === 'x-frame-options')) {
+      if (iFrame) {
+        src.value = 'data:text/html,<p>cannot open this page in iFrame ;(</p>'
+      }
+    } else {
+      if (iFrame) {
+        src.value = found.chromeTab.url || 'data:text/html,<p>loading....</p>'
+      }
     }
+
 
   }
 

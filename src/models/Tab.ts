@@ -15,7 +15,11 @@ export class Tab {
   bookmarkUrl: string | undefined
   bookmarkId: string | undefined
   description: string
-  metas: object
+  keywords: string
+  image: string
+  date: string
+  lastModified: string
+  author: string
   note: string
   canvasLeft: number
   canvasTop: number
@@ -32,7 +36,11 @@ export class Tab {
     this.history = []
     this.name = undefined
     this.description = ''
-    this.metas = {}
+    this.keywords = ''
+    this.image = ''
+    this.date = ''
+    this.lastModified = ''
+    this.author = ''
     this.note = ''
     this.canvasTop = 0
     this.canvasLeft = 0

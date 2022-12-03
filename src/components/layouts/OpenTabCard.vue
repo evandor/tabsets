@@ -11,14 +11,15 @@
       <div class="row items-baseline">
         <div class="col-2">
           <q-img
-            class="rounded-borders"
+            class="rounded-borders" style="cursor: move"
             width="20px"
             height="20px"
             :src="tab.chromeTab?.favIconUrl">
           </q-img>
         </div>
-        <div class="col-9 text-body2 ellipsis">
-          {{ tab.chromeTab?.title }}
+        <div class="col-9 text-body2 ellipsis cursor-pointer" @click="NavigationService.openOrCreateTab(tab.chromeTab?.url)">
+          <span v-if="tab.chromeTab?.discarded">*</span>&nbsp;{{ tab.chromeTab?.title }}
+          <q-tooltip v-if="featureToggles.isEnabled('debug')">{{tab.chromeTab}}</q-tooltip>
         </div>
         <div class="col-1">
           <q-icon name="close" @click="closeTab(tab)"/>
@@ -37,6 +38,9 @@
 
 import {Tab} from "src/models/Tab";
 import NavigationService from "src/services/NavigationService";
+import {useFeatureTogglesStore} from "stores/featureTogglesStore";
+
+const featureToggles = useFeatureTogglesStore()
 
 const props = defineProps({
   tab: {

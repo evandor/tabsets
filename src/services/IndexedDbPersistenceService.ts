@@ -25,7 +25,7 @@ class IndexedDbPersistenceService implements PersistenceService {
   async loadTabsets(): Promise<any> {
     const tabsStore = useTabsStore()
     const keys: IDBValidKey[] = await this.db.getAllKeys('tabsets')
-    console.log("got keys from db", keys)
+    //console.log("got keys from db", keys)
     const promises = []
     const res:Promise<any>[] = _.map(keys, key => {
       return this.db.get('tabsets', key)
@@ -33,15 +33,13 @@ class IndexedDbPersistenceService implements PersistenceService {
           if ('ignored' === key) {
             tabsStore.ignoredTabset = ts
           } else {
-            console.log("tabset added", ts)
+            //console.log("tabset added", ts)
             tabsStore.addTabset(ts)
           }
         })
         .catch(err => console.log("err", err))
     })
-    console.log("res1", res)
     return Promise.all(res)
-    //useSearchStore().populate(this.getContents())
   }
 
   async loadSpaces(): Promise<void> {
@@ -144,14 +142,13 @@ class IndexedDbPersistenceService implements PersistenceService {
     return this.db.delete('content', btoa(url))
   }
 
-  saveContent(tab: chrome.tabs.Tab, text: string, metas: object, title: string, description: string, tabsetIds: string[]): Promise<IDBValidKey> {
+  saveContent(tab: chrome.tabs.Tab, text: string, metas: object, title: string, tabsetIds: string[]): Promise<IDBValidKey> {
     if (tab.url) {
       const encodedTabUrl = btoa(tab.url)
       return this.db.put('content', {
         id: encodedTabUrl,
         expires: new Date().getTime() + 1000 * 60 * EXPIRE_DATA_PERIOD_IN_MINUTES,
         title,
-        description,
         url: tab.url,
         content: text,
         metas: metas,
@@ -212,7 +209,7 @@ class IndexedDbPersistenceService implements PersistenceService {
           data.expires = 0
           contentObjectStore.put(data, contentCursor.key)
           result.push(new SearchDoc(
-            data.id, "", data.title, data.url, data.description, data.content, [], data.favIconUrl
+            data.id, "", data.title, data.url, data.description,"", data.content, [], data.favIconUrl
           ))
         } else {
           if (contentCursor.value.expires < new Date().getTime()) {
@@ -261,7 +258,7 @@ class IndexedDbPersistenceService implements PersistenceService {
     //console.log("XXX4", innerHtml);
     //console.log("XXX4", html.window.document.innerHTML);
     const res = "data:text/html," + innerHtml
-    console.log("res", res)
+    //console.log("res", res)
 
     const blob2 = content.slice(0, content.size, "multipart/related")
 

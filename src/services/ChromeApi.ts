@@ -16,7 +16,7 @@ function runHousekeeping(alarm: chrome.alarms.Alarm) {
 class ChromeApi {
 
   init() {
-    console.log("initializing ChromeApi")
+    console.debug("initializing ChromeApi")
 
     chrome.alarms.create("housekeeping", {periodInMinutes: CLEANUP_PERIOD_IN_MINUTES})
 
