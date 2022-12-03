@@ -104,11 +104,11 @@ class ChromeListeners {
   onRemoved(number: number, info: chrome.tabs.TabRemoveInfo) {
     this.eventTriggered()
     const tabsStore = useTabsStore()
-    console.log(`onRemoved: tab ${number}: >>> ${JSON.stringify(info)}`)
+    //console.log(`onRemoved: tab ${number}: >>> ${JSON.stringify(info)}`)
     const currentTabset: Tabset = tabsStore.tabsets.get(tabsStore.currentTabsetId) || new Tabset("", "", [], [])
     const index = _.findIndex(currentTabset.tabs, t => t.chromeTab.id === number);
     if (index >= 0) {
-      console.log(`onRemoved: tab ${number}:     found index ${index}`)
+      //console.log(`onRemoved: tab ${number}:     found index ${index}`)
       const updatedTab = currentTabset.tabs.at(index)
       if (updatedTab) {
         console.log(`onRemoved: tab ${number}:     setting status DELETED`)

@@ -69,7 +69,7 @@ watchEffect(() => {
 })
 
 const updateSpaces = () => {
-  console.log("updated", checked.value)
+ // console.log("updated", checked.value)
 
   _.forEach([...tabsStore.tabsets.values()], (ts: Tabset, tabsetIndex: number) => {
     const spaces: Array<string> = []

@@ -137,6 +137,7 @@ import {useQuasar} from "quasar";
 import ImportFromBookmarks from "components/dialogues/ImportFromBookmarks.vue";
 import BookmarksService from "src/services/BookmarksService";
 import {useBookmarksStore} from "src/stores/bookmarksStore";
+import _ from "lodash"
 
 const emits = defineEmits(['sendCaption'])
 
@@ -195,7 +196,11 @@ const importBookmarks = () => {
   $q.dialog({component: ImportFromBookmarks})
 }
 
-const existsInTabset = (url: string) => TabsetService.tabsetsFor(url).length > 0
+// const filterdBookmarks = () => {
+//   _.filter(bookmarksStore.bookmarksForFolder, (bm:Bookmark) => !bm.chromeBookmark.url)
+// }
+
+const existsInTabset = (url: string) => TabsetService.tabsetsFor(url)?.length > 0
 
 </script>
 

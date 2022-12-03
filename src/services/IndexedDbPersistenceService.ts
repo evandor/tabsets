@@ -12,7 +12,6 @@ import {Tab} from "src/models/Tab";
 import {SearchDoc} from "src/models/SearchDoc";
 import {RequestInfo} from "src/models/RequestInfo";
 import {EXPIRE_DATA_PERIOD_IN_MINUTES} from "src/boot/constants"
-import {useSearchStore} from "stores/searchStore";
 
 class IndexedDbPersistenceService implements PersistenceService {
 
@@ -25,15 +24,12 @@ class IndexedDbPersistenceService implements PersistenceService {
   async loadTabsets(): Promise<any> {
     const tabsStore = useTabsStore()
     const keys: IDBValidKey[] = await this.db.getAllKeys('tabsets')
-    //console.log("got keys from db", keys)
-    const promises = []
     const res:Promise<any>[] = _.map(keys, key => {
       return this.db.get('tabsets', key)
         .then(ts => {
           if ('ignored' === key) {
             tabsStore.ignoredTabset = ts
           } else {
-            //console.log("tabset added", ts)
             tabsStore.addTabset(ts)
           }
         })
@@ -115,7 +111,7 @@ class IndexedDbPersistenceService implements PersistenceService {
       url: url,
       requestInfo
     }, encodedTabUrl)
-      .then(() => console.log("added request"))
+      .then(() => console.debug("added request"))
       .catch(err => console.log("err", err))
   }
 

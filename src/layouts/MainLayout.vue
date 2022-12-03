@@ -47,7 +47,7 @@
         <q-space/>
 
         <div>
-          <OpenTabsThresholdWidget />
+          <OpenTabsThresholdWidget v-if="tabsStore.tabsets.size > 0"/>
         </div>
 
         <div>

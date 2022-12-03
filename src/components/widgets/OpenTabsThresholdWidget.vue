@@ -34,9 +34,9 @@
         clickable v-close-popup @click="TabsetService.closeTrackedTabs()">
         <q-item-section>&bull; Close all tracked tabs</q-item-section>
       </q-item>
-      <q-item clickable v-close-popup @click="TabsetService.closeDuplictedOpenTabs()">
-        <q-item-section>&bull; Close duplicated open tabs</q-item-section>
-      </q-item>
+<!--      <q-item clickable v-close-popup @click="TabsetService.closeDuplictedOpenTabs()">-->
+<!--        <q-item-section>&bull; Close duplicated open tabs</q-item-section>-->
+<!--      </q-item>-->
       <q-separator/>
       <q-item clickable v-close-popup @click="router.push('/settings')">
         <q-item-section>Change Settings</q-item-section>

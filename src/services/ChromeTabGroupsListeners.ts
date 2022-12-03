@@ -40,8 +40,6 @@ class ChromeTabGroupsListeners {
 
   // @ts-ignore
   onRemoved(tg: chrome.tabGroups.TabGroup) {
-    let msg = `tabGroup ${tg.title} removed`
-    console.log('onRemoved', msg)
     const tabGroupsStore = useTabGroupsStore()
     tabGroupsStore.loadTabGroups()
   }

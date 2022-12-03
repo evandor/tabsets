@@ -337,7 +337,7 @@ class TabsetService {
   saveRequestFor(url: string, requestInfo: RequestInfo) {
     if (url) {
       this.persistenceService.saveRequest(url, requestInfo)
-        .then(() => console.log("added request"))
+        .then(() => console.debug("added request"))
         .catch(err => console.log("err", err))
     }
   }
@@ -397,7 +397,7 @@ class TabsetService {
         .then(() => console.log("added content"))
         .catch(err => console.log("err", err))
 
-      console.log("updating meta data for ", tabsetIds, tab.url)
+     // console.log("updating meta data for ", tabsetIds, tab.url)
       const tabsets = [...useTabsStore().tabsets.values()]
       tabsets.forEach((tabset: Tabset) => {
         if (tabset) {
@@ -429,7 +429,7 @@ class TabsetService {
               if (image) {
                 t.image = image
               }
-              console.log("updated", t)
+            //  console.log("updated", t)
             }
           })
           this.saveTabset(tabset)

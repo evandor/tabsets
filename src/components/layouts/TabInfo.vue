@@ -44,33 +44,33 @@
             created
           </div>
           <div class="col-7">
-            {{ date.formatDate(notificationStore.selectedTab.created, 'DD.MM.YYYY HH:mm') }}
+            {{ date.formatDate(notificationStore.selectedTab.created, 'DD. MMM YYYY HH:mm') }}
           </div>
           <div class="col-5">
             updated
           </div>
           <div class="col-7">
-            {{ date.formatDate(notificationStore.selectedTab.updated, 'DD.MM.YYYY HH:mm') }}
+            {{ date.formatDate(notificationStore.selectedTab.updated, 'DD. MMM YYYY HH:mm') }}
           </div>
           <div class="col-5">
             last Active
           </div>
           <div class="col-7">
-            {{ date.formatDate(notificationStore.selectedTab.lastActive, 'DD.MM.YYYY HH:mm') }}
+            {{ date.formatDate(notificationStore.selectedTab.lastActive, 'DD. MMM YYYY HH:mm') }}
           </div>
           <div class="col-5">
-            activated#
+            opened
           </div>
           <div class="col-7">
-            {{ notificationStore.selectedTab.activatedCount }}
+            {{ notificationStore.selectedTab.activatedCount }}x
           </div>
 
-          <div class="col-5">
-            History
-          </div>
-          <div class="col-7">
-            {{ notificationStore.selectedTab.history }}
-          </div>
+<!--          <div class="col-5">-->
+<!--            History-->
+<!--          </div>-->
+<!--          <div class="col-7">-->
+<!--            {{ notificationStore.selectedTab.history }}-->
+<!--          </div>-->
 
           <div class="col-5" v-if="notificationStore.selectedTab.bookmarkId">
             Bookmark ID
