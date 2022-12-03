@@ -4,34 +4,43 @@
   <q-item v-ripple autofocus class="q-mb-lg">
 
     <q-item-section>
-      <q-item-label class="ellipsis text-black" caption>{{ hit.chromeTab?.url }}</q-item-label>
+      <q-item-label class="ellipsis text-black" caption v-html="formatText(hit, 'url',hit.chromeTab.url || '', '#FFFFDD')"></q-item-label>
       <q-item-label class="text-blue-9 text-h6">
 
         <q-img
           class="rounded-borders"
-          width="20px"
-          height="20px"
+          width="16px"
+          height="16px"
           :src="hit.chromeTab?.favIconUrl">
           <q-tooltip>{{ hit.chromeTab?.id }} / {{ hit.id }}</q-tooltip>
         </q-img>
 
         <span class="cursor-pointer underline-on-hover q-ml-sm" style="font-weight:400"
-              @click="NavigationService.openOrCreateTab(hit.chromeTab?.url )">{{ hit.chromeTab?.title }}</span>
+              @click="NavigationService.openOrCreateTab(hit.chromeTab?.url )"
+              v-html="formatText(hit, 'title',hit.chromeTab.title || '', '#FFFFDD')"></span>
         <template v-for="badge in tabsetBadges(hit)">
-          <q-chip class="cursor-pointer q-ml-md" size="9px" clickable icon="tab" @click="openTabset(badge)">{{ badge.label }}</q-chip>
+          <q-chip class="cursor-pointer q-ml-md" size="9px" clickable icon="tab" @click="openTabset(badge)">
+            {{ badge.label }}
+          </q-chip>
         </template>
       </q-item-label>
 
-      <q-item-label caption>{{ hit.description }}</q-item-label>
-      <q-item-label class="text-blue-2 q-mb-sm" v-if="featureToggles.isEnabled('debug')">Match in: {{ hit['matches'].join(", ")}}</q-item-label>
+      <q-item-label caption v-html="formatText(hit, 'description', hit.description || '', '#FFFFDD')"></q-item-label>
+      <q-item-label style="font-style:italic" caption v-html="formatText(hit, 'keywords', hit.keywords || '', '#FFFFDD')"></q-item-label>
+      <q-item-label class="text-blue-2 q-mb-sm" v-if="featureToggles.isEnabled('debug')">Match in:
+        {{ _.map(hit['matches'], m => m['key']).join(", ") }}
+      </q-item-label>
+<!--      <q-item-label caption>{{ hit['matches'] }}</q-item-label>-->
 
-      <q-rating
-        v-model="scoreAsRating"
-        size="13px"
-        color="warning"
-        readonly
-      />
-
+      <span>
+        <q-rating
+          v-model="scoreAsRating"
+          size="13px"
+          color="warning"
+          readonly
+        />
+<!--        {{ hit.score }}%-->
+      </span>
     </q-item-section>
 
   </q-item>
@@ -120,7 +129,7 @@ const setInfo = (tab: Tab) => {
   }
 }
 
-const tabsetBadges = (hit:Hit): object[] => {
+const tabsetBadges = (hit: Hit): object[] => {
   const badges: object[] = []
   _.forEach(hit.tabsets, ts => badges.push({
     label: TabsetService.nameForTabsetId(ts),
@@ -133,7 +142,37 @@ const tabsetBadges = (hit:Hit): object[] => {
 const openTabset = (badge: any) => {
   console.log("badge", badge)
   TabsetService.selectTabset(badge.tabsetId)
-  router.push("/tabset?highlight="+badge.encodedUrl)
+  router.push("/tabset?highlight=" + badge.encodedUrl)
+}
+
+const formatText = (hit: Hit, key: string, text: string, color:string) => {
+
+  let urlMatch: object[] = _.filter(hit.matches, (m: object) => m['key' as keyof object] === key)
+  if (urlMatch && urlMatch.length > 0) {
+    console.log("urlMatch", urlMatch[0])
+    console.log("indices", urlMatch[0]['indices' as keyof object])
+    let res = ''
+    let offset = 0
+    let begin = '<span style="background-color:'+color+'">'
+    let end = '</span>'
+
+    const indices = urlMatch[0]['indices' as keyof object] as unknown as any[]
+
+    let startString = text
+
+    indices.forEach(match => {
+      const from = match[0] + offset
+      const to = match[1] + offset
+      res = startString.substring(0, from) + begin
+      res += startString.substring(from , to  + 1) + end
+      res += startString.substring(to + 1)
+      offset += begin.length + end.length
+      startString = res
+    })
+    return res
+  }
+
+  return text
 }
 
 

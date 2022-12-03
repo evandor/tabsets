@@ -39,7 +39,7 @@ describe('TabsetService', () => {
 
   beforeEach(() => {
     setActivePinia(createPinia())
-    const request = indexedDB.open('db', 3);
+    const request = indexedDB.open('db', 4);
 
     request.onupgradeneeded = async function () {
       const db = request.result;
@@ -63,6 +63,7 @@ describe('TabsetService', () => {
   })
 
   it('can create a new tabset', async () => {
+    await IndexedDbPersistenceService.init()
     const tabsStore = useTabsStore()
     chrome.tabs.query.mockImplementation(async (o: object) => [{id: 2}])
 

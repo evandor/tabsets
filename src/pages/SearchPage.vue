@@ -90,10 +90,16 @@ const newSearch = (term: string) => {
     tabsetHits.value.push(new Hit(
       uid(),
       ChromeApi.createChromeTabObject(h.item.title, h.item.url, h.item.favIconUrl), 0, 0,
-      Math.round(100 - (100 * h.score)),
+      Math.round(100 - (100 * (h?.score || 1))),
       h.item.tabsets,
-      _.map(h['matches' as keyof object], m => m['key' as keyof object]),
-      h.item.description
+      _.map(h['matches' as keyof object], (m:any) => {
+        return {
+          key: m['key' as keyof object],
+          indices: m['indices' as keyof object]
+        }
+      }),
+      h.item.description,
+      h.item.keywords
     ))
   })
 }

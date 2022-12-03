@@ -16,8 +16,10 @@ export class Hit {
     public updated: number,
     public score: number,
     public tabsets: string[],
-    public matches: string[],
-    public description: string) {
+    public matches: object[],
+    public description: string,
+    public keywords: string
+  ) {
 
     this.updated = new Date().getTime()
     this.lastActive = 0

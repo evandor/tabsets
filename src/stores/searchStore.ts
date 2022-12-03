@@ -29,7 +29,8 @@ export const useSearchStore = defineStore('search', () => {
     ],
     includeScore: true,
     includeMatches: true,
-    minMatchCharLength: 3,
+    minMatchCharLength: 4,
+    threshold: 0.0,
     // ignoreFieldNorm: true
     ignoreLocation: true
   })
@@ -191,7 +192,9 @@ export const useSearchStore = defineStore('search', () => {
         }
       }
     })
-    minimalIndex.forEach((doc: SearchDoc) => fuse.value.add(doc))
+    if (fuse.value) {
+      minimalIndex.forEach((doc: SearchDoc) => fuse.value.add(doc))
+    }
   }
 
   return {init, populate, getIndex, addToIndex, remove, term, search, indexTabs, update}
