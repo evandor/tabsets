@@ -46,3 +46,4 @@ yarn-error.log*
 /playwright-report/
 /playwright/.cache/
 /releases/0.2.4 (first public)/
+/releases/0.2.5/
