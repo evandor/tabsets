@@ -108,7 +108,7 @@ const selectTabset = (tabsetId: string) => {
 
 const tabsets = () => {
   let tabsets = [...tabsStore.tabsets.values()]
-  if (spacesStore.spaces && spacesStore.spaces.size > 0) {
+  if (featuresStore.isEnabled('spaces') && spacesStore.spaces && spacesStore.spaces.size > 0) {
     if (spacesStore.space && spacesStore.space.id && spacesStore.space.id.length > 0) {
       tabsets = _.filter(tabsets, ts => ts.spaces && ts.spaces.indexOf(spacesStore.space.id) >= 0)
     } else {

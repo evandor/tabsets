@@ -5,25 +5,31 @@
       Spaces Settings
     </div>
 
-    <div class="row">
-      <div class="col-1"></div>
-      <div class="col">
+    <div class="row q-pa-md" style="border-bottom: 1px solid grey">
+      <div class="col-2"></div>
+      <div class="col q-ml-lg" >
         <b>Spaces</b>
       </div>
     </div>
-    <div class="row">
-      <div class="col"><b>Tabset</b></div>
-      <div class="col" v-for="space in spacesStore.spaces.values()">
+    <div class="row q-pa-md">
+      <div class="col-2" style="border-right: 1px solid grey"><b>Tabset</b></div>
+      <div class="col q-ml-lg" v-for="space in spacesStore.spaces.values()">
         {{ space.label }}
       </div>
     </div>
-    <div class="row" v-for="(ts,tsIndex) in tabsStore.tabsets.values()">
-      <div class="col">{{ ts.name }}</div>
-      <div class="col" v-for="(space, spaceIndex) in spacesStore.spaces.values()">
+    <div class="row q-pa-none" style="border-bottom: 1px solid grey">
+      <div class="col-12"></div>
+    </div>
+    <div class="row q-px-md" v-for="(ts,tsIndex) in tabsStore.tabsets.values()" >
+      <div class="col-2" style="border-right: 1px solid grey">{{ ts.name }}</div>
+      <div class="col q-ml-lg" v-for="(space, spaceIndex) in spacesStore.spaces.values()">
         <q-checkbox v-model="checked[spaceIndex][tsIndex]"/>
       </div>
     </div>
-    <div class="row">
+    <div class="row q-pa-none" style="border-bottom: 1px solid grey">
+      <div class="col-12"></div>
+    </div>
+    <div class="row q-pa-md">
       <div class="col">
         <q-btn flat
                class="bg-positive"
@@ -58,7 +64,7 @@ watchEffect(() => {
   _.forEach([...spacesStore.spaces.values()], (space: Space) => {
     const tsArray: Array<boolean> = []
     _.forEach([...tabsStore.tabsets.values()], (ts: Tabset) => {
-      console.log("checking", space.id, ts.id)
+      //console.log("checking", space.id, ts.id)
       tsArray.push(ts.spaces.indexOf(space.id) >= 0)
     })
     spaceArray.push(tsArray)
@@ -74,7 +80,7 @@ const updateSpaces = () => {
   _.forEach([...tabsStore.tabsets.values()], (ts: Tabset, tabsetIndex: number) => {
     const spaces: Array<string> = []
     _.forEach([...spacesStore.spaces.values()], (space: Space, spaceIndex: number) => {
-      console.log("checking", space.id, ts.id)
+      //console.log("checking", space.id, ts.id)
       //tsArray.push(false)
       if (checked.value[spaceIndex][tabsetIndex]) {
         spaces.push(space.id)

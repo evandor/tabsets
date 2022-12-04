@@ -29,14 +29,14 @@
       </q-item>
       <q-item
         :disable="tabsStore.tabsets?.size === 0"
-        clickable v-close-popup @click="TabsetService.closeTrackedTabs()">
+        clickable v-close-popup @click="reindexTabset">
         <q-item-section>&bull; Reindex this tabset's tabs</q-item-section>
       </q-item>
-      <q-item
-        :disable="tabsStore.tabsets?.size === 0"
-        clickable v-close-popup @click="TabsetService.closeTrackedTabs()">
-        <q-item-section>&bull; Reindex all tabs</q-item-section>
-      </q-item>
+<!--      <q-item-->
+<!--        :disable="tabsStore.tabsets?.size === 0"-->
+<!--        clickable v-close-popup @click="TabsetService.closeTrackedTabs()">-->
+<!--        <q-item-section>&bull; Reindex all tabs</q-item-section>-->
+<!--      </q-item>-->
     </q-list>
   </q-menu>
 
@@ -46,16 +46,17 @@
 
 import {useTabsStore} from "stores/tabsStore";
 import {useSettingsStore} from "stores/settingsStore";
-import TabsetService from "src/services/TabsetService"
 import {ref, watchEffect} from "vue";
 import {useRouter} from "vue-router";
-import {useNotificationsStore} from "stores/notificationsStore";
 import {useSearchStore} from "stores/searchStore";
+import ReindexDialog from "components/dialogues/ReindexDialog.vue";
+import {useQuasar} from "quasar";
 
 const tabsStore = useTabsStore()
 const settingsStore = useSettingsStore()
 const searchStore = useSearchStore()
 const router = useRouter()
+const $q = useQuasar()
 
 const openTabsCountRatio = ref(0)
 
@@ -73,5 +74,15 @@ const thresholdStyle = () => {
 // @ts-ignore
 const thresholdLabel = () => searchStore.getIndex().size() + " tabs indexed"
 
+const reindexTabset = () => {
+  $q.dialog({
+    component: ReindexDialog,
+    componentProps: {
+      tabsetId: tabsStore.currentTabsetId,
+    }
+  }).onDismiss(() => {
+   // showReindexDialog.value = false
+  })
+}
 
 </script>

@@ -43,14 +43,13 @@
       </div>
     </div>
 
-    <fab></fab>
+<!--    <fab></fab>-->
   </q-page>
 
 </template>
 
 <script setup lang="ts">
 import {useTabsStore} from "src/stores/tabsStore"
-import Fab from "src/components/Fab.vue"
 import {useRouter} from "vue-router";
 
 const tabsStore = useTabsStore()

@@ -40,7 +40,7 @@ class TabsetService {
    */
   async init() {
     console.debug("initializing tabsetService")
-    const done = await this.persistenceService.loadTabsets()
+    await this.persistenceService.loadTabsets()
     useSearchStore().populate(this.persistenceService.getContents())
   }
 
@@ -174,10 +174,10 @@ class TabsetService {
     return tabsStore.tabsets.get(tabsStore.currentTabsetId)
   }
 
-  async saveToCurrentTabset(tab: Tab): Promise<number> {
+  async saveToCurrentTabset(tab: Tab, useIndex: number | undefined = undefined): Promise<number> {
     const currentTs = this.getCurrentTabset()
     if (currentTs) {
-      return this.saveToTabset(currentTs, tab)
+      return this.saveToTabset(currentTs, tab, useIndex)
     }
     return Promise.reject("could not get current tabset")
   }
@@ -198,8 +198,9 @@ class TabsetService {
    *
    * @param ts
    * @param tab
+   * @param useIndex
    */
-  async saveToTabset(ts: Tabset, tab: Tab): Promise<number> {
+  async saveToTabset(ts: Tabset, tab: Tab, useIndex: number | undefined = undefined): Promise<number> {
     console.log("adding tab x to tabset y", tab.id, ts.id)
     if (tab.chromeTab.url) {
       const tabsStore = useTabsStore()
@@ -209,7 +210,13 @@ class TabsetService {
         return Promise.reject("tab exists already")
       }
 
-      ts.tabs.push(tab)
+      if (useIndex !== undefined && useIndex >= 0) {
+        // tabsStore.getCurrentTabs.splice(useIndex, 0, added.element)
+        ts.tabs.splice(useIndex, 0, tab)
+      } else {
+        ts.tabs.push(tab)
+      }
+
 
       const index = _.findIndex(tabsStore.pendingTabset.tabs, t => t.id === tab.id)
       tabsStore.pendingTabset.tabs.splice(index, 1);
@@ -253,7 +260,7 @@ class TabsetService {
   }
 
   selectTabset(tabsetId: string): void {
-    console.log("selecting tabset", tabsetId)
+    console.debug("selecting tabset", tabsetId)
     const tabsStore = useTabsStore()
     this.resetSelectedTabs()
     tabsStore.currentTabsetId = tabsetId;
@@ -358,7 +365,7 @@ class TabsetService {
   }
 
   async getRequestForUrl(url: string): Promise<any> {
-      return this.persistenceService.getRequest(url)
+    return this.persistenceService.getRequest(url)
   }
 
   async getContentFor(selectedTab: Tab): Promise<any> {
@@ -369,7 +376,7 @@ class TabsetService {
   }
 
   async getContentForUrl(url: string): Promise<any> {
-      return this.persistenceService.getContent(url)
+    return this.persistenceService.getContent(url)
   }
 
   removeThumbnailsFor(url: string): Promise<any> {
@@ -397,7 +404,7 @@ class TabsetService {
         .then(() => console.log("added content"))
         .catch(err => console.log("err", err))
 
-     // console.log("updating meta data for ", tabsetIds, tab.url)
+      // console.log("updating meta data for ", tabsetIds, tab.url)
       const tabsets = [...useTabsStore().tabsets.values()]
       tabsets.forEach((tabset: Tabset) => {
         if (tabset) {
@@ -429,7 +436,7 @@ class TabsetService {
               if (image) {
                 t.image = image
               }
-            //  console.log("updated", t)
+              //  console.log("updated", t)
             }
           })
           this.saveTabset(tabset)
@@ -496,13 +503,13 @@ class TabsetService {
 
     const tabsStore = useTabsStore()
     let data = ''
-    let filename = 'tabsets.'+appVersion+'.json'
+    let filename = 'tabsets.' + appVersion + '.json'
     if (exportAs === 'json') {
       data = JSON.stringify([...tabsStore.tabsets.values()])
       return this.createFile(data, filename);
     } else if (exportAs === 'csv') {
       data = "not implemented yet"
-      filename = "tabsets."+appVersion+".csv"
+      filename = "tabsets." + appVersion + ".csv"
       return this.createFile(data, filename);
     } else if (exportAs === 'bookmarks') {
       console.log("creating bookmarks...")
@@ -517,7 +524,7 @@ class TabsetService {
       })
 
       chrome.bookmarks.create({title: 'tabsetsBackup', parentId: '1'}, (result: chrome.bookmarks.BookmarkTreeNode) => {
-       // console.log("res", result)
+        // console.log("res", result)
         _.forEach([...tabsStore.tabsets.values()], ts => {
           console.log("ts", ts)
           chrome.bookmarks.create({
@@ -585,7 +592,7 @@ class TabsetService {
     this.persistenceService.cleanUpContent()
       .then(searchDocs => {
         _.forEach(searchDocs, d => {
-          console.log("got document", d)
+          //console.log("got document", d)
           useSearchStore().remove((doc: SearchDoc, idx: number) => {
             if (doc.url === d.url) {
               console.log("removing", doc)

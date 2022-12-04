@@ -111,7 +111,7 @@ class ChromeListeners {
       //console.log(`onRemoved: tab ${number}:     found index ${index}`)
       const updatedTab = currentTabset.tabs.at(index)
       if (updatedTab) {
-        console.log(`onRemoved: tab ${number}:     setting status DELETED`)
+        //console.log(`onRemoved: tab ${number}:     setting status DELETED`)
       }
     }
   }

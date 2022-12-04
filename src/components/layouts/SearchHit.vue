@@ -149,8 +149,8 @@ const formatText = (hit: Hit, key: string, text: string, color:string) => {
 
   let urlMatch: object[] = _.filter(hit.matches, (m: object) => m['key' as keyof object] === key)
   if (urlMatch && urlMatch.length > 0) {
-    console.log("urlMatch", urlMatch[0])
-    console.log("indices", urlMatch[0]['indices' as keyof object])
+    //console.log("urlMatch", urlMatch[0])
+    //console.log("indices", urlMatch[0]['indices' as keyof object])
     let res = ''
     let offset = 0
     let begin = '<span style="background-color:'+color+'">'

@@ -41,7 +41,7 @@
       </q-card-section>
     </q-card>
 
-    <fab></fab>
+<!--    <fab></fab>-->
 
 
   </q-page>
@@ -55,7 +55,6 @@ import {uid, useQuasar} from "quasar";
 import _ from "lodash"
 import {useTabsStore} from "src/stores/tabsStore";
 import BookmarkCards from "src/components/layouts/BookmarkCards.vue";
-import Fab from "components/Fab.vue";
 import {useBookmarksStore} from "src/stores/bookmarksStore";
 import {Bookmark} from "src/models/Bookmark";
 import {ref, watchEffect} from "vue";

@@ -23,7 +23,7 @@ class IndexedDbPersistenceService implements PersistenceService {
   async loadTabsets(): Promise<any> {
     const tabsStore = useTabsStore()
     const keys: IDBValidKey[] = await this.db.getAllKeys('tabsets')
-    const res:Promise<any>[] = _.map(keys, key => {
+    const res: Promise<any>[] = _.map(keys, key => {
       return this.db.get('tabsets', key)
         .then(ts => {
           if ('ignored' === key) {
@@ -204,7 +204,7 @@ class IndexedDbPersistenceService implements PersistenceService {
           data.expires = 0
           contentObjectStore.put(data, contentCursor.key)
           result.push(new SearchDoc(
-            data.id, "", data.title, data.url, data.description,"", data.content, [], data.favIconUrl
+            data.id, "", data.title, data.url, data.description, "", data.content, [], data.favIconUrl
           ))
         } else {
           if (contentCursor.value.expires < new Date().getTime()) {
@@ -238,6 +238,7 @@ class IndexedDbPersistenceService implements PersistenceService {
 
   async getMHtml(url: string): Promise<any> {
 
+    console.log("getting mhtml for", url)
     const mhtml = await this.db.get('mhtml', url)
     console.log("got", mhtml.content, typeof mhtml.content)
 
@@ -263,7 +264,7 @@ class IndexedDbPersistenceService implements PersistenceService {
       let base64data = reader.result as unknown as string
       //console.log(base64data);
 
-      base64data = base64data?.replace("data:application/octet-stream;base64,", "data:multipart/related;base64,")
+      //base64data = base64data?.replace("data:application/octet-stream;base64,", "data:multipart/related;base64,")
       var win = window.open();
       if (win) {
         win.document.write(res + "<br>")
@@ -275,20 +276,33 @@ class IndexedDbPersistenceService implements PersistenceService {
   }
 
   async getMHtmlInline(url: string): Promise<object> {
-    const mhtml = await this.db.get('mhtml', url)
-    const mhtmlString = await mhtml.content.text()
-    const html = mhtml2html.convert(mhtmlString)
-    const innerHtml = html.window.document.documentElement.innerHTML
-    return Promise.resolve({
-      html: innerHtml,
-      title: mhtml.title,
-      created: mhtml.created
-    })
+    console.log("getMHtmlInline", url, this.db)
+    try {
+      const mhtml = await this.db.get('mhtml', url)
+      const mhtmlString = await mhtml.content.text()
+      console.log("mhtmlString", mhtmlString)
+      const html = mhtml2html.convert(mhtmlString)
+      console.log("html", html)
+      const innerHtml = html.window.document.documentElement.innerHTML
+      return Promise.resolve({
+        html: innerHtml,
+        title: mhtml.title,
+        created: mhtml.created
+      })
+    } catch (ex) {
+      console.log("problem getting MHtmlInline", ex)
+      return Promise.reject("problem getting MHtmlInline")
+    }
   }
 
   getMHtmls(): Promise<MHtml[]> {
-    console.log("getMHtmls")
-    return this.db.getAll('mhtml')
+    //console.log("getMHtmls")
+    try {
+      return this.db.getAll('mhtml')
+    } catch (ex) {
+      console.log("got error in getMHtmls", ex)
+      return Promise.reject("got error in getMHtmls")
+    }
   }
 
 

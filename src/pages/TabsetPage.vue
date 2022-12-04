@@ -350,7 +350,7 @@ const tabsetId = ref(null as unknown as string)
 watchEffect(() => {
   tabsetId.value = route.params.tabsetId as string
   if (tabsetId.value) {
-    console.log("got tabset id", tabsetId.value)
+    console.debug("got tabset id", tabsetId.value)
     tabsStore.selectCurrentTabset(tabsetId.value)
   }
 })

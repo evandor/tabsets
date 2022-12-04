@@ -9,27 +9,29 @@
         <q-toolbar-title @click.stop="goHome()" class="cursor-pointer" shrink>
           Tabsets
           <span class="text-caption"
-                v-show="spacesStore.spaces.size === 0">Handle more links, with less tabs open</span>
+                v-show="!featuresStore.isEnabled('spaces')">Handle more links, with less tabs open</span>
         </q-toolbar-title>
 
-        <q-select
-          bg-color="white"
-          v-if="spacesStore.spaces.size > 0"
-          filled v-model="spacesStore.space" :options="spacesOptions" dense options-dense>
-          <template v-slot:selected>
-            Space:
-            <q-chip
-              v-if="spacesStore.space"
-              dense
-              square
-              color="white"
-              text-color="primary"
-              class="q-my-none q-ml-xs q-mr-none">
-              {{ spacesStore.space.label }}
-            </q-chip>
-            <q-badge v-else>*none*</q-badge>
-          </template>
-        </q-select>
+        <SpacesSelectorWidget v-if="featuresStore.isEnabled('spaces')" />
+
+<!--        <q-select-->
+<!--          bg-color="white"-->
+<!--          v-if="featuresStore.isEnabled('spaces')"-->
+<!--          filled v-model="spacesStore.space" :options="spacesOptions" dense options-dense>-->
+<!--          <template v-slot:selected>-->
+<!--            Space:-->
+<!--            <q-chip-->
+<!--              v-if="spacesStore.space"-->
+<!--              dense-->
+<!--              square-->
+<!--              color="white"-->
+<!--              text-color="primary"-->
+<!--              class="q-my-none q-ml-xs q-mr-none">-->
+<!--              {{ spacesStore.space.label }}-->
+<!--            </q-chip>-->
+<!--            <q-badge v-else>*none*</q-badge>-->
+<!--          </template>-->
+<!--        </q-select>-->
 
         <q-input dark dense standout v-model="search"
                  ref="searchBox"
@@ -139,6 +141,7 @@ import {useSpacesStore} from "stores/spacesStore"
 import {useSettingsStore} from "stores/settingsStore"
 import OpenTabsThresholdWidget from 'src/components/widgets/OpenTabsThresholdWidget.vue'
 import SearchIndexThresholdWidget from 'src/components/widgets/SearchIndexThresholdWidget.vue'
+import SpacesSelectorWidget from 'src/components/widgets/SpacesSelectorWidget.vue'
 
 const router = useRouter()
 const tabsStore = useTabsStore()
@@ -172,8 +175,8 @@ watchEffect(() => {
     return {id: key, label: label}
   })
     .concat({id: '', label: '(unassigned)'})
+    .concat({id: '', label: 'create new space'})
 })
-
 
 //@ts-ignore
 const appVersion = import.meta.env.PACKAGE_VERSION

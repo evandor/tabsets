@@ -128,11 +128,8 @@ const handleDragAndDrop = (event: any) => {
     }
 
     if (!exists) {
-      if (useIndex !== undefined && useIndex >= 0) {
-        tabsStore.getCurrentTabs.splice(useIndex, 0, added.element)
-      } else {
-        tabsStore.getCurrentTabs.push(added.element)
-      }
+      TabsetService.saveToCurrentTabset(added.element, useIndex)
+
     } else {
       const oldIndex = _.findIndex(tabsStore.getCurrentTabs, t => t.id === added.element.id)
       if (oldIndex >= 0) {

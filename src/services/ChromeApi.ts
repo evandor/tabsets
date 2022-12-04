@@ -37,7 +37,7 @@ class ChromeApi {
 
     chrome.webRequest.onHeadersReceived.addListener(
       (details) => {
-        console.log("headerDetails", details)
+        //console.log("headerDetails", details)
         TabsetService.saveRequestFor(
           details.url,
           new RequestInfo(details.statusCode,  details.responseHeaders || [])
