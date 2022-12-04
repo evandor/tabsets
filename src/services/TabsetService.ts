@@ -491,15 +491,18 @@ class TabsetService {
   exportData(exportAs: string): Promise<any> {
     console.log("exporting as ", exportAs)
 
+    //@ts-ignore
+    const appVersion = import.meta.env.PACKAGE_VERSION
+
     const tabsStore = useTabsStore()
     let data = ''
-    let filename = 'tabsets.json'
+    let filename = 'tabsets.'+appVersion+'.json'
     if (exportAs === 'json') {
       data = JSON.stringify([...tabsStore.tabsets.values()])
       return this.createFile(data, filename);
     } else if (exportAs === 'csv') {
       data = "not implemented yet"
-      filename = "tabsets.csv"
+      filename = "tabsets."+appVersion+".csv"
       return this.createFile(data, filename);
     } else if (exportAs === 'bookmarks') {
       console.log("creating bookmarks...")
