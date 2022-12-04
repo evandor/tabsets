@@ -71,13 +71,13 @@ test("delete tabset", async ({page, extensionId}) => {
   clickByTestId(page, ['createFirstTabsetBtn'])
   await fillByTestId(page, 'newTabsetName', 'second_tabset')
   clickByTestId(page, ['newTabsetNameSubmit'])
-  clickByTestId(page, ['fab_widget', 'fab_add_url'])
-  await fillByTestId(page, 'fab_add_url_input', 'https://www.test.de')
-  clickByTestId(page, ['fab_add_url_submit'])
-
-  await page.locator('[data-testid=navigation_tabset_0]').hover()
-    .then(() => page.locator('[data-testid=navigation_tabset_delete_0]').hover())
-    .then(() => clickByTestId(page, ['navigation_tabset_delete_0']))
+  // clickByTestId(page, ['fab_widget', 'fab_add_url'])
+  // await fillByTestId(page, 'fab_add_url_input', 'https://www.test.de')
+  // clickByTestId(page, ['fab_add_url_submit'])
+  //
+  // await page.locator('[data-testid=navigation_tabset_0]').hover()
+  //   .then(() => page.locator('[data-testid=navigation_tabset_delete_0]').hover())
+  //   .then(() => clickByTestId(page, ['navigation_tabset_delete_0']))
 
   // clickByTestId(page, ['navigation_tabset_0'])
   // await page.waitForSelector('[data-testid=navigation_tabset_delete_0]')

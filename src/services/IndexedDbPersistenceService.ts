@@ -1,7 +1,7 @@
 import {IDBPDatabase, openDB} from "idb";
 import {useTabsStore} from "src/stores/tabsStore";
 import _ from "lodash";
-import {INDEX_DB_NAME} from "boot/constants";
+import {INDEX_DB_NAME, INDEX_DB_VERSION, EXPIRE_DATA_PERIOD_IN_MINUTES} from "boot/constants";
 import PersistenceService from "src/services/PersistenceService";
 import {Tabset} from "src/models/Tabset";
 import mhtml2html from 'mhtml2html';
@@ -11,7 +11,6 @@ import {MHtml} from "src/models/MHtml";
 import {Tab} from "src/models/Tab";
 import {SearchDoc} from "src/models/SearchDoc";
 import {RequestInfo} from "src/models/RequestInfo";
-import {EXPIRE_DATA_PERIOD_IN_MINUTES} from "src/boot/constants"
 
 class IndexedDbPersistenceService implements PersistenceService {
 
@@ -299,7 +298,7 @@ class IndexedDbPersistenceService implements PersistenceService {
   }
 
   private async initDatabase(): Promise<IDBPDatabase> {
-    return await openDB(INDEX_DB_NAME, 4, {
+    return await openDB(INDEX_DB_NAME, INDEX_DB_VERSION, {
       // upgrading see https://stackoverflow.com/questions/50193906/create-index-on-already-existing-objectstore
       upgrade(db) {
         if (!db.objectStoreNames.contains('tabsets')) {
