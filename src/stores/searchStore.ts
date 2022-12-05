@@ -109,7 +109,7 @@ export const useSearchStore = defineStore('search', () => {
 
   function reindex(values: Tabset[]) {
     const throttleOnePerXSeconds = throttledQueue(1, 3000, true)
-    chrome.windows.create({focused: true}, (window: any) => {
+    chrome.windows.create({focused: true, width: 1024, height:800}, (window: any) => {
       useWindowsStore().screenshotWindow = window.id
       let tabToClose: number | undefined = undefined
 

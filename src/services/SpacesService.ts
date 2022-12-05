@@ -1,5 +1,5 @@
 import IndexedDbPersistenceService from "src/services/IndexedDbPersistenceService";
-import {LocalStorage, uid} from "quasar";
+import {uid} from "quasar";
 import {useSpacesStore} from "stores/spacesStore";
 
 class SpacesService {
@@ -23,6 +23,11 @@ class SpacesService {
     const spaceId = uid()
     const newSpace = spacesStore.addSpace(spaceId, name)
     return this.persistenceService.addSpace(newSpace)
+  }
+
+  deleteById(spaceId: string) {
+    useSpacesStore().deleteById(spaceId)
+    return this.persistenceService.deleteSpace(spaceId)
   }
 }
 

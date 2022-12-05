@@ -9,7 +9,7 @@
           class="rounded-borders"
           width="20px"
           height="20px"
-          :src="tab.chromeTab?.favIconUrl">
+          :src="getFaviconUrl(tab.chromeTab)">
           <q-tooltip>{{ tab.chromeTab?.id }} / {{ tab.id }}</q-tooltip>
         </q-img>
 
@@ -19,11 +19,12 @@
         <q-item-label caption>{{ tab.chromeTab?.url }}</q-item-label>
       </q-item-section>
       <q-item-section avatar>
-        <q-icon name="launch" color="primary" @click.stop="NavigationService.openOrCreateTab(tab.chromeTab?.url )"></q-icon>
+        <q-icon name="launch" color="primary"
+                @click.stop="NavigationService.openOrCreateTab(tab.chromeTab?.url )"></q-icon>
       </q-item-section>
-<!--      <q-item-section avatar>-->
-<!--        <q-icon name="close" @click.stop="closeTab(tab)"/>-->
-<!--      </q-item-section>-->
+      <!--      <q-item-section avatar>-->
+      <!--        <q-icon name="close" @click.stop="closeTab(tab)"/>-->
+      <!--      </q-item-section>-->
     </q-item>
   </q-list>
 
@@ -131,6 +132,13 @@ const selectTab = (tab: Tab) => {
 const setCustomTitle = (tab: Tab, newValue: string) => {
   console.log(" -> ", newValue)
   TabsetService.setCustomTitle(tab, newValue)
+}
+
+const getFaviconUrl = (chromeTab: chrome.tabs.Tab | undefined) => {
+  if (chromeTab && chromeTab.favIconUrl && !chromeTab.favIconUrl.startsWith("chrome")) {
+    return chromeTab.favIconUrl
+  }
+  return 'favicon-unknown-32x32.png'
 }
 
 </script>

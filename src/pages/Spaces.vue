@@ -29,6 +29,15 @@
     <div class="row q-pa-none" style="border-bottom: 1px solid grey">
       <div class="col-12"></div>
     </div>
+    <div class="row q-px-md">
+      <div class="col-2" style="border-right: 1px solid grey">Delete Space<br>(will not delete the tabsets)</div>
+      <div class="col q-ml-lg" v-for="(space, spaceIndex) in [...spacesStore.spaces.values()]">
+        <q-checkbox color="negative" v-model="deleteSpace[spaceIndex]"/>
+      </div>
+    </div>
+    <div class="row q-pa-none" style="border-bottom: 1px solid grey">
+      <div class="col-12"></div>
+    </div>
     <div class="row q-pa-md">
       <div class="col">
         <q-btn flat
@@ -53,15 +62,19 @@ import {Space} from "src/models/Space"
 import {Tabset} from "src/models/Tabset";
 import TabsetService from "src/services/TabsetService";
 import {useRouter} from "vue-router";
+import SpacesService from "src/services/SpacesService";
 
 const spacesStore = useSpacesStore()
 const tabsStore = useTabsStore()
 const checked = ref<boolean[][]>([[]])
+const deleteSpace = ref<boolean[]>([])
 const router = useRouter()
 
 watchEffect(() => {
   const spaceArray: boolean[][] = []
+  deleteSpace.value = []
   _.forEach([...spacesStore.spaces.values()], (space: Space) => {
+    deleteSpace.value.push(false)
     const tsArray: Array<boolean> = []
     _.forEach([...tabsStore.tabsets.values()], (ts: Tabset) => {
       //console.log("checking", space.id, ts.id)
@@ -70,6 +83,7 @@ watchEffect(() => {
     spaceArray.push(tsArray)
   })
   console.log("spaceArray", spaceArray)
+  console.log("deleteSpace", deleteSpace.value)
 
   checked.value = spaceArray
 })
@@ -80,18 +94,24 @@ const updateSpaces = () => {
   _.forEach([...tabsStore.tabsets.values()], (ts: Tabset, tabsetIndex: number) => {
     const spaces: Array<string> = []
     _.forEach([...spacesStore.spaces.values()], (space: Space, spaceIndex: number) => {
-      //console.log("checking", space.id, ts.id)
-      //tsArray.push(false)
       if (checked.value[spaceIndex][tabsetIndex]) {
         spaces.push(space.id)
       }
     })
     console.log("result", ts.id, spaces)
     ts.spaces = spaces
+
     TabsetService.saveTabset(ts)
-    router.push("/tabset")
   })
 
+  _.forEach([...spacesStore.spaces.values()], (space: Space, spaceIndex: number) => {
+    if (deleteSpace.value[spaceIndex]) {
+      console.log("deleting space", space)
+      SpacesService.deleteById(space.id)
+    }
+  })
+
+  router.push("/tabset")
 
 }
 

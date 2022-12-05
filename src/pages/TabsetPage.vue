@@ -307,7 +307,7 @@
     </q-card-section>
   </q-card>
 
-  <Fab/>
+<!--  <Fab/>-->
 
 </template>
 
@@ -315,7 +315,6 @@
 import {ref, watchEffect} from 'vue'
 import {useRoute, useRouter} from "vue-router";
 import {useQuasar} from "quasar";
-import Fab from "src/components/Fab.vue";
 import Tabcards from "src/components/layouts/Tabcards.vue";
 import TabThumbs from "src/components/layouts/TabThumbs.vue";
 import TabcardsPending from "src/components/layouts/TabcardsPending.vue";

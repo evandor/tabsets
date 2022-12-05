@@ -9,8 +9,8 @@
           <q-img
             class="rounded-borders"
             style="cursor: move"
-            width="24px"
-            height="24px"
+            width="22px"
+            height="22px"
             :src="getFaviconUrl(tab.chromeTab)">
             <q-tooltip>{{ tab.chromeTab?.id }} / {{ tab.id }} / {{ tab.bookmarkId }}</q-tooltip>
           </q-img>
@@ -24,21 +24,21 @@
             <q-input v-model="scope.value" dense autofocus counter @keyup.enter="scope.set"/>
           </q-popup-edit>
           <q-tooltip>{{ tab.chromeTab.title }}</q-tooltip>
+
+
+          <q-badge v-if="tab.bookmarkId"
+                   color="info" floating>
+            <q-icon name="o_bookmark" size="14px" color="white">
+              <q-tooltip>You have a bookmark with this url</q-tooltip>
+            </q-icon>
+          </q-badge>
+          <!--        <q-badge v-if="tab.note?.length > 0"-->
+          <!--                 color="warning" floating>-->
+          <!--          <q-icon name="o_note" size="14px" color="white">-->
+          <!--            <q-tooltip>You have a note attached to this tab</q-tooltip>-->
+          <!--          </q-icon>-->
+          <!--        </q-badge>-->
         </div>
-
-        <q-badge v-if="tab.bookmarkId"
-                 color="info" floating>
-          <q-icon name="o_bookmark" size="14px" color="white">
-            <q-tooltip>You have a bookmark with this url</q-tooltip>
-          </q-icon>
-        </q-badge>
-        <!--        <q-badge v-if="tab.note?.length > 0"-->
-        <!--                 color="warning" floating>-->
-        <!--          <q-icon name="o_note" size="14px" color="white">-->
-        <!--            <q-tooltip>You have a note attached to this tab</q-tooltip>-->
-        <!--          </q-icon>-->
-        <!--        </q-badge>-->
-
       </div>
 
 
@@ -61,7 +61,7 @@
         </div>
         <div class="col-8 text-right">
 
-<!--          :text-color="tab.note?.length > 0 ? 'warning' : 'white'"-->
+          <!--          :text-color="tab.note?.length > 0 ? 'warning' : 'white'"-->
           <q-btn round size="11px"
                  :color="tab.note && tab.note.length > 0 ? 'white' : 'warning'"
                  :style="tab.note && tab.note.length > 0 ? 'background: #FFBF46' : 'background: #ffffff'"
@@ -183,7 +183,7 @@ const getFaviconUrl = (chromeTab: chrome.tabs.Tab | undefined) => {
     //console.log("chromeTab.favIconUrl", chromeTab.favIconUrl)
     return chromeTab.favIconUrl
   }
-  return ''
+  return 'favicon-unknown-32x32.png'
 }
 
 const nameOrTitle = (tab: Tab) => tab.name ? tab.name : tab.chromeTab?.title

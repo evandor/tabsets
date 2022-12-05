@@ -62,7 +62,8 @@ const thumbnails = ref<Map<string, string>>(new Map())
 
 const thumbnailFor = (tab: Tab): string => {
   const key = btoa(tab.chromeTab.url || '')
-  return thumbnails.value.get(key) || "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+ip1sAAAAASUVORK5CYII="
+  // return thumbnails.value.get(key) || "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+ip1sAAAAASUVORK5CYII="
+  return thumbnails.value.get(key) || "thumbnail-not-available.png"
 }
 
 const loadThumbnail = (tab: Tab) => {

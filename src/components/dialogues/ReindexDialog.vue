@@ -46,7 +46,6 @@
 <script lang="ts" setup>
 
 import {ref, watchEffect} from "vue";
-import TabsetService from "src/services/TabsetService";
 import {useQuasar} from "quasar";
 import {useRouter} from "vue-router";
 import {useTabsStore} from "src/stores/tabsStore";
@@ -91,45 +90,6 @@ watchEffect(() => {
 watchEffect(() => {
   newTabsetNameExists.value = !!tabsStore.nameExistsInContextTabset(newTabsetName.value);
 })
-
-const createNewTabset = () => {
-  hideWarning.value = true
-  const tabsToUse = addAutomatically.value ? tabsStore.tabs : []
-  TabsetService.saveOrReplaceFromChromeTabs(newTabsetName.value, tabsToUse, true)
-    .then((result: object) => {
-
-      if (!addAutomatically.value) {
-        TabsetService.createPendingFromBrowserTabs()
-      }
-
-      newTabsetName.value = ''
-
-      //@ts-ignore
-      const replaced = result.replaced
-      //@ts-ignore
-      const merged = result.merged
-      let message = 'Empty Tabset ' + newTabsetName.value + ' created successfully'
-      if (replaced && merged) {
-        message = 'Existing Tabset ' + newTabsetName.value + ' can be updated now'
-      } else if (replaced) {
-        message = 'Existing Tabset ' + newTabsetName.value + ' was overwritten'
-      }
-      hideWarning.value = false
-      router.push("/tabset")
-      $q.notify({
-        message: message,
-        type: 'positive'
-      })
-    }).catch((ex: any) => {
-    console.error("ex", ex)
-    hideWarning.value = false
-    $q.notify({
-      message: 'There was a problem creating the tabset ' + newTabsetName.value,
-      type: 'warning',
-    })
-
-  })
-}
 
 const newTabsetDialogWarning = () => {
   return (!hideWarning.value && tabsStore.nameExistsInContextTabset(newTabsetName.value)) ?

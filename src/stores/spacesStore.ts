@@ -59,5 +59,14 @@ export const useSpacesStore = defineStore('spaces', () => {
     }
   }
 
-  return {spaces, space, nameExists, initialize, addSpace, putSpace, setSpace}
+  function deleteById(spaceId: string) {
+    console.log("deleting space", spaceId)
+    spaces.value.delete(spaceId)
+    if (spaceId === currentFromLocalStorage ) {
+      console.log("setting current space to null")
+      space.value = null as unknown as Space
+    }
+  }
+
+  return {spaces, space, nameExists, initialize, addSpace, putSpace, setSpace, deleteById}
 })
