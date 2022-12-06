@@ -21,8 +21,8 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
-      - run: npx playwright install
       - run: npm install
+      - run: npx playwright install
       - run: npm build
       - run: npm run test:unit:ci
       - run: npm run test:e2e
