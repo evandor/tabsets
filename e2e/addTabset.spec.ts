@@ -1,5 +1,6 @@
 import {test as base, expect, BrowserContext, chromium, Page} from "@playwright/test";
 import path from "path";
+import {AboutPage} from "app/e2e/AboutPage";
 
 export const test = base.extend<{
   context: BrowserContext;
@@ -7,8 +8,6 @@ export const test = base.extend<{
 }>({
   context: async ({}, use) => {
     const pathToExtension = path.join(__dirname, "../dist/bex");
-    console.log("using path", pathToExtension)
-    const userDataDir = '/tmp';
 
     const context = await chromium.launchPersistentContext("", {
       headless: false,
@@ -19,7 +18,6 @@ export const test = base.extend<{
     });
     // @ts-ignore
     await use(context);
-    //await context.close();
     setTimeout(() => {
       context.close();
     }, 3000);
@@ -34,47 +32,15 @@ export const test = base.extend<{
   },
 });
 
-test("actions button has 'add tabset' entry", async ({page, extensionId}) => {
-  await page.goto(`chrome-extension://${extensionId}/www/index.html`);
-  await page.waitForSelector('[data-testid=createFirstTabsetBtn]')
-  await expect(page.locator('text=Add new Tabset')).not.toBeVisible()
-  await page.locator('[data-testid=createFirstTabsetBtn]').click()
-  await expect(page.locator('text=Create a new Tabset')).toBeVisible()
+test("add a new tab to a new tabset via addUrlDialog", async ({page, extensionId}) => {
+  const aboutPage = new AboutPage(page, extensionId);
+  await aboutPage.goto()
+  await aboutPage.submitNewTabsetDialog('another first tabset')
+  await aboutPage.submitAddUrlDialog('https://www.skysail.io')
+
+  await expect(page).toHaveURL(/.*\/tabsets\//);
+  // const loc = page.locator('.text-subtitle2')
+  await expect(page.locator('.text-subtitle2')).toHaveText('about:blank launch')
+  await aboutPage.screenshot(page, 'addTabset', 'finish.png')
 });
-
-function clickByText(page: Page, strings: string[]) {
-  strings.forEach(s => {
-    const selector = 'text=' + s
-    console.log("selector set to ", selector)
-    page.locator(selector).click()
-  })
-}
-
-function clickByTestId(page: Page, strings: string[]) {
-  strings.forEach(s => {
-    const selector = '[data-testid=' + s + ']'
-    console.log("selector set to ", selector)
-    page.locator(selector).click()
-  })
-}
-
-async function fillByTestId(page: Page, ident: string, text: string) {
-  const selector = '[data-testid=' + ident + ']'
-  console.log("selector set to ", selector)
-  await page.locator(selector).fill(text)
-}
-
-// test("add a tabset with skysail url", async ({page, extensionId}) => {
-//   await page.goto(`chrome-extension://${extensionId}/www/index.html`);
-//   await page.waitForSelector('[data-testid=createFirstTabsetBtn]')
-//
-//   clickByTestId(page, ['createFirstTabsetBtn'])
-//   await fillByTestId(page, 'newTabsetName', 'first_tabset')
-//   clickByTestId(page, ['newTabsetNameSubmit'])
-//   clickByTestId(page, ['fab_widget', 'fab_add_url'])
-//   await fillByTestId(page, 'fab_add_url_input', 'https://www.skysail.io')
-//   clickByTestId(page, ['fab_add_url_submit'])
-//
-//   await expect(page.locator('[data-testid=expansion_item_unpinnedNoGroup]')).toContainText("skysail.io");
-// });
 

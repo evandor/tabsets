@@ -495,11 +495,8 @@ class TabsetService {
     this.saveTabset(ignoredTS)
   }
 
-  exportData(exportAs: string): Promise<any> {
+  exportData(exportAs: string, appVersion: string = "0.0.0"): Promise<any> {
     console.log("exporting as ", exportAs)
-
-    //@ts-ignore
-    const appVersion = import.meta.env.PACKAGE_VERSION
 
     const tabsStore = useTabsStore()
     let data = ''
