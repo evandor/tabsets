@@ -80,7 +80,7 @@
   </q-banner>
 
   <!-- toolbar -->
-  <q-toolbar class="text-primary" v-if="tabsStore.currentTabsetId">
+  <q-toolbar class="text-primary lightgrey" v-if="tabsStore.currentTabsetId">
     <div class="row fit">
       <div class="col-xs-12 col-md-5">
         <q-toolbar-title>
@@ -172,6 +172,7 @@
 
   <!-- pinned tabs -->
   <q-expansion-item v-if="tabsStore.pinnedTabs.length > 0 && !specialView()"
+                    class="greyBorderTop"
                     header-class="text-black"
                     expand-icon-class="text-black"
                     expand-separator
@@ -444,3 +445,13 @@ const specialView = (): boolean =>
   tabsStore.getCurrentTabset?.view === 'kanban' || tabsStore.getCurrentTabset?.view === 'canvas'
 
 </script>
+
+<style lang="sass" scoped>
+
+.lightgrey
+  background-color: $lightgrey
+
+.greyBorderTop
+  border-top: 1px solid $bordergrey
+
+</style>

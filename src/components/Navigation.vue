@@ -1,38 +1,107 @@
 <template>
 
-  <q-list class="q-mt-md">
+  <q-toolbar class="text-primary lightgrey" v-if="tabsStore.tabsets.size > 0">
+    <div class="row fit">
+      <div class="col-xs-12 col-md-5">
+        <q-toolbar-title>
+          <div class="row justify-start items-baseline">
+            Tabsets
+          </div>
+        </q-toolbar-title>
+      </div>
+      <div class="col-xs-12 col-md-7 text-right">
 
-<!--      <q-btn-->
-<!--        @click="addTabset"-->
-<!--        flat round dense icon="add" color="positive">-->
-<!--        <q-tooltip>Click here to add new tabsets</q-tooltip>-->
-<!--      </q-btn>-->
+        <q-btn
+          @click="addTabset"
+          flat round dense icon="add" color="primary">
+          <q-tooltip>Click here to add new tabsets</q-tooltip>
+        </q-btn>
 
-    <q-toolbar v-if="tabsStore.tabsets.size > 0">
-      <q-toolbar-title style="font-size:16px">
-        <span>Tabsets</span>
-        <span v-if="tabsStore.tabsets.size > 3">({{ tabsStore.tabsets.size }})</span>
-      </q-toolbar-title>
-      <q-btn
-        @click="addTabset"
-        flat round dense icon="add" color="positive">
-        <q-tooltip>Click here to add new tabsets</q-tooltip>
-      </q-btn>
-    </q-toolbar>
+      </div>
+    </div>
+  </q-toolbar>
 
-    <q-toolbar v-else>
-      <q-toolbar-title style="font-size:16px">
-        <Transition name="delayed-appear" appear>
-          <q-btn class="fit" outline
-                 data-testid="createFirstTabsetBtn"
-                 @click="addTabset"
-                 label="create your first tabset"></q-btn>
-        </Transition>
-      </q-toolbar-title>
-    </q-toolbar>
+  <q-toolbar v-else>
+    <q-toolbar-title style="font-size:16px">
+      <Transition name="delayed-appear" appear>
+        <q-btn class="fit" outline
+               data-testid="createFirstTabsetBtn"
+               @click="addTabset"
+               label="create your first tabset"></q-btn>
+      </Transition>
+    </q-toolbar-title>
+  </q-toolbar>
+
+
+  <q-list class="q-mt-none greyBorderTop">
+
+    <!--      <q-btn-->
+    <!--        @click="addTabset"-->
+    <!--        flat round dense icon="add" color="positive">-->
+    <!--        <q-tooltip>Click here to add new tabsets</q-tooltip>-->
+    <!--      </q-btn>-->
+
+    <!--    <q-toolbar v-if="tabsStore.tabsets.size > 0">-->
+    <!--      <q-toolbar-title style="font-size:16px">-->
+    <!--        <span>Tabsets</span>-->
+    <!--        <span v-if="tabsStore.tabsets.size > 3">({{ tabsStore.tabsets.size }})</span>-->
+    <!--      </q-toolbar-title>-->
+    <!--      <q-btn-->
+    <!--        @click="addTabset"-->
+    <!--        flat round dense icon="add" color="positive">-->
+    <!--        <q-tooltip>Click here to add new tabsets</q-tooltip>-->
+    <!--      </q-btn>-->
+    <!--    </q-toolbar>-->
+
 
     <q-item
-      v-for="(tabset,index) in tabsets()"
+      v-for="(tabset,index) in tabsets(true)"
+      :key="'local_' + tabset.id"
+      :data-testid="'navigation_tabset_' +  index"
+      clickable v-ripple
+      @click="selectTabset(tabset.id)"
+      @mouseover="showButtons(tabset.id, true)"
+      @mouseleave="showButtons(tabset.id, false)"
+      :style="tabset.id === tabsStore.currentTabsetId ? 'background-color:#efefef' : 'border:0px solid #bfbfbf'">
+
+      <q-item-section no-wrap
+                      @drop="onDrop($event, tabset.id)"
+                      @dragover.prevent
+                      @dragenter.prevent>
+        <q-item-label>
+          <template v-slot>
+            <q-icon name="stars" color="warning" class="q-ml-none q-mr-sm"/>
+            {{ tabsetLabel(tabset) }}
+          </template>
+        </q-item-label>
+      </q-item-section>
+
+      <q-space/>
+
+      <q-item-section side v-if="showEditButton.get(tabset.id)">
+        <q-icon name="edit" color="positive" size="18px" @click="editDialog(tabset)">
+          <q-tooltip>Edit the tabset's name...</q-tooltip>
+        </q-icon>
+      </q-item-section>
+
+      <q-item-section side v-if="showEditButton.get(tabset.id)">
+        <q-icon name="star" color="warning" size="18px" @click="toggleFavorite(tabset)">
+          <q-tooltip>Undo marking this tabset as favorite</q-tooltip>
+        </q-icon>
+      </q-item-section>
+
+      <q-item-section side v-if="showDeleteButton.get(tabset.id)"
+                      :data-testid="'navigation_tabset_delete_' +  index">
+        <q-icon name="delete_outline" color="negative" size="18px" @click="deleteDialog">
+          <q-tooltip>Delete this tabset...</q-tooltip>
+        </q-icon>
+      </q-item-section>
+    </q-item>
+
+    <q-separator v-if="tabsets(true).length > 0"/>
+
+    <q-item
+      v-for="(tabset,index) in tabsets(false)"
       :key="'local_' + tabset.id"
       :data-testid="'navigation_tabset_' +  index"
       clickable v-ripple
@@ -48,14 +117,22 @@
         <q-item-label v-text="tabsetLabel(tabset)"/>
       </q-item-section>
 
-      <q-item-section avatar v-if="showEditButton.get(tabset.id)">
-        <q-icon name="edit" color="positive" size="2em" @click="editDialog(tabset)">
+      <q-space/>
+
+      <q-item-section side v-if="showEditButton.get(tabset.id)">
+        <q-icon name="edit" color="positive" size="18px" @click="editDialog(tabset)">
           <q-tooltip>Edit the tabset's name...</q-tooltip>
         </q-icon>
       </q-item-section>
-      <q-item-section
-        avatar v-if="showDeleteButton.get(tabset.id)"
-        :data-testid="'navigation_tabset_delete_' +  index">
+
+      <q-item-section side v-if="showEditButton.get(tabset.id) && tabsStore.tabsets.size > 1">
+        <q-icon name="stars" color="warning" size="18px" @click="toggleFavorite(tabset)">
+          <q-tooltip>Mark the tabset as favorite</q-tooltip>
+        </q-icon>
+      </q-item-section>
+
+      <q-item-section side v-if="showDeleteButton.get(tabset.id)"
+                      :data-testid="'navigation_tabset_delete_' +  index">
         <q-icon name="delete_outline" color="negative" size="18px" @click="deleteDialog">
           <q-tooltip>Delete this tabset...</q-tooltip>
         </q-icon>
@@ -106,7 +183,7 @@ const selectTabset = (tabsetId: string) => {
   router.push("/tabsets/" + tabsetId)
 }
 
-const tabsets = () => {
+const tabsets = (isFavorite: boolean) => {
   let tabsets = [...tabsStore.tabsets.values()]
   if (featuresStore.isEnabled('spaces') && spacesStore.spaces && spacesStore.spaces.size > 0) {
     if (spacesStore.space && spacesStore.space.id && spacesStore.space.id.length > 0) {
@@ -115,7 +192,7 @@ const tabsets = () => {
       tabsets = _.filter(tabsets, ts => ts.spaces && ts.spaces.length === 0)
     }
   }
-  return _.sortBy(tabsets, ['name'])
+  return _.sortBy(_.filter(tabsets, (ts: Tabset) => ts.isFavorite === isFavorite), ['name'])
 }
 
 const onDrop = (evt: DragEvent, tabsetId: string) => {
@@ -171,6 +248,8 @@ const addTabset = () => {
   })
 }
 
+const toggleFavorite = (ts: Tabset) => TabsetService.toggleFavorite(ts.id)
+
 </script>
 
 <style lang="sass" scoped>
@@ -182,5 +261,11 @@ const addTabset = () => {
 .delayed-appear-enter-from,
 .delayed-appear-leave-to
   opacity: 0
+
+.lightgrey
+  background-color: $lightgrey
+
+.greyBorderTop
+  border-top: 1px solid $bordergrey
 
 </style>

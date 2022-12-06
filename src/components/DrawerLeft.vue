@@ -1,13 +1,21 @@
 <template>
+
+  <q-toolbar class="text-primary lightgrey">
+    <div class="row fit">
+      <q-toolbar-title>
+        <div class="row justify-start items-baseline" v-text="drawerLabel()"></div>
+      </q-toolbar-title>
+    </div>
+  </q-toolbar>
+
   <q-tabs
     v-model="tab"
     dense
-    class="bg-grey-1 text-primary shadow-2"
-  >
+    class="text-primary q-mt-none greyBorderTop">
     <q-tab name="bookmarks" icon="o_bookmark" color="positive">
       <q-tooltip>Your bookmarks</q-tooltip>
     </q-tab>
-    <q-tab name="openTabs" icon="o_table_rows" >
+    <q-tab name="openTabs" icon="o_table_rows">
       <q-tooltip>Your open tabs</q-tooltip>
     </q-tab>
     <q-tab name="savedTabs" icon="o_save">
@@ -20,17 +28,17 @@
 
   <BookmarksTree v-if="tab === 'bookmarks'"/>
 
-  <OpenTabs v-else-if="tab === 'openTabs'" />
+  <OpenTabs v-else-if="tab === 'openTabs'"/>
 
-  <SavedTabs v-else-if="tab === 'savedTabs'" />
+  <SavedTabs v-else-if="tab === 'savedTabs'"/>
 
-  <TabsetAsSidebar v-else />
+  <TabsetAsSidebar v-else/>
 
-<!--  <div>-->
-<!--    <q-btn @click="openSavedTab" label="open" />-->
-<!--    <br>-->
-<!--    <q-btn @click="openSavedTabInline" label="open" />-->
-<!--  </div>-->
+  <!--  <div>-->
+  <!--    <q-btn @click="openSavedTab" label="open" />-->
+  <!--    <br>-->
+  <!--    <q-btn @click="openSavedTabInline" label="open" />-->
+  <!--  </div>-->
 
 </template>
 
@@ -54,5 +62,26 @@ watchEffect(() => {
   tab.value = useNotificationsStore().showOpenTabs ? 'openTabs' : 'bookmarks'
 })
 
-
+const drawerLabel = () => {
+  switch (tab.value) {
+    case "bookmarks":
+      return "Bookmarks"
+    case "openTabs":
+      return "Open Tabs"
+    case "savedTabs":
+      return "Saved Pages"
+    case "tabset":
+      return "Tabset Sidebar"
+    default:
+      return tab.value
+  }
+}
 </script>
+
+<style lang="sass" scoped>
+.lightgrey
+  background-color: $lightgrey
+
+.greyBorderTop
+  border-top: 1px solid $bordergrey
+</style>

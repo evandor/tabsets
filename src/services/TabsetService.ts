@@ -707,6 +707,14 @@ class TabsetService {
   }
 
 
+  toggleFavorite(id: string) {
+    console.log("toggling favorite for", id)
+    const ts = this.getTabset(id)
+    if (ts) {
+      ts.isFavorite = !ts.isFavorite
+      this.saveTabset(ts)
+    }
+  }
 }
 
 export default new TabsetService();

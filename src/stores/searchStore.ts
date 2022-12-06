@@ -42,7 +42,7 @@ export const useSearchStore = defineStore('search', () => {
     ],
     includeScore: true,
     includeMatches: true,
-    minMatchCharLength: 4,
+    minMatchCharLength: 3,
     threshold: 0.0,
     // ignoreFieldNorm: true
     ignoreLocation: true

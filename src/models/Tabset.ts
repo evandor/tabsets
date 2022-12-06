@@ -10,6 +10,7 @@ export class Tabset {
   groups: Group[]
   spaces: string[] // got json problems with set<string>
   view: string = 'grid'
+  isFavorite: boolean;
 
   constructor(id: string, name: string, tabs: Tab[], groups: Group[] = [], spaces: string[] = []) {
     this.id = id
@@ -19,6 +20,7 @@ export class Tabset {
     this.tabs = tabs
     this.groups = groups
     this.spaces = spaces
+    this.isFavorite = false
   }
 
 }
