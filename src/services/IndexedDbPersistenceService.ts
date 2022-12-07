@@ -17,6 +17,7 @@ class IndexedDbPersistenceService implements PersistenceService {
   private db: IDBPDatabase = null as unknown as IDBPDatabase
 
   async init() {
+    console.debug("initializing database")
     this.db = await this.initDatabase()
   }
 
@@ -38,6 +39,7 @@ class IndexedDbPersistenceService implements PersistenceService {
   }
 
   async loadSpaces(): Promise<void> {
+    console.debug("loading spaes...")
     const spacesStore = useSpacesStore()
     const keys: IDBValidKey[] = await this.db.getAllKeys('spaces')
     _.forEach(keys, key => {

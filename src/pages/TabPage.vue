@@ -1,229 +1,158 @@
 <template>
-  <q-page padding>
 
-    <div class="text-h5 q-ml-md q-mb-lg ellipsis">
-      Tab Details for '{{ notificationStore.selectedTab?.chromeTab?.url }}'
+  <q-toolbar class="text-primary lightgrey">
+    <div class="row fit">
+      <q-toolbar-title>
+        <div class="row justify-start items-baseline">
+          Tab Info for '{{ notificationStore.selectedTab?.chromeTab?.url }}'
+        </div>
+      </q-toolbar-title>
+
     </div>
+  </q-toolbar>
 
 
-    <div class="justify-start items-start">
-      <q-tabs align="left" class="bg-grey-1"
-              v-model="tab"
-              no-caps>
-        <q-tab name="tabdata" label="Tab"/>
-        <q-tab name="meta" :label="metaDataLabel()"/>
-        <q-tab name="history" label="History"/>
-        <q-tab name="content" label="Content"/>
-        <q-tab name="index" label="Search Index"/>
-        <q-tab name="request" :label="requestDataLabel()"/>
-      </q-tabs>
-    </div>
+  <div class="justify-start items-start greyBorderTop">
+    <q-tabs align="left" class="bg-grey-1"
+            v-model="tab"
+            no-caps>
+      <q-tab name="tabdata" label="Tab Details"/>
+      <q-tab name="meta" :label="metaDataLabel()"/>
+      <q-tab name="history" label="History"/>
+      <q-tab name="content" label="Content"/>
+      <q-tab name="index" label="Search Index"/>
+      <q-tab name="request" :label="requestDataLabel()"/>
+    </q-tabs>
+  </div>
 
-    <div v-if="tab === 'tabdata'">
-      <div class="row items-baseline q-ma-lg">
-        <div class="col-2">
-          <q-img
-            class="rounded-borders"
-            width="32px"
-            height="32px"
-            :src="notificationStore.selectedTab?.chromeTab?.favIconUrl">
-            <q-tooltip>
-              {{ notificationStore.selectedTab?.chromeTab?.favIconUrl }} / {{
-                notificationStore.selectedTab?.chromeTab?.id
-              }} / {{ notificationStore.selectedTab.id }}
-            </q-tooltip>
-          </q-img>
-        </div>
-        <div class="col-10 text-body1 ellipsis">
-          {{ getHost(notificationStore.selectedTab?.chromeTab?.url, true) }}
-        </div>
-        <div class="col-12 text-body2 ellipsis">
-          {{ notificationStore.selectedTab?.chromeTab?.title }}
-        </div>
-
-        <div class="col-12">
-          <div class="text-overline ellipsis">
-            {{ notificationStore.selectedTab?.chromeTab?.url }}&nbsp;<q-icon name="launch" color="secondary"
-                                                                             @click.stop="NavigationService.openOrCreateTab(tab.chromeTab?.url )"></q-icon>
-          </div>
-        </div>
+  <div v-if="tab === 'tabdata'">
+    <div class="row items-baseline q-ma-lg">
+      <div class="col-2">
+        <q-img
+          class="rounded-borders"
+          width="32px"
+          height="32px"
+          :src="notificationStore.selectedTab?.chromeTab?.favIconUrl">
+          <q-tooltip>
+            {{ notificationStore.selectedTab?.chromeTab?.favIconUrl }} / {{
+              notificationStore.selectedTab?.chromeTab?.id
+            }} / {{ notificationStore.selectedTab.id }}
+          </q-tooltip>
+        </q-img>
       </div>
-      <div class="row items-baseline q-ma-lg">
-        <div class="col-5">
-          Description
-        </div>
-        <div class="col-7">
-          {{ notificationStore.selectedTab?.description }}
-        </div>
+      <div class="col-10 text-body1 ellipsis">
+        {{ getHost(notificationStore.selectedTab?.chromeTab?.url, true) }}
       </div>
-      <div class="row items-baseline q-ma-lg">
-        <div class="col-5">
-          Author
-        </div>
-        <div class="col-7">
-          {{ notificationStore.selectedTab?.author }}
-        </div>
-      </div>
-      <div class="row items-baseline q-ma-lg">
-        <div class="col-5">
-          Date
-        </div>
-        <div class="col-7">
-          {{ notificationStore.selectedTab?.date }}
-        </div>
-      </div>
-      <div class="row items-baseline q-ma-lg">
-        <div class="col-5">
-          Last Modified
-        </div>
-        <div class="col-7">
-          {{ notificationStore.selectedTab?.lastModified }}
-        </div>
-      </div>
-      <div class="row items-baseline q-ma-lg">
-        <div class="col-5">
-          Keywords
-        </div>
-        <div class="col-7">
-          {{ notificationStore.selectedTab?.keywords }}
-        </div>
-      </div>
-      <div class="row items-baseline q-ma-lg">
-        <div class="col-5">
-          Image
-        </div>
-        <div class="col-7">
-          {{ notificationStore.selectedTab?.image }}
-        </div>
+      <div class="col-12 text-body2 ellipsis">
+        {{ notificationStore.selectedTab?.chromeTab?.title }}
       </div>
 
-      <div class="row items-baseline q-ma-lg">
-        <div class="col-12">
-          <q-img :src="thumbnail" width="512px" style="border:1px solid grey"/>
-        </div>
-      </div>
-
-      <div class="row q-ma-sm">
-        <div class="col-5">
-          created
-        </div>
-        <div class="col-7">
-          {{ date.formatDate(notificationStore.selectedTab?.created, 'DD.MM.YYYY HH:mm') }}
-        </div>
-        <div class="col-5">
-          updated
-        </div>
-        <div class="col-7">
-          {{ date.formatDate(notificationStore.selectedTab?.updated, 'DD.MM.YYYY HH:mm') }}
-        </div>
-        <div class="col-5">
-          last Active
-        </div>
-        <div class="col-7">
-          {{ date.formatDate(notificationStore.selectedTab?.lastActive, 'DD.MM.YYYY HH:mm') }}
-        </div>
-        <div class="col-5">
-          activated#
-        </div>
-        <div class="col-7">
-          {{ notificationStore.selectedTab?.activatedCount }}
+      <div class="col-12">
+        <div class="text-overline ellipsis">
+          {{ notificationStore.selectedTab?.chromeTab?.url }}&nbsp;<q-icon name="launch" color="secondary"
+                                                                           @click.stop="NavigationService.openOrCreateTab(tab.chromeTab?.url )"></q-icon>
         </div>
       </div>
     </div>
-
-
-    <div v-else-if="tab === 'meta'">
-
-      <div class="q-pa-md">
-
-        <q-table
-          title="Meta data from the website source"
-          :rows="metaRows"
-          :columns="metaColumns"
-          row-key="name"
-          :pagination="metaInitialPagination"
-          :filter="filter"
-          dense
-        >
-          <template v-slot:top-right>
-            <q-input borderless dense debounce="300" v-model="filter" placeholder="Search">
-              <template v-slot:append>
-                <q-icon name="search"/>
-              </template>
-            </q-input>
-          </template>
-
-          <template v-slot:body-cell-name="props">
-            <q-td :props="props">
-              <div>
-                <q-badge v-if="showNameLink(props.value)"
-                         color="grey" class="cursor-pointer" @click="openNameLink(props.value)" :label="props.value"/>
-                <q-badge v-else
-                         color="grey" @click="openNameLink(props.value)" :label="props.value"/>
-              </div>
-            </q-td>
-          </template>
-
-          <template v-slot:body-cell-value="props">
-            <q-td :props="props">
-              <div>
-                {{ props.value }}
-                <q-icon v-if="showValueLink(props.key)"
-                        name="o_open_in_new" @click="openValueLink(props.key, props.value)"/>
-              </div>
-            </q-td>
-          </template>
-
-        </q-table>
-
-      </div>
-
-    </div>
-
-    <div v-else-if="tab === 'history'">
-      ---
-    </div>
-    <div v-else-if="tab === 'content'">
+    <div class="row items-baseline q-ma-lg">
       <div class="col-5">
-        Content
+        Description
       </div>
       <div class="col-7">
-        {{ content }}
+        {{ notificationStore.selectedTab?.description }}
+      </div>
+    </div>
+    <div class="row items-baseline q-ma-lg">
+      <div class="col-5">
+        Author
+      </div>
+      <div class="col-7">
+        {{ notificationStore.selectedTab?.author }}
+      </div>
+    </div>
+    <div class="row items-baseline q-ma-lg">
+      <div class="col-5">
+        Date
+      </div>
+      <div class="col-7">
+        {{ notificationStore.selectedTab?.date }}
+      </div>
+    </div>
+    <div class="row items-baseline q-ma-lg">
+      <div class="col-5">
+        Last Modified
+      </div>
+      <div class="col-7">
+        {{ notificationStore.selectedTab?.lastModified }}
+      </div>
+    </div>
+    <div class="row items-baseline q-ma-lg">
+      <div class="col-5">
+        Keywords
+      </div>
+      <div class="col-7">
+        {{ notificationStore.selectedTab?.keywords }}
+      </div>
+    </div>
+    <div class="row items-baseline q-ma-lg">
+      <div class="col-5">
+        Image
+      </div>
+      <div class="col-7">
+        {{ notificationStore.selectedTab?.image }}
       </div>
     </div>
 
-    <div v-else-if="tab === 'index'">
-
-      <div v-for="k in keys">
-        ID: {{ k.id }} - weight {{ k.weight }}
+    <div class="row items-baseline q-ma-lg">
+      <div class="col-12">
+        <q-img :src="thumbnail" width="512px" style="border:1px solid grey"/>
       </div>
-      <hr>
-      <div v-for="key in Object.keys(keysMap)">
-        <div v-if="keysMap.hasOwnProperty(key)">
-          <b>key: {{ key }} - {{ keysMap[key] }}</b><br>
-          {{ getForKey(key) }}
-          <!--          {{ index.$[keysMap[key]] }}<br><br>-->
-        </div>
-      </div>
-
-
     </div>
 
-    <div v-else-if="tab === 'request'">
+    <div class="row q-ma-sm">
+      <div class="col-5">
+        created
+      </div>
+      <div class="col-7">
+        {{ date.formatDate(notificationStore.selectedTab?.created, 'DD.MM.YYYY HH:mm') }}
+      </div>
+      <div class="col-5">
+        updated
+      </div>
+      <div class="col-7">
+        {{ date.formatDate(notificationStore.selectedTab?.updated, 'DD.MM.YYYY HH:mm') }}
+      </div>
+      <div class="col-5">
+        last Active
+      </div>
+      <div class="col-7">
+        {{ date.formatDate(notificationStore.selectedTab?.lastActive, 'DD.MM.YYYY HH:mm') }}
+      </div>
+      <div class="col-5">
+        activated#
+      </div>
+      <div class="col-7">
+        {{ notificationStore.selectedTab?.activatedCount }}
+      </div>
+    </div>
+  </div>
 
-      Status Code: {{ request['statusCode'] }}<br><br>
+
+  <div v-else-if="tab === 'meta'">
+
+    <div class="q-pa-md">
 
       <q-table
-        title="Request data"
-        :rows="requestRows"
+        title="Meta data from the website source"
+        :rows="metaRows"
         :columns="metaColumns"
         row-key="name"
         :pagination="metaInitialPagination"
-        :filter="filterRequest"
+        :filter="filter"
         dense
       >
         <template v-slot:top-right>
-          <q-input borderless dense debounce="300" v-model="filterRequest" placeholder="Search">
+          <q-input borderless dense debounce="300" v-model="filter" placeholder="Search">
             <template v-slot:append>
               <q-icon name="search"/>
             </template>
@@ -233,7 +162,20 @@
         <template v-slot:body-cell-name="props">
           <q-td :props="props">
             <div>
-              <q-badge color="grey" class="cursor-pointer" @click="openNameLink(props.value)" :label="props.value"/>
+              <q-badge v-if="showNameLink(props.value)"
+                       color="grey" class="cursor-pointer" @click="openNameLink(props.value)" :label="props.value"/>
+              <q-badge v-else
+                       color="grey" @click="openNameLink(props.value)" :label="props.value"/>
+            </div>
+          </q-td>
+        </template>
+
+        <template v-slot:body-cell-value="props">
+          <q-td :props="props">
+            <div>
+              {{ props.value }}
+              <q-icon v-if="showValueLink(props.key)"
+                      name="o_open_in_new" @click="openValueLink(props.key, props.value)"/>
             </div>
           </q-td>
         </template>
@@ -241,7 +183,70 @@
       </q-table>
 
     </div>
-  </q-page>
+
+  </div>
+
+  <div v-else-if="tab === 'history'">
+    ---
+  </div>
+  <div v-else-if="tab === 'content'">
+    <div class="col-5">
+      Content
+    </div>
+    <div class="col-7">
+      {{ content }}
+    </div>
+  </div>
+
+  <div v-else-if="tab === 'index'">
+
+    <div v-for="k in keys">
+      ID: {{ k.id }} - weight {{ k.weight }}
+    </div>
+    <hr>
+    <div v-for="key in Object.keys(keysMap)">
+      <div v-if="keysMap.hasOwnProperty(key)">
+        <b>key: {{ key }} - {{ keysMap[key] }}</b><br>
+        {{ getForKey(key) }}
+        <!--          {{ index.$[keysMap[key]] }}<br><br>-->
+      </div>
+    </div>
+
+
+  </div>
+
+  <div v-else-if="tab === 'request'">
+
+    Status Code: {{ request['statusCode'] }}<br><br>
+
+    <q-table
+      title="Request data"
+      :rows="requestRows"
+      :columns="metaColumns"
+      row-key="name"
+      :pagination="metaInitialPagination"
+      :filter="filterRequest"
+      dense
+    >
+      <template v-slot:top-right>
+        <q-input borderless dense debounce="300" v-model="filterRequest" placeholder="Search">
+          <template v-slot:append>
+            <q-icon name="search"/>
+          </template>
+        </q-input>
+      </template>
+
+      <template v-slot:body-cell-name="props">
+        <q-td :props="props">
+          <div>
+            <q-badge color="grey" class="cursor-pointer" @click="openNameLink(props.value)" :label="props.value"/>
+          </div>
+        </q-td>
+      </template>
+
+    </q-table>
+
+  </div>
 
 </template>
 
@@ -358,7 +363,7 @@ watchEffect(() => {
   const res = _.filter(fuseIndex['records' as keyof object], (r: any) => {
     return notificationStore.selectedTab?.chromeTab.url === r.$[2]?.v
   })
- // console.log("res", res, res.length)
+  // console.log("res", res, res.length)
   if (res && res.length > 0) {
     index.value = res[0]
   }
@@ -409,3 +414,14 @@ const openValueLink = (name: any, value: string) => {
 const showValueLink = (name: string) => "fb:page_id" === name || "twitter:account_id" === name
 
 </script>
+
+
+<style lang="sass" scoped>
+
+.lightgrey
+  background-color: $lightgrey
+
+.greyBorderTop
+  border-top: 1px solid $bordergrey
+
+</style>

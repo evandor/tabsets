@@ -707,14 +707,28 @@ class TabsetService {
   }
 
 
-  toggleFavorite(id: string) {
+  toggleFavorite(id: string): Promise<boolean> {
     console.log("toggling favorite for", id)
     const ts = this.getTabset(id)
     if (ts) {
       ts.isFavorite = !ts.isFavorite
-      this.saveTabset(ts)
+      return this.saveTabset(ts)
+        .then(() => ts.isArchived)
     }
+    return Promise.reject("could not toggle archive flag for " + id)
   }
+
+  toggleArchived(id: string): Promise<boolean> {
+    console.log("toggling archived flag for", id)
+    const ts = this.getTabset(id)
+    if (ts) {
+      ts.isArchived = !ts.isArchived
+      return this.saveTabset(ts)
+        .then(() => ts.isArchived)
+    }
+    return Promise.reject("could not toggle archive flag for " + id)
+  }
+
 }
 
 export default new TabsetService();

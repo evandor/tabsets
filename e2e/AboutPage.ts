@@ -39,10 +39,10 @@ export class AboutPage extends TabsetPage {
   }
 
   async submitAddUrlDialog(url: string) {
-    await this.page.screenshot({ path: 'e2e/screenshots/addTabset/beforeAddUrl.png', fullPage: true });
+    await this.screenshot(this.page, 'addTabset','beforeAddUrl.png');
     await this.page.waitForSelector('text="Add Url..."')
     await this.page.locator('text="Add Url..."').click()
     await this.addUrlDialogSubmit.fill(url)
-    await this.page.screenshot({ path: 'e2e/screenshots/addTabset/afterAddUrl.png', fullPage: true });
+    await this.screenshot(this.page, 'addTabset','afterAddUrl.png');
   }
 }

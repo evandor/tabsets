@@ -26,7 +26,7 @@ export class TabsetPage {
   }
 
   async screenshot(page: Page, folder: string, name: string) {
-    await page.screenshot({ path: 'e2e/screenshots/'+folder+'/'+name, fullPage: true });
+    await page.screenshot({ path: 'e2e/screenshots/'+folder+'/'+name, clip: {x:0, y:0, width:1280, height:800} });
   }
 
 }
