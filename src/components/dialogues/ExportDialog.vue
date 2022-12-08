@@ -67,7 +67,9 @@ watchEffect(() => {
 
 const exportData = () => {
   hideWarning.value = true
-  TabsetService.exportData(exportAs.value)
+  // @ts-ignore
+  const appVersion = import.meta.env.PACKAGE_VERSION
+  TabsetService.exportData(exportAs.value, appVersion)
     .then(() => {
       router.push("/tabset")
       $q.notify({

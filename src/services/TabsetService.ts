@@ -495,11 +495,8 @@ class TabsetService {
     this.saveTabset(ignoredTS)
   }
 
-  exportData(exportAs: string): Promise<any> {
+  exportData(exportAs: string, appVersion: string = "0.0.0"): Promise<any> {
     console.log("exporting as ", exportAs)
-
-    //@ts-ignore
-    const appVersion = import.meta.env.PACKAGE_VERSION
 
     const tabsStore = useTabsStore()
     let data = ''
@@ -709,6 +706,28 @@ class TabsetService {
     return Promise.reject("did not find tab with id " + tabId)
   }
 
+
+  toggleFavorite(id: string): Promise<boolean> {
+    console.log("toggling favorite for", id)
+    const ts = this.getTabset(id)
+    if (ts) {
+      ts.isFavorite = !ts.isFavorite
+      return this.saveTabset(ts)
+        .then(() => ts.isArchived)
+    }
+    return Promise.reject("could not toggle archive flag for " + id)
+  }
+
+  toggleArchived(id: string): Promise<boolean> {
+    console.log("toggling archived flag for", id)
+    const ts = this.getTabset(id)
+    if (ts) {
+      ts.isArchived = !ts.isArchived
+      return this.saveTabset(ts)
+        .then(() => ts.isArchived)
+    }
+    return Promise.reject("could not toggle archive flag for " + id)
+  }
 
 }
 

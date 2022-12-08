@@ -9,6 +9,7 @@ import {Tab} from "src/models/Tab";
 import TabsetService from "src/services/TabsetService";
 import throttledQueue from "throttled-queue";
 import {useWindowsStore} from "stores/windowsStores";
+import {useBookmarksStore} from "stores/bookmarksStore";
 
 function dummyPromise(timeout: number, tabToCloseId: number | undefined = undefined) {
   return new Promise((resolve, reject) => {
@@ -42,7 +43,7 @@ export const useSearchStore = defineStore('search', () => {
     ],
     includeScore: true,
     includeMatches: true,
-    minMatchCharLength: 4,
+    minMatchCharLength: 3,
     threshold: 0.0,
     // ignoreFieldNorm: true
     ignoreLocation: true
@@ -68,7 +69,7 @@ export const useSearchStore = defineStore('search', () => {
 
   function addToIndex(id: string, name: string, title: string, url: string, description: string, content: string, tabsets: string[], favIconUrl: string): number {
     const doc: SearchDoc = new SearchDoc(
-      id, name, title, url, description, '',content, tabsets, favIconUrl
+      id, name, title, url, description, '', content, tabsets, favIconUrl
     )
     console.log("adding to index", doc)
     // @ts-ignore
@@ -79,9 +80,9 @@ export const useSearchStore = defineStore('search', () => {
   }
 
   function update(url: string, key: string, value: string) {
-    const removed:SearchDoc[] = fuse.value.remove((doc: SearchDoc) => doc.url === url)
+    const removed: SearchDoc[] = fuse.value.remove((doc: SearchDoc) => doc.url === url)
     if (removed && removed.length > 0) {
-      let newDoc:SearchDoc = removed[0]
+      let newDoc: SearchDoc = removed[0]
       switch (key) {
         case 'description':
           newDoc.description = value
@@ -109,7 +110,7 @@ export const useSearchStore = defineStore('search', () => {
 
   function reindex(values: Tabset[]) {
     const throttleOnePerXSeconds = throttledQueue(1, 3000, true)
-    chrome.windows.create({focused: true, width: 1024, height:800}, (window: any) => {
+    chrome.windows.create({focused: true, width: 1024, height: 800}, (window: any) => {
       useWindowsStore().screenshotWindow = window.id
       let tabToClose: number | undefined = undefined
 
@@ -143,9 +144,36 @@ export const useSearchStore = defineStore('search', () => {
   function populate(contentPromise: Promise<any[]>) {
     console.debug("populating searchstore...")
 
+    const urlSet: Set<string> = new Set()
+
+    // --- add data from stored content
+    let count = 0
+    let countFiltered = 0
+    let overwritten = 0
+    contentPromise
+      .then(content => {
+        content.forEach(c => {
+          if (c.expires === 0 || TabsetService.urlExistsInATabset(c.url)) {
+            const searchDoc = new SearchDoc(c.id, c.name, c.title, c.url, c.description, c.keywords, c.content, c.tabsets, c.favIconUrl)
+            searchDoc.description = c.metas['description']
+            searchDoc.keywords = c.metas['keywords']
+            const removed = fuse.value.remove((doc) => {
+              return doc.url === searchDoc.url
+            })
+            overwritten += removed.length
+            fuse.value.add(searchDoc)
+            urlSet.add(c.url)
+            count++
+          } else {
+            countFiltered++
+          }
+        })
+        console.log(`populated from content with ${count} entries (${overwritten} of which overwritten), ${countFiltered} is/are filtered (not in any tab)`)
+      })
+
     // --- add data from tabs directly, like url and title
     const minimalIndex: SearchDoc[] = []
-    const urlSet: Set<string> = new Set()
+
     _.forEach([...useTabsStore().tabsets.values()], (tabset: Tabset) => {
         tabset.tabs.forEach((tab: Tab) => {
           if (tab.chromeTab?.url) {
@@ -153,11 +181,13 @@ export const useSearchStore = defineStore('search', () => {
               const existingDocIndex = _.findIndex(minimalIndex, d => d.url === tab.chromeTab.title)
               if (existingDocIndex >= 0) {
                 const existingDoc = minimalIndex[existingDocIndex]
-                existingDoc.tabsets = existingDoc.tabsets.concat([tabset.id])
-                minimalIndex.splice(existingDocIndex, 1, existingDoc)
+                if (existingDoc.tabsets.indexOf(tabset.id) < 0) {
+                  existingDoc.tabsets = existingDoc.tabsets.concat([tabset.id])
+                  minimalIndex.splice(existingDocIndex, 1, existingDoc)
+                }
               }
             } else {
-              const doc = new SearchDoc("", "", tab.chromeTab.title || '', tab.chromeTab.url, "", "","", [tabset.id], "")
+              const doc = new SearchDoc("", "", tab.chromeTab.title || '', tab.chromeTab.url, "", "", "", [tabset.id], "")
               minimalIndex.push(doc)
               urlSet.add(tab.chromeTab.url)
             }
@@ -168,29 +198,30 @@ export const useSearchStore = defineStore('search', () => {
     console.log(`populated from tabsets with ${minimalIndex.length} entries`)
     minimalIndex.forEach((doc: SearchDoc) => fuse.value.add(doc))
 
-    // add data from stored content
-    let count = 0
-    let countFiltered = 0
-    let overwritten = 0
-    contentPromise
-      .then(content => {
-        content.forEach(c => {
-          if (c.expires === 0 || TabsetService.urlExistsInATabset(c.url)) {
-            const searchDoc = new SearchDoc(c.id, c.name, c.title, c.url, c.description,c.keywords,c.content,c.tabsets,c.favIconUrl)
-            searchDoc.description = c.metas['description']
-            searchDoc.keywords = c.metas['keywords']
-            const removed = fuse.value.remove((doc) => {
-              return doc.url === searchDoc.url
-            })
-            overwritten += removed.length
-            fuse.value.add(searchDoc)
-            count++
-          } else {
-            countFiltered++
-          }
-        })
-        console.log(`populated from content with ${count} entries (${overwritten} of which overwritten), ${countFiltered} is/are filtered (not in any tab)`)
-      })
+    // --- add data from bookmarks directly, like url and title
+    const indexFromBookmarks: SearchDoc[] = []
+    _.forEach(useBookmarksStore().bookmarksLeaves, (bookmark: any) => {
+        if (bookmark && bookmark.url && !urlSet.has(bookmark.url)) {
+          //console.log("bookmark", bookmark)
+          urlSet.add(bookmark.url)
+          //   if (urlSet.has(tab.chromeTab.url)) {
+          //     const existingDocIndex = _.findIndex(minimalIndex, d => d.url === tab.chromeTab.title)
+          //     if (existingDocIndex >= 0) {
+          //       const existingDoc = minimalIndex[existingDocIndex]
+          //       existingDoc.tabsets = existingDoc.tabsets.concat([tabset.id])
+          //       minimalIndex.splice(existingDocIndex, 1, existingDoc)
+          //     }
+          //   } else {
+          const doc = new SearchDoc("", "", bookmark.title || '', bookmark.url, "", "", "", ['bookmarks'], "")
+          indexFromBookmarks.push(doc)
+          //   }
+        }
+      }
+    )
+    console.log(`populated from bookmarks with ${indexFromBookmarks.length} entries`)
+    indexFromBookmarks.forEach((doc: SearchDoc) => fuse.value.add(doc))
+
+
   }
 
   function indexTabs(tsId: string, tabs: Tab[]) {
@@ -199,7 +230,7 @@ export const useSearchStore = defineStore('search', () => {
     tabs.forEach((tab: Tab) => {
       if (tab.chromeTab?.url) {
         if (!urlSet.has(tab.chromeTab.url)) {
-          const doc = new SearchDoc("", "", tab.chromeTab.title || '', tab.chromeTab.url, "","", "", [tsId], "")
+          const doc = new SearchDoc("", "", tab.chromeTab.title || '', tab.chromeTab.url, "", "", "", [tsId], "")
           minimalIndex.push(doc)
           urlSet.add(tab.chromeTab.url)
         }

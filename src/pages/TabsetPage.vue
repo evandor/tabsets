@@ -1,86 +1,7 @@
 <template>
 
-  <!-- pending tabs -->
-  <q-expansion-item v-if="tabsStore.pendingTabset?.tabs.length > 0"
-                    class="q-mb-lg"
-                    style="border: 3px dotted grey; border-radius:8px;"
-                    header-class="text-black"
-                    expand-icon-class="text-black"
-                    expand-icon-toggle
-                    default-opened>
-    <template v-slot:header="{ expanded }">
-
-      <q-item-section>
-        <div>
-          <span class="text-weight-bold">Changed Tabs</span>
-          <div class="text-caption">Decide which tabs you want to put into your tabset
-          </div>
-        </div>
-      </q-item-section>
-      <q-item-section>
-        <q-item-label lines="2">
-          <div class="text-weight-bold">{{ filter ? filter : '&nbsp;' }}</div>
-          <div class="text-caption">
-            {{ filter ? '' : 'not filtering' }}
-            <q-icon :name="filter ? 'o_filter_alt' : 'filter_alt_off'" size="16px">
-              <q-tooltip>Filter shown tabs</q-tooltip>
-            </q-icon>
-            <q-popup-edit
-              :model-value="filter"
-              v-slot="scope"
-              @update:model-value="val => setFilter( val)">
-              <q-input v-model="scope.value" dense autofocus counter @keypress.enter="scope.set"/>
-            </q-popup-edit>
-          </div>
-        </q-item-label>
-      </q-item-section>
-      <q-item-section>{{ pendingTabsCount() }}</q-item-section>
-
-    </template>
-
-    <q-card>
-      <q-card-section>
-        <TabcardsPending :tabs="filteredTabs()"
-                         v-on:selectionChanged="updateSelectionCount"/>
-      </q-card-section>
-    </q-card>
-
-    <div class="justify-center row q-ma-none q-pa-xl">
-
-    <span v-if="TabsetService.getSelectedPendingTabs().length === 0">
-      <q-btn icon="file_download" :label="'Add all to Tabset  ' + tabsStore.currentTabsetName" class="q-mx-lg"
-             color="positive"
-             @click="saveAllPendingTabs()"></q-btn>
-      <q-btn icon="delete_outline" label="Clear changed tabs" class="q-mx-lg" color="negative"
-             @click="removeAllPendingTabs()"></q-btn>
-    </span>
-      <span v-else>
-      <q-btn icon="file_download" label="add selected" color="positive" class="q-mx-lg"
-             @click="saveSelectedPendingTabs()"></q-btn>
-       <q-btn icon="delete_outline" label="clear selected tabs" class="q-mx-lg" color="negative"
-              @click="removeSelectedPendingTabs()"></q-btn>
-    </span>
-    </div>
-
-  </q-expansion-item>
-
-  <!-- banners -->
-  <!--  <q-banner rounded class="bg-amber-1 text-black q-ma-md"-->
-  <!--            v-if="!tabsStore.currentTabsetId && tabsStore.tabsets.size === 0">-->
-  <!--    <div class="text-body2">-->
-  <!--      To get started, add a new tabset by clicking on the plus sign at the lower right page.-->
-  <!--    </div>-->
-  <!--  </q-banner>-->
-
-  <q-banner rounded class="bg-amber-1 text-black q-ma-md"
-            v-if="!tabsStore.currentTabsetId && tabsStore.tabsets.size > 0">
-    <div class="text-body2">
-      Select an existing tabset from the right or add a new tabset by clicking on the plus sign at the lower right page.
-    </div>
-  </q-banner>
-
   <!-- toolbar -->
-  <q-toolbar class="text-primary" v-if="tabsStore.currentTabsetId">
+  <q-toolbar class="text-primary lightgrey" v-if="tabsStore.currentTabsetId">
     <div class="row fit">
       <div class="col-xs-12 col-md-5">
         <q-toolbar-title>
@@ -170,8 +91,90 @@
     </div>
   </q-toolbar>
 
+  <!-- pending tabs -->
+  <q-expansion-item v-if="tabsStore.pendingTabset?.tabs.length > 0"
+                    class="q-ma-lg greyBorderTop"
+                    style="border: 3px dotted grey; border-radius:8px;"
+                    header-class="text-black"
+                    expand-icon-class="text-black"
+                    expand-icon-toggle
+                    default-opened>
+    <template v-slot:header="{ expanded }">
+
+      <q-item-section>
+        <div>
+          <span class="text-weight-bold">Unassigned Tabs</span>
+          <div class="text-caption">Decide which tabs you want to put into your tabset
+          </div>
+        </div>
+      </q-item-section>
+      <q-item-section>
+        <q-item-label lines="2">
+          <div class="text-weight-bold">{{ filter ? filter : '&nbsp;' }}</div>
+          <div class="text-caption">
+            {{ filter ? '' : 'not filtering' }}
+            <q-icon :name="filter ? 'o_filter_alt' : 'filter_alt_off'" size="16px">
+              <q-tooltip>Filter shown tabs</q-tooltip>
+            </q-icon>
+            <q-popup-edit
+              :model-value="filter"
+              v-slot="scope"
+              @update:model-value="val => setFilter( val)">
+              <q-input v-model="scope.value" dense autofocus counter @keypress.enter="scope.set"/>
+            </q-popup-edit>
+          </div>
+        </q-item-label>
+      </q-item-section>
+      <q-item-section>{{ pendingTabsCount() }}</q-item-section>
+
+    </template>
+
+    <q-card>
+      <q-card-section>
+        <TabcardsPending :tabs="filteredTabs()"
+                         v-on:selectionChanged="updateSelectionCount"/>
+      </q-card-section>
+    </q-card>
+
+    <div class="justify-center row q-ma-none q-pa-xl">
+
+    <span v-if="TabsetService.getSelectedPendingTabs().length === 0">
+      <q-btn icon="file_download" :label="'Add all to Tabset  ' + tabsStore.currentTabsetName" class="q-mx-lg"
+             color="positive"
+             @click="saveAllPendingTabs()"></q-btn>
+      <q-btn icon="delete_outline" label="Clear unassigned tabs" class="q-mx-lg" color="negative"
+             @click="removeAllPendingTabs()"></q-btn>
+    </span>
+      <span v-else>
+      <q-btn icon="file_download" label="add selected" color="positive" class="q-mx-lg"
+             @click="saveSelectedPendingTabs()"></q-btn>
+       <q-btn icon="delete_outline" label="clear selected tabs" class="q-mx-lg" color="negative"
+              @click="removeSelectedPendingTabs()"></q-btn>
+    </span>
+    </div>
+
+  </q-expansion-item>
+
+  <!-- banners -->
+  <!--  <q-banner rounded class="bg-amber-1 text-black q-ma-md"-->
+  <!--            v-if="!tabsStore.currentTabsetId && tabsStore.tabsets.size === 0">-->
+  <!--    <div class="text-body2">-->
+  <!--      To get started, add a new tabset by clicking on the plus sign at the lower right page.-->
+  <!--    </div>-->
+  <!--  </q-banner>-->
+
+  <q-banner rounded class="bg-amber-1 text-black q-ma-md"
+            v-if="!tabsStore.currentTabsetId && tabsStore.tabsets.size > 0">
+    <div class="text-body2">
+      Select an existing tabset from the right or add a new tabset by clicking on the plus sign at the lower right page.
+    </div>
+  </q-banner>
+
+
+
   <!-- pinned tabs -->
   <q-expansion-item v-if="tabsStore.pinnedTabs.length > 0 && !specialView()"
+                    class="greyBorderTop"
                     header-class="text-black"
                     expand-icon-class="text-black"
                     expand-separator
@@ -179,9 +182,7 @@
     <template v-slot:header="{ expanded }">
       <q-item-section>
         <div>
-          <span class="text-weight-bold">Pinned Tabs ({{
-              formatLength(tabsStore.pinnedTabs.length, 'tab', 'tabs')
-            }})</span>
+          <span class="text-weight-bold">Pinned Tabs ({{tabsStore.pinnedTabs.length}})</span>
           <div class="text-caption ellipsis">this browser's window's tabs to be pinned</div>
         </div>
       </q-item-section>
@@ -269,8 +270,8 @@
     <template v-slot:header="{ expanded }">
       <q-item-section>
         <div>
-          <span class="text-weight-bold">Tabs ({{ formatLength(unpinnedNoGroup().length, 'tab', 'tabs') }})</span>
-          <div class="text-caption ellipsis">other tabs</div>
+          <span class="text-weight-bold">Tabs ({{ unpinnedNoGroup().length }})</span>
+          <div class="text-caption ellipsis"></div>
         </div>
       </q-item-section>
     </template>
@@ -444,3 +445,13 @@ const specialView = (): boolean =>
   tabsStore.getCurrentTabset?.view === 'kanban' || tabsStore.getCurrentTabset?.view === 'canvas'
 
 </script>
+
+<style lang="sass" scoped>
+
+.lightgrey
+  background-color: $lightgrey
+
+.greyBorderTop
+  border-top: 1px solid $bordergrey
+
+</style>

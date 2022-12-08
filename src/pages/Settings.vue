@@ -1,24 +1,39 @@
 <template>
-  <q-page padding>
 
-    <div class="text-h5 q-mb-lg">
-      Tabset Settings
+
+  <q-toolbar class="text-primary lightgrey" v-if="tabsStore.tabsets.size > 0">
+    <div class="row fit">
+      <q-toolbar-title>
+        <div class="row justify-start items-baseline">
+          Tabsets Extension Settings
+        </div>
+      </q-toolbar-title>
     </div>
+  </q-toolbar>
 
-    <div class="text-h6">Dark Mode</div>
-    <div>
-      <q-radio v-model="darkMode" :val="true" label="Enabled"/>
-      <q-radio v-model="darkMode" :val="false" label="Disabled"/>
-    </div>
+  <div class="justify-start items-start greyBorderTop">
+    <q-tabs align="left" class="bg-grey-1"
+            v-model="tab"
+            no-caps>
+      <q-tab name="appearance" label="Appearance"/>
+      <q-tab name="ignored" label="Ignored Urls"/>
+      <q-tab name="archived" label="Archived Tabsets"/>
+      <q-tab name="db" label="DB" v-if="featuresStore.isEnabled('debug')"/>
+      <q-tab name="search" label="Search Engine" v-if="featuresStore.isEnabled('debug')"/>
+      <q-tab name="importExport" label="Import/Export"/>
+      <q-tab name="featureToggles" label="Feature Toggles"/>
+    </q-tabs>
+  </div>
 
-    <hr>
-    <div class="text-h6">Ignored Urls</div>
-    <div v-for="t in tabsStore.ignoredTabset?.tabs">
-      {{ t.chromeTab.url }}
-    </div>
+  <div v-if="tab === 'appearance'">
+    <div class="row items-baseline q-ma-lg">
 
-    <hr>
-    <div class="row q-mb-md">
+      <div class="col-3 text-h6">Dark Mode</div>
+      <div class="col-9">
+        <q-radio v-model="darkMode" :val="true" label="Enabled"/>
+        <q-radio v-model="darkMode" :val="false" label="Disabled"/>
+      </div>
+
       <div class="col-3 text-h6">
         Warning Thresholds
       </div>
@@ -26,7 +41,7 @@
         warnings start when minimum open tabs count is reached<br>
         Reaching the maximum will turn the bar red.
       </div>
-      <div class="col-3">
+      <div class="col">
         <q-range
           v-model="settingsStore.thresholds"
           :step=5
@@ -36,158 +51,198 @@
         />
       </div>
     </div>
+  </div>
 
-    <hr v-if="featuresStore.isEnabled('debug')">
-    <div class="text-h6" v-if="featuresStore.isEnabled('debug')">Index DB</div>
-    <div class="row" v-if="featuresStore.isEnabled('debug')">
-      <div class="col-3">
-        DB Name
-      </div>
-      <div class="col-3">
-        {{ INDEX_DB_NAME }}
+  <div v-if="tab === 'ignored'">
+
+    <div class="q-pa-md q-gutter-sm">
+
+      <q-banner rounded class="bg-grey-1 text-primary">Urls can be ignored so that the tabsets extension will not
+        notifiy you about changes.
+      </q-banner>
+
+      <div class="row q-pa-md" v-for="tabset in ignoredUrls()">
+        <div class="col-3"><b>{{ tabset.chromeTab?.url }}</b></div>
+        <div class="col-3"></div>
+        <div class="col-1"></div>
+        <div class="col-5">
+<!--          <q-btn label="Un-Archive" @click="unarchive(tabset)"/>-->
+        </div>
       </div>
     </div>
 
-    <hr v-if="featuresStore.isEnabled('debug')">
-    <div class="text-h6" v-if="featuresStore.isEnabled('debug')">Search Index</div>
-    <div class="row" v-if="featuresStore.isEnabled('debug')">
-      <div class="col-3">
-        Search Index
+  </div>
+
+  <div v-if="tab === 'archived'">
+    <div class="q-pa-md q-gutter-sm">
+
+      <q-banner rounded class="bg-grey-1 text-primary">Tabsets can be archived to remove them from direct view. Here's
+        the list of archived tabsets so that
+        they can be restored if needed.
+      </q-banner>
+
+      <div class="row q-pa-md" v-for="tabset in archivedTabsets()">
+        <div class="col-3"><b>{{ tabset.name }}</b></div>
+        <div class="col-3"></div>
+        <div class="col-1"></div>
+        <div class="col-5">
+          <q-btn label="Un-Archive" @click="unarchive(tabset)"/>
+        </div>
       </div>
-      <div class="col-3">
-        Current Size: {{ indexSize }} Entries
+    </div>
+  </div>
+
+  <div v-if="tab === 'db'">
+
+    <div class="q-pa-md q-gutter-sm">
+
+      <q-banner rounded class="bg-grey-1 text-primary">Info about the indexedDB used (locally stored in your browser)
+      </q-banner>
+
+      <div class="row q-pa-md">
+        <div class="col-3"><b>DB Name</b></div>
+        <div class="col-3"></div>
+        <div class="col-1"></div>
+        <div class="col-5">
+          {{ INDEX_DB_NAME }}
+        </div>
       </div>
-      <div class="col-3">
-        <span class="text-blue cursor-pointer" @click="downloadIndex">[Download]</span>&nbsp;
-        <span class="text-blue cursor-pointer" @click="clearIndex">[clear Index]</span>&nbsp;
+      <div class="row q-pa-md">
+        <div class="col-3"><b>DB Version</b></div>
+        <div class="col-3"></div>
+        <div class="col-1"></div>
+        <div class="col-5">
+          {{ INDEX_DB_VERSION }}
+        </div>
       </div>
     </div>
 
-    <hr v-if="featuresStore.isEnabled('debug')">
-    <div class="text-h6" v-if="featuresStore.isEnabled('debug')">Simulate new Version</div>
-    <div class="row" v-if="featuresStore.isEnabled('debug')">
-      <div class="col-3">
-        Version 0.1.2
-      </div>
-      <div class="col-3">
+  </div>
 
-      </div>
-      <div class="col-3">
-        <span class="text-blue cursor-pointer" @click="simulateNewVersion('0.1.2')">Simulate</span>&nbsp;
+  <div v-if="tab === 'search'">
 
+    <div class="q-pa-md q-gutter-sm">
+
+      <q-banner rounded class="bg-grey-1 text-primary">This Browser Extension tracks your tabsets and provides a search
+        bar to search for keywords.
+      </q-banner>
+
+      <div class="row q-pa-md">
+        <div class="col-3"><b>Search Index</b></div>
+        <div class="col-3">Current Size: {{ indexSize }} Entries</div>
+        <div class="col-1"></div>
+        <div class="col-5">
+          <span class="text-blue cursor-pointer" @click="downloadIndex">[Download]</span>&nbsp;
+          <span class="text-blue cursor-pointer" @click="clearIndex">[clear Index]</span>&nbsp;
+        </div>
       </div>
     </div>
 
+  </div>
 
-    <hr>
-    <div class="text-h6">Export Tabset Data</div>
-    <div class="row">
-      <div class="col-3">
+  <div v-if="tab === 'importExport'">
 
-      </div>
-      <div class="col-3">
-        <q-btn
-          @click="showExportDialog"
-          flat round dense icon="file_download" color="primary">
-          <q-tooltip>Export your tabsets</q-tooltip>
-        </q-btn>
-      </div>
-      <div class="col-3">
+    <div class="q-pa-md q-gutter-sm">
 
+      <q-banner rounded class="bg-grey-1 text-primary">You can export your data in various formats and re-import them
+        from json. Please
+        note that it is not guaranteed that older exports can be imported with newer versions of the tabsets extension.
+      </q-banner>
+
+      <div class="row q-pa-md">
+        <div class="col-3"><b>Export</b></div>
+        <div class="col-3">json or as bookmarks</div>
+        <div class="col-1"></div>
+        <div class="col-5">
+          <q-btn
+            @click="showExportDialog"
+            flat round dense icon="file_download" color="primary">
+            <q-tooltip>Export your tabsets</q-tooltip>
+          </q-btn>
+        </div>
       </div>
+
+      <div class="row q-pa-md">
+        <div class="col-3"><b>Import</b></div>
+        <div class="col-3">from json</div>
+        <div class="col-1"></div>
+        <div class="col-5">
+          <q-btn
+            @click="showImportDialog"
+            flat round dense icon="file_upload" color="primary">
+            <q-tooltip>Import your tabsets backup</q-tooltip>
+          </q-btn>
+        </div>
+      </div>
+
     </div>
 
-    <hr>
-    <div class="text-h6">Import Tabset Data</div>
-    <div class="row">
-      <div class="col-3">
 
-      </div>
-      <div class="col-3">
-        <q-btn
-          @click="showImportDialog"
-          flat round dense icon="file_upload" color="primary">
-          <q-tooltip>Import your tabsets backup</q-tooltip>
-        </q-btn>
-      </div>
-      <div class="col-3">
+  </div>
 
+  <div v-if="tab === 'featureToggles'">
+
+    <div class="q-pa-md q-gutter-sm">
+
+      <q-banner rounded class="bg-grey-1 text-primary">Switch on experimental features (or off)</q-banner>
+
+      <div class="row q-pa-md">
+        <div class="col-3"><b>debug</b></div>
+        <div class="col-3">add some information (mainly on tooltips) to help debugging</div>
+        <div class="col-1"></div>
+        <div class="col-5">
+          <q-toggle v-model="debugEnabled"/>
+        </div>
       </div>
+
+      <div class="row q-pa-md">
+        <div class="col-3"><b>spaces</b></div>
+        <div class="col-3">spaces can be used to organize tabsets - a tabset can belong to zero, one or many
+          spaces.
+          You decide first which space you want to work with.
+        </div>
+        <div class="col-1"></div>
+        <div class="col-5">
+          <q-toggle v-model="spacesEnabled"/>
+        </div>
+      </div>
+
+      <div class="row q-pa-md">
+        <div class="col-3"><b>sidebar</b></div>
+        <div class="col-3">the sidebar shows the current tabs on the left and let's you open the tabs in an inline
+          view.
+        </div>
+        <div class="col-1"></div>
+        <div class="col-5">
+          <q-toggle v-model="sidebarEnabled"/>
+        </div>
+      </div>
+
+      <div class="row q-pa-md">
+        <div class="col-3"><b>experimental view</b></div>
+        <div class="col-3">add the views 'kanban' (a column layout) and 'canvas' (a freestlye 2D layout) to the tabsets
+          page.
+        </div>
+        <div class="col-1"></div>
+        <div class="col-5">
+          <q-toggle v-model="experimentalViewsEnabled"/>
+        </div>
+      </div>
+
+      <div class="row q-pa-md">
+        <div class="col-3"><b>Stats Page</b></div>
+        <div class="col-3">view stats for tabsets, bookmarks and so on
+        </div>
+        <div class="col-1"></div>
+        <div class="col-5">
+          <q-toggle v-model="statsEnabled"/>
+        </div>
+      </div>
+
     </div>
 
-    <hr>
-    <div class="text-h6">Feature Toggles</div>
-    <div class="row q-mb-lg">
-      <div class="col-3">
-        Switch on experimental features (or off)
-      </div>
-      <div class="col-3">
+  </div>
 
-      </div>
-      <div class="col-3">
-
-      </div>
-    </div>
-    <div class="row q-mb-md">
-      <div class="col-3">
-        debug
-      </div>
-      <div class="col-3">
-        add some information (mainly on tooltips) to help debugging
-      </div>
-      <div class="col-3">
-        <q-toggle v-model="debugEnabled"/>
-      </div>
-    </div>
-
-    <div class="row q-mb-md">
-      <div class="col-3">
-        spaces
-      </div>
-      <div class="col-3">
-        spaces can be used to organize tabsets - a tabset can belong to zero, one or many spaces.
-        You decide first which space you want to work with.
-      </div>
-      <div class="col-3">
-        <q-toggle v-model="spacesEnabled"/>
-      </div>
-    </div>
-
-    <div class="row q-mb-md">
-      <div class="col-3">
-        sidebar
-      </div>
-      <div class="col-3">
-        the sidebar shows the current tabs on the left and let's you open the tabs in an inline view.
-      </div>
-      <div class="col-3">
-        <q-toggle v-model="sidebarEnabled"/>
-      </div>
-    </div>
-
-    <div class="row q-mb-md">
-      <div class="col-3">
-        experimental views
-      </div>
-      <div class="col-3">
-        add the views 'kanban' (a column layout) and 'canvas' (a freestlye 2D layout) to the tabsets page.
-      </div>
-      <div class="col-3">
-        <q-toggle v-model="experimentalViewsEnabled"/>
-      </div>
-    </div>
-    <div class="row q-mb-md">
-      <div class="col-3">
-        searchIndexWidget
-      </div>
-      <div class="col-3">
-
-      </div>
-      <div class="col-3">
-        <q-toggle v-model="searchIndexWidgetEnabled"/>
-      </div>
-    </div>
-  </q-page>
 
 </template>
 
@@ -197,13 +252,15 @@ import {useFeatureTogglesStore} from "src/stores/featureTogglesStore";
 import {useRouter} from "vue-router";
 import {ref, watchEffect} from "vue";
 import {useQuasar} from "quasar";
-import {INDEX_DB_NAME} from "boot/constants"
+import {INDEX_DB_NAME, INDEX_DB_VERSION} from "boot/constants"
 import {useSearchStore} from "src/stores/searchStore";
 import {useSettingsStore} from "src/stores/settingsStore";
 import TabsetService from "src/services/TabsetService";
 import NavigationService from "src/services/NavigationService";
 import ExportDialog from "components/dialogues/ExportDialog.vue";
 import ImportDialog from "components/dialogues/ImportDialog.vue";
+import _ from "lodash";
+import {Tabset} from "src/models/Tabset";
 
 const tabsStore = useTabsStore()
 const featuresStore = useFeatureTogglesStore()
@@ -225,10 +282,11 @@ const debugEnabled = ref<boolean>(featuresStore.isEnabled('debug'))
 const spacesEnabled = ref<boolean>(featuresStore.isEnabled('spaces'))
 const sidebarEnabled = ref<boolean>(featuresStore.isEnabled('sidebar'))
 const experimentalViewsEnabled = ref<boolean>(featuresStore.isEnabled('experimentalViews'))
-const searchIndexWidgetEnabled = ref<boolean>(featuresStore.isEnabled('searchIndexWidget'))
+const statsEnabled = ref<boolean>(featuresStore.isEnabled('stats'))
 
 const darkMode = ref<boolean>(localStorage.getItem('darkMode') || false)
 const showBookmarks = ref<boolean>(localStorage.getItem('showBookmarks') || false)
+const tab = ref('appearance')
 
 watchEffect(() => {
   console.log("darkMode", darkMode.value, typeof darkMode.value)
@@ -241,7 +299,7 @@ watchEffect(() => {
   featuresStore.setFeatureToggle("spaces", spacesEnabled.value)
   featuresStore.setFeatureToggle("sidebar", sidebarEnabled.value)
   featuresStore.setFeatureToggle("experimentalViews", experimentalViewsEnabled.value)
-  featuresStore.setFeatureToggle("searchIndexWidget", searchIndexWidgetEnabled.value)
+  featuresStore.setFeatureToggle("stats", statsEnabled.value)
 })
 
 watchEffect(() => {
@@ -264,10 +322,25 @@ const downloadIndex = () => {
 
 const clearIndex = () => searchStore.init()
 
-const simulateNewVersion = (version: string) => NavigationService.updateAvailable({version: version})
-
 const showExportDialog = () => $q.dialog({component: ExportDialog})
 const showImportDialog = () => $q.dialog({component: ImportDialog})
 
+const archivedTabsets = () => {
+  let tabsets = [...tabsStore.tabsets.values()]
+  return _.sortBy(_.filter(tabsets, (ts: Tabset) => ts.isArchived), ['name'])
+}
+
+const unarchive = (tabset: Tabset) => TabsetService.toggleArchived(tabset.id)
+const ignoredUrls = () => useTabsStore().ignoredTabset?.tabs
 
 </script>
+
+<style lang="sass" scoped>
+
+.lightgrey
+  background-color: $lightgrey
+
+.greyBorderTop
+  border-top: 1px solid $bordergrey
+
+</style>

@@ -9,7 +9,7 @@ const test = base.extend({
     const browserTypes = {chromium, webkit}
     const launchOptions = {
       devtools: true,
-      headless: false,
+      headless: true,
       args: [
         `--disable-extensions-except=${extensionPath}`
       ],

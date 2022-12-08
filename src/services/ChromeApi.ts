@@ -5,11 +5,13 @@ import {useTabsStore} from "src/stores/tabsStore";
 import _ from "lodash"
 import NavigationService from "src/services/NavigationService";
 import {RequestInfo} from "src/models/RequestInfo";
+import StatsService from "src/services/StatsService";
 
 
 function runHousekeeping(alarm: chrome.alarms.Alarm) {
   if (alarm.name === "housekeeping") {
     TabsetService.housekeeping()
+    StatsService.count()
   }
 }
 

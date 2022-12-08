@@ -26,13 +26,13 @@
         </div>
         <div class="col-xs-12 col-md-7 text-right">
 
-          <!--          <q-btn-->
-          <!--            flat dense icon="restore_page"-->
-          <!--            color="green" :label="$q.screen.gt.sm ? 'Search with browser...' : ''"-->
-          <!--            class="q-mr-md"-->
-          <!--            @click="searchWithBrowser">-->
-          <!--            <q-tooltip>Use your browsers default search provideder to search for {{ searchStore.term }}</q-tooltip>-->
-          <!--          </q-btn>-->
+                    <q-btn
+                      flat dense icon="restore_page"
+                      color="green" :label="$q.screen.gt.sm ? 'Search with browser...' : ''"
+                      class="q-mr-md"
+                      @click="searchWithBrowser">
+                      <q-tooltip>Use your browsers default search provideder to search for {{ searchStore.term }}</q-tooltip>
+                    </q-btn>
 
         </div>
       </div>
@@ -128,9 +128,9 @@ watchEffect(() => {
   }
 })
 
-// const searchWithBrowser = () => {
-//   chrome.search.query({dispostion: 'NEW_TAB', text: searchStore.term})
-// }
+const searchWithBrowser = () => {
+  chrome.search.query({disposition: 'NEW_TAB', text: searchStore.term})
+}
 
 
 </script>

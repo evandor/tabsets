@@ -1,13 +1,13 @@
 <template>
-  <q-page padding>
 
-    <!-- toolbar -->
-    <q-toolbar class="text-primary">
-      <div class="row fit">
-        <div class="col-xs-12 col-md-7">
-          <q-toolbar-title>
-            <div class="row justify-start items-baseline">
-              <div class="col-12">
+
+  <!-- toolbar -->
+  <q-toolbar class="text-primary lightgrey">
+    <div class="row fit">
+      <div class="col-xs-12 col-md-7">
+        <q-toolbar-title>
+          <div class="row justify-start items-baseline">
+            <div class="col-12">
                 <span class="text-primary">
                   <q-breadcrumbs separator=">">
                         <q-breadcrumbs-el label="Bookmarks"/>
@@ -18,30 +18,31 @@
                         />
                       </q-breadcrumbs>
                 </span>
-              </div>
             </div>
-          </q-toolbar-title>
-        </div>
-        <div class="col-xs-12 col-md-5 text-right">
-          <q-btn
-            flat dense icon="delete_outline"
-            color="negative" :label="$q.screen.gt.sm ? 'Delete Folder...' : ''"
-            class="q-mr-md"
-            @click="deleteBookmarkFolder">
-            <q-tooltip>Delete this Bookmark</q-tooltip>
-          </q-btn>
-
-        </div>
+          </div>
+        </q-toolbar-title>
       </div>
-    </q-toolbar>
+      <div class="col-xs-12 col-md-5 text-right">
+        <q-btn
+          flat dense icon="delete_outline"
+          color="negative" :label="$q.screen.gt.sm ? 'Delete Folder...' : ''"
+          class="q-mr-md"
+          @click="deleteBookmarkFolder">
+          <q-tooltip>Delete this Bookmark</q-tooltip>
+        </q-btn>
+
+      </div>
+    </div>
+  </q-toolbar>
+  <q-page padding class="greyBorderTop">
 
     <q-card>
       <q-card-section>
-        <BookmarkCards />
+        <BookmarkCards/>
       </q-card-section>
     </q-card>
 
-<!--    <fab></fab>-->
+    <!--    <fab></fab>-->
 
 
   </q-page>
@@ -142,3 +143,14 @@ const deleteBookmarkFolder = () => {
 
 }
 </script>
+
+
+<style lang="sass" scoped>
+
+.lightgrey
+  background-color: $lightgrey
+
+.greyBorderTop
+  border-top: 1px solid $bordergrey
+
+</style>

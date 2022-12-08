@@ -17,6 +17,7 @@ class IndexedDbPersistenceService implements PersistenceService {
   private db: IDBPDatabase = null as unknown as IDBPDatabase
 
   async init() {
+    console.debug("initializing database")
     this.db = await this.initDatabase()
   }
 
@@ -38,6 +39,7 @@ class IndexedDbPersistenceService implements PersistenceService {
   }
 
   async loadSpaces(): Promise<void> {
+    console.debug("loading spaes...")
     const spacesStore = useSpacesStore()
     const keys: IDBValidKey[] = await this.db.getAllKeys('spaces')
     _.forEach(keys, key => {
@@ -339,13 +341,16 @@ class IndexedDbPersistenceService implements PersistenceService {
         }
         if (!db.objectStoreNames.contains('mhtml')) {
           console.log("creating db mhtml")
-          let store = db.createObjectStore('mhtml');
-          //store.createIndex("expires", "expires", {unique: false});
+          db.createObjectStore('mhtml');
         }
         if (!db.objectStoreNames.contains('requests')) {
           console.log("creating db requests")
           let store = db.createObjectStore('requests');
           store.createIndex("expires", "expires", {unique: false});
+        }
+        if (!db.objectStoreNames.contains('stats')) {
+          console.log("creating db stats")
+          db.createObjectStore('stats');
         }
       },
     });
@@ -362,6 +367,12 @@ class IndexedDbPersistenceService implements PersistenceService {
   }
 
 
+  saveStats(dataset: object) {
+    const offset = new Date().getTimezoneOffset()
+    const todayLong = new Date(new Date().getTime() - (offset*60*1000))
+    const today = todayLong.toISOString().split('T')[0]
+    this.db.put('stats', dataset, today)
+  }
 }
 
 export default new IndexedDbPersistenceService()

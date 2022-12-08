@@ -1,5 +1,17 @@
 <template>
-  <q-page padding>
+
+  <q-toolbar class="text-primary lightgrey" v-if="tabsStore.tabsets.size > 0">
+    <div class="row fit">
+      <q-toolbar-title>
+        <div class="row justify-start items-baseline">
+
+        </div>
+      </q-toolbar-title>
+
+    </div>
+  </q-toolbar>
+
+  <q-page padding class="greyBorderTop">
 
     <div class="text-h4 q-ml-md">
       Welcome to Tabsets
@@ -8,11 +20,14 @@
 
     <div class="text-body1 q-ma-md" v-if="tabsStore.tabsets.size === 0">
       Tabsets is a browser extension which helps you organize your tabs.<br><br>
-      A <q-chip label="tabset" square color="warning" /> is just a collection of tabs you can give a name to.
+      A
+      <q-chip label="tabset" square color="warning"/>
+      is just a collection of tabs you can give a name to.
     </div>
     <div class="text-body1 q-ma-md" v-else>
       Tabsets is a browser extension which helps you organize your tabs.<br><br>
-      You are managing <b>{{ tabsStore.allTabsCount }} tabs</b> in <b>{{ tabsStore.tabsets.size }} Tabset(s)</b> already.
+      You are managing <b>{{ tabsStore.allTabsCount }} tabs</b> in <b>{{ tabsStore.tabsets.size }} Tabset(s)</b>
+      already.
     </div>
 
     <div class="text-h5 q-ma-md">
@@ -33,7 +48,7 @@
             </q-card-section>
 
             <q-card-section class="q-pt-none text-black" style="height: 65px">
-              {{ feature.text}}
+              {{ feature.text }}
             </q-card-section>
           </q-card>
         </div>
@@ -59,8 +74,14 @@
 
     <div class="text-body1 q-ma-md">
       <ul>
-        <li>Chrome (<a href="https://chrome.google.com/webstore/detail/tabsets-extension/afkknkdbgondbbfjehipnjmojndnjhjg?hl=en&authuser=0'" target="_blank">webstore</a>)</li>
-        <li>Brave (<a href="https://chrome.google.com/webstore/detail/tabsets-extension/afkknkdbgondbbfjehipnjmojndnjhjg?hl=en&authuser=0'" target="_blank">webstore</a>)</li>
+        <li>Chrome (<a
+          href="https://chrome.google.com/webstore/detail/tabsets-extension/afkknkdbgondbbfjehipnjmojndnjhjg?hl=en&authuser=0'"
+          target="_blank">webstore</a>)
+        </li>
+        <li>Brave (<a
+          href="https://chrome.google.com/webstore/detail/tabsets-extension/afkknkdbgondbbfjehipnjmojndnjhjg?hl=en&authuser=0'"
+          target="_blank">webstore</a>)
+        </li>
         <li class="text-grey-7">Firefox (once manifest v3 is supported)</li>
       </ul>
     </div>
@@ -103,3 +124,14 @@ const features = ref([
 ])
 
 </script>
+
+
+<style lang="sass" scoped>
+
+.lightgrey
+  background-color: $lightgrey
+
+.greyBorderTop
+  border-top: 1px solid $bordergrey
+
+</style>

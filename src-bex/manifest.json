@@ -15,7 +15,8 @@
     "scripting",
     "notifications",
     "pageCapture",
-    "webRequest"
+    "webRequest",
+    "search"
   ],
   "host_permissions": [
     "<all_urls>"

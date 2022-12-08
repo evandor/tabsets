@@ -31,6 +31,8 @@ interface PersistenceService {
   addSpace(space: Space): Promise<void>
 
   cleanUpRequests(): Promise<void>
+
+  saveStats(dataset: object): void
 }
 
 export default PersistenceService

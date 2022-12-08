@@ -18,7 +18,9 @@
                  data-testid="newTabsetName"
                  @keydown.enter="createNewTabset()"/>
         <div class="text-caption text-negative q-mt-none q-pt-none">{{ newTabsetDialogWarning() }}</div>
-        <q-checkbox v-model="addAutomatically" label="Add open tabs automatically"/>&nbsp;
+        <q-checkbox
+          data-testid="newTabsetAutoAdd"
+          v-model="addAutomatically" label="Add open tabs automatically"/>&nbsp;
         <q-icon name="help" color="primary" size="1em">
           <q-tooltip>When checked, this will add all your browsers open tabs automatically to the new tabset.<br>
             Otherwise, you have the chance to add all (or selected) tabs yourself later.
