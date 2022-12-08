@@ -230,12 +230,12 @@
       </div>
 
       <div class="row q-pa-md">
-        <div class="col-3"><b>Search Index Widget</b></div>
-        <div class="col-3">see how many tabs are indexed in the search engine
+        <div class="col-3"><b>Stats Page</b></div>
+        <div class="col-3">view stats for tabsets, bookmarks and so on
         </div>
         <div class="col-1"></div>
         <div class="col-5">
-          <q-toggle v-model="searchIndexWidgetEnabled"/>
+          <q-toggle v-model="statsEnabled"/>
         </div>
       </div>
 
@@ -282,7 +282,7 @@ const debugEnabled = ref<boolean>(featuresStore.isEnabled('debug'))
 const spacesEnabled = ref<boolean>(featuresStore.isEnabled('spaces'))
 const sidebarEnabled = ref<boolean>(featuresStore.isEnabled('sidebar'))
 const experimentalViewsEnabled = ref<boolean>(featuresStore.isEnabled('experimentalViews'))
-const searchIndexWidgetEnabled = ref<boolean>(featuresStore.isEnabled('searchIndexWidget'))
+const statsEnabled = ref<boolean>(featuresStore.isEnabled('stats'))
 
 const darkMode = ref<boolean>(localStorage.getItem('darkMode') || false)
 const showBookmarks = ref<boolean>(localStorage.getItem('showBookmarks') || false)
@@ -299,7 +299,7 @@ watchEffect(() => {
   featuresStore.setFeatureToggle("spaces", spacesEnabled.value)
   featuresStore.setFeatureToggle("sidebar", sidebarEnabled.value)
   featuresStore.setFeatureToggle("experimentalViews", experimentalViewsEnabled.value)
-  featuresStore.setFeatureToggle("searchIndexWidget", searchIndexWidgetEnabled.value)
+  featuresStore.setFeatureToggle("stats", statsEnabled.value)
 })
 
 watchEffect(() => {

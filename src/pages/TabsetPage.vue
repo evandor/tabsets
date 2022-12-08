@@ -103,7 +103,7 @@
 
       <q-item-section>
         <div>
-          <span class="text-weight-bold">Changed Tabs</span>
+          <span class="text-weight-bold">Unassigned Tabs</span>
           <div class="text-caption">Decide which tabs you want to put into your tabset
           </div>
         </div>
@@ -142,7 +142,7 @@
       <q-btn icon="file_download" :label="'Add all to Tabset  ' + tabsStore.currentTabsetName" class="q-mx-lg"
              color="positive"
              @click="saveAllPendingTabs()"></q-btn>
-      <q-btn icon="delete_outline" label="Clear changed tabs" class="q-mx-lg" color="negative"
+      <q-btn icon="delete_outline" label="Clear unassigned tabs" class="q-mx-lg" color="negative"
              @click="removeAllPendingTabs()"></q-btn>
     </span>
       <span v-else>
@@ -182,9 +182,7 @@
     <template v-slot:header="{ expanded }">
       <q-item-section>
         <div>
-          <span class="text-weight-bold">Pinned Tabs ({{
-              formatLength(tabsStore.pinnedTabs.length, 'tab', 'tabs')
-            }})</span>
+          <span class="text-weight-bold">Pinned Tabs ({{tabsStore.pinnedTabs.length}})</span>
           <div class="text-caption ellipsis">this browser's window's tabs to be pinned</div>
         </div>
       </q-item-section>

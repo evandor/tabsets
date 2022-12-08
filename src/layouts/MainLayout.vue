@@ -52,14 +52,6 @@
           <OpenTabsThresholdWidget v-if="tabsStore.tabsets.size > 0"/>
         </div>
 
-        <div>
-          <SearchIndexThresholdWidget v-if="featuresStore.isEnabled('searchIndexWidget')"/>
-        </div>
-
-        <div>
-
-        </div>
-
         <div v-if="tabsStore.pendingTabset?.tabs.length > 0 && tabsStore.tabsets.size > 1" class="q-mr-lg">
           {{ tabsStore.pendingTabset?.tabs.length }} unassigned tab(s)
         </div>
@@ -82,6 +74,11 @@
             </q-list>
           </q-menu>
         </div>
+
+        <q-btn v-if="featuresStore.isEnabled('stats')"
+               class="q-mr-md" icon="o_query_stats" size="12px" style="width:24px" flat @click="router.push('/stats')">
+          <q-tooltip>Check out stats (experimental)</q-tooltip>
+        </q-btn>
 
         <q-btn class="q-mr-md" icon="o_settings" size="12px" style="width:24px" flat @click="router.push('/settings')">
           <q-tooltip>Customize Tabsets and utilize advanced features</q-tooltip>
@@ -140,7 +137,6 @@ import _ from "lodash";
 import {useSpacesStore} from "stores/spacesStore"
 import {useSettingsStore} from "stores/settingsStore"
 import OpenTabsThresholdWidget from 'src/components/widgets/OpenTabsThresholdWidget.vue'
-import SearchIndexThresholdWidget from 'src/components/widgets/SearchIndexThresholdWidget.vue'
 import SpacesSelectorWidget from 'src/components/widgets/SpacesSelectorWidget.vue'
 
 const router = useRouter()
