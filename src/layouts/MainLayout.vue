@@ -14,25 +14,6 @@
 
         <SpacesSelectorWidget v-if="featuresStore.isEnabled('spaces')" />
 
-<!--        <q-select-->
-<!--          bg-color="white"-->
-<!--          v-if="featuresStore.isEnabled('spaces')"-->
-<!--          filled v-model="spacesStore.space" :options="spacesOptions" dense options-dense>-->
-<!--          <template v-slot:selected>-->
-<!--            Space:-->
-<!--            <q-chip-->
-<!--              v-if="spacesStore.space"-->
-<!--              dense-->
-<!--              square-->
-<!--              color="white"-->
-<!--              text-color="primary"-->
-<!--              class="q-my-none q-ml-xs q-mr-none">-->
-<!--              {{ spacesStore.space.label }}-->
-<!--            </q-chip>-->
-<!--            <q-badge v-else>*none*</q-badge>-->
-<!--          </template>-->
-<!--        </q-select>-->
-
         <q-input dark dense standout v-model="search"
                  ref="searchBox"
                  style="width:460px;"
@@ -205,9 +186,8 @@ onUnmounted(() => {
 })
 
 function submitSearch() {
-  console.log("s", search.value)
   searchStore.term = search.value
-  router.push("/search/" + search.value)
+  router.push("/search")
 }
 
 const title = () => {

@@ -104,7 +104,8 @@
           </div>
 
 
-          <div class="text-subtitle2 ellipsis text-secondary" @click.stop="NavigationService.openOrCreateTab(bm.chromeBookmark?.url )">
+          <div class="text-subtitle2 ellipsis text-secondary"
+               @click.stop="NavigationService.openOrCreateTab(bm.chromeBookmark?.url )">
             {{ bm.chromeBookmark?.url.replace("https://www.", '').replace("https://", '') }}
             <q-icon name="launch" color="secondary"
                     @click.stop="NavigationService.openOrCreateTab(bm.chromeBookmark?.url )"></q-icon>
@@ -113,9 +114,13 @@
             </q-tooltip>
           </div>
 
-          <div>
-            {{date.formatDate(bm.chromeBookmark?.dateAdded, 'DD.MM.YYYY HH:mm')}}
+          <div class="text-grey-5">
+            {{ formatDate(bm.chromeBookmark?.dateAdded) }}
+            <q-tooltip>this bookmark was created at
+              {{ date.formatDate(bm.chromeBookmark?.dateAdded, 'DD.MM.YYYY HH:mm') }}
+            </q-tooltip>
           </div>
+
 
         </q-card-section>
 
@@ -145,8 +150,17 @@ import BookmarksService from "src/services/BookmarksService";
 import NavigationService from "src/services/NavigationService";
 import {useBookmarksStore} from "src/stores/bookmarksStore";
 import _ from "lodash"
+import {formatDistance, subDays} from 'date-fns'
 
 const emits = defineEmits(['sendCaption'])
+
+const props = defineProps({
+  highlightId: {
+    type: String,
+    required: false
+  }
+})
+
 
 const bookmarksStore = useBookmarksStore()
 const router = useRouter()
@@ -165,7 +179,10 @@ function cardStyle(bm: Bookmark) {
   }
 
   let background = ''
-  // style=""
+  //console.log("xxx", bm.id, props.highlightId)
+  if (props.highlightId && bm.chromeBookmark.id === props.highlightId) {
+    background = "background-color: red"
+  }
   return `${borderColor};${background}`
 }
 
@@ -201,6 +218,14 @@ const startDrag = (evt: DragEvent, bm: Bookmark) => {
 
 const importBookmarks = () => {
   $q.dialog({component: ImportFromBookmarks})
+}
+
+const formatDate = (timestamp: number | undefined) => {
+  if (timestamp) {
+    // return date.formatDate(timestamp, 'DD.MM.YYYY HH:mm')
+    return formatDistance(timestamp, new Date(), {addSuffix: true})
+  }
+  return ""
 }
 
 // const filterdBookmarks = () => {

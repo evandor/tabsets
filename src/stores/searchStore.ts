@@ -69,7 +69,7 @@ export const useSearchStore = defineStore('search', () => {
 
   function addToIndex(id: string, name: string, title: string, url: string, description: string, content: string, tabsets: string[], favIconUrl: string): number {
     const doc: SearchDoc = new SearchDoc(
-      id, name, title, url, description, '', content, tabsets, favIconUrl
+      id, name, title, url, description, '', content, tabsets, '', favIconUrl
     )
     console.log("adding to index", doc)
     // @ts-ignore
@@ -154,7 +154,7 @@ export const useSearchStore = defineStore('search', () => {
       .then(content => {
         content.forEach(c => {
           if (c.expires === 0 || TabsetService.urlExistsInATabset(c.url)) {
-            const searchDoc = new SearchDoc(c.id, c.name, c.title, c.url, c.description, c.keywords, c.content, c.tabsets, c.favIconUrl)
+            const searchDoc = new SearchDoc(c.id, c.name, c.title, c.url, c.description, c.keywords, c.content, c.tabsets, '', c.favIconUrl)
             searchDoc.description = c.metas['description']
             searchDoc.keywords = c.metas['keywords']
             const removed = fuse.value.remove((doc) => {
@@ -187,7 +187,7 @@ export const useSearchStore = defineStore('search', () => {
                 }
               }
             } else {
-              const doc = new SearchDoc("", "", tab.chromeTab.title || '', tab.chromeTab.url, "", "", "", [tabset.id], "")
+              const doc = new SearchDoc("", "", tab.chromeTab.title || '', tab.chromeTab.url, "", "", "", [tabset.id], '', "")
               minimalIndex.push(doc)
               urlSet.add(tab.chromeTab.url)
             }
@@ -202,19 +202,10 @@ export const useSearchStore = defineStore('search', () => {
     const indexFromBookmarks: SearchDoc[] = []
     _.forEach(useBookmarksStore().bookmarksLeaves, (bookmark: any) => {
         if (bookmark && bookmark.url && !urlSet.has(bookmark.url)) {
-          //console.log("bookmark", bookmark)
+         // console.log("bookmark", bookmark)
           urlSet.add(bookmark.url)
-          //   if (urlSet.has(tab.chromeTab.url)) {
-          //     const existingDocIndex = _.findIndex(minimalIndex, d => d.url === tab.chromeTab.title)
-          //     if (existingDocIndex >= 0) {
-          //       const existingDoc = minimalIndex[existingDocIndex]
-          //       existingDoc.tabsets = existingDoc.tabsets.concat([tabset.id])
-          //       minimalIndex.splice(existingDocIndex, 1, existingDoc)
-          //     }
-          //   } else {
-          const doc = new SearchDoc("", "", bookmark.title || '', bookmark.url, "", "", "", ['bookmarks'], "")
+          const doc = new SearchDoc("", "", bookmark.title || '', bookmark.url, "", "", "", [], bookmark.id, "")
           indexFromBookmarks.push(doc)
-          //   }
         }
       }
     )
@@ -230,7 +221,7 @@ export const useSearchStore = defineStore('search', () => {
     tabs.forEach((tab: Tab) => {
       if (tab.chromeTab?.url) {
         if (!urlSet.has(tab.chromeTab.url)) {
-          const doc = new SearchDoc("", "", tab.chromeTab.title || '', tab.chromeTab.url, "", "", "", [tsId], "")
+          const doc = new SearchDoc("", "", tab.chromeTab.title || '', tab.chromeTab.url, "", "", "", [tsId], '', "")
           minimalIndex.push(doc)
           urlSet.add(tab.chromeTab.url)
         }

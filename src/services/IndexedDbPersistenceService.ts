@@ -206,7 +206,7 @@ class IndexedDbPersistenceService implements PersistenceService {
           data.expires = 0
           contentObjectStore.put(data, contentCursor.key)
           result.push(new SearchDoc(
-            data.id, "", data.title, data.url, data.description, "", data.content, [], data.favIconUrl
+            data.id, "", data.title, data.url, data.description, "", data.content, [], '', data.favIconUrl
           ))
         } else {
           if (contentCursor.value.expires < new Date().getTime()) {
@@ -249,9 +249,6 @@ class IndexedDbPersistenceService implements PersistenceService {
     const mhtmlString = await content.text()
     //console.log("mhtmlString", mhtmlString)
     const html = mhtml2html.convert(mhtmlString)//,{ parseDOM: (html:any) => new JSDOM(html)    });
-    console.log("XXX1", html, typeof html);
-    console.log("XXX2", html.window);
-    console.log("XXX3", html.window.document);
     const innerHtml = html.window.document.documentElement.innerHTML
     //console.log("XXX4", innerHtml);
     //console.log("XXX4", html.window.document.innerHTML);

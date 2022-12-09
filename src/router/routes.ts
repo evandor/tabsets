@@ -48,7 +48,7 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/bookmarks/:id',
     component: () => import('layouts/MainLayout.vue'),
-    children: [{ path: '', component: () => import('pages/Bookmarks.vue') }],
+    children: [{ path: '', component: () => import('pages/BookmarksPage.vue') }],
   },
   {
     path: '/spaces',
@@ -60,13 +60,8 @@ const routes: RouteRecordRaw[] = [
     component: () => import('layouts/MainLayout.vue'),
     children: [{ path: '', component: () => import('pages/MHtmlPage.vue') }],
   },
-  // {
-  //   path: '/browser',
-  //   component: () => import('layouts/MainLayout.vue'),
-  //   children: [{ path: '', component: () => import('pages/ChromeTabset.vue') }],
-  // },
   {
-    path: '/search/:term',
+    path: '/search',
     component: () => import('layouts/MainLayout.vue'),
     children: [{ path: '', component: () => import('pages/SearchPage.vue') }],
   },

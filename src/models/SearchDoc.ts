@@ -11,6 +11,7 @@ export class SearchDoc {
     public keywords: string,
     public content: string,
     public tabsets: string[],
+    public bookmarkId: string,
     public favIconUrl: string) {
 
     this.created = new Date().getTime()

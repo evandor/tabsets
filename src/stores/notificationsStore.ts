@@ -30,6 +30,10 @@ export const useNotificationsStore = defineStore('notifications', {
       },
       updateAvailable(available: boolean, version: string = '') {
         this.updateToVersion = available ? version : '';
+      },
+      expandForBookmarkId(bookmarkId: string) {
+        bookmarksExpanded: [] as unknown as string[]
+
       }
     }
   }

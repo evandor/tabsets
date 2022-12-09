@@ -155,22 +155,12 @@
 
   </q-expansion-item>
 
-  <!-- banners -->
-  <!--  <q-banner rounded class="bg-amber-1 text-black q-ma-md"-->
-  <!--            v-if="!tabsStore.currentTabsetId && tabsStore.tabsets.size === 0">-->
-  <!--    <div class="text-body2">-->
-  <!--      To get started, add a new tabset by clicking on the plus sign at the lower right page.-->
-  <!--    </div>-->
-  <!--  </q-banner>-->
-
   <q-banner rounded class="bg-amber-1 text-black q-ma-md"
             v-if="!tabsStore.currentTabsetId && tabsStore.tabsets.size > 0">
     <div class="text-body2">
-      Select an existing tabset from the right or add a new tabset by clicking on the plus sign at the lower right page.
+      Select an existing tabset from the right or add a new tabset by clicking on the plus sign at the top right.
     </div>
   </q-banner>
-
-
 
   <!-- pinned tabs -->
   <q-expansion-item v-if="tabsStore.pinnedTabs.length > 0 && !specialView()"

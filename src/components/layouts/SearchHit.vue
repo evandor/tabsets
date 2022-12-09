@@ -4,7 +4,8 @@
   <q-item v-ripple autofocus class="q-mb-lg">
 
     <q-item-section>
-      <q-item-label class="ellipsis text-black" caption v-html="formatText(hit, 'url',hit.chromeTab.url || '', '#FFFFDD')"></q-item-label>
+      <q-item-label class="ellipsis text-black" caption
+                    v-html="formatText(hit, 'url',hit.chromeTab.url || '', '#FFFFDD')"></q-item-label>
       <q-item-label class="text-blue-9 text-h6">
 
         <q-img
@@ -19,18 +20,24 @@
               @click="NavigationService.openOrCreateTab(hit.chromeTab?.url )"
               v-html="formatText(hit, 'title',hit.chromeTab.title || '', '#FFFFDD')"></span>
         <template v-for="badge in tabsetBadges(hit)">
-          <q-chip class="cursor-pointer q-ml-md" size="9px" clickable icon="tab" @click="openTabset(badge)">
+          <q-chip v-if="badge.bookmarkId"
+                  class="cursor-pointer q-ml-md" size="9px" clickable icon="o_bookmark" color="warning" @click="openBookmark(badge)">
+            {{ badge.label }}
+          </q-chip>
+          <q-chip v-else
+                  class="cursor-pointer q-ml-md" size="9px" clickable icon="tab" @click="openTabset(badge)">
             {{ badge.label }}
           </q-chip>
         </template>
       </q-item-label>
 
       <q-item-label caption v-html="formatText(hit, 'description', hit.description || '', '#FFFFDD')"></q-item-label>
-      <q-item-label style="font-style:italic" caption v-html="formatText(hit, 'keywords', hit.keywords || '', '#FFFFDD')"></q-item-label>
+      <q-item-label style="font-style:italic" caption
+                    v-html="formatText(hit, 'keywords', hit.keywords || '', '#FFFFDD')"></q-item-label>
       <q-item-label class="text-blue-2 q-mb-sm" v-if="featureToggles.isEnabled('debug')">Match in:
         {{ _.map(hit['matches'], m => m['key']).join(", ") }}
       </q-item-label>
-<!--      <q-item-label caption>{{ hit['matches'] }}</q-item-label>-->
+      <!--      <q-item-label caption>{{ hit['matches'] }}</q-item-label>-->
 
       <span>
         <q-rating
@@ -39,7 +46,7 @@
           color="warning"
           readonly
         />
-<!--        {{ hit.score }}%-->
+        <!--        {{ hit.score }}%-->
       </span>
     </q-item-section>
 
@@ -57,6 +64,8 @@ import {Hit} from "src/models/Hit";
 import _ from "lodash"
 import {useFeatureTogglesStore} from "src/stores/featureTogglesStore";
 import {useRouter} from "vue-router";
+import {useNotificationsStore} from "stores/notificationsStore";
+import BookmarksService from "src/services/BookmarksService";
 
 const props = defineProps({
   hit: {
@@ -131,21 +140,37 @@ const setInfo = (tab: Tab) => {
 
 const tabsetBadges = (hit: Hit): object[] => {
   const badges: object[] = []
+  //console.log("xxx", hit.bookmarkId)
   _.forEach(hit.tabsets, ts => badges.push({
     label: TabsetService.nameForTabsetId(ts),
     tabsetId: ts,
     encodedUrl: btoa(hit.chromeTab.url || '')
   }))
+  if (hit.bookmarkId) {
+    badges.push({
+      label: 'bookmark',
+      bookmarkId: hit.bookmarkId,
+      encodedUrl: btoa(hit.chromeTab.url || '')
+    })
+  }
   return badges;
 }
 
 const openTabset = (badge: any) => {
   console.log("badge", badge)
   TabsetService.selectTabset(badge.tabsetId)
-  router.push("/tabset?highlight=" + badge.encodedUrl)
+  router.push("/tabsets/" + badge.tabsetId + "?highlight=" + badge.encodedUrl)
 }
 
-const formatText = (hit: Hit, key: string, text: string, color:string) => {
+const openBookmark = (badge: any) => {
+  console.log("badge", badge)
+  BookmarksService.expandTreeForBookmarkId(badge.bookmarkId)
+    .then(parentId => {
+      router.push("/bookmarks/" +  parentId + "?highlight=" + badge.bookmarkId)
+    })
+}
+
+const formatText = (hit: Hit, key: string, text: string, color: string) => {
 
   let urlMatch: object[] = _.filter(hit.matches, (m: object) => m['key' as keyof object] === key)
   if (urlMatch && urlMatch.length > 0) {
@@ -153,7 +178,7 @@ const formatText = (hit: Hit, key: string, text: string, color:string) => {
     //console.log("indices", urlMatch[0]['indices' as keyof object])
     let res = ''
     let offset = 0
-    let begin = '<span style="background-color:'+color+'">'
+    let begin = '<span style="background-color:' + color + '">'
     let end = '</span>'
 
     const indices = urlMatch[0]['indices' as keyof object] as unknown as any[]
@@ -164,7 +189,7 @@ const formatText = (hit: Hit, key: string, text: string, color:string) => {
       const from = match[0] + offset
       const to = match[1] + offset
       res = startString.substring(0, from) + begin
-      res += startString.substring(from , to  + 1) + end
+      res += startString.substring(from, to + 1) + end
       res += startString.substring(to + 1)
       offset += begin.length + end.length
       startString = res

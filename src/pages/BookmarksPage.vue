@@ -38,7 +38,7 @@
 
     <q-card>
       <q-card-section>
-        <BookmarkCards/>
+        <BookmarkCards :highlightId="highlightId"/>
       </q-card-section>
     </q-card>
 
@@ -71,6 +71,19 @@ const $q = useQuasar()
 const bookmarksForFolder = ref<Bookmark[]>([])
 const bookmarksForBreadcrumb = ref<Bookmark[]>([])
 const bookmarkId = ref('')
+
+const highlightId = ref<string>('')
+
+watchEffect(() => {
+  const highlight = route.query['highlight'] as unknown as string
+  if (highlight) {
+    try {
+      highlightId.value = highlight
+    } catch (e: any) {
+      console.error("highlight error", e)
+    }
+  }
+})
 
 async function getParentChain(bookmarkId: string, chain: Bookmark[] = []): Promise<Bookmark[]> {
   // @ts-ignore
