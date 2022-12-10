@@ -260,7 +260,7 @@ import NavigationService from "src/services/NavigationService";
 import ExportDialog from "components/dialogues/ExportDialog.vue";
 import ImportDialog from "components/dialogues/ImportDialog.vue";
 import _ from "lodash";
-import {Tabset} from "src/models/Tabset";
+import {Tabset, TabsetStatus} from "src/models/Tabset";
 
 const tabsStore = useTabsStore()
 const featuresStore = useFeatureTogglesStore()
@@ -327,7 +327,7 @@ const showImportDialog = () => $q.dialog({component: ImportDialog})
 
 const archivedTabsets = () => {
   let tabsets = [...tabsStore.tabsets.values()]
-  return _.sortBy(_.filter(tabsets, (ts: Tabset) => ts.isArchived), ['name'])
+  return _.sortBy(_.filter(tabsets, (ts: Tabset) => ts.status = TabsetStatus.ARCHIVED), ['name'])
 }
 
 const unarchive = (tabset: Tabset) => TabsetService.toggleArchived(tabset.id)

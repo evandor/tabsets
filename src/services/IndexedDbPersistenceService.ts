@@ -3,7 +3,7 @@ import {useTabsStore} from "src/stores/tabsStore";
 import _ from "lodash";
 import {INDEX_DB_NAME, INDEX_DB_VERSION, EXPIRE_DATA_PERIOD_IN_MINUTES} from "boot/constants";
 import PersistenceService from "src/services/PersistenceService";
-import {Tabset} from "src/models/Tabset";
+import {Tabset, TabsetStatus} from "src/models/Tabset";
 import mhtml2html from 'mhtml2html';
 import {useSpacesStore} from "stores/spacesStore";
 import {Space} from "src/models/Space";
@@ -154,6 +154,18 @@ class IndexedDbPersistenceService implements PersistenceService {
       }, encodedTabUrl)
     }
     return Promise.reject("tab.url missing")
+  }
+
+  async cleanUpTabsets(): Promise<void> {
+    const objectStore = this.db.transaction("tabsets", "readwrite").objectStore("tabsets");
+    let cursor = await objectStore.openCursor()
+    while (cursor) {
+      if (cursor.value.status === TabsetStatus.DELETED) {
+        console.log("cleanup: deleteing stale tabset", cursor.key)
+        objectStore.delete(cursor.key)
+      }
+      cursor = await cursor.continue();
+    }
   }
 
   async cleanUpThumbnails(): Promise<void> {
@@ -366,7 +378,7 @@ class IndexedDbPersistenceService implements PersistenceService {
 
   saveStats(dataset: object) {
     const offset = new Date().getTimezoneOffset()
-    const todayLong = new Date(new Date().getTime() - (offset*60*1000))
+    const todayLong = new Date(new Date().getTime() - (offset * 60 * 1000))
     const today = todayLong.toISOString().split('T')[0]
     this.db.put('stats', dataset, today)
   }

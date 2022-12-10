@@ -39,8 +39,8 @@
     <q-separator v-if="tabsets(true).length > 0"/>
     <NavTabsetsListWidget :tabsets="tabsets(false)"/>
 
-<!--    <q-separator v-if="archivedTabsets().length > 0"/>-->
-<!--    <NavTabsetsListWidget :tabsets="archivedTabsets()" :useExpansion=true />-->
+    <!--    <q-separator v-if="archivedTabsets().length > 0"/>-->
+    <!--    <NavTabsetsListWidget :tabsets="archivedTabsets()" :useExpansion=true />-->
   </q-list>
 
 
@@ -54,7 +54,7 @@ import {useTabsStore} from "src/stores/tabsStore";
 import _ from "lodash"
 import {ref} from "vue";
 import {useQuasar} from "quasar";
-import {Tabset} from "src/models/Tabset";
+import {Tabset, TabsetStatus} from "src/models/Tabset";
 import {useFeatureTogglesStore} from "src/stores/featureTogglesStore";
 import {useSpacesStore} from "stores/spacesStore";
 import NewTabsetDialog from "components/dialogues/NewTabsetDialog.vue";
@@ -65,8 +65,6 @@ const tabsStore = useTabsStore()
 const featuresStore = useFeatureTogglesStore()
 const spacesStore = useSpacesStore()
 
-const showDeleteButton = ref<Map<string, boolean>>(new Map())
-const showEditButton = ref<Map<string, boolean>>(new Map())
 const $q = useQuasar();
 const localStorage = $q.localStorage
 
@@ -89,17 +87,15 @@ const tabsets = (isFavorite: boolean) => {
   let tabsets = [...tabsStore.tabsets.values()]
   if (featuresStore.isEnabled('spaces') && spacesStore.spaces && spacesStore.spaces.size > 0) {
     if (spacesStore.space && spacesStore.space.id && spacesStore.space.id.length > 0) {
-      tabsets = _.filter(tabsets, ts => !ts.isArchived && ts.spaces && ts.spaces.indexOf(spacesStore.space.id) >= 0)
+      tabsets = _.filter(tabsets, ts => ts.status !== TabsetStatus.ARCHIVED && ts.spaces && ts.spaces.indexOf(spacesStore.space.id) >= 0)
     } else {
-      tabsets = _.filter(tabsets, ts => !ts.isArchived && ts.spaces && ts.spaces.length === 0)
+      tabsets = _.filter(tabsets, ts => ts.status !== TabsetStatus.ARCHIVED && ts.spaces && ts.spaces.length === 0)
     }
   }
-  return _.sortBy(_.filter(tabsets, (ts: Tabset) => !ts.isArchived && isFavorite === (ts.isFavorite || false)), ['name'])
-}
-
-const archivedTabsets = () => {
-  let tabsets = [...tabsStore.tabsets.values()]
-  return _.sortBy(_.filter(tabsets, (ts: Tabset) => ts.isArchived), ['name'])
+  return _.sortBy(_.filter(tabsets, (ts: Tabset) =>
+    ts.status !== TabsetStatus.ARCHIVED &&
+    ts.status !== TabsetStatus.DELETED &&
+    ts.status === (isFavorite ? TabsetStatus.FAVORITE : TabsetStatus.DEFAULT)), ['name'])
 }
 
 const onDrop = (evt: DragEvent, tabsetId: string) => {
@@ -118,13 +114,7 @@ const tabsetLabel = (tabset: Tabset) => {
 
 const tabNameExists = () => tabsStore.nameExistsInContextTabset(newTabsetName.value)
 
-const addTabset = () => {
-  $q.dialog({
-    component: NewTabsetDialog
-  }).onDismiss(() => {
-    // showNewTabsetDialog.value = false
-  })
-}
+const addTabset = () => $q.dialog({component: NewTabsetDialog})
 
 </script>
 

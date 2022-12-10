@@ -3,7 +3,7 @@ import {LocalStorage, uid} from "quasar";
 import ChromeApi from "src/services/ChromeApi";
 import _ from "lodash";
 import {Tab} from "src/models/Tab";
-import {Tabset} from "src/models/Tabset";
+import {Tabset, TabsetStatus} from "src/models/Tabset";
 import {useNotificationsStore} from "src/stores/notificationsStore";
 import {useSearchStore} from "src/stores/searchStore";
 import {useBookmarksStore} from "src/stores/bookmarksStore";
@@ -70,6 +70,7 @@ class TabsetService {
       }
       return {
         replaced: result.replaced,
+        tabsetId: result.tabset.id,
         merged: merge
       }
     } catch (err) {
@@ -148,7 +149,7 @@ class TabsetService {
     }
   }
 
-  delete(tabsetId: string) {
+  delete(tabsetId: string): Promise<string> {
     console.log("deleting tabset ", tabsetId)
     const tabset = this.getTabset(tabsetId)
     if (tabset) {
@@ -160,7 +161,9 @@ class TabsetService {
       const nextKey: string = tabsStore.tabsets.keys().next().value
       console.log("setting next key to", nextKey)
       this.selectTabset(nextKey)
+      return Promise.resolve("ok")
     }
+    return Promise.reject("could not get tabset for id")
   }
 
   private getTabset(tabsetId: string): Tabset | undefined {
@@ -581,6 +584,8 @@ class TabsetService {
 
   async housekeeping() {
     console.log("housekeeping now...")
+
+    this.persistenceService.cleanUpTabsets()
     // clean up thumbnails
     this.persistenceService.cleanUpThumbnails()
 
@@ -711,9 +716,17 @@ class TabsetService {
     console.log("toggling favorite for", id)
     const ts = this.getTabset(id)
     if (ts) {
-      ts.isFavorite = !ts.isFavorite
+      switch (ts.status) {
+        case TabsetStatus.DEFAULT:
+          ts.status = TabsetStatus.FAVORITE
+          break
+        case TabsetStatus.FAVORITE:
+          ts.status = TabsetStatus.DEFAULT
+          break
+        default:
+      }
       return this.saveTabset(ts)
-        .then(() => ts.isArchived)
+        .then(() => true)
     }
     return Promise.reject("could not toggle archive flag for " + id)
   }
@@ -722,13 +735,35 @@ class TabsetService {
     console.log("toggling archived flag for", id)
     const ts = this.getTabset(id)
     if (ts) {
-      ts.isArchived = !ts.isArchived
+      switch (ts.status) {
+        case TabsetStatus.ARCHIVED:
+          ts.status = TabsetStatus.DEFAULT
+          break
+        case TabsetStatus.FAVORITE:
+          ts.status = TabsetStatus.ARCHIVED
+          break
+        case TabsetStatus.DEFAULT:
+          ts.status = TabsetStatus.ARCHIVED
+          break
+        default:
+
+      }
       return this.saveTabset(ts)
-        .then(() => ts.isArchived)
+        .then(() => true)
     }
     return Promise.reject("could not toggle archive flag for " + id)
   }
 
+  markAsDeleted(tabsetId: string): Promise<boolean> {
+    console.log("marking as deleted", tabsetId)
+    const ts = this.getTabset(tabsetId)
+    if (ts) {
+      ts.status = TabsetStatus.DELETED
+      return this.saveTabset(ts)
+        .then(() => true)
+    }
+    return Promise.reject("could not mark as deleted: " + tabsetId)
+  }
 }
 
 export default new TabsetService();

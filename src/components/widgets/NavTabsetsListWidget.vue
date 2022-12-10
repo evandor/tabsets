@@ -16,7 +16,7 @@
                     @dragenter.prevent>
       <q-item-label>
         <template v-slot>
-          <q-icon name="stars" color="warning" class="q-ml-none q-mr-sm" v-if="tabset.isFavorite"/>
+          <q-icon name="stars" color="warning" class="q-ml-none q-mr-sm" v-if="tabset.status === TabsetStatus.FAVORITE"/>
           {{ tabsetLabel(tabset) }}
         </template>
       </q-item-label>
@@ -32,7 +32,8 @@
 
     <q-item-section side v-if="showEditButton.get(tabset.id)">
       <q-icon name="star" color="warning" size="18px" @click="toggleFavorite(tabset)">
-        <q-tooltip>Undo marking this tabset as favorite</q-tooltip>
+        <q-tooltip v-if="tabset.status === TabsetStatus.FAVORITE">Undo marking this tabset as favorite</q-tooltip>
+        <q-tooltip v-else>Marking this tabset as favorite</q-tooltip>
       </q-icon>
     </q-item-section>
 
@@ -53,8 +54,8 @@
 
 <script lang="ts" setup>
 
-import {PropType, ref} from "vue";
-import {Tabset} from "src/models/Tabset";
+import {handleError, PropType, ref} from "vue";
+import {Tabset, TabsetStatus} from "src/models/Tabset";
 import TabsetService from "src/services/TabsetService";
 import {useRouter} from "vue-router";
 import {useQuasar} from "quasar";
@@ -62,6 +63,10 @@ import {useTabsStore} from "stores/tabsStore";
 import {useFeatureTogglesStore} from "stores/featureTogglesStore";
 import {useSpacesStore} from "stores/spacesStore";
 import EditTabset from "components/dialogues/EditTabsetDialog.vue";
+import {DeleteTabsetCommand} from "src/domain/commands/DeleteTabsetCommand";
+import {useNotificationHandler} from "src/services/ErrorHandler";
+import {MarkTabsetDeletedCommand} from "src/domain/commands/MarkTabsetDeletedCommand";
+const {handleError, handleSuccess} = useNotificationHandler()
 
 const router = useRouter()
 const tabsStore = useTabsStore()
@@ -116,8 +121,19 @@ const deleteDialog = () => {
     cancel: true,
     persistent: true
   }).onOk(() => {
-    TabsetService.delete(tabsStore.currentTabsetId)
-    router.push("/about")
+
+    const command = new MarkTabsetDeletedCommand(tabsStore.currentTabsetId)
+    command.execute()
+      .then((res) => {
+        handleSuccess(res)
+        router.push("/about")
+      })
+      .catch(err => handleError(err))
+
+
+
+   // TabsetService.delete(tabsStore.currentTabsetId)
+   // router.push("/about")
   }).onCancel(() => {
   }).onDismiss(() => {
   })

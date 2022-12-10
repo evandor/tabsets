@@ -46,13 +46,17 @@
 <script lang="ts" setup>
 
 import {computed, ref, watchEffect} from "vue";
-import TabsetService from "src/services/TabsetService";
 import {useQuasar} from "quasar";
 import {useRouter} from "vue-router";
 import {useTabsStore} from "src/stores/tabsStore";
 
 import {useDialogPluginComponent} from 'quasar'
 import {STRIP_CHARS_IN_USER_INPUT} from "boot/constants";
+import {CreateTabsetCommand} from "src/domain/commands/CreateTabsetCommand";
+import {NotificationHandler} from "src/services/NotificationHandler";
+import {useNotificationHandler} from "src/services/ErrorHandler";
+import {ExecutionResult} from "src/domain/ExecutionResult";
+import TabsetService from "src/services/TabsetService";
 
 defineEmits([
   // REQUIRED; need to specify some events that your
@@ -80,41 +84,40 @@ watchEffect(() => {
 const createNewTabset = () => {
   hideWarning.value = true
   const tabsToUse = addAutomatically.value ? tabsStore.tabs : []
-  TabsetService.saveOrReplaceFromChromeTabs(newTabsetName.value, tabsToUse, true)
-    .then((result: object) => {
+  const {handleError, handleSuccess} = useNotificationHandler()
 
+  const command = new CreateTabsetCommand(newTabsetName.value, tabsToUse)
+  command.execute()
+    .then((res) => {
       if (!addAutomatically.value) {
         TabsetService.createPendingFromBrowserTabs()
       }
-
-      newTabsetName.value = ''
-
-      //@ts-ignore
-      const replaced = result.replaced
-      //@ts-ignore
-      const merged = result.merged
-      let message = 'Tabset ' + newTabsetName.value + ' created successfully'
-      if (replaced && merged) {
-        message = 'Existing Tabset ' + newTabsetName.value + ' can be updated now'
-      } else if (replaced) {
-        message = 'Existing Tabset ' + newTabsetName.value + ' was overwritten'
-      }
-      hideWarning.value = false
+      handleSuccess(res)
       router.push("/tabset")
-      $q.notify({
-        message: message,
-        type: 'positive'
-      })
     })
-    .catch((ex: any) => {
-      console.error("ex", ex)
-      hideWarning.value = false
-      $q.notify({
-        message: 'There was a problem creating the tabset ' + newTabsetName.value,
-        type: 'warning',
-      })
+    .catch(err => handleError(err))
+  // .catch(err => handleError())
 
-    })
+  // TabsetService.saveOrReplaceFromChromeTabs(newTabsetName.value, tabsToUse, true)
+  //   .then((result: object) => {
+  //
+  //
+  //
+  //     router.push("/tabset")
+  //     $q.notify({
+  //       message: message,
+  //       type: 'positive'
+  //     })
+  //   })
+  //   .catch((ex: any) => {
+  //     console.error("ex", ex)
+  //     hideWarning.value = false
+  //     $q.notify({
+  //       message: 'There was a problem creating the tabset ' + newTabsetName.value,
+  //       type: 'warning',
+  //     })
+  //
+  //   })
 }
 
 const newTabsetDialogWarning = () => {
