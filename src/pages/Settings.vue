@@ -261,6 +261,9 @@ import ExportDialog from "components/dialogues/ExportDialog.vue";
 import ImportDialog from "components/dialogues/ImportDialog.vue";
 import _ from "lodash";
 import {Tabset, TabsetStatus} from "src/models/Tabset";
+import {MarkTabsetAsDefaultCommand} from "src/domain/commands/MarkTabsetAsDefaultCommand";
+import {useNotificationHandler} from "src/services/ErrorHandler";
+import {CommandExecutor, useCommandExecutor} from "src/services/CommandExecutor";
 
 const tabsStore = useTabsStore()
 const featuresStore = useFeatureTogglesStore()
@@ -288,6 +291,8 @@ const darkMode = ref<boolean>(localStorage.getItem('darkMode') || false)
 const showBookmarks = ref<boolean>(localStorage.getItem('showBookmarks') || false)
 const tab = ref('appearance')
 
+const {handleSuccess, handleError} = useNotificationHandler()
+
 watchEffect(() => {
   console.log("darkMode", darkMode.value, typeof darkMode.value)
   $q.dark.set(darkMode.value)
@@ -304,10 +309,6 @@ watchEffect(() => {
 
 watchEffect(() => {
   localStorage.set("layout", view.value)
-})
-
-watchEffect(() => {
-  //settingsStore.setThresholds(thresholds.value)
 })
 
 watchEffect(() => {
@@ -330,7 +331,8 @@ const archivedTabsets = () => {
   return _.sortBy(_.filter(tabsets, (ts: Tabset) => ts.status = TabsetStatus.ARCHIVED), ['name'])
 }
 
-const unarchive = (tabset: Tabset) => TabsetService.toggleArchived(tabset.id)
+const unarchive = (tabset: Tabset) => useCommandExecutor(logger).executeFromUi(new MarkTabsetAsDefaultCommand(tabset.id))
+
 const ignoredUrls = () => useTabsStore().ignoredTabset?.tabs
 
 </script>

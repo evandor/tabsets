@@ -33,7 +33,7 @@
 
 <script lang="ts" setup>
 
-import {computed, ref, watchEffect} from "vue";
+import {computed, inject, ref, watchEffect} from "vue";
 import TabsetService from "src/services/TabsetService";
 import {useQuasar} from "quasar";
 import {useRouter} from "vue-router";
@@ -41,6 +41,10 @@ import {useTabsStore} from "src/stores/tabsStore";
 
 import {useDialogPluginComponent} from 'quasar'
 import {STRIP_CHARS_IN_USER_INPUT} from "boot/constants";
+import {CreateTabsetCommand} from "src/domain/commands/CreateTabsetCommand";
+import {RenameTabsetCommand} from "src/domain/commands/RenameTabsetCommand";
+import {useNotificationHandler} from "src/services/ErrorHandler";
+import {CommandExecutor, useCommandExecutor} from "src/services/CommandExecutor";
 
 defineEmits([
   ...useDialogPluginComponent.emits
@@ -57,11 +61,13 @@ const props = defineProps({
   }
 })
 
+const {handleError, handleSuccess} = useNotificationHandler()
 const {dialogRef, onDialogHide, onDialogCancel} = useDialogPluginComponent()
 
 const tabsStore = useTabsStore()
 const router = useRouter()
 const $q = useQuasar()
+const logger = inject('vuejs3-logger')
 
 const newTabsetName = ref(props.tabsetName)
 const newTabsetNameExists = ref(false)
@@ -71,14 +77,8 @@ watchEffect(() => {
   newTabsetNameExists.value = !!tabsStore.nameExistsInContextTabset(newTabsetName.value);
 })
 
-const updateTabset = () => {
-  //hideWarning.value = true
-  TabsetService.rename(props.tabsetId, newTabsetName.value)
-  $q.notify({
-    message: 'The tabset has been renamed',
-    type: 'positive'
-  })
-}
+const updateTabset = () =>
+  useCommandExecutor(logger).executeFromUi(new RenameTabsetCommand(props.tabsetId, newTabsetName.value))
 
 const newTabsetDialogWarning = () => {
   return (!hideWarning.value && newTabsetName.value !== props.tabsetName && tabsStore.nameExistsInContextTabset(newTabsetName.value)) ?

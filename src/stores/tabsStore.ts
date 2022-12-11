@@ -215,7 +215,7 @@ export const useTabsStore = defineStore('tabs', {
       // @ts-ignore
       return _.filter(this.tabs, (t: chrome.tabs.Tab) => t.groupId === groupId)
     },
-    selectCurrentTabset(tabsetId: string): void {
+    selectCurrentTabset(tabsetId: string): Tabset | undefined {
       const found = _.find([...this.tabsets.values()], k => {
         const ts = k || new Tabset("", "", [])
         return ts.id === tabsetId
@@ -223,9 +223,11 @@ export const useTabsStore = defineStore('tabs', {
       if (found) {
         //console.log("found", found)
         this.currentTabsetId = tabsetId //this.tabsets.get(found) || new Tabset("", "", [])
+        return found
       } else {
         console.debug("not found:", tabsetId, [...this.tabsets.values()])
       }
+      return undefined
     },
     removeTab(tabId: string) {
       const currentTabset: Tabset = this.tabsets.get(this.currentTabsetId) || new Tabset("", "", [])

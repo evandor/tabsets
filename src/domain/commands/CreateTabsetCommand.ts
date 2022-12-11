@@ -13,8 +13,7 @@ class UndoCreateTabsetCommand implements Command {
     console.log("execution undo command", this.tabsetId)
     return new DeleteTabsetCommand(this.tabsetId).execute()
       .then(res => Promise.resolve(new ExecutionResult(res, "Tabset was deleted again")))
-      //.catch(err => console.error(err))
-    return Promise.reject(undefined);
+   // return Promise.reject(undefined);
   }
 
 }
@@ -29,10 +28,8 @@ export class CreateTabsetCommand implements Command {
   }
 
   async execute(): Promise<ExecutionResult> {
-    // debug level ?
     try {
       const result = await TabsetService.saveOrReplaceFromChromeTabs(this.tabsetName, this.tabsToUse, this.merge)
-      console.log("got result", result)
       let doneMsg = 'Tabset ' + this.tabsetName + ' created successfully'
       if (result['replaced' as keyof object] && result['merged' as keyof object]) {
         doneMsg = 'Existing Tabset ' + this.tabsetName + ' can be updated now'

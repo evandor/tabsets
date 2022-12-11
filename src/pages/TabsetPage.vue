@@ -267,7 +267,7 @@
     </template>
 
     <q-card>
-      <q-card-section>
+      <q-card-section v-if="tabsStore.getCurrentTabset?.tabs.length > 0">
 
         <Tablist v-if="tabsStore.getCurrentTabset?.view === 'list'"
                  :tabs="unpinnedNoGroup()"/>
@@ -279,6 +279,16 @@
                   :tabs="unpinnedNoGroup()" group="otherTabs" :highlightUrl="highlightUrl"/>
 
       </q-card-section>
+
+      <q-card-section v-if="tabsStore.getCurrentTabset?.tabs.length === 0 && tabsStore.pendingTabset?.tabs.length > 0">
+        <q-banner rounded class="text-black"
+                  style="font-weight: bold; border: 2px solid orange">
+          <div class="row justify-center items-center">
+            Your tabset does not yet contain any tabs. You can select some (or all) from the list above.
+          </div>
+        </q-banner>
+      </q-card-section>
+
     </q-card>
   </q-expansion-item>
 
@@ -303,7 +313,7 @@
 </template>
 
 <script setup lang="ts">
-import {ref, watchEffect} from 'vue'
+import {inject, ref, watchEffect} from 'vue'
 import {useRoute, useRouter} from "vue-router";
 import {useQuasar} from "quasar";
 import Tabcards from "src/components/layouts/Tabcards.vue";
@@ -321,6 +331,7 @@ import {useFeatureTogglesStore} from "src/stores/featureTogglesStore";
 import {MAX_TABS_TO_SHOW} from 'boot/constants'
 import RestoreTabsetDialog from "components/dialogues/RestoreTabsetDialog.vue";
 import AddUrlDialog from "components/dialogues/AddUrlDialog.vue";
+import {TabsetStatus} from "src/models/Tabset";
 
 const route = useRoute();
 const router = useRouter();
@@ -341,7 +352,10 @@ watchEffect(() => {
   tabsetId.value = route.params.tabsetId as string
   if (tabsetId.value) {
     console.debug("got tabset id", tabsetId.value)
-    tabsStore.selectCurrentTabset(tabsetId.value)
+    const ts = tabsStore.selectCurrentTabset(tabsetId.value)
+    if (!ts || TabsetStatus.DELETED === ts.status) {
+      router.push("/about")
+    }
   }
 })
 

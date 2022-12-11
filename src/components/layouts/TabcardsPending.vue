@@ -135,6 +135,11 @@ import TabsetService from "src/services/TabsetService";
 import {useNotificationsStore} from "src/stores/notificationsStore";
 import {MAX_TABS_TO_SHOW} from 'boot/constants'
 import {useFeatureTogglesStore} from "src/stores/featureTogglesStore";
+import {CommandExecutor, useCommandExecutor} from "src/services/CommandExecutor";
+import {SavePendingTabToCurrentTabsetCommand} from "src/domain/commands/SavePendingTabToCurrentTabsetCommand";
+import {inject} from "vue";
+
+const logger = inject('vuejs3-logger')
 
 const props = defineProps({
   tabs: {
@@ -177,10 +182,8 @@ function ignoreTab(tab: Tab) {
   NavigationService.closeTab(tab)
 }
 
-function saveTab(tab: Tab) {
-  console.log("saving tab", tab)
-  TabsetService.saveToCurrentTabset(tab)
-}
+const saveTab = (tab: Tab) => useCommandExecutor(logger).executeFromUi(new SavePendingTabToCurrentTabsetCommand(tab))
+
 
 function cardStyle(tab: Tab) {
   let borderColor = ""

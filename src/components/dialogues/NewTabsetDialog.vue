@@ -45,18 +45,15 @@
 
 <script lang="ts" setup>
 
-import {computed, ref, watchEffect} from "vue";
-import {useQuasar} from "quasar";
+import {computed, inject, ref, watchEffect} from "vue";
+import {useDialogPluginComponent, useQuasar} from "quasar";
 import {useRouter} from "vue-router";
 import {useTabsStore} from "src/stores/tabsStore";
-
-import {useDialogPluginComponent} from 'quasar'
 import {STRIP_CHARS_IN_USER_INPUT} from "boot/constants";
 import {CreateTabsetCommand} from "src/domain/commands/CreateTabsetCommand";
-import {NotificationHandler} from "src/services/NotificationHandler";
 import {useNotificationHandler} from "src/services/ErrorHandler";
-import {ExecutionResult} from "src/domain/ExecutionResult";
 import TabsetService from "src/services/TabsetService";
+import {useCommandExecutor} from "src/services/CommandExecutor";
 
 defineEmits([
   // REQUIRED; need to specify some events that your
@@ -74,6 +71,7 @@ const newTabsetName = ref('')
 const newTabsetNameExists = ref(false)
 const hideWarning = ref(false)
 const addAutomatically = ref(false)
+const logger = inject('vuejs3-logger')
 
 const newTabsetNameIsValid = computed(() => newTabsetName.value.length <= 32 && !STRIP_CHARS_IN_USER_INPUT.test(newTabsetName.value))
 
@@ -84,40 +82,15 @@ watchEffect(() => {
 const createNewTabset = () => {
   hideWarning.value = true
   const tabsToUse = addAutomatically.value ? tabsStore.tabs : []
-  const {handleError, handleSuccess} = useNotificationHandler()
 
-  const command = new CreateTabsetCommand(newTabsetName.value, tabsToUse)
-  command.execute()
-    .then((res) => {
+  useCommandExecutor(logger)
+    .executeFromUi(new CreateTabsetCommand(newTabsetName.value, tabsToUse))
+    .then(res => {
       if (!addAutomatically.value) {
         TabsetService.createPendingFromBrowserTabs()
       }
-      handleSuccess(res)
       router.push("/tabset")
     })
-    .catch(err => handleError(err))
-  // .catch(err => handleError())
-
-  // TabsetService.saveOrReplaceFromChromeTabs(newTabsetName.value, tabsToUse, true)
-  //   .then((result: object) => {
-  //
-  //
-  //
-  //     router.push("/tabset")
-  //     $q.notify({
-  //       message: message,
-  //       type: 'positive'
-  //     })
-  //   })
-  //   .catch((ex: any) => {
-  //     console.error("ex", ex)
-  //     hideWarning.value = false
-  //     $q.notify({
-  //       message: 'There was a problem creating the tabset ' + newTabsetName.value,
-  //       type: 'warning',
-  //     })
-  //
-  //   })
 }
 
 const newTabsetDialogWarning = () => {

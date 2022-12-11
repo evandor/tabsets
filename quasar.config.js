@@ -26,7 +26,8 @@ module.exports = configure(function (/* ctx */) {
     boot: [
       'i18n',
       'constants',
-      'firebase'
+      'firebase',
+      'logger'
     ],
 
     // https://v2.quasar.dev/quasar-cli-vite/quasar-config-js#css

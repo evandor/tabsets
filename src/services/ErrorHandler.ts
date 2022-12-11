@@ -1,13 +1,12 @@
-//import {useQuasar} from "quasar";
 import {Notify} from 'quasar'
 import {ExecutionResult} from "src/domain/ExecutionResult";
 
 export function useNotificationHandler() {
 
-  const handleError = (error: any) => {
-    console.log("--- catched error ---")
-    console.log("type", typeof error)
-    console.log("msg", error)
+  const handleError = (error: any, logger: any) => {
+    logger.error("--- catched error ---")
+    logger.error("type", typeof error)
+    logger.error("msg", error)
     Notify.create({
       position: 'bottom',
       color: 'red-5',
@@ -24,7 +23,7 @@ export function useNotificationHandler() {
     })
   }
 
-  const handleSuccess = (executionResult: ExecutionResult) => {
+  const handleSuccess = (executionResult: ExecutionResult, logger:any) => {
     const actions: any[] = []
     if (executionResult.undoCommand) {
       actions.push(
@@ -32,7 +31,7 @@ export function useNotificationHandler() {
           label: 'Undo', color: 'white', handler: () => {
             executionResult.undoCommand?.execute()
               .then(res => handleWarning(res))
-              .catch(err => handleError(err))
+              .catch(err => handleError(err, logger))
           }
         }
       )

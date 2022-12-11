@@ -220,27 +220,23 @@ class TabsetService {
         ts.tabs.push(tab)
       }
 
-
-      const index = _.findIndex(tabsStore.pendingTabset.tabs, t => t.id === tab.id)
-      tabsStore.pendingTabset.tabs.splice(index, 1);
-
       this.saveTabset(ts)
 
-      const dataFromStore: object = await this.persistenceService.updateContent(tab.chromeTab.url)
+  //    const dataFromStore: object = await this.persistenceService.updateContent(tab.chromeTab.url)
 
-      await this.persistenceService.updateThumbnail(tab.chromeTab.url)
+      // await this.persistenceService.updateThumbnail(tab.chromeTab.url)
 
-      // update fuse index
-      console.log("in saveToTabset: indexing", tab)
-      return useSearchStore().addToIndex(
-        tab.id,
-        tab.chromeTab.title || '',
-        tab.chromeTab.title || '',
-        tab.chromeTab.url || '',
-        dataFromStore ? dataFromStore['description' as keyof object] : '',
-        dataFromStore ? dataFromStore['content' as keyof object] : '',
-        [ts.id],
-        tab.chromeTab.favIconUrl || '')
+      // // update fuse index
+      // console.log("in saveToTabset: indexing", tab)
+      // return useSearchStore().addToIndex(
+      //   tab.id,
+      //   tab.chromeTab.title || '',
+      //   tab.chromeTab.title || '',
+      //   tab.chromeTab.url || '',
+      //   dataFromStore ? dataFromStore['description' as keyof object] : '',
+      //   dataFromStore ? dataFromStore['content' as keyof object] : '',
+      //   [ts.id],
+      //   tab.chromeTab.favIconUrl || '')
     }
     return Promise.reject("tab.chromeTab.url undefined")
   }
@@ -657,12 +653,23 @@ class TabsetService {
 
   }
 
-  rename(tabsetId: string, tabsetName: string) {
+  /**
+   * renames a tabset identified by its id with the new name. The old name
+   * is returned.
+   *
+   * @param tabsetId
+   * @param tabsetName
+   */
+  rename(tabsetId: string, tabsetName: string):Promise<string> {
+    const trustedName = tabsetName.replace(STRIP_CHARS_IN_USER_INPUT, '')
     const tabset = this.getTabset(tabsetId)
     if (tabset) {
-      tabset.name = tabsetName
-      this.saveTabset(tabset)
+      const oldName = tabset.name
+      tabset.name = trustedName
+      return this.saveTabset(tabset)
+        .then(() => Promise.resolve(oldName))
     }
+    return Promise.reject("could not find tabset for id " + tabsetId)
   }
 
   canvasPosition(tabsetId: string, tabsetName: string) {
@@ -712,50 +719,49 @@ class TabsetService {
   }
 
 
-  toggleFavorite(id: string): Promise<boolean> {
-    console.log("toggling favorite for", id)
-    const ts = this.getTabset(id)
-    if (ts) {
-      switch (ts.status) {
-        case TabsetStatus.DEFAULT:
-          ts.status = TabsetStatus.FAVORITE
-          break
-        case TabsetStatus.FAVORITE:
-          ts.status = TabsetStatus.DEFAULT
-          break
-        default:
-      }
-      return this.saveTabset(ts)
-        .then(() => true)
-    }
-    return Promise.reject("could not toggle archive flag for " + id)
-  }
+  // toggleFavorite(id: string): Promise<boolean> {
+  //   console.log("toggling favorite for", id)
+  //   const ts = this.getTabset(id)
+  //   if (ts) {
+  //     switch (ts.status) {
+  //       case TabsetStatus.DEFAULT:
+  //         ts.status = TabsetStatus.FAVORITE
+  //         break
+  //       case TabsetStatus.FAVORITE:
+  //         ts.status = TabsetStatus.DEFAULT
+  //         break
+  //       default:
+  //     }
+  //     return this.saveTabset(ts)
+  //       .then(() => true)
+  //   }
+  //   return Promise.reject("could not toggle archive flag for " + id)
+  // }
 
-  toggleArchived(id: string): Promise<boolean> {
-    console.log("toggling archived flag for", id)
-    const ts = this.getTabset(id)
-    if (ts) {
-      switch (ts.status) {
-        case TabsetStatus.ARCHIVED:
-          ts.status = TabsetStatus.DEFAULT
-          break
-        case TabsetStatus.FAVORITE:
-          ts.status = TabsetStatus.ARCHIVED
-          break
-        case TabsetStatus.DEFAULT:
-          ts.status = TabsetStatus.ARCHIVED
-          break
-        default:
-
-      }
-      return this.saveTabset(ts)
-        .then(() => true)
-    }
-    return Promise.reject("could not toggle archive flag for " + id)
-  }
+  // toggleArchived(id: string): Promise<boolean> {
+  //   console.log("toggling archived flag for", id)
+  //   const ts = this.getTabset(id)
+  //   if (ts) {
+  //     switch (ts.status) {
+  //       case TabsetStatus.ARCHIVED:
+  //         ts.status = TabsetStatus.DEFAULT
+  //         break
+  //       case TabsetStatus.FAVORITE:
+  //         ts.status = TabsetStatus.ARCHIVED
+  //         break
+  //       case TabsetStatus.DEFAULT:
+  //         ts.status = TabsetStatus.ARCHIVED
+  //         break
+  //       default:
+  //
+  //     }
+  //     return this.saveTabset(ts)
+  //       .then(() => true)
+  //   }
+  //   return Promise.reject("could not toggle archive flag for " + id)
+  // }
 
   markAsDeleted(tabsetId: string): Promise<boolean> {
-    console.log("marking as deleted", tabsetId)
     const ts = this.getTabset(tabsetId)
     if (ts) {
       ts.status = TabsetStatus.DELETED
@@ -763,6 +769,18 @@ class TabsetService {
         .then(() => true)
     }
     return Promise.reject("could not mark as deleted: " + tabsetId)
+  }
+
+  markAs(tabsetId: string, status: TabsetStatus): Promise<TabsetStatus> {
+    console.debug(`marking ${tabsetId} as ${status}`)
+    const ts = this.getTabset(tabsetId)
+    if (ts) {
+      const oldStatus = ts.status
+      ts.status = status
+      return this.saveTabset(ts)
+        .then(() => oldStatus)
+    }
+    return Promise.reject("could not change status : " + tabsetId)
   }
 }
 
