@@ -7,7 +7,7 @@ export function useCommandExecutor(logger: any) {
 
   const executeFromUi = (command: Command): Promise<void> => {
     logger.info("running command:", command)
-    return command.execute()
+    return command.execute(logger)
       .then(res => handleSuccess(res, logger))
       .then(res => console.log("command finished"))
       .catch(err => handleError(err, logger))

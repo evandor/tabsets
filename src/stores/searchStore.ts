@@ -24,7 +24,7 @@ function dummyPromise(timeout: number, tabToCloseId: number | undefined = undefi
 
 export const useSearchStore = defineStore('search', () => {
 
-  const term = ref(null as unknown as string)
+  const term = ref<string>('')
 
   const history = ref([] as unknown as string[])
 
@@ -59,7 +59,10 @@ export const useSearchStore = defineStore('search', () => {
     return fuse.value.getIndex()
   }
 
-  function search(term: string) {
+  function search(term: string, limit: number | undefined = undefined) {
+    if (limit) {
+      return fuse.value.search(term, {limit})
+    }
     return fuse.value.search(term)
   }
 

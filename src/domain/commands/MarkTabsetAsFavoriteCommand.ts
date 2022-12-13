@@ -10,8 +10,8 @@ class UndoCommand implements Command {
   constructor(public tabsetId: string, public oldStatus: TabsetStatus) {
   }
 
-  execute(): Promise<ExecutionResult> {
-    return new MarkTabsetAsDefaultCommand(this.tabsetId).execute()
+  execute(logger: any): Promise<ExecutionResult> {
+    return new MarkTabsetAsDefaultCommand(this.tabsetId).execute(logger)
       .then(res => Promise.resolve(new ExecutionResult(res, "Tabset was unmarked again")))
   }
 
@@ -23,7 +23,7 @@ export class MarkTabsetAsFavoriteCommand implements Command {
     public tabsetId: string)
   {}
 
-  async execute(): Promise<ExecutionResult> {
+  async execute(logger: any): Promise<ExecutionResult> {
     return TabsetService.markAs(this.tabsetId, TabsetStatus.FAVORITE)
       .then(oldStatus => Promise.resolve(
         new ExecutionResult(

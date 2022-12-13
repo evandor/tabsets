@@ -33,7 +33,7 @@ export class MarkTabsetAsArchivedCommand implements Command {
     public tabsetId: string)
   {}
 
-  async execute(): Promise<ExecutionResult> {
+  async execute(logger: any): Promise<ExecutionResult> {
     return TabsetService.markAs(this.tabsetId, TabsetStatus.ARCHIVED)
       .then(oldStatus => Promise.resolve(
         new ExecutionResult(

@@ -8,7 +8,7 @@ export class DeleteTabsetCommand implements Command {
   constructor(public tabsetId: string) {
   }
 
-  async execute(): Promise<ExecutionResult> {
+  async execute(logger: any): Promise<ExecutionResult> {
     return TabsetService.delete(this.tabsetId)
       .then(res => Promise.resolve(new ExecutionResult(res, "Tabset was deleted")))
       .catch(err => Promise.reject(err))

@@ -14,17 +14,19 @@
 
         <SpacesSelectorWidget v-if="featuresStore.isEnabled('spaces')" />
 
-        <q-input dark dense standout v-model="search"
-                 ref="searchBox"
-                 style="width:460px;"
-                 v-if="tabsStore.tabsets.size > 0"
-                 @keydown.enter.prevent="submitSearch()"
-                 class="q-ml-md">
-          <template v-slot:prepend>
-            <q-icon v-if="search === ''" name="search"/>
-            <q-icon v-else name="clear" class="cursor-pointer" @click="search = ''"/>
-          </template>
-        </q-input>
+<!--        <q-input dark dense standout v-model="search"-->
+<!--                 ref="searchBox"-->
+<!--                 style="width:460px;"-->
+<!--                 v-if="tabsStore.tabsets.size > 0"-->
+<!--                 @keydown.enter.prevent="submitSearch()"-->
+<!--                 class="q-ml-md">-->
+<!--          <template v-slot:prepend>-->
+<!--            <q-icon v-if="search === ''" name="search"/>-->
+<!--            <q-icon v-else name="clear" class="cursor-pointer" @click="search = ''"/>-->
+<!--          </template>-->
+<!--        </q-input>-->
+
+        <SearchWidget />
 
 
         <q-space/>
@@ -119,6 +121,7 @@ import {useSpacesStore} from "stores/spacesStore"
 import {useSettingsStore} from "stores/settingsStore"
 import OpenTabsThresholdWidget from 'src/components/widgets/OpenTabsThresholdWidget.vue'
 import SpacesSelectorWidget from 'src/components/widgets/SpacesSelectorWidget.vue'
+import SearchWidget from 'src/components/widgets/SearchWidget.vue'
 
 const router = useRouter()
 const tabsStore = useTabsStore()

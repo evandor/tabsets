@@ -29,7 +29,7 @@ export function useNotificationHandler() {
       actions.push(
         {
           label: 'Undo', color: 'white', handler: () => {
-            executionResult.undoCommand?.execute()
+            executionResult.undoCommand?.execute(logger)
               .then(res => handleWarning(res))
               .catch(err => handleError(err, logger))
           }
