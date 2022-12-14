@@ -15,6 +15,22 @@ describe('CreateTabsetCommand', () => {
     }
   }
 
+  function createChromeTab(id: number, url: string) {
+    return {
+      id,
+      url,
+      index: 1,
+      pinned: false,
+      highlighted: false,
+      windowId: 1,
+      active: false,
+      incognito: false,
+      selected: false,
+      discarded: false,
+      autoDiscardable: false
+    }
+  }
+
   beforeEach(() => {
     setActivePinia(createPinia())
     //localStorageMock.clear()
@@ -37,19 +53,23 @@ describe('CreateTabsetCommand', () => {
     await IndexedDbPersistenceService.init()
     process.env.MODE = "bex"
     chrome.tabs.query.mockImplementation(async (o: object) => [])
-    //chrome.tabs.getCurrent.mockImplementation(async () => Promise<void>)
-    const cmd = new CreateTabsetCommand('tsid', [])
+    const cmd = new CreateTabsetCommand('emptyTabsetId', [])
     const res = await cmd.execute(new Logger())
     console.log("res", res)
-    expect(res.message).toBe("Tabset tsid created successfully")
+    expect(res.message).toBe("Tabset emptyTabsetId created successfully")
     expect(res.undoCommand).not.toBe(null)
-    // const tabsStore = useTabsStore()
-    // chrome.tabs.query.mockImplementation(async (o: object) => [{id: 1}])
-    //
-    // await tabsStore.initialize(localStorageMock)
-    //
-    // expect(tabsStore.tabs.length).toBe(1)
-    // expect(tabsStore.tabsets.size).toBe(0)
   })
+
+
+  // it('creates tabset with tabs', async () => {
+  //   await IndexedDbPersistenceService.init()
+  //   process.env.MODE = "bex"
+  //   chrome.tabs.query.mockImplementation(async (o: object) => [])
+  //   const cmd = new CreateTabsetCommand('tabsetWithTabs', [createChromeTab(1, "https://www.skysail.io")])
+  //   const res = await cmd.execute(new Logger())
+  //   console.log("res", res)
+  //   expect(res.message).toBe("Tabset tabsetWithTabs created successfully")
+  //   expect(res.undoCommand).not.toBe(null)
+  // })
 
 })

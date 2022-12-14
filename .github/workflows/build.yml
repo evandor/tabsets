@@ -25,4 +25,3 @@ jobs:
       - run: npx playwright install
       - run: npm build
       - run: npm run test:unit:ci
-      - run: npm run test:e2e

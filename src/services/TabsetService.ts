@@ -187,7 +187,8 @@ class TabsetService {
         ts.tabs.push(tab)
       }
 
-      this.saveTabset(ts)
+      return this.saveTabset(ts)
+        .then(res => Promise.resolve(0)) // TODO
 
   //    const dataFromStore: object = await this.persistenceService.updateContent(tab.chromeTab.url)
 

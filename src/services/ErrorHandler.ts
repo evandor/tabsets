@@ -4,9 +4,9 @@ import {ExecutionResult} from "src/domain/ExecutionResult";
 export function useNotificationHandler() {
 
   const handleError = (error: any, logger: any) => {
-    logger.error("--- catched error ---")
-    logger.error("type", typeof error)
-    logger.error("msg", error)
+    //logger.error("--- catched error ---")
+    //logger.error("type", typeof error)
+    logger.error(error)
     Notify.create({
       position: 'bottom',
       color: 'red-5',
