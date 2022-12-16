@@ -5,7 +5,7 @@
     vertical
     active-color="primary"
     class="text-grey-9 q-mt-none q-mx-none greyBorderTopRight">
-    <q-tab name="bookmarks" icon="o_bookmark">
+    <q-tab name="bookmarks" icon="o_bookmark" @click="tabsClicked(LeftDrawerTabs.BOOKMARKS)">
       <q-tooltip>Your bookmarks</q-tooltip>
     </q-tab>
     <q-tab name="openTabs" icon="o_table_rows">
@@ -88,6 +88,10 @@ const thresholdStyle = () =>
 
 const badgeThreshold = () => tabsStore.tabs.length >= settingsStore.thresholds['min' as keyof object]
 
+const tabsClicked = (tab: LeftDrawerTabs) => {
+  console.log("tabsClicked", tab)
+  uiService.leftDrawerSetActiveTab(tab)
+}
 </script>
 
 <style lang="sass" scoped>

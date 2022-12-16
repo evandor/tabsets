@@ -82,7 +82,9 @@
       </template>
     </q-drawer>
 
-    <q-drawer show-if-above v-model="rightDrawerOpen" side="right" bordered
+    <q-drawer show-if-above
+              :width="220"
+              v-model="rightDrawerOpen" side="right" bordered
               content-class="column justify-between no-wrap bg-grey-1">
       <Navigation></Navigation>
 
