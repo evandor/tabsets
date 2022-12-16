@@ -11,9 +11,9 @@
   <q-tabs
     v-model="tab"
     dense
-    class="text-primary q-mt-none greyBorderTop">
+    class="text-primary q-mt-none q-mx-none greyBorderTop">
     <q-tab name="bookmarks" icon="o_bookmark" color="positive">
-      <q-tooltip>Your bookmarks</q-tooltip>
+      <q-tooltip>Your bookmarks!</q-tooltip>
     </q-tab>
     <q-tab name="openTabs" icon="o_table_rows">
       <q-tooltip>Your open tabs</q-tooltip>
@@ -23,6 +23,9 @@
     </q-tab>
     <q-tab name="tabset" icon="o_tab" v-if="featureToggles.isEnabled('sidebar')">
       <q-tooltip>Your current tabset</q-tooltip>
+    </q-tab>
+    <q-tab name="tabset" icon="o_tab">
+      <q-tooltip>RSS Feeds</q-tooltip>
     </q-tab>
   </q-tabs>
 

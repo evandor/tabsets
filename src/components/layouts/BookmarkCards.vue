@@ -220,13 +220,9 @@ const importBookmarks = () => {
   $q.dialog({component: ImportFromBookmarks})
 }
 
-const formatDate = (timestamp: number | undefined) => {
-  if (timestamp) {
-    // return date.formatDate(timestamp, 'DD.MM.YYYY HH:mm')
-    return formatDistance(timestamp, new Date(), {addSuffix: true})
-  }
-  return ""
-}
+const formatDate = (timestamp: number | undefined) =>
+  timestamp ? formatDistance(timestamp, new Date(), {addSuffix: true}) : ""
+
 
 // const filterdBookmarks = () => {
 //   _.filter(bookmarksStore.bookmarksForFolder, (bm:Bookmark) => !bm.chromeBookmark.url)

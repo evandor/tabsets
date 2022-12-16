@@ -22,7 +22,7 @@ class MHtmlService {
   getMHtmls(): Promise<MHtml[]> {
     const res = this.persistenceService.getMHtmls()
       .then(mhtmls => _.map(mhtmls, mhtml => new MHtml(mhtml.id, mhtml.title, mhtml.favIconUrl)))
-    //console.log("res", res)
+      //console.log("res", res)
     return res
   }
 

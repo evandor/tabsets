@@ -14,20 +14,7 @@
 
         <SpacesSelectorWidget v-if="featuresStore.isEnabled('spaces')" />
 
-<!--        <q-input dark dense standout v-model="search"-->
-<!--                 ref="searchBox"-->
-<!--                 style="width:460px;"-->
-<!--                 v-if="tabsStore.tabsets.size > 0"-->
-<!--                 @keydown.enter.prevent="submitSearch()"-->
-<!--                 class="q-ml-md">-->
-<!--          <template v-slot:prepend>-->
-<!--            <q-icon v-if="search === ''" name="search"/>-->
-<!--            <q-icon v-else name="clear" class="cursor-pointer" @click="search = ''"/>-->
-<!--          </template>-->
-<!--        </q-input>-->
-
         <SearchWidget />
-
 
         <q-space/>
 
@@ -80,8 +67,19 @@
       </q-toolbar>
     </q-header>
 
-    <q-drawer v-model="leftDrawerOpen" side="left" bordered>
-      <DrawerLeft/>
+
+<!--    <q-drawer v-if="uiService.useSmallDrawerView()" v-model="leftDrawerOpen" mini side="left" bordered>-->
+<!--      <DrawerLeftSmall/>-->
+<!--    </q-drawer>-->
+<!--    <q-drawer v-else v-model="leftDrawerOpen" side="left" bordered>-->
+<!--      <DrawerLeft />-->
+<!--    </q-drawer>-->
+
+    <q-drawer v-model="leftDrawerOpen" :mini=uiService.useSmallDrawerView() side="left" bordered>
+      <DrawerLeft3 />
+      <template v-slot:mini>
+        <DrawerLeftSmall2 />
+      </template>
     </q-drawer>
 
     <q-drawer show-if-above v-model="rightDrawerOpen" side="right" bordered
@@ -112,7 +110,9 @@ import {useNotificationsStore} from "src/stores/notificationsStore";
 import TabInfo from "src/components/layouts/TabInfo.vue"
 import Navigation from "src/components/Navigation.vue"
 import NavigationService from "src/services/NavigationService"
-import DrawerLeft from "src/components/DrawerLeft.vue"
+import DrawerLeft from "src/components/DrawerLeft2.vue"
+import DrawerLeft3 from "src/components/DrawerLeft3.vue"
+import DrawerLeftSmall2 from "src/components/DrawerLeftSmall2.vue"
 import TabsetService from "src/services/TabsetService";
 import {useSearchStore} from "src/stores/searchStore";
 import {useFeatureTogglesStore} from "src/stores/featureTogglesStore";
@@ -122,21 +122,26 @@ import {useSettingsStore} from "stores/settingsStore"
 import OpenTabsThresholdWidget from 'src/components/widgets/OpenTabsThresholdWidget.vue'
 import SpacesSelectorWidget from 'src/components/widgets/SpacesSelectorWidget.vue'
 import SearchWidget from 'src/components/widgets/SearchWidget.vue'
+import {useUiService} from "src/services/useUiService";
+import {useUiStore} from "stores/uiStore";
 
 const router = useRouter()
 const tabsStore = useTabsStore()
 const searchStore = useSearchStore()
+const uiStore = useUiStore()
 
 const localStorage = useQuasar().localStorage
 
 const rightDrawerOpen = ref(true)
 const leftDrawerOpen = ref(false)
+const largeDrawer = ref(false)
 const model = ref(85)
 
 const notificationsStore = useNotificationsStore()
 const featuresStore = useFeatureTogglesStore()
 const settingsStore = useSettingsStore()
 const spacesStore = useSpacesStore()
+const uiService = useUiService()
 const route = useRoute()
 
 const spacesOptions = ref<object[]>([])
@@ -200,23 +205,18 @@ const title = () => {
 const goHome = () => router.push("/")
 
 const toggleLeftDrawer = () => {
-  useNotificationsStore().showDrawer = !useNotificationsStore().showDrawer
-  localStorage.set("showLeftDrawer", useNotificationsStore().showDrawer)
+  //useNotificationsStore().showDrawer = !useNotificationsStore().showDrawer
+  //localStorage.set("showLeftDrawer", useNotificationsStore().showDrawer)
+  useUiService().toggleDrawer()
 }
 
-onMounted(() => {
-  leftDrawerOpen.value = localStorage.getItem<boolean>("showLeftDrawer") || false
-  useNotificationsStore().showDrawer = leftDrawerOpen.value
-})
+const toggleLargeDrawer = () => {
+  largeDrawer.value = !largeDrawer.value
+}
 
 watchEffect(() => {
-  leftDrawerOpen.value = useNotificationsStore().showDrawer
+  leftDrawerOpen.value = tabsStore.tabsets?.size > 0
 })
-
-const closeTrackedTabs = () => {
-  TabsetService.closeTrackedTabs()
-}
-
 
 const installNewVersion = () => {
   notificationsStore.updateAvailable(false)

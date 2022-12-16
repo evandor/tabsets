@@ -74,7 +74,7 @@ export const useSearchStore = defineStore('search', () => {
     const doc: SearchDoc = new SearchDoc(
       id, name, title, url, description, '', content, tabsets, '', favIconUrl
     )
-    console.log("adding to index", doc)
+    //console.log("adding to index", doc)
     // @ts-ignore
     const indexLength = fuse.value.getIndex().size()
     //console.log("adding to index: ", indexLength, doc)
@@ -158,8 +158,12 @@ export const useSearchStore = defineStore('search', () => {
         content.forEach(c => {
           if (c.expires === 0 || TabsetService.urlExistsInATabset(c.url)) {
             const searchDoc = new SearchDoc(c.id, c.name, c.title, c.url, c.description, c.keywords, c.content, c.tabsets, '', c.favIconUrl)
-            searchDoc.description = c.metas['description']
-            searchDoc.keywords = c.metas['keywords']
+            if (c.metas && c.metas['description']) {
+              searchDoc.description = c.metas['description']
+            }
+            if (c.metas && c.metas['keywords']) {
+              searchDoc.keywords = c.metas['keywords']
+            }
             const removed = fuse.value.remove((doc) => {
               return doc.url === searchDoc.url
             })

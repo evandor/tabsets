@@ -1,6 +1,6 @@
 {
   "name": "tabsets",
-  "version": "0.2.6",
+  "version": "0.2.7",
   "description": "Browser Extension to manage your tabs by grouping them into re-storable sets",
   "productName": "Tabsets Extension",
   "author": "evandor <evandor@gmail.com>",
@@ -25,7 +25,8 @@
     "concurrently:dev:jest": "concurrently \"quasar dev\" \"jest --watch\""
   },
   "dependencies": {
-    "@quasar/extras": "^1.15.5",
+    "@extractus/feed-extractor": "^6.1.7",
+    "@quasar/extras": "^1.15.8",
     "@types/lodash": "^4.14.182",
     "apexcharts": "^3.36.3",
     "date-fns": "^2.29.3",

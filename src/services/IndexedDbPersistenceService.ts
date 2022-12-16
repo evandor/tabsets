@@ -30,6 +30,9 @@ class IndexedDbPersistenceService implements PersistenceService {
           if ('ignored' === key) {
             tabsStore.ignoredTabset = ts
           } else {
+            if (!ts.status) {
+              ts.status = TabsetStatus.DEFAULT
+            }
             tabsStore.addTabset(ts)
           }
         })

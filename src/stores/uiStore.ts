@@ -1,0 +1,43 @@
+import {defineStore} from 'pinia';
+import _ from 'lodash'
+import {computed, ref, watch} from "vue";
+import {Space} from "src/models/Space";
+import {useTabsStore} from "stores/tabsStore";
+import {useQuasar} from "quasar";
+
+
+export enum LeftDrawerState {
+  SMALL = "SMALL",
+  WIDE = "WIDE"
+}
+
+export enum LeftDrawerTabs {
+  BOOKMARKS = "bookmarks",
+  OPEN_TABS = "openTabs",
+  SAVED_TABS = "savedTabs",
+  TABSETS = "tabsets",
+  RSS = "rss"
+}
+
+export class LeftDrawer {
+  constructor(
+    public state: LeftDrawerState,
+    public activeTab: LeftDrawerTabs = LeftDrawerTabs.BOOKMARKS) {
+  }
+}
+
+export const useUiStore = defineStore('ui', () => {
+
+  const $q = useQuasar()
+
+  const leftDrawer = ref<LeftDrawer>($q.localStorage.getItem('ui.leftDrawer') || new LeftDrawer(LeftDrawerState.SMALL))
+
+  watch(
+    leftDrawer,
+    (val: Object) => {
+      $q.localStorage.set("ui.leftDrawer", val)
+    }, {deep: true}
+  )
+
+  return {leftDrawer}
+})

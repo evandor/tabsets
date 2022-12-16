@@ -1,6 +1,11 @@
+export enum UrlExtension {
+  HTML = "HTML",
+  RSS = "RSS",
+  IMAGE = "IMAGE",
+  UNKNOWN = "UNKNOWN"
+}
 
 export class Tab {
-  // id: string // internal id, do not want to rely on chromeTab.id
   created: number
   updated: number
   lastActive: number
@@ -23,6 +28,7 @@ export class Tab {
   note: string
   canvasLeft: number
   canvasTop: number
+  extension: UrlExtension
 
   constructor(public id: string, chromeTab: chrome.tabs.Tab) {
     this.created = new Date().getTime()
@@ -44,6 +50,7 @@ export class Tab {
     this.note = ''
     this.canvasTop = 0
     this.canvasLeft = 0
+    this.extension = this.determineUrlExtension(chromeTab)
   }
 
   setHistoryFrom(existingTab: Tab) {
@@ -61,13 +68,34 @@ export class Tab {
     this.history.push(url)
   }
 
-  hasHistory(): boolean {
-    // console.log("has", this.history)
-    return true //this.history && this.history.length > 0
+  determineUrlExtension(chromeTab: chrome.tabs.Tab): UrlExtension {
+    let ext = UrlExtension.UNKNOWN
+    if (chromeTab?.url) {
+      try {
+        const url = new URL(chromeTab.url)
+        ext = UrlExtension.HTML
+        const urlToCheck = url.href.toLowerCase().split("?")[0]
+        if (urlToCheck.endsWith(".rss")) {
+          ext = UrlExtension.RSS
+        } else if (urlToCheck.endsWith(".rdf")) {
+          ext = UrlExtension.RSS
+        } else if (urlToCheck.endsWith(".xml")) {
+          ext = UrlExtension.RSS
+        }
+      } catch (err) {
+        console.error("checking extension url: ", err)
+      }
+    }
+    return ext
   }
 
-  public setName(newName: string): void {
-    // TODO validate
-    this.name = newName
-  }
+  // hasHistory(): boolean {
+  //   // console.log("has", this.history)
+  //   return true //this.history && this.history.length > 0
+  // }
+  //
+  // public setName(newName: string): void {
+  //   // TODO validate
+  //   this.name = newName
+  // }
 }
