@@ -310,8 +310,12 @@ class IndexedDbPersistenceService implements PersistenceService {
   }
 
   getMHtmls(): Promise<MHtml[]> {
-    //console.log("getMHtmls")
+    if (!this.db) { // can happen for some reason
+      console.log("hier")
+      return Promise.resolve([])
+    }
     try {
+      console.log("da")
       return this.db.getAll('mhtml')
     } catch (ex) {
       console.log("got error in getMHtmls", ex)

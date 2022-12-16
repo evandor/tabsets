@@ -76,9 +76,9 @@
 <!--    </q-drawer>-->
 
     <q-drawer v-model="leftDrawerOpen" :mini=uiService.useSmallDrawerView() side="left" bordered>
-      <DrawerLeft3 />
+      <DrawerLeft />
       <template v-slot:mini>
-        <DrawerLeftSmall2 />
+        <DrawerLeftMini />
       </template>
     </q-drawer>
 
@@ -110,9 +110,8 @@ import {useNotificationsStore} from "src/stores/notificationsStore";
 import TabInfo from "src/components/layouts/TabInfo.vue"
 import Navigation from "src/components/Navigation.vue"
 import NavigationService from "src/services/NavigationService"
-import DrawerLeft from "src/components/DrawerLeft2.vue"
-import DrawerLeft3 from "src/components/DrawerLeft3.vue"
-import DrawerLeftSmall2 from "src/components/DrawerLeftSmall2.vue"
+import DrawerLeft from "src/components/DrawerLeft.vue"
+import DrawerLeftMini from "src/components/DrawerLeftMini.vue"
 import TabsetService from "src/services/TabsetService";
 import {useSearchStore} from "src/stores/searchStore";
 import {useFeatureTogglesStore} from "src/stores/featureTogglesStore";

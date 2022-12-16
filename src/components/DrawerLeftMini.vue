@@ -32,13 +32,14 @@
 
 <script lang="ts" setup>
 import {ref, watch, watchEffect} from "vue";
-import {useNotificationsStore} from "stores/notificationsStore";
 import {useRouter} from "vue-router";
 import {useFeatureTogglesStore} from "stores/featureTogglesStore";
 import {useTabsStore} from "stores/tabsStore";
 import {useSettingsStore} from "stores/settingsStore";
 import {useUiService} from "src/services/useUiService";
 import {LeftDrawerTabs} from "stores/uiStore";
+import MHtmlService from "src/services/MHtmlService";
+import {MHtml} from "src/models/MHtml";
 
 const router = useRouter()
 
@@ -63,13 +64,14 @@ watchEffect(() => {
 
 watchEffect(() => rssTabsCount.value = tabsStore.rssTabs?.length)
 
-watchEffect(() => {
+// watchEffect(() => {
 
-  // MHtmlService.getMHtmls()
-  //   .then((res: MHtml[]) => {
-  //     savedTabsCount.value = res.length
-  //   })
-})
+  MHtmlService.getMHtmls()
+    .then((res: MHtml[]) => {
+      console.log("res", res)
+      savedTabsCount.value = res.length
+    })
+// })
 
 
 watch(() => tab.value, (currentValue, oldValue) => {

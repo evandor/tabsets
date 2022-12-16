@@ -90,7 +90,7 @@ import {useTabsStore} from "src/stores/tabsStore";
 import {useRoute, useRouter} from "vue-router";
 import {useMeta} from 'quasar'
 import {useNotificationsStore} from "src/stores/notificationsStore";
-import DrawerLeft from "src/components/DrawerLeft2.vue"
+import DrawerLeft from "src/components/DrawerLeft.vue"
 import TabsetService from "src/services/TabsetService";
 import {useSearchStore} from "src/stores/searchStore";
 import {useFeatureTogglesStore} from "src/stores/featureTogglesStore";
