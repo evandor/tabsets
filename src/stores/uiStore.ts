@@ -15,7 +15,7 @@ export enum LeftDrawerTabs {
   BOOKMARKS = "bookmarks",
   OPEN_TABS = "openTabs",
   SAVED_TABS = "savedTabs",
-  TABSETS = "tabsets",
+  SIDEBAR = "sidebar",
   RSS = "rss"
 }
 

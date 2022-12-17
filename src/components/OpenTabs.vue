@@ -2,12 +2,6 @@
 
   <q-separator></q-separator>
 
-<!--  <div class="row items-start">-->
-<!--    <div class="col-12 q-pa-xs" v-for="tab in unpinnedNoGroup()">-->
-<!--      <OpenTabCard :tab="tab"/>-->
-<!--    </div>-->
-<!--  </div>-->
-
 <!--  @end="end"-->
   <vue-draggable-next
     :list="unpinnedNoGroup()"

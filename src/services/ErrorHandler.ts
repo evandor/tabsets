@@ -12,7 +12,7 @@ export function useNotificationHandler() {
       color: 'red-5',
       textColor: 'white',
       icon: 'error',
-      message: error.toString()
+      message: error ? error.toString() : 'unknown error'
     })
   }
 

@@ -267,7 +267,7 @@
     </template>
 
     <q-card>
-      <q-card-section v-if="tabsStore.getCurrentTabset?.tabs.length > 0">
+      <q-card-section>
 
         <Tablist v-if="tabsStore.getCurrentTabset?.view === 'list'"
                  :tabs="unpinnedNoGroup()"/>

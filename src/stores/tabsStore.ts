@@ -10,6 +10,7 @@ import {NewOrReplacedTabset} from "src/models/NewOrReplacedTabset";
 import {useTabGroupsStore} from "src/stores/tabGroupsStore";
 import {Group} from "src/models/Group";
 import {useSpacesStore} from "stores/spacesStore";
+import {inject} from "vue";
 
 async function queryTabs(): Promise<chrome.tabs.Tab[]> {
   // @ts-ignore
@@ -250,9 +251,8 @@ export const useTabsStore = defineStore('tabs', {
       this.pendingTabset.tabs = _.filter(this.pendingTabset.tabs, (t: Tab) => t.id !== tabId)
     },
 
-    // async updateOrCreateTabset(tabsetName: string, tabs: chrome.tabs.Tab[], merge: boolean = false): Promise<NewOrReplacedTabset> {
     async updateOrCreateTabset(tabsetName: string, tabs: Tab[], merge: boolean = false, spaces: Set<string> = new Set()): Promise<NewOrReplacedTabset> {
-      console.log("--- updateOrCreateTabset start -------------")
+      console.debug("--- updateOrCreateTabset start -------------")
       const foundTS: Tabset | undefined = _.find([...this.tabsets.values()], ts => ts.name === tabsetName)
       let ts: Tabset = null as unknown as Tabset
       const tabsetExtensionTab = await ChromeApi.getCurrentTab()
@@ -260,7 +260,7 @@ export const useTabsStore = defineStore('tabs', {
       const currentSpace = useSpacesStore().space
       if (foundTS) {
         if (merge) {
-          console.log("found existing tabset " + foundTS.id + ", merging...")
+          console.debug("found existing tabset " + foundTS.id + ", merging...")
           _.forEach(tabs, t => {
             const exists = _.find(foundTS.tabs, existing => existing.chromeTab.url === t.chromeTab?.url)
             if (!exists) {
@@ -268,7 +268,7 @@ export const useTabsStore = defineStore('tabs', {
             }
           })
           ts = foundTS
-          console.log("merging groups", tabGroupsStore.tabGroups)
+          console.debug("merging groups", tabGroupsStore.tabGroups)
           _.forEach(tabGroupsStore.tabGroups, tg => {
             const exists = _.find(foundTS.groups, existing => existing.chromeGroup.title === tg.title)
             if (!exists) {
@@ -278,14 +278,14 @@ export const useTabsStore = defineStore('tabs', {
 
 
         } else {
-          console.log("found existing tabset " + foundTS.id + ", replacing...")
+          console.debug("found existing tabset " + foundTS.id + ", replacing...")
           ts = new Tabset(foundTS.id, tabsetName, _.map(tabs, t => t),
             _.map(tabGroupsStore.tabGroups, tg => new Group(uid(), tg)))
           this.tabsets.set(foundTS.id, ts)
           //TabsetService.saveTabset(ts)
         }
       } else {
-        console.log("didn't find existing tabset, creating new...")
+        console.debug("didn't find existing tabset, creating new...")
         const useId = uid()
         ts = new Tabset(useId, tabsetName, _.map(
             _.filter(
@@ -295,15 +295,15 @@ export const useTabsStore = defineStore('tabs', {
               }),
             t => t),
           _.map(tabGroupsStore.tabGroups, tg => new Group(uid(), tg)))
-        console.log("got ts", ts)
+        console.debug("got ts", ts)
         this.tabsets.set(useId, ts)
       }
-      console.log("currentSpace", currentSpace)
+      console.debug("currentSpace", currentSpace)
       if (currentSpace && currentSpace.id && ts.spaces.findIndex(s => s === currentSpace.id) < 0) {
         ts.spaces.push(currentSpace.id)
       }
 
-      console.log("--- updateOrCreateTabset end -------------")
+      console.debug("--- updateOrCreateTabset end -------------")
       return new NewOrReplacedTabset(foundTS !== undefined, ts)
     },
 

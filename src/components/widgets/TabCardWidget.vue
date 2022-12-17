@@ -11,7 +11,7 @@
             style="cursor: move"
             width="22px"
             height="22px"
-            :src="getFaviconUrl(tab.chromeTab)">
+            :src="getFaviconUrl(tab)">
             <q-tooltip>{{ tab.chromeTab?.id }} / {{ tab.id }} / {{ tab.bookmarkId }}</q-tooltip>
           </q-img>
         </div>
@@ -91,7 +91,7 @@
 
 <script setup lang="ts">
 
-import {Tab} from "src/models/Tab";
+import {Tab, UrlExtension} from "src/models/Tab";
 import TabsetService from "src/services/TabsetService";
 import {useNotificationsStore} from "stores/notificationsStore";
 import {ref} from "vue";
@@ -115,6 +115,9 @@ const emits = defineEmits(['sendCaption'])
 const thumbnails = ref<Map<string, string>>(new Map())
 
 const thumbnailFor = (tab: Tab): string => {
+  if (tab.extension === UrlExtension.IMAGE) {
+    return tab.chromeTab.url || 'favicon-unknown-32x32.png'
+  }
   const key = btoa(tab.chromeTab.url || '')
   return thumbnails.value.get(key) || "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+ip1sAAAAASUVORK5CYII="
 }
@@ -178,9 +181,9 @@ const selectTab = (tab: Tab) => {
   notificationStore.setSelectedTab(tab)
 }
 
-const getFaviconUrl = (chromeTab: chrome.tabs.Tab | undefined) => {
+const getFaviconUrl = (tab: Tab) => {
+  const chromeTab = tab.chromeTab
   if (chromeTab && chromeTab.favIconUrl && !chromeTab.favIconUrl.startsWith("chrome")) {
-    //console.log("chromeTab.favIconUrl", chromeTab.favIconUrl)
     return chromeTab.favIconUrl
   }
   return 'favicon-unknown-32x32.png'

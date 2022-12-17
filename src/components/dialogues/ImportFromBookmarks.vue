@@ -37,7 +37,7 @@
 
 <script lang="ts" setup>
 
-import {ref} from "vue";
+import {inject, ref} from "vue";
 import TabsetService from "src/services/TabsetService";
 import {useQuasar} from "quasar";
 import {useRoute, useRouter} from "vue-router";
@@ -46,6 +46,9 @@ import {useTabsStore} from "src/stores/tabsStore";
 import {useDialogPluginComponent} from 'quasar'
 import ChromeApi from "src/services/ChromeApi";
 import {useBookmarksStore} from "src/stores/bookmarksStore";
+import {useCommandExecutor} from "src/services/CommandExecutor";
+import {CreateTabsetCommand} from "src/domain/commands/CreateTabsetCommand";
+import {CreateTabsetFromBookmarksCommand} from "src/domain/commands/CreateTabsetFromBookmarksCommand";
 
 defineEmits([
   ...useDialogPluginComponent.emits
@@ -75,7 +78,7 @@ const bookmarkId = ref(bookmarksStore.currentBookmark.chromeBookmark.id)
 const merge = ref(false)
 
 const tabNameExists = () => tabsStore.nameExistsInContextTabset(newTabsetName.value)
-
+const logger = inject('vuejs3-logger')
 
 const newTabsetDialogWarning = () => {
   if (tabsStore.nameExistsInContextTabset(newTabsetName.value)) {
@@ -89,38 +92,41 @@ const importBookmarks = async () => {
   console.log("importing bookmarks", bookmarkId.value)
   $q.loadingBar.start()
 
-  try {
+  // try {
+  //
+  //   const candidates: chrome.bookmarks.BookmarkTreeNode[] = await ChromeApi.childrenFor(bookmarkId.value)
+  //
+  //   const result = await TabsetService.saveOrReplaceFromBookmarks(newTabsetName.value, candidates, true)
+  //   //@ts-ignore
+  //   const replaced = result.replaced
+  //   //@ts-ignore
+  //   const merged = result.merged
+  //   let message = 'Tabset ' + newTabsetName.value + ' created successfully'
+  //   if (replaced && merged) {
+  //     message = 'Tabset ' + newTabsetName.value + ' was updated'
+  //   } else if (replaced) {
+  //     message = 'Tabset ' + newTabsetName.value + ' was overwritten'
+  //   }
+  //   router.push("/tabset")
+  //   $q.notify({
+  //     message: message,
+  //     type: 'positive'
+  //   })
+  // } catch (ex: any) {
+  //   console.error("ex", ex)
+  //   $q.notify({
+  //     message: 'There was a problem creating the tabset ' + newTabsetName.value,
+  //     type: 'warning',
+  //   })
+  // }
 
-    const candidates: chrome.bookmarks.BookmarkTreeNode[] = await ChromeApi.childrenFor(bookmarkId.value)
-
-    const result = await TabsetService.saveOrReplaceFromBookmarks(newTabsetName.value, candidates, true)
-    //@ts-ignore
-    const replaced = result.replaced
-    //@ts-ignore
-    const merged = result.merged
-    let message = 'Tabset ' + newTabsetName.value + ' created successfully'
-    if (replaced && merged) {
-      message = 'Tabset ' + newTabsetName.value + ' was updated'
-    } else if (replaced) {
-      message = 'Tabset ' + newTabsetName.value + ' was overwritten'
-    }
-    router.push("/tabset")
-    $q.notify({
-      message: message,
-      type: 'positive'
+  const candidates: chrome.bookmarks.BookmarkTreeNode[] = await ChromeApi.childrenFor(bookmarkId.value)
+  useCommandExecutor(logger)
+    .executeFromUi(new CreateTabsetFromBookmarksCommand(newTabsetName.value, candidates))
+    .then(res => {
+      router.push("/tabset")
     })
-  } catch (ex: any) {
-    console.error("ex", ex)
-    $q.notify({
-      message: 'There was a problem creating the tabset ' + newTabsetName.value,
-      type: 'warning',
-    })
-  }
-  // }).catch((ex: any) => {
 
-  // }).finally(() => {
-  //   $q.loadingBar.stop()
-  // })
   $q.loadingBar.stop()
 }
 

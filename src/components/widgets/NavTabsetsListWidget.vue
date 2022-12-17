@@ -169,6 +169,6 @@ const editDialog = (tabset: Tabset) =>
 
 const markAsFavorite = (ts: Tabset) => useCommandExecutor(logger).executeFromUi(new MarkTabsetAsFavoriteCommand(ts.id))
 const markAsDefault = (ts: Tabset) => useCommandExecutor(logger).executeFromUi(new MarkTabsetAsDefaultCommand(ts.id))
-const archiveTabset = (ts: Tabset) => useCommandExecutor(loggger).executeFromUi(new MarkTabsetAsArchivedCommand(ts.id))
+const archiveTabset = (ts: Tabset) => useCommandExecutor(logger).executeFromUi(new MarkTabsetAsArchivedCommand(ts.id))
 
 </script>

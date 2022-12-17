@@ -67,14 +67,6 @@
       </q-toolbar>
     </q-header>
 
-
-<!--    <q-drawer v-if="uiService.useSmallDrawerView()" v-model="leftDrawerOpen" mini side="left" bordered>-->
-<!--      <DrawerLeftSmall/>-->
-<!--    </q-drawer>-->
-<!--    <q-drawer v-else v-model="leftDrawerOpen" side="left" bordered>-->
-<!--      <DrawerLeft />-->
-<!--    </q-drawer>-->
-
     <q-drawer v-model="leftDrawerOpen" :mini=uiService.useSmallDrawerView() side="left" bordered>
       <DrawerLeft />
       <template v-slot:mini>
@@ -83,7 +75,6 @@
     </q-drawer>
 
     <q-drawer show-if-above
-              :width="220"
               v-model="rightDrawerOpen" side="right" bordered
               content-class="column justify-between no-wrap bg-grey-1">
       <Navigation></Navigation>

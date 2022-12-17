@@ -7,12 +7,17 @@
     :group="{ name: 'tabs', pull: 'clone' }"
     @change="handleDragAndDrop">
     <div
+      v-if="props.tabs.length > 0"
       class="col-xs-12 col-sm-4 col-md-3 col-lg-2 q-pa-xs"
       v-for="tab in props.tabs"
       :key="props.group + '_' + tab.id">
 
       <TabCardWidget :key="props.group + '__' + tab.id" :tab="tabAsTab(tab)" :highlightUrl="highlightUrl" />
 
+    </div>
+
+    <div v-else class="q-ma-md q-pa-xl fit" style="border: 2px dotted grey; border-radius: 7px">
+      <div class="row text-subtitle2 justify-center items-center">drag and drop new tabs from <span class="cursor-pointer text-blue-8" @click="openOrShowOpenTabs()">here</span></div>
     </div>
   </vue-draggable-next>
 
@@ -27,9 +32,12 @@ import TabCardWidget from "src/components/widgets/TabCardWidget.vue"
 import {useQuasar} from "quasar";
 import _ from "lodash"
 import {useTabsStore} from "src/stores/tabsStore";
+import {useUiService} from "src/services/useUiService";
+import {LeftDrawerState, LeftDrawerTabs} from "stores/uiStore";
 
 const $q = useQuasar()
 const tabsStore = useTabsStore()
+const uiService = useUiService()
 
 const props = defineProps({
   tabs: {
@@ -154,6 +162,17 @@ const handleDragAndDrop = (event: any) => {
         })
       })
   }
+}
+
+const openOrShowOpenTabs = () => {
+  // const activeTab = uiService.leftDrawerActiveTab()
+  const drawerModel =uiService.drawerModel()
+  if (drawerModel.state === LeftDrawerState.SMALL || drawerModel.activeTab !== LeftDrawerTabs.OPEN_TABS) {
+    uiService.leftDrawerSetActiveTab(LeftDrawerTabs.OPEN_TABS)
+  } else {
+
+  }
+  // useUiService().setWideDrawer()
 }
 
 </script>

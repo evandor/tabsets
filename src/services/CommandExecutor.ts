@@ -9,7 +9,7 @@ export function useCommandExecutor(logger: any) {
     logger.info("running command:", command)
     return command.execute(logger)
       .then(res => handleSuccess(res, logger))
-      .then(res => console.log("command finished"))
+      .then(() => logger.debug("command finished"))
       .catch(err => handleError(err, logger))
   }
 

@@ -1,0 +1,51 @@
+import Command from "src/domain/Command";
+import TabsetService from "src/services/TabsetService";
+import {ExecutionResult} from "src/domain/ExecutionResult";
+import {DeleteTabsetCommand} from "src/domain/commands/DeleteTabsetCommand";
+import {useTabsetService} from "src/services/TabsetService2";
+import {DeleteTabsFromTabsetCommand} from "src/domain/commands/DeleteTabsFromTabsetCommand";
+
+
+class UndoCommand implements Command {
+
+  constructor(
+    public tabsetId: string,
+    public updated: number) {
+  }
+
+  execute(logger: any): Promise<ExecutionResult> {
+    logger.info("execution of undo command", this.tabsetId, this.updated)
+    return new DeleteTabsFromTabsetCommand(this.tabsetId, this.updated).execute(logger)
+      .then(res => Promise.resolve(new ExecutionResult(res, res.message)))
+  }
+
+}
+
+export class CreateTabsetFromBookmarksCommand implements Command {
+
+  public merge: boolean = true
+
+  constructor(
+    public tabsetName: string,
+    public bmsToUse: chrome.bookmarks.BookmarkTreeNode[]) {
+  }
+
+  async execute(logger: any): Promise<ExecutionResult> {
+    try {
+      const result = await useTabsetService(logger)
+        .saveOrReplaceFromBookmarks(this.tabsetName, this.bmsToUse, this.merge)
+      let doneMsg = 'Tabset ' + this.tabsetName + ' created successfully from bookmarks folder'
+      if (result['replaced' as keyof object] && result['merged' as keyof object]) {
+        doneMsg = 'Existing Tabset ' + this.tabsetName + ' was updated'
+      } else if (result['replaced' as keyof object]) {
+        doneMsg = 'Existing Tabset ' + this.tabsetName + ' was overwritten'
+      }
+      const executionResult = new ExecutionResult(result, doneMsg, new UndoCommand(result['tabsetId' as keyof object], result['updated' as keyof object]))
+      return Promise.resolve(executionResult)
+    } catch (err) {
+      return Promise.reject(err)
+    }
+  }
+
+
+}

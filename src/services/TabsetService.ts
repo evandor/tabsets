@@ -45,36 +45,7 @@ class TabsetService {
   }
 
 
-  /**
-   * Will create a new tabset (or update an existing one with matching name) from
-   * the provided bookmarks.
-   *
-   * The tabset is created or updated in the store, and the new data is persisted.
-   *
-   * @param name the tabset's name (TODO: validation)
-   * @param bms an array of Chrome bookmarks.
-   * @param merge if true, the old values and the new ones will be merged.
-   */
-  async saveOrReplaceFromBookmarks(name: string, bms: chrome.bookmarks.BookmarkTreeNode[], merge: boolean = false): Promise<object> {
-    const tabsStore = useTabsStore()
-    const tabs = _.map(_.filter(bms, bm => bm.url !== undefined), c => {
-      const tab = new Tab(uid(), null as unknown as chrome.tabs.Tab)
-      tab.bookmarkUrl = c.url
-      tab.bookmarkId = c.id
-      tab.created = c.dateAdded || 0
-      tab.chromeTab = ChromeApi.createChromeTabObject(c.title || '', c.url || '', '')
-      return tab
-    })
-    const result = await tabsStore.updateOrCreateTabset(name, tabs, merge)
-    if (result && result.tabset) {
-      await this.saveTabset(result.tabset)
-      this.selectTabset(result.tabset.id)
-    }
-    return {
-      replaced: result.replaced,
-      merged: merge
-    }
-  }
+
 
   async saveTabset(tabset: Tabset): Promise<IDBValidKey> {
     if (tabset.id) {
@@ -418,7 +389,7 @@ class TabsetService {
   }
 
   createPendingFromBrowserTabs() {
-    console.log(`createPendingFromBrowserTabs`)
+    //console.log(`createPendingFromBrowserTabs`)
     const tabsStore = useTabsStore()
     tabsStore.pendingTabset.tabs = []
     const urlSet = new Set<string>()

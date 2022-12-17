@@ -75,12 +75,15 @@ export class Tab {
         const url = new URL(chromeTab.url)
         ext = UrlExtension.HTML
         const urlToCheck = url.href.toLowerCase().split("?")[0]
+        //console.log("urlToCheck", urlToCheck)
         if (urlToCheck.endsWith(".rss")) {
           ext = UrlExtension.RSS
         } else if (urlToCheck.endsWith(".rdf")) {
           ext = UrlExtension.RSS
         } else if (urlToCheck.endsWith(".xml")) {
           ext = UrlExtension.RSS
+        } else if (urlToCheck.endsWith(".png") || urlToCheck.endsWith(".jpg") || urlToCheck.endsWith(".jpeg")) {
+          ext = UrlExtension.IMAGE
         }
       } catch (err) {
         console.error("checking extension url: ", err)

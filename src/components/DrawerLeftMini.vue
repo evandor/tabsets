@@ -1,32 +1,5 @@
 <template>
-
-  <q-tabs
-    v-model="tab"
-    vertical
-    active-color="primary"
-    class="text-grey-9 q-mt-none q-mx-none greyBorderTopRight">
-    <q-tab name="bookmarks" icon="o_bookmark" @click="tabsClicked(LeftDrawerTabs.BOOKMARKS)">
-      <q-tooltip>Your bookmarks</q-tooltip>
-    </q-tab>
-    <q-tab name="openTabs" icon="o_table_rows">
-      <q-badge v-if="badgeThreshold()"
-               align="middle"
-               :style="thresholdStyle()" outline>{{ tabsStore.tabs.length }}
-      </q-badge>
-      <q-tooltip>Your open tabs</q-tooltip>
-    </q-tab>
-    <q-tab v-if="savedTabsCount > 0"
-           name="savedTabs" icon="o_save">
-      <q-tooltip>Your saved tabs</q-tooltip>
-    </q-tab>
-    <q-tab name="tabset" icon="o_tab" v-if="featureToggles.isEnabled('sidebar')">
-      <q-tooltip>Your current tabset</q-tooltip>
-    </q-tab>
-    <q-tab v-if="rssTabsCount > 0"
-           name="rss" icon="o_rss_feed">
-      <q-tooltip>RSS Feeds</q-tooltip>
-    </q-tab>
-  </q-tabs>
+  <DrawerLeftTabs />
 
 </template>
 
@@ -40,6 +13,7 @@ import {useUiService} from "src/services/useUiService";
 import {LeftDrawerTabs} from "stores/uiStore";
 import MHtmlService from "src/services/MHtmlService";
 import {MHtml} from "src/models/MHtml";
+import DrawerLeftTabs from "src/components/DrawerLeftTabs.vue"
 
 const router = useRouter()
 
@@ -66,11 +40,11 @@ watchEffect(() => rssTabsCount.value = tabsStore.rssTabs?.length)
 
 // watchEffect(() => {
 
-  MHtmlService.getMHtmls()
-    .then((res: MHtml[]) => {
-      console.log("res", res)
-      savedTabsCount.value = res.length
-    })
+MHtmlService.getMHtmls()
+  .then((res: MHtml[]) => {
+    console.log("res", res)
+    savedTabsCount.value = res.length
+  })
 // })
 
 
@@ -79,29 +53,4 @@ watch(() => tab.value, (currentValue, oldValue) => {
   uiService.leftDrawerSetActiveTab(currentValue)
 })
 
-// watchEffect(() => {
-//   tab.value = uiService.leftDrawerActiveTab()
-// })
-
-const thresholdStyle = () =>
-  "color: hsl(" + (120 - Math.round(120 * openTabsCountRatio.value)) + " 80% 50%)"
-
-const badgeThreshold = () => tabsStore.tabs.length >= settingsStore.thresholds['min' as keyof object]
-
-const tabsClicked = (tab: LeftDrawerTabs) => {
-  console.log("tabsClicked", tab)
-  uiService.leftDrawerSetActiveTab(tab)
-}
 </script>
-
-<style lang="sass" scoped>
-.lightgrey
-  background-color: $lightgrey
-
-.greyBorderTop
-  border-top: 1px solid $bordergrey
-
-.greyBorderTopRight
-  border-top: 1px solid $bordergrey
-  border-right: 1px solid $bordergrey
-</style>

@@ -1,13 +1,12 @@
 <template>
 
-  <q-toolbar class="text-primary lightgrey" v-if="tabsStore.tabsets.size > 0">
+  <q-toolbar class="text-primary lightgrey" >
     <div class="row fit">
       <q-toolbar-title>
         <div class="row justify-start items-baseline">
           Welcome to Tabsets
         </div>
       </q-toolbar-title>
-
     </div>
   </q-toolbar>
 
