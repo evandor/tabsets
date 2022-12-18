@@ -6,6 +6,7 @@ import _ from "lodash"
 import NavigationService from "src/services/NavigationService";
 import {RequestInfo} from "src/models/RequestInfo";
 import StatsService from "src/services/StatsService";
+import {useUiService} from "src/services/useUiService";
 
 
 function runHousekeeping(alarm: chrome.alarms.Alarm) {
@@ -96,6 +97,18 @@ class ChromeApi {
           });
         }
       })
+
+    chrome.omnibox.onInputStarted.addListener(
+      () => {
+        console.log("onInputStarted")
+      }
+    )
+    chrome.omnibox.onInputEntered.addListener(
+      (a,b) => {
+        console.log("onInputEntered",a,b)
+        useUiService().showSearchResultsPageFor(a)
+      }
+    )
   }
 
   buildContextMenu() {

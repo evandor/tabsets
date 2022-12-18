@@ -18,25 +18,50 @@
 
       <q-toolbar class="text-primary lightgrey">
         <div class="row fit">
-          <div class="col-xs-12 col-md-5">
+          <div class="col-xs-12 col-md-7">
             <q-toolbar-title>
               <div class="row justify-start items-baseline">
                 <div class="col-1">
-                  <span class="text-dark">{{ drawerLabel() }}</span>
+                  <span class="text-dark" :class="{
+                    'animated flash': uiService.leftDrawerAnimate()
+                  }">{{ drawerLabel() }}</span>
                 </div>
               </div>
             </q-toolbar-title>
           </div>
-          <div class="col-xs-12 col-md-7 text-right">
+          <div class="col-xs-12 col-md-5 q-ma-none q-mt-sm text-right">
 
-
-            <q-btn
-                   flat dense icon="o_filter_list"
-                   color="primary"
-                   class="q-ml-md q-mr-md"
-                   >
-              <q-tooltip>Apply Filter</q-tooltip>
-            </q-btn>
+            <div class="row">
+              <div class="col">
+                <span class="text-caption ellipsis">{{ filter }}</span>
+                <q-btn
+                  flat dense icon="o_filter_list"
+                  :color="filter ? 'secondary' : 'primary'"
+                  size="0.8em"
+                  class="q-ml-md q-mr-none">
+                  <q-tooltip v-if="filter">Apply Filter: '{{ filter }}'</q-tooltip>
+                  <q-tooltip v-else>Apply Filter</q-tooltip>
+                </q-btn>
+                <q-popup-edit v-model="filter"  v-slot="scope">
+                  <q-input
+                    autofocus
+                    dense
+                    maxlength="9"
+                    v-model="scope.value"
+                    :model-value="scope.value"
+                    @update:model-value="val => setFilter2( val)"
+                    hint="Filter open Tabs"
+                    @keyup.enter="scope.set">
+                    <template v-slot:after>
+                      <q-btn
+                        flat dense color="warning" icon="cancel" v-close-popup
+                        @click="cancelFilter()"
+                      />
+                    </template>
+                  </q-input>
+                </q-popup-edit>
+              </div>
+            </div>
 
           </div>
         </div>
@@ -44,7 +69,7 @@
 
 
       <BookmarksTree v-if="tab === LeftDrawerTabs.BOOKMARKS"/>
-      <OpenTabs v-else-if="tab ===  LeftDrawerTabs.OPEN_TABS"/>
+      <OpenTabs v-else-if="tab ===  LeftDrawerTabs.OPEN_TABS" :filter="filter"/>
       <SavedTabs v-else-if="tab ===  LeftDrawerTabs.SAVED_TABS"/>
       <TabsetAsSidebar v-else-if="tab ===  LeftDrawerTabs.SIDEBAR"/>
       <RssTabs v-else-if="tab ===  LeftDrawerTabs.RSS"/>
@@ -81,7 +106,7 @@ const settingsStore = useSettingsStore()
 const openTabsCountRatio = ref(0)
 const tab = ref<LeftDrawerTabs>(uiService.leftDrawerActiveTab())
 const rssTabsCount = ref(0)
-const savedTabsCount = ref(0)
+const filter = ref<string>('')
 
 watchEffect(() => tab.value = uiService.leftDrawerActiveTab())
 
@@ -123,10 +148,14 @@ const drawerLabel = () => {
   }
 }
 
-const thresholdStyle = () =>
-  "color: hsl(" + (120 - Math.round(120 * openTabsCountRatio.value)) + " 80% 50%)"
-
-const badgeThreshold = () => tabsStore.tabs.length >= settingsStore.thresholds['min' as keyof object]
+const cancelFilter = () => {
+  console.log("cancelFilter")
+  filter.value = ''
+}
+const setFilter2 = (newVal: string) => {
+  console.log("newVal2", newVal)
+  filter.value = newVal
+}
 
 </script>
 

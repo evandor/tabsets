@@ -31,6 +31,7 @@ export const useUiStore = defineStore('ui', () => {
   const $q = useQuasar()
 
   const leftDrawer = ref<LeftDrawer>($q.localStorage.getItem('ui.leftDrawer') || new LeftDrawer(LeftDrawerState.SMALL))
+  const leftDrawerLabelAnimated = ref(false)
 
   watch(
     leftDrawer,
@@ -39,5 +40,16 @@ export const useUiStore = defineStore('ui', () => {
     }, {deep: true}
   )
 
-  return {leftDrawer}
+  const leftDrawerLabelIsAnimated = computed(() => {
+    return () => {
+      return leftDrawerLabelAnimated.value
+    }
+  })
+
+  function setLeftDrawerLabelAnimated(animated: boolean) {
+    leftDrawerLabelAnimated.value = animated
+  }
+
+
+  return {leftDrawer, leftDrawerLabelIsAnimated, setLeftDrawerLabelAnimated}
 })

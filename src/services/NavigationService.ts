@@ -27,7 +27,6 @@ class NavigationService {
           })
       }
     });
-
   }
 
   openTab(tabId: number) {

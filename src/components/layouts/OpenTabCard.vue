@@ -15,6 +15,7 @@
             width="20px"
             height="20px"
             :src="tab.chromeTab?.favIconUrl">
+            <q-tooltip>{{tab.chromeTab?.id}}</q-tooltip>
           </q-img>
         </div>
         <div class="col-9 text-body2 ellipsis cursor-pointer" @click="NavigationService.openOrCreateTab(tab.chromeTab?.url)">

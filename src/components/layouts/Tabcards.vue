@@ -12,13 +12,19 @@
       v-for="tab in props.tabs"
       :key="props.group + '_' + tab.id">
 
-      <TabCardWidget :key="props.group + '__' + tab.id" :tab="tabAsTab(tab)" :highlightUrl="highlightUrl" />
+      <TabCardWidget :key="props.group + '__' + tab.id" :tab="tabAsTab(tab)" :highlightUrl="highlightUrl"/>
 
     </div>
 
     <div v-else class="q-ma-md q-pa-xl fit" style="border: 2px dotted grey; border-radius: 7px">
-      <div class="row text-subtitle2 justify-center items-center">drag and drop new tabs from <span class="cursor-pointer text-blue-8" @click="openOrShowOpenTabs()">here</span></div>
+      <div class="row fit text-subtitle2 justify-center items-center">
+        <div class="col-12">drag and drop new tabs from</div>
+      </div>
+      <div class="row">
+        <div class="col-12 cursor-pointer text-blue-8" @click="openOrShowOpenTabs()">here</div>
+      </div>
     </div>
+
   </vue-draggable-next>
 
 </template>
@@ -166,11 +172,11 @@ const handleDragAndDrop = (event: any) => {
 
 const openOrShowOpenTabs = () => {
   // const activeTab = uiService.leftDrawerActiveTab()
-  const drawerModel =uiService.drawerModel()
+  const drawerModel = uiService.drawerModel()
   if (drawerModel.state === LeftDrawerState.SMALL || drawerModel.activeTab !== LeftDrawerTabs.OPEN_TABS) {
     uiService.leftDrawerSetActiveTab(LeftDrawerTabs.OPEN_TABS)
   } else {
-
+    uiService.leftDrawerAnimateLabel()
   }
   // useUiService().setWideDrawer()
 }

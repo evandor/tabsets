@@ -65,7 +65,7 @@ const route = useRoute()
 const tabsStore = useTabsStore()
 const searchStore = useSearchStore()
 
-const term = route.params.term as string
+const termFromParams = route.query.t as string
 
 const $q = useQuasar()
 const tabsetHits = ref<Hit[]>([])
@@ -100,8 +100,9 @@ const newSearch = (term: string) => {
   }
 }
 
-if (term && term.trim() !== '') {
-  searchStore.term = term
+console.log("termFromParams", termFromParams, route.query)
+if (termFromParams && termFromParams.trim() !== '') {
+  searchStore.term = termFromParams
 }
 
 watchEffect(() => {
@@ -122,6 +123,7 @@ watchEffect(() => {
 })
 
 const searchWithBrowser = () => {
+  // @ts-ignore
   chrome.search.query({disposition: 'NEW_TAB', text: searchStore.term})
 }
 

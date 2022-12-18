@@ -1,4 +1,7 @@
 import {LeftDrawer, LeftDrawerState, LeftDrawerTabs, useUiStore} from "stores/uiStore";
+import {useRouter} from "vue-router";
+import Router from '../router';
+import router from "../router";
 
 export function useUiService() {
 
@@ -35,13 +38,37 @@ export function useUiService() {
     useUiStore().leftDrawer.state = LeftDrawerState.WIDE
   }
 
+  const leftDrawerAnimateLabel = () => {
+    useUiStore().setLeftDrawerLabelAnimated(true)
+    setTimeout(() => useUiStore().setLeftDrawerLabelAnimated(false),  1000);
+  }
+
+  const leftDrawerAnimate = () => useUiStore().leftDrawerLabelIsAnimated()
+
+  const showSearchResultsPageFor = (term: string) => {
+    window.location.href = window.location.href.split('#')[0] +  "#/search?t=" + term
+    const selfId = localStorage.getItem("selfId")
+    if (selfId) {
+      chrome.tabs.query({title: `Tabsets Extension`}, (result: chrome.tabs.Tab[]) => {
+        if (result && result.length > 0) {
+          const tab = result[0]
+          if (tab.id) {
+            chrome.tabs.update(tab.id, {active: true})
+          }
+        }
+      })
+    }
+  }
 
   return {
     useSmallDrawerView,
     toggleDrawer,
     drawerModel,
     leftDrawerActiveTab,
-    leftDrawerSetActiveTab
+    leftDrawerSetActiveTab,
+    leftDrawerAnimateLabel,
+    leftDrawerAnimate,
+    showSearchResultsPageFor
   }
 
 }

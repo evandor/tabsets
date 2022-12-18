@@ -1,8 +1,8 @@
 <template>
 
-  <q-separator></q-separator>
+  <!--  <q-separator></q-separator>-->
 
-<!--  @end="end"-->
+  <!--  @end="end"-->
   <vue-draggable-next
     :list="unpinnedNoGroup()"
     :group="{ name: 'tabs', pull: 'clone', put: false }"
@@ -14,7 +14,7 @@
       v-for="tab in unpinnedNoGroup()"
       :key="tab.id">
 
-      <OpenTabCard :tab="tab"/>
+      <OpenTabCard :tab="tab" />
 
     </div>
 
@@ -30,13 +30,38 @@ import _ from "lodash"
 import {useTabsStore} from "src/stores/tabsStore"
 import {VueDraggableNext} from 'vue-draggable-next'
 
+const props = defineProps({
+  filter: {
+    type: String,
+    required: false
+  }
+})
+
 const tabsStore = useTabsStore()
 
 function unpinnedNoGroup(): Tab[] {
   return _.filter(
     tabsStore.browserTabset?.tabs,
     //@ts-ignore
-    (t: Tab) => !t.chromeTab.pinned && t.chromeTab.groupId === -1)
+    (t: Tab) => {
+
+      if (props.filter && props.filter.trim().length > 0) {
+        const f = props.filter.toLowerCase()
+        const chromeTab = t.chromeTab
+        if (chromeTab && chromeTab.title && chromeTab.title.toLowerCase().indexOf(f) >= 0) {
+          return true
+        }
+        if (chromeTab && chromeTab.url && chromeTab.url.indexOf(f) >= 0) {
+          return true
+        }
+        if (t.name && t.name.toLowerCase().indexOf(f) >= 0) {
+          return true
+        }
+        return false
+      }
+
+      return true//!t.chromeTab.pinned && t.chromeTab.groupId === -1
+    })
 }
 
 const handleMove = (a: any) => console.log("handleMove1 a", a)
