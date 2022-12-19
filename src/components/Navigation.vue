@@ -33,15 +33,30 @@
   </q-toolbar>
 
 
-  <q-list class="q-mt-none greyBorderTop">
-    <NavTabsetsListWidget :tabsets="tabsets(true)"/>
+  <q-splitter
+    v-model="splitterModel"
+    horizontal
+    style="height: 800px"
+    reverse>
 
-    <q-separator v-if="tabsets(true).length > 0"/>
-    <NavTabsetsListWidget :tabsets="tabsets(false)"/>
+    <template v-slot:before>
+      <q-list class="q-mt-none greyBorderTop">
+        <NavTabsetsListWidget :tabsets="tabsets(true)"/>
 
-    <!--    <q-separator v-if="archivedTabsets().length > 0"/>-->
-    <!--    <NavTabsetsListWidget :tabsets="archivedTabsets()" :useExpansion=true />-->
-  </q-list>
+        <q-separator v-if="tabsets(true).length > 0"/>
+        <NavTabsetsListWidget :tabsets="tabsets(false)"/>
+
+        <!--    <q-separator v-if="archivedTabsets().length > 0"/>-->
+        <!--    <NavTabsetsListWidget :tabsets="archivedTabsets()" :useExpansion=true />-->
+      </q-list>
+    </template>
+
+    <template v-slot:after>
+<!--      <TabInfo />-->
+      ***
+    </template>
+
+  </q-splitter>
 
 
 </template>
@@ -59,6 +74,7 @@ import {useFeatureTogglesStore} from "src/stores/featureTogglesStore";
 import {useSpacesStore} from "stores/spacesStore";
 import NewTabsetDialog from "components/dialogues/NewTabsetDialog.vue";
 import NavTabsetsListWidget from "components/widgets/NavTabsetsListWidget.vue"
+import TabInfo from "components/layouts/TabInfo.vue";
 
 const router = useRouter()
 const tabsStore = useTabsStore()
@@ -70,6 +86,7 @@ const localStorage = $q.localStorage
 
 const newTabsetName = ref('')
 const merge = ref(false)
+const splitterModel = ref(20)
 
 $q.loadingBar.setDefaults({
   color: 'green',

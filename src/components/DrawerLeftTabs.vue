@@ -6,7 +6,7 @@
     active-color="primary"
     class="text-grey-9 q-mt-none q-mx-none greyBorderTopRight">
 
-    <q-tab name="bookmarks" icon="o_bookmark" @click="tabsClicked(LeftDrawerTabs.BOOKMARKS)">
+    <q-tab name="bookmarks" icon="o_bookmarks" @click="tabsClicked(LeftDrawerTabs.BOOKMARKS)">
       <q-tooltip>Your bookmarks</q-tooltip>
     </q-tab>
 

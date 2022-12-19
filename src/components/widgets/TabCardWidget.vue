@@ -5,16 +5,23 @@
       <div class="row items-baseline">
 
         <!-- favicon -->
-        <div class="col-2">
-          <q-img
-            class="rounded-borders"
-            style="cursor: move"
-            width="22px"
-            height="22px"
-            :src="getFaviconUrl(tab)">
-            <q-tooltip>{{ tab.chromeTab?.id }} / {{ tab.id }} / {{ tab.bookmarkId }}</q-tooltip>
-          </q-img>
-        </div>
+        <TabFaviconWidget :tab="tab" width="22px" height="22px" />
+<!--        <div class="col-2">-->
+<!--          <q-icon v-if="UrlExtension.IMAGE === tab.extension"-->
+<!--                  size="22px"-->
+<!--                  name="image" />-->
+<!--          <q-icon v-else-if="UrlExtension.RSS === tab.extension"-->
+<!--                  size="22px"-->
+<!--                  name="rss_feed" />-->
+<!--          <q-img v-else-->
+<!--            class="rounded-borders"-->
+<!--            style="cursor: move"-->
+<!--            width="22px"-->
+<!--            height="22px"-->
+<!--            :src="getFaviconUrl(tab)">-->
+<!--            <q-tooltip>{{ tab.chromeTab?.id }} / {{ tab.id }} / {{ tab.bookmarkId }}</q-tooltip>-->
+<!--          </q-img>-->
+<!--        </div>-->
 
         <!-- title or name if given -->
         <div class="col-10 text-subtitle1 ellipsis">
@@ -91,14 +98,15 @@
 
 <script setup lang="ts">
 
-import {Tab, UrlExtension} from "src/models/Tab";
-import TabsetService from "src/services/TabsetService";
-import {useNotificationsStore} from "stores/notificationsStore";
-import {ref} from "vue";
-import NavigationService from "src/services/NavigationService";
-import MHtmlService from "src/services/MHtmlService";
-import EditNoteDialog from "components/dialogues/EditNoteDialog.vue";
-import {useQuasar} from "quasar";
+import {Tab, UrlExtension} from "src/models/Tab"
+import TabsetService from "src/services/TabsetService"
+import {useNotificationsStore} from "stores/notificationsStore"
+import {PropType, ref} from "vue"
+import NavigationService from "src/services/NavigationService"
+import MHtmlService from "src/services/MHtmlService"
+import EditNoteDialog from "components/dialogues/EditNoteDialog.vue"
+import {useQuasar} from "quasar"
+import TabFaviconWidget from "src/components/widgets/TabFaviconWidget.vue"
 
 const props = defineProps({
   tab: {
@@ -181,13 +189,7 @@ const selectTab = (tab: Tab) => {
   notificationStore.setSelectedTab(tab)
 }
 
-const getFaviconUrl = (tab: Tab) => {
-  const chromeTab = tab.chromeTab
-  if (chromeTab && chromeTab.favIconUrl && !chromeTab.favIconUrl.startsWith("chrome")) {
-    return chromeTab.favIconUrl
-  }
-  return 'favicon-unknown-32x32.png'
-}
+
 
 const nameOrTitle = (tab: Tab) => tab.name ? tab.name : tab.chromeTab?.title
 const dynamicNameOrTitleModel = (tab: Tab) => tab.name ? tab.name : tab.chromeTab?.title

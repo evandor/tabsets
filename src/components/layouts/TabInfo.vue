@@ -10,15 +10,16 @@
 
     <div class="row items-baseline q-mx-md q-my-none" style="width:265px">
       <div class="col-2">
-        <q-img
-          class="rounded-borders"
-          width="24px"
-          height="24px"
-          :src="notificationStore.selectedTab.chromeTab?.favIconUrl">
-          <q-tooltip v-if="featuresStore.isEnabled('debug')">
-            {{ notificationStore.selectedTab.chromeTab.favIconUrl }} / {{ notificationStore.selectedTab.chromeTab.id }}  / {{ notificationStore.selectedTab.id }}
-          </q-tooltip>
-        </q-img>
+        <TabFaviconWidget :tab="notificationStore.selectedTab" width="24ps" height="24px" />
+<!--        <q-img-->
+<!--          class="rounded-borders"-->
+<!--          width="24px"-->
+<!--          height="24px"-->
+<!--          :src="notificationStore.selectedTab.chromeTab?.favIconUrl">-->
+<!--          <q-tooltip v-if="featuresStore.isEnabled('debug')">-->
+<!--            {{ notificationStore.selectedTab.chromeTab.favIconUrl }} / {{ notificationStore.selectedTab.chromeTab.id }}  / {{ notificationStore.selectedTab.id }}-->
+<!--          </q-tooltip>-->
+<!--        </q-img>-->
       </div>
       <div class="col-10 text-body1 ellipsis">
         {{ getHost(notificationStore.selectedTab.chromeTab?.url, true) }}
@@ -100,6 +101,7 @@ import {ref, watchEffect} from "vue";
 import TabsetService from "src/services/TabsetService";
 import {useFeatureTogglesStore} from "src/stores/featureTogglesStore";
 import {useRouter} from "vue-router";
+import TabFaviconWidget from "components/widgets/TabFaviconWidget.vue";
 
 const notificationStore = useNotificationsStore()
 const featuresStore = useFeatureTogglesStore()

@@ -79,7 +79,7 @@
               content-class="column justify-between no-wrap bg-grey-1">
       <Navigation></Navigation>
 
-      <TabInfo style="position: absolute;bottom:0"/>
+<!--      <TabInfo style="position: absolute;bottom:0"/>-->
 
 
     </q-drawer>

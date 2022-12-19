@@ -92,68 +92,8 @@
   </q-toolbar>
 
   <!-- pending tabs -->
-  <q-expansion-item v-if="tabsStore.pendingTabset?.tabs.length > 0"
-                    class="q-ma-lg greyBorderTop"
-                    style="border: 3px dotted grey; border-radius:8px;"
-                    header-class="text-black"
-                    expand-icon-class="text-black"
-                    expand-icon-toggle
-                    default-opened>
-    <template v-slot:header="{ expanded }">
-
-      <q-item-section>
-        <div>
-          <span class="text-weight-bold">Unassigned Tabs</span>
-          <div class="text-caption">Decide which tabs you want to put into your tabset
-          </div>
-        </div>
-      </q-item-section>
-      <q-item-section>
-        <q-item-label lines="2">
-          <div class="text-weight-bold">{{ filter ? filter : '&nbsp;' }}</div>
-          <div class="text-caption">
-            {{ filter ? '' : 'not filtering' }}
-            <q-icon :name="filter ? 'o_filter_alt' : 'filter_alt_off'" size="16px">
-              <q-tooltip>Filter shown tabs</q-tooltip>
-            </q-icon>
-            <q-popup-edit
-              :model-value="filter"
-              v-slot="scope"
-              @update:model-value="val => setFilter( val)">
-              <q-input v-model="scope.value" dense autofocus counter @keypress.enter="scope.set"/>
-            </q-popup-edit>
-          </div>
-        </q-item-label>
-      </q-item-section>
-      <q-item-section>{{ pendingTabsCount() }}</q-item-section>
-
-    </template>
-
-    <q-card>
-      <q-card-section>
-        <TabcardsPending :tabs="filteredTabs()"
-                         v-on:selectionChanged="updateSelectionCount"/>
-      </q-card-section>
-    </q-card>
-
-    <div class="justify-center row q-ma-none q-pa-xl">
-
-    <span v-if="TabsetService.getSelectedPendingTabs().length === 0">
-      <q-btn icon="file_download" :label="'Add all to Tabset  ' + tabsStore.currentTabsetName" class="q-mx-lg"
-             color="positive"
-             @click="saveAllPendingTabs()"></q-btn>
-      <q-btn icon="delete_outline" label="Clear unassigned tabs" class="q-mx-lg" color="negative"
-             @click="removeAllPendingTabs()"></q-btn>
-    </span>
-      <span v-else>
-      <q-btn icon="file_download" label="add selected" color="positive" class="q-mx-lg"
-             @click="saveSelectedPendingTabs()"></q-btn>
-       <q-btn icon="delete_outline" label="clear selected tabs" class="q-mx-lg" color="negative"
-              @click="removeSelectedPendingTabs()"></q-btn>
-    </span>
-    </div>
-
-  </q-expansion-item>
+<!--  <PendingTabsAsCardsWidget />-->
+  <PendingTabsAsCarouselWidget />
 
   <q-banner rounded class="bg-amber-1 text-black q-ma-md"
             v-if="!tabsStore.currentTabsetId && tabsStore.tabsets.size > 0">
@@ -318,7 +258,6 @@ import {useRoute, useRouter} from "vue-router";
 import {useQuasar} from "quasar";
 import Tabcards from "src/components/layouts/Tabcards.vue";
 import TabThumbs from "src/components/layouts/TabThumbs.vue";
-import TabcardsPending from "src/components/layouts/TabcardsPending.vue";
 import TabColumns from "src/components/layouts/TabColumns.vue";
 import TabsCanvas from "src/components/layouts/TabsCanvas.vue";
 import Tablist from "src/components/layouts/Tablist.vue";
@@ -328,10 +267,11 @@ import {useTabGroupsStore} from "src/stores/tabGroupsStore";
 import TabsetService from "src/services/TabsetService";
 import {Tab} from "src/models/Tab";
 import {useFeatureTogglesStore} from "src/stores/featureTogglesStore";
-import {MAX_TABS_TO_SHOW} from 'boot/constants'
 import RestoreTabsetDialog from "components/dialogues/RestoreTabsetDialog.vue";
 import AddUrlDialog from "components/dialogues/AddUrlDialog.vue";
 import {TabsetStatus} from "src/models/Tabset";
+import PendingTabsAsCardsWidget from "src/components/widgets/PendingTabsAsCardsWidget.vue"
+import PendingTabsAsCarouselWidget from "src/components/widgets/PendingTabsAsCarouselWidget.vue"
 
 const route = useRoute();
 const router = useRouter();
@@ -393,36 +333,11 @@ const formatLength = (length: number, singular: string, plural: string) => {
   return (length > 1 || length === 0) ? length + ' ' + plural : length + ' ' + singular
 }
 
-//const removeClosedTabs = () => TabsetService.removeClosedTabs()
-const saveAllPendingTabs = () => {
-  TabsetService.saveAllPendingTabs()
-    .then(() => $q.notify({
-      message: 'The tabs have been saved',
-      type: 'positive'
-    }))
-    .catch(() => $q.notify({
-      message: 'There was a problem saving (all) the tabs',
-      type: 'negative'
-    }))
-}
-const saveSelectedPendingTabs = () => TabsetService.saveSelectedPendingTabs()
-const removeSelectedPendingTabs = () => TabsetService.removeSelectedPendingTabs()
-const removeAllPendingTabs = () => TabsetService.removeAllPendingTabs()
-
 const selectedCount = ref(0)
 
 const updateSelectionCount = () => {
   selectedCount.value = TabsetService.getSelectedPendingTabs().length
 }
-
-const pendingTabsCount = () => {
-  let label = formatLength(tabsStore.pendingTabset?.tabs.length, 'tab', 'tabs')
-  if (tabsStore.pendingTabset?.tabs.length > MAX_TABS_TO_SHOW) {
-    label += ", with " + (1 + tabsStore.pendingTabset?.tabs.length - MAX_TABS_TO_SHOW) + " hidden"
-  }
-  return label
-}
-
 
 const setFilter = (val: string) => {
   console.log("filter", val, filter.value)
