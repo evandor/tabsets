@@ -66,6 +66,7 @@
       <SavedTabs v-else-if="tab ===  LeftDrawerTabs.SAVED_TABS"/>
       <TabsetAsSidebar v-else-if="tab ===  LeftDrawerTabs.SIDEBAR"/>
       <RssTabs v-else-if="tab ===  LeftDrawerTabs.RSS"/>
+      <ScheduledTabs v-else-if="tab ===  LeftDrawerTabs.SCHEDULED"/>
 
       <div v-else>unknown tab name {{ tab }}</div>
     </div>
@@ -80,6 +81,7 @@ import OpenTabs from "src/components/OpenTabs.vue"
 import SavedTabs from "src/components/SavedTabs.vue"
 import UnassignedTabs from "src/components/UnassignedTabs.vue"
 import RssTabs from "src/components/RssTabs.vue"
+import ScheduledTabs from "src/components/ScheduledTabs.vue"
 import TabsetAsSidebar from "src/components/TabsetAsSidebar.vue"
 import DrawerLeftTabs from "src/components/DrawerLeftTabs.vue"
 import {useRouter} from "vue-router";
@@ -139,6 +141,8 @@ const drawerLabel = () => {
       return "Tabset Sidebar"
     case LeftDrawerTabs.RSS:
       return "RSS Sidebar"
+    case LeftDrawerTabs.SCHEDULED:
+      return "Scheduled"
     default:
       return tab.value
   }

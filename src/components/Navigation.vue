@@ -37,7 +37,7 @@
     v-model="splitterModel"
     separator-class="bg-white"
     horizontal
-    class="fit"
+    class="fit bg-grey-1"
     unit="px"
     reverse>
 

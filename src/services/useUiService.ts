@@ -12,7 +12,7 @@ export function useUiService() {
 
   const toggleDrawer = (): void => {
     const leftDrawer = useUiStore().leftDrawer
-    console.log("toggleDrawer",leftDrawer)
+    //console.log("toggleDrawer",leftDrawer)
    // leftDrawer.isHidden = true
     switch (leftDrawer.state) {
       case LeftDrawerState.SMALL:

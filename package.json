@@ -41,7 +41,7 @@
     "lodash": "^4.17.21",
     "mhtml2html": "^3.0.0",
     "pinia": "^2.0.11",
-    "quasar": "^2.10.2",
+    "quasar": "^2.11.1",
     "throttled-queue": "^2.1.4",
     "vite-plugin-package-version": "^1.0.2",
     "vue": "^3.0.0",

@@ -20,14 +20,15 @@
         </div>
 
       </q-card-section>
-      <q-card-section>
-        <q-input filled v-model="date">
+      <q-card-section v-if="props.schedule">
+        {{ scheduleFor }}
+        <q-input filled v-model="scheduleFor">
           <template v-slot:prepend>
             <q-icon name="event" class="cursor-pointer">
               <q-popup-proxy cover transition-show="scale" transition-hide="scale">
-                <q-date v-model="date" mask="YYYY-MM-DD HH:mm">
+                <q-date v-model="scheduleFor" mask="YYYY-MM-DD HH:mm">
                   <div class="row items-center justify-end">
-                    <q-btn v-close-popup label="Close" color="primary" flat />
+                    <q-btn v-close-popup label="Close" color="primary" flat/>
                   </div>
                 </q-date>
               </q-popup-proxy>
@@ -37,9 +38,9 @@
           <template v-slot:append>
             <q-icon name="access_time" class="cursor-pointer">
               <q-popup-proxy cover transition-show="scale" transition-hide="scale">
-                <q-time v-model="date" mask="YYYY-MM-DD HH:mm" format24h>
+                <q-time v-model="scheduleFor" mask="YYYY-MM-DD HH:mm" format24h>
                   <div class="row items-center justify-end">
-                    <q-btn v-close-popup label="Close" color="primary" flat />
+                    <q-btn v-close-popup label="Close" color="primary" flat/>
                   </div>
                 </q-time>
               </q-popup-proxy>
@@ -65,7 +66,7 @@
 
 import {ref, watchEffect} from "vue";
 import TabsetService from "src/services/TabsetService";
-import {useQuasar} from "quasar";
+import {date, useQuasar} from "quasar";
 import {useRouter} from "vue-router";
 import {useTabsStore} from "src/stores/tabsStore";
 
@@ -98,20 +99,25 @@ const tabsStore = useTabsStore()
 const router = useRouter()
 const $q = useQuasar()
 
+const dateFormat = "YYYY-MM-DD HH:mm"
 const newTabsetName = ref('')
 const newTabsetNameExists = ref(false)
 const hideWarning = ref(false)
-const date = ref('2019-02-01 12:44')
+const scheduleFor = ref(date.formatDate(new Date().getTime(), dateFormat))
 
 watchEffect(() => {
   newTabsetNameExists.value = !!tabsStore.nameExistsInContextTabset(newTabsetName.value);
 })
 
+const parseDate = (str: string): Date => {
+  return date.extractDate(str, dateFormat)
+}
+
 const saveNote = () => {
-  TabsetService.saveNote(props.tabId, editor.value)
+  TabsetService.saveNote(props.tabId, editor.value, props.schedule ? parseDate(scheduleFor.value) : undefined)
     .then(() => {
       $q.notify({
-        message: 'The note has been saved',
+        message: props.schedule ? 'The tab has been scheduled' : 'The note has been saved',
         type: 'positive'
       })
     })

@@ -26,6 +26,7 @@ export class Tab {
   lastModified: string
   author: string
   note: string
+  scheduledFor: number | undefined
   canvasLeft: number
   canvasTop: number
   extension: UrlExtension
@@ -48,6 +49,7 @@ export class Tab {
     this.lastModified = ''
     this.author = ''
     this.note = ''
+    this.scheduledFor = undefined
     this.canvasTop = 0
     this.canvasLeft = 0
     this.extension = this.determineUrlExtension(chromeTab)

@@ -167,7 +167,21 @@ export const useTabsStore = defineStore('tabs', {
         }
       })
       return res
+    },
+    scheduledTabs: (state) => {
+      const res: Tab[] = []
+      _.forEach([...state.tabsets.values()], (ts: Tabset) => {
+        //if (ts.status === TabsetStatus.DEFAULT || ts.status === TabsetStatus.FAVORITE) {
+          _.forEach(ts.tabs, (t: Tab) => {
+            if (t.scheduledFor) {
+              res.push(t)
+            }
+          })
+       // }
+      })
+      return res
     }
+
   },
 
   actions: {
@@ -243,12 +257,14 @@ export const useTabsStore = defineStore('tabs', {
       }
       return undefined
     },
-    removeTab(tabId: string) {
+
+    removeTab(tabId: string):Promise<Tabset> {
       const currentTabset: Tabset = this.tabsets.get(this.currentTabsetId) || new Tabset("", "", [])
       currentTabset.tabs = _.filter(currentTabset.tabs, (t: Tab) => t.id !== tabId)
       markDuplicates(currentTabset)
-      TabsetService.saveTabset(currentTabset)
       this.pendingTabset.tabs = _.filter(this.pendingTabset.tabs, (t: Tab) => t.id !== tabId)
+      return TabsetService.saveTabset(currentTabset)
+        .then(() => currentTabset)
     },
 
     async updateOrCreateTabset(tabsetName: string, tabs: Tab[], merge: boolean = false, spaces: Set<string> = new Set()): Promise<NewOrReplacedTabset> {

@@ -10,14 +10,14 @@ class UndoCommand implements Command {
   constructor(public tabsetId: string, public oldStatus: TabsetStatus) {
   }
 
-  execute(): Promise<ExecutionResult> {
+  execute(logger:any): Promise<ExecutionResult> {
     console.log("execution undo command", this.tabsetId)
     switch (this.oldStatus) {
       case TabsetStatus.DEFAULT:
-        return new MarkTabsetAsDefaultCommand(this.tabsetId).execute()
+        return new MarkTabsetAsDefaultCommand(this.tabsetId).execute(logger)
           .then(res => Promise.resolve(new ExecutionResult(res, "Tabset was un-archived again")))
       case TabsetStatus.FAVORITE:
-        return new MarkTabsetAsFavoriteCommand(this.tabsetId).execute()
+        return new MarkTabsetAsFavoriteCommand(this.tabsetId).execute(logger)
           .then(res => Promise.resolve(new ExecutionResult(res, "Tabset was un-archived again")))
       default:
         return Promise.reject("could not deal with status " + this.oldStatus)

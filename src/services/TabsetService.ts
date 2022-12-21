@@ -45,8 +45,6 @@ class TabsetService {
   }
 
 
-
-
   async saveTabset(tabset: Tabset): Promise<IDBValidKey> {
     if (tabset.id) {
       return this.persistenceService.saveTabset(tabset)
@@ -161,7 +159,7 @@ class TabsetService {
       return this.saveTabset(ts)
         .then(res => Promise.resolve(0)) // TODO
 
-  //    const dataFromStore: object = await this.persistenceService.updateContent(tab.chromeTab.url)
+      //    const dataFromStore: object = await this.persistenceService.updateContent(tab.chromeTab.url)
 
       // await this.persistenceService.updateThumbnail(tab.chromeTab.url)
 
@@ -599,7 +597,7 @@ class TabsetService {
    * @param tabsetId
    * @param tabsetName
    */
-  rename(tabsetId: string, tabsetName: string):Promise<string> {
+  rename(tabsetId: string, tabsetName: string): Promise<string> {
     const trustedName = tabsetName.replace(STRIP_CHARS_IN_USER_INPUT, '')
     const tabset = this.getTabset(tabsetId)
     if (tabset) {
@@ -647,11 +645,14 @@ class TabsetService {
     }
   }
 
-  saveNote(tabId: string, note: string): Promise<void> {
+  saveNote(tabId: string, note: string, scheduledFor: Date | undefined): Promise<void> {
     console.log("got", tabId, note)
     const tab = _.find(this.getCurrentTabset()?.tabs, (t: Tab) => t.id === tabId)
     if (tab) {
       tab.note = note
+      if (scheduledFor) {
+        tab.scheduledFor = scheduledFor.getTime()
+      }
       return this.saveCurrentTabset()
     }
     return Promise.reject("did not find tab with id " + tabId)

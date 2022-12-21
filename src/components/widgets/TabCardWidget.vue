@@ -5,23 +5,23 @@
       <div class="row items-baseline">
 
         <!-- favicon -->
-        <TabFaviconWidget :tab="tab" width="22px" height="22px" />
-<!--        <div class="col-2">-->
-<!--          <q-icon v-if="UrlExtension.IMAGE === tab.extension"-->
-<!--                  size="22px"-->
-<!--                  name="image" />-->
-<!--          <q-icon v-else-if="UrlExtension.RSS === tab.extension"-->
-<!--                  size="22px"-->
-<!--                  name="rss_feed" />-->
-<!--          <q-img v-else-->
-<!--            class="rounded-borders"-->
-<!--            style="cursor: move"-->
-<!--            width="22px"-->
-<!--            height="22px"-->
-<!--            :src="getFaviconUrl(tab)">-->
-<!--            <q-tooltip>{{ tab.chromeTab?.id }} / {{ tab.id }} / {{ tab.bookmarkId }}</q-tooltip>-->
-<!--          </q-img>-->
-<!--        </div>-->
+        <TabFaviconWidget :tab="tab" width="22px" height="22px"/>
+        <!--        <div class="col-2">-->
+        <!--          <q-icon v-if="UrlExtension.IMAGE === tab.extension"-->
+        <!--                  size="22px"-->
+        <!--                  name="image" />-->
+        <!--          <q-icon v-else-if="UrlExtension.RSS === tab.extension"-->
+        <!--                  size="22px"-->
+        <!--                  name="rss_feed" />-->
+        <!--          <q-img v-else-->
+        <!--            class="rounded-borders"-->
+        <!--            style="cursor: move"-->
+        <!--            width="22px"-->
+        <!--            height="22px"-->
+        <!--            :src="getFaviconUrl(tab)">-->
+        <!--            <q-tooltip>{{ tab.chromeTab?.id }} / {{ tab.id }} / {{ tab.bookmarkId }}</q-tooltip>-->
+        <!--          </q-img>-->
+        <!--        </div>-->
 
         <!-- title or name if given -->
         <div class="col-10 text-subtitle1 ellipsis">
@@ -68,25 +68,10 @@
         </div>
         <div class="col-8 text-right">
 
-          <!--          :text-color="tab.note?.length > 0 ? 'warning' : 'white'"-->
-<!--          <q-btn round size="11px"-->
-<!--                 :color="tab.note && tab.note.length > 0 ? 'white' : 'warning'"-->
-<!--                 :style="tab.note && tab.note.length > 0 ? 'background: #FFBF46' : 'background: #ffffff'"-->
-<!--                 flat-->
-<!--                 icon="edit_note"-->
-<!--                 @click.stop="editNoteDialog(tab)">-->
-<!--            <q-tooltip>Add a note to this tab or edit it</q-tooltip>-->
-<!--          </q-btn>-->
-<!--          <q-btn flat round color="positive" size="11px" icon="save" @click.stop="saveTab(tab)"-->
-<!--                 :disabled="!isOpen(tab)">-->
-<!--            <q-tooltip v-if="isOpen(tab)">Save this tab</q-tooltip>-->
-<!--            <q-tooltip v-else>The tab must be open if you want to save it. Click on the link and come back here to save-->
-<!--              it.-->
-<!--            </q-tooltip>-->
-<!--          </q-btn>-->
-          <q-btn flat round color="red" size="11px" icon="delete_outline" @click.stop="closeTab(tab)">
-            <q-tooltip>Delete this tab from this list</q-tooltip>
+          <q-btn flat round color="red" size="11px" icon="delete_outline" @click.stop="deleteTab(tab)">
+            <q-tooltip>Delete this tab from this list!</q-tooltip>
           </q-btn>
+
         </div>
       </div>
 
@@ -101,12 +86,17 @@
 import {Tab, UrlExtension} from "src/models/Tab"
 import TabsetService from "src/services/TabsetService"
 import {useNotificationsStore} from "stores/notificationsStore"
-import {PropType, ref} from "vue"
+import {inject, PropType, ref} from "vue"
 import NavigationService from "src/services/NavigationService"
 import MHtmlService from "src/services/MHtmlService"
 import EditNoteDialog from "components/dialogues/EditNoteDialog.vue"
 import {useQuasar} from "quasar"
 import TabFaviconWidget from "src/components/widgets/TabFaviconWidget.vue"
+import {useCommandExecutor} from "src/services/CommandExecutor";
+import {CreateTabsetCommand} from "src/domain/commands/CreateTabsetCommand";
+import {DeleteTabCommand} from "src/domain/commands/DeleteTabCommand";
+
+const logger = inject('vuejs3-logger')
 
 const props = defineProps({
   tab: {
@@ -190,12 +180,15 @@ const selectTab = (tab: Tab) => {
 }
 
 
-
 const nameOrTitle = (tab: Tab) => tab.name ? tab.name : tab.chromeTab?.title
 const dynamicNameOrTitleModel = (tab: Tab) => tab.name ? tab.name : tab.chromeTab?.title
 
-function closeTab(tab: Tab) {
-  NavigationService.closeTab(tab)
+function deleteTab(tab: Tab) {
+ // NavigationService.closeTab(tab)
+
+  useCommandExecutor(logger)
+    .executeFromUi(new DeleteTabCommand(tab))
+
 }
 
 const saveTab = (tab: Tab) => {

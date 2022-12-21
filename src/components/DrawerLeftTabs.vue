@@ -42,6 +42,11 @@
       <q-tooltip>RSS Feeds</q-tooltip>
     </q-tab>
 
+    <q-tab
+           name="scheduled" icon="o_schedule" @click="tabsClicked(LeftDrawerTabs.SCHEDULED)">
+      <q-tooltip>Scheduled Tabs</q-tooltip>
+    </q-tab>
+
   </q-tabs>
 
 
@@ -90,7 +95,7 @@ watchEffect(() => {
 })
 
 const tabsClicked = (tab: LeftDrawerTabs) => {
-  console.log("tabsClicked", tab)
+ // console.log("tabsClicked", tab)
   uiService.leftDrawerSetActiveTab(tab)
 }
 

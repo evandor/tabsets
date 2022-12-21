@@ -150,7 +150,7 @@ const filteredTabs = () => {
 const pendingTabsChunks = (): any[][] => {
   const tabs = filteredTabs()
   const chunks = _.chunk(tabs, 4)
-  console.log("chunks", chunks)
+  //console.log("chunks", chunks)
   return chunks
 }
 </script>
