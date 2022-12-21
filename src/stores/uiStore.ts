@@ -14,6 +14,7 @@ export enum LeftDrawerState {
 export enum LeftDrawerTabs {
   BOOKMARKS = "bookmarks",
   OPEN_TABS = "openTabs",
+  UNASSIGNED_TABS = "unassignedTabs",
   SAVED_TABS = "savedTabs",
   SIDEBAR = "sidebar",
   RSS = "rss"

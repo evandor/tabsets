@@ -12,9 +12,9 @@
                 v-show="!featuresStore.isEnabled('spaces')">Handle more links, with less tabs open</span>
         </q-toolbar-title>
 
-        <SpacesSelectorWidget v-if="featuresStore.isEnabled('spaces')" />
+        <SpacesSelectorWidget v-if="featuresStore.isEnabled('spaces')"/>
 
-        <SearchWidget />
+        <SearchWidget/>
 
         <q-space/>
 
@@ -22,25 +22,26 @@
           <OpenTabsThresholdWidget v-if="tabsStore.tabsets.size > 0"/>
         </div>
 
-        <div v-if="tabsStore.pendingTabset?.tabs.length > 0 && tabsStore.tabsets.size > 1" class="q-mr-lg">
-          {{ tabsStore.pendingTabset?.tabs.length }} unassigned tab(s)
+        <div v-if="tabsStore.pendingTabset?.tabs.length > 0 && tabsStore.tabsets.size >= 1"
+             class="q-mr-lg cursor-pointer">
+          <UnassignedTabsWidget/>
         </div>
 
         <div v-if="tabsStore.audibleTabs.length > 0">
-          <span v-if="tabsStore.audibleTabs.length > 1">{{tabsStore.audibleTabs.length}}x</span>
+          <span v-if="tabsStore.audibleTabs.length > 1">{{ tabsStore.audibleTabs.length }}x</span>
           <q-icon name="volume_up" size="22px" class="q-mr-md">
-<!--            <q-tooltip>{{tabsStore.audibleTabs}}</q-tooltip>-->
+            <!--            <q-tooltip>{{tabsStore.audibleTabs}}</q-tooltip>-->
           </q-icon>
           <q-menu :offset="[0, 15]">
             <q-list style="min-width: 200px">
               <q-item v-for="tab in tabsStore.audibleTabs"
-                clickable v-close-popup @click="NavigationService.openTab(tab.id)">
-                <q-item-section>{{tab.title}}</q-item-section>
+                      clickable v-close-popup @click="NavigationService.openTab(tab.id)">
+                <q-item-section>{{ tab.title }}</q-item-section>
               </q-item>
-<!--              <q-item-->
-<!--                      clickable v-close-popup @click="NavigationService.muteAll()">-->
-<!--                <q-item-section>Mute (all from window)</q-item-section>-->
-<!--              </q-item>-->
+              <!--              <q-item-->
+              <!--                      clickable v-close-popup @click="NavigationService.muteAll()">-->
+              <!--                <q-item-section>Mute (all from window)</q-item-section>-->
+              <!--              </q-item>-->
             </q-list>
           </q-menu>
         </div>
@@ -68,9 +69,9 @@
     </q-header>
 
     <q-drawer v-model="leftDrawerOpen" :mini=uiService.useSmallDrawerView() side="left" bordered>
-      <DrawerLeft />
+      <DrawerLeft/>
       <template v-slot:mini>
-        <DrawerLeftMini />
+        <DrawerLeftMini/>
       </template>
     </q-drawer>
 
@@ -79,7 +80,7 @@
               content-class="column justify-between no-wrap bg-grey-1">
       <Navigation></Navigation>
 
-<!--      <TabInfo style="position: absolute;bottom:0"/>-->
+      <!--      <TabInfo style="position: absolute;bottom:0"/>-->
 
 
     </q-drawer>
@@ -100,12 +101,10 @@ import {useTabsStore} from "src/stores/tabsStore";
 import {useRoute, useRouter} from "vue-router";
 import {useMeta} from 'quasar'
 import {useNotificationsStore} from "src/stores/notificationsStore";
-import TabInfo from "src/components/layouts/TabInfo.vue"
 import Navigation from "src/components/Navigation.vue"
 import NavigationService from "src/services/NavigationService"
 import DrawerLeft from "src/components/DrawerLeft.vue"
 import DrawerLeftMini from "src/components/DrawerLeftMini.vue"
-import TabsetService from "src/services/TabsetService";
 import {useSearchStore} from "src/stores/searchStore";
 import {useFeatureTogglesStore} from "src/stores/featureTogglesStore";
 import _ from "lodash";
@@ -113,6 +112,7 @@ import {useSpacesStore} from "stores/spacesStore"
 import {useSettingsStore} from "stores/settingsStore"
 import OpenTabsThresholdWidget from 'src/components/widgets/OpenTabsThresholdWidget.vue'
 import SpacesSelectorWidget from 'src/components/widgets/SpacesSelectorWidget.vue'
+import UnassignedTabsWidget from 'src/components/widgets/UnassignedTabsWidget.vue'
 import SearchWidget from 'src/components/widgets/SearchWidget.vue'
 import {useUiService} from "src/services/useUiService";
 import {useUiStore} from "stores/uiStore";
@@ -214,7 +214,6 @@ const installNewVersion = () => {
   notificationsStore.updateAvailable(false)
   chrome.runtime.reload()
 }
-
 
 
 </script>

@@ -1,7 +1,6 @@
 <template>
   <q-expansion-item v-if="tabsStore.pendingTabset?.tabs.length > 0"
                     class="q-ma-lg greyBorderTop"
-                    style="border: 3px dotted grey; border-radius:8px;"
                     header-class="text-black"
                     expand-icon-class="text-black"
                     expand-icon-toggle
@@ -46,8 +45,8 @@
       navigation
       padding
       arrows
-      height="300px"
-      class="bg-grey-1 shadow-2 rounded-borders"
+      height="230px"
+      class="bg-grey-1 shadow-1 rounded-borders"
     >
       <q-carousel-slide :name="index+1" class="column no-wrap" v-for="(chunk,index) in pendingTabsChunks()">
         <div class="row fit justify-start items-center q-gutter-xs q-col-gutter no-wrap">

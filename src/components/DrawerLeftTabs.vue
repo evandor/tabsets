@@ -18,6 +18,15 @@
       <q-tooltip>Your open tabs</q-tooltip>
     </q-tab>
 
+    <q-tab v-if="tabsStore.pendingTabset?.tabs.length > 0"
+           name="unassignedTabs" icon="o_fiber_new" @click="tabsClicked(LeftDrawerTabs.UNASSIGNED_TABS)">
+      <q-badge v-if="badgeThreshold()"
+               align="middle"
+               color="secondary" outline>{{ tabsStore.pendingTabset?.tabs.length }}
+      </q-badge>
+      <q-tooltip>Your unassigned tabs</q-tooltip>
+    </q-tab>
+
     <q-tab v-if="savedTabsCount > 0"
            name="savedTabs" icon="o_save" @click="tabsClicked(LeftDrawerTabs.SAVED_TABS)">
       <q-tooltip>Your saved tabs</q-tooltip>
@@ -34,7 +43,6 @@
     </q-tab>
 
   </q-tabs>
-
 
 
 </template>

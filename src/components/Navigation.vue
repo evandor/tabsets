@@ -35,8 +35,10 @@
 
   <q-splitter
     v-model="splitterModel"
+    separator-class="bg-white"
     horizontal
-    style="height: 800px"
+    class="fit"
+    unit="px"
     reverse>
 
     <template v-slot:before>
@@ -51,9 +53,12 @@
       </q-list>
     </template>
 
+   <!-- <template v-slot:separator>
+      <q-avatar color="primary" text-color="white" size="40px" icon="drag_indicator" />
+    </template>-->
+
     <template v-slot:after>
-<!--      <TabInfo />-->
-      ***
+      <TabInfo />
     </template>
 
   </q-splitter>
@@ -86,7 +91,7 @@ const localStorage = $q.localStorage
 
 const newTabsetName = ref('')
 const merge = ref(false)
-const splitterModel = ref(20)
+const splitterModel = ref(430)
 
 $q.loadingBar.setDefaults({
   color: 'green',

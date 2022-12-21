@@ -8,14 +8,6 @@
 
     <div class="col-10 q-mt-none q-mx-none greyBorderTop">
 
-      <!--      <q-toolbar class="text-primary lightgrey">-->
-      <!--        <div class="row fit">-->
-      <!--          <q-toolbar-title>-->
-      <!--            <div class="row justify-start items-baseline" v-text="drawerLabel()"></div>-->
-      <!--          </q-toolbar-title>-->
-      <!--        </div>-->
-      <!--      </q-toolbar>-->
-
       <q-toolbar class="text-primary lightgrey">
         <div class="row fit">
           <div class="col-xs-12 col-md-7">
@@ -70,6 +62,7 @@
 
       <BookmarksTree v-if="tab === LeftDrawerTabs.BOOKMARKS"/>
       <OpenTabs v-else-if="tab ===  LeftDrawerTabs.OPEN_TABS" :filter="filter"/>
+      <UnassignedTabs v-else-if="tab ===  LeftDrawerTabs.UNASSIGNED_TABS" :filter="filter"/>
       <SavedTabs v-else-if="tab ===  LeftDrawerTabs.SAVED_TABS"/>
       <TabsetAsSidebar v-else-if="tab ===  LeftDrawerTabs.SIDEBAR"/>
       <RssTabs v-else-if="tab ===  LeftDrawerTabs.RSS"/>
@@ -85,6 +78,7 @@ import {ref, watch, watchEffect} from "vue";
 import BookmarksTree from "src/components/BookmarksTree.vue"
 import OpenTabs from "src/components/OpenTabs.vue"
 import SavedTabs from "src/components/SavedTabs.vue"
+import UnassignedTabs from "src/components/UnassignedTabs.vue"
 import RssTabs from "src/components/RssTabs.vue"
 import TabsetAsSidebar from "src/components/TabsetAsSidebar.vue"
 import DrawerLeftTabs from "src/components/DrawerLeftTabs.vue"
@@ -137,6 +131,8 @@ const drawerLabel = () => {
       return "Bookmarks"
     case LeftDrawerTabs.OPEN_TABS:
       return "Open Tabs"
+    case LeftDrawerTabs.UNASSIGNED_TABS:
+      return "Unassigned"
     case LeftDrawerTabs.SAVED_TABS:
       return "Saved Pages"
     case LeftDrawerTabs.SIDEBAR:

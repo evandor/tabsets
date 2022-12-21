@@ -69,8 +69,8 @@
           <q-btn flat round color="warning" size="11px" icon="highlight_off" @click.stop="ignoreTab(tab)">
             <q-tooltip>Ignore the tab's url from now on</q-tooltip>
           </q-btn>
-          <q-btn flat round color="red" size="11px" icon="delete_outline" @click.stop="closeTab(tab)">
-            <q-tooltip>Delete this tab from this list</q-tooltip>
+          <q-btn flat round color="red" size="11px" icon="cancel" @click.stop="closeTab(tab)">
+            <q-tooltip>Remove this tab from this list</q-tooltip>
           </q-btn>
         </div>
       </div>

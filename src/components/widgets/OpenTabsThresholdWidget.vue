@@ -53,7 +53,8 @@ import {useSettingsStore} from "stores/settingsStore";
 import TabsetService from "src/services/TabsetService"
 import {ref, watchEffect} from "vue";
 import {useRouter} from "vue-router";
-import {useNotificationsStore} from "stores/notificationsStore";
+import {useUiService} from "src/services/useUiService";
+import {LeftDrawerTabs} from "stores/uiStore";
 
 const tabsStore = useTabsStore()
 const settingsStore = useSettingsStore()
@@ -76,8 +77,7 @@ const thresholdStyle = () =>
 const thresholdLabel = () => tabsStore.tabs.length + " open tabs"
 
 const showOpenTabs = () => {
-  useNotificationsStore().showDrawer = true
-  useNotificationsStore().showOpenTabs = true
+  useUiService().leftDrawerSetActiveTab(LeftDrawerTabs.OPEN_TABS)
 }
 
 </script>
