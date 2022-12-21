@@ -11,8 +11,10 @@ class NavigationService {
       t.filter(r => r.url && !r.url.startsWith("chrome"))
         .map(r => {
           if (withUrl === r.url) {
-            found = true
-            chrome.tabs.highlight({tabs: r.index});
+            if (!found) { // highlight only first hit
+              found = true
+              chrome.tabs.highlight({tabs: r.index});
+            }
           }
         });
       if (!found) {

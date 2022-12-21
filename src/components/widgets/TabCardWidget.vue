@@ -69,21 +69,21 @@
         <div class="col-8 text-right">
 
           <!--          :text-color="tab.note?.length > 0 ? 'warning' : 'white'"-->
-          <q-btn round size="11px"
-                 :color="tab.note && tab.note.length > 0 ? 'white' : 'warning'"
-                 :style="tab.note && tab.note.length > 0 ? 'background: #FFBF46' : 'background: #ffffff'"
-                 flat
-                 icon="edit_note"
-                 @click.stop="editNoteDialog(tab)">
-            <q-tooltip>Add a note to this tab or edit it</q-tooltip>
-          </q-btn>
-          <q-btn flat round color="positive" size="11px" icon="save" @click.stop="saveTab(tab)"
-                 :disabled="!isOpen(tab)">
-            <q-tooltip v-if="isOpen(tab)">Save this tab</q-tooltip>
-            <q-tooltip v-else>The tab must be open if you want to save it. Click on the link and come back here to save
-              it.
-            </q-tooltip>
-          </q-btn>
+<!--          <q-btn round size="11px"-->
+<!--                 :color="tab.note && tab.note.length > 0 ? 'white' : 'warning'"-->
+<!--                 :style="tab.note && tab.note.length > 0 ? 'background: #FFBF46' : 'background: #ffffff'"-->
+<!--                 flat-->
+<!--                 icon="edit_note"-->
+<!--                 @click.stop="editNoteDialog(tab)">-->
+<!--            <q-tooltip>Add a note to this tab or edit it</q-tooltip>-->
+<!--          </q-btn>-->
+<!--          <q-btn flat round color="positive" size="11px" icon="save" @click.stop="saveTab(tab)"-->
+<!--                 :disabled="!isOpen(tab)">-->
+<!--            <q-tooltip v-if="isOpen(tab)">Save this tab</q-tooltip>-->
+<!--            <q-tooltip v-else>The tab must be open if you want to save it. Click on the link and come back here to save-->
+<!--              it.-->
+<!--            </q-tooltip>-->
+<!--          </q-btn>-->
           <q-btn flat round color="red" size="11px" icon="delete_outline" @click.stop="closeTab(tab)">
             <q-tooltip>Delete this tab from this list</q-tooltip>
           </q-btn>
@@ -210,14 +210,5 @@ const saveTab = (tab: Tab) => {
   }
 }
 
-const editNoteDialog = (tab: Tab) => {
-  $q.dialog({
-    component: EditNoteDialog,
-    componentProps: {
-      tabId: tab.id,
-      note: tab.note
-    }
-  })
-}
 
 </script>
