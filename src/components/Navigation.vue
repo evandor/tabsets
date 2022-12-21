@@ -91,7 +91,7 @@ const localStorage = $q.localStorage
 
 const newTabsetName = ref('')
 const merge = ref(false)
-const splitterModel = ref(430)
+const splitterModel = ref(350)
 
 $q.loadingBar.setDefaults({
   color: 'green',
