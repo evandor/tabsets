@@ -4,15 +4,16 @@ import {createPinia, setActivePinia} from "pinia";
 import {CreateTabsetCommand} from "src/domain/commands/CreateTabsetCommand";
 import "fake-indexeddb/auto"
 import IndexedDbPersistenceService from "src/services/IndexedDbPersistenceService";
+import {INDEX_DB_VERSION} from "boot/constants";
 
 describe('CreateTabsetCommand', () => {
 
   jest.setTimeout(10000)
 
   class Logger {
-    info = (msg: string) => {
-      console.log("info", msg)
-    }
+    info = (msg: string) => console.log("info", msg)
+    debug = (msg: string) => console.debug("info", msg)
+
   }
 
   function createChromeTab(id: number, url: string) {
@@ -34,7 +35,7 @@ describe('CreateTabsetCommand', () => {
   beforeEach(() => {
     setActivePinia(createPinia())
     //localStorageMock.clear()
-    const request = indexedDB.open('db', 5);
+    const request = indexedDB.open('db', INDEX_DB_VERSION);
 
     request.onupgradeneeded = async function () {
       const db = request.result;
