@@ -10,7 +10,6 @@ import {NewOrReplacedTabset} from "src/models/NewOrReplacedTabset";
 import {useTabGroupsStore} from "src/stores/tabGroupsStore";
 import {Group} from "src/models/Group";
 import {useSpacesStore} from "stores/spacesStore";
-import {inject} from "vue";
 
 async function queryTabs(): Promise<chrome.tabs.Tab[]> {
   // @ts-ignore

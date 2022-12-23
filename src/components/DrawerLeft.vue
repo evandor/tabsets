@@ -34,7 +34,7 @@
                   <q-tooltip v-if="filter">Apply Filter: '{{ filter }}'</q-tooltip>
                   <q-tooltip v-else>Apply Filter</q-tooltip>
                 </q-btn>
-                <q-popup-edit v-model="filter"  v-slot="scope">
+                <q-popup-edit v-model="filter" v-slot="scope">
                   <q-input
                     autofocus
                     dense
@@ -107,7 +107,6 @@ const filter = ref<string>('')
 watchEffect(() => tab.value = uiService.leftDrawerActiveTab())
 
 watch(() => tab.value, (currentValue, oldValue) => {
-  console.log("selected2", tab.value, currentValue, oldValue)
   if (currentValue !== oldValue) {
     uiService.leftDrawerSetActiveTab(currentValue)
   }

@@ -74,7 +74,6 @@ const $q = useQuasar()
 const newTabsetName = ref('')
 const newTabsetNameExists = ref(false)
 const hideWarning = ref(false)
-const addAutomatically = ref(false)
 const duration = ref(1)
 
 watchEffect(() => {
@@ -100,7 +99,7 @@ const startIndexing = () => {
   if (props.tabsetId !== '') {
     searchStore.reindexTabset(props.tabsetId)
   } else {
-    searchStore.reindexAll()
+    //searchStore.reindexAll()
   }
 }
 

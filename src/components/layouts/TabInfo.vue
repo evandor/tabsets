@@ -35,17 +35,27 @@
         <q-img :src="thumbnail" width="265px" style="border:1px solid grey;border-radius: 5px;" no-native-menu/>
       </div>
 
-      <div class="col-2 text-left">
+      <div class="col-3 text-left">
         <q-btn round size="11px"
                color="primary"
                flat
                icon="o_info">
-          <q-tooltip>This tab was created {{formatDate(notificationStore.selectedTab.created)}}, opened
-          {{notificationStore.selectedTab.activatedCount}} times and was last active
-          {{formatDate(notificationStore.selectedTab.lastActive)}}.</q-tooltip>
+          <q-tooltip>This tab was created {{ formatDate(notificationStore.selectedTab.created) }}, opened
+            {{ notificationStore.selectedTab.activatedCount }} times and was last active
+            {{ formatDate(notificationStore.selectedTab.lastActive) }}.
+          </q-tooltip>
+        </q-btn>
+
+        <q-btn v-if="featuresStore.isEnabled('dev')"
+               @click="showTabDetails"
+               round size="11px"
+               color="primary"
+               flat
+               icon="o_more_horiz">
+          <q-tooltip>Show additional information about this tab (developer mode).</q-tooltip>
         </q-btn>
       </div>
-      <div class="col-10 text-right">
+      <div class="col-9 text-right">
         <q-btn round size="11px"
                :color="notificationStore.selectedTab.note && notificationStore.selectedTab.note.length > 0 ? 'white' : 'warning'"
                :style="notificationStore.selectedTab.note && notificationStore.selectedTab.note.length > 0 ? 'background: #FFBF46' : 'background: #ffffff'"
@@ -55,11 +65,11 @@
           <q-tooltip>Add a note to this tab or edit it</q-tooltip>
         </q-btn>
 
-        <q-btn flat round color="positive" size="11px" icon="o_schedule" @click.stop="scheduleTab()">
+        <q-btn flat round color="primary" size="11px" icon="o_schedule" @click.stop="scheduleTab()">
           <q-tooltip>Schedule this tab</q-tooltip>
         </q-btn>
 
-        <q-btn flat round color="positive" size="11px" icon="save" @click.stop="saveTab(notificationStore.selectedTab)"
+        <q-btn flat round color="primary" size="11px" icon="save" @click.stop="saveTab(notificationStore.selectedTab)"
                :disabled="!isOpen(notificationStore.selectedTab)">
           <q-tooltip v-if="isOpen(notificationStore.selectedTab)">Save this tab</q-tooltip>
           <q-tooltip v-else>The tab must be open if you want to save it. Click on the link and come back here to save
@@ -72,41 +82,41 @@
 
       <div class="col-12">
         <div class="row q-ma-sm">
-<!--
-          <div class="col-5">
-            Created
-          </div>
-          <div class="col-7">
-            {{ formatDate(notificationStore.selectedTab.created) }}
-            <q-tooltip>this tab was created at
-              {{ date.formatDate(notificationStore.selectedTab.created, 'DD.MM.YYYY HH:mm') }}
-            </q-tooltip>
-          </div>
-          <div class="col-5">
-            Updated
-          </div>
-          <div class="col-7">
-            {{ formatDate(notificationStore.selectedTab.updated) }}
-            <q-tooltip>this tab was updated at
-              {{ date.formatDate(notificationStore.selectedTab.updated, 'DD.MM.YYYY HH:mm') }}
-            </q-tooltip>
-          </div>
--->
-<!--          <div class="col-5">
-            Last Active
-          </div>
-          <div class="col-7">
-            {{ formatDate(notificationStore.selectedTab.lastActive) }}
-            <q-tooltip>this tab was last active at
-              {{ date.formatDate(notificationStore.selectedTab.lastActive, 'DD.MM.YYYY HH:mm') }}
-            </q-tooltip>
-          </div>
-          <div class="col-5">
-            opened
-          </div>
-          <div class="col-7">
-            {{ notificationStore.selectedTab.activatedCount }}x
-          </div>-->
+          <!--
+                    <div class="col-5">
+                      Created
+                    </div>
+                    <div class="col-7">
+                      {{ formatDate(notificationStore.selectedTab.created) }}
+                      <q-tooltip>this tab was created at
+                        {{ date.formatDate(notificationStore.selectedTab.created, 'DD.MM.YYYY HH:mm') }}
+                      </q-tooltip>
+                    </div>
+                    <div class="col-5">
+                      Updated
+                    </div>
+                    <div class="col-7">
+                      {{ formatDate(notificationStore.selectedTab.updated) }}
+                      <q-tooltip>this tab was updated at
+                        {{ date.formatDate(notificationStore.selectedTab.updated, 'DD.MM.YYYY HH:mm') }}
+                      </q-tooltip>
+                    </div>
+          -->
+          <!--          <div class="col-5">
+                      Last Active
+                    </div>
+                    <div class="col-7">
+                      {{ formatDate(notificationStore.selectedTab.lastActive) }}
+                      <q-tooltip>this tab was last active at
+                        {{ date.formatDate(notificationStore.selectedTab.lastActive, 'DD.MM.YYYY HH:mm') }}
+                      </q-tooltip>
+                    </div>
+                    <div class="col-5">
+                      opened
+                    </div>
+                    <div class="col-7">
+                      {{ notificationStore.selectedTab.activatedCount }}x
+                    </div>-->
 
           <!--          <div class="col-5">-->
           <!--            History-->
@@ -115,19 +125,19 @@
           <!--            {{ notificationStore.selectedTab.history }}-->
           <!--          </div>-->
 
-          <div class="col-5" v-if="notificationStore.selectedTab.bookmarkId">
-            Bookmark ID
-          </div>
-          <div class="col-7" v-if="notificationStore.selectedTab.bookmarkId">
-            {{ notificationStore.selectedTab.bookmarkId }}
-          </div>
+          <!--          <div class="col-5" v-if="notificationStore.selectedTab.bookmarkId">-->
+          <!--            Bookmark ID-->
+          <!--          </div>-->
+          <!--          <div class="col-7" v-if="notificationStore.selectedTab.bookmarkId">-->
+          <!--            {{ notificationStore.selectedTab.bookmarkId }}-->
+          <!--          </div>-->
 
-          <div class="col-5" v-if="notificationStore.selectedTab.bookmarkUrl">
-            Bookmark URL
-          </div>
-          <div class="col-7" v-if="notificationStore.selectedTab.bookmarkUrl">
-            {{ notificationStore.selectedTab.bookmarkUrl }}
-          </div>
+          <!--          <div class="col-5" v-if="notificationStore.selectedTab.bookmarkUrl">-->
+          <!--            Bookmark URL-->
+          <!--          </div>-->
+          <!--          <div class="col-7" v-if="notificationStore.selectedTab.bookmarkUrl">-->
+          <!--            {{ notificationStore.selectedTab.bookmarkUrl }}-->
+          <!--          </div>-->
         </div>
       </div>
     </div>
@@ -137,7 +147,7 @@
 </template>
 
 <script setup lang="ts">
-import {date, useQuasar} from "quasar";
+import {useQuasar} from "quasar";
 import {useNotificationsStore} from "src/stores/notificationsStore";
 import NavigationService from "src/services/NavigationService"
 import {ref, watchEffect} from "vue";
@@ -196,9 +206,7 @@ function getHost(urlAsString: string, shorten: Boolean = true): string {
 }
 
 const showTabDetails = () => {
-  if (useFeatureTogglesStore().isEnabled('debug')) {
-    router.push("/tab/" + notificationStore.selectedTab.id)
-  }
+  router.push("/tab/" + notificationStore.selectedTab.id)
 }
 
 const formatDate = (timestamp: number | undefined) =>

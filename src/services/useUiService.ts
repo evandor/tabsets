@@ -1,7 +1,4 @@
 import {LeftDrawer, LeftDrawerState, LeftDrawerTabs, useUiStore} from "stores/uiStore";
-import {useRouter} from "vue-router";
-import Router from '../router';
-import router from "../router";
 
 export function useUiService() {
 

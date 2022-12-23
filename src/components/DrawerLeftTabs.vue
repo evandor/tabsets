@@ -58,13 +58,12 @@ import {useRouter} from "vue-router";
 import {useFeatureTogglesStore} from "stores/featureTogglesStore";
 import {useTabsStore} from "stores/tabsStore";
 import {useSettingsStore} from "stores/settingsStore";
-import {LeftDrawerTabs, useUiStore} from "stores/uiStore";
+import {LeftDrawerTabs} from "stores/uiStore";
 import {useUiService} from "src/services/useUiService";
 
 const router = useRouter()
 
 const uiService = useUiService()
-const uiStore = useUiStore()
 
 const featureToggles = useFeatureTogglesStore()
 const tabsStore = useTabsStore()
@@ -75,8 +74,7 @@ const tab = ref<LeftDrawerTabs>(uiService.leftDrawerActiveTab())
 const rssTabsCount = ref(0)
 const savedTabsCount = ref(0)
 
-watch(() => tab.value, (currentValue, oldValue) => {
-  console.log("selected3", tab.value, currentValue, oldValue)
+watch(() => tab.value, (currentValue) => {
   uiService.leftDrawerSetActiveTab(currentValue)
 })
 

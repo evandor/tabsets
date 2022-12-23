@@ -9,9 +9,9 @@ import {useSearchStore} from "src/stores/searchStore";
 import {useBookmarksStore} from "src/stores/bookmarksStore";
 import IndexedDbPersistenceService from "src/services/IndexedDbPersistenceService"
 import {STRIP_CHARS_IN_USER_INPUT} from "boot/constants";
-import {NewOrReplacedTabset} from "src/models/NewOrReplacedTabset";
 import {SearchDoc} from "src/models/SearchDoc";
 import {RequestInfo} from "src/models/RequestInfo";
+import {MetaLink} from "src/models/MetaLink";
 
 function getIfAvailable(metas: object, key: string): string | undefined {
   let res = undefined
@@ -142,38 +142,19 @@ class TabsetService {
   async saveToTabset(ts: Tabset, tab: Tab, useIndex: number | undefined = undefined): Promise<number> {
     console.log("adding tab x to tabset y", tab.id, ts.id)
     if (tab.chromeTab.url) {
-      const tabsStore = useTabsStore()
-
       const indexInTabset = _.findIndex(ts.tabs, t => t.chromeTab.url === tab.chromeTab.url)
       if (indexInTabset >= 0) {
         return Promise.reject("tab exists already")
       }
 
       if (useIndex !== undefined && useIndex >= 0) {
-        // tabsStore.getCurrentTabs.splice(useIndex, 0, added.element)
         ts.tabs.splice(useIndex, 0, tab)
       } else {
         ts.tabs.push(tab)
       }
 
       return this.saveTabset(ts)
-        .then(res => Promise.resolve(0)) // TODO
-
-      //    const dataFromStore: object = await this.persistenceService.updateContent(tab.chromeTab.url)
-
-      // await this.persistenceService.updateThumbnail(tab.chromeTab.url)
-
-      // // update fuse index
-      // console.log("in saveToTabset: indexing", tab)
-      // return useSearchStore().addToIndex(
-      //   tab.id,
-      //   tab.chromeTab.title || '',
-      //   tab.chromeTab.title || '',
-      //   tab.chromeTab.url || '',
-      //   dataFromStore ? dataFromStore['description' as keyof object] : '',
-      //   dataFromStore ? dataFromStore['content' as keyof object] : '',
-      //   [ts.id],
-      //   tab.chromeTab.favIconUrl || '')
+        .then(() => Promise.resolve(0)) // TODO
     }
     return Promise.reject("tab.chromeTab.url undefined")
   }
@@ -189,7 +170,6 @@ class TabsetService {
 
   isOpen(tabUrl: string): boolean {
     const tabsStore = useTabsStore()
-    //console.log("checking tabUrl", tabUrl)
     return _.filter(tabsStore.tabs, t => {
       return t?.url === tabUrl
     }).length > 0
@@ -323,6 +303,45 @@ class TabsetService {
     return this.persistenceService.deleteContent(url)
 
   }
+
+  saveMetaLinksFor(tab: chrome.tabs.Tab, metaLinks: MetaLink[]) {
+    if (tab && tab.url) {
+      this.persistenceService.saveMetaLinks(tab.url, metaLinks)
+        .then(() => console.debug("added meta links"))
+        .catch(err => console.log("err", err))
+    }
+  }
+
+  async getMetaLinksFor(selectedTab: Tab): Promise<any> {
+    if (selectedTab.chromeTab.url) {
+      return this.getMetaLinksForUrl(selectedTab.chromeTab.url)
+    }
+    return Promise.reject("url not provided");
+  }
+
+  async getMetaLinksForUrl(url: string): Promise<any> {
+    return this.persistenceService.getMetaLinks(url)
+  }
+
+  saveLinksFor(tab: chrome.tabs.Tab, links: any) {
+    if (tab && tab.url) {
+      this.persistenceService.saveLinks(tab.url, links)
+        .then(() => console.debug("added links"))
+        .catch(err => console.log("err", err))
+    }
+  }
+
+  async getLinksFor(selectedTab: Tab): Promise<any> {
+    if (selectedTab.chromeTab.url) {
+      return this.getLinksForUrl(selectedTab.chromeTab.url)
+    }
+    return Promise.reject("url not provided");
+  }
+
+  async getLinksForUrl(url: string): Promise<any> {
+    return this.persistenceService.getLinks(url)
+  }
+
 
   /**
    * called when we have a text excerpt from the background script
@@ -524,6 +543,10 @@ class TabsetService {
 
     this.persistenceService.cleanUpRequests()
 
+    this.persistenceService.cleanUpMetaLinks()
+
+    this.persistenceService.cleanUpLinks()
+
     this.persistenceService.cleanUpContent()
       .then(searchDocs => {
         _.forEach(searchDocs, d => {
@@ -584,10 +607,6 @@ class TabsetService {
         }
       })
     })
-  }
-
-  async closeDuplictedOpenTabs() {
-
   }
 
   /**

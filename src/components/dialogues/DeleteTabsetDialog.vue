@@ -21,7 +21,7 @@
 <script lang="ts" setup>
 
 import {useDialogPluginComponent} from 'quasar'
-import {CommandExecutor, useCommandExecutor} from "src/services/CommandExecutor";
+import {useCommandExecutor} from "src/services/CommandExecutor";
 import {MarkTabsetDeletedCommand} from "src/domain/commands/MarkTabsetDeletedCommand";
 import {inject} from "vue";
 

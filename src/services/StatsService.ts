@@ -16,13 +16,17 @@ class StatsService {
     const tabsCount = tabsStore.allTabsCount
     const bookmarksCount = _.filter(bookmarsStore.bookmarksLeaves, (b:object) => Object.hasOwn(b, 'url')).length
 
-    const dataset = {
-      tabsets: tabssetsSize,
-      openTabsCount: openTabsCount,
-      tabsCount: tabsCount,
-      bookmarksCount: bookmarksCount
-    }
-    this.persistenceService.saveStats(dataset)
+    navigator.storage.estimate()
+      .then((res) => {
+        const dataset = {
+          tabsets: tabssetsSize,
+          openTabsCount: openTabsCount,
+          tabsCount: tabsCount,
+          bookmarksCount: bookmarksCount,
+          storageUsage: res.usage
+        }
+        this.persistenceService.saveStats(dataset)
+      })
   }
 }
 

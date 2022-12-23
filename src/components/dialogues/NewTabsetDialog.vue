@@ -85,7 +85,7 @@ const createNewTabset = () => {
 
   useCommandExecutor(logger)
     .executeFromUi(new CreateTabsetCommand(newTabsetName.value, tabsToUse))
-    .then(res => {
+    .then(() => {
       if (!addAutomatically.value) {
         TabsetService.createPendingFromBrowserTabs()
       }

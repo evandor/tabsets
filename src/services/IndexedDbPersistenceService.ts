@@ -11,6 +11,7 @@ import {MHtml} from "src/models/MHtml";
 import {Tab} from "src/models/Tab";
 import {SearchDoc} from "src/models/SearchDoc";
 import {RequestInfo} from "src/models/RequestInfo";
+import {MetaLink} from "src/models/MetaLink";
 
 class IndexedDbPersistenceService implements PersistenceService {
 
@@ -119,6 +120,28 @@ class IndexedDbPersistenceService implements PersistenceService {
       .catch(err => console.log("err", err))
   }
 
+  saveMetaLinks(url: string, metaLinks: MetaLink[]): Promise<void> {
+    const encodedTabUrl = btoa(url)
+    return this.db.put('metalinks', {
+      expires: new Date().getTime() + 1000 * 60 * EXPIRE_DATA_PERIOD_IN_MINUTES,
+      url: url,
+      metaLinks
+    }, encodedTabUrl)
+      .then(() => console.debug("added meta links"))
+      .catch(err => console.log("err", err))
+  }
+
+  saveLinks(url: string, links: any): Promise<void> {
+    const encodedTabUrl = btoa(url)
+    return this.db.put('links', {
+      expires: new Date().getTime() + 1000 * 60 * EXPIRE_DATA_PERIOD_IN_MINUTES,
+      url: url,
+      links
+    }, encodedTabUrl)
+      .then(() => console.debug("added links"))
+      .catch(err => console.log("err", err))
+  }
+
   getThumbnail(url: string): Promise<string> {
     const encodedUrl = btoa(url)
     return this.db.get('thumbnails', encodedUrl)
@@ -159,6 +182,16 @@ class IndexedDbPersistenceService implements PersistenceService {
     return Promise.reject("tab.url missing")
   }
 
+  getMetaLinks(url: string): Promise<object> {
+    const encodedUrl = btoa(url)
+    return this.db.get('metalinks', encodedUrl)
+  }
+
+  getLinks(url: string): Promise<object> {
+    const encodedUrl = btoa(url)
+    return this.db.get('links', encodedUrl)
+  }
+
   async cleanUpTabsets(): Promise<void> {
     const objectStore = this.db.transaction("tabsets", "readwrite").objectStore("tabsets");
     let cursor = await objectStore.openCursor()
@@ -172,25 +205,55 @@ class IndexedDbPersistenceService implements PersistenceService {
   }
 
   async cleanUpThumbnails(): Promise<void> {
-    const objectStore = this.db.transaction("thumbnails", "readwrite").objectStore("thumbnails");
-    let cursor = await objectStore.openCursor()
-    while (cursor) {
-      if (cursor.value.expires !== 0) {
-        const exists: boolean = this.urlExistsInATabset(atob(cursor.key.toString()))
-        if (exists) {
-          objectStore.put({expires: 0, thumbnail: cursor.value.thumbnail}, cursor.key)
-        } else {
-          if (cursor.value.expires < new Date().getTime()) {
-            objectStore.delete(cursor.key)
-          }
-        }
-      }
-      cursor = await cursor.continue();
-    }
+    return this.cleanUpExpired("thumbnails")
+    // const objectStore = this.db.transaction("thumbnails", "readwrite").objectStore("thumbnails");
+    // let cursor = await objectStore.openCursor()
+    // while (cursor) {
+    //   if (cursor.value.expires !== 0) {
+    //     const exists: boolean = this.urlExistsInATabset(atob(cursor.key.toString()))
+    //     if (exists) {
+    //       objectStore.put({expires: 0, thumbnail: cursor.value.thumbnail}, cursor.key)
+    //     } else {
+    //       if (cursor.value.expires < new Date().getTime()) {
+    //         objectStore.delete(cursor.key)
+    //       }
+    //     }
+    //   }
+    //   cursor = await cursor.continue();
+    // }
   }
 
   async cleanUpRequests(): Promise<void> {
-    const objectStore = this.db.transaction("requests", "readwrite").objectStore("requests");
+    return this.cleanUpExpired('requests')
+    // const objectStore = this.db.transaction("requests", "readwrite").objectStore("requests");
+    // let cursor = await objectStore.openCursor()
+    // while (cursor) {
+    //   if (cursor.value.expires !== 0) {
+    //     const exists: boolean = this.urlExistsInATabset(atob(cursor.key.toString()))
+    //     if (exists) {
+    //       const data = cursor.value
+    //       data.expires = 0
+    //       objectStore.put(data, cursor.key)
+    //     } else {
+    //       if (cursor.value.expires < new Date().getTime()) {
+    //         objectStore.delete(cursor.key)
+    //       }
+    //     }
+    //   }
+    //   cursor = await cursor.continue();
+    // }
+  }
+
+  async cleanUpMetaLinks(): Promise<void> {
+    return this.cleanUpExpired('metalinks')
+  }
+
+  async cleanUpLinks(): Promise<void> {
+    return this.cleanUpExpired('links')
+  }
+
+  async cleanUpExpired(tableName: string): Promise<void> {
+    const objectStore = this.db.transaction(tableName, "readwrite").objectStore(tableName);
     let cursor = await objectStore.openCursor()
     while (cursor) {
       if (cursor.value.expires !== 0) {
@@ -200,7 +263,9 @@ class IndexedDbPersistenceService implements PersistenceService {
           data.expires = 0
           objectStore.put(data, cursor.key)
         } else {
+          console.log("expiring?", cursor.value.expires - new Date().getTime(), tableName)
           if (cursor.value.expires < new Date().getTime()) {
+            console.log("cleaning up ", tableName, cursor.value.id)
             objectStore.delete(cursor.key)
           }
         }
@@ -272,14 +337,10 @@ class IndexedDbPersistenceService implements PersistenceService {
 
     const blob2 = content.slice(0, content.size, "multipart/related")
 
-    var reader = new window.FileReader();
+    const reader = new window.FileReader();
     reader.readAsDataURL(blob2);
     reader.onloadend = function () {
-      let base64data = reader.result as unknown as string
-      //console.log(base64data);
-
-      //base64data = base64data?.replace("data:application/octet-stream;base64,", "data:multipart/related;base64,")
-      var win = window.open();
+      const win = window.open();
       if (win) {
         win.document.write(res + "<br>")
         win.document.write("<iframe style='width:100%;height:800px' src=" + res + "><\/iframe>");
@@ -351,7 +412,7 @@ class IndexedDbPersistenceService implements PersistenceService {
         }
         if (!db.objectStoreNames.contains('spaces')) {
           console.log("creating db spaces")
-          let store = db.createObjectStore('spaces');
+          db.createObjectStore('spaces');
         }
         if (!db.objectStoreNames.contains('mhtml')) {
           console.log("creating db mhtml")
@@ -365,6 +426,16 @@ class IndexedDbPersistenceService implements PersistenceService {
         if (!db.objectStoreNames.contains('stats')) {
           console.log("creating db stats")
           db.createObjectStore('stats');
+        }
+        if (!db.objectStoreNames.contains('metalinks')) {
+          console.log("creating db metalinks")
+          const store =db.createObjectStore('metalinks');
+          store.createIndex("expires", "expires", {unique: false});
+        }
+        if (!db.objectStoreNames.contains('links')) {
+          console.log("creating db links")
+          const store =db.createObjectStore('links');
+          store.createIndex("expires", "expires", {unique: false});
         }
       },
     });
@@ -387,6 +458,8 @@ class IndexedDbPersistenceService implements PersistenceService {
     const today = todayLong.toISOString().split('T')[0]
     this.db.put('stats', dataset, today)
   }
+
+
 }
 
 export default new IndexedDbPersistenceService()

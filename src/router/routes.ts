@@ -71,11 +71,6 @@ const routes: RouteRecordRaw[] = [
     children: [{ path: '', component: () => import('pages/SearchPage.vue') }],
   },
   {
-    path: '/debug',
-    component: () => import('layouts/MainLayout.vue'),
-    children: [{ path: '', component: () => import('pages/DebugPage.vue') }],
-  },
-  {
     path: '/iframe/:tabId',
     component: () => import('layouts/WithoutTabsetsLayout.vue'),
     children: [{ path: '', component: () => import('pages/IFramePage.vue') }],

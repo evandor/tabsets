@@ -239,6 +239,16 @@
         </div>
       </div>
 
+      <div class="row q-pa-md">
+        <div class="col-3"><b>Develop Mode</b></div>
+        <div class="col-3">show additional tab page with more data / insights
+        </div>
+        <div class="col-1"></div>
+        <div class="col-5">
+          <q-toggle v-model="devEnabled"/>
+        </div>
+      </div>
+
     </div>
 
   </div>
@@ -250,20 +260,21 @@
 import {useTabsStore} from "src/stores/tabsStore"
 import {useFeatureTogglesStore} from "src/stores/featureTogglesStore";
 import {useRouter} from "vue-router";
-import {ref, watchEffect} from "vue";
+import {inject, ref, watchEffect} from "vue";
 import {useQuasar} from "quasar";
 import {INDEX_DB_NAME, INDEX_DB_VERSION} from "boot/constants"
 import {useSearchStore} from "src/stores/searchStore";
 import {useSettingsStore} from "src/stores/settingsStore";
 import TabsetService from "src/services/TabsetService";
-import NavigationService from "src/services/NavigationService";
 import ExportDialog from "components/dialogues/ExportDialog.vue";
 import ImportDialog from "components/dialogues/ImportDialog.vue";
 import _ from "lodash";
 import {Tabset, TabsetStatus} from "src/models/Tabset";
 import {MarkTabsetAsDefaultCommand} from "src/domain/commands/MarkTabsetAsDefaultCommand";
 import {useNotificationHandler} from "src/services/ErrorHandler";
-import {CommandExecutor, useCommandExecutor} from "src/services/CommandExecutor";
+import {useCommandExecutor} from "src/services/CommandExecutor";
+
+const logger = inject('vuejs3-logger')
 
 const tabsStore = useTabsStore()
 const featuresStore = useFeatureTogglesStore()
@@ -276,22 +287,19 @@ const $q = useQuasar()
 
 const view = ref('grid')
 const indexSize = ref(0)
-// const thresholds = ref(localStorage.getItem('thresholds') || {
-//   min: 10,
-//   max: 40
-// })
 
 const debugEnabled = ref<boolean>(featuresStore.isEnabled('debug'))
 const spacesEnabled = ref<boolean>(featuresStore.isEnabled('spaces'))
 const sidebarEnabled = ref<boolean>(featuresStore.isEnabled('sidebar'))
 const experimentalViewsEnabled = ref<boolean>(featuresStore.isEnabled('experimentalViews'))
 const statsEnabled = ref<boolean>(featuresStore.isEnabled('stats'))
+const devEnabled = ref<boolean>(featuresStore.isEnabled('dev'))
 
 const darkMode = ref<boolean>(localStorage.getItem('darkMode') || false)
 const showBookmarks = ref<boolean>(localStorage.getItem('showBookmarks') || false)
 const tab = ref('appearance')
 
-const {handleSuccess, handleError} = useNotificationHandler()
+const {handleError} = useNotificationHandler()
 
 watchEffect(() => {
   console.log("darkMode", darkMode.value, typeof darkMode.value)
@@ -305,6 +313,7 @@ watchEffect(() => {
   featuresStore.setFeatureToggle("sidebar", sidebarEnabled.value)
   featuresStore.setFeatureToggle("experimentalViews", experimentalViewsEnabled.value)
   featuresStore.setFeatureToggle("stats", statsEnabled.value)
+  featuresStore.setFeatureToggle("dev", devEnabled.value)
 })
 
 watchEffect(() => {

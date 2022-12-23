@@ -49,8 +49,5 @@ const open = (tab: Tab) => {
   }
 }
 
-const deleteMHtml = () => {
-  console.log("deleting...")
-}
 
 </script>

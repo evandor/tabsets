@@ -11,11 +11,11 @@ import throttledQueue from "throttled-queue";
 import {useWindowsStore} from "stores/windowsStores";
 import {useBookmarksStore} from "stores/bookmarksStore";
 
-function dummyPromise(timeout: number, tabToCloseId: number | undefined = undefined) {
+function dummyPromise(timeout: number, tabToCloseId: number | undefined = undefined): Promise<string> {
   return new Promise((resolve, reject) => {
     setTimeout(() => {
       if (tabToCloseId) {
-        chrome.tabs.remove(tabToCloseId)
+        //chrome.tabs.remove(tabToCloseId)
       }
       resolve("Success!");
     }, timeout);
@@ -109,6 +109,56 @@ export const useSearchStore = defineStore('search', () => {
     const ts = useTabsStore().getTabset(tabsetId)
     const values: Tabset[] = ts ? [ts] : []
     reindex(values)
+  }
+
+  async function reindexTab(tab: Tab): Promise<number> {
+    const window = await chrome.windows.create({focused: true, width: 1024, height: 800})
+    // @ts-ignore
+    if (window) {
+      // @ts-ignore
+      useWindowsStore().screenshotWindow = window.id
+      // @ts-ignore
+      let tabToClose = await chrome.tabs.create({windowId: window.id, url: tab.chromeTab.url})
+      // @ts-ignore
+      if (tabToClose) {
+        // @ts-ignore
+        const promise = dummyPromise(3000, tabToClose.id)
+        return promise.then((res) => {
+          // try {
+          //   chrome.windows.remove(window.id);
+          // } catch (err) {
+          //   console.log("err", err)
+          // }
+          // @ts-ignore
+          return window.id
+        })
+      }
+      return Promise.reject("could not get tab")
+    }
+    return Promise.reject("could not get window")
+
+    // chrome.windows.create({focused: true, width: 1024, height: 800}, (window: any) => {
+    //   useWindowsStore().screenshotWindow = window.id
+    //   let tabToClose: number | undefined = undefined
+    //
+    //   chrome.tabs.create({windowId: window.id, url: tab.chromeTab.url}, (tab: chrome.tabs.Tab) => {
+    //     tabToClose = tab.id
+    //     //dummyPromise(3000, tab.id)
+    //   })
+    //   // const promise = dummyPromise(3000)
+    //   //
+    //   // promise
+    //   //   .then(() => {
+    //   //     chrome.windows.remove(window.id)
+    //   //     useWindowsStore().screenshotWindow = null as unknown as number
+    //   //     const proxy = getCurrentInstance()?.proxy
+    //   //       if (proxy) {
+    //   //         console.log("proxy", proxy)
+    //   //         proxy.$forceUpdate()
+    //   //       }
+    //   //   })
+    //
+    // })
   }
 
   function reindex(values: Tabset[]) {
@@ -209,7 +259,7 @@ export const useSearchStore = defineStore('search', () => {
     const indexFromBookmarks: SearchDoc[] = []
     _.forEach(useBookmarksStore().bookmarksLeaves, (bookmark: any) => {
         if (bookmark && bookmark.url && !urlSet.has(bookmark.url)) {
-         // console.log("bookmark", bookmark)
+          // console.log("bookmark", bookmark)
           urlSet.add(bookmark.url)
           const doc = new SearchDoc("", "", bookmark.title || '', bookmark.url, "", "", "", [], bookmark.id, "")
           indexFromBookmarks.push(doc)
@@ -239,5 +289,5 @@ export const useSearchStore = defineStore('search', () => {
     }
   }
 
-  return {init, populate, getIndex, addToIndex, remove, term, search, indexTabs, update, reindexTabset}
+  return {init, populate, getIndex, addToIndex, remove, term, search, indexTabs, update, reindexTabset, reindexTab}
 })

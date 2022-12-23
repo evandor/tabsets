@@ -176,8 +176,8 @@ class ChromeListeners {
       this.handleCapture(sender, screenShotWindow, sendResponse)
     } else if (request.msg === 'html2text') {
       this.handleHtml2Text(request, sender, sendResponse)
-      // } else if (request.msg === 'htmlmeta') {
-      //   this.handleMetaData(request, sender, sendResponse)
+    } else if (request.msg === 'html2links') {
+      this.handleHtml2Links(request, sender, sendResponse)
     } else if (request.msg === 'addTabToTabset') {
       this.handleAddTabToTabset(request, sender, sendResponse)
     } else {
@@ -204,7 +204,7 @@ class ChromeListeners {
     const text = convert(request.html, {
       wordwrap: 130
     });
-    const text2 = text.replace(/\[[^\]].*/g, '').replace('*','')
+    const text2 = text.replace(/\[[^\]].*/g, '').replace('*', '')
     //console.log("text2", text2)
     const tokens = text2
       .replaceAll("\\n", " ")
@@ -225,6 +225,14 @@ class ChromeListeners {
     sendResponse({html2text: 'done'});
   }
 
+  private handleHtml2Links(request: any, sender: chrome.runtime.MessageSender, sendResponse: any) {
+    if (sender.tab) {
+      TabsetService.saveMetaLinksFor(sender.tab, request.links)
+      TabsetService.saveLinksFor(sender.tab, request.anchors)
+    }
+    sendResponse({html2links: 'done'});
+  }
+
   private handleAddTabToTabset(request: any, sender: chrome.runtime.MessageSender, sendResponse: any) {
     if (sender.tab) {
       TabsetService.saveToTabsetId(request.tabsetId, new Tab(uid(), sender.tab))
@@ -238,7 +246,7 @@ class ChromeListeners {
             }
           )
         })
-        .catch((err:any) => {
+        .catch((err: any) => {
           console.log("catching rejection", err)
           chrome.notifications.create(
             {
@@ -312,7 +320,7 @@ class ChromeListeners {
             }
           }
         );
-      },1000 )
+      }, 1000)
 
     })
 

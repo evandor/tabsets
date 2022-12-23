@@ -86,14 +86,12 @@
 import {Tab, UrlExtension} from "src/models/Tab"
 import TabsetService from "src/services/TabsetService"
 import {useNotificationsStore} from "stores/notificationsStore"
-import {inject, PropType, ref} from "vue"
+import {inject, ref} from "vue"
 import NavigationService from "src/services/NavigationService"
 import MHtmlService from "src/services/MHtmlService"
-import EditNoteDialog from "components/dialogues/EditNoteDialog.vue"
 import {useQuasar} from "quasar"
 import TabFaviconWidget from "src/components/widgets/TabFaviconWidget.vue"
 import {useCommandExecutor} from "src/services/CommandExecutor";
-import {CreateTabsetCommand} from "src/domain/commands/CreateTabsetCommand";
 import {DeleteTabCommand} from "src/domain/commands/DeleteTabCommand";
 
 const logger = inject('vuejs3-logger')
