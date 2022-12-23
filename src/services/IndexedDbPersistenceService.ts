@@ -263,9 +263,7 @@ class IndexedDbPersistenceService implements PersistenceService {
           data.expires = 0
           objectStore.put(data, cursor.key)
         } else {
-          console.log("expiring?", cursor.value.expires - new Date().getTime(), tableName)
           if (cursor.value.expires < new Date().getTime()) {
-            console.log("cleaning up ", tableName, cursor.value.id)
             objectStore.delete(cursor.key)
           }
         }

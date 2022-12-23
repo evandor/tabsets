@@ -46,7 +46,8 @@ export const useSearchStore = defineStore('search', () => {
     minMatchCharLength: 3,
     threshold: 0.0,
     // ignoreFieldNorm: true
-    ignoreLocation: true
+    ignoreLocation: true,
+    useExtendedSearch: true
   })
 
   async function init() {
