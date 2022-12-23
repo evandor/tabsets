@@ -55,7 +55,6 @@ describe('CreateTabsetCommand', () => {
     chrome.tabs.query.mockImplementation(async (o: object) => [])
     const cmd = new CreateTabsetCommand('emptyTabsetId', [])
     const res = await cmd.execute(new Logger())
-    console.log("res", res)
     expect(res.message).toBe("Tabset emptyTabsetId created successfully")
     expect(res.undoCommand).not.toBe(null)
   })

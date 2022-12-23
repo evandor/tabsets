@@ -42,7 +42,6 @@ watchEffect(() => rssTabsCount.value = tabsStore.rssTabs?.length)
 
 MHtmlService.getMHtmls()
   .then((res: MHtml[]) => {
-    console.log("res", res)
     savedTabsCount.value = res.length
   })
 // })
