@@ -1,9 +1,9 @@
 import {bexBackground} from 'quasar/wrappers';
 
-var corsExceptions:any[] = [];
+var corsExceptions: any[] = [];
 var sameOriginOnly = false;
 
-function formatHeaders(headersObject:any) {
+function formatHeaders(headersObject: any) {
   var headers = [];
   for (var pair of headersObject.entries()) {
     headers.push({
@@ -15,7 +15,7 @@ function formatHeaders(headersObject:any) {
   return headers;
 }
 
-function createRequestObject(request:any) {
+function createRequestObject(request: any) {
   return {
     method: request.method,
     url: request.url,
@@ -24,7 +24,7 @@ function createRequestObject(request:any) {
   };
 }
 
-function getCorsForUrl(request:any) {
+function getCorsForUrl(request: any) {
   var urlHost = hostParser(request.url);
   var referrerHost = hostParser(request.referrer);
 
@@ -36,14 +36,14 @@ function getCorsForUrl(request:any) {
     return 'same-origin';
   }
 
-  var isAnException = corsExceptions.some(function(exception:any) {
+  var isAnException = corsExceptions.some(function (exception: any) {
     return (request.url.indexOf(exception) !== -1);
   });
 
   return isAnException ? 'cors' : 'no-cors';
 }
 
-function hostParser(url:string) {
+function hostParser(url: string) {
   var match = url.match(/^(https?\:\/\/[^\/]*)(\/|$)/);
   return match && match[1];
 }
@@ -141,21 +141,32 @@ function hostParser(url:string) {
 //   // }
 // })
 
-chrome.runtime.onInstalled.addListener(() => {
-  console.log("adding listener in background.ts")
+chrome.runtime.onInstalled.addListener((details) => {
+  console.log("adding listener in background.ts", details)
   // @ts-ignore
-  chrome.action.onClicked.addListener((/* tab */) => {
+  chrome.action.onClicked.addListener((tab) => {
     // Opens our extension in a new browser window.
     // Only if a popup isn't defined in the manifest.
+    console.log("tab", tab)
+
+    if (details.reason === "update") {
+      chrome.tabs.create(
+        {
+          url: 'https://tabsets.web.app/#/updateFrom/' + details.previousVersion,
+        }
+      );
+    }
+
     chrome.tabs.create(
       {
         url: chrome.runtime.getURL('www/index.html'),
       },
       (newTab) => {
         // Tab opened.
-        //console.log("newTab", newTab)
+        console.log("newTab", newTab)
       }
     );
+
   });
 
 });
