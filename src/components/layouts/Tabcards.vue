@@ -16,7 +16,7 @@
 
     </div>
 
-    <div v-else class="q-ma-md q-pa-xl fit" style="border: 2px dotted grey; border-radius: 7px">
+    <div v-else-if="tabsStore.pendingTabset?.tabs.length === 0" class="q-ma-md q-pa-xl fit" style="border: 2px dotted grey; border-radius: 7px">
       <div class="row fit text-subtitle2 justify-center items-center">
         <div class="col-12">drag and drop new tabs from</div>
       </div>

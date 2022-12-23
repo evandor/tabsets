@@ -74,7 +74,7 @@ import {useNotificationHandler} from "src/services/ErrorHandler";
 import {MarkTabsetAsFavoriteCommand} from "src/domain/commands/MarkTabsetAsFavoriteCommand";
 import {MarkTabsetAsDefaultCommand} from "src/domain/commands/MarkTabsetAsDefaultCommand";
 import {MarkTabsetAsArchivedCommand} from "src/domain/commands/MarkTabsetAsArchivedCommand";
-import {CommandExecutor, useCommandExecutor} from "src/services/CommandExecutor";
+import {useCommandExecutor} from "src/services/CommandExecutor";
 
 const {handleError, handleSuccess} = useNotificationHandler()
 
@@ -133,30 +133,6 @@ const deleteDialog = (tabset: Tabset) =>
       tabsetName: tabset.name
     }
   })
-//
-// {
-//   $q.dialog({
-//     title: 'Deleting Tabset',
-//     message: 'Would you like to delete this tabset?',
-//     cancel: true,
-//     persistent: true
-//   }).onOk(() => {
-//
-//     const command = new MarkTabsetDeletedCommand(tabsStore.currentTabsetId)
-//     command.execute()
-//       .then((res) => {
-//         handleSuccess(res)
-//         router.push("/about")
-//       })
-//       .catch(err => handleError(err))
-//
-//
-//     // TabsetService.delete(tabsStore.currentTabsetId)
-//     // router.push("/about")
-//   }).onCancel(() => {
-//   }).onDismiss(() => {
-//   })
-// }
 
 const editDialog = (tabset: Tabset) =>
   $q.dialog({

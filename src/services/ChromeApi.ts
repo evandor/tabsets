@@ -7,12 +7,14 @@ import NavigationService from "src/services/NavigationService";
 import {RequestInfo} from "src/models/RequestInfo";
 import StatsService from "src/services/StatsService";
 import {useUiService} from "src/services/useUiService";
+import TabService from "src/services/TabService";
 
 
 function runHousekeeping(alarm: chrome.alarms.Alarm) {
   if (alarm.name === "housekeeping") {
     TabsetService.housekeeping()
     StatsService.count()
+    TabService.checkScheduled()
   }
 }
 

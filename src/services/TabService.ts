@@ -4,6 +4,7 @@ import {useTabsStore} from "stores/tabsStore";
 import {useNotificationsStore} from "stores/notificationsStore";
 import {Tab} from "src/models/Tab";
 import {Tabset} from "src/models/Tabset";
+import _ from "lodash"
 
 class TabService {
 
@@ -40,6 +41,45 @@ class TabService {
     useNotificationsStore().unsetSelectedTab()
     return useTabsStore().removeTab(tab.id)
 
+  }
+
+  checkScheduled() {
+    const tabs = useTabsStore().scheduledTabs
+    const dueTabs: Tab[] = []
+    const now = new Date().getTime()
+    const selfId = localStorage.getItem("selfId")
+    _.forEach(tabs, (t: Tab) => {
+      console.log("comparing", t.scheduledFor, now, selfId)
+      if (t.scheduledFor && t.scheduledFor <= now) {
+        console.log("hir")
+        dueTabs.push(t)
+      }
+    })
+    if (dueTabs.length > 0) {
+      chrome.notifications.create(
+        dueTabs[0].id,
+        {
+          title: "Tabset Extension Message",
+          type: "basic",
+          iconUrl: "chrome-extension://" + selfId + "/www/favicon.ico",
+          message: "scheduled tab is due",
+          buttons: [
+            {title: "open Tabsets Extension"}
+          ]
+        },
+        (a) => {
+          console.log("a", a)
+          /*chrome.tabs.query({title: `Tabsets Extension`}, (result: chrome.tabs.Tab[]) => {
+            if (result && result.length > 0) {
+              const tab = result[0]
+              if (tab.id) {
+                chrome.tabs.update(tab.id, {active: true})
+              }
+            }
+          })*/
+        }
+      )
+    }
   }
 }
 

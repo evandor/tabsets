@@ -10,13 +10,12 @@
             <div class="col-12">
                 <span class="text-primary">
                   <q-breadcrumbs separator=">">
-                        <q-breadcrumbs-el label="Bookmarks"/>
-                        <q-breadcrumbs-el v-for="bm in bookmarksForBreadcrumb"
-                                          :label="bm.chromeBookmark.title"
-                                          class="cursor-pointer"
-                                          @click="router.push('/bookmarks/' + bm.chromeBookmark.id)"
-                        />
-                      </q-breadcrumbs>
+                    <q-breadcrumbs-el v-for="bm in bookmarksForBreadcrumb"
+                                      :label="bm.chromeBookmark.title"
+                                      class="cursor-pointer"
+                                      @click="router.push('/bookmarks/' + bm.chromeBookmark.id)"
+                    />
+                  </q-breadcrumbs>
                 </span>
             </div>
           </div>

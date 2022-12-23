@@ -12,11 +12,13 @@
                 v-show="!featuresStore.isEnabled('spaces')">Handle more links, with less tabs open</span>
         </q-toolbar-title>
 
-        <SpacesSelectorWidget v-if="featuresStore.isEnabled('spaces')"/>
+        <q-space/>
 
         <SearchWidget/>
 
         <q-space/>
+
+        <SpacesSelectorWidget v-if="featuresStore.isEnabled('spaces')"/>
 
         <div>
           <OpenTabsThresholdWidget v-if="tabsStore.tabsets.size > 0"/>
