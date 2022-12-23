@@ -235,13 +235,16 @@ class ChromeListeners {
 
   private handleAddTabToTabset(request: any, sender: chrome.runtime.MessageSender, sendResponse: any) {
     if (sender.tab) {
+
+      const selfId = localStorage.getItem("selfId")
+
       TabsetService.saveToTabsetId(request.tabsetId, new Tab(uid(), sender.tab))
         .then(() => {
           chrome.notifications.create(
             {
               title: "Tabset Extension Message",
               type: "basic",
-              iconUrl: "chrome-extension://agphkldbejefifhmgpgmiphlnijklnol/www/favicon.ico",
+              iconUrl: "chrome-extension://"+selfId+"/www/favicon.ico",
               message: "the tab has been created successfully"
             }
           )
@@ -252,7 +255,7 @@ class ChromeListeners {
             {
               title: "Tabset Extension Message",
               type: "basic",
-              iconUrl: "chrome-extension://agphkldbejefifhmgpgmiphlnijklnol/www/favicon.ico",
+              iconUrl: "chrome-extension://"+selfId+"/www/favicon.ico",
               message: "tab could not be added: " + err
             }
           )
