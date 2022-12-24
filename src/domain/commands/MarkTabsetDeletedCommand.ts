@@ -8,9 +8,9 @@ class UndoCommand implements Command {
   constructor(public tabsetId: string) {
   }
 
-  execute(logger: any): Promise<ExecutionResult> {
+  execute(): Promise<ExecutionResult> {
     console.log("execution undo command", this.tabsetId)
-    return new MarkTabsetAsDefaultCommand(this.tabsetId).execute(logger)
+    return new MarkTabsetAsDefaultCommand(this.tabsetId).execute()
       .then(res => Promise.resolve(new ExecutionResult(res, "Tabset was restored again")))
   }
 
@@ -22,7 +22,7 @@ export class MarkTabsetDeletedCommand implements Command {
     public tabsetId: string) {
   }
 
-  async execute(logger: any): Promise<ExecutionResult> {
+  async execute(): Promise<ExecutionResult> {
     return TabsetService.markAsDeleted(this.tabsetId)
       .then(res => Promise.resolve(
         new ExecutionResult(

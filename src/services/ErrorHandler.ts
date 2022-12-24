@@ -3,10 +3,10 @@ import {ExecutionResult} from "src/domain/ExecutionResult";
 
 export function useNotificationHandler() {
 
-  const handleError = (error: any, logger: any) => {
+  const handleError = (error: any) => {
     //logger.error("--- catched error ---")
     //logger.error("type", typeof error)
-    logger.error(error)
+    //logger.error(error)
     Notify.create({
       position: 'bottom',
       color: 'red-5',
@@ -29,9 +29,9 @@ export function useNotificationHandler() {
       actions.push(
         {
           label: 'Undo', color: 'white', handler: () => {
-            executionResult.undoCommand?.execute(logger)
+            executionResult.undoCommand?.execute()
               .then(res => handleWarning(res))
-              .catch(err => handleError(err, logger))
+              .catch(err => handleError(err))
           }
         }
       )

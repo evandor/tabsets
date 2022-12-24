@@ -2,7 +2,6 @@ import {STRIP_CHARS_IN_USER_INPUT} from "boot/constants";
 import {useTabsStore} from "stores/tabsStore";
 import {Tab} from "src/models/Tab";
 import _ from "lodash";
-import ListIterateeCustom from "lodash";
 import {uid} from "quasar";
 import {NewOrReplacedTabset} from "src/models/NewOrReplacedTabset";
 import {useSearchStore} from "stores/searchStore";
@@ -10,8 +9,11 @@ import TabsetService from "src/services/TabsetService";
 import {usePersistenceService} from "src/services/usePersistenceService";
 import ChromeApi from "src/services/ChromeApi";
 import {TabPredicate} from "src/domain/Types";
+import {useUtils} from "src/services/Utils";
 
-export function useTabsetService(logger: any) {
+const {logger} = useUtils()
+
+export function useTabsetService() {
 
   const persistenceService = usePersistenceService()
 
@@ -29,7 +31,6 @@ export function useTabsetService(logger: any) {
    * @param merge if true, the old values (if existent) and the new ones will be merged.
    */
   const saveOrReplaceFromChromeTabs = async (name: string, chromeTabs: chrome.tabs.Tab[], merge: boolean = false): Promise<object> => {
-    logger.debug("persistenceService", persistenceService)
     const trustedName = name.replace(STRIP_CHARS_IN_USER_INPUT, '')
     const tabs: Tab[] = _.map(chromeTabs, t => new Tab(uid(), t))
     try {

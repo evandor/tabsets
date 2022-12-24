@@ -1,7 +1,8 @@
 <template>
 
-  <div class="cursor-pointer">
+  <div class="cursor-pointer text-right" style="min-width:160px">
     <q-badge v-if="showThresholdBar()"
+             :multi-line="false"
              class="q-mr-sm"
              color="primary" text-color="white" :label="thresholdLabel()">
     </q-badge>

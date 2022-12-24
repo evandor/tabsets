@@ -275,7 +275,7 @@
 import {useTabsStore} from "src/stores/tabsStore"
 import {useFeatureTogglesStore} from "src/stores/featureTogglesStore";
 import {useRouter} from "vue-router";
-import {inject, ref, watchEffect} from "vue";
+import {ref, watchEffect} from "vue";
 import {useQuasar} from "quasar";
 import {INDEX_DB_NAME, INDEX_DB_VERSION} from "boot/constants"
 import {useSearchStore} from "src/stores/searchStore";
@@ -288,10 +288,8 @@ import {Tabset, TabsetStatus} from "src/models/Tabset";
 import {MarkTabsetAsDefaultCommand} from "src/domain/commands/MarkTabsetAsDefaultCommand";
 import {useNotificationHandler} from "src/services/ErrorHandler";
 import {useCommandExecutor} from "src/services/CommandExecutor";
-import Navigation from "components/Navigation.vue";
 import NavigationService from "src/services/NavigationService";
 
-const logger = inject('vuejs3-logger')
 
 const tabsStore = useTabsStore()
 const featuresStore = useFeatureTogglesStore()
@@ -357,7 +355,7 @@ const archivedTabsets = () => {
   return _.sortBy(_.filter(tabsets, (ts: Tabset) => ts.status = TabsetStatus.ARCHIVED), ['name'])
 }
 
-const unarchive = (tabset: Tabset) => useCommandExecutor(logger).executeFromUi(new MarkTabsetAsDefaultCommand(tabset.id))
+const unarchive = (tabset: Tabset) => useCommandExecutor().executeFromUi(new MarkTabsetAsDefaultCommand(tabset.id))
 
 const ignoredUrls = () => useTabsStore().ignoredTabset?.tabs
 

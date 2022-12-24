@@ -12,7 +12,7 @@ export class SearchIndexQuery implements Query<Hit[]> {
     public term: string) {
   }
 
-  query<T>(logger: any): Promise<QueryResult<Hit[]>> {
+  query<T>(): Promise<QueryResult<Hit[]>> {
 
     const results = useSearchStore().search(this.term, 7)
 
@@ -37,6 +37,7 @@ export class SearchIndexQuery implements Query<Hit[]> {
       }
       theHits.push(theHit)
     })
+    console.log("theHits", theHits)
     const r:QueryResult<Hit[]> = new QueryResult(theHits, "")
     return Promise.resolve(r)
   }

@@ -11,7 +11,7 @@ class SpacesService {
    */
   async init() {
     console.debug("init spaces service")
-    await this.persistenceService.init();
+    //await this.persistenceService.init();
     await this.persistenceService.loadSpaces()
   }
 

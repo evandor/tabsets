@@ -23,7 +23,7 @@ export class RenameTabsetCommand implements Command {
     public newName: string) {
   }
 
-  async execute(logger: any): Promise<ExecutionResult> {
+  async execute(): Promise<ExecutionResult> {
     return TabsetService.rename(this.tabsetId, this.newName)
       .then(oldName => Promise.resolve(
         new ExecutionResult(

@@ -5,11 +5,11 @@ import {QueryResult} from "src/domain/QueryResult";
 
 const {handleSuccess, handleError} = useNotificationHandler()
 
-export function useQueryExecutor(logger: any) {
+export function useQueryExecutor() {
 
-  const queryFromUi = (query: Query): Promise<QueryResult> => {
-    logger.info("running query:", query)
-    return query.query(logger)
+  const queryFromUi = (query: Query<any>): Promise<QueryResult<any>> => {
+    //logger.info("running query:", query)
+    return query.query()
       // .then(res => handleSuccess(res, logger))
       // .then(res => console.log("command finished"))
       // .catch(err => handleError(err, logger))

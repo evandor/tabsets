@@ -12,6 +12,8 @@ import {Tab} from "src/models/Tab";
 import {SearchDoc} from "src/models/SearchDoc";
 import {RequestInfo} from "src/models/RequestInfo";
 import {MetaLink} from "src/models/MetaLink";
+import {LogEntry} from "src/models/LogEntry";
+import {LogLevel} from "logging-library";
 
 class IndexedDbPersistenceService implements PersistenceService {
 
@@ -97,6 +99,14 @@ class IndexedDbPersistenceService implements PersistenceService {
       }
       tnCursor = await tnCursor.continue();
     }
+  }
+
+  saveLog(level: LogLevel, msg: string, ...args: any[]): Promise<any> {
+    return this.db.put('logs', {
+      msg,
+      level,
+      args
+    }, new Date().getTime())
   }
 
   saveThumbnail(url: string, thumbnail: string): Promise<void> {
@@ -391,6 +401,7 @@ class IndexedDbPersistenceService implements PersistenceService {
   }
 
   private async initDatabase(): Promise<IDBPDatabase> {
+    console.debug("about to initialize indexedDB")
     return await openDB(INDEX_DB_NAME, INDEX_DB_VERSION, {
       // upgrading see https://stackoverflow.com/questions/50193906/create-index-on-already-existing-objectstore
       upgrade(db) {
@@ -427,13 +438,18 @@ class IndexedDbPersistenceService implements PersistenceService {
         }
         if (!db.objectStoreNames.contains('metalinks')) {
           console.log("creating db metalinks")
-          const store =db.createObjectStore('metalinks');
+          const store = db.createObjectStore('metalinks');
           store.createIndex("expires", "expires", {unique: false});
         }
         if (!db.objectStoreNames.contains('links')) {
           console.log("creating db links")
-          const store =db.createObjectStore('links');
+          const store = db.createObjectStore('links');
           store.createIndex("expires", "expires", {unique: false});
+        }
+        if (!db.objectStoreNames.contains('logs')) {
+          console.log("creating db logs")
+          db.createObjectStore('logs');
+          //store.createIndex("expires", "expires", {unique: false});
         }
       },
     });
@@ -457,7 +473,20 @@ class IndexedDbPersistenceService implements PersistenceService {
     this.db.put('stats', dataset, today)
   }
 
-
+  async getLogs(): Promise<LogEntry[]> {
+    const transaction = this.db.transaction(["logs"]);
+    const objectStore = transaction.objectStore("logs");
+    const res: LogEntry[] = []
+    let cursor = await objectStore.openCursor()
+    while (cursor) {
+      let key = cursor.primaryKey;
+      let value = cursor.value;
+      //console.log("***", key, value);
+      res.push(new LogEntry(key as number, value.level, value.msg))
+      cursor = await cursor.continue();
+    }
+    return res
+  }
 }
 
 export default new IndexedDbPersistenceService()

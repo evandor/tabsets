@@ -12,7 +12,7 @@ class UndoCommand implements Command {
   constructor(public tab: Tab) {
   }
 
-  execute(logger: any): Promise<ExecutionResult> {
+  execute(): Promise<ExecutionResult> {
     console.log("execution undo command", this.tab)
     // return new DeleteTabsetCommand(this.tabsetId).execute()
     //   .then(res => Promise.resolve(new ExecutionResult(res, "Tabset was deleted again")))
@@ -26,7 +26,7 @@ export class SavePendingTabToCurrentTabsetCommand implements Command {
   constructor(public tab: Tab) {
   }
 
-  async execute(logger: any): Promise<ExecutionResult> {
+  async execute(): Promise<ExecutionResult> {
     return TabsetService.saveToCurrentTabset(this.tab)
       .then(() => this.removeFromPendingTabset(this.tab))
       .then(() => this.unExpireThumbnail(this.tab))

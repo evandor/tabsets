@@ -23,13 +23,10 @@
 import {useDialogPluginComponent} from 'quasar'
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {MarkTabsetDeletedCommand} from "src/domain/commands/MarkTabsetDeletedCommand";
-import {inject} from "vue";
 
 defineEmits([
   ...useDialogPluginComponent.emits
 ])
-
-const logger = inject('vuejs3-logger')
 
 const props = defineProps({
   tabsetId: {
@@ -43,7 +40,7 @@ const props = defineProps({
 })
 
 const {dialogRef, onDialogHide, onDialogCancel} = useDialogPluginComponent()
-const deleteTabset = () => useCommandExecutor(logger).executeFromUi(new MarkTabsetDeletedCommand(props.tabsetId))
+const deleteTabset = () => useCommandExecutor().executeFromUi(new MarkTabsetDeletedCommand(props.tabsetId))
 
 
 </script>

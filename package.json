@@ -38,6 +38,7 @@
     "html-to-text": "^8.2.1",
     "idb": "^7.0.2",
     "lodash": "^4.17.21",
+    "logging-library": "^0.5.0",
     "mhtml2html": "^3.0.0",
     "pinia": "^2.0.11",
     "quasar": "^2.11.1",
@@ -48,8 +49,7 @@
     "vue-i18n": "^9.0.0",
     "vue-router": "^4.0.0",
     "vue-timeago3": "^2.3.0",
-    "vue3-apexcharts": "^1.4.1",
-    "vuejs3-logger": "^1.0.0"
+    "vue3-apexcharts": "^1.4.1"
   },
   "devDependencies": {
     "@babel/preset-env": "^7.19.0",

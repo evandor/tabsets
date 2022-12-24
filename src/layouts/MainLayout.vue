@@ -6,7 +6,8 @@
         <q-btn v-if="tabsStore.tabsets.size > 0"
                dense flat round icon="menu" @click="toggleLeftDrawer"/>
 
-        <q-toolbar-title @click.stop="goHome()" class="cursor-pointer" shrink>
+        <q-toolbar-title @click.stop="goHome()" class="cursor-pointer"
+                         :style="featuresStore.isEnabled('spaces') ? 'min-width:150px' : 'min-width:350px'" shrink>
           Tabsets
           <span class="text-caption"
                 v-show="!featuresStore.isEnabled('spaces')">Handle more links, with less tabs open</span>
@@ -14,7 +15,7 @@
 
         <q-space/>
 
-        <SearchWidget/>
+        <SearchWidget />
 
         <q-space/>
 
@@ -25,8 +26,8 @@
         </div>
 
         <div v-if="tabsStore.pendingTabset?.tabs.length > 0 && tabsStore.tabsets.size >= 1"
-             class="q-mr-lg cursor-pointer">
-          <UnassignedTabsWidget/>
+             class="q-mr-lg cursor-pointer no-wrap" style="min-width:200px">
+          <UnassignedTabsWidget />
         </div>
 
         <div v-if="tabsStore.audibleTabs.length > 0">
@@ -49,8 +50,13 @@
         </div>
 
         <q-btn v-if="featuresStore.isEnabled('stats')"
-               class="q-mr-md" icon="o_query_stats" size="12px" style="width:24px" flat @click="router.push('/stats')">
+               class="q-mr-md" icon="o_query_stats" size="12px" style="min-width:24px" flat @click="router.push('/stats')">
           <q-tooltip>Check out stats (experimental)</q-tooltip>
+        </q-btn>
+
+        <q-btn v-if="featuresStore.isEnabled('dev')"
+               class="q-mr-md" icon="o_list" size="12px" style="width:24px" flat @click="router.push('/logs')">
+          <q-tooltip>Logs (developer mode)</q-tooltip>
         </q-btn>
 
         <q-btn class="q-mr-md" icon="o_settings" size="12px" style="width:24px" flat @click="router.push('/settings')">

@@ -60,7 +60,7 @@
 
 <script lang="ts" setup>
 
-import {inject, PropType, ref} from "vue";
+import {PropType, ref} from "vue";
 import {Tabset, TabsetStatus} from "src/models/Tabset";
 import TabsetService from "src/services/TabsetService";
 import {useRouter} from "vue-router";
@@ -82,7 +82,6 @@ const router = useRouter()
 const tabsStore = useTabsStore()
 const featuresStore = useFeatureTogglesStore()
 const spacesStore = useSpacesStore()
-const logger = inject('vuejs3-logger')
 
 const showDeleteButton = ref<Map<string, boolean>>(new Map())
 const showEditButton = ref<Map<string, boolean>>(new Map())
@@ -143,8 +142,8 @@ const editDialog = (tabset: Tabset) =>
     }
   })
 
-const markAsFavorite = (ts: Tabset) => useCommandExecutor(logger).executeFromUi(new MarkTabsetAsFavoriteCommand(ts.id))
-const markAsDefault = (ts: Tabset) => useCommandExecutor(logger).executeFromUi(new MarkTabsetAsDefaultCommand(ts.id))
-const archiveTabset = (ts: Tabset) => useCommandExecutor(logger).executeFromUi(new MarkTabsetAsArchivedCommand(ts.id))
+const markAsFavorite = (ts: Tabset) => useCommandExecutor().executeFromUi(new MarkTabsetAsFavoriteCommand(ts.id))
+const markAsDefault = (ts: Tabset) => useCommandExecutor().executeFromUi(new MarkTabsetAsDefaultCommand(ts.id))
+const archiveTabset = (ts: Tabset) => useCommandExecutor().executeFromUi(new MarkTabsetAsArchivedCommand(ts.id))
 
 </script>
