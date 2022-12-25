@@ -99,12 +99,6 @@ $q.loadingBar.setDefaults({
   position: 'bottom'
 })
 
-const selectTabset = (tabsetId: string) => {
-  TabsetService.selectTabset(tabsetId)
-  // router.push("/tabset")
-  router.push("/tabsets/" + tabsetId)
-}
-
 const tabsets = (isFavorite: boolean) => {
   let tabsets = [...tabsStore.tabsets.values()]
   if (featuresStore.isEnabled('spaces') && spacesStore.spaces && spacesStore.spaces.size > 0) {
@@ -132,9 +126,6 @@ const onDrop = (evt: DragEvent, tabsetId: string) => {
 const tabsetLabel = (tabset: Tabset) => {
   return tabset.tabs?.length > 1 ? tabset.name + ' (' + tabset.tabs?.length + ' tabs)' : tabset.name + ' (' + tabset.tabs?.length + ' tab)'
 }
-
-
-const tabNameExists = () => tabsStore.nameExistsInContextTabset(newTabsetName.value)
 
 const addTabset = () => $q.dialog({component: NewTabsetDialog})
 

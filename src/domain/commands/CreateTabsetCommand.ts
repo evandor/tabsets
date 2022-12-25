@@ -2,7 +2,9 @@ import Command from "src/domain/Command";
 import {ExecutionResult} from "src/domain/ExecutionResult";
 import {DeleteTabsetCommand} from "src/domain/commands/DeleteTabsetCommand";
 import {useTabsetService} from "src/services/TabsetService2";
+import {useLoggingServicee} from "src/services/useLoggingService";
 
+const {logger} = useLoggingServicee()
 
 class UndoCreateTabsetCommand implements Command {
 
@@ -10,7 +12,7 @@ class UndoCreateTabsetCommand implements Command {
   }
 
   execute(): Promise<ExecutionResult> {
-    //logger.debug("execution undo command", this.tabsetId)
+    logger.info("execution of undo command", this.tabsetId)
     return new DeleteTabsetCommand(this.tabsetId).execute()
       .then(res => Promise.resolve(new ExecutionResult(res, "Tabset was deleted again")))
   }
@@ -45,5 +47,5 @@ export class CreateTabsetCommand implements Command {
 }
 
 CreateTabsetCommand.prototype.toString = function dogToString() {
-  return `CreateTabsetCommand: ${JSON.stringify(this)}`;
+  return `CreateTabsetCommand: {merge=${this.merge}, tabsetName=${this.tabsetName}, tabs#=${this.tabsToUse.length}}`;
 };

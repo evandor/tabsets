@@ -66,6 +66,7 @@ import {useFeatureTogglesStore} from "src/stores/featureTogglesStore";
 import {useRouter} from "vue-router";
 import {useNotificationsStore} from "stores/notificationsStore";
 import BookmarksService from "src/services/BookmarksService";
+import {useTabsetService} from "src/services/TabsetService2";
 
 const props = defineProps({
   hit: {
@@ -80,6 +81,8 @@ const router = useRouter()
 const featureToggles = useFeatureTogglesStore()
 const line = ref(null);
 const scoreAsRating = ref(Math.round(props.hit.score / 18))
+
+const {selectTabset} = useTabsetService()
 
 function getShortHostname(host: string) {
 
@@ -158,7 +161,7 @@ const tabsetBadges = (hit: Hit): object[] => {
 
 const openTabset = (badge: any) => {
   console.log("badge", badge)
-  TabsetService.selectTabset(badge.tabsetId)
+  selectTabset(badge.tabsetId)
   router.push("/tabsets/" + badge.tabsetId + "?highlight=" + badge.encodedUrl)
 }
 

@@ -36,7 +36,7 @@ interface PersistenceService {
 
   saveStats(dataset: object): void
 
-  saveLog(level: LogLevel, msg: string, ...args: any[]):Promise<any>
+  saveLog(context: string, level: LogLevel, msg: string, ...args: any[]):Promise<any>
 }
 
 export default PersistenceService

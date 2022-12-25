@@ -1,12 +1,13 @@
 import {Notify} from 'quasar'
 import {ExecutionResult} from "src/domain/ExecutionResult";
+import {useLoggingServicee} from "src/services/useLoggingService";
+
+const {logger} = useLoggingServicee()
 
 export function useNotificationHandler() {
 
   const handleError = (error: any) => {
-    //logger.error("--- catched error ---")
-    //logger.error("type", typeof error)
-    //logger.error(error)
+    logger.error(error)
     Notify.create({
       position: 'bottom',
       color: 'red-5',

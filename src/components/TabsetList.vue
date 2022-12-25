@@ -173,6 +173,7 @@ import {useTabsStore} from "src/stores/tabsStore";
 import {useTabGroupsStore} from "src/stores/tabGroupsStore";
 import TabsetService from "src/services/TabsetService";
 import {Tab} from "src/models/Tab";
+import {useTabsetService} from "src/services/TabsetService2";
 
 const route = useRoute();
 const router = useRouter();
@@ -214,6 +215,7 @@ const removeAllPendingTabs = () => TabsetService.removeAllPendingTabs()
 
 const setOtherTabsCaption = (msg: string) => otherTabsCaption.value = msg
 const setGroupedTabsCaption = (msg: string) => groupedTabsCaption.value = msg
+const {deleteTabset} = useTabsetService()
 
 
 const deleteDialog = () => {
@@ -223,7 +225,7 @@ const deleteDialog = () => {
     cancel: true,
     persistent: true
   }).onOk((data: any) => {
-    TabsetService.delete(tabsStore.currentTabsetId)
+    deleteTabset(tabsStore.currentTabsetId)
     //router.push("/browser")
   }).onCancel(() => {
   }).onDismiss(() => {

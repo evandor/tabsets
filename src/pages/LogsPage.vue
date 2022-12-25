@@ -75,11 +75,13 @@ import {useQueryExecutor} from "src/services/QueryExecutor";
 import {SearchIndexQuery} from "src/domain/queries/SearchIndexQuery";
 import {LogsQuery} from "src/domain/queries/LogsQuery";
 
+const {logger} = useLoggingServicee()
 const route = useRoute()
 
 const encodedUrl = ref()
 const title = ref()
 const logs = ref<any[]>([])
+const filter = ref('')
 
 const metaInitialPagination = {
   sortBy: 'timestamp',
@@ -90,20 +92,15 @@ const metaInitialPagination = {
 
 const logsColumns = ref([
   {name: 'timestamp', align: 'left', label: 'Timestamp', field: 'timestamp', sortable: true},
+  {name: 'context', align: 'left', label: 'Context', field: 'context', sortable: true},
   {name: 'level', align: 'left', label: 'Level', field: 'level', sortable: true},
   {name: 'msg', align: 'left', label: 'Message', field: 'msg', sortable: true}
 ])
 
-
 useQueryExecutor()
   .queryFromUi(new LogsQuery())
   .then(res => {logs.value = res.result})
-
-// watchEffect(() => {
-//   useLoggingServicee().getLogs()
-//     .then((res) => logs.value = res)
-//
-// })
+  .catch((err) => logger.warning(err))
 
 
 </script>

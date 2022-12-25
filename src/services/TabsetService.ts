@@ -4,7 +4,6 @@ import ChromeApi from "src/services/ChromeApi";
 import _ from "lodash";
 import {Tab} from "src/models/Tab";
 import {Tabset, TabsetStatus} from "src/models/Tabset";
-import {useNotificationsStore} from "src/stores/notificationsStore";
 import {useSearchStore} from "src/stores/searchStore";
 import {useBookmarksStore} from "src/stores/bookmarksStore";
 import IndexedDbPersistenceService from "src/services/IndexedDbPersistenceService"
@@ -12,6 +11,9 @@ import {STRIP_CHARS_IN_USER_INPUT} from "boot/constants";
 import {SearchDoc} from "src/models/SearchDoc";
 import {RequestInfo} from "src/models/RequestInfo";
 import {MetaLink} from "src/models/MetaLink";
+import {useTabsetService} from "src/services/TabsetService2";
+
+const {getTabset, getCurrentTabset} = useTabsetService()
 
 function getIfAvailable(metas: object, key: string): string | undefined {
   let res = undefined
@@ -69,7 +71,7 @@ class TabsetService {
       if (closeOldTabs) {
         await ChromeApi.closeAllTabs()
       }
-      const tabset = this.getTabset(tabsetId)
+      const tabset = getTabset(tabsetId)
       if (tabset) {
         console.log("found tabset for id", tabsetId)
         ChromeApi.restore(tabset)
@@ -85,36 +87,9 @@ class TabsetService {
     }
   }
 
-  delete(tabsetId: string): Promise<string> {
-    console.log("deleting tabset ", tabsetId)
-    const tabset = this.getTabset(tabsetId)
-    if (tabset) {
-      const tabsStore = useTabsStore()
-      _.forEach(tabsStore.getTabset(tabsetId)?.tabs, t => this.removeThumbnailsFor(t?.chromeTab.url || ''))
-      tabsStore.deleteTabset(tabsetId)
-      this.persistenceService.deleteTabset(tabsetId)
-      //this.db.delete('tabsets', tabsetId)
-      const nextKey: string = tabsStore.tabsets.keys().next().value
-      console.log("setting next key to", nextKey)
-      this.selectTabset(nextKey)
-      return Promise.resolve("ok")
-    }
-    return Promise.reject("could not get tabset for id")
-  }
-
-  private getTabset(tabsetId: string): Tabset | undefined {
-    //return this.localStorage.getItem<Tabset>("tabsets.tabset." + tabsetId);
-    const tabsStore = useTabsStore()
-    return _.find([...tabsStore.tabsets.values()], ts => ts.id === tabsetId)
-  }
-
-  getCurrentTabset(): Tabset | undefined {
-    const tabsStore = useTabsStore()
-    return tabsStore.tabsets.get(tabsStore.currentTabsetId)
-  }
 
   async saveToCurrentTabset(tab: Tab, useIndex: number | undefined = undefined): Promise<number> {
-    const currentTs = this.getCurrentTabset()
+    const currentTs = getCurrentTabset()
     if (currentTs) {
       return this.saveToTabset(currentTs, tab, useIndex)
     }
@@ -122,7 +97,7 @@ class TabsetService {
   }
 
   async saveToTabsetId(tsId: string, tab: Tab): Promise<number> {
-    const ts = this.getTabset(tsId)
+    const ts = getTabset(tsId)
     if (ts) {
       return this.saveToTabset(ts, tab)
     }
@@ -160,7 +135,7 @@ class TabsetService {
   }
 
   togglePin(tabId: number) {
-    const currentTabset: Tabset = this.getCurrentTabset() || new Tabset("", "", [], [])
+    const currentTabset: Tabset = getCurrentTabset() || new Tabset("", "", [], [])
     _.filter(currentTabset.tabs, t => t.chromeTab.id === tabId)
       .forEach(t => {
         t.chromeTab.pinned = !t.chromeTab.pinned
@@ -175,15 +150,6 @@ class TabsetService {
     }).length > 0
   }
 
-  selectTabset(tabsetId: string): void {
-    console.debug("selecting tabset", tabsetId)
-    const tabsStore = useTabsStore()
-    this.resetSelectedTabs()
-    tabsStore.currentTabsetId = tabsetId;
-
-    localStorage.setItem("selectedTabset", tabsetId)
-
-  }
 
   saveAllPendingTabs(onlySelected: boolean = false): Promise<void> {
     const tabsStore = useTabsStore()
@@ -233,7 +199,7 @@ class TabsetService {
   }
 
   setOnlySelectedTab(tab: Tab) {
-    const currentTabset = this.getCurrentTabset()
+    const currentTabset = getCurrentTabset()
     if (currentTabset) {
       _.forEach(currentTabset.tabs, (t: Tab) => {
         t.selected = t.id === tab.id;
@@ -241,13 +207,6 @@ class TabsetService {
     }
   }
 
-  resetSelectedTabs() {
-    const currentTabset = this.getCurrentTabset()
-    if (currentTabset) {
-      _.forEach(currentTabset.tabs, (t: Tab) => t.selected = false)
-    }
-    useNotificationsStore().setSelectedTab(null as unknown as Tab)
-  }
 
   saveThumbnailFor(tab: chrome.tabs.Tab | undefined, thumbnail: string) {
     if (tab && tab.url) {
@@ -293,10 +252,6 @@ class TabsetService {
 
   async getContentForUrl(url: string): Promise<any> {
     return this.persistenceService.getContent(url)
-  }
-
-  removeThumbnailsFor(url: string): Promise<any> {
-    return this.persistenceService.deleteThumbnail(url)
   }
 
   removeContentFor(url: string): Promise<any> {
@@ -618,7 +573,7 @@ class TabsetService {
    */
   rename(tabsetId: string, tabsetName: string): Promise<string> {
     const trustedName = tabsetName.replace(STRIP_CHARS_IN_USER_INPUT, '')
-    const tabset = this.getTabset(tabsetId)
+    const tabset = getTabset(tabsetId)
     if (tabset) {
       const oldName = tabset.name
       tabset.name = trustedName
@@ -629,7 +584,7 @@ class TabsetService {
   }
 
   canvasPosition(tabsetId: string, tabsetName: string) {
-    const tabset = this.getTabset(tabsetId)
+    const tabset = getTabset(tabsetId)
     if (tabset) {
       tabset.name = tabsetName
       this.saveTabset(tabset)
@@ -656,7 +611,7 @@ class TabsetService {
   }
 
   setPosition(tabId: string, top: number, left: number) {
-    const tab = _.find(this.getCurrentTabset()?.tabs, t => t.id === tabId)
+    const tab = _.find(getCurrentTabset()?.tabs, t => t.id === tabId)
     if (tab) {
       tab.canvasLeft = left
       tab.canvasTop = top
@@ -666,7 +621,7 @@ class TabsetService {
 
   saveNote(tabId: string, note: string, scheduledFor: Date | undefined): Promise<void> {
     console.log("got", tabId, note)
-    const tab = _.find(this.getCurrentTabset()?.tabs, (t: Tab) => t.id === tabId)
+    const tab = _.find(getCurrentTabset()?.tabs, (t: Tab) => t.id === tabId)
     if (tab) {
       tab.note = note
       if (scheduledFor) {
@@ -721,7 +676,7 @@ class TabsetService {
   // }
 
   markAsDeleted(tabsetId: string): Promise<boolean> {
-    const ts = this.getTabset(tabsetId)
+    const ts = getTabset(tabsetId)
     if (ts) {
       ts.status = TabsetStatus.DELETED
       return this.saveTabset(ts)
@@ -732,7 +687,7 @@ class TabsetService {
 
   markAs(tabsetId: string, status: TabsetStatus): Promise<TabsetStatus> {
     console.debug(`marking ${tabsetId} as ${status}`)
-    const ts = this.getTabset(tabsetId)
+    const ts = getTabset(tabsetId)
     if (ts) {
       const oldStatus = ts.status
       ts.status = status

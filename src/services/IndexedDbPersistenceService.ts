@@ -14,6 +14,8 @@ import {RequestInfo} from "src/models/RequestInfo";
 import {MetaLink} from "src/models/MetaLink";
 import {LogEntry} from "src/models/LogEntry";
 import {LogLevel} from "logging-library";
+import {Predicate} from "src/domain/Types";
+import {TabLogger} from "src/services/useLoggingService";
 
 class IndexedDbPersistenceService implements PersistenceService {
 
@@ -101,12 +103,19 @@ class IndexedDbPersistenceService implements PersistenceService {
     }
   }
 
-  saveLog(level: LogLevel, msg: string, ...args: any[]): Promise<any> {
-    return this.db.put('logs', {
-      msg,
-      level,
-      args
-    }, new Date().getTime())
+  saveLog(context: string, level: LogLevel, msg: string, ...args: any[]): Promise<any> {
+    if (this.db) {
+      const store = this.db.transaction(["logs"], "readwrite")
+        .objectStore("logs");
+      return store.put({
+        timestamp: new Date().getTime(),
+        context,
+        msg,
+        level,
+        args
+      })
+    }
+    return Promise.reject("db not available (yet)")
   }
 
   saveThumbnail(url: string, thumbnail: string): Promise<void> {
@@ -188,6 +197,10 @@ class IndexedDbPersistenceService implements PersistenceService {
         tabsets: tabsetIds,
         favIconUrl: tab.favIconUrl
       }, encodedTabUrl)
+        .then((res) => {
+          TabLogger.info(tab.url || '', "saved content for url " +  tab.url)
+          return res
+        })
     }
     return Promise.reject("tab.url missing")
   }
@@ -448,7 +461,7 @@ class IndexedDbPersistenceService implements PersistenceService {
         }
         if (!db.objectStoreNames.contains('logs')) {
           console.log("creating db logs")
-          db.createObjectStore('logs');
+          db.createObjectStore('logs', { autoIncrement: true });
           //store.createIndex("expires", "expires", {unique: false});
         }
       },
@@ -473,19 +486,26 @@ class IndexedDbPersistenceService implements PersistenceService {
     this.db.put('stats', dataset, today)
   }
 
-  async getLogs(): Promise<LogEntry[]> {
-    const transaction = this.db.transaction(["logs"]);
-    const objectStore = transaction.objectStore("logs");
-    const res: LogEntry[] = []
-    let cursor = await objectStore.openCursor()
-    while (cursor) {
-      let key = cursor.primaryKey;
-      let value = cursor.value;
-      //console.log("***", key, value);
-      res.push(new LogEntry(key as number, value.level, value.msg))
-      cursor = await cursor.continue();
+  async getLogs(predicate: Predicate<LogEntry> = (l: LogEntry) => true): Promise<LogEntry[]> {
+    if (this.db) {
+      const transaction = this.db.transaction(["logs"]);
+      const objectStore = transaction.objectStore("logs");
+      const res: LogEntry[] = []
+      let cursor = await objectStore.openCursor()
+      while (cursor) {
+        let key = cursor.primaryKey;
+        let value = cursor.value;
+        //console.log("***", key, value);
+        const logEntry = new LogEntry(key as number, value.context, value.level, value.msg)
+        if (predicate(logEntry)) {
+          res.push(logEntry)
+        }
+
+        cursor = await cursor.continue();
+      }
+      return res
     }
-    return res
+    return Promise.reject('db not available (yet)')
   }
 }
 

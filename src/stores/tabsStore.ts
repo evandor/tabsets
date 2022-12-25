@@ -11,6 +11,7 @@ import {useTabGroupsStore} from "src/stores/tabGroupsStore";
 import {Group} from "src/models/Group";
 import {useSpacesStore} from "stores/spacesStore";
 import {useUtils} from "src/services/Utils";
+import {useLoggingServicee} from "src/services/useLoggingService";
 
 async function queryTabs(): Promise<chrome.tabs.Tab[]> {
   // @ts-ignore
@@ -34,7 +35,7 @@ function markDuplicates(tabset: Tabset) {
   })
 }
 
-const {logger} = useUtils()
+const {logger} = useLoggingServicee()
 
 export const useTabsStore = defineStore('tabs', {
   state: () => ({

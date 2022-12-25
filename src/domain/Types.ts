@@ -7,11 +7,6 @@ export type Programmer = {
   knownFor: string[];
 };
 
-// export type Predicate = {
-//   tabPredicate: (t: Tab) => boolean;
-// }
-
 export type TabPredicate = (t: Tab) => boolean;
+export type Predicate<T> = (t: T) => boolean;
 
-// add: (x: number, y: number) => number;
-// }
