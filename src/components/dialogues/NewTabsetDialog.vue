@@ -86,6 +86,9 @@ const createNewTabset = () => {
     .then(() => {
       if (!addAutomatically.value) {
         TabsetService.createPendingFromBrowserTabs()
+      } else {
+        // clear pending tabset - why neccessary?
+        tabsStore.pendingTabset.tabs = []
       }
       router.push("/tabset")
     })
