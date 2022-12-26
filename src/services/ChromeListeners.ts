@@ -1,5 +1,5 @@
 import {Tabset} from "src/models/Tabset";
-import TabsetService from "src/services/TabsetService";
+//import TabsetService from "src/services/TabsetService";
 import {useTabsStore} from "src/stores/tabsStore";
 import _ from "lodash";
 import {Tab} from "src/models/Tab";
@@ -10,6 +10,9 @@ import throttledQueue from 'throttled-queue';
 import {convert} from "html-to-text"
 import ChromeApi from "src/services/ChromeApi";
 import {useWindowsStore} from "src/stores/windowsStores";
+import {useTabsetService} from "src/services/TabsetService2";
+
+const {saveCurrentTabset, saveTabset, saveText,saveMetaLinksFor, saveLinksFor, saveToTabsetId, saveThumbnailFor} = useTabsetService()
 
 class ChromeListeners {
 
@@ -18,6 +21,26 @@ class ChromeListeners {
   thumbnailsActive = true
 
   throttleOnePerSecond = throttledQueue(1, 1000, true)
+
+  initListeners() {
+    if (process.env.MODE === 'bex') {
+      console.info("initializing chrome tab listeners")
+
+      chrome.tabs.onCreated.addListener((tab: chrome.tabs.Tab) => this.onCreated(tab))
+      chrome.tabs.onUpdated.addListener((number, info, tab) => this.onUpdated(number, info, tab))
+      chrome.tabs.onMoved.addListener((number, info) => this.onMoved(number, info))
+      chrome.tabs.onRemoved.addListener((number, info) => this.onRemoved(number, info))
+      chrome.tabs.onReplaced.addListener((n1, n2) => this.onReplaced(n1, n2))
+      chrome.tabs.onActivated.addListener((info) => this.onActivated(info))
+      chrome.tabs.onAttached.addListener((number, info) => this.onAttached(number, info))
+      chrome.tabs.onDetached.addListener((number, info) => this.onDetached(number, info))
+      chrome.tabs.onHighlighted.addListener((info) => this.onHighlighted(info))
+      chrome.tabs.onZoomChange.addListener((info) => this.onZoomChange(info))
+
+      chrome.runtime.onMessage.addListener((request, sender, sendResponse) => this.onMessage(request, sender, sendResponse))
+    }
+
+  }
 
   clearWorking() {
     if (this.inProgress) {
@@ -50,7 +73,7 @@ class ChromeListeners {
       console.log(`onCreated: tab ${tab.id}: updating existing chromeTab.id: ${maybeTab.chromeTab.id} -> ${tab.id}`)
       maybeTab.chromeTab.id = tab.id
       maybeTab.chromeTab.windowId = tab.windowId
-      TabsetService.saveCurrentTabset()
+      saveCurrentTabset()
       return
     }
     tabsStore.pendingTabset.tabs.push(new Tab(uid(), tab))
@@ -139,7 +162,7 @@ class ChromeListeners {
             h.lastActive = new Date().getTime()
             console.debug(`onActivated: tab ${info.tabId}:updating hits`, h)
           })
-          TabsetService.saveTabset(ts)
+          saveTabset(ts)
         }
       })
     })
@@ -221,14 +244,14 @@ class ChromeListeners {
       }
     })
     // console.log("res", res)
-    TabsetService.saveText(sender.tab, [...tokenSet].join(" "), request.metas)
+    saveText(sender.tab, [...tokenSet].join(" "), request.metas)
     sendResponse({html2text: 'done'});
   }
 
   private handleHtml2Links(request: any, sender: chrome.runtime.MessageSender, sendResponse: any) {
     if (sender.tab) {
-      TabsetService.saveMetaLinksFor(sender.tab, request.links)
-      TabsetService.saveLinksFor(sender.tab, request.anchors)
+      saveMetaLinksFor(sender.tab, request.links)
+      saveLinksFor(sender.tab, request.anchors)
     }
     sendResponse({html2links: 'done'});
   }
@@ -238,13 +261,13 @@ class ChromeListeners {
 
       const selfId = localStorage.getItem("selfId")
 
-      TabsetService.saveToTabsetId(request.tabsetId, new Tab(uid(), sender.tab))
+      saveToTabsetId(request.tabsetId, new Tab(uid(), sender.tab))
         .then(() => {
           chrome.notifications.create(
             {
               title: "Tabset Extension Message",
               type: "basic",
-              iconUrl: "chrome-extension://"+selfId+"/www/favicon.ico",
+              iconUrl: "chrome-extension://" + selfId + "/www/favicon.ico",
               message: "the tab has been created successfully"
             }
           )
@@ -255,7 +278,7 @@ class ChromeListeners {
             {
               title: "Tabset Extension Message",
               type: "basic",
-              iconUrl: "chrome-extension://"+selfId+"/www/favicon.ico",
+              iconUrl: "chrome-extension://" + selfId + "/www/favicon.ico",
               message: "tab could not be added: " + err
             }
           )
@@ -317,7 +340,7 @@ class ChromeListeners {
               //resolve(canvas.toDataURL()) // this will return base64 image results after resize
 
               console.log(`capturing ${width}x${height} thumbnail for ${sender.tab?.id}, ${Math.round(canvas.toDataURL().length / 1024)}kB`)
-              TabsetService.saveThumbnailFor(sender.tab, canvas.toDataURL())
+              saveThumbnailFor(sender.tab, canvas.toDataURL())
               sendResponse({imgSrc: dataUrl});
 
             }

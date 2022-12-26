@@ -17,6 +17,7 @@ import {LogLevel} from "logging-library";
 import {Predicate} from "src/domain/Types";
 import {TabLogger} from "src/services/useLoggingService";
 import {StatsEntry} from "src/models/StatsEntry";
+import {uid} from "quasar";
 
 class IndexedDbPersistenceService implements PersistenceService {
 
@@ -199,7 +200,7 @@ class IndexedDbPersistenceService implements PersistenceService {
         favIconUrl: tab.favIconUrl
       }, encodedTabUrl)
         .then((res) => {
-          TabLogger.info(tab.url || '', "saved content for url " +  tab.url)
+          TabLogger.info(new Tab(uid(), tab), "saved content for url " +  tab.url)
           return res
         })
     }

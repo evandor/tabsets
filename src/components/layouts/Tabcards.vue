@@ -40,10 +40,16 @@ import _ from "lodash"
 import {useTabsStore} from "src/stores/tabsStore";
 import {useUiService} from "src/services/useUiService";
 import {LeftDrawerState, LeftDrawerTabs} from "stores/uiStore";
+import {useTabsetService} from "src/services/TabsetService2";
+import {useCommandExecutor} from "src/services/CommandExecutor";
+import {CreateTabsetCommand} from "src/domain/commands/CreateTabsetCommand";
+import {CreateTabFromOpenTabsCommand} from "src/domain/commands/CreateTabFromOpenTabsCommand";
 
 const $q = useQuasar()
 const tabsStore = useTabsStore()
 const uiService = useUiService()
+
+const {saveCurrentTabset} = useTabsetService()
 
 const props = defineProps({
   tabs: {
@@ -75,7 +81,7 @@ function adjustIndex(element: any, tabs: Tab[]) {
 }
 
 const handleDragAndDrop = (event: any) => {
-  console.log("event", event)
+  //console.log("event", event)
   const {moved, added} = event
   if (moved) {
     console.log('d&d tabs moved', moved.element.id, moved.newIndex, props.group)
@@ -106,67 +112,8 @@ const handleDragAndDrop = (event: any) => {
     TabsetService.moveTo(moved.element.id, useIndex)
   }
   if (added) {
-    console.log('d&d tabs added', added.element.id, added.newIndex, props.group)
-    console.log("tabs", tabsStore.getCurrentTabs)
-    const exists = _.findIndex(tabsStore.getCurrentTabs, t => t.chromeTab.url === added.element.chromeTab.url) >= 0
-
-    let useIndex = added.newIndex
-    switch (props.group) {
-      case 'otherTabs':
-        const unpinnedNoGroup: Tab[] = _.filter(tabsStore.getCurrentTabs, (t: Tab) => !t.chromeTab.pinned && t.chromeTab.groupId === -1)
-        if (unpinnedNoGroup.length > 0) {
-          useIndex = adjustIndex(added, unpinnedNoGroup);
-        }
-        added.element.chromeTab.groupId = -1
-        added.element.chromeTab.pinned = false
-        break;
-      case 'pinnedTabs':
-        const filteredTabs: Tab[] = _.filter(tabsStore.getCurrentTabs, (t: Tab) => t.chromeTab.pinned)
-        if (filteredTabs.length > 0) {
-          useIndex = adjustIndex(added, filteredTabs);
-        }
-        added.element.chromeTab.pinned = true
-        added.element.chromeTab.groupId = -1
-        break
-      default:
-        if (props.group.startsWith('groupedTabs_')) {
-          const groupId = props.group.split('_')[1]
-          console.log("got group id", groupId)
-          const filteredTabs: Tab[] = _.filter(tabsStore.getCurrentTabs, (t: Tab) => t.chromeTab.groupId === parseInt(groupId))
-          if (filteredTabs.length > 0) {
-            useIndex = adjustIndex(added, filteredTabs);
-          }
-          added.element.chromeTab.groupId = parseInt(groupId)
-        }
-        break
-    }
-
-    if (!exists) {
-      TabsetService.saveToCurrentTabset(added.element, useIndex)
-
-    } else {
-      const oldIndex = _.findIndex(tabsStore.getCurrentTabs, t => t.id === added.element.id)
-      if (oldIndex >= 0) {
-        const tab = tabsStore.getCurrentTabs.splice(oldIndex, 1)[0];
-        tabsStore.getCurrentTabs.splice(useIndex, 0, tab);
-      }
-
-    }
-
-    TabsetService.saveCurrentTabset()
-      .then(() => {
-        $q.notify({
-          message: exists ? 'The tab has been moved' : 'The tab has been added',
-          type: 'positive'
-        })
-      })
-      .catch((err: any) => {
-        console.log("err", err)
-        $q.notify({
-          message: 'The tab already exists in this tabset',
-          type: 'negative'
-        })
-      })
+    useCommandExecutor()
+      .executeFromUi(new CreateTabFromOpenTabsCommand(added.element, added.newIndex, props.group))
   }
 }
 

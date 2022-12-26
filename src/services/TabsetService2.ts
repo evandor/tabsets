@@ -1,17 +1,19 @@
 import {STRIP_CHARS_IN_USER_INPUT} from "boot/constants";
-import {useTabsStore} from "stores/tabsStore";
+import {useTabsStore} from "src/stores/tabsStore";
 import {Tab} from "src/models/Tab";
 import _ from "lodash";
 import {uid} from "quasar";
 import {NewOrReplacedTabset} from "src/models/NewOrReplacedTabset";
 import {useSearchStore} from "stores/searchStore";
-import TabsetService from "src/services/TabsetService";
 import {usePersistenceService} from "src/services/usePersistenceService";
 import ChromeApi from "src/services/ChromeApi";
 import {TabPredicate} from "src/domain/Types";
 import {useLoggingServicee} from "src/services/useLoggingService";
 import {Tabset} from "src/models/Tabset";
 import {useNotificationsStore} from "stores/notificationsStore";
+import {MetaLink} from "src/models/MetaLink";
+import {SearchDoc} from "src/models/SearchDoc";
+import {RequestInfo} from "src/models/RequestInfo";
 
 const {logger, TabLogger} = useLoggingServicee()
 const {persistenceService} = usePersistenceService()
@@ -39,10 +41,10 @@ export function useTabsetService() {
       const result: NewOrReplacedTabset = await useTabsStore()
         .updateOrCreateTabset(trustedName, tabs, merge)
       if (result && result.tabset) {
-        await TabsetService.saveTabset(result.tabset)
+        await saveTabset(result.tabset)
         result.tabset.tabs.forEach((tab: Tab) => {
           //const tabLogger = logger.withContext("")
-          TabLogger.info(tab.chromeTab.url || '', "created tab!")
+          TabLogger.info(tab, "created tab!")
           //logger.info("created tab", tab.id)
         })
         selectTabset(result.tabset.id)
@@ -83,7 +85,7 @@ export function useTabsetService() {
     })
     const result = await tabsStore.updateOrCreateTabset(name, tabs, merge)
     if (result && result.tabset) {
-      await TabsetService.saveTabset(result.tabset)
+      await saveTabset(result.tabset)
       selectTabset(result.tabset.id)
       return {
         tabsetId: result.tabset.id,
@@ -130,8 +132,8 @@ export function useTabsetService() {
     const tabset = getTabset(tabsetId)
     if (tabset) {
       const tabsStore = useTabsStore()
-      _.forEach(tabsStore.getTabset(tabsetId)?.tabs, (t:Tab) => {
-        TabLogger.info(t.chromeTab.url || '', "removing thumbnails")
+      _.forEach(tabsStore.getTabset(tabsetId)?.tabs, (t: Tab) => {
+        TabLogger.info(t, "removing thumbnails")
         removeThumbnailsFor(t?.chromeTab.url || '')
       })
       tabsStore.deleteTabset(tabsetId)
@@ -153,11 +155,244 @@ export function useTabsetService() {
       const tabsToKeep: Tab[] = _.filter(ts.tabs, (t: Tab) => !predicate(t))
       console.debug("found tabsToKeep", tabsToKeep)
       ts.tabs = tabsToKeep
-      return TabsetService.saveTabset(ts)
+      return saveTabset(ts)
         .then((res) => tabsCount - tabsToKeep.length)
     }
     return Promise.reject("did not find tabset for id " + tabsetId)
 
+  }
+
+  const saveTabset = async (tabset: Tabset): Promise<IDBValidKey> => {
+    if (tabset.id) {
+      return persistenceService.saveTabset(tabset)
+    }
+    return Promise.reject("tabset id not set")
+  }
+
+  const saveToTabsetId = async (tsId: string, tab: Tab): Promise<number> => {
+    const ts = getTabset(tsId)
+    if (ts) {
+      return saveToTabset(ts, tab)
+    }
+    return Promise.reject("no tabset for give id " + tsId)
+  }
+
+
+  const saveCurrentTabset = (): Promise<any> => {
+    const tabsStore = useTabsStore()
+    const currentTabset = tabsStore.getCurrentTabset
+    if (currentTabset) {
+      return saveTabset(currentTabset)
+    }
+    return Promise.reject("current tabset could not be found")
+  }
+  /**
+   * called when we have a text excerpt from the background script
+   *
+   * @param tab
+   * @param text
+   * @param metas
+   */
+  const saveText = (tab: chrome.tabs.Tab | undefined, text: string, metas: object) => {
+    if (tab && tab.url) {
+      const title = tab.title || ''
+      const tabsetIds: string[] = tabsetsFor(tab.url)
+
+      persistenceService.saveContent(tab, text, metas, title, tabsetIds)
+        .then(() => console.log("added content"))
+        .catch(err => console.log("err", err))
+
+      // console.log("updating meta data for ", tabsetIds, tab.url)
+      const tabsets = [...useTabsStore().tabsets.values()]
+      tabsets.forEach((tabset: Tabset) => {
+        if (tabset) {
+          _.forEach(tabset.tabs, (t: Tab) => {
+            //console.log("comparing", t.chromeTab.url, tab.url)
+            if (t.chromeTab.url === tab.url) {
+              //console.log(" ... in tab", tab.id)
+              if (metas['description' as keyof object]) {
+                t.description = metas['description' as keyof object]
+                // @ts-ignore
+                useSearchStore().update(tab.url, 'description', t.description)
+              }
+              if (metas['keywords' as keyof object]) {
+                t.keywords = metas['keywords' as keyof object]
+              }
+              const author = getIfAvailable(metas, 'author')
+              if (author) {
+                t.author = author
+              }
+              const lastModified = getIfAvailable(metas, 'last-modified')
+              if (lastModified) {
+                t.lastModified = lastModified
+              }
+              const date = getIfAvailable(metas, 'date')
+              if (date) {
+                t.date = date
+              }
+              const image = getIfAvailable(metas, 'image')
+              if (image) {
+                t.image = image
+              }
+              //  console.log("updated", t)
+            }
+          })
+          saveTabset(tabset)
+        }
+      })
+    }
+  }
+
+  const saveMetaLinksFor = (tab: chrome.tabs.Tab, metaLinks: MetaLink[]) => {
+    if (tab && tab.url) {
+      persistenceService.saveMetaLinks(tab.url, metaLinks)
+        .then(() => console.debug("added meta links"))
+        .catch(err => console.log("err", err))
+    }
+  }
+
+  const saveLinksFor = (tab: chrome.tabs.Tab, links: any) => {
+    if (tab && tab.url) {
+      persistenceService.saveLinks(tab.url, links)
+        .then(() => console.debug("added links"))
+        .catch(err => console.log("err", err))
+    }
+  }
+
+
+  const tabsetsFor = (url: string): string[] => {
+    const tabsets: string[] = []
+    for (let ts of [...useTabsStore().tabsets.values()]) {
+      if (_.find(ts.tabs, t => t.chromeTab.url === url)) {
+        tabsets.push(ts.id)
+      }
+    }
+    return tabsets;
+  }
+
+  /**
+   * adds the (new) Tab 'tab' to the tabset given in 'ts'.
+   *
+   * proceeds only if tab.chromeTab.url exists and the tab is not already contained in the tabset.
+   * the tab is removed from the pending tabset if it exists there.
+   *
+   * @param ts
+   * @param tab
+   * @param useIndex
+   */
+  const saveToTabset = async (ts: Tabset, tab: Tab, useIndex: number | undefined = undefined): Promise<number> => {
+    //console.log("adding tab x to tabset y", tab.id, ts.id)
+    if (tab.chromeTab.url) {
+      const indexInTabset = _.findIndex(ts.tabs, t => t.chromeTab.url === tab.chromeTab.url)
+      if (indexInTabset >= 0) {
+        return Promise.reject("tab exists already")
+      }
+
+      if (useIndex !== undefined && useIndex >= 0) {
+        ts.tabs.splice(useIndex, 0, tab)
+      } else {
+        ts.tabs.push(tab)
+      }
+
+      return saveTabset(ts)
+        .then(() => Promise.resolve(0)) // TODO
+    }
+    return Promise.reject("tab.chromeTab.url undefined")
+  }
+
+  const saveThumbnailFor = (tab: chrome.tabs.Tab | undefined, thumbnail: string) => {
+    if (tab && tab.url) {
+      persistenceService.saveThumbnail(tab.url, thumbnail)
+        .then(() => console.log("added thumbnail"))
+        .catch(err => console.log("err", err))
+    }
+  }
+
+
+  const saveRequestFor = (url: string, requestInfo: RequestInfo) => {
+    if (url) {
+      persistenceService.saveRequest(url, requestInfo)
+        .then(() => console.debug("added request"))
+        .catch(err => console.log("err", err))
+    }
+  }
+
+
+  const removeContentFor = (url: string): Promise<any> => {
+    return persistenceService.deleteContent(url)
+  }
+
+
+  /**
+   * https://skysail.atlassian.net/wiki/spaces/TAB/pages/800849921/Tab+Handling
+   *
+   * @param tab to deal with
+   */
+  const closeTab = (tab: Tab) => {
+    console.log("closing tab", tab.id, tab.chromeTab?.id)
+    const tabUrl = tab.chromeTab?.url || ''
+    if (tabsetsFor(tabUrl).length <= 1) {
+      removeThumbnailsFor(tabUrl)
+        .then(() => console.log("deleting thumbnail for ", tabUrl))
+        .catch(err => console.log("error deleting thumbnail", err))
+
+      removeContentFor(tabUrl)
+        .then(() => console.log("deleting content for ", tabUrl))
+        .catch(err => console.log("error deleting content", err))
+    }
+    useTabsStore().removeTab(tab.id)
+    const currentTabset = useTabsStore().getCurrentTabset
+    if (currentTabset) {
+      useNotificationsStore().unsetSelectedTab()
+      return saveTabset(currentTabset)
+        .then(() => currentTabset)
+    }
+    return Promise.reject("could not access current tabset")
+  }
+
+  const deleteTab = (tab: Tab): Promise<Tabset> => {
+    console.log("deleting tab", tab.id, tab.chromeTab?.id)
+    const tabUrl = tab.chromeTab?.url || ''
+    if (tabsetsFor(tabUrl).length <= 1) {
+      removeThumbnailsFor(tabUrl)
+        .then(() => console.log("deleting thumbnail for ", tabUrl))
+        .catch(err => console.log("error deleting thumbnail", err))
+
+      removeContentFor(tabUrl)
+        .then(() => console.log("deleting content for ", tabUrl))
+        .catch(err => console.log("error deleting content", err))
+    }
+    useNotificationsStore().unsetSelectedTab()
+    useTabsStore().removeTab(tab.id)
+    const currentTabset = useTabsStore().getCurrentTabset
+    if (currentTabset) {
+      return saveTabset(currentTabset)
+        .then(() => currentTabset)
+    }
+    return Promise.reject("could not access current tabset")
+
+  }
+
+  const getIfAvailable = (metas: object, key: string): string | undefined => {
+    let res = undefined
+    _.forEach(Object.keys(metas), k => {
+      const value = metas[k as keyof object] as string
+      if (k.endsWith(key) && value && value.trim().length > 0) {
+        //console.log("k>", k, value)
+        res = value
+      }
+    })
+    return res
+  }
+
+
+  const urlExistsInATabset = (url: string): boolean => {
+    for (let ts of [...useTabsStore().tabsets.values()]) {
+      if (_.find(ts.tabs, t => t.chromeTab.url === url)) {
+        return true;
+      }
+    }
+    return false;
   }
 
   return {
@@ -167,7 +402,23 @@ export function useTabsetService() {
     deleteTabset,
     getTabset,
     getCurrentTabset,
-    selectTabset
+    selectTabset,
+    saveTabset,
+    saveCurrentTabset,
+    saveText,
+    saveMetaLinksFor,
+    saveLinksFor,
+    saveToTabsetId,
+    saveToTabset,
+    tabsetsFor,
+    saveThumbnailFor,
+    //housekeeping,
+    //saveRequestFor,
+    removeThumbnailsFor,
+    removeContentFor,
+    closeTab,
+    deleteTab,
+    urlExistsInATabset
   }
 
 }

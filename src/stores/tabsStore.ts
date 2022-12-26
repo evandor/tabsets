@@ -3,15 +3,14 @@ import _ from 'lodash'
 import {LocalStorage, uid} from "quasar";
 import {Tabset, TabsetStatus} from "src/models/Tabset";
 import {Tab, UrlExtension} from "src/models/Tab";
-import TabsetService from "src/services/TabsetService";
-import ChromeListeners from "src/services/ChromeListeners";
+//import ChromeListeners from "src/services/ChromeListeners";
 import ChromeApi from "src/services/ChromeApi";
 import {NewOrReplacedTabset} from "src/models/NewOrReplacedTabset";
 import {useTabGroupsStore} from "src/stores/tabGroupsStore";
 import {Group} from "src/models/Group";
 import {useSpacesStore} from "stores/spacesStore";
-import {useUtils} from "src/services/Utils";
 import {useLoggingServicee} from "src/services/useLoggingService";
+import {useTabsetService} from "src/services/TabsetService2";
 
 async function queryTabs(): Promise<chrome.tabs.Tab[]> {
   // @ts-ignore
@@ -36,6 +35,7 @@ function markDuplicates(tabset: Tabset) {
 }
 
 const {logger} = useLoggingServicee()
+//const {saveTabset} = useTabsetService()
 
 export const useTabsStore = defineStore('tabs', {
   state: () => ({
@@ -223,25 +223,25 @@ export const useTabsStore = defineStore('tabs', {
       markDuplicates(current)
       this.browserTabset = current
     },
-    initListeners() {
-      if (process.env.MODE === 'bex') {
-        console.debug("initializing chrome tab listeners")
-
-        chrome.tabs.onCreated.addListener((tab: chrome.tabs.Tab) => ChromeListeners.onCreated(tab))
-        chrome.tabs.onUpdated.addListener((number, info, tab) => ChromeListeners.onUpdated(number, info, tab))
-        chrome.tabs.onMoved.addListener((number, info) => ChromeListeners.onMoved(number, info))
-        chrome.tabs.onRemoved.addListener((number, info) => ChromeListeners.onRemoved(number, info))
-        chrome.tabs.onReplaced.addListener((n1, n2) => ChromeListeners.onReplaced(n1, n2))
-        chrome.tabs.onActivated.addListener((info) => ChromeListeners.onActivated(info))
-        chrome.tabs.onAttached.addListener((number, info) => ChromeListeners.onAttached(number, info))
-        chrome.tabs.onDetached.addListener((number, info) => ChromeListeners.onDetached(number, info))
-        chrome.tabs.onHighlighted.addListener((info) => ChromeListeners.onHighlighted(info))
-        chrome.tabs.onZoomChange.addListener((info) => ChromeListeners.onZoomChange(info))
-
-        chrome.runtime.onMessage.addListener((request, sender, sendResponse) => ChromeListeners.onMessage(request, sender, sendResponse))
-      }
-
-    },
+    // initListeners() {
+    //   if (process.env.MODE === 'bex') {
+    //     console.debug("initializing chrome tab listeners")
+    //
+    //     chrome.tabs.onCreated.addListener((tab: chrome.tabs.Tab) => ChromeListeners.onCreated(tab))
+    //     chrome.tabs.onUpdated.addListener((number, info, tab) => ChromeListeners.onUpdated(number, info, tab))
+    //     chrome.tabs.onMoved.addListener((number, info) => ChromeListeners.onMoved(number, info))
+    //     chrome.tabs.onRemoved.addListener((number, info) => ChromeListeners.onRemoved(number, info))
+    //     chrome.tabs.onReplaced.addListener((n1, n2) => ChromeListeners.onReplaced(n1, n2))
+    //     chrome.tabs.onActivated.addListener((info) => ChromeListeners.onActivated(info))
+    //     chrome.tabs.onAttached.addListener((number, info) => ChromeListeners.onAttached(number, info))
+    //     chrome.tabs.onDetached.addListener((number, info) => ChromeListeners.onDetached(number, info))
+    //     chrome.tabs.onHighlighted.addListener((info) => ChromeListeners.onHighlighted(info))
+    //     chrome.tabs.onZoomChange.addListener((info) => ChromeListeners.onZoomChange(info))
+    //
+    //     chrome.runtime.onMessage.addListener((request, sender, sendResponse) => ChromeListeners.onMessage(request, sender, sendResponse))
+    //   }
+    //
+    // },
     tabsForGroup(groupId: number): chrome.tabs.Tab[] {
       // @ts-ignore
       return _.filter(this.tabs, (t: chrome.tabs.Tab) => t.groupId === groupId)
@@ -261,13 +261,13 @@ export const useTabsStore = defineStore('tabs', {
       return undefined
     },
 
-    removeTab(tabId: string):Promise<Tabset> {
+    removeTab(tabId: string) {
       const currentTabset: Tabset = this.tabsets.get(this.currentTabsetId) || new Tabset("", "", [])
       currentTabset.tabs = _.filter(currentTabset.tabs, (t: Tab) => t.id !== tabId)
       markDuplicates(currentTabset)
       this.pendingTabset.tabs = _.filter(this.pendingTabset.tabs, (t: Tab) => t.id !== tabId)
-      return TabsetService.saveTabset(currentTabset)
-        .then(() => currentTabset)
+      // return saveTabset(currentTabset)
+      //   .then(() => currentTabset)
     },
 
     async updateOrCreateTabset(tabsetName: string, tabs: Tab[], merge: boolean = false, spaces: Set<string> = new Set()): Promise<NewOrReplacedTabset> {

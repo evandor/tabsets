@@ -1,6 +1,6 @@
 import {Bookmark} from "src/models/Bookmark";
 import {useBookmarksStore} from "src/stores/bookmarksStore";
-import {useNotificationsStore} from "stores/notificationsStore";
+import {useNotificationsStore} from "src/stores/notificationsStore";
 
 async function getParentChain(parentId: string, chain: string[] = []): Promise<string[]> {
   if (!parentId || parentId === "0") {

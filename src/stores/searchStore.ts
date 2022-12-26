@@ -6,10 +6,11 @@ import {Tabset} from "src/models/Tabset";
 import {useTabsStore} from "src/stores/tabsStore";
 import {ref} from "vue";
 import {Tab} from "src/models/Tab";
-import TabsetService from "src/services/TabsetService";
+//import TabsetService from "src/services/TabsetService";
 import throttledQueue from "throttled-queue";
 import {useWindowsStore} from "stores/windowsStores";
 import {useBookmarksStore} from "stores/bookmarksStore";
+import {useTabsetService} from "src/services/TabsetService2";
 
 function dummyPromise(timeout: number, tabToCloseId: number | undefined = undefined): Promise<string> {
   return new Promise((resolve, reject) => {
@@ -22,7 +23,10 @@ function dummyPromise(timeout: number, tabToCloseId: number | undefined = undefi
   });
 }
 
+
 export const useSearchStore = defineStore('search', () => {
+
+  const {urlExistsInATabset} = useTabsetService()
 
   const term = ref<string>('')
 
@@ -207,7 +211,7 @@ export const useSearchStore = defineStore('search', () => {
     contentPromise
       .then(content => {
         content.forEach(c => {
-          if (c.expires === 0 || TabsetService.urlExistsInATabset(c.url)) {
+          if (c.expires === 0 || urlExistsInATabset(c.url)) {
             const searchDoc = new SearchDoc(c.id, c.name, c.title, c.url, c.description, c.keywords, c.content, c.tabsets, '', c.favIconUrl)
             if (c.metas && c.metas['description']) {
               searchDoc.description = c.metas['description']

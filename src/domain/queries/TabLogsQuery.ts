@@ -22,7 +22,6 @@ export class TabLogsQuery implements Query<object[]> {
   }
 
   query<T>(): Promise<QueryResult<LogEntry[]>> {
-    console.log("tablogquery", this.tabUrl, btoa(this.tabUrl))
     const predicate: Predicate<LogEntry> = (t: LogEntry) => t.context === "url_" + btoa(this.tabUrl)
     return this.persistenceService.getLogs(predicate)
       .then((r) => new QueryResult(r, ""))

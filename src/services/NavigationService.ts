@@ -1,7 +1,5 @@
-import {useTabsStore} from "src/stores/tabsStore";
 import {Tab} from "src/models/Tab";
 import {useNotificationsStore} from "stores/notificationsStore";
-import TabsetService from "src/services/TabsetService";
 
 class NavigationService {
 
@@ -45,28 +43,6 @@ class NavigationService {
     })
   }
 
-  /**
-   * https://skysail.atlassian.net/wiki/spaces/TAB/pages/800849921/Tab+Handling
-   *
-   * TODO move to TabsetService?
-   *
-   * @param tab to deal with
-   */
-  closeTab(tab: Tab) {
-    console.log("closing tab", tab.id, tab.chromeTab?.id)
-    const tabUrl = tab.chromeTab?.url || ''
-    if (TabsetService.tabsetsFor(tabUrl).length <= 1) {
-      TabsetService.removeThumbnailsFor(tabUrl)
-        .then(() => console.log("deleting thumbnail for ", tabUrl))
-        .catch(err => console.log("error deleting thumbnail", err))
-
-      TabsetService.removeContentFor(tabUrl)
-        .then(() => console.log("deleting content for ", tabUrl))
-        .catch(err => console.log("error deleting content", err))
-    }
-    useTabsStore().removeTab(tab.id)
-    useNotificationsStore().unsetSelectedTab()
-  }
 
   closeChromeTab(tab: Tab) {
     console.log("closing chrome tab", tab.id, tab.chromeTab?.id)

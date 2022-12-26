@@ -482,7 +482,7 @@ const logs = ref<any[]>([])
 const logsFilter = ref('')
 const logsColumns = ref([
   {name: 'timestamp', align: 'left', label: 'Timestamp', field: 'timestamp', sortable: true},
-  {name: 'context', align: 'left', label: 'Context', field: 'context', sortable: true},
+ // {name: 'context', align: 'left', label: 'Context', field: 'context', sortable: true},
   {name: 'level', align: 'left', label: 'Level', field: 'level', sortable: true},
   {name: 'msg', align: 'left', label: 'Message', field: 'msg', sortable: true}
 ])
@@ -550,7 +550,6 @@ watchEffect(() => {
 
     TabsetService.getLinksFor(notificationStore.selectedTab)
       .then(data => {
-        console.log("data", data)
         if (data) {
           linkRows.value = data.links
         }
@@ -631,9 +630,6 @@ const openValueLink = (name: any, value: string) => {
   return
 }
 const showValueLink = (name: string) => "fb:page_id" === name || "twitter:account_id" === name
-
-navigator.storage.estimate().then((res) =>
-  console.log("navigator.storage.estimate()", res))
 
 const analyseTab = () => searchStore.reindexTab(notificationStore.selectedTab)
   .then((windowId: number) => {

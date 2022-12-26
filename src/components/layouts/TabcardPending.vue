@@ -69,7 +69,7 @@
           <q-btn flat round color="warning" size="11px" icon="highlight_off" @click.stop="ignoreTab(tab)">
             <q-tooltip>Ignore the tab's url from now on</q-tooltip>
           </q-btn>
-          <q-btn flat round color="red" size="11px" icon="cancel" @click.stop="closeTab(tab)">
+          <q-btn flat round color="red" size="11px" icon="cancel" @click.stop="close(tab)">
             <q-tooltip>Remove this tab from this list</q-tooltip>
           </q-btn>
         </div>
@@ -92,6 +92,9 @@ import {MAX_TABS_TO_SHOW} from 'boot/constants'
 import {useFeatureTogglesStore} from "src/stores/featureTogglesStore";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {SavePendingTabToCurrentTabsetCommand} from "src/domain/commands/SavePendingTabToCurrentTabsetCommand";
+import {useTabsetService} from "src/services/TabsetService2";
+
+const {closeTab} = useTabsetService()
 
 const props = defineProps({
   tab: {
@@ -124,14 +127,14 @@ function getHost(urlAsString: string, shorten: Boolean = true): string {
   }
 }
 
-function closeTab(tab: Tab) {
-  NavigationService.closeTab(tab)
+function close(tab: Tab) {
+  closeTab(tab)
 }
 
 function ignoreTab(tab: Tab) {
   console.log("ignoring tab", tab)
   TabsetService.ignoreTab(tab)
-  NavigationService.closeTab(tab)
+  closeTab(tab)
 }
 
 const saveTab = (tab: Tab) => useCommandExecutor().executeFromUi(new SavePendingTabToCurrentTabsetCommand(tab))

@@ -317,7 +317,6 @@ const tab = ref('appearance')
 const {handleError} = useNotificationHandler()
 
 watchEffect(() => {
-  console.log("darkMode", darkMode.value, typeof darkMode.value)
   $q.dark.set(darkMode.value)
   localStorage.set('darkMode', darkMode.value)
 })

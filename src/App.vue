@@ -17,6 +17,7 @@ import {useWindowsStore} from "src/stores/windowsStores";
 import {useSpacesStore} from "stores/spacesStore";
 import MHtmlService from "src/services/MHtmlService";
 import IndexedDbPersistenceService from "src/services/IndexedDbPersistenceService";
+import ChromeListeners from "src/services/ChromeListeners";
 
 const tabsStore = useTabsStore()
 const tabGroupsStore = useTabGroupsStore()
@@ -32,7 +33,9 @@ const $q = useQuasar()
 featureTogglesStore.initialize(useQuasar().localStorage);
 
 tabsStore.initialize(useQuasar().localStorage);
-tabsStore.initListeners();
+// tabsStore.initListeners();
+
+ChromeListeners.initListeners()
 
 tabGroupsStore.initialize();
 tabGroupsStore.initListeners();

@@ -2,6 +2,7 @@ import IndexedDbPersistenceService from "src/services/IndexedDbPersistenceServic
 import {BaseHandler, ConsoleHandler, ILogRecord, Logger, LoggerStore, LogLevel} from "logging-library";
 import PersistenceService from "src/services/PersistenceService";
 import {LOG_LEVEL_CONSOLE, LOG_LEVEL_PERSITSTENT} from "boot/constants";
+import {Tab} from "src/models/Tab";
 
 class PersistingHandler extends BaseHandler {
 
@@ -19,8 +20,8 @@ class PersistingHandler extends BaseHandler {
 }
 
 export class TabLogger {
-   static info(url: string, msg: string) :void {
-     const useId = "url_" + btoa(url)
+   static info(tab: Tab | undefined, msg: string) :void {
+     const useId = "url_" + (tab?.chromeTab.url ? btoa(tab.chromeTab.url) : '')
      var loggerToUse = LoggerStore.get(useId)
      if (!loggerToUse) {
        const defaultLogger = LoggerStore.get("default")

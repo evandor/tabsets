@@ -1,6 +1,5 @@
 import Command from "src/domain/Command";
 import {ExecutionResult} from "src/domain/ExecutionResult";
-import TabsetService from "src/services/TabsetService";
 import {useTabsetService} from "src/services/TabsetService2";
 
 const {deleteTabset} = useTabsetService()

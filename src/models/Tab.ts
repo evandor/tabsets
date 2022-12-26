@@ -1,3 +1,5 @@
+import {SavePendingTabToCurrentTabsetCommand} from "src/domain/commands/SavePendingTabToCurrentTabsetCommand";
+
 export enum UrlExtension {
   HTML = "HTML",
   RSS = "RSS",
@@ -104,3 +106,7 @@ export class Tab {
   //   this.name = newName
   // }
 }
+
+Tab.prototype.toString = function tabToString() {
+  return `Tab: {id=${this.id}, url=${this.chromeTab.url}}`;
+};

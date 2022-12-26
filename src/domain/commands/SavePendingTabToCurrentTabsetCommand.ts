@@ -6,6 +6,10 @@ import {useSearchStore} from "stores/searchStore";
 import TabService from "src/services/TabService";
 import _ from "lodash";
 import {useTabsStore} from "stores/tabsStore";
+import {CreateTabsetCommand} from "src/domain/commands/CreateTabsetCommand";
+import {useLoggingServicee} from "src/services/useLoggingService";
+
+const {TabLogger} = useLoggingServicee()
 
 class UndoCommand implements Command {
 
@@ -38,9 +42,9 @@ export class SavePendingTabToCurrentTabsetCommand implements Command {
         new UndoCommand(this.tab)))
   }
 
+  // update fuse index
   private addToSearchIndex(dataFromStore: object, tab: Tab) {
-    // update fuse index
-    console.log("in saveToTabset: indexing", tab)
+    TabLogger.info(tab, "in saveToTabset: adding to search index")
     return useSearchStore().addToIndex(
       tab.id,
       tab.chromeTab.title || '',
@@ -53,10 +57,12 @@ export class SavePendingTabToCurrentTabsetCommand implements Command {
   }
 
   private unExpireThumbnail(tab: Tab): Promise<void> {
+    TabLogger.info(tab, "un-expiring thumbnail")
     return TabService.updateThumbnail(tab.chromeTab.url)
   }
 
   private unExpireContent(tab: Tab): Promise<object> {
+    TabLogger.info(tab, "un-expiring content")
     return TabService.updateContent(tab.chromeTab.url)
   }
 
@@ -67,3 +73,7 @@ export class SavePendingTabToCurrentTabsetCommand implements Command {
     return index;
   }
 }
+
+SavePendingTabToCurrentTabsetCommand.prototype.toString = function cmdToString() {
+  return `SavePendingTabToCurrentTabsetCommand: {tab=${this.tab.toString()}}`;
+};

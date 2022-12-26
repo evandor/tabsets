@@ -1,5 +1,4 @@
 import {Tabset} from "src/models/Tabset";
-import TabsetService from "src/services/TabsetService";
 import {CLEANUP_PERIOD_IN_MINUTES} from "boot/constants";
 import {useTabsStore} from "src/stores/tabsStore";
 import _ from "lodash"
@@ -8,15 +7,52 @@ import {RequestInfo} from "src/models/RequestInfo";
 import StatsService from "src/services/StatsService";
 import {useUiService} from "src/services/useUiService";
 import TabService from "src/services/TabService";
+import IndexedDbPersistenceService from "src/services/IndexedDbPersistenceService";
+import {useSearchStore} from "stores/searchStore";
+import {SearchDoc} from "src/models/SearchDoc";
 
+// const {housekeeping} = useTabsetService()
 
 function runHousekeeping(alarm: chrome.alarms.Alarm) {
   if (alarm.name === "housekeeping") {
-    TabsetService.housekeeping()
+    //housekeeping()
+
+    console.log("housekeeping now...")
+
+    persistenceService.cleanUpTabsets()
+    // clean up thumbnails
+    persistenceService.cleanUpThumbnails()
+
+    persistenceService.cleanUpRequests()
+
+    persistenceService.cleanUpMetaLinks()
+
+    persistenceService.cleanUpLinks()
+
+    persistenceService.cleanUpContent()
+      .then(searchDocs => {
+        _.forEach(searchDocs, d => {
+          //console.log("got document", d)
+          useSearchStore().remove((doc: SearchDoc, idx: number) => {
+            if (doc.url === d.url) {
+              console.log("removing", doc)
+            }
+            return doc.url === d.url
+          })
+          useSearchStore().addToIndex(
+            d.id, d.name, d.title, d.url, d.description, d.content, d.tabsets, d.favIconUrl
+          )
+        })
+        //useSearchStore().addToIndex()
+      })
+
+
     StatsService.count()
     TabService.checkScheduled()
   }
 }
+
+const persistenceService = IndexedDbPersistenceService
 
 class ChromeApi {
 
@@ -43,10 +79,16 @@ class ChromeApi {
     chrome.webRequest.onHeadersReceived.addListener(
       (details) => {
         //console.log("headerDetails", details)
-        TabsetService.saveRequestFor(
-          details.url,
-          new RequestInfo(details.statusCode,  details.responseHeaders || [])
-        )
+        // saveRequestFor(
+        //   details.url,
+        //   new RequestInfo(details.statusCode,  details.responseHeaders || [])
+        // )
+        if ( details.url) {
+          persistenceService.saveRequest( details.url,  new RequestInfo(details.statusCode,  details.responseHeaders || []))
+            .then(() => console.debug("added request"))
+            .catch(err => console.log("err", err))
+        }
+
       },
       {urls: ['*://*/*'], types: ['main_frame']},
       ['responseHeaders']
