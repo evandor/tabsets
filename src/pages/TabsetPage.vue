@@ -253,7 +253,7 @@
 </template>
 
 <script setup lang="ts">
-import {inject, ref, watchEffect} from 'vue'
+import {ref, watchEffect} from 'vue'
 import {useRoute, useRouter} from "vue-router";
 import {useQuasar} from "quasar";
 import Tabcards from "src/components/layouts/Tabcards.vue";

@@ -1,11 +1,12 @@
 import {Notify} from 'quasar'
 import {ExecutionResult} from "src/domain/ExecutionResult";
+import {useLoggingServicee} from "src/services/useLoggingService";
+
+const {logger} = useLoggingServicee()
 
 export function useNotificationHandler() {
 
-  const handleError = (error: any, logger: any) => {
-    //logger.error("--- catched error ---")
-    //logger.error("type", typeof error)
+  const handleError = (error: any) => {
     logger.error(error)
     Notify.create({
       position: 'bottom',
@@ -29,9 +30,9 @@ export function useNotificationHandler() {
       actions.push(
         {
           label: 'Undo', color: 'white', handler: () => {
-            executionResult.undoCommand?.execute(logger)
+            executionResult.undoCommand?.execute()
               .then(res => handleWarning(res))
-              .catch(err => handleError(err, logger))
+              .catch(err => handleError(err))
           }
         }
       )

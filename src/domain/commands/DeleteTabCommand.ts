@@ -24,7 +24,7 @@ export class DeleteTabCommand implements Command {
   constructor(public tab: Tab) {
   }
 
-  async execute(logger: any): Promise<ExecutionResult> {
+  async execute(): Promise<ExecutionResult> {
     return TabService.delete(this.tab)
       .then(tabset => Promise.resolve(new ExecutionResult(
         tabset,

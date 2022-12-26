@@ -100,13 +100,16 @@ const newSearch = (term: string) => {
   }
 }
 
-console.log("termFromParams", termFromParams, route.query)
-if (termFromParams && termFromParams.trim() !== '') {
-  searchStore.term = termFromParams
-}
+//console.log("termFromParams", termFromParams, route.query)
+watchEffect (() => {
+  if (termFromParams && termFromParams.trim() !== '') {
+    console.log("setting search term from params", termFromParams)
+    searchStore.term = termFromParams
+  }
+})
 
 watchEffect(() => {
-  console.log("searchStore.term", searchStore.term)
+  console.log("watch effect: searchStore.term", searchStore.term)
   if (searchStore.term?.trim() !== '') {
     newSearch(searchStore.term)
   }

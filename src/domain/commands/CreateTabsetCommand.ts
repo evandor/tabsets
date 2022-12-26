@@ -2,16 +2,18 @@ import Command from "src/domain/Command";
 import {ExecutionResult} from "src/domain/ExecutionResult";
 import {DeleteTabsetCommand} from "src/domain/commands/DeleteTabsetCommand";
 import {useTabsetService} from "src/services/TabsetService2";
+import {useLoggingServicee} from "src/services/useLoggingService";
 
+const {logger} = useLoggingServicee()
 
 class UndoCreateTabsetCommand implements Command {
 
   constructor(public tabsetId: string) {
   }
 
-  execute(logger: any): Promise<ExecutionResult> {
-    logger.debug("execution undo command", this.tabsetId)
-    return new DeleteTabsetCommand(this.tabsetId).execute(logger)
+  execute(): Promise<ExecutionResult> {
+    logger.info("execution of undo command", this.tabsetId)
+    return new DeleteTabsetCommand(this.tabsetId).execute()
       .then(res => Promise.resolve(new ExecutionResult(res, "Tabset was deleted again")))
   }
 
@@ -26,9 +28,9 @@ export class CreateTabsetCommand implements Command {
     public tabsToUse: chrome.tabs.Tab[]) {
   }
 
-  async execute(logger: any): Promise<ExecutionResult> {
+  async execute(): Promise<ExecutionResult> {
     try {
-      const result = await useTabsetService(logger)
+      const result = await useTabsetService()
         .saveOrReplaceFromChromeTabs(this.tabsetName, this.tabsToUse, this.merge)
       let doneMsg = 'Tabset ' + this.tabsetName + ' created successfully'
       if (result['replaced' as keyof object] && result['merged' as keyof object]) {
@@ -42,6 +44,8 @@ export class CreateTabsetCommand implements Command {
       return Promise.reject(err)
     }
   }
-
-
 }
+
+CreateTabsetCommand.prototype.toString = function dogToString() {
+  return `CreateTabsetCommand: {merge=${this.merge}, tabsetName=${this.tabsetName}, tabs#=${this.tabsToUse.length}}`;
+};

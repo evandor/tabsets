@@ -51,6 +51,18 @@
         />
       </div>
     </div>
+    <div class="row items-baseline q-ma-lg">
+
+      <div class="col-3 text-h6">
+        New Version Simulation
+      </div>
+      <div class="col-3">
+        Simulate that there is a new version available
+      </div>
+      <div class="col">
+        <span class="text-blue cursor-pointer" @click="simulateNewVersion('0.1.2')">Simulate</span>
+      </div>
+    </div>
   </div>
 
   <div v-if="tab === 'ignored'">
@@ -66,7 +78,7 @@
         <div class="col-3"></div>
         <div class="col-1"></div>
         <div class="col-5">
-<!--          <q-btn label="Un-Archive" @click="unarchive(tabset)"/>-->
+          <!--          <q-btn label="Un-Archive" @click="unarchive(tabset)"/>-->
         </div>
       </div>
     </div>
@@ -123,7 +135,8 @@
 
     <div class="q-pa-md q-gutter-sm">
 
-      <q-banner rounded class="bg-grey-1 text-primary">This Browser Extension tracks your tabsets and provides a search
+      <q-banner rounded class="bg-grey-1 text-primary">This Browser Extension tracks your tabsets and provides a
+        search
         bar to search for keywords.
       </q-banner>
 
@@ -146,7 +159,8 @@
 
       <q-banner rounded class="bg-grey-1 text-primary">You can export your data in various formats and re-import them
         from json. Please
-        note that it is not guaranteed that older exports can be imported with newer versions of the tabsets extension.
+        note that it is not guaranteed that older exports can be imported with newer versions of the tabsets
+        extension.
       </q-banner>
 
       <div class="row q-pa-md">
@@ -220,7 +234,8 @@
 
       <div class="row q-pa-md">
         <div class="col-3"><b>experimental view</b></div>
-        <div class="col-3">add the views 'kanban' (a column layout) and 'canvas' (a freestlye 2D layout) to the tabsets
+        <div class="col-3">add the views 'kanban' (a column layout) and 'canvas' (a freestlye 2D layout) to the
+          tabsets
           page.
         </div>
         <div class="col-1"></div>
@@ -260,7 +275,7 @@
 import {useTabsStore} from "src/stores/tabsStore"
 import {useFeatureTogglesStore} from "src/stores/featureTogglesStore";
 import {useRouter} from "vue-router";
-import {inject, ref, watchEffect} from "vue";
+import {ref, watchEffect} from "vue";
 import {useQuasar} from "quasar";
 import {INDEX_DB_NAME, INDEX_DB_VERSION} from "boot/constants"
 import {useSearchStore} from "src/stores/searchStore";
@@ -273,8 +288,8 @@ import {Tabset, TabsetStatus} from "src/models/Tabset";
 import {MarkTabsetAsDefaultCommand} from "src/domain/commands/MarkTabsetAsDefaultCommand";
 import {useNotificationHandler} from "src/services/ErrorHandler";
 import {useCommandExecutor} from "src/services/CommandExecutor";
+import NavigationService from "src/services/NavigationService";
 
-const logger = inject('vuejs3-logger')
 
 const tabsStore = useTabsStore()
 const featuresStore = useFeatureTogglesStore()
@@ -340,9 +355,11 @@ const archivedTabsets = () => {
   return _.sortBy(_.filter(tabsets, (ts: Tabset) => ts.status = TabsetStatus.ARCHIVED), ['name'])
 }
 
-const unarchive = (tabset: Tabset) => useCommandExecutor(logger).executeFromUi(new MarkTabsetAsDefaultCommand(tabset.id))
+const unarchive = (tabset: Tabset) => useCommandExecutor().executeFromUi(new MarkTabsetAsDefaultCommand(tabset.id))
 
 const ignoredUrls = () => useTabsStore().ignoredTabset?.tabs
+
+const simulateNewVersion = (version: string) => NavigationService.updateAvailable({version: version})
 
 </script>
 

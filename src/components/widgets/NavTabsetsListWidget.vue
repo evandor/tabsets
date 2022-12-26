@@ -5,7 +5,7 @@
     :key="'local_' + tabset.id"
     :data-testid="'navigation_tabset_' +  index"
     clickable v-ripple
-    @click="selectTabset(tabset.id)"
+    @click="selectTS(tabset.id)"
     @mouseover="showButtons(tabset.id, true)"
     @mouseleave="showButtons(tabset.id, false)"
     :style="tabset.id === tabsStore.currentTabsetId ? 'background-color:#efefef' : 'border:0px solid #bfbfbf'">
@@ -60,7 +60,7 @@
 
 <script lang="ts" setup>
 
-import {inject, PropType, ref} from "vue";
+import {PropType, ref} from "vue";
 import {Tabset, TabsetStatus} from "src/models/Tabset";
 import TabsetService from "src/services/TabsetService";
 import {useRouter} from "vue-router";
@@ -75,6 +75,7 @@ import {MarkTabsetAsFavoriteCommand} from "src/domain/commands/MarkTabsetAsFavor
 import {MarkTabsetAsDefaultCommand} from "src/domain/commands/MarkTabsetAsDefaultCommand";
 import {MarkTabsetAsArchivedCommand} from "src/domain/commands/MarkTabsetAsArchivedCommand";
 import {useCommandExecutor} from "src/services/CommandExecutor";
+import {useTabsetService} from "src/services/TabsetService2";
 
 const {handleError, handleSuccess} = useNotificationHandler()
 
@@ -82,7 +83,6 @@ const router = useRouter()
 const tabsStore = useTabsStore()
 const featuresStore = useFeatureTogglesStore()
 const spacesStore = useSpacesStore()
-const logger = inject('vuejs3-logger')
 
 const showDeleteButton = ref<Map<string, boolean>>(new Map())
 const showEditButton = ref<Map<string, boolean>>(new Map())
@@ -91,6 +91,8 @@ const localStorage = $q.localStorage
 const newTabsetName = ref('')
 const merge = ref(false)
 
+const {selectTabset} = useTabsetService()
+
 const props = defineProps({
   tabsets: {
     type: Array as PropType<Array<Tabset>>,
@@ -98,8 +100,8 @@ const props = defineProps({
   }
 })
 
-const selectTabset = (tabsetId: string) => {
-  TabsetService.selectTabset(tabsetId)
+const selectTS = (tabsetId: string) => {
+  selectTabset(tabsetId)
   // router.push("/tabset")
   router.push("/tabsets/" + tabsetId)
 }
@@ -112,9 +114,6 @@ const showButtons = (tabsetId: string, show: boolean) => {
 const tabsetLabel = (tabset: Tabset) => {
   return tabset.tabs?.length > 1 ? tabset.name + ' (' + tabset.tabs?.length + ' tabs)' : tabset.name + ' (' + tabset.tabs?.length + ' tab)'
 }
-
-const tabNameExists = () => tabsStore.nameExistsInContextTabset(newTabsetName.value)
-
 
 const onDrop = (evt: DragEvent, tabsetId: string) => {
   if (evt.dataTransfer && tabsetId) {
@@ -143,8 +142,8 @@ const editDialog = (tabset: Tabset) =>
     }
   })
 
-const markAsFavorite = (ts: Tabset) => useCommandExecutor(logger).executeFromUi(new MarkTabsetAsFavoriteCommand(ts.id))
-const markAsDefault = (ts: Tabset) => useCommandExecutor(logger).executeFromUi(new MarkTabsetAsDefaultCommand(ts.id))
-const archiveTabset = (ts: Tabset) => useCommandExecutor(logger).executeFromUi(new MarkTabsetAsArchivedCommand(ts.id))
+const markAsFavorite = (ts: Tabset) => useCommandExecutor().executeFromUi(new MarkTabsetAsFavoriteCommand(ts.id))
+const markAsDefault = (ts: Tabset) => useCommandExecutor().executeFromUi(new MarkTabsetAsDefaultCommand(ts.id))
+const archiveTabset = (ts: Tabset) => useCommandExecutor().executeFromUi(new MarkTabsetAsArchivedCommand(ts.id))
 
 </script>

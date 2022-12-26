@@ -167,6 +167,7 @@ import {useTabsStore} from "src/stores/tabsStore";
 import {useTabGroupsStore} from "src/stores/tabGroupsStore";
 import TabsetService from "src/services/TabsetService";
 import {Tab} from "src/models/Tab";
+import {useTabsetService} from "src/services/TabsetService2";
 
 const route = useRoute();
 const router = useRouter();
@@ -183,6 +184,7 @@ const $q = useQuasar()
 function unpinnedNoGroup() {
   return _.filter(
     _.map(tabsStore.getCurrentTabs, t => t),
+    // @ts-ignore
     (t: Tab) => !t.chromeTab.pinned && t.chromeTab.groupId === -1 && (t.status === TabStatus.DEFAULT || !t.status))
 }
 
@@ -209,6 +211,7 @@ const removeAllPendingTabs = () => TabsetService.removeAllPendingTabs()
 
 const setOtherTabsCaption = (msg: string) => otherTabsCaption.value = msg
 const setGroupedTabsCaption = (msg: string) => groupedTabsCaption.value = msg
+const {deleteTabset} = useTabsetService()
 
 const deleteDialog = () => {
   $q.dialog({
@@ -217,7 +220,7 @@ const deleteDialog = () => {
     cancel: true,
     persistent: true
   }).onOk((data: any) => {
-    TabsetService.delete(tabsStore.currentTabsetId)
+    deleteTabset(tabsStore.currentTabsetId)
     //router.push("/browser")
   }).onCancel(() => {
   }).onDismiss(() => {

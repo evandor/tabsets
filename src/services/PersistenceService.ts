@@ -4,6 +4,7 @@ import {MHtml} from "src/models/MHtml";
 import {Tab} from "src/models/Tab";
 import {SearchDoc} from "src/models/SearchDoc";
 import IndexedDbPersistenceService from "src/services/IndexedDbPersistenceService";
+import {LogLevel} from "logging-library";
 
 interface PersistenceService {
 
@@ -34,6 +35,8 @@ interface PersistenceService {
   cleanUpRequests(): Promise<void>
 
   saveStats(dataset: object): void
+
+  saveLog(context: string, level: LogLevel, msg: string, ...args: any[]):Promise<any>
 }
 
 export default PersistenceService

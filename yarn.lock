@@ -4134,11 +4134,6 @@ es6-error@^4.1.1:
   resolved "https://registry.yarnpkg.com/es6-error/-/es6-error-4.1.1.tgz#9e3af407459deed47e9a91f9b885a84eb05c561d"
   integrity sha512-Um/+FxMr9CISWh0bi5Zv0iOD+4cFh5qLeks1qhAopKVAJw3drgKbKySikp7wGhDL0HPeaja0P5ULZrxLkniUVg==
 
-es6-object-assign@1.1.0:
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/es6-object-assign/-/es6-object-assign-1.1.0.tgz#c2c3582656247c39ea107cb1e6652b6f9f24523c"
-  integrity sha512-MEl9uirslVwqQU369iHNWZXsI8yaZYGg/D65aOgZkeyFJwHYSxilf7rQzXKI7DdDuBPrBXbfk3sl9hJhmd5AUw==
-
 esbuild-android-64@0.14.51:
   version "0.14.51"
   resolved "https://registry.yarnpkg.com/esbuild-android-64/-/esbuild-android-64-0.14.51.tgz#414a087cb0de8db1e347ecca6c8320513de433db"
@@ -6771,6 +6766,11 @@ log-symbols@^4.1.0:
     chalk "^4.1.0"
     is-unicode-supported "^0.1.0"
 
+logging-library@^0.5.0:
+  version "0.5.0"
+  resolved "https://registry.yarnpkg.com/logging-library/-/logging-library-0.5.0.tgz#038a7536d58f1877f9b1e52777766e4017289f0f"
+  integrity sha512-c9o2h++qNxmv3sVpigNiz8qy5X4vkpfAWQv9xeFQIJ1IPoUvNnsh1+stlAz0e4jDtUlqtVXycwQkUVGKb7lNSQ==
+
 long@^4.0.0:
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/long/-/long-4.0.0.tgz#9a7b71cfb7d361a194ea555241c92f7468d5bf28"
@@ -9302,14 +9302,6 @@ vue@^3.0.0:
     "@vue/runtime-dom" "3.2.45"
     "@vue/server-renderer" "3.2.45"
     "@vue/shared" "3.2.45"
-
-vuejs3-logger@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/vuejs3-logger/-/vuejs3-logger-1.0.0.tgz#9c387be967bc780f9ab87774b87c688a9b6f0b0a"
-  integrity sha512-fnUypm2TGQ+gEMs+0S8MsqGw/LGmGCd2ug2B5IryiLhI3vqzEJfHK680SDJ5SZCAeACtZxYXbRAp5llggZzvtA==
-  dependencies:
-    es6-object-assign "1.1.0"
-    vue "^3.0.0"
 
 w3c-hr-time@^1.0.1, w3c-hr-time@^1.0.2:
   version "1.0.2"

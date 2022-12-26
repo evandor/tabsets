@@ -45,13 +45,12 @@
 
 <script lang="ts" setup>
 
-import {computed, inject, ref, watchEffect} from "vue";
+import {computed, ref, watchEffect} from "vue";
 import {useDialogPluginComponent, useQuasar} from "quasar";
 import {useRouter} from "vue-router";
 import {useTabsStore} from "src/stores/tabsStore";
 import {STRIP_CHARS_IN_USER_INPUT} from "boot/constants";
 import {CreateTabsetCommand} from "src/domain/commands/CreateTabsetCommand";
-import {useNotificationHandler} from "src/services/ErrorHandler";
 import TabsetService from "src/services/TabsetService";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 
@@ -71,7 +70,6 @@ const newTabsetName = ref('')
 const newTabsetNameExists = ref(false)
 const hideWarning = ref(false)
 const addAutomatically = ref(false)
-const logger = inject('vuejs3-logger')
 
 const newTabsetNameIsValid = computed(() => newTabsetName.value.length <= 32 && !STRIP_CHARS_IN_USER_INPUT.test(newTabsetName.value))
 
@@ -83,7 +81,7 @@ const createNewTabset = () => {
   hideWarning.value = true
   const tabsToUse = addAutomatically.value ? tabsStore.tabs : []
 
-  useCommandExecutor(logger)
+  useCommandExecutor()
     .executeFromUi(new CreateTabsetCommand(newTabsetName.value, tabsToUse))
     .then(() => {
       if (!addAutomatically.value) {

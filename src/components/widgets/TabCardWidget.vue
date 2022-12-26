@@ -86,15 +86,13 @@
 import {Tab, UrlExtension} from "src/models/Tab"
 import TabsetService from "src/services/TabsetService"
 import {useNotificationsStore} from "stores/notificationsStore"
-import {inject, ref} from "vue"
+import {ref} from "vue"
 import NavigationService from "src/services/NavigationService"
 import MHtmlService from "src/services/MHtmlService"
 import {useQuasar} from "quasar"
 import TabFaviconWidget from "src/components/widgets/TabFaviconWidget.vue"
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {DeleteTabCommand} from "src/domain/commands/DeleteTabCommand";
-
-const logger = inject('vuejs3-logger')
 
 const props = defineProps({
   tab: {
@@ -184,7 +182,7 @@ const dynamicNameOrTitleModel = (tab: Tab) => tab.name ? tab.name : tab.chromeTa
 function deleteTab(tab: Tab) {
  // NavigationService.closeTab(tab)
 
-  useCommandExecutor(logger)
+  useCommandExecutor()
     .executeFromUi(new DeleteTabCommand(tab))
 
 }

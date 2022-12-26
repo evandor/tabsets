@@ -92,9 +92,6 @@ import {MAX_TABS_TO_SHOW} from 'boot/constants'
 import {useFeatureTogglesStore} from "src/stores/featureTogglesStore";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {SavePendingTabToCurrentTabsetCommand} from "src/domain/commands/SavePendingTabToCurrentTabsetCommand";
-import {inject, PropType} from "vue";
-
-const logger = inject('vuejs3-logger')
 
 const props = defineProps({
   tab: {
@@ -137,7 +134,7 @@ function ignoreTab(tab: Tab) {
   NavigationService.closeTab(tab)
 }
 
-const saveTab = (tab: Tab) => useCommandExecutor(logger).executeFromUi(new SavePendingTabToCurrentTabsetCommand(tab))
+const saveTab = (tab: Tab) => useCommandExecutor().executeFromUi(new SavePendingTabToCurrentTabsetCommand(tab))
 
 
 function cardStyle(tab: Tab) {

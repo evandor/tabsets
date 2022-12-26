@@ -1,7 +1,5 @@
 import Command from "src/domain/Command";
-import TabsetService from "src/services/TabsetService";
 import {ExecutionResult} from "src/domain/ExecutionResult";
-import {DeleteTabsetCommand} from "src/domain/commands/DeleteTabsetCommand";
 import {useTabsetService} from "src/services/TabsetService2";
 import {DeleteTabsFromTabsetCommand} from "src/domain/commands/DeleteTabsFromTabsetCommand";
 
@@ -13,9 +11,9 @@ class UndoCommand implements Command {
     public updated: number) {
   }
 
-  execute(logger: any): Promise<ExecutionResult> {
-    logger.info("execution of undo command", this.tabsetId, this.updated)
-    return new DeleteTabsFromTabsetCommand(this.tabsetId, this.updated).execute(logger)
+  execute(): Promise<ExecutionResult> {
+    //logger.info("execution of undo command", this.tabsetId, this.updated)
+    return new DeleteTabsFromTabsetCommand(this.tabsetId, this.updated).execute()
       .then(res => Promise.resolve(new ExecutionResult(res, res.message)))
   }
 
@@ -30,9 +28,9 @@ export class CreateTabsetFromBookmarksCommand implements Command {
     public bmsToUse: chrome.bookmarks.BookmarkTreeNode[]) {
   }
 
-  async execute(logger: any): Promise<ExecutionResult> {
+  async execute(): Promise<ExecutionResult> {
     try {
-      const result = await useTabsetService(logger)
+      const result = await useTabsetService()
         .saveOrReplaceFromBookmarks(this.tabsetName, this.bmsToUse, this.merge)
       let doneMsg = 'Tabset ' + this.tabsetName + ' created successfully from bookmarks folder'
       if (result['replaced' as keyof object] && result['merged' as keyof object]) {

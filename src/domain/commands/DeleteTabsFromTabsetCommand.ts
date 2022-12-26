@@ -10,9 +10,9 @@ export class DeleteTabsFromTabsetCommand implements Command {
   constructor(public tabsetId: string, public updated: number) {
   }
 
-  async execute(logger: any): Promise<ExecutionResult> {
+  async execute(): Promise<ExecutionResult> {
     const predicate: TabPredicate = (t: Tab) => t.updated === this.updated && t.bookmarkId !== null
-    return useTabsetService(logger)
+    return useTabsetService()
       .deleteFromTabset(this.tabsetId, predicate)
       .then(res => Promise.resolve(new ExecutionResult(res, res + " Tab(s) were deleted again")))
       .catch(err => Promise.reject(err))

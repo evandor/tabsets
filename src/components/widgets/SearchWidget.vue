@@ -1,8 +1,8 @@
 <template>
 
-  <div class="q-gutter-md row items-start">
+  <div class="q-gutter-md row items-start fit">
     <q-select dark dense standout
-              style="width: 460px"
+              class="fit q-mx-md "
               :model-value="search"
               ref="searchBox"
               hide-dropdown-icon
@@ -52,7 +52,7 @@
 
 <script lang="ts" setup>
 import {useTabsStore} from "src/stores/tabsStore";
-import {inject, ref} from "vue";
+import {ref} from "vue";
 import {useSearchStore} from "stores/searchStore";
 import {Hit} from "src/models/Hit";
 import {useRoute, useRouter} from "vue-router";
@@ -84,11 +84,11 @@ function submitSearch() {
 
 const options = ref<Hit[]>([])
 const model = ref(null)
-const logger = inject('vuejs3-logger')
 
 const runSeach = (term: string) => {
   if (term && term.trim().length > 2) {
-    useQueryExecutor(logger)
+    searchStore.term = term
+    useQueryExecutor()
       .queryFromUi(new SearchIndexQuery(term))
       .then(res => {theHits.value = res.result})
   }

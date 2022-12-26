@@ -2,7 +2,6 @@ import {STRIP_CHARS_IN_USER_INPUT} from "boot/constants";
 import {useTabsStore} from "stores/tabsStore";
 import {Tab} from "src/models/Tab";
 import _ from "lodash";
-import ListIterateeCustom from "lodash";
 import {uid} from "quasar";
 import {NewOrReplacedTabset} from "src/models/NewOrReplacedTabset";
 import {useSearchStore} from "stores/searchStore";
@@ -10,10 +9,15 @@ import TabsetService from "src/services/TabsetService";
 import {usePersistenceService} from "src/services/usePersistenceService";
 import ChromeApi from "src/services/ChromeApi";
 import {TabPredicate} from "src/domain/Types";
+import {useLoggingServicee} from "src/services/useLoggingService";
+import {Tabset} from "src/models/Tabset";
+import {useNotificationsStore} from "stores/notificationsStore";
 
-export function useTabsetService(logger: any) {
+const {logger, TabLogger} = useLoggingServicee()
+const {persistenceService} = usePersistenceService()
 
-  const persistenceService = usePersistenceService()
+export function useTabsetService() {
+
 
   /**
    * Will create a new tabset (or update an existing one with matching name) from
@@ -29,14 +33,19 @@ export function useTabsetService(logger: any) {
    * @param merge if true, the old values (if existent) and the new ones will be merged.
    */
   const saveOrReplaceFromChromeTabs = async (name: string, chromeTabs: chrome.tabs.Tab[], merge: boolean = false): Promise<object> => {
-    logger.debug("persistenceService", persistenceService)
     const trustedName = name.replace(STRIP_CHARS_IN_USER_INPUT, '')
     const tabs: Tab[] = _.map(chromeTabs, t => new Tab(uid(), t))
     try {
-      const result: NewOrReplacedTabset = await useTabsStore().updateOrCreateTabset(trustedName, tabs, merge)
+      const result: NewOrReplacedTabset = await useTabsStore()
+        .updateOrCreateTabset(trustedName, tabs, merge)
       if (result && result.tabset) {
         await TabsetService.saveTabset(result.tabset)
-        TabsetService.selectTabset(result.tabset.id)
+        result.tabset.tabs.forEach((tab: Tab) => {
+          //const tabLogger = logger.withContext("")
+          TabLogger.info(tab.chromeTab.url || '', "created tab!")
+          //logger.info("created tab", tab.id)
+        })
+        selectTabset(result.tabset.id)
         useSearchStore().indexTabs(result.tabset.id, tabs)
         return {
           replaced: result.replaced,
@@ -75,7 +84,7 @@ export function useTabsetService(logger: any) {
     const result = await tabsStore.updateOrCreateTabset(name, tabs, merge)
     if (result && result.tabset) {
       await TabsetService.saveTabset(result.tabset)
-      TabsetService.selectTabset(result.tabset.id)
+      selectTabset(result.tabset.id)
       return {
         tabsetId: result.tabset.id,
         replaced: result.replaced,
@@ -86,12 +95,62 @@ export function useTabsetService(logger: any) {
     return Promise.reject("could not import from bookmarks")
   }
 
-  const deleteFromTabset = (tabsetId: any, predicate: TabPredicate):Promise<number> => {
+  const getTabset = (tabsetId: string): Tabset | undefined => {
+    const tabsStore = useTabsStore()
+    return _.find([...tabsStore.tabsets.values()], ts => ts.id === tabsetId)
+  }
+
+  const getCurrentTabset = (): Tabset | undefined => {
+    const tabsStore = useTabsStore()
+    return tabsStore.tabsets.get(tabsStore.currentTabsetId)
+  }
+
+  const resetSelectedTabs = () => {
+    const currentTabset = getCurrentTabset()
+    if (currentTabset) {
+      _.forEach(currentTabset.tabs, (t: Tab) => t.selected = false)
+    }
+    useNotificationsStore().setSelectedTab(null as unknown as Tab)
+  }
+
+  const selectTabset = (tabsetId: string): void => {
+    console.debug("selecting tabset", tabsetId)
+    const tabsStore = useTabsStore()
+    resetSelectedTabs()
+    tabsStore.currentTabsetId = tabsetId;
+    localStorage.setItem("selectedTabset", tabsetId)
+  }
+
+  const removeThumbnailsFor = (url: string): Promise<any> => {
+    return persistenceService.deleteThumbnail(url)
+  }
+
+  const deleteTabset = (tabsetId: string): Promise<string> => {
+    logger.info("deleting tabset ", tabsetId)
+    const tabset = getTabset(tabsetId)
+    if (tabset) {
+      const tabsStore = useTabsStore()
+      _.forEach(tabsStore.getTabset(tabsetId)?.tabs, (t:Tab) => {
+        TabLogger.info(t.chromeTab.url || '', "removing thumbnails")
+        removeThumbnailsFor(t?.chromeTab.url || '')
+      })
+      tabsStore.deleteTabset(tabsetId)
+      persistenceService.deleteTabset(tabsetId)
+      //this.db.delete('tabsets', tabsetId)
+      const nextKey: string = tabsStore.tabsets.keys().next().value
+      console.log("setting next key to", nextKey)
+      selectTabset(nextKey)
+      return Promise.resolve("ok")
+    }
+    return Promise.reject("could not get tabset for id")
+  }
+
+  const deleteFromTabset = (tabsetId: any, predicate: TabPredicate): Promise<number> => {
     console.log("deleting from tabset")
     const ts = useTabsStore().getTabset(tabsetId)
     if (ts) {
       const tabsCount = ts.tabs.length
-      const tabsToKeep: Tab[] = _.filter(ts.tabs, (t:Tab) => !predicate(t))
+      const tabsToKeep: Tab[] = _.filter(ts.tabs, (t: Tab) => !predicate(t))
       console.debug("found tabsToKeep", tabsToKeep)
       ts.tabs = tabsToKeep
       return TabsetService.saveTabset(ts)
@@ -104,7 +163,11 @@ export function useTabsetService(logger: any) {
   return {
     saveOrReplaceFromChromeTabs,
     saveOrReplaceFromBookmarks,
-    deleteFromTabset
+    deleteFromTabset,
+    deleteTabset,
+    getTabset,
+    getCurrentTabset,
+    selectTabset
   }
 
 }

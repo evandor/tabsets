@@ -12,7 +12,7 @@ class MHtmlService {
    */
   async init() {
     console.debug("init mhtmlService")
-    await this.persistenceService.init();
+    //await this.persistenceService.init();
   }
 
   saveMHtml(tab: Tab, mhtml: string): Promise<any> {

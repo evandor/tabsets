@@ -44,6 +44,7 @@ describe('CreateTabsetCommand', () => {
       db.createObjectStore("content");
       db.createObjectStore("thumbnails");
       db.createObjectStore("mhtml");
+      db.createObjectStore("logs", { autoIncrement: true });
       // store.createIndex("by_title", "title", {unique: true});
       // store.put({title: "Quarry Memories", author: "Fred", isbn: 123456});
       //IndexedDbPersistenceService.init();
@@ -55,7 +56,7 @@ describe('CreateTabsetCommand', () => {
     process.env.MODE = "bex"
     chrome.tabs.query.mockImplementation(async (o: object) => [])
     const cmd = new CreateTabsetCommand('emptyTabsetId', [])
-    const res = await cmd.execute(new Logger())
+    const res = await cmd.execute()
     expect(res.message).toBe("Tabset emptyTabsetId created successfully")
     expect(res.undoCommand).not.toBe(null)
   })

@@ -59,9 +59,6 @@ import {useFeatureTogglesStore} from "src/stores/featureTogglesStore";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import TabcardPending from "src/components/layouts/TabcardPending.vue"
 import {SavePendingTabToCurrentTabsetCommand} from "src/domain/commands/SavePendingTabToCurrentTabsetCommand";
-import {inject} from "vue";
-
-const logger = inject('vuejs3-logger')
 
 const props = defineProps({
   tabs: {
@@ -85,7 +82,7 @@ function ignoreTab(tab: Tab) {
   NavigationService.closeTab(tab)
 }
 
-const saveTab = (tab: Tab) => useCommandExecutor(logger).executeFromUi(new SavePendingTabToCurrentTabsetCommand(tab))
+const saveTab = (tab: Tab) => useCommandExecutor().executeFromUi(new SavePendingTabToCurrentTabsetCommand(tab))
 
 
 const nameOrTitle = (tab: Tab) => tab.name ? tab.name : tab.chromeTab?.title

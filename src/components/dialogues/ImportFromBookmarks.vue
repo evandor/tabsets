@@ -37,8 +37,7 @@
 
 <script lang="ts" setup>
 
-import {inject, ref} from "vue";
-import TabsetService from "src/services/TabsetService";
+import {ref} from "vue";
 import {useQuasar} from "quasar";
 import {useRoute, useRouter} from "vue-router";
 import {useTabsStore} from "src/stores/tabsStore";
@@ -47,7 +46,6 @@ import {useDialogPluginComponent} from 'quasar'
 import ChromeApi from "src/services/ChromeApi";
 import {useBookmarksStore} from "src/stores/bookmarksStore";
 import {useCommandExecutor} from "src/services/CommandExecutor";
-import {CreateTabsetCommand} from "src/domain/commands/CreateTabsetCommand";
 import {CreateTabsetFromBookmarksCommand} from "src/domain/commands/CreateTabsetFromBookmarksCommand";
 
 defineEmits([
@@ -78,7 +76,6 @@ const bookmarkId = ref(bookmarksStore.currentBookmark.chromeBookmark.id)
 const merge = ref(false)
 
 const tabNameExists = () => tabsStore.nameExistsInContextTabset(newTabsetName.value)
-const logger = inject('vuejs3-logger')
 
 const newTabsetDialogWarning = () => {
   if (tabsStore.nameExistsInContextTabset(newTabsetName.value)) {
@@ -121,7 +118,7 @@ const importBookmarks = async () => {
   // }
 
   const candidates: chrome.bookmarks.BookmarkTreeNode[] = await ChromeApi.childrenFor(bookmarkId.value)
-  useCommandExecutor(logger)
+  useCommandExecutor()
     .executeFromUi(new CreateTabsetFromBookmarksCommand(newTabsetName.value, candidates))
     .then(res => {
       router.push("/tabset")

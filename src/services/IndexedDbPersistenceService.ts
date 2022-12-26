@@ -12,6 +12,10 @@ import {Tab} from "src/models/Tab";
 import {SearchDoc} from "src/models/SearchDoc";
 import {RequestInfo} from "src/models/RequestInfo";
 import {MetaLink} from "src/models/MetaLink";
+import {LogEntry} from "src/models/LogEntry";
+import {LogLevel} from "logging-library";
+import {Predicate} from "src/domain/Types";
+import {TabLogger} from "src/services/useLoggingService";
 
 class IndexedDbPersistenceService implements PersistenceService {
 
@@ -99,6 +103,21 @@ class IndexedDbPersistenceService implements PersistenceService {
     }
   }
 
+  saveLog(context: string, level: LogLevel, msg: string, ...args: any[]): Promise<any> {
+    if (this.db) {
+      const store = this.db.transaction(["logs"], "readwrite")
+        .objectStore("logs");
+      return store.put({
+        timestamp: new Date().getTime(),
+        context,
+        msg,
+        level,
+        args
+      })
+    }
+    return Promise.reject("db not available (yet)")
+  }
+
   saveThumbnail(url: string, thumbnail: string): Promise<void> {
     const encodedTabUrl = btoa(url)
     return this.db.put('thumbnails', {
@@ -178,6 +197,10 @@ class IndexedDbPersistenceService implements PersistenceService {
         tabsets: tabsetIds,
         favIconUrl: tab.favIconUrl
       }, encodedTabUrl)
+        .then((res) => {
+          TabLogger.info(tab.url || '', "saved content for url " +  tab.url)
+          return res
+        })
     }
     return Promise.reject("tab.url missing")
   }
@@ -263,9 +286,7 @@ class IndexedDbPersistenceService implements PersistenceService {
           data.expires = 0
           objectStore.put(data, cursor.key)
         } else {
-          console.log("expiring?", cursor.value.expires - new Date().getTime(), tableName)
           if (cursor.value.expires < new Date().getTime()) {
-            console.log("cleaning up ", tableName, cursor.value.id)
             objectStore.delete(cursor.key)
           }
         }
@@ -393,6 +414,7 @@ class IndexedDbPersistenceService implements PersistenceService {
   }
 
   private async initDatabase(): Promise<IDBPDatabase> {
+    console.debug("about to initialize indexedDB")
     return await openDB(INDEX_DB_NAME, INDEX_DB_VERSION, {
       // upgrading see https://stackoverflow.com/questions/50193906/create-index-on-already-existing-objectstore
       upgrade(db) {
@@ -429,13 +451,18 @@ class IndexedDbPersistenceService implements PersistenceService {
         }
         if (!db.objectStoreNames.contains('metalinks')) {
           console.log("creating db metalinks")
-          const store =db.createObjectStore('metalinks');
+          const store = db.createObjectStore('metalinks');
           store.createIndex("expires", "expires", {unique: false});
         }
         if (!db.objectStoreNames.contains('links')) {
           console.log("creating db links")
-          const store =db.createObjectStore('links');
+          const store = db.createObjectStore('links');
           store.createIndex("expires", "expires", {unique: false});
+        }
+        if (!db.objectStoreNames.contains('logs')) {
+          console.log("creating db logs")
+          db.createObjectStore('logs', { autoIncrement: true });
+          //store.createIndex("expires", "expires", {unique: false});
         }
       },
     });
@@ -459,7 +486,27 @@ class IndexedDbPersistenceService implements PersistenceService {
     this.db.put('stats', dataset, today)
   }
 
+  async getLogs(predicate: Predicate<LogEntry> = (l: LogEntry) => true): Promise<LogEntry[]> {
+    if (this.db) {
+      const transaction = this.db.transaction(["logs"]);
+      const objectStore = transaction.objectStore("logs");
+      const res: LogEntry[] = []
+      let cursor = await objectStore.openCursor()
+      while (cursor) {
+        let key = cursor.primaryKey;
+        let value = cursor.value;
+        //console.log("***", key, value);
+        const logEntry = new LogEntry(key as number, value.context, value.level, value.msg)
+        if (predicate(logEntry)) {
+          res.push(logEntry)
+        }
 
+        cursor = await cursor.continue();
+      }
+      return res
+    }
+    return Promise.reject('db not available (yet)')
+  }
 }
 
 export default new IndexedDbPersistenceService()
