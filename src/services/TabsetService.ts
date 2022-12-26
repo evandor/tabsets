@@ -115,7 +115,7 @@ class TabsetService {
    * @param useIndex
    */
   async saveToTabset(ts: Tabset, tab: Tab, useIndex: number | undefined = undefined): Promise<number> {
-    console.log("adding tab x to tabset y", tab.id, ts.id)
+   //console.log("adding tab x to tabset y", tab.id, ts.id)
     if (tab.chromeTab.url) {
       const indexInTabset = _.findIndex(ts.tabs, t => t.chromeTab.url === tab.chromeTab.url)
       if (indexInTabset >= 0) {

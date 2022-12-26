@@ -127,7 +127,7 @@ class ChromeApi {
             })
             //console.log("building context menu from ", tabsStore.tabsets)
             _.forEach([...tabsStore.tabsets.values()], (ts: Tabset) => {
-              console.log("new submenu from", ts.id)
+              //console.log("new submenu from", ts.id)
               chrome.contextMenus.create({
                 id: 'save_as_tab|' + ts.id,
                 parentId: 'tabset_extension',

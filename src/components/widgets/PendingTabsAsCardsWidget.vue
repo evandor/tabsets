@@ -46,7 +46,7 @@
     <div class="justify-center row q-ma-none q-pa-xl">
 
     <span v-if="TabsetService.getSelectedPendingTabs().length === 0">
-      <q-btn icon="file_download" :label="'Add all to Tabset  ' + tabsStore.currentTabsetName" class="q-mx-lg"
+      <q-btn icon="file_download" :label="'Add all ' + tabsStore.pendingTabset.tabs.length + ' tabs to Tabset  ' + tabsStore.currentTabsetName" class="q-mx-lg"
              color="positive"
              @click="saveAllPendingTabs()"></q-btn>
       <q-btn icon="delete_outline" label="Clear unassigned tabs" class="q-mx-lg" color="negative"

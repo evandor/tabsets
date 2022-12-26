@@ -5,7 +5,7 @@
     <div class="row fit">
       <q-toolbar-title>
         <div class="row justify-start items-baseline">
-          Tabsets Stats
+          Tabsets Stats (experimental)
         </div>
       </q-toolbar-title>
     </div>
@@ -16,13 +16,20 @@
             v-model="tab"
             no-caps>
       <q-tab name="tabs" label="Tabs"/>
-<!--      <q-tab name="ignored" label="Ignored Urls"/>-->
+      <!--      <q-tab name="ignored" label="Ignored Urls"/>-->
 
     </q-tabs>
   </div>
 
   <div v-if="tab === 'tabs'">
     <vue-apex-charts width="500" type="bar" :options="options" :series="series"></vue-apex-charts>
+    <vue-apex-charts width="500" type="line" :options="options" :series="series2"></vue-apex-charts>
+
+    {{ stats }}
+    <hr>
+    {{ tabsetsCount }}
+    <hr>
+    {{ series2 }}
   </div>
 
   <div v-if="tab === 'ignored'">
@@ -40,7 +47,14 @@ import {ref} from "vue";
 import {useQuasar} from "quasar";
 import {useSearchStore} from "src/stores/searchStore";
 import VueApexCharts from 'vue3-apexcharts'
+import {useQueryExecutor} from "src/services/QueryExecutor";
+import {LogsQuery} from "src/domain/queries/LogsQuery";
+import {StatsQuery} from "src/domain/queries/StatsQuery";
+import {useLoggingServicee} from "src/services/useLoggingService";
+import {StatsEntry} from "src/models/StatsEntry";
+import _ from "lodash"
 
+const {logger} = useLoggingServicee()
 const tabsStore = useTabsStore()
 const featuresStore = useFeatureTogglesStore()
 const searchStore = useSearchStore()
@@ -50,21 +64,34 @@ const localStorage = useQuasar().localStorage
 const $q = useQuasar()
 
 const view = ref('grid')
+const stats = ref<StatsEntry[]>([])
+const tabsetsCount = ref<number[]>([])
+const series2 = ref<any[]>([])
 
 const options = {
   chart: {
-    id: 'vuechart-example'
+    id: 'tabsets-count'
   },
   xaxis: {
     categories: [1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998]
   }
 }
 const series = [{
-  name: 'series-1',
-  data: [30, 40, 45, 50, 49, 60, 70, 91]
+  name: 'tabsets',
+  data: tabsetsCount.value
 }]
 
 const tab = ref('tabs')
+
+useQueryExecutor()
+  .queryFromUi(new StatsQuery())
+  .then(res => {
+    const entries: StatsEntry[] = res.result // TODO sorted by date?
+    series2.value.push({name: 'tabsets', data: _.map(entries, entry => entry.tabsets)})
+    series2.value.push({name: 'openTabsCount', data: _.map(entries, entry => entry.openTabsCount)})
+    stats.value = res.result
+  })
+  .catch((err) => logger.warning(err))
 
 
 </script>

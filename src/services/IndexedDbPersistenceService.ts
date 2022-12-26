@@ -16,6 +16,7 @@ import {LogEntry} from "src/models/LogEntry";
 import {LogLevel} from "logging-library";
 import {Predicate} from "src/domain/Types";
 import {TabLogger} from "src/services/useLoggingService";
+import {StatsEntry} from "src/models/StatsEntry";
 
 class IndexedDbPersistenceService implements PersistenceService {
 
@@ -479,7 +480,7 @@ class IndexedDbPersistenceService implements PersistenceService {
   }
 
 
-  saveStats(dataset: object) {
+  saveStats(dataset: StatsEntry) {
     const offset = new Date().getTimezoneOffset()
     const todayLong = new Date(new Date().getTime() - (offset * 60 * 1000))
     const today = todayLong.toISOString().split('T')[0]
@@ -501,6 +502,23 @@ class IndexedDbPersistenceService implements PersistenceService {
           res.push(logEntry)
         }
 
+        cursor = await cursor.continue();
+      }
+      return res
+    }
+    return Promise.reject('db not available (yet)')
+  }
+
+  async getStats():Promise<StatsEntry[]> {
+    if (this.db) {
+      const store = this.db.transaction(["stats"]).objectStore("stats");
+      const res: StatsEntry[] = []
+      let cursor = await store.openCursor()
+      while (cursor) {
+        let key = cursor.primaryKey;
+        let value = cursor.value;
+        const logEntry = new StatsEntry(key as string, value.tabsets, value.openTabsCount, value.tabsCount, value.bookmarksCount, value.storageUsage)
+        res.push(logEntry)
         cursor = await cursor.continue();
       }
       return res

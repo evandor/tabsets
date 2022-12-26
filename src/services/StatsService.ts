@@ -2,6 +2,7 @@ import {useTabsStore} from "stores/tabsStore";
 import IndexedDbPersistenceService from "src/services/IndexedDbPersistenceService";
 import {useBookmarksStore} from "stores/bookmarksStore";
 import _ from "lodash"
+import {StatsEntry} from "src/models/StatsEntry";
 
 class StatsService {
 
@@ -18,13 +19,7 @@ class StatsService {
 
     navigator.storage.estimate()
       .then((res) => {
-        const dataset = {
-          tabsets: tabssetsSize,
-          openTabsCount: openTabsCount,
-          tabsCount: tabsCount,
-          bookmarksCount: bookmarksCount,
-          storageUsage: res.usage
-        }
+        const dataset = new StatsEntry(tabssetsSize, openTabsCount, tabsCount, bookmarksCount, res.usage || 0)
         this.persistenceService.saveStats(dataset)
       })
   }
