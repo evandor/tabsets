@@ -87,6 +87,14 @@
           <q-tooltip>Copy and Paste or create a new Url for this tabset</q-tooltip>
         </q-btn>
 
+        <q-btn v-if="tabsStore.currentTabsetId !== '' && tabsStore.getTabset(tabsStore.currentTabsetId) && useFeatureTogglesStore().isEnabled('newTab')"
+               flat dense icon="o_create_new_folder"
+               color="primary" :label="$q.screen.gt.sm ? 'Set as New Tab Page' : ''"
+               class="q-ml-md q-mr-md"
+               @click="setAsNewTabPage">
+          <q-tooltip>Choose this tabset to be shown whenever you open a new tab in your browser</q-tooltip>
+        </q-btn>
+
       </div>
     </div>
   </q-toolbar>
@@ -270,8 +278,8 @@ import {useFeatureTogglesStore} from "src/stores/featureTogglesStore";
 import RestoreTabsetDialog from "components/dialogues/RestoreTabsetDialog.vue";
 import AddUrlDialog from "components/dialogues/AddUrlDialog.vue";
 import {TabsetStatus} from "src/models/Tabset";
-import PendingTabsAsCardsWidget from "src/components/widgets/PendingTabsAsCardsWidget.vue"
 import PendingTabsAsCarouselWidget from "src/components/widgets/PendingTabsAsCarouselWidget.vue"
+import {useUiService} from "src/services/useUiService";
 
 const route = useRoute();
 const router = useRouter();
@@ -356,6 +364,10 @@ const filteredTabs = () => {
 
 const restoreDialog = () => $q.dialog({component: RestoreTabsetDialog})
 const addUrlDialog = () => $q.dialog({component: AddUrlDialog})
+
+const setAsNewTabPage = () => {
+  useUiService().setTabsetForNewTabPage(tabsetId.value)
+}
 
 
 const setView = (view: string) => TabsetService.setView(tabsetId.value, view)

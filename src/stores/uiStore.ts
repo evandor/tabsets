@@ -31,11 +31,19 @@ export const useUiStore = defineStore('ui', () => {
 
   const leftDrawer = ref<LeftDrawer>($q.localStorage.getItem('ui.leftDrawer') || new LeftDrawer(LeftDrawerState.SMALL))
   const leftDrawerLabelAnimated = ref(false)
+  const tabsetIdForNewTab = ref<string | undefined>($q.localStorage.getItem('ui.tabsetIdForNewTab') as string || undefined)
 
   watch(
     leftDrawer,
     (val: Object) => {
       $q.localStorage.set("ui.leftDrawer", val)
+    }, {deep: true}
+  )
+
+  watch(
+    tabsetIdForNewTab,
+    (val: Object) => {
+      $q.localStorage.set("ui.tabsetIdForNewTab", val)
     }, {deep: true}
   )
 
@@ -49,6 +57,11 @@ export const useUiStore = defineStore('ui', () => {
     leftDrawerLabelAnimated.value = animated
   }
 
+  const setTabsetForNewTabPage = (tabsetId: string) => {
+    tabsetIdForNewTab.value = tabsetId
+  }
 
-  return {leftDrawer, leftDrawerLabelIsAnimated, setLeftDrawerLabelAnimated}
+
+
+  return {leftDrawer, leftDrawerLabelIsAnimated, setLeftDrawerLabelAnimated, setTabsetForNewTabPage, tabsetIdForNewTab}
 })

@@ -18,6 +18,7 @@ import {useSpacesStore} from "stores/spacesStore";
 import MHtmlService from "src/services/MHtmlService";
 import IndexedDbPersistenceService from "src/services/IndexedDbPersistenceService";
 import ChromeListeners from "src/services/ChromeListeners";
+import {useRoute} from "vue-router";
 
 const tabsStore = useTabsStore()
 const tabGroupsStore = useTabGroupsStore()
@@ -26,50 +27,70 @@ const bookmarksStore = useBookmarksStore()
 const searchStore = useSearchStore()
 const windowsStore = useWindowsStore()
 const spacesStore = useSpacesStore()
+const route = useRoute()
 
 const $q = useQuasar()
 
-// init of stores
-featureTogglesStore.initialize(useQuasar().localStorage);
+function isNewTabPage() {
+  return route.path === '/newtab';
+}
 
-tabsStore.initialize(useQuasar().localStorage);
-// tabsStore.initListeners();
+if (isNewTabPage()) {
 
-ChromeListeners.initListeners()
+  // init db
+  IndexedDbPersistenceService.init()
+    .then(() => {
+      // init services
+      tabsetService.setLocalStorage(localStorage)
+      spacesService.init()
+        .then(() => {
+          tabsetService.init(isNewTabPage())
+            .then(() => {
+              MHtmlService.init()
+              ChromeApi.init()
+            })
+        })
+    })
 
-tabGroupsStore.initialize();
-tabGroupsStore.initListeners();
+} else {
+  // init of stores
+  featureTogglesStore.initialize(useQuasar().localStorage);
+  tabsStore.initialize(useQuasar().localStorage);
 
-spacesStore.initialize();
+  ChromeListeners.initListeners(isNewTabPage())
 
-bookmarksStore.init()
-searchStore.init()
-windowsStore.init()
+  tabGroupsStore.initialize();
+  tabGroupsStore.initListeners();
 
-const localStorage = useQuasar().localStorage
+  spacesStore.initialize();
 
-// init db
-IndexedDbPersistenceService.init()
-  .then(() => {
-    // init services
-    tabsetService.setLocalStorage(localStorage)
-    spacesService.init()
-      .then(() => {
-        tabsetService.init()
-          .then(() => {
-            MHtmlService.init()
-            ChromeApi.init()
-            //searchStore.init()
+  bookmarksStore.init()
+  searchStore.init()
+  windowsStore.init()
 
-          })
-      })
+  const localStorage = useQuasar().localStorage
 
-  })
+  // init db
+  IndexedDbPersistenceService.init()
+    .then(() => {
+      // init services
+      tabsetService.setLocalStorage(localStorage)
+      spacesService.init()
+        .then(() => {
+          tabsetService.init(isNewTabPage())
+            .then(() => {
+              MHtmlService.init()
+              ChromeApi.init()
+            })
+        })
+    })
 
+
+
+  useNotificationsStore().bookmarksExpanded = $q.localStorage.getItem("bookmarks.expanded") || []
+}
 
 $q.dark.set($q.localStorage.getItem('darkMode') || false)
 
-//useNotificationsStore().showBookmarks = $q.localStorage.getItem('showBookmarks') || false
-useNotificationsStore().bookmarksExpanded = $q.localStorage.getItem("bookmarks.expanded") || []
 
 </script>

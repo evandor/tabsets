@@ -57,6 +57,10 @@ export function useUiService() {
     }
   }
 
+  const setTabsetForNewTabPage = (tabsetId: string) => {
+    useUiStore().setTabsetForNewTabPage(tabsetId)
+  }
+
   return {
     useSmallDrawerView,
     toggleDrawer,
@@ -65,7 +69,8 @@ export function useUiService() {
     leftDrawerSetActiveTab,
     leftDrawerAnimateLabel,
     leftDrawerAnimate,
-    showSearchResultsPageFor
+    showSearchResultsPageFor,
+    setTabsetForNewTabPage
   }
 
 }

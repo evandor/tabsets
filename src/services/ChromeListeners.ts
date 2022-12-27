@@ -11,6 +11,8 @@ import {convert} from "html-to-text"
 import ChromeApi from "src/services/ChromeApi";
 import {useWindowsStore} from "src/stores/windowsStores";
 import {useTabsetService} from "src/services/TabsetService2";
+import {useFeatureTogglesStore} from "stores/featureTogglesStore";
+import {useUiStore} from "stores/uiStore";
 
 const {saveCurrentTabset, saveTabset, saveText,saveMetaLinksFor, saveLinksFor, saveToTabsetId, saveThumbnailFor} = useTabsetService()
 
@@ -22,8 +24,8 @@ class ChromeListeners {
 
   throttleOnePerSecond = throttledQueue(1, 1000, true)
 
-  initListeners() {
-    if (process.env.MODE === 'bex') {
+  initListeners(isNewTabPage: boolean = false) {
+    if (process.env.MODE === 'bex' && !isNewTabPage) {
       console.info("initializing chrome tab listeners")
 
       chrome.tabs.onCreated.addListener((tab: chrome.tabs.Tab) => this.onCreated(tab))
@@ -66,8 +68,15 @@ class ChromeListeners {
       return
     }
     this.eventTriggered()
-    const tabsStore = useTabsStore()
     console.log(`onCreated: tab ${tab.id}: >>> ${tab.pendingUrl}`)
+    if (useFeatureTogglesStore().isEnabled('newTab') && useUiStore().tabsetIdForNewTab && tab.pendingUrl === 'chrome://newtab/') {
+      // @ts-ignore
+      chrome.tabs.update(tab.id, {
+        url: chrome.runtime.getURL("www/index.html#/newtab")
+      })
+      return
+    }
+    const tabsStore = useTabsStore()
     const maybeTab = tabsStore.tabForUrlInSelectedTabset(tab.pendingUrl || '')
     if (maybeTab) {
       console.log(`onCreated: tab ${tab.id}: updating existing chromeTab.id: ${maybeTab.chromeTab.id} -> ${tab.id}`)

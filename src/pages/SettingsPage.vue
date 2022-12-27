@@ -264,6 +264,16 @@
         </div>
       </div>
 
+      <div class="row q-pa-md">
+        <div class="col-3"><b>New Tab Mode</b></div>
+        <div class="col-3">use tabset as your browsers default 'New Tab' page<br>Currently set to {{currentNewTabTabsetId}}.
+        </div>
+        <div class="col-1"></div>
+        <div class="col-5">
+          <q-toggle v-model="newTabEnabled"/>
+        </div>
+      </div>
+
     </div>
 
   </div>
@@ -289,6 +299,7 @@ import {MarkTabsetAsDefaultCommand} from "src/domain/commands/MarkTabsetAsDefaul
 import {useNotificationHandler} from "src/services/ErrorHandler";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import NavigationService from "src/services/NavigationService";
+import {useUiStore} from "stores/uiStore";
 
 
 const tabsStore = useTabsStore()
@@ -302,6 +313,7 @@ const $q = useQuasar()
 
 const view = ref('grid')
 const indexSize = ref(0)
+const currentNewTabTabsetId = ref(useUiStore().tabsetIdForNewTab)
 
 const debugEnabled = ref<boolean>(featuresStore.isEnabled('debug'))
 const spacesEnabled = ref<boolean>(featuresStore.isEnabled('spaces'))
@@ -309,6 +321,7 @@ const sidebarEnabled = ref<boolean>(featuresStore.isEnabled('sidebar'))
 const experimentalViewsEnabled = ref<boolean>(featuresStore.isEnabled('experimentalViews'))
 const statsEnabled = ref<boolean>(featuresStore.isEnabled('stats'))
 const devEnabled = ref<boolean>(featuresStore.isEnabled('dev'))
+const newTabEnabled = ref<boolean>(featuresStore.isEnabled('newTab'))
 
 const darkMode = ref<boolean>(localStorage.getItem('darkMode') || false)
 const showBookmarks = ref<boolean>(localStorage.getItem('showBookmarks') || false)
@@ -328,6 +341,7 @@ watchEffect(() => {
   featuresStore.setFeatureToggle("experimentalViews", experimentalViewsEnabled.value)
   featuresStore.setFeatureToggle("stats", statsEnabled.value)
   featuresStore.setFeatureToggle("dev", devEnabled.value)
+  featuresStore.setFeatureToggle("newTab", newTabEnabled.value)
 })
 
 watchEffect(() => {

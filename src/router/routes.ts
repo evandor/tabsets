@@ -23,7 +23,7 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/settings',
     component: () => import('layouts/MainLayout.vue'),
-    children: [{ path: '', component: () => import('pages/Settings.vue') }],
+    children: [{ path: '', component: () => import('pages/SettingsPage.vue') }],
   },
   {
     path: '/stats',
@@ -79,6 +79,11 @@ const routes: RouteRecordRaw[] = [
     path: '/logs',
     component: () => import('layouts/MainLayout.vue'),
     children: [{ path: '', component: () => import('pages/LogsPage.vue') }],
+  },
+  {
+    path: '/newtab',
+    component: () => import('layouts/NewTabLayout.vue'),
+    children: [{ path: '', component: () => import('pages/NewTabPage.vue') }],
   },
   {
     path: '/:catchAll(.*)*',

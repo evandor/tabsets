@@ -74,7 +74,7 @@ function submitSearch() {
       searchStore.term = typedOrSelected.value
     }
     if (route.path === "/search") {
-      runSeach(searchStore.term)
+      runSearch(searchStore.term)
     } else {
       router.push("/search")
     }
@@ -85,7 +85,7 @@ function submitSearch() {
 const options = ref<Hit[]>([])
 const model = ref(null)
 
-const runSeach = (term: string) => {
+const runSearch = (term: string) => {
   if (term && term.trim().length > 2) {
     searchStore.term = term
     useQueryExecutor()
@@ -95,7 +95,7 @@ const runSeach = (term: string) => {
 }
 
 const filterFn = (val: any, update: any, abort: any) => {
-  runSeach(val)
+  runSearch(val)
 
   setTimeout(() => {
     update(() => {

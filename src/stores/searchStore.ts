@@ -194,8 +194,7 @@ export const useSearchStore = defineStore('search', () => {
   }
 
   /**
-   * Initial population of search index when the extension is reloaded (and when run the first time, which
-   * is more like a no-op)
+   * Initial population of search index when the extension is reloaded (and when run the first time)
    *
    * @param contentPromise
    */

@@ -4,64 +4,70 @@
       <q-toolbar>
 
         <q-btn v-if="tabsStore.tabsets.size > 0"
-          dense flat round icon="menu" @click="toggleLeftDrawer"/>
+               dense flat round icon="menu" @click="toggleLeftDrawer"/>
 
-        <q-toolbar-title @click.stop="goHome()" class="cursor-pointer" shrink>
+        <q-toolbar-title @click.stop="goHome()" class="cursor-pointer"
+                         :style="featuresStore.isEnabled('spaces') ? 'min-width:150px' : 'min-width:350px'" shrink>
           Tabsets
-          <span class="text-caption" v-show="spacesStore.spaces.size === 0">Handle more links, with less tabs open</span>
+          <span class="text-caption"
+                v-show="!featuresStore.isEnabled('spaces')">Handle more links, with less tabs open</span>
         </q-toolbar-title>
-
-        <q-select
-                  bg-color="white"
-                  v-if="spacesStore.spaces.size > 0"
-                  filled v-model="spacesStore.space" :options="spacesOptions" dense options-dense>
-          <template v-slot:selected>
-            Space:
-            <q-chip
-              v-if="spacesStore.space"
-              dense
-              square
-              color="white"
-              text-color="primary"
-              class="q-my-none q-ml-xs q-mr-none">
-              {{ spacesStore.space.label }}
-            </q-chip>
-            <q-badge v-else>*none*</q-badge>
-          </template>
-        </q-select>
-
-        <q-input dark dense standout v-model="search"
-                 ref="searchBox"
-                 style="width:460px;"
-                 v-if="tabsStore.tabsets.size > 0"
-                 @keydown.enter.prevent="submitSearch()"
-                 class="q-ml-md">
-          <template v-slot:prepend>
-            <q-icon v-if="search === ''" name="search"/>
-            <q-icon v-else name="clear" class="cursor-pointer" @click="search = ''"/>
-          </template>
-        </q-input>
-
 
         <q-space/>
 
-        <div v-if="tabsStore.pendingTabset?.tabs.length > 0 && tabsStore.tabsets.size > 1" class="q-mr-lg">
-          {{ tabsStore.pendingTabset?.tabs.length }} unassigned tab(s)
+        <SearchWidget />
+
+        <q-space/>
+
+        <SpacesSelectorWidget v-if="featuresStore.isEnabled('spaces')"/>
+
+        <div>
+          <OpenTabsThresholdWidget v-if="tabsStore.tabsets.size > 0"/>
         </div>
+
+        <div v-if="tabsStore.pendingTabset?.tabs.length > 0 && tabsStore.tabsets.size >= 1"
+             class="q-mr-lg cursor-pointer no-wrap" style="min-width:200px">
+          <UnassignedTabsWidget />
+        </div>
+
+        <div v-if="tabsStore.audibleTabs.length > 0">
+          <span v-if="tabsStore.audibleTabs.length > 1">{{ tabsStore.audibleTabs.length }}x</span>
+          <q-icon name="volume_up" size="22px" class="q-mr-md">
+            <!--            <q-tooltip>{{tabsStore.audibleTabs}}</q-tooltip>-->
+          </q-icon>
+          <q-menu :offset="[0, 15]">
+            <q-list style="min-width: 200px">
+              <q-item v-for="tab in tabsStore.audibleTabs"
+                      clickable v-close-popup @click="NavigationService.openTab(tab.id)">
+                <q-item-section>{{ tab.title }}</q-item-section>
+              </q-item>
+              <!--              <q-item-->
+              <!--                      clickable v-close-popup @click="NavigationService.muteAll()">-->
+              <!--                <q-item-section>Mute (all from window)</q-item-section>-->
+              <!--              </q-item>-->
+            </q-list>
+          </q-menu>
+        </div>
+
+        <q-btn v-if="featuresStore.isEnabled('stats')"
+               class="q-mr-md" icon="o_query_stats" size="12px" style="min-width:24px" flat @click="router.push('/stats')">
+          <q-tooltip>Check out stats (experimental)</q-tooltip>
+        </q-btn>
+
+        <q-btn v-if="featuresStore.isEnabled('dev')"
+               class="q-mr-md" icon="o_list" size="12px" style="width:24px" flat @click="router.push('/logs')">
+          <q-tooltip>Logs (developer mode)</q-tooltip>
+        </q-btn>
 
         <q-btn class="q-mr-md" icon="o_settings" size="12px" style="width:24px" flat @click="router.push('/settings')">
           <q-tooltip>Customize Tabsets and utilize advanced features</q-tooltip>
         </q-btn>
 
-        <q-btn class="q-mr-md"  icon="o_help" size="12px" style="width:24px" flat @click="router.push('/about')">
-          <q-tooltip>About tabsets browser extension</q-tooltip>
+        <q-btn class="q-mr-md" icon="o_help" size="12px" style="width:24px" flat @click="router.push('/about')">
+          <q-tooltip>About tabsets browser extension v{{ appVersion }}</q-tooltip>
         </q-btn>
 
-
-        <div class="cursor-pointer" @click="router.push('/about')" v-if="notificationsStore.updateToVersion === ''">
-          v{{ appVersion }}
-        </div>
-        <div class="cursor-pointer" @click="router.push('/about')" v-else>
+        <div class="cursor-pointer" @click="router.push('/about')" v-if="notificationsStore.updateToVersion !== ''">
           <q-btn
             class="text-primary bg-warning"
             @click="installNewVersion"
@@ -70,8 +76,11 @@
       </q-toolbar>
     </q-header>
 
-    <q-drawer v-model="leftDrawerOpen" side="left" bordered>
+    <q-drawer v-model="leftDrawerOpen" :mini=uiService.useSmallDrawerView() side="left" bordered>
       <DrawerLeft/>
+      <template v-slot:mini>
+        <DrawerLeftMini/>
+      </template>
     </q-drawer>
 
     <q-page-container>
@@ -90,25 +99,38 @@ import {useTabsStore} from "src/stores/tabsStore";
 import {useRoute, useRouter} from "vue-router";
 import {useMeta} from 'quasar'
 import {useNotificationsStore} from "src/stores/notificationsStore";
+import NavigationService from "src/services/NavigationService"
 import DrawerLeft from "src/components/DrawerLeft.vue"
-import TabsetService from "src/services/TabsetService";
+import DrawerLeftMini from "src/components/DrawerLeftMini.vue"
 import {useSearchStore} from "src/stores/searchStore";
 import {useFeatureTogglesStore} from "src/stores/featureTogglesStore";
 import _ from "lodash";
-import {useSpacesStore} from "stores/spacesStore";
+import {useSpacesStore} from "stores/spacesStore"
+import {useSettingsStore} from "stores/settingsStore"
+import OpenTabsThresholdWidget from 'src/components/widgets/OpenTabsThresholdWidget.vue'
+import SpacesSelectorWidget from 'src/components/widgets/SpacesSelectorWidget.vue'
+import UnassignedTabsWidget from 'src/components/widgets/UnassignedTabsWidget.vue'
+import SearchWidget from 'src/components/widgets/SearchWidget.vue'
+import {useUiService} from "src/services/useUiService";
+import {useUiStore} from "stores/uiStore";
 
 const router = useRouter()
 const tabsStore = useTabsStore()
 const searchStore = useSearchStore()
+const uiStore = useUiStore()
 
 const localStorage = useQuasar().localStorage
 
 const rightDrawerOpen = ref(true)
 const leftDrawerOpen = ref(false)
+const largeDrawer = ref(false)
+const model = ref(85)
 
 const notificationsStore = useNotificationsStore()
 const featuresStore = useFeatureTogglesStore()
+const settingsStore = useSettingsStore()
 const spacesStore = useSpacesStore()
+const uiService = useUiService()
 const route = useRoute()
 
 const spacesOptions = ref<object[]>([])
@@ -127,6 +149,7 @@ watchEffect(() => {
     return {id: key, label: label}
   })
     .concat({id: '', label: '(unassigned)'})
+    .concat({id: '', label: 'create new space'})
 })
 
 //@ts-ignore
@@ -160,9 +183,8 @@ onUnmounted(() => {
 })
 
 function submitSearch() {
-  console.log("s", search.value)
   searchStore.term = search.value
-  router.push("/search/" + search.value)
+  router.push("/search")
 }
 
 const title = () => {
@@ -172,23 +194,18 @@ const title = () => {
 const goHome = () => router.push("/")
 
 const toggleLeftDrawer = () => {
-  useNotificationsStore().showDrawer = !useNotificationsStore().showDrawer
-  localStorage.set("showLeftDrawer", useNotificationsStore().showDrawer)
+  //useNotificationsStore().showDrawer = !useNotificationsStore().showDrawer
+  //localStorage.set("showLeftDrawer", useNotificationsStore().showDrawer)
+  useUiService().toggleDrawer()
 }
 
-onMounted(() => {
-  leftDrawerOpen.value = localStorage.getItem<boolean>("showLeftDrawer") || false
-  useNotificationsStore().showDrawer = leftDrawerOpen.value
-})
+const toggleLargeDrawer = () => {
+  largeDrawer.value = !largeDrawer.value
+}
 
 watchEffect(() => {
-  leftDrawerOpen.value = useNotificationsStore().showDrawer
+  leftDrawerOpen.value = tabsStore.tabsets?.size > 0
 })
-
-const closeTrackedTabs = () => {
-  TabsetService.closeTrackedTabs()
-}
-
 
 const installNewVersion = () => {
   notificationsStore.updateAvailable(false)

@@ -8,8 +8,6 @@ import {useSearchStore} from "src/stores/searchStore";
 import {useBookmarksStore} from "src/stores/bookmarksStore";
 import IndexedDbPersistenceService from "src/services/IndexedDbPersistenceService"
 import {STRIP_CHARS_IN_USER_INPUT} from "boot/constants";
-import {SearchDoc} from "src/models/SearchDoc";
-import {RequestInfo} from "src/models/RequestInfo";
 import {useTabsetService} from "src/services/TabsetService2";
 
 const {getTabset, getCurrentTabset, saveTabset, saveCurrentTabset, tabsetsFor, saveToTabset} = useTabsetService()
@@ -28,10 +26,12 @@ class TabsetService {
   /**
    * Init, called when extension is loaded (via App.vue)
    */
-  async init() {
+  async init(doNotInitSearchIndex: boolean = false) {
     console.debug("initializing tabsetService")
     await this.persistenceService.loadTabsets()
-    useSearchStore().populate(this.persistenceService.getContents())
+    if (!doNotInitSearchIndex) {
+      useSearchStore().populate(this.persistenceService.getContents())
+    }
   }
 
 
