@@ -42,7 +42,7 @@
     reverse>
 
     <template v-slot:before>
-      <q-list class="q-mt-none greyBorderTop">
+      <q-list class="q-mt-none greyBorderTop bg-green-1">
         <NavTabsetsListWidget :tabsets="tabsets(true)"/>
 
         <q-separator v-if="tabsets(true).length > 0"/>
@@ -53,12 +53,12 @@
       </q-list>
     </template>
 
-   <!-- <template v-slot:separator>
+   <template v-slot:separator>
       <q-avatar color="primary" text-color="white" size="40px" icon="drag_indicator" />
-    </template>-->
+    </template>
 
     <template v-slot:after>
-      <TabInfo />
+      <TabInfo class="bg-green-2" />
     </template>
 
   </q-splitter>

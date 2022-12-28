@@ -86,10 +86,7 @@
     <q-drawer show-if-above
               v-model="rightDrawerOpen" side="right" bordered
               content-class="column justify-between no-wrap bg-grey-1">
-      <Navigation></Navigation>
-
-      <!--      <TabInfo style="position: absolute;bottom:0"/>-->
-
+      <NavigationEmpty></NavigationEmpty>
 
     </q-drawer>
 
@@ -124,6 +121,7 @@ import UnassignedTabsWidget from 'src/components/widgets/UnassignedTabsWidget.vu
 import SearchWidget from 'src/components/widgets/SearchWidget.vue'
 import {useUiService} from "src/services/useUiService";
 import {useUiStore} from "stores/uiStore";
+import NavigationEmpty from "components/NavigationEmpty.vue";
 
 const router = useRouter()
 const tabsStore = useTabsStore()

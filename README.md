@@ -43,3 +43,14 @@ You can try the current version directly at
 
 https://chrome.google.com/webstore/detail/tabsets-extension/afkknkdbgondbbfjehipnjmojndnjhjg
 
+### current versions:
+
+vue --version
+
+@vue/cli 5.0.8
+
+quasar --version
+
+1.1.3
+
+
