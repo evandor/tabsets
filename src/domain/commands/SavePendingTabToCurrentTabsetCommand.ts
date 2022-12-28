@@ -6,7 +6,6 @@ import {useSearchStore} from "stores/searchStore";
 import TabService from "src/services/TabService";
 import _ from "lodash";
 import {useTabsStore} from "stores/tabsStore";
-import {CreateTabsetCommand} from "src/domain/commands/CreateTabsetCommand";
 import {useLoggingServicee} from "src/services/useLoggingService";
 
 const {TabLogger} = useLoggingServicee()
@@ -16,7 +15,7 @@ class UndoCommand implements Command {
   constructor(public tab: Tab) {
   }
 
-  execute(): Promise<ExecutionResult> {
+  execute(): Promise<ExecutionResult<undefined>> {
     console.log("execution undo command", this.tab)
     // return new DeleteTabsetCommand(this.tabsetId).execute()
     //   .then(res => Promise.resolve(new ExecutionResult(res, "Tabset was deleted again")))
@@ -30,7 +29,7 @@ export class SavePendingTabToCurrentTabsetCommand implements Command {
   constructor(public tab: Tab) {
   }
 
-  async execute(): Promise<ExecutionResult> {
+  async execute(): Promise<ExecutionResult<number>> {
     return TabsetService.saveToCurrentTabset(this.tab)
       .then(() => this.removeFromPendingTabset(this.tab))
       .then(() => this.unExpireThumbnail(this.tab))

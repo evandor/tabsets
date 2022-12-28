@@ -11,7 +11,7 @@ class UndoCreateTabsetCommand implements Command {
   constructor(public tabsetId: string) {
   }
 
-  execute(): Promise<ExecutionResult> {
+  execute(): Promise<ExecutionResult<object>> {
     logger.info("execution of undo command", this.tabsetId)
     return new DeleteTabsetCommand(this.tabsetId).execute()
       .then(res => Promise.resolve(new ExecutionResult(res, "Tabset was deleted again")))
@@ -28,7 +28,7 @@ export class CreateTabsetCommand implements Command {
     public tabsToUse: chrome.tabs.Tab[]) {
   }
 
-  async execute(): Promise<ExecutionResult> {
+  async execute(): Promise<ExecutionResult<object>> {
     try {
       const result = await useTabsetService()
         .saveOrReplaceFromChromeTabs(this.tabsetName, this.tabsToUse, this.merge)

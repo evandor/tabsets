@@ -6,6 +6,21 @@ class ChromeBookmarkListeners {
 
   inProgress = false;
 
+  initListeners() {
+    chrome.permissions.contains(
+      {permissions: ["bookmarks"]},
+      (res: boolean) => {
+        if (res) {
+          chrome.bookmarks.onCreated.addListener((name: string, bm: any) => this.onCreated(bm))
+          chrome.bookmarks.onMoved.addListener((id: string, info: any) => this.reload())
+          chrome.bookmarks.onRemoved.addListener((id: string, info: any) => this.reload())
+          chrome.bookmarks.onChanged.addListener((id: string, info: any) => this.reload())
+          chrome.bookmarks.onChildrenReordered.addListener((id: string, info: any) => this.reload())
+        }
+      })
+
+  }
+
   clearWorking() {
     if (this.inProgress) {
       //console.log("resetting 'inProgress' to false")

@@ -18,7 +18,8 @@ import {useSpacesStore} from "stores/spacesStore";
 import MHtmlService from "src/services/MHtmlService";
 import IndexedDbPersistenceService from "src/services/IndexedDbPersistenceService";
 import ChromeListeners from "src/services/ChromeListeners";
-import {useRoute} from "vue-router";
+import {useRoute, useRouter} from "vue-router";
+import ChromeBookmarkListeners from "src/services/ChromeBookmarkListeners";
 
 const tabsStore = useTabsStore()
 const tabGroupsStore = useTabGroupsStore()
@@ -27,13 +28,16 @@ const bookmarksStore = useBookmarksStore()
 const searchStore = useSearchStore()
 const windowsStore = useWindowsStore()
 const spacesStore = useSpacesStore()
+const router = useRouter()
 const route = useRoute()
-
 const $q = useQuasar()
+
 
 function isNewTabPage() {
   return route.path === '/newtab';
 }
+
+$q.dark.set($q.localStorage.getItem('darkMode') || false)
 
 if (isNewTabPage()) {
 
@@ -57,7 +61,8 @@ if (isNewTabPage()) {
   featureTogglesStore.initialize(useQuasar().localStorage);
   tabsStore.initialize(useQuasar().localStorage);
 
-  ChromeListeners.initListeners(isNewTabPage())
+  ChromeListeners.initListeners(false)
+  ChromeBookmarkListeners.initListeners()
 
   tabGroupsStore.initialize();
   tabGroupsStore.initListeners();
@@ -88,9 +93,10 @@ if (isNewTabPage()) {
 
 
   useNotificationsStore().bookmarksExpanded = $q.localStorage.getItem("bookmarks.expanded") || []
+  router.push("/start")
 }
 
-$q.dark.set($q.localStorage.getItem('darkMode') || false)
+
 
 
 </script>

@@ -10,7 +10,7 @@ export class DeleteTabsFromTabsetCommand implements Command {
   constructor(public tabsetId: string, public updated: number) {
   }
 
-  async execute(): Promise<ExecutionResult> {
+  async execute(): Promise<ExecutionResult<any>> {
     const predicate: TabPredicate = (t: Tab) => t.updated === this.updated && t.bookmarkId !== null
     return useTabsetService()
       .deleteFromTabset(this.tabsetId, predicate)

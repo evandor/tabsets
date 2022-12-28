@@ -16,6 +16,7 @@
             v-model="tab"
             no-caps>
       <q-tab name="appearance" label="Appearance"/>
+      <q-tab name="permissions" label="Permissions"/>
       <q-tab name="ignored" label="Ignored Urls"/>
       <q-tab name="archived" label="Archived Tabsets"/>
       <q-tab name="db" label="DB" v-if="featuresStore.isEnabled('debug')"/>
@@ -61,6 +62,16 @@
       </div>
       <div class="col">
         <span class="text-blue cursor-pointer" @click="simulateNewVersion('0.1.2')">Simulate</span>
+      </div>
+    </div>
+  </div>
+
+  <div v-if="tab === 'permissions'">
+    <div class="row items-baseline q-ma-lg">
+      <div class="col-3 text-h6">Bookmarks</div>
+      <div class="col-9">
+        <q-radio v-model="bookmarksPermissionGranted" :val="true" label="Granted"/>
+        <q-radio v-model="bookmarksPermissionGranted" :val="false" label="Revoked"/>
       </div>
     </div>
   </div>
@@ -266,7 +277,8 @@
 
       <div class="row q-pa-md">
         <div class="col-3"><b>New Tab Mode</b></div>
-        <div class="col-3">use tabset as your browsers default 'New Tab' page<br>Currently set to {{currentNewTabTabsetId}}.
+        <div class="col-3">use tabset as your browsers default 'New Tab' page<br>Currently set to
+          {{ currentNewTabTabsetId }}.
         </div>
         <div class="col-1"></div>
         <div class="col-5">
@@ -285,7 +297,7 @@
 import {useTabsStore} from "src/stores/tabsStore"
 import {useFeatureTogglesStore} from "src/stores/featureTogglesStore";
 import {useRouter} from "vue-router";
-import {ref, watchEffect} from "vue";
+import {ref, watch, watchEffect} from "vue";
 import {useQuasar} from "quasar";
 import {INDEX_DB_NAME, INDEX_DB_VERSION} from "boot/constants"
 import {useSearchStore} from "src/stores/searchStore";
@@ -300,6 +312,11 @@ import {useNotificationHandler} from "src/services/ErrorHandler";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import NavigationService from "src/services/NavigationService";
 import {useUiStore} from "stores/uiStore";
+import {useBookmarksStore} from "stores/bookmarksStore";
+import {usePermissionsStore} from "stores/permissionsStore";
+import {GrantPermissionCommand} from "src/domain/commands/GrantPermissionCommand";
+import {ExecutionResult} from "src/domain/ExecutionResult";
+import {RevokePermissionCommand} from "src/domain/commands/RevokePermissionCommand";
 
 
 const tabsStore = useTabsStore()
@@ -324,10 +341,33 @@ const devEnabled = ref<boolean>(featuresStore.isEnabled('dev'))
 const newTabEnabled = ref<boolean>(featuresStore.isEnabled('newTab'))
 
 const darkMode = ref<boolean>(localStorage.getItem('darkMode') || false)
+const bookmarksPermissionGranted = ref<boolean | undefined>(usePermissionsStore().hasPermission('bookmarks'))
 const showBookmarks = ref<boolean>(localStorage.getItem('showBookmarks') || false)
 const tab = ref('appearance')
 
 const {handleError} = useNotificationHandler()
+
+watchEffect(() => {
+  bookmarksPermissionGranted.value = usePermissionsStore().hasPermission('bookmarks')
+})
+
+watch(() => bookmarksPermissionGranted.value, (newValue, oldValue) => {
+  if (newValue === oldValue) {
+    return
+  }
+  if (bookmarksPermissionGranted.value && !usePermissionsStore().hasPermission('bookmarks')) {
+    useCommandExecutor()
+      .executeFromUi(new GrantPermissionCommand("bookmarks"))
+    //usePermissionsStore().grantPermission("bookmarks")
+      .then((res:ExecutionResult<boolean>) => bookmarksPermissionGranted.value = res.result)
+  } else if (!bookmarksPermissionGranted.value) {
+    useCommandExecutor()
+      .executeFromUi(new RevokePermissionCommand("bookmarks"))
+      .then(() => {
+        useBookmarksStore().loadBookmarks()
+      })
+  }
+})
 
 watchEffect(() => {
   $q.dark.set(darkMode.value)

@@ -1,8 +1,9 @@
 <template>
 
-  <q-list class="q-mt-md" >
+  <q-list class="q-mt-md">
 
     <q-tree
+      v-if="bookmarksPermissionGranted"
       :nodes="bookmarksStore.bookmarksNodes"
       node-key="id"
       selected-color="dark"
@@ -11,17 +12,15 @@
       v-model:selected="selected"
       v-model:expanded="useNotificationsStore().bookmarksExpanded">
       <template v-slot:header-node="prop">
-<!--        <div class="row">-->
-          <q-icon name="o_folder" class="q-mr-sm"/>
-          <span class="cursor-pointer fit no-wrap"
-          >{{ prop.node.label }}</span>
+        <q-icon name="o_folder" class="q-mr-sm"/>
+        <span class="cursor-pointer fit no-wrap"
+        >{{ prop.node.label }}</span>
 
-          <span class="text-right fit" v-show="mouseHover && prop.node.id === deleteButtonId">
+        <span class="text-right fit" v-show="mouseHover && prop.node.id === deleteButtonId">
             <q-icon name="delete_outline" color="negative" size="18px" @click.stop="deleteBookmarksFolderDialog">
               <q-tooltip>Delete this folder</q-tooltip>
             </q-icon>
           </span>
-<!--        </div>-->
 
 
         <!--        <q-menu :v-model="false" context-menu>-->
@@ -51,36 +50,14 @@
       <!--      </template>-->
     </q-tree>
 
+    <q-banner class="bg-yellow-1" v-else>
+      No permissions granted.<br><br>
+      Click <span class="cursor-pointer text-blue-6" style="text-decoration: underline"
+                  @click="grant('bookmarks')">here</span> to
+      grant permissions for the tabset extension to access your bookmarks.
+    </q-banner>
 
   </q-list>
-
-<!--  <q-dialog v-model="showImportTabsetDialog">-->
-<!--    <q-card style="min-width: 350px">-->
-<!--      <q-card-section>-->
-<!--        <div class="text-h6">Import this Bookmarks Folder as Tabset</div>-->
-<!--      </q-card-section>-->
-<!--      <q-card-section>-->
-<!--        <div class="text-body">Please provide a name for the new tabset</div>-->
-<!--      </q-card-section>-->
-
-<!--      <q-card-section class="q-pt-none">-->
-<!--        <div class="text-body">New Tabset's name:</div>-->
-<!--        <q-input dense v-model="newTabsetName" autofocus @keyup.enter="prompt = false"/>-->
-<!--        &lt;!&ndash;        <q-checkbox v-model="clearTabs" label="close current Tabs"/>&ndash;&gt;-->
-<!--        <div class="text-body2 text-warning"> {{ newTabsetDialogWarning() }}</div>-->
-<!--        <q-radio v-model="merge" val="true" label="Merge" v-if="tabNameExists()"></q-radio>-->
-<!--        <q-radio v-model="merge" val="false" label="Overwrite" v-if="tabNameExists()"></q-radio>-->
-<!--      </q-card-section>-->
-
-<!--      <q-card-actions align="right" class="text-primary">-->
-<!--        <q-btn flat label="Cancel" v-close-popup/>-->
-<!--        <q-btn flat label="Create new Tabset"-->
-<!--               :disable="newTabsetName.trim().length === 0 || newTabsetName.trim() === 'current'" v-close-popup-->
-<!--               @click="importBookmarks()"/>-->
-<!--      </q-card-actions>-->
-<!--    </q-card>-->
-<!--  </q-dialog>-->
-
 
 </template>
 
@@ -95,11 +72,16 @@ import {useFeatureTogglesStore} from "src/stores/featureTogglesStore";
 import {useBookmarksStore} from "src/stores/bookmarksStore";
 import {useNotificationsStore} from "src/stores/notificationsStore";
 import BookmarksService from "src/services/BookmarksService";
+import {usePermissionsStore} from "stores/permissionsStore";
+import {useNotificationHandler} from "src/services/ErrorHandler";
+import {useCommandExecutor} from "src/services/CommandExecutor";
+import {GrantPermissionCommand} from "src/domain/commands/GrantPermissionCommand";
 
 const router = useRouter()
 const tabsStore = useTabsStore()
 const featuresStore = useFeatureTogglesStore()
 const bookmarksStore = useBookmarksStore()
+const permissionsStore = usePermissionsStore()
 
 const $q = useQuasar();
 const localStorage = useQuasar().localStorage
@@ -109,10 +91,16 @@ const selected = ref('')
 const deleteButtonId = ref('')
 const newTabsetName = ref('')
 const merge = ref(false)
+const bookmarksPermissionGranted = ref<boolean | undefined>(undefined)
 
+const {handleSuccess, handleError} = useNotificationHandler()
+
+watchEffect(() => {
+  bookmarksPermissionGranted.value = permissionsStore.hasPermission('bookmarks')
+  useBookmarksStore().loadBookmarks()
+})
 
 watch(() => selected.value, (currentValue, oldValue) => {
-  //console.log("selected", selected.value, currentValue, oldValue)
   if (currentValue !== oldValue) {
     router.push("/bookmarks/" + selected.value)
   }
@@ -154,6 +142,17 @@ const deleteBookmarksFolderDialog = () => {
 }
 
 const entered = (b: boolean) => mouseHover.value = b
+const grant = (permission: string) => {
+  useCommandExecutor()
+    .executeFromUi(new GrantPermissionCommand(permission))
+
+  // usePermissionsStore().grantPermission(permission)
+  //   .then((granted: boolean) => {
+  //     if (granted) {
+  //       bookmarksPermissionGranted.value = granted
+  //     }
+  //   })
+}
 
 
 </script>

@@ -10,7 +10,7 @@ class UndoCommand implements Command {
   constructor(public tabsetId: string, public oldStatus: TabsetStatus) {
   }
 
-  execute(): Promise<ExecutionResult> {
+  execute(): Promise<ExecutionResult<any>> {
     console.log("execution undo command", this.tabsetId)
     switch (this.oldStatus) {
       case TabsetStatus.DEFAULT:
@@ -33,7 +33,7 @@ export class MarkTabsetAsArchivedCommand implements Command {
     public tabsetId: string)
   {}
 
-  async execute(): Promise<ExecutionResult> {
+  async execute(): Promise<ExecutionResult<any>> {
     return TabsetService.markAs(this.tabsetId, TabsetStatus.ARCHIVED)
       .then(oldStatus => Promise.resolve(
         new ExecutionResult(

@@ -10,7 +10,6 @@
     "tabGroups",
     "tabs",
     "activeTab",
-    "bookmarks",
     "alarms",
     "contextMenus",
     "scripting",
@@ -18,6 +17,9 @@
     "pageCapture",
     "webRequest",
     "search"
+  ],
+  "optional_permissions": [
+    "bookmarks"
   ],
   "host_permissions": [
     "<all_urls>"

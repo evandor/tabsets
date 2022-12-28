@@ -2,14 +2,10 @@ import Command from "src/domain/Command";
 import TabsetService from "src/services/TabsetService";
 import {ExecutionResult} from "src/domain/ExecutionResult";
 import {Tab} from "src/models/Tab";
-import {useSearchStore} from "stores/searchStore";
-import TabService from "src/services/TabService";
 import _ from "lodash";
 import {useTabsStore} from "stores/tabsStore";
-import {CreateTabsetCommand} from "src/domain/commands/CreateTabsetCommand";
 import {useLoggingServicee} from "src/services/useLoggingService";
 import {useTabsetService} from "src/services/TabsetService2";
-import {DeleteTabsetCommand} from "src/domain/commands/DeleteTabsetCommand";
 import {DeleteTabCommand} from "src/domain/commands/DeleteTabCommand";
 
 const {TabLogger} = useLoggingServicee()
@@ -20,7 +16,7 @@ class UndoCommand implements Command {
   constructor(public tab: Tab) {
   }
 
-  execute(): Promise<ExecutionResult> {
+  execute(): Promise<ExecutionResult<any>> {
     TabLogger.info(this.tab, "execution undo command")
     return new DeleteTabCommand(this.tab).execute()
       .then(res => Promise.resolve(new ExecutionResult(res, "Tab was deleted again")))
@@ -44,7 +40,7 @@ export class CreateTabFromOpenTabsCommand implements Command {
   constructor(public tab: Tab, public newIndex: number, public group: string) {
   }
 
-  async execute(): Promise<ExecutionResult> {
+  async execute(): Promise<ExecutionResult<any>> {
     const tabsStore = useTabsStore()
     TabLogger.info(this.tab, 'adding tab by d&d, group ' + this.group)
     //console.log("tabs", tabsStore.getCurrentTabs)

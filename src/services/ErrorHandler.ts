@@ -24,7 +24,7 @@ export function useNotificationHandler() {
     })
   }
 
-  const handleSuccess = (executionResult: ExecutionResult, logger:any) => {
+  const handleSuccess = (executionResult: ExecutionResult): ExecutionResult => {
     const actions: any[] = []
     if (executionResult.undoCommand) {
       actions.push(
@@ -42,6 +42,7 @@ export function useNotificationHandler() {
       message: executionResult.message,
       actions: actions
     })
+    return executionResult
   }
 
   return {

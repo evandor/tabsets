@@ -1,8 +1,8 @@
 import Command from "src/domain/Command";
 
-export class ExecutionResult {
+export class ExecutionResult<T> {
   constructor(
-    result: any,
+    public result: T,
     public message: string,
     public undoCommand: Command | undefined = undefined) {
 

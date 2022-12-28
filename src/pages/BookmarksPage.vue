@@ -107,29 +107,16 @@ watchEffect(() => {
       // console.log("resul", results)
       if (results && results[0]) {
         bookmarksStore.currentBookmark = new Bookmark(uid(), results[0])
-
         getParentChain(bookmarkId.value)
           .then(res => {
             bookmarksForBreadcrumb.value = res.reverse()
           })
-
-        // bookmarksForBreadcrumb.value.push(bookmarksStore.currentBookmark)
-        // if (bookmarksStore.currentBookmark.chromeBookmark.parentId) {
-        //   chrome.bookmarks.get(bookmarksStore.currentBookmark.chromeBookmark.parentId, results => {
-        //     if (results && results[0]) {
-        //       bookmarksForBreadcrumb.value.push(new Bookmark(uid(), results[0]))
-        //     }
-        //   })
-        // }
       }
     })
     chrome.bookmarks.getChildren(bookmarkId.value, (bms: chrome.bookmarks.BookmarkTreeNode[]) => {
       bookmarksForFolder.value = _.map(bms, (l: chrome.bookmarks.BookmarkTreeNode) => new Bookmark(uid(), l))
-
       useBookmarksStore().bookmarksForFolder = bookmarksForFolder.value
     })
-
-
   }
 })
 

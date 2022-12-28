@@ -11,7 +11,7 @@ class UndoCommand implements Command {
     public updated: number) {
   }
 
-  execute(): Promise<ExecutionResult> {
+  execute(): Promise<ExecutionResult<object>> {
     //logger.info("execution of undo command", this.tabsetId, this.updated)
     return new DeleteTabsFromTabsetCommand(this.tabsetId, this.updated).execute()
       .then(res => Promise.resolve(new ExecutionResult(res, res.message)))
@@ -28,7 +28,7 @@ export class CreateTabsetFromBookmarksCommand implements Command {
     public bmsToUse: chrome.bookmarks.BookmarkTreeNode[]) {
   }
 
-  async execute(): Promise<ExecutionResult> {
+  async execute(): Promise<ExecutionResult<object>> {
     try {
       const result = await useTabsetService()
         .saveOrReplaceFromBookmarks(this.tabsetName, this.bmsToUse, this.merge)
