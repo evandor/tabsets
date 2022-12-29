@@ -151,6 +151,7 @@ import NavigationService from "src/services/NavigationService";
 import {useBookmarksStore} from "src/stores/bookmarksStore";
 import _ from "lodash"
 import {formatDistance, subDays} from 'date-fns'
+import {useTabsetService} from "src/services/TabsetService2";
 
 const emits = defineEmits(['sendCaption'])
 
@@ -228,7 +229,7 @@ const formatDate = (timestamp: number | undefined) =>
 //   _.filter(bookmarksStore.bookmarksForFolder, (bm:Bookmark) => !bm.chromeBookmark.url)
 // }
 
-const existsInTabset = (url: string) => TabsetService.tabsetsFor(url)?.length > 0
+const existsInTabset = (url: string) => useTabsetService().tabsetsFor(url)?.length > 0
 
 </script>
 

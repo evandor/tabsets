@@ -205,7 +205,7 @@ const formatLength = (length: number, singular: string, plural: string) => {
   return length > 1 ? length + ' ' + plural : length + ' ' + singular
 }
 
-const removeClosedTabs = () => TabsetService.removeClosedTabs()
+// const removeClosedTabs = () => useTabsetService().removeClosedTabs()
 const saveAllPendingTabs = () => TabsetService.saveAllPendingTabs()
 const removeAllPendingTabs = () => TabsetService.removeAllPendingTabs()
 
