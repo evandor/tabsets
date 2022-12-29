@@ -1,6 +1,6 @@
 <template>
 
-  <q-page padding>
+  <q-page class="greyBorderTop">
     <q-toolbar class="text-primary">
       <div class="row fit">
         <div class="col-xs-12 col-md-5">
@@ -37,7 +37,7 @@
       </div>
     </q-toolbar>
 
-    <iframe id="tabIFrame" :src='src' frameBorder="0" :style="iFrameStyle"/>
+    <iframe ref="iFrameRef" id="tabIFrame" :src='src' frameBorder="0" :style="iFrameStyle"/>
 
   </q-page>
 
@@ -45,7 +45,7 @@
 
 <script lang="ts" setup>
 
-import {ref, watchEffect} from "vue";
+import {onMounted, ref, watchEffect} from "vue";
 import {useRoute, useRouter} from "vue-router";
 import {date} from "quasar"
 import {useTabsStore} from "stores/tabsStore";
@@ -60,6 +60,7 @@ const title = ref()
 const data = ref<string[]>([])
 const src = ref('data:text/html,<p>loading...</p>')
 const created = ref('')
+const iFrameRef = ref(null)
 
 // const currentLog = console.log
 // console.log = (msg, args) => {
@@ -77,22 +78,27 @@ const created = ref('')
 //   alert("Error occurred while loading image");
 // };
 
+onMounted(() => {
+  const iFrame = iFrameRef.value
+  if (iFrame) {
+    // @ts-ignore
+    iFrame.setAttribute("style", "overflow:hidden;height:" + (window.innerHeight - 50) + "px;width:100%;border:0px");
+  }
+})
+
+
 watchEffect(async () => {
   tabId.value = route.params.tabId as string
   const found = _.find(useTabsStore().getCurrentTabs, t => t.id === route.params.tabId)
   if (found && found.chromeTab.url) {
     const content = await TabsetService.getContentForUrl(found.chromeTab.url)
     const request = await TabsetService.getRequestForUrl(found.chromeTab.url)
-    const iFrame: HTMLIFrameElement = window.document?.getElementById('tabIFrame') as unknown as HTMLIFrameElement
-    iFrame.setAttribute("style", "overflow:hidden;height:" + (window.innerHeight - 50) + "px;width:100%;border:0px");
+    // const iFrame: HTMLIFrameElement = window.document?.getElementById('tabIFrame') as unknown as HTMLIFrameElement
+    // iFrame.setAttribute("style", "overflow:hidden;height:" + (window.innerHeight - 50) + "px;width:100%;border:0px");
     if (_.find(Object.values(request.requestInfo.headers), (v: any) => v.name === 'x-frame-options')) {
-      if (iFrame) {
-        src.value = 'data:text/html,<p>cannot open this page in iFrame ;(</p>'
-      }
+      src.value = 'data:text/html,<p>cannot open this page in iFrame ;(</p>'
     } else {
-      if (iFrame) {
-        src.value = found.chromeTab.url || 'data:text/html,<p>loading....</p>'
-      }
+      src.value = found.chromeTab.url || 'data:text/html,<p>loading....</p>'
     }
 
 
@@ -109,3 +115,13 @@ const iFrameStyle = () => {
 }
 
 </script>
+
+<style lang="sass" scoped>
+
+.lightgrey
+  background-color: $lightgrey
+
+.greyBorderTop
+  border-top: 1px solid $bordergrey
+
+</style>

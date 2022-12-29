@@ -8,6 +8,9 @@
       <q-item clickable v-close-popup @click="openUnassigendTabs()">
         <q-item-section>Show unassigned tabs</q-item-section>
       </q-item>
+      <q-item clickable v-close-popup @click="newTabsetFromUnassigndTabs">
+        <q-item-section>Create new tabset from those tabs</q-item-section>
+      </q-item>
       <!--      <q-separator/>
             <q-item disable>
               Close some tabs:
@@ -28,14 +31,23 @@
 <script lang="ts" setup>
 import {useTabsStore} from "stores/tabsStore";
 import {useRouter} from "vue-router";
-import TabsetService from "src/services/TabsetService"
+import NewTabsetDialog from "src/components/dialogues/NewTabsetDialog.vue"
 import {useUiService} from "src/services/useUiService";
 import {LeftDrawerTabs} from "stores/uiStore";
+import {useQuasar} from "quasar";
 
 const tabsStore = useTabsStore()
 const router = useRouter()
+const $q = useQuasar()
 
-const openUnassigendTabs = () => {
+const openUnassigendTabs = () =>
   useUiService().leftDrawerSetActiveTab(LeftDrawerTabs.UNASSIGNED_TABS)
-}
+
+const newTabsetFromUnassigndTabs = () => $q.dialog(
+  {
+    component: NewTabsetDialog,
+    componentProps: {
+      setAddAutomaticByDefault: true,
+    }
+  })
 </script>

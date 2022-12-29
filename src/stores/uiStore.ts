@@ -15,7 +15,8 @@ export enum LeftDrawerTabs {
   SAVED_TABS = "savedTabs",
   SIDEBAR = "sidebar",
   RSS = "rss",
-  SCHEDULED = "scheduled"
+  SCHEDULED = "scheduled",
+  HELP = "help"
 }
 
 export class LeftDrawer {

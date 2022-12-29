@@ -76,6 +76,11 @@ const routes: RouteRecordRaw[] = [
     children: [{ path: '', component: () => import('pages/IFramePage.vue') }],
   },
   {
+    path: '/help/:ident',
+    component: () => import('layouts/WithoutTabsetsLayout.vue'),
+    children: [{ path: '', component: () => import('pages/HelpPage.vue') }],
+  },
+  {
     path: '/logs',
     component: () => import('layouts/MainLayout.vue'),
     children: [{ path: '', component: () => import('pages/LogsPage.vue') }],

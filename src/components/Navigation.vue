@@ -1,67 +1,71 @@
 <template>
+  <div class="column" style="height:96%">
+    <div class="col" >
 
-  <q-toolbar class="text-primary lightgrey" v-if="tabsStore.tabsets.size > 0">
-    <div class="row fit">
-      <div class="col-xs-12 col-md-5">
-        <q-toolbar-title>
-          <div class="row justify-start items-baseline">
-            Tabsets
+      <q-toolbar class="text-primary lightgrey" v-if="tabsStore.tabsets.size > 0">
+        <div class="row fit">
+          <div class="col-xs-12 col-md-5">
+            <q-toolbar-title>
+              <div class="row justify-start items-baseline">
+                Tabsets
+              </div>
+            </q-toolbar-title>
           </div>
+          <div class="col-xs-12 col-md-7 text-right">
+
+            <q-btn
+              @click="addTabset"
+              flat round dense icon="add" color="primary">
+              <q-tooltip>Click here to add new tabsets</q-tooltip>
+            </q-btn>
+
+          </div>
+        </div>
+      </q-toolbar>
+
+      <q-toolbar v-else class="text-primary lightgrey">
+        <q-toolbar-title style="font-size:16px">
+          <Transition name="delayed-appear" appear>
+            <q-btn class="fit bg-white" outline
+                   data-testid="createFirstTabsetBtn"
+                   @click="addTabset"
+                   label="create your first tabset"></q-btn>
+          </Transition>
         </q-toolbar-title>
-      </div>
-      <div class="col-xs-12 col-md-7 text-right">
+      </q-toolbar>
 
-        <q-btn
-          @click="addTabset"
-          flat round dense icon="add" color="primary">
-          <q-tooltip>Click here to add new tabsets</q-tooltip>
-        </q-btn>
+      <q-splitter
+        v-model="splitterModel"
+        separator-class="bg-white"
+        horizontal
+        class="bg-grey-1 fit"
+        unit="px"
+        reverse>
 
-      </div>
+        <template v-slot:before>
+          <q-list class="q-mt-none greyBorderTop">
+            <NavTabsetsListWidget :tabsets="tabsets(true)"/>
+
+            <q-separator v-if="tabsets(true).length > 0"/>
+            <NavTabsetsListWidget :tabsets="tabsets(false)"/>
+
+            <!--    <q-separator v-if="archivedTabsets().length > 0"/>-->
+            <!--    <NavTabsetsListWidget :tabsets="archivedTabsets()" :useExpansion=true />-->
+          </q-list>
+        </template>
+
+<!--        <template v-slot:separator>-->
+<!--          <q-avatar color="primary" text-color="white" size="40px" icon="drag_indicator"/>-->
+<!--        </template>-->
+
+        <template v-slot:after>
+          <TabInfo />
+        </template>
+
+      </q-splitter>
+
     </div>
-  </q-toolbar>
-
-  <q-toolbar v-else class="text-primary lightgrey">
-    <q-toolbar-title style="font-size:16px">
-      <Transition name="delayed-appear" appear>
-        <q-btn class="fit bg-white" outline
-               data-testid="createFirstTabsetBtn"
-               @click="addTabset"
-               label="create your first tabset"></q-btn>
-      </Transition>
-    </q-toolbar-title>
-  </q-toolbar>
-
-
-  <q-splitter
-    v-model="splitterModel"
-    separator-class="bg-white"
-    horizontal
-    class="fit bg-grey-1"
-    unit="px"
-    reverse>
-
-    <template v-slot:before>
-      <q-list class="q-mt-none greyBorderTop bg-green-1">
-        <NavTabsetsListWidget :tabsets="tabsets(true)"/>
-
-        <q-separator v-if="tabsets(true).length > 0"/>
-        <NavTabsetsListWidget :tabsets="tabsets(false)"/>
-
-        <!--    <q-separator v-if="archivedTabsets().length > 0"/>-->
-        <!--    <NavTabsetsListWidget :tabsets="archivedTabsets()" :useExpansion=true />-->
-      </q-list>
-    </template>
-
-   <template v-slot:separator>
-      <q-avatar color="primary" text-color="white" size="40px" icon="drag_indicator" />
-    </template>
-
-    <template v-slot:after>
-      <TabInfo class="bg-green-2" />
-    </template>
-
-  </q-splitter>
+  </div>
 
 
 </template>

@@ -47,6 +47,11 @@
       <q-tooltip>Scheduled Tabs</q-tooltip>
     </q-tab>
 
+    <q-tab
+      name="help" icon="help" @click="tabsClicked(LeftDrawerTabs.HELP)">
+      <q-tooltip>Help</q-tooltip>
+    </q-tab>
+
   </q-tabs>
 
 

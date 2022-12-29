@@ -60,6 +60,13 @@ defineEmits([
   ...useDialogPluginComponent.emits
 ])
 
+const props = defineProps({
+  setAddAutomaticByDefault: {
+    type: Boolean,
+    default: false
+  }
+})
+
 const {dialogRef, onDialogHide, onDialogCancel} = useDialogPluginComponent()
 
 const tabsStore = useTabsStore()
@@ -69,7 +76,7 @@ const $q = useQuasar()
 const newTabsetName = ref('')
 const newTabsetNameExists = ref(false)
 const hideWarning = ref(false)
-const addAutomatically = ref(false)
+const addAutomatically = ref(props.setAddAutomaticByDefault)
 
 const newTabsetNameIsValid = computed(() => newTabsetName.value.length <= 32 && !STRIP_CHARS_IN_USER_INPUT.test(newTabsetName.value))
 
