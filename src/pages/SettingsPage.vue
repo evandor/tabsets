@@ -405,7 +405,7 @@ const showImportDialog = () => $q.dialog({component: ImportDialog})
 
 const archivedTabsets = () => {
   let tabsets = [...tabsStore.tabsets.values()]
-  return _.sortBy(_.filter(tabsets, (ts: Tabset) => ts.status = TabsetStatus.ARCHIVED), ['name'])
+  return _.sortBy(_.filter(tabsets, (ts: Tabset) => ts.status === TabsetStatus.ARCHIVED), ['name'])
 }
 
 const unarchive = (tabset: Tabset) => useCommandExecutor().executeFromUi(new MarkTabsetAsDefaultCommand(tabset.id))
