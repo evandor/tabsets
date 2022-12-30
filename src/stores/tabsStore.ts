@@ -1,16 +1,14 @@
 import {defineStore} from 'pinia';
 import _ from 'lodash'
 import {LocalStorage, uid} from "quasar";
-import {Tabset, TabsetStatus} from "src/models/Tabset";
+import {Tabset, TabsetStatus, TabsetType} from "src/models/Tabset";
 import {Tab, UrlExtension} from "src/models/Tab";
-//import ChromeListeners from "src/services/ChromeListeners";
 import ChromeApi from "src/services/ChromeApi";
 import {NewOrReplacedTabset} from "src/models/NewOrReplacedTabset";
 import {useTabGroupsStore} from "src/stores/tabGroupsStore";
 import {Group} from "src/models/Group";
 import {useSpacesStore} from "stores/spacesStore";
 import {useLoggingServicee} from "src/services/useLoggingService";
-import {useTabsetService} from "src/services/TabsetService2";
 
 async function queryTabs(): Promise<chrome.tabs.Tab[]> {
   // @ts-ignore
@@ -270,7 +268,12 @@ export const useTabsStore = defineStore('tabs', {
       //   .then(() => currentTabset)
     },
 
-    async updateOrCreateTabset(tabsetName: string, tabs: Tab[], merge: boolean = false, spaces: Set<string> = new Set()): Promise<NewOrReplacedTabset> {
+    async updateOrCreateTabset(
+      tabsetName: string,
+      tabs: Tab[],
+      merge: boolean = false,
+      type: TabsetType = TabsetType.DEFAULT): Promise<NewOrReplacedTabset> {
+
       logger.debug("--- updateOrCreateTabset start -------------")
       const foundTS: Tabset | undefined = _.find([...this.tabsets.values()], ts => ts.name === tabsetName)
       let ts: Tabset = null as unknown as Tabset
@@ -321,6 +324,8 @@ export const useTabsStore = defineStore('tabs', {
       if (currentSpace && currentSpace.id && ts.spaces.findIndex(s => s === currentSpace.id) < 0) {
         ts.spaces.push(currentSpace.id)
       }
+
+      ts.type = type
 
       logger.debug("--- updateOrCreateTabset end -------------")
       return new NewOrReplacedTabset(foundTS !== undefined, ts)

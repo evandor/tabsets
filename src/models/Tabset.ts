@@ -8,6 +8,11 @@ export enum TabsetStatus {
   DELETED = "DELETED"
 }
 
+export enum TabsetType {
+  DEFAULT= "DEFAULT",
+  SESSION = "SESSION"
+}
+
 export class Tabset {
   id: string
   name: string
@@ -18,6 +23,7 @@ export class Tabset {
   spaces: string[] // got json problems with set<string>
   view: string = 'grid'
   status: TabsetStatus = TabsetStatus.DEFAULT
+  type: TabsetType = TabsetType.DEFAULT
 
   constructor(id: string, name: string, tabs: Tab[], groups: Group[] = [], spaces: string[] = []) {
     this.id = id

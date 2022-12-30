@@ -3,7 +3,7 @@ import {LocalStorage, uid} from "quasar";
 import ChromeApi from "src/services/ChromeApi";
 import _ from "lodash";
 import {Tab} from "src/models/Tab";
-import {Tabset, TabsetStatus} from "src/models/Tabset";
+import {Tabset, TabsetStatus, TabsetType} from "src/models/Tabset";
 import {useSearchStore} from "src/stores/searchStore";
 import {useBookmarksStore} from "src/stores/bookmarksStore";
 import IndexedDbPersistenceService from "src/services/IndexedDbPersistenceService"
@@ -141,8 +141,6 @@ class TabsetService {
       })
     }
   }
-
-
 
 
   async getThumbnailFor(selectedTab: Tab): Promise<any> {
@@ -334,10 +332,21 @@ class TabsetService {
   }
 
 
-
-
   nameForTabsetId(tsId: string): string {
     return useTabsStore().tabsets.get(tsId)?.name || 'unknown'
+  }
+
+  async trackedTabsCount(): Promise<number> {
+    // @ts-ignore
+    const result: chrome.tabs.Tab[] = await chrome.tabs.query({})
+    let trackedTabs  = 0
+    _.forEach(result, (tab: chrome.tabs.Tab) => {
+      //console.log("checking tab", tab.id, tabsetsFor(tab?.url || ''))
+      if (tab && tab.url && tabsetsFor(tab.url).length > 0) {
+        trackedTabs++
+      }
+    })
+    return trackedTabs
   }
 
   async closeTrackedTabs() {
@@ -357,6 +366,11 @@ class TabsetService {
         }
       })
     })
+  }
+
+  async closeAllTabs() {
+    // TODO long-Running action
+    ChromeApi.closeAllTabs()
   }
 
   /**
@@ -480,12 +494,13 @@ class TabsetService {
     return Promise.reject("could not mark as deleted: " + tabsetId)
   }
 
-  markAs(tabsetId: string, status: TabsetStatus): Promise<TabsetStatus> {
+  markAs(tabsetId: string, status: TabsetStatus, type: TabsetType = TabsetType.DEFAULT): Promise<TabsetStatus> {
     console.debug(`marking ${tabsetId} as ${status}`)
     const ts = getTabset(tabsetId)
     if (ts) {
       const oldStatus = ts.status
       ts.status = status
+      ts.type = type
       return saveTabset(ts)
         .then(() => oldStatus)
     }

@@ -9,7 +9,7 @@ import {usePersistenceService} from "src/services/usePersistenceService";
 import ChromeApi from "src/services/ChromeApi";
 import {TabPredicate} from "src/domain/Types";
 import {useLoggingServicee} from "src/services/useLoggingService";
-import {Tabset} from "src/models/Tabset";
+import {Tabset, TabsetType} from "src/models/Tabset";
 import {useNotificationsStore} from "stores/notificationsStore";
 import {MetaLink} from "src/models/MetaLink";
 import {SearchDoc} from "src/models/SearchDoc";
@@ -33,13 +33,19 @@ export function useTabsetService() {
    * @param name the tabset's name
    * @param chromeTabs an array of Chrome tabs
    * @param merge if true, the old values (if existent) and the new ones will be merged.
+   * @param startSession if true, create a special 'session' tabset
    */
-  const saveOrReplaceFromChromeTabs = async (name: string, chromeTabs: chrome.tabs.Tab[], merge: boolean = false): Promise<object> => {
+  const saveOrReplaceFromChromeTabs = async (
+    name: string,
+    chromeTabs: chrome.tabs.Tab[],
+    merge: boolean = false,
+    type: TabsetType = TabsetType.DEFAULT): Promise<object> => {
+
     const trustedName = name.replace(STRIP_CHARS_IN_USER_INPUT, '')
     const tabs: Tab[] = _.map(chromeTabs, t => new Tab(uid(), t))
     try {
       const result: NewOrReplacedTabset = await useTabsStore()
-        .updateOrCreateTabset(trustedName, tabs, merge)
+        .updateOrCreateTabset(trustedName, tabs, merge, type)
       if (result && result.tabset) {
         await saveTabset(result.tabset)
         result.tabset.tabs.forEach((tab: Tab) => {

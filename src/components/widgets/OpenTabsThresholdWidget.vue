@@ -31,13 +31,30 @@
         Close some tabs:
       </q-item>
       <q-item
-        :disable="tabsStore.tabsets?.size === 0"
+        :disable="tabsStore.tabsets?.size === 0 || trackedTabsCount === 0"
         clickable v-close-popup @click="TabsetService.closeTrackedTabs()">
-        <q-item-section>&bull; Close all tracked tabs</q-item-section>
+        <q-item-section>&bull; Close all tracked tabs ({{ trackedTabsCount }})</q-item-section>
       </q-item>
-<!--      <q-item clickable v-close-popup @click="TabsetService.closeDuplictedOpenTabs()">-->
-<!--        <q-item-section>&bull; Close duplicated open tabs</q-item-section>-->
-<!--      </q-item>-->
+      <!--      <q-item clickable v-close-popup @click="TabsetService.closeDuplictedOpenTabs()">-->
+      <!--        <q-item-section>&bull; Close duplicated open tabs</q-item-section>-->
+      <!--      </q-item>-->
+      <q-item
+        :disable="tabsStore.tabsets?.size === 0"
+        clickable v-close-popup @click="TabsetService.closeAllTabs()">
+        <q-item-section>&bull; Close all tabs</q-item-section>
+      </q-item>
+      <q-separator/>
+      <q-item disable>
+        Use special tabsets:
+      </q-item>
+      <q-item v-if="existingSession"
+        clickable v-close-popup @click="replaceSession">
+        <q-item-section>&bull; Replace existing Session...</q-item-section>
+      </q-item>
+      <q-item v-else
+        clickable v-close-popup @click="startSession">
+        <q-item-section>&bull; Start a new Session...</q-item-section>
+      </q-item>
       <q-separator/>
       <q-item clickable v-close-popup @click="router.push('/settings')">
         <q-item-section>Change Settings</q-item-section>
@@ -56,18 +73,27 @@ import {ref, watchEffect} from "vue";
 import {useRouter} from "vue-router";
 import {useUiService} from "src/services/useUiService";
 import {LeftDrawerTabs} from "stores/uiStore";
+import NewSessionDialog from "components/dialogues/NewSessionDialog.vue";
+import {useQuasar} from "quasar";
+import _ from "lodash"
+import {Tabset, TabsetType} from "src/models/Tabset";
 
 const tabsStore = useTabsStore()
 const settingsStore = useSettingsStore()
 const router = useRouter()
+const $q = useQuasar()
 
 const openTabsCountRatio = ref(0)
 const openTabsCountRatio2 = ref(0)
+const trackedTabsCount = ref(0)
+const existingSession = ref(false)
 
 watchEffect(() => {
   openTabsCountRatio.value = Math.min(tabsStore.tabs.length / settingsStore.thresholds['max' as keyof object], 1)
   openTabsCountRatio2.value = Math.round(100 * Math.min(tabsStore.tabs.length / settingsStore.thresholds['max' as keyof object], 1))
 })
+
+watchEffect(() => TabsetService.trackedTabsCount().then((res) => trackedTabsCount.value = res))
 
 const showThresholdBar = () =>
   tabsStore.tabs.length >= settingsStore.thresholds['min' as keyof object]
@@ -80,5 +106,12 @@ const thresholdLabel = () => tabsStore.tabs.length + " open tabs"
 const showOpenTabs = () => {
   useUiService().leftDrawerSetActiveTab(LeftDrawerTabs.OPEN_TABS)
 }
+
+watchEffect(() => {
+  existingSession.value = _.filter([...tabsStore.tabsets.values()], (ts: Tabset) => ts.type === TabsetType.SESSION).length > 0
+})
+
+const startSession = () => $q.dialog({component: NewSessionDialog, componentProps: {replaceSession: false}})
+const replaceSession = () => $q.dialog({component: NewSessionDialog, componentProps: {replaceSession: true}})
 
 </script>

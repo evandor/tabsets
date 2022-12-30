@@ -11,7 +11,7 @@
 
         <!-- title or name if given -->
         <div class="col-10 text-subtitle1 ellipsis">
-          !!!{{ nameOrTitle(tab) }}
+          {{ nameOrTitle(tab) }}
           <q-popup-edit :model-value="dynamicNameOrTitleModel(tab)" v-slot="scope"
                         @update:model-value="val => setCustomTitle( tab, val)">
             <q-input v-model="scope.value" dense autofocus counter @keyup.enter="scope.set"/>

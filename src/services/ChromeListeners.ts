@@ -1,4 +1,4 @@
-import {Tabset} from "src/models/Tabset";
+import {Tabset, TabsetType} from "src/models/Tabset";
 //import TabsetService from "src/services/TabsetService";
 import {useTabsStore} from "src/stores/tabsStore";
 import _ from "lodash";
@@ -14,7 +14,15 @@ import {useTabsetService} from "src/services/TabsetService2";
 import {useFeatureTogglesStore} from "stores/featureTogglesStore";
 import {useUiStore} from "stores/uiStore";
 
-const {saveCurrentTabset, saveTabset, saveText,saveMetaLinksFor, saveLinksFor, saveToTabsetId, saveThumbnailFor} = useTabsetService()
+const {
+  saveCurrentTabset,
+  saveTabset,
+  saveText,
+  saveMetaLinksFor,
+  saveLinksFor,
+  saveToTabsetId,
+  saveThumbnailFor
+} = useTabsetService()
 
 class ChromeListeners {
 
@@ -85,10 +93,22 @@ class ChromeListeners {
       saveCurrentTabset()
       return
     }
-    tabsStore.pendingTabset.tabs.push(new Tab(uid(), tab))
+
+    let foundSession = false
+    _.forEach([...tabsStore.tabsets.values()], (ts: Tabset) => {
+      if (ts.type === TabsetType.SESSION) {
+        foundSession = true
+        //console.log("pushing to", ts.id, tab)
+        ts.tabs.push(new Tab(uid(), tab))
+      }
+    })
+    if (!foundSession) {
+      //console.log("pushing to pending", tab)
+      tabsStore.pendingTabset.tabs.push(new Tab(uid(), tab))
+    }
   }
 
-  onUpdated(number: number, info: chrome.tabs.TabChangeInfo, tab: chrome.tabs.Tab) {
+  onUpdated(number: number, info: chrome.tabs.TabChangeInfo, chromeTab: chrome.tabs.Tab) {
     if (!useTabsStore().listenersOn) {
       return
     }
@@ -98,38 +118,48 @@ class ChromeListeners {
     if (!info.status || (Object.keys(info).length > 1)) {
       console.debug(`onUpdated:   tab ${number}: >>> ${JSON.stringify(info)} <<<`)
 
-      // find tab which was created by "onCreate" moments ago
-      const index = _.findIndex(tabsStore.pendingTabset?.tabs, t => t.chromeTab.id === tab.id);
+      //console.log(" --- handleUpdate of pending")
+      this.handleUpdate(tabsStore.pendingTabset as Tabset, chromeTab)
 
-      if (index >= 0) {
-        if (!this.isIgnored(tab)) {
-          const existingPendingTab = tabsStore.pendingTabset.tabs[index]
-          const updatedTab = new Tab(uid(), tab)
-          if (existingPendingTab.chromeTab.url !== updatedTab.chromeTab.url && existingPendingTab.chromeTab.url !== 'chrome://newtab/') {
-            updatedTab.setHistoryFrom(existingPendingTab)
-            if (existingPendingTab.chromeTab.url) {
-              updatedTab.addToHistory(existingPendingTab.chromeTab.url)
-            }
+      let foundSession = false
+      _.forEach([...tabsStore.tabsets.values()], (ts: Tabset) => {
+        if (ts.type === TabsetType.SESSION) {
+          foundSession = true
+          console.log(" --- handleUpdate of", ts.id)
+          //ts.tabs.push(updatedTab)
+          this.handleUpdate(ts, chromeTab)
+        }
+      })
+
+    }
+  }
+
+  private handleUpdate(tabset: Tabset, tab: chrome.tabs.Tab) {
+    // find tab which was created by "onCreate" moments ago
+    const index = _.findIndex(tabset?.tabs, t => t.chromeTab.id === tab.id);
+
+    if (index >= 0) {
+      if (!this.isIgnored(tab)) {
+        const existingPendingTab = tabset.tabs[index]
+        const updatedTab = new Tab(uid(), tab)
+        if (existingPendingTab.chromeTab.url !== updatedTab.chromeTab.url && existingPendingTab.chromeTab.url !== 'chrome://newtab/') {
+          updatedTab.setHistoryFrom(existingPendingTab)
+          if (existingPendingTab.chromeTab.url) {
+            updatedTab.addToHistory(existingPendingTab.chromeTab.url)
           }
-          const urlExistsAlready = _.filter(tabsStore.pendingTabset.tabs, pT => pT.chromeTab.url === tab.url).length >= 2
-          if (urlExistsAlready) {
-            //console.log("deleting pending tab", tab)
-            tabsStore.pendingTabset.tabs.splice(index, 1);
-          } else {
-            //console.log("updating pending tab", tab)
-            tabsStore.pendingTabset.tabs.splice(index, 1, updatedTab);
-          }
-          // // reload tabs (to be sure?!)
-          // if (!this.inProgress) {
-          //   tabsStore.loadTabs('onUpdated');
-          // }
+        }
+        const urlExistsAlready = _.filter(tabset.tabs, pT => pT.chromeTab.url === tab.url).length >= 2
+        if (urlExistsAlready) {
+          tabset.tabs.splice(index, 1);
         } else {
-          console.log("deleting ignored tab", tab)
-          tabsStore.pendingTabset.tabs.splice(index, 1)
+          tabset.tabs.splice(index, 1, updatedTab);
         }
       } else {
-        console.debug("ignoring, pending tab has been deleted", info, tab)
+        console.log("deleting ignored tab", tab)
+        tabset.tabs.splice(index, 1)
       }
+    } else {
+      console.debug("ignoring, pending tab has been deleted", tab)
     }
   }
 
