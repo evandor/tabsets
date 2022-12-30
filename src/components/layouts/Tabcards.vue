@@ -10,13 +10,15 @@
       v-if="props.tabs.length > 0"
       class="col-xs-12 col-sm-4 col-md-3 col-lg-2 q-pa-xs"
       v-for="tab in props.tabs"
+      @dragstart="startDrag($event, tab)"
       :key="props.group + '_' + tab.id">
 
       <TabCardWidget :key="props.group + '__' + tab.id" :tab="tabAsTab(tab)" :highlightUrl="highlightUrl"/>
 
     </div>
 
-    <div v-else-if="tabsStore.pendingTabset?.tabs.length === 0" class="q-ma-md q-pa-xl fit" style="border: 2px dotted grey; border-radius: 7px">
+    <div v-else-if="tabsStore.pendingTabset?.tabs.length === 0" class="q-ma-md q-pa-xl fit"
+         style="border: 2px dotted grey; border-radius: 7px">
       <div class="row fit text-subtitle2 justify-center items-center">
         <div class="col-12">drag and drop new tabs from</div>
       </div>
@@ -81,13 +83,14 @@ function adjustIndex(element: any, tabs: Tab[]) {
 }
 
 const handleDragAndDrop = (event: any) => {
-  //console.log("event", event)
+  console.log("event", event)
   const {moved, added} = event
   if (moved) {
     console.log('d&d tabs moved', moved.element.id, moved.newIndex, props.group)
     let useIndex = moved.newIndex
     switch (props.group) {
       case 'otherTabs':
+        // @ts-ignore
         const unpinnedNoGroup: Tab[] = _.filter(tabsStore.getCurrentTabs, (t: Tab) => !t.chromeTab.pinned && t.chromeTab.groupId === -1)
         if (unpinnedNoGroup.length > 0) {
           useIndex = adjustIndex(moved, unpinnedNoGroup);
@@ -102,6 +105,7 @@ const handleDragAndDrop = (event: any) => {
       default:
         if (props.group.startsWith('groupedTabs_')) {
           const groupId = props.group.split('_')[1]
+          // @ts-ignore
           const filteredTabs: Tab[] = _.filter(tabsStore.getCurrentTabs, (t: Tab) => t.chromeTab.groupId === parseInt(groupId))
           if (filteredTabs.length > 0) {
             useIndex = adjustIndex(moved, filteredTabs);
@@ -126,6 +130,17 @@ const openOrShowOpenTabs = () => {
     uiService.leftDrawerAnimateLabel()
   }
   // useUiService().setWideDrawer()
+}
+
+const startDrag = (evt: any, tab: Tab) => {
+  console.log("start drag", evt, tab)
+  if (evt.dataTransfer) {
+    evt.dataTransfer.dropEffect = 'move'
+    evt.dataTransfer.effectAllowed = 'move'
+    evt.dataTransfer.setData('text/plain', tab.id)
+    useUiService().draggingTab(tab.id)
+  }
+  console.log("evt.dataTransfer.getData('text/plain')", evt.dataTransfer.getData('text/plain'))
 }
 
 </script>

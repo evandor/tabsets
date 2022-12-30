@@ -119,6 +119,7 @@ const tabsets = (isFavorite: boolean) => {
 }
 
 const onDrop = (evt: DragEvent, tabsetId: string) => {
+  console.log("onDrop", evt, tabsetId)
   if (evt.dataTransfer && tabsetId) {
     const tabId = evt.dataTransfer.getData('text/plain')
     TabsetService.moveToTabset(tabId, tabsetId)

@@ -228,6 +228,7 @@ class TabsetService {
   }
 
   moveToTabset(tabId: string, tabsetId: string) {
+    console.log("xxx", tabId, tabsetId)
     const tabsStore = useTabsStore()
     const tabIndex = _.findIndex(tabsStore.getCurrentTabs, {id: tabId})
     const targetTabset = tabsStore.getTabset(tabsetId)

@@ -67,12 +67,6 @@
           <q-tooltip>About tabsets browser extension v{{ appVersion }}</q-tooltip>
         </q-btn>
 
-        <div class="cursor-pointer" @click="router.push('/about')" v-if="notificationsStore.updateToVersion !== ''">
-          <q-btn
-            class="text-primary bg-warning"
-            @click="installNewVersion"
-            :label="'New Version ' + notificationsStore.updateToVersion + ' available. Click here to update'"/>
-        </div>
       </q-toolbar>
     </q-header>
 

@@ -11,7 +11,7 @@
       </div>
     </q-toolbar>
 
-    <iframe ref="iFrameRef" class="greyBorderTop" id="tabIFrame" :src='src' frameBorder="0" :style="iFrameStyle"/>
+    <iframe ref="iFrameRef" class="greyBorderTop" id="tabIFrame" :src='src' frameBorder="0" />
 
   </q-page>
 
@@ -39,7 +39,7 @@ onMounted(() => {
   const iFrame = iFrameRef.value
   if (iFrame) {
     // @ts-ignore
-    iFrame.setAttribute("style", "overflow:hidden;height:" + (window.innerHeight - 50) + "px;width:100%;border:0px");
+    iFrame.setAttribute("style", "overflow:hidden;height:" + (window.innerHeight - 130) + "px;width:100%;border:0px");
   }
 })
 
@@ -55,8 +55,7 @@ watchEffect(async () => {
 
 })
 
-const iFrameStyle = () => "overflow:hidden;height:" + (window.innerHeight - 50) + "px;width:100%;border:0px"
-
+const iFrameStyle = () => "overflow:hidden;height:" + (window.innerHeight - 130) + "px;width:100%;border:0px"
 
 </script>
 

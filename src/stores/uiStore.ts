@@ -33,6 +33,7 @@ export const useUiStore = defineStore('ui', () => {
   const leftDrawer = ref<LeftDrawer>($q.localStorage.getItem('ui.leftDrawer') || new LeftDrawer(LeftDrawerState.SMALL))
   const leftDrawerLabelAnimated = ref(false)
   const tabsetIdForNewTab = ref<string | undefined>($q.localStorage.getItem('ui.tabsetIdForNewTab') as string || undefined)
+  const tabBeingDragged = ref<string | undefined>(undefined)
 
   watch(
     leftDrawer,
@@ -62,7 +63,15 @@ export const useUiStore = defineStore('ui', () => {
     tabsetIdForNewTab.value = tabsetId
   }
 
+  function draggingTab (tabId: string) {
+    tabBeingDragged.value = tabId
+  }
 
+  function droppingTab () {
+    const tabBeingDropped = tabBeingDragged.value
+    tabBeingDragged.value = undefined
+    return tabBeingDropped
+  }
 
-  return {leftDrawer, leftDrawerLabelIsAnimated, setLeftDrawerLabelAnimated, setTabsetForNewTabPage, tabsetIdForNewTab}
+  return {leftDrawer, leftDrawerLabelIsAnimated, setLeftDrawerLabelAnimated, setTabsetForNewTabPage, tabsetIdForNewTab, draggingTab, droppingTab}
 })

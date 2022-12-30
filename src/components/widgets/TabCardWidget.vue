@@ -1,31 +1,17 @@
 <template>
-  <q-card class="my-card" flat bordered :style="cardStyle(tab)" @mouseover="setInfo(tab)" @click="selectTab(tab)">
+  <q-card class="my-card" flat bordered :style="cardStyle(tab)"
+          @mouseover="setInfo(tab)"
+          @click="selectTab(tab)">
     {{ loadThumbnail(tab) }}
     <q-card-section class="q-pt-xs cursor-pointer bg-primary text-white" style="width:100%;">
       <div class="row items-baseline">
 
         <!-- favicon -->
-        <TabFaviconWidget :tab="tab" width="22px" height="22px"/>
-        <!--        <div class="col-2">-->
-        <!--          <q-icon v-if="UrlExtension.IMAGE === tab.extension"-->
-        <!--                  size="22px"-->
-        <!--                  name="image" />-->
-        <!--          <q-icon v-else-if="UrlExtension.RSS === tab.extension"-->
-        <!--                  size="22px"-->
-        <!--                  name="rss_feed" />-->
-        <!--          <q-img v-else-->
-        <!--            class="rounded-borders"-->
-        <!--            style="cursor: move"-->
-        <!--            width="22px"-->
-        <!--            height="22px"-->
-        <!--            :src="getFaviconUrl(tab)">-->
-        <!--            <q-tooltip>{{ tab.chromeTab?.id }} / {{ tab.id }} / {{ tab.bookmarkId }}</q-tooltip>-->
-        <!--          </q-img>-->
-        <!--        </div>-->
+        <TabFaviconWidget :tab="tab" width="22px" height="22px" />
 
         <!-- title or name if given -->
         <div class="col-10 text-subtitle1 ellipsis">
-          {{ nameOrTitle(tab) }}
+          !!!{{ nameOrTitle(tab) }}
           <q-popup-edit :model-value="dynamicNameOrTitleModel(tab)" v-slot="scope"
                         @update:model-value="val => setCustomTitle( tab, val)">
             <q-input v-model="scope.value" dense autofocus counter @keyup.enter="scope.set"/>
@@ -198,6 +184,5 @@ const saveTab = (tab: Tab) => {
     )
   }
 }
-
 
 </script>

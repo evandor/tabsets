@@ -76,6 +76,7 @@ import {MarkTabsetAsDefaultCommand} from "src/domain/commands/MarkTabsetAsDefaul
 import {MarkTabsetAsArchivedCommand} from "src/domain/commands/MarkTabsetAsArchivedCommand";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {useTabsetService} from "src/services/TabsetService2";
+import {useUiService} from "src/services/useUiService";
 
 const {handleError, handleSuccess} = useNotificationHandler()
 
@@ -116,9 +117,9 @@ const tabsetLabel = (tabset: Tabset) => {
 }
 
 const onDrop = (evt: DragEvent, tabsetId: string) => {
-  if (evt.dataTransfer && tabsetId) {
-    const tabId = evt.dataTransfer.getData('text/plain')
-    TabsetService.moveToTabset(tabId, tabsetId)
+  const tabId2 = useUiService().droppingTab()
+  if (evt.dataTransfer && tabsetId && tabId2) {
+    TabsetService.moveToTabset(tabId2, tabsetId)
   } else {
     console.log("got error dropping tab", tabsetId)
   }

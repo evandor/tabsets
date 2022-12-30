@@ -63,9 +63,9 @@
           <q-tooltip>Customize Tabsets and utilize advanced features</q-tooltip>
         </q-btn>
 
-        <q-btn class="q-mr-md" icon="o_help" size="12px" style="width:24px" flat @click="router.push('/about')">
-          <q-tooltip>About tabsets browser extension v{{ appVersion }}</q-tooltip>
-        </q-btn>
+<!--        <q-btn class="q-mr-md" icon="o_help" size="12px" style="width:24px" flat @click="router.push('/about')">-->
+<!--          <q-tooltip>About tabsets browser extension v{{ appVersion }}</q-tooltip>-->
+<!--        </q-btn>-->
 
         <div class="cursor-pointer" @click="router.push('/about')" v-if="notificationsStore.updateToVersion !== ''">
           <q-btn

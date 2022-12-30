@@ -61,6 +61,10 @@ export function useUiService() {
     useUiStore().setTabsetForNewTabPage(tabsetId)
   }
 
+  const  draggingTab = (tabId: string) => useUiStore().draggingTab(tabId)
+  const  droppingTab = ():string | undefined => useUiStore().droppingTab()
+
+
   return {
     useSmallDrawerView,
     toggleDrawer,
@@ -70,7 +74,9 @@ export function useUiService() {
     leftDrawerAnimateLabel,
     leftDrawerAnimate,
     showSearchResultsPageFor,
-    setTabsetForNewTabPage
+    setTabsetForNewTabPage,
+    draggingTab,
+    droppingTab
   }
 
 }
