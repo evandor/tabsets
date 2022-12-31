@@ -51,7 +51,7 @@ class TabService {
           ]
         },
         (a) => {
-          console.log("a", a)
+          //console.log("a", a)
           /*chrome.tabs.query({title: `Tabsets Extension`}, (result: chrome.tabs.Tab[]) => {
             if (result && result.length > 0) {
               const tab = result[0]

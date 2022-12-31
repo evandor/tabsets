@@ -90,6 +90,14 @@
         <q-radio v-model="bookmarksPermissionGranted" :val="false" label="Revoked"/>
       </div>
     </div>
+
+    <div class="row items-baseline q-ma-lg">
+      <div class="col-3 text-h6">All URLs</div>
+      <div class="col-9">
+        <q-radio v-model="allUrlsOriginGranted" :val="true" label="Granted"/>
+        <q-radio v-model="allUrlsOriginGranted" :val="false" label="Revoked"/>
+      </div>
+    </div>
   </div>
 
   <div v-if="tab === 'ignored'">
@@ -333,6 +341,8 @@ import {usePermissionsStore} from "stores/permissionsStore";
 import {GrantPermissionCommand} from "src/domain/commands/GrantPermissionCommand";
 import {ExecutionResult} from "src/domain/ExecutionResult";
 import {RevokePermissionCommand} from "src/domain/commands/RevokePermissionCommand";
+import {GrantOriginCommand} from "src/domain/commands/GrantOriginCommand";
+import {RevokeOriginCommand} from "src/domain/commands/RevokeOriginCommand";
 
 
 const tabsStore = useTabsStore()
@@ -358,6 +368,7 @@ const newTabEnabled = ref<boolean>(featuresStore.isEnabled('newTab'))
 
 const darkMode = ref<boolean>(localStorage.getItem('darkMode') || false)
 const bookmarksPermissionGranted = ref<boolean | undefined>(usePermissionsStore().hasPermission('bookmarks'))
+const allUrlsOriginGranted = ref<boolean | undefined>(usePermissionsStore().hasOrigin('*://*/*'))
 const showBookmarks = ref<boolean>(localStorage.getItem('showBookmarks') || false)
 const tab = ref('appearance')
 
@@ -374,13 +385,29 @@ watch(() => bookmarksPermissionGranted.value, (newValue, oldValue) => {
   if (bookmarksPermissionGranted.value && !usePermissionsStore().hasPermission('bookmarks')) {
     useCommandExecutor()
       .executeFromUi(new GrantPermissionCommand("bookmarks"))
-    //usePermissionsStore().grantPermission("bookmarks")
       .then((res:ExecutionResult<boolean>) => bookmarksPermissionGranted.value = res.result)
   } else if (!bookmarksPermissionGranted.value) {
     useCommandExecutor()
       .executeFromUi(new RevokePermissionCommand("bookmarks"))
       .then(() => {
         useBookmarksStore().loadBookmarks()
+      })
+  }
+})
+
+watch(() => allUrlsOriginGranted.value, (newValue, oldValue) => {
+  if (newValue === oldValue) {
+    return
+  }
+  if (allUrlsOriginGranted.value && !usePermissionsStore().hasOrigin('*://*/*')) {
+    useCommandExecutor()
+      .executeFromUi(new GrantOriginCommand("*://*/*"))
+      .then((res:ExecutionResult<boolean>) => allUrlsOriginGranted.value = res.result)
+  } else if (!allUrlsOriginGranted.value) {
+    useCommandExecutor()
+      .executeFromUi(new RevokeOriginCommand("*://*/*"))
+      .then(() => {
+       // useBookmarksStore().loadBookmarks()
       })
   }
 })

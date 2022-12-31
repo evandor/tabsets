@@ -31,8 +31,16 @@
     </div>
     <div class="row q-mx-md q-my-none" style="width:265px;border:0 solid yellow">
 
-      <div class="col-12">
+      <div class="col-12" v-if="hasAllUrlsPermission">
         <q-img :src="thumbnail" width="265px" style="border:1px solid grey;border-radius: 5px;" no-native-menu/>
+      </div>
+      <div class="col-12" v-else>
+        <q-banner rounded class="bg-yellow-1 text-black" style="border:1px solid grey;border-radius: 5px;">
+          If you want to have thumbnails of your tabs, additional permissions are needed.<br><br>
+          Click <span class="cursor-pointer text-blue-6" style="text-decoration: underline"
+                      @click="grant('*://*/*')">here</span> to
+          grant permissions for the tabset extension to access your bookmarks.
+        </q-banner>
       </div>
 
       <div class="col-3 text-left">
@@ -159,6 +167,10 @@ import {formatDistance} from "date-fns";
 import {Tab} from "src/models/Tab";
 import EditNoteDialog from "components/dialogues/EditNoteDialog.vue";
 import MHtmlService from "src/services/MHtmlService";
+import {usePermissionsStore} from "stores/permissionsStore";
+import {useCommandExecutor} from "src/services/CommandExecutor";
+import {GrantPermissionCommand} from "src/domain/commands/GrantPermissionCommand";
+import {GrantOriginCommand} from "src/domain/commands/GrantOriginCommand";
 
 const notificationStore = useNotificationsStore()
 const featuresStore = useFeatureTogglesStore()
@@ -167,6 +179,9 @@ const $q = useQuasar()
 
 const thumbnail = ref('')
 const content = ref('')
+const hasAllUrlsPermission = ref(false)
+
+watchEffect(() => hasAllUrlsPermission.value = usePermissionsStore().hasOrigin('*://*/*') || false)
 
 watchEffect(() => {
   if (notificationStore.selectedTab) {
@@ -248,5 +263,9 @@ const scheduleTab = () => {
     }
   })
 }
+
+const grant = (origin: string) => useCommandExecutor().executeFromUi(new GrantOriginCommand(origin))
+
+
 
 </script>

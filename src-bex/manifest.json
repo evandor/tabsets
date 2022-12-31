@@ -21,26 +21,13 @@
   "optional_permissions": [
     "bookmarks"
   ],
-  "host_permissions": [
-    "<all_urls>"
+  "optional_host_permissions": [
+    "*://*/*"
   ],
   "action": {},
   "background": {
     "service_worker": "background.js"
   },
-  "content_scripts": [
-    {
-      "matches": [
-        "*://*/*"
-      ],
-      "css": [
-        "assets/content.css"
-      ],
-      "js": [
-        "tabsets-content-script.js"
-      ]
-    }
-  ],
   "content_security_policy": {
     "extension_pages": "script-src 'self'; object-src 'self';"
   },

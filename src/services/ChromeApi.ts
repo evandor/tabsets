@@ -78,7 +78,7 @@ class ChromeApi {
 
     chrome.webRequest.onHeadersReceived.addListener(
       (details) => {
-        //console.log("headerDetails", details)
+        console.log("headerDetails", details)
         // saveRequestFor(
         //   details.url,
         //   new RequestInfo(details.statusCode,  details.responseHeaders || [])
@@ -98,7 +98,7 @@ class ChromeApi {
 
     chrome.contextMenus.onClicked.addListener(
       (e: chrome.contextMenus.OnClickData, tab: chrome.tabs.Tab | undefined) => {
-        //console.log("listening to", e, tab)
+        console.log("listening to", e, tab)
         if (e.menuItemId === "open_tabsets_page") {
           chrome.tabs.query({title: `Tabsets Extension`}, (result: chrome.tabs.Tab[]) => {
             if (result && result[0]) {

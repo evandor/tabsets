@@ -41,7 +41,7 @@
       <q-item
         :disable="tabsStore.tabsets?.size === 0"
         clickable v-close-popup @click="TabsetService.closeAllTabs()">
-        <q-item-section>&bull; Close all tabs</q-item-section>
+        <q-item-section>&bull; Close all other tabs</q-item-section>
       </q-item>
       <q-separator/>
       <q-item disable>

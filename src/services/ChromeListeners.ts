@@ -123,6 +123,15 @@ class ChromeListeners {
       //console.log(" --- handleUpdate of pending")
       this.handleUpdate(tabsStore.pendingTabset as Tabset, chromeTab)
 
+      if (usePermissionsStore().hasOrigin('*://*/*') && !chromeTab.url?.startsWith("chrome")) {
+        console.log("hier1a")
+        // @ts-ignore
+        chrome.scripting.executeScript({
+          target: {tabId: chromeTab.id, allFrames: true},
+          files: ["tabsets-content-script.js"],
+        }, (callback:any) => console.log("callback", callback));
+      }
+
       let foundSession = false
       _.forEach([...tabsStore.tabsets.values()], (ts: Tabset) => {
         if (ts.type === TabsetType.SESSION) {
@@ -342,8 +351,9 @@ class ChromeListeners {
         return // no screenshot of extension itself
       }
       console.log("capturing tab...", current.url, selfId)
-      const allUrlsPermission = usePermissionsStore().hasPermission('<all_urls>')
+      const allUrlsPermission = usePermissionsStore().hasOrigin('*://*/*')
       console.log("has Permission", allUrlsPermission)
+      chrome.permissions.getAll((res) => console.log("res", res))
       if (allUrlsPermission) {
         setTimeout(() => {
           chrome.tabs.captureVisibleTab(
