@@ -19,8 +19,11 @@ class StatsService {
 
     navigator.storage.estimate()
       .then((res) => {
-        const dataset = new StatsEntry(tabssetsSize, openTabsCount, tabsCount, bookmarksCount, res.usage || 0)
-        this.persistenceService.saveStats(dataset)
+        const offset = new Date().getTimezoneOffset()
+        const todayLong = new Date(new Date().getTime() - (offset * 60 * 1000))
+        const today = todayLong.toISOString().split('T')[0]
+        const dataset = new StatsEntry(today, tabssetsSize, openTabsCount, tabsCount, bookmarksCount, res.usage || 0)
+        this.persistenceService.saveStats(today, dataset)
       })
   }
 }

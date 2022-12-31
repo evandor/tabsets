@@ -163,7 +163,7 @@ chrome.runtime.onInstalled.addListener((details) => {
       },
       (newTab) => {
         // Tab opened.
-        console.log("newTab", newTab)
+        //console.log("newTab", newTab)
       }
     );
 

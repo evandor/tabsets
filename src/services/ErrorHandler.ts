@@ -17,14 +17,14 @@ export function useNotificationHandler() {
     })
   }
 
-  const handleWarning = (res: ExecutionResult) => {
+  const handleWarning = (res: ExecutionResult<any>) => {
     Notify.create({
       color: 'warning',
       message: res.message
     })
   }
 
-  const handleSuccess = (executionResult: ExecutionResult): ExecutionResult => {
+  const handleSuccess = (executionResult: ExecutionResult<any>): ExecutionResult<any> => {
     const actions: any[] = []
     if (executionResult.undoCommand) {
       actions.push(

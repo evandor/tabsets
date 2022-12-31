@@ -34,7 +34,7 @@ interface PersistenceService {
 
   cleanUpRequests(): Promise<void>
 
-  saveStats(dataset: object): void
+  saveStats(date: string, dataset: object): void
 
   saveLog(context: string, level: LogLevel, msg: string, ...args: any[]):Promise<any>
 }

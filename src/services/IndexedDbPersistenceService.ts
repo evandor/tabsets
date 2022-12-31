@@ -481,11 +481,8 @@ class IndexedDbPersistenceService implements PersistenceService {
   }
 
 
-  saveStats(dataset: StatsEntry) {
-    const offset = new Date().getTimezoneOffset()
-    const todayLong = new Date(new Date().getTime() - (offset * 60 * 1000))
-    const today = todayLong.toISOString().split('T')[0]
-    this.db.put('stats', dataset, today)
+  saveStats(date: string, dataset: StatsEntry) {
+    this.db.put('stats', dataset, date)
   }
 
   async getLogs(predicate: Predicate<LogEntry> = (l: LogEntry) => true): Promise<LogEntry[]> {
@@ -518,7 +515,13 @@ class IndexedDbPersistenceService implements PersistenceService {
       while (cursor) {
         let key = cursor.primaryKey;
         let value = cursor.value;
-        const logEntry = new StatsEntry(key as string, value.tabsets, value.openTabsCount, value.tabsCount, value.bookmarksCount, value.storageUsage)
+        const logEntry = new StatsEntry(
+          key as string,
+          value.tabsets,
+          value.openTabsCount,
+          value.tabsCount,
+          value.bookmarksCount,
+          value.storageUsage)
         res.push(logEntry)
         cursor = await cursor.continue();
       }

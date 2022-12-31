@@ -52,6 +52,22 @@
         />
       </div>
     </div>
+
+    <div class="row items-baseline q-ma-lg">
+
+      <div class="col-3 text-h6">
+        Thumbnail Quality
+      </div>
+      <div class="col-3">
+        larger Thumbnails look better but need more (local) storage.
+      </div>
+      <div class="col">
+        <q-slider v-model="settingsStore.thumbnailQuality"
+                  marker-labels
+                  :min="0" :max="100" :inner-min="10" :inner-max="100" :step=5 />
+      </div>
+    </div>
+
     <div class="row items-baseline q-ma-lg">
 
       <div class="col-3 text-h6">

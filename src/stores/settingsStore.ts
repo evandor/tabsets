@@ -15,6 +15,8 @@ export const useSettingsStore = defineStore('settings', () => {
     max: 40
   })
 
+  const thumbnailQuality = ref($q.localStorage.getItem('thumbnailQuality') || 25)
+
   watch(
     thresholds,
     (thresholdsVal: Object) => {
@@ -22,5 +24,7 @@ export const useSettingsStore = defineStore('settings', () => {
     }, {deep: true}
   )
 
-  return {thresholds}
+  watch(thumbnailQuality, (val: Object) => $q.localStorage.set("thumbnailQuality", val))
+
+  return {thresholds, thumbnailQuality}
 })

@@ -13,6 +13,8 @@ import {useWindowsStore} from "src/stores/windowsStores";
 import {useTabsetService} from "src/services/TabsetService2";
 import {useFeatureTogglesStore} from "stores/featureTogglesStore";
 import {useUiStore} from "stores/uiStore";
+import {useSettingsStore} from "stores/settingsStore";
+import {usePermissionsStore} from "stores/permissionsStore";
 
 const {
   saveCurrentTabset,
@@ -137,7 +139,6 @@ class ChromeListeners {
   private handleUpdate(tabset: Tabset, tab: chrome.tabs.Tab) {
     // find tab which was created by "onCreate" moments ago
     const index = _.findIndex(tabset?.tabs, t => t.chromeTab.id === tab.id);
-
     if (index >= 0) {
       if (!this.isIgnored(tab)) {
         const existingPendingTab = tabset.tabs[index]
@@ -149,6 +150,7 @@ class ChromeListeners {
           }
         }
         const urlExistsAlready = _.filter(tabset.tabs, pT => pT.chromeTab.url === tab.url).length >= 2
+
         if (urlExistsAlready) {
           tabset.tabs.splice(index, 1);
         } else {
@@ -340,52 +342,85 @@ class ChromeListeners {
         return // no screenshot of extension itself
       }
       console.log("capturing tab...", current.url, selfId)
-      setTimeout(() => {
-        chrome.tabs.captureVisibleTab(
-          windowId,
-          {},
-          function (dataUrl) {
-            if (dataUrl === undefined) {
-              return
-            }
-            //console.log("capturing thumbnail for ", sender.tab?.id, Math.round(dataUrl.length / 1024) + "kB")
-
-            let img = new Image()
-            img.src = dataUrl
-            img.onload = () => {
-              let canvas = document.createElement('canvas')
-              let width = img.width
-              let height = img.height
-              console.log("original width/height", img.width, img.height)
-              const MAX_WIDTH = 265 * 1.3
-              const MAX_HEIGHT = 200 * 1.3
-
-              if (width > height) {
-                if (width > MAX_WIDTH) {
-                  height *= MAX_WIDTH / width
-                  height = Math.round(height)
-                  width = MAX_WIDTH
-                }
-              } else {
-                if (height > MAX_HEIGHT) {
-                  width *= MAX_HEIGHT / height
-                  width = Math.round(width)
-                  height = MAX_HEIGHT
-                }
+      const allUrlsPermission = usePermissionsStore().hasPermission('<all_urls>')
+      console.log("has Permission", allUrlsPermission)
+      if (allUrlsPermission) {
+        setTimeout(() => {
+          chrome.tabs.captureVisibleTab(
+            windowId,
+            {},
+            function (dataUrl) {
+              if (dataUrl === undefined) {
+                return
               }
-              let ctx = canvas.getContext('2d')
-              // @ts-ignore
-              ctx.drawImage(img, 0, 0, width, height)
-              //resolve(canvas.toDataURL()) // this will return base64 image results after resize
+              console.log("capturing thumbnail for ", sender.tab?.id, Math.round(dataUrl.length / 1024) + "kB")
 
-              console.log(`capturing ${width}x${height} thumbnail for ${sender.tab?.id}, ${Math.round(canvas.toDataURL().length / 1024)}kB`)
-              saveThumbnailFor(sender.tab, canvas.toDataURL())
-              sendResponse({imgSrc: dataUrl});
+              var img = new Image();
 
+              // https://stackoverflow.com/questions/19262141/resize-image-with-javascript-canvas-smoothly
+              img.onload = function () {
+
+                // set size proportional to image
+                //canvas.height = canvas.width * (img.height / img.width);
+
+                var oc = document.createElement('canvas')
+                var octx = oc.getContext('2d')
+
+                let quality = useSettingsStore().thumbnailQuality as number
+                oc.width = Math.round(img.width * 0.5 * quality / 100)
+                oc.height = Math.round(img.height * 0.5 * quality / 100)
+                // @ts-ignore
+                octx.drawImage(img, 0, 0, oc.width, oc.height);
+
+                console.log(`capturing ${oc.width}x${oc.height} thumbnail for ${sender.tab?.id}, ${Math.round(oc.toDataURL().length / 1024)}kB`)
+                saveThumbnailFor(sender.tab, oc.toDataURL())
+                sendResponse({imgSrc: dataUrl});
+              }
+              img.src = dataUrl//"https://i.imgur.com/SHo6Fub.jpg";
+
+              // let img = new Image()
+              // img.src = dataUrl
+              // img.onload = () => {
+              //   let canvas = document.createElement('canvas')
+              //   let width = img.width
+              //   let height = img.height
+              //   let quality = 90//useSettingsStore().thumbnailQuality
+              //   console.log("original width/height", width, height, quality)
+              //   const MAX_WIDTH = Math.round(265 * quality / 10)
+              //   const MAX_HEIGHT = Math.round(200 * quality / 10)
+              //
+              //   if (width > height) {
+              //     if (width > MAX_WIDTH) {
+              //       height *= MAX_WIDTH / width
+              //       height = Math.round(height)
+              //       width = MAX_WIDTH
+              //     }
+              //   } else {
+              //     if (height > MAX_HEIGHT) {
+              //       width *= MAX_HEIGHT / height
+              //       width = Math.round(width)
+              //       height = MAX_HEIGHT
+              //     }
+              //   }
+              //   let ctx = canvas.getContext('2d')
+              //   width = 1000
+              //   height = 800
+              //   img.width = width
+              //   img.height = height
+              //   // @ts-ignore
+              //   ctx.drawImage(img, 0, 0, width, height)//, 0,0, img.width,img.height)
+              //   //resolve(canvas.toDataURL()) // this will return base64 image results after resize
+              //
+              //   console.log(`capturing ${width}x${height} thumbnail for ${sender.tab?.id}, ${Math.round(canvas.toDataURL().length / 1024)}kB`)
+              //   saveThumbnailFor(sender.tab, canvas.toDataURL())
+              //   // saveThumbnailFor(sender.tab, dataUrl)
+              //   sendResponse({imgSrc: dataUrl});
+              //
+              // }
             }
-          }
-        );
-      }, 1000)
+          );
+        }, 1000)
+      }
 
     })
 
