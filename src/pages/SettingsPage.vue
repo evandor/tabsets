@@ -368,7 +368,7 @@ const newTabEnabled = ref<boolean>(featuresStore.isEnabled('newTab'))
 
 const darkMode = ref<boolean>(localStorage.getItem('darkMode') || false)
 const bookmarksPermissionGranted = ref<boolean | undefined>(usePermissionsStore().hasPermission('bookmarks'))
-const allUrlsOriginGranted = ref<boolean | undefined>(usePermissionsStore().hasOrigin('*://*/*'))
+const allUrlsOriginGranted = ref<boolean | undefined>(usePermissionsStore().hasAllOrigins())
 const showBookmarks = ref<boolean>(localStorage.getItem('showBookmarks') || false)
 const tab = ref('appearance')
 
@@ -399,7 +399,7 @@ watch(() => allUrlsOriginGranted.value, (newValue, oldValue) => {
   if (newValue === oldValue) {
     return
   }
-  if (allUrlsOriginGranted.value && !usePermissionsStore().hasOrigin('*://*/*')) {
+  if (allUrlsOriginGranted.value && !usePermissionsStore().hasAllOrigins()) {
     useCommandExecutor()
       .executeFromUi(new GrantOriginCommand("*://*/*"))
       .then((res:ExecutionResult<boolean>) => allUrlsOriginGranted.value = res.result)

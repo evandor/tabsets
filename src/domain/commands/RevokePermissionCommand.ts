@@ -3,6 +3,9 @@ import {ExecutionResult} from "src/domain/ExecutionResult";
 import {useLoggingServicee} from "src/services/useLoggingService";
 import {usePermissionsStore} from "stores/permissionsStore";
 import {GrantPermissionCommand} from "src/domain/commands/GrantPermissionCommand";
+import {useBookmarksStore} from "stores/bookmarksStore";
+import ChromeBookmarkListeners from "src/services/ChromeBookmarkListeners";
+import TabsetService from "src/services/TabsetService";
 
 const {TabLogger} = useLoggingServicee()
 
@@ -27,6 +30,13 @@ export class RevokePermissionCommand implements Command {
   async execute(): Promise<ExecutionResult<boolean>> {
     return usePermissionsStore().revokePermission(this.permission)
       .then(() => {
+        if ("bookmarks" === this.permission) {
+          useBookmarksStore().loadBookmarks()
+            .then(() => {
+              ChromeBookmarkListeners.removeListeners()
+              TabsetService.init()
+            })
+        }
         return new ExecutionResult(
           true,
           "Permission was revoked",

@@ -10,6 +10,7 @@ import TabService from "src/services/TabService";
 import IndexedDbPersistenceService from "src/services/IndexedDbPersistenceService";
 import {useSearchStore} from "stores/searchStore";
 import {SearchDoc} from "src/models/SearchDoc";
+import {usePermissionsStore} from "stores/permissionsStore";
 
 // const {housekeeping} = useTabsetService()
 
@@ -56,6 +57,15 @@ const persistenceService = IndexedDbPersistenceService
 
 class ChromeApi {
 
+  onHeadersReceivedListener = function (details:any) {
+    console.log("headerDetails", details)
+    if (details.url) {
+      persistenceService.saveRequest(details.url, new RequestInfo(details.statusCode, details.responseHeaders || []))
+        .then(() => console.debug("added request"))
+        .catch(err => console.log("err", err))
+    }
+  }
+
   init() {
     console.debug("initializing ChromeApi")
 
@@ -76,23 +86,9 @@ class ChromeApi {
       (details: any) => NavigationService.updateAvailable(details)
     )
 
-    chrome.webRequest.onHeadersReceived.addListener(
-      (details) => {
-        console.log("headerDetails", details)
-        // saveRequestFor(
-        //   details.url,
-        //   new RequestInfo(details.statusCode,  details.responseHeaders || [])
-        // )
-        if ( details.url) {
-          persistenceService.saveRequest( details.url,  new RequestInfo(details.statusCode,  details.responseHeaders || []))
-            .then(() => console.debug("added request"))
-            .catch(err => console.log("err", err))
-        }
-
-      },
-      {urls: ['*://*/*'], types: ['main_frame']},
-      ['responseHeaders']
-    )
+    if (usePermissionsStore().hasAllOrigins()) {
+      this.startWebRequestListener()
+    }
 
     this.buildContextMenu();
 
@@ -148,11 +144,23 @@ class ChromeApi {
       }
     )
     chrome.omnibox.onInputEntered.addListener(
-      (a,b) => {
-        console.log("onInputEntered",a,b)
+      (a, b) => {
+        console.log("onInputEntered", a, b)
         useUiService().showSearchResultsPageFor(a)
       }
     )
+  }
+
+  startWebRequestListener() {
+    chrome.webRequest.onHeadersReceived.addListener(
+      this.onHeadersReceivedListener,
+      {urls: ['*://*/*'], types: ['main_frame']},
+      ['responseHeaders']
+    )
+  }
+
+  stopWebRequestListener() {
+    chrome.webRequest.onHeadersReceived.removeListener(this.onHeadersReceivedListener)
   }
 
   buildContextMenu() {

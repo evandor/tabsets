@@ -64,6 +64,7 @@ const tabsStore = useTabsStore()
 const searchStore = useSearchStore()
 const search = ref('')
 const theHits = ref<Hit[]>([])
+const moreHits = ref<boolean>(false)
 const router = useRouter()
 const route = useRoute()
 const typedOrSelected = ref<any>()
@@ -90,7 +91,10 @@ const runSearch = (term: string) => {
     searchStore.term = term
     useQueryExecutor()
       .queryFromUi(new SearchIndexQuery(term))
-      .then(res => {theHits.value = res.result})
+      .then(res => {
+        theHits.value = res.result.hits
+        moreHits.value = res.result.moreHits
+      })
   }
 }
 
@@ -99,6 +103,7 @@ const filterFn = (val: any, update: any, abort: any) => {
 
   setTimeout(() => {
     update(() => {
+      //options.value = moreHits ? theHits.value.concat(new Hit()) : theHits.value
       options.value = theHits.value
     })
   }, 100)

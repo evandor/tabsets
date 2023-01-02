@@ -181,7 +181,7 @@ const thumbnail = ref('')
 const content = ref('')
 const hasAllUrlsPermission = ref(false)
 
-watchEffect(() => hasAllUrlsPermission.value = usePermissionsStore().hasOrigin('*://*/*') || false)
+watchEffect(() => hasAllUrlsPermission.value = usePermissionsStore().hasAllOrigins || false)
 
 watchEffect(() => {
   if (notificationStore.selectedTab) {

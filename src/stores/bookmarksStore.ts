@@ -51,30 +51,27 @@ export const useBookmarksStore = defineStore('bookmarks', {
       this.bookmarksNodes = []
       this.bookmarksLeaves = []
       const accessGranted = usePermissionsStore().hasPermission("bookmarks")
-      //console.log("loading bookmarks", accessGranted, (new Error()).stack)
+      console.log("loading bookmarks", accessGranted)//, (new Error()).stack)
       if (accessGranted) {
-        chrome.bookmarks.search({}, async (bookmarks) => {
-          this.bookmarksLeaves = bookmarks
+        // @ts-ignore
+        const bookmarks: object[] = await chrome.bookmarks.search({})//, async (bookmarks) => {
+        this.bookmarksLeaves = bookmarks
 
-          chrome.bookmarks.search({}, bookmarks => {
-            this.bookmarksLeaves = bookmarks
-          })
+        // @ts-ignore
+        const tree: chrome.bookmarks.BookmarkTreeNode[] = await chrome.bookmarks.getTree()
 
-          // @ts-ignore
-          const tree: chrome.bookmarks.BookmarkTreeNode[] = await chrome.bookmarks.getTree()
+        _.forEach(tree[0].children, parent => {
+          const children: TreeNode[] = getChildren(parent)
+          const treeNode = new TreeNode(parent.id, parent.title, parent.title, parent.url, 'o_folder', children)
+          this.bookmarksTree.push(treeNode)
 
-          _.forEach(tree[0].children, parent => {
-            const children: TreeNode[] = getChildren(parent)
-            const treeNode = new TreeNode(parent.id, parent.title, parent.title, parent.url, 'o_folder', children)
-            this.bookmarksTree.push(treeNode)
-
-            const childrenNodes: TreeNode[] = getChildren(parent, x => !x.url)
-            this.bookmarksNodes.push(new TreeNode(parent.id, parent.title, parent.title, parent.url, 'o_folder', childrenNodes))
-          })
-
-          return Promise.resolve()
-
+          const childrenNodes: TreeNode[] = getChildren(parent, x => !x.url)
+          this.bookmarksNodes.push(new TreeNode(parent.id, parent.title, parent.title, parent.url, 'o_folder', childrenNodes))
         })
+        console.log("loading bookmarks done")
+        return Promise.resolve()
+
+        //})
       }
 
     },

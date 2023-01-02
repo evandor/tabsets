@@ -20,6 +20,7 @@ import IndexedDbPersistenceService from "src/services/IndexedDbPersistenceServic
 import ChromeListeners from "src/services/ChromeListeners";
 import {useRoute, useRouter} from "vue-router";
 import ChromeBookmarkListeners from "src/services/ChromeBookmarkListeners";
+import {usePermissionsStore} from "stores/permissionsStore";
 
 const tabsStore = useTabsStore()
 const tabGroupsStore = useTabGroupsStore()
@@ -57,19 +58,22 @@ if (isNewTabPage()) {
     })
 
 } else {
-  // init of stores
+  // init of stores and some listeners
+  usePermissionsStore().initialize()
+    .then(() => {
+      ChromeListeners.initListeners(false)
+      ChromeBookmarkListeners.initListeners()
+      bookmarksStore.init()
+    })
   featureTogglesStore.initialize(useQuasar().localStorage);
   tabsStore.initialize(useQuasar().localStorage);
 
-  ChromeListeners.initListeners(false)
-  ChromeBookmarkListeners.initListeners()
 
   tabGroupsStore.initialize();
   tabGroupsStore.initListeners();
 
   spacesStore.initialize();
 
-  bookmarksStore.init()
   searchStore.init()
   windowsStore.init()
 

@@ -123,7 +123,7 @@ class ChromeListeners {
       //console.log(" --- handleUpdate of pending")
       this.handleUpdate(tabsStore.pendingTabset as Tabset, chromeTab)
 
-      if (usePermissionsStore().hasOrigin('*://*/*') && !chromeTab.url?.startsWith("chrome")) {
+      if (usePermissionsStore().hasAllOrigins() && !chromeTab.url?.startsWith("chrome")) {
         console.log("hier1a")
         // @ts-ignore
         chrome.scripting.executeScript({
@@ -351,7 +351,7 @@ class ChromeListeners {
         return // no screenshot of extension itself
       }
       console.log("capturing tab...", current.url, selfId)
-      const allUrlsPermission = usePermissionsStore().hasOrigin('*://*/*')
+      const allUrlsPermission = usePermissionsStore().hasAllOrigins()
       console.log("has Permission", allUrlsPermission)
       chrome.permissions.getAll((res) => console.log("res", res))
       if (allUrlsPermission) {

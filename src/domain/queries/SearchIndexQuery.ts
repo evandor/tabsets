@@ -5,18 +5,21 @@ import {Hit} from "src/models/Hit";
 import {uid} from "quasar";
 import ChromeApi from "src/services/ChromeApi";
 import {useSearchStore} from "stores/searchStore";
+import {Hits} from "src/models/Hits";
 
-export class SearchIndexQuery implements Query<Hit[]> {
+export class SearchIndexQuery implements Query<Hits> {
 
   constructor(
     public term: string) {
   }
 
-  query<T>(): Promise<QueryResult<Hit[]>> {
+  query<T>(): Promise<QueryResult<Hits>> {
 
-    const results = useSearchStore().search(this.term, 7)
+    const results = useSearchStore().search(this.term, 10)
 
     const theHits: Hit[] = []
+    let count = 0
+    let moreHits = false
     _.forEach(results, h => {
       const theHit = new Hit(
         uid(),
@@ -35,10 +38,15 @@ export class SearchIndexQuery implements Query<Hit[]> {
       if (h.item.bookmarkId) {
         theHit.bookmarkId = h.item.bookmarkId
       }
-      theHits.push(theHit)
+      count += 1
+      if (count < 10) {
+        theHits.push(theHit)
+      } else {
+        moreHits = true
+      }
     })
     console.log("theHits", theHits)
-    const r:QueryResult<Hit[]> = new QueryResult(theHits, "")
+    const r:QueryResult<Hits> = new QueryResult(new Hits(theHits, moreHits), "")
     return Promise.resolve(r)
   }
 

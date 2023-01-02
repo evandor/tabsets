@@ -3,6 +3,9 @@ import {ExecutionResult} from "src/domain/ExecutionResult";
 import {useLoggingServicee} from "src/services/useLoggingService";
 import {usePermissionsStore} from "stores/permissionsStore";
 import {RevokePermissionCommand} from "src/domain/commands/RevokePermissionCommand";
+import {useBookmarksStore} from "stores/bookmarksStore";
+import ChromeBookmarkListeners from "src/services/ChromeBookmarkListeners";
+import TabsetService from "src/services/TabsetService";
 
 const {TabLogger} = useLoggingServicee()
 
@@ -28,6 +31,13 @@ export class GrantPermissionCommand implements Command {
     return usePermissionsStore().grantPermission(this.permission)
       .then((granted: boolean) => {
         if (granted) {
+          if ("bookmarks" === this.permission) {
+            useBookmarksStore().loadBookmarks()
+              .then(() => {
+                TabsetService.init()
+                ChromeBookmarkListeners.initListeners()
+              })
+          }
           return new ExecutionResult(
             granted,
             "Permission was added",

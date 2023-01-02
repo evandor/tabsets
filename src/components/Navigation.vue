@@ -1,6 +1,6 @@
 <template>
   <div class="column" style="height:96%">
-    <div class="col" >
+    <div class="col">
 
       <q-toolbar class="text-primary lightgrey" v-if="tabsStore.tabsets.size > 0">
         <div class="row fit">
@@ -54,12 +54,12 @@
           </q-list>
         </template>
 
-<!--        <template v-slot:separator>-->
-<!--          <q-avatar color="primary" text-color="white" size="40px" icon="drag_indicator"/>-->
-<!--        </template>-->
+        <!--        <template v-slot:separator>-->
+        <!--          <q-avatar color="primary" text-color="white" size="40px" icon="drag_indicator"/>-->
+        <!--        </template>-->
 
         <template v-slot:after>
-          <TabInfo />
+          <TabInfo/>
         </template>
 
       </q-splitter>
@@ -84,6 +84,7 @@ import {useSpacesStore} from "stores/spacesStore";
 import NewTabsetDialog from "components/dialogues/NewTabsetDialog.vue";
 import NavTabsetsListWidget from "components/widgets/NavTabsetsListWidget.vue"
 import TabInfo from "components/layouts/TabInfo.vue";
+import {useUiStore} from "stores/uiStore";
 
 const router = useRouter()
 const tabsStore = useTabsStore()
@@ -132,7 +133,11 @@ const tabsetLabel = (tabset: Tabset) => {
   return tabset.tabs?.length > 1 ? tabset.name + ' (' + tabset.tabs?.length + ' tabs)' : tabset.name + ' (' + tabset.tabs?.length + ' tab)'
 }
 
-const addTabset = () => $q.dialog({component: NewTabsetDialog})
+const addTabset = () => $q.dialog({
+  component: NewTabsetDialog, componentProps: {
+    setAddAutomaticByDefault: useUiStore().addTabsAutomaticallyDefault
+  }
+})
 
 </script>
 

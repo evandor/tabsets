@@ -1,24 +1,39 @@
 import {useBookmarksStore} from "src/stores/bookmarksStore";
 import {useTabsStore} from "src/stores/tabsStore";
+import {RequestInfo} from "src/models/RequestInfo";
 
 
 class ChromeBookmarkListeners {
 
   inProgress = false;
 
+  onCreatedListener = (name: string, bm: any) => this.onCreated(bm)
+  onMovedListener = (id: string, info: any) => this.reload()
+  onRemovedListener = (id: string, info: any) => this.reload()
+  onChangedListener = (id: string, info: any) => this.reload()
+  onChildrenReorderedListener = (id: string, info: any) => this.reload()
+
+
   initListeners() {
     chrome.permissions.contains(
       {permissions: ["bookmarks"]},
       (res: boolean) => {
         if (res) {
-          chrome.bookmarks.onCreated.addListener((name: string, bm: any) => this.onCreated(bm))
-          chrome.bookmarks.onMoved.addListener((id: string, info: any) => this.reload())
-          chrome.bookmarks.onRemoved.addListener((id: string, info: any) => this.reload())
-          chrome.bookmarks.onChanged.addListener((id: string, info: any) => this.reload())
-          chrome.bookmarks.onChildrenReordered.addListener((id: string, info: any) => this.reload())
+          chrome.bookmarks.onCreated.addListener(this.onCreatedListener)
+          chrome.bookmarks.onMoved.addListener(this.onMovedListener)
+          chrome.bookmarks.onRemoved.addListener(this.onRemovedListener)
+          chrome.bookmarks.onChanged.addListener(this.onChangedListener)
+          chrome.bookmarks.onChildrenReordered.addListener(this.onChildrenReorderedListener)
         }
       })
+  }
 
+  removeListeners() {
+    chrome.bookmarks.onCreated.removeListener(this.onCreatedListener)
+    chrome.bookmarks.onMoved.removeListener(this.onMovedListener)
+    chrome.bookmarks.onRemoved.removeListener(this.onRemovedListener)
+    chrome.bookmarks.onChanged.removeListener(this.onChangedListener)
+    chrome.bookmarks.onChildrenReordered.removeListener(this.onChildrenReorderedListener)
   }
 
   clearWorking() {

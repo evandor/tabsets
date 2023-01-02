@@ -33,6 +33,7 @@ export const useUiStore = defineStore('ui', () => {
   const leftDrawer = ref<LeftDrawer>($q.localStorage.getItem('ui.leftDrawer') || new LeftDrawer(LeftDrawerState.SMALL))
   const leftDrawerLabelAnimated = ref(false)
   const tabsetIdForNewTab = ref<string | undefined>($q.localStorage.getItem('ui.tabsetIdForNewTab') as string || undefined)
+  const addTabsAutomaticallyDefault = ref<boolean>($q.localStorage.getItem('ui.addTabsAutomatically') as boolean || true)
   const tabBeingDragged = ref<string | undefined>(undefined)
 
   watch(
@@ -49,6 +50,12 @@ export const useUiStore = defineStore('ui', () => {
     }, {deep: true}
   )
 
+  watch(
+    addTabsAutomaticallyDefault,
+    (val: Object) => {
+      $q.localStorage.set("ui.addTabsAutomatically", val)
+    })
+
   const leftDrawerLabelIsAnimated = computed(() => {
     return () => {
       return leftDrawerLabelAnimated.value
@@ -63,15 +70,29 @@ export const useUiStore = defineStore('ui', () => {
     tabsetIdForNewTab.value = tabsetId
   }
 
-  function draggingTab (tabId: string) {
+  function draggingTab(tabId: string) {
     tabBeingDragged.value = tabId
   }
 
-  function droppingTab () {
+  function droppingTab() {
     const tabBeingDropped = tabBeingDragged.value
     tabBeingDragged.value = undefined
     return tabBeingDropped
   }
 
-  return {leftDrawer, leftDrawerLabelIsAnimated, setLeftDrawerLabelAnimated, setTabsetForNewTabPage, tabsetIdForNewTab, draggingTab, droppingTab}
+  function setAddAutomaticDefault(defaultValue: boolean) {
+    addTabsAutomaticallyDefault.value = defaultValue
+  }
+
+  return {
+    leftDrawer,
+    leftDrawerLabelIsAnimated,
+    setLeftDrawerLabelAnimated,
+    setTabsetForNewTabPage,
+    tabsetIdForNewTab,
+    draggingTab,
+    droppingTab,
+    addTabsAutomaticallyDefault,
+    setAddAutomaticDefault
+  }
 })

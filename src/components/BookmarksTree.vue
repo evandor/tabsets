@@ -142,17 +142,9 @@ const deleteBookmarksFolderDialog = () => {
 }
 
 const entered = (b: boolean) => mouseHover.value = b
-const grant = (permission: string) => {
-  useCommandExecutor()
-    .executeFromUi(new GrantPermissionCommand(permission))
 
-  // usePermissionsStore().grantPermission(permission)
-  //   .then((granted: boolean) => {
-  //     if (granted) {
-  //       bookmarksPermissionGranted.value = granted
-  //     }
-  //   })
-}
+const grant = (permission: string) => useCommandExecutor().executeFromUi(new GrantPermissionCommand(permission))
+
 
 
 </script>

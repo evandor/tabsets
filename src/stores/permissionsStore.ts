@@ -4,8 +4,6 @@ import {computed, ref} from "vue";
 
 export const usePermissionsStore = defineStore('permissions', () => {
 
-  initialize()
-
   const grantedOptionalPermissions = ref<string[] | undefined>([])
   const grantedOptionalOrigins = ref<string[] | undefined>([])
 
@@ -16,6 +14,7 @@ export const usePermissionsStore = defineStore('permissions', () => {
     console.log("permissions", permissions)
     grantedOptionalPermissions.value = permissions.permissions ? permissions.permissions : []
     grantedOptionalOrigins.value = permissions.origins ? permissions.origins : []
+    console.log("initializing permissions Store done")
   }
 
   const hasPermission = computed(() => {
@@ -25,9 +24,11 @@ export const usePermissionsStore = defineStore('permissions', () => {
     }
   })
 
-  const hasOrigin = computed(() => {
-    return (origin: string): boolean | undefined => {
-      return grantedOptionalOrigins.value ? grantedOptionalOrigins.value.indexOf(origin) >= 0 : undefined
+  const hasAllOrigins = computed(() => {
+    return (): boolean | undefined => {
+      return grantedOptionalOrigins.value ?
+        grantedOptionalOrigins.value.indexOf("*://*/*") >= 0
+        : undefined
     }
   })
 
@@ -38,9 +39,9 @@ export const usePermissionsStore = defineStore('permissions', () => {
       .then(() => Promise.resolve(granted))
   }
 
-  async function grantOrigin(origin: string): Promise<boolean> {
+  async function grantAllOrigins(): Promise<boolean> {
     // @ts-ignore
-    const granted: boolean = await chrome.permissions.request({origins: [origin]})
+    const granted: boolean = await chrome.permissions.request({origins: ["*://*/*", "<all_urls>"]})
     return initialize()
       .then(() => Promise.resolve(granted))
   }
@@ -52,13 +53,13 @@ export const usePermissionsStore = defineStore('permissions', () => {
     return Promise.resolve()
   }
 
-  async function revokeOrigin(origin: string): Promise<void> {
+  async function revokeAllOrigins(): Promise<void> {
     // @ts-ignore
-    await chrome.permissions.remove({origins: [origin]})
+    await chrome.permissions.remove({origins: ["*://*/*", "<all_urls>"]})
     await initialize()
     return Promise.resolve()
   }
 
 
-  return {hasPermission, grantPermission, revokePermission, hasOrigin, grantOrigin, revokeOrigin}
+  return {initialize, hasPermission, grantPermission, revokePermission, hasAllOrigins, grantAllOrigins, revokeAllOrigins}
 })

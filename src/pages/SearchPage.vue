@@ -44,6 +44,17 @@
       </div>
     </div>
 
+    <div class="row" v-if="!bookmarksEnabled()">
+      <div class="col-12 q-ma-md" style="border-top: 1px dotted grey">
+        <q-banner class="text-caption bg-yellow-1">
+          Tabsets can search your bookmarks as well, but is currently missing permissions to do so.<br>
+          Click <span class="cursor-pointer text-blue-6" style="text-decoration: underline"
+                      @click="grant('bookmarks')">here</span> to
+          grant permissions for the tabset extension to access your bookmarks.
+        </q-banner>
+      </div>
+    </div>
+
 
   </q-page>
 </template>
@@ -60,6 +71,9 @@ import SearchHit from "src/components/layouts/SearchHit.vue"
 import ChromeApi from "src/services/ChromeApi";
 import {Hit} from "src/models/Hit";
 import ReindexDialog from "components/dialogues/ReindexDialog.vue";
+import {usePermissionsStore} from "stores/permissionsStore";
+import {useCommandExecutor} from "src/services/CommandExecutor";
+import {GrantPermissionCommand} from "src/domain/commands/GrantPermissionCommand";
 
 const route = useRoute()
 const tabsStore = useTabsStore()
@@ -130,5 +144,7 @@ const searchWithBrowser = () => {
   chrome.search.query({disposition: 'NEW_TAB', text: searchStore.term})
 }
 
+const bookmarksEnabled = () => usePermissionsStore().hasPermission('bookmarks')
+const grant = (permission: string) => useCommandExecutor().executeFromUi(new GrantPermissionCommand(permission))
 
 </script>

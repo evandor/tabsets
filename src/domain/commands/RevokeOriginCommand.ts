@@ -3,6 +3,7 @@ import {ExecutionResult} from "src/domain/ExecutionResult";
 import {useLoggingServicee} from "src/services/useLoggingService";
 import {usePermissionsStore} from "stores/permissionsStore";
 import {GrantOriginCommand} from "src/domain/commands/GrantOriginCommand";
+import ChromeApi from "src/services/ChromeApi";
 
 const {TabLogger} = useLoggingServicee()
 
@@ -14,7 +15,10 @@ class UndoCommand implements Command {
   execute(): Promise<ExecutionResult<boolean>> {
     console.log("execution undo command", this.origin)
     return new GrantOriginCommand(this.origin).execute()
-      .then(res => new ExecutionResult(true, "Origin was granted again"))
+      .then(res => {
+        ChromeApi.startWebRequestListener()
+        return new ExecutionResult(true, "Origin was granted again")
+      })
   }
 
 }
@@ -25,8 +29,9 @@ export class RevokeOriginCommand implements Command {
   }
 
   async execute(): Promise<ExecutionResult<boolean>> {
-    return usePermissionsStore().revokeOrigin(this.origin)
+    return usePermissionsStore().revokeAllOrigins()
       .then(() => {
+        ChromeApi.stopWebRequestListener()
         return new ExecutionResult(
           true,
           "Origin was revoked",
