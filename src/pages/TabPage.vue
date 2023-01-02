@@ -408,7 +408,6 @@ import {useSearchStore} from "stores/searchStore";
 import _ from "lodash"
 import {useUtils} from "src/services/Utils";
 import {useQueryExecutor} from "src/services/QueryExecutor";
-import {LogsQuery} from "src/domain/queries/LogsQuery";
 import {TabLogsQuery} from "src/domain/queries/TabLogsQuery";
 
 const tabsStore = useTabsStore()

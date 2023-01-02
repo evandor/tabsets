@@ -11,13 +11,22 @@ export default {
     '^src/(.*)$': '<rootDir>/src/$1',
     '^app/(.*)$': '<rootDir>/$1',
     '^components/(.*)$': '<rootDir>/src/components/$1',
+    '^domain/(.*)$': '<rootDir>/src/domain/$1',
     '^layouts/(.*)$': '<rootDir>/src/layouts/$1',
+    '^models/(.*)$': '<rootDir>/src/models/$1',
     '^pages/(.*)$': '<rootDir>/src/pages/$1',
     '^assets/(.*)$': '<rootDir>/src/assets/$1',
     '^boot/(.*)$': '<rootDir>/src/boot/$1',
     '.*css$': '@quasar/quasar-app-extension-testing-unit-jest/stub.css'
   },
-  // collectCoverage: true,
+  collectCoverage: true,
+  collectCoverageFrom: [
+    '<rootDir>/src/**/*.vue',
+    '<rootDir>/src/**/*.js',
+    '<rootDir>/src/**/*.ts',
+    '<rootDir>/src/**/*.jsx',
+    '<rootDir>/src/**/*.tsx',
+  ],
   // coverageThreshold: {
   //   global: {
   //      branches: 50,

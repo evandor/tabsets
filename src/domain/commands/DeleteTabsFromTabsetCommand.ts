@@ -5,7 +5,7 @@ import {Tab} from "src/models/Tab";
 import {TabPredicate} from "src/domain/Types";
 
 
-export class DeleteTabsFromTabsetCommand implements Command {
+export class DeleteTabsFromTabsetCommand implements Command<any> {
 
   constructor(public tabsetId: string, public updated: number) {
   }

@@ -4,7 +4,7 @@ import {useTabsetService} from "src/services/TabsetService2";
 import {DeleteTabsFromTabsetCommand} from "src/domain/commands/DeleteTabsFromTabsetCommand";
 
 
-class UndoCommand implements Command {
+class UndoCommand implements Command<object> {
 
   constructor(
     public tabsetId: string,
@@ -19,7 +19,7 @@ class UndoCommand implements Command {
 
 }
 
-export class CreateTabsetFromBookmarksCommand implements Command {
+export class CreateTabsetFromBookmarksCommand implements Command<object> {
 
   public merge: boolean = true
 

@@ -11,7 +11,7 @@ import {DeleteTabCommand} from "src/domain/commands/DeleteTabCommand";
 const {TabLogger} = useLoggingServicee()
 const {saveCurrentTabset} = useTabsetService()
 
-class UndoCommand implements Command {
+class UndoCommand implements Command<any> {
 
   constructor(public tab: Tab) {
   }
@@ -35,7 +35,7 @@ function adjustIndex(newIndex: number, tabs: Tab[]) {
   }
 }
 
-export class CreateTabFromOpenTabsCommand implements Command {
+export class CreateTabFromOpenTabsCommand implements Command<any> {
 
   constructor(public tab: Tab, public newIndex: number, public group: string) {
   }

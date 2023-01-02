@@ -4,12 +4,12 @@ import {DeleteTabsetCommand} from "src/domain/commands/DeleteTabsetCommand";
 import {useTabsetService} from "src/services/TabsetService2";
 import {useLoggingServicee} from "src/services/useLoggingService";
 import {Tabset, TabsetType} from "src/models/Tabset";
-import {useTabsStore} from "stores/tabsStore";
+import {useTabsStore} from "src/stores/tabsStore";
 import _ from "lodash"
 
 const {logger} = useLoggingServicee()
 
-class UndoCommand implements Command {
+class UndoCommand implements Command<object> {
 
   constructor(public tabsetId: string) {
   }
@@ -22,7 +22,7 @@ class UndoCommand implements Command {
 
 }
 
-export class CreateSessionCommand implements Command {
+export class CreateSessionCommand implements Command<object> {
 
   public merge: boolean = true
 

@@ -3,7 +3,7 @@ import {ExecutionResult} from "src/domain/ExecutionResult";
 import TabsetService from "src/services/TabsetService";
 import {MarkTabsetAsDefaultCommand} from "src/domain/commands/MarkTabsetAsDefaultCommand";
 
-class UndoCommand implements Command {
+class UndoCommand implements Command<any> {
 
   constructor(public tabsetId: string) {
   }
@@ -16,7 +16,7 @@ class UndoCommand implements Command {
 
 }
 
-export class MarkTabsetDeletedCommand implements Command {
+export class MarkTabsetDeletedCommand implements Command<boolean> {
 
   constructor(
     public tabsetId: string) {

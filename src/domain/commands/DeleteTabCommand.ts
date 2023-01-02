@@ -6,7 +6,7 @@ import {useTabsetService} from "src/services/TabsetService2";
 
 const {saveToTabset, deleteTab} = useTabsetService()
 
-class UndoCommand implements Command {
+class UndoCommand implements Command<any> {
 
 
   constructor(public tabset: Tabset, public tab: Tab) {
@@ -20,7 +20,7 @@ class UndoCommand implements Command {
 
 }
 
-export class DeleteTabCommand implements Command {
+export class DeleteTabCommand implements Command<Tabset> {
 
   constructor(public tab: Tab) {
   }

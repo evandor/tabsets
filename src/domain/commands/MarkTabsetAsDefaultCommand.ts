@@ -4,20 +4,20 @@ import TabsetService from "src/services/TabsetService";
 import {TabsetStatus} from "src/models/Tabset";
 import {MarkTabsetAsFavoriteCommand} from "src/domain/commands/MarkTabsetAsFavoriteCommand";
 
-class UndoCommand implements Command {
+class UndoCommand implements Command<TabsetStatus> {
 
   constructor(public tabsetId: string, public oldStatus: TabsetStatus) {
   }
 
-  execute(): Promise<ExecutionResult<TabsetStatus>> {
+  execute(): Promise<ExecutionResult<any>> {
     //logger.info("execution undo command", this.tabsetId)
     return new MarkTabsetAsFavoriteCommand(this.tabsetId).execute()
-      .then(res => Promise.resolve(new ExecutionResult(res, "Tabset was reverted to favorite")))
+      .then(res => new ExecutionResult(res, "Tabset was reverted to favorite"))
   }
 
 }
 
-export class MarkTabsetAsDefaultCommand implements Command {
+export class MarkTabsetAsDefaultCommand implements Command<TabsetStatus> {
 
   constructor(
     public tabsetId: string)

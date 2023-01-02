@@ -4,7 +4,7 @@ import {useTabsetService} from "src/services/TabsetService2";
 
 const {deleteTabset} = useTabsetService()
 
-export class DeleteTabsetCommand implements Command {
+export class DeleteTabsetCommand implements Command<string> {
 
   constructor(public tabsetId: string) {
   }

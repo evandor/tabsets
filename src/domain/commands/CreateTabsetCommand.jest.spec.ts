@@ -5,49 +5,17 @@ import {CreateTabsetCommand} from "src/domain/commands/CreateTabsetCommand";
 import "fake-indexeddb/auto"
 import IndexedDbPersistenceService from "src/services/IndexedDbPersistenceService";
 import {INDEX_DB_VERSION} from "boot/constants";
+import {useJestHelper} from "src/domain/JestHelper";
 
 describe('CreateTabsetCommand', () => {
 
   jest.setTimeout(10000)
 
-  class Logger {
-    info = (msg: string) => console.log("info", msg)
-    debug = (msg: string) => console.debug("info", msg)
-
-  }
-
-  function createChromeTab(id: number, url: string) {
-    return {
-      id,
-      url,
-      index: 1,
-      pinned: false,
-      highlighted: false,
-      windowId: 1,
-      active: false,
-      incognito: false,
-      selected: false,
-      discarded: false,
-      autoDiscardable: false
-    }
-  }
-
   beforeEach(() => {
     setActivePinia(createPinia())
-    //localStorageMock.clear()
     const request = indexedDB.open('db', INDEX_DB_VERSION);
-
     request.onupgradeneeded = async function () {
-      const db = request.result;
-      //tabsetsDbStore =
-      db.createObjectStore("tabsets");
-      db.createObjectStore("content");
-      db.createObjectStore("thumbnails");
-      db.createObjectStore("mhtml");
-      db.createObjectStore("logs", { autoIncrement: true });
-      // store.createIndex("by_title", "title", {unique: true});
-      // store.put({title: "Quarry Memories", author: "Fred", isbn: 123456});
-      //IndexedDbPersistenceService.init();
+      await useJestHelper().dbInit(request)
     }
   })
 

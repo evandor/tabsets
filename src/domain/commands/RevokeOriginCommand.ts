@@ -7,7 +7,7 @@ import ChromeApi from "src/services/ChromeApi";
 
 const {TabLogger} = useLoggingServicee()
 
-class UndoCommand implements Command {
+class UndoCommand implements Command<boolean> {
 
   constructor(public origin: string) {
   }
@@ -23,7 +23,7 @@ class UndoCommand implements Command {
 
 }
 
-export class RevokeOriginCommand implements Command {
+export class RevokeOriginCommand implements Command<boolean> {
 
   constructor(public origin: string) {
   }

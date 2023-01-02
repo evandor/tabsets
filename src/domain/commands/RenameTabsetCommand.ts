@@ -2,7 +2,7 @@ import Command from "src/domain/Command";
 import {ExecutionResult} from "src/domain/ExecutionResult";
 import TabsetService from "src/services/TabsetService";
 
-class UndoRenameTabsetCommand implements Command {
+class UndoRenameTabsetCommand implements Command<any> {
 
   constructor(public tabsetId: string, public oldName: string) {
   }
@@ -15,7 +15,7 @@ class UndoRenameTabsetCommand implements Command {
 
 }
 
-export class RenameTabsetCommand implements Command {
+export class RenameTabsetCommand implements Command<any> {
 
   constructor(
     public tabsetId: string,

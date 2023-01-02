@@ -10,7 +10,7 @@ import {useLoggingServicee} from "src/services/useLoggingService";
 
 const {TabLogger} = useLoggingServicee()
 
-class UndoCommand implements Command {
+class UndoCommand implements Command<undefined> {
 
   constructor(public tab: Tab) {
   }
@@ -24,7 +24,7 @@ class UndoCommand implements Command {
 
 }
 
-export class SavePendingTabToCurrentTabsetCommand implements Command {
+export class SavePendingTabToCurrentTabsetCommand implements Command<number> {
 
   constructor(public tab: Tab) {
   }

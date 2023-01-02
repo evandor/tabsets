@@ -7,7 +7,7 @@ import {TabsetType} from "src/models/Tabset";
 
 const {logger} = useLoggingServicee()
 
-class UndoCreateTabsetCommand implements Command {
+class UndoCreateTabsetCommand implements Command<object> {
 
   constructor(public tabsetId: string) {
   }
@@ -20,7 +20,7 @@ class UndoCreateTabsetCommand implements Command {
 
 }
 
-export class CreateTabsetCommand implements Command {
+export class CreateTabsetCommand implements Command<object> {
 
   public merge: boolean = true
 

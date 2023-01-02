@@ -9,7 +9,7 @@ import TabsetService from "src/services/TabsetService";
 
 const {TabLogger} = useLoggingServicee()
 
-class UndoCommand implements Command {
+class UndoCommand implements Command<boolean> {
 
   constructor(public permission: string) {
   }
@@ -22,7 +22,7 @@ class UndoCommand implements Command {
 
 }
 
-export class GrantPermissionCommand implements Command {
+export class GrantPermissionCommand implements Command<boolean> {
 
   constructor(public permission: string) {
   }

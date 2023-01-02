@@ -3,7 +3,7 @@ import {ExecutionResult} from "src/domain/ExecutionResult";
 import {Tabset, TabsetType} from "src/models/Tabset";
 import {useTabsetService} from "src/services/TabsetService2";
 
-class UndoCommand implements Command {
+class UndoCommand implements Command<any> {
 
   constructor(public tabset: Tabset) {
   }
@@ -18,7 +18,7 @@ class UndoCommand implements Command {
 
 }
 
-export class StopSessionCommand implements Command {
+export class StopSessionCommand implements Command<any> {
 
   constructor(
     public tabset: Tabset) {

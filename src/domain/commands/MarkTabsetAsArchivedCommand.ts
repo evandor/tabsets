@@ -5,7 +5,7 @@ import {TabsetStatus} from "src/models/Tabset";
 import {MarkTabsetAsFavoriteCommand} from "src/domain/commands/MarkTabsetAsFavoriteCommand";
 import {MarkTabsetAsDefaultCommand} from "src/domain/commands/MarkTabsetAsDefaultCommand";
 
-class UndoCommand implements Command {
+class UndoCommand implements Command<any> {
 
   constructor(public tabsetId: string, public oldStatus: TabsetStatus) {
   }
@@ -27,7 +27,7 @@ class UndoCommand implements Command {
 
 }
 
-export class MarkTabsetAsArchivedCommand implements Command {
+export class MarkTabsetAsArchivedCommand implements Command<any> {
 
   constructor(
     public tabsetId: string)
