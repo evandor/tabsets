@@ -174,7 +174,7 @@ useMeta(() => {
 })
 
 function checkKeystroke(e: any) {
-  if (e.key === '/') {
+  if (e.key === '/' && searchBox.value) {
     //console.log("e", e, searchBox, search.value)
     // @ts-ignore
     searchBox.value.focus()

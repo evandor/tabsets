@@ -51,7 +51,7 @@ export const useBookmarksStore = defineStore('bookmarks', {
       this.bookmarksNodes = []
       this.bookmarksLeaves = []
       const accessGranted = usePermissionsStore().hasPermission("bookmarks")
-      console.log("loading bookmarks", accessGranted)//, (new Error()).stack)
+      // console.log("loading bookmarks", accessGranted)//, (new Error()).stack)
       if (accessGranted) {
         // @ts-ignore
         const bookmarks: object[] = await chrome.bookmarks.search({})//, async (bookmarks) => {
@@ -68,10 +68,9 @@ export const useBookmarksStore = defineStore('bookmarks', {
           const childrenNodes: TreeNode[] = getChildren(parent, x => !x.url)
           this.bookmarksNodes.push(new TreeNode(parent.id, parent.title, parent.title, parent.url, 'o_folder', childrenNodes))
         })
-        console.log("loading bookmarks done")
+        //console.log("loading bookmarks done")
         return Promise.resolve()
 
-        //})
       }
 
     },

@@ -3,11 +3,15 @@
           @mouseover="setInfo(tab)"
           @click="selectTab(tab)">
     {{ loadThumbnail(tab) }}
-    <q-card-section class="q-pt-xs cursor-pointer bg-primary text-white" style="width:100%;">
+    <q-card-section
+      :data-testid="useUtils().createDataTestIdentifier('tabcardwidget', tab.chromeTab.title)"
+      class="q-pt-xs cursor-pointer bg-primary text-white"
+      style="width:100%;">
+
       <div class="row items-baseline">
 
         <!-- favicon -->
-        <TabFaviconWidget :tab="tab" width="22px" height="22px" />
+        <TabFaviconWidget :tab="tab" width="22px" height="22px"/>
 
         <!-- title or name if given -->
         <div class="col-10 text-subtitle1 ellipsis">
@@ -17,7 +21,6 @@
             <q-input v-model="scope.value" dense autofocus counter @keyup.enter="scope.set"/>
           </q-popup-edit>
           <q-tooltip>{{ tab.chromeTab.title }}</q-tooltip>
-
 
           <q-badge v-if="tab.bookmarkId"
                    color="info" floating>
@@ -78,7 +81,8 @@ import MHtmlService from "src/services/MHtmlService"
 import {useQuasar} from "quasar"
 import TabFaviconWidget from "src/components/widgets/TabFaviconWidget.vue"
 import {useCommandExecutor} from "src/services/CommandExecutor";
-import {DeleteTabCommand} from "src/domain/commands/DeleteTabCommand";
+import {DeleteTabCommand} from "src/domain/commands/DeleteTabCommand"
+import {useUtils} from "src/services/Utils"
 
 const props = defineProps({
   tab: {
@@ -166,7 +170,7 @@ const nameOrTitle = (tab: Tab) => tab.name ? tab.name : tab.chromeTab?.title
 const dynamicNameOrTitleModel = (tab: Tab) => tab.name ? tab.name : tab.chromeTab?.title
 
 function deleteTab(tab: Tab) {
- // NavigationService.closeTab(tab)
+  // NavigationService.closeTab(tab)
 
   useCommandExecutor()
     .executeFromUi(new DeleteTabCommand(tab))

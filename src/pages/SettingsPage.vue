@@ -83,6 +83,21 @@
   </div>
 
   <div v-if="tab === 'permissions'">
+
+    <div class="row items-baseline q-ma-lg">
+      <div class="col-3 text-h6">Necessary Permissions</div>
+      <div class="col-9">
+        {{permissionsList}}
+      </div>
+    </div>
+
+    <div class="row items-baseline q-ma-lg">
+      <div class="col-3 text-h6">Allowed Origins</div>
+      <div class="col-9">
+        {{usePermissionsStore().permissions?.origins}}
+      </div>
+    </div>
+
     <div class="row items-baseline q-ma-lg">
       <div class="col-3 text-h6">Bookmarks</div>
       <div class="col-9">
@@ -365,6 +380,7 @@ const experimentalViewsEnabled = ref<boolean>(featuresStore.isEnabled('experimen
 const statsEnabled = ref<boolean>(featuresStore.isEnabled('stats'))
 const devEnabled = ref<boolean>(featuresStore.isEnabled('dev'))
 const newTabEnabled = ref<boolean>(featuresStore.isEnabled('newTab'))
+const permissionsList = ref<string[]>([])
 
 const darkMode = ref<boolean>(localStorage.getItem('darkMode') || false)
 const bookmarksPermissionGranted = ref<boolean | undefined>(usePermissionsStore().hasPermission('bookmarks'))
@@ -374,9 +390,9 @@ const tab = ref('appearance')
 
 const {handleError} = useNotificationHandler()
 
-watchEffect(() => {
-  bookmarksPermissionGranted.value = usePermissionsStore().hasPermission('bookmarks')
-})
+watchEffect(() => permissionsList.value = usePermissionsStore().permissions?.permissions || [])
+
+watchEffect(() => bookmarksPermissionGranted.value = usePermissionsStore().hasPermission('bookmarks'))
 
 watch(() => bookmarksPermissionGranted.value, (newValue, oldValue) => {
   if (newValue === oldValue) {

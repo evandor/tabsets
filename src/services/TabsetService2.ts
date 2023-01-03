@@ -50,7 +50,7 @@ export function useTabsetService() {
         await saveTabset(result.tabset)
         result.tabset.tabs.forEach((tab: Tab) => {
           //const tabLogger = logger.withContext("")
-          TabLogger.info(tab, "created tab!")
+          TabLogger.info(tab, "created tab")
           //logger.info("created tab", tab.id)
         })
         selectTabset(result.tabset.id)

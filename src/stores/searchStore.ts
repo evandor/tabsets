@@ -198,8 +198,10 @@ export const useSearchStore = defineStore('search', () => {
    *
    * @param contentPromise
    */
-  function populate(contentPromise: Promise<any[]>) {
+  async function populate(contentPromise: Promise<any[]>) {
     console.debug("populating searchstore...")
+
+    await init()
 
     const urlSet: Set<string> = new Set()
 

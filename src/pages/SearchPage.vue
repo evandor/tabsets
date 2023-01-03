@@ -123,7 +123,7 @@ watchEffect (() => {
 })
 
 watchEffect(() => {
-  console.log("watch effect: searchStore.term", searchStore.term)
+  // console.log("watch effect: searchStore.term", searchStore.term)
   if (searchStore.term?.trim() !== '') {
     newSearch(searchStore.term)
   }

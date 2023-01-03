@@ -6,15 +6,18 @@ export const usePermissionsStore = defineStore('permissions', () => {
 
   const grantedOptionalPermissions = ref<string[] | undefined>([])
   const grantedOptionalOrigins = ref<string[] | undefined>([])
+  const permissions = ref<chrome.permissions.Permissions | undefined>(undefined)
 
   async function initialize() {
     console.log("initializing permissions Store")
     // @ts-ignore
-    const permissions: chrome.permissions.Permissions = await chrome.permissions.getAll()
-    console.log("permissions", permissions)
-    grantedOptionalPermissions.value = permissions.permissions ? permissions.permissions : []
-    grantedOptionalOrigins.value = permissions.origins ? permissions.origins : []
-    console.log("initializing permissions Store done")
+    permissions.value = await chrome.permissions.getAll()
+    //console.log("permissions", permissions.value)
+    if (permissions.value) {
+      grantedOptionalPermissions.value = permissions.value.permissions ? permissions.value.permissions : []
+      grantedOptionalOrigins.value = permissions.value.origins ? permissions.value.origins : []
+      console.log("initializing permissions Store done")
+    }
   }
 
   const hasPermission = computed(() => {
@@ -61,5 +64,14 @@ export const usePermissionsStore = defineStore('permissions', () => {
   }
 
 
-  return {initialize, hasPermission, grantPermission, revokePermission, hasAllOrigins, grantAllOrigins, revokeAllOrigins}
+  return {
+    initialize,
+    hasPermission,
+    grantPermission,
+    revokePermission,
+    hasAllOrigins,
+    grantAllOrigins,
+    revokeAllOrigins,
+    permissions
+  }
 })

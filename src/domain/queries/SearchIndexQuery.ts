@@ -45,7 +45,7 @@ export class SearchIndexQuery implements Query<Hits> {
         moreHits = true
       }
     })
-    console.log("theHits", theHits)
+    // console.log("theHits", theHits)
     const r:QueryResult<Hits> = new QueryResult(new Hits(theHits, moreHits), "")
     return Promise.resolve(r)
   }

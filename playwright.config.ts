@@ -13,7 +13,7 @@ import { devices } from '@playwright/test';
 const config: PlaywrightTestConfig = {
   testDir: './e2e',
   /* Maximum time one test can run for. */
-  timeout: 30 * 1000,
+  timeout: 300 * 1000,
   expect: {
     /**
      * Maximum time expect() should wait for the condition to be met.
@@ -22,7 +22,7 @@ const config: PlaywrightTestConfig = {
     timeout: 5000
   },
   /* Run tests in files in parallel */
-  fullyParallel: true,
+  fullyParallel: false,
   /* Fail the build on CI if you accidentally left test.only in the source code. */
   forbidOnly: !!process.env.CI,
   /* Retry on CI only */

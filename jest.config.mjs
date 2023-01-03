@@ -19,7 +19,7 @@ export default {
     '^boot/(.*)$': '<rootDir>/src/boot/$1',
     '.*css$': '@quasar/quasar-app-extension-testing-unit-jest/stub.css'
   },
-  collectCoverage: true,
+  collectCoverage: false,
   collectCoverageFrom: [
     '<rootDir>/src/**/*.vue',
     '<rootDir>/src/**/*.js',

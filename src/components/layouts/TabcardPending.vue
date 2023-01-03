@@ -1,5 +1,7 @@
 <template>
-  <q-card class="my-card" bordered :style="cardStyle(tab)" @mouseover="setInfo(tab)" @click="selectTab(tab)">
+  <q-card
+    :data-testid="useUtils().createDataTestIdentifier('tabcardpending', tab.chromeTab.url)"
+    class="my-card" bordered :style="cardStyle(tab)" @mouseover="setInfo(tab)" @click="selectTab(tab)">
 
     <q-card-section class="bg-grey-1 text-black cursor-pointer">
 
@@ -88,11 +90,11 @@ import NavigationService from "src/services/NavigationService";
 import {Tab} from "src/models/Tab";
 import TabsetService from "src/services/TabsetService";
 import {useNotificationsStore} from "src/stores/notificationsStore";
-import {MAX_TABS_TO_SHOW} from 'boot/constants'
 import {useFeatureTogglesStore} from "src/stores/featureTogglesStore";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {SavePendingTabToCurrentTabsetCommand} from "src/domain/commands/SavePendingTabToCurrentTabsetCommand";
 import {useTabsetService} from "src/services/TabsetService2";
+import {useUtils} from "src/services/Utils";
 
 const {closeTab} = useTabsetService()
 
@@ -188,13 +190,7 @@ const dynamicNameOrTitleModel = (tab: Tab) => tab.name ? tab.name : tab.chromeTa
 
 const selectionChanged = (val: any) => emits('selectionChanged', val)
 
-const tabsWithLimit = () => {
-  const allTabs = props.tabs
-  if (allTabs.length > MAX_TABS_TO_SHOW) {
-    return allTabs.slice(0, MAX_TABS_TO_SHOW - 1)
-  }
-  return allTabs
-}
+
 
 const getFaviconUrl = (chromeTab: chrome.tabs.Tab | undefined) => {
   if (chromeTab && chromeTab.favIconUrl && !chromeTab.favIconUrl.startsWith("chrome")) {
