@@ -1,6 +1,6 @@
 {
   "name": "tabsets",
-  "version": "0.2.8",
+  "version": "0.2.9",
   "description": "Browser Extension to manage your tabs by grouping them into re-storable sets",
   "productName": "Tabsets Extension",
   "author": "evandor <evandor@gmail.com>",
@@ -41,7 +41,7 @@
     "logging-library": "^0.5.0",
     "mhtml2html": "^3.0.0",
     "pinia": "^2.0.11",
-    "quasar": "^2.11.1",
+    "quasar": "^2.11.3",
     "throttled-queue": "^2.1.4",
     "vite-plugin-package-version": "^1.0.2",
     "vue": "3",
