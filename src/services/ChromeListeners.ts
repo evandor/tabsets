@@ -305,15 +305,14 @@ class ChromeListeners {
   private handleAddTabToTabset(request: any, sender: chrome.runtime.MessageSender, sendResponse: any) {
     if (sender.tab) {
 
-      const selfId = localStorage.getItem("selfId")
-
       saveToTabsetId(request.tabsetId, new Tab(uid(), sender.tab))
         .then(() => {
           chrome.notifications.create(
             {
               title: "Tabset Extension Message",
               type: "basic",
-              iconUrl: "chrome-extension://" + selfId + "/www/favicon.ico",
+              //iconUrl: "chrome-extension://" + selfId + "/www/favicon.ico",
+              iconUrl: chrome.runtime.getURL("www/favicon.ico"),
               message: "the tab has been created successfully"
             }
           )
@@ -324,7 +323,8 @@ class ChromeListeners {
             {
               title: "Tabset Extension Message",
               type: "basic",
-              iconUrl: "chrome-extension://" + selfId + "/www/favicon.ico",
+              //iconUrl: "chrome-extension://" + selfId + "/www/favicon.ico",
+              iconUrl: chrome.runtime.getURL("www/favicon.ico"),
               message: "tab could not be added: " + err
             }
           )
@@ -342,11 +342,12 @@ class ChromeListeners {
 
     this.throttleOnePerSecond(async () => {
       const current = await ChromeApi.getCurrentTab()
-      const selfId = localStorage.getItem("selfId")
-      if (current && current.url && selfId && current.url.indexOf(selfId) >= 0) {
-        return // no screenshot of extension itself
-      }
-      console.log("capturing tab...", current.url, selfId)
+      // const selfId = localStorage.getItem("selfId")
+      // chrome.runtime.getURL("www/index.html#/newtab")
+      // if (current && current.url && selfId && current.url.indexOf(selfId) >= 0) {
+      //   return // no screenshot of extension itself
+      // }
+      console.log("capturing tab...", current.url)
       const allUrlsPermission = usePermissionsStore().hasAllOrigins()
       console.log("has Permission", allUrlsPermission)
       chrome.permissions.getAll((res) => console.log("res", res))

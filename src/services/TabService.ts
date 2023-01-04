@@ -30,11 +30,10 @@ class TabService {
     const tabs = useTabsStore().scheduledTabs
     const dueTabs: Tab[] = []
     const now = new Date().getTime()
-    const selfId = localStorage.getItem("selfId")
+    //const selfId = localStorage.getItem("selfId")
     _.forEach(tabs, (t: Tab) => {
-      console.log("comparing", t.scheduledFor, now, selfId)
+      console.log("comparing", t.scheduledFor, now)
       if (t.scheduledFor && t.scheduledFor <= now) {
-        console.log("hir")
         dueTabs.push(t)
       }
     })
@@ -44,7 +43,8 @@ class TabService {
         {
           title: "Tabset Extension Message",
           type: "basic",
-          iconUrl: "chrome-extension://" + selfId + "/www/favicon.ico",
+          //iconUrl: "chrome-extension://" + selfId + "/www/favicon.ico",
+          iconUrl: chrome.runtime.getURL("www/favicon.ico"),
           message: "scheduled tab is due",
           buttons: [
             {title: "open Tabsets Extension"}

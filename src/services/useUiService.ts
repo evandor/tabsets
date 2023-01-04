@@ -44,8 +44,8 @@ export function useUiService() {
 
   const showSearchResultsPageFor = (term: string) => {
     window.location.href = window.location.href.split('#')[0] +  "#/search?t=" + term
-    const selfId = localStorage.getItem("selfId")
-    if (selfId) {
+    // const selfId = localStorage.getItem("selfId")
+    // if (selfId) {
       chrome.tabs.query({title: `Tabsets Extension`}, (result: chrome.tabs.Tab[]) => {
         if (result && result.length > 0) {
           const tab = result[0]
@@ -54,7 +54,7 @@ export function useUiService() {
           }
         }
       })
-    }
+    //}
   }
 
   const setTabsetForNewTabPage = (tabsetId: string) => {

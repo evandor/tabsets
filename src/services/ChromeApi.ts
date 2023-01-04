@@ -75,12 +75,12 @@ class ChromeApi {
       (alarm: chrome.alarms.Alarm) => runHousekeeping(alarm)
     )
 
-    chrome.management.getSelf(
-      (self: chrome.management.ExtensionInfo) => {
-        // TODO needed ?
-        localStorage.setItem("selfId", self.id)
-      }
-    )
+    // chrome.management.getSelf(
+    //   (self: chrome.management.ExtensionInfo) => {
+    //     // TODO needed ?
+    //     localStorage.setItem("selfId", self.id)
+    //   }
+    // )
 
     chrome.runtime.onUpdateAvailable.addListener(
       (details: any) => NavigationService.updateAvailable(details)
@@ -100,14 +100,15 @@ class ChromeApi {
             if (result && result[0]) {
               chrome.tabs.highlight({tabs: result[0].index});
             } else {
-              const selfId = localStorage.getItem("selfId")
-              if (selfId) {
+              // const selfId = localStorage.getItem("selfId")
+              // if (selfId) {
                 chrome.tabs.create({
                   active: true,
                   pinned: false,
-                  url: "chrome-extension://" + selfId + "/www/index.html#/start"
+                  //url: "chrome-extension://" + selfId + "/www/index.html#/start"
+                  url: chrome.runtime.getURL("www/index.html#/start")
                 })
-              }
+             // }
             }
           })
         } else if (e.menuItemId.startsWith("save_as_tab|")) {
