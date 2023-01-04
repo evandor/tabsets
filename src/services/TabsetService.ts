@@ -486,7 +486,12 @@ class TabsetService {
     if (ts) {
       ts.status = TabsetStatus.DELETED
       return saveTabset(ts)
-        .then(() => true)
+        .then(() => {
+          if (useTabsStore().currentTabsetId === tabsetId) {
+            useTabsStore().currentTabsetId = null as unknown as string
+          }
+          return true
+        })
     }
     return Promise.reject("could not mark as deleted: " + tabsetId)
   }

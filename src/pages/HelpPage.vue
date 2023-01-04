@@ -49,6 +49,9 @@ watchEffect(async () => {
     case "howtos":
       src.value = "https://tabsets.web.app/#/plain/howtos"
       break;
+    case "glossary":
+      src.value = "https://tabsets.web.app/#/plain/glossary"
+      break;
     default:
       src.value = "https://tabsets.web.app/#/plain/howtos"
   }

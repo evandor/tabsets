@@ -29,7 +29,7 @@
   <div v-if="tab === 'appearance'">
     <div class="row items-baseline q-ma-lg">
 
-      <div class="col-3 text-h6">Dark Mode</div>
+      <div class="col-3 text-h6">Dark Mode (experimental)</div>
       <div class="col-9">
         <q-radio v-model="darkMode" :val="true" label="Enabled"/>
         <q-radio v-model="darkMode" :val="false" label="Disabled"/>

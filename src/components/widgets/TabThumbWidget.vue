@@ -1,8 +1,8 @@
 <template>
 
-  <q-card class="my-card" flat bordered :style="cardStyle(tab)" @mouseover="setInfo(tab)" @click="selectTab(tab)">
+  <q-card class="my-card" flat :style="cardStyle(tab)" @mouseover="setInfo(tab)" @click="selectTab(tab)">
     {{ loadThumbnail(tab) }}
-    <q-card-section class="q-pt-xs cursor-pointer bg-primary text-white" style="width:100%;">
+    <q-card-section class="q-pt-xs cursor-pointer bg-white text-primary" style="width:100%;">
       <div class="row items-baseline">
 
         <div class="col-12">
@@ -19,7 +19,7 @@
       </div>
 
 
-      <div class="text-subtitle2 ellipsis text-secondary"
+      <div class="text-subtitle2 ellipsis text-blue-9"
            @click.stop="NavigationService.openOrCreateTab(tab.chromeTab?.url )">
         {{ tab.chromeTab?.url.replace("https://www.", '').replace("https://", '') }}
         <q-icon name="launch" color="secondary"></q-icon>
@@ -28,7 +28,7 @@
         </q-tooltip>
 
       </div>
-      <div class="text-subtitle2 ellipsis text-white">
+      <div class="text-subtitle2 ellipsis text-black">
         {{ nameOrTitle(tab) }}
       </div>
 

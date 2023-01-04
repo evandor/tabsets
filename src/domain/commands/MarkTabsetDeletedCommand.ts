@@ -35,3 +35,7 @@ export class MarkTabsetDeletedCommand implements Command<boolean> {
 
 
 }
+
+MarkTabsetDeletedCommand.prototype.toString = function dogToString() {
+  return `MarkTabsetDeletedCommand: {tabsetId=${this.tabsetId}}`;
+};

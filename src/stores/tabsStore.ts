@@ -330,7 +330,6 @@ export const useTabsStore = defineStore('tabs', {
               }),
             t => t),
           _.map(tabGroupsStore.tabGroups, tg => new Group(uid(), tg)))
-        logger.debug("got ts", ts)
         this.tabsets.set(useId, ts)
       }
       logger.debug("currentSpace", currentSpace)
@@ -346,7 +345,11 @@ export const useTabsStore = defineStore('tabs', {
 
     deleteTabset(tabsetId: string) {
       this.tabsets.delete(tabsetId)
+      if (this.currentTabsetId === tabsetId) {
+        this.currentTabsetId = null as unknown as string
+      }
     },
+
     deactivateListeners() {
       console.log("setting listeners to false")
       this.listenersOn = false

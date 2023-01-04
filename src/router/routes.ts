@@ -77,7 +77,7 @@ const routes: RouteRecordRaw[] = [
   },
   {
     path: '/help/:ident',
-    component: () => import('layouts/WithoutTabsetsLayout.vue'),
+    component: () => import('layouts/MainLayout.vue'),
     children: [{ path: '', component: () => import('pages/HelpPage.vue') }],
   },
   {

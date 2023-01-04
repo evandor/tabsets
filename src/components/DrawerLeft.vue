@@ -23,7 +23,7 @@
           </div>
           <div class="col-xs-12 col-md-5 q-ma-none q-mt-sm text-right">
 
-            <div class="row">
+            <div class="row" v-if="tab !==  LeftDrawerTabs.HELP">
               <div class="col">
                 <span class="text-caption ellipsis">{{ filter }}</span>
                 <q-btn

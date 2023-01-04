@@ -114,6 +114,12 @@ class ChromeListeners {
     if (!useTabsStore().listenersOn) {
       return
     }
+    const selfUrl = chrome.runtime.getURL("")
+    if (chromeTab.url?.startsWith(selfUrl)) {
+      //console.log("ignoring selfturl2", selfUrl, chromeTab.url)
+      return
+    }
+
     this.eventTriggered()
     const tabsStore = useTabsStore()
 
@@ -127,7 +133,7 @@ class ChromeListeners {
         chrome.scripting.executeScript({
           target: {tabId: chromeTab.id, allFrames: true},
           files: ["tabsets-content-script.js"],
-        }, (callback:any) => console.log("callback", callback));
+        }, (callback: any) => console.debug("callback", callback));
       }
 
       let foundSession = false
@@ -166,7 +172,7 @@ class ChromeListeners {
         tabset.tabs.splice(index, 1)
       }
     } else {
-      console.debug("ignoring, pending tab has been deleted", tab)
+      console.log(`onUpdated: tab ${tab.id}: ignoring, pending tab cannot be found in ${tabset.name}`)
     }
   }
 
@@ -343,13 +349,13 @@ class ChromeListeners {
     this.throttleOnePerSecond(async () => {
       const current = await ChromeApi.getCurrentTab()
       // const selfId = localStorage.getItem("selfId")
-      // chrome.runtime.getURL("www/index.html#/newtab")
-      // if (current && current.url && selfId && current.url.indexOf(selfId) >= 0) {
-      //   return // no screenshot of extension itself
-      // }
+      const selfUrl = chrome.runtime.getURL("www/index.html")
+      console.log("selfturl", selfUrl)
+      if (current && current.url) {// && selfId && current.url.indexOf(selfId) >= 0) {
+        return // no screenshot of extension itself
+      }
       console.log("capturing tab...", current.url)
       const allUrlsPermission = usePermissionsStore().hasAllOrigins()
-      console.log("has Permission", allUrlsPermission)
       chrome.permissions.getAll((res) => console.log("res", res))
       if (allUrlsPermission) {
         setTimeout(() => {

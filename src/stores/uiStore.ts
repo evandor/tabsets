@@ -36,30 +36,21 @@ export const useUiStore = defineStore('ui', () => {
   const addTabsAutomaticallyDefault = ref<boolean>($q.localStorage.getItem('ui.addTabsAutomatically') as boolean || true)
   const tabBeingDragged = ref<string | undefined>(undefined)
 
-  watch(
-    leftDrawer,
-    (val: Object) => {
-      $q.localStorage.set("ui.leftDrawer", val)
-    }, {deep: true}
-  )
+  watch(leftDrawer, (val: Object) => {
+    $q.localStorage.set("ui.leftDrawer", val)
+  }, {deep: true})
 
-  watch(
-    tabsetIdForNewTab,
-    (val: Object) => {
-      $q.localStorage.set("ui.tabsetIdForNewTab", val)
-    }, {deep: true}
-  )
+  watch(tabsetIdForNewTab, (val: Object) => {
+    $q.localStorage.set("ui.tabsetIdForNewTab", val)
+  }, {deep: true})
 
-  watch(
-    addTabsAutomaticallyDefault,
+  watch(addTabsAutomaticallyDefault,
     (val: Object) => {
       $q.localStorage.set("ui.addTabsAutomatically", val)
     })
 
   const leftDrawerLabelIsAnimated = computed(() => {
-    return () => {
-      return leftDrawerLabelAnimated.value
-    }
+    return () => leftDrawerLabelAnimated.value
   })
 
   function setLeftDrawerLabelAnimated(animated: boolean) {

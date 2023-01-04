@@ -59,7 +59,9 @@
         <!--        </template>-->
 
         <template v-slot:after>
-          <TabInfo/>
+          <TabInfo v-if="notificationStore.selectedTab"/>
+          <TabsetInfo v-else-if="tabsStore.currentTabsetId" />
+
         </template>
 
       </q-splitter>
@@ -85,11 +87,14 @@ import NewTabsetDialog from "components/dialogues/NewTabsetDialog.vue";
 import NavTabsetsListWidget from "components/widgets/NavTabsetsListWidget.vue"
 import TabInfo from "components/layouts/TabInfo.vue";
 import {useUiStore} from "stores/uiStore";
+import {useNotificationsStore} from "stores/notificationsStore";
+import TabsetInfo from "components/layouts/TabsetInfo.vue";
 
 const router = useRouter()
 const tabsStore = useTabsStore()
 const featuresStore = useFeatureTogglesStore()
 const spacesStore = useSpacesStore()
+const notificationStore = useNotificationsStore()
 
 const $q = useQuasar();
 const localStorage = $q.localStorage

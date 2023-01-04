@@ -1,5 +1,5 @@
 <template>
-  <div v-if="notificationStore.selectedTab">
+  <div>
     <div class="row items-baseline q-mx-md q-pa-none" style="width:265px;border-top:1px dotted grey">
       <div class="col-12 q-mb-md">&nbsp;
         <q-banner v-if="notificationStore.selectedTab.isDuplicate"
@@ -143,6 +143,8 @@ watchEffect(() => {
       .then(data => {
         if (data) {
           thumbnail.value = data.thumbnail
+        } else {
+          thumbnail.value = ''
         }
       })
     TabsetService.getContentFor(notificationStore.selectedTab)

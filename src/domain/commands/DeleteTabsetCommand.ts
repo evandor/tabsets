@@ -15,3 +15,7 @@ export class DeleteTabsetCommand implements Command<string> {
       .catch(err => Promise.reject(err))
   }
 }
+
+DeleteTabsetCommand.prototype.toString = function cmdToString() {
+  return `DeleteTabsetCommand: {tabsetId=${this.tabsetId}}`;
+};

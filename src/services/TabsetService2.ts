@@ -169,6 +169,7 @@ export function useTabsetService() {
 
   const saveTabset = async (tabset: Tabset): Promise<IDBValidKey> => {
     if (tabset.id) {
+      tabset.updated = new Date().getTime()
       return persistenceService.saveTabset(tabset)
     }
     return Promise.reject("tabset id not set")
