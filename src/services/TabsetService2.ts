@@ -9,10 +9,9 @@ import {usePersistenceService} from "src/services/usePersistenceService";
 import ChromeApi from "src/services/ChromeApi";
 import {TabPredicate} from "src/domain/Types";
 import {useLoggingServicee} from "src/services/useLoggingService";
-import {Tabset, TabsetType} from "src/models/Tabset";
+import {Tabset, TabsetStatus, TabsetType} from "src/models/Tabset";
 import {useNotificationsStore} from "stores/notificationsStore";
 import {MetaLink} from "src/models/MetaLink";
-import {SearchDoc} from "src/models/SearchDoc";
 import {RequestInfo} from "src/models/RequestInfo";
 
 const {logger, TabLogger} = useLoggingServicee()
@@ -269,8 +268,10 @@ export function useTabsetService() {
   const tabsetsFor = (url: string): string[] => {
     const tabsets: string[] = []
     for (let ts of [...useTabsStore().tabsets.values()]) {
-      if (_.find(ts.tabs, t => t.chromeTab.url === url)) {
-        tabsets.push(ts.id)
+      if (ts.status === TabsetStatus.DEFAULT || ts.status === TabsetStatus.FAVORITE) {
+        if (_.find(ts.tabs, t => t.chromeTab.url === url)) {
+          tabsets.push(ts.id)
+        }
       }
     }
     return tabsets;

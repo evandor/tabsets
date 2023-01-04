@@ -120,11 +120,9 @@ class ChromeListeners {
     if (!info.status || (Object.keys(info).length > 1)) {
       console.debug(`onUpdated:   tab ${number}: >>> ${JSON.stringify(info)} <<<`)
 
-      //console.log(" --- handleUpdate of pending")
       this.handleUpdate(tabsStore.pendingTabset as Tabset, chromeTab)
 
       if (usePermissionsStore().hasAllOrigins() && !chromeTab.url?.startsWith("chrome")) {
-        console.log("hier1a")
         // @ts-ignore
         chrome.scripting.executeScript({
           target: {tabId: chromeTab.id, allFrames: true},
@@ -136,8 +134,6 @@ class ChromeListeners {
       _.forEach([...tabsStore.tabsets.values()], (ts: Tabset) => {
         if (ts.type === TabsetType.SESSION) {
           foundSession = true
-          console.log(" --- handleUpdate of", ts.id)
-          //ts.tabs.push(updatedTab)
           this.handleUpdate(ts, chromeTab)
         }
       })

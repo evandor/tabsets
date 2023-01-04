@@ -160,7 +160,6 @@ const tabsetBadges = (hit: Hit): object[] => {
 }
 
 const openTabset = (badge: any) => {
-  console.log("badge", badge)
   selectTabset(badge.tabsetId)
   router.push("/tabsets/" + badge.tabsetId + "?highlight=" + badge.encodedUrl)
 }

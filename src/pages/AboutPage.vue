@@ -1,6 +1,6 @@
 <template>
 
-  <q-page >
+  <q-page>
 
     <q-toolbar class="text-primary lightgrey">
       <div class="row fit">
@@ -30,31 +30,48 @@
         already - and can access <b>{{ bookmarksStore.bookmarksLeaves.length }} bookmarks</b> of yours.
       </div>
 
-      <div class="text-h5 q-ma-md">
-        Features
-      </div>
-
-      <div class="q-pa-md">
-        <div class="row q-gutter-lg">
-
-          <div class="col-xs-12 col-sm-4 col-md-3 col-lg-2" v-for="feature in features">
-            <q-card
-              class="my-card text-primary"
-              style="background: radial-gradient(circle, #efefef 0%, #ACBCBB 100%)"
-            >
-              <q-card-section>
-                <div class="text-h6">{{ feature.title }}</div>
-                <div class="text-subtitle2">{{ feature.caption }}</div>
-              </q-card-section>
-
-              <q-card-section class="q-pt-none text-black" style="height: 65px">
-                {{ feature.text }}
-              </q-card-section>
-            </q-card>
-          </div>
-
+      <template v-if="tabsStore.mostAccessedTabs.length >= 3">
+        <div class="text-h5 q-ma-md">
+          Most accessed sites
         </div>
-      </div>
+
+        <div class="q-pa-md">
+          <div class="row q-gutter-lg">
+
+            <TabcardsMostAccessed :tabs="tabsStore.mostAccessedTabs" group="mostAccessed"/>
+
+          </div>
+        </div>
+      </template>
+      <template v-else>
+
+        <div class="text-h5 q-ma-md">
+          Features
+        </div>
+
+        <div class="q-pa-md">
+          <div class="row q-gutter-lg">
+
+            <div class="col-xs-12 col-sm-4 col-md-3 col-lg-2" v-for="feature in features">
+              <q-card
+                class="my-card text-primary"
+                style="background: radial-gradient(circle, #efefef 0%, #ACBCBB 100%)"
+              >
+                <q-card-section>
+                  <div class="text-h6">{{ feature.title }}</div>
+                  <div class="text-subtitle2">{{ feature.caption }}</div>
+                </q-card-section>
+
+                <q-card-section class="q-pt-none text-black" style="height: 65px">
+                  {{ feature.text }}
+                </q-card-section>
+              </q-card>
+            </div>
+
+          </div>
+        </div>
+
+      </template>
 
       <div class="text-h5 q-ma-md">
         Good to know
@@ -104,6 +121,8 @@ import {useTabsStore} from "src/stores/tabsStore"
 import {useNotificationsStore} from "src/stores/notificationsStore";
 import {ref} from "vue";
 import {useBookmarksStore} from "stores/bookmarksStore";
+import Tabcards from "components/layouts/Tabcards.vue";
+import TabcardsMostAccessed from "components/layouts/TabcardsMostAccessed.vue";
 
 //@ts-ignore
 const appVersion = import.meta.env.PACKAGE_VERSION

@@ -28,12 +28,10 @@
               <q-tooltip>You have a bookmark with this url</q-tooltip>
             </q-icon>
           </q-badge>
-          <!--        <q-badge v-if="tab.note?.length > 0"-->
-          <!--                 color="warning" floating>-->
-          <!--          <q-icon name="o_note" size="14px" color="white">-->
-          <!--            <q-tooltip>You have a note attached to this tab</q-tooltip>-->
-          <!--          </q-icon>-->
-          <!--        </q-badge>-->
+<!--          <q-badge-->
+<!--            color="warning" floating>-->
+<!--            {{ tab.activatedCount }}-->
+<!--          </q-badge>-->
         </div>
       </div>
 

@@ -10,7 +10,6 @@
 
     <div class="row items-baseline q-mx-md q-my-none" style="width:265px">
 
-
       <div class="col-2">
         <TabFaviconWidget :tab="notificationStore.selectedTab" width="24ps" height="24px"/>
       </div>
@@ -29,6 +28,16 @@
         </div>
       </div>
     </div>
+
+    <div class="row q-mx-md q-my-none" style="width:265px;border:0 solid yellow">
+      <div class="col-12 text-right">
+        <q-chip v-for="chip in tabsetChips()"
+                class="cursor-pointer q-ml-xs" size="8px" clickable icon="tab" @click="openTabset(chip)">
+          {{ chip.label }}
+        </q-chip>
+      </div>
+    </div>
+
     <div class="row q-mx-md q-my-none" style="width:265px;border:0 solid yellow">
 
       <div class="col-12" v-if="hasAllUrlsPermission">
@@ -88,66 +97,6 @@
 
       </div>
 
-      <div class="col-12">
-        <div class="row q-ma-sm">
-          <!--
-                    <div class="col-5">
-                      Created
-                    </div>
-                    <div class="col-7">
-                      {{ formatDate(notificationStore.selectedTab.created) }}
-                      <q-tooltip>this tab was created at
-                        {{ date.formatDate(notificationStore.selectedTab.created, 'DD.MM.YYYY HH:mm') }}
-                      </q-tooltip>
-                    </div>
-                    <div class="col-5">
-                      Updated
-                    </div>
-                    <div class="col-7">
-                      {{ formatDate(notificationStore.selectedTab.updated) }}
-                      <q-tooltip>this tab was updated at
-                        {{ date.formatDate(notificationStore.selectedTab.updated, 'DD.MM.YYYY HH:mm') }}
-                      </q-tooltip>
-                    </div>
-          -->
-          <!--          <div class="col-5">
-                      Last Active
-                    </div>
-                    <div class="col-7">
-                      {{ formatDate(notificationStore.selectedTab.lastActive) }}
-                      <q-tooltip>this tab was last active at
-                        {{ date.formatDate(notificationStore.selectedTab.lastActive, 'DD.MM.YYYY HH:mm') }}
-                      </q-tooltip>
-                    </div>
-                    <div class="col-5">
-                      opened
-                    </div>
-                    <div class="col-7">
-                      {{ notificationStore.selectedTab.activatedCount }}x
-                    </div>-->
-
-          <!--          <div class="col-5">-->
-          <!--            History-->
-          <!--          </div>-->
-          <!--          <div class="col-7">-->
-          <!--            {{ notificationStore.selectedTab.history }}-->
-          <!--          </div>-->
-
-          <!--          <div class="col-5" v-if="notificationStore.selectedTab.bookmarkId">-->
-          <!--            Bookmark ID-->
-          <!--          </div>-->
-          <!--          <div class="col-7" v-if="notificationStore.selectedTab.bookmarkId">-->
-          <!--            {{ notificationStore.selectedTab.bookmarkId }}-->
-          <!--          </div>-->
-
-          <!--          <div class="col-5" v-if="notificationStore.selectedTab.bookmarkUrl">-->
-          <!--            Bookmark URL-->
-          <!--          </div>-->
-          <!--          <div class="col-7" v-if="notificationStore.selectedTab.bookmarkUrl">-->
-          <!--            {{ notificationStore.selectedTab.bookmarkUrl }}-->
-          <!--          </div>-->
-        </div>
-      </div>
     </div>
   </div>
 
@@ -171,6 +120,9 @@ import {usePermissionsStore} from "stores/permissionsStore";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {GrantPermissionCommand} from "src/domain/commands/GrantPermissionCommand";
 import {GrantOriginCommand} from "src/domain/commands/GrantOriginCommand";
+import {Hit} from "src/models/Hit";
+import _ from "lodash";
+import {useTabsetService} from "src/services/TabsetService2";
 
 const notificationStore = useNotificationsStore()
 const featuresStore = useFeatureTogglesStore()
@@ -179,9 +131,11 @@ const $q = useQuasar()
 
 const thumbnail = ref('')
 const content = ref('')
-const hasAllUrlsPermission = ref(false)
+const hasAllUrlsPermission = ref<boolean | undefined>(false)
+const {selectTabset} = useTabsetService()
 
-watchEffect(() => hasAllUrlsPermission.value = usePermissionsStore().hasAllOrigins || false)
+
+watchEffect(() => hasAllUrlsPermission.value = usePermissionsStore().hasAllOrigins())
 
 watchEffect(() => {
   if (notificationStore.selectedTab) {
@@ -199,6 +153,27 @@ watchEffect(() => {
       })
   }
 })
+const tabsetChips = (): object[] => {
+  const badges: object[] = []
+  //console.log("xxx", hit.bookmarkId)
+  const url = notificationStore.selectedTab.chromeTab.url
+  if (url) {
+    _.forEach(useTabsetService().tabsetsFor(url), ts => badges.push({
+      label: TabsetService.nameForTabsetId(ts),
+      tabsetId: ts,
+      encodedUrl: btoa(url || '')
+    }))
+  }
+  // if (hit.bookmarkId) {
+  //   badges.push({
+  //     label: 'bookmark',
+  //     bookmarkId: hit.bookmarkId,
+  //     encodedUrl: btoa(hit.chromeTab.url || '')
+  //   })
+  // }
+  return badges;
+}
+
 
 function getShortHostname(host: string) {
   const nrOfDots = (host.match(/\./g) || []).length
@@ -266,6 +241,9 @@ const scheduleTab = () => {
 
 const grant = (origin: string) => useCommandExecutor().executeFromUi(new GrantOriginCommand(origin))
 
-
+const openTabset = (badge: any) => {
+  selectTabset(badge.tabsetId)
+  router.push("/tabsets/" + badge.tabsetId + "?highlight=" + badge.encodedUrl)
+}
 
 </script>

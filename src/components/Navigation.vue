@@ -6,7 +6,7 @@
         <div class="row fit">
           <div class="col-xs-12 col-md-5">
             <q-toolbar-title>
-              <div class="row justify-start items-baseline">
+              <div class="row justify-start items-baseline cursor-pointer" @click="router.push('/about')">
                 Tabsets
               </div>
             </q-toolbar-title>

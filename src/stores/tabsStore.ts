@@ -83,6 +83,19 @@ export const useTabsStore = defineStore('tabs', {
       })
     },
 
+    mostAccessedTabs(state): Tab[] {
+      const allTabs: Tab[] =
+        _.orderBy(
+          _.filter(
+            _.flatMap(
+              _.filter(
+                _.map([...this.tabsets.values()], (ts: Tabset) => ts),
+                (ts: Tabset) => ts.status === TabsetStatus.DEFAULT || ts.status === TabsetStatus.FAVORITE),
+              (ts: Tabset) => ts.tabs), (t: Tab) => t.activatedCount > 1),
+          (t: Tab) => t.activatedCount, ['desc'])
+      return allTabs.slice(0, 12)
+    },
+
     audibleTabs(state): chrome.tabs.Tab[] {
       const openTabs: chrome.tabs.Tab[] = state.tabs
       // @ts-ignore
@@ -173,12 +186,12 @@ export const useTabsStore = defineStore('tabs', {
       const res: Tab[] = []
       _.forEach([...state.tabsets.values()], (ts: Tabset) => {
         //if (ts.status === TabsetStatus.DEFAULT || ts.status === TabsetStatus.FAVORITE) {
-          _.forEach(ts.tabs, (t: Tab) => {
-            if (t.scheduledFor) {
-              res.push(t)
-            }
-          })
-       // }
+        _.forEach(ts.tabs, (t: Tab) => {
+          if (t.scheduledFor) {
+            res.push(t)
+          }
+        })
+        // }
       })
       return res
     }

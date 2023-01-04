@@ -63,6 +63,7 @@ import {Tabset} from "src/models/Tabset";
 import TabsetService from "src/services/TabsetService";
 import {useRouter} from "vue-router";
 import SpacesService from "src/services/SpacesService";
+import {useTabsetService} from "src/services/TabsetService2";
 
 const spacesStore = useSpacesStore()
 const tabsStore = useTabsStore()
@@ -101,7 +102,7 @@ const updateSpaces = () => {
     console.log("result", ts.id, spaces)
     ts.spaces = spaces
 
-    TabsetService.saveTabset(ts)
+    useTabsetService().saveTabset(ts)
   })
 
   _.forEach([...spacesStore.spaces.values()], (space: Space, spaceIndex: number) => {
