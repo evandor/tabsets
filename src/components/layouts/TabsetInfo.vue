@@ -10,7 +10,10 @@
 
     <div class="row items-baseline q-mx-md q-my-none" style="width:265px">
 
-      <div class="col-12 text-body1 ellipsis">
+      <div class="col-12 text-body1">
+        Tabset
+      </div>
+      <div class="col-12 text-body2 ellipsis">
         {{ tabset.name }}
       </div>
       <div class="col-12 text-caption">

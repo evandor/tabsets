@@ -120,14 +120,17 @@ class IndexedDbPersistenceService implements PersistenceService {
     return Promise.reject("db not available (yet)")
   }
 
-  saveThumbnail(url: string, thumbnail: string): Promise<void> {
-    const encodedTabUrl = btoa(url)
-    return this.db.put('thumbnails', {
-      expires: new Date().getTime() + 1000 * 60 * EXPIRE_DATA_PERIOD_IN_MINUTES,
-      thumbnail: thumbnail
-    }, encodedTabUrl)
-      .then(() => console.log("added thumbnail"))
-      .catch(err => console.log("err", err))
+  saveThumbnail(tab: chrome.tabs.Tab, thumbnail: string): Promise<void> {
+    if (tab.url) {
+      const encodedTabUrl = btoa(tab.url)
+      return this.db.put('thumbnails', {
+        expires: new Date().getTime() + 1000 * 60 * EXPIRE_DATA_PERIOD_IN_MINUTES,
+        thumbnail: thumbnail
+      }, encodedTabUrl)
+        .then(() => TabLogger.info(new Tab(uid(), tab), `saved thumbnail for url ${tab.url}, ${Math.round(thumbnail.length / 1024)}kB`))
+        .catch(err => TabLogger.error(new Tab(uid(), tab), err))
+    }
+    return Promise.reject("no url provided")
   }
 
   saveRequest(url: string, requestInfo: RequestInfo): Promise<void> {
@@ -200,7 +203,7 @@ class IndexedDbPersistenceService implements PersistenceService {
         favIconUrl: tab.favIconUrl
       }, encodedTabUrl)
         .then((res) => {
-          TabLogger.info(new Tab(uid(), tab), "saved content for url " +  tab.url)
+          TabLogger.info(new Tab(uid(), tab), "saved content for url " + tab.url)
           return res
         })
     }
@@ -463,7 +466,7 @@ class IndexedDbPersistenceService implements PersistenceService {
         }
         if (!db.objectStoreNames.contains('logs')) {
           console.log("creating db logs")
-          db.createObjectStore('logs', { autoIncrement: true });
+          db.createObjectStore('logs', {autoIncrement: true});
           //store.createIndex("expires", "expires", {unique: false});
         }
       },
@@ -507,7 +510,7 @@ class IndexedDbPersistenceService implements PersistenceService {
     return Promise.reject('db not available (yet)')
   }
 
-  async getStats():Promise<StatsEntry[]> {
+  async getStats(): Promise<StatsEntry[]> {
     if (this.db) {
       const store = this.db.transaction(["stats"]).objectStore("stats");
       const res: StatsEntry[] = []

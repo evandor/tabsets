@@ -48,7 +48,7 @@
           If you want to have thumbnails of your tabs, additional permissions are needed.<br><br>
           Click <span class="cursor-pointer text-blue-6" style="text-decoration: underline"
                       @click="grant('*://*/*')">here</span> to
-          grant permissions for the tabset extension to access your bookmarks.
+          grant permissions for the tabset extension to create thumbnails for your tabs.
         </q-banner>
       </div>
 

@@ -205,7 +205,7 @@ export function useTabsetService() {
       const tabsetIds: string[] = tabsetsFor(tab.url)
 
       persistenceService.saveContent(tab, text, metas, title, tabsetIds)
-        .then(() => console.log("added content"))
+        //.then(() => console.log("added content"))
         .catch(err => console.log("err", err))
 
       // console.log("updating meta data for ", tabsetIds, tab.url)
@@ -310,8 +310,8 @@ export function useTabsetService() {
 
   const saveThumbnailFor = (tab: chrome.tabs.Tab | undefined, thumbnail: string) => {
     if (tab && tab.url) {
-      persistenceService.saveThumbnail(tab.url, thumbnail)
-        .then(() => console.log("added thumbnail"))
+      persistenceService.saveThumbnail(tab, thumbnail)
+        //.then(() => console.log("added thumbnail"))
         .catch(err => console.log("err", err))
     }
   }

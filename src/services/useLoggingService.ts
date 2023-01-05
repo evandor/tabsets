@@ -20,18 +20,26 @@ class PersistingHandler extends BaseHandler {
 }
 
 export class TabLogger {
-   static info(tab: Tab | undefined, msg: string) :void {
-     const useId = "url_" + (tab?.chromeTab.url ? btoa(tab.chromeTab.url) : '')
-     var loggerToUse = LoggerStore.get(useId)
-     if (!loggerToUse) {
-       const defaultLogger = LoggerStore.get("default")
-       if (defaultLogger) {
-         loggerToUse = defaultLogger.withContext(useId)
-         LoggerStore.add(useId, loggerToUse)
-       }
-     }
-     loggerToUse?.info(msg)
-   }
+  static info(tab: Tab, msg: string): void {
+    this.getLogger(tab)?.info(msg)
+  }
+
+  static error(tab: Tab, msg: string): void {
+    this.getLogger(tab)?.error(msg)
+  }
+
+  private static getLogger(tab: Tab) {
+    const useId = "url_" + (tab?.chromeTab.url ? btoa(tab.chromeTab.url) : '')
+    let loggerToUse = LoggerStore.get(useId)
+    if (!loggerToUse) {
+      const defaultLogger = LoggerStore.get("default")
+      if (defaultLogger) {
+        loggerToUse = defaultLogger.withContext(useId)
+        LoggerStore.add(useId, loggerToUse)
+      }
+    }
+    return loggerToUse;
+  }
 }
 
 
@@ -47,7 +55,7 @@ export function useLoggingServicee() {
 
   const getLogs = () => {
     return persistenceService.getLogs()
-      //.then((ls: any[]) => logs.value = ls)
+    //.then((ls: any[]) => logs.value = ls)
   }
 
 

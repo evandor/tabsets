@@ -66,11 +66,6 @@
           <q-tooltip>Use the canvas freestyle layout to visualize your tabs</q-tooltip>
         </q-btn>
 
-        <!--        <q-icon v-if="tabsStore.getCurrentTabs.length > 0"-->
-        <!--                class="q-ml-none q-mr-md"-->
-        <!--          name="more_vert"-->
-        <!--        />-->
-
         <q-btn v-if="tabsStore.getCurrentTabs.length > 0"
                flat dense icon="o_restore_page"
                color="primary" :label="$q.screen.gt.sm ? 'Open Tabset...' : ''"
@@ -131,7 +126,7 @@
         <Tablist v-if="tabsStore.getCurrentTabset?.view === 'list'"
                  :tabs="tabsStore.pinnedTabs"/>
 
-        <TabThumbs v-else-if="tabsStore.getCurrentTabset?.view === 'thumbnails'"
+        <TabThumbs v-else-if="tabsStore.getCurrentTabset?.view === 'thumbnails'" group="pinnedTabs"
                    :tabs="tabsStore.pinnedTabs"/>
 
 
@@ -171,6 +166,7 @@
                    :tabs="tabsForGroup( group.chromeGroup.id)"/>
 
           <TabThumbs v-else-if="tabsStore.getCurrentTabset?.view === 'thumbnails'"
+                     :group="'groupedTabs_'+group.chromeGroup.id"
                      :tabs="tabsForGroup( group.chromeGroup.id)"/>
 
           <Tabcards v-else
@@ -221,6 +217,7 @@
                  :tabs="unpinnedNoGroup()"/>
 
         <TabThumbs v-else-if="tabsStore.getCurrentTabset?.view === 'thumbnails'"
+                   group="otherTabs"
                    :tabs="unpinnedNoGroup()"/>
 
         <Tabcards v-else
@@ -255,8 +252,6 @@
 
     </q-card-section>
   </q-card>
-
-<!--  <Fab/>-->
 
 </template>
 

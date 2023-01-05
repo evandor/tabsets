@@ -35,7 +35,7 @@ export class GrantOriginCommand implements Command<boolean> {
           ChromeApi.startWebRequestListener()
           return new ExecutionResult(
             granted,
-            "Origin was added",
+            "Thumbnail permission was added, subsequently stored tabs should have thumbnails ",
             new UndoCommand(this.origin))
         } else {
           return new ExecutionResult(granted, "Origin was not granted")

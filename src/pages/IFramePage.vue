@@ -95,7 +95,7 @@ watchEffect(async () => {
     const request = await TabsetService.getRequestForUrl(found.chromeTab.url)
     // const iFrame: HTMLIFrameElement = window.document?.getElementById('tabIFrame') as unknown as HTMLIFrameElement
     // iFrame.setAttribute("style", "overflow:hidden;height:" + (window.innerHeight - 50) + "px;width:100%;border:0px");
-    if (_.find(Object.values(request.requestInfo.headers), (v: any) => v.name === 'x-frame-options')) {
+    if (request.requestInfo && _.find(Object.values(request.requestInfo.headers), (v: any) => v.name === 'x-frame-options')) {
       src.value = 'data:text/html,<p>cannot open this page in iFrame ;(</p>'
     } else {
       src.value = found.chromeTab.url || 'data:text/html,<p>loading....</p>'

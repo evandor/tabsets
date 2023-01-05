@@ -1,5 +1,5 @@
 <template>
-  <q-expansion-item v-if="tabsStore.pendingTabset?.tabs.length > 0"
+  <q-expansion-item v-if="relevantPendingTabs.length > 0"
                     class="q-ma-lg greyBorderTop"
                     header-class="text-black"
                     expand-icon-class="text-black"
@@ -31,7 +31,7 @@
           </div>
         </q-item-label>
       </q-item-section>
-      <q-item-section>{{ pendingTabsCount() }}</q-item-section>
+      <q-item-section>{{ relevantPendingTabs.length }}</q-item-section>
 
     </template>
 
@@ -89,13 +89,15 @@ import TabcardPending from "src/components/layouts/TabcardPending.vue";
 
 import _ from "lodash";
 import {Tab} from "src/models/Tab";
-import {ref} from "vue";
+import {ref, watchEffect} from "vue";
 import {useQuasar} from "quasar";
 
 const tabsStore = useTabsStore()
 const filter = ref('')
 const slide = ref(1)
 const $q = useQuasar()
+
+const relevantPendingTabs = ref<Tab[]>([])
 
 const saveAllPendingTabs = () => {
   TabsetService.saveAllPendingTabs()
@@ -123,13 +125,11 @@ const formatLength = (length: number, singular: string, plural: string) => {
   return (length > 1 || length === 0) ? length + ' ' + plural : length + ' ' + singular
 }
 
-const pendingTabsCount = () => {
-  let label = formatLength(tabsStore.pendingTabset?.tabs.length, 'tab', 'tabs')
-  if (tabsStore.pendingTabset?.tabs.length > MAX_TABS_TO_SHOW) {
-    label += ", with " + (1 + tabsStore.pendingTabset?.tabs.length - MAX_TABS_TO_SHOW) + " hidden"
-  }
-  return label
-}
+watchEffect(() => {
+  const tabs: Tab[] = tabsStore.pendingTabset?.tabs
+  relevantPendingTabs.value = _.filter(tabs, (t:Tab) => t.chromeTab.url !== 'chrome://newtab/')
+})
+
 
 
 const setFilter = (val: string) => {
@@ -138,7 +138,7 @@ const setFilter = (val: string) => {
 }
 
 const filteredTabs = () => {
-  const noDupliatesTabs = _.filter(tabsStore.pendingTabset?.tabs, (t: Tab) => !t.isDuplicate)
+  const noDupliatesTabs = _.filter(relevantPendingTabs.value, (t: Tab) => !t.isDuplicate)
   if (filter.value && filter.value.trim() !== '') {
     return _.filter(noDupliatesTabs, (t: Tab) =>
       (t?.chromeTab.url && t?.chromeTab.url.indexOf(filter.value) >= 0) ||
@@ -147,10 +147,6 @@ const filteredTabs = () => {
   return noDupliatesTabs
 }
 
-const pendingTabsChunks = (): any[][] => {
-  const tabs = filteredTabs()
-  const chunks = _.chunk(tabs, 4)
-  //console.log("chunks", chunks)
-  return chunks
-}
+const pendingTabsChunks = (): any[][] => _.chunk(filteredTabs(), 4)
+
 </script>

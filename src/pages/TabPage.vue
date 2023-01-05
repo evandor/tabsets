@@ -631,16 +631,7 @@ const openValueLink = (name: any, value: string) => {
 const showValueLink = (name: string) => "fb:page_id" === name || "twitter:account_id" === name
 
 const analyseTab = () => searchStore.reindexTab(notificationStore.selectedTab)
-  .then((windowId: number) => {
-    console.log("hier", windowId)
-    //chrome.windows.remove(windowId)
-    // const proxy = getCurrentInstance()?.proxy
-    // console.log("hier", proxy)
-    // if (proxy) {
-    //   console.log("proxy", proxy)
-    //   proxy.$forceUpdate()
-    // }
-  })
+  .then((windowId: number) => {})
 
 
 </script>
