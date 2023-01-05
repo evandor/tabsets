@@ -35,7 +35,7 @@ const featureToggles = useFeatureTogglesStore()
 
 const props = defineProps({
   tab: {
-    type: Tab,
+    type: Object,
     required: true
   }
 })

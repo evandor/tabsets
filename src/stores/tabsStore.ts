@@ -272,10 +272,11 @@ export const useTabsStore = defineStore('tabs', {
       return undefined
     },
 
-    removeTab(tabId: string) {
-      const currentTabset: Tabset = this.tabsets.get(this.currentTabsetId) || new Tabset("", "", [])
-      currentTabset.tabs = _.filter(currentTabset.tabs, (t: Tab) => t.id !== tabId)
-      markDuplicates(currentTabset)
+    removeTab(tabset: Tabset, tabId: string) {
+
+      //const currentTabset: Tabset = this.tabsets.get(this.currentTabsetId) || new Tabset("", "", [])
+      tabset.tabs = _.filter(tabset.tabs, (t: Tab) => t.id !== tabId)
+      markDuplicates(tabset)
       this.pendingTabset.tabs = _.filter(this.pendingTabset.tabs, (t: Tab) => t.id !== tabId)
       // return saveTabset(currentTabset)
       //   .then(() => currentTabset)

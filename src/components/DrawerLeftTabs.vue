@@ -27,6 +27,11 @@
       <q-tooltip>Your unassigned tabs</q-tooltip>
     </q-tab>
 
+    <q-tab
+           name="groupedByHostTabs" icon="o_dns" @click="tabsClicked(LeftDrawerTabs.GROUP_BY_HOST_TABS)">
+      <q-tooltip>Your tabs grouped by host, if there are at least two tabs</q-tooltip>
+    </q-tab>
+
     <q-tab v-if="savedTabsCount > 0"
            name="savedTabs" icon="o_save" @click="tabsClicked(LeftDrawerTabs.SAVED_TABS)">
       <q-tooltip>Your saved tabs</q-tooltip>

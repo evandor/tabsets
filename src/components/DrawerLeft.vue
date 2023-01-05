@@ -10,7 +10,7 @@
 
       <q-toolbar class="text-primary lightgrey">
         <div class="row fit">
-          <div class="col-xs-12 col-md-7">
+          <div class="col-xs-12 col-md-9">
             <q-toolbar-title>
               <div class="row justify-start items-baseline">
                 <div class="col-1">
@@ -21,7 +21,7 @@
               </div>
             </q-toolbar-title>
           </div>
-          <div class="col-xs-12 col-md-5 q-ma-none q-mt-sm text-right">
+          <div class="col-xs-12 col-md-3 q-ma-none q-mt-sm text-right">
 
             <div class="row" v-if="tab !==  LeftDrawerTabs.HELP">
               <div class="col">
@@ -63,6 +63,7 @@
       <BookmarksTree v-if="tab === LeftDrawerTabs.BOOKMARKS"/>
       <OpenTabs v-else-if="tab ===  LeftDrawerTabs.OPEN_TABS" :filter="filter"/>
       <UnassignedTabs v-else-if="tab ===  LeftDrawerTabs.UNASSIGNED_TABS" :filter="filter"/>
+      <TabsGroupedByHost v-else-if="tab ===  LeftDrawerTabs.GROUP_BY_HOST_TABS" />
       <SavedTabs v-else-if="tab ===  LeftDrawerTabs.SAVED_TABS"/>
       <TabsetAsSidebar v-else-if="tab ===  LeftDrawerTabs.SIDEBAR"/>
       <RssTabs v-else-if="tab ===  LeftDrawerTabs.RSS"/>
@@ -92,6 +93,7 @@ import {useSettingsStore} from "stores/settingsStore";
 import {LeftDrawerTabs} from "stores/uiStore";
 import {useUiService} from "src/services/useUiService";
 import TabsetHelp from "components/TabsetHelp.vue";
+import TabsGroupedByHost from "components/TabsGroupedByHost.vue";
 
 const router = useRouter()
 
@@ -136,6 +138,8 @@ const drawerLabel = () => {
       return "Open Tabs"
     case LeftDrawerTabs.UNASSIGNED_TABS:
       return "Unassigned"
+    case LeftDrawerTabs.GROUP_BY_HOST_TABS:
+      return "Grouped by Host"
     case LeftDrawerTabs.SAVED_TABS:
       return "Saved Pages"
     case LeftDrawerTabs.SIDEBAR:

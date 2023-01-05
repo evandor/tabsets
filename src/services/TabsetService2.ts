@@ -278,6 +278,16 @@ export function useTabsetService() {
     return tabsets;
   }
 
+  const tabsetFor = (id: string): Tabset | undefined => {
+    let tabset: Tabset | undefined = undefined
+    for (let ts of [...useTabsStore().tabsets.values()]) {
+      if (_.find(ts.tabs, t => t.id === id)) {
+        tabset = ts
+      }
+    }
+    return tabset
+  }
+
   /**
    * adds the (new) Tab 'tab' to the tabset given in 'ts'.
    *
@@ -348,12 +358,12 @@ export function useTabsetService() {
         .then(() => console.log("deleting content for ", tabUrl))
         .catch(err => console.log("error deleting content", err))
     }
-    useTabsStore().removeTab(tab.id)
-    const currentTabset = useTabsStore().getCurrentTabset
-    if (currentTabset) {
+    const tabset = tabsetFor(tab.id)
+    if (tabset) {
+      useTabsStore().removeTab(tabset, tab.id)
       useNotificationsStore().unsetSelectedTab()
-      return saveTabset(currentTabset)
-        .then(() => currentTabset)
+      return saveTabset(tabset)
+        .then(() => tabset)
     }
     return Promise.reject("could not access current tabset")
   }
@@ -370,12 +380,12 @@ export function useTabsetService() {
         .then(() => console.log("deleting content for ", tabUrl))
         .catch(err => console.log("error deleting content", err))
     }
-    useNotificationsStore().unsetSelectedTab()
-    useTabsStore().removeTab(tab.id)
-    const currentTabset = useTabsStore().getCurrentTabset
-    if (currentTabset) {
-      return saveTabset(currentTabset)
-        .then(() => currentTabset)
+    const tabset = tabsetFor(tab.id)
+    if (tabset) {
+      useTabsStore().removeTab(tabset, tab.id)
+      useNotificationsStore().unsetSelectedTab()
+      return saveTabset(tabset)
+        .then(() => tabset)
     }
     return Promise.reject("could not access current tabset")
 
