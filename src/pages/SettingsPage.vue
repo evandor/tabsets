@@ -113,6 +113,14 @@
         <q-radio v-model="allUrlsOriginGranted" :val="false" label="Revoked"/>
       </div>
     </div>
+
+    <div class="row items-baseline q-ma-lg">
+      <div class="col-3 text-h6">History</div>
+      <div class="col-9">
+        <q-radio v-model="historyPermissionGranted" :val="true" label="Granted"/>
+        <q-radio v-model="historyPermissionGranted" :val="false" label="Revoked"/>
+      </div>
+    </div>
   </div>
 
   <div v-if="tab === 'ignored'">
@@ -384,6 +392,7 @@ const permissionsList = ref<string[]>([])
 
 const darkMode = ref<boolean>(localStorage.getItem('darkMode') || false)
 const bookmarksPermissionGranted = ref<boolean | undefined>(usePermissionsStore().hasPermission('bookmarks'))
+const historyPermissionGranted = ref<boolean | undefined>(usePermissionsStore().hasPermission('history'))
 const allUrlsOriginGranted = ref<boolean | undefined>(usePermissionsStore().hasAllOrigins())
 const showBookmarks = ref<boolean>(localStorage.getItem('showBookmarks') || false)
 const tab = ref('appearance')
@@ -393,6 +402,7 @@ const {handleError} = useNotificationHandler()
 watchEffect(() => permissionsList.value = usePermissionsStore().permissions?.permissions || [])
 
 watchEffect(() => bookmarksPermissionGranted.value = usePermissionsStore().hasPermission('bookmarks'))
+watchEffect(() => historyPermissionGranted.value = usePermissionsStore().hasPermission('history'))
 
 watch(() => bookmarksPermissionGranted.value, (newValue, oldValue) => {
   if (newValue === oldValue) {
@@ -407,6 +417,23 @@ watch(() => bookmarksPermissionGranted.value, (newValue, oldValue) => {
       .executeFromUi(new RevokePermissionCommand("bookmarks"))
       .then(() => {
         useBookmarksStore().loadBookmarks()
+      })
+  }
+})
+
+watch(() => historyPermissionGranted.value, (newValue, oldValue) => {
+  if (newValue === oldValue) {
+    return
+  }
+  if (historyPermissionGranted.value && !usePermissionsStore().hasPermission('history')) {
+    useCommandExecutor()
+      .executeFromUi(new GrantPermissionCommand("history"))
+      .then((res:ExecutionResult<boolean>) => historyPermissionGranted.value = res.result)
+  } else if (!historyPermissionGranted.value) {
+    useCommandExecutor()
+      .executeFromUi(new RevokePermissionCommand("history"))
+      .then(() => {
+        //useBookmarksStore().loadBookmarks()
       })
   }
 })

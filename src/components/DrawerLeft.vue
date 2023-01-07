@@ -68,6 +68,7 @@
       <TabsetAsSidebar v-else-if="tab ===  LeftDrawerTabs.SIDEBAR"/>
       <RssTabs v-else-if="tab ===  LeftDrawerTabs.RSS"/>
       <ScheduledTabs v-else-if="tab ===  LeftDrawerTabs.SCHEDULED"/>
+      <BrowserHistory v-else-if="tab ===  LeftDrawerTabs.HISTORY"/>
       <TabsetHelp v-else-if="tab ===  LeftDrawerTabs.HELP"/>
 
       <div v-else>unknown tab name {{ tab }}</div>
@@ -94,6 +95,7 @@ import {LeftDrawerTabs} from "stores/uiStore";
 import {useUiService} from "src/services/useUiService";
 import TabsetHelp from "components/TabsetHelp.vue";
 import TabsGroupedByHost from "components/TabsGroupedByHost.vue";
+import BrowserHistory from "components/BrowserHistory.vue";
 
 const router = useRouter()
 
@@ -148,6 +150,8 @@ const drawerLabel = () => {
       return "RSS Sidebar"
     case LeftDrawerTabs.SCHEDULED:
       return "Scheduled"
+    case LeftDrawerTabs.HISTORY:
+      return "History"
     case LeftDrawerTabs.HELP:
       return "Help"
     default:

@@ -30,9 +30,7 @@ class TabService {
     const tabs = useTabsStore().scheduledTabs
     const dueTabs: Tab[] = []
     const now = new Date().getTime()
-    //const selfId = localStorage.getItem("selfId")
     _.forEach(tabs, (t: Tab) => {
-      console.log("comparing", t.scheduledFor, now)
       if (t.scheduledFor && t.scheduledFor <= now) {
         dueTabs.push(t)
       }

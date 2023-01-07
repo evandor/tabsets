@@ -19,7 +19,8 @@
     "search"
   ],
   "optional_permissions": [
-    "bookmarks"
+    "bookmarks",
+    "history"
   ],
   "optional_host_permissions": [
     "<all_urls>",

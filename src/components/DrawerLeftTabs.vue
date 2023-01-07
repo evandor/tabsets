@@ -48,8 +48,13 @@
     </q-tab>
 
     <q-tab
-           name="scheduled" icon="o_schedule" @click="tabsClicked(LeftDrawerTabs.SCHEDULED)">
+           name="scheduled" icon="o_update" @click="tabsClicked(LeftDrawerTabs.SCHEDULED)">
       <q-tooltip>Scheduled Tabs</q-tooltip>
+    </q-tab>
+
+    <q-tab v-if="permissionsStore.hasPermission('history')"
+           name="history" icon="o_history" @click="tabsClicked(LeftDrawerTabs.HISTORY)">
+      <q-tooltip>Browser History</q-tooltip>
     </q-tab>
 
     <q-tab
@@ -70,6 +75,7 @@ import {useTabsStore} from "stores/tabsStore";
 import {useSettingsStore} from "stores/settingsStore";
 import {LeftDrawerTabs} from "stores/uiStore";
 import {useUiService} from "src/services/useUiService";
+import {usePermissionsStore} from "stores/permissionsStore";
 
 const router = useRouter()
 
@@ -78,6 +84,7 @@ const uiService = useUiService()
 const featureToggles = useFeatureTogglesStore()
 const tabsStore = useTabsStore()
 const settingsStore = useSettingsStore()
+const permissionsStore = usePermissionsStore()
 
 const openTabsCountRatio = ref(0)
 const tab = ref<LeftDrawerTabs>(uiService.leftDrawerActiveTab())

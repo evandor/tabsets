@@ -1,5 +1,6 @@
 <template>
   <q-expansion-item v-for="[host,val] in groupedTabs"
+                    @click="showByDomainPage(host)"
                     expand-separator
                     :label="host"
                     :caption="captionFor(val)">
@@ -19,8 +20,10 @@ import {ref, watchEffect} from "vue";
 import {Tab} from "src/models/Tab";
 import {Tabset, TabsetStatus} from "src/models/Tabset";
 import OpenTabCard from "components/layouts/OpenTabCard.vue";
+import {useRouter} from "vue-router";
 
 const tabsStore = useTabsStore()
+const router = useRouter()
 
 const groupedTabs = ref<Map<String, Tab[]>>(new Map())
 
@@ -67,8 +70,8 @@ watchEffect(() => {
 
 })
 
-const captionFor = (t: any[]) => {
-  return t.length + " tab(s)"
-}
+const captionFor = (t: any[]) =>  t.length + " tab(s)"
+
+const showByDomainPage = (host: string) => router.push("/bydomain/" + btoa(host))
 
 </script>

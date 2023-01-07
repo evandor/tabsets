@@ -66,6 +66,11 @@ const routes: RouteRecordRaw[] = [
     children: [{ path: '', component: () => import('pages/RssPage.vue') }],
   },
   {
+    path: '/bydomain/:encodedUrl',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [{ path: '', component: () => import('pages/ByDomainPage.vue') }],
+  },
+  {
     path: '/search',
     component: () => import('layouts/MainLayout.vue'),
     children: [{ path: '', component: () => import('pages/SearchPage.vue') }],
