@@ -1,9 +1,21 @@
 <template>
 
+  <div class="q-pa-none">
+    <q-list>
+      <q-item clickable v-ripple v-for="[host,val] in groupedHistory"
+              @click="showByAge(host)">
+        <q-item-section>
+          <q-item-label overline>{{ host }}</q-item-label>
+          <q-item-label caption>{{ captionFor(val) }}</q-item-label>
+        </q-item-section>
+      </q-item>
+    </q-list>
+  </div>
+
   <q-expansion-item v-for="[host,val] in groupedHistory"
                     expand-separator
                     :label="host"
-                    :caption="val.length">
+                    :caption="val.length + 'Tab(s)'">
     <q-card v-for="h in val">
       <q-card-section>
         {{h.url}}
@@ -49,7 +61,7 @@ const open = (tab: Tab) => {
 chrome.history.search(
   {text: ''},
   (results: chrome.history.HistoryItem[]) => {
-    console.log("history", results)
+    //console.log("history", results)
     historyList.value = results//_.map(results, (h:chrome.history.HistoryItem) => )
 
     const grouped = _.groupBy(results, (h: chrome.history.HistoryItem) => {
@@ -64,5 +76,11 @@ chrome.history.search(
     groupedHistory.value = new Map([...map3.entries()].filter((a) => a[1].length > 1))
   }
 )
+const captionFor = (val:any[]) => val.length
+
+const showByAge = (age: string) => {
+  console.log("clicked", age)
+  router.push("/historyByAge/" + btoa(age))
+}
 
 </script>

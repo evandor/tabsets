@@ -36,11 +36,7 @@
         </div>
 
         <div class="q-pa-md">
-          <div class="row q-gutter-lg">
-
-            <TabcardsMostAccessed :tabs="tabsStore.mostAccessedTabs" group="mostAccessed"/>
-
-          </div>
+          <TabcardsMostAccessed :tabs="tabsStore.mostAccessedTabs" group="mostAccessed"/>
         </div>
       </template>
       <template v-else>

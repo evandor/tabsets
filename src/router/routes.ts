@@ -71,6 +71,11 @@ const routes: RouteRecordRaw[] = [
     children: [{ path: '', component: () => import('pages/ByDomainPage.vue') }],
   },
   {
+    path: '/historyByAge/:encodedAge',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [{ path: '', component: () => import('pages/ByAgePage.vue') }],
+  },
+  {
     path: '/search',
     component: () => import('layouts/MainLayout.vue'),
     children: [{ path: '', component: () => import('pages/SearchPage.vue') }],

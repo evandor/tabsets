@@ -6,20 +6,20 @@
       <div class="col-xs-12 col-md-5">
         <q-toolbar-title>
           <div class="row justify-start items-baseline">
-            <div class="col-1"><span class="text-dark">Domain</span> <span
+            <div class="col-1"><span class="text-dark">Age</span> <span
               class="text-primary">
-              {{ domain }}
+              {{ age }}
             </span></div>
           </div>
         </q-toolbar-title>
       </div>
       <div class="col-xs-12 col-md-7 text-right">
 
-
       </div>
     </div>
   </q-toolbar>
 
+  {{ groupedTabs}}
   <!-- rest: neither pinned, grouped, or pending -->
   <q-expansion-item
     icon="tabs"
@@ -98,21 +98,20 @@ const $q = useQuasar()
 
 const highlightUrl = ref('')
 
-const domain = ref(null as unknown as string)
+const age = ref(null as unknown as string)
 
-//domain.value = atob(route.params.encodedUrl as string)
+//age.value = atob(route.params.encodedAge as string)
 
 watchEffect(() => {
-    domain.value = route.params.encodedUrl as string
-    if (domain.value) {
-      domain.value = atob(domain.value)
-    }
+  age.value = route.params.encodedAge as string
+  if (age.value) {
+    age.value = atob(age.value)
+  }
 })
 
 const groupedTabs = ref<Tab[]>([])
 
 watchEffect(() => {
-  console.log("checkin tabs2....")
   const allTabs: Tab[] =
     _.orderBy(
       _.filter(
@@ -123,17 +122,19 @@ watchEffect(() => {
             (ts: Tabset) => ts.status === TabsetStatus.DEFAULT || ts.status === TabsetStatus.FAVORITE),
           (ts: Tabset) => ts.tabs), (t: Tab) => true),
       (t: Tab) => t.activatedCount, ['desc'])
+  console.log("checkin tabs2....", allTabs)
   groupedTabs.value =
     _.filter(allTabs, (t: Tab) => {
       if (t.chromeTab.url) {
         try {
           const hostname = new URL(t.chromeTab.url).hostname
+          console.log("comparing", hostname, age.value)
           const splits = hostname.split('.')
           switch (splits.length) {
             case 3:
-              return hostname.substring(1 + hostname.indexOf(".")) === domain.value
+              return hostname.substring(1 + hostname.indexOf(".")) === age.value
             default:
-              return hostname === domain.value
+              return hostname === age.value
           }
         } catch (e) {
           return false

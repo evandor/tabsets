@@ -1,15 +1,17 @@
 <template>
-  <q-expansion-item v-for="[host,val] in groupedTabs"
-                    @click="showByDomainPage(host)"
-                    expand-separator
-                    :label="host"
-                    :caption="captionFor(val)">
-    <q-card v-for="tab in val">
-      <q-card-section>
-        <OpenTabCard :tab="tab"/>
-      </q-card-section>
-    </q-card>
-  </q-expansion-item>
+
+  <div class="q-pa-none">
+    <q-list>
+      <q-item clickable v-ripple v-for="[host,val] in groupedTabs"
+              @click="showByDomainPage(host)">
+        <q-item-section>
+          <q-item-label overline>{{ host }}</q-item-label>
+          <q-item-label caption>{{ captionFor(val) }}</q-item-label>
+        </q-item-section>
+      </q-item>
+    </q-list>
+  </div>
+
 </template>
 
 <script lang="ts" setup>
@@ -70,8 +72,11 @@ watchEffect(() => {
 
 })
 
-const captionFor = (t: any[]) =>  t.length + " tab(s)"
+const captionFor = (t: any[]) => t.length + " tab(s)"
 
-const showByDomainPage = (host: string) => router.push("/bydomain/" + btoa(host))
+const showByDomainPage = (host: string) => {
+  console.log("clicked", host)
+  router.push("/bydomain/" + btoa(host))
+}
 
 </script>
