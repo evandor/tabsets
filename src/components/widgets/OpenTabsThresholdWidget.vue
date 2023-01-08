@@ -48,11 +48,11 @@
         Use special tabsets:
       </q-item>
       <q-item v-if="existingSession"
-        clickable v-close-popup @click="replaceSession">
+              clickable v-close-popup @click="replaceSession">
         <q-item-section>&bull; Replace existing Session...</q-item-section>
       </q-item>
       <q-item v-else
-        clickable v-close-popup @click="startSession">
+              clickable v-close-popup @click="startSession">
         <q-item-section>&bull; Start a new Session...</q-item-section>
       </q-item>
       <q-separator/>
@@ -69,7 +69,7 @@
 import {useTabsStore} from "stores/tabsStore";
 import {useSettingsStore} from "stores/settingsStore";
 import TabsetService from "src/services/TabsetService"
-import {ref, watchEffect} from "vue";
+import {ref, watch, watchEffect} from "vue";
 import {useRouter} from "vue-router";
 import {useUiService} from "src/services/useUiService";
 import {LeftDrawerTabs} from "stores/uiStore";
@@ -88,12 +88,29 @@ const openTabsCountRatio2 = ref(0)
 const trackedTabsCount = ref(0)
 const existingSession = ref(false)
 
+TabsetService.trackedTabsCount().then((res) => trackedTabsCount.value = res)
+
 watchEffect(() => {
   openTabsCountRatio.value = Math.min(tabsStore.tabs.length / settingsStore.thresholds['max' as keyof object], 1)
   openTabsCountRatio2.value = Math.round(100 * Math.min(tabsStore.tabs.length / settingsStore.thresholds['max' as keyof object], 1))
 })
 
-watchEffect(() => TabsetService.trackedTabsCount().then((res) => trackedTabsCount.value = res))
+watch(() => tabsStore.tabs.length, (after: number, before: number) => {
+  TabsetService.trackedTabsCount().then((res) => trackedTabsCount.value = res)
+})
+
+watch(() => tabsStore.getCurrentTabs.length, (after: number, before: number) => {
+  TabsetService.trackedTabsCount().then((res) => trackedTabsCount.value = res)
+})
+
+
+
+// watch( useEventStore().events, (val: any) => {
+//   console.log("event received", val)
+//   TabsetService.trackedTabsCount().then((res) => trackedTabsCount.value = res)
+// })
+
+//watchEffect(() => TabsetService.trackedTabsCount().then((res) => trackedTabsCount.value = res))
 
 const showThresholdBar = () =>
   tabsStore.tabs.length >= settingsStore.thresholds['min' as keyof object]

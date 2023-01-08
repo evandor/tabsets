@@ -34,3 +34,8 @@ export class DeleteTabCommand implements Command<Tabset> {
       .catch(err => Promise.reject(err))
   }
 }
+
+
+DeleteTabCommand.prototype.toString = function dogToString() {
+  return `DeleteTabCommand: {tab.id=${this.tab.id}, tab.url=${this.tab.chromeTab?.url}}`;
+};
