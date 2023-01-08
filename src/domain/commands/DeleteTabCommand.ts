@@ -3,6 +3,7 @@ import {ExecutionResult} from "src/domain/ExecutionResult";
 import {Tab} from "src/models/Tab";
 import {Tabset} from "src/models/Tabset";
 import {useTabsetService} from "src/services/TabsetService2";
+import {useEventStore} from "stores/eventStore";
 
 const {saveToTabset, deleteTab} = useTabsetService()
 
@@ -27,6 +28,11 @@ export class DeleteTabCommand implements Command<Tabset> {
 
   async execute(): Promise<ExecutionResult<Tabset>> {
     return deleteTab(this.tab)
+      .then((tabset) => {
+        console.log("emitting event...")
+        useEventStore().emit('deletedTab')
+        return tabset
+      })
       .then(tabset => Promise.resolve(new ExecutionResult(
         tabset,
         "Tab was deleted",
@@ -34,3 +40,8 @@ export class DeleteTabCommand implements Command<Tabset> {
       .catch(err => Promise.reject(err))
   }
 }
+
+
+DeleteTabCommand.prototype.toString = function dogToString() {
+  return `DeleteTabCommand: {tab.id=${this.tab.id}, tab.url=${this.tab.chromeTab?.url}}`;
+};

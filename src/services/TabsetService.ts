@@ -338,7 +338,6 @@ class TabsetService {
     const result: chrome.tabs.Tab[] = await chrome.tabs.query({})
     let trackedTabs  = 0
     _.forEach(result, (tab: chrome.tabs.Tab) => {
-      //console.log("checking tab", tab.id, tabsetsFor(tab?.url || ''))
       if (tab && tab.url && tabsetsFor(tab.url).length > 0) {
         trackedTabs++
       }
