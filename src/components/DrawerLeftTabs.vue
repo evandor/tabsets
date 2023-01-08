@@ -12,17 +12,21 @@
 
     <q-tab name="openTabs" icon="o_table_rows" @click="tabsClicked(LeftDrawerTabs.OPEN_TABS)">
       <q-badge v-if="badgeThreshold()"
-               align="middle"
-               :style="thresholdStyle()" outline>{{ tabsStore.tabs.length }}
+               floating
+               text-color="white"
+               :style="thresholdStyle()">{{ tabsStore.tabs.length }}
       </q-badge>
       <q-tooltip>Your open tabs</q-tooltip>
     </q-tab>
 
     <q-tab v-if="tabsStore.pendingTabset?.tabs.length > 0"
-           name="unassignedTabs" icon="o_fiber_new" @click="tabsClicked(LeftDrawerTabs.UNASSIGNED_TABS)">
+           name="unassignedTabs" icon="o_fiber_new"
+
+           @click="tabsClicked(LeftDrawerTabs.UNASSIGNED_TABS)">
       <q-badge v-if="badgeThreshold()"
-               align="middle"
-               color="secondary" outline>{{ tabsStore.pendingTabset?.tabs.length }}
+               floating
+               style="right:-2px"
+               color="secondary">{{ tabsStore.pendingTabset?.tabs.length }}
       </q-badge>
       <q-tooltip>Your unassigned tabs</q-tooltip>
     </q-tab>
@@ -115,7 +119,7 @@ const tabsClicked = (tab: LeftDrawerTabs) => {
 }
 
 const thresholdStyle = () =>
-  "color: hsl(" + (120 - Math.round(120 * openTabsCountRatio.value)) + " 80% 50%)"
+  "background-color: hsl(" + (120 - Math.round(120 * openTabsCountRatio.value)) + " 80% 50%); right:-2px"
 
 const badgeThreshold = () => tabsStore.tabs.length >= settingsStore.thresholds['min' as keyof object]
 
