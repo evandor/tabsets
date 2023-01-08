@@ -95,7 +95,6 @@
   </q-toolbar>
 
   <!-- pending tabs -->
-<!--  <PendingTabsAsCardsWidget />-->
   <PendingTabsAsCarouselWidget />
 
   <q-banner rounded class="bg-amber-1 text-black q-ma-md"

@@ -88,6 +88,7 @@ import {useCommandExecutor} from "src/services/CommandExecutor";
 import {useTabsetService} from "src/services/TabsetService2";
 import {useUiService} from "src/services/useUiService";
 import {StopSessionCommand} from "src/domain/commands/StopSessionCommand";
+import {SelectTabsetCommand} from "src/domain/commands/SelectTabsetCommand";
 
 const {handleError, handleSuccess} = useNotificationHandler()
 
@@ -112,11 +113,10 @@ const props = defineProps({
   }
 })
 
-const selectTS = (tabsetId: string) => {
-  selectTabset(tabsetId)
-  // router.push("/tabset")
-  router.push("/tabsets/" + tabsetId)
-}
+const selectTS = (tabsetId: string) =>
+  useCommandExecutor().executeFromUi(new SelectTabsetCommand(tabsetId))
+    .then(() =>  router.push("/tabsets/" + tabsetId))
+
 
 const showButtons = (tabsetId: string, show: boolean) => {
   showDeleteButton.value.set(tabsetId, show)

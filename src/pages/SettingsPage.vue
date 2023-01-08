@@ -19,7 +19,6 @@
       <q-tab name="permissions" label="Permissions"/>
       <q-tab name="ignored" label="Ignored Urls"/>
       <q-tab name="archived" label="Archived Tabsets"/>
-      <q-tab name="db" label="DB" v-if="featuresStore.isEnabled('debug')"/>
       <q-tab name="search" label="Search Engine" v-if="featuresStore.isEnabled('debug')"/>
       <q-tab name="importExport" label="Import/Export"/>
       <q-tab name="featureToggles" label="Feature Toggles"/>
@@ -160,33 +159,6 @@
         </div>
       </div>
     </div>
-  </div>
-
-  <div v-if="tab === 'db'">
-
-    <div class="q-pa-md q-gutter-sm">
-
-      <q-banner rounded class="bg-grey-1 text-primary">Info about the indexedDB used (locally stored in your browser)
-      </q-banner>
-
-      <div class="row q-pa-md">
-        <div class="col-3"><b>DB Name</b></div>
-        <div class="col-3"></div>
-        <div class="col-1"></div>
-        <div class="col-5">
-          {{ INDEX_DB_NAME }}
-        </div>
-      </div>
-      <div class="row q-pa-md">
-        <div class="col-3"><b>DB Version</b></div>
-        <div class="col-3"></div>
-        <div class="col-1"></div>
-        <div class="col-5">
-          {{ INDEX_DB_VERSION }}
-        </div>
-      </div>
-    </div>
-
   </div>
 
   <div v-if="tab === 'search'">
