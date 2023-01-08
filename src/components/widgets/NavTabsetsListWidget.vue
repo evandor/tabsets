@@ -47,13 +47,15 @@
       </q-icon>
     </q-item-section>
 
-    <q-item-section side v-if="tabset.type === TabsetType.DEFAULT && showEditButton.get(tabset.id) && tabset.status !== TabsetStatus.DELETED">
+    <q-item-section side
+                    v-if="tabset.type === TabsetType.DEFAULT && showEditButton.get(tabset.id) && tabset.status !== TabsetStatus.DELETED">
       <q-icon name="inventory_2" color="primary" size="18px" @click="archiveTabset(tabset)">
         <q-tooltip>Archive this tabset</q-tooltip>
       </q-icon>
     </q-item-section>
 
-    <q-item-section side v-if="tabset.type === TabsetType.SESSION && showEditButton.get(tabset.id) && tabset.status !== TabsetStatus.DELETED">
+    <q-item-section side
+                    v-if="tabset.type === TabsetType.SESSION && showEditButton.get(tabset.id) && tabset.status !== TabsetStatus.DELETED">
       <q-icon name="o_stop_circle" color="primary" size="18px" @click="stopSession(tabset)">
         <q-tooltip>Stop this session</q-tooltip>
       </q-icon>
@@ -114,8 +116,9 @@ const props = defineProps({
 })
 
 const selectTS = (tabsetId: string) =>
-  useCommandExecutor().executeFromUi(new SelectTabsetCommand(tabsetId))
-    .then(() =>  router.push("/tabsets/" + tabsetId))
+  useCommandExecutor()
+    .execute(new SelectTabsetCommand(tabsetId))
+    .then(() => router.push("/tabsets/" + tabsetId))
 
 
 const showButtons = (tabsetId: string, show: boolean) => {

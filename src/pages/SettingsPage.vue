@@ -26,59 +26,70 @@
   </div>
 
   <div v-if="tab === 'appearance'">
-    <div class="row items-baseline q-ma-lg">
 
-      <div class="col-3 text-h6">Dark Mode (experimental)</div>
-      <div class="col-9">
-        <q-radio v-model="darkMode" :val="true" label="Enabled"/>
-        <q-radio v-model="darkMode" :val="false" label="Disabled"/>
+
+    <div class="q-pa-md q-gutter-sm">
+      <q-banner rounded class="bg-grey-1 text-primary">On this settings page, you can adjust the general appearance of
+        the tabsets extension.
+      </q-banner>
+
+      <div class="row items-baseline q-ma-md">
+        <div class="col-3">
+          Dark Mode (experimental)
+        </div>
+        <div class="col-9">
+          <q-radio v-model="darkMode" :val="true" label="Enabled"/>
+          <q-radio v-model="darkMode" :val="false" label="Disabled"/>
+        </div>
       </div>
 
-      <div class="col-3 text-h6">
-        Warning Thresholds
+      <div class="row items-baseline q-ma-md">
+        <div class="col-3">
+          Warning Thresholds
+        </div>
+        <div class="col-3">
+          warnings start when minimum open tabs count is reached<br>
+          Reaching the maximum will turn the bar red.
+        </div>
+        <div class="col q-ma-xl">
+          <q-range
+            v-model="settingsStore.thresholds"
+            :step=10
+            marker-labels
+            :min=0
+            :max=100
+          />
+        </div>
       </div>
-      <div class="col-3">
-        warnings start when minimum open tabs count is reached<br>
-        Reaching the maximum will turn the bar red.
+
+      <div class="row items-baseline q-ma-md">
+        <div class="col-3">
+          Thumbnail Quality in %
+        </div>
+        <div class="col-3">
+          larger Thumbnails look better but need more (local) storage.
+        </div>
+        <div class="col q-ma-xl">
+          <q-slider v-model="settingsStore.thumbnailQuality"
+                    marker-labels
+                    :min="0" :max="100" :inner-min="10" :inner-max="100" :step=10></q-slider>
+        </div>
       </div>
-      <div class="col">
-        <q-range
-          v-model="settingsStore.thresholds"
-          :step=5
-          marker-labels
-          :min=0
-          :max=100
-        />
+
+      <div class="row items-baseline q-ma-md">
+        <div class="col-3">
+          New Version Simulation
+        </div>
+        <div class="col-3">
+          Simulate that there is a new version available
+        </div>
+        <div class="col q-ma-xl">
+          <span class="text-blue cursor-pointer" @click="simulateNewVersion('0.1.2')">Simulate</span>
+        </div>
       </div>
+
     </div>
 
-    <div class="row items-baseline q-ma-lg">
-
-      <div class="col-3 text-h6">
-        Thumbnail Quality
-      </div>
-      <div class="col-3">
-        larger Thumbnails look better but need more (local) storage.
-      </div>
-      <div class="col">
-        <q-slider v-model="settingsStore.thumbnailQuality"
-                  marker-labels
-                  :min="0" :max="100" :inner-min="10" :inner-max="100" :step=5 />
-      </div>
-    </div>
-
-    <div class="row items-baseline q-ma-lg">
-
-      <div class="col-3 text-h6">
-        New Version Simulation
-      </div>
-      <div class="col-3">
-        Simulate that there is a new version available
-      </div>
-      <div class="col">
-        <span class="text-blue cursor-pointer" @click="simulateNewVersion('0.1.2')">Simulate</span>
-      </div>
-    </div>
   </div>
 
   <div v-if="tab === 'permissions'">
@@ -86,14 +97,14 @@
     <div class="row items-baseline q-ma-lg">
       <div class="col-3 text-h6">Necessary Permissions</div>
       <div class="col-9">
-        {{permissionsList}}
+        {{ permissionsList }}
       </div>
     </div>
 
     <div class="row items-baseline q-ma-lg">
       <div class="col-3 text-h6">Allowed Origins</div>
       <div class="col-9">
-        {{usePermissionsStore().permissions?.origins}}
+        {{ usePermissionsStore().permissions?.origins }}
       </div>
     </div>
 
@@ -383,7 +394,7 @@ watch(() => bookmarksPermissionGranted.value, (newValue, oldValue) => {
   if (bookmarksPermissionGranted.value && !usePermissionsStore().hasPermission('bookmarks')) {
     useCommandExecutor()
       .executeFromUi(new GrantPermissionCommand("bookmarks"))
-      .then((res:ExecutionResult<boolean>) => bookmarksPermissionGranted.value = res.result)
+      .then((res: ExecutionResult<boolean>) => bookmarksPermissionGranted.value = res.result)
   } else if (!bookmarksPermissionGranted.value) {
     useCommandExecutor()
       .executeFromUi(new RevokePermissionCommand("bookmarks"))
@@ -400,7 +411,7 @@ watch(() => historyPermissionGranted.value, (newValue, oldValue) => {
   if (historyPermissionGranted.value && !usePermissionsStore().hasPermission('history')) {
     useCommandExecutor()
       .executeFromUi(new GrantPermissionCommand("history"))
-      .then((res:ExecutionResult<boolean>) => historyPermissionGranted.value = res.result)
+      .then((res: ExecutionResult<boolean>) => historyPermissionGranted.value = res.result)
   } else if (!historyPermissionGranted.value) {
     useCommandExecutor()
       .executeFromUi(new RevokePermissionCommand("history"))
@@ -417,12 +428,12 @@ watch(() => allUrlsOriginGranted.value, (newValue, oldValue) => {
   if (allUrlsOriginGranted.value && !usePermissionsStore().hasAllOrigins()) {
     useCommandExecutor()
       .executeFromUi(new GrantOriginCommand("*://*/*"))
-      .then((res:ExecutionResult<boolean>) => allUrlsOriginGranted.value = res.result)
+      .then((res: ExecutionResult<boolean>) => allUrlsOriginGranted.value = res.result)
   } else if (!allUrlsOriginGranted.value) {
     useCommandExecutor()
       .executeFromUi(new RevokeOriginCommand("*://*/*"))
       .then(() => {
-       // useBookmarksStore().loadBookmarks()
+        // useBookmarksStore().loadBookmarks()
       })
   }
 })
