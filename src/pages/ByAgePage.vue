@@ -69,20 +69,14 @@
 import {ref, watchEffect} from 'vue'
 import {useRoute, useRouter} from "vue-router";
 import {useQuasar} from "quasar";
-import Tabcards from "src/components/layouts/Tabcards.vue";
-import TabThumbs from "src/components/layouts/TabThumbs.vue";
 import TabColumns from "src/components/layouts/TabColumns.vue";
 import TabsCanvas from "src/components/layouts/TabsCanvas.vue";
 import Tablist from "src/components/layouts/Tablist.vue";
 import _ from "lodash"
 import {useTabsStore} from "src/stores/tabsStore";
 import {useTabGroupsStore} from "src/stores/tabGroupsStore";
-import TabsetService from "src/services/TabsetService";
 import {Tab} from "src/models/Tab";
 import {useFeatureTogglesStore} from "src/stores/featureTogglesStore";
-import RestoreTabsetDialog from "components/dialogues/RestoreTabsetDialog.vue";
-import AddUrlDialog from "components/dialogues/AddUrlDialog.vue";
-import PendingTabsAsCarouselWidget from "src/components/widgets/PendingTabsAsCarouselWidget.vue"
 import {Tabset, TabsetStatus} from "src/models/Tabset";
 
 const route = useRoute();

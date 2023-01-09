@@ -94,41 +94,82 @@
 
   <div v-if="tab === 'permissions'">
 
-    <div class="row items-baseline q-ma-lg">
-      <div class="col-3 text-h6">Necessary Permissions</div>
-      <div class="col-9">
-        {{ permissionsList }}
+    <div class="q-pa-md q-gutter-sm">
+      <q-banner rounded class="bg-grey-1 text-primary">On this settings page, you can adjust some of the permissions needed for the tabsets extension.
+      </q-banner>
+
+      <div class="row items-baseline q-ma-md">
+        <div class="col-3">
+          Active Permissions
+        </div>
+        <div class="col-9">
+          {{ permissionsList.join(", ") }}
+        </div>
       </div>
+
+      <div class="row items-baseline q-ma-md">
+        <div class="col-3">
+          Allowed Origins
+        </div>
+        <div class="col-9">
+          {{ usePermissionsStore().permissions?.origins }}
+        </div>
+      </div>
+
+      <div class="row items-baseline q-ma-md">
+        <div class="col-3">
+          Bookmarks (optional permission)
+        </div>
+        <div class="col-9">
+          <q-radio v-model="bookmarksPermissionGranted" :val="true" label="Granted"/>
+          <q-radio v-model="bookmarksPermissionGranted" :val="false" label="Revoked"/>
+        </div>
+      </div>
+
+      <div class="row items-baseline q-ma-md">
+        <div class="col-3">
+          All URLs
+        </div>
+        <div class="col-9">
+          <q-radio v-model="allUrlsOriginGranted" :val="true" label="Granted"/>
+          <q-radio v-model="allUrlsOriginGranted" :val="false" label="Revoked"/>
+        </div>
+      </div>
+
+      <div class="row items-baseline q-ma-md">
+        <div class="col-3">
+          History
+        </div>
+        <div class="col-9">
+          <q-radio v-model="historyPermissionGranted" :val="true" label="Granted"/>
+          <q-radio v-model="historyPermissionGranted" :val="false" label="Revoked"/>
+        </div>
+      </div>
+
+      <div class="row items-baseline q-ma-md">
+        <div class="col-3">
+          Page Capture
+        </div>
+        <div class="col-9">
+          <q-radio v-model="pageCapturePermissionGranted" :val="true" label="Granted"/>
+          <q-radio v-model="pageCapturePermissionGranted" :val="false" label="Revoked"/>
+        </div>
+      </div>
+
     </div>
 
-    <div class="row items-baseline q-ma-lg">
-      <div class="col-3 text-h6">Allowed Origins</div>
-      <div class="col-9">
-        {{ usePermissionsStore().permissions?.origins }}
-      </div>
-    </div>
-
-    <div class="row items-baseline q-ma-lg">
-      <div class="col-3 text-h6">Bookmarks</div>
-      <div class="col-9">
-        <q-radio v-model="bookmarksPermissionGranted" :val="true" label="Granted"/>
-        <q-radio v-model="bookmarksPermissionGranted" :val="false" label="Revoked"/>
-      </div>
-    </div>
 
     <div class="row items-baseline q-ma-lg">
       <div class="col-3 text-h6">All URLs</div>
       <div class="col-9">
-        <q-radio v-model="allUrlsOriginGranted" :val="true" label="Granted"/>
-        <q-radio v-model="allUrlsOriginGranted" :val="false" label="Revoked"/>
+
       </div>
     </div>
 
     <div class="row items-baseline q-ma-lg">
       <div class="col-3 text-h6">History</div>
       <div class="col-9">
-        <q-radio v-model="historyPermissionGranted" :val="true" label="Granted"/>
-        <q-radio v-model="historyPermissionGranted" :val="false" label="Revoked"/>
+
       </div>
     </div>
   </div>
@@ -376,6 +417,7 @@ const permissionsList = ref<string[]>([])
 const darkMode = ref<boolean>(localStorage.getItem('darkMode') || false)
 const bookmarksPermissionGranted = ref<boolean | undefined>(usePermissionsStore().hasPermission('bookmarks'))
 const historyPermissionGranted = ref<boolean | undefined>(usePermissionsStore().hasPermission('history'))
+const pageCapturePermissionGranted = ref<boolean | undefined>(usePermissionsStore().hasPermission('history'))
 const allUrlsOriginGranted = ref<boolean | undefined>(usePermissionsStore().hasAllOrigins())
 const showBookmarks = ref<boolean>(localStorage.getItem('showBookmarks') || false)
 const tab = ref('appearance')
@@ -386,6 +428,7 @@ watchEffect(() => permissionsList.value = usePermissionsStore().permissions?.per
 
 watchEffect(() => bookmarksPermissionGranted.value = usePermissionsStore().hasPermission('bookmarks'))
 watchEffect(() => historyPermissionGranted.value = usePermissionsStore().hasPermission('history'))
+watchEffect(() => pageCapturePermissionGranted.value = usePermissionsStore().hasPermission('pageCapture'))
 
 watch(() => bookmarksPermissionGranted.value, (newValue, oldValue) => {
   if (newValue === oldValue) {
@@ -415,9 +458,20 @@ watch(() => historyPermissionGranted.value, (newValue, oldValue) => {
   } else if (!historyPermissionGranted.value) {
     useCommandExecutor()
       .executeFromUi(new RevokePermissionCommand("history"))
-      .then(() => {
-        //useBookmarksStore().loadBookmarks()
-      })
+  }
+})
+
+watch(() => pageCapturePermissionGranted.value, (newValue, oldValue) => {
+  if (newValue === oldValue) {
+    return
+  }
+  if (pageCapturePermissionGranted.value && !usePermissionsStore().hasPermission('pageCapture')) {
+    useCommandExecutor()
+      .executeFromUi(new GrantPermissionCommand("pageCapture"))
+      .then((res: ExecutionResult<boolean>) => pageCapturePermissionGranted.value = res.result)
+  } else if (!pageCapturePermissionGranted.value) {
+    useCommandExecutor()
+      .executeFromUi(new RevokePermissionCommand("pageCapture"))
   }
 })
 

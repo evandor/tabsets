@@ -5,7 +5,6 @@
     "48": "icons/icon-48x48.png",
     "128": "icons/icon-128x128.png"
   },
-  "omnibox": { "keyword" : "ts" },
   "permissions": [
     "tabGroups",
     "tabs",
@@ -14,12 +13,12 @@
     "contextMenus",
     "scripting",
     "notifications",
-    "pageCapture",
     "webRequest",
     "search"
   ],
   "optional_permissions": [
     "bookmarks",
+    "pageCapture",
     "history"
   ],
   "optional_host_permissions": [

@@ -2,23 +2,18 @@
   <q-dialog ref="dialogRef" @hide="onDialogHide">
     <q-card class="q-dialog-plugin">
       <q-card-section>
-        <div class="text-h6">Add Url to current tabset</div>
+        <div class="text-h6">Missing Permission</div>
       </q-card-section>
       <q-card-section>
-        <div class="text-body">Please provide the url to be added</div>
-      </q-card-section>
-
-      <q-card-section class="q-pt-none">
-        <div class="text-body">Url:</div>
-        <q-input dense v-model="url"
-                 data-testid="add_url_input"
-                 autofocus @keyup.enter="prompt = false"/>
-<!--        <div class="text-body2 text-warning">{{ newUrlDialogWarning() }}</div>-->
+        <div class="text-body">
+          The Tabsets Extension requires an additional permission ({{props.permissionName}}
+          for this action.
+        </div>
       </q-card-section>
 
       <q-card-actions align="right" class="text-primary">
         <q-btn flat label="Cancel" v-close-popup/>
-        <q-btn flat label="Add URL"
+        <q-btn flat label="Grant Permission"
                data-testid="add_url_submit"
                :disable="url.trim().length === 0" v-close-popup
                @click="createNewUrl()"/>
@@ -48,6 +43,11 @@ defineEmits([
 
 const url = ref('')
 
+const props = defineProps({
+  permissionName: {
+    type: String,
+    required: true
+  })
 
 const {dialogRef, onDialogHide, onDialogCancel} = useDialogPluginComponent()
 

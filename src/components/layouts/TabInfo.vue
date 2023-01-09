@@ -123,6 +123,7 @@ import {GrantOriginCommand} from "src/domain/commands/GrantOriginCommand";
 import {Hit} from "src/models/Hit";
 import _ from "lodash";
 import {useTabsetService} from "src/services/TabsetService2";
+import AddUrlDialog from "components/dialogues/AddUrlDialog.vue";
 
 const notificationStore = useNotificationsStore()
 const featuresStore = useFeatureTogglesStore()
@@ -213,8 +214,12 @@ const editNoteDialog = (tab: Tab) => {
     }
   })
 }
+
+// TODO make command
 const saveTab = (tab: Tab) => {
-  if (tab.chromeTab.id) {
+  if (!usePermissionsStore().hasPermission('pageCapture')) {
+
+  } else if (tab.chromeTab.id) {
     console.log("capturing", tab.chromeTab)
     chrome.pageCapture.saveAsMHTML(
       {tabId: tab.chromeTab.id},
@@ -247,5 +252,7 @@ const openTabset = (badge: any) => {
   selectTabset(badge.tabsetId)
   router.push("/tabsets/" + badge.tabsetId + "?highlight=" + badge.encodedUrl)
 }
+
+const addUrlDialog = () => $q.dialog({component: RequestPermissionDialog})
 
 </script>
