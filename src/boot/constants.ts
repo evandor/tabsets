@@ -11,7 +11,7 @@ const LOG_LEVEL_CONSOLE = LogLevel.DEBUG
 
 const LOG_LEVEL_PERSITSTENT = LogLevel.DEBUG
 
-const STRIP_CHARS_IN_USER_INPUT = /[`@#$%^&*()=\[\]{};':"\\|<>\/~]/;
+const STRIP_CHARS_IN_USER_INPUT = /[`@#$%^*()=\[\]{};':"\\|<>\/~]/;
 
 const LOG_LEVEL = "info"
 
