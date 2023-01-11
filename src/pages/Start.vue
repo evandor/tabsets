@@ -20,27 +20,24 @@ import {useRouter} from "vue-router";
 const $q = useQuasar()
 const router = useRouter()
 
+let timer
+const tabsStore = useTabsStore()
+
+
 $q.loading.show({
   message: 'Initializing tabsets. Please hang on...'
 })
-
-let timer
-
 timer = setTimeout(() => {
-  const tabsStore = useTabsStore()
-
-
   if (tabsStore.tabsets.size === 0) {
     router.push("/about")
   } else {
     router.push("/tabset")
   }
-
-
   setTimeout(() => {
     $q.loading.hide()
   }, 500)
   timer = void 0
 }, 2000)
+
 
 </script>

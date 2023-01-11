@@ -139,17 +139,13 @@ class ChromeApi {
         }
       })
 
-    chrome.omnibox.onInputStarted.addListener(
-      () => {
-        console.log("onInputStarted")
-      }
-    )
-    chrome.omnibox.onInputEntered.addListener(
-      (a, b) => {
-        console.log("onInputEntered", a, b)
-        useUiService().showSearchResultsPageFor(a)
-      }
-    )
+
+    // chrome.omnibox.onInputEntered.addListener(
+    //   (a, b) => {
+    //     console.log("onInputEntered", a, b)
+    //     useUiService().showSearchResultsPageFor(a)
+    //   }
+    // )
   }
 
   startWebRequestListener() {

@@ -1,7 +1,16 @@
 <template>
 
   <!-- toolbar -->
-  <q-toolbar class="text-primary lightgrey" v-if="tabsStore.currentTabsetId">
+  <q-toolbar class="text-primary lightgrey" v-if="!tabsStore.currentTabsetId">
+    <div class="row fit">
+        <q-toolbar-title>
+          <div class="row justify-start items-baseline">
+            <div class="col-1"><span class="text-dark">Tabset</span> (none selected)</div>
+          </div>
+        </q-toolbar-title>
+    </div>
+  </q-toolbar>
+  <q-toolbar class="text-primary lightgrey" v-else>
     <div class="row fit">
       <div class="col-xs-12 col-md-5">
         <q-toolbar-title>
@@ -36,7 +45,7 @@
           <q-tooltip>Use the list layout to visualize your tabs</q-tooltip>
         </q-btn>
 
-        <q-btn
+        <q-btn v-if="permissionsStore.hasAllOrigins()"
           @click="setView('thumbnails')"
           style="width:14px"
           class="q-mr-sm" size="10px"
@@ -94,8 +103,12 @@
     </div>
   </q-toolbar>
 
+  <div class="row fit greyBorderTop"></div>
+
   <!-- pending tabs -->
-  <PendingTabsAsCarouselWidget />
+  <Transition name="delayed-disappear"  v-if="tabsStore.currentTabsetId">
+    <PendingTabsAsCarouselWidget />
+  </Transition>
 
   <q-banner rounded class="bg-amber-1 text-black q-ma-md"
             v-if="!tabsStore.currentTabsetId && tabsStore.tabsets.size > 0">
@@ -106,7 +119,6 @@
 
   <!-- pinned tabs -->
   <q-expansion-item v-if="tabsStore.pinnedTabs.length > 0 && !specialView()"
-                    class="greyBorderTop"
                     header-class="text-black"
                     expand-icon-class="text-black"
                     expand-separator
@@ -122,7 +134,8 @@
     <q-card>
       <q-card-section>
 
-        <Tablist v-if="tabsStore.getCurrentTabset?.view === 'list'"
+        <TabList v-if="tabsStore.getCurrentTabset?.view === 'list'"
+                 group="pinnedTabs"
                  :tabs="tabsStore.pinnedTabs"/>
 
         <TabThumbs v-else-if="tabsStore.getCurrentTabset?.view === 'thumbnails'" group="pinnedTabs"
@@ -161,7 +174,8 @@
         <q-card-section>
 
 
-          <Tablist v-if="tabsStore.getCurrentTabset?.view === 'list'"
+          <TabList v-if="tabsStore.getCurrentTabset?.view === 'list'"
+                   :group="'groupedTabs_'+group.chromeGroup.id"
                    :tabs="tabsForGroup( group.chromeGroup.id)"/>
 
           <TabThumbs v-else-if="tabsStore.getCurrentTabset?.view === 'thumbnails'"
@@ -193,13 +207,12 @@
 
   <!-- rest: neither pinned, grouped, or pending -->
   <q-expansion-item
-    v-if="!specialView()"
+    v-if="!specialView() && tabsStore.currentTabsetId"
     icon="tabs"
     default-opened
     data-testid="expansion_item_unpinnedNoGroup"
     header-class="text-black"
-    expand-icon-class="text-black"
-    expand-separator>
+    expand-icon-class="text-black">
     <template v-slot:header="{ expanded }">
       <q-item-section>
         <div>
@@ -212,8 +225,9 @@
     <q-card>
       <q-card-section>
 
-        <Tablist v-if="tabsStore.getCurrentTabset?.view === 'list'"
-                 :tabs="unpinnedNoGroup()"/>
+        <TabList v-if="tabsStore.getCurrentTabset?.view === 'list'"
+                 group="otherTabs"
+                 :tabs="unpinnedNoGroup()" />
 
         <TabThumbs v-else-if="tabsStore.getCurrentTabset?.view === 'thumbnails'"
                    group="otherTabs"
@@ -262,7 +276,6 @@ import Tabcards from "src/components/layouts/Tabcards.vue";
 import TabThumbs from "src/components/layouts/TabThumbs.vue";
 import TabColumns from "src/components/layouts/TabColumns.vue";
 import TabsCanvas from "src/components/layouts/TabsCanvas.vue";
-import Tablist from "src/components/layouts/Tablist.vue";
 import _ from "lodash"
 import {useTabsStore} from "src/stores/tabsStore";
 import {useTabGroupsStore} from "src/stores/tabGroupsStore";
@@ -271,9 +284,10 @@ import {Tab} from "src/models/Tab";
 import {useFeatureTogglesStore} from "src/stores/featureTogglesStore";
 import RestoreTabsetDialog from "components/dialogues/RestoreTabsetDialog.vue";
 import AddUrlDialog from "components/dialogues/AddUrlDialog.vue";
-import {TabsetStatus} from "src/models/Tabset";
 import PendingTabsAsCarouselWidget from "src/components/widgets/PendingTabsAsCarouselWidget.vue"
 import {useUiService} from "src/services/useUiService";
+import {usePermissionsStore} from "stores/permissionsStore";
+import TabList from "components/layouts/TabList.vue";
 
 const route = useRoute();
 const router = useRouter();
@@ -281,6 +295,7 @@ const localStorage = useQuasar().localStorage
 const tabsStore = useTabsStore()
 const tabGroupsStore = useTabGroupsStore()
 const featuresStore = useFeatureTogglesStore()
+const permissionsStore = usePermissionsStore()
 
 const tabsetname = ref(tabsStore.currentTabsetName)
 const filter = ref('')
@@ -295,9 +310,9 @@ watchEffect(() => {
   if (tabsetId.value) {
     console.debug("got tabset id", tabsetId.value)
     const ts = tabsStore.selectCurrentTabset(tabsetId.value)
-    if (!ts || TabsetStatus.DELETED === ts.status) {
-      router.push("/about")
-    }
+    // if (!ts || TabsetStatus.DELETED === ts.status) {
+    //   router.push("/about")
+    // }
   }
 })
 
@@ -373,10 +388,12 @@ const specialView = (): boolean =>
 
 <style lang="sass" scoped>
 
-.lightgrey
-  background-color: $lightgrey
+.delayed-appear-leave-active
+  transition: all 2s ease-in
+  transition-delay: 0s
 
-.greyBorderTop
-  border-top: 1px solid $bordergrey
+.delayed-appear-enter-from,
+.delayed-appear-leave-to
+  opacity: 0
 
 </style>

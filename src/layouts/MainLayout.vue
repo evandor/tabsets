@@ -1,21 +1,19 @@
 <template>
   <q-layout view="hHh lpR lFr">
     <q-header elevated>
-      <q-toolbar>
+      <q-toolbar >
 
+<!--        <q-img src="favicon.ico" height="24px" width="24px"/>-->
         <q-btn v-if="tabsStore.tabsets.size > 0"
                dense flat round icon="menu" @click="toggleLeftDrawer"/>
 
         <q-toolbar-title @click.stop="goHome()" class="cursor-pointer"
-                         :style="featuresStore.isEnabled('spaces') ? 'min-width:150px' : 'min-width:350px'" shrink>
-          Tabsets
-          <span class="text-caption"
-                v-show="!featuresStore.isEnabled('spaces')">Handle more links, with less tabs open</span>
+                         style="min-width:130px" shrink>Tabsets
         </q-toolbar-title>
 
         <q-space/>
 
-        <SearchWidget />
+        <SearchWidget v-if="tabsStore.tabsets.size > 0"/>
 
         <q-space/>
 
@@ -59,13 +57,13 @@
           <q-tooltip>Logs (developer mode)</q-tooltip>
         </q-btn>
 
+<!--        <q-btn class="q-mr-md" icon="o_help" size="12px" style="width:24px" flat @click="router.push('/help/howto')">-->
+<!--          <q-tooltip>About tabsets browser extension v{{ appVersion }}</q-tooltip>-->
+<!--        </q-btn>-->
+
         <q-btn class="q-mr-md" icon="o_settings" size="12px" style="width:24px" flat @click="router.push('/settings')">
           <q-tooltip>Customize Tabsets and utilize advanced features</q-tooltip>
         </q-btn>
-
-<!--        <q-btn class="q-mr-md" icon="o_help" size="12px" style="width:24px" flat @click="router.push('/about')">-->
-<!--          <q-tooltip>About tabsets browser extension v{{ appVersion }}</q-tooltip>-->
-<!--        </q-btn>-->
 
         <div class="cursor-pointer" @click="router.push('/about')" v-if="notificationsStore.updateToVersion !== ''">
           <q-btn

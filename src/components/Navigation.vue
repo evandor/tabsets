@@ -6,7 +6,7 @@
         <div class="row fit">
           <div class="col-xs-12 col-md-5">
             <q-toolbar-title>
-              <div class="row justify-start items-baseline cursor-pointer" @click="router.push('/about')">
+              <div class="row justify-start items-baseline">
                 Tabsets
               </div>
             </q-toolbar-title>
@@ -23,16 +23,7 @@
         </div>
       </q-toolbar>
 
-      <q-toolbar v-else class="text-primary lightgrey">
-        <q-toolbar-title style="font-size:16px">
-          <Transition name="delayed-appear" appear>
-            <q-btn class="fit bg-white" outline
-                   data-testid="createFirstTabsetBtn"
-                   @click="addTabset"
-                   label="create your first tabset"></q-btn>
-          </Transition>
-        </q-toolbar-title>
-      </q-toolbar>
+
 
       <q-splitter
         v-model="splitterModel"
@@ -146,20 +137,3 @@ const addTabset = () => $q.dialog({
 
 </script>
 
-<style lang="sass" scoped>
-
-.delayed-appear-enter-active
-  transition: all 2s ease-in
-  transition-delay: 1s
-
-.delayed-appear-enter-from,
-.delayed-appear-leave-to
-  opacity: 0
-
-.lightgrey
-  background-color: $lightgrey
-
-.greyBorderTop
-  border-top: 1px solid $bordergrey
-
-</style>

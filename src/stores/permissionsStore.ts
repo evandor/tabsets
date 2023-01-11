@@ -1,12 +1,19 @@
 import {defineStore} from 'pinia';
-import {computed, ref} from "vue";
+import {computed, ref, watch} from "vue";
+import {useQuasar} from "quasar";
 
 
 export const usePermissionsStore = defineStore('permissions', () => {
 
+  const $q = useQuasar()
+
+  // related to chrome permissions
   const grantedOptionalPermissions = ref<string[] | undefined>([])
   const grantedOptionalOrigins = ref<string[] | undefined>([])
   const permissions = ref<chrome.permissions.Permissions | undefined>(undefined)
+
+  // related to tabsets permissions
+  const activeFeatures = ref<string[]>($q.localStorage.getItem('ui.activeFeatures') as string[] || [])
 
   async function initialize() {
     console.log("initializing permissions Store")
@@ -63,6 +70,32 @@ export const usePermissionsStore = defineStore('permissions', () => {
     return Promise.resolve()
   }
 
+  watch(activeFeatures, (val: any[]) => {
+    $q.localStorage.set("ui.activeFeatures", val)
+  })
+
+  const hasFeature = computed(() => {
+    return (feature: string): boolean => {
+      return activeFeatures.value.indexOf(feature) >= 0
+    }
+  })
+
+  const activateFeature = computed(() => {
+    return (feature: string): void => {
+      if (activeFeatures.value.indexOf(feature) < 0) {
+        activeFeatures.value.push(feature)
+      }
+    }
+  })
+
+  const deactivateFeature = computed(() => {
+    return (feature: string): void => {
+      const index = activeFeatures.value.indexOf(feature)
+      if (index >= 0) {
+        activeFeatures.value.splice(index, 1)
+      }
+    }
+  })
 
   return {
     initialize,
@@ -72,6 +105,9 @@ export const usePermissionsStore = defineStore('permissions', () => {
     hasAllOrigins,
     grantAllOrigins,
     revokeAllOrigins,
-    permissions
+    permissions,
+    hasFeature,
+    activateFeature,
+    deactivateFeature
   }
 })

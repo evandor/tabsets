@@ -23,7 +23,7 @@
           </div>
           <div class="col-xs-12 col-md-3 q-ma-none q-mt-sm text-right">
 
-            <div class="row" v-if="tab !==  LeftDrawerTabs.HELP">
+            <div class="row" v-if="tab !== LeftDrawerTabs.HELP && tab !== LeftDrawerTabs.FEATURES">
               <div class="col">
                 <span class="text-caption ellipsis">{{ filter }}</span>
                 <q-btn
@@ -63,12 +63,13 @@
       <BookmarksTree v-if="tab === LeftDrawerTabs.BOOKMARKS"/>
       <OpenTabs v-else-if="tab ===  LeftDrawerTabs.OPEN_TABS" :filter="filter"/>
       <UnassignedTabs v-else-if="tab ===  LeftDrawerTabs.UNASSIGNED_TABS" :filter="filter"/>
-      <TabsGroupedByHost v-else-if="tab ===  LeftDrawerTabs.GROUP_BY_HOST_TABS" />
+      <TabsGroupedByHost v-else-if="tab ===  LeftDrawerTabs.GROUP_BY_HOST_TABS"/>
       <SavedTabs v-else-if="tab ===  LeftDrawerTabs.SAVED_TABS"/>
       <TabsetAsSidebar v-else-if="tab ===  LeftDrawerTabs.SIDEBAR"/>
       <RssTabs v-else-if="tab ===  LeftDrawerTabs.RSS"/>
       <ScheduledTabs v-else-if="tab ===  LeftDrawerTabs.SCHEDULED"/>
       <BrowserHistory v-else-if="tab ===  LeftDrawerTabs.HISTORY"/>
+      <Features v-else-if="tab ===  LeftDrawerTabs.FEATURES"/>
       <TabsetHelp v-else-if="tab ===  LeftDrawerTabs.HELP"/>
 
       <div v-else>unknown tab name {{ tab }}</div>
@@ -96,6 +97,7 @@ import {useUiService} from "src/services/useUiService";
 import TabsetHelp from "components/TabsetHelp.vue";
 import TabsGroupedByHost from "components/TabsGroupedByHost.vue";
 import BrowserHistory from "components/BrowserHistory.vue";
+import Features from "components/Features.vue";
 
 const router = useRouter()
 
@@ -152,6 +154,8 @@ const drawerLabel = () => {
       return "Scheduled"
     case LeftDrawerTabs.HISTORY:
       return "History"
+    case LeftDrawerTabs.FEATURES:
+      return "Add. Features"
     case LeftDrawerTabs.HELP:
       return "Help"
     default:

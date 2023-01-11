@@ -1,32 +1,27 @@
 <template>
 
-  <q-list bordered separator>
-    <!-- manual-focus :focused="selected === index" :active="selected === index" -->
-    <q-item clickable v-ripple v-for="(tab,index) in props.tabs" @click="selectTab(tab, index)" autofocus>
       <q-item-section avatar>
 
         <q-img
-          class="rounded-borders"
+          class="rounded-borders" style="cursor: move"
           width="20px"
           height="20px"
-          :src="getFaviconUrl(tab.chromeTab)">
-          <q-tooltip>{{ tab.chromeTab?.id }} / {{ tab.id }}</q-tooltip>
+          :src="getFaviconUrl(props.tab.chromeTab)">
+          <q-tooltip>{{ props.tab.chromeTab?.id }} / {{ props.tab.id }}</q-tooltip>
         </q-img>
 
       </q-item-section>
       <q-item-section>
-        <q-item-label>{{ tab.chromeTab?.title }}</q-item-label>
-        <q-item-label caption>{{ tab.chromeTab?.url }}</q-item-label>
+        <q-item-label>{{ props.tab.chromeTab?.title }}</q-item-label>
+        <q-item-label caption>{{ props.tab.chromeTab?.url }}</q-item-label>
       </q-item-section>
       <q-item-section avatar>
         <q-icon name="launch" color="primary"
-                @click.stop="NavigationService.openOrCreateTab(tab.chromeTab?.url )"></q-icon>
+                @click.stop="NavigationService.openOrCreateTab(props.tab.chromeTab?.url )"></q-icon>
       </q-item-section>
       <!--      <q-item-section avatar>-->
       <!--        <q-icon name="close" @click.stop="closeTab(tab)"/>-->
       <!--      </q-item-section>-->
-    </q-item>
-  </q-list>
 
 
 </template>
@@ -39,13 +34,13 @@ import {useNotificationsStore} from "src/stores/notificationsStore";
 import {ref} from "vue";
 
 const props = defineProps({
-  tabs: {
-    type: Array,
+  tab: {
+    type: Object,
     required: true
   },
-  showActions: {
-    type: Boolean,
-    default: false
+  highlightUrl: {
+    type: String,
+    required: false
   }
 })
 

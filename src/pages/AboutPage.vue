@@ -1,34 +1,66 @@
 <template>
 
-  <q-page>
+  <q-page class="constrained-width">
 
-    <q-toolbar class="text-primary lightgrey">
+    <q-toolbar class="text-primary ">
       <div class="row fit">
         <q-toolbar-title>
           <div class="row justify-start items-baseline">
-            Welcome to Tabsets
+
           </div>
         </q-toolbar-title>
       </div>
     </q-toolbar>
 
-    <div class="q-pa-md greyBorderTop">
+    <div class="q-pa-md q-ml-xl">
       <div class="text-h4 q-ml-md">
         Tabsets Browser Extension
       </div>
-      <div class="text-caption q-ml-md q-mb-md">Version {{ appVersion }}</div>
+      <div class="text-subtitle1 q-ml-lg q-mb-xs">Handle more links, with less tabs open</div>
+      <div class="text-caption q-ml-lg q-mb-md">Version {{ appVersion }}</div>
 
       <div class="text-body1 q-ma-md" v-if="tabsStore.tabsets.size === 0">
-        Tabsets is a browser extension which helps you organize your tabs.<br><br>
-        A
-        <q-chip label="tabset" square color="warning"/>
-        is just a collection of tabs you can give a name to.
+        <q-chip label="Tabsets" square color="warning"/>
+        is a browser extension which helps you organize your links. As simple as that.<br><br>
+        A tabset is just a collection of tabs you can give a name to. You can use them instead of (or together with)
+        bookmarks - and you can even search within pages you already visited. Check it out and:
       </div>
       <div class="text-body1 q-ma-md" v-else>
-        Tabsets is a browser extension which helps you organize your tabs.<br><br>
+        is a browser extension which helps you organize your links. As simple as that.<br><br>
         You are managing <b>{{ tabsStore.allTabsCount }} tabs</b> in <b>{{ tabsStore.tabsets.size }} Tabset(s)</b>
         already - and can access <b>{{ bookmarksStore.bookmarksLeaves.length }} bookmarks</b> of yours.
       </div>
+
+
+      <template v-if="tabsStore.tabsets.size === 0">
+
+        <div class="row">
+          <div class="col-3"></div>
+          <div class="col-6 q-pa-md">
+            <Transition name="delayed-appear" appear>
+              <q-btn class="fit bg-white" outline color="primary"
+                     data-testid="createFirstTabsetBtn"
+                     @click="addTabset"
+                     label="create your first tabset"></q-btn>
+            </Transition>
+          </div>
+          <div class="col-3"></div>
+        </div>
+
+      </template>
+      <template v-else>
+
+        <div class="row">
+          <div class="col-3"></div>
+          <div class="col-6 q-pa-md">
+              <q-btn class="fit bg-white" outline color="primary"
+                     @click="router.push('/tabset')"
+                     label="goto your tabsets"></q-btn>
+          </div>
+          <div class="col-3"></div>
+        </div>
+
+      </template>
 
       <template v-if="tabsStore.mostAccessedTabs.length >= 3">
         <div class="text-h5 q-ma-md">
@@ -39,37 +71,9 @@
           <TabcardsMostAccessed :tabs="tabsStore.mostAccessedTabs" group="mostAccessed"/>
         </div>
       </template>
-      <template v-else>
 
-        <div class="text-h5 q-ma-md">
-          Features
-        </div>
 
-        <div class="q-pa-md">
-          <div class="row q-gutter-lg">
-
-            <div class="col-xs-12 col-sm-4 col-md-3 col-lg-2" v-for="feature in features">
-              <q-card
-                class="my-card text-primary"
-                style="background: radial-gradient(circle, #efefef 0%, #ACBCBB 100%)"
-              >
-                <q-card-section>
-                  <div class="text-h6">{{ feature.title }}</div>
-                  <div class="text-subtitle2">{{ feature.caption }}</div>
-                </q-card-section>
-
-                <q-card-section class="q-pt-none text-black" style="height: 65px">
-                  {{ feature.text }}
-                </q-card-section>
-              </q-card>
-            </div>
-
-          </div>
-        </div>
-
-      </template>
-
-      <div class="text-h5 q-ma-md">
+      <div class="text-h6 q-ma-md q-mt-xl text-grey-7">
         Good to know
       </div>
 
@@ -81,7 +85,7 @@
         </ul>
       </div>
 
-      <div class="text-h5 q-ma-md">
+      <div class="text-h6 q-ma-md text-grey-7">
         Supported Browsers
       </div>
 
@@ -99,7 +103,7 @@
         </ul>
       </div>
 
-      <div class="text-h5 q-ma-md">
+      <div class="text-h6 q-ma-md text-grey-7">
         Official Extension Website
       </div>
 
@@ -113,45 +117,39 @@
 </template>
 
 <script setup lang="ts">
-import {useTabsStore} from "src/stores/tabsStore"
-import {useNotificationsStore} from "src/stores/notificationsStore";
-import {ref} from "vue";
+
+import TabcardsMostAccessed from "components/layouts/TabcardsMostAccessed.vue"
+import {useQuasar} from "quasar"
+import {useUiStore} from "stores/uiStore"
+import NewTabsetDialog from "src/components/dialogues/NewTabsetDialog.vue"
+import {useTabsStore} from "stores/tabsStore";
 import {useBookmarksStore} from "stores/bookmarksStore";
-import Tabcards from "components/layouts/Tabcards.vue";
-import TabcardsMostAccessed from "components/layouts/TabcardsMostAccessed.vue";
+import {useRouter} from "vue-router";
 
 //@ts-ignore
 const appVersion = import.meta.env.PACKAGE_VERSION
 
 const tabsStore = useTabsStore()
 const bookmarksStore = useBookmarksStore()
+const router = useRouter()
+const $q = useQuasar()
 
-const animateFab = () => useNotificationsStore().animateFab()
-
-const features = ref([
-  {title: 'Tabsets', caption: 'Creation', text: 'Turn your open tabs into tabsets'},
-  {title: 'Tabs', caption: 'Utilization', text: 'Search for keywords or content in your tabs and bookmarks'},
-  {title: 'Tabsets', caption: 'Reuse', text: 'Re-open your tabsets or tabs whenever you need them'},
-  {title: 'Tabsets', caption: 'Management', text: 'Edit Tabsets'},
-  {title: 'Tabsets', caption: 'Management', text: 'Use Spaces to organize your tabsets (experimental)'},
-  {title: 'Tabsets', caption: 'Persistence', text: 'Export and Import Tabsets Data'},
-  {title: 'Tabs', caption: 'Visualization', text: 'Thumbnails Preview (experimental)'},
-  {title: 'Tabs', caption: 'Visualization', text: 'List View (experimental)'},
-  {title: 'Bookmarks', caption: 'Integration', text: 'Bookmarks integration: create tabsets from bookmark folders'},
-  {title: 'Tabsets', caption: 'Visualization', text: 'Dark Mode (experimental)'},
-  {title: 'Tabsets', caption: 'Utilization', text: 'Drag and Drop Support (experimental)'},
-  {title: 'RSS Feeds', caption: 'Integration', text: 'Displayment of RSS Feeds (experimental)'},
-])
+const addTabset = () => $q.dialog({
+  component: NewTabsetDialog, componentProps: {
+    setAddAutomaticByDefault: useUiStore().addTabsAutomaticallyDefault
+  }
+})
 
 </script>
 
-
 <style lang="sass" scoped>
 
-.lightgrey
-  background-color: $lightgrey
+.delayed-appear-enter-active
+  transition: all 2s ease-in
+  transition-delay: 1s
 
-.greyBorderTop
-  border-top: 1px solid $bordergrey
+.delayed-appear-enter-from,
+.delayed-appear-leave-to
+  opacity: 0
 
 </style>

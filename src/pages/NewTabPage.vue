@@ -104,7 +104,7 @@
   <!-- pinned tabs -->
   <q-card>
     <q-card-section>
-<!--      <Tablist v-if="tabsetForNewTabPage?.view === 'list'" :tabs="pinned()"/>-->
+<!--      <TabList v-if="tabsetForNewTabPage?.view === 'list'" :tabs="pinned()"/>-->
 <!--      <TabThumbs v-else-if="tabsetForNewTabPage?.view === 'thumbnails'" :tabs="pinned()"/>-->
       <Tabcards4NewTabPage key="pinnedTabs" :tabs="pinned()" group="pinnedTabs"/>
     </q-card-section>
@@ -117,7 +117,7 @@
 
       <q-card>
         <q-card-section>
-<!--          <Tablist v-if="tabsetForNewTabPage?.view === 'list'" :tabs="tabsForGroup( group.chromeGroup.id)"/>-->
+<!--          <TabList v-if="tabsetForNewTabPage?.view === 'list'" :tabs="tabsForGroup( group.chromeGroup.id)"/>-->
 <!--          <TabThumbs v-else-if="tabsetForNewTabPage?.view === 'thumbnails'" :tabs="tabsForGroup( group.chromeGroup.id)"/>-->
           <Tabcards4NewTabPage
                     :tabs="tabsForGroup( group.chromeGroup.id)" :key="'groupedTabs_'+group.chromeGroup.id"
@@ -131,7 +131,7 @@
 
   <q-card>
     <q-card-section>
-<!--      <Tablist v-if="tabsetForNewTabPage?.view === 'list'" :tabs="unpinnedNoGroup()"/>-->
+<!--      <TabList v-if="tabsetForNewTabPage?.view === 'list'" :tabs="unpinnedNoGroup()"/>-->
 <!--      <TabThumbs v-else-if="tabsetForNewTabPage?.view === 'thumbnails'" :tabs="unpinnedNoGroup()"/>-->
       <Tabcards4NewTabPage :tabs="unpinnedNoGroup()" group="otherTabs"/>
     </q-card-section>

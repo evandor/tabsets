@@ -32,6 +32,7 @@ export class GrantPermissionCommand implements Command<boolean> {
       .then((granted: boolean) => {
         if (granted) {
           if ("bookmarks" === this.permission) {
+            usePermissionsStore().activateFeature('bookmarks')
             useBookmarksStore().loadBookmarks()
               .then(() => {
                 TabsetService.init()
@@ -43,6 +44,7 @@ export class GrantPermissionCommand implements Command<boolean> {
             "Permission was added",
             new UndoCommand(this.permission))
         } else {
+          usePermissionsStore().deactivateFeature('bookmarks')
           return new ExecutionResult(granted, "Permission was not added")
         }
       })

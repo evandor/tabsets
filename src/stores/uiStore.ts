@@ -18,6 +18,7 @@ export enum LeftDrawerTabs {
   RSS = "rss",
   SCHEDULED = "scheduled",
   HISTORY = "history",
+  FEATURES = "features",
   HELP = "help"
 }
 

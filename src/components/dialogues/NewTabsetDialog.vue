@@ -4,9 +4,9 @@
       <q-card-section>
         <div class="text-h6">Create a new Tabset</div>
       </q-card-section>
-      <q-card-section>
-        <div class="text-body">Please provide a name for the new tabset</div>
-      </q-card-section>
+<!--      <q-card-section>-->
+<!--        <div class="text-body">Please provide a name</div>-->
+<!--      </q-card-section>-->
 
       <q-card-section class="q-pt-none">
         <div class="text-body">New Tabset's name:</div>
@@ -18,14 +18,14 @@
                  data-testid="newTabsetName"
                  @keydown.enter="createNewTabset()"/>
         <div class="text-caption text-negative q-mt-none q-pt-none">{{ newTabsetDialogWarning() }}</div>
-        <q-checkbox
-          data-testid="newTabsetAutoAdd"
-          v-model="addAutomatically" label="Add open tabs automatically"/>&nbsp;
-        <q-icon name="help" color="primary" size="1em">
-          <q-tooltip>When checked, this will add all your browsers open tabs automatically to the new tabset.<br>
-            Otherwise, you have the chance to add all (or selected) tabs yourself later.
-          </q-tooltip>
-        </q-icon>
+<!--        <q-checkbox-->
+<!--          data-testid="newTabsetAutoAdd"-->
+<!--          v-model="addAutomatically" label="Add open tabs automatically"/>&nbsp;-->
+<!--        <q-icon name="help" color="primary" size="1em">-->
+<!--          <q-tooltip>When checked, this will add all your browsers open tabs automatically to the new tabset.<br>-->
+<!--            Otherwise, you have the chance to add all (or selected) tabs yourself later.-->
+<!--          </q-tooltip>-->
+<!--        </q-icon>-->
       </q-card-section>
 
       <q-card-actions align="right" class="text-primary">

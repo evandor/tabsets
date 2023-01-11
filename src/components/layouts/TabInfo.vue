@@ -253,6 +253,5 @@ const openTabset = (badge: any) => {
   router.push("/tabsets/" + badge.tabsetId + "?highlight=" + badge.encodedUrl)
 }
 
-const addUrlDialog = () => $q.dialog({component: RequestPermissionDialog})
 
 </script>

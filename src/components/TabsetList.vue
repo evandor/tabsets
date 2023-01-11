@@ -95,7 +95,7 @@
         <q-item-section>{{ formatLength(tabsStore.pinnedTabs.length, 'tab', 'tabs') }}</q-item-section>
       </template>
 
-      <Tablist :tabs="tabsStore.pinnedTabs"/>
+      <TabList :tabs="tabsStore.pinnedTabs"/>
 
 
     </q-expansion-item>
@@ -124,7 +124,7 @@
           <q-item-section>{{ formatLength(tabsForGroup(group.id).length, 'tab', 'tabs') }}</q-item-section>
         </template>
 
-        <Tablist :tabs="tabsForGroup( group.id)" v-on:sendCaption="setGroupedTabsCaption"/>
+        <TabList :tabs="tabsForGroup( group.id)" v-on:sendCaption="setGroupedTabsCaption"/>
 
       </q-expansion-item>
     </div>
@@ -153,10 +153,10 @@
       </template>
 
 
-      <Tablist :tabs="unpinnedNoGroup()"/>
+      <TabList :tabs="unpinnedNoGroup()"/>
     </q-expansion-item>
     <div v-else>
-      <Tablist :tabs="unpinnedNoGroup()"/>
+      <TabList :tabs="unpinnedNoGroup()"/>
     </div>
   </q-list>
 
@@ -167,7 +167,6 @@ import {ref, watchEffect} from 'vue'
 import {useRoute, useRouter} from "vue-router";
 import {useQuasar} from "quasar";
 import Tabcards from "src/components/layouts/Tabcards.vue";
-import Tablist from "src/components/layouts/Tablist.vue";
 import _ from "lodash"
 import {useTabsStore} from "src/stores/tabsStore";
 import {useTabGroupsStore} from "src/stores/tabGroupsStore";

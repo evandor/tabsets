@@ -1,1 +1,13 @@
 // app global css in SCSS form
+.constrained-width {
+  max-width:1200px;
+  margin: 0 auto;
+}
+
+.lightgrey {
+  background-color: $lightgrey;
+}
+
+.greyBorderTop {
+  border-top: 1px solid $bordergrey;
+}

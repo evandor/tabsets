@@ -21,7 +21,7 @@ export class Tabset {
   tabs: Tab[]
   groups: Group[]
   spaces: string[] // got json problems with set<string>
-  view: string = 'grid'
+  view: string = 'list'
   status: TabsetStatus = TabsetStatus.DEFAULT
   type: TabsetType = TabsetType.DEFAULT
 

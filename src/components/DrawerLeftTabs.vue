@@ -6,7 +6,9 @@
     active-color="primary"
     class="text-grey-9 q-mt-none q-mx-none greyBorderTopRight">
 
-    <q-tab name="bookmarks" icon="o_bookmarks" @click="tabsClicked(LeftDrawerTabs.BOOKMARKS)">
+    <q-tab name="bookmarks" icon="o_bookmarks"
+           v-if="permissionsStore.hasFeature('bookmarks')"
+           @click="tabsClicked(LeftDrawerTabs.BOOKMARKS)">
       <q-tooltip>Your bookmarks</q-tooltip>
     </q-tab>
 
@@ -59,6 +61,11 @@
     <q-tab v-if="permissionsStore.hasPermission('history')"
            name="history" icon="o_history" @click="tabsClicked(LeftDrawerTabs.HISTORY)">
       <q-tooltip>Browser History</q-tooltip>
+    </q-tab>
+
+    <q-tab
+           name="features" icon="o_more_horiz" @click="tabsClicked(LeftDrawerTabs.FEATURES)">
+      <q-tooltip>Additional Features</q-tooltip>
     </q-tab>
 
     <q-tab

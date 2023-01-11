@@ -12,7 +12,7 @@ const routes: RouteRecordRaw[] = [
   },
   {
     path: '/about',
-    component: () => import('layouts/MainLayout.vue'),
+    component: () => import('layouts/AboutLayout.vue'),
     children: [{ path: '', component: () => import('pages/AboutPage.vue') }],
   },
   {
@@ -74,6 +74,11 @@ const routes: RouteRecordRaw[] = [
     path: '/historyByAge/:encodedAge',
     component: () => import('layouts/MainLayout.vue'),
     children: [{ path: '', component: () => import('pages/ByAgePage.vue') }],
+  },
+  {
+    path: '/features/:feature',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [{ path: '', component: () => import('pages/FeaturesPage.vue') }],
   },
   {
     path: '/search',

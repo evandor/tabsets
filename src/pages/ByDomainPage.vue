@@ -40,7 +40,7 @@
     <q-card>
       <q-card-section>
 
-        <Tablist :tabs="groupedTabs"/>
+        <TabList :tabs="groupedTabs" group="groupedTabs" />
 
       </q-card-section>
 
@@ -69,17 +69,15 @@
 import {ref, watchEffect} from 'vue'
 import {useRoute, useRouter} from "vue-router";
 import {useQuasar} from "quasar";
-import Tabcards from "src/components/layouts/Tabcards.vue";
-import TabThumbs from "src/components/layouts/TabThumbs.vue";
 import TabColumns from "src/components/layouts/TabColumns.vue";
 import TabsCanvas from "src/components/layouts/TabsCanvas.vue";
-import Tablist from "src/components/layouts/Tablist.vue";
 import _ from "lodash"
 import {useTabsStore} from "src/stores/tabsStore";
 import {useTabGroupsStore} from "src/stores/tabGroupsStore";
 import {Tab} from "src/models/Tab";
 import {useFeatureTogglesStore} from "src/stores/featureTogglesStore";
 import {Tabset, TabsetStatus} from "src/models/Tabset";
+import TabList from "components/layouts/TabList.vue";
 
 const route = useRoute();
 const router = useRouter();
