@@ -50,10 +50,10 @@
     </div>
 
     <div class="col-12 q-my-md">
-      <q-btn v-if="permissionsStore.hasFeature('bookmarks')"
+      <q-btn v-if="!hasFeature('bookmarks')"
              label="Activate Bookmarks Feature" @click="grant('bookmarks')" />
       <q-btn v-else
-        label="Activate Bookmarks Feature" @click="revoke('bookmarks')" />
+        label="Deactivate Bookmarks Feature" @click="revoke('bookmarks')" />
     </div>
 
   </div>

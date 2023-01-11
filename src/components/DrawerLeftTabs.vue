@@ -6,11 +6,13 @@
     active-color="primary"
     class="text-grey-9 q-mt-none q-mx-none greyBorderTopRight">
 
-    <q-tab name="bookmarks" icon="o_bookmarks"
-           v-if="permissionsStore.hasFeature('bookmarks')"
-           @click="tabsClicked(LeftDrawerTabs.BOOKMARKS)">
-      <q-tooltip>Your bookmarks</q-tooltip>
-    </q-tab>
+    <Transition name="colorized-appear">
+      <q-tab name="bookmarks" icon="o_bookmarks"
+             v-if="permissionsStore.hasFeature('bookmarks')"
+             @click="tabsClicked(LeftDrawerTabs.BOOKMARKS)">
+        <q-tooltip>Your bookmarks</q-tooltip>
+      </q-tab>
+    </Transition>
 
     <q-tab name="openTabs" icon="o_table_rows" @click="tabsClicked(LeftDrawerTabs.OPEN_TABS)">
       <q-badge v-if="badgeThreshold()"
@@ -34,7 +36,7 @@
     </q-tab>
 
     <q-tab
-           name="groupedByHostTabs" icon="o_dns" @click="tabsClicked(LeftDrawerTabs.GROUP_BY_HOST_TABS)">
+      name="groupedByHostTabs" icon="o_dns" @click="tabsClicked(LeftDrawerTabs.GROUP_BY_HOST_TABS)">
       <q-tooltip>Your tabs grouped by host, if there are at least two tabs</q-tooltip>
     </q-tab>
 
@@ -54,7 +56,7 @@
     </q-tab>
 
     <q-tab
-           name="scheduled" icon="o_update" @click="tabsClicked(LeftDrawerTabs.SCHEDULED)">
+      name="scheduled" icon="o_update" @click="tabsClicked(LeftDrawerTabs.SCHEDULED)">
       <q-tooltip>Scheduled Tabs</q-tooltip>
     </q-tab>
 
@@ -64,7 +66,7 @@
     </q-tab>
 
     <q-tab
-           name="features" icon="o_more_horiz" @click="tabsClicked(LeftDrawerTabs.FEATURES)">
+      name="features" icon="o_more_horiz" @click="tabsClicked(LeftDrawerTabs.FEATURES)">
       <q-tooltip>Additional Features</q-tooltip>
     </q-tab>
 
@@ -121,7 +123,7 @@ watchEffect(() => {
 })
 
 const tabsClicked = (tab: LeftDrawerTabs) => {
- // console.log("tabsClicked", tab)
+  // console.log("tabsClicked", tab)
   uiService.leftDrawerSetActiveTab(tab)
 }
 
@@ -133,13 +135,16 @@ const badgeThreshold = () => tabsStore.tabs.length >= settingsStore.thresholds['
 </script>
 
 <style lang="sass" scoped>
-.lightgrey
-  background-color: $lightgrey
-
-.greyBorderTop
-  border-top: 1px solid $bordergrey
 
 .greyBorderTopRight
   border-top: 1px solid $bordergrey
   border-right: 1px solid $bordergrey
+
+.colorized-appear-enter-active
+  transition: all 2s ease-in
+  transition-delay: 1s
+
+.colorized-appear-enter-from
+  background-color: red
+
 </style>

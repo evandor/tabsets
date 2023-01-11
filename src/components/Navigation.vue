@@ -14,15 +14,28 @@
           <div class="col-xs-12 col-md-7 text-right">
 
             <q-btn
-              @click="addTabset"
+              @click="addTabset(false)"
+              style="cursor: context-menu"
               flat round dense icon="add" color="primary">
-              <q-tooltip>Click here to add new tabsets</q-tooltip>
+              <q-tooltip
+                class="tooltip"
+                :delay="200"
+                anchor="center left" self="center right">
+                Click here to add new tabsets.<br>
+                Check the context menu for additional options
+              </q-tooltip>
             </q-btn>
+            <q-menu :v-model="false" context-menu :offset="[-10,-30]">
+              <q-list style="min-width: 100px" dense>
+                <q-item clickable v-close-popup>
+                  <q-item-section @click="addTabset(true)">Add empty tabset</q-item-section>
+                </q-item>
+              </q-list>
+            </q-menu>
 
           </div>
         </div>
       </q-toolbar>
-
 
 
       <q-splitter
@@ -51,7 +64,7 @@
 
         <template v-slot:after>
           <TabInfo v-if="notificationStore.selectedTab"/>
-          <TabsetInfo v-else-if="tabsStore.currentTabsetId" />
+          <TabsetInfo v-else-if="tabsStore.currentTabsetId"/>
 
         </template>
 
@@ -129,9 +142,9 @@ const tabsetLabel = (tabset: Tabset) => {
   return tabset.tabs?.length > 1 ? tabset.name + ' (' + tabset.tabs?.length + ' tabs)' : tabset.name + ' (' + tabset.tabs?.length + ' tab)'
 }
 
-const addTabset = () => $q.dialog({
+const addTabset = (empty: boolean) => $q.dialog({
   component: NewTabsetDialog, componentProps: {
-    setAddAutomaticByDefault: useUiStore().addTabsAutomaticallyDefault
+    setAddAutomaticByDefault: !empty//useUiStore().addTabsAutomaticallyDefault
   }
 })
 

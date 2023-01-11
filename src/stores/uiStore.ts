@@ -25,7 +25,7 @@ export enum LeftDrawerTabs {
 export class LeftDrawer {
   constructor(
     public state: LeftDrawerState,
-    public activeTab: LeftDrawerTabs = LeftDrawerTabs.BOOKMARKS) {
+    public activeTab: LeftDrawerTabs = LeftDrawerTabs.OPEN_TABS) {
   }
 }
 
@@ -39,7 +39,7 @@ export const useUiStore = defineStore('ui', () => {
   const addTabsAutomaticallyDefault = ref<boolean>($q.localStorage.getItem('ui.addTabsAutomatically') as boolean || true)
   const tabBeingDragged = ref<string | undefined>(undefined)
 
-  watch(leftDrawer, (val: Object) => {
+  watch(leftDrawer.value, (val: Object) => {
     $q.localStorage.set("ui.leftDrawer", val)
   }, {deep: true})
 
