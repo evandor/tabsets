@@ -14,24 +14,23 @@
           <div class="col-xs-12 col-md-7 text-right">
 
             <q-btn
-              @click="addTabset(false)"
-              style="cursor: context-menu"
+              @click="addTabset"
+              class="cursor-pointer"
               flat round dense icon="add" color="primary">
               <q-tooltip
                 class="tooltip"
                 :delay="200"
                 anchor="center left" self="center right">
-                Click here to add new tabsets.<br>
-                Check the context menu for additional options
+                Click here to add new tabsets
               </q-tooltip>
             </q-btn>
-            <q-menu :v-model="false" context-menu :offset="[-10,-30]">
-              <q-list style="min-width: 100px" dense>
-                <q-item clickable v-close-popup>
-                  <q-item-section @click="addTabset(true)">Add empty tabset</q-item-section>
-                </q-item>
-              </q-list>
-            </q-menu>
+<!--            <q-menu :v-model="false" context-menu :offset="[-10,-30]">-->
+<!--              <q-list style="min-width: 100px" dense>-->
+<!--                <q-item clickable v-close-popup>-->
+<!--                  <q-item-section @click="addTabset(true)">Add empty tabset</q-item-section>-->
+<!--                </q-item>-->
+<!--              </q-list>-->
+<!--            </q-menu>-->
 
           </div>
         </div>
@@ -62,7 +61,7 @@
         <!--          <q-avatar color="primary" text-color="white" size="40px" icon="drag_indicator"/>-->
         <!--        </template>-->
 
-        <template v-slot:after>
+        <template v-slot:after v-if="permissonsStore.hasFeature('details')">
           <TabInfo v-if="notificationStore.selectedTab"/>
           <TabsetInfo v-else-if="tabsStore.currentTabsetId"/>
 
@@ -93,12 +92,14 @@ import TabInfo from "components/layouts/TabInfo.vue";
 import {useUiStore} from "stores/uiStore";
 import {useNotificationsStore} from "stores/notificationsStore";
 import TabsetInfo from "components/layouts/TabsetInfo.vue";
+import {usePermissionsStore} from "stores/permissionsStore";
 
 const router = useRouter()
 const tabsStore = useTabsStore()
 const featuresStore = useFeatureTogglesStore()
 const spacesStore = useSpacesStore()
 const notificationStore = useNotificationsStore()
+const permissonsStore = usePermissionsStore()
 
 const $q = useQuasar();
 const localStorage = $q.localStorage
@@ -142,9 +143,9 @@ const tabsetLabel = (tabset: Tabset) => {
   return tabset.tabs?.length > 1 ? tabset.name + ' (' + tabset.tabs?.length + ' tabs)' : tabset.name + ' (' + tabset.tabs?.length + ' tab)'
 }
 
-const addTabset = (empty: boolean) => $q.dialog({
+const addTabset = () => $q.dialog({
   component: NewTabsetDialog, componentProps: {
-    setAddAutomaticByDefault: !empty//useUiStore().addTabsAutomaticallyDefault
+    setEmptyByDefault: useUiStore().newTabsetEmptyByDefault
   }
 })
 

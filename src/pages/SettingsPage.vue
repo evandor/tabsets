@@ -45,6 +45,19 @@
 
       <div class="row items-baseline q-ma-md">
         <div class="col-3">
+          Restore Info Messages
+        </div>
+        <div class="col-3">
+         If you accidentally closed an info message box with a hint, you can restore them all by clicking here:
+        </div>
+        <div class="col-1"></div>
+        <div class="col">
+          <q-btn label="Restore Hints" @click.stop="restoreHints" />
+        </div>
+      </div>
+
+      <div class="row items-baseline q-ma-md">
+        <div class="col-3">
           Warning Thresholds
         </div>
         <div class="col-3">
@@ -481,11 +494,11 @@ watch(() => allUrlsOriginGranted.value, (newValue, oldValue) => {
   }
   if (allUrlsOriginGranted.value && !usePermissionsStore().hasAllOrigins()) {
     useCommandExecutor()
-      .executeFromUi(new GrantOriginCommand("*://*/*"))
+      .executeFromUi(new GrantOriginCommand("none"))
       .then((res: ExecutionResult<boolean>) => allUrlsOriginGranted.value = res.result)
   } else if (!allUrlsOriginGranted.value) {
     useCommandExecutor()
-      .executeFromUi(new RevokeOriginCommand("*://*/*"))
+      .executeFromUi(new RevokeOriginCommand("all"))
       .then(() => {
         // useBookmarksStore().loadBookmarks()
       })
@@ -536,6 +549,8 @@ const unarchive = (tabset: Tabset) => useCommandExecutor().executeFromUi(new Mar
 const ignoredUrls = () => useTabsStore().ignoredTabset?.tabs
 
 const simulateNewVersion = (version: string) => NavigationService.updateAvailable({version: version})
+
+const restoreHints = () => useUiStore().restoreHints()
 
 </script>
 

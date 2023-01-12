@@ -9,15 +9,25 @@ const {TabLogger} = useLoggingServicee()
 
 class UndoCommand implements Command<boolean> {
 
-  constructor(public origin: string) {
+  constructor(public feature: string) {
   }
 
   execute(): Promise<ExecutionResult<boolean>> {
-    console.log("execution undo command", this.origin)
-    return new RevokeOriginCommand(this.origin).execute()
+    console.log("execution undo command")
+    return new RevokeOriginCommand(this.feature).execute()
       .then(res => {
-        ChromeApi.stopWebRequestListener()
-        return new ExecutionResult(true, "Origin was revoked again")
+        switch (this.feature) {
+          case "thumbnails":
+            usePermissionsStore().deactivateFeature(this.feature)
+            break;
+          case "analyseTabs":
+            ChromeApi.stopWebRequestListener()
+            usePermissionsStore().deactivateFeature(this.feature)
+            break;
+          default:
+            Promise.reject("feature " + this.feature + " is unknown")
+        }
+        return new ExecutionResult(true, "Permission (Origin) was revoked again")
       })
   }
 
@@ -25,19 +35,34 @@ class UndoCommand implements Command<boolean> {
 
 export class GrantOriginCommand implements Command<boolean> {
 
-  constructor(public origin: string) {
+  constructor(public feature: string) {
   }
 
   async execute(): Promise<ExecutionResult<boolean>> {
     return usePermissionsStore().grantAllOrigins()
       .then((granted: boolean) => {
         if (granted) {
-          ChromeApi.startWebRequestListener()
-          return new ExecutionResult(
-            granted,
-            "Thumbnail permission was added, subsequently stored tabs should have thumbnails ",
-            new UndoCommand(this.origin))
+          let msg = "unknown feature " + this.feature
+          switch (this.feature) {
+            case "thumbnails":
+              msg = "Thumbnail permission was added, subsequently stored tabs should have thumbnails"
+              usePermissionsStore().activateFeature(this.feature)
+              break;
+            case "analyseTabs":
+              ChromeApi.startWebRequestListener()
+              usePermissionsStore().activateFeature(this.feature)
+              msg = "Permission was added, subsequently accessed tabs will be analysed"
+              break;
+            case "none":
+              msg: "All Origins Permission was granted"
+            default:
+              return Promise.reject("feature " + this.feature + " is unknown")
+          }
+          return new ExecutionResult(granted, msg, new UndoCommand(this.feature))
         } else {
+          if (this.feature) {
+            usePermissionsStore().deactivateFeature(this.feature)
+          }
           return new ExecutionResult(granted, "Origin was not granted")
         }
       })
@@ -46,5 +71,5 @@ export class GrantOriginCommand implements Command<boolean> {
 }
 
 GrantOriginCommand.prototype.toString = function cmdToString() {
-  return `GrantOriginCommand: {origin=${this.origin}}`;
+  return `GrantOriginCommand: {feature: ${this.feature}}`;
 };

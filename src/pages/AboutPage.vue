@@ -136,7 +136,7 @@ const $q = useQuasar()
 
 const addTabset = () => $q.dialog({
   component: NewTabsetDialog, componentProps: {
-    setAddAutomaticByDefault: useUiStore().addTabsAutomaticallyDefault
+    setEmptyByDefault: useUiStore().newTabsetEmptyByDefault
   }
 })
 

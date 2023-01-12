@@ -28,15 +28,17 @@ export class RevokePermissionCommand implements Command<boolean> {
   }
 
   async execute(): Promise<ExecutionResult<boolean>> {
+    if ("bookmarks" === this.permission) {
+      useBookmarksStore().loadBookmarks()
+        .then(() => {
+          ChromeBookmarkListeners.removeListeners()
+          TabsetService.init()
+        })
+    }
+    usePermissionsStore().deactivateFeature(this.permission)
     return usePermissionsStore().revokePermission(this.permission)
       .then(() => {
-        if ("bookmarks" === this.permission) {
-          useBookmarksStore().loadBookmarks()
-            .then(() => {
-              ChromeBookmarkListeners.removeListeners()
-              TabsetService.init()
-            })
-        }
+
         return new ExecutionResult(
           true,
           "Permission was revoked",

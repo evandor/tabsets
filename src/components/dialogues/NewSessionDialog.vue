@@ -63,7 +63,7 @@ defineEmits([
 ])
 
 const props = defineProps({
-  setAddAutomaticByDefault: {
+  setEmptyByDefault: {
     type: Boolean,
     default: false
   },
@@ -82,7 +82,7 @@ const $q = useQuasar()
 const newTabsetName = ref( 'Session ' + new Date().getDate() + '.' + (new Date().getMonth() + 1) )
 const newTabsetNameExists = ref(false)
 const hideWarning = ref(false)
-const addAutomatically = ref(props.setAddAutomaticByDefault)
+const addAutomatically = ref(props.setEmptyByDefault)
 
 const newTabsetNameIsValid = computed(() => newTabsetName.value.length <= 32 && !STRIP_CHARS_IN_USER_INPUT.test(newTabsetName.value))
 

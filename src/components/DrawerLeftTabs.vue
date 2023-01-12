@@ -10,7 +10,7 @@
       <q-tab name="bookmarks" icon="o_bookmarks"
              v-if="permissionsStore.hasFeature('bookmarks')"
              @click="tabsClicked(LeftDrawerTabs.BOOKMARKS)">
-        <q-tooltip>Your bookmarks</q-tooltip>
+        <q-tooltip class="tooltip">Your bookmarks</q-tooltip>
       </q-tab>
     </Transition>
 
@@ -20,7 +20,7 @@
                text-color="white"
                :style="thresholdStyle()">{{ tabsStore.tabs.length }}
       </q-badge>
-      <q-tooltip>Your open tabs</q-tooltip>
+      <q-tooltip class="tooltip">Your open tabs</q-tooltip>
     </q-tab>
 
     <q-tab v-if="tabsStore.pendingTabset?.tabs.length > 0"
@@ -32,47 +32,55 @@
                style="right:-2px"
                color="secondary">{{ tabsStore.pendingTabset?.tabs.length }}
       </q-badge>
-      <q-tooltip>Your unassigned tabs</q-tooltip>
+      <q-tooltip class="tooltip">Your unassigned tabs</q-tooltip>
     </q-tab>
 
-    <q-tab
-      name="groupedByHostTabs" icon="o_dns" @click="tabsClicked(LeftDrawerTabs.GROUP_BY_HOST_TABS)">
-      <q-tooltip>Your tabs grouped by host, if there are at least two tabs</q-tooltip>
-    </q-tab>
+    <Transition name="colorized-appear">
+      <q-tab
+        v-if="permissionsStore.hasFeature('groupedByDomain')"
+        name="groupedByHostTabs" icon="o_dns" @click="tabsClicked(LeftDrawerTabs.GROUP_BY_HOST_TABS)">
+        <q-tooltip class="tooltip" anchor="center right" self="center left" :delay="200">Your tabs grouped by host, if there are at least two tabs</q-tooltip>
+      </q-tab>
+    </Transition>
 
     <q-tab v-if="savedTabsCount > 0"
            name="savedTabs" icon="o_save" @click="tabsClicked(LeftDrawerTabs.SAVED_TABS)">
-      <q-tooltip>Your saved tabs</q-tooltip>
+      <q-tooltip class="tooltip" anchor="center right" self="center left" :delay="200">Your saved tabs</q-tooltip>
     </q-tab>
 
     <q-tab v-if="featureToggles.isEnabled('sidebar')"
            name="sidebar" icon="o_tab" @click="tabsClicked(LeftDrawerTabs.SIDEBAR)">
-      <q-tooltip>Your current tabset as 'sidebar'</q-tooltip>
+      <q-tooltip class="tooltip" anchor="center right" self="center left" :delay="200">Your current tabset as 'sidebar'</q-tooltip>
     </q-tab>
 
     <q-tab v-if="rssTabsCount > 0"
            name="rss" icon="o_rss_feed" @click="tabsClicked(LeftDrawerTabs.RSS)">
-      <q-tooltip>RSS Feeds</q-tooltip>
+      <q-tooltip class="tooltip" anchor="center right" self="center left" :delay="200">RSS Feeds</q-tooltip>
     </q-tab>
 
-    <q-tab
-      name="scheduled" icon="o_update" @click="tabsClicked(LeftDrawerTabs.SCHEDULED)">
-      <q-tooltip>Scheduled Tabs</q-tooltip>
-    </q-tab>
+    <Transition name="colorized-appear">
+      <q-tab
+        v-if="permissionsStore.hasFeature('scheduled')"
+        name="scheduled" icon="o_update" @click="tabsClicked(LeftDrawerTabs.SCHEDULED)">
+        <q-tooltip class="tooltip" anchor="center right" self="center left" :delay="200">Scheduled Tabs</q-tooltip>
+      </q-tab>
+    </Transition>
 
-    <q-tab v-if="permissionsStore.hasPermission('history')"
-           name="history" icon="o_history" @click="tabsClicked(LeftDrawerTabs.HISTORY)">
-      <q-tooltip>Browser History</q-tooltip>
-    </q-tab>
+    <Transition name="colorized-appear">
+      <q-tab v-if="permissionsStore.hasFeature('history')"
+             name="history" icon="o_history" @click="tabsClicked(LeftDrawerTabs.HISTORY)">
+        <q-tooltip class="tooltip" anchor="center right" self="center left" :delay="200">Browser History</q-tooltip>
+      </q-tab>
+    </Transition>
 
     <q-tab
       name="features" icon="o_more_horiz" @click="tabsClicked(LeftDrawerTabs.FEATURES)">
-      <q-tooltip>Additional Features</q-tooltip>
+      <q-tooltip class="tooltip" anchor="center right" self="center left" :delay="200">Additional Features</q-tooltip>
     </q-tab>
 
     <q-tab
       name="help" icon="help" @click="tabsClicked(LeftDrawerTabs.HELP)">
-      <q-tooltip>Help</q-tooltip>
+      <q-tooltip class="tooltip" anchor="center right" self="center left" :delay="200">Help</q-tooltip>
     </q-tab>
 
   </q-tabs>
@@ -142,9 +150,9 @@ const badgeThreshold = () => tabsStore.tabs.length >= settingsStore.thresholds['
 
 .colorized-appear-enter-active
   transition: all 2s ease-in
-  transition-delay: 1s
+  transition-delay: 0s
 
 .colorized-appear-enter-from
-  background-color: red
+  background-color: $warning
 
 </style>

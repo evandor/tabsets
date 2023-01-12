@@ -4,9 +4,9 @@
       <q-card-section>
         <div class="text-h6">Create a new Tabset</div>
       </q-card-section>
-<!--      <q-card-section>-->
-<!--        <div class="text-body">Please provide a name</div>-->
-<!--      </q-card-section>-->
+      <!--      <q-card-section>-->
+      <!--        <div class="text-body">Please provide a name</div>-->
+      <!--      </q-card-section>-->
 
       <q-card-section class="q-pt-none">
         <div class="text-body">New Tabset's name:</div>
@@ -18,14 +18,12 @@
                  data-testid="newTabsetName"
                  @keydown.enter="createNewTabset()"/>
         <div class="text-caption text-negative q-mt-none q-pt-none">{{ newTabsetDialogWarning() }}</div>
-<!--        <q-checkbox-->
-<!--          data-testid="newTabsetAutoAdd"-->
-<!--          v-model="addAutomatically" label="Add open tabs automatically"/>&nbsp;-->
-<!--        <q-icon name="help" color="primary" size="1em">-->
-<!--          <q-tooltip>When checked, this will add all your browsers open tabs automatically to the new tabset.<br>-->
-<!--            Otherwise, you have the chance to add all (or selected) tabs yourself later.-->
-<!--          </q-tooltip>-->
-<!--        </q-icon>-->
+        <q-checkbox
+          data-testid="newTabsetAutoAdd"
+          v-model="addEmptyTabset" label="Create an empty tabset"/>&nbsp;
+        <q-icon name="help" color="primary" size="1em">
+          <q-tooltip>Otherwise, all open tabs will be added to your new tabset automatically</q-tooltip>
+        </q-icon>
       </q-card-section>
 
       <q-card-actions align="right" class="text-primary">
@@ -62,7 +60,7 @@ defineEmits([
 ])
 
 const props = defineProps({
-  setAddAutomaticByDefault: {
+  setEmptyByDefault: {
     type: Boolean,
     default: false
   }
@@ -77,7 +75,7 @@ const $q = useQuasar()
 const newTabsetName = ref('')
 const newTabsetNameExists = ref(false)
 const hideWarning = ref(false)
-const addAutomatically = ref(tabsStore.tabs.length <= 1 ? false : props.setAddAutomaticByDefault)
+const addEmptyTabset = ref(tabsStore.tabs.length <= 1 ? false : props.setEmptyByDefault)
 
 const newTabsetNameIsValid = computed(() => newTabsetName.value.length <= 32 && !STRIP_CHARS_IN_USER_INPUT.test(newTabsetName.value))
 
@@ -87,13 +85,13 @@ watchEffect(() => {
 
 const createNewTabset = () => {
   hideWarning.value = true
-  const tabsToUse = addAutomatically.value ? tabsStore.tabs : []
+  const tabsToUse = addEmptyTabset.value ? [] : tabsStore.tabs
 
   useCommandExecutor()
     .executeFromUi(new CreateTabsetCommand(newTabsetName.value, tabsToUse))
     .then(() => {
-      useUiStore().setAddAutomaticDefault(addAutomatically.value)
-      if (!addAutomatically.value) {
+      useUiStore().setNewTabsetEmptyByDefault(addEmptyTabset.value)
+      if (!addEmptyTabset.value) {
         TabsetService.createPendingFromBrowserTabs()
       } else {
         // clear pending tabset - why neccessary?

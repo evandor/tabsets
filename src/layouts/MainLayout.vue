@@ -3,9 +3,11 @@
     <q-header elevated>
       <q-toolbar >
 
-<!--        <q-img src="favicon.ico" height="24px" width="24px"/>-->
         <q-btn v-if="tabsStore.tabsets.size > 0"
                dense flat round icon="menu" @click="toggleLeftDrawer"/>
+
+        <q-img class="q-ml-lg" style="margin-top:-4px"
+          src="favicon.ico" height="32px" width="32px"/>
 
         <q-toolbar-title @click.stop="goHome()" class="cursor-pointer"
                          style="min-width:130px" shrink>Tabsets
@@ -19,8 +21,8 @@
 
         <SpacesSelectorWidget v-if="featuresStore.isEnabled('spaces')"/>
 
-        <div>
-          <OpenTabsThresholdWidget v-if="tabsStore.tabsets.size > 0"/>
+        <div v-if="permissionsStore.hasFeature('opentabsThreshold') && tabsStore.tabsets.size > 0">
+          <OpenTabsThresholdWidget />
         </div>
 
         <div v-if="tabsStore.pendingTabset?.tabs.length > 0 && tabsStore.tabsets.size >= 1"
@@ -120,6 +122,7 @@ import SearchWidget from 'src/components/widgets/SearchWidget.vue'
 import {useUiService} from "src/services/useUiService";
 import {useUiStore} from "stores/uiStore";
 import NavigationEmpty from "components/NavigationEmpty.vue";
+import {usePermissionsStore} from "stores/permissionsStore";
 
 const router = useRouter()
 const tabsStore = useTabsStore()
@@ -134,6 +137,7 @@ const largeDrawer = ref(false)
 const model = ref(85)
 
 const notificationsStore = useNotificationsStore()
+const permissionsStore = usePermissionsStore()
 const featuresStore = useFeatureTogglesStore()
 const settingsStore = useSettingsStore()
 const spacesStore = useSpacesStore()

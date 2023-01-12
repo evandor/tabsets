@@ -47,7 +47,7 @@ const newTabsetFromUnassigndTabs = () => $q.dialog(
   {
     component: NewTabsetDialog,
     componentProps: {
-      setAddAutomaticByDefault: true,
+      setEmptyByDefault: false,
     }
   })
 </script>

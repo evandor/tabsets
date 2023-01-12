@@ -11,7 +11,7 @@ export const useSettingsStore = defineStore('settings', () => {
   const $q = useQuasar()
 
   const thresholds = ref($q.localStorage.getItem('thresholds') || {
-    min: 10,
+    min: 0,
     max: 40
   })
 

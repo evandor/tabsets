@@ -106,7 +106,7 @@
   <div class="row fit greyBorderTop"></div>
 
   <!-- pending tabs -->
-  <Transition name="delayed-disappear"  v-if="tabsStore.currentTabsetId">
+  <Transition name="delayed-disappear"  v-if="tabsStore.currentTabsetId && permissionsStore.hasFeature('pendingTabs')">
     <PendingTabsAsCarouselWidget />
   </Transition>
 

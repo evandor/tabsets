@@ -51,23 +51,25 @@ test("add a new tab to a new tabset via addUrlDialog", async ({page, extensionId
 
 });
 
-test("add a new tab to a new tabset via addUrlDialog2", async ({page, extensionId, context}) => {
-  const aboutPage = new AboutPage(page, extensionId);
-  await aboutPage.goto()
-  const tabsetPage:TabsetTestPage = await aboutPage.submitNewTabsetDialog('another first tabset')
+// will not work right now as pending tabs is disabled
+// test("add a new tab to a new tabset via addUrlDialog2", async ({page, extensionId, context}) => {
+//   const aboutPage = new AboutPage(page, extensionId);
+//   await aboutPage.goto()
+//   const tabsetPage:TabsetTestPage = await aboutPage.submitNewTabsetDialog('another first tabset')
+//
+//   await delay(1000)
+//  // const pageOne = await context.newPage();
+//   const pageTwo = await context.newPage();
+//   await pageTwo.goto("https://www.test.de")
+//
+//   const pendingTab = await tabsetPage.waitForAndGetPendingTab('wwwtestde')
+//   await expect(pendingTab).toContainText("test.de")
+//
+//   // browser.newPage()
+//   // window.open('https://www.facebook.com/')
+//   //await page.goto('https://www.facebook.com/');
+// })
 
-  await delay(1000)
- // const pageOne = await context.newPage();
-  const pageTwo = await context.newPage();
-  await pageTwo.goto("https://www.test.de")
-
-  const pendingTab = await tabsetPage.waitForAndGetPendingTab('wwwtestde')
-  await expect(pendingTab).toContainText("test.de")
-
-  // browser.newPage()
-  // window.open('https://www.facebook.com/')
-  //await page.goto('https://www.facebook.com/');
-})
 // test("add a new tab to a tabset via addUrlDialog and clicking on undo", async ({page, extensionId}) => {
 //   const aboutPage = new AboutPage(page, extensionId);
 //   await aboutPage.goto()

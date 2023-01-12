@@ -131,17 +131,25 @@ class ChromeListeners {
 
       this.handleUpdate(tabsStore.pendingTabset as Tabset, chromeTab)
 
-      if (usePermissionsStore().hasAllOrigins() && !chromeTab.url?.startsWith("chrome") && chromeTab.id) {
+      if (!chromeTab.url?.startsWith("chrome") && chromeTab.id) {
 
-        if (!this.injectedScripts.get(chromeTab.id)) {
-          console.log("executing script", chromeTab.id)
+        const scripts = []
+        if (usePermissionsStore().hasFeature('thumbnails')) {
+          scripts.push("content-script-thumbnails.js")
+        }
+        if (usePermissionsStore().hasFeature('analyseTabs')) {
+          scripts.push("tabsets-content-script.js")
+        }
+        if (scripts.length > 0 && !this.injectedScripts.get(chromeTab.id)) {
+          console.log("executing scripts", chromeTab.id, scripts)
           // @ts-ignore
           chrome.scripting.executeScript({
             target: {tabId: chromeTab.id, allFrames: true},
-            files: ["tabsets-content-script.js"],
+            files: scripts //["tabsets-content-script.js","content-script-thumbnails.js"],
           }, (callback: any) => console.debug("callback", callback));
           if (chromeTab.id) {
-            this.injectedScripts.put(chromeTab.id, "tabsets-content-script.js")
+            // @ts-ignore
+            scripts.forEach(s => this.injectedScripts.put(chromeTab.id, s))
           }
         }
       }
@@ -256,7 +264,7 @@ class ChromeListeners {
   }
 
   onMessage(request: any, sender: chrome.runtime.MessageSender, sendResponse: any) {
-    if (request.msg === 'capture') {
+    if (request.msg === 'captureThumbnail') {
       const screenShotWindow = useWindowsStore().screenshotWindow
       this.handleCapture(sender, screenShotWindow, sendResponse)
     } else if (request.msg === 'html2text') {

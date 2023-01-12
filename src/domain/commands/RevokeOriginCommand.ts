@@ -9,15 +9,26 @@ const {TabLogger} = useLoggingServicee()
 
 class UndoCommand implements Command<boolean> {
 
-  constructor(public origin: string) {
+  constructor(public feature: string) {
   }
 
   execute(): Promise<ExecutionResult<boolean>> {
-    console.log("execution undo command", this.origin)
-    return new GrantOriginCommand(this.origin).execute()
+    console.log("execution undo command")
+    return new GrantOriginCommand(this.feature).execute()
       .then(res => {
-        ChromeApi.startWebRequestListener()
-        return new ExecutionResult(true, "Origin was granted again")
+        switch (this.feature) {
+          case "thumbnails":
+            usePermissionsStore().activateFeature(this.feature)
+            break;
+          case "analyseTabs":
+            ChromeApi.startWebRequestListener()
+            usePermissionsStore().activateFeature(this.feature)
+            break;
+          default:
+            Promise.reject("feature " + this.feature + " is unknown")
+        }
+
+        return new ExecutionResult(true, "Permission was granted again")
       })
   }
 
@@ -25,22 +36,38 @@ class UndoCommand implements Command<boolean> {
 
 export class RevokeOriginCommand implements Command<boolean> {
 
-  constructor(public origin: string) {
+  constructor(public feature: string) {
   }
 
   async execute(): Promise<ExecutionResult<boolean>> {
     return usePermissionsStore().revokeAllOrigins()
       .then(() => {
-        ChromeApi.stopWebRequestListener()
-        return new ExecutionResult(
-          true,
-          "Origin was revoked",
-          new UndoCommand(this.origin))
+        let msg = "unknown feature " + this.feature
+        switch (this.feature) {
+          case "thumbnails":
+            msg = "Thumbnail permission was removed, subsequently tabs will not have thumbnails"
+            usePermissionsStore().deactivateFeature(this.feature)
+            break;
+          case "analyseTabs":
+            ChromeApi.stopWebRequestListener()
+            usePermissionsStore().deactivateFeature(this.feature)
+            msg = "Permission was added, subsequently accessed tabs will not be analysed"
+            break;
+          case "all":
+            usePermissionsStore().deactivateFeature('thumbnails')
+            usePermissionsStore().deactivateFeature('analyseTabs')
+            msg = "Permissions thumbnails and analyseTabs were revoked (if allowed)"
+            return new ExecutionResult(true, msg)
+          default:
+            Promise.reject("feature " + this.feature + " is unknown")
+        }
+        return new ExecutionResult(true, msg, new UndoCommand(this.feature))
+
       })
   }
 
 }
 
 RevokeOriginCommand.prototype.toString = function cmdToString() {
-  return `RevokeOriginCommand: {origin=${this.origin}}`;
+  return `RevokeOriginCommand: {feature: ${this.feature}}`;
 };

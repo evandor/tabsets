@@ -142,12 +142,12 @@ function hostParser(url: string) {
 // })
 
 chrome.runtime.onInstalled.addListener((details) => {
-  console.log("adding listener in background.ts", details)
+  //console.log("adding listener in background.ts", details)
   // @ts-ignore
   chrome.action.onClicked.addListener((tab) => {
     // Opens our extension in a new browser window.
     // Only if a popup isn't defined in the manifest.
-    console.log("tab", tab)
+    //console.log("tab", tab)
 
     if (details.reason === "update") {
       chrome.tabs.create(

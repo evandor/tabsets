@@ -11,7 +11,9 @@
         </q-img>
 
       </q-item-section>
-      <q-item-section>
+      <q-item-section
+        :data-testid="useUtils().createDataTestIdentifier('tabListElementWidget', tab.chromeTab.title)"
+        class="cursor-pointer" @click.stop="NavigationService.openOrCreateTab(props.tab.chromeTab?.url )">
         <q-item-label>{{ props.tab.chromeTab?.title }}</q-item-label>
         <q-item-label caption>{{ props.tab.chromeTab?.url }}</q-item-label>
       </q-item-section>
@@ -32,6 +34,7 @@ import {Tab} from "src/models/Tab";
 import TabsetService from "src/services/TabsetService";
 import {useNotificationsStore} from "src/stores/notificationsStore";
 import {ref} from "vue";
+import {useUtils} from "src/services/Utils"
 
 const props = defineProps({
   tab: {

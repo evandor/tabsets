@@ -5,12 +5,7 @@ import {bexContent} from 'quasar/wrappers'
 
 
 export default bexContent((bridge: any) => {
-  console.log("bexContentBridge1", bridge)
-  // console.log("bexContentBridge2", typeof document.body, document.body.toString())
-
-  chrome.runtime.sendMessage({msg: "capture"}, function (response) {
-    console.log("created thumbnail for tabsets")
-  });
+  console.log("initializing tabset extension content script for tab analysis")
 
   function getMetas(document: Document) {
     const result: { [k: string]: string } = {}

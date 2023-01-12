@@ -403,11 +403,19 @@ export function useTabsetService() {
     return res
   }
 
-
   const urlExistsInATabset = (url: string): boolean => {
     for (let ts of [...useTabsStore().tabsets.values()]) {
       if (_.find(ts.tabs, t => t.chromeTab.url === url)) {
         return true;
+      }
+    }
+    return false;
+  }
+  const urlExistsInCurrentTabset = (url: string): boolean => {
+    const currentTabset = getCurrentTabset()
+    if (currentTabset) {
+      if(_.find(currentTabset.tabs, t => t.chromeTab.url === url)) {
+        return true
       }
     }
     return false;
@@ -436,7 +444,8 @@ export function useTabsetService() {
     removeContentFor,
     closeTab,
     deleteTab,
-    urlExistsInATabset
+    urlExistsInATabset,
+    urlExistsInCurrentTabset
   }
 
 }

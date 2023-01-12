@@ -18,8 +18,8 @@ export class TabsetTestPage extends TabsetPage {
     this.page = page;
     this.extensionId = extensionId;
     expect(page).toHaveURL(/.*\/tabsets\//);
-    this.skysailTabcardWidget = page.locator('[data-testid=tabcardwidget_wwwskysailio]')
-    this.heiseTabcardWidget = page.locator('[data-testid=tabcardwidget_wwwheisede]')
+    this.skysailTabcardWidget = page.locator('[data-testid=tabListElementWidget_wwwskysailio]')
+    this.heiseTabcardWidget = page.locator('[data-testid=tabListElementWidget_wwwheisede]')
     // this.newTabsetName = page.locator('[data-testid=newTabsetName]')
     // this.newTabsetNameSubmit = page.locator('[data-testid=newTabsetNameSubmit]')
     // this.addUrlButton = page.locator('[text="Add Url..."]')
@@ -35,7 +35,7 @@ export class TabsetTestPage extends TabsetPage {
 
 
   async waitForAndGetPendingTab(ident: string) {
-    await this.page.waitForSelector('[data-testid=tabcardpending_'+ident+']')
-    return this.page.locator('[data-testid=tabcardpending_'+ident+']')
+    await this.page.waitForSelector('[data-testid=tabListElementWidget_'+ident+']')
+    return this.page.locator('[data-testid=tabListElementWidget_'+ident+']')
   }
 }

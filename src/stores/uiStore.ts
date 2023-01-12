@@ -36,8 +36,9 @@ export const useUiStore = defineStore('ui', () => {
   const leftDrawer = ref<LeftDrawer>($q.localStorage.getItem('ui.leftDrawer') || new LeftDrawer(LeftDrawerState.SMALL))
   const leftDrawerLabelAnimated = ref(false)
   const tabsetIdForNewTab = ref<string | undefined>($q.localStorage.getItem('ui.tabsetIdForNewTab') as string || undefined)
-  const addTabsAutomaticallyDefault = ref<boolean>($q.localStorage.getItem('ui.addTabsAutomatically') as boolean || true)
+  const newTabsetEmptyByDefault = ref<boolean>($q.localStorage.getItem('ui.newTabsetEmptyByDefault') as boolean || false)
   const tabBeingDragged = ref<string | undefined>(undefined)
+  const hiddenMessages = ref<string[]>($q.localStorage.getItem('ui.hiddenInfoMessages') as string[] || [])
 
   watch(leftDrawer.value, (val: Object) => {
     $q.localStorage.set("ui.leftDrawer", val)
@@ -47,9 +48,14 @@ export const useUiStore = defineStore('ui', () => {
     $q.localStorage.set("ui.tabsetIdForNewTab", val)
   }, {deep: true})
 
-  watch(addTabsAutomaticallyDefault,
+  watch(newTabsetEmptyByDefault,
     (val: Object) => {
-      $q.localStorage.set("ui.addTabsAutomatically", val)
+      $q.localStorage.set("ui.newTabsetEmptyByDefault", val)
+    })
+
+  watch(hiddenMessages.value,
+    (val: string[]) => {
+      $q.localStorage.set("ui.hiddenInfoMessages", val)
     })
 
   const leftDrawerLabelIsAnimated = computed(() => {
@@ -74,8 +80,20 @@ export const useUiStore = defineStore('ui', () => {
     return tabBeingDropped
   }
 
-  function setAddAutomaticDefault(defaultValue: boolean) {
-    addTabsAutomaticallyDefault.value = defaultValue
+  function setNewTabsetEmptyByDefault(defaultValue: boolean) {
+    newTabsetEmptyByDefault.value = defaultValue
+  }
+
+  function hideInfoMessage(ident: string) {
+    hiddenMessages.value.push(ident)
+  }
+
+  function infoMessageHidden(ident: string) {
+    return hiddenMessages.value.indexOf(ident) >= 0
+  }
+
+  function restoreHints() {
+    hiddenMessages.value = []
   }
 
   return {
@@ -86,7 +104,10 @@ export const useUiStore = defineStore('ui', () => {
     tabsetIdForNewTab,
     draggingTab,
     droppingTab,
-    addTabsAutomaticallyDefault,
-    setAddAutomaticDefault
+    newTabsetEmptyByDefault,
+    setNewTabsetEmptyByDefault,
+    hideInfoMessage,
+    infoMessageHidden,
+    restoreHints
   }
 })

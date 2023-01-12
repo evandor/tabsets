@@ -71,7 +71,6 @@ export const usePermissionsStore = defineStore('permissions', () => {
   }
 
   watch(activeFeatures.value, (val: any[]) => {
-    console.log("hier", val)
     $q.localStorage.set("ui.activeFeatures", val)
   })
 
@@ -84,7 +83,6 @@ export const usePermissionsStore = defineStore('permissions', () => {
   const activateFeature = computed(() => {
     return (feature: string): void => {
       if (activeFeatures.value.indexOf(feature) < 0) {
-        console.log("adding", feature)
         activeFeatures.value.push(feature)
       }
     }
@@ -94,7 +92,6 @@ export const usePermissionsStore = defineStore('permissions', () => {
     return (feature: string): void => {
       const index = activeFeatures.value.indexOf(feature)
       if (index >= 0) {
-        console.log("removing", feature)
         activeFeatures.value.splice(index, 1)
       }
     }

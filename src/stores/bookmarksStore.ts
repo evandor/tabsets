@@ -27,7 +27,7 @@ function getChildren(
   }
 }
 
-export const useBookmarksStore = defineStore('bookmarks', {
+export const  useBookmarksStore = defineStore('bookmarks', {
   state: () => ({
     bookmarksTree: [] as unknown as object[],
     bookmarksNodes: [] as unknown as object[],
@@ -50,7 +50,7 @@ export const useBookmarksStore = defineStore('bookmarks', {
       this.bookmarksTree = []
       this.bookmarksNodes = []
       this.bookmarksLeaves = []
-      const accessGranted = usePermissionsStore().hasPermission("bookmarks")
+      const accessGranted = usePermissionsStore().hasPermission("bookmarks") && usePermissionsStore().hasFeature('bookmarks')
       // console.log("loading bookmarks", accessGranted)//, (new Error()).stack)
       if (accessGranted) {
         // @ts-ignore

@@ -3,46 +3,18 @@
   <q-list bordered separator>
     <vue-draggable-next
       class="dragArea list-group w-full"
-      :list="props.tabs" @change="handleDragAndDrop">
+      :list="props.tabs"
+      :group="{ name: 'tabs', pull: 'clone' }"
+      @change="handleDragAndDrop">
       <q-item
         v-for="(tab,index) in props.tabs"
         @click="selectTab(tab, index)"
         :key="props.group + '_' + tab.id">
-        <TabListElementWidget :key="props.group + '__' + tab.id" :tab="tabAsTab(tab)" :highlightUrl="highlightUrl" />
+        <TabListElementWidget
+          :key="props.group + '__' + tab.id" :tab="tabAsTab(tab)" :highlightUrl="highlightUrl" />
       </q-item>
     </vue-draggable-next>
   </q-list>
-
-<!--  <vue-draggable-next-->
-<!--    :key="props.group"-->
-<!--    class="row items-start"-->
-<!--    :list="props.tabs"-->
-<!--    :group="{ name: 'tabs', pull: 'clone' }"-->
-<!--    @change="handleDragAndDrop">-->
-<!--    <q-list bordered separator-->
-<!--            v-if="props.tabs.length > 0">-->
-<!--      <q-item clickable v-ripple-->
-<!--              v-for="(tab,index) in props.tabs"-->
-<!--              @click="selectTab(tab, index)"-->
-<!--              @dragstart="startDrag($event, tab)"-->
-<!--              :key="props.group + '_' + tab.id">-->
-
-<!--        {{ tab.id }}-->
-
-<!--      </q-item>-->
-<!--    </q-list>-->
-
-<!--    <div v-else-if="tabsStore.pendingTabset?.tabs.length === 0" class="q-ma-md q-pa-xl fit"-->
-<!--         style="border: 2px dotted grey; border-radius: 7px">-->
-<!--      <div class="row fit text-subtitle2 justify-center items-center">-->
-<!--        <div class="col-12">drag and drop new tabs from</div>-->
-<!--      </div>-->
-<!--      <div class="row">-->
-<!--        <div class="col-12 cursor-pointer text-blue-8" @click="openOrShowOpenTabs()">here</div>-->
-<!--      </div>-->
-<!--    </div>-->
-
-<!--  </vue-draggable-next>-->
 
 </template>
 
@@ -60,6 +32,7 @@ import {useTabsetService} from "src/services/TabsetService2";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {CreateTabFromOpenTabsCommand} from "src/domain/commands/CreateTabFromOpenTabsCommand";
 import TabListElementWidget from "src/components/widgets/TabListElementWidget.vue";
+import {useUtils} from "src/services/Utils"
 
 const $q = useQuasar()
 const tabsStore = useTabsStore()

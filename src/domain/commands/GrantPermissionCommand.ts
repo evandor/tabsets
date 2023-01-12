@@ -38,13 +38,15 @@ export class GrantPermissionCommand implements Command<boolean> {
                 TabsetService.init()
                 ChromeBookmarkListeners.initListeners()
               })
+          } else if ("history" === this.permission) {
+            usePermissionsStore().activateFeature('history')
           }
           return new ExecutionResult(
             granted,
             "Permission was added",
             new UndoCommand(this.permission))
         } else {
-          usePermissionsStore().deactivateFeature('bookmarks')
+          usePermissionsStore().activateFeature(this.permission)
           return new ExecutionResult(granted, "Permission was not added")
         }
       })
