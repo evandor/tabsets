@@ -42,7 +42,7 @@ export const useUiStore = defineStore('ui', () => {
 
   // info Messages
   const hiddenMessages = ref<string[]>($q.localStorage.getItem('ui.hiddenInfoMessages') as string[] || [])
-  const anotherMessageAlreadyShown = ref(false)
+  const messageAlreadyShown = ref<string | undefined>(undefined)
 
   watch(leftDrawer.value, (val: Object) => {
     $q.localStorage.set("ui.leftDrawer", val)
@@ -59,8 +59,8 @@ export const useUiStore = defineStore('ui', () => {
 
   const route = useRoute()
   watch(route, (to) => {
-    console.log("resetting", anotherMessageAlreadyShown.value)
-    anotherMessageAlreadyShown.value = false
+    console.log("resetting", messageAlreadyShown.value)
+    setAnotherMessageAlreadyShown(undefined)
   }, {flush: 'pre', immediate: true, deep: true})
 
   // watch(hiddenMessages.value,
@@ -107,18 +107,15 @@ export const useUiStore = defineStore('ui', () => {
   }
 
   function restoreHints() {
-    // hiddenMessages.value = [] did not work
-    hiddenMessages.value = hiddenMessages.value.splice(0, hiddenMessages.value.length)
-    anotherMessageAlreadyShown.value = false
+    console.log("hiddenMessages.value", hiddenMessages.value)
+    hiddenMessages.value = []
+    setAnotherMessageAlreadyShown(undefined)
   }
 
-  // const activateFeature = computed(() => {
-  //   return (feature: string): void => {
-  //     if (activeFeatures.value.indexOf(feature) < 0) {
-  //       activeFeatures.value.push(feature)
-  //     }
-  //   }
-  // })
+  function setAnotherMessageAlreadyShown (msg: string | undefined) {
+    console.log("setting setAnotherMessageAlreadyShown", msg)
+    messageAlreadyShown.value = msg
+  }
 
   const showMessage = computed(() => {
     return (ident: string, probability: number = 1) => {
@@ -126,18 +123,15 @@ export const useUiStore = defineStore('ui', () => {
       if (hiddenMessages.value.indexOf(ident) >= 0) {
         return false
       }
-      return true
-      //const random = Math.random()
-      //console.log("random", random, props.probability)
-      // const couldBeShown = Math.random() < probability
-      // console.log("could be shown", couldBeShown, anotherMessageAlreadyShown)
-      // if (couldBeShown && !anotherMessageAlreadyShown) {
-      //   //anotherMessageAlreadyShown.value = true
-      //   return true
-      // } else if (anotherMessageAlreadyShown.value) {
-      //   return false
-      // }
-      // return couldBeShown
+      const couldBeShown = Math.random() < probability
+      console.log("could be shown", couldBeShown, messageAlreadyShown.value)
+      if (couldBeShown && (messageAlreadyShown === undefined || messageAlreadyShown.value === ident)) {
+        setAnotherMessageAlreadyShown(ident)
+        return true
+      } else if (messageAlreadyShown.value) {
+        return false
+      }
+      return couldBeShown
     }
   })
 
