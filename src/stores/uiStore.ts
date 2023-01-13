@@ -1,6 +1,7 @@
 import {defineStore} from 'pinia';
 import {computed, ref, watch} from "vue";
 import {useQuasar} from "quasar";
+import {useRoute} from "vue-router";
 
 
 export enum LeftDrawerState {
@@ -38,7 +39,10 @@ export const useUiStore = defineStore('ui', () => {
   const tabsetIdForNewTab = ref<string | undefined>($q.localStorage.getItem('ui.tabsetIdForNewTab') as string || undefined)
   const newTabsetEmptyByDefault = ref<boolean>($q.localStorage.getItem('ui.newTabsetEmptyByDefault') as boolean || false)
   const tabBeingDragged = ref<string | undefined>(undefined)
+
+  // info Messages
   const hiddenMessages = ref<string[]>($q.localStorage.getItem('ui.hiddenInfoMessages') as string[] || [])
+  const anotherMessageAlreadyShown = ref(false)
 
   watch(leftDrawer.value, (val: Object) => {
     $q.localStorage.set("ui.leftDrawer", val)
@@ -53,10 +57,24 @@ export const useUiStore = defineStore('ui', () => {
       $q.localStorage.set("ui.newTabsetEmptyByDefault", val)
     })
 
-  watch(hiddenMessages.value,
-    (val: string[]) => {
-      $q.localStorage.set("ui.hiddenInfoMessages", val)
-    })
+  const route = useRoute()
+  watch(route, (to) => {
+    console.log("resetting", anotherMessageAlreadyShown.value)
+    anotherMessageAlreadyShown.value = false
+  }, {flush: 'pre', immediate: true, deep: true})
+
+  // watch(hiddenMessages.value,
+  //   (val: string[], val2: string[]) => {
+  //     console.log("watching", val, val2)
+  //     $q.localStorage.set("ui.hiddenInfoMessages", val)
+  //   })
+
+  watch(
+    hiddenMessages,
+    (thresholdsVal: Object) => {
+      $q.localStorage.set("ui.hiddenInfoMessages", thresholdsVal)
+    }, {deep: true}
+  )
 
   const leftDrawerLabelIsAnimated = computed(() => {
     return () => leftDrawerLabelAnimated.value
@@ -88,13 +106,40 @@ export const useUiStore = defineStore('ui', () => {
     hiddenMessages.value.push(ident)
   }
 
-  function infoMessageHidden(ident: string) {
-    return hiddenMessages.value.indexOf(ident) >= 0
+  function restoreHints() {
+    // hiddenMessages.value = [] did not work
+    hiddenMessages.value = hiddenMessages.value.splice(0, hiddenMessages.value.length)
+    anotherMessageAlreadyShown.value = false
   }
 
-  function restoreHints() {
-    hiddenMessages.value = []
-  }
+  // const activateFeature = computed(() => {
+  //   return (feature: string): void => {
+  //     if (activeFeatures.value.indexOf(feature) < 0) {
+  //       activeFeatures.value.push(feature)
+  //     }
+  //   }
+  // })
+
+  const showMessage = computed(() => {
+    return (ident: string, probability: number = 1) => {
+      console.log("checking message", ident, probability, hiddenMessages.value)
+      if (hiddenMessages.value.indexOf(ident) >= 0) {
+        return false
+      }
+      return true
+      //const random = Math.random()
+      //console.log("random", random, props.probability)
+      // const couldBeShown = Math.random() < probability
+      // console.log("could be shown", couldBeShown, anotherMessageAlreadyShown)
+      // if (couldBeShown && !anotherMessageAlreadyShown) {
+      //   //anotherMessageAlreadyShown.value = true
+      //   return true
+      // } else if (anotherMessageAlreadyShown.value) {
+      //   return false
+      // }
+      // return couldBeShown
+    }
+  })
 
   return {
     leftDrawer,
@@ -107,7 +152,7 @@ export const useUiStore = defineStore('ui', () => {
     newTabsetEmptyByDefault,
     setNewTabsetEmptyByDefault,
     hideInfoMessage,
-    infoMessageHidden,
-    restoreHints
+    restoreHints,
+    showMessage
   }
 })

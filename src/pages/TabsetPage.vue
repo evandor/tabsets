@@ -3,11 +3,11 @@
   <!-- toolbar -->
   <q-toolbar class="text-primary lightgrey" v-if="!tabsStore.currentTabsetId">
     <div class="row fit">
-        <q-toolbar-title>
-          <div class="row justify-start items-baseline">
-            <div class="col-1"><span class="text-dark">Tabset</span> (none selected)</div>
-          </div>
-        </q-toolbar-title>
+      <q-toolbar-title>
+        <div class="row justify-start items-baseline">
+          <div class="col-1"><span class="text-dark">Tabset</span> (none selected)</div>
+        </div>
+      </q-toolbar-title>
     </div>
   </q-toolbar>
   <q-toolbar class="text-primary lightgrey" v-else>
@@ -46,12 +46,12 @@
         </q-btn>
 
         <q-btn v-if="permissionsStore.hasAllOrigins()"
-          @click="setView('thumbnails')"
-          style="width:14px"
-          class="q-mr-sm" size="10px"
-          :flat="tabsStore.getCurrentTabset?.view !== 'thumbnails'"
-          :outline="tabsStore.getCurrentTabset?.view === 'thumbnails'"
-          icon="o_image">
+               @click="setView('thumbnails')"
+               style="width:14px"
+               class="q-mr-sm" size="10px"
+               :flat="tabsStore.getCurrentTabset?.view !== 'thumbnails'"
+               :outline="tabsStore.getCurrentTabset?.view === 'thumbnails'"
+               icon="o_image">
           <q-tooltip>Use the thumbnail layout to visualize your tabs</q-tooltip>
         </q-btn>
 
@@ -91,11 +91,12 @@
           <q-tooltip>Copy and Paste or create a new Url for this tabset</q-tooltip>
         </q-btn>
 
-        <q-btn v-if="tabsStore.currentTabsetId !== '' && tabsStore.getTabset(tabsStore.currentTabsetId) && useFeatureTogglesStore().isEnabled('newTab')"
-               flat dense icon="o_create_new_folder"
-               color="primary" :label="$q.screen.gt.sm ? 'Set as New Tab Page' : ''"
-               class="q-ml-md q-mr-md"
-               @click="setAsNewTabPage">
+        <q-btn
+          v-if="tabsStore.currentTabsetId !== '' && tabsStore.getTabset(tabsStore.currentTabsetId) && useFeatureTogglesStore().isEnabled('newTab')"
+          flat dense icon="o_create_new_folder"
+          color="primary" :label="$q.screen.gt.sm ? 'Set as New Tab Page' : ''"
+          class="q-ml-md q-mr-md"
+          @click="setAsNewTabPage">
           <q-tooltip>Choose this tabset to be shown whenever you open a new tab in your browser</q-tooltip>
         </q-btn>
 
@@ -106,8 +107,8 @@
   <div class="row fit greyBorderTop"></div>
 
   <!-- pending tabs -->
-  <Transition name="delayed-disappear"  v-if="tabsStore.currentTabsetId && permissionsStore.hasFeature('pendingTabs')">
-    <PendingTabsAsCarouselWidget />
+  <Transition name="delayed-disappear" v-if="tabsStore.currentTabsetId && permissionsStore.hasFeature('pendingTabs')">
+    <PendingTabsAsCarouselWidget/>
   </Transition>
 
   <q-banner rounded class="bg-amber-1 text-black q-ma-md"
@@ -126,7 +127,7 @@
     <template v-slot:header="{ expanded }">
       <q-item-section>
         <div>
-          <span class="text-weight-bold">Pinned Tabs ({{tabsStore.pinnedTabs.length}})</span>
+          <span class="text-weight-bold">Pinned Tabs ({{ tabsStore.pinnedTabs.length }})</span>
           <div class="text-caption ellipsis">this browser's window's tabs to be pinned</div>
         </div>
       </q-item-section>
@@ -216,18 +217,26 @@
     <template v-slot:header="{ expanded }">
       <q-item-section>
         <div>
-          <span class="text-weight-bold">Tabs ({{ unpinnedNoGroup().length }})</span>
+          <span class="text-weight-bold">{{
+              unpinnedNoGroup().length
+            }} {{ unpinnedNoGroup().length === 1 ? 'Tab' : 'Tabs' }}</span>
           <div class="text-caption ellipsis"></div>
         </div>
       </q-item-section>
     </template>
+
+    <InfoMessageWidget
+      v-if="unpinnedNoGroup().length > 1"
+      :probability="1"
+      ident="tabsetPage_dnd"
+      hint="You can select the favicon images and drag and drop the entries to reorder the list to your wishes"/>
 
     <q-card>
       <q-card-section>
 
         <TabList v-if="tabsStore.getCurrentTabset?.view === 'list'"
                  group="otherTabs"
-                 :tabs="unpinnedNoGroup()" />
+                 :tabs="unpinnedNoGroup()"/>
 
         <TabThumbs v-else-if="tabsStore.getCurrentTabset?.view === 'thumbnails'"
                    group="otherTabs"
@@ -288,6 +297,7 @@ import PendingTabsAsCarouselWidget from "src/components/widgets/PendingTabsAsCar
 import {useUiService} from "src/services/useUiService";
 import {usePermissionsStore} from "stores/permissionsStore";
 import TabList from "components/layouts/TabList.vue";
+import InfoMessageWidget from "components/widgets/InfoMessageWidget.vue";
 
 const route = useRoute();
 const router = useRouter();

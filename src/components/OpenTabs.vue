@@ -1,24 +1,28 @@
 <template>
 
-  <div class="q-pa-md q-gutter-sm"
-       v-if="!useUiStore().infoMessageHidden('openTabs_dnd') && tabsStore.currentTabsetId && tabsStore.tabs.length > 0">
-    <q-banner inline-actions rounded class="bg-yellow-1 text-black" style="border: 1px solid grey">
-      <div class="row q-pa-xs">
-        <div class="2">
-          <q-icon name="o_lightbulb" color="warning" size="1.3em"/>
-        </div>
-        <div class="col text-right cursor-pointer" @click="hideMessage('openTabs_dnd')">x
-          <q-tooltip>close this info message</q-tooltip>
-        </div>
-      </div>
-      <div class="row q-pa-xs">
-        <div class="2"></div>
-        <div class="col text-caption">You can drag and drop open tabs into your current tabset by clicking on the
-          favicon.
-        </div>
-      </div>
-    </q-banner>
-  </div>
+  <InfoMessageWidget
+    v-if="tabsStore.currentTabsetId && tabsStore.tabs.length > 0"
+    ident="openTabs_dnd" hint="You can drag and drop open tabs into your current tabset by clicking on the
+          favicon." />
+<!--  <div class="q-pa-md q-gutter-sm"-->
+<!--       v-if="!useUiStore().infoMessageHidden('openTabs_dnd') && tabsStore.currentTabsetId && tabsStore.tabs.length > 0">-->
+<!--    <q-banner inline-actions rounded class="bg-yellow-1 text-black" style="border: 1px solid grey">-->
+<!--      <div class="row q-pa-xs">-->
+<!--        <div class="2">-->
+<!--          <q-icon name="o_lightbulb" color="warning" size="1.3em"/>-->
+<!--        </div>-->
+<!--        <div class="col text-right cursor-pointer" @click="hideMessage('openTabs_dnd')">x-->
+<!--          <q-tooltip>close this info message</q-tooltip>-->
+<!--        </div>-->
+<!--      </div>-->
+<!--      <div class="row q-pa-xs">-->
+<!--        <div class="2"></div>-->
+<!--        <div class="col text-caption">You can drag and drop open tabs into your current tabset by clicking on the-->
+<!--          favicon.-->
+<!--        </div>-->
+<!--      </div>-->
+<!--    </q-banner>-->
+<!--  </div>-->
 
 
   <!--  @end="end"-->
@@ -49,6 +53,7 @@ import _ from "lodash"
 import {useTabsStore} from "src/stores/tabsStore"
 import {VueDraggableNext} from 'vue-draggable-next'
 import {useUiStore} from "stores/uiStore";
+import InfoMessageWidget from "components/widgets/InfoMessageWidget.vue";
 
 const props = defineProps({
   filter: {

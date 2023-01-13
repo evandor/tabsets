@@ -7,7 +7,6 @@
           width="20px"
           height="20px"
           :src="getFaviconUrl(props.tab.chromeTab)">
-          <q-tooltip>{{ props.tab.chromeTab?.id }} / {{ props.tab.id }}</q-tooltip>
         </q-img>
 
       </q-item-section>
@@ -17,10 +16,10 @@
         <q-item-label>{{ props.tab.chromeTab?.title }}</q-item-label>
         <q-item-label caption>{{ props.tab.chromeTab?.url }}</q-item-label>
       </q-item-section>
-      <q-item-section avatar>
-        <q-icon name="launch" color="primary"
-                @click.stop="NavigationService.openOrCreateTab(props.tab.chromeTab?.url )"></q-icon>
-      </q-item-section>
+<!--      <q-item-section avatar>-->
+<!--        <q-icon name="launch" color="primary"-->
+<!--                @click.stop="NavigationService.openOrCreateTab(props.tab.chromeTab?.url )"></q-icon>-->
+<!--      </q-item-section>-->
       <!--      <q-item-section avatar>-->
       <!--        <q-icon name="close" @click.stop="closeTab(tab)"/>-->
       <!--      </q-item-section>-->
