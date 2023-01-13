@@ -43,6 +43,7 @@ export const useUiStore = defineStore('ui', () => {
   // info Messages
   const hiddenMessages = ref<string[]>($q.localStorage.getItem('ui.hiddenInfoMessages') as string[] || [])
   const messageAlreadyShown = ref<string | undefined>(undefined)
+  const openTabMatchesTabsetTabs = ref(false)
 
   watch(leftDrawer.value, (val: Object) => {
     $q.localStorage.set("ui.leftDrawer", val)
@@ -125,7 +126,8 @@ export const useUiStore = defineStore('ui', () => {
       }
       const couldBeShown = Math.random() < probability
       console.log("could be shown", couldBeShown, messageAlreadyShown.value)
-      if (couldBeShown && (messageAlreadyShown === undefined || messageAlreadyShown.value === ident)) {
+      if (couldBeShown && (messageAlreadyShown.value === undefined || messageAlreadyShown.value === ident)) {
+        console.log("stting to ", ident)
         setAnotherMessageAlreadyShown(ident)
         return true
       } else if (messageAlreadyShown.value) {

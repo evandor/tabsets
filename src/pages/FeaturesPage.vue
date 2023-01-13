@@ -20,7 +20,8 @@
   </q-toolbar>
   <div class="row q-ma-lg">
     <q-banner rounded class="bg-grey-1 text-primary">
-      The Tabsets Extension starts simple - you can manage tabs - but it has more to offer. Check out the optional or experimental features
+      The Tabsets Extension starts simple - you can manage tabs - but it has more to offer. Check out the optional or
+      experimental features
       described below.<br><br>
       Some of the features may require additional browser permissions which you will have to grant.
     </q-banner>
@@ -28,11 +29,17 @@
 
   <div class="row q-ma-lg">
 
-    <div class="col-12">
+    <div class="col-7">
       <div class="text-h6">{{ text.get(feature)?.name }}</div>
-    </div>
-    <div class="col-12">
       <div>Status: {{ hasFeature(feature) ? 'active' : 'inactive' }}</div>
+    </div>
+    <div class="col text-right q-mr-xl">
+      <div v-if="!text.get(feature)?.planned">
+        <q-btn v-if="!hasFeature(feature)"
+               label="Activate Feature" @click="grant(feature)"/>
+        <q-btn v-else
+               label="Deactivate Feature" @click="revoke(feature)"/>
+      </div>
     </div>
 
     <div class="col-12 q-my-sm">
@@ -55,20 +62,6 @@
 
     <div class="col-12 q-my-md">
       <div>{{ text.get(feature)?.permissions }}</div>
-    </div>
-
-    <div class="col-12 q-my-sm">
-      <div class="text-subtitle2">Action</div>
-    </div>
-
-    <div class="col-12 q-my-md" v-if="!text.get(feature)?.planned">
-      <q-btn v-if="!hasFeature(feature)"
-             label="Activate Feature" @click="grant(feature)"/>
-      <q-btn v-else
-             label="Deactivate Feature" @click="revoke(feature)"/>
-    </div>
-    <div v-else>
-      no action available yet
     </div>
 
   </div>
@@ -225,7 +218,7 @@ const grant = (ident: string) => {
 }
 
 const revoke = (ident: string) => {
-  if ("groupedByDomain" === ident || "opentabsThreshold" === ident || "pendingTabs" === ident  || "details" === ident || "sessions" === ident) {
+  if ("groupedByDomain" === ident || "opentabsThreshold" === ident || "pendingTabs" === ident || "details" === ident || "sessions" === ident) {
     permissionsStore.deactivateFeature(ident)
   } else if ("thumbnails" === ident || "analyseTabs" === ident) {
     useCommandExecutor()

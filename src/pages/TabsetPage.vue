@@ -227,7 +227,7 @@
 
     <InfoMessageWidget
       v-if="unpinnedNoGroup().length > 1"
-      :probability="1"
+      :probability="0.3"
       ident="tabsetPage_dnd"
       hint="You can select the favicon images and drag and drop the entries to reorder the list to your wishes"/>
 
