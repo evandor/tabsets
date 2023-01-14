@@ -4,8 +4,25 @@
     <b>Optional Features</b>
   </div>
 
+  <q-list>
+    <q-item
+      clickable v-ripple
+      v-for="f in optionalFeatures"
+      @click="router.push(f.target)">
+
+      <q-item-section avatar>
+        <q-icon :name="f.icon" size="1.3em" :color="iconColor(f.ident)"/>
+      </q-item-section>
+
+      <q-item-section>{{ f.name }}</q-item-section>
+    </q-item>
+
+  </q-list>
+
   <q-card flat v-for="f in optionalFeatures">
-    <q-card-section class="q-pt-xs cursor-pointer" style="width:100%;" @click="router.push(f.target)">
+    <q-card-section
+      class="q-pt-xs cursor-pointer"
+      style="width:100%;" @click="router.push(f.target)">
       <div class="row items-baseline">
         <div class="col-2">
           <q-icon :name="f.icon" size="1.3em" :color="iconColor(f.ident)"/>
