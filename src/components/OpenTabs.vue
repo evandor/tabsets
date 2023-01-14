@@ -2,11 +2,13 @@
 
   <InfoMessageWidget
     v-if="tabsStore.currentTabsetId && tabsStore.tabs.length > 0"
+    :probability="0.5"
     ident="openTabs_dnd" hint="You can drag and drop open tabs into your current tabset by clicking on the
           favicon." />
 
   <InfoMessageWidget
     v-if="tabsStore.currentTabsetId && tabsStore.tabs.length > 9"
+    :probability="0.7"
     ident="openTabs_darkerBackground" hint="If an open tab has a grey background, it indicates
     that is is already contained in the current tabset" />
 

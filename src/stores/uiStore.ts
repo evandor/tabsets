@@ -60,7 +60,7 @@ export const useUiStore = defineStore('ui', () => {
 
   const route = useRoute()
   watch(route, (to) => {
-    console.log("resetting", messageAlreadyShown.value)
+   // console.log("resetting", messageAlreadyShown.value)
     setAnotherMessageAlreadyShown(undefined)
   }, {flush: 'pre', immediate: true, deep: true})
 
@@ -114,20 +114,20 @@ export const useUiStore = defineStore('ui', () => {
   }
 
   function setAnotherMessageAlreadyShown (msg: string | undefined) {
-    console.log("setting setAnotherMessageAlreadyShown", msg)
+    //console.log("setting setAnotherMessageAlreadyShown", msg)
     messageAlreadyShown.value = msg
   }
 
   const showMessage = computed(() => {
     return (ident: string, probability: number = 1) => {
-      console.log("checking message", ident, probability, hiddenMessages.value)
+      //console.log("checking message", ident, probability, hiddenMessages.value)
       if (hiddenMessages.value.indexOf(ident) >= 0) {
         return false
       }
       const couldBeShown = Math.random() < probability
-      console.log("could be shown", couldBeShown, messageAlreadyShown.value)
+      //console.log("could be shown", couldBeShown, messageAlreadyShown.value)
       if (couldBeShown && (messageAlreadyShown.value === undefined || messageAlreadyShown.value === ident)) {
-        console.log("stting to ", ident)
+        //console.log("stting to ", ident)
         setAnotherMessageAlreadyShown(ident)
         return true
       } else if (messageAlreadyShown.value) {

@@ -148,11 +148,4 @@ const badgeThreshold = () => tabsStore.tabs.length >= settingsStore.thresholds['
   border-top: 1px solid $bordergrey
   border-right: 1px solid $bordergrey
 
-.colorized-appear-enter-active
-  transition: all 2s ease-in
-  transition-delay: 0s
-
-.colorized-appear-enter-from
-  background-color: $warning
-
 </style>

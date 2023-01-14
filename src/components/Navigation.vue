@@ -47,6 +47,25 @@
 
         <template v-slot:before>
           <q-list class="q-mt-none greyBorderTop">
+
+            <InfoMessageWidget
+              v-if="tabsStore.tabsets.size === 1"
+              :probability="0.5"
+              ident="navigation_newTabset"
+              hint="Click on the plus sign on the upper right to create another tabset" />
+
+            <InfoMessageWidget
+              v-if="tabsStore.tabsets.size > 6"
+              :probability="0.5"
+              ident="navigation_useFavorites"
+              hint="You can click on the yellow star icon to turn your tabset into a favorite one, which will appear at the top of the list." />
+
+            <InfoMessageWidget
+              v-if="tabsStore.tabsets.size > 9"
+              :probability="0.5"
+              ident="navigation_archiveTabsets"
+              hint="You can click on the inventory icon to archive your tabset. It will not appear here any more, but can be restored in the settings." />
+
             <NavTabsetsListWidget :tabsets="tabsets(true)"/>
 
             <q-separator v-if="tabsets(true).length > 0"/>
@@ -93,6 +112,7 @@ import {useUiStore} from "stores/uiStore";
 import {useNotificationsStore} from "stores/notificationsStore";
 import TabsetInfo from "components/layouts/TabsetInfo.vue";
 import {usePermissionsStore} from "stores/permissionsStore";
+import InfoMessageWidget from "components/widgets/InfoMessageWidget.vue";
 
 const router = useRouter()
 const tabsStore = useTabsStore()

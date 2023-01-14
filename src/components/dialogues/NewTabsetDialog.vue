@@ -91,7 +91,7 @@ const createNewTabset = () => {
     .executeFromUi(new CreateTabsetCommand(newTabsetName.value, tabsToUse))
     .then(() => {
       useUiStore().setNewTabsetEmptyByDefault(addEmptyTabset.value)
-      if (!addEmptyTabset.value) {
+      if (addEmptyTabset.value) {
         TabsetService.createPendingFromBrowserTabs()
       } else {
         // clear pending tabset - why neccessary?

@@ -7,6 +7,7 @@
       :group="{ name: 'tabs', pull: 'clone' }"
       @change="handleDragAndDrop">
       <q-item
+        v-ripple
         v-for="(tab,index) in props.tabs"
         @click="selectTab(tab, index)"
         :key="props.group + '_' + tab.id">

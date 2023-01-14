@@ -32,6 +32,13 @@ export class RevokePermissionCommand implements Command<boolean> {
       useBookmarksStore().loadBookmarks()
         .then(() => {
           ChromeBookmarkListeners.removeListeners()
+          useBookmarksStore().bookmarksLeaves = []
+          TabsetService.init()
+        })
+        .catch ((err) => {
+          console.info("dealing with error: " + err)
+          ChromeBookmarkListeners.removeListeners()
+          useBookmarksStore().bookmarksLeaves = []
           TabsetService.init()
         })
     }

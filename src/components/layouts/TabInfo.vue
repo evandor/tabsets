@@ -47,7 +47,7 @@
         <q-banner rounded class="bg-yellow-1 text-black" style="border:1px solid grey;border-radius: 5px;">
           If you want to have thumbnails of your tabs, additional permissions are needed.<br><br>
           Click <span class="cursor-pointer text-blue-6" style="text-decoration: underline"
-                      @click="grant('*://*/*')">here</span> to
+                      @click="router.push('/features/thumbnails')">here</span> to
           grant permissions for the tabset extension to create thumbnails for your tabs.
         </q-banner>
       </div>
@@ -117,13 +117,8 @@ import {Tab} from "src/models/Tab";
 import EditNoteDialog from "components/dialogues/EditNoteDialog.vue";
 import MHtmlService from "src/services/MHtmlService";
 import {usePermissionsStore} from "stores/permissionsStore";
-import {useCommandExecutor} from "src/services/CommandExecutor";
-import {GrantPermissionCommand} from "src/domain/commands/GrantPermissionCommand";
-import {GrantOriginCommand} from "src/domain/commands/GrantOriginCommand";
-import {Hit} from "src/models/Hit";
 import _ from "lodash";
 import {useTabsetService} from "src/services/TabsetService2";
-import AddUrlDialog from "components/dialogues/AddUrlDialog.vue";
 
 const notificationStore = useNotificationsStore()
 const featuresStore = useFeatureTogglesStore()
@@ -245,8 +240,6 @@ const scheduleTab = () => {
     }
   })
 }
-
-const grant = (origin: string) => useCommandExecutor().executeFromUi(new GrantOriginCommand(origin))
 
 const openTabset = (badge: any) => {
   selectTabset(badge.tabsetId)

@@ -1,13 +1,13 @@
 <template>
   <q-layout view="hHh lpR lFr">
     <q-header elevated>
-      <q-toolbar >
+      <q-toolbar>
 
         <q-btn v-if="tabsStore.tabsets.size > 0"
                dense flat round icon="menu" @click="toggleLeftDrawer"/>
 
         <q-img class="q-ml-lg" style="margin-top:-4px"
-          src="favicon.ico" height="32px" width="32px"/>
+               src="favicon.ico" height="32px" width="32px"/>
 
         <q-toolbar-title @click.stop="goHome()" class="cursor-pointer"
                          style="min-width:130px" shrink>Tabsets
@@ -21,13 +21,15 @@
 
         <SpacesSelectorWidget v-if="featuresStore.isEnabled('spaces')"/>
 
-        <div v-if="permissionsStore.hasFeature('opentabsThreshold') && tabsStore.tabsets.size > 0">
-          <OpenTabsThresholdWidget />
-        </div>
+        <Transition name="colorized-appear">
+          <div v-if="permissionsStore.hasFeature('opentabsThreshold') && tabsStore.tabsets.size > 0">
+            <OpenTabsThresholdWidget/>
+          </div>
+        </Transition>
 
         <div v-if="tabsStore.pendingTabset?.tabs.length > 0 && tabsStore.tabsets.size >= 1"
              class="q-mr-lg cursor-pointer no-wrap" style="min-width:200px">
-          <UnassignedTabsWidget />
+          <UnassignedTabsWidget/>
         </div>
 
         <div v-if="tabsStore.audibleTabs.length > 0">
@@ -50,7 +52,8 @@
         </div>
 
         <q-btn v-if="featuresStore.isEnabled('stats')"
-               class="q-mr-md" icon="o_query_stats" size="12px" style="min-width:24px" flat @click="router.push('/stats')">
+               class="q-mr-md" icon="o_query_stats" size="12px" style="min-width:24px" flat
+               @click="router.push('/stats')">
           <q-tooltip>Check out stats (experimental)</q-tooltip>
         </q-btn>
 
@@ -59,9 +62,9 @@
           <q-tooltip>Logs (developer mode)</q-tooltip>
         </q-btn>
 
-<!--        <q-btn class="q-mr-md" icon="o_help" size="12px" style="width:24px" flat @click="router.push('/help/howto')">-->
-<!--          <q-tooltip>About tabsets browser extension v{{ appVersion }}</q-tooltip>-->
-<!--        </q-btn>-->
+        <!--        <q-btn class="q-mr-md" icon="o_help" size="12px" style="width:24px" flat @click="router.push('/help/howto')">-->
+        <!--          <q-tooltip>About tabsets browser extension v{{ appVersion }}</q-tooltip>-->
+        <!--        </q-btn>-->
 
         <q-btn class="q-mr-md" icon="o_settings" size="12px" style="width:24px" flat @click="router.push('/settings')">
           <q-tooltip>Customize Tabsets and utilize advanced features</q-tooltip>

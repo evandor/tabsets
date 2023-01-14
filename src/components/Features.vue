@@ -6,70 +6,73 @@
 
   <q-list>
     <q-item
-      clickable v-ripple
       v-for="f in optionalFeatures"
-      @click="router.push(f.target)">
+      clickable v-ripple
+      :active="f.ident === selected"
+      @click="showFeature(f)">
 
       <q-item-section avatar>
         <q-icon :name="f.icon" size="1.3em" :color="iconColor(f.ident)"/>
       </q-item-section>
-
       <q-item-section>{{ f.name }}</q-item-section>
+
     </q-item>
-
   </q-list>
-
-  <q-card flat v-for="f in optionalFeatures">
-    <q-card-section
-      class="q-pt-xs cursor-pointer"
-      style="width:100%;" @click="router.push(f.target)">
-      <div class="row items-baseline">
-        <div class="col-2">
-          <q-icon :name="f.icon" size="1.3em" :color="iconColor(f.ident)"/>
-        </div>
-        <div class="col-9 text-body2">
-          {{ f.name }}
-        </div>
-        <div class="col-1"></div>
-      </div>
-    </q-card-section>
-  </q-card>
 
   <div class="q-ma-md">
     <b>Experimental Features</b>
   </div>
 
-  <q-card flat v-for="f in experimantalFeatures">
-    <q-card-section class="q-pt-xs cursor-pointer" style="width:100%;" @click="router.push(f.target)">
-      <div class="row items-baseline">
-        <div class="col-2">
-          <q-icon :name="f.icon" size="1.3em" :color="iconColor(f.ident)"/>
-        </div>
-        <div class="col-9 text-body2">
-          {{ f.name }}
-        </div>
-        <div class="col-1"></div>
-      </div>
-    </q-card-section>
-  </q-card>
+  <q-list>
+    <q-item
+      v-for="f in experimantalFeatures"
+      clickable v-ripple
+      :active="f.ident === selected"
+      @click="showFeature(f)">
+
+      <q-item-section avatar>
+        <q-icon :name="f.icon" size="1.3em" :color="iconColor(f.ident)"/>
+      </q-item-section>
+      <q-item-section>{{ f.name }}</q-item-section>
+
+    </q-item>
+  </q-list>
 
   <div class="q-ma-md text-grey-8">
     <b>Planned Features</b>
   </div>
 
-  <q-card flat v-for="f in plannedFeatures">
-    <q-card-section class="q-pt-xs cursor-pointer" style="width:100%;" @click="router.push(f.target)">
-      <div class="row items-baseline">
-        <div class="col-2">
-          <q-icon :name="f.icon" size="1.3em" :color="iconColor(f.ident)"/>
-        </div>
-        <div class="col-9 text-body2 text-grey-8">
-          {{ f.name }}
-        </div>
-        <div class="col-1"></div>
-      </div>
-    </q-card-section>
-  </q-card>
+  <q-list>
+    <q-item
+      v-for="f in plannedFeatures"
+      clickable v-ripple
+      :active="f.ident === selected"
+      @click="showFeature(f)">
+
+      <q-item-section avatar>
+        <q-icon :name="f.icon" size="1.3em" :color="iconColor(f.ident)"/>
+      </q-item-section>
+      <q-item-section class="text-grey-8">{{ f.name }}</q-item-section>
+
+    </q-item>
+  </q-list>
+
+  <div class="q-ma-md text-grey-8">
+    <b>Ideas</b>
+  </div>
+
+  <q-list>
+    <q-item
+      v-for="f in ideas"
+      clickable v-ripple>
+
+      <q-item-section avatar>
+        <q-icon :name="f.icon" size="1.3em" :color="iconColor(f.ident)"/>
+      </q-item-section>
+      <q-item-section class="text-grey-8">{{ f.name }}</q-item-section>
+
+    </q-item>
+  </q-list>
 
 </template>
 
@@ -84,6 +87,7 @@ import {usePermissionsStore} from "stores/permissionsStore";
 
 const tabsStore = useTabsStore()
 const router = useRouter()
+const selected = ref('')
 
 const optionalFeatures = [
   {ident: 'opentabsThreshold', name: 'Open Tabs Warning', icon: 'o_tab', target: '/features/opentabsThreshold'},
@@ -111,6 +115,12 @@ const plannedFeatures = [
   {ident: 'oldTabs', name: 'Old Tabs View', icon: 'o_history', target: '/features/oldTabs'}
 ]
 
+const ideas = [
+  {ident: 'stats', name: 'Gather and show stats', icon: 'o_history'},
+  {ident: 'tagcloud', name: 'Tag clouds from titles', icon: 'o_history'},
+  {ident: 'tagcloud', name: 'Tag clouds from content', icon: 'o_history'}
+]
+
 
 const open = (ident: string) => {
   router.push("/help/" + ident)
@@ -128,6 +138,11 @@ const iconColor = (ident: string) => {
     default:
       return usePermissionsStore().hasFeature(ident) ? 'green' : 'primary'
   }
+}
+
+const showFeature = (f: any) => {
+  selected.value = f.ident
+  router.push(f.target)
 }
 
 </script>

@@ -247,7 +247,9 @@
 
       </q-card-section>
 
-      <q-card-section v-if="tabsStore.getCurrentTabset?.tabs.length === 0 && tabsStore.pendingTabset?.tabs.length > 0">
+      <q-card-section v-if="tabsStore.getCurrentTabset?.tabs.length === 0
+        && permissionsStore.hasFeature('pendingTabs')
+        && tabsStore.pendingTabset?.tabs.length > 0">
         <q-banner rounded class="text-black"
                   style="font-weight: bold; border: 2px solid orange">
           <div class="row justify-center items-center">

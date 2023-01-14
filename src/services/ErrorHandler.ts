@@ -7,7 +7,7 @@ const {logger} = useLoggingServicee()
 export function useNotificationHandler() {
 
   const handleError = (error: any) => {
-    logger.error(error)
+    logger.info(error) // 'info' only (?) - we did handle this somehow. Warning still shows in extension errors
     Notify.create({
       position: 'bottom',
       color: 'red-5',
@@ -31,8 +31,8 @@ export function useNotificationHandler() {
         {
           label: 'Undo', color: 'white', handler: () => {
             executionResult.undoCommand?.execute()
-              .then(res => handleWarning(res))
-              .catch(err => handleError(err))
+              .then((res:any) => handleWarning(res))
+              .catch((err:any) => handleError(err))
           }
         }
       )
