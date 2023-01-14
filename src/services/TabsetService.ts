@@ -6,16 +6,15 @@ import {Tab} from "src/models/Tab";
 import {Tabset, TabsetStatus, TabsetType} from "src/models/Tabset";
 import {useSearchStore} from "src/stores/searchStore";
 import {useBookmarksStore} from "src/stores/bookmarksStore";
-import IndexedDbPersistenceService from "src/services/IndexedDbPersistenceService"
 import {STRIP_CHARS_IN_USER_INPUT} from "boot/constants";
 import {useTabsetService} from "src/services/TabsetService2";
 
 const {getTabset, getCurrentTabset, saveTabset, saveCurrentTabset, tabsetsFor, saveToTabset} = useTabsetService()
 
+import {useDB} from "src/services/usePersistenceService";
+const {db} = useDB()
 
 class TabsetService {
-
-  private persistenceService = IndexedDbPersistenceService
 
   private localStorage: LocalStorage = null as unknown as LocalStorage
 
@@ -28,9 +27,9 @@ class TabsetService {
    */
   async init(doNotInitSearchIndex: boolean = false) {
     console.debug("initializing tabsetService")
-    await this.persistenceService.loadTabsets()
+    await db.loadTabsets()
     if (!doNotInitSearchIndex) {
-      useSearchStore().populate(this.persistenceService.getContents())
+      useSearchStore().populate(db.getContents())
     }
   }
 
@@ -146,7 +145,7 @@ class TabsetService {
   async getThumbnailFor(selectedTab: Tab): Promise<any> {
     //console.log("checking thumbnail for", selectedTab.chromeTab.url)
     if (selectedTab.chromeTab.url) {
-      return this.persistenceService.getThumbnail(selectedTab.chromeTab.url)
+      return db.getThumbnail(selectedTab.chromeTab.url)
     }
     return Promise.reject("url not provided");
   }
@@ -159,7 +158,7 @@ class TabsetService {
   }
 
   async getRequestForUrl(url: string): Promise<any> {
-    return this.persistenceService.getRequest(url)
+    return db.getRequest(url)
   }
 
   async getContentFor(selectedTab: Tab): Promise<any> {
@@ -170,7 +169,7 @@ class TabsetService {
   }
 
   async getContentForUrl(url: string): Promise<any> {
-    return this.persistenceService.getContent(url)
+    return db.getContent(url)
   }
 
 
@@ -182,7 +181,7 @@ class TabsetService {
   }
 
   async getMetaLinksForUrl(url: string): Promise<any> {
-    return this.persistenceService.getMetaLinks(url)
+    return db.getMetaLinks(url)
   }
 
   async getLinksFor(selectedTab: Tab): Promise<any> {
@@ -193,7 +192,7 @@ class TabsetService {
   }
 
   async getLinksForUrl(url: string): Promise<any> {
-    return this.persistenceService.getLinks(url)
+    return db.getLinks(url)
   }
 
   setCustomTitle(tab: Tab, title: string) {

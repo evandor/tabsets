@@ -43,7 +43,9 @@ export const  useBookmarksStore = defineStore('bookmarks', {
   actions: {
     init() {
       console.debug("initializing bookmarkStore")
-      this.loadBookmarks()
+      if (process.env.MODE !== 'bex') {
+        return Promise.resolve()
+      }
       this.initListeners()
     },
     async loadBookmarks(): Promise<void> {

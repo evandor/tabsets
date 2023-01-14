@@ -16,9 +16,10 @@ import {TabLogger} from "src/services/useLoggingService";
 //
 // }
 
-export function usePersistenceService() {
+export function useDB() {
 
   const persistenceService = IndexedDbPersistenceService
+  const db = IndexedDbPersistenceService
 
   const logger = new Logger()
     .addHandler(new ConsoleHandler(LOG_LEVEL_CONSOLE))
@@ -33,7 +34,7 @@ export function usePersistenceService() {
 
 
   return {
-    getLogs, logger, TabLogger, persistenceService
+    getLogs, logger, TabLogger, persistenceService,db
   }
 
 }

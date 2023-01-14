@@ -5,7 +5,6 @@ import _ from "lodash";
 import {uid} from "quasar";
 import {NewOrReplacedTabset} from "src/models/NewOrReplacedTabset";
 import {useSearchStore} from "stores/searchStore";
-import {usePersistenceService} from "src/services/usePersistenceService";
 import ChromeApi from "src/services/ChromeApi";
 import {TabPredicate} from "src/domain/Types";
 import {useLoggingServicee} from "src/services/useLoggingService";
@@ -15,7 +14,9 @@ import {MetaLink} from "src/models/MetaLink";
 import {RequestInfo} from "src/models/RequestInfo";
 
 const {logger, TabLogger} = useLoggingServicee()
-const {persistenceService} = usePersistenceService()
+
+import {useDB} from "src/services/usePersistenceService";
+const {db} = useDB()
 
 export function useTabsetService() {
 
@@ -129,7 +130,7 @@ export function useTabsetService() {
   }
 
   const removeThumbnailsFor = (url: string): Promise<any> => {
-    return persistenceService.deleteThumbnail(url)
+    return db.deleteThumbnail(url)
   }
 
   const deleteTabset = (tabsetId: string): Promise<string> => {
@@ -142,7 +143,7 @@ export function useTabsetService() {
         removeThumbnailsFor(t?.chromeTab.url || '')
       })
       tabsStore.deleteTabset(tabsetId)
-      persistenceService.deleteTabset(tabsetId)
+      db.deleteTabset(tabsetId)
       //this.db.delete('tabsets', tabsetId)
       const nextKey: string = tabsStore.tabsets.keys().next().value
       console.log("setting next key to", nextKey)
@@ -170,7 +171,7 @@ export function useTabsetService() {
   const saveTabset = async (tabset: Tabset): Promise<IDBValidKey> => {
     if (tabset.id) {
       tabset.updated = new Date().getTime()
-      return persistenceService.saveTabset(tabset)
+      return db.saveTabset(tabset)
     }
     return Promise.reject("tabset id not set")
   }
@@ -204,7 +205,7 @@ export function useTabsetService() {
       const title = tab.title || ''
       const tabsetIds: string[] = tabsetsFor(tab.url)
 
-      persistenceService.saveContent(tab, text, metas, title, tabsetIds)
+      db.saveContent(tab, text, metas, title, tabsetIds)
         //.then(() => console.log("added content"))
         .catch(err => console.log("err", err))
 
@@ -251,7 +252,7 @@ export function useTabsetService() {
 
   const saveMetaLinksFor = (tab: chrome.tabs.Tab, metaLinks: MetaLink[]) => {
     if (tab && tab.url) {
-      persistenceService.saveMetaLinks(tab.url, metaLinks)
+      db.saveMetaLinks(tab.url, metaLinks)
         .then(() => console.debug("added meta links"))
         .catch(err => console.log("err", err))
     }
@@ -259,7 +260,7 @@ export function useTabsetService() {
 
   const saveLinksFor = (tab: chrome.tabs.Tab, links: any) => {
     if (tab && tab.url) {
-      persistenceService.saveLinks(tab.url, links)
+      db.saveLinks(tab.url, links)
         .then(() => console.debug("added links"))
         .catch(err => console.log("err", err))
     }
@@ -320,7 +321,7 @@ export function useTabsetService() {
 
   const saveThumbnailFor = (tab: chrome.tabs.Tab | undefined, thumbnail: string) => {
     if (tab && tab.url) {
-      persistenceService.saveThumbnail(tab, thumbnail)
+      db.saveThumbnail(tab, thumbnail)
         //.then(() => console.log("added thumbnail"))
         .catch(err => console.log("err", err))
     }
@@ -329,7 +330,7 @@ export function useTabsetService() {
 
   const saveRequestFor = (url: string, requestInfo: RequestInfo) => {
     if (url) {
-      persistenceService.saveRequest(url, requestInfo)
+      db.saveRequest(url, requestInfo)
         .then(() => console.debug("added request"))
         .catch(err => console.log("err", err))
     }
@@ -337,7 +338,7 @@ export function useTabsetService() {
 
 
   const removeContentFor = (url: string): Promise<any> => {
-    return persistenceService.deleteContent(url)
+    return db.deleteContent(url)
   }
 
 

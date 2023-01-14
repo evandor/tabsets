@@ -3,8 +3,9 @@ import {Space} from "src/models/Space";
 import {MHtml} from "src/models/MHtml";
 import {Tab} from "src/models/Tab";
 import {SearchDoc} from "src/models/SearchDoc";
-import IndexedDbPersistenceService from "src/services/IndexedDbPersistenceService";
 import {LogLevel} from "logging-library";
+import {Predicate} from "src/domain/Types";
+import {LogEntry} from "src/models/LogEntry";
 
 interface PersistenceService {
 
@@ -36,6 +37,7 @@ interface PersistenceService {
 
   saveStats(date: string, dataset: object): void
 
+  getLogs(predicate: Predicate<LogEntry>): Promise<LogEntry[]>
   saveLog(context: string, level: LogLevel, msg: string, ...args: any[]):Promise<any>
 }
 
