@@ -62,7 +62,7 @@ export function useTabsetService() {
       }
       return Promise.reject("could not update or create tabset")
     } catch (err) {
-      return Promise.reject("problem updating or creating tabset: " + err)
+       return Promise.reject("problem updating or creating tabset: " + err)
     }
   }
 

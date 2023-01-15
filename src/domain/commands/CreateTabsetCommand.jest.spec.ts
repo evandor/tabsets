@@ -6,6 +6,8 @@ import "fake-indexeddb/auto"
 import IndexedDbPersistenceService from "src/services/IndexedDbPersistenceService";
 import {INDEX_DB_VERSION} from "boot/constants";
 import {useJestHelper} from "src/domain/JestHelper";
+import {TabLogger} from "src/logging/TabLogger";
+import LoggingService from "src/services/LoggingService";
 
 describe('CreateTabsetCommand', () => {
 
@@ -13,6 +15,7 @@ describe('CreateTabsetCommand', () => {
 
   beforeEach(() => {
     setActivePinia(createPinia())
+    LoggingService.init()
     const request = indexedDB.open('db', INDEX_DB_VERSION);
     request.onupgradeneeded = async function () {
       await useJestHelper().dbInit(request)
