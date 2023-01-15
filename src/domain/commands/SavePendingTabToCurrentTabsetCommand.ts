@@ -6,9 +6,7 @@ import {useSearchStore} from "stores/searchStore";
 import TabService from "src/services/TabService";
 import _ from "lodash";
 import {useTabsStore} from "stores/tabsStore";
-import {useLoggingServicee} from "src/services/useLoggingService";
-
-const {TabLogger} = useLoggingServicee()
+import {TabLogger} from "src/logging/TabLogger";
 
 class UndoCommand implements Command<undefined> {
 

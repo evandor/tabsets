@@ -1,13 +1,11 @@
 import {Notify} from 'quasar'
 import {ExecutionResult} from "src/domain/ExecutionResult";
-import {useLoggingServicee} from "src/services/useLoggingService";
-
-const {logger} = useLoggingServicee()
+import LoggingService from "src/services/LoggingService";
 
 export function useNotificationHandler() {
 
   const handleError = (error: any) => {
-    logger.info(error) // 'info' only (?) - we did handle this somehow. Warning still shows in extension errors
+    LoggingService.logger.info(error) // 'info' only (?) - we did handle this somehow. Warning still shows in extension errors
     Notify.create({
       position: 'bottom',
       color: 'red-5',
@@ -31,8 +29,8 @@ export function useNotificationHandler() {
         {
           label: 'Undo', color: 'white', handler: () => {
             executionResult.undoCommand?.execute()
-              .then((res:any) => handleWarning(res))
-              .catch((err:any) => handleError(err))
+              .then((res: any) => handleWarning(res))
+              .catch((err: any) => handleError(err))
           }
         }
       )

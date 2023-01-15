@@ -1,18 +1,18 @@
-import IndexedDbPersistenceService from "src/services/IndexedDbPersistenceService";
 import {uid} from "quasar";
 import {useSpacesStore} from "stores/spacesStore";
+import {useDB} from "src/services/usePersistenceService";
+
+const {db} = useDB()
 
 class SpacesService {
-
-  private persistenceService = IndexedDbPersistenceService
 
   /**
    * Init, called when extension is loaded (via App.vue)
    */
   async init() {
     console.debug("init spaces service")
-    //await this.persistenceService.init();
-    await this.persistenceService.loadSpaces()
+    //await localDb.init();
+    await db.loadSpaces()
   }
 
   addNewSpace(name: string): Promise<void> {
@@ -22,12 +22,12 @@ class SpacesService {
     }
     const spaceId = uid()
     const newSpace = spacesStore.addSpace(spaceId, name)
-    return this.persistenceService.addSpace(newSpace)
+    return db.addSpace(newSpace)
   }
 
   deleteById(spaceId: string) {
     useSpacesStore().deleteById(spaceId)
-    return this.persistenceService.deleteSpace(spaceId)
+    return db.deleteSpace(spaceId)
   }
 }
 

@@ -1,5 +1,9 @@
 <template>
 
+  <InfoMessageWidget
+    :probability="1"
+    ident="groupByDomain_atLeastTwo" hint="In this view, you will see your tabs grouped by Domain, for all domains having at least two entries" />
+
   <div class="q-pa-none">
     <q-list>
       <q-item clickable v-ripple v-for="[host,val] in groupedTabs"
@@ -23,6 +27,7 @@ import {Tab} from "src/models/Tab";
 import {Tabset, TabsetStatus} from "src/models/Tabset";
 import OpenTabCard from "components/layouts/OpenTabCard.vue";
 import {useRouter} from "vue-router";
+import InfoMessageWidget from "components/widgets/InfoMessageWidget.vue";
 
 const tabsStore = useTabsStore()
 const router = useRouter()

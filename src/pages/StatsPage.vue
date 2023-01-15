@@ -48,9 +48,7 @@ import {useQuasar} from "quasar";
 import {useSearchStore} from "src/stores/searchStore";
 import VueApexCharts from 'vue3-apexcharts'
 import {useQueryExecutor} from "src/services/QueryExecutor";
-import {LogsQuery} from "src/domain/queries/LogsQuery";
 import {StatsQuery} from "src/domain/queries/StatsQuery";
-import {useLoggingServicee} from "src/services/useLoggingService";
 import {StatsEntry} from "src/models/StatsEntry";
 import _ from "lodash"
 

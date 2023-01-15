@@ -15,7 +15,7 @@ import {MetaLink} from "src/models/MetaLink";
 import {LogEntry} from "src/models/LogEntry";
 import {LogLevel} from "logging-library";
 import {Predicate} from "src/domain/Types";
-import {TabLogger} from "src/services/useLoggingService";
+import {TabLogger} from "src/logging/TabLogger";
 import {StatsEntry} from "src/models/StatsEntry";
 import {uid} from "quasar";
 

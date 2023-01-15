@@ -4,11 +4,10 @@ import {ExecutionResult} from "src/domain/ExecutionResult";
 import {Tab} from "src/models/Tab";
 import _ from "lodash";
 import {useTabsStore} from "stores/tabsStore";
-import {useLoggingServicee} from "src/services/useLoggingService";
 import {useTabsetService} from "src/services/TabsetService2";
 import {DeleteTabCommand} from "src/domain/commands/DeleteTabCommand";
+import {TabLogger} from "src/logging/TabLogger";
 
-const {TabLogger} = useLoggingServicee()
 const {saveCurrentTabset} = useTabsetService()
 
 class UndoCommand implements Command<any> {

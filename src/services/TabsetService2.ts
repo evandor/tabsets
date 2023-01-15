@@ -7,15 +7,14 @@ import {NewOrReplacedTabset} from "src/models/NewOrReplacedTabset";
 import {useSearchStore} from "stores/searchStore";
 import ChromeApi from "src/services/ChromeApi";
 import {TabPredicate} from "src/domain/Types";
-import {useLoggingServicee} from "src/services/useLoggingService";
 import {Tabset, TabsetStatus, TabsetType} from "src/models/Tabset";
 import {useNotificationsStore} from "stores/notificationsStore";
 import {MetaLink} from "src/models/MetaLink";
 import {RequestInfo} from "src/models/RequestInfo";
 
-const {logger, TabLogger} = useLoggingServicee()
-
 import {useDB} from "src/services/usePersistenceService";
+import {TabLogger} from "src/logging/TabLogger";
+import LoggingService from "src/services/LoggingService";
 const {db} = useDB()
 
 export function useTabsetService() {
@@ -134,7 +133,7 @@ export function useTabsetService() {
   }
 
   const deleteTabset = (tabsetId: string): Promise<string> => {
-    logger.info("deleting tabset ", tabsetId)
+    LoggingService.logger.info("deleting tabset ", tabsetId)
     const tabset = getTabset(tabsetId)
     if (tabset) {
       const tabsStore = useTabsStore()

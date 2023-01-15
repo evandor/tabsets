@@ -1,17 +1,17 @@
 import Query from "src/domain/Query";
 import {QueryResult} from "src/domain/QueryResult";
-import IndexedDbPersistenceService from "src/services/IndexedDbPersistenceService";
 import {StatsEntry} from "src/models/StatsEntry";
+import {useDB} from "src/services/usePersistenceService";
+
+const {localDb} = useDB()
 
 export class StatsQuery implements Query<StatsEntry[]> {
-
-  private persistenceService = IndexedDbPersistenceService
 
   constructor() {
   }
 
   query<T>(): Promise<QueryResult<StatsEntry[]>> {
-    const results = this.persistenceService.getStats()
+    const results = localDb.getStats()
     return results
       .then((r) => new QueryResult(r, ""))
   }

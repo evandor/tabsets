@@ -1,20 +1,17 @@
 import Query from "src/domain/Query";
 import {QueryResult} from "src/domain/QueryResult";
-import IndexedDbPersistenceService from "src/services/IndexedDbPersistenceService";
 import {LogEntry} from "src/models/LogEntry";
-import {useLoggingServicee} from "src/services/useLoggingService";
+import {useDB} from "src/services/usePersistenceService";
 
-const {logger} = useLoggingServicee()
+const {localDb} = useDB()
 
 export class LogsQuery implements Query<object[]> {
-
-  private persistenceService = IndexedDbPersistenceService
 
   constructor() {
   }
 
   query<T>(): Promise<QueryResult<LogEntry[]>> {
-    const results = this.persistenceService.getLogs()
+    const results = localDb.getLogs()
     return results
       .then((r) => new QueryResult(r, ""))
   }

@@ -360,25 +360,21 @@ class ChromeListeners {
 
 
   private handleCapture(sender: chrome.runtime.MessageSender, windowId: number, sendResponse: any) {
+
     if (!this.thumbnailsActive) {
+      console.log("capturing thumbnail: not active")
       return
     }
 
     this.throttleOnePerSecond(async () => {
-      const current = await ChromeApi.getCurrentTab()
-      // const selfId = localStorage.getItem("selfId")
-      const selfUrl = chrome.runtime.getURL("www/index.html")
-     // console.log("selfurl", selfUrl)
-      // if (current && current.url) {// && selfId && current.url.indexOf(selfId) >= 0) {
-      //   return // no screenshot of extension itself
-      // }
-      //console.log("capturing tab...", current.url)
+      console.log("capturing tab...")
       const allUrlsPermission = usePermissionsStore().hasAllOrigins()
       //chrome.permissions.getAll((res) => console.log("res", res))
       if (allUrlsPermission) {
         setTimeout(async () => {
           const ctx = this
           if (windowId != null) {
+            console.log("capturing thumbnail", windowId)
             chrome.windows.get(windowId, {}, (w: chrome.windows.Window) => {
               if (chrome.runtime.lastError) {
                 console.log("got error", chrome.runtime.lastError)
@@ -400,6 +396,7 @@ class ChromeListeners {
               }
             })
           } else {
+            console.log("capturing thumbnail", windowId)
             chrome.tabs.captureVisibleTab(
               {},
               function (dataUrl) {
@@ -407,21 +404,6 @@ class ChromeListeners {
               }
             );
           }
-          // // @ts-ignore
-          // const windowExists = windowId != null ? await chrome.windows.get(windowId, {}) : null
-          //
-          // console.log("got possible window", windowExists)
-          // // @ts-ignore
-          // const useWindowId: number = windowExists ? windowId : await chrome.windows.getCurrent().id
-          // console.log("got useWindowId", useWindowId)
-          // const ctx = this
-          // chrome.tabs.captureVisibleTab(
-          //   useWindowId,
-          //   {},
-          //   function (dataUrl) {
-          //     ctx.handleCaptureCallback(dataUrl, sender, sendResponse);
-          //   }
-          // );
         }, 1000)
       }
 

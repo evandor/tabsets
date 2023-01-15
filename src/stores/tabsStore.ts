@@ -8,7 +8,7 @@ import {NewOrReplacedTabset} from "src/models/NewOrReplacedTabset";
 import {useTabGroupsStore} from "src/stores/tabGroupsStore";
 import {Group} from "src/models/Group";
 import {useSpacesStore} from "stores/spacesStore";
-import {useLoggingServicee} from "src/services/useLoggingService";
+import LoggingService from "src/services/LoggingService";
 
 async function queryTabs(): Promise<chrome.tabs.Tab[]> {
   // @ts-ignore
@@ -31,9 +31,6 @@ function markDuplicates(tabset: Tabset) {
     t.isDuplicate = duplicates.has(t.chromeTab.url || 'undefined');
   })
 }
-
-const {logger} = useLoggingServicee()
-//const {saveTabset} = useTabsetService()
 
 export const useTabsStore = defineStore('tabs', {
   state: () => ({
@@ -288,7 +285,7 @@ export const useTabsStore = defineStore('tabs', {
       merge: boolean = false,
       type: TabsetType = TabsetType.DEFAULT): Promise<NewOrReplacedTabset> {
 
-      logger.debug("--- updateOrCreateTabset start -------------")
+      LoggingService.logger.debug("--- updateOrCreateTabset start -------------")
       const foundTS: Tabset | undefined = _.find([...this.tabsets.values()], ts => ts.name === tabsetName)
       let ts: Tabset = null as unknown as Tabset
       const tabsetExtensionTab = await ChromeApi.getCurrentTab()
@@ -296,7 +293,7 @@ export const useTabsStore = defineStore('tabs', {
       const currentSpace = useSpacesStore().space
       if (foundTS) {
         if (merge) {
-          logger.debug("found existing tabset " + foundTS.id + ", merging...")
+          LoggingService.logger.debug("found existing tabset " + foundTS.id + ", merging...")
           _.forEach(tabs, t => {
             const exists = _.find(foundTS.tabs, existing => existing.chromeTab.url === t.chromeTab?.url)
             if (!exists) {
@@ -304,7 +301,7 @@ export const useTabsStore = defineStore('tabs', {
             }
           })
           ts = foundTS
-          logger.debug("merging groups", tabGroupsStore.tabGroups)
+          LoggingService.logger.debug("merging groups", tabGroupsStore.tabGroups)
           _.forEach(tabGroupsStore.tabGroups, tg => {
             const exists = _.find(foundTS.groups, existing => existing.chromeGroup.title === tg.title)
             if (!exists) {
@@ -314,14 +311,14 @@ export const useTabsStore = defineStore('tabs', {
 
 
         } else {
-          logger.debug("found existing tabset " + foundTS.id + ", replacing...")
+          LoggingService.logger.debug("found existing tabset " + foundTS.id + ", replacing...")
           ts = new Tabset(foundTS.id, tabsetName, _.map(tabs, t => t),
             _.map(tabGroupsStore.tabGroups, tg => new Group(uid(), tg)))
           this.tabsets.set(foundTS.id, ts)
           //TabsetService.saveTabset(ts)
         }
       } else {
-        logger.debug("didn't find existing tabset, creating new...")
+        LoggingService.logger.debug("didn't find existing tabset, creating new...")
         const useId = uid()
         ts = new Tabset(useId, tabsetName, _.map(
             _.filter(
@@ -333,14 +330,14 @@ export const useTabsStore = defineStore('tabs', {
           _.map(tabGroupsStore.tabGroups, tg => new Group(uid(), tg)))
         this.tabsets.set(useId, ts)
       }
-      logger.debug("currentSpace", currentSpace)
+      LoggingService.logger.debug("currentSpace", currentSpace)
       if (currentSpace && currentSpace.id && ts.spaces.findIndex(s => s === currentSpace.id) < 0) {
         ts.spaces.push(currentSpace.id)
       }
 
       ts.type = type
 
-      logger.debug("--- updateOrCreateTabset end -------------")
+      LoggingService.logger.debug("--- updateOrCreateTabset end -------------")
       return new NewOrReplacedTabset(foundTS !== undefined, ts)
     },
 

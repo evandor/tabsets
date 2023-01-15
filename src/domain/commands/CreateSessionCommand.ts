@@ -2,12 +2,10 @@ import Command from "src/domain/Command";
 import {ExecutionResult} from "src/domain/ExecutionResult";
 import {DeleteTabsetCommand} from "src/domain/commands/DeleteTabsetCommand";
 import {useTabsetService} from "src/services/TabsetService2";
-import {useLoggingServicee} from "src/services/useLoggingService";
 import {Tabset, TabsetType} from "src/models/Tabset";
 import {useTabsStore} from "src/stores/tabsStore";
 import _ from "lodash"
-
-const {logger} = useLoggingServicee()
+import LoggingService from "src/services/LoggingService";
 
 class UndoCommand implements Command<object> {
 
@@ -15,7 +13,7 @@ class UndoCommand implements Command<object> {
   }
 
   execute(): Promise<ExecutionResult<object>> {
-    logger.info("execution of undo command", this.tabsetId)
+    LoggingService.logger.info("execution of undo command", this.tabsetId)
     return new DeleteTabsetCommand(this.tabsetId).execute()
       .then(res => Promise.resolve(new ExecutionResult(res, "Session was deleted again")))
   }

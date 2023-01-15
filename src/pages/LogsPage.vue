@@ -70,12 +70,9 @@ import {read} from '@extractus/feed-extractor'
 import NavigationService from "src/services/NavigationService";
 import {formatDistance, parseISO} from "date-fns";
 import IndexedDbPersistenceService from "src/services/IndexedDbPersistenceService";
-import {useLoggingServicee} from "src/services/useLoggingService";
 import {useQueryExecutor} from "src/services/QueryExecutor";
-import {SearchIndexQuery} from "src/domain/queries/SearchIndexQuery";
 import {LogsQuery} from "src/domain/queries/LogsQuery";
 
-const {logger} = useLoggingServicee()
 const route = useRoute()
 
 const encodedUrl = ref()

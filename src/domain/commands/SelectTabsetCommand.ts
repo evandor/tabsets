@@ -1,12 +1,9 @@
 import Command from "src/domain/Command";
 import {ExecutionResult} from "src/domain/ExecutionResult";
-import {useLoggingServicee} from "src/services/useLoggingService";
 import {useTabsStore} from "src/stores/tabsStore";
 import _ from "lodash"
 import {Tab} from "src/models/Tab";
 import {useNotificationsStore} from "stores/notificationsStore";
-
-const {logger} = useLoggingServicee()
 
 
 export class SelectTabsetCommand implements Command<object> {

@@ -1,16 +1,15 @@
-import IndexedDbPersistenceService from "src/services/IndexedDbPersistenceService";
 import {useTabsStore} from "stores/tabsStore";
 import {Tab} from "src/models/Tab";
 import _ from "lodash"
+import {useDB} from "src/services/usePersistenceService";
 
+const {localDb} = useDB()
 
 class TabService {
 
-  private persistenceService = IndexedDbPersistenceService
-
   updateThumbnail(url: string | undefined): Promise<void> {
     if (url) {
-      return this.persistenceService.updateThumbnail(url)
+      return localDb.updateThumbnail(url)
     }
     console.log("could not update thumbnail")
     return Promise.resolve()
@@ -18,7 +17,7 @@ class TabService {
 
   updateContent(url: string | undefined): Promise<object> {
     if (url) {
-      return this.persistenceService.updateContent(url)
+      return localDb.updateContent(url)
     }
     console.log("could not update thumbnail")
     return Promise.resolve({})

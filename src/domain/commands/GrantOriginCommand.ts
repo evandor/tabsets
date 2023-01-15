@@ -1,11 +1,9 @@
 import Command from "src/domain/Command";
 import {ExecutionResult} from "src/domain/ExecutionResult";
-import {useLoggingServicee} from "src/services/useLoggingService";
 import {usePermissionsStore} from "stores/permissionsStore";
 import {RevokeOriginCommand} from "src/domain/commands/RevokeOriginCommand";
 import ChromeApi from "src/services/ChromeApi";
 
-const {TabLogger} = useLoggingServicee()
 
 class UndoCommand implements Command<boolean> {
 
