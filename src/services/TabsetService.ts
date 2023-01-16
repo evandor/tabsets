@@ -12,6 +12,7 @@ import {useTabsetService} from "src/services/TabsetService2";
 const {getTabset, getCurrentTabset, saveTabset, saveCurrentTabset, tabsetsFor, saveToTabset} = useTabsetService()
 
 import {useDB} from "src/services/usePersistenceService";
+
 const {db} = useDB()
 
 class TabsetService {
@@ -335,7 +336,7 @@ class TabsetService {
   async trackedTabsCount(): Promise<number> {
     // @ts-ignore
     const result: chrome.tabs.Tab[] = await chrome.tabs.query({})
-    let trackedTabs  = 0
+    let trackedTabs = 0
     _.forEach(result, (tab: chrome.tabs.Tab) => {
       if (tab && tab.url && tabsetsFor(tab.url).length > 0) {
         trackedTabs++
@@ -410,6 +411,26 @@ class TabsetService {
     const tabset = useTabsStore().getTabset(tabsetId)
     if (tabset) {
       tabset.view = view
+      saveTabset(tabset)
+    }
+  }
+
+  toggleSorting(tabsetId: string) {
+    const tabset = useTabsStore().getTabset(tabsetId)
+    if (tabset) {
+      switch (tabset.sorting) {
+        case 'custom':
+          tabset.sorting = 'alphabeticalUrl';
+          break;
+        case 'alphabeticalUrl':
+          tabset.sorting = 'alphabeticalTitle';
+          break;
+        case 'alphabeticalTitle':
+          tabset.sorting = 'custom';
+          break;
+        default:
+          tabset.sorting = 'custom'
+      }
       saveTabset(tabset)
     }
   }
@@ -506,6 +527,8 @@ class TabsetService {
     }
     return Promise.reject("could not change status : " + tabsetId)
   }
+
+
 }
 
 export default new TabsetService();

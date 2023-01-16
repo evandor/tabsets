@@ -22,6 +22,7 @@ export class Tabset {
   groups: Group[]
   spaces: string[] // got json problems with set<string>
   view: string = 'list'
+  sorting: string = 'custom'
   status: TabsetStatus = TabsetStatus.DEFAULT
   type: TabsetType = TabsetType.DEFAULT
 

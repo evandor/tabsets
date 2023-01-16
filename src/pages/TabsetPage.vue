@@ -26,6 +26,27 @@
       <div class="col-xs-12 col-md-7 text-right">
 
         <q-btn
+          @click="toggleSorting()"
+          style="width:14px"
+          class="q-mr-sm" size="10px"
+          outline
+          icon="o_sort_by_alpha">
+          <q-tooltip>Toggle through sorting - current: {{ tabsStore.getCurrentTabset?.sorting }}. Available: custom,
+            alphabetical by url, alphabetical by title
+          </q-tooltip>
+        </q-btn>
+
+        <q-btn
+          :disable="tabsStore.getCurrentTabset?.sorting === 'custom'"
+          @click="toggleOrder()"
+          style="width:14px"
+          class="q-mr-xl" size="10px"
+          outline
+          :icon="orderDesc ? 'arrow_drop_up' : 'arrow_drop_down'">
+          <q-tooltip>Sorting descending or ascending, currently {{ orderDesc }}</q-tooltip>
+        </q-btn>
+
+        <q-btn
           @click="setView('grid')"
           style="width:14px"
           class="q-mr-sm" size="8px"
@@ -75,7 +96,7 @@
           <q-tooltip>Use the canvas freestyle layout to visualize your tabs</q-tooltip>
         </q-btn>
 
-        <q-btn v-if="tabsStore.getCurrentTabs.length > 0"
+        <q-btn v-if="tabsStore.getCurrentTabs?.length > 0"
                flat dense icon="o_restore_page"
                color="primary" :label="$q.screen.gt.sm ? 'Open Tabset...' : ''"
                class="q-ml-xl q-mr-none"
@@ -119,7 +140,7 @@
   </q-banner>
 
   <!-- pinned tabs -->
-  <q-expansion-item v-if="tabsStore.pinnedTabs.length > 0 && !specialView()"
+  <q-expansion-item v-if="tabsStore.pinnedTabs?.length > 0 && !specialView()"
                     header-class="text-black"
                     expand-icon-class="text-black"
                     expand-separator
@@ -127,7 +148,7 @@
     <template v-slot:header="{ expanded }">
       <q-item-section>
         <div>
-          <span class="text-weight-bold">Pinned Tabs ({{ tabsStore.pinnedTabs.length }})</span>
+          <span class="text-weight-bold">Pinned Tabs ({{ tabsStore.pinnedTabs?.length }})</span>
           <div class="text-caption ellipsis">this browser's window's tabs to be pinned</div>
         </div>
       </q-item-section>
@@ -218,15 +239,15 @@
       <q-item-section>
         <div>
           <span class="text-weight-bold">{{
-              unpinnedNoGroup().length
-            }} {{ unpinnedNoGroup().length === 1 ? 'Tab' : 'Tabs' }}</span>
+              unpinnedNoGroup()?.length
+            }} {{ unpinnedNoGroup()?.length === 1 ? 'Tab' : 'Tabs' }}</span>
           <div class="text-caption ellipsis"></div>
         </div>
       </q-item-section>
     </template>
 
     <InfoMessageWidget
-      v-if="unpinnedNoGroup().length > 1"
+      v-if="unpinnedNoGroup()?.length > 1"
       :probability="0.3"
       ident="tabsetPage_dnd"
       hint="You can select the favicon images and drag and drop the entries to reorder the list to your wishes"/>
@@ -316,6 +337,7 @@ const $q = useQuasar()
 const highlightUrl = ref('')
 
 const tabsetId = ref(null as unknown as string)
+const orderDesc = ref(false)
 
 watchEffect(() => {
   tabsetId.value = route.params.tabsetId as string
@@ -339,17 +361,39 @@ watchEffect(() => {
   }
 })
 
-function unpinnedNoGroup() {
-  return _.filter(
-    _.map(tabsStore.getCurrentTabs, t => t),
-    // @ts-ignore
-    (t: Tab) => !t?.chromeTab.pinned && t?.chromeTab.groupId === -1)
+function getOrder() {
+  if (tabsStore.getCurrentTabset) {
+    switch (tabsStore.getCurrentTabset?.sorting) {
+      case 'alphabeticalUrl':
+        return (t: Tab) => t.chromeTab.url
+        break
+      case 'alphabeticalTitle':
+        return (t: Tab) => t.chromeTab.title
+        break
+      default:
+        return (t: Tab) => 1
+    }
+    return (t: Tab) => 1
+  }
 }
 
+function unpinnedNoGroup(): Tab[] {
+  return _.orderBy(
+    _.filter(
+      tabsStore.getCurrentTabs,
+      // @ts-ignore
+      (t: Tab) => !t?.chromeTab.pinned && t?.chromeTab.groupId === -1),
+    getOrder(), [orderDesc.value ? 'desc' : 'asc'])
+}
+
+
 function tabsForGroup(groupId: number): Tab[] {
-  return _.filter(tabsStore.getTabset(tabsetId.value)?.tabs,
-    //@ts-ignore
-    (t: Tab) => t?.chromeTab.groupId === groupId)
+  return _.orderBy(
+    _.filter(
+      tabsStore.getTabset(tabsetId.value)?.tabs,
+      // @ts-ignore
+      (t: Tab) => t?.chromeTab.groupId === groupId),
+    getOrder(), [orderDesc.value ? 'desc' : 'asc'])
 }
 
 const update = (tabsetIdent: object) => {
@@ -395,6 +439,9 @@ const setView = (view: string) => TabsetService.setView(tabsetId.value, view)
 
 const specialView = (): boolean =>
   tabsStore.getCurrentTabset?.view === 'kanban' || tabsStore.getCurrentTabset?.view === 'canvas'
+
+const toggleSorting = () => TabsetService.toggleSorting(tabsetId.value)
+const toggleOrder = () => orderDesc.value = !orderDesc.value
 
 </script>
 
