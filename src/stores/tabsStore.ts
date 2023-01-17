@@ -288,7 +288,7 @@ export const useTabsStore = defineStore('tabs', {
       LoggingService.logger.debug("--- updateOrCreateTabset start -------------")
       const foundTS: Tabset | undefined = _.find([...this.tabsets.values()], ts => ts.name === tabsetName)
       let ts: Tabset = null as unknown as Tabset
-      const tabsetExtensionTab = await ChromeApi.getCurrentTab()
+      //const tabsetExtensionTab = await ChromeApi.getCurrentTab()
       const tabGroupsStore = useTabGroupsStore()
       const currentSpace = useSpacesStore().space
       if (foundTS) {
@@ -320,14 +320,7 @@ export const useTabsStore = defineStore('tabs', {
       } else {
         LoggingService.logger.debug("didn't find existing tabset, creating new...")
         const useId = uid()
-        ts = new Tabset(useId, tabsetName, _.map(
-            _.filter(
-              tabs, t => {
-                //console.log("comparing", t.chromeTab?.url, tabsetExtensionTab.url, t.chromeTab?.url !== tabsetExtensionTab.url)
-                return t.chromeTab?.url !== tabsetExtensionTab.url
-              }),
-            t => t),
-          _.map(tabGroupsStore.tabGroups, tg => new Group(uid(), tg)))
+        ts = new Tabset(useId, tabsetName, tabs, _.map(tabGroupsStore.tabGroups, tg => new Group(uid(), tg)))
         this.tabsets.set(useId, ts)
       }
       LoggingService.logger.debug("currentSpace", currentSpace)

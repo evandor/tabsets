@@ -2,7 +2,7 @@
   <div class="column" style="height:96%">
     <div class="col">
 
-      <q-toolbar class="text-primary lightgrey" v-if="tabsStore.tabsets.size > 0">
+      <q-toolbar class="text-primary lightgrey">
         <div class="row fit">
           <div class="col-xs-12 col-md-5">
             <q-toolbar-title>

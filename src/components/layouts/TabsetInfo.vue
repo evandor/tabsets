@@ -72,6 +72,13 @@
           <!--          <q-btn flat round color="primary" size="11px" icon="save" @click.stop="saveTab(notificationStore.selectedTab)">-->
 
           <!--          </q-btn>-->
+
+          <q-icon v-if="notBexMode()"
+                  name="o_share" class="q-mr-lg cursor-pointer" color="positive" size="18px"
+                  @click="shareDialog(tabset)">
+            <q-tooltip>Share this tabset...</q-tooltip>
+          </q-icon>
+
           <q-icon name="delete_outline" class="cursor-pointer" color="negative" size="18px"
                   @click="deleteDialog(tabset)">
             <q-tooltip>Delete this tabset...</q-tooltip>
@@ -88,7 +95,6 @@
 <script setup lang="ts">
 import {useQuasar} from "quasar";
 import {useNotificationsStore} from "src/stores/notificationsStore";
-import NavigationService from "src/services/NavigationService"
 import {ref, watchEffect} from "vue";
 import {date} from "quasar"
 import {useFeatureTogglesStore} from "src/stores/featureTogglesStore";
@@ -99,6 +105,7 @@ import {useTabsStore} from "src/stores/tabsStore";
 import {Tabset, TabsetType} from "src/models/Tabset";
 import {useUtils} from "src/services/Utils";
 import DeleteTabsetDialog from "components/dialogues/DeleteTabsetDialog.vue";
+import ShareTabsetDialog from "components/dialogues/ShareTabsetDialog.vue";
 
 const tabsStore = useTabsStore()
 const notificationStore = useNotificationsStore()
@@ -122,5 +129,16 @@ const deleteDialog = (tabset: Tabset) =>
       tabsetName: tabset.name
     }
   })
+
+const shareDialog = (tabset: Tabset) =>
+  $q.dialog({
+    component: ShareTabsetDialog,
+    componentProps: {
+      tabsetId: tabset.id,
+      tabsetName: tabset.name
+    }
+  })
+
+const notBexMode = () => process.env.MODE !== 'bex'
 
 </script>

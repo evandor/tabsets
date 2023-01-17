@@ -6,7 +6,7 @@
 
   <q-list>
     <q-item
-      v-for="f in optionalFeatures"
+      v-for="f in filterBexMode(optionalFeatures)"
       clickable v-ripple
       :active="f.ident === selected"
       @click="showFeature(f)">
@@ -25,7 +25,7 @@
 
   <q-list>
     <q-item
-      v-for="f in experimantalFeatures"
+      v-for="f in filterBexMode(experimantalFeatures)"
       clickable v-ripple
       :active="f.ident === selected"
       @click="showFeature(f)">
@@ -79,38 +79,43 @@
 <script setup lang="ts">
 
 import {useTabsStore} from "src/stores/tabsStore"
-import {ref, watchEffect} from "vue";
+import {ref} from "vue";
 import {useRouter} from "vue-router";
-import {Tab} from "src/models/Tab";
-import TabsetService from "src/services/TabsetService";
 import {usePermissionsStore} from "stores/permissionsStore";
+import _ from "lodash"
 
 const tabsStore = useTabsStore()
 const router = useRouter()
 const selected = ref('')
 
 const optionalFeatures = [
-  {ident: 'opentabsThreshold', name: 'Open Tabs Warning', icon: 'o_tab', target: '/features/opentabsThreshold'},
-  {ident: 'bookmarks', name: 'Bookmarks', icon: 'o_bookmarks', target: '/features/bookmarks'},
-  {ident: 'pendingTabs', name: 'New Tabs Tracking', icon: 'o_tab', target: '/features/pendingTabs'},
+  {
+    ident: 'opentabsThreshold',
+    name: 'Open Tabs Warning',
+    icon: 'o_tab',
+    bexOnly: true,
+    target: '/features/opentabsThreshold'
+  },
+  {ident: 'bookmarks', name: 'Bookmarks', icon: 'o_bookmarks', bexOnly: true, target: '/features/bookmarks'},
+  {ident: 'pendingTabs', name: 'New Tabs Tracking', icon: 'o_tab', bexOnly: true, target: '/features/pendingTabs'},
   {ident: 'details', name: 'Tab(set) Details View', icon: 'o_tab', target: '/features/details'},
   {ident: 'groupedByDomain', name: 'Group By Domain View', icon: 'o_dns', target: '/features/groupedByDomain'},
-  {ident: 'thumbnails', name: 'Thumbnails', icon: 'o_image', target: '/features/thumbnails'},
-  {ident: 'analyseTabs', name: 'Analyse Tabs', icon: 'o_analytics', target: '/features/analyseTabs'}
+  {ident: 'thumbnails', name: 'Thumbnails', icon: 'o_image', bexOnly: true, target: '/features/thumbnails'},
+  {ident: 'analyseTabs', name: 'Analyse Tabs', icon: 'o_analytics', bexOnly: true, target: '/features/analyseTabs'}
 ]
 
 const experimantalFeatures = [
   // {ident: 'mhtml', name: 'Saving Pages', icon: 'o_bookmarks', target: '/features/pageCapture'},
   // {ident: 'scheduled', name: 'Schedule Tabs', icon: 'o_update', target: '/features/scheduled'},
-  {ident: 'sessions', name: 'Sessions', icon: 'o_explore', target: '/features/sessions'},
-  {ident: 'history', name: 'History', icon: 'o_history', target: '/features/history'}
+  {ident: 'sessions', name: 'Sessions', icon: 'o_explore', bexOnly: true, target: '/features/sessions'},
+  {ident: 'history', name: 'History', icon: 'o_history', bexOnly: true, target: '/features/history'}
 ]
 
 const plannedFeatures = [
   // {ident: 'mhtml', name: 'Saving Pages', icon: 'o_bookmarks', target: '/features/pageCapture'},
   // {ident: 'scheduled', name: 'Schedule Tabs', icon: 'o_update', target: '/features/scheduled'},
   {ident: 'spaces', name: 'Spaces', icon: 'o_history', target: '/features/spaces'},
-  {ident: 'windows', name: 'Multiple Windows', icon: 'o_history', target: '/features/windows'},
+  {ident: 'windows', name: 'Multiple Windows', icon: 'o_history', bexOnly: true, target: '/features/windows'},
   {ident: 'scheduled', name: 'Scheduled Tabs', icon: 'o_history', target: '/features/scheduled'},
   {ident: 'oldTabs', name: 'Old Tabs View', icon: 'o_history', target: '/features/oldTabs'}
 ]
@@ -144,5 +149,9 @@ const showFeature = (f: any) => {
   selected.value = f.ident
   router.push(f.target)
 }
+
+const checkBexMode = (f: any) => process.env.MODE === "bex" ? true : !f.bexOnly
+
+const filterBexMode = (fs: any[]) => _.filter(fs, (f: any) => checkBexMode(f))
 
 </script>
