@@ -15,6 +15,7 @@ class ChromeBookmarkListeners {
 
 
   initListeners() {
+    if (process.env.MODE === 'bex') {
     chrome.permissions.contains(
       {permissions: ["bookmarks"]},
       (res: boolean) => {
@@ -27,15 +28,18 @@ class ChromeBookmarkListeners {
           chrome.bookmarks.onChildrenReordered.addListener(this.onChildrenReorderedListener)
         }
       })
+    }
   }
 
   removeListeners() {
-    console.log("removing chrome bookmark listeners")
-    chrome.bookmarks.onCreated.removeListener(this.onCreatedListener)
-    chrome.bookmarks.onMoved.removeListener(this.onMovedListener)
-    chrome.bookmarks.onRemoved.removeListener(this.onRemovedListener)
-    chrome.bookmarks.onChanged.removeListener(this.onChangedListener)
-    chrome.bookmarks.onChildrenReordered.removeListener(this.onChildrenReorderedListener)
+    if (process.env.MODE === 'bex') {
+      console.log("removing chrome bookmark listeners")
+      chrome.bookmarks.onCreated.removeListener(this.onCreatedListener)
+      chrome.bookmarks.onMoved.removeListener(this.onMovedListener)
+      chrome.bookmarks.onRemoved.removeListener(this.onRemovedListener)
+      chrome.bookmarks.onChanged.removeListener(this.onChangedListener)
+      chrome.bookmarks.onChildrenReordered.removeListener(this.onChildrenReorderedListener)
+    }
   }
 
   clearWorking() {

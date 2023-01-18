@@ -1,32 +1,37 @@
 import {Tab} from "src/models/Tab";
 import {useNotificationsStore} from "stores/notificationsStore";
+import {openURL} from "quasar";
 
 class NavigationService {
 
   openOrCreateTab(withUrl: string) {
-    chrome.tabs.query({currentWindow: true}, (t: chrome.tabs.Tab[]) => {
-      let found = false;
-      t.filter(r => r.url && !r.url.startsWith("chrome"))
-        .map(r => {
-          if (withUrl === r.url) {
-            if (!found) { // highlight only first hit
-              found = true
-              chrome.tabs.highlight({tabs: r.index});
+    if (process.env.MODE === "bex") {
+      chrome.tabs.query({currentWindow: true}, (t: chrome.tabs.Tab[]) => {
+        let found = false;
+        t.filter(r => r.url && !r.url.startsWith("chrome"))
+          .map(r => {
+            if (withUrl === r.url) {
+              if (!found) { // highlight only first hit
+                found = true
+                chrome.tabs.highlight({tabs: r.index});
+              }
             }
-          }
-        });
-      if (!found) {
+          });
+        if (!found) {
 
-        chrome.tabs.create({
-          active: true,
-          pinned: false,
-          url: withUrl
-        })// @ts-ignore
-          .catch(e => {
-            console.log("got error", e)
-          })
-      }
-    });
+          chrome.tabs.create({
+            active: true,
+            pinned: false,
+            url: withUrl
+          })// @ts-ignore
+            .catch(e => {
+              console.log("got error", e)
+            })
+        }
+      })
+    } else {
+      openURL(withUrl)
+    }
   }
 
   openTab(tabId: number) {

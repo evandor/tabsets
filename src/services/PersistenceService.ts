@@ -2,6 +2,7 @@ import {Tabset} from "src/models/Tabset";
 import {Space} from "src/models/Space";
 import {MHtml} from "src/models/MHtml";
 import {Tab} from "src/models/Tab";
+import {Notification} from "src/models/Notification";
 import {SearchDoc} from "src/models/SearchDoc";
 import {LogLevel} from "logging-library";
 import {Predicate} from "src/domain/Types";
@@ -36,6 +37,10 @@ interface PersistenceService {
   cleanUpRequests(): Promise<void>
 
   saveStats(date: string, dataset: object): void
+
+  getNotifications(onlyNew: boolean): Promise<Notification[]>
+  addNotification(notification: Notification): Promise<void>
+  notificationRead(notificationId: string): Promise<void>
 
   getLogs(predicate: Predicate<LogEntry>): Promise<LogEntry[]>
   saveLog(context: string, level: LogLevel, msg: string, ...args: any[]):Promise<any>

@@ -22,6 +22,11 @@
                   v-if="tabset.type === TabsetType.SESSION">
             <q-tooltip>This is a 'session' tabset, keeping track of your tabs automatically</q-tooltip>
           </q-icon>
+          <!-- !MIT -->
+          <q-icon name="share" color="primary" class="q-ml-none q-mr-sm"
+                  v-if="tabset.sharedBy">
+            <q-tooltip>This tabset is shared by {{tabset.sharedBy}}</q-tooltip>
+          </q-icon>
           {{ tabsetLabel(tabset) }}
         </template>
       </q-item-label>

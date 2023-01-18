@@ -231,25 +231,7 @@ export const useTabsStore = defineStore('tabs', {
       markDuplicates(current)
       this.browserTabset = current
     },
-    // initListeners() {
-    //   if (process.env.MODE === 'bex') {
-    //     console.debug("initializing chrome tab listeners")
-    //
-    //     chrome.tabs.onCreated.addListener((tab: chrome.tabs.Tab) => ChromeListeners.onCreated(tab))
-    //     chrome.tabs.onUpdated.addListener((number, info, tab) => ChromeListeners.onUpdated(number, info, tab))
-    //     chrome.tabs.onMoved.addListener((number, info) => ChromeListeners.onMoved(number, info))
-    //     chrome.tabs.onRemoved.addListener((number, info) => ChromeListeners.onRemoved(number, info))
-    //     chrome.tabs.onReplaced.addListener((n1, n2) => ChromeListeners.onReplaced(n1, n2))
-    //     chrome.tabs.onActivated.addListener((info) => ChromeListeners.onActivated(info))
-    //     chrome.tabs.onAttached.addListener((number, info) => ChromeListeners.onAttached(number, info))
-    //     chrome.tabs.onDetached.addListener((number, info) => ChromeListeners.onDetached(number, info))
-    //     chrome.tabs.onHighlighted.addListener((info) => ChromeListeners.onHighlighted(info))
-    //     chrome.tabs.onZoomChange.addListener((info) => ChromeListeners.onZoomChange(info))
-    //
-    //     chrome.runtime.onMessage.addListener((request, sender, sendResponse) => ChromeListeners.onMessage(request, sender, sendResponse))
-    //   }
-    //
-    // },
+
     tabsForGroup(groupId: number): chrome.tabs.Tab[] {
       // @ts-ignore
       return _.filter(this.tabs, (t: chrome.tabs.Tab) => t.groupId === groupId)

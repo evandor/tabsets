@@ -7,6 +7,7 @@
   "private": true,
   "scripts": {
     "dev": "quasar dev -m bex",
+    "dev spa": "quasar dev -m spa",
     "dev stage prod": "stage=production quasar dev -m bex",
     "build": "quasar build -m bex",
     "icon": "icongenie generate -i src/assets/icon.png",

@@ -18,6 +18,7 @@ import {Predicate} from "src/domain/Types";
 import {TabLogger} from "src/logging/TabLogger";
 import {StatsEntry} from "src/models/StatsEntry";
 import {uid} from "quasar";
+import {Notification, NotificationStatus} from "src/models/Notification";
 
 class IndexedDbPersistenceService implements PersistenceService {
 
@@ -464,6 +465,10 @@ class IndexedDbPersistenceService implements PersistenceService {
           const store = db.createObjectStore('links');
           store.createIndex("expires", "expires", {unique: false});
         }
+        if (!db.objectStoreNames.contains('notifications')) {
+          console.log("creating db notifications")
+          db.createObjectStore('notifications');
+        }
         if (!db.objectStoreNames.contains('logs')) {
           console.log("creating db logs")
           db.createObjectStore('logs', {autoIncrement: true});
@@ -532,6 +537,26 @@ class IndexedDbPersistenceService implements PersistenceService {
     }
     return Promise.reject('db not available (yet)')
   }
+
+  getNotifications(onlyNew: boolean = true): Promise<Notification[]> {
+    return this.db.getAll('notifications')
+  }
+
+  addNotification(notification: Notification): Promise<void> {
+    return this.db.add('notifications', notification, notification.id)
+      .then((res) => Promise.resolve())
+  }
+
+  notificationRead(notificationId: string): Promise<void> {
+    const objectStore = this.db.transaction('notifications', 'readwrite').objectStore('notifications');
+    return objectStore.get(notificationId)
+      .then(res => {
+        res.status = NotificationStatus.READ
+        res.updated = new Date().getTime()
+        objectStore.put(res, notificationId)
+      })
+  }
+
 }
 
 export default new IndexedDbPersistenceService()

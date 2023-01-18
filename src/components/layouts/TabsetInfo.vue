@@ -1,4 +1,5 @@
 <template>
+  <!-- !== MIT -->
   <div>
     <div class="row items-baseline q-mx-md q-pa-none" style="width:265px;border-top:1px dotted grey">
       <div class="col-12 q-ma-none">
@@ -105,7 +106,6 @@ import {useTabsStore} from "src/stores/tabsStore";
 import {Tabset, TabsetType} from "src/models/Tabset";
 import {useUtils} from "src/services/Utils";
 import DeleteTabsetDialog from "components/dialogues/DeleteTabsetDialog.vue";
-import ShareTabsetDialog from "components/dialogues/ShareTabsetDialog.vue";
 
 const tabsStore = useTabsStore()
 const notificationStore = useNotificationsStore()
@@ -124,15 +124,6 @@ watchEffect(() => tabset.value = tabsStore.getCurrentTabset)
 const deleteDialog = (tabset: Tabset) =>
   $q.dialog({
     component: DeleteTabsetDialog,
-    componentProps: {
-      tabsetId: tabset.id,
-      tabsetName: tabset.name
-    }
-  })
-
-const shareDialog = (tabset: Tabset) =>
-  $q.dialog({
-    component: ShareTabsetDialog,
     componentProps: {
       tabsetId: tabset.id,
       tabsetName: tabset.name

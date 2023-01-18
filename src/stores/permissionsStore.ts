@@ -16,6 +16,9 @@ export const usePermissionsStore = defineStore('permissions', () => {
   const activeFeatures = ref<string[]>($q.localStorage.getItem('ui.activeFeatures') as string[] || [])
 
   async function initialize() {
+    if (process.env.MODE !== 'bex') {
+      return
+    }
     console.debug("initializing permissions Store")
     // @ts-ignore
     permissions.value = await chrome.permissions.getAll()

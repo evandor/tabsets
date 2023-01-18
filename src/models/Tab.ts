@@ -1,5 +1,3 @@
-import {SavePendingTabToCurrentTabsetCommand} from "src/domain/commands/SavePendingTabToCurrentTabsetCommand";
-
 export enum UrlExtension {
   HTML = "HTML",
   RSS = "RSS",

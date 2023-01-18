@@ -62,6 +62,21 @@
           <q-tooltip>Logs (developer mode)</q-tooltip>
         </q-btn>
 
+        <div v-if="unreadNotifications().length > 0">
+          <q-btn flat icon="o_notifications" class="q-mr-md cursor-pointer">
+            <q-badge floating color="red" rounded />
+          </q-btn>
+          <q-menu :offset="[0, 7]">
+            <q-list style="min-width: 200px">
+              <q-item>New Notifications:</q-item>
+              <q-item v-for="n in unreadNotifications()"
+                clickable v-close-popup @click="showNotificationDialog(n.id)">
+                <q-item-section>{{ n.title }}</q-item-section>
+              </q-item>
+            </q-list>
+          </q-menu>
+        </div>
+
         <!--        <q-btn class="q-mr-md" icon="o_help" size="12px" style="width:24px" flat @click="router.push('/help/howto')">-->
         <!--          <q-tooltip>About tabsets browser extension v{{ appVersion }}</q-tooltip>-->
         <!--        </q-btn>-->
@@ -124,8 +139,9 @@ import UnassignedTabsWidget from 'src/components/widgets/UnassignedTabsWidget.vu
 import SearchWidget from 'src/components/widgets/SearchWidget.vue'
 import {useUiService} from "src/services/useUiService";
 import {useUiStore} from "stores/uiStore";
-import NavigationEmpty from "components/NavigationEmpty.vue";
+import NotificationDialog from "components/dialogues/NotificationDialog.vue"
 import {usePermissionsStore} from "stores/permissionsStore";
+import {Notification, NotificationStatus} from "src/models/Notification";
 
 const router = useRouter()
 const tabsStore = useTabsStore()
@@ -226,5 +242,12 @@ const installNewVersion = () => {
   chrome.runtime.reload()
 }
 
+const unreadNotifications = () => _.filter(notificationsStore.notifications, (n: Notification) => n.status === NotificationStatus.UNREAD)
+
+const showNotificationDialog = (nId: string) => $q.dialog({
+  component: NotificationDialog, componentProps: {
+    notificationId: nId
+  }
+})
 
 </script>

@@ -22,6 +22,7 @@ import {useRoute, useRouter} from "vue-router";
 import ChromeBookmarkListeners from "src/services/ChromeBookmarkListeners";
 import {usePermissionsStore} from "stores/permissionsStore";
 import LoggingService from "src/services/LoggingService";
+import NotificationsService from "src/services/NotificationsService";
 
 const tabsStore = useTabsStore()
 const tabGroupsStore = useTabGroupsStore()
@@ -85,6 +86,7 @@ if (isNewTabPage()) {
     .then(() => {
       // init services
       LoggingService.init()
+      NotificationsService.init()
       tabsetService.setLocalStorage(localStorage)
       spacesService.init()
         .then(() => {

@@ -67,6 +67,9 @@ class ChromeApi {
   }
 
   init() {
+    if (process.env.MODE !== 'bex') {
+      return
+    }
     console.debug("initializing ChromeApi")
 
     chrome.alarms.create("housekeeping", {periodInMinutes: CLEANUP_PERIOD_IN_MINUTES})

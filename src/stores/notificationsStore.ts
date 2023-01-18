@@ -1,5 +1,7 @@
 import {defineStore} from "pinia";
 import {Tab} from "src/models/Tab";
+import {Notification} from "src/models/Notification"
+import _ from "lodash"
 
 export const useNotificationsStore = defineStore('notifications', {
     state: () => ({
@@ -11,7 +13,8 @@ export const useNotificationsStore = defineStore('notifications', {
       bookmarksActive: false,
       bookmarksExpanded: [] as unknown as string[],
       fabHasElementAnimation: false,
-      updateToVersion: ''
+      updateToVersion: '',
+      notifications: [] as unknown as Notification[]
     }),
     getters: {},
     actions: {
@@ -31,9 +34,12 @@ export const useNotificationsStore = defineStore('notifications', {
       updateAvailable(available: boolean, version: string = '') {
         this.updateToVersion = available ? version : '';
       },
-      expandForBookmarkId(bookmarkId: string) {
-        bookmarksExpanded: [] as unknown as string[]
-
+      getNotification(notificationId: string): Notification | undefined {
+        const r: any[] = _.filter(this.notifications, (n: Notification) => n.id === notificationId)
+        if (r && r.length > 0) {
+          return r[0]
+        }
+        return undefined
       }
     }
   }
