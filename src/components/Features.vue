@@ -99,6 +99,7 @@ const optionalFeatures = [
   {ident: 'bookmarks', name: 'Bookmarks', icon: 'o_bookmarks', bexOnly: true, target: '/features/bookmarks'},
   {ident: 'pendingTabs', name: 'New Tabs Tracking', icon: 'o_tab', bexOnly: true, target: '/features/pendingTabs'},
   {ident: 'details', name: 'Tab(set) Details View', icon: 'o_tab', target: '/features/details'},
+  {ident: 'sidebar', name: 'Sidebar View', icon: 'o_input', target: '/features/sidebar'},
   {ident: 'groupedByDomain', name: 'Group By Domain View', icon: 'o_dns', target: '/features/groupedByDomain'},
   {ident: 'thumbnails', name: 'Thumbnails', icon: 'o_image', bexOnly: true, target: '/features/thumbnails'},
   {ident: 'analyseTabs', name: 'Analyse Tabs', icon: 'o_analytics', bexOnly: true, target: '/features/analyseTabs'}

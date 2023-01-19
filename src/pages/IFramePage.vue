@@ -1,45 +1,49 @@
 <template>
 
-  <q-page class="greyBorderTop">
-    <q-toolbar class="text-primary">
-      <div class="row fit">
-        <div class="col-xs-12 col-md-5">
-          <q-toolbar-title class="q-mb-lg">
-            <div class="row justify-start items-baseline">
-              <div class="col-1"><span class="text-dark">Page: {{ tabId }}</span></div>
-            </div>
-            <div class="text-caption">Created {{ date.formatDate(created, 'DD.MM.YYYY HH:mm') }}</div>
-          </q-toolbar-title>
-        </div>
-        <div class="col-xs-12 col-md-7 text-right">
-
-          <q-btn
-            flat dense icon="o_open_in_new"
-            color="primary"
-            label="Open in new tab"
-            class="q-mr-md"
-            @click="openInNewTab"
-          >
-            <q-tooltip>Open in new tab</q-tooltip>
-          </q-btn>
-
-          <q-btn
-            flat dense icon="o_reply"
-            color="primary"
-            label="Back to tabsets"
-            class="q-mr-md"
-            @click="router.push('/tabset')"
-          >
-            <q-tooltip>Back to tabsets</q-tooltip>
-          </q-btn>
-
-        </div>
+  <q-toolbar class="text-primary lightgrey">
+    <div class="row fit">
+      <div class="col-xs-12 col-md-5">
+        <q-toolbar-title>
+          <div class="row justify-start items-baseline">
+            <div class="col-1"><span class="text-dark">Page: {{ title }}</span> <span
+              class="text-primary">
+            </span></div>
+          </div>
+        </q-toolbar-title>
       </div>
-    </q-toolbar>
+      <div class="col-xs-12 col-md-7 text-right">
+        <q-btn
+          flat dense icon="o_open_in_new"
+          color="primary"
+          label="Open in new tab"
+          class="q-mr-md"
+          @click="openInNewTab"
+        >
+          <q-tooltip>Open in new tab</q-tooltip>
+        </q-btn>
 
-    <iframe ref="iFrameRef" id="tabIFrame" :src='src' frameBorder="0" :style="iFrameStyle"/>
+        <q-btn
+          flat dense icon="o_reply"
+          color="primary"
+          label="Back to tabsets"
+          class="q-mr-md"
+          @click="router.push('/tabset')"
+        >
+          <q-tooltip>Back to tabsets</q-tooltip>
+        </q-btn>
+      </div>
+    </div>
+  </q-toolbar>
 
-  </q-page>
+
+    <InfoMessageWidget
+      class="greyBorderTop"
+      :probability="1"
+      ident="iframePage_general"
+      hint="Be aware that many pages cannot be displayed here as they defined a policy not to be displayed in an iFrame."/>
+
+    <iframe ref="iFrameRef" id="tabIFrame" :src='src' frameBorder="0" class="greyBorderTop"/>
+
 
 </template>
 
@@ -51,38 +55,24 @@ import {date} from "quasar"
 import {useTabsStore} from "stores/tabsStore";
 import _ from "lodash"
 import TabsetService from "src/services/TabsetService";
+import InfoMessageWidget from "components/widgets/InfoMessageWidget.vue";
 
 const route = useRoute()
 const router = useRouter()
 
 const tabId = ref()
-const title = ref()
+const title = ref('')
 const data = ref<string[]>([])
 const src = ref('data:text/html,<p>loading...</p>')
-const created = ref('')
 const iFrameRef = ref(null)
 
-// const currentLog = console.log
-// console.log = (msg, args) => {
-//   if (msg !== undefined) {
-//     data.value.push(msg);
-//     //console.log("msg:",msg)
-//   }
-// //  currentLog.apply(null, args);
-//   if (args) {
-//     currentLog.apply(this, Array.prototype.slice.call(args));
-//   }
-// }
-
-// window.onerror = function() {
-//   alert("Error occurred while loading image");
-// };
 
 onMounted(() => {
   const iFrame = iFrameRef.value
   if (iFrame) {
+    console.log("window.innerHeight", window.innerHeight)
     // @ts-ignore
-    iFrame.setAttribute("style", "overflow:hidden;height:" + (window.innerHeight - 50) + "px;width:100%;border:0px");
+    iFrame.setAttribute("style", "overflow:hidden;height:" + (window.innerHeight - 106) + "px;width:100%;border:0px");
   }
 })
 
@@ -91,11 +81,9 @@ watchEffect(async () => {
   tabId.value = route.params.tabId as string
   const found = _.find(useTabsStore().getCurrentTabs, t => t.id === route.params.tabId)
   if (found && found.chromeTab.url) {
-    const content = await TabsetService.getContentForUrl(found.chromeTab.url)
+    title.value = found.chromeTab?.title || 'unknown'
     const request = await TabsetService.getRequestForUrl(found.chromeTab.url)
-    // const iFrame: HTMLIFrameElement = window.document?.getElementById('tabIFrame') as unknown as HTMLIFrameElement
-    // iFrame.setAttribute("style", "overflow:hidden;height:" + (window.innerHeight - 50) + "px;width:100%;border:0px");
-    if (request.requestInfo && _.find(Object.values(request.requestInfo.headers), (v: any) => v.name === 'x-frame-options')) {
+    if (request && request.requestInfo && _.find(Object.values(request.requestInfo.headers), (v: any) => v.name === 'x-frame-options')) {
       src.value = 'data:text/html,<p>cannot open this page in iFrame ;(</p>'
     } else {
       src.value = found.chromeTab.url || 'data:text/html,<p>loading....</p>'
@@ -109,19 +97,9 @@ watchEffect(async () => {
 const openInNewTab = () => console.log("not implemented")
 
 const iFrameStyle = () => {
-  const v = "overflow:hidden;height:" + (window.innerHeight - 50) + "px;width:100%;border:0px"
+  const v = "overflow:hidden;height:" + (window.innerHeight - 80) + "px;width:100%;border:0px"
   console.log("v", v)
   return v
 }
 
 </script>
-
-<style lang="sass" scoped>
-
-.lightgrey
-  background-color: $lightgrey
-
-.greyBorderTop
-  border-top: 1px solid $bordergrey
-
-</style>

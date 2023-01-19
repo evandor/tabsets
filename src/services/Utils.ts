@@ -8,8 +8,11 @@ export function useUtils() {
   const createDataTestIdentifier = (prefix: string, url: string) =>
     prefix + "_" + url.replace("https://", "").replaceAll('.','').replaceAll("/", "")
 
+  const inBexMode = () => process.env.MODE === 'bex'
+
   return {
     formatDate,
-    createDataTestIdentifier
+    createDataTestIdentifier,
+    inBexMode
   }
 }

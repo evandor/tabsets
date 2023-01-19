@@ -10,7 +10,7 @@
                src="favicon.ico" height="32px" width="32px"/>
 
         <q-toolbar-title @click.stop="goHome()" class="cursor-pointer"
-                         style="min-width:130px" shrink>Tabsets
+                         style="min-width:200px" shrink>{{ title() }}
         </q-toolbar-title>
 
         <q-space/>
@@ -142,6 +142,7 @@ import {useUiStore} from "stores/uiStore";
 import NotificationDialog from "components/dialogues/NotificationDialog.vue"
 import {usePermissionsStore} from "stores/permissionsStore";
 import {Notification, NotificationStatus} from "src/models/Notification";
+import {useUtils} from "src/services/Utils";
 
 const router = useRouter()
 const tabsStore = useTabsStore()
@@ -166,6 +167,8 @@ const route = useRoute()
 const spacesOptions = ref<object[]>([])
 const search = ref('')
 const $q = useQuasar()
+
+const {inBexMode} = useUtils()
 
 $q.loadingBar.setDefaults({
   color: 'positive',
@@ -218,7 +221,7 @@ function submitSearch() {
 }
 
 const title = () => {
-  return spacesStore.spaces.size === 0 ? 'Tabsets' : 'Tabsets - Space: '
+  return inBexMode() ? 'Tabsets' : 'Tabsets ('+process.env.MODE+')'
 }
 
 const goHome = () => router.push("/")

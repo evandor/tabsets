@@ -74,7 +74,7 @@
 
           <!--          </q-btn>-->
 
-          <q-icon v-if="notBexMode()"
+          <q-icon v-if="!inBexMode()"
                   name="o_share" class="q-mr-lg cursor-pointer" color="positive" size="18px"
                   @click="shareDialog(tabset)">
             <q-tooltip>Share this tabset...</q-tooltip>
@@ -113,7 +113,7 @@ const featuresStore = useFeatureTogglesStore()
 const router = useRouter()
 const $q = useQuasar()
 
-const {formatDate} = useUtils()
+const {formatDate, inBexMode} = useUtils()
 
 const tabset = ref<Tabset | undefined>(undefined)
 const content = ref('')
@@ -129,7 +129,5 @@ const deleteDialog = (tabset: Tabset) =>
       tabsetName: tabset.name
     }
   })
-
-const notBexMode = () => process.env.MODE !== 'bex'
 
 </script>

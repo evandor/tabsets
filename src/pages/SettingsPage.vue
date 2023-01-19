@@ -316,16 +316,16 @@
         </div>
       </div>
 
-      <div class="row q-pa-md">
-        <div class="col-3"><b>sidebar</b></div>
-        <div class="col-3">the sidebar shows the current tabs on the left and let's you open the tabs in an inline
-          view.
-        </div>
-        <div class="col-1"></div>
-        <div class="col-5">
-          <q-toggle v-model="sidebarEnabled"/>
-        </div>
-      </div>
+<!--      <div class="row q-pa-md">-->
+<!--        <div class="col-3"><b>sidebar</b></div>-->
+<!--        <div class="col-3">the sidebar shows the current tabs on the left and let's you open the tabs in an inline-->
+<!--          view.-->
+<!--        </div>-->
+<!--        <div class="col-1"></div>-->
+<!--        <div class="col-5">-->
+<!--          <q-toggle v-model="sidebarEnabled"/>-->
+<!--        </div>-->
+<!--      </div>-->
 
       <div class="row q-pa-md">
         <div class="col-3"><b>experimental view</b></div>
@@ -420,7 +420,6 @@ const currentNewTabTabsetId = ref(useUiStore().tabsetIdForNewTab)
 
 const debugEnabled = ref<boolean>(featuresStore.isEnabled('debug'))
 const spacesEnabled = ref<boolean>(featuresStore.isEnabled('spaces'))
-const sidebarEnabled = ref<boolean>(featuresStore.isEnabled('sidebar'))
 const experimentalViewsEnabled = ref<boolean>(featuresStore.isEnabled('experimentalViews'))
 const statsEnabled = ref<boolean>(featuresStore.isEnabled('stats'))
 const devEnabled = ref<boolean>(featuresStore.isEnabled('dev'))
@@ -513,7 +512,7 @@ watchEffect(() => {
 watchEffect(() => {
   featuresStore.setFeatureToggle("debug", debugEnabled.value)
   featuresStore.setFeatureToggle("spaces", spacesEnabled.value)
-  featuresStore.setFeatureToggle("sidebar", sidebarEnabled.value)
+  //featuresStore.setFeatureToggle("sidebar", sidebarEnabled.value)
   featuresStore.setFeatureToggle("experimentalViews", experimentalViewsEnabled.value)
   featuresStore.setFeatureToggle("stats", statsEnabled.value)
   featuresStore.setFeatureToggle("dev", devEnabled.value)

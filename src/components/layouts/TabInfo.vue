@@ -213,7 +213,7 @@ const editNoteDialog = (tab: Tab) => {
 // TODO make command
 const saveTab = (tab: Tab) => {
   if (!usePermissionsStore().hasPermission('pageCapture')) {
-
+    console.log("missing permission pageCapture")
   } else if (tab.chromeTab.id) {
     console.log("capturing", tab.chromeTab)
     chrome.pageCapture.saveAsMHTML(

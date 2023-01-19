@@ -14,7 +14,8 @@
       </q-tab>
     </Transition>
 
-    <q-tab name="openTabs" icon="o_table_rows" @click="tabsClicked(LeftDrawerTabs.OPEN_TABS)">
+    <q-tab v-if="inBexMode()"
+           name="openTabs" icon="o_table_rows" @click="tabsClicked(LeftDrawerTabs.OPEN_TABS)">
       <q-badge v-if="badgeThreshold()"
                floating
                text-color="white"
@@ -39,7 +40,9 @@
       <q-tab
         v-if="permissionsStore.hasFeature('groupedByDomain')"
         name="groupedByHostTabs" icon="o_dns" @click="tabsClicked(LeftDrawerTabs.GROUP_BY_HOST_TABS)">
-        <q-tooltip class="tooltip" anchor="center right" self="center left" :delay="200">Your tabs grouped by host, if there are at least two tabs</q-tooltip>
+        <q-tooltip class="tooltip" anchor="center right" self="center left" :delay="200">Your tabs grouped by host, if
+          there are at least two tabs
+        </q-tooltip>
       </q-tab>
     </Transition>
 
@@ -48,10 +51,14 @@
       <q-tooltip class="tooltip" anchor="center right" self="center left" :delay="200">Your saved tabs</q-tooltip>
     </q-tab>
 
-    <q-tab v-if="featureToggles.isEnabled('sidebar')"
-           name="sidebar" icon="o_tab" @click="tabsClicked(LeftDrawerTabs.SIDEBAR)">
-      <q-tooltip class="tooltip" anchor="center right" self="center left" :delay="200">Your current tabset as 'sidebar'</q-tooltip>
-    </q-tab>
+    <Transition name="colorized-appear">
+      <q-tab v-if="permissionsStore.hasFeature('sidebar')"
+             name="sidebar" icon="o_input" @click="tabsClicked(LeftDrawerTabs.SIDEBAR)">
+        <q-tooltip class="tooltip" anchor="center right" self="center left" :delay="200">Your current tabset as
+          'sidebar'
+        </q-tooltip>
+      </q-tab>
+    </Transition>
 
     <q-tab v-if="rssTabsCount > 0"
            name="rss" icon="o_rss_feed" @click="tabsClicked(LeftDrawerTabs.RSS)">
@@ -97,6 +104,9 @@ import {useSettingsStore} from "stores/settingsStore";
 import {LeftDrawerTabs} from "stores/uiStore";
 import {useUiService} from "src/services/useUiService";
 import {usePermissionsStore} from "stores/permissionsStore";
+import {useUtils} from "src/services/Utils";
+import {MHtml} from "src/models/MHtml";
+import MHtmlService from "src/services/MHtmlService";
 
 const router = useRouter()
 
@@ -112,6 +122,8 @@ const tab = ref<LeftDrawerTabs>(uiService.leftDrawerActiveTab())
 const rssTabsCount = ref(0)
 const savedTabsCount = ref(0)
 
+const {formatDate, inBexMode} = useUtils()
+
 watch(() => tab.value, (currentValue) => {
   uiService.leftDrawerSetActiveTab(currentValue)
 })
@@ -124,10 +136,10 @@ watchEffect(() => rssTabsCount.value = tabsStore.rssTabs?.length)
 
 watchEffect(() => {
 
-  // MHtmlService.getMHtmls()
-  //   .then((res: MHtml[]) => {
-  //     savedTabsCount.value = res.length
-  //   })
+  MHtmlService.getMHtmls()
+    .then((res: MHtml[]) => {
+      savedTabsCount.value = res.length
+    })
 })
 
 const tabsClicked = (tab: LeftDrawerTabs) => {

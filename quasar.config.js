@@ -26,6 +26,7 @@ module.exports = configure(function (/* ctx */) {
     boot: [
       'i18n',
       'constants',
+      'konva',
       'firebase'
     ],
 

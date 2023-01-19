@@ -128,6 +128,12 @@ text.set('details', {
   description: 'Click on the info icon to get more details about the selected tab',
   permissions: 'This feature needs no additional permissions.'
 })
+text.set('sidebar', {
+  name: 'Sidebar View',
+  img: 'sidebar.png',
+  description: 'The sidebar view lets you open the tabs of a tabset in the extension page itself via an iframe. Please note that not all pages can be displayed like this.',
+  permissions: 'This feature needs no additional permissions.'
+})
 text.set('groupedByDomain', {
   name: 'Group By Domain',
   img: 'groupedByDomain.png',
@@ -206,7 +212,7 @@ watchEffect(() => {
 const hasFeature = (feature: string) => permissionsStore.hasFeature(feature)
 
 const grant = (ident: string) => {
-  if ("groupedByDomain" === ident || "opentabsThreshold" === ident || "pendingTabs" === ident || "details" === ident || "sessions" === ident) {
+  if ("groupedByDomain" === ident || "opentabsThreshold" === ident || "pendingTabs" === ident || "details" === ident || "sessions" === ident || "sidebar" === ident) {
     permissionsStore.activateFeature(ident)
   } else if ("thumbnails" === ident || "analyseTabs" === ident) {
     useCommandExecutor()
@@ -218,7 +224,7 @@ const grant = (ident: string) => {
 }
 
 const revoke = (ident: string) => {
-  if ("groupedByDomain" === ident || "opentabsThreshold" === ident || "pendingTabs" === ident || "details" === ident || "sessions" === ident) {
+  if ("groupedByDomain" === ident || "opentabsThreshold" === ident || "pendingTabs" === ident || "details" === ident || "sessions" === ident || "sidebar" === ident) {
     permissionsStore.deactivateFeature(ident)
   } else if ("thumbnails" === ident || "analyseTabs" === ident) {
     useCommandExecutor()
