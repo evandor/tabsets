@@ -441,6 +441,19 @@ class TabsetService {
       tab.canvasLeft = left
       tab.canvasTop = top
       saveCurrentTabset()
+        .catch((err) => console.error("problem saving tabset", err))
+    } else {
+      console.log("warning: could not set position for", tabId)
+    }
+  }
+
+  saveCanvasLayer(tabsetId: string, layerInfo: string) {
+    const tabset = getTabset(tabsetId)
+    if (tabset) {
+      tabset.canvas = layerInfo
+      saveTabset(tabset)
+    } else {
+      console.log("warning: could not set save canvas for", tabsetId)
     }
   }
 

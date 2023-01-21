@@ -52,7 +52,6 @@ import {StatsQuery} from "src/domain/queries/StatsQuery";
 import {StatsEntry} from "src/models/StatsEntry";
 import _ from "lodash"
 
-const {logger} = useLoggingServicee()
 const tabsStore = useTabsStore()
 const featuresStore = useFeatureTogglesStore()
 const searchStore = useSearchStore()
@@ -89,7 +88,7 @@ useQueryExecutor()
     series2.value.push({name: 'openTabsCount', data: _.map(entries, entry => entry.openTabsCount)})
     stats.value = res.result
   })
-  .catch((err) => logger.warning(err))
+//  .catch((err) => logger.warning(err))
 
 
 </script>

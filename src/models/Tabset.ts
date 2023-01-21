@@ -26,7 +26,7 @@ export class Tabset {
   status: TabsetStatus = TabsetStatus.DEFAULT
   type: TabsetType = TabsetType.DEFAULT
   sharedBy: string | undefined = undefined
-
+  canvas: string | undefined = undefined
   constructor(id: string, name: string, tabs: Tab[], groups: Group[] = [], spaces: string[] = []) {
     this.id = id
     this.name = name

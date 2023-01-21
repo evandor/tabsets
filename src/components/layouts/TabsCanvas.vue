@@ -2,166 +2,254 @@
 
   <div class="flex justify-center">
 
-
     <v-stage
       ref="stage"
-      :config="configKonva"
-      @dragstart="handleDragstart"
-      @dragend="handleDragend"
-    >
-      <v-layer ref="layer">
-        <!--        <v-circle :config="configCircle"></v-circle>-->
-        <!--        <v-circle :config="configCircle2"></v-circle>-->
-        <v-circle v-for="item in urlElements"
-                  :key="item.id"
-                  :config="{
-                        x: 100,
-                        y: item.y,
-                        radius: item.radius,
-                        fill: 'green',
-                      stroke: 'black',
-                      strokeWidth: 4,
-                      draggable: true
-        }">
-        </v-circle>
+      :config="configKonva">
+      <v-layer>
+        <v-rect :config="{x:0,y:0,height:65, width:35, stroke: 'grey', fill:'#efefef', strokeWidth:1}"/>
+        <v-rect :config="{x:5,y:5,height:25, width:25, stroke: 'grey', fill:'white', strokeWidth:1}"/>
+        <v-text @mouseover="handleMouseOver($event,'pointer')" @mouseout="handleMouseOut"
+                @mousedown="addElement('text')"
+                :config="{x:13, y:13, text: 'A'}"/>
+        <v-rect @mouseover="handleMouseOver($event,'pointer')" @mouseout="handleMouseOut"
+                :config="{x:5,y:35,height:25, width:25, stroke: 'gray', fill:'white',strokeWidth:1}"/>
+        <v-line :config="{points: [10, 53,26, 40],
+        stroke: 'black',
+        strokeWidth: 2,
+        lineCap: 'round',
+        lineJoin: 'round'}"/>
       </v-layer>
-    </v-stage>
 
-    <canvas id="canvas" ref="canvas" width="500" height="500" :key="'canvas_' + tabsStore.currentTabsetId"/>
+      <v-layer ref="drawingLayer">
+        <!--        <v-circle-->
+        <!--          v-for="item in list"-->
+
+        <!--          :config="{-->
+        <!--            x : item.x, y: item.y, radius: 50, fill: 'red',-->
+        <!--          }"></v-circle>-->
+      </v-layer>
+
+      <v-layer ref="urlsLayer">
+        <v-group
+          v-for="rec in urlElementGroups"
+          :key="'node' + rec.id"
+          @dragstart="handleDragstart"
+          @dragend="handleDragend"
+          @mouseover="handleMouseOver($event,'move')"
+          @mouseout="handleMouseOut"
+          :config="{ draggable: true, id:rec.id, x: rec.x, y: rec.y }">
+          <v-rect
+            :key="'node' + rec.id"
+            :config="{
+                          width: rec.width,
+                          height: rec.height,
+                          fill: 'rgb(255,255,255,100)',
+                          stroke: 'grey',cornerRadius: 4,
+                          strokeWidth: 1}"/>
+          <v-text
+            @mousedown="handleClick"
+            @mouseover="handleMouseOver($event,'pointer')"
+            @mouseout="handleMouseOut"
+            :config="{id: rec.id, offsetX: -5, offsetY: -5, text: rec.name}"/>
+
+          <v-image :config="{image: faviconFor(rec.id), offsetX: -5, offsetY: -18, height:25,width:25}"/>
+
+        </v-group>
+      </v-layer>
+
+    </v-stage>
   </div>
 
 </template>
 
 <script setup lang="ts">
-import {fabric} from "fabric"
 import _ from "lodash"
-import {onMounted, ref, watch, watchEffect} from "vue";
+import {onMounted, ref} from "vue";
 import {useTabsStore} from "stores/tabsStore";
 import TabsetService from "src/services/TabsetService";
+import NavigationService from "src/services/NavigationService";
+import {useTabsetService} from "src/services/TabsetService2";
+import {Tab} from "src/models/Tab";
+import Konva from "konva";
 
 const canvas = ref(null);
+const stage = ref<any>(null);
+const drawingLayer = ref<any>(null);
 const tabsStore = useTabsStore()
 const currentTabsetId = ref('')
-let c = null as unknown as fabric.Canvas
-const urlElements = ref<object[]>([] as unknown as object[])
+const urlElementGroups = ref<object[]>([] as unknown as object[])
+const dragItemId = ref<any>(null)
+const images = ref<Map<string, any>>(new Map())
+const list = ref([{x: 100, y: 100, radius: 50, fill: 'blue'}])
 
 const configKonva = {
-  width: 400,
-  height: 400
-}
-const configCircle = {
-  x: 100,
-  y: 100,
-  radius: 70,
-  fill: "red",
-  stroke: "black",
-  strokeWidth: 4
-}
-const configCircle2 = {
-  x: 100,
-  y: 40,
-  radius: 30,
-  fill: "red",
-  stroke: "black",
-  strokeWidth: 4
+  width: window.innerWidth - 650,
+  height: window.innerHeight - 400
 }
 
 const setupCanvas = (caller: string) => {
-  // console.log("setting up canvas", tabsStore.currentTabsetId, caller)
-  // console.log("setting up canvas2", tabsStore.currentTabsetId, window.document?.getElementById('canvas'))
-  window.document?.getElementById('canvas')?.setAttribute("width", (window.innerWidth - 650).toString())
-  window.document?.getElementById('canvas')?.setAttribute("height", (window.innerHeight - 150).toString())
-
-  if (c) {
-    console.log("clearing c")
-    c.clear()
-  }
-
-  c = new fabric.Canvas(canvas.value, {
-    isDrawingMode: false
-  })
-  // console.log("c is", c)
-
-  c.on('mouse:up', function (options) {
-    // @ts-ignore
-    if (options.transform && options.transform.target.data) {
-      const left = options.target?.left
-      const top = options.target?.top
-      // @ts-ignore
-      TabsetService.setPosition(options.transform.target.data, top || 0, left || 0)
-    }
-  });
 
 
   let top = 0
   _.forEach(tabsStore.getCurrentTabs, t => {
     top += 60
 
-    urlElements.value.push({
+    urlElementGroups.value.push({
       id: t.id,
-      x: 100,
-      y: top,
-      radius: 30,
-      fill: "red",
-      stroke: "black",
-      strokeWidth: 2,
-      draggable: true
-    })
-    //console.log("got", t)
-    var grp = new fabric.Group(
-      [
-        new fabric.Rect({
-          top: t.canvasTop ? t.canvasTop : top,
-          left: t.canvasLeft ? t.canvasLeft : 100,
-          width: 200,
-          height: 50,
-          fill: '#efefef',
-          strokeWidth: 2,
-          stroke: 'rgba(200,200,200,0.5)'
-        })
-      ], {data: t.id}
-    )
-    fabric.Image.fromURL(t.chromeTab.favIconUrl || '', (img) => {
-      img.set({left: -95, top: -30, angle: 0, width: 24, height: 24, data: t.id})
-      img.on('mouse:click', function () {
-        console.log('selected a rectangle', img);
-      });
-      grp.add(img)
-      grp.add(new fabric.Text(t.chromeTab.url?.replace("https://", "").replace("http://", "") || '?',
-        {left: -95, top: 0, fontSize: 12, fontFamily: 'Roboto'}))
-      c.add(
-        grp
-      );
+      x: t.canvasLeft ? t.canvasLeft : 100,
+      y: t.canvasTop ? t.canvasTop : top,
+      width: 200,
+      height: 50,
+      name: t.chromeTab.title
     })
 
+    const img = new window.Image();
+    if (t.chromeTab.favIconUrl) {
+      img.src = t.chromeTab.favIconUrl;
+      img.onload = () => {
+        images.value.set(t.id, img)
+      };
+    }
+
+
   })
+
+  const layer = tabsStore.getCurrentTabset?.canvas || undefined
+  if (layer) {
+    const json = JSON.parse(layer)
+    console.log("drawingLayer1", layer)
+    console.log("drawingLayer2", json)
+    console.log("drawingLayer3", drawingLayer.value.getNode())
+    //drawingLayer.value = layer[0]
+    //drawingLayer.value.getStage().add(layer[0])
+    // drawingLayer.value.getNode().add([...layer])
+    //Konva.Node.create(layer, drawingLayer)
+    json.children.forEach((c: any) => {
+      console.log("chidl", c)
+      switch (c.className) {
+        case "Text":
+          const element = new Konva.Text(c.attrs)
+          element.on('dblclick dbltap', () => {
+            // create textarea over canvas with absolute position
+
+            // first we need to find position for textarea
+            // how to find it?
+
+            // at first lets find position of text node relative to the stage:
+            var textPosition = element.getAbsolutePosition();
+            console.log("element", element, stage.value)
+            // then lets find position of stage container on the page:
+            var stageBox = stage.value.getNode().container().getBoundingClientRect();
+
+            // so position of textarea will be the sum of positions above:
+            var areaPosition = {
+              x: stageBox.left + textPosition.x,
+              y: stageBox.top + textPosition.y,
+            };
+
+            // create textarea and style it
+            var textarea = document.createElement('textarea');
+            document.body.appendChild(textarea);
+
+            textarea.value = element.text();
+            textarea.style.position = 'absolute';
+            textarea.style.top = areaPosition.y + 'px';
+            textarea.style.left = areaPosition.x + 'px';
+            //textarea.style.width = element.width();
+
+            textarea.focus();
+
+            textarea.addEventListener('keydown', function (e) {
+              // hide on enter
+              if (e.keyCode === 13) {
+                element.text(textarea.value);
+                document.body.removeChild(textarea);
+              }
+            });
+          })
+          drawingLayer.value.getNode().add(element)
+          break;
+        default:
+          console.log("unknown className in ", c)
+      }
+    })
+  }
 }
 
 onMounted(() => setupCanvas('onMounted'))
 
+
 const handleDragstart = (e: any) => {
-  // save drag element:
-  console.log("handleDragstart", e)
-  // this.dragItemId = e.target.id();
-  // // move current element to the top:
-  // const item = this.list.find(i => i.id === this.dragItemId);
-  // const index = this.list.indexOf(item);
-  // this.list.splice(index, 1);
-  // this.list.push(item);
+  //console.log("handleDragstart", e.target.id(), e)
+  dragItemId.value = e.target.id();
 }
 
 const handleDragend = (e: any) => {
-  console.log("handleDragend", e)
-//  this.dragItemId = null;
+  const left = e.target?.attrs['x']
+  const top = e.target?.attrs['y']
+  // // @ts-ignore
+  TabsetService.setPosition(dragItemId.value, top || 0, left || 0)
+  dragItemId.value = null;
+}
+
+const handleClick = (e: any) => {
+  //console.log("handleClick", e.target.id(), e)
+  const tabset = useTabsetService().getCurrentTabset()
+  if (tabset) {
+    const tab = _.find(tabset.tabs, (t: Tab) => t.id === e.target.id())
+    if (tab) {
+      NavigationService.openOrCreateTab(tab.chromeTab?.url || '')
+    }
+  }
+}
+const handleMouseOver = (e: any, style: string) => {
+  if (stage.value) {
+    const oldVal = stage.value.getNode().getContent().style['cursor']
+    if ("pointer" !== oldVal) {
+      stage.value.getNode().getContent().style['cursor'] = style
+    }
+  }
+}
+
+const handleMouseOut = (e: any) => {
+  if (stage.value) {
+    stage.value.getNode().getContent().style['cursor'] = 'default'
+  }
+}
+
+const faviconFor = (t: string) => images.value.get(t)
+
+const addElement = (type: string) => {
+  switch (type) {
+    case 'text':
+      var simpleText = new Konva.Text({
+        x: 200,
+        y: 15,
+        text: 'Simple Text',
+        fontSize: 30,
+        fontFamily: 'Calibri',
+        fill: 'green',
+        draggable: true
+      });
+      console.log("hier", drawingLayer.value)
+      console.log("hier2", drawingLayer.value.getNode())
+      drawingLayer.value.getNode().add(simpleText)
+      console.log("hier3", JSON.stringify(drawingLayer.value.getNode()))
+      if (tabsStore.getCurrentTabset) {
+        TabsetService.saveCanvasLayer(tabsStore.getCurrentTabset.id, drawingLayer.value.getNode())
+      }
+      break
+    default:
+      console.log("unknown identifier", type)
+  }
 }
 
 </script>
 
 <style lang="sass" scoped>
-.fabric
-  height: 500px
 
-canvas
-  border: 1px solid #bfbfbf
+
+v-stage
+  border: 10px solid #bfbfbf
   border-radius: 5px
 </style>

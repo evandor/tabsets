@@ -293,7 +293,9 @@
 
     <div class="q-pa-md q-gutter-sm">
 
-      <q-banner rounded class="bg-grey-1 text-primary">Switch on experimental features (or off)</q-banner>
+      <q-banner rounded class="bg-grey-1 text-primary">Switch on experimental features (or off). These feature toggles are meant for developers
+      only as they might break functionality and/or destroy data. Once they are considered 'safe enough', they will be available at the
+      "experimental features" view on the left.</q-banner>
 
       <div class="row q-pa-md">
         <div class="col-3"><b>debug</b></div>

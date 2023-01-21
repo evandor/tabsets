@@ -221,7 +221,7 @@ function submitSearch() {
 }
 
 const title = () => {
-  return inBexMode() ? 'Tabsets' : 'Tabsets ('+process.env.MODE+')'
+  return inBexMode() ? 'Tabsets' : process.env.MODE === 'spa' ? 'Tabsets Web' : 'Tabsets ('+process.env.MODE+')'
 }
 
 const goHome = () => router.push("/")
