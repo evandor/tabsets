@@ -3,11 +3,9 @@ import {ExecutionResult} from "src/domain/ExecutionResult";
 import {DeleteTabsetCommand} from "src/domain/commands/DeleteTabsetCommand";
 import {useTabsetService} from "src/services/TabsetService2";
 import LoggingService from "src/services/LoggingService";
-import {useNotificationsStore} from "stores/notificationsStore";
 import NotificationsService from "src/services/NotificationsService";
-import TabsetService from "src/services/TabsetService";
-import {useTabsStore} from "stores/tabsStore";
-import {Notification, SharedTabsetNotification} from "src/models/Notification"
+import {useTabsStore} from "src/stores/tabsStore";
+import {Notification} from "src/models/Notification"
 import {uid} from "quasar";
 
 class UndoCreateTabsetCommand implements Command<object> {
@@ -38,7 +36,7 @@ export class CreateTabsetCommand implements Command<object> {
         .saveOrReplaceFromChromeTabs(this.tabsetName, this.tabsToUse, this.merge)
         .then(res => {
           if (useTabsStore().tabsets.size === 1) {
-            NotificationsService.addNotification(new Notification(uid(), 'Congrats!', 'You created your first tabset'))
+           // NotificationsService.addNotification(new Notification(uid(), 'Congrats!', 'You created your first tabset'))
             //NotificationsService.addNotification(new SharedTabsetNotification("tsid"))
           }
           return res

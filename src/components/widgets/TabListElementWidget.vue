@@ -1,29 +1,26 @@
 <template>
 
-      <q-item-section avatar>
+  <q-item-section avatar>
 
-        <q-img
-          class="rounded-borders" style="cursor: move"
-          width="20px"
-          height="20px"
-          :src="getFaviconUrl(props.tab.chromeTab)">
-        </q-img>
+    <q-img
+      class="rounded-borders" style="cursor: move"
+      width="20px"
+      height="20px"
+      :src="getFaviconUrl(props.tab.chromeTab)">
+    </q-img>
 
-      </q-item-section>
-      <q-item-section
-        :data-testid="useUtils().createDataTestIdentifier('tabListElementWidget', tab.chromeTab.title)"
-        class="cursor-pointer" @click.stop="NavigationService.openOrCreateTab(props.tab.chromeTab?.url )">
-        <q-item-label>{{ props.tab.chromeTab?.title }}</q-item-label>
-        <q-item-label caption>{{ props.tab.chromeTab?.url }}</q-item-label>
-      </q-item-section>
-<!--      <q-item-section avatar>-->
-<!--        <q-icon name="launch" color="primary"-->
-<!--                @click.stop="NavigationService.openOrCreateTab(props.tab.chromeTab?.url )"></q-icon>-->
-<!--      </q-item-section>-->
-      <!--      <q-item-section avatar>-->
-      <!--        <q-icon name="close" @click.stop="closeTab(tab)"/>-->
-      <!--      </q-item-section>-->
-
+  </q-item-section>
+  <q-item-section
+    :data-testid="useUtils().createDataTestIdentifier('tabListElementWidget', tab.chromeTab.title)"
+    class="cursor-pointer" @click.stop="NavigationService.openOrCreateTab(props.tab.chromeTab?.url )">
+    <q-item-label>{{ props.tab.chromeTab?.title }}</q-item-label>
+    <q-item-label caption>{{ props.tab.chromeTab?.url }}</q-item-label>
+  </q-item-section>
+  <q-item-section avatar>
+    <q-btn flat round color="red" size="11px" icon="delete_outline" @click.stop="deleteTab(tab)">
+      <q-tooltip>Delete this tab from this list!</q-tooltip>
+    </q-btn>
+  </q-item-section>
 
 </template>
 
@@ -34,6 +31,8 @@ import TabsetService from "src/services/TabsetService";
 import {useNotificationsStore} from "src/stores/notificationsStore";
 import {ref} from "vue";
 import {useUtils} from "src/services/Utils"
+import {useCommandExecutor} from "src/services/CommandExecutor";
+import {DeleteTabCommand} from "src/domain/commands/DeleteTabCommand";
 
 const props = defineProps({
   tab: {
@@ -50,14 +49,7 @@ const emits = defineEmits(['sendCaption'])
 
 const line = ref(null);
 
-// onMounted(() => {
-//   if (line.value && line.value[0]) {
-//     line.value[0].focus()
-//   }
-// })
-
 function getShortHostname(host: string) {
-
   const nrOfDots = (host.match(/\./g) || []).length
   if (nrOfDots >= 2) {
     return host.substring(host.indexOf(".", nrOfDots - 2) + 1)
@@ -82,13 +74,8 @@ function closeTab(tab: Tab) {
 }
 
 function cardStyle(tab: Tab) {
-  const height = props.showActions ? "100px" : "66px"
+  const height =  "66px"
   let borderColor = ""
-  // if (TabStatus.CREATED === tab.status) {
-  //   borderColor = "";
-  // } else if (TabStatus.DELETED === tab.status) {
-  //   borderColor = "border-color:#EF9A9A"
-  // }
   if (isOpen(tab)) {
     borderColor = "border-color:#8f8f8f"
   }
@@ -119,8 +106,6 @@ const setInfo = (tab: Tab) => {
 }
 
 const selectTab = (tab: Tab) => {
-  console.log("tab selected", tab)
-
   TabsetService.setOnlySelectedTab(tab)
   const notificationStore = useNotificationsStore()
   notificationStore.setSelectedTab(tab)
@@ -137,5 +122,8 @@ const getFaviconUrl = (chromeTab: chrome.tabs.Tab | undefined) => {
   }
   return 'favicon-unknown-32x32.png'
 }
+
+const deleteTab = (tab: Tab) => useCommandExecutor().executeFromUi(new DeleteTabCommand(tab))
+
 
 </script>

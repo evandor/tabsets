@@ -1,6 +1,5 @@
 <template>
 
-
   <!-- toolbar -->
   <q-toolbar class="text-primary lightgrey">
     <div class="row fit">
@@ -22,6 +21,15 @@
         </q-toolbar-title>
       </div>
       <div class="col-xs-12 col-md-5 text-right">
+
+        <q-btn
+               flat dense icon="o_add"
+               color="primary" :label="$q.screen.gt.sm ? 'Add Folder...' : ''"
+               class="q-ml-md q-mr-md"
+               @click="addUrlDialog">
+          <q-tooltip>Create a new Bookmark Folder</q-tooltip>
+        </q-btn>
+
         <q-btn
           flat dense icon="delete_outline"
           color="negative" :label="$q.screen.gt.sm ? 'Delete Folder...' : ''"
@@ -33,7 +41,33 @@
       </div>
     </div>
   </q-toolbar>
-  <q-page padding class="greyBorderTop">
+
+  <!-- bookmark folders -->
+  <q-expansion-item
+                    header-class="text-black"
+                    expand-icon-class="text-black"
+                    expand-separator
+                    default-opened>
+    <template v-slot:header="{ expanded }">
+      <q-item-section>
+        <div>
+          <span class="text-weight-bold">Bookmark Folders (x)</span>
+          <div class="text-caption ellipsis">bookmark folders</div>
+        </div>
+      </q-item-section>
+    </template>
+    <q-card>
+      <q-card-section>
+
+        <BookmarkList
+                 group="bookmarkFolders"
+                 :bookmarks="bookmarksStore.bookmarksForFolder"/>
+***
+{{bookmarksStore.bookmarksForFolder}}
+
+      </q-card-section>
+    </q-card>
+  </q-expansion-item>
 
     <q-card>
       <q-card-section>
@@ -41,10 +75,6 @@
       </q-card-section>
     </q-card>
 
-    <!--    <fab></fab>-->
-
-
-  </q-page>
 
 
 </template>
@@ -58,6 +88,9 @@ import BookmarkCards from "src/components/layouts/BookmarkCards.vue";
 import {useBookmarksStore} from "src/stores/bookmarksStore";
 import {Bookmark} from "src/models/Bookmark";
 import {ref, watchEffect} from "vue";
+import AddUrlDialog from "components/dialogues/AddUrlDialog.vue";
+import AddBookmarkFolderDialog from "components/dialogues/AddBookmarkFolderDialog.vue";
+import BookmarkList from "components/layouts/BookmarkList.vue";
 
 const route = useRoute();
 const router = useRouter();
@@ -138,18 +171,8 @@ const deleteBookmarkFolder = () => {
   }).onCancel(() => {
   }).onDismiss(() => {
   })
-
-
 }
+
+const addUrlDialog = () => $q.dialog({component: AddBookmarkFolderDialog, componentProps: {parentFolderId: bookmarkId.value}})
+
 </script>
-
-
-<style lang="sass" scoped>
-
-.lightgrey
-  background-color: $lightgrey
-
-.greyBorderTop
-  border-top: 1px solid $bordergrey
-
-</style>

@@ -382,6 +382,7 @@ export function useTabsetService() {
     }
     const tabset = tabsetFor(tab.id)
     if (tabset) {
+      console.log("hier", tabset, tab.id)
       useTabsStore().removeTab(tabset, tab.id)
       useNotificationsStore().unsetSelectedTab()
       return saveTabset(tabset)

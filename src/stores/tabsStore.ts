@@ -256,9 +256,9 @@ export const useTabsStore = defineStore('tabs', {
       //const currentTabset: Tabset = this.tabsets.get(this.currentTabsetId) || new Tabset("", "", [])
       tabset.tabs = _.filter(tabset.tabs, (t: Tab) => t.id !== tabId)
       markDuplicates(tabset)
-      this.pendingTabset.tabs = _.filter(this.pendingTabset.tabs, (t: Tab) => t.id !== tabId)
-      // return saveTabset(currentTabset)
-      //   .then(() => currentTabset)
+      if(this.pendingTabset) {
+        this.pendingTabset.tabs = _.filter(this.pendingTabset.tabs, (t: Tab) => t.id !== tabId)
+      }
     },
 
     async updateOrCreateTabset(

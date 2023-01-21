@@ -6,7 +6,6 @@ import "fake-indexeddb/auto"
 import IndexedDbPersistenceService from "src/services/IndexedDbPersistenceService";
 import {INDEX_DB_VERSION} from "boot/constants";
 import {useJestHelper} from "src/domain/JestHelper";
-import {TabLogger} from "src/logging/TabLogger";
 import LoggingService from "src/services/LoggingService";
 
 describe('CreateTabsetCommand', () => {

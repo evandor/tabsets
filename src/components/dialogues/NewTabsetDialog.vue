@@ -4,9 +4,6 @@
       <q-card-section>
         <div class="text-h6">Create a new Tabset</div>
       </q-card-section>
-      <!--      <q-card-section>-->
-      <!--        <div class="text-body">Please provide a name</div>-->
-      <!--      </q-card-section>-->
 
       <q-card-section class="q-pt-none">
         <div class="text-body">New Tabset's name:</div>
@@ -54,8 +51,6 @@ import {useCommandExecutor} from "src/services/CommandExecutor";
 import {useUiStore} from "stores/uiStore";
 
 defineEmits([
-  // REQUIRED; need to specify some events that your
-  // component will emit through useDialogPluginComponent()
   ...useDialogPluginComponent.emits
 ])
 

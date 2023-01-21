@@ -2,26 +2,25 @@
   <q-dialog ref="dialogRef" @hide="onDialogHide">
     <q-card class="q-dialog-plugin">
       <q-card-section>
-        <div class="text-h6">Add Url to current tabset</div>
+        <div class="text-h6">Add Bookmark Folder</div>
       </q-card-section>
       <q-card-section>
-        <div class="text-body">Please provide the url to be added</div>
+        <div class="text-body">Please provide the name of the new Folder</div>
       </q-card-section>
 
       <q-card-section class="q-pt-none">
-        <div class="text-body">Url:</div>
-        <q-input dense v-model="url"
-                 data-testid="add_url_input"
-                 autofocus @keyup.enter="createNewUrl()"/>
-<!--        <div class="text-body2 text-warning">{{ newUrlDialogWarning() }}</div>-->
+        <div class="text-body">Name:</div>
+        <q-input dense v-model="folderName"
+                 data-testid="add_folder_input"
+                 autofocus @keyup.enter="createNewFolder()"/>
       </q-card-section>
 
       <q-card-actions align="right" class="text-primary">
         <q-btn flat label="Cancel" v-close-popup/>
-        <q-btn flat label="Add URL"
-               data-testid="add_url_submit"
-               :disable="url.trim().length === 0" v-close-popup
-               @click="createNewUrl()"  />
+        <q-btn flat label="Add Folder"
+               data-testid="add_folder_submit"
+               :disable="folderName.trim().length === 0" v-close-popup
+               @click="createNewFolder()"  />
       </q-card-actions>
     </q-card>
 
@@ -41,16 +40,22 @@ import {useDialogPluginComponent} from 'quasar'
 import {STRIP_CHARS_IN_USER_INPUT} from "boot/constants";
 import {Tab} from "src/models/Tab";
 import ChromeApi from "src/services/ChromeApi";
+import {useCommandExecutor} from "src/services/CommandExecutor";
+import {CreateBookmarkFolderCommand} from "src/domain/commands/CreateBookmarkFolderCommand";
 
 defineEmits([
   ...useDialogPluginComponent.emits
 ])
 
-const url = ref('')
-
+const props = defineProps({
+  parentFolderId: {
+    type: String,
+    required: true
+  }
+})
 
 const {dialogRef, onDialogHide, onDialogOK, onDialogCancel} = useDialogPluginComponent()
-
+const folderName = ref('')
 const tabsStore = useTabsStore()
 const router = useRouter()
 const $q = useQuasar()
@@ -64,19 +69,8 @@ watchEffect(() => {
 })
 
 
-const createNewUrl = () => {
-  let useUrl = ''
-  try {
-    useUrl = new URL(url.value).toString()
-  } catch (err) {
-    console.debug("could not parse url, adding https:// ", url.value)
-    useUrl = "https://" + url.value
-  }
-  const tab = new Tab(uid(), null as unknown as chrome.tabs.Tab)
-  tab.created = new Date().getTime()
-  tab.chromeTab = ChromeApi.createChromeTabObject(useUrl, useUrl, null as unknown as string)
-  tab.extension = tab.determineUrlExtension(tab.chromeTab)
-  TabsetService.saveToCurrentTabset(tab)
+const createNewFolder = () => {
+  useCommandExecutor().execute(new CreateBookmarkFolderCommand(folderName.value, props.parentFolderId))
   onDialogOK()
 }
 

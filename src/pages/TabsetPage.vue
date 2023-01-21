@@ -25,7 +25,7 @@
       </div>
       <div class="col-xs-12 col-md-7 text-right">
 
-        <q-btn
+        <q-btn v-if="tabsStore.getCurrentTabs.length > 1"
           @click="toggleSorting()"
           style="width:14px"
           class="q-mr-sm" size="10px"
@@ -36,7 +36,7 @@
           </q-tooltip>
         </q-btn>
 
-        <q-btn
+        <q-btn v-if="tabsStore.getCurrentTabs.length > 1"
           :disable="tabsStore.getCurrentTabset?.sorting === 'custom'"
           @click="toggleOrder()"
           style="width:14px"
@@ -76,15 +76,15 @@
           <q-tooltip>Use the thumbnail layout to visualize your tabs</q-tooltip>
         </q-btn>
 
-        <q-btn v-if="featuresStore.isEnabled('experimentalViews')"
-               @click="setView('kanban')"
-               style="width:14px"
-               class="q-mr-sm" size="10px"
-               :flat="tabsStore.getCurrentTabset?.view !== 'kanban'"
-               :outline="tabsStore.getCurrentTabset?.view === 'kanban'"
-               icon="o_view_kanban">
-          <q-tooltip>Use the columns layout to visualize your tabs</q-tooltip>
-        </q-btn>
+<!--        <q-btn v-if="featuresStore.isEnabled('experimentalViews')"-->
+<!--               @click="setView('kanban')"-->
+<!--               style="width:14px"-->
+<!--               class="q-mr-sm" size="10px"-->
+<!--               :flat="tabsStore.getCurrentTabset?.view !== 'kanban'"-->
+<!--               :outline="tabsStore.getCurrentTabset?.view === 'kanban'"-->
+<!--               icon="o_view_kanban">-->
+<!--          <q-tooltip>Use the columns layout to visualize your tabs</q-tooltip>-->
+<!--        </q-btn>-->
 
         <q-btn v-if="featuresStore.isEnabled('experimentalViews')"
                @click="setView('canvas')"
