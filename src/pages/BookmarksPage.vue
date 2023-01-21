@@ -23,19 +23,27 @@
       <div class="col-xs-12 col-md-5 text-right">
 
         <q-btn
-               flat dense icon="o_add"
-               color="primary" :label="$q.screen.gt.sm ? 'Add Folder...' : ''"
-               class="q-ml-md q-mr-md"
-               @click="addUrlDialog">
+          flat dense icon="upload_file"
+          color="primary" :label="$q.screen.gt.lg ? 'Import as Tabset...' : ''"
+          class="q-mr-sm"
+          @click="importBookmarks">
+          <q-tooltip>Import these bookmarks as Tabset</q-tooltip>
+        </q-btn>
+
+        <q-btn
+          flat dense icon="o_add"
+          color="primary" :label="$q.screen.gt.lg ? 'Add Folder...' : ''"
+          class="q-mr-md"
+          @click="addUrlDialog">
           <q-tooltip>Create a new Bookmark Folder</q-tooltip>
         </q-btn>
 
         <q-btn
           flat dense icon="delete_outline"
-          color="negative" :label="$q.screen.gt.sm ? 'Delete Folder...' : ''"
+          color="negative" :label="$q.screen.gt.lg ? 'Delete Folder...' : ''"
           class="q-mr-md"
           @click="deleteBookmarkFolder">
-          <q-tooltip>Delete this Bookmark</q-tooltip>
+          <q-tooltip>Delete this Bookmark Folder</q-tooltip>
         </q-btn>
 
       </div>
@@ -43,7 +51,7 @@
   </q-toolbar>
 
   <!-- bookmark folders -->
-  <q-expansion-item
+  <q-expansion-item v-if="folders().length > 0"
                     header-class="text-black"
                     expand-icon-class="text-black"
                     expand-separator
@@ -51,8 +59,36 @@
     <template v-slot:header="{ expanded }">
       <q-item-section>
         <div>
-          <span class="text-weight-bold">Bookmark Folders (x)</span>
-          <div class="text-caption ellipsis">bookmark folders</div>
+          <span class="text-weight-bold">{{
+              folders().length
+            }} {{ folders().length === 1 ? 'Folder' : 'Folders' }}</span>
+          <div class="text-caption ellipsis">Subfolder of '{{ bookmarksStore.currentBookmark?.chromeBookmark.title }}'
+          </div>
+        </div>
+      </q-item-section>
+    </template>
+    <q-card>
+      <q-card-section>
+
+        <BookmarkList group="bookmarkFolders" :bookmarks="folders()"/>
+
+      </q-card-section>
+    </q-card>
+  </q-expansion-item>
+
+  <!-- bookmarks  -->
+  <q-expansion-item
+    header-class="text-black"
+    expand-icon-class="text-black"
+    expand-separator
+    default-opened>
+    <template v-slot:header="{ expanded }">
+      <q-item-section>
+        <div>
+          <span class="text-weight-bold">{{
+              nonFolders().length
+            }} {{ nonFolders().length === 1 ? 'Bookmark' : 'Bookmarks' }}</span>
+          <div class="text-caption ellipsis">bookmarks of current folder</div>
         </div>
       </q-item-section>
     </template>
@@ -60,22 +96,13 @@
       <q-card-section>
 
         <BookmarkList
-                 group="bookmarkFolders"
-                 :bookmarks="bookmarksStore.bookmarksForFolder"/>
-***
-{{bookmarksStore.bookmarksForFolder}}
+          group="bookmarks"
+          :highlightId="highlightId"
+          :bookmarks="nonFolders()"/>
 
       </q-card-section>
     </q-card>
   </q-expansion-item>
-
-    <q-card>
-      <q-card-section>
-        <BookmarkCards :highlightId="highlightId"/>
-      </q-card-section>
-    </q-card>
-
-
 
 </template>
 
@@ -91,6 +118,7 @@ import {ref, watchEffect} from "vue";
 import AddUrlDialog from "components/dialogues/AddUrlDialog.vue";
 import AddBookmarkFolderDialog from "components/dialogues/AddBookmarkFolderDialog.vue";
 import BookmarkList from "components/layouts/BookmarkList.vue";
+import ImportFromBookmarks from "components/dialogues/ImportFromBookmarks.vue";
 
 const route = useRoute();
 const router = useRouter();
@@ -173,6 +201,14 @@ const deleteBookmarkFolder = () => {
   })
 }
 
-const addUrlDialog = () => $q.dialog({component: AddBookmarkFolderDialog, componentProps: {parentFolderId: bookmarkId.value}})
+const addUrlDialog = () => $q.dialog({
+  component: AddBookmarkFolderDialog,
+  componentProps: {parentFolderId: bookmarkId.value}
+})
+
+const folders = () => _.filter(bookmarksStore.bookmarksForFolder, (bm: Bookmark) => !bm.chromeBookmark.url)
+const nonFolders = () => _.filter(bookmarksStore.bookmarksForFolder, (bm: Bookmark) => bm.chromeBookmark.url)
+
+const importBookmarks = () => $q.dialog({component: ImportFromBookmarks})
 
 </script>

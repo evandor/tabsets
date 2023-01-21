@@ -1,5 +1,5 @@
 <template>
-
+<!-- deprecated, to be deleted -->
   <div class="row items-start q-mb-xl">
     <div v-for="bm in _.filter(bookmarksStore.bookmarksForFolder, (bm:Bookmark) => !bm.chromeBookmark.url)"
          :key="bm.id"

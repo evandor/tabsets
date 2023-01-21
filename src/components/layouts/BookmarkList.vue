@@ -7,13 +7,12 @@
       :group="{ name: 'tabs', pull: 'clone' }"
       @change="handleDragAndDrop">
       <q-item
-        v-ripple
+        clickable v-ripple
         v-for="(bm,index) in props.bookmarks"
-        @click="selectTab(bm, index)"
         :key="props.group + '_' + bm.id">
-        {{bm}}
-<!--        <TabListElementWidget-->
-<!--          :key="props.group + '__' + tab.id" :tab="tabAsTab(tab)" :highlightUrl="highlightUrl" />-->
+
+        <BookmarkListElementWidget :key="props.group + '__' + bm.id" :bookmark="bm" :highlightUrl="highlightUrl"/>
+
       </q-item>
     </vue-draggable-next>
   </q-list>
@@ -36,6 +35,7 @@ import {CreateTabFromOpenTabsCommand} from "src/domain/commands/CreateTabFromOpe
 import TabListElementWidget from "src/components/widgets/TabListElementWidget.vue";
 import {useUtils} from "src/services/Utils"
 import {Tab} from "src/models/Tab";
+import BookmarkListElementWidget from "components/widgets/BookmarkListElementWidget.vue";
 
 const $q = useQuasar()
 const tabsStore = useTabsStore()
@@ -89,7 +89,7 @@ const handleDragAndDrop = (event: any) => {
       case 'pinnedTabs':
         const filteredTabs: Tab[] = _.filter(tabsStore.getCurrentTabs, (t: Tab) => t.chromeTab.pinned)
         if (filteredTabs.length > 0) {
-         // useIndex = adjustIndex(moved, filteredTabs);
+          // useIndex = adjustIndex(moved, filteredTabs);
         }
         break
       default:
@@ -98,7 +98,7 @@ const handleDragAndDrop = (event: any) => {
           // @ts-ignore
           const filteredTabs: Tab[] = _.filter(tabsStore.getCurrentTabs, (t: Tab) => t.chromeTab.groupId === parseInt(groupId))
           if (filteredTabs.length > 0) {
-           // useIndex = adjustIndex(moved, filteredTabs);
+            // useIndex = adjustIndex(moved, filteredTabs);
           }
         }
         break
