@@ -188,8 +188,6 @@ watchEffect(() => {
 //@ts-ignore
 const appVersion = import.meta.env.PACKAGE_VERSION
 
-const searchBox = ref(null)
-
 useMeta(() => {
   return {
     // @ts-ignore
@@ -197,23 +195,6 @@ useMeta(() => {
   }
 })
 
-function checkKeystroke(e: any) {
-  if (e.key === '/' && searchBox.value) {
-    //console.log("e", e, searchBox, search.value)
-    // @ts-ignore
-    searchBox.value.focus()
-    search.value = ''
-    //console.log("e2", search.value)
-  }
-}
-
-onMounted(() => {
-  window.addEventListener('keypress', checkKeystroke);
-})
-
-onUnmounted(() => {
-  window.removeEventListener('keypress', checkKeystroke);
-})
 
 function submitSearch() {
   searchStore.term = search.value
@@ -232,9 +213,6 @@ const toggleLeftDrawer = () => {
   useUiService().toggleDrawer()
 }
 
-const toggleLargeDrawer = () => {
-  largeDrawer.value = !largeDrawer.value
-}
 
 watchEffect(() => {
   leftDrawerOpen.value = tabsStore.tabsets?.size > 0

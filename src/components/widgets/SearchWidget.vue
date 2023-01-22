@@ -52,7 +52,7 @@
 
 <script lang="ts" setup>
 import {useTabsStore} from "src/stores/tabsStore";
-import {ref} from "vue";
+import {onMounted, onUnmounted, ref} from "vue";
 import {useSearchStore} from "stores/searchStore";
 import {Hit} from "src/models/Hit";
 import {useRoute, useRouter} from "vue-router";
@@ -68,6 +68,7 @@ const moreHits = ref<boolean>(false)
 const router = useRouter()
 const route = useRoute()
 const typedOrSelected = ref<any>()
+const searchBox = ref(null)
 
 function submitSearch() {
   setTimeout(() => {
@@ -82,6 +83,23 @@ function submitSearch() {
   }, 200)
 
 }
+
+function checkKeystroke(e: KeyboardEvent) {
+  if (e.key === '/' && searchBox.value) {
+    e.preventDefault()
+    // @ts-ignore
+    searchBox.value.focus()
+    search.value = ''
+  }
+}
+
+onMounted(() => {
+  window.addEventListener('keypress', checkKeystroke);
+})
+
+onUnmounted(() => {
+  window.removeEventListener('keypress', checkKeystroke);
+})
 
 const options = ref<Hit[]>([])
 const model = ref(null)
