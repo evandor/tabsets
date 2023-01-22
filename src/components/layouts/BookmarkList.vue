@@ -11,7 +11,8 @@
         v-for="(bm,index) in props.bookmarks"
         :key="props.group + '_' + bm.id">
 
-        <BookmarkListElementWidget :key="props.group + '__' + bm.id" :bookmark="bm" :highlightUrl="highlightUrl"/>
+        <BookmarkListElementWidget
+          :key="props.group + '__' + bm.id" :bookmark="bm" :highlightUrl="highlightUrl"/>
 
       </q-item>
     </vue-draggable-next>
@@ -21,21 +22,16 @@
 
 <script setup lang="ts">
 import {Bookmark} from "src/models/Bookmark";
-import TabsetService from "src/services/TabsetService";
 import {PropType, ref} from "vue";
 import {VueDraggableNext} from 'vue-draggable-next'
 import {useQuasar} from "quasar";
-import _ from "lodash"
 import {useTabsStore} from "src/stores/tabsStore";
 import {useUiService} from "src/services/useUiService";
 import {LeftDrawerState, LeftDrawerTabs} from "stores/uiStore";
 import {useTabsetService} from "src/services/TabsetService2";
 import {useCommandExecutor} from "src/services/CommandExecutor";
-import {CreateTabFromOpenTabsCommand} from "src/domain/commands/CreateTabFromOpenTabsCommand";
-import TabListElementWidget from "src/components/widgets/TabListElementWidget.vue";
-import {useUtils} from "src/services/Utils"
-import {Tab} from "src/models/Tab";
 import BookmarkListElementWidget from "components/widgets/BookmarkListElementWidget.vue";
+import {CreateBookmarkFromOpenTabsCommand} from "src/domain/commands/CreateBookmarkFromOpenTabsCommand";
 
 const $q = useQuasar()
 const tabsStore = useTabsStore()
@@ -49,6 +45,10 @@ const props = defineProps({
     required: true
   },
   group: {
+    type:String,
+    required: true
+  },
+  parent: {
     type: String,
     required: true
   },
@@ -57,6 +57,7 @@ const props = defineProps({
     required: false
   }
 })
+const showDeleteButton = ref<Map<string, boolean>>(new Map())
 
 const thumbnails = ref<Map<string, string>>(new Map())
 //const tabAsTab = (tab: Tab): Tab => tab as unknown as Tab
@@ -76,38 +77,38 @@ const handleDragAndDrop = (event: any) => {
   console.log("event", event)
   const {moved, added} = event
   if (moved) {
-    console.log('d&d tabs moved', moved.element.id, moved.newIndex, props.group)
+    console.log('d&d bookmarks moved', moved.element.id, moved.newIndex)
     let useIndex = moved.newIndex
-    switch (props.group) {
-      case 'otherTabs':
-        // @ts-ignore
-        const unpinnedNoGroup: Tab[] = _.filter(tabsStore.getCurrentTabs, (t: Tab) => !t.chromeTab.pinned && t.chromeTab.groupId === -1)
-        if (unpinnedNoGroup.length > 0) {
-          //useIndex = adjustIndex(moved, unpinnedNoGroup);
-        }
-        break;
-      case 'pinnedTabs':
-        const filteredTabs: Tab[] = _.filter(tabsStore.getCurrentTabs, (t: Tab) => t.chromeTab.pinned)
-        if (filteredTabs.length > 0) {
-          // useIndex = adjustIndex(moved, filteredTabs);
-        }
-        break
-      default:
-        if (props.group.startsWith('groupedTabs_')) {
-          const groupId = props.group.split('_')[1]
-          // @ts-ignore
-          const filteredTabs: Tab[] = _.filter(tabsStore.getCurrentTabs, (t: Tab) => t.chromeTab.groupId === parseInt(groupId))
-          if (filteredTabs.length > 0) {
-            // useIndex = adjustIndex(moved, filteredTabs);
-          }
-        }
-        break
-    }
-    TabsetService.moveTo(moved.element.id, useIndex)
+    // switch (props.group) {
+    //   case 'otherTabs':
+    //     // @ts-ignore
+    //     const unpinnedNoGroup: Tab[] = _.filter(tabsStore.getCurrentTabs, (t: Tab) => !t.chromeTab.pinned && t.chromeTab.groupId === -1)
+    //     if (unpinnedNoGroup.length > 0) {
+    //       //useIndex = adjustIndex(moved, unpinnedNoGroup);
+    //     }
+    //     break;
+    //   case 'pinnedTabs':
+    //     const filteredTabs: Tab[] = _.filter(tabsStore.getCurrentTabs, (t: Tab) => t.chromeTab.pinned)
+    //     if (filteredTabs.length > 0) {
+    //       // useIndex = adjustIndex(moved, filteredTabs);
+    //     }
+    //     break
+    //   default:
+    //     if (props.group.startsWith('groupedTabs_')) {
+    //       const groupId = props.group.split('_')[1]
+    //       // @ts-ignore
+    //       const filteredTabs: Tab[] = _.filter(tabsStore.getCurrentTabs, (t: Tab) => t.chromeTab.groupId === parseInt(groupId))
+    //       if (filteredTabs.length > 0) {
+    //         // useIndex = adjustIndex(moved, filteredTabs);
+    //       }
+    //     }
+    //     break
+    // }
+    //TabsetService.moveTo(moved.element.id, useIndex)
   }
   if (added) {
     useCommandExecutor()
-      .executeFromUi(new CreateTabFromOpenTabsCommand(added.element, added.newIndex, props.group))
+      .executeFromUi(new CreateBookmarkFromOpenTabsCommand(added.element, added.newIndex, props.parent))
   }
 }
 
@@ -132,6 +133,7 @@ const startDrag = (evt: any, tab: Bookmark) => {
   }
   console.log("evt.dataTransfer.getData('text/plain')", evt.dataTransfer.getData('text/plain'))
 }
+
 
 </script>
 

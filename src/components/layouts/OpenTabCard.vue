@@ -10,9 +10,10 @@
           <TabFaviconWidget :tab="tab" width="20px" height="20px"/>
         </div>
         <div class="col-9 text-body2 ellipsis cursor-pointer"
+             @mouseenter="emitInfo(tab.chromeTab?.url)"
+             @mouseout="emitInfo(undefined)"
              @click="NavigationService.openOrCreateTab(tab.chromeTab?.url)">
           <span v-if="tab.chromeTab?.discarded">*</span>&nbsp;{{ tab.chromeTab?.title }}
-          <q-tooltip v-if="featureToggles.isEnabled('debug')">{{ tab.chromeTab }}</q-tooltip>
         </div>
         <div class="col-1">
           <q-icon name="close" @click="closeTab(tab)" v-if="!isSelf(tab.chromeTab.url)">
@@ -33,9 +34,8 @@ import {Tab} from "src/models/Tab"
 import NavigationService from "src/services/NavigationService"
 import {useFeatureTogglesStore} from "stores/featureTogglesStore"
 import TabFaviconWidget from "src/components/widgets/TabFaviconWidget.vue"
-import {useTabsStore} from "stores/tabsStore";
 import {useTabsetService} from "src/services/TabsetService2";
-import TabsetService from "src/services/TabsetService";
+import {useUiStore} from "stores/uiStore";
 
 const featureToggles = useFeatureTogglesStore()
 
@@ -63,6 +63,8 @@ const cardStyle = (tab: Tab) => {
 const self = chrome.runtime.getURL("")
 
 const isSelf = (url: string) => url.startsWith(self)
+
+const emitInfo = (msg: string | undefined) => useUiStore().footerInfo = msg
 
 </script>
 

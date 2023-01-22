@@ -39,6 +39,7 @@ export const useUiStore = defineStore('ui', () => {
   const tabsetIdForNewTab = ref<string | undefined>($q.localStorage.getItem('ui.tabsetIdForNewTab') as string || undefined)
   const newTabsetEmptyByDefault = ref<boolean>($q.localStorage.getItem('ui.newTabsetEmptyByDefault') as boolean || false)
   const tabBeingDragged = ref<string | undefined>(undefined)
+  const footerInfo = ref<string | undefined>(undefined)
 
   // info Messages
   const hiddenMessages = ref<string[]>($q.localStorage.getItem('ui.hiddenInfoMessages') as string[] || [])
@@ -149,6 +150,7 @@ export const useUiStore = defineStore('ui', () => {
     setNewTabsetEmptyByDefault,
     hideInfoMessage,
     restoreHints,
-    showMessage
+    showMessage,
+    footerInfo
   }
 })

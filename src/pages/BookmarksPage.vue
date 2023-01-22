@@ -70,7 +70,10 @@
     <q-card>
       <q-card-section>
 
-        <BookmarkList group="bookmarkFolders" :bookmarks="folders()"/>
+        <BookmarkList
+          :parent="bookmarkId"
+          group="bookmarkFolders"
+          :bookmarks="folders()"/>
 
       </q-card-section>
     </q-card>
@@ -95,9 +98,10 @@
     <q-card>
       <q-card-section>
 
+<!--          :highlightId="highlightId"-->
         <BookmarkList
           group="bookmarks"
-          :highlightId="highlightId"
+          :parent="bookmarkId"
           :bookmarks="nonFolders()"/>
 
       </q-card-section>
@@ -111,11 +115,9 @@ import {useRoute, useRouter} from "vue-router";
 import {uid, useQuasar} from "quasar";
 import _ from "lodash"
 import {useTabsStore} from "src/stores/tabsStore";
-import BookmarkCards from "src/components/layouts/BookmarkCards.vue";
 import {useBookmarksStore} from "src/stores/bookmarksStore";
 import {Bookmark} from "src/models/Bookmark";
 import {ref, watchEffect} from "vue";
-import AddUrlDialog from "components/dialogues/AddUrlDialog.vue";
 import AddBookmarkFolderDialog from "components/dialogues/AddBookmarkFolderDialog.vue";
 import BookmarkList from "components/layouts/BookmarkList.vue";
 import ImportFromBookmarks from "components/dialogues/ImportFromBookmarks.vue";
@@ -206,8 +208,8 @@ const addUrlDialog = () => $q.dialog({
   componentProps: {parentFolderId: bookmarkId.value}
 })
 
-const folders = () => _.filter(bookmarksStore.bookmarksForFolder, (bm: Bookmark) => !bm.chromeBookmark.url)
-const nonFolders = () => _.filter(bookmarksStore.bookmarksForFolder, (bm: Bookmark) => bm.chromeBookmark.url)
+const folders = ():Bookmark[] => _.filter(bookmarksStore.bookmarksForFolder, (bm: Bookmark) => !bm.chromeBookmark.url)
+const nonFolders = ():Bookmark[] => _.filter(bookmarksStore.bookmarksForFolder, (bm: Bookmark) => !!bm.chromeBookmark.url)
 
 const importBookmarks = () => $q.dialog({component: ImportFromBookmarks})
 

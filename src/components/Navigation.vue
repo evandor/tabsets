@@ -83,7 +83,6 @@
         <template v-slot:after v-if="permissonsStore.hasFeature('details')">
           <TabInfo v-if="notificationStore.selectedTab"/>
           <TabsetInfo v-else-if="tabsStore.currentTabsetId"/>
-
         </template>
 
       </q-splitter>
@@ -168,6 +167,11 @@ const addTabset = () => $q.dialog({
     setEmptyByDefault: useUiStore().newTabsetEmptyByDefault
   }
 })
+
+const setGroupedTabsCaption = (msg: string) => {
+  console.log("received caption", msg)
+  //groupedTabsCaption.value = msg
+}
 
 </script>
 

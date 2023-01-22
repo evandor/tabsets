@@ -26,3 +26,14 @@
 .colorized-appear-enter-from {
   background-color: $warning
 }
+
+#fixed-footer
+{
+  background-color:white;
+  position:fixed;
+  bottom:0;
+  left:300px;
+  right:0;
+  height:25px;
+  margin-bottom:0;
+}

@@ -26,23 +26,21 @@
       <div class="col-xs-12 col-md-7 text-right">
 
         <q-btn v-if="tabsStore.getCurrentTabs.length > 1"
-          @click="toggleSorting()"
-          style="width:14px"
-          class="q-mr-sm" size="10px"
-          outline
-          icon="o_sort_by_alpha">
-          <q-tooltip>Toggle through sorting - current: {{ tabsStore.getCurrentTabset?.sorting }}. Available: custom,
-            alphabetical by url, alphabetical by title
-          </q-tooltip>
+               @click="toggleSorting()"
+               style="width:14px"
+               class="q-mr-sm" size="10px"
+               outline
+               icon="o_sort_by_alpha">
+          <q-tooltip>Toggle through sorting</q-tooltip>
         </q-btn>
 
         <q-btn v-if="tabsStore.getCurrentTabs.length > 1"
-          :disable="tabsStore.getCurrentTabset?.sorting === 'custom'"
-          @click="toggleOrder()"
-          style="width:14px"
-          class="q-mr-xl" size="10px"
-          outline
-          :icon="orderDesc ? 'arrow_drop_up' : 'arrow_drop_down'">
+               :disable="tabsStore.getCurrentTabset?.sorting === 'custom'"
+               @click="toggleOrder()"
+               style="width:14px"
+               class="q-mr-xl" size="10px"
+               outline
+               :icon="orderDesc ? 'arrow_drop_up' : 'arrow_drop_down'">
           <q-tooltip>Sorting descending or ascending, currently {{ orderDesc }}</q-tooltip>
         </q-btn>
 
@@ -76,15 +74,15 @@
           <q-tooltip>Use the thumbnail layout to visualize your tabs</q-tooltip>
         </q-btn>
 
-<!--        <q-btn v-if="featuresStore.isEnabled('experimentalViews')"-->
-<!--               @click="setView('kanban')"-->
-<!--               style="width:14px"-->
-<!--               class="q-mr-sm" size="10px"-->
-<!--               :flat="tabsStore.getCurrentTabset?.view !== 'kanban'"-->
-<!--               :outline="tabsStore.getCurrentTabset?.view === 'kanban'"-->
-<!--               icon="o_view_kanban">-->
-<!--          <q-tooltip>Use the columns layout to visualize your tabs</q-tooltip>-->
-<!--        </q-btn>-->
+        <!--        <q-btn v-if="featuresStore.isEnabled('experimentalViews')"-->
+        <!--               @click="setView('kanban')"-->
+        <!--               style="width:14px"-->
+        <!--               class="q-mr-sm" size="10px"-->
+        <!--               :flat="tabsStore.getCurrentTabset?.view !== 'kanban'"-->
+        <!--               :outline="tabsStore.getCurrentTabset?.view === 'kanban'"-->
+        <!--               icon="o_view_kanban">-->
+        <!--          <q-tooltip>Use the columns layout to visualize your tabs</q-tooltip>-->
+        <!--        </q-btn>-->
 
         <q-btn v-if="featuresStore.isEnabled('experimentalViews')"
                @click="setView('canvas')"
@@ -98,7 +96,7 @@
 
         <q-btn v-if="tabsStore.getCurrentTabs?.length > 0"
                flat dense icon="o_restore_page"
-               color="primary" :label="$q.screen.gt.sm ? 'Open Tabset...' : ''"
+               color="primary" :label="$q.screen.gt.lg ? 'Open Tabset...' : ''"
                class="q-ml-xl q-mr-none"
                @click="restoreDialog">
           <q-tooltip>Replace your current tabs with all the tabs from this tabset</q-tooltip>
@@ -106,7 +104,7 @@
 
         <q-btn v-if="tabsStore.currentTabsetId !== '' && tabsStore.getTabset(tabsStore.currentTabsetId)"
                flat dense icon="o_add"
-               color="primary" :label="$q.screen.gt.sm ? 'Add Url...' : ''"
+               color="primary" :label="$q.screen.gt.lg ? 'Add Url...' : ''"
                class="q-ml-md q-mr-md"
                @click="addUrlDialog">
           <q-tooltip>Copy and Paste or create a new Url for this tabset</q-tooltip>
@@ -240,7 +238,7 @@
         <div>
           <span class="text-weight-bold">{{
               unpinnedNoGroup()?.length
-            }} {{ unpinnedNoGroup()?.length === 1 ? 'Tab' : 'Tabs' }}</span>
+            }} {{ unpinnedNoGroup()?.length === 1 ? 'Tab' : 'Tabs' }}</span><span class="text-caption">{{ sortingInfo() }}</span>
           <div class="text-caption ellipsis"></div>
         </div>
       </q-item-section>
@@ -442,6 +440,20 @@ const specialView = (): boolean =>
 
 const toggleSorting = () => TabsetService.toggleSorting(tabsetId.value)
 const toggleOrder = () => orderDesc.value = !orderDesc.value
+
+const sortingInfo = (): string => {
+  switch (tabsStore.getCurrentTabset?.sorting) {
+    case 'custom':
+      return ", sorted by index";
+      break
+    case 'alphabeticalUrl':
+      return ", sorted by URL";
+      break
+    default:
+      return "";
+      break
+  }
+}
 
 </script>
 

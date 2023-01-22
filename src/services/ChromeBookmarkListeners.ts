@@ -1,7 +1,4 @@
 import {useBookmarksStore} from "src/stores/bookmarksStore";
-import {useTabsStore} from "src/stores/tabsStore";
-import {RequestInfo} from "src/models/RequestInfo";
-
 
 class ChromeBookmarkListeners {
 
@@ -44,15 +41,13 @@ class ChromeBookmarkListeners {
 
   clearWorking() {
     if (this.inProgress) {
-      //console.log("resetting 'inProgress' to false")
-      const tabsStore = useTabsStore()
       useBookmarksStore().loadBookmarks()
         .then(() => console.log("loaded when clearing workload"))
     }
     this.inProgress = false
   }
 
-  intervalID = setInterval(() => this.clearWorking(), 5000);
+  intervalID = setInterval(() => this.clearWorking(), 500);
 
   eventTriggered() {
     this.inProgress = true
@@ -60,8 +55,8 @@ class ChromeBookmarkListeners {
 
   // @ts-ignore
   onCreated(bm: chrome.bookmarks.BookmarkTreeNode) {
-    this.eventTriggered()
     if (!this.inProgress) {
+      this.eventTriggered()
       let msg = `bookmark ${bm.url} created`
       console.log("msg", msg)
       useBookmarksStore().loadBookmarks()

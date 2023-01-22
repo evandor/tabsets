@@ -109,9 +109,9 @@
     </q-drawer>
 
     <q-page-container>
-      <router-view/>
+      <router-view />
+      <div id="fixed-footer" class="q-pl-md q-pa-xs">{{ useUiStore().footerInfo }}</div>
     </q-page-container>
-
 
   </q-layout>
 
@@ -252,5 +252,7 @@ const showNotificationDialog = (nId: string) => $q.dialog({
     notificationId: nId
   }
 })
+
+
 
 </script>

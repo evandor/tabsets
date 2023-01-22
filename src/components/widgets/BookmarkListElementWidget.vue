@@ -10,12 +10,13 @@
       :data-testid="useUtils().createDataTestIdentifier('tabListElementWidget', props.bookmark.chromeBookmark.title)"
       class="cursor-pointer"
       @click="selectBookmark(props.bookmark)">
-      <q-item-label>{{ props.bookmark.chromeBookmark?.title }}</q-item-label>
-      <q-item-label caption>
-        {{ formatDate(props.bookmark.chromeBookmark?.dateAdded) }}
+      <q-item-label>{{ props.bookmark.chromeBookmark?.title }}
+        <span class="text-caption text-grey-8">
+           - {{ formatDate(props.bookmark.chromeBookmark?.dateAdded) }}
         <q-tooltip>this folder was created at
           {{ date.formatDate(props.bookmark.chromeBookmark?.dateAdded, 'DD.MM.YYYY HH:mm') }}
         </q-tooltip>
+        </span>
       </q-item-label>
     </q-item-section>
 
@@ -27,10 +28,19 @@
       <q-icon name="o_bookmark_border" size="24px"></q-icon>
     </q-item-section>
     <q-item-section
+      @mouseover="showButtons(props.bookmark.chromeBookmark?.id, true)"
+      @mouseleave="showButtons(props.bookmark.chromeBookmark?.id, false)"
       @click.stop="NavigationService.openOrCreateTab(props.bookmark.chromeBookmark?.url )">
 
       <q-item-label>
-        <div>{{ props.bookmark.chromeBookmark?.title }}</div>
+        <div>{{ props.bookmark.chromeBookmark?.title }}
+          <span class="text-caption text-grey-8">
+           - {{ formatDate(props.bookmark.chromeBookmark?.dateAdded) }}
+        <q-tooltip>this folder was created at
+          {{ date.formatDate(props.bookmark.chromeBookmark?.dateAdded, 'DD.MM.YYYY HH:mm') }}
+        </q-tooltip>
+        </span>
+        </div>
         <q-badge color="warning" v-if="existsInTabset(props.bookmark.chromeBookmark.url)" floating>
           <q-icon name="tab" size="16px" color="white">
             <q-tooltip>This bookmark is saved in a tabset</q-tooltip>
@@ -39,15 +49,13 @@
       </q-item-label>
 
       <q-item-label caption>{{ props.bookmark.chromeBookmark?.url }}</q-item-label>
-      <q-item-label caption>
-        {{ formatDate(props.bookmark.chromeBookmark?.dateAdded) }}
-        <q-tooltip>this bookmark was created at
-          {{ date.formatDate(props.bookmark.chromeBookmark?.dateAdded, 'DD.MM.YYYY HH:mm') }}
-        </q-tooltip>
-      </q-item-label>
+
     </q-item-section>
-    <q-item-section avatar>
-      <q-btn flat round color="red" size="11px" icon="delete_outline" @click.stop="deleteBookmark(props.bookmark)">
+    <q-item-section avatar
+                    @mouseover="showButtons(props.bookmark.chromeBookmark?.id, true)"
+                    @mouseleave="showButtons(props.bookmark.chromeBookmark?.id, false)">
+      <q-btn v-if="showDeleteButton.get(props.bookmark.chromeBookmark?.id)"
+             flat round color="red" size="11px" icon="delete_outline" @click.stop="deleteBookmark(props.bookmark)">
         <q-tooltip>Delete this bookmark</q-tooltip>
       </q-btn>
     </q-item-section>
@@ -86,7 +94,7 @@ const props = defineProps({
 
 const router = useRouter()
 
-const emits = defineEmits(['sendCaption'])
+const showDeleteButton = ref<Map<string, boolean>>(new Map())
 
 const line = ref(null);
 
@@ -157,6 +165,8 @@ const selectBookmark = (bm: Bookmark) => router.push("/bookmarks/" + bm.chromeBo
 const deleteBookmark = (bm: Bookmark) => BookmarksService.deleteBookmark(bm)
 
 const existsInTabset = (url: string) => useTabsetService().tabsetsFor(url)?.length > 0
+
+const showButtons = (bookmarkId: string, show: boolean) => showDeleteButton.value.set(bookmarkId, show)
 
 
 </script>
