@@ -15,10 +15,11 @@
                  data-testid="newTabsetName"
                  @keydown.enter="createNewTabset()"/>
         <div class="text-caption text-negative q-mt-none q-pt-none">{{ newTabsetDialogWarning() }}</div>
-        <q-checkbox
-          data-testid="newTabsetAutoAdd"
-          v-model="addEmptyTabset" label="Create an empty tabset"/>&nbsp;
-        <q-icon name="help" color="primary" size="1em">
+        <q-checkbox v-if="props.firstTabset === false"
+                    data-testid="newTabsetAutoAdd"
+                    v-model="addEmptyTabset" label="Create an empty tabset"/>&nbsp;
+        <q-icon v-if="props.firstTabset === false"
+                name="help" color="primary" size="1em">
           <q-tooltip>Otherwise, all open tabs will be added to your new tabset automatically</q-tooltip>
         </q-icon>
       </q-card-section>
@@ -58,6 +59,10 @@ const props = defineProps({
   setEmptyByDefault: {
     type: Boolean,
     default: false
+  },
+  firstTabset: {
+    type: Boolean,
+    default: false
   }
 })
 
@@ -70,7 +75,7 @@ const $q = useQuasar()
 const newTabsetName = ref('')
 const newTabsetNameExists = ref(false)
 const hideWarning = ref(false)
-const addEmptyTabset = ref(tabsStore.tabs.length <= 1 ? false : props.setEmptyByDefault)
+const addEmptyTabset = ref(props.firstTabset ? false : (tabsStore.tabs.length <= 1 ? false : props.setEmptyByDefault))
 
 const newTabsetNameIsValid = computed(() => newTabsetName.value.length <= 32 && !STRIP_CHARS_IN_USER_INPUT.test(newTabsetName.value))
 

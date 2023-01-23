@@ -35,11 +35,12 @@
 
 import {ref} from "vue";
 import TabsetService from "src/services/TabsetService";
-import {useQuasar} from "quasar";
 import {useRouter} from "vue-router";
 import {useTabsStore} from "src/stores/tabsStore";
 
 import {useDialogPluginComponent} from 'quasar'
+import {useCommandExecutor} from "src/services/CommandExecutor";
+import {RestoreTabsetCommand} from "src/domain/commands/RestoreTabsetCommand"
 
 defineEmits([
   ...useDialogPluginComponent.emits
@@ -55,7 +56,8 @@ const warning = ref('')
 
 const openTabset = () => {
   console.log("opening tabset", closeOld.value)
-  TabsetService.restore(tabsStore.currentTabsetId, closeOld.value === "true")
+  useCommandExecutor().execute(new RestoreTabsetCommand(tabsStore.currentTabsetId))
+  //TabsetService.restore(tabsStore.currentTabsetId, closeOld.value === "true")
 }
 
 

@@ -9,7 +9,10 @@
         <div class="col-2">
           <TabFaviconWidget :tab="tab" width="20px" height="20px"/>
         </div>
-        <div class="col-9 text-body2 ellipsis cursor-pointer"
+        <div class="col-2">
+          <TabFaviconWidget :tab="tab" width="20px" height="20px"/>
+        </div>
+        <div class="col-7 text-body2 ellipsis cursor-pointer"
              @mouseenter="emitInfo(tab.chromeTab?.url)"
              @mouseout="emitInfo(undefined)"
              @click="NavigationService.openOrCreateTab(tab.chromeTab?.url)">

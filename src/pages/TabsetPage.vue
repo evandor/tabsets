@@ -5,7 +5,7 @@
     <div class="row fit">
       <q-toolbar-title>
         <div class="row justify-start items-baseline">
-          <div class="col-1"><span class="text-dark">Tabset</span> (none selected)</div>
+          <div class="col-1"><span class="text-dark">Tabs</span> (no tabset selected)</div>
         </div>
       </q-toolbar-title>
     </div>
@@ -15,8 +15,8 @@
       <div class="col-xs-12 col-md-5">
         <q-toolbar-title>
           <div class="row justify-start items-baseline">
-            <div class="col-1"><span class="text-dark">Tabset</span> <span
-              class="text-primary">
+            <div class="col-1"><span class="text-dark">Tabs of </span> <span
+              class="text-primary text-weight-bold">
               {{ tabsStore.currentTabsetName }}
 
             </span></div>
@@ -44,45 +44,36 @@
           <q-tooltip>Sorting descending or ascending, currently {{ orderDesc }}</q-tooltip>
         </q-btn>
 
-        <q-btn
-          @click="setView('grid')"
-          style="width:14px"
-          class="q-mr-sm" size="8px"
-          :flat="tabsStore.getCurrentTabset?.view !== 'grid'"
-          :outline="tabsStore.getCurrentTabset?.view === 'grid'"
-          icon="grid_on">
+        <q-btn v-if="featuresStore.isEnabled('experimentalViews')"
+               @click="setView('grid')"
+               style="width:14px"
+               class="q-mr-sm" size="8px"
+               :flat="tabsStore.getCurrentTabset?.view !== 'grid'"
+               :outline="tabsStore.getCurrentTabset?.view === 'grid'"
+               icon="grid_on">
           <q-tooltip>Use grid layout to visualize your tabs</q-tooltip>
         </q-btn>
 
-        <q-btn
-          @click="setView('list')"
-          style="width:14px"
-          class="q-mr-sm" size="10px"
-          :flat="tabsStore.getCurrentTabset?.view !== 'list'"
-          :outline="tabsStore.getCurrentTabset?.view === 'list'"
-          icon="o_list">
+        <!-- default view, no need to show if there is no alternative -->
+        <q-btn v-if="featuresStore.isEnabled('experimentalViews')"
+               @click="setView('list')"
+               style="width:14px"
+               class="q-mr-sm" size="10px"
+               :flat="tabsStore.getCurrentTabset?.view !== 'list'"
+               :outline="tabsStore.getCurrentTabset?.view === 'list'"
+               icon="o_list">
           <q-tooltip>Use the list layout to visualize your tabs</q-tooltip>
         </q-btn>
 
-        <q-btn v-if="permissionsStore.hasAllOrigins()"
-               @click="setView('thumbnails')"
-               style="width:14px"
-               class="q-mr-sm" size="10px"
-               :flat="tabsStore.getCurrentTabset?.view !== 'thumbnails'"
-               :outline="tabsStore.getCurrentTabset?.view === 'thumbnails'"
-               icon="o_image">
-          <q-tooltip>Use the thumbnail layout to visualize your tabs</q-tooltip>
-        </q-btn>
-
-        <!--        <q-btn v-if="featuresStore.isEnabled('experimentalViews')"-->
-        <!--               @click="setView('kanban')"-->
-        <!--               style="width:14px"-->
-        <!--               class="q-mr-sm" size="10px"-->
-        <!--               :flat="tabsStore.getCurrentTabset?.view !== 'kanban'"-->
-        <!--               :outline="tabsStore.getCurrentTabset?.view === 'kanban'"-->
-        <!--               icon="o_view_kanban">-->
-        <!--          <q-tooltip>Use the columns layout to visualize your tabs</q-tooltip>-->
-        <!--        </q-btn>-->
+<!--        <q-btn v-if="permissionsStore.hasAllOrigins()"-->
+<!--               @click="setView('thumbnails')"-->
+<!--               style="width:14px"-->
+<!--               class="q-mr-sm" size="10px"-->
+<!--               :flat="tabsStore.getCurrentTabset?.view !== 'thumbnails'"-->
+<!--               :outline="tabsStore.getCurrentTabset?.view === 'thumbnails'"-->
+<!--               icon="o_image">-->
+<!--          <q-tooltip>Use the thumbnail layout to visualize your tabs</q-tooltip>-->
+<!--        </q-btn>-->
 
         <q-btn v-if="featuresStore.isEnabled('experimentalViews')"
                @click="setView('canvas')"
@@ -103,11 +94,18 @@
         </q-btn>
 
         <q-btn v-if="tabsStore.currentTabsetId !== '' && tabsStore.getTabset(tabsStore.currentTabsetId)"
-               flat dense icon="o_add"
-               color="primary" :label="$q.screen.gt.lg ? 'Add Url...' : ''"
                class="q-ml-md q-mr-md"
-               @click="addUrlDialog">
-          <q-tooltip>Copy and Paste or create a new Url for this tabset</q-tooltip>
+               @click="addUrlDialog"
+               label="create tab"
+               unelevated
+               size="0.8em"
+               color="warning">
+          <q-tooltip
+            class="tooltip"
+            :delay="200"
+            anchor="center left" self="center right">
+            Copy and Paste or create a new Tab inside this tabset
+          </q-tooltip>
         </q-btn>
 
         <q-btn
@@ -133,7 +131,7 @@
   <q-banner rounded class="bg-amber-1 text-black q-ma-md"
             v-if="!tabsStore.currentTabsetId && tabsStore.tabsets.size > 0">
     <div class="text-body2">
-      Select an existing tabset from the right or add a new tabset by clicking on the plus sign at the top right.
+      Select an existing tabset from the menu or add a new tabset.
     </div>
   </q-banner>
 
@@ -238,7 +236,9 @@
         <div>
           <span class="text-weight-bold">{{
               unpinnedNoGroup()?.length
-            }} {{ unpinnedNoGroup()?.length === 1 ? 'Tab' : 'Tabs' }}</span><span class="text-caption">{{ sortingInfo() }}</span>
+            }} {{ unpinnedNoGroup()?.length === 1 ? 'Tab' : 'Tabs' }}</span><span class="text-caption">{{
+            sortingInfo()
+          }}</span>
           <div class="text-caption ellipsis"></div>
         </div>
       </q-item-section>
@@ -363,10 +363,10 @@ function getOrder() {
   if (tabsStore.getCurrentTabset) {
     switch (tabsStore.getCurrentTabset?.sorting) {
       case 'alphabeticalUrl':
-        return (t: Tab) => t.chromeTab.url
+        return (t: Tab) => t.chromeTab.url?.replace("https://", "").replace("http://", "").toUpperCase()
         break
       case 'alphabeticalTitle':
-        return (t: Tab) => t.chromeTab.title
+        return (t: Tab) => t.chromeTab.title?.toUpperCase()
         break
       default:
         return (t: Tab) => 1
@@ -444,10 +444,13 @@ const toggleOrder = () => orderDesc.value = !orderDesc.value
 const sortingInfo = (): string => {
   switch (tabsStore.getCurrentTabset?.sorting) {
     case 'custom':
-      return ", sorted by index";
+      return ", sorted by Index" + (orderDesc.value ? ', descending' : '')
       break
     case 'alphabeticalUrl':
-      return ", sorted by URL";
+      return ", sorted by URL" + (orderDesc.value ? ', descending' : '')
+      break
+    case 'alphabeticalTitle':
+      return ", sorted by Title" + (orderDesc.value ? ', descending' : '')
       break
     default:
       return "";

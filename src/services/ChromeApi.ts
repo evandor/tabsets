@@ -11,6 +11,7 @@ import IndexedDbPersistenceService from "src/services/IndexedDbPersistenceServic
 import {useSearchStore} from "stores/searchStore";
 import {SearchDoc} from "src/models/SearchDoc";
 import {usePermissionsStore} from "stores/permissionsStore";
+import {Tab} from "src/models/Tab";
 
 // const {housekeeping} = useTabsetService()
 
@@ -57,7 +58,7 @@ const persistenceService = IndexedDbPersistenceService
 
 class ChromeApi {
 
-  onHeadersReceivedListener = function (details:any) {
+  onHeadersReceivedListener = function (details: any) {
     //console.log("headerDetails", details)
     if (details.url) {
       persistenceService.saveRequest(details.url, new RequestInfo(details.statusCode, details.responseHeaders || []))
@@ -105,13 +106,13 @@ class ChromeApi {
             } else {
               // const selfId = localStorage.getItem("selfId")
               // if (selfId) {
-                chrome.tabs.create({
-                  active: true,
-                  pinned: false,
-                  //url: "chrome-extension://" + selfId + "/www/index.html#/start"
-                  url: chrome.runtime.getURL("www/index.html#/start")
-                })
-             // }
+              chrome.tabs.create({
+                active: true,
+                pinned: false,
+                //url: "chrome-extension://" + selfId + "/www/index.html#/start"
+                url: chrome.runtime.getURL("www/index.html#/start")
+              })
+              // }
             }
           })
         } else if (e.menuItemId.startsWith("save_as_tab|")) {
@@ -209,34 +210,49 @@ class ChromeApi {
     console.log(" --- closing all tabs: end ---")
   }
 
-  restore(tabset: Tabset) {
-    console.log("restoring tabset ", tabset.id)
-    this.getCurrentTab()
-      .then((currentTab: chrome.tabs.Tab) => {
-        console.log("proceeding...")
+  restore(tabset: Tabset, inNewWindow: boolean = true) {
+    console.log("restoring tabset ", tabset.id, inNewWindow)
 
-        const promisedTabs: Promise<chrome.tabs.Tab>[] = []
+    if (inNewWindow) {
+      const urls: string[] = _.map(_.filter(tabset.tabs, (t:Tab) => t.chromeTab !== undefined), (t:Tab) => t.chromeTab.url || '')
 
-        tabset.tabs.forEach(async t => {
-
-          if (t.chromeTab.url !== currentTab.url) {
-            //console.log("creating tab", t.chromeTab.id)
-            const newTabPromise: Promise<chrome.tabs.Tab> = this.chromeTabsCreateAsync({
-              active: false,
-              index: t.chromeTab.index,
-              pinned: t.chromeTab.pinned,
-              url: t.chromeTab.url
-            })
-            //console.log("got new tab", newTabPromise)
-            promisedTabs.push(newTabPromise)
-          } else {
-            console.log("omitting opening current tab again")
-          }
-        });
-
-        Promise.all(promisedTabs)
-          .then(() => useTabsStore().activateListeners())
+      chrome.windows.create({
+        focused: true,
+        left: 50,
+        top:50,
+        url: urls
       })
+    } else {
+      this.getCurrentTab()
+        .then((currentTab: chrome.tabs.Tab) => {
+          console.log("proceeding...")
+
+          const promisedTabs: Promise<chrome.tabs.Tab>[] = []
+
+          tabset.tabs.forEach(async t => {
+
+            if (t.chromeTab.url !== currentTab.url) {
+              //console.log("creating tab", t.chromeTab.id)
+              const newTabPromise: Promise<chrome.tabs.Tab> = this.chromeTabsCreateAsync({
+                active: false,
+                index: t.chromeTab.index,
+                pinned: t.chromeTab.pinned,
+                url: t.chromeTab.url
+              })
+              //console.log("got new tab", newTabPromise)
+              promisedTabs.push(newTabPromise)
+            } else {
+              console.log("omitting opening current tab again")
+            }
+          });
+
+          Promise.all(promisedTabs)
+            .then(() => useTabsStore().activateListeners())
+        })
+
+    }
+
+
   }
 
   async getCurrentTab(): Promise<chrome.tabs.Tab> {

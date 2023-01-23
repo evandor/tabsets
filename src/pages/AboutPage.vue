@@ -20,10 +20,12 @@
       <div class="text-caption q-ml-lg q-mb-md">Version {{ appVersion }}</div>
 
       <div class="text-body1 q-ma-md" v-if="tabsStore.tabsets.size === 0">
-        <q-chip label="Tabsets" square color="warning"/>
-        is a browser extension which helps you organize your links. As simple as that.<br><br>
-        A tabset is just a collection of tabs you can give a name to. You can use them instead of (or together with)
-        bookmarks - and you can even search within pages you already visited. Check it out and:
+<!--        <q-chip label="Tabsets" square color="warning"/>-->
+       <b>Tabsets</b>  is a browser extension which helps you organize your links. As simple as that.<br><br>
+        You can use it them instead of (or together with)
+        bookmarks - and you can even search within pages you already visited.
+        <br><br>
+        Check it out and:
       </div>
       <div class="text-body1 q-ma-md" v-else>
         is a browser extension which helps you organize your links. As simple as that.<br><br>
@@ -38,7 +40,9 @@
           <div class="col-3"></div>
           <div class="col-6 q-pa-md">
             <Transition name="delayed-appear" appear>
-              <q-btn class="fit bg-white" outline color="primary"
+              <q-btn class="fit text-warning"
+                     outline
+
                      data-testid="createFirstTabsetBtn"
                      @click="addTabset"
                      label="create your first tabset"></q-btn>
@@ -136,7 +140,8 @@ const $q = useQuasar()
 
 const addTabset = () => $q.dialog({
   component: NewTabsetDialog, componentProps: {
-    setEmptyByDefault: useUiStore().newTabsetEmptyByDefault
+    setEmptyByDefault: useUiStore().newTabsetEmptyByDefault,
+    firstTabset: true
   }
 })
 

@@ -4,33 +4,29 @@
 
       <q-toolbar class="text-primary lightgrey">
         <div class="row fit">
-          <div class="col-xs-12 col-md-5">
+          <div class="col-xs-12 col-md-6">
             <q-toolbar-title>
               <div class="row justify-start items-baseline">
-                Tabsets
+                Your Tabsets
               </div>
             </q-toolbar-title>
           </div>
-          <div class="col-xs-12 col-md-7 text-right">
+          <div class="col-xs-12 col-md-6 text-right">
 
             <q-btn
               @click="addTabset"
-              class="cursor-pointer"
-              flat round dense icon="add" color="primary">
+              label="create"
+              unelevated
+              size="0.8em"
+              color="warning">
               <q-tooltip
                 class="tooltip"
                 :delay="200"
                 anchor="center left" self="center right">
-                Click here to add new tabsets
+                Click here to add a new tabset
               </q-tooltip>
             </q-btn>
-<!--            <q-menu :v-model="false" context-menu :offset="[-10,-30]">-->
-<!--              <q-list style="min-width: 100px" dense>-->
-<!--                <q-item clickable v-close-popup>-->
-<!--                  <q-item-section @click="addTabset(true)">Add empty tabset</q-item-section>-->
-<!--                </q-item>-->
-<!--              </q-list>-->
-<!--            </q-menu>-->
+
 
           </div>
         </div>
@@ -49,22 +45,16 @@
           <q-list class="q-mt-none greyBorderTop">
 
             <InfoMessageWidget
-              v-if="tabsStore.tabsets.size === 1"
-              :probability="0.5"
-              ident="navigation_newTabset"
-              hint="Click on the plus sign on the upper right to create another tabset" />
-
-            <InfoMessageWidget
               v-if="tabsStore.tabsets.size > 6"
               :probability="0.5"
               ident="navigation_useFavorites"
-              hint="You can click on the yellow star icon to turn your tabset into a favorite one, which will appear at the top of the list." />
+              hint="You can click on the yellow star icon to turn your tabset into a favorite one, which will appear at the top of the list."/>
 
             <InfoMessageWidget
               v-if="tabsStore.tabsets.size > 9"
               :probability="0.5"
               ident="navigation_archiveTabsets"
-              hint="You can click on the inventory icon to archive your tabset. It will not appear here any more, but can be restored in the settings." />
+              hint="You can click on the inventory icon to archive your tabset. It will not appear here any more, but can be restored in the settings."/>
 
             <NavTabsetsListWidget :tabsets="tabsets(true)"/>
 

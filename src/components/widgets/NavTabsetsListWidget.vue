@@ -8,7 +8,7 @@
     @click="selectTS(tabset.id)"
     @mouseover="showButtons(tabset.id, true)"
     @mouseleave="showButtons(tabset.id, false)"
-    :style="tabset.id === tabsStore.currentTabsetId ? 'background-color:#efefef' : 'border:0px solid #bfbfbf'">
+    :active='tabset.id === tabsStore.currentTabsetId' active-class="text-weight-bold">
 
     <q-item-section no-wrap
                     @drop="onDrop($event, tabset.id)"
@@ -40,20 +40,20 @@
       </q-icon>
     </q-item-section>
 
-    <q-item-section side v-if="showEditButton.get(tabset.id) && tabset.status === TabsetStatus.DEFAULT">
+    <q-item-section side v-if="tabsStore.tabsets.size > 9 && showEditButton.get(tabset.id) && tabset.status === TabsetStatus.DEFAULT">
       <q-icon name="star" color="warning" size="18px" @click="markAsFavorite(tabset)">
         <q-tooltip>Marking this tabset as favorite</q-tooltip>
       </q-icon>
     </q-item-section>
 
-    <q-item-section side v-if="showEditButton.get(tabset.id) && tabset.status === TabsetStatus.FAVORITE">
+    <q-item-section side v-if="tabsStore.tabsets.size > 9 && showEditButton.get(tabset.id) && tabset.status === TabsetStatus.FAVORITE">
       <q-icon name="star" color="warning" size="18px" @click="markAsDefault(tabset)">
         <q-tooltip>Undo marking this tabset as favorite</q-tooltip>
       </q-icon>
     </q-item-section>
 
     <q-item-section side
-                    v-if="tabset.type === TabsetType.DEFAULT && showEditButton.get(tabset.id) && tabset.status !== TabsetStatus.DELETED">
+                    v-if="tabsStore.tabsets.size > 9 && tabset.type === TabsetType.DEFAULT && showEditButton.get(tabset.id) && tabset.status !== TabsetStatus.DELETED">
       <q-icon name="inventory_2" color="primary" size="18px" @click="archiveTabset(tabset)">
         <q-tooltip>Archive this tabset</q-tooltip>
       </q-icon>
@@ -132,6 +132,9 @@ const showButtons = (tabsetId: string, show: boolean) => {
 }
 
 const tabsetLabel = (tabset: Tabset) => {
+  if (tabsStore.tabsets.size < 10) {
+    return tabset.name
+  }
   return tabset.name + ' (' + tabset.tabs?.length + ')'
 }
 
