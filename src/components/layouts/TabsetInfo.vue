@@ -1,5 +1,4 @@
 <template>
-  <!-- !== MIT -->
   <div>
     <div class="row items-baseline q-mx-md q-pa-none" style="width:265px;border-top:1px dotted grey">
       <div class="col-12 q-ma-none">

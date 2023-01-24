@@ -34,6 +34,7 @@ export function useUiService() {
     useUiStore().leftDrawer.state = LeftDrawerState.WIDE
   }
   const  rightDrawerSetActiveTab = (tab: DrawerTabs) => {
+
     useUiStore().rightDrawer.activeTab = tab
   }
 

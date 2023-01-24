@@ -17,13 +17,22 @@
         <div class="col-2">
           <TabFaviconWidget :tab="tab" width="20px" height="20px"/>
         </div>
+        <div class="col-1" v-if="props.useSelection">
+          <q-checkbox
+            v-model="tab.selected"
+            size="30px"
+            checked-icon="task_alt"
+            @update:model-value="val => selectionChanged(val)"
+            unchecked-icon="check_box_outline_blank"
+          />
+        </div>
         <div class="col-7 text-body2 ellipsis cursor-pointer"
              @mouseenter="emitInfo(tab.chromeTab?.url)"
              @mouseout="emitInfo(undefined)"
              @click="NavigationService.openOrCreateTab(tab.chromeTab?.url)">
           <span v-if="tab.chromeTab?.discarded">*</span>&nbsp;{{ tab.chromeTab?.title }}
         </div>
-        <div class="col-1">
+        <div class="col-1" v-if="!props.useSelection">
           <q-icon name="close" @click="closeTab(tab)" v-if="!isSelf(tab.chromeTab.url)">
             <q-tooltip class="tooltip">Close this tab in the browser</q-tooltip>
           </q-icon>
@@ -54,8 +63,14 @@ const props = defineProps({
   tab: {
     type: Object,
     required: true
+  },
+  useSelection: {
+    type: Boolean,
+    default: false
   }
 })
+
+const emits = defineEmits(['selectionChanged'])
 
 const tabsStore = useTabsStore()
 
@@ -73,7 +88,7 @@ const cardStyle = (tab: Tab) => {
   return `height: ${height};max-height:${height}; min-height: ${height};position:relative; top:5px;${background}`
 }
 
-const self = chrome.runtime.getURL("")
+const self = chrome.runtime?.getURL("")
 
 const isSelf = (url: string) => url.startsWith(self)
 
@@ -82,6 +97,12 @@ const emitInfo = (msg: string | undefined) => useUiStore().footerInfo = msg
 const addToCurrentTabset = () => {
   useCommandExecutor().executeFromUi(new CreateTabFromOpenTabsCommand(props.tab as unknown as Tab, 0, 'openTabs'))
 }
+
+const selectionChanged = (val: any) => {
+  //console.log("emitting", val)
+  emits('selectionChanged', {tabId: props.tab.id, selected: val})
+}
+
 </script>
 
 <style lang="sass" scoped>

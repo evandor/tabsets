@@ -17,10 +17,10 @@
           </div>
           <div class="col-xs-12 col-md-3 q-ma-none q-mt-sm text-right">
 
-            <span class="text-subtitle2 cursor-pointer">
-              X
-            </span>
-            <q-tooltip class="tooltip" @click="closeCurrentView()">Close this view</q-tooltip>
+            <span v-if="useUiStore().rightDrawerShowCloseButton()"
+                  class="text-subtitle2 cursor-pointer"
+                  @click="closeCurrentView()">              X</span>
+            <q-tooltip class="tooltip">Close this view</q-tooltip>
 
             <div class="row" v-if="tab === DrawerTabs.OPEN_TABS">
               <div class="col">
@@ -59,17 +59,17 @@
       </q-toolbar>
 
       <UnassignedAndOpenTabs v-if="tab === DrawerTabs.UNASSIGNED_TABS"/>
-<!--      <BookmarksTree v-if="tab === DrawerTabs.BOOKMARKS"/>-->
-<!--      <OpenTabs v-else-if="tab ===  DrawerTabs.OPEN_TABS" :filter="filter"/>-->
-<!--      <UnassignedTabs v-else-if="tab ===  DrawerTabs.UNASSIGNED_TABS" :filter="filter"/>-->
-<!--      <TabsGroupedByHost v-else-if="tab ===  DrawerTabs.GROUP_BY_HOST_TABS"/>-->
-<!--      <SavedTabs v-else-if="tab ===  DrawerTabs.SAVED_TABS"/>-->
+      <!--      <BookmarksTree v-if="tab === DrawerTabs.BOOKMARKS"/>-->
+      <!--      <OpenTabs v-else-if="tab ===  DrawerTabs.OPEN_TABS" :filter="filter"/>-->
+      <!--      <UnassignedTabs v-else-if="tab ===  DrawerTabs.UNASSIGNED_TABS" :filter="filter"/>-->
+      <!--      <TabsGroupedByHost v-else-if="tab ===  DrawerTabs.GROUP_BY_HOST_TABS"/>-->
+      <!--      <SavedTabs v-else-if="tab ===  DrawerTabs.SAVED_TABS"/>-->
       <TabsetAsSidebar v-else-if="tab ===  DrawerTabs.SIDEBAR"/>
-<!--      <RssTabs v-else-if="tab ===  DrawerTabs.RSS"/>-->
-<!--      <ScheduledTabs v-else-if="tab ===  DrawerTabs.SCHEDULED"/>-->
-<!--      <BrowserHistory v-else-if="tab ===  DrawerTabs.HISTORY"/>-->
+      <!--      <RssTabs v-else-if="tab ===  DrawerTabs.RSS"/>-->
+      <!--      <ScheduledTabs v-else-if="tab ===  DrawerTabs.SCHEDULED"/>-->
+      <!--      <BrowserHistory v-else-if="tab ===  DrawerTabs.HISTORY"/>-->
       <Features v-else-if="tab ===  DrawerTabs.FEATURES"/>
-<!--      <TabsetHelp v-else-if="tab ===  DrawerTabs.HELP"/>-->
+      <!--      <TabsetHelp v-else-if="tab ===  DrawerTabs.HELP"/>-->
 
       <div v-else>unknown tab name {{ tab }}</div>
     </div>
@@ -89,7 +89,7 @@ import {useRouter} from "vue-router";
 import {useFeatureTogglesStore} from "stores/featureTogglesStore";
 import {useTabsStore} from "stores/tabsStore";
 import {useSettingsStore} from "stores/settingsStore";
-import {DrawerTabs} from "stores/uiStore";
+import {DrawerTabs, useUiStore} from "stores/uiStore";
 import {useUiService} from "src/services/useUiService";
 import TabsetHelp from "components/TabsetHelp.vue";
 import TabsGroupedByHost from "components/TabsGroupedByHost.vue";

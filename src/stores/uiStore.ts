@@ -42,8 +42,10 @@ export const useUiStore = defineStore('ui', () => {
 
   const leftDrawer = ref<LeftDrawer>($q.localStorage.getItem('ui.leftDrawer') || new LeftDrawer(LeftDrawerState.SMALL))
   const leftDrawerLabelAnimated = ref(false)
+
   const rightDrawer = ref<RightDrawer>($q.localStorage.getItem('ui.rightDrawer') || new RightDrawer())
-  const rightDrawerViewStack = ref<RightDrawer[]>([new RightDrawer()])
+  const rightDrawerViewStack = ref<DrawerTabs[]>([DrawerTabs.UNASSIGNED_TABS])
+
   const tabsetIdForNewTab = ref<string | undefined>($q.localStorage.getItem('ui.tabsetIdForNewTab') as string || undefined)
   const newTabsetEmptyByDefault = ref<boolean>($q.localStorage.getItem('ui.newTabsetEmptyByDefault') as boolean || false)
   const tabBeingDragged = ref<string | undefined>(undefined)
@@ -73,7 +75,7 @@ export const useUiStore = defineStore('ui', () => {
 
   const route = useRoute()
   watch(route, (to) => {
-   // console.log("resetting", messageAlreadyShown.value)
+    // console.log("resetting", messageAlreadyShown.value)
     setAnotherMessageAlreadyShown(undefined)
   }, {flush: 'pre', immediate: true, deep: true})
 
@@ -126,7 +128,7 @@ export const useUiStore = defineStore('ui', () => {
     setAnotherMessageAlreadyShown(undefined)
   }
 
-  function setAnotherMessageAlreadyShown (msg: string | undefined) {
+  function setAnotherMessageAlreadyShown(msg: string | undefined) {
     //console.log("setting setAnotherMessageAlreadyShown", msg)
     messageAlreadyShown.value = msg
   }
@@ -134,10 +136,22 @@ export const useUiStore = defineStore('ui', () => {
   function rightDrawerSetLastView() {
     console.log("here", rightDrawerViewStack.value)
     if (rightDrawerViewStack.value.length === 0) {
-      rightDrawerViewStack.value.push(new RightDrawer())
+      rightDrawerViewStack.value.push(DrawerTabs.UNASSIGNED_TABS)
       rightDrawer.value = new RightDrawer()
+    } else if (rightDrawerViewStack.value.length === 1) {
+      rightDrawer.value.activeTab = rightDrawerViewStack.value[0]
+    } else {
+      rightDrawer.value.activeTab = rightDrawerViewStack.value.pop() as unknown as DrawerTabs
     }
+    console.log("after1", rightDrawer.value)
+    console.log("after2", rightDrawerViewStack.value)
+
   }
+
+  const rightDrawerShowCloseButton = computed(() => {
+    console.log("rightDrawerShowCloseButton",rightDrawerViewStack.value)
+    return () => rightDrawerViewStack.value.length > 0
+  })
 
   const showMessage = computed(() => {
     return (ident: string, probability: number = 1) => {
@@ -164,6 +178,7 @@ export const useUiStore = defineStore('ui', () => {
     setLeftDrawerLabelAnimated,
     rightDrawer,
     rightDrawerSetLastView,
+    rightDrawerShowCloseButton,
     setTabsetForNewTabPage,
     tabsetIdForNewTab,
     draggingTab,
