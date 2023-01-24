@@ -27,6 +27,10 @@ interface PersistenceService {
   cleanUpContent(): Promise<SearchDoc[]>
   getContents(): Promise<any[]>
 
+  getRequest(url: string): Promise<string>
+
+  getMetaLinks(url: string): Promise<object>
+  getLinks(url: string): Promise<object>
   saveMHtml(tab: Tab, mhtml: string): Promise<any>
   getMHtml(url: string):Promise<object>
   getMHtmlInline(url: string): Promise<object>

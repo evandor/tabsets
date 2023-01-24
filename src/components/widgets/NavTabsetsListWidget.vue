@@ -8,7 +8,7 @@
     @click="selectTS(tabset.id)"
     @mouseover="showButtons(tabset.id, true)"
     @mouseleave="showButtons(tabset.id, false)"
-    :active='tabset.id === tabsStore.currentTabsetId' active-class="text-weight-bold">
+    :active='tabset.id === tabsStore.currentTabsetId' active-class="active-list-element">
 
     <q-item-section no-wrap
                     @drop="onDrop($event, tabset.id)"

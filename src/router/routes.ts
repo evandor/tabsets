@@ -22,7 +22,7 @@ const routes: RouteRecordRaw[] = [
   },
   {
     path: '/settings',
-    component: () => import('layouts/MainLayout.vue'),
+    component: () => import('layouts/DefaultLayout.vue'),
     children: [{ path: '', component: () => import('pages/SettingsPage.vue') }],
   },
   {
@@ -77,7 +77,7 @@ const routes: RouteRecordRaw[] = [
   },
   {
     path: '/features/:feature',
-    component: () => import('layouts/MainLayout.vue'),
+    component: () => import('layouts/DefaultLayout.vue'),
     children: [{ path: '', component: () => import('pages/FeaturesPage.vue') }],
   },
   {
@@ -87,7 +87,7 @@ const routes: RouteRecordRaw[] = [
   },
   {
     path: '/iframe/:tabId',
-    component: () => import('layouts/WithoutTabsetsLayout.vue'),
+    component: () => import('layouts/DefaultLayout.vue'),
     children: [{ path: '', component: () => import('pages/IFramePage.vue') }],
   },
   {

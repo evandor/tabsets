@@ -33,7 +33,7 @@ import {useTabsStore} from "stores/tabsStore";
 import {useRouter} from "vue-router";
 import NewTabsetDialog from "src/components/dialogues/NewTabsetDialog.vue"
 import {useUiService} from "src/services/useUiService";
-import {LeftDrawerTabs} from "stores/uiStore";
+import {DrawerTabs} from "stores/uiStore";
 import {useQuasar} from "quasar";
 
 const tabsStore = useTabsStore()
@@ -41,7 +41,7 @@ const router = useRouter()
 const $q = useQuasar()
 
 const openUnassigendTabs = () =>
-  useUiService().leftDrawerSetActiveTab(LeftDrawerTabs.UNASSIGNED_TABS)
+  useUiService().leftDrawerSetActiveTab(DrawerTabs.UNASSIGNED_TABS)
 
 const newTabsetFromUnassigndTabs = () => $q.dialog(
   {

@@ -10,7 +10,7 @@ import {useFeatureTogglesStore} from "stores/featureTogglesStore";
 import {useTabsStore} from "stores/tabsStore";
 import {useSettingsStore} from "stores/settingsStore";
 import {useUiService} from "src/services/useUiService";
-import {LeftDrawerTabs} from "stores/uiStore";
+import {DrawerTabs} from "stores/uiStore";
 import MHtmlService from "src/services/MHtmlService";
 import {MHtml} from "src/models/MHtml";
 import DrawerLeftTabs from "src/components/DrawerLeftTabs.vue"
@@ -24,7 +24,7 @@ const settingsStore = useSettingsStore()
 const uiService = useUiService()
 
 const openTabsCountRatio = ref(0)
-const tab = ref<LeftDrawerTabs>(uiService.leftDrawerActiveTab())
+const tab = ref<DrawerTabs>(uiService.leftDrawerActiveTab())
 const rssTabsCount = ref(0)
 const savedTabsCount = ref(0)
 

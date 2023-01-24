@@ -108,6 +108,7 @@ const optionalFeatures = [
 const experimantalFeatures = [
   // {ident: 'mhtml', name: 'Saving Pages', icon: 'o_bookmarks', target: '/features/pageCapture'},
   // {ident: 'scheduled', name: 'Schedule Tabs', icon: 'o_update', target: '/features/scheduled'},
+  {ident: 'experimentalViews', name: 'Experimental Views', icon: 'o_explore', bexOnly: false, target: '/features/experimentalViews'},
   {ident: 'sessions', name: 'Sessions', icon: 'o_explore', bexOnly: true, target: '/features/sessions'},
   {ident: 'history', name: 'History', icon: 'o_history', bexOnly: true, target: '/features/history'}
 ]

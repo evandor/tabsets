@@ -6,8 +6,13 @@
     <q-card-section class="q-pt-xs cursor-pointer" style="width:100%;">
 
       <div class="row items-baseline">
-        <div class="col-2">
-          <TabFaviconWidget :tab="tab" width="20px" height="20px"/>
+        <div class="col-1 q-mr-md q-ml-none">
+          <q-icon v-if="tabsStore.currentTabsetId" color="primary"
+            name="o_arrow_left" @click="addToCurrentTabset" size="2em">
+            <q-tooltip class="tooltip">
+              Click here to add the tab to your current tabset
+            </q-tooltip>
+          </q-icon>
         </div>
         <div class="col-2">
           <TabFaviconWidget :tab="tab" width="20px" height="20px"/>
@@ -39,6 +44,9 @@ import {useFeatureTogglesStore} from "stores/featureTogglesStore"
 import TabFaviconWidget from "src/components/widgets/TabFaviconWidget.vue"
 import {useTabsetService} from "src/services/TabsetService2";
 import {useUiStore} from "stores/uiStore";
+import {useCommandExecutor} from "src/services/CommandExecutor";
+import {CreateTabFromOpenTabsCommand} from "src/domain/commands/CreateTabFromOpenTabsCommand";
+import {useTabsStore} from "stores/tabsStore";
 
 const featureToggles = useFeatureTogglesStore()
 
@@ -48,6 +56,8 @@ const props = defineProps({
     required: true
   }
 })
+
+const tabsStore = useTabsStore()
 
 const closeTab = (tab: Tab) => NavigationService.closeChromeTab(tab)
 
@@ -69,6 +79,9 @@ const isSelf = (url: string) => url.startsWith(self)
 
 const emitInfo = (msg: string | undefined) => useUiStore().footerInfo = msg
 
+const addToCurrentTabset = () => {
+  useCommandExecutor().executeFromUi(new CreateTabFromOpenTabsCommand(props.tab as unknown as Tab, 0, 'openTabs'))
+}
 </script>
 
 <style lang="sass" scoped>

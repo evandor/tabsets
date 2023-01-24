@@ -2,11 +2,7 @@
 
   <div class="row q-ma-none q-pa-none fit">
 
-    <div class="col-2">
-      <DrawerLeftTabs/>
-    </div>
-
-    <div class="col-10 q-mt-none q-mx-none greyBorderTop">
+    <div class="col-12 q-mt-none q-mx-none greyBorderTop">
 
       <q-toolbar class="text-primary lightgrey">
         <div class="row fit">
@@ -14,16 +10,19 @@
             <q-toolbar-title>
               <div class="row justify-start items-baseline">
                 <div class="col-1">
-                  <span class="text-dark" :class="{
-                    'animated flash': uiService.leftDrawerAnimate()
-                  }">{{ drawerLabel() }}</span>
+                  {{ drawerLabel() }}
                 </div>
               </div>
             </q-toolbar-title>
           </div>
           <div class="col-xs-12 col-md-3 q-ma-none q-mt-sm text-right">
 
-            <div class="row" v-if="tab !== DrawerTabs.HELP && tab !== DrawerTabs.FEATURES">
+            <span class="text-subtitle2 cursor-pointer">
+              X
+            </span>
+            <q-tooltip class="tooltip" @click="closeCurrentView()">Close this view</q-tooltip>
+
+            <div class="row" v-if="tab === DrawerTabs.OPEN_TABS">
               <div class="col">
                 <span class="text-caption ellipsis">{{ filter }}</span>
                 <q-btn
@@ -59,18 +58,18 @@
         </div>
       </q-toolbar>
 
-
-      <BookmarksTree v-if="tab === DrawerTabs.BOOKMARKS"/>
-      <OpenTabs v-else-if="tab ===  DrawerTabs.OPEN_TABS" :filter="filter"/>
-      <UnassignedTabs v-else-if="tab ===  DrawerTabs.UNASSIGNED_TABS" :filter="filter"/>
-      <TabsGroupedByHost v-else-if="tab ===  DrawerTabs.GROUP_BY_HOST_TABS"/>
-      <SavedTabs v-else-if="tab ===  DrawerTabs.SAVED_TABS"/>
+      <UnassignedAndOpenTabs v-if="tab === DrawerTabs.UNASSIGNED_TABS"/>
+<!--      <BookmarksTree v-if="tab === DrawerTabs.BOOKMARKS"/>-->
+<!--      <OpenTabs v-else-if="tab ===  DrawerTabs.OPEN_TABS" :filter="filter"/>-->
+<!--      <UnassignedTabs v-else-if="tab ===  DrawerTabs.UNASSIGNED_TABS" :filter="filter"/>-->
+<!--      <TabsGroupedByHost v-else-if="tab ===  DrawerTabs.GROUP_BY_HOST_TABS"/>-->
+<!--      <SavedTabs v-else-if="tab ===  DrawerTabs.SAVED_TABS"/>-->
       <TabsetAsSidebar v-else-if="tab ===  DrawerTabs.SIDEBAR"/>
-      <RssTabs v-else-if="tab ===  DrawerTabs.RSS"/>
-      <ScheduledTabs v-else-if="tab ===  DrawerTabs.SCHEDULED"/>
-      <BrowserHistory v-else-if="tab ===  DrawerTabs.HISTORY"/>
+<!--      <RssTabs v-else-if="tab ===  DrawerTabs.RSS"/>-->
+<!--      <ScheduledTabs v-else-if="tab ===  DrawerTabs.SCHEDULED"/>-->
+<!--      <BrowserHistory v-else-if="tab ===  DrawerTabs.HISTORY"/>-->
       <Features v-else-if="tab ===  DrawerTabs.FEATURES"/>
-      <TabsetHelp v-else-if="tab ===  DrawerTabs.HELP"/>
+<!--      <TabsetHelp v-else-if="tab ===  DrawerTabs.HELP"/>-->
 
       <div v-else>unknown tab name {{ tab }}</div>
     </div>
@@ -80,14 +79,12 @@
 
 <script lang="ts" setup>
 import {ref, watch, watchEffect} from "vue";
-import BookmarksTree from "src/components/BookmarksTree.vue"
 import OpenTabs from "src/components/OpenTabs.vue"
 import SavedTabs from "src/components/SavedTabs.vue"
 import UnassignedTabs from "src/components/UnassignedTabs.vue"
 import RssTabs from "src/components/RssTabs.vue"
 import ScheduledTabs from "src/components/ScheduledTabs.vue"
 import TabsetAsSidebar from "src/components/TabsetAsSidebar.vue"
-import DrawerLeftTabs from "src/components/DrawerLeftTabs.vue"
 import {useRouter} from "vue-router";
 import {useFeatureTogglesStore} from "stores/featureTogglesStore";
 import {useTabsStore} from "stores/tabsStore";
@@ -98,6 +95,7 @@ import TabsetHelp from "components/TabsetHelp.vue";
 import TabsGroupedByHost from "components/TabsGroupedByHost.vue";
 import BrowserHistory from "components/BrowserHistory.vue";
 import Features from "components/Features.vue";
+import UnassignedAndOpenTabs from "components/views/UnassignedAndOpenTabs.vue";
 
 const router = useRouter()
 
@@ -108,15 +106,15 @@ const tabsStore = useTabsStore()
 const settingsStore = useSettingsStore()
 
 const openTabsCountRatio = ref(0)
-const tab = ref<DrawerTabs>(uiService.leftDrawerActiveTab())
+const tab = ref<DrawerTabs>(uiService.rightDrawerActiveTab())
 const rssTabsCount = ref(0)
 const filter = ref<string>('')
 
-watchEffect(() => tab.value = uiService.leftDrawerActiveTab())
+watchEffect(() => tab.value = uiService.rightDrawerActiveTab())
 
 watch(() => tab.value, (currentValue, oldValue) => {
   if (currentValue !== oldValue) {
-    uiService.leftDrawerSetActiveTab(currentValue)
+    uiService.rightDrawerSetActiveTab(currentValue)
   }
 })
 
@@ -141,7 +139,7 @@ const drawerLabel = () => {
     case DrawerTabs.OPEN_TABS:
       return "Open Tabs"
     case DrawerTabs.UNASSIGNED_TABS:
-      return "Unassigned"
+      return "Tabs to add"
     case DrawerTabs.GROUP_BY_HOST_TABS:
       return "Grouped by Host"
     case DrawerTabs.SAVED_TABS:
@@ -171,17 +169,9 @@ const setFilter2 = (newVal: string) => {
   console.log("newVal2", newVal)
   filter.value = newVal
 }
+const closeCurrentView = () => useUiService().closeCurrentView()
+
 
 </script>
 
-<style lang="sass" scoped>
-.lightgrey
-  background-color: $lightgrey
 
-.greyBorderTop
-  border-top: 1px solid $bordergrey
-
-.greyBorderTopRight
-  border-top: 1px solid $bordergrey
-  border-right: 1px solid $bordergrey
-</style>

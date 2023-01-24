@@ -15,7 +15,7 @@
 
         <q-space/>
 
-        <SearchWidget v-if="tabsStore.tabsets.size > 2"/>
+        <SearchWidget v-if="tabsStore.tabsets.size > 4"/>
 
         <q-space/>
 
@@ -77,9 +77,27 @@
         <!--          <q-tooltip>About tabsets browser extension v{{ appVersion }}</q-tooltip>-->
         <!--        </q-btn>-->
 
-        <q-btn class="q-mr-md" icon="o_settings" size="12px" style="width:24px" flat @click="router.push('/settings')">
-          <q-tooltip>Customize Tabsets and utilize advanced features</q-tooltip>
+        <Transition name="colorized-appear">
+          <q-btn v-if="permissionsStore.hasFeature('sidebar')"
+                 flat
+                 name="sidebar" icon="o_input" @click="tabsClicked(DrawerTabs.SIDEBAR)">
+            <q-tooltip class="tooltip" anchor="center right" self="center left" :delay="200">Your current tabset as
+              'sidebar'
+            </q-tooltip>
+          </q-btn>
+        </Transition>
+
+        <div>
+        <q-btn class="q-mr-md" icon="o_settings" size="12px" style="width:24px" flat >
+          <q-tooltip class="tooltip" anchor="center right" self="center left" :delay="200">Customize Tabsets</q-tooltip>
         </q-btn>
+          <q-menu :offset="[0, 7]">
+            <q-list style="min-width: 200px">
+              <q-item clickable @click="router.push('/settings')">Settings</q-item>
+              <q-item clickable @click="useUiService().rightDrawerSetActiveTab(DrawerTabs.FEATURES)" v-close-popup>Activate more Features</q-item>
+            </q-list>
+          </q-menu>
+        </div>
 
         <div class="cursor-pointer" @click="router.push('/about')" v-if="notificationsStore.updateToVersion !== ''">
           <q-btn
@@ -104,8 +122,9 @@
     <q-drawer show-if-above
               v-model="rightDrawerOpen" side="right" bordered
               content-class="column justify-between no-wrap bg-grey-1">
-          <UnassignedAndOpenTabs />
-<!--      <UnassignedTabs v-else-if="tab ===  LeftDrawerTabs.UNASSIGNED_TABS" :filter="filter"/>-->
+      <DrawerRight />
+
+<!--      <UnassignedTabs v-else-if="tab ===  DrawerTabs.UNASSIGNED_TABS" :filter="filter"/>-->
 
     </q-drawer>
 
@@ -138,12 +157,13 @@ import SpacesSelectorWidget from 'src/components/widgets/SpacesSelectorWidget.vu
 import UnassignedTabsWidget from 'src/components/widgets/UnassignedTabsWidget.vue'
 import SearchWidget from 'src/components/widgets/SearchWidget.vue'
 import {useUiService} from "src/services/useUiService";
-import {useUiStore} from "stores/uiStore";
+import {DrawerTabs, useUiStore} from "stores/uiStore";
 import NotificationDialog from "components/dialogues/NotificationDialog.vue"
 import {usePermissionsStore} from "stores/permissionsStore";
 import {Notification, NotificationStatus} from "src/models/Notification";
 import {useUtils} from "src/services/Utils";
 import OpenTabs from "components/OpenTabs.vue";
+import DrawerRight from "components/DrawerRight.vue";
 
 const router = useRouter()
 const tabsStore = useTabsStore()
@@ -226,6 +246,8 @@ const showNotificationDialog = (nId: string) => $q.dialog({
     notificationId: nId
   }
 })
+
+const tabsClicked = (tab: DrawerTabs) => uiService.rightDrawerSetActiveTab(tab)
 
 
 

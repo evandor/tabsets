@@ -9,7 +9,7 @@ export enum LeftDrawerState {
   WIDE = "WIDE"
 }
 
-export enum LeftDrawerTabs {
+export enum DrawerTabs {
   BOOKMARKS = "bookmarks",
   OPEN_TABS = "openTabs",
   UNASSIGNED_TABS = "unassignedTabs",
@@ -26,7 +26,13 @@ export enum LeftDrawerTabs {
 export class LeftDrawer {
   constructor(
     public state: LeftDrawerState,
-    public activeTab: LeftDrawerTabs = LeftDrawerTabs.OPEN_TABS) {
+    public activeTab: DrawerTabs = DrawerTabs.OPEN_TABS) {
+  }
+}
+
+export class RightDrawer {
+  constructor(
+    public activeTab: DrawerTabs = DrawerTabs.UNASSIGNED_TABS) {
   }
 }
 
@@ -36,6 +42,8 @@ export const useUiStore = defineStore('ui', () => {
 
   const leftDrawer = ref<LeftDrawer>($q.localStorage.getItem('ui.leftDrawer') || new LeftDrawer(LeftDrawerState.SMALL))
   const leftDrawerLabelAnimated = ref(false)
+  const rightDrawer = ref<RightDrawer>($q.localStorage.getItem('ui.rightDrawer') || new RightDrawer())
+  const rightDrawerViewStack = ref<RightDrawer[]>([new RightDrawer()])
   const tabsetIdForNewTab = ref<string | undefined>($q.localStorage.getItem('ui.tabsetIdForNewTab') as string || undefined)
   const newTabsetEmptyByDefault = ref<boolean>($q.localStorage.getItem('ui.newTabsetEmptyByDefault') as boolean || false)
   const tabBeingDragged = ref<string | undefined>(undefined)
@@ -48,6 +56,10 @@ export const useUiStore = defineStore('ui', () => {
 
   watch(leftDrawer.value, (val: Object) => {
     $q.localStorage.set("ui.leftDrawer", val)
+  }, {deep: true})
+
+  watch(rightDrawer.value, (val: Object) => {
+    $q.localStorage.set("ui.rightDrawer", val)
   }, {deep: true})
 
   watch(tabsetIdForNewTab, (val: Object) => {
@@ -119,6 +131,14 @@ export const useUiStore = defineStore('ui', () => {
     messageAlreadyShown.value = msg
   }
 
+  function rightDrawerSetLastView() {
+    console.log("here", rightDrawerViewStack.value)
+    if (rightDrawerViewStack.value.length === 0) {
+      rightDrawerViewStack.value.push(new RightDrawer())
+      rightDrawer.value = new RightDrawer()
+    }
+  }
+
   const showMessage = computed(() => {
     return (ident: string, probability: number = 1) => {
       //console.log("checking message", ident, probability, hiddenMessages.value)
@@ -142,6 +162,8 @@ export const useUiStore = defineStore('ui', () => {
     leftDrawer,
     leftDrawerLabelIsAnimated,
     setLeftDrawerLabelAnimated,
+    rightDrawer,
+    rightDrawerSetLastView,
     setTabsetForNewTabPage,
     tabsetIdForNewTab,
     draggingTab,

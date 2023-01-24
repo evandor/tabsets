@@ -165,6 +165,12 @@ text.set('history', {
   description: 'The "History" Feature provides access to your browser\'s history to provide additional features.',
   permissions: 'This feature needs additional permissions.'
 })
+text.set('experimentalViews', {
+  experimental: true,
+  name: 'Experimental Views',
+  description: 'The default view of your tabset is a list - but there can be other views as well like grids or even a canvas.',
+  permissions: 'This feature needs no additional permissions.'
+})
 text.set('sessions', {
   experimental: true,
   name: 'Sessions',

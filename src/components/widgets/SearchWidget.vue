@@ -2,6 +2,7 @@
 
   <div class="q-gutter-md row items-start fit">
     <q-select dark dense standout
+              placeholder="Search inside all of tabsets"
               class="fit q-mx-md "
               :model-value="search"
               ref="searchBox"

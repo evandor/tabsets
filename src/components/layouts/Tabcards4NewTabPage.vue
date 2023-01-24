@@ -23,7 +23,7 @@ import {useQuasar} from "quasar";
 import _ from "lodash"
 import {useTabsStore} from "src/stores/tabsStore";
 import {useUiService} from "src/services/useUiService";
-import {LeftDrawerState, LeftDrawerTabs} from "stores/uiStore";
+import {LeftDrawerState, DrawerTabs} from "stores/uiStore";
 import {useTabsetService} from "src/services/TabsetService2";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {CreateTabFromOpenTabsCommand} from "src/domain/commands/CreateTabFromOpenTabsCommand";
@@ -98,8 +98,8 @@ const handleDragAndDrop = (event: any) => {
 const openOrShowOpenTabs = () => {
   // const activeTab = uiService.leftDrawerActiveTab()
   const drawerModel = uiService.drawerModel()
-  if (drawerModel.state === LeftDrawerState.SMALL || drawerModel.activeTab !== LeftDrawerTabs.OPEN_TABS) {
-    uiService.leftDrawerSetActiveTab(LeftDrawerTabs.OPEN_TABS)
+  if (drawerModel.state === LeftDrawerState.SMALL || drawerModel.activeTab !== DrawerTabs.OPEN_TABS) {
+    uiService.leftDrawerSetActiveTab(DrawerTabs.OPEN_TABS)
   } else {
     uiService.leftDrawerAnimateLabel()
   }

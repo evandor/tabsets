@@ -25,7 +25,7 @@
       </div>
       <div class="col-xs-12 col-md-7 text-right">
 
-        <q-btn v-if="tabsStore.getCurrentTabs.length > 1"
+        <q-btn v-if="showSorting()"
                @click="toggleSorting()"
                style="width:14px"
                class="q-mr-sm" size="10px"
@@ -34,7 +34,7 @@
           <q-tooltip>Toggle through sorting</q-tooltip>
         </q-btn>
 
-        <q-btn v-if="tabsStore.getCurrentTabs.length > 1"
+        <q-btn v-if="showSorting()"
                :disable="tabsStore.getCurrentTabset?.sorting === 'custom'"
                @click="toggleOrder()"
                style="width:14px"
@@ -131,7 +131,7 @@
   <q-banner rounded class="bg-amber-1 text-black q-ma-md"
             v-if="!tabsStore.currentTabsetId && tabsStore.tabsets.size > 0">
     <div class="text-body2">
-      Select an existing tabset from the menu or add a new tabset.
+      Select an existing tabset from the list or create a new tabset.
     </div>
   </q-banner>
 
@@ -458,16 +458,6 @@ const sortingInfo = (): string => {
   }
 }
 
+const showSorting = () => tabsStore.getCurrentTabs.length > 10
+
 </script>
-
-<style lang="sass" scoped>
-
-.delayed-appear-leave-active
-  transition: all 2s ease-in
-  transition-delay: 0s
-
-.delayed-appear-enter-from,
-.delayed-appear-leave-to
-  opacity: 0
-
-</style>

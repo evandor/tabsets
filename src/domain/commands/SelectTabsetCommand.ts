@@ -4,6 +4,8 @@ import {useTabsStore} from "src/stores/tabsStore";
 import _ from "lodash"
 import {Tab} from "src/models/Tab";
 import {useNotificationsStore} from "stores/notificationsStore";
+import {DrawerTabs, useUiStore} from "stores/uiStore";
+import {useUiService} from "src/services/useUiService";
 
 
 export class SelectTabsetCommand implements Command<object> {
@@ -26,6 +28,7 @@ export class SelectTabsetCommand implements Command<object> {
 
     tabsStore.currentTabsetId = this.tabsetId;
     localStorage.setItem("selectedTabset", this.tabsetId)
+    //useUiService().rightDrawerSetActiveTab(DrawerTabs.UNASSIGNED_TABS)
     const executionResult = new ExecutionResult(null, "done")
     return Promise.resolve(executionResult)
   }

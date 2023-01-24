@@ -72,7 +72,7 @@ import TabsetService from "src/services/TabsetService"
 import {ref, watch, watchEffect} from "vue";
 import {useRouter} from "vue-router";
 import {useUiService} from "src/services/useUiService";
-import {LeftDrawerTabs} from "stores/uiStore";
+import {DrawerTabs} from "stores/uiStore";
 import NewSessionDialog from "components/dialogues/NewSessionDialog.vue";
 import {useQuasar} from "quasar";
 import _ from "lodash"
@@ -121,7 +121,7 @@ const thresholdStyle = () =>
 const thresholdLabel = () => tabsStore.tabs.length + " open tabs"
 
 const showOpenTabs = () => {
-  useUiService().leftDrawerSetActiveTab(LeftDrawerTabs.OPEN_TABS)
+  useUiService().leftDrawerSetActiveTab(DrawerTabs.OPEN_TABS)
 }
 
 watchEffect(() => {

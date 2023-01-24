@@ -1,4 +1,4 @@
-import {LeftDrawer, LeftDrawerState, LeftDrawerTabs, useUiStore} from "stores/uiStore";
+import {DrawerTabs, LeftDrawer, LeftDrawerState, useUiStore} from "stores/uiStore";
 
 export function useUiService() {
 
@@ -25,14 +25,16 @@ export function useUiService() {
     return useUiStore().leftDrawer
   }
 
-  const leftDrawerActiveTab = (): LeftDrawerTabs => {
-    const uiStore = useUiStore()
-    return uiStore.leftDrawer.activeTab
-  }
+  const leftDrawerActiveTab = (): DrawerTabs => useUiStore().leftDrawer.activeTab
+  const rightDrawerActiveTab = (): DrawerTabs => useUiStore().rightDrawer.activeTab
 
-  const  leftDrawerSetActiveTab = (tab: LeftDrawerTabs) => {
+
+  const  leftDrawerSetActiveTab = (tab: DrawerTabs) => {
     useUiStore().leftDrawer.activeTab = tab
     useUiStore().leftDrawer.state = LeftDrawerState.WIDE
+  }
+  const  rightDrawerSetActiveTab = (tab: DrawerTabs) => {
+    useUiStore().rightDrawer.activeTab = tab
   }
 
   const leftDrawerAnimateLabel = () => {
@@ -64,6 +66,9 @@ export function useUiService() {
   const  draggingTab = (tabId: string) => useUiStore().draggingTab(tabId)
   const  droppingTab = ():string | undefined => useUiStore().droppingTab()
 
+  const closeCurrentView = () => {
+    useUiStore().rightDrawerSetLastView()
+  }
 
   return {
     useSmallDrawerView,
@@ -73,10 +78,13 @@ export function useUiService() {
     leftDrawerSetActiveTab,
     leftDrawerAnimateLabel,
     leftDrawerAnimate,
+    rightDrawerActiveTab,
+    rightDrawerSetActiveTab,
     showSearchResultsPageFor,
     setTabsetForNewTabPage,
     draggingTab,
-    droppingTab
+    droppingTab,
+    closeCurrentView
   }
 
 }

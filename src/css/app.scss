@@ -37,3 +37,12 @@
   height:25px;
   margin-bottom:0;
 }
+
+.active-list-element {
+  font-weight: bold;
+  font-size: larger;
+  color: $primary;
+  border-left: 5px solid $primary;
+  border-radius: 5px;
+}
+
