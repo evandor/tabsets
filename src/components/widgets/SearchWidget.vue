@@ -2,7 +2,7 @@
 
   <div class="q-gutter-md row items-start fit">
     <q-select dark dense standout
-              placeholder="Search inside all of tabsets"
+              :placeholder="inputPlaceholder()"
               class="fit q-mx-md "
               :model-value="search"
               ref="searchBox"
@@ -60,6 +60,9 @@ import {useRoute, useRouter} from "vue-router";
 import NavigationService from "src/services/NavigationService";
 import {SearchIndexQuery} from "src/domain/queries/SearchIndexQuery";
 import {useQueryExecutor} from "src/services/QueryExecutor";
+import {useBookmarksStore} from "stores/bookmarksStore";
+import {usePermissionsStore} from "stores/permissionsStore";
+import {useUiStore} from "stores/uiStore";
 
 const tabsStore = useTabsStore()
 const searchStore = useSearchStore()
@@ -135,5 +138,18 @@ const updateSearch = (val: any) => {
   }
 }
 
+const inputPlaceholder = () => {
+  if (Math.random() < 0.1) {
+    return "use the key '/' for quick access to search"
+  }
+  if (usePermissionsStore().hasFeature('bookmarks') && usePermissionsStore().hasFeature('analyseTabs')) {
+    const contentCount = useSearchStore().stats.get("content.count")
+    return `Search inside ${tabsStore.allTabsCount} tabs (${contentCount} analysed) and ${useBookmarksStore().bookmarksLeaves.length} bookmarks`
+  }
+  if (usePermissionsStore().hasFeature('bookmarks')) {
+    return "Search inside all of " + tabsStore.allTabsCount + " tabs and " + useBookmarksStore().bookmarksLeaves.length + " bookmarks"
+  }
+  return "Search inside all of " + tabsStore.allTabsCount + " tabs"
+}
 
 </script>

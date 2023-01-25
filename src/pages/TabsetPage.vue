@@ -12,7 +12,7 @@
   </q-toolbar>
   <q-toolbar class="text-primary lightgrey" v-else>
     <div class="row fit">
-      <div class="col-xs-12 col-md-5">
+      <div class="col-xs-12 col-md-4">
         <q-toolbar-title>
           <div class="row justify-start items-baseline">
             <div class="col-1"><span class="text-dark">Tabs of </span> <span
@@ -23,7 +23,7 @@
           </div>
         </q-toolbar-title>
       </div>
-      <div class="col-xs-12 col-md-7 text-right">
+      <div class="col-xs-12 col-md-8 text-right">
 
         <q-btn v-if="showSorting()"
                @click="toggleSorting()"
@@ -65,15 +65,15 @@
           <q-tooltip>Use the list layout to visualize your tabs</q-tooltip>
         </q-btn>
 
-<!--        <q-btn v-if="permissionsStore.hasAllOrigins()"-->
-<!--               @click="setView('thumbnails')"-->
-<!--               style="width:14px"-->
-<!--               class="q-mr-sm" size="10px"-->
-<!--               :flat="tabsStore.getCurrentTabset?.view !== 'thumbnails'"-->
-<!--               :outline="tabsStore.getCurrentTabset?.view === 'thumbnails'"-->
-<!--               icon="o_image">-->
-<!--          <q-tooltip>Use the thumbnail layout to visualize your tabs</q-tooltip>-->
-<!--        </q-btn>-->
+        <!--        <q-btn v-if="permissionsStore.hasAllOrigins()"-->
+        <!--               @click="setView('thumbnails')"-->
+        <!--               style="width:14px"-->
+        <!--               class="q-mr-sm" size="10px"-->
+        <!--               :flat="tabsStore.getCurrentTabset?.view !== 'thumbnails'"-->
+        <!--               :outline="tabsStore.getCurrentTabset?.view === 'thumbnails'"-->
+        <!--               icon="o_image">-->
+        <!--          <q-tooltip>Use the thumbnail layout to visualize your tabs</q-tooltip>-->
+        <!--        </q-btn>-->
 
         <q-btn v-if="featuresStore.isEnabled('experimentalViews')"
                @click="setView('canvas')"
@@ -85,25 +85,31 @@
           <q-tooltip>Use the canvas freestyle layout to visualize your tabs</q-tooltip>
         </q-btn>
 
+
         <q-btn v-if="tabsStore.getCurrentTabs?.length > 0"
-               flat dense icon="o_restore_page"
-               color="primary" :label="$q.screen.gt.lg ? 'Open Tabset...' : ''"
-               class="q-ml-xl q-mr-none"
-               @click="restoreDialog">
-          <q-tooltip>Replace your current tabs with all the tabs from this tabset</q-tooltip>
+               class="q-ml-xl q-mr-md"
+               icon="o_open_in_browser"
+               @click="restoreDialog"
+               outline
+               size="0.8em"
+               color="primary">
+          <q-tooltip
+            class="tooltip"
+            :delay="200">
+            Open all the tabs from this tabset in a new window
+          </q-tooltip>
         </q-btn>
 
         <q-btn v-if="tabsStore.currentTabsetId !== '' && tabsStore.getTabset(tabsStore.currentTabsetId)"
-               class="q-ml-md q-mr-md"
+               class="q-mr-md"
                @click="addUrlDialog"
-               label="create tab"
-               unelevated
+               icon="add_circle"
+               outline
                size="0.8em"
-               color="warning">
+               color="primary">
           <q-tooltip
             class="tooltip"
-            :delay="200"
-            anchor="center left" self="center right">
+            :delay="200">
             Copy and Paste or create a new Tab inside this tabset
           </q-tooltip>
         </q-btn>
@@ -136,7 +142,7 @@
   </q-banner>
 
   <!-- pinned tabs -->
-  <q-expansion-item v-if="tabsStore.pinnedTabs?.length > 0 && !specialView()"
+  <q-expansion-item v-if="showPinnedTabsSection()"
                     header-class="text-black"
                     expand-icon-class="text-black"
                     expand-separator
@@ -168,7 +174,8 @@
   </q-expansion-item>
 
   <!-- chrome groups new -->
-  <template v-for="group in tabsStore.getCurrentTabset?.groups">
+  <template v-if="usePermissionsStore().hasFeature('useGroups')"
+            v-for="group in tabsStore.getCurrentTabset?.groups">
     <q-expansion-item
       v-if="tabsForGroup(group.chromeGroup.id).length > 0 && !specialView()"
       default-opened
@@ -235,8 +242,8 @@
       <q-item-section>
         <div>
           <span class="text-weight-bold">{{
-              unpinnedNoGroup()?.length
-            }} {{ unpinnedNoGroup()?.length === 1 ? 'Tab' : 'Tabs' }}</span><span class="text-caption">{{
+              unpinnedNoGroupOrAllTabs()?.length
+            }} {{ unpinnedNoGroupOrAllTabs()?.length === 1 ? 'Tab' : 'Tabs' }}</span><span class="text-caption">{{
             sortingInfo()
           }}</span>
           <div class="text-caption ellipsis"></div>
@@ -245,7 +252,7 @@
     </template>
 
     <InfoMessageWidget
-      v-if="unpinnedNoGroup()?.length > 1"
+      v-if="unpinnedNoGroupOrAllTabs()?.length > 1"
       :probability="0.3"
       ident="tabsetPage_dnd"
       hint="You can select the favicon images and drag and drop the entries to reorder the list to your wishes"/>
@@ -255,14 +262,14 @@
 
         <TabList v-if="tabsStore.getCurrentTabset?.view === 'list'"
                  group="otherTabs"
-                 :tabs="unpinnedNoGroup()"/>
+                 :tabs="unpinnedNoGroupOrAllTabs()"/>
 
         <TabThumbs v-else-if="tabsStore.getCurrentTabset?.view === 'thumbnails'"
                    group="otherTabs"
-                   :tabs="unpinnedNoGroup()"/>
+                   :tabs="unpinnedNoGroupOrAllTabs()"/>
 
         <Tabcards v-else
-                  :tabs="unpinnedNoGroup()" group="otherTabs" :highlightUrl="highlightUrl"/>
+                  :tabs="unpinnedNoGroupOrAllTabs()" group="otherTabs" :highlightUrl="highlightUrl"/>
 
       </q-card-section>
 
@@ -375,13 +382,17 @@ function getOrder() {
   }
 }
 
-function unpinnedNoGroup(): Tab[] {
-  return _.orderBy(
-    _.filter(
-      tabsStore.getCurrentTabs,
-      // @ts-ignore
-      (t: Tab) => !t?.chromeTab.pinned && t?.chromeTab.groupId === -1),
-    getOrder(), [orderDesc.value ? 'desc' : 'asc'])
+function unpinnedNoGroupOrAllTabs(): Tab[] {
+  if (usePermissionsStore().hasFeature('useGroups')) {
+    return _.orderBy(
+      _.filter(
+        tabsStore.getCurrentTabs,
+        // @ts-ignore
+        (t: Tab) => !t?.chromeTab.pinned && t?.chromeTab.groupId === -1),
+      getOrder(), [orderDesc.value ? 'desc' : 'asc'])
+  } else {
+    return _.orderBy(tabsStore.getCurrentTabs, getOrder(), [orderDesc.value ? 'desc' : 'asc'])
+  }
 }
 
 
@@ -460,4 +471,5 @@ const sortingInfo = (): string => {
 
 const showSorting = () => tabsStore.getCurrentTabs.length > 10
 
+const showPinnedTabsSection = () => usePermissionsStore().hasFeature('useGroups') && tabsStore.pinnedTabs?.length > 0 && !specialView()
 </script>

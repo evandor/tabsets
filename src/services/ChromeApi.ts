@@ -79,6 +79,7 @@ class ChromeApi {
       (alarm: chrome.alarms.Alarm) => runHousekeeping(alarm)
     )
 
+
     // chrome.management.getSelf(
     //   (self: chrome.management.ExtensionInfo) => {
     //     // TODO needed ?

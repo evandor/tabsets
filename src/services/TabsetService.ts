@@ -30,7 +30,7 @@ class TabsetService {
     console.debug("initializing tabsetService")
     await db.loadTabsets()
     if (!doNotInitSearchIndex) {
-      useSearchStore().populate(db.getContents())
+      useSearchStore(). populate(db.getContents())
     }
   }
 

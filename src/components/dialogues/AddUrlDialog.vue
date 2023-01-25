@@ -46,7 +46,14 @@ defineEmits([
   ...useDialogPluginComponent.emits
 ])
 
-const url = ref('')
+const props = defineProps({
+  providedUrl: {
+    type: String,
+    default: ''
+  }
+})
+
+const url = ref(props.providedUrl)
 
 
 const {dialogRef, onDialogHide, onDialogOK, onDialogCancel} = useDialogPluginComponent()

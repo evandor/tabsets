@@ -59,7 +59,7 @@
       </q-toolbar>
 
       <UnassignedAndOpenTabs v-if="tab === DrawerTabs.UNASSIGNED_TABS"/>
-      <!--      <BookmarksTree v-if="tab === DrawerTabs.BOOKMARKS"/>-->
+      <BookmarksTree v-else-if="tab === DrawerTabs.BOOKMARKS"/>
       <!--      <OpenTabs v-else-if="tab ===  DrawerTabs.OPEN_TABS" :filter="filter"/>-->
       <!--      <UnassignedTabs v-else-if="tab ===  DrawerTabs.UNASSIGNED_TABS" :filter="filter"/>-->
       <!--      <TabsGroupedByHost v-else-if="tab ===  DrawerTabs.GROUP_BY_HOST_TABS"/>-->
@@ -96,6 +96,7 @@ import TabsGroupedByHost from "components/TabsGroupedByHost.vue";
 import BrowserHistory from "components/BrowserHistory.vue";
 import Features from "components/Features.vue";
 import UnassignedAndOpenTabs from "components/views/UnassignedAndOpenTabs.vue";
+import BookmarksTree from "components/BookmarksTree.vue";
 
 const router = useRouter()
 

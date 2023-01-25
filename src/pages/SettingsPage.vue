@@ -20,7 +20,7 @@
       <q-tab name="ignored" label="Ignored Urls"/>
       <q-tab name="archived" label="Archived Tabsets"/>
       <q-tab name="search" label="Search Engine" v-if="featuresStore.isEnabled('debug')"/>
-      <q-tab name="importExport" label="Import/Export"/>
+<!--      <q-tab name="importExport" label="Import/Export"/>-->
       <q-tab name="featureToggles" label="Feature Toggles"/>
     </q-tabs>
   </div>
@@ -421,6 +421,7 @@ const indexSize = ref(0)
 const currentNewTabTabsetId = ref(useUiStore().tabsetIdForNewTab)
 
 const debugEnabled = ref<boolean>(featuresStore.isEnabled('debug'))
+const syncEnabled = ref<boolean>(featuresStore.isEnabled('sync'))
 const spacesEnabled = ref<boolean>(featuresStore.isEnabled('spaces'))
 const experimentalViewsEnabled = ref<boolean>(featuresStore.isEnabled('experimentalViews'))
 const statsEnabled = ref<boolean>(featuresStore.isEnabled('stats'))
@@ -513,6 +514,7 @@ watchEffect(() => {
 
 watchEffect(() => {
   featuresStore.setFeatureToggle("debug", debugEnabled.value)
+  featuresStore.setFeatureToggle("sync", syncEnabled.value)
   featuresStore.setFeatureToggle("spaces", spacesEnabled.value)
   //featuresStore.setFeatureToggle("sidebar", sidebarEnabled.value)
   featuresStore.setFeatureToggle("experimentalViews", experimentalViewsEnabled.value)
@@ -537,9 +539,6 @@ const downloadIndex = () => {
 
 const clearIndex = () => searchStore.init()
 
-const showExportDialog = () => $q.dialog({component: ExportDialog})
-const showImportDialog = () => $q.dialog({component: ImportDialog})
-
 const archivedTabsets = () => {
   let tabsets = [...tabsStore.tabsets.values()]
   return _.sortBy(_.filter(tabsets, (ts: Tabset) => ts.status === TabsetStatus.ARCHIVED), ['name'])
@@ -553,14 +552,7 @@ const simulateNewVersion = (version: string) => NavigationService.updateAvailabl
 
 const restoreHints = () => useUiStore().restoreHints()
 
+console.log("'chooseFileSystemEntries' in window", 'chooseFileSystemEntries' in window)
+console.log("'showOpenFilePicker' in window", 'showOpenFilePicker' in window)
 </script>
 
-<style lang="sass" scoped>
-
-.lightgrey
-  background-color: $lightgrey
-
-.greyBorderTop
-  border-top: 1px solid $bordergrey
-
-</style>

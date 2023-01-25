@@ -11,6 +11,7 @@ import throttledQueue from "throttled-queue";
 import {useWindowsStore} from "stores/windowsStores";
 import {useBookmarksStore} from "stores/bookmarksStore";
 import {useTabsetService} from "src/services/TabsetService2";
+import {useUiStore} from "stores/uiStore";
 
 function dummyPromise(timeout: number, tabToCloseId: number | undefined = undefined): Promise<string> {
   return new Promise((resolve, reject) => {
@@ -35,6 +36,8 @@ export const useSearchStore = defineStore('search', () => {
   const searchIndex = ref(null as unknown as any)
 
   const fuse = ref(null as unknown as Fuse<SearchDoc>)
+
+  const stats = ref<Map<string, number>>(new Map())
 
   const options = ref({
     keys: [
@@ -232,6 +235,10 @@ export const useSearchStore = defineStore('search', () => {
           }
         })
         console.log(`populated from content with ${count} entries (${overwritten} of which overwritten), ${countFiltered} is/are filtered (not in any tab)`)
+        //useUiStore().setContentCount(count - countFiltered)
+        stats.value.set("content.count", count)
+        stats.value.set("content.overwritten", overwritten)
+        stats.value.set("content.filtered", countFiltered)
       })
 
     // --- add data from tabs directly, like url and title
@@ -295,5 +302,5 @@ export const useSearchStore = defineStore('search', () => {
     }
   }
 
-  return {init, populate, getIndex, addToIndex, remove, term, search, indexTabs, update, reindexTabset, reindexTab}
+  return {init, populate, getIndex, addToIndex, remove, term, search, indexTabs, update, reindexTabset, reindexTab, stats}
 })

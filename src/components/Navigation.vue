@@ -60,15 +60,8 @@
 
             <q-separator v-if="tabsets(true).length > 0"/>
             <NavTabsetsListWidget :tabsets="tabsets(false)"/>
-
-            <!--    <q-separator v-if="archivedTabsets().length > 0"/>-->
-            <!--    <NavTabsetsListWidget :tabsets="archivedTabsets()" :useExpansion=true />-->
           </q-list>
         </template>
-
-        <!--        <template v-slot:separator>-->
-        <!--          <q-avatar color="primary" text-color="white" size="40px" icon="drag_indicator"/>-->
-        <!--        </template>-->
 
         <template v-slot:after v-if="permissonsStore.hasFeature('details')">
           <TabInfo v-if="notificationStore.selectedTab"/>
@@ -115,7 +108,7 @@ const localStorage = $q.localStorage
 
 const newTabsetName = ref('')
 const merge = ref(false)
-const splitterModel = ref(350)
+const splitterModel = ref(permissonsStore.hasFeature('details') ? 350 : 1)
 
 $q.loadingBar.setDefaults({
   color: 'green',

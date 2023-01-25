@@ -47,7 +47,7 @@ const routes: RouteRecordRaw[] = [
   },
   {
     path: '/bookmarks/:id',
-    component: () => import('layouts/MainLayout.vue'),
+    component: () => import('layouts/DefaultLayout.vue'),
     children: [{ path: '', component: () => import('pages/BookmarksPage.vue') }],
   },
   {
@@ -82,7 +82,7 @@ const routes: RouteRecordRaw[] = [
   },
   {
     path: '/search',
-    component: () => import('layouts/MainLayout.vue'),
+    component: () => import('layouts/DefaultLayout.vue'),
     children: [{ path: '', component: () => import('pages/SearchPage.vue') }],
   },
   {

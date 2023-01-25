@@ -177,6 +177,14 @@ text.set('sessions', {
   description: 'A session is a special type of tabsets where your newly opened tabs will be tracked automatically',
   permissions: 'This feature needs additional permissions.'
 })
+text.set('useGroups', {
+  experimental: true,
+  name: 'Use Browser Groups',
+  img: 'useGroups.png',
+  img_width: '700px',
+  description: 'Some Browsers can groups tabs to help you organize them. Activate this feature to use groups and pinned tabs inside this extension',
+  permissions: 'This feature needs no additional permissions.'
+})
 
 text.set('spaces', {
   planned: true,
@@ -218,7 +226,8 @@ watchEffect(() => {
 const hasFeature = (feature: string) => permissionsStore.hasFeature(feature)
 
 const grant = (ident: string) => {
-  if ("groupedByDomain" === ident || "opentabsThreshold" === ident || "pendingTabs" === ident || "details" === ident || "sessions" === ident || "sidebar" === ident) {
+  if ("groupedByDomain" === ident || "opentabsThreshold" === ident || "pendingTabs" === ident
+    || "details" === ident || "sessions" === ident || "sidebar" === ident || "useGroups" === ident) {
     permissionsStore.activateFeature(ident)
   } else if ("thumbnails" === ident || "analyseTabs" === ident) {
     useCommandExecutor()
@@ -230,7 +239,8 @@ const grant = (ident: string) => {
 }
 
 const revoke = (ident: string) => {
-  if ("groupedByDomain" === ident || "opentabsThreshold" === ident || "pendingTabs" === ident || "details" === ident || "sessions" === ident || "sidebar" === ident) {
+  if ("groupedByDomain" === ident || "opentabsThreshold" === ident || "pendingTabs" === ident
+    || "details" === ident || "sessions" === ident || "sidebar" === ident || "useGroups" === ident) {
     permissionsStore.deactivateFeature(ident)
   } else if ("thumbnails" === ident || "analyseTabs" === ident) {
     useCommandExecutor()

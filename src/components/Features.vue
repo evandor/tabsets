@@ -97,12 +97,12 @@ const optionalFeatures = [
     target: '/features/opentabsThreshold'
   },
   {ident: 'bookmarks', name: 'Bookmarks', icon: 'o_bookmarks', bexOnly: true, target: '/features/bookmarks'},
-  {ident: 'pendingTabs', name: 'New Tabs Tracking', icon: 'o_tab', bexOnly: true, target: '/features/pendingTabs'},
+  // {ident: 'pendingTabs', name: 'New Tabs Tracking', icon: 'o_tab', bexOnly: true, target: '/features/pendingTabs'},
   {ident: 'details', name: 'Tab(set) Details View', icon: 'o_tab', target: '/features/details'},
   {ident: 'sidebar', name: 'Sidebar View', icon: 'o_input', target: '/features/sidebar'},
   {ident: 'groupedByDomain', name: 'Group By Domain View', icon: 'o_dns', target: '/features/groupedByDomain'},
   {ident: 'thumbnails', name: 'Thumbnails', icon: 'o_image', bexOnly: true, target: '/features/thumbnails'},
-  {ident: 'analyseTabs', name: 'Analyse Tabs', icon: 'o_analytics', bexOnly: true, target: '/features/analyseTabs'}
+  {ident: 'analyseTabs', name: 'Analyse Tabs', icon: 'o_analytics', bexOnly: true, target: '/features/analyseTabs'},
 ]
 
 const experimantalFeatures = [
@@ -110,7 +110,8 @@ const experimantalFeatures = [
   // {ident: 'scheduled', name: 'Schedule Tabs', icon: 'o_update', target: '/features/scheduled'},
   {ident: 'experimentalViews', name: 'Experimental Views', icon: 'o_explore', bexOnly: false, target: '/features/experimentalViews'},
   {ident: 'sessions', name: 'Sessions', icon: 'o_explore', bexOnly: true, target: '/features/sessions'},
-  {ident: 'history', name: 'History', icon: 'o_history', bexOnly: true, target: '/features/history'}
+  {ident: 'history', name: 'History', icon: 'o_history', bexOnly: true, target: '/features/history'},
+  {ident: 'useGroups', name: 'Use Tab Groups', icon: 'o_toc', bexOnly: false, target: '/features/useGroups'}
 ]
 
 const plannedFeatures = [

@@ -3,7 +3,7 @@
     <q-header elevated>
       <q-toolbar>
 
-        <q-img class="q-ml-xs q-mr-none" style="margin-top:-7px"
+        <q-img class="q-ml-xs q-mr-none cursor-pointer" style="margin-top:-7px"
                @click="toggleLeftDrawer"
                src="favicon.ico" height="32px" width="32px">
           <q-tooltip class="tooltip">Toggle the tabset list view by clicking here</q-tooltip>
@@ -13,13 +13,14 @@
           @click.stop="goHome()" class="cursor-pointer"
           style="min-width:200px" shrink>
           {{ title() }}
-          <q-tooltip class="tooltip">test</q-tooltip>
+          <q-tooltip class="tooltip">Reload Tabsets Extension</q-tooltip>
         </q-toolbar-title>
 
 
         <q-space/>
 
-        <SearchWidget v-if="tabsStore.tabsets.size > 4"/>
+        <SearchWidget style="position: absolute; left:300px;top:5px;max-width:500px"
+                      v-if="tabsStore.tabsets.size > 4"/>
 
         <q-space/>
 
@@ -82,6 +83,15 @@
         <!--        </q-btn>-->
 
         <Transition name="colorized-appear">
+          <q-btn v-if="permissionsStore.hasFeature('bookmarks')"
+                 flat
+                 name="sidebar" icon="o_bookmark" @click="tabsClicked(DrawerTabs.BOOKMARKS)">
+            <q-tooltip class="tooltip" anchor="center right" self="center left" :delay="200">Access to your bookmarks
+            </q-tooltip>
+          </q-btn>
+        </Transition>
+
+        <Transition name="colorized-appear">
           <q-btn v-if="permissionsStore.hasFeature('sidebar')"
                  flat
                  name="sidebar" icon="o_input" @click="tabsClicked(DrawerTabs.SIDEBAR)">
@@ -101,6 +111,12 @@
               <q-item clickable @click="router.push('/settings')">Settings</q-item>
               <q-item clickable @click="useUiService().rightDrawerSetActiveTab(DrawerTabs.FEATURES)" v-close-popup>
                 Activate more Features
+              </q-item>
+              <q-item clickable @click="showImportDialog" v-close-popup>
+                Import Tabsets
+              </q-item>
+              <q-item clickable @click="showExportDialog" v-close-popup>
+                Export Tabsets
               </q-item>
             </q-list>
           </q-menu>
@@ -171,6 +187,8 @@ import {Notification, NotificationStatus} from "src/models/Notification";
 import {useUtils} from "src/services/Utils";
 import OpenTabs from "components/OpenTabs.vue";
 import DrawerRight from "components/DrawerRight.vue";
+import ExportDialog from "components/dialogues/ExportDialog.vue";
+import ImportDialog from "components/dialogues/ImportDialog.vue";
 
 const router = useRouter()
 const tabsStore = useTabsStore()
@@ -254,6 +272,9 @@ const showNotificationDialog = (nId: string) => $q.dialog({
 })
 
 const tabsClicked = (tab: DrawerTabs) => uiService.rightDrawerSetActiveTab(tab)
+
+const showExportDialog = () => $q.dialog({component: ExportDialog})
+const showImportDialog = () => $q.dialog({component: ImportDialog})
 
 
 </script>

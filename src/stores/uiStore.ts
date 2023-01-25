@@ -51,6 +51,8 @@ export const useUiStore = defineStore('ui', () => {
   const tabBeingDragged = ref<string | undefined>(undefined)
   const footerInfo = ref<string | undefined>(undefined)
 
+  const contentCount = ref<number>(0)
+
   // info Messages
   const hiddenMessages = ref<string[]>($q.localStorage.getItem('ui.hiddenInfoMessages') as string[] || [])
   const messageAlreadyShown = ref<string | undefined>(undefined)
@@ -149,7 +151,7 @@ export const useUiStore = defineStore('ui', () => {
   }
 
   const rightDrawerShowCloseButton = computed(() => {
-    console.log("rightDrawerShowCloseButton",rightDrawerViewStack.value)
+    console.log("rightDrawerShowCloseButton", rightDrawerViewStack.value)
     return () => rightDrawerViewStack.value.length > 0
   })
 
@@ -172,6 +174,12 @@ export const useUiStore = defineStore('ui', () => {
     }
   })
 
+  function setContentCount(val: number) {
+    contentCount.value = val
+  }
+
+  const getContentCount = computed((): number => contentCount.value)
+
   return {
     leftDrawer,
     leftDrawerLabelIsAnimated,
@@ -188,6 +196,8 @@ export const useUiStore = defineStore('ui', () => {
     hideInfoMessage,
     restoreHints,
     showMessage,
-    footerInfo
+    footerInfo,
+    getContentCount,
+    setContentCount
   }
 })

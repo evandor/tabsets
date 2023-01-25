@@ -1,7 +1,7 @@
 <template>
 
   <div v-if="showMissingSomeTabsAction()"
-    class="q-ma-sm bg-white text-grey" style="border: 1px dotted grey; border-radius: 3px">
+       class="q-ma-sm bg-white text-grey" style="border: 1px dotted grey; border-radius: 3px">
     <div class="q-pa-sm">
       <div class="col text-caption">Missing some of your tabs? Click
         <span class="cursor-pointer text-blue-6" style="text-decoration: underline" @click="addOpenTabs">here</span>
@@ -10,8 +10,10 @@
     </div>
   </div>
 
+  <q-input type="textarea" v-model="dragTarget"/>
+
   <div v-if="tabsStore.currentTabsetId"
-    class="q-ma-sm" style="border: 1px dotted grey; border-radius: 3px">
+       class="q-ma-sm" style="border: 1px dotted grey; border-radius: 3px">
     <!--    <q-banner inline-actions rounded class="bg-white text-grey" style="border: 1px dotted grey">-->
     <div class="row">
       <div class="col-6 q-pa-xs">
@@ -38,9 +40,9 @@
           checked-icon="task_alt"
           unchecked-icon="check_box_outline_blank"
         />
-<!--        <q-btn flat round color="warning" size="11px" icon="cancel" @click="saveTab(tab)">-->
-<!--          <q-tooltip>Remove all tabs from this view</q-tooltip>-->
-<!--        </q-btn>-->
+        <!--        <q-btn flat round color="warning" size="11px" icon="cancel" @click="saveTab(tab)">-->
+        <!--          <q-tooltip>Remove all tabs from this view</q-tooltip>-->
+        <!--        </q-btn>-->
       </div>
     </div>
     <!--    </q-banner>-->
@@ -72,15 +74,18 @@ import {useTabsStore} from "stores/tabsStore";
 import {Tab} from "src/models/Tab";
 import {Tabset} from "src/models/Tabset";
 import _ from "lodash";
-import {ref} from "vue"
+import {ref, watchEffect} from "vue"
 import OpenTabCard from "components/layouts/OpenTabCard.vue";
 import {VueDraggableNext} from 'vue-draggable-next'
 import TabsetService from "src/services/TabsetService";
 import {uid, useQuasar} from "quasar";
+import AddUrlDialog from "components/dialogues/AddUrlDialog.vue";
 
 const tabsStore = useTabsStore()
+const $q = useQuasar()
 
 const useSelection = ref(false)
+const dragTarget = ref('')
 
 const tabSelection = ref<Set<string>>(new Set<string>())
 
@@ -89,24 +94,23 @@ function unassignedTabs(): Tab[] {
     tabsStore.pendingTabset?.tabs,
     //@ts-ignore
     (t: Tab) => {
-
-      // if (props.filter && props.filter.trim().length > 0) {
-      //   const f = props.filter.toLowerCase()
-      //   const chromeTab = t.chromeTab
-      //   if (chromeTab && chromeTab.title && chromeTab.title.toLowerCase().indexOf(f) >= 0) {
-      //     return true
-      //   }
-      //   if (chromeTab && chromeTab.url && chromeTab.url.indexOf(f) >= 0) {
-      //     return true
-      //   }
-      //   if (t.name && t.name.toLowerCase().indexOf(f) >= 0) {
-      //     return true
-      //   }
-      //   return false
-      // }
       return true
     })
 }
+
+watchEffect (() => {
+  console.log("d&d", dragTarget.value)
+  if (dragTarget.value.trim() === "") {
+    return
+  }
+  try {
+    const url = new URL(dragTarget.value)
+    $q.dialog({component: AddUrlDialog, componentProps: {providedUrl: url.toString()}})
+  } catch (err) {
+    console.log("hier", err)
+  }
+  dragTarget.value = ''
+})
 
 const addLabel = () => useSelection.value ? 'add ' + tabSelection.value.size + ' tab(s)' : 'add all'
 const checkboxLabel = () => useSelection.value ? '' : 'use selection'
@@ -120,6 +124,8 @@ const tabSelectionChanged = (a: any) => {
   }
   console.log("tabselection", tabSelection)
 }
+
+const handleDragend = (i: any) => console.log("dragend", i)
 
 const showMissingSomeTabsAction = () => {
   if (!tabsStore.pendingTabset || tabsStore.pendingTabset.tabs.length === 0) {
