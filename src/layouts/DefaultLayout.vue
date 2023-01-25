@@ -3,15 +3,19 @@
     <q-header elevated>
       <q-toolbar>
 
-<!--        <q-btn v-if="tabsStore.tabsets.size > 0"-->
-<!--               dense flat round icon="menu" @click="toggleLeftDrawer"/>-->
+        <q-img class="q-ml-xs q-mr-none" style="margin-top:-7px"
+               @click="toggleLeftDrawer"
+               src="favicon.ico" height="32px" width="32px">
+          <q-tooltip class="tooltip">Toggle the tabset list view by clicking here</q-tooltip>
+        </q-img>
 
-        <q-img class="q-ml-lg" style="margin-top:-4px"
-               src="favicon.ico" height="32px" width="32px"/>
-
-        <q-toolbar-title @click.stop="goHome()" class="cursor-pointer"
-                         style="min-width:200px" shrink>{{ title() }}
+        <q-toolbar-title
+          @click.stop="goHome()" class="cursor-pointer"
+          style="min-width:200px" shrink>
+          {{ title() }}
+          <q-tooltip class="tooltip">test</q-tooltip>
         </q-toolbar-title>
+
 
         <q-space/>
 
@@ -27,10 +31,10 @@
           </div>
         </Transition>
 
-<!--        <div v-if="tabsStore.pendingTabset?.tabs.length > 0 && tabsStore.tabsets.size >= 1"-->
-<!--             class="q-mr-lg cursor-pointer no-wrap" style="min-width:200px">-->
-<!--          <UnassignedTabsWidget/>-->
-<!--        </div>-->
+        <!--        <div v-if="tabsStore.pendingTabset?.tabs.length > 0 && tabsStore.tabsets.size >= 1"-->
+        <!--             class="q-mr-lg cursor-pointer no-wrap" style="min-width:200px">-->
+        <!--          <UnassignedTabsWidget/>-->
+        <!--        </div>-->
 
         <div v-if="tabsStore.audibleTabs.length > 0">
           <span v-if="tabsStore.audibleTabs.length > 1">{{ tabsStore.audibleTabs.length }}x</span>
@@ -60,13 +64,13 @@
 
         <div v-if="unreadNotifications().length > 0">
           <q-btn flat icon="o_notifications" class="q-mr-md cursor-pointer">
-            <q-badge floating color="red" rounded />
+            <q-badge floating color="red" rounded/>
           </q-btn>
           <q-menu :offset="[0, 7]">
             <q-list style="min-width: 200px">
               <q-item>New Notifications:</q-item>
               <q-item v-for="n in unreadNotifications()"
-                clickable v-close-popup @click="showNotificationDialog(n.id)">
+                      clickable v-close-popup @click="showNotificationDialog(n.id)">
                 <q-item-section>{{ n.title }}</q-item-section>
               </q-item>
             </q-list>
@@ -88,13 +92,16 @@
         </Transition>
 
         <div>
-        <q-btn class="q-mr-md" icon="o_settings" size="12px" style="width:24px" flat >
-          <q-tooltip class="tooltip" anchor="center right" self="center left" :delay="200">Customize Tabsets</q-tooltip>
-        </q-btn>
+          <q-btn class="q-mr-md" icon="o_settings" size="12px" style="width:24px" flat>
+            <q-tooltip class="tooltip" anchor="center right" self="center left" :delay="200">Customize Tabsets
+            </q-tooltip>
+          </q-btn>
           <q-menu :offset="[0, 7]">
             <q-list style="min-width: 200px">
               <q-item clickable @click="router.push('/settings')">Settings</q-item>
-              <q-item clickable @click="useUiService().rightDrawerSetActiveTab(DrawerTabs.FEATURES)" v-close-popup>Activate more Features</q-item>
+              <q-item clickable @click="useUiService().rightDrawerSetActiveTab(DrawerTabs.FEATURES)" v-close-popup>
+                Activate more Features
+              </q-item>
             </q-list>
           </q-menu>
         </div>
@@ -108,28 +115,28 @@
       </q-toolbar>
     </q-header>
 
-<!--    <q-drawer v-model="leftDrawerOpen" :mini=uiService.useSmallDrawerView() side="left" bordered>-->
-<!--      <DrawerLeft/>-->
-<!--      <template v-slot:mini>-->
-<!--        <DrawerLeftMini/>-->
-<!--      </template>-->
-<!--    </q-drawer>-->
+    <!--    <q-drawer v-model="leftDrawerOpen" :mini=uiService.useSmallDrawerView() side="left" bordered>-->
+    <!--      <DrawerLeft/>-->
+    <!--      <template v-slot:mini>-->
+    <!--        <DrawerLeftMini/>-->
+    <!--      </template>-->
+    <!--    </q-drawer>-->
 
-    <q-drawer  v-model="leftDrawerOpen" side="left" bordered>
+    <q-drawer v-model="leftDrawerOpen" side="left" bordered>
       <Navigation></Navigation>
     </q-drawer>
 
     <q-drawer show-if-above
               v-model="rightDrawerOpen" side="right" bordered
               content-class="column justify-between no-wrap bg-grey-1">
-      <DrawerRight />
+      <DrawerRight/>
 
-<!--      <UnassignedTabs v-else-if="tab ===  DrawerTabs.UNASSIGNED_TABS" :filter="filter"/>-->
+      <!--      <UnassignedTabs v-else-if="tab ===  DrawerTabs.UNASSIGNED_TABS" :filter="filter"/>-->
 
     </q-drawer>
 
     <q-page-container>
-      <router-view />
+      <router-view/>
       <div id="fixed-footer" class="q-pl-md q-pa-xs">{{ useUiStore().footerInfo }}</div>
     </q-page-container>
 
@@ -223,15 +230,14 @@ function submitSearch() {
 }
 
 const title = () => {
-  return inBexMode() ? 'Tabsets' : process.env.MODE === 'spa' ? 'Tabsets Web' : 'Tabsets ('+process.env.MODE+')'
+  return inBexMode() ? 'Tabsets' : process.env.MODE === 'spa' ? 'Tabsets Web' : 'Tabsets (' + process.env.MODE + ')'
 }
 
 const goHome = () => router.push("/")
 
 const toggleLeftDrawer = () => {
-  //useNotificationsStore().showDrawer = !useNotificationsStore().showDrawer
-  //localStorage.set("showLeftDrawer", useNotificationsStore().showDrawer)
-  useUiService().toggleDrawer()
+  leftDrawerOpen.value = !leftDrawerOpen.value
+  //useUiService().toggleDrawer()
 }
 
 const installNewVersion = () => {
@@ -248,7 +254,6 @@ const showNotificationDialog = (nId: string) => $q.dialog({
 })
 
 const tabsClicked = (tab: DrawerTabs) => uiService.rightDrawerSetActiveTab(tab)
-
 
 
 </script>

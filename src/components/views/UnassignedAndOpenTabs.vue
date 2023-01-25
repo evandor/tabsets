@@ -1,10 +1,11 @@
 <template>
 
-  <div class="q-ma-sm bg-white text-grey" style="border: 1px dotted grey; border-radius: 3px">
+  <div v-if="showMissingSomeTabsAction()"
+    class="q-ma-sm bg-white text-grey" style="border: 1px dotted grey; border-radius: 3px">
     <div class="q-pa-sm">
-      <div class="col text-caption">Missing some tabs? Click
+      <div class="col text-caption">Missing some of your tabs? Click
         <span class="cursor-pointer text-blue-6" style="text-decoration: underline" @click="addOpenTabs">here</span>
-        to add your open tabs
+        to add the open ones of the browser
       </div>
     </div>
   </div>
@@ -33,7 +34,7 @@
           v-model="useSelection"
           color="primary"
           size="30px"
-          label="use selection"
+          :label="checkboxLabel()"
           checked-icon="task_alt"
           unchecked-icon="check_box_outline_blank"
         />
@@ -108,7 +109,7 @@ function unassignedTabs(): Tab[] {
 }
 
 const addLabel = () => useSelection.value ? 'add ' + tabSelection.value.size + ' tab(s)' : 'add all'
-
+const checkboxLabel = () => useSelection.value ? '' : 'use selection'
 const tabSelectionChanged = (a: any) => {
   console.log("tabSelectionChanged", a)
   const {tabId, selected} = a
@@ -118,6 +119,13 @@ const tabSelectionChanged = (a: any) => {
     tabSelection.value.delete(tabId)
   }
   console.log("tabselection", tabSelection)
+}
+
+const showMissingSomeTabsAction = () => {
+  if (!tabsStore.pendingTabset || tabsStore.pendingTabset.tabs.length === 0) {
+    return true
+  }
+  return false
 }
 
 const addOpenTabs = () => {

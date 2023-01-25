@@ -7,18 +7,14 @@
 
       <div class="row items-baseline">
         <div class="col-1 q-mr-md q-ml-none">
-          <q-icon v-if="tabsStore.currentTabsetId" color="primary"
+          <q-icon v-if="showAddToTabsetIcon(tab)" color="primary"
             name="o_arrow_left" @click="addToCurrentTabset" size="2em">
             <q-tooltip class="tooltip">
               Click here to add the tab to your current tabset
             </q-tooltip>
           </q-icon>
-        </div>
-        <div class="col-2">
-          <TabFaviconWidget :tab="tab" width="20px" height="20px"/>
-        </div>
-        <div class="col-1" v-if="props.useSelection">
           <q-checkbox
+            v-if="showSelectIcon(tab)"
             v-model="tab.selected"
             size="30px"
             checked-icon="task_alt"
@@ -26,6 +22,11 @@
             unchecked-icon="check_box_outline_blank"
           />
         </div>
+
+        <div class="col-2">
+          <TabFaviconWidget :tab="tab" width="20px" height="20px"/>
+        </div>
+
         <div class="col-7 text-body2 ellipsis cursor-pointer"
              @mouseenter="emitInfo(tab.chromeTab?.url)"
              @mouseout="emitInfo(undefined)"
@@ -102,6 +103,12 @@ const selectionChanged = (val: any) => {
   //console.log("emitting", val)
   emits('selectionChanged', {tabId: props.tab.id, selected: val})
 }
+
+const showAddToTabsetIcon = (tab: Tab) => {
+  return tabsStore.currentTabsetId && !props.useSelection && !useTabsetService().urlExistsInCurrentTabset(tab.chromeTab?.url || '')
+}
+
+const showSelectIcon = (tab: Tab) => props.useSelection && !useTabsetService().urlExistsInCurrentTabset(tab.chromeTab?.url || '')
 
 </script>
 
