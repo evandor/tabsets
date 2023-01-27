@@ -57,22 +57,22 @@
     </q-item>
   </q-list>
 
-  <div class="q-ma-md text-grey-8">
-    <b>Ideas</b>
-  </div>
+  <!--  <div class="q-ma-md text-grey-8">-->
+  <!--    <b>Ideas</b>-->
+  <!--  </div>-->
 
-  <q-list>
-    <q-item
-      v-for="f in ideas"
-      clickable v-ripple>
+  <!--  <q-list>-->
+  <!--    <q-item-->
+  <!--      v-for="f in ideas"-->
+  <!--      clickable v-ripple>-->
 
-      <q-item-section avatar>
-        <q-icon :name="f.icon" size="1.3em" :color="iconColor(f.ident)"/>
-      </q-item-section>
-      <q-item-section class="text-grey-8">{{ f.name }}</q-item-section>
+  <!--      <q-item-section avatar>-->
+  <!--        <q-icon :name="f.icon" size="1.3em" :color="iconColor(f.ident)"/>-->
+  <!--      </q-item-section>-->
+  <!--      <q-item-section class="text-grey-8">{{ f.name }}</q-item-section>-->
 
-    </q-item>
-  </q-list>
+  <!--    </q-item>-->
+  <!--  </q-list>-->
 
 </template>
 
@@ -101,6 +101,7 @@ const optionalFeatures = [
   {ident: 'details', name: 'Tab(set) Details View', icon: 'o_tab', target: '/features/details'},
   {ident: 'sidebar', name: 'Sidebar View', icon: 'o_input', target: '/features/sidebar'},
   {ident: 'groupedByDomain', name: 'Group By Domain View', icon: 'o_dns', target: '/features/groupedByDomain'},
+  {ident: 'rss', name: 'RSS View', icon: 'o_rss_feed', bexOnly: true, target: '/features/rss'}, // does not work properly right now (keeps re-catching the source)
   {ident: 'thumbnails', name: 'Thumbnails', icon: 'o_image', bexOnly: true, target: '/features/thumbnails'},
   {ident: 'analyseTabs', name: 'Analyse Tabs', icon: 'o_analytics', bexOnly: true, target: '/features/analyseTabs'},
 ]
@@ -108,8 +109,15 @@ const optionalFeatures = [
 const experimantalFeatures = [
   // {ident: 'mhtml', name: 'Saving Pages', icon: 'o_bookmarks', target: '/features/pageCapture'},
   // {ident: 'scheduled', name: 'Schedule Tabs', icon: 'o_update', target: '/features/scheduled'},
-  {ident: 'experimentalViews', name: 'Experimental Views', icon: 'o_explore', bexOnly: false, target: '/features/experimentalViews'},
+  {
+    ident: 'experimentalViews',
+    name: 'Experimental Views',
+    icon: 'o_explore',
+    bexOnly: false,
+    target: '/features/experimentalViews'
+  },
   {ident: 'sessions', name: 'Sessions', icon: 'o_explore', bexOnly: true, target: '/features/sessions'},
+  {ident: 'dynamic', name: 'Dynamic Tabsets', icon: 'o_file_open', bexOnly: false, target: '/features/dynamic'},
   {ident: 'history', name: 'History', icon: 'o_history', bexOnly: true, target: '/features/history'},
   {ident: 'useGroups', name: 'Use Tab Groups', icon: 'o_toc', bexOnly: false, target: '/features/useGroups'}
 ]
@@ -156,5 +164,23 @@ const showFeature = (f: any) => {
 const checkBexMode = (f: any) => process.env.MODE === "bex" ? true : !f.bexOnly
 
 const filterBexMode = (fs: any[]) => _.filter(fs, (f: any) => checkBexMode(f))
+
+import wiki from 'wikipedia';
+import {wikiSummary, summaryError} from 'wikipedia';
+import {summary} from 'wikipedia';
+
+// try {
+//   wiki.page("List_of_most_visited_websites").then((res) => {
+//     console.log("res", res)
+//     res.html().then((r) =>  console.log("r", r))
+//     res.tables().then((r2) =>  console.log("r2", r2))
+//   })
+//   let summary: wikiSummary; //sets the object as type wikiSummary
+//   //wiki.summary('Batman').then((res) => console.log("res", res))
+//   // let summary2 = await summary('Batman');//using summary directly
+// } catch (error) {
+//   console.log(error);
+//   //=> Typeof summaryError, helpful in case you want to handle this error separately
+// }
 
 </script>

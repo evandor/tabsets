@@ -15,10 +15,21 @@
     class="cursor-pointer" @click.stop="NavigationService.openOrCreateTab(props.tab.chromeTab?.url )">
     <q-item-label>{{ props.tab.chromeTab?.title }}</q-item-label>
     <q-item-label caption>{{ props.tab.chromeTab?.url }}</q-item-label>
+    <q-item-label v-if="props.tab.note" class="text-grey-10" text-subtitle1>
+      <q-icon color="blue-10" name="edit_note"/>
+      {{ props.tab.note }}
+    </q-item-label>
   </q-item-section>
-  <q-item-section avatar>
+  <q-item-section avatar v-if="props.showButtons">
+    <q-btn flat round :color="props.tab.note ? 'secondary':'primary'" size="11px" icon="edit_note"
+           @click.stop="editNoteDialog(tab)">
+      <q-tooltip v-if="props.tab.note">Edit note</q-tooltip>
+      <q-tooltip v-else>Add a note to this tab</q-tooltip>
+    </q-btn>
+  </q-item-section>
+  <q-item-section avatar v-if="props.showButtons">
     <q-btn flat round color="red" size="11px" icon="delete_outline" @click.stop="deleteTab(tab)">
-      <q-tooltip>Delete this tab from this list!</q-tooltip>
+      <q-tooltip>Delete this tab from this list</q-tooltip>
     </q-btn>
   </q-item-section>
 
@@ -33,19 +44,18 @@ import {ref} from "vue";
 import {useUtils} from "src/services/Utils"
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {DeleteTabCommand} from "src/domain/commands/DeleteTabCommand";
+import EditNoteDialog from "components/dialogues/EditNoteDialog.vue";
+import {useQuasar} from "quasar";
 
 const props = defineProps({
-  tab: {
-    type: Object,
-    required: true
-  },
-  highlightUrl: {
-    type: String,
-    required: false
-  }
+  tab: {type: Object, required: true},
+  showButtons: {type: Boolean, default: false},
+  highlightUrl: {type: String, required: false}
 })
 
 const emits = defineEmits(['sendCaption'])
+
+const $q = useQuasar()
 
 const line = ref(null);
 
@@ -69,12 +79,12 @@ function getHost(urlAsString: string, shorten: Boolean = true): string {
   }
 }
 
-function closeTab(tab: Tab) {
-  NavigationService.closeTab(tab)
-}
+// function closeTab(tab: Tab) {
+//   NavigationService.closeTab(tab)
+// }
 
 function cardStyle(tab: Tab) {
-  const height =  "66px"
+  const height = "66px"
   let borderColor = ""
   if (isOpen(tab)) {
     borderColor = "border-color:#8f8f8f"
@@ -120,10 +130,14 @@ const getFaviconUrl = (chromeTab: chrome.tabs.Tab | undefined) => {
   if (chromeTab && chromeTab.favIconUrl && !chromeTab.favIconUrl.startsWith("chrome")) {
     return chromeTab.favIconUrl
   }
-  return 'favicon-unknown-32x32.png'
+  return ''//'favicon-unknown-32x32.png'
 }
 
 const deleteTab = (tab: Tab) => useCommandExecutor().executeFromUi(new DeleteTabCommand(tab))
 
+const editNoteDialog = (tab: Tab) => $q.dialog({
+  component: EditNoteDialog,
+  componentProps: {tabId: tab.id, note: tab.note}
+})
 
 </script>

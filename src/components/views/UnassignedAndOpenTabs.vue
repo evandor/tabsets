@@ -1,5 +1,13 @@
 <template>
 
+  <div v-if="!inBexMode()"
+       class="q-ma-sm bg-white text-grey" style="border: 1px dotted grey; border-radius: 3px">
+    <div class="q-pa-sm">
+      <div class="col text-caption">You are using the Web Version of Tabsets.
+      </div>
+    </div>
+  </div>
+
   <div v-if="showMissingSomeTabsAction()"
        class="q-ma-sm bg-white text-grey" style="border: 1px dotted grey; border-radius: 3px">
     <div class="q-pa-sm">
@@ -10,7 +18,14 @@
     </div>
   </div>
 
-  <q-input type="textarea" v-model="dragTarget"/>
+  <!--  <div class="q-ma-md" style="border: 1px dotted grey; border-radius: 5px; height:80px"-->
+  <!--  @dragend="handleDragend">-->
+  <!--      drag and drop urls here-->
+  <!--  </div>-->
+
+  <q-input v-if="!inBexMode()"
+           class="q-ma-md" dense
+           style="border: 1px dotted grey; border-radius: 5px;" type="textarea" v-model="dragTarget"/>
 
   <div v-if="tabsStore.currentTabsetId"
        class="q-ma-sm" style="border: 1px dotted grey; border-radius: 3px">
@@ -80,6 +95,9 @@ import {VueDraggableNext} from 'vue-draggable-next'
 import TabsetService from "src/services/TabsetService";
 import {uid, useQuasar} from "quasar";
 import AddUrlDialog from "components/dialogues/AddUrlDialog.vue";
+import {useUtils} from "src/services/Utils"
+
+const {inBexMode} = useUtils()
 
 const tabsStore = useTabsStore()
 const $q = useQuasar()
@@ -98,7 +116,7 @@ function unassignedTabs(): Tab[] {
     })
 }
 
-watchEffect (() => {
+watchEffect(() => {
   console.log("d&d", dragTarget.value)
   if (dragTarget.value.trim() === "") {
     return
@@ -128,6 +146,9 @@ const tabSelectionChanged = (a: any) => {
 const handleDragend = (i: any) => console.log("dragend", i)
 
 const showMissingSomeTabsAction = () => {
+  if (process.env.MODE !== 'bex') {
+    return false
+  }
   if (!tabsStore.pendingTabset || tabsStore.pendingTabset.tabs.length === 0) {
     return true
   }
@@ -172,4 +193,5 @@ const addOpenTabs = () => {
 }
 
 
-</script>
+</script>import { useTabsStore } from 'stores/tabsStore';
+

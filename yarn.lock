@@ -1107,7 +1107,7 @@
   resolved "https://registry.yarnpkg.com/@esbuild/linux-loong64/-/linux-loong64-0.15.18.tgz#128b76ecb9be48b60cf5cfc1c63a4f00691a3239"
   integrity sha512-L4jVKS82XVhw2nvzLg/19ClLWg0y27ulRwuP7lcyL6AbUWB5aPglXY3M21mauDQMDfRLs8cQmeT03r/+X3cZYQ==
 
-"@extractus/feed-extractor@^6.1.7":
+"@extractus/feed-extractor@^6.2.1":
   version "6.2.1"
   resolved "https://registry.yarnpkg.com/@extractus/feed-extractor/-/feed-extractor-6.2.1.tgz#9f9295a4c997f7711a068afe7d7fdb7ef6bce863"
   integrity sha512-zCIcvp4CDhgqdX17MJenBCXXm4NMVFJyKmvVMzl3LwOyFUEmpO4WGjtzXhxw1XN1Mjj5gvPclJNPgRBGlom2zA==
@@ -3203,6 +3203,11 @@ camel-case@^3.0.0:
   dependencies:
     no-case "^2.2.0"
     upper-case "^1.1.1"
+
+camelcase@^4.1.0:
+  version "4.1.0"
+  resolved "https://registry.yarnpkg.com/camelcase/-/camelcase-4.1.0.tgz#d545635be1e33c542649c69173e5de6acfae34dd"
+  integrity sha512-FxAv7HpHrXbh3aPo4o2qxHay2lkLY3x5Mw3KeE4KQE8ysVfziWeRZDwcjauvwBSGEC/nXUPzZy8zeh4HokqOnw==
 
 camelcase@^5.0.0, camelcase@^5.3.1:
   version "5.3.1"
@@ -5510,6 +5515,13 @@ inflight@^1.0.4:
     once "^1.3.0"
     wrappy "1"
 
+infobox-parser@^3.6.2:
+  version "3.6.2"
+  resolved "https://registry.yarnpkg.com/infobox-parser/-/infobox-parser-3.6.2.tgz#e2b2701fd6a6274fad49869ee1a0bad56930f1e7"
+  integrity sha512-lasdwvbtjCtDDO6mArAs/ueFEnBJRyo2UbZPAkd5rEG5NVJ3XFCOvbMwNTT/rJlFv1+ORw8D3UvZV4brpgATCg==
+  dependencies:
+    camelcase "^4.1.0"
+
 inherits@2, inherits@2.0.4, inherits@^2.0.3, inherits@^2.0.4, inherits@~2.0.3:
   version "2.0.4"
   resolved "https://registry.yarnpkg.com/inherits/-/inherits-2.0.4.tgz#0fa2c64f932917c3433a0ded55363aae37416b7c"
@@ -6938,6 +6950,11 @@ node-dir@^0.1.17:
   integrity sha512-tmPX422rYgofd4epzrNoOXiE8XFZYOcCq1vD7MAXCDO+O+zndlA2ztdKKMa+EeuBG5tHETpr4ml4RGgpqDCCAg==
   dependencies:
     minimatch "^3.0.2"
+
+node-fetch@2.6.1:
+  version "2.6.1"
+  resolved "https://registry.yarnpkg.com/node-fetch/-/node-fetch-2.6.1.tgz#045bd323631f76ed2e2b55573394416b639a0052"
+  integrity sha512-V4aYg89jEoVRxRb2fJdAg8FHvI7cEyYdVAh94HH0UIK8oJxUfkjlDQN9RbMx+bEjP7+ggMiFRprSti032Oipxw==
 
 node-fetch@2.6.7:
   version "2.6.7"
@@ -9211,6 +9228,14 @@ which@^2.0.1, which@^2.0.2:
   integrity sha512-BLI3Tl1TW3Pvl70l3yq3Y64i+awpwXqsGBYWkkqMtnbXgrMD+yj7rhW0kuEDxzJaYXGjEW5ogapKNMEKNMjibA==
   dependencies:
     isexe "^2.0.0"
+
+wikipedia@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/wikipedia/-/wikipedia-2.0.0.tgz#7bbdbc2ace0d6802a64d2e553a09c6096e1bc355"
+  integrity sha512-2Rgs8cM1CNxANRJw2kw+RpZo6r/fuJSVYh91cHpEA7gXdDxmPBdGbmo1VZrrVaKmZrfMLaQo4BQeoVf0wRyoFQ==
+  dependencies:
+    infobox-parser "^3.6.2"
+    node-fetch "2.6.1"
 
 wildcard@^2.0.0:
   version "2.0.0"

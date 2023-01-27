@@ -25,7 +25,7 @@
     "concurrently:dev:jest": "concurrently \"quasar dev\" \"jest --watch\""
   },
   "dependencies": {
-    "@extractus/feed-extractor": "^6.1.7",
+    "@extractus/feed-extractor": "^6.2.1",
     "@quasar/extras": "^1.15.9",
     "@types/lodash": "^4.14.182",
     "apexcharts": "^3.36.3",
@@ -51,7 +51,8 @@
     "vue-konva": "^3.0.2",
     "vue-router": "^4.0.0",
     "vue-timeago3": "^2.3.0",
-    "vue3-apexcharts": "^1.4.1"
+    "vue3-apexcharts": "^1.4.1",
+    "wikipedia": "^2.0.0"
   },
   "devDependencies": {
     "@babel/preset-env": "^7.19.0",

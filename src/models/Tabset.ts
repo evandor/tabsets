@@ -2,15 +2,16 @@ import {Tab} from "src/models/Tab";
 import {Group} from "src/models/Group";
 
 export enum TabsetStatus {
-  DEFAULT= "DEFAULT",
+  DEFAULT = "DEFAULT",
   FAVORITE = "FAVORITE",
   ARCHIVED = "ARCHIVED",
   DELETED = "DELETED"
 }
 
 export enum TabsetType {
-  DEFAULT= "DEFAULT",
-  SESSION = "SESSION"
+  DEFAULT = "DEFAULT",
+  SESSION = "SESSION",
+  DYNAMIC = "DYNAMIC"
 }
 
 export class Tabset {
@@ -19,6 +20,7 @@ export class Tabset {
   created: number
   updated: number
   tabs: Tab[]
+  dynamicTabs: DynamicTabSource | undefined
   groups: Group[]
   spaces: string[] // got json problems with set<string>
   view: string = 'list'
@@ -27,6 +29,7 @@ export class Tabset {
   type: TabsetType = TabsetType.DEFAULT
   sharedBy: string | undefined = undefined
   canvas: string | undefined = undefined
+
   constructor(id: string, name: string, tabs: Tab[], groups: Group[] = [], spaces: string[] = []) {
     this.id = id
     this.name = name

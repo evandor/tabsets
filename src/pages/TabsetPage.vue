@@ -12,18 +12,54 @@
   </q-toolbar>
   <q-toolbar class="text-primary lightgrey" v-else>
     <div class="row fit">
-      <div class="col-xs-12 col-md-4">
+      <div class="col-xs-12 col-md-6">
         <q-toolbar-title>
           <div class="row justify-start items-baseline">
             <div class="col-1"><span class="text-dark">Tabs of </span> <span
-              class="text-primary text-weight-bold">
+              class="text-primary text-weight-bold cursor-pointer"
+              @mouseenter="showEditButton = true"
+              @mouseout="showEditButton = false">
               {{ tabsStore.currentTabsetName }}
+               <q-popup-edit :model-value="tabsStore.getCurrentTabset.name" v-slot="scope"
+                             @update:model-value="val => setNewName(  val)">
+                 <q-input v-model="scope.value" dense autofocus counter @keyup.enter="scope.set"/>
+               </q-popup-edit>
+            </span>
+              <q-icon v-if="showEditButton" style="position:relative;top:-11px;left:-5px" color="primary" name="edit"
+                      size="16px"/>
+              <q-icon v-else size="16px"/>
 
-            </span></div>
+              <q-icon v-if="tabsStore.tabsets.size > 9 && tabsStore.getCurrentTabset?.status === TabsetStatus.DEFAULT"
+                      @click="markAsFavorite()"
+                      class="q-ml-sm cursor-pointer"
+                      color="warning" name="o_grade" size="20px">
+                <q-tooltip class="tooltip">Mark this tabset as a favorite one</q-tooltip>
+              </q-icon>
+
+              <q-icon v-if="tabsStore.tabsets.size > 9 && tabsStore.getCurrentTabset?.status === TabsetStatus.FAVORITE"
+                      @click="markAsDefault()"
+                      class="q-ml-sm cursor-pointer"
+                      color="warning" name="grade" size="20px">
+                <q-tooltip class="tooltip">Undo marking this tabset as favorite</q-tooltip>
+              </q-icon>
+
+              <q-icon v-if="tabsStore.getCurrentTabs?.length > 0 && inBexMode()"
+                      @click="restoreDialog"
+                      class="q-ml-md cursor-pointer"
+                      color="primary" name="o_open_in_browser" size="20px">
+                <q-tooltip
+                  class="tooltip"
+                  :delay="200">
+                  Open all the tabs from this tabset in a new window
+                </q-tooltip>
+              </q-icon>
+
+
+            </div>
           </div>
         </q-toolbar-title>
       </div>
-      <div class="col-xs-12 col-md-8 text-right">
+      <div class="col-xs-12 col-md-6 text-right">
 
         <q-btn v-if="showSorting()"
                @click="toggleSorting()"
@@ -86,30 +122,31 @@
         </q-btn>
 
 
-        <q-btn v-if="tabsStore.getCurrentTabs?.length > 0"
-               class="q-ml-xl q-mr-md"
-               icon="o_open_in_browser"
-               @click="restoreDialog"
-               outline
-               size="0.8em"
-               color="primary">
-          <q-tooltip
-            class="tooltip"
-            :delay="200">
-            Open all the tabs from this tabset in a new window
-          </q-tooltip>
-        </q-btn>
+<!--        <q-btn v-if="tabsStore.currentTabsetId !== '' && tabsStore.getTabset(tabsStore.currentTabsetId)"-->
+<!--               class="q-ml-xl q-mr-md"-->
+<!--               @click="addUrlDialog"-->
+<!--               icon="add_circle"-->
+<!--               outline-->
+<!--               size="0.8em"-->
+<!--               color="primary">-->
+<!--          <q-tooltip-->
+<!--            class="tooltip"-->
+<!--            :delay="200">-->
+<!--            Copy and Paste or create a new Tab inside this tabset-->
+<!--          </q-tooltip>-->
+<!--        </q-btn>-->
 
         <q-btn v-if="tabsStore.currentTabsetId !== '' && tabsStore.getTabset(tabsStore.currentTabsetId)"
-               class="q-mr-md"
                @click="addUrlDialog"
-               icon="add_circle"
-               outline
+               class="q-ml-xl"
+               label="new Tab"
+               unelevated
                size="0.8em"
-               color="primary">
+               color="warning">
           <q-tooltip
             class="tooltip"
-            :delay="200">
+            :delay="200"
+            anchor="center left" self="center right">
             Copy and Paste or create a new Tab inside this tabset
           </q-tooltip>
         </q-btn>
@@ -326,6 +363,15 @@ import {useUiService} from "src/services/useUiService";
 import {usePermissionsStore} from "stores/permissionsStore";
 import TabList from "components/layouts/TabList.vue";
 import InfoMessageWidget from "components/widgets/InfoMessageWidget.vue";
+import {useCommandExecutor} from "src/services/CommandExecutor";
+import {RenameTabsetCommand} from "src/domain/commands/RenameTabsetCommand";
+import {Tabset, TabsetStatus, TabsetType} from "src/models/Tabset";
+import {MarkTabsetAsFavoriteCommand} from "src/domain/commands/MarkTabsetAsFavoriteCommand";
+import {MarkTabsetAsDefaultCommand} from "src/domain/commands/MarkTabsetAsDefaultCommand";
+import {MarkTabsetAsArchivedCommand} from "src/domain/commands/MarkTabsetAsArchivedCommand";
+import {StopSessionCommand} from "src/domain/commands/StopSessionCommand";
+import {useUtils} from "src/services/Utils";
+import {DynamicTabSourceType} from "src/models/DynamicTabSource";
 
 const route = useRoute();
 const router = useRouter();
@@ -335,6 +381,8 @@ const tabGroupsStore = useTabGroupsStore()
 const featuresStore = useFeatureTogglesStore()
 const permissionsStore = usePermissionsStore()
 
+const {inBexMode} = useUtils()
+
 const tabsetname = ref(tabsStore.currentTabsetName)
 const filter = ref('')
 const $q = useQuasar()
@@ -343,6 +391,7 @@ const highlightUrl = ref('')
 
 const tabsetId = ref(null as unknown as string)
 const orderDesc = ref(false)
+const showEditButton = ref(false)
 
 watchEffect(() => {
   tabsetId.value = route.params.tabsetId as string
@@ -366,6 +415,9 @@ watchEffect(() => {
   }
 })
 
+const setNewName = (newValue: string) => useCommandExecutor().executeFromUi(new RenameTabsetCommand(tabsStore.currentTabsetId, newValue))
+
+
 function getOrder() {
   if (tabsStore.getCurrentTabset) {
     switch (tabsStore.getCurrentTabset?.sorting) {
@@ -383,6 +435,17 @@ function getOrder() {
 }
 
 function unpinnedNoGroupOrAllTabs(): Tab[] {
+  if (tabsStore.getCurrentTabset?.type == TabsetType.DYNAMIC) {
+    //console.log("curretn1", tabsStore.getCurrentTabset)
+    console.log("curretn2", tabsStore.getCurrentTabset.dynamicTabs)
+    switch (tabsStore.getCurrentTabset.dynamicTabs.type) {
+      case DynamicTabSourceType.WIKIPEDIA:
+
+        break;
+      default: break;
+    }
+
+  }
   if (usePermissionsStore().hasFeature('useGroups')) {
     return _.orderBy(
       _.filter(
@@ -449,6 +512,11 @@ const setView = (view: string) => TabsetService.setView(tabsetId.value, view)
 const specialView = (): boolean =>
   tabsStore.getCurrentTabset?.view === 'kanban' || tabsStore.getCurrentTabset?.view === 'canvas'
 
+const markAsFavorite = () => useCommandExecutor().executeFromUi(new MarkTabsetAsFavoriteCommand(tabsStore.currentTabsetId))
+const markAsDefault = () => useCommandExecutor().executeFromUi(new MarkTabsetAsDefaultCommand(tabsStore.currentTabsetId))
+const archiveTabset = () => useCommandExecutor().executeFromUi(new MarkTabsetAsArchivedCommand(tabsStore.currentTabsetId))
+const stopSession = () => useCommandExecutor().executeFromUi(new StopSessionCommand(tabsStore.getCurrentTabset))
+
 const toggleSorting = () => TabsetService.toggleSorting(tabsetId.value)
 const toggleOrder = () => orderDesc.value = !orderDesc.value
 
@@ -473,3 +541,12 @@ const showSorting = () => tabsStore.getCurrentTabs.length > 10
 
 const showPinnedTabsSection = () => usePermissionsStore().hasFeature('useGroups') && tabsStore.pinnedTabs?.length > 0 && !specialView()
 </script>
+
+<style>
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0,
+  'wght' 400,
+  'GRAD' 0,
+  'opsz' 48
+}
+</style>

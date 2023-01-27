@@ -81,6 +81,19 @@
         <!--        <q-btn class="q-mr-md" icon="o_help" size="12px" style="width:24px" flat @click="router.push('/help/howto')">-->
         <!--          <q-tooltip>About tabsets browser extension v{{ appVersion }}</q-tooltip>-->
         <!--        </q-btn>-->
+<!--        <q-tab v-if="rssTabsCount > 0"-->
+<!--               name="rss" icon="o_rss_feed" @click="tabsClicked(DrawerTabs.RSS)">-->
+<!--          <q-tooltip class="tooltip" anchor="center right" self="center left" :delay="200">RSS Feeds</q-tooltip>-->
+<!--        </q-tab>-->
+
+        <Transition name="colorized-appear">
+          <q-btn v-if="permissionsStore.hasFeature('rss') && !inBexMode()"
+                 flat
+                 name="rss" icon="o_rss_feed" @click="tabsClicked(DrawerTabs.RSS)">
+            <q-tooltip class="tooltip" anchor="center right" self="center left" :delay="200">Access to your rss feed tabs
+            </q-tooltip>
+          </q-btn>
+        </Transition>
 
         <Transition name="colorized-appear">
           <q-btn v-if="permissionsStore.hasFeature('bookmarks')"

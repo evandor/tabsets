@@ -81,6 +81,7 @@ import {GrantPermissionCommand} from "src/domain/commands/GrantPermissionCommand
 import {GrantOriginCommand} from "src/domain/commands/GrantOriginCommand";
 import {RevokePermissionCommand} from "src/domain/commands/RevokePermissionCommand";
 import {RevokeOriginCommand} from "src/domain/commands/RevokeOriginCommand";
+import {CreateDynamicTabsetCommand} from "src/domain/commands/CreateDynamicTabsetCommand";
 
 const route = useRoute();
 const router = useRouter();
@@ -140,6 +141,12 @@ text.set('groupedByDomain', {
   description: 'The "Grouped By Domain" Feature provides a view where you can see all your tabs grouped by Domains. All Domains with at least two matching tabs will be considered.',
   permissions: 'This feature does not need any additional permissions.'
 })
+text.set('rss', {
+  name: 'RSS View',
+  img: 'rss.png',
+  description: 'The "RSS View" list all your RSS Pages',
+  permissions: 'This feature does not need any additional permissions.'
+})
 text.set('thumbnails', {
   experimental: false,
   name: 'Thumbnails',
@@ -169,6 +176,13 @@ text.set('experimentalViews', {
   experimental: true,
   name: 'Experimental Views',
   description: 'The default view of your tabset is a list - but there can be other views as well like grids or even a canvas.',
+  permissions: 'This feature needs no additional permissions.'
+})
+text.set('dynamic', {
+  experimental: true,
+  name: 'Dynamic Tabsets',
+  description: 'The idea is to provide you with tabset data which is defined outside the scope of this extension - e.g. defined by a website like wikipedia. ' +
+    'For now, there is only one example; the wikipedia "List of most visited websites" is added to your tabsets as a readonly tab.',
   permissions: 'This feature needs no additional permissions.'
 })
 text.set('sessions', {
@@ -226,29 +240,52 @@ watchEffect(() => {
 const hasFeature = (feature: string) => permissionsStore.hasFeature(feature)
 
 const grant = (ident: string) => {
-  if ("groupedByDomain" === ident || "opentabsThreshold" === ident || "pendingTabs" === ident
-    || "details" === ident || "sessions" === ident || "sidebar" === ident || "useGroups" === ident) {
-    permissionsStore.activateFeature(ident)
-  } else if ("thumbnails" === ident || "analyseTabs" === ident) {
+  if ("thumbnails" === ident || "analyseTabs" === ident) {
     useCommandExecutor()
       .executeFromUi(new GrantOriginCommand(ident))
-  } else {
+  } else if ("pageCapture" === ident) {
     useCommandExecutor()
       .executeFromUi(new GrantPermissionCommand(ident))
+  } else if ("dynamic" === ident) {
+    useCommandExecutor()
+      .executeFromUi(new CreateDynamicTabsetCommand(ident))
+  } else {
+    permissionsStore.activateFeature(ident)
   }
+
+  // if ("groupedByDomain" === ident || "opentabsThreshold" === ident || "pendingTabs" === ident
+  //   || "details" === ident || "sessions" === ident || "sidebar" === ident || "useGroups" === ident) {
+  //   permissionsStore.activateFeature(ident)
+  // } else if ("thumbnails" === ident || "analyseTabs" === ident) {
+  //   useCommandExecutor()
+  //     .executeFromUi(new GrantOriginCommand(ident))
+  // } else {
+  //   useCommandExecutor()
+  //     .executeFromUi(new GrantPermissionCommand(ident))
+  // }
 }
 
 const revoke = (ident: string) => {
-  if ("groupedByDomain" === ident || "opentabsThreshold" === ident || "pendingTabs" === ident
-    || "details" === ident || "sessions" === ident || "sidebar" === ident || "useGroups" === ident) {
-    permissionsStore.deactivateFeature(ident)
-  } else if ("thumbnails" === ident || "analyseTabs" === ident) {
+  if ("thumbnails" === ident || "analyseTabs" === ident) {
     useCommandExecutor()
       .executeFromUi(new RevokeOriginCommand(ident))
-  } else {
+  } else if ("pageCapture" === ident) {
     useCommandExecutor()
       .executeFromUi(new RevokePermissionCommand(ident))
+  } else {
+    permissionsStore.deactivateFeature(ident)
   }
+
+  // if ("groupedByDomain" === ident || "opentabsThreshold" === ident || "pendingTabs" === ident
+  //   || "details" === ident || "sessions" === ident || "sidebar" === ident || "useGroups" === ident) {
+  //   permissionsStore.deactivateFeature(ident)
+  // } else if ("thumbnails" === ident || "analyseTabs" === ident) {
+  //   useCommandExecutor()
+  //     .executeFromUi(new RevokeOriginCommand(ident))
+  // } else {
+  //   useCommandExecutor()
+  //     .executeFromUi(new RevokePermissionCommand(ident))
+  // }
 }
 
 

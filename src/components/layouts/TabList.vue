@@ -10,9 +10,11 @@
         clickable v-ripple
         v-for="(tab,index) in props.tabs"
         @click="selectTab(tab, index)"
+        @mouseover="showButtons(  tab.id,true)"
+        @mouseleave="showButtons( tab.id, false)"
         :key="props.group + '_' + tab.id">
-        <TabListElementWidget
-          :key="props.group + '__' + tab.id" :tab="tabAsTab(tab)" :highlightUrl="highlightUrl" />
+        <TabListElementWidget :showButtons="showButtonsProp.get(tab.id)"
+                              :key="props.group + '__' + tab.id" :tab="tabAsTab(tab)" :highlightUrl="highlightUrl"/>
       </q-item>
     </vue-draggable-next>
   </q-list>
@@ -58,6 +60,10 @@ const props = defineProps({
 
 const thumbnails = ref<Map<string, string>>(new Map())
 const tabAsTab = (tab: Tab): Tab => tab as unknown as Tab
+
+const showButtonsProp = ref<Map<string, boolean>>(new Map())
+
+const showButtons = (tabId: string, show: boolean) => showButtonsProp.value.set(tabId, show)
 
 function adjustIndex(element: any, tabs: Tab[]) {
   //console.log("filtered", tabs)

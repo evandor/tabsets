@@ -62,7 +62,7 @@ const routes: RouteRecordRaw[] = [
   },
   {
     path: '/rss/:encodedUrl',
-    component: () => import('layouts/MainLayout.vue'),
+    component: () => import('layouts/DefaultLayout.vue'),
     children: [{ path: '', component: () => import('pages/RssPage.vue') }],
   },
   {

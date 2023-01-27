@@ -25,7 +25,7 @@
           <!-- !MIT -->
           <q-icon name="share" color="primary" class="q-ml-none q-mr-sm"
                   v-if="tabset.sharedBy">
-            <q-tooltip>This tabset is shared by {{tabset.sharedBy}}</q-tooltip>
+            <q-tooltip>This tabset is shared by {{ tabset.sharedBy }}</q-tooltip>
           </q-icon>
           {{ tabsetLabel(tabset) }}
         </template>
@@ -34,23 +34,23 @@
 
     <q-space/>
 
-    <q-item-section side v-if="showEditButton.get(tabset.id)">
-      <q-icon name="edit" color="primary" size="18px" @click="editDialog(tabset)">
-        <q-tooltip>Edit the tabset's name...</q-tooltip>
-      </q-icon>
-    </q-item-section>
+    <!--    <q-item-section side v-if="showEditButton.get(tabset.id)">-->
+    <!--      <q-icon name="edit" color="primary" size="18px" @click="editDialog(tabset)">-->
+    <!--        <q-tooltip>Edit the tabset's name...</q-tooltip>-->
+    <!--      </q-icon>-->
+    <!--    </q-item-section>-->
 
-    <q-item-section side v-if="tabsStore.tabsets.size > 9 && showEditButton.get(tabset.id) && tabset.status === TabsetStatus.DEFAULT">
-      <q-icon name="star" color="warning" size="18px" @click="markAsFavorite(tabset)">
-        <q-tooltip>Marking this tabset as favorite</q-tooltip>
-      </q-icon>
-    </q-item-section>
+    <!--    <q-item-section side v-if="tabsStore.tabsets.size > 9 && showEditButton.get(tabset.id) && tabset.status === TabsetStatus.DEFAULT">-->
+    <!--      <q-icon name="star" color="warning" size="18px" @click="markAsFavorite(tabset)">-->
+    <!--        <q-tooltip>Marking this tabset as favorite</q-tooltip>-->
+    <!--      </q-icon>-->
+    <!--    </q-item-section>-->
 
-    <q-item-section side v-if="tabsStore.tabsets.size > 9 && showEditButton.get(tabset.id) && tabset.status === TabsetStatus.FAVORITE">
-      <q-icon name="star" color="warning" size="18px" @click="markAsDefault(tabset)">
-        <q-tooltip>Undo marking this tabset as favorite</q-tooltip>
-      </q-icon>
-    </q-item-section>
+    <!--    <q-item-section side v-if="tabsStore.tabsets.size > 9 && showEditButton.get(tabset.id) && tabset.status === TabsetStatus.FAVORITE">-->
+    <!--      <q-icon name="star" color="warning" size="18px" @click="markAsDefault(tabset)">-->
+    <!--        <q-tooltip>Undo marking this tabset as favorite</q-tooltip>-->
+    <!--      </q-icon>-->
+    <!--    </q-item-section>-->
 
     <q-item-section side
                     v-if="tabsStore.tabsets.size > 9 && tabset.type === TabsetType.DEFAULT && showEditButton.get(tabset.id) && tabset.status !== TabsetStatus.DELETED">
@@ -132,10 +132,12 @@ const showButtons = (tabsetId: string, show: boolean) => {
 }
 
 const tabsetLabel = (tabset: Tabset) => {
+  const maxLength = 20
   if (tabsStore.tabsets.size < 10) {
-    return tabset.name
+    return tabset.name.length > maxLength ? tabset.name.substring(0, maxLength - 1) + "..." : tabset.name
   }
-  return tabset.name + ' (' + tabset.tabs?.length + ')'
+  const theName = tabset.name + ' (' + tabset.tabs?.length + ')'
+  return theName.length > maxLength ? theName.substring(0, maxLength - 1) + "..." : theName
 }
 
 const onDrop = (evt: DragEvent, tabsetId: string) => {

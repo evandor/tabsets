@@ -61,10 +61,10 @@
 
 <script lang="ts" setup>
 
-import {ref, watchEffect} from "vue";
+import {ref, watch, watchEffect} from "vue";
 import {useRoute} from "vue-router";
 import {date} from "quasar"
-import {read} from '@extractus/feed-extractor'
+import {extract} from '@extractus/feed-extractor'
 import NavigationService from "src/services/NavigationService";
 import {formatDistance, parseISO} from "date-fns";
 
@@ -106,17 +106,23 @@ const opts = {
 //  useISODateFormat: useISODateFormat !== 'n',
 //  normalization: normalization !== 'n'
 }
-
+// watch(() => route.params, (currentValue, oldValue) => {
+//   console.log("url", currentValue, oldValue)
+// })
 
 watchEffect(() => {
   encodedUrl.value = route.params.encodedUrl as string
+  console.log("url2", encodedUrl.value)
   if (encodedUrl.value) {
-
-    read(atob(encodedUrl.value), opts)
+    try {
+    extract(atob(encodedUrl.value), opts)
       .then(res => {
-        //console.log("res", res)
+        console.log("res", res)
         rss.value = res
       })
+    } catch (err) {
+      console.log("err", err)
+    }
   }
 })
 
