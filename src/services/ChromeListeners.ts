@@ -297,7 +297,7 @@ class ChromeListeners {
     const text = convert(request.html, {
       wordwrap: 130
     });
-    const text2 = text.replace(/\[[^\]].*/g, '').replace('*', '')
+    const text2 = text.replace(/\[[^\]].*/g, '').replaceAll('*', '')
     //console.log("text2", text2)
     const tokens = text2
       .replaceAll("\\n", " ")
