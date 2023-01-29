@@ -9,14 +9,13 @@ on:
 jobs:
   coverage:
     runs-on: ubuntu-latest
-    with:
-      test-script: yarn jest --legacy-peer-deps
     steps:
       - uses: actions/checkout@v3
       - uses: ArtiomTr/jest-coverage-report-action@v2
         id: coverage
         with:
           output: report-markdown
+          test-script: yarn jest --legacy-peer-deps
       - uses: marocchino/sticky-pull-request-comment@v2
         with:
           message: ${{ steps.coverage.outputs.report }}
