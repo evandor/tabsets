@@ -30,6 +30,7 @@
     "@types/lodash": "^4.14.182",
     "apexcharts": "^3.36.3",
     "date-fns": "^2.29.3",
+    "axios": "^0.21.1",
     "dotenv": "^16.0.1",
     "events": "^3.3.0",
     "firebase": "^9.9.2",
@@ -51,8 +52,7 @@
     "vue-konva": "^3.0.2",
     "vue-router": "^4.0.0",
     "vue-timeago3": "^2.3.0",
-    "vue3-apexcharts": "^1.4.1",
-    "wikipedia": "^2.0.0"
+    "vue3-apexcharts": "^1.4.1"
   },
   "devDependencies": {
     "@babel/preset-env": "^7.19.0",

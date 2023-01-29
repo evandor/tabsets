@@ -1,6 +1,25 @@
 <template>
 
   <div class="q-ma-md">
+    <b>Recommended Features</b>
+  </div>
+
+  <q-list>
+    <q-item
+      v-for="f in filterBexMode(recommendedFeatures)"
+      clickable v-ripple
+      :active="f.ident === selected"
+      @click="showFeature(f)">
+
+      <q-item-section avatar>
+        <q-icon :name="f.icon" size="1.3em" :color="iconColor(f.ident)"/>
+      </q-item-section>
+      <q-item-section>{{ f.name }}</q-item-section>
+
+    </q-item>
+  </q-list>
+
+  <div class="q-ma-md">
     <b>Optional Features</b>
   </div>
 
@@ -88,6 +107,10 @@ const tabsStore = useTabsStore()
 const router = useRouter()
 const selected = ref('')
 
+const recommendedFeatures = [
+  {ident: 'bookmarks', name: 'Bookmarks', icon: 'o_bookmarks', bexOnly: true, target: '/features/bookmarks'}
+]
+
 const optionalFeatures = [
   {
     ident: 'opentabsThreshold',
@@ -96,14 +119,9 @@ const optionalFeatures = [
     bexOnly: true,
     target: '/features/opentabsThreshold'
   },
-  {ident: 'bookmarks', name: 'Bookmarks', icon: 'o_bookmarks', bexOnly: true, target: '/features/bookmarks'},
   // {ident: 'pendingTabs', name: 'New Tabs Tracking', icon: 'o_tab', bexOnly: true, target: '/features/pendingTabs'},
-  {ident: 'details', name: 'Tab(set) Details View', icon: 'o_tab', target: '/features/details'},
   {ident: 'sidebar', name: 'Sidebar View', icon: 'o_input', target: '/features/sidebar'},
-  {ident: 'groupedByDomain', name: 'Group By Domain View', icon: 'o_dns', target: '/features/groupedByDomain'},
-  {ident: 'rss', name: 'RSS View', icon: 'o_rss_feed', bexOnly: true, target: '/features/rss'}, // does not work properly right now (keeps re-catching the source)
-  {ident: 'thumbnails', name: 'Thumbnails', icon: 'o_image', bexOnly: true, target: '/features/thumbnails'},
-  {ident: 'analyseTabs', name: 'Analyse Tabs', icon: 'o_analytics', bexOnly: true, target: '/features/analyseTabs'},
+  {ident: 'groupedByDomain', name: 'Group By Domain View', icon: 'o_dns', target: '/features/groupedByDomain'}
 ]
 
 const experimantalFeatures = [
@@ -116,6 +134,10 @@ const experimantalFeatures = [
     bexOnly: false,
     target: '/features/experimentalViews'
   },
+  {ident: 'rss', name: 'RSS View', icon: 'o_rss_feed', bexOnly: true, target: '/features/rss'}, // does not work properly right now (keeps re-catching the source)
+  {ident: 'thumbnails', name: 'Thumbnails', icon: 'o_image', bexOnly: true, target: '/features/thumbnails'},
+  {ident: 'analyseTabs', name: 'Analyse Tabs', icon: 'o_analytics', bexOnly: true, target: '/features/analyseTabs'},
+  {ident: 'details', name: 'Tab(set) Details View', icon: 'o_tab', target: '/features/details'},
   {ident: 'sessions', name: 'Sessions', icon: 'o_explore', bexOnly: true, target: '/features/sessions'},
   {ident: 'dynamic', name: 'Dynamic Tabsets', icon: 'o_file_open', bexOnly: false, target: '/features/dynamic'},
   {ident: 'history', name: 'History', icon: 'o_history', bexOnly: true, target: '/features/history'},
@@ -165,9 +187,9 @@ const checkBexMode = (f: any) => process.env.MODE === "bex" ? true : !f.bexOnly
 
 const filterBexMode = (fs: any[]) => _.filter(fs, (f: any) => checkBexMode(f))
 
-import wiki from 'wikipedia';
-import {wikiSummary, summaryError} from 'wikipedia';
-import {summary} from 'wikipedia';
+// import wiki from 'wikipedia';
+// import {wikiSummary, summaryError} from 'wikipedia';
+//import {summary} from 'wikipedia';
 
 // try {
 //   wiki.page("List_of_most_visited_websites").then((res) => {

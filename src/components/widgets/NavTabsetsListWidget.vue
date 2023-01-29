@@ -5,7 +5,7 @@
     :key="'local_' + tabset.id"
     :data-testid="'navigation_tabset_' +  index"
     clickable v-ripple
-    @click="selectTS(tabset.id)"
+    @click="selectTS(tabset)"
     @mouseover="showButtons(tabset.id, true)"
     @mouseleave="showButtons(tabset.id, false)"
     :active='tabset.id === tabsStore.currentTabsetId' active-class="active-list-element">
@@ -120,10 +120,10 @@ const props = defineProps({
   }
 })
 
-const selectTS = (tabsetId: string) =>
+const selectTS = (tabset: Tabset) =>
   useCommandExecutor()
-    .execute(new SelectTabsetCommand(tabsetId))
-    .then(() => router.push("/tabsets/" + tabsetId))
+    .execute(new SelectTabsetCommand(tabset.id))
+    .then(() => tabset.type === TabsetType.DYNAMIC ? router.push("/dynamicTs/" + tabset.id) : router.push("/tabsets/" + tabset.id))
 
 
 const showButtons = (tabsetId: string, show: boolean) => {

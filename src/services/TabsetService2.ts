@@ -48,9 +48,7 @@ export function useTabsetService() {
       if (result && result.tabset) {
         await saveTabset(result.tabset)
         result.tabset.tabs.forEach((tab: Tab) => {
-          //const tabLogger = logger.withContext("")
           TabLogger.info(tab, "created tab")
-          //logger.info("created tab", tab.id)
         })
         selectTabset(result.tabset.id)
         useSearchStore().indexTabs(result.tabset.id, tabs)

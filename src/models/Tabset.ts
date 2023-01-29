@@ -1,5 +1,6 @@
 import {Tab} from "src/models/Tab";
 import {Group} from "src/models/Group";
+import {DynamicTabSource} from "src/models/DynamicTabSource";
 
 export enum TabsetStatus {
   DEFAULT = "DEFAULT",
