@@ -14,8 +14,8 @@ jobs:
       - uses: ArtiomTr/jest-coverage-report-action@v2
         id: coverage
         with:
-          output: report-markdown
           test-script: yarn jest --legacy-peer-deps
+          output: report-markdown
       - uses: marocchino/sticky-pull-request-comment@v2
         with:
           message: ${{ steps.coverage.outputs.report }}
