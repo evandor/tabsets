@@ -9,6 +9,8 @@ on:
 jobs:
   coverage:
     runs-on: ubuntu-latest
+    with:
+      test-script: yarn jest --legacy-peer-deps
     steps:
       - uses: actions/checkout@v3
       - uses: ArtiomTr/jest-coverage-report-action@v2
