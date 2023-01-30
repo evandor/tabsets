@@ -17,6 +17,9 @@ jobs:
           package-manager: yarn
           test-script: yarn jest
           output: comment, report-markdown
-      - uses: marocchino/sticky-pull-request-comment@v2
+      - uses: peter-evans/commit-comment@v2
         with:
-          message: ${{ steps.coverage.outputs.report }}
+            body: ${{ steps.coverage.outputs.report }}
+#      - uses: marocchino/sticky-pull-request-comment@v2
+#        with:
+#          message: ${{ steps.coverage.outputs.report }}
