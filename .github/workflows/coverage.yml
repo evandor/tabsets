@@ -15,7 +15,7 @@ jobs:
         id: coverage
         with:
           package-manager: yarn
-          test-script: yarn jest --legacy-peer-deps
+          test-script: yarn jest
           output: report-markdown
       - uses: marocchino/sticky-pull-request-comment@v2
         with:
