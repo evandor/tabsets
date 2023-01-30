@@ -24,9 +24,10 @@ export default {
   collectCoverageFrom: [
     '<rootDir>/src/**/*.vue',
     '<rootDir>/src/**/*.js',
-    '<rootDir>/src/**/*.ts',
+    "<rootDir>/src/**/*.ts",
     '<rootDir>/src/**/*.jsx',
     '<rootDir>/src/**/*.tsx',
+    "!<rootDir>/node_modules/"
   ],
   // coverageThreshold: {
   //   global: {

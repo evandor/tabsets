@@ -1,7 +1,7 @@
 import {beforeEach, describe, expect, it, jest} from "@jest/globals";
 import {chrome} from "jest-chrome";
 import {createPinia, setActivePinia} from "pinia";
-import {CreateTabsetCommand} from "src/domain/commands/CreateTabsetCommand";
+import {CreateTabsetCommand} from "src/domain/commands/CreateTabset";
 import "fake-indexeddb/auto"
 import IndexedDbPersistenceService from "src/services/IndexedDbPersistenceService";
 import {INDEX_DB_VERSION} from "boot/constants";
@@ -10,7 +10,7 @@ import LoggingService from "src/services/LoggingService";
 import ChromeApi from "src/services/ChromeApi";
 import {useTabsStore} from "src/stores/tabsStore";
 import {useSearchStore} from "src/stores/searchStore";
-import {DeleteTabsetCommand} from "src/domain/commands/DeleteTabsetCommand";
+import {DeleteTabsetCommand} from "src/domain/commands/DeleteTabset";
 import {MarkTabsetDeletedCommand} from "src/domain/commands/MarkTabsetDeletedCommand";
 
 describe('CreateTabsetCommand', () => {
@@ -30,18 +30,20 @@ describe('CreateTabsetCommand', () => {
     chrome.tabs.query.mockImplementation(async (o: object) => [])
   })
 
-  it('deletes new empty tabset', async () => {
+  it('mark tabset deleted', async () => {
     const createTsCmd = new CreateTabsetCommand('emptyTabsetId', [])
     await createTsCmd.execute()
     const tabsets = useTabsStore().tabsets
     expect(tabsets.size).toBe(1)
     const ts = tabsets.values().next().value
+    expect(ts.status).toBe("DEFAULT")
 
     const deleteTsCmd = new MarkTabsetDeletedCommand(ts.id)
     const res: any = await deleteTsCmd.execute()
     console.log("res", res)
     expect(res.message).toBe("Tabset was deleted")
-    expect(res.undoCommand).not.toBe(null)  })
-
+    expect(res.undoCommand).not.toBe(null)
+    expect(ts.status).toBe("DELETED")
+  })
 
 })

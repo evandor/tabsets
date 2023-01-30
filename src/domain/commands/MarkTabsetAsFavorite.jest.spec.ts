@@ -7,10 +7,9 @@ import IndexedDbPersistenceService from "src/services/IndexedDbPersistenceServic
 import {INDEX_DB_VERSION} from "boot/constants";
 import {useJestHelper} from "src/domain/JestHelper";
 import LoggingService from "src/services/LoggingService";
-import ChromeApi from "src/services/ChromeApi";
 import {useTabsStore} from "src/stores/tabsStore";
 import {useSearchStore} from "src/stores/searchStore";
-import {DeleteTabsetCommand} from "src/domain/commands/DeleteTabset";
+import {MarkTabsetAsFavoriteCommand} from "src/domain/commands/MarkTabsetAsFavoriteCommand";
 
 describe('CreateTabsetCommand', () => {
 
@@ -29,18 +28,20 @@ describe('CreateTabsetCommand', () => {
     chrome.tabs.query.mockImplementation(async (o: object) => [])
   })
 
-  it('deletes new empty tabset', async () => {
+  it('mark tabset as favorite', async () => {
     const createTsCmd = new CreateTabsetCommand('emptyTabsetId', [])
     await createTsCmd.execute()
     const tabsets = useTabsStore().tabsets
     expect(tabsets.size).toBe(1)
     const ts = tabsets.values().next().value
+    expect(ts.status).toBe("DEFAULT")
 
-    const deleteTsCmd = new DeleteTabsetCommand(ts.id)
-    const res: any = await deleteTsCmd.execute()
+    const favoriteCmd = new MarkTabsetAsFavoriteCommand(ts.id)
+    const res: any = await favoriteCmd.execute()
     console.log("res", res)
-    expect(res.message).toBe("Tabset was deleted")
-    expect(res.undoCommand).not.toBe(null)  })
-
+    expect(res.message).toBe("Tabset was marked as favorite")
+    expect(res.undoCommand).not.toBe(null)
+    expect(ts.status).toBe("FAVORITE")
+  })
 
 })

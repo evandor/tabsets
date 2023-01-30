@@ -80,7 +80,7 @@
           <q-tooltip>Sorting descending or ascending, currently {{ orderDesc }}</q-tooltip>
         </q-btn>
 
-        <q-btn v-if="featuresStore.isEnabled('experimentalViews')"
+        <q-btn v-if="permissionsStore.hasFeature('experimentalViews')"
                @click="setView('grid')"
                style="width:14px"
                class="q-mr-sm" size="8px"
@@ -91,7 +91,7 @@
         </q-btn>
 
         <!-- default view, no need to show if there is no alternative -->
-        <q-btn v-if="featuresStore.isEnabled('experimentalViews')"
+        <q-btn v-if="permissionsStore.hasFeature('experimentalViews')"
                @click="setView('list')"
                style="width:14px"
                class="q-mr-sm" size="10px"
@@ -111,7 +111,7 @@
         <!--          <q-tooltip>Use the thumbnail layout to visualize your tabs</q-tooltip>-->
         <!--        </q-btn>-->
 
-        <q-btn v-if="featuresStore.isEnabled('experimentalViews')"
+        <q-btn v-if="permissionsStore.hasFeature('experimentalViews')"
                @click="setView('canvas')"
                style="width:14px"
                class="q-mr-sm" size="10px"
@@ -271,6 +271,7 @@
   <q-expansion-item
     v-if="!specialView() && tabsStore.currentTabsetId"
     icon="tabs"
+    expand-icon-toggle
     default-opened
     data-testid="expansion_item_unpinnedNoGroup"
     header-class="text-black"
@@ -364,8 +365,8 @@ import {usePermissionsStore} from "stores/permissionsStore";
 import TabList from "components/layouts/TabList.vue";
 import InfoMessageWidget from "components/widgets/InfoMessageWidget.vue";
 import {useCommandExecutor} from "src/services/CommandExecutor";
-import {RenameTabsetCommand} from "src/domain/commands/RenameTabsetCommand";
-import {Tabset, TabsetStatus, TabsetType} from "src/models/Tabset";
+import {RenameTabsetCommand} from "src/domain/commands/RenameTabset";
+import {TabsetStatus} from "src/models/Tabset";
 import {MarkTabsetAsFavoriteCommand} from "src/domain/commands/MarkTabsetAsFavoriteCommand";
 import {MarkTabsetAsDefaultCommand} from "src/domain/commands/MarkTabsetAsDefaultCommand";
 import {MarkTabsetAsArchivedCommand} from "src/domain/commands/MarkTabsetAsArchivedCommand";

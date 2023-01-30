@@ -1,6 +1,6 @@
 import Command from "src/domain/Command";
 import {ExecutionResult} from "src/domain/ExecutionResult";
-import {DeleteTabsetCommand} from "src/domain/commands/DeleteTabsetCommand";
+import {DeleteTabsetCommand} from "src/domain/commands/DeleteTabset";
 import {useTabsetService} from "src/services/TabsetService2";
 import LoggingService from "src/services/LoggingService";
 import NotificationsService from "src/services/NotificationsService";

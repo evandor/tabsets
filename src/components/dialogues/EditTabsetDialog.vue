@@ -40,7 +40,7 @@ import {useTabsStore} from "src/stores/tabsStore";
 
 import {useDialogPluginComponent} from 'quasar'
 import {STRIP_CHARS_IN_USER_INPUT} from "boot/constants";
-import {RenameTabsetCommand} from "src/domain/commands/RenameTabsetCommand";
+import {RenameTabsetCommand} from "src/domain/commands/RenameTabset";
 import {useNotificationHandler} from "src/services/ErrorHandler";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 
