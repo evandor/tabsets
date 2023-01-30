@@ -16,7 +16,6 @@ jobs:
         with:
           package-manager: yarn
           test-script: yarn jest
-          annotations: none
           output: comment, report-markdown
       - uses: marocchino/sticky-pull-request-comment@v2
         with:
