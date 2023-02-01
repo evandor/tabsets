@@ -6,17 +6,21 @@
 
   <q-list>
     <q-item
-      v-for="f in filterBexMode(recommendedFeatures)"
+      v-for="f in recommendedFeatures"
       clickable v-ripple
       :active="f.ident === selected"
+      :disable="wrongMode(f)"
       @click="showFeature(f)">
 
       <q-item-section avatar>
         <q-icon :name="f.icon" size="1.3em" :color="iconColor(f.ident)"/>
       </q-item-section>
       <q-item-section>{{ f.name }}</q-item-section>
-
+      <q-tooltip class="tooltip" v-if="wrongMode(f)">
+        This feature is not available in this mode of tabsets
+      </q-tooltip>
     </q-item>
+
   </q-list>
 
   <div class="q-ma-md">
@@ -25,16 +29,19 @@
 
   <q-list>
     <q-item
-      v-for="f in filterBexMode(optionalFeatures)"
+      v-for="f in optionalFeatures"
       clickable v-ripple
       :active="f.ident === selected"
+      :disable="wrongMode(f)"
       @click="showFeature(f)">
 
       <q-item-section avatar>
         <q-icon :name="f.icon" size="1.3em" :color="iconColor(f.ident)"/>
       </q-item-section>
       <q-item-section>{{ f.name }}</q-item-section>
-
+      <q-tooltip class="tooltip" v-if="wrongMode(f)">
+        This feature is not available in this mode of tabsets
+      </q-tooltip>
     </q-item>
   </q-list>
 
@@ -44,16 +51,19 @@
 
   <q-list>
     <q-item
-      v-for="f in filterBexMode(experimantalFeatures)"
+      v-for="f in experimantalFeatures"
       clickable v-ripple
       :active="f.ident === selected"
+      :disable="wrongMode(f)"
       @click="showFeature(f)">
 
       <q-item-section avatar>
         <q-icon :name="f.icon" size="1.3em" :color="iconColor(f.ident)"/>
       </q-item-section>
       <q-item-section>{{ f.name }}</q-item-section>
-
+      <q-tooltip class="tooltip" v-if="wrongMode(f)">
+        This feature is not available in this mode of tabsets
+      </q-tooltip>
     </q-item>
   </q-list>
 
@@ -108,7 +118,7 @@ const router = useRouter()
 const selected = ref('')
 
 const recommendedFeatures = [
-  {ident: 'bookmarks', name: 'Bookmarks', icon: 'o_bookmarks', bexOnly: true, target: '/features/bookmarks'}
+  {ident: 'bookmarks', name: 'Bookmarks', icon: 'o_bookmarks', useIn: ['bex'], target: '/features/bookmarks'}
 ]
 
 const optionalFeatures = [
@@ -116,12 +126,12 @@ const optionalFeatures = [
     ident: 'opentabsThreshold',
     name: 'Open Tabs Warning',
     icon: 'o_tab',
-    bexOnly: true,
+    useIn: ['bex'],
     target: '/features/opentabsThreshold'
   },
-  // {ident: 'pendingTabs', name: 'New Tabs Tracking', icon: 'o_tab', bexOnly: true, target: '/features/pendingTabs'},
-  {ident: 'sidebar', name: 'Sidebar View', icon: 'o_input', target: '/features/sidebar'},
-  {ident: 'groupedByDomain', name: 'Group By Domain View', icon: 'o_dns', target: '/features/groupedByDomain'}
+  // {ident: 'pendingTabs', name: 'New Tabs Tracking', icon: 'o_tab', useIn: ['bex'], target: '/features/pendingTabs'},
+  {ident: 'sidebar', name: 'Sidebar View', icon: 'o_input', useIn: ['electron'], target: '/features/sidebar'},
+  {ident: 'groupedByDomain', name: 'Group By Domain View', icon: 'o_dns', useIn: ['all'], target: '/features/groupedByDomain'}
 ]
 
 const experimantalFeatures = [
@@ -131,24 +141,24 @@ const experimantalFeatures = [
     ident: 'experimentalViews',
     name: 'Experimental Views',
     icon: 'o_explore',
-    bexOnly: false,
+    useIn: ['all'],
     target: '/features/experimentalViews'
   },
-  {ident: 'rss', name: 'RSS View', icon: 'o_rss_feed', bexOnly: true, target: '/features/rss'}, // does not work properly right now (keeps re-catching the source)
-  {ident: 'thumbnails', name: 'Thumbnails', icon: 'o_image', bexOnly: true, target: '/features/thumbnails'},
-  {ident: 'analyseTabs', name: 'Analyse Tabs', icon: 'o_analytics', bexOnly: true, target: '/features/analyseTabs'},
+  {ident: 'rss', name: 'RSS View', icon: 'o_rss_feed', useIn: ['bex'], target: '/features/rss'}, // does not work properly right now (keeps re-catching the source)
+  {ident: 'thumbnails', name: 'Thumbnails', icon: 'o_image', useIn: ['bex'], target: '/features/thumbnails'},
+  {ident: 'analyseTabs', name: 'Analyse Tabs', icon: 'o_analytics', useIn: ['bex'], target: '/features/analyseTabs'},
   {ident: 'details', name: 'Tab(set) Details View', icon: 'o_tab', target: '/features/details'},
-  {ident: 'sessions', name: 'Sessions', icon: 'o_explore', bexOnly: true, target: '/features/sessions'},
+  {ident: 'sessions', name: 'Sessions', icon: 'o_explore', useIn: ['bex'], target: '/features/sessions'},
   {ident: 'dynamic', name: 'Dynamic Tabsets', icon: 'o_file_open', bexOnly: false, target: '/features/dynamic'},
-  {ident: 'history', name: 'History', icon: 'o_history', bexOnly: true, target: '/features/history'},
-  {ident: 'useGroups', name: 'Use Tab Groups', icon: 'o_toc', bexOnly: false, target: '/features/useGroups'}
+  {ident: 'history', name: 'History', icon: 'o_history', useIn: ['bex'], target: '/features/history'},
+  {ident: 'useGroups', name: 'Use Tab Groups', icon: 'o_toc', useIn: ['all'], target: '/features/useGroups'}
 ]
 
 const plannedFeatures = [
   // {ident: 'mhtml', name: 'Saving Pages', icon: 'o_bookmarks', target: '/features/pageCapture'},
   // {ident: 'scheduled', name: 'Schedule Tabs', icon: 'o_update', target: '/features/scheduled'},
   {ident: 'spaces', name: 'Spaces', icon: 'o_history', target: '/features/spaces'},
-  {ident: 'windows', name: 'Multiple Windows', icon: 'o_history', bexOnly: true, target: '/features/windows'},
+  {ident: 'windows', name: 'Multiple Windows', icon: 'o_history', useIn: ['bex'], target: '/features/windows'},
   {ident: 'scheduled', name: 'Scheduled Tabs', icon: 'o_history', target: '/features/scheduled'},
   {ident: 'oldTabs', name: 'Old Tabs View', icon: 'o_history', target: '/features/oldTabs'}
 ]
@@ -185,24 +195,10 @@ const showFeature = (f: any) => {
 
 const checkBexMode = (f: any) => process.env.MODE === "bex" ? true : !f.bexOnly
 
-const filterBexMode = (fs: any[]) => _.filter(fs, (f: any) => checkBexMode(f))
+const filterMode = (fs: any[]) => _.filter(fs, (f: any) =>
+  f.useIn?.indexOf('all') >= 0 || f.useIn?.indexOf(process.env.MODE) >= 0)
 
-// import wiki from 'wikipedia';
-// import {wikiSummary, summaryError} from 'wikipedia';
-//import {summary} from 'wikipedia';
-
-// try {
-//   wiki.page("List_of_most_visited_websites").then((res) => {
-//     console.log("res", res)
-//     res.html().then((r) =>  console.log("r", r))
-//     res.tables().then((r2) =>  console.log("r2", r2))
-//   })
-//   let summary: wikiSummary; //sets the object as type wikiSummary
-//   //wiki.summary('Batman').then((res) => console.log("res", res))
-//   // let summary2 = await summary('Batman');//using summary directly
-// } catch (error) {
-//   console.log(error);
-//   //=> Typeof summaryError, helpful in case you want to handle this error separately
-// }
-
+const wrongMode = (f: any) => {
+  return f.useIn?.indexOf('all') < 0 && f.useIn?.indexOf(process.env.MODE) < 0
+}
 </script>

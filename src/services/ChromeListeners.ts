@@ -16,6 +16,9 @@ import {useUiStore} from "stores/uiStore";
 import {useSettingsStore} from "stores/settingsStore";
 import {usePermissionsStore} from "stores/permissionsStore";
 import ExpiringMap from "stores/ExpiringMap";
+import {MetaLink} from "src/models/MetaLink";
+import {Suggestion} from "src/models/Suggestion";
+import SuggestionsService from "src/services/SuggestionsService";
 
 const {
   saveCurrentTabset,
@@ -322,6 +325,16 @@ class ChromeListeners {
     if (sender.tab) {
       saveMetaLinksFor(sender.tab, request.links)
       saveLinksFor(sender.tab, request.anchors)
+
+      if (usePermissionsStore().hasFeature('rss')) {
+        console.log("hier!!!")
+        request.links.forEach((metaLink: MetaLink) => {
+          if ("application/rss+xml" === metaLink.type) {
+            console.log("hier!!!", metaLink)
+            SuggestionsService.addSuggestion(new Suggestion(uid(), metaLink.title || 'Found RSS Feed', "msg", metaLink.href))
+          }
+        })
+      }
     }
     sendResponse({html2links: 'done'});
   }

@@ -81,16 +81,38 @@
         <!--        <q-btn class="q-mr-md" icon="o_help" size="12px" style="width:24px" flat @click="router.push('/help/howto')">-->
         <!--          <q-tooltip>About tabsets browser extension v{{ appVersion }}</q-tooltip>-->
         <!--        </q-btn>-->
-<!--        <q-tab v-if="rssTabsCount > 0"-->
-<!--               name="rss" icon="o_rss_feed" @click="tabsClicked(DrawerTabs.RSS)">-->
-<!--          <q-tooltip class="tooltip" anchor="center right" self="center left" :delay="200">RSS Feeds</q-tooltip>-->
-<!--        </q-tab>-->
+        <!--        <q-tab v-if="rssTabsCount > 0"-->
+        <!--               name="rss" icon="o_rss_feed" @click="tabsClicked(DrawerTabs.RSS)">-->
+        <!--          <q-tooltip class="tooltip" anchor="center right" self="center left" :delay="200">RSS Feeds</q-tooltip>-->
+        <!--        </q-tab>-->
+
+        <span v-if="SuggestionsService.getSuggestions().length > 0">
+          <q-btn
+            flat
+            name="rss" icon="o_assistant">
+            <q-tooltip class="tooltip" anchor="center right" self="center left" :delay="200">You have suggestions
+            </q-tooltip>
+            <q-badge :label="useSuggestionsStore().getSuggestions().length"/>
+          </q-btn>
+          <q-menu :offset="[0, 7]">
+            <q-list style="min-width: 200px">
+              <q-item clickable v-close-popup @click="suggestionDialog(s)"
+                      v-for="s in SuggestionsService.getSuggestions()">
+                <q-item-section>
+                  <div>{{ s.title }}</div>
+                  <div class="text-caption">{{ s.msg }}</div>
+                </q-item-section>
+              </q-item>
+            </q-list>
+          </q-menu>
+        </span>
 
         <Transition name="colorized-appear">
           <q-btn v-if="permissionsStore.hasFeature('rss') && !inBexMode()"
                  flat
                  name="rss" icon="o_rss_feed" @click="tabsClicked(DrawerTabs.RSS)">
-            <q-tooltip class="tooltip" anchor="center right" self="center left" :delay="200">Access to your rss feed tabs
+            <q-tooltip class="tooltip" anchor="center right" self="center left" :delay="200">Access to your rss feed
+              tabs
             </q-tooltip>
           </q-btn>
         </Transition>
@@ -165,6 +187,7 @@
     </q-drawer>
 
     <q-page-container>
+      {{suggestions}}
       <router-view/>
       <div id="fixed-footer" class="q-pl-md q-pa-xs">{{ useUiStore().footerInfo }}</div>
     </q-page-container>
@@ -182,7 +205,6 @@ import {useMeta} from 'quasar'
 import {useNotificationsStore} from "src/stores/notificationsStore";
 import Navigation from "src/components/Navigation.vue"
 import NavigationService from "src/services/NavigationService"
-import UnassignedAndOpenTabs from "src/components/views/UnassignedAndOpenTabs.vue"
 import {useSearchStore} from "src/stores/searchStore";
 import {useFeatureTogglesStore} from "src/stores/featureTogglesStore";
 import _ from "lodash";
@@ -190,7 +212,6 @@ import {useSpacesStore} from "stores/spacesStore"
 import {useSettingsStore} from "stores/settingsStore"
 import OpenTabsThresholdWidget from 'src/components/widgets/OpenTabsThresholdWidget.vue'
 import SpacesSelectorWidget from 'src/components/widgets/SpacesSelectorWidget.vue'
-import UnassignedTabsWidget from 'src/components/widgets/UnassignedTabsWidget.vue'
 import SearchWidget from 'src/components/widgets/SearchWidget.vue'
 import {useUiService} from "src/services/useUiService";
 import {DrawerTabs, useUiStore} from "stores/uiStore";
@@ -198,10 +219,13 @@ import NotificationDialog from "components/dialogues/NotificationDialog.vue"
 import {usePermissionsStore} from "stores/permissionsStore";
 import {Notification, NotificationStatus} from "src/models/Notification";
 import {useUtils} from "src/services/Utils";
-import OpenTabs from "components/OpenTabs.vue";
 import DrawerRight from "components/DrawerRight.vue";
 import ExportDialog from "components/dialogues/ExportDialog.vue";
 import ImportDialog from "components/dialogues/ImportDialog.vue";
+import {Suggestion, SuggestionState} from "src/models/Suggestion";
+import SuggestionDialog from "components/dialogues/SuggestionDialog.vue";
+import {useSuggestionsStore} from "stores/suggestionsStore";
+import SuggestionsService from "src/services/SuggestionsService";
 
 const router = useRouter()
 const tabsStore = useTabsStore()
@@ -224,6 +248,7 @@ const uiService = useUiService()
 const route = useRoute()
 
 const spacesOptions = ref<object[]>([])
+const suggestions = ref<Suggestion[]>(useSuggestionsStore().getSuggestions())
 const search = ref('')
 const $q = useQuasar()
 
@@ -233,6 +258,10 @@ $q.loadingBar.setDefaults({
   color: 'positive',
   size: '10px',
   position: 'top'
+})
+
+watchEffect(() => {
+  suggestions.value = useSuggestionsStore().getSuggestions()
 })
 
 watchEffect(() => {
@@ -289,5 +318,10 @@ const tabsClicked = (tab: DrawerTabs) => uiService.rightDrawerSetActiveTab(tab)
 const showExportDialog = () => $q.dialog({component: ExportDialog})
 const showImportDialog = () => $q.dialog({component: ImportDialog})
 
+const suggestionDialog = (s: Suggestion) => $q.dialog({
+  component: SuggestionDialog, componentProps: {
+    suggestion: s
+  }
+})
 
 </script>

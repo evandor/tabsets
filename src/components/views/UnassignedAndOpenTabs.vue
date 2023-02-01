@@ -27,7 +27,7 @@
            class="q-ma-md" dense
            style="border: 1px dotted grey; border-radius: 5px;" type="textarea" v-model="dragTarget"/>
 
-  <div v-if="tabsStore.currentTabsetId"
+  <div v-if="tabsStore.currentTabsetId && unassignedTabs().length > 0"
        class="q-ma-sm" style="border: 1px dotted grey; border-radius: 3px">
     <!--    <q-banner inline-actions rounded class="bg-white text-grey" style="border: 1px dotted grey">-->
     <div class="row">

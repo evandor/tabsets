@@ -44,7 +44,7 @@ export class GrantPermissionCommand implements Command<boolean> {
             "Permission was added",
             new UndoCommand(this.permission))
         } else {
-          usePermissionsStore().activateFeature(this.permission)
+          usePermissionsStore().deactivateFeature(this.permission)
           return new ExecutionResult(granted, "Permission was not added")
         }
       })

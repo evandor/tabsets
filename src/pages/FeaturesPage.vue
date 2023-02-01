@@ -18,6 +18,9 @@
       </div>
     </div>
   </q-toolbar>
+
+  <div class="row fit greyBorderTop"></div>
+
   <div class="row q-ma-lg">
     <q-banner rounded class="bg-grey-1 text-primary">
       The Tabsets Extension starts simple - you can manage tabs - but it has more to offer. Check out the optional or
@@ -61,7 +64,7 @@
     </div>
 
     <div class="col-12 q-my-md">
-      <div>{{ text.get(feature)?.permissions }}</div>
+      <div>{{ permissionText(text.get(feature)) }}</div>
     </div>
 
   </div>
@@ -107,45 +110,46 @@ text.set('opentabsThreshold', {
     ' can help you by tracking your open tabs count and alert you when it gets too big. Furthermore, it offers you ways to reduce your tab count on the fly. This ' +
     'feature is customizable in the settings.',
   img: 'open_tabs_warning.png',
-  permissions: 'This feature needs no additional permissions.'
+  permissions: []
 })
 text.set('bookmarks', {
   name: 'Bookmarks',
   img: 'bookmarks.png',
   description: 'The Bookmarks Feature lets you access the browsers bookmarks to view (or delete) them and to turn them into tabsets if you wish. Futhermore, the search will ' +
     'take the URLs and titles of your bookmarks into account as well.',
-  permissions: 'This feature needs additional permissions.'
+  permissions: ['bookmarks']
 })
 text.set('pendingTabs', {
   name: 'New Tabs Tracking',
   img: 'pending.png',
   img_width: '700px',
   description: 'This feature aims to provide a more advanced way to track currently open tabs to be added to your tabsets (additionally to the default drag-and-drop approach from the open tabs view).',
-  permissions: 'This feature needs no additional permissions.'
+  permissions: []
 })
 text.set('details', {
   name: 'Tab and Tabset Details',
   img: 'details.png',
   description: 'Click on the info icon to get more details about the selected tab',
-  permissions: 'This feature needs no additional permissions.'
+  permissions: []
 })
 text.set('sidebar', {
   name: 'Sidebar View',
   img: 'sidebar.png',
   description: 'The sidebar view lets you open the tabs of a tabset in the extension page itself via an iframe. Please note that not all pages can be displayed like this.',
-  permissions: 'This feature needs no additional permissions.'
+  permissions: []
 })
 text.set('groupedByDomain', {
   name: 'Group By Domain',
   img: 'groupedByDomain.png',
   description: 'The "Grouped By Domain" Feature provides a view where you can see all your tabs grouped by Domains. All Domains with at least two matching tabs will be considered.',
-  permissions: 'This feature does not need any additional permissions.'
+  permissions: []
 })
 text.set('rss', {
   name: 'RSS View',
   img: 'rss.png',
-  description: 'The "RSS View" list all your RSS Pages',
-  permissions: 'This feature does not need any additional permissions.'
+  description: 'The "RSS View" list all your RSS Pages. It is recommended to enable the "analyse Tabs" feature as well to automatically find ' +
+    'linked rss feeds from your tabsets.',
+  permissions: []
 })
 text.set('thumbnails', {
   experimental: false,
@@ -153,7 +157,7 @@ text.set('thumbnails', {
   img: 'thumbnails.png',
   description: 'This extension can create thumbnails of the tabs you visit, so that they can presented in an more appealing way. ' +
     'Please note that only tabs that you visit (or revisit) after the activation of this feature are going to have thumbnails.',
-  permissions: 'This feature needs additional permissions.'
+  permissions: ['thumbnails']
 })
 text.set('analyseTabs', {
   experimental: false,
@@ -163,33 +167,33 @@ text.set('analyseTabs', {
   description: 'This extension can analyse the tabs you visit, so that the search can be improved significantly. The tab\'s content, ' +
     'its links and the received http headers are taken into account. ' +
     'Please note that only tabs that you visit (or revisit) after the activation of this feature are going to be analysed.',
-  permissions: 'This feature needs additional permissions.'
+  permissions: ['allOrigins']
 })
 
 text.set('history', {
   experimental: true,
   name: 'History',
   description: 'The "History" Feature provides access to your browser\'s history to provide additional features.',
-  permissions: 'This feature needs additional permissions.'
+  permissions: ['history']
 })
 text.set('experimentalViews', {
   experimental: true,
   name: 'Experimental Views',
   description: 'The default view of your tabset is a list - but there can be other views as well like grids or even a canvas.',
-  permissions: 'This feature needs no additional permissions.'
+  permissions: []
 })
 text.set('dynamic', {
   experimental: true,
   name: 'Dynamic Tabsets',
   description: 'The idea is to provide you with tabset data which is defined outside the scope of this extension - e.g. defined by a website like wikipedia. ' +
     'For now, there is only one example; the wikipedia "List of most visited websites" is added to your tabsets as a readonly tab.',
-  permissions: 'This feature needs no additional permissions.'
+  permissions: []
 })
 text.set('sessions', {
   experimental: true,
   name: 'Sessions',
   description: 'A session is a special type of tabsets where your newly opened tabs will be tracked automatically',
-  permissions: 'This feature needs additional permissions.'
+  permissions: []
 })
 text.set('useGroups', {
   experimental: true,
@@ -197,32 +201,32 @@ text.set('useGroups', {
   img: 'useGroups.png',
   img_width: '700px',
   description: 'Some Browsers can groups tabs to help you organize them. Activate this feature to use groups and pinned tabs inside this extension',
-  permissions: 'This feature needs no additional permissions.'
+  permissions: []
 })
 
 text.set('spaces', {
   planned: true,
   name: 'Spaces',
   description: 'The "Spaces" Feature lets you organize your tabsets in a larger structure, which might become handy if you start having many tabsets.',
-  permissions: 'This feature needs no additional permissions.'
+  permissions: []
 })
 text.set('windows', {
   planned: true,
   name: 'Multiple Windows Support',
   description: 'Currently, only the active window is tracked by the Tabsets Extension. This feature will support all open Browser windows.',
-  permissions: 'This feature needs no additional permissions.'
+  permissions: []
 })
 text.set('scheduled', {
   planned: true,
   name: 'Schedule Tabs Support',
   description: 'Be reminded about tabs you want to revisit',
-  permissions: 'This feature needs no additional permissions.'
+  permissions: []
 })
 text.set('oldTabs', {
   planned: true,
   name: 'Old Tabs View',
   description: 'Get a list of old tabs to decide which ones to keep.',
-  permissions: 'This feature needs no additional permissions.'
+  permissions: []
 })
 
 watchEffect(() => {
@@ -243,7 +247,7 @@ const grant = (ident: string) => {
   if ("thumbnails" === ident || "analyseTabs" === ident) {
     useCommandExecutor()
       .executeFromUi(new GrantOriginCommand(ident))
-  } else if ("pageCapture" === ident) {
+  } else if ("pageCapture" === ident || "bookmarks" === ident || "history" === ident) {
     useCommandExecutor()
       .executeFromUi(new GrantPermissionCommand(ident))
   } else if ("dynamic" === ident) {
@@ -269,23 +273,22 @@ const revoke = (ident: string) => {
   if ("thumbnails" === ident || "analyseTabs" === ident) {
     useCommandExecutor()
       .executeFromUi(new RevokeOriginCommand(ident))
-  } else if ("pageCapture" === ident) {
+  } else if ("pageCapture" === ident || "bookmarks" === ident || "history" === ident) {
     useCommandExecutor()
       .executeFromUi(new RevokePermissionCommand(ident))
   } else {
     permissionsStore.deactivateFeature(ident)
   }
+}
 
-  // if ("groupedByDomain" === ident || "opentabsThreshold" === ident || "pendingTabs" === ident
-  //   || "details" === ident || "sessions" === ident || "sidebar" === ident || "useGroups" === ident) {
-  //   permissionsStore.deactivateFeature(ident)
-  // } else if ("thumbnails" === ident || "analyseTabs" === ident) {
-  //   useCommandExecutor()
-  //     .executeFromUi(new RevokeOriginCommand(ident))
-  // } else {
-  //   useCommandExecutor()
-  //     .executeFromUi(new RevokePermissionCommand(ident))
-  // }
+const permissionText = (f: any ) => {
+  const permissions: string[] = f.permissions
+  if (permissions.length === 0) {
+    return "This feature does not need additional browser permissions."
+  } else {
+    return "This feature needs additional browser permissions: " + JSON.stringify(permissions)
+  }
+
 }
 
 

@@ -19,6 +19,7 @@ import {TabLogger} from "src/logging/TabLogger";
 import {StatsEntry} from "src/models/StatsEntry";
 import {uid} from "quasar";
 import {Notification, NotificationStatus} from "src/models/Notification";
+import {Suggestion, SuggestionState} from "src/models/Suggestion";
 
 class IndexedDbPersistenceService implements PersistenceService {
 
@@ -469,6 +470,10 @@ class IndexedDbPersistenceService implements PersistenceService {
           console.log("creating db notifications")
           db.createObjectStore('notifications');
         }
+        if (!db.objectStoreNames.contains('suggestions')) {
+          console.log("creating db suggestions")
+          db.createObjectStore('suggestions');
+        }
         if (!db.objectStoreNames.contains('logs')) {
           console.log("creating db logs")
           db.createObjectStore('logs', {autoIncrement: true});
@@ -557,6 +562,35 @@ class IndexedDbPersistenceService implements PersistenceService {
       })
   }
 
+  getSuggestions(): Promise<Suggestion[]> {
+    return this.db ? this.db.getAll('suggestions') : Promise.resolve([])
+  }
+
+  addSuggestion(suggestion: Suggestion): Promise<void> {
+    return this.getSuggestions()
+      .then((suggestions) => {
+        const found = _.find(suggestions, (s: Suggestion) => s.url === suggestion.url)
+        if (!found) {
+          return this.db.add('suggestions', suggestion, suggestion.id)
+            .then((res) => Promise.resolve())
+        }
+        return Promise.reject("suggestion already exists")
+      })
+     // .catch((err) => Promise.reject(err))
+
+  }
+
+
+  ignoreSuggestion(suggestionId: string): Promise<void> {
+    console.log("ignoring suggestion", suggestionId)
+    const objectStore = this.db.transaction('suggestions', 'readwrite').objectStore('suggestions');
+    return objectStore.get(suggestionId)
+      .then((res: Suggestion) => {
+        res.state = SuggestionState.IGNORED
+        console.log("storing", res)
+        objectStore.put(res, suggestionId)
+      })
+  }
 }
 
 export default new IndexedDbPersistenceService()

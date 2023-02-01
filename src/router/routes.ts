@@ -47,7 +47,7 @@ const routes: RouteRecordRaw[] = [
   },
   {
     path: '/tab/:id',
-    component: () => import('layouts/MainLayout.vue'),
+    component: () => import('layouts/DefaultLayout.vue'),
     children: [{ path: '', component: () => import('pages/TabPage.vue') }],
   },
   {

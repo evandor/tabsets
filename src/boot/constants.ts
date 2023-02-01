@@ -3,7 +3,7 @@ import {LogLevel} from "logging-library";
 
 const MAX_TABS_TO_SHOW = 12
 const INDEX_DB_NAME = 'db'
-const INDEX_DB_VERSION = 8
+const INDEX_DB_VERSION = 9
 const CLEANUP_PERIOD_IN_MINUTES = 10 // in prod: 10
 const EXPIRE_DATA_PERIOD_IN_MINUTES = 60 // in prod: 60
 

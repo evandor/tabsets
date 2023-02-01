@@ -7,6 +7,7 @@ import {SearchDoc} from "src/models/SearchDoc";
 import {LogLevel} from "logging-library";
 import {Predicate} from "src/domain/Types";
 import {LogEntry} from "src/models/LogEntry";
+import {Suggestion} from "src/models/Suggestion";
 
 interface PersistenceService {
 
@@ -45,6 +46,9 @@ interface PersistenceService {
   getNotifications(onlyNew: boolean): Promise<Notification[]>
   addNotification(notification: Notification): Promise<void>
   notificationRead(notificationId: string): Promise<void>
+
+  getSuggestions(): Promise<Suggestion[]>
+  addSuggestion(suggestion: Suggestion): Promise<void>
 
   getLogs(predicate: Predicate<LogEntry>): Promise<LogEntry[]>
   saveLog(context: string, level: LogLevel, msg: string, ...args: any[]):Promise<any>

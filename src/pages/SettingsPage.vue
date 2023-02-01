@@ -56,7 +56,7 @@
         </div>
       </div>
 
-      <div class="row items-baseline q-ma-md">
+      <div class="row items-baseline q-ma-md" v-if="usePermissionsStore().hasFeature('opentabsThreshold')">
         <div class="col-3">
           Warning Thresholds
         </div>
@@ -75,7 +75,7 @@
         </div>
       </div>
 
-      <div class="row items-baseline q-ma-md">
+      <div class="row items-baseline q-ma-md" v-if="usePermissionsStore().hasFeature('thumbnails')">
         <div class="col-3">
           Thumbnail Quality in %
         </div>

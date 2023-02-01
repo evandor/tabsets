@@ -23,13 +23,16 @@ import ChromeBookmarkListeners from "src/services/ChromeBookmarkListeners";
 import {usePermissionsStore} from "stores/permissionsStore";
 import LoggingService from "src/services/LoggingService";
 import NotificationsService from "src/services/NotificationsService";
+import {useSuggestionsStore} from "stores/suggestionsStore";
+import SuggestionsService from "src/services/SuggestionsService";
 
 const tabsStore = useTabsStore()
 const tabGroupsStore = useTabGroupsStore()
 const featureTogglesStore = useFeatureTogglesStore()
+const suggestionsStore = useSuggestionsStore()
 const bookmarksStore = useBookmarksStore()
-const searchStore = useSearchStore()
 const windowsStore = useWindowsStore()
+const searchStore = useSearchStore()
 const spacesStore = useSpacesStore()
 const router = useRouter()
 const route = useRoute()
@@ -87,6 +90,7 @@ if (isNewTabPage()) {
       // init services
       LoggingService.init()
       NotificationsService.init()
+      SuggestionsService.init()
       tabsetService.setLocalStorage(localStorage)
       spacesService.init()
         .then(() => {

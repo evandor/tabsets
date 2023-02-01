@@ -1,8 +1,8 @@
 <template>
 
-  <div class="row q-ma-none q-pa-none fit">
+<!--  <div class="row q-ma-none q-pa-none fit">-->
 
-    <div class="col-12 q-mt-none q-mx-none greyBorderTop">
+<!--    <div class="col-12 q-mt-none q-mx-none greyBorderTop">-->
 
       <q-toolbar class="text-primary lightgrey">
         <div class="row fit">
@@ -58,6 +58,8 @@
         </div>
       </q-toolbar>
 
+      <div class="row greyBorderTop"></div>
+
       <UnassignedAndOpenTabs v-if="tab === DrawerTabs.UNASSIGNED_TABS"/>
       <BookmarksTree v-else-if="tab === DrawerTabs.BOOKMARKS"/>
       <!--      <OpenTabs v-else-if="tab ===  DrawerTabs.OPEN_TABS" :filter="filter"/>-->
@@ -72,8 +74,8 @@
       <!--      <TabsetHelp v-else-if="tab ===  DrawerTabs.HELP"/>-->
 
       <div v-else>unknown tab name {{ tab }}</div>
-    </div>
-  </div>
+<!--    </div>-->
+<!--  </div>-->
 
 </template>
 
