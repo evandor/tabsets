@@ -86,7 +86,7 @@
         <!--          <q-tooltip class="tooltip" anchor="center right" self="center left" :delay="200">RSS Feeds</q-tooltip>-->
         <!--        </q-tab>-->
 
-        <span v-if="SuggestionsService.getSuggestions().length > 0">
+        <span v-if="useSuggestionsStore().getSuggestions().length > 0">
           <q-btn
             flat
             name="rss" icon="o_assistant">
@@ -97,7 +97,7 @@
           <q-menu :offset="[0, 7]">
             <q-list style="min-width: 200px">
               <q-item clickable v-close-popup @click="suggestionDialog(s)"
-                      v-for="s in SuggestionsService.getSuggestions()">
+                      v-for="s in useSuggestionsStore().getSuggestions()">
                 <q-item-section>
                   <div>{{ s.title }}</div>
                   <div class="text-caption">{{ s.msg }}</div>
