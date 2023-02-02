@@ -18,7 +18,7 @@ import {usePermissionsStore} from "stores/permissionsStore";
 import ExpiringMap from "stores/ExpiringMap";
 import {MetaLink} from "src/models/MetaLink";
 import {Suggestion} from "src/models/Suggestion";
-import SuggestionsService from "src/services/SuggestionsService";
+import {useSuggestionsStore} from "stores/suggestionsStore";
 
 const {
   saveCurrentTabset,
@@ -331,7 +331,7 @@ class ChromeListeners {
         request.links.forEach((metaLink: MetaLink) => {
           if ("application/rss+xml" === metaLink.type) {
             console.log("hier!!!", metaLink)
-            SuggestionsService.addSuggestion(new Suggestion(uid(), metaLink.title || 'Found RSS Feed', "msg", metaLink.href))
+            useSuggestionsStore().addSuggestion(new Suggestion(uid(), metaLink.title || 'Found RSS Feed', "msg", metaLink.href))
           }
         })
       }

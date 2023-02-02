@@ -32,7 +32,7 @@ import {computed, ref, watchEffect} from "vue";
 import {useDialogPluginComponent, useQuasar} from "quasar";
 import {useRouter} from "vue-router";
 import {useNotificationsStore} from "stores/notificationsStore";
-import SuggestionsService from "src/services/SuggestionsService";
+import {useSuggestionsStore} from "stores/suggestionsStore";
 
 defineEmits([
   ...useDialogPluginComponent.emits
@@ -53,9 +53,9 @@ const $q = useQuasar()
 
 const newTabsetNameExists = ref(false)
 
-const ignoreSuggestion = () => SuggestionsService.ignoreSuggestion(props.suggestion.id)
+const ignoreSuggestion = () => useSuggestionsStore().ignoreSuggestion(props.suggestion.id)
 
-const addSuggestion = () => SuggestionsService.applySuggestion(props.suggestion.id)
+const addSuggestion = () => useSuggestionsStore().applySuggestion(props.suggestion.id)
 
 
 

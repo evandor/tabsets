@@ -187,7 +187,6 @@
     </q-drawer>
 
     <q-page-container>
-      {{suggestions}}
       <router-view/>
       <div id="fixed-footer" class="q-pl-md q-pa-xs">{{ useUiStore().footerInfo }}</div>
     </q-page-container>
@@ -225,7 +224,6 @@ import ImportDialog from "components/dialogues/ImportDialog.vue";
 import {Suggestion, SuggestionState} from "src/models/Suggestion";
 import SuggestionDialog from "components/dialogues/SuggestionDialog.vue";
 import {useSuggestionsStore} from "stores/suggestionsStore";
-import SuggestionsService from "src/services/SuggestionsService";
 
 const router = useRouter()
 const tabsStore = useTabsStore()

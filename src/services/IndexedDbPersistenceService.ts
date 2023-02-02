@@ -577,7 +577,6 @@ class IndexedDbPersistenceService implements PersistenceService {
         return Promise.reject("suggestion already exists")
       })
      // .catch((err) => Promise.reject(err))
-
   }
 
 

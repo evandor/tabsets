@@ -8,25 +8,36 @@ import _ from "lodash";
 
 const {localDb} = useDB()
 
+
 export const useSuggestionsStore = defineStore('suggestions', () => {
 
   const suggestions = ref<Suggestion[]>([])
 
   function init() {
     console.debug("initializing SuggestionsService")
+    loadSuggestionsFromDb()
+  }
+
+  function loadSuggestionsFromDb() {
     localDb.getSuggestions()
       .then((res: Suggestion[]) => {
         suggestions.value = res
       })
   }
 
-  watch(suggestions, (val: Object) => {
-    //$q.localStorage.set("ui.tabsetIdForNewTab", val)
-    console.log("watching suggestions", suggestions.value)
-  }, {deep: true})
+  function addSuggestion(s: Suggestion) {
+    localDb.addSuggestion(s)
+      .then(() => suggestions.value.push(s))
+  }
 
   function ignoreSuggestion(id: string): Promise<void> {
     return localDb.ignoreSuggestion(id)
+      .then((res) => loadSuggestionsFromDb())
+  }
+
+  function applySuggestion(id: string): Promise<void> {
+    return localDb.ignoreSuggestion(id)
+      .then((res) => loadSuggestionsFromDb())
   }
 
   const getSuggestions = computed(() => {
@@ -37,8 +48,10 @@ export const useSuggestionsStore = defineStore('suggestions', () => {
 
   return {
     init,
+    addSuggestion,
     getSuggestions,
-    ignoreSuggestion
+    ignoreSuggestion,
+    applySuggestion
   }
 
 })

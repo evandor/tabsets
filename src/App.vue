@@ -90,7 +90,7 @@ if (isNewTabPage()) {
       // init services
       LoggingService.init()
       NotificationsService.init()
-      SuggestionsService.init()
+      useSuggestionsStore().init()
       tabsetService.setLocalStorage(localStorage)
       spacesService.init()
         .then(() => {
