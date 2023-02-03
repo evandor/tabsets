@@ -28,6 +28,14 @@
             <q-tooltip>This tabset is shared by {{ tabset.sharedBy }}</q-tooltip>
           </q-icon>
           {{ tabsetLabel(tabset) }}
+          <q-icon name="build_circle" color="blue-10" class="q-ml-none q-mr-sm" style="position:relative;top:-5px;left:-2px;"
+                  v-if="tabset.type === TabsetType.DYNAMIC">
+            <q-tooltip class="tooltip">The tabs of this tabset have been generated automatically</q-tooltip>
+          </q-icon>
+          <q-icon name="local_library" color="blue-10" class="q-ml-none q-mr-sm" style="position:relative;top:-5px;left:-2px;"
+                  v-if="tabset.type === TabsetType.DYNAMIC">
+            <q-tooltip class="tooltip">This tabset is readonly</q-tooltip>
+          </q-icon>
         </template>
       </q-item-label>
     </q-item-section>

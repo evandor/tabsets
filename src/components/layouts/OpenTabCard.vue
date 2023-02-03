@@ -57,6 +57,7 @@ import {useUiStore} from "stores/uiStore";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {CreateTabFromOpenTabsCommand} from "src/domain/commands/CreateTabFromOpenTabsCommand";
 import {useTabsStore} from "stores/tabsStore";
+import _ from "lodash"
 
 const featureToggles = useFeatureTogglesStore()
 
@@ -71,11 +72,14 @@ const props = defineProps({
   }
 })
 
-const emits = defineEmits(['selectionChanged'])
+const emits = defineEmits(['selectionChanged','addedToTabset'])
 
 const tabsStore = useTabsStore()
 
-const closeTab = (tab: Tab) => NavigationService.closeChromeTab(tab)
+const closeTab = (tab: Tab) => {
+  NavigationService.closeChromeTab(tab)
+  tabsStore.pendingTabset.tabs = _.filter(tabsStore.pendingTabset.tabs, t => t.chromeTab.url !== tab.chromeTab.url)
+}
 
 const cardStyle = (tab: Tab) => {
   const height = "30px";
@@ -97,6 +101,7 @@ const emitInfo = (msg: string | undefined) => useUiStore().footerInfo = msg
 
 const addToCurrentTabset = () => {
   useCommandExecutor().executeFromUi(new CreateTabFromOpenTabsCommand(props.tab as unknown as Tab, 0, 'openTabs'))
+    .then((res) => emits('addedToTabset', {tabId: props.tab.id, tabUrl: props.tab.chromeTab.url}))
 }
 
 const selectionChanged = (val: any) => {

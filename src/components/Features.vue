@@ -45,11 +45,11 @@
     </q-item>
   </q-list>
 
-  <div class="q-ma-md">
+  <div class="q-ma-md" v-if="useFeatureTogglesStore().isEnabled('dev')">
     <b>Experimental Features</b>
   </div>
 
-  <q-list>
+  <q-list v-if="useFeatureTogglesStore().isEnabled('dev')">
     <q-item
       v-for="f in experimantalFeatures"
       clickable v-ripple
@@ -112,6 +112,7 @@ import {ref} from "vue";
 import {useRouter} from "vue-router";
 import {usePermissionsStore} from "stores/permissionsStore";
 import _ from "lodash"
+import {useFeatureTogglesStore} from "stores/featureTogglesStore";
 
 const tabsStore = useTabsStore()
 const router = useRouter()
@@ -131,7 +132,7 @@ const optionalFeatures = [
   },
   // {ident: 'pendingTabs', name: 'New Tabs Tracking', icon: 'o_tab', useIn: ['bex'], target: '/features/pendingTabs'},
   {ident: 'sidebar', name: 'Sidebar View', icon: 'o_input', useIn: ['electron'], target: '/features/sidebar'},
-  {ident: 'groupedByDomain', name: 'Group By Domain View', icon: 'o_dns', useIn: ['all'], target: '/features/groupedByDomain'}
+  // {ident: 'groupedByDomain', name: 'Group By Domain View', icon: 'o_dns', useIn: ['all'], target: '/features/groupedByDomain'}
 ]
 
 const experimantalFeatures = [
@@ -149,8 +150,8 @@ const experimantalFeatures = [
   {ident: 'analyseTabs', name: 'Analyse Tabs', icon: 'o_analytics', useIn: ['bex'], target: '/features/analyseTabs'},
   {ident: 'details', name: 'Tab(set) Details View', icon: 'o_tab', target: '/features/details'},
   {ident: 'sessions', name: 'Sessions', icon: 'o_explore', useIn: ['bex'], target: '/features/sessions'},
-  {ident: 'dynamic', name: 'Dynamic Tabsets', icon: 'o_file_open', bexOnly: false, target: '/features/dynamic'},
-  {ident: 'history', name: 'History', icon: 'o_history', useIn: ['bex'], target: '/features/history'},
+  // {ident: 'dynamic', name: 'Dynamic Tabsets', icon: 'o_file_open', bexOnly: false, target: '/features/dynamic'},
+  // {ident: 'history', name: 'History', icon: 'o_history', useIn: ['bex'], target: '/features/history'},
   {ident: 'useGroups', name: 'Use Tab Groups', icon: 'o_toc', useIn: ['all'], target: '/features/useGroups'}
 ]
 

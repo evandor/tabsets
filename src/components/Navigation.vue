@@ -45,7 +45,7 @@
           <q-list class="q-mt-none greyBorderTop">
 
             <InfoMessageWidget
-              v-if="tabsStore.tabsets.size > 6"
+              v-if="tabsStore.tabsets.size > 9"
               :probability="0.5"
               ident="navigation_useFavorites"
               hint="You can click on the yellow star icon to turn your tabset into a favorite one, which will appear at the top of the list."/>

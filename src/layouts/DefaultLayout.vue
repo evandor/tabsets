@@ -96,8 +96,11 @@
           </q-btn>
           <q-menu :offset="[0, 7]">
             <q-list style="min-width: 200px">
-              <q-item clickable v-close-popup @click="suggestionDialog(s)"
+              <q-item clickable v-close-popup v-ripple @click="suggestionDialog(s)"
                       v-for="s in useSuggestionsStore().getSuggestions()">
+                <q-item-section avatar>
+                  <q-icon color="primary" name="rss_feed"/>
+                </q-item-section>
                 <q-item-section>
                   <div>{{ s.title }}</div>
                   <div class="text-caption">{{ s.msg }}</div>
@@ -108,7 +111,7 @@
         </span>
 
         <Transition name="colorized-appear">
-          <q-btn v-if="permissionsStore.hasFeature('rss') && !inBexMode()"
+          <q-btn v-if="permissionsStore.hasFeature('rss')"
                  flat
                  name="rss" icon="o_rss_feed" @click="tabsClicked(DrawerTabs.RSS)">
             <q-tooltip class="tooltip" anchor="center right" self="center left" :delay="200">Access to your rss feed

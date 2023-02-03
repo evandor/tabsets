@@ -83,6 +83,9 @@ export class CreateTabFromOpenTabsCommand implements Command<any> {
 
     if (!exists) {
       TabsetService.saveToCurrentTabset(this.tab, useIndex)
+        .then((res) => {
+          tabsStore.pendingTabset.tabs = _.filter(tabsStore.pendingTabset.tabs, t => t.chromeTab.url !== this.tab.chromeTab.url)
+        })
     } else {
       const oldIndex = _.findIndex(useTabsStore().getCurrentTabs, t => t.id === this.tab.id)
       if (oldIndex >= 0) {

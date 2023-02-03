@@ -297,26 +297,26 @@
       only as they might break functionality and/or destroy data. Once they are considered 'safe enough', they will be available at the
       "experimental features" view on the left.</q-banner>
 
-      <div class="row q-pa-md">
-        <div class="col-3"><b>debug</b></div>
-        <div class="col-3">add some information (mainly on tooltips) to help debugging</div>
-        <div class="col-1"></div>
-        <div class="col-5">
-          <q-toggle v-model="debugEnabled"/>
-        </div>
-      </div>
+<!--      <div class="row q-pa-md">-->
+<!--        <div class="col-3"><b>debug</b></div>-->
+<!--        <div class="col-3">add some information (mainly on tooltips) to help debugging</div>-->
+<!--        <div class="col-1"></div>-->
+<!--        <div class="col-5">-->
+<!--          <q-toggle v-model="debugEnabled"/>-->
+<!--        </div>-->
+<!--      </div>-->
 
-      <div class="row q-pa-md">
-        <div class="col-3"><b>spaces</b></div>
-        <div class="col-3">spaces can be used to organize tabsets - a tabset can belong to zero, one or many
-          spaces.
-          You decide first which space you want to work with.
-        </div>
-        <div class="col-1"></div>
-        <div class="col-5">
-          <q-toggle v-model="spacesEnabled"/>
-        </div>
-      </div>
+<!--      <div class="row q-pa-md">-->
+<!--        <div class="col-3"><b>spaces</b></div>-->
+<!--        <div class="col-3">spaces can be used to organize tabsets - a tabset can belong to zero, one or many-->
+<!--          spaces.-->
+<!--          You decide first which space you want to work with.-->
+<!--        </div>-->
+<!--        <div class="col-1"></div>-->
+<!--        <div class="col-5">-->
+<!--          <q-toggle v-model="spacesEnabled"/>-->
+<!--        </div>-->
+<!--      </div>-->
 
 <!--      <div class="row q-pa-md">-->
 <!--        <div class="col-3"><b>sidebar</b></div>-->
@@ -329,31 +329,32 @@
 <!--        </div>-->
 <!--      </div>-->
 
-      <div class="row q-pa-md">
-        <div class="col-3"><b>experimental view</b></div>
-        <div class="col-3">add the views 'kanban' (a column layout) and 'canvas' (a freestlye 2D layout) to the
-          tabsets
-          page.
-        </div>
-        <div class="col-1"></div>
-        <div class="col-5">
-          <q-toggle v-model="experimentalViewsEnabled"/>
-        </div>
-      </div>
+<!--      <div class="row q-pa-md">-->
+<!--        <div class="col-3"><b>experimental view</b></div>-->
+<!--        <div class="col-3">add the views 'kanban' (a column layout) and 'canvas' (a freestlye 2D layout) to the-->
+<!--          tabsets-->
+<!--          page.-->
+<!--        </div>-->
+<!--        <div class="col-1"></div>-->
+<!--        <div class="col-5">-->
+<!--          <q-toggle v-model="experimentalViewsEnabled"/>-->
+<!--        </div>-->
+<!--      </div>-->
 
-      <div class="row q-pa-md">
-        <div class="col-3"><b>Stats Page</b></div>
-        <div class="col-3">view stats for tabsets, bookmarks and so on
-        </div>
-        <div class="col-1"></div>
-        <div class="col-5">
-          <q-toggle v-model="statsEnabled"/>
-        </div>
-      </div>
+<!--      <div class="row q-pa-md">-->
+<!--        <div class="col-3"><b>Stats Page</b></div>-->
+<!--        <div class="col-3">view stats for tabsets, bookmarks and so on-->
+<!--        </div>-->
+<!--        <div class="col-1"></div>-->
+<!--        <div class="col-5">-->
+<!--          <q-toggle v-model="statsEnabled"/>-->
+<!--        </div>-->
+<!--      </div>-->
 
       <div class="row q-pa-md">
         <div class="col-3"><b>Develop Mode</b></div>
-        <div class="col-3">show additional tab page with more data / insights
+        <div class="col-3">activates a couple of experimental features and debug insights. You should only use this
+          if you can live with loosing data.
         </div>
         <div class="col-1"></div>
         <div class="col-5">
@@ -361,16 +362,16 @@
         </div>
       </div>
 
-      <div class="row q-pa-md">
-        <div class="col-3"><b>New Tab Mode</b></div>
-        <div class="col-3">use tabset as your browsers default 'New Tab' page<br>Currently set to
-          {{ currentNewTabTabsetId }}.
-        </div>
-        <div class="col-1"></div>
-        <div class="col-5">
-          <q-toggle v-model="newTabEnabled"/>
-        </div>
-      </div>
+<!--      <div class="row q-pa-md">-->
+<!--        <div class="col-3"><b>New Tab Mode</b></div>-->
+<!--        <div class="col-3">use tabset as your browsers default 'New Tab' page<br>Currently set to-->
+<!--          {{ currentNewTabTabsetId }}.-->
+<!--        </div>-->
+<!--        <div class="col-1"></div>-->
+<!--        <div class="col-5">-->
+<!--          <q-toggle v-model="newTabEnabled"/>-->
+<!--        </div>-->
+<!--      </div>-->
 
     </div>
 
@@ -420,7 +421,7 @@ const view = ref('grid')
 const indexSize = ref(0)
 const currentNewTabTabsetId = ref(useUiStore().tabsetIdForNewTab)
 
-const debugEnabled = ref<boolean>(featuresStore.isEnabled('debug'))
+// const debugEnabled = ref<boolean>(featuresStore.isEnabled('debug'))
 const syncEnabled = ref<boolean>(featuresStore.isEnabled('sync'))
 const spacesEnabled = ref<boolean>(featuresStore.isEnabled('spaces'))
 const experimentalViewsEnabled = ref<boolean>(featuresStore.isEnabled('experimentalViews'))
@@ -513,7 +514,7 @@ watchEffect(() => {
 })
 
 watchEffect(() => {
-  featuresStore.setFeatureToggle("debug", debugEnabled.value)
+  //featuresStore.setFeatureToggle("debug", debugEnabled.value)
   featuresStore.setFeatureToggle("sync", syncEnabled.value)
   featuresStore.setFeatureToggle("spaces", spacesEnabled.value)
   //featuresStore.setFeatureToggle("sidebar", sidebarEnabled.value)

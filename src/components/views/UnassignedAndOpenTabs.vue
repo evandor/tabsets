@@ -28,22 +28,36 @@
            style="border: 1px dotted grey; border-radius: 5px;" type="textarea" v-model="dragTarget"/>
 
   <div v-if="tabsStore.currentTabsetId && unassignedTabs().length > 0"
-       class="q-ma-sm" style="border: 1px dotted grey; border-radius: 3px">
+       class="q-ma-xs" style="border: 1px dotted grey; border-radius: 3px">
     <!--    <q-banner inline-actions rounded class="bg-white text-grey" style="border: 1px dotted grey">-->
     <div class="row">
       <div class="col-6 q-pa-xs">
         <q-btn flat color="primary" size="11px" icon="keyboard_double_arrow_left"
                :label="addLabel()"
-               @click="saveTab(tab)">
-          <q-tooltip>Save all {{ tabsStore.pendingTabset?.tabs.length }} tabs to {{
-              tabsStore.currentTabsetName
-            }}
-          </q-tooltip>
+               @click="saveSelectedTabs()">
+          <q-tooltip class="tooltip" v-html="addTooltip()"></q-tooltip>
         </q-btn>
+<!--        <q-btn flat color="negative" size="11px" icon="o_delete"-->
+<!--               @click="removeSelectedTabs()">-->
+<!--          <q-tooltip class="tooltip" v-html="deleteTabset()"></q-tooltip>-->
+<!--        </q-btn>-->
 
       </div>
       <div class="col q-pa-xs text-right">
-        <!--          @update:model-value="val => selectionChanged(val)"-->
+
+        <q-checkbox v-if="useSelection"
+          @update:model-value="val => toggleInvert(val)"
+          rigth-label
+          class="text-primary text-uppercase q-mr-lg"
+          style="font-size: 11px"
+          v-model="invert"
+          color="primary"
+          size="30px"
+          label="invert"
+          checked-icon="task_alt"
+          unchecked-icon="check_box_outline_blank"
+        />
+
         <q-checkbox
           left-label
           class="text-primary text-uppercase"
@@ -55,9 +69,6 @@
           checked-icon="task_alt"
           unchecked-icon="check_box_outline_blank"
         />
-        <!--        <q-btn flat round color="warning" size="11px" icon="cancel" @click="saveTab(tab)">-->
-        <!--          <q-tooltip>Remove all tabs from this view</q-tooltip>-->
-        <!--        </q-btn>-->
       </div>
     </div>
     <!--    </q-banner>-->
@@ -76,6 +87,7 @@
 
       <OpenTabCard
         v-on:selectionChanged="tabSelectionChanged"
+        v-on:addedToTabset="tabAddedToTabset"
         :tab="tab"
         :useSelection="useSelection"/>
 
@@ -96,6 +108,9 @@ import TabsetService from "src/services/TabsetService";
 import {uid, useQuasar} from "quasar";
 import AddUrlDialog from "components/dialogues/AddUrlDialog.vue";
 import {useUtils} from "src/services/Utils"
+import {useCommandExecutor} from "src/services/CommandExecutor";
+import {SavePendingTabToCurrentTabsetCommand} from "src/domain/commands/SavePendingTabToCurrentTabsetCommand";
+import {useTabsetService} from "src/services/TabsetService2";
 
 const {inBexMode} = useUtils()
 
@@ -103,6 +118,7 @@ const tabsStore = useTabsStore()
 const $q = useQuasar()
 
 const useSelection = ref(false)
+const invert = ref(false)
 const dragTarget = ref('')
 
 const tabSelection = ref<Set<string>>(new Set<string>())
@@ -130,20 +146,34 @@ watchEffect(() => {
   dragTarget.value = ''
 })
 
-const addLabel = () => useSelection.value ? 'add ' + tabSelection.value.size + ' tab(s)' : 'add all'
+const addTooltip = () => useSelection.value ?
+  `Add ${tabSelection.value.size} tab(s) to ${tabsStore.currentTabsetName}` :
+  `Add all tabs to ${tabsStore.currentTabsetName}`
+
+const deleteTabset = () => useSelection.value ?
+  `Remove ${tabSelection.value.size} tabs from this view` :
+  `Remove all tabs from this view`
+
+// const addLabel = () => useSelection.value ? 'add ' + tabSelection.value.size + ' tabs' : 'add'
+const addLabel = () => 'add'
 const checkboxLabel = () => useSelection.value ? '' : 'use selection'
 const tabSelectionChanged = (a: any) => {
-  console.log("tabSelectionChanged", a)
   const {tabId, selected} = a
   if (selected) {
     tabSelection.value.add(tabId)
   } else {
     tabSelection.value.delete(tabId)
   }
-  console.log("tabselection", tabSelection)
 }
 
-const handleDragend = (i: any) => console.log("dragend", i)
+const tabAddedToTabset = (a: any) => {
+  const {tabId, tabUrl} = a
+  // console.log("tabAddedToTabset", tabId, tabUrl, tabsStore.pendingTabset.tabs.length)
+  tabSelection.value.delete(tabId)
+  // tabsStore.pendingTabset.tabs = _.filter(tabsStore.pendingTabset.tabs, t => t.chromeTab.url !== tabUrl)
+  // console.log("tabAddedToTabset", tabId, tabsStore.pendingTabset.tabs.length)
+}
+
 
 const showMissingSomeTabsAction = () => {
   if (process.env.MODE !== 'bex') {
@@ -154,6 +184,25 @@ const showMissingSomeTabsAction = () => {
   }
   return false
 }
+
+const saveSelectedTabs = () => {
+  //useCommandExecutor().executeFromUi(new SavePendingTabToCurrentTabsetCommand(tab))
+  TabsetService.saveSelectedPendingTabs()
+}
+const removeSelectedTabs = () => {
+  //useCommandExecutor().executeFromUi(new SavePendingTabToCurrentTabsetCommand(tab))
+  //TabsetService.saveSelectedPendingTabs()
+}
+
+const toggleInvert = (invert: boolean) => {
+  tabsStore.pendingTabset?.tabs.forEach(t => {
+    if (!useTabsetService().urlExistsInCurrentTabset(t.chromeTab?.url || '')) {
+      t.selected = !t.selected
+      tabSelectionChanged({tabId: t.id, selected: t.selected})
+    }
+  })
+}
+
 
 const addOpenTabs = () => {
   if (process.env.MODE !== 'bex') {
@@ -193,5 +242,5 @@ const addOpenTabs = () => {
 }
 
 
-</script>import { useTabsStore } from 'stores/tabsStore';
+</script>
 

@@ -8,7 +8,6 @@ import throttledQueue from 'throttled-queue';
 
 // @ts-ignore
 import {convert} from "html-to-text"
-import ChromeApi from "src/services/ChromeApi";
 import {useWindowsStore} from "src/stores/windowsStores";
 import {useTabsetService} from "src/services/TabsetService2";
 import {useFeatureTogglesStore} from "stores/featureTogglesStore";
@@ -17,7 +16,7 @@ import {useSettingsStore} from "stores/settingsStore";
 import {usePermissionsStore} from "stores/permissionsStore";
 import ExpiringMap from "stores/ExpiringMap";
 import {MetaLink} from "src/models/MetaLink";
-import {Suggestion} from "src/models/Suggestion";
+import {Suggestion, SuggestionType} from "src/models/Suggestion";
 import {useSuggestionsStore} from "stores/suggestionsStore";
 
 const {
@@ -327,11 +326,10 @@ class ChromeListeners {
       saveLinksFor(sender.tab, request.anchors)
 
       if (usePermissionsStore().hasFeature('rss')) {
-        console.log("hier!!!")
         request.links.forEach((metaLink: MetaLink) => {
           if ("application/rss+xml" === metaLink.type) {
-            console.log("hier!!!", metaLink)
-            useSuggestionsStore().addSuggestion(new Suggestion(uid(), metaLink.title || 'Found RSS Feed', "msg", metaLink.href))
+            //console.log("hier!!!", metaLink)
+            useSuggestionsStore().addSuggestion(new Suggestion(uid(), metaLink.title || 'Found RSS Feed', "In RSS Link was found in one of your tabs", metaLink.href, SuggestionType.RSS))
           }
         })
       }

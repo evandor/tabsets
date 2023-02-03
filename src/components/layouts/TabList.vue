@@ -6,6 +6,16 @@
       :list="props.tabs"
       :group="{ name: 'tabs', pull: 'clone' }"
       @change="handleDragAndDrop">
+
+      <q-item v-if="props.tabs.length === 0 &&
+                      inBexMode() &&
+                      useUiStore().rightDrawer.activeTab === DrawerTabs.UNASSIGNED_TABS &&
+                      tabsStore.pendingTabset.tabs.length > 0">
+        <div class="row fit q-ma-lg q-pa-lg text-subtitle2 text-grey-8">
+          You can drag and drop items from the "Tabs to add" view to add them to this tabset by clicking on the icons
+        </div>
+      </q-item>
+
       <q-item
         clickable v-ripple
         v-for="(tab,index) in props.tabs"
@@ -30,12 +40,14 @@ import {useQuasar} from "quasar";
 import _ from "lodash"
 import {useTabsStore} from "src/stores/tabsStore";
 import {useUiService} from "src/services/useUiService";
-import {LeftDrawerState, DrawerTabs} from "stores/uiStore";
+import {LeftDrawerState, DrawerTabs, useUiStore} from "stores/uiStore";
 import {useTabsetService} from "src/services/TabsetService2";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {CreateTabFromOpenTabsCommand} from "src/domain/commands/CreateTabFromOpenTabsCommand";
 import TabListElementWidget from "src/components/widgets/TabListElementWidget.vue";
 import {useUtils} from "src/services/Utils"
+
+const {inBexMode} = useUtils()
 
 const $q = useQuasar()
 const tabsStore = useTabsStore()

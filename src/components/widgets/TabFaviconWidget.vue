@@ -12,7 +12,7 @@
            :width="props.width"
            :height="props.height"
            :src="getFaviconUrl(tab)">
-      <q-tooltip>{{ tab.chromeTab?.id }} / {{ tab.id }} / {{ tab.bookmarkId }}</q-tooltip>
+      <q-tooltip>drag and drop to tabset</q-tooltip>
     </q-img>
   </div>
 
