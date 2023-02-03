@@ -26,7 +26,7 @@ import {LeftDrawerState, DrawerTabs} from "stores/uiStore";
 import {useTabsetService} from "src/services/TabsetService2";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {CreateTabsetCommand} from "src/domain/commands/CreateTabsetCommand";
-import {CreateTabFromOpenTabsCommand} from "src/domain/commands/CreateTabFromOpenTabsCommand";
+import {CreateTabFromOpenTabsCommand} from "src/domain/commands/CreateTabFromOpenTabs";
 
 const $q = useQuasar()
 const tabsStore = useTabsStore()

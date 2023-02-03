@@ -36,7 +36,7 @@ import {CreateTabsetCommand} from "src/domain/commands/CreateTabsetCommand";
 import TabsetService from "src/services/TabsetService";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {useUiStore} from "stores/uiStore";
-import {useNotificationsStore} from "stores/notificationsStore";
+import {useNotificationsStore} from "src/stores/notificationsStore";
 import NotificationsService from "src/services/NotificationsService";
 
 defineEmits([

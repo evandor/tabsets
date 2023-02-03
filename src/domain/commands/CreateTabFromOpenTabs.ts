@@ -3,7 +3,7 @@ import TabsetService from "src/services/TabsetService";
 import {ExecutionResult} from "src/domain/ExecutionResult";
 import {Tab} from "src/models/Tab";
 import _ from "lodash";
-import {useTabsStore} from "stores/tabsStore";
+import {useTabsStore} from "src/stores/tabsStore";
 import {useTabsetService} from "src/services/TabsetService2";
 import {DeleteTabCommand} from "src/domain/commands/DeleteTabCommand";
 import {TabLogger} from "src/logging/TabLogger";
@@ -84,7 +84,9 @@ export class CreateTabFromOpenTabsCommand implements Command<any> {
     if (!exists) {
       TabsetService.saveToCurrentTabset(this.tab, useIndex)
         .then((res) => {
-          tabsStore.pendingTabset.tabs = _.filter(tabsStore.pendingTabset.tabs, t => t.chromeTab.url !== this.tab.chromeTab.url)
+          if (tabsStore.pendingTabset) {
+            tabsStore.pendingTabset.tabs = _.filter(tabsStore.pendingTabset.tabs, t => t.chromeTab.url !== this.tab.chromeTab.url)
+          }
         })
     } else {
       const oldIndex = _.findIndex(useTabsStore().getCurrentTabs, t => t.id === this.tab.id)

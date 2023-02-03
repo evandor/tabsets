@@ -47,12 +47,6 @@
             <InfoMessageWidget
               v-if="tabsStore.tabsets.size > 9"
               :probability="0.5"
-              ident="navigation_useFavorites"
-              hint="You can click on the yellow star icon to turn your tabset into a favorite one, which will appear at the top of the list."/>
-
-            <InfoMessageWidget
-              v-if="tabsStore.tabsets.size > 9"
-              :probability="0.5"
               ident="navigation_archiveTabsets"
               hint="You can click on the inventory icon to archive your tabset. It will not appear here any more, but can be restored in the settings."/>
 
@@ -91,7 +85,7 @@ import NewTabsetDialog from "components/dialogues/NewTabsetDialog.vue";
 import NavTabsetsListWidget from "components/widgets/NavTabsetsListWidget.vue"
 import TabInfo from "components/layouts/TabInfo.vue";
 import {useUiStore} from "stores/uiStore";
-import {useNotificationsStore} from "stores/notificationsStore";
+import {useNotificationsStore} from "src/stores/notificationsStore";
 import TabsetInfo from "components/layouts/TabsetInfo.vue";
 import {usePermissionsStore} from "stores/permissionsStore";
 import InfoMessageWidget from "components/widgets/InfoMessageWidget.vue";

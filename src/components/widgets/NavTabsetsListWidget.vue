@@ -103,7 +103,7 @@ import {useCommandExecutor} from "src/services/CommandExecutor";
 import {useTabsetService} from "src/services/TabsetService2";
 import {useUiService} from "src/services/useUiService";
 import {StopSessionCommand} from "src/domain/commands/StopSessionCommand";
-import {SelectTabsetCommand} from "src/domain/commands/SelectTabsetCommand";
+import {SelectTabsetCommand} from "src/domain/tabsets/SelectTabset";
 
 const {handleError, handleSuccess} = useNotificationHandler()
 

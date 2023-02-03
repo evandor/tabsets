@@ -64,7 +64,6 @@ import {Hit} from "src/models/Hit";
 import _ from "lodash"
 import {useFeatureTogglesStore} from "src/stores/featureTogglesStore";
 import {useRouter} from "vue-router";
-import {useNotificationsStore} from "stores/notificationsStore";
 import BookmarksService from "src/services/BookmarksService";
 import {useTabsetService} from "src/services/TabsetService2";
 

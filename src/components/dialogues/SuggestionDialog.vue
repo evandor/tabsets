@@ -31,8 +31,8 @@
 import {computed, ref, watchEffect} from "vue";
 import {useDialogPluginComponent, useQuasar} from "quasar";
 import {useRouter} from "vue-router";
-import {useNotificationsStore} from "stores/notificationsStore";
-import {useSuggestionsStore} from "stores/suggestionsStore";
+import {useNotificationsStore} from "src/stores/notificationsStore";
+import {useSuggestionsStore} from "src/stores/suggestionsStore";
 
 defineEmits([
   ...useDialogPluginComponent.emits

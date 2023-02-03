@@ -1,6 +1,6 @@
 import {useDB} from "src/services/usePersistenceService";
-import {useNotificationsStore} from "stores/notificationsStore";
-import {Notification, NotificationStatus} from 'src/models/Notification'
+import {useNotificationsStore} from "src/stores/notificationsStore";
+import {Notification} from 'src/models/Notification'
 import {uid} from "quasar";
 
 const {db} = useDB()

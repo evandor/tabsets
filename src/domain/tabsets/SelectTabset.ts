@@ -3,9 +3,7 @@ import {ExecutionResult} from "src/domain/ExecutionResult";
 import {useTabsStore} from "src/stores/tabsStore";
 import _ from "lodash"
 import {Tab} from "src/models/Tab";
-import {useNotificationsStore} from "stores/notificationsStore";
-import {DrawerTabs, useUiStore} from "stores/uiStore";
-import {useUiService} from "src/services/useUiService";
+import {useNotificationsStore} from "src/stores/notificationsStore";
 
 
 export class SelectTabsetCommand implements Command<object> {
