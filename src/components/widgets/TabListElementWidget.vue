@@ -20,6 +20,12 @@
       {{ props.tab.note }}
     </q-item-label>
   </q-item-section>
+  <q-item-section avatar v-if="props.showButtons" style="max-width:15px">
+    <q-btn flat round color="primary" size="11px" icon="o_info"
+           @click.stop="showDetails(tab)">
+      <q-tooltip class="tooltip">Show details about this tab</q-tooltip>
+    </q-btn>
+  </q-item-section>
   <q-item-section avatar v-if="props.showButtons">
     <q-btn flat round :color="props.tab.note ? 'secondary':'primary'" size="11px" icon="edit_note"
            @click.stop="editNoteDialog(tab)">
@@ -46,6 +52,7 @@ import {useCommandExecutor} from "src/services/CommandExecutor";
 import {DeleteTabCommand} from "src/domain/commands/DeleteTabCommand";
 import EditNoteDialog from "components/dialogues/EditNoteDialog.vue";
 import {useQuasar} from "quasar";
+import {DrawerTabs, useUiStore} from "stores/uiStore";
 
 const props = defineProps({
   tab: {type: Object, required: true},
@@ -139,5 +146,10 @@ const editNoteDialog = (tab: Tab) => $q.dialog({
   component: EditNoteDialog,
   componentProps: {tabId: tab.id, note: tab.note}
 })
+
+const showDetails = (tab: Tab) => {
+  useUiStore().setSelectedTab(tab)
+  useUiStore().rightDrawerSetActiveTab(DrawerTabs.TAB_DETAILS)
+}
 
 </script>

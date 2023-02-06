@@ -200,15 +200,17 @@ export const useTabsStore = defineStore('tabs', {
       console.debug("initializing tabsStore")
       this.localStorage = localStorage
 
-      // --- own tab id ---
-      const ownTab = await ChromeApi.getCurrentTab()
-      if (ownTab && ownTab.id) {
-        //console.log("setting extension tab id to ", ownTab.id)
-        this.ownTabId = ownTab.id
-      }
+      if ("bex" === process.env.MODE) {
+        // --- own tab id ---
+        const ownTab = await ChromeApi.getCurrentTab()
+        if (ownTab && ownTab.id) {
+          //console.log("setting extension tab id to ", ownTab.id)
+          this.ownTabId = ownTab.id
+        }
 
-      // --- setting current tabs
-      this.tabs = await queryTabs()
+        // --- setting current tabs
+        this.tabs = await queryTabs()
+      }
 
       // @ts-ignore
       this.browserTabset = new Tabset("current", "current",
@@ -256,7 +258,7 @@ export const useTabsStore = defineStore('tabs', {
       //const currentTabset: Tabset = this.tabsets.get(this.currentTabsetId) || new Tabset("", "", [])
       tabset.tabs = _.filter(tabset.tabs, (t: Tab) => t.id !== tabId)
       markDuplicates(tabset)
-      if(this.pendingTabset) {
+      if (this.pendingTabset) {
         this.pendingTabset.tabs = _.filter(this.pendingTabset.tabs, (t: Tab) => t.id !== tabId)
       }
     },

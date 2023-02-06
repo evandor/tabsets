@@ -258,7 +258,7 @@ class ChromeApi {
 
   async getCurrentTab(): Promise<chrome.tabs.Tab> {
     if (process.env.MODE !== 'bex') {
-      return Promise.reject("not in bex mode")
+      return Promise.reject("not in bex mode, but " + process.env.MODE)
     }
     let queryOptions = {active: true, lastFocusedWindow: true};
     // @ts-ignore

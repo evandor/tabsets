@@ -105,12 +105,12 @@ class ChromeListeners {
     _.forEach([...tabsStore.tabsets.values()], (ts: Tabset) => {
       if (ts.type === TabsetType.SESSION) {
         foundSession = true
-        //console.log("pushing to", ts.id, tab)
+        console.debug("pushing to", ts.id, tab)
         ts.tabs.push(new Tab(uid(), tab))
       }
     })
     if (!foundSession) {
-      //console.log("pushing to pending", tab)
+      console.debug("pushing to pending", tab)
       tabsStore.pendingTabset.tabs.push(new Tab(uid(), tab))
     }
   }
@@ -187,9 +187,9 @@ class ChromeListeners {
         } else {
           tabset.tabs.splice(index, 1, updatedTab);
         }
-      } else {
-        console.log("deleting ignored tab", tab)
-        tabset.tabs.splice(index, 1)
+      // } else {
+      //   console.log("deleting ignored tab", tab)
+      //   tabset.tabs.splice(index, 1)
       }
     } else {
       console.log(`onUpdated: tab ${tab.id}: ignoring, pending tab cannot be found in ${tabset.name}`)
@@ -407,7 +407,7 @@ class ChromeListeners {
               }
             })
           } else {
-            console.log("capturing thumbnail", windowId)
+            console.log("capturing thumbnail for window", windowId)
             chrome.tabs.captureVisibleTab(
               {},
               function (dataUrl) {

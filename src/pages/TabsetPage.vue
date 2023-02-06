@@ -166,10 +166,10 @@
 
   <div class="row fit greyBorderTop"></div>
 
-  <!-- pending tabs -->
+  <!-- pending tabs
   <Transition name="delayed-disappear" v-if="tabsStore.currentTabsetId && permissionsStore.hasFeature('pendingTabs')">
     <PendingTabsAsCarouselWidget/>
-  </Transition>
+  </Transition> -->
 
   <q-banner rounded class="bg-amber-1 text-black q-ma-md"
             v-if="!tabsStore.currentTabsetId && tabsStore.tabsets.size > 0">

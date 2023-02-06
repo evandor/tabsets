@@ -58,8 +58,8 @@
         </template>
 
         <template v-slot:after v-if="permissonsStore.hasFeature('details')">
-          <TabInfo v-if="notificationStore.selectedTab"/>
-          <TabsetInfo v-else-if="tabsStore.currentTabsetId"/>
+<!--          <TabInfo v-if="notificationStore.selectedTab"/>-->
+          <TabsetInfo v-if="tabsStore.currentTabsetId"/>
         </template>
 
       </q-splitter>

@@ -24,9 +24,19 @@
 
   <!-- bookmark -->
   <template v-else>
-    <q-item-section avatar class="text-warning">
-      <q-icon name="o_bookmark_border" size="24px"></q-icon>
+    <!--    <q-item-section avatar class="text-warning">-->
+    <!--      <q-icon name="o_bookmark_border" size="24px"></q-icon>-->
+    <!--    </q-item-section>-->
+
+    <q-item-section avatar>
+      <q-img
+        class="rounded-borders" style="cursor: move"
+        width="20px"
+        height="20px"
+        :src="getFaviconUrl(props.bookmark.chromeBookmark)">
+      </q-img>
     </q-item-section>
+
     <q-item-section
       @mouseover="showButtons(props.bookmark.chromeBookmark?.id, true)"
       @mouseleave="showButtons(props.bookmark.chromeBookmark?.id, false)"
@@ -151,9 +161,25 @@ const setCustomTitle = (tab: Tab, newValue: string) => {
   TabsetService.setCustomTitle(tab, newValue)
 }
 
-const getFaviconUrl = (chromeBookmark: chrome.tabs.Tab | undefined) => {
-  if (chromeBookmark && chromeBookmark.favIconUrl && !chromeBookmark.favIconUrl.startsWith("chrome")) {
-    return chromeBookmark.favIconUrl
+const getFaviconUrl = (chromeBookmark: chrome.bookmarks.BookmarkTreeNode | undefined) => {
+  // if (chromeBookmark && chromeBookmark.favIconUrl && !chromeBookmark.favIconUrl.startsWith("chrome")) {
+  //   return chromeBookmark.favIconUrl
+  // }
+  if (chromeBookmark && chromeBookmark.url) {
+    let theUrl = chromeBookmark.url
+    let theRealUrl
+    try {
+      theRealUrl = new URL(theUrl)
+    } catch (err) {
+      if (!theUrl.startsWith('http')) {
+        theUrl = 'https://' + theUrl
+        try {
+          theRealUrl = new URL(theUrl)
+        } catch (err) {
+        }
+      }
+    }
+    return theRealUrl ? "https://icons.duckduckgo.com/ip3/" + theRealUrl.hostname + ".ico" : 'favicon-unknown-32x32.png'
   }
   return 'favicon-unknown-32x32.png'
 }

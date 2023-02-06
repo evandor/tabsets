@@ -1,9 +1,9 @@
 <template>
   <div class="col-2">
-    <q-icon v-if="UrlExtension.IMAGE === tab.extension"
+    <q-icon v-if="UrlExtension.IMAGE === tab?.extension"
             :size="props.width"
             name="image" />
-    <q-icon v-else-if="UrlExtension.RSS === tab.extension"
+    <q-icon v-else-if="UrlExtension.RSS === tab?.extension"
             size="22px"
             name="rss_feed" />
     <q-img v-else
@@ -39,7 +39,7 @@ const props = defineProps({
 })
 
 const getFaviconUrl = (tab: Tab) => {
-  const chromeTab = tab.chromeTab
+  const chromeTab = tab?.chromeTab
   if (chromeTab && chromeTab.favIconUrl && !chromeTab.favIconUrl.startsWith("chrome")) {
     return chromeTab.favIconUrl
   }

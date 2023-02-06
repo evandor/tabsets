@@ -2,6 +2,7 @@ import {defineStore} from 'pinia';
 import {computed, ref, watch} from "vue";
 import {useQuasar} from "quasar";
 import {useRoute} from "vue-router";
+import {Tab} from "src/models/Tab";
 
 
 export enum LeftDrawerState {
@@ -20,6 +21,8 @@ export enum DrawerTabs {
   SCHEDULED = "scheduled",
   HISTORY = "history",
   FEATURES = "features",
+
+  TAB_DETAILS = "tabDetails",
   HELP = "help"
 }
 
@@ -43,8 +46,21 @@ export const useUiStore = defineStore('ui', () => {
   const leftDrawer = ref<LeftDrawer>($q.localStorage.getItem('ui.leftDrawer') || new LeftDrawer(LeftDrawerState.SMALL))
   const leftDrawerLabelAnimated = ref(false)
 
-  const rightDrawer = ref<RightDrawer>($q.localStorage.getItem('ui.rightDrawer') || new RightDrawer())
-  const rightDrawerViewStack = ref<DrawerTabs[]>([DrawerTabs.UNASSIGNED_TABS])
+  const selectedTab = ref<Tab | undefined>(undefined)
+
+  let rightDrawer = ref<RightDrawer>(new RightDrawer())
+  let rightDrawerViewStack = ref<DrawerTabs[]>([DrawerTabs.UNASSIGNED_TABS])
+
+  const rightDrawerFromStorage: RightDrawer | null = $q.localStorage.getItem('ui.rightDrawer')
+  if (rightDrawerFromStorage !== null) {
+    console.log("got", rightDrawerFromStorage)
+    if (rightDrawerFromStorage.activeTab !== DrawerTabs.TAB_DETAILS) {
+      rightDrawer = ref<RightDrawer>(rightDrawerFromStorage)
+    }
+    if (rightDrawerFromStorage.activeTab !== DrawerTabs.UNASSIGNED_TABS && rightDrawerFromStorage.activeTab !== DrawerTabs.TAB_DETAILS) {
+      rightDrawerViewStack = ref<DrawerTabs[]>([DrawerTabs.UNASSIGNED_TABS, rightDrawerFromStorage.activeTab])
+    }
+  }
 
   const tabsetIdForNewTab = ref<string | undefined>($q.localStorage.getItem('ui.tabsetIdForNewTab') as string || undefined)
   const newTabsetEmptyByDefault = ref<boolean>($q.localStorage.getItem('ui.newTabsetEmptyByDefault') as boolean || false)
@@ -135,25 +151,27 @@ export const useUiStore = defineStore('ui', () => {
     messageAlreadyShown.value = msg
   }
 
+  function rightDrawerSetActiveTab(tab: DrawerTabs) {
+    rightDrawer.value.activeTab = tab
+    if (rightDrawerViewStack.value[rightDrawerViewStack.value.length - 1] !== tab) {
+      rightDrawerViewStack.value.push(tab)
+    }
+  }
+
   function rightDrawerSetLastView() {
     console.log("here", rightDrawerViewStack.value)
     if (rightDrawerViewStack.value.length === 0) {
       rightDrawerViewStack.value.push(DrawerTabs.UNASSIGNED_TABS)
       rightDrawer.value = new RightDrawer()
-    } else if (rightDrawerViewStack.value.length === 1) {
-      rightDrawer.value.activeTab = rightDrawerViewStack.value[0]
+      // } else if (rightDrawerViewStack.value.length === 1) {
+      //   rightDrawer.value.activeTab = rightDrawerViewStack.value[0]
     } else {
-      rightDrawer.value.activeTab = rightDrawerViewStack.value.pop() as unknown as DrawerTabs
+      rightDrawerViewStack.value.pop()
+      rightDrawer.value.activeTab = rightDrawerViewStack.value[rightDrawerViewStack.value.length - 1]
     }
-    console.log("after1", rightDrawer.value)
-    console.log("after2", rightDrawerViewStack.value)
-
   }
 
-  const rightDrawerShowCloseButton = computed(() => {
-    console.log("rightDrawerShowCloseButton", rightDrawerViewStack.value)
-    return () => rightDrawerViewStack.value.length > 0
-  })
+  const rightDrawerShowCloseButton = computed(() => () => rightDrawerViewStack.value.length > 1)
 
   const showMessage = computed(() => {
     return (ident: string, probability: number = 1) => {
@@ -180,12 +198,22 @@ export const useUiStore = defineStore('ui', () => {
 
   const getContentCount = computed((): number => contentCount.value)
 
+  function setSelectedTab(tab: Tab) {
+    selectedTab.value = tab
+  }
+
+  const getSelectedTab = computed(() => {
+    return selectedTab.value
+  })
+
   return {
     leftDrawer,
     leftDrawerLabelIsAnimated,
     setLeftDrawerLabelAnimated,
     rightDrawer,
     rightDrawerSetLastView,
+    rightDrawerViewStack,
+    rightDrawerSetActiveTab,
     rightDrawerShowCloseButton,
     setTabsetForNewTabPage,
     tabsetIdForNewTab,
@@ -198,6 +226,8 @@ export const useUiStore = defineStore('ui', () => {
     showMessage,
     footerInfo,
     getContentCount,
-    setContentCount
+    setContentCount,
+    setSelectedTab,
+    getSelectedTab
   }
 })

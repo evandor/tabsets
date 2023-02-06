@@ -147,7 +147,7 @@
           <q-menu :offset="[0, 7]">
             <q-list style="min-width: 200px">
               <q-item clickable @click="router.push('/settings')">Settings</q-item>
-              <q-item clickable @click="useUiService().rightDrawerSetActiveTab(DrawerTabs.FEATURES)" v-close-popup>
+              <q-item clickable @click="tabsClicked(DrawerTabs.FEATURES)" v-close-popup>
                 Activate more Features
               </q-item>
               <q-item clickable @click="showImportDialog" v-close-popup>

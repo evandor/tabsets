@@ -1,81 +1,84 @@
 <template>
 
-<!--  <div class="row q-ma-none q-pa-none fit">-->
+  <!--  <div class="row q-ma-none q-pa-none fit">-->
 
-<!--    <div class="col-12 q-mt-none q-mx-none greyBorderTop">-->
+  <!--    <div class="col-12 q-mt-none q-mx-none greyBorderTop">-->
 
-      <q-toolbar class="text-primary lightgrey">
-        <div class="row fit">
-          <div class="col-xs-12 col-md-9">
-            <q-toolbar-title>
-              <div class="row justify-start items-baseline">
-                <div class="col-1">
-                  {{ drawerLabel() }}
-                </div>
-              </div>
-            </q-toolbar-title>
-          </div>
-          <div class="col-xs-12 col-md-3 q-ma-none q-mt-sm text-right">
-
-            <span v-if="useUiStore().rightDrawerShowCloseButton()"
-                  class="text-subtitle2 cursor-pointer"
-                  @click="closeCurrentView()">              X</span>
-            <q-tooltip class="tooltip">Close this view</q-tooltip>
-
-            <div class="row" v-if="tab === DrawerTabs.OPEN_TABS">
-              <div class="col">
-                <span class="text-caption ellipsis">{{ filter }}</span>
-                <q-btn
-                  flat dense icon="o_filter_list"
-                  :color="filter ? 'secondary' : 'primary'"
-                  size="0.8em"
-                  class="q-ml-md q-mr-none">
-                  <q-tooltip v-if="filter">Apply Filter: '{{ filter }}'</q-tooltip>
-                  <q-tooltip v-else>Apply Filter</q-tooltip>
-                </q-btn>
-                <q-popup-edit v-model="filter" v-slot="scope">
-                  <q-input
-                    autofocus
-                    dense
-                    maxlength="9"
-                    v-model="scope.value"
-                    :model-value="scope.value"
-                    @update:model-value="val => setFilter2( val)"
-                    hint="Filter open Tabs"
-                    @keyup.enter="scope.set">
-                    <template v-slot:after>
-                      <q-btn
-                        flat dense color="warning" icon="cancel" v-close-popup
-                        @click="cancelFilter()"
-                      />
-                    </template>
-                  </q-input>
-                </q-popup-edit>
-              </div>
+  <q-toolbar class="text-primary lightgrey">
+    <div class="row fit">
+      <div class="col-xs-12 col-md-9">
+        <q-toolbar-title>
+          <div class="row justify-start items-baseline">
+            <div class="col-1">
+              {{ drawerLabel() }}
             </div>
+          </div>
+        </q-toolbar-title>
+      </div>
+      <div class="col-xs-12 col-md-3 q-ma-none q-mt-sm text-right">
 
+        <q-icon v-if="useUiStore().rightDrawerShowCloseButton()"
+                class="cursor-pointer" size="1.3em"
+                name="o_cancel" @click="closeCurrentView()">
+          <q-tooltip class="tooltip">Close this view</q-tooltip>
+        </q-icon>
+
+        <div class="row" v-if="tab === DrawerTabs.OPEN_TABS">
+          <div class="col">
+            <span class="text-caption ellipsis">{{ filter }}</span>
+            <q-btn
+              flat dense icon="o_filter_list"
+              :color="filter ? 'secondary' : 'primary'"
+              size="0.8em"
+              class="q-ml-md q-mr-none">
+              <q-tooltip v-if="filter">Apply Filter: '{{ filter }}'</q-tooltip>
+              <q-tooltip v-else>Apply Filter</q-tooltip>
+            </q-btn>
+            <q-popup-edit v-model="filter" v-slot="scope">
+              <q-input
+                autofocus
+                dense
+                maxlength="9"
+                v-model="scope.value"
+                :model-value="scope.value"
+                @update:model-value="val => setFilter2( val)"
+                hint="Filter open Tabs"
+                @keyup.enter="scope.set">
+                <template v-slot:after>
+                  <q-btn
+                    flat dense color="warning" icon="cancel" v-close-popup
+                    @click="cancelFilter()"
+                  />
+                </template>
+              </q-input>
+            </q-popup-edit>
           </div>
         </div>
-      </q-toolbar>
 
-      <div class="row greyBorderTop"></div>
+      </div>
+    </div>
+  </q-toolbar>
 
-      <UnassignedAndOpenTabs v-if="tab === DrawerTabs.UNASSIGNED_TABS"/>
-      <BookmarksTree v-else-if="tab === DrawerTabs.BOOKMARKS"/>
-      <!--      <OpenTabs v-else-if="tab ===  DrawerTabs.OPEN_TABS" :filter="filter"/>-->
-      <!--      <UnassignedTabs v-else-if="tab ===  DrawerTabs.UNASSIGNED_TABS" :filter="filter"/>-->
-      <!--      <TabsGroupedByHost v-else-if="tab ===  DrawerTabs.GROUP_BY_HOST_TABS"/>-->
-      <!--      <SavedTabs v-else-if="tab ===  DrawerTabs.SAVED_TABS"/>-->
-      <TabsetAsSidebar v-else-if="tab ===  DrawerTabs.SIDEBAR"/>
-      <RssTabs v-else-if="tab ===  DrawerTabs.RSS"/>
-      <!--      <ScheduledTabs v-else-if="tab ===  DrawerTabs.SCHEDULED"/>-->
-      <!--      <BrowserHistory v-else-if="tab ===  DrawerTabs.HISTORY"/>-->
-      <Features v-else-if="tab ===  DrawerTabs.FEATURES"/>
-      <!--      <TabsetHelp v-else-if="tab ===  DrawerTabs.HELP"/>-->
+  <div class="row greyBorderTop"></div>
 
-      <div v-else>unknown tab name {{ tab }}</div>
-<!--    </div>-->
-<!--  </div>-->
+<!--  <div>{{useUiStore().rightDrawerViewStack}}*</div>-->
+  <UnassignedAndOpenTabs v-if="tab === DrawerTabs.UNASSIGNED_TABS"/>
+  <BookmarksTree v-else-if="tab === DrawerTabs.BOOKMARKS"/>
+  <!--      <OpenTabs v-else-if="tab ===  DrawerTabs.OPEN_TABS" :filter="filter"/>-->
+  <!--      <UnassignedTabs v-else-if="tab ===  DrawerTabs.UNASSIGNED_TABS" :filter="filter"/>-->
+  <!--      <TabsGroupedByHost v-else-if="tab ===  DrawerTabs.GROUP_BY_HOST_TABS"/>-->
+  <!--      <SavedTabs v-else-if="tab ===  DrawerTabs.SAVED_TABS"/>-->
+  <TabsetAsSidebar v-else-if="tab ===  DrawerTabs.SIDEBAR"/>
+  <RssTabs v-else-if="tab ===  DrawerTabs.RSS"/>
+  <!--      <ScheduledTabs v-else-if="tab ===  DrawerTabs.SCHEDULED"/>-->
+  <!--      <BrowserHistory v-else-if="tab ===  DrawerTabs.HISTORY"/>-->
+  <Features v-else-if="tab ===  DrawerTabs.FEATURES"/>
+  <TabDetails v-else-if="tab ===  DrawerTabs.TAB_DETAILS"/>
+  <!--      <TabsetHelp v-else-if="tab ===  DrawerTabs.HELP"/>-->
+
+  <div v-else>unknown tab name {{ tab }}</div>
+  <!--    </div>-->
+  <!--  </div>-->
 
 </template>
 
@@ -99,6 +102,7 @@ import BrowserHistory from "components/BrowserHistory.vue";
 import Features from "components/Features.vue";
 import UnassignedAndOpenTabs from "components/views/UnassignedAndOpenTabs.vue";
 import BookmarksTree from "components/BookmarksTree.vue";
+import TabDetails from "components/views/TabDetails.vue";
 
 const router = useRouter()
 
@@ -115,11 +119,12 @@ const filter = ref<string>('')
 
 watchEffect(() => tab.value = uiService.rightDrawerActiveTab())
 
-watch(() => tab.value, (currentValue, oldValue) => {
-  if (currentValue !== oldValue) {
-    uiService.rightDrawerSetActiveTab(currentValue)
-  }
-})
+// watch(() => tab.value, (currentValue, oldValue) => {
+//   console.log("watching", currentValue, oldValue)
+//   if (currentValue !== oldValue) {
+//     // uiService.rightDrawerSetActiveTab(currentValue)
+//   }
+// })
 
 watchEffect(() => {
   openTabsCountRatio.value = Math.min(tabsStore.tabs.length / settingsStore.thresholds['max' as keyof object], 1)
@@ -157,6 +162,8 @@ const drawerLabel = () => {
       return "History"
     case DrawerTabs.FEATURES:
       return "Add. Features"
+    case DrawerTabs.TAB_DETAILS:
+      return "Tab Details"
     case DrawerTabs.HELP:
       return "Help"
     default:

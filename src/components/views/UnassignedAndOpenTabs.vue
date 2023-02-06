@@ -133,7 +133,7 @@ function unassignedTabs(): Tab[] {
 }
 
 watchEffect(() => {
-  console.log("d&d", dragTarget.value)
+ // console.log("d&d", dragTarget.value)
   if (dragTarget.value.trim() === "") {
     return
   }
