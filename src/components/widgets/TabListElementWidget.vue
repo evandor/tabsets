@@ -10,11 +10,19 @@
     </q-img>
 
   </q-item-section>
-  <q-item-section
-    :data-testid="useUtils().createDataTestIdentifier('tabListElementWidget', tab.chromeTab.title)"
-    class="cursor-pointer" @click.stop="NavigationService.openOrCreateTab(props.tab.chromeTab?.url )">
-    <q-item-label>{{ props.tab.chromeTab?.title }}</q-item-label>
-    <q-item-label caption>{{ props.tab.chromeTab?.url }}</q-item-label>
+  <q-item-section :style="itemStyle(props.tab)"
+                  :data-testid="useUtils().createDataTestIdentifier('tabListElementWidget', props.tab.chromeTab.title)"
+                  class="cursor-pointer" @click.stop="NavigationService.openOrCreateTab(props.tab.chromeTab?.url )">
+    <q-item-label>
+      {{ props.tab.chromeTab?.title }}
+      <q-badge v-if="isOpen(props.tab)" color="primary" label="opened" outline class="q-ml-sm" style="position: relative;top:-5px">
+        <q-tooltip class="tooltip">This tab is currently open in your browser</q-tooltip>
+      </q-badge>
+      <q-badge v-if="props.tab.isDuplicate" color="warning" label="duplicate" outline class="q-ml-sm">
+        <q-tooltip class="tooltip">This tab has a duplicate inside this tabset and could be deleted</q-tooltip>
+      </q-badge>
+    </q-item-label>
+    <q-item-label caption class="ellipsis-2-lines">{{ props.tab.chromeTab?.url }}</q-item-label>
     <q-item-label v-if="props.tab.note" class="text-grey-10" text-subtitle1>
       <q-icon color="blue-10" name="edit_note"/>
       {{ props.tab.note }}
@@ -86,32 +94,19 @@ function getHost(urlAsString: string, shorten: Boolean = true): string {
   }
 }
 
-// function closeTab(tab: Tab) {
-//   NavigationService.closeTab(tab)
-// }
-
-function cardStyle(tab: Tab) {
-  const height = "66px"
-  let borderColor = ""
-  if (isOpen(tab)) {
-    borderColor = "border-color:#8f8f8f"
-  }
+const itemStyle = (tab: Tab) => {
+  let border = ""
   if (tab.selected) {
-    borderColor = "border-color:#000066"
+    // borderColor = "border-color:#000066"
   }
-
   let background = ''
   if (tab.isDuplicate) {
     background = "background: radial-gradient(circle, #FFFFFF 0%, #FFECB3 100%)"
   }
-  // style=""
-  return `height: ${height};max-height:${height}; min-height: ${height};${borderColor};${background}`
+  return `${border};${background}`
 }
 
-function isOpen(tab: Tab): boolean {
-  //console.log("tabUrl", tab.chromeTab?.url);
-  return TabsetService.isOpen(tab?.chromeTab?.url || '')
-}
+const isOpen = (tab: Tab): boolean => TabsetService.isOpen(tab?.chromeTab?.url || '')
 
 const setInfo = (tab: Tab) => {
   const parts = (tab.chromeTab?.url || '').split('?')

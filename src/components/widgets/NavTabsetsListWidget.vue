@@ -60,12 +60,12 @@
     <!--      </q-icon>-->
     <!--    </q-item-section>-->
 
-    <q-item-section side
-                    v-if="tabsStore.tabsets.size > 9 && tabset.type === TabsetType.DEFAULT && showEditButton.get(tabset.id) && tabset.status !== TabsetStatus.DELETED">
-      <q-icon name="inventory_2" color="primary" size="18px" @click="archiveTabset(tabset)">
-        <q-tooltip>Archive this tabset</q-tooltip>
-      </q-icon>
-    </q-item-section>
+<!--    <q-item-section side-->
+<!--                    v-if="tabsStore.tabsets.size > 9 && tabset.type === TabsetType.DEFAULT && showEditButton.get(tabset.id) && tabset.status !== TabsetStatus.DELETED">-->
+<!--      <q-icon name="inventory_2" color="primary" size="18px" @click="archiveTabset(tabset)">-->
+<!--        <q-tooltip>Archive this tabset</q-tooltip>-->
+<!--      </q-icon>-->
+<!--    </q-item-section>-->
 
     <q-item-section side
                     v-if="tabset.type === TabsetType.SESSION && showEditButton.get(tabset.id) && tabset.status !== TabsetStatus.DELETED">
@@ -98,7 +98,6 @@ import DeleteTabsetDialog from "components/dialogues/DeleteTabsetDialog.vue";
 import {useNotificationHandler} from "src/services/ErrorHandler";
 import {MarkTabsetAsFavoriteCommand} from "src/domain/commands/MarkTabsetAsFavoriteCommand";
 import {MarkTabsetAsDefaultCommand} from "src/domain/commands/MarkTabsetAsDefaultCommand";
-import {MarkTabsetAsArchivedCommand} from "src/domain/commands/MarkTabsetAsArchivedCommand";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {useTabsetService} from "src/services/TabsetService2";
 import {useUiService} from "src/services/useUiService";
@@ -135,7 +134,13 @@ const selectTS = (tabset: Tabset) =>
 
 
 const showButtons = (tabsetId: string, show: boolean) => {
-  showDeleteButton.value.set(tabsetId, show)
+  if (show) {
+    if (tabsetId === tabsStore.currentTabsetId) {
+      showDeleteButton.value.set(tabsetId, true)
+    }
+  } else {
+    showDeleteButton.value.set(tabsetId, show)
+  }
   showEditButton.value.set(tabsetId, show)
 }
 
@@ -177,7 +182,7 @@ const editDialog = (tabset: Tabset) =>
 
 const markAsFavorite = (ts: Tabset) => useCommandExecutor().executeFromUi(new MarkTabsetAsFavoriteCommand(ts.id))
 const markAsDefault = (ts: Tabset) => useCommandExecutor().executeFromUi(new MarkTabsetAsDefaultCommand(ts.id))
-const archiveTabset = (ts: Tabset) => useCommandExecutor().executeFromUi(new MarkTabsetAsArchivedCommand(ts.id))
+//const archiveTabset = (ts: Tabset) => useCommandExecutor().executeFromUi(new MarkTabsetAsArchivedCommand(ts.id))
 const stopSession = (ts: Tabset) => useCommandExecutor().executeFromUi(new StopSessionCommand(ts))
 
 </script>

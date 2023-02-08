@@ -33,15 +33,15 @@
       </q-toolbar>
 
 
-      <q-splitter
-        v-model="splitterModel"
-        separator-class="bg-white"
-        horizontal
-        class="bg-grey-1 fit"
-        unit="px"
-        reverse>
+<!--      <q-splitter-->
+<!--        v-model="splitterModel"-->
+<!--        separator-class="bg-white"-->
+<!--        horizontal-->
+<!--        class="bg-grey-1 fit"-->
+<!--        unit="px"-->
+<!--        reverse>-->
 
-        <template v-slot:before>
+<!--        <template v-slot:before>-->
           <q-list class="q-mt-none greyBorderTop">
 
             <InfoMessageWidget
@@ -55,14 +55,14 @@
             <q-separator v-if="tabsets(true).length > 0"/>
             <NavTabsetsListWidget :tabsets="tabsets(false)"/>
           </q-list>
-        </template>
+<!--        </template>-->
 
-        <template v-slot:after v-if="permissonsStore.hasFeature('details')">
-<!--          <TabInfo v-if="notificationStore.selectedTab"/>-->
-          <TabsetInfo v-if="tabsStore.currentTabsetId"/>
-        </template>
+<!--        <template v-slot:after v-if="permissonsStore.hasFeature('details')">-->
+<!--&lt;!&ndash;          <TabInfo v-if="notificationStore.selectedTab"/>&ndash;&gt;-->
+<!--          <TabsetInfo v-if="tabsStore.currentTabsetId"/>-->
+<!--        </template>-->
 
-      </q-splitter>
+<!--      </q-splitter>-->
 
     </div>
   </div>

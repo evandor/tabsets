@@ -31,16 +31,23 @@
 
               <q-icon v-if="tabsStore.tabsets.size > 9 && tabsStore.getCurrentTabset?.status === TabsetStatus.DEFAULT"
                       @click="markAsFavorite()"
-                      class="q-ml-sm cursor-pointer"
+                      class="q-ml-md cursor-pointer"
                       color="warning" name="o_grade" size="20px">
                 <q-tooltip class="tooltip">Mark this tabset as a favorite one</q-tooltip>
               </q-icon>
 
               <q-icon v-if="tabsStore.tabsets.size > 9 && tabsStore.getCurrentTabset?.status === TabsetStatus.FAVORITE"
                       @click="markAsDefault()"
-                      class="q-ml-sm cursor-pointer"
+                      class="q-ml-md cursor-pointer"
                       color="warning" name="grade" size="20px">
                 <q-tooltip class="tooltip">Undo marking this tabset as favorite</q-tooltip>
+              </q-icon>
+
+              <q-icon v-if="tabsStore.tabsets.size > 9 && tabsStore.getCurrentTabset?.type === TabsetType.DEFAULT && tabsStore.getCurrentTabset?.status !== TabsetStatus.DELETED"
+                      @click="archiveTabset(tabset)"
+                      class="q-ml-md cursor-pointer"
+                      color="primary" name="o_inventory_2" size="20px">
+                <q-tooltip class="tooltip">Archive this tabset</q-tooltip>
               </q-icon>
 
               <q-icon v-if="tabsStore.getCurrentTabs?.length > 0 && inBexMode()"
@@ -366,7 +373,7 @@ import TabList from "components/layouts/TabList.vue";
 import InfoMessageWidget from "components/widgets/InfoMessageWidget.vue";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {RenameTabsetCommand} from "src/domain/commands/RenameTabset";
-import {TabsetStatus} from "src/models/Tabset";
+import {Tabset, TabsetStatus, TabsetType} from "src/models/Tabset";
 import {MarkTabsetAsFavoriteCommand} from "src/domain/commands/MarkTabsetAsFavoriteCommand";
 import {MarkTabsetAsDefaultCommand} from "src/domain/commands/MarkTabsetAsDefaultCommand";
 import {MarkTabsetAsArchivedCommand} from "src/domain/commands/MarkTabsetAsArchivedCommand";
@@ -505,7 +512,9 @@ const specialView = (): boolean =>
 
 const markAsFavorite = () => useCommandExecutor().executeFromUi(new MarkTabsetAsFavoriteCommand(tabsStore.currentTabsetId))
 const markAsDefault = () => useCommandExecutor().executeFromUi(new MarkTabsetAsDefaultCommand(tabsStore.currentTabsetId))
-const archiveTabset = () => useCommandExecutor().executeFromUi(new MarkTabsetAsArchivedCommand(tabsStore.currentTabsetId))
+//const archiveTabset = () => useCommandExecutor().executeFromUi(new MarkTabsetAsArchivedCommand(tabsStore.currentTabsetId))
+const archiveTabset = (ts: Tabset) => useCommandExecutor().executeFromUi(new MarkTabsetAsArchivedCommand(ts.id))
+
 const stopSession = () => useCommandExecutor().executeFromUi(new StopSessionCommand(tabsStore.getCurrentTabset))
 
 const toggleSorting = () => TabsetService.toggleSorting(tabsetId.value)

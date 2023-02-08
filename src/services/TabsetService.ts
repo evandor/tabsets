@@ -80,7 +80,7 @@ class TabsetService {
 
   isOpen(tabUrl: string): boolean {
     const tabsStore = useTabsStore()
-    return _.filter(tabsStore.tabs, t => {
+    return _.filter(tabsStore.tabs, (t:chrome.tabs.Tab) => {
       return t?.url === tabUrl
     }).length > 0
   }
