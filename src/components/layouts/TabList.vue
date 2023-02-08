@@ -1,10 +1,17 @@
 <template>
 
+  <InfoMessageWidget
+    v-if="props.tabs.length > 1"
+    :probability="0.3"
+    ident="tablist_dnd"
+    hint="You can select the favicon images and drag and drop the entries to reorder the list to your wishes" />
+
   <q-list bordered separator>
     <vue-draggable-next
       class="dragArea list-group w-full"
       :list="props.tabs"
       :group="{ name: 'tabs', pull: 'clone' }"
+
       @change="handleDragAndDrop">
 
       <q-item v-if="props.tabs.length === 0 &&
@@ -22,6 +29,7 @@
         @click="selectTab(tab, index)"
         @mouseover="showButtons(  tab.id,true)"
         @mouseleave="showButtons( tab.id, false)"
+        @dragstart="startDrag($event, tab)"
         :key="props.group + '_' + tab.id">
         <TabListElementWidget :showButtons="showButtonsProp.get(tab.id)"
                               :key="props.group + '__' + tab.id" :tab="tabAsTab(tab)" :highlightUrl="highlightUrl"/>
@@ -46,6 +54,7 @@ import {useCommandExecutor} from "src/services/CommandExecutor";
 import {CreateTabFromOpenTabsCommand} from "src/domain/commands/CreateTabFromOpenTabs";
 import TabListElementWidget from "src/components/widgets/TabListElementWidget.vue";
 import {useUtils} from "src/services/Utils"
+import InfoMessageWidget from "components/widgets/InfoMessageWidget.vue";
 
 const {inBexMode} = useUtils()
 
@@ -87,6 +96,8 @@ function adjustIndex(element: any, tabs: Tab[]) {
     return 1 + _.findIndex(tabsStore.getCurrentTabs, t => t.id === tabs[element.newIndex - 1].id)
   }
 }
+
+
 
 const handleDragAndDrop = (event: any) => {
   console.log("event", event)
@@ -148,6 +159,7 @@ const startDrag = (evt: any, tab: Tab) => {
   }
   console.log("evt.dataTransfer.getData('text/plain')", evt.dataTransfer.getData('text/plain'))
 }
+
 
 </script>
 

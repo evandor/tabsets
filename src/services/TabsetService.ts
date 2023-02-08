@@ -231,6 +231,8 @@ class TabsetService {
     const targetTabset = tabsStore.getTabset(tabsetId)
     if (tabIndex >= 0 && targetTabset) {
       targetTabset.tabs.push(tabsStore.getCurrentTabs[tabIndex])
+      saveTabset(targetTabset)
+        .then(() => saveCurrentTabset())
       tabsStore.getCurrentTabs.splice(tabIndex, 1)
     } else {
       console.error("could not find tab/tabset", tabId, tabsetId)
@@ -458,7 +460,7 @@ class TabsetService {
   }
 
   saveNote(tabId: string, note: string, scheduledFor: Date | undefined): Promise<void> {
-    console.log("got", tabId, note)
+   // console.log("got", tabId, note)
     const tab = _.find(getCurrentTabset()?.tabs, (t: Tab) => t.id === tabId)
     if (tab) {
       tab.note = note

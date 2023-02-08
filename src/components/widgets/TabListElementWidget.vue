@@ -18,7 +18,7 @@
       <q-badge v-if="isOpen(props.tab)" color="primary" label="opened" outline class="q-ml-sm" style="position: relative;top:-5px">
         <q-tooltip class="tooltip">This tab is currently open in your browser</q-tooltip>
       </q-badge>
-      <q-badge v-if="props.tab.isDuplicate" color="warning" label="duplicate" outline class="q-ml-sm">
+      <q-badge v-if="props.tab.isDuplicate" color="warning" label="duplicate" outline class="q-ml-sm" style="position: relative;top:-5px">
         <q-tooltip class="tooltip">This tab has a duplicate inside this tabset and could be deleted</q-tooltip>
       </q-badge>
     </q-item-label>

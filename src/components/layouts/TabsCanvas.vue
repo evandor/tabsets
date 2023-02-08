@@ -231,8 +231,6 @@ const addElement = (type: string) => {
         fill: 'green',
         draggable: true
       });
-      console.log("hier", drawingLayer.value)
-      console.log("hier2", drawingLayer.value.getNode())
       drawingLayer.value.getNode().add(simpleText)
       console.log("hier3", JSON.stringify(drawingLayer.value.getNode()))
       if (tabsStore.getCurrentTabset) {

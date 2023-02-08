@@ -156,6 +156,7 @@ const tabsetLabel = (tabset: Tabset) => {
 const onDrop = (evt: DragEvent, tabsetId: string) => {
   const tabId2 = useUiService().droppingTab()
   if (evt.dataTransfer && tabsetId && tabId2) {
+    console.log("onDrop", tabId2, tabsetId)
     TabsetService.moveToTabset(tabId2, tabsetId)
   } else {
     console.log("got error dropping tab", tabsetId)

@@ -53,7 +53,7 @@ export const useUiStore = defineStore('ui', () => {
 
   const rightDrawerFromStorage: RightDrawer | null = $q.localStorage.getItem('ui.rightDrawer')
   if (rightDrawerFromStorage !== null) {
-    console.log("got", rightDrawerFromStorage)
+   // console.log("got", rightDrawerFromStorage)
     if (rightDrawerFromStorage.activeTab !== DrawerTabs.TAB_DETAILS) {
       rightDrawer = ref<RightDrawer>(rightDrawerFromStorage)
     }
@@ -127,6 +127,7 @@ export const useUiStore = defineStore('ui', () => {
   }
 
   function droppingTab() {
+    console.log("dropping tab", tabBeingDragged.value)
     const tabBeingDropped = tabBeingDragged.value
     tabBeingDragged.value = undefined
     return tabBeingDropped

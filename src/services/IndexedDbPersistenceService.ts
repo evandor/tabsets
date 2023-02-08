@@ -350,7 +350,7 @@ class IndexedDbPersistenceService implements PersistenceService {
 
     console.log("getting mhtml for", url)
     const mhtml = await this.db.get('mhtml', url)
-    console.log("got", mhtml.content, typeof mhtml.content)
+  //  console.log("got", mhtml.content, typeof mhtml.content)
 
     const content: Blob = mhtml.content
 
