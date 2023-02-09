@@ -1,4 +1,5 @@
 import {formatDistance} from "date-fns";
+import normalizeUrl from 'normalize-url';
 
 export function useUtils() {
 
@@ -10,9 +11,18 @@ export function useUtils() {
 
   const inBexMode = () => process.env.MODE === 'bex'
 
+  const normalize = (url: string):string => {
+    if (url.startsWith("http://")) {
+      return normalizeUrl(url);
+    } else {
+      return normalizeUrl(url, {forceHttps: true});
+    }
+  }
+
   return {
     formatDate,
     createDataTestIdentifier,
-    inBexMode
+    inBexMode,
+    normalize
   }
 }

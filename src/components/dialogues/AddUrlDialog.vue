@@ -38,9 +38,10 @@ import {useRouter} from "vue-router";
 import {useTabsStore} from "src/stores/tabsStore";
 
 import {useDialogPluginComponent} from 'quasar'
-import {STRIP_CHARS_IN_USER_INPUT} from "boot/constants";
+import normalizeUrl from 'normalize-url';
 import {Tab} from "src/models/Tab";
 import ChromeApi from "src/services/ChromeApi";
+import {useUtils} from "src/services/Utils";
 
 defineEmits([
   ...useDialogPluginComponent.emits
@@ -54,6 +55,8 @@ const props = defineProps({
 })
 
 const url = ref(props.providedUrl)
+
+const {normalize} = useUtils()
 
 
 const {dialogRef, onDialogHide, onDialogOK, onDialogCancel} = useDialogPluginComponent()
@@ -72,13 +75,8 @@ watchEffect(() => {
 
 
 const createNewUrl = () => {
-  let useUrl = ''
-  try {
-    useUrl = new URL(url.value).toString()
-  } catch (err) {
-    console.debug("could not parse url, adding https:// ", url.value)
-    useUrl = "https://" + url.value
-  }
+  let useUrl = normalize(url.value)
+  console.log("normalizing url", url.value, useUrl)
   const tab = new Tab(uid(), null as unknown as chrome.tabs.Tab)
   tab.created = new Date().getTime()
   tab.chromeTab = ChromeApi.createChromeTabObject(useUrl, useUrl, null as unknown as string)
