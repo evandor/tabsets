@@ -248,47 +248,6 @@
 
   </div>
 
-  <div v-if="tab === 'importExport'">
-
-    <div class="q-pa-md q-gutter-sm">
-
-      <q-banner rounded class="bg-grey-1 text-primary">You can export your data in various formats and re-import them
-        from json. Please
-        note that it is not guaranteed that older exports can be imported with newer versions of the tabsets
-        extension.
-      </q-banner>
-
-      <div class="row q-pa-md">
-        <div class="col-3"><b>Export</b></div>
-        <div class="col-3">json or as bookmarks</div>
-        <div class="col-1"></div>
-        <div class="col-5">
-          <q-btn
-            @click="showExportDialog"
-            flat round dense icon="file_download" color="primary">
-            <q-tooltip>Export your tabsets</q-tooltip>
-          </q-btn>
-        </div>
-      </div>
-
-      <div class="row q-pa-md">
-        <div class="col-3"><b>Import</b></div>
-        <div class="col-3">from json</div>
-        <div class="col-1"></div>
-        <div class="col-5">
-          <q-btn
-            @click="showImportDialog"
-            flat round dense icon="file_upload" color="primary">
-            <q-tooltip>Import your tabsets backup</q-tooltip>
-          </q-btn>
-        </div>
-      </div>
-
-    </div>
-
-
-  </div>
-
   <div v-if="tab === 'featureToggles'">
 
     <div class="q-pa-md q-gutter-sm">
@@ -352,7 +311,7 @@
 <!--      </div>-->
 
       <div class="row q-pa-md">
-        <div class="col-3"><b>Develop Mode</b></div>
+        <div class="col-3"><b>Developer Mode</b></div>
         <div class="col-3">activates a couple of experimental features and debug insights. You should only use this
           if you can live with loosing data.
         </div>
@@ -361,17 +320,6 @@
           <q-toggle v-model="devEnabled"/>
         </div>
       </div>
-
-<!--      <div class="row q-pa-md">-->
-<!--        <div class="col-3"><b>New Tab Mode</b></div>-->
-<!--        <div class="col-3">use tabset as your browsers default 'New Tab' page<br>Currently set to-->
-<!--          {{ currentNewTabTabsetId }}.-->
-<!--        </div>-->
-<!--        <div class="col-1"></div>-->
-<!--        <div class="col-5">-->
-<!--          <q-toggle v-model="newTabEnabled"/>-->
-<!--        </div>-->
-<!--      </div>-->
 
     </div>
 
@@ -386,12 +334,9 @@ import {useFeatureTogglesStore} from "src/stores/featureTogglesStore";
 import {useRouter} from "vue-router";
 import {ref, watch, watchEffect} from "vue";
 import {useQuasar} from "quasar";
-import {INDEX_DB_NAME, INDEX_DB_VERSION} from "boot/constants"
 import {useSearchStore} from "src/stores/searchStore";
 import {useSettingsStore} from "src/stores/settingsStore";
 import TabsetService from "src/services/TabsetService";
-import ExportDialog from "components/dialogues/ExportDialog.vue";
-import ImportDialog from "components/dialogues/ImportDialog.vue";
 import _ from "lodash";
 import {Tabset, TabsetStatus} from "src/models/Tabset";
 import {MarkTabsetAsDefaultCommand} from "src/domain/commands/MarkTabsetAsDefaultCommand";
@@ -427,7 +372,6 @@ const spacesEnabled = ref<boolean>(featuresStore.isEnabled('spaces'))
 const experimentalViewsEnabled = ref<boolean>(featuresStore.isEnabled('experimentalViews'))
 const statsEnabled = ref<boolean>(featuresStore.isEnabled('stats'))
 const devEnabled = ref<boolean>(featuresStore.isEnabled('dev'))
-const newTabEnabled = ref<boolean>(featuresStore.isEnabled('newTab'))
 const permissionsList = ref<string[]>([])
 
 const darkMode = ref<boolean>(localStorage.getItem('darkMode') || false)
@@ -517,11 +461,9 @@ watchEffect(() => {
   //featuresStore.setFeatureToggle("debug", debugEnabled.value)
   featuresStore.setFeatureToggle("sync", syncEnabled.value)
   featuresStore.setFeatureToggle("spaces", spacesEnabled.value)
-  //featuresStore.setFeatureToggle("sidebar", sidebarEnabled.value)
   featuresStore.setFeatureToggle("experimentalViews", experimentalViewsEnabled.value)
   featuresStore.setFeatureToggle("stats", statsEnabled.value)
   featuresStore.setFeatureToggle("dev", devEnabled.value)
-  featuresStore.setFeatureToggle("newTab", newTabEnabled.value)
 })
 
 watchEffect(() => {

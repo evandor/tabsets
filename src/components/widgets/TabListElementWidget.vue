@@ -15,10 +15,12 @@
                   class="cursor-pointer" @click.stop="NavigationService.openOrCreateTab(props.tab.chromeTab?.url )">
     <q-item-label>
       {{ props.tab.chromeTab?.title }}
-      <q-badge v-if="isOpen(props.tab)" color="primary" label="opened" outline class="q-ml-sm" style="position: relative;top:-5px">
+      <q-badge v-if="isOpen(props.tab)" color="primary" label="opened" outline class="q-ml-sm"
+               style="position: relative;top:-5px">
         <q-tooltip class="tooltip">This tab is currently open in your browser</q-tooltip>
       </q-badge>
-      <q-badge v-if="props.tab.isDuplicate" color="warning" label="duplicate" outline class="q-ml-sm" style="position: relative;top:-5px">
+      <q-badge v-if="props.tab.isDuplicate" color="warning" label="duplicate" outline class="q-ml-sm"
+               style="position: relative;top:-5px">
         <q-tooltip class="tooltip">This tab has a duplicate inside this tabset and could be deleted</q-tooltip>
       </q-badge>
     </q-item-label>
@@ -28,20 +30,29 @@
       {{ props.tab.note }}
     </q-item-label>
   </q-item-section>
-  <q-item-section avatar v-if="props.showButtons" style="max-width:15px">
-    <q-btn flat round color="primary" size="11px" icon="o_info"
-           @click.stop="showDetails(tab)">
-      <q-tooltip class="tooltip">Show details about this tab</q-tooltip>
-    </q-btn>
+
+  <q-item-section side v-if="props.showButtons">
+    <div class="row">
+      <q-btn flat round color="primary" size="11px" icon="o_info"
+             @click.stop="showDetails(tab)">
+        <q-tooltip class="tooltip">Show details about this tab</q-tooltip>
+      </q-btn>
+      <q-btn v-if="usePermissionsStore().hasFeature('newTab')"
+        flat round color="primary" size="11px" icon="o_create_new_folder"
+             @click.stop="addToNewTabUrlList(tab)">
+        <q-tooltip class="tooltip">Add this tab to the list of tabs showing when you open a new tab in your browser</q-tooltip>
+      </q-btn>
+      <q-btn flat round :color="props.tab.note ? 'secondary':'primary'" size="11px" icon="edit_note"
+             @click.stop="editNoteDialog(tab)">
+        <q-tooltip v-if="props.tab.note">Edit note</q-tooltip>
+        <q-tooltip v-else>Add a note to this tab</q-tooltip>
+      </q-btn>
+    </div>
   </q-item-section>
-  <q-item-section avatar v-if="props.showButtons">
-    <q-btn flat round :color="props.tab.note ? 'secondary':'primary'" size="11px" icon="edit_note"
-           @click.stop="editNoteDialog(tab)">
-      <q-tooltip v-if="props.tab.note">Edit note</q-tooltip>
-      <q-tooltip v-else>Add a note to this tab</q-tooltip>
-    </q-btn>
+  <q-item-section side v-if="props.showButtons">
+
   </q-item-section>
-  <q-item-section avatar v-if="props.showButtons">
+  <q-item-section side v-if="props.showButtons">
     <q-btn flat round color="red" size="11px" icon="delete_outline" @click.stop="deleteTab(tab)">
       <q-tooltip>Delete this tab from this list</q-tooltip>
     </q-btn>
@@ -61,6 +72,7 @@ import {DeleteTabCommand} from "src/domain/commands/DeleteTabCommand";
 import EditNoteDialog from "components/dialogues/EditNoteDialog.vue";
 import {useQuasar} from "quasar";
 import {DrawerTabs, useUiStore} from "stores/uiStore";
+import {usePermissionsStore} from "stores/permissionsStore";
 
 const props = defineProps({
   tab: {type: Object, required: true},
@@ -145,6 +157,15 @@ const editNoteDialog = (tab: Tab) => $q.dialog({
 const showDetails = (tab: Tab) => {
   useUiStore().setSelectedTab(tab)
   useUiStore().rightDrawerSetActiveTab(DrawerTabs.TAB_DETAILS)
+}
+
+const addToNewTabUrlList = (tab: Tab) => {
+  console.log("got tab", tab)
+  useUiStore().addToNewTabUrlList({
+    url: tab.chromeTab.url,
+    title: tab.chromeTab.title,
+    favIconUrl: tab.chromeTab.favIconUrl
+  })
 }
 
 </script>

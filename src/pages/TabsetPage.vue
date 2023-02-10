@@ -168,15 +168,6 @@
           </q-tooltip>
         </q-btn>
 
-        <q-btn
-          v-if="tabsStore.currentTabsetId !== '' && tabsStore.getTabset(tabsStore.currentTabsetId) && useFeatureTogglesStore().isEnabled('newTab')"
-          flat dense icon="o_create_new_folder"
-          color="primary" :label="$q.screen.gt.sm ? 'Set as New Tab Page' : ''"
-          class="q-ml-md q-mr-md"
-          @click="setAsNewTabPage">
-          <q-tooltip>Choose this tabset to be shown whenever you open a new tab in your browser</q-tooltip>
-        </q-btn>
-
       </div>
     </div>
   </q-toolbar>
@@ -516,10 +507,6 @@ const filteredTabs = () => {
 
 const restoreDialog = () => $q.dialog({component: RestoreTabsetDialog})
 const addUrlDialog = () => $q.dialog({component: AddUrlDialog})
-
-const setAsNewTabPage = () => {
-  useUiService().setTabsetForNewTabPage(tabsetId.value)
-}
 
 
 const setView = (view: string) => TabsetService.setView(tabsetId.value, view)

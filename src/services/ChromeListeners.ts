@@ -84,12 +84,13 @@ class ChromeListeners {
     }
     this.eventTriggered()
     console.log(`onCreated: tab ${tab.id}: >>> ${tab.pendingUrl}`)
-    if (useFeatureTogglesStore().isEnabled('newTab') && useUiStore().tabsetIdForNewTab && tab.pendingUrl === 'chrome://newtab/') {
+    if (usePermissionsStore().hasFeature('newTab') && useUiStore().tabsetIdForNewTab && tab.pendingUrl === 'chrome://newtab/') {
       // @ts-ignore
       chrome.tabs.update(tab.id, {
+        // url: chrome.runtime.getURL("www/newtab.html")
         url: chrome.runtime.getURL("www/index.html#/newtab")
       })
-      return
+      //return
     }
     const tabsStore = useTabsStore()
     const maybeTab = tabsStore.tabForUrlInSelectedTabset(tab.pendingUrl || '')
@@ -121,7 +122,6 @@ class ChromeListeners {
     }
     const selfUrl = chrome.runtime.getURL("")
     if (chromeTab.url?.startsWith(selfUrl)) {
-      //console.log("ignoring selfturl2", selfUrl, chromeTab.url)
       return
     }
 
@@ -199,14 +199,11 @@ class ChromeListeners {
   onRemoved(number: number, info: chrome.tabs.TabRemoveInfo) {
     this.eventTriggered()
     const tabsStore = useTabsStore()
-    //console.log(`onRemoved: tab ${number}: >>> ${JSON.stringify(info)}`)
     const currentTabset: Tabset = tabsStore.tabsets.get(tabsStore.currentTabsetId) || new Tabset("", "", [], [])
     const index = _.findIndex(currentTabset.tabs, t => t.chromeTab.id === number);
     if (index >= 0) {
-      //console.log(`onRemoved: tab ${number}:     found index ${index}`)
       const updatedTab = currentTabset.tabs.at(index)
       if (updatedTab) {
-        //console.log(`onRemoved: tab ${number}:     setting status DELETED`)
       }
     }
   }
@@ -223,7 +220,6 @@ class ChromeListeners {
     console.debug(`onActivated: tab ${info.tabId} activated: >>> ${JSON.stringify(info)}`)
 
     chrome.tabs.get(info.tabId, tab => {
-      //console.log("got tab", tab)
       const url = tab.url
       _.forEach([...tabsStore.tabsets.keys()], key => {
         const ts = tabsStore.tabsets.get(key)

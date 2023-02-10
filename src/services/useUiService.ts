@@ -59,10 +59,6 @@ export function useUiService() {
     //}
   }
 
-  const setTabsetForNewTabPage = (tabsetId: string) => {
-    useUiStore().setTabsetForNewTabPage(tabsetId)
-  }
-
   const  draggingTab = (tabId: string) => useUiStore().draggingTab(tabId)
   const  droppingTab = ():string | undefined => useUiStore().droppingTab()
 
@@ -81,7 +77,6 @@ export function useUiService() {
     rightDrawerActiveTab,
     rightDrawerSetActiveTab,
     showSearchResultsPageFor,
-    setTabsetForNewTabPage,
     draggingTab,
     droppingTab,
     closeCurrentView

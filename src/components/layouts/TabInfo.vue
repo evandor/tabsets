@@ -153,7 +153,6 @@ watchEffect(() => {
 })
 const tabsetChips = (): object[] => {
   const badges: object[] = []
-  //console.log("xxx", hit.bookmarkId)
   const url = notificationStore.selectedTab.chromeTab.url
   if (url) {
     _.forEach(useTabsetService().tabsetsFor(url), ts => badges.push({

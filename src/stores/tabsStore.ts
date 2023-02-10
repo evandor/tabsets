@@ -119,7 +119,6 @@ export const useTabsStore = defineStore('tabs', {
       }
     },
     currentTabsetName: (state) => {
-      //console.log("here!", state.currentTabsetId)
       if (state.currentTabsetId !== 'current') {
         const tabset = _.head(_.filter([...state.tabsets.values()], ts => ts.id === state.currentTabsetId)) || new Tabset("", "undefined", [], [])
         return tabset.name
@@ -248,7 +247,7 @@ export const useTabsStore = defineStore('tabs', {
         this.currentTabsetId = tabsetId //this.tabsets.get(found) || new Tabset("", "", [])
         return found
       } else {
-        console.debug("not found:", tabsetId, [...this.tabsets.values()])
+        console.debug("not found:", tabsetId)//, [...this.tabsets.values()])
       }
       return undefined
     },

@@ -144,6 +144,12 @@ text.set('groupedByDomain', {
   description: 'The "Grouped By Domain" Feature provides a view where you can see all your tabs grouped by Domains. All Domains with at least two matching tabs will be considered.',
   permissions: []
 })
+text.set('newTab', {
+  name: 'new Tab Feature',
+
+  description: 'use tabset as your browsers default "New Tab" page.',
+  permissions: []
+})
 text.set('rss', {
   name: 'RSS View',
   img: 'rss.png',
@@ -257,16 +263,6 @@ const grant = (ident: string) => {
     permissionsStore.activateFeature(ident)
   }
 
-  // if ("groupedByDomain" === ident || "opentabsThreshold" === ident || "pendingTabs" === ident
-  //   || "details" === ident || "sessions" === ident || "sidebar" === ident || "useGroups" === ident) {
-  //   permissionsStore.activateFeature(ident)
-  // } else if ("thumbnails" === ident || "analyseTabs" === ident) {
-  //   useCommandExecutor()
-  //     .executeFromUi(new GrantOriginCommand(ident))
-  // } else {
-  //   useCommandExecutor()
-  //     .executeFromUi(new GrantPermissionCommand(ident))
-  // }
 }
 
 const revoke = (ident: string) => {

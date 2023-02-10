@@ -72,7 +72,7 @@ const routes: RouteRecordRaw[] = [
   },
   {
     path: '/bydomain/:encodedUrl',
-    component: () => import('layouts/MainLayout.vue'),
+    component: () => import('layouts/DefaultLayout.vue'),
     children: [{ path: '', component: () => import('pages/ByDomainPage.vue') }],
   },
   {

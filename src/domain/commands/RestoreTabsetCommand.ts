@@ -27,10 +27,6 @@ export class RestoreTabsetCommand implements Command<string> {
       if (tabset) {
         console.log("found tabset for id", this.tabsetId)
         ChromeApi.restore(tabset)
-        // .then((res: any) => {
-        //   console.log("res", res)
-        //   tabsStore.activateListeners()
-        // })
         return new ExecutionResult("result", "doneMsg")
       }
       return Promise.reject("could not find tabset")

@@ -196,7 +196,6 @@ function isOpen(tab: Tab): boolean {
 
 const tabsetChips = (): object[] => {
   const badges: object[] = []
-  //console.log("xxx", hit.bookmarkId)
   const url = uiStore.getSelectedTab?.chromeTab.url
   if (url) {
     _.forEach(useTabsetService().tabsetsFor(url), ts => badges.push({

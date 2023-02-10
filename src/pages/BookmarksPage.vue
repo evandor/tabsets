@@ -167,7 +167,6 @@ watchEffect(() => {
   bookmarkId.value = route.params.id as string
   if (bookmarkId.value) {
     chrome.bookmarks.get(bookmarkId.value, results => {
-      // console.log("resul", results)
       if (results && results[0]) {
         bookmarksStore.currentBookmark = new Bookmark(uid(), results[0])
         getParentChain(bookmarkId.value)

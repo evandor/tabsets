@@ -355,13 +355,9 @@ class IndexedDbPersistenceService implements PersistenceService {
     const content: Blob = mhtml.content
 
     const mhtmlString = await content.text()
-    //console.log("mhtmlString", mhtmlString)
     const html = mhtml2html.convert(mhtmlString)//,{ parseDOM: (html:any) => new JSDOM(html)    });
     const innerHtml = html.window.document.documentElement.innerHTML
-    //console.log("XXX4", innerHtml);
-    //console.log("XXX4", html.window.document.innerHTML);
     const res = "data:text/html," + innerHtml
-    //console.log("res", res)
 
     const blob2 = content.slice(0, content.size, "multipart/related")
 

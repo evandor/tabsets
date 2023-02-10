@@ -142,7 +142,6 @@ const setInfo = (tab: Tab) => {
 
 const tabsetBadges = (hit: Hit): object[] => {
   const badges: object[] = []
-  //console.log("xxx", hit.bookmarkId)
   _.forEach(hit.tabsets, ts => badges.push({
     label: TabsetService.nameForTabsetId(ts),
     tabsetId: ts,

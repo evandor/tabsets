@@ -111,6 +111,26 @@
         </span>
 
         <Transition name="colorized-appear">
+          <q-btn v-if="permissionsStore.hasFeature('newTab')"
+                 flat
+                 name="rss" icon="o_create_new_folder" @click="tabsClicked(DrawerTabs.NEW_TAB_URLS)">
+            <q-tooltip class="tooltip" anchor="center right" self="center left" :delay="200">
+              The List of Urls displayed when you open a new tab in your Browser
+            </q-tooltip>
+          </q-btn>
+        </Transition>
+
+        <Transition name="colorized-appear">
+          <q-btn v-if="permissionsStore.hasFeature('groupedByDomain')"
+                 flat
+                 icon="o_dns" @click="tabsClicked(DrawerTabs.GROUP_BY_HOST_TABS)">
+            <q-tooltip class="tooltip" anchor="center right" self="center left" :delay="200">Your tabs grouped by
+              domain
+            </q-tooltip>
+          </q-btn>
+        </Transition>
+
+        <Transition name="colorized-appear">
           <q-btn v-if="permissionsStore.hasFeature('rss')"
                  flat
                  name="rss" icon="o_rss_feed" @click="tabsClicked(DrawerTabs.RSS)">

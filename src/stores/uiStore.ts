@@ -3,6 +3,7 @@ import {computed, ref, watch} from "vue";
 import {useQuasar} from "quasar";
 import {useRoute} from "vue-router";
 import {Tab} from "src/models/Tab";
+import _ from "lodash"
 
 
 export enum LeftDrawerState {
@@ -21,8 +22,8 @@ export enum DrawerTabs {
   SCHEDULED = "scheduled",
   HISTORY = "history",
   FEATURES = "features",
-
   TAB_DETAILS = "tabDetails",
+  NEW_TAB_URLS = "newTabUrls",
   HELP = "help"
 }
 
@@ -62,7 +63,6 @@ export const useUiStore = defineStore('ui', () => {
     }
   }
 
-  const tabsetIdForNewTab = ref<string | undefined>($q.localStorage.getItem('ui.tabsetIdForNewTab') as string || undefined)
   const newTabsetEmptyByDefault = ref<boolean>($q.localStorage.getItem('ui.newTabsetEmptyByDefault') as boolean || false)
   const tabBeingDragged = ref<string | undefined>(undefined)
   const footerInfo = ref<string | undefined>(undefined)
@@ -74,6 +74,9 @@ export const useUiStore = defineStore('ui', () => {
   const messageAlreadyShown = ref<string | undefined>(undefined)
   const openTabMatchesTabsetTabs = ref(false)
 
+  // new tab feature
+  const newTabUrlList = ref<object[]>($q.localStorage.getItem('ui.newTabUrlList') as object[] || [])
+
   watch(leftDrawer.value, (val: Object) => {
     $q.localStorage.set("ui.leftDrawer", val)
   }, {deep: true})
@@ -82,13 +85,21 @@ export const useUiStore = defineStore('ui', () => {
     $q.localStorage.set("ui.rightDrawer", val)
   }, {deep: true})
 
-  watch(tabsetIdForNewTab, (val: Object) => {
-    $q.localStorage.set("ui.tabsetIdForNewTab", val)
-  }, {deep: true})
-
   watch(newTabsetEmptyByDefault,
     (val: Object) => {
       $q.localStorage.set("ui.newTabsetEmptyByDefault", val)
+    })
+
+  watch(newTabUrlList,
+    (val: object[]) => {
+      console.log("newTabUrlList", val)
+      $q.localStorage.set("ui.newTabUrlList", val)
+    })
+
+  watch(newTabUrlList.value,
+    (val: object[]) => {
+      console.log("val", val)
+      $q.localStorage.set("ui.newTabUrlList", val)
     })
 
   const route = useRoute()
@@ -96,12 +107,6 @@ export const useUiStore = defineStore('ui', () => {
     // console.log("resetting", messageAlreadyShown.value)
     setAnotherMessageAlreadyShown(undefined)
   }, {flush: 'pre', immediate: true, deep: true})
-
-  // watch(hiddenMessages.value,
-  //   (val: string[], val2: string[]) => {
-  //     console.log("watching", val, val2)
-  //     $q.localStorage.set("ui.hiddenInfoMessages", val)
-  //   })
 
   watch(
     hiddenMessages,
@@ -118,10 +123,6 @@ export const useUiStore = defineStore('ui', () => {
     leftDrawerLabelAnimated.value = animated
   }
 
-  const setTabsetForNewTabPage = (tabsetId: string) => {
-    tabsetIdForNewTab.value = tabsetId
-  }
-
   function draggingTab(tabId: string) {
     tabBeingDragged.value = tabId
   }
@@ -135,6 +136,14 @@ export const useUiStore = defineStore('ui', () => {
 
   function setNewTabsetEmptyByDefault(defaultValue: boolean) {
     newTabsetEmptyByDefault.value = defaultValue
+  }
+
+  function addToNewTabUrlList(l: object) {
+    newTabUrlList.value.push(l)
+  }
+
+  function removeNewTabUrl (url: string) {
+    newTabUrlList.value = _.filter(newTabUrlList.value, (e:any) => e.url !== url)
   }
 
   function hideInfoMessage(ident: string) {
@@ -160,7 +169,6 @@ export const useUiStore = defineStore('ui', () => {
   }
 
   function rightDrawerSetLastView() {
-    console.log("here", rightDrawerViewStack.value)
     if (rightDrawerViewStack.value.length === 0) {
       rightDrawerViewStack.value.push(DrawerTabs.UNASSIGNED_TABS)
       rightDrawer.value = new RightDrawer()
@@ -216,8 +224,6 @@ export const useUiStore = defineStore('ui', () => {
     rightDrawerViewStack,
     rightDrawerSetActiveTab,
     rightDrawerShowCloseButton,
-    setTabsetForNewTabPage,
-    tabsetIdForNewTab,
     draggingTab,
     droppingTab,
     newTabsetEmptyByDefault,
@@ -229,6 +235,9 @@ export const useUiStore = defineStore('ui', () => {
     getContentCount,
     setContentCount,
     setSelectedTab,
-    getSelectedTab
+    getSelectedTab,
+    newTabUrlList,
+    addToNewTabUrlList,
+    removeNewTabUrl
   }
 })

@@ -180,7 +180,6 @@ function cardStyle(bm: Bookmark) {
   }
 
   let background = ''
-  //console.log("xxx", bm.id, props.highlightId)
   if (props.highlightId && bm.chromeBookmark.id === props.highlightId) {
     background = "background-color: red"
   }

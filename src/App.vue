@@ -48,19 +48,7 @@ $q.dark.set($q.localStorage.getItem('darkMode') || false)
 if (isNewTabPage()) {
 
   // init db
-  IndexedDbPersistenceService.init()
-    .then(() => {
-      // init services
-      tabsetService.setLocalStorage(localStorage)
-      spacesService.init()
-        .then(() => {
-          tabsetService.init(isNewTabPage())
-            .then(() => {
-              MHtmlService.init()
-              ChromeApi.init()
-            })
-        })
-    })
+
 
 } else {
   // init of stores and some listeners
@@ -103,12 +91,9 @@ if (isNewTabPage()) {
     })
 
 
-
   useNotificationsStore().bookmarksExpanded = $q.localStorage.getItem("bookmarks.expanded") || []
   router.push("/start")
 }
-
-
 
 
 </script>

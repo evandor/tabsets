@@ -46,3 +46,7 @@
   background: darken(white, 10%);
 }
 
+.constrained-width {
+  max-width:1600px;
+  margin: 0 auto;
+}

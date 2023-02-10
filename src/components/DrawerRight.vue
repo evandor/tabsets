@@ -61,14 +61,15 @@
 
   <div class="row greyBorderTop"></div>
 
-<!--  <div>{{useUiStore().rightDrawerViewStack}}*</div>-->
+  <!--  <div>{{useUiStore().rightDrawerViewStack}}*</div>-->
   <UnassignedAndOpenTabs v-if="tab === DrawerTabs.UNASSIGNED_TABS"/>
   <BookmarksTree v-else-if="tab === DrawerTabs.BOOKMARKS"/>
   <!--      <OpenTabs v-else-if="tab ===  DrawerTabs.OPEN_TABS" :filter="filter"/>-->
   <!--      <UnassignedTabs v-else-if="tab ===  DrawerTabs.UNASSIGNED_TABS" :filter="filter"/>-->
-  <!--      <TabsGroupedByHost v-else-if="tab ===  DrawerTabs.GROUP_BY_HOST_TABS"/>-->
+  <TabsGroupedByHost v-else-if="tab ===  DrawerTabs.GROUP_BY_HOST_TABS"/>
   <!--      <SavedTabs v-else-if="tab ===  DrawerTabs.SAVED_TABS"/>-->
   <TabsetAsSidebar v-else-if="tab ===  DrawerTabs.SIDEBAR"/>
+  <NewTabUrls v-else-if="tab ===  DrawerTabs.NEW_TAB_URLS"/>
   <RssTabs v-else-if="tab ===  DrawerTabs.RSS"/>
   <!--      <ScheduledTabs v-else-if="tab ===  DrawerTabs.SCHEDULED"/>-->
   <!--      <BrowserHistory v-else-if="tab ===  DrawerTabs.HISTORY"/>-->
@@ -103,6 +104,7 @@ import Features from "components/Features.vue";
 import UnassignedAndOpenTabs from "components/views/UnassignedAndOpenTabs.vue";
 import BookmarksTree from "components/BookmarksTree.vue";
 import TabDetails from "components/views/TabDetails.vue";
+import NewTabUrls from "components/NewTabUrls.vue";
 
 const router = useRouter()
 
@@ -164,6 +166,8 @@ const drawerLabel = () => {
       return "Add. Features"
     case DrawerTabs.TAB_DETAILS:
       return "Tab Details"
+    case DrawerTabs.NEW_TAB_URLS:
+      return "Urls on New Tab Page"
     case DrawerTabs.HELP:
       return "Help"
     default:

@@ -26,7 +26,7 @@
       <q-item
         clickable v-ripple
         v-for="(tab,index) in props.tabs"
-        @click="selectTab(tab, index)"
+
         @mouseover="showButtons(  tab.id,true)"
         @mouseleave="showButtons( tab.id, false)"
         @dragstart="startDrag($event, tab)"

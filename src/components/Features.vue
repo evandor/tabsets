@@ -132,7 +132,7 @@ const optionalFeatures = [
   },
   // {ident: 'pendingTabs', name: 'New Tabs Tracking', icon: 'o_tab', useIn: ['bex'], target: '/features/pendingTabs'},
   {ident: 'sidebar', name: 'Sidebar View', icon: 'o_input', useIn: ['electron'], target: '/features/sidebar'},
-  // {ident: 'groupedByDomain', name: 'Group By Domain View', icon: 'o_dns', useIn: ['all'], target: '/features/groupedByDomain'}
+  {ident: 'groupedByDomain', name: 'Group By Domain View', icon: 'o_dns', useIn: ['all'], target: '/features/groupedByDomain'}
 ]
 
 const experimantalFeatures = [
@@ -145,14 +145,16 @@ const experimantalFeatures = [
     useIn: ['all'],
     target: '/features/experimentalViews'
   },
-  {ident: 'rss', name: 'RSS View', icon: 'o_rss_feed', useIn: ['bex'], target: '/features/rss'}, // does not work properly right now (keeps re-catching the source)
+  {ident: 'newTab', name: 'New Tab', icon: 'o_create_new_folder', useIn: ['bex'], target: '/features/newTab'}, // does not work properly right now (keeps re-catching the source)
+  {ident: 'rss', name: 'RSS View', icon: 'o_rss_feed', useIn: ['all'], target: '/features/rss'}, // does not work properly right now (keeps re-catching the source)
   {ident: 'thumbnails', name: 'Thumbnails', icon: 'o_image', useIn: ['bex'], target: '/features/thumbnails'},
   {ident: 'analyseTabs', name: 'Analyse Tabs', icon: 'o_analytics', useIn: ['bex'], target: '/features/analyseTabs'},
   {ident: 'details', name: 'Tab(set) Details View', icon: 'o_tab', target: '/features/details'},
   {ident: 'sessions', name: 'Sessions', icon: 'o_explore', useIn: ['bex'], target: '/features/sessions'},
   // {ident: 'dynamic', name: 'Dynamic Tabsets', icon: 'o_file_open', bexOnly: false, target: '/features/dynamic'},
   // {ident: 'history', name: 'History', icon: 'o_history', useIn: ['bex'], target: '/features/history'},
-  {ident: 'useGroups', name: 'Use Tab Groups', icon: 'o_toc', useIn: ['all'], target: '/features/useGroups'}
+  // {ident: 'useGroups', name: '' +
+  //     'Use Tab Groups', icon: 'o_toc', useIn: ['all'], target: '/features/useGroups'}
 ]
 
 const plannedFeatures = [
