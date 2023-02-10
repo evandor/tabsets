@@ -146,7 +146,7 @@ const experimantalFeatures = [
     target: '/features/experimentalViews'
   },
   {ident: 'newTab', name: 'New Tab', icon: 'o_create_new_folder', useIn: ['bex'], target: '/features/newTab'}, // does not work properly right now (keeps re-catching the source)
-  {ident: 'rss', name: 'RSS View', icon: 'o_rss_feed', useIn: ['all'], target: '/features/rss'}, // does not work properly right now (keeps re-catching the source)
+  {ident: 'rss', name: 'RSS View', icon: 'o_rss_feed', useIn: ['bex','spa'], target: '/features/rss'}, // does not work properly right now in electron (keeps re-catching the source)
   {ident: 'thumbnails', name: 'Thumbnails', icon: 'o_image', useIn: ['bex'], target: '/features/thumbnails'},
   {ident: 'analyseTabs', name: 'Analyse Tabs', icon: 'o_analytics', useIn: ['bex'], target: '/features/analyseTabs'},
   {ident: 'details', name: 'Tab(set) Details View', icon: 'o_tab', target: '/features/details'},

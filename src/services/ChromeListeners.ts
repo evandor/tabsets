@@ -84,13 +84,12 @@ class ChromeListeners {
     }
     this.eventTriggered()
     console.log(`onCreated: tab ${tab.id}: >>> ${tab.pendingUrl}`)
-    if (usePermissionsStore().hasFeature('newTab') && useUiStore().tabsetIdForNewTab && tab.pendingUrl === 'chrome://newtab/') {
+    if (usePermissionsStore().hasFeature('newTab') && tab.pendingUrl === 'chrome://newtab/') {
       // @ts-ignore
       chrome.tabs.update(tab.id, {
         // url: chrome.runtime.getURL("www/newtab.html")
         url: chrome.runtime.getURL("www/index.html#/newtab")
       })
-      //return
     }
     const tabsStore = useTabsStore()
     const maybeTab = tabsStore.tabForUrlInSelectedTabset(tab.pendingUrl || '')

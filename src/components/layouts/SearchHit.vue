@@ -8,15 +8,9 @@
                     v-html="formatText(hit, 'url',hit.chromeTab.url || '', '#FFFFDD')"></q-item-label>
       <q-item-label class="text-blue-9 text-h6">
 
-        <q-img
-          class="rounded-borders"
-          width="16px"
-          height="16px"
-          :src="hit.chromeTab?.favIconUrl">
-          <q-tooltip>{{ hit.chromeTab?.id }} / {{ hit.id }}</q-tooltip>
-        </q-img>
+        <FaviconWidget :url="hit.chromeTab.url" :favicon="hit.chromeTab.favIconUrl" />
 
-        <span class="cursor-pointer underline-on-hover q-ml-sm" style="font-weight:400"
+        <span class="cursor-pointer underline-on-hover q-ml-sm text-subtitle1" style="font-weight:400"
               @click="NavigationService.openOrCreateTab(hit.chromeTab?.url )"
               v-html="formatText(hit, 'title',hit.chromeTab.title || '', '#FFFFDD')"></span>
         <template v-for="badge in tabsetBadges(hit)">
@@ -66,6 +60,8 @@ import {useFeatureTogglesStore} from "src/stores/featureTogglesStore";
 import {useRouter} from "vue-router";
 import BookmarksService from "src/services/BookmarksService";
 import {useTabsetService} from "src/services/TabsetService2";
+import TabFaviconWidget from "components/widgets/TabFaviconWidget.vue";
+import FaviconWidget from "components/widgets/FaviconWidget.vue";
 
 const props = defineProps({
   hit: {

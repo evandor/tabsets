@@ -10,6 +10,7 @@ export function useUtils() {
     prefix + "_" + url.replace("https://", "").replaceAll('.','').replaceAll("/", "")
 
   const inBexMode = () => process.env.MODE === 'bex'
+  const modeIs = (ident: string) => process.env.MODE === ident
 
   const normalize = (url: string):string => {
     if (url.startsWith("http://")) {
@@ -23,6 +24,7 @@ export function useUtils() {
     formatDate,
     createDataTestIdentifier,
     inBexMode,
-    normalize
+    normalize,
+    modeIs
   }
 }

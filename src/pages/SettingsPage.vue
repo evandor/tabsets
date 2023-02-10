@@ -16,10 +16,11 @@
             v-model="tab"
             no-caps>
       <q-tab name="appearance" label="Appearance"/>
-      <q-tab name="permissions" label="Permissions"/>
-      <q-tab name="ignored" label="Ignored Urls"/>
+      <q-tab name="permissions" label="Permissions" v-if="devEnabled" />
+      <q-tab name="thirdparty" label="Third Party Services" />
+<!--      <q-tab name="ignored" label="Ignored Urls"/>-->
       <q-tab name="archived" label="Archived Tabsets"/>
-      <q-tab name="search" label="Search Engine" v-if="featuresStore.isEnabled('debug')"/>
+      <q-tab name="search" label="Search Engine"  v-if="devEnabled" />
 <!--      <q-tab name="importExport" label="Import/Export"/>-->
       <q-tab name="featureToggles" label="Feature Toggles"/>
     </q-tabs>
@@ -248,67 +249,37 @@
 
   </div>
 
+  <div v-if="tab === 'thirdparty'">
+
+    <div class="q-pa-md q-gutter-sm">
+
+      <q-banner rounded class="bg-grey-1 text-primary">
+        TODO
+      </q-banner>
+
+      <div class="row q-pa-md">
+        <div class="col-3"><b>DuckDuckGo FavIcon Service</b></div>
+        <div class="col-5">Usually, the favicon (the little icon displayed next to a tab url) is provided by the page you are visiting.
+          Sometimes, Tabsets does not have the information (yet) and might defer to a third party service, here duckduckgo. Switch this off
+          if you do not want to use this service.
+        </div>
+        <div class="col-1"></div>
+        <div class="col-3">
+          <q-toggle v-model="ddgEnabled"/>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
   <div v-if="tab === 'featureToggles'">
 
     <div class="q-pa-md q-gutter-sm">
 
       <q-banner rounded class="bg-grey-1 text-primary">Switch on experimental features (or off). These feature toggles are meant for developers
-      only as they might break functionality and/or destroy data. Once they are considered 'safe enough', they will be available at the
-      "experimental features" view on the left.</q-banner>
-
-<!--      <div class="row q-pa-md">-->
-<!--        <div class="col-3"><b>debug</b></div>-->
-<!--        <div class="col-3">add some information (mainly on tooltips) to help debugging</div>-->
-<!--        <div class="col-1"></div>-->
-<!--        <div class="col-5">-->
-<!--          <q-toggle v-model="debugEnabled"/>-->
-<!--        </div>-->
-<!--      </div>-->
-
-<!--      <div class="row q-pa-md">-->
-<!--        <div class="col-3"><b>spaces</b></div>-->
-<!--        <div class="col-3">spaces can be used to organize tabsets - a tabset can belong to zero, one or many-->
-<!--          spaces.-->
-<!--          You decide first which space you want to work with.-->
-<!--        </div>-->
-<!--        <div class="col-1"></div>-->
-<!--        <div class="col-5">-->
-<!--          <q-toggle v-model="spacesEnabled"/>-->
-<!--        </div>-->
-<!--      </div>-->
-
-<!--      <div class="row q-pa-md">-->
-<!--        <div class="col-3"><b>sidebar</b></div>-->
-<!--        <div class="col-3">the sidebar shows the current tabs on the left and let's you open the tabs in an inline-->
-<!--          view.-->
-<!--        </div>-->
-<!--        <div class="col-1"></div>-->
-<!--        <div class="col-5">-->
-<!--          <q-toggle v-model="sidebarEnabled"/>-->
-<!--        </div>-->
-<!--      </div>-->
-
-<!--      <div class="row q-pa-md">-->
-<!--        <div class="col-3"><b>experimental view</b></div>-->
-<!--        <div class="col-3">add the views 'kanban' (a column layout) and 'canvas' (a freestlye 2D layout) to the-->
-<!--          tabsets-->
-<!--          page.-->
-<!--        </div>-->
-<!--        <div class="col-1"></div>-->
-<!--        <div class="col-5">-->
-<!--          <q-toggle v-model="experimentalViewsEnabled"/>-->
-<!--        </div>-->
-<!--      </div>-->
-
-<!--      <div class="row q-pa-md">-->
-<!--        <div class="col-3"><b>Stats Page</b></div>-->
-<!--        <div class="col-3">view stats for tabsets, bookmarks and so on-->
-<!--        </div>-->
-<!--        <div class="col-1"></div>-->
-<!--        <div class="col-5">-->
-<!--          <q-toggle v-model="statsEnabled"/>-->
-<!--        </div>-->
-<!--      </div>-->
+        only as they might break functionality and/or destroy data. Once they are considered 'safe enough', they will be available at the
+        "experimental features" view on the left.</q-banner>
 
       <div class="row q-pa-md">
         <div class="col-3"><b>Developer Mode</b></div>
@@ -324,7 +295,6 @@
     </div>
 
   </div>
-
 
 </template>
 
@@ -364,14 +334,13 @@ const $q = useQuasar()
 
 const view = ref('grid')
 const indexSize = ref(0)
-const currentNewTabTabsetId = ref(useUiStore().tabsetIdForNewTab)
 
-// const debugEnabled = ref<boolean>(featuresStore.isEnabled('debug'))
 const syncEnabled = ref<boolean>(featuresStore.isEnabled('sync'))
 const spacesEnabled = ref<boolean>(featuresStore.isEnabled('spaces'))
 const experimentalViewsEnabled = ref<boolean>(featuresStore.isEnabled('experimentalViews'))
 const statsEnabled = ref<boolean>(featuresStore.isEnabled('stats'))
 const devEnabled = ref<boolean>(featuresStore.isEnabled('dev'))
+const ddgEnabled = ref<boolean>(!featuresStore.isEnabled('noDDG'))
 const permissionsList = ref<string[]>([])
 
 const darkMode = ref<boolean>(localStorage.getItem('darkMode') || false)
@@ -464,6 +433,7 @@ watchEffect(() => {
   featuresStore.setFeatureToggle("experimentalViews", experimentalViewsEnabled.value)
   featuresStore.setFeatureToggle("stats", statsEnabled.value)
   featuresStore.setFeatureToggle("dev", devEnabled.value)
+  featuresStore.setFeatureToggle("noDDG", !ddgEnabled.value)
 })
 
 watchEffect(() => {

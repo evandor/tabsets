@@ -115,6 +115,9 @@ const itemStyle = (tab: Tab) => {
   if (tab.isDuplicate) {
     background = "background: radial-gradient(circle, #FFFFFF 0%, #FFECB3 100%)"
   }
+  if (tab.chromeTab.url === props.highlightUrl) {
+    border = "border: 1px dotted grey; padding:2px; border-radius:5px"
+  }
   return `${border};${background}`
 }
 

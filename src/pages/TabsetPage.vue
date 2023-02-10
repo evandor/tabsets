@@ -43,10 +43,11 @@
                 <q-tooltip class="tooltip">Undo marking this tabset as favorite</q-tooltip>
               </q-icon>
 
-              <q-icon v-if="tabsStore.tabsets.size > 9 && tabsStore.getCurrentTabset?.type === TabsetType.DEFAULT && tabsStore.getCurrentTabset?.status !== TabsetStatus.DELETED"
-                      @click="archiveTabset(tabset)"
-                      class="q-ml-md cursor-pointer"
-                      color="primary" name="o_inventory_2" size="20px">
+              <q-icon
+                v-if="tabsStore.tabsets.size > 9 && tabsStore.getCurrentTabset?.type === TabsetType.DEFAULT && tabsStore.getCurrentTabset?.status !== TabsetStatus.DELETED"
+                @click="archiveTabset()"
+                class="q-ml-md cursor-pointer"
+                color="primary" name="o_inventory_2" size="20px">
                 <q-tooltip class="tooltip">Archive this tabset</q-tooltip>
               </q-icon>
 
@@ -139,19 +140,19 @@
         </q-btn>
 
 
-<!--        <q-btn v-if="tabsStore.currentTabsetId !== '' && tabsStore.getTabset(tabsStore.currentTabsetId)"-->
-<!--               class="q-ml-xl q-mr-md"-->
-<!--               @click="addUrlDialog"-->
-<!--               icon="add_circle"-->
-<!--               outline-->
-<!--               size="0.8em"-->
-<!--               color="primary">-->
-<!--          <q-tooltip-->
-<!--            class="tooltip"-->
-<!--            :delay="200">-->
-<!--            Copy and Paste or create a new Tab inside this tabset-->
-<!--          </q-tooltip>-->
-<!--        </q-btn>-->
+        <!--        <q-btn v-if="tabsStore.currentTabsetId !== '' && tabsStore.getTabset(tabsStore.currentTabsetId)"-->
+        <!--               class="q-ml-xl q-mr-md"-->
+        <!--               @click="addUrlDialog"-->
+        <!--               icon="add_circle"-->
+        <!--               outline-->
+        <!--               size="0.8em"-->
+        <!--               color="primary">-->
+        <!--          <q-tooltip-->
+        <!--            class="tooltip"-->
+        <!--            :delay="200">-->
+        <!--            Copy and Paste or create a new Tab inside this tabset-->
+        <!--          </q-tooltip>-->
+        <!--        </q-btn>-->
 
         <q-btn v-if="tabsStore.currentTabsetId !== '' && tabsStore.getTabset(tabsStore.currentTabsetId)"
                @click="addUrlDialog"
@@ -174,103 +175,12 @@
 
   <div class="row fit greyBorderTop"></div>
 
-  <!-- pending tabs
-  <Transition name="delayed-disappear" v-if="tabsStore.currentTabsetId && permissionsStore.hasFeature('pendingTabs')">
-    <PendingTabsAsCarouselWidget/>
-  </Transition> -->
-
   <q-banner rounded class="bg-amber-1 text-black q-ma-md"
             v-if="!tabsStore.currentTabsetId && tabsStore.tabsets.size > 0">
     <div class="text-body2">
       Select an existing tabset from the list or create a new tabset.
     </div>
   </q-banner>
-
-  <!-- pinned tabs -->
-<!--  <q-expansion-item v-if="showPinnedTabsSection()"-->
-<!--                    header-class="text-black"-->
-<!--                    expand-icon-class="text-black"-->
-<!--                    expand-separator-->
-<!--                    default-opened>-->
-<!--    <template v-slot:header="{ expanded }">-->
-<!--      <q-item-section>-->
-<!--        <div>-->
-<!--          <span class="text-weight-bold">Pinned Tabs ({{ tabsStore.pinnedTabs?.length }})</span>-->
-<!--          <div class="text-caption ellipsis">this browser's window's tabs to be pinned</div>-->
-<!--        </div>-->
-<!--      </q-item-section>-->
-<!--    </template>-->
-<!--    <q-card>-->
-<!--      <q-card-section>-->
-
-<!--        <TabList v-if="tabsStore.getCurrentTabset?.view === 'list'"-->
-<!--                 group="pinnedTabs"-->
-<!--                 :tabs="tabsStore.pinnedTabs"/>-->
-
-<!--        <TabList v-else-if="tabsStore.getCurrentTabset?.view === 'table'"-->
-<!--                 group="pinnedTabs"-->
-<!--                 :tabs="tabsStore.pinnedTabs"/>-->
-
-<!--        <TabThumbs v-else-if="tabsStore.getCurrentTabset?.view === 'thumbnails'" group="pinnedTabs"-->
-<!--                   :tabs="tabsStore.pinnedTabs"/>-->
-
-
-<!--        <Tabcards v-else-->
-<!--                  key="pinnedTabs" :tabs="tabsStore.pinnedTabs" group="pinnedTabs" :highlightUrl="highlightUrl"/>-->
-
-<!--      </q-card-section>-->
-<!--    </q-card>-->
-<!--  </q-expansion-item>-->
-
-  <!-- chrome groups new -->
-<!--  <template v-if="usePermissionsStore().hasFeature('useGroups')"-->
-<!--            v-for="group in tabsStore.getCurrentTabset?.groups">-->
-<!--    <q-expansion-item-->
-<!--      v-if="tabsForGroup(group.chromeGroup.id).length > 0 && !specialView()"-->
-<!--      default-opened-->
-<!--      header-class="text-black"-->
-<!--      expand-icon-class="text-black"-->
-<!--      expand-separator>-->
-<!--      <template v-slot:header="{ expanded }">-->
-<!--        <q-item-section avatar>-->
-<!--          <q-icon :color="group.color" name="tab"/>-->
-<!--        </q-item-section>-->
-
-<!--        <q-item-section>-->
-<!--          <div>-->
-<!--            <span class="text-weight-bold">{{ group.chromeGroup.title }}</span>-->
-<!--            <div class="text-caption">chrome browser's group of tabs</div>-->
-<!--          </div>-->
-<!--        </q-item-section>-->
-<!--        <q-item-section>{{ formatLength(tabsForGroup(group.chromeGroup.id).length, 'tab', 'tabs') }}</q-item-section>-->
-<!--      </template>-->
-<!--      <q-card>-->
-<!--        <q-card-section>-->
-
-
-<!--          <TabList v-if="tabsStore.getCurrentTabset?.view === 'list'"-->
-<!--                   :group="'groupedTabs_'+group.chromeGroup.id"-->
-<!--                   :tabs="tabsForGroup( group.chromeGroup.id)"/>-->
-
-<!--          <TabTable v-else-if="tabsStore.getCurrentTabset?.view === 'table'"-->
-<!--                   :group="'groupedTabs_'+group.chromeGroup.id"-->
-<!--                   :tabs="tabsForGroup( group.chromeGroup.id)"/>-->
-
-<!--          <TabThumbs v-else-if="tabsStore.getCurrentTabset?.view === 'thumbnails'"-->
-<!--                     :group="'groupedTabs_'+group.chromeGroup.id"-->
-<!--                     :tabs="tabsForGroup( group.chromeGroup.id)"/>-->
-
-<!--          <Tabcards v-else-->
-<!--                    :tabs="tabsForGroup( group.chromeGroup.id)" :key="'groupedTabs_'+group.chromeGroup.id"-->
-<!--                    :group="'groupedTabs_'+group.chromeGroup.id"-->
-<!--                    :highlightUrl="highlightUrl"/>-->
-
-
-<!--        </q-card-section>-->
-<!--      </q-card>-->
-<!--    </q-expansion-item>-->
-<!--  </template>-->
-
   <q-banner rounded class="bg-amber-1 text-black q-ma-md"
             v-if="tabsStore.currentTabsetId && tabsStore.getTabset(tabsetId.value)?.tabs.length === 0 && tabsStore.pendingTabset?.tabs.length > 0">
     <div class="text-body2">
@@ -283,75 +193,50 @@
     <!--If you want to assign your open tabs straight away, click <span class="cursor-pointer text-blue" @click="addOpenTabs()"><u>here</u></span>.-->
   </q-banner>
 
-  <!-- rest: neither pinned, grouped, or pending -->
-<!--  <q-expansion-item-->
-<!--    v-if="!specialView() && tabsStore.currentTabsetId"-->
-<!--    icon="tabs"-->
-<!--    expand-icon-toggle-->
-<!--    default-opened-->
-<!--    data-testid="expansion_item_unpinnedNoGroup"-->
-<!--    header-class="text-black"-->
-<!--    expand-icon-class="text-black">-->
-<!--    <template v-slot:header="{ expanded }">-->
-<!--      <q-item-section>-->
-<!--        <div>-->
-<!--          <span class="text-weight-bold">{{-->
-<!--              unpinnedNoGroupOrAllTabs()?.length-->
-<!--            }} {{ unpinnedNoGroupOrAllTabs()?.length === 1 ? 'Tab' : 'Tabs' }}</span><span class="text-caption">{{-->
-<!--            sortingInfo()-->
-<!--          }}</span>-->
-<!--          <div class="text-caption ellipsis"></div>-->
-<!--        </div>-->
-<!--      </q-item-section>-->
-<!--    </template>-->
+  <q-card flat>
+    <q-card-section>
 
-    <q-card>
-      <q-card-section>
+      <TabList v-if="tabsStore.getCurrentTabset?.view === 'list'"
+               group="otherTabs"
+               :highlightUrl="highlightUrl"
+               :tabs="unpinnedNoGroupOrAllTabs()"/>
 
-        <TabList v-if="tabsStore.getCurrentTabset?.view === 'list'"
+      <TabTable v-else-if="tabsStore.getCurrentTabset?.view === 'table'"
+                group="otherTabs"
+                :highlightUrl="highlightUrl"
+                :tabs="unpinnedNoGroupOrAllTabs()"/>
+
+      <TabThumbs v-else-if="tabsStore.getCurrentTabset?.view === 'thumbnails'"
                  group="otherTabs"
                  :tabs="unpinnedNoGroupOrAllTabs()"/>
 
-        <TabTable v-else-if="tabsStore.getCurrentTabset?.view === 'table'"
-                 group="otherTabs"
-                 :tabs="unpinnedNoGroupOrAllTabs()"/>
+      <Tabcards v-else
+                :tabs="unpinnedNoGroupOrAllTabs()" group="otherTabs" :highlightUrl="highlightUrl"/>
 
-        <TabThumbs v-else-if="tabsStore.getCurrentTabset?.view === 'thumbnails'"
-                   group="otherTabs"
-                   :tabs="unpinnedNoGroupOrAllTabs()"/>
+    </q-card-section>
 
-        <Tabcards v-else
-                  :tabs="unpinnedNoGroupOrAllTabs()" group="otherTabs" :highlightUrl="highlightUrl"/>
-
-      </q-card-section>
-
-      <q-card-section v-if="tabsStore.getCurrentTabset?.tabs.length === 0
+    <q-card-section v-if="tabsStore.getCurrentTabset?.tabs.length === 0
         && permissionsStore.hasFeature('pendingTabs')
         && tabsStore.pendingTabset?.tabs.length > 0">
-        <q-banner rounded class="text-black"
-                  style="font-weight: bold; border: 2px solid orange">
-          <div class="row justify-center items-center">
-            Your tabset does not yet contain any tabs. You can select some (or all) from the list above.
-          </div>
-        </q-banner>
-      </q-card-section>
+      <q-banner rounded class="text-black"
+                style="font-weight: bold; border: 2px solid orange">
+        <div class="row justify-center items-center">
+          Your tabset does not yet contain any tabs. You can select some (or all) from the list above.
+        </div>
+      </q-banner>
+    </q-card-section>
 
-    </q-card>
-<!--  </q-expansion-item>-->
+  </q-card>
 
   <q-card v-if="tabsStore.getCurrentTabset?.view === 'kanban'">
     <q-card-section>
-
       <TabColumns/>
-
     </q-card-section>
   </q-card>
 
   <q-card v-if="tabsStore.getCurrentTabset?.view === 'canvas'">
     <q-card-section>
-
       <TabsCanvas :key="'tabCanvas_' + tabsStore.currentTabsetId"/>
-
     </q-card-section>
   </q-card>
 
@@ -516,8 +401,7 @@ const specialView = (): boolean =>
 
 const markAsFavorite = () => useCommandExecutor().executeFromUi(new MarkTabsetAsFavoriteCommand(tabsStore.currentTabsetId))
 const markAsDefault = () => useCommandExecutor().executeFromUi(new MarkTabsetAsDefaultCommand(tabsStore.currentTabsetId))
-//const archiveTabset = () => useCommandExecutor().executeFromUi(new MarkTabsetAsArchivedCommand(tabsStore.currentTabsetId))
-const archiveTabset = (ts: Tabset) => useCommandExecutor().executeFromUi(new MarkTabsetAsArchivedCommand(ts.id))
+const archiveTabset = () => useCommandExecutor().executeFromUi(new MarkTabsetAsArchivedCommand(tabsStore.currentTabsetId))
 
 const stopSession = () => useCommandExecutor().executeFromUi(new StopSessionCommand(tabsStore.getCurrentTabset))
 

@@ -102,7 +102,7 @@ const routes: RouteRecordRaw[] = [
   },
   {
     path: '/logs',
-    component: () => import('layouts/MainLayout.vue'),
+    component: () => import('layouts/DefaultLayout.vue'),
     children: [{ path: '', component: () => import('pages/LogsPage.vue') }],
   },
   {

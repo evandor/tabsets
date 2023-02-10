@@ -1,62 +1,51 @@
 <template>
-  <q-page class="q-ma-lg">
 
-    <q-toolbar class="text-primary">
-      <div class="row fit">
-        <div class="col-xs-12 col-md-5">
-          <q-toolbar-title>
-            <div class="row justify-start items-baseline">
-              <div><span class="text-dark">Search Results for '{{
-                  searchStore.term
-                }}': {{ tabsetHits.length }} hit(s)</span>
-              </div>
-              <!--              <div class="text-caption q-mb-md">Not happy with the search results? Try <span-->
-              <!--                class="text-blue-9 cursor-pointer" @click="showReindexDialog = true"><u>re-indexing</u></span>.-->
-              <!--              </div>-->
+
+  <q-toolbar class="text-primary lightgrey">
+    <div class="row fit">
+      <div class="col-xs-12 col-md-5">
+        <q-toolbar-title>
+          <div class="row justify-start items-baseline">
+            <div><span class="text-dark">Search Results for '{{
+                searchStore.term
+              }}': {{ tabsetHits.length }} hit(s)</span>
             </div>
-          </q-toolbar-title>
-        </div>
-        <div class="col-xs-12 col-md-7 text-right">
-
-          <q-btn
-            flat dense icon="restore_page"
-            color="green" :label="$q.screen.gt.sm ? 'Search with browser...' : ''"
-            class="q-mr-md"
-            @click="searchWithBrowser">
-            <q-tooltip>Use your browsers default search provideder to search for {{ searchStore.term }}</q-tooltip>
-          </q-btn>
-
-        </div>
+            <!--              <div class="text-caption q-mb-md">Not happy with the search results? Try <span-->
+            <!--                class="text-blue-9 cursor-pointer" @click="showReindexDialog = true"><u>re-indexing</u></span>.-->
+            <!--              </div>-->
+          </div>
+        </q-toolbar-title>
       </div>
-    </q-toolbar>
+      <div class="col-xs-12 col-md-7 text-right">
 
-    <div class="row">
-      <div class="col-8 q-ma-md">
-        <template v-for="hit in tabsetHits">
-          <q-list>
-            <SearchHit :hit="hit"/>
-          </q-list>
-        </template>
-
-      </div>
-      <div class="col-4 q-ma-md">
+        <q-btn
+          flat dense icon="restore_page"
+          color="green" :label="$q.screen.gt.sm ? 'Search with browser...' : ''"
+          class="q-mr-md"
+          @click="searchWithBrowser">
+          <q-tooltip>Use your browsers default search provider to search for {{ searchStore.term }}</q-tooltip>
+        </q-btn>
 
       </div>
     </div>
+  </q-toolbar>
 
-    <div class="row" v-if="!bookmarksEnabled()">
-      <div class="col-12 q-ma-md" style="border-top: 1px dotted grey">
-        <q-banner class="text-caption bg-yellow-1">
-          Tabsets can search your bookmarks as well, but is currently missing permissions to do so.<br>
-          Click <span class="cursor-pointer text-blue-6" style="text-decoration: underline"
-                      @click="grant('bookmarks')">here</span> to
-          grant permissions for the tabset extension to access your bookmarks.
-        </q-banner>
-      </div>
+  <div class="row fit greyBorderTop"></div>
+
+  <div class="row">
+    <div class="col-8 q-ma-md">
+      <template v-for="hit in tabsetHits">
+        <q-list>
+          <SearchHit :hit="hit"/>
+        </q-list>
+      </template>
+
     </div>
+    <div class="col-4 q-ma-md">
 
+    </div>
+  </div>
 
-  </q-page>
 </template>
 
 <script setup lang="ts">
@@ -115,7 +104,7 @@ const newSearch = (term: string) => {
 }
 
 //console.log("termFromParams", termFromParams, route.query)
-watchEffect (() => {
+watchEffect(() => {
   if (termFromParams && termFromParams.trim() !== '') {
     console.log("setting search term from params", termFromParams)
     searchStore.term = termFromParams
