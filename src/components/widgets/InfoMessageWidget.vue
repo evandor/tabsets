@@ -1,6 +1,6 @@
 <template>
 
-  <div class="q-pa-md q-gutter-sm" v-if="showHint()">
+  <div :class="cssClass" v-if="showHint()">
     <q-banner inline-actions rounded class="bg-yellow-1 text-black" style="border: 1px solid grey">
       <div class="row q-pa-xs">
         <div class="2">
@@ -32,16 +32,18 @@ const props = defineProps({
     type: String,
     required: true
   },
-  probability: {
-    type: Number,
-    default: 1
-  }
+  cssClass: {type: String, default: 'q-pa-md q-gutter-sm'},
+  // even if this is set to 1.0, showMessage might return "false", e.g.
+  // when another message is already shown
+  probability: {type: Number, default: 1},
+  // the hint is shown unless it has been disabled by the user
+  forceDisplay: {type: Boolean, default: false}
 })
 const uiStore = useUiStore()
 const tabsStore = useTabsStore()
 
 const hideMessage = (ident: string) => useUiStore().hideInfoMessage(ident)
 
-const showHint = () => uiStore.showMessage(props.ident, props.probability)
+const showHint = () => uiStore.showMessage(props.ident, props.probability, props.forceDisplay)
 
 </script>

@@ -44,11 +44,11 @@
 <!--        <template v-slot:before>-->
           <q-list class="q-mt-none greyBorderTop">
 
-            <InfoMessageWidget
-              v-if="tabsStore.tabsets.size > 9"
-              :probability="0.5"
-              ident="navigation_archiveTabsets"
-              hint="You can click on the inventory icon to archive your tabset. It will not appear here any more, but can be restored in the settings."/>
+<!--            <InfoMessageWidget-->
+<!--              v-if="tabsStore.tabsets.size > 9"-->
+<!--              :probability="0.5"-->
+<!--              ident="navigation_archiveTabsets"-->
+<!--              hint="You can click on the inventory icon to archive your tabset. It will not appear here any more, but can be restored in the settings."/>-->
 
             <NavTabsetsListWidget :tabsets="tabsets(true)"/>
 

@@ -79,14 +79,6 @@ class ChromeApi {
       (alarm: chrome.alarms.Alarm) => runHousekeeping(alarm)
     )
 
-
-    // chrome.management.getSelf(
-    //   (self: chrome.management.ExtensionInfo) => {
-    //     // TODO needed ?
-    //     localStorage.setItem("selfId", self.id)
-    //   }
-    // )
-
     chrome.runtime.onUpdateAvailable.addListener(
       (details: any) => NavigationService.updateAvailable(details)
     )

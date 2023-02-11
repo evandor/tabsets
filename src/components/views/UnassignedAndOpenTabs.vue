@@ -18,18 +18,20 @@
     </div>
   </div>
 
-  <!--  <div class="q-ma-md" style="border: 1px dotted grey; border-radius: 5px; height:80px"-->
-  <!--  @dragend="handleDragend">-->
-  <!--      drag and drop urls here-->
-  <!--  </div>-->
-
   <q-input v-if="!inBexMode()"
            class="q-ma-md" dense
            style="border: 1px dotted grey; border-radius: 5px;" type="textarea" v-model="dragTarget"/>
 
-  <div v-if="tabsStore.currentTabsetId && unassignedTabs().length > 0"
+  <InfoMessageWidget
+    v-if="tabsStore.currentTabsetId && unassignedTabs().length > 0 && !userCanSelect"
+    :probability="1"
+    css-class="q-pa-sm q-gutter-sm"
+    force-display
+    ident="unassignedAndOpenTabs_userCannotSelect"
+    hint="Tabs with grey background are already contained in the current tabset."/>
+
+  <div v-if="tabsStore.currentTabsetId && unassignedTabs().length > 0 && userCanSelect"
        class="q-ma-xs" style="border: 1px dotted grey; border-radius: 3px">
-    <!--    <q-banner inline-actions rounded class="bg-white text-grey" style="border: 1px dotted grey">-->
     <div class="row">
       <div class="col-6 q-pa-xs">
         <q-btn flat color="primary" size="11px" icon="keyboard_double_arrow_left"
@@ -37,10 +39,6 @@
                @click="saveSelectedTabs()">
           <q-tooltip class="tooltip" v-html="addTooltip()"></q-tooltip>
         </q-btn>
-<!--        <q-btn flat color="negative" size="11px" icon="o_delete"-->
-<!--               @click="removeSelectedTabs()">-->
-<!--          <q-tooltip class="tooltip" v-html="deleteTabset()"></q-tooltip>-->
-<!--        </q-btn>-->
 
       </div>
       <div class="col q-pa-xs text-right">
@@ -71,7 +69,6 @@
         />
       </div>
     </div>
-    <!--    </q-banner>-->
   </div>
 
   <vue-draggable-next
@@ -88,6 +85,7 @@
       <OpenTabCard
         v-on:selectionChanged="tabSelectionChanged"
         v-on:addedToTabset="tabAddedToTabset"
+        v-on:hasSelectable="hasSelectable"
         :tab="tab"
         :useSelection="useSelection"/>
 
@@ -101,7 +99,7 @@ import {useTabsStore} from "stores/tabsStore";
 import {Tab} from "src/models/Tab";
 import {Tabset} from "src/models/Tabset";
 import _ from "lodash";
-import {ref, watchEffect} from "vue"
+import {onMounted, ref, watchEffect} from "vue"
 import OpenTabCard from "components/layouts/OpenTabCard.vue";
 import {VueDraggableNext} from 'vue-draggable-next'
 import TabsetService from "src/services/TabsetService";
@@ -111,6 +109,7 @@ import {useUtils} from "src/services/Utils"
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {SavePendingTabToCurrentTabsetCommand} from "src/domain/commands/SavePendingTabToCurrentTabsetCommand";
 import {useTabsetService} from "src/services/TabsetService2";
+import InfoMessageWidget from "components/widgets/InfoMessageWidget.vue";
 
 const {inBexMode} = useUtils()
 
@@ -120,6 +119,7 @@ const $q = useQuasar()
 const useSelection = ref(false)
 const invert = ref(false)
 const dragTarget = ref('')
+const userCanSelect = ref(false)
 
 const tabSelection = ref<Set<string>>(new Set<string>())
 
@@ -131,6 +131,13 @@ function unassignedTabs(): Tab[] {
       return true
     })
 }
+
+watchEffect(() => {
+  console.log("watching", tabsStore.pendingTabset?.tabs)
+  userCanSelect.value = false
+})
+
+//onMounted(() => userCanSelect.value = false)
 
 watchEffect(() => {
  // console.log("d&d", dragTarget.value)
@@ -173,6 +180,8 @@ const tabAddedToTabset = (a: any) => {
   // tabsStore.pendingTabset.tabs = _.filter(tabsStore.pendingTabset.tabs, t => t.chromeTab.url !== tabUrl)
   // console.log("tabAddedToTabset", tabId, tabsStore.pendingTabset.tabs.length)
 }
+
+const hasSelectable = () => userCanSelect.value = true
 
 
 const showMissingSomeTabsAction = () => {

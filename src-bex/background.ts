@@ -150,11 +150,11 @@ chrome.runtime.onInstalled.addListener((details) => {
     //console.log("tab", tab)
 
     if (details.reason === "update") {
-      chrome.tabs.create(
-        {
-          url: 'https://tabsets.web.app/#/updateFrom/' + details.previousVersion,
-        }
-      );
+      // chrome.tabs.create(
+      //   {
+      //     url: 'https://tabsets.web.app/#/updateFrom/' + details.previousVersion,
+      //   }
+      // );
     }
 
     chrome.tabs.create(

@@ -78,7 +78,7 @@
                color="primary"
                flat
                icon="o_more_horiz">
-          <q-tooltip>Show additional information about this tab (developer mode).</q-tooltip>
+          <q-tooltip>Show additional information about this tab (developer mode)</q-tooltip>
         </q-btn>
       </div>
       <div class="col-9 text-right">
@@ -152,6 +152,7 @@ import {useQuasar} from "quasar";
 import {Tab} from "src/models/Tab";
 import {formatDistance} from "date-fns";
 import {useUtils} from "src/services/Utils";
+import NavigationService from "src/services/NavigationService";
 
 const {inBexMode} = useUtils()
 

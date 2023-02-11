@@ -33,6 +33,7 @@ export const useNotificationsStore = defineStore('notifications', {
       },
       updateAvailable(available: boolean, version: string = '') {
         this.updateToVersion = available ? version : '';
+        console.log("updateToVersion set to ", this.updateToVersion)
       },
       getNotification(notificationId: string): Notification | undefined {
         const r: any[] = _.filter(this.notifications, (n: Notification) => n.id === notificationId)

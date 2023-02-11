@@ -89,7 +89,7 @@ const createNewTabset = () => {
 
   useCommandExecutor()
     .executeFromUi(new CreateTabsetCommand(newTabsetName.value, tabsToUse))
-    .then(() => {
+    .then((res) => {
       useUiStore().setNewTabsetEmptyByDefault(addEmptyTabset.value)
       if (addEmptyTabset.value) {
         TabsetService.createPendingFromBrowserTabs()
@@ -99,7 +99,7 @@ const createNewTabset = () => {
           tabsStore.pendingTabset.tabs = []
         }
       }
-      router.push("/tabset")
+      router.push("/tabsets/" + res.result.tabsetId + "?first=" + props.firstTabset)
     })
 }
 

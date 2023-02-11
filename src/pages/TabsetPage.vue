@@ -193,6 +193,13 @@
     <!--If you want to assign your open tabs straight away, click <span class="cursor-pointer text-blue" @click="addOpenTabs()"><u>here</u></span>.-->
   </q-banner>
 
+  <InfoMessageWidget
+    v-if="route.query.first && tabsStore.getCurrentTabset?.tabs.length > 0"
+    :probability="1"
+    ident="tabsetPage_firstTime"
+    hint="Congrats - you created your first tabset. Your open tabs have been added automatically to get you started with tabsets!" />
+
+
   <q-card flat>
     <q-card-section>
 

@@ -72,7 +72,7 @@ const props = defineProps({
   }
 })
 
-const emits = defineEmits(['selectionChanged','addedToTabset'])
+const emits = defineEmits(['selectionChanged','addedToTabset','hasSelectable'])
 
 const tabsStore = useTabsStore()
 
@@ -89,6 +89,8 @@ const cardStyle = (tab: Tab) => {
   }
   if (useTabsetService().urlExistsInCurrentTabset(tab.chromeTab?.url || '')) {
     background = "background: #efefef"
+  } else {
+    emits('hasSelectable', true)
   }
   return `height: ${height};max-height:${height}; min-height: ${height};position:relative; top:5px;${background}`
 }

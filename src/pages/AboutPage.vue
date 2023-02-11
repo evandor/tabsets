@@ -42,7 +42,6 @@
             <Transition name="delayed-appear" appear>
               <q-btn class="fit text-warning"
                      outline
-
                      data-testid="createFirstTabsetBtn"
                      @click="addTabset"
                      label="create your first tabset"></q-btn>

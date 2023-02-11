@@ -161,8 +161,8 @@
 
         <div>
           <q-btn class="q-mr-md" icon="o_settings" size="12px" style="width:24px" flat>
-<!--            <q-tooltip class="tooltip" anchor="center right" self="center left" :delay="200">Customize Tabsets-->
-<!--            </q-tooltip>-->
+            <!--            <q-tooltip class="tooltip" anchor="center right" self="center left" :delay="200">Customize Tabsets-->
+            <!--            </q-tooltip>-->
           </q-btn>
           <q-menu :offset="[0, 7]">
             <q-list style="min-width: 200px">
@@ -183,7 +183,7 @@
         <div class="cursor-pointer" @click="router.push('/about')" v-if="notificationsStore.updateToVersion !== ''">
           <q-btn
             class="text-primary bg-warning"
-            @click="installNewVersion"
+            @click="installNewVersion(notificationsStore.updateToVersion)"
             :label="'New Version ' + notificationsStore.updateToVersion + ' available. Click here to update'"/>
         </div>
       </q-toolbar>
@@ -321,8 +321,12 @@ const toggleLeftDrawer = () => {
   //useUiService().toggleDrawer()
 }
 
-const installNewVersion = () => {
+const installNewVersion = (version: string) => {
   notificationsStore.updateAvailable(false)
+  chrome.tabs.create({
+    active: true,
+    url: "https://tabsets.web.app/#/updatedTo/" + version
+  })
   chrome.runtime.reload()
 }
 

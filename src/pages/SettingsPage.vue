@@ -90,7 +90,7 @@
         </div>
       </div>
 
-      <div class="row items-baseline q-ma-md">
+      <div class="row items-baseline q-ma-md" v-if="devEnabled">
         <div class="col-3">
           New Version Simulation
         </div>
@@ -98,7 +98,7 @@
           Simulate that there is a new version available
         </div>
         <div class="col q-ma-xl">
-          <span class="text-blue cursor-pointer" @click="simulateNewVersion('0.1.2')">Simulate</span>
+          <span class="text-blue cursor-pointer" @click="simulateNewVersion('0.2.12')">Simulate</span>
         </div>
       </div>
 

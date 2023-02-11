@@ -183,15 +183,17 @@ export const useUiStore = defineStore('ui', () => {
   const rightDrawerShowCloseButton = computed(() => () => rightDrawerViewStack.value.length > 1)
 
   const showMessage = computed(() => {
-    return (ident: string, probability: number = 1) => {
+    return (ident: string, probability: number = 1, forceDisplay: boolean = false) => {
       //console.log("checking message", ident, probability, hiddenMessages.value)
       if (hiddenMessages.value.indexOf(ident) >= 0) {
         return false
       }
+      if (forceDisplay) {
+        return true
+      }
       const couldBeShown = Math.random() < probability
       //console.log("could be shown", couldBeShown, messageAlreadyShown.value)
       if (couldBeShown && (messageAlreadyShown.value === undefined || messageAlreadyShown.value === ident)) {
-        //console.log("stting to ", ident)
         setAnotherMessageAlreadyShown(ident)
         return true
       } else if (messageAlreadyShown.value) {
