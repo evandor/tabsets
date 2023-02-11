@@ -112,7 +112,7 @@ $q.loadingBar.setDefaults({
 
 const tabsets = (isFavorite: boolean) => {
   let tabsets = [...tabsStore.tabsets.values()]
-  if (featuresStore.isEnabled('spaces') && spacesStore.spaces && spacesStore.spaces.size > 0) {
+  if (usePermissionsStore().hasFeature('spaces') && spacesStore.spaces && spacesStore.spaces.size > 0) {
     if (spacesStore.space && spacesStore.space.id && spacesStore.space.id.length > 0) {
       tabsets = _.filter(tabsets, ts => ts.status !== TabsetStatus.ARCHIVED && ts.spaces && ts.spaces.indexOf(spacesStore.space.id) >= 0)
     } else {

@@ -57,7 +57,7 @@ const routes: RouteRecordRaw[] = [
   },
   {
     path: '/spaces',
-    component: () => import('layouts/MainLayout.vue'),
+    component: () => import('layouts/DefaultLayout.vue'),
     children: [{ path: '', component: () => import('pages/Spaces.vue') }],
   },
   {

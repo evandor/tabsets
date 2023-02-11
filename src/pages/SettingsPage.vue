@@ -336,7 +336,6 @@ const view = ref('grid')
 const indexSize = ref(0)
 
 const syncEnabled = ref<boolean>(featuresStore.isEnabled('sync'))
-const spacesEnabled = ref<boolean>(featuresStore.isEnabled('spaces'))
 const experimentalViewsEnabled = ref<boolean>(featuresStore.isEnabled('experimentalViews'))
 const statsEnabled = ref<boolean>(featuresStore.isEnabled('stats'))
 const devEnabled = ref<boolean>(featuresStore.isEnabled('dev'))
@@ -429,7 +428,6 @@ watchEffect(() => {
 watchEffect(() => {
   //featuresStore.setFeatureToggle("debug", debugEnabled.value)
   featuresStore.setFeatureToggle("sync", syncEnabled.value)
-  featuresStore.setFeatureToggle("spaces", spacesEnabled.value)
   featuresStore.setFeatureToggle("experimentalViews", experimentalViewsEnabled.value)
   featuresStore.setFeatureToggle("stats", statsEnabled.value)
   featuresStore.setFeatureToggle("dev", devEnabled.value)

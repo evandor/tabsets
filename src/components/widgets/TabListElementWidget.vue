@@ -2,12 +2,7 @@
 
   <q-item-section avatar>
 
-    <q-img
-      class="rounded-borders" style="cursor: move"
-      width="20px"
-      height="20px"
-      :src="getFaviconUrl(props.tab.chromeTab)">
-    </q-img>
+    <TabFaviconWidget :tab="props.tab" width="20px" height="20px"/>
 
   </q-item-section>
   <q-item-section :style="itemStyle(props.tab)"
@@ -73,6 +68,7 @@ import EditNoteDialog from "components/dialogues/EditNoteDialog.vue";
 import {useQuasar} from "quasar";
 import {DrawerTabs, useUiStore} from "stores/uiStore";
 import {usePermissionsStore} from "stores/permissionsStore";
+import TabFaviconWidget from "components/widgets/TabFaviconWidget.vue";
 
 const props = defineProps({
   tab: {type: Object, required: true},

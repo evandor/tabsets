@@ -211,7 +211,7 @@ text.set('useGroups', {
 })
 
 text.set('spaces', {
-  planned: true,
+  experimental: true,
   name: 'Spaces',
   description: 'The "Spaces" Feature lets you organize your tabsets in a larger structure, which might become handy if you start having many tabsets.',
   permissions: []

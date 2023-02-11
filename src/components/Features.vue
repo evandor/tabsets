@@ -151,6 +151,7 @@ const experimantalFeatures = [
   {ident: 'analyseTabs', name: 'Analyse Tabs', icon: 'o_analytics', useIn: ['bex'], target: '/features/analyseTabs'},
   {ident: 'details', name: 'Tab(set) Details View', icon: 'o_tab', target: '/features/details'},
   {ident: 'sessions', name: 'Sessions', icon: 'o_explore', useIn: ['bex'], target: '/features/sessions'},
+  {ident: 'spaces', name: 'Spaces', icon: 'o_history', useIn: ['all'], target: '/features/spaces'},
   // {ident: 'dynamic', name: 'Dynamic Tabsets', icon: 'o_file_open', bexOnly: false, target: '/features/dynamic'},
   // {ident: 'history', name: 'History', icon: 'o_history', useIn: ['bex'], target: '/features/history'},
   // {ident: 'useGroups', name: '' +
@@ -160,7 +161,7 @@ const experimantalFeatures = [
 const plannedFeatures = [
   // {ident: 'mhtml', name: 'Saving Pages', icon: 'o_bookmarks', target: '/features/pageCapture'},
   // {ident: 'scheduled', name: 'Schedule Tabs', icon: 'o_update', target: '/features/scheduled'},
-  {ident: 'spaces', name: 'Spaces', icon: 'o_history', target: '/features/spaces'},
+
   {ident: 'windows', name: 'Multiple Windows', icon: 'o_history', useIn: ['bex'], target: '/features/windows'},
   {ident: 'scheduled', name: 'Scheduled Tabs', icon: 'o_history', target: '/features/scheduled'},
   {ident: 'oldTabs', name: 'Old Tabs View', icon: 'o_history', target: '/features/oldTabs'}

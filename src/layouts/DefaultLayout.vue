@@ -24,7 +24,7 @@
 
         <q-space/>
 
-        <SpacesSelectorWidget v-if="featuresStore.isEnabled('spaces')"/>
+        <SpacesSelectorWidget v-if="usePermissionsStore().hasFeature('spaces')"/>
 
         <Transition name="colorized-appear">
           <div v-if="permissionsStore.hasFeature('opentabsThreshold') && tabsStore.tabsets.size > 0">
