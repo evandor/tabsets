@@ -12,6 +12,7 @@ import {useSearchStore} from "stores/searchStore";
 import {SearchDoc} from "src/models/SearchDoc";
 import {usePermissionsStore} from "stores/permissionsStore";
 import {Tab} from "src/models/Tab";
+import {uid} from "quasar";
 
 // const {housekeeping} = useTabsetService()
 
@@ -285,6 +286,26 @@ class ChromeApi {
 
   createChromeTabObject(title: string, url: string, favIconUrl: string) {
     return {
+      active: false,
+      discarded: true,
+      // @ts-ignore
+      groupId: -1,
+      autoDiscardable: true,
+      favIconUrl: favIconUrl,
+      index: 0,
+      highlighted: false,
+      title: title,
+      pinned: false,
+      url: url,
+      windowId: 0,
+      incognito: false,
+      selected: false
+    }
+  }
+
+  createChromeBookmarkObject(title: string, url: string, favIconUrl: string) {
+    return {
+      id: uid(),
       active: false,
       discarded: true,
       // @ts-ignore

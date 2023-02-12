@@ -8,6 +8,7 @@ export function useJestHelper() {
     db.createObjectStore("thumbnails");
     db.createObjectStore("mhtml");
     db.createObjectStore("notifications");
+    db.createObjectStore("suggestions");
     db.createObjectStore("logs", { autoIncrement: true });
     // store.createIndex("by_title", "title", {unique: true});
     // store.put({title: "Quarry Memories", author: "Fred", isbn: 123456});
