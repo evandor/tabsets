@@ -205,7 +205,7 @@ import {useUiService} from "src/services/useUiService";
 import {usePermissionsStore} from "stores/permissionsStore";
 import TabList from "components/layouts/TabList.vue";
 import {useCommandExecutor} from "src/services/CommandExecutor";
-import {RenameTabsetCommand} from "src/domain/commands/RenameTabset";
+import {RenameTabsetCommand} from "src/domain/tabsets/RenameTabset";
 import {Tabset, TabsetStatus, TabsetType} from "src/models/Tabset";
 import {MarkTabsetAsFavoriteCommand} from "src/domain/commands/MarkTabsetAsFavoriteCommand";
 import {MarkTabsetAsDefaultCommand} from "src/domain/commands/MarkTabsetAsDefaultCommand";

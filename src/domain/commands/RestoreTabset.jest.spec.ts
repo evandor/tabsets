@@ -9,10 +9,9 @@ import {useJestHelper} from "src/domain/JestHelper";
 import LoggingService from "src/services/LoggingService";
 import {useTabsStore} from "src/stores/tabsStore";
 import {useSearchStore} from "src/stores/searchStore";
-import {MarkTabsetAsFavoriteCommand} from "src/domain/commands/MarkTabsetAsFavoriteCommand";
-import {RenameTabsetCommand} from "src/domain/commands/RenameTabset";
+import {RestoreTabsetCommand} from "src/domain/commands/RestoreTabset"
 
-describe('CreateTabsetCommand', () => {
+describe('RestoreTabsetCommand', () => {
 
   jest.setTimeout(10000)
 
@@ -29,20 +28,16 @@ describe('CreateTabsetCommand', () => {
     chrome.tabs.query.mockImplementation(async (o: object) => [])
   })
 
-  it('rename tabset', async () => {
-    const createTsCmd = new CreateTabsetCommand('oldName', [])
+  it('restore tabset', async () => {
+    const createTsCmd = new CreateTabsetCommand('theTabset', [])
     await createTsCmd.execute()
     const tabsets = useTabsStore().tabsets
-    expect(tabsets.size).toBe(1)
     const ts = tabsets.values().next().value
-    expect(ts.name).toBe("oldName")
 
-    const favoriteCmd = new RenameTabsetCommand(ts.id, "new Name")
+    const favoriteCmd = new RestoreTabsetCommand(ts.id, true)
     const res: any = await favoriteCmd.execute()
-    console.log("res", res)
-    expect(res.message).toBe("Tabset was renamed")
+    expect(res.message).toBe("doneMsg")
     expect(res.undoCommand).not.toBe(null)
-    expect(ts.name).toBe("new Name")
   })
 
 })

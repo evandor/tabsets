@@ -47,10 +47,6 @@ class TabsetService {
       if (tabset) {
         console.log("found tabset for id", tabsetId)
         ChromeApi.restore(tabset)
-        // .then((res: any) => {
-        //   console.log("res", res)
-        //   tabsStore.activateListeners()
-        // })
       }
     } catch (ex) {
       console.log("ex", ex)
@@ -84,7 +80,6 @@ class TabsetService {
       return t?.url === tabUrl
     }).length > 0
   }
-
 
   saveAllPendingTabs(onlySelected: boolean = false): Promise<void> {
     const tabsStore = useTabsStore()
@@ -471,49 +466,6 @@ class TabsetService {
     }
     return Promise.reject("did not find tab with id " + tabId)
   }
-
-
-  // toggleFavorite(id: string): Promise<boolean> {
-  //   console.log("toggling favorite for", id)
-  //   const ts = this.getTabset(id)
-  //   if (ts) {
-  //     switch (ts.status) {
-  //       case TabsetStatus.DEFAULT:
-  //         ts.status = TabsetStatus.FAVORITE
-  //         break
-  //       case TabsetStatus.FAVORITE:
-  //         ts.status = TabsetStatus.DEFAULT
-  //         break
-  //       default:
-  //     }
-  //     return this.saveTabset(ts)
-  //       .then(() => true)
-  //   }
-  //   return Promise.reject("could not toggle archive flag for " + id)
-  // }
-
-  // toggleArchived(id: string): Promise<boolean> {
-  //   console.log("toggling archived flag for", id)
-  //   const ts = this.getTabset(id)
-  //   if (ts) {
-  //     switch (ts.status) {
-  //       case TabsetStatus.ARCHIVED:
-  //         ts.status = TabsetStatus.DEFAULT
-  //         break
-  //       case TabsetStatus.FAVORITE:
-  //         ts.status = TabsetStatus.ARCHIVED
-  //         break
-  //       case TabsetStatus.DEFAULT:
-  //         ts.status = TabsetStatus.ARCHIVED
-  //         break
-  //       default:
-  //
-  //     }
-  //     return this.saveTabset(ts)
-  //       .then(() => true)
-  //   }
-  //   return Promise.reject("could not toggle archive flag for " + id)
-  // }
 
   markAsDeleted(tabsetId: string): Promise<boolean> {
     const ts = getTabset(tabsetId)
