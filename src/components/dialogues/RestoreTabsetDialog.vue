@@ -40,7 +40,7 @@ import {useTabsStore} from "src/stores/tabsStore";
 
 import {useDialogPluginComponent} from 'quasar'
 import {useCommandExecutor} from "src/services/CommandExecutor";
-import {RestoreTabsetCommand} from "src/domain/commands/RestoreTabsetCommand"
+import {RestoreTabsetCommand} from "src/domain/commands/RestoreTabset"
 
 defineEmits([
   ...useDialogPluginComponent.emits
