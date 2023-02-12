@@ -1,7 +1,7 @@
 import {beforeEach, describe, expect, it, jest} from "@jest/globals";
 import {chrome} from "jest-chrome";
 import {createPinia, setActivePinia} from "pinia";
-import {CreateTabsetCommand} from "src/domain/commands/CreateTabset";
+import {CreateTabsetCommand} from "src/domain/tabsets/CreateTabset";
 import "fake-indexeddb/auto"
 import IndexedDbPersistenceService from "src/services/IndexedDbPersistenceService";
 import {INDEX_DB_VERSION} from "boot/constants";
@@ -10,8 +10,8 @@ import LoggingService from "src/services/LoggingService";
 import ChromeApi from "src/services/ChromeApi";
 import {useTabsStore} from "src/stores/tabsStore";
 import {useSearchStore} from "src/stores/searchStore";
-import {DeleteTabsetCommand} from "src/domain/commands/DeleteTabset";
-import {MarkTabsetDeletedCommand} from "src/domain/commands/MarkTabsetDeletedCommand";
+import {DeleteTabsetCommand} from "src/domain/tabsets/DeleteTabset";
+import {MarkTabsetDeletedCommand} from "src/domain/tabsets/MarkTabsetDeleted";
 
 describe('CreateTabsetCommand', () => {
 

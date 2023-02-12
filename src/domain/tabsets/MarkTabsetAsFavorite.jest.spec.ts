@@ -1,7 +1,7 @@
 import {beforeEach, describe, expect, it, jest} from "@jest/globals";
 import {chrome} from "jest-chrome";
 import {createPinia, setActivePinia} from "pinia";
-import {CreateTabsetCommand} from "src/domain/commands/CreateTabset";
+import {CreateTabsetCommand} from "src/domain/tabsets/CreateTabset";
 import "fake-indexeddb/auto"
 import IndexedDbPersistenceService from "src/services/IndexedDbPersistenceService";
 import {INDEX_DB_VERSION} from "boot/constants";
@@ -9,9 +9,9 @@ import {useJestHelper} from "src/domain/JestHelper";
 import LoggingService from "src/services/LoggingService";
 import {useTabsStore} from "src/stores/tabsStore";
 import {useSearchStore} from "src/stores/searchStore";
-import {RestoreTabsetCommand} from "src/domain/commands/RestoreTabset"
+import {MarkTabsetAsFavoriteCommand} from "src/domain/tabsets/MarkTabsetAsFavorite";
 
-describe('RestoreTabsetCommand', () => {
+describe('CreateTabsetCommand', () => {
 
   jest.setTimeout(10000)
 
@@ -28,16 +28,20 @@ describe('RestoreTabsetCommand', () => {
     chrome.tabs.query.mockImplementation(async (o: object) => [])
   })
 
-  it('restore tabset', async () => {
-    const createTsCmd = new CreateTabsetCommand('theTabset', [])
+  it('mark tabset as favorite', async () => {
+    const createTsCmd = new CreateTabsetCommand('emptyTabsetId', [])
     await createTsCmd.execute()
     const tabsets = useTabsStore().tabsets
+    expect(tabsets.size).toBe(1)
     const ts = tabsets.values().next().value
+    expect(ts.status).toBe("DEFAULT")
 
-    const favoriteCmd = new RestoreTabsetCommand(ts.id, true)
+    const favoriteCmd = new MarkTabsetAsFavoriteCommand(ts.id)
     const res: any = await favoriteCmd.execute()
-    expect(res.message).toBe("doneMsg")
+    console.log("res", res)
+    expect(res.message).toBe("Tabset was marked as favorite")
     expect(res.undoCommand).not.toBe(null)
+    expect(ts.status).toBe("FAVORITE")
   })
 
 })

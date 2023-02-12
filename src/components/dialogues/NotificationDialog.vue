@@ -30,12 +30,6 @@
 import {computed, ref, watchEffect} from "vue";
 import {useDialogPluginComponent, useQuasar} from "quasar";
 import {useRouter} from "vue-router";
-import {useTabsStore} from "src/stores/tabsStore";
-import {STRIP_CHARS_IN_USER_INPUT} from "boot/constants";
-import {CreateTabsetCommand} from "src/domain/commands/CreateTabsetCommand";
-import TabsetService from "src/services/TabsetService";
-import {useCommandExecutor} from "src/services/CommandExecutor";
-import {useUiStore} from "stores/uiStore";
 import {useNotificationsStore} from "src/stores/notificationsStore";
 import NotificationsService from "src/services/NotificationsService";
 

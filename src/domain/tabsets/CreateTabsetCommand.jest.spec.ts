@@ -1,7 +1,7 @@
 import {beforeEach, describe, expect, it, jest} from "@jest/globals";
 import {chrome} from "jest-chrome";
 import {createPinia, setActivePinia} from "pinia";
-import {CreateTabsetCommand} from "src/domain/commands/CreateTabset";
+import {CreateTabsetCommand} from "src/domain/tabsets/CreateTabset";
 import "fake-indexeddb/auto"
 import IndexedDbPersistenceService from "src/services/IndexedDbPersistenceService";
 import {INDEX_DB_VERSION} from "boot/constants";

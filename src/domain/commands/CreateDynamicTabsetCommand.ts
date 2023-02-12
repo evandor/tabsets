@@ -1,19 +1,11 @@
 import Command from "src/domain/Command";
 import {ExecutionResult} from "src/domain/ExecutionResult";
-import {DeleteTabsetCommand} from "src/domain/commands/DeleteTabset";
+import {DeleteTabsetCommand} from "src/domain/tabsets/DeleteTabset";
 import {useTabsetService} from "src/services/TabsetService2";
 import LoggingService from "src/services/LoggingService";
-import NotificationsService from "src/services/NotificationsService";
 import {useTabsStore} from "src/stores/tabsStore";
-import {Notification} from "src/models/Notification"
-import {uid} from "quasar";
 import {NewOrReplacedTabset} from "src/models/NewOrReplacedTabset";
-import {Tab} from "src/models/Tab";
-import {TabLogger} from "src/logging/TabLogger";
-import {type} from "os";
 import {Tabset, TabsetType} from "src/models/Tabset";
-import TabsetService from "src/services/TabsetService";
-import wiki from "wikipedia";
 import {DynamicTabSource, DynamicTabSourceType} from "src/models/DynamicTabSource";
 
 class UndoCreateTabsetCommand implements Command<object> {

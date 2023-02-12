@@ -22,7 +22,7 @@
 
 import {useDialogPluginComponent} from 'quasar'
 import {useCommandExecutor} from "src/services/CommandExecutor";
-import {MarkTabsetDeletedCommand} from "src/domain/commands/MarkTabsetDeletedCommand";
+import {MarkTabsetDeletedCommand} from "src/domain/tabsets/MarkTabsetDeleted";
 
 defineEmits([
   ...useDialogPluginComponent.emits

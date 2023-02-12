@@ -46,7 +46,7 @@ import {useDialogPluginComponent} from 'quasar'
 import ChromeApi from "src/services/ChromeApi";
 import {useBookmarksStore} from "src/stores/bookmarksStore";
 import {useCommandExecutor} from "src/services/CommandExecutor";
-import {CreateTabsetFromBookmarksCommand} from "src/domain/commands/CreateTabsetFromBookmarksCommand";
+import {CreateTabsetFromBookmarksCommand} from "src/domain/tabsets/CreateTabsetFromBookmarks";
 
 defineEmits([
   ...useDialogPluginComponent.emits

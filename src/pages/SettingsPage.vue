@@ -309,7 +309,7 @@ import {useSettingsStore} from "src/stores/settingsStore";
 import TabsetService from "src/services/TabsetService";
 import _ from "lodash";
 import {Tabset, TabsetStatus} from "src/models/Tabset";
-import {MarkTabsetAsDefaultCommand} from "src/domain/commands/MarkTabsetAsDefaultCommand";
+import {MarkTabsetAsDefaultCommand} from "src/domain/tabsets/MarkTabsetAsDefault";
 import {useNotificationHandler} from "src/services/ErrorHandler";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import NavigationService from "src/services/NavigationService";

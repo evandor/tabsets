@@ -2,7 +2,7 @@ import Command from "src/domain/Command";
 import {ExecutionResult} from "src/domain/ExecutionResult";
 import TabsetService from "src/services/TabsetService";
 import {TabsetStatus} from "src/models/Tabset";
-import {MarkTabsetAsDefaultCommand} from "src/domain/commands/MarkTabsetAsDefaultCommand";
+import {MarkTabsetAsFavoriteCommand} from "src/domain/tabsets/MarkTabsetAsFavorite";
 
 class UndoCommand implements Command<TabsetStatus> {
 
@@ -10,24 +10,25 @@ class UndoCommand implements Command<TabsetStatus> {
   }
 
   execute(): Promise<ExecutionResult<any>> {
-    return new MarkTabsetAsDefaultCommand(this.tabsetId).execute()
-      .then(res => new ExecutionResult(res, "Tabset was unmarked again"))
+    //logger.info("execution undo command", this.tabsetId)
+    return new MarkTabsetAsFavoriteCommand(this.tabsetId).execute()
+      .then(res => new ExecutionResult(res, "Tabset was reverted to favorite"))
   }
 
 }
 
-export class MarkTabsetAsFavoriteCommand implements Command<TabsetStatus> {
+export class MarkTabsetAsDefaultCommand implements Command<TabsetStatus> {
 
   constructor(
     public tabsetId: string)
   {}
 
   async execute(): Promise<ExecutionResult<TabsetStatus>> {
-    return TabsetService.markAs(this.tabsetId, TabsetStatus.FAVORITE)
+    return TabsetService.markAs(this.tabsetId, TabsetStatus.DEFAULT)
       .then(oldStatus => Promise.resolve(
         new ExecutionResult(
           oldStatus,
-          "Tabset was marked as favorite",
+          "Tabset was unmarked as favorite",
           new UndoCommand(this.tabsetId, oldStatus)))
       )
       .catch(err => Promise.reject(err))
