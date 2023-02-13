@@ -20,8 +20,8 @@
 </template>
 
 <script lang="ts" setup>
-import {useUiStore} from "stores/uiStore";
-import {useTabsStore} from "stores/tabsStore";
+import {useUiStore} from "src/stores/uiStore";
+import {useTabsStore} from "src/stores/tabsStore";
 
 const props = defineProps({
   ident: {

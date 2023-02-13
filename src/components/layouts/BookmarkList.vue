@@ -27,7 +27,7 @@ import {VueDraggableNext} from 'vue-draggable-next'
 import {useQuasar} from "quasar";
 import {useTabsStore} from "src/stores/tabsStore";
 import {useUiService} from "src/services/useUiService";
-import {LeftDrawerState, DrawerTabs} from "stores/uiStore";
+import {LeftDrawerState, DrawerTabs} from "src/stores/uiStore";
 import {useTabsetService} from "src/services/TabsetService2";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import BookmarkListElementWidget from "components/widgets/BookmarkListElementWidget.vue";

@@ -95,7 +95,7 @@
 
 </template>
 <script setup lang="ts">
-import {useTabsStore} from "stores/tabsStore";
+import {useTabsStore} from "src/stores/tabsStore";
 import {Tab} from "src/models/Tab";
 import {Tabset} from "src/models/Tabset";
 import _ from "lodash";

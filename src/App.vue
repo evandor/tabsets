@@ -14,16 +14,16 @@ import {useSearchStore} from "src/stores/searchStore";
 import {useNotificationsStore} from "src/stores/notificationsStore";
 import ChromeApi from "src/services/ChromeApi";
 import {useWindowsStore} from "src/stores/windowsStores";
-import {useSpacesStore} from "stores/spacesStore";
+import {useSpacesStore} from "src/stores/spacesStore";
 import MHtmlService from "src/services/MHtmlService";
 import IndexedDbPersistenceService from "src/services/IndexedDbPersistenceService";
 import ChromeListeners from "src/services/ChromeListeners";
 import {useRoute, useRouter} from "vue-router";
 import ChromeBookmarkListeners from "src/services/ChromeBookmarkListeners";
-import {usePermissionsStore} from "stores/permissionsStore";
+import {usePermissionsStore} from "src/stores/permissionsStore";
 import LoggingService from "src/services/LoggingService";
 import NotificationsService from "src/services/NotificationsService";
-import {useSuggestionsStore} from "stores/suggestionsStore";
+import {useSuggestionsStore} from "src/stores/suggestionsStore";
 import SuggestionsService from "src/services/SuggestionsService";
 
 const tabsStore = useTabsStore()

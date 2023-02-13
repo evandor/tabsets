@@ -8,10 +8,10 @@ import {ref} from "vue";
 import {Tab} from "src/models/Tab";
 //import TabsetService from "src/services/TabsetService";
 import throttledQueue from "throttled-queue";
-import {useWindowsStore} from "stores/windowsStores";
-import {useBookmarksStore} from "stores/bookmarksStore";
+import {useWindowsStore} from "src/stores/windowsStores";
+import {useBookmarksStore} from "src/stores/bookmarksStore";
 import {useTabsetService} from "src/services/TabsetService2";
-import {useUiStore} from "stores/uiStore";
+import {useUiStore} from "src/stores/uiStore";
 
 function dummyPromise(timeout: number, tabToCloseId: number | undefined = undefined): Promise<string> {
   return new Promise((resolve, reject) => {

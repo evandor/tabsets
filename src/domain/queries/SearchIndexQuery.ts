@@ -4,7 +4,7 @@ import _ from "lodash";
 import {Hit} from "src/models/Hit";
 import {uid} from "quasar";
 import ChromeApi from "src/services/ChromeApi";
-import {useSearchStore} from "stores/searchStore";
+import {useSearchStore} from "src/stores/searchStore";
 import {Hits} from "src/models/Hits";
 
 export class SearchIndexQuery implements Query<Hits> {

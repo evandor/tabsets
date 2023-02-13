@@ -92,10 +92,10 @@ import RssTabs from "src/components/RssTabs.vue"
 import ScheduledTabs from "src/components/ScheduledTabs.vue"
 import TabsetAsSidebar from "src/components/TabsetAsSidebar.vue"
 import {useRouter} from "vue-router";
-import {useFeatureTogglesStore} from "stores/featureTogglesStore";
-import {useTabsStore} from "stores/tabsStore";
-import {useSettingsStore} from "stores/settingsStore";
-import {DrawerTabs, useUiStore} from "stores/uiStore";
+import {useFeatureTogglesStore} from "src/stores/featureTogglesStore";
+import {useTabsStore} from "src/stores/tabsStore";
+import {useSettingsStore} from "src/stores/settingsStore";
+import {DrawerTabs, useUiStore} from "src/stores/uiStore";
 import {useUiService} from "src/services/useUiService";
 import TabsetHelp from "components/TabsetHelp.vue";
 import TabsGroupedByHost from "components/TabsGroupedByHost.vue";

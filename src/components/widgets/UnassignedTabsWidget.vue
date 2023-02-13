@@ -29,11 +29,11 @@
 </template>
 
 <script lang="ts" setup>
-import {useTabsStore} from "stores/tabsStore";
+import {useTabsStore} from "src/stores/tabsStore";
 import {useRouter} from "vue-router";
 import NewTabsetDialog from "src/components/dialogues/NewTabsetDialog.vue"
 import {useUiService} from "src/services/useUiService";
-import {DrawerTabs} from "stores/uiStore";
+import {DrawerTabs} from "src/stores/uiStore";
 import {useQuasar} from "quasar";
 
 const tabsStore = useTabsStore()

@@ -82,7 +82,7 @@
 </template>
 
 <script lang="ts" setup>
-import {useTabsStore} from "stores/tabsStore";
+import {useTabsStore} from "src/stores/tabsStore";
 import TabsetService from "src/services/TabsetService";
 import {MAX_TABS_TO_SHOW} from "boot/constants";
 import TabcardPending from "src/components/layouts/TabcardPending.vue";

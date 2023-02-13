@@ -182,19 +182,20 @@
     </div>
   </q-banner>
   <q-banner rounded class="bg-amber-1 text-black q-ma-md"
-            v-if="tabsStore.currentTabsetId && tabsStore.getTabset(tabsetId.value)?.tabs.length === 0 && tabsStore.pendingTabset?.tabs.length > 0">
+            v-if="tabsStore.currentTabsetId && tabsStore.getTabset(tabsetId?.value)?.tabs.length === 0 && tabsStore.pendingTabset?.tabs.length > 0">
     <div class="text-body2">
       To start adding new tabs to this empty tabset, select the tabs you want to use from above and click save.
     </div>
   </q-banner>
-  <q-banner v-else-if="tabsStore.currentTabsetId && tabsStore.getTabset(tabsetId.value)?.tabs.length === 0">
+  <q-banner v-else-if="tabsStore.currentTabsetId && tabsStore.getTabset(tabsetId?.value)?.tabs.length === 0">
     To start adding new tabs to this empty tabset, open new browser tabs and come back to this extension to
     associate them with a tabset.<br><br>
     <!--If you want to assign your open tabs straight away, click <span class="cursor-pointer text-blue" @click="addOpenTabs()"><u>here</u></span>.-->
   </q-banner>
-
+***{{tabsStore.getCurrentTabset?.tabs.length}}***
+***{{route.query.first}}***
   <InfoMessageWidget
-    v-if="route.query.first && tabsStore.getCurrentTabset?.tabs.length > 0"
+    v-if="route?.query?.first && tabsStore.getCurrentTabset?.tabs.length > 0"
     :probability="1"
     ident="tabsetPage_firstTime"
     hint="Congrats - you created your first tabset. Your open tabs have been added automatically to get you started with tabsets!" />
@@ -267,7 +268,7 @@ import RestoreTabsetDialog from "components/dialogues/RestoreTabsetDialog.vue";
 import AddUrlDialog from "components/dialogues/AddUrlDialog.vue";
 import PendingTabsAsCarouselWidget from "src/components/widgets/PendingTabsAsCarouselWidget.vue"
 import {useUiService} from "src/services/useUiService";
-import {usePermissionsStore} from "stores/permissionsStore";
+import {usePermissionsStore} from "src/stores/permissionsStore";
 import TabList from "components/layouts/TabList.vue";
 import InfoMessageWidget from "components/widgets/InfoMessageWidget.vue";
 import {useCommandExecutor} from "src/services/CommandExecutor";
@@ -302,7 +303,10 @@ const orderDesc = ref(false)
 const showEditButton = ref(false)
 
 watchEffect(() => {
-  tabsetId.value = route.params.tabsetId as string
+  if (!route || !route.params) {
+    return
+  }
+  tabsetId.value = route?.params.tabsetId as string
   if (tabsetId.value) {
     console.debug("got tabset id", tabsetId.value)
     const ts = tabsStore.selectCurrentTabset(tabsetId.value)
@@ -313,7 +317,10 @@ watchEffect(() => {
 })
 
 watchEffect(() => {
-  const highlight = route.query['highlight'] as unknown as string
+  if (!route || !route.query) {
+    return
+  }
+  const highlight = route?.query['highlight'] as unknown as string
   if (highlight && highlight.length > 0) {
     try {
       highlightUrl.value = atob(highlight)

@@ -39,7 +39,7 @@ import OpenTabCard from "components/layouts/OpenTabCard.vue"
 import _ from "lodash"
 import {useTabsStore} from "src/stores/tabsStore"
 import {VueDraggableNext} from 'vue-draggable-next'
-import {useUiStore} from "stores/uiStore";
+import {useUiStore} from "src/stores/uiStore";
 import InfoMessageWidget from "components/widgets/InfoMessageWidget.vue";
 
 const props = defineProps({

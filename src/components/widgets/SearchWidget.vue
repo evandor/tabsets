@@ -54,15 +54,15 @@
 <script lang="ts" setup>
 import {useTabsStore} from "src/stores/tabsStore";
 import {onMounted, onUnmounted, ref} from "vue";
-import {useSearchStore} from "stores/searchStore";
+import {useSearchStore} from "src/stores/searchStore";
 import {Hit} from "src/models/Hit";
 import {useRoute, useRouter} from "vue-router";
 import NavigationService from "src/services/NavigationService";
 import {SearchIndexQuery} from "src/domain/queries/SearchIndexQuery";
 import {useQueryExecutor} from "src/services/QueryExecutor";
-import {useBookmarksStore} from "stores/bookmarksStore";
-import {usePermissionsStore} from "stores/permissionsStore";
-import {useUiStore} from "stores/uiStore";
+import {useBookmarksStore} from "src/stores/bookmarksStore";
+import {usePermissionsStore} from "src/stores/permissionsStore";
+import {useUiStore} from "src/stores/uiStore";
 
 const tabsStore = useTabsStore()
 const searchStore = useSearchStore()

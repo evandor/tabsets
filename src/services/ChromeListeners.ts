@@ -10,14 +10,12 @@ import throttledQueue from 'throttled-queue';
 import {convert} from "html-to-text"
 import {useWindowsStore} from "src/stores/windowsStores";
 import {useTabsetService} from "src/services/TabsetService2";
-import {useFeatureTogglesStore} from "stores/featureTogglesStore";
-import {useUiStore} from "stores/uiStore";
-import {useSettingsStore} from "stores/settingsStore";
-import {usePermissionsStore} from "stores/permissionsStore";
+import {useSettingsStore} from "src/stores/settingsStore";
+import {usePermissionsStore} from "src/stores/permissionsStore";
 import ExpiringMap from "stores/ExpiringMap";
 import {MetaLink} from "src/models/MetaLink";
 import {Suggestion, SuggestionType} from "src/models/Suggestion";
-import {useSuggestionsStore} from "stores/suggestionsStore";
+import {useSuggestionsStore} from "src/stores/suggestionsStore";
 
 const {
   saveCurrentTabset,

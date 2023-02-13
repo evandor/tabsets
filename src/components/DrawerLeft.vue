@@ -89,10 +89,10 @@ import ScheduledTabs from "src/components/ScheduledTabs.vue"
 import TabsetAsSidebar from "src/components/TabsetAsSidebar.vue"
 import DrawerLeftTabs from "src/components/DrawerLeftTabs.vue"
 import {useRouter} from "vue-router";
-import {useFeatureTogglesStore} from "stores/featureTogglesStore";
-import {useTabsStore} from "stores/tabsStore";
-import {useSettingsStore} from "stores/settingsStore";
-import {DrawerTabs} from "stores/uiStore";
+import {useFeatureTogglesStore} from "src/stores/featureTogglesStore";
+import {useTabsStore} from "src/stores/tabsStore";
+import {useSettingsStore} from "src/stores/settingsStore";
+import {DrawerTabs} from "src/stores/uiStore";
 import {useUiService} from "src/services/useUiService";
 import TabsetHelp from "components/TabsetHelp.vue";
 import TabsGroupedByHost from "components/TabsGroupedByHost.vue";

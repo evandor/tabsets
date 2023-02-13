@@ -98,12 +98,12 @@
 <script lang="ts" setup>
 import {ref, watch, watchEffect} from "vue";
 import {useRouter} from "vue-router";
-import {useFeatureTogglesStore} from "stores/featureTogglesStore";
-import {useTabsStore} from "stores/tabsStore";
-import {useSettingsStore} from "stores/settingsStore";
-import {DrawerTabs} from "stores/uiStore";
+import {useFeatureTogglesStore} from "src/stores/featureTogglesStore";
+import {useTabsStore} from "src/stores/tabsStore";
+import {useSettingsStore} from "src/stores/settingsStore";
+import {DrawerTabs} from "src/stores/uiStore";
 import {useUiService} from "src/services/useUiService";
-import {usePermissionsStore} from "stores/permissionsStore";
+import {usePermissionsStore} from "src/stores/permissionsStore";
 import {useUtils} from "src/services/Utils";
 import {MHtml} from "src/models/MHtml";
 import MHtmlService from "src/services/MHtmlService";

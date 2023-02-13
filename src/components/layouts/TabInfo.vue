@@ -116,7 +116,7 @@
 <!--import {Tab} from "src/models/Tab";-->
 <!--import EditNoteDialog from "components/dialogues/EditNoteDialog.vue";-->
 <!--import MHtmlService from "src/services/MHtmlService";-->
-<!--import {usePermissionsStore} from "stores/permissionsStore";-->
+<!--import {usePermissionsStore} from "src/stores/permissionsStore";-->
 <!--import _ from "lodash";-->
 <!--import {useTabsetService} from "src/services/TabsetService2";-->
 

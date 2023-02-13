@@ -35,10 +35,10 @@
 
 <script lang="ts" setup>
 
-import {useTabsStore} from "stores/tabsStore";
+import {useTabsStore} from "src/stores/tabsStore";
 import {ref, watchEffect} from "vue";
 import {useRouter} from "vue-router";
-import {useSpacesStore} from "stores/spacesStore";
+import {useSpacesStore} from "src/stores/spacesStore";
 import NewSpaceDialog from "components/dialogues/NewSpaceDialog.vue"
 import {useQuasar} from "quasar";
 import _ from "lodash";

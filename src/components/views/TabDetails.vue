@@ -139,14 +139,14 @@
 
 <script lang="ts" setup>
 
-import {useUiStore} from "stores/uiStore";
+import {useUiStore} from "src/stores/uiStore";
 import TabFaviconWidget from "components/widgets/TabFaviconWidget.vue";
 import _ from "lodash";
 import {useTabsetService} from "src/services/TabsetService2";
 import TabsetService from "src/services/TabsetService";
 import {ref, watchEffect} from "vue";
-import {usePermissionsStore} from "stores/permissionsStore";
-import {useFeatureTogglesStore} from "stores/featureTogglesStore";
+import {usePermissionsStore} from "src/stores/permissionsStore";
+import {useFeatureTogglesStore} from "src/stores/featureTogglesStore";
 import {useRouter} from "vue-router";
 import {useQuasar} from "quasar";
 import {Tab} from "src/models/Tab";

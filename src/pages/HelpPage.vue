@@ -21,7 +21,7 @@
 
 import {onMounted, ref, watchEffect} from "vue";
 import {useRoute, useRouter} from "vue-router";
-import {useTabsStore} from "stores/tabsStore";
+import {useTabsStore} from "src/stores/tabsStore";
 import _ from "lodash"
 import TabsetService from "src/services/TabsetService";
 

@@ -16,7 +16,7 @@
 import {useQuasar} from "quasar";
 import {Tab} from "src/models/Tab";
 import {onMounted, ref} from "vue";
-import {useTabsStore} from "stores/tabsStore";
+import {useTabsStore} from "src/stores/tabsStore";
 import IndexedDbPersistenceService from "src/services/IndexedDbPersistenceService";
 import tabsetService from "src/services/TabsetService";
 import NavigationService from "src/services/NavigationService";

@@ -17,7 +17,7 @@ import TabColumn from "src/components/layouts/TabColumn.vue"
 import {useQuasar} from "quasar";
 import _ from "lodash"
 import {useTabsStore} from "src/stores/tabsStore";
-import {useTabGroupsStore} from "stores/tabGroupsStore";
+import {useTabGroupsStore} from "src/stores/tabGroupsStore";
 import {useRoute} from "vue-router";
 
 const $q = useQuasar()

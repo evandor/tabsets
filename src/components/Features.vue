@@ -110,9 +110,9 @@
 import {useTabsStore} from "src/stores/tabsStore"
 import {ref} from "vue";
 import {useRouter} from "vue-router";
-import {usePermissionsStore} from "stores/permissionsStore";
+import {usePermissionsStore} from "src/stores/permissionsStore";
 import _ from "lodash"
-import {useFeatureTogglesStore} from "stores/featureTogglesStore";
+import {useFeatureTogglesStore} from "src/stores/featureTogglesStore";
 
 const tabsStore = useTabsStore()
 const router = useRouter()

@@ -20,7 +20,7 @@
 
 <script lang="ts" setup>
 
-import {useTabsStore} from "stores/tabsStore";
+import {useTabsStore} from "src/stores/tabsStore";
 import _ from "lodash"
 import {ref, watchEffect} from "vue";
 import {Tab} from "src/models/Tab";

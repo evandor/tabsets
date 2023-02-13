@@ -80,14 +80,14 @@ import {ref} from "vue";
 import {useQuasar} from "quasar";
 import {Tabset, TabsetStatus} from "src/models/Tabset";
 import {useFeatureTogglesStore} from "src/stores/featureTogglesStore";
-import {useSpacesStore} from "stores/spacesStore";
+import {useSpacesStore} from "src/stores/spacesStore";
 import NewTabsetDialog from "components/dialogues/NewTabsetDialog.vue";
 import NavTabsetsListWidget from "components/widgets/NavTabsetsListWidget.vue"
 import TabInfo from "components/layouts/TabInfo.vue";
-import {useUiStore} from "stores/uiStore";
+import {useUiStore} from "src/stores/uiStore";
 import {useNotificationsStore} from "src/stores/notificationsStore";
 import TabsetInfo from "components/layouts/TabsetInfo.vue";
-import {usePermissionsStore} from "stores/permissionsStore";
+import {usePermissionsStore} from "src/stores/permissionsStore";
 import InfoMessageWidget from "components/widgets/InfoMessageWidget.vue";
 
 const router = useRouter()

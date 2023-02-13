@@ -123,10 +123,10 @@
 
 import TabcardsMostAccessed from "components/layouts/TabcardsMostAccessed.vue"
 import {useQuasar} from "quasar"
-import {useUiStore} from "stores/uiStore"
+import {useUiStore} from "src/stores/uiStore"
 import NewTabsetDialog from "src/components/dialogues/NewTabsetDialog.vue"
-import {useTabsStore} from "stores/tabsStore";
-import {useBookmarksStore} from "stores/bookmarksStore";
+import {useTabsStore} from "src/stores/tabsStore";
+import {useBookmarksStore} from "src/stores/bookmarksStore";
 import {useRouter} from "vue-router";
 
 //@ts-ignore

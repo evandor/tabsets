@@ -78,7 +78,7 @@ import {useQuasar} from "quasar";
 import {useTabsStore} from "src/stores/tabsStore";
 import {useTabGroupsStore} from "src/stores/tabGroupsStore";
 import {useFeatureTogglesStore} from "src/stores/featureTogglesStore";
-import {usePermissionsStore} from "stores/permissionsStore";
+import {usePermissionsStore} from "src/stores/permissionsStore";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {GrantPermissionCommand} from "src/domain/commands/GrantPermissionCommand";
 import {GrantOriginCommand} from "src/domain/commands/GrantOriginCommand";

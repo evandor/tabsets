@@ -2,7 +2,7 @@ import {defineStore} from 'pinia';
 import _ from 'lodash'
 import {computed, ref, watch} from "vue";
 import {Space} from "src/models/Space";
-import {useTabsStore} from "stores/tabsStore";
+import {useTabsStore} from "src/stores/tabsStore";
 
 
 export const useSpacesStore = defineStore('spaces', () => {

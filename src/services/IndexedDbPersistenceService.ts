@@ -5,7 +5,7 @@ import {INDEX_DB_NAME, INDEX_DB_VERSION, EXPIRE_DATA_PERIOD_IN_MINUTES} from "bo
 import PersistenceService from "src/services/PersistenceService";
 import {Tabset, TabsetStatus} from "src/models/Tabset";
 import mhtml2html from 'mhtml2html';
-import {useSpacesStore} from "stores/spacesStore";
+import {useSpacesStore} from "src/stores/spacesStore";
 import {Space} from "src/models/Space";
 import {MHtml} from "src/models/MHtml";
 import {Tab} from "src/models/Tab";

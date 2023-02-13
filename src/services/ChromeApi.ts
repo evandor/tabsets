@@ -8,9 +8,9 @@ import StatsService from "src/services/StatsService";
 import {useUiService} from "src/services/useUiService";
 import TabService from "src/services/TabService";
 import IndexedDbPersistenceService from "src/services/IndexedDbPersistenceService";
-import {useSearchStore} from "stores/searchStore";
+import {useSearchStore} from "src/stores/searchStore";
 import {SearchDoc} from "src/models/SearchDoc";
-import {usePermissionsStore} from "stores/permissionsStore";
+import {usePermissionsStore} from "src/stores/permissionsStore";
 import {Tab} from "src/models/Tab";
 import {uid} from "quasar";
 

@@ -6,11 +6,11 @@
 <script lang="ts" setup>
 import {ref, watch, watchEffect} from "vue";
 import {useRouter} from "vue-router";
-import {useFeatureTogglesStore} from "stores/featureTogglesStore";
-import {useTabsStore} from "stores/tabsStore";
-import {useSettingsStore} from "stores/settingsStore";
+import {useFeatureTogglesStore} from "src/stores/featureTogglesStore";
+import {useTabsStore} from "src/stores/tabsStore";
+import {useSettingsStore} from "src/stores/settingsStore";
 import {useUiService} from "src/services/useUiService";
-import {DrawerTabs} from "stores/uiStore";
+import {DrawerTabs} from "src/stores/uiStore";
 import MHtmlService from "src/services/MHtmlService";
 import {MHtml} from "src/models/MHtml";
 import DrawerLeftTabs from "src/components/DrawerLeftTabs.vue"

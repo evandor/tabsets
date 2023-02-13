@@ -1,4 +1,4 @@
-import {DrawerTabs, LeftDrawer, LeftDrawerState, useUiStore} from "stores/uiStore";
+import {DrawerTabs, LeftDrawer, LeftDrawerState, useUiStore} from "src/stores/uiStore";
 
 export function useUiService() {
 

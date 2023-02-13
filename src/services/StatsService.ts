@@ -1,5 +1,5 @@
-import {useTabsStore} from "stores/tabsStore";
-import {useBookmarksStore} from "stores/bookmarksStore";
+import {useTabsStore} from "src/stores/tabsStore";
+import {useBookmarksStore} from "src/stores/bookmarksStore";
 import _ from "lodash"
 import {StatsEntry} from "src/models/StatsEntry";
 import {useDB} from "src/services/usePersistenceService";

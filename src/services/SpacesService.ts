@@ -1,5 +1,5 @@
 import {uid} from "quasar";
-import {useSpacesStore} from "stores/spacesStore";
+import {useSpacesStore} from "src/stores/spacesStore";
 import {useDB} from "src/services/usePersistenceService";
 
 const {db} = useDB()

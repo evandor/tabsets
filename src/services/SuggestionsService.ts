@@ -1,6 +1,6 @@
 // import {Suggestion, SuggestionState} from "src/models/Suggestion";
 // import {useDB} from "src/services/usePersistenceService";
-// import {useSuggestionsStore} from "stores/suggestionsStore";
+// import {useSuggestionsStore} from "src/stores/suggestionsStore";
 //
 // const {localDb} = useDB()
 //

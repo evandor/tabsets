@@ -50,13 +50,13 @@
 
 import {Tab} from "src/models/Tab"
 import NavigationService from "src/services/NavigationService"
-import {useFeatureTogglesStore} from "stores/featureTogglesStore"
+import {useFeatureTogglesStore} from "src/stores/featureTogglesStore"
 import TabFaviconWidget from "src/components/widgets/TabFaviconWidget.vue"
 import {useTabsetService} from "src/services/TabsetService2";
-import {useUiStore} from "stores/uiStore";
+import {useUiStore} from "src/stores/uiStore";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {CreateTabFromOpenTabsCommand} from "src/domain/commands/CreateTabFromOpenTabs";
-import {useTabsStore} from "stores/tabsStore";
+import {useTabsStore} from "src/stores/tabsStore";
 import _ from "lodash"
 
 const featureToggles = useFeatureTogglesStore()

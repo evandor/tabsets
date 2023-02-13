@@ -404,7 +404,7 @@ import {ref, watchEffect} from "vue";
 import TabsetService from "src/services/TabsetService";
 import NavigationService from "src/services/NavigationService"
 import {date} from "quasar";
-import {useSearchStore} from "stores/searchStore";
+import {useSearchStore} from "src/stores/searchStore";
 import _ from "lodash"
 import {useUtils} from "src/services/Utils";
 import {useQueryExecutor} from "src/services/QueryExecutor";

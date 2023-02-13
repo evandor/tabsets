@@ -54,8 +54,8 @@
 
 <script lang="ts" setup>
 
-import {useTabsStore} from "stores/tabsStore";
-import {useSpacesStore} from "stores/spacesStore";
+import {useTabsStore} from "src/stores/tabsStore";
+import {useSpacesStore} from "src/stores/spacesStore";
 import {ref, watchEffect} from "vue"
 import _ from "lodash"
 import {Space} from "src/models/Space"

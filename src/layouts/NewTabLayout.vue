@@ -34,8 +34,8 @@ import {useRoute, useRouter} from "vue-router";
 import {useNotificationsStore} from "src/stores/notificationsStore";
 import {useSearchStore} from "src/stores/searchStore";
 import {useFeatureTogglesStore} from "src/stores/featureTogglesStore";
-import {useSpacesStore} from "stores/spacesStore"
-import {useUiStore} from "stores/uiStore";
+import {useSpacesStore} from "src/stores/spacesStore"
+import {useUiStore} from "src/stores/uiStore";
 
 // const router = useRouter()
 // const tabsStore = useTabsStore()

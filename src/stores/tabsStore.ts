@@ -7,7 +7,7 @@ import ChromeApi from "src/services/ChromeApi";
 import {NewOrReplacedTabset} from "src/models/NewOrReplacedTabset";
 import {useTabGroupsStore} from "src/stores/tabGroupsStore";
 import {Group} from "src/models/Group";
-import {useSpacesStore} from "stores/spacesStore";
+import {useSpacesStore} from "src/stores/spacesStore";
 import LoggingService from "src/services/LoggingService";
 
 async function queryTabs(): Promise<chrome.tabs.Tab[]> {

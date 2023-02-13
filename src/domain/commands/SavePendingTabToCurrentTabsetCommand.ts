@@ -2,10 +2,10 @@ import Command from "src/domain/Command";
 import TabsetService from "src/services/TabsetService";
 import {ExecutionResult} from "src/domain/ExecutionResult";
 import {Tab} from "src/models/Tab";
-import {useSearchStore} from "stores/searchStore";
+import {useSearchStore} from "src/stores/searchStore";
 import TabService from "src/services/TabService";
 import _ from "lodash";
-import {useTabsStore} from "stores/tabsStore";
+import {useTabsStore} from "src/stores/tabsStore";
 import {TabLogger} from "src/logging/TabLogger";
 
 class UndoCommand implements Command<undefined> {

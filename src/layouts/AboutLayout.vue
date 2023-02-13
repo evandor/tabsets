@@ -41,10 +41,10 @@ import {useNotificationsStore} from "src/stores/notificationsStore";
 import {useSearchStore} from "src/stores/searchStore";
 import {useFeatureTogglesStore} from "src/stores/featureTogglesStore";
 import _ from "lodash";
-import {useSpacesStore} from "stores/spacesStore"
-import {useSettingsStore} from "stores/settingsStore"
+import {useSpacesStore} from "src/stores/spacesStore"
+import {useSettingsStore} from "src/stores/settingsStore"
 import {useUiService} from "src/services/useUiService";
-import {useUiStore} from "stores/uiStore";
+import {useUiStore} from "src/stores/uiStore";
 
 const router = useRouter()
 const tabsStore = useTabsStore()

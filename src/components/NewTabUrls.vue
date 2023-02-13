@@ -33,7 +33,7 @@
 <script setup lang="ts">
 
 import {ref, watchEffect} from "vue";
-import {useUiStore} from "stores/uiStore";
+import {useUiStore} from "src/stores/uiStore";
 import NavigationService from "src/services/NavigationService";
 
 const urls = ref<object[]>([])

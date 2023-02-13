@@ -1,4 +1,4 @@
-import {useTabsStore} from "stores/tabsStore";
+import {useTabsStore} from "src/stores/tabsStore";
 import {Tab} from "src/models/Tab";
 import _ from "lodash"
 import {useDB} from "src/services/usePersistenceService";

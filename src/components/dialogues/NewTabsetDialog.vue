@@ -49,7 +49,7 @@ import {STRIP_CHARS_IN_USER_INPUT} from "boot/constants";
 import {CreateTabsetCommand} from "src/domain/tabsets/CreateTabset";
 import TabsetService from "src/services/TabsetService";
 import {useCommandExecutor} from "src/services/CommandExecutor";
-import {useUiStore} from "stores/uiStore";
+import {useUiStore} from "src/stores/uiStore";
 
 defineEmits([
   ...useDialogPluginComponent.emits

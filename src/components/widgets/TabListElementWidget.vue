@@ -66,8 +66,8 @@ import {useCommandExecutor} from "src/services/CommandExecutor";
 import {DeleteTabCommand} from "src/domain/commands/DeleteTabCommand";
 import EditNoteDialog from "components/dialogues/EditNoteDialog.vue";
 import {useQuasar} from "quasar";
-import {DrawerTabs, useUiStore} from "stores/uiStore";
-import {usePermissionsStore} from "stores/permissionsStore";
+import {DrawerTabs, useUiStore} from "src/stores/uiStore";
+import {usePermissionsStore} from "src/stores/permissionsStore";
 import TabFaviconWidget from "components/widgets/TabFaviconWidget.vue";
 
 const props = defineProps({

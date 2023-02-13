@@ -51,7 +51,7 @@ import {useRouter} from "vue-router";
 
 import {useDialogPluginComponent} from 'quasar'
 import {STRIP_CHARS_IN_USER_INPUT} from "boot/constants";
-import {useSpacesStore} from "stores/spacesStore";
+import {useSpacesStore} from "src/stores/spacesStore";
 
 defineEmits([
   ...useDialogPluginComponent.emits

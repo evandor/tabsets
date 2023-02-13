@@ -44,11 +44,11 @@
 
 <script lang="ts" setup>
 
-import {useTabsStore} from "stores/tabsStore";
-import {useSettingsStore} from "stores/settingsStore";
+import {useTabsStore} from "src/stores/tabsStore";
+import {useSettingsStore} from "src/stores/settingsStore";
 import {ref, watchEffect} from "vue";
 import {useRouter} from "vue-router";
-import {useSearchStore} from "stores/searchStore";
+import {useSearchStore} from "src/stores/searchStore";
 import ReindexDialog from "components/dialogues/ReindexDialog.vue";
 import {useQuasar} from "quasar";
 

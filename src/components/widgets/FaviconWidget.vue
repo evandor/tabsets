@@ -12,8 +12,8 @@
 
 <script lang="ts" setup>
 
-import {usePermissionsStore} from "stores/permissionsStore";
-import {useFeatureTogglesStore} from "stores/featureTogglesStore";
+import {usePermissionsStore} from "src/stores/permissionsStore";
+import {useFeatureTogglesStore} from "src/stores/featureTogglesStore";
 
 const props = defineProps({
   url: {

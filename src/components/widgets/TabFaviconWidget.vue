@@ -25,7 +25,7 @@
 <script lang="ts" setup>
 
 import {Tab, UrlExtension} from "src/models/Tab";
-import {useFeatureTogglesStore} from "stores/featureTogglesStore";
+import {useFeatureTogglesStore} from "src/stores/featureTogglesStore";
 
 const props = defineProps({
   tab: {

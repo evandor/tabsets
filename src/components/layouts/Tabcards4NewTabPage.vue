@@ -23,7 +23,7 @@
 <!--import _ from "lodash"-->
 <!--import {useTabsStore} from "src/stores/tabsStore";-->
 <!--import {useUiService} from "src/services/useUiService";-->
-<!--import {LeftDrawerState, DrawerTabs} from "stores/uiStore";-->
+<!--import {LeftDrawerState, DrawerTabs} from "src/stores/uiStore";-->
 <!--import {useTabsetService} from "src/services/TabsetService2";-->
 <!--import {useCommandExecutor} from "src/services/CommandExecutor";-->
 <!--import {CreateTabFromOpenTabsCommand} from "src/domain/commands/CreateTabFromOpenTabs";-->

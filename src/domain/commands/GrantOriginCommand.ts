@@ -1,6 +1,6 @@
 import Command from "src/domain/Command";
 import {ExecutionResult} from "src/domain/ExecutionResult";
-import {usePermissionsStore} from "stores/permissionsStore";
+import {usePermissionsStore} from "src/stores/permissionsStore";
 import {RevokeOriginCommand} from "src/domain/commands/RevokeOriginCommand";
 import ChromeApi from "src/services/ChromeApi";
 

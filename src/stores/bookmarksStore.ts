@@ -2,7 +2,7 @@ import {defineStore} from 'pinia';
 import _ from "lodash";
 import {TreeNode} from "src/models/Tree";
 import {Bookmark} from "src/models/Bookmark";
-import {usePermissionsStore} from "stores/permissionsStore";
+import {usePermissionsStore} from "src/stores/permissionsStore";
 
 function getChildren(
   parent: chrome.bookmarks.BookmarkTreeNode,

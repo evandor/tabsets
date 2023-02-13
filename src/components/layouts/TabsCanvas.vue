@@ -65,7 +65,7 @@
 <script setup lang="ts">
 import _ from "lodash"
 import {onMounted, ref} from "vue";
-import {useTabsStore} from "stores/tabsStore";
+import {useTabsStore} from "src/stores/tabsStore";
 import TabsetService from "src/services/TabsetService";
 import NavigationService from "src/services/NavigationService";
 import {useTabsetService} from "src/services/TabsetService2";

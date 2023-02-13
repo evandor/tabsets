@@ -230,15 +230,15 @@ import NavigationService from "src/services/NavigationService"
 import {useSearchStore} from "src/stores/searchStore";
 import {useFeatureTogglesStore} from "src/stores/featureTogglesStore";
 import _ from "lodash";
-import {useSpacesStore} from "stores/spacesStore"
-import {useSettingsStore} from "stores/settingsStore"
+import {useSpacesStore} from "src/stores/spacesStore"
+import {useSettingsStore} from "src/stores/settingsStore"
 import OpenTabsThresholdWidget from 'src/components/widgets/OpenTabsThresholdWidget.vue'
 import SpacesSelectorWidget from 'src/components/widgets/SpacesSelectorWidget.vue'
 import SearchWidget from 'src/components/widgets/SearchWidget.vue'
 import {useUiService} from "src/services/useUiService";
-import {DrawerTabs, useUiStore} from "stores/uiStore";
+import {DrawerTabs, useUiStore} from "src/stores/uiStore";
 import NotificationDialog from "components/dialogues/NotificationDialog.vue"
-import {usePermissionsStore} from "stores/permissionsStore";
+import {usePermissionsStore} from "src/stores/permissionsStore";
 import {Notification, NotificationStatus} from "src/models/Notification";
 import {useUtils} from "src/services/Utils";
 import DrawerRight from "components/DrawerRight.vue";
@@ -246,7 +246,7 @@ import ExportDialog from "components/dialogues/ExportDialog.vue";
 import ImportDialog from "components/dialogues/ImportDialog.vue";
 import {Suggestion, SuggestionState} from "src/models/Suggestion";
 import SuggestionDialog from "components/dialogues/SuggestionDialog.vue";
-import {useSuggestionsStore} from "stores/suggestionsStore";
+import {useSuggestionsStore} from "src/stores/suggestionsStore";
 
 const router = useRouter()
 const tabsStore = useTabsStore()
