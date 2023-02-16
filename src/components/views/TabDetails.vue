@@ -125,6 +125,26 @@
     </div>
 
     <div class="row q-mx-md q-mt-lg">
+      <div class="col-12 text-caption text-bold q-mb-sm">Search Index</div>
+    </div>
+    <div class="row q-mx-md">
+      <div class="col-12 text-caption">
+        <div v-for="(k,index) in searchIndex">
+          <div class="row" v-if="searchIndex.get(index)['v']">
+            <div class="col-4 q-ml-sm">
+              {{ searchIndex.get(index)['name'] }}
+            </div>
+            <div class="col-7 ellipsis">
+              {{ searchIndex.get(index)['v'] }}
+              <q-tooltip class="tooltip">{{ searchIndex.get(index)['v'] }} </q-tooltip>
+            </div>
+            <div class="col text-right"><q-icon name="o_check_circle" color="primary" /></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row q-mx-md q-mt-lg">
       <div class="col-12 text-caption text-bold">Note</div>
     </div>
     <div class="row q-mx-md">
@@ -152,6 +172,7 @@ import {Tab} from "src/models/Tab";
 import {formatDistance} from "date-fns";
 import {useUtils} from "src/services/Utils";
 import NavigationService from "src/services/NavigationService";
+import {useSearchStore} from "stores/searchStore";
 
 const {inBexMode} = useUtils()
 
@@ -166,6 +187,7 @@ watchEffect(() => hasAllUrlsPermission.value = usePermissionsStore().hasAllOrigi
 
 const thumbnail = ref('')
 const content = ref('')
+const searchIndex = ref<any>()
 const {selectTabset} = useTabsetService()
 
 
@@ -239,5 +261,32 @@ const formatDate = (timestamp: number | undefined) =>
 
 const showTabDetails = () => router.push("/tab/" + uiStore.getSelectedTab?.id)
 
+watchEffect(() => {
+  const fuseIndex = useSearchStore().getIndex()
+  // keys.value = fuseIndex['keys' as keyof object]
+  const keyMaps = fuseIndex['_keysMap' as keyof object]
+  const res = _.filter(fuseIndex['records' as keyof object], (r: any) => {
+    return useUiStore().getSelectedTab?.chromeTab.url === r.$[2]?.v
+  })
+  const keys: Map<number, object> = new Map()
+  Object.keys(keyMaps).forEach((k: any) => {
+    keys.set(keyMaps[k], {
+      name: k
+    })
+  })
+
+  if (res && res.length > 0) {
+    Object.keys(res[0]['$' as keyof object]).forEach(k => {
+      const tmp = res[0]['$' as keyof object][k as keyof object]
+      const v:any = keys.get(+k)
+      v.n = tmp['n' as keyof object]
+      const c = tmp['v' as keyof object]
+      v.v = c //? (c.length > 100 ? c.substring(0,98) + "..." : c) : ''
+      keys.set(+k, v)
+    })
+    console.log("keys2", keys)
+    searchIndex.value = keys
+  }
+})
 
 </script>

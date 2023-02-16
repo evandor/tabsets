@@ -180,7 +180,8 @@
   <div v-else-if="tab === 'meta'">
 
     <div class="q-pa-md q-gutter-sm">
-      <q-banner rounded class="bg-grey-1 text-primary">This meta data was derived from the pages provided meta tags.
+      <q-banner rounded class="bg-grey-1 text-primary">This meta data was derived from the pages provided meta tags. This data is collected if the 'analyse tabs' feature is active.
+        If this does not work as expected, you might have to refresh or reinstall the tabsets extension.
       </q-banner>
 
       <q-table
@@ -229,7 +230,7 @@
 
   <div v-else-if="tab === 'request'">
     <div class="q-pa-md q-gutter-sm">
-      <q-banner rounded class="bg-grey-1 text-primary">This is a data derived from the request to the tabs content
+      <q-banner rounded class="bg-grey-1 text-primary">This is a data derived from the request to the tabs content. This data is collected if the 'analyse tabs' feature is active.
       </q-banner>
 
       Status Code: {{ request['statusCode'] }}<br><br>
@@ -265,7 +266,8 @@
 
   <div v-else-if="tab === 'metalinks'">
     <div class="q-pa-md q-gutter-sm">
-      <q-banner rounded class="bg-grey-1 text-primary">This is a data derived from the tab's content link tags
+      <q-banner rounded class="bg-grey-1 text-primary">This is a data derived from the tab's content link tags. This data is collected if the 'analyse tabs' feature is active.
+        If this does not work as expected, you might have to refresh or reinstall the tabsets extension.
       </q-banner>
 
       <q-table

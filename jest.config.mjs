@@ -37,6 +37,7 @@ export default {
   //      statements: 50
   //   },
   // },
+  // transformIgnorePatterns: ['/node_modules/(?!(normalize-url)/)'],
   transform: {
     [`^(${quasarEsModulesPackageNames}).+\\.js$`]: 'babel-jest',
     '^.+\\.(ts|js|html)$': [

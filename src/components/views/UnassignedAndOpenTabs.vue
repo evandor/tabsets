@@ -133,7 +133,6 @@ function unassignedTabs(): Tab[] {
 }
 
 watchEffect(() => {
-  console.log("watching", tabsStore.pendingTabset?.tabs)
   userCanSelect.value = false
 })
 

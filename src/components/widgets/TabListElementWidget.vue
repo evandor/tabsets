@@ -35,7 +35,7 @@
 
   <q-item-section side v-if="props.showButtons">
     <div class="row">
-      <q-btn flat round color="primary" size="11px" icon="o_info"
+      <q-btn flat round color="primary" size="11px" icon="o_info" v-if="usePermissionsStore().hasFeature('details')"
              @click.stop="showDetails(tab)">
         <q-tooltip class="tooltip">Show details about this tab</q-tooltip>
       </q-btn>

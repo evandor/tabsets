@@ -1,5 +1,4 @@
 import {formatDistance} from "date-fns";
-//import normalizeUrl from 'normalize-url';
 
 export function useUtils() {
 
@@ -13,12 +12,12 @@ export function useUtils() {
   const modeIs = (ident: string) => process.env.MODE === ident
 
   const normalize = (url: string):string => {
-    // if (url.startsWith("http://")) {
-    //   return normalizeUrl(url);
-    // } else {
-    //   return normalizeUrl(url, {forceHttps: true});
-    // }
-    return url;
+    try {
+      new URL(url)
+      return url
+    } catch (err) {
+      return "https://" + url
+    }
   }
 
   return {

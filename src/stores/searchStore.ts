@@ -259,11 +259,9 @@ export const useSearchStore = defineStore('search', () => {
     //const res = fuse.value.remove((doc) => true)
     _.forEach([...useTabsStore().tabsets.values()], (tabset: Tabset) => {
         tabset.tabs.forEach((tab: Tab) => {
-          console.log("checking", tab.chromeTab.url, urlSet.has(tab.chromeTab.url || ''))
           if (tab.chromeTab?.url) {
             if (urlSet.has(tab.chromeTab.url)) {
               const existingDocIndex = _.findIndex(minimalIndex, d => {
-                console.log("=", d.url, tab.chromeTab.title)
                 return d.url === tab.chromeTab.title
               })
               if (existingDocIndex >= 0) {
@@ -288,7 +286,6 @@ export const useSearchStore = defineStore('search', () => {
     )
     console.log(`populated from tabsets with ${minimalIndex.length} entries`)
     minimalIndex.forEach((doc: SearchDoc) => {
-      console.log("adding to fuse:", doc)
       const removed = fuse.value.remove((d) => {
         return d.url === doc.url
       })

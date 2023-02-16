@@ -130,6 +130,7 @@
         </q-btn>
 
         <q-btn v-if="tabsStore.currentTabsetId !== '' && tabsStore.getTabset(tabsStore.currentTabsetId)"
+               data-testid="addUrlDialogBtn"
                @click="addUrlDialog"
                class="q-ml-xl"
                label="new Tab"
