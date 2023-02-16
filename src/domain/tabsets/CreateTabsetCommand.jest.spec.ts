@@ -34,7 +34,7 @@ describe('CreateTabsetCommand', () => {
 
     expect(res.message).toBe("Tabset emptyTabsetId created successfully")
     expect(res.result.replaced).toBe(false)
-    expect(res.result.tabsetId.length).toBe(36)
+    expect(res.result.tabset.id.length).toBe(36)
     expect(res.undoCommand).not.toBe(null)
   })
 
@@ -50,7 +50,7 @@ describe('CreateTabsetCommand', () => {
     const res:any = await cmd.execute()
     expect(res.message).toBe("Tabset tabsetWithTabs created successfully")
     expect(res.result.replaced).toBe(false)
-    expect(res.result.tabsetId.length).toBe(36)
+    expect(res.result.tabset.id.length).toBe(36)
     expect(res.undoCommand).not.toBe(null)
   })
 

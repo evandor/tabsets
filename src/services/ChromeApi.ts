@@ -297,6 +297,7 @@ class ChromeApi {
       title: title,
       pinned: false,
       url: url,
+      name: '',
       windowId: 0,
       incognito: false,
       selected: false

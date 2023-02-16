@@ -4,7 +4,7 @@
     <div class="row fit">
       <q-toolbar-title>
         <div class="row justify-start items-baseline">
-          Tab Info for '{{ notificationStore.selectedTab?.chromeTab?.url }}' (experimental)
+          Tab Info for '{{ useUiStore().getSelectedTab?.chromeTab?.url }}' (experimental)
         </div>
       </q-toolbar-title>
     </div>
@@ -39,25 +39,25 @@
             class="rounded-borders"
             width="32px"
             height="32px"
-            :src="notificationStore.selectedTab?.chromeTab?.favIconUrl">
+            :src="useUiStore().getSelectedTab?.chromeTab?.favIconUrl">
             <q-tooltip>
-              {{ notificationStore.selectedTab?.chromeTab?.favIconUrl }} / {{
-                notificationStore.selectedTab?.chromeTab?.id
-              }} / {{ notificationStore.selectedTab.id }}
+              {{ useUiStore().getSelectedTab?.chromeTab?.favIconUrl }} / {{
+                useUiStore().getSelectedTab?.chromeTab?.id
+              }} / {{ useUiStore().getSelectedTab.id }}
             </q-tooltip>
           </q-img>
         </div>
         <div class="col-10 text-body1 ellipsis">
-          {{ getHost(notificationStore.selectedTab?.chromeTab?.url, true) }}
+          {{ getHost(useUiStore().getSelectedTab?.chromeTab?.url, true) }}
         </div>
         <div class="col-12 text-body2 ellipsis">
-          {{ notificationStore.selectedTab?.chromeTab?.title }}
+          {{ useUiStore().getSelectedTab?.chromeTab?.title }}
         </div>
 
         <div class="col-12">
           <div class="text-overline ellipsis">
-            {{ notificationStore.selectedTab?.chromeTab?.url }}&nbsp;<q-icon name="launch" color="secondary"
-                                                                             @click.stop="NavigationService.openOrCreateTab(tab.chromeTab?.url )"></q-icon>
+            {{ useUiStore().getSelectedTab?.chromeTab?.url }}&nbsp;<q-icon name="launch" color="secondary"
+                                                                           @click.stop="NavigationService.openOrCreateTab(tab.chromeTab?.url )"></q-icon>
           </div>
         </div>
       </div>
@@ -69,48 +69,48 @@
               Description
             </div>
             <div class="col-9 text-subtitle2">
-              {{ notificationStore.selectedTab?.description }}
+              {{ useUiStore().getSelectedTab?.description }}
             </div>
           </div>
-          <div class="row items-baseline q-ma-lg" v-if="notificationStore.selectedTab?.author">
+          <div class="row items-baseline q-ma-lg" v-if="useUiStore().getSelectedTab?.author">
             <div class="col-3 text-subtitle1">
               Author
             </div>
             <div class="col-9 text-subtitle2">
-              {{ notificationStore.selectedTab?.author }}
+              {{ useUiStore().getSelectedTab?.author }}
             </div>
           </div>
-          <div class="row items-baseline q-ma-lg" v-if="notificationStore.selectedTab?.date">
+          <div class="row items-baseline q-ma-lg" v-if="useUiStore().getSelectedTab?.date">
             <div class="col-3 text-subtitle1">
               Date
             </div>
             <div class="col-9 text-subtitle2">
-              {{ notificationStore.selectedTab?.date }}
+              {{ useUiStore().getSelectedTab?.date }}
             </div>
           </div>
-          <div class="row items-baseline q-ma-lg" v-if="notificationStore.selectedTab?.lastModified">
+          <div class="row items-baseline q-ma-lg" v-if="useUiStore().getSelectedTab?.lastModified">
             <div class="col-3 text-subtitle1">
               Last Modified
             </div>
             <div class="col-9 text-subtitle2">
-              {{ notificationStore.selectedTab?.lastModified }}
+              {{ useUiStore().getSelectedTab?.lastModified }}
             </div>
           </div>
-          <div class="row items-baseline q-ma-lg" v-if="notificationStore.selectedTab?.keywords">
+          <div class="row items-baseline q-ma-lg" v-if="useUiStore().getSelectedTab?.keywords">
             <div class="col-3 text-subtitle1">
               Keywords
             </div>
             <div class="col-9 text-subtitle2">
-              {{ notificationStore.selectedTab?.keywords }}
+              {{ useUiStore().getSelectedTab?.keywords }}
             </div>
           </div>
-          <div class="row items-baseline q-ma-lg" v-if="notificationStore.selectedTab?.image">
+          <div class="row items-baseline q-ma-lg" v-if="useUiStore().getSelectedTab?.image">
             <div class="col-3 text-subtitle1">
               Image
             </div>
             <div class="col-9 text-subtitle2">
-              {{ notificationStore.selectedTab?.image }}<br>
-              <q-img :src="notificationStore.selectedTab?.image"/>
+              {{ useUiStore().getSelectedTab?.image }}<br>
+              <q-img :src="useUiStore().getSelectedTab?.image"/>
             </div>
           </div>
         </div>
@@ -121,34 +121,34 @@
               Created
             </div>
             <div class="col-7 text-subtitle2">
-              {{ formatDate(notificationStore.selectedTab?.created) }}
+              {{ formatDate(useUiStore().getSelectedTab?.created) }}
               <q-tooltip>
-                {{ date.formatDate(notificationStore.selectedTab?.created, 'DD.MM.YYYY HH:mm') }}
+                {{ date.formatDate(useUiStore().getSelectedTab?.created, 'DD.MM.YYYY HH:mm') }}
               </q-tooltip>
             </div>
             <div class="col-5 text-subtitle1">
               Updated
             </div>
             <div class="col-7 text-subtitle2">
-              {{ formatDate(notificationStore.selectedTab?.updated) }}
+              {{ formatDate(useUiStore().getSelectedTab?.updated) }}
               <q-tooltip>
-                {{ date.formatDate(notificationStore.selectedTab?.updated, 'DD.MM.YYYY HH:mm') }}
+                {{ date.formatDate(useUiStore().getSelectedTab?.updated, 'DD.MM.YYYY HH:mm') }}
               </q-tooltip>
             </div>
             <div class="col-5 text-subtitle1">
               last Active
             </div>
             <div class="col-7 text-subtitle2">
-              {{ formatDate(notificationStore.selectedTab?.lastActive) }}
+              {{ formatDate(useUiStore().getSelectedTab?.lastActive) }}
               <q-tooltip>
-                {{ date.formatDate(notificationStore.selectedTab?.lastActive, 'DD.MM.YYYY HH:mm') }}
+                {{ date.formatDate(useUiStore().getSelectedTab?.lastActive, 'DD.MM.YYYY HH:mm') }}
               </q-tooltip>
             </div>
             <div class="col-5 text-subtitle1">
               activated#
             </div>
             <div class="col-7 text-subtitle2">
-              {{ notificationStore.selectedTab?.activatedCount }}
+              {{ useUiStore().getSelectedTab?.activatedCount }}
             </div>
           </div>
         </div>
@@ -229,7 +229,8 @@
 
   <div v-else-if="tab === 'request'">
     <div class="q-pa-md q-gutter-sm">
-      <q-banner rounded class="bg-grey-1 text-primary">This is a data derived from the request to the tabs content</q-banner>
+      <q-banner rounded class="bg-grey-1 text-primary">This is a data derived from the request to the tabs content
+      </q-banner>
 
       Status Code: {{ request['statusCode'] }}<br><br>
 
@@ -264,7 +265,8 @@
 
   <div v-else-if="tab === 'metalinks'">
     <div class="q-pa-md q-gutter-sm">
-      <q-banner rounded class="bg-grey-1 text-primary">This is a data derived from the tab's content link tags</q-banner>
+      <q-banner rounded class="bg-grey-1 text-primary">This is a data derived from the tab's content link tags
+      </q-banner>
 
       <q-table
         title="Meta Links"
@@ -282,13 +284,13 @@
           </q-input>
         </template>
 
-<!--        <template v-slot:body-cell-name="props">-->
-<!--          <q-td :props="props">-->
-<!--            <div>-->
-<!--              <q-badge color="grey" class="cursor-pointer" @click="openNameLink(props.value)" :label="props.value"/>-->
-<!--            </div>-->
-<!--          </q-td>-->
-<!--        </template>-->
+        <!--        <template v-slot:body-cell-name="props">-->
+        <!--          <q-td :props="props">-->
+        <!--            <div>-->
+        <!--              <q-badge color="grey" class="cursor-pointer" @click="openNameLink(props.value)" :label="props.value"/>-->
+        <!--            </div>-->
+        <!--          </q-td>-->
+        <!--        </template>-->
 
       </q-table>
     </div>
@@ -306,21 +308,21 @@
         :pagination="metaInitialPagination"
         :filter="filterMetaLinks"
         dense>
-<!--        <template v-slot:top-right>-->
-<!--          <q-input borderless dense debounce="300" v-model="filterMetaLinks" placeholder="Search">-->
-<!--            <template v-slot:append>-->
-<!--              <q-icon name="search"/>-->
-<!--            </template>-->
-<!--          </q-input>-->
-<!--        </template>-->
+        <!--        <template v-slot:top-right>-->
+        <!--          <q-input borderless dense debounce="300" v-model="filterMetaLinks" placeholder="Search">-->
+        <!--            <template v-slot:append>-->
+        <!--              <q-icon name="search"/>-->
+        <!--            </template>-->
+        <!--          </q-input>-->
+        <!--        </template>-->
 
-<!--        &lt;!&ndash;        <template v-slot:body-cell-name="props">&ndash;&gt;-->
-<!--        &lt;!&ndash;          <q-td :props="props">&ndash;&gt;-->
-<!--        &lt;!&ndash;            <div>&ndash;&gt;-->
-<!--        &lt;!&ndash;              <q-badge color="grey" class="cursor-pointer" @click="openNameLink(props.value)" :label="props.value"/>&ndash;&gt;-->
-<!--        &lt;!&ndash;            </div>&ndash;&gt;-->
-<!--        &lt;!&ndash;          </q-td>&ndash;&gt;-->
-<!--        &lt;!&ndash;        </template>&ndash;&gt;-->
+        <!--        &lt;!&ndash;        <template v-slot:body-cell-name="props">&ndash;&gt;-->
+        <!--        &lt;!&ndash;          <q-td :props="props">&ndash;&gt;-->
+        <!--        &lt;!&ndash;            <div>&ndash;&gt;-->
+        <!--        &lt;!&ndash;              <q-badge color="grey" class="cursor-pointer" @click="openNameLink(props.value)" :label="props.value"/>&ndash;&gt;-->
+        <!--        &lt;!&ndash;            </div>&ndash;&gt;-->
+        <!--        &lt;!&ndash;          </q-td>&ndash;&gt;-->
+        <!--        &lt;!&ndash;        </template>&ndash;&gt;-->
 
       </q-table>
     </div>
@@ -349,7 +351,7 @@
 
     <div class="q-pa-md q-gutter-sm">
       <q-banner rounded class="bg-grey-1 text-primary">This is a search index for the current tab.</q-banner>
-
+{{ keysMap }}
       <div v-for="k in keys">
         ID: {{ k.id }} - weight {{ k.weight }}
       </div>
@@ -409,6 +411,7 @@ import _ from "lodash"
 import {useUtils} from "src/services/Utils";
 import {useQueryExecutor} from "src/services/QueryExecutor";
 import {TabLogsQuery} from "src/domain/queries/TabLogsQuery";
+import {useUiStore} from "src/stores/uiStore";
 
 const tabsStore = useTabsStore()
 const notificationStore = useNotificationsStore()
@@ -481,15 +484,17 @@ const logs = ref<any[]>([])
 const logsFilter = ref('')
 const logsColumns = ref([
   {name: 'timestamp', align: 'left', label: 'Timestamp', field: 'timestamp', sortable: true},
- // {name: 'context', align: 'left', label: 'Context', field: 'context', sortable: true},
+  // {name: 'context', align: 'left', label: 'Context', field: 'context', sortable: true},
   {name: 'level', align: 'left', label: 'Level', field: 'level', sortable: true},
   {name: 'msg', align: 'left', label: 'Message', field: 'msg', sortable: true}
 ])
 
 useQueryExecutor()
-  .queryFromUi(new TabLogsQuery(notificationStore.selectedTab?.chromeTab.url || ''))
-  .then(res => {logs.value = res.result})
-  //.catch((err) => logger.warning(err))
+  .queryFromUi(new TabLogsQuery(useUiStore().getSelectedTab?.chromeTab.url || ''))
+  .then(res => {
+    logs.value = res.result
+  })
+//.catch((err) => logger.warning(err))
 
 
 watchEffect(() => {
@@ -503,14 +508,15 @@ watchEffect(() => {
 })
 
 watchEffect(() => {
-  if (notificationStore.selectedTab) {
-    TabsetService.getThumbnailFor(notificationStore.selectedTab)
+  const selectedTab = useUiStore().getSelectedTab
+  if (selectedTab) {
+    TabsetService.getThumbnailFor(selectedTab)
       .then(data => {
         if (data) {
           thumbnail.value = data.thumbnail
         }
       })
-    TabsetService.getContentFor(notificationStore.selectedTab)
+    TabsetService.getContentFor(selectedTab)
       .then(data => {
         if (data) {
           content.value = data.content
@@ -525,7 +531,7 @@ watchEffect(() => {
           })
         }
       })
-    TabsetService.getRequestFor(notificationStore.selectedTab)
+    TabsetService.getRequestFor(selectedTab)
       .then(data => {
         if (data) {
           //console.log("got data", data)
@@ -540,14 +546,14 @@ watchEffect(() => {
         }
       })
 
-    TabsetService.getMetaLinksFor(notificationStore.selectedTab)
+    TabsetService.getMetaLinksFor(selectedTab)
       .then(data => {
         if (data) {
           metaLinkRows.value = data.metaLinks
         }
       })
 
-    TabsetService.getLinksFor(notificationStore.selectedTab)
+    TabsetService.getLinksFor(selectedTab)
       .then(data => {
         if (data) {
           linkRows.value = data.links
@@ -559,7 +565,7 @@ watchEffect(() => {
   }
 })
 
-const links = ():object[] => {
+const links = (): object[] => {
   const keys = Object.keys(linkRows.value)
   const result: object[] = []
   keys.forEach(k => {
@@ -576,9 +582,8 @@ watchEffect(() => {
   keys.value = fuseIndex['keys' as keyof object]
   keysMap.value = fuseIndex['_keysMap' as keyof object]
   const res = _.filter(fuseIndex['records' as keyof object], (r: any) => {
-    return notificationStore.selectedTab?.chromeTab.url === r.$[2]?.v
+    return useUiStore().getSelectedTab?.chromeTab.url === r.$[2]?.v
   })
-  // console.log("res", res, res.length)
   if (res && res.length > 0) {
     index.value = res[0]
   }
@@ -606,7 +611,7 @@ function getHost(urlAsString: string, shorten: Boolean = true): string {
 }
 
 const getForKey = (key: any) => {
-  if (keysMap.value[key as keyof object]
+  if ((keysMap.value[key as keyof object] || keysMap.value[key as keyof object] === 0)
     && index.value['$' as keyof object]) {
     return index.value['$' as keyof object][keysMap.value[key as keyof object]]
   }
@@ -630,8 +635,14 @@ const openValueLink = (name: any, value: string) => {
 }
 const showValueLink = (name: string) => "fb:page_id" === name || "twitter:account_id" === name
 
-const analyseTab = () => searchStore.reindexTab(notificationStore.selectedTab)
-  .then((windowId: number) => {})
+const analyseTab = () => {
+  const selectedTab = useUiStore().getSelectedTab
+  if (selectedTab) {
+    searchStore.reindexTab(selectedTab)
+      .then((windowId: number) => {
+      })
+  }
+}
 
 
 </script>

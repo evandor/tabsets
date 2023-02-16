@@ -191,9 +191,9 @@ class TabsetService {
     return db.getLinks(url)
   }
 
-  setCustomTitle(tab: Tab, title: string) {
+  setCustomTitle(tab: Tab, title: string):Promise<any> {
     tab.name = title
-    saveCurrentTabset()
+    return saveCurrentTabset()
   }
 
   createPendingFromBrowserTabs() {

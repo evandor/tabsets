@@ -23,10 +23,9 @@
       </div>
 
       <div class="col-12">
-        <div class="text-overline ellipsis">
+        <div class="text-overline ellipsis text-blue-10 cursor-pointer" @click.stop="NavigationService.openOrCreateTab(useUiStore().getSelectedTab.chromeTab?.url )">
           {{ useUiStore().getSelectedTab?.chromeTab?.url }}&nbsp;<q-icon name="launch" color="secondary"
-                                                                         class="cursor-pointer"
-                                                                         @click.stop="NavigationService.openOrCreateTab(useUiStore().getSelectedTab.chromeTab?.url )"></q-icon>
+                                                                         class="cursor-pointer"></q-icon>
         </div>
       </div>
     </div>
@@ -72,7 +71,7 @@
       <div class="col-3 text-left">
 
 
-        <q-btn v-if="featuresStore.isEnabled('dev')"
+        <q-btn v-if="featuresStore.isEnabled('dev') && usePermissionsStore().hasFeature('analyseTabs')"
                @click="showTabDetails"
                round size="11px"
                color="primary"

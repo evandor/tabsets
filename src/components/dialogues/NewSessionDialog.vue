@@ -54,7 +54,7 @@ import {STRIP_CHARS_IN_USER_INPUT} from "boot/constants";
 import {CreateTabsetCommand} from "src/domain/tabsets/CreateTabset";
 import TabsetService from "src/services/TabsetService";
 import {useCommandExecutor} from "src/services/CommandExecutor";
-import {CreateSessionCommand} from "src/domain/commands/CreateSessionCommand";
+import {CreateSessionCommand} from "src/domain/commands/CreateSession";
 
 defineEmits([
   // REQUIRED; need to specify some events that your

@@ -12,6 +12,7 @@ import {useWindowsStore} from "src/stores/windowsStores";
 import {useBookmarksStore} from "src/stores/bookmarksStore";
 import {useTabsetService} from "src/services/TabsetService2";
 import {useUiStore} from "src/stores/uiStore";
+import {uid} from "quasar";
 
 function dummyPromise(timeout: number, tabToCloseId: number | undefined = undefined): Promise<string> {
   return new Promise((resolve, reject) => {
@@ -24,6 +25,12 @@ function dummyPromise(timeout: number, tabToCloseId: number | undefined = undefi
   });
 }
 
+
+function overwrite(ident: string, doc: SearchDoc, removed: SearchDoc[]) {
+  if (!doc[ident as keyof object]) {
+    doc[ident as keyof object] = removed[0][ident as keyof object]
+  }
+}
 
 export const useSearchStore = defineStore('search', () => {
 
@@ -63,7 +70,7 @@ export const useSearchStore = defineStore('search', () => {
     fuse.value = new Fuse([], options.value, searchIndex.value)
   }
 
-  function getIndex() {
+  function getIndex(): Fuse.FuseIndex<SearchDoc> {
     return fuse.value.getIndex()
   }
 
@@ -91,10 +98,16 @@ export const useSearchStore = defineStore('search', () => {
   }
 
   function update(url: string, key: string, value: string) {
+    if (!fuse || !fuse.value) {
+      return // called too early?
+    }
     const removed: SearchDoc[] = fuse.value.remove((doc: SearchDoc) => doc.url === url)
     if (removed && removed.length > 0) {
       let newDoc: SearchDoc = removed[0]
       switch (key) {
+        case 'name':
+          newDoc.name = value
+          break
         case 'description':
           newDoc.description = value
           break
@@ -212,52 +225,61 @@ export const useSearchStore = defineStore('search', () => {
     let count = 0
     let countFiltered = 0
     let overwritten = 0
-    contentPromise
-      .then(content => {
-        content.forEach(c => {
-          if (c.expires === 0 || urlExistsInATabset(c.url)) {
-            const searchDoc = new SearchDoc(c.id, c.name, c.title, c.url, c.description, c.keywords, c.content, c.tabsets, '', c.favIconUrl)
-            if (c.metas && c.metas['description']) {
-              searchDoc.description = c.metas['description']
-            }
-            if (c.metas && c.metas['keywords']) {
-              searchDoc.keywords = c.metas['keywords']
-            }
-            const removed = fuse.value.remove((doc) => {
-              return doc.url === searchDoc.url
-            })
-            overwritten += removed.length
-            fuse.value.add(searchDoc)
-            urlSet.add(c.url)
-            count++
-          } else {
-            countFiltered++
-          }
+    const content = await contentPromise
+    // .then(content => {
+    content.forEach(c => {
+      if (c.expires === 0 || urlExistsInATabset(c.url)) {
+        const searchDoc = new SearchDoc(c.id, c.name, c.title, c.url, c.description, c.keywords, c.content, c.tabsets, '', c.favIconUrl)
+        if (c.metas && c.metas['description']) {
+          searchDoc.description = c.metas['description']
+        }
+        if (c.metas && c.metas['keywords']) {
+          searchDoc.keywords = c.metas['keywords']
+        }
+        const removed = fuse.value.remove((doc) => {
+          return doc.url === searchDoc.url
         })
-        console.log(`populated from content with ${count} entries (${overwritten} of which overwritten), ${countFiltered} is/are filtered (not in any tab)`)
-        //useUiStore().setContentCount(count - countFiltered)
-        stats.value.set("content.count", count)
-        stats.value.set("content.overwritten", overwritten)
-        stats.value.set("content.filtered", countFiltered)
-      })
+        overwritten += removed.length
+        fuse.value.add(searchDoc)
+        urlSet.add(c.url)
+        count++
+      } else {
+        countFiltered++
+      }
+    })
+    console.log(`populated from content with ${count} entries (${overwritten} of which overwritten), ${countFiltered} is/are filtered (not in any tab)`)
+    //useUiStore().setContentCount(count - countFiltered)
+    stats.value.set("content.count", count)
+    stats.value.set("content.overwritten", overwritten)
+    stats.value.set("content.filtered", countFiltered)
+    // })
 
     // --- add data from tabs directly, like url and title
     const minimalIndex: SearchDoc[] = []
-
+    //const res = fuse.value.remove((doc) => true)
+    console.log("url", urlSet)
     _.forEach([...useTabsStore().tabsets.values()], (tabset: Tabset) => {
         tabset.tabs.forEach((tab: Tab) => {
+          console.log("checking", tab.chromeTab.url, urlSet.has(tab.chromeTab.url || ''))
           if (tab.chromeTab?.url) {
             if (urlSet.has(tab.chromeTab.url)) {
-              const existingDocIndex = _.findIndex(minimalIndex, d => d.url === tab.chromeTab.title)
+              const existingDocIndex = _.findIndex(minimalIndex, d => {
+                console.log("=", d.url, tab.chromeTab.title)
+                return d.url === tab.chromeTab.title
+              })
               if (existingDocIndex >= 0) {
                 const existingDoc = minimalIndex[existingDocIndex]
+                console.log("existingDoc", existingDoc)
                 if (existingDoc.tabsets.indexOf(tabset.id) < 0) {
                   existingDoc.tabsets = existingDoc.tabsets.concat([tabset.id])
                   minimalIndex.splice(existingDocIndex, 1, existingDoc)
                 }
+              } else {
+                const doc = new SearchDoc(uid(), tab.name || '', tab.chromeTab.title || '', tab.chromeTab.url, "", "", "", [tabset.id], '', "")
+                minimalIndex.push(doc)
               }
             } else {
-              const doc = new SearchDoc("", "", tab.chromeTab.title || '', tab.chromeTab.url, "", "", "", [tabset.id], '', "")
+              const doc = new SearchDoc(uid(), tab.name || '', tab.chromeTab.title || '', tab.chromeTab.url, "", "", "", [tabset.id], '', "")
               minimalIndex.push(doc)
               urlSet.add(tab.chromeTab.url)
             }
@@ -266,7 +288,21 @@ export const useSearchStore = defineStore('search', () => {
       }
     )
     console.log(`populated from tabsets with ${minimalIndex.length} entries`)
-    minimalIndex.forEach((doc: SearchDoc) => fuse.value.add(doc))
+    minimalIndex.forEach((doc: SearchDoc) => {
+      console.log("adding to fuse:", doc)
+      const removed = fuse.value.remove((d) => {
+        return d.url === doc.url
+      })
+      if (removed && removed[0]) {
+        overwrite('name', doc, removed)
+        overwrite('description', doc, removed)
+        overwrite('keywords', doc, removed)
+        overwrite('content', doc, removed)
+
+      }
+      fuse.value.add(doc)
+    })
+    console.log("fuse... after", fuse.value.getIndex())
 
     // --- add data from bookmarks directly, like url and title
     const indexFromBookmarks: SearchDoc[] = []
@@ -302,5 +338,18 @@ export const useSearchStore = defineStore('search', () => {
     }
   }
 
-  return {init, populate, getIndex, addToIndex, remove, term, search, indexTabs, update, reindexTabset, reindexTab, stats}
+  return {
+    init,
+    populate,
+    getIndex,
+    addToIndex,
+    remove,
+    term,
+    search,
+    indexTabs,
+    update,
+    reindexTabset,
+    reindexTab,
+    stats
+  }
 })

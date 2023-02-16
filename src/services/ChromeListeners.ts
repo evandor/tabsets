@@ -12,7 +12,7 @@ import {useWindowsStore} from "src/stores/windowsStores";
 import {useTabsetService} from "src/services/TabsetService2";
 import {useSettingsStore} from "src/stores/settingsStore";
 import {usePermissionsStore} from "src/stores/permissionsStore";
-import ExpiringMap from "stores/ExpiringMap";
+import ExpiringMap from "src/stores/ExpiringMap";
 import {MetaLink} from "src/models/MetaLink";
 import {Suggestion, SuggestionType} from "src/models/Suggestion";
 import {useSuggestionsStore} from "src/stores/suggestionsStore";

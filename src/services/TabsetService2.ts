@@ -54,7 +54,7 @@ export function useTabsetService() {
         useSearchStore().indexTabs(result.tabset.id, tabs)
         return {
           replaced: result.replaced,
-          tabsetId: result.tabset.id,
+          tabset: result.tabset,
           merged: merge
         }
       }

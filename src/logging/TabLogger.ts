@@ -1,5 +1,6 @@
 import {Tab} from "src/models/Tab";
 import {LoggerStore} from "logging-library";
+import LoggingService from "src/services/LoggingService";
 
 export class TabLogger {
   static info(tab: Tab, msg: string): void {
@@ -14,7 +15,7 @@ export class TabLogger {
     const useId = "url_" + (tab?.chromeTab.url ? btoa(tab.chromeTab.url) : '')
     let loggerToUse = LoggerStore.get(useId)
     if (!loggerToUse) {
-      const defaultLogger = LoggerStore.get("default")
+      const defaultLogger = LoggingService.logger
       if (defaultLogger) {
         loggerToUse = defaultLogger.withContext(useId)
         LoggerStore.add(useId, loggerToUse)

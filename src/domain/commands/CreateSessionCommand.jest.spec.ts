@@ -1,7 +1,7 @@
 import {beforeEach, describe, expect, it, jest} from "@jest/globals";
 import {chrome} from "jest-chrome";
 import {createPinia, setActivePinia} from "pinia";
-import {CreateSessionCommand} from "src/domain/commands/CreateSessionCommand";
+import {CreateSessionCommand} from "src/domain/commands/CreateSession";
 import "fake-indexeddb/auto"
 import IndexedDbPersistenceService from "src/services/IndexedDbPersistenceService";
 import {INDEX_DB_VERSION} from "boot/constants";

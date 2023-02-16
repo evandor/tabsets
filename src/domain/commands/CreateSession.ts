@@ -45,7 +45,7 @@ export class CreateSessionCommand implements Command<object> {
       } else if (result['replaced' as keyof object]) {
         doneMsg = 'Existing Session ' + this.sessionName + ' was overwritten'
       }
-      const executionResult = new ExecutionResult(result, doneMsg, new UndoCommand(result['tabsetId' as keyof object]))
+      const executionResult = new ExecutionResult(result, doneMsg, new UndoCommand(result['tabset' as keyof object]['id']))
       return Promise.resolve(executionResult)
     } catch (err) {
       return Promise.reject(err)

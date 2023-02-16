@@ -44,7 +44,7 @@ export class CreateTabsetCommand implements Command<object> {
       } else if (result['replaced' as keyof object]) {
         doneMsg = 'Existing Tabset ' + this.tabsetName + ' was overwritten'
       }
-      const executionResult = new ExecutionResult(result, doneMsg, new UndoCreateTabsetCommand(result['tabsetId' as keyof object]))
+      const executionResult = new ExecutionResult(result, doneMsg, new UndoCreateTabsetCommand(result['tabset' as keyof object]['id']))
       return Promise.resolve(executionResult)
     } catch (err) {
       return Promise.reject(err)

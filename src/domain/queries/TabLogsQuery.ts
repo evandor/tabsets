@@ -14,7 +14,9 @@ export class TabLogsQuery implements Query<object[]> {
   query<T>(): Promise<QueryResult<LogEntry[]>> {
     const predicate: Predicate<LogEntry> = (t: LogEntry) => t.context === "url_" + btoa(this.tabUrl)
     return localDb.getLogs(predicate)
-      .then((r) => new QueryResult(r, ""))
+      .then((r) => {
+        return new QueryResult(r, "")
+      })
   }
 
 

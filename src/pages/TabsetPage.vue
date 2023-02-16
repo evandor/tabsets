@@ -112,22 +112,12 @@
         <q-btn v-if="permissionsStore.hasFeature('experimentalViews')"
                @click="setView('table')"
                style="width:14px"
-               class="q-mr-sm" size="10px"
+               class="q-mr-xs" size="10px"
                :flat="tabsStore.getCurrentTabset?.view !== 'table'"
                :outline="tabsStore.getCurrentTabset?.view === 'table'"
                icon="table_rows">
           <q-tooltip>Use the table layout to visualize your tabs</q-tooltip>
         </q-btn>
-
-        <!--        <q-btn v-if="permissionsStore.hasAllOrigins()"-->
-        <!--               @click="setView('thumbnails')"-->
-        <!--               style="width:14px"-->
-        <!--               class="q-mr-sm" size="10px"-->
-        <!--               :flat="tabsStore.getCurrentTabset?.view !== 'thumbnails'"-->
-        <!--               :outline="tabsStore.getCurrentTabset?.view === 'thumbnails'"-->
-        <!--               icon="o_image">-->
-        <!--          <q-tooltip>Use the thumbnail layout to visualize your tabs</q-tooltip>-->
-        <!--        </q-btn>-->
 
         <q-btn v-if="permissionsStore.hasFeature('experimentalViews')"
                @click="setView('canvas')"
@@ -138,21 +128,6 @@
                icon="o_shape_line">
           <q-tooltip>Use the canvas freestyle layout to visualize your tabs</q-tooltip>
         </q-btn>
-
-
-        <!--        <q-btn v-if="tabsStore.currentTabsetId !== '' && tabsStore.getTabset(tabsStore.currentTabsetId)"-->
-        <!--               class="q-ml-xl q-mr-md"-->
-        <!--               @click="addUrlDialog"-->
-        <!--               icon="add_circle"-->
-        <!--               outline-->
-        <!--               size="0.8em"-->
-        <!--               color="primary">-->
-        <!--          <q-tooltip-->
-        <!--            class="tooltip"-->
-        <!--            :delay="200">-->
-        <!--            Copy and Paste or create a new Tab inside this tabset-->
-        <!--          </q-tooltip>-->
-        <!--        </q-btn>-->
 
         <q-btn v-if="tabsStore.currentTabsetId !== '' && tabsStore.getTabset(tabsStore.currentTabsetId)"
                @click="addUrlDialog"
@@ -192,8 +167,7 @@
     associate them with a tabset.<br><br>
     <!--If you want to assign your open tabs straight away, click <span class="cursor-pointer text-blue" @click="addOpenTabs()"><u>here</u></span>.-->
   </q-banner>
-***{{tabsStore.getCurrentTabset?.tabs.length}}***
-***{{route.query.first}}***
+
   <InfoMessageWidget
     v-if="route?.query?.first && tabsStore.getCurrentTabset?.tabs.length > 0"
     :probability="1"

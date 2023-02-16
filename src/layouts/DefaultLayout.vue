@@ -20,7 +20,7 @@
         <q-space/>
 
         <SearchWidget style="position: absolute; left:300px;top:5px;max-width:500px"
-                      v-if="tabsStore.tabsets.size > 4"/>
+                      v-if="tabsStore.tabsets.size > 4 || useFeatureTogglesStore().isEnabled('dev')"/>
 
         <q-space/>
 
