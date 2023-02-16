@@ -257,7 +257,6 @@ export const useSearchStore = defineStore('search', () => {
     // --- add data from tabs directly, like url and title
     const minimalIndex: SearchDoc[] = []
     //const res = fuse.value.remove((doc) => true)
-    console.log("url", urlSet)
     _.forEach([...useTabsStore().tabsets.values()], (tabset: Tabset) => {
         tabset.tabs.forEach((tab: Tab) => {
           console.log("checking", tab.chromeTab.url, urlSet.has(tab.chromeTab.url || ''))
@@ -302,13 +301,11 @@ export const useSearchStore = defineStore('search', () => {
       }
       fuse.value.add(doc)
     })
-    console.log("fuse... after", fuse.value.getIndex())
 
     // --- add data from bookmarks directly, like url and title
     const indexFromBookmarks: SearchDoc[] = []
     _.forEach(useBookmarksStore().bookmarksLeaves, (bookmark: any) => {
         if (bookmark && bookmark.url && !urlSet.has(bookmark.url)) {
-          // console.log("bookmark", bookmark)
           urlSet.add(bookmark.url)
           const doc = new SearchDoc("", "", bookmark.title || '', bookmark.url, "", "", "", [], bookmark.id, "")
           indexFromBookmarks.push(doc)
@@ -317,7 +314,6 @@ export const useSearchStore = defineStore('search', () => {
     )
     console.log(`populated from bookmarks with ${indexFromBookmarks.length} entries`)
     indexFromBookmarks.forEach((doc: SearchDoc) => fuse.value.add(doc))
-
 
   }
 

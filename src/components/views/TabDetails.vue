@@ -71,7 +71,7 @@
       <div class="col-3 text-left">
 
 
-        <q-btn v-if="featuresStore.isEnabled('dev') && usePermissionsStore().hasFeature('analyseTabs')"
+        <q-btn v-if="featuresStore.isEnabled('dev')"
                @click="showTabDetails"
                round size="11px"
                color="primary"

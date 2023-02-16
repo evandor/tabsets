@@ -84,7 +84,7 @@ class ChromeApi {
       (details: any) => NavigationService.updateAvailable(details)
     )
 
-    if (usePermissionsStore().hasAllOrigins()) {
+    if (usePermissionsStore().hasAllOrigins() && usePermissionsStore().hasFeature('analyseTabs')) {
       this.startWebRequestListener()
     }
 
@@ -147,6 +147,7 @@ class ChromeApi {
   }
 
   startWebRequestListener() {
+    console.log("adding WebRequestListener")
     chrome.webRequest.onHeadersReceived.addListener(
       this.onHeadersReceivedListener,
       {urls: ['*://*/*'], types: ['main_frame']},
@@ -155,6 +156,7 @@ class ChromeApi {
   }
 
   stopWebRequestListener() {
+    console.log("removing WebRequestListener")
     chrome.webRequest.onHeadersReceived.removeListener(this.onHeadersReceivedListener)
   }
 
