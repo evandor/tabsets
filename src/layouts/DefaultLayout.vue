@@ -24,10 +24,10 @@
 
         <q-space/>
 
-        <SpacesSelectorWidget v-if="usePermissionsStore().hasFeature('spaces')"/>
+        <SpacesSelectorWidget v-if="usePermissionsStore().hasFeature(FeatureIdent.SPACES)"/>
 
         <Transition name="colorized-appear">
-          <div v-if="permissionsStore.hasFeature('opentabsThreshold') && tabsStore.tabsets.size > 0">
+          <div v-if="permissionsStore.hasFeature(FeatureIdent.OPENTABS_THRESHOLD) && tabsStore.tabsets.size > 0">
             <OpenTabsThresholdWidget/>
           </div>
         </Transition>
@@ -111,7 +111,7 @@
         </span>
 
         <Transition name="colorized-appear">
-          <q-btn v-if="permissionsStore.hasFeature('newTab')"
+          <q-btn v-if="permissionsStore.hasFeature(FeatureIdent.NEW_TAB)"
                  flat
                  name="rss" icon="o_create_new_folder" @click="tabsClicked(DrawerTabs.NEW_TAB_URLS)">
             <q-tooltip class="tooltip" anchor="center right" self="center left" :delay="200">
@@ -129,7 +129,7 @@
         </q-btn>
 
         <Transition name="colorized-appear">
-          <q-btn v-if="permissionsStore.hasFeature('groupedByDomain')"
+          <q-btn v-if="permissionsStore.hasFeature(FeatureIdent.GROUP_BY_DOMAIN)"
                  flat
                  icon="o_dns" @click="tabsClicked(DrawerTabs.GROUP_BY_HOST_TABS)">
             <q-tooltip class="tooltip" anchor="center right" self="center left" :delay="200">Your tabs grouped by
@@ -139,7 +139,7 @@
         </Transition>
 
         <Transition name="colorized-appear">
-          <q-btn v-if="permissionsStore.hasFeature('rss')"
+          <q-btn v-if="permissionsStore.hasFeature(FeatureIdent.RSS)"
                  flat
                  name="rss" icon="o_rss_feed" @click="tabsClicked(DrawerTabs.RSS)">
             <q-tooltip class="tooltip" anchor="center right" self="center left" :delay="200">Access to your rss feed
@@ -149,7 +149,7 @@
         </Transition>
 
         <Transition name="colorized-appear">
-          <q-btn v-if="permissionsStore.hasFeature('bookmarks')"
+          <q-btn v-if="permissionsStore.hasFeature(FeatureIdent.BOOKMARKS)"
                  flat
                  name="sidebar" icon="o_bookmark" @click="tabsClicked(DrawerTabs.BOOKMARKS)">
             <q-tooltip class="tooltip" anchor="center right" self="center left" :delay="200">Access to your bookmarks
@@ -158,7 +158,7 @@
         </Transition>
 
         <Transition name="colorized-appear">
-          <q-btn v-if="permissionsStore.hasFeature('sidebar')"
+          <q-btn v-if="permissionsStore.hasFeature(FeatureIdent.SIDEBAR)"
                  flat
                  name="sidebar" icon="o_input" @click="tabsClicked(DrawerTabs.SIDEBAR)">
             <q-tooltip class="tooltip" anchor="center right" self="center left" :delay="200">Your current tabset as
@@ -255,6 +255,7 @@ import ImportDialog from "components/dialogues/ImportDialog.vue";
 import {Suggestion, SuggestionState} from "src/models/Suggestion";
 import SuggestionDialog from "components/dialogues/SuggestionDialog.vue";
 import {useSuggestionsStore} from "src/stores/suggestionsStore";
+import {FeatureIdent} from "src/models/AppFeatures";
 
 const router = useRouter()
 const tabsStore = useTabsStore()

@@ -8,7 +8,7 @@
 
     <Transition name="colorized-appear">
       <q-tab name="bookmarks" icon="o_bookmarks"
-             v-if="permissionsStore.hasFeature('bookmarks')"
+             v-if="permissionsStore.hasFeature(FeatureIdent.BOOKMARKS)"
              @click="tabsClicked(DrawerTabs.BOOKMARKS)">
         <q-tooltip class="tooltip">Your bookmarks</q-tooltip>
       </q-tab>
@@ -38,7 +38,7 @@
 
     <Transition name="colorized-appear">
       <q-tab
-        v-if="permissionsStore.hasFeature('groupedByDomain')"
+        v-if="permissionsStore.hasFeature(FeatureIdent.GROUP_BY_DOMAIN)"
         name="groupedByHostTabs" icon="o_dns" @click="tabsClicked(DrawerTabs.GROUP_BY_HOST_TABS)">
         <q-tooltip class="tooltip" anchor="center right" self="center left" :delay="200">Your tabs grouped by host, if
           there are at least two tabs
@@ -52,7 +52,7 @@
     </q-tab>
 
     <Transition name="colorized-appear">
-      <q-tab v-if="permissionsStore.hasFeature('sidebar')"
+      <q-tab v-if="permissionsStore.hasFeature(FeatureIdent.SIDEBAR)"
              name="sidebar" icon="o_input" @click="tabsClicked(DrawerTabs.SIDEBAR)">
         <q-tooltip class="tooltip" anchor="center right" self="center left" :delay="200">Your current tabset as
           'sidebar'
@@ -65,20 +65,20 @@
       <q-tooltip class="tooltip" anchor="center right" self="center left" :delay="200">RSS Feeds</q-tooltip>
     </q-tab>
 
-    <Transition name="colorized-appear">
-      <q-tab
-        v-if="permissionsStore.hasFeature('scheduled')"
-        name="scheduled" icon="o_update" @click="tabsClicked(DrawerTabs.SCHEDULED)">
-        <q-tooltip class="tooltip" anchor="center right" self="center left" :delay="200">Scheduled Tabs</q-tooltip>
-      </q-tab>
-    </Transition>
+<!--    <Transition name="colorized-appear">-->
+<!--      <q-tab-->
+<!--        v-if="permissionsStore.hasFeature('scheduled')"-->
+<!--        name="scheduled" icon="o_update" @click="tabsClicked(DrawerTabs.SCHEDULED)">-->
+<!--        <q-tooltip class="tooltip" anchor="center right" self="center left" :delay="200">Scheduled Tabs</q-tooltip>-->
+<!--      </q-tab>-->
+<!--    </Transition>-->
 
-    <Transition name="colorized-appear">
-      <q-tab v-if="permissionsStore.hasFeature('history')"
-             name="history" icon="o_history" @click="tabsClicked(DrawerTabs.HISTORY)">
-        <q-tooltip class="tooltip" anchor="center right" self="center left" :delay="200">Browser History</q-tooltip>
-      </q-tab>
-    </Transition>
+<!--    <Transition name="colorized-appear">-->
+<!--      <q-tab v-if="permissionsStore.hasFeature('history')"-->
+<!--             name="history" icon="o_history" @click="tabsClicked(DrawerTabs.HISTORY)">-->
+<!--        <q-tooltip class="tooltip" anchor="center right" self="center left" :delay="200">Browser History</q-tooltip>-->
+<!--      </q-tab>-->
+<!--    </Transition>-->
 
     <q-tab
       name="features" icon="o_more_horiz" @click="tabsClicked(DrawerTabs.FEATURES)">
@@ -107,6 +107,7 @@ import {usePermissionsStore} from "src/stores/permissionsStore";
 import {useUtils} from "src/services/Utils";
 import {MHtml} from "src/models/MHtml";
 import MHtmlService from "src/services/MHtmlService";
+import {FeatureIdent} from "src/models/AppFeatures";
 
 const router = useRouter()
 

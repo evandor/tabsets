@@ -88,7 +88,7 @@
           <q-tooltip>Sorting descending or ascending, currently {{ orderDesc }}</q-tooltip>
         </q-btn>
 
-        <q-btn v-if="permissionsStore.hasFeature('experimentalViews')"
+        <q-btn v-if="permissionsStore.hasFeature(FeatureIdent.EXPERIMENTAL_VIEWS)"
                @click="setView('grid')"
                style="width:14px"
                class="q-mr-sm" size="8px"
@@ -99,7 +99,7 @@
         </q-btn>
 
         <!-- default view, no need to show if there is no alternative -->
-        <q-btn v-if="permissionsStore.hasFeature('experimentalViews')"
+        <q-btn v-if="permissionsStore.hasFeature(FeatureIdent.EXPERIMENTAL_VIEWS)"
                @click="setView('list')"
                style="width:14px"
                class="q-mr-sm" size="10px"
@@ -109,7 +109,7 @@
           <q-tooltip>Use the list layout to visualize your tabs</q-tooltip>
         </q-btn>
 
-        <q-btn v-if="permissionsStore.hasFeature('experimentalViews')"
+        <q-btn v-if="permissionsStore.hasFeature(FeatureIdent.EXPERIMENTAL_VIEWS)"
                @click="setView('table')"
                style="width:14px"
                class="q-mr-xs" size="10px"
@@ -119,7 +119,7 @@
           <q-tooltip>Use the table layout to visualize your tabs</q-tooltip>
         </q-btn>
 
-        <q-btn v-if="permissionsStore.hasFeature('experimentalViews')"
+        <q-btn v-if="permissionsStore.hasFeature(FeatureIdent.EXPERIMENTAL_VIEWS)"
                @click="setView('canvas')"
                style="width:14px"
                class="q-mr-sm" size="10px"
@@ -198,16 +198,16 @@
 
     </q-card-section>
 
-    <q-card-section v-if="tabsStore.getCurrentTabset?.tabs.length === 0
-        && permissionsStore.hasFeature('pendingTabs')
-        && tabsStore.pendingTabset?.tabs.length > 0">
-      <q-banner rounded class="text-black"
-                style="font-weight: bold; border: 2px solid orange">
-        <div class="row justify-center items-center">
-          Your tabset does not yet contain any tabs. You can select some (or all) from the list above.
-        </div>
-      </q-banner>
-    </q-card-section>
+<!--    <q-card-section v-if="tabsStore.getCurrentTabset?.tabs.length === 0-->
+<!--        && permissionsStore.hasFeature('pendingTabs')-->
+<!--        && tabsStore.pendingTabset?.tabs.length > 0">-->
+<!--      <q-banner rounded class="text-black"-->
+<!--                style="font-weight: bold; border: 2px solid orange">-->
+<!--        <div class="row justify-center items-center">-->
+<!--          Your tabset does not yet contain any tabs. You can select some (or all) from the list above.-->
+<!--        </div>-->
+<!--      </q-banner>-->
+<!--    </q-card-section>-->
 
   </q-card>
 
@@ -256,6 +256,7 @@ import {StopSessionCommand} from "src/domain/commands/StopSessionCommand";
 import {useUtils} from "src/services/Utils";
 import {DynamicTabSourceType} from "src/models/DynamicTabSource";
 import TabTable from "components/layouts/TabTable.vue";
+import {FeatureIdent} from "src/models/AppFeatures";
 
 const route = useRoute();
 const router = useRouter();
@@ -326,16 +327,17 @@ function getOrder() {
 
 function unpinnedNoGroupOrAllTabs(): Tab[] {
 
-  if (usePermissionsStore().hasFeature('useGroups')) {
-    return _.orderBy(
-      _.filter(
-        tabsStore.getCurrentTabs,
-        // @ts-ignore
-        (t: Tab) => !t?.chromeTab.pinned && t?.chromeTab.groupId === -1),
-      getOrder(), [orderDesc.value ? 'desc' : 'asc'])
-  } else {
-    return _.orderBy(tabsStore.getCurrentTabs, getOrder(), [orderDesc.value ? 'desc' : 'asc'])
-  }
+  // if (usePermissionsStore().hasFeature('useGroups')) {
+  //   return _.orderBy(
+  //     _.filter(
+  //       tabsStore.getCurrentTabs,
+  //       // @ts-ignore
+  //       (t: Tab) => !t?.chromeTab.pinned && t?.chromeTab.groupId === -1),
+  //     getOrder(), [orderDesc.value ? 'desc' : 'asc'])
+  // } else {
+  //   return _.orderBy(tabsStore.getCurrentTabs, getOrder(), [orderDesc.value ? 'desc' : 'asc'])
+  // }
+  return []
 }
 
 
@@ -416,7 +418,7 @@ const sortingInfo = (): string => {
 
 const showSorting = () => tabsStore.getCurrentTabs.length > 10
 
-const showPinnedTabsSection = () => usePermissionsStore().hasFeature('useGroups') && tabsStore.pinnedTabs?.length > 0 && !specialView()
+// const showPinnedTabsSection = () => usePermissionsStore().hasFeature('useGroups') && tabsStore.pinnedTabs?.length > 0 && !specialView()
 </script>
 
 <style>
