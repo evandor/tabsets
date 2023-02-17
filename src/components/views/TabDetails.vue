@@ -23,7 +23,8 @@
       </div>
 
       <div class="col-12">
-        <div class="text-overline ellipsis text-blue-10 cursor-pointer" @click.stop="NavigationService.openOrCreateTab(useUiStore().getSelectedTab.chromeTab?.url )">
+        <div class="text-overline ellipsis text-blue-10 cursor-pointer"
+             @click.stop="NavigationService.openOrCreateTab(useUiStore().getSelectedTab.chromeTab?.url )">
           {{ useUiStore().getSelectedTab?.chromeTab?.url }}&nbsp;<q-icon name="launch" color="secondary"
                                                                          class="cursor-pointer"></q-icon>
         </div>
@@ -81,20 +82,22 @@
         </q-btn>
       </div>
       <div class="col-9 text-right">
-<!--        <q-btn round size="11px"-->
-<!--               :color="useUiStore().getSelectedTab?.note && useUiStore().getSelectedTab.note.length > 0 ? 'white' : 'warning'"-->
-<!--               :style="useUiStore().getSelectedTab?.note && useUiStore().getSelectedTab.note.length > 0 ? 'background: #FFBF46' : 'background: #ffffff'"-->
-<!--               flat-->
-<!--               icon="edit_note"-->
-<!--               @click.stop="editNoteDialog(useUiStore().getSelectedTab)">-->
-<!--          <q-tooltip>Add a note to this tab or edit it</q-tooltip>-->
-<!--        </q-btn>-->
+        <!--        <q-btn round size="11px"-->
+        <!--               :color="useUiStore().getSelectedTab?.note && useUiStore().getSelectedTab.note.length > 0 ? 'white' : 'warning'"-->
+        <!--               :style="useUiStore().getSelectedTab?.note && useUiStore().getSelectedTab.note.length > 0 ? 'background: #FFBF46' : 'background: #ffffff'"-->
+        <!--               flat-->
+        <!--               icon="edit_note"-->
+        <!--               @click.stop="editNoteDialog(useUiStore().getSelectedTab)">-->
+        <!--          <q-tooltip>Add a note to this tab or edit it</q-tooltip>-->
+        <!--        </q-btn>-->
 
         <q-btn flat round color="primary" size="11px" icon="o_schedule" @click.stop="scheduleTab()">
           <q-tooltip>Schedule this tab</q-tooltip>
         </q-btn>
 
-        <q-btn flat round color="primary" size="11px" icon="save" @click.stop="saveTab(useUiStore().getSelectedTab)"
+        <q-btn v-if="usePermissionsStore().hasPermission('pageCapture')"
+               @click.stop="saveTab(useUiStore().getSelectedTab)"
+               flat round color="primary" size="11px" icon="save"
                :disabled="!isOpen(useUiStore().getSelectedTab)">
           <q-tooltip v-if="isOpen(useUiStore().getSelectedTab)">Save this tab</q-tooltip>
           <q-tooltip v-else>The tab must be open if you want to save it. Click on the link and come back here to save
@@ -136,9 +139,11 @@
             </div>
             <div class="col-7 ellipsis">
               {{ searchIndex.get(index)['v'] }}
-              <q-tooltip class="tooltip">{{ searchIndex.get(index)['v'] }} </q-tooltip>
+              <q-tooltip class="tooltip">{{ searchIndex.get(index)['v'] }}</q-tooltip>
             </div>
-            <div class="col text-right"><q-icon name="o_check_circle" color="primary" /></div>
+            <div class="col text-right">
+              <q-icon name="o_check_circle" color="primary"/>
+            </div>
           </div>
         </div>
       </div>
@@ -173,6 +178,9 @@ import {formatDistance} from "date-fns";
 import {useUtils} from "src/services/Utils";
 import NavigationService from "src/services/NavigationService";
 import {useSearchStore} from "stores/searchStore";
+import MHtmlService from "src/services/MHtmlService";
+import {useCommandExecutor} from "src/services/CommandExecutor";
+import {SaveTabCommand} from "src/domain/tabs/SaveTab";
 
 const {inBexMode} = useUtils()
 
@@ -278,7 +286,7 @@ watchEffect(() => {
   if (res && res.length > 0) {
     Object.keys(res[0]['$' as keyof object]).forEach(k => {
       const tmp = res[0]['$' as keyof object][k as keyof object]
-      const v:any = keys.get(+k)
+      const v: any = keys.get(+k)
       v.n = tmp['n' as keyof object]
       const c = tmp['v' as keyof object]
       v.v = c //? (c.length > 100 ? c.substring(0,98) + "..." : c) : ''
@@ -288,5 +296,9 @@ watchEffect(() => {
     searchIndex.value = keys
   }
 })
+
+const saveTab = (tab: Tab) => useCommandExecutor().executeFromUi(new SaveTabCommand(tab))
+
+
 
 </script>

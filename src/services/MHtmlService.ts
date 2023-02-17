@@ -16,6 +16,7 @@ class MHtmlService {
   }
 
   saveMHtml(tab: Tab, mhtml: string): Promise<any> {
+    console.log("saving MHtml")
     return localDb.saveMHtml(tab, mhtml)
   }
 

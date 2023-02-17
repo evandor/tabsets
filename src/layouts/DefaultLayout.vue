@@ -120,6 +120,14 @@
           </q-btn>
         </Transition>
 
+        <q-btn
+               flat
+               name="savedTabs" icon="o_create_new_folder" @click="tabsClicked(DrawerTabs.SAVED_TABS)">
+          <q-tooltip class="tooltip" anchor="center right" self="center left" :delay="200">
+            The List of Urls displayed when you open a new tab in your Browser
+          </q-tooltip>
+        </q-btn>
+
         <Transition name="colorized-appear">
           <q-btn v-if="permissionsStore.hasFeature('groupedByDomain')"
                  flat
