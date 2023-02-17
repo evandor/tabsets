@@ -1,6 +1,7 @@
 import {defineStore} from 'pinia';
 import {computed, ref, watch} from "vue";
 import {useQuasar} from "quasar";
+import {FeatureIdent} from "src/models/AppFeatures";
 
 
 export const usePermissionsStore = defineStore('permissions', () => {
@@ -78,9 +79,7 @@ export const usePermissionsStore = defineStore('permissions', () => {
   })
 
   const hasFeature = computed(() => {
-    return (feature: string): boolean => {
-      return activeFeatures.value.indexOf(feature) >= 0
-    }
+    return (feature: FeatureIdent): boolean => activeFeatures.value.indexOf(feature.toLowerCase()) >= 0
   })
 
   const activateFeature = computed(() => {

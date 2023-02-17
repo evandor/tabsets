@@ -3,6 +3,7 @@ import {ExecutionResult} from "src/domain/ExecutionResult";
 import {usePermissionsStore} from "src/stores/permissionsStore";
 import {GrantOriginCommand} from "src/domain/commands/GrantOriginCommand";
 import ChromeApi from "src/services/ChromeApi";
+import {FeatureIdent} from "src/models/AppFeatures";
 
 class UndoCommand implements Command<boolean> {
 
@@ -51,8 +52,8 @@ export class RevokeOriginCommand implements Command<boolean> {
             msg = "Permission was added, subsequently accessed tabs will not be analysed"
             break;
           case "all":
-            usePermissionsStore().deactivateFeature('thumbnails')
-            usePermissionsStore().deactivateFeature('analyseTabs')
+            usePermissionsStore().deactivateFeature(FeatureIdent.THUMBNAILS)
+            usePermissionsStore().deactivateFeature(FeatureIdent.ANALYSE_TABS)
             msg = "Permissions thumbnails and analyseTabs were revoked (if allowed)"
             return new ExecutionResult(true, msg)
           default:
