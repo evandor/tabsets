@@ -63,7 +63,6 @@ import {useQueryExecutor} from "src/services/QueryExecutor";
 import {useBookmarksStore} from "src/stores/bookmarksStore";
 import {usePermissionsStore} from "src/stores/permissionsStore";
 import {useUiStore} from "src/stores/uiStore";
-import {FeatureIdent} from "src/models/AppFeatures";
 
 const tabsStore = useTabsStore()
 const searchStore = useSearchStore()
@@ -143,11 +142,11 @@ const inputPlaceholder = () => {
   if (Math.random() < 0.1) {
     return "use the key '/' for quick access to search"
   }
-  if (usePermissionsStore().hasFeature(FeatureIdent.BOOKMARKS) && usePermissionsStore().hasFeature(FeatureIdent.ANALYSE_TABS)) {
+  if (usePermissionsStore().hasFeature('bookmarks') && usePermissionsStore().hasFeature('analyseTabs')) {
     const contentCount = useSearchStore().stats.get("content.count")
     return `Search inside ${tabsStore.allTabsCount} tabs (${contentCount} analysed) and ${useBookmarksStore().bookmarksLeaves.length} bookmarks`
   }
-  if (usePermissionsStore().hasFeature(FeatureIdent.BOOKMARKS)) {
+  if (usePermissionsStore().hasFeature('bookmarks')) {
     return "Search inside all of " + tabsStore.allTabsCount + " tabs and " + useBookmarksStore().bookmarksLeaves.length + " bookmarks"
   }
   return "Search inside all of " + tabsStore.allTabsCount + " tabs"

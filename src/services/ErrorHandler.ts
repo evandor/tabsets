@@ -24,7 +24,6 @@ export function useNotificationHandler() {
 
   const handleSuccess = (executionResult: ExecutionResult<any>): ExecutionResult<any> => {
     const actions: any[] = []
-    console.log("handleSuccess", executionResult.undoCommand)
     if (executionResult.undoCommand) {
       actions.push(
         {

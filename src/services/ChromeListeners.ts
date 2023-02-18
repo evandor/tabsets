@@ -16,7 +16,6 @@ import ExpiringMap from "src/stores/ExpiringMap";
 import {MetaLink} from "src/models/MetaLink";
 import {Suggestion, SuggestionType} from "src/models/Suggestion";
 import {useSuggestionsStore} from "src/stores/suggestionsStore";
-import {FeatureIdent} from "src/models/AppFeatures";
 
 const {
   saveCurrentTabset,
@@ -83,7 +82,7 @@ class ChromeListeners {
     }
     this.eventTriggered()
     console.log(`onCreated: tab ${tab.id}: >>> ${tab.pendingUrl}`)
-    if (usePermissionsStore().hasFeature(FeatureIdent.NEW_TAB) && tab.pendingUrl === 'chrome://newtab/') {
+    if (usePermissionsStore().hasFeature('newTab') && tab.pendingUrl === 'chrome://newtab/') {
       // @ts-ignore
       chrome.tabs.update(tab.id, {
         // url: chrome.runtime.getURL("www/newtab.html")
@@ -134,10 +133,10 @@ class ChromeListeners {
       if (!chromeTab.url?.startsWith("chrome") && chromeTab.id) {
 
         const scripts = []
-        if (usePermissionsStore().hasFeature(FeatureIdent.THUMBNAILS)) {
+        if (usePermissionsStore().hasFeature('thumbnails')) {
           scripts.push("content-script-thumbnails.js")
         }
-        if (usePermissionsStore().hasFeature(FeatureIdent.ANALYSE_TABS)) {
+        if (usePermissionsStore().hasFeature('analyseTabs')) {
           scripts.push("tabsets-content-script.js")
         }
         if (scripts.length > 0 && !this.injectedScripts.get(chromeTab.id)) {
@@ -319,7 +318,7 @@ class ChromeListeners {
       saveMetaLinksFor(sender.tab, request.links)
       saveLinksFor(sender.tab, request.anchors)
 
-      if (usePermissionsStore().hasFeature(FeatureIdent.RSS)) {
+      if (usePermissionsStore().hasFeature('rss')) {
         request.links.forEach((metaLink: MetaLink) => {
           if ("application/rss+xml" === metaLink.type) {
             //console.log("hier!!!", metaLink)

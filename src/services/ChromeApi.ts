@@ -13,7 +13,6 @@ import {SearchDoc} from "src/models/SearchDoc";
 import {usePermissionsStore} from "src/stores/permissionsStore";
 import {Tab} from "src/models/Tab";
 import {uid} from "quasar";
-import {FeatureIdent} from "src/models/AppFeatures";
 
 // const {housekeeping} = useTabsetService()
 
@@ -85,7 +84,7 @@ class ChromeApi {
       (details: any) => NavigationService.updateAvailable(details)
     )
 
-    if (usePermissionsStore().hasAllOrigins() && usePermissionsStore().hasFeature(FeatureIdent.ANALYSE_TABS)) {
+    if (usePermissionsStore().hasAllOrigins() && usePermissionsStore().hasFeature('analyseTabs')) {
       this.startWebRequestListener()
     }
 

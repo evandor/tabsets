@@ -3,7 +3,6 @@ import _ from "lodash";
 import {TreeNode} from "src/models/Tree";
 import {Bookmark} from "src/models/Bookmark";
 import {usePermissionsStore} from "src/stores/permissionsStore";
-import {FeatureIdent} from "src/models/AppFeatures";
 
 function getChildren(
   parent: chrome.bookmarks.BookmarkTreeNode,
@@ -53,7 +52,7 @@ export const  useBookmarksStore = defineStore('bookmarks', {
       this.bookmarksTree = []
       this.bookmarksNodes = []
       this.bookmarksLeaves = []
-      const accessGranted = usePermissionsStore().hasPermission("bookmarks") && usePermissionsStore().hasFeature(FeatureIdent.BOOKMARKS)
+      const accessGranted = usePermissionsStore().hasPermission("bookmarks") && usePermissionsStore().hasFeature('bookmarks')
       console.log("loading bookmarks", accessGranted)//, (new Error()).stack)
       if (accessGranted) {
         // @ts-ignore

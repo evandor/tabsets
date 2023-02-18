@@ -83,10 +83,12 @@ import {useFeatureTogglesStore} from "src/stores/featureTogglesStore";
 import {useSpacesStore} from "src/stores/spacesStore";
 import NewTabsetDialog from "components/dialogues/NewTabsetDialog.vue";
 import NavTabsetsListWidget from "components/widgets/NavTabsetsListWidget.vue"
+import TabInfo from "components/layouts/TabInfo.vue";
 import {useUiStore} from "src/stores/uiStore";
 import {useNotificationsStore} from "src/stores/notificationsStore";
+import TabsetInfo from "components/layouts/TabsetInfo.vue";
 import {usePermissionsStore} from "src/stores/permissionsStore";
-import {FeatureIdent} from "src/models/AppFeatures";
+import InfoMessageWidget from "components/widgets/InfoMessageWidget.vue";
 
 const router = useRouter()
 const tabsStore = useTabsStore()
@@ -100,7 +102,7 @@ const localStorage = $q.localStorage
 
 const newTabsetName = ref('')
 const merge = ref(false)
-const splitterModel = ref(permissonsStore.hasFeature(FeatureIdent.DETAILS) ? 350 : 1)
+const splitterModel = ref(permissonsStore.hasFeature('details') ? 350 : 1)
 
 $q.loadingBar.setDefaults({
   color: 'green',
@@ -110,7 +112,7 @@ $q.loadingBar.setDefaults({
 
 const tabsets = (isFavorite: boolean) => {
   let tabsets = [...tabsStore.tabsets.values()]
-  if (usePermissionsStore().hasFeature(FeatureIdent.SPACES) && spacesStore.spaces && spacesStore.spaces.size > 0) {
+  if (usePermissionsStore().hasFeature('spaces') && spacesStore.spaces && spacesStore.spaces.size > 0) {
     if (spacesStore.space && spacesStore.space.id && spacesStore.space.id.length > 0) {
       tabsets = _.filter(tabsets, ts => ts.status !== TabsetStatus.ARCHIVED && ts.spaces && ts.spaces.indexOf(spacesStore.space.id) >= 0)
     } else {

@@ -1,3 +1,7 @@
+import {Tab} from "src/models/Tab";
+import {Group} from "src/models/Group";
+import {Space} from "src/models/Space";
+
 export class MHtml {
   created: number
   updated: number

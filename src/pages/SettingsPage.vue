@@ -57,7 +57,7 @@
         </div>
       </div>
 
-      <div class="row items-baseline q-ma-md" v-if="usePermissionsStore().hasFeature(FeatureIdent.OPENTABS_THRESHOLD)">
+      <div class="row items-baseline q-ma-md" v-if="usePermissionsStore().hasFeature('opentabsThreshold')">
         <div class="col-3">
           Warning Thresholds
         </div>
@@ -76,7 +76,7 @@
         </div>
       </div>
 
-      <div class="row items-baseline q-ma-md" v-if="usePermissionsStore().hasFeature(FeatureIdent.THUMBNAILS)">
+      <div class="row items-baseline q-ma-md" v-if="usePermissionsStore().hasFeature('thumbnails')">
         <div class="col-3">
           Thumbnail Quality in %
         </div>
@@ -321,7 +321,6 @@ import {ExecutionResult} from "src/domain/ExecutionResult";
 import {RevokePermissionCommand} from "src/domain/commands/RevokePermissionCommand";
 import {GrantOriginCommand} from "src/domain/commands/GrantOriginCommand";
 import {RevokeOriginCommand} from "src/domain/commands/RevokeOriginCommand";
-import {FeatureIdent} from "src/models/AppFeatures";
 
 
 const tabsStore = useTabsStore()
@@ -337,7 +336,7 @@ const view = ref('grid')
 const indexSize = ref(0)
 
 const syncEnabled = ref<boolean>(featuresStore.isEnabled('sync'))
-// const experimentalViewsEnabled = ref<boolean>(featuresStore.isEnabled('experimentalViews'))
+const experimentalViewsEnabled = ref<boolean>(featuresStore.isEnabled('experimentalViews'))
 const statsEnabled = ref<boolean>(featuresStore.isEnabled('stats'))
 const devEnabled = ref<boolean>(featuresStore.isEnabled('dev'))
 const ddgEnabled = ref<boolean>(!featuresStore.isEnabled('noDDG'))
@@ -429,7 +428,7 @@ watchEffect(() => {
 watchEffect(() => {
   //featuresStore.setFeatureToggle("debug", debugEnabled.value)
   featuresStore.setFeatureToggle("sync", syncEnabled.value)
-  // featuresStore.setFeatureToggle("experimentalViews", experimentalViewsEnabled.value)
+  featuresStore.setFeatureToggle("experimentalViews", experimentalViewsEnabled.value)
   featuresStore.setFeatureToggle("stats", statsEnabled.value)
   featuresStore.setFeatureToggle("dev", devEnabled.value)
   featuresStore.setFeatureToggle("noDDG", !ddgEnabled.value)

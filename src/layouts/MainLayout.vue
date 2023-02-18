@@ -22,7 +22,7 @@
         <SpacesSelectorWidget v-if="featuresStore.isEnabled('spaces')"/>
 
         <Transition name="colorized-appear">
-          <div v-if="permissionsStore.hasFeature(FeatureIdent.OPENTABS_THRESHOLD) && tabsStore.tabsets.size > 0">
+          <div v-if="permissionsStore.hasFeature('opentabsThreshold') && tabsStore.tabsets.size > 0">
             <OpenTabsThresholdWidget/>
           </div>
         </Transition>
@@ -143,7 +143,6 @@ import NotificationDialog from "components/dialogues/NotificationDialog.vue"
 import {usePermissionsStore} from "src/stores/permissionsStore";
 import {Notification, NotificationStatus} from "src/models/Notification";
 import {useUtils} from "src/services/Utils";
-import {FeatureIdent} from "src/models/AppFeatures";
 
 const router = useRouter()
 const tabsStore = useTabsStore()

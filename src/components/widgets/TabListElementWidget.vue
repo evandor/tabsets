@@ -35,11 +35,11 @@
 
   <q-item-section side v-if="props.showButtons">
     <div class="row">
-      <q-btn flat round color="primary" size="11px" icon="o_info" v-if="usePermissionsStore().hasFeature(FeatureIdent.DETAILS)"
+      <q-btn flat round color="primary" size="11px" icon="o_info" v-if="usePermissionsStore().hasFeature('details')"
              @click.stop="showDetails(tab)">
         <q-tooltip class="tooltip">Show details about this tab</q-tooltip>
       </q-btn>
-      <q-btn v-if="usePermissionsStore().hasFeature(FeatureIdent.NEW_TAB)"
+      <q-btn v-if="usePermissionsStore().hasFeature('newTab')"
              flat round color="primary" size="11px" icon="o_create_new_folder"
              @click.stop="addToNewTabUrlList(tab)">
         <q-tooltip class="tooltip">Add this tab to the list of tabs showing when you open a new tab in your browser
@@ -78,7 +78,6 @@ import {DrawerTabs, useUiStore} from "src/stores/uiStore";
 import {usePermissionsStore} from "src/stores/permissionsStore";
 import TabFaviconWidget from "components/widgets/TabFaviconWidget.vue";
 import {UpdateTabNameCommand} from "src/domain/tabs/UpdateTabName";
-import {FeatureIdent} from "src/models/AppFeatures";
 
 const props = defineProps({
   tab: {type: Object, required: true},
