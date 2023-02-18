@@ -3,7 +3,7 @@ import {ExecutionResult} from "src/domain/ExecutionResult";
 import {usePermissionsStore} from "src/stores/permissionsStore";
 import {GrantOriginCommand} from "src/domain/commands/GrantOriginCommand";
 import ChromeApi from "src/services/ChromeApi";
-import {FeatureIdent} from "src/models/AppFeatures";
+import {FeatureIdent} from "src/models/AppFeature";
 
 class UndoCommand implements Command<boolean> {
 

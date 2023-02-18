@@ -107,7 +107,7 @@ import {usePermissionsStore} from "src/stores/permissionsStore";
 import {useUtils} from "src/services/Utils";
 import {MHtml} from "src/models/MHtml";
 import MHtmlService from "src/services/MHtmlService";
-import {FeatureIdent} from "src/models/AppFeatures";
+import {FeatureIdent} from "src/models/AppFeature";
 
 const router = useRouter()
 

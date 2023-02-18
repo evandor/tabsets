@@ -256,7 +256,7 @@ import {StopSessionCommand} from "src/domain/commands/StopSessionCommand";
 import {useUtils} from "src/services/Utils";
 import {DynamicTabSourceType} from "src/models/DynamicTabSource";
 import TabTable from "components/layouts/TabTable.vue";
-import {FeatureIdent} from "src/models/AppFeatures";
+import {FeatureIdent} from "src/models/AppFeature";
 
 const route = useRoute();
 const router = useRouter();

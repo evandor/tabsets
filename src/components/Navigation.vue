@@ -86,7 +86,7 @@ import NavTabsetsListWidget from "components/widgets/NavTabsetsListWidget.vue"
 import {useUiStore} from "src/stores/uiStore";
 import {useNotificationsStore} from "src/stores/notificationsStore";
 import {usePermissionsStore} from "src/stores/permissionsStore";
-import {FeatureIdent} from "src/models/AppFeatures";
+import {FeatureIdent} from "src/models/AppFeature";
 
 const router = useRouter()
 const tabsStore = useTabsStore()

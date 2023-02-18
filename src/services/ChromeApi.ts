@@ -5,7 +5,6 @@ import _ from "lodash"
 import NavigationService from "src/services/NavigationService";
 import {RequestInfo} from "src/models/RequestInfo";
 import StatsService from "src/services/StatsService";
-import {useUiService} from "src/services/useUiService";
 import TabService from "src/services/TabService";
 import IndexedDbPersistenceService from "src/services/IndexedDbPersistenceService";
 import {useSearchStore} from "src/stores/searchStore";
@@ -13,9 +12,7 @@ import {SearchDoc} from "src/models/SearchDoc";
 import {usePermissionsStore} from "src/stores/permissionsStore";
 import {Tab} from "src/models/Tab";
 import {uid} from "quasar";
-import {FeatureIdent} from "src/models/AppFeatures";
-
-// const {housekeeping} = useTabsetService()
+import {FeatureIdent} from "src/models/AppFeature";
 
 function runHousekeeping(alarm: chrome.alarms.Alarm) {
   if (alarm.name === "housekeeping") {
@@ -210,12 +207,12 @@ class ChromeApi {
     console.log("restoring tabset ", tabset.id, inNewWindow)
 
     if (inNewWindow) {
-      const urls: string[] = _.map(_.filter(tabset.tabs, (t:Tab) => t.chromeTab !== undefined), (t:Tab) => t.chromeTab.url || '')
+      const urls: string[] = _.map(_.filter(tabset.tabs, (t: Tab) => t.chromeTab !== undefined), (t: Tab) => t.chromeTab.url || '')
 
       chrome.windows.create({
         focused: true,
         left: 50,
-        top:50,
+        top: 50,
         url: urls
       })
     } else {

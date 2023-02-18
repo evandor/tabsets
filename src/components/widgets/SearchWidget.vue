@@ -63,7 +63,7 @@ import {useQueryExecutor} from "src/services/QueryExecutor";
 import {useBookmarksStore} from "src/stores/bookmarksStore";
 import {usePermissionsStore} from "src/stores/permissionsStore";
 import {useUiStore} from "src/stores/uiStore";
-import {FeatureIdent} from "src/models/AppFeatures";
+import {FeatureIdent} from "src/models/AppFeature";
 
 const tabsStore = useTabsStore()
 const searchStore = useSearchStore()

@@ -212,7 +212,7 @@ import {MarkTabsetAsDefaultCommand} from "src/domain/tabsets/MarkTabsetAsDefault
 import {MarkTabsetAsArchivedCommand} from "src/domain/tabsets/MarkTabsetAsArchived";
 import {useUtils} from "src/services/Utils";
 import {api} from "boot/axios";
-import {FeatureIdent} from "src/models/AppFeatures";
+import {FeatureIdent} from "src/models/AppFeature";
 
 const route = useRoute();
 const router = useRouter();

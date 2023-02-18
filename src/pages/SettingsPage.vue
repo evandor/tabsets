@@ -321,7 +321,7 @@ import {ExecutionResult} from "src/domain/ExecutionResult";
 import {RevokePermissionCommand} from "src/domain/commands/RevokePermissionCommand";
 import {GrantOriginCommand} from "src/domain/commands/GrantOriginCommand";
 import {RevokeOriginCommand} from "src/domain/commands/RevokeOriginCommand";
-import {FeatureIdent} from "src/models/AppFeatures";
+import {FeatureIdent} from "src/models/AppFeature";
 
 
 const tabsStore = useTabsStore()

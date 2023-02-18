@@ -16,7 +16,7 @@ import ExpiringMap from "src/stores/ExpiringMap";
 import {MetaLink} from "src/models/MetaLink";
 import {Suggestion, SuggestionType} from "src/models/Suggestion";
 import {useSuggestionsStore} from "src/stores/suggestionsStore";
-import {FeatureIdent} from "src/models/AppFeatures";
+import {FeatureIdent} from "src/models/AppFeature";
 
 const {
   saveCurrentTabset,

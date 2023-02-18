@@ -3,7 +3,7 @@ import _ from "lodash";
 import {TreeNode} from "src/models/Tree";
 import {Bookmark} from "src/models/Bookmark";
 import {usePermissionsStore} from "src/stores/permissionsStore";
-import {FeatureIdent} from "src/models/AppFeatures";
+import {FeatureIdent} from "src/models/AppFeature";
 
 function getChildren(
   parent: chrome.bookmarks.BookmarkTreeNode,

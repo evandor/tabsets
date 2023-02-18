@@ -78,7 +78,7 @@ import {DrawerTabs, useUiStore} from "src/stores/uiStore";
 import {usePermissionsStore} from "src/stores/permissionsStore";
 import TabFaviconWidget from "components/widgets/TabFaviconWidget.vue";
 import {UpdateTabNameCommand} from "src/domain/tabs/UpdateTabName";
-import {FeatureIdent} from "src/models/AppFeatures";
+import {FeatureIdent} from "src/models/AppFeature";
 
 const props = defineProps({
   tab: {type: Object, required: true},

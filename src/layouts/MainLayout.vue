@@ -143,7 +143,7 @@ import NotificationDialog from "components/dialogues/NotificationDialog.vue"
 import {usePermissionsStore} from "src/stores/permissionsStore";
 import {Notification, NotificationStatus} from "src/models/Notification";
 import {useUtils} from "src/services/Utils";
-import {FeatureIdent} from "src/models/AppFeatures";
+import {FeatureIdent} from "src/models/AppFeature";
 
 const router = useRouter()
 const tabsStore = useTabsStore()

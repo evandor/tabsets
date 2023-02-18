@@ -1,7 +1,7 @@
 import {defineStore} from 'pinia';
 import {computed, ref, watch} from "vue";
 import {useQuasar} from "quasar";
-import {FeatureIdent} from "src/models/AppFeatures";
+import {FeatureIdent} from "src/models/AppFeature";
 
 
 export const usePermissionsStore = defineStore('permissions', () => {

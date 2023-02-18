@@ -255,7 +255,7 @@ import ImportDialog from "components/dialogues/ImportDialog.vue";
 import {Suggestion, SuggestionState} from "src/models/Suggestion";
 import SuggestionDialog from "components/dialogues/SuggestionDialog.vue";
 import {useSuggestionsStore} from "src/stores/suggestionsStore";
-import {FeatureIdent} from "src/models/AppFeatures";
+import {FeatureIdent} from "src/models/AppFeature";
 
 const router = useRouter()
 const tabsStore = useTabsStore()
