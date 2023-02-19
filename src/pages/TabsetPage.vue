@@ -241,20 +241,17 @@ import {Tab} from "src/models/Tab";
 import {useFeatureTogglesStore} from "src/stores/featureTogglesStore";
 import RestoreTabsetDialog from "components/dialogues/RestoreTabsetDialog.vue";
 import AddUrlDialog from "components/dialogues/AddUrlDialog.vue";
-import PendingTabsAsCarouselWidget from "src/components/widgets/PendingTabsAsCarouselWidget.vue"
-import {useUiService} from "src/services/useUiService";
 import {usePermissionsStore} from "src/stores/permissionsStore";
 import TabList from "components/layouts/TabList.vue";
 import InfoMessageWidget from "components/widgets/InfoMessageWidget.vue";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {RenameTabsetCommand} from "src/domain/tabsets/RenameTabset";
-import {Tabset, TabsetStatus, TabsetType} from "src/models/Tabset";
+import { TabsetStatus, TabsetType} from "src/models/Tabset";
 import {MarkTabsetAsFavoriteCommand} from "src/domain/tabsets/MarkTabsetAsFavorite";
 import {MarkTabsetAsDefaultCommand} from "src/domain/tabsets/MarkTabsetAsDefault";
 import {MarkTabsetAsArchivedCommand} from "src/domain/tabsets/MarkTabsetAsArchived";
 import {StopSessionCommand} from "src/domain/commands/StopSessionCommand";
 import {useUtils} from "src/services/Utils";
-import {DynamicTabSourceType} from "src/models/DynamicTabSource";
 import TabTable from "components/layouts/TabTable.vue";
 import {FeatureIdent} from "src/models/AppFeature";
 
@@ -335,9 +332,8 @@ function unpinnedNoGroupOrAllTabs(): Tab[] {
   //       (t: Tab) => !t?.chromeTab.pinned && t?.chromeTab.groupId === -1),
   //     getOrder(), [orderDesc.value ? 'desc' : 'asc'])
   // } else {
-  //   return _.orderBy(tabsStore.getCurrentTabs, getOrder(), [orderDesc.value ? 'desc' : 'asc'])
+    return _.orderBy(tabsStore.getCurrentTabs, getOrder(), [orderDesc.value ? 'desc' : 'asc'])
   // }
-  return []
 }
 
 

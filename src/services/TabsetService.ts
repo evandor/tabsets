@@ -9,8 +9,6 @@ import {useBookmarksStore} from "src/stores/bookmarksStore";
 import {STRIP_CHARS_IN_USER_INPUT} from "boot/constants";
 import {useTabsetService} from "src/services/TabsetService2";
 
-console.log("usetabset", useTabsetService())
-
 const {getTabset, getCurrentTabset, saveTabset, saveCurrentTabset, tabsetsFor, saveToTabset} = useTabsetService()
 
 import {useDB} from "src/services/usePersistenceService";

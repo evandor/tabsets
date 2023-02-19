@@ -80,7 +80,9 @@ import {useTabGroupsStore} from "src/stores/tabGroupsStore";
 import {useFeatureTogglesStore} from "src/stores/featureTogglesStore";
 import {usePermissionsStore} from "src/stores/permissionsStore";
 import {useCommandExecutor} from "src/services/CommandExecutor";
-import {AppFeature, AppFeatures, FeatureIdent, FeatureType} from "src/models/AppFeatures";
+import {AppFeature, FeatureIdent, FeatureType} from "src/models/AppFeature";
+import {AppFeatures} from "src/models/AppFeatures";
+import {ExecutionResult} from "src/domain/ExecutionResult";
 
 const route = useRoute();
 const router = useRouter();
@@ -263,25 +265,22 @@ const hasFeature = () => {
 const grant = (ident: string) => {
   if (appFeature.value && appFeature.value.activateCommand) {
     useCommandExecutor().execute(appFeature.value.activateCommand)
-      .then(() => permissionsStore.activateFeature(ident))
+      .then((executionResult: ExecutionResult<any>) => {
+        console.log("exres", executionResult)
+        if (executionResult.result) {
+          permissionsStore.activateFeature(ident)
+        }
+      })
   } else {
     permissionsStore.activateFeature(ident)
   }
 
-  // else {
   //   if ("thumbnails" === ident || "analyseTabs" === ident) {
-  //     useCommandExecutor()
   //       .executeFromUi(new GrantOriginCommand(ident))
   //   } else if ("pageCapture" === ident || "bookmarks" === ident || "history" === ident) {
-  //     useCommandExecutor()
   //       .executeFromUi(new GrantPermissionCommand(ident))
   //   } else if ("dynamic" === ident) {
-  //     useCommandExecutor()
   //       .executeFromUi(new CreateDynamicTabsetCommand(ident))
-  //   } else {
-  //     permissionsStore.activateFeature(ident)
-  //   }
-  // }
 
 }
 

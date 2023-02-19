@@ -4,7 +4,7 @@ export class ExecutionResult<T> {
   constructor(
     public result: T,
     public message: string,
-    public undoCommand: Command | undefined = undefined) {
+    public undoCommand: Command<T> | undefined = undefined) {
 
   }
 

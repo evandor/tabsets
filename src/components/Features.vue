@@ -199,7 +199,8 @@ import {useRouter} from "vue-router";
 import {usePermissionsStore} from "src/stores/permissionsStore";
 import _ from "lodash"
 import {useFeatureTogglesStore} from "src/stores/featureTogglesStore";
-import {AppFeature, AppFeatures, FeatureType} from "src/models/AppFeatures";
+import {AppFeatures} from "src/models/AppFeatures";
+import {AppFeature, FeatureType} from "src/models/AppFeature";
 
 const tabsStore = useTabsStore()
 const router = useRouter()
@@ -215,35 +216,10 @@ const recommendedFeatures = [
 ]
 
 const optionalFeatures = [
-  // {
-  //   ident: 'opentabsThreshold',
-  //   name: 'Open Tabs Warning',
-  //   icon: 'o_tab',
-  //   useIn: ['bex'],
-  //   target: '/features/opentabsThreshold'
-  // },
-  // {ident: 'pendingTabs', name: 'New Tabs Tracking', icon: 'o_tab', useIn: ['bex'], target: '/features/pendingTabs'},
   {ident: 'sidebar', name: 'Sidebar View', icon: 'o_input', useIn: ['electron'], target: '/features/sidebar'},
-  // {ident: 'groupedByDomain', name: 'Group By Domain View', icon: 'o_dns', useIn: ['all'], target: '/features/groupedByDomain'}
 ]
 
-const experimantalFeatures = [
-  // {ident: 'mhtml', name: 'Saving Pages', icon: 'o_bookmarks', target: '/features/pageCapture'},
-  // {ident: 'scheduled', name: 'Schedule Tabs', icon: 'o_update', target: '/features/scheduled'},
-  // {ident: 'dynamic', name: 'Dynamic Tabsets', icon: 'o_file_open', bexOnly: false, target: '/features/dynamic'},
-  // {ident: 'history', name: 'History', icon: 'o_history', useIn: ['bex'], target: '/features/history'},
-  // {ident: 'useGroups', name: '' +
-  //     'Use Tab Groups', icon: 'o_toc', useIn: ['all'], target: '/features/useGroups'}
-]
 
-const plannedFeatures = [
-  // {ident: 'mhtml', name: 'Saving Pages', icon: 'o_bookmarks', target: '/features/pageCapture'},
-  // {ident: 'scheduled', name: 'Schedule Tabs', icon: 'o_update', target: '/features/scheduled'},
-
-]
-
-const ideas = [
-]
 
 
 const open = (ident: string) => {
@@ -253,16 +229,6 @@ const open = (ident: string) => {
 //@ts-ignore
 const appVersion = import.meta.env.PACKAGE_VERSION
 
-// const iconColor = (ident: string) => {
-//   switch (ident) {
-//     // case "Bookmarks":
-//     //   return usePermissionsStore().hasFeature('bookmarks') ? 'green' : 'primary'
-//     // case "Bookmarks":
-//     //   return usePermissionsStore().hasFeature('bookmarks') ? 'green' : 'primary'
-//     default:
-//       return usePermissionsStore().hasFeature(ident) ? 'green' : 'primary'
-//   }
-// }
 
 const iconColor2 = (f: AppFeature) => {
   switch (f) {

@@ -120,13 +120,25 @@
           </q-btn>
         </Transition>
 
-        <q-btn
-               flat
-               name="savedTabs" icon="o_create_new_folder" @click="tabsClicked(DrawerTabs.SAVED_TABS)">
-          <q-tooltip class="tooltip" anchor="center right" self="center left" :delay="200">
-            The List of Urls displayed when you open a new tab in your Browser
-          </q-tooltip>
-        </q-btn>
+        <Transition name="colorized-appear">
+          <q-btn v-if="permissionsStore.hasFeature(FeatureIdent.HISTORY)"
+                 flat
+                 name="history" icon="o_history" @click="tabsClicked(DrawerTabs.HISTORY)">
+            <q-tooltip class="tooltip" anchor="center right" self="center left" :delay="200">
+              Access to your browsers History
+            </q-tooltip>
+          </q-btn>
+        </Transition>
+
+        <Transition name="colorized-appear">
+          <q-btn v-if="permissionsStore.hasFeature(FeatureIdent.SAVE_TAB)"
+            flat
+            name="savedTabs" icon="o_save" @click="tabsClicked(DrawerTabs.SAVED_TABS)">
+            <q-tooltip class="tooltip" anchor="center right" self="center left" :delay="200">
+              The List of Urls displayed when you open a new tab in your Browser
+            </q-tooltip>
+          </q-btn>
+        </Transition>
 
         <Transition name="colorized-appear">
           <q-btn v-if="permissionsStore.hasFeature(FeatureIdent.GROUP_BY_DOMAIN)"
@@ -252,7 +264,7 @@ import {useUtils} from "src/services/Utils";
 import DrawerRight from "components/DrawerRight.vue";
 import ExportDialog from "components/dialogues/ExportDialog.vue";
 import ImportDialog from "components/dialogues/ImportDialog.vue";
-import {Suggestion, SuggestionState} from "src/models/Suggestion";
+import {Suggestion} from "src/models/Suggestion";
 import SuggestionDialog from "components/dialogues/SuggestionDialog.vue";
 import {useSuggestionsStore} from "src/stores/suggestionsStore";
 import {FeatureIdent} from "src/models/AppFeature";

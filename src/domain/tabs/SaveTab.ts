@@ -4,6 +4,9 @@ import {Tab} from "src/models/Tab";
 import {TabLogger} from "src/logging/TabLogger";
 import {usePermissionsStore} from "stores/permissionsStore";
 import MHtmlService from "src/services/MHtmlService";
+import {useNotificationHandler} from "src/services/ErrorHandler";
+
+const {handleSuccess, handleError} = useNotificationHandler()
 
 class UndoCommand implements Command<any> {
 
@@ -25,49 +28,31 @@ export class SaveTabCommand implements Command<any> {
     public tab: Tab) {
   }
 
-  caputure = (tab: Tab) => {
-    return new Promise(
-      (resolve, reject) => {
-        resolve(chrome.pageCapture.saveAsMHTML({tabId: this.tab.chromeTab.id || 0}, (html: any) => {}))
-        //return Promise.reject("")
-      }
-    )
-
-  }
-
   async execute(): Promise<ExecutionResult<any>> {
     if (!usePermissionsStore().hasPermission('pageCapture')) {
-      return Promise.reject("missing permission pageCapture")
+      handleError("missing permission pageCapture")
+      return Promise.reject("xxx")
     } else if (this.tab.chromeTab.id) {
       console.log("capturing", this.tab.chromeTab.id)
-      this.caputure(this.tab)
-        .then((res) => {
-          console.log("res", res)
-        })
-
+      // TODO cannot return from "saveAsHTML" as the callback cannot be turned into a promise
       chrome.pageCapture.saveAsMHTML({tabId: this.tab.chromeTab.id},
         (html: any) => {
-          console.log("html", html)
-          return ""
-          // return MHtmlService.saveMHtml(this.tab, html)
-          //   .then((res) => {
-          //     return Promise.resolve(
-          //       new ExecutionResult(
-          //         "done",
-          //         "Tab was saved!",
-          //         new UndoCommand(this.tab)))
-          //   }).catch(err => {
-          //     return Promise.reject("got error: " + err)
-          //   })
+          return MHtmlService.saveMHtml(this.tab, html)
+            .then((res) => {
+              handleSuccess(
+                new ExecutionResult(
+                  "done",
+                  "Tab was saved",
+                  new UndoCommand(this.tab)))
+            }).catch(err => {
+              return handleError(err)
+            })
         })
-      // TODO cannot return from "saveAsHTML" as the callback is returning void?
+
       return Promise.resolve(
-        new ExecutionResult(
-          "done",
-          "Tab was saved",
-          new UndoCommand(this.tab)))
+        new ExecutionResult("dummy", "this should not be called from UI"))
     } else {
-      return Promise.reject("")
+      return Promise.reject("yyy")
     }
 
   }

@@ -292,12 +292,11 @@ watchEffect(() => {
       v.v = c //? (c.length > 100 ? c.substring(0,98) + "..." : c) : ''
       keys.set(+k, v)
     })
-    console.log("keys2", keys)
     searchIndex.value = keys
   }
 })
 
-const saveTab = (tab: Tab) => useCommandExecutor().executeFromUi(new SaveTabCommand(tab))
+const saveTab = (tab: Tab) => useCommandExecutor().execute(new SaveTabCommand(tab))
 
 
 

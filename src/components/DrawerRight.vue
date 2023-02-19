@@ -72,7 +72,7 @@
   <NewTabUrls v-else-if="tab ===  DrawerTabs.NEW_TAB_URLS"/>
   <RssTabs v-else-if="tab ===  DrawerTabs.RSS"/>
   <!--      <ScheduledTabs v-else-if="tab ===  DrawerTabs.SCHEDULED"/>-->
-  <!--      <BrowserHistory v-else-if="tab ===  DrawerTabs.HISTORY"/>-->
+  <BrowserHistory v-else-if="tab ===  DrawerTabs.HISTORY"/>
   <Features v-else-if="tab ===  DrawerTabs.FEATURES"/>
   <TabDetails v-else-if="tab ===  DrawerTabs.TAB_DETAILS"/>
   <!--      <TabsetHelp v-else-if="tab ===  DrawerTabs.HELP"/>-->

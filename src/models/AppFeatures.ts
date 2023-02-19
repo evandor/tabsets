@@ -12,29 +12,31 @@ export class AppFeatures {
     new AppFeature(FeatureIdent.BOOKMARKS, FeatureType.RECOMMENDED, 'Bookmarks', 'o_bookmarks', ['bex'])
       .setActivateCommand(new GrantPermissionCommand('bookmarks'))
       .setDeactivateCommand(new RevokePermissionCommand('bookmarks')),
+
     new AppFeature(FeatureIdent.SAVE_TAB, FeatureType.OPTIONAL, 'Save Tabs', 'o_save', ['all'])
       .setActivateCommand(new GrantPermissionCommand('pageCapture'))
       .setDeactivateCommand(new RevokePermissionCommand('pageCapture')),
     new AppFeature(FeatureIdent.GROUP_BY_DOMAIN, FeatureType.OPTIONAL, 'Group By Domain View', 'o_dns', ['all']),
     new AppFeature(FeatureIdent.SIDEBAR, FeatureType.OPTIONAL, 'Sidebar View', 'o_input', ['electron']),
     new AppFeature(FeatureIdent.OPENTABS_THRESHOLD, FeatureType.OPTIONAL, 'Open Tabs Warnings', 'o_tab', ['bex']),
-    new AppFeature(FeatureIdent.EXPERIMENTAL_VIEWS, FeatureType.EXPERIMENTAL, 'Experimental Views', 'o_explore', ['all']),
 
+    new AppFeature(FeatureIdent.EXPERIMENTAL_VIEWS, FeatureType.EXPERIMENTAL, 'Experimental Views', 'o_explore', ['all']),
     // does not work properly right now (keeps re-catching the source)
     new AppFeature(FeatureIdent.NEW_TAB, FeatureType.EXPERIMENTAL, 'New Tab', 'o_create_new_folder', ['bex']),
-
     // does not work properly right now in electron (keeps re-catching the source)
     new AppFeature(FeatureIdent.RSS, FeatureType.EXPERIMENTAL, 'RSS View', 'o_rss_feed', ['bex', 'spa']),
-
     new AppFeature(FeatureIdent.SESSIONS, FeatureType.EXPERIMENTAL, 'Sessions', 'o_explore', ['all']),
-    new AppFeature(FeatureIdent.SPACES, FeatureType.EXPERIMENTAL, 'Spaces', 'o_history', ['all']),
-    new AppFeature(FeatureIdent.DETAILS, FeatureType.EXPERIMENTAL, 'Tab(set) Details View', 'o_tab', ['all']),
-    new AppFeature(FeatureIdent.THUMBNAILS, FeatureType.EXPERIMENTAL, 'Thumbnails', 'o_tab', ['all'])
+    new AppFeature(FeatureIdent.SPACES, FeatureType.EXPERIMENTAL, 'Spaces', 'o_space_dashboard', ['all']),
+    new AppFeature(FeatureIdent.DETAILS, FeatureType.EXPERIMENTAL, 'Tab(set) Details View', 'o_info', ['all']),
+    new AppFeature(FeatureIdent.THUMBNAILS, FeatureType.EXPERIMENTAL, 'Thumbnails', 'o_image', ['all'])
       .setActivateCommand(new GrantOriginCommand('thumbnails'))
       .setDeactivateCommand(new RevokeOriginCommand('thumbnails')),
     new AppFeature(FeatureIdent.ANALYSE_TABS, FeatureType.EXPERIMENTAL, 'Analyse Tabs', 'o_analytics', ['bex'])
       .setActivateCommand(new GrantOriginCommand('analyseTabs'))
       .setDeactivateCommand(new RevokeOriginCommand('analyseTabs')),
+    new AppFeature(FeatureIdent.HISTORY, FeatureType.EXPERIMENTAL, 'Access Browser History', 'o_history', ['bex'])
+      .setActivateCommand(new GrantPermissionCommand('history'))
+      .setDeactivateCommand(new RevokePermissionCommand('history')),
 
     // new AppFeature(FeatureIdent.ANALYSE_TABS, FeatureType.PLANNED, 'Multiple Windows', 'o_history', ['bex']),
     // new AppFeature(FeatureIdent.ANALYSE_TABS, FeatureType.PLANNED, 'Scheduled Tabs', 'o_history', ['bex']),
