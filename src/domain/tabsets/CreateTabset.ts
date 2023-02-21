@@ -52,6 +52,6 @@ export class CreateTabsetCommand implements Command<object> {
   }
 }
 
-CreateTabsetCommand.prototype.toString = function dogToString() {
+CreateTabsetCommand.prototype.toString = function cmdToString() {
   return `CreateTabsetCommand: {merge=${this.merge}, tabsetName=${this.tabsetName}, tabs#=${this.tabsToUse.length}}`;
 };

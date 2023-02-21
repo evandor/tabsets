@@ -57,6 +57,6 @@ export class CreateDynamicTabsetCommand implements Command<object> {
   }
 }
 
-CreateDynamicTabsetCommand.prototype.toString = function dogToString() {
+CreateDynamicTabsetCommand.prototype.toString = function cmdToString() {
   return `CreateDynamicTabsetCommand: {merge=${this.merge}, tabsetName=${this.tabsetName}}`;
 };

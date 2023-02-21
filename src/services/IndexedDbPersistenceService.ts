@@ -470,6 +470,10 @@ class IndexedDbPersistenceService implements PersistenceService {
           console.log("creating db suggestions")
           db.createObjectStore('suggestions');
         }
+        if (!db.objectStoreNames.contains('blobs')) {
+          console.log("creating blobs suggestions")
+          db.createObjectStore('blobs');
+        }
         if (!db.objectStoreNames.contains('logs')) {
           console.log("creating db logs")
           db.createObjectStore('logs', {autoIncrement: true});

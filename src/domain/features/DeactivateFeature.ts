@@ -21,6 +21,6 @@ export class DeactivateFeatureCommand implements Command<any> {
 
 }
 
-DeactivateFeatureCommand.prototype.toString = function dogToString() {
+DeactivateFeatureCommand.prototype.toString = function cmdToString() {
   return `DeactivateFeatureCommand: {feature=${this.feature.ident}}`;
 };

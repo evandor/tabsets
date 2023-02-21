@@ -15,7 +15,9 @@
       </q-popup-edit>
 
 
-      <q-badge v-if="isOpen(props.tab)" color="primary" label="opened" outline class="q-ml-sm"
+      <q-badge v-if="isOpen(props.tab)"
+               @click.stop="NavigationService.openOrCreateTab(props.tab.chromeTab?.url)"
+               color="primary" label="opened" outline class="q-ml-sm"
                style="position: relative;top:-5px">
         <q-tooltip class="tooltip">This tab is currently open in your browser</q-tooltip>
       </q-badge>
@@ -24,9 +26,17 @@
         <q-tooltip class="tooltip">This tab has a duplicate inside this tabset and could be deleted</q-tooltip>
       </q-badge>
     </q-item-label>
-    <q-item-label @click.stop="NavigationService.openOrCreateTab(props.tab.chromeTab?.url )"
-      caption class="ellipsis-2-lines cursor-pointer text-blue-10">{{ props.tab.chromeTab?.url }} <q-icon name="open_in_new" />
+
+    <q-item-label caption class="ellipsis-2-lines cursor-pointer text-blue-10">
+      <div class="q-pr-lg" style="display: inline-block;" @click.stop="NavigationService.openOrCreateTab(props.tab.chromeTab?.url )">
+        {{ props.tab.chromeTab?.url }}
+        <q-icon name="open_in_new"/>
+        <q-icon class="q-ml-md" name="content_copy" @click.stop="copyToClipboard(props.tab.chromeTab?.url)">
+          <q-tooltip class="tooltip">Copy URL to clipboard</q-tooltip>
+        </q-icon>
+      </div>
     </q-item-label>
+
     <q-item-label v-if="props.tab.note" class="text-grey-10" text-subtitle1>
       <q-icon color="blue-10" name="edit_note"/>
       {{ props.tab.note }}
@@ -35,7 +45,8 @@
 
   <q-item-section side v-if="props.showButtons">
     <div class="row">
-      <q-btn flat round color="primary" size="11px" icon="o_info" v-if="usePermissionsStore().hasFeature(FeatureIdent.DETAILS)"
+      <q-btn flat round color="primary" size="11px" icon="o_info"
+             v-if="usePermissionsStore().hasFeature(FeatureIdent.DETAILS)"
              @click.stop="showDetails(tab)">
         <q-tooltip class="tooltip">Show details about this tab</q-tooltip>
       </q-btn>
@@ -79,6 +90,7 @@ import {usePermissionsStore} from "src/stores/permissionsStore";
 import TabFaviconWidget from "components/widgets/TabFaviconWidget.vue";
 import {UpdateTabNameCommand} from "src/domain/tabs/UpdateTabName";
 import {FeatureIdent} from "src/models/AppFeature";
+import {CopyToClipboardCommand} from "src/domain/commands/CopyToClipboard";
 
 const props = defineProps({
   tab: {type: Object, required: true},
@@ -180,5 +192,7 @@ const dynamicNameOrTitleModel = (tab: Tab) => tab.name ? tab.name : tab.chromeTa
 const setCustomTitle = (tab: Tab, newValue: string) =>
   useCommandExecutor().executeFromUi(new UpdateTabNameCommand(tab, newValue))
 
+const copyToClipboard = (text: string) =>
+  useCommandExecutor().executeFromUi(new CopyToClipboardCommand(text))
 
 </script>

@@ -59,6 +59,6 @@ export class SaveTabCommand implements Command<any> {
 
 }
 
-SaveTabCommand.prototype.toString = function dogToString() {
+SaveTabCommand.prototype.toString = function cmdToString() {
   return `SaveTabCommand: {tabId=${this.tab.id}}`;
 };

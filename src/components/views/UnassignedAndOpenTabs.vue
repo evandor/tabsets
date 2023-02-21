@@ -18,6 +18,13 @@
     </div>
   </div>
 
+  <div v-if="showStartingHint()"
+       class="q-ma-sm bg-white text-grey" style="border: 1px dotted grey; border-radius: 3px">
+    <div class="q-pa-sm">
+      <div class="col text-caption">And now? Just open new tabs in your browser (and come back here to organize them in tabsets)</div>
+    </div>
+  </div>
+
   <q-input v-if="!inBexMode()"
            class="q-ma-md" dense
            style="border: 1px dotted grey; border-radius: 5px;" type="textarea" v-model="dragTarget"/>
@@ -187,11 +194,13 @@ const showMissingSomeTabsAction = () => {
   if (process.env.MODE !== 'bex') {
     return false
   }
-  if (!tabsStore.pendingTabset || tabsStore.pendingTabset.tabs.length === 0) {
+  if ((!tabsStore.pendingTabset || tabsStore.pendingTabset.tabs.length === 0) && tabsStore.tabs.length > 1) {
     return true
   }
   return false
 }
+
+const showStartingHint = () => !showMissingSomeTabsAction() && tabsStore.tabs.length <= 1
 
 const saveSelectedTabs = () => {
   //useCommandExecutor().executeFromUi(new SavePendingTabToCurrentTabsetCommand(tab))

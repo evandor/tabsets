@@ -53,6 +53,6 @@ export class UpdateTabNameCommand implements Command<any> {
 
 }
 
-UpdateTabNameCommand.prototype.toString = function dogToString() {
+UpdateTabNameCommand.prototype.toString = function cmdToString() {
   return `UpdateTabNameCommand: {tabId=${this.tab.id}, newName=${this.newName}}`;
 };

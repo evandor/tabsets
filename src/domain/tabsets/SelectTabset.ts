@@ -32,6 +32,6 @@ export class SelectTabsetCommand implements Command<object> {
   }
 }
 
-SelectTabsetCommand.prototype.toString = function dogToString() {
+SelectTabsetCommand.prototype.toString = function cmdToString() {
   return `SelectTabsetCommand: {tabsetId=${this.tabsetId}}`;
 };

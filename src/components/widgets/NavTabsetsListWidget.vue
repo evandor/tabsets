@@ -103,6 +103,7 @@ import {useTabsetService} from "src/services/TabsetService2";
 import {useUiService} from "src/services/useUiService";
 import {StopSessionCommand} from "src/domain/commands/StopSessionCommand";
 import {SelectTabsetCommand} from "src/domain/tabsets/SelectTabset";
+import {MoveToTabsetCommand} from "src/domain/tabs/MoveToTabset";
 
 const {handleError, handleSuccess} = useNotificationHandler()
 
@@ -154,13 +155,16 @@ const tabsetLabel = (tabset: Tabset) => {
 }
 
 const onDrop = (evt: DragEvent, tabsetId: string) => {
-  const tabId2 = useUiService().droppingTab()
-  if (evt.dataTransfer && tabsetId && tabId2) {
-    console.log("onDrop", tabId2, tabsetId)
-    TabsetService.moveToTabset(tabId2, tabsetId)
-  } else {
-    console.log("got error dropping tab", tabsetId)
+  const tabId = useUiService().droppingTab()
+  if (evt.dataTransfer && tabId) {
+    useCommandExecutor().executeFromUi(new MoveToTabsetCommand(tabId, tabsetId, tabsStore.currentTabsetId, evt.shiftKey))
   }
+  // if (evt.dataTransfer && tabsetId && tabId2) {
+  //   console.log("onDrop", tabId2, tabsetId)
+  //   TabsetService.moveToTabset(tabId2, tabsetId)
+  // } else {
+  //   console.log("got error dropping tab", tabsetId)
+  // }
 }
 
 const deleteDialog = (tabset: Tabset) =>

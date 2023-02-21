@@ -65,6 +65,7 @@ export const useUiStore = defineStore('ui', () => {
 
   const newTabsetEmptyByDefault = ref<boolean>($q.localStorage.getItem('ui.newTabsetEmptyByDefault') as boolean || false)
   const tabBeingDragged = ref<string | undefined>(undefined)
+  const dragEvent = ref<DragEvent | undefined>(undefined)
   const footerInfo = ref<string | undefined>(undefined)
 
   const contentCount = ref<number>(0)
@@ -123,14 +124,16 @@ export const useUiStore = defineStore('ui', () => {
     leftDrawerLabelAnimated.value = animated
   }
 
-  function draggingTab(tabId: string) {
+  function draggingTab(tabId: string, evt: DragEvent) {
     tabBeingDragged.value = tabId
+    dragEvent.value = evt
   }
 
   function droppingTab() {
     console.log("dropping tab", tabBeingDragged.value)
     const tabBeingDropped = tabBeingDragged.value
     tabBeingDragged.value = undefined
+    dragEvent.value = undefined
     return tabBeingDropped
   }
 

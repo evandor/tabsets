@@ -36,6 +36,6 @@ export class CreateBookmarkFolderCommand implements Command<object> {
   }
 }
 
-CreateBookmarkFolderCommand.prototype.toString = function dogToString() {
+CreateBookmarkFolderCommand.prototype.toString = function cmdToString() {
   return `CreateBookmarkFolderCommand: {folderName=${this.folderName}, parentId=${this.parentFolderId}}`;
 };

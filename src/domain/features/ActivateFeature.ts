@@ -21,6 +21,6 @@ export class ActivateFeatureCommand implements Command<any> {
 
 }
 
-ActivateFeatureCommand.prototype.toString = function dogToString() {
+ActivateFeatureCommand.prototype.toString = function cmdToString() {
   return `ActivateFeatureCommand: {feature=${this.feature.ident}}`;
 };

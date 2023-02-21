@@ -53,6 +53,6 @@ export class CreateSessionCommand implements Command<object> {
   }
 }
 
-CreateSessionCommand.prototype.toString = function dogToString() {
+CreateSessionCommand.prototype.toString = function cmdToString() {
   return `CreateSessionCommand: {merge=${this.merge}, tabsetName=${this.sessionName}, tabs#=${this.tabsToUse.length}}`;
 };

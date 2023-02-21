@@ -30,7 +30,7 @@ class TabsetService {
     console.debug("initializing tabsetService")
     await db.loadTabsets()
     if (!doNotInitSearchIndex) {
-      useSearchStore(). populate(db.getContents())
+      useSearchStore().populate(db.getContents())
     }
   }
 
@@ -76,7 +76,7 @@ class TabsetService {
 
   isOpen(tabUrl: string): boolean {
     const tabsStore = useTabsStore()
-    return _.filter(tabsStore.tabs, (t:chrome.tabs.Tab) => {
+    return _.filter(tabsStore.tabs, (t: chrome.tabs.Tab) => {
       return t?.url === tabUrl
     }).length > 0
   }
@@ -191,7 +191,7 @@ class TabsetService {
     return db.getLinks(url)
   }
 
-  setCustomTitle(tab: Tab, title: string):Promise<any> {
+  setCustomTitle(tab: Tab, title: string): Promise<any> {
     tab.name = title
     return saveCurrentTabset()
   }
@@ -220,18 +220,24 @@ class TabsetService {
     return []
   }
 
-  moveToTabset(tabId: string, tabsetId: string) {
+  moveToTabset(tabId: string, toTabsetId: string): Promise<any> {
     const tabsStore = useTabsStore()
-    const tabIndex = _.findIndex(tabsStore.getCurrentTabs, {id: tabId})
-    const targetTabset = tabsStore.getTabset(tabsetId)
-    if (tabIndex >= 0 && targetTabset) {
-      targetTabset.tabs.push(tabsStore.getCurrentTabs[tabIndex])
-      saveTabset(targetTabset)
-        .then(() => saveCurrentTabset())
-      tabsStore.getCurrentTabs.splice(tabIndex, 1)
-    } else {
-      console.error("could not find tab/tabset", tabId, tabsetId)
+
+    const tabset = tabsStore.tabsetFor(tabId)
+    if (tabset) {
+      const tabIndex = _.findIndex(tabset.tabs, {id: tabId})
+      const targetTabset = tabsStore.getTabset(toTabsetId)
+
+      if (tabIndex >= 0 && targetTabset) {
+        targetTabset.tabs.push(tabset.tabs[tabIndex])
+        return saveTabset(targetTabset)
+          .then(() => tabset.tabs.splice(tabIndex, 1))
+          .then(() => saveTabset(tabset))
+      } else {
+        return Promise.reject("could not find tab/tabset " + tabId + "/" + toTabsetId)
+      }
     }
+    return Promise.reject("could not find tab " + tabId )
   }
 
   ignoreTab(tab: Tab) {
@@ -455,7 +461,7 @@ class TabsetService {
   }
 
   saveNote(tabId: string, note: string, scheduledFor: Date | undefined): Promise<void> {
-   // console.log("got", tabId, note)
+    // console.log("got", tabId, note)
     const tab = _.find(getCurrentTabset()?.tabs, (t: Tab) => t.id === tabId)
     if (tab) {
       tab.note = note

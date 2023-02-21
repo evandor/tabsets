@@ -149,6 +149,16 @@ export const useTabsStore = defineStore('tabs', {
         return undefined
       }
     },
+    tabsetFor: (state) => {
+      return  (tabId: string):Tabset | undefined => {
+        for (const [key, value] of state.tabsets) {
+          if (_.find(value.tabs, t => t.id === tabId)) {
+            return value
+          }
+        }
+        return undefined
+      }
+    },
     allTabsCount: (state) => {
       var count = 0
       for (const [key, value] of state.tabsets) {

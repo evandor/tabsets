@@ -185,9 +185,9 @@ class ChromeListeners {
         } else {
           tabset.tabs.splice(index, 1, updatedTab);
         }
-      // } else {
-      //   console.log("deleting ignored tab", tab)
-      //   tabset.tabs.splice(index, 1)
+        // } else {
+        //   console.log("deleting ignored tab", tab)
+        //   tabset.tabs.splice(index, 1)
       }
     } else {
       console.log(`onUpdated: tab ${tab.id}: ignoring, pending tab cannot be found in ${tabset.name}`)
@@ -223,12 +223,17 @@ class ChromeListeners {
         const ts = tabsStore.tabsets.get(key)
         if (ts) {
           const hits = _.filter(ts.tabs, (t: Tab) => t.chromeTab.url === url)
+          let hit = false
           _.forEach(hits, h => {
             h.activatedCount = 1 + h.activatedCount
             h.lastActive = new Date().getTime()
             console.debug(`onActivated: tab ${info.tabId}:updating hits`, h)
+            hit = true
           })
-          saveTabset(ts)
+          if (hit) {
+            console.debug("saving tabset on activated", ts.name)
+            saveTabset(ts)
+          }
         }
       })
     })

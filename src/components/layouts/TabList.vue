@@ -26,7 +26,7 @@
       <q-item
         clickable v-ripple
         v-for="(tab,index) in props.tabs"
-
+        @click.stop="showDetails(tab)"
         @mouseover="showButtons(  tab.id,true)"
         @mouseleave="showButtons( tab.id, false)"
         @dragstart="startDrag($event, tab)"
@@ -152,14 +152,18 @@ const openOrShowOpenTabs = () => {
 const startDrag = (evt: any, tab: Tab) => {
   console.log("start drag", evt, tab)
   if (evt.dataTransfer) {
-    evt.dataTransfer.dropEffect = 'move'
-    evt.dataTransfer.effectAllowed = 'move'
+    evt.dataTransfer.dropEffect = 'all'
+    evt.dataTransfer.effectAllowed = 'all'
     evt.dataTransfer.setData('text/plain', tab.id)
-    useUiService().draggingTab(tab.id)
+    useUiService().draggingTab(tab.id, evt)
   }
   console.log("evt.dataTransfer.getData('text/plain')", evt.dataTransfer.getData('text/plain'))
 }
 
+const showDetails = (tab: Tab) => {
+  useUiStore().setSelectedTab(tab)
+  useUiStore().rightDrawerSetActiveTab(DrawerTabs.TAB_DETAILS)
+}
 
 </script>
 
