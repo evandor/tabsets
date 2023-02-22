@@ -8,12 +8,13 @@
   <q-item-section :style="itemStyle(props.tab)"
                   :data-testid="useUtils().createDataTestIdentifier('tabListElementWidget', props.tab.chromeTab.title)">
     <q-item-label>
-      {{ nameOrTitle(props.tab) }}
-      <q-popup-edit :model-value="dynamicNameOrTitleModel(tab)" v-slot="scope"
-                    @update:model-value="val => setCustomTitle( tab, val)">
-        <q-input v-model="scope.value" dense autofocus counter @keyup.enter="scope.set"/>
-      </q-popup-edit>
-
+      <div class="q-pr-lg" style="display: inline-block;">
+        {{ nameOrTitle(props.tab) }}
+        <q-popup-edit :model-value="dynamicNameOrTitleModel(tab)" v-slot="scope"
+                      @update:model-value="val => setCustomTitle( tab, val)">
+          <q-input v-model="scope.value" dense autofocus counter @keyup.enter="scope.set"/>
+        </q-popup-edit>
+      </div>
 
       <q-badge v-if="isOpen(props.tab)"
                @click.stop="NavigationService.openOrCreateTab(props.tab.chromeTab?.url)"
@@ -28,7 +29,8 @@
     </q-item-label>
 
     <q-item-label caption class="ellipsis-2-lines cursor-pointer text-blue-10">
-      <div class="q-pr-lg" style="display: inline-block;" @click.stop="NavigationService.openOrCreateTab(props.tab.chromeTab?.url )">
+      <div class="q-pr-lg" style="display: inline-block;"
+           @click.stop="NavigationService.openOrCreateTab(props.tab.chromeTab?.url )">
         {{ props.tab.chromeTab?.url }}
         <q-icon name="open_in_new"/>
         <q-icon class="q-ml-md" name="content_copy" @click.stop="copyToClipboard(props.tab.chromeTab?.url)">
@@ -45,11 +47,7 @@
 
   <q-item-section side v-if="props.showButtons">
     <div class="row">
-      <q-btn flat round color="primary" size="11px" icon="o_info"
-             v-if="usePermissionsStore().hasFeature(FeatureIdent.DETAILS)"
-             @click.stop="showDetails(tab)">
-        <q-tooltip class="tooltip">Show details about this tab</q-tooltip>
-      </q-btn>
+
       <q-btn v-if="usePermissionsStore().hasFeature(FeatureIdent.NEW_TAB)"
              flat round color="primary" size="11px" icon="o_create_new_folder"
              @click.stop="addToNewTabUrlList(tab)">

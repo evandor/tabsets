@@ -1,19 +1,16 @@
 import Command from "src/domain/Command";
 import {ExecutionResult} from "src/domain/ExecutionResult";
-import {useNotificationHandler} from "src/services/ErrorHandler";
 import TabsetService from "src/services/TabsetService";
-
-const {handleSuccess, handleError} = useNotificationHandler()
 
 class UndoCommand implements Command<any> {
 
-  constructor(public tabId: string, public tabsetId: string) {
+  constructor(public tabId: string, public oldTabsetId: string, public copy: boolean) {
   }
 
   execute(): Promise<ExecutionResult<any>> {
-    return TabsetService.moveToTabset(this.tabId, this.tabsetId)
+    return TabsetService.moveToTabset(this.tabId, this.oldTabsetId)
       .then(() => {
-        return Promise.resolve(new ExecutionResult("done", "Tab was moved"))
+        return Promise.resolve(new ExecutionResult("done", "Tab was moved back"))
       })
   }
 
@@ -29,10 +26,13 @@ export class MoveToTabsetCommand implements Command<any> {
   }
 
   async execute(): Promise<ExecutionResult<any>> {
-    return TabsetService.moveToTabset(this.tabId, this.tabsetId)
+    return TabsetService.moveToTabset(this.tabId, this.tabsetId, this.copy)
       .then(() => {
-        return Promise.resolve(
-          new ExecutionResult("done", "Tab was moved", new UndoCommand(this.tabId, this.oldTabsetId)))
+        if (this.copy) {
+          return Promise.resolve(new ExecutionResult("done", "Tab was copied"))
+        } else {
+          return Promise.resolve(new ExecutionResult("done", "Tab was moved - press 'Shift' if you want to copy instead", new UndoCommand(this.tabId, this.oldTabsetId, this.copy)))
+        }
       })
       .catch((err) => Promise.reject(err))
   }

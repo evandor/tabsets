@@ -29,6 +29,7 @@
                                                                          class="cursor-pointer"></q-icon>
         </div>
       </div>
+
     </div>
 
     <div class="row q-ma-sm">
@@ -110,44 +111,7 @@
 
     </div>
 
-    <div class="row q-mx-md q-mt-lg">
-      <div class="col-5 text-caption text-bold">created</div>
-      <div class="col-7 text-right text-caption">{{ formatDate(useUiStore().getSelectedTab.created) }}</div>
-    </div>
-    <div class="row q-mx-md">
-      <div class="col-5 text-caption text-bold">changed</div>
-      <div class="col-7 text-right text-caption">{{ formatDate(useUiStore().getSelectedTab.changed) }}</div>
-    </div>
-    <div class="row q-mx-md">
-      <div class="col-5 text-caption text-bold">last active</div>
-      <div class="col-7 text-right text-caption">{{ formatDate(useUiStore().getSelectedTab.lastActive) }}</div>
-    </div>
-    <div class="row q-mx-md">
-      <div class="col-5 text-caption text-bold">opened</div>
-      <div class="col-7 text-right text-caption">{{ useUiStore().getSelectedTab.activatedCount }}x</div>
-    </div>
 
-    <div class="row q-mx-md q-mt-lg">
-      <div class="col-12 text-caption text-bold q-mb-sm">Search Index</div>
-    </div>
-    <div class="row q-mx-md">
-      <div class="col-12 text-caption">
-        <div v-for="(k,index) in searchIndex">
-          <div class="row" v-if="searchIndex.get(index)['v']">
-            <div class="col-4 q-ml-sm">
-              {{ searchIndex.get(index)['name'] }}
-            </div>
-            <div class="col-7 ellipsis">
-              {{ searchIndex.get(index)['v'] }}
-              <q-tooltip class="tooltip">{{ searchIndex.get(index)['v'] }}</q-tooltip>
-            </div>
-            <div class="col text-right">
-              <q-icon name="o_check_circle" color="primary"/>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
 
     <div class="row q-mx-md q-mt-lg">
       <div class="col-12 text-caption text-bold">Note</div>
@@ -159,6 +123,84 @@
 
   </div>
 
+  <q-list bordered>
+    <q-expansion-item
+      group="somegroup"
+      label="Meta Data"
+      default-opened>
+      <q-card>
+        <q-card-section>
+          <div class="row q-mx-md q-mt-lg">
+            <div class="col-5 text-caption text-bold">created</div>
+            <div class="col-7 text-right text-caption">{{ formatDate(useUiStore().getSelectedTab.created) }}</div>
+          </div>
+          <div class="row q-mx-md">
+            <div class="col-5 text-caption text-bold">changed</div>
+            <div class="col-7 text-right text-caption">{{ formatDate(useUiStore().getSelectedTab.changed) }}</div>
+          </div>
+          <div class="row q-mx-md">
+            <div class="col-5 text-caption text-bold">last active</div>
+            <div class="col-7 text-right text-caption">{{ formatDate(useUiStore().getSelectedTab.lastActive) }}</div>
+          </div>
+          <div class="row q-mx-md">
+            <div class="col-5 text-caption text-bold">opened</div>
+            <div class="col-7 text-right text-caption">{{ useUiStore().getSelectedTab.activatedCount }}x</div>
+          </div>
+        </q-card-section>
+      </q-card>
+    </q-expansion-item>
+
+    <q-separator/>
+
+    <q-expansion-item group="somegroup" label="Search Index">
+      <q-card>
+        <q-card-section>
+          <div class="row q-mx-md q-mt-lg">
+            <div class="col-12 text-caption text-bold q-mb-sm">Search Index</div>
+          </div>
+          <div class="row q-mx-md">
+            <div class="col-12 text-caption">
+              <div v-for="(k,index) in searchIndex">
+                <div class="row" v-if="searchIndex.get(index)['v']">
+                  <div class="col-4 q-ml-sm">
+                    {{ searchIndex.get(index)['name'] }}
+                  </div>
+                  <div class="col-7 ellipsis">
+                    {{ searchIndex.get(index)['v'] }}
+                    <q-tooltip class="tooltip">{{ searchIndex.get(index)['v'] }}</q-tooltip>
+                  </div>
+                  <div class="col text-right">
+                    <q-icon name="o_check_circle" color="primary"/>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </q-card-section>
+      </q-card>
+    </q-expansion-item>
+
+    <q-separator/>
+
+    <q-expansion-item v-if="useFeatureTogglesStore().isEnabled('dev')"
+                      group="somegroup" label="Debug">
+      <q-card>
+        <q-card-section>
+          #{{ useUiStore().getSelectedTab?.id }}
+        </q-card-section>
+        <q-card-section>
+          <vue-json-pretty style="font-size: 80%"
+                           v-model:data="state.data"
+                           :show-double-quotes="true"
+          />
+        </q-card-section>
+      </q-card>
+    </q-expansion-item>
+
+    <q-separator/>
+
+  </q-list>
+
 </template>
 
 <script lang="ts" setup>
@@ -168,7 +210,7 @@ import TabFaviconWidget from "components/widgets/TabFaviconWidget.vue";
 import _ from "lodash";
 import {useTabsetService} from "src/services/TabsetService2";
 import TabsetService from "src/services/TabsetService";
-import {ref, watchEffect} from "vue";
+import {reactive, ref, watchEffect} from "vue";
 import {usePermissionsStore} from "src/stores/permissionsStore";
 import {useFeatureTogglesStore} from "src/stores/featureTogglesStore";
 import {useRouter} from "vue-router";
@@ -178,7 +220,8 @@ import {formatDistance} from "date-fns";
 import {useUtils} from "src/services/Utils";
 import NavigationService from "src/services/NavigationService";
 import {useSearchStore} from "stores/searchStore";
-import MHtmlService from "src/services/MHtmlService";
+import VueJsonPretty from "vue-json-pretty";
+import 'vue-json-pretty/lib/styles.css';
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {SaveTabCommand} from "src/domain/tabs/SaveTab";
 
@@ -197,6 +240,19 @@ const thumbnail = ref('')
 const content = ref('')
 const searchIndex = ref<any>()
 const {selectTabset} = useTabsetService()
+
+const json = ref(null)
+
+const state = reactive({
+  val: JSON.stringify(json),
+  data: json
+})
+
+watchEffect(() => {
+  if (useUiStore().getSelectedTab) {
+    json.value = JSON.parse(JSON.stringify(useUiStore().getSelectedTab))
+  }
+})
 
 
 watchEffect(() => hasAllUrlsPermission.value = usePermissionsStore().hasAllOrigins())
@@ -297,7 +353,6 @@ watchEffect(() => {
 })
 
 const saveTab = (tab: Tab) => useCommandExecutor().execute(new SaveTabCommand(tab))
-
 
 
 </script>

@@ -220,9 +220,8 @@ class TabsetService {
     return []
   }
 
-  moveToTabset(tabId: string, toTabsetId: string): Promise<any> {
+  moveToTabset(tabId: string, toTabsetId: string, copy: boolean = false): Promise<any> {
     const tabsStore = useTabsStore()
-
     const tabset = tabsStore.tabsetFor(tabId)
     if (tabset) {
       const tabIndex = _.findIndex(tabset.tabs, {id: tabId})
@@ -231,13 +230,23 @@ class TabsetService {
       if (tabIndex >= 0 && targetTabset) {
         targetTabset.tabs.push(tabset.tabs[tabIndex])
         return saveTabset(targetTabset)
-          .then(() => tabset.tabs.splice(tabIndex, 1))
+          .then(() => {
+            if (copy) {
+              let tabWithNewId = Object.assign({}, tabset.tabs[tabIndex])
+              tabWithNewId['id'] = uid()
+              console.log("copying", tabset.tabs[tabIndex], tabWithNewId)
+              tabset.tabs.splice(tabIndex, 1, tabWithNewId)
+            } else {
+              console.log("not copying...")
+              tabset.tabs.splice(tabIndex, 1)
+            }
+          })
           .then(() => saveTabset(tabset))
       } else {
         return Promise.reject("could not find tab/tabset " + tabId + "/" + toTabsetId)
       }
     }
-    return Promise.reject("could not find tab " + tabId )
+    return Promise.reject("could not find tab " + tabId)
   }
 
   ignoreTab(tab: Tab) {

@@ -22,7 +22,7 @@
       <q-tab name="links" :label="linksDataLabel()"/>
       <q-tab name="history" label="History"/>
       <q-tab name="content" label="Content"/>
-      <q-tab name="index" label="Index"/>
+<!--      <q-tab name="index" label="Index"/>-->
       <q-tab name="logs" label="Logs"/>
     </q-tabs>
   </div>
@@ -180,7 +180,8 @@
   <div v-else-if="tab === 'meta'">
 
     <div class="q-pa-md q-gutter-sm">
-      <q-banner rounded class="bg-grey-1 text-primary">This meta data was derived from the pages provided meta tags. This data is collected if the 'analyse tabs' feature is active.
+      <q-banner rounded class="bg-grey-1 text-primary">This meta data was derived from the pages provided meta tags.
+        This data is collected if the 'analyse tabs' feature is active.
         If this does not work as expected, you might have to refresh or reinstall the tabsets extension.
       </q-banner>
 
@@ -230,7 +231,8 @@
 
   <div v-else-if="tab === 'request'">
     <div class="q-pa-md q-gutter-sm">
-      <q-banner rounded class="bg-grey-1 text-primary">This is a data derived from the request to the tabs content. This data is collected if the 'analyse tabs' feature is active.
+      <q-banner rounded class="bg-grey-1 text-primary">This is a data derived from the request to the tabs content. This
+        data is collected if the 'analyse tabs' feature is active.
       </q-banner>
 
       Status Code: {{ request['statusCode'] }}<br><br>
@@ -266,7 +268,8 @@
 
   <div v-else-if="tab === 'metalinks'">
     <div class="q-pa-md q-gutter-sm">
-      <q-banner rounded class="bg-grey-1 text-primary">This is a data derived from the tab's content link tags. This data is collected if the 'analyse tabs' feature is active.
+      <q-banner rounded class="bg-grey-1 text-primary">This is a data derived from the tab's content link tags. This
+        data is collected if the 'analyse tabs' feature is active.
         If this does not work as expected, you might have to refresh or reinstall the tabsets extension.
       </q-banner>
 
@@ -286,13 +289,17 @@
           </q-input>
         </template>
 
-        <!--        <template v-slot:body-cell-name="props">-->
-        <!--          <q-td :props="props">-->
-        <!--            <div>-->
-        <!--              <q-badge color="grey" class="cursor-pointer" @click="openNameLink(props.value)" :label="props.value"/>-->
-        <!--            </div>-->
-        <!--          </q-td>-->
-        <!--        </template>-->
+        <template v-slot:body-cell-href="props">
+          <q-td :props="props">
+            <div class="cursor-pointer text-blue-10">
+              <span v-if="props.row.href.length > 0 && props.row.href.startsWith('/')"
+                    @click="openLink(useUiStore().getSelectedTab.chromeTab.url + '/' + props.row.href.substring(1))">
+                {{ props.row.href }}
+              </span>
+              <span v-else @click="openLink(props.row.href)">{{ props.row.href }}</span>
+            </div>
+          </q-td>
+        </template>
 
       </q-table>
     </div>
@@ -310,21 +317,25 @@
         :pagination="metaInitialPagination"
         :filter="filterMetaLinks"
         dense>
-        <!--        <template v-slot:top-right>-->
-        <!--          <q-input borderless dense debounce="300" v-model="filterMetaLinks" placeholder="Search">-->
-        <!--            <template v-slot:append>-->
-        <!--              <q-icon name="search"/>-->
-        <!--            </template>-->
-        <!--          </q-input>-->
-        <!--        </template>-->
+                <template v-slot:top-right>
+                  <q-input borderless dense debounce="300" v-model="filterMetaLinks" placeholder="Search">
+                    <template v-slot:append>
+                      <q-icon name="search"/>
+                    </template>
+                  </q-input>
+                </template>
 
-        <!--        &lt;!&ndash;        <template v-slot:body-cell-name="props">&ndash;&gt;-->
-        <!--        &lt;!&ndash;          <q-td :props="props">&ndash;&gt;-->
-        <!--        &lt;!&ndash;            <div>&ndash;&gt;-->
-        <!--        &lt;!&ndash;              <q-badge color="grey" class="cursor-pointer" @click="openNameLink(props.value)" :label="props.value"/>&ndash;&gt;-->
-        <!--        &lt;!&ndash;            </div>&ndash;&gt;-->
-        <!--        &lt;!&ndash;          </q-td>&ndash;&gt;-->
-        <!--        &lt;!&ndash;        </template>&ndash;&gt;-->
+        <template v-slot:body-cell-link="props">
+          <q-td :props="props">
+            <div class="cursor-pointer text-blue-10">
+              <span v-if="props.row.link.length > 0 && props.row.link.startsWith('/')"
+                    @click="openLink(useUiStore().getSelectedTab.chromeTab.url + '/' + props.row.link.substring(1))">
+                {{ props.row.link }}
+              </span>
+              <span v-else @click="openLink(props.row.link)">{{ props.row.link }}</span>
+            </div>
+          </q-td>
+        </template>
 
       </q-table>
     </div>
@@ -347,26 +358,6 @@
         {{ content }}
       </div>
     </div>
-  </div>
-
-  <div v-else-if="tab === 'index'">
-
-    <div class="q-pa-md q-gutter-sm">
-      <q-banner rounded class="bg-grey-1 text-primary">This is a search index for the current tab.</q-banner>
-{{ keysMap }}
-      <div v-for="k in keys">
-        ID: {{ k.id }} - weight {{ k.weight }}
-      </div>
-      <hr>
-      <div v-for="key in Object.keys(keysMap)">
-        <div v-if="keysMap.hasOwnProperty(key)">
-          <b>key: {{ key }} - {{ keysMap[key] }}</b><br>
-          {{ getForKey(key) }}
-          <!--          {{ index.$[keysMap[key]] }}<br><br>-->
-        </div>
-      </div>
-    </div>
-
   </div>
 
   <div v-else-if="tab === 'logs'">
@@ -414,6 +405,7 @@ import {useUtils} from "src/services/Utils";
 import {useQueryExecutor} from "src/services/QueryExecutor";
 import {TabLogsQuery} from "src/domain/queries/TabLogsQuery";
 import {useUiStore} from "src/stores/uiStore";
+import {openURL} from "quasar";
 
 const tabsStore = useTabsStore()
 const notificationStore = useNotificationsStore()
@@ -458,8 +450,8 @@ const metaLinkColumns = ref([
 
 
 const linkColumns = ref([
-  {name: 'Link', align: 'left', label: 'Title', field: 'link', sortable: true},
-  {name: 'Count', align: 'left', label: 'Link', field: 'count', sortable: true}
+  {name: 'link', align: 'left', label: 'Link', field: 'link', sortable: true},
+  {name: 'count', align: 'left', label: 'Count', field: 'count', sortable: true}
 ])
 
 
@@ -646,6 +638,7 @@ const analyseTab = () => {
   }
 }
 
+const openLink = (url: string) => openURL(url)
 
 </script>
 
