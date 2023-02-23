@@ -238,10 +238,9 @@ export function useTabsetService() {
               if (image) {
                 t.image = image
               }
-              //  console.log("updated", t)
+              saveTabset(tabset)
             }
           })
-          saveTabset(tabset)
         }
       })
     }

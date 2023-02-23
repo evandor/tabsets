@@ -7,6 +7,14 @@ import {bexContent} from 'quasar/wrappers'
 export default bexContent((bridge: any) => {
   console.log("initializing tabset extension content script for tab analysis")
 
+  chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+    if (request === 'getContent') {
+      console.log("received message for content")
+      sendResponse({content: document.documentElement.outerHTML});
+    }
+    return sendResponse({content: "unknown"});
+  })
+
   function getMetas(document: Document) {
     const result: { [k: string]: string } = {}
     //const res: string[] = []

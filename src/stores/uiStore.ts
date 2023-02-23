@@ -17,6 +17,7 @@ export enum DrawerTabs {
   UNASSIGNED_TABS = "unassignedTabs",
   GROUP_BY_HOST_TABS = "groupedByHostTabs",
   SAVED_TABS = "savedTabs",
+  PDF_TABS = "pdfTabs",
   SIDEBAR = "sidebar",
   RSS = "rss",
   SCHEDULED = "scheduled",
