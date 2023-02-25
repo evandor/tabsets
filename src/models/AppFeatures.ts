@@ -9,6 +9,7 @@ import {AppFeature, FeatureIdent, FeatureType} from "src/models/AppFeature"
 
 export class AppFeatures {
   features: AppFeature[] = [
+    new AppFeature(FeatureIdent.DETAILS, FeatureType.RECOMMENDED, 'Tab(set) Details View', 'o_info', ['all']),
     new AppFeature(FeatureIdent.BOOKMARKS, FeatureType.RECOMMENDED, 'Bookmarks', 'o_bookmarks', ['bex'])
       .setActivateCommand(new GrantPermissionCommand('bookmarks'))
       .setDeactivateCommand(new RevokePermissionCommand('bookmarks')),
@@ -27,7 +28,6 @@ export class AppFeatures {
     new AppFeature(FeatureIdent.RSS, FeatureType.EXPERIMENTAL, 'RSS View', 'o_rss_feed', ['bex', 'spa']),
     new AppFeature(FeatureIdent.SESSIONS, FeatureType.EXPERIMENTAL, 'Sessions', 'o_explore', ['all']),
     new AppFeature(FeatureIdent.SPACES, FeatureType.EXPERIMENTAL, 'Spaces', 'o_space_dashboard', ['all']),
-    new AppFeature(FeatureIdent.DETAILS, FeatureType.EXPERIMENTAL, 'Tab(set) Details View', 'o_info', ['all']),
     new AppFeature(FeatureIdent.THUMBNAILS, FeatureType.EXPERIMENTAL, 'Thumbnails', 'o_image', ['bex'])
       .setActivateCommand(new GrantOriginCommand('thumbnails'))
       .setDeactivateCommand(new RevokeOriginCommand('thumbnails')),

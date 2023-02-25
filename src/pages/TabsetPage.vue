@@ -129,6 +129,16 @@
           <q-tooltip>Use the canvas freestyle layout to visualize your tabs</q-tooltip>
         </q-btn>
 
+        <q-btn v-if="permissionsStore.hasFeature(FeatureIdent.EXPERIMENTAL_VIEWS)"
+               @click="setView('exporter')"
+               style="width:14px"
+               class="q-mr-sm" size="10px"
+               :flat="tabsStore.getCurrentTabset?.view !== 'exporter'"
+               :outline="tabsStore.getCurrentTabset?.view === 'exporter'"
+               icon="o_ios_share">
+          <q-tooltip>Use the exporter layout if you want to copy and paste the urls of this tabset</q-tooltip>
+        </q-btn>
+
         <q-btn v-if="tabsStore.currentTabsetId !== '' && tabsStore.getTabset(tabsStore.currentTabsetId)"
                data-testid="addUrlDialogBtn"
                @click="addUrlDialog"
@@ -193,8 +203,13 @@
                  group="otherTabs"
                  :tabs="unpinnedNoGroupOrAllTabs()"/>
 
+      <TabsExporter v-else-if="tabsStore.getCurrentTabset?.view === 'exporter'"
+                    group="otherTabs"
+                    :tabs="unpinnedNoGroupOrAllTabs()"/>
+
       <Tabcards v-else
                 :tabs="unpinnedNoGroupOrAllTabs()" group="otherTabs" :highlightUrl="highlightUrl"/>
+
 
     </q-card-section>
 
@@ -254,6 +269,7 @@ import {StopSessionCommand} from "src/domain/commands/StopSessionCommand";
 import {useUtils} from "src/services/Utils";
 import TabTable from "components/layouts/TabTable.vue";
 import {FeatureIdent} from "src/models/AppFeature";
+import TabsExporter from "components/layouts/TabsExporter.vue";
 
 const route = useRoute();
 const router = useRouter();
