@@ -110,6 +110,7 @@ class ChromeListeners {
     })
     if (!foundSession) {
       console.debug("pushing to pending", tab)
+      //tabsStore.addToPendingTabset(new Tab(uid(),tab))
       tabsStore.pendingTabset.tabs.push(new Tab(uid(), tab))
     }
   }
@@ -169,7 +170,7 @@ class ChromeListeners {
     // find tab which was created by "onCreate" moments ago
     const index = _.findIndex(tabset?.tabs, t => t.chromeTab.id === tab.id);
     if (index >= 0) {
-      if (!this.isIgnored(tab)) {
+      //if (!this.isIgnored(tab)) {
         const existingPendingTab = tabset.tabs[index]
         const updatedTab = new Tab(uid(), tab)
         if (existingPendingTab.chromeTab.url !== updatedTab.chromeTab.url && existingPendingTab.chromeTab.url !== 'chrome://newtab/') {
@@ -185,10 +186,7 @@ class ChromeListeners {
         } else {
           tabset.tabs.splice(index, 1, updatedTab);
         }
-        // } else {
-        //   console.log("deleting ignored tab", tab)
-        //   tabset.tabs.splice(index, 1)
-      }
+     // }
     } else {
       console.log(`onUpdated: tab ${tab.id}: ignoring, pending tab cannot be found in ${tabset.name}`)
     }
@@ -280,19 +278,19 @@ class ChromeListeners {
     return true;
   }
 
-  private isIgnored(tab: chrome.tabs.Tab) {
-    const tabsStore = useTabsStore()
-    const ignoreIndex = _.findIndex(tabsStore.ignoredTabset.tabs, (ignoredTab: Tab) => {
-      if (ignoredTab.chromeTab.url && tab.url) {
-        if (tab.url.startsWith(ignoredTab.chromeTab.url)) {
-          console.log("ignoring tab with url", tab.url)
-          return true
-        }
-      }
-      return false
-    })
-    return ignoreIndex >= 0
-  }
+  // private isIgnored(tab: chrome.tabs.Tab) {
+  //   const tabsStore = useTabsStore()
+  //   const ignoreIndex = _.findIndex(tabsStore.ignoredTabset.tabs, (ignoredTab: Tab) => {
+  //     if (ignoredTab.chromeTab.url && tab.url) {
+  //       if (tab.url.startsWith(ignoredTab.chromeTab.url)) {
+  //         console.log("ignoring tab with url", tab.url)
+  //         return true
+  //       }
+  //     }
+  //     return false
+  //   })
+  //   return ignoreIndex >= 0
+  // }
 
   private handleHtml2Text(request: any, sender: chrome.runtime.MessageSender, sendResponse: any) {
     const text = convert(request.html, {

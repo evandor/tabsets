@@ -13,7 +13,7 @@ export enum TabsetType {
   DEFAULT = "DEFAULT",
   SESSION = "SESSION",
 
-  BACKUP = "BACKUP",
+  SPECIAL = "SPECIAL",
   DYNAMIC = "DYNAMIC"
 }
 

@@ -16,6 +16,8 @@ import {useDB} from "src/services/usePersistenceService";
 import {TabLogger} from "src/logging/TabLogger";
 import LoggingService from "src/services/LoggingService";
 import {SpecialTabsetIdent} from "src/domain/tabsets/CreateSpecialTabset";
+import {usePermissionsStore} from "stores/permissionsStore";
+import {FeatureIdent} from "src/models/AppFeature";
 
 const {db} = useDB()
 

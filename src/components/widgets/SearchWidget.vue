@@ -90,6 +90,9 @@ function submitSearch() {
 }
 
 function checkKeystroke(e: KeyboardEvent) {
+  if (useUiStore().ignoreKeypressListener()) {
+    return
+  }
   if (e.key === '/' && searchBox.value) {
     e.preventDefault()
     // @ts-ignore
@@ -134,7 +137,7 @@ const filterFn = (val: any, update: any, abort: any) => {
 
 const updateSearch = (val: any) => {
   typedOrSelected.value = val
-  if (val.chromeTab) {
+  if (val?.chromeTab) {
     NavigationService.openOrCreateTab(val.chromeTab.url)
   }
 }

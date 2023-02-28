@@ -63,127 +63,6 @@
     </q-item>
   </q-list>
 
-<!--  <div class="q-ma-md text-grey-8">-->
-<!--    <b>Planned Features</b>-->
-<!--  </div>-->
-
-<!--  <q-list>-->
-<!--    <q-item-->
-<!--      v-for="f in featuresByType(FeatureType.PLANNED)"-->
-<!--      clickable v-ripple-->
-<!--      :active="f === selected2"-->
-<!--      @click="showFeature2(f)">-->
-
-<!--      <q-item-section avatar>-->
-<!--        <q-icon :name="f.icon" size="1.3em" :color="iconColor(f.ident)"/>-->
-<!--      </q-item-section>-->
-<!--      <q-item-section class="text-grey-8">{{ f.name }}</q-item-section>-->
-
-<!--    </q-item>-->
-<!--  </q-list>-->
-
-<!--  <div class="q-ma-md">-->
-<!--    <b>Recommended Features</b>-->
-<!--  </div>-->
-
-<!--  <q-list>-->
-<!--    <q-item-->
-<!--      v-for="f in recommendedFeatures"-->
-<!--      clickable v-ripple-->
-<!--      :active="f.ident === selected"-->
-<!--      :disable="wrongMode(f)"-->
-<!--      @click="showFeature(f)">-->
-
-<!--      <q-item-section avatar>-->
-<!--        <q-icon :name="f.icon" size="1.3em" :color="iconColor(f.ident)"/>-->
-<!--      </q-item-section>-->
-<!--      <q-item-section>{{ f.name }}</q-item-section>-->
-<!--      <q-tooltip class="tooltip" v-if="wrongMode(f)">-->
-<!--        This feature is not available in this mode of tabsets-->
-<!--      </q-tooltip>-->
-<!--    </q-item>-->
-
-<!--  </q-list>-->
-
-<!--  <div class="q-ma-md">-->
-<!--    <b>Optional Features</b>-->
-<!--  </div>-->
-
-<!--  <q-list>-->
-<!--    <q-item-->
-<!--      v-for="f in optionalFeatures"-->
-<!--      clickable v-ripple-->
-<!--      :active="f.ident === selected"-->
-<!--      :disable="wrongMode(f)"-->
-<!--      @click="showFeature(f)">-->
-
-<!--      <q-item-section avatar>-->
-<!--        <q-icon :name="f.icon" size="1.3em" :color="iconColor(f.ident)"/>-->
-<!--      </q-item-section>-->
-<!--      <q-item-section>{{ f.name }}</q-item-section>-->
-<!--      <q-tooltip class="tooltip" v-if="wrongMode(f)">-->
-<!--        This feature is not available in this mode of tabsets-->
-<!--      </q-tooltip>-->
-<!--    </q-item>-->
-<!--  </q-list>-->
-
-<!--  <div class="q-ma-md" v-if="useFeatureTogglesStore().isEnabled('dev')">-->
-<!--    <b>Experimental Features</b>-->
-<!--  </div>-->
-
-<!--  <q-list v-if="useFeatureTogglesStore().isEnabled('dev')">-->
-<!--    <q-item-->
-<!--      v-for="f in experimantalFeatures"-->
-<!--      clickable v-ripple-->
-<!--      :active="f.ident === selected"-->
-<!--      :disable="wrongMode(f)"-->
-<!--      @click="showFeature(f)">-->
-
-<!--      <q-item-section avatar>-->
-<!--        <q-icon :name="f.icon" size="1.3em" :color="iconColor(f.ident)"/>-->
-<!--      </q-item-section>-->
-<!--      <q-item-section>{{ f.name }}</q-item-section>-->
-<!--      <q-tooltip class="tooltip" v-if="wrongMode(f)">-->
-<!--        This feature is not available in this mode of tabsets-->
-<!--      </q-tooltip>-->
-<!--    </q-item>-->
-<!--  </q-list>-->
-
-<!--  <div class="q-ma-md text-grey-8">-->
-<!--    <b>Planned Features</b>-->
-<!--  </div>-->
-
-<!--  <q-list>-->
-<!--    <q-item-->
-<!--      v-for="f in plannedFeatures"-->
-<!--      clickable v-ripple-->
-<!--      :active="f.ident === selected"-->
-<!--      @click="showFeature(f)">-->
-
-<!--      <q-item-section avatar>-->
-<!--        <q-icon :name="f.icon" size="1.3em" :color="iconColor(f.ident)"/>-->
-<!--      </q-item-section>-->
-<!--      <q-item-section class="text-grey-8">{{ f.name }}</q-item-section>-->
-
-<!--    </q-item>-->
-<!--  </q-list>-->
-
-  <!--  <div class="q-ma-md text-grey-8">-->
-  <!--    <b>Ideas</b>-->
-  <!--  </div>-->
-
-  <!--  <q-list>-->
-  <!--    <q-item-->
-  <!--      v-for="f in ideas"-->
-  <!--      clickable v-ripple>-->
-
-  <!--      <q-item-section avatar>-->
-  <!--        <q-icon :name="f.icon" size="1.3em" :color="iconColor(f.ident)"/>-->
-  <!--      </q-item-section>-->
-  <!--      <q-item-section class="text-grey-8">{{ f.name }}</q-item-section>-->
-
-  <!--    </q-item>-->
-  <!--  </q-list>-->
 
 </template>
 
@@ -196,7 +75,7 @@ import {usePermissionsStore} from "src/stores/permissionsStore";
 import _ from "lodash"
 import {useFeatureTogglesStore} from "src/stores/featureTogglesStore";
 import {AppFeatures} from "src/models/AppFeatures";
-import {AppFeature, FeatureType} from "src/models/AppFeature";
+import {AppFeature, FeatureIdent, FeatureType} from "src/models/AppFeature";
 
 const tabsStore = useTabsStore()
 const router = useRouter()
@@ -205,7 +84,22 @@ const selected2 = ref<AppFeature | undefined>(undefined)
 
 const features = ref(new AppFeatures().features)
 
-const featuresByType = (type: FeatureType) =>  _.filter(features.value, (f: AppFeature) => f.type === type && !wrongMode(f))
+const featuresByType = (type: FeatureType) =>
+  _.filter(features.value, (f: AppFeature) => {
+    const typeAndModeMatch = f.type === type && !wrongMode(f)
+    if (f.requires.length > 0) {
+      let missingRequirement = false
+      f.requires.forEach((requirement: FeatureIdent) => {
+        if (!usePermissionsStore().hasFeature(requirement)) {
+          missingRequirement = true
+        }
+      })
+      if (missingRequirement) {
+        return false
+      }
+    }
+    return typeAndModeMatch
+  })
 
 const recommendedFeatures = [
   {ident: 'bookmarks', name: 'Bookmarks', icon: 'o_bookmarks', useIn: ['bex'], target: '/features/bookmarks'}
@@ -214,8 +108,6 @@ const recommendedFeatures = [
 const optionalFeatures = [
   {ident: 'sidebar', name: 'Sidebar View', icon: 'o_input', useIn: ['electron'], target: '/features/sidebar'},
 ]
-
-
 
 
 const open = (ident: string) => {

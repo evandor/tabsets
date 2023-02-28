@@ -6,6 +6,10 @@ import {useSuggestionsStore} from "src/stores/suggestionsStore";
 import {StaticSuggestionIdent} from "src/models/Suggestion";
 import {CreateSpecialTabsetCommand, SpecialTabsetIdent} from "src/domain/tabsets/CreateSpecialTabset";
 import {TabsetType} from "src/models/Tabset";
+import {useCommandExecutor} from "src/services/CommandExecutor";
+import {AppFeatures} from "src/models/AppFeatures";
+
+
 
 
 export const usePermissionsStore = defineStore('permissions', () => {
@@ -95,18 +99,35 @@ export const usePermissionsStore = defineStore('permissions', () => {
         }
         else if (FeatureIdent.BACKUP.toLowerCase() === feature) {
           //useSuggestionsStore().removeSuggestion(StaticSuggestionIdent.TRY_TAB_DETAILS_FEATURE)
-          new CreateSpecialTabsetCommand(SpecialTabsetIdent.BACKUP, TabsetType.BACKUP).execute()
+          useCommandExecutor().executeFromUi(new CreateSpecialTabsetCommand(SpecialTabsetIdent.BACKUP, TabsetType.SPECIAL))
+        }
+        else if (FeatureIdent.IGNORE.toLowerCase() === feature) {
+          //useSuggestionsStore().removeSuggestion(StaticSuggestionIdent.TRY_TAB_DETAILS_FEATURE)
+          useCommandExecutor().executeFromUi(new CreateSpecialTabsetCommand(SpecialTabsetIdent.IGNORE, TabsetType.SPECIAL))
         }
       }
     }
   })
 
+  function deactivateRecursive(feature: string) {
+    const index = activeFeatures.value.indexOf(feature)
+    if (index >= 0) {
+      activeFeatures.value.splice(index, 1)
+      const deactivatedIdent = feature.toUpperCase() as FeatureIdent
+      new AppFeatures().getFeatures().forEach(f => {
+        if (f.requires.findIndex((r: FeatureIdent) => r === deactivatedIdent) >= 0) {
+          console.log("need to deactivate as well:", f)
+          deactivateRecursive(f.ident.toLowerCase())
+        }
+      })
+      console.log("deactivated", feature, activeFeatures.value)
+    }
+  }
+
   const deactivateFeature = computed(() => {
     return (feature: string): void => {
-      const index = activeFeatures.value.indexOf(feature)
-      if (index >= 0) {
-        activeFeatures.value.splice(index, 1)
-      }
+      console.log("deactivating", feature)
+      deactivateRecursive(feature)
     }
   })
 

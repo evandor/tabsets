@@ -10,6 +10,8 @@ import {Group} from "src/models/Group";
 import {useSpacesStore} from "src/stores/spacesStore";
 import LoggingService from "src/services/LoggingService";
 import {SpecialTabsetIdent} from "src/domain/tabsets/CreateSpecialTabset";
+import {usePermissionsStore} from "stores/permissionsStore";
+import {FeatureIdent} from "src/models/AppFeature";
 
 async function queryTabs(): Promise<chrome.tabs.Tab[]> {
   // @ts-ignore
@@ -60,7 +62,7 @@ export const useTabsStore = defineStore('tabs', {
     /**
      * tabs the extension should ignore
      */
-    ignoredTabset: null as unknown as Tabset,
+    //ignoredTabset: null as unknown as Tabset,
 
     /**
      * tabs to revisit later (will be available in all spaces)
@@ -233,7 +235,7 @@ export const useTabsStore = defineStore('tabs', {
 
       this.pendingTabset = new Tabset("pending", "pending", [], [])
 
-      this.ignoredTabset = new Tabset("ignored", "ignored", [], [])
+     // this.ignoredTabset = new Tabset("ignored", "ignored", [], [])
 
      // this.backupTabset = new Tabset("backup", "backup", [], [])
 
@@ -342,6 +344,7 @@ export const useTabsStore = defineStore('tabs', {
       let ts: Tabset = null as unknown as Tabset
       if (foundTS) {
         ts = foundTS
+        ts.status = TabsetStatus.DEFAULT
       } else {
         const id = ident.toString()
         ts = new Tabset(id, id, [])
@@ -371,6 +374,19 @@ export const useTabsStore = defineStore('tabs', {
       ts.tabs = _.filter(ts.tabs, (t: Tab) => t !== null)
       this.tabsets.set(ts.id, ts)
       markDuplicates(ts)
+    },
+    addToPendingTabset(tab: Tab) {
+      if (usePermissionsStore().hasFeature(FeatureIdent.IGNORE)) {
+        const ignoreTS = this.getTabset('IGNORE')
+        if (ignoreTS && tab.chromeTab.url) {
+          const foundIndex = ignoreTS.tabs.findIndex((ignoreTab: Tab) => ignoreTab.chromeTab.url?.startsWith(tab.chromeTab.url || 'xxx'))
+          if (foundIndex >= 0) {
+            console.log("ignoring", tab.chromeTab.url, ignoreTS.tabs[foundIndex].chromeTab.url)
+            return false
+          }
+        }
+      }
+      this.pendingTabset.tabs.push(tab)
     }
   }
 });

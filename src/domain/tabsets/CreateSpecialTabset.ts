@@ -4,7 +4,8 @@ import {useTabsetService} from "src/services/TabsetService2";
 import {TabsetType} from "src/models/Tabset";
 
 export enum SpecialTabsetIdent {
-  BACKUP = "BACKUP"
+  BACKUP = "BACKUP",
+  IGNORE = "IGNORE"
 }
 
 
@@ -19,7 +20,7 @@ export class CreateSpecialTabsetCommand implements Command<object> {
   async execute(): Promise<ExecutionResult<object>> {
     try {
       const result = await useTabsetService().getOrCreateSpecialTabset(this.tabsetIdent, this.tabsetType)
-      return Promise.resolve(new ExecutionResult(result, 'Tabset created successfully'))
+      return Promise.resolve(new ExecutionResult(result, 'Special Tabset created successfully'))
     } catch (err) {
       return Promise.reject(err)
     }

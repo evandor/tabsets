@@ -183,8 +183,21 @@
     v-if="route?.query?.first && tabsStore.getCurrentTabset?.tabs.length > 0"
     :probability="1"
     ident="tabsetPage_firstTime"
-    hint="Congrats - you created your first tabset. Your open tabs have been added automatically to get you started with tabsets!" />
+    hint="Congrats - you created your first tabset. Your open tabs have been added automatically to get you started with tabsets!"/>
 
+  <InfoMessageWidget
+    v-if="tabsetId === 'BACKUP'"
+    :probability="1"
+    ident="tabsetPage_backupTabset"
+    hint="This is a special type of tabset - it's meant for Backups. You can use it as any other tabset, but when you use the feature
+ 'backup and close current tabs' from the 'open tabs' menu, all tabs will be closed and automatically added to this backup tabset."/>
+
+  <InfoMessageWidget
+    v-if="tabsetId === 'IGNORE'"
+    :probability="1"
+    ident="tabsetPage_ignoreTabset"
+    hint="This is a special type of tabset - it's meant for those tabs which you don't want to track. You can add urls and whenever
+a tab's url starts with one of the urls of this tabset, it will be ignored and not added to the tabs to be added."/>
 
   <q-card flat>
     <q-card-section>
@@ -213,16 +226,16 @@
 
     </q-card-section>
 
-<!--    <q-card-section v-if="tabsStore.getCurrentTabset?.tabs.length === 0-->
-<!--        && permissionsStore.hasFeature('pendingTabs')-->
-<!--        && tabsStore.pendingTabset?.tabs.length > 0">-->
-<!--      <q-banner rounded class="text-black"-->
-<!--                style="font-weight: bold; border: 2px solid orange">-->
-<!--        <div class="row justify-center items-center">-->
-<!--          Your tabset does not yet contain any tabs. You can select some (or all) from the list above.-->
-<!--        </div>-->
-<!--      </q-banner>-->
-<!--    </q-card-section>-->
+    <!--    <q-card-section v-if="tabsStore.getCurrentTabset?.tabs.length === 0-->
+    <!--        && permissionsStore.hasFeature('pendingTabs')-->
+    <!--        && tabsStore.pendingTabset?.tabs.length > 0">-->
+    <!--      <q-banner rounded class="text-black"-->
+    <!--                style="font-weight: bold; border: 2px solid orange">-->
+    <!--        <div class="row justify-center items-center">-->
+    <!--          Your tabset does not yet contain any tabs. You can select some (or all) from the list above.-->
+    <!--        </div>-->
+    <!--      </q-banner>-->
+    <!--    </q-card-section>-->
 
   </q-card>
 
@@ -261,7 +274,7 @@ import TabList from "components/layouts/TabList.vue";
 import InfoMessageWidget from "components/widgets/InfoMessageWidget.vue";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {RenameTabsetCommand} from "src/domain/tabsets/RenameTabset";
-import { TabsetStatus, TabsetType} from "src/models/Tabset";
+import {TabsetStatus, TabsetType} from "src/models/Tabset";
 import {MarkTabsetAsFavoriteCommand} from "src/domain/tabsets/MarkTabsetAsFavorite";
 import {MarkTabsetAsDefaultCommand} from "src/domain/tabsets/MarkTabsetAsDefault";
 import {MarkTabsetAsArchivedCommand} from "src/domain/tabsets/MarkTabsetAsArchived";
@@ -360,7 +373,7 @@ function unpinnedNoGroupOrAllTabs(): Tab[] {
   //       (t: Tab) => !t?.chromeTab.pinned && t?.chromeTab.groupId === -1),
   //     getOrder(), [orderDesc.value ? 'desc' : 'asc'])
   // } else {
-    return _.orderBy(tabsStore.getCurrentTabs, getOrder(), [orderDesc.value ? 'desc' : 'asc'])
+  return _.orderBy(tabsStore.getCurrentTabs, getOrder(), [orderDesc.value ? 'desc' : 'asc'])
   // }
 }
 

@@ -1,3 +1,4 @@
+#
 <template>
 
   <div v-if="!inBexMode()"
@@ -21,7 +22,9 @@
   <div v-if="showStartingHint() && inBexMode()"
        class="q-ma-sm bg-white text-grey" style="border: 1px dotted grey; border-radius: 3px">
     <div class="q-pa-sm">
-      <div class="col text-caption">And now? Just open new tabs in your browser (and come back here to organize them in tabsets)</div>
+      <div class="col text-caption">And now? Just open new tabs in your browser (and come back here to organize them in
+        tabsets)
+      </div>
     </div>
   </div>
 
@@ -51,16 +54,16 @@
       <div class="col q-pa-xs text-right">
 
         <q-checkbox v-if="useSelection"
-          @update:model-value="val => toggleInvert(val)"
-          rigth-label
-          class="text-primary text-uppercase q-mr-lg"
-          style="font-size: 11px"
-          v-model="invert"
-          color="primary"
-          size="30px"
-          label="invert"
-          checked-icon="task_alt"
-          unchecked-icon="check_box_outline_blank"
+                    @update:model-value="val => toggleInvert(val)"
+                    rigth-label
+                    class="text-primary text-uppercase q-mr-lg"
+                    style="font-size: 11px"
+                    v-model="invert"
+                    color="primary"
+                    size="30px"
+                    label="invert"
+                    checked-icon="task_alt"
+                    unchecked-icon="check_box_outline_blank"
         />
 
         <q-checkbox
@@ -118,6 +121,8 @@ import {SavePendingTabToCurrentTabsetCommand} from "src/domain/commands/SavePend
 import {useTabsetService} from "src/services/TabsetService2";
 import InfoMessageWidget from "components/widgets/InfoMessageWidget.vue";
 import {useRoute} from "vue-router";
+import {usePermissionsStore} from "stores/permissionsStore";
+import {FeatureIdent} from "src/models/AppFeature";
 
 const {inBexMode} = useUtils()
 
@@ -135,8 +140,18 @@ const tabSelection = ref<Set<string>>(new Set<string>())
 function unassignedTabs(): Tab[] {
   return _.filter(
     tabsStore.pendingTabset?.tabs,
-    //@ts-ignore
-    (t: Tab) => {
+    (tab: Tab) => {
+      if (usePermissionsStore().hasFeature(FeatureIdent.IGNORE)) {
+        const ignoreTS = useTabsetService().getTabset('IGNORE')
+        if (ignoreTS && tab.chromeTab.url !== undefined) {
+          const foundIndex = ignoreTS.tabs.findIndex((ignoreTab: Tab) =>
+            tab.chromeTab.url?.startsWith(ignoreTab.chromeTab.url || 'somestrangestring'))
+          if (foundIndex >= 0) {
+            console.log("ignoring", tab.chromeTab.url, ignoreTS.tabs[foundIndex].chromeTab.url)
+            return false
+          }
+        }
+      }
       return true
     })
 }
@@ -148,7 +163,7 @@ watchEffect(() => {
 //onMounted(() => userCanSelect.value = false)
 
 watchEffect(() => {
- // console.log("d&d", dragTarget.value)
+  // console.log("d&d", dragTarget.value)
   if (dragTarget.value.trim() === "") {
     return
   }

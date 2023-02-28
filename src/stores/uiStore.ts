@@ -81,6 +81,9 @@ export const useUiStore = defineStore('ui', () => {
   // new tab feature
   const newTabUrlList = ref<object[]>(LocalStorage.getItem('ui.newTabUrlList') as unknown as object[] || [])
 
+  // listener currently triggered on '/' keypress for search keyboard shortcut
+  const ignoreKeypress = ref(false)
+
   // watch(leftDrawer.value, (val: Object) => {
   //   $q.LocalStorage.set("ui.leftDrawer", val)
   // }, {deep: true})
@@ -234,6 +237,14 @@ export const useUiStore = defineStore('ui', () => {
 
   const getHighlightUrls = computed(() => highlightUrls.value)
 
+  function ignoreKeypressListener() {
+    return ignoreKeypress.value;
+  }
+
+  function setIgnoreKeypress(b: boolean) {
+    ignoreKeypress.value = b
+  }
+
   return {
     rightDrawer,
     rightDrawerSetLastView,
@@ -257,6 +268,8 @@ export const useUiStore = defineStore('ui', () => {
     removeNewTabUrl,
     clearHighlights,
     addHighlight,
-    getHighlightUrls
+    getHighlightUrls,
+    ignoreKeypressListener,
+    setIgnoreKeypress
   }
 })

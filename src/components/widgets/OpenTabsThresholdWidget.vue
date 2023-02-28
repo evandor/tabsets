@@ -38,6 +38,11 @@
       <!--      <q-item clickable v-close-popup @click="TabsetService.closeDuplictedOpenTabs()">-->
       <!--        <q-item-section>&bull; Close duplicated open tabs</q-item-section>-->
       <!--      </q-item>-->
+      <q-item v-if="usePermissionsStore().hasFeature(FeatureIdent.BACKUP)"
+              clickable v-close-popup
+              @click="backupAndClose">
+        <q-item-section>&bull; Backup and close current tabs...</q-item-section>
+      </q-item>
       <q-item
         :disable="tabsStore.tabsets?.size === 0"
         clickable v-close-popup @click="TabsetService.closeAllTabs()">
@@ -48,11 +53,13 @@
         Use special tabsets:
       </q-item>
       <q-item v-if="usePermissionsStore().hasFeature(FeatureIdent.SESSIONS) && existingSession"
-              clickable v-close-popup @click="replaceSession">
+              clickable v-close-popup
+              @click="replaceSession">
         <q-item-section>&bull; Replace existing Session...</q-item-section>
       </q-item>
       <q-item v-else-if="usePermissionsStore().hasFeature(FeatureIdent.SESSIONS) && !existingSession"
-              clickable v-close-popup @click="startSession">
+              clickable v-close-popup
+              @click="startSession">
         <q-item-section>&bull; Start a new Session...</q-item-section>
       </q-item>
       <q-separator v-if="usePermissionsStore().hasFeature(FeatureIdent.SESSIONS)"/>
@@ -80,6 +87,7 @@ import _ from "lodash"
 import {Tabset, TabsetType} from "src/models/Tabset";
 import {usePermissionsStore} from "stores/permissionsStore";
 import {FeatureIdent} from "src/models/AppFeature";
+import BackupAndCloseDialog from "components/dialogues/BackupAndCloseDialog.vue";
 
 const tabsStore = useTabsStore()
 const settingsStore = useSettingsStore()
@@ -132,6 +140,7 @@ watchEffect(() => {
 
 const startSession = () => $q.dialog({component: NewSessionDialog, componentProps: {replaceSession: false}})
 const replaceSession = () => $q.dialog({component: NewSessionDialog, componentProps: {replaceSession: true}})
+const backupAndClose = () => $q.dialog({component: BackupAndCloseDialog})
 
 const showSpecialTabsets = () => usePermissionsStore().hasFeature(FeatureIdent.SESSIONS)
 </script>

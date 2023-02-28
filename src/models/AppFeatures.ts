@@ -26,7 +26,7 @@ export class AppFeatures {
     new AppFeature(FeatureIdent.NEW_TAB, FeatureType.EXPERIMENTAL, 'New Tab', 'o_create_new_folder', ['bex']),
     // does not work properly right now in electron (keeps re-catching the source)
     new AppFeature(FeatureIdent.RSS, FeatureType.EXPERIMENTAL, 'RSS View', 'o_rss_feed', ['bex', 'spa']),
-    new AppFeature(FeatureIdent.SESSIONS, FeatureType.EXPERIMENTAL, 'Sessions', 'o_explore', ['all']),
+    new AppFeature(FeatureIdent.SESSIONS, FeatureType.EXPERIMENTAL, 'Sessions', 'o_explore', ['all'],[FeatureIdent.OPENTABS_THRESHOLD]),
     new AppFeature(FeatureIdent.SPACES, FeatureType.EXPERIMENTAL, 'Spaces', 'o_space_dashboard', ['all']),
     new AppFeature(FeatureIdent.THUMBNAILS, FeatureType.EXPERIMENTAL, 'Thumbnails', 'o_image', ['bex'])
       .setActivateCommand(new GrantOriginCommand('thumbnails'))
@@ -37,7 +37,8 @@ export class AppFeatures {
     new AppFeature(FeatureIdent.HISTORY, FeatureType.EXPERIMENTAL, 'Access Browser History', 'o_history', ['bex'])
       .setActivateCommand(new GrantPermissionCommand('history'))
       .setDeactivateCommand(new RevokePermissionCommand('history')),
-    new AppFeature(FeatureIdent.BACKUP, FeatureType.EXPERIMENTAL, 'Backup Tabset', 'o_inventory_2', ['bex'])
+    new AppFeature(FeatureIdent.BACKUP, FeatureType.EXPERIMENTAL, 'Backup Tabset', 'o_inventory_2', ['bex'], [FeatureIdent.OPENTABS_THRESHOLD]),
+    new AppFeature(FeatureIdent.IGNORE, FeatureType.EXPERIMENTAL, 'Ignore Tabset', 'o_pause_circle', ['bex'])
 
     // new AppFeature(FeatureIdent.ANALYSE_TABS, FeatureType.PLANNED, 'Multiple Windows', 'o_history', ['bex']),
     // new AppFeature(FeatureIdent.ANALYSE_TABS, FeatureType.PLANNED, 'Scheduled Tabs', 'o_history', ['bex']),
@@ -55,5 +56,9 @@ export class AppFeatures {
       return found[0]
     }
     return undefined
+  }
+
+  getFeatures(): AppFeature[] {
+    return this.features
   }
 }

@@ -54,6 +54,27 @@
       <div v-if="hasFeature()" class="text-primary q-mt-md">{{ text.get(feature)?.activatedMsg }}</div>
     </div>
 
+    <div class="col-12 q-my-sm" v-if="getDependentFeatures(feature).length > 0 && !hasFeature()">
+      <div class="text-subtitle2">Dependent Features</div>
+    </div>
+    <div class="col-12 q-my-sm" v-if="getDependentFeatures(feature, true).length > 0 && hasFeature()">
+      <div class="text-subtitle2">Dependent Features</div>
+    </div>
+
+    <div class="col-12 q-my-md" v-if="getDependentFeatures(feature).length > 0 && !hasFeature()">
+      Activating this feature will make {{ getDependentFeatures(feature).length }} more feature(s) available:
+      <ul>
+        <li v-for="f in getDependentFeatures(feature)">{{ f.name }}</li>
+      </ul>
+    </div>
+
+    <div class="col-12 q-my-md" v-if="getDependentFeatures(feature, true).length > 0 && hasFeature()">
+      Deactivating this feature would deactivate {{ getDependentFeatures(feature, true).length }} more feature(s):
+      <ul>
+        <li v-for="f in getDependentFeatures(feature, true)">{{ f.name }} (currently active)</li>
+      </ul>
+    </div>
+
     <div class="col-12 q-my-md" v-if="text.get(feature)?.img">
       <div>
         <q-img :src="text.get(feature)?.img" :width="text.get(feature)?.img_width || '250px'"/>
@@ -213,6 +234,13 @@ text.set(FeatureIdent.BACKUP.toLowerCase(), {
   permissions: []
 })
 
+text.set(FeatureIdent.IGNORE.toLowerCase(), {
+  experimental: true,
+  name: 'Ignore Tabset',
+  description: 'This is a list of urls you want to ignore. This can be normal urls or urls with placeholders to catch all google search results for example',
+  permissions: []
+})
+
 
 text.set(FeatureIdent.SPACES.toLowerCase(), {
   experimental: true,
@@ -322,6 +350,19 @@ const permissionText = (f: any) => {
   }
 
 }
+
+const getDependentFeatures = (rootFeature: string, onlyActive: boolean = false): AppFeature[] => {
+  const featureIdent = rootFeature.toUpperCase() as FeatureIdent
+  const dependentFeatures: AppFeature[] = []
+  new AppFeatures().getFeatures().forEach(appFeature => {
+    if (appFeature.requires.findIndex((r: FeatureIdent) => r === featureIdent && (onlyActive ? isActive(appFeature) : true)) >= 0) {
+      dependentFeatures.push(appFeature)
+    }
+  })
+  return dependentFeatures
+}
+
+const isActive = (f: AppFeature) => usePermissionsStore().hasFeature(f.ident)
 
 
 </script>

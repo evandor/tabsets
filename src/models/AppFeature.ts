@@ -23,6 +23,7 @@ export enum FeatureIdent {
   SCHEDULED = "SCHEDULED",
   OLD_TABS = "OLD_TABS",
   BACKUP = "BACKUP",
+  IGNORE = "IGNORE",
 
 }
 
@@ -47,6 +48,8 @@ export class AppFeature {
     public name: string,
     public icon: string,
     public useIn: string[],
+
+    public requires: FeatureIdent[] = []
   ) {
     this.activateCommand = new ActivateFeatureCommand(this)
     this.deactivateCommand = new DeactivateFeatureCommand(this)

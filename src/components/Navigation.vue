@@ -33,27 +33,29 @@
       </q-toolbar>
 
 
-      <q-splitter
-        v-model="splitterModel"
-        separator-class="bg-white"
-        horizontal
-        class="bg-grey-1 fit"
-        unit="px"
-        reverse>
+      <!--      <q-splitter-->
+      <!--        v-model="splitterModel"-->
+      <!--        separator-class="bg-white"-->
+      <!--        horizontal-->
+      <!--        class="bg-grey-1 fit"-->
+      <!--        unit="px"-->
+      <!--        reverse>-->
 
-        <template v-slot:before>
-          <q-list class="q-mt-none greyBorderTop">
-            <NavTabsetsListWidget :tabsets="tabsets(true)"/>
-            <q-separator v-if="tabsets(true).length > 0"/>
-            <NavTabsetsListWidget :tabsets="tabsets(false)"/>
-          </q-list>
-        </template>
+      <!--        <template v-slot:before>-->
+      <q-list class="q-mt-none greyBorderTop">
+        <NavTabsetsListWidget :tabsets="tabsets(true)"/>
+        <q-separator v-if="tabsets(true).length > 0"/>
+        <NavTabsetsListWidget :tabsets="tabsets(false)"/>
+      </q-list>
+      <!--        </template>-->
 
-        <template v-slot:after>
-          <NavTabsetsListWidget :tabsets="tabsetsWithTypes([TabsetType.BACKUP])"/>
-        </template>
+      <!--        <template v-slot:after>-->
+      <q-separator v-if="tabsetsWithTypes([TabsetType.SPECIAL]).length > 0"/>
 
-      </q-splitter>
+      <NavTabsetsListWidget :tabsets="tabsetsWithTypes([TabsetType.SPECIAL])"/>
+      <!--        </template>-->
+
+      <!--      </q-splitter>-->
 
     </div>
   </div>
@@ -109,7 +111,7 @@ const tabsets = (isFavorite: boolean) => {
     }
   }
   return _.sortBy(_.filter(tabsets, (ts: Tabset) =>
-    ts.type !== TabsetType.BACKUP &&
+    ts.type !== TabsetType.SPECIAL &&
     ts.status !== TabsetStatus.ARCHIVED &&
     ts.status !== TabsetStatus.DELETED &&
     ts.status === (isFavorite ? TabsetStatus.FAVORITE : TabsetStatus.DEFAULT)), ['name'])
@@ -119,7 +121,7 @@ const tabsetsWithTypes = (types: TabsetType[]) => {
   let tabsets = [...tabsStore.tabsets.values()]
   return _.sortBy(
     _.filter(tabsets, (ts: Tabset) =>
-      types.findIndex(t => ts.type === t) >= 0),
+      types.findIndex(t => ts.type === t && TabsetStatus.DELETED !== ts.status) >= 0),
     ['name'])
 }
 

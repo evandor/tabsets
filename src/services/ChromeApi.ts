@@ -196,10 +196,13 @@ class ChromeApi {
       .filter(r => r.id !== undefined)
       .map(r => r.id || 0);
     console.log("ids to close", ids)
-    if (ids.length > 0) {
-      // @ts-ignore
-      await chrome.tabs.remove(ids)
-    }
+    ids.forEach(id => {
+      try {
+        chrome.tabs.remove(id)
+      } catch (err) {
+        console.warn("got error removing tabs", err, ids)
+      }
+    })
     console.log(" --- closing all tabs: end ---")
   }
 

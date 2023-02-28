@@ -197,7 +197,7 @@ class TabsetService {
   }
 
   createPendingFromBrowserTabs() {
-    //console.log(`createPendingFromBrowserTabs`)
+    console.log(`createPendingFromBrowserTabs`)
     const tabsStore = useTabsStore()
     tabsStore.pendingTabset.tabs = []
     const urlSet = new Set<string>()
@@ -205,7 +205,8 @@ class TabsetService {
       if (t.url) {
         if (!urlSet.has(t.url) && !t.url.startsWith("chrome")) {
           urlSet.add(t.url)
-          tabsStore.pendingTabset.tabs.push(new Tab(uid(), t))
+          tabsStore.addToPendingTabset(new Tab(uid(),t))
+          //tabsStore.pendingTabset.tabs.push(new Tab(uid(), t))
         }
       }
     })
@@ -357,23 +358,42 @@ class TabsetService {
     return trackedTabs
   }
 
-  async closeTrackedTabs() {
+  async closeTrackedTabs():Promise<chrome.tabs.Tab[]> {
     // TODO long-Running action
     const currentTab = await ChromeApi.getCurrentTab()
-    chrome.tabs.query({}, (result: chrome.tabs.Tab[]) => {
-      const tabsToClose: chrome.tabs.Tab[] = []
-      _.forEach(result, (tab: chrome.tabs.Tab) => {
-        if (tab && tab.url && tab.url !== currentTab.url && tabsetsFor(tab.url).length > 0) {
-          tabsToClose.push(tab)
-        }
-      })
-      // console.log("tabsToClose", tabsToClose)
-      _.forEach(tabsToClose, (t: chrome.tabs.Tab) => {
-        if (t.id) {
-          chrome.tabs.remove(t.id)
-        }
-      })
+    // chrome.tabs.query({}, (result: chrome.tabs.Tab[]) => {
+    //   const tabsToClose: chrome.tabs.Tab[] = []
+    //   _.forEach(result, (tab: chrome.tabs.Tab) => {
+    //     if (tab && tab.url && tab.url !== currentTab.url && tabsetsFor(tab.url).length > 0) {
+    //       tabsToClose.push(tab)
+    //     }
+    //   })
+    //   // console.log("tabsToClose", tabsToClose)
+    //   _.forEach(tabsToClose, (t: chrome.tabs.Tab) => {
+    //     if (t.id) {
+    //       chrome.tabs.remove(t.id)
+    //     }
+    //   })
+    // })
+
+    // @ts-ignore
+    const result: chrome.tabs.Tab[] = await chrome.tabs.query({})
+    const tabsToClose: chrome.tabs.Tab[] = []
+    const tabsToKeep: chrome.tabs.Tab[] = []
+    _.forEach(result, (tab: chrome.tabs.Tab) => {
+      if (tab && tab.url && tab.url !== currentTab.url && tabsetsFor(tab.url).length > 0) {
+        tabsToClose.push(tab)
+      } else {
+        tabsToKeep.push(tab)
+      }
     })
+    // console.log("tabsToClose", tabsToClose)
+    _.forEach(tabsToClose, (t: chrome.tabs.Tab) => {
+      if (t.id) {
+        chrome.tabs.remove(t.id)
+      }
+    })
+    return Promise.resolve(tabsToKeep)
   }
 
   async closeAllTabs() {
@@ -482,7 +502,7 @@ class TabsetService {
     return Promise.reject("did not find tab with id " + tabId)
   }
 
-  markAsDeleted(tabsetId: string): Promise<boolean> {
+  markAsDeleted(tabsetId: string): Promise<Tabset> {
     const ts = getTabset(tabsetId)
     if (ts) {
       ts.status = TabsetStatus.DELETED
@@ -491,7 +511,7 @@ class TabsetService {
           if (useTabsStore().currentTabsetId === tabsetId) {
             useTabsStore().currentTabsetId = null as unknown as string
           }
-          return true
+          return ts
         })
     }
     return Promise.reject("could not mark as deleted: " + tabsetId)

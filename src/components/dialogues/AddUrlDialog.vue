@@ -17,7 +17,7 @@
       </q-card-section>
 
       <q-card-actions align="right" class="text-primary">
-        <q-btn flat label="Cancel" v-close-popup/>
+        <q-btn flat label="Cancel" @click="onDialogCancelClick" v-close-popup/>
         <q-btn flat label="Add URL"
                data-testid="add_url_submit"
                :disable="url.trim().length === 0" v-close-popup
@@ -42,6 +42,7 @@ import normalizeUrl from 'normalize-url';
 import {Tab} from "src/models/Tab";
 import ChromeApi from "src/services/ChromeApi";
 import {useUtils} from "src/services/Utils";
+import {useUiStore} from "stores/uiStore";
 
 defineEmits([
   ...useDialogPluginComponent.emits
@@ -54,10 +55,11 @@ const props = defineProps({
   }
 })
 
-const url = ref(props.providedUrl)
+useUiStore().setIgnoreKeypress(true)
+
+const url = ref<string>(props.providedUrl)
 
 const {normalize} = useUtils()
-
 
 const {dialogRef, onDialogHide, onDialogOK, onDialogCancel} = useDialogPluginComponent()
 
@@ -82,7 +84,12 @@ const createNewUrl = () => {
   tab.chromeTab = ChromeApi.createChromeTabObject(useUrl, useUrl, null as unknown as string)
   tab.extension = tab.determineUrlExtension(tab.chromeTab)
   TabsetService.saveToCurrentTabset(tab)
+  useUiStore().setIgnoreKeypress(false)
   onDialogOK()
+}
+
+const onDialogCancelClick = () => {
+  useUiStore().setIgnoreKeypress(false)
 }
 
 </script>
