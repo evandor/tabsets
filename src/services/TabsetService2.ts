@@ -15,6 +15,8 @@ import {RequestInfo} from "src/models/RequestInfo";
 import {useDB} from "src/services/usePersistenceService";
 import {TabLogger} from "src/logging/TabLogger";
 import LoggingService from "src/services/LoggingService";
+import {SpecialTabsetIdent} from "src/domain/tabsets/CreateSpecialTabset";
+
 const {db} = useDB()
 
 export function useTabsetService() {
@@ -60,8 +62,14 @@ export function useTabsetService() {
       }
       return Promise.reject("could not update or create tabset")
     } catch (err) {
-       return Promise.reject("problem updating or creating tabset: " + err)
+      return Promise.reject("problem updating or creating tabset: " + err)
     }
+  }
+
+  const getOrCreateSpecialTabset = async (ident: SpecialTabsetIdent, type: TabsetType): Tabset => {
+    const result: Tabset = await useTabsStore().getOrCreateSpecialTabset(ident, type)
+    await saveTabset(result)
+    return result
   }
 
   /**
@@ -411,7 +419,7 @@ export function useTabsetService() {
   const urlExistsInCurrentTabset = (url: string): boolean => {
     const currentTabset = getCurrentTabset()
     if (currentTabset) {
-      if(_.find(currentTabset.tabs, t => t.chromeTab.url === url)) {
+      if (_.find(currentTabset.tabs, t => t.chromeTab.url === url)) {
         return true
       }
     }
@@ -442,7 +450,8 @@ export function useTabsetService() {
     closeTab,
     deleteTab,
     urlExistsInATabset,
-    urlExistsInCurrentTabset
+    urlExistsInCurrentTabset,
+    getOrCreateSpecialTabset
   }
 
 }

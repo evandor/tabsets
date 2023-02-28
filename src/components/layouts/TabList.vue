@@ -4,7 +4,7 @@
     v-if="props.tabs.length > 1"
     :probability="0.3"
     ident="tablist_dnd"
-    hint="You can select the favicon images and drag and drop the entries to reorder the list to your wishes" />
+    hint="You can select the favicon images and drag and drop the entries to reorder the list to your wishes"/>
 
   <q-list bordered separator>
     <vue-draggable-next
@@ -24,15 +24,20 @@
       </q-item>
 
       <q-item
-        clickable v-ripple
+        :clickable="usePermissionsStore().hasFeature(FeatureIdent.DETAILS)"
+        v-ripple
         v-for="(tab,index) in props.tabs"
         @click.stop="showDetails(tab)"
         @mouseover="showButtons(  tab.id,true)"
         @mouseleave="showButtons( tab.id, false)"
         @dragstart="startDrag($event, tab)"
         :key="props.group + '_' + tab.id">
+
         <TabListElementWidget :showButtons="showButtonsProp.get(tab.id)"
-                              :key="props.group + '__' + tab.id" :tab="tabAsTab(tab)" :highlightUrl="highlightUrl"/>
+                              :key="props.group + '__' + tab.id"
+                              :tab="tabAsTab(tab)"
+                              :highlightUrl="highlightUrl"/>
+
       </q-item>
     </vue-draggable-next>
   </q-list>
@@ -48,13 +53,15 @@ import {useQuasar} from "quasar";
 import _ from "lodash"
 import {useTabsStore} from "src/stores/tabsStore";
 import {useUiService} from "src/services/useUiService";
-import {LeftDrawerState, DrawerTabs, useUiStore} from "src/stores/uiStore";
+import {DrawerTabs, LeftDrawerState, useUiStore} from "src/stores/uiStore";
 import {useTabsetService} from "src/services/TabsetService2";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {CreateTabFromOpenTabsCommand} from "src/domain/commands/CreateTabFromOpenTabs";
 import TabListElementWidget from "src/components/widgets/TabListElementWidget.vue";
 import {useUtils} from "src/services/Utils"
 import InfoMessageWidget from "components/widgets/InfoMessageWidget.vue";
+import {usePermissionsStore} from "src/stores/permissionsStore";
+import {FeatureIdent} from "src/models/AppFeature";
 
 const {inBexMode} = useUtils()
 
@@ -96,7 +103,6 @@ function adjustIndex(element: any, tabs: Tab[]) {
     return 1 + _.findIndex(tabsStore.getCurrentTabs, t => t.id === tabs[element.newIndex - 1].id)
   }
 }
-
 
 
 const handleDragAndDrop = (event: any) => {
@@ -161,8 +167,10 @@ const startDrag = (evt: any, tab: Tab) => {
 }
 
 const showDetails = (tab: Tab) => {
-  useUiStore().setSelectedTab(tab)
-  useUiStore().rightDrawerSetActiveTab(DrawerTabs.TAB_DETAILS)
+  if (usePermissionsStore().hasFeature(FeatureIdent.DETAILS)) {
+    useUiStore().setSelectedTab(tab)
+    useUiStore().rightDrawerSetActiveTab(DrawerTabs.TAB_DETAILS)
+  }
 }
 
 </script>

@@ -1,14 +1,15 @@
 <template>
 
   <q-item-section avatar>
-
-    <TabFaviconWidget :tab="props.tab" width="20px" height="20px"/>
-
+    <TabFaviconWidget :tab="props.tab" width="20px" height="20px" style="position: relative;top:-10px"/>
   </q-item-section>
+
+  <!-- name, title, url && note -->
   <q-item-section :style="itemStyle(props.tab)"
                   :data-testid="useUtils().createDataTestIdentifier('tabListElementWidget', props.tab.chromeTab.title)">
+    <!-- name or title -->
     <q-item-label>
-      <div class="q-pr-lg" style="display: inline-block;">
+      <div class="q-pr-lg cursor-pointer" style="display: inline-block;">
         {{ nameOrTitle(props.tab) }}
         <q-popup-edit :model-value="dynamicNameOrTitleModel(tab)" v-slot="scope"
                       @update:model-value="val => setCustomTitle( tab, val)">
@@ -18,7 +19,7 @@
 
       <q-badge v-if="isOpen(props.tab)"
                @click.stop="NavigationService.openOrCreateTab(props.tab.chromeTab?.url)"
-               color="primary" label="opened" outline class="q-ml-sm"
+               color="primary" label="opened" outline class="q-ml-none"
                style="position: relative;top:-5px">
         <q-tooltip class="tooltip">This tab is currently open in your browser</q-tooltip>
       </q-badge>
@@ -28,26 +29,32 @@
       </q-badge>
     </q-item-label>
 
-    <q-item-label caption class="ellipsis-2-lines cursor-pointer text-blue-10">
-      <div class="q-pr-lg" style="display: inline-block;"
+    <!-- url -->
+    <q-item-label caption class="ellipsis-2-lines text-blue-10"
+                  @mouseover="showButtonsProp = true"
+                  @mouseleave="showButtonsProp = false">
+      <div class="q-pr-lg cursor-pointer" style="display: inline-block;"
            @click.stop="NavigationService.openOrCreateTab(props.tab.chromeTab?.url )">
         {{ props.tab.chromeTab?.url }}
         <q-icon name="open_in_new"/>
-        <q-icon class="q-ml-md" name="content_copy" @click.stop="copyToClipboard(props.tab.chromeTab?.url)">
+        <q-icon v-if="showButtonsProp"
+                class="q-ml-md" name="content_copy"
+                @click.stop="copyToClipboard(props.tab.chromeTab?.url)">
           <q-tooltip class="tooltip">Copy URL to clipboard</q-tooltip>
         </q-icon>
       </div>
     </q-item-label>
 
+    <!-- note -->
     <q-item-label v-if="props.tab.note" class="text-grey-10" text-subtitle1>
       <q-icon color="blue-10" name="edit_note"/>
       {{ props.tab.note }}
     </q-item-label>
   </q-item-section>
 
+  <!-- new tab and edit note buttons -->
   <q-item-section side v-if="props.showButtons">
     <div class="row">
-
       <q-btn v-if="usePermissionsStore().hasFeature(FeatureIdent.NEW_TAB)"
              flat round color="primary" size="11px" icon="o_create_new_folder"
              @click.stop="addToNewTabUrlList(tab)">
@@ -61,9 +68,8 @@
       </q-btn>
     </div>
   </q-item-section>
-  <q-item-section side v-if="props.showButtons">
 
-  </q-item-section>
+  <!-- Delete button -->
   <q-item-section side v-if="props.showButtons">
     <q-btn flat round color="red" size="11px" icon="delete_outline" @click.stop="deleteTab(tab)">
       <q-tooltip>Delete this tab from this list</q-tooltip>
@@ -100,7 +106,9 @@ const emits = defineEmits(['sendCaption'])
 
 const $q = useQuasar()
 
-const line = ref(null);
+const line = ref(null)
+const showButtonsProp = ref<boolean>(false)
+
 
 function getShortHostname(host: string) {
   const nrOfDots = (host.match(/\./g) || []).length
@@ -132,7 +140,7 @@ const itemStyle = (tab: Tab) => {
     background = "background: radial-gradient(circle, #FFFFFF 0%, #FFECB3 100%)"
   }
   if (tab.chromeTab.url === props.highlightUrl) {
-    border = "border: 1px dotted grey; padding:2px; border-radius:5px"
+    border = "border: 1px dotted orange; padding:15px; border-radius:5px"
   }
   return `${border};${background}`
 }
@@ -169,10 +177,10 @@ const editNoteDialog = (tab: Tab) => $q.dialog({
   componentProps: {tabId: tab.id, note: tab.note}
 })
 
-const showDetails = (tab: Tab) => {
-  useUiStore().setSelectedTab(tab)
-  useUiStore().rightDrawerSetActiveTab(DrawerTabs.TAB_DETAILS)
-}
+// const showDetails = (tab: Tab) => {
+//   useUiStore().setSelectedTab(tab)
+//   useUiStore().rightDrawerSetActiveTab(DrawerTabs.TAB_DETAILS)
+// }
 
 const addToNewTabUrlList = (tab: Tab) => {
   console.log("got tab", tab)

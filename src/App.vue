@@ -25,6 +25,7 @@ import LoggingService from "src/services/LoggingService";
 import NotificationsService from "src/services/NotificationsService";
 import {useSuggestionsStore} from "src/stores/suggestionsStore";
 import SuggestionsService from "src/services/SuggestionsService";
+import {useUiStore} from "stores/uiStore";
 
 const tabsStore = useTabsStore()
 const tabGroupsStore = useTabGroupsStore()
@@ -34,6 +35,7 @@ const bookmarksStore = useBookmarksStore()
 const windowsStore = useWindowsStore()
 const searchStore = useSearchStore()
 const spacesStore = useSpacesStore()
+const uiStore = useUiStore()
 const router = useRouter()
 const route = useRoute()
 const $q = useQuasar()

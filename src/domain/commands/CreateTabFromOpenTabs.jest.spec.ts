@@ -14,7 +14,7 @@ import {useSearchStore} from "src/stores/searchStore";
  import {uid} from "quasar";
  import {SelectTabsetCommand} from "src/domain/tabsets/SelectTabset";
 
-describe('CreateTabsetCommand', () => {
+describe('CreateTabFromOpenTabs', () => {
 
   jest.setTimeout(10000)
 

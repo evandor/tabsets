@@ -44,7 +44,7 @@
       </div>
     </div>
 
-    <div class="row q-ma-sm">
+    <div class="row q-ma-sm" v-if="usePermissionsStore().hasFeature(FeatureIdent.BOOKMARKS)">
       <div class="col-5 text-caption text-bold">
         In Bookmarks:
       </div>
@@ -58,8 +58,8 @@
       <div class="col-12" v-if="hasAllUrlsPermission">
         <q-img :src="thumbnail" style="border:1px dotted grey;border-radius: 5px;" no-native-menu/>
       </div>
-      <div class="col-12" v-else-if="!inBexMode()">
-        <q-img src="thumbnail-not-available.png" style="border:1px solid grey;border-radius: 5px;" no-native-menu/>
+      <div class="col-12 bg-amber-1" v-else-if="!inBexMode()">
+        <!--        <q-img src="thumbnail-not-available.png" style="border:1px solid grey;border-radius: 5px;" no-native-menu/>-->
       </div>
       <div class="col-12" v-else>
         <q-banner rounded class="bg-yellow-1 text-black" style="border:1px solid grey;border-radius: 5px;">
@@ -92,9 +92,9 @@
         <!--          <q-tooltip>Add a note to this tab or edit it</q-tooltip>-->
         <!--        </q-btn>-->
 
-        <q-btn flat round color="primary" size="11px" icon="o_schedule" @click.stop="scheduleTab()">
-          <q-tooltip>Schedule this tab</q-tooltip>
-        </q-btn>
+        <!--        <q-btn flat round color="primary" size="11px" icon="o_schedule" @click.stop="scheduleTab()">-->
+        <!--          <q-tooltip>Schedule this tab</q-tooltip>-->
+        <!--        </q-btn>-->
 
         <q-btn v-if="usePermissionsStore().hasPermission('pageCapture')"
                @click.stop="saveTab(useUiStore().getSelectedTab)"
@@ -111,38 +111,44 @@
 
     </div>
 
-
-
-    <div class="row q-mx-md q-mt-lg">
-      <div class="col-12 text-caption text-bold">Note</div>
-    </div>
-    <div class="row q-mx-md">
-      <div class="col-12 text-caption">{{ useUiStore().getSelectedTab.note }}</div>
-    </div>
-
-
   </div>
 
-  <q-list bordered>
+  <q-separator />
+
+  <q-list>
+
+    <q-expansion-item
+      group="somegroup"
+      label="Note"
+      :default-opened="useUiStore().getSelectedTab.note !== undefined">
+      <q-card>
+        <q-card-section>
+          <div class="text-caption">
+            {{ useUiStore().getSelectedTab.note }}
+          </div>
+        </q-card-section>
+      </q-card>
+    </q-expansion-item>
+
     <q-expansion-item
       group="somegroup"
       label="Meta Data"
-      default-opened>
+      :default-opened="useUiStore().getSelectedTab.note === undefined">
       <q-card>
         <q-card-section>
-          <div class="row q-mx-md q-mt-lg">
+          <div class="row q-mx-sm q-mt-none">
             <div class="col-5 text-caption text-bold">created</div>
             <div class="col-7 text-right text-caption">{{ formatDate(useUiStore().getSelectedTab.created) }}</div>
           </div>
-          <div class="row q-mx-md">
+          <div class="row q-mx-sm">
             <div class="col-5 text-caption text-bold">changed</div>
             <div class="col-7 text-right text-caption">{{ formatDate(useUiStore().getSelectedTab.changed) }}</div>
           </div>
-          <div class="row q-mx-md">
+          <div class="row q-mx-sm">
             <div class="col-5 text-caption text-bold">last active</div>
             <div class="col-7 text-right text-caption">{{ formatDate(useUiStore().getSelectedTab.lastActive) }}</div>
           </div>
-          <div class="row q-mx-md">
+          <div class="row q-mx-sm">
             <div class="col-5 text-caption text-bold">opened</div>
             <div class="col-7 text-right text-caption">{{ useUiStore().getSelectedTab.activatedCount }}x</div>
           </div>
@@ -150,19 +156,14 @@
       </q-card>
     </q-expansion-item>
 
-    <q-separator/>
-
     <q-expansion-item group="somegroup" label="Search Index">
       <q-card>
         <q-card-section>
-          <div class="row q-mx-md q-mt-lg">
-            <div class="col-12 text-caption text-bold q-mb-sm">Search Index</div>
-          </div>
-          <div class="row q-mx-md">
+          <div class="row q-mx-sm">
             <div class="col-12 text-caption">
               <div v-for="(k,index) in searchIndex">
                 <div class="row" v-if="searchIndex.get(index)['v']">
-                  <div class="col-4 q-ml-sm">
+                  <div class="col-4 q-ml-sm text-bold">
                     {{ searchIndex.get(index)['name'] }}
                   </div>
                   <div class="col-7 ellipsis">
@@ -180,7 +181,6 @@
       </q-card>
     </q-expansion-item>
 
-    <q-separator/>
 
     <q-expansion-item v-if="useFeatureTogglesStore().isEnabled('dev')"
                       group="somegroup" label="Debug">
@@ -196,8 +196,6 @@
         </q-card-section>
       </q-card>
     </q-expansion-item>
-
-    <q-separator/>
 
   </q-list>
 
@@ -219,11 +217,12 @@ import {Tab} from "src/models/Tab";
 import {formatDistance} from "date-fns";
 import {useUtils} from "src/services/Utils";
 import NavigationService from "src/services/NavigationService";
-import {useSearchStore} from "stores/searchStore";
+import {useSearchStore} from "src/stores/searchStore";
 import VueJsonPretty from "vue-json-pretty";
 import 'vue-json-pretty/lib/styles.css';
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {SaveTabCommand} from "src/domain/tabs/SaveTab";
+import {FeatureIdent} from "src/models/AppFeature";
 
 const {inBexMode} = useUtils()
 
@@ -233,8 +232,6 @@ const router = useRouter()
 const $q = useQuasar()
 
 const hasAllUrlsPermission = ref<boolean | undefined>(false)
-
-watchEffect(() => hasAllUrlsPermission.value = usePermissionsStore().hasAllOrigins())
 
 const thumbnail = ref('')
 const content = ref('')
@@ -253,7 +250,6 @@ watchEffect(() => {
     json.value = JSON.parse(JSON.stringify(useUiStore().getSelectedTab))
   }
 })
-
 
 watchEffect(() => hasAllUrlsPermission.value = usePermissionsStore().hasAllOrigins())
 

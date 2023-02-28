@@ -44,19 +44,20 @@
         <q-item-section>&bull; Close all other tabs</q-item-section>
       </q-item>
       <q-separator/>
-      <q-item disable>
+      <q-item disable v-if="showSpecialTabsets()">
         Use special tabsets:
       </q-item>
-      <q-item v-if="existingSession"
+      <q-item v-if="usePermissionsStore().hasFeature(FeatureIdent.SESSIONS) && existingSession"
               clickable v-close-popup @click="replaceSession">
         <q-item-section>&bull; Replace existing Session...</q-item-section>
       </q-item>
-      <q-item v-else
+      <q-item v-else-if="usePermissionsStore().hasFeature(FeatureIdent.SESSIONS) && !existingSession"
               clickable v-close-popup @click="startSession">
         <q-item-section>&bull; Start a new Session...</q-item-section>
       </q-item>
-      <q-separator/>
-      <q-item clickable v-close-popup @click="router.push('/settings')">
+      <q-separator v-if="usePermissionsStore().hasFeature(FeatureIdent.SESSIONS)"/>
+      <q-item v-if="usePermissionsStore().hasFeature(FeatureIdent.SESSIONS)"
+        clickable v-close-popup @click="router.push('/settings')">
         <q-item-section>Change Settings</q-item-section>
       </q-item>
     </q-list>
@@ -77,6 +78,8 @@ import NewSessionDialog from "components/dialogues/NewSessionDialog.vue";
 import {useQuasar} from "quasar";
 import _ from "lodash"
 import {Tabset, TabsetType} from "src/models/Tabset";
+import {usePermissionsStore} from "stores/permissionsStore";
+import {FeatureIdent} from "src/models/AppFeature";
 
 const tabsStore = useTabsStore()
 const settingsStore = useSettingsStore()
@@ -120,9 +123,8 @@ const thresholdStyle = () =>
 
 const thresholdLabel = () => tabsStore.tabs.length + " open tabs"
 
-const showOpenTabs = () => {
-  useUiService().leftDrawerSetActiveTab(DrawerTabs.OPEN_TABS)
-}
+const showOpenTabs = () =>
+  useUiService().rightDrawerSetActiveTab(DrawerTabs.UNASSIGNED_TABS)
 
 watchEffect(() => {
   existingSession.value = _.filter([...tabsStore.tabsets.values()], (ts: Tabset) => ts.type === TabsetType.SESSION).length > 0
@@ -131,4 +133,5 @@ watchEffect(() => {
 const startSession = () => $q.dialog({component: NewSessionDialog, componentProps: {replaceSession: false}})
 const replaceSession = () => $q.dialog({component: NewSessionDialog, componentProps: {replaceSession: true}})
 
+const showSpecialTabsets = () => usePermissionsStore().hasFeature(FeatureIdent.SESSIONS)
 </script>

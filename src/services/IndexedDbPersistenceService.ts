@@ -19,7 +19,7 @@ import {TabLogger} from "src/logging/TabLogger";
 import {StatsEntry} from "src/models/StatsEntry";
 import {uid} from "quasar";
 import {Notification, NotificationStatus} from "src/models/Notification";
-import {Suggestion, SuggestionState} from "src/models/Suggestion";
+import {StaticSuggestionIdent, Suggestion, SuggestionState} from "src/models/Suggestion";
 
 class IndexedDbPersistenceService implements PersistenceService {
 
@@ -574,22 +574,49 @@ class IndexedDbPersistenceService implements PersistenceService {
           return this.db.add('suggestions', suggestion, suggestion.id)
             .then((res) => Promise.resolve())
         }
-        return Promise.reject("suggestion already exists")
+        console.log("suggestion already exists")
+        return Promise.resolve()
       })
      // .catch((err) => Promise.reject(err))
   }
 
+  removeSuggestion(ident: StaticSuggestionIdent): Promise<any> {
+    return this.db.delete('suggestions', ident)
+  }
 
-  ignoreSuggestion(suggestionId: string): Promise<void> {
-    console.log("ignoring suggestion", suggestionId)
+
+  setSuggestionState(suggestionId: string, state: SuggestionState): Promise<Suggestion> {
+    console.log("setting suggestion to state", suggestionId, state)
     const objectStore = this.db.transaction('suggestions', 'readwrite').objectStore('suggestions');
     return objectStore.get(suggestionId)
       .then((res: Suggestion) => {
-        res.state = SuggestionState.IGNORED
-        console.log("storing", res)
+        res.state = state
         objectStore.put(res, suggestionId)
+        return res
       })
+      .catch((err) => Promise.reject("error updating suggestion" + err))
   }
+  // ignoreSuggestion(suggestionId: string): Promise<void> {
+  //   console.log("ignoring suggestion", suggestionId)
+  //   const objectStore = this.db.transaction('suggestions', 'readwrite').objectStore('suggestions');
+  //   return objectStore.get(suggestionId)
+  //     .then((res: Suggestion) => {
+  //       res.state = SuggestionState.IGNORED
+  //       objectStore.put(res, suggestionId)
+  //     })
+  // }
+
+  // applySuggestion(suggestionId: string): Promise<Suggestion> {
+  //   console.log("applying suggestion", suggestionId)
+  //   const objectStore = this.db.transaction('suggestions', 'readwrite').objectStore('suggestions');
+  //   return objectStore.get(suggestionId)
+  //     .then((res: Suggestion) => {
+  //       res.state = SuggestionState.APPLIED
+  //       objectStore.put(res, suggestionId)
+  //       return res
+  //     })
+  //     .catch((err) => Promise.reject("error applying suggestion" + err))
+  // }
 }
 
 export default new IndexedDbPersistenceService()

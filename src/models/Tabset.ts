@@ -12,6 +12,8 @@ export enum TabsetStatus {
 export enum TabsetType {
   DEFAULT = "DEFAULT",
   SESSION = "SESSION",
+
+  BACKUP = "BACKUP",
   DYNAMIC = "DYNAMIC"
 }
 

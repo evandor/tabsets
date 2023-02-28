@@ -33,36 +33,27 @@
       </q-toolbar>
 
 
-<!--      <q-splitter-->
-<!--        v-model="splitterModel"-->
-<!--        separator-class="bg-white"-->
-<!--        horizontal-->
-<!--        class="bg-grey-1 fit"-->
-<!--        unit="px"-->
-<!--        reverse>-->
+      <q-splitter
+        v-model="splitterModel"
+        separator-class="bg-white"
+        horizontal
+        class="bg-grey-1 fit"
+        unit="px"
+        reverse>
 
-<!--        <template v-slot:before>-->
+        <template v-slot:before>
           <q-list class="q-mt-none greyBorderTop">
-
-<!--            <InfoMessageWidget-->
-<!--              v-if="tabsStore.tabsets.size > 9"-->
-<!--              :probability="0.5"-->
-<!--              ident="navigation_archiveTabsets"-->
-<!--              hint="You can click on the inventory icon to archive your tabset. It will not appear here any more, but can be restored in the settings."/>-->
-
             <NavTabsetsListWidget :tabsets="tabsets(true)"/>
-
             <q-separator v-if="tabsets(true).length > 0"/>
             <NavTabsetsListWidget :tabsets="tabsets(false)"/>
           </q-list>
-<!--        </template>-->
+        </template>
 
-<!--        <template v-slot:after v-if="permissonsStore.hasFeature('details')">-->
-<!--&lt;!&ndash;          <TabInfo v-if="notificationStore.selectedTab"/>&ndash;&gt;-->
-<!--          <TabsetInfo v-if="tabsStore.currentTabsetId"/>-->
-<!--        </template>-->
+        <template v-slot:after>
+          <NavTabsetsListWidget :tabsets="tabsetsWithTypes([TabsetType.BACKUP])"/>
+        </template>
 
-<!--      </q-splitter>-->
+      </q-splitter>
 
     </div>
   </div>
@@ -78,7 +69,7 @@ import {useTabsStore} from "src/stores/tabsStore";
 import _ from "lodash"
 import {ref} from "vue";
 import {useQuasar} from "quasar";
-import {Tabset, TabsetStatus} from "src/models/Tabset";
+import {Tabset, TabsetStatus, TabsetType} from "src/models/Tabset";
 import {useFeatureTogglesStore} from "src/stores/featureTogglesStore";
 import {useSpacesStore} from "src/stores/spacesStore";
 import NewTabsetDialog from "components/dialogues/NewTabsetDialog.vue";
@@ -100,7 +91,7 @@ const localStorage = $q.localStorage
 
 const newTabsetName = ref('')
 const merge = ref(false)
-const splitterModel = ref(permissonsStore.hasFeature(FeatureIdent.DETAILS) ? 350 : 1)
+const splitterModel = ref(100)//permissonsStore.hasFeature(FeatureIdent.DETAILS) ? 350 : 1)
 
 $q.loadingBar.setDefaults({
   color: 'green',
@@ -121,6 +112,14 @@ const tabsets = (isFavorite: boolean) => {
     ts.status !== TabsetStatus.ARCHIVED &&
     ts.status !== TabsetStatus.DELETED &&
     ts.status === (isFavorite ? TabsetStatus.FAVORITE : TabsetStatus.DEFAULT)), ['name'])
+}
+
+const tabsetsWithTypes = (types: TabsetType[]) => {
+  let tabsets = [...tabsStore.tabsets.values()]
+  return _.sortBy(
+    _.filter(tabsets, (ts: Tabset) =>
+      types.findIndex(t => ts.type === t) >= 0),
+    ['name'])
 }
 
 const onDrop = (evt: DragEvent, tabsetId: string) => {

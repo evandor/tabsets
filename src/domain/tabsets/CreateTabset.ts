@@ -4,6 +4,12 @@ import {DeleteTabsetCommand} from "src/domain/tabsets/DeleteTabset";
 import {useTabsetService} from "src/services/TabsetService2";
 import LoggingService from "src/services/LoggingService";
 import {useTabsStore} from "src/stores/tabsStore";
+import {useSuggestionsStore} from "src/stores/suggestionsStore";
+import {StaticSuggestionIdent, Suggestion, SuggestionType} from "src/models/Suggestion";
+import {uid} from "quasar";
+import {usePermissionsStore} from "src/stores/permissionsStore";
+import {FeatureIdent} from "src/models/AppFeature";
+import {useUtils} from "src/services/Utils";
 
 class UndoCreateTabsetCommand implements Command<object> {
 
@@ -32,9 +38,10 @@ export class CreateTabsetCommand implements Command<object> {
       const result = await useTabsetService()
         .saveOrReplaceFromChromeTabs(this.tabsetName, this.tabsToUse, this.merge)
         .then(res => {
-          if (useTabsStore().tabsets.size === 1) {
-           // NotificationsService.addNotification(new Notification(uid(), 'Congrats!', 'You created your first tabset'))
-            //NotificationsService.addNotification(new SharedTabsetNotification("tsid"))
+          if (useTabsStore().tabsets.size === 3 && !usePermissionsStore().hasFeature(FeatureIdent.DETAILS)) {
+            useSuggestionsStore().addSuggestion(Suggestion.getStaticSuggestion(StaticSuggestionIdent.TRY_TAB_DETAILS_FEATURE))
+          } else if (useTabsStore().tabsets.size === 5 && !usePermissionsStore().hasFeature(FeatureIdent.BOOKMARKS) && process.env.MODE === 'bex') {
+            useSuggestionsStore().addSuggestion(Suggestion.getStaticSuggestion(StaticSuggestionIdent.TRY_BOOKMARKS_FEATURE))
           }
           return res
         })

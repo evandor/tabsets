@@ -2,6 +2,10 @@ import {defineStore} from 'pinia';
 import {computed, ref, watch} from "vue";
 import {useQuasar} from "quasar";
 import {FeatureIdent} from "src/models/AppFeature";
+import {useSuggestionsStore} from "src/stores/suggestionsStore";
+import {StaticSuggestionIdent} from "src/models/Suggestion";
+import {CreateSpecialTabsetCommand, SpecialTabsetIdent} from "src/domain/tabsets/CreateSpecialTabset";
+import {TabsetType} from "src/models/Tabset";
 
 
 export const usePermissionsStore = defineStore('permissions', () => {
@@ -86,6 +90,13 @@ export const usePermissionsStore = defineStore('permissions', () => {
     return (feature: string): void => {
       if (activeFeatures.value.indexOf(feature) < 0) {
         activeFeatures.value.push(feature)
+        if (FeatureIdent.DETAILS.toLowerCase() === feature) {
+          useSuggestionsStore().removeSuggestion(StaticSuggestionIdent.TRY_TAB_DETAILS_FEATURE)
+        }
+        else if (FeatureIdent.BACKUP.toLowerCase() === feature) {
+          //useSuggestionsStore().removeSuggestion(StaticSuggestionIdent.TRY_TAB_DETAILS_FEATURE)
+          new CreateSpecialTabsetCommand(SpecialTabsetIdent.BACKUP, TabsetType.BACKUP).execute()
+        }
       }
     }
   })

@@ -18,7 +18,7 @@
     </div>
   </div>
 
-  <div v-if="showStartingHint()"
+  <div v-if="showStartingHint() && inBexMode()"
        class="q-ma-sm bg-white text-grey" style="border: 1px dotted grey; border-radius: 3px">
     <div class="q-pa-sm">
       <div class="col text-caption">And now? Just open new tabs in your browser (and come back here to organize them in tabsets)</div>
@@ -37,7 +37,7 @@
     ident="unassignedAndOpenTabs_userCannotSelect"
     hint="Tabs with grey background are already contained in the current tabset."/>
 
-  <div v-if="tabsStore.currentTabsetId && unassignedTabs().length > 0 && userCanSelect"
+  <div v-if="tabsStore.currentTabsetId && unassignedTabs().length > 1 && userCanSelect"
        class="q-ma-xs" style="border: 1px dotted grey; border-radius: 3px">
     <div class="row">
       <div class="col-6 q-pa-xs">
@@ -117,10 +117,12 @@ import {useCommandExecutor} from "src/services/CommandExecutor";
 import {SavePendingTabToCurrentTabsetCommand} from "src/domain/commands/SavePendingTabToCurrentTabsetCommand";
 import {useTabsetService} from "src/services/TabsetService2";
 import InfoMessageWidget from "components/widgets/InfoMessageWidget.vue";
+import {useRoute} from "vue-router";
 
 const {inBexMode} = useUtils()
 
 const tabsStore = useTabsStore()
+const route = useRoute()
 const $q = useQuasar()
 
 const useSelection = ref(false)
@@ -194,21 +196,19 @@ const showMissingSomeTabsAction = () => {
   if (process.env.MODE !== 'bex') {
     return false
   }
+  if (route?.query?.first) {
+    return false
+  }
   if ((!tabsStore.pendingTabset || tabsStore.pendingTabset.tabs.length === 0) && tabsStore.tabs.length > 1) {
     return true
   }
   return false
 }
 
-const showStartingHint = () => !showMissingSomeTabsAction() && tabsStore.tabs.length <= 1
+const showStartingHint = () => !showMissingSomeTabsAction() && tabsStore.pendingTabset?.tabs.length <= 1
 
 const saveSelectedTabs = () => {
-  //useCommandExecutor().executeFromUi(new SavePendingTabToCurrentTabsetCommand(tab))
   TabsetService.saveSelectedPendingTabs()
-}
-const removeSelectedTabs = () => {
-  //useCommandExecutor().executeFromUi(new SavePendingTabToCurrentTabsetCommand(tab))
-  //TabsetService.saveSelectedPendingTabs()
 }
 
 const toggleInvert = (invert: boolean) => {
@@ -219,7 +219,6 @@ const toggleInvert = (invert: boolean) => {
     }
   })
 }
-
 
 const addOpenTabs = () => {
   if (process.env.MODE !== 'bex') {

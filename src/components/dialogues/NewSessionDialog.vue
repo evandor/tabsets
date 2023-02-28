@@ -95,7 +95,7 @@ const createNewTabset = () => {
   const tabsToUse = addAutomatically.value ? tabsStore.tabs : []
 
   useCommandExecutor()
-    .executeFromUi(new CreateSessionCommand(newTabsetName.value, tabsToUse, props.replaceSession))
+    .executeFromUi(new CreateSessionCommand(newTabsetName.value, tabsToUse))
     .then(() => {
       if (!addAutomatically.value) {
         TabsetService.createPendingFromBrowserTabs()

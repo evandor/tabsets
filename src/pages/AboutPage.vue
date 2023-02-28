@@ -30,7 +30,7 @@
       <div class="text-body1 q-ma-md" v-else>
         is a browser extension which helps you organize your links. As simple as that.<br><br>
         You are managing <b>{{ tabsStore.allTabsCount }} tabs</b> in <b>{{ tabsStore.tabsets.size }} Tabset(s)</b>
-        already - and can access <b>{{ bookmarksStore.bookmarksLeaves.length }} bookmarks</b> of yours.
+        already <!-- - and can access <b>{{ bookmarksStore.bookmarksLeaves.length }} bookmarks</b> of yours. -->
       </div>
 
 

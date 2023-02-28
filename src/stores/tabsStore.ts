@@ -9,6 +9,7 @@ import {useTabGroupsStore} from "src/stores/tabGroupsStore";
 import {Group} from "src/models/Group";
 import {useSpacesStore} from "src/stores/spacesStore";
 import LoggingService from "src/services/LoggingService";
+import {SpecialTabsetIdent} from "src/domain/tabsets/CreateSpecialTabset";
 
 async function queryTabs(): Promise<chrome.tabs.Tab[]> {
   // @ts-ignore
@@ -60,6 +61,11 @@ export const useTabsStore = defineStore('tabs', {
      * tabs the extension should ignore
      */
     ignoredTabset: null as unknown as Tabset,
+
+    /**
+     * tabs to revisit later (will be available in all spaces)
+     */
+    backupTabset: null as unknown as Tabset,
 
     // which tabset should be shown in the extension?
     currentTabsetId: null as unknown as string,
@@ -228,6 +234,9 @@ export const useTabsStore = defineStore('tabs', {
       this.pendingTabset = new Tabset("pending", "pending", [], [])
 
       this.ignoredTabset = new Tabset("ignored", "ignored", [], [])
+
+     // this.backupTabset = new Tabset("backup", "backup", [], [])
+
     },
 
     async loadTabs(eventName: string) {
@@ -325,6 +334,21 @@ export const useTabsStore = defineStore('tabs', {
 
       LoggingService.logger.debug("--- updateOrCreateTabset end -------------")
       return new NewOrReplacedTabset(foundTS !== undefined, ts)
+    },
+
+    getOrCreateSpecialTabset(ident: SpecialTabsetIdent, type: TabsetType): Tabset {
+      LoggingService.logger.debug("--- getOrCreateSpecialTabset start -------------")
+      const foundTS: Tabset | undefined = _.find([...this.tabsets.values()], ts => ts.id === ident.toString())
+      let ts: Tabset = null as unknown as Tabset
+      if (foundTS) {
+        ts = foundTS
+      } else {
+        const id = ident.toString()
+        ts = new Tabset(id, id, [])
+        this.tabsets.set(id, ts)
+      }
+      ts.type = type
+      return ts
     },
 
     deleteTabset(tabsetId: string) {

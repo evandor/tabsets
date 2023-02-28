@@ -51,6 +51,7 @@
 
     <div class="col-12 q-my-md">
       <div>{{ text.get(feature)?.description }}</div>
+      <div v-if="hasFeature()" class="text-primary q-mt-md">{{ text.get(feature)?.activatedMsg }}</div>
     </div>
 
     <div class="col-12 q-my-md" v-if="text.get(feature)?.img">
@@ -64,7 +65,7 @@
     </div>
 
     <div class="col-12 q-my-md">
-      <div> permissionText(text.get(feature))</div>
+      <div> {{ permissionText(text.get(feature)) }}</div>
     </div>
 
   </div>
@@ -119,7 +120,8 @@ text.set(FeatureIdent.BOOKMARKS.toLowerCase(), {
 text.set(FeatureIdent.DETAILS.toLowerCase(), {
   name: 'Tab and Tabset Details',
   img: 'details.png',
-  description: 'Click on the info icon to get more details about the selected tab',
+  description: 'When clicking on a tab, a detail view will open providing you with meta information about the tab.',
+  activatedMsg: 'Now open a tabset and select a tab by clicking somewhere outside of the text',
   permissions: []
 })
 text.set(FeatureIdent.SIDEBAR.toLowerCase(), {
@@ -204,6 +206,13 @@ text.set(FeatureIdent.SESSIONS.toLowerCase(), {
 //   description: 'Some Browsers can groups tabs to help you organize them. Activate this feature to use groups and pinned tabs inside this extension',
 //   permissions: []
 // })
+text.set(FeatureIdent.BACKUP.toLowerCase(), {
+  experimental: true,
+  name: 'Backup Tabset',
+  description: 'Simply get rid of all open tabs by assigning them to this special tabset - a backup tabset which you can revisit later for proper assignment',
+  permissions: []
+})
+
 
 text.set(FeatureIdent.SPACES.toLowerCase(), {
   experimental: true,
@@ -229,6 +238,7 @@ text.set(FeatureIdent.OLD_TABS.toLowerCase(), {
   description: 'Get a list of old tabs to decide which ones to keep.',
   permissions: []
 })
+
 
 watchEffect(() => {
     feature.value = route.params.feature as string
@@ -266,7 +276,6 @@ const grant = (ident: string) => {
   if (appFeature.value && appFeature.value.activateCommand) {
     useCommandExecutor().execute(appFeature.value.activateCommand)
       .then((executionResult: ExecutionResult<any>) => {
-        console.log("exres", executionResult)
         if (executionResult.result) {
           permissionsStore.activateFeature(ident)
         }

@@ -22,6 +22,7 @@ export enum FeatureIdent {
   WINDOWS = "WINDOWS",
   SCHEDULED = "SCHEDULED",
   OLD_TABS = "OLD_TABS",
+  BACKUP = "BACKUP",
 
 }
 
@@ -48,7 +49,7 @@ export class AppFeature {
     public useIn: string[],
   ) {
     this.activateCommand = new ActivateFeatureCommand(this)
-    this.activateCommand = new DeactivateFeatureCommand(this)
+    this.deactivateCommand = new DeactivateFeatureCommand(this)
   }
 
   setActivateCommand(cmd: Command<any>): AppFeature {

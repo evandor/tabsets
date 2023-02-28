@@ -89,6 +89,7 @@
         <span v-if="useSuggestionsStore().getSuggestions().length > 0">
           <q-btn
             flat
+            :color="dependingOnStates()"
             name="rss" icon="o_assistant">
             <q-tooltip class="tooltip" anchor="center right" self="center left" :delay="200">You have suggestions
             </q-tooltip>
@@ -99,7 +100,7 @@
               <q-item clickable v-close-popup v-ripple @click="suggestionDialog(s)"
                       v-for="s in useSuggestionsStore().getSuggestions()">
                 <q-item-section avatar>
-                  <q-icon color="primary" name="rss_feed"/>
+                  <q-icon color="primary" :name="s.img ? s.img : 'rss_feed'"/>
                 </q-item-section>
                 <q-item-section>
                   <div>{{ s.title }}</div>
@@ -196,6 +197,9 @@
               <q-item clickable @click="showExportDialog" v-close-popup>
                 Export Tabsets
               </q-item>
+              <q-item clickable @click="router.push('/about')" v-close-popup>
+                About Tabsets
+              </q-item>
             </q-list>
           </q-menu>
         </div>
@@ -240,10 +244,9 @@
 
 <script setup lang="ts">
 import {ref, watchEffect} from 'vue';
-import {useQuasar} from "quasar";
+import {useMeta, useQuasar} from "quasar";
 import {useTabsStore} from "src/stores/tabsStore";
 import {useRoute, useRouter} from "vue-router";
-import {useMeta} from 'quasar'
 import {useNotificationsStore} from "src/stores/notificationsStore";
 import Navigation from "src/components/Navigation.vue"
 import NavigationService from "src/services/NavigationService"
@@ -264,7 +267,7 @@ import {useUtils} from "src/services/Utils";
 import DrawerRight from "components/DrawerRight.vue";
 import ExportDialog from "components/dialogues/ExportDialog.vue";
 import ImportDialog from "components/dialogues/ImportDialog.vue";
-import {Suggestion} from "src/models/Suggestion";
+import {Suggestion, SuggestionState} from "src/models/Suggestion";
 import SuggestionDialog from "components/dialogues/SuggestionDialog.vue";
 import {useSuggestionsStore} from "src/stores/suggestionsStore";
 import {FeatureIdent} from "src/models/AppFeature";
@@ -369,5 +372,8 @@ const suggestionDialog = (s: Suggestion) => $q.dialog({
     suggestion: s
   }
 })
+
+const dependingOnStates = () =>
+  _.find(useSuggestionsStore().getSuggestions(),s => s.state === SuggestionState.NEW) ? 'warning' : 'white'
 
 </script>

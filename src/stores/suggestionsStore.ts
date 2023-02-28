@@ -1,8 +1,6 @@
 import {defineStore} from 'pinia';
-import {computed, ref, watch} from "vue";
-import {useQuasar} from "quasar";
-import {useRoute} from "vue-router";
-import {Suggestion, SuggestionState} from "src/models/Suggestion";
+import {computed, ref} from "vue";
+import {StaticSuggestionIdent, Suggestion, SuggestionState} from "src/models/Suggestion";
 import {useDB} from "src/services/usePersistenceService";
 import _ from "lodash";
 
@@ -25,24 +23,41 @@ export const useSuggestionsStore = defineStore('suggestions', () => {
       })
   }
 
-  function addSuggestion(s: Suggestion) {
-    localDb.addSuggestion(s)
-      .then(() => suggestions.value.push(s))
+  function addSuggestion(s: Suggestion | undefined) {
+    if (s) {
+      localDb.addSuggestion(s)
+        .then(() => suggestions.value.push(s))
+    }
+  }
+
+  function removeSuggestion(ident: StaticSuggestionIdent) {
+    // console.log("removing suggestion if exists: ", ident)
+    localDb.removeSuggestion(ident)
+      .then(() => suggestions.value = _.filter(suggestions.value, s => s.id !== ident))
+  }
+
+  function cancelSuggestion(id: string): Promise<void> {
+    return localDb.setSuggestionState(id, SuggestionState.CANCELED)
+      .then((res) => loadSuggestionsFromDb())
   }
 
   function ignoreSuggestion(id: string): Promise<void> {
-    return localDb.ignoreSuggestion(id)
+    return localDb.setSuggestionState(id, SuggestionState.IGNORED)
       .then((res) => loadSuggestionsFromDb())
   }
 
-  function applySuggestion(id: string): Promise<void> {
-    return localDb.ignoreSuggestion(id)
-      .then((res) => loadSuggestionsFromDb())
+  function applySuggestion(id: string): Promise<Suggestion> {
+    return localDb.setSuggestionState(id, SuggestionState.APPLIED)
+      .then((res) => {
+        loadSuggestionsFromDb();
+        return res
+      })
+
   }
 
   const getSuggestions = computed(() => {
     return () => _.filter(suggestions.value,
-      (s: Suggestion) => s.state === SuggestionState.NEW)
+      (s: Suggestion) => s.state === SuggestionState.NEW || s.state === SuggestionState.CANCELED)
   })
 
 
@@ -51,6 +66,8 @@ export const useSuggestionsStore = defineStore('suggestions', () => {
     addSuggestion,
     getSuggestions,
     ignoreSuggestion,
+    cancelSuggestion,
+    removeSuggestion,
     applySuggestion
   }
 

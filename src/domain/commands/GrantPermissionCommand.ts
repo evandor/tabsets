@@ -5,6 +5,8 @@ import {RevokePermissionCommand} from "src/domain/commands/RevokePermissionComma
 import {useBookmarksStore} from "src/stores/bookmarksStore";
 import ChromeBookmarkListeners from "src/services/ChromeBookmarkListeners";
 import TabsetService from "src/services/TabsetService";
+import {useSuggestionsStore} from "src/stores/suggestionsStore";
+import {StaticSuggestionIdent} from "src/models/Suggestion";
 
 
 class UndoCommand implements Command<boolean> {
@@ -36,6 +38,7 @@ export class GrantPermissionCommand implements Command<boolean> {
                 TabsetService.init()
                 ChromeBookmarkListeners.initListeners()
               })
+            useSuggestionsStore().removeSuggestion(StaticSuggestionIdent.TRY_BOOKMARKS_FEATURE)
           } else if ("history" === this.permission) {
             usePermissionsStore().activateFeature('history')
           }

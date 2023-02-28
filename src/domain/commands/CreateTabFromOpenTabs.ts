@@ -9,6 +9,7 @@ import {DeleteTabCommand} from "src/domain/commands/DeleteTabCommand";
 import {TabLogger} from "src/logging/TabLogger";
 import {useSearchStore} from "src/stores/searchStore";
 import {uid} from "quasar";
+import {useUiStore} from "src/stores/uiStore";
 
 const {saveCurrentTabset} = useTabsetService()
 
@@ -87,6 +88,8 @@ export class CreateTabFromOpenTabsCommand implements Command<any> {
       TabsetService.saveToCurrentTabset(this.tab, useIndex)
         .then((res) => {
           if (this.tab.chromeTab.url) {
+            useUiStore().clearHighlights()
+            useUiStore().addHighlight(this.tab.chromeTab.url)
             // useSearchStore().update(this.tab.chromeTab.url, 'name', this.newName)
             useSearchStore().addToIndex(uid(), "", this.tab.chromeTab.title || '',
               this.tab.chromeTab.url, "","",[tabsStore.currentTabsetId], this.tab.chromeTab.favIconUrl || '')

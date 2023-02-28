@@ -464,7 +464,5 @@ const simulateNewVersion = (version: string) => NavigationService.updateAvailabl
 
 const restoreHints = () => useUiStore().restoreHints()
 
-console.log("'chooseFileSystemEntries' in window", 'chooseFileSystemEntries' in window)
-console.log("'showOpenFilePicker' in window", 'showOpenFilePicker' in window)
 </script>
 

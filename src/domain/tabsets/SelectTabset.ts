@@ -4,6 +4,7 @@ import {useTabsStore} from "src/stores/tabsStore";
 import _ from "lodash"
 import {Tab} from "src/models/Tab";
 import {useNotificationsStore} from "src/stores/notificationsStore";
+import {useUiStore} from "src/stores/uiStore";
 
 
 export class SelectTabsetCommand implements Command<object> {
@@ -23,6 +24,8 @@ export class SelectTabsetCommand implements Command<object> {
       _.forEach(currentTabset.tabs, (t: Tab) => t.selected = false)
     }
     useNotificationsStore().setSelectedTab(null as unknown as Tab)
+
+    useUiStore().clearHighlights()
 
     tabsStore.currentTabsetId = this.tabsetId;
     localStorage.setItem("selectedTabset", this.tabsetId)

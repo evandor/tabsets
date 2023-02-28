@@ -1,9 +1,9 @@
 import {defineStore} from 'pinia';
 import {computed, ref, watch} from "vue";
-import {useQuasar} from "quasar";
 import {useRoute} from "vue-router";
 import {Tab} from "src/models/Tab";
 import _ from "lodash"
+import {LocalStorage} from "quasar";
 
 
 export enum LeftDrawerState {
@@ -43,17 +43,16 @@ export class RightDrawer {
 
 export const useUiStore = defineStore('ui', () => {
 
-  const $q = useQuasar()
 
-  const leftDrawer = ref<LeftDrawer>($q.localStorage.getItem('ui.leftDrawer') || new LeftDrawer(LeftDrawerState.SMALL))
-  const leftDrawerLabelAnimated = ref(false)
+ // const leftDrawer = ref<LeftDrawer>($q.LocalStorage.getItem('ui.leftDrawer') || new LeftDrawer(LeftDrawerState.SMALL))
+ // const leftDrawerLabelAnimated = ref(false)
 
   const selectedTab = ref<Tab | undefined>(undefined)
 
   let rightDrawer = ref<RightDrawer>(new RightDrawer())
   let rightDrawerViewStack = ref<DrawerTabs[]>([DrawerTabs.UNASSIGNED_TABS])
 
-  const rightDrawerFromStorage: RightDrawer | null = $q.localStorage.getItem('ui.rightDrawer')
+  const rightDrawerFromStorage: RightDrawer | null = LocalStorage.getItem('ui.rightDrawer') as unknown as RightDrawer
   if (rightDrawerFromStorage !== null) {
    // console.log("got", rightDrawerFromStorage)
     if (rightDrawerFromStorage.activeTab !== DrawerTabs.TAB_DETAILS) {
@@ -64,7 +63,7 @@ export const useUiStore = defineStore('ui', () => {
     }
   }
 
-  const newTabsetEmptyByDefault = ref<boolean>($q.localStorage.getItem('ui.newTabsetEmptyByDefault') as boolean || false)
+  const newTabsetEmptyByDefault = ref<boolean>(LocalStorage.getItem('ui.newTabsetEmptyByDefault') as unknown as boolean || false)
   const tabBeingDragged = ref<string | undefined>(undefined)
   const dragEvent = ref<DragEvent | undefined>(undefined)
   const footerInfo = ref<string | undefined>(undefined)
@@ -72,36 +71,39 @@ export const useUiStore = defineStore('ui', () => {
   const contentCount = ref<number>(0)
 
   // info Messages
-  const hiddenMessages = ref<string[]>($q.localStorage.getItem('ui.hiddenInfoMessages') as string[] || [])
+  const hiddenMessages = ref<string[]>(LocalStorage.getItem('ui.hiddenInfoMessages') as unknown as string[] || [])
   const messageAlreadyShown = ref<string | undefined>(undefined)
   const openTabMatchesTabsetTabs = ref(false)
 
-  // new tab feature
-  const newTabUrlList = ref<object[]>($q.localStorage.getItem('ui.newTabUrlList') as object[] || [])
+  // highlight url(s) feature
+  const highlightUrls = ref<string[]>([])
 
-  watch(leftDrawer.value, (val: Object) => {
-    $q.localStorage.set("ui.leftDrawer", val)
-  }, {deep: true})
+  // new tab feature
+  const newTabUrlList = ref<object[]>(LocalStorage.getItem('ui.newTabUrlList') as unknown as object[] || [])
+
+  // watch(leftDrawer.value, (val: Object) => {
+  //   $q.LocalStorage.set("ui.leftDrawer", val)
+  // }, {deep: true})
 
   watch(rightDrawer.value, (val: Object) => {
-    $q.localStorage.set("ui.rightDrawer", val)
+    LocalStorage.set("ui.rightDrawer", val)
   }, {deep: true})
 
   watch(newTabsetEmptyByDefault,
     (val: Object) => {
-      $q.localStorage.set("ui.newTabsetEmptyByDefault", val)
+      LocalStorage.set("ui.newTabsetEmptyByDefault", val)
     })
 
   watch(newTabUrlList,
     (val: object[]) => {
       console.log("newTabUrlList", val)
-      $q.localStorage.set("ui.newTabUrlList", val)
+      LocalStorage.set("ui.newTabUrlList", val)
     })
 
   watch(newTabUrlList.value,
     (val: object[]) => {
       console.log("val", val)
-      $q.localStorage.set("ui.newTabUrlList", val)
+      LocalStorage.set("ui.newTabUrlList", val)
     })
 
   const route = useRoute()
@@ -113,17 +115,17 @@ export const useUiStore = defineStore('ui', () => {
   watch(
     hiddenMessages,
     (thresholdsVal: Object) => {
-      $q.localStorage.set("ui.hiddenInfoMessages", thresholdsVal)
+      LocalStorage.set("ui.hiddenInfoMessages", thresholdsVal)
     }, {deep: true}
   )
 
-  const leftDrawerLabelIsAnimated = computed(() => {
-    return () => leftDrawerLabelAnimated.value
-  })
-
-  function setLeftDrawerLabelAnimated(animated: boolean) {
-    leftDrawerLabelAnimated.value = animated
-  }
+  // const leftDrawerLabelIsAnimated = computed(() => {
+  //   return () => leftDrawerLabelAnimated.value
+  // })
+  //
+  // function setLeftDrawerLabelAnimated(animated: boolean) {
+  //   leftDrawerLabelAnimated.value = animated
+  // }
 
   function draggingTab(tabId: string, evt: DragEvent) {
     tabBeingDragged.value = tabId
@@ -221,10 +223,18 @@ export const useUiStore = defineStore('ui', () => {
     return selectedTab.value
   })
 
+  // highlight url(s) feature
+  function clearHighlights() {
+    highlightUrls.value = []
+  }
+
+  function addHighlight(url: string) {
+    highlightUrls.value.push(url)
+  }
+
+  const getHighlightUrls = computed(() => highlightUrls.value)
+
   return {
-    leftDrawer,
-    leftDrawerLabelIsAnimated,
-    setLeftDrawerLabelAnimated,
     rightDrawer,
     rightDrawerSetLastView,
     rightDrawerViewStack,
@@ -244,6 +254,9 @@ export const useUiStore = defineStore('ui', () => {
     getSelectedTab,
     newTabUrlList,
     addToNewTabUrlList,
-    removeNewTabUrl
+    removeNewTabUrl,
+    clearHighlights,
+    addHighlight,
+    getHighlightUrls
   }
 })

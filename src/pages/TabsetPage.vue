@@ -270,6 +270,7 @@ import {useUtils} from "src/services/Utils";
 import TabTable from "components/layouts/TabTable.vue";
 import {FeatureIdent} from "src/models/AppFeature";
 import TabsExporter from "components/layouts/TabsExporter.vue";
+import {useUiStore} from "src/stores/uiStore";
 
 const route = useRoute();
 const router = useRouter();
@@ -312,10 +313,21 @@ watchEffect(() => {
   const highlight = route?.query['highlight'] as unknown as string
   if (highlight && highlight.length > 0) {
     try {
-      highlightUrl.value = atob(highlight)
+      // highlightUrl.value = atob(highlight)
+      useUiStore().addHighlight(atob(highlight))
     } catch (e: any) {
       console.error("highlight error", e)
     }
+  }
+})
+
+watchEffect(() => {
+  const highlightUrls: string[] = useUiStore().getHighlightUrls
+  if (highlightUrls.length > 0) {
+    console.log("found hightligh", highlightUrls)
+    highlightUrl.value = highlightUrls[0]
+  } else {
+    highlightUrl.value = ''
   }
 })
 
