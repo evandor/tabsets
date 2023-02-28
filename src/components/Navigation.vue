@@ -109,6 +109,7 @@ const tabsets = (isFavorite: boolean) => {
     }
   }
   return _.sortBy(_.filter(tabsets, (ts: Tabset) =>
+    ts.type !== TabsetType.BACKUP &&
     ts.status !== TabsetStatus.ARCHIVED &&
     ts.status !== TabsetStatus.DELETED &&
     ts.status === (isFavorite ? TabsetStatus.FAVORITE : TabsetStatus.DEFAULT)), ['name'])

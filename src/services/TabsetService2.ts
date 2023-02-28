@@ -66,6 +66,7 @@ export function useTabsetService() {
     }
   }
 
+  // @ts-ignore
   const getOrCreateSpecialTabset = async (ident: SpecialTabsetIdent, type: TabsetType): Tabset => {
     const result: Tabset = await useTabsStore().getOrCreateSpecialTabset(ident, type)
     await saveTabset(result)
