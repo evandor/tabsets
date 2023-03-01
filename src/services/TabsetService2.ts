@@ -16,13 +16,18 @@ import {useDB} from "src/services/usePersistenceService";
 import {TabLogger} from "src/logging/TabLogger";
 import LoggingService from "src/services/LoggingService";
 import {SpecialTabsetIdent} from "src/domain/tabsets/CreateSpecialTabset";
-import {usePermissionsStore} from "stores/permissionsStore";
-import {FeatureIdent} from "src/models/AppFeature";
 
 const {db} = useDB()
 
 export function useTabsetService() {
 
+  const init = async (doNotInitSearchIndex: boolean = false) => {
+    console.debug("initializing tabsetService2")
+    await db.loadTabsets()
+    if (!doNotInitSearchIndex) {
+      useSearchStore().populate(db.getContents())
+    }
+  }
 
   /**
    * Will create a new tabset (or update an existing one with matching name) from
@@ -430,6 +435,7 @@ export function useTabsetService() {
   }
 
   return {
+    init,
     saveOrReplaceFromChromeTabs,
     saveOrReplaceFromBookmarks,
     deleteFromTabset,

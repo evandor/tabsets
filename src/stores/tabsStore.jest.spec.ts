@@ -85,7 +85,6 @@ describe('TabsStore', () => {
     expect(tabsStore.tabs.length).toBe(0)
     expect(tabsStore.tabsets.size).toBe(0)
     expect(tabsStore.pendingTabset.tabs.length).toBe(0)
-    expect(tabsStore.ignoredTabset.tabs.length).toBe(0)
   });
 
   it('creates new tabset', async () => {

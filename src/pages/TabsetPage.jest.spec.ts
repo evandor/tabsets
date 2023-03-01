@@ -13,7 +13,7 @@ import {useSearchStore} from "src/stores/searchStore";
 import {installQuasarPlugin} from "@quasar/quasar-app-extension-testing-unit-jest";
 import {Dialog} from "quasar";
 import TabsetPage from "pages/TabsetPage.vue";
-import {mount, shallowMount} from "@vue/test-utils";
+import {shallowMount} from "@vue/test-utils";
 
 installQuasarPlugin({plugins: {Dialog}});
 

@@ -12,6 +12,8 @@ import {useTabsetService} from "src/services/TabsetService2";
 const {getTabset, getCurrentTabset, saveTabset, saveCurrentTabset, tabsetsFor, saveToTabset} = useTabsetService()
 
 import {useDB} from "src/services/usePersistenceService";
+import LoggingService from "src/services/LoggingService";
+import {TabLogger} from "src/logging/TabLogger";
 
 const {db} = useDB()
 
@@ -26,13 +28,13 @@ class TabsetService {
   /**
    * Init, called when extension is loaded (via App.vue)
    */
-  async init(doNotInitSearchIndex: boolean = false) {
-    console.debug("initializing tabsetService")
-    await db.loadTabsets()
-    if (!doNotInitSearchIndex) {
-      useSearchStore().populate(db.getContents())
-    }
-  }
+  // async init(doNotInitSearchIndex: boolean = false) {
+  //   console.debug("initializing tabsetService")
+  //   await db.loadTabsets()
+  //   if (!doNotInitSearchIndex) {
+  //     useSearchStore().populate(db.getContents())
+  //   }
+  // }
 
 
   async restore(tabsetId: string, closeOldTabs: boolean = true) {
@@ -250,12 +252,12 @@ class TabsetService {
     return Promise.reject("could not find tab " + tabId)
   }
 
-  ignoreTab(tab: Tab) {
-    const tabsStore = useTabsStore()
-    tabsStore.ignoredTabset.tabs.push(tab)
-    const ignoredTS: Tabset = tabsStore.ignoredTabset as Tabset
-    saveTabset(ignoredTS)
-  }
+  // ignoreTab(tab: Tab) {
+  //   const tabsStore = useTabsStore()
+  //   tabsStore.ignoredTabset.tabs.push(tab)
+  //   const ignoredTS: Tabset = tabsStore.ignoredTabset as Tabset
+  //   saveTabset(ignoredTS)
+  // }
 
   exportData(exportAs: string, appVersion: string = "0.0.0"): Promise<any> {
     console.log("exporting as ", exportAs)

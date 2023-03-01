@@ -10,7 +10,7 @@ import {Group} from "src/models/Group";
 import {useSpacesStore} from "src/stores/spacesStore";
 import LoggingService from "src/services/LoggingService";
 import {SpecialTabsetIdent} from "src/domain/tabsets/CreateSpecialTabset";
-import {usePermissionsStore} from "stores/permissionsStore";
+import {usePermissionsStore} from "src/stores/permissionsStore";
 import {FeatureIdent} from "src/models/AppFeature";
 
 async function queryTabs(): Promise<chrome.tabs.Tab[]> {

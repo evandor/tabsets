@@ -85,7 +85,7 @@ import NewSessionDialog from "components/dialogues/NewSessionDialog.vue";
 import {useQuasar} from "quasar";
 import _ from "lodash"
 import {Tabset, TabsetType} from "src/models/Tabset";
-import {usePermissionsStore} from "stores/permissionsStore";
+import {usePermissionsStore} from "src/stores/permissionsStore";
 import {FeatureIdent} from "src/models/AppFeature";
 import BackupAndCloseDialog from "components/dialogues/BackupAndCloseDialog.vue";
 

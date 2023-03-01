@@ -42,7 +42,7 @@ import normalizeUrl from 'normalize-url';
 import {Tab} from "src/models/Tab";
 import ChromeApi from "src/services/ChromeApi";
 import {useUtils} from "src/services/Utils";
-import {useUiStore} from "stores/uiStore";
+import {useUiStore} from "src/stores/uiStore";
 
 defineEmits([
   ...useDialogPluginComponent.emits

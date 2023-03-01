@@ -39,6 +39,10 @@ class ChromeListeners {
   injectedScripts = new ExpiringMap<number>(10000)
 
   initListeners(isNewTabPage: boolean = false) {
+
+    if (process.env.MODE === 'bex') {
+      chrome.runtime.setUninstallURL("https://tabsets.web.app/#/uninstall")
+    }
     if (process.env.MODE === 'bex' && !isNewTabPage) {
       console.info("initializing chrome tab listeners")
 
@@ -79,6 +83,7 @@ class ChromeListeners {
 
   onCreated(tab: chrome.tabs.Tab) {
     if (!useTabsStore().listenersOn) {
+      console.debug(`onCreated: tab ${tab.id}: >>> listeners off, returning <<<`)
       return
     }
     this.eventTriggered()
@@ -117,10 +122,12 @@ class ChromeListeners {
 
   onUpdated(number: number, info: chrome.tabs.TabChangeInfo, chromeTab: chrome.tabs.Tab) {
     if (!useTabsStore().listenersOn) {
+      console.debug(`onUpdated:   tab ${number}: >>> listeners off, returning <<<`)
       return
     }
     const selfUrl = chrome.runtime.getURL("")
     if (chromeTab.url?.startsWith(selfUrl)) {
+      console.debug(`onUpdated:   tab ${number}: >>> chromeTab.url starts with '${selfUrl}' <<<`)
       return
     }
 

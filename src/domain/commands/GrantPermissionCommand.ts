@@ -4,9 +4,10 @@ import {usePermissionsStore} from "src/stores/permissionsStore";
 import {RevokePermissionCommand} from "src/domain/commands/RevokePermissionCommand";
 import {useBookmarksStore} from "src/stores/bookmarksStore";
 import ChromeBookmarkListeners from "src/services/ChromeBookmarkListeners";
-import TabsetService from "src/services/TabsetService";
+//import TabsetService from "src/services/TabsetService";
 import {useSuggestionsStore} from "src/stores/suggestionsStore";
 import {StaticSuggestionIdent} from "src/models/Suggestion";
+import {useTabsetService} from "src/services/TabsetService2";
 
 
 class UndoCommand implements Command<boolean> {
@@ -35,7 +36,8 @@ export class GrantPermissionCommand implements Command<boolean> {
             usePermissionsStore().activateFeature('bookmarks')
             useBookmarksStore().loadBookmarks()
               .then(() => {
-                TabsetService.init()
+               // TabsetService.init()
+                useTabsetService().init()
                 ChromeBookmarkListeners.initListeners()
               })
             useSuggestionsStore().removeSuggestion(StaticSuggestionIdent.TRY_BOOKMARKS_FEATURE)

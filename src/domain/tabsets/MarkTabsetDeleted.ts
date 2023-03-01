@@ -3,7 +3,7 @@ import {ExecutionResult} from "src/domain/ExecutionResult";
 import TabsetService from "src/services/TabsetService";
 import {MarkTabsetAsDefaultCommand} from "src/domain/tabsets/MarkTabsetAsDefault";
 import {TabsetType} from "src/models/Tabset";
-import {usePermissionsStore} from "stores/permissionsStore";
+import {usePermissionsStore} from "src/stores/permissionsStore";
 import {FeatureIdent} from "src/models/AppFeature";
 
 class UndoCommand implements Command<any> {

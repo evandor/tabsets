@@ -24,8 +24,8 @@ import {usePermissionsStore} from "src/stores/permissionsStore";
 import LoggingService from "src/services/LoggingService";
 import NotificationsService from "src/services/NotificationsService";
 import {useSuggestionsStore} from "src/stores/suggestionsStore";
-import SuggestionsService from "src/services/SuggestionsService";
-import {useUiStore} from "stores/uiStore";
+import {useUiStore} from "src/stores/uiStore";
+import {useTabsetService} from "src/services/TabsetService2";
 
 const tabsStore = useTabsStore()
 const tabGroupsStore = useTabGroupsStore()
@@ -84,7 +84,7 @@ if (isNewTabPage()) {
       tabsetService.setLocalStorage(localStorage)
       spacesService.init()
         .then(() => {
-          tabsetService.init(isNewTabPage())
+          useTabsetService().init(isNewTabPage())
             .then(() => {
               MHtmlService.init()
               ChromeApi.init()

@@ -121,7 +121,7 @@ import {SavePendingTabToCurrentTabsetCommand} from "src/domain/commands/SavePend
 import {useTabsetService} from "src/services/TabsetService2";
 import InfoMessageWidget from "components/widgets/InfoMessageWidget.vue";
 import {useRoute} from "vue-router";
-import {usePermissionsStore} from "stores/permissionsStore";
+import {usePermissionsStore} from "src/stores/permissionsStore";
 import {FeatureIdent} from "src/models/AppFeature";
 
 const {inBexMode} = useUtils()

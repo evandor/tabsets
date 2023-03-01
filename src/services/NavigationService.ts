@@ -52,7 +52,11 @@ class NavigationService {
   closeChromeTab(tab: Tab) {
     console.log("closing chrome tab", tab.id, tab.chromeTab?.id)
     if (tab.chromeTab?.id) {
-      chrome.tabs.remove(tab.chromeTab.id)
+      try {
+        chrome.tabs.remove(tab.chromeTab.id)
+      } catch (err) {
+        console.log("error clsosing chrome tab", err)
+      }
     }
   }
 

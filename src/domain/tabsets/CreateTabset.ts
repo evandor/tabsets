@@ -5,11 +5,9 @@ import {useTabsetService} from "src/services/TabsetService2";
 import LoggingService from "src/services/LoggingService";
 import {useTabsStore} from "src/stores/tabsStore";
 import {useSuggestionsStore} from "src/stores/suggestionsStore";
-import {StaticSuggestionIdent, Suggestion, SuggestionType} from "src/models/Suggestion";
-import {uid} from "quasar";
+import {StaticSuggestionIdent, Suggestion} from "src/models/Suggestion";
 import {usePermissionsStore} from "src/stores/permissionsStore";
 import {FeatureIdent} from "src/models/AppFeature";
-import {useUtils} from "src/services/Utils";
 
 class UndoCreateTabsetCommand implements Command<object> {
 

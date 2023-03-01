@@ -8,7 +8,7 @@
       <div class="row items-baseline">
         <div class="col-1 q-mr-md q-ml-none">
           <q-icon v-if="showAddToTabsetIcon(tab)" color="primary"
-            name="o_arrow_left" @click="addToCurrentTabset" size="2em">
+                  name="o_arrow_left" @click="addToCurrentTabset" size="2em">
             <q-tooltip class="tooltip">
               Click here to add the tab to your current tabset
             </q-tooltip>
@@ -31,7 +31,13 @@
              @mouseenter="emitInfo(tab.chromeTab?.url)"
              @mouseout="emitInfo(undefined)"
              @click="NavigationService.openOrCreateTab(tab.chromeTab?.url)">
-          <span v-if="tab.chromeTab?.discarded">*</span>&nbsp;{{ tab.chromeTab?.title }}
+          {{ tab.chromeTab?.title }}
+          <q-tooltip class="tooltip" v-if="useFeatureTogglesStore().isEnabled('dev')">
+            {{tab.chromeTab.id}} / {{tab.chromeTab.url}}
+          </q-tooltip>
+          <q-tooltip class="tooltip" v-else>
+            {{tab.chromeTab.url}}
+          </q-tooltip>
         </div>
         <div class="col-1" v-if="!props.useSelection">
           <q-icon name="close" @click="closeTab(tab)" v-if="!isSelf(tab.chromeTab.url)">
@@ -58,6 +64,7 @@ import {useCommandExecutor} from "src/services/CommandExecutor";
 import {CreateTabFromOpenTabsCommand} from "src/domain/commands/CreateTabFromOpenTabs";
 import {useTabsStore} from "src/stores/tabsStore";
 import _ from "lodash"
+import {usePermissionsStore} from "stores/permissionsStore";
 
 const featureToggles = useFeatureTogglesStore()
 
@@ -72,7 +79,7 @@ const props = defineProps({
   }
 })
 
-const emits = defineEmits(['selectionChanged','addedToTabset','hasSelectable'])
+const emits = defineEmits(['selectionChanged', 'addedToTabset', 'hasSelectable'])
 
 const tabsStore = useTabsStore()
 
