@@ -35,7 +35,7 @@ export class TabsetTestPage extends TabsetPage {
 
 
   async waitForAndGetPendingTab(ident: string) {
-    await this.page.waitForSelector('[data-testid=tabListElementWidget_'+ident+']')
-    return this.page.locator('[data-testid=tabListElementWidget_'+ident+']')
+    await this.page.waitForSelector('[data-testid=openTabCard_'+ident+']')
+    return this.page.locator('[data-testid=openTabCard_'+ident+']')
   }
 }

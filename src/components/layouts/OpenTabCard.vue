@@ -3,7 +3,9 @@
   <q-card class="tabBorder" flat
           :style="cardStyle(tab)">
 
-    <q-card-section class="q-pt-xs cursor-pointer" style="width:100%;">
+    <q-card-section class="q-pt-xs cursor-pointer"
+                    :data-testid="useUtils().createDataTestIdentifier('openTabCard', props.tab.chromeTab.url)"
+                    style="width:100%;">
 
       <div class="row items-baseline">
         <div class="col-1 q-mr-md q-ml-none">
@@ -65,6 +67,7 @@ import {CreateTabFromOpenTabsCommand} from "src/domain/commands/CreateTabFromOpe
 import {useTabsStore} from "src/stores/tabsStore";
 import _ from "lodash"
 import {usePermissionsStore} from "stores/permissionsStore";
+import {useUtils} from "src/services/Utils"
 
 const featureToggles = useFeatureTogglesStore()
 

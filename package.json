@@ -21,7 +21,7 @@
     "test:unit:watchAll": "jest --watchAll",
     "test:e2e": "npx playwright test",
     "test:e2e:showReport": "npx playwright show-report",
-    "test:specificTest": "npx playwright test addTabset",
+    "test:specificTest": "npx playwright test addTab",
     "serve:test:coverage": "quasar serve test/jest/coverage/lcov-report/ --port 8788",
     "concurrently:dev:jest": "concurrently \"quasar dev\" \"jest --watch\""
   },

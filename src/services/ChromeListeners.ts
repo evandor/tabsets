@@ -98,11 +98,14 @@ class ChromeListeners {
     const tabsStore = useTabsStore()
     const maybeTab = tabsStore.tabForUrlInSelectedTabset(tab.pendingUrl || '')
     if (maybeTab) {
+      console.log("checked", tab.pendingUrl)
       console.log(`onCreated: tab ${tab.id}: updating existing chromeTab.id: ${maybeTab.chromeTab.id} -> ${tab.id}`)
-      maybeTab.chromeTab.id = tab.id
-      maybeTab.chromeTab.windowId = tab.windowId
-      saveCurrentTabset()
-      return
+      // TODO check: this breaks an e2e test (with tab "about:blank") when activated
+      // why was this here in the first place?
+      // maybeTab.chromeTab.id = tab.id
+      // maybeTab.chromeTab.windowId = tab.windowId
+      // saveCurrentTabset()
+      // return
     }
 
     let foundSession = false
@@ -196,6 +199,8 @@ class ChromeListeners {
      // }
     } else {
       console.log(`onUpdated: tab ${tab.id}: ignoring, pending tab cannot be found in ${tabset.name}`)
+      console.log("compared with")
+      tabset?.tabs.forEach(t => console.log("t.chromeTab.id", t.chromeTab.id))
     }
   }
 
