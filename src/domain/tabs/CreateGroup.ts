@@ -39,8 +39,8 @@ export class CreateGroupCommand implements Command<any> {
     this.tabset.groups.push(group)
     return useTabsetService().saveTabset(this.tabset)
       .then((res) =>
-        Promise.resolve(new ExecutionResult("done", "Group was created")))
-      .catch(err => Promise.reject("could not rename group"))
+        Promise.resolve(new ExecutionResult("done", `Group ${trustedTitle} was created`)))
+      .catch(err => Promise.reject("could not create group"))
   }
 
 }
