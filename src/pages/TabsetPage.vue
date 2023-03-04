@@ -98,6 +98,16 @@
           <q-tooltip>Use grid layout to visualize your tabs</q-tooltip>
         </q-btn>
 
+        <q-btn v-if="usePermissionsStore().hasFeature(FeatureIdent.EXPERIMENTAL_VIEWS)"
+               @click="setView('group')"
+               style="width:14px"
+               class="q-mr-sm" size="8px"
+               :flat="tabsStore.getCurrentTabset?.view !== 'group'"
+               :outline="tabsStore.getCurrentTabset?.view === 'group'"
+               icon="view_week">
+          <q-tooltip>Use group layout to visualize your tabs</q-tooltip>
+        </q-btn>
+
         <!-- default view, no need to show if there is no alternative -->
         <q-btn v-if="permissionsStore.hasFeature(FeatureIdent.EXPERIMENTAL_VIEWS)"
                @click="setView('list')"
@@ -212,6 +222,11 @@ a tab's url starts with one of the urls of this tabset, it will be ignored and n
                 :highlightUrl="highlightUrl"
                 :tabs="unpinnedNoGroupOrAllTabs()"/>
 
+      <TabGroups v-else-if="tabsStore.getCurrentTabset?.view === 'group'"
+                group="otherTabs"
+                :highlightUrl="highlightUrl"
+                :tabs="unpinnedNoGroupOrAllTabs()"/>
+
       <TabThumbs v-else-if="tabsStore.getCurrentTabset?.view === 'thumbnails'"
                  group="otherTabs"
                  :tabs="unpinnedNoGroupOrAllTabs()"/>
@@ -284,6 +299,7 @@ import TabTable from "components/layouts/TabTable.vue";
 import {FeatureIdent} from "src/models/AppFeature";
 import TabsExporter from "components/layouts/TabsExporter.vue";
 import {useUiStore} from "src/stores/uiStore";
+import TabGroups from "components/layouts/TabGroups.vue";
 
 const route = useRoute();
 const router = useRouter();

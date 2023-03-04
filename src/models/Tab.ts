@@ -32,6 +32,8 @@ export class Tab {
   canvasTop: number
   extension: UrlExtension
 
+  groupId: string | undefined
+
   constructor(public id: string, chromeTab: chrome.tabs.Tab) {
     this.created = new Date().getTime()
     this.updated = new Date().getTime()
