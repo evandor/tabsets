@@ -32,7 +32,16 @@ describe('CreateGroupCommand', () => {
     const cmd = new CreateGroupCommand(createTabsetResult.result['tabset' as keyof object], "grouptitle;")
     const res: any = await cmd.execute()
     expect(res.message).toBe("Group grouptitle was created")
-    expect(res.undoCommand).toBe(undefined)
+    expect(res.undoCommand).not.toBe(undefined)
+  })
+
+  it('creating group can be undone', async () => {
+    const createTabsetResult = await new CreateTabsetCommand('emptyTabsetId', []).execute()
+    const cmd = new CreateGroupCommand(createTabsetResult.result['tabset' as keyof object], "group2undo")
+    const res: any = await cmd.execute()
+    const undoRes = await  res.undoCommand.execute()
+    expect(undoRes.message).toBe("Group was deleted again")
+    expect(undoRes.undoCommand).toBe(undefined)
   })
 
   it('does not create group with identical name', async () => {

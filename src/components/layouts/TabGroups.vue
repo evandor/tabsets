@@ -84,7 +84,8 @@
             @dragend="stopDrag($event, tab)"
             :key="props.group + '_' + tab.id">
 
-            <TabListElementWidget :showButtons="showButtonsProp.get(tab.id)"
+            <TabListElementWidget :showButtons="false"
+                                  :showIsOpened="false"
                                   :key="props.group + '__' + tab.id"
                                   :tab="tabAsTab(tab)"
                                   :highlightUrl="highlightUrl"/>
@@ -148,9 +149,14 @@ const props = defineProps({
 const tabsetGroups = ref<Group[]>(tabsStore.getCurrentTabset?.groups || [])
 
 watchEffect(() => {
-  if (tabsStore.getCurrentTabset?.groups && tabsStore.getCurrentTabset.groups.length === 0) {
-    tabsetGroups.value.push(new Group("foralltabswithoutgroup", "no group"))
+  //console.log("watching!", tabsStore.getCurrentTabset?.groups)
+  if (tabsStore.getCurrentTabset?.groups) {
+    tabsetGroups.value = tabsStore.getCurrentTabset.groups
+    if (tabsStore.getCurrentTabset.groups.length === 0) {
+      tabsetGroups.value.push(new Group("foralltabswithoutgroup", "no group"))
+    }
   }
+
 })
 
 

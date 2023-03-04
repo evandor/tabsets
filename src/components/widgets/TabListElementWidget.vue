@@ -1,6 +1,6 @@
 <template>
 
-  <q-item-section avatar>
+  <q-item-section class="q-mr-sm" style="max-width:20px">
     <TabFaviconWidget :tab="props.tab" width="20px" height="20px" style="position: relative;top:-10px"/>
   </q-item-section>
 
@@ -17,7 +17,7 @@
         </q-popup-edit>
       </div>
 
-      <q-badge v-if="isOpen(props.tab)"
+      <q-badge v-if="isOpen(props.tab) && props.showIsOpened"
                @click.stop="NavigationService.openOrCreateTab(props.tab.chromeTab?.url)"
                color="primary" label="opened" outline class="q-ml-none"
                style="position: relative;top:-5px">
@@ -99,6 +99,7 @@ import {CopyToClipboardCommand} from "src/domain/commands/CopyToClipboard";
 const props = defineProps({
   tab: {type: Object, required: true},
   showButtons: {type: Boolean, default: false},
+  showIsOpened: {type: Boolean, default: true},
   highlightUrl: {type: String, required: false}
 })
 

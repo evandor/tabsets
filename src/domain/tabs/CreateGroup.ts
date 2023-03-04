@@ -6,20 +6,21 @@ import {uid} from "quasar";
 import {Tabset} from "src/models/Tabset";
 import {STRIP_CHARS_IN_USER_INPUT} from "boot/constants";
 import {useTabsetService} from "src/services/TabsetService2";
+import _ from "lodash"
 
-// class UndoCommand implements Command<any> {
-//
-//   constructor(public tabId: string, public oldTabsetId: string, public copy: boolean) {
-//   }
-//
-//   execute(): Promise<ExecutionResult<any>> {
-//     return TabsetService.moveToTabset(this.tabId, this.oldTabsetId)
-//       .then(() => {
-//         return Promise.resolve(new ExecutionResult("done", "Tab was moved back"))
-//       })
-//   }
-//
-// }
+class UndoCommand implements Command<any> {
+
+  constructor(public tabset: Tabset, public groupId: string) {
+  }
+
+  execute(): Promise<ExecutionResult<any>> {
+    this.tabset.groups = _.filter(this.tabset.groups, (g: Group) => g.id !== this.groupId)
+    return useTabsetService().saveTabset(this.tabset)
+      .then((res) =>
+        Promise.resolve(new ExecutionResult("done", `Group was deleted again`)))
+  }
+
+}
 
 export class CreateGroupCommand implements Command<any> {
 
@@ -39,7 +40,7 @@ export class CreateGroupCommand implements Command<any> {
     this.tabset.groups.push(group)
     return useTabsetService().saveTabset(this.tabset)
       .then((res) =>
-        Promise.resolve(new ExecutionResult("done", `Group ${trustedTitle} was created`)))
+        Promise.resolve(new ExecutionResult("done", `Group ${trustedTitle} was created`, new UndoCommand(this.tabset, group.id))))
       .catch(err => Promise.reject("could not create group"))
   }
 
