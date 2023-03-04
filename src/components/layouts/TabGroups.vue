@@ -9,8 +9,8 @@
 
   <div class="row q-mb-lg q-mr-lg">
     <div class="col text-bold">&nbsp;</div>
-    <div class="col-1 text-right">
-      <q-icon name="add" size="1.3em" color="primary"/>
+    <div class="col-2 text-right text-primary cursor-pointer">
+      <q-icon name="add" size="1.3em" color="primary" class="q-mr-sm"/>Add Group
       <q-popup-edit :model-value="newGroupName" v-slot="scope"
                     @update:model-value="val => setNewName(val)">
         <q-input v-model="scope.value" dense autofocus counter @keyup.enter="scope.set"/>
@@ -63,6 +63,7 @@
 
           @change="handleDragAndDrop($event, element)">
 
+<!--          <div v-if="tabsFor(element).length === 0">drag here</div>-->
           <q-item v-if="props.tabs.length === 0 &&
                       inBexMode() &&
                       useUiStore().rightDrawer.activeTab === DrawerTabs.UNASSIGNED_TABS &&
@@ -121,6 +122,7 @@ import {CreateGroupCommand} from "src/domain/tabs/CreateGroup";
 import {RenameGroupCommand} from "src/domain/tabs/RenameGroup";
 import {Group} from "src/models/Group";
 import {DeleteGroupCommand} from "src/domain/tabs/DeleteGroup";
+import {SPECIAL_ID_FOR_NO_GROUP_ASSIGNED} from "boot/constants"
 
 const {inBexMode} = useUtils()
 
@@ -145,7 +147,6 @@ const props = defineProps({
   }
 })
 
-
 const tabsetGroups = ref<Group[]>(tabsStore.getCurrentTabset?.groups || [])
 
 watchEffect(() => {
@@ -153,7 +154,7 @@ watchEffect(() => {
   if (tabsStore.getCurrentTabset?.groups) {
     tabsetGroups.value = tabsStore.getCurrentTabset.groups
     if (tabsStore.getCurrentTabset.groups.length === 0) {
-      tabsetGroups.value.push(new Group("foralltabswithoutgroup", "no group"))
+      tabsetGroups.value.push(new Group(SPECIAL_ID_FOR_NO_GROUP_ASSIGNED, "no group"))
     }
   }
 
@@ -222,11 +223,15 @@ const handleDragAndDrop = (event: any, group: Group) => {
   if (added) {
     if (draggedTab.value !== undefined && group.id) {
       added.element.groupId = group.id
+      if (group.id === SPECIAL_ID_FOR_NO_GROUP_ASSIGNED) {
+        added.element.groupId = undefined
+      }
       draggedTab.value = undefined
       useTabsetService().saveCurrentTabset()
+    } else {
+      useCommandExecutor()
+        .executeFromUi(new CreateTabFromOpenTabsCommand(added.element, added.newIndex, props.group))
     }
-    useCommandExecutor()
-      .executeFromUi(new CreateTabFromOpenTabsCommand(added.element, added.newIndex, props.group))
   }
 }
 
@@ -284,7 +289,7 @@ const deleteGroup = (g: Group) => {
 }
 
 const tabsFor = (group: Group) => {
-  if (group.id === "foralltabswithoutgroup") {
+  if (group.id === SPECIAL_ID_FOR_NO_GROUP_ASSIGNED) {
     return _.filter(props.tabs, (t: Tab) => t.groupId === undefined)
   }
   return _.filter(props.tabs, (t: Tab) => t.groupId === group.id)

@@ -95,28 +95,28 @@
                :flat="tabsStore.getCurrentTabset?.view !== 'grid'"
                :outline="tabsStore.getCurrentTabset?.view === 'grid'"
                icon="grid_on">
-          <q-tooltip>Use grid layout to visualize your tabs</q-tooltip>
+          <q-tooltip class="tooltip">Use grid layout to visualize your tabs</q-tooltip>
         </q-btn>
 
-        <q-btn v-if="usePermissionsStore().hasFeature(FeatureIdent.EXPERIMENTAL_VIEWS)"
+        <q-btn
                @click="setView('group')"
                style="width:14px"
                class="q-mr-sm" size="8px"
                :flat="tabsStore.getCurrentTabset?.view !== 'group'"
                :outline="tabsStore.getCurrentTabset?.view === 'group'"
                icon="view_week">
-          <q-tooltip>Use group layout to visualize your tabs</q-tooltip>
+          <q-tooltip class="tooltip">Use group layout to visualize your tabs</q-tooltip>
         </q-btn>
 
         <!-- default view, no need to show if there is no alternative -->
-        <q-btn v-if="permissionsStore.hasFeature(FeatureIdent.EXPERIMENTAL_VIEWS)"
+        <q-btn
                @click="setView('list')"
                style="width:14px"
                class="q-mr-sm" size="10px"
                :flat="tabsStore.getCurrentTabset?.view !== 'list'"
                :outline="tabsStore.getCurrentTabset?.view === 'list'"
                icon="o_list">
-          <q-tooltip>Use the list layout to visualize your tabs</q-tooltip>
+          <q-tooltip class="tooltip">Use the list layout to visualize your tabs</q-tooltip>
         </q-btn>
 
         <q-btn v-if="permissionsStore.hasFeature(FeatureIdent.EXPERIMENTAL_VIEWS)"
