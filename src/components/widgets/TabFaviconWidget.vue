@@ -44,7 +44,10 @@ const props = defineProps({
 
 const getFaviconUrl = (tab: Tab) => {
   const chromeTab = tab?.chromeTab
-  if (chromeTab && chromeTab.favIconUrl && !chromeTab.favIconUrl.startsWith("chrome")) {
+  if (chromeTab && chromeTab.url?.startsWith("chrome")) {
+    return 'favicon-unknown-32x32.png'
+  }
+  if (chromeTab && chromeTab.favIconUrl) {
     return chromeTab.favIconUrl
   }
   if (!useFeatureTogglesStore().isEnabled('noDDG') && tab && tab.chromeTab) {

@@ -31,8 +31,11 @@ export class Tab {
   canvasLeft: number
   canvasTop: number
   extension: UrlExtension
-
   groupId: string | undefined
+
+  mhtmls: string[]
+
+  contentHash: string
 
   constructor(public id: string, chromeTab: chrome.tabs.Tab) {
     this.created = new Date().getTime()
@@ -56,6 +59,8 @@ export class Tab {
     this.canvasTop = 0
     this.canvasLeft = 0
     this.extension = this.determineUrlExtension(chromeTab)
+    this.mhtmls = []
+    this.contentHash = ''
   }
 
   setHistoryFrom(existingTab: Tab) {
@@ -71,6 +76,13 @@ export class Tab {
       this.history = [] as unknown as string[]
     }
     this.history.push(url)
+  }
+
+  addToMHtmls(id: string) {
+    if (!this.mhtmls) {
+      this.mhtmls = [] as unknown as string[]
+    }
+    this.mhtmls.push(id)
   }
 
   determineUrlExtension(chromeTab: chrome.tabs.Tab): UrlExtension {
@@ -109,5 +121,5 @@ export class Tab {
 }
 
 Tab.prototype.toString = function tabToString() {
-  return `Tab: {id=${this.id}, url=${this.chromeTab.url}}`;
+  return `Tab: {id=${this.id}, url=${this.chromeTab.url}, #history=${this.history.length}}`;
 };

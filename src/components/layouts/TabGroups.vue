@@ -10,7 +10,8 @@
   <div class="row q-mb-lg q-mr-lg">
     <div class="col text-bold">&nbsp;</div>
     <div class="col-2 text-right text-primary cursor-pointer">
-      <q-icon name="add" size="1.3em" color="primary" class="q-mr-sm"/>Add Group
+      <q-icon name="add" size="1.3em" color="primary" class="q-mr-sm"/>
+      Add Group
       <q-popup-edit :model-value="newGroupName" v-slot="scope"
                     @update:model-value="val => setNewName(val)">
         <q-input v-model="scope.value" dense autofocus counter @keyup.enter="scope.set"/>
@@ -31,15 +32,17 @@
                       @update:model-value="val => rename(element.id, val)">
           <q-input
             v-model="scope.value" dense autofocus counter @keyup.enter="scope.set"
-            hint="Provide the new name of the group or delete it">
+            :hint="element.id !== SPECIAL_ID_FOR_NO_GROUP_ASSIGNED ?
+              'Provide the new name of the group or delete it':
+              'Provide a new name. This group cannot be deleted'">
             <template v-slot:after>
               <q-btn
                 flat dense color="warning" icon="cancel"
                 @click.stop.prevent="scope.cancel"/>
 
-              <q-btn
-                flat dense color="negative" icon="delete"
-                @click.stop.prevent="deleteGroup(element)"/>
+              <q-btn v-if="element.id !== SPECIAL_ID_FOR_NO_GROUP_ASSIGNED"
+                     flat dense color="negative" icon="delete"
+                     @click.stop.prevent="deleteGroup(element)"/>
 
               <q-btn
                 flat dense color="positive" icon="check_circle"
@@ -55,15 +58,14 @@
   <div class="row q-gutter-md">
     <div class="col lower-border"
          v-for="element in tabsetGroups">
-      <q-list bordered separator>
+      <q-list separator>
         <vue-draggable-next
-          class="dragArea list-group w-full"
+
           :list="tabsFor(element)"
           :group="{ name: 'tabs', pull: 'clone' }"
 
           @change="handleDragAndDrop($event, element)">
 
-<!--          <div v-if="tabsFor(element).length === 0">drag here</div>-->
           <q-item v-if="props.tabs.length === 0 &&
                       inBexMode() &&
                       useUiStore().rightDrawer.activeTab === DrawerTabs.UNASSIGNED_TABS &&
@@ -82,7 +84,6 @@
             @mouseover="showButtons(  tab.id,true)"
             @mouseleave="showButtons( tab.id, false)"
             @dragstart="startDrag($event, tab)"
-            @dragend="stopDrag($event, tab)"
             :key="props.group + '_' + tab.id">
 
             <TabListElementWidget :showButtons="false"
@@ -105,7 +106,7 @@ import {Tab} from "src/models/Tab";
 import TabsetService from "src/services/TabsetService";
 import {PropType, ref, watchEffect} from "vue";
 import {VueDraggableNext} from 'vue-draggable-next'
-import {useQuasar} from "quasar";
+import {uid, useQuasar} from "quasar";
 import _ from "lodash"
 import {useTabsStore} from "src/stores/tabsStore";
 import {useUiService} from "src/services/useUiService";
@@ -123,6 +124,7 @@ import {RenameGroupCommand} from "src/domain/tabs/RenameGroup";
 import {Group} from "src/models/Group";
 import {DeleteGroupCommand} from "src/domain/tabs/DeleteGroup";
 import {SPECIAL_ID_FOR_NO_GROUP_ASSIGNED} from "boot/constants"
+import ChromeApi from "src/services/ChromeApi";
 
 const {inBexMode} = useUtils()
 
@@ -184,8 +186,6 @@ function adjustIndex(element: any, tabs: Tab[]) {
 }
 
 const log = (evt: any) => console.log(evt)
-// const add = () => list.push({ name: "Juan" })
-
 
 const handleDragAndDrop = (event: any, group: Group) => {
   console.log("event", event, group)
@@ -236,14 +236,12 @@ const handleDragAndDrop = (event: any, group: Group) => {
 }
 
 const openOrShowOpenTabs = () => {
-  // const activeTab = uiService.leftDrawerActiveTab()
   const drawerModel = uiService.drawerModel()
   if (drawerModel.state === LeftDrawerState.SMALL || drawerModel.activeTab !== DrawerTabs.OPEN_TABS) {
     uiService.leftDrawerSetActiveTab(DrawerTabs.OPEN_TABS)
   } else {
     uiService.leftDrawerAnimateLabel()
   }
-  // useUiService().setWideDrawer()
 }
 
 const startDrag = (evt: any, tab: Tab) => {
@@ -258,9 +256,6 @@ const startDrag = (evt: any, tab: Tab) => {
   console.log("evt.dataTransfer.getData('text/plain')", evt.dataTransfer.getData('text/plain'))
 }
 
-const stopDrag = (evt: any, tab: Tab) => {
-  console.log("stop drag", evt, tab)
-}
 
 const showDetails = (tab: Tab) => {
   if (usePermissionsStore().hasFeature(FeatureIdent.DETAILS)) {
@@ -289,10 +284,16 @@ const deleteGroup = (g: Group) => {
 }
 
 const tabsFor = (group: Group) => {
+  let res: Tab[] = []
   if (group.id === SPECIAL_ID_FOR_NO_GROUP_ASSIGNED) {
-    return _.filter(props.tabs, (t: Tab) => t.groupId === undefined)
+    res = _.filter(props.tabs, (t: Tab) => t.groupId === undefined)
+  } else {
+    res = _.filter(props.tabs, (t: Tab) => t.groupId === group.id)
   }
-  return _.filter(props.tabs, (t: Tab) => t.groupId === group.id)
+  if (res.length === 0) {
+    return [new Tab(uid(), ChromeApi.createChromeTabObject('drag & drop here', '', ''))]
+  }
+  return res
 }
 
 </script>
@@ -302,16 +303,16 @@ const tabsFor = (group: Group) => {
   width: 100%
 
 .upper-border
-  border-top: 1px solid grey
-  border-left: 1px solid grey
-  border-right: 1px solid grey
+  border-top: 1px solid #bfbfbf
+  border-left: 1px solid #bfbfbf
+  border-right: 1px solid #bfbfbf
   border-top-left-radius: 4px
   border-top-right-radius: 4px
 
 .lower-border
-  border-bottom: 1px solid grey
-  border-left: 1px solid grey
-  border-right: 1px solid grey
+  border-bottom: 1px solid #bfbfbf
+  border-left: 1px solid #bfbfbf
+  border-right: 1px solid #bfbfbf
   border-bottom-left-radius: 4px
   border-bottom-right-radius: 4px
 

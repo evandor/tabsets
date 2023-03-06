@@ -30,9 +30,11 @@
     </q-item-label>
 
     <!-- url -->
-    <q-item-label caption class="ellipsis-2-lines text-blue-10"
-                  @mouseover="showButtonsProp = true"
-                  @mouseleave="showButtonsProp = false">
+    <q-item-label
+      v-if="props.tab.chromeTab.url"
+      caption class="ellipsis-2-lines text-blue-10"
+      @mouseover="showButtonsProp = true"
+      @mouseleave="showButtonsProp = false">
       <div class="q-pr-lg cursor-pointer" style="display: inline-block;"
            @click.stop="NavigationService.openOrCreateTab(props.tab.chromeTab?.url )">
         {{ props.tab.chromeTab?.url }}

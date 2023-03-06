@@ -21,6 +21,7 @@ import {uid} from "quasar";
 import {Notification, NotificationStatus} from "src/models/Notification";
 import {StaticSuggestionIdent, Suggestion, SuggestionState} from "src/models/Suggestion";
 
+
 class IndexedDbPersistenceService implements PersistenceService {
 
   private db: IDBPDatabase = null as unknown as IDBPDatabase
@@ -36,14 +37,10 @@ class IndexedDbPersistenceService implements PersistenceService {
     const res: Promise<any>[] = _.map(keys, key => {
       return this.db.get('tabsets', key)
         .then(ts => {
-          if ('ignored' === key) {
-            tabsStore.ignoredTabset = ts
-          } else {
-            if (!ts.status) {
-              ts.status = TabsetStatus.DEFAULT
-            }
-            tabsStore.addTabset(ts)
+          if (!ts.status) {
+            ts.status = TabsetStatus.DEFAULT
           }
+          tabsStore.addTabset(ts)
         })
         .catch(err => console.log("err", err))
     })
@@ -331,17 +328,23 @@ class IndexedDbPersistenceService implements PersistenceService {
     return this.db.getAll('content')
   }
 
-  saveMHtml(tab: Tab, mhtml: string): Promise<IDBValidKey> {
+  async saveMHtml(tab: Tab, mhtml: Blob): Promise<string> {
     if (tab.chromeTab.url) {
-      const encodedTabUrl = btoa(tab.chromeTab.url)
-      return this.db.put('mhtml', {
-        id: encodedTabUrl,
+      // console.log("TextDecoder('utf-8')", new TextDecoder('utf-8'), typeof mhtml)
+      // console.log("mhtml", mhtml)
+
+      //const mhtmlAsString = await mhtml.text()
+      const mhtmlId = uid()
+      this.db.put('mhtml', {
+        id: mhtmlId,
         title: tab.name ? tab.name : tab.chromeTab.title,
         favIconUrl: tab.chromeTab.favIconUrl,
         url: tab.chromeTab.url,
         created: new Date().getTime(),
         content: mhtml
-      }, encodedTabUrl)
+        //hash: uuidv5(mhtmlAsString, 'da42d8e8-2afd-446f-b72e-8b437aa03e46')
+      }, mhtmlId)
+      return Promise.resolve(mhtmlId)
     }
     return Promise.reject("tab.url missing")
   }
@@ -350,7 +353,7 @@ class IndexedDbPersistenceService implements PersistenceService {
 
     console.log("getting mhtml for", url)
     const mhtml = await this.db.get('mhtml', url)
-  //  console.log("got", mhtml.content, typeof mhtml.content)
+    //  console.log("got", mhtml.content, typeof mhtml.content)
 
     const content: Blob = mhtml.content
 
@@ -379,9 +382,7 @@ class IndexedDbPersistenceService implements PersistenceService {
     try {
       const mhtml = await this.db.get('mhtml', url)
       const mhtmlString = await mhtml.content.text()
-      console.log("mhtmlString", mhtmlString)
       const html = mhtml2html.convert(mhtmlString)
-      console.log("html", html)
       const innerHtml = html.window.document.documentElement.innerHTML
       return Promise.resolve({
         html: innerHtml,
@@ -577,7 +578,7 @@ class IndexedDbPersistenceService implements PersistenceService {
         console.log("suggestion already exists")
         return Promise.resolve()
       })
-     // .catch((err) => Promise.reject(err))
+    // .catch((err) => Promise.reject(err))
   }
 
   removeSuggestion(ident: StaticSuggestionIdent): Promise<any> {
@@ -596,6 +597,7 @@ class IndexedDbPersistenceService implements PersistenceService {
       })
       .catch((err) => Promise.reject("error updating suggestion" + err))
   }
+
   // ignoreSuggestion(suggestionId: string): Promise<void> {
   //   console.log("ignoring suggestion", suggestionId)
   //   const objectStore = this.db.transaction('suggestions', 'readwrite').objectStore('suggestions');

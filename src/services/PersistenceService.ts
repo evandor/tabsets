@@ -32,7 +32,7 @@ interface PersistenceService {
 
   getMetaLinks(url: string): Promise<object>
   getLinks(url: string): Promise<object>
-  saveMHtml(tab: Tab, mhtml: string): Promise<any>
+  saveMHtml(tab: Tab, mhtml: Blob): Promise<string>
   getMHtml(url: string):Promise<object>
   getMHtmlInline(url: string): Promise<object>
   getMHtmls(): Promise<MHtml[]>

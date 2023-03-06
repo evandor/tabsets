@@ -154,10 +154,6 @@
                  group="otherTabs"
                  :tabs="dynamicTabset?.tabs || []"/>
 
-        <TabThumbs v-else-if="tabsStore.getCurrentTabset?.view === 'thumbnails'"
-                   group="otherTabs"
-                   :tabs="dynamicTabset?.tabs"/>
-
         <Tabcards v-else
                   :tabs="dynamicTabset?.tabs" group="otherTabs"/>
 

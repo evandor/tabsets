@@ -227,9 +227,9 @@ a tab's url starts with one of the urls of this tabset, it will be ignored and n
                 :highlightUrl="highlightUrl"
                 :tabs="unpinnedNoGroupOrAllTabs()"/>
 
-      <TabThumbs v-else-if="tabsStore.getCurrentTabset?.view === 'thumbnails'"
-                 group="otherTabs"
-                 :tabs="unpinnedNoGroupOrAllTabs()"/>
+<!--      <TabThumbs v-else-if="tabsStore.getCurrentTabset?.view === 'thumbnails'"-->
+<!--                 group="otherTabs"-->
+<!--                 :tabs="unpinnedNoGroupOrAllTabs()"/>-->
 
       <TabsExporter v-else-if="tabsStore.getCurrentTabset?.view === 'exporter'"
                     group="otherTabs"

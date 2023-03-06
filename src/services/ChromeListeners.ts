@@ -181,26 +181,32 @@ class ChromeListeners {
     const index = _.findIndex(tabset?.tabs, t => t.chromeTab.id === tab.id);
     if (index >= 0) {
       //if (!this.isIgnored(tab)) {
-        const existingPendingTab = tabset.tabs[index]
-        const updatedTab = new Tab(uid(), tab)
-        if (existingPendingTab.chromeTab.url !== updatedTab.chromeTab.url && existingPendingTab.chromeTab.url !== 'chrome://newtab/') {
-          updatedTab.setHistoryFrom(existingPendingTab)
-          if (existingPendingTab.chromeTab.url) {
-            updatedTab.addToHistory(existingPendingTab.chromeTab.url)
-          }
+      const existingPendingTab = tabset.tabs[index]
+      const updatedTab = new Tab(uid(), tab)
+      // console.log("hier", existingPendingTab.chromeTab.url, updatedTab.chromeTab.url)
+      // console.log("existingPendingTab", existingPendingTab)
+      updatedTab.setHistoryFrom(existingPendingTab)
+      if (existingPendingTab.chromeTab.url !== updatedTab.chromeTab.url && existingPendingTab.chromeTab.url !== 'chrome://newtab/') {
+        if (existingPendingTab.chromeTab.url) {
+          console.log("updating from history", existingPendingTab)
+          updatedTab.addToHistory(existingPendingTab.chromeTab.url)
         }
-        const urlExistsAlready = _.filter(tabset.tabs, pT => pT.chromeTab.url === tab.url).length >= 2
-
-        if (urlExistsAlready) {
-          tabset.tabs.splice(index, 1);
-        } else {
-          tabset.tabs.splice(index, 1, updatedTab);
-        }
-     // }
+      }
+      const urlExistsAlready = _.filter(tabset.tabs, pT => pT.chromeTab.url === tab.url).length >= 2
+      if (urlExistsAlready) {
+        tabset.tabs.splice(index, 1);
+      } else {
+        tabset.tabs.splice(index, 1, updatedTab);
+      }
+      // }
     } else {
-      console.log(`onUpdated: tab ${tab.id}: ignoring, pending tab cannot be found in ${tabset.name}`)
-      console.log("compared with")
-      tabset?.tabs.forEach(t => console.log("t.chromeTab.id", t.chromeTab.id))
+      console.log(`onUpdated: tab ${tab.id}: pending tab cannot be found in ${tabset.name}`)
+      // console.log("compared with")
+      // tabset?.tabs.forEach(t => console.log("t.chromeTab.id", t.chromeTab.id))
+      if (tab.url !== undefined) {
+        console.log(`onUpdated: tab ${tab.id}: missing tab added for url ${tab.url}`)
+        tabset.tabs.push(new Tab(uid(), tab))
+      }
     }
   }
 
@@ -275,6 +281,7 @@ class ChromeListeners {
   }
 
   onMessage(request: any, sender: chrome.runtime.MessageSender, sendResponse: any) {
+    console.log("handling request", request.msg)
     if (request.msg === 'captureThumbnail') {
       const screenShotWindow = useWindowsStore().screenshotWindow
       this.handleCapture(sender, screenShotWindow, sendResponse)
@@ -315,7 +322,7 @@ class ChromeListeners {
       .replaceAll("\n", " ")
       .replace(/[`~!@#$%^&*()_|+\-=?;:'",.<>»«{}\[\]\\\/]/gi, ' ')
       .split(" ")
-    //console.log("tokens", tokens)
+    console.log("tokens", tokens)
     let res = ""
     const tokenSet = new Set()
     tokens.forEach((t: string) => {

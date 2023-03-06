@@ -186,9 +186,6 @@
                       group="somegroup" label="Debug">
       <q-card>
         <q-card-section>
-          #{{ useUiStore().getSelectedTab?.id }}
-        </q-card-section>
-        <q-card-section>
           <vue-json-pretty style="font-size: 80%"
                            v-model:data="state.data"
                            :show-double-quotes="true"
@@ -223,6 +220,7 @@ import 'vue-json-pretty/lib/styles.css';
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {SaveTabCommand} from "src/domain/tabs/SaveTab";
 import {FeatureIdent} from "src/models/AppFeature";
+import {useTabsStore} from "stores/tabsStore";
 
 const {inBexMode} = useUtils()
 
@@ -348,7 +346,7 @@ watchEffect(() => {
   }
 })
 
-const saveTab = (tab: Tab) => useCommandExecutor().execute(new SaveTabCommand(tab))
+const saveTab = (tab: Tab) => useCommandExecutor().execute(new SaveTabCommand(useTabsStore().getCurrentTabset, tab))
 
 
 </script>
