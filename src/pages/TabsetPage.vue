@@ -300,6 +300,7 @@ import {FeatureIdent} from "src/models/AppFeature";
 import TabsExporter from "components/layouts/TabsExporter.vue";
 import {useUiStore} from "src/stores/uiStore";
 import TabGroups from "components/layouts/TabGroups.vue";
+import {ToggleSortingCommand} from "src/domain/tabsets/ToggleSorting";
 
 const route = useRoute();
 const router = useRouter();
@@ -449,7 +450,8 @@ const archiveTabset = () => useCommandExecutor().executeFromUi(new MarkTabsetAsA
 
 const stopSession = () => useCommandExecutor().executeFromUi(new StopSessionCommand(tabsStore.getCurrentTabset))
 
-const toggleSorting = () => TabsetService.toggleSorting(tabsetId.value)
+const toggleSorting = () => useCommandExecutor().executeFromUi(new ToggleSortingCommand(tabsetId.value))
+
 const toggleOrder = () => orderDesc.value = !orderDesc.value
 
 const sortingInfo = (): string => {

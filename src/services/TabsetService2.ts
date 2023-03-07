@@ -18,6 +18,8 @@ import LoggingService from "src/services/LoggingService";
 import {SpecialTabsetIdent} from "src/domain/tabsets/CreateSpecialTabset";
 // @ts-ignore
 import {v5 as uuidv5} from 'uuid';
+import {useSuggestionsStore} from "stores/suggestionsStore";
+import {Suggestion, SuggestionType} from "src/models/Suggestion";
 
 const {db} = useDB()
 
@@ -220,7 +222,7 @@ export function useTabsetService() {
       const title = tab.title || ''
       const tabsetIds: string[] = tabsetsFor(tab.url)
 
-      console.log("saving content", tab, text, metas, title, tabsetIds)
+      //console.log("saving content", tab, text, metas, title, tabsetIds)
       db.saveContent(tab, text, metas, title, tabsetIds)
         //.then(() => console.log("added content"))
         .catch(err => console.log("err", err))
@@ -258,12 +260,17 @@ export function useTabsetService() {
                 t.image = image
               }
 
+              const oldContent = t.contentHash
               if (text && text.length > 0) {
                 t.contentHash = uuidv5(text, 'da42d8e8-2afd-446f-b72e-8b437aa03e46')
               } else {
                 t.contentHash = ""
               }
-
+              if (oldContent && oldContent !== '' && t.contentHash !== '' && t.chromeTab.url) {
+                useSuggestionsStore().addSuggestion(
+                  new Suggestion(uid(), 'Content Change Detected', "Info: Something might have changed in " + t.chromeTab.url + ".",
+                    t.chromeTab.url, SuggestionType.CONTENT_CHANGE))
+              }
 
               saveTabset(tabset)
             }

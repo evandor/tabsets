@@ -2,7 +2,7 @@
 
   <InfoMessageWidget
     :probability="1"
-    css-class="q-pa-none q-gutter-sm"
+    css-class="q-pa-none q-gutter-sm q-mb-md"
     ident="tabgroups_info"
     hint="You can create and reorder groups which you can use to assign tabs to by dragging and dropping. Create
               a new group by clicking on the plus sign."/>

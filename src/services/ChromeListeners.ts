@@ -316,22 +316,23 @@ class ChromeListeners {
       wordwrap: 130
     });
     const text2 = text.replace(/\[[^\]].*/g, '').replaceAll('*', '')
-    //console.log("text2", text2)
+    console.log("text2", text2)
     const tokens = text2
       .replaceAll("\\n", " ")
-      .replaceAll("\n", " ")
+      .replaceAll("[0-9a-fA-F]{8}\\b-[0-9a-fA-F]{4}\\b-[0-9a-fA-F]{4}\\b-[0-9a-fA-F]{4}\\b-[0-9a-fA-F]{12}", " ")
+      .replaceAll("\n"," ")
       .replace(/[`~!@#$%^&*()_|+\-=?;:'",.<>»«{}\[\]\\\/]/gi, ' ')
       .split(" ")
     console.log("tokens", tokens)
     let res = ""
     const tokenSet = new Set()
     tokens.forEach((t: string) => {
-      if (t.length >= 4) {
+      if (t.length >= 4 && t.length <=   24) {
         res += t + " "
         tokenSet.add(t.toLowerCase())
       }
     })
-    // console.log("res", res)
+    console.log("res", res)
     saveText(sender.tab, [...tokenSet].join(" "), request.metas)
     sendResponse({html2text: 'done'});
   }
@@ -345,7 +346,7 @@ class ChromeListeners {
         request.links.forEach((metaLink: MetaLink) => {
           if ("application/rss+xml" === metaLink.type) {
             //console.log("hier!!!", metaLink)
-            useSuggestionsStore().addSuggestion(new Suggestion(uid(), metaLink.title || 'Found RSS Feed', "In RSS Link was found in one of your tabs", metaLink.href, SuggestionType.RSS))
+            useSuggestionsStore().addSuggestion(new Suggestion(uid(), metaLink.title || 'Found RSS Feed', "An RSS Link was found in one of your tabs", metaLink.href, SuggestionType.RSS))
           }
         })
       }

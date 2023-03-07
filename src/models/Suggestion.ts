@@ -10,6 +10,8 @@ export enum SuggestionState {
 
 export enum SuggestionType {
   RSS = "RSS",
+
+  CONTENT_CHANGE = "CONTENT_CHANGE",
   FEATURE = "FEATURE"
 }
 

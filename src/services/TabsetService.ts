@@ -449,7 +449,7 @@ class TabsetService {
     }
   }
 
-  toggleSorting(tabsetId: string) {
+  toggleSorting(tabsetId: string): string | undefined {
     const tabset = useTabsStore().getTabset(tabsetId)
     if (tabset) {
       switch (tabset.sorting) {
@@ -466,7 +466,9 @@ class TabsetService {
           tabset.sorting = 'custom'
       }
       saveTabset(tabset)
+      return tabset.sorting
     }
+    return undefined
   }
 
   setPosition(tabId: string, top: number, left: number) {

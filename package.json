@@ -37,7 +37,7 @@
     "firebase": "^9.9.2",
     "firebaseui": "^6.0.1",
     "fuse.js": "^6.6.2",
-    "html-to-text": "^8.2.1",
+    "html-to-text": "^9.0.4",
     "idb": "^7.0.2",
     "konva": "^8.4.0",
     "lodash": "^4.17.21",

@@ -29,7 +29,7 @@
 <script lang="ts" setup>
 
 import {computed, ref, watchEffect} from "vue";
-import {useDialogPluginComponent, useQuasar} from "quasar";
+import {openURL, useDialogPluginComponent, useQuasar} from "quasar";
 import {useRouter} from "vue-router";
 import {useNotificationsStore} from "src/stores/notificationsStore";
 import {useSuggestionsStore} from "src/stores/suggestionsStore";
@@ -62,6 +62,8 @@ const addSuggestion = () => useSuggestionsStore()
   .then((res: Suggestion) => {
     if (res.url.startsWith("/")) {
       router.push(res.url)
+    } else {
+      openURL((res.url))
     }
   })
 
