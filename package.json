@@ -1,6 +1,6 @@
 {
   "name": "tabsets",
-  "version": "0.2.13",
+  "version": "0.3.0",
   "description": "Tabsets is a browser extension which helps you organize your links. As simple as that.",
   "productName": "Tabsets Extension",
   "author": "evandor <evandor@gmail.com>",

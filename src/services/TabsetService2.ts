@@ -20,6 +20,7 @@ import {SpecialTabsetIdent} from "src/domain/tabsets/CreateSpecialTabset";
 import {v5 as uuidv5} from 'uuid';
 import {useSuggestionsStore} from "stores/suggestionsStore";
 import {Suggestion, SuggestionType} from "src/models/Suggestion";
+import {useFeatureTogglesStore} from "stores/featureTogglesStore";
 
 const {db} = useDB()
 
@@ -54,7 +55,14 @@ export function useTabsetService() {
     type: TabsetType = TabsetType.DEFAULT): Promise<object> => {
 
     const trustedName = name.replace(STRIP_CHARS_IN_USER_INPUT, '')
-    const tabs: Tab[] = _.map(chromeTabs, t => new Tab(uid(), t))
+    const tabs: Tab[] = _.filter(
+      _.map(chromeTabs, t => new Tab(uid(), t)),
+      (t:Tab) => {
+        if (!useFeatureTogglesStore().isEnabled('extensionsAsTabs')) {
+          return !t.chromeTab.url?.startsWith("chrome-extension://")
+        }
+        return true
+    })
     try {
       const result: NewOrReplacedTabset = await useTabsStore()
         .updateOrCreateTabset(trustedName, tabs, merge, type)

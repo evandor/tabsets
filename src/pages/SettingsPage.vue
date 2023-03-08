@@ -46,6 +46,15 @@
 
       <div class="row items-baseline q-ma-md">
         <div class="col-3">
+          Ignore Browser Extensions as tabs
+        </div>
+        <div class="col-9">
+          <q-toggle v-model="ignoreExtensionsEnabled"/>
+        </div>
+      </div>
+
+      <div class="row items-baseline q-ma-md">
+        <div class="col-3">
           Restore Info Messages
         </div>
         <div class="col-3">
@@ -337,10 +346,10 @@ const view = ref('grid')
 const indexSize = ref(0)
 
 const syncEnabled = ref<boolean>(featuresStore.isEnabled('sync'))
-// const experimentalViewsEnabled = ref<boolean>(featuresStore.isEnabled('experimentalViews'))
 const statsEnabled = ref<boolean>(featuresStore.isEnabled('stats'))
 const devEnabled = ref<boolean>(featuresStore.isEnabled('dev'))
 const ddgEnabled = ref<boolean>(!featuresStore.isEnabled('noDDG'))
+const ignoreExtensionsEnabled = ref<boolean>(!featuresStore.isEnabled('extensionsAsTabs'))
 const permissionsList = ref<string[]>([])
 
 const darkMode = ref<boolean>(localStorage.getItem('darkMode') || false)
@@ -348,7 +357,7 @@ const bookmarksPermissionGranted = ref<boolean | undefined>(usePermissionsStore(
 const historyPermissionGranted = ref<boolean | undefined>(usePermissionsStore().hasPermission('history'))
 const pageCapturePermissionGranted = ref<boolean | undefined>(usePermissionsStore().hasPermission('history'))
 const allUrlsOriginGranted = ref<boolean | undefined>(usePermissionsStore().hasAllOrigins())
-const showBookmarks = ref<boolean>(localStorage.getItem('showBookmarks') || false)
+// const showBookmarks = ref<boolean>(localStorage.getItem('showBookmarks') || false)
 const tab = ref('appearance')
 
 const {handleError} = useNotificationHandler()
@@ -427,12 +436,11 @@ watchEffect(() => {
 })
 
 watchEffect(() => {
-  //featuresStore.setFeatureToggle("debug", debugEnabled.value)
   featuresStore.setFeatureToggle("sync", syncEnabled.value)
-  // featuresStore.setFeatureToggle("experimentalViews", experimentalViewsEnabled.value)
   featuresStore.setFeatureToggle("stats", statsEnabled.value)
   featuresStore.setFeatureToggle("dev", devEnabled.value)
   featuresStore.setFeatureToggle("noDDG", !ddgEnabled.value)
+  featuresStore.setFeatureToggle("extensionsAsTabs", !ignoreExtensionsEnabled.value)
 })
 
 watchEffect(() => {
@@ -458,7 +466,7 @@ const archivedTabsets = () => {
 
 const unarchive = (tabset: Tabset) => useCommandExecutor().executeFromUi(new MarkTabsetAsDefaultCommand(tabset.id))
 
-const ignoredUrls = () => useTabsStore().ignoredTabset?.tabs
+// const ignoredUrls = () => useTabsStore().ignoredTabset?.tabs
 
 const simulateNewVersion = (version: string) => NavigationService.updateAvailable({version: version})
 

@@ -180,15 +180,11 @@ class ChromeListeners {
     // find tab which was created by "onCreate" moments ago
     const index = _.findIndex(tabset?.tabs, t => t.chromeTab.id === tab.id);
     if (index >= 0) {
-      //if (!this.isIgnored(tab)) {
       const existingPendingTab = tabset.tabs[index]
       const updatedTab = new Tab(uid(), tab)
-      // console.log("hier", existingPendingTab.chromeTab.url, updatedTab.chromeTab.url)
-      // console.log("existingPendingTab", existingPendingTab)
       updatedTab.setHistoryFrom(existingPendingTab)
       if (existingPendingTab.chromeTab.url !== updatedTab.chromeTab.url && existingPendingTab.chromeTab.url !== 'chrome://newtab/') {
         if (existingPendingTab.chromeTab.url) {
-          console.log("updating from history", existingPendingTab)
           updatedTab.addToHistory(existingPendingTab.chromeTab.url)
         }
       }
@@ -198,11 +194,8 @@ class ChromeListeners {
       } else {
         tabset.tabs.splice(index, 1, updatedTab);
       }
-      // }
     } else {
       console.log(`onUpdated: tab ${tab.id}: pending tab cannot be found in ${tabset.name}`)
-      // console.log("compared with")
-      // tabset?.tabs.forEach(t => console.log("t.chromeTab.id", t.chromeTab.id))
       if (tab.url !== undefined) {
         console.log(`onUpdated: tab ${tab.id}: missing tab added for url ${tab.url}`)
         tabset.tabs.push(new Tab(uid(), tab))
@@ -316,13 +309,14 @@ class ChromeListeners {
       wordwrap: 130
     });
     const text2 = text.replace(/\[[^\]].*/g, '').replaceAll('*', '')
-    console.log("text2", text2)
     const tokens = text2
       .replaceAll("\\n", " ")
       .replaceAll("[0-9a-fA-F]{8}\\b-[0-9a-fA-F]{4}\\b-[0-9a-fA-F]{4}\\b-[0-9a-fA-F]{4}\\b-[0-9a-fA-F]{12}", " ")
+      .replaceAll("[\u00AD\u002D\u2011]",' ')
       .replaceAll("\n"," ")
       .replace(/[`~!@#$%^&*()_|+\-=?;:'",.<>»«{}\[\]\\\/]/gi, ' ')
       .split(" ")
+    console.log("text2", text2)
     console.log("tokens", tokens)
     let res = ""
     const tokenSet = new Set()
