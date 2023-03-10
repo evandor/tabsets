@@ -25,6 +25,8 @@ export enum FeatureIdent {
   BACKUP = "BACKUP",
   IGNORE = "IGNORE",
 
+  SORT_TABS = "SORT_TABS"
+
 }
 
 export enum FeatureType {

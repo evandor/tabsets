@@ -194,6 +194,43 @@ class ChromeListeners {
       } else {
         tabset.tabs.splice(index, 1, updatedTab);
       }
+
+      if (usePermissionsStore().hasFeature(FeatureIdent.SORT_TABS)) {
+        console.log("sorting...")
+        chrome.tabs.query({currentWindow: true}, (result: chrome.tabs.Tab[]) => {
+          //result.forEach(t => console.log("t1", t.index, t.pinned, t.url))
+          const tabs = _.map(result, (t: chrome.tabs.Tab) => { return {
+            id: t.id,
+            index: t.index,
+            url: (t.url || 'unknown')
+              .replace('https://www.','')
+              .replace('http://www.','')
+              .replace('https://','')
+              .replace('http://',''),
+            pinned: t.pinned
+          }})
+          console.log("tabs", tabs)
+          const sortedTabs = _.orderBy(tabs, ['pinned','url'], ['desc', 'desc'])
+
+         // const sorted = _.orderBy(result, ['pinned','url'], ['desc', 'desc'])
+          sortedTabs.forEach(t => console.log("t2", t.index, t.pinned, t.url))
+          let newIndex = 1
+          sortedTabs.forEach((t: any) => {
+            if (!t.pinned) {
+              t.index = newIndex
+            }
+            newIndex++
+            //chrome.tabs.update()
+          })
+          //sorted.forEach(t => console.log("t3", t.index, t.pinned, t.url))
+          // @ts-ignore
+          const sortedIds: number[] = _.map(sortedTabs, (t:any) => t.id).reverse()
+          //console.log("sortedIds", sortedIds)
+          chrome.tabs.move(sortedIds, {index:-1})
+        })
+      }
+
+
     } else {
       console.log(`onUpdated: tab ${tab.id}: pending tab cannot be found in ${tabset.name}`)
       if (tab.url !== undefined) {
@@ -253,7 +290,7 @@ class ChromeListeners {
     this.eventTriggered()
     const tabsStore = useTabsStore()
 
-    console.log(`onMoved: tab ${number} moved: ${JSON.stringify(info)}`)
+    console.debug(`onMoved: tab ${number} moved: ${JSON.stringify(info)}`)
     tabsStore.loadTabs('onMoved');
   }
 

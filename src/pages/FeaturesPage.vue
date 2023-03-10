@@ -242,6 +242,13 @@ text.set(FeatureIdent.IGNORE.toLowerCase(), {
 })
 
 
+text.set(FeatureIdent.SORT_TABS.toLowerCase(), {
+  name: 'Sort Open Tabs',
+  description: 'When activated, tabsets will sort your tabs according to their url. Pinned tabs are not taken into account.',
+  permissions: []
+})
+
+
 text.set(FeatureIdent.SPACES.toLowerCase(), {
   experimental: true,
   name: 'Spaces',
