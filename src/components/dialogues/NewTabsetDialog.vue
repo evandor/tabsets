@@ -50,6 +50,7 @@ import {CreateTabsetCommand} from "src/domain/tabsets/CreateTabset";
 import TabsetService from "src/services/TabsetService";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {useUiStore} from "src/stores/uiStore";
+import {TabsetStatus} from "src/models/Tabset";
 
 defineEmits([
   ...useDialogPluginComponent.emits
@@ -80,7 +81,8 @@ const addEmptyTabset = ref(props.firstTabset ? false : (tabsStore.tabs.length <=
 const newTabsetNameIsValid = computed(() => newTabsetName.value.length <= 32 && !STRIP_CHARS_IN_USER_INPUT.test(newTabsetName.value))
 
 watchEffect(() => {
-  newTabsetNameExists.value = !!tabsStore.nameExistsInContextTabset(newTabsetName.value);
+  const existsInTabset = tabsStore.existingInTabset(newTabsetName.value)
+  newTabsetNameExists.value = !!existsInTabset && existsInTabset.status !== TabsetStatus.DELETED
 })
 
 const createNewTabset = () => {
@@ -104,7 +106,8 @@ const createNewTabset = () => {
 }
 
 const newTabsetDialogWarning = () => {
-  return (!hideWarning.value && tabsStore.nameExistsInContextTabset(newTabsetName.value)) ?
+  const existsInTabset = tabsStore.existingInTabset(newTabsetName.value)
+  return (!hideWarning.value && existsInTabset && existsInTabset.status !== TabsetStatus.DELETED) ?
     "Hint: Tabset exists, but you can add tabs" : ""
 }
 

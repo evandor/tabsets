@@ -12,6 +12,7 @@ import LoggingService from "src/services/LoggingService";
 import {SpecialTabsetIdent} from "src/domain/tabsets/CreateSpecialTabset";
 import {usePermissionsStore} from "src/stores/permissionsStore";
 import {FeatureIdent} from "src/models/AppFeature";
+import {STRIP_CHARS_IN_USER_INPUT} from "boot/constants";
 
 async function queryTabs(): Promise<chrome.tabs.Tab[]> {
   // @ts-ignore
@@ -139,10 +140,17 @@ export const useTabsStore = defineStore('tabs', {
       return (url: string) => _.find(tabs, t => t.chromeTab.url === url)
     },
 
+    // Deprecated, use existingInTabset
     nameExistsInContextTabset: (state) => {
       return (searchName: string) => {
         const existingNames = _.map([...state.tabsets.values()], ts => ts.name)
         return _.find(existingNames, name => name === searchName?.trim())
+      }
+    },
+    existingInTabset: (state) => {
+      return (searchName: string): Tabset | undefined => {
+        const trustedName = searchName.replace(STRIP_CHARS_IN_USER_INPUT, '')
+        return _.find([...state.tabsets.values()], (ts: Tabset) => ts.name === trustedName?.trim())
       }
     },
     getTab: (state) => {
@@ -296,6 +304,10 @@ export const useTabsStore = defineStore('tabs', {
       const tabGroupsStore = useTabGroupsStore()
       const currentSpace = useSpacesStore().space
       if (foundTS) {
+        if (foundTS.status === TabsetStatus.DELETED) {
+          foundTS.status = TabsetStatus.DEFAULT
+          foundTS.tabs = []
+        }
         if (merge) {
           LoggingService.logger.debug("found existing tabset " + foundTS.id + ", merging...")
           _.forEach(tabs, t => {
