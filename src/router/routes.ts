@@ -11,6 +11,11 @@ const routes: RouteRecordRaw[] = [
     children: [{ path: '', component: () => import('pages/Start.vue') }],
   },
   {
+    path: '/popup',
+    component: () => import('layouts/PlainLayout.vue'),
+    children: [{ path: '', component: () => import('pages/PopupPage.vue') }],
+  },
+  {
     path: '/about',
     component: () => import('layouts/AboutLayout.vue'),
     children: [{ path: '', component: () => import('pages/AboutPage.vue') }],

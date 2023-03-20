@@ -18,6 +18,7 @@
               label="create"
               unelevated
               size="0.8em"
+              text-color="primary"
               color="warning">
               <q-tooltip
                 class="tooltip"

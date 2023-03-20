@@ -198,35 +198,43 @@ class ChromeListeners {
       if (usePermissionsStore().hasFeature(FeatureIdent.SORT_TABS)) {
         console.log("sorting...")
         chrome.tabs.query({currentWindow: true}, (result: chrome.tabs.Tab[]) => {
-          //result.forEach(t => console.log("t1", t.index, t.pinned, t.url))
-          const tabs = _.map(result, (t: chrome.tabs.Tab) => { return {
-            id: t.id,
-            index: t.index,
-            url: (t.url || 'unknown')
-              .replace('https://www.','')
-              .replace('http://www.','')
-              .replace('https://','')
-              .replace('http://',''),
-            pinned: t.pinned
-          }})
-          console.log("tabs", tabs)
-          const sortedTabs = _.orderBy(tabs, ['pinned','url'], ['desc', 'desc'])
+          const tabs = _.map(result, (t: chrome.tabs.Tab) => {
 
-         // const sorted = _.orderBy(result, ['pinned','url'], ['desc', 'desc'])
-          sortedTabs.forEach(t => console.log("t2", t.index, t.pinned, t.url))
+            const url = t.url || 'https://unknown.tld'
+            let domain = "unknown.tld"
+            try {
+              const hostname = new URL(url).hostname
+              const splits = hostname.split(".")
+              if(splits.length >= 2) {
+                domain = splits[splits.length-2] + "." + splits[splits.length-1]
+              } else {
+                domain = hostname
+              }
+            } catch (err) {
+            }
+
+            console.log("domain", domain)
+
+            return {
+              id: t.id,
+              index: t.index,
+              url: (t.url || 'unknown'),
+              domain: domain,
+              pinned: t.pinned
+            }
+          })
+          const sortedTabs = _.orderBy(tabs, ['pinned', 'domain'], ['desc', 'desc'])
+
           let newIndex = 1
           sortedTabs.forEach((t: any) => {
             if (!t.pinned) {
               t.index = newIndex
             }
             newIndex++
-            //chrome.tabs.update()
           })
-          //sorted.forEach(t => console.log("t3", t.index, t.pinned, t.url))
           // @ts-ignore
-          const sortedIds: number[] = _.map(sortedTabs, (t:any) => t.id).reverse()
-          //console.log("sortedIds", sortedIds)
-          chrome.tabs.move(sortedIds, {index:-1})
+          const sortedIds: number[] = _.map(sortedTabs, (t: any) => t.id).reverse()
+          chrome.tabs.move(sortedIds, {index: -1})
         })
       }
 
@@ -349,8 +357,8 @@ class ChromeListeners {
     const tokens = text2
       .replaceAll("\\n", " ")
       .replaceAll("[0-9a-fA-F]{8}\\b-[0-9a-fA-F]{4}\\b-[0-9a-fA-F]{4}\\b-[0-9a-fA-F]{4}\\b-[0-9a-fA-F]{12}", " ")
-      .replaceAll("[\u00AD\u002D\u2011]",' ')
-      .replaceAll("\n"," ")
+      .replaceAll("[\u00AD\u002D\u2011]", ' ')
+      .replaceAll("\n", " ")
       .replace(/[`~!@#$%^&*()_|+\-=?;:'",.<>»«{}\[\]\\\/]/gi, ' ')
       .split(" ")
     console.log("text2", text2)
@@ -358,7 +366,7 @@ class ChromeListeners {
     let res = ""
     const tokenSet = new Set()
     tokens.forEach((t: string) => {
-      if (t.length >= 4 && t.length <=   24) {
+      if (t.length >= 4 && t.length <= 24) {
         res += t + " "
         tokenSet.add(t.toLowerCase())
       }
