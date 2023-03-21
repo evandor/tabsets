@@ -27,7 +27,22 @@ import {useSuggestionsStore} from "src/stores/suggestionsStore";
 import {useUiStore} from "src/stores/uiStore";
 import {useTabsetService} from "src/services/TabsetService2";
 import {computed, ref, watch, watchEffect} from "vue";
-console.log("start", new Date().getTime())
+
+
+// function isNewTabPage() {
+//   return route.path === '/newtab';
+// }
+//
+// $q.dark.set($q.localStorage.getItem('darkMode') || false)
+
+// if (isNewTabPage()) {
+//
+//   // init db
+//
+//
+// } else {
+//
+
 const tabsStore = useTabsStore()
 const tabGroupsStore = useTabGroupsStore()
 const featureTogglesStore = useFeatureTogglesStore()
@@ -41,116 +56,45 @@ const router = useRouter()
 const route = useRoute()
 const $q = useQuasar()
 
+// init of stores and some listeners
+usePermissionsStore().initialize()
+  .then(() => {
+    ChromeListeners.initListeners(false)
+    ChromeBookmarkListeners.initListeners()
+    bookmarksStore.init()
+  })
+featureTogglesStore.initialize(useQuasar().localStorage);
+tabsStore.initialize(useQuasar().localStorage);
+
+
+searchStore.init()
+windowsStore.init()
+
 const localStorage = useQuasar().localStorage
 
-
-// watchEffect(() => {
-//   //console.log("get current route!!", useRouter().currentRoute)
-//  // if (useRouter() && useRouter().currentRoute) {
-//   if (router && router.currentRoute) {
-//     console.log("currentRoute!", router.currentRoute.value.fullPath)
-//     if (router.currentRoute.value.fullPath !== "/popup") {
-//     //   // init of stores and some listeners
-//     //   usePermissionsStore().initialize()
-//     //     .then(() => {
-//     //       ChromeListeners.initListeners(false)
-//     //       ChromeBookmarkListeners.initListeners()
-//     //       bookmarksStore.init()
-//     //     })
-//     //   featureTogglesStore.initialize(localStorage);
-//     //   tabsStore.initialize(localStorage);
-//     //
-//     //
-//     //   tabGroupsStore.initialize();
-//     //   tabGroupsStore.initListeners();
-//     //
-//     //   spacesStore.initialize();
-//     //
-//     //   searchStore.init()
-//     //   windowsStore.init()
-//     //
-//     //
-//     //
-//     //   // init db
-//     //   IndexedDbPersistenceService.init()
-//     //     .then(() => {
-//     //       // init services
-//     //       LoggingService.init()
-//     //       NotificationsService.init()
-//     //       useSuggestionsStore().init()
-//     //       tabsetService.setLocalStorage(localStorage)
-//     //       spacesService.init()
-//     //         .then(() => {
-//     //           useTabsetService().init(isNewTabPage())
-//     //             .then(() => {
-//     //               MHtmlService.init()
-//     //               ChromeApi.init()
-//     //             })
-//     //         })
-//     //     })
-//     //
-//     //
-//     //   useNotificationsStore().bookmarksExpanded = $q.localStorage.getItem("bookmarks.expanded") || []
-//     //
-//       console.log("pushing /start")
-//       router.push("/start")
-//     }
-//   }
-// })
-
-function isNewTabPage() {
-  return route.path === '/newtab';
-}
-
-$q.dark.set($q.localStorage.getItem('darkMode') || false)
-
-if (isNewTabPage()) {
-
-  // init db
-
-
-} else {
-  if (!window.location.href.endsWith("#/popup")) {
-    // init of stores and some listeners
-    usePermissionsStore().initialize()
+// init db
+IndexedDbPersistenceService.init()
+  .then(() => {
+    // init services
+    LoggingService.init()
+    NotificationsService.init()
+    useSuggestionsStore().init()
+    tabsetService.setLocalStorage(localStorage)
+    spacesService.init()
       .then(() => {
-        ChromeListeners.initListeners(false)
-        ChromeBookmarkListeners.initListeners()
-        bookmarksStore.init()
-      })
-    featureTogglesStore.initialize(useQuasar().localStorage);
-    tabsStore.initialize(useQuasar().localStorage);
-
-
-    searchStore.init()
-    windowsStore.init()
-
-    const localStorage = useQuasar().localStorage
-
-    // init db
-    IndexedDbPersistenceService.init()
-      .then(() => {
-        // init services
-        LoggingService.init()
-        NotificationsService.init()
-        useSuggestionsStore().init()
-        tabsetService.setLocalStorage(localStorage)
-        spacesService.init()
+        useTabsetService().init(false)
           .then(() => {
-            useTabsetService().init(isNewTabPage())
-              .then(() => {
-                MHtmlService.init()
-                ChromeApi.init()
-              })
+            MHtmlService.init()
+            ChromeApi.init()
           })
       })
+  })
 
 
-    useNotificationsStore().bookmarksExpanded = $q.localStorage.getItem("bookmarks.expanded") || []
-    router.push("/start")
-  }
+useNotificationsStore().bookmarksExpanded = $q.localStorage.getItem("bookmarks.expanded") || []
+if (!window.location.href.endsWith("#/popup")) {
+  router.push("/start")
 }
-console.log("end", new Date().getTime())
 
 
 </script>

@@ -1,5 +1,5 @@
 import {defineStore} from 'pinia';
-import _ from 'lodash'
+import _, {forEach} from 'lodash'
 import {LocalStorage, uid} from "quasar";
 import {Tabset, TabsetStatus, TabsetType} from "src/models/Tabset";
 import {Tab, UrlExtension} from "src/models/Tab";
@@ -140,6 +140,20 @@ export const useTabsStore = defineStore('tabs', {
       return (url: string) => _.find(tabs, t => t.chromeTab.url === url)
     },
 
+    tabsForUrl: (state): (url: string) => Tab[] | undefined => {
+      return (url: string) => {
+        const tabs: Tab[] = []
+        forEach([...state.tabsets.values()], (ts: Tabset) => {
+          forEach(ts.tabs, (t: Tab) => {
+            if (t.chromeTab.url === url) {
+              tabs.push(t)
+            }
+          })
+        })
+        return tabs
+      }
+    },
+
     // Deprecated, use existingInTabset
     nameExistsInContextTabset: (state) => {
       return (searchName: string) => {
@@ -166,7 +180,7 @@ export const useTabsStore = defineStore('tabs', {
       }
     },
     tabsetFor: (state) => {
-      return  (tabId: string):Tabset | undefined => {
+      return (tabId: string): Tabset | undefined => {
         for (const [key, value] of state.tabsets) {
           if (_.find(value.tabs, t => t.id === tabId)) {
             return value
@@ -243,9 +257,9 @@ export const useTabsStore = defineStore('tabs', {
 
       this.pendingTabset = new Tabset("pending", "pending", [], [])
 
-     // this.ignoredTabset = new Tabset("ignored", "ignored", [], [])
+      // this.ignoredTabset = new Tabset("ignored", "ignored", [], [])
 
-     // this.backupTabset = new Tabset("backup", "backup", [], [])
+      // this.backupTabset = new Tabset("backup", "backup", [], [])
 
     },
 

@@ -19,7 +19,8 @@ chrome.runtime.onInstalled.addListener((details) => {
 
     // @ts-ignore
     chrome.action.setPopup(
-      {popup: "www/index.html#/popup"},
+      // {popup: "www/index.html#/popup"},
+      {popup: "www/popup.html"},
       () => {
         console.log("popup set", chrome.runtime.lastError)
       })
@@ -52,7 +53,8 @@ chrome.runtime.onStartup.addListener(() => {
 
     // @ts-ignore
     chrome.action.setPopup(
-      {popup: "www/index.html#/popup"},
+      // {popup: "www/index.html#/popup"},
+      {popup: "www/popup.html"},
       () => {
         console.log("popup set", chrome.runtime.lastError)
       })
@@ -61,5 +63,9 @@ chrome.runtime.onStartup.addListener(() => {
 })
 
 export default bexBackground((bridge, cons/* , allActiveConnections */) => {
-  //console.log("bexBackgroundBridge", bridge)
+  console.log("bexBackgroundBridge", bridge)
+  bridge.on('some.event', ({ data, respond }) => {
+    console.log('Event receieved, responding...')
+    respond(data.someKey + ' hey!')
+  })
 });

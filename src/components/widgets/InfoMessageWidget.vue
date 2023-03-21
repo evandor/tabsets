@@ -1,7 +1,7 @@
 <template>
 
   <div :class="cssClass" v-if="showHint()">
-    <q-banner inline-actions rounded class="bg-yellow-1 text-black" style="border: 1px solid grey">
+    <q-banner inline-actions rounded class="text-primary" style="border: 1px solid grey">
       <div class="row q-pa-xs">
         <div class="2">
           <q-icon name="o_lightbulb" color="warning" size="1.3em"/>

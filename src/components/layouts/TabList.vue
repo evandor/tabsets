@@ -27,6 +27,7 @@
         :clickable="usePermissionsStore().hasFeature(FeatureIdent.DETAILS)"
         v-ripple
         v-for="(tab,index) in props.tabs"
+        class="q-my-lg"
         @click.stop="showDetails(tab)"
         @mouseover="showButtons(  tab.id,true)"
         @mouseleave="showButtons( tab.id, false)"

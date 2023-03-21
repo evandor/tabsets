@@ -9,7 +9,7 @@
                   :data-testid="useUtils().createDataTestIdentifier('tabListElementWidget', props.tab.chromeTab.title)">
     <!-- name or title -->
     <q-item-label>
-      <div class="q-pr-lg cursor-pointer" style="display: inline-block;">
+      <div class="q-pr-lg cursor-pointer " style="display: inline-block;font-size: larger">
         {{ nameOrTitle(props.tab) }}
         <q-popup-edit :model-value="dynamicNameOrTitleModel(tab)" v-slot="scope"
                       @update:model-value="val => setCustomTitle( tab, val)">
@@ -37,7 +37,7 @@
       @mouseleave="showButtonsProp = false">
       <div class="q-pr-lg cursor-pointer" style="display: inline-block;"
            @click.stop="NavigationService.openOrCreateTab(props.tab.chromeTab?.url )">
-        {{ props.tab.chromeTab?.url }}
+        {{ props.tab.chromeTab?.url.split('?')[0] }}
         <q-icon name="open_in_new"/>
         <q-icon v-if="showButtonsProp"
                 class="q-ml-md" name="content_copy"
