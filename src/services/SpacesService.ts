@@ -2,7 +2,7 @@ import {uid} from "quasar";
 import {useSpacesStore} from "src/stores/spacesStore";
 import {useDB} from "src/services/usePersistenceService";
 
-const {db} = useDB()
+const {db,pouchDb} = useDB()
 
 class SpacesService {
 
@@ -12,7 +12,7 @@ class SpacesService {
   async init() {
     console.debug("init spaces service")
     //await localDb.init();
-    await db.loadSpaces()
+    await pouchDb.loadSpaces()
   }
 
   addNewSpace(name: string): Promise<void> {
@@ -22,7 +22,7 @@ class SpacesService {
     }
     const spaceId = uid()
     const newSpace = spacesStore.addSpace(spaceId, name)
-    return db.addSpace(newSpace)
+    return pouchDb.addSpace(newSpace)
   }
 
   deleteById(spaceId: string) {

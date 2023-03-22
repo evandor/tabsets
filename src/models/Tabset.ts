@@ -19,6 +19,8 @@ export enum TabsetType {
 
 export class Tabset {
   id: string
+
+  _id: string
   name: string
   created: number
   updated: number
@@ -35,6 +37,7 @@ export class Tabset {
 
   constructor(id: string, name: string, tabs: Tab[], groups: Group[] = [], spaces: string[] = []) {
     this.id = id
+    this._id = "tabset:" + new Date().toJSON()
     this.name = name
     this.created = new Date().getTime()
     this.updated = new Date().getTime()

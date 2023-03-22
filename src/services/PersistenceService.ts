@@ -37,14 +37,16 @@ interface PersistenceService {
   getMHtmlInline(url: string): Promise<object>
   getMHtmls(): Promise<MHtml[]>
 
-  addSpace(space: Space): Promise<void>
+  loadSpaces(): Promise<any>
+
+  addSpace(space: Space): Promise<any>
 
   cleanUpRequests(): Promise<void>
 
   saveStats(date: string, dataset: object): void
 
   getNotifications(onlyNew: boolean): Promise<Notification[]>
-  addNotification(notification: Notification): Promise<void>
+  addNotification(notification: Notification): Promise<any>
   notificationRead(notificationId: string): Promise<void>
 
   getSuggestions(): Promise<Suggestion[]>

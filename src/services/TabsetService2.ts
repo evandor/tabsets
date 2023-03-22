@@ -22,13 +22,14 @@ import {useSuggestionsStore} from "stores/suggestionsStore";
 import {Suggestion, SuggestionType} from "src/models/Suggestion";
 import {useFeatureTogglesStore} from "stores/featureTogglesStore";
 
-const {db} = useDB()
+const {db,pouchDb} = useDB()
 
 export function useTabsetService() {
 
   const init = async (doNotInitSearchIndex: boolean = false) => {
     console.debug("initializing tabsetService2")
-    await db.loadTabsets()
+    //await db.loadTabsets()
+    await pouchDb.loadTabsets()
     if (!doNotInitSearchIndex) {
       useSearchStore().populate(db.getContents())
     }
@@ -196,6 +197,7 @@ export function useTabsetService() {
   const saveTabset = async (tabset: Tabset): Promise<IDBValidKey> => {
     if (tabset.id) {
       tabset.updated = new Date().getTime()
+      pouchDb.saveTabset(tabset)
       return db.saveTabset(tabset)
     }
     return Promise.reject("tabset id not set")
