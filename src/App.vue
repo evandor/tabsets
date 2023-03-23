@@ -28,6 +28,7 @@ import {useUiStore} from "src/stores/uiStore";
 import {useTabsetService} from "src/services/TabsetService2";
 import {computed, ref, watch, watchEffect} from "vue";
 import PouchDbPersistenceService from "src/services/PouchDbPersistenceService";
+// import PouchDbPersistenceService from "src/services/PouchDbPersistenceService";
 
 
 // function isNewTabPage() {

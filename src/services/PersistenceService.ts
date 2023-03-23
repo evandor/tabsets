@@ -13,7 +13,7 @@ interface PersistenceService {
 
   loadTabsets():Promise<void>
   saveTabset(tabset: Tabset): Promise<any>
-  deleteTabset(tabsetId: string):Promise<void>
+  deleteTabset(tabsetId: string):Promise<any>
 
   updateThumbnail(url: string):Promise<void>
   saveThumbnail(tab: chrome.tabs.Tab, thumbnail: string):Promise<void>
@@ -50,7 +50,7 @@ interface PersistenceService {
   notificationRead(notificationId: string): Promise<void>
 
   getSuggestions(): Promise<Suggestion[]>
-  addSuggestion(suggestion: Suggestion): Promise<void>
+  addSuggestion(suggestion: Suggestion): Promise<any>
 
   getLogs(predicate: Predicate<LogEntry>): Promise<LogEntry[]>
   saveLog(context: string, level: LogLevel, msg: string, ...args: any[]):Promise<any>

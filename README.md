@@ -54,3 +54,6 @@ quasar --version
 1.1.3
 
 
+### couch db @skysail
+
+add-cors-to-couchdb https://cdb.skysail.io -u admin -p 3Z...

@@ -1,4 +1,5 @@
-import PouchDB from 'pouchdb';
+import PouchDB from 'pouchdb-browser';
+// var PouchDB = require('pouchdb-browser');
 import {IDBPDatabase, openDB} from "idb";
 import {useTabsStore} from "src/stores/tabsStore";
 import _ from "lodash";
@@ -25,7 +26,7 @@ import {StaticSuggestionIdent, Suggestion, SuggestionState} from "src/models/Sug
 class PouchDbPersistenceService implements PersistenceService {
 
   private db = new PouchDB('ts');
-  private remoteDB = new PouchDB(`http://admin:${process.env.COUCHDB_PWD}@localhost:5984/ts-4711`)
+  private remoteDB = new PouchDB(`${process.env.COUCHDB_PROTOCOL}admin:${process.env.COUCHDB_PWD}@${process.env.COUCHDB_URL}/ts-4711`)
 
   async init() {
     console.debug("initializing database remote sync setup")
@@ -72,28 +73,36 @@ class PouchDbPersistenceService implements PersistenceService {
     return Promise.resolve();
   }
 
-  addSuggestion(suggestion: Suggestion): Promise<void> {
-    return Promise.resolve(undefined);
+  addSuggestion(suggestion: Suggestion): Promise<any> {
+    suggestion._id = "suggestion:" + new Date().toJSON()
+    return this.db.put(suggestion)
+      .then(() => this.db.sync(this.remoteDB))
   }
 
   cleanUpContent(): Promise<SearchDoc[]> {
+    console.warn("cleaupUpContent not implemented yet in pouchdb")
     return Promise.resolve([]);
   }
 
   cleanUpRequests(): Promise<void> {
+    console.warn("cleanUpRequests not implemented yet in pouchdb")
     return Promise.resolve(undefined);
   }
 
   cleanUpThumbnails(): Promise<void> {
+    console.warn("cleanUpThumbnails not implemented yet in pouchdb")
     return Promise.resolve(undefined);
   }
 
   deleteContent(url: string): Promise<void> {
+    console.warn("deleteContent not implemented yet in pouchdb")
     return Promise.resolve(undefined);
   }
 
-  deleteTabset(tabsetId: string): Promise<void> {
-    return Promise.resolve(undefined);
+  async deleteTabset(_id: string): Promise<any> {
+    console.log("deleting tabset _id", _id)
+    const doc = await this.db.get(_id)//.then(function (doc) {
+    return this.db.remove(doc);
   }
 
   deleteThumbnail(url: string): Promise<void> {
@@ -184,4 +193,4 @@ class PouchDbPersistenceService implements PersistenceService {
 
 }
 
-export default new PouchDbPersistenceService()
+export default  new PouchDbPersistenceService()

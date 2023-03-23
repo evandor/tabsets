@@ -22,6 +22,7 @@ export enum StaticSuggestionIdent {
 
 export class Suggestion {
 
+  public _id: string
   public state: SuggestionState;
   public img: string | undefined = undefined;
 
@@ -41,6 +42,7 @@ export class Suggestion {
   ]
 
   constructor(public id: string, public title: string, public msg: string, public url: string, public type: SuggestionType = SuggestionType.RSS) {
+    this._id = "suggestion:" + new Date().toJSON()
     this.state = SuggestionState.NEW
   }
 

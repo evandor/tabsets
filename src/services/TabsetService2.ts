@@ -169,7 +169,7 @@ export function useTabsetService() {
         removeThumbnailsFor(t?.chromeTab.url || '')
       })
       tabsStore.deleteTabset(tabsetId)
-      db.deleteTabset(tabsetId)
+      pouchDb.deleteTabset(tabset._id)
       //this.db.delete('tabsets', tabsetId)
       const nextKey: string = tabsStore.tabsets.keys().next().value
       console.log("setting next key to", nextKey)
