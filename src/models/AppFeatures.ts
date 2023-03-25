@@ -39,7 +39,9 @@ export class AppFeatures {
       .setActivateCommand(new GrantPermissionCommand('history'))
       .setDeactivateCommand(new RevokePermissionCommand('history')),
     new AppFeature(FeatureIdent.BACKUP, FeatureType.EXPERIMENTAL, 'Backup Tabset', 'o_inventory_2', ['bex'], [FeatureIdent.OPENTABS_THRESHOLD]),
-    new AppFeature(FeatureIdent.IGNORE, FeatureType.EXPERIMENTAL, 'Ignore Tabset', 'o_pause_circle', ['bex'])
+    new AppFeature(FeatureIdent.IGNORE, FeatureType.EXPERIMENTAL, 'Ignore Tabset', 'o_pause_circle', ['bex']),
+    new AppFeature(FeatureIdent.SYNC, FeatureType.EXPERIMENTAL, 'Sync across browsers', 'o_sync', ['all']),
+    new AppFeature(FeatureIdent.ENCRYPTION, FeatureType.EXPERIMENTAL, 'Encrypt synced data', 'o_sync', ['all'])
 
     // new AppFeature(FeatureIdent.ANALYSE_TABS, FeatureType.PLANNED, 'Multiple Windows', 'o_history', ['bex']),
     // new AppFeature(FeatureIdent.ANALYSE_TABS, FeatureType.PLANNED, 'Scheduled Tabs', 'o_history', ['bex']),

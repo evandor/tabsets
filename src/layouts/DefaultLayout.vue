@@ -133,8 +133,8 @@
 
         <Transition name="colorized-appear">
           <q-btn v-if="permissionsStore.hasFeature(FeatureIdent.SAVE_TAB)"
-            flat
-            name="savedTabs" icon="o_save" @click="tabsClicked(DrawerTabs.SAVED_TABS)">
+                 flat
+                 name="savedTabs" icon="o_save" @click="tabsClicked(DrawerTabs.SAVED_TABS)">
             <q-tooltip class="tooltip" anchor="center right" self="center left" :delay="200">
               The List of Urls displayed when you open a new tab in your Browser
             </q-tooltip>
@@ -210,6 +210,31 @@
             @click="installNewVersion(notificationsStore.updateToVersion)"
             :label="'New Version ' + notificationsStore.updateToVersion + ' available. Click here to update'"/>
         </div>
+
+
+        <span class="q-pr-lg cursor-pointer" v-if="permissionsStore.hasFeature(FeatureIdent.SYNC) && authStore.user">
+          <q-icon name="person" class="q-mr-md" size="28px">
+            <q-tooltip>{{ authStore.user?.email }}</q-tooltip>
+          </q-icon>
+          <q-menu>
+            <q-list dense style="min-width: 100px">
+              <q-item clickable v-close-popup>
+                <q-item-section @click="logout()">Logout {{ authStore.user?.email }}</q-item-section>
+              </q-item>
+            </q-list>
+
+          </q-menu>
+        </span>
+
+
+        <Transition name="colorized-appear">
+        <span class="q-pr-lg cursor-pointer"
+              v-if="permissionsStore.hasFeature(FeatureIdent.SYNC) && !authStore.user">
+          <q-icon name="person" class="q-mr-md" size="28px"></q-icon>
+          <span @click="login">Login</span>
+        </span>
+        </Transition>
+
       </q-toolbar>
     </q-header>
 
@@ -270,7 +295,10 @@ import ImportDialog from "components/dialogues/ImportDialog.vue";
 import {Suggestion, SuggestionState} from "src/models/Suggestion";
 import SuggestionDialog from "components/dialogues/SuggestionDialog.vue";
 import {useSuggestionsStore} from "src/stores/suggestionsStore";
-import {FeatureIdent} from "src/models/AppFeature";
+import {useAuthStore} from "stores/auth";
+import {FeatureIdent} from "src/models/AppFeature"
+import {useTabsetService} from "src/services/TabsetService2";
+import {useAuth0} from "@auth0/auth0-vue";
 
 const router = useRouter()
 const tabsStore = useTabsStore()
@@ -278,6 +306,8 @@ const searchStore = useSearchStore()
 const uiStore = useUiStore()
 
 const localStorage = useQuasar().localStorage
+
+const authStore = useAuthStore()
 
 const rightDrawerOpen = ref(true)
 const leftDrawerOpen = ref(true)
@@ -291,6 +321,7 @@ const settingsStore = useSettingsStore()
 const spacesStore = useSpacesStore()
 const uiService = useUiService()
 const route = useRoute()
+const auth0 = useAuth0()
 
 const spacesOptions = ref<object[]>([])
 const suggestions = ref<Suggestion[]>(useSuggestionsStore().getSuggestions())
@@ -345,6 +376,24 @@ const toggleLeftDrawer = () => {
   //useUiService().toggleDrawer()
 }
 
+const login = () => auth0.loginWithRedirect()
+
+const logout = () => {
+  console.log("logout!")
+
+  authStore.logout()
+    .then(() => {
+      router.push("/start")
+    })
+    .catch(() => {
+      //this.handleError(error)
+    })
+    .finally(() => {
+      console.log("cleaning up after logout")
+      useTabsetService().init()
+    })
+}
+
 const installNewVersion = (version: string) => {
   notificationsStore.updateAvailable(false)
   chrome.tabs.create({
@@ -374,6 +423,6 @@ const suggestionDialog = (s: Suggestion) => $q.dialog({
 })
 
 const dependingOnStates = () =>
-  _.find(useSuggestionsStore().getSuggestions(),s => s.state === SuggestionState.NEW) ? 'warning' : 'white'
+  _.find(useSuggestionsStore().getSuggestions(), s => s.state === SuggestionState.NEW) ? 'warning' : 'white'
 
 </script>

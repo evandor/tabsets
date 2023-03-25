@@ -24,8 +24,10 @@ export enum FeatureIdent {
   OLD_TABS = "OLD_TABS",
   BACKUP = "BACKUP",
   IGNORE = "IGNORE",
+  SORT_TABS = "SORT_TABS",
 
-  SORT_TABS = "SORT_TABS"
+  SYNC = "SYNC",
+  ENCRYPTION = "ENCRYPTION"
 
 }
 

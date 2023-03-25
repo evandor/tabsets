@@ -27,6 +27,7 @@ module.exports = configure(function (/* ctx */) {
       'i18n',
       'constants',
       'konva',
+      'auth0',
       'firebase'
     ],
 

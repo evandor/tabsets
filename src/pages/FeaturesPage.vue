@@ -273,6 +273,18 @@ text.set(FeatureIdent.OLD_TABS.toLowerCase(), {
   description: 'Get a list of old tabs to decide which ones to keep.',
   permissions: []
 })
+text.set(FeatureIdent.SYNC.toLowerCase(), {
+  planned: false,
+  name: 'Synchronize',
+  description: 'Synchronize your tabsets across browsers',
+  permissions: []
+})
+text.set(FeatureIdent.ENCRYPTION.toLowerCase(), {
+  planned: false,
+  name: 'Encrypt',
+  description: 'Encrypt your synchronized tabs',
+  permissions: []
+})
 
 
 watchEffect(() => {

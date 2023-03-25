@@ -1,48 +1,94 @@
 import PouchDB from 'pouchdb-browser';
-// var PouchDB = require('pouchdb-browser');
-import {IDBPDatabase, openDB} from "idb";
 import {useTabsStore} from "src/stores/tabsStore";
-import _ from "lodash";
-import {INDEX_DB_NAME, INDEX_DB_VERSION, EXPIRE_DATA_PERIOD_IN_MINUTES} from "boot/constants";
 import PersistenceService from "src/services/PersistenceService";
 import {Tabset, TabsetStatus} from "src/models/Tabset";
-import mhtml2html from 'mhtml2html';
 import {useSpacesStore} from "src/stores/spacesStore";
 import {Space} from "src/models/Space";
 import {MHtml} from "src/models/MHtml";
 import {Tab} from "src/models/Tab";
 import {SearchDoc} from "src/models/SearchDoc";
-import {RequestInfo} from "src/models/RequestInfo";
-import {MetaLink} from "src/models/MetaLink";
 import {LogEntry} from "src/models/LogEntry";
 import {LogLevel} from "logging-library";
 import {Predicate} from "src/domain/Types";
-import {TabLogger} from "src/logging/TabLogger";
-import {StatsEntry} from "src/models/StatsEntry";
-import {uid} from "quasar";
-import {Notification, NotificationStatus} from "src/models/Notification";
-import {StaticSuggestionIdent, Suggestion, SuggestionState} from "src/models/Suggestion";
+import {Notification} from "src/models/Notification";
+import {Suggestion} from "src/models/Suggestion";
+import {useAuthStore} from "stores/auth";
 
 class PouchDbPersistenceService implements PersistenceService {
 
   private db = new PouchDB('ts');
-  private remoteDB = new PouchDB(`${process.env.COUCHDB_PROTOCOL}admin:${process.env.COUCHDB_PWD}@${process.env.COUCHDB_URL}/ts-4711`)
-
+  private remoteDB: undefined | PouchDB.Database<{}> & {} = undefined //new PouchDB(`${process.env.COUCHDB_PROTOCOL}admin:${process.env.COUCHDB_PWD}@${process.env.COUCHDB_URL}/ts-4711`)
   async init() {
-    console.debug("initializing database remote sync setup")
-    this.db.sync(this.remoteDB);
+    const isAuthenticated = useAuthStore().isAuthenticated
+    console.debug("initializing database remote sync setup", isAuthenticated)
+    if (isAuthenticated && this.remoteDB) {
+      this.db.sync(this.remoteDB);
+    }
+  }
+
+  /**
+   * new user:
+   *
+   * curl -X PUT https://admin:3Zmd...@cdb.skysail.io/_users/org.couchdb.user:auth0|641d4ef02fed75bb3d235f4b -H "Accept: application/json" -H "Content-Type: application/json" -d '{"name": "izzy", "password": "apple", "roles": [], "type": "user"}'
+   *
+   *
+   * in couchdb /etc/local.init:
+   *
+   * [chttpd]
+   * authentication_handlers = {chttpd_auth, cookie_authentication_handler}, {chttpd_auth, jwt_authentication_handler}, {chttpd_auth, default_authentication_handler}
+   * [jwt_auth]
+   * required_claims =
+   * [jwt_keys]
+   * hmac:foo = aGVsbG8=
+   * rsa:MzEx...yNw = -----BEGIN PUBLIC KEY-----\nMIIBIjANBgkq...D45YsMSR\nXQIDAQAB\n-----END PUBLIC KEY-----\n
+   * ~
+   * MzEx... from token 'kid'
+   * MIIBI... from skysail curl -s ...auth0.com/pem | openssl x509 -pubkey -noout
+   */
+  initRemoteDb() {
+    console.log("initializing remote db")
+    const user = useAuthStore().user
+    console.log("initializing remote db", user)
+    if (user && user['sub']) {
+      const user_id:string = user['sub']
+      const dbname = "ts-" + user['sub']
+      console.log("initializing remote db", dbname)
+      this.remoteDB = new PouchDB(`${process.env.COUCHDB_PROTOCOL}${process.env.COUCHDB_URL}/ts-auth0-641d4ef02fed75bb3d235f4b`,
+        {
+          fetch: async function (url, opts) {
+            console.log("url", url)
+            // console.log("opts", opts?.headers)
+            const token = await useAuthStore().auth0.getAccessTokenSilently()
+            console.log("token", token)
+
+            if (opts && opts.headers) {
+              // @ts-ignore
+              opts.headers.set('Authorization', 'Bearer ' +  token  );
+              // @ts-ignore
+              //opts.headers.set('X-Auth-CouchDB-UserName', 'foo')//user_id.replace('|','-')  );
+              // @ts-ignore
+              //opts.headers.set('X-Auth-CouchDB-Token', '22047ebd7c4ec67dfbcbad7213a693249dbfbf86')//user_id.replace('|','-')  );
+            }
+            // console.log("opts2", opts?.headers)
+            return PouchDB.fetch(url, opts);
+          }
+        })
+      //this.remoteDB = new PouchDB(`${process.env.COUCHDB_PROTOCOL}izzy:apple@${process.env.COUCHDB_URL}/ts-auth0-641d4ef02fed75bb3d235f4b`)
+      this.db.sync(this.remoteDB)
+    }
   }
 
   saveTabset(tabset: Tabset): Promise<any> {
     tabset._id = "tabset:" + new Date().toJSON()
     return this.db.put(JSON.parse(JSON.stringify(tabset)))
-      .then(() => this.db.sync(this.remoteDB))
+      .then(this.syncIfAuthenticated())
   }
+
 
   loadTabsets(): Promise<void> {
     const tabsStore = useTabsStore()
     this.db.allDocs({include_docs: true, startkey: 'tabset:',})
-      .then((docs:PouchDB.Core.AllDocsResponse<any>) => {
+      .then((docs: PouchDB.Core.AllDocsResponse<any>) => {
         docs.rows.forEach(row => {
           tabsStore.addTabset(row.doc)
         })
@@ -53,19 +99,19 @@ class PouchDbPersistenceService implements PersistenceService {
   addNotification(notification: Notification): Promise<any> {
     notification._id = "notification:" + new Date().toJSON()
     return this.db.put(notification)
-      .then(() => this.db.sync(this.remoteDB))
+      .then(this.syncIfAuthenticated())
   }
 
   addSpace(space: Space): Promise<any> {
     space._id = "space:" + new Date().toJSON()
     return this.db.put(space)
-      .then(() => this.db.sync(this.remoteDB))
+      .then(this.syncIfAuthenticated())
   }
 
   loadSpaces(): Promise<any> {
     const store = useSpacesStore()
     this.db.allDocs({include_docs: true, startkey: 'space:',})
-      .then((docs:PouchDB.Core.AllDocsResponse<any>) => {
+      .then((docs: PouchDB.Core.AllDocsResponse<any>) => {
         docs.rows.forEach(row => {
           store.putSpace(row.doc)
         })
@@ -76,7 +122,7 @@ class PouchDbPersistenceService implements PersistenceService {
   addSuggestion(suggestion: Suggestion): Promise<any> {
     suggestion._id = "suggestion:" + new Date().toJSON()
     return this.db.put(suggestion)
-      .then(() => this.db.sync(this.remoteDB))
+      .then(this.syncIfAuthenticated())
   }
 
   cleanUpContent(): Promise<SearchDoc[]> {
@@ -177,7 +223,6 @@ class PouchDbPersistenceService implements PersistenceService {
   }
 
 
-
   saveThumbnail(tab: chrome.tabs.Tab, thumbnail: string): Promise<void> {
     return Promise.resolve(undefined);
   }
@@ -190,7 +235,15 @@ class PouchDbPersistenceService implements PersistenceService {
     return Promise.resolve(undefined);
   }
 
+  private syncIfAuthenticated() {
+    return () => {
+      if (useAuthStore().isAuthenticated && this.remoteDB) {
+        console.log("synchronizing pouchdb")
+        this.db.sync(this.remoteDB);
+      }
+    }
+  }
 
 }
 
-export default  new PouchDbPersistenceService()
+export default new PouchDbPersistenceService()

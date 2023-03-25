@@ -26,6 +26,7 @@
     "concurrently:dev:jest": "concurrently \"quasar dev\" \"jest --watch\""
   },
   "dependencies": {
+    "@auth0/auth0-vue": "^2.1.0",
     "@extractus/feed-extractor": "^6.2.1",
     "@quasar/extras": "^1.15.11",
     "@types/lodash": "^4.14.182",
