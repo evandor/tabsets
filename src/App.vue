@@ -28,6 +28,8 @@ import {useUiStore} from "src/stores/uiStore";
 import {useTabsetService} from "src/services/TabsetService2";
 import {computed, ref, watch, watchEffect} from "vue";
 import PouchDbPersistenceService from "src/services/PouchDbPersistenceService";
+import {INDEX_DB_NAME} from "boot/constants";
+import {useAuth0} from "@auth0/auth0-vue";
 // import PouchDbPersistenceService from "src/services/PouchDbPersistenceService";
 
 
@@ -57,6 +59,7 @@ const uiStore = useUiStore()
 const router = useRouter()
 const route = useRoute()
 const $q = useQuasar()
+const auth0 = useAuth0()
 
 // init of stores and some listeners
 usePermissionsStore().initialize()
@@ -74,11 +77,16 @@ windowsStore.init()
 
 const localStorage = useQuasar().localStorage
 
+console.log("Here: ", auth0.isAuthenticated.value)
+const dbName = localStorage.getItem("current.user") && auth0.isAuthenticated.value ?
+  "db-" + localStorage.getItem('current.user') : INDEX_DB_NAME;
+console.log("d:", dbName)
+
 // init db
-IndexedDbPersistenceService.init()
+IndexedDbPersistenceService.init(dbName)
   .then(() => {
     // init services
-    PouchDbPersistenceService.init()
+    PouchDbPersistenceService.init(dbName)
     LoggingService.init()
     NotificationsService.init()
     useSuggestionsStore().init()

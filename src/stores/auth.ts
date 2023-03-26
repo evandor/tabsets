@@ -1,13 +1,16 @@
 import {defineStore} from 'pinia';
 import "firebase/auth";
 import {Subscription} from "src/models/Subscription";
-import {Auth0VueClient, useAuth0} from "@auth0/auth0-vue";
+import {Auth0VueClient, useAuth0, User} from "@auth0/auth0-vue";
 import {getAuth, signInWithCustomToken} from "firebase/auth";
+import IndexedDbPersistenceService from "src/services/IndexedDbPersistenceService";
+import PouchDbPersistenceService from "src/services/PouchDbPersistenceService";
+import {INDEX_DB_NAME} from "boot/constants";
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
     authenticated: false,
-    user: null,
+    user: null as unknown as User,
     auth0: null as unknown as Auth0VueClient,
     subscription: null as unknown as Subscription,
     idToken: null as unknown as string
@@ -28,8 +31,15 @@ export const useAuthStore = defineStore('auth', {
   },
 
   actions: {
-    setUser(user: any) {
-      console.log("authStore: setting user", typeof user, user)
+    setUser(user: User) {
+      console.log("authStore: setting user", typeof user, user.email, user.name)
+      if (!user.name) {
+        console.warn("setting user without name", user)
+        return
+      }
+      localStorage.setItem("current.user", user.name)
+      IndexedDbPersistenceService.init("db-" + user.name)
+        .then(() => PouchDbPersistenceService.init("db-" + user.name))
       this.authenticated = true;
       this.user = user;
     },
@@ -74,7 +84,7 @@ export const useAuthStore = defineStore('auth', {
         logoutParams: {
           returnTo: window.location.origin
         }
-      }).then((res:any) => {
+      }).then((res: any) => {
         console.log("logout res", res)
       })
 
@@ -83,7 +93,7 @@ export const useAuthStore = defineStore('auth', {
       return firebaseAuth.signOut()
         .then((success: any) => {
           console.log("firebaseAuth logged out")
-          this.user = null
+          this.user = null as unknown as User
           this.authenticated = false
         })
     }

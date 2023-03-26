@@ -26,9 +26,9 @@ class IndexedDbPersistenceService implements PersistenceService {
 
   private db: IDBPDatabase = null as unknown as IDBPDatabase
 
-  async init() {
-    console.debug("initializing database")
-    this.db = await this.initDatabase()
+  async init(dbName: string) {
+    console.log("initializing indexeddb database", dbName)
+    this.db = await this.initDatabase(dbName)
   }
 
   async loadTabsets(): Promise<any> {
@@ -417,9 +417,9 @@ class IndexedDbPersistenceService implements PersistenceService {
     return this.db.delete('spaces', spaceId)
   }
 
-  private async initDatabase(): Promise<IDBPDatabase> {
+  private async initDatabase(dbName: string): Promise<IDBPDatabase> {
     console.debug("about to initialize indexedDB")
-    return await openDB(INDEX_DB_NAME, INDEX_DB_VERSION, {
+    return await openDB(dbName, INDEX_DB_VERSION, {
       // upgrading see https://stackoverflow.com/questions/50193906/create-index-on-already-existing-objectstore
       upgrade(db) {
         if (!db.objectStoreNames.contains('tabsets')) {

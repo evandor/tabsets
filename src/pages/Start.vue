@@ -15,7 +15,7 @@
 <script setup lang="ts">
 import {useQuasar} from "quasar";
 import {useRouter} from "vue-router";
-import {useAuth0} from "@auth0/auth0-vue";
+import {useAuth0, User} from "@auth0/auth0-vue";
 import {onMounted, ref, watchEffect} from "vue";
 import {useAuthStore} from "stores/auth";
 import {useTabsStore} from "stores/tabsStore";
@@ -31,19 +31,20 @@ const tabsStore = useTabsStore()
 
 const isAuthenticated = ref(auth0.isAuthenticated)
 const isLoading = ref(auth0.isLoading)
-const user = ref(auth0.user)
+const user = ref<undefined | User>(auth0.user)
 
 onMounted(() => {
   console.log("AboutProPage.vue mounted")
 })
 
 watchEffect(() => {
-  if (isAuthenticated.value) {
-    console.log("setting user", user.value)
-    authStore.setUser(user.value)
+  console.log("watchging", auth0.user.value)
+  console.log("watchging2", user.value)
+  if (isAuthenticated.value && auth0.user.value) {
+    console.log("setting user", auth0.user.value)
+    authStore.setUser(auth0.user.value)
     authStore.setAuth0(auth0)
     PouchDbPersistenceService.initRemoteDb()
-    //AppService.init(false)
   }
 })
 
