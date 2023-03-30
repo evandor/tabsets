@@ -1,32 +1,44 @@
 <template>
 
-  <q-item-section class="q-mr-sm" style="max-width:20px">
+  <q-item-section class="q-mr-sm" style="max-width:20px;">
     <TabFaviconWidget :tab="props.tab" width="20px" height="20px" style="position: relative;top:-10px"/>
   </q-item-section>
 
   <!-- name, title, url && note -->
   <q-item-section :style="itemStyle(props.tab)"
                   :data-testid="useUtils().createDataTestIdentifier('tabListElementWidget', props.tab.chromeTab.title)">
+
     <!-- name or title -->
     <q-item-label>
-      <div class="q-pr-lg cursor-pointer " style="display: inline-block;font-size: larger">
-        {{ nameOrTitle(props.tab) }}
-        <q-popup-edit :model-value="dynamicNameOrTitleModel(tab)" v-slot="scope"
-                      @update:model-value="val => setCustomTitle( tab, val)">
-          <q-input v-model="scope.value" dense autofocus counter @keyup.enter="scope.set"/>
-        </q-popup-edit>
-      </div>
+      <div>
+        <div class="q-pr-lg cursor-pointer" style="font-size: larger;line-height: 120%;">
+          <q-chip v-if="isOpen(props.tab) && props.showIsOpened"
+                  class="q-my-none q-py-none q-ml-none"
+                  clickable
+                  style="float:left;"
+                  @click="NavigationService.openOrCreateTab(props.tab.chromeTab?.url)"
+                  size="xs" icon="tab">
+            opened
+            <q-tooltip>This tab is open in your browser. Click to open the corresponding tab.</q-tooltip>
+          </q-chip>
+          {{nameOrTitle(props.tab)}}
+          <q-popup-edit :model-value="dynamicNameOrTitleModel(tab)" v-slot="scope"
+                        @update:model-value="val => setCustomTitle( tab, val)">
+            <q-input v-model="scope.value" dense autofocus counter @keyup.enter="scope.set"/>
+          </q-popup-edit>
+        </div>
 
-      <q-badge v-if="isOpen(props.tab) && props.showIsOpened"
-               @click.stop="NavigationService.openOrCreateTab(props.tab.chromeTab?.url)"
-               color="primary" label="opened" outline class="q-ml-none"
-               style="position: relative;top:-5px">
-        <q-tooltip class="tooltip">This tab is currently open in your browser</q-tooltip>
-      </q-badge>
-      <q-badge v-if="props.tab.isDuplicate" color="warning" label="duplicate" outline class="q-ml-sm"
-               style="position: relative;top:-5px">
-        <q-tooltip class="tooltip">This tab has a duplicate inside this tabset and could be deleted</q-tooltip>
-      </q-badge>
+        <!--      <q-badge v-if="isOpen(props.tab) && props.showIsOpened"-->
+        <!--               @click.stop="NavigationService.openOrCreateTab(props.tab.chromeTab?.url)"-->
+        <!--               color="primary" class="q-ml-none"-->
+        <!--               style="position: relative;top:-5px">-->
+        <!--        <q-tooltip class="tooltip">This tab is currently open in your browser</q-tooltip>-->
+        <!--      </q-badge>-->
+        <q-badge v-if="props.tab.isDuplicate" color="warning" label="duplicate" outline class="q-ml-sm"
+                 style="position: relative;top:-5px">
+          <q-tooltip class="tooltip">This tab has a duplicate inside this tabset and could be deleted</q-tooltip>
+        </q-badge>
+      </div>
     </q-item-label>
 
     <!-- url -->
@@ -44,6 +56,7 @@
                 @click.stop="copyToClipboard(props.tab.chromeTab?.url)">
           <q-tooltip class="tooltip">Copy URL to clipboard</q-tooltip>
         </q-icon>
+        <q-icon v-else class="q-ml-md"/>
       </div>
     </q-item-label>
 
@@ -70,12 +83,21 @@
       </q-btn>
     </div>
   </q-item-section>
+  <q-item-section side v-else>
+    <div v-if="usePermissionsStore().hasFeature(FeatureIdent.NEW_TAB)"
+         style="min-width:35px;">&nbsp;
+    </div>
+    <div style="min-width:35px;">&nbsp;</div>
+  </q-item-section>
 
   <!-- Delete button -->
   <q-item-section side v-if="props.showButtons">
     <q-btn flat round color="red" size="11px" icon="delete_outline" @click.stop="deleteTab(tab)">
       <q-tooltip>Delete this tab from this list</q-tooltip>
     </q-btn>
+  </q-item-section>
+  <q-item-section side v-else>
+    <q-btn flat round color="red" size="11px"/>
   </q-item-section>
 
 </template>
@@ -194,7 +216,12 @@ const addToNewTabUrlList = (tab: Tab) => {
   })
 }
 
-const nameOrTitle = (tab: Tab) => tab.name ? tab.name : tab.chromeTab?.title
+const nameOrTitle = (tab: Tab) => {
+  // if (tab.executionResult) {
+  //   return tab.executionResult[0]['email' as keyof object] + " <img src='"+tab.executionResult[0]['picture' as keyof object]['medium' as keyof object]+"' />"
+  // }
+  return tab.name ? tab.name : tab.chromeTab?.title
+}
 
 const dynamicNameOrTitleModel = (tab: Tab) => tab.name ? tab.name : tab.chromeTab?.title
 

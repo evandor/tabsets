@@ -3,7 +3,7 @@ import _ from "lodash"
 import {Tab} from "src/models/Tab";
 import {useDB} from "src/services/usePersistenceService";
 
-const {localDb} = useDB()
+const {db} = useDB()
 
 class MHtmlService {
 
@@ -17,22 +17,22 @@ class MHtmlService {
 
   saveMHtml(tab: Tab, mhtml: Blob): Promise<string> {
     console.log("saving MHtml")
-    return localDb.saveMHtml(tab, mhtml)
+    return db.saveMHtml(tab, mhtml)
   }
 
   getMHtmls(): Promise<MHtml[]> {
-    const res = localDb.getMHtmls()
+    const res = db.getMHtmls()
       .then(mhtmls => _.map(mhtmls, mhtml => new MHtml(mhtml.id, mhtml.title, mhtml.favIconUrl)))
       //console.log("res", res)
     return res
   }
 
   getMHtml(encodedUrl: string) {
-    return localDb.getMHtml(encodedUrl)
+    return db.getMHtml(encodedUrl)
   }
 
   getMHtmlInline(encodedUrl: string) {
-    return localDb.getMHtmlInline(encodedUrl)
+    return db.getMHtmlInline(encodedUrl)
   }
 }
 

@@ -4,7 +4,7 @@ import {LogEntry} from "src/models/LogEntry";
 import {Predicate} from "src/domain/Types";
 import {useDB} from "src/services/usePersistenceService";
 
-const {localDb} = useDB()
+const {db} = useDB()
 
 export class TabLogsQuery implements Query<object[]> {
 
@@ -13,7 +13,7 @@ export class TabLogsQuery implements Query<object[]> {
 
   query<T>(): Promise<QueryResult<LogEntry[]>> {
     const predicate: Predicate<LogEntry> = (t: LogEntry) => t.context === "url_" + btoa(this.tabUrl)
-    return localDb.getLogs(predicate)
+    return db.getLogs(predicate)
       .then((r) => {
         return new QueryResult(r, "")
       })

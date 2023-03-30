@@ -233,7 +233,7 @@ export function useTabsetService() {
       //console.log("saving content", tab, text, metas, title, tabsetIds)
       db.saveContent(tab, text, metas, title, tabsetIds)
         //.then(() => console.log("added content"))
-        .catch(err => console.log("err", err))
+        .catch((err:any) => console.log("err", err))
 
       // console.log("updating meta data for ", tabsetIds, tab.url)
       const tabsets = [...useTabsStore().tabsets.values()]

@@ -4,7 +4,7 @@ import {StaticSuggestionIdent, Suggestion, SuggestionState} from "src/models/Sug
 import {useDB} from "src/services/usePersistenceService";
 import _ from "lodash";
 
-const {localDb} = useDB()
+const {db} = useDB()
 
 
 export const useSuggestionsStore = defineStore('suggestions', () => {
@@ -17,7 +17,7 @@ export const useSuggestionsStore = defineStore('suggestions', () => {
   }
 
   function loadSuggestionsFromDb() {
-    localDb.getSuggestions()
+    db.getSuggestions()
       .then((res: Suggestion[]) => {
         suggestions.value = res
       })
@@ -25,29 +25,29 @@ export const useSuggestionsStore = defineStore('suggestions', () => {
 
   function addSuggestion(s: Suggestion | undefined) {
     if (s) {
-      localDb.addSuggestion(s)
+      db.addSuggestion(s)
         .then(() => suggestions.value.push(s))
     }
   }
 
   function removeSuggestion(ident: StaticSuggestionIdent) {
     // console.log("removing suggestion if exists: ", ident)
-    localDb.removeSuggestion(ident)
+    db.removeSuggestion(ident)
       .then(() => suggestions.value = _.filter(suggestions.value, s => s.id !== ident))
   }
 
   function cancelSuggestion(id: string): Promise<void> {
-    return localDb.setSuggestionState(id, SuggestionState.CANCELED)
+    return db.setSuggestionState(id, SuggestionState.CANCELED)
       .then((res) => loadSuggestionsFromDb())
   }
 
   function ignoreSuggestion(id: string): Promise<void> {
-    return localDb.setSuggestionState(id, SuggestionState.IGNORED)
+    return db.setSuggestionState(id, SuggestionState.IGNORED)
       .then((res) => loadSuggestionsFromDb())
   }
 
   function applySuggestion(id: string): Promise<Suggestion> {
-    return localDb.setSuggestionState(id, SuggestionState.APPLIED)
+    return db.setSuggestionState(id, SuggestionState.APPLIED)
       .then((res) => {
         loadSuggestionsFromDb();
         return res

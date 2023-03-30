@@ -27,6 +27,7 @@ import {useSuggestionsStore} from "src/stores/suggestionsStore";
 import {useUiStore} from "src/stores/uiStore";
 import {useTabsetService} from "src/services/TabsetService2";
 import {computed, ref, watch, watchEffect} from "vue";
+import {INDEX_DB_NAME} from "boot/constants";
 
 
 // function isNewTabPage() {
@@ -73,7 +74,7 @@ windowsStore.init()
 const localStorage = useQuasar().localStorage
 
 // init db
-IndexedDbPersistenceService.init()
+IndexedDbPersistenceService.init(INDEX_DB_NAME)
   .then(() => {
     // init services
     LoggingService.init()

@@ -7,7 +7,7 @@ class LoggingService {
   logger: ILogger  = null as unknown as ILogger
 
   constructor() {
-    console.log("called new LoggingService")
+    console.debug("called new LoggingService")
   }
 
   async init() {

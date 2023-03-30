@@ -3,7 +3,7 @@ import {QueryResult} from "src/domain/QueryResult";
 import {LogEntry} from "src/models/LogEntry";
 import {useDB} from "src/services/usePersistenceService";
 
-const {localDb} = useDB()
+const {db} = useDB()
 
 export class LogsQuery implements Query<object[]> {
 
@@ -11,7 +11,7 @@ export class LogsQuery implements Query<object[]> {
   }
 
   query<T>(): Promise<QueryResult<LogEntry[]>> {
-    const results = localDb.getLogs()
+    const results = db.getLogs()
     return results
       .then((r) => new QueryResult(r, ""))
   }

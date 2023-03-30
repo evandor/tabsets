@@ -4,7 +4,7 @@ import _ from "lodash"
 import {StatsEntry} from "src/models/StatsEntry";
 import {useDB} from "src/services/usePersistenceService";
 
-const {localDb} = useDB()
+const {db} = useDB()
 
 class StatsService {
 
@@ -23,7 +23,7 @@ class StatsService {
         const todayLong = new Date(new Date().getTime() - (offset * 60 * 1000))
         const today = todayLong.toISOString().split('T')[0]
         const dataset = new StatsEntry(today, tabssetsSize, openTabsCount, tabsCount, bookmarksCount, res.usage || 0)
-        localDb.saveStats(today, dataset)
+        db.saveStats(today, dataset)
       })
   }
 }

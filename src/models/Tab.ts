@@ -37,6 +37,8 @@ export class Tab {
 
   contentHash: string
 
+  //executionResult: string | undefined
+
   constructor(public id: string, chromeTab: chrome.tabs.Tab) {
     this.created = new Date().getTime()
     this.updated = new Date().getTime()

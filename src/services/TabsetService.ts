@@ -14,6 +14,7 @@ const {getTabset, getCurrentTabset, saveTabset, saveCurrentTabset, tabsetsFor, s
 import {useDB} from "src/services/usePersistenceService";
 import LoggingService from "src/services/LoggingService";
 import {TabLogger} from "src/logging/TabLogger";
+import {api} from "boot/axios";
 
 const {db} = useDB()
 
@@ -61,7 +62,25 @@ class TabsetService {
   async saveToCurrentTabset(tab: Tab, useIndex: number | undefined = undefined): Promise<number> {
     const currentTs = getCurrentTabset()
     if (currentTs) {
-      return saveToTabset(currentTs, tab, useIndex)
+
+      // if (tab.chromeTab.url?.startsWith("https://randomuser.me/api")) {
+      //   const res = await api.get(tab.chromeTab.url, {
+      //     params: {
+      //       url: "domainName",
+      //       title: "site",
+      //       note: "category"
+      //     }
+      //   })
+      //   //  .then((res) => {
+      //       const results = JSON.stringify(res.data.results)
+      //       console.log("results", results)
+      //       // tab.executionResult = JSON.stringify(JSON.parse(res.data))
+      //       tab.executionResult = JSON.parse(results)
+      //       return saveToTabset(currentTs, tab, useIndex)
+      //   //  })
+      // } else {
+        return saveToTabset(currentTs, tab, useIndex)
+      // }
     }
     return Promise.reject("could not get current tabset")
   }
@@ -207,7 +226,7 @@ class TabsetService {
       if (t.url) {
         if (!urlSet.has(t.url) && !t.url.startsWith("chrome")) {
           urlSet.add(t.url)
-          tabsStore.addToPendingTabset(new Tab(uid(),t))
+          tabsStore.addToPendingTabset(new Tab(uid(), t))
           //tabsStore.pendingTabset.tabs.push(new Tab(uid(), t))
         }
       }
@@ -360,7 +379,7 @@ class TabsetService {
     return trackedTabs
   }
 
-  async closeTrackedTabs():Promise<chrome.tabs.Tab[]> {
+  async closeTrackedTabs(): Promise<chrome.tabs.Tab[]> {
     // TODO long-Running action
     const currentTab = await ChromeApi.getCurrentTab()
     // chrome.tabs.query({}, (result: chrome.tabs.Tab[]) => {

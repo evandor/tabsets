@@ -394,6 +394,7 @@ class ChromeListeners {
   }
 
   private handleAddTabToTabset(request: any, sender: chrome.runtime.MessageSender, sendResponse: any) {
+    console.log("handleAddTabToTabset", request, sender)
     if (sender.tab) {
 
       saveToTabsetId(request.tabsetId, new Tab(uid(), sender.tab))

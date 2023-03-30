@@ -6,7 +6,7 @@
     ident="tablist_dnd"
     hint="You can select the favicon images and drag and drop the entries to reorder the list to your wishes"/>
 
-  <q-list bordered separator>
+  <q-list separator>
     <vue-draggable-next
       class="dragArea list-group w-full"
       :list="props.tabs"

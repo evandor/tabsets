@@ -3,13 +3,13 @@ import {Tab} from "src/models/Tab";
 import _ from "lodash"
 import {useDB} from "src/services/usePersistenceService";
 
-const {localDb} = useDB()
+const {db} = useDB()
 
 class TabService {
 
   updateThumbnail(url: string | undefined): Promise<void> {
     if (url) {
-      return localDb.updateThumbnail(url)
+      return db.updateThumbnail(url)
     }
     console.log("could not update thumbnail")
     return Promise.resolve()
@@ -17,7 +17,7 @@ class TabService {
 
   updateContent(url: string | undefined): Promise<object> {
     if (url) {
-      return localDb.updateContent(url)
+      return db.updateContent(url)
     }
     console.log("could not update thumbnail")
     return Promise.resolve({})

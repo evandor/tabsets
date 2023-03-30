@@ -42,10 +42,10 @@ export const useSpacesStore = defineStore('spaces', () => {
   }
 
   function putSpace(s: Space) {
-    console.log("putting space", s.id, s)
+    // console.log("putting space", s.id, s)
     spaces.value.set(s.id, s)
     if (s.id === currentFromLocalStorage ) {
-      console.log("setting current space to ", s)
+      // console.log("setting current space to ", s)
       space.value = s
     }
   }

@@ -20,15 +20,11 @@ import {StatsEntry} from "src/models/StatsEntry";
 import {uid} from "quasar";
 import {Notification, NotificationStatus} from "src/models/Notification";
 import {StaticSuggestionIdent, Suggestion, SuggestionState} from "src/models/Suggestion";
-
-
 class IndexedDbPersistenceService implements PersistenceService {
-
   private db: IDBPDatabase = null as unknown as IDBPDatabase
-
-  async init() {
-    console.debug("initializing database")
-    this.db = await this.initDatabase()
+  async init(dbName: string) {
+    console.log("initializing indexeddb database", dbName)
+    this.db = await this.initDatabase(dbName)
   }
 
   async loadTabsets(): Promise<any> {
@@ -233,42 +229,10 @@ class IndexedDbPersistenceService implements PersistenceService {
 
   async cleanUpThumbnails(): Promise<void> {
     return this.cleanUpExpired("thumbnails")
-    // const objectStore = this.db.transaction("thumbnails", "readwrite").objectStore("thumbnails");
-    // let cursor = await objectStore.openCursor()
-    // while (cursor) {
-    //   if (cursor.value.expires !== 0) {
-    //     const exists: boolean = this.urlExistsInATabset(atob(cursor.key.toString()))
-    //     if (exists) {
-    //       objectStore.put({expires: 0, thumbnail: cursor.value.thumbnail}, cursor.key)
-    //     } else {
-    //       if (cursor.value.expires < new Date().getTime()) {
-    //         objectStore.delete(cursor.key)
-    //       }
-    //     }
-    //   }
-    //   cursor = await cursor.continue();
-    // }
   }
 
   async cleanUpRequests(): Promise<void> {
     return this.cleanUpExpired('requests')
-    // const objectStore = this.db.transaction("requests", "readwrite").objectStore("requests");
-    // let cursor = await objectStore.openCursor()
-    // while (cursor) {
-    //   if (cursor.value.expires !== 0) {
-    //     const exists: boolean = this.urlExistsInATabset(atob(cursor.key.toString()))
-    //     if (exists) {
-    //       const data = cursor.value
-    //       data.expires = 0
-    //       objectStore.put(data, cursor.key)
-    //     } else {
-    //       if (cursor.value.expires < new Date().getTime()) {
-    //         objectStore.delete(cursor.key)
-    //       }
-    //     }
-    //   }
-    //   cursor = await cursor.continue();
-    // }
   }
 
   async cleanUpMetaLinks(): Promise<void> {
@@ -417,9 +381,9 @@ class IndexedDbPersistenceService implements PersistenceService {
     return this.db.delete('spaces', spaceId)
   }
 
-  private async initDatabase(): Promise<IDBPDatabase> {
+  private async initDatabase(dbName: string): Promise<IDBPDatabase> {
     console.debug("about to initialize indexedDB")
-    return await openDB(INDEX_DB_NAME, INDEX_DB_VERSION, {
+    return await openDB(dbName, INDEX_DB_VERSION, {
       // upgrading see https://stackoverflow.com/questions/50193906/create-index-on-already-existing-objectstore
       upgrade(db) {
         if (!db.objectStoreNames.contains('tabsets')) {

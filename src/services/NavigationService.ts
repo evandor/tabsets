@@ -5,6 +5,7 @@ import {openURL} from "quasar";
 class NavigationService {
 
   openOrCreateTab(withUrl: string) {
+    console.log("opening", withUrl)
     if (process.env.MODE === "bex") {
       chrome.tabs.query({currentWindow: true}, (t: chrome.tabs.Tab[]) => {
         let found = false;
