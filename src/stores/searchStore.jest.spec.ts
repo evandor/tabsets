@@ -1,12 +1,10 @@
-import {beforeEach, describe, expect, it, jest} from "@jest/globals";
-import {chrome} from "jest-chrome";
+import {beforeEach, describe, expect, it} from "@jest/globals";
 import {createPinia, setActivePinia} from "pinia";
 import {CreateTabsetCommand} from "src/domain/tabsets/CreateTabset";
 import "fake-indexeddb/auto"
 import IndexedDbPersistenceService from "src/services/IndexedDbPersistenceService";
 import {INDEX_DB_VERSION} from "boot/constants";
 import {useJestHelper} from "src/domain/JestHelper";
-import LoggingService from "src/services/LoggingService";
 import ChromeApi from "src/services/ChromeApi";
 import {useSearchStore} from "src/stores/searchStore";
 import {Tab} from "src/models/Tab";
@@ -39,12 +37,11 @@ describe('SearchStore', () => {
 
   beforeEach(async () => {
     setActivePinia(createPinia())
-    await LoggingService.init()
     const request = indexedDB.open('db', INDEX_DB_VERSION);
     request.onupgradeneeded = async function () {
       await useJestHelper().dbInit(request)
     }
-    await IndexedDbPersistenceService.init()
+    await IndexedDbPersistenceService.init("db")
   })
 
   it('populate with empty content promise', async () => {

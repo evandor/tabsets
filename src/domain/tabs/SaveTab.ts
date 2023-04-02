@@ -1,7 +1,6 @@
 import Command from "src/domain/Command";
 import {ExecutionResult} from "src/domain/ExecutionResult";
 import {Tab} from "src/models/Tab";
-import {TabLogger} from "src/logging/TabLogger";
 import {usePermissionsStore} from "src/stores/permissionsStore";
 import MHtmlService from "src/services/MHtmlService";
 import {useNotificationHandler} from "src/services/ErrorHandler";

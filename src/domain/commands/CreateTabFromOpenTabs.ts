@@ -6,7 +6,6 @@ import _ from "lodash";
 import {useTabsStore} from "src/stores/tabsStore";
 import {useTabsetService} from "src/services/TabsetService2";
 import {DeleteTabCommand} from "src/domain/commands/DeleteTabCommand";
-import {TabLogger} from "src/logging/TabLogger";
 import {useSearchStore} from "src/stores/searchStore";
 import {uid} from "quasar";
 import {useUiStore} from "src/stores/uiStore";
@@ -19,7 +18,7 @@ class UndoCommand implements Command<any> {
   }
 
   execute(): Promise<ExecutionResult<any>> {
-    TabLogger.info(this.tab, "execution undo command")
+    console.info(this.tab, "execution undo command")
     return new DeleteTabCommand(this.tab).execute()
       .then(res => Promise.resolve(new ExecutionResult(res, "Tab was deleted again")))
   }
@@ -44,7 +43,7 @@ export class CreateTabFromOpenTabsCommand implements Command<any> {
 
   async execute(): Promise<ExecutionResult<any>> {
     const tabsStore = useTabsStore()
-    TabLogger.info(this.tab, 'adding tab by d&d, group ' + this.group)
+    console.info(this.tab, 'adding tab by d&d, group ' + this.group)
     //console.log("tabs", tabsStore.getCurrentTabs)
     const exists = _.findIndex(tabsStore.getCurrentTabs, t => t.chromeTab.url === this.tab.chromeTab.url) >= 0
 

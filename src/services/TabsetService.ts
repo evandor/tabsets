@@ -12,8 +12,6 @@ import {useTabsetService} from "src/services/TabsetService2";
 const {getTabset, getCurrentTabset, saveTabset, saveCurrentTabset, tabsetsFor, saveToTabset} = useTabsetService()
 
 import {useDB} from "src/services/usePersistenceService";
-import LoggingService from "src/services/LoggingService";
-import {TabLogger} from "src/logging/TabLogger";
 import {api} from "boot/axios";
 
 const {db} = useDB()

@@ -6,7 +6,6 @@ import "fake-indexeddb/auto"
 import IndexedDbPersistenceService from "src/services/IndexedDbPersistenceService";
 import {INDEX_DB_VERSION} from "boot/constants";
 import {useJestHelper} from "src/domain/JestHelper";
-import LoggingService from "src/services/LoggingService";
 import {useSearchStore} from "src/stores/searchStore";
  import {SelectTabsetCommand} from "src/domain/tabsets/SelectTabset";
  import {useTabsStore} from "src/stores/tabsStore";
@@ -17,7 +16,6 @@ describe('CreateTabsetCommand', () => {
 
   beforeEach(async () => {
     setActivePinia(createPinia())
-    await LoggingService.init()
     await useSearchStore().init()
     const request = indexedDB.open('db', INDEX_DB_VERSION);
     request.onupgradeneeded = async function () {

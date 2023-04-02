@@ -4,7 +4,6 @@ import {MHtml} from "src/models/MHtml";
 import {Tab} from "src/models/Tab";
 import {Notification} from "src/models/Notification";
 import {SearchDoc} from "src/models/SearchDoc";
-import {LogLevel} from "logging-library";
 import {Predicate} from "src/domain/Types";
 import {LogEntry} from "src/models/LogEntry";
 import {Suggestion} from "src/models/Suggestion";
@@ -52,8 +51,6 @@ interface PersistenceService {
   getSuggestions(): Promise<Suggestion[]>
   addSuggestion(suggestion: Suggestion): Promise<any>
 
-  getLogs(predicate: Predicate<LogEntry>): Promise<LogEntry[]>
-  saveLog(context: string, level: LogLevel, msg: string, ...args: any[]):Promise<any>
 }
 
 export default PersistenceService

@@ -13,9 +13,7 @@ import {SearchDoc} from "src/models/SearchDoc";
 import {RequestInfo} from "src/models/RequestInfo";
 import {MetaLink} from "src/models/MetaLink";
 import {LogEntry} from "src/models/LogEntry";
-import {LogLevel} from "logging-library";
 import {Predicate} from "src/domain/Types";
-import {TabLogger} from "src/logging/TabLogger";
 import {StatsEntry} from "src/models/StatsEntry";
 import {uid} from "quasar";
 import {Notification, NotificationStatus} from "src/models/Notification";
@@ -100,20 +98,20 @@ class IndexedDbPersistenceService implements PersistenceService {
     }
   }
 
-  saveLog(context: string, level: LogLevel, msg: string, ...args: any[]): Promise<any> {
-    if (this.db) {
-      const store = this.db.transaction(["logs"], "readwrite")
-        .objectStore("logs");
-      return store.put({
-        timestamp: new Date().getTime(),
-        context,
-        msg,
-        level,
-        args
-      })
-    }
-    return Promise.reject("db not available (yet)")
-  }
+  // saveLog(context: string, level: LogLevel, msg: string, ...args: any[]): Promise<any> {
+  //   if (this.db) {
+  //     const store = this.db.transaction(["logs"], "readwrite")
+  //       .objectStore("logs");
+  //     return store.put({
+  //       timestamp: new Date().getTime(),
+  //       context,
+  //       msg,
+  //       level,
+  //       args
+  //     })
+  //   }
+  //   return Promise.reject("db not available (yet)")
+  // }
 
   saveThumbnail(tab: chrome.tabs.Tab, thumbnail: string): Promise<void> {
     if (tab.url) {
@@ -122,8 +120,8 @@ class IndexedDbPersistenceService implements PersistenceService {
         expires: new Date().getTime() + 1000 * 60 * EXPIRE_DATA_PERIOD_IN_MINUTES,
         thumbnail: thumbnail
       }, encodedTabUrl)
-        .then(() => TabLogger.info(new Tab(uid(), tab), `saved thumbnail for url ${tab.url}, ${Math.round(thumbnail.length / 1024)}kB`))
-        .catch(err => TabLogger.error(new Tab(uid(), tab), err))
+        .then(() => console.log(new Tab(uid(), tab), `saved thumbnail for url ${tab.url}, ${Math.round(thumbnail.length / 1024)}kB`))
+        .catch(err => console.error(new Tab(uid(), tab), err))
     }
     return Promise.reject("no url provided")
   }
@@ -198,7 +196,7 @@ class IndexedDbPersistenceService implements PersistenceService {
         favIconUrl: tab.favIconUrl
       }, encodedTabUrl)
         .then((res) => {
-          TabLogger.info(new Tab(uid(), tab), "saved content for url " + tab.url)
+          console.info(new Tab(uid(), tab), "saved content for url " + tab.url)
           return res
         })
     }
@@ -439,11 +437,11 @@ class IndexedDbPersistenceService implements PersistenceService {
           console.log("creating blobs suggestions")
           db.createObjectStore('blobs');
         }
-        if (!db.objectStoreNames.contains('logs')) {
-          console.log("creating db logs")
-          db.createObjectStore('logs', {autoIncrement: true});
-          //store.createIndex("expires", "expires", {unique: false});
-        }
+        // if (!db.objectStoreNames.contains('logs')) {
+        //   console.log("creating db logs")
+        //   db.createObjectStore('logs', {autoIncrement: true});
+        //   //store.createIndex("expires", "expires", {unique: false});
+        // }
       },
     });
   }
@@ -461,28 +459,6 @@ class IndexedDbPersistenceService implements PersistenceService {
 
   saveStats(date: string, dataset: StatsEntry) {
     this.db.put('stats', dataset, date)
-  }
-
-  async getLogs(predicate: Predicate<LogEntry> = (l: LogEntry) => true): Promise<LogEntry[]> {
-    if (this.db) {
-      const transaction = this.db.transaction(["logs"]);
-      const objectStore = transaction.objectStore("logs");
-      const res: LogEntry[] = []
-      let cursor = await objectStore.openCursor()
-      while (cursor) {
-        let key = cursor.primaryKey;
-        let value = cursor.value;
-        //console.log("***", key, value);
-        const logEntry = new LogEntry(key as number, value.context, value.level, value.msg)
-        if (predicate(logEntry)) {
-          res.push(logEntry)
-        }
-
-        cursor = await cursor.continue();
-      }
-      return res
-    }
-    return Promise.reject('db not available (yet)')
   }
 
   async getStats(): Promise<StatsEntry[]> {

@@ -21,7 +21,6 @@ import ChromeListeners from "src/services/ChromeListeners";
 import {useRoute, useRouter} from "vue-router";
 import ChromeBookmarkListeners from "src/services/ChromeBookmarkListeners";
 import {usePermissionsStore} from "src/stores/permissionsStore";
-import LoggingService from "src/services/LoggingService";
 import NotificationsService from "src/services/NotificationsService";
 import {useSuggestionsStore} from "src/stores/suggestionsStore";
 import {useUiStore} from "src/stores/uiStore";
@@ -77,7 +76,6 @@ const localStorage = useQuasar().localStorage
 IndexedDbPersistenceService.init(INDEX_DB_NAME)
   .then(() => {
     // init services
-    LoggingService.init()
     NotificationsService.init()
     useSuggestionsStore().init()
     tabsetService.setLocalStorage(localStorage)

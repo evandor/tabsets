@@ -1,11 +1,9 @@
 import {Notify} from 'quasar'
 import {ExecutionResult} from "src/domain/ExecutionResult";
-import LoggingService from "src/services/LoggingService";
 
 export function useNotificationHandler() {
 
   const handleError = (error: any) => {
-    LoggingService.logger.info(error) // 'info' only (?) - we did handle this somehow. Warning still shows in extension errors
     Notify.create({
       position: 'bottom',
       color: 'red-5',

@@ -6,7 +6,6 @@ import {chrome} from 'jest-chrome'
 import {Tabset} from "src/models/Tabset";
 import TabsetService from "src/services/TabsetService";
 import {Tab} from "src/models/Tab";
-import LoggingService from "src/services/LoggingService";
 
 function createChromeTab(id: number, url: string) {
   return {
@@ -59,7 +58,6 @@ describe('TabsStore', () => {
 
   beforeEach(() => {
     setActivePinia(createPinia())
-    LoggingService.init()
     localStorageMock.clear()
   })
 

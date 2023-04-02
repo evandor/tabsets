@@ -2,7 +2,6 @@ import Command from "src/domain/Command";
 import {ExecutionResult} from "src/domain/ExecutionResult";
 import {DeleteTabsetCommand} from "src/domain/tabsets/DeleteTabset";
 import {useTabsetService} from "src/services/TabsetService2";
-import LoggingService from "src/services/LoggingService";
 import {useTabsStore} from "src/stores/tabsStore";
 import {NewOrReplacedTabset} from "src/models/NewOrReplacedTabset";
 import {Tabset, TabsetType} from "src/models/Tabset";
@@ -14,7 +13,6 @@ class UndoCreateTabsetCommand implements Command<object> {
   }
 
   execute(): Promise<ExecutionResult<object>> {
-    LoggingService.logger.info("execution of undo command", this.tabsetId)
     return new DeleteTabsetCommand(this.tabsetId).execute()
       .then(res => Promise.resolve(new ExecutionResult(res, "Tabset was deleted again")))
   }

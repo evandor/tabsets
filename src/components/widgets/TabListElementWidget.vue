@@ -19,7 +19,7 @@
                   @click="NavigationService.openOrCreateTab(props.tab.chromeTab?.url)"
                   size="xs" icon="tab">
             opened
-            <q-tooltip>This tab is open in your browser. Click to open the corresponding tab.</q-tooltip>
+            <q-tooltip class="tooltip">This tab is open in your browser. Click to open the corresponding tab.</q-tooltip>
           </q-chip>
           {{nameOrTitle(props.tab)}}
           <q-popup-edit :model-value="dynamicNameOrTitleModel(tab)" v-slot="scope"

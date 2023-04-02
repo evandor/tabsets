@@ -106,11 +106,6 @@ const routes: RouteRecordRaw[] = [
     children: [{ path: '', component: () => import('pages/HelpPage.vue') }],
   },
   {
-    path: '/logs',
-    component: () => import('layouts/DefaultLayout.vue'),
-    children: [{ path: '', component: () => import('pages/LogsPage.vue') }],
-  },
-  {
     path: '/newtab',
     component: () => import('layouts/NewTabLayout.vue'),
     children: [{ path: '', component: () => import('pages/NewTabPage.vue') }],

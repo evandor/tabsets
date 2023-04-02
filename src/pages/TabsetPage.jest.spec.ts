@@ -7,7 +7,6 @@ import {CreateTabsetCommand} from "src/domain/tabsets/CreateTabset";
 import IndexedDbPersistenceService from "src/services/IndexedDbPersistenceService";
 import {INDEX_DB_VERSION} from "boot/constants";
 import {useJestHelper} from "src/domain/JestHelper";
-import LoggingService from "src/services/LoggingService";
 import ChromeApi from "src/services/ChromeApi";
 import {useSearchStore} from "src/stores/searchStore";
 import {installQuasarPlugin} from "@quasar/quasar-app-extension-testing-unit-jest";
@@ -26,7 +25,6 @@ describe('BookComponent', () => {
 
   beforeEach(async () => {
     setActivePinia(createPinia())
-    await LoggingService.init()
     await useSearchStore().init()
     const request = indexedDB.open('db', INDEX_DB_VERSION);
     request.onupgradeneeded = async function () {

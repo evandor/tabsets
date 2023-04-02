@@ -98,7 +98,7 @@
           <q-tooltip class="tooltip">Use grid layout to visualize your tabs</q-tooltip>
         </q-btn>
 
-        <q-btn
+        <q-btn v-if="tabsStore.getCurrentTabset?.tabs.length > 0"
                @click="setView('group')"
                style="width:14px"
                class="q-mr-sm" size="8px"
@@ -109,7 +109,7 @@
         </q-btn>
 
         <!-- default view, no need to show if there is no alternative -->
-        <q-btn
+        <q-btn v-if="tabsStore.getCurrentTabset?.tabs.length > 0"
                @click="setView('list')"
                style="width:14px"
                class="q-mr-sm" size="10px"
@@ -119,7 +119,7 @@
           <q-tooltip class="tooltip">Use the list layout to visualize your tabs</q-tooltip>
         </q-btn>
 
-        <q-btn v-if="permissionsStore.hasFeature(FeatureIdent.EXPERIMENTAL_VIEWS)"
+        <q-btn v-if="permissionsStore.hasFeature(FeatureIdent.EXPERIMENTAL_VIEWS) && tabsStore.getCurrentTabset?.tabs.length > 0"
                @click="setView('table')"
                style="width:14px"
                class="q-mr-xs" size="10px"
@@ -129,7 +129,7 @@
           <q-tooltip>Use the table layout to visualize your tabs</q-tooltip>
         </q-btn>
 
-        <q-btn v-if="permissionsStore.hasFeature(FeatureIdent.EXPERIMENTAL_VIEWS)"
+        <q-btn v-if="permissionsStore.hasFeature(FeatureIdent.EXPERIMENTAL_VIEWS) && tabsStore.getCurrentTabset?.tabs.length > 0"
                @click="setView('canvas')"
                style="width:14px"
                class="q-mr-sm" size="10px"
@@ -139,7 +139,7 @@
           <q-tooltip>Use the canvas freestyle layout to visualize your tabs</q-tooltip>
         </q-btn>
 
-        <q-btn v-if="permissionsStore.hasFeature(FeatureIdent.EXPERIMENTAL_VIEWS)"
+        <q-btn v-if="permissionsStore.hasFeature(FeatureIdent.EXPERIMENTAL_VIEWS) && tabsStore.getCurrentTabset?.tabs.length > 0"
                @click="setView('exporter')"
                style="width:14px"
                class="q-mr-sm" size="10px"

@@ -6203,11 +6203,6 @@ log-symbols@^4.1.0:
     chalk "^4.1.0"
     is-unicode-supported "^0.1.0"
 
-logging-library@^0.5.0:
-  version "0.5.0"
-  resolved "https://registry.yarnpkg.com/logging-library/-/logging-library-0.5.0.tgz#038a7536d58f1877f9b1e52777766e4017289f0f"
-  integrity sha512-c9o2h++qNxmv3sVpigNiz8qy5X4vkpfAWQv9xeFQIJ1IPoUvNnsh1+stlAz0e4jDtUlqtVXycwQkUVGKb7lNSQ==
-
 loupe@^2.3.1:
   version "2.3.6"
   resolved "https://registry.yarnpkg.com/loupe/-/loupe-2.3.6.tgz#76e4af498103c532d1ecc9be102036a21f787b53"

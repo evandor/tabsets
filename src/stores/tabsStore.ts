@@ -8,7 +8,6 @@ import {NewOrReplacedTabset} from "src/models/NewOrReplacedTabset";
 import {useTabGroupsStore} from "src/stores/tabGroupsStore";
 import {Group} from "src/models/Group";
 import {useSpacesStore} from "src/stores/spacesStore";
-import LoggingService from "src/services/LoggingService";
 import {SpecialTabsetIdent} from "src/domain/tabsets/CreateSpecialTabset";
 import {usePermissionsStore} from "src/stores/permissionsStore";
 import {FeatureIdent} from "src/models/AppFeature";
@@ -311,7 +310,6 @@ export const useTabsStore = defineStore('tabs', {
       merge: boolean = false,
       type: TabsetType = TabsetType.DEFAULT): Promise<NewOrReplacedTabset> {
 
-      LoggingService.logger.debug("--- updateOrCreateTabset start -------------")
       const foundTS: Tabset | undefined = _.find([...this.tabsets.values()], ts => ts.name === tabsetName)
       let ts: Tabset = null as unknown as Tabset
       //const tabsetExtensionTab = await ChromeApi.getCurrentTab()
@@ -323,7 +321,6 @@ export const useTabsStore = defineStore('tabs', {
           foundTS.tabs = []
         }
         if (merge) {
-          LoggingService.logger.debug("found existing tabset " + foundTS.id + ", merging...")
           _.forEach(tabs, t => {
             const exists = _.find(foundTS.tabs, existing => existing.chromeTab.url === t.chromeTab?.url)
             if (!exists) {
@@ -331,7 +328,6 @@ export const useTabsStore = defineStore('tabs', {
             }
           })
           ts = foundTS
-          LoggingService.logger.debug("merging groups", tabGroupsStore.tabGroups)
           _.forEach(tabGroupsStore.tabGroups, tg => {
             const exists = _.find(foundTS.groups, existing => existing.chromeGroup.title === tg.title)
             if (!exists) {
@@ -341,31 +337,26 @@ export const useTabsStore = defineStore('tabs', {
 
 
         } else {
-          LoggingService.logger.debug("found existing tabset " + foundTS.id + ", replacing...")
           ts = new Tabset(foundTS.id, tabsetName, _.map(tabs, t => t),
             _.map(tabGroupsStore.tabGroups, tg => new Group(uid(), tg)))
           this.tabsets.set(foundTS.id, ts)
           //TabsetService.saveTabset(ts)
         }
       } else {
-        LoggingService.logger.debug("didn't find existing tabset, creating new...")
         const useId = uid()
         ts = new Tabset(useId, tabsetName, tabs, _.map(tabGroupsStore.tabGroups, tg => new Group(uid(), tg)))
         this.tabsets.set(useId, ts)
       }
-      LoggingService.logger.debug("currentSpace", currentSpace)
       if (currentSpace && currentSpace.id && ts.spaces.findIndex(s => s === currentSpace.id) < 0) {
         ts.spaces.push(currentSpace.id)
       }
 
       ts.type = type
 
-      LoggingService.logger.debug("--- updateOrCreateTabset end -------------")
       return new NewOrReplacedTabset(foundTS !== undefined, ts)
     },
 
     getOrCreateSpecialTabset(ident: SpecialTabsetIdent, type: TabsetType): Tabset {
-      LoggingService.logger.debug("--- getOrCreateSpecialTabset start -------------")
       const foundTS: Tabset | undefined = _.find([...this.tabsets.values()], ts => ts.id === ident.toString())
       let ts: Tabset = null as unknown as Tabset
       if (foundTS) {

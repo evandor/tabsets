@@ -58,11 +58,6 @@
           <q-tooltip>Check out stats (experimental)</q-tooltip>
         </q-btn>
 
-        <q-btn v-if="featuresStore.isEnabled('dev')"
-               class="q-mr-md" icon="o_list" size="12px" style="width:24px" flat @click="router.push('/logs')">
-          <q-tooltip>Logs (developer mode)</q-tooltip>
-        </q-btn>
-
         <div v-if="unreadNotifications().length > 0">
           <q-btn flat icon="o_notifications" class="q-mr-md cursor-pointer">
             <q-badge floating color="red" rounded/>

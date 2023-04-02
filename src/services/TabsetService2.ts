@@ -13,8 +13,6 @@ import {MetaLink} from "src/models/MetaLink";
 import {RequestInfo} from "src/models/RequestInfo";
 
 import {useDB} from "src/services/usePersistenceService";
-import {TabLogger} from "src/logging/TabLogger";
-import LoggingService from "src/services/LoggingService";
 import {SpecialTabsetIdent} from "src/domain/tabsets/CreateSpecialTabset";
 // @ts-ignore
 import {v5 as uuidv5} from 'uuid';
@@ -69,7 +67,7 @@ export function useTabsetService() {
       if (result && result.tabset) {
         await saveTabset(result.tabset)
         result.tabset.tabs.forEach((tab: Tab) => {
-          TabLogger.info(tab, "created tab")
+          console.info(tab, "created tab")
         })
         selectTabset(result.tabset.id)
         useSearchStore().indexTabs(result.tabset.id, tabs)
@@ -159,12 +157,11 @@ export function useTabsetService() {
   }
 
   const deleteTabset = (tabsetId: string): Promise<string> => {
-    LoggingService.logger.info("deleting tabset ", tabsetId)
     const tabset = getTabset(tabsetId)
     if (tabset) {
       const tabsStore = useTabsStore()
       _.forEach(tabsStore.getTabset(tabsetId)?.tabs, (t: Tab) => {
-        TabLogger.info(t, "removing thumbnails")
+        console.info(t, "removing thumbnails")
         removeThumbnailsFor(t?.chromeTab.url || '')
       })
       tabsStore.deleteTabset(tabsetId)
