@@ -109,7 +109,7 @@
 <!--import NavigationService from "src/services/NavigationService"-->
 <!--import {ref, watchEffect} from "vue";-->
 <!--import TabsetService from "src/services/TabsetService";-->
-<!--import {useFeatureTogglesStore} from "src/stores/featureTogglesStore";-->
+<!--import {useSettingsStore} from "src/stores/featureTogglesStore";-->
 <!--import {useRouter} from "vue-router";-->
 <!--import TabFaviconWidget from "components/widgets/TabFaviconWidget.vue";-->
 <!--import {formatDistance} from "date-fns";-->
@@ -121,7 +121,7 @@
 <!--import {useTabsetService} from "src/services/TabsetService2";-->
 
 <!--const notificationStore = useNotificationsStore()-->
-<!--const featuresStore = useFeatureTogglesStore()-->
+<!--const featuresStore = useSettingsStore()-->
 <!--const router = useRouter()-->
 <!--const $q = useQuasar()-->
 

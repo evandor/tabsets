@@ -34,7 +34,7 @@
              @mouseout="emitInfo(undefined)"
              @click="NavigationService.openOrCreateTab(tab.chromeTab?.url)">
           {{ tab.chromeTab?.title }}
-          <q-tooltip class="tooltip" v-if="useFeatureTogglesStore().isEnabled('dev')">
+          <q-tooltip class="tooltip" v-if="useSettingsStore().isEnabled('dev')">
             {{tab.chromeTab.id}} / {{tab.chromeTab.url}}
           </q-tooltip>
           <q-tooltip class="tooltip" v-else>
@@ -58,7 +58,6 @@
 
 import {Tab} from "src/models/Tab"
 import NavigationService from "src/services/NavigationService"
-import {useFeatureTogglesStore} from "src/stores/featureTogglesStore"
 import TabFaviconWidget from "src/components/widgets/TabFaviconWidget.vue"
 import {useTabsetService} from "src/services/TabsetService2";
 import {useUiStore} from "src/stores/uiStore";
@@ -66,10 +65,10 @@ import {useCommandExecutor} from "src/services/CommandExecutor";
 import {CreateTabFromOpenTabsCommand} from "src/domain/commands/CreateTabFromOpenTabs";
 import {useTabsStore} from "src/stores/tabsStore";
 import _ from "lodash"
-import {usePermissionsStore} from "stores/permissionsStore";
 import {useUtils} from "src/services/Utils"
+import {useSettingsStore} from "src/stores/settingsStore"
 
-const featureToggles = useFeatureTogglesStore()
+const featureToggles = useSettingsStore()
 
 const props = defineProps({
   tab: {

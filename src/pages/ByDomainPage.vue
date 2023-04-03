@@ -75,16 +75,16 @@ import _ from "lodash"
 import {useTabsStore} from "src/stores/tabsStore";
 import {useTabGroupsStore} from "src/stores/tabGroupsStore";
 import {Tab} from "src/models/Tab";
-import {useFeatureTogglesStore} from "src/stores/featureTogglesStore";
 import {Tabset, TabsetStatus} from "src/models/Tabset";
 import TabList from "components/layouts/TabList.vue";
+import {useSettingsStore} from "stores/settingsStore"
 
 const route = useRoute();
 const router = useRouter();
 const localStorage = useQuasar().localStorage
 const tabsStore = useTabsStore()
 const tabGroupsStore = useTabGroupsStore()
-const featuresStore = useFeatureTogglesStore()
+const featuresStore = useSettingsStore()
 
 const tabsetname = ref(tabsStore.currentTabsetName)
 const filter = ref('')

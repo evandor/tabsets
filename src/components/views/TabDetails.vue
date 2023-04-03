@@ -182,7 +182,7 @@
     </q-expansion-item>
 
 
-    <q-expansion-item v-if="useFeatureTogglesStore().isEnabled('dev')"
+    <q-expansion-item v-if="useSettingsStore().isEnabled('dev')"
                       group="somegroup" label="Debug">
       <q-card>
         <q-card-section>
@@ -207,7 +207,6 @@ import {useTabsetService} from "src/services/TabsetService2";
 import TabsetService from "src/services/TabsetService";
 import {reactive, ref, watchEffect} from "vue";
 import {usePermissionsStore} from "src/stores/permissionsStore";
-import {useFeatureTogglesStore} from "src/stores/featureTogglesStore";
 import {useRouter} from "vue-router";
 import {useQuasar} from "quasar";
 import {Tab} from "src/models/Tab";
@@ -221,11 +220,12 @@ import {useCommandExecutor} from "src/services/CommandExecutor";
 import {SaveTabCommand} from "src/domain/tabs/SaveTab";
 import {FeatureIdent} from "src/models/AppFeature";
 import {useTabsStore} from "stores/tabsStore";
+import {useSettingsStore} from "src/stores/settingsStore"
 
 const {inBexMode} = useUtils()
 
 const uiStore = useUiStore()
-const featuresStore = useFeatureTogglesStore()
+const featuresStore = useSettingsStore()
 const router = useRouter()
 const $q = useQuasar()
 

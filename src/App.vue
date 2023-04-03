@@ -8,7 +8,6 @@ import {useTabGroupsStore} from "src/stores/tabGroupsStore";
 import {useQuasar} from "quasar";
 import tabsetService from "src/services/TabsetService";
 import spacesService from "src/services/SpacesService";
-import {useFeatureTogglesStore} from "src/stores/featureTogglesStore";
 import {useBookmarksStore} from "src/stores/bookmarksStore";
 import {useSearchStore} from "src/stores/searchStore";
 import {useNotificationsStore} from "src/stores/notificationsStore";
@@ -25,8 +24,8 @@ import NotificationsService from "src/services/NotificationsService";
 import {useSuggestionsStore} from "src/stores/suggestionsStore";
 import {useUiStore} from "src/stores/uiStore";
 import {useTabsetService} from "src/services/TabsetService2";
-import {computed, ref, watch, watchEffect} from "vue";
 import {INDEX_DB_NAME} from "boot/constants";
+import {useSettingsStore} from "stores/settingsStore";
 
 
 // function isNewTabPage() {
@@ -45,7 +44,7 @@ import {INDEX_DB_NAME} from "boot/constants";
 
 const tabsStore = useTabsStore()
 const tabGroupsStore = useTabGroupsStore()
-const featureTogglesStore = useFeatureTogglesStore()
+const featureTogglesStore = useSettingsStore()
 const suggestionsStore = useSuggestionsStore()
 const bookmarksStore = useBookmarksStore()
 const windowsStore = useWindowsStore()

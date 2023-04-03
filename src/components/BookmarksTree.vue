@@ -68,7 +68,6 @@ import {useTabsStore} from "src/stores/tabsStore";
 import _ from "lodash"
 import {ref, watch, watchEffect} from "vue";
 import {useQuasar} from "quasar";
-import {useFeatureTogglesStore} from "src/stores/featureTogglesStore";
 import {useBookmarksStore} from "src/stores/bookmarksStore";
 import {useNotificationsStore} from "src/stores/notificationsStore";
 import BookmarksService from "src/services/BookmarksService";
@@ -76,10 +75,11 @@ import {usePermissionsStore} from "src/stores/permissionsStore";
 import {useNotificationHandler} from "src/services/ErrorHandler";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {GrantPermissionCommand} from "src/domain/commands/GrantPermissionCommand";
+import {useSettingsStore} from "stores/settingsStore"
 
 const router = useRouter()
 const tabsStore = useTabsStore()
-const featuresStore = useFeatureTogglesStore()
+const featuresStore = useSettingsStore()
 const bookmarksStore = useBookmarksStore()
 const permissionsStore = usePermissionsStore()
 

@@ -55,7 +55,6 @@ import NavigationService from "src/services/NavigationService";
 import {Tab} from "src/models/Tab";
 import TabsetService from "src/services/TabsetService";
 import {MAX_TABS_TO_SHOW} from 'boot/constants'
-import {useFeatureTogglesStore} from "src/stores/featureTogglesStore";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import TabcardPending from "src/components/layouts/TabcardPending.vue"
 import {SavePendingTabToCurrentTabsetCommand} from "src/domain/commands/SavePendingTabToCurrentTabsetCommand";
@@ -69,7 +68,7 @@ const props = defineProps({
 
 const emits = defineEmits(['sendCaption', 'selectionChanged'])
 
-const featureToggles = useFeatureTogglesStore()
+const featureToggles = useSettingsStore()
 
 
 function closeTab(tab: Tab) {

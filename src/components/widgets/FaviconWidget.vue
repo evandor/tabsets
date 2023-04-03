@@ -12,8 +12,7 @@
 
 <script lang="ts" setup>
 
-import {usePermissionsStore} from "src/stores/permissionsStore";
-import {useFeatureTogglesStore} from "src/stores/featureTogglesStore";
+import {useSettingsStore} from "src/stores/settingsStore"
 
 const props = defineProps({
   url: {
@@ -42,7 +41,7 @@ const getFaviconUrl = () => {
   if (props.favicon && !props.favicon.startsWith("chrome")) {
     return props.favicon
   }
-  if (!useFeatureTogglesStore().isEnabled('noDDG')) {
+  if (!useSettingsStore().isEnabled('noDDG')) {
     let theUrl = props.url
     let theRealUrl
     try {

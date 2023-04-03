@@ -98,7 +98,6 @@
 <script lang="ts" setup>
 import {ref, watch, watchEffect} from "vue";
 import {useRouter} from "vue-router";
-import {useFeatureTogglesStore} from "src/stores/featureTogglesStore";
 import {useTabsStore} from "src/stores/tabsStore";
 import {useSettingsStore} from "src/stores/settingsStore";
 import {DrawerTabs} from "src/stores/uiStore";
@@ -113,7 +112,7 @@ const router = useRouter()
 
 const uiService = useUiService()
 
-const featureToggles = useFeatureTogglesStore()
+const featureToggles = useSettingsStore()
 const tabsStore = useTabsStore()
 const settingsStore = useSettingsStore()
 const permissionsStore = usePermissionsStore()

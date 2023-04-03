@@ -25,7 +25,7 @@
 <script lang="ts" setup>
 
 import {Tab, UrlExtension} from "src/models/Tab";
-import {useFeatureTogglesStore} from "src/stores/featureTogglesStore";
+import {useSettingsStore} from "src/stores/settingsStore"
 
 const props = defineProps({
   tab: {
@@ -50,7 +50,7 @@ const getFaviconUrl = (tab: Tab) => {
   if (chromeTab && chromeTab.favIconUrl) {
     return chromeTab.favIconUrl
   }
-  if (!useFeatureTogglesStore().isEnabled('noDDG') && tab && tab.chromeTab) {
+  if (!useSettingsStore().isEnabled('noDDG') && tab && tab.chromeTab) {
     let theUrl = tab.chromeTab.url || ''
     let theRealUrl
     try {

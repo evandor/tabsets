@@ -41,7 +41,6 @@
 
 <script setup lang="ts">
 import {useTabsStore} from "src/stores/tabsStore"
-import {useFeatureTogglesStore} from "src/stores/featureTogglesStore";
 import {useRouter} from "vue-router";
 import {ref} from "vue";
 import {useQuasar} from "quasar";
@@ -51,9 +50,10 @@ import {useQueryExecutor} from "src/services/QueryExecutor";
 import {StatsQuery} from "src/domain/queries/StatsQuery";
 import {StatsEntry} from "src/models/StatsEntry";
 import _ from "lodash"
+import {useSettingsStore} from "src/stores/settingsStore"
 
 const tabsStore = useTabsStore()
-const featuresStore = useFeatureTogglesStore()
+const featuresStore = useSettingsStore()
 const searchStore = useSearchStore()
 
 const router = useRouter()

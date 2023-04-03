@@ -41,11 +41,11 @@
     </q-item>
   </q-list>
 
-  <div class="q-ma-md" v-if="useFeatureTogglesStore().isEnabled('dev')">
+  <div class="q-ma-md" v-if="useSettingsStore().isEnabled('dev')">
     <b>Experimental Features</b>
   </div>
 
-  <q-list v-if="useFeatureTogglesStore().isEnabled('dev')">
+  <q-list v-if="useSettingsStore().isEnabled('dev')">
     <q-item
       v-for="f in featuresByType(FeatureType.EXPERIMENTAL)"
       clickable v-ripple
@@ -73,9 +73,9 @@ import {ref} from "vue";
 import {useRouter} from "vue-router";
 import {usePermissionsStore} from "src/stores/permissionsStore";
 import _ from "lodash"
-import {useFeatureTogglesStore} from "src/stores/featureTogglesStore";
 import {AppFeatures} from "src/models/AppFeatures";
 import {AppFeature, FeatureIdent, FeatureType} from "src/models/AppFeature";
+import {useSettingsStore} from "stores/settingsStore";
 
 const tabsStore = useTabsStore()
 const router = useRouter()

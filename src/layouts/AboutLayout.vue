@@ -39,7 +39,6 @@ import {useTabsStore} from "src/stores/tabsStore";
 import {useRoute, useRouter} from "vue-router";
 import {useNotificationsStore} from "src/stores/notificationsStore";
 import {useSearchStore} from "src/stores/searchStore";
-import {useFeatureTogglesStore} from "src/stores/featureTogglesStore";
 import _ from "lodash";
 import {useSpacesStore} from "src/stores/spacesStore"
 import {useSettingsStore} from "src/stores/settingsStore"
@@ -59,7 +58,7 @@ const largeDrawer = ref(false)
 const model = ref(85)
 
 const notificationsStore = useNotificationsStore()
-const featuresStore = useFeatureTogglesStore()
+const featuresStore = useSettingsStore()
 const settingsStore = useSettingsStore()
 const spacesStore = useSpacesStore()
 const uiService = useUiService()

@@ -283,7 +283,6 @@ import {useTabsStore} from "src/stores/tabsStore";
 import {useTabGroupsStore} from "src/stores/tabGroupsStore";
 import TabsetService from "src/services/TabsetService";
 import {Tab} from "src/models/Tab";
-import {useFeatureTogglesStore} from "src/stores/featureTogglesStore";
 import RestoreTabsetDialog from "components/dialogues/RestoreTabsetDialog.vue";
 import AddUrlDialog from "components/dialogues/AddUrlDialog.vue";
 import {usePermissionsStore} from "src/stores/permissionsStore";
@@ -303,13 +302,14 @@ import TabsExporter from "components/layouts/TabsExporter.vue";
 import {useUiStore} from "src/stores/uiStore";
 import TabGroups from "components/layouts/TabGroups.vue";
 import {ToggleSortingCommand} from "src/domain/tabsets/ToggleSorting";
+import {useSettingsStore} from "src/stores/settingsStore"
 
 const route = useRoute();
 const router = useRouter();
 const localStorage = useQuasar().localStorage
 const tabsStore = useTabsStore()
 const tabGroupsStore = useTabGroupsStore()
-const featuresStore = useFeatureTogglesStore()
+const featuresStore = useSettingsStore()
 const permissionsStore = usePermissionsStore()
 
 const {inBexMode} = useUtils()

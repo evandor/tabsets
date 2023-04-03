@@ -33,7 +33,6 @@ import {useTabsStore} from "src/stores/tabsStore";
 import {useRoute, useRouter} from "vue-router";
 import {useNotificationsStore} from "src/stores/notificationsStore";
 import {useSearchStore} from "src/stores/searchStore";
-import {useFeatureTogglesStore} from "src/stores/featureTogglesStore";
 import {useSpacesStore} from "src/stores/spacesStore"
 import {useUiStore} from "src/stores/uiStore";
 
@@ -47,7 +46,7 @@ import {useUiStore} from "src/stores/uiStore";
 // const model = ref(85)
 //
 // const notificationsStore = useNotificationsStore()
-// const featuresStore = useFeatureTogglesStore()
+// const featuresStore = useSettingsStore()
 // const spacesStore = useSpacesStore()
 // const route = useRoute()
 //

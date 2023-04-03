@@ -39,10 +39,10 @@
 </template>
 
 <script setup lang="ts">
-import {useFeatureTogglesStore} from "src/stores/featureTogglesStore";
 import {useRouter} from "vue-router";
+import {useSettingsStore} from "src/stores/settingsStore"
 
-const featuresStore = useFeatureTogglesStore()
+const featuresStore = useSettingsStore()
 const auth = useAuthStore()
 const router = useRouter()
 

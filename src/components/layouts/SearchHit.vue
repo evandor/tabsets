@@ -56,12 +56,12 @@ import TabsetService from "src/services/TabsetService";
 import {ref} from "vue";
 import {Hit} from "src/models/Hit";
 import _ from "lodash"
-import {useFeatureTogglesStore} from "src/stores/featureTogglesStore";
 import {useRouter} from "vue-router";
 import BookmarksService from "src/services/BookmarksService";
 import {useTabsetService} from "src/services/TabsetService2";
 import TabFaviconWidget from "components/widgets/TabFaviconWidget.vue";
 import FaviconWidget from "components/widgets/FaviconWidget.vue";
+import {useSettingsStore} from "src/stores/settingsStore"
 
 const props = defineProps({
   hit: {
@@ -73,7 +73,7 @@ const props = defineProps({
 const emits = defineEmits(['sendCaption'])
 
 const router = useRouter()
-const featureToggles = useFeatureTogglesStore()
+const featureToggles = useSettingsStore()
 const line = ref(null);
 const scoreAsRating = ref(Math.round(props.hit.score / 18))
 

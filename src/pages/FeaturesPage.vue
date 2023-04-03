@@ -99,19 +99,19 @@ import {useRoute, useRouter} from "vue-router";
 import {useQuasar} from "quasar";
 import {useTabsStore} from "src/stores/tabsStore";
 import {useTabGroupsStore} from "src/stores/tabGroupsStore";
-import {useFeatureTogglesStore} from "src/stores/featureTogglesStore";
 import {usePermissionsStore} from "src/stores/permissionsStore";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {AppFeature, FeatureIdent, FeatureType} from "src/models/AppFeature";
 import {AppFeatures} from "src/models/AppFeatures";
 import {ExecutionResult} from "src/domain/ExecutionResult";
+import {useSettingsStore} from "src/stores/settingsStore"
 
 const route = useRoute();
 const router = useRouter();
 const localStorage = useQuasar().localStorage
 const tabsStore = useTabsStore()
 const tabGroupsStore = useTabGroupsStore()
-const featuresStore = useFeatureTogglesStore()
+const featuresStore = useSettingsStore()
 const permissionsStore = usePermissionsStore()
 
 const title = ref('')

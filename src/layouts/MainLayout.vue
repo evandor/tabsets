@@ -129,7 +129,6 @@ import NavigationService from "src/services/NavigationService"
 import DrawerLeft from "src/components/DrawerLeft.vue"
 import DrawerLeftMini from "src/components/DrawerLeftMini.vue"
 import {useSearchStore} from "src/stores/searchStore";
-import {useFeatureTogglesStore} from "src/stores/featureTogglesStore";
 import _ from "lodash";
 import {useSpacesStore} from "src/stores/spacesStore"
 import {useSettingsStore} from "src/stores/settingsStore"
@@ -159,7 +158,7 @@ const model = ref(85)
 
 const notificationsStore = useNotificationsStore()
 const permissionsStore = usePermissionsStore()
-const featuresStore = useFeatureTogglesStore()
+const featuresStore = useSettingsStore()
 const settingsStore = useSettingsStore()
 const spacesStore = useSpacesStore()
 const uiService = useUiService()

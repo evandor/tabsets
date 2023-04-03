@@ -309,12 +309,10 @@
 
 <script setup lang="ts">
 import {useTabsStore} from "src/stores/tabsStore"
-import {useFeatureTogglesStore} from "src/stores/featureTogglesStore";
 import {useRouter} from "vue-router";
 import {ref, watch, watchEffect} from "vue";
 import {useQuasar} from "quasar";
 import {useSearchStore} from "src/stores/searchStore";
-import {useSettingsStore} from "src/stores/settingsStore";
 import TabsetService from "src/services/TabsetService";
 import _ from "lodash";
 import {Tabset, TabsetStatus} from "src/models/Tabset";
@@ -331,10 +329,11 @@ import {RevokePermissionCommand} from "src/domain/commands/RevokePermissionComma
 import {GrantOriginCommand} from "src/domain/commands/GrantOriginCommand";
 import {RevokeOriginCommand} from "src/domain/commands/RevokeOriginCommand";
 import {FeatureIdent} from "src/models/AppFeature";
+import {useSettingsStore} from "src/stores/settingsStore"
 
 
 const tabsStore = useTabsStore()
-const featuresStore = useFeatureTogglesStore()
+const featuresStore = useSettingsStore()
 const searchStore = useSearchStore()
 const settingsStore = useSettingsStore()
 

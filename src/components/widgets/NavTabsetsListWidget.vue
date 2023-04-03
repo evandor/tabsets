@@ -91,7 +91,6 @@ import TabsetService from "src/services/TabsetService";
 import {useRouter} from "vue-router";
 import {useQuasar} from "quasar";
 import {useTabsStore} from "src/stores/tabsStore";
-import {useFeatureTogglesStore} from "src/stores/featureTogglesStore";
 import {useSpacesStore} from "src/stores/spacesStore";
 import EditTabset from "components/dialogues/EditTabsetDialog.vue";
 import DeleteTabsetDialog from "components/dialogues/DeleteTabsetDialog.vue";
@@ -104,12 +103,13 @@ import {useUiService} from "src/services/useUiService";
 import {StopSessionCommand} from "src/domain/commands/StopSessionCommand";
 import {SelectTabsetCommand} from "src/domain/tabsets/SelectTabset";
 import {MoveToTabsetCommand} from "src/domain/tabs/MoveToTabset";
+import {useSettingsStore} from "src/stores/settingsStore"
 
 const {handleError, handleSuccess} = useNotificationHandler()
 
 const router = useRouter()
 const tabsStore = useTabsStore()
-const featuresStore = useFeatureTogglesStore()
+const featuresStore = useSettingsStore()
 const spacesStore = useSpacesStore()
 
 const showDeleteButton = ref<Map<string, boolean>>(new Map())

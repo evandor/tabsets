@@ -393,7 +393,6 @@
 <script setup lang="ts">
 import {useTabsStore} from "src/stores/tabsStore"
 import {useNotificationsStore} from "src/stores/notificationsStore";
-import {useFeatureTogglesStore} from "src/stores/featureTogglesStore";
 import {useRoute, useRouter} from "vue-router";
 import {ref, watchEffect} from "vue";
 import TabsetService from "src/services/TabsetService";
@@ -406,10 +405,11 @@ import {useQueryExecutor} from "src/services/QueryExecutor";
 import {TabLogsQuery} from "src/domain/queries/TabLogsQuery";
 import {useUiStore} from "src/stores/uiStore";
 import {openURL} from "quasar";
+import {useSettingsStore} from "src/stores/settingsStore"
 
 const tabsStore = useTabsStore()
 const notificationStore = useNotificationsStore()
-const featuresStore = useFeatureTogglesStore()
+const featuresStore = useSettingsStore()
 const searchStore = useSearchStore()
 const router = useRouter()
 const route = useRoute()

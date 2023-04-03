@@ -112,7 +112,7 @@
         </q-btn>
 
         <q-btn
-          v-if="tabsStore.currentTabsetId !== '' && tabsStore.getTabset(tabsStore.currentTabsetId) && useFeatureTogglesStore().isEnabled('newTab')"
+          v-if="tabsStore.currentTabsetId !== '' && tabsStore.getTabset(tabsStore.currentTabsetId) && useSettingsStore().isEnabled('newTab')"
           flat dense icon="o_create_new_folder"
           color="primary" :label="$q.screen.gt.sm ? 'Set as New Tab Page' : ''"
           class="q-ml-md q-mr-md"
@@ -194,7 +194,6 @@ import {useTabsStore} from "src/stores/tabsStore";
 import {useTabGroupsStore} from "src/stores/tabGroupsStore";
 import TabsetService from "src/services/TabsetService";
 import {Tab} from "src/models/Tab";
-import {useFeatureTogglesStore} from "src/stores/featureTogglesStore";
 import RestoreTabsetDialog from "components/dialogues/RestoreTabsetDialog.vue";
 import AddUrlDialog from "components/dialogues/AddUrlDialog.vue";
 import {useUiService} from "src/services/useUiService";
@@ -209,13 +208,14 @@ import {MarkTabsetAsArchivedCommand} from "src/domain/tabsets/MarkTabsetAsArchiv
 import {useUtils} from "src/services/Utils";
 import {api} from "boot/axios";
 import {FeatureIdent} from "src/models/AppFeature";
+import {useSettingsStore} from "stores/settingsStore";
 
 const route = useRoute();
 const router = useRouter();
 const localStorage = useQuasar().localStorage
 const tabsStore = useTabsStore()
 const tabGroupsStore = useTabGroupsStore()
-const featuresStore = useFeatureTogglesStore()
+const featuresStore = useSettingsStore()
 const permissionsStore = usePermissionsStore()
 
 const {inBexMode} = useUtils()

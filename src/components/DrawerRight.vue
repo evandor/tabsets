@@ -85,19 +85,14 @@
 
 <script lang="ts" setup>
 import {ref, watch, watchEffect} from "vue";
-import OpenTabs from "src/components/OpenTabs.vue"
 import SavedTabs from "src/components/SavedTabs.vue"
-import UnassignedTabs from "src/components/UnassignedTabs.vue"
 import RssTabs from "src/components/RssTabs.vue"
-import ScheduledTabs from "src/components/ScheduledTabs.vue"
 import TabsetAsSidebar from "src/components/TabsetAsSidebar.vue"
 import {useRouter} from "vue-router";
-import {useFeatureTogglesStore} from "src/stores/featureTogglesStore";
 import {useTabsStore} from "src/stores/tabsStore";
 import {useSettingsStore} from "src/stores/settingsStore";
 import {DrawerTabs, useUiStore} from "src/stores/uiStore";
 import {useUiService} from "src/services/useUiService";
-import TabsetHelp from "components/TabsetHelp.vue";
 import TabsGroupedByHost from "components/TabsGroupedByHost.vue";
 import BrowserHistory from "components/BrowserHistory.vue";
 import Features from "components/Features.vue";
@@ -110,7 +105,7 @@ const router = useRouter()
 
 const uiService = useUiService()
 
-const featureToggles = useFeatureTogglesStore()
+const featureToggles = useSettingsStore()
 const tabsStore = useTabsStore()
 const settingsStore = useSettingsStore()
 

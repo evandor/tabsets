@@ -97,16 +97,15 @@ import NavigationService from "src/services/NavigationService"
 import DrawerLeft from "src/components/DrawerLeft.vue"
 import DrawerLeftMini from "src/components/DrawerLeftMini.vue"
 import {useSearchStore} from "src/stores/searchStore";
-import {useFeatureTogglesStore} from "src/stores/featureTogglesStore";
 import _ from "lodash";
 import {useSpacesStore} from "src/stores/spacesStore"
-import {useSettingsStore} from "src/stores/settingsStore"
 import OpenTabsThresholdWidget from 'src/components/widgets/OpenTabsThresholdWidget.vue'
 import SpacesSelectorWidget from 'src/components/widgets/SpacesSelectorWidget.vue'
 import UnassignedTabsWidget from 'src/components/widgets/UnassignedTabsWidget.vue'
 import SearchWidget from 'src/components/widgets/SearchWidget.vue'
 import {useUiService} from "src/services/useUiService";
 import {useUiStore} from "src/stores/uiStore";
+import {useSettingsStore} from "src/stores/settingsStore"
 
 const router = useRouter()
 const tabsStore = useTabsStore()
@@ -121,7 +120,7 @@ const largeDrawer = ref(false)
 const model = ref(85)
 
 const notificationsStore = useNotificationsStore()
-const featuresStore = useFeatureTogglesStore()
+const featuresStore = useSettingsStore()
 const settingsStore = useSettingsStore()
 const spacesStore = useSpacesStore()
 const uiService = useUiService()

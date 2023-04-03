@@ -35,7 +35,32 @@ process.env.MODE = 'bex'
 
 describe('SearchStore', () => {
 
+  const localStorageMock = (() => {
+    let store = new Map<string, object>();
+    return {
+      getItem(key: string) {
+        return store.get(key)
+      },
+      setItem(key: string, value: any) {
+        store.set(key, value)
+      },
+      set(key: string, value: any) {
+        store.set(key, value)
+      },
+      clear() {
+        store = new Map<string, object>();
+      },
+      removeItem(key: string) {
+        store.delete(key)
+      },
+      getAllKeys(): string[] {
+        return [...store.keys()]
+      }
+    };
+  })();
+
   beforeEach(async () => {
+    localStorageMock.clear()
     setActivePinia(createPinia())
     const request = indexedDB.open('db', INDEX_DB_VERSION);
     request.onupgradeneeded = async function () {

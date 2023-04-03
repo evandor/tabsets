@@ -97,7 +97,6 @@ import {useQuasar} from "quasar";
 import {useNotificationsStore} from "src/stores/notificationsStore";
 import {ref, watchEffect} from "vue";
 import {date} from "quasar"
-import {useFeatureTogglesStore} from "src/stores/featureTogglesStore";
 import {useRouter} from "vue-router";
 
 import {useTabsetService} from "src/services/TabsetService2";
@@ -105,10 +104,11 @@ import {useTabsStore} from "src/stores/tabsStore";
 import {Tabset, TabsetType} from "src/models/Tabset";
 import {useUtils} from "src/services/Utils";
 import DeleteTabsetDialog from "components/dialogues/DeleteTabsetDialog.vue";
+import {useSettingsStore} from "src/stores/settingsStore"
 
 const tabsStore = useTabsStore()
 const notificationStore = useNotificationsStore()
-const featuresStore = useFeatureTogglesStore()
+const featuresStore = useSettingsStore()
 const router = useRouter()
 const $q = useQuasar()
 

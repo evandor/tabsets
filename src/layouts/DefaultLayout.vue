@@ -20,7 +20,7 @@
         <q-space/>
 
         <SearchWidget style="position: absolute; left:300px;top:5px;max-width:500px"
-                      v-if="tabsStore.tabsets.size > 4 || useFeatureTogglesStore().isEnabled('dev')"/>
+                      v-if="tabsStore.tabsets.size > 4 || useSettingsStore().isEnabled('dev')"/>
 
         <q-space/>
 
@@ -246,10 +246,8 @@ import {useNotificationsStore} from "src/stores/notificationsStore";
 import Navigation from "src/components/Navigation.vue"
 import NavigationService from "src/services/NavigationService"
 import {useSearchStore} from "src/stores/searchStore";
-import {useFeatureTogglesStore} from "src/stores/featureTogglesStore";
 import _ from "lodash";
 import {useSpacesStore} from "src/stores/spacesStore"
-import {useSettingsStore} from "src/stores/settingsStore"
 import OpenTabsThresholdWidget from 'src/components/widgets/OpenTabsThresholdWidget.vue'
 import SpacesSelectorWidget from 'src/components/widgets/SpacesSelectorWidget.vue'
 import SearchWidget from 'src/components/widgets/SearchWidget.vue'
@@ -266,6 +264,7 @@ import {Suggestion, SuggestionState} from "src/models/Suggestion";
 import SuggestionDialog from "components/dialogues/SuggestionDialog.vue";
 import {useSuggestionsStore} from "src/stores/suggestionsStore";
 import {FeatureIdent} from "src/models/AppFeature";
+import {useSettingsStore} from "stores/settingsStore"
 
 const router = useRouter()
 const tabsStore = useTabsStore()
@@ -281,7 +280,7 @@ const model = ref(85)
 
 const notificationsStore = useNotificationsStore()
 const permissionsStore = usePermissionsStore()
-const featuresStore = useFeatureTogglesStore()
+const featuresStore = useSettingsStore()
 const settingsStore = useSettingsStore()
 const spacesStore = useSpacesStore()
 const uiService = useUiService()
