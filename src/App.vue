@@ -44,7 +44,7 @@ import {useSettingsStore} from "stores/settingsStore";
 
 const tabsStore = useTabsStore()
 const tabGroupsStore = useTabGroupsStore()
-const featureTogglesStore = useSettingsStore()
+const settingsStore = useSettingsStore()
 const suggestionsStore = useSuggestionsStore()
 const bookmarksStore = useBookmarksStore()
 const windowsStore = useWindowsStore()
@@ -62,7 +62,7 @@ usePermissionsStore().initialize()
     ChromeBookmarkListeners.initListeners()
     bookmarksStore.init()
   })
-featureTogglesStore.initialize(useQuasar().localStorage);
+settingsStore.initialize(useQuasar().localStorage);
 tabsStore.initialize(useQuasar().localStorage);
 
 

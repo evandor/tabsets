@@ -68,8 +68,6 @@ import _ from "lodash"
 import {useUtils} from "src/services/Utils"
 import {useSettingsStore} from "src/stores/settingsStore"
 
-const featureToggles = useSettingsStore()
-
 const props = defineProps({
   tab: {
     type: Object,

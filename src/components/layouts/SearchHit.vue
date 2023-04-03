@@ -28,7 +28,7 @@
       <q-item-label caption v-html="formatText(hit, 'description', hit.description || '', '#FFFFDD')"></q-item-label>
       <q-item-label style="font-style:italic" caption
                     v-html="formatText(hit, 'keywords', hit.keywords || '', '#FFFFDD')"></q-item-label>
-      <q-item-label class="text-blue-2 q-mb-sm" v-if="featureToggles.isEnabled('debug')">Match in:
+      <q-item-label class="text-blue-2 q-mb-sm" v-if="settingsStore.isEnabled('debug')">Match in:
         {{ _.map(hit['matches'], m => m['key']).join(", ") }}
       </q-item-label>
       <!--      <q-item-label caption>{{ hit['matches'] }}</q-item-label>-->
@@ -73,7 +73,7 @@ const props = defineProps({
 const emits = defineEmits(['sendCaption'])
 
 const router = useRouter()
-const featureToggles = useSettingsStore()
+const settingsStore = useSettingsStore()
 const line = ref(null);
 const scoreAsRating = ref(Math.round(props.hit.score / 18))
 

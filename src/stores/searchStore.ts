@@ -6,12 +6,10 @@ import {Tabset} from "src/models/Tabset";
 import {useTabsStore} from "src/stores/tabsStore";
 import {ref} from "vue";
 import {Tab} from "src/models/Tab";
-//import TabsetService from "src/services/TabsetService";
 import throttledQueue from "throttled-queue";
 import {useWindowsStore} from "src/stores/windowsStores";
 import {useBookmarksStore} from "src/stores/bookmarksStore";
 import {useTabsetService} from "src/services/TabsetService2";
-import {useUiStore} from "src/stores/uiStore";
 import {uid} from "quasar";
 
 function dummyPromise(timeout: number, tabToCloseId: number | undefined = undefined): Promise<string> {
@@ -209,6 +207,56 @@ export const useSearchStore = defineStore('search', () => {
     })
   }
 
+  async function populateFromTabsets(urlSet: Set<string>) {
+    // init() has to have been called already!
+    // --- add data from tabs directly, like url and title
+    const minimalIndex: SearchDoc[] = []
+    //const res = fuse.value.remove((doc) => true)
+    _.forEach([...useTabsStore().tabsets.values()], (tabset: Tabset) => {
+        tabset.tabs.forEach((tab: Tab) => {
+          if (tab.chromeTab?.url) {
+            if (urlSet.has(tab.chromeTab.url)) {
+              const existingDocIndex = _.findIndex(minimalIndex, d => {
+                return d.url === tab.chromeTab.title
+              })
+              if (existingDocIndex >= 0) {
+                const existingDoc = minimalIndex[existingDocIndex]
+                console.log("existingDoc", existingDoc)
+                if (existingDoc.tabsets.indexOf(tabset.id) < 0) {
+                  existingDoc.tabsets = existingDoc.tabsets.concat([tabset.id])
+                  minimalIndex.splice(existingDocIndex, 1, existingDoc)
+                }
+              } else {
+                const doc = new SearchDoc(uid(), tab.name || '', tab.chromeTab.title || '', tab.chromeTab.url, "", "", "", [tabset.id], '', "")
+                minimalIndex.push(doc)
+              }
+            } else {
+              const doc = new SearchDoc(uid(), tab.name || '', tab.chromeTab.title || '', tab.chromeTab.url, "", "", "", [tabset.id], '', "")
+              minimalIndex.push(doc)
+              urlSet.add(tab.chromeTab.url)
+            }
+          }
+        })
+      }
+    )
+
+    console.log(`populated from tabsets with ${minimalIndex.length} entries`)
+    minimalIndex.forEach((doc: SearchDoc) => {
+      const removed = fuse.value.remove((d) => {
+        return d.url === doc.url
+      })
+      if (removed && removed[0]) {
+        overwrite('name', doc, removed)
+        overwrite('description', doc, removed)
+        overwrite('keywords', doc, removed)
+        overwrite('content', doc, removed)
+
+      }
+      fuse.value.add(doc)
+    })
+    return urlSet
+  }
+
   /**
    * Initial population of search index when the extension is reloaded (and when run the first time)
    *
@@ -219,7 +267,7 @@ export const useSearchStore = defineStore('search', () => {
 
     await init()
 
-    const urlSet: Set<string> = new Set()
+    var urlSet: Set<string> = new Set()
 
     // --- add data from stored content
     let count = 0
@@ -254,50 +302,7 @@ export const useSearchStore = defineStore('search', () => {
     stats.value.set("content.filtered", countFiltered)
     // })
 
-    // --- add data from tabs directly, like url and title
-    const minimalIndex: SearchDoc[] = []
-    //const res = fuse.value.remove((doc) => true)
-    _.forEach([...useTabsStore().tabsets.values()], (tabset: Tabset) => {
-        tabset.tabs.forEach((tab: Tab) => {
-          if (tab.chromeTab?.url) {
-            if (urlSet.has(tab.chromeTab.url)) {
-              const existingDocIndex = _.findIndex(minimalIndex, d => {
-                return d.url === tab.chromeTab.title
-              })
-              if (existingDocIndex >= 0) {
-                const existingDoc = minimalIndex[existingDocIndex]
-                console.log("existingDoc", existingDoc)
-                if (existingDoc.tabsets.indexOf(tabset.id) < 0) {
-                  existingDoc.tabsets = existingDoc.tabsets.concat([tabset.id])
-                  minimalIndex.splice(existingDocIndex, 1, existingDoc)
-                }
-              } else {
-                const doc = new SearchDoc(uid(), tab.name || '', tab.chromeTab.title || '', tab.chromeTab.url, "", "", "", [tabset.id], '', "")
-                minimalIndex.push(doc)
-              }
-            } else {
-              const doc = new SearchDoc(uid(), tab.name || '', tab.chromeTab.title || '', tab.chromeTab.url, "", "", "", [tabset.id], '', "")
-              minimalIndex.push(doc)
-              urlSet.add(tab.chromeTab.url)
-            }
-          }
-        })
-      }
-    )
-    console.log(`populated from tabsets with ${minimalIndex.length} entries`)
-    minimalIndex.forEach((doc: SearchDoc) => {
-      const removed = fuse.value.remove((d) => {
-        return d.url === doc.url
-      })
-      if (removed && removed[0]) {
-        overwrite('name', doc, removed)
-        overwrite('description', doc, removed)
-        overwrite('keywords', doc, removed)
-        overwrite('content', doc, removed)
-
-      }
-      fuse.value.add(doc)
-    })
+    urlSet = await populateFromTabsets(urlSet)
 
     // --- add data from bookmarks directly, like url and title
     const indexFromBookmarks: SearchDoc[] = []

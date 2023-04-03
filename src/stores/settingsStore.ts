@@ -5,14 +5,12 @@ import {useQuasar} from "quasar";
 
 export const useSettingsStore = defineStore('settings', () => {
 
-  const $q = useQuasar()
-
   const activeToggles = ref<string[]>([])
-  const thresholds = ref($q.localStorage.getItem('thresholds') || {
+  const thresholds = ref(localStorage.getItem('thresholds') || {
     min: 0,
     max: 40
   })
-  const thumbnailQuality = ref($q.localStorage.getItem('thumbnailQuality') || 25)
+  const thumbnailQuality = ref(localStorage.getItem('thumbnailQuality') || 25)
   const isEnabled = computed(() => (ident: string) => _.findIndex(activeToggles.value, (e: string) => e === ident) >= 0)
 
   watch(
@@ -25,11 +23,11 @@ export const useSettingsStore = defineStore('settings', () => {
   watch(
     thresholds,
     (thresholdsVal: Object) => {
-      $q.localStorage.set("thresholds", thresholdsVal)
+      localStorage.set("thresholds", thresholdsVal)
     }, {deep: true}
   )
 
-  watch(thumbnailQuality, (val: Object) => $q.localStorage.set("thumbnailQuality", val))
+  watch(thumbnailQuality, (val: Object) => localStorage.set("thumbnailQuality", val))
 
   function initialize(localStorage: any) {
     console.debug("initializing settingsStore")
