@@ -3,18 +3,28 @@
     <q-header elevated>
       <q-toolbar>
 
-        <q-img class="q-ml-xs q-mr-none cursor-pointer" style="margin-top:-7px"
-               @click="toggleLeftDrawer"
-               src="favicon.ico" height="32px" width="32px">
-          <q-tooltip class="tooltip">Toggle the tabset list view by clicking here</q-tooltip>
-        </q-img>
-
-        <q-toolbar-title
-          @click.stop="goHome()" class="cursor-pointer"
-          style="min-width:200px" shrink>
-          {{ title() }}
-          <q-tooltip class="tooltip">Reload Tabsets Extension</q-tooltip>
-        </q-toolbar-title>
+        <template v-if="leftDrawerOpen">
+          <q-img
+            class="q-ml-xs q-mr-none cursor-pointer" style="margin-top:-7px"
+            @click="toggleLeftDrawer"
+            src="favicon.ico" height="32px" width="32px">
+            <q-tooltip class="tooltip">Toggle the tabset list view by clicking here</q-tooltip>
+          </q-img>
+          <q-toolbar-title
+            @click.stop="goHome()" class="cursor-pointer"
+            style="min-width:200px" shrink>
+            {{ title() }}
+            <q-tooltip class="tooltip">Reload Tabsets Extension</q-tooltip>
+          </q-toolbar-title>
+        </template>
+        <template v-else>
+          <q-icon
+            class="q-ml-xs q-mr-none cursor-pointer"
+            name="menu" size="18px" @click="toggleLeftDrawer">
+            <q-tooltip class="tooltip">Toggle the tabset list view by clicking here</q-tooltip>
+          </q-icon>
+          <TabsetsSelectorWidget class="q-mx-md" />
+        </template>
 
 
         <q-space/>
@@ -128,8 +138,8 @@
 
         <Transition name="colorized-appear">
           <q-btn v-if="permissionsStore.hasFeature(FeatureIdent.SAVE_TAB)"
-            flat
-            name="savedTabs" icon="o_save" @click="tabsClicked(DrawerTabs.SAVED_TABS)">
+                 flat
+                 name="savedTabs" icon="o_save" @click="tabsClicked(DrawerTabs.SAVED_TABS)">
             <q-tooltip class="tooltip" anchor="center right" self="center left" :delay="200">
               The List of Urls displayed when you open a new tab in your Browser
             </q-tooltip>
@@ -265,6 +275,10 @@ import SuggestionDialog from "components/dialogues/SuggestionDialog.vue";
 import {useSuggestionsStore} from "src/stores/suggestionsStore";
 import {FeatureIdent} from "src/models/AppFeature";
 import {useSettingsStore} from "stores/settingsStore"
+import {useCommandExecutor} from "src/services/CommandExecutor";
+import {SelectTabsetCommand} from "src/domain/tabsets/SelectTabset";
+import {TabsetType} from "src/models/Tabset";
+import TabsetsSelectorWidget from "components/widgets/TabsetsSelectorWidget.vue";
 
 const router = useRouter()
 const tabsStore = useTabsStore()
@@ -368,6 +382,6 @@ const suggestionDialog = (s: Suggestion) => $q.dialog({
 })
 
 const dependingOnStates = () =>
-  _.find(useSuggestionsStore().getSuggestions(),s => s.state === SuggestionState.NEW) ? 'warning' : 'white'
+  _.find(useSuggestionsStore().getSuggestions(), s => s.state === SuggestionState.NEW) ? 'warning' : 'white'
 
 </script>

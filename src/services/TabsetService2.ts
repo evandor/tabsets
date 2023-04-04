@@ -28,7 +28,8 @@ export function useTabsetService() {
     console.debug("initializing tabsetService2")
     await db.loadTabsets()
     if (!doNotInitSearchIndex) {
-      useSearchStore().populate(db.getContents())
+      useSearchStore().populateFromContent(db.getContents())
+      useSearchStore().populateFromTabsets()
     }
   }
 

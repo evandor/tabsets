@@ -192,7 +192,7 @@
   </q-banner>
 
   <InfoMessageWidget
-    v-if="route?.query?.first && tabsStore.getCurrentTabset?.tabs.length > 0"
+    v-if="route?.query?.first && route.query.first === 'true' && tabsStore.getCurrentTabset?.tabs.length > 0"
     :probability="1"
     ident="tabsetPage_firstTime"
     hint="Congrats - you created your first tabset. Your open tabs have been added automatically to get you started with tabsets!"/>

@@ -26,6 +26,7 @@ import {useUiStore} from "src/stores/uiStore";
 import {useTabsetService} from "src/services/TabsetService2";
 import {INDEX_DB_NAME} from "boot/constants";
 import {useSettingsStore} from "stores/settingsStore";
+import BookmarksService from "src/services/BookmarksService";
 
 
 // function isNewTabPage() {
@@ -61,6 +62,7 @@ usePermissionsStore().initialize()
     ChromeListeners.initListeners(false)
     ChromeBookmarkListeners.initListeners()
     bookmarksStore.init()
+    BookmarksService.init()
   })
 settingsStore.initialize(useQuasar().localStorage);
 tabsStore.initialize(useQuasar().localStorage);

@@ -22,7 +22,7 @@ const routes: RouteRecordRaw[] = [
   },
   {
     path: '/trypro',
-    component: () => import('layouts/MainLayout.vue'),
+    component: () => import('layouts/DefaultLayout.vue'),
     children: [{ path: '', component: () => import('pages/TryPro.vue') }],
   },
   {
@@ -32,7 +32,7 @@ const routes: RouteRecordRaw[] = [
   },
   {
     path: '/stats',
-    component: () => import('layouts/MainLayout.vue'),
+    component: () => import('layouts/DefaultLayout.vue'),
     children: [{ path: '', component: () => import('pages/StatsPage.vue') }],
   },
   {
@@ -102,7 +102,7 @@ const routes: RouteRecordRaw[] = [
   },
   {
     path: '/help/:ident',
-    component: () => import('layouts/MainLayout.vue'),
+    component: () => import('layouts/DefaultLayout.vue'),
     children: [{ path: '', component: () => import('pages/HelpPage.vue') }],
   },
   {

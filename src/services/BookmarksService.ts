@@ -1,6 +1,7 @@
 import {Bookmark} from "src/models/Bookmark";
 import {useBookmarksStore} from "src/stores/bookmarksStore";
 import {useNotificationsStore} from "src/stores/notificationsStore";
+import {useSearchStore} from "stores/searchStore";
 
 async function getParentChain(parentId: string, chain: string[] = []): Promise<string[]> {
   if (!parentId || parentId === "0") {
@@ -19,8 +20,10 @@ class BookmarksService {
 
 
   async init() {
-
-
+    useBookmarksStore().loadBookmarks()
+      .then(res => {
+        useSearchStore().populateFromBookmarks()
+      })
   }
 
   deleteBookmarksFolder(folderId: string) {
@@ -54,7 +57,10 @@ class BookmarksService {
   async createBookmarkFolder(folderName: string, parentFolderId: string): Promise<chrome.bookmarks.BookmarkTreeNode> {
     console.log("createing folder", folderName, parentFolderId)
     // @ts-ignore
-    const res: chrome.bookmarks.BookmarkTreeNode = await chrome.bookmarks.create({title: folderName, parentId: parentFolderId})
+    const res: chrome.bookmarks.BookmarkTreeNode = await chrome.bookmarks.create({
+      title: folderName,
+      parentId: parentFolderId
+    })
     return Promise.resolve(res)
   }
 }

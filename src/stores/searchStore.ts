@@ -62,8 +62,11 @@ export const useSearchStore = defineStore('search', () => {
     useExtendedSearch: true
   })
 
+  var urlSet: Set<string> = new Set()
+
   async function init() {
-    console.debug("initializing searchStore")
+    console.debug("(re-)initializing searchStore")
+    urlSet = new Set()
     searchIndex.value = Fuse.createIndex(options.value.keys, [])
     fuse.value = new Fuse([], options.value, searchIndex.value)
   }
@@ -156,28 +159,6 @@ export const useSearchStore = defineStore('search', () => {
     }
     return Promise.reject("could not get window")
 
-    // chrome.windows.create({focused: true, width: 1024, height: 800}, (window: any) => {
-    //   useWindowsStore().screenshotWindow = window.id
-    //   let tabToClose: number | undefined = undefined
-    //
-    //   chrome.tabs.create({windowId: window.id, url: tab.chromeTab.url}, (tab: chrome.tabs.Tab) => {
-    //     tabToClose = tab.id
-    //     //dummyPromise(3000, tab.id)
-    //   })
-    //   // const promise = dummyPromise(3000)
-    //   //
-    //   // promise
-    //   //   .then(() => {
-    //   //     chrome.windows.remove(window.id)
-    //   //     useWindowsStore().screenshotWindow = null as unknown as number
-    //   //     const proxy = getCurrentInstance()?.proxy
-    //   //       if (proxy) {
-    //   //         console.log("proxy", proxy)
-    //   //         proxy.$forceUpdate()
-    //   //       }
-    //   //   })
-    //
-    // })
   }
 
   function reindex(values: Tabset[]) {
@@ -207,9 +188,9 @@ export const useSearchStore = defineStore('search', () => {
     })
   }
 
-  async function populateFromTabsets(urlSet: Set<string>) {
-    // init() has to have been called already!
+  async function populateFromTabsets() {
     // --- add data from tabs directly, like url and title
+    console.log("populating search index from tabsets")
     const minimalIndex: SearchDoc[] = []
     //const res = fuse.value.remove((doc) => true)
     _.forEach([...useTabsStore().tabsets.values()], (tabset: Tabset) => {
@@ -221,7 +202,7 @@ export const useSearchStore = defineStore('search', () => {
               })
               if (existingDocIndex >= 0) {
                 const existingDoc = minimalIndex[existingDocIndex]
-                console.log("existingDoc", existingDoc)
+                // console.log("existingDoc", existingDoc)
                 if (existingDoc.tabsets.indexOf(tabset.id) < 0) {
                   existingDoc.tabsets = existingDoc.tabsets.concat([tabset.id])
                   minimalIndex.splice(existingDocIndex, 1, existingDoc)
@@ -254,7 +235,21 @@ export const useSearchStore = defineStore('search', () => {
       }
       fuse.value.add(doc)
     })
-    return urlSet
+  }
+  async function populateFromBookmarks() {
+    // --- add data from bookmarks directly, like url and title
+    console.log("populating search index from bookmarks")
+    const indexFromBookmarks: SearchDoc[] = []
+    _.forEach(useBookmarksStore().bookmarksLeaves, (bookmark: any) => {
+        if (bookmark && bookmark.url && !urlSet.has(bookmark.url)) {
+          urlSet.add(bookmark.url)
+          const doc = new SearchDoc("", "", bookmark.title || '', bookmark.url, "", "", "", [], bookmark.id, "")
+          indexFromBookmarks.push(doc)
+        }
+      }
+    )
+    console.log(`populated from bookmarks with ${indexFromBookmarks.length} entries`)
+    indexFromBookmarks.forEach((doc: SearchDoc) => fuse.value.add(doc))
   }
 
   /**
@@ -262,13 +257,8 @@ export const useSearchStore = defineStore('search', () => {
    *
    * @param contentPromise
    */
-  async function populate(contentPromise: Promise<any[]>) {
-    console.debug("populating searchstore...")
-
-    await init()
-
-    var urlSet: Set<string> = new Set()
-
+  async function populateFromContent(contentPromise: Promise<any[]>) {
+    console.log("populating search index from content")
     // --- add data from stored content
     let count = 0
     let countFiltered = 0
@@ -302,20 +292,9 @@ export const useSearchStore = defineStore('search', () => {
     stats.value.set("content.filtered", countFiltered)
     // })
 
-    urlSet = await populateFromTabsets(urlSet)
-
-    // --- add data from bookmarks directly, like url and title
-    const indexFromBookmarks: SearchDoc[] = []
-    _.forEach(useBookmarksStore().bookmarksLeaves, (bookmark: any) => {
-        if (bookmark && bookmark.url && !urlSet.has(bookmark.url)) {
-          urlSet.add(bookmark.url)
-          const doc = new SearchDoc("", "", bookmark.title || '', bookmark.url, "", "", "", [], bookmark.id, "")
-          indexFromBookmarks.push(doc)
-        }
-      }
-    )
-    console.log(`populated from bookmarks with ${indexFromBookmarks.length} entries`)
-    indexFromBookmarks.forEach((doc: SearchDoc) => fuse.value.add(doc))
+    // await populateFromTabsets()
+    //
+    // await populateFromBookmarks()
 
   }
 
@@ -338,7 +317,9 @@ export const useSearchStore = defineStore('search', () => {
 
   return {
     init,
-    populate,
+    populateFromContent,
+    populateFromTabsets,
+    populateFromBookmarks,
     getIndex,
     addToIndex,
     remove,
