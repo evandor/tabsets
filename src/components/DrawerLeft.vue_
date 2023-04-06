@@ -107,17 +107,9 @@ const tabsStore = useTabsStore()
 const settingsStore = useSettingsStore()
 
 const openTabsCountRatio = ref(0)
-const tab = ref<DrawerTabs>(uiService.leftDrawerActiveTab())
+const tab = ref<DrawerTabs>(null as unknown as DrawerTabs)
 const rssTabsCount = ref(0)
 const filter = ref<string>('')
-
-watchEffect(() => tab.value = uiService.leftDrawerActiveTab())
-
-watch(() => tab.value, (currentValue, oldValue) => {
-  if (currentValue !== oldValue) {
-    uiService.leftDrawerSetActiveTab(currentValue)
-  }
-})
 
 watchEffect(() => {
   openTabsCountRatio.value = Math.min(tabsStore.tabs.length / settingsStore.thresholds['max' as keyof object], 1)

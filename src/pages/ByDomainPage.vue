@@ -47,14 +47,6 @@
     </q-card>
   </q-expansion-item>
 
-  <q-card v-if="tabsStore.getCurrentTabset?.view === 'kanban'">
-    <q-card-section>
-
-      <TabColumns/>
-
-    </q-card-section>
-  </q-card>
-
   <q-card v-if="tabsStore.getCurrentTabset?.view === 'canvas'">
     <q-card-section>
 

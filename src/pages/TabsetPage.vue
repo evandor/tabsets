@@ -88,15 +88,15 @@
           <q-tooltip>Sorting descending or ascending, currently {{ orderDesc }}</q-tooltip>
         </q-btn>
 
-        <q-btn v-if="permissionsStore.hasFeature(FeatureIdent.EXPERIMENTAL_VIEWS)"
-               @click="setView('grid')"
-               style="width:14px"
-               class="q-mr-sm" size="8px"
-               :flat="tabsStore.getCurrentTabset?.view !== 'grid'"
-               :outline="tabsStore.getCurrentTabset?.view === 'grid'"
-               icon="grid_on">
-          <q-tooltip class="tooltip">Use grid layout to visualize your tabs</q-tooltip>
-        </q-btn>
+<!--        <q-btn v-if="permissionsStore.hasFeature(FeatureIdent.EXPERIMENTAL_VIEWS)"-->
+<!--               @click="setView('grid')"-->
+<!--               style="width:14px"-->
+<!--               class="q-mr-sm" size="8px"-->
+<!--               :flat="tabsStore.getCurrentTabset?.view !== 'grid'"-->
+<!--               :outline="tabsStore.getCurrentTabset?.view === 'grid'"-->
+<!--               icon="grid_on">-->
+<!--          <q-tooltip class="tooltip">Use grid layout to visualize your tabs</q-tooltip>-->
+<!--        </q-btn>-->
 
         <q-btn v-if="tabsStore.getCurrentTabset?.tabs.length > 0"
                @click="setView('group')"
@@ -119,15 +119,15 @@
           <q-tooltip class="tooltip">Use the list layout to visualize your tabs</q-tooltip>
         </q-btn>
 
-        <q-btn v-if="permissionsStore.hasFeature(FeatureIdent.EXPERIMENTAL_VIEWS) && tabsStore.getCurrentTabset?.tabs.length > 0"
-               @click="setView('table')"
-               style="width:14px"
-               class="q-mr-xs" size="10px"
-               :flat="tabsStore.getCurrentTabset?.view !== 'table'"
-               :outline="tabsStore.getCurrentTabset?.view === 'table'"
-               icon="table_rows">
-          <q-tooltip>Use the table layout to visualize your tabs</q-tooltip>
-        </q-btn>
+<!--        <q-btn v-if="permissionsStore.hasFeature(FeatureIdent.EXPERIMENTAL_VIEWS) && tabsStore.getCurrentTabset?.tabs.length > 0"-->
+<!--               @click="setView('table')"-->
+<!--               style="width:14px"-->
+<!--               class="q-mr-xs" size="10px"-->
+<!--               :flat="tabsStore.getCurrentTabset?.view !== 'table'"-->
+<!--               :outline="tabsStore.getCurrentTabset?.view === 'table'"-->
+<!--               icon="table_rows">-->
+<!--          <q-tooltip>Use the table layout to visualize your tabs</q-tooltip>-->
+<!--        </q-btn>-->
 
         <q-btn v-if="permissionsStore.hasFeature(FeatureIdent.EXPERIMENTAL_VIEWS) && tabsStore.getCurrentTabset?.tabs.length > 0"
                @click="setView('canvas')"
@@ -172,101 +172,72 @@
 
   <div class="row fit greyBorderTop"></div>
 
-<!--  <q-banner rounded class="bg-amber-1 text-black q-ma-md"-->
-  <q-banner rounded class="text-primary q-ma-md" style="border: 1px solid #efefef"
-            v-if="!tabsStore.currentTabsetId && tabsStore.tabsets.size > 0">
-    <div class="text-body2">
-      Select an existing tabset from the list or create a new tabset.
-    </div>
-  </q-banner>
-  <q-banner rounded class="bg-amber-1 text-black q-ma-md"
-            v-if="tabsStore.currentTabsetId && tabsStore.getTabset(tabsetId?.value)?.tabs.length === 0 && tabsStore.pendingTabset?.tabs.length > 0">
-    <div class="text-body2">
-      To start adding new tabs to this empty tabset, select the tabs you want to use from above and click save.
-    </div>
-  </q-banner>
-  <q-banner v-else-if="tabsStore.currentTabsetId && tabsStore.getTabset(tabsetId?.value)?.tabs.length === 0">
-    To start adding new tabs to this empty tabset, open new browser tabs and come back to this extension to
-    associate them with a tabset.<br><br>
-    <!--If you want to assign your open tabs straight away, click <span class="cursor-pointer text-blue" @click="addOpenTabs()"><u>here</u></span>.-->
-  </q-banner>
+  <q-tabs v-if="usePermissionsStore().hasFeature(FeatureIdent.TABSET_PAGE)"
+    v-model="tab"
+    dense
+    class="text-grey"
+    active-color="primary"
+    indicator-color="primary"
+    align="left"
+    narrow-indicator
+  >
+    <q-tab name="tabset" label="Tabs" />
+    <q-tab name="page" label="Page" :disable="!tabsStore.currentTabsetId" />
+  </q-tabs>
 
-  <InfoMessageWidget
-    v-if="route?.query?.first && route.query.first === 'true' && tabsStore.getCurrentTabset?.tabs.length > 0"
-    :probability="1"
-    ident="tabsetPage_firstTime"
-    hint="Congrats - you created your first tabset. Your open tabs have been added automatically to get you started with tabsets!"/>
+  <q-separator />
 
-  <InfoMessageWidget
-    v-if="tabsetId === 'BACKUP'"
-    :probability="1"
-    ident="tabsetPage_backupTabset"
-    hint="This is a special type of tabset - it's meant for Backups. You can use it as any other tabset, but when you use the feature
+  <q-tab-panels v-model="tab" animated>
+    <q-tab-panel name="tabset">
+      <!--  <q-banner rounded class="bg-amber-1 text-black q-ma-md"-->
+      <q-banner rounded class="text-primary q-ma-md" style="border: 1px solid #efefef"
+                v-if="!tabsStore.currentTabsetId && tabsStore.tabsets.size > 0">
+        <div class="text-body2">
+          Select an existing tabset from the list or create a new tabset.
+        </div>
+      </q-banner>
+      <q-banner rounded class="bg-amber-1 text-black q-ma-md"
+                v-if="tabsStore.currentTabsetId && tabsStore.getTabset(tabsetId?.value)?.tabs.length === 0 && tabsStore.pendingTabset?.tabs.length > 0">
+        <div class="text-body2">
+          To start adding new tabs to this empty tabset, select the tabs you want to use from above and click save.
+        </div>
+      </q-banner>
+      <q-banner v-else-if="tabsStore.currentTabsetId && tabsStore.getTabset(tabsetId?.value)?.tabs.length === 0">
+        To start adding new tabs to this empty tabset, open new browser tabs and come back to this extension to
+        associate them with a tabset.<br><br>
+        <!--If you want to assign your open tabs straight away, click <span class="cursor-pointer text-blue" @click="addOpenTabs()"><u>here</u></span>.-->
+      </q-banner>
+
+      <InfoMessageWidget
+        v-if="route?.query?.first && route.query.first === 'true' && tabsStore.getCurrentTabset?.tabs.length > 0"
+        :probability="1"
+        ident="tabsetPage_firstTime"
+        hint="Congrats - you created your first tabset. Your open tabs have been added automatically to get you started with tabsets!"/>
+
+      <InfoMessageWidget
+        v-if="tabsetId === 'BACKUP'"
+        :probability="1"
+        ident="tabsetPage_backupTabset"
+        hint="This is a special type of tabset - it's meant for Backups. You can use it as any other tabset, but when you use the feature
  'backup and close current tabs' from the 'open tabs' menu, all tabs will be closed and automatically added to this backup tabset."/>
 
-  <InfoMessageWidget
-    v-if="tabsetId === 'IGNORE'"
-    :probability="1"
-    ident="tabsetPage_ignoreTabset"
-    hint="This is a special type of tabset - it's meant for those tabs which you don't want to track. You can add urls and whenever
+      <InfoMessageWidget
+        v-if="tabsetId === 'IGNORE'"
+        :probability="1"
+        ident="tabsetPage_ignoreTabset"
+        hint="This is a special type of tabset - it's meant for those tabs which you don't want to track. You can add urls and whenever
 a tab's url starts with one of the urls of this tabset, it will be ignored and not added to the tabs to be added."/>
 
-  <q-card flat>
-    <q-card-section>
+      <template v-if="usePermissionsStore().hasFeature(FeatureIdent.TABSET_PAGE) && tabsStore.getCurrentTabset?.showPageAsHeader">
+        <div v-html="tabsStore.getCurrentTabset.page"></div>
+      </template>
 
-      <TabList v-if="tabsStore.getCurrentTabset?.view === 'list'"
-               group="otherTabs"
-               :highlightUrl="highlightUrl"
-               :tabs="unpinnedNoGroupOrAllTabs()"/>
-
-      <TabTable v-else-if="tabsStore.getCurrentTabset?.view === 'table'"
-                group="otherTabs"
-                :highlightUrl="highlightUrl"
-                :tabs="unpinnedNoGroupOrAllTabs()"/>
-
-      <TabGroups v-else-if="tabsStore.getCurrentTabset?.view === 'group'"
-                group="otherTabs"
-                :highlightUrl="highlightUrl"
-                :tabs="unpinnedNoGroupOrAllTabs()"/>
-
-<!--      <TabThumbs v-else-if="tabsStore.getCurrentTabset?.view === 'thumbnails'"-->
-<!--                 group="otherTabs"-->
-<!--                 :tabs="unpinnedNoGroupOrAllTabs()"/>-->
-
-      <TabsExporter v-else-if="tabsStore.getCurrentTabset?.view === 'exporter'"
-                    group="otherTabs"
-                    :tabs="unpinnedNoGroupOrAllTabs()"/>
-
-      <Tabcards v-else
-                :tabs="unpinnedNoGroupOrAllTabs()" group="otherTabs" :highlightUrl="highlightUrl"/>
-
-
-    </q-card-section>
-
-    <!--    <q-card-section v-if="tabsStore.getCurrentTabset?.tabs.length === 0-->
-    <!--        && permissionsStore.hasFeature('pendingTabs')-->
-    <!--        && tabsStore.pendingTabset?.tabs.length > 0">-->
-    <!--      <q-banner rounded class="text-black"-->
-    <!--                style="font-weight: bold; border: 2px solid orange">-->
-    <!--        <div class="row justify-center items-center">-->
-    <!--          Your tabset does not yet contain any tabs. You can select some (or all) from the list above.-->
-    <!--        </div>-->
-    <!--      </q-banner>-->
-    <!--    </q-card-section>-->
-
-  </q-card>
-
-  <q-card v-if="tabsStore.getCurrentTabset?.view === 'kanban'">
-    <q-card-section>
-      <TabColumns/>
-    </q-card-section>
-  </q-card>
-
-  <q-card v-if="tabsStore.getCurrentTabset?.view === 'canvas'">
-    <q-card-section>
-      <TabsCanvas :key="'tabCanvas_' + tabsStore.currentTabsetId"/>
-    </q-card-section>
-  </q-card>
+      <TabsetPageCards />
+    </q-tab-panel>
+    <q-tab-panel name="page">
+      <PageForTabset />
+    </q-tab-panel>
+  </q-tab-panels>
 
 </template>
 
@@ -303,6 +274,8 @@ import {useUiStore} from "src/stores/uiStore";
 import TabGroups from "components/layouts/TabGroups.vue";
 import {ToggleSortingCommand} from "src/domain/tabsets/ToggleSorting";
 import {useSettingsStore} from "src/stores/settingsStore"
+import PageForTabset from "components/layouts/PageForTabset.vue";
+import TabsetPageCards from "pages/TabsetPageCards.vue";
 
 const route = useRoute();
 const router = useRouter();
@@ -318,11 +291,11 @@ const tabsetname = ref(tabsStore.currentTabsetName)
 const filter = ref('')
 const $q = useQuasar()
 
-const highlightUrl = ref('')
-
 const tabsetId = ref(null as unknown as string)
 const orderDesc = ref(false)
 const showEditButton = ref(false)
+
+const tab = ref('tabset')
 
 watchEffect(() => {
   if (!route || !route.params) {
@@ -338,30 +311,7 @@ watchEffect(() => {
   }
 })
 
-watchEffect(() => {
-  if (!route || !route.query) {
-    return
-  }
-  const highlight = route?.query['highlight'] as unknown as string
-  if (highlight && highlight.length > 0) {
-    try {
-      // highlightUrl.value = atob(highlight)
-      useUiStore().addHighlight(atob(highlight))
-    } catch (e: any) {
-      console.error("highlight error", e)
-    }
-  }
-})
 
-watchEffect(() => {
-  const highlightUrls: string[] = useUiStore().getHighlightUrls
-  if (highlightUrls.length > 0) {
-    console.log("found hightligh", highlightUrls)
-    highlightUrl.value = highlightUrls[0]
-  } else {
-    highlightUrl.value = ''
-  }
-})
 
 const setNewName = (newValue: string) => useCommandExecutor().executeFromUi(new RenameTabsetCommand(tabsStore.currentTabsetId, newValue))
 
@@ -422,10 +372,6 @@ const updateSelectionCount = () => {
   selectedCount.value = TabsetService.getSelectedPendingTabs().length
 }
 
-const setFilter = (val: string) => {
-  console.log("filter", val, filter.value)
-  filter.value = val
-}
 
 const filteredTabs = () => {
   const noDupliatesTabs = _.filter(tabsStore.pendingTabset?.tabs, (t: Tab) => !t.isDuplicate)

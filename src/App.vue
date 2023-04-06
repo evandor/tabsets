@@ -27,6 +27,7 @@ import {useTabsetService} from "src/services/TabsetService2";
 import {INDEX_DB_NAME} from "boot/constants";
 import {useSettingsStore} from "stores/settingsStore";
 import BookmarksService from "src/services/BookmarksService";
+import {useEntitiesService} from "src/services/EntitiesService";
 
 
 // function isNewTabPage() {
@@ -87,6 +88,7 @@ IndexedDbPersistenceService.init(INDEX_DB_NAME)
             MHtmlService.init()
             ChromeApi.init()
           })
+        useEntitiesService().init()
       })
   })
 

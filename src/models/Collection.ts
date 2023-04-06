@@ -1,48 +1,31 @@
 import {Tab} from "src/models/Tab";
 import {Group} from "src/models/Group";
 import {DynamicTabSource} from "src/models/DynamicTabSource";
+import {Entity} from "src/models/Entity";
 
-export enum TabsetStatus {
-  DEFAULT = "DEFAULT",
-  FAVORITE = "FAVORITE",
-  ARCHIVED = "ARCHIVED",
-  DELETED = "DELETED"
-}
 
-export enum TabsetType {
-  DEFAULT = "DEFAULT",
-  SESSION = "SESSION",
-
-  SPECIAL = "SPECIAL",
-  DYNAMIC = "DYNAMIC"
-}
-
-export class Tabset {
+export class Collection {
   id: string
   name: string
   created: number
   updated: number
-  tabs: Tab[]
-  dynamicTabs: DynamicTabSource | undefined
+  entities: Entity[]
   groups: Group[]
   spaces: string[] // got json problems with set<string>
   view: string = 'list'
   sorting: string = 'custom'
-  status: TabsetStatus = TabsetStatus.DEFAULT
-  type: TabsetType = TabsetType.DEFAULT
   sharedBy: string | undefined = undefined
-  canvas: string | undefined = undefined
 
   page: string | undefined = undefined
 
   showPageAsHeader = false
 
-  constructor(id: string, name: string, tabs: Tab[], groups: Group[] = [], spaces: string[] = []) {
+  constructor(id: string, name: string, entities: Entity[], groups: Group[] = [], spaces: string[] = []) {
     this.id = id
     this.name = name
     this.created = new Date().getTime()
     this.updated = new Date().getTime()
-    this.tabs = tabs
+    this.entities = entities
     this.groups = groups
     this.spaces = spaces
   }

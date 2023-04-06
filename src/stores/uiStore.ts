@@ -25,7 +25,12 @@ export enum DrawerTabs {
   FEATURES = "features",
   TAB_DETAILS = "tabDetails",
   NEW_TAB_URLS = "newTabUrls",
-  HELP = "help"
+  HELP = "help",
+
+  NOTES = "NOTES",
+  TODOS = "TODOS",
+  ENTITY_MANAGER = "ENTITY_MANAGER",
+  ENTITY = "ENTITY"
 }
 
 export class LeftDrawer {
@@ -44,8 +49,8 @@ export class RightDrawer {
 export const useUiStore = defineStore('ui', () => {
 
 
- // const leftDrawer = ref<LeftDrawer>($q.LocalStorage.getItem('ui.leftDrawer') || new LeftDrawer(LeftDrawerState.SMALL))
- // const leftDrawerLabelAnimated = ref(false)
+  // const leftDrawer = ref<LeftDrawer>($q.LocalStorage.getItem('ui.leftDrawer') || new LeftDrawer(LeftDrawerState.SMALL))
+  // const leftDrawerLabelAnimated = ref(false)
 
   const selectedTab = ref<Tab | undefined>(undefined)
 
@@ -54,7 +59,7 @@ export const useUiStore = defineStore('ui', () => {
 
   const rightDrawerFromStorage: RightDrawer | null = LocalStorage.getItem('ui.rightDrawer') as unknown as RightDrawer
   if (rightDrawerFromStorage !== null) {
-   // console.log("got", rightDrawerFromStorage)
+    // console.log("got", rightDrawerFromStorage)
     if (rightDrawerFromStorage.activeTab !== DrawerTabs.TAB_DETAILS) {
       rightDrawer = ref<RightDrawer>(rightDrawerFromStorage)
     }
@@ -151,8 +156,8 @@ export const useUiStore = defineStore('ui', () => {
     newTabUrlList.value.push(l)
   }
 
-  function removeNewTabUrl (url: string) {
-    newTabUrlList.value = _.filter(newTabUrlList.value, (e:any) => e.url !== url)
+  function removeNewTabUrl(url: string) {
+    newTabUrlList.value = _.filter(newTabUrlList.value, (e: any) => e.url !== url)
   }
 
   function hideInfoMessage(ident: string) {

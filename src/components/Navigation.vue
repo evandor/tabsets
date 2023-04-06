@@ -1,4 +1,5 @@
 <template>
+  <!-- !== MIT -->
   <div class="column" style="height:96%">
     <div class="col">
 
@@ -34,29 +35,19 @@
       </q-toolbar>
 
 
-      <!--      <q-splitter-->
-      <!--        v-model="splitterModel"-->
-      <!--        separator-class="bg-white"-->
-      <!--        horizontal-->
-      <!--        class="bg-grey-1 fit"-->
-      <!--        unit="px"-->
-      <!--        reverse>-->
-
-      <!--        <template v-slot:before>-->
       <q-list class="q-mt-none greyBorderTop">
-        <NavTabsetsListWidget :tabsets="tabsets(true)"/>
-        <q-separator v-if="tabsets(true).length > 0"/>
-        <NavTabsetsListWidget :tabsets="tabsets(false)"/>
-      </q-list>
-      <!--        </template>-->
+<!--        <NavTabsetsListWidget v-if="inBexMode()" :tabsets="tabsets(true)"/>-->
+        <NavTabsetsListWidgetNonBex :tabsets="tabsets(true)"/>
 
-      <!--        <template v-slot:after>-->
+        <q-separator v-if="tabsets(true).length > 0"/>
+
+<!--        <NavTabsetsListWidget v-if="!inBexMode()" :tabsets="tabsets(false)"/>-->
+        <NavTabsetsListWidgetNonBex :tabsets="tabsets(false)"/>
+
+      </q-list>
       <q-separator v-if="tabsetsWithTypes([TabsetType.SPECIAL]).length > 0"/>
 
       <NavTabsetsListWidget :tabsets="tabsetsWithTypes([TabsetType.SPECIAL])"/>
-      <!--        </template>-->
-
-      <!--      </q-splitter>-->
 
     </div>
   </div>
@@ -79,6 +70,9 @@ import NavTabsetsListWidget from "components/widgets/NavTabsetsListWidget.vue"
 import {useUiStore} from "src/stores/uiStore";
 import {useNotificationsStore} from "src/stores/notificationsStore";
 import {usePermissionsStore} from "src/stores/permissionsStore";
+import InfoMessageWidget from "components/widgets/InfoMessageWidget.vue";
+import {useUtils} from "src/services/Utils";
+import NavTabsetsListWidgetNonBex from "components/widgets/NavTabsetsListWidgetNonBex.vue";
 import {FeatureIdent} from "src/models/AppFeature";
 import {useSettingsStore} from "src/stores/settingsStore"
 
@@ -92,9 +86,11 @@ const permissonsStore = usePermissionsStore()
 const $q = useQuasar();
 const localStorage = $q.localStorage
 
+const {inBexMode} = useUtils()
+
 const newTabsetName = ref('')
 const merge = ref(false)
-const splitterModel = ref(100)//permissonsStore.hasFeature(FeatureIdent.DETAILS) ? 350 : 1)
+const splitterModel = ref(permissonsStore.hasFeature(FeatureIdent.DETAILS) ? 350 : 1)
 
 $q.loadingBar.setDefaults({
   color: 'green',

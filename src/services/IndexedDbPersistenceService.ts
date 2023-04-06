@@ -18,6 +18,8 @@ import {StatsEntry} from "src/models/StatsEntry";
 import {uid} from "quasar";
 import {Notification, NotificationStatus} from "src/models/Notification";
 import {StaticSuggestionIdent, Suggestion, SuggestionState} from "src/models/Suggestion";
+import {Collection} from "src/models/Collection";
+import {useEntitiesStore} from "stores/entitiesStore";
 class IndexedDbPersistenceService implements PersistenceService {
   private db: IDBPDatabase = null as unknown as IDBPDatabase
   async init(dbName: string) {
@@ -41,6 +43,19 @@ class IndexedDbPersistenceService implements PersistenceService {
     return Promise.all(res)
   }
 
+  async loadCollections(): Promise<any> {
+    const entitiesStore = useEntitiesStore()
+    const keys: IDBValidKey[] = await this.db.getAllKeys('collections')
+    const res: Promise<any>[] = _.map(keys, key => {
+      return this.db.get('collections', key)
+        .then(coll => {
+          entitiesStore.addCollection(key.toString(),coll)
+        })
+        .catch(err => console.log("err", err))
+    })
+    return Promise.all(res)
+  }
+
   async loadSpaces(): Promise<void> {
     console.debug("loading spaes...")
     const spacesStore = useSpacesStore()
@@ -57,6 +72,13 @@ class IndexedDbPersistenceService implements PersistenceService {
 
   async saveTabset(tabset: Tabset): Promise<IDBValidKey> {
     return await this.db.put('tabsets', JSON.parse(JSON.stringify(tabset)), tabset.id);
+  }
+
+  async saveCollection(type: string, collections: Map<string, Collection>): Promise<IDBValidKey> {
+    console.log("actually saving1", [...collections.values()])
+    console.log("actually saving2", JSON.stringify([...collections.values()]))
+    console.log("actually saving3", JSON.parse(JSON.stringify([...collections.values()])))
+    return await this.db.put('collections', JSON.parse(JSON.stringify([...collections.values()])), type);
   }
 
   deleteTabset(tabsetId: string): Promise<void> {
@@ -437,11 +459,11 @@ class IndexedDbPersistenceService implements PersistenceService {
           console.log("creating blobs suggestions")
           db.createObjectStore('blobs');
         }
-        // if (!db.objectStoreNames.contains('logs')) {
-        //   console.log("creating db logs")
-        //   db.createObjectStore('logs', {autoIncrement: true});
-        //   //store.createIndex("expires", "expires", {unique: false});
-        // }
+        if (!db.objectStoreNames.contains('collections')) {
+          console.log("creating db collections")
+          const store = db.createObjectStore('collections');
+          //store.createIndex("expires", "expires", {unique: false});
+        }
       },
     });
   }

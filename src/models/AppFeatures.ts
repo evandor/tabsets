@@ -39,7 +39,11 @@ export class AppFeatures {
       .setActivateCommand(new GrantPermissionCommand('history'))
       .setDeactivateCommand(new RevokePermissionCommand('history')),
     new AppFeature(FeatureIdent.BACKUP, FeatureType.EXPERIMENTAL, 'Backup Tabset', 'o_inventory_2', ['bex'], [FeatureIdent.OPENTABS_THRESHOLD]),
-    new AppFeature(FeatureIdent.IGNORE, FeatureType.EXPERIMENTAL, 'Ignore Tabset', 'o_pause_circle', ['bex'])
+    new AppFeature(FeatureIdent.IGNORE, FeatureType.EXPERIMENTAL, 'Ignore Tabset', 'o_pause_circle', ['bex']),
+
+    new AppFeature(FeatureIdent.TABSET_PAGE, FeatureType.EXPERIMENTAL, 'Use Tabset Pages', 'o_article', ['all']),
+    new AppFeature(FeatureIdent.NOTES, FeatureType.EXPERIMENTAL, 'Activate Notes Feature', 'o_note', ['all']),
+    new AppFeature(FeatureIdent.ENTITY_MANAGER, FeatureType.EXPERIMENTAL, 'Define your own entities', 'o_auto_awesome_motion', ['all'])
 
     // new AppFeature(FeatureIdent.ANALYSE_TABS, FeatureType.PLANNED, 'Multiple Windows', 'o_history', ['bex']),
     // new AppFeature(FeatureIdent.ANALYSE_TABS, FeatureType.PLANNED, 'Scheduled Tabs', 'o_history', ['bex']),

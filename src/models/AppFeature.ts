@@ -18,14 +18,19 @@ export enum FeatureIdent {
   THUMBNAILS = "THUMBNAILS",
   ANALYSE_TABS = "ANALYSE_TABS",
   HISTORY = "HISTORY",
-  DYNAMIC ="DYNAMIC",
+  DYNAMIC = "DYNAMIC",
   WINDOWS = "WINDOWS",
   SCHEDULED = "SCHEDULED",
   OLD_TABS = "OLD_TABS",
   BACKUP = "BACKUP",
   IGNORE = "IGNORE",
 
-  SORT_TABS = "SORT_TABS"
+  SORT_TABS = "SORT_TABS",
+
+  TABSET_PAGE = "TABSET_PAGE",
+  NOTES = "NOTES",
+
+  ENTITY_MANAGER = "ENTITY_MANAGER"
 
 }
 
@@ -50,7 +55,6 @@ export class AppFeature {
     public name: string,
     public icon: string,
     public useIn: string[],
-
     public requires: FeatureIdent[] = []
   ) {
     this.activateCommand = new ActivateFeatureCommand(this)

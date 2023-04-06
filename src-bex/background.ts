@@ -63,7 +63,7 @@ chrome.runtime.onStartup.addListener(() => {
 })
 
 export default bexBackground((bridge, cons/* , allActiveConnections */) => {
-  console.log("bexBackgroundBridge", bridge)
+  // console.log("bexBackgroundBridge", bridge)
   bridge.on('some.event', ({ data, respond }) => {
     console.log('Event receieved, responding...')
     respond(data.someKey + ' hey!')

@@ -11,8 +11,9 @@
       <q-card-section class="q-pt-none">
 
         <q-radio v-model="exportAs" val="json" label="as JSON"></q-radio>
-        <q-radio v-model="exportAs" val="csv" label="as CSV (not implemented yet)"></q-radio>
-        <q-radio v-model="exportAs" val="bookmarks" label="to Bookmarks Folder"></q-radio>
+<!--        <q-radio v-model="exportAs" val="csv" label="as CSV (not implemented yet)"></q-radio>-->
+        <q-radio v-if="usePermissionsStore().hasFeature(FeatureIdent.BOOKMARKS)"
+          v-model="exportAs" val="bookmarks" label="to Bookmarks Folder"></q-radio>
 
       </q-card-section>
 
@@ -40,6 +41,8 @@ import {useRouter} from "vue-router";
 import {useTabsStore} from "src/stores/tabsStore";
 
 import {useDialogPluginComponent} from 'quasar'
+import {usePermissionsStore} from "stores/permissionsStore";
+import {FeatureIdent} from "src/models/AppFeature";
 
 defineEmits([
   // REQUIRED; need to specify some events that your

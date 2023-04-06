@@ -1,0 +1,7 @@
+{
+  "name": "Todos",
+  "type": "TODOS",
+  "version": "0.0.1",
+  "icon": "check_circle",
+  "active": true
+}

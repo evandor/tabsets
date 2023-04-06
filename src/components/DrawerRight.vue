@@ -75,6 +75,10 @@
   <BrowserHistory v-else-if="tab ===  DrawerTabs.HISTORY"/>
   <Features v-else-if="tab ===  DrawerTabs.FEATURES"/>
   <TabDetails v-else-if="tab ===  DrawerTabs.TAB_DETAILS"/>
+
+  <NoteCollections v-else-if="tab ===  DrawerTabs.NOTES"/>
+  <EntityCollectionsView v-else-if="tab ===  DrawerTabs.ENTITY"/>
+  <EntityManagerView v-else-if="tab ===  DrawerTabs.ENTITY_MANAGER"/>
   <!--      <TabsetHelp v-else-if="tab ===  DrawerTabs.HELP"/>-->
 
   <div v-else>unknown tab name {{ tab }}</div>
@@ -100,6 +104,10 @@ import UnassignedAndOpenTabs from "components/views/UnassignedAndOpenTabs.vue";
 import BookmarksTree from "components/BookmarksTree.vue";
 import TabDetails from "components/views/TabDetails.vue";
 import NewTabUrls from "components/NewTabUrls.vue";
+import NoteCollections from "components/views/NoteCollections.vue";
+import TodoCollections from "components/views/TodoCollections.vue";
+import EntityManagerView from "components/views/EntityManagerView.vue";
+import EntityCollectionsView from "components/views/EntityCollectionsView.vue";
 
 const router = useRouter()
 
@@ -165,7 +173,16 @@ const drawerLabel = () => {
       return "Urls on New Tab Page"
     case DrawerTabs.HELP:
       return "Help"
+    case DrawerTabs.NOTES:
+      return "Note Collections"
+    case DrawerTabs.TODOS:
+      return "TODOs Collections"
+    case DrawerTabs.ENTITY_MANAGER:
+      return "Entity Manager"
+    case DrawerTabs.ENTITY:
+      return "Entity..."
     default:
+      ``
       return tab.value
   }
 }
