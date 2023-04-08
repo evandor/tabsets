@@ -22,7 +22,7 @@ describe('CreateSessionCommand', () => {
   })
 
   it('creates new session', async () => {
-    await IndexedDbPersistenceService.init()
+    await IndexedDbPersistenceService.init("db")
     const cmd = new CreateSessionCommand('newSessionId', [])
     const res = await cmd.execute()
     expect(res.message).toBe("Session newSessionId created successfully")
@@ -30,7 +30,7 @@ describe('CreateSessionCommand', () => {
   })
 
   it('updates session', async () => {
-    await IndexedDbPersistenceService.init()
+    await IndexedDbPersistenceService.init("db")
     await new CreateSessionCommand('newSessionId', []).execute()
 
     const res = await new CreateSessionCommand('newSessionId', []).execute()
@@ -40,13 +40,13 @@ describe('CreateSessionCommand', () => {
   })
 
   it('undoes create session', async () => {
-    await IndexedDbPersistenceService.init()
+    await IndexedDbPersistenceService.init("db")
     const res = await new CreateSessionCommand('newSessionId', []).execute()
 
     const undoRes = await res.undoCommand?.execute()
 
-    expect(undoRes.message).toBe("Session was deleted again")
-    expect(undoRes.undoCommand).not.toBe(null)
+    expect(undoRes?.message).toBe("Session was deleted again")
+    expect(undoRes?.undoCommand).not.toBe(null)
   })
 
 

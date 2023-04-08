@@ -10,7 +10,7 @@
 
 import {useQuasar} from "quasar";
 import {useTabsStore} from "stores/tabsStore";
-import NewEntityDialog from "components/dialogues/NewEntityDialog.vue";
+import NewEntityCollectionDialog from "components/dialogues/NewEntityCollectionDialog.vue";
 import {ref, watchEffect} from "vue";
 import {Collection} from "src/models/Collection";
 import {useEntitiesStore} from "stores/entitiesStore";
@@ -31,7 +31,7 @@ watchEffect(() => {
 
 const openDialog = () => {
   $q.dialog({
-    component: NewEntityDialog,
+    component: NewEntityCollectionDialog,
     componentProps: {
       type: 'NOTES',
       heading: 'Create a new Note Collection',

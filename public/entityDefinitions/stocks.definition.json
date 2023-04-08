@@ -3,5 +3,26 @@
   "type": "STOCKS",
   "version": "0.0.1",
   "icon": "area_chart",
-  "active": true
+  "active": true,
+  "fields": [
+    {
+      "ident": "name",
+      "hint": "provide the name as it is given at www.finanzen.net",
+      "type": "string",
+      "required": true
+    },
+    {
+      "ident": "url",
+      "type": "url",
+      "value": "https://www.finanzen.net/aktien/allianz-aktie"
+    },
+    {
+      "ident": "img",
+      "type": "img",
+      "derivedFrom": {
+        "ident": "url",
+        "xpath": "/html/body/main/div[2]/div/article[1]/div[4]/a/img"
+      }
+    }
+  ]
 }

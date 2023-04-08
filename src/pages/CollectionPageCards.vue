@@ -1,29 +1,30 @@
 <template>
   **{{ entitiesStore.getCurrentCollection(collectionType) }}**
   <hr>
-  **{{entitiesStore.getCurrentCollection(collectionType.value)?.entities}}
+  **{{ entitiesStore.getCurrentCollection(collectionType.value)?.entities }}
   <hr>
   <q-card flat v-if="entitiesStore.getCurrentCollection(collectionType)?.view !== 'canvas'">
     <q-card-section>
 
-      <TabList v-if="entitiesStore.getCurrentCollection(collectionType)?.view === 'list'"
-               group="otherTabs"
+      <CollectionList v-if="entitiesStore.getCurrentCollection(collectionType)?.view === 'list'"
+                      group="otherTabs"
+                      :type="collectionType"
+                      :collectionId="collectionId"
+                      :entities="getEntities()"/>
 
-               :tabs="getEntities()"/>
+      <!--      <TabTable v-else-if="entitiesStore.getCurrentCollection(collectionType)?.view === 'table'"-->
+      <!--                group="otherTabs"-->
 
-      <TabTable v-else-if="entitiesStore.getCurrentCollection(collectionType)?.view === 'table'"
-                group="otherTabs"
+      <!--                :tabs="getEntities()"/>-->
 
-                :tabs="getEntities()"/>
+      <!--      <TabGroups v-else-if="entitiesStore.getCurrentCollection(collectionType)?.view === 'group'"-->
+      <!--                 group="otherTabs"-->
 
-      <TabGroups v-else-if="entitiesStore.getCurrentCollection(collectionType)?.view === 'group'"
-                 group="otherTabs"
+      <!--                 :tabs="getEntities()"/>-->
 
-                 :tabs="getEntities()"/>
-
-      <TabsExporter v-else-if="entitiesStore.getCurrentCollection(collectionType)?.view === 'exporter'"
-                    group="otherTabs"
-                    :tabs="getEntities()"/>
+      <!--      <TabsExporter v-else-if="entitiesStore.getCurrentCollection(collectionType)?.view === 'exporter'"-->
+      <!--                    group="otherTabs"-->
+      <!--                    :tabs="getEntities()"/>-->
 
     </q-card-section>
 
@@ -48,6 +49,7 @@ import {useRoute} from "vue-router";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {ToggleSortingCommand} from "src/domain/tabsets/ToggleSorting";
 import {useEntitiesStore} from "stores/entitiesStore";
+import CollectionList from "components/layouts/CollectionList.vue";
 
 const entitiesStore = useEntitiesStore()
 const route = useRoute()

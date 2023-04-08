@@ -5,8 +5,12 @@ export function useUiService() {
   const rightDrawerActiveTab = (): DrawerTabs => useUiStore().rightDrawer.activeTab
 
 
-  const  rightDrawerSetActiveTab = (tab: DrawerTabs) => {
+  const  rightDrawerSetActiveTab = (tab: DrawerTabs, data: object = {}) => {
     useUiStore().rightDrawerSetActiveTab(tab)
+    console.log("got data", data)
+    if (data && data['entityType' as keyof object]) {
+      useUiStore().setEntityType(data['entityType' as keyof object])
+    }
   }
 
   const showSearchResultsPageFor = (term: string) => {

@@ -188,7 +188,8 @@
         <q-btn v-if="permissionsStore.hasFeature(FeatureIdent.ENTITY_MANAGER)"
                v-for="key in useEntitiesStore().entityDefinitions.keys()"
                flat
-               name="sidebar" :icon="useEntitiesStore().entityDefinitions.get(key).icon" @click="tabsClicked(DrawerTabs.ENTITY)">
+               name="sidebar" :icon="useEntitiesStore().entityDefinitions.get(key).icon"
+               @click="tabsClicked(DrawerTabs.ENTITY, {entityType: key})">
           <q-tooltip class="tooltip" anchor="center right" self="center left" :delay="200">{{useEntitiesStore().entityDefinitions.get(key)}}
           </q-tooltip>
         </q-btn>
@@ -398,7 +399,7 @@ const showNotificationDialog = (nId: string) => $q.dialog({
   }
 })
 
-const tabsClicked = (tab: DrawerTabs) => uiService.rightDrawerSetActiveTab(tab)
+const tabsClicked = (tab: DrawerTabs, data: object = {}) => uiService.rightDrawerSetActiveTab(tab, data)
 
 const showExportDialog = () => $q.dialog({component: ExportDialog})
 const showImportDialog = () => $q.dialog({component: ImportDialog})

@@ -16,7 +16,7 @@ export class Entity {
   author: string
 
 
-  constructor(public id: string, chromeTab: chrome.tabs.Tab) {
+  constructor(public id: string, public data: object) {
     this.created = new Date().getTime()
     this.updated = new Date().getTime()
     this.lastActive = new Date().getTime()

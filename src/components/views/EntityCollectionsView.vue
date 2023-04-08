@@ -1,5 +1,5 @@
 <template>
-<q-btn @click="openDialog" label="create new collection" size="12px"/>
+  <q-btn @click="openDialog" label="create new collection" size="12px"/>
 
   <ul v-for="notesCollection in [...collections.values()]">
     <li @click="openEntityCollection(notesCollection.id)">{{ notesCollection.name }}</li>
@@ -10,37 +10,43 @@
 
 import {useQuasar} from "quasar";
 import {useTabsStore} from "stores/tabsStore";
-import NewEntityDialog from "components/dialogues/NewEntityDialog.vue";
+import NewEntityCollectionDialog from "components/dialogues/NewEntityCollectionDialog.vue";
 import {ref, watchEffect} from "vue";
 import {Collection} from "src/models/Collection";
 import {useEntitiesStore} from "stores/entitiesStore";
 import {useRouter} from "vue-router";
+import {useUiStore} from "stores/uiStore";
 
 const $q = useQuasar()
 const tabsStore = useTabsStore()
 const router = useRouter()
+const uiStore = useUiStore()
 
 const collections = ref<Map<string, Collection>>(new Map())
+const entityType = ref()
 
 watchEffect(() => {
   const entitiesStore = useEntitiesStore()
-  const todos: Map<string, Collection> = entitiesStore.collections.get("NOTES") || new Map()
-  console.log("todos", todos)
-  collections.value = todos
+  console.log("uiStore.entityType", uiStore.entityType)
+  if (uiStore.entityType) {
+    const entityCollection: Map<string, Collection> = entitiesStore.collections.get(uiStore.entityType) || new Map()
+    console.log("entityCollection", entityCollection)
+    collections.value = entityCollection
+  }
 })
 
 const openDialog = () => {
   $q.dialog({
-    component: NewEntityDialog,
+    component: NewEntityCollectionDialog,
     componentProps: {
-      type: 'NOTES',
-      heading: 'Create a new Note Collection',
+      type: uiStore.entityType,
+      heading: 'Create a new '+uiStore.entityType+' Collection',
       tabsetId: tabsStore.currentTabsetId,
     }
   })
 }
 
 const openEntityCollection = (id: string) => {
-  router.push("/collections/notes/" + id)
+  router.push(`/collections/${uiStore.entityType}/${id}`)
 }
 </script>

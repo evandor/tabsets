@@ -5,27 +5,25 @@
         <div class="text-h6">{{ props.heading }}</div>
       </q-card-section>
 
-      <q-card-section class="q-pt-none">
-        <div class="text-body">New Collection's name:</div>
-        <q-input v-model="newCollectionName"
+      <q-card-section class="q-pt-none" v-for="field in fields">
+        <div class="text-body">{{ field.ident }}</div>
+        <q-input v-model="entity[field.ident]"
                  class="q-mb-md q-pb-none"
                  dense autofocus
-                 error-message="Please do not use special Characters, maximum length is 32"
-                 :error="!newCollectionNameIsValid"
-                 data-testid="newCollectionName"
-                 @keydown.enter="createNewCollection()" v-close-popup />
-        <div class="text-caption text-negative q-mt-none q-pt-none">{{ newTabsetDialogWarning() }}</div>
-
+                 error-message="Please do not use special Characters, maximum length is 32"/>
       </q-card-section>
 
       <q-card-actions align="right" class="text-primary">
         <q-btn flat label="Cancel" @click="onDialogCancel"/>
         <q-btn flat
                data-testid="newCollectionNameSubmit"
-               :label="newCollectionNameExists ? 'Alter Collection' : 'Create new Collection'"
-               :disable="newCollectionName.trim().length === 0" v-close-popup
-               @click="createNewCollection()"/>
+               label="Create new Collection"
+               @click="createEntity()"/>
       </q-card-actions>
+
+      <q-card-section class="q-pt-none">
+        {{ entity }}
+      </q-card-section>
 
 
     </q-card>
@@ -37,12 +35,13 @@
 
 import {computed, ref, watchEffect} from "vue";
 import {useDialogPluginComponent, useQuasar} from "quasar";
-import {useRouter} from "vue-router";
-import {useTabsStore} from "src/stores/tabsStore";
+import {useRoute, useRouter} from "vue-router";
 import {STRIP_CHARS_IN_USER_INPUT} from "boot/constants";
 import {useCommandExecutor} from "src/services/CommandExecutor";
-import {TabsetStatus} from "src/models/Tabset";
-import {CreateEntityCollection} from "src/domain/entities/CreateEntityCollection";
+import {useEntitiesStore} from "stores/entitiesStore";
+import {Field} from "src/models/EntityDefinition";
+import {CreateEntityCommand} from "src/domain/entities/CreateEntity";
+import {forEach} from "lodash";
 
 defineEmits([
   ...useDialogPluginComponent.emits
@@ -61,45 +60,44 @@ const props = defineProps({
 
 const {dialogRef, onDialogHide, onDialogCancel} = useDialogPluginComponent()
 
-const tabsStore = useTabsStore()
+const entitiesStore = useEntitiesStore()
 const router = useRouter()
+const route = useRoute()
 const $q = useQuasar()
 
-const newCollectionName = ref('')
-const newCollectionNameExists = ref(false)
+const fields = ref<Field[]>([])
 const hideWarning = ref(false)
-
-const newCollectionNameIsValid = computed(() => newCollectionName.value.length <= 32 && !STRIP_CHARS_IN_USER_INPUT.test(newCollectionName.value))
+const entity = ref<any>({})
+const collectionId = ref<string | undefined>(undefined)
 
 watchEffect(() => {
-  const existsInTabset = tabsStore.existingInTabset(newCollectionName.value)
-  newCollectionNameExists.value = !!existsInTabset && existsInTabset.status !== TabsetStatus.DELETED
+  console.log("props.type", props.type)
+  const definition = entitiesStore.entityDefinitions?.get(props.type)
+  console.log("definition", definition)
+  if (definition) {
+    fields.value = definition.fields
+    forEach(fields.value, f => {
+      if (f.value && entity.value) {
+        entity.value[f.ident as keyof object] = f.value
+        // entity.value['test' as keyof object] = ""
+      }
+    })
+  }
 })
 
-const createNewCollection = () => {
-  hideWarning.value = true
+watchEffect(() => {
+  if (!route || !route.params) {
+    return
+  }
+  collectionId.value = route?.params.collectionId as string
+})
 
-  useCommandExecutor()
-    .executeFromUi(new CreateEntityCollection(props.type, newCollectionName.value))
-    .then((res) => {
-      // useUiStore().setNewTabsetEmptyByDefault(addEmptyTabset.value)
-      // if (addEmptyTabset.value) {
-      //   TabsetService.createPendingFromBrowserTabs()
-      // } else {
-      //   if (tabsStore.pendingTabset) {
-      //     // clear pending tabset - why neccessary?
-      //     tabsStore.pendingTabset.tabs = []
-      //   }
-      // }
-      //router.push("/tabsets/" + res.result.tabsetId + "?first=" + props.firstTabset)
-      //window.close()
-    })
-}
-
-const newTabsetDialogWarning = () => {
-  const existsInTabset = tabsStore.existingInTabset(newCollectionName.value)
-  return (!hideWarning.value && existsInTabset && existsInTabset.status !== TabsetStatus.DELETED) ?
-    "Hint: Tabset exists, but you can add tabs" : ""
+const createEntity = () => {
+  if (collectionId.value) {
+    hideWarning.value = true
+    useCommandExecutor()
+      .executeFromUi(new CreateEntityCommand(props.type, collectionId.value, entity.value))
+  }
 }
 
 

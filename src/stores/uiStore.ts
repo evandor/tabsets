@@ -89,6 +89,9 @@ export const useUiStore = defineStore('ui', () => {
   // listener currently triggered on '/' keypress for search keyboard shortcut
   const ignoreKeypress = ref(false)
 
+  // entity management
+  const entityType = ref<string | undefined>(undefined)
+
   // watch(leftDrawer.value, (val: Object) => {
   //   $q.LocalStorage.set("ui.leftDrawer", val)
   // }, {deep: true})
@@ -180,6 +183,10 @@ export const useUiStore = defineStore('ui', () => {
     if (rightDrawerViewStack.value[rightDrawerViewStack.value.length - 1] !== tab) {
       rightDrawerViewStack.value.push(tab)
     }
+  }
+
+  function setEntityType(type: string) {
+    entityType.value = type
   }
 
   function rightDrawerSetLastView() {
@@ -275,6 +282,8 @@ export const useUiStore = defineStore('ui', () => {
     addHighlight,
     getHighlightUrls,
     ignoreKeypressListener,
-    setIgnoreKeypress
+    setIgnoreKeypress,
+    setEntityType,
+    entityType
   }
 })

@@ -1,0 +1,19 @@
+{
+  "name": "Notes",
+  "type": "NOTES",
+  "version": "0.0.1",
+  "icon": "note",
+  "active": true,
+  "fields": [
+    {
+      "ident": "note",
+      "type": "string",
+      "required": true
+    }
+  ],
+  "render": {
+    "tag": "div",
+    "props": {"class": "text-red"},
+    "child": "note"
+  }
+}

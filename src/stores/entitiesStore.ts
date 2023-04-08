@@ -17,6 +17,14 @@ import {CollectionInCollections} from "src/models/CollectionInCollections";
 import {EntityDefinition} from "src/models/EntityDefinition";
 
 
+function loadEntityDefinition(name: string, entityDefs: Map<string, EntityDefinition>) {
+  fetch('./entityDefinitions/' + name + '.definition.json')
+    .then((response) => response.json())
+    .then((json) => {
+      entityDefs.set(json.type.toString().toUpperCase(), json)
+    });
+}
+
 export const useEntitiesStore = defineStore('entities', {
   state: () => ({
 
@@ -37,17 +45,13 @@ export const useEntitiesStore = defineStore('entities', {
     getCurrentCollection: (state) => {
       return (type: string): Collection | undefined => {
         const currentCollectionId = state.currentCollection.get(type)
-        console.log("currentCollectionId", type, currentCollectionId)
-        console.log("currentCollection", state.currentCollection)
-        // console.log("state.collections.get(type)", type, state.collections.get(type))
-        //console.log("state.collections.get(type)?.get(currentCollectionId || '')", currentCollectionId, state.collections.get(type)?.get(currentCollectionId || ''))
         const colls = state.collections.get(type)
         return colls ?
           _.find([...colls.values()], c => c.id === currentCollectionId)
           : undefined
       }
     },
-    currentCollectionName():any  {
+    currentCollectionName(): any {
       return this.getCurrentCollection.name || 'undefined'
     },
 
@@ -56,18 +60,9 @@ export const useEntitiesStore = defineStore('entities', {
   actions: {
 
     async loadEntityDefinitions() {
-      fetch('./entityDefinitions/stocks.definition.json')
-        .then((response) => response.json())
-        .then((json) => {
-          console.log("JSON", json.name, json)
-          this.entityDefinitions.set(json.type.toString().toUpperCase(), json)
-        });
-      fetch('./entityDefinitions/todos.definition.json')
-        .then((response) => response.json())
-        .then((json) => {
-          console.log("JSON", json.name, json)
-          this.entityDefinitions.set(json.type.toString().toUpperCase(), json)
-        });
+      loadEntityDefinition("stocks", this.entityDefinitions)
+      loadEntityDefinition("todos", this.entityDefinitions)
+      loadEntityDefinition("notes", this.entityDefinitions)
     },
 
     async createCollection(collectionType: string, collectionName: string): Promise<CollectionInCollections> {

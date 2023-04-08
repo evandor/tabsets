@@ -54,7 +54,8 @@
     "vue-konva": "^3.0.2",
     "vue-router": "^4.0.0",
     "vue-timeago3": "^2.3.0",
-    "vue3-apexcharts": "^1.4.1"
+    "vue3-apexcharts": "^1.4.1",
+    "xpath": "^0.0.32"
   },
   "devDependencies": {
     "@babel/preset-env": "^7.19.0",

@@ -116,6 +116,7 @@ const uiService = useUiService()
 const featureToggles = useSettingsStore()
 const tabsStore = useTabsStore()
 const settingsStore = useSettingsStore()
+const uiStore = useUiStore()
 
 const openTabsCountRatio = ref(0)
 const tab = ref<DrawerTabs>(uiService.rightDrawerActiveTab())
@@ -180,7 +181,7 @@ const drawerLabel = () => {
     case DrawerTabs.ENTITY_MANAGER:
       return "Entity Manager"
     case DrawerTabs.ENTITY:
-      return "Entity..."
+      return uiStore.entityType
     default:
       ``
       return tab.value
