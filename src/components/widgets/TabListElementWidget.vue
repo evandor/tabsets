@@ -1,7 +1,10 @@
 <template>
 
-  <q-item-section class="q-mr-sm" style="max-width:20px;">
-    <TabFaviconWidget :tab="props.tab" width="20px" height="20px" style="position: relative;top:-10px"/>
+  <q-item-section class="q-mr-sm" style="border:1px solid gray;min-widht:60px;max-width:60px;">
+    <q-img v-if="thumbnail"
+           :src="thumbnail" width="60px"/>
+    <TabFaviconWidget v-else
+                      :tab="props.tab" width="20px" height="20px" style="position: relative;top:-10px"/>
   </q-item-section>
 
   <!-- name, title, url && note -->
@@ -19,9 +22,10 @@
                   @click="NavigationService.openOrCreateTab(props.tab.chromeTab?.url)"
                   size="xs" icon="tab">
             opened
-            <q-tooltip class="tooltip">This tab is open in your browser. Click to open the corresponding tab.</q-tooltip>
+            <q-tooltip class="tooltip">This tab is open in your browser. Click to open the corresponding tab.
+            </q-tooltip>
           </q-chip>
-          {{nameOrTitle(props.tab)}}
+          {{ nameOrTitle(props.tab) }}
           <q-popup-edit :model-value="dynamicNameOrTitleModel(tab)" v-slot="scope"
                         @update:model-value="val => setCustomTitle( tab, val)">
             <q-input v-model="scope.value" dense autofocus counter @keyup.enter="scope.set"/>
@@ -107,7 +111,7 @@ import NavigationService from "src/services/NavigationService";
 import {Tab} from "src/models/Tab";
 import TabsetService from "src/services/TabsetService";
 import {useNotificationsStore} from "src/stores/notificationsStore";
-import {ref} from "vue";
+import {ref, watchEffect} from "vue";
 import {useUtils} from "src/services/Utils"
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {DeleteTabCommand} from "src/domain/commands/DeleteTabCommand";
@@ -133,6 +137,7 @@ const $q = useQuasar()
 
 const line = ref(null)
 const showButtonsProp = ref<boolean>(false)
+const thumbnail = ref<string | undefined>(undefined)
 
 
 function getShortHostname(host: string) {
@@ -231,4 +236,25 @@ const setCustomTitle = (tab: Tab, newValue: string) =>
 const copyToClipboard = (text: string) =>
   useCommandExecutor().executeFromUi(new CopyToClipboardCommand(text))
 
+const thumbnailFor = async (tab: Tab): Promise<object> => {
+  //const key = btoa(tab.chromeTab.url || '')
+  return await TabsetService.getThumbnailFor(tab)
+  // if (thumnna)
+  //
+  // // return thumbnails.value.get(key) || "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+ip1sAAAAASUVORK5CYII="
+  // return thumbnails.value.get(key) || "thumbnail-not-available.png"
+}
+
+watchEffect(() => {
+  if (props.tab) {
+    // @ts-ignore
+    thumbnailFor(props.tab)
+      .then((tn: object) => {
+        console.log("tn", tn)
+        if (tn && tn['thumbnail' as keyof object]) {
+          thumbnail.value = tn['thumbnail' as keyof object]
+        }
+      })
+  }
+})
 </script>

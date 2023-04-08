@@ -13,6 +13,9 @@ export class AppFeatures {
     new AppFeature(FeatureIdent.BOOKMARKS, FeatureType.RECOMMENDED, 'Bookmarks', 'o_bookmarks', ['bex'])
       .setActivateCommand(new GrantPermissionCommand('bookmarks'))
       .setDeactivateCommand(new RevokePermissionCommand('bookmarks')),
+    new AppFeature(FeatureIdent.THUMBNAILS, FeatureType.RECOMMENDED, 'Thumbnails', 'o_image', ['bex'])
+      .setActivateCommand(new GrantOriginCommand('thumbnails'))
+      .setDeactivateCommand(new RevokeOriginCommand('thumbnails')),
 
     new AppFeature(FeatureIdent.SAVE_TAB, FeatureType.OPTIONAL, 'Save Tabs', 'o_save', ['bex'])
       .setActivateCommand(new GrantPermissionCommand('pageCapture'))
@@ -29,9 +32,6 @@ export class AppFeatures {
     new AppFeature(FeatureIdent.RSS, FeatureType.EXPERIMENTAL, 'RSS View', 'o_rss_feed', ['bex', 'spa']),
     new AppFeature(FeatureIdent.SESSIONS, FeatureType.EXPERIMENTAL, 'Sessions', 'o_explore', ['all'],[FeatureIdent.OPENTABS_THRESHOLD]),
     new AppFeature(FeatureIdent.SPACES, FeatureType.EXPERIMENTAL, 'Spaces', 'o_space_dashboard', ['all']),
-    new AppFeature(FeatureIdent.THUMBNAILS, FeatureType.EXPERIMENTAL, 'Thumbnails', 'o_image', ['bex'])
-      .setActivateCommand(new GrantOriginCommand('thumbnails'))
-      .setDeactivateCommand(new RevokeOriginCommand('thumbnails')),
     new AppFeature(FeatureIdent.ANALYSE_TABS, FeatureType.EXPERIMENTAL, 'Analyse Tabs', 'o_analytics', ['bex'])
       .setActivateCommand(new GrantOriginCommand('analyseTabs'))
       .setDeactivateCommand(new RevokeOriginCommand('analyseTabs')),

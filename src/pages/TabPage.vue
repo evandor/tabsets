@@ -22,8 +22,6 @@
       <q-tab name="links" :label="linksDataLabel()"/>
       <q-tab name="history" label="History"/>
       <q-tab name="content" label="Content"/>
-<!--      <q-tab name="index" label="Index"/>-->
-      <q-tab name="logs" label="Logs"/>
     </q-tabs>
   </div>
 
@@ -360,33 +358,6 @@
     </div>
   </div>
 
-  <div v-else-if="tab === 'logs'">
-
-    <div class="q-pa-md q-gutter-sm">
-      <q-banner rounded class="bg-grey-1 text-primary">The log of events related to this tab.</q-banner>
-
-      <q-table
-        title="Meta data from the website source"
-        :rows="logs"
-        :columns="logsColumns"
-        row-key="name"
-        :pagination="logsInitialPagination"
-        :filter="logsFilter"
-        dense>
-
-        <template v-slot:top-right>
-          <q-input borderless dense debounce="300" v-model="filter" placeholder="Search">
-            <template v-slot:append>
-              <q-icon name="search"/>
-            </template>
-          </q-input>
-        </template>
-
-      </q-table>
-    </div>
-
-  </div>
-
 
 </template>
 
@@ -401,8 +372,6 @@ import {date} from "quasar";
 import {useSearchStore} from "src/stores/searchStore";
 import _ from "lodash"
 import {useUtils} from "src/services/Utils";
-import {useQueryExecutor} from "src/services/QueryExecutor";
-import {TabLogsQuery} from "src/domain/queries/TabLogsQuery";
 import {useUiStore} from "src/stores/uiStore";
 import {openURL} from "quasar";
 import {useSettingsStore} from "src/stores/settingsStore"
@@ -483,11 +452,11 @@ const logsColumns = ref([
   {name: 'msg', align: 'left', label: 'Message', field: 'msg', sortable: true}
 ])
 
-useQueryExecutor()
-  .queryFromUi(new TabLogsQuery(useUiStore().getSelectedTab?.chromeTab.url || ''))
-  .then(res => {
-    logs.value = res.result
-  })
+// useQueryExecutor()
+//   .queryFromUi(new TabLogsQuery(useUiStore().getSelectedTab?.chromeTab.url || ''))
+//   .then(res => {
+//     logs.value = res.result
+//   })
 //.catch((err) => logger.warning(err))
 
 

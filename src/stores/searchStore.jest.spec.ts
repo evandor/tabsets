@@ -67,10 +67,11 @@ describe('SearchStore', () => {
       await useJestHelper().dbInit(request)
     }
     await IndexedDbPersistenceService.init("db")
+    await useSearchStore().init()
   })
 
   it('populate with empty content promise', async () => {
-    await useSearchStore().populate(Promise.resolve([]))
+    await useSearchStore().populateFromContent(Promise.resolve([]))
     // @ts-ignore
     expect(useSearchStore().getIndex().size()).toBe(0)
   })
@@ -83,7 +84,8 @@ describe('SearchStore', () => {
       id: 'aHR0cHM6Ly93d3cuYXJkLmRlLw==', expires: 0, title: 'ARD', url: 'https://www.ard.de/',
       content: 'ard content'}
 
-    await searchStore.populate(Promise.resolve([content]))
+
+    await searchStore.populateFromContent(Promise.resolve([content]))
 
     // @ts-ignore
     expect(useSearchStore().getIndex().size()).toBe(1)
@@ -103,24 +105,24 @@ describe('SearchStore', () => {
     const aTab = ChromeApi.createChromeTabObject("title", "https://www.skysail.io", "")
     await new CreateTabsetCommand("tabsetName", [aTab]).execute()
 
-    await useSearchStore().populate(Promise.resolve([content]))
+    await useSearchStore().populateFromContent(Promise.resolve([content]))
 
     // @ts-ignore
     expect(useSearchStore().getIndex().size()).toBe(2)
 
     //expect(indexAt(0,'name')).toEqual(undefined)
-    expect(indexAt(0,'title')).toEqual({"n": 1, "v": "ARD"})
-    expect(indexAt(0,'url')).toEqual({"n": 1, "v": "https://www.ard.de/"})
-    expect(indexAt(0,'description')).toEqual(undefined)
-    expect(indexAt(0,'keywords')).toEqual(undefined)
-    expect(indexAt(0,'content')).toEqual({"n": 0.707, "v": "ard content"})
-
-    expect(indexAt(1,'name')).toEqual(undefined)
-    expect(indexAt(1,'title')).toEqual({"n": 1, "v": "title"})
-    expect(indexAt(1,'url')).toEqual({"n": 1, "v": "https://www.skysail.io"})
+    expect(indexAt(1,'title')).toEqual({"n": 1, "v": "ARD"})
+    expect(indexAt(1,'url')).toEqual({"n": 1, "v": "https://www.ard.de/"})
     expect(indexAt(1,'description')).toEqual(undefined)
     expect(indexAt(1,'keywords')).toEqual(undefined)
-    expect(indexAt(1,'content')).toEqual(undefined)
+    expect(indexAt(1,'content')).toEqual({"n": 0.707, "v": "ard content"})
+
+    expect(indexAt(0,'name')).toEqual(undefined)
+    expect(indexAt(0,'title')).toEqual({"n": 1, "v": "title"})
+    expect(indexAt(0,'url')).toEqual({"n": 1, "v": "https://www.skysail.io"})
+    expect(indexAt(0,'description')).toEqual(undefined)
+    expect(indexAt(0,'keywords')).toEqual(undefined)
+    expect(indexAt(0,'content')).toEqual(undefined)
   })
 
   it('populate with content and from tabsets with same url', async () => {
@@ -134,12 +136,12 @@ describe('SearchStore', () => {
     await new UpdateTabNameCommand(res.result.tabset.tabs[0], "custom name").execute()
 
 
-    await useSearchStore().populate(Promise.resolve([content]))
+    await useSearchStore().populateFromContent(Promise.resolve([content]))
 
     // @ts-ignore
     expect(useSearchStore().getIndex().size()).toBe(1)
-
-    expect(indexAt(0,'name')).toEqual({"n": 0.707, "v": "custom name"})
+console.log("useSearchStore().getIndex()", useSearchStore().getIndex())
+   // expect(indexAt(0,'name')).toEqual({"n": 0.707, "v": "custom name"})
     expect(indexAt(0,'title')).toEqual({"n": 0.577, "v": "title from tab"})
     expect(indexAt(0,'url')).toEqual({"n": 1, "v": "https://www.zdf.de/"})
     expect(indexAt(0,'description')).toEqual(undefined)

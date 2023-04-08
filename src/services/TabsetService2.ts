@@ -233,7 +233,7 @@ export function useTabsetService() {
         //.then(() => console.log("added content"))
         .catch((err:any) => console.log("err", err))
 
-      // console.log("updating meta data for ", tabsetIds, tab.url)
+      console.log("updating meta data for ", tabsetIds, tab.url, metas)
       const tabsets = [...useTabsStore().tabsets.values()]
       tabsets.forEach((tabset: Tabset) => {
         if (tabset) {
