@@ -46,16 +46,6 @@ const routes: RouteRecordRaw[] = [
     children: [{ path: '', component: () => import('pages/TabsetPage.vue') }],
   },
   {
-    path: '/entityManager/:type',
-    component: () => import('layouts/DefaultLayout.vue'),
-    children: [{ path: '', component: () => import('pages/EntityManagerPage.vue') }],
-  },
-  {
-    path: '/collections/:type/:collectionId',
-    component: () => import('layouts/DefaultLayout.vue'),
-    children: [{ path: '', component: () => import('pages/CollectionPage.vue') }],
-  },
-  {
     path: '/dynamicTs/:tabsetId',
     component: () => import('layouts/DefaultLayout.vue'),
     children: [{ path: '', component: () => import('pages/DynamicTabsetPage.vue') }],

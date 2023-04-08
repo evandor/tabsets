@@ -176,34 +176,6 @@
         </Transition>
 
         <Transition name="colorized-appear">
-          <q-btn v-if="permissionsStore.hasFeature(FeatureIdent.NOTES)"
-                 flat
-                 name="sidebar" icon="o_note" @click="tabsClicked(DrawerTabs.NOTES)">
-            <q-tooltip class="tooltip" anchor="center right" self="center left" :delay="200">Access to your notes
-            </q-tooltip>
-          </q-btn>
-        </Transition>
-
-
-        <q-btn v-if="permissionsStore.hasFeature(FeatureIdent.ENTITY_MANAGER)"
-               v-for="key in useEntitiesStore().entityDefinitions.keys()"
-               flat
-               name="sidebar" :icon="useEntitiesStore().entityDefinitions.get(key).icon"
-               @click="tabsClicked(DrawerTabs.ENTITY, {entityType: key})">
-          <q-tooltip class="tooltip" anchor="center right" self="center left" :delay="200">{{useEntitiesStore().entityDefinitions.get(key)}}
-          </q-tooltip>
-        </q-btn>
-
-        <Transition name="colorized-appear">
-          <q-btn v-if="permissionsStore.hasFeature(FeatureIdent.ENTITY_MANAGER)"
-                 flat
-                 name="sidebar" icon="o_auto_awesome_motion" @click="tabsClicked(DrawerTabs.ENTITY_MANAGER)">
-            <q-tooltip class="tooltip" anchor="center right" self="center left" :delay="200">Define your own entities
-            </q-tooltip>
-          </q-btn>
-        </Transition>
-
-        <Transition name="colorized-appear">
           <q-btn v-if="permissionsStore.hasFeature(FeatureIdent.SIDEBAR)"
                  flat
                  name="sidebar" icon="o_input" @click="tabsClicked(DrawerTabs.SIDEBAR)">
@@ -303,11 +275,7 @@ import SuggestionDialog from "components/dialogues/SuggestionDialog.vue";
 import {useSuggestionsStore} from "src/stores/suggestionsStore";
 import {FeatureIdent} from "src/models/AppFeature";
 import {useSettingsStore} from "stores/settingsStore"
-import {useCommandExecutor} from "src/services/CommandExecutor";
-import {SelectTabsetCommand} from "src/domain/tabsets/SelectTabset";
-import {TabsetType} from "src/models/Tabset";
 import TabsetsSelectorWidget from "components/widgets/TabsetsSelectorWidget.vue";
-import {useEntitiesStore} from "stores/entitiesStore";
 
 const router = useRouter()
 const tabsStore = useTabsStore()
