@@ -20,7 +20,7 @@
               @mouseenter="showEditButton = true"
               @mouseout="showEditButton = false">
               {{ tabsStore.currentTabsetName }}
-               <q-popup-edit :model-value="tabsStore.getCurrentTabset.name" v-slot="scope"
+               <q-popup-edit :model-value="tabsStore.getCurrentTabset?.name" v-slot="scope"
                              @update:model-value="val => setNewName(  val)">
                  <q-input v-model="scope.value" dense autofocus counter @keyup.enter="scope.set"/>
                </q-popup-edit>
@@ -175,7 +175,7 @@
   <q-tabs v-if="usePermissionsStore().hasFeature(FeatureIdent.TABSET_PAGE)"
     v-model="tab"
     dense
-    class="text-grey"
+    class="text-grey q-ma-none q-pa-none"
     active-color="primary"
     indicator-color="primary"
     align="left"
@@ -185,10 +185,10 @@
     <q-tab name="page" label="Page" :disable="!tabsStore.currentTabsetId" />
   </q-tabs>
 
-  <q-separator />
+  <q-separator class="q-mb-md" />
 
   <q-tab-panels v-model="tab" animated>
-    <q-tab-panel name="tabset">
+    <q-tab-panel class="q-ma-none q-pa-none" name="tabset">
       <!--  <q-banner rounded class="bg-amber-1 text-black q-ma-md"-->
       <q-banner rounded class="text-primary q-ma-md" style="border: 1px solid #efefef"
                 v-if="!tabsStore.currentTabsetId && tabsStore.tabsets.size > 0">
@@ -196,13 +196,7 @@
           Select an existing tabset from the list or create a new tabset.
         </div>
       </q-banner>
-      <q-banner rounded class="bg-amber-1 text-black q-ma-md"
-                v-if="tabsStore.currentTabsetId && tabsStore.getTabset(tabsetId?.value)?.tabs.length === 0 && tabsStore.pendingTabset?.tabs.length > 0">
-        <div class="text-body2">
-          To start adding new tabs to this empty tabset, select the tabs you want to use from above and click save.
-        </div>
-      </q-banner>
-      <q-banner v-else-if="tabsStore.currentTabsetId && tabsStore.getTabset(tabsetId?.value)?.tabs.length === 0">
+      <q-banner v-else-if="tabsStore.currentTabsetId && tabsStore.getTabset(tabsetId)?.tabs.length === 0">
         To start adding new tabs to this empty tabset, open new browser tabs and come back to this extension to
         associate them with a tabset.<br><br>
         <!--If you want to assign your open tabs straight away, click <span class="cursor-pointer text-blue" @click="addOpenTabs()"><u>here</u></span>.-->
@@ -229,10 +223,11 @@
 a tab's url starts with one of the urls of this tabset, it will be ignored and not added to the tabs to be added."/>
 
       <template v-if="usePermissionsStore().hasFeature(FeatureIdent.TABSET_PAGE) && tabsStore.getCurrentTabset?.showPageAsHeader">
-        <div v-html="tabsStore.getCurrentTabset.page"></div>
+        <div v-html="tabsStore.getCurrentTabset?.page"></div>
       </template>
 
       <TabsetPageCards />
+
     </q-tab-panel>
     <q-tab-panel name="page">
       <PageForTabset />

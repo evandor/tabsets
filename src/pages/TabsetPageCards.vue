@@ -1,6 +1,6 @@
 <template>
   <q-card flat v-if="tabsStore.getCurrentTabset?.view !== 'canvas'">
-    <q-card-section>
+    <q-card-section class="q-pa-none">
 
       <TabList v-if="tabsStore.getCurrentTabset?.view === 'list'"
                group="otherTabs"

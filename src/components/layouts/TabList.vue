@@ -1,7 +1,7 @@
 <template>
 
   <InfoMessageWidget
-    v-if="props.tabs.length > 1"
+    v-if="props.tabs?.length > 1"
     :probability="0.3"
     ident="tablist_dnd"
     hint="You can select the favicon images and drag and drop the entries to reorder the list to your wishes"/>
@@ -14,7 +14,7 @@
 
       @change="handleDragAndDrop">
 
-      <q-item v-if="props.tabs.length === 0 &&
+      <q-item v-if="props.tabs?.length === 0 &&
                       inBexMode() &&
                       useUiStore().rightDrawer.activeTab === DrawerTabs.UNASSIGNED_TABS &&
                       tabsStore.pendingTabset.tabs.length > 0">
@@ -27,7 +27,8 @@
         :clickable="usePermissionsStore().hasFeature(FeatureIdent.DETAILS)"
         v-ripple
         v-for="(tab,index) in props.tabs"
-        class="q-my-lg"
+        class="q-ma-none q-pa-md"
+        :style="itemStyle(tab)"
         @click.stop="showDetails(tab)"
         @mouseover="showButtons(  tab.id,true)"
         @mouseleave="showButtons( tab.id, false)"
@@ -161,6 +162,13 @@ const showDetails = (tab: Tab) => {
     useUiStore().setSelectedTab(tab)
     useUiStore().rightDrawerSetActiveTab(DrawerTabs.TAB_DETAILS)
   }
+}
+
+const itemStyle = (tab: Tab) => {
+  if (tab.chromeTab.url === props.highlightUrl) {
+    return "border: 1px dotted orange; padding:15px; border-radius:5px"
+  }
+  return "border-bottom: 1px solid #fafafa"
 }
 
 </script>

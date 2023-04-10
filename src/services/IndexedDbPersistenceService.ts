@@ -195,7 +195,7 @@ class IndexedDbPersistenceService implements PersistenceService {
         favIconUrl: tab.favIconUrl
       }, encodedTabUrl)
         .then((res) => {
-          console.info(new Tab(uid(), tab), "saved content for url " + tab.url)
+         // console.info(new Tab(uid(), tab), "saved content for url " + tab.url)
           return res
         })
     }

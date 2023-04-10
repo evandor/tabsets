@@ -361,8 +361,8 @@ class ChromeListeners {
       .replaceAll("\n", " ")
       .replace(/[`~!@#$%^&*()_|+\-=?;:'",.<>»«{}\[\]\\\/]/gi, ' ')
       .split(" ")
-    console.log("text2", text2)
-    console.log("tokens", tokens)
+    //console.log("text2", text2)
+    //console.log("tokens", tokens)
     let res = ""
     const tokenSet = new Set()
     tokens.forEach((t: string) => {
@@ -371,7 +371,7 @@ class ChromeListeners {
         tokenSet.add(t.toLowerCase())
       }
     })
-    console.log("res", res)
+    //console.log("res", res)
     saveText(sender.tab, [...tokenSet].join(" "), request.metas)
     sendResponse({html2text: 'done'});
   }

@@ -48,6 +48,7 @@ export class CreateTabFromOpenTabsCommand implements Command<any> {
     const exists = _.findIndex(tabsStore.getCurrentTabs, t => t.chromeTab.url === this.tab.chromeTab.url) >= 0
 
     let useIndex = this.newIndex
+    console.log("exists", exists, this.group)
     switch (this.group) {
       case 'otherTabs':
         // @ts-ignore
@@ -84,6 +85,11 @@ export class CreateTabFromOpenTabsCommand implements Command<any> {
     }
 
     if (!exists) {
+      const content = await TabsetService.getContentFor(this.tab)
+      console.log("foudn content", content)
+      if (content && content.metas.description) {
+        this.tab.description = content.metas.description
+      }
       TabsetService.saveToCurrentTabset(this.tab, useIndex)
         .then((res) => {
           if (this.tab.chromeTab.url) {

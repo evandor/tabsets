@@ -1,13 +1,13 @@
 <template>
 
-  <q-item-section class="q-mr-sm" style="border:1px solid gray;min-widht:60px;max-width:60px;">
-    <q-img v-if="thumbnail"
-           :src="thumbnail" width="60px"/>
+  <q-item-section class="q-mr-sm text-right" style="justify-content:start;min-widht:70px;max-width:70px;">
+    <q-img v-if="thumbnail" style="border:1px dotted white;border-radius:3px"
+           :src="thumbnail" width="70px"/>
     <TabFaviconWidget v-else
                       :tab="props.tab" width="20px" height="20px" style="position: relative;top:-10px"/>
   </q-item-section>
 
-  <!-- name, title, url && note -->
+  <!-- name, title, description, url && note -->
   <q-item-section :style="itemStyle(props.tab)"
                   :data-testid="useUtils().createDataTestIdentifier('tabListElementWidget', props.tab.chromeTab.title)">
 
@@ -45,6 +45,11 @@
       </div>
     </q-item-label>
 
+    <!-- description -->
+    <q-item-label class="ellipsis-2-lines text-grey-8">
+      {{props.tab.description}}
+    </q-item-label>
+
     <!-- url -->
     <q-item-label
       v-if="props.tab.chromeTab.url"
@@ -53,7 +58,7 @@
       @mouseleave="showButtonsProp = false">
       <div class="q-pr-lg cursor-pointer" style="display: inline-block;"
            @click.stop="NavigationService.openOrCreateTab(props.tab.chromeTab?.url )">
-        {{ props.tab.chromeTab?.url.split('?')[0] }}
+        {{ props.tab.chromeTab?.url.split('?')[0].replace("https://", "") }}
         <q-icon name="open_in_new"/>
         <q-icon v-if="showButtonsProp"
                 class="q-ml-md" name="content_copy"
@@ -169,9 +174,9 @@ const itemStyle = (tab: Tab) => {
   if (tab.isDuplicate) {
     background = "background: radial-gradient(circle, #FFFFFF 0%, #FFECB3 100%)"
   }
-  if (tab.chromeTab.url === props.highlightUrl) {
-    border = "border: 1px dotted orange; padding:15px; border-radius:5px"
-  }
+//  if (tab.chromeTab.url === props.highlightUrl) {
+//    border = "border: 1px dotted orange; padding:15px; border-radius:5px"
+//  }
   return `${border};${background}`
 }
 
@@ -250,7 +255,7 @@ watchEffect(() => {
     // @ts-ignore
     thumbnailFor(props.tab)
       .then((tn: object) => {
-        console.log("tn", tn)
+        //console.log("tn", tn)
         if (tn && tn['thumbnail' as keyof object]) {
           thumbnail.value = tn['thumbnail' as keyof object]
         }
