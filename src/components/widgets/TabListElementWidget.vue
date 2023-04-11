@@ -1,7 +1,9 @@
 <template>
 
   <q-item-section class="q-mr-sm text-right" style="justify-content:start;min-widht:70px;max-width:70px;">
-    <q-img v-if="thumbnail" style="border:1px dotted white;border-radius:3px"
+    <q-img v-if="props.tab.image" style="border:1px dotted white;border-radius:3px"
+           :src="props.tab.image" width="70px"/>
+    <q-img v-else-if="thumbnail" style="border:1px dotted white;border-radius:3px"
            :src="thumbnail" width="70px"/>
     <TabFaviconWidget v-else
                       :tab="props.tab" width="20px" height="20px" style="position: relative;top:-10px"/>

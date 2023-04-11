@@ -56,12 +56,12 @@ export function useTabsetService() {
     const trustedName = name.replace(STRIP_CHARS_IN_USER_INPUT, '')
     const tabs: Tab[] = _.filter(
       _.map(chromeTabs, t => new Tab(uid(), t)),
-      (t:Tab) => {
+      (t: Tab) => {
         if (!useSettingsStore().isEnabled('extensionsAsTabs')) {
           return !t.chromeTab.url?.startsWith("chrome-extension://")
         }
         return true
-    })
+      })
     try {
       const result: NewOrReplacedTabset = await useTabsStore()
         .updateOrCreateTabset(trustedName, tabs, merge, type)
@@ -216,74 +216,80 @@ export function useTabsetService() {
     }
     return Promise.reject("current tabset could not be found")
   }
+
   /**
-   * called when we have a text excerpt from the background script
+   * called when we have a text excerpt (and meta data) from the background script.
+   *
+   * The data (text & meta) will be saved in the content db with an identifier derived from
+   * the url - this data will be saved even if there is no tab for this url yet.
+   *
+   * Then, all existing tabs for the same url will be updated with the new data.
    *
    * @param tab
    * @param text
    * @param metas
    */
-  const saveText = (tab: chrome.tabs.Tab | undefined, text: string, metas: object) => {
-    if (tab && tab.url) {
-      const title = tab.title || ''
-      const tabsetIds: string[] = tabsetsFor(tab.url)
-
-      //console.log("saving content", tab, text, metas, title, tabsetIds)
-      db.saveContent(tab, text, metas, title, tabsetIds)
-        //.then(() => console.log("added content"))
-        .catch((err:any) => console.log("err", err))
-
-      console.log("updating meta data for ", tabsetIds, tab.url, metas)
-      const tabsets = [...useTabsStore().tabsets.values()]
-      tabsets.forEach((tabset: Tabset) => {
-        if (tabset) {
-          _.forEach(tabset.tabs, (t: Tab) => {
-            //console.log("comparing", t.chromeTab.url, tab.url)
-            if (t.chromeTab.url === tab.url) {
-              //console.log(" ... in tab", tab.id)
-              if (metas['description' as keyof object]) {
-                t.description = metas['description' as keyof object]
-                // @ts-ignore
-                useSearchStore().update(tab.url, 'description', t.description)
-              }
-              if (metas['keywords' as keyof object]) {
-                t.keywords = metas['keywords' as keyof object]
-              }
-              const author = getIfAvailable(metas, 'author')
-              if (author) {
-                t.author = author
-              }
-              const lastModified = getIfAvailable(metas, 'last-modified')
-              if (lastModified) {
-                t.lastModified = lastModified
-              }
-              const date = getIfAvailable(metas, 'date')
-              if (date) {
-                t.date = date
-              }
-              const image = getIfAvailable(metas, 'image')
-              if (image) {
-                t.image = image
-              }
-
-              const oldContent = t.contentHash
-              if (text && text.length > 0) {
-                t.contentHash = uuidv5(text, 'da42d8e8-2afd-446f-b72e-8b437aa03e46')
-              } else {
-                t.contentHash = ""
-              }
-              if (oldContent && oldContent !== '' && t.contentHash !== '' && t.chromeTab.url) {
-                useSuggestionsStore().addSuggestion(
-                  new Suggestion(uid(), 'Content Change Detected', "Info: Something might have changed in " + t.chromeTab.url + ".",
-                    t.chromeTab.url, SuggestionType.CONTENT_CHANGE))
-              }
-
-              saveTabset(tabset)
-            }
-          })
-        }
-      })
+  const saveText = (tab: chrome.tabs.Tab | undefined, text: string, metas: object): void => {
+    if (!tab || !tab.url) {
+      return
     }
+    const title = tab.title || ''
+    const tabsetIds: string[] = tabsetsFor(tab.url)
+
+    db.saveContent(tab, text, metas, title, tabsetIds)
+      .catch((err: any) => console.log("err", err))
+
+    console.log("updating meta data for ", tabsetIds, tab.url, metas)
+    const tabsets = [...useTabsStore().tabsets.values()]
+    tabsets.forEach((tabset: Tabset) => {
+      if (tabset) {
+        _.forEach(tabset.tabs, (t: Tab) => {
+          //console.log("comparing", t.chromeTab.url, tab.url)
+          if (t.chromeTab.url === tab.url) {
+            //console.log(" ... in tab", tab.id)
+            if (metas['description' as keyof object]) {
+              t.description = metas['description' as keyof object]
+              // @ts-ignore
+              useSearchStore().update(tab.url, 'description', t.description)
+            }
+            if (metas['keywords' as keyof object]) {
+              t.keywords = metas['keywords' as keyof object]
+            }
+            const author = getIfAvailable(metas, 'author')
+            if (author) {
+              t.author = author
+            }
+            const lastModified = getIfAvailable(metas, 'last-modified')
+            if (lastModified) {
+              t.lastModified = lastModified
+            }
+            const date = getIfAvailable(metas, 'date')
+            if (date) {
+              t.date = date
+            }
+            const image = getIfAvailable(metas, 'image')
+            if (image) {
+              t.image = image
+            }
+
+            const oldContent = t.contentHash
+            if (text && text.length > 0) {
+              t.contentHash = uuidv5(text, 'da42d8e8-2afd-446f-b72e-8b437aa03e46')
+            } else {
+              t.contentHash = ""
+            }
+            if (oldContent && oldContent !== '' && t.contentHash !== '' && t.chromeTab.url) {
+              useSuggestionsStore().addSuggestion(
+                new Suggestion(uid(), 'Content Change Detected', "Info: Something might have changed in " + t.chromeTab.url + ".",
+                  t.chromeTab.url, SuggestionType.CONTENT_CHANGE))
+            }
+
+            saveTabset(tabset)
+          }
+        })
+      }
+    })
+
   }
 
   const saveMetaLinksFor = (tab: chrome.tabs.Tab, metaLinks: MetaLink[]) => {

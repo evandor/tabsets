@@ -36,6 +36,13 @@ function adjustIndex(newIndex: number, tabs: Tab[]) {
   }
 }
 
+// function addMetaIfExists(content: any, metaIdent: string, tab: Tab, tabIdent: string) {
+//   if (content && content.metas[metaIdent]) {
+//     // @ts-ignore
+//     tab[tabIdent] = content.metas[metaIdent]
+//   }
+// }
+
 export class CreateTabFromOpenTabsCommand implements Command<any> {
 
   constructor(public tab: Tab, public newIndex: number, public group: string) {
@@ -49,47 +56,42 @@ export class CreateTabFromOpenTabsCommand implements Command<any> {
 
     let useIndex = this.newIndex
     console.log("exists", exists, this.group)
-    switch (this.group) {
-      case 'otherTabs':
-        // @ts-ignore
-        const unpinnedNoGroup: Tab[] = _.filter(tabsStore.getCurrentTabs, (t: Tab) => !t.chromeTab.pinned && t.chromeTab.groupId === -1)
-        if (unpinnedNoGroup.length > 0) {
-          useIndex = adjustIndex(this.newIndex, unpinnedNoGroup);
-        }
-        // @ts-ignore
-        this.tab.chromeTab.groupId = -1
-        this.tab.chromeTab.pinned = false
-        break;
-      case 'pinnedTabs':
-        const filteredTabs: Tab[] = _.filter(tabsStore.getCurrentTabs, (t: Tab) => t.chromeTab.pinned)
-        if (filteredTabs.length > 0) {
-          useIndex = adjustIndex(this.newIndex, filteredTabs);
-        }
-        this.tab.chromeTab.pinned = true
-        // @ts-ignore
-        this.tab.chromeTab.groupId = -1
-        break
-      default:
-        if (this.group.startsWith('groupedTabs_')) {
-          const groupId = this.group.split('_')[1]
-          //console.log("got group id", groupId)
-          // @ts-ignore
-          const filteredTabs: Tab[] = _.filter(tabsStore.getCurrentTabs, (t: Tab) => t.chromeTab.groupId === parseInt(groupId))
-          if (filteredTabs.length > 0) {
-            useIndex = adjustIndex(this.newIndex, filteredTabs);
-          }
-          // @ts-ignore
-          this.tab.chromeTab.groupId = parseInt(groupId)
-        }
-        break
-    }
+    // switch (this.group) {
+    //   case 'otherTabs':
+    //     // @ts-ignore
+    //     const unpinnedNoGroup: Tab[] = _.filter(tabsStore.getCurrentTabs, (t: Tab) => !t.chromeTab.pinned && t.chromeTab.groupId === -1)
+    //     if (unpinnedNoGroup.length > 0) {
+    //       useIndex = adjustIndex(this.newIndex, unpinnedNoGroup);
+    //     }
+    //     // @ts-ignore
+    //     this.tab.chromeTab.groupId = -1
+    //     this.tab.chromeTab.pinned = false
+    //     break;
+    //   case 'pinnedTabs':
+    //     const filteredTabs: Tab[] = _.filter(tabsStore.getCurrentTabs, (t: Tab) => t.chromeTab.pinned)
+    //     if (filteredTabs.length > 0) {
+    //       useIndex = adjustIndex(this.newIndex, filteredTabs);
+    //     }
+    //     this.tab.chromeTab.pinned = true
+    //     // @ts-ignore
+    //     this.tab.chromeTab.groupId = -1
+    //     break
+    //   default:
+    //     if (this.group.startsWith('groupedTabs_')) {
+    //       const groupId = this.group.split('_')[1]
+    //       //console.log("got group id", groupId)
+    //       // @ts-ignore
+    //       const filteredTabs: Tab[] = _.filter(tabsStore.getCurrentTabs, (t: Tab) => t.chromeTab.groupId === parseInt(groupId))
+    //       if (filteredTabs.length > 0) {
+    //         useIndex = adjustIndex(this.newIndex, filteredTabs);
+    //       }
+    //       // @ts-ignore
+    //       this.tab.chromeTab.groupId = parseInt(groupId)
+    //     }
+    //     break
+    // }
 
     if (!exists) {
-      const content = await TabsetService.getContentFor(this.tab)
-      //console.log("foudn content", content)
-      if (content && content.metas.description) {
-        this.tab.description = content.metas.description
-      }
       TabsetService.saveToCurrentTabset(this.tab, useIndex)
         .then((res) => {
           if (this.tab.chromeTab.url) {
@@ -97,9 +99,16 @@ export class CreateTabFromOpenTabsCommand implements Command<any> {
             useUiStore().addHighlight(this.tab.chromeTab.url)
             // useSearchStore().update(this.tab.chromeTab.url, 'name', this.newName)
             useSearchStore().addToIndex(uid(), "", this.tab.chromeTab.title || '',
-              this.tab.chromeTab.url, "","",[tabsStore.currentTabsetId], this.tab.chromeTab.favIconUrl || '')
+              this.tab.chromeTab.url, "", "", [tabsStore.currentTabsetId], this.tab.chromeTab.favIconUrl || '')
           }
           return res
+        })
+        .then((res: number) => {
+          TabsetService.getContentFor(this.tab)
+            .then((content) => {
+              useTabsetService().saveText(this.tab.chromeTab, content['content' as keyof object], content['metas' as keyof object])
+            })
+          return res;
         })
         .then((res) => {
           if (tabsStore.pendingTabset) {

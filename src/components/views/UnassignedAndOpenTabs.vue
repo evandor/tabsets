@@ -116,8 +116,6 @@ import TabsetService from "src/services/TabsetService";
 import {uid, useQuasar} from "quasar";
 import AddUrlDialog from "components/dialogues/AddUrlDialog.vue";
 import {useUtils} from "src/services/Utils"
-import {useCommandExecutor} from "src/services/CommandExecutor";
-import {SavePendingTabToCurrentTabsetCommand} from "src/domain/commands/SavePendingTabToCurrentTabsetCommand";
 import {useTabsetService} from "src/services/TabsetService2";
 import InfoMessageWidget from "components/widgets/InfoMessageWidget.vue";
 import {useRoute} from "vue-router";

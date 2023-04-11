@@ -39,7 +39,7 @@
         </template>
 
         <div v-for="tab in tabset.tabs">
-          <q-card flat class="q-mt-none q-ml-lg q-mb-lg q-pa-none" style="max-width:260px;border:1px solid green">
+          <q-card flat class="q-mt-none q-ml-lg q-mb-sm q-pa-none" style="max-width:260px">
             <q-card-section class="q-ma-none q-pa-none">
               <div class="row items-baseline cursor-pointer" @click.stop="open(tab.id)">
                 <div class="col-1">
@@ -153,19 +153,6 @@ const deleteDialog = (tabset: Tabset) =>
     }
   })
 
-const editDialog = (tabset: Tabset) =>
-  $q.dialog({
-    component: EditTabset,
-    componentProps: {
-      tabsetId: tabset.id,
-      tabsetName: tabset.name
-    }
-  })
-
-const markAsFavorite = (ts: Tabset) => useCommandExecutor().executeFromUi(new MarkTabsetAsFavoriteCommand(ts.id))
-const markAsDefault = (ts: Tabset) => useCommandExecutor().executeFromUi(new MarkTabsetAsDefaultCommand(ts.id))
-//const archiveTabset = (ts: Tabset) => useCommandExecutor().executeFromUi(new MarkTabsetAsArchivedCommand(ts.id))
-const stopSession = (ts: Tabset) => useCommandExecutor().executeFromUi(new StopSessionCommand(ts))
 
 const open = (tabId: string) => {
   console.log("clicked", process.env.MODE, tabId)
@@ -185,6 +172,6 @@ const toggleExpand = (index: number):void => {
 
 <style>
 .q-expansion-item__content {
-  border:1px solid blue
+  border:1px solid #f5f5f5
 }
 </style>

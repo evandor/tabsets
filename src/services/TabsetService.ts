@@ -176,14 +176,14 @@ class TabsetService {
     return db.getRequest(url)
   }
 
-  async getContentFor(selectedTab: Tab): Promise<any> {
+  async getContentFor(selectedTab: Tab): Promise<object> {
     if (selectedTab.chromeTab.url) {
       return this.getContentForUrl(selectedTab.chromeTab.url)
     }
     return Promise.reject("url not provided");
   }
 
-  async getContentForUrl(url: string): Promise<any> {
+  async getContentForUrl(url: string): Promise<object> {
     return db.getContent(url)
   }
 
