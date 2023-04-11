@@ -78,7 +78,7 @@
 
   <!--      <TabsetHelp v-else-if="tab ===  DrawerTabs.HELP"/>-->
 
-  <div v-else>unknown tab name {{ tab }}</div>
+  <div v-else>unknown tab name '{{ tab }}' {{typeof tab}}</div>
   <!--    </div>-->
   <!--  </div>-->
 

@@ -90,6 +90,8 @@ export const usePermissionsStore = defineStore('permissions', () => {
     return (feature: FeatureIdent): boolean => activeFeatures.value.indexOf(feature.toLowerCase()) >= 0
   })
 
+  const featuresCount = computed(() => (): number => activeFeatures.value.length)
+
   const activateFeature = computed(() => {
     return (feature: string): void => {
       if (activeFeatures.value.indexOf(feature) < 0) {
@@ -142,6 +144,7 @@ export const usePermissionsStore = defineStore('permissions', () => {
     permissions,
     hasFeature,
     activateFeature,
-    deactivateFeature
+    deactivateFeature,
+    featuresCount
   }
 })

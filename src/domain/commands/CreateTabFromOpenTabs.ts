@@ -86,7 +86,7 @@ export class CreateTabFromOpenTabsCommand implements Command<any> {
 
     if (!exists) {
       const content = await TabsetService.getContentFor(this.tab)
-      console.log("foudn content", content)
+      //console.log("foudn content", content)
       if (content && content.metas.description) {
         this.tab.description = content.metas.description
       }

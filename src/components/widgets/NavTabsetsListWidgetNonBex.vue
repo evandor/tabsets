@@ -1,21 +1,26 @@
 <template>
-  <div class="q-ma-none q-pa-none" style="max-width:300px;">
-    <q-list >
+  <div class="q-ma-none q-pa-none" style="max-width:300px">
+    <q-list>
       <q-expansion-item v-for="(tabset,index) in tabsets" group="thegroup"
-                        dense-toggle dense
+                        dense-toggle dense hide-expand-icon
+                        v-model="expanded[index]"
+                        :style="activeTabset === tabset.id ? 'background-color: #efefef' : 'background-color:#f9f9f9'"
+                        header-class="q-ma-none q-pa-none q-ml-md q-mb-xs"
                         :expand-icon="activeTabset === tabset.id ? 'expand_more' : 'none'"
                         expand-icon-toggle>
 
         <template v-slot:header>
-          <q-item-section class="cursor-pointer q-ma-xs q-pa-sm"
-
+          <q-item-section class="cursor-pointer q-ma-none q-pa-none"
+                          @drop="onDrop($event, tabset.id)"
+                          @dragover.prevent
+                          @dragenter.prevent
                           :class="activeTabset === tabset.id ? 'active-list-element' : ''"
                           @mouseover="showButtons(tabset.id, true)"
                           @mouseleave="showButtons(tabset.id, false)"
                           @click="selectTS(tabset)">
             <div class="row">
               <div class="col-10 ellipsis">
-                {{ tabsetLabel(tabset) }}
+                {{ tabset.name }}
               </div>
               <div class="col text-right">
                 <q-icon v-if="showDeleteButton.get(tabset.id)"
@@ -26,18 +31,23 @@
               </div>
             </div>
           </q-item-section>
+          <q-item-section class="text-right q-mx-sm cursor-pointer"
+                          @click="toggleExpand(index)"
+                          style="max-width:25px;font-size: 12px;color:#bfbfbf">
+            {{ tabset.tabs.length }}&nbsp;
+          </q-item-section>
         </template>
 
         <div v-for="tab in tabset.tabs">
-          <q-card flat class="q-ml-md" style="max-width:260px">
-            <q-card-section>
+          <q-card flat class="q-mt-none q-ml-lg q-mb-lg q-pa-none" style="max-width:260px;border:1px solid green">
+            <q-card-section class="q-ma-none q-pa-none">
               <div class="row items-baseline cursor-pointer" @click.stop="open(tab.id)">
-                <div class="col-2">
-                  <TabFaviconWidget :tab="tab" />
+                <div class="col-1">
+                  <TabFaviconWidget height="12px" width="12px" :tab="tab"/>
                 </div>
-                <div class="col-10 ellipsis">
+                <div class="col-11 ellipsis">
                   {{ tab.chromeTab.title }}
-                  <q-tooltip class="tooltip">{{tab.chromeTab.url}}</q-tooltip>
+                  <q-tooltip class="tooltip">{{ tab.chromeTab.url }}</q-tooltip>
                 </div>
               </div>
 
@@ -54,7 +64,7 @@
 
 <script lang="ts" setup>
 
-import {PropType, ref} from "vue";
+import {onMounted, PropType, ref} from "vue";
 import {Tabset, TabsetStatus, TabsetType} from "src/models/Tabset";
 import TabsetService from "src/services/TabsetService";
 import {useRouter} from "vue-router";
@@ -73,6 +83,7 @@ import {StopSessionCommand} from "src/domain/commands/StopSessionCommand";
 import {SelectTabsetCommand} from "src/domain/tabsets/SelectTabset";
 import TabFaviconWidget from "components/widgets/TabFaviconWidget.vue";
 import {useSearchStore} from "stores/searchStore";
+import {MoveToTabsetCommand} from "src/domain/tabs/MoveToTabset";
 
 const {handleError, handleSuccess} = useNotificationHandler()
 
@@ -89,6 +100,7 @@ const newTabsetName = ref('')
 const activeTabset = ref<string | undefined>(undefined)
 const merge = ref(false)
 const showExpandIcon = ref<string | undefined>(undefined)
+const expanded = ref<boolean[]>([])
 
 const {selectTabset} = useTabsetService()
 
@@ -97,6 +109,10 @@ const props = defineProps({
     type: Array as PropType<Array<Tabset>>,
     required: true
   }
+})
+
+onMounted(() => {
+  expanded.value = new Array(props.tabsets?.length).fill(false);
 })
 
 const selectTS = (tabset: Tabset) => {
@@ -120,22 +136,11 @@ const showButtons = (tabsetId: string, show: boolean) => {
   showEditButton.value.set(tabsetId, show)
 }
 
-const tabsetLabel = (tabset: Tabset) => {
-  const maxLength = 20
-  if (tabsStore.tabsets.size < 10) {
-    return tabset.name.length > maxLength ? tabset.name.substring(0, maxLength - 1) + "..." : tabset.name
-  }
-  const theName = tabset.name + ' (' + tabset.tabs?.length + ')'
-  return theName.length > maxLength ? theName.substring(0, maxLength - 1) + "..." : theName
-}
 
 const onDrop = (evt: DragEvent, tabsetId: string) => {
-  const tabId2 = useUiService().droppingTab()
-  if (evt.dataTransfer && tabsetId && tabId2) {
-    console.log("onDrop", tabId2, tabsetId)
-    TabsetService.moveToTabset(tabId2, tabsetId)
-  } else {
-    console.log("got error dropping tab", tabsetId)
+  const tabId = useUiService().droppingTab()
+  if (evt.dataTransfer && tabId) {
+    useCommandExecutor().executeFromUi(new MoveToTabsetCommand(tabId, tabsetId, tabsStore.currentTabsetId, evt.shiftKey))
   }
 }
 
@@ -171,4 +176,15 @@ const open = (tabId: string) => {
   }
 }
 
+const toggleExpand = (index: number):void => {
+  expanded.value[index] = !expanded.value[index]
+  console.log("expanded", expanded.value)
+}
+
 </script>
+
+<style>
+.q-expansion-item__content {
+  border:1px solid blue
+}
+</style>

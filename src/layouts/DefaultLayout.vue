@@ -30,7 +30,7 @@
         <q-space/>
 
         <SearchWidget style="position: absolute; left:300px;top:5px;max-width:500px"
-                      v-if="tabsStore.tabsets.size > 4 || useSettingsStore().isEnabled('dev')"/>
+                      v-if="tabsStore.tabsets.size > 1 || useSettingsStore().isEnabled('dev')"/>
 
         <q-space/>
 
@@ -116,79 +116,60 @@
           </q-menu>
         </span>
 
-        <Transition name="colorized-appear">
-          <q-btn v-if="permissionsStore.hasFeature(FeatureIdent.NEW_TAB)"
-                 flat
-                 name="rss" icon="o_create_new_folder" @click="tabsClicked(DrawerTabs.NEW_TAB_URLS)">
-            <q-tooltip class="tooltip" anchor="center right" self="center left" :delay="200">
-              The List of Urls displayed when you open a new tab in your Browser
-            </q-tooltip>
-          </q-btn>
-        </Transition>
+        <ToolbarButton
+          :feature="FeatureIdent.NEW_TAB"
+          :drawer="DrawerTabs.NEW_TAB_URLS"
+          icon="o_create_new_folder"
+          tooltip="The List of Urls displayed when you open a new tab in your Browser"/>
 
-        <Transition name="colorized-appear">
-          <q-btn v-if="permissionsStore.hasFeature(FeatureIdent.HISTORY)"
-                 flat
-                 name="history" icon="o_history" @click="tabsClicked(DrawerTabs.HISTORY)">
-            <q-tooltip class="tooltip" anchor="center right" self="center left" :delay="200">
-              Access to your browsers History
-            </q-tooltip>
-          </q-btn>
-        </Transition>
+        <ToolbarButton
+          :feature="FeatureIdent.HISTORY"
+          :drawer="DrawerTabs.HISTORY"
+          icon="o_history"
+          tooltip="Access to your browsers History"/>
 
-        <Transition name="colorized-appear">
-          <q-btn v-if="permissionsStore.hasFeature(FeatureIdent.SAVE_TAB)"
-                 flat
-                 name="savedTabs" icon="o_save" @click="tabsClicked(DrawerTabs.SAVED_TABS)">
-            <q-tooltip class="tooltip" anchor="center right" self="center left" :delay="200">
-              The List of Urls displayed when you open a new tab in your Browser
-            </q-tooltip>
-          </q-btn>
-        </Transition>
+        <ToolbarButton
+          :feature="FeatureIdent.SAVE_TAB"
+          :drawer="DrawerTabs.SAVED_TABS"
+          icon="o_save"
+          tooltip="The List of Urls displayed when you open a new tab in your Browser"/>
 
-        <Transition name="colorized-appear">
-          <q-btn v-if="permissionsStore.hasFeature(FeatureIdent.GROUP_BY_DOMAIN)"
-                 flat
-                 icon="o_dns" @click="tabsClicked(DrawerTabs.GROUP_BY_HOST_TABS)">
-            <q-tooltip class="tooltip" anchor="center right" self="center left" :delay="200">Your tabs grouped by
-              domain
-            </q-tooltip>
-          </q-btn>
-        </Transition>
+        <ToolbarButton
+          :feature="FeatureIdent.GROUP_BY_DOMAIN"
+          :drawer="DrawerTabs.GROUP_BY_HOST_TABS"
+          icon="o_dns"
+          tooltip="Your tabs grouped by domain"/>
 
-        <Transition name="colorized-appear">
-          <q-btn v-if="permissionsStore.hasFeature(FeatureIdent.RSS)"
-                 flat
-                 name="rss" icon="o_rss_feed" @click="tabsClicked(DrawerTabs.RSS)">
-            <q-tooltip class="tooltip" anchor="center right" self="center left" :delay="200">Access to your rss feed
-              tabs
-            </q-tooltip>
-          </q-btn>
-        </Transition>
+        <ToolbarButton
+          :feature=FeatureIdent.RSS
+          :drawer="DrawerTabs.RSS"
+          icon="o_rss_feed"
+          tooltip="Access to your rss feed"/>
 
-        <Transition name="colorized-appear">
-          <q-btn v-if="permissionsStore.hasFeature(FeatureIdent.BOOKMARKS)"
-                 flat
-                 name="sidebar" icon="o_bookmark" @click="tabsClicked(DrawerTabs.BOOKMARKS)">
-            <q-tooltip class="tooltip" anchor="center right" self="center left" :delay="200">Access to your bookmarks
-            </q-tooltip>
-          </q-btn>
-        </Transition>
+        <ToolbarButton
+          :feature="FeatureIdent.BOOKMARKS"
+          :drawer="DrawerTabs.BOOKMARKS"
+          icon="o_bookmark"
+          tooltip="Access to your bookmarks"/>
 
-        <Transition name="colorized-appear">
-          <q-btn v-if="permissionsStore.hasFeature(FeatureIdent.SIDEBAR)"
-                 flat
-                 name="sidebar" icon="o_input" @click="tabsClicked(DrawerTabs.SIDEBAR)">
-            <q-tooltip class="tooltip" anchor="center right" self="center left" :delay="200">Your current tabset as
-              'sidebar'
-            </q-tooltip>
-          </q-btn>
-        </Transition>
+        <ToolbarButton
+          :feature="FeatureIdent.SIDEBAR"
+          :drawer="DrawerTabs.SIDEBAR"
+          icon="o_input"
+          tooltip="Your current tabset as 'sidebar'"/>
+
+        <ToolbarButton
+          :drawer="DrawerTabs.UNASSIGNED_TABS"
+          icon="o_playlist_add"
+          tooltip="Show add tabs view"
+          :restricted="false"/>
 
         <div>
-          <q-btn class="q-mr-md" icon="o_settings" size="12px" style="width:24px" flat>
-            <!--            <q-tooltip class="tooltip" anchor="center right" self="center left" :delay="200">Customize Tabsets-->
-            <!--            </q-tooltip>-->
+          <q-btn
+            @click="toggleSettings"
+            flat
+            size="12px"
+            class="q-mr-md" icon="o_settings" >
           </q-btn>
           <q-menu :offset="[0, 7]">
             <q-list style="min-width: 200px">
@@ -217,13 +198,6 @@
         </div>
       </q-toolbar>
     </q-header>
-
-    <!--    <q-drawer v-model="leftDrawerOpen" :mini=uiService.useSmallDrawerView() side="left" bordered>-->
-    <!--      <DrawerLeft/>-->
-    <!--      <template v-slot:mini>-->
-    <!--        <DrawerLeftMini/>-->
-    <!--      </template>-->
-    <!--    </q-drawer>-->
 
     <q-drawer v-model="leftDrawerOpen" side="left" bordered>
       <Navigation></Navigation>
@@ -276,6 +250,7 @@ import {useSuggestionsStore} from "src/stores/suggestionsStore";
 import {FeatureIdent} from "src/models/AppFeature";
 import {useSettingsStore} from "stores/settingsStore"
 import TabsetsSelectorWidget from "components/widgets/TabsetsSelectorWidget.vue";
+import ToolbarButton from "components/widgets/ToolbarButton.vue";
 
 const router = useRouter()
 const tabsStore = useTabsStore()
@@ -309,6 +284,8 @@ $q.loadingBar.setDefaults({
   size: '10px',
   position: 'top'
 })
+
+const settingsClicked = ref(false)
 
 watchEffect(() => {
   suggestions.value = useSuggestionsStore().getSuggestions()
@@ -380,5 +357,9 @@ const suggestionDialog = (s: Suggestion) => $q.dialog({
 
 const dependingOnStates = () =>
   _.find(useSuggestionsStore().getSuggestions(), s => s.state === SuggestionState.NEW) ? 'warning' : 'white'
+
+const toggleSettings = () => settingsClicked.value = !settingsClicked.value
+
+
 
 </script>

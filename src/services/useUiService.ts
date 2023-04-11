@@ -7,7 +7,6 @@ export function useUiService() {
 
   const  rightDrawerSetActiveTab = (tab: DrawerTabs, data: object = {}) => {
     useUiStore().rightDrawerSetActiveTab(tab)
-    console.log("got data", data)
     if (data && data['entityType' as keyof object]) {
       useUiStore().setEntityType(data['entityType' as keyof object])
     }
