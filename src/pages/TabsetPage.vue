@@ -149,22 +149,17 @@
           <q-tooltip>Use the exporter layout if you want to copy and paste the urls of this tabset</q-tooltip>
         </q-btn>
 
-        <q-btn v-if="tabsStore.currentTabsetId !== '' && tabsStore.getTabset(tabsStore.currentTabsetId)"
-               data-testid="addUrlDialogBtn"
-               @click="addUrlDialog"
-               class="q-ml-xl"
-               label="new Tab"
-               unelevated
-               size="0.8em"
-               text-color="primary"
-               color="warning">
+        <q-icon v-if="tabsStore.currentTabsetId !== '' && tabsStore.getTabset(tabsStore.currentTabsetId)"
+                data-testid="addUrlDialogBtn"
+                class="cursor-pointer q-ml-lg" size="1.3em"
+                name="add" @click="addUrlDialog">
           <q-tooltip
             class="tooltip"
             :delay="200"
             anchor="center left" self="center right">
             Copy and Paste or create a new Tab inside this tabset
           </q-tooltip>
-        </q-btn>
+        </q-icon>
 
       </div>
     </div>
@@ -185,7 +180,7 @@
     <q-tab name="page" label="Page" :disable="!tabsStore.currentTabsetId" />
   </q-tabs>
 
-  <q-separator class="q-mb-md" />
+<!--  <q-separator class="q-mb-md" />-->
 
   <q-tab-panels v-model="tab" animated>
     <q-tab-panel class="q-ma-none q-pa-none" name="tabset">

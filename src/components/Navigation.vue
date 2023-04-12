@@ -14,21 +14,17 @@
           </div>
           <div class="col-xs-12 col-md-6 text-right">
 
-            <q-btn
-              @click="addTabset"
-              label="create"
-              unelevated
-              size="0.8em"
-              text-color="primary"
-              color="warning">
+            <q-icon
+              class="cursor-pointer" size="1.3em"
+              style="position: relative;top:5px;right:-2px"
+              name="add" @click="addTabset">
               <q-tooltip
                 class="tooltip"
                 :delay="200"
                 anchor="center left" self="center right">
                 Click here to add a new tabset
               </q-tooltip>
-            </q-btn>
-
+            </q-icon>
 
           </div>
         </div>
@@ -36,12 +32,12 @@
 
 
       <q-list class="q-mt-none greyBorderTop">
-<!--        <NavTabsetsListWidget v-if="inBexMode()" :tabsets="tabsets(true)"/>-->
+        <!--        <NavTabsetsListWidget v-if="inBexMode()" :tabsets="tabsets(true)"/>-->
         <NavTabsetsListWidgetNonBex :tabsets="tabsets(true)"/>
 
         <q-separator v-if="tabsets(true).length > 0"/>
 
-<!--        <NavTabsetsListWidget v-if="!inBexMode()" :tabsets="tabsets(false)"/>-->
+        <!--        <NavTabsetsListWidget v-if="!inBexMode()" :tabsets="tabsets(false)"/>-->
         <NavTabsetsListWidgetNonBex :tabsets="tabsets(false)"/>
 
       </q-list>
