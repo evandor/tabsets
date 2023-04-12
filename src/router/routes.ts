@@ -101,6 +101,11 @@ const routes: RouteRecordRaw[] = [
     children: [{ path: '', component: () => import('pages/IFramePage.vue') }],
   },
   {
+    path: '/preview/:tabId',
+    component: () => import('layouts/DefaultLayout.vue'),
+    children: [{ path: '', component: () => import('pages/PreviewPage.vue') }],
+  },
+  {
     path: '/help/:ident',
     component: () => import('layouts/DefaultLayout.vue'),
     children: [{ path: '', component: () => import('pages/HelpPage.vue') }],

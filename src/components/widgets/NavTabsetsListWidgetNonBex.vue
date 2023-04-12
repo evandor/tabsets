@@ -159,14 +159,11 @@ const open = (tabId: string) => {
   if ("electron" === process.env.MODE) {
     router.push("/browser/" + tabId)
   } else {
-    router.push("/iframe/" + tabId)
+    router.push("/preview/" + tabId)
   }
 }
 
-const toggleExpand = (index: number):void => {
-  expanded.value[index] = !expanded.value[index]
-  console.log("expanded", expanded.value)
-}
+const toggleExpand = (index: number):void => expanded.value[index] = !expanded.value[index]
 
 </script>
 
