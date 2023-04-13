@@ -4,6 +4,7 @@
       <q-expansion-item v-for="(tabset,index) in tabsets" group="thegroup"
                         dense-toggle dense hide-expand-icon
                         v-model="expanded[index]"
+                        class="darken-on-hover"
                         :style="activeTabset === tabset.id ? 'background-color: #efefef' : 'background-color:#f9f9f9'"
                         header-class="q-ma-none q-pa-none q-ml-md q-mb-xs"
                         :expand-icon="activeTabset === tabset.id ? 'expand_more' : 'none'"
@@ -18,18 +19,51 @@
                           @mouseover="showButtons(tabset.id, true)"
                           @mouseleave="showButtons(tabset.id, false)"
                           @click="selectTS(tabset)">
-            <div class="row">
-              <div class="col-10 ellipsis">
-                {{ tabset.name }}
-              </div>
-              <div class="col text-right">
-                <q-icon v-if="showDeleteButton.get(tabset.id)"
-                        name="delete_outline" color="negative" size="1.1rem" @click.stop="deleteDialog(tabset)">
-                  <q-tooltip>Delete this tabset...</q-tooltip>
-                </q-icon>
-                <q-icon v-else name="shim" color="negative" size="1.1rem"></q-icon>
-              </div>
-            </div>
+            <q-item-label>
+              <template v-slot>
+
+                <div class="row">
+                  <div class="col-10 ellipsis">
+                    <q-icon name="stars" color="warning" class="q-ml-none q-mr-sm"
+                            v-if="tabset.status === TabsetStatus.FAVORITE">
+                      <q-tooltip class="tooltip">This tabset is marked as 'favorite'</q-tooltip>
+                    </q-icon>
+                    <q-icon name="explore" color="primary" class="q-ml-none q-mr-sm"
+                            v-if="tabset.type === TabsetType.SESSION">
+                      <q-tooltip>This is a 'session' tabset, keeping track of your tabs automatically</q-tooltip>
+                    </q-icon>
+                    <q-icon name="share" color="primary" class="q-ml-none q-mr-sm"
+                            v-if="tabset.sharedBy">
+                      <q-tooltip>This tabset is shared by {{ tabset.sharedBy }}</q-tooltip>
+                    </q-icon>
+                    {{ tabset.name }}
+                    <q-icon name="build_circle" color="blue-10" class="q-ml-none q-mr-sm"
+                            style="position:relative;top:-5px;left:-2px;"
+                            v-if="tabset.type === TabsetType.DYNAMIC">
+                      <q-tooltip class="tooltip">The tabs of this tabset have been generated automatically</q-tooltip>
+                    </q-icon>
+                    <q-icon name="local_library" color="blue-10" class="q-ml-none q-mr-sm"
+                            style="position:relative;top:-5px;left:-2px;"
+                            v-if="tabset.type === TabsetType.DYNAMIC">
+                      <q-tooltip class="tooltip">This tabset is readonly</q-tooltip>
+                    </q-icon>
+                    {{ tabset.name }}
+                  </div>
+                  <div class="col text-right">
+                    <q-icon v-if="showDeleteButton.get(tabset.id)"
+                            name="delete_outline" color="negative" size="1.1rem" @click.stop="deleteDialog(tabset)">
+                      <q-tooltip>Delete this tabset...</q-tooltip>
+                    </q-icon>
+                    <q-icon v-else name="shim" color="negative" size="1.1rem"></q-icon>
+                  </div>
+                </div>
+
+
+                <!-- !MIT -->
+
+              </template>
+            </q-item-label>
+
           </q-item-section>
           <q-item-section class="text-right q-mx-sm cursor-pointer"
                           @click="toggleExpand(index)"
@@ -66,16 +100,12 @@
 
 import {onMounted, PropType, ref} from "vue";
 import {Tabset, TabsetStatus, TabsetType} from "src/models/Tabset";
-import TabsetService from "src/services/TabsetService";
 import {useRouter} from "vue-router";
 import {useQuasar} from "quasar";
 import {useTabsStore} from "stores/tabsStore";
 import {useSpacesStore} from "stores/spacesStore";
-import EditTabset from "components/dialogues/EditTabsetDialog.vue";
 import DeleteTabsetDialog from "components/dialogues/DeleteTabsetDialog.vue";
 import {useNotificationHandler} from "src/services/ErrorHandler";
-import {MarkTabsetAsFavoriteCommand} from "src/domain/tabsets/MarkTabsetAsFavorite";
-import {MarkTabsetAsDefaultCommand} from "src/domain/tabsets/MarkTabsetAsDefault";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {useTabsetService} from "src/services/TabsetService2";
 import {useUiService} from "src/services/useUiService";
@@ -163,12 +193,19 @@ const open = (tabId: string) => {
   }
 }
 
-const toggleExpand = (index: number):void => expanded.value[index] = !expanded.value[index]
+const toggleExpand = (index: number): void => {
+  expanded.value[index] = !expanded.value[index]
+}
 
 </script>
 
 <style>
 .q-expansion-item__content {
-  border:1px solid #f5f5f5
+  border: 1px solid #f5f5f5
 }
+
+.darken-on-hover:hover {
+  background-color: #efefef !important;
+}
+
 </style>

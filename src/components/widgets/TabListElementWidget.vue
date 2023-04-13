@@ -1,6 +1,6 @@
 <template>
 
-  <q-item-section class="q-mr-sm text-right" style="justify-content:start;min-widht:70px;max-width:70px;">
+  <q-item-section class="q-mr-sm text-right" style="justify-content:start;width:70px;max-width:70px;">
     <q-img v-if="props.tab.image" style="border:1px dotted white;border-radius:3px"
            :src="props.tab.image" width="70px"/>
     <q-img v-else-if="thumbnail" style="border:1px dotted white;border-radius:3px"
@@ -27,6 +27,14 @@
             <q-tooltip class="tooltip">This tab is open in your browser. Click to open the corresponding tab.
             </q-tooltip>
           </q-chip>
+          <q-chip v-if="props.tab.isDuplicate"
+                  class="q-my-none q-py-none q-ml-none" color="warning"
+                  clickable
+                  style="float:left;"
+                  size="xs" icon="tab">
+            duplicate
+            <q-tooltip class="tooltip">This tab has a duplicate inside this tabset and could be deleted</q-tooltip>
+          </q-chip>
           {{ nameOrTitle(props.tab) }}
           <q-popup-edit :model-value="dynamicNameOrTitleModel(tab)" v-slot="scope"
                         @update:model-value="val => setCustomTitle( tab, val)">
@@ -34,16 +42,6 @@
           </q-popup-edit>
         </div>
 
-        <!--      <q-badge v-if="isOpen(props.tab) && props.showIsOpened"-->
-        <!--               @click.stop="NavigationService.openOrCreateTab(props.tab.chromeTab?.url)"-->
-        <!--               color="primary" class="q-ml-none"-->
-        <!--               style="position: relative;top:-5px">-->
-        <!--        <q-tooltip class="tooltip">This tab is currently open in your browser</q-tooltip>-->
-        <!--      </q-badge>-->
-        <q-badge v-if="props.tab.isDuplicate" color="warning" label="duplicate" outline class="q-ml-sm"
-                 style="position: relative;top:-5px">
-          <q-tooltip class="tooltip">This tab has a duplicate inside this tabset and could be deleted</q-tooltip>
-        </q-badge>
       </div>
     </q-item-label>
 
@@ -173,9 +171,9 @@ const itemStyle = (tab: Tab) => {
     // borderColor = "border-color:#000066"
   }
   let background = ''
-  if (tab.isDuplicate) {
-    background = "background: radial-gradient(circle, #FFFFFF 0%, #FFECB3 100%)"
-  }
+  // if (tab.isDuplicate) {
+  //   background = "background: radial-gradient(circle, #FFFFFF 0%, #FFECB3 100%)"
+  // }
 //  if (tab.chromeTab.url === props.highlightUrl) {
 //    border = "border: 1px dotted orange; padding:15px; border-radius:5px"
 //  }

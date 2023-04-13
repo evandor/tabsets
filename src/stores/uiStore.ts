@@ -49,24 +49,22 @@ export class RightDrawer {
 export const useUiStore = defineStore('ui', () => {
 
 
-  // const leftDrawer = ref<LeftDrawer>($q.LocalStorage.getItem('ui.leftDrawer') || new LeftDrawer(LeftDrawerState.SMALL))
-  // const leftDrawerLabelAnimated = ref(false)
-
   const selectedTab = ref<Tab | undefined>(undefined)
 
   let rightDrawer = ref<RightDrawer>(new RightDrawer())
-  let rightDrawerViewStack = ref<DrawerTabs[]>([DrawerTabs.UNASSIGNED_TABS])
+  let rightDrawerOpen = ref(true)
+  //let rightDrawerViewStack = ref<DrawerTabs[]>([DrawerTabs.UNASSIGNED_TABS])
 
-  const rightDrawerFromStorage: RightDrawer | null = LocalStorage.getItem('ui.rightDrawer') as unknown as RightDrawer
-  if (rightDrawerFromStorage !== null) {
-    // console.log("got", rightDrawerFromStorage)
-    if (rightDrawerFromStorage.activeTab !== DrawerTabs.TAB_DETAILS) {
-      rightDrawer = ref<RightDrawer>(rightDrawerFromStorage)
-    }
-    if (rightDrawerFromStorage.activeTab !== DrawerTabs.UNASSIGNED_TABS && rightDrawerFromStorage.activeTab !== DrawerTabs.TAB_DETAILS) {
-      rightDrawerViewStack = ref<DrawerTabs[]>([DrawerTabs.UNASSIGNED_TABS, rightDrawerFromStorage.activeTab])
-    }
-  }
+  // const rightDrawerFromStorage: RightDrawer | null = LocalStorage.getItem('ui.rightDrawer') as unknown as RightDrawer
+  // if (rightDrawerFromStorage !== null) {
+  //   // console.log("got", rightDrawerFromStorage)
+  //   if (rightDrawerFromStorage.activeTab !== DrawerTabs.TAB_DETAILS) {
+  //     rightDrawer = ref<RightDrawer>(rightDrawerFromStorage)
+  //   }
+  //   if (rightDrawerFromStorage.activeTab !== DrawerTabs.UNASSIGNED_TABS && rightDrawerFromStorage.activeTab !== DrawerTabs.TAB_DETAILS) {
+  //     rightDrawerViewStack = ref<DrawerTabs[]>([DrawerTabs.UNASSIGNED_TABS, rightDrawerFromStorage.activeTab])
+  //   }
+  // }
 
   const newTabsetEmptyByDefault = ref<boolean>(LocalStorage.getItem('ui.newTabsetEmptyByDefault') as unknown as boolean || false)
   const tabBeingDragged = ref<string | undefined>(undefined)
@@ -180,28 +178,25 @@ export const useUiStore = defineStore('ui', () => {
 
   function rightDrawerSetActiveTab(tab: DrawerTabs) {
     rightDrawer.value.activeTab = tab
-    if (rightDrawerViewStack.value[rightDrawerViewStack.value.length - 1] !== tab) {
-      rightDrawerViewStack.value.push(tab)
-    }
   }
 
   function setEntityType(type: string) {
     entityType.value = type
   }
 
-  function rightDrawerSetLastView() {
-    if (rightDrawerViewStack.value.length === 0) {
-      rightDrawerViewStack.value.push(DrawerTabs.UNASSIGNED_TABS)
-      rightDrawer.value = new RightDrawer()
-      // } else if (rightDrawerViewStack.value.length === 1) {
-      //   rightDrawer.value.activeTab = rightDrawerViewStack.value[0]
-    } else {
-      rightDrawerViewStack.value.pop()
-      rightDrawer.value.activeTab = rightDrawerViewStack.value[rightDrawerViewStack.value.length - 1]
-    }
-  }
+  // function rightDrawerSetLastView() {
+  //   if (rightDrawerViewStack.value.length === 0) {
+  //     rightDrawerViewStack.value.push(DrawerTabs.UNASSIGNED_TABS)
+  //     rightDrawer.value = new RightDrawer()
+  //     // } else if (rightDrawerViewStack.value.length === 1) {
+  //     //   rightDrawer.value.activeTab = rightDrawerViewStack.value[0]
+  //   } else {
+  //     rightDrawerViewStack.value.pop()
+  //     rightDrawer.value.activeTab = rightDrawerViewStack.value[rightDrawerViewStack.value.length - 1]
+  //   }
+  // }
 
-  const rightDrawerShowCloseButton = computed(() => () => rightDrawerViewStack.value.length > 1)
+  // const rightDrawerShowCloseButton = computed(() => () => rightDrawerViewStack.value.length > 1)
 
   const showMessage = computed(() => {
     return (ident: string, probability: number = 1, forceDisplay: boolean = false) => {
@@ -259,10 +254,8 @@ export const useUiStore = defineStore('ui', () => {
 
   return {
     rightDrawer,
-    rightDrawerSetLastView,
-    rightDrawerViewStack,
+    rightDrawerOpen,
     rightDrawerSetActiveTab,
-    rightDrawerShowCloseButton,
     draggingTab,
     droppingTab,
     newTabsetEmptyByDefault,

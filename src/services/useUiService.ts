@@ -34,13 +34,18 @@ export function useUiService() {
     useUiStore().rightDrawerSetLastView()
   }
 
+  const closeRightDrawer = () => {
+    useUiStore().rightDrawerOpen = false
+  }
+
   return {
     rightDrawerActiveTab,
     rightDrawerSetActiveTab,
     showSearchResultsPageFor,
     draggingTab,
     droppingTab,
-    closeCurrentView
+    closeCurrentView,
+    closeRightDrawer
   }
 
 }

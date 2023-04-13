@@ -204,7 +204,7 @@
     </q-drawer>
 
     <q-drawer show-if-above
-              v-model="rightDrawerOpen" side="right" bordered
+              v-model="useUiStore().rightDrawerOpen" side="right" bordered
               content-class="column justify-between no-wrap bg-grey-1">
       <DrawerRight/>
 
@@ -325,6 +325,10 @@ const goHome = () => router.push("/")
 const toggleLeftDrawer = () => {
   leftDrawerOpen.value = !leftDrawerOpen.value
   //useUiService().toggleDrawer()
+}
+
+const toggleRightDrawer = () => {
+  rightDrawerOpen.value = !rightDrawerOpen.value
 }
 
 const installNewVersion = (version: string) => {

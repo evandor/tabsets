@@ -32,15 +32,9 @@
 
 
       <q-list class="q-mt-none greyBorderTop">
-        <!--        <NavTabsetsListWidget v-if="inBexMode()" :tabsets="tabsets(true)"/>-->
-        <NavTabsetsListWidgetNonBex :tabsets="tabsets(true)"/>
-
-        <q-separator v-if="tabsets(true).length > 0"/>
-
-        <!--        <NavTabsetsListWidget v-if="!inBexMode()" :tabsets="tabsets(false)"/>-->
-        <NavTabsetsListWidgetNonBex :tabsets="tabsets(false)"/>
-
+        <NavTabsetsListWidgetNonBex :tabsets="tabsets()"/>
       </q-list>
+
       <q-separator v-if="tabsetsWithTypes([TabsetType.SPECIAL]).length > 0"/>
 
       <NavTabsetsListWidget :tabsets="tabsetsWithTypes([TabsetType.SPECIAL])"/>
@@ -66,7 +60,6 @@ import NavTabsetsListWidget from "components/widgets/NavTabsetsListWidget.vue"
 import {useUiStore} from "src/stores/uiStore";
 import {useNotificationsStore} from "src/stores/notificationsStore";
 import {usePermissionsStore} from "src/stores/permissionsStore";
-import InfoMessageWidget from "components/widgets/InfoMessageWidget.vue";
 import {useUtils} from "src/services/Utils";
 import NavTabsetsListWidgetNonBex from "components/widgets/NavTabsetsListWidgetNonBex.vue";
 import {FeatureIdent} from "src/models/AppFeature";
@@ -94,7 +87,7 @@ $q.loadingBar.setDefaults({
   position: 'bottom'
 })
 
-const tabsets = (isFavorite: boolean) => {
+const tabsets = ():Tabset[] => {
   let tabsets = [...tabsStore.tabsets.values()]
   if (usePermissionsStore().hasFeature(FeatureIdent.SPACES) && spacesStore.spaces && spacesStore.spaces.size > 0) {
     if (spacesStore.space && spacesStore.space.id && spacesStore.space.id.length > 0) {
@@ -104,10 +97,17 @@ const tabsets = (isFavorite: boolean) => {
     }
   }
   return _.sortBy(_.filter(tabsets, (ts: Tabset) =>
-    ts.type !== TabsetType.SPECIAL &&
-    ts.status !== TabsetStatus.ARCHIVED &&
-    ts.status !== TabsetStatus.DELETED &&
-    ts.status === (isFavorite ? TabsetStatus.FAVORITE : TabsetStatus.DEFAULT)), ['name'])
+      ts.type !== TabsetType.SPECIAL &&
+      ts.status !== TabsetStatus.ARCHIVED &&
+      ts.status !== TabsetStatus.DELETED),
+    [
+      function (o) {
+        return o.status === TabsetStatus.FAVORITE ? 0 : 1
+      },
+      function (o) {
+        return o.name.toLowerCase()
+      }
+    ])
 }
 
 const tabsetsWithTypes = (types: TabsetType[]) => {

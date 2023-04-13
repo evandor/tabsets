@@ -17,10 +17,10 @@
       </div>
       <div class="col-xs-12 col-md-3 q-ma-none q-mt-sm text-right">
 
-        <q-icon v-if="useUiStore().rightDrawerShowCloseButton()"
-                class="cursor-pointer" size="1.3em"
-                name="o_cancel" @click="closeCurrentView()">
-          <q-tooltip class="tooltip">Close this view</q-tooltip>
+        <q-icon
+                class="cursor-pointer" size="2em"
+                name="chevron_right" @click="closeRightDrawer()">
+          <q-tooltip class="tooltip">Hide this view</q-tooltip>
         </q-icon>
 
         <div class="row" v-if="tab === DrawerTabs.OPEN_TABS">
@@ -189,8 +189,8 @@ const setFilter2 = (newVal: string) => {
   console.log("newVal2", newVal)
   filter.value = newVal
 }
-const closeCurrentView = () => useUiService().closeCurrentView()
-
+// const closeCurrentView = () => useUiService().closeCurrentView()
+const closeRightDrawer = () => useUiService().closeRightDrawer()
 
 </script>
 

@@ -5,7 +5,10 @@
     <div class="row fit">
       <q-toolbar-title>
         <div class="row justify-start items-baseline">
-          <div class="col-1"><span class="text-dark">Tabs</span> (no tabset selected)</div>
+          <div class="col-10"><span class="text-dark">Tabs</span> (no tabset selected)</div>
+          <div class="col-2 text-right">
+            <OpenRightDrawerWidget/>
+          </div>
         </div>
       </q-toolbar-title>
     </div>
@@ -15,10 +18,12 @@
       <div class="col-xs-12 col-md-6">
         <q-toolbar-title>
           <div class="row justify-start items-baseline">
-            <div class="col-1"><span class="text-dark">Tabs of </span> <span
-              class="text-primary text-weight-bold cursor-pointer"
-              @mouseenter="showEditButton = true"
-              @mouseout="showEditButton = false">
+            <div class="col-1">
+              <span class="text-dark">Tabs of </span>
+              <span
+                class="text-primary text-weight-bold cursor-pointer"
+                @mouseenter="showEditButton = true"
+                @mouseout="showEditButton = false">
               {{ tabsStore.currentTabsetName }}
                <q-popup-edit :model-value="tabsStore.getCurrentTabset?.name" v-slot="scope"
                              @update:model-value="val => setNewName(  val)">
@@ -29,14 +34,14 @@
                       size="16px"/>
               <q-icon v-else size="16px"/>
 
-              <q-icon v-if="tabsStore.tabsets.size > 9 && tabsStore.getCurrentTabset?.status === TabsetStatus.DEFAULT"
+              <q-icon v-if="tabsStore.tabsets.size > 2 && tabsStore.getCurrentTabset?.status === TabsetStatus.DEFAULT"
                       @click="markAsFavorite()"
                       class="q-ml-md cursor-pointer"
                       color="warning" name="o_grade" size="20px">
                 <q-tooltip class="tooltip">Mark this tabset as a favorite one</q-tooltip>
               </q-icon>
 
-              <q-icon v-if="tabsStore.tabsets.size > 9 && tabsStore.getCurrentTabset?.status === TabsetStatus.FAVORITE"
+              <q-icon v-if="tabsStore.tabsets.size > 2 && tabsStore.getCurrentTabset?.status === TabsetStatus.FAVORITE"
                       @click="markAsDefault()"
                       class="q-ml-md cursor-pointer"
                       color="warning" name="grade" size="20px">
@@ -44,7 +49,7 @@
               </q-icon>
 
               <q-icon
-                v-if="tabsStore.tabsets.size > 9 && tabsStore.getCurrentTabset?.type === TabsetType.DEFAULT && tabsStore.getCurrentTabset?.status !== TabsetStatus.DELETED"
+                v-if="tabsStore.tabsets.size > 2 && tabsStore.getCurrentTabset?.type === TabsetType.DEFAULT && tabsStore.getCurrentTabset?.status !== TabsetStatus.DELETED"
                 @click="archiveTabset()"
                 class="q-ml-md cursor-pointer"
                 color="primary" name="o_inventory_2" size="20px">
@@ -64,6 +69,7 @@
 
 
             </div>
+
           </div>
         </q-toolbar-title>
       </div>
@@ -88,15 +94,15 @@
           <q-tooltip>Sorting descending or ascending, currently {{ orderDesc }}</q-tooltip>
         </q-btn>
 
-<!--        <q-btn v-if="permissionsStore.hasFeature(FeatureIdent.EXPERIMENTAL_VIEWS)"-->
-<!--               @click="setView('grid')"-->
-<!--               style="width:14px"-->
-<!--               class="q-mr-sm" size="8px"-->
-<!--               :flat="tabsStore.getCurrentTabset?.view !== 'grid'"-->
-<!--               :outline="tabsStore.getCurrentTabset?.view === 'grid'"-->
-<!--               icon="grid_on">-->
-<!--          <q-tooltip class="tooltip">Use grid layout to visualize your tabs</q-tooltip>-->
-<!--        </q-btn>-->
+        <!--        <q-btn v-if="permissionsStore.hasFeature(FeatureIdent.EXPERIMENTAL_VIEWS)"-->
+        <!--               @click="setView('grid')"-->
+        <!--               style="width:14px"-->
+        <!--               class="q-mr-sm" size="8px"-->
+        <!--               :flat="tabsStore.getCurrentTabset?.view !== 'grid'"-->
+        <!--               :outline="tabsStore.getCurrentTabset?.view === 'grid'"-->
+        <!--               icon="grid_on">-->
+        <!--          <q-tooltip class="tooltip">Use grid layout to visualize your tabs</q-tooltip>-->
+        <!--        </q-btn>-->
 
         <q-btn v-if="tabsStore.getCurrentTabset?.tabs.length > 0"
                @click="setView('group')"
@@ -119,33 +125,35 @@
           <q-tooltip class="tooltip">Use the list layout to visualize your tabs</q-tooltip>
         </q-btn>
 
-<!--        <q-btn v-if="permissionsStore.hasFeature(FeatureIdent.EXPERIMENTAL_VIEWS) && tabsStore.getCurrentTabset?.tabs.length > 0"-->
-<!--               @click="setView('table')"-->
-<!--               style="width:14px"-->
-<!--               class="q-mr-xs" size="10px"-->
-<!--               :flat="tabsStore.getCurrentTabset?.view !== 'table'"-->
-<!--               :outline="tabsStore.getCurrentTabset?.view === 'table'"-->
-<!--               icon="table_rows">-->
-<!--          <q-tooltip>Use the table layout to visualize your tabs</q-tooltip>-->
-<!--        </q-btn>-->
+        <!--        <q-btn v-if="permissionsStore.hasFeature(FeatureIdent.EXPERIMENTAL_VIEWS) && tabsStore.getCurrentTabset?.tabs.length > 0"-->
+        <!--               @click="setView('table')"-->
+        <!--               style="width:14px"-->
+        <!--               class="q-mr-xs" size="10px"-->
+        <!--               :flat="tabsStore.getCurrentTabset?.view !== 'table'"-->
+        <!--               :outline="tabsStore.getCurrentTabset?.view === 'table'"-->
+        <!--               icon="table_rows">-->
+        <!--          <q-tooltip>Use the table layout to visualize your tabs</q-tooltip>-->
+        <!--        </q-btn>-->
 
-        <q-btn v-if="permissionsStore.hasFeature(FeatureIdent.EXPERIMENTAL_VIEWS) && tabsStore.getCurrentTabset?.tabs.length > 0"
-               @click="setView('canvas')"
-               style="width:14px"
-               class="q-mr-sm" size="10px"
-               :flat="tabsStore.getCurrentTabset?.view !== 'canvas'"
-               :outline="tabsStore.getCurrentTabset?.view === 'canvas'"
-               icon="o_shape_line">
+        <q-btn
+          v-if="permissionsStore.hasFeature(FeatureIdent.EXPERIMENTAL_VIEWS) && tabsStore.getCurrentTabset?.tabs.length > 0"
+          @click="setView('canvas')"
+          style="width:14px"
+          class="q-mr-sm" size="10px"
+          :flat="tabsStore.getCurrentTabset?.view !== 'canvas'"
+          :outline="tabsStore.getCurrentTabset?.view === 'canvas'"
+          icon="o_shape_line">
           <q-tooltip>Use the canvas freestyle layout to visualize your tabs</q-tooltip>
         </q-btn>
 
-        <q-btn v-if="permissionsStore.hasFeature(FeatureIdent.EXPERIMENTAL_VIEWS) && tabsStore.getCurrentTabset?.tabs.length > 0"
-               @click="setView('exporter')"
-               style="width:14px"
-               class="q-mr-sm" size="10px"
-               :flat="tabsStore.getCurrentTabset?.view !== 'exporter'"
-               :outline="tabsStore.getCurrentTabset?.view === 'exporter'"
-               icon="o_ios_share">
+        <q-btn
+          v-if="permissionsStore.hasFeature(FeatureIdent.EXPERIMENTAL_VIEWS) && tabsStore.getCurrentTabset?.tabs.length > 0"
+          @click="setView('exporter')"
+          style="width:14px"
+          class="q-mr-sm" size="10px"
+          :flat="tabsStore.getCurrentTabset?.view !== 'exporter'"
+          :outline="tabsStore.getCurrentTabset?.view === 'exporter'"
+          icon="o_ios_share">
           <q-tooltip>Use the exporter layout if you want to copy and paste the urls of this tabset</q-tooltip>
         </q-btn>
 
@@ -161,6 +169,7 @@
           </q-tooltip>
         </q-icon>
 
+          <OpenRightDrawerWidget/>
       </div>
     </div>
   </q-toolbar>
@@ -168,19 +177,19 @@
   <div class="row fit greyBorderTop"></div>
 
   <q-tabs v-if="usePermissionsStore().hasFeature(FeatureIdent.TABSET_PAGE)"
-    v-model="tab"
-    dense
-    class="text-grey q-ma-none q-pa-none"
-    active-color="primary"
-    indicator-color="primary"
-    align="left"
-    narrow-indicator
+          v-model="tab"
+          dense
+          class="text-grey q-ma-none q-pa-none"
+          active-color="primary"
+          indicator-color="primary"
+          align="left"
+          narrow-indicator
   >
-    <q-tab name="tabset" label="Tabs" />
-    <q-tab name="page" label="Page" :disable="!tabsStore.currentTabsetId" />
+    <q-tab name="tabset" label="Tabs"/>
+    <q-tab name="page" label="Page" :disable="!tabsStore.currentTabsetId"/>
   </q-tabs>
 
-<!--  <q-separator class="q-mb-md" />-->
+  <!--  <q-separator class="q-mb-md" />-->
 
   <q-tab-panels v-model="tab" animated>
     <q-tab-panel class="q-ma-none q-pa-none" name="tabset">
@@ -217,15 +226,16 @@
         hint="This is a special type of tabset - it's meant for those tabs which you don't want to track. You can add urls and whenever
 a tab's url starts with one of the urls of this tabset, it will be ignored and not added to the tabs to be added."/>
 
-      <template v-if="usePermissionsStore().hasFeature(FeatureIdent.TABSET_PAGE) && tabsStore.getCurrentTabset?.showPageAsHeader">
+      <template
+        v-if="usePermissionsStore().hasFeature(FeatureIdent.TABSET_PAGE) && tabsStore.getCurrentTabset?.showPageAsHeader">
         <div v-html="tabsStore.getCurrentTabset?.page"></div>
       </template>
 
-      <TabsetPageCards />
+      <TabsetPageCards/>
 
     </q-tab-panel>
     <q-tab-panel name="page">
-      <PageForTabset />
+      <PageForTabset/>
     </q-tab-panel>
   </q-tab-panels>
 
@@ -266,6 +276,8 @@ import {ToggleSortingCommand} from "src/domain/tabsets/ToggleSorting";
 import {useSettingsStore} from "src/stores/settingsStore"
 import PageForTabset from "components/layouts/PageForTabset.vue";
 import TabsetPageCards from "pages/TabsetPageCards.vue";
+import {useUiService} from "src/services/useUiService";
+import OpenRightDrawerWidget from "components/widgets/OpenRightDrawerWidget.vue";
 
 const route = useRoute();
 const router = useRouter();
@@ -300,7 +312,6 @@ watchEffect(() => {
     // }
   }
 })
-
 
 
 const setNewName = (newValue: string) => useCommandExecutor().executeFromUi(new RenameTabsetCommand(tabsStore.currentTabsetId, newValue))
