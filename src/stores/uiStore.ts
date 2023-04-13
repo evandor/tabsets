@@ -178,6 +178,7 @@ export const useUiStore = defineStore('ui', () => {
 
   function rightDrawerSetActiveTab(tab: DrawerTabs) {
     rightDrawer.value.activeTab = tab
+    rightDrawerOpen.value = true
   }
 
   function setEntityType(type: string) {

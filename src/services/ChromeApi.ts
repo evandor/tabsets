@@ -88,8 +88,49 @@ class ChromeApi {
       this.startWebRequestListener()
     }
 
-    this.buildContextMenu();
+  }
 
+  startWebRequestListener() {
+    console.log("adding WebRequestListener")
+    chrome.webRequest.onHeadersReceived.addListener(
+      this.onHeadersReceivedListener,
+      {urls: ['*://*/*'], types: ['main_frame']},
+      ['responseHeaders']
+    )
+  }
+
+  stopWebRequestListener() {
+    console.log("removing WebRequestListener")
+    chrome.webRequest.onHeadersReceived.removeListener(this.onHeadersReceivedListener)
+  }
+
+  buildContextMenu() {
+    const tabsStore = useTabsStore()
+    chrome.contextMenus.removeAll(
+      () => {
+        chrome.contextMenus.create({id: 'tabset_extension', title: 'Tabset Extension', contexts: ['all']},
+          () => {
+            chrome.contextMenus.create({
+              id: 'open_tabsets_page',
+              parentId: 'tabset_extension',
+              title: 'Open Tabsets Extension',
+              contexts: ['all']
+            })
+            console.log("building context menu from ", tabsStore.tabsets)
+            _.forEach([...tabsStore.tabsets.values()], (ts: Tabset) => {
+              //console.log("new submenu from", ts.id)
+              chrome.contextMenus.create({
+                id: 'save_as_tab|' + ts.id,
+                parentId: 'tabset_extension',
+                title: 'Save to Tabset ' + ts.name,
+                contexts: ['page']
+              })
+            })
+            //chrome.contextMenus.create({id: 'capture_text', parentId: 'tabset_extension', title: 'Save selection as/to Tabset', contexts: ['all']})
+
+          })
+      }
+    )
     chrome.contextMenus.onClicked.addListener(
       (e: chrome.contextMenus.OnClickData, tab: chrome.tabs.Tab | undefined) => {
         console.log("listening to", e, tab)
@@ -137,56 +178,6 @@ class ChromeApi {
         }
       })
 
-
-    // chrome.omnibox.onInputEntered.addListener(
-    //   (a, b) => {
-    //     console.log("onInputEntered", a, b)
-    //     useUiService().showSearchResultsPageFor(a)
-    //   }
-    // )
-  }
-
-  startWebRequestListener() {
-    console.log("adding WebRequestListener")
-    chrome.webRequest.onHeadersReceived.addListener(
-      this.onHeadersReceivedListener,
-      {urls: ['*://*/*'], types: ['main_frame']},
-      ['responseHeaders']
-    )
-  }
-
-  stopWebRequestListener() {
-    console.log("removing WebRequestListener")
-    chrome.webRequest.onHeadersReceived.removeListener(this.onHeadersReceivedListener)
-  }
-
-  buildContextMenu() {
-    const tabsStore = useTabsStore()
-    chrome.contextMenus.removeAll(
-      () => {
-        chrome.contextMenus.create({id: 'tabset_extension', title: 'Tabset Extension', contexts: ['all']},
-          () => {
-            chrome.contextMenus.create({
-              id: 'open_tabsets_page',
-              parentId: 'tabset_extension',
-              title: 'Open Tabsets Extension',
-              contexts: ['all']
-            })
-            //console.log("building context menu from ", tabsStore.tabsets)
-            _.forEach([...tabsStore.tabsets.values()], (ts: Tabset) => {
-              //console.log("new submenu from", ts.id)
-              chrome.contextMenus.create({
-                id: 'save_as_tab|' + ts.id,
-                parentId: 'tabset_extension',
-                title: 'Save to Tabset ' + ts.name,
-                contexts: ['page']
-              })
-            })
-            //chrome.contextMenus.create({id: 'capture_text', parentId: 'tabset_extension', title: 'Save selection as/to Tabset', contexts: ['all']})
-
-          })
-      }
-    )
   }
 
   async closeAllTabs() {

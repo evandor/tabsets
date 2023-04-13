@@ -1,5 +1,4 @@
 <template>
-  <!-- !== MIT -->
   <div class="column" style="height:100%;background-color: #f9f9f9">
     <div class="col">
 

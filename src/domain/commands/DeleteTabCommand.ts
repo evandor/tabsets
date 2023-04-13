@@ -4,7 +4,7 @@ import {Tab} from "src/models/Tab";
 import {Tabset} from "src/models/Tabset";
 import {useTabsetService} from "src/services/TabsetService2";
 
-const {saveToTabset, deleteTab} = useTabsetService()
+const {addToTabset, deleteTab} = useTabsetService()
 
 class UndoCommand implements Command<any> {
 
@@ -14,7 +14,7 @@ class UndoCommand implements Command<any> {
 
   execute(): Promise<ExecutionResult<any>> {
     console.log("execution undo command", this.tab, this.tabset)
-    return saveToTabset(this.tabset, this.tab)
+    return addToTabset(this.tabset, this.tab)
       .then((res) => new ExecutionResult(res, "Tab has been restored again"))
   }
 

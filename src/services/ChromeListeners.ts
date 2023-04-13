@@ -24,7 +24,7 @@ const {
   saveText,
   saveMetaLinksFor,
   saveLinksFor,
-  saveToTabsetId,
+  addToTabsetId,
   saveThumbnailFor
 } = useTabsetService()
 
@@ -397,7 +397,7 @@ class ChromeListeners {
     console.log("handleAddTabToTabset", request, sender)
     if (sender.tab) {
 
-      saveToTabsetId(request.tabsetId, new Tab(uid(), sender.tab))
+      addToTabsetId(request.tabsetId, new Tab(uid(), sender.tab))
         .then(() => {
           chrome.notifications.create(
             {

@@ -9,7 +9,7 @@ import {useBookmarksStore} from "src/stores/bookmarksStore";
 import {STRIP_CHARS_IN_USER_INPUT} from "boot/constants";
 import {useTabsetService} from "src/services/TabsetService2";
 
-const {getTabset, getCurrentTabset, saveTabset, saveCurrentTabset, tabsetsFor, saveToTabset} = useTabsetService()
+const {getTabset, getCurrentTabset, saveTabset, saveCurrentTabset, tabsetsFor, addToTabset} = useTabsetService()
 
 import {useDB} from "src/services/usePersistenceService";
 import {api} from "boot/axios";
@@ -77,7 +77,7 @@ class TabsetService {
       //       return saveToTabset(currentTs, tab, useIndex)
       //   //  })
       // } else {
-        return saveToTabset(currentTs, tab, useIndex)
+        return addToTabset(currentTs, tab, useIndex)
       // }
     }
     return Promise.reject("could not get current tabset")

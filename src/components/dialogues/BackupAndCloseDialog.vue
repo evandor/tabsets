@@ -55,7 +55,7 @@ const backupAndCloseTabs = () => {
       if (backupTabset) {
         tabsToBackup.forEach(t => {
           const tab = new Tab(uid(), t)
-          useTabsetService().saveToTabset(backupTabset, tab)
+          useTabsetService().addToTabset(backupTabset, tab)
         })
       }
     })

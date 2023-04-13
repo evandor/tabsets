@@ -31,6 +31,7 @@ export function useTabsetService() {
       useSearchStore().populateFromContent(db.getContents())
       useSearchStore().populateFromTabsets()
     }
+    ChromeApi.buildContextMenu()
   }
 
   /**
@@ -56,12 +57,12 @@ export function useTabsetService() {
     const trustedName = name.replace(STRIP_CHARS_IN_USER_INPUT, '')
     const tabs: Tab[] = _.filter(
       _.map(chromeTabs, t => new Tab(uid(), t)),
-      (t: Tab) => {
+      (t:Tab) => {
         if (!useSettingsStore().isEnabled('extensionsAsTabs')) {
           return !t.chromeTab.url?.startsWith("chrome-extension://")
         }
         return true
-      })
+    })
     try {
       const result: NewOrReplacedTabset = await useTabsStore()
         .updateOrCreateTabset(trustedName, tabs, merge, type)
@@ -191,18 +192,22 @@ export function useTabsetService() {
 
   }
 
-  const saveTabset = async (tabset: Tabset): Promise<IDBValidKey> => {
+  const saveTabset = async (tabset: Tabset): Promise<any> => {
     if (tabset.id) {
       tabset.updated = new Date().getTime()
+      // seems necessary !?
+      if (!tabset.type) {
+        tabset.type = TabsetType.DEFAULT
+      }
       return db.saveTabset(tabset)
     }
     return Promise.reject("tabset id not set")
   }
 
-  const saveToTabsetId = async (tsId: string, tab: Tab): Promise<number> => {
+  const addToTabsetId = async (tsId: string, tab: Tab): Promise<number> => {
     const ts = getTabset(tsId)
     if (ts) {
-      return saveToTabset(ts, tab)
+      return addToTabset(ts, tab)
     }
     return Promise.reject("no tabset for give id " + tsId)
   }
@@ -332,16 +337,15 @@ export function useTabsetService() {
   }
 
   /**
-   * adds the (new) Tab 'tab' to the tabset given in 'ts'.
+   * adds the (new) Tab 'tab' to the tabset given in 'ts' (- but does not persist to db).
    *
    * proceeds only if tab.chromeTab.url exists and the tab is not already contained in the tabset.
-   * the tab is removed from the pending tabset if it exists there.
    *
    * @param ts
    * @param tab
    * @param useIndex
    */
-  const saveToTabset = async (ts: Tabset, tab: Tab, useIndex: number | undefined = undefined): Promise<number> => {
+  const addToTabset = async (ts: Tabset, tab: Tab, useIndex: number | undefined = undefined): Promise<number> => {
     //console.log("adding tab x to tabset y", tab.id, ts.id)
     if (tab.chromeTab.url) {
       const indexInTabset = _.findIndex(ts.tabs, t => t.chromeTab.url === tab.chromeTab.url)
@@ -355,8 +359,9 @@ export function useTabsetService() {
         ts.tabs.push(tab)
       }
 
-      return saveTabset(ts)
-        .then(() => Promise.resolve(0)) // TODO
+      // return saveTabset(ts)
+      //   .then(() => Promise.resolve(0)) // TODO
+      return Promise.resolve(0)
     }
     return Promise.reject("tab.chromeTab.url undefined")
   }
@@ -478,8 +483,8 @@ export function useTabsetService() {
     saveText,
     saveMetaLinksFor,
     saveLinksFor,
-    saveToTabsetId,
-    saveToTabset,
+    addToTabsetId,
+    addToTabset,
     tabsetsFor,
     saveThumbnailFor,
     //housekeeping,

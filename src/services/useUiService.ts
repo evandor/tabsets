@@ -30,9 +30,9 @@ export function useUiService() {
   const  draggingTab = (tabId: string, evt: DragEvent) => useUiStore().draggingTab(tabId, evt)
   const  droppingTab = ():string | undefined => useUiStore().droppingTab()
 
-  const closeCurrentView = () => {
-    useUiStore().rightDrawerSetLastView()
-  }
+  // const closeCurrentView = () => {
+  //   useUiStore().rightDrawerSetLastView()
+  // }
 
   const closeRightDrawer = () => {
     useUiStore().rightDrawerOpen = false
@@ -44,7 +44,6 @@ export function useUiService() {
     showSearchResultsPageFor,
     draggingTab,
     droppingTab,
-    closeCurrentView,
     closeRightDrawer
   }
 
