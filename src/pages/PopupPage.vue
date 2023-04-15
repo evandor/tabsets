@@ -7,6 +7,12 @@
       <hr>
     </div>
     <div class="col-12">
+      <div @click="capturePart"> Capture a Portion</div>
+    </div>
+    <div class="col-12">
+      <hr>
+    </div>
+    <div class="col-12">
       <div class="row">
         <div class="col-3 text-bold">
           Tab
@@ -109,18 +115,18 @@ const save = () => {
       func: (tabId: number, tabsetId: string) => {
         //console.log("calling func", tabId, tabsetId)
         //if (window.getSelection()?.anchorNode && window.getSelection()?.anchorNode !== null) {
-          const msg = {
-            msg: "addTabToTabset",
-            tabId: tabId,
-            tabsetId: tabsetId
-          }
-          //console.log("sending message", msg)
-          chrome.runtime.sendMessage(msg, function (response) {
-            console.log("created new tab in current tabset:", response)
-          });
-       // }
+        const msg = {
+          msg: "addTabToTabset",
+          tabId: tabId,
+          tabsetId: tabsetId
+        }
+        //console.log("sending message", msg)
+        chrome.runtime.sendMessage(msg, function (response) {
+          console.log("created new tab in current tabset:", response)
+        });
+        // }
       }
-    }, (result:any) => {
+    }, (result: any) => {
       console.log("result", result)
       //window.close()
     });
@@ -159,6 +165,26 @@ const save = () => {
   //
   //     })
   // }
+}
+
+const capturePart = () => {
+  console.log("capturing part", currentChromeTabs.value[0]?.id)
+  // @ts-ignore
+  chrome.scripting.insertCSS({
+    target: {tabId: currentChromeTabs.value[0]?.id},
+    files: ['assets/content.css']
+  }, () => {
+    const lastError = chrome.runtime.lastError;
+    if (lastError) {
+      alert(JSON.stringify(lastError))
+      return
+    }
+    // @ts-ignore
+    chrome.scripting.executeScript({
+      target: {tabId: currentChromeTabs.value[0]?.id},
+      files: ['clipping.js']
+    });
+  });
 }
 
 </script>

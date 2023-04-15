@@ -1,6 +1,6 @@
 try {
   console.log("hier---")
-  importScripts("./background.js");
+  //importScripts("./background.js");
 } catch (e) {
   console.error(e);
 }

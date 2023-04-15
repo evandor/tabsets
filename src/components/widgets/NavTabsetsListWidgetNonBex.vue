@@ -36,7 +36,6 @@
                             v-if="tabset.sharedBy">
                       <q-tooltip>This tabset is shared by {{ tabset.sharedBy }}</q-tooltip>
                     </q-icon>
-                    {{ tabset.name }}
                     <q-icon name="build_circle" color="blue-10" class="q-ml-none q-mr-sm"
                             style="position:relative;top:-5px;left:-2px;"
                             v-if="tabset.type === TabsetType.DYNAMIC">

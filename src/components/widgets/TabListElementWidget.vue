@@ -1,7 +1,11 @@
 <template>
 
   <q-item-section class="q-mr-sm text-right" style="justify-content:start;width:70px;max-width:70px;">
-    <q-img v-if="props.tab.image" style="border:1px dotted white;border-radius:3px"
+    <q-img v-if="props.tab.image && props.tab.image.startsWith('blob://')"
+           style="border:3px dotted white;border-radius:3px"
+           :src="imgFromBlob" width="70px"/>
+    <q-img v-else-if="props.tab.image"
+           style="border:1px dotted white;border-radius:3px"
            :src="props.tab.image" width="70px"/>
     <q-img v-else-if="thumbnail" style="border:1px dotted white;border-radius:3px"
            :src="thumbnail" width="70px"/>
@@ -47,7 +51,7 @@
 
     <!-- description -->
     <q-item-label class="ellipsis-2-lines text-grey-8">
-      {{props.tab.description}}
+      {{ props.tab.description }}
     </q-item-label>
 
     <!-- url -->
@@ -116,7 +120,7 @@ import NavigationService from "src/services/NavigationService";
 import {Tab} from "src/models/Tab";
 import TabsetService from "src/services/TabsetService";
 import {useNotificationsStore} from "src/stores/notificationsStore";
-import {ref, watchEffect} from "vue";
+import {onMounted, ref, watchEffect} from "vue";
 import {useUtils} from "src/services/Utils"
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {DeleteTabCommand} from "src/domain/commands/DeleteTabCommand";
@@ -128,6 +132,7 @@ import TabFaviconWidget from "components/widgets/TabFaviconWidget.vue";
 import {UpdateTabNameCommand} from "src/domain/tabs/UpdateTabName";
 import {FeatureIdent} from "src/models/AppFeature";
 import {CopyToClipboardCommand} from "src/domain/commands/CopyToClipboard";
+import {useTabsetService} from "src/services/TabsetService2";
 
 const props = defineProps({
   tab: {type: Object, required: true},
@@ -143,6 +148,25 @@ const $q = useQuasar()
 const line = ref(null)
 const showButtonsProp = ref<boolean>(false)
 const thumbnail = ref<string | undefined>(undefined)
+const imgFromBlob = ref<string>("")
+
+onMounted(() => {
+  const blobImgPath = props.tab.image
+  if (blobImgPath && blobImgPath.startsWith('blob://')) {
+    useTabsetService().getBlob(blobImgPath.replace("blob://", ""))
+      .then((res) => {
+        var reader = new FileReader();
+        reader.readAsDataURL(res.content);
+        reader.onloadend = function () {
+          var base64data = reader.result;
+          if (base64data) {
+            imgFromBlob.value = base64data.toString()
+          }
+        }
+      })
+      .catch((err) => console.error(err))
+  }
+})
 
 
 function getShortHostname(host: string) {
@@ -167,16 +191,7 @@ function getHost(urlAsString: string, shorten: Boolean = true): string {
 
 const itemStyle = (tab: Tab) => {
   let border = ""
-  if (tab.selected) {
-    // borderColor = "border-color:#000066"
-  }
   let background = ''
-  // if (tab.isDuplicate) {
-  //   background = "background: radial-gradient(circle, #FFFFFF 0%, #FFECB3 100%)"
-  // }
-//  if (tab.chromeTab.url === props.highlightUrl) {
-//    border = "border: 1px dotted orange; padding:15px; border-radius:5px"
-//  }
   return `${border};${background}`
 }
 
@@ -242,12 +257,7 @@ const copyToClipboard = (text: string) =>
   useCommandExecutor().executeFromUi(new CopyToClipboardCommand(text))
 
 const thumbnailFor = async (tab: Tab): Promise<object> => {
-  //const key = btoa(tab.chromeTab.url || '')
   return await TabsetService.getThumbnailFor(tab)
-  // if (thumnna)
-  //
-  // // return thumbnails.value.get(key) || "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+ip1sAAAAASUVORK5CYII="
-  // return thumbnails.value.get(key) || "thumbnail-not-available.png"
 }
 
 watchEffect(() => {

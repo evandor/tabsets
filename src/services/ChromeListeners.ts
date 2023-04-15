@@ -44,7 +44,7 @@ class ChromeListeners {
       chrome.runtime.setUninstallURL("https://tabsets.web.app/#/uninstall")
     }
     if (process.env.MODE === 'bex' && !isNewTabPage) {
-      console.info("initializing chrome tab listeners")
+      console.debug("initializing chrome tab listeners")
 
       chrome.tabs.onCreated.addListener((tab: chrome.tabs.Tab) => this.onCreated(tab))
       chrome.tabs.onUpdated.addListener((number, info, tab) => this.onUpdated(number, info, tab))
@@ -205,8 +205,8 @@ class ChromeListeners {
             try {
               const hostname = new URL(url).hostname
               const splits = hostname.split(".")
-              if(splits.length >= 2) {
-                domain = splits[splits.length-2] + "." + splits[splits.length-1]
+              if (splits.length >= 2) {
+                domain = splits[splits.length - 2] + "." + splits[splits.length - 1]
               } else {
                 domain = hostname
               }
@@ -329,6 +329,8 @@ class ChromeListeners {
       this.handleHtml2Links(request, sender, sendResponse)
     } else if (request.msg === 'addTabToTabset') {
       this.handleAddTabToTabset(request, sender, sendResponse)
+    } else if (request.msg === 'captureClipping') {
+      this.handleCaptureClipping(request, sender, sendResponse)
     } else {
       console.log("got unknown message", request.msg)
     }
@@ -399,6 +401,12 @@ class ChromeListeners {
 
       addToTabsetId(request.tabsetId, new Tab(uid(), sender.tab))
         .then(() => {
+          const ts = useTabsetService().getTabset(request.tabsetId)
+          if (ts) {
+            useTabsetService().saveTabset(ts)
+          }
+        })
+        .then(() => {
           chrome.notifications.create(
             {
               title: "Tabset Extension Message",
@@ -426,6 +434,94 @@ class ChromeListeners {
     sendResponse({addTabToCurrent: 'done'});
   }
 
+  private capture(request: any) {
+    return new Promise((resolve, reject) => {
+      chrome.tabs.captureVisibleTab(null, {format: 'png'}, dataUrl => {
+        const lastError = chrome.runtime.lastError;
+        if (lastError) {
+          return reject(lastError);
+        }
+
+        if (!request) {
+          return fetch(dataUrl).then(r => r.blob()).then(resolve, reject);
+        }
+
+        const left = request.left * request.dpr;
+        const top = request.top * request.dpr;
+        const width = request.width * request.dpr;
+        const height = request.height * request.dpr;
+
+        const canvas = new OffscreenCanvas(width, height);
+        const ctx = canvas.getContext('2d');
+
+        fetch(dataUrl).then(r => r.blob()).then(async blob => {
+          // const prefs = await new Promise(resolve => chrome.storage.local.get({
+          //   quality: 0.95
+          // }, resolve));
+
+          const img = await createImageBitmap(blob);
+
+          if (width && height) {
+            ctx.drawImage(img, left, top, width, height, 0, 0, width, height);
+          } else {
+            ctx.drawImage(img, 0, 0);
+          }
+          resolve(await canvas.convertToBlob({
+            type: 'image/png',
+            quality: 0.95 //prefs.quality
+          }));
+        }).catch(reject);
+      });
+    });
+  }
+
+  private async handleCaptureClipping(request: any, sender: chrome.runtime.MessageSender, sendResponse: any) {
+    console.log("handleCaptureClipping", request, sender, request.tabsetId)
+
+    const blob = await this.capture(request)
+    const currentTS = useTabsetService().getCurrentTabset()
+    if (sender.tab && currentTS) {
+      console.log("blob", blob)
+      const blobId = await useTabsetService().saveBlob(sender.tab, blob as unknown as Blob)
+
+      const newTab = new Tab(uid(), sender.tab)
+      newTab.image = "blob://" + blobId
+      console.log("newTab", newTab)
+      addToTabsetId(currentTS.id, newTab)
+        .then(() => {
+          const ts = useTabsetService().getTabset(currentTS.id)
+          if (ts) {
+            useTabsetService().saveTabset(ts)
+          }
+        })
+        .then(() => {
+          chrome.notifications.create(
+            {
+              title: "Tabset Extension Message",
+              type: "basic",
+              //iconUrl: "chrome-extension://" + selfId + "/www/favicon.ico",
+              iconUrl: chrome.runtime.getURL("www/favicon.ico"),
+              message: "the tab has been created successfully"
+            }
+          )
+        })
+        .catch((err: any) => {
+          console.log("catching rejection", err)
+          chrome.notifications.create(
+            {
+              title: "Tabset Extension Message",
+              type: "basic",
+              //iconUrl: "chrome-extension://" + selfId + "/www/favicon.ico",
+              iconUrl: chrome.runtime.getURL("www/favicon.ico"),
+              message: "tab could not be added: " + err
+            }
+          )
+
+        })
+    }
+
+    sendResponse({addTabToCurrent: 'done'});
+  }
 
   private handleCapture(sender: chrome.runtime.MessageSender, windowId: number, sendResponse: any) {
 

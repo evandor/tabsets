@@ -309,6 +309,19 @@ class IndexedDbPersistenceService implements PersistenceService {
     return Promise.reject("tab.url missing")
   }
 
+  saveBlob(id: string, url: string, data: Blob, type: string):Promise<any> {
+      //const encodedTabUrl = btoa(tab.chromeTab.url)
+      return this.db.put('blobs', {
+        id: id,
+        type: type,
+        //title: tab.name ? tab.name : tab.chromeTab.title,
+        //favIconUrl: tab.chromeTab.favIconUrl,
+        url: url,
+        created: new Date().getTime(),
+        content: data
+      }, id)
+  }
+
   async getMHtml(url: string): Promise<any> {
 
     console.log("getting mhtml for", url)
@@ -367,6 +380,39 @@ class IndexedDbPersistenceService implements PersistenceService {
     }
   }
 
+  getBlobs(type: string):Promise<any[]> {
+    if (!this.db) { // can happen for some reason
+      return Promise.resolve([])
+    }
+    try {
+      return this.db.getAll('blobs')
+        .then((b:any[]) => {
+          return _.filter(b, d => d.type === type)
+        })
+    } catch (ex) {
+      console.log("got error in getBlobs", ex)
+      return Promise.reject("got error in getBlobs")
+    }
+  }
+
+  getBlob(blobId: string):Promise<any> {
+    if (!this.db) { // can happen for some reason
+      return Promise.resolve([])
+    }
+    try {
+      return this.db.getAll('blobs')
+        .then((b:any[]) => {
+          const found = _.filter(b, d => d.id === blobId)
+          if (found && found.length === 1) {
+            return Promise.resolve(found[0])
+          }
+          return Promise.reject("could not find blob for id " + blobId)
+        })
+    } catch (ex) {
+      console.log("got error in getBlobs", ex)
+      return Promise.reject("got error in getBlobs")
+    }
+  }
 
   async addSpace(space: Space): Promise<void> {
     return await this.db.put('spaces', space, space.id)

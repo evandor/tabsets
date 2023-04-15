@@ -31,6 +31,11 @@ export function useTabsetService() {
       useSearchStore().populateFromContent(db.getContents())
       useSearchStore().populateFromTabsets()
     }
+    const selectedTS = localStorage.getItem("selectedTabset")
+    if (selectedTS) {
+      console.log("setting selected tabset from storage", selectedTS)
+      useTabsStore().selectCurrentTabset(selectedTS)
+    }
     ChromeApi.buildContextMenu()
   }
 
@@ -349,7 +354,7 @@ export function useTabsetService() {
     //console.log("adding tab x to tabset y", tab.id, ts.id)
     if (tab.chromeTab.url) {
       const indexInTabset = _.findIndex(ts.tabs, t => t.chromeTab.url === tab.chromeTab.url)
-      if (indexInTabset >= 0) {
+      if (indexInTabset >= 0 && !tab.image) {
         return Promise.reject("tab exists already")
       }
 
@@ -372,6 +377,20 @@ export function useTabsetService() {
         //.then(() => console.log("added thumbnail"))
         .catch(err => console.log("err", err))
     }
+  }
+
+  const saveBlob = (tab: chrome.tabs.Tab | undefined, blob: Blob): Promise<string> => {
+    if (tab && tab.url) {
+      const id:string = uid()
+      return db.saveBlob(id, tab.url, blob, 'PNG')
+        .then(() =>  Promise.resolve(id))
+        .catch(err =>  Promise.reject(err))
+    }
+    return Promise.reject("no tab or tab url")
+  }
+
+  const getBlob = (blobId: string):Promise<any>  => {
+    return db.getBlob(blobId)
   }
 
 
@@ -495,7 +514,9 @@ export function useTabsetService() {
     deleteTab,
     urlExistsInATabset,
     urlExistsInCurrentTabset,
-    getOrCreateSpecialTabset
+    getOrCreateSpecialTabset,
+    saveBlob,
+    getBlob
   }
 
 }

@@ -116,7 +116,7 @@ class ChromeApi {
               title: 'Open Tabsets Extension',
               contexts: ['all']
             })
-            console.log("building context menu from ", tabsStore.tabsets)
+            //console.log("building context menu from ", tabsStore.tabsets)
             _.forEach([...tabsStore.tabsets.values()], (ts: Tabset) => {
               //console.log("new submenu from", ts.id)
               chrome.contextMenus.create({

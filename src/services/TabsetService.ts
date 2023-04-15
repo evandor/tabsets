@@ -60,25 +60,7 @@ class TabsetService {
   async saveToCurrentTabset(tab: Tab, useIndex: number | undefined = undefined): Promise<number> {
     const currentTs = getCurrentTabset()
     if (currentTs) {
-
-      // if (tab.chromeTab.url?.startsWith("https://randomuser.me/api")) {
-      //   const res = await api.get(tab.chromeTab.url, {
-      //     params: {
-      //       url: "domainName",
-      //       title: "site",
-      //       note: "category"
-      //     }
-      //   })
-      //   //  .then((res) => {
-      //       const results = JSON.stringify(res.data.results)
-      //       console.log("results", results)
-      //       // tab.executionResult = JSON.stringify(JSON.parse(res.data))
-      //       tab.executionResult = JSON.parse(results)
-      //       return saveToTabset(currentTs, tab, useIndex)
-      //   //  })
-      // } else {
         return addToTabset(currentTs, tab, useIndex)
-      // }
     }
     return Promise.reject("could not get current tabset")
   }
