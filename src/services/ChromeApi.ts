@@ -13,6 +13,7 @@ import {usePermissionsStore} from "src/stores/permissionsStore";
 import {Tab} from "src/models/Tab";
 import {uid} from "quasar";
 import {FeatureIdent} from "src/models/AppFeature";
+import {useTabsetService} from "src/services/TabsetService2";
 
 function runHousekeeping(alarm: chrome.alarms.Alarm) {
   if (alarm.name === "housekeeping") {
@@ -54,6 +55,8 @@ function runHousekeeping(alarm: chrome.alarms.Alarm) {
 }
 
 const persistenceService = IndexedDbPersistenceService
+
+
 
 class ChromeApi {
 
@@ -116,6 +119,18 @@ class ChromeApi {
               title: 'Open Tabsets Extension',
               contexts: ['all']
             })
+            chrome.contextMenus.create({
+              id: 'website_clip',
+              parentId: 'tabset_extension',
+              title: 'Create Website Clip',
+              contexts: ['all']
+            })
+            chrome.contextMenus.create({
+              id: 'save_to_currentTS',
+              parentId: 'tabset_extension',
+              title: 'Save to current Tabset',
+              contexts: ['all']
+            })
             //console.log("building context menu from ", tabsStore.tabsets)
             _.forEach([...tabsStore.tabsets.values()], (ts: Tabset) => {
               //console.log("new submenu from", ts.id)
@@ -150,31 +165,20 @@ class ChromeApi {
               // }
             }
           })
+        } else if (e.menuItemId === "website_clip") {
+          console.log("creating Clip", tab)
+          if (tab && tab.id) {
+            this.executeClippingJS(tab.id)
+          }
+        } else if (e.menuItemId === 'save_to_currentTS') {
+          const tabId = tab?.id || 0
+          this.executeAddToTS(tabId, useTabsStore().currentTabsetId)
         } else if (e.menuItemId.startsWith("save_as_tab|")) {
           //console.log("got", e, e.menuItemId.split("|"))
           const tabId = tab?.id || 0
           const tabsetId = e.menuItemId.split("|")[1]
           console.log("got tabsetId", tabsetId, e.menuItemId)
-
-          // @ts-ignore
-          chrome.scripting.executeScript({
-            target: {tabId: tab?.id, allFrames: true},
-            args: [tabId, tabsetId],
-            func: (tabId: number, tabsetId: string) => {
-
-              if (window.getSelection()?.anchorNode && window.getSelection()?.anchorNode !== null) {
-                const msg = {
-                  msg: "addTabToTabset",
-                  tabId: tabId,
-                  tabsetId: tabsetId
-                }
-                console.log("sending message", msg)
-                chrome.runtime.sendMessage(msg, function (response) {
-                  console.log("created new tab in current tabset:", response)
-                });
-              }
-            }
-          });
+          this.executeAddToTS(tabId, tabsetId)
         }
       })
 
@@ -328,6 +332,47 @@ class ChromeApi {
           resolve(tab);
         }
       });
+    });
+  }
+
+  executeClippingJS(tabId: number) {
+    // @ts-ignore
+    chrome.scripting.insertCSS({
+      target: {tabId: tabId},
+      files: ['assets/content.css']
+    }, () => {
+      const lastError = chrome.runtime.lastError;
+      if (lastError) {
+        alert(JSON.stringify(lastError))
+        return
+      }
+      // @ts-ignore
+      chrome.scripting.executeScript({
+        target: {tabId: tabId},
+        files: ['clipping.js']
+      });
+    });
+  }
+
+  executeAddToTS(tabId: number, tabsetId: string) {
+    // @ts-ignore
+    chrome.scripting.executeScript({
+      target: {tabId: tabId, allFrames: true},
+      args: [tabId, tabsetId],
+      func: (tabId: number, tabsetId: string) => {
+
+        if (window.getSelection()?.anchorNode && window.getSelection()?.anchorNode !== null) {
+          const msg = {
+            msg: "addTabToTabset",
+            tabId: tabId,
+            tabsetId: tabsetId
+          }
+          console.log("sending message", msg)
+          chrome.runtime.sendMessage(msg, function (response) {
+            console.log("created new tab in current tabset:", response)
+          });
+        }
+      }
     });
   }
 }

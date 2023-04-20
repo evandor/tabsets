@@ -7,7 +7,7 @@
       <hr>
     </div>
     <div class="col-12">
-      <div @click="capturePart"> Capture a Portion</div>
+      <div @click="createClip" class="cursor-pointer">Create Website Clip</div>
     </div>
     <div class="col-12">
       <hr>
@@ -67,6 +67,7 @@ import {useTabsStore} from "stores/tabsStore";
 import {Tab} from "src/models/Tab";
 import _ from "lodash"
 import {Tabset} from "src/models/Tabset";
+import ChromeApi from "src/services/ChromeApi";
 
 const currentChromeTabs = ref<chrome.tabs.Tab[]>([])
 const currentTabs = ref<Tab[]>([])
@@ -167,24 +168,10 @@ const save = () => {
   // }
 }
 
-const capturePart = () => {
-  console.log("capturing part", currentChromeTabs.value[0]?.id)
-  // @ts-ignore
-  chrome.scripting.insertCSS({
-    target: {tabId: currentChromeTabs.value[0]?.id},
-    files: ['assets/content.css']
-  }, () => {
-    const lastError = chrome.runtime.lastError;
-    if (lastError) {
-      alert(JSON.stringify(lastError))
-      return
-    }
-    // @ts-ignore
-    chrome.scripting.executeScript({
-      target: {tabId: currentChromeTabs.value[0]?.id},
-      files: ['clipping.js']
-    });
-  });
+const createClip = () => {
+  if (currentChromeTabs.value[0]?.id) {
+    ChromeApi.executeClippingJS(currentChromeTabs.value[0]?.id)
+  }
 }
 
 </script>

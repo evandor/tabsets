@@ -94,15 +94,15 @@
           <q-tooltip>Sorting descending or ascending, currently {{ orderDesc }}</q-tooltip>
         </q-btn>
 
-        <!--        <q-btn v-if="permissionsStore.hasFeature(FeatureIdent.EXPERIMENTAL_VIEWS)"-->
-        <!--               @click="setView('grid')"-->
-        <!--               style="width:14px"-->
-        <!--               class="q-mr-sm" size="8px"-->
-        <!--               :flat="tabsStore.getCurrentTabset?.view !== 'grid'"-->
-        <!--               :outline="tabsStore.getCurrentTabset?.view === 'grid'"-->
-        <!--               icon="grid_on">-->
-        <!--          <q-tooltip class="tooltip">Use grid layout to visualize your tabs</q-tooltip>-->
-        <!--        </q-btn>-->
+        <q-btn
+               @click="setView('grid')"
+               style="width:14px"
+               class="q-mr-sm" size="8px"
+               :flat="tabsStore.getCurrentTabset?.view !== 'grid'"
+               :outline="tabsStore.getCurrentTabset?.view === 'grid'"
+               icon="grid_on">
+          <q-tooltip class="tooltip">Use grid layout to visualize your tabs</q-tooltip>
+        </q-btn>
 
         <q-btn v-if="tabsStore.getCurrentTabset?.tabs.length > 0"
                @click="setView('group')"

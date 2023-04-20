@@ -5,21 +5,26 @@
       <TabList v-if="tabsStore.getCurrentTabset?.view === 'list'"
                group="otherTabs"
                :highlightUrl="highlightUrl"
-               :tabs="unpinnedNoGroupOrAllTabs()"/>
+               :tabs="currentTabs()"/>
 
       <TabTable v-else-if="tabsStore.getCurrentTabset?.view === 'table'"
                 group="otherTabs"
                 :highlightUrl="highlightUrl"
-                :tabs="unpinnedNoGroupOrAllTabs()"/>
+                :tabs="currentTabs()"/>
 
       <TabGroups v-else-if="tabsStore.getCurrentTabset?.view === 'group'"
                  group="otherTabs"
                  :highlightUrl="highlightUrl"
-                 :tabs="unpinnedNoGroupOrAllTabs()"/>
+                 :tabs="currentTabs()"/>
+
+      <TabGrid v-else-if="tabsStore.getCurrentTabset?.view === 'grid'"
+                 group="otherTabs"
+                 :highlightUrl="highlightUrl"
+                 :tabs="currentTabs()"/>
 
       <TabsExporter v-else-if="tabsStore.getCurrentTabset?.view === 'exporter'"
                     group="otherTabs"
-                    :tabs="unpinnedNoGroupOrAllTabs()"/>
+                    :tabs="currentTabs()"/>
 
     </q-card-section>
 
@@ -49,6 +54,7 @@ import {useUiStore} from "stores/uiStore";
 import {useRoute} from "vue-router";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {ToggleSortingCommand} from "src/domain/tabsets/ToggleSorting";
+import TabGrid from "components/layouts/TabGrid.vue";
 
 const tabsStore = useTabsStore()
 const route = useRoute()
@@ -93,7 +99,7 @@ watchEffect(() => {
   }
 })
 
-function unpinnedNoGroupOrAllTabs(): Tab[] {
+function currentTabs(): Tab[] {
   return _.orderBy(tabsStore.getCurrentTabs, getOrder(), [orderDesc.value ? 'desc' : 'asc'])
 }
 

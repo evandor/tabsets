@@ -1,23 +1,21 @@
 <template>
-  <div class="col-2">
-    <q-icon v-if="UrlExtension.IMAGE === tab?.extension"
-            :size="props.width"
-            name="image" />
-    <q-icon v-else-if="UrlExtension.RSS === tab?.extension"
-            size="22px"
-            name="rss_feed" />
-    <q-icon v-else-if="UrlExtension.PDF === tab?.extension"
-            size="22px"
-            name="pdf" />
-    <q-img v-else
-           class="rounded-borders"
-           style="cursor: move"
-           :width="props.width"
-           :height="props.height"
-           :src="getFaviconUrl(tab)">
-      <q-tooltip>drag and drop to tabset</q-tooltip>
-    </q-img>
-  </div>
+  <q-icon v-if="UrlExtension.IMAGE === tab?.extension"
+          :size="props.width"
+          name="image"/>
+  <q-icon v-else-if="UrlExtension.RSS === tab?.extension"
+          size="22px"
+          name="rss_feed"/>
+  <q-icon v-else-if="UrlExtension.PDF === tab?.extension"
+          size="22px"
+          name="pdf"/>
+  <q-img v-else
+         class="rounded-borders"
+         style="cursor: move"
+         :width="props.width"
+         :height="props.height"
+         :src="getFaviconUrl(tab)">
+    <q-tooltip>drag and drop to tabset</q-tooltip>
+  </q-img>
 
 
 </template>

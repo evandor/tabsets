@@ -23,10 +23,10 @@ function markDuplicates(tabset: Tabset) {
   const urls = new Set<string>()
   const duplicates = new Set<string>()
   _.forEach(tabset.tabs, t => {
-    if (urls.has(t.chromeTab.url || 'undefined')) {
+    if (urls.has((t.chromeTab.url || 'undefined') + '-' + t.image)) {
       duplicates.add(t.chromeTab.url || 'undefined')
     } else {
-      urls.add(t.chromeTab.url || 'undefined')
+      urls.add((t.chromeTab.url || 'undefined') + '-' + t.image)
     }
   })
   //console.log("found duplicates", urls, duplicates)
