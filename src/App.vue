@@ -96,5 +96,4 @@ if (!window.location.href.endsWith("#/popup")) {
   router.push("/start")
 }
 
-
 </script>

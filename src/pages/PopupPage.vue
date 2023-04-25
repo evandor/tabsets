@@ -134,38 +134,6 @@ const save = () => {
 
   }
 
-  // if (currentChromeTabs.value[0] && tabsetName.value) {
-  //   useTabsetService().saveToTabsetId(tabsetName.value['value' as keyof object], new Tab(uid(), currentChromeTabs.value[0]))
-  //     .then(() => {
-  //       console.log("chrome.notification")
-  //       chrome.notifications.create(
-  //         {
-  //           title: "Tabset Extension Message",
-  //           type: "basic",
-  //           //iconUrl: "chrome-extension://" + selfId + "/www/favicon.ico",
-  //           iconUrl: chrome.runtime.getURL("www/favicon.ico"),
-  //           message: "the tab has been created successfully"
-  //         }, (nid:any) => {
-  //           console.log("nid", nid)
-  //         }
-  //       )
-  //     })
-  //     .catch((err: any) => {
-  //       console.log("catching rejection", err)
-  //       chrome.notifications.create(
-  //         {
-  //           title: "Tabset Extension Message",
-  //           type: "basic",
-  //           //iconUrl: "chrome-extension://" + selfId + "/www/favicon.ico",
-  //           iconUrl: chrome.runtime.getURL("www/favicon.ico"),
-  //           message: "tab could not be added: " + err
-  //         }, (nid:any) => {
-  //           console.log("nid", nid)
-  //         }
-  //       )
-  //
-  //     })
-  // }
 }
 
 const createClip = () => {

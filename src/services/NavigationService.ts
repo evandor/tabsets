@@ -1,12 +1,23 @@
 import {Tab} from "src/models/Tab";
 import {useNotificationsStore} from "src/stores/notificationsStore";
 import {openURL} from "quasar";
+import {useTabsetService} from "src/services/TabsetService2";
+import {useTabsStore} from "stores/tabsStore";
 
 class NavigationService {
 
   openOrCreateTab(withUrl: string) {
     console.log("opening", withUrl)
     if (process.env.MODE === "bex") {
+      // get all tabs with this url
+      const tabsForUrl = useTabsStore().tabsForUrl(withUrl) || []
+      const selections: string[] = []
+      tabsForUrl.forEach(t => {
+        if (t.selection) {
+          selections.push(t.selection)
+        }
+      })
+
       chrome.tabs.query({currentWindow: true}, (t: chrome.tabs.Tab[]) => {
         let found = false;
         t.filter(r => r.url && !r.url.startsWith("chrome"))
@@ -15,19 +26,43 @@ class NavigationService {
               if (!found) { // highlight only first hit
                 found = true
                 chrome.tabs.highlight({tabs: r.index});
+                console.log("sending Message highlightSelections")
+                chrome.runtime.sendMessage({
+                  msg: "highlightSelections",
+                  selections: selections
+                }, (res: any) => {
+                  console.log("got response1", res)
+                })
               }
             }
           });
         if (!found) {
-
+          console.log("tab not found, creating new one")
           chrome.tabs.create({
             active: true,
             pinned: false,
             url: withUrl
-          })// @ts-ignore
-            .catch(e => {
-              console.log("got error", e)
-            })
+          }, (tab:chrome.tabs.Tab) => {
+            // pass selections and execute quoting script
+            if (selections.length > 0) {
+              console.log("selections", selections)
+              // @ts-ignore
+              chrome.scripting.executeScript({
+                target: {tabId: tab.id},
+                files: ['highlighting.js']
+              }, (result: any) => {
+                console.log("sending Message highlightSelections", tab.id)
+                if (tab.id) {
+                  chrome.tabs.sendMessage(tab.id, {
+                    msg: "highlightSelections",
+                    selections: selections
+                  }, (res: any) => {
+                    console.log("got response2", res)
+                  })
+                }
+              });
+            }
+          })
         }
       })
     } else {

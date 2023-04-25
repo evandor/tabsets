@@ -39,7 +39,7 @@ class Clipper {
   }
 
   mouseUp = () => {
-    console.log("about to send message!")
+    console.log("tabsets: about to send message!")
     const msg = {
       msg: 'captureClipping',
       left: this.left,
@@ -162,7 +162,7 @@ class Crosshair {
 }
 
 export default bexContent((bridge: any) => {
-  console.log("initializing tabset extension content script for clipping")
+  console.log("tabsets: initializing tabset extension content script for clipping")
   const clipper = new Clipper()
   try {
     clipper.remove()

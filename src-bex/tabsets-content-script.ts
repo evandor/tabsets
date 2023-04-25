@@ -5,14 +5,14 @@ import {bexContent} from 'quasar/wrappers'
 
 
 export default bexContent((bridge: any) => {
-  console.log("initializing tabset extension content script for tab analysis")
+  console.log("tabsets: initializing tabset extension content script for tab analysis")
 
   chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-    if (request === 'getContent') {
+    if (request.msg === 'getContent') {
       console.log("received message for content")
       sendResponse({content: document.documentElement.outerHTML});
     }
-    return sendResponse({content: "unknown"});
+    return sendResponse({content: "unknown request in tabsets-content-scripts: " + request.msg});
   })
 
   function getMetas(document: Document) {
@@ -80,7 +80,7 @@ export default bexContent((bridge: any) => {
     html: document.documentElement.outerHTML,
     metas: getMetas(document)
   }, function (response) {
-    console.log("created text excerpt for tabsets")
+    console.log("tabsets: created text excerpt for tabsets")
   });
 
   chrome.runtime.sendMessage({
@@ -88,7 +88,7 @@ export default bexContent((bridge: any) => {
     anchors: getAnchors(document),
     links: getLinks(document)
   }, function (response) {
-    console.log("created links excerpt for tabsets")
+    console.log("tabsets: created links excerpt for tabsets")
   });
 
 

@@ -9,7 +9,8 @@ import {AppFeature, FeatureIdent, FeatureType} from "src/models/AppFeature"
 
 export class AppFeatures {
   features: AppFeature[] = [
-    new AppFeature(FeatureIdent.DETAILS, FeatureType.RECOMMENDED, 'Tab(set) Details View', 'o_info', ['all']),
+    new AppFeature(FeatureIdent.DETAILS, FeatureType.DEFAULT, 'Tab(set) Details View', 'o_info', ['all']),
+
     new AppFeature(FeatureIdent.BOOKMARKS, FeatureType.RECOMMENDED, 'Bookmarks', 'o_bookmarks', ['bex'])
       .setActivateCommand(new GrantPermissionCommand('bookmarks'))
       .setDeactivateCommand(new RevokePermissionCommand('bookmarks')),

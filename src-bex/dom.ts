@@ -6,32 +6,49 @@ export default bexDom((bridge) => {
   //console.log("bexDom", bridge)
   const allImgs = document.querySelectorAll('img')
   allImgs.forEach(i => {
-   // console.log("i", i)
-    i.setAttribute("style", "border: 1px solid red")
+    const parent = i.parentElement || document.body
+    var parentStyle =  window.getComputedStyle(parent);
 
-    const parent = i.parentElement
-    //console.log("parent", typeof parent, parent?.toString())
-    if (parent && (parent instanceof HTMLDivElement) &&
-      (parent as unknown as HTMLDivElement).outerHTML.indexOf('class="tabsets_overlay_container"') >= 0) {
-      // console.log("skipping", (parent as unknown as HTMLDivElement).outerHTML)
-    } else {
-      // const org_html = i.outerHTML;
-      // // console.log("org_html", org_html)
-      // const new_html =
-      //   "<div class='tabsets_overlay_container' style='position:relative'>" +
-      //   org_html +
-      //   " <div class=\"tabsets_overlay\" style='position:absolute;left:0;top:0'>\n" +
-      //   "    <h3>Position absolute place this heading on top of the image</h3> \n" +
-      //   "  </div>" +
-      //   "</div>";
-      // i.outerHTML = new_html;
-      // console.log("got result: ", i)
+    var imgStyle =  window.getComputedStyle(i);
+    const height = Number.parseFloat(imgStyle.height.replace("px", ""))
+    const width = Number.parseFloat(imgStyle.width.replace("px", ""))
+    if (height > 100.0 && width > 100.0) {
+      i.parentElement?.setAttribute("style", "position:relative")
+      i.setAttribute("style", "border: 1px solid blue")
+
+      var fav = document.createElement('a')
+      fav.className = 'image-fav';
+      const paddingTop = Number.parseFloat(parentStyle.paddingTop.replace("px", "")) + 10
+      const paddingLeft = Number.parseFloat(parentStyle.paddingLeft.replace("px", "")) + 10
+      fav.setAttribute("style", "position:absolute;display:block;" +
+        "top:"+ paddingTop +"px;" +
+        "left:"+ paddingLeft+"px;" +
+        "width:25px;" +
+        "height:25px;" +
+        "background-image:url(https://www.filecart.com/images/icons/s/small-network-icons.gif);z-index:100000")
+      fav.href = '#';
+      fav.onclick=(ev) => {
+        const msg = {
+          msg: 'websiteImg',
+          img: i.src
+        }
+        console.log("sending", msg)
+        bridge.send('websiteImg', msg)
+          .then((res:any) => {
+            console.log("got res", res)
+          })
+        ev.stopPropagation();
+        ev.stopImmediatePropagation()
+      }
+
+      i.parentElement?.appendChild(fav);
+      i.onmouseover = function () {
+        //fav.style.display = 'block'
+      }
+      i.onmouseout = function () {
+        //fav.style.display = 'none'
+      }
     }
 
   })
-  /*
-  bridge.send('message.to.quasar', {
-    worked: true
-  })
-  */
 })

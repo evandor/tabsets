@@ -57,7 +57,6 @@ function runHousekeeping(alarm: chrome.alarms.Alarm) {
 const persistenceService = IndexedDbPersistenceService
 
 
-
 class ChromeApi {
 
   onHeadersReceivedListener = function (details: any) {
@@ -126,6 +125,12 @@ class ChromeApi {
               contexts: ['all']
             })
             chrome.contextMenus.create({
+              id: 'website_quote',
+              parentId: 'tabset_extension',
+              title: 'Create Website Quote',
+              contexts: ['all']
+            })
+            chrome.contextMenus.create({
               id: 'save_to_currentTS',
               parentId: 'tabset_extension',
               title: 'Save to current Tabset',
@@ -169,6 +174,11 @@ class ChromeApi {
           console.log("creating Clip", tab)
           if (tab && tab.id) {
             this.executeClippingJS(tab.id)
+          }
+        } else if (e.menuItemId === "website_quote") {
+          console.log("creating Quote", tab)
+          if (tab && tab.id) {
+            this.executeQuoteJS(tab.id)
           }
         } else if (e.menuItemId === 'save_to_currentTS') {
           const tabId = tab?.id || 0
@@ -351,6 +361,14 @@ class ChromeApi {
         target: {tabId: tabId},
         files: ['clipping.js']
       });
+    });
+  }
+
+  executeQuoteJS(tabId: number) {
+    // @ts-ignore
+    chrome.scripting.executeScript({
+      target: {tabId: tabId},
+      files: ['quoting.js']
     });
   }
 

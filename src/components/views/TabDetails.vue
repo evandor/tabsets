@@ -13,7 +13,7 @@
       <div class="col-2">
         <TabFaviconWidget
           class="q-mr-md q-mb-md"
-          :tab="uiStore.getSelectedTab" width="24ps" height="24px"/>
+          :tab="uiStore.getSelectedTab" width="24px" height="24px"/>
       </div>
       <div class="col-10 text-body1 ellipsis">
         {{ getHost(useUiStore().getSelectedTab?.chromeTab?.url, true) }}

@@ -35,6 +35,7 @@ export enum FeatureIdent {
 }
 
 export enum FeatureType {
+  DEFAULT = "DEFAULT",          // Default features are active by default and can be disabled by the user
   RECOMMENDED = "RECOMMENDED",
   OPTIONAL = "OPTIONAL",
 

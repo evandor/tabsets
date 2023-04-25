@@ -32,6 +32,7 @@ export class Tab {
   canvasTop: number
   extension: UrlExtension
   groupId: string | undefined
+  selection: string | undefined
 
   mhtmls: string[]
 
@@ -63,6 +64,7 @@ export class Tab {
     this.extension = this.determineUrlExtension(chromeTab)
     this.mhtmls = []
     this.contentHash = ''
+    this.selection = undefined
   }
 
   setHistoryFrom(existingTab: Tab) {

@@ -21,14 +21,11 @@
 
   <div class="row fit greyBorderTop"></div>
 
-  <div class="row q-ma-lg">
-    <q-banner rounded class="bg-grey-1 text-primary">
-      The Tabsets Extension starts simple - you can manage tabs - but it has more to offer. Check out the optional or
-      experimental features
-      described below.<br><br>
-      Some of the features may require additional browser permissions which you will have to grant.
-    </q-banner>
-  </div>
+  <InfoMessageWidget
+    :probability="1"
+    ident="featuresPage_overview"
+    hint="The Tabsets Extension starts simple - you can manage tabs - but it has more to offer. Check out the optional or
+      experimental features described below. Some of the features may require additional browser permissions which you will have to grant."/>
 
   <div class="row q-ma-lg">
 
@@ -42,6 +39,26 @@
                label="Activate Feature" @click="grant(feature)"/>
         <q-btn v-else
                label="Deactivate Feature" @click="revoke(feature)"/>
+      </div>
+    </div>
+
+    <div class="col-12 q-my-sm">
+      <div class="text-subtitle2">Type</div>
+    </div>
+
+    <div class="col-12 q-my-md">
+      <div v-if="appFeature.type === FeatureType.DEFAULT">
+        This feature is considered stable and useful. It is activated by default and can be switched off if wanted.
+      </div>
+      <div v-if="appFeature.type === FeatureType.RECOMMENDED">
+        This feature is considered stable and useful, but not activated by default. To use it, switch this feature on.
+      </div>
+      <div v-if="appFeature.type === FeatureType.OPTIONAL">
+        This feature is considered stable but might not be useful for everybody. To use it, switch this feature on.
+      </div>
+      <div v-if="appFeature.type === FeatureType.EXPERIMENTAL">
+        This feature is not considered stable and might break other parts of this extension. To use it at your
+        own risk, switch this feature on.
       </div>
     </div>
 
@@ -105,6 +122,7 @@ import {AppFeature, FeatureIdent, FeatureType} from "src/models/AppFeature";
 import {AppFeatures} from "src/models/AppFeatures";
 import {ExecutionResult} from "src/domain/ExecutionResult";
 import {useSettingsStore} from "src/stores/settingsStore"
+import InfoMessageWidget from "components/widgets/InfoMessageWidget.vue";
 
 const route = useRoute();
 const router = useRouter();
@@ -345,22 +363,13 @@ const grant = (ident: string) => {
 
 const revoke = (ident: string) => {
   if (appFeature.value && appFeature.value.deactivateCommand) {
+    console.log("revoking1", ident, appFeature.value.deactivateCommand)
     useCommandExecutor().execute(appFeature.value.deactivateCommand)
       .then(() => permissionsStore.deactivateFeature(ident))
   } else {
+    console.log("revoking2", ident)
     permissionsStore.deactivateFeature(ident)
   }
-  // } else {
-  //   if ("thumbnails" === ident || "analyseTabs" === ident) {
-  //     useCommandExecutor()
-  //       .executeFromUi(new RevokeOriginCommand(ident))
-  //   } else if ("pageCapture" === ident || "bookmarks" === ident || "history" === ident) {
-  //     useCommandExecutor()
-  //       .executeFromUi(new RevokePermissionCommand(ident))
-  //   } else {
-  //     permissionsStore.deactivateFeature(ident)
-  //   }
-  // }
 }
 
 const permissionText = (f: any) => {

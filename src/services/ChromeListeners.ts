@@ -5,6 +5,8 @@ import _ from "lodash";
 import {Tab} from "src/models/Tab";
 import {uid} from "quasar";
 import throttledQueue from 'throttled-queue';
+import * as rangy from 'rangy'
+
 
 // @ts-ignore
 import {convert} from "html-to-text"
@@ -58,6 +60,7 @@ class ChromeListeners {
       chrome.tabs.onZoomChange.addListener((info) => this.onZoomChange(info))
 
       chrome.runtime.onMessage.addListener((request, sender, sendResponse) => this.onMessage(request, sender, sendResponse))
+
     }
 
   }
@@ -143,6 +146,12 @@ class ChromeListeners {
       this.handleUpdate(tabsStore.pendingTabset as Tabset, chromeTab)
 
       if (!chromeTab.url?.startsWith("chrome") && chromeTab.id) {
+
+        // @ts-ignore
+        chrome.scripting.executeScript({
+          target: {tabId: chromeTab.id, allFrames: true},
+          files: ["content-script.js"],
+        }, (callback: any) => console.debug("callback", callback));
 
         const scripts = []
         if (usePermissionsStore().hasFeature(FeatureIdent.THUMBNAILS)) {
@@ -331,6 +340,10 @@ class ChromeListeners {
       this.handleAddTabToTabset(request, sender, sendResponse)
     } else if (request.msg === 'captureClipping') {
       this.handleCaptureClipping(request, sender, sendResponse)
+    } else if (request.msg === 'websiteQuote') {
+      this.handleMessageWebsiteQuote(request, sender, sendResponse)
+    } else if (request.msg === 'websiteImg') {
+      this.handleMessageWebsiteImage(request, sender, sendResponse)
     } else {
       console.log("got unknown message", request.msg)
     }
@@ -521,6 +534,61 @@ class ChromeListeners {
     }
 
     sendResponse({addTabToCurrent: 'done'});
+  }
+
+  private async handleMessageWebsiteQuote(request: any, sender: chrome.runtime.MessageSender, sendResponse: any) {
+    const currentTS = useTabsetService().getCurrentTabset()
+    if (sender.tab && currentTS) {
+      console.log("request", request.selection)
+      const serialTx = request.selection
+      // https://stackoverflow.com/questions/965968/serialize-internal-javascript-objects-like-range
+
+      const newTab = new Tab(uid(), sender.tab)
+      newTab.selection = serialTx
+      console.log("newTab with selection", newTab)
+      addToTabsetId(currentTS.id, newTab)
+        .then(() => {
+          const ts = useTabsetService().getTabset(currentTS.id)
+          if (ts) {
+            useTabsetService().saveTabset(ts)
+          }
+        })
+        .then(() => {
+          chrome.notifications.create(
+            {
+              title: "Tabset Extension Message",
+              type: "basic",
+              //iconUrl: "chrome-extension://" + selfId + "/www/favicon.ico",
+              iconUrl: chrome.runtime.getURL("www/favicon.ico"),
+              message: "the tab has been created successfully"
+            }
+          )
+        })
+        .catch((err: any) => {
+          console.log("catching rejection", err)
+          chrome.notifications.create(
+            {
+              title: "Tabset Extension Message",
+              type: "basic",
+              //iconUrl: "chrome-extension://" + selfId + "/www/favicon.ico",
+              iconUrl: chrome.runtime.getURL("www/favicon.ico"),
+              message: "tab could not be added: " + err
+            }
+          )
+
+        })
+
+    }
+    sendResponse({websiteQuote: 'done'});
+  }
+
+  private async handleMessageWebsiteImage(request: any, sender: chrome.runtime.MessageSender, sendResponse: any) {
+    const currentTS = useTabsetService().getCurrentTabset()
+    if (sender.tab && currentTS) {
+      console.log("request", request)
+
+    }
+    sendResponse({websiteImg: 'done'});
   }
 
   private handleCapture(sender: chrome.runtime.MessageSender, windowId: number, sendResponse: any) {

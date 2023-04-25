@@ -1,15 +1,13 @@
 import {defineStore} from 'pinia';
 import {computed, ref, watch} from "vue";
 import {useQuasar} from "quasar";
-import {FeatureIdent} from "src/models/AppFeature";
+import {FeatureIdent, FeatureType} from "src/models/AppFeature";
 import {useSuggestionsStore} from "src/stores/suggestionsStore";
 import {StaticSuggestionIdent} from "src/models/Suggestion";
 import {CreateSpecialTabsetCommand, SpecialTabsetIdent} from "src/domain/tabsets/CreateSpecialTabset";
 import {TabsetType} from "src/models/Tabset";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {AppFeatures} from "src/models/AppFeatures";
-
-
 
 
 export const usePermissionsStore = defineStore('permissions', () => {
@@ -23,6 +21,7 @@ export const usePermissionsStore = defineStore('permissions', () => {
 
   // related to tabsets permissions
   const activeFeatures = ref<string[]>($q.localStorage?.getItem('ui.activeFeatures') as string[] || [])
+  const inActiveDefaultFeatures = ref<string[]>($q.localStorage?.getItem('ui.inActiveDefaultFeatures') as string[] || [])
 
   async function initialize() {
     if (process.env.MODE !== 'bex') {
@@ -86,8 +85,20 @@ export const usePermissionsStore = defineStore('permissions', () => {
     $q.localStorage.set("ui.activeFeatures", val)
   })
 
+  watch(inActiveDefaultFeatures.value, (val: any[]) => {
+    $q.localStorage.set("ui.inActiveDefaultFeatures", val)
+  })
+
   const hasFeature = computed(() => {
-    return (feature: FeatureIdent): boolean => activeFeatures.value.indexOf(feature.toLowerCase()) >= 0
+    return (feature: FeatureIdent): boolean => {
+      const appFeature = new AppFeatures().getFeature(feature)
+      if (appFeature && appFeature.type === FeatureType.DEFAULT) {
+        return inActiveDefaultFeatures.value.indexOf(feature.toLowerCase()) < 0
+      } else if (appFeature) {
+        return activeFeatures.value.indexOf(feature.toLowerCase()) >= 0
+      }
+      return false
+    }
   })
 
   const featuresCount = computed(() => (): number => activeFeatures.value.length)
@@ -95,15 +106,23 @@ export const usePermissionsStore = defineStore('permissions', () => {
   const activateFeature = computed(() => {
     return (feature: string): void => {
       if (activeFeatures.value.indexOf(feature) < 0) {
-        activeFeatures.value.push(feature)
+        const appFeature = new AppFeatures().getFeature(feature.toUpperCase() as FeatureIdent)
+        if (appFeature && appFeature.type === FeatureType.DEFAULT) {
+          // remove from 'inactive'
+          const index = inActiveDefaultFeatures.value.indexOf(feature)
+          if (index >= 0) {
+            inActiveDefaultFeatures.value.splice(index, 1)
+          }
+        } else {
+          // add to 'active'
+          activeFeatures.value.push(feature)
+        }
         if (FeatureIdent.DETAILS.toLowerCase() === feature) {
           useSuggestionsStore().removeSuggestion(StaticSuggestionIdent.TRY_TAB_DETAILS_FEATURE)
-        }
-        else if (FeatureIdent.BACKUP.toLowerCase() === feature) {
+        } else if (FeatureIdent.BACKUP.toLowerCase() === feature) {
           //useSuggestionsStore().removeSuggestion(StaticSuggestionIdent.TRY_TAB_DETAILS_FEATURE)
           useCommandExecutor().executeFromUi(new CreateSpecialTabsetCommand(SpecialTabsetIdent.BACKUP, TabsetType.SPECIAL))
-        }
-        else if (FeatureIdent.IGNORE.toLowerCase() === feature) {
+        } else if (FeatureIdent.IGNORE.toLowerCase() === feature) {
           //useSuggestionsStore().removeSuggestion(StaticSuggestionIdent.TRY_TAB_DETAILS_FEATURE)
           useCommandExecutor().executeFromUi(new CreateSpecialTabsetCommand(SpecialTabsetIdent.IGNORE, TabsetType.SPECIAL))
         }
@@ -112,17 +131,28 @@ export const usePermissionsStore = defineStore('permissions', () => {
   })
 
   function deactivateRecursive(feature: string) {
-    const index = activeFeatures.value.indexOf(feature)
-    if (index >= 0) {
-      activeFeatures.value.splice(index, 1)
-      const deactivatedIdent = feature.toUpperCase() as FeatureIdent
-      new AppFeatures().getFeatures().forEach(f => {
-        if (f.requires.findIndex((r: FeatureIdent) => r === deactivatedIdent) >= 0) {
-          console.log("need to deactivate as well:", f)
-          deactivateRecursive(f.ident.toLowerCase())
-        }
-      })
-      console.log("deactivated", feature, activeFeatures.value)
+    console.log("deactivate recursive: ", feature)
+    const deactivatedIdent = feature.toUpperCase() as FeatureIdent
+    const appFeature = new AppFeatures().getFeature(deactivatedIdent)
+    if (appFeature && appFeature.type === FeatureType.DEFAULT) {
+      if (inActiveDefaultFeatures.value.indexOf(feature) < 0) {
+        console.log("deactivating default feature", feature)
+        inActiveDefaultFeatures.value.push(feature)
+      }
+    } else {
+      console.log("deactivating normal feature", feature)
+      const index = activeFeatures.value.indexOf(feature)
+      if (index >= 0) {
+        activeFeatures.value.splice(index, 1)
+
+        new AppFeatures().getFeatures().forEach(f => {
+          if (f.requires.findIndex((r: FeatureIdent) => r === deactivatedIdent) >= 0) {
+            console.log("need to deactivate as well:", f)
+            deactivateRecursive(f.ident.toLowerCase())
+          }
+        })
+        console.log("deactivated", feature, activeFeatures.value)
+      }
     }
   }
 
