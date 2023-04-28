@@ -31,7 +31,7 @@ class NavigationService {
                   msg: "highlightSelections",
                   selections: selections
                 }, (res: any) => {
-                  console.log("got response1", res)
+                  //console.log("got response1", res)
                 })
               }
             }
@@ -57,7 +57,7 @@ class NavigationService {
                     msg: "highlightSelections",
                     selections: selections
                   }, (res: any) => {
-                    console.log("got response2", res)
+                    //console.log("got response2", res)
                   })
                 }
               });

@@ -10,6 +10,9 @@ import {AppFeature, FeatureIdent, FeatureType} from "src/models/AppFeature"
 export class AppFeatures {
   features: AppFeature[] = [
     new AppFeature(FeatureIdent.DETAILS, FeatureType.DEFAULT, 'Tab(set) Details View', 'o_info', ['all']),
+    new AppFeature(FeatureIdent.ANALYSE_TABS, FeatureType.DEFAULT, 'Analyse Tabs', 'o_analytics', ['bex'])
+      .setActivateCommand(new GrantOriginCommand('analyseTabs'))
+      .setDeactivateCommand(new RevokeOriginCommand('analyseTabs')),
 
     new AppFeature(FeatureIdent.BOOKMARKS, FeatureType.RECOMMENDED, 'Bookmarks', 'o_bookmarks', ['bex'])
       .setActivateCommand(new GrantPermissionCommand('bookmarks'))
@@ -17,9 +20,6 @@ export class AppFeatures {
     new AppFeature(FeatureIdent.THUMBNAILS, FeatureType.RECOMMENDED, 'Thumbnails', 'o_image', ['bex'])
       .setActivateCommand(new GrantOriginCommand('thumbnails'))
       .setDeactivateCommand(new RevokeOriginCommand('thumbnails')),
-    new AppFeature(FeatureIdent.ANALYSE_TABS, FeatureType.RECOMMENDED, 'Analyse Tabs', 'o_analytics', ['bex'])
-      .setActivateCommand(new GrantOriginCommand('analyseTabs'))
-      .setDeactivateCommand(new RevokeOriginCommand('analyseTabs')),
 
     new AppFeature(FeatureIdent.SAVE_TAB, FeatureType.OPTIONAL, 'Save Tabs', 'o_save', ['bex'])
       .setActivateCommand(new GrantPermissionCommand('pageCapture'))

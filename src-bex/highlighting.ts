@@ -14,7 +14,7 @@ class Caret {
 // https://stackoverflow.com/questions/965968/serialize-internal-javascript-objects-like-range
 export default bexContent((bridge: any) => {
 
-  console.log("tabsets: initializing tabset extension content script for highlighting")
+  console.log("tabsets: initializing content script for highlighting")
 
   var _caretPosition = new Caret()
 

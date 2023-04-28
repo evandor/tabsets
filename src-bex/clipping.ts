@@ -162,7 +162,7 @@ class Crosshair {
 }
 
 export default bexContent((bridge: any) => {
-  console.log("tabsets: initializing tabset extension content script for clipping")
+  console.log("tabsets: initializing content script for clipping")
   const clipper = new Clipper()
   try {
     clipper.remove()

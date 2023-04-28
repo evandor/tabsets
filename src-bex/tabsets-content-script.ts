@@ -5,7 +5,7 @@ import {bexContent} from 'quasar/wrappers'
 
 
 export default bexContent((bridge: any) => {
-  console.log("tabsets: initializing tabset extension content script for tab analysis")
+  console.log("tabsets: initializing content script for tab analysis")
 
   chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (request.msg === 'getContent') {

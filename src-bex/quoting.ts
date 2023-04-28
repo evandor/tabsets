@@ -10,7 +10,7 @@ import * as rangy from 'rangy'
 // https://stackoverflow.com/questions/965968/serialize-internal-javascript-objects-like-range
 export default bexContent((bridge: any) => {
 
-  console.log("tabsets: initializing tabset extension content script for quoting")
+  console.log("tabsets: initializing content script for quoting")
 
   var _caretPosition: any;
 

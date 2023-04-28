@@ -27,6 +27,7 @@ import {useTabsetService} from "src/services/TabsetService2";
 import {INDEX_DB_NAME} from "boot/constants";
 import {useSettingsStore} from "stores/settingsStore";
 import BookmarksService from "src/services/BookmarksService";
+import {FeatureIdent} from "src/models/AppFeature";
 
 
 // function isNewTabPage() {
@@ -63,6 +64,11 @@ usePermissionsStore().initialize()
     ChromeBookmarkListeners.initListeners()
     bookmarksStore.init()
     BookmarksService.init()
+
+    console.log("activating dom script", usePermissionsStore().hasFeature(FeatureIdent.ANALYSE_TABS))
+    if (usePermissionsStore().hasFeature(FeatureIdent.ANALYSE_TABS)) {
+      $q.bex.send('initDomScripts')
+    }
   })
 settingsStore.initialize(useQuasar().localStorage);
 tabsStore.initialize(useQuasar().localStorage);

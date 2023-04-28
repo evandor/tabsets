@@ -14,14 +14,14 @@
     "scripting",
     "notifications",
     "webRequest",
+    "pageCapture",
     "search"
   ],
   "optional_permissions": [
     "bookmarks",
-    "pageCapture",
     "history"
   ],
-  "optional_host_permissions": [
+  "host_permissions": [
     "<all_urls>",
     "*://*/*"
   ],

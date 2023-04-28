@@ -13,7 +13,6 @@ import {usePermissionsStore} from "src/stores/permissionsStore";
 import {Tab} from "src/models/Tab";
 import {uid} from "quasar";
 import {FeatureIdent} from "src/models/AppFeature";
-import {useTabsetService} from "src/services/TabsetService2";
 
 function runHousekeeping(alarm: chrome.alarms.Alarm) {
   if (alarm.name === "housekeeping") {
@@ -107,6 +106,7 @@ class ChromeApi {
   }
 
   buildContextMenu() {
+    console.log("building context menu")
     const tabsStore = useTabsStore()
     chrome.contextMenus.removeAll(
       () => {
@@ -118,18 +118,20 @@ class ChromeApi {
               title: 'Open Tabsets Extension',
               contexts: ['all']
             })
-            chrome.contextMenus.create({
-              id: 'website_clip',
-              parentId: 'tabset_extension',
-              title: 'Create Website Clip',
-              contexts: ['all']
-            })
-            chrome.contextMenus.create({
-              id: 'website_quote',
-              parentId: 'tabset_extension',
-              title: 'Create Website Quote',
-              contexts: ['all']
-            })
+            if (usePermissionsStore().hasFeature(FeatureIdent.ANALYSE_TABS)) {
+              chrome.contextMenus.create({
+                id: 'website_clip',
+                parentId: 'tabset_extension',
+                title: 'Create Website Clip',
+                contexts: ['all']
+              })
+              chrome.contextMenus.create({
+                id: 'website_quote',
+                parentId: 'tabset_extension',
+                title: 'Create Website Quote',
+                contexts: ['all']
+              })
+            }
             chrome.contextMenus.create({
               id: 'save_to_currentTS',
               parentId: 'tabset_extension',

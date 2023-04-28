@@ -6,7 +6,7 @@ import {bexContent} from 'quasar/wrappers'
 
 export default bexContent((bridge: any) => {
 
-  console.log("tabsets: initializing tabset extension content script for thumbnails")
+  console.log("tabsets: initializing content script for thumbnails")
 
   chrome.runtime.sendMessage({msg: "captureThumbnail"}, function (response) {
     console.log("tabsets: created thumbnail for tabsets")

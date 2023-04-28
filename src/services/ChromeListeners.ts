@@ -38,7 +38,8 @@ class ChromeListeners {
 
   throttleOnePerSecond = throttledQueue(1, 1000, true)
 
-  injectedScripts = new ExpiringMap<number>(10000)
+  //injectedScripts = new ExpiringMap<number>(10000)
+  injectedScripts: Map<number, string[]> = new Map()
 
   initListeners(isNewTabPage: boolean = false) {
 
@@ -101,7 +102,6 @@ class ChromeListeners {
     const tabsStore = useTabsStore()
     const maybeTab = tabsStore.tabForUrlInSelectedTabset(tab.pendingUrl || '')
     if (maybeTab) {
-      console.log("checked", tab.pendingUrl)
       console.log(`onCreated: tab ${tab.id}: updating existing chromeTab.id: ${maybeTab.chromeTab.id} -> ${tab.id}`)
       // TODO check: this breaks an e2e test (with tab "about:blank") when activated
       // why was this here in the first place?
@@ -145,34 +145,7 @@ class ChromeListeners {
 
       this.handleUpdate(tabsStore.pendingTabset as Tabset, chromeTab)
 
-      if (!chromeTab.url?.startsWith("chrome") && chromeTab.id) {
-
-        // @ts-ignore
-        chrome.scripting.executeScript({
-          target: {tabId: chromeTab.id, allFrames: true},
-          files: ["content-script.js"],
-        }, (callback: any) => console.debug("callback", callback));
-
-        const scripts = []
-        if (usePermissionsStore().hasFeature(FeatureIdent.THUMBNAILS)) {
-          scripts.push("content-script-thumbnails.js")
-        }
-        if (usePermissionsStore().hasFeature(FeatureIdent.ANALYSE_TABS)) {
-          scripts.push("tabsets-content-script.js")
-        }
-        if (scripts.length > 0 && !this.injectedScripts.get(chromeTab.id)) {
-          console.log("executing scripts", chromeTab.id, scripts)
-          // @ts-ignore
-          chrome.scripting.executeScript({
-            target: {tabId: chromeTab.id, allFrames: true},
-            files: scripts //["tabsets-content-script.js","content-script-thumbnails.js"],
-          }, (callback: any) => console.debug("callback", callback));
-          if (chromeTab.id) {
-            // @ts-ignore
-            scripts.forEach(s => this.injectedScripts.put(chromeTab.id, s))
-          }
-        }
-      }
+      this.handleUpdateInjectScripts(tabsStore.pendingTabset as Tabset, info, chromeTab)
 
       let foundSession = false
       _.forEach([...tabsStore.tabsets.values()], (ts: Tabset) => {
@@ -254,6 +227,49 @@ class ChromeListeners {
         console.log(`onUpdated: tab ${tab.id}: missing tab added for url ${tab.url}`)
         tabset.tabs.push(new Tab(uid(), tab))
       }
+    }
+  }
+
+  private handleUpdateInjectScripts(tabset: Tabset, info: chrome.tabs.TabChangeInfo, tab: chrome.tabs.Tab) {
+    if (tab.url?.startsWith("chrome") || info.url?.startsWith("chrome")) {
+      return
+    }
+    if (info.status !== "loading") {
+      return
+    }
+    if (!tab.id) {
+      return
+    }
+
+    const scripts: string[] = []
+
+    if (usePermissionsStore().hasFeature(FeatureIdent.THUMBNAILS)) {
+      scripts.push("content-script-thumbnails.js")
+    }
+    if (usePermissionsStore().hasFeature(FeatureIdent.ANALYSE_TABS)) {
+      scripts.push("content-script.js")
+      scripts.push("tabsets-content-script.js")
+    }
+    if (scripts.length > 0 && tab.id != null) { // && !this.injectedScripts.get(chromeTab.id)) {
+
+      scripts.forEach((script: string) => {
+        console.log("executing scripts", tab.id, script)
+        // @ts-ignore
+        chrome.scripting.executeScript({
+          target: {tabId: tab.id, allFrames: true},
+          files: [script] //["tabsets-content-script.js","content-script-thumbnails.js"],
+        }, (callback: any) => {
+          if (chrome.runtime.lastError) {
+            console.warn("could not execute script: " + chrome.runtime.lastError.message);
+          }
+          console.debug("callback", callback)
+        });
+        const activeScripts = this.injectedScripts.get(tab.id || 0) || []
+        if (activeScripts.indexOf(script) < 0) {
+          this.injectedScripts.set(tab.id || 0, activeScripts.concat(script))
+          //console.log("adding injectedScripts", this.injectedScripts)
+        }
+      })
     }
   }
 
@@ -350,20 +366,6 @@ class ChromeListeners {
     return true;
   }
 
-  // private isIgnored(tab: chrome.tabs.Tab) {
-  //   const tabsStore = useTabsStore()
-  //   const ignoreIndex = _.findIndex(tabsStore.ignoredTabset.tabs, (ignoredTab: Tab) => {
-  //     if (ignoredTab.chromeTab.url && tab.url) {
-  //       if (tab.url.startsWith(ignoredTab.chromeTab.url)) {
-  //         console.log("ignoring tab with url", tab.url)
-  //         return true
-  //       }
-  //     }
-  //     return false
-  //   })
-  //   return ignoreIndex >= 0
-  // }
-
   private handleHtml2Text(request: any, sender: chrome.runtime.MessageSender, sendResponse: any) {
     const text = convert(request.html, {
       wordwrap: 130
@@ -411,8 +413,8 @@ class ChromeListeners {
   private handleAddTabToTabset(request: any, sender: chrome.runtime.MessageSender, sendResponse: any) {
     console.log("handleAddTabToTabset", request, sender)
     if (sender.tab) {
-
-      addToTabsetId(request.tabsetId, new Tab(uid(), sender.tab))
+      this.addToTabset(request.tabsetId, new Tab(uid(), sender.tab))
+     /* addToTabsetId(request.tabsetId, new Tab(uid(), sender.tab))
         .then(() => {
           const ts = useTabsetService().getTabset(request.tabsetId)
           if (ts) {
@@ -442,7 +444,7 @@ class ChromeListeners {
             }
           )
 
-        })
+        })*/
     }
     sendResponse({addTabToCurrent: 'done'});
   }
@@ -493,6 +495,7 @@ class ChromeListeners {
 
     const blob = await this.capture(request)
     const currentTS = useTabsetService().getCurrentTabset()
+
     if (sender.tab && currentTS) {
       console.log("blob", blob)
       const blobId = await useTabsetService().saveBlob(sender.tab, blob as unknown as Blob)
@@ -500,37 +503,7 @@ class ChromeListeners {
       const newTab = new Tab(uid(), sender.tab)
       newTab.image = "blob://" + blobId
       console.log("newTab", newTab)
-      addToTabsetId(currentTS.id, newTab)
-        .then(() => {
-          const ts = useTabsetService().getTabset(currentTS.id)
-          if (ts) {
-            useTabsetService().saveTabset(ts)
-          }
-        })
-        .then(() => {
-          chrome.notifications.create(
-            {
-              title: "Tabset Extension Message",
-              type: "basic",
-              //iconUrl: "chrome-extension://" + selfId + "/www/favicon.ico",
-              iconUrl: chrome.runtime.getURL("www/favicon.ico"),
-              message: "the tab has been created successfully"
-            }
-          )
-        })
-        .catch((err: any) => {
-          console.log("catching rejection", err)
-          chrome.notifications.create(
-            {
-              title: "Tabset Extension Message",
-              type: "basic",
-              //iconUrl: "chrome-extension://" + selfId + "/www/favicon.ico",
-              iconUrl: chrome.runtime.getURL("www/favicon.ico"),
-              message: "tab could not be added: " + err
-            }
-          )
-
-        })
+      this.addToTabset(currentTS.id, newTab)
     }
 
     sendResponse({addTabToCurrent: 'done'});
@@ -546,7 +519,8 @@ class ChromeListeners {
       const newTab = new Tab(uid(), sender.tab)
       newTab.selection = serialTx
       console.log("newTab with selection", newTab)
-      addToTabsetId(currentTS.id, newTab)
+      this.addToTabset(currentTS.id, newTab)
+      /*addToTabsetId(currentTS.id, newTab)
         .then(() => {
           const ts = useTabsetService().getTabset(currentTS.id)
           if (ts) {
@@ -576,7 +550,7 @@ class ChromeListeners {
             }
           )
 
-        })
+        })*/
 
     }
     sendResponse({websiteQuote: 'done'});
@@ -586,7 +560,10 @@ class ChromeListeners {
     const currentTS = useTabsetService().getCurrentTabset()
     if (sender.tab && currentTS) {
       console.log("request", request)
-
+      const newTab = new Tab(uid(), sender.tab)
+      newTab.image = request.img
+      console.log("newTab with selection", newTab)
+      this.addToTabset(currentTS.id, newTab)
     }
     sendResponse({websiteImg: 'done'});
   }
@@ -675,6 +652,40 @@ class ChromeListeners {
       sendResponse({imgSrc: dataUrl});
     }
     img.src = dataUrl//"https://i.imgur.com/SHo6Fub.jpg";
+  }
+
+  private addToTabset(currentTSId: string, newTab: Tab) {
+    addToTabsetId(currentTSId, newTab)
+      .then(() => {
+        const ts = useTabsetService().getTabset(currentTSId)
+        if (ts) {
+          useTabsetService().saveTabset(ts)
+        }
+      })
+      .then(() => {
+        chrome.notifications.create(
+          {
+            title: "Tabset Extension Message",
+            type: "basic",
+            //iconUrl: "chrome-extension://" + selfId + "/www/favicon.ico",
+            iconUrl: chrome.runtime.getURL("www/favicon.ico"),
+            message: "the tab has been created successfully"
+          }
+        )
+      })
+      .catch((err: any) => {
+        console.log("catching rejection", err)
+        chrome.notifications.create(
+          {
+            title: "Tabset Extension Message",
+            type: "basic",
+            //iconUrl: "chrome-extension://" + selfId + "/www/favicon.ico",
+            iconUrl: chrome.runtime.getURL("www/favicon.ico"),
+            message: "tab could not be added: " + err
+          }
+        )
+
+      })
   }
 }
 
