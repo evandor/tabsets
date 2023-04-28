@@ -10,7 +10,7 @@
     <q-img v-else-if="thumbnail" style="border:1px dotted white;border-radius:3px"
            :src="thumbnail" width="70px"/>
     <TabFaviconWidget v-else
-                      :tab="props.tab" width="20px" height="20px" style="position: relative;top:-10px"/>
+                      :tab="props.tab" width="20px" height="20px" style="position: relative;left:30px;top:5px"/>
   </q-item-section>
 
   <!-- name, title, description, url && note -->
@@ -22,9 +22,9 @@
       <div>
         <div class="q-pr-lg cursor-pointer" style="font-size: larger;line-height: 120%;">
           <q-chip v-if="isOpen(props.tab) && props.showIsOpened"
-                  class="q-my-none q-py-none q-ml-none"
+                  class="q-my-none q-py-none q-ml-none q-mr-sm"
                   clickable
-                  style="float:left;"
+                  style="float:left;position: relative;top:3px"
                   @click="NavigationService.openOrCreateTab(props.tab.chromeTab?.url)"
                   size="xs" icon="tab">
             opened
@@ -32,13 +32,16 @@
             </q-tooltip>
           </q-chip>
           <q-chip v-if="props.tab.isDuplicate"
-                  class="q-my-none q-py-none q-ml-none" color="warning"
+                  class="q-my-none q-py-none q-ml-none q-mr-sm" color="warning"
                   clickable
-                  style="float:left;"
+                  style="float:left;position: relative;top:3px"
                   size="xs" icon="tab">
             duplicate
             <q-tooltip class="tooltip">This tab has a duplicate inside this tabset and could be deleted</q-tooltip>
           </q-chip>
+          <span v-if="useTabsStore().getCurrentTabset?.sorting === 'alphabeticalTitle'">
+            <q-icon name="arrow_right" size="16px" />
+          </span>
           {{ nameOrTitle(props.tab) }}
           <q-popup-edit :model-value="dynamicNameOrTitleModel(tab)" v-slot="scope"
                         @update:model-value="val => setCustomTitle( tab, val)">
@@ -62,8 +65,13 @@
       @mouseleave="showButtonsProp = false">
       <div class="q-pr-lg cursor-pointer" style="display: inline-block;"
            @click.stop="NavigationService.openOrCreateTab(props.tab.chromeTab?.url )">
-        {{ props.tab.chromeTab?.url.split('?')[0].replace("https://", "") }}
-        <q-icon name="open_in_new"/>
+
+        <span v-if="useTabsStore().getCurrentTabset?.sorting === 'alphabeticalUrl'">
+          <q-icon name="arrow_right" size="16px" />
+        </span>
+        <short-url :url="props.tab.chromeTab?.url" :hostname-only="true" />
+
+        <q-icon class="q-ml-xs" name="open_in_new"/>
         <q-icon v-if="showButtonsProp"
                 class="q-ml-md" name="content_copy"
                 @click.stop="copyToClipboard(props.tab.chromeTab?.url)">
@@ -133,6 +141,8 @@ import {UpdateTabNameCommand} from "src/domain/tabs/UpdateTabName";
 import {FeatureIdent} from "src/models/AppFeature";
 import {CopyToClipboardCommand} from "src/domain/commands/CopyToClipboard";
 import {useTabsetService} from "src/services/TabsetService2";
+import ShortUrl from "components/utils/ShortUrl.vue";
+import {useTabsStore} from "../../stores/tabsStore";
 
 const props = defineProps({
   tab: {type: Object, required: true},
