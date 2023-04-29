@@ -8,7 +8,7 @@ export default bexContent((bridge: any) => {
   console.log("tabsets: initializing content script")
 
   // @ts-ignore
-  bridge.on('websiteImg', ({ data, respond }) => {
+  bridge.on('websiteImg', ({data, respond}) => {
     console.log('Event received, responding...', data)
     chrome.runtime.sendMessage(data, (res) => {
       console.log("2", res)
@@ -16,12 +16,12 @@ export default bexContent((bridge: any) => {
     respond('sent')
   })
 
-  const allImgs = document.querySelectorAll('img')
+  /*const allImgs = document.querySelectorAll('img')
   allImgs.forEach(i => {
     const parent = i.parentElement || document.body
-    var parentStyle =  window.getComputedStyle(parent);
+    var parentStyle = window.getComputedStyle(parent);
 
-    var imgStyle =  window.getComputedStyle(i);
+    var imgStyle = window.getComputedStyle(i);
     const height = Number.parseFloat(imgStyle.height.replace("px", ""))
     const width = Number.parseFloat(imgStyle.width.replace("px", ""))
     if (height > 100.0 && width > 100.0) {
@@ -33,20 +33,20 @@ export default bexContent((bridge: any) => {
       const paddingTop = Number.parseFloat(parentStyle.paddingTop.replace("px", "")) + 10
       const paddingLeft = Number.parseFloat(parentStyle.paddingLeft.replace("px", "")) + 10
       fav.setAttribute("style", "position:absolute;display:block;" +
-        "top:"+ paddingTop +"px;" +
-        "left:"+ paddingLeft+"px;" +
+        "top:" + paddingTop + "px;" +
+        "left:" + paddingLeft + "px;" +
         "width:25px;" +
         "height:25px;" +
         "background-image:url(https://www.filecart.com/images/icons/s/small-network-icons.gif);z-index:100000")
       fav.href = '#';
-      fav.onclick=(ev) => {
+      fav.onclick = (ev) => {
         const msg = {
           msg: 'websiteImg',
           img: i.src
         }
         console.log("sending", msg)
         bridge.send('websiteImg', msg)
-          .then((res:any) => {
+          .then((res: any) => {
             console.log("got res", res)
           })
         ev.stopPropagation();
@@ -62,6 +62,6 @@ export default bexContent((bridge: any) => {
       }
     }
 
-  })
+  })*/
 
 })

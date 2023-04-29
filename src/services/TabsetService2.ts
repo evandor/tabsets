@@ -239,9 +239,9 @@ export function useTabsetService() {
    * @param text
    * @param metas
    */
-  const saveText = (tab: chrome.tabs.Tab | undefined, text: string, metas: object): void => {
+  const saveText = (tab: chrome.tabs.Tab | undefined, text: string, metas: object): Promise<any> => {
     if (!tab || !tab.url) {
-      return
+      return Promise.resolve('done')
     }
     const title = tab.title || ''
     const tabsetIds: string[] = tabsetsFor(tab.url)
@@ -251,12 +251,15 @@ export function useTabsetService() {
 
     console.log("updating meta data for ", tabsetIds, tab.url, metas)
     const tabsets = [...useTabsStore().tabsets.values()]
+
+    const savePromises: Promise<any>[] = []
+
     tabsets.forEach((tabset: Tabset) => {
       if (tabset) {
         _.forEach(tabset.tabs, (t: Tab) => {
           //console.log("comparing", t.chromeTab.url, tab.url)
           if (t.chromeTab.url === tab.url) {
-            //console.log(" ... in tab", tab.id)
+            console.log(" ... in tab", tab.id)
             if (metas['description' as keyof object]) {
               t.description = metas['description' as keyof object]
               // @ts-ignore
@@ -294,12 +297,21 @@ export function useTabsetService() {
                   t.chromeTab.url, SuggestionType.CONTENT_CHANGE))
             }
 
-            saveTabset(tabset)
+            console.log("about to save tabset", tabset.id)
+            savePromises.push(saveTabset(tabset)
+              .then((res) => {
+                console.log("saved tabset", tabset._id, tabset._rev)
+                //tabset._rev = res._rev
+              }))
           }
         })
       }
     })
 
+    return Promise.all(savePromises)
+      .then((res) => {
+        console.log("all save promises fulfilled")
+      })
   }
 
   const saveMetaLinksFor = (tab: chrome.tabs.Tab, metaLinks: MetaLink[]) => {

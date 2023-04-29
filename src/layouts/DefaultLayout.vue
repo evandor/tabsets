@@ -83,9 +83,6 @@
           </q-menu>
         </div>
 
-        <!--        <q-btn class="q-mr-md" icon="o_help" size="12px" style="width:24px" flat @click="router.push('/help/howto')">-->
-        <!--          <q-tooltip>About tabsets browser extension v{{ appVersion }}</q-tooltip>-->
-        <!--        </q-btn>-->
         <!--        <q-tab v-if="rssTabsCount > 0"-->
         <!--               name="rss" icon="o_rss_feed" @click="tabsClicked(DrawerTabs.RSS)">-->
         <!--          <q-tooltip class="tooltip" anchor="center right" self="center left" :delay="200">RSS Feeds</q-tooltip>-->
@@ -162,6 +159,12 @@
           :drawer="DrawerTabs.UNASSIGNED_TABS"
           icon="o_playlist_add"
           tooltip="Show add tabs view"
+          :restricted="false"/>
+
+        <ToolbarButton
+          :drawer="DrawerTabs.HELP"
+          icon="o_help"
+          tooltip="Help Pages"
           :restricted="false"/>
 
         <div>

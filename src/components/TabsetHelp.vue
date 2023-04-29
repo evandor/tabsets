@@ -5,71 +5,71 @@
   </div>
 
 
-  <q-card class="my-card" flat @click="router.push('/about')">
-    <q-card-section class="q-pt-xs cursor-pointer" style="width:100%;">
-      <div class="row items-baseline">
-        <div class="col-2">
-          <q-img
-            class="rounded-borders"
-            width="20px"
-            height="20px"
-            src="https://tabsets.web.app/icons/favicon-96x96.png">
-          </q-img>
-        </div>
-        <div class="col-9 text-body2 ellipsis">
-          About Tabsets
-        </div>
-        <div class="col-1">
+<!--  <q-card class="my-card" flat @click="router.push('/about')">-->
+<!--    <q-card-section class="q-pt-xs cursor-pointer" style="width:100%;">-->
+<!--      <div class="row items-baseline">-->
+<!--        <div class="col-2">-->
+<!--          <q-img-->
+<!--            class="rounded-borders"-->
+<!--            width="20px"-->
+<!--            height="20px"-->
+<!--            src="https://tabsets.web.app/icons/favicon-96x96.png">-->
+<!--          </q-img>-->
+<!--        </div>-->
+<!--        <div class="col-9 text-body2 ellipsis">-->
+<!--          About Tabsets-->
+<!--        </div>-->
+<!--        <div class="col-1">-->
 
-        </div>
-      </div>
+<!--        </div>-->
+<!--      </div>-->
 
-    </q-card-section>
-  </q-card>
+<!--    </q-card-section>-->
+<!--  </q-card>-->
 
-  <q-card class="my-card" flat @click="open('howto')">
-    <q-card-section class="q-pt-xs cursor-pointer" style="width:100%;">
-      <div class="row items-baseline">
-        <div class="col-2">
-          <q-img
-            class="rounded-borders"
-            width="20px"
-            height="20px"
-            src="https://tabsets.web.app/icons/favicon-96x96.png">
-          </q-img>
-        </div>
-        <div class="col-9 text-body2 ellipsis">
-          How to...
-        </div>
-        <div class="col-1">
+<!--  <q-card class="my-card" flat @click="open('howto')">-->
+<!--    <q-card-section class="q-pt-xs cursor-pointer" style="width:100%;">-->
+<!--      <div class="row items-baseline">-->
+<!--        <div class="col-2">-->
+<!--          <q-img-->
+<!--            class="rounded-borders"-->
+<!--            width="20px"-->
+<!--            height="20px"-->
+<!--            src="https://tabsets.web.app/icons/favicon-96x96.png">-->
+<!--          </q-img>-->
+<!--        </div>-->
+<!--        <div class="col-9 text-body2 ellipsis">-->
+<!--          How to...-->
+<!--        </div>-->
+<!--        <div class="col-1">-->
 
-        </div>
-      </div>
+<!--        </div>-->
+<!--      </div>-->
 
-    </q-card-section>
-  </q-card>
+<!--    </q-card-section>-->
+<!--  </q-card>-->
 
-  <q-card class="my-card" flat @click="open('permissions')">
-    <q-card-section class="q-pt-xs cursor-pointer" style="width:100%;">
-      <div class="row items-baseline">
-        <div class="col-2">
-          <q-img
-            class="rounded-borders"
-            width="20px"
-            height="20px"
-            src="https://tabsets.web.app/icons/favicon-96x96.png">
-          </q-img>
-        </div>
-        <div class="col-9 text-body2 ellipsis">
-          Permissions
-        </div>
-        <div class="col-1">
+<!--  <q-card class="my-card" flat @click="open('permissions')">-->
+<!--    <q-card-section class="q-pt-xs cursor-pointer" style="width:100%;">-->
+<!--      <div class="row items-baseline">-->
+<!--        <div class="col-2">-->
+<!--          <q-img-->
+<!--            class="rounded-borders"-->
+<!--            width="20px"-->
+<!--            height="20px"-->
+<!--            src="https://tabsets.web.app/icons/favicon-96x96.png">-->
+<!--          </q-img>-->
+<!--        </div>-->
+<!--        <div class="col-9 text-body2 ellipsis">-->
+<!--          Permissions-->
+<!--        </div>-->
+<!--        <div class="col-1">-->
 
-        </div>
-      </div>
+<!--        </div>-->
+<!--      </div>-->
 
-    </q-card-section>
-  </q-card>
+<!--    </q-card-section>-->
+<!--  </q-card>-->
 
   <q-card class="my-card" flat @click="open('glossary')">
     <q-card-section class="q-pt-xs cursor-pointer" style="width:100%;">

@@ -36,13 +36,6 @@ function adjustIndex(newIndex: number, tabs: Tab[]) {
   }
 }
 
-// function addMetaIfExists(content: any, metaIdent: string, tab: Tab, tabIdent: string) {
-//   if (content && content.metas[metaIdent]) {
-//     // @ts-ignore
-//     tab[tabIdent] = content.metas[metaIdent]
-//   }
-// }
-
 export class CreateTabFromOpenTabsCommand implements Command<any> {
 
   constructor(public tab: Tab, public newIndex: number, public group: string) {
@@ -56,43 +49,9 @@ export class CreateTabFromOpenTabsCommand implements Command<any> {
 
     let useIndex = this.newIndex
     console.log("exists", exists, this.group)
-    // switch (this.group) {
-    //   case 'otherTabs':
-    //     // @ts-ignore
-    //     const unpinnedNoGroup: Tab[] = _.filter(tabsStore.getCurrentTabs, (t: Tab) => !t.chromeTab.pinned && t.chromeTab.groupId === -1)
-    //     if (unpinnedNoGroup.length > 0) {
-    //       useIndex = adjustIndex(this.newIndex, unpinnedNoGroup);
-    //     }
-    //     // @ts-ignore
-    //     this.tab.chromeTab.groupId = -1
-    //     this.tab.chromeTab.pinned = false
-    //     break;
-    //   case 'pinnedTabs':
-    //     const filteredTabs: Tab[] = _.filter(tabsStore.getCurrentTabs, (t: Tab) => t.chromeTab.pinned)
-    //     if (filteredTabs.length > 0) {
-    //       useIndex = adjustIndex(this.newIndex, filteredTabs);
-    //     }
-    //     this.tab.chromeTab.pinned = true
-    //     // @ts-ignore
-    //     this.tab.chromeTab.groupId = -1
-    //     break
-    //   default:
-    //     if (this.group.startsWith('groupedTabs_')) {
-    //       const groupId = this.group.split('_')[1]
-    //       //console.log("got group id", groupId)
-    //       // @ts-ignore
-    //       const filteredTabs: Tab[] = _.filter(tabsStore.getCurrentTabs, (t: Tab) => t.chromeTab.groupId === parseInt(groupId))
-    //       if (filteredTabs.length > 0) {
-    //         useIndex = adjustIndex(this.newIndex, filteredTabs);
-    //       }
-    //       // @ts-ignore
-    //       this.tab.chromeTab.groupId = parseInt(groupId)
-    //     }
-    //     break
-    // }
 
     if (!exists) {
-      TabsetService.saveToCurrentTabset(this.tab, useIndex)
+      return TabsetService.saveToCurrentTabset(this.tab, useIndex)
         .then((res) => {
           if (this.tab.chromeTab.url) {
             useUiStore().clearHighlights()
@@ -103,17 +62,25 @@ export class CreateTabFromOpenTabsCommand implements Command<any> {
           }
           return res
         })
-        .then((res: number) => {
-          TabsetService.getContentFor(this.tab)
-            .then((content) => {
-              useTabsetService().saveText(this.tab.chromeTab, content['content' as keyof object], content['metas' as keyof object])
-            })
-          return res;
-        })
         .then((res) => {
           if (tabsStore.pendingTabset) {
             tabsStore.pendingTabset.tabs = _.filter(tabsStore.pendingTabset.tabs, t => t.chromeTab.url !== this.tab.chromeTab.url)
           }
+        })
+        .then((res) => {
+          return TabsetService.getContentFor(this.tab)
+            .then((content) => {
+              if (content) {
+                return useTabsetService()
+                  .saveText(this.tab.chromeTab, content['content' as keyof object], content['metas' as keyof object])
+                  .then((res) => {
+                    return new ExecutionResult("result", "Tab was added", new UndoCommand(this.tab))
+                  })
+              } else {
+                return saveCurrentTabset()
+                  .then(result => new ExecutionResult(result, "Tab was added", new UndoCommand(this.tab)))
+              }
+            })
         })
     } else {
       const oldIndex = _.findIndex(useTabsStore().getCurrentTabs, t => t.id === this.tab.id)
@@ -121,13 +88,14 @@ export class CreateTabFromOpenTabsCommand implements Command<any> {
         const tab = tabsStore.getCurrentTabs.splice(oldIndex, 1)[0];
         tabsStore.getCurrentTabs.splice(useIndex, 0, tab);
       }
+      return saveCurrentTabset()
+        .then(result => new ExecutionResult(
+          result,
+          "Tab was added",
+          new UndoCommand(this.tab)))
     }
 
-    return saveCurrentTabset()
-      .then(result => new ExecutionResult(
-        result,
-        "Tab was added",
-        new UndoCommand(this.tab)))
+
   }
 
 

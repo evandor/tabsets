@@ -106,6 +106,9 @@ class ChromeApi {
   }
 
   buildContextMenu() {
+    if (process.env.MODE !== 'bex') {
+      return
+    }
     console.log("building context menu")
     const tabsStore = useTabsStore()
     chrome.contextMenus.removeAll(

@@ -76,7 +76,7 @@
   <Features v-else-if="tab ===  DrawerTabs.FEATURES"/>
   <TabDetails v-else-if="tab ===  DrawerTabs.TAB_DETAILS"/>
 
-  <!--      <TabsetHelp v-else-if="tab ===  DrawerTabs.HELP"/>-->
+  <TabsetHelp v-else-if="tab ===  DrawerTabs.HELP"/>
 
   <div v-else>unknown tab name '{{ tab }}' {{typeof tab}}</div>
   <!--    </div>-->
@@ -101,6 +101,7 @@ import UnassignedAndOpenTabs from "components/views/UnassignedAndOpenTabs.vue";
 import BookmarksTree from "components/BookmarksTree.vue";
 import TabDetails from "components/views/TabDetails.vue";
 import NewTabUrls from "components/NewTabUrls.vue";
+import TabsetHelp from "components/TabsetHelp.vue";
 
 const router = useRouter()
 
