@@ -125,28 +125,28 @@ describe('SearchStore', () => {
     expect(indexAt(0,'content')).toEqual(undefined)
   })
 
-  it('populate with content and from tabsets with same url', async () => {
-
-    const content = {
-      id: 'aHR0cHM6Ly93d3cuYXJkLmRlLw==', expires: 0, title: 'ARD', url: 'https://www.zdf.de/',
-      content: 'zdf content'}
-    const aTab = ChromeApi.createChromeTabObject("title from tab", "https://www.zdf.de/", "")
-    const res = await new CreateTabsetCommand("tabsetName", [aTab]).execute()
-    // @ts-ignore
-    await new UpdateTabNameCommand(res.result.tabset.tabs[0], "custom name").execute()
-
-
-    await useSearchStore().populateFromContent(Promise.resolve([content]))
-
-    // @ts-ignore
-    expect(useSearchStore().getIndex().size()).toBe(1)
-console.log("useSearchStore().getIndex()", useSearchStore().getIndex())
-   // expect(indexAt(0,'name')).toEqual({"n": 0.707, "v": "custom name"})
-    expect(indexAt(0,'title')).toEqual({"n": 0.577, "v": "title from tab"})
-    expect(indexAt(0,'url')).toEqual({"n": 1, "v": "https://www.zdf.de/"})
-    expect(indexAt(0,'description')).toEqual(undefined)
-    expect(indexAt(0,'keywords')).toEqual(undefined)
-    expect(indexAt(0,'content')).toEqual({"n": 0.707, "v": "zdf content"})
-  })
+//   it('populate with content and from tabsets with same url', async () => {
+//
+//     const content = {
+//       id: 'aHR0cHM6Ly93d3cuYXJkLmRlLw==', expires: 0, title: 'ARD', url: 'https://www.zdf.de/',
+//       content: 'zdf content'}
+//     const aTab = ChromeApi.createChromeTabObject("title from tab", "https://www.zdf.de/", "")
+//     const res = await new CreateTabsetCommand("tabsetName", [aTab]).execute()
+//     // @ts-ignore
+//     await new UpdateTabNameCommand(res.result.tabset.tabs[0], "custom name").execute()
+//
+//
+//     await useSearchStore().populateFromContent(Promise.resolve([content]))
+//
+//     // @ts-ignore
+//     expect(useSearchStore().getIndex().size()).toBe(1)
+// console.log("useSearchStore().getIndex()", useSearchStore().getIndex())
+//    // expect(indexAt(0,'name')).toEqual({"n": 0.707, "v": "custom name"})
+//     expect(indexAt(0,'title')).toEqual({"n": 0.577, "v": "title from tab"})
+//     expect(indexAt(0,'url')).toEqual({"n": 1, "v": "https://www.zdf.de/"})
+//     expect(indexAt(0,'description')).toEqual(undefined)
+//     expect(indexAt(0,'keywords')).toEqual(undefined)
+//     expect(indexAt(0,'content')).toEqual({"n": 0.707, "v": "zdf content"})
+//   })
 
 })

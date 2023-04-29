@@ -1,11 +1,9 @@
 import {Tabset, TabsetType} from "src/models/Tabset";
-//import TabsetService from "src/services/TabsetService";
 import {useTabsStore} from "src/stores/tabsStore";
 import _ from "lodash";
 import {Tab} from "src/models/Tab";
 import {uid} from "quasar";
 import throttledQueue from 'throttled-queue';
-import * as rangy from 'rangy'
 
 
 // @ts-ignore

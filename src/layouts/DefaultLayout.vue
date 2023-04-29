@@ -62,7 +62,7 @@
           </q-menu>
         </div>
 
-        <q-btn v-if="featuresStore.isEnabled('stats')"
+        <q-btn v-if="settingsStore.isEnabled('stats')"
                class="q-mr-md" icon="o_query_stats" size="12px" style="min-width:24px" flat
                @click="router.push('/stats')">
           <q-tooltip>Check out stats (experimental)</q-tooltip>
@@ -269,7 +269,6 @@ const model = ref(85)
 
 const notificationsStore = useNotificationsStore()
 const permissionsStore = usePermissionsStore()
-const featuresStore = useSettingsStore()
 const settingsStore = useSettingsStore()
 const spacesStore = useSpacesStore()
 const uiService = useUiService()

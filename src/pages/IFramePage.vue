@@ -2,16 +2,16 @@
 
   <q-toolbar class="text-primary lightgrey">
     <div class="row fit">
-      <div class="col-xs-12 col-md-5">
+      <div class="col-xs-12 col-md-9">
         <q-toolbar-title>
           <div class="row justify-start items-baseline">
-            <div class="col-1"><span class="text-dark">Page: {{ title }}</span> <span
+            <div class="col-1"><span class="text-dark ellipsis">Page: {{ title }}</span> <span
               class="text-primary">
             </span></div>
           </div>
         </q-toolbar-title>
       </div>
-      <div class="col-xs-12 col-md-7 text-right">
+      <div class="col-xs-12 col-md-3 text-right">
         <q-btn
           flat dense icon="o_open_in_new"
           color="primary"
@@ -22,15 +22,6 @@
           <q-tooltip>Open in new tab</q-tooltip>
         </q-btn>
 
-        <q-btn
-          flat dense icon="o_reply"
-          color="primary"
-          label="Back to tabsets"
-          class="q-mr-md"
-          @click="router.push('/tabset')"
-        >
-          <q-tooltip>Back to tabsets</q-tooltip>
-        </q-btn>
       </div>
     </div>
   </q-toolbar>

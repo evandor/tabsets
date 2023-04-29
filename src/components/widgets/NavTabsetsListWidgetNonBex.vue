@@ -188,7 +188,7 @@ const open = (tabId: string) => {
   if ("electron" === process.env.MODE) {
     router.push("/browser/" + tabId)
   } else {
-    router.push("/preview/" + tabId)
+    router.push("/iframe/" + tabId)
   }
 }
 
