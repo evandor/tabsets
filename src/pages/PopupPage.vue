@@ -63,7 +63,7 @@
 
 import NavigationService from "src/services/NavigationService";
 import {ref, watchEffect} from "vue";
-import {useTabsStore} from "stores/tabsStore";
+import {useTabsStore} from "src/stores/tabsStore";
 import {Tab} from "src/models/Tab";
 import _ from "lodash"
 import {Tabset} from "src/models/Tabset";

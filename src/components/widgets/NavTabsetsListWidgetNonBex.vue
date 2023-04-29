@@ -101,8 +101,8 @@ import {onMounted, PropType, ref} from "vue";
 import {Tabset, TabsetStatus, TabsetType} from "src/models/Tabset";
 import {useRouter} from "vue-router";
 import {useQuasar} from "quasar";
-import {useTabsStore} from "stores/tabsStore";
-import {useSpacesStore} from "stores/spacesStore";
+import {useTabsStore} from "src/stores/tabsStore";
+import {useSpacesStore} from "src/stores/spacesStore";
 import DeleteTabsetDialog from "components/dialogues/DeleteTabsetDialog.vue";
 import {useNotificationHandler} from "src/services/ErrorHandler";
 import {useCommandExecutor} from "src/services/CommandExecutor";
@@ -111,7 +111,7 @@ import {useUiService} from "src/services/useUiService";
 import {StopSessionCommand} from "src/domain/commands/StopSessionCommand";
 import {SelectTabsetCommand} from "src/domain/tabsets/SelectTabset";
 import TabFaviconWidget from "components/widgets/TabFaviconWidget.vue";
-import {useSearchStore} from "stores/searchStore";
+import {useSearchStore} from "src/stores/searchStore";
 import {MoveToTabsetCommand} from "src/domain/tabs/MoveToTabset";
 
 const {handleError, handleSuccess} = useNotificationHandler()

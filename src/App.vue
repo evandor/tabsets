@@ -25,7 +25,7 @@ import {useSuggestionsStore} from "src/stores/suggestionsStore";
 import {useUiStore} from "src/stores/uiStore";
 import {useTabsetService} from "src/services/TabsetService2";
 import {INDEX_DB_NAME} from "boot/constants";
-import {useSettingsStore} from "stores/settingsStore";
+import {useSettingsStore} from "src/stores/settingsStore";
 import BookmarksService from "src/services/BookmarksService";
 import {FeatureIdent} from "src/models/AppFeature";
 

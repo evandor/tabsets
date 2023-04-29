@@ -69,7 +69,7 @@ import {useTabGroupsStore} from "src/stores/tabGroupsStore";
 import {Tab} from "src/models/Tab";
 import {Tabset, TabsetStatus} from "src/models/Tabset";
 import TabList from "components/layouts/TabList.vue";
-import {useSettingsStore} from "stores/settingsStore"
+import {useSettingsStore} from "src/stores/settingsStore"
 
 const route = useRoute();
 const router = useRouter();

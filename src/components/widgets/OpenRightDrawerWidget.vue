@@ -8,7 +8,7 @@
 
 <script lang="ts" setup>
 
-import {useUiStore} from "stores/uiStore";
+import {useUiStore} from "src/stores/uiStore";
 
 const uiStore = useUiStore()
 

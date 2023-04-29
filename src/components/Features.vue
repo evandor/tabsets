@@ -98,7 +98,7 @@ import {usePermissionsStore} from "src/stores/permissionsStore";
 import _ from "lodash"
 import {AppFeatures} from "src/models/AppFeatures";
 import {AppFeature, FeatureIdent, FeatureType} from "src/models/AppFeature";
-import {useSettingsStore} from "stores/settingsStore";
+import {useSettingsStore} from "src/stores/settingsStore";
 
 const tabsStore = useTabsStore()
 const router = useRouter()

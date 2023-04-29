@@ -200,7 +200,7 @@ import {MarkTabsetAsArchivedCommand} from "src/domain/tabsets/MarkTabsetAsArchiv
 import {useUtils} from "src/services/Utils";
 import {api} from "boot/axios";
 import {FeatureIdent} from "src/models/AppFeature";
-import {useSettingsStore} from "stores/settingsStore";
+import {useSettingsStore} from "src/stores/settingsStore";
 
 const route = useRoute();
 const router = useRouter();

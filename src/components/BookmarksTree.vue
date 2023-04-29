@@ -75,7 +75,7 @@ import {usePermissionsStore} from "src/stores/permissionsStore";
 import {useNotificationHandler} from "src/services/ErrorHandler";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {GrantPermissionCommand} from "src/domain/commands/GrantPermissionCommand";
-import {useSettingsStore} from "stores/settingsStore"
+import {useSettingsStore} from "src/stores/settingsStore"
 
 const router = useRouter()
 const tabsStore = useTabsStore()

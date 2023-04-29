@@ -28,8 +28,8 @@
 </template>
 
 <script lang="ts" setup>
-import {DrawerTabs, useUiStore} from "stores/uiStore";
-import {usePermissionsStore} from "stores/permissionsStore";
+import {DrawerTabs, useUiStore} from "src/stores/uiStore";
+import {usePermissionsStore} from "src/stores/permissionsStore";
 import {PropType} from "vue";
 import {useUiService} from "src/services/useUiService";
 import {FeatureIdent} from "src/models/AppFeature";

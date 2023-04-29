@@ -12,7 +12,7 @@ import {DrawerTabs} from "src/stores/uiStore";
 import MHtmlService from "src/services/MHtmlService";
 import {MHtml} from "src/models/MHtml";
 import DrawerLeftTabs from "src/components/DrawerLeftTabs.vue"
-import {useSettingsStore} from "stores/settingsStore"
+import {useSettingsStore} from "src/stores/settingsStore"
 
 
 const router = useRouter()

@@ -78,7 +78,7 @@ import {useTabsStore} from "src/stores/tabsStore";
 import {useTabGroupsStore} from "src/stores/tabGroupsStore";
 import {useRoute} from "vue-router";
 import {useTabsetService} from "src/services/TabsetService2";
-import sanitizeHtml from 'sanitize-html';
+import * as sanitizeHtml from 'sanitize-html';
 
 const $q = useQuasar()
 const tabsStore = useTabsStore()

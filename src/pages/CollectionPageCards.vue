@@ -38,17 +38,17 @@ import TabList from "components/layouts/TabList.vue";
 import TabTable from "components/layouts/TabTable.vue";
 import TabGroups from "components/layouts/TabGroups.vue";
 import TabsExporter from "components/layouts/TabsExporter.vue";
-import {useTabsStore} from "stores/tabsStore";
+import {useTabsStore} from "src/stores/tabsStore";
 import {ref, watchEffect} from "vue";
 import {Tab} from "src/models/Tab";
 import _ from "lodash";
 import PageForTabset from "components/layouts/PageForTabset.vue";
 import TabsCanvas from "components/layouts/TabsCanvas.vue";
-import {useUiStore} from "stores/uiStore";
+import {useUiStore} from "src/stores/uiStore";
 import {useRoute} from "vue-router";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {ToggleSortingCommand} from "src/domain/tabsets/ToggleSorting";
-import {useEntitiesStore} from "stores/entitiesStore";
+import {useEntitiesStore} from "src/stores/entitiesStore";
 import CollectionList from "components/layouts/CollectionList.vue";
 
 const entitiesStore = useEntitiesStore()

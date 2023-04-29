@@ -1,7 +1,7 @@
 import {Bookmark} from "src/models/Bookmark";
 import {useBookmarksStore} from "src/stores/bookmarksStore";
 import {useNotificationsStore} from "src/stores/notificationsStore";
-import {useSearchStore} from "stores/searchStore";
+import {useSearchStore} from "src/stores/searchStore";
 
 async function getParentChain(parentId: string, chain: string[] = []): Promise<string[]> {
   if (!parentId || parentId === "0") {

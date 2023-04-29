@@ -5,7 +5,7 @@ import {usePermissionsStore} from "src/stores/permissionsStore";
 import MHtmlService from "src/services/MHtmlService";
 import {useNotificationHandler} from "src/services/ErrorHandler";
 import {Tabset} from "src/models/Tabset";
-import {useTabsStore} from "stores/tabsStore";
+import {useTabsStore} from "src/stores/tabsStore";
 import {useTabsetService} from "src/services/TabsetService2";
 
 const {handleSuccess, handleError} = useNotificationHandler()

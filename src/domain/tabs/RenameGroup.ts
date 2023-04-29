@@ -5,7 +5,7 @@ import {Group} from "src/models/Group";
 import {uid} from "quasar";
 import {Tabset} from "src/models/Tabset";
 import {STRIP_CHARS_IN_USER_INPUT} from "boot/constants";
-import {useTabsStore} from "stores/tabsStore";
+import {useTabsStore} from "src/stores/tabsStore";
 import {useTabsetService} from "src/services/TabsetService2";
 
 // class UndoCommand implements Command<any> {

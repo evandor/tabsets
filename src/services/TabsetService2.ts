@@ -16,7 +16,7 @@ import {useDB} from "src/services/usePersistenceService";
 import {SpecialTabsetIdent} from "src/domain/tabsets/CreateSpecialTabset";
 // @ts-ignore
 import {v5 as uuidv5} from 'uuid';
-import {useSuggestionsStore} from "stores/suggestionsStore";
+import {useSuggestionsStore} from "src/stores/suggestionsStore";
 import {Suggestion, SuggestionType} from "src/models/Suggestion";
 import {useSettingsStore} from "src/stores/settingsStore"
 

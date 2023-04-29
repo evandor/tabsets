@@ -245,10 +245,6 @@ a tab's url starts with one of the urls of this tabset, it will be ignored and n
 import {ref, watchEffect} from 'vue'
 import {useRoute, useRouter} from "vue-router";
 import {useQuasar} from "quasar";
-import Tabcards from "src/components/layouts/Tabcards.vue";
-import TabThumbs from "src/components/layouts/TabThumbs.vue";
-import TabColumns from "src/components/layouts/TabColumns.vue";
-import TabsCanvas from "src/components/layouts/TabsCanvas.vue";
 import _ from "lodash"
 import {useTabsStore} from "src/stores/tabsStore";
 import {useTabGroupsStore} from "src/stores/tabGroupsStore";
@@ -257,7 +253,6 @@ import {Tab} from "src/models/Tab";
 import RestoreTabsetDialog from "components/dialogues/RestoreTabsetDialog.vue";
 import AddUrlDialog from "components/dialogues/AddUrlDialog.vue";
 import {usePermissionsStore} from "src/stores/permissionsStore";
-import TabList from "components/layouts/TabList.vue";
 import InfoMessageWidget from "components/widgets/InfoMessageWidget.vue";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {RenameTabsetCommand} from "src/domain/tabsets/RenameTabset";
@@ -267,16 +262,11 @@ import {MarkTabsetAsDefaultCommand} from "src/domain/tabsets/MarkTabsetAsDefault
 import {MarkTabsetAsArchivedCommand} from "src/domain/tabsets/MarkTabsetAsArchived";
 import {StopSessionCommand} from "src/domain/commands/StopSessionCommand";
 import {useUtils} from "src/services/Utils";
-import TabTable from "components/layouts/TabTable.vue";
 import {FeatureIdent} from "src/models/AppFeature";
-import TabsExporter from "components/layouts/TabsExporter.vue";
-import {useUiStore} from "src/stores/uiStore";
-import TabGroups from "components/layouts/TabGroups.vue";
 import {ToggleSortingCommand} from "src/domain/tabsets/ToggleSorting";
 import {useSettingsStore} from "src/stores/settingsStore"
 import PageForTabset from "components/layouts/PageForTabset.vue";
 import TabsetPageCards from "pages/TabsetPageCards.vue";
-import {useUiService} from "src/services/useUiService";
 import OpenRightDrawerWidget from "components/widgets/OpenRightDrawerWidget.vue";
 
 const route = useRoute();
