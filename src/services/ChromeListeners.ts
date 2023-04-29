@@ -251,7 +251,7 @@ class ChromeListeners {
     if (scripts.length > 0 && tab.id != null) { // && !this.injectedScripts.get(chromeTab.id)) {
 
       scripts.forEach((script: string) => {
-        console.log("executing scripts", tab.id, script)
+        //console.log("executing scripts", tab.id, script)
         // @ts-ignore
         chrome.scripting.executeScript({
           target: {tabId: tab.id, allFrames: true},
@@ -260,7 +260,7 @@ class ChromeListeners {
           if (chrome.runtime.lastError) {
             console.warn("could not execute script: " + chrome.runtime.lastError.message);
           }
-          console.debug("callback", callback)
+          //console.debug("callback", callback)
         });
         const activeScripts = this.injectedScripts.get(tab.id || 0) || []
         if (activeScripts.indexOf(script) < 0) {
