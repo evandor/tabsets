@@ -53,18 +53,8 @@ export const useUiStore = defineStore('ui', () => {
 
   let rightDrawer = ref<RightDrawer>(new RightDrawer())
   let rightDrawerOpen = ref(true)
-  //let rightDrawerViewStack = ref<DrawerTabs[]>([DrawerTabs.UNASSIGNED_TABS])
 
-  // const rightDrawerFromStorage: RightDrawer | null = LocalStorage.getItem('ui.rightDrawer') as unknown as RightDrawer
-  // if (rightDrawerFromStorage !== null) {
-  //   // console.log("got", rightDrawerFromStorage)
-  //   if (rightDrawerFromStorage.activeTab !== DrawerTabs.TAB_DETAILS) {
-  //     rightDrawer = ref<RightDrawer>(rightDrawerFromStorage)
-  //   }
-  //   if (rightDrawerFromStorage.activeTab !== DrawerTabs.UNASSIGNED_TABS && rightDrawerFromStorage.activeTab !== DrawerTabs.TAB_DETAILS) {
-  //     rightDrawerViewStack = ref<DrawerTabs[]>([DrawerTabs.UNASSIGNED_TABS, rightDrawerFromStorage.activeTab])
-  //   }
-  // }
+  const highlightTerm = ref<string|undefined>(undefined)
 
   const newTabsetEmptyByDefault = ref<boolean>(LocalStorage.getItem('ui.newTabsetEmptyByDefault') as unknown as boolean || false)
   const tabBeingDragged = ref<string | undefined>(undefined)
@@ -185,19 +175,9 @@ export const useUiStore = defineStore('ui', () => {
     entityType.value = type
   }
 
-  // function rightDrawerSetLastView() {
-  //   if (rightDrawerViewStack.value.length === 0) {
-  //     rightDrawerViewStack.value.push(DrawerTabs.UNASSIGNED_TABS)
-  //     rightDrawer.value = new RightDrawer()
-  //     // } else if (rightDrawerViewStack.value.length === 1) {
-  //     //   rightDrawer.value.activeTab = rightDrawerViewStack.value[0]
-  //   } else {
-  //     rightDrawerViewStack.value.pop()
-  //     rightDrawer.value.activeTab = rightDrawerViewStack.value[rightDrawerViewStack.value.length - 1]
-  //   }
-  // }
-
-  // const rightDrawerShowCloseButton = computed(() => () => rightDrawerViewStack.value.length > 1)
+  function setHighlightTerm(term: string | undefined) {
+    highlightTerm.value = term
+  }
 
   const showMessage = computed(() => {
     return (ident: string, probability: number = 1, forceDisplay: boolean = false) => {
@@ -278,6 +258,8 @@ export const useUiStore = defineStore('ui', () => {
     ignoreKeypressListener,
     setIgnoreKeypress,
     setEntityType,
-    entityType
+    entityType,
+    highlightTerm,
+    setHighlightTerm
   }
 })

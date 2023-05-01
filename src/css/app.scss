@@ -51,3 +51,9 @@
   max-width:1600px;
   margin: 0 auto;
 }
+
+// https://microsoftedge.github.io/Demos/custom-highlight-api/
+::highlight(search-result-highlight) {
+  background-color: yellow;
+  color: black;
+}

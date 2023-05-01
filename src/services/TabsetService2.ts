@@ -310,7 +310,7 @@ export function useTabsetService() {
 
     return Promise.all(savePromises)
       .then((res) => {
-        console.log("all save promises fulfilled")
+        //console.log("all save promises fulfilled")
       })
   }
 

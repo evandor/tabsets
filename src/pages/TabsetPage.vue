@@ -19,7 +19,7 @@
         <q-toolbar-title>
           <div class="row justify-start items-baseline">
             <div class="col-1">
-              <span class="text-dark">Tabs of </span>
+              <span class="text-dark" v-if="$q.screen.gt.xs">Tabs of </span>
               <span
                 class="text-primary text-weight-bold cursor-pointer"
                 @mouseenter="showEditButton = true"
@@ -95,12 +95,12 @@
         </q-btn>
 
         <q-btn
-               @click="setView('grid')"
-               style="width:14px"
-               class="q-mr-sm" size="8px"
-               :flat="tabsStore.getCurrentTabset?.view !== 'grid'"
-               :outline="tabsStore.getCurrentTabset?.view === 'grid'"
-               icon="grid_on">
+          @click="setView('grid')"
+          style="width:14px"
+          class="q-mr-sm" size="8px"
+          :flat="tabsStore.getCurrentTabset?.view !== 'grid'"
+          :outline="tabsStore.getCurrentTabset?.view === 'grid'"
+          icon="grid_on">
           <q-tooltip class="tooltip">Use grid layout to visualize your tabs</q-tooltip>
         </q-btn>
 
@@ -169,7 +169,7 @@
           </q-tooltip>
         </q-icon>
 
-          <OpenRightDrawerWidget/>
+        <OpenRightDrawerWidget/>
       </div>
     </div>
   </q-toolbar>
@@ -242,7 +242,7 @@ a tab's url starts with one of the urls of this tabset, it will be ignored and n
 </template>
 
 <script setup lang="ts">
-import {ref, watchEffect} from 'vue'
+import {onMounted, onUpdated, ref, watchEffect} from 'vue'
 import {useRoute, useRouter} from "vue-router";
 import {useQuasar} from "quasar";
 import _ from "lodash"
@@ -268,6 +268,7 @@ import {useSettingsStore} from "src/stores/settingsStore"
 import PageForTabset from "components/layouts/PageForTabset.vue";
 import TabsetPageCards from "pages/TabsetPageCards.vue";
 import OpenRightDrawerWidget from "components/widgets/OpenRightDrawerWidget.vue";
+import JsUtils from "src/utils/JsUtils";
 
 const route = useRoute();
 const router = useRouter();
@@ -289,23 +290,19 @@ const showEditButton = ref(false)
 
 const tab = ref('tabset')
 
+
+onUpdated(() => {
+  JsUtils.runCssHighlight()
+})
+
 watchEffect(() => {
   if (!route || !route.params) {
     return
-  }
-  tabsetId.value = route?.params.tabsetId as string
-  if (tabsetId.value) {
-    console.debug("got tabset id", tabsetId.value)
-    const ts = tabsStore.selectCurrentTabset(tabsetId.value)
-    // if (!ts || TabsetStatus.DELETED === ts.status) {
-    //   router.push("/about")
-    // }
   }
 })
 
 
 const setNewName = (newValue: string) => useCommandExecutor().executeFromUi(new RenameTabsetCommand(tabsStore.currentTabsetId, newValue))
-
 
 function getOrder() {
   if (tabsStore.getCurrentTabset) {
@@ -322,21 +319,6 @@ function getOrder() {
     return (t: Tab) => 1
   }
 }
-
-function unpinnedNoGroupOrAllTabs(): Tab[] {
-
-  // if (usePermissionsStore().hasFeature('useGroups')) {
-  //   return _.orderBy(
-  //     _.filter(
-  //       tabsStore.getCurrentTabs,
-  //       // @ts-ignore
-  //       (t: Tab) => !t?.chromeTab.pinned && t?.chromeTab.groupId === -1),
-  //     getOrder(), [orderDesc.value ? 'desc' : 'asc'])
-  // } else {
-  return _.orderBy(tabsStore.getCurrentTabs, getOrder(), [orderDesc.value ? 'desc' : 'asc'])
-  // }
-}
-
 
 function tabsForGroup(groupId: number): Tab[] {
   return _.orderBy(
@@ -412,7 +394,7 @@ const sortingInfo = (): string => {
 
 const showSorting = () => tabsStore.getCurrentTabs.length > 10
 
-// const showPinnedTabsSection = () => usePermissionsStore().hasFeature('useGroups') && tabsStore.pinnedTabs?.length > 0 && !specialView()
+
 </script>
 
 <style>
