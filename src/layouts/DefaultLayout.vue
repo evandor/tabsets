@@ -10,11 +10,14 @@
             src="favicon.ico" height="32px" width="32px">
             <q-tooltip class="tooltip">Toggle the tabset list view by clicking here</q-tooltip>
           </q-img>
-          <q-toolbar-title
+          <q-toolbar-title v-if="!usePermissionsStore().hasFeature(FeatureIdent.SPACES)"
             @click.stop="goHome()" class="cursor-pointer"
             style="min-width:200px" shrink>
             {{ title() }}
             <q-tooltip class="tooltip">Reload Tabsets Extension</q-tooltip>
+          </q-toolbar-title>
+          <q-toolbar-title v-else>
+            <SpacesSelectorWidget />
           </q-toolbar-title>
         </template>
         <template v-else>
@@ -23,7 +26,7 @@
             name="menu" size="18px" @click="toggleLeftDrawer">
             <q-tooltip class="tooltip">Toggle the tabset list view by clicking here</q-tooltip>
           </q-icon>
-          <TabsetsSelectorWidget class="q-mx-md"/>
+          <SpacesSelectorWidget class="q-mx-md"/>
         </template>
 
 
@@ -31,10 +34,6 @@
 
         <SearchWidget style="position: absolute; left:300px;top:5px;max-width:500px"
                       v-if="tabsStore.tabsets.size > 1 || useSettingsStore().isEnabled('dev')"/>
-
-        <q-space/>
-
-        <SpacesSelectorWidget v-if="usePermissionsStore().hasFeature(FeatureIdent.SPACES)"/>
 
         <Transition name="colorized-appear">
           <div v-if="permissionsStore.hasFeature(FeatureIdent.OPENTABS_THRESHOLD) && tabsStore.tabsets.size > 0">
@@ -326,7 +325,7 @@ const goHome = () => router.push("/")
 
 const toggleLeftDrawer = () => {
   leftDrawerOpen.value = !leftDrawerOpen.value
-  //useUiService().toggleDrawer()
+  useUiService().toggleLeftDrawer()
 }
 
 const toggleRightDrawer = () => {

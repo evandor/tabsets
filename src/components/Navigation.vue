@@ -63,6 +63,7 @@ import {useUtils} from "src/services/Utils";
 import NavTabsetsListWidgetNonBex from "components/widgets/NavTabsetsListWidgetNonBex.vue";
 import {FeatureIdent} from "src/models/AppFeature";
 import {useSettingsStore} from "src/stores/settingsStore"
+import TabsetsSelectorWidget from "components/widgets/TabsetsSelectorWidget.vue";
 
 const router = useRouter()
 const tabsStore = useTabsStore()

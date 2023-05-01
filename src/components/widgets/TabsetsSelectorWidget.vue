@@ -1,10 +1,10 @@
 <template>
 
-  <div class="cursor-pointer">
+  <span class="cursor-pointer">
     <q-badge outline
              class="q-mr-md q-mt-none q-pt-sm q-pb-sm q-px-sm"
              style="font-size:19px"
-             color="white" text-color="white" :label="tabsetLabel()">
+             color="primary" text-color="primary" :label="tabsetLabel()">
     </q-badge>
 
     <q-menu :offset="[0,10]">
@@ -24,7 +24,7 @@
         </q-item>
       </q-list>
     </q-menu>
-  </div>
+  </span>
 
 </template>
 

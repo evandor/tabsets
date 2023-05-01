@@ -18,18 +18,23 @@
       <div class="col-xs-12 col-md-6">
         <q-toolbar-title>
           <div class="row justify-start items-baseline">
-            <div class="col-1">
+            <div class="col-12">
+              <template v-if="useUiStore().leftDrawerOpen">
               <span class="text-dark" v-if="$q.screen.gt.xs">Tabs of </span>
               <span
-                class="text-primary text-weight-bold cursor-pointer"
-                @mouseenter="showEditButton = true"
-                @mouseout="showEditButton = false">
-              {{ tabsStore.currentTabsetName }}
-               <q-popup-edit :model-value="tabsStore.getCurrentTabset?.name" v-slot="scope"
-                             @update:model-value="val => setNewName(  val)">
-                 <q-input v-model="scope.value" dense autofocus counter @keyup.enter="scope.set"/>
-               </q-popup-edit>
-            </span>
+                    class="text-primary text-weight-bold cursor-pointer"
+                    @mouseenter="showEditButton = true"
+                    @mouseout="showEditButton = false">
+                  {{ tabsStore.currentTabsetName }}
+                   <q-popup-edit :model-value="tabsStore.getCurrentTabset?.name" v-slot="scope"
+                                 @update:model-value="val => setNewName(  val)">
+                     <q-input v-model="scope.value" dense autofocus counter @keyup.enter="scope.set"/>
+                   </q-popup-edit>
+                </span>
+              </template>
+              <template v-else>
+                <TabsetsSelectorWidget />
+              </template>
               <q-icon v-if="showEditButton" style="position:relative;top:-11px;left:-5px" color="primary" name="edit"
                       size="16px"/>
               <q-icon v-else size="16px"/>
@@ -269,6 +274,8 @@ import PageForTabset from "components/layouts/PageForTabset.vue";
 import TabsetPageCards from "pages/TabsetPageCards.vue";
 import OpenRightDrawerWidget from "components/widgets/OpenRightDrawerWidget.vue";
 import JsUtils from "src/utils/JsUtils";
+import {useUiStore} from "stores/uiStore";
+import TabsetsSelectorWidget from "components/widgets/TabsetsSelectorWidget.vue";
 
 const route = useRoute();
 const router = useRouter();

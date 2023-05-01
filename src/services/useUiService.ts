@@ -38,13 +38,18 @@ export function useUiService() {
     useUiStore().rightDrawerOpen = false
   }
 
+  const toggleLeftDrawer = () => {
+    useUiStore().leftDrawerOpen = !useUiStore().leftDrawerOpen
+  }
+
   return {
     rightDrawerActiveTab,
     rightDrawerSetActiveTab,
     showSearchResultsPageFor,
     draggingTab,
     droppingTab,
-    closeRightDrawer
+    closeRightDrawer,
+    toggleLeftDrawer
   }
 
 }

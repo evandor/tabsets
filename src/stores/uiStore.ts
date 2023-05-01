@@ -53,6 +53,7 @@ export const useUiStore = defineStore('ui', () => {
 
   let rightDrawer = ref<RightDrawer>(new RightDrawer())
   let rightDrawerOpen = ref(true)
+  let leftDrawerOpen = ref(true)
 
   const highlightTerm = ref<string|undefined>(undefined)
 
@@ -236,6 +237,7 @@ export const useUiStore = defineStore('ui', () => {
   return {
     rightDrawer,
     rightDrawerOpen,
+    leftDrawerOpen,
     rightDrawerSetActiveTab,
     draggingTab,
     droppingTab,
