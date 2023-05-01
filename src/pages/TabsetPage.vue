@@ -18,7 +18,7 @@
       <div class="col-xs-12 col-md-6">
         <q-toolbar-title>
           <div class="row justify-start items-baseline">
-            <div class="col-12">
+            <div class="col-1">
               <template v-if="useUiStore().leftDrawerOpen">
               <span class="text-dark" v-if="$q.screen.gt.xs">Tabs of </span>
               <span
@@ -306,6 +306,7 @@ watchEffect(() => {
   if (!route || !route.params) {
     return
   }
+  tabsetId.value = route?.params.tabsetId as string
 })
 
 

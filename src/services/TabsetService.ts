@@ -441,6 +441,7 @@ class TabsetService {
   }
 
   setView(tabsetId: string, view: string) {
+    console.log("setting view", tabsetId, view)
     const tabset = useTabsStore().getTabset(tabsetId)
     if (tabset) {
       tabset.view = view
