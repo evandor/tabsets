@@ -10,15 +10,16 @@
 
       <q-card-section>
         <div class="text-body">This means opening all the tabset's tabs in a new browser window, restoring
-        the tabset you want to work with.</div>
+          the tabset you want to work with.
+        </div>
       </q-card-section>
 
-<!--      <q-card-section class="q-pt-none">-->
+      <!--      <q-card-section class="q-pt-none">-->
 
-<!--        <q-radio v-model="closeOld" val="true" label="Close open Tabs"></q-radio>-->
-<!--        <q-radio v-model="closeOld" val="false" label="Keep them open"></q-radio>-->
+      <!--        <q-radio v-model="closeOld" val="true" label="Close open Tabs"></q-radio>-->
+      <!--        <q-radio v-model="closeOld" val="false" label="Keep them open"></q-radio>-->
 
-<!--      </q-card-section>-->
+      <!--      </q-card-section>-->
 
       <q-card-actions align="right" class="text-primary">
         <q-btn flat label="Cancel" @click="onDialogCancel"/>
@@ -34,7 +35,6 @@
 <script lang="ts" setup>
 
 import {ref} from "vue";
-import TabsetService from "src/services/TabsetService";
 import {useRouter} from "vue-router";
 import {useTabsStore} from "src/stores/tabsStore";
 
@@ -48,16 +48,19 @@ defineEmits([
 
 const {dialogRef, onDialogHide, onDialogCancel} = useDialogPluginComponent()
 
+const props = defineProps({
+  tabsetId: {
+    type: String,
+    required: true
+  }
+})
+
 const tabsStore = useTabsStore()
 const router = useRouter()
 
-const closeOld = ref("false")
 const warning = ref('')
 
-const openTabset = () =>
-  useCommandExecutor().execute(new RestoreTabsetCommand(tabsStore.currentTabsetId))
-
-
+const openTabset = () => useCommandExecutor().execute(new RestoreTabsetCommand(props.tabsetId))
 
 
 </script>

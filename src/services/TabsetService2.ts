@@ -300,6 +300,7 @@ export function useTabsetService() {
             console.log("about to save tabset", tabset.id)
             savePromises.push(saveTabset(tabset)
               .then((res) => {
+                // @ts-ignore
                 console.log("saved tabset", tabset._id, tabset._rev)
                 //tabset._rev = res._rev
               }))

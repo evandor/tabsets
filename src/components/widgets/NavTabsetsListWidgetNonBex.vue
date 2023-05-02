@@ -48,13 +48,13 @@
                     </q-icon>
                     {{ tabset.name }}
                   </div>
-                  <div class="col text-right">
-                    <q-icon v-if="showDeleteButton.get(tabset.id)"
-                            name="delete_outline" color="negative" size="1.1rem" @click.stop="deleteDialog(tabset)">
-                      <q-tooltip>Delete this tabset...</q-tooltip>
-                    </q-icon>
-                    <q-icon v-else name="shim" color="negative" size="1.1rem"></q-icon>
-                  </div>
+                  <!--                  <div class="col text-right">-->
+                  <!--                    <q-icon v-if="showDeleteButton.get(tabset.id)"-->
+                  <!--                            name="delete_outline" color="negative" size="1.1rem" @click.stop="deleteDialog(tabset)">-->
+                  <!--                      <q-tooltip>Delete this tabset...</q-tooltip>-->
+                  <!--                    </q-icon>-->
+                  <!--                    <q-icon v-else name="shim" color="negative" size="1.1rem"></q-icon>-->
+                  <!--                  </div>-->
                 </div>
 
 
@@ -65,9 +65,45 @@
 
           </q-item-section>
           <q-item-section class="text-right q-mx-sm cursor-pointer"
-                          @click="toggleExpand(index)"
+                          @mouseover="hoveredTab = tabset.id"
+                          @mouseleave="hoveredTab = undefined"
                           style="max-width:25px;font-size: 12px;color:#bfbfbf">
-            {{ tabset.tabs.length }}&nbsp;
+            <span v-if="hoveredOver(tabset.id)">
+              <q-icon name="more_horiz" color="primary" size="16px"/>
+            </span>
+            <span v-else>
+                {{ tabset.tabs.length }}
+            </span>
+            <q-menu :offset="[0, 0]">
+              <q-list dense style="min-width: 200px">
+                <q-item v-if="tabset.tabs.length > 0"
+                        clickable v-close-popup @click="toggleExpand(index)">
+                  {{ expanded[index] ? 'Collapse' : 'Expand' }}
+                </q-item>
+                <q-item v-if="tabset.status === TabsetStatus.DEFAULT"
+                        clickable v-close-popup @click="markAsFavorite(tabset.id)">
+                  Make favorite
+                </q-item>
+                <q-item v-if="tabset.status === TabsetStatus.FAVORITE"
+                        clickable v-close-popup @click="markAsDefault(tabset.id)">
+                  Remove as favorite
+                </q-item>
+
+                <q-item v-if="tabset.type === TabsetType.DEFAULT && tabset.status !== TabsetStatus.DELETED"
+                        clickable v-close-popup @click="archiveTabset(tabset.id)">
+                  Archive Tabset
+                </q-item>
+                <q-separator v-if="tabset.tabs.length > 0 && inBexMode()"/>
+                <q-item v-if="tabset.tabs.length > 0 && inBexMode()"
+                        clickable v-close-popup @click="restoreDialog(tabset.id)">
+                  Open all the tabs in a new window...
+                </q-item>
+                <q-separator/>
+                <q-item clickable v-close-popup @click.stop="deleteDialog(tabset)">
+                  Delete Tabset...
+                </q-item>
+              </q-list>
+            </q-menu>
           </q-item-section>
         </template>
 
@@ -113,8 +149,15 @@ import {SelectTabsetCommand} from "src/domain/tabsets/SelectTabset";
 import TabFaviconWidget from "components/widgets/TabFaviconWidget.vue";
 import {useSearchStore} from "src/stores/searchStore";
 import {MoveToTabsetCommand} from "src/domain/tabs/MoveToTabset";
+import {DrawerTabs} from "stores/uiStore";
+import {MarkTabsetAsFavoriteCommand} from "src/domain/tabsets/MarkTabsetAsFavorite";
+import {MarkTabsetAsDefaultCommand} from "src/domain/tabsets/MarkTabsetAsDefault";
+import {MarkTabsetAsArchivedCommand} from "src/domain/tabsets/MarkTabsetAsArchived";
+import RestoreTabsetDialog from "components/dialogues/RestoreTabsetDialog.vue";
+import {useUtils} from "src/services/Utils";
 
 const {handleError, handleSuccess} = useNotificationHandler()
+const {inBexMode} = useUtils()
 
 const router = useRouter()
 const tabsStore = useTabsStore()
@@ -130,6 +173,7 @@ const activeTabset = ref<string | undefined>(undefined)
 const merge = ref(false)
 const showExpandIcon = ref<string | undefined>(undefined)
 const expanded = ref<boolean[]>([])
+const hoveredTab = ref<string | undefined>(undefined)
 
 const {selectTabset} = useTabsetService()
 
@@ -195,6 +239,18 @@ const open = (tabId: string) => {
 const toggleExpand = (index: number): void => {
   expanded.value[index] = !expanded.value[index]
 }
+
+const hoveredOver = (tabsetId: string) => hoveredTab.value === tabsetId
+
+const markAsFavorite = (tabsetId: string) => useCommandExecutor().executeFromUi(new MarkTabsetAsFavoriteCommand(tabsetId))
+const markAsDefault = (tabsetId: string) => useCommandExecutor().executeFromUi(new MarkTabsetAsDefaultCommand(tabsetId))
+const archiveTabset = (tabsetId: string) => useCommandExecutor().executeFromUi(new MarkTabsetAsArchivedCommand(tabsetId))
+
+const restoreDialog = (tabsetId: string) => $q.dialog({
+  component: RestoreTabsetDialog,
+  componentProps: {tabsetId: tabsetId}
+})
+
 
 </script>
 

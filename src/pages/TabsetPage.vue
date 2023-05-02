@@ -20,11 +20,11 @@
           <div class="row justify-start items-baseline">
             <div class="col-1">
               <template v-if="useUiStore().leftDrawerOpen">
-              <span class="text-dark" v-if="$q.screen.gt.xs">Tabs of </span>
-              <span
-                    class="text-primary text-weight-bold cursor-pointer"
-                    @mouseenter="showEditButton = true"
-                    @mouseout="showEditButton = false">
+                <span class="text-dark" v-if="$q.screen.gt.xs">Tabs of </span>
+                <span
+                  class="text-primary text-weight-bold cursor-pointer"
+                  @mouseenter="showEditButton = true"
+                  @mouseout="showEditButton = false">
                   {{ tabsStore.currentTabsetName }}
                    <q-popup-edit :model-value="tabsStore.getCurrentTabset?.name" v-slot="scope"
                                  @update:model-value="val => setNewName(  val)">
@@ -33,44 +33,11 @@
                 </span>
               </template>
               <template v-else>
-                <TabsetsSelectorWidget />
+                <TabsetsSelectorWidget/>
               </template>
               <q-icon v-if="showEditButton" style="position:relative;top:-11px;left:-5px" color="primary" name="edit"
                       size="16px"/>
               <q-icon v-else size="16px"/>
-
-              <q-icon v-if="tabsStore.tabsets.size > 2 && tabsStore.getCurrentTabset?.status === TabsetStatus.DEFAULT"
-                      @click="markAsFavorite()"
-                      class="q-ml-md cursor-pointer"
-                      color="warning" name="o_grade" size="20px">
-                <q-tooltip class="tooltip">Mark this tabset as a favorite one</q-tooltip>
-              </q-icon>
-
-              <q-icon v-if="tabsStore.tabsets.size > 2 && tabsStore.getCurrentTabset?.status === TabsetStatus.FAVORITE"
-                      @click="markAsDefault()"
-                      class="q-ml-md cursor-pointer"
-                      color="warning" name="grade" size="20px">
-                <q-tooltip class="tooltip">Undo marking this tabset as favorite</q-tooltip>
-              </q-icon>
-
-              <q-icon
-                v-if="tabsStore.tabsets.size > 2 && tabsStore.getCurrentTabset?.type === TabsetType.DEFAULT && tabsStore.getCurrentTabset?.status !== TabsetStatus.DELETED"
-                @click="archiveTabset()"
-                class="q-ml-md cursor-pointer"
-                color="primary" name="o_inventory_2" size="20px">
-                <q-tooltip class="tooltip">Archive this tabset</q-tooltip>
-              </q-icon>
-
-              <q-icon v-if="tabsStore.getCurrentTabs?.length > 0 && inBexMode()"
-                      @click="restoreDialog"
-                      class="q-ml-md cursor-pointer"
-                      color="primary" name="o_open_in_browser" size="20px">
-                <q-tooltip
-                  class="tooltip"
-                  :delay="200">
-                  Open all the tabs from this tabset in a new window
-                </q-tooltip>
-              </q-icon>
 
 
             </div>
@@ -99,13 +66,13 @@
           <q-tooltip>Sorting descending or ascending, currently {{ orderDesc }}</q-tooltip>
         </q-btn>
 
-        <q-btn
-          @click="setView('grid')"
-          style="width:14px"
-          class="q-mr-sm" size="8px"
-          :flat="tabsStore.getCurrentTabset?.view !== 'grid'"
-          :outline="tabsStore.getCurrentTabset?.view === 'grid'"
-          icon="grid_on">
+        <q-btn v-if="tabsStore.getCurrentTabset?.tabs.length > 0"
+               @click="setView('grid')"
+               style="width:14px"
+               class="q-mr-sm" size="8px"
+               :flat="tabsStore.getCurrentTabset?.view !== 'grid'"
+               :outline="tabsStore.getCurrentTabset?.view === 'grid'"
+               icon="grid_on">
           <q-tooltip class="tooltip">Use grid layout to visualize your tabs</q-tooltip>
         </q-btn>
 
@@ -372,10 +339,6 @@ const setView = (view: string) => TabsetService.setView(tabsetId.value, view)
 
 const specialView = (): boolean =>
   tabsStore.getCurrentTabset?.view === 'kanban' || tabsStore.getCurrentTabset?.view === 'canvas'
-
-const markAsFavorite = () => useCommandExecutor().executeFromUi(new MarkTabsetAsFavoriteCommand(tabsStore.currentTabsetId))
-const markAsDefault = () => useCommandExecutor().executeFromUi(new MarkTabsetAsDefaultCommand(tabsStore.currentTabsetId))
-const archiveTabset = () => useCommandExecutor().executeFromUi(new MarkTabsetAsArchivedCommand(tabsStore.currentTabsetId))
 
 const stopSession = () => useCommandExecutor().executeFromUi(new StopSessionCommand(tabsStore.getCurrentTabset))
 
