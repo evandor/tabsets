@@ -19,6 +19,10 @@
           <q-item-section>{{ space.label }}</q-item-section>
         </q-item>
         <q-separator/>
+        <q-item clickable v-close-popup @click="switchSpace(null as unknown as Space)">
+          <q-item-section>Show unassigned tabs</q-item-section>
+        </q-item>
+        <q-separator/>
         <q-item clickable v-close-popup @click="openNewSpaceDialog()">
           <q-item-section>Add Space</q-item-section>
         </q-item>

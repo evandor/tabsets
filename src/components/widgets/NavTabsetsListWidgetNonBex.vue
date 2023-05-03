@@ -93,10 +93,46 @@
                         clickable v-close-popup @click="archiveTabset(tabset.id)">
                   Archive Tabset
                 </q-item>
+
+                <q-separator v-if="usePermissionsStore().hasFeature(FeatureIdent.SPACES)"/>
+                <q-item v-if="usePermissionsStore().hasFeature(FeatureIdent.SPACES)"
+                        clickable>
+                  <q-item-section>Spaces</q-item-section>
+                  <q-item-section side>
+                    <q-icon name="keyboard_arrow_right"/>
+                  </q-item-section>
+
+                  <q-menu anchor="top end" self="top start">
+                    <q-list>
+                      <q-item
+                        v-for="space in addToSpaces(tabset)"
+                        :key="space['spaceId']"
+                        dense
+                        @click="addToSpace(tabset, space['spaceId'])"
+                        clickable>
+                        <q-item-section>Add to Space <i>{{ space['spaceName'] }}</i></q-item-section>
+                      </q-item>
+                    </q-list>
+                    <q-separator/>
+                    <q-list>
+                      <q-item
+                        v-for="space in removeFromSpaces(tabset)"
+                        :key="space['spaceId']"
+                        dense
+                        @click="removeFromSpace(tabset, space['spaceId'])"
+                        clickable>
+                        <q-item-section>Remove from Space <i>{{ space['spaceName'] }}</i></q-item-section>
+                      </q-item>
+                    </q-list>
+                  </q-menu>
+
+                </q-item>
+
+
                 <q-separator v-if="tabset.tabs.length > 0 && inBexMode()"/>
                 <q-item v-if="tabset.tabs.length > 0 && inBexMode()"
                         clickable v-close-popup @click="restoreDialog(tabset.id)">
-                  Open all the tabs in a new window...
+                  Open all tabs in a new window...
                 </q-item>
                 <q-separator/>
                 <q-item clickable v-close-popup @click.stop="deleteDialog(tabset)">
@@ -144,17 +180,20 @@ import {useNotificationHandler} from "src/services/ErrorHandler";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {useTabsetService} from "src/services/TabsetService2";
 import {useUiService} from "src/services/useUiService";
-import {StopSessionCommand} from "src/domain/commands/StopSessionCommand";
 import {SelectTabsetCommand} from "src/domain/tabsets/SelectTabset";
 import TabFaviconWidget from "components/widgets/TabFaviconWidget.vue";
 import {useSearchStore} from "src/stores/searchStore";
 import {MoveToTabsetCommand} from "src/domain/tabs/MoveToTabset";
-import {DrawerTabs} from "stores/uiStore";
 import {MarkTabsetAsFavoriteCommand} from "src/domain/tabsets/MarkTabsetAsFavorite";
 import {MarkTabsetAsDefaultCommand} from "src/domain/tabsets/MarkTabsetAsDefault";
 import {MarkTabsetAsArchivedCommand} from "src/domain/tabsets/MarkTabsetAsArchived";
 import RestoreTabsetDialog from "components/dialogues/RestoreTabsetDialog.vue";
 import {useUtils} from "src/services/Utils";
+import {usePermissionsStore} from "stores/permissionsStore";
+import {FeatureIdent} from "src/models/AppFeature";
+import {Space} from "src/models/Space";
+import _ from "lodash"
+import SpacesService from "src/services/SpacesService";
 
 const {handleError, handleSuccess} = useNotificationHandler()
 const {inBexMode} = useUtils()
@@ -250,6 +289,47 @@ const restoreDialog = (tabsetId: string) => $q.dialog({
   component: RestoreTabsetDialog,
   componentProps: {tabsetId: tabsetId}
 })
+
+const addToSpaces = (tabset: Tabset) => {
+  const hasSpaces: string[] = tabset.spaces
+  const allSpaces: Map<string, Space> = useSpacesStore().spaces
+  let addList: object[] = []
+  _.forEach([...allSpaces.keys()], (availableSpace: string) => {
+    if (hasSpaces.indexOf(availableSpace) < 0) {
+      addList.push({
+        spaceId: availableSpace,
+        spaceName: allSpaces.get(availableSpace)?.label || "---"
+      })
+    }
+  })
+  return addList
+}
+
+const removeFromSpaces = (tabset: Tabset) => {
+  const hasSpaces: string[] = tabset.spaces
+  const allSpaces: Map<string, Space> = useSpacesStore().spaces
+  let removeList: object[] = []
+  _.forEach(hasSpaces, (availableSpace: string) => {
+    removeList.push({
+      spaceId: availableSpace,
+      spaceName: allSpaces.get(availableSpace)?.label || "---"
+    })
+  })
+  return removeList
+}
+
+const addToSpace = (tabset: Tabset, spaceId: string) => {
+  tabset.spaces.push(spaceId)
+  console.log("spaces set to", tabset.spaces)
+  useTabsetService().saveTabset(tabset)
+}
+
+const removeFromSpace = (tabset: Tabset, spaceId: string) => {
+  console.log("removing space", tabset.id, spaceId)
+  tabset.spaces = _.filter(tabset.spaces, (s:string) => s !== spaceId)
+  console.log("spaces set to", tabset.spaces)
+  useTabsetService().saveTabset(tabset)
+}
 
 
 </script>

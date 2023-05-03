@@ -229,7 +229,7 @@ class ChromeListeners {
   }
 
   private handleUpdateInjectScripts(tabset: Tabset, info: chrome.tabs.TabChangeInfo, tab: chrome.tabs.Tab) {
-    if (tab.url?.startsWith("chrome") || info.url?.startsWith("chrome")) {
+    if (this.ignoreUrl(tab, info)) {
       return
     }
     if (info.status !== "loading") {
@@ -258,7 +258,7 @@ class ChromeListeners {
           files: [script] //["tabsets-content-script.js","content-script-thumbnails.js"],
         }, (callback: any) => {
           if (chrome.runtime.lastError) {
-            console.warn("could not execute script: " + chrome.runtime.lastError.message);
+            console.warn("could not execute script: " + chrome.runtime.lastError.message, info.url);
           }
           //console.debug("callback", callback)
         });
@@ -445,6 +445,17 @@ class ChromeListeners {
         })*/
     }
     sendResponse({addTabToCurrent: 'done'});
+  }
+
+  private ignoreUrl(tab: Tab, info: chrome.tabs.TabChangeInfo) {
+    if (!tab.chromeTab || !info) {
+      return true
+    }
+    return tab.chromeTab.url?.startsWith("chrome") ||
+      tab.chromeTab.url?.startsWith("about") ||
+      info.url?.startsWith("chrome") ||
+      info.url?.startsWith("about") ||
+      info.url?.startsWith("https://skysail.eu.auth0.com/")
   }
 
   private capture(request: any) {
