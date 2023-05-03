@@ -22,6 +22,7 @@ export class Tab {
   bookmarkId: string | undefined
   description: string
   keywords: string
+  tags: string[]
   image: string
   date: string
   lastModified: string
@@ -53,6 +54,7 @@ export class Tab {
     this.name = undefined
     this.description = ''
     this.keywords = ''
+    this.tags = []
     this.image = ''
     this.date = ''
     this.lastModified = ''

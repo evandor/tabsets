@@ -267,6 +267,12 @@ export function useTabsetService() {
             }
             if (metas['keywords' as keyof object]) {
               t.keywords = metas['keywords' as keyof object]
+              if (t.tags && t.tags.length === 0 && t.keywords) {
+                const blankSeparated= t.keywords.split(" ")
+                const commaSeparated= t.keywords.split(",")
+                const splits = (t.keywords.indexOf(",") >= 0) ? commaSeparated : blankSeparated
+                t.tags = _.union(_.filter(_.map(splits, (split) => split.trim()), (split: string) => split.length > 0))
+              }
             }
             const author = getIfAvailable(metas, 'author')
             if (author) {

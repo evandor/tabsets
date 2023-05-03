@@ -113,14 +113,33 @@
 
   </div>
 
-  <q-separator />
+  <q-separator/>
 
   <q-list>
 
-    <q-expansion-item
-      group="somegroup"
-      label="Note"
-      :default-opened="useUiStore().getSelectedTab.note !== undefined">
+    <q-expansion-item label="Tags" :default-opened="true">
+      <q-card>
+        <q-card-section>
+          <q-select
+            filled
+            v-model="tags"
+            use-input
+            use-chips
+            multiple
+            hide-dropdown-icon
+            input-debounce="0"
+            new-value-mode="add-unique"
+            @update:model-value="val => updatedTags(val)"
+            style="width: 250px"
+          />
+        </q-card-section>
+      </q-card>
+    </q-expansion-item>
+
+    <q-expansion-item label="Note"
+                      group="somegroup"
+
+                      :default-opened="false">
       <q-card>
         <q-card-section>
           <div class="text-caption">
@@ -130,10 +149,10 @@
       </q-card>
     </q-expansion-item>
 
-    <q-expansion-item
-      group="somegroup"
-      label="Meta Data"
-      :default-opened="useUiStore().getSelectedTab.note === undefined">
+    <q-expansion-item label="Meta Data"
+                      group="somegroup"
+
+                      :default-opened="useUiStore().getSelectedTab.note === undefined">
       <q-card>
         <q-card-section>
           <div class="row q-mx-sm q-mt-none">
@@ -237,6 +256,7 @@ const searchIndex = ref<any>()
 const {selectTabset} = useTabsetService()
 
 const json = ref(null)
+const tags = ref<string[]>([])
 
 const state = reactive({
   val: JSON.stringify(json),
@@ -244,10 +264,13 @@ const state = reactive({
 })
 
 watchEffect(() => {
-  if (useUiStore().getSelectedTab) {
-    json.value = JSON.parse(JSON.stringify(useUiStore().getSelectedTab))
+  const selectedTab = useUiStore().getSelectedTab
+  if (selectedTab) {
+    json.value = JSON.parse(JSON.stringify(selectedTab))
+    tags.value = selectedTab.tags
   }
 })
+
 
 watchEffect(() => hasAllUrlsPermission.value = usePermissionsStore().hasAllOrigins())
 
@@ -321,7 +344,6 @@ const showTabDetails = () => router.push("/tab/" + uiStore.getSelectedTab?.id)
 
 watchEffect(() => {
   const fuseIndex = useSearchStore().getIndex()
-  // keys.value = fuseIndex['keys' as keyof object]
   const keyMaps = fuseIndex['_keysMap' as keyof object]
   const res = _.filter(fuseIndex['records' as keyof object], (r: any) => {
     return useUiStore().getSelectedTab?.chromeTab.url === r.$[2]?.v
@@ -348,5 +370,13 @@ watchEffect(() => {
 
 const saveTab = (tab: Tab) => useCommandExecutor().execute(new SaveTabCommand(useTabsStore().getCurrentTabset, tab))
 
-
+const updatedTags = (val: string[]) => {
+  const tab = useUiStore().getSelectedTab
+  if (tab) {
+    console.log("updating tag", val)
+    tab.tags = val
+    useTabsetService().saveCurrentTabset()
+      .catch((err) => console.error(err))
+  }
+}
 </script>

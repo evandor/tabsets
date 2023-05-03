@@ -29,9 +29,7 @@ export enum FeatureIdent {
 
   TABSET_PAGE = "TABSET_PAGE",
   NOTES = "NOTES",
-
-  ENTITY_MANAGER = "ENTITY_MANAGER"
-
+  TAGS = "TAGS"
 }
 
 export enum FeatureType {

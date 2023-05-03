@@ -44,6 +44,8 @@ export class AppFeatures {
 
     new AppFeature(FeatureIdent.TABSET_PAGE, FeatureType.EXPERIMENTAL, 'Use Tabset Pages', 'o_article', ['all']),
 
+    new AppFeature(FeatureIdent.TAGS, FeatureType.OPTIONAL, 'Use Tags for Tabs', 'o_label', ['all']),
+
     // new AppFeature(FeatureIdent.ANALYSE_TABS, FeatureType.PLANNED, 'Multiple Windows', 'o_history', ['bex']),
     // new AppFeature(FeatureIdent.ANALYSE_TABS, FeatureType.PLANNED, 'Scheduled Tabs', 'o_history', ['bex']),
     // new AppFeature(FeatureIdent.ANALYSE_TABS, FeatureType.PLANNED, 'Old Tabs View', 'o_history', ['bex']),

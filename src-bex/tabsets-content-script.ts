@@ -25,7 +25,7 @@ export default bexContent((bridge: any) => {
       const nameAttr = element.attributes.getNamedItem('name')
       const propAttr = element.attributes.getNamedItem('property')
       const contAttr = element.attributes.getNamedItem('content')
-      const key: string = nameAttr ? (nameAttr.value || 'undefName') : (propAttr?.value || 'undefProp')
+      const key: string = nameAttr ? (nameAttr.value.trim().toLowerCase() || 'undefName') : (propAttr?.value || 'undefProp')
       //console.log("key", key, contAttr?.value || 'x')
       if (key) {
         result[key] = contAttr?.value || ''

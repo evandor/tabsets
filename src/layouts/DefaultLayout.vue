@@ -113,6 +113,12 @@
         </span>
 
         <ToolbarButton
+          :feature="FeatureIdent.TAGS"
+          :drawer="DrawerTabs.TAGS_VIEWER"
+          icon="o_label"
+          tooltip="List the tags assigned to your tabs"/>
+
+        <ToolbarButton
           :feature="FeatureIdent.NEW_TAB"
           :drawer="DrawerTabs.NEW_TAB_URLS"
           icon="o_create_new_folder"

@@ -18,8 +18,8 @@
       <div class="col-xs-12 col-md-3 q-ma-none q-mt-sm text-right">
 
         <q-icon
-                class="cursor-pointer" size="2em"
-                name="chevron_right" @click="closeRightDrawer()">
+          class="cursor-pointer" size="2em"
+          name="chevron_right" @click="closeRightDrawer()">
           <q-tooltip class="tooltip">Hide this view</q-tooltip>
         </q-icon>
 
@@ -77,10 +77,9 @@
   <TabDetails v-else-if="tab ===  DrawerTabs.TAB_DETAILS"/>
 
   <TabsetHelp v-else-if="tab ===  DrawerTabs.HELP"/>
+  <TagsViewer v-else-if="tab ===  DrawerTabs.TAGS_VIEWER"/>
 
-  <div v-else>unknown tab name '{{ tab }}' {{typeof tab}}</div>
-  <!--    </div>-->
-  <!--  </div>-->
+  <div v-else>unknown tab name '{{ tab }}' {{ typeof tab }}</div>
 
 </template>
 
@@ -102,6 +101,7 @@ import BookmarksTree from "components/BookmarksTree.vue";
 import TabDetails from "components/views/TabDetails.vue";
 import NewTabUrls from "components/NewTabUrls.vue";
 import TabsetHelp from "components/TabsetHelp.vue";
+import TagsViewer from "components/views/TagsViewer.vue";
 
 const router = useRouter()
 
@@ -119,26 +119,12 @@ const filter = ref<string>('')
 
 watchEffect(() => tab.value = uiService.rightDrawerActiveTab())
 
-// watch(() => tab.value, (currentValue, oldValue) => {
-//   console.log("watching", currentValue, oldValue)
-//   if (currentValue !== oldValue) {
-//     // uiService.rightDrawerSetActiveTab(currentValue)
-//   }
-// })
-
 watchEffect(() => {
   openTabsCountRatio.value = Math.min(tabsStore.tabs.length / settingsStore.thresholds['max' as keyof object], 1)
 })
 
 watchEffect(() => rssTabsCount.value = tabsStore.rssTabs?.length)
 
-watchEffect(() => {
-
-  // MHtmlService.getMHtmls()
-  //   .then((res: MHtml[]) => {
-  //     savedTabsCount.value = res.length
-  //   })
-})
 
 const drawerLabel = () => {
   switch (tab.value) {
@@ -172,12 +158,9 @@ const drawerLabel = () => {
       return "Note Collections"
     case DrawerTabs.TODOS:
       return "TODOs Collections"
-    case DrawerTabs.ENTITY_MANAGER:
-      return "Entity Manager"
-    case DrawerTabs.ENTITY:
-      return uiStore.entityType
+    case DrawerTabs.TAGS_VIEWER:
+      return "Tags Viewer"
     default:
-      ``
       return tab.value
   }
 }

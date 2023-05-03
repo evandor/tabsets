@@ -25,12 +25,10 @@ export enum DrawerTabs {
   FEATURES = "features",
   TAB_DETAILS = "tabDetails",
   NEW_TAB_URLS = "newTabUrls",
+  TAGS_VIEWER = "tagsViewer",
   HELP = "help",
-
   NOTES = "NOTES",
-  TODOS = "TODOS",
-  ENTITY_MANAGER = "ENTITY_MANAGER",
-  ENTITY = "ENTITY"
+  TODOS = "TODOS"
 }
 
 export class LeftDrawer {
@@ -50,6 +48,7 @@ export const useUiStore = defineStore('ui', () => {
 
 
   const selectedTab = ref<Tab | undefined>(undefined)
+  const selectedTag = ref<string | undefined>(undefined)
 
   let rightDrawer = ref<RightDrawer>(new RightDrawer())
   let rightDrawerOpen = ref(true)
@@ -119,14 +118,6 @@ export const useUiStore = defineStore('ui', () => {
     }, {deep: true}
   )
 
-  // const leftDrawerLabelIsAnimated = computed(() => {
-  //   return () => leftDrawerLabelAnimated.value
-  // })
-  //
-  // function setLeftDrawerLabelAnimated(animated: boolean) {
-  //   leftDrawerLabelAnimated.value = animated
-  // }
-
   function draggingTab(tabId: string, evt: DragEvent) {
     tabBeingDragged.value = tabId
     dragEvent.value = evt
@@ -138,6 +129,10 @@ export const useUiStore = defineStore('ui', () => {
     tabBeingDragged.value = undefined
     dragEvent.value = undefined
     return tabBeingDropped
+  }
+
+  function setSelectedTag(tag: string) {
+    selectedTag.value = tag
   }
 
   function setNewTabsetEmptyByDefault(defaultValue: boolean) {
@@ -262,6 +257,8 @@ export const useUiStore = defineStore('ui', () => {
     setEntityType,
     entityType,
     highlightTerm,
-    setHighlightTerm
+    setHighlightTerm,
+    selectedTag,
+    setSelectedTag
   }
 })
