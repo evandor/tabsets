@@ -1,5 +1,5 @@
 <template>
-  <q-layout view="hHh lpR lFr">
+  <q-layout view="hHh LpR lFr">
     <q-header elevated>
       <q-toolbar>
 
@@ -207,7 +207,7 @@
       </q-toolbar>
     </q-header>
 
-    <q-drawer v-model="leftDrawerOpen" side="left" bordered>
+    <q-drawer v-model="leftDrawerOpen" side="left" bordered >
       <Navigation></Navigation>
     </q-drawer>
 

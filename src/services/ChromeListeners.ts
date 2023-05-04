@@ -448,11 +448,8 @@ class ChromeListeners {
   }
 
   private ignoreUrl(tab: Tab, info: chrome.tabs.TabChangeInfo) {
-    if (!tab.chromeTab || !info) {
-      return true
-    }
-    return tab.chromeTab.url?.startsWith("chrome") ||
-      tab.chromeTab.url?.startsWith("about") ||
+    return (tab.chromeTab && tab.chromeTab.url?.startsWith("chrome")) ||
+      (tab.chromeTab && tab.chromeTab?.url?.startsWith("about")) ||
       info.url?.startsWith("chrome") ||
       info.url?.startsWith("about") ||
       info.url?.startsWith("https://skysail.eu.auth0.com/")

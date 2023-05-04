@@ -4,7 +4,7 @@ import {DeleteTabsetCommand} from "src/domain/tabsets/DeleteTabset";
 import {useTabsetService} from "src/services/TabsetService2";
 import {useTabsStore} from "src/stores/tabsStore";
 import {NewOrReplacedTabset} from "src/models/NewOrReplacedTabset";
-import {Tabset, TabsetType} from "src/models/Tabset";
+import {TabsetType} from "src/models/Tabset";
 import {DynamicTabSource, DynamicTabSourceType} from "src/models/DynamicTabSource";
 
 class UndoCreateTabsetCommand implements Command<object> {
@@ -19,30 +19,26 @@ class UndoCreateTabsetCommand implements Command<object> {
 
 }
 
-export class CreateDynamicTabsetCommand implements Command<object> {
+export class CreateDynamicTabset implements Command<object> {
 
   public merge: boolean = true
 
   constructor(
     public tabsetName: string,
+    public sourceType: DynamicTabSourceType = DynamicTabSourceType.TAG
   ) {
   }
 
   async execute(): Promise<ExecutionResult<object>> {
     try {
-      // const result = await useTabsetService()
-      //   .saveOrReplaceFromChromeTabs(this.tabsetName, this.tabsToUse, this.merge)
       const result: NewOrReplacedTabset = await useTabsStore()
-        .updateOrCreateTabset("Wikipedia", [], false, TabsetType.DYNAMIC)
+        .updateOrCreateTabset("Tag: " + this.tabsetName, [], false, TabsetType.DYNAMIC)
       if (result && result.tabset) {
-
-        // result.tabset.dynamicTabs = async () => {
-        //   const wikiPage = await wiki.page("List_of_most_visited_websites")
-        //   const tables = await wikiPage.tables()
-        //   console.log("tables", tables)
-        //   return Array<Tab>() // Promise.resolve(Tab[])
-        // }
-        result.tabset.dynamicTabs = new DynamicTabSource(DynamicTabSourceType.WIKIPEDIA)
+        if (this.sourceType === DynamicTabSourceType.TAG) {
+          result.tabset.dynamicTabs = new DynamicTabSource(this.sourceType, {tags: [this.tabsetName]})
+        } else {
+          result.tabset.dynamicTabs = new DynamicTabSource(this.sourceType)
+        }
         console.log("tabset", result.tabset)
         await useTabsetService().saveTabset(result.tabset)
       }
@@ -55,6 +51,6 @@ export class CreateDynamicTabsetCommand implements Command<object> {
   }
 }
 
-CreateDynamicTabsetCommand.prototype.toString = function cmdToString() {
+CreateDynamicTabset.prototype.toString = function cmdToString() {
   return `CreateDynamicTabsetCommand: {merge=${this.merge}, tabsetName=${this.tabsetName}}`;
 };

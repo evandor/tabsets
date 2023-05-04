@@ -26,7 +26,7 @@
                   @mouseenter="showEditButton = true"
                   @mouseout="showEditButton = false">
                   {{ tabsStore.currentTabsetName }}
-                   <q-popup-edit :model-value="tabsStore.getCurrentTabset?.name" v-slot="scope"
+                   <q-popup-edit :model-value="tabset?.name" v-slot="scope"
                                  @update:model-value="val => setNewName(  val)">
                      <q-input v-model="scope.value" dense autofocus counter @keyup.enter="scope.set"/>
                    </q-popup-edit>
@@ -57,7 +57,7 @@
         </q-btn>
 
         <q-btn v-if="showSorting()"
-               :disable="tabsStore.getCurrentTabset?.sorting === 'custom'"
+               :disable="tabset?.sorting === 'custom'"
                @click="toggleOrder()"
                style="width:14px"
                class="q-mr-xl" size="10px"
@@ -66,80 +66,82 @@
           <q-tooltip>Sorting descending or ascending, currently {{ orderDesc }}</q-tooltip>
         </q-btn>
 
-        <q-btn v-if="tabsStore.getCurrentTabset?.tabs.length > 0"
+        <q-btn v-if="tabset?.tabs.length > 0"
                @click="setView('grid')"
                style="width:14px"
                class="q-mr-sm" size="8px"
-               :flat="tabsStore.getCurrentTabset?.view !== 'grid'"
-               :outline="tabsStore.getCurrentTabset?.view === 'grid'"
+               :flat="tabset?.view !== 'grid'"
+               :outline="tabset?.view === 'grid'"
                icon="grid_on">
           <q-tooltip class="tooltip">Use grid layout to visualize your tabs</q-tooltip>
         </q-btn>
 
-        <q-btn v-if="tabsStore.getCurrentTabset?.tabs.length > 0"
+        <q-btn v-if="tabset?.tabs.length > 0"
                @click="setView('group')"
                style="width:14px"
                class="q-mr-sm" size="8px"
-               :flat="tabsStore.getCurrentTabset?.view !== 'group'"
-               :outline="tabsStore.getCurrentTabset?.view === 'group'"
+               :flat="tabset?.view !== 'group'"
+               :outline="tabset?.view === 'group'"
                icon="view_week">
           <q-tooltip class="tooltip">Use group layout to visualize your tabs</q-tooltip>
         </q-btn>
 
         <!-- default view, no need to show if there is no alternative -->
-        <q-btn v-if="tabsStore.getCurrentTabset?.tabs.length > 0"
+        <q-btn v-if="tabset?.tabs.length > 0"
                @click="setView('list')"
                style="width:14px"
                class="q-mr-sm" size="10px"
-               :flat="tabsStore.getCurrentTabset?.view !== 'list'"
-               :outline="tabsStore.getCurrentTabset?.view === 'list'"
+               :flat="tabset?.view !== 'list'"
+               :outline="tabset?.view === 'list'"
                icon="o_list">
           <q-tooltip class="tooltip">Use the list layout to visualize your tabs</q-tooltip>
         </q-btn>
 
-        <!--        <q-btn v-if="permissionsStore.hasFeature(FeatureIdent.EXPERIMENTAL_VIEWS) && tabsStore.getCurrentTabset?.tabs.length > 0"-->
+        <!--        <q-btn v-if="permissionsStore.hasFeature(FeatureIdent.EXPERIMENTAL_VIEWS) && tabset?.tabs.length > 0"-->
         <!--               @click="setView('table')"-->
         <!--               style="width:14px"-->
         <!--               class="q-mr-xs" size="10px"-->
-        <!--               :flat="tabsStore.getCurrentTabset?.view !== 'table'"-->
-        <!--               :outline="tabsStore.getCurrentTabset?.view === 'table'"-->
+        <!--               :flat="tabset?.view !== 'table'"-->
+        <!--               :outline="tabset?.view === 'table'"-->
         <!--               icon="table_rows">-->
         <!--          <q-tooltip>Use the table layout to visualize your tabs</q-tooltip>-->
         <!--        </q-btn>-->
 
         <q-btn
-          v-if="permissionsStore.hasFeature(FeatureIdent.EXPERIMENTAL_VIEWS) && tabsStore.getCurrentTabset?.tabs.length > 0"
+          v-if="permissionsStore.hasFeature(FeatureIdent.EXPERIMENTAL_VIEWS) && tabset?.tabs.length > 0"
           @click="setView('canvas')"
           style="width:14px"
           class="q-mr-sm" size="10px"
-          :flat="tabsStore.getCurrentTabset?.view !== 'canvas'"
-          :outline="tabsStore.getCurrentTabset?.view === 'canvas'"
+          :flat="tabset?.view !== 'canvas'"
+          :outline="tabset?.view === 'canvas'"
           icon="o_shape_line">
           <q-tooltip>Use the canvas freestyle layout to visualize your tabs</q-tooltip>
         </q-btn>
 
         <q-btn
-          v-if="permissionsStore.hasFeature(FeatureIdent.EXPERIMENTAL_VIEWS) && tabsStore.getCurrentTabset?.tabs.length > 0"
+          v-if="permissionsStore.hasFeature(FeatureIdent.EXPERIMENTAL_VIEWS) && tabset?.tabs.length > 0"
           @click="setView('exporter')"
           style="width:14px"
           class="q-mr-sm" size="10px"
-          :flat="tabsStore.getCurrentTabset?.view !== 'exporter'"
-          :outline="tabsStore.getCurrentTabset?.view === 'exporter'"
+          :flat="tabset?.view !== 'exporter'"
+          :outline="tabset?.view === 'exporter'"
           icon="o_ios_share">
           <q-tooltip>Use the exporter layout if you want to copy and paste the urls of this tabset</q-tooltip>
         </q-btn>
 
-        <q-icon v-if="tabsStore.currentTabsetId !== '' && tabsStore.getTabset(tabsStore.currentTabsetId)"
-                data-testid="addUrlDialogBtn"
-                class="cursor-pointer q-ml-lg" size="1.3em"
-                name="add" @click="addUrlDialog">
+        <q-btn v-if="tabsStore.currentTabsetId !== '' && tabsStore.getTabset(tabsStore.currentTabsetId)"
+               data-testid="addUrlDialogBtn"
+               flat
+               :disable="tabset?.type === TabsetType.DYNAMIC"
+               class="cursor-pointer q-ml-lg" size="1.3em"
+               icon="add" @click="addUrlDialog">
           <q-tooltip
             class="tooltip"
             :delay="200"
             anchor="center left" self="center right">
             Copy and Paste or create a new Tab inside this tabset
           </q-tooltip>
-        </q-icon>
+        </q-btn>
 
         <OpenRightDrawerWidget/>
       </div>
@@ -172,14 +174,21 @@
           Select an existing tabset from the list or create a new tabset.
         </div>
       </q-banner>
-      <q-banner v-else-if="tabsStore.currentTabsetId && tabsStore.getTabset(tabsetId)?.tabs.length === 0">
+
+      <q-banner v-else-if="tabset?.tabs.length === 0 && tabset?.type !== TabsetType.DYNAMIC">
         To start adding new tabs to this empty tabset, open new browser tabs and come back to this extension to
         associate them with a tabset.<br><br>
         <!--If you want to assign your open tabs straight away, click <span class="cursor-pointer text-blue" @click="addOpenTabs()"><u>here</u></span>.-->
       </q-banner>
 
       <InfoMessageWidget
-        v-if="route?.query?.first && route.query.first === 'true' && tabsStore.getCurrentTabset?.tabs.length > 0"
+        v-if="tabset?.type === TabsetType.DYNAMIC"
+        :probability="1"
+        ident="tabsetPage_dynamicTabset"
+        hint="This is a 'dynamic' Tabset, i.e. it gets its data from some kind of query (e.g. checking for tags in your tabsets) and is readonly for that reason."/>
+
+      <InfoMessageWidget
+        v-if="route?.query?.first && route.query.first === 'true' && tabset?.tabs.length > 0"
         :probability="1"
         ident="tabsetPage_firstTime"
         hint="Congrats - you created your first tabset. Your open tabs have been added automatically to get you started with tabsets!"/>
@@ -199,11 +208,12 @@
 a tab's url starts with one of the urls of this tabset, it will be ignored and not added to the tabs to be added."/>
 
       <template
-        v-if="usePermissionsStore().hasFeature(FeatureIdent.TABSET_PAGE) && tabsStore.getCurrentTabset?.showPageAsHeader">
-        <div v-html="tabsStore.getCurrentTabset?.page"></div>
+        v-if="usePermissionsStore().hasFeature(FeatureIdent.TABSET_PAGE) && tabset?.showPageAsHeader">
+        <div v-html="tabset?.page"></div>
       </template>
 
-      <TabsetPageCards/>
+      <DynamicTabsetPageCards v-if="tabset?.type === TabsetType.DYNAMIC"/>
+      <TabsetPageCards v-else/>
 
     </q-tab-panel>
     <q-tab-panel name="page">
@@ -214,7 +224,7 @@ a tab's url starts with one of the urls of this tabset, it will be ignored and n
 </template>
 
 <script setup lang="ts">
-import {onMounted, onUpdated, ref, watchEffect} from 'vue'
+import {onUpdated, ref, watchEffect} from 'vue'
 import {useRoute, useRouter} from "vue-router";
 import {useQuasar} from "quasar";
 import _ from "lodash"
@@ -228,10 +238,7 @@ import {usePermissionsStore} from "src/stores/permissionsStore";
 import InfoMessageWidget from "components/widgets/InfoMessageWidget.vue";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {RenameTabsetCommand} from "src/domain/tabsets/RenameTabset";
-import {TabsetStatus, TabsetType} from "src/models/Tabset";
-import {MarkTabsetAsFavoriteCommand} from "src/domain/tabsets/MarkTabsetAsFavorite";
-import {MarkTabsetAsDefaultCommand} from "src/domain/tabsets/MarkTabsetAsDefault";
-import {MarkTabsetAsArchivedCommand} from "src/domain/tabsets/MarkTabsetAsArchived";
+import {Tabset, TabsetType} from "src/models/Tabset";
 import {StopSessionCommand} from "src/domain/commands/StopSessionCommand";
 import {useUtils} from "src/services/Utils";
 import {FeatureIdent} from "src/models/AppFeature";
@@ -243,6 +250,7 @@ import OpenRightDrawerWidget from "components/widgets/OpenRightDrawerWidget.vue"
 import JsUtils from "src/utils/JsUtils";
 import {useUiStore} from "stores/uiStore";
 import TabsetsSelectorWidget from "components/widgets/TabsetsSelectorWidget.vue";
+import DynamicTabsetPageCards from "pages/DynamicTabsetPageCards.vue";
 
 const route = useRoute();
 const router = useRouter();
@@ -259,6 +267,7 @@ const filter = ref('')
 const $q = useQuasar()
 
 const tabsetId = ref(null as unknown as string)
+const tabset = ref<Tabset | undefined>(undefined)
 const orderDesc = ref(false)
 const showEditButton = ref(false)
 
@@ -274,14 +283,15 @@ watchEffect(() => {
     return
   }
   tabsetId.value = route?.params.tabsetId as string
+  tabset.value = tabsStore.getCurrentTabset
 })
 
 
 const setNewName = (newValue: string) => useCommandExecutor().executeFromUi(new RenameTabsetCommand(tabsStore.currentTabsetId, newValue))
 
 function getOrder() {
-  if (tabsStore.getCurrentTabset) {
-    switch (tabsStore.getCurrentTabset?.sorting) {
+  if (tabset.value) {
+    switch (tabset.value?.sorting) {
       case 'alphabeticalUrl':
         return (t: Tab) => t.chromeTab.url?.replace("https://", "").replace("http://", "").toUpperCase()
         break
@@ -337,17 +347,12 @@ const addUrlDialog = () => $q.dialog({component: AddUrlDialog})
 
 const setView = (view: string) => TabsetService.setView(tabsetId.value, view)
 
-const specialView = (): boolean =>
-  tabsStore.getCurrentTabset?.view === 'kanban' || tabsStore.getCurrentTabset?.view === 'canvas'
-
-const stopSession = () => useCommandExecutor().executeFromUi(new StopSessionCommand(tabsStore.getCurrentTabset))
-
 const toggleSorting = () => useCommandExecutor().executeFromUi(new ToggleSortingCommand(tabsetId.value))
 
 const toggleOrder = () => orderDesc.value = !orderDesc.value
 
 const sortingInfo = (): string => {
-  switch (tabsStore.getCurrentTabset?.sorting) {
+  switch (tabset.value?.sorting) {
     case 'custom':
       return ", sorted by Index" + (orderDesc.value ? ', descending' : '')
       break

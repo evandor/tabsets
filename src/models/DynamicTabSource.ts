@@ -1,11 +1,14 @@
 export enum DynamicTabSourceType {
-  WIKIPEDIA = "WIKIPEDIA"
+  WIKIPEDIA = "WIKIPEDIA",
+  TAG = "TAG"
 }
 
 
 export class DynamicTabSource {
 
 
-  constructor(public type: DynamicTabSourceType) {
+  constructor(
+    public type: DynamicTabSourceType,
+    public config: object = {}) {
   }
 }

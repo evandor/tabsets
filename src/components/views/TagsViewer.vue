@@ -21,8 +21,29 @@
 
         </q-item-section>
         <q-item-section class="text-right q-mx-sm cursor-pointer"
+                        @mouseover="hoveredTag = tag"
+                        @mouseleave="hoveredTag = undefined"
                         style="max-width:25px;font-size: 12px;color:#bfbfbf">
-          {{ tags.get(tag) }}
+            <span v-if="hoveredOver(tag)">
+              <q-icon name="more_horiz" color="primary" size="16px"/>
+            </span>
+          <span v-else>
+                {{ tags.get(tag) }}
+            </span>
+          <q-menu :offset="[0, 0]">
+            <q-list dense style="min-width: 200px">
+
+              <q-item
+                      clickable v-close-popup @click="createDynamicTabsetFrom(tag)">
+                Turn into (dynamic) tabset
+              </q-item>
+
+              <q-separator/>
+              <q-item clickable v-close-popup >
+                Delete Tag in all Tabs
+              </q-item>
+            </q-list>
+          </q-menu>
         </q-item-section>
 
       </q-item>
@@ -35,7 +56,7 @@
 <script lang="ts" setup>
 
 import {ref, watchEffect} from "vue";
-import {Tabset} from "src/models/Tabset";
+import {Tabset, TabsetStatus, TabsetType} from "src/models/Tabset";
 import {useRouter} from "vue-router";
 import {useQuasar} from "quasar";
 import {useTabsStore} from "src/stores/tabsStore";
@@ -44,6 +65,8 @@ import {useUtils} from "src/services/Utils";
 import _ from "lodash"
 import {Tab} from "src/models/Tab";
 import {useUiStore} from "stores/uiStore";
+import {useCommandExecutor} from "src/services/CommandExecutor";
+import {CreateDynamicTabset} from "src/domain/commands/CreateDynamicTabset";
 
 const {handleError, handleSuccess} = useNotificationHandler()
 const {inBexMode} = useUtils()
@@ -69,6 +92,8 @@ watchEffect(() => {
   tags.value = new Map([...tags.value.entries()].sort((a, b) => b[1] - a[1]));
 })
 
+const hoveredTag = ref<string | undefined>(undefined)
+const hoveredOver = (tag: string) => hoveredTag.value === tag
 
 const selectTag = (tag: string) => {
   console.log("selecting", tag)
@@ -76,5 +101,7 @@ const selectTag = (tag: string) => {
   router.push("/tags")
 }
 
+const createDynamicTabsetFrom = (tag: string) =>
+  useCommandExecutor().executeFromUi(new CreateDynamicTabset(tag))
 
 </script>

@@ -16,8 +16,6 @@
                           @dragover.prevent
                           @dragenter.prevent
                           :class="activeTabset === tabset.id ? 'active-list-element' : ''"
-                          @mouseover="showButtons(tabset.id, true)"
-                          @mouseleave="showButtons(tabset.id, false)"
                           @click="selectTS(tabset)">
             <q-item-label>
               <template v-slot>
@@ -36,25 +34,17 @@
                             v-if="tabset.sharedBy">
                       <q-tooltip>This tabset is shared by {{ tabset.sharedBy }}</q-tooltip>
                     </q-icon>
-                    <q-icon name="build_circle" color="blue-10" class="q-ml-none q-mr-sm"
-                            style="position:relative;top:-5px;left:-2px;"
+                    <q-icon name="build_circle" color="primary" class="q-ml-none q-mr-sm"
                             v-if="tabset.type === TabsetType.DYNAMIC">
                       <q-tooltip class="tooltip">The tabs of this tabset have been generated automatically</q-tooltip>
                     </q-icon>
-                    <q-icon name="local_library" color="blue-10" class="q-ml-none q-mr-sm"
-                            style="position:relative;top:-5px;left:-2px;"
-                            v-if="tabset.type === TabsetType.DYNAMIC">
-                      <q-tooltip class="tooltip">This tabset is readonly</q-tooltip>
-                    </q-icon>
+<!--                    <q-icon name="local_library" color="blue-10" class="q-ml-none q-mr-sm"-->
+<!--                            style="position:relative;top:-5px;left:-2px;"-->
+<!--                            v-if="tabset.type === TabsetType.DYNAMIC">-->
+<!--                      <q-tooltip class="tooltip">This tabset is readonly</q-tooltip>-->
+<!--                    </q-icon>-->
                     {{ tabset.name }}
                   </div>
-                  <!--                  <div class="col text-right">-->
-                  <!--                    <q-icon v-if="showDeleteButton.get(tabset.id)"-->
-                  <!--                            name="delete_outline" color="negative" size="1.1rem" @click.stop="deleteDialog(tabset)">-->
-                  <!--                      <q-tooltip>Delete this tabset...</q-tooltip>-->
-                  <!--                    </q-icon>-->
-                  <!--                    <q-icon v-else name="shim" color="negative" size="1.1rem"></q-icon>-->
-                  <!--                  </div>-->
                 </div>
 
 
@@ -71,75 +61,15 @@
             <span v-if="hoveredOver(tabset.id)">
               <q-icon name="more_horiz" color="primary" size="16px"/>
             </span>
+            <span v-else-if="tabset.type === TabsetType.DYNAMIC">
+              -
+            </span>
             <span v-else>
                 {{ tabset.tabs.length }}
             </span>
-            <q-menu :offset="[0, 0]">
-              <q-list dense style="min-width: 200px">
-                <q-item v-if="tabset.tabs.length > 0"
-                        clickable v-close-popup @click="toggleExpand(index)">
-                  {{ expanded[index] ? 'Collapse' : 'Expand' }}
-                </q-item>
-                <q-item v-if="tabset.status === TabsetStatus.DEFAULT"
-                        clickable v-close-popup @click="markAsFavorite(tabset.id)">
-                  Make favorite
-                </q-item>
-                <q-item v-if="tabset.status === TabsetStatus.FAVORITE"
-                        clickable v-close-popup @click="markAsDefault(tabset.id)">
-                  Remove as favorite
-                </q-item>
 
-                <q-item v-if="tabset.type === TabsetType.DEFAULT && tabset.status !== TabsetStatus.DELETED"
-                        clickable v-close-popup @click="archiveTabset(tabset.id)">
-                  Archive Tabset
-                </q-item>
+            <TabsetListContextMenu :tabset="tabset" :index="index" :hoveredTab="hoveredTab" />
 
-                <q-separator v-if="usePermissionsStore().hasFeature(FeatureIdent.SPACES)"/>
-                <q-item v-if="usePermissionsStore().hasFeature(FeatureIdent.SPACES)"
-                        clickable>
-                  <q-item-section>Spaces</q-item-section>
-                  <q-item-section side>
-                    <q-icon name="keyboard_arrow_right"/>
-                  </q-item-section>
-
-                  <q-menu anchor="top end" self="top start">
-                    <q-list>
-                      <q-item
-                        v-for="space in addToSpaces(tabset)"
-                        :key="space['spaceId']"
-                        dense
-                        @click="addToSpace(tabset, space['spaceId'])"
-                        clickable>
-                        <q-item-section>Add to Space <i>{{ space['spaceName'] }}</i></q-item-section>
-                      </q-item>
-                    </q-list>
-                    <q-separator/>
-                    <q-list>
-                      <q-item
-                        v-for="space in removeFromSpaces(tabset)"
-                        :key="space['spaceId']"
-                        dense
-                        @click="removeFromSpace(tabset, space['spaceId'])"
-                        clickable>
-                        <q-item-section>Remove from Space <i>{{ space['spaceName'] }}</i></q-item-section>
-                      </q-item>
-                    </q-list>
-                  </q-menu>
-
-                </q-item>
-
-
-                <q-separator v-if="tabset.tabs.length > 0 && inBexMode()"/>
-                <q-item v-if="tabset.tabs.length > 0 && inBexMode()"
-                        clickable v-close-popup @click="restoreDialog(tabset.id)">
-                  Open all tabs in a new window...
-                </q-item>
-                <q-separator/>
-                <q-item clickable v-close-popup @click.stop="deleteDialog(tabset)">
-                  Delete Tabset...
-                </q-item>
-              </q-list>
-            </q-menu>
           </q-item-section>
         </template>
 
@@ -193,7 +123,7 @@ import {usePermissionsStore} from "stores/permissionsStore";
 import {FeatureIdent} from "src/models/AppFeature";
 import {Space} from "src/models/Space";
 import _ from "lodash"
-import SpacesService from "src/services/SpacesService";
+import TabsetListContextMenu from "components/widgets/helper/TabsetListContextMenu.vue";
 
 const {handleError, handleSuccess} = useNotificationHandler()
 const {inBexMode} = useUtils()
@@ -203,14 +133,11 @@ const tabsStore = useTabsStore()
 const featuresStore = useSearchStore()
 const spacesStore = useSpacesStore()
 
-const showDeleteButton = ref<Map<string, boolean>>(new Map())
-const showEditButton = ref<Map<string, boolean>>(new Map())
 const $q = useQuasar();
 const localStorage = $q.localStorage
 const newTabsetName = ref('')
 const activeTabset = ref<string | undefined>(undefined)
 const merge = ref(false)
-const showExpandIcon = ref<string | undefined>(undefined)
 const expanded = ref<boolean[]>([])
 const hoveredTab = ref<string | undefined>(undefined)
 
@@ -223,9 +150,9 @@ const props = defineProps({
   }
 })
 
-onMounted(() => {
-  expanded.value = new Array(props.tabsets?.length).fill(false);
-})
+// onMounted(() => {
+//   expanded.value = new Array(props.tabsets?.length).fill(false);
+// })
 
 const selectTS = (tabset: Tabset) => {
   console.log("selecting", tabset.id)
@@ -236,18 +163,6 @@ const selectTS = (tabset: Tabset) => {
       tabset.type === TabsetType.DYNAMIC ? router.push("/dynamicTs/" + tabset.id) : router.push("/tabsets/" + tabset.id)
     })
 }
-
-const showButtons = (tabsetId: string, show: boolean) => {
-  if (show) {
-    if (tabsetId === tabsStore.currentTabsetId) {
-      showDeleteButton.value.set(tabsetId, true)
-    }
-  } else {
-    showDeleteButton.value.set(tabsetId, show)
-  }
-  showEditButton.value.set(tabsetId, show)
-}
-
 
 const onDrop = (evt: DragEvent, tabsetId: string) => {
   const tabId = useUiService().droppingTab()
@@ -275,61 +190,7 @@ const open = (tabId: string) => {
   }
 }
 
-const toggleExpand = (index: number): void => {
-  expanded.value[index] = !expanded.value[index]
-}
-
 const hoveredOver = (tabsetId: string) => hoveredTab.value === tabsetId
-
-const markAsFavorite = (tabsetId: string) => useCommandExecutor().executeFromUi(new MarkTabsetAsFavoriteCommand(tabsetId))
-const markAsDefault = (tabsetId: string) => useCommandExecutor().executeFromUi(new MarkTabsetAsDefaultCommand(tabsetId))
-const archiveTabset = (tabsetId: string) => useCommandExecutor().executeFromUi(new MarkTabsetAsArchivedCommand(tabsetId))
-
-const restoreDialog = (tabsetId: string) => $q.dialog({
-  component: RestoreTabsetDialog,
-  componentProps: {tabsetId: tabsetId}
-})
-
-const addToSpaces = (tabset: Tabset) => {
-  const hasSpaces: string[] = tabset.spaces
-  const allSpaces: Map<string, Space> = useSpacesStore().spaces
-  let addList: object[] = []
-  _.forEach([...allSpaces.keys()], (availableSpace: string) => {
-    if (hasSpaces.indexOf(availableSpace) < 0) {
-      addList.push({
-        spaceId: availableSpace,
-        spaceName: allSpaces.get(availableSpace)?.label || "---"
-      })
-    }
-  })
-  return addList
-}
-
-const removeFromSpaces = (tabset: Tabset) => {
-  const hasSpaces: string[] = tabset.spaces
-  const allSpaces: Map<string, Space> = useSpacesStore().spaces
-  let removeList: object[] = []
-  _.forEach(hasSpaces, (availableSpace: string) => {
-    removeList.push({
-      spaceId: availableSpace,
-      spaceName: allSpaces.get(availableSpace)?.label || "---"
-    })
-  })
-  return removeList
-}
-
-const addToSpace = (tabset: Tabset, spaceId: string) => {
-  tabset.spaces.push(spaceId)
-  console.log("spaces set to", tabset.spaces)
-  useTabsetService().saveTabset(tabset)
-}
-
-const removeFromSpace = (tabset: Tabset, spaceId: string) => {
-  console.log("removing space", tabset.id, spaceId)
-  tabset.spaces = _.filter(tabset.spaces, (s:string) => s !== spaceId)
-  console.log("spaces set to", tabset.spaces)
-  useTabsetService().saveTabset(tabset)
-}
 
 
 </script>
