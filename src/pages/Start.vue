@@ -31,7 +31,14 @@ timer = setTimeout(() => {
   if (tabsStore.tabsets.size === 0) {
     router.push("/about")
   } else {
-    router.push("/tabset")
+    const selectedTS = localStorage.getItem("selectedTabset")
+    if (selectedTS) {
+      console.log("setting selected tabset from storage", selectedTS)
+      useTabsStore().selectCurrentTabset(selectedTS)
+      router.push("/tabsets/" + selectedTS)
+    } else {
+      router.push("/tabsets/none")
+    }
   }
   setTimeout(() => {
     $q.loading.hide()

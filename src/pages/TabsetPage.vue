@@ -15,10 +15,9 @@
   </q-toolbar>
   <q-toolbar class="text-primary lightgrey" v-else>
     <div class="row fit">
-      <div class="col-xs-12 col-md-6">
+      <div class="col-xs-12 col-md-6 q-mt-xs">
         <q-toolbar-title>
-          <div class="row justify-start items-baseline">
-            <div class="col-1">
+
               <template v-if="useUiStore().leftDrawerOpen">
                 <span class="text-dark" v-if="$q.screen.gt.xs">Tabs of </span>
                 <span
@@ -39,10 +38,6 @@
                       size="16px"/>
               <q-icon v-else size="16px"/>
 
-
-            </div>
-
-          </div>
         </q-toolbar-title>
       </div>
       <div class="col-xs-12 col-md-6 text-right">
@@ -133,7 +128,7 @@
                data-testid="addUrlDialogBtn"
                flat
                :disable="tabset?.type === TabsetType.DYNAMIC"
-               class="cursor-pointer q-ml-lg" size="1.3em"
+               class="cursor-pointer q-ml-lg" size="12px"
                icon="add" @click="addUrlDialog">
           <q-tooltip
             class="tooltip"
@@ -212,8 +207,12 @@ a tab's url starts with one of the urls of this tabset, it will be ignored and n
         <div v-html="tabset?.page"></div>
       </template>
 
-      <DynamicTabsetPageCards v-if="tabset?.type === TabsetType.DYNAMIC"/>
-      <TabsetPageCards v-else/>
+      <DynamicTabsetPageCards
+        v-if="tabset?.type === TabsetType.DYNAMIC"
+        :tabset="tabset as unknown as Tabset" />
+
+      <TabsetPageCards v-else
+        :tabset="tabset as unknown as Tabset"/>
 
     </q-tab-panel>
     <q-tab-panel name="page">
@@ -224,9 +223,9 @@ a tab's url starts with one of the urls of this tabset, it will be ignored and n
 </template>
 
 <script setup lang="ts">
-import {onUpdated, ref, watchEffect} from 'vue'
+import {onUpdated, ref, unref, watchEffect} from 'vue'
 import {useRoute, useRouter} from "vue-router";
-import {useQuasar} from "quasar";
+import {uid, useQuasar} from "quasar";
 import _ from "lodash"
 import {useTabsStore} from "src/stores/tabsStore";
 import {useTabGroupsStore} from "src/stores/tabGroupsStore";
@@ -251,6 +250,7 @@ import JsUtils from "src/utils/JsUtils";
 import {useUiStore} from "stores/uiStore";
 import TabsetsSelectorWidget from "components/widgets/TabsetsSelectorWidget.vue";
 import DynamicTabsetPageCards from "pages/DynamicTabsetPageCards.vue";
+import {useTabsetService} from "src/services/TabsetService2";
 
 const route = useRoute();
 const router = useRouter();
@@ -267,7 +267,7 @@ const filter = ref('')
 const $q = useQuasar()
 
 const tabsetId = ref(null as unknown as string)
-const tabset = ref<Tabset | undefined>(undefined)
+const tabset = ref<Tabset>(new Tabset(uid(),"empty", []))
 const orderDesc = ref(false)
 const showEditButton = ref(false)
 
@@ -283,7 +283,7 @@ watchEffect(() => {
     return
   }
   tabsetId.value = route?.params.tabsetId as string
-  tabset.value = tabsStore.getCurrentTabset
+  tabset.value = useTabsetService().getTabset(tabsetId.value) || new Tabset(uid(),"empty", [])
 })
 
 

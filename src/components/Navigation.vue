@@ -14,7 +14,7 @@
           <div class="col-xs-12 col-md-6 text-right">
 
             <q-icon
-              class="cursor-pointer" size="1.3em"
+              class="cursor-pointer" size="18px"
               style="position: relative;top:5px;right:-2px"
               name="add" @click="addTabset">
               <q-tooltip

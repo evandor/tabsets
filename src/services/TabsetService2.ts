@@ -31,11 +31,6 @@ export function useTabsetService() {
       useSearchStore().populateFromContent(db.getContents())
       useSearchStore().populateFromTabsets()
     }
-    const selectedTS = localStorage.getItem("selectedTabset")
-    if (selectedTS) {
-      console.log("setting selected tabset from storage", selectedTS)
-      useTabsStore().selectCurrentTabset(selectedTS)
-    }
     ChromeApi.buildContextMenu()
   }
 

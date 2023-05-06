@@ -9,7 +9,7 @@
   <q-list separator>
     <vue-draggable-next
       class="dragArea list-group w-full"
-      :list="props.tabs"
+      :list="props.tabs as Array<Tab>"
       :group="{ name: 'tabs', pull: 'clone' }"
 
       @change="handleDragAndDrop">
@@ -17,7 +17,7 @@
       <q-item v-if="props.tabs?.length === 0 &&
                       inBexMode() &&
                       useUiStore().rightDrawer.activeTab === DrawerTabs.UNASSIGNED_TABS &&
-                      tabsStore.pendingTabset.tabs.length > 0">
+                      tabsStore.pendingTabset?.tabs.length > 0">
         <div class="row fit q-ma-lg q-pa-lg text-subtitle2 text-grey-8">
           You can drag and drop items from the "Tabs to add" view to add them to this tabset by clicking on the icons
         </div>

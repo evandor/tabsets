@@ -103,12 +103,15 @@ const props = defineProps({
   }
 })
 
+const emit = defineEmits(['toggleExpand']);
+
 const $q = useQuasar()
 
 const expanded = ref<boolean[]>([])
 
 const toggleExpand = (index: number): void => {
   expanded.value[index] = !expanded.value[index]
+  emit('toggleExpand', index)
 }
 
 const markAsFavorite = (tabsetId: string) => useCommandExecutor().executeFromUi(new MarkTabsetAsFavoriteCommand(tabsetId))
@@ -156,7 +159,7 @@ const addToSpace = (tabset: Tabset, spaceId: string) => {
 
 const removeFromSpace = (tabset: Tabset, spaceId: string) => {
   console.log("removing space", tabset.id, spaceId)
-  tabset.spaces = _.filter(tabset.spaces, (s:string) => s !== spaceId)
+  tabset.spaces = _.filter(tabset.spaces, (s: string) => s !== spaceId)
   console.log("spaces set to", tabset.spaces)
   useTabsetService().saveTabset(tabset)
 }

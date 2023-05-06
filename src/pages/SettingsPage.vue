@@ -344,8 +344,8 @@ const $q = useQuasar()
 const view = ref('grid')
 const indexSize = ref(0)
 
-const syncEnabled = ref<boolean>(featuresStore.isEnabled('sync'))
-const statsEnabled = ref<boolean>(featuresStore.isEnabled('stats'))
+//const syncEnabled = ref<boolean>(featuresStore.isEnabled('sync'))
+// const statsEnabled = ref<boolean>(featuresStore.isEnabled('stats'))
 const devEnabled = ref<boolean>(featuresStore.isEnabled('dev'))
 const ddgEnabled = ref<boolean>(!featuresStore.isEnabled('noDDG'))
 const ignoreExtensionsEnabled = ref<boolean>(!featuresStore.isEnabled('extensionsAsTabs'))
@@ -435,8 +435,7 @@ watchEffect(() => {
 })
 
 watchEffect(() => {
-  featuresStore.setFeatureToggle("sync", syncEnabled.value)
-  featuresStore.setFeatureToggle("stats", statsEnabled.value)
+  //featuresStore.setFeatureToggle("stats", statsEnabled.value)
   featuresStore.setFeatureToggle("dev", devEnabled.value)
   featuresStore.setFeatureToggle("noDDG", !ddgEnabled.value)
   featuresStore.setFeatureToggle("extensionsAsTabs", !ignoreExtensionsEnabled.value)

@@ -1,28 +1,28 @@
 <template>
-  <q-card flat v-if="tabsStore.getCurrentTabset?.view !== 'canvas'">
+  <q-card flat v-if="props.tabset?.view !== 'canvas'">
     <q-card-section class="q-pa-none">
 
-      <TabList v-if="tabsStore.getCurrentTabset?.view === 'list'"
+      <TabList v-if="props.tabset?.view === 'list'"
                group="otherTabs"
                :highlightUrl="highlightUrl"
                :tabs="currentTabs()"/>
 
-      <TabTable v-else-if="tabsStore.getCurrentTabset?.view === 'table'"
+      <TabTable v-else-if="props.tabset?.view === 'table'"
                 group="otherTabs"
                 :highlightUrl="highlightUrl"
                 :tabs="currentTabs()"/>
 
-      <TabGroups v-else-if="tabsStore.getCurrentTabset?.view === 'group'"
+      <TabGroups v-else-if="props.tabset?.view === 'group'"
                  group="otherTabs"
                  :highlightUrl="highlightUrl"
                  :tabs="currentTabs()"/>
 
-      <TabGrid v-else-if="tabsStore.getCurrentTabset?.view === 'grid'"
+      <TabGrid v-else-if="props.tabset?.view === 'grid'"
                group="otherTabs"
                :highlightUrl="highlightUrl"
                :tabs="currentTabs()"/>
 
-      <TabsExporter v-else-if="tabsStore.getCurrentTabset?.view === 'exporter'"
+      <TabsExporter v-else-if="props.tabset?.view === 'exporter'"
                     group="otherTabs"
                     :tabs="currentTabs()"/>
 
@@ -31,7 +31,7 @@
   </q-card>
 
 
-  <q-card v-if="tabsStore.getCurrentTabset?.view === 'canvas'">
+  <q-card v-if="props.tabset?.view === 'canvas'">
     <q-card-section>
       <TabsCanvas :key="'tabCanvas_' + tabsStore.currentTabsetId"/>
     </q-card-section>
@@ -45,7 +45,7 @@ import TabTable from "components/layouts/TabTable.vue";
 import TabGroups from "components/layouts/TabGroups.vue";
 import TabsExporter from "components/layouts/TabsExporter.vue";
 import {useTabsStore} from "src/stores/tabsStore";
-import {ref, watchEffect} from "vue";
+import {PropType, ref, watchEffect} from "vue";
 import {Tab} from "src/models/Tab";
 import _ from "lodash";
 import PageForTabset from "components/layouts/PageForTabset.vue";
@@ -64,6 +64,13 @@ const route = useRoute()
 const highlightUrl = ref('')
 const orderDesc = ref(false)
 const tabsetId = ref(null as unknown as string)
+
+const props = defineProps({
+  tabset: {
+    type: Object as PropType<Tabset>,
+    required: true
+  }
+})
 
 watchEffect(() => {
   if (!route || !route.query) {
@@ -102,9 +109,10 @@ watchEffect(() => {
 })
 
 function currentTabs(): Tab[] {
-  if (tabsStore.getCurrentTabset && tabsStore.getCurrentTabset.dynamicTabs && tabsStore.getCurrentTabset.dynamicTabs.type === DynamicTabSourceType.TAG) {
+  if (props.tabset && props.tabset.dynamicTabs && props.tabset.dynamicTabs.type === DynamicTabSourceType.TAG) {
     const results: Tab[] = []
-    const tag = tabsStore.getCurrentTabset.dynamicTabs?.config['tags' as keyof object][0]
+    console.log("checking", props.tabset.dynamicTabs )
+    const tag = props.tabset.dynamicTabs?.config['tags' as keyof object][0]
     console.log("using tag", tag)
     _.forEach([...tabsStore.tabsets.values()], (tabset: Tabset) => {
       _.forEach(tabset.tabs, (tab: Tab) => {
@@ -121,8 +129,8 @@ function currentTabs(): Tab[] {
 }
 
 function getOrder() {
-  if (tabsStore.getCurrentTabset) {
-    switch (tabsStore.getCurrentTabset?.sorting) {
+  if (props.tabset) {
+    switch (props.tabset?.sorting) {
       case 'alphabeticalUrl':
         return (t: Tab) => t.chromeTab.url?.replace("https://", "").replace("http://", "").toUpperCase()
         break
@@ -150,7 +158,7 @@ const toggleSorting = () => useCommandExecutor().executeFromUi(new ToggleSorting
 const toggleOrder = () => orderDesc.value = !orderDesc.value
 
 const sortingInfo = (): string => {
-  switch (tabsStore.getCurrentTabset?.sorting) {
+  switch (props.tabset?.sorting) {
     case 'custom':
       return ", sorted by Index" + (orderDesc.value ? ', descending' : '')
       break

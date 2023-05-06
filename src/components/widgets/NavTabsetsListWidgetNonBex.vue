@@ -38,11 +38,11 @@
                             v-if="tabset.type === TabsetType.DYNAMIC">
                       <q-tooltip class="tooltip">The tabs of this tabset have been generated automatically</q-tooltip>
                     </q-icon>
-<!--                    <q-icon name="local_library" color="blue-10" class="q-ml-none q-mr-sm"-->
-<!--                            style="position:relative;top:-5px;left:-2px;"-->
-<!--                            v-if="tabset.type === TabsetType.DYNAMIC">-->
-<!--                      <q-tooltip class="tooltip">This tabset is readonly</q-tooltip>-->
-<!--                    </q-icon>-->
+                    <!--                    <q-icon name="local_library" color="blue-10" class="q-ml-none q-mr-sm"-->
+                    <!--                            style="position:relative;top:-5px;left:-2px;"-->
+                    <!--                            v-if="tabset.type === TabsetType.DYNAMIC">-->
+                    <!--                      <q-tooltip class="tooltip">This tabset is readonly</q-tooltip>-->
+                    <!--                    </q-icon>-->
                     {{ tabset.name }}
                   </div>
                 </div>
@@ -68,7 +68,11 @@
                 {{ tabset.tabs.length }}
             </span>
 
-            <TabsetListContextMenu :tabset="tabset" :index="index" :hoveredTab="hoveredTab" />
+            <TabsetListContextMenu
+              :tabset="tabset"
+              :index="index"
+              :hoveredTab="hoveredTab"
+              @toggleExpand="(index:number) => toggleExpand(index)" />
 
           </q-item-section>
         </template>
@@ -150,9 +154,9 @@ const props = defineProps({
   }
 })
 
-// onMounted(() => {
-//   expanded.value = new Array(props.tabsets?.length).fill(false);
-// })
+onMounted(() => {
+  expanded.value = new Array(props.tabsets?.length).fill(false);
+})
 
 const selectTS = (tabset: Tabset) => {
   console.log("selecting", tabset.id)
@@ -188,6 +192,10 @@ const open = (tabId: string) => {
   } else {
     router.push("/iframe/" + tabId)
   }
+}
+
+const toggleExpand = (index: number): void => {
+  expanded.value[index] = !expanded.value[index]
 }
 
 const hoveredOver = (tabsetId: string) => hoveredTab.value === tabsetId

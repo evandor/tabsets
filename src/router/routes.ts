@@ -35,11 +35,11 @@ const routes: RouteRecordRaw[] = [
     component: () => import('layouts/DefaultLayout.vue'),
     children: [{ path: '', component: () => import('pages/StatsPage.vue') }],
   },
-  {
+  /*{
     path: '/tabset',
     component: () => import('layouts/DefaultLayout.vue'),
     children: [{ path: '', component: () => import('pages/CurrentTabs.vue') }],
-  },
+  },*/
   {
     path: '/tabsets/:tabsetId',
     component: () => import('layouts/DefaultLayout.vue'),
