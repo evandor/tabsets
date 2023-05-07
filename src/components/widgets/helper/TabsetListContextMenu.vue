@@ -14,6 +14,11 @@
         Remove as favorite
       </q-item>
 
+      <q-item v-if="tabset.type === TabsetType.SESSION && tabset.status !== TabsetStatus.DELETED"
+              clickable v-close-popup @click="stopSession(props.tabset.id)">
+        Stop active Session
+      </q-item>
+
       <q-item v-if="props.tabset.type === TabsetType.DEFAULT && props.tabset.status !== TabsetStatus.DELETED"
               clickable v-close-popup @click="archiveTabset(props.tabset.id)">
         Archive Tabset
@@ -85,6 +90,7 @@ import _ from "lodash";
 import {useTabsetService} from "src/services/TabsetService2";
 import {useQuasar} from "quasar";
 import DeleteTabsetDialog from "components/dialogues/DeleteTabsetDialog.vue";
+import {StopSessionCommand} from "src/domain/commands/StopSessionCommand";
 
 const {inBexMode} = useUtils()
 
@@ -117,6 +123,13 @@ const toggleExpand = (index: number): void => {
 const markAsFavorite = (tabsetId: string) => useCommandExecutor().executeFromUi(new MarkTabsetAsFavoriteCommand(tabsetId))
 const markAsDefault = (tabsetId: string) => useCommandExecutor().executeFromUi(new MarkTabsetAsDefaultCommand(tabsetId))
 const archiveTabset = (tabsetId: string) => useCommandExecutor().executeFromUi(new MarkTabsetAsArchivedCommand(tabsetId))
+
+const stopSession = (tabsetId: string) => {
+  const tabset = useTabsetService().getTabset(tabsetId)
+  if (tabset) {
+    useCommandExecutor().executeFromUi(new StopSessionCommand(tabset))
+  }
+}
 
 const restoreDialog = (tabsetId: string) => $q.dialog({
   component: RestoreTabsetDialog,

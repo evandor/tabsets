@@ -248,25 +248,30 @@ class ChromeListeners {
       scripts.push("content-script.js")
       scripts.push("tabsets-content-script.js")
     }
-    if (scripts.length > 0 && tab.id != null) { // && !this.injectedScripts.get(chromeTab.id)) {
+    if (scripts.length > 0 && tab.id !== null) { // && !this.injectedScripts.get(chromeTab.id)) {
 
       scripts.forEach((script: string) => {
-        //console.log("executing scripts", tab.id, script)
-        // @ts-ignore
-        chrome.scripting.executeScript({
-          target: {tabId: tab.id, allFrames: true},
-          files: [script] //["tabsets-content-script.js","content-script-thumbnails.js"],
-        }, (callback: any) => {
-          if (chrome.runtime.lastError) {
-            console.warn("could not execute script: " + chrome.runtime.lastError.message, info.url);
-          }
-          //console.debug("callback", callback)
-        });
-        const activeScripts = this.injectedScripts.get(tab.id || 0) || []
-        if (activeScripts.indexOf(script) < 0) {
-          this.injectedScripts.set(tab.id || 0, activeScripts.concat(script))
-          //console.log("adding injectedScripts", this.injectedScripts)
-        }
+        // // @ts-ignore
+        // if (tab.id && this.injectedScripts.get(tab.id) && this.injectedScripts.get(tab.id).indexOf(script) >= 0) {
+        //   console.log("omitting script " + script + " on tab " + tab.id)
+        // } else {
+          console.log("executing scripts", tab.id, script)
+          // @ts-ignore
+          chrome.scripting.executeScript({
+            target: {tabId: tab.id, allFrames: false},
+            files: [script] //["tabsets-content-script.js","content-script-thumbnails.js"],
+          }, (callback: any) => {
+            if (chrome.runtime.lastError) {
+              console.warn("could not execute script: " + chrome.runtime.lastError.message, info.url);
+            }
+            //console.debug("callback", callback)
+          });
+          // const activeScripts = this.injectedScripts.get(tab.id || 0) || []
+          // if (activeScripts.indexOf(script) < 0) {
+          //  // this.injectedScripts.set(tab.id || 0, activeScripts.concat(script))
+          //   //console.log("adding injectedScripts", this.injectedScripts)
+          // }
+        // }
       })
     }
   }
@@ -412,37 +417,37 @@ class ChromeListeners {
     console.log("handleAddTabToTabset", request, sender)
     if (sender.tab) {
       this.addToTabset(request.tabsetId, new Tab(uid(), sender.tab))
-     /* addToTabsetId(request.tabsetId, new Tab(uid(), sender.tab))
-        .then(() => {
-          const ts = useTabsetService().getTabset(request.tabsetId)
-          if (ts) {
-            useTabsetService().saveTabset(ts)
-          }
-        })
-        .then(() => {
-          chrome.notifications.create(
-            {
-              title: "Tabset Extension Message",
-              type: "basic",
-              //iconUrl: "chrome-extension://" + selfId + "/www/favicon.ico",
-              iconUrl: chrome.runtime.getURL("www/favicon.ico"),
-              message: "the tab has been created successfully"
-            }
-          )
-        })
-        .catch((err: any) => {
-          console.log("catching rejection", err)
-          chrome.notifications.create(
-            {
-              title: "Tabset Extension Message",
-              type: "basic",
-              //iconUrl: "chrome-extension://" + selfId + "/www/favicon.ico",
-              iconUrl: chrome.runtime.getURL("www/favicon.ico"),
-              message: "tab could not be added: " + err
-            }
-          )
+      /* addToTabsetId(request.tabsetId, new Tab(uid(), sender.tab))
+         .then(() => {
+           const ts = useTabsetService().getTabset(request.tabsetId)
+           if (ts) {
+             useTabsetService().saveTabset(ts)
+           }
+         })
+         .then(() => {
+           chrome.notifications.create(
+             {
+               title: "Tabset Extension Message",
+               type: "basic",
+               //iconUrl: "chrome-extension://" + selfId + "/www/favicon.ico",
+               iconUrl: chrome.runtime.getURL("www/favicon.ico"),
+               message: "the tab has been created successfully"
+             }
+           )
+         })
+         .catch((err: any) => {
+           console.log("catching rejection", err)
+           chrome.notifications.create(
+             {
+               title: "Tabset Extension Message",
+               type: "basic",
+               //iconUrl: "chrome-extension://" + selfId + "/www/favicon.ico",
+               iconUrl: chrome.runtime.getURL("www/favicon.ico"),
+               message: "tab could not be added: " + err
+             }
+           )
 
-        })*/
+         })*/
     }
     sendResponse({addTabToCurrent: 'done'});
   }

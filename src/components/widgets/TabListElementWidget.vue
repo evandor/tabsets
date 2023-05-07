@@ -280,6 +280,9 @@ watchEffect(() => {
           thumbnail.value = tn['thumbnail' as keyof object]
         }
       })
+      .catch((err) => {
+        //console.log("could not get thumbnail for ", props.tab)
+      })
   }
 })
 </script>
