@@ -103,7 +103,7 @@ const createNewTabset = () => {
         // clear pending tabset - why neccessary?
         tabsStore.pendingTabset.tabs = []
       }
-      router.push("/tabset")
+      router.push("/tabsets" + useTabsStore().currentTabsetId)
     })
 }
 
