@@ -93,7 +93,6 @@ export const usePermissionsStore = defineStore('permissions', () => {
   }
 
   watchEffect(() => {
-    console.log("watching active features")
     if (storage) {
       storage.saveActiveFeatures(activeFeatures.value)
     }
@@ -104,7 +103,6 @@ export const usePermissionsStore = defineStore('permissions', () => {
   // })
 
   watchEffect(() => {
-    console.log("watching inactive default features", inActiveDefaultFeatures.value, storage)
     if (storage) {
       storage.setInactiveDefaultFeatures(inActiveDefaultFeatures.value)
     }

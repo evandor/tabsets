@@ -13,7 +13,6 @@ export class LocalStoragePersistenceService implements PersistenceService {
   private quasar: QVueGlobals;
 
   constructor(quasar: QVueGlobals) {
-    console.log("$q", quasar)
     this.quasar = quasar
   }
 

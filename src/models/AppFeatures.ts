@@ -35,7 +35,7 @@ export class AppFeatures {
     // does not work properly right now in electron (keeps re-catching the source)
     new AppFeature(FeatureIdent.RSS, FeatureType.EXPERIMENTAL, 'RSS View', 'o_rss_feed', ['bex', 'spa']),
     new AppFeature(FeatureIdent.SESSIONS, FeatureType.EXPERIMENTAL, 'Sessions', 'o_explore', ['all'],[FeatureIdent.OPENTABS_THRESHOLD]),
-    new AppFeature(FeatureIdent.SPACES, FeatureType.EXPERIMENTAL, 'Spaces', 'o_space_dashboard', ['all']),
+    new AppFeature(FeatureIdent.SPACES, FeatureType.OPTIONAL, 'Spaces', 'o_space_dashboard', ['all']),
     new AppFeature(FeatureIdent.HISTORY, FeatureType.EXPERIMENTAL, 'Access Browser History', 'o_history', ['bex'])
       .setActivateCommand(new GrantPermissionCommand('history'))
       .setDeactivateCommand(new RevokePermissionCommand('history')),
