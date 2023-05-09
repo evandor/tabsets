@@ -13,7 +13,7 @@
         <q-input dense v-model="url"
                  data-testid="add_url_input"
                  autofocus @keyup.enter="createNewUrl()"/>
-<!--        <div class="text-body2 text-warning">{{ newUrlDialogWarning() }}</div>-->
+        <!--        <div class="text-body2 text-warning">{{ newUrlDialogWarning() }}</div>-->
       </q-card-section>
 
       <q-card-actions align="right" class="text-primary">
@@ -43,6 +43,7 @@ import {Tab} from "src/models/Tab";
 import ChromeApi from "src/services/ChromeApi";
 import {useUtils} from "src/services/Utils";
 import {useUiStore} from "src/stores/uiStore";
+import {useTabsetService} from "src/services/TabsetService2";
 
 defineEmits([
   ...useDialogPluginComponent.emits
@@ -84,6 +85,7 @@ const createNewUrl = () => {
   tab.chromeTab = ChromeApi.createChromeTabObject(useUrl, useUrl, null as unknown as string)
   tab.extension = tab.determineUrlExtension(tab.chromeTab)
   TabsetService.saveToCurrentTabset(tab)
+    .then((res) => useTabsetService().saveCurrentTabset())
   useUiStore().setIgnoreKeypress(false)
   onDialogOK()
 }

@@ -112,7 +112,7 @@ const updateSpaces = () => {
     }
   })
 
-  router.push("/tabset")
+  router.push("/tabsets/" + tabsStore.currentTabsetId)
 
 }
 

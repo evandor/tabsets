@@ -121,7 +121,7 @@ const importBookmarks = async () => {
   useCommandExecutor()
     .executeFromUi(new CreateTabsetFromBookmarksCommand(newTabsetName.value, candidates))
     .then(res => {
-      router.push("/tabset")
+      router.push("/tabsets/" + tabsStore.currentTabsetId)
     })
 
   $q.loadingBar.stop()
