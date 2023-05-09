@@ -1,17 +1,27 @@
 <template>
   <q-menu :offset="[0, 0]">
     <q-list dense style="min-width: 200px">
-      <q-item v-if="props.tabset?.tabs.length > 0"
+
+      <q-item v-if="props.tabset?.tabs.length > 0 && expanded[index]"
               clickable v-close-popup @click="toggleExpand(index)">
-        {{ expanded[index] ? 'Collapse' : 'Expand' }}
+        <q-icon name="o_expand_less" class="q-my-xs q-mr-xs" color="grey-5" style="position:relative;top:-1px"/>Collapse
+      </q-item>
+      <q-item v-if="props.tabset?.tabs.length > 0 && !expanded[index]"
+              clickable v-close-popup @click="toggleExpand(index)">
+        <q-icon name="o_expand_more" class="q-my-xs q-mr-xs" color="grey-5" style="position:relative;top:-1px"/>Expand
+      </q-item>
+
+      <q-item
+              clickable v-close-popup @click="showDetails(props.tabset.id)">
+        <q-icon name="o_info" class="q-my-xs q-mr-xs" color="grey-5" style="position:relative;top:-1px"/>Tabset Details...
       </q-item>
       <q-item v-if="props.tabset?.status === TabsetStatus.DEFAULT"
               clickable v-close-popup @click="markAsFavorite(props.tabset.id)">
-        Make favorite
+        <q-icon name="stars" class="q-my-xs q-mr-xs" color="grey-5" style="position:relative;top:-1px"/>Make favorite
       </q-item>
       <q-item v-if="props.tabset.status === TabsetStatus.FAVORITE"
               clickable v-close-popup @click="markAsDefault(props.tabset.id)">
-        Remove as favorite
+        <q-icon name="o_stars" class="q-my-xs q-mr-xs" color="grey-5" style="position:relative;top:-1px"/>Remove as favorite
       </q-item>
 
       <q-item v-if="tabset.type === TabsetType.SESSION && tabset.status !== TabsetStatus.DELETED"
@@ -66,7 +76,7 @@
       </q-item>
       <q-separator/>
       <q-item clickable v-close-popup @click.stop="deleteDialog(tabset)">
-        Delete tabset...
+        <q-icon name="o_delete" class="q-my-xs q-mr-xs" color="grey-5" style="position:relative;top:-1px"/>Delete tabset...
       </q-item>
     </q-list>
   </q-menu>
@@ -91,6 +101,8 @@ import {useTabsetService} from "src/services/TabsetService2";
 import {useQuasar} from "quasar";
 import DeleteTabsetDialog from "components/dialogues/DeleteTabsetDialog.vue";
 import {StopSessionCommand} from "src/domain/commands/StopSessionCommand";
+import {useUiService} from "src/services/useUiService";
+import {DrawerTabs} from "stores/uiStore";
 
 const {inBexMode} = useUtils()
 
@@ -124,10 +136,12 @@ const markAsFavorite = (tabsetId: string) => useCommandExecutor().executeFromUi(
 const markAsDefault = (tabsetId: string) => useCommandExecutor().executeFromUi(new MarkTabsetAsDefaultCommand(tabsetId))
 const archiveTabset = (tabsetId: string) => useCommandExecutor().executeFromUi(new MarkTabsetAsArchivedCommand(tabsetId))
 
+const showDetails = (tabsetId: string) => useUiService().rightDrawerSetActiveTab(DrawerTabs.TABSET_DETAILS, {tabsetId})
+
 const stopSession = (tabsetId: string) => {
   const tabset = useTabsetService().getTabset(tabsetId)
   if (tabset) {
-    useCommandExecutor().executeFromUi(new StopSessionCommand(tabset))
+    useCommandExecutor().executeFromUi(new StopSessionCommand(tabset ))
   }
 }
 

@@ -1,5 +1,6 @@
+// !== MIT
 import {defineStore} from 'pinia';
-import {computed, ref, watch} from "vue";
+import {computed, ref, watch, watchEffect} from "vue";
 import {useQuasar} from "quasar";
 import {FeatureIdent, FeatureType} from "src/models/AppFeature";
 import {useSuggestionsStore} from "src/stores/suggestionsStore";
@@ -8,11 +9,16 @@ import {CreateSpecialTabsetCommand, SpecialTabsetIdent} from "src/domain/tabsets
 import {TabsetType} from "src/models/Tabset";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {AppFeatures} from "src/models/AppFeatures";
+import {useDB} from "src/services/usePersistenceService";
 
 
 export const usePermissionsStore = defineStore('permissions', () => {
 
   const $q = useQuasar()
+
+  const {localDb} = useDB($q)
+
+  const storage = localDb
 
   // related to chrome permissions
   const grantedOptionalPermissions = ref<string[] | undefined>([])
@@ -30,11 +36,16 @@ export const usePermissionsStore = defineStore('permissions', () => {
     console.debug("initializing permissions Store")
     // @ts-ignore
     permissions.value = await chrome.permissions.getAll()
-    //console.log("permissions", permissions.value)
     if (permissions.value) {
       grantedOptionalPermissions.value = permissions.value.permissions ? permissions.value.permissions : []
       grantedOptionalOrigins.value = permissions.value.origins ? permissions.value.origins : []
       console.log("initializing permissions Store done")
+    }
+    if (storage) {
+      storage.getActiveFeatures().then((res) => activeFeatures.value = res)
+      storage.getInactiveDefaultFeatures().then((res) => inActiveDefaultFeatures.value = res)
+    } else {
+      console.warn("storage not provided")
     }
   }
 
@@ -81,12 +92,22 @@ export const usePermissionsStore = defineStore('permissions', () => {
     return Promise.resolve()
   }
 
-  watch(activeFeatures.value, (val: any[]) => {
-    $q.localStorage.set("ui.activeFeatures", val)
+  watchEffect(() => {
+    console.log("watching active features")
+    if (storage) {
+      storage.saveActiveFeatures(activeFeatures.value)
+    }
   })
 
-  watch(inActiveDefaultFeatures.value, (val: any[]) => {
-    $q.localStorage.set("ui.inActiveDefaultFeatures", val)
+  // watch(inActiveDefaultFeatures.value, (val: any[]) => {
+  //   $q.localStorage.set("ui.inActiveDefaultFeatures", val)
+  // })
+
+  watchEffect(() => {
+    console.log("watching inactive default features", inActiveDefaultFeatures.value, storage)
+    if (storage) {
+      storage.setInactiveDefaultFeatures(inActiveDefaultFeatures.value)
+    }
   })
 
   const hasFeature = computed(() => {

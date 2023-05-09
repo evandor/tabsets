@@ -22,6 +22,7 @@
       <q-tab name="links" :label="linksDataLabel()"/>
       <q-tab name="history" label="History"/>
       <q-tab name="content" label="Content"/>
+      <q-tab name="debug" label="Debug"/>
     </q-tabs>
   </div>
 
@@ -315,13 +316,13 @@
         :pagination="metaInitialPagination"
         :filter="filterMetaLinks"
         dense>
-                <template v-slot:top-right>
-                  <q-input borderless dense debounce="300" v-model="filterMetaLinks" placeholder="Search">
-                    <template v-slot:append>
-                      <q-icon name="search"/>
-                    </template>
-                  </q-input>
-                </template>
+        <template v-slot:top-right>
+          <q-input borderless dense debounce="300" v-model="filterMetaLinks" placeholder="Search">
+            <template v-slot:append>
+              <q-icon name="search"/>
+            </template>
+          </q-input>
+        </template>
 
         <template v-slot:body-cell-link="props">
           <q-td :props="props">
@@ -358,6 +359,15 @@
     </div>
   </div>
 
+  <div v-else-if="tab === 'debug'" v-if="useSettingsStore().isEnabled('dev')">
+    <div class="q-pa-md q-gutter-sm">
+      <q-banner rounded class="bg-grey-1 text-primary">The tabs internal representation</q-banner>
+      <vue-json-pretty style="font-size: 80%"
+                       v-model:data="state.data"
+                       :show-double-quotes="true"
+      />
+    </div>
+  </div>
 
 </template>
 
@@ -365,7 +375,7 @@
 import {useTabsStore} from "src/stores/tabsStore"
 import {useNotificationsStore} from "src/stores/notificationsStore";
 import {useRoute, useRouter} from "vue-router";
-import {ref, watchEffect} from "vue";
+import {reactive, ref, watchEffect} from "vue";
 import TabsetService from "src/services/TabsetService";
 import NavigationService from "src/services/NavigationService"
 import {date} from "quasar";
@@ -375,6 +385,8 @@ import {useUtils} from "src/services/Utils";
 import {useUiStore} from "src/stores/uiStore";
 import {openURL} from "quasar";
 import {useSettingsStore} from "src/stores/settingsStore"
+import VueJsonPretty from "vue-json-pretty";
+import 'vue-json-pretty/lib/styles.css';
 
 const tabsStore = useTabsStore()
 const notificationStore = useNotificationsStore()
@@ -396,6 +408,23 @@ const index = ref({})
 const filter = ref('')
 const filterRequest = ref('')
 const filterMetaLinks = ref('')
+
+const json = ref(null)
+const tags = ref<string[]>([])
+
+const state = reactive({
+  val: JSON.stringify(json),
+  data: json
+})
+
+watchEffect(() => {
+  const selectedTab = useUiStore().getSelectedTab
+  if (selectedTab) {
+    json.value = JSON.parse(JSON.stringify(selectedTab))
+    tags.value = selectedTab.tags
+  }
+})
+
 
 const metaColumns = ref([
   {

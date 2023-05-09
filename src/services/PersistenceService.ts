@@ -4,8 +4,6 @@ import {MHtml} from "src/models/MHtml";
 import {Tab} from "src/models/Tab";
 import {Notification} from "src/models/Notification";
 import {SearchDoc} from "src/models/SearchDoc";
-import {Predicate} from "src/domain/Types";
-import {LogEntry} from "src/models/LogEntry";
 import {Suggestion} from "src/models/Suggestion";
 
 interface PersistenceService {

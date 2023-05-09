@@ -200,19 +200,6 @@
       </q-card>
     </q-expansion-item>
 
-
-    <q-expansion-item v-if="useSettingsStore().isEnabled('dev')"
-                      group="somegroup" label="Debug">
-      <q-card>
-        <q-card-section>
-          <vue-json-pretty style="font-size: 80%"
-                           v-model:data="state.data"
-                           :show-double-quotes="true"
-          />
-        </q-card-section>
-      </q-card>
-    </q-expansion-item>
-
   </q-list>
 
 </template>
@@ -233,8 +220,6 @@ import {formatDistance} from "date-fns";
 import {useUtils} from "src/services/Utils";
 import NavigationService from "src/services/NavigationService";
 import {useSearchStore} from "src/stores/searchStore";
-import VueJsonPretty from "vue-json-pretty";
-import 'vue-json-pretty/lib/styles.css';
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {SaveTabCommand} from "src/domain/tabs/SaveTab";
 import {FeatureIdent} from "src/models/AppFeature";
@@ -254,23 +239,6 @@ const thumbnail = ref('')
 const content = ref('')
 const searchIndex = ref<any>()
 const {selectTabset} = useTabsetService()
-
-const json = ref(null)
-const tags = ref<string[]>([])
-
-const state = reactive({
-  val: JSON.stringify(json),
-  data: json
-})
-
-watchEffect(() => {
-  const selectedTab = useUiStore().getSelectedTab
-  if (selectedTab) {
-    json.value = JSON.parse(JSON.stringify(selectedTab))
-    tags.value = selectedTab.tags
-  }
-})
-
 
 watchEffect(() => hasAllUrlsPermission.value = usePermissionsStore().hasAllOrigins())
 

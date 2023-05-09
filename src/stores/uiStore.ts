@@ -24,6 +24,7 @@ export enum DrawerTabs {
   HISTORY = "history",
   FEATURES = "features",
   TAB_DETAILS = "tabDetails",
+  TABSET_DETAILS = "tabsetDetails",
   NEW_TAB_URLS = "newTabUrls",
   TAGS_VIEWER = "tagsViewer",
   HELP = "help",
@@ -79,6 +80,7 @@ export const useUiStore = defineStore('ui', () => {
 
   // entity management
   const entityType = ref<string | undefined>(undefined)
+  const selectedTabsetId = ref<string | undefined>(undefined)
 
   // watch(leftDrawer.value, (val: Object) => {
   //   $q.LocalStorage.set("ui.leftDrawer", val)
@@ -171,6 +173,9 @@ export const useUiStore = defineStore('ui', () => {
     entityType.value = type
   }
 
+  function setSelectedTabsetId(id: string) {
+    selectedTabsetId.value = id
+  }
   function setHighlightTerm(term: string | undefined) {
     highlightTerm.value = term
   }
@@ -259,6 +264,8 @@ export const useUiStore = defineStore('ui', () => {
     highlightTerm,
     setHighlightTerm,
     selectedTag,
-    setSelectedTag
+    setSelectedTag,
+    setSelectedTabsetId,
+    selectedTabsetId
   }
 })

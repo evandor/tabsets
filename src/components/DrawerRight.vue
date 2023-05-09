@@ -75,6 +75,7 @@
   <BrowserHistory v-else-if="tab ===  DrawerTabs.HISTORY"/>
   <Features v-else-if="tab ===  DrawerTabs.FEATURES"/>
   <TabDetails v-else-if="tab ===  DrawerTabs.TAB_DETAILS"/>
+  <TabsetDetails v-else-if="tab ===  DrawerTabs.TABSET_DETAILS"/>
 
   <TabsetHelp v-else-if="tab ===  DrawerTabs.HELP"/>
   <TagsViewer v-else-if="tab ===  DrawerTabs.TAGS_VIEWER"/>
@@ -102,6 +103,7 @@ import TabDetails from "components/views/TabDetails.vue";
 import NewTabUrls from "components/NewTabUrls.vue";
 import TabsetHelp from "components/TabsetHelp.vue";
 import TagsViewer from "components/views/TagsViewer.vue";
+import TabsetDetails from "components/views/TabsetDetails.vue";
 
 const router = useRouter()
 
@@ -150,6 +152,8 @@ const drawerLabel = () => {
       return "Add. Features"
     case DrawerTabs.TAB_DETAILS:
       return "Tab Details"
+    case DrawerTabs.TABSET_DETAILS:
+      return "Tabset Details"
     case DrawerTabs.NEW_TAB_URLS:
       return "Urls on New Tab Page"
     case DrawerTabs.HELP:

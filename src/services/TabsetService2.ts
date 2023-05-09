@@ -293,9 +293,10 @@ export function useTabsetService() {
               t.contentHash = ""
             }
             if (oldContent && oldContent !== '' && t.contentHash !== '' && t.chromeTab.url) {
-              useSuggestionsStore().addSuggestion(
-                new Suggestion(uid(), 'Content Change Detected', "Info: Something might have changed in " + t.chromeTab.url + ".",
-                  t.chromeTab.url, SuggestionType.CONTENT_CHANGE))
+              // TODO not ready yet (like this)
+              // useSuggestionsStore().addSuggestion(
+              //   new Suggestion(uid(), 'Content Change Detected', "Info: Something might have changed in " + t.chromeTab.url + ".",
+              //     t.chromeTab.url, SuggestionType.CONTENT_CHANGE))
             }
 
             console.log("about to save tabset", tabset.id)

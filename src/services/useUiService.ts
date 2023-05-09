@@ -10,6 +10,9 @@ export function useUiService() {
     if (data && data['entityType' as keyof object]) {
       useUiStore().setEntityType(data['entityType' as keyof object])
     }
+    if (data && data['tabsetId' as keyof object]) {
+      useUiStore().setSelectedTabsetId(data['tabsetId' as keyof object])
+    }
   }
 
   const showSearchResultsPageFor = (term: string) => {

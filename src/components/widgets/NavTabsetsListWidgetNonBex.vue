@@ -118,15 +118,7 @@ import {SelectTabsetCommand} from "src/domain/tabsets/SelectTabset";
 import TabFaviconWidget from "components/widgets/TabFaviconWidget.vue";
 import {useSearchStore} from "src/stores/searchStore";
 import {MoveToTabsetCommand} from "src/domain/tabs/MoveToTabset";
-import {MarkTabsetAsFavoriteCommand} from "src/domain/tabsets/MarkTabsetAsFavorite";
-import {MarkTabsetAsDefaultCommand} from "src/domain/tabsets/MarkTabsetAsDefault";
-import {MarkTabsetAsArchivedCommand} from "src/domain/tabsets/MarkTabsetAsArchived";
-import RestoreTabsetDialog from "components/dialogues/RestoreTabsetDialog.vue";
 import {useUtils} from "src/services/Utils";
-import {usePermissionsStore} from "stores/permissionsStore";
-import {FeatureIdent} from "src/models/AppFeature";
-import {Space} from "src/models/Space";
-import _ from "lodash"
 import TabsetListContextMenu from "components/widgets/helper/TabsetListContextMenu.vue";
 
 const {handleError, handleSuccess} = useNotificationHandler()
