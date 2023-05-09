@@ -72,7 +72,7 @@
               :tabset="tabset"
               :index="index"
               :hoveredTab="hoveredTab"
-              @toggleExpand="(index:number) => toggleExpand(index)" />
+              @toggleExpand="(index:number) => toggleExpand(index)"/>
 
           </q-item-section>
         </template>
@@ -84,9 +84,16 @@
                 <div class="col-1">
                   <TabFaviconWidget height="12px" width="12px" :tab="tab"/>
                 </div>
-                <div class="col-11 ellipsis">
+                <div class="col-10 ellipsis">
                   {{ tab.chromeTab.title }}
                   <q-tooltip class="tooltip">{{ tab.chromeTab.url }}</q-tooltip>
+                </div>
+                <div class="col-1">
+                  <q-icon
+                    @click="deleteTab(tab)"
+                    name="o_delete" color="grey-5">
+                    <q-tooltip class="tooltip">Delete this tab from this tabset</q-tooltip>
+                  </q-icon>
                 </div>
               </div>
 
@@ -120,6 +127,8 @@ import {useSearchStore} from "src/stores/searchStore";
 import {MoveToTabsetCommand} from "src/domain/tabs/MoveToTabset";
 import {useUtils} from "src/services/Utils";
 import TabsetListContextMenu from "components/widgets/helper/TabsetListContextMenu.vue";
+import {Tab} from "src/models/Tab";
+import {DeleteTabCommand} from "src/domain/commands/DeleteTabCommand";
 
 const {handleError, handleSuccess} = useNotificationHandler()
 const {inBexMode} = useUtils()
@@ -192,6 +201,7 @@ const toggleExpand = (index: number): void => {
 
 const hoveredOver = (tabsetId: string) => hoveredTab.value === tabsetId
 
+const deleteTab = (tab: Tab) => useCommandExecutor().executeFromUi(new DeleteTabCommand(tab))
 
 </script>
 
