@@ -51,6 +51,8 @@ import TabsetService from "src/services/TabsetService";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {useUiStore} from "src/stores/uiStore";
 import {TabsetStatus} from "src/models/Tabset";
+import {useSpacesStore} from "src/stores/spacesStore";
+import spacesService from "src/services/SpacesService";
 
 defineEmits([
   ...useDialogPluginComponent.emits
@@ -106,7 +108,8 @@ const createNewTabset = () => {
 }
 
 const newTabsetDialogWarning = () => {
-  const existsInTabset = tabsStore.existingInTabset(newTabsetName.value)
+  const currentSpace = useSpacesStore().space
+  const existsInTabset = tabsStore.existingInTabset(newTabsetName.value, currentSpace)
   return (!hideWarning.value && existsInTabset && existsInTabset.status !== TabsetStatus.DELETED) ?
     "Hint: Tabset exists, but you can add tabs" : ""
 }

@@ -193,8 +193,6 @@ class ChromeListeners {
             } catch (err) {
             }
 
-            console.log("domain", domain)
-
             return {
               id: t.id,
               index: t.index,
@@ -255,7 +253,7 @@ class ChromeListeners {
         // if (tab.id && this.injectedScripts.get(tab.id) && this.injectedScripts.get(tab.id).indexOf(script) >= 0) {
         //   console.log("omitting script " + script + " on tab " + tab.id)
         // } else {
-          console.log("executing scripts", tab.id, script)
+          console.debug("executing scripts", tab.id, script)
           // @ts-ignore
           chrome.scripting.executeScript({
             target: {tabId: tab.id, allFrames: false},

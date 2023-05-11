@@ -36,7 +36,7 @@ function runHousekeeping(alarm: chrome.alarms.Alarm) {
           //console.log("got document", d)
           useSearchStore().remove((doc: SearchDoc, idx: number) => {
             if (doc.url === d.url) {
-              console.log("removing", doc)
+              console.debug("removing", doc)
             }
             return doc.url === d.url
           })

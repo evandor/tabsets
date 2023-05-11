@@ -12,6 +12,7 @@ import {SpecialTabsetIdent} from "src/domain/tabsets/CreateSpecialTabset";
 import {usePermissionsStore} from "src/stores/permissionsStore";
 import {FeatureIdent} from "src/models/AppFeature";
 import {STRIP_CHARS_IN_USER_INPUT} from "boot/constants";
+import {Space} from "src/models/Space";
 
 async function queryTabs(): Promise<chrome.tabs.Tab[]> {
   // @ts-ignore
@@ -158,9 +159,15 @@ export const useTabsStore = defineStore('tabs', {
       }
     },
     existingInTabset: (state) => {
-      return (searchName: string): Tabset | undefined => {
+      return (searchName: string, space: Space = null as unknown as Space): Tabset | undefined => {
         const trustedName = searchName.replace(STRIP_CHARS_IN_USER_INPUT, '')
-        return _.find([...state.tabsets.values()], (ts: Tabset) => ts.name === trustedName?.trim())
+        return _.find([...state.tabsets.values()], (ts: Tabset) => {
+          if (space === null) {
+            return ts.name === trustedName?.trim()
+          } else {
+            return ts.name === trustedName?.trim() && ts.spaces.indexOf(space.id) >= 0
+          }
+        })
       }
     },
     getTab: (state) => {

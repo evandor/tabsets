@@ -8,7 +8,7 @@ import {useTabsStore} from "src/stores/tabsStore";
 export const useSpacesStore = defineStore('spaces', () => {
 
   const spaces = ref<Map<string, Space>>(new Map<string, Space>())
-  const space = ref(null as unknown as Space)
+  const space = ref<Space>(null as unknown as Space)
 
   const currentFromLocalStorage = localStorage.getItem("currentSpace")
 

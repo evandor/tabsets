@@ -16,9 +16,9 @@ import {useDB} from "src/services/usePersistenceService";
 import {SpecialTabsetIdent} from "src/domain/tabsets/CreateSpecialTabset";
 // @ts-ignore
 import {v5 as uuidv5} from 'uuid';
-import {useSuggestionsStore} from "src/stores/suggestionsStore";
-import {Suggestion, SuggestionType} from "src/models/Suggestion";
 import {useSettingsStore} from "src/stores/settingsStore"
+import {Space} from "src/models/Space";
+import {useSpacesStore} from "src/stores/spacesStore";
 
 const {db} = useDB()
 
@@ -57,12 +57,12 @@ export function useTabsetService() {
     const trustedName = name.replace(STRIP_CHARS_IN_USER_INPUT, '')
     const tabs: Tab[] = _.filter(
       _.map(chromeTabs, t => new Tab(uid(), t)),
-      (t:Tab) => {
+      (t: Tab) => {
         if (!useSettingsStore().isEnabled('extensionsAsTabs')) {
           return !t.chromeTab.url?.startsWith("chrome-extension://")
         }
         return true
-    })
+      })
     try {
       const result: NewOrReplacedTabset = await useTabsStore()
         .updateOrCreateTabset(trustedName, tabs, merge, type)
@@ -82,6 +82,38 @@ export function useTabsetService() {
       return Promise.reject("could not update or create tabset")
     } catch (err) {
       return Promise.reject("problem updating or creating tabset: " + err)
+    }
+  }
+
+  const copyFromTabset = async (tabset: Tabset, space: Space): Promise<object> => {
+
+    function nameFrom(name: string): string {
+      const nameCandidate = name + " - Copy"
+      const existsAlready = useTabsStore().existingInTabset(nameCandidate, useSpacesStore().space)
+      return existsAlready ? nameFrom(nameCandidate) : nameCandidate.replace(STRIP_CHARS_IN_USER_INPUT, '')
+    }
+
+    const copyName = nameFrom(tabset.name)
+    try {
+      const result: NewOrReplacedTabset = await useTabsStore().updateOrCreateTabset(copyName, tabset.tabs)
+      if (result && result.tabset) {
+        if (space) {
+          tabset.spaces = [space.id]
+        } else {
+          tabset.spaces = []
+        }
+        await saveTabset(result.tabset)
+        selectTabset(result.tabset.id)
+        useSearchStore().indexTabs(result.tabset.id, result.tabset.tabs)
+        return {
+          replaced: false,
+          tabset: result.tabset,
+          merged: false
+        }
+      }
+      return Promise.reject("could not copy tabset")
+    } catch (err) {
+      return Promise.reject("problem copying tabset: " + err)
     }
   }
 
@@ -163,7 +195,7 @@ export function useTabsetService() {
     if (tabset) {
       const tabsStore = useTabsStore()
       _.forEach(tabsStore.getTabset(tabsetId)?.tabs, (t: Tab) => {
-        console.info(t, "removing thumbnails")
+        console.debug(t, "removing thumbnails")
         removeThumbnailsFor(t?.chromeTab.url || '')
       })
       tabsStore.deleteTabset(tabsetId)
@@ -244,7 +276,7 @@ export function useTabsetService() {
     db.saveContent(tab, text, metas, title, tabsetIds)
       .catch((err: any) => console.log("err", err))
 
-    console.log("updating meta data for ", tabsetIds, tab.url, metas)
+    console.debug("updating meta data for ", tabsetIds, tab.url, metas)
     const tabsets = [...useTabsStore().tabsets.values()]
 
     const savePromises: Promise<any>[] = []
@@ -263,8 +295,8 @@ export function useTabsetService() {
             if (metas['keywords' as keyof object]) {
               t.keywords = metas['keywords' as keyof object]
               if (t.tags && t.tags.length === 0 && t.keywords) {
-                const blankSeparated= t.keywords.split(" ")
-                const commaSeparated= t.keywords.split(",")
+                const blankSeparated = t.keywords.split(" ")
+                const commaSeparated = t.keywords.split(",")
                 const splits = (t.keywords.indexOf(",") >= 0) ? commaSeparated : blankSeparated
                 t.tags = _.union(_.filter(_.map(splits, (split) => split.trim()), (split: string) => split.length > 0))
               }
@@ -396,15 +428,15 @@ export function useTabsetService() {
 
   const saveBlob = (tab: chrome.tabs.Tab | undefined, blob: Blob): Promise<string> => {
     if (tab && tab.url) {
-      const id:string = uid()
+      const id: string = uid()
       return db.saveBlob(id, tab.url, blob, 'PNG')
-        .then(() =>  Promise.resolve(id))
-        .catch(err =>  Promise.reject(err))
+        .then(() => Promise.resolve(id))
+        .catch(err => Promise.reject(err))
     }
     return Promise.reject("no tab or tab url")
   }
 
-  const getBlob = (blobId: string):Promise<any>  => {
+  const getBlob = (blobId: string): Promise<any> => {
     return db.getBlob(blobId)
   }
 
@@ -507,6 +539,7 @@ export function useTabsetService() {
     init,
     saveOrReplaceFromChromeTabs,
     saveOrReplaceFromBookmarks,
+    copyFromTabset,
     deleteFromTabset,
     deleteTabset,
     getTabset,

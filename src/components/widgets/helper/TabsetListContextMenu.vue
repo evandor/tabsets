@@ -15,7 +15,7 @@
               clickable v-close-popup @click="showDetails(props.tabset.id)">
         <q-icon name="o_info" class="q-my-xs q-mr-xs" color="grey-5" style="position:relative;top:-1px"/>Tabset Details...
       </q-item>
-      <q-item v-if="props.tabset?.status === TabsetStatus.DEFAULT"
+      <q-item v-if="props.tabset?.status === TabsetStatus.DEFAULT && props.tabset?.type !== TabsetType.SPECIAL"
               clickable v-close-popup @click="markAsFavorite(props.tabset.id)">
         <q-icon name="stars" class="q-my-xs q-mr-xs" color="grey-5" style="position:relative;top:-1px"/>Make favorite
       </q-item>
@@ -75,6 +75,10 @@
         Open all tabs in a new window...
       </q-item>
       <q-separator/>
+      <q-item clickable v-close-popup @click.stop="copyTabset(tabset)">
+        <q-icon name="o_folder_copy" class="q-my-xs q-mr-xs" color="grey-5" style="position:relative;top:-1px"/>Copy tabset...
+      </q-item>
+      <q-separator/>
       <q-item clickable v-close-popup @click.stop="deleteDialog(tabset)">
         <q-icon name="o_delete" class="q-my-xs q-mr-xs" color="grey-5" style="position:relative;top:-1px"/>Delete tabset...
       </q-item>
@@ -95,7 +99,7 @@ import {MarkTabsetAsDefaultCommand} from "src/domain/tabsets/MarkTabsetAsDefault
 import {MarkTabsetAsArchivedCommand} from "src/domain/tabsets/MarkTabsetAsArchived";
 import RestoreTabsetDialog from "components/dialogues/RestoreTabsetDialog.vue";
 import {Space} from "src/models/Space";
-import {useSpacesStore} from "stores/spacesStore";
+import {useSpacesStore} from "src/stores/spacesStore";
 import _ from "lodash";
 import {useTabsetService} from "src/services/TabsetService2";
 import {useQuasar} from "quasar";
@@ -103,6 +107,7 @@ import DeleteTabsetDialog from "components/dialogues/DeleteTabsetDialog.vue";
 import {StopSessionCommand} from "src/domain/commands/StopSessionCommand";
 import {useUiService} from "src/services/useUiService";
 import {DrawerTabs} from "stores/uiStore";
+import {CopyTabsetCommand} from "src/domain/tabsets/CopyTabset";
 
 const {inBexMode} = useUtils()
 
@@ -189,6 +194,10 @@ const removeFromSpace = (tabset: Tabset, spaceId: string) => {
   tabset.spaces = _.filter(tabset.spaces, (s: string) => s !== spaceId)
   console.log("spaces set to", tabset.spaces)
   useTabsetService().saveTabset(tabset)
+}
+
+const copyTabset = (tabset: Tabset) => {
+  useCommandExecutor().executeFromUi(new CopyTabsetCommand(tabset))
 }
 
 const deleteDialog = (tabset: Tabset) =>

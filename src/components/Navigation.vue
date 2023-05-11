@@ -36,7 +36,7 @@
 
       <q-separator v-if="tabsetsWithTypes([TabsetType.SPECIAL]).length > 0"/>
 
-      <NavTabsetsListWidget :tabsets="tabsetsWithTypes([TabsetType.SPECIAL])"/>
+      <NavTabsetsListWidgetNonBex :tabsets="tabsetsWithTypes([TabsetType.SPECIAL])"/>
 
     </div>
   </div>

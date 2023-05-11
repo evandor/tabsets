@@ -240,6 +240,16 @@ const content = ref('')
 const searchIndex = ref<any>()
 const {selectTabset} = useTabsetService()
 
+const tags = ref<string[]>([])
+
+watchEffect(() => {
+  const selectedTab = useUiStore().getSelectedTab
+  if (selectedTab) {
+    tags.value = selectedTab.tags
+  }
+})
+
+
 watchEffect(() => hasAllUrlsPermission.value = usePermissionsStore().hasAllOrigins())
 
 watchEffect(() => {
