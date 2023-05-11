@@ -12,7 +12,7 @@ export class RestoreTabsetCommand implements Command<string> {
 
   constructor(
     public tabsetId: string,
-    public inNewWindow: Boolean = true) {
+    public inNewWindow: boolean = true) {
   }
 
   async execute(): Promise<ExecutionResult<string>> {
@@ -20,13 +20,10 @@ export class RestoreTabsetCommand implements Command<string> {
     const tabsStore = useTabsStore()
     try {
       tabsStore.deactivateListeners()
-      // if (closeOldTabs) {
-      //   await ChromeApi.closeAllTabs()
-      // }
       const tabset = useTabsetService().getTabset(this.tabsetId)
       if (tabset) {
         console.log("found tabset for id", this.tabsetId)
-        ChromeApi.restore(tabset)
+        ChromeApi.restore(tabset, this.inNewWindow)
         return new ExecutionResult("result", "doneMsg")
       }
       return Promise.reject("could not find tabset")

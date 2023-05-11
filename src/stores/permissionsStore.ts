@@ -150,16 +150,16 @@ export const usePermissionsStore = defineStore('permissions', () => {
   })
 
   function deactivateRecursive(feature: string) {
-    console.log("deactivate recursive: ", feature)
+    //console.log("deactivate recursive: ", feature)
     const deactivatedIdent = feature.toUpperCase() as FeatureIdent
     const appFeature = new AppFeatures().getFeature(deactivatedIdent)
     if (appFeature && appFeature.type === FeatureType.DEFAULT) {
       if (inActiveDefaultFeatures.value.indexOf(feature) < 0) {
-        console.log("deactivating default feature", feature)
+        //console.log("deactivating default feature", feature)
         inActiveDefaultFeatures.value.push(feature)
       }
     } else {
-      console.log("deactivating normal feature", feature)
+      //console.log("deactivating normal feature", feature)
       const index = activeFeatures.value.indexOf(feature)
       if (index >= 0) {
         activeFeatures.value.splice(index, 1)
@@ -170,14 +170,14 @@ export const usePermissionsStore = defineStore('permissions', () => {
             deactivateRecursive(f.ident.toLowerCase())
           }
         })
-        console.log("deactivated", feature, activeFeatures.value)
+        //console.log("deactivated", feature, activeFeatures.value)
       }
     }
   }
 
   const deactivateFeature = computed(() => {
     return (feature: string): void => {
-      console.log("deactivating", feature)
+      //console.log("deactivating", feature)
       deactivateRecursive(feature)
     }
   })

@@ -30,7 +30,7 @@ export class MarkTabsetDeletedCommand implements Command<boolean> {
       .then((tabset) => {
         console.log("deleting", tabset.type, tabset.id)
         if (tabset.type === TabsetType.SPECIAL && tabset.id === "BACKUP") {
-          console.log("deactivating")
+          //console.log("deactivating")
           usePermissionsStore().deactivateFeature(FeatureIdent.BACKUP.toLowerCase())
         } else if (tabset.type === TabsetType.SPECIAL && tabset.id === "IGNORE") {
           usePermissionsStore().deactivateFeature(FeatureIdent.IGNORE.toLowerCase())

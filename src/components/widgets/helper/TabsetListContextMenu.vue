@@ -4,24 +4,29 @@
 
       <q-item v-if="props.tabset?.tabs.length > 0 && expanded[index]"
               clickable v-close-popup @click="toggleExpand(index)">
-        <q-icon name="o_expand_less" class="q-my-xs q-mr-xs" color="grey-5" style="position:relative;top:-1px"/>Collapse
+        <q-icon name="o_expand_less" class="q-my-xs q-mr-xs" color="grey-5" style="position:relative;top:-1px"/>
+        Collapse
       </q-item>
       <q-item v-if="props.tabset?.tabs.length > 0 && !expanded[index]"
               clickable v-close-popup @click="toggleExpand(index)">
-        <q-icon name="o_expand_more" class="q-my-xs q-mr-xs" color="grey-5" style="position:relative;top:-1px"/>Expand
+        <q-icon name="o_expand_more" class="q-my-xs q-mr-xs" color="grey-5" style="position:relative;top:-1px"/>
+        Expand
       </q-item>
 
       <q-item
-              clickable v-close-popup @click="showDetails(props.tabset.id)">
-        <q-icon name="o_info" class="q-my-xs q-mr-xs" color="grey-5" style="position:relative;top:-1px"/>Tabset Details...
+        clickable v-close-popup @click="showDetails(props.tabset.id)">
+        <q-icon name="o_info" class="q-my-xs q-mr-xs" color="grey-5" style="position:relative;top:-1px"/>
+        Tabset Details...
       </q-item>
       <q-item v-if="props.tabset?.status === TabsetStatus.DEFAULT && props.tabset?.type !== TabsetType.SPECIAL"
               clickable v-close-popup @click="markAsFavorite(props.tabset.id)">
-        <q-icon name="stars" class="q-my-xs q-mr-xs" color="grey-5" style="position:relative;top:-1px"/>Make favorite
+        <q-icon name="stars" class="q-my-xs q-mr-xs" color="grey-5" style="position:relative;top:-1px"/>
+        Make favorite
       </q-item>
       <q-item v-if="props.tabset.status === TabsetStatus.FAVORITE"
               clickable v-close-popup @click="markAsDefault(props.tabset.id)">
-        <q-icon name="o_stars" class="q-my-xs q-mr-xs" color="grey-5" style="position:relative;top:-1px"/>Remove as favorite
+        <q-icon name="o_stars" class="q-my-xs q-mr-xs" color="grey-5" style="position:relative;top:-1px"/>
+        Remove as favorite
       </q-item>
 
       <q-item v-if="tabset.type === TabsetType.SESSION && tabset.status !== TabsetStatus.DELETED"
@@ -68,19 +73,36 @@
 
       </q-item>
 
-
       <q-separator v-if="props.tabset.tabs.length > 0 && inBexMode()"/>
       <q-item v-if="props.tabset.tabs.length > 0 && inBexMode()"
-              clickable v-close-popup @click="restoreDialog(props.tabset.id)">
-        Open all tabs in a new window...
+              clickable>
+        <q-item-section>Open all tabsets tabs...</q-item-section>
+        <q-item-section side>
+          <q-icon name="keyboard_arrow_right"/>
+        </q-item-section>
+
+        <q-menu anchor="top end" self="top start">
+          <q-list>
+            <q-item dense clickable v-close-popup @click="restoreDialog(props.tabset.id)">
+              <q-item-section>in a new window</q-item-section>
+            </q-item>
+            <q-item dense clickable v-close-popup @click="restoreInGroup(props.tabset.id)">
+              <q-item-section>in current window</q-item-section>
+            </q-item>
+          </q-list>
+        </q-menu>
+
       </q-item>
+
       <q-separator/>
       <q-item clickable v-close-popup @click.stop="copyTabset(tabset)">
-        <q-icon name="o_folder_copy" class="q-my-xs q-mr-xs" color="grey-5" style="position:relative;top:-1px"/>Copy tabset...
+        <q-icon name="o_folder_copy" class="q-my-xs q-mr-xs" color="grey-5" style="position:relative;top:-1px"/>
+        Copy tabset...
       </q-item>
       <q-separator/>
       <q-item clickable v-close-popup @click.stop="deleteDialog(tabset)">
-        <q-icon name="o_delete" class="q-my-xs q-mr-xs" color="grey-5" style="position:relative;top:-1px"/>Delete tabset...
+        <q-icon name="o_delete" class="q-my-xs q-mr-xs" color="grey-5" style="position:relative;top:-1px"/>
+        Delete tabset...
       </q-item>
     </q-list>
   </q-menu>
@@ -108,6 +130,7 @@ import {StopSessionCommand} from "src/domain/commands/StopSessionCommand";
 import {useUiService} from "src/services/useUiService";
 import {DrawerTabs} from "stores/uiStore";
 import {CopyTabsetCommand} from "src/domain/tabsets/CopyTabset";
+import {RestoreTabsetCommand} from "src/domain/tabsets/RestoreTabset";
 
 const {inBexMode} = useUtils()
 
@@ -146,9 +169,11 @@ const showDetails = (tabsetId: string) => useUiService().rightDrawerSetActiveTab
 const stopSession = (tabsetId: string) => {
   const tabset = useTabsetService().getTabset(tabsetId)
   if (tabset) {
-    useCommandExecutor().executeFromUi(new StopSessionCommand(tabset ))
+    useCommandExecutor().executeFromUi(new StopSessionCommand(tabset))
   }
 }
+
+const restoreInGroup = (tabsetId: string) => useCommandExecutor().execute(new RestoreTabsetCommand(tabsetId, false))
 
 const restoreDialog = (tabsetId: string) => $q.dialog({
   component: RestoreTabsetDialog,

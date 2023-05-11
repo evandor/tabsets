@@ -223,7 +223,6 @@ class ChromeApi {
 
     if (inNewWindow) {
       const urls: string[] = _.map(_.filter(tabset.tabs, (t: Tab) => t.chromeTab !== undefined), (t: Tab) => t.chromeTab.url || '')
-
       chrome.windows.create({
         focused: true,
         left: 50,
