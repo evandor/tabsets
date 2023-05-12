@@ -253,22 +253,22 @@ class ChromeListeners {
         // if (tab.id && this.injectedScripts.get(tab.id) && this.injectedScripts.get(tab.id).indexOf(script) >= 0) {
         //   console.log("omitting script " + script + " on tab " + tab.id)
         // } else {
-          console.debug("executing scripts", tab.id, script)
-          // @ts-ignore
-          chrome.scripting.executeScript({
-            target: {tabId: tab.id, allFrames: false},
-            files: [script] //["tabsets-content-script.js","content-script-thumbnails.js"],
-          }, (callback: any) => {
-            if (chrome.runtime.lastError) {
-              console.warn("could not execute script: " + chrome.runtime.lastError.message, info.url);
-            }
-            //console.debug("callback", callback)
-          });
-          // const activeScripts = this.injectedScripts.get(tab.id || 0) || []
-          // if (activeScripts.indexOf(script) < 0) {
-          //  // this.injectedScripts.set(tab.id || 0, activeScripts.concat(script))
-          //   //console.log("adding injectedScripts", this.injectedScripts)
-          // }
+        console.debug("executing scripts", tab.id, script)
+        // @ts-ignore
+        chrome.scripting.executeScript({
+          target: {tabId: tab.id, allFrames: false},
+          files: [script] //["tabsets-content-script.js","content-script-thumbnails.js"],
+        }, (callback: any) => {
+          if (chrome.runtime.lastError) {
+            console.warn("could not execute script: " + chrome.runtime.lastError.message, info.url);
+          }
+          //console.debug("callback", callback)
+        });
+        // const activeScripts = this.injectedScripts.get(tab.id || 0) || []
+        // if (activeScripts.indexOf(script) < 0) {
+        //  // this.injectedScripts.set(tab.id || 0, activeScripts.concat(script))
+        //   //console.log("adding injectedScripts", this.injectedScripts)
+        // }
         // }
       })
     }
@@ -368,6 +368,26 @@ class ChromeListeners {
   }
 
   private handleHtml2Text(request: any, sender: chrome.runtime.MessageSender, sendResponse: any) {
+
+    console.log("request html", request.html)
+    // console.log("sender", sender)
+    if (sender && sender.url && request.html) {
+      try {
+        const hostname = new URL(sender.url).hostname
+        console.log("hostname", hostname)
+        if (hostname === "www.youtube.com") {
+          const regex = /"shortDescription":"([^"]*)/mg
+          const matches = request.html.matchAll(regex)
+          for (const match of matches) {
+            console.log("found desc", match[1])
+            request.metas['tabsets:longDescription'] = match[1]
+          }
+        }
+      } catch (err) {
+        console.log("error", err)
+      }
+    }
+
     const text = convert(request.html, {
       wordwrap: 130
     });

@@ -89,7 +89,7 @@ const configKonva = {
 
 const setupCanvas = (caller: string) => {
 
-
+  console.log("setup Canvas")
   let top = 0
   _.forEach(tabsStore.getCurrentTabs, t => {
     top += 60
@@ -100,7 +100,7 @@ const setupCanvas = (caller: string) => {
       y: t.canvasTop ? t.canvasTop : top,
       width: 200,
       height: 50,
-      name: t.chromeTab.title
+      name: (t.chromeTab.title || '').length > 30 ? t.chromeTab.title?.substring(0, 27) + "..." : t.chromeTab.title
     })
 
     const img = new window.Image();
@@ -116,10 +116,15 @@ const setupCanvas = (caller: string) => {
 
   const layer = tabsStore.getCurrentTabset?.canvas || undefined
   if (layer) {
+    let jsonString = layer.replaceAll('\\"', '"').substring(1)
+    jsonString = jsonString.substring(0, jsonString.length - 1)
+    console.log("layer", tabsStore.getCurrentTabset?.id, "*" + jsonString + "*")
     const json = JSON.parse(layer)
     console.log("drawingLayer1", layer)
     console.log("drawingLayer2", json)
     console.log("drawingLayer3", drawingLayer.value.getNode())
+    console.log("drawingLayer4", json.children)
+    console.log("drawingLayer5", json.children.length)
     //drawingLayer.value = layer[0]
     //drawingLayer.value.getStage().add(layer[0])
     // drawingLayer.value.getNode().add([...layer])
@@ -160,10 +165,19 @@ const setupCanvas = (caller: string) => {
             textarea.focus();
 
             textarea.addEventListener('keydown', function (e) {
+              //console.log("e", e.keyCode)
               // hide on enter
               if (e.keyCode === 13) {
-                element.text(textarea.value);
+                if (textarea.value.trim() === '') {
+                  element.remove()
+                } else {
+                  element.text(textarea.value);
+                }
                 document.body.removeChild(textarea);
+                if (tabsStore.getCurrentTabset) {
+                  const node = drawingLayer.value.getNode().toJSON()
+                  TabsetService.saveCanvasLayer(tabsStore.getCurrentTabset.id, node)
+                }
               }
             });
           })
@@ -225,16 +239,17 @@ const addElement = (type: string) => {
       var simpleText = new Konva.Text({
         x: 200,
         y: 15,
-        text: 'Simple Text',
+        text: 'Text',
         fontSize: 30,
-        fontFamily: 'Calibri',
-        fill: 'green',
+        fontFamily: 'Roboto',
+        fill: 'black',
         draggable: true
       });
       drawingLayer.value.getNode().add(simpleText)
       console.log("hier3", JSON.stringify(drawingLayer.value.getNode()))
       if (tabsStore.getCurrentTabset) {
-        TabsetService.saveCanvasLayer(tabsStore.getCurrentTabset.id, drawingLayer.value.getNode())
+        const node = drawingLayer.value.getNode().toJSON()
+        TabsetService.saveCanvasLayer(tabsStore.getCurrentTabset.id, node)
       }
       break
     default:

@@ -7,9 +7,11 @@ import {bexContent} from 'quasar/wrappers'
 export default bexContent((bridge: any) => {
   console.log("tabsets: initializing content script for tab analysis")
 
+  // I guess this is never called  TODO remove
   chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+    console.log("tabsets: !!!", request.msg)
     if (request.msg === 'getContent') {
-      console.log("received message for content")
+      console.log("tabsets: received message for content", document.documentElement.outerHTML)
       sendResponse({content: document.documentElement.outerHTML});
     }
     return sendResponse({content: "unknown request in tabsets-content-scripts: " + request.msg});
@@ -32,7 +34,6 @@ export default bexContent((bridge: any) => {
       }
       // res.push((element.attributes.getNamedItem('name')?.textContent) || 'undef')
     })
-    //console.log("result", result)
     return result
   }
 

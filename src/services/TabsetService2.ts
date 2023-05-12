@@ -292,6 +292,9 @@ export function useTabsetService() {
               // @ts-ignore
               useSearchStore().update(tab.url, 'description', t.description)
             }
+            if (metas['tabsets:longDescription' as keyof object]) {
+              t.longDescription = metas['tabsets:longDescription' as keyof object]
+            }
             if (metas['keywords' as keyof object]) {
               t.keywords = metas['keywords' as keyof object]
               if (t.tags && t.tags.length === 0 && t.keywords) {

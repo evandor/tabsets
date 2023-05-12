@@ -21,6 +21,7 @@ export class Tab {
   bookmarkUrl: string | undefined
   bookmarkId: string | undefined
   description: string
+  longDescription: string | undefined
   keywords: string
   tags: string[]
   image: string

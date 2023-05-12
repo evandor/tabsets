@@ -30,6 +30,12 @@ export const usePermissionsStore = defineStore('permissions', () => {
   const inActiveDefaultFeatures = ref<string[]>($q.localStorage?.getItem('ui.inActiveDefaultFeatures') as string[] || [])
 
   async function initialize() {
+    if (storage) {
+      storage.getActiveFeatures().then((res) => activeFeatures.value = res)
+      storage.getInactiveDefaultFeatures().then((res) => inActiveDefaultFeatures.value = res)
+    } else {
+      console.warn("storage not provided")
+    }
     if (process.env.MODE !== 'bex') {
       return
     }
@@ -40,12 +46,6 @@ export const usePermissionsStore = defineStore('permissions', () => {
       grantedOptionalPermissions.value = permissions.value.permissions ? permissions.value.permissions : []
       grantedOptionalOrigins.value = permissions.value.origins ? permissions.value.origins : []
       console.log("initializing permissions Store done")
-    }
-    if (storage) {
-      storage.getActiveFeatures().then((res) => activeFeatures.value = res)
-      storage.getInactiveDefaultFeatures().then((res) => inActiveDefaultFeatures.value = res)
-    } else {
-      console.warn("storage not provided")
     }
   }
 

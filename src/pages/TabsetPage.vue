@@ -368,7 +368,7 @@ const sortingInfo = (): string => {
   }
 }
 
-const showSorting = () => tabsStore.getCurrentTabs.length > 10
+const showSorting = () => tabsStore.getCurrentTabs.length > 10 && $q.screen.gt.xs
 
 
 </script>

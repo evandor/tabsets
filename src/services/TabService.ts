@@ -42,7 +42,7 @@ class TabService {
           type: "basic",
           //iconUrl: "chrome-extension://" + selfId + "/www/favicon.ico",
           iconUrl: chrome.runtime.getURL("www/favicon.ico"),
-          message: "scheduled tab is due",
+          message: "scheduled tab is due: " + dueTabs[0].chromeTab.url,
           buttons: [
             {title: "open Tabsets Extension"}
           ]

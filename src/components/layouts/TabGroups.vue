@@ -1,103 +1,105 @@
 <template>
 
-  <InfoMessageWidget
-    :probability="1"
-    css-class="q-pa-none q-gutter-sm q-mb-md"
-    ident="tabgroups_info"
-    hint="You can create and reorder groups which you can use to assign tabs to by dragging and dropping. Create
+  <div class="q-ma-sm">
+
+    <InfoMessageWidget
+      :probability="1"
+      css-class="q-pa-none q-gutter-sm q-mb-md"
+      ident="tabgroups_info"
+      hint="You can create and reorder groups which you can use to assign tabs to by dragging and dropping. Create
               a new group by clicking on the plus sign."/>
 
-  <div class="row q-mb-lg q-mr-lg">
-    <div class="col text-bold">&nbsp;</div>
-    <div class="col-2 text-right text-primary cursor-pointer">
-      <q-icon name="add" size="1.3em" color="primary" class="q-mr-sm"/>
-      Add Group
-      <q-popup-edit :model-value="newGroupName" v-slot="scope"
-                    @update:model-value="val => setNewName(val)">
-        <q-input v-model="scope.value" dense autofocus counter @keyup.enter="scope.set"/>
-      </q-popup-edit>
-    </div>
-  </div>
-
-  <div>
-    <vue-draggable-next
-      class="row q-gutter-md"
-      :list="tabsetGroups">
-      <div
-        class="col text-bold bg-primary text-white upper-border q-pa-sm" style="cursor: move"
-        v-for="element in tabsetGroups"
-        :key="element.id">
-        {{ element.title }}
-        <q-popup-edit :model-value="element.title" v-slot="scope"
-                      @update:model-value="val => rename(element.id, val)">
-          <q-input
-            v-model="scope.value" dense autofocus counter @keyup.enter="scope.set"
-            :hint="element.id !== SPECIAL_ID_FOR_NO_GROUP_ASSIGNED ?
-              'Provide the new name of the group or delete it':
-              'Provide a new name. This group cannot be deleted'">
-            <template v-slot:after>
-              <q-btn
-                flat dense color="warning" icon="cancel"
-                @click.stop.prevent="scope.cancel"/>
-
-              <q-btn v-if="element.id !== SPECIAL_ID_FOR_NO_GROUP_ASSIGNED"
-                     flat dense color="negative" icon="delete"
-                     @click.stop.prevent="deleteGroup(element)"/>
-
-              <q-btn
-                flat dense color="positive" icon="check_circle"
-                @click.stop.prevent="scope.set"
-                :disable="scope.validate(scope.value) === false || scope.initialValue === scope.value"/>
-            </template>
-          </q-input>
+    <div class="row q-mb-lg q-mr-lg">
+      <div class="col text-bold">&nbsp;</div>
+      <div class="col-2 text-right text-primary cursor-pointer">
+        <q-icon name="add" size="1.3em" color="primary" class="q-mr-sm"/>
+        Add Group
+        <q-popup-edit :model-value="newGroupName" v-slot="scope"
+                      @update:model-value="val => setNewName(val)">
+          <q-input v-model="scope.value" dense autofocus counter @keyup.enter="scope.set"/>
         </q-popup-edit>
       </div>
-    </vue-draggable-next>
-  </div>
+    </div>
 
-  <div class="row q-gutter-md">
-    <div class="col lower-border"
-         v-for="element in tabsetGroups">
-      <q-list separator>
-        <vue-draggable-next
+    <div>
+      <vue-draggable-next
+        class="row q-gutter-md"
+        :list="tabsetGroups">
+        <div
+          class="col text-bold bg-primary text-white upper-border q-pa-sm" style="cursor: move"
+          v-for="element in tabsetGroups"
+          :key="element.id">
+          {{ element.title }}
+          <q-popup-edit :model-value="element.title" v-slot="scope"
+                        @update:model-value="val => rename(element.id, val)">
+            <q-input
+              v-model="scope.value" dense autofocus counter @keyup.enter="scope.set"
+              :hint="element.id !== SPECIAL_ID_FOR_NO_GROUP_ASSIGNED ?
+              'Provide the new name of the group or delete it':
+              'Provide a new name. This group cannot be deleted'">
+              <template v-slot:after>
+                <q-btn
+                  flat dense color="warning" icon="cancel"
+                  @click.stop.prevent="scope.cancel"/>
 
-          :list="tabsFor(element)"
-          :group="{ name: 'tabs', pull: 'clone' }"
+                <q-btn v-if="element.id !== SPECIAL_ID_FOR_NO_GROUP_ASSIGNED"
+                       flat dense color="negative" icon="delete"
+                       @click.stop.prevent="deleteGroup(element)"/>
 
-          @change="handleDragAndDrop($event, element)">
+                <q-btn
+                  flat dense color="positive" icon="check_circle"
+                  @click.stop.prevent="scope.set"
+                  :disable="scope.validate(scope.value) === false || scope.initialValue === scope.value"/>
+              </template>
+            </q-input>
+          </q-popup-edit>
+        </div>
+      </vue-draggable-next>
+    </div>
 
-          <q-item v-if="props.tabs.length === 0 &&
+    <div class="row q-gutter-md">
+      <div class="col lower-border"
+           v-for="element in tabsetGroups">
+        <q-list separator>
+          <vue-draggable-next
+
+            :list="tabsFor(element)"
+            :group="{ name: 'tabs', pull: 'clone' }"
+
+            @change="handleDragAndDrop($event, element)">
+
+            <q-item v-if="props.tabs.length === 0 &&
                       inBexMode() &&
                       useUiStore().rightDrawer.activeTab === DrawerTabs.UNASSIGNED_TABS &&
                       tabsStore.pendingTabset.tabs.length > 0">
-            <div class="row fit q-ma-lg q-pa-lg text-subtitle2 text-grey-8">
-              You can drag and drop items from the "Tabs to add" view to add them to this tabset by clicking on the
-              icons
-            </div>
-          </q-item>
+              <div class="row fit q-ma-lg q-pa-lg text-subtitle2 text-grey-8">
+                You can drag and drop items from the "Tabs to add" view to add them to this tabset by clicking on the
+                icons
+              </div>
+            </q-item>
 
-          <q-item
-            :clickable="usePermissionsStore().hasFeature(FeatureIdent.DETAILS)"
-            v-ripple
-            v-for="(tab,index) in tabsFor(element)"
-            @click.stop="showDetails(tab)"
-            @mouseover="showButtons(  tab.id,true)"
-            @mouseleave="showButtons( tab.id, false)"
-            @dragstart="startDrag($event, tab)"
-            :key="props.group + '_' + tab.id">
+            <q-item
+              :clickable="usePermissionsStore().hasFeature(FeatureIdent.DETAILS)"
+              v-ripple
+              v-for="(tab,index) in tabsFor(element)"
+              @click.stop="showDetails(tab)"
+              @mouseover="showButtons(  tab.id,true)"
+              @mouseleave="showButtons( tab.id, false)"
+              @dragstart="startDrag($event, tab)"
+              :key="props.group + '_' + tab.id">
 
-            <TabListElementWidget :showButtons="false"
-                                  :showIsOpened="false"
-                                  :key="props.group + '__' + tab.id"
-                                  :tab="tabAsTab(tab)"
-                                  :highlightUrl="highlightUrl"/>
+              <TabListElementWidget :showButtons="false"
+                                    :showIsOpened="false"
+                                    :key="props.group + '__' + tab.id"
+                                    :tab="tabAsTab(tab)"
+                                    :highlightUrl="highlightUrl"/>
 
-          </q-item>
-        </vue-draggable-next>
-      </q-list>
+            </q-item>
+          </vue-draggable-next>
+        </q-list>
+      </div>
     </div>
   </div>
-
 
 </template>
 
