@@ -18,25 +18,25 @@
       <div class="col-xs-12 col-md-6 q-mt-xs">
         <q-toolbar-title>
 
-              <template v-if="useUiStore().leftDrawerOpen">
-                <span class="text-dark" v-if="$q.screen.gt.xs">Tabs of </span>
-                <span
-                  class="text-primary text-weight-bold cursor-pointer"
-                  @mouseenter="showEditButton = true"
-                  @mouseout="showEditButton = false">
+          <template v-if="useUiStore().leftDrawerOpen">
+            <span class="text-dark" v-if="$q.screen.gt.xs">Tabs of </span>
+            <span
+              class="text-primary text-weight-bold cursor-pointer"
+              @mouseenter="showEditButton = true"
+              @mouseout="showEditButton = false">
                   {{ tabsStore.currentTabsetName }}
                    <q-popup-edit :model-value="tabset?.name" v-slot="scope"
                                  @update:model-value="val => setNewName(  val)">
                      <q-input v-model="scope.value" dense autofocus counter @keyup.enter="scope.set"/>
                    </q-popup-edit>
                 </span>
-              </template>
-              <template v-else>
-                <TabsetsSelectorWidget/>
-              </template>
-              <q-icon v-if="showEditButton" style="position:relative;top:-11px;left:-5px" color="primary" name="edit"
-                      size="16px"/>
-              <q-icon v-else size="16px"/>
+          </template>
+          <template v-else>
+            <TabsetsSelectorWidget/>
+          </template>
+          <q-icon v-if="showEditButton" style="position:relative;top:-11px;left:-5px" color="primary" name="edit"
+                  size="16px"/>
+          <q-icon v-else size="16px"/>
 
         </q-toolbar-title>
       </div>
@@ -124,11 +124,33 @@
           <q-tooltip>Use the exporter layout if you want to copy and paste the urls of this tabset</q-tooltip>
         </q-btn>
 
+        <!--        <q-separator vertical dark inset />-->
+        <!--        <span>{{ useUiStore().tabsFilter }}</span>-->
+        <q-btn
+          v-if="tabsStore.currentTabsetId !== '' && tabsStore.getTabset(tabsStore.currentTabsetId) && tabsStore.getCurrentTabset?.tabs.length > 0 && $q.screen.gt.xs"
+          flat
+          :text-color="useUiStore().tabsFilter ? 'secondary' : 'primary'"
+          :disable="tabset?.type === TabsetType.DYNAMIC"
+          :label="useUiStore().tabsFilter"
+          class="cursor-pointer q-ml-lg" size="12px"
+          icon="o_filter_alt">
+          <q-popup-edit :model-value="useUiStore().tabsFilter" v-slot="scope"
+                        @update:model-value="val => setFilter(  val)">
+            <q-input v-model="scope.value" dense autofocus counter @keyup.enter="scope.set"/>
+          </q-popup-edit>
+          <q-tooltip
+            class="tooltip"
+            :delay="200"
+            anchor="center left" self="center right">
+            Filter this tabset
+          </q-tooltip>
+        </q-btn>
+
         <q-btn v-if="tabsStore.currentTabsetId !== '' && tabsStore.getTabset(tabsStore.currentTabsetId)"
                data-testid="addUrlDialogBtn"
                flat
                :disable="tabset?.type === TabsetType.DYNAMIC"
-               class="cursor-pointer q-ml-lg" size="12px"
+               class="cursor-pointer q-ml-xs" size="12px"
                icon="add" @click="addUrlDialog">
           <q-tooltip
             class="tooltip"
@@ -209,10 +231,10 @@ a tab's url starts with one of the urls of this tabset, it will be ignored and n
 
       <DynamicTabsetPageCards
         v-if="tabset?.type === TabsetType.DYNAMIC"
-        :tabset="tabset as unknown as Tabset" />
+        :tabset="tabset as unknown as Tabset"/>
 
       <TabsetPageCards v-else
-        :tabset="tabset as unknown as Tabset"/>
+                       :tabset="tabset as unknown as Tabset"/>
 
     </q-tab-panel>
     <q-tab-panel name="page">
@@ -267,7 +289,7 @@ const filter = ref('')
 const $q = useQuasar()
 
 const tabsetId = ref(null as unknown as string)
-const tabset = ref<Tabset>(new Tabset(uid(),"empty", []))
+const tabset = ref<Tabset>(new Tabset(uid(), "empty", []))
 const orderDesc = ref(false)
 const showEditButton = ref(false)
 
@@ -283,11 +305,19 @@ watchEffect(() => {
     return
   }
   tabsetId.value = route?.params.tabsetId as string
-  tabset.value = useTabsetService().getTabset(tabsetId.value) || new Tabset(uid(),"empty", [])
+  tabset.value = useTabsetService().getTabset(tabsetId.value) || new Tabset(uid(), "empty", [])
 })
 
 
 const setNewName = (newValue: string) => useCommandExecutor().executeFromUi(new RenameTabsetCommand(tabsStore.currentTabsetId, newValue))
+
+const setFilter = (newValue: string) => {
+  console.log("filter", newValue)
+  const useValue = newValue && newValue.trim().length > 0 ? newValue.trim() : undefined
+  useUiStore().tabsFilter = useValue
+  useUiStore().setHighlightTerm(useValue)
+  JsUtils.runCssHighlight()
+}
 
 function getOrder() {
   if (tabset.value) {

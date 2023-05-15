@@ -19,9 +19,9 @@
                  :tabs="currentTabs()"/>
 
       <TabGrid v-else-if="props.tabset?.view === 'grid'"
-                 group="otherTabs"
-                 :highlightUrl="highlightUrl"
-                 :tabs="currentTabs()"/>
+               group="otherTabs"
+               :highlightUrl="highlightUrl"
+               :tabs="currentTabs()"/>
 
       <TabsExporter v-else-if="props.tabset?.view === 'exporter'"
                     group="otherTabs"
@@ -110,6 +110,14 @@ watchEffect(() => {
 
 function currentTabs(): Tab[] {
   //console.log("got", props.tabset.tabs)
+  const filter = useUiStore().tabsFilter
+  if (filter && filter.trim() !== '') {
+    return _.orderBy(_.filter(props.tabset.tabs, (t: Tab) => {
+      return (t.chromeTab.url || '')?.indexOf(filter) >= 0 ||
+        (t.chromeTab.title || '')?.indexOf(filter) >= 0 ||
+        t.description.indexOf(filter) >= 0
+    }), getOrder(), [orderDesc.value ? 'desc' : 'asc'])
+  }
   return _.orderBy(props.tabset.tabs, getOrder(), [orderDesc.value ? 'desc' : 'asc'])
 }
 

@@ -49,6 +49,7 @@ export const useUiStore = defineStore('ui', () => {
 
 
   const selectedTab = ref<Tab | undefined>(undefined)
+  const tabsFilter = ref<string | undefined>(undefined)
   const selectedTag = ref<string | undefined>(undefined)
 
   let rightDrawer = ref<RightDrawer>(new RightDrawer())
@@ -266,6 +267,7 @@ export const useUiStore = defineStore('ui', () => {
     selectedTag,
     setSelectedTag,
     setSelectedTabsetId,
-    selectedTabsetId
+    selectedTabsetId,
+    tabsFilter
   }
 })

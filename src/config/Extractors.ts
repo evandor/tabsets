@@ -11,7 +11,7 @@ export enum ExtractorType {
 }
 
 export enum ExtractorTarget {
-  LONG_DESCRIPTION = "'tabsets:longDescription'"
+  LONG_DESCRIPTION = "tabsets:longDescription"
 }
 
 export class Extractor {
@@ -27,11 +27,10 @@ export class Extractor {
 }
 
 export class Extractors {
-  exractors: Extractor[] = [
+  extractors: Extractor[] = [
     new Extractor(".youtube.com", ExtractorType.REGEX, ExtractorTarget.LONG_DESCRIPTION, /"shortDescription":"([^"]*)/mg),
     new Extractor(".wikipedia.org", ExtractorType.HTML_SELECTOR, ExtractorTarget.LONG_DESCRIPTION, undefined, "#mw-content-text > div.mw-parser-output > p:nth-child(10)"),
-
-
+    new Extractor("stackoverflow.com", ExtractorType.HTML_SELECTOR, ExtractorTarget.LONG_DESCRIPTION, undefined, "#question > div > div.postcell.post-layout--right > div.s-prose.js-post-body"),
   ]
 
   // getFeature(f: FeatureIdent): AppFeature | undefined {
@@ -43,6 +42,6 @@ export class Extractors {
   // }
   //
   getExtractors(): Extractor[] {
-    return this.exractors
+    return this.extractors
   }
 }

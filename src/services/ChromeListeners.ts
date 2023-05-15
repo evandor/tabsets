@@ -4,8 +4,6 @@ import _ from "lodash";
 import {Tab} from "src/models/Tab";
 import {uid} from "quasar";
 import throttledQueue from 'throttled-queue';
-
-
 // @ts-ignore
 import {convert} from "html-to-text"
 import {useWindowsStore} from "src/stores/windowsStores";
@@ -17,6 +15,7 @@ import {Suggestion, SuggestionType} from "src/models/Suggestion";
 import {useSuggestionsStore} from "src/stores/suggestionsStore";
 import {FeatureIdent} from "src/models/AppFeature";
 import {Extractor, Extractors, ExtractorType} from "src/config/Extractors";
+import sanitizeHtml from 'sanitize-html';
 
 const {
   saveCurrentTabset,
@@ -369,7 +368,7 @@ class ChromeListeners {
 
   private handleHtml2Text(request: any, sender: chrome.runtime.MessageSender, sendResponse: any) {
 
-    console.log("request", request.html)
+    console.log("handleHtml2Text")
 
     if (sender && sender.url && request.html) {
       try {
@@ -377,12 +376,13 @@ class ChromeListeners {
         new Extractors().getExtractors().forEach((e: Extractor) => {
           if (hostname.indexOf(e.hostnameMatch) >= 0) {
             console.log("matched", hostname, e.hostnameMatch)
+            let candidate = ""
             switch (e.type) {
               case ExtractorType.REGEX:
                 const matches = request.html.matchAll(e.regex)
                 for (const match of matches) {
-                  console.log("found desc", match[1])
-                  request.metas[e.target.toString()] = match[1]
+                  //console.log("found desc", match[1])
+                  candidate = match[1].replace("\n", "<br>")
                 }
                 break;
               case ExtractorType.HTML_SELECTOR:
@@ -394,12 +394,22 @@ class ChromeListeners {
                   const selection =
                     doc.querySelector(e.selector)
                   console.log("selection", e.target.toString(), selection?.outerHTML)
-                  request.metas[e.target.toString()] = selection?.outerHTML
+                  candidate = selection?.outerHTML || ''
+                } else {
+                  console.log("could not find ", e.selector)
                 }
-
                 break;
               default:
                 break;
+            }
+            if (candidate.length > 0) {
+              request.metas[e.target.toString()] = sanitizeHtml(candidate, {
+                allowedTags: sanitizeHtml.defaults.allowedTags.concat([ 'img' ]),
+                allowedAttributes: sanitizeHtml.defaults.allowedAttributes = {
+                  a: [ 'href', 'name', 'target' ],
+                  img: [ 'src', 'srcset', 'alt', 'title', 'width', 'height', 'loading' ]
+                }
+              })
             }
           }
         })
