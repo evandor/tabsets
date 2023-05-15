@@ -40,7 +40,7 @@ class IndexedDbPersistenceService implements PersistenceService {
   }
 
   async loadSpaces(): Promise<void> {
-    console.debug("loading spaes...")
+    console.debug("loading spaces...")
     const spacesStore = useSpacesStore()
     const keys: IDBValidKey[] = await this.db.getAllKeys('spaces')
     _.forEach(keys, key => {

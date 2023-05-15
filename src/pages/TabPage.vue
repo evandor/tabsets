@@ -71,6 +71,14 @@
               {{ useUiStore().getSelectedTab?.description }}
             </div>
           </div>
+          <div class="row items-baseline q-ma-lg" v-if="useUiStore().getSelectedTab?.longDescription">
+            <div class="col-3 text-subtitle1">
+              Long Description
+            </div>
+            <div class="col-9 text-subtitle2" v-if="useUiStore().getSelectedTab?.longDescription">
+              {{ useUiStore().getSelectedTab?.longDescription }}
+            </div>
+          </div>
           <div class="row items-baseline q-ma-lg" v-if="useUiStore().getSelectedTab?.author">
             <div class="col-3 text-subtitle1">
               Author

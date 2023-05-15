@@ -1,7 +1,7 @@
 {
   "name": "tabsets",
   "version": "0.3.3",
-  "description": "Tabsets is a browser extension which helps you organize your links. As simple as that.",
+  "description": "Bookmarks next generation - Tabsets is a browser extension which helps you organize your links. As simple as that.",
   "productName": "Tabsets Extension",
   "author": "evandor <evandor@gmail.com>",
   "private": true,

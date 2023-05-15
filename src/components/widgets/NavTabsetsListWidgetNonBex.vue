@@ -110,7 +110,7 @@
 
 <script lang="ts" setup>
 
-import {onMounted, PropType, ref} from "vue";
+import {onMounted, PropType, ref, watchEffect} from "vue";
 import {Tabset, TabsetStatus, TabsetType} from "src/models/Tabset";
 import {useRouter} from "vue-router";
 import {useQuasar} from "quasar";
@@ -157,6 +157,10 @@ const props = defineProps({
 
 onMounted(() => {
   expanded.value = new Array(props.tabsets?.length).fill(false);
+})
+
+watchEffect(() => {
+  activeTabset.value = tabsStore.currentTabsetId
 })
 
 const selectTS = (tabset: Tabset) => {

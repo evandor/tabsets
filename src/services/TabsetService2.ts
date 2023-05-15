@@ -286,7 +286,7 @@ export function useTabsetService() {
         _.forEach(tabset.tabs, (t: Tab) => {
           //console.log("comparing", t.chromeTab.url, tab.url)
           if (t.chromeTab.url === tab.url) {
-            console.log(" ... in tab", tab.id)
+            console.log(" ... in tab", tab.id, metas['tabsets:longDescription' as keyof object], metas)
             if (metas['description' as keyof object]) {
               t.description = metas['description' as keyof object]
               // @ts-ignore

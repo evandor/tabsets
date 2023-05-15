@@ -12,11 +12,11 @@ import {useWindowsStore} from "src/stores/windowsStores";
 import {useTabsetService} from "src/services/TabsetService2";
 import {useSettingsStore} from "src/stores/settingsStore";
 import {usePermissionsStore} from "src/stores/permissionsStore";
-import ExpiringMap from "src/stores/ExpiringMap";
 import {MetaLink} from "src/models/MetaLink";
 import {Suggestion, SuggestionType} from "src/models/Suggestion";
 import {useSuggestionsStore} from "src/stores/suggestionsStore";
 import {FeatureIdent} from "src/models/AppFeature";
+import {Extractor, Extractors, ExtractorType} from "src/config/Extractors";
 
 const {
   saveCurrentTabset,
@@ -369,24 +369,62 @@ class ChromeListeners {
 
   private handleHtml2Text(request: any, sender: chrome.runtime.MessageSender, sendResponse: any) {
 
-    console.log("request html", request.html)
-    // console.log("sender", sender)
+    console.log("request", request.html)
+
     if (sender && sender.url && request.html) {
       try {
         const hostname = new URL(sender.url).hostname
-        console.log("hostname", hostname)
-        if (hostname === "www.youtube.com") {
-          const regex = /"shortDescription":"([^"]*)/mg
-          const matches = request.html.matchAll(regex)
-          for (const match of matches) {
-            console.log("found desc", match[1])
-            request.metas['tabsets:longDescription'] = match[1]
+        new Extractors().getExtractors().forEach((e: Extractor) => {
+          if (hostname.indexOf(e.hostnameMatch) >= 0) {
+            console.log("matched", hostname, e.hostnameMatch)
+            switch (e.type) {
+              case ExtractorType.REGEX:
+                const matches = request.html.matchAll(e.regex)
+                for (const match of matches) {
+                  console.log("found desc", match[1])
+                  request.metas[e.target.toString()] = match[1]
+                }
+                break;
+              case ExtractorType.HTML_SELECTOR:
+                // const doc = request.html
+                const domParser = new DOMParser()
+                const doc = domParser.parseFromString(request.html, "text/html")
+                console.log("doc", typeof doc)
+                if (e.selector) {
+                  const selection =
+                    doc.querySelector(e.selector)
+                  console.log("selection", e.target.toString(), selection?.outerHTML)
+                  request.metas[e.target.toString()] = selection?.outerHTML
+                }
+
+                break;
+              default:
+                break;
+            }
           }
-        }
+        })
       } catch (err) {
         console.log("error", err)
       }
     }
+
+    // console.log("sender", sender)
+    // if (sender && sender.url && request.html) {
+    //   try {
+    //     const hostname = new URL(sender.url).hostname
+    //     console.log("hostname", hostname)
+    //     if (hostname === "www.youtube.com") {
+    //       const regex = /"shortDescription":"([^"]*)/mg
+    //       const matches = request.html.matchAll(regex)
+    //       for (const match of matches) {
+    //         console.log("found desc", match[1])
+    //         request.metas['tabsets:longDescription'] = match[1]
+    //       }
+    //     }
+    //   } catch (err) {
+    //     console.log("error", err)
+    //   }
+    // }
 
     const text = convert(request.html, {
       wordwrap: 130

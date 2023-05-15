@@ -111,7 +111,7 @@ export const usePermissionsStore = defineStore('permissions', () => {
   const hasFeature = computed(() => {
     return (feature: FeatureIdent): boolean => {
       const appFeature = new AppFeatures().getFeature(feature)
-      if (appFeature && appFeature.type === FeatureType.DEFAULT) {
+      if (inActiveDefaultFeatures.value && appFeature && appFeature.type === FeatureType.DEFAULT) {
         return inActiveDefaultFeatures.value.indexOf(feature.toLowerCase()) < 0
       } else if (appFeature) {
         return activeFeatures.value.indexOf(feature.toLowerCase()) >= 0

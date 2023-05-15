@@ -1,0 +1,48 @@
+import _ from "lodash"
+import {GrantPermissionCommand} from "src/domain/commands/GrantPermissionCommand";
+import {RevokePermissionCommand} from "src/domain/commands/RevokePermissionCommand";
+import {GrantOriginCommand} from "src/domain/commands/GrantOriginCommand";
+import {RevokeOriginCommand} from "src/domain/commands/RevokeOriginCommand";
+import {AppFeature, FeatureIdent, FeatureType} from "src/models/AppFeature"
+
+export enum ExtractorType {
+  REGEX = "REGEX",
+  HTML_SELECTOR = "HTML_SELECTOR"
+}
+
+export enum ExtractorTarget {
+  LONG_DESCRIPTION = "'tabsets:longDescription'"
+}
+
+export class Extractor {
+  constructor(
+    public hostnameMatch: string,
+    public type: ExtractorType,
+    public target: ExtractorTarget,
+    public regex: RegExp | undefined = undefined,
+    public selector: string | undefined = undefined
+  ) {
+
+  }
+}
+
+export class Extractors {
+  exractors: Extractor[] = [
+    new Extractor(".youtube.com", ExtractorType.REGEX, ExtractorTarget.LONG_DESCRIPTION, /"shortDescription":"([^"]*)/mg),
+    new Extractor(".wikipedia.org", ExtractorType.HTML_SELECTOR, ExtractorTarget.LONG_DESCRIPTION, undefined, "#mw-content-text > div.mw-parser-output > p:nth-child(10)"),
+
+
+  ]
+
+  // getFeature(f: FeatureIdent): AppFeature | undefined {
+  //   const found = _.filter(this.features, (feature: AppFeature) => feature.ident === f)
+  //   if (found && found.length > 0) {
+  //     return found[0]
+  //   }
+  //   return undefined
+  // }
+  //
+  getExtractors(): Extractor[] {
+    return this.exractors
+  }
+}
