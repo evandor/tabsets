@@ -45,6 +45,13 @@ const $q = useQuasar()
 
 const tabsetsOptions = ref<object[]>([])
 
+const props = defineProps({
+  fromPanel: {
+    type: Boolean,
+    default: false
+  }
+})
+
 watchEffect(() => {
   tabsetsOptions.value = _.map([...tabsStore.tabsets.values()], key => {
     return {id: key.id, label: key.name}
@@ -62,15 +69,20 @@ const openNewTabsetDialog = () => {
     component: NewTabsetDialog,
     componentProps: {
       tabsetId: tabsStore.currentTabsetId,
+      fromPanel: props.fromPanel
     }
   })
 }
 
 const switchTabset = (ts: any) => {
-  console.log("settings space to ", ts)
+  console.log("settings tabset to ", ts)
   useCommandExecutor()
     .execute(new SelectTabsetCommand(ts.id))
-    .then(() => router.push("/tabsets/" + ts.id))
+    .then(() => {
+      if (!props.fromPanel) {
+        router.push("/tabsets/" + ts.id)
+      }
+    })
 }
 
 </script>

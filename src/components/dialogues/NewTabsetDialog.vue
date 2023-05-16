@@ -66,6 +66,10 @@ const props = defineProps({
   firstTabset: {
     type: Boolean,
     default: false
+  },
+  fromPanel: {
+    type: Boolean,
+    default: false
   }
 })
 
@@ -103,7 +107,9 @@ const createNewTabset = () => {
           tabsStore.pendingTabset.tabs = []
         }
       }
-      router.push("/tabsets/" + res.result.tabsetId + "?first=" + props.firstTabset)
+      if (!props.fromPanel) {
+        router.push("/tabsets/" + res.result.tabsetId + "?first=" + props.firstTabset)
+      }
     })
 }
 

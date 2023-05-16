@@ -45,6 +45,9 @@ export const useTabsStore = defineStore('tabs', {
     // chrome's current's windows tabs, reloaded on various events
     tabs: [] as unknown as chrome.tabs.Tab[],
 
+    // @ts-ignore
+    currentChromeTab: chrome.tabs.Tab,
+
     /**
      * a named list of tabsets managed by this extension.
      */
@@ -120,6 +123,7 @@ export const useTabsStore = defineStore('tabs', {
       return state.tabsets.get(state.currentTabsetId)?.tabs || []
     },
     getCurrentTabset: (state): Tabset | undefined => {
+      console.log("calling getcurrenttabset", state.currentTabsetId)
       return state.tabsets.get(state.currentTabsetId)
     },
     getTabset: (state) => {
@@ -283,6 +287,11 @@ export const useTabsStore = defineStore('tabs', {
       // @ts-ignore
       return _.filter(this.tabs, (t: chrome.tabs.Tab) => t.groupId === groupId)
     },
+
+    setCurrentChromeTab(tab: chrome.tabs.Tab) {
+      this.currentChromeTab = tab
+    },
+
     selectCurrentTabset(tabsetId: string): Tabset | undefined {
       const found = _.find([...this.tabsets.values()], k => {
         const ts = k || new Tabset("", "", [])

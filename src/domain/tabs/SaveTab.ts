@@ -16,7 +16,7 @@ class UndoCommand implements Command<any> {
   }
 
   execute(): Promise<ExecutionResult<any>> {
-    TabLogger.info(this.tab, `deleting saved tab`)
+    // TabLogger.info(this.tab, `deleting saved tab`)
 //    return MHtmlService.deleteMHtml(this.tab)
 //      .then(res => new ExecutionResult(res, "Tab's title change was undone"))
     return Promise.reject("not yet implemented")

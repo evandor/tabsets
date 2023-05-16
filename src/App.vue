@@ -28,7 +28,9 @@ import {INDEX_DB_NAME} from "boot/constants";
 import {useSettingsStore} from "src/stores/settingsStore";
 import BookmarksService from "src/services/BookmarksService";
 import {FeatureIdent} from "src/models/AppFeature";
+import {useUtils} from "src/services/Utils";
 
+const {inBexMode} = useUtils()
 
 // function isNewTabPage() {
 //   return route.path === '/newtab';
@@ -98,11 +100,15 @@ IndexedDbPersistenceService.init(INDEX_DB_NAME)
 
 
 useNotificationsStore().bookmarksExpanded = $q.localStorage.getItem("bookmarks.expanded") || []
-console.log("route", window.location.href)
-if (window.location.href.endsWith("?sidepanel=true")) {
-  console.log("pushing to sidepanel")
-  router.push("/sidepanel")
-} else if (!window.location.href.endsWith("#/popup")) {
+
+// console.log("route", window.location.href)
+// if (window.location.href.indexOf("sidepanel=true") >= 0) {
+//   console.log("pushing to sidepanel")
+//   router.push("/sidepanel")
+// } else if (!window.location.href.endsWith("#/popup")) {
+//   router.push("/start")
+// }
+if (!inBexMode()) {
   router.push("/start")
 }
 

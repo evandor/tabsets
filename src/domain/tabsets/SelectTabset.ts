@@ -5,7 +5,9 @@ import _ from "lodash"
 import {Tab} from "src/models/Tab";
 import {useNotificationsStore} from "src/stores/notificationsStore";
 import {useUiStore} from "src/stores/uiStore";
+import {useUtils} from "src/services/Utils";
 
+const {inBexMode} = useUtils()
 
 export class SelectTabsetCommand implements Command<object> {
 
@@ -30,6 +32,16 @@ export class SelectTabsetCommand implements Command<object> {
     tabsStore.currentTabsetId = this.tabsetId;
     localStorage.setItem("selectedTabset", this.tabsetId)
     //useUiService().rightDrawerSetActiveTab(DrawerTabs.UNASSIGNED_TABS)
+
+    if (inBexMode()) {
+      const msg = {
+        name: 'current-tabset-id-change',
+        data: {tabsetId: this.tabsetId}
+      }
+      console.log("sending message", msg)
+      chrome.runtime.sendMessage(msg);
+    }
+
     const executionResult = new ExecutionResult(null, "done")
     return Promise.resolve(executionResult)
   }

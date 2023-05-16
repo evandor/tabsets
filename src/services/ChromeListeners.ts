@@ -27,6 +27,15 @@ const {
   saveThumbnailFor
 } = useTabsetService()
 
+function setCurrentTab() {
+  chrome.tabs.query({ active: true, lastFocusedWindow: true}, (tabs) => {
+    if (tabs && tabs[0]) {
+      console.log("setting current tab", tabs)
+      useTabsStore().setCurrentChromeTab(tabs[0] as unknown as chrome.tabs.Tab)
+    }
+  });
+}
+
 class ChromeListeners {
 
   inProgress = false;
@@ -133,6 +142,11 @@ class ChromeListeners {
       console.debug(`onUpdated:   tab ${number}: >>> listeners off, returning <<<`)
       return
     }
+
+    // get current tab
+    setCurrentTab()
+
+
     const selfUrl = chrome.runtime.getURL("")
     if (chromeTab.url?.startsWith(selfUrl)) {
       console.debug(`onUpdated:   tab ${number}: >>> chromeTab.url starts with '${selfUrl}' <<<`)
@@ -300,6 +314,8 @@ class ChromeListeners {
     this.eventTriggered()
     const tabsStore = useTabsStore()
     console.debug(`onActivated: tab ${info.tabId} activated: >>> ${JSON.stringify(info)}`)
+
+    setCurrentTab()
 
     chrome.tabs.get(info.tabId, tab => {
       const url = tab.url

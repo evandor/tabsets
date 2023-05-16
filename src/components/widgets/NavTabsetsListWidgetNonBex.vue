@@ -80,7 +80,7 @@
         <div v-for="tab in tabset.tabs">
           <q-card flat class="q-mt-none q-ml-lg q-mb-sm q-pa-none" style="max-width:260px">
             <q-card-section class="q-ma-none q-pa-none">
-              <div class="row items-baseline cursor-pointer" @click.stop="open(tab.id)">
+              <div class="row items-baseline cursor-pointer" @click.stop="open(tab)">
                 <div class="col-1">
                   <TabFaviconWidget height="12px" width="12px" :tab="tab"/>
                 </div>
@@ -113,7 +113,7 @@
 import {onMounted, PropType, ref, watchEffect} from "vue";
 import {Tabset, TabsetStatus, TabsetType} from "src/models/Tabset";
 import {useRouter} from "vue-router";
-import {useQuasar} from "quasar";
+import {openURL, useQuasar} from "quasar";
 import {useTabsStore} from "src/stores/tabsStore";
 import {useSpacesStore} from "src/stores/spacesStore";
 import DeleteTabsetDialog from "components/dialogues/DeleteTabsetDialog.vue";
@@ -163,6 +163,14 @@ watchEffect(() => {
   activeTabset.value = tabsStore.currentTabsetId
 })
 
+// async function getCurrentTab() {
+//   let queryOptions = { active: true, lastFocusedWindow: true };
+//   // @ts-ignore
+//   let [tab] = await chrome.tabs.query(queryOptions);
+//   return tab;
+// }
+
+
 const selectTS = (tabset: Tabset) => {
   console.log("selecting", tabset.id)
   useCommandExecutor()
@@ -190,12 +198,13 @@ const deleteDialog = (tabset: Tabset) =>
   })
 
 
-const open = (tabId: string) => {
-  console.log("clicked", process.env.MODE, tabId)
+const open = (tab: Tab) => {
+  console.log("clicked", process.env.MODE, tab.id)
   if ("electron" === process.env.MODE) {
-    router.push("/browser/" + tabId)
-  } else {
-    router.push("/iframe/" + tabId)
+    router.push("/browser/" + tab.id)
+  } else if (tab.chromeTab.url) {
+    openURL(tab.chromeTab.url)
+    //router.push("/iframe/" + tabId)
   }
 }
 
