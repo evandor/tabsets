@@ -13,6 +13,12 @@
         Expand
       </q-item>
 
+      <q-item v-if="props.tabset?.tabs.length > 0 && !expanded[index]"
+              clickable v-close-popup @click="openInSidePanel(index)">
+        <q-icon name="left_panel_close" class="q-my-xs q-mr-xs" color="grey-5" style="position:relative;top:-1px"/>
+        Open in sidePanel
+      </q-item>
+
       <q-item
         clickable v-close-popup @click="showDetails(props.tabset.id)">
         <q-icon name="o_info" class="q-my-xs q-mr-xs" color="grey-5" style="position:relative;top:-1px"/>
@@ -158,6 +164,17 @@ const expanded = ref<boolean[]>([])
 const toggleExpand = (index: number): void => {
   expanded.value[index] = !expanded.value[index]
   emit('toggleExpand', index)
+}
+
+const openInSidePanel = async (index: number) => {
+  console.log("got ", index)
+  if (chrome.sidePanel) {
+    chrome.sidePanel.setOptions({
+      path: 'www/sidepanel.html',
+      enabled: true
+    }, (c: any) => console.log("c", c));
+  }
+
 }
 
 const markAsFavorite = (tabsetId: string) => useCommandExecutor().executeFromUi(new MarkTabsetAsFavoriteCommand(tabsetId))

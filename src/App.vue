@@ -65,10 +65,10 @@ usePermissionsStore().initialize()
     bookmarksStore.init()
     BookmarksService.init()
 
-    console.log("activating dom script", usePermissionsStore().hasFeature(FeatureIdent.ANALYSE_TABS))
-    if (usePermissionsStore().hasFeature(FeatureIdent.ANALYSE_TABS)) {
-      $q.bex.send('initDomScripts')
-    }
+    // console.log("activating dom script", usePermissionsStore().hasFeature(FeatureIdent.ANALYSE_TABS))
+    // if (usePermissionsStore().hasFeature(FeatureIdent.ANALYSE_TABS)) {
+    //   $q.bex.send('initDomScripts')
+    // }
   })
 settingsStore.initialize(useQuasar().localStorage);
 tabsStore.initialize(useQuasar().localStorage);
@@ -98,7 +98,11 @@ IndexedDbPersistenceService.init(INDEX_DB_NAME)
 
 
 useNotificationsStore().bookmarksExpanded = $q.localStorage.getItem("bookmarks.expanded") || []
-if (!window.location.href.endsWith("#/popup")) {
+console.log("route", window.location.href)
+if (window.location.href.endsWith("?sidepanel=true")) {
+  console.log("pushing to sidepanel")
+  router.push("/sidepanel")
+} else if (!window.location.href.endsWith("#/popup")) {
   router.push("/start")
 }
 

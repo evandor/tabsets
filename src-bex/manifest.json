@@ -15,7 +15,8 @@
     "notifications",
     "webRequest",
     "pageCapture",
-    "search"
+    "search",
+    "sidePanel"
   ],
   "optional_permissions": [
     "bookmarks",
@@ -25,6 +26,9 @@
     "<all_urls>",
     "*://*/*"
   ],
+  "side_panel": {
+    "default_path": "www/sidepanel.html"
+  },
   "action": {
     "default_title": "Start Tabsets Extension",
     "default_icon": {
@@ -38,6 +42,14 @@
   },
   "content_security_policy": {
     "extension_pages": "script-src 'self'; object-src 'self';"
+  },
+  "commands": {
+    "_execute_action": {
+      "suggested_key": {
+        "default": "Ctrl+B",
+        "mac": "Command+B"
+      }
+    }
   },
   "web_accessible_resources": [
     {

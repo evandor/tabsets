@@ -59,6 +59,11 @@ class ChromeListeners {
 
       chrome.runtime.onMessage.addListener((request, sender, sendResponse) => this.onMessage(request, sender, sendResponse))
 
+      if (chrome.sidePanel) {
+        chrome.sidePanel
+          .setPanelBehavior({openPanelOnActionClick: true})
+          .catch((error: any) => console.error(error));
+      }
     }
 
   }
@@ -404,10 +409,10 @@ class ChromeListeners {
             }
             if (candidate.length > 0) {
               request.metas[e.target.toString()] = sanitizeHtml(candidate, {
-                allowedTags: sanitizeHtml.defaults.allowedTags.concat([ 'img' ]),
+                allowedTags: sanitizeHtml.defaults.allowedTags.concat(['img']),
                 allowedAttributes: sanitizeHtml.defaults.allowedAttributes = {
-                  a: [ 'href', 'name', 'target' ],
-                  img: [ 'src', 'srcset', 'alt', 'title', 'width', 'height', 'loading' ]
+                  a: ['href', 'name', 'target'],
+                  img: ['src', 'srcset', 'alt', 'title', 'width', 'height', 'loading']
                 }
               })
             }
