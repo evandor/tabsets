@@ -21,7 +21,7 @@
               <TabsetsSelectorWidget :fromPanel="true"/>
             </div>
             <div class="col-3 text-right">
-              <q-icon class="q-ma-xs cursor-pointer" name="crop_7_5" @click="createClip">
+              <q-icon class="q-ma-xs cursor-pointer" name="filter_center_focus" @click="createClip">
                 <q-tooltip class="tooltip">Create website clip</q-tooltip>
               </q-icon>
               <q-icon class="q-ma-xs cursor-pointer" name="open_in_new" @click="openExtensionTab">
@@ -34,76 +34,50 @@
     </q-toolbar>
 
     <div class="row q-ma-sm">
-      <div class="col-12">
-        <hr>
-      </div>
+      <!--      <div class="col-12">-->
+      <!--        <hr>-->
+      <!--      </div>-->
       <div class="col-12">
         <div class="row">
-          <div class="col-2 text-bold  q-my-sm">
+          <div class="col-2 text-bold  ">
             Tab
           </div>
-          <div class="col-10 ellipsis q-my-sm" v-if="currentChromeTab?.url">
+          <div class="col-10 ellipsis " v-if="currentChromeTab?.url">
             {{ currentChromeTab?.url }}
           </div>
-          <div v-else class="col-10 ellipsis text-grey q-my-sm" >
+          <div v-else class="col-10 ellipsis text-grey ">
             open or select a tab first...
           </div>
-          <div class="col-2 text-bold q-my-sm">
+          <div class="col-2 text-bold ">
             Title
           </div>
-          <div class="col-10 ellipsis q-my-sm">
+          <div class="col-10 ellipsis ">
             {{ currentChromeTab?.title }}
           </div>
-          <div class="col-2 text-bold q-my-sm">
-            Tabset
-          </div>
-          <div class="col-10">
-            <q-select dense options-dense v-model="tabsetName" :options="tabsetNameOptions"/>
-          </div>
+
         </div>
       </div>
-<!--      <div>-->
-<!--        tabs# {{ openTabs.length }}<br>-->
-<!--        tabs2# {{ useTabsStore().tabs?.length }}<br>-->
-<!--        pending# {{ useTabsStore().pendingTabset?.tabs?.length }}<br>-->
-<!--        tabset {{ currentTabset?.name }}<br>-->
-<!--      </div>-->
     </div>
 
-    <!--  <div>-->
-    <!--    {{ currentChromeTab }}-->
-    <!--  </div>-->
-<!--    <div>-->
-<!--      <NavTabsetsListWidgetNonBex :tabsets="tabsets()"/>-->
-<!--    </div>-->
-
-<!--    <div class="row q-ma-sm q-mt-xl" style="max-width:390px">-->
-<!--      <div class="col-3 text-bold">-->
-
-<!--      </div>-->
-<!--      <div class="col-9">-->
-<!--        {{ currentChromeTab?.url }}<br>-->
-<!--        Select the tabset you want to save this tab to:-->
-<!--      </div>-->
-<!--    </div>-->
-
-<!--    <div class="row q-ma-sm" style="max-width:390px">-->
-<!--      <div class="col-3 text-bold">-->
-
-<!--      </div>-->
-<!--      <div class="col-9">-->
-<!--        <q-select dense options-dense v-model="tabsetName" :options="tabsetNameOptions" label="Choose"/>-->
-<!--      </div>-->
-<!--    </div>-->
 
     <div class="row q-ma-sm" style="max-width:390px;">
       <div class="col-3">
 
       </div>
       <div class="col-9 text-right">
-        <!--      <q-btn label="Save" size="12px" @click="save()" style="width:120px"></q-btn>-->
-        <q-btn label="Save" size="12px" @click="saveFromPanel()" style="width:120px"></q-btn>
+        <q-btn :disable="noCurrentTabGiven()" label="Save" size="12px" @click="saveFromPanel()"
+               style="width:120px"></q-btn>
       </div>
+    </div>
+    <div class="col-12">
+      &nbsp;
+    </div>
+    <div class="row q-ma-sm" style="max-width:390px;">
+      <div class="col-12">
+
+        <PanelTabList  :tabs="tabsStore.getCurrentTabset?.tabs || []"/>
+      </div>
+
     </div>
   </div>
 
@@ -120,16 +94,14 @@ import {Tabset} from "src/models/Tabset";
 import ChromeApi from "src/services/ChromeApi";
 import {useRouter} from "vue-router";
 import {useUtils} from "src/services/Utils";
-import NavTabsetsListWidgetNonBex from "components/widgets/NavTabsetsListWidgetNonBex.vue";
 import {uid, useQuasar} from "quasar";
 import {useTabsetService} from "src/services/TabsetService2";
 import {useCommandExecutor} from "src/services/CommandExecutor";
-import {SaveTabCommand} from "src/domain/tabs/SaveTab";
 import {AddTabToTabsetCommand} from "src/domain/tabs/AddTabToTabset";
 import NewTabsetDialog from "components/dialogues/NewTabsetDialog.vue";
 import {useUiStore} from "stores/uiStore";
-import OpenRightDrawerWidget from "components/widgets/OpenRightDrawerWidget.vue";
 import TabsetsSelectorWidget from "components/widgets/TabsetsSelectorWidget.vue";
+import PanelTabList from "components/layouts/PanelTabList.vue";
 
 const {inBexMode} = useUtils()
 
@@ -208,8 +180,8 @@ if (inBexMode()) {
 const saveFromPanel = () => {
   const currentChromeTab = useTabsStore().currentChromeTab
   console.log("saving from panel...", currentChromeTab)
-  const tabsetId = tabsetName.value['value' as keyof object]
-  if (currentChromeTab && tabsetId) {
+  if (currentChromeTab && tabsStore.getCurrentTabset) {
+    const tabsetId = tabsStore.getCurrentTabset.id // tabsetName.value['value' as keyof object]
     // useTabsetService().addToTabsetId(tabset['value' as keyof object], new Tab(uid(), currentChromeTab))
     const useTS = useTabsetService().getTabset(tabsetId)
     if (useTS) {
@@ -270,5 +242,8 @@ const addFirstTabset = () => $q.dialog({
     fromPanel: true
   }
 })
+
+const noCurrentTabGiven = () => !(currentChromeTab.value && currentChromeTab.value.url && currentChromeTab.value.url.trim().length >= 0)
+
 
 </script>

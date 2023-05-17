@@ -3,7 +3,7 @@
   <InfoMessageWidget
     v-if="props.tabs?.length > 1"
     :probability="0.3"
-    ident="tablist_dnd"
+    ident="paneltablist_dnd"
     hint="You can select the favicon images and drag and drop the entries to reorder the list to your wishes"/>
 
   <q-list separator>
@@ -26,19 +26,14 @@
       <q-item
         :clickable="usePermissionsStore().hasFeature(FeatureIdent.DETAILS)"
         v-ripple
-        v-for="(tab,index) in props.tabs"
-        class="q-ma-none q-pa-md"
+        v-for="tab in props.tabs"
+        class="q-ma-none q-pa-xs"
         :style="itemStyle(tab)"
         @click.stop="showDetails(tab)"
-        @mouseover="showButtons(  tab.id,true)"
-        @mouseleave="showButtons( tab.id, false)"
         @dragstart="startDrag($event, tab)"
-        :key="props.group + '_' + tab.id">
+        :key="'paneltablist_' + tab.id">
 
-        <TabListElementWidget :showButtons="showButtonsProp.get(tab.id)"
-                              :key="props.group + '__' + tab.id"
-                              :tab="tabAsTab(tab)"
-                              :highlightUrl="highlightUrl"/>
+        <PanelTabListElementWidget :key="'ptlew__' + tab.id" :tab="tabAsTab(tab)"/>
 
       </q-item>
     </vue-draggable-next>
@@ -64,6 +59,7 @@ import {useUtils} from "src/services/Utils"
 import InfoMessageWidget from "components/widgets/InfoMessageWidget.vue";
 import {usePermissionsStore} from "src/stores/permissionsStore";
 import {FeatureIdent} from "src/models/AppFeature";
+import PanelTabListElementWidget from "components/widgets/PanelTabListElementWidget.vue";
 
 const {inBexMode} = useUtils()
 
@@ -77,14 +73,6 @@ const props = defineProps({
   tabs: {
     type: Array as PropType<Tab[]>,
     required: true
-  },
-  group: {
-    type: String,
-    required: true
-  },
-  highlightUrl: {
-    type: String,
-    required: false
   }
 })
 
@@ -164,12 +152,8 @@ const showDetails = (tab: Tab) => {
   }
 }
 
-const itemStyle = (tab: Tab) => {
-  if (tab.chromeTab.url === props.highlightUrl) {
-    return "border: 1px dotted orange; padding:15px; border-radius:5px"
-  }
-  return "border-bottom: 1px solid #fafafa"
-}
+const itemStyle = (tab: Tab) => "border-bottom: 1px solid #fafafa"
+
 
 </script>
 
