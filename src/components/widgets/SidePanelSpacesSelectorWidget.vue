@@ -62,8 +62,8 @@ watchEffect(() => {
 // }
 
 const switchSpace = (s: any) => {
-  console.log("settings space to ", s.id)
-  spacesStore.space = s.id
+  console.log("settings space to ", s)
+  spacesStore.space = s
 }
 
 

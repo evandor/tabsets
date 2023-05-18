@@ -3,8 +3,7 @@ import { RouteRecordRaw } from 'vue-router';
 const routes: RouteRecordRaw[] = [
   {
     path: '/',
-    component: () => import('layouts/PlainLayout.vue'),
-    children: [{ path: '', component: () => import('pages/SidePanelPage.vue') }],
+    redirect: '/sidepanel'
   },
   {
     path: '/start',
@@ -18,12 +17,12 @@ const routes: RouteRecordRaw[] = [
   },
   {
     path: '/sidepanel',
-    component: () => import('layouts/PlainLayout.vue'),
+    component: () => import('layouts/SidePanelLayout.vue'),
     children: [{ path: '', component: () => import('pages/SidePanelPage.vue') }],
   },
   {
     path: '/sidepanel-tabsets',
-    component: () => import('layouts/PlainLayout.vue'),
+    component: () => import('layouts/SidePanelLayout.vue'),
     children: [{ path: '', component: () => import('pages/SidePanelTabsetsPage.vue') }],
   },
   {
@@ -125,11 +124,6 @@ const routes: RouteRecordRaw[] = [
     path: '/help/:ident',
     component: () => import('layouts/DefaultLayout.vue'),
     children: [{ path: '', component: () => import('pages/HelpPage.vue') }],
-  },
-  {
-    path: '/newtab',
-    component: () => import('layouts/NewTabLayout.vue'),
-    children: [{ path: '', component: () => import('pages/NewTabPage.vue') }],
   },
   {
     path: '/:catchAll(.*)*',

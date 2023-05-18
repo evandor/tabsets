@@ -33,10 +33,9 @@
 
     <div class="row q-ma-sm">
       <div class="col-12">
-        Tabsets associated with this space:
+        Tabsets associated with this space {{useSpacesStore().space?.name}}:
       </div>
       <div class="col-12">
-<!--        <PanelTabList :tabs="tabsStore.getCurrentTabset?.tabs || []"/>-->
         <NavTabsetsListWidgetNonBex :tabsets="tabsets()" :fromPanel="true"/>
       </div>
     </div>
@@ -135,11 +134,6 @@ watchEffect(() => {
     }
   }
 })
-
-const openExtensionTab = () => {
-  const extensionUrl = chrome.runtime.getURL('www/index.html#/start')
-  NavigationService.openOrCreateTab(extensionUrl)
-}
 
 if (inBexMode()) {
   let queryOptions = {active: true, lastFocusedWindow: true};
