@@ -39,7 +39,12 @@ export class SelectTabsetCommand implements Command<object> {
         data: {tabsetId: this.tabsetId}
       }
       console.log("sending message", msg)
-      chrome.runtime.sendMessage(msg);
+      chrome.runtime.sendMessage(msg, (callback) => {
+        console.log("got callback", callback)
+        if (chrome.runtime.lastError) {
+          // ignore
+        }
+      });
     }
 
     const executionResult = new ExecutionResult(null, "done")

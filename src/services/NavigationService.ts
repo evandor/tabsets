@@ -66,7 +66,7 @@ class NavigationService {
         }
       })
     } else {
-      openURL(withUrl)
+      openURL(withUrl)//, undefined, {target: "_ts"}) - does not work
     }
   }
 

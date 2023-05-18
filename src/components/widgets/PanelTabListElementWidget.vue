@@ -1,20 +1,20 @@
 <template>
 
-  <q-item-section class="q-mr-sm text-right" style="justify-content:start;width:30px;max-width:30px">
+  <q-item-section class="q-mr-sm text-right" style="justify-content:start;width:40px;max-width:40px">
     <q-img v-if="props.tab?.image && props.tab.image.startsWith('blob://')"
            style="border:3px dotted white;border-radius:3px"
-           :src="imgFromBlob" width="30px"/>
+           :src="imgFromBlob" width="40px"/>
     <q-img v-else-if="props.tab.image"
            style="border:1px dotted white;border-radius:3px"
-           :src="props.tab.image" width="30px"/>
+           :src="props.tab.image" width="40px"/>
     <q-img v-else-if="thumbnail" style="border:1px dotted white;border-radius:3px"
-           :src="thumbnail" width="30px"/>
+           :src="thumbnail" width="40px"/>
     <TabFaviconWidget v-else
-                      :tab="props.tab" width="20px" height="20px" />
+                      :tab="props.tab" width="40px" height="40px" />
   </q-item-section>
 
   <!-- name, title, description, url && note -->
-  <q-item-section class="q-mb-md" :style="itemStyle(props.tab)">
+  <q-item-section class="q-mb-sm" :style="itemStyle(props.tab)">
 
     <!-- name or title -->
     <q-item-label>
@@ -30,6 +30,7 @@
 <!--            <q-tooltip class="tooltip">This tab is open in your browser. Click to open the corresponding tab.-->
 <!--            </q-tooltip>-->
 <!--          </q-chip>-->
+          <span v-if="props.header" class="text-bold">{{ props.header }}<br></span>
           {{ nameOrTitle(props.tab) }}
           <q-popup-edit :model-value="dynamicNameOrTitleModel(tab)" v-slot="scope"
                         @update:model-value="val => setCustomTitle( tab, val)">
@@ -47,7 +48,7 @@
 
     <!-- url -->
     <q-item-label
-      v-if="props.tab.chromeTab.url"
+      v-if="props.tab.chromeTab?.url"
       caption class="ellipsis-2-lines text-blue-10"
       @mouseover="showButtonsProp = true"
       @mouseleave="showButtonsProp = false">
@@ -100,7 +101,8 @@ import ShortUrl from "components/utils/ShortUrl.vue";
 import {useTabsStore} from "src/stores/tabsStore";
 
 const props = defineProps({
-  tab: {type: Object, required: true}
+  tab: {type: Object, required: true},
+  header: {type: String, required: false}
 })
 
 const emits = defineEmits(['sendCaption'])

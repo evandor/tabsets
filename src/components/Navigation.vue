@@ -138,10 +138,6 @@ const addTabset = () => $q.dialog({
   }
 })
 
-const setGroupedTabsCaption = (msg: string) => {
-  console.log("received caption", msg)
-  //groupedTabsCaption.value = msg
-}
 
 </script>
 

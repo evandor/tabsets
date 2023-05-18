@@ -2,9 +2,8 @@
 
   <div class="cursor-pointer">
     <q-badge outline
-             class="q-mr-md q-mt-none q-pt-sm q-pb-sm q-px-sm"
-             style="font-size:19px"
-             color="white" text-color="white" :label="spacesLabel()">
+      class="q-mr-md q-mt-none q-pt-sm q-pb-sm q-px-sm"
+      color="primary" text-color="primary" :label="spacesLabel()">
     </q-badge>
 
     <q-menu :offset="[0,10]">
@@ -26,8 +25,8 @@
         <q-item clickable v-close-popup @click="openNewSpaceDialog()">
           <q-item-section>Add Space</q-item-section>
         </q-item>
-        <q-separator v-if="spacesOptions.length > 0"/>
-        <q-item v-if="spacesOptions.length > 0"
+        <q-separator v-if="spacesOptions.length > 0 && !props.fromPanel"/>
+        <q-item v-if="spacesOptions.length > 0 && !props.fromPanel"
                 clickable v-close-popup @click="router.push('/spaces')">
           <q-item-section>Manage Spaces</q-item-section>
         </q-item>
@@ -53,6 +52,10 @@ const spacesStore = useSpacesStore()
 const router = useRouter()
 const $q = useQuasar()
 
+const props = defineProps({
+  fromPanel: {type: Boolean, default: false}
+})
+
 const spacesOptions = ref<object[]>([])
 
 watchEffect(() => {
@@ -71,6 +74,7 @@ const openNewSpaceDialog = () => {
     component: NewSpaceDialog,
     componentProps: {
       tabsetId: tabsStore.currentTabsetId,
+      fromPanel: props.fromPanel
     }
   })
 }

@@ -57,6 +57,10 @@ defineEmits([
   ...useDialogPluginComponent.emits
 ])
 
+const props = defineProps({
+  fromPanel: {type: Boolean, default: false}
+})
+
 const {dialogRef, onDialogHide, onDialogCancel} = useDialogPluginComponent()
 
 const spacesStore = useSpacesStore()
@@ -82,7 +86,9 @@ const createNewSpace = () => {
       newSpaceName.value = ''
       let message = 'New Space ' + newSpaceName.value + ' created successfully'
       hideWarning.value = false
-      router.push("/spaces")
+      if (!props.fromPanel) {
+        router.push("/spaces")
+      }
       $q.notify({
         message: message,
         type: 'positive'

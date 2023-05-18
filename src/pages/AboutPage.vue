@@ -57,7 +57,7 @@
           <div class="col-3"></div>
           <div class="col-6 q-pa-md">
             <q-btn class="fit bg-white" outline color="primary"
-                   @click="router.push('/tabset')"
+                   @click="router.push('/tabsets/' + useTabsStore().currentTabsetId )"
                    label="goto your tabsets"></q-btn>
           </div>
           <div class="col-3"></div>
@@ -92,7 +92,7 @@
               <q-icon name="add" class="q-mr-md"/>
               Open source: see <a href="https://www.github.com/evandor/tabsets" target="_blank">github project</a><br>
             </div>
-            <div  class="q-mb-md">
+            <div class="q-mb-md">
               <q-icon name="add" class="q-mr-md"/>
               <a href="https://opensource.org/licenses/MIT" target="_blank">MIT</a> license<br>
             </div>

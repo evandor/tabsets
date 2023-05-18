@@ -149,10 +149,8 @@ const hoveredTab = ref<string | undefined>(undefined)
 const {selectTabset} = useTabsetService()
 
 const props = defineProps({
-  tabsets: {
-    type: Array as PropType<Array<Tabset>>,
-    required: true
-  }
+  tabsets: {type: Array as PropType<Array<Tabset>>, required: true},
+  fromPanel: {type: Boolean, default: false}
 })
 
 onMounted(() => {
@@ -163,21 +161,19 @@ watchEffect(() => {
   activeTabset.value = tabsStore.currentTabsetId
 })
 
-// async function getCurrentTab() {
-//   let queryOptions = { active: true, lastFocusedWindow: true };
-//   // @ts-ignore
-//   let [tab] = await chrome.tabs.query(queryOptions);
-//   return tab;
-// }
-
-
 const selectTS = (tabset: Tabset) => {
   console.log("selecting", tabset.id)
   useCommandExecutor()
     .execute(new SelectTabsetCommand(tabset.id))
     .then(() => {
       activeTabset.value = tabset.id
-      tabset.type === TabsetType.DYNAMIC ? router.push("/dynamicTs/" + tabset.id) : router.push("/tabsets/" + tabset.id)
+      if (!props.fromPanel) {
+        tabset.type === TabsetType.DYNAMIC ?
+          router.push("/dynamicTs/" + tabset.id) :
+          router.push("/tabsets/" + tabset.id)
+      } else {
+        router.push("/sidepanel")
+      }
     })
 }
 

@@ -1,61 +1,31 @@
 <template>
-  <!-- first time -->
-  <div class="row q-ma-sm" v-if="tabsStore.tabsets.size === 0">
-    <Transition name="delayed-appear" appear>
-      <q-btn class="fit text-warning"
-             outline
-             data-testid="createFirstTabsetBtn"
-             @click="addFirstTabset"
-             label="create your first tabset"></q-btn>
-    </Transition>
-  </div>
 
-  <!-- we have at least one tabset -->
-  <div v-else class="q-ma-none">
+  <div class="q-ma-none">
 
     <q-toolbar class="text-primary lightgrey">
       <div class="row fit">
         <q-toolbar-title>
           <div class="row">
-            <div class="col-9">
-              <TabsetsSelectorWidget :fromPanel="true"/>
+            <div class="col-2">
+              <q-icon name="chevron_left" class="cursor-pointer" @click="router.push('/sidepanel')">
+                <q-tooltip>Back</q-tooltip>
+              </q-icon>
             </div>
-            <div class="col-3 text-right">
-              <q-icon v-if="usePermissionsStore().hasFeature(FeatureIdent.SPACES)"
-                class="q-ma-xs cursor-pointer" name="expand_less" size="16px" @click="showTabsets">
-                <q-tooltip class="tooltip">Manage Spaces</q-tooltip>
-              </q-icon>
-              <q-icon class="q-ma-xs cursor-pointer" name="filter_center_focus" size="16px" @click="createClip">
-                <q-tooltip class="tooltip">Create website clip</q-tooltip>
-              </q-icon>
-              <q-icon class="q-ma-xs cursor-pointer" name="open_in_new" size="16px" @click="openExtensionTab">
-                <q-tooltip class="tooltip">Open Tabsets</q-tooltip>
-              </q-icon>
+<!--            <div class="col-2" style="font-size: small">-->
+<!--              Space-->
+<!--            </div>-->
+            <div class="col-10">
+              <SidePanelSpacesSelectorWidget />
+            </div>
+            <div class="col-1 text-right">
+<!--              <q-icon class="q-ma-xs cursor-pointer" name="open_in_new" size="16px" @click="openExtensionTab">-->
+<!--                <q-tooltip class="tooltip">Open Tabsets</q-tooltip>-->
+<!--              </q-icon>-->
             </div>
           </div>
         </q-toolbar-title>
       </div>
     </q-toolbar>
-
-
-
-    <div class="row q-ma-sm bg-yellow-1" v-if="tabFromChromeTab()"
-         style="border:1px solid gray;border-radius: 5px">
-
-      <div class="col-10">
-        <q-list>
-          <q-item
-            v-ripple
-            class="q-ma-none q-pa-xs">
-            <PanelTabListElementWidget header="Current Tab:" :tab="tabFromChromeTab()"/>
-          </q-item>
-        </q-list>
-      </div>
-      <div class="col-2">
-        <q-btn :disable="alreadyInTabset()" :label="alreadyInTabset() ? 'saved' :'save'" color="primary" flat
-               size="10px" @click="saveFromPanel()"></q-btn>
-      </div>
-    </div>
 
     <div class="col-12">
       &nbsp;
@@ -63,7 +33,11 @@
 
     <div class="row q-ma-sm">
       <div class="col-12">
-        <PanelTabList :tabs="tabsStore.getCurrentTabset?.tabs || []"/>
+        Tabsets associated with this space:
+      </div>
+      <div class="col-12">
+<!--        <PanelTabList :tabs="tabsStore.getCurrentTabset?.tabs || []"/>-->
+        <NavTabsetsListWidgetNonBex :tabsets="tabsets()" :fromPanel="true"/>
       </div>
     </div>
 
@@ -78,7 +52,7 @@ import {ref, watchEffect} from "vue";
 import {useTabsStore} from "src/stores/tabsStore";
 import {Tab} from "src/models/Tab";
 import _ from "lodash"
-import {Tabset} from "src/models/Tabset";
+import {Tabset, TabsetStatus, TabsetType} from "src/models/Tabset";
 import ChromeApi from "src/services/ChromeApi";
 import {useRouter} from "vue-router";
 import {useUtils} from "src/services/Utils";
@@ -91,14 +65,20 @@ import {useUiStore} from "stores/uiStore";
 import TabsetsSelectorWidget from "components/widgets/TabsetsSelectorWidget.vue";
 import PanelTabList from "components/layouts/PanelTabList.vue";
 import PanelTabListElementWidget from "components/widgets/PanelTabListElementWidget.vue";
+import TabsetsAndSpacesSelectorWidget from "components/widgets/TabsetsAndSpacesSelectorWidget.vue";
+import SpacesSelectorWidget from "components/widgets/SpacesSelectorWidget.vue";
+import NavTabsetsListWidgetNonBex from "components/widgets/NavTabsetsListWidgetNonBex.vue";
 import {usePermissionsStore} from "stores/permissionsStore";
 import {FeatureIdent} from "src/models/AppFeature";
+import {useSpacesStore} from "stores/spacesStore";
+import SidePanelSpacesSelectorWidget from "components/widgets/SidePanelSpacesSelectorWidget.vue";
 
 const {inBexMode} = useUtils()
 
 const $q = useQuasar()
 const router = useRouter()
 const tabsStore = useTabsStore()
+const spacesStore = useSpacesStore()
 
 const currentChromeTabs = ref<chrome.tabs.Tab[]>([])
 const currentTabs = ref<Tab[]>([])
@@ -228,19 +208,29 @@ const createClip = () => {
 
 const navigate = (target: string) => router.push(target)
 
-const tabsets = (): Tabset[] => {
+const tabsets = ():Tabset[] => {
   let tabsets = [...tabsStore.tabsets.values()]
-  return tabsets
+  if (usePermissionsStore().hasFeature(FeatureIdent.SPACES) && spacesStore.spaces && spacesStore.spaces.size > 0) {
+    if (spacesStore.space && spacesStore.space.id && spacesStore.space.id.length > 0) {
+      tabsets = _.filter(tabsets, ts => ts.status !== TabsetStatus.ARCHIVED && ts.spaces && ts.spaces.indexOf(spacesStore.space.id) >= 0)
+    } else {
+      tabsets = _.filter(tabsets, ts => ts.status !== TabsetStatus.ARCHIVED && ts.spaces && ts.spaces.length === 0)
+    }
+  }
+  return _.sortBy(_.filter(tabsets, (ts: Tabset) =>
+      ts.type !== TabsetType.SPECIAL &&
+      ts.status !== TabsetStatus.ARCHIVED &&
+      ts.status !== TabsetStatus.DELETED),
+    [
+      function (o) {
+        return o.status === TabsetStatus.FAVORITE ? 0 : 1
+      },
+      function (o) {
+        return o.name.toLowerCase()
+      }
+    ])
 }
 
-
-const addFirstTabset = () => $q.dialog({
-  component: NewTabsetDialog, componentProps: {
-    setEmptyByDefault: useUiStore().newTabsetEmptyByDefault,
-    firstTabset: true,
-    fromPanel: true
-  }
-})
 
 const tabFromChromeTab = () => currentChromeTab.value ? new Tab(uid(), currentChromeTab.value) : undefined
 

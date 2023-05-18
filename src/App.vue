@@ -27,7 +27,6 @@ import {useTabsetService} from "src/services/TabsetService2";
 import {INDEX_DB_NAME} from "boot/constants";
 import {useSettingsStore} from "src/stores/settingsStore";
 import BookmarksService from "src/services/BookmarksService";
-import {FeatureIdent} from "src/models/AppFeature";
 import {useUtils} from "src/services/Utils";
 
 const {inBexMode} = useUtils()
@@ -38,13 +37,21 @@ const {inBexMode} = useUtils()
 //
 // $q.dark.set($q.localStorage.getItem('darkMode') || false)
 
-// if (isNewTabPage()) {
-//
-//   // init db
-//
-//
-// } else {
-//
+// https://stackoverflow.com/questions/19846078/how-to-read-from-chromes-console-in-javascript
+// console.debug("initializing logs store")
+// // @ts-ignore
+// // console.defaultLog = console.log.bind(console);
+// console.defaultError = console.error.bind(console);
+// // logs.value = [];
+// // console.log = function () {
+// console.error = function(){
+//   // @ts-ignore
+//   //console.defaultLog.apply(console, arguments);
+//   console.defaultError.apply(console, arguments);
+//   // new & array data
+//   //console.debug("adding to logs", arguments)
+//   useLogsStore().push(Array.from(arguments));
+// }
 
 const tabsStore = useTabsStore()
 const tabGroupsStore = useTabGroupsStore()
@@ -75,7 +82,6 @@ usePermissionsStore().initialize()
 settingsStore.initialize(useQuasar().localStorage);
 tabsStore.initialize(useQuasar().localStorage);
 
-
 searchStore.init()
 windowsStore.init()
 
@@ -101,13 +107,6 @@ IndexedDbPersistenceService.init(INDEX_DB_NAME)
 
 useNotificationsStore().bookmarksExpanded = $q.localStorage.getItem("bookmarks.expanded") || []
 
-// console.log("route", window.location.href)
-// if (window.location.href.indexOf("sidepanel=true") >= 0) {
-//   console.log("pushing to sidepanel")
-//   router.push("/sidepanel")
-// } else if (!window.location.href.endsWith("#/popup")) {
-//   router.push("/start")
-// }
 if (!inBexMode()) {
   router.push("/start")
 }

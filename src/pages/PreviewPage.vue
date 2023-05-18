@@ -27,7 +27,7 @@
           color="primary"
           label="Back to tabsets"
           class="q-mr-md"
-          @click="router.push('/tabset')"
+          @click="router.push('/tabsets/' + useTabsStore().currentTabsetId )"
         >
           <q-tooltip>Back to tabsets</q-tooltip>
         </q-btn>
