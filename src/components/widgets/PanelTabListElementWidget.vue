@@ -1,7 +1,9 @@
 <template>
 
   <q-item-section v-if="useUiStore().listDetailLevelGreaterEqual(ListDetailLevel.MEDIUM)"
-    class="q-mr-sm text-right" style="justify-content:start;width:40px;max-width:40px">
+                  @mouseover="hoveredTab = tab.id"
+                  @mouseleave="hoveredTab = undefined"
+                  class="q-mr-sm text-right" style="justify-content:start;width:40px;max-width:40px">
     <q-img v-if="props.tab?.image && props.tab.image.startsWith('blob://')"
            style="border:3px dotted white;border-radius:3px"
            :src="imgFromBlob" width="40px"/>
@@ -11,11 +13,13 @@
     <q-img v-else-if="thumbnail" style="border:1px dotted white;border-radius:3px"
            :src="thumbnail" width="40px"/>
     <TabFaviconWidget v-else
-                      :tab="props.tab" width="40px" height="40px" />
+                      :tab="props.tab" width="40px" height="40px"/>
   </q-item-section>
 
   <!-- name, title, description, url && note -->
-  <q-item-section class="q-mb-sm" :style="itemStyle(props.tab)">
+  <q-item-section class="q-mb-sm" :style="itemStyle(props.tab)"
+                  @mouseover="hoveredTab = tab.id"
+                  @mouseleave="hoveredTab = undefined">
 
     <!-- name or title -->
     <q-item-label>
@@ -33,7 +37,8 @@
     </q-item-label>
 
     <!-- description -->
-    <q-item-label class="ellipsis-2-lines text-grey-8" v-if="useUiStore().listDetailLevelGreaterEqual(ListDetailLevel.LARGE)">
+    <q-item-label class="ellipsis-2-lines text-grey-8"
+                  v-if="useUiStore().listDetailLevelGreaterEqual(ListDetailLevel.LARGE)">
       {{ props.tab.description }}
     </q-item-label>
 
@@ -68,8 +73,26 @@
     </q-item-label>
   </q-item-section>
 
-  <q-item-section class="q-mb-sm" style="width:30px;max-width:30px">
-  +
+  <!--  <q-item-section class="q-mb-sm" style="width:30px;max-width:30px">-->
+  <!--  +-->
+  <!--  </q-item-section>-->
+
+  <q-item-section class="text-right q-mx-sm cursor-pointer"
+                  @mouseover="hoveredTab = tab.id"
+                  @mouseleave="hoveredTab = undefined"
+                  style="max-width:25px;font-size: 12px;color:#bfbfbf">
+            <span v-if="hoveredOver(tab.id)">
+              <q-icon name="more_horiz" color="primary" size="16px"/>
+            </span>
+    <span v-else>
+
+            </span>
+    <PanelTabListContextMenu :tab="tab"/>
+
+    <!--    :index="index"-->
+    <!--    :hoveredTab="hoveredTab"-->
+    <!--    @toggleExpand="(index:number) => toggleExpand(index)"-->
+
   </q-item-section>
 
 </template>
@@ -94,6 +117,9 @@ import {CopyToClipboardCommand} from "src/domain/commands/CopyToClipboard";
 import {useTabsetService} from "src/services/TabsetService2";
 import ShortUrl from "components/utils/ShortUrl.vue";
 import {useTabsStore} from "src/stores/tabsStore";
+import {TabsetType} from "src/models/Tabset";
+import TabsetListContextMenu from "components/widgets/helper/TabsetListContextMenu.vue";
+import PanelTabListContextMenu from "components/widgets/helper/PanelTabListContextMenu.vue";
 
 const props = defineProps({
   tab: {type: Object, required: true},
@@ -108,6 +134,7 @@ const line = ref(null)
 const showButtonsProp = ref<boolean>(false)
 const thumbnail = ref<string | undefined>(undefined)
 const imgFromBlob = ref<string>("")
+const hoveredTab = ref<string | undefined>(undefined)
 
 onMounted(() => {
   const blobImgPath = props.tab.image
@@ -211,4 +238,8 @@ watchEffect(() => {
       })
   }
 })
+
+const hoveredOver = (tabsetId: string) => hoveredTab.value === tabsetId
+
+
 </script>
