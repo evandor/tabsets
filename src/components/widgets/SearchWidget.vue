@@ -1,9 +1,11 @@
 <template>
 
   <div class="q-gutter-md row items-start fit">
-    <q-select dark dense standout
+    <q-select dark dense standout filled autofocus
               :placeholder="inputPlaceholder()"
               class="fit q-mx-md"
+              :color="props.fromPanel ? 'blue' : 'green'"
+              :bg-color="props.fromPanel ? 'primary' : 'secondary'"
               :model-value="search"
               ref="searchBox"
               hide-dropdown-icon
@@ -87,16 +89,24 @@ const typedOrSelected = ref<any>()
 const searchBox = ref(null)
 const highlight = ref<string | undefined>(undefined)
 
+const props = defineProps({
+  fromPanel: {type: Boolean, default: false}
+})
+
 function submitSearch() {
   setTimeout(() => {
     console.log("submitting search", searchStore, typedOrSelected.value)
     if (searchStore.term === '') {
       searchStore.term = typedOrSelected.value
     }
-    if (route.path === "/search") {
-      runSearch(searchStore.term)
+    if (props.fromPanel) {
+      router.push("/sidepanel-search")
     } else {
-      router.push("/search")
+      if (route.path === "/search") {
+        runSearch(searchStore.term)
+      } else {
+        router.push("/search")
+      }
     }
   }, 200)
 
@@ -181,12 +191,13 @@ const inputPlaceholder = () => {
   }
   if (usePermissionsStore().hasFeature(FeatureIdent.BOOKMARKS) && usePermissionsStore().hasFeature(FeatureIdent.ANALYSE_TABS)) {
     const contentCount = useSearchStore().stats.get("content.count")
-    return `Search inside ${tabsStore.allTabsCount} tabs (${contentCount} analysed) and ${useBookmarksStore().bookmarksLeaves.length} bookmarks`
+    // return `Search in ${tabsStore.allTabsCount} tabs (${contentCount} analysed) and ${useBookmarksStore().bookmarksLeaves.length} bookmarks`
+    return `Search in ${tabsStore.allTabsCount} tabs and ${useBookmarksStore().bookmarksLeaves.length} bookmarks`
   }
   if (usePermissionsStore().hasFeature(FeatureIdent.BOOKMARKS)) {
-    return "Search inside all of " + tabsStore.allTabsCount + " tabs and " + useBookmarksStore().bookmarksLeaves.length + " bookmarks"
+    return "Search in all of " + tabsStore.allTabsCount + " tabs and " + useBookmarksStore().bookmarksLeaves.length + " bookmarks"
   }
-  return "Search inside all of " + tabsStore.allTabsCount + " tabs"
+  return "Search in all of " + tabsStore.allTabsCount + " tabs"
 }
 
 const clearSearch = () => {

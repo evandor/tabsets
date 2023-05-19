@@ -32,11 +32,10 @@ export enum DrawerTabs {
   TODOS = "TODOS"
 }
 
-export class LeftDrawer {
-  constructor(
-    public state: LeftDrawerState,
-    public activeTab: DrawerTabs = DrawerTabs.OPEN_TABS) {
-  }
+export enum ListDetailLevel {
+  SMALL = "SMALL",
+  MEDIUM = "MEDIUM",
+  LARGE = "LARGE"
 }
 
 export class RightDrawer {
@@ -64,6 +63,8 @@ export const useUiStore = defineStore('ui', () => {
   const footerInfo = ref<string | undefined>(undefined)
 
   const contentCount = ref<number>(0)
+
+  const listDetailLevel = ref<ListDetailLevel>(ListDetailLevel.LARGE)
 
   // info Messages
   const hiddenMessages = ref<string[]>(LocalStorage.getItem('ui.hiddenInfoMessages') as unknown as string[] || [])
@@ -181,6 +182,23 @@ export const useUiStore = defineStore('ui', () => {
     highlightTerm.value = term
   }
 
+  function setListDetailLevel(val: ListDetailLevel) {
+    listDetailLevel.value = val
+  }
+
+  const listDetailLevelGreaterEqual = computed(() => {
+    return (level: ListDetailLevel) => {
+      switch(listDetailLevel.value) {
+        case ListDetailLevel.LARGE:
+          return true
+        case ListDetailLevel.MEDIUM:
+          return level === ListDetailLevel.MEDIUM || level === ListDetailLevel.SMALL
+        case ListDetailLevel.SMALL:
+          return level === ListDetailLevel.SMALL
+      }
+    }
+  })
+
   const showMessage = computed(() => {
     return (ident: string, probability: number = 1, forceDisplay: boolean = false) => {
       //console.log("checking message", ident, probability, hiddenMessages.value)
@@ -268,6 +286,9 @@ export const useUiStore = defineStore('ui', () => {
     setSelectedTag,
     setSelectedTabsetId,
     selectedTabsetId,
-    tabsFilter
+    tabsFilter,
+    setListDetailLevel,
+    listDetailLevel,
+    listDetailLevelGreaterEqual
   }
 })

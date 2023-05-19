@@ -5,8 +5,8 @@
       <router-view/>
     </q-page-container>
 
-    <q-footer elevated class="bg-grey-8 text-white" style="font-size:small">
-          {{ location }}
+    <q-footer elevated class="bg-grey-8 text-white">
+      <SidePanelFooter />
     </q-footer>
 
   </q-layout>
@@ -16,6 +16,7 @@
 <script setup lang="ts">
 
 import {ref, watchEffect} from "vue";
+import SidePanelFooter from "components/SidePanelFooter.vue";
 
 const location = ref('')
 

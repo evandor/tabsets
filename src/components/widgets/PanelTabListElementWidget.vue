@@ -1,6 +1,7 @@
 <template>
 
-  <q-item-section class="q-mr-sm text-right" style="justify-content:start;width:40px;max-width:40px">
+  <q-item-section v-if="useUiStore().listDetailLevelGreaterEqual(ListDetailLevel.MEDIUM)"
+    class="q-mr-sm text-right" style="justify-content:start;width:40px;max-width:40px">
     <q-img v-if="props.tab?.image && props.tab.image.startsWith('blob://')"
            style="border:3px dotted white;border-radius:3px"
            :src="imgFromBlob" width="40px"/>
@@ -19,17 +20,7 @@
     <!-- name or title -->
     <q-item-label>
       <div>
-        <div class="q-pr-lg cursor-pointer">
-<!--          <q-chip v-if="isOpen(props.tab)"-->
-<!--                  class="q-my-none q-py-none q-ml-none q-mr-sm"-->
-<!--                  clickable-->
-<!--                  style="float:left;position: relative;top:3px"-->
-<!--                  @click="NavigationService.openOrCreateTab(props.tab.chromeTab?.url)"-->
-<!--                  size="xs" icon="tab">-->
-<!--            opened-->
-<!--            <q-tooltip class="tooltip">This tab is open in your browser. Click to open the corresponding tab.-->
-<!--            </q-tooltip>-->
-<!--          </q-chip>-->
+        <div class="q-pr-lg cursor-pointer ellipsis">
           <span v-if="props.header" class="text-bold">{{ props.header }}<br></span>
           {{ nameOrTitle(props.tab) }}
           <q-popup-edit :model-value="dynamicNameOrTitleModel(tab)" v-slot="scope"
@@ -42,7 +33,7 @@
     </q-item-label>
 
     <!-- description -->
-    <q-item-label class="ellipsis-2-lines text-grey-8">
+    <q-item-label class="ellipsis-2-lines text-grey-8" v-if="useUiStore().listDetailLevelGreaterEqual(ListDetailLevel.LARGE)">
       {{ props.tab.description }}
     </q-item-label>
 
@@ -77,6 +68,10 @@
     </q-item-label>
   </q-item-section>
 
+  <q-item-section class="q-mb-sm" style="width:30px;max-width:30px">
+  +
+  </q-item-section>
+
 </template>
 
 <script setup lang="ts">
@@ -90,7 +85,7 @@ import {useCommandExecutor} from "src/services/CommandExecutor";
 import {DeleteTabCommand} from "src/domain/commands/DeleteTabCommand";
 import EditNoteDialog from "components/dialogues/EditNoteDialog.vue";
 import {useQuasar} from "quasar";
-import {DrawerTabs, useUiStore} from "src/stores/uiStore";
+import {DrawerTabs, ListDetailLevel, useUiStore} from "src/stores/uiStore";
 import {usePermissionsStore} from "src/stores/permissionsStore";
 import TabFaviconWidget from "components/widgets/TabFaviconWidget.vue";
 import {UpdateTabNameCommand} from "src/domain/tabs/UpdateTabName";
@@ -187,12 +182,7 @@ const getFaviconUrl = (chromeTab: chrome.tabs.Tab | undefined) => {
 const deleteTab = (tab: Tab) => useCommandExecutor().executeFromUi(new DeleteTabCommand(tab))
 
 
-const nameOrTitle = (tab: Tab) => {
-  // if (tab.executionResult) {
-  //   return tab.executionResult[0]['email' as keyof object] + " <img src='"+tab.executionResult[0]['picture' as keyof object]['medium' as keyof object]+"' />"
-  // }
-  return tab.name ? tab.name : tab.chromeTab?.title
-}
+const nameOrTitle = (tab: Tab) => tab.name ? tab.name : tab.chromeTab?.title
 
 const dynamicNameOrTitleModel = (tab: Tab) => tab.name ? tab.name : tab.chromeTab?.title
 

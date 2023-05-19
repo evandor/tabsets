@@ -26,6 +26,11 @@ const routes: RouteRecordRaw[] = [
     children: [{ path: '', component: () => import('pages/SidePanelTabsetsPage.vue') }],
   },
   {
+    path: '/sidepanel-search',
+    component: () => import('layouts/SidePanelLayout.vue'),
+    children: [{ path: '', component: () => import('pages/SidePanelSearchPage.vue') }],
+  },
+  {
     path: '/about',
     component: () => import('layouts/AboutLayout.vue'),
     children: [{ path: '', component: () => import('pages/AboutPage.vue') }],

@@ -106,7 +106,8 @@ class ChromeApi {
   }
 
   buildContextMenu() {
-    if (process.env.MODE !== 'bex') {
+    // @ts-ignore
+    if (process.env.MODE !== 'bex' || chrome.sidePanel) {
       return
     }
     console.log("building context menu")

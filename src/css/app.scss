@@ -1,6 +1,6 @@
 // app global css in SCSS form
 .constrained-width {
-  max-width:1200px;
+  max-width: 1200px;
   margin: 0 auto;
 }
 
@@ -27,28 +27,37 @@
   background-color: $warning
 }
 
-#fixed-footer
-{
-  background-color:white;
-  position:fixed;
-  bottom:0;
-  left:300px;
-  right:0;
-  height:25px;
-  margin-bottom:0;
+.delayed-appear-enter-active {
+  transition: all 12s ease-in;
+  transition-delay: 1s
+}
+
+.delayed-appear-enter-from,
+.delayed-appear-leave-to {
+  opacity: 0
+}
+
+#fixed-footer {
+  background-color: white;
+  position: fixed;
+  bottom: 0;
+  left: 300px;
+  right: 0;
+  height: 25px;
+  margin-bottom: 0;
 }
 
 .active-list-element {
   //font-weight: bold;
   color: $primary;
-//  border-left: 5px solid $primary;
+  //  border-left: 5px solid $primary;
   border-radius: 5px;
   background: #efefef;
   //background: darken(white, 10%);
 }
 
 .constrained-width {
-  max-width:1600px;
+  max-width: 1600px;
   margin: 0 auto;
 }
 

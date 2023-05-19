@@ -19,7 +19,7 @@
         <q-item v-for="ts in tabsetsOptions"
                 :disable="ts.id === tabsStore.currentTabsetId?.id"
                 clickable v-close-popup @click="switchTabset(ts)">
-          <q-item-section>{{ ts.label }}</q-item-section>
+          <q-item-section class="q-ml-sm">{{ ts.label }}</q-item-section>
         </q-item>
         <q-separator/>
         <q-item clickable v-close-popup @click="openNewTabsetDialog()">

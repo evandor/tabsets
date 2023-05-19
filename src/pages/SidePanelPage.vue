@@ -1,7 +1,7 @@
 <template>
   <!-- first time -->
   <div class="row q-ma-sm" v-if="tabsStore.tabsets.size === 0">
-    <Transition name="delayed-appear" appear>
+    <Transition name="delayed-appear">
       <q-btn class="fit text-warning"
              outline
              data-testid="createFirstTabsetBtn"
@@ -18,12 +18,19 @@
         <q-toolbar-title>
           <div class="row">
             <div class="col-9">
-              <TabsetsSelectorWidget :fromPanel="true"/>
+              <SearchWidget v-if="searching"
+                            :fromPanel="true"
+                            style="position: absolute; left:5px;top:5px;max-width:310px"/>
+              <TabsetsSelectorWidget v-else :fromPanel="true"/>
             </div>
             <div class="col-3 text-right">
               <q-icon v-if="usePermissionsStore().hasFeature(FeatureIdent.SPACES)"
-                class="q-ma-xs cursor-pointer" name="expand_less" size="16px" @click="showTabsets">
+                      class="q-ma-xs cursor-pointer" name="expand_less" size="16px" @click="showTabsets">
                 <q-tooltip class="tooltip">Manage Spaces</q-tooltip>
+              </q-icon>
+              <q-icon v-if="tabsStore.tabsets.size > 1"
+                      class="q-ma-xs cursor-pointer" name="search" size="16px" @click="toggleSearch">
+                <q-tooltip class="tooltip">Search</q-tooltip>
               </q-icon>
               <q-icon class="q-ma-xs cursor-pointer" name="filter_center_focus" size="16px" @click="createClip">
                 <q-tooltip class="tooltip">Create website clip</q-tooltip>
@@ -36,7 +43,6 @@
         </q-toolbar-title>
       </div>
     </q-toolbar>
-
 
 
     <div class="row q-ma-sm bg-yellow-1" v-if="tabFromChromeTab()"
@@ -93,6 +99,8 @@ import PanelTabList from "components/layouts/PanelTabList.vue";
 import PanelTabListElementWidget from "components/widgets/PanelTabListElementWidget.vue";
 import {usePermissionsStore} from "stores/permissionsStore";
 import {FeatureIdent} from "src/models/AppFeature";
+import {useSettingsStore} from "stores/settingsStore";
+import SearchWidget from "components/widgets/SearchWidget.vue";
 
 const {inBexMode} = useUtils()
 
@@ -107,6 +115,7 @@ const tabsetNameOptions = ref<object[]>([])
 const openTabs = ref<chrome.tabs.Tab[]>([])
 const currentTabset = ref<Tabset | undefined>(undefined)
 const currentChromeTab = ref<chrome.tabs.Tab>(null as unknown as chrome.tabs.Tab)
+const searching = ref(false)
 
 console.log("adding listener")
 
@@ -246,4 +255,18 @@ const tabFromChromeTab = () => currentChromeTab.value ? new Tab(uid(), currentCh
 
 const showTabsets = () => router.push("/sidepanel-tabsets")
 
+const toggleSearch = () => searching.value = !searching.value
+
 </script>
+
+<style lang="sass" scoped>
+
+.delayed-appear-enter-active
+  transition: all 3s ease-in
+  transition-delay: 3s
+
+.delayed-appear-enter-from,
+.delayed-appear-leave-to
+  opacity: 0
+
+</style>

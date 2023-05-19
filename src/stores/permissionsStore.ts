@@ -1,6 +1,6 @@
 // !== MIT
 import {defineStore} from 'pinia';
-import {computed, ref, watch, watchEffect} from "vue";
+import {computed, ref, watchEffect} from "vue";
 import {useQuasar} from "quasar";
 import {FeatureIdent, FeatureType} from "src/models/AppFeature";
 import {useSuggestionsStore} from "src/stores/suggestionsStore";
@@ -110,6 +110,10 @@ export const usePermissionsStore = defineStore('permissions', () => {
 
   const hasFeature = computed(() => {
     return (feature: FeatureIdent): boolean => {
+      if (feature === FeatureIdent.SIDE_PANEL) {
+        // @ts-ignore
+        return chrome.sidePanel !== undefined
+      }
       const appFeature = new AppFeatures().getFeature(feature)
       if (inActiveDefaultFeatures.value && appFeature && appFeature.type === FeatureType.DEFAULT) {
         return inActiveDefaultFeatures.value.indexOf(feature.toLowerCase()) < 0
