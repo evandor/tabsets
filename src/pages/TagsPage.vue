@@ -122,11 +122,6 @@ watchEffect(() => {
   }
 })
 
-const searchWithBrowser = () => {
-  // @ts-ignore
-  chrome.search.query({disposition: 'NEW_TAB', text: searchStore.term})
-}
-
 const bookmarksEnabled = () => usePermissionsStore().hasPermission('bookmarks')
 const grant = (permission: string) => useCommandExecutor().executeFromUi(new GrantPermissionCommand(permission))
 
