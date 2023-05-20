@@ -75,14 +75,12 @@ import {ref, watchEffect} from "vue";
 import {useQuasar} from "quasar";
 import _ from "lodash"
 import {useTabsStore} from "src/stores/tabsStore";
-import {useTabGroupsStore} from "src/stores/tabGroupsStore";
 import {useRoute} from "vue-router";
 import {useTabsetService} from "src/services/TabsetService2";
 import sanitizeHtml from 'sanitize-html';
 
 const $q = useQuasar()
 const tabsStore = useTabsStore()
-const tabGroupsStore = useTabGroupsStore()
 const route = useRoute()
 
 const thumbnails = ref<Map<string, string>>(new Map())

@@ -115,7 +115,6 @@ import {ref, watchEffect} from 'vue'
 import {useRoute, useRouter} from "vue-router";
 import {useQuasar} from "quasar";
 import {useTabsStore} from "src/stores/tabsStore";
-import {useTabGroupsStore} from "src/stores/tabGroupsStore";
 import {usePermissionsStore} from "src/stores/permissionsStore";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {AppFeature, FeatureIdent, FeatureType} from "src/models/AppFeature";
@@ -128,7 +127,6 @@ const route = useRoute();
 const router = useRouter();
 const localStorage = useQuasar().localStorage
 const tabsStore = useTabsStore()
-const tabGroupsStore = useTabGroupsStore()
 const featuresStore = useSettingsStore()
 const permissionsStore = usePermissionsStore()
 

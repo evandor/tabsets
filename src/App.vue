@@ -4,7 +4,6 @@
 
 <script setup lang="ts">
 import {useTabsStore} from "src/stores/tabsStore";
-import {useTabGroupsStore} from "src/stores/tabGroupsStore";
 import {useQuasar} from "quasar";
 import tabsetService from "src/services/TabsetService";
 import spacesService from "src/services/SpacesService";
@@ -37,24 +36,7 @@ const {inBexMode} = useUtils()
 //
 // $q.dark.set($q.localStorage.getItem('darkMode') || false)
 
-// https://stackoverflow.com/questions/19846078/how-to-read-from-chromes-console-in-javascript
-// console.debug("initializing logs store")
-// // @ts-ignore
-// // console.defaultLog = console.log.bind(console);
-// console.defaultError = console.error.bind(console);
-// // logs.value = [];
-// // console.log = function () {
-// console.error = function(){
-//   // @ts-ignore
-//   //console.defaultLog.apply(console, arguments);
-//   console.defaultError.apply(console, arguments);
-//   // new & array data
-//   //console.debug("adding to logs", arguments)
-//   useLogsStore().push(Array.from(arguments));
-// }
-
 const tabsStore = useTabsStore()
-const tabGroupsStore = useTabGroupsStore()
 const settingsStore = useSettingsStore()
 const suggestionsStore = useSuggestionsStore()
 const bookmarksStore = useBookmarksStore()

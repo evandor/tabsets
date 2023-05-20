@@ -250,7 +250,6 @@ import {useRoute, useRouter} from "vue-router";
 import {uid, useQuasar} from "quasar";
 import _ from "lodash"
 import {useTabsStore} from "src/stores/tabsStore";
-import {useTabGroupsStore} from "src/stores/tabGroupsStore";
 import TabsetService from "src/services/TabsetService";
 import {Tab} from "src/models/Tab";
 import RestoreTabsetDialog from "components/dialogues/RestoreTabsetDialog.vue";
@@ -278,7 +277,6 @@ const route = useRoute();
 const router = useRouter();
 const localStorage = useQuasar().localStorage
 const tabsStore = useTabsStore()
-const tabGroupsStore = useTabGroupsStore()
 const featuresStore = useSettingsStore()
 const permissionsStore = usePermissionsStore()
 

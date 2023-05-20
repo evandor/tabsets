@@ -5,7 +5,6 @@ import {Tabset, TabsetStatus, TabsetType} from "src/models/Tabset";
 import {Tab, UrlExtension} from "src/models/Tab";
 import ChromeApi from "src/services/ChromeApi";
 import {NewOrReplacedTabset} from "src/models/NewOrReplacedTabset";
-import {useTabGroupsStore} from "src/stores/tabGroupsStore";
 import {Group} from "src/models/Group";
 import {useSpacesStore} from "src/stores/spacesStore";
 import {SpecialTabsetIdent} from "src/domain/tabsets/CreateSpecialTabset";
@@ -326,7 +325,6 @@ export const useTabsStore = defineStore('tabs', {
       const foundTS: Tabset | undefined = _.find([...this.tabsets.values()], ts => ts.name === tabsetName)
       let ts: Tabset = null as unknown as Tabset
       //const tabsetExtensionTab = await ChromeApi.getCurrentTab()
-      const tabGroupsStore = useTabGroupsStore()
       const currentSpace = useSpacesStore().space
       if (foundTS) {
         if (foundTS.status === TabsetStatus.DELETED) {
@@ -341,23 +339,22 @@ export const useTabsStore = defineStore('tabs', {
             }
           })
           ts = foundTS
-          _.forEach(tabGroupsStore.tabGroups, tg => {
-            const exists = _.find(foundTS.groups, existing => existing.chromeGroup.title === tg.title)
-            if (!exists) {
-              foundTS.groups.push(new Group(uid(), tg))
-            }
-          })
+          // _.forEach(tabGroupsStore.tabGroups, tg => {
+          //   const exists = _.find(foundTS.groups, existing => existing.chromeGroup.title === tg.title)
+          //   if (!exists) {
+          //     foundTS.groups.push(new Group(uid(), tg))
+          //   }
+          // })
 
 
         } else {
-          ts = new Tabset(foundTS.id, tabsetName, _.map(tabs, t => t),
-            _.map(tabGroupsStore.tabGroups, tg => new Group(uid(), tg)))
+          ts = new Tabset(foundTS.id, tabsetName, _.map(tabs, t => t),[])
           this.tabsets.set(foundTS.id, ts)
           //TabsetService.saveTabset(ts)
         }
       } else {
         const useId = uid()
-        ts = new Tabset(useId, tabsetName, tabs, _.map(tabGroupsStore.tabGroups, tg => new Group(uid(), tg)))
+        ts = new Tabset(useId, tabsetName, tabs, [])
         this.tabsets.set(useId, ts)
       }
       if (currentSpace && currentSpace.id && ts.spaces.findIndex(s => s === currentSpace.id) < 0) {
