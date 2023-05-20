@@ -45,8 +45,8 @@ export const useTabsStore = defineStore('tabs', {
     // chrome's current's windows tabs, reloaded on various events
     tabs: [] as unknown as chrome.tabs.Tab[],
 
-    // @ts-ignore
-    currentChromeTab: chrome.tabs.Tab,
+    // cannot use type chrome.tabs.Tab if not in bex mode
+    currentChromeTab: null as unknown as chrome.tabs.Tab,
 
     /**
      * a named list of tabsets managed by this extension.
@@ -400,7 +400,7 @@ export const useTabsStore = defineStore('tabs', {
       this.listenersOn = true
     },
     addTabset(ts: Tabset) {
-      console.log("adding tabset", ts)
+      // console.log("adding tabset", ts)
       ts.tabs = _.filter(ts.tabs, (t: Tab) => t !== null)
       this.tabsets.set(ts.id, ts)
       markDuplicates(ts)

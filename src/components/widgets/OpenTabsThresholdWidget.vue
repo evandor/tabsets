@@ -64,7 +64,7 @@
       </q-item>
       <q-separator v-if="usePermissionsStore().hasFeature(FeatureIdent.SESSIONS)"/>
       <q-item v-if="usePermissionsStore().hasFeature(FeatureIdent.SESSIONS)"
-        clickable v-close-popup @click="router.push('/settings')">
+              clickable v-close-popup @click="router.push('/settings')">
         <q-item-section>Change Settings</q-item-section>
       </q-item>
     </q-list>
@@ -88,6 +88,7 @@ import {Tabset, TabsetType} from "src/models/Tabset";
 import {usePermissionsStore} from "src/stores/permissionsStore";
 import {FeatureIdent} from "src/models/AppFeature";
 import BackupAndCloseDialog from "components/dialogues/BackupAndCloseDialog.vue";
+import {useUtils} from "src/services/Utils";
 
 const tabsStore = useTabsStore()
 const settingsStore = useSettingsStore()
@@ -99,7 +100,11 @@ const openTabsCountRatio2 = ref(0)
 const trackedTabsCount = ref(0)
 const existingSession = ref(false)
 
-TabsetService.trackedTabsCount().then((res) => trackedTabsCount.value = res)
+const {inBexMode} = useUtils()
+
+if (!inBexMode()) {
+  TabsetService.trackedTabsCount().then((res) => trackedTabsCount.value = res)
+}
 
 watchEffect(() => {
   openTabsCountRatio.value = Math.min(tabsStore.tabs.length / settingsStore.thresholds['max' as keyof object], 1)
@@ -107,13 +112,16 @@ watchEffect(() => {
 })
 
 watch(() => tabsStore.tabs.length, (after: number, before: number) => {
-  TabsetService.trackedTabsCount().then((res) => trackedTabsCount.value = res)
+  if (inBexMode()) {
+    TabsetService.trackedTabsCount().then((res) => trackedTabsCount.value = res)
+  }
 })
 
 watch(() => tabsStore.getCurrentTabs.length, (after: number, before: number) => {
-  TabsetService.trackedTabsCount().then((res) => trackedTabsCount.value = res)
+  if (inBexMode()) {
+    TabsetService.trackedTabsCount().then((res) => trackedTabsCount.value = res)
+  }
 })
-
 
 
 // watch( useEventStore().events, (val: any) => {
