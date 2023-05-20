@@ -39,9 +39,6 @@ export function useTabsetService() {
       useTabsStore().selectCurrentTabset(selectedTS)
     }
 
-
-
-    ChromeApi.buildContextMenu()
   }
 
   /**
