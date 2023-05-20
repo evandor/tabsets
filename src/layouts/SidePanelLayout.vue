@@ -5,7 +5,7 @@
       <router-view/>
     </q-page-container>
 
-    <q-footer elevated class="bg-grey-8 text-white">
+    <q-footer elevated class="bg-grey-8 text-white" v-if="tabsStore.tabsets.size > 0">
       <SidePanelFooter />
     </q-footer>
 
@@ -17,6 +17,9 @@
 
 import {ref, watchEffect} from "vue";
 import SidePanelFooter from "components/SidePanelFooter.vue";
+import {useTabsStore} from "stores/tabsStore";
+
+const tabsStore = useTabsStore()
 
 const location = ref('')
 

@@ -1,13 +1,35 @@
 <template>
   <!-- first time -->
-  <div class="row q-ma-sm" v-if="tabsStore.tabsets.size === 0">
+  <div class="q-ma-none q-pa-md fullimageBackground" v-if="tabsStore.tabsets.size === 0">
+    <div class="row">
+      <div class="col-12 text-h6">
+        Welcome to Tabsets Extension
+      </div>
+    </div>
+    <div class="row q-mb-lg">
+      <div class="col-12 text-subtitle1">
+        Bookmarks next generation
+      </div>
+    </div>
+
+    <div class="row items-center">
+      <div class="col-12 text-subtitle2 q-mb-md">
+        To get started:
+      </div>
+    </div>
+
     <Transition name="delayed-appear">
-      <q-btn class="fit text-warning"
+      <q-btn class="text-primary"
              outline
              data-testid="createFirstTabsetBtn"
              @click="addFirstTabset"
              label="create your first tabset"></q-btn>
     </Transition>
+    <div class="row q-mt-lg">
+      <div class="col-12 items-center q-mb-md">
+        This will create a new tabset with containing some pre-chosen tabs.
+      </div>
+    </div>
   </div>
 
   <!-- we have at least one tabset -->
@@ -45,7 +67,7 @@
     </q-toolbar>
 
 
-    <div class="row q-ma-sm bg-yellow-1" v-if="tabFromChromeTab()"
+    <div class="row q-ma-sm" :class="alreadyInTabset() ? 'bg-grey-1':'bg-yellow-1'" v-if="tabFromChromeTab()"
          style="border:1px solid gray;border-radius: 5px">
 
       <div class="col-10">
@@ -116,8 +138,11 @@ const openTabs = ref<chrome.tabs.Tab[]>([])
 const currentTabset = ref<Tabset | undefined>(undefined)
 const currentChromeTab = ref<chrome.tabs.Tab>(null as unknown as chrome.tabs.Tab)
 const searching = ref(false)
+// const chromeVersion = ref('unknown')
 
 console.log("adding listener")
+
+const chromeVersion = (/Chrome\/([0-9]+)/.exec(navigator.userAgent) || [, 0])[1];
 
 if (inBexMode()) {
   chrome.runtime.onMessage.addListener(({name, data}) => {
@@ -259,14 +284,36 @@ const toggleSearch = () => searching.value = !searching.value
 
 </script>
 
-<style lang="sass" scoped>
+<style scoped>
 
-.delayed-appear-enter-active
-  transition: all 3s ease-in
+
+
+.fullimageBackground {
+  height: 100vh;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+}
+
+.fullimageBackground::before {
+  background-image: url('src/assets/bg.jpg');
+  background-size: cover;
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  opacity: 0.3;
+}
+
+.delayed-appear-enter-active {
+  transition: all 3s ease-in;
   transition-delay: 3s
+}
 
 .delayed-appear-enter-from,
-.delayed-appear-leave-to
+.delayed-appear-leave-to {
   opacity: 0
-
+}
 </style>

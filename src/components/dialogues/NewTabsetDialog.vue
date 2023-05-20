@@ -2,7 +2,7 @@
   <q-dialog ref="dialogRef" @hide="onDialogHide">
     <q-card class="q-dialog-plugin">
       <q-card-section>
-        <div class="text-h6">Create a new Tabset</div>
+        <div class="text-h6">{{props.firstTabset ? 'Create your first Tabset':'Create a new Tabset'}}</div>
       </q-card-section>
 
       <q-card-section class="q-pt-none">
@@ -17,10 +17,10 @@
         <div class="text-caption text-negative q-mt-none q-pt-none">{{ newTabsetDialogWarning() }}</div>
         <q-checkbox v-if="props.firstTabset === false"
                     data-testid="newTabsetAutoAdd"
-                    v-model="addEmptyTabset" label="Create an empty tabset"/>&nbsp;
+                    v-model="addAllOpenTabs" label="Add all open tabs"/>&nbsp;
         <q-icon v-if="props.firstTabset === false"
                 name="help" color="primary" size="1em">
-          <q-tooltip>Otherwise, all open tabs will be added to your new tabset automatically</q-tooltip>
+          <q-tooltip>If you select this option, all currently open tabs will be added to your new tabset</q-tooltip>
         </q-icon>
       </q-card-section>
 
@@ -53,6 +53,7 @@ import {useUiStore} from "src/stores/uiStore";
 import {TabsetStatus} from "src/models/Tabset";
 import {useSpacesStore} from "src/stores/spacesStore";
 import spacesService from "src/services/SpacesService";
+import ChromeApi from "src/services/ChromeApi";
 
 defineEmits([
   ...useDialogPluginComponent.emits
@@ -82,9 +83,14 @@ const $q = useQuasar()
 const newTabsetName = ref('')
 const newTabsetNameExists = ref(false)
 const hideWarning = ref(false)
-const addEmptyTabset = ref(props.firstTabset ? false : (tabsStore.tabs.length <= 1 ? false : props.setEmptyByDefault))
+// const addEmptyTabset = ref(props.firstTabset ? false : (tabsStore.tabs.length <= 1 ? false : props.setEmptyByDefault))
+const addAllOpenTabs = ref(false)
 
 const newTabsetNameIsValid = computed(() => newTabsetName.value.length <= 32 && !STRIP_CHARS_IN_USER_INPUT.test(newTabsetName.value))
+
+const firstTabset = [
+  ChromeApi.createChromeTabObject("Welcome to Tabsets", "https://tabsets.web.app/#/welcome", "")
+]
 
 watchEffect(() => {
   const existsInTabset = tabsStore.existingInTabset(newTabsetName.value)
@@ -93,13 +99,13 @@ watchEffect(() => {
 
 const createNewTabset = () => {
   hideWarning.value = true
-  const tabsToUse = addEmptyTabset.value ? [] : tabsStore.tabs
+  const tabsToUse = addAllOpenTabs.value ? tabsStore.tabs : []
 
   useCommandExecutor()
-    .executeFromUi(new CreateTabsetCommand(newTabsetName.value, tabsToUse))
+    .executeFromUi(new CreateTabsetCommand(newTabsetName.value, props.firstTabset ? firstTabset : tabsToUse))
     .then((res) => {
-      useUiStore().setNewTabsetEmptyByDefault(addEmptyTabset.value)
-      if (addEmptyTabset.value) {
+      //useUiStore().setNewTabsetEmptyByDefault(addEmptyTabset.value)
+      if (!addAllOpenTabs.value) {
         TabsetService.createPendingFromBrowserTabs()
       } else {
         if (tabsStore.pendingTabset) {

@@ -54,7 +54,8 @@
         <span v-if="useTabsStore().getCurrentTabset?.sorting === 'alphabeticalUrl'">
           <q-icon name="arrow_right" size="16px"/>
         </span>
-        <short-url :url="props.tab.chromeTab?.url" :hostname-only="true"/>
+
+        <short-url :url="props.tab.chromeTab?.url" :hostname-only="true" />
 
         <q-icon class="q-ml-xs" name="open_in_new"/>
         <q-icon v-if="showButtonsProp"
@@ -103,22 +104,16 @@ import {Tab} from "src/models/Tab";
 import TabsetService from "src/services/TabsetService";
 import {useNotificationsStore} from "src/stores/notificationsStore";
 import {onMounted, ref, watchEffect} from "vue";
-import {useUtils} from "src/services/Utils"
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {DeleteTabCommand} from "src/domain/commands/DeleteTabCommand";
-import EditNoteDialog from "components/dialogues/EditNoteDialog.vue";
 import {useQuasar} from "quasar";
-import {DrawerTabs, ListDetailLevel, useUiStore} from "src/stores/uiStore";
-import {usePermissionsStore} from "src/stores/permissionsStore";
+import {ListDetailLevel, useUiStore} from "src/stores/uiStore";
 import TabFaviconWidget from "components/widgets/TabFaviconWidget.vue";
 import {UpdateTabNameCommand} from "src/domain/tabs/UpdateTabName";
-import {FeatureIdent} from "src/models/AppFeature";
 import {CopyToClipboardCommand} from "src/domain/commands/CopyToClipboard";
 import {useTabsetService} from "src/services/TabsetService2";
 import ShortUrl from "components/utils/ShortUrl.vue";
 import {useTabsStore} from "src/stores/tabsStore";
-import {TabsetType} from "src/models/Tabset";
-import TabsetListContextMenu from "components/widgets/helper/TabsetListContextMenu.vue";
 import PanelTabListContextMenu from "components/widgets/helper/PanelTabListContextMenu.vue";
 
 const props = defineProps({
