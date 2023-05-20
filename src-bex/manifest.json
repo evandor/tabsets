@@ -18,8 +18,7 @@
     "sidePanel"
   ],
   "optional_permissions": [
-    "bookmarks",
-    "history"
+    "bookmarks"
   ],
   "host_permissions": [
     "<all_urls>",
