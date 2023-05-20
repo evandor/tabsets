@@ -3,7 +3,6 @@ import {CLEANUP_PERIOD_IN_MINUTES} from "boot/constants";
 import {useTabsStore} from "src/stores/tabsStore";
 import _ from "lodash"
 import NavigationService from "src/services/NavigationService";
-import {RequestInfo} from "src/models/RequestInfo";
 import StatsService from "src/services/StatsService";
 import TabService from "src/services/TabService";
 import IndexedDbPersistenceService from "src/services/IndexedDbPersistenceService";
@@ -58,14 +57,14 @@ const persistenceService = IndexedDbPersistenceService
 
 class ChromeApi {
 
-  onHeadersReceivedListener = function (details: any) {
-    //console.log("headerDetails", details)
-    if (details.url) {
-      persistenceService.saveRequest(details.url, new RequestInfo(details.statusCode, details.responseHeaders || []))
-        .then(() => console.debug("added request"))
-        .catch(err => console.log("err", err))
-    }
-  }
+  // onHeadersReceivedListener = function (details: any) {
+  //   //console.log("headerDetails", details)
+  //   // if (details.url) {
+  //   //   persistenceService.saveRequest(details.url, new RequestInfo(details.statusCode, details.responseHeaders || []))
+  //   //     .then(() => console.debug("added request"))
+  //   //     .catch(err => console.log("err", err))
+  //   // }
+  // }
 
   init() {
 
@@ -85,24 +84,6 @@ class ChromeApi {
       (details: any) => NavigationService.updateAvailable(details)
     )
 
-    if (usePermissionsStore().hasAllOrigins() && usePermissionsStore().hasFeature(FeatureIdent.ANALYSE_TABS)) {
-      this.startWebRequestListener()
-    }
-
-  }
-
-  startWebRequestListener() {
-    console.log("adding WebRequestListener")
-    chrome.webRequest.onHeadersReceived.addListener(
-      this.onHeadersReceivedListener,
-      {urls: ['*://*/*'], types: ['main_frame']},
-      ['responseHeaders']
-    )
-  }
-
-  stopWebRequestListener() {
-    console.log("removing WebRequestListener")
-    chrome.webRequest.onHeadersReceived.removeListener(this.onHeadersReceivedListener)
   }
 
   async closeAllTabs() {
