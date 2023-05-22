@@ -47,14 +47,6 @@
     </q-card>
   </q-expansion-item>
 
-  <q-card v-if="tabsStore.getCurrentTabset?.view === 'canvas'">
-    <q-card-section>
-
-      <TabsCanvas :key="'tabCanvas_' + tabsStore.currentTabsetId"/>
-
-    </q-card-section>
-  </q-card>
-
 </template>
 
 <script setup lang="ts">

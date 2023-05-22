@@ -13,11 +13,11 @@
         Expand
       </q-item>
 
-      <q-item v-if="props.tabset?.tabs.length > 0 && !expanded[index]"
-              clickable v-close-popup @click="openInSidePanel(index)">
-        <q-icon name="left_panel_close" class="q-my-xs q-mr-xs" color="grey-5" style="position:relative;top:-1px"/>
-        Open in sidePanel
-      </q-item>
+<!--      <q-item v-if="props.tabset?.tabs.length > 0 && !expanded[index]"-->
+<!--              clickable v-close-popup @click="openInSidePanel(index)">-->
+<!--        <q-icon name="left_panel_close" class="q-my-xs q-mr-xs" color="grey-5" style="position:relative;top:-1px"/>-->
+<!--        Open in sidePanel-->
+<!--      </q-item>-->
 
       <q-item
         clickable v-close-popup @click="showDetails(props.tabset.id)">

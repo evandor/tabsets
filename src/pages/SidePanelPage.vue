@@ -1,36 +1,31 @@
 <template>
   <!-- first time -->
-  <div class="q-ma-none q-pa-md fullimageBackground" v-if="tabsStore.tabsets.size === 0">
-    <div class="row">
-      <div class="col-12 text-h6">
-        Welcome to Tabsets Extension
+  <transition appear enter-active-class="fadeIn" style="transition-delay: 3.5s" v-if="tabsStore.tabsets.size === 0">
+    <div class="q-ma-none q-pa-md fullimageBackground">
+      <div class="row">
+        <div class="col-12 text-h6">
+          Welcome to Tabsets Extension
+        </div>
       </div>
-    </div>
-    <div class="row q-mb-lg">
-      <div class="col-12 text-subtitle1">
-        Bookmarks next generation
+      <div class="row q-mb-lg">
+        <div class="col-12 text-subtitle1">
+          Bookmarks next generation
+        </div>
       </div>
-    </div>
 
-    <div class="row items-center">
-      <div class="col-12 text-subtitle2 q-mb-md">
-        To get started:
+      <div class="row items-center">
+        <div class="col-12 text-subtitle2 q-mb-md">
+          To get started:
+        </div>
       </div>
-    </div>
 
-    <Transition name="delayed-appear">
-      <q-btn class="text-primary"
-             outline
-             data-testid="createFirstTabsetBtn"
-             @click="addFirstTabset"
-             label="create your first tabset"></q-btn>
-    </Transition>
-    <div class="row q-mt-lg">
-      <div class="col-12 items-center q-mb-md">
-        This will create a new tabset with containing some pre-chosen tabs.
+      <div class="row q-mt-lg">
+        <div class="col-12 items-center q-mb-md">
+          This will create a new tabset containing some pre-chosen tabs.
+        </div>
       </div>
     </div>
-  </div>
+  </transition>
 
   <!-- we have at least one tabset -->
   <div v-else class="q-ma-none">
@@ -68,8 +63,8 @@
       </div>
     </q-toolbar>
 
-
-    <div class="row q-ma-sm" :class="alreadyInTabset() ? 'bg-grey-1':'bg-yellow-1'" v-if="tabFromChromeTab() && tabsStore.getCurrentTabset"
+    <div class="row q-ma-sm" :class="alreadyInTabset() ? 'bg-grey-1':'bg-yellow-1'"
+         v-if="tabFromChromeTab() && tabsStore.getCurrentTabset"
          style="border:1px solid gray;border-radius: 5px">
 
       <div class="col-10">
@@ -139,6 +134,7 @@ const $q = useQuasar()
 const router = useRouter()
 const tabsStore = useTabsStore()
 const spacesStore = useSpacesStore()
+const show = ref(false)
 
 const currentChromeTabs = ref<chrome.tabs.Tab[]>([])
 const currentTabs = ref<Tab[]>([])
@@ -329,5 +325,16 @@ const toggleSearch = () => searching.value = !searching.value
 .delayed-appear-enter-from,
 .delayed-appear-leave-to {
   opacity: 0
+}
+
+/* we will explain what these classes do next! */
+.v-enter-active,
+.v-leave-active {
+  transition: opacity 0.5s ease;
+}
+
+.v-enter-from,
+.v-leave-to {
+  opacity: 0;
 }
 </style>

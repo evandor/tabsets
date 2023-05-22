@@ -17,6 +17,7 @@ export class SelectTabsetCommand implements Command<object> {
     public tabsetId: string) {
   }
 
+  // TODO selecting a tabset from a different space should change space
   async execute(): Promise<ExecutionResult<any>> {
     console.debug("selecting tabset", this.tabsetId)
     const tabsStore = useTabsStore()

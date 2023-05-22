@@ -19,7 +19,7 @@ class UndoCommand implements Command<boolean> {
             usePermissionsStore().activateFeature(this.feature)
             break;
           case "analyseTabs":
-            ChromeApi.startWebRequestListener()
+            //ChromeApi.startWebRequestListener()
             usePermissionsStore().activateFeature(this.feature)
             break;
           default:
@@ -47,7 +47,7 @@ export class RevokeOriginCommand implements Command<boolean> {
             usePermissionsStore().deactivateFeature(this.feature)
             break;
           case "analyseTabs":
-            ChromeApi.stopWebRequestListener()
+            //ChromeApi.stopWebRequestListener()
             usePermissionsStore().deactivateFeature(this.feature)
             msg = "Permission was added, subsequently accessed tabs will not be analysed"
             break;

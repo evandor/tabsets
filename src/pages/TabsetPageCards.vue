@@ -1,6 +1,6 @@
 <template>
 
-  <q-card flat v-if="props.tabset?.view !== 'canvas'">
+  <q-card flat>
     <q-card-section class="q-pa-none">
 
       <TabList v-if="props.tabset?.view === 'list'"
@@ -27,16 +27,16 @@
                     group="otherTabs"
                     :tabs="currentTabs()"/>
 
+      <!-- fallback -->
+      <TabList v-else
+               group="otherTabs"
+               :highlightUrl="highlightUrl"
+               :tabs="currentTabs()"/>
+
     </q-card-section>
 
   </q-card>
-
-
-  <q-card v-if="props.tabset?.view === 'canvas'">
-    <q-card-section>
-      <TabsCanvas :key="'tabCanvas_' + tabsStore.currentTabsetId"/>
-    </q-card-section>
-  </q-card>
+  
 </template>
 
 <script lang="ts" setup>

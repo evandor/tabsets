@@ -17,7 +17,7 @@
         </q-item>
         <q-separator v-if="tabsetsOptions.length > 1"/>
         <q-item v-for="ts in tabsetsOptions"
-                :disable="ts.id === tabsStore.currentTabsetId?.id"
+                :disable="ts.id === tabsStore.currentTabsetId"
                 clickable v-close-popup @click="switchTabset(ts)">
           <q-item-section class="q-ml-sm">{{ ts.label }}</q-item-section>
         </q-item>

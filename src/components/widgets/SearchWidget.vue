@@ -4,8 +4,8 @@
     <q-select dark dense standout filled autofocus
               :placeholder="inputPlaceholder()"
               class="fit q-mx-md"
-              :color="props.fromPanel ? 'blue' : 'green'"
-              :bg-color="props.fromPanel ? 'primary' : 'secondary'"
+              :color="props.fromPanel ? 'blue' : ''"
+              :bg-color="props.fromPanel ? 'primary' : ''"
               :model-value="search"
               ref="searchBox"
               hide-dropdown-icon

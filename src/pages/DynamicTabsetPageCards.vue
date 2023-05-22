@@ -31,11 +31,6 @@
   </q-card>
 
 
-  <q-card v-if="props.tabset?.view === 'canvas'">
-    <q-card-section>
-      <TabsCanvas :key="'tabCanvas_' + tabsStore.currentTabsetId"/>
-    </q-card-section>
-  </q-card>
 </template>
 
 <script lang="ts" setup>

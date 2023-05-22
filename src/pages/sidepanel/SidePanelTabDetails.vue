@@ -1,12 +1,24 @@
 <template>
-  <div>
-    <!--    <div class="row items-baseline q-mx-md q-pa-none">-->
-    <!--      <div class="col-12 q-mb-md">&nbsp;-->
-    <!--        <q-banner v-if="useUiStore().getSelectedTab?.isDuplicate"-->
-    <!--                  rounded class="bg-amber-1 text-black">This tab has duplicates in this tabset-->
-    <!--        </q-banner>-->
-    <!--      </div>-->
-    <!--    </div>-->
+  <div class="q-ma-none">
+
+    <q-toolbar class="text-primary lightgrey">
+      <div class="row fit">
+        <q-toolbar-title>
+          <div class="row">
+            <div class="col-2">
+              <q-icon name="chevron_left" class="cursor-pointer" @click="router.push('/sidepanel')">
+                <q-tooltip>Back</q-tooltip>
+              </q-icon>
+            </div>
+            <div class="col-10">
+              Tab Details
+            </div>
+            <div class="col-1 text-right">
+            </div>
+          </div>
+        </q-toolbar-title>
+      </div>
+    </q-toolbar>
 
     <div class="row items-baseline q-mx-sm q-my-sm">
 
@@ -15,10 +27,10 @@
           class="q-mr-md q-mb-md"
           :tab="uiStore.getSelectedTab" width="24px" height="24px"/>
       </div>
-      <div class="col-10 text-body1 ellipsis">
+      <div class="col-10 text-body1 ellipsis-3">
         {{ getHost(useUiStore().getSelectedTab?.chromeTab?.url, true) }}
       </div>
-      <div class="col-12 text-body2 ellipsis">
+      <div class="col-12 text-body2 ellipsis-3">
         {{ useUiStore().getSelectedTab?.chromeTab?.title }}
       </div>
 
@@ -225,6 +237,7 @@ import {SaveTabCommand} from "src/domain/tabs/SaveTab";
 import {FeatureIdent} from "src/models/AppFeature";
 import {useTabsStore} from "src/stores/tabsStore";
 import {useSettingsStore} from "src/stores/settingsStore"
+import SidePanelSpacesSelectorWidget from "components/widgets/SidePanelSpacesSelectorWidget.vue";
 import {SelectTabsetCommand} from "src/domain/tabsets/SelectTabset";
 
 const {inBexMode} = useUtils()
@@ -358,4 +371,11 @@ const updatedTags = (val: string[]) => {
       .catch((err) => console.error(err))
   }
 }
+
+const openTabset = (chip:any) => {
+  console.log("chip", chip)
+  useCommandExecutor()
+    .execute(new SelectTabsetCommand(chip['tabsetId']))
+}
+
 </script>

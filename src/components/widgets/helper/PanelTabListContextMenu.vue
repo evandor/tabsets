@@ -2,8 +2,13 @@
   <q-menu :offset="[0, 0]">
     <q-list dense style="min-width: 200px">
       <q-separator/>
+      <q-item clickable v-close-popup @click.stop="showTabDetails(props['tab' as keyof object])">
+        <q-icon name="o_info" class="q-my-xs q-mr-xs" color="blue-5" style="position:relative;top:-1px"/>
+        Show Tab Details
+      </q-item>
+      <q-separator/>
       <q-item clickable v-close-popup @click.stop="editNoteDialog(props['tab' as keyof object])">
-        <q-icon name="o_note" class="q-my-xs q-mr-xs" color="grey-5" style="position:relative;top:-1px"/>
+        <q-icon name="o_note" class="q-my-xs q-mr-xs" color="accent" style="position:relative;top:-1px"/>
         Add / Edit Note
       </q-item>
       <q-separator/>
@@ -27,6 +32,7 @@ import {DrawerTabs} from "stores/uiStore";
 import {Tab} from "src/models/Tab";
 import {DeleteTabCommand} from "src/domain/commands/DeleteTabCommand";
 import EditNoteDialog from "components/dialogues/EditNoteDialog.vue";
+import {useRouter} from "vue-router";
 
 const {inBexMode} = useUtils()
 
@@ -40,6 +46,7 @@ const props = defineProps({
 const emit = defineEmits(['toggleExpand']);
 
 const $q = useQuasar()
+const router = useRouter()
 
 const expanded = ref<boolean[]>([])
 
@@ -63,5 +70,10 @@ const editNoteDialog = (tab: Tab) => $q.dialog({
   component: EditNoteDialog,
   componentProps: {tabId: tab.id, note: tab.note}
 })
+
+const showTabDetails = (tab: Tab) => {
+  console.log("showing tab details for", tab)
+  router.push("/sidepanel/tab/" + tab.id)
+}
 
 </script>
