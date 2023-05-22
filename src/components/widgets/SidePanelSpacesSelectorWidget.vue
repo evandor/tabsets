@@ -35,9 +35,12 @@ watchEffect(() => {
       const label = spacesStore.spaces.get(key)?.label || 'undef'
       return {id: key, label: label}
     })
-    if (spacesOptions.value.length > 0) {
-      spaces.value = spacesOptions.value[0]
-    }
+    // if (spacesOptions.value.length > 0) {
+       spaces.value = spacesStore.space //spacesOptions.value[0]
+    // }
+    spacesOptions.value = spacesOptions.value.concat({id: "unassigned-tabsets", label: "Show Unassigned tabsets"})
+    spacesOptions.value = spacesOptions.value.concat({id: "add-space", label: "Add new Space"})
+
   }
 })
 
@@ -63,7 +66,18 @@ watchEffect(() => {
 
 const switchSpace = (s: any) => {
   console.log("settings space to ", s)
-  spacesStore.space = s
+  if (s.id === 'add-space') {
+    $q.dialog({
+      component: NewSpaceDialog,
+      componentProps: {
+        tabsetId: tabsStore.currentTabsetId,
+        fromPanel: true
+      }
+    })
+  } else {
+    spacesStore.space = s
+  }
+
 }
 
 

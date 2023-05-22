@@ -122,6 +122,8 @@ import {AppFeatures} from "src/models/AppFeatures";
 import {ExecutionResult} from "src/domain/ExecutionResult";
 import {useSettingsStore} from "src/stores/settingsStore"
 import InfoMessageWidget from "components/widgets/InfoMessageWidget.vue";
+import {useUiService} from "src/services/useUiService";
+import {DrawerTabs} from "stores/uiStore";
 
 const route = useRoute();
 const router = useRouter();
@@ -129,10 +131,13 @@ const localStorage = useQuasar().localStorage
 const tabsStore = useTabsStore()
 const featuresStore = useSettingsStore()
 const permissionsStore = usePermissionsStore()
+const uiService = useUiService()
 
 const title = ref('')
 const filter = ref('')
 const $q = useQuasar()
+
+uiService.rightDrawerSetActiveTab(DrawerTabs.FEATURES)
 
 const feature = ref(null as unknown as string)
 const appFeature = ref<AppFeature | undefined>(undefined)
@@ -210,12 +215,6 @@ text.set(FeatureIdent.ANALYSE_TABS.toLowerCase(), {
   permissions: ['allOrigins']
 })
 
-text.set(FeatureIdent.HISTORY.toLowerCase(), {
-  experimental: true,
-  name: 'History',
-  description: 'The "History" Feature provides access to your browser\'s history to provide additional features.',
-  permissions: ['history']
-})
 text.set(FeatureIdent.EXPERIMENTAL_VIEWS.toLowerCase(), {
   experimental: true,
   name: 'Experimental Views',
@@ -349,13 +348,6 @@ const grant = (ident: string) => {
   } else {
     permissionsStore.activateFeature(ident)
   }
-
-  //   if ("thumbnails" === ident || "analyseTabs" === ident) {
-  //       .executeFromUi(new GrantOriginCommand(ident))
-  //   } else if ("pageCapture" === ident || "bookmarks" === ident || "history" === ident) {
-  //       .executeFromUi(new GrantPermissionCommand(ident))
-  //   } else if ("dynamic" === ident) {
-  //       .executeFromUi(new CreateDynamicTabsetCommand(ident))
 
 }
 

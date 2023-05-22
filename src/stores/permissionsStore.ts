@@ -12,6 +12,18 @@ import {AppFeatures} from "src/models/AppFeatures";
 import {useDB} from "src/services/usePersistenceService";
 
 
+function sendMsg(msgName: string, data: object) {
+  // if (inBexMode()) {
+  chrome.runtime.sendMessage({
+    name: msgName, data: data
+  }, (callback) => {
+    console.log("got callback", callback)
+    if (chrome.runtime.lastError) { /* ignore */
+    }
+  });
+  // }
+}
+
 export const usePermissionsStore = defineStore('permissions', () => {
 
   const $q = useQuasar()
@@ -135,10 +147,12 @@ export const usePermissionsStore = defineStore('permissions', () => {
           const index = inActiveDefaultFeatures.value.indexOf(feature)
           if (index >= 0) {
             inActiveDefaultFeatures.value.splice(index, 1)
+            sendMsg('feature-activated', {feature: feature})
           }
         } else {
           // add to 'active'
           activeFeatures.value.push(feature)
+          sendMsg('feature-activated', {feature: feature})
         }
         if (FeatureIdent.DETAILS.toLowerCase() === feature) {
           useSuggestionsStore().removeSuggestion(StaticSuggestionIdent.TRY_TAB_DETAILS_FEATURE)
@@ -161,12 +175,14 @@ export const usePermissionsStore = defineStore('permissions', () => {
       if (inActiveDefaultFeatures.value.indexOf(feature) < 0) {
         //console.log("deactivating default feature", feature)
         inActiveDefaultFeatures.value.push(feature)
+        sendMsg('feature-deactivated', {feature: feature})
       }
     } else {
       //console.log("deactivating normal feature", feature)
       const index = activeFeatures.value.indexOf(feature)
       if (index >= 0) {
         activeFeatures.value.splice(index, 1)
+        sendMsg('feature-deactivated', {feature: feature})
 
         new AppFeatures().getFeatures().forEach(f => {
           if (f.requires.findIndex((r: FeatureIdent) => r === deactivatedIdent) >= 0) {

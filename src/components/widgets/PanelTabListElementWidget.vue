@@ -68,9 +68,9 @@
     </q-item-label>
 
     <!-- note -->
-    <q-item-label v-if="props.tab.note" class="text-grey-10" text-subtitle1>
+    <q-item-label v-if="useUiStore().listDetailLevelGreaterEqual(ListDetailLevel.LARGE) && props['tab']['note']" class="text-grey-10" text-subtitle1>
       <q-icon color="blue-10" name="edit_note"/>
-      {{ props.tab.note }}
+      {{ props['tab']['note'] }}
     </q-item-label>
   </q-item-section>
 

@@ -130,9 +130,12 @@ export const useTabsStore = defineStore('tabs', {
         return state.tabsets.get(tabsetId)
       }
     },
-    currentTabsetName: (state) => {
-      const tabset = _.head(_.filter([...state.tabsets.values()], ts => ts.id === state.currentTabsetId)) || new Tabset("", "undefined", [], [])
-      return tabset.name
+    currentTabsetName: (state) : string | undefined => {
+      const candidates = _.filter([...state.tabsets.values()], ts => ts.id === state.currentTabsetId)
+      if (candidates.length > 0) {
+        return candidates[0].name
+      }
+      return undefined
     },
 
     tabForUrlInSelectedTabset: (state): (url: string) => Tab | undefined => {

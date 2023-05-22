@@ -161,16 +161,6 @@
 
       <div class="row items-baseline q-ma-md">
         <div class="col-3">
-          History
-        </div>
-        <div class="col-9">
-          <q-radio v-model="historyPermissionGranted" :val="true" label="Granted"/>
-          <q-radio v-model="historyPermissionGranted" :val="false" label="Revoked"/>
-        </div>
-      </div>
-
-      <div class="row items-baseline q-ma-md">
-        <div class="col-3">
           Page Capture
         </div>
         <div class="col-9">
@@ -320,7 +310,7 @@ import {MarkTabsetAsDefaultCommand} from "src/domain/tabsets/MarkTabsetAsDefault
 import {useNotificationHandler} from "src/services/ErrorHandler";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import NavigationService from "src/services/NavigationService";
-import {useUiStore} from "src/stores/uiStore";
+import {DrawerTabs, useUiStore} from "src/stores/uiStore";
 import {useBookmarksStore} from "src/stores/bookmarksStore";
 import {usePermissionsStore} from "src/stores/permissionsStore";
 import {GrantPermissionCommand} from "src/domain/commands/GrantPermissionCommand";
@@ -330,16 +320,20 @@ import {GrantOriginCommand} from "src/domain/commands/GrantOriginCommand";
 import {RevokeOriginCommand} from "src/domain/commands/RevokeOriginCommand";
 import {FeatureIdent} from "src/models/AppFeature";
 import {useSettingsStore} from "src/stores/settingsStore"
+import {useUiService} from "src/services/useUiService";
 
 
 const tabsStore = useTabsStore()
 const featuresStore = useSettingsStore()
 const searchStore = useSearchStore()
 const settingsStore = useSettingsStore()
+const uiService = useUiService()
 
 const router = useRouter()
 const localStorage = useQuasar().localStorage
 const $q = useQuasar()
+
+uiService.rightDrawerSetActiveTab(DrawerTabs.FEATURES)
 
 const view = ref('grid')
 const indexSize = ref(0)
@@ -353,7 +347,7 @@ const permissionsList = ref<string[]>([])
 
 const darkMode = ref<boolean>(localStorage.getItem('darkMode') || false)
 const bookmarksPermissionGranted = ref<boolean | undefined>(usePermissionsStore().hasPermission('bookmarks'))
-const historyPermissionGranted = ref<boolean | undefined>(usePermissionsStore().hasPermission('history'))
+// const historyPermissionGranted = ref<boolean | undefined>(usePermissionsStore().hasPermission('history'))
 const pageCapturePermissionGranted = ref<boolean | undefined>(usePermissionsStore().hasPermission('history'))
 const allUrlsOriginGranted = ref<boolean | undefined>(usePermissionsStore().hasAllOrigins())
 // const showBookmarks = ref<boolean>(localStorage.getItem('showBookmarks') || false)
@@ -364,7 +358,7 @@ const {handleError} = useNotificationHandler()
 watchEffect(() => permissionsList.value = usePermissionsStore().permissions?.permissions || [])
 
 watchEffect(() => bookmarksPermissionGranted.value = usePermissionsStore().hasPermission('bookmarks'))
-watchEffect(() => historyPermissionGranted.value = usePermissionsStore().hasPermission('history'))
+// watchEffect(() => historyPermissionGranted.value = usePermissionsStore().hasPermission('history'))
 watchEffect(() => pageCapturePermissionGranted.value = usePermissionsStore().hasPermission('pageCapture'))
 
 watch(() => bookmarksPermissionGranted.value, (newValue, oldValue) => {
@@ -384,19 +378,6 @@ watch(() => bookmarksPermissionGranted.value, (newValue, oldValue) => {
   }
 })
 
-watch(() => historyPermissionGranted.value, (newValue, oldValue) => {
-  if (newValue === oldValue) {
-    return
-  }
-  if (historyPermissionGranted.value && !usePermissionsStore().hasPermission('history')) {
-    useCommandExecutor()
-      .executeFromUi(new GrantPermissionCommand("history"))
-      .then((res: ExecutionResult<boolean>) => historyPermissionGranted.value = res.result)
-  } else if (!historyPermissionGranted.value) {
-    useCommandExecutor()
-      .executeFromUi(new RevokePermissionCommand("history"))
-  }
-})
 
 watch(() => pageCapturePermissionGranted.value, (newValue, oldValue) => {
   if (newValue === oldValue) {

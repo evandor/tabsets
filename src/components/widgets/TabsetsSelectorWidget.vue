@@ -64,13 +64,17 @@ watchEffect(() => {
 
   // const tabsets = (): Tabset[] => {
   let tabsets = [...tabsStore.tabsets.values()]
+  console.log("choosing from1", tabsets)
   if (usePermissionsStore().hasFeature(FeatureIdent.SPACES) && spacesStore.spaces && spacesStore.spaces.size > 0) {
     if (spacesStore.space && spacesStore.space.id && spacesStore.space.id.length > 0) {
       tabsets = _.filter(tabsets, ts => ts.status !== TabsetStatus.ARCHIVED && ts.spaces && ts.spaces.indexOf(spacesStore.space.id) >= 0)
+      console.log("choosing from2a", spacesStore.space)
     } else {
       tabsets = _.filter(tabsets, ts => ts.status !== TabsetStatus.ARCHIVED && ts.spaces && ts.spaces.length === 0)
+      console.log("choosing from2b", spacesStore.space)
     }
   }
+  console.log("choosing from3", tabsets)
   tabsetsOptions.value = _.map(_.sortBy(_.filter(tabsets, (ts: Tabset) =>
       ts.type !== TabsetType.SPECIAL &&
       ts.status !== TabsetStatus.ARCHIVED &&
@@ -85,15 +89,12 @@ watchEffect(() => {
     ]), (key) => {
     return {id: key.id, label: key.name}
   })
+  console.log("choosing from4", tabsetsOptions.value)
   // }
 
 })
 
-const tabsetLabel = () => {
-  console.log("current", tabsStore.currentTabsetName)
-  return !tabsStore.currentTabsetName ? 'no tabset selected' : tabsStore.currentTabsetName
-}
-
+const tabsetLabel = () => !tabsStore.currentTabsetName  ? 'no tabset selected' : tabsStore.currentTabsetName
 
 const openNewTabsetDialog = () => {
   $q.dialog({

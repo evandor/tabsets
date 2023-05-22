@@ -125,12 +125,6 @@
           tooltip="The List of Urls displayed when you open a new tab in your Browser"/>
 
         <ToolbarButton
-          :feature="FeatureIdent.HISTORY"
-          :drawer="DrawerTabs.HISTORY"
-          icon="o_history"
-          tooltip="Access to your browsers History"/>
-
-        <ToolbarButton
           :feature="FeatureIdent.SAVE_TAB"
           :drawer="DrawerTabs.SAVED_TABS"
           icon="o_save"

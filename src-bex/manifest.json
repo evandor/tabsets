@@ -46,7 +46,7 @@
       }
     }
   },
-  "options_page": "www/index.html#/panel/settings",
+  "options_page": "www/index.html#/sidepanel/settings",
   "web_accessible_resources": [
     {
       "resources": [

@@ -2,7 +2,12 @@
   <q-menu :offset="[0, 0]">
     <q-list dense style="min-width: 200px">
       <q-separator/>
-      <q-item clickable v-close-popup @click.stop="deleteTab(props.tab)">
+      <q-item clickable v-close-popup @click.stop="editNoteDialog(props['tab' as keyof object])">
+        <q-icon name="o_note" class="q-my-xs q-mr-xs" color="grey-5" style="position:relative;top:-1px"/>
+        Add / Edit Note
+      </q-item>
+      <q-separator/>
+      <q-item clickable v-close-popup @click.stop="deleteTab(props['tab' as keyof object])">
         <q-icon name="o_delete" class="q-my-xs q-mr-xs" color="grey-5" style="position:relative;top:-1px"/>
         Delete tab
       </q-item>
@@ -12,29 +17,16 @@
 
 <script lang="ts" setup>
 
-import {Tabset, TabsetStatus, TabsetType} from "src/models/Tabset";
-import {usePermissionsStore} from "stores/permissionsStore";
-import {FeatureIdent} from "src/models/AppFeature";
 import {PropType, ref} from "vue";
 import {useUtils} from "src/services/Utils";
 import {useCommandExecutor} from "src/services/CommandExecutor";
-import {MarkTabsetAsFavoriteCommand} from "src/domain/tabsets/MarkTabsetAsFavorite";
-import {MarkTabsetAsDefaultCommand} from "src/domain/tabsets/MarkTabsetAsDefault";
-import {MarkTabsetAsArchivedCommand} from "src/domain/tabsets/MarkTabsetAsArchived";
 import RestoreTabsetDialog from "components/dialogues/RestoreTabsetDialog.vue";
-import {Space} from "src/models/Space";
-import {useSpacesStore} from "src/stores/spacesStore";
-import _ from "lodash";
-import {useTabsetService} from "src/services/TabsetService2";
 import {useQuasar} from "quasar";
-import DeleteTabsetDialog from "components/dialogues/DeleteTabsetDialog.vue";
-import {StopSessionCommand} from "src/domain/commands/StopSessionCommand";
 import {useUiService} from "src/services/useUiService";
 import {DrawerTabs} from "stores/uiStore";
-import {CopyTabsetCommand} from "src/domain/tabsets/CopyTabset";
-import {RestoreTabsetCommand} from "src/domain/tabsets/RestoreTabset";
 import {Tab} from "src/models/Tab";
 import {DeleteTabCommand} from "src/domain/commands/DeleteTabCommand";
+import EditNoteDialog from "components/dialogues/EditNoteDialog.vue";
 
 const {inBexMode} = useUtils()
 
@@ -66,5 +58,10 @@ const restoreDialog = (tabsetId: string) => $q.dialog({
 
 const deleteTab = (tab: Tab) => useCommandExecutor().executeFromUi(new DeleteTabCommand(tab))
 
+
+const editNoteDialog = (tab: Tab) => $q.dialog({
+  component: EditNoteDialog,
+  componentProps: {tabId: tab.id, note: tab.note}
+})
 
 </script>

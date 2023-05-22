@@ -237,11 +237,6 @@ const editNoteDialog = (tab: Tab) => $q.dialog({
   componentProps: {tabId: tab.id, note: tab.note}
 })
 
-// const showDetails = (tab: Tab) => {
-//   useUiStore().setSelectedTab(tab)
-//   useUiStore().rightDrawerSetActiveTab(DrawerTabs.TAB_DETAILS)
-// }
-
 const addToNewTabUrlList = (tab: Tab) => {
   console.log("got tab", tab)
   useUiStore().addToNewTabUrlList({
@@ -285,4 +280,5 @@ watchEffect(() => {
       })
   }
 })
+
 </script>

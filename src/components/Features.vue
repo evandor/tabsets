@@ -93,7 +93,7 @@
 
 import {useTabsStore} from "src/stores/tabsStore"
 import {ref} from "vue";
-import {useRouter} from "vue-router";
+import {useRoute, useRouter} from "vue-router";
 import {usePermissionsStore} from "src/stores/permissionsStore";
 import _ from "lodash"
 import {AppFeatures} from "src/models/AppFeatures";
@@ -102,6 +102,7 @@ import {useSettingsStore} from "src/stores/settingsStore";
 
 const tabsStore = useTabsStore()
 const router = useRouter()
+const route = useRoute()
 const selected = ref('')
 const selected2 = ref<AppFeature | undefined>(undefined)
 
@@ -152,20 +153,12 @@ const iconColor2 = (f: AppFeature) => {
   }
 }
 
-const showFeature = (f: any) => {
-  selected.value = f.ident
-  router.push(f.target)
-}
 const showFeature2 = (f: AppFeature) => {
   selected2.value = f
-  const path = "/features/" + f.ident.toLowerCase()
-  router.push(path)
+  route.path.startsWith('/sidepanel/') ?
+    router.push("/sidepanel/features/" + f.ident.toLowerCase()) :
+    router.push("/features/" + f.ident.toLowerCase())
 }
-
-const checkBexMode = (f: any) => process.env.MODE === "bex" ? true : !f.bexOnly
-
-const filterMode = (fs: any[]) => _.filter(fs, (f: any) =>
-  f.useIn?.indexOf('all') >= 0 || f.useIn?.indexOf(process.env.MODE) >= 0)
 
 const wrongMode = (f: any) => {
   return f.useIn?.indexOf('all') < 0 && f.useIn?.indexOf(process.env.MODE) < 0

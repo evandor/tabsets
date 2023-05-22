@@ -100,7 +100,7 @@ function submitSearch() {
       searchStore.term = typedOrSelected.value
     }
     if (props.fromPanel) {
-      router.push("/sidepanel-search")
+      router.push("/sidepanel/search")
     } else {
       if (route.path === "/search") {
         runSearch(searchStore.term)

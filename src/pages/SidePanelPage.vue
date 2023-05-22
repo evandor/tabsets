@@ -54,10 +54,12 @@
                       class="q-ma-xs cursor-pointer" name="search" size="16px" @click="toggleSearch">
                 <q-tooltip class="tooltip">Search</q-tooltip>
               </q-icon>
-              <q-icon class="q-ma-xs cursor-pointer" name="filter_center_focus" size="16px" @click="createClip">
+              <q-icon v-if="useSettingsStore().isEnabled('dev')"
+                      class="q-ma-xs cursor-pointer" name="filter_center_focus" size="16px" @click="createClip">
                 <q-tooltip class="tooltip">Create website clip</q-tooltip>
               </q-icon>
-              <q-icon class="q-ma-xs cursor-pointer" name="open_in_new" size="16px" @click="openExtensionTab">
+              <q-icon v-if="useSettingsStore().isEnabled('dev')"
+                      class="q-ma-xs cursor-pointer" name="open_in_new" size="16px" @click="openExtensionTab">
                 <q-tooltip class="tooltip">Open Tabsets</q-tooltip>
               </q-icon>
             </div>
@@ -67,7 +69,7 @@
     </q-toolbar>
 
 
-    <div class="row q-ma-sm" :class="alreadyInTabset() ? 'bg-grey-1':'bg-yellow-1'" v-if="tabFromChromeTab()"
+    <div class="row q-ma-sm" :class="alreadyInTabset() ? 'bg-grey-1':'bg-yellow-1'" v-if="tabFromChromeTab() && tabsStore.getCurrentTabset"
          style="border:1px solid gray;border-radius: 5px">
 
       <div class="col-10">
@@ -86,12 +88,18 @@
     </div>
 
     <div class="col-12">
-      &nbsp;
+      &nbsp
     </div>
 
-    <div class="row q-ma-sm">
+    <div class="row q-ma-sm" v-if="tabsStore.getCurrentTabset">
       <div class="col-12">
-        <PanelTabList :tabs="tabsStore.getCurrentTabset?.tabs || []"/>
+        <PanelTabList :tabs="tabsStore.getCurrentTabset.tabs"/>
+      </div>
+    </div>
+
+    <div class="row q-ma-sm" v-else>
+      <div class="col-12">
+        Add a new tabset to assign tabs to
       </div>
     </div>
 
@@ -123,12 +131,14 @@ import {usePermissionsStore} from "stores/permissionsStore";
 import {FeatureIdent} from "src/models/AppFeature";
 import {useSettingsStore} from "stores/settingsStore";
 import SearchWidget from "components/widgets/SearchWidget.vue";
+import {useSpacesStore} from "stores/spacesStore";
 
 const {inBexMode} = useUtils()
 
 const $q = useQuasar()
 const router = useRouter()
 const tabsStore = useTabsStore()
+const spacesStore = useSpacesStore()
 
 const currentChromeTabs = ref<chrome.tabs.Tab[]>([])
 const currentTabs = ref<Tab[]>([])
@@ -151,6 +161,12 @@ if (inBexMode()) {
       const tsId = data.tabsetId
       console.log("hier", useTabsStore().getCurrentTabset, tsId)
       useTabsStore().selectCurrentTabset(tsId)
+    } else if (name === 'feature-activated') {
+      console.log("message data", data)
+      usePermissionsStore().initialize()
+    } else if (name === 'feature-deactivated') {
+      console.log("message data", data)
+      usePermissionsStore().initialize()
     }
     return true
   })
@@ -172,7 +188,7 @@ watchEffect(() => {
   console.log("tabset id", useTabsStore().currentTabsetId)
 })
 watchEffect(() => {
-  console.log("currentChromeTab", useTabsStore().currentChromeTab)
+  //console.log("currentChromeTab", useTabsStore().currentChromeTab)
   currentChromeTab.value = useTabsStore().currentChromeTab
 })
 
@@ -216,7 +232,6 @@ const saveFromPanel = () => {
 }
 
 const alreadyInTabset = () => {
-  console.log("her", currentChromeTab.value.url, tabsStore.getCurrentTabset)
   if (currentChromeTab.value.url && tabsStore.getCurrentTabset) {
     return useTabsetService().urlExistsInCurrentTabset(currentChromeTab.value.url)
   }
@@ -278,14 +293,13 @@ const addFirstTabset = () => $q.dialog({
 
 const tabFromChromeTab = () => currentChromeTab.value ? new Tab(uid(), currentChromeTab.value) : undefined
 
-const showTabsets = () => router.push("/sidepanel-tabsets")
+const showTabsets = () => router.push("/sidepanel/tabsets")
 
 const toggleSearch = () => searching.value = !searching.value
 
 </script>
 
 <style scoped>
-
 
 
 .fullimageBackground {

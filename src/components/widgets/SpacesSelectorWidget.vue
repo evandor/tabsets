@@ -3,7 +3,7 @@
   <div class="cursor-pointer">
     <q-badge outline
       class="q-mr-md q-mt-none q-pt-sm q-pb-sm q-px-sm"
-      color="primary" text-color="primary" :label="spacesLabel()">
+      color="white" text-color="white" :label="spacesLabel()">
     </q-badge>
 
     <q-menu :offset="[0,10]">

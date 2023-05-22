@@ -18,6 +18,7 @@
       <div class="col-xs-12 col-md-3 q-ma-none q-mt-sm text-right">
 
         <q-icon
+          v-if="!route.path.startsWith('/sidepanel/')"
           class="cursor-pointer" size="2em"
           name="chevron_right" @click="closeRightDrawer()">
           <q-tooltip class="tooltip">Hide this view</q-tooltip>
@@ -88,7 +89,7 @@ import {ref, watch, watchEffect} from "vue";
 import SavedTabs from "src/components/SavedTabs.vue"
 import RssTabs from "src/components/RssTabs.vue"
 import TabsetAsSidebar from "src/components/TabsetAsSidebar.vue"
-import {useRouter} from "vue-router";
+import {useRoute, useRouter} from "vue-router";
 import {useTabsStore} from "src/stores/tabsStore";
 import {useSettingsStore} from "src/stores/settingsStore";
 import {DrawerTabs, useUiStore} from "src/stores/uiStore";
@@ -105,6 +106,7 @@ import TagsViewer from "components/views/TagsViewer.vue";
 import TabsetDetails from "components/views/TabsetDetails.vue";
 
 const router = useRouter()
+const route = useRoute()
 
 const uiService = useUiService()
 

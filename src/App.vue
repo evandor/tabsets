@@ -30,12 +30,6 @@ import {useUtils} from "src/services/Utils";
 
 const {inBexMode} = useUtils()
 
-// function isNewTabPage() {
-//   return route.path === '/newtab';
-// }
-//
-// $q.dark.set($q.localStorage.getItem('darkMode') || false)
-
 const tabsStore = useTabsStore()
 const settingsStore = useSettingsStore()
 const suggestionsStore = useSuggestionsStore()
@@ -47,6 +41,8 @@ const uiStore = useUiStore()
 const router = useRouter()
 const route = useRoute()
 const $q = useQuasar()
+
+$q.dark.set($q.localStorage.getItem('darkMode') || false)
 
 // init of stores and some listeners
 usePermissionsStore().initialize()

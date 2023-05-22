@@ -21,14 +21,24 @@ const routes: RouteRecordRaw[] = [
     children: [{ path: '', component: () => import('pages/SidePanelPage.vue') }],
   },
   {
-    path: '/sidepanel-tabsets',
+    path: '/sidepanel/tabsets',
     component: () => import('layouts/SidePanelLayout.vue'),
     children: [{ path: '', component: () => import('pages/SidePanelTabsetsPage.vue') }],
   },
   {
-    path: '/sidepanel-search',
+    path: '/sidepanel/search',
     component: () => import('layouts/SidePanelLayout.vue'),
     children: [{ path: '', component: () => import('pages/SidePanelSearchPage.vue') }],
+  },
+  {
+    path: '/sidepanel/settings',
+    component: () => import('layouts/PlainWithRightDrawerLayout.vue'),
+    children: [{ path: '', component: () => import('pages/SettingsPage.vue') }],
+  },
+  {
+    path: '/sidepanel/features/:feature',
+    component: () => import('layouts/PlainWithRightDrawerLayout.vue'),
+    children: [{ path: '', component: () => import('pages/FeaturesPage.vue') }],
   },
   {
     path: '/about',
@@ -43,11 +53,6 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/settings',
     component: () => import('layouts/DefaultLayout.vue'),
-    children: [{ path: '', component: () => import('pages/SettingsPage.vue') }],
-  },
-  {
-    path: '/panel/settings',
-    component: () => import('layouts/PlainLayout.vue'),
     children: [{ path: '', component: () => import('pages/SettingsPage.vue') }],
   },
   {
