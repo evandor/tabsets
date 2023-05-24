@@ -46,6 +46,16 @@ const routes: RouteRecordRaw[] = [
     children: [{ path: '', component: () => import('pages/FeaturesPage.vue') }],
   },
   {
+    path: '/sidepanel/tagslist',
+    component: () => import('layouts/SidePanelLayout.vue'),
+    children: [{ path: '', component: () => import('pages/sidepanel/SidePanelTagsListViewer.vue') }],
+  },
+  {
+    path: '/sidepanel/tags',
+    component: () => import('layouts/SidePanelLayout.vue'),
+    children: [{ path: '', component: () => import('pages/sidepanel/SidePanelTagsPage.vue') }],
+  },
+  {
     path: '/about',
     component: () => import('layouts/AboutLayout.vue'),
     children: [{ path: '', component: () => import('pages/AboutPage.vue') }],
@@ -65,11 +75,6 @@ const routes: RouteRecordRaw[] = [
     component: () => import('layouts/DefaultLayout.vue'),
     children: [{ path: '', component: () => import('pages/StatsPage.vue') }],
   },
-  /*{
-    path: '/tabset',
-    component: () => import('layouts/DefaultLayout.vue'),
-    children: [{ path: '', component: () => import('pages/CurrentTabs.vue') }],
-  },*/
   {
     path: '/tabsets/:tabsetId',
     component: () => import('layouts/DefaultLayout.vue'),
@@ -124,11 +129,6 @@ const routes: RouteRecordRaw[] = [
     path: '/search',
     component: () => import('layouts/DefaultLayout.vue'),
     children: [{ path: '', component: () => import('pages/SearchPage.vue') }],
-  },
-  {
-    path: '/tags',
-    component: () => import('layouts/DefaultLayout.vue'),
-    children: [{ path: '', component: () => import('pages/TagsPage.vue') }],
   },
   {
     path: '/iframe/:tabId',

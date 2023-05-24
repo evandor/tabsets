@@ -70,7 +70,7 @@
   <TabsGroupedByHost v-else-if="tab ===  DrawerTabs.GROUP_BY_HOST_TABS"/>
   <SavedTabs v-else-if="tab ===  DrawerTabs.SAVED_TABS"/>
   <TabsetAsSidebar v-else-if="tab ===  DrawerTabs.SIDEBAR"/>
-  <NewTabUrls v-else-if="tab ===  DrawerTabs.NEW_TAB_URLS"/>
+<!--  <NewTabUrls v-else-if="tab ===  DrawerTabs.NEW_TAB_URLS"/>-->
   <RssTabs v-else-if="tab ===  DrawerTabs.RSS"/>
   <!--      <ScheduledTabs v-else-if="tab ===  DrawerTabs.SCHEDULED"/>-->
   <Features v-else-if="tab ===  DrawerTabs.FEATURES"/>
@@ -78,7 +78,9 @@
   <TabsetDetails v-else-if="tab ===  DrawerTabs.TABSET_DETAILS"/>
 
   <TabsetHelp v-else-if="tab ===  DrawerTabs.HELP"/>
-  <TagsViewer v-else-if="tab ===  DrawerTabs.TAGS_VIEWER"/>
+
+  <!-- only in sidepanel in chrome extension-->
+  <!--  <TagsViewer v-else-if="tab ===  DrawerTabs.TAGS_VIEWER"/>-->
 
   <div v-else>unknown tab name '{{ tab }}' {{ typeof tab }}</div>
 
@@ -95,14 +97,11 @@ import {useSettingsStore} from "src/stores/settingsStore";
 import {DrawerTabs, useUiStore} from "src/stores/uiStore";
 import {useUiService} from "src/services/useUiService";
 import TabsGroupedByHost from "components/TabsGroupedByHost.vue";
-import BrowserHistory from "components/BrowserHistory.vue";
 import Features from "components/Features.vue";
 import UnassignedAndOpenTabs from "components/views/UnassignedAndOpenTabs.vue";
 import BookmarksTree from "components/BookmarksTree.vue";
 import TabDetails from "components/views/TabDetails.vue";
-import NewTabUrls from "components/NewTabUrls.vue";
 import TabsetHelp from "components/TabsetHelp.vue";
-import TagsViewer from "components/views/TagsViewer.vue";
 import TabsetDetails from "components/views/TabsetDetails.vue";
 
 const router = useRouter()

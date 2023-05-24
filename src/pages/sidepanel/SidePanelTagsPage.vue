@@ -1,41 +1,45 @@
 <template>
 
-  <q-toolbar class="text-primary lightgrey">
-    <div class="row fit">
-      <div class="col-12">
+  <q-page>
+    <q-toolbar class="text-primary lightgrey">
+      <div class="row fit">
         <q-toolbar-title>
-          <div class="row justify-start items-baseline">
-            <div><span class="text-dark">Tag '{{
-                useUiStore().selectedTag
-              }}': {{ tabsetHits.length }} hit(s)</span>
+          <div class="row">
+            <div class="col-2">
+              <q-icon name="chevron_left" class="cursor-pointer" @click="router.push('/sidepanel/tagslist')">
+                <q-tooltip>Back</q-tooltip>
+              </q-icon>
+            </div>
+            <div class="col-10" style="font-size:smaller">
+              Tags List
             </div>
           </div>
         </q-toolbar-title>
       </div>
+    </q-toolbar>
+
+    <div class="row fit greyBorderTop"></div>
+
+    <div class="row">
+      <div class="col-8 q-ma-md">
+        <template v-for="hit in tabsetHits">
+          <q-list>
+            <SearchHit :hit="hit"/>
+          </q-list>
+        </template>
+
+      </div>
+      <div class="col-4 q-ma-md">
+
+      </div>
     </div>
-  </q-toolbar>
-
-  <div class="row fit greyBorderTop"></div>
-
-  <div class="row">
-    <div class="col-8 q-ma-md">
-      <template v-for="hit in tabsetHits">
-        <q-list>
-          <SearchHit :hit="hit"/>
-        </q-list>
-      </template>
-
-    </div>
-    <div class="col-4 q-ma-md">
-
-    </div>
-  </div>
+  </q-page>
 
 </template>
 
 <script setup lang="ts">
 import {ref, watchEffect} from 'vue';
-import {useRoute} from "vue-router";
+import {useRoute, useRouter} from "vue-router";
 import {useTabsStore} from "src/stores/tabsStore";
 import _ from "lodash"
 import {useSearchStore} from "src/stores/searchStore";
@@ -56,7 +60,7 @@ const route = useRoute()
 const tabsStore = useTabsStore()
 const searchStore = useSearchStore()
 
-const termFromParams = route.query.t as string
+const router = useRouter()
 
 const $q = useQuasar()
 const tabsetHits = ref<Hit[]>([])

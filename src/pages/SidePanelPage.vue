@@ -1,104 +1,147 @@
 <template>
-  <!-- first time -->
-  <transition appear enter-active-class="fadeIn" style="transition-delay: 3.5s" v-if="tabsStore.tabsets.size === 0">
-    <div class="q-ma-none q-pa-md fullimageBackground">
-      <div class="row">
-        <div class="col-12 text-h6">
-          Welcome to Tabsets Extension
-        </div>
-      </div>
-      <div class="row q-mb-lg">
-        <div class="col-12 text-subtitle1">
-          Bookmarks next generation
-        </div>
-      </div>
 
-      <div class="row items-center">
-        <div class="col-12 text-subtitle2 q-mb-md">
-          To get started:
-        </div>
-      </div>
+  <q-page>
 
-      <div class="row q-mt-lg">
-        <div class="col-12 items-center q-mb-md">
-          This will create a new tabset containing some pre-chosen tabs.
-        </div>
-      </div>
-    </div>
-  </transition>
+    <q-splitter class="window-height" style="position:absolute;left:0;right:0"
+                v-model="splitterModel"
+                separator-class="bg-grey-1"
+                horizontal
+                unit="px"
+                reverse>
 
-  <!-- we have at least one tabset -->
-  <div v-else class="q-ma-none">
-
-    <q-toolbar class="text-primary lightgrey">
-      <div class="row fit">
-        <q-toolbar-title>
-          <div class="row">
-            <div class="col-9">
-              <SearchWidget v-if="searching"
-                            :fromPanel="true"
-                            style="position: absolute; left:5px;top:5px;max-width:310px"/>
-              <TabsetsSelectorWidget v-else :fromPanel="true"/>
+      <template v-slot:before>
+        <!-- first time -->
+        <transition appear enter-active-class="fadeIn" style="transition-delay: 3.5s"
+                    v-if="tabsStore.tabsets.size === 0">
+          <div class="q-ma-none q-pa-md fullimageBackground">
+            <div class="row">
+              <div class="col-12 text-h6">
+                Welcome to Tabsets Extension
+              </div>
             </div>
-            <div class="col-3 text-right">
-              <q-icon v-if="usePermissionsStore().hasFeature(FeatureIdent.SPACES)"
-                      class="q-ma-xs cursor-pointer" name="expand_less" size="16px" @click="showTabsets">
-                <q-tooltip class="tooltip">Manage Spaces</q-tooltip>
-              </q-icon>
-              <q-icon v-if="tabsStore.tabsets.size > 1"
-                      class="q-ma-xs cursor-pointer" name="search" size="16px" @click="toggleSearch">
-                <q-tooltip class="tooltip">Search</q-tooltip>
-              </q-icon>
-              <q-icon v-if="useSettingsStore().isEnabled('dev')"
-                      class="q-ma-xs cursor-pointer" name="filter_center_focus" size="16px" @click="createClip">
-                <q-tooltip class="tooltip">Create website clip</q-tooltip>
-              </q-icon>
-              <q-icon v-if="useSettingsStore().isEnabled('dev')"
-                      class="q-ma-xs cursor-pointer" name="open_in_new" size="16px" @click="openExtensionTab">
-                <q-tooltip class="tooltip">Open Tabsets</q-tooltip>
-              </q-icon>
+            <div class="row q-mb-lg">
+              <div class="col-12 text-subtitle1">
+                Bookmarks next generation
+              </div>
+            </div>
+
+            <div class="row items-center">
+              <div class="col-12 text-subtitle2 q-mb-md">
+                To get started:
+              </div>
+            </div>
+
+            <div class="row q-mt-lg">
+              <div class="col-12 items-center q-mb-md">
+                This will create a new tabset containing some pre-chosen tabs.
+              </div>
             </div>
           </div>
-        </q-toolbar-title>
-      </div>
-    </q-toolbar>
+        </transition>
 
-    <div class="row q-ma-sm" :class="alreadyInTabset() ? 'bg-grey-1':'bg-yellow-1'"
-         v-if="tabFromChromeTab() && tabsStore.getCurrentTabset"
-         style="border:1px solid gray;border-radius: 5px">
+        <!-- we have at least one tabset -->
+        <div v-else class="q-ma-none">
 
-      <div class="col-10">
-        <q-list>
-          <q-item
-            v-ripple
-            class="q-ma-none q-pa-xs">
-            <PanelTabListElementWidget header="Current Tab:" :tab="tabFromChromeTab()"/>
-          </q-item>
-        </q-list>
-      </div>
-      <div class="col-2">
-        <q-btn :disable="alreadyInTabset()" :label="alreadyInTabset() ? 'saved' :'save'" color="primary" flat
-               size="10px" @click="saveFromPanel()"></q-btn>
-      </div>
-    </div>
+          <q-toolbar class="text-primary lightgrey">
+            <div class="row fit">
+              <q-toolbar-title>
+                <div class="row">
+                  <div class="col-9">
+                    <SearchWidget v-if="searching"
+                                  :fromPanel="true"
+                                  style="position: absolute; left:5px;top:5px;max-width:310px"/>
+                    <TabsetsSelectorWidget v-else :fromPanel="true"/>
+                  </div>
+                  <div class="col-3 text-right">
+                    <q-icon v-if="usePermissionsStore().hasFeature(FeatureIdent.SPACES)"
+                            class="q-ma-xs cursor-pointer" name="expand_less" size="16px" @click="showTabsets">
+                      <q-tooltip class="tooltip">Manage Spaces</q-tooltip>
+                    </q-icon>
+                    <q-icon v-if="tabsStore.tabsets.size > 1"
+                            class="q-ma-xs cursor-pointer" name="search" size="16px" @click="toggleSearch">
+                      <q-tooltip class="tooltip">Search</q-tooltip>
+                    </q-icon>
+                    <q-icon v-if="useSettingsStore().isEnabled('dev')"
+                            class="q-ma-xs cursor-pointer" name="filter_center_focus" size="16px" @click="createClip">
+                      <q-tooltip class="tooltip">Create website clip</q-tooltip>
+                    </q-icon>
+                    <q-icon v-if="useSettingsStore().isEnabled('dev')"
+                            class="q-ma-xs cursor-pointer" name="open_in_new" size="16px" @click="openExtensionTab">
+                      <q-tooltip class="tooltip">Open Tabsets</q-tooltip>
+                    </q-icon>
+                  </div>
+                </div>
+              </q-toolbar-title>
+            </div>
+          </q-toolbar>
 
-    <div class="col-12">
-      &nbsp
-    </div>
 
-    <div class="row q-ma-sm" v-if="tabsStore.getCurrentTabset">
-      <div class="col-12">
-        <PanelTabList :tabs="tabsStore.getCurrentTabset.tabs"/>
-      </div>
-    </div>
+          <div class="col-12">
+            &nbsp
+          </div>
 
-    <div class="row q-ma-sm" v-else>
-      <div class="col-12">
-        Add a new tabset to assign tabs to
-      </div>
-    </div>
+          <div class="row q-ma-sm" v-if="tabsStore.getCurrentTabset">
+            <div class="col-12">
+              <PanelTabList :tabs="tabsStore.getCurrentTabset.tabs"/>
+            </div>
+          </div>
 
-  </div>
+          <transition v-else
+                      appear enter-active-class="fadeIn" style="transition-delay: 1.5s">
+            <div class="row q-ma-sm">
+              <div class="col-12">
+                Add a new tabset to assign tabs to
+              </div>
+            </div>
+          </transition>
+
+        </div>
+
+
+      </template>
+
+      <template v-slot:after>
+        <div v-if="tabFromChromeTab() && tabsStore.getCurrentTabset"
+             class="row q-ma-sm q-mt-lg"
+             :class="alreadyInTabset() ? 'bg-grey-1':'bg-yellow-1'"
+             style="border:1px solid gray;border-radius: 5px">
+
+          <div class="col-10">
+            <q-list>
+              <q-item
+                v-ripple
+                class="q-ma-none q-pa-xs">
+                <PanelTabListElementWidget header="Current Tab:" :tab="tabFromChromeTab()" :hideMenu="true"/>
+              </q-item>
+            </q-list>
+          </div>
+          <div class="col-2">
+            <q-btn :disable="alreadyInTabset()" :label="alreadyInTabset() ? 'saved' :'save'" color="primary" flat
+                   size="10px" @click="saveFromPanel()"></q-btn>
+          </div>
+        </div>
+
+        <div v-else-if="selectedTab"
+             class="row q-ma-sm q-mt-lg"
+             :class="alreadyInTabset() ? 'bg-grey-1':'bg-yellow-1'"
+             style="border:1px solid gray;border-radius: 5px">
+
+          <div class="col-12">
+            <q-list>
+              <q-item
+                v-ripple
+                class="q-ma-none q-pa-xs">
+                <SidePanelTabListElementDetails :tab="selectedTab" />
+              </q-item>
+            </q-list>
+          </div>
+        </div>
+      </template>
+
+    </q-splitter>
+
+  </q-page>
+
 
 </template>
 
@@ -127,6 +170,7 @@ import {FeatureIdent} from "src/models/AppFeature";
 import {useSettingsStore} from "stores/settingsStore";
 import SearchWidget from "components/widgets/SearchWidget.vue";
 import {useSpacesStore} from "stores/spacesStore";
+import SidePanelTabListElementDetails from "components/widgets/SidePanelTabListElementDetails.vue";
 
 const {inBexMode} = useUtils()
 
@@ -145,10 +189,20 @@ const currentTabset = ref<Tabset | undefined>(undefined)
 const currentChromeTab = ref<chrome.tabs.Tab>(null as unknown as chrome.tabs.Tab)
 const searching = ref(false)
 // const chromeVersion = ref('unknown')
+const splitterModel = ref(160)
+const selectedTab = ref<Tab | undefined>(undefined)
 
 console.log("adding listener")
 
 const chromeVersion = (/Chrome\/([0-9]+)/.exec(navigator.userAgent) || [, 0])[1];
+
+watchEffect(() => {
+  //console.log("watching", useUiStore().getSelectedTab)
+  selectedTab.value = useUiStore().getSelectedTab
+  if (selectedTab.value) {
+    currentChromeTab.value = null as unknown as chrome.tabs.Tab
+  }
+})
 
 if (inBexMode()) {
   chrome.runtime.onMessage.addListener(({name, data}) => {
@@ -228,7 +282,7 @@ const saveFromPanel = () => {
 }
 
 const alreadyInTabset = () => {
-  if (currentChromeTab.value.url && tabsStore.getCurrentTabset) {
+  if (currentChromeTab.value?.url && tabsStore.getCurrentTabset) {
     return useTabsetService().urlExistsInCurrentTabset(currentChromeTab.value.url)
   }
   return false

@@ -17,54 +17,30 @@
   </q-item-section>
 
   <!-- name, title, description, url && note -->
-  <q-item-section class="q-mb-sm" :style="itemStyle(props.tab)"
-                  @click="selectTab(tab)"
-                  @mouseover="hoveredTab = tab.id"
-                  @mouseleave="hoveredTab = undefined">
+  <q-item-section class="q-mb-sm" :style="itemStyle(props.tab)">
 
     <!-- name or title -->
     <q-item-label>
       <div>
         <div class="q-pr-lg cursor-pointer ellipsis">
-          <span v-if="props.header" class="text-bold">{{ props.header }}<br></span>
           {{ nameOrTitle(props.tab) }}
-          <q-popup-edit :model-value="dynamicNameOrTitleModel(tab)" v-slot="scope"
-                        @update:model-value="val => setCustomTitle( tab, val)">
-            <q-input v-model="scope.value" dense autofocus counter @keyup.enter="scope.set"/>
-          </q-popup-edit>
         </div>
-
       </div>
     </q-item-label>
 
-    <!-- description -->
-    <q-item-label class="ellipsis-2-lines text-grey-8"
-                  v-if="useUiStore().listDetailLevelGreaterEqual(ListDetailLevel.LARGE)">
-      {{ props.tab.description }}
-    </q-item-label>
-
-    <!-- url -->
-    <q-item-label
-      v-if="props.tab.chromeTab?.url"
-      caption class="ellipsis-2-lines text-blue-10"
-      @mouseover="showButtonsProp = true"
-      @mouseleave="showButtonsProp = false">
-      <div class="q-pr-lg cursor-pointer" style="display: inline-block;"
-           @click.stop="NavigationService.openOrCreateTab(props.tab.chromeTab?.url )">
-
-        <span v-if="useTabsStore().getCurrentTabset?.sorting === 'alphabeticalUrl'">
-          <q-icon name="arrow_right" size="16px"/>
-        </span>
-
-        <short-url :url="props.tab.chromeTab?.url" :hostname-only="true" />
-
-        <q-icon class="q-ml-xs" name="open_in_new"/>
-        <q-icon v-if="showButtonsProp"
-                class="q-ml-md" name="content_copy"
-                @click.stop="copyToClipboard(props.tab.chromeTab?.url)">
-          <q-tooltip class="tooltip">Copy URL to clipboard</q-tooltip>
-        </q-icon>
-        <q-icon v-else class="q-ml-md"/>
+    <!-- meta -->
+    <q-item-label caption>
+      <div class="row q-mx-sm q-mt-none">
+        <div class="col-5 text-caption text-bold">created</div>
+        <div class="col-7 text-right text-caption">{{ formatDate(props.tab.created) }}</div>
+      </div>
+      <div class="row q-mx-sm q-mt-none">
+        <div class="col-5 text-caption text-bold">last active</div>
+        <div class="col-7 text-right text-caption">{{ formatDate(props.tab.lastActive) }}</div>
+      </div>
+      <div class="row q-mx-sm q-mt-none">
+        <div class="col-5 text-caption text-bold">#opened</div>
+        <div class="col-7 text-right text-caption">{{ props.tab.activatedCount }}x</div>
       </div>
     </q-item-label>
 
@@ -75,52 +51,22 @@
     </q-item-label>
   </q-item-section>
 
-  <!--  <q-item-section class="q-mb-sm" style="width:30px;max-width:30px">-->
-  <!--  +-->
-  <!--  </q-item-section>-->
-
-  <q-item-section class="text-right q-mx-sm cursor-pointer"
-                  @mouseover="hoveredTab = tab.id"
-                  @mouseleave="hoveredTab = undefined"
-                  style="max-width:25px;font-size: 12px;color:#bfbfbf">
-            <span v-if="hoveredOver(tab.id)">
-              <q-icon name="more_horiz" color="primary" size="16px"/>
-            </span>
-    <span v-else>
-
-            </span>
-    <PanelTabListContextMenu :tab="tab" v-if="!props.hideMenu"/>
-
-    <!--    :index="index"-->
-    <!--    :hoveredTab="hoveredTab"-->
-    <!--    @toggleExpand="(index:number) => toggleExpand(index)"-->
-
-  </q-item-section>
-
 </template>
 
 <script setup lang="ts">
-import NavigationService from "src/services/NavigationService";
 import {Tab} from "src/models/Tab";
 import TabsetService from "src/services/TabsetService";
-import {useNotificationsStore} from "src/stores/notificationsStore";
 import {onMounted, ref, watchEffect} from "vue";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {DeleteTabCommand} from "src/domain/commands/DeleteTabCommand";
 import {useQuasar} from "quasar";
 import {ListDetailLevel, useUiStore} from "src/stores/uiStore";
 import TabFaviconWidget from "components/widgets/TabFaviconWidget.vue";
-import {UpdateTabNameCommand} from "src/domain/tabs/UpdateTabName";
-import {CopyToClipboardCommand} from "src/domain/commands/CopyToClipboard";
 import {useTabsetService} from "src/services/TabsetService2";
-import ShortUrl from "components/utils/ShortUrl.vue";
-import {useTabsStore} from "src/stores/tabsStore";
-import PanelTabListContextMenu from "components/widgets/helper/PanelTabListContextMenu.vue";
+import {formatDistance} from "date-fns";
 
 const props = defineProps({
-  tab: {type: Object, required: true},
-  header: {type: String, required: false},
-  hideMenu: {type: Boolean, default: false}
+  tab: {type: Object, required: true}
 })
 
 const emits = defineEmits(['sendCaption'])
@@ -189,14 +135,6 @@ const setInfo = (tab: Tab) => {
   }
 }
 
-const selectTab = (tab: Tab) => {
-  useUiStore().setSelectedTab(tab)
-  // TabsetService.setOnlySelectedTab(tab)
-  // const notificationStore = useNotificationsStore()
-  // notificationStore.setSelectedTab(tab)
-}
-
-
 const getFaviconUrl = (chromeTab: chrome.tabs.Tab | undefined) => {
   if (chromeTab && chromeTab.favIconUrl && !chromeTab.favIconUrl.startsWith("chrome")) {
     return chromeTab.favIconUrl
@@ -210,12 +148,6 @@ const deleteTab = (tab: Tab) => useCommandExecutor().executeFromUi(new DeleteTab
 const nameOrTitle = (tab: Tab) => tab.name ? tab.name : tab.chromeTab?.title
 
 const dynamicNameOrTitleModel = (tab: Tab) => tab.name ? tab.name : tab.chromeTab?.title
-
-const setCustomTitle = (tab: Tab, newValue: string) =>
-  useCommandExecutor().executeFromUi(new UpdateTabNameCommand(tab, newValue))
-
-const copyToClipboard = (text: string) =>
-  useCommandExecutor().executeFromUi(new CopyToClipboardCommand(text))
 
 const thumbnailFor = async (tab: Tab): Promise<object> => {
   return await TabsetService.getThumbnailFor(tab)
@@ -237,7 +169,8 @@ watchEffect(() => {
   }
 })
 
-const hoveredOver = (tabsetId: string) => hoveredTab.value === tabsetId
+const formatDate = (timestamp: number | undefined) =>
+  timestamp ? formatDistance(timestamp, new Date(), {addSuffix: true}) : ""
 
 
 </script>

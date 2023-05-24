@@ -1,112 +1,53 @@
-<script>
-export default {
-  data() {
-    return {
-      show: true
-    }
-  }
-}
-</script>
-
 <template>
+  <q-page>
 
-<!--  <Transition name="bounce" appear>-->
-<!--    <p style="text-align: center;">hello</p>-->
-<!--  </Transition>-->
+      <q-splitter class="window-height" style="position:absolute"
+        v-model="splitterModel"
+        horizontal
+        unit="px"
+        reverse>
 
-  <!--  <Transition name="bounce">-->
-  <!--    <p v-if="show" style="text-align: center;">-->
-  <!--      Hello here is some bouncy text!-->
-  <!--    </p>-->
-  <!--  </Transition>-->
+        <template v-slot:before>
+          <div class="q-pa-md">
+            <div class="text-h4 q-mb-md">Before</div>
+            <div v-for="n in 13" :key="n" class="q-my-md">{{ n }}. Lorem ipsum dolor sit, amet consectetur adipisicing elit. Quis praesentium cumque magnam odio iure quidem, quod illum numquam possimus obcaecati commodi minima assumenda consectetur culpa fuga nulla ullam. In, libero.</div>
+          </div>
+        </template>
 
-<!--  <button @click="show = !show">Toggle</button>-->
-  <transition appear enter-active-class="fadeIn" style="transition-delay: 3.5s">
-    <p>hello</p>
-  </transition>
+        <template v-slot:after>
+          <div class="q-pa-md">
+            <div class="text-h4 q-mb-md">After</div>
+            <div v-for="n in 1" :key="n" class="q-my-md">{{ n }}. Lorem ipsum dolor sit, amet consectetur adipisicing elit. Quis praesentium cumque magnam odio iure quidem, quod illum numquam possimus obcaecati commodi minima assumenda consectetur culpa fuga nulla ullam. In, libero.</div>
+          </div>
+        </template>
 
-  <!--  <transition-->
-  <!--    appear-->
-  <!--    enter-active-class="animated fadeInRight"-->
-  <!--    leave-active-class="animated fadeOut">-->
-  <!--    <q-btn-->
-  <!--      color="secondary"-->
-  <!--      icon="mail"-->
-  <!--      label="Email"-->
-  <!--    />-->
-  <!--  </transition>-->
+      </q-splitter>
 
-  <!--  <transition name="delayed-appear" appear>-->
-  <!--    <q-btn class="fit text-warning"-->
-  <!--           outline-->
-  <!--           data-testid="createFirstTabsetBtn"-->
-  <!--           label="create your first tabset"></q-btn>-->
-  <!--  </transition>-->
-
+  </q-page>
 </template>
 
-<style scoped>
-.v-enter-active,
-.v-leave-active {
-  transition: opacity 0.5s ease;
-}
+<script lang="ts" setup>
 
-.v-enter-from,
-.v-leave-to {
-  opacity: 0;
-}
+import {ref} from "vue";
 
-.v-enter-to {
-  opacity: 100%;
-}
+const splitterModel = ref(300)
 
-.delayed-appear-enter-active {
-  transition: all 3s ease-in;
-  transition-delay: 3s
-}
+</script>
+<!--<script>-->
+<!--const maxSize = 10-->
+<!--const heavyList = []-->
 
-.delayed-appear-enter-from,
-.delayed-appear-leave-to {
-  opacity: 0
-}
+<!--for (let i = 0; i < maxSize; i++) {-->
+<!--  heavyList.push({-->
+<!--    label: 'Option ' + (i + 1)-->
+<!--  })-->
+<!--}-->
 
-/*
-  Enter and leave animations can use different
-  durations and timing functions.
-*/
-.fade-in-right-enter-active {
-  transition: all 10.3s ease-out;
-  transition-delay: 5s;
-}
-
-.slidefade-leave-active {
-  transition: all 0.8s cubic-bezier(1, 0.5, 0.8, 1);
-}
-
-.slidefade-enter-from,
-.slidefade-leave-to {
-  transform: translateX(20px);
-  opacity: 0;
-}
-
-.bounce-enter-active {
-  animation: bounce-in 0.5s;
-}
-
-.bounce-leave-active {
-  animation: bounce-in 0.5s reverse;
-}
-
-@keyframes bounce-in {
-  0% {
-    transform: scale(0);
-  }
-  50% {
-    transform: scale(10.25);
-  }
-  100% {
-    transform: scale(1);
-  }
-}
-
-</style>
+<!--export default {-->
+<!--  setup() {-->
+<!--    return {-->
+<!--      heavyList-->
+<!--    }-->
+<!--  }-->
+<!--}-->
+<!--</script>-->

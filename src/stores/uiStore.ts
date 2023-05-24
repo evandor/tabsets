@@ -227,6 +227,7 @@ export const useUiStore = defineStore('ui', () => {
   const getContentCount = computed((): number => contentCount.value)
 
   function setSelectedTab(tab: Tab) {
+    console.log("setting selected tab", tab)
     selectedTab.value = tab
   }
 
