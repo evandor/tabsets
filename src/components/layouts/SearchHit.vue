@@ -62,6 +62,7 @@ import {useTabsetService} from "src/services/TabsetService2";
 import TabFaviconWidget from "components/widgets/TabFaviconWidget.vue";
 import FaviconWidget from "components/widgets/FaviconWidget.vue";
 import {useSettingsStore} from "src/stores/settingsStore"
+import {useUtils} from "src/services/Utils";
 
 const props = defineProps({
   hit: {
@@ -76,6 +77,7 @@ const router = useRouter()
 const settingsStore = useSettingsStore()
 const line = ref(null);
 const scoreAsRating = ref(Math.round(props.hit.score / 18))
+const {inBexMode} = useUtils()
 
 const {selectTabset} = useTabsetService()
 
@@ -155,7 +157,14 @@ const tabsetBadges = (hit: Hit): object[] => {
 
 const openTabset = (badge: any) => {
   selectTabset(badge.tabsetId)
-  router.push("/tabsets/" + badge.tabsetId + "?highlight=" + badge.encodedUrl)
+  // @ts-ignore
+  if (!inBexMode() || !chrome.sidePanel) {
+    router.push("/tabsets/" + badge.tabsetId + "?highlight=" + badge.encodedUrl)
+  } else {
+    // router.push("/sidepanel/tabsets/" + badge.tabsetId + "?highlight=" + badge.encodedUrl)
+    router.push("/sidepanel" + "?highlight=" + badge.encodedUrl)
+  }
+
 }
 
 const openBookmark = (badge: any) => {

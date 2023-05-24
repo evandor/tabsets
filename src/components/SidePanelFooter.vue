@@ -4,12 +4,22 @@
     <div class="row fit">
       <div class="col-5">
         <q-btn icon="o_label"
+               v-if="usePermissionsStore().hasFeature(FeatureIdent.TAGS)"
                class="q-my-xs q-mx-sm"
                style="width:20px"
                color="primary"
                size="10px"
                @click="openTagsList()">
           <q-tooltip>List of all tags sorted by prevalence</q-tooltip>
+        </q-btn>
+        <q-btn icon="o_dns"
+               v-if="usePermissionsStore().hasFeature(FeatureIdent.GROUP_BY_DOMAIN)"
+               class="q-my-xs q-mx-sm"
+               style="width:20px"
+               color="primary"
+               size="10px"
+               @click="openGroupedByDomain()">
+          <q-tooltip>List all your tabs URLs by domain</q-tooltip>
         </q-btn>
       </div>
       <div class="col-7 text-right">
@@ -54,6 +64,8 @@ import {useTabsStore} from "stores/tabsStore";
 import {Tab} from "src/models/Tab";
 import {ref, watchEffect} from "vue";
 import {useRouter} from "vue-router";
+import {usePermissionsStore} from "stores/permissionsStore";
+import {FeatureIdent} from "src/models/AppFeature";
 
 const tabsStore = useTabsStore()
 const router = useRouter()
@@ -86,5 +98,6 @@ const openOptionsPage = () => {
 }
 
 const openTagsList = () => router.push("/sidepanel/tagslist")
+const openGroupedByDomain = () => router.push("/sidepanel/byDomainList")
 
 </script>

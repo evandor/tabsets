@@ -28,7 +28,7 @@
     </q-toolbar>
 
     <div class="col-12">
-      &nbsp;{{ spacesStore.space }}
+      &nbsp;
     </div>
 
     <div class="row q-ma-sm">
@@ -143,19 +143,6 @@ if (inBexMode()) {
   })
 }
 
-const saveFromPanel = () => {
-  const currentChromeTab = useTabsStore().currentChromeTab
-  console.log("saving from panel...", currentChromeTab)
-  if (currentChromeTab && tabsStore.getCurrentTabset) {
-    const tabsetId = tabsStore.getCurrentTabset.id // tabsetName.value['value' as keyof object]
-    // useTabsetService().addToTabsetId(tabset['value' as keyof object], new Tab(uid(), currentChromeTab))
-    const useTS = useTabsetService().getTabset(tabsetId)
-    if (useTS) {
-      useCommandExecutor().executeFromUi(new AddTabToTabsetCommand(new Tab(uid(), currentChromeTab), useTS))
-    }
-  }
-}
-
 const save = () => {
   console.log("saving...", tabsetName.value['value' as keyof object])
   if (tabsetName.value && tabsetName.value['value' as keyof object]) {
@@ -187,11 +174,11 @@ const save = () => {
 
 }
 
-const createClip = () => {
-  if (currentChromeTabs.value[0]?.id) {
-    ChromeApi.executeClippingJS(currentChromeTabs.value[0]?.id)
-  }
-}
+// const createClip = () => {
+//   if (currentChromeTabs.value[0]?.id) {
+//     ChromeApi.executeClippingJS(currentChromeTabs.value[0]?.id)
+//   }
+// }
 
 const navigate = (target: string) => router.push(target)
 

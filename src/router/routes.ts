@@ -56,6 +56,16 @@ const routes: RouteRecordRaw[] = [
     children: [{ path: '', component: () => import('pages/sidepanel/SidePanelTagsPage.vue') }],
   },
   {
+    path: '/sidepanel/byDomainList',
+    component: () => import('layouts/SidePanelLayout.vue'),
+    children: [{ path: '', component: () => import('pages/sidepanel/SidePanelByDomainList.vue') }],
+  },
+  {
+    path: '/sidepanel/byDomain/:encodedUrl',
+    component: () => import('layouts/SidePanelLayout.vue'),
+    children: [{ path: '', component: () => import('pages/sidepanel/SidePanelByDomainPage.vue') }],
+  },
+  {
     path: '/about',
     component: () => import('layouts/AboutLayout.vue'),
     children: [{ path: '', component: () => import('pages/AboutPage.vue') }],

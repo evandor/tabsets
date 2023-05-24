@@ -166,12 +166,6 @@ text.set(FeatureIdent.DETAILS.toLowerCase(), {
   activatedMsg: 'Now open a tabset and select a tab by clicking somewhere outside of the text',
   permissions: []
 })
-text.set(FeatureIdent.SIDEBAR.toLowerCase(), {
-  name: 'Sidebar View',
-  img: 'sidebar.png',
-  description: 'The sidebar view lets you open the tabs of a tabset in the extension page itself via an iframe. Please note that not all pages can be displayed like this.',
-  permissions: []
-})
 text.set(FeatureIdent.GROUP_BY_DOMAIN.toLowerCase(), {
   name: 'Group By Domain',
   img: 'groupedByDomain.png',
@@ -181,12 +175,6 @@ text.set(FeatureIdent.GROUP_BY_DOMAIN.toLowerCase(), {
 text.set(FeatureIdent.SAVE_TAB.toLowerCase(), {
   name: 'Save Tabs',
   description: 'You can save tabs in a format called MHtml.',
-  permissions: []
-})
-text.set(FeatureIdent.NEW_TAB.toLowerCase(), {
-  name: 'new Tab Feature',
-
-  description: 'use tabset as your browsers default "New Tab" page.',
   permissions: []
 })
 text.set(FeatureIdent.RSS.toLowerCase(), {
@@ -255,14 +243,6 @@ text.set(FeatureIdent.IGNORE.toLowerCase(), {
   description: 'This is a list of urls you want to ignore. This can be normal urls or urls with placeholders to catch all google search results for example',
   permissions: []
 })
-
-
-text.set(FeatureIdent.SORT_TABS.toLowerCase(), {
-  name: 'Sort Open Tabs',
-  description: 'When activated, tabsets will sort your tabs according to their url. Pinned tabs are not taken into account.',
-  permissions: []
-})
-
 
 text.set(FeatureIdent.SPACES.toLowerCase(), {
   experimental: true,

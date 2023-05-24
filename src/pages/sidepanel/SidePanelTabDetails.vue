@@ -129,7 +129,9 @@
 
   <q-list>
 
-    <q-expansion-item label="Tags" :default-opened="true">
+    <q-expansion-item label="Tags"
+                      v-if="usePermissionsStore().hasFeature(FeatureIdent.TAGS)"
+                      :default-opened="true">
       <q-card>
         <q-card-section>
           <q-select
@@ -223,7 +225,7 @@ import TabFaviconWidget from "components/widgets/TabFaviconWidget.vue";
 import _ from "lodash";
 import {useTabsetService} from "src/services/TabsetService2";
 import TabsetService from "src/services/TabsetService";
-import {reactive, ref, watchEffect} from "vue";
+import {ref, watchEffect} from "vue";
 import {usePermissionsStore} from "src/stores/permissionsStore";
 import {useRouter} from "vue-router";
 import {useQuasar} from "quasar";
@@ -237,7 +239,6 @@ import {SaveTabCommand} from "src/domain/tabs/SaveTab";
 import {FeatureIdent} from "src/models/AppFeature";
 import {useTabsStore} from "src/stores/tabsStore";
 import {useSettingsStore} from "src/stores/settingsStore"
-import SidePanelSpacesSelectorWidget from "components/widgets/SidePanelSpacesSelectorWidget.vue";
 import {SelectTabsetCommand} from "src/domain/tabsets/SelectTabset";
 
 const {inBexMode} = useUtils()

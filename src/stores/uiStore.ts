@@ -18,7 +18,7 @@ export enum DrawerTabs {
   GROUP_BY_HOST_TABS = "groupedByHostTabs",
   SAVED_TABS = "savedTabs",
   PDF_TABS = "pdfTabs",
-  SIDEBAR = "sidebar",
+  //SIDEBAR = "sidebar",
   RSS = "rss",
   SCHEDULED = "scheduled",
   HISTORY = "history",
@@ -27,9 +27,7 @@ export enum DrawerTabs {
   TABSET_DETAILS = "tabsetDetails",
   NEW_TAB_URLS = "newTabUrls",
   TAGS_VIEWER = "tagsViewer",
-  HELP = "help",
-  NOTES = "NOTES",
-  TODOS = "TODOS"
+  HELP = "help"
 }
 
 export enum ListDetailLevel {
