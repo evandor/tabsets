@@ -30,7 +30,7 @@ const {
 function setCurrentTab() {
   chrome.tabs.query({ active: true, lastFocusedWindow: true}, (tabs) => {
     if (tabs && tabs[0]) {
-      console.log("setting current tab", tabs)
+      //console.log("setting current tab", tabs)
       useTabsStore().setCurrentChromeTab(tabs[0] as unknown as chrome.tabs.Tab)
     }
   });
@@ -103,13 +103,6 @@ class ChromeListeners {
     }
     this.eventTriggered()
     console.log(`onCreated: tab ${tab.id}: >>> ${tab.pendingUrl}`)
-    if (usePermissionsStore().hasFeature(FeatureIdent.NEW_TAB) && tab.pendingUrl === 'chrome://newtab/') {
-      // @ts-ignore
-      chrome.tabs.update(tab.id, {
-        // url: chrome.runtime.getURL("www/newtab.html")
-        url: chrome.runtime.getURL("www/index.html#/newtab")
-      })
-    }
     const tabsStore = useTabsStore()
     const maybeTab = tabsStore.tabForUrlInSelectedTabset(tab.pendingUrl || '')
     if (maybeTab) {

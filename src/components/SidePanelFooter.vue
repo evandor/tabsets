@@ -3,22 +3,30 @@
   <q-footer elevated class="bg-grey-8 text-white q-pa-xs">
     <div class="row fit">
       <div class="col-5">
+        <q-btn icon="o_playlist_add"
+               class="q-my-xs q-mx-xs"
+               style="width:20px"
+               :color="isActive('tabslist') ? 'secondary':'primary'"
+               size="9px"
+               @click="toggleView('tabslist')">
+          <q-tooltip>List all open tabs in your browser</q-tooltip>
+        </q-btn>
         <q-btn icon="o_label"
                v-if="usePermissionsStore().hasFeature(FeatureIdent.TAGS)"
-               class="q-my-xs q-mx-sm"
+               class="q-my-xs q-mx-xs"
                style="width:20px"
-               color="primary"
-               size="10px"
-               @click="openTagsList()">
+               :color="isActive('tagslist') ? 'secondary':'primary'"
+               size="9px"
+               @click="toggleView('tagslist')">
           <q-tooltip>List of all tags sorted by prevalence</q-tooltip>
         </q-btn>
         <q-btn icon="o_dns"
                v-if="usePermissionsStore().hasFeature(FeatureIdent.GROUP_BY_DOMAIN)"
-               class="q-my-xs q-mx-sm"
+               class="q-my-xs q-mx-xs"
                style="width:20px"
-               color="primary"
-               size="10px"
-               @click="openGroupedByDomain()">
+               :color="isActive('byDomainList') ? 'secondary':'primary'"
+               size="9px"
+               @click="toggleView('byDomainList')">
           <q-tooltip>List all your tabs URLs by domain</q-tooltip>
         </q-btn>
       </div>
@@ -27,7 +35,7 @@
                class="q-my-xs q-mx-none"
                style="width:20px"
                color="primary"
-               :outline="useUiStore().listDetailLevel !== ListDetailLevel.SMALL" size="10px"
+               :outline="useUiStore().listDetailLevel !== ListDetailLevel.SMALL" size="9px"
                @click="setListDetailLevel(ListDetailLevel.SMALL)">
           <q-tooltip>Show only title and url</q-tooltip>
         </q-btn>
@@ -35,7 +43,7 @@
                class="q-my-xs q-mx-none"
                style="width:20px"
                color="primary"
-               :outline="useUiStore().listDetailLevel !== ListDetailLevel.MEDIUM" size="10px"
+               :outline="useUiStore().listDetailLevel !== ListDetailLevel.MEDIUM" size="9px"
                @click="setListDetailLevel(ListDetailLevel.MEDIUM)">
           <q-tooltip>Show image, title and url</q-tooltip>
         </q-btn>
@@ -43,7 +51,7 @@
                class="q-my-xs q-mx-none"
                style="width:20px"
                color="primary"
-               :outline="useUiStore().listDetailLevel !== ListDetailLevel.LARGE" size="10px"
+               :outline="useUiStore().listDetailLevel !== ListDetailLevel.LARGE" size="9px"
                @click="setListDetailLevel(ListDetailLevel.LARGE)">
           <q-tooltip>All available info</q-tooltip>
         </q-btn>
@@ -51,8 +59,10 @@
         <q-btn icon="o_settings"
                class="q-my-xs q-mx-sm"
                color="primary"
-               size="10px"
-               @click="openOptionsPage()"/>
+               size="9px"
+               @click="openOptionsPage()">
+          <q-tooltip>Open Settings Page</q-tooltip>
+        </q-btn>
       </div>
     </div>
 
@@ -70,6 +80,7 @@ import {FeatureIdent} from "src/models/AppFeature";
 const tabsStore = useTabsStore()
 const router = useRouter()
 
+const activeView = ref<string | undefined>(undefined)
 const currentChromeTabs = ref<chrome.tabs.Tab[]>([])
 const currentTabs = ref<Tab[]>([])
 const currentChromeTab = ref<chrome.tabs.Tab>(null as unknown as chrome.tabs.Tab)
@@ -97,7 +108,17 @@ const openOptionsPage = () => {
   }
 }
 
-const openTagsList = () => router.push("/sidepanel/tagslist")
-const openGroupedByDomain = () => router.push("/sidepanel/byDomainList")
+const toggleView = (ident: string) => {
+  if (isActive(ident)) {
+    activateView(undefined)
+    router.push("/sidepanel")
+  } else {
+    activateView(ident)
+    router.push("/sidepanel/" + ident)
+  }
+}
+
+const isActive = (ident: string) => activeView.value !== undefined && activeView.value === ident
+const activateView = (ident: string | undefined) => activeView.value = ident
 
 </script>

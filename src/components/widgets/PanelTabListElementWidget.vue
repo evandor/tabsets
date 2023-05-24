@@ -25,7 +25,7 @@
     <!-- name or title -->
     <q-item-label>
       <div>
-        <div class="q-pr-lg cursor-pointer ellipsis">
+        <div class="q-pr-sm cursor-pointer ellipsis">
           <span v-if="props.header" class="text-bold">{{ props.header }}<br></span>
           {{ nameOrTitle(props.tab) }}
           <q-popup-edit :model-value="dynamicNameOrTitleModel(tab)" v-slot="scope"
@@ -45,57 +45,53 @@
 
     <!-- url -->
     <q-item-label
+      style="width:100%"
       v-if="props.tab.chromeTab?.url"
       caption class="ellipsis-2-lines text-blue-10"
       @mouseover="showButtonsProp = true"
       @mouseleave="showButtonsProp = false">
-      <div class="q-pr-lg cursor-pointer" style="display: inline-block;"
-           @click.stop="NavigationService.openOrCreateTab(props.tab.chromeTab?.url )">
+      <div class="row q-ma-none">
+        <div class="col-10 q-pr-lg cursor-pointer"
+             @click.stop="NavigationService.openOrCreateTab(props.tab.chromeTab?.url )">
+           <span v-if="useTabsStore().getCurrentTabset?.sorting === 'alphabeticalUrl'">
+              <q-icon name="arrow_right" size="16px"/>
+           </span>
 
-        <span v-if="useTabsStore().getCurrentTabset?.sorting === 'alphabeticalUrl'">
-          <q-icon name="arrow_right" size="16px"/>
-        </span>
+          <short-url :url="props.tab.chromeTab?.url" :hostname-only="true"/>
 
-        <short-url :url="props.tab.chromeTab?.url" :hostname-only="true" />
+          <q-icon class="q-ml-xs" name="open_in_new"/>
+          <!--          <q-icon v-if="showButtonsProp"-->
+          <!--                  class="q-ml-md" name="content_copy"-->
+          <!--                  @click.stop="copyToClipboard(props.tab.chromeTab?.url)">-->
+          <!--            <q-tooltip class="tooltip">Copy URL to clipboard</q-tooltip>-->
+          <!--          </q-icon>-->
+          <!--          <q-icon v-else class="q-ml-md"/>-->
+        </div>
+        <div class="col text-right q-mx-sm cursor-pointer"
+             @mouseover="hoveredTab = tab.id"
+             @mouseleave="hoveredTab = undefined"
+             style="max-width:25px;font-size: 12px;color:#bfbfbf">
+            <span v-if="hoveredOver(tab.id)">
+              <q-icon name="more_horiz" color="primary" size="16px"/>
+            </span>
+          <span v-else>
+              <q-icon color="primary" size="16px"/>
+            </span>
+          <PanelTabListContextMenu :tab="tab" v-if="!props.hideMenu"/>
 
-        <q-icon class="q-ml-xs" name="open_in_new"/>
-        <q-icon v-if="showButtonsProp"
-                class="q-ml-md" name="content_copy"
-                @click.stop="copyToClipboard(props.tab.chromeTab?.url)">
-          <q-tooltip class="tooltip">Copy URL to clipboard</q-tooltip>
-        </q-icon>
-        <q-icon v-else class="q-ml-md"/>
+        </div>
       </div>
+
     </q-item-label>
 
     <!-- note -->
-    <q-item-label v-if="useUiStore().listDetailLevelGreaterEqual(ListDetailLevel.LARGE) && props['tab']['note']" class="text-grey-10" text-subtitle1>
+    <q-item-label v-if="useUiStore().listDetailLevelGreaterEqual(ListDetailLevel.LARGE) && props['tab']['note']"
+                  class="text-grey-10" text-subtitle1>
       <q-icon color="blue-10" name="edit_note"/>
       {{ props['tab']['note'] }}
     </q-item-label>
   </q-item-section>
 
-  <!--  <q-item-section class="q-mb-sm" style="width:30px;max-width:30px">-->
-  <!--  +-->
-  <!--  </q-item-section>-->
-
-  <q-item-section class="text-right q-mx-sm cursor-pointer"
-                  @mouseover="hoveredTab = tab.id"
-                  @mouseleave="hoveredTab = undefined"
-                  style="max-width:25px;font-size: 12px;color:#bfbfbf">
-            <span v-if="hoveredOver(tab.id)">
-              <q-icon name="more_horiz" color="primary" size="16px"/>
-            </span>
-    <span v-else>
-
-            </span>
-    <PanelTabListContextMenu :tab="tab" v-if="!props.hideMenu"/>
-
-    <!--    :index="index"-->
-    <!--    :hoveredTab="hoveredTab"-->
-    <!--    @toggleExpand="(index:number) => toggleExpand(index)"-->
-
-  </q-item-section>
 
 </template>
 

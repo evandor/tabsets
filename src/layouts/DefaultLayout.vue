@@ -113,18 +113,6 @@
         </span>
 
         <ToolbarButton
-          :feature="FeatureIdent.TAGS"
-          :drawer="DrawerTabs.TAGS_VIEWER"
-          icon="o_label"
-          tooltip="List the tags assigned to your tabs"/>
-
-        <ToolbarButton
-          :feature="FeatureIdent.NEW_TAB"
-          :drawer="DrawerTabs.NEW_TAB_URLS"
-          icon="o_create_new_folder"
-          tooltip="The List of Urls displayed when you open a new tab in your Browser"/>
-
-        <ToolbarButton
           :feature="FeatureIdent.SAVE_TAB"
           :drawer="DrawerTabs.SAVED_TABS"
           icon="o_save"
@@ -147,12 +135,6 @@
           :drawer="DrawerTabs.BOOKMARKS"
           icon="o_bookmark"
           tooltip="Access to your bookmarks"/>
-
-        <ToolbarButton
-          :feature="FeatureIdent.SIDEBAR"
-          :drawer="DrawerTabs.SIDEBAR"
-          icon="o_input"
-          tooltip="Your current tabset as 'sidebar'"/>
 
         <ToolbarButton
           :drawer="DrawerTabs.UNASSIGNED_TABS"

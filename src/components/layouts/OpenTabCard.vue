@@ -12,7 +12,7 @@
           <q-icon v-if="showAddToTabsetIcon(tab)" color="primary"
                   name="o_arrow_left" @click="addToCurrentTabset" size="2em">
             <q-tooltip class="tooltip">
-              Click here to add the tab to your current tabset
+              Click here to add the tab to your current tabset {{tabsStore.currentTabsetName}}
             </q-tooltip>
           </q-icon>
           <q-checkbox

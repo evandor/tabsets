@@ -322,7 +322,12 @@ class IndexedDbPersistenceService implements PersistenceService {
       }, id)
   }
 
-  async getMHtml(url: string): Promise<any> {
+  async getMHtml(id: string): Promise<any> {
+    console.log("getting mhtml for", id)
+    return this.db.get('mhtml', id)
+  }
+
+  async getMHtmlContent(url: string): Promise<any> {
 
     console.log("getting mhtml for", url)
     const mhtml = await this.db.get('mhtml', url)

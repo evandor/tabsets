@@ -6,10 +6,11 @@ import {Tab} from "src/models/Tab";
 import {useNotificationsStore} from "src/stores/notificationsStore";
 import {useUiStore} from "src/stores/uiStore";
 import {useUtils} from "src/services/Utils";
+import {Tabset} from "src/models/Tabset";
 
 const {inBexMode} = useUtils()
 
-export class SelectTabsetCommand implements Command<object> {
+export class SelectTabsetCommand implements Command<Tabset | undefined> {
 
   public merge: boolean = true
 
@@ -18,7 +19,7 @@ export class SelectTabsetCommand implements Command<object> {
   }
 
   // TODO selecting a tabset from a different space should change space
-  async execute(): Promise<ExecutionResult<any>> {
+  async execute(): Promise<ExecutionResult<Tabset | undefined>> {
     console.debug("selecting tabset", this.tabsetId)
     const tabsStore = useTabsStore()
 
@@ -48,7 +49,7 @@ export class SelectTabsetCommand implements Command<object> {
       });
     }
 
-    const executionResult = new ExecutionResult(null, "done")
+    const executionResult = new ExecutionResult(currentTabset, "done")
     return Promise.resolve(executionResult)
   }
 }

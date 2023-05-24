@@ -150,6 +150,18 @@
       </q-card>
     </q-expansion-item>
 
+    <q-expansion-item label="Archived Snapshots"
+                      v-if="usePermissionsStore().hasFeature(FeatureIdent.SAVE_TAB) && useUiStore().getSelectedTab?.mhtmls.length > 0"
+                      :default-opened="true">
+      <q-card>
+        <q-card-section>
+          <div class="row q-mx-sm q-mt-xs" v-for="mhtml in useUiStore().getSelectedTab?.mhtmls">
+            <MHtmlViewHelper :mhtmlId="mhtml" />
+          </div>
+        </q-card-section>
+      </q-card>
+    </q-expansion-item>
+
     <q-expansion-item label="Note"
                       group="somegroup"
 
@@ -240,6 +252,8 @@ import {FeatureIdent} from "src/models/AppFeature";
 import {useTabsStore} from "src/stores/tabsStore";
 import {useSettingsStore} from "src/stores/settingsStore"
 import {SelectTabsetCommand} from "src/domain/tabsets/SelectTabset";
+import MHtmlPage from "pages/MHtmlPage.vue";
+import MHtmlViewHelper from "pages/sidepanel/helper/MHtmlViewHelper.vue";
 
 const {inBexMode} = useUtils()
 

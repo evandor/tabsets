@@ -54,7 +54,6 @@ import {DrawerTabs, LeftDrawerState, useUiStore} from "src/stores/uiStore";
 import {useTabsetService} from "src/services/TabsetService2";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {CreateTabFromOpenTabsCommand} from "src/domain/commands/CreateTabFromOpenTabs";
-import TabListElementWidget from "src/components/widgets/TabListElementWidget.vue";
 import {useUtils} from "src/services/Utils"
 import InfoMessageWidget from "components/widgets/InfoMessageWidget.vue";
 import {usePermissionsStore} from "src/stores/permissionsStore";

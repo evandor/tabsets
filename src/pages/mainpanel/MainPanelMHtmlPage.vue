@@ -65,7 +65,7 @@ watchEffect(() => {
   }
 })
 
-const openInNewTab = () => MHtmlService.getMHtmlContent(encodedUrl.value)
+const openInNewTab = () => MHtmlService.getMHtml(encodedUrl.value)
 
 
 </script>

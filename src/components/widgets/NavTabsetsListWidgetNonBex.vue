@@ -172,7 +172,9 @@ const selectTS = (tabset: Tabset) => {
           router.push("/dynamicTs/" + tabset.id) :
           router.push("/tabsets/" + tabset.id)
       } else {
-        router.push("/sidepanel")
+        tabset.type === TabsetType.DYNAMIC ?
+          router.push("/sidepanel/dynamicTs/" + tabset.id) :
+          router.push("/sidepanel")
       }
     })
 }
