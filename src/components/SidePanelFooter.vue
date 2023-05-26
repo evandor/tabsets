@@ -1,33 +1,33 @@
 <template>
 
-  <q-footer elevated class="bg-grey-8 text-white q-pa-xs">
+  <q-footer class="lightgrey text-primary q-pa-xs">
     <div class="row fit">
       <div class="col-5">
         <q-btn icon="o_playlist_add"
                class="q-my-xs q-mx-xs"
                style="width:20px"
                :color="isActive('tabslist') ? 'secondary':'primary'"
-               size="9px"
+               size="8px"
                @click="toggleView('tabslist')">
-          <q-tooltip>List all open tabs in your browser</q-tooltip>
+          <q-tooltip class="tooltip">List all open tabs in your browser</q-tooltip>
         </q-btn>
         <q-btn icon="o_label"
                v-if="usePermissionsStore().hasFeature(FeatureIdent.TAGS)"
                class="q-my-xs q-mx-xs"
                style="width:20px"
                :color="isActive('tagslist') ? 'secondary':'primary'"
-               size="9px"
+               size="8px"
                @click="toggleView('tagslist')">
-          <q-tooltip>List of all tags sorted by prevalence</q-tooltip>
+          <q-tooltip class="tooltip">List of all tags sorted by prevalence</q-tooltip>
         </q-btn>
         <q-btn icon="o_dns"
                v-if="usePermissionsStore().hasFeature(FeatureIdent.GROUP_BY_DOMAIN)"
                class="q-my-xs q-mx-xs"
                style="width:20px"
                :color="isActive('byDomainList') ? 'secondary':'primary'"
-               size="9px"
+               size="8px"
                @click="toggleView('byDomainList')">
-          <q-tooltip>List all your tabs URLs by domain</q-tooltip>
+          <q-tooltip class="tooltip">List all your tabs URLs by domain</q-tooltip>
         </q-btn>
       </div>
       <div class="col-7 text-right">
@@ -35,33 +35,33 @@
                class="q-my-xs q-mx-none"
                style="width:20px"
                color="primary"
-               :outline="useUiStore().listDetailLevel !== ListDetailLevel.SMALL" size="9px"
+               :outline="useUiStore().listDetailLevel !== ListDetailLevel.SMALL" size="8px"
                @click="setListDetailLevel(ListDetailLevel.SMALL)">
-          <q-tooltip>Show only title and url</q-tooltip>
+          <q-tooltip class="tooltip">Show only title and url</q-tooltip>
         </q-btn>
         <q-btn icon="crop_16_9"
                class="q-my-xs q-mx-none"
                style="width:20px"
                color="primary"
-               :outline="useUiStore().listDetailLevel !== ListDetailLevel.MEDIUM" size="9px"
+               :outline="useUiStore().listDetailLevel !== ListDetailLevel.MEDIUM" size="8px"
                @click="setListDetailLevel(ListDetailLevel.MEDIUM)">
-          <q-tooltip>Show image, title and url</q-tooltip>
+          <q-tooltip class="tooltip">Show image, title and url</q-tooltip>
         </q-btn>
         <q-btn icon="crop_portrait"
                class="q-my-xs q-mx-none"
                style="width:20px"
                color="primary"
-               :outline="useUiStore().listDetailLevel !== ListDetailLevel.LARGE" size="9px"
+               :outline="useUiStore().listDetailLevel !== ListDetailLevel.LARGE" size="8px"
                @click="setListDetailLevel(ListDetailLevel.LARGE)">
-          <q-tooltip>All available info</q-tooltip>
+          <q-tooltip class="tooltip">All available info</q-tooltip>
         </q-btn>
 
         <q-btn icon="o_settings"
                class="q-my-xs q-mx-sm"
                color="primary"
-               size="9px"
+               size="8px"
                @click="openOptionsPage()">
-          <q-tooltip>Settings Page</q-tooltip>
+          <q-tooltip class="tooltip" anchor="top left" self="bottom left">Open Settings</q-tooltip>
         </q-btn>
       </div>
     </div>

@@ -18,10 +18,21 @@
 import {ref, watchEffect} from "vue";
 import SidePanelFooter from "components/SidePanelFooter.vue";
 import {useTabsStore} from "stores/tabsStore";
+import {useMeta} from "quasar";
 
 const tabsStore = useTabsStore()
 
 const location = ref('')
+
+
+useMeta(() => {
+  console.log("using meta...")
+  return {
+    // @ts-ignore
+    title: 'Tabsets Extension...' //+ appVersion
+  }
+})
+
 
 watchEffect(() => location.value = window.location.href.split('/www/')[1] || window.location.href)
 

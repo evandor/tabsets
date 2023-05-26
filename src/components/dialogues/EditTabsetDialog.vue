@@ -86,7 +86,7 @@ const newTabsetDialogWarning = () => {
     "Tabset already exists" : ""
 }
 
-const newTabsetNameIsValid = computed(() => newTabsetName.value.length <= 32 && !STRIP_CHARS_IN_USER_INPUT.test(newTabsetName.value))
+const newTabsetNameIsValid = computed(() => newTabsetName.value?.length <= 32 && !STRIP_CHARS_IN_USER_INPUT.test(newTabsetName.value))
 
 
 </script>

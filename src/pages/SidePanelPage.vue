@@ -363,25 +363,6 @@ const toggleSearch = () => searching.value = !searching.value
 <style scoped>
 
 
-.fullimageBackground {
-  height: 100vh;
-  width: 100%;
-  align-items: center;
-  justify-content: center;
-}
-
-.fullimageBackground::before {
-  background-image: url('src/assets/bg.jpg');
-  background-size: cover;
-  content: "";
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  opacity: 0.3;
-}
-
 .delayed-appear-enter-active {
   transition: all 3s ease-in;
   transition-delay: 3s

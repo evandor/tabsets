@@ -10,6 +10,7 @@
         <q-input v-model="newTabsetName"
                  class="q-mb-md q-pb-none"
                  dense autofocus
+                 v-close-popup
                  error-message="Please do not use special Characters, maximum length is 32"
                  :error="!newTabsetNameIsValid"
                  data-testid="newTabsetName"
@@ -115,6 +116,8 @@ const createNewTabset = () => {
       }
       if (!props.fromPanel) {
         router.push("/tabsets/" + res.result.tabsetId + "?first=" + props.firstTabset)
+      } else {
+        router.push("/sidepanel")
       }
     })
 }

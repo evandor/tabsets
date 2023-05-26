@@ -78,6 +78,10 @@ IndexedDbPersistenceService.init(INDEX_DB_NAME)
           .then(() => {
             MHtmlService.init()
             ChromeApi.init()
+            // @ts-ignore
+            if (tabsStore.tabsets.size === 0 && chrome.sidePanel) {
+              router.push("/sidepanel/welcome")
+            }
           })
       })
   })
