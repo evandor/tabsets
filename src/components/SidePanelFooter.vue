@@ -61,7 +61,7 @@
                color="primary"
                size="9px"
                @click="openOptionsPage()">
-          <q-tooltip>Open Settings Page</q-tooltip>
+          <q-tooltip>Settings Page</q-tooltip>
         </q-btn>
       </div>
     </div>
@@ -101,11 +101,12 @@ watchEffect(() => {
 })
 
 const openOptionsPage = () => {
-  if (chrome.runtime.openOptionsPage) {
-    chrome.runtime.openOptionsPage();
-  } else {
-    window.open(chrome.runtime.getURL('www/options.html'));
-  }
+  // if (chrome.runtime.openOptionsPage) {
+  //   chrome.runtime.openOptionsPage();
+  // } else {
+  //   window.open(chrome.runtime.getURL('www/options.html'));
+  // }
+  window.open(chrome.runtime.getURL('www/index.html#/mainpanel/settings'));
 }
 
 const toggleView = (ident: string) => {

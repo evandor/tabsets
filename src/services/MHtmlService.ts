@@ -1,7 +1,9 @@
 import {MHtml} from "src/models/MHtml";
-import _ from "lodash"
 import {Tab} from "src/models/Tab";
 import {useDB} from "src/services/usePersistenceService";
+import {useTabsStore} from "stores/tabsStore";
+import _ from "lodash"
+import {useTabsetService} from "src/services/TabsetService2";
 
 const {db} = useDB()
 
@@ -33,6 +35,16 @@ class MHtmlService {
 
   getMHtmlInline(encodedUrl: string) {
     return db.getMHtmlInline(encodedUrl)
+  }
+
+  deleteMHtml(tabId: string, mhtmlId: string) {
+    const tab = useTabsStore().getTab(tabId)
+    if (tab) {
+      tab.mhtmls = _.filter(tab.mhtmls, (e:string) => e !== mhtmlId)
+      // assuming tab is in current tabset (TODO)
+      useTabsetService().saveCurrentTabset()
+    }
+    return db.deleteMHtml(mhtmlId)
   }
 }
 

@@ -2,8 +2,8 @@
   <div class="col-3 text-caption text-bold">created</div>
   <div class="col-6 text-right text-caption">{{ date.formatDate(mhtml?.created, 'DD.MM.YYYY HH:mm') }}</div>
   <div class="col-3 text-caption">
-    <q-icon name="o_open_in_new" class="q-ml-md cursor-pointer" @click="openMhtml" />
-    <q-icon name="o_delete" class="q-ml-md cursor-pointer" />
+    <q-icon name="o_open_in_new" class="q-ml-md cursor-pointer" @click="openMhtml"/>
+    <q-icon name="o_delete" class="q-ml-md cursor-pointer" @click="deleteMhtml"/>
   </div>
 </template>
 
@@ -15,10 +15,8 @@ import {date} from "quasar";
 const mhtml = ref<any>()
 
 const props = defineProps({
-  mhtmlId: {
-    type: String,
-    required: true
-  }
+  mhtmlId: {type: String, required: true},
+  tabId: {type: String, required: true}
 })
 
 MHtmlService.getMHtml(props.mhtmlId)
@@ -26,8 +24,7 @@ MHtmlService.getMHtml(props.mhtmlId)
     mhtml.value = res
   })
 
-const openMhtml = () => {
-  console.log("open mthml", props.mhtmlId)
-  window.open(chrome.runtime.getURL('www/index.html#/mainpanel/mhtml/' + props.mhtmlId));
-}
+const openMhtml = () => window.open(chrome.runtime.getURL('www/index.html#/mainpanel/mhtml/' + props.mhtmlId));
+const deleteMhtml = () => MHtmlService.deleteMHtml(props.tabId, props.mhtmlId)
+
 </script>

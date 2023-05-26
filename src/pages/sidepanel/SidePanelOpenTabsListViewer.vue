@@ -57,6 +57,9 @@
     <q-input
       class="q-ma-md" dense
       style="border: 1px dotted grey; border-radius: 5px;" type="textarea" v-model="dragTarget"/>
+    <div v-if="linkToNewNote.length > 0">
+      <div class="cursor-pointer" @click="openURL(linkToNewNote)">open</div>
+    </div>
 
     <InfoMessageWidget
       v-if="tabsStore.currentTabsetId && unassignedTabs().length > 0 && !userCanSelect"
@@ -139,7 +142,7 @@ import {onMounted, ref, watchEffect} from "vue"
 import OpenTabCard from "components/layouts/OpenTabCard.vue";
 import {VueDraggableNext} from 'vue-draggable-next'
 import TabsetService from "src/services/TabsetService";
-import {uid, useQuasar} from "quasar";
+import {date, openURL, uid, useQuasar} from "quasar";
 import AddUrlDialog from "components/dialogues/AddUrlDialog.vue";
 import {useUtils} from "src/services/Utils"
 import {useTabsetService} from "src/services/TabsetService2";
@@ -163,6 +166,7 @@ const useSelection = ref(false)
 const invert = ref(false)
 const dragTarget = ref('')
 const userCanSelect = ref(false)
+const linkToNewNote = ref('')
 
 const tabSelection = ref<Set<string>>(new Set<string>())
 
@@ -197,16 +201,33 @@ watchEffect(() => {
     return
   }
   try {
+    linkToNewNote.value = ''
     const url = new URL(dragTarget.value)
     $q.dialog({component: AddUrlDialog, componentProps: {providedUrl: url.toString()}})
   } catch (err) {
     // not an url, create a "fake" url and save as note
     if (tabsStore.getCurrentTabset) {
       const id = uid()
-      const chromeTab = ChromeApi.createChromeTabObject("a new note", "chrome-extension://agphkldbejefifhmgpgmiphlnijklnol/www/index.html#/notes/" + id, "")
+      const url = chrome.runtime.getURL('www/index.html') + "#/mainpanel/notes/" + id
+      const chromeTab = ChromeApi.createChromeTabObject("note " + date.formatDate(new Date().getTime(), 'DD.MM.YYYY HH:mm'), url,
+        "https://img.icons8.com/?size=512&id=86843&format=png")
       const tab = new Tab(id, chromeTab)
       tab.description = dragTarget.value.trim()
-      useCommandExecutor().executeFromUi(new AddTabToTabsetCommand(tab, tabsStore.getCurrentTabset))
+
+      if (inBexMode()) {
+        chrome.tabs.query({active: true, lastFocusedWindow: true}, (openTabs) => {
+          if (openTabs.length > 0) {
+            tab.description = openTabs[0].url + "\n\n" + tab.description
+          }
+          // @ts-ignore
+          useCommandExecutor().executeFromUi(new AddTabToTabsetCommand(tab, tabsStore.getCurrentTabset))
+            //.then(() => router.push('/mainpanel/notes/' + ))
+          linkToNewNote.value = url
+        })
+      } else {
+        useCommandExecutor().executeFromUi(new AddTabToTabsetCommand(tab, tabsStore.getCurrentTabset))
+      }
+
     } else {
       console.log("no current tabset")
     }

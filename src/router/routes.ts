@@ -36,11 +36,6 @@ const routes: RouteRecordRaw[] = [
     children: [{ path: '', component: () => import('pages/sidepanel/SidePanelTabDetails.vue') }],
   },
   {
-    path: '/sidepanel/features/:feature',
-    component: () => import('layouts/PlainWithRightDrawerLayout.vue'),
-    children: [{ path: '', component: () => import('pages/FeaturesPage.vue') }],
-  },
-  {
     path: '/sidepanel/tabslist',
     component: () => import('layouts/SidePanelLayout.vue'),
     children: [{ path: '', component: () => import('pages/sidepanel/SidePanelOpenTabsListViewer.vue') }],
@@ -69,6 +64,16 @@ const routes: RouteRecordRaw[] = [
     path: '/mainpanel/settings',
     component: () => import('layouts/PlainWithRightDrawerLayout.vue'),
     children: [{ path: '', component: () => import('pages/SettingsPage.vue') }],
+  },
+  {
+    path: '/mainpanel/features/:feature',
+    component: () => import('layouts/PlainWithRightDrawerLayout.vue'),
+    children: [{ path: '', component: () => import('pages/FeaturesPage.vue') }],
+  },
+  {
+    path: '/mainpanel/notes/:noteId',
+    component: () => import('layouts/PlainLayout.vue'),
+    children: [{ path: '', component: () => import('pages/mainpanel/MainPanelNotePage.vue') }],
   },
   {
     path: '/mainpanel/mhtml/:encodedUrl',

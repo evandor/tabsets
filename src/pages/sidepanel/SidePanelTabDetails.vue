@@ -156,7 +156,7 @@
       <q-card>
         <q-card-section>
           <div class="row q-mx-sm q-mt-xs" v-for="mhtml in useUiStore().getSelectedTab?.mhtmls">
-            <MHtmlViewHelper :mhtmlId="mhtml" />
+            <MHtmlViewHelper :mhtmlId="mhtml" :tabId="useUiStore().getSelectedTab?.id || 'unknown'"/>
           </div>
         </q-card-section>
       </q-card>

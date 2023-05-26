@@ -40,6 +40,7 @@ import {ref, watchEffect} from "vue";
 import {useRoute} from "vue-router";
 import {date} from "quasar"
 import MHtmlService from "src/services/MHtmlService";
+import {useUiStore} from "stores/uiStore";
 
 const route = useRoute()
 
@@ -50,17 +51,13 @@ const created = ref('')
 
 watchEffect(() => {
   encodedUrl.value = route.params.encodedUrl as string
-  if (encodedUrl) {
+  if (encodedUrl && useUiStore().dbReady) {
     MHtmlService.getMHtmlInline(encodedUrl.value)
-    //IndexedDbPersistenceService.getMHtmlInline(encodedUrl.value)
       .then((res: object) => {
         window.document?.getElementById('mhtmlframe')?.setAttribute("style", "overflow:hidden;height:" + (window.innerHeight - 50) + "px;width:100%;border:0px");
         window.document?.getElementById('mhtmlframe')?.setAttribute("srcdoc", res['html' as keyof object]);
         title.value = res['title' as keyof object]
         created.value = res['created' as keyof object]
-        // navigator.storage.estimate().then(({usage, quota}) => {
-        //   console.log(`Using ${usage} out of ${quota} bytes.`);
-        // });
       })
   }
 })

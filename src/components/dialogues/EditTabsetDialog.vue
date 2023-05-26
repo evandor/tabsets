@@ -20,7 +20,7 @@
       <q-card-actions align="right" class="text-primary">
         <q-btn flat label="Cancel" @click="onDialogCancel"/>
         <q-btn flat label="Rename Tabset"
-               :disable="newTabsetName.trim().length === 0 || newTabsetName.trim() === props.tabsetName || newTabsetDialogWarning() !== ''"
+               :disable="newTabsetName?.trim().length === 0 || newTabsetName?.trim() === props.tabsetName || newTabsetDialogWarning() !== ''"
                v-close-popup
                @click="updateTabset()"/>
       </q-card-actions>
@@ -56,6 +56,10 @@ const props = defineProps({
   tabsetName: {
     type: String,
     required: true
+  },
+  fromPanel: {
+    type: Boolean,
+    default: false
   }
 })
 

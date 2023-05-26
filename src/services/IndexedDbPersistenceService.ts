@@ -1,7 +1,7 @@
 import {IDBPDatabase, openDB} from "idb";
 import {useTabsStore} from "src/stores/tabsStore";
 import _ from "lodash";
-import {INDEX_DB_NAME, INDEX_DB_VERSION, EXPIRE_DATA_PERIOD_IN_MINUTES} from "boot/constants";
+import {INDEX_DB_VERSION, EXPIRE_DATA_PERIOD_IN_MINUTES} from "boot/constants";
 import PersistenceService from "src/services/PersistenceService";
 import {Tabset, TabsetStatus} from "src/models/Tabset";
 import mhtml2html from 'mhtml2html';
@@ -10,17 +10,19 @@ import {Space} from "src/models/Space";
 import {MHtml} from "src/models/MHtml";
 import {Tab} from "src/models/Tab";
 import {SearchDoc} from "src/models/SearchDoc";
-import {RequestInfo} from "src/models/RequestInfo";
 import {MetaLink} from "src/models/MetaLink";
 import {StatsEntry} from "src/models/StatsEntry";
 import {uid} from "quasar";
 import {Notification, NotificationStatus} from "src/models/Notification";
 import {StaticSuggestionIdent, Suggestion, SuggestionState} from "src/models/Suggestion";
+import {useUiStore} from "stores/uiStore";
+
 class IndexedDbPersistenceService implements PersistenceService {
   private db: IDBPDatabase = null as unknown as IDBPDatabase
   async init(dbName: string) {
     console.log("initializing indexeddb database", dbName)
     this.db = await this.initDatabase(dbName)
+    useUiStore().dbReady = true
   }
 
   async loadTabsets(): Promise<any> {
@@ -325,6 +327,10 @@ class IndexedDbPersistenceService implements PersistenceService {
   async getMHtml(id: string): Promise<any> {
     console.log("getting mhtml for", id)
     return this.db.get('mhtml', id)
+  }
+
+  async deleteMHtml(id: string):Promise<void> {
+    return this.db.delete('mhtml', id)
   }
 
   async getMHtmlContent(url: string): Promise<any> {

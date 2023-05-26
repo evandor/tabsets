@@ -155,8 +155,8 @@ const iconColor2 = (f: AppFeature) => {
 
 const showFeature2 = (f: AppFeature) => {
   selected2.value = f
-  route.path.startsWith('/sidepanel/') ?
-    router.push("/sidepanel/features/" + f.ident.toLowerCase()) :
+  route.path.startsWith('/mainpanel/') ?
+    router.push("/mainpanel/features/" + f.ident.toLowerCase()) :
     router.push("/features/" + f.ident.toLowerCase())
 }
 

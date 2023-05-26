@@ -82,6 +82,9 @@ export const useUiStore = defineStore('ui', () => {
   const entityType = ref<string | undefined>(undefined)
   const selectedTabsetId = ref<string | undefined>(undefined)
 
+  // system management
+  const dbReady = ref<boolean>(false)
+
   // watch(leftDrawer.value, (val: Object) => {
   //   $q.LocalStorage.set("ui.leftDrawer", val)
   // }, {deep: true})
@@ -288,6 +291,7 @@ export const useUiStore = defineStore('ui', () => {
     tabsFilter,
     setListDetailLevel,
     listDetailLevel,
-    listDetailLevelGreaterEqual
+    listDetailLevelGreaterEqual,
+    dbReady
   }
 })

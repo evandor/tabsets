@@ -3,7 +3,6 @@
   <span class="cursor-pointer">
     <q-badge
       class="q-mr-md q-mt-none q-pt-sm q-pb-sm q-px-sm"
-
       color="white" text-color="primary" :label="tabsetLabel()">
     </q-badge>
 
@@ -15,11 +14,15 @@
         <q-item disable v-if="tabsetsOptions.length > 1 && !usePermissionsStore().hasFeature(FeatureIdent.SPACES)">
           Switch to Tabset:
         </q-item>
-<!--        <q-separator v-if="tabsetsOptions.length > 1"/>-->
+        <!--        <q-separator v-if="tabsetsOptions.length > 1"/>-->
         <q-item v-for="ts in tabsetsOptions"
                 :disable="ts.id === tabsStore.currentTabsetId"
                 clickable v-close-popup @click="switchTabset(ts)">
           <q-item-section class="q-ml-sm">{{ ts.label }}</q-item-section>
+        </q-item>
+        <q-separator/>
+        <q-item clickable v-close-popup @click="openEditTabsetDialog()">
+          <q-item-section>Edit Tabset Name</q-item-section>
         </q-item>
         <q-separator/>
         <q-item clickable v-close-popup @click="openNewTabsetDialog()">
@@ -46,6 +49,7 @@ import {FeatureIdent} from "src/models/AppFeature";
 import {Tabset, TabsetStatus, TabsetType} from "src/models/Tabset";
 import {useSpacesStore} from "src/stores/spacesStore";
 import {ExecutionResult} from "src/domain/ExecutionResult";
+import EditTabsetDialog from "components/dialogues/EditTabsetDialog.vue";
 
 const tabsStore = useTabsStore()
 const spacesStore = useSpacesStore()
@@ -83,11 +87,21 @@ watchEffect(() => {
   })
 })
 
-const tabsetLabel = () => !tabsStore.currentTabsetName  ? 'no tabset selected' : tabsStore.currentTabsetName
+const tabsetLabel = () => !tabsStore.currentTabsetName ? 'no tabset selected' : tabsStore.currentTabsetName
 
 const openNewTabsetDialog = () => {
   $q.dialog({
     component: NewTabsetDialog,
+    componentProps: {
+      tabsetId: tabsStore.currentTabsetId,
+      fromPanel: props.fromPanel
+    }
+  })
+}
+
+const openEditTabsetDialog = () => {
+  $q.dialog({
+    component: EditTabsetDialog,
     componentProps: {
       tabsetId: tabsStore.currentTabsetId,
       fromPanel: props.fromPanel

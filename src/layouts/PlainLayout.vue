@@ -4,9 +4,9 @@
     <q-page-container>
       <router-view/>
     </q-page-container>
-    <q-footer elevated>
-      ***
-    </q-footer>
+<!--    <q-footer elevated>-->
+<!--      ***-->
+<!--    </q-footer>-->
   </q-layout>
 </template>
 <script setup lang="ts">
