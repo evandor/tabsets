@@ -31,23 +31,17 @@
     <!-- meta -->
     <q-item-label caption>
       <div class="row q-mx-sm q-mt-none">
-        <div class="col-5 text-caption text-bold">created</div>
-        <div class="col-7 text-right text-caption">{{ formatDate(props.tab.created) }}</div>
+        <div class="col-4 text-caption text-bold">created</div>
+        <div class="col-8 text-right text-caption">{{ formatDate(props.tab.created) }}</div>
       </div>
       <div class="row q-mx-sm q-mt-none">
-        <div class="col-5 text-caption text-bold">last active</div>
-        <div class="col-7 text-right text-caption">{{ formatDate(props.tab.lastActive) }}</div>
+        <div class="col-4 text-caption text-bold">last active</div>
+        <div class="col-8 text-right text-caption">{{ formatDate(props.tab.lastActive) }}</div>
       </div>
       <div class="row q-mx-sm q-mt-none">
-        <div class="col-5 text-caption text-bold">#opened</div>
-        <div class="col-7 text-right text-caption">{{ props.tab.activatedCount }}x</div>
+        <div class="col-4 text-caption text-bold">#opened</div>
+        <div class="col-8 text-right text-caption">{{ props.tab.activatedCount }}x</div>
       </div>
-    </q-item-label>
-
-    <!-- note -->
-    <q-item-label v-if="useUiStore().listDetailLevelGreaterEqual(ListDetailLevel.LARGE) && props['tab']['note']" class="text-grey-10" text-subtitle1>
-      <q-icon color="blue-10" name="edit_note"/>
-      {{ props['tab']['note'] }}
     </q-item-label>
   </q-item-section>
 

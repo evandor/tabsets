@@ -15,7 +15,7 @@ import {Suggestion, SuggestionType} from "src/models/Suggestion";
 import {useSuggestionsStore} from "src/stores/suggestionsStore";
 import {FeatureIdent} from "src/models/AppFeature";
 import {Extractor, Extractors, ExtractorType} from "src/config/Extractors";
-import sanitizeHtml from 'sanitize-html';
+import {useUtils} from "src/services/Utils";
 
 const {
   saveCurrentTabset,
@@ -27,8 +27,11 @@ const {
   saveThumbnailFor
 } = useTabsetService()
 
+const {sanitize} = useUtils()
+
+
 function setCurrentTab() {
-  chrome.tabs.query({ active: true, lastFocusedWindow: true}, (tabs) => {
+  chrome.tabs.query({active: true, lastFocusedWindow: true}, (tabs) => {
     if (tabs && tabs[0]) {
       //console.log("setting current tab", tabs)
       useTabsStore().setCurrentChromeTab(tabs[0] as unknown as chrome.tabs.Tab)
@@ -68,7 +71,9 @@ class ChromeListeners {
 
       chrome.runtime.onMessage.addListener((request, sender, sendResponse) => this.onMessage(request, sender, sendResponse))
 
+      // @ts-ignore
       if (chrome.sidePanel) {
+        // @ts-ignore
         chrome.sidePanel
           .setPanelBehavior({openPanelOnActionClick: true})
           .catch((error: any) => console.error(error));
@@ -417,13 +422,7 @@ class ChromeListeners {
                 break;
             }
             if (candidate.length > 0) {
-              request.metas[e.target.toString()] = sanitizeHtml(candidate, {
-                allowedTags: sanitizeHtml.defaults.allowedTags.concat(['img']),
-                allowedAttributes: sanitizeHtml.defaults.allowedAttributes = {
-                  a: ['href', 'name', 'target'],
-                  img: ['src', 'srcset', 'alt', 'title', 'width', 'height', 'loading']
-                }
-              })
+              request.metas[e.target.toString()] = sanitize(candidate)
             }
           }
         })

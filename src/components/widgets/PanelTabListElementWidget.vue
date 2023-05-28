@@ -28,8 +28,10 @@
         <div class="q-pr-sm cursor-pointer ellipsis">
           <span v-if="props.header" class="text-bold">{{ props.header }}<br></span>
           {{ nameOrTitle(props.tab) }}
-          <q-popup-edit :model-value="dynamicNameOrTitleModel(tab)" v-slot="scope"
-                        @update:model-value="val => setCustomTitle( tab, val)">
+          <q-popup-edit
+            v-if="props.tab.extension !== UrlExtension.NOTE"
+            :model-value="dynamicNameOrTitleModel(tab)" v-slot="scope"
+            @update:model-value="val => setCustomTitle( tab, val)">
             <q-input v-model="scope.value" dense autofocus counter @keyup.enter="scope.set"/>
           </q-popup-edit>
         </div>
@@ -57,15 +59,11 @@
               <q-icon name="arrow_right" size="16px"/>
            </span>
 
-          <short-url :url="props.tab.chromeTab?.url" :hostname-only="true"/>
+          <span v-if="props.tab.extension === UrlExtension.NOTE"
+                @click="NavigationService.openOrCreateTab(props.tab.chromeTab?.url)">open Note</span>
+          <short-url v-else :url="props.tab.chromeTab?.url" :hostname-only="true"/>
 
           <q-icon class="q-ml-xs" name="open_in_new"/>
-          <!--          <q-icon v-if="showButtonsProp"-->
-          <!--                  class="q-ml-md" name="content_copy"-->
-          <!--                  @click.stop="copyToClipboard(props.tab.chromeTab?.url)">-->
-          <!--            <q-tooltip class="tooltip">Copy URL to clipboard</q-tooltip>-->
-          <!--          </q-icon>-->
-          <!--          <q-icon v-else class="q-ml-md"/>-->
         </div>
         <div class="col text-right q-mx-sm cursor-pointer"
              @mouseover="hoveredTab = tab.id"
@@ -97,7 +95,7 @@
 
 <script setup lang="ts">
 import NavigationService from "src/services/NavigationService";
-import {Tab} from "src/models/Tab";
+import {Tab, UrlExtension} from "src/models/Tab";
 import TabsetService from "src/services/TabsetService";
 import {useNotificationsStore} from "src/stores/notificationsStore";
 import {onMounted, ref, watchEffect} from "vue";

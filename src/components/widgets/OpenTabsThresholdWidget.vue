@@ -1,7 +1,7 @@
 <template>
 
-  <div class="cursor-pointer text-right" style="min-width:160px">
-    <q-badge v-if="showThresholdBar()"
+  <span class="cursor-pointer text-right" :style="props.showLabel ? 'min-width:160px' : 'max-width:30px'">
+    <q-badge v-if="showThresholdBar() && props.showLabel"
              :multi-line="false"
              class="q-mr-sm"
              color="primary" text-color="white" :label="thresholdLabel()">
@@ -9,21 +9,20 @@
 
     <q-circular-progress
       v-if="showThresholdBar()"
-      show-value
+      :show-value="props.showLabel"
       reverse
       :value="openTabsCountRatio2"
-      size="20px"
+      :size="props.inSidePanel ? '22px':'20px'"
       :thickness="0.7"
       :style="thresholdStyle()"
-      track-color="grey-3"
-      class="q-mr-lg">
-
-
+      :track-color="props.inSidePanel? 'primary':'grey-3'"
+      class="q-ml-xs">
     </q-circular-progress>
-  </div>
+  </span>
   <q-menu :offset="[0, 15]">
     <q-list style="min-width: 200px">
-      <q-item clickable v-close-popup @click="showOpenTabs">
+      <q-item v-if="!props.inSidePanel"
+              clickable v-close-popup @click="showOpenTabs">
         <q-item-section>Show open tabs</q-item-section>
       </q-item>
       <q-separator/>
@@ -44,9 +43,9 @@
         <q-item-section>&bull; Backup and close current tabs...</q-item-section>
       </q-item>
       <q-item
-        :disable="tabsStore.tabsets?.size === 0"
+        :disable="tabsStore.tabs.length <= 1"
         clickable v-close-popup @click="TabsetService.closeAllTabs()">
-        <q-item-section>&bull; Close all other tabs</q-item-section>
+        <q-item-section>&bull; Close all other tabs ({{tabsStore.tabs.length - 1}})</q-item-section>
       </q-item>
       <q-separator/>
       <q-item disable v-if="showSpecialTabsets()">
@@ -62,8 +61,8 @@
               @click="startSession">
         <q-item-section>&bull; Start a new Session...</q-item-section>
       </q-item>
-      <q-separator v-if="usePermissionsStore().hasFeature(FeatureIdent.SESSIONS)"/>
-      <q-item v-if="usePermissionsStore().hasFeature(FeatureIdent.SESSIONS)"
+      <q-separator v-if="usePermissionsStore().hasFeature(FeatureIdent.SESSIONS) && !props.inSidePanel"/>
+      <q-item v-if="usePermissionsStore().hasFeature(FeatureIdent.SESSIONS) && !props.inSidePanel"
               clickable v-close-popup @click="router.push('/settings')">
         <q-item-section>Change Settings</q-item-section>
       </q-item>
@@ -101,6 +100,11 @@ const trackedTabsCount = ref(0)
 const existingSession = ref(false)
 
 const {inBexMode} = useUtils()
+
+const props = defineProps({
+  showLabel: {type: Boolean, default: true},
+  inSidePanel: {type: Boolean, default: false}
+})
 
 if (!inBexMode()) {
   TabsetService.trackedTabsCount().then((res) => trackedTabsCount.value = res)

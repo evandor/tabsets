@@ -50,7 +50,7 @@ import {useQuasar} from "quasar";
 import _ from "lodash"
 import {useTabsStore} from "src/stores/tabsStore";
 import {useUiService} from "src/services/useUiService";
-import {DrawerTabs, LeftDrawerState, useUiStore} from "src/stores/uiStore";
+import {DrawerTabs, useUiStore} from "src/stores/uiStore";
 import {useTabsetService} from "src/services/TabsetService2";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {CreateTabFromOpenTabsCommand} from "src/domain/commands/CreateTabFromOpenTabs";
@@ -98,33 +98,33 @@ const handleDragAndDrop = (event: any) => {
   console.log("event", event)
   const {moved, added} = event
   if (moved) {
-    console.log('d&d tabs moved', moved.element.id, moved.newIndex, props.group)
+    console.log('d&d tabs moved', moved.element.id, moved.newIndex)
     let useIndex = moved.newIndex
-    switch (props.group) {
-      case 'otherTabs':
-        // @ts-ignore
-        const unpinnedNoGroup: Tab[] = _.filter(tabsStore.getCurrentTabs, (t: Tab) => !t.chromeTab.pinned && t.chromeTab.groupId === -1)
-        if (unpinnedNoGroup.length > 0) {
-          useIndex = adjustIndex(moved, unpinnedNoGroup);
-        }
-        break;
-      case 'pinnedTabs':
-        const filteredTabs: Tab[] = _.filter(tabsStore.getCurrentTabs, (t: Tab) => t.chromeTab.pinned)
-        if (filteredTabs.length > 0) {
-          useIndex = adjustIndex(moved, filteredTabs);
-        }
-        break
-      default:
-        if (props.group.startsWith('groupedTabs_')) {
-          const groupId = props.group.split('_')[1]
-          // @ts-ignore
-          const filteredTabs: Tab[] = _.filter(tabsStore.getCurrentTabs, (t: Tab) => t.chromeTab.groupId === parseInt(groupId))
-          if (filteredTabs.length > 0) {
-            useIndex = adjustIndex(moved, filteredTabs);
-          }
-        }
-        break
-    }
+    // switch (props.group) {
+    //   case 'otherTabs':
+    //     // @ts-ignore
+    //     const unpinnedNoGroup: Tab[] = _.filter(tabsStore.getCurrentTabs, (t: Tab) => !t.chromeTab.pinned && t.chromeTab.groupId === -1)
+    //     if (unpinnedNoGroup.length > 0) {
+    //       useIndex = adjustIndex(moved, unpinnedNoGroup);
+    //     }
+    //     break;
+    //   case 'pinnedTabs':
+    //     const filteredTabs: Tab[] = _.filter(tabsStore.getCurrentTabs, (t: Tab) => t.chromeTab.pinned)
+    //     if (filteredTabs.length > 0) {
+    //       useIndex = adjustIndex(moved, filteredTabs);
+    //     }
+    //     break
+    //   default:
+    //     if (props.group.startsWith('groupedTabs_')) {
+    //       const groupId = props.group.split('_')[1]
+    //       // @ts-ignore
+    //       const filteredTabs: Tab[] = _.filter(tabsStore.getCurrentTabs, (t: Tab) => t.chromeTab.groupId === parseInt(groupId))
+    //       if (filteredTabs.length > 0) {
+    //         useIndex = adjustIndex(moved, filteredTabs);
+    //       }
+    //     }
+    //     break
+    // }
     TabsetService.moveTo(moved.element.id, useIndex)
   }
   if (added) {

@@ -3,6 +3,7 @@ export enum UrlExtension {
   RSS = "RSS",
   PDF = "PDF",
   IMAGE = "IMAGE",
+  NOTE = "NOTE",
   UNKNOWN = "UNKNOWN"
 }
 

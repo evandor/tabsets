@@ -1,15 +1,9 @@
 import {defineStore} from 'pinia';
 import {computed, ref, watch} from "vue";
-import {useRoute} from "vue-router";
+import {useRoute, useRouter} from "vue-router";
 import {Tab} from "src/models/Tab";
 import _ from "lodash"
 import {LocalStorage} from "quasar";
-
-
-export enum LeftDrawerState {
-  SMALL = "SMALL",
-  WIDE = "WIDE"
-}
 
 export enum DrawerTabs {
   BOOKMARKS = "bookmarks",
@@ -18,7 +12,6 @@ export enum DrawerTabs {
   GROUP_BY_HOST_TABS = "groupedByHostTabs",
   SAVED_TABS = "savedTabs",
   PDF_TABS = "pdfTabs",
-  //SIDEBAR = "sidebar",
   RSS = "rss",
   SCHEDULED = "scheduled",
   HISTORY = "history",
@@ -28,6 +21,21 @@ export enum DrawerTabs {
   NEW_TAB_URLS = "newTabUrls",
   TAGS_VIEWER = "tagsViewer",
   HELP = "help"
+}
+
+export class SidePanelView {
+  static readonly MAIN = new SidePanelView('main', '/sidepanel');
+  static readonly TABS_LIST = new SidePanelView('tabsList', '/sidepanel/tabslist');
+  static readonly TAGS_LIST = new SidePanelView('tagsList', '/sidepanel/tagslist');
+  static readonly TAG = new SidePanelView('tag', '/sidepanel/tags');
+  static readonly BY_DOMAIN_LIST = new SidePanelView('byDomainList', '/sidepanel/byDomainList');
+
+  private constructor(public readonly ident: string, public readonly path: any) {
+  }
+
+  toString() {
+    return this.ident;
+  }
 }
 
 export enum ListDetailLevel {
@@ -42,18 +50,31 @@ export class RightDrawer {
   }
 }
 
+export class SidePanel {
+  constructor(
+    public activeView: SidePanelView = SidePanelView.MAIN) {
+  }
+}
+
+
 export const useUiStore = defineStore('ui', () => {
 
+  const router = useRouter()
 
   const selectedTab = ref<Tab | undefined>(undefined)
   const tabsFilter = ref<string | undefined>(undefined)
   const selectedTag = ref<string | undefined>(undefined)
 
+  // RightDrawer
   let rightDrawer = ref<RightDrawer>(new RightDrawer())
   let rightDrawerOpen = ref(true)
   let leftDrawerOpen = ref(true)
 
-  const highlightTerm = ref<string|undefined>(undefined)
+  // SidePanel
+  let sidePanel = ref<SidePanel>(new SidePanel())
+
+
+  const highlightTerm = ref<string | undefined>(undefined)
 
   const newTabsetEmptyByDefault = ref<boolean>(LocalStorage.getItem('ui.newTabsetEmptyByDefault') as unknown as boolean || false)
   const tabBeingDragged = ref<string | undefined>(undefined)
@@ -84,10 +105,6 @@ export const useUiStore = defineStore('ui', () => {
 
   // system management
   const dbReady = ref<boolean>(false)
-
-  // watch(leftDrawer.value, (val: Object) => {
-  //   $q.LocalStorage.set("ui.leftDrawer", val)
-  // }, {deep: true})
 
   watch(rightDrawer.value, (val: Object) => {
     LocalStorage.set("ui.rightDrawer", val)
@@ -172,6 +189,11 @@ export const useUiStore = defineStore('ui', () => {
     rightDrawerOpen.value = true
   }
 
+  function sidePanelSetActiveView(view: SidePanelView) {
+    sidePanel.value.activeView = view
+    router.push(view.path)
+  }
+
   function setEntityType(type: string) {
     entityType.value = type
   }
@@ -179,6 +201,7 @@ export const useUiStore = defineStore('ui', () => {
   function setSelectedTabsetId(id: string) {
     selectedTabsetId.value = id
   }
+
   function setHighlightTerm(term: string | undefined) {
     highlightTerm.value = term
   }
@@ -189,7 +212,7 @@ export const useUiStore = defineStore('ui', () => {
 
   const listDetailLevelGreaterEqual = computed(() => {
     return (level: ListDetailLevel) => {
-      switch(listDetailLevel.value) {
+      switch (listDetailLevel.value) {
         case ListDetailLevel.LARGE:
           return true
         case ListDetailLevel.MEDIUM:
@@ -219,6 +242,10 @@ export const useUiStore = defineStore('ui', () => {
       }
       return couldBeShown
     }
+  })
+
+  const sidePanelIsActive = computed(() => {
+    return (view: SidePanelView) => sidePanel.value.activeView?.ident === view.ident
   })
 
   function setContentCount(val: number) {
@@ -292,6 +319,9 @@ export const useUiStore = defineStore('ui', () => {
     setListDetailLevel,
     listDetailLevel,
     listDetailLevelGreaterEqual,
-    dbReady
+    dbReady,
+    sidePanel,
+    sidePanelSetActiveView,
+    sidePanelIsActive
   }
 })

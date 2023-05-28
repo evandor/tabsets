@@ -2,35 +2,40 @@
 
   <q-footer class="lightgrey text-primary q-pa-xs">
     <div class="row fit">
-      <div class="col-5">
+      <div class="col-6">
         <q-btn icon="o_playlist_add"
-               class="q-my-xs q-mx-xs"
+               class="q-my-xs q-ml-xs"
                style="width:20px"
-               :color="isActive('tabslist') ? 'secondary':'primary'"
+               :color="isActive(SidePanelView.TABS_LIST) ? 'secondary':'primary'"
                size="8px"
-               @click="toggleView('tabslist')">
+               @click="toggleView(SidePanelView.TABS_LIST)">
           <q-tooltip class="tooltip">List all open tabs in your browser</q-tooltip>
         </q-btn>
         <q-btn icon="o_label"
-               v-if="usePermissionsStore().hasFeature(FeatureIdent.TAGS)"
-               class="q-my-xs q-mx-xs"
+               v-if="permissionsStore.hasFeature(FeatureIdent.TAGS)"
+               class="q-my-xs q-ml-xs"
                style="width:20px"
-               :color="isActive('tagslist') ? 'secondary':'primary'"
+               :color="isActive(SidePanelView.TAGS_LIST) ? 'secondary':'primary'"
                size="8px"
-               @click="toggleView('tagslist')">
+               @click="toggleView(SidePanelView.TAGS_LIST)">
           <q-tooltip class="tooltip">List of all tags sorted by prevalence</q-tooltip>
         </q-btn>
         <q-btn icon="o_dns"
-               v-if="usePermissionsStore().hasFeature(FeatureIdent.GROUP_BY_DOMAIN)"
-               class="q-my-xs q-mx-xs"
+               v-if="permissionsStore.hasFeature(FeatureIdent.GROUP_BY_DOMAIN)"
+               class="q-my-xs q-ml-xs"
                style="width:20px"
-               :color="isActive('byDomainList') ? 'secondary':'primary'"
+               :color="isActive(SidePanelView.BY_DOMAIN_LIST) ? 'secondary':'primary'"
                size="8px"
-               @click="toggleView('byDomainList')">
+               @click="toggleView(SidePanelView.BY_DOMAIN_LIST)">
           <q-tooltip class="tooltip">List all your tabs URLs by domain</q-tooltip>
         </q-btn>
+        <span class="q-ma-none" v-if="permissionsStore.hasFeature(FeatureIdent.OPENTABS_THRESHOLD) && tabsStore.tabsets.size > 0">
+          <OpenTabsThresholdWidget :showLabel="false" :in-side-panel="true">
+            <q-tooltip>{{tabsStore.tabs.length}} open tabs</q-tooltip>
+          </OpenTabsThresholdWidget>
+        </span>
       </div>
-      <div class="col-7 text-right">
+      <div class="col text-right">
         <q-btn icon="crop_7_5"
                class="q-my-xs q-mx-none"
                style="width:20px"
@@ -57,9 +62,10 @@
         </q-btn>
 
         <q-btn icon="o_settings"
-               class="q-my-xs q-mx-sm"
+               class="q-my-xs q-mx-xs"
                color="primary"
                size="8px"
+               style="width:20px"
                @click="openOptionsPage()">
           <q-tooltip class="tooltip" anchor="top left" self="bottom left">Open Settings</q-tooltip>
         </q-btn>
@@ -69,15 +75,17 @@
   </q-footer>
 </template>
 <script setup lang="ts">
-import {ListDetailLevel, useUiStore} from "stores/uiStore";
+import {ListDetailLevel, SidePanelView, useUiStore} from "stores/uiStore";
 import {useTabsStore} from "stores/tabsStore";
 import {Tab} from "src/models/Tab";
 import {ref, watchEffect} from "vue";
 import {useRouter} from "vue-router";
 import {usePermissionsStore} from "stores/permissionsStore";
 import {FeatureIdent} from "src/models/AppFeature";
+import OpenTabsThresholdWidget from "components/widgets/OpenTabsThresholdWidget.vue";
 
 const tabsStore = useTabsStore()
+const permissionsStore = usePermissionsStore()
 const router = useRouter()
 
 const activeView = ref<string | undefined>(undefined)
@@ -109,17 +117,17 @@ const openOptionsPage = () => {
   window.open(chrome.runtime.getURL('www/index.html#/mainpanel/settings'));
 }
 
-const toggleView = (ident: string) => {
-  if (isActive(ident)) {
-    activateView(undefined)
+const toggleView = (view: SidePanelView) => {
+  if (isActive(view)) {
+    activateView(SidePanelView.MAIN)
     router.push("/sidepanel")
   } else {
-    activateView(ident)
-    router.push("/sidepanel/" + ident)
+    activateView(view)
+    router.push("/sidepanel/" + view)
   }
 }
 
-const isActive = (ident: string) => activeView.value !== undefined && activeView.value === ident
-const activateView = (ident: string | undefined) => activeView.value = ident
+const isActive = (view: SidePanelView) => useUiStore().sidePanelIsActive(view)
+const activateView = (view: SidePanelView) => useUiStore().sidePanelSetActiveView(view)
 
 </script>

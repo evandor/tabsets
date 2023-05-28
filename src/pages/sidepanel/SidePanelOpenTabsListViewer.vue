@@ -6,7 +6,7 @@
         <q-toolbar-title>
           <div class="row">
             <div class="col-2">
-              <q-icon name="chevron_left" class="cursor-pointer" @click="router.push('/sidepanel/byDomainList')">
+              <q-icon name="chevron_left" class="cursor-pointer" @click="useUiStore().sidePanelSetActiveView(SidePanelView.MAIN)">
                 <q-tooltip>Back</q-tooltip>
               </q-icon>
             </div>
@@ -52,13 +52,6 @@
           tabsets)
         </div>
       </div>
-    </div>
-
-    <q-input
-      class="q-ma-md" dense
-      style="border: 1px dotted grey; border-radius: 5px;" type="textarea" v-model="dragTarget"/>
-    <div v-if="linkToNewNote.length > 0">
-      <div class="cursor-pointer" @click="openURL(linkToNewNote)">open</div>
     </div>
 
     <InfoMessageWidget
@@ -136,14 +129,13 @@
 <script setup lang="ts">
 import {useTabsStore} from "src/stores/tabsStore";
 import {Tab} from "src/models/Tab";
-import {Tabset, TabsetType} from "src/models/Tabset";
+import {Tabset} from "src/models/Tabset";
 import _ from "lodash";
-import {onMounted, ref, watchEffect} from "vue"
+import {ref, watchEffect} from "vue"
 import OpenTabCard from "components/layouts/OpenTabCard.vue";
 import {VueDraggableNext} from 'vue-draggable-next'
 import TabsetService from "src/services/TabsetService";
 import {date, openURL, uid, useQuasar} from "quasar";
-import AddUrlDialog from "components/dialogues/AddUrlDialog.vue";
 import {useUtils} from "src/services/Utils"
 import {useTabsetService} from "src/services/TabsetService2";
 import InfoMessageWidget from "components/widgets/InfoMessageWidget.vue";
@@ -151,9 +143,7 @@ import {useRoute, useRouter} from "vue-router";
 import {usePermissionsStore} from "src/stores/permissionsStore";
 import {FeatureIdent} from "src/models/AppFeature";
 import OpenTabDialog from "components/dialogues/OpenTabDialog.vue";
-import ChromeApi from "src/services/ChromeApi";
-import {useCommandExecutor} from "src/services/CommandExecutor";
-import {AddTabToTabsetCommand} from "src/domain/tabs/AddTabToTabset";
+import {SidePanelView, useUiStore} from "stores/uiStore";
 
 const {inBexMode} = useUtils()
 
@@ -164,9 +154,7 @@ const $q = useQuasar()
 
 const useSelection = ref(false)
 const invert = ref(false)
-const dragTarget = ref('')
 const userCanSelect = ref(false)
-const linkToNewNote = ref('')
 
 const tabSelection = ref<Set<string>>(new Set<string>())
 
@@ -191,48 +179,6 @@ function unassignedTabs(): Tab[] {
 
 watchEffect(() => {
   userCanSelect.value = false
-})
-
-//onMounted(() => userCanSelect.value = false)
-
-watchEffect(() => {
-  // console.log("d&d", dragTarget.value)
-  if (dragTarget.value.trim() === "") {
-    return
-  }
-  try {
-    linkToNewNote.value = ''
-    const url = new URL(dragTarget.value)
-    $q.dialog({component: AddUrlDialog, componentProps: {providedUrl: url.toString()}})
-  } catch (err) {
-    // not an url, create a "fake" url and save as note
-    if (tabsStore.getCurrentTabset) {
-      const id = uid()
-      const url = chrome.runtime.getURL('www/index.html') + "#/mainpanel/notes/" + id
-      const chromeTab = ChromeApi.createChromeTabObject("note " + date.formatDate(new Date().getTime(), 'DD.MM.YYYY HH:mm'), url,
-        "https://img.icons8.com/?size=512&id=86843&format=png")
-      const tab = new Tab(id, chromeTab)
-      tab.description = dragTarget.value.trim()
-
-      if (inBexMode()) {
-        chrome.tabs.query({active: true, lastFocusedWindow: true}, (openTabs) => {
-          if (openTabs.length > 0) {
-            tab.description = openTabs[0].url + "\n\n" + tab.description
-          }
-          // @ts-ignore
-          useCommandExecutor().executeFromUi(new AddTabToTabsetCommand(tab, tabsStore.getCurrentTabset))
-            //.then(() => router.push('/mainpanel/notes/' + ))
-          linkToNewNote.value = url
-        })
-      } else {
-        useCommandExecutor().executeFromUi(new AddTabToTabsetCommand(tab, tabsStore.getCurrentTabset))
-      }
-
-    } else {
-      console.log("no current tabset")
-    }
-  }
-  dragTarget.value = ''
 })
 
 const addTooltip = () => useSelection.value ?

@@ -5,7 +5,7 @@
         <q-toolbar-title>
           <div class="row">
             <div class="col-2">
-              <q-icon name="chevron_left" class="cursor-pointer" @click="router.push('/sidepanel')">
+              <q-icon name="chevron_left" class="cursor-pointer" @click="useUiStore().sidePanelSetActiveView(SidePanelView.MAIN)">
                 <q-tooltip>Back</q-tooltip>
               </q-icon>
             </div>
@@ -56,10 +56,10 @@
                   Turn into (dynamic) tabset
                 </q-item>
 
-                <q-separator/>
-                <q-item clickable v-close-popup>
-                  Delete Tag in all Tabs
-                </q-item>
+<!--                <q-separator/>-->
+<!--                <q-item clickable v-close-popup>-->
+<!--                  Delete Tag in all Tabs-->
+<!--                </q-item>-->
               </q-list>
             </q-menu>
           </q-item-section>
@@ -83,7 +83,7 @@ import {useNotificationHandler} from "src/services/ErrorHandler";
 import {useUtils} from "src/services/Utils";
 import _ from "lodash"
 import {Tab} from "src/models/Tab";
-import {useUiStore} from "stores/uiStore";
+import {SidePanelView, useUiStore} from "stores/uiStore";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {CreateDynamicTabset} from "src/domain/commands/CreateDynamicTabset";
 
@@ -117,7 +117,8 @@ const hoveredOver = (tag: string) => hoveredTag.value === tag
 const selectTag = (tag: string) => {
   console.log("selecting", tag)
   useUiStore().setSelectedTag(tag)
-  router.push("/sidepanel/tags")
+  // router.push("/sidepanel/tags")
+  useUiStore().sidePanelSetActiveView(SidePanelView.TAG)
 }
 
 const createDynamicTabsetFrom = (tag: string) =>

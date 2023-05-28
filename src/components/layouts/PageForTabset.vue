@@ -78,6 +78,9 @@ import {useTabsStore} from "src/stores/tabsStore";
 import {useRoute} from "vue-router";
 import {useTabsetService} from "src/services/TabsetService2";
 import sanitizeHtml from 'sanitize-html';
+import {useUtils} from "src/services/Utils";
+
+const {sanitize} = useUtils()
 
 const $q = useQuasar()
 const tabsStore = useTabsStore()
@@ -126,13 +129,7 @@ const add = (tab: Tab) => {
 }
 const saveWork = () => {
   if (tabsStore.getCurrentTabset) {
-    tabsStore.getCurrentTabset.page = sanitizeHtml(editor.value, {
-      allowedTags: sanitizeHtml.defaults.allowedTags.concat([ 'img' ]),
-      allowedAttributes: sanitizeHtml.defaults.allowedAttributes = {
-        a: [ 'href', 'name', 'target' ],
-        img: [ 'src', 'srcset', 'alt', 'title', 'width', 'height', 'loading' ]
-      }
-    })
+    tabsStore.getCurrentTabset.page = sanitize(editor.value)
     useTabsetService().saveCurrentTabset()
     $q.notify({
       message: 'Saved your text to local storage',

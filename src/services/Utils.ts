@@ -1,4 +1,5 @@
 import {formatDistance} from "date-fns";
+import sanitizeHtml from "sanitize-html";
 
 export function useUtils() {
 
@@ -20,11 +21,23 @@ export function useUtils() {
     }
   }
 
+  const sanitize = (input: string): string => {
+    return sanitizeHtml(input, {
+      allowedTags: sanitizeHtml.defaults.allowedTags.concat(['img']),
+      allowedAttributes: sanitizeHtml.defaults.allowedAttributes = {
+        a: ['href', 'name', 'target'],
+        img: ['src', 'srcset', 'alt', 'title', 'width', 'height', 'loading']
+      }
+    })
+  }
+
+
   return {
     formatDate,
     createDataTestIdentifier,
     inBexMode,
     normalize,
-    modeIs
+    modeIs,
+    sanitize
   }
 }

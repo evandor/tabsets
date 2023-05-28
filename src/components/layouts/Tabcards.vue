@@ -121,14 +121,6 @@ const handleDragAndDrop = (event: any) => {
 }
 
 const openOrShowOpenTabs = () => {
-  // const activeTab = uiService.leftDrawerActiveTab()
-  const drawerModel = uiService.drawerModel()
-  if (drawerModel.state === LeftDrawerState.SMALL || drawerModel.activeTab !== DrawerTabs.OPEN_TABS) {
-    uiService.leftDrawerSetActiveTab(DrawerTabs.OPEN_TABS)
-  } else {
-    uiService.leftDrawerAnimateLabel()
-  }
-  // useUiService().setWideDrawer()
 }
 
 const startDrag = (evt: any, tab: Tab) => {

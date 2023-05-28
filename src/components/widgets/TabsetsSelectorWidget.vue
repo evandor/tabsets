@@ -18,6 +18,10 @@
         <q-item v-for="ts in tabsetsOptions"
                 :disable="ts.id === tabsStore.currentTabsetId"
                 clickable v-close-popup @click="switchTabset(ts)">
+          <q-item-section v-if="ts.type === TabsetType.SESSION"
+                          class="q-ml-sm" style="max-width:20px">
+            <q-icon name="o_stop_circle" color="red"/>
+          </q-item-section>
           <q-item-section class="q-ml-sm">{{ ts.label }}</q-item-section>
         </q-item>
         <q-separator/>
@@ -57,6 +61,7 @@ const router = useRouter()
 const $q = useQuasar()
 
 const tabsetsOptions = ref<object[]>([])
+const dragTarget = ref('')
 
 const props = defineProps({
   fromPanel: {type: Boolean, default: false}
@@ -83,7 +88,7 @@ watchEffect(() => {
         return o.name.toLowerCase()
       }
     ]), (key) => {
-    return {id: key.id, label: key.name}
+    return {id: key.id, label: key.name, type: key.type}
   })
 })
 

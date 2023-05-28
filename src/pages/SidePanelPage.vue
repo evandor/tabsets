@@ -1,154 +1,163 @@
 <template>
 
   <q-page>
-<!--    <div class="fullimageBackground">-->
-      <q-splitter class="window-height" style="position:absolute;left:0;right:0"
-                  v-model="splitterModel"
-                  separator-class="bg-grey-1"
-                  horizontal
-                  unit="px"
-                  reverse>
+    <!--    <div class="fullimageBackground">-->
+    <q-splitter class="window-height" style="position:absolute;left:0;right:0"
+                v-model="splitterModel"
+                separator-class="bg-grey-1"
+                horizontal
+                unit="px"
+                reverse>
 
-        <template v-slot:before>
+      <template v-slot:before>
 
-          <!-- first time -->
-          <transition appear enter-active-class="fadeIn" style="transition-delay: 1.5s;transition: all 2s ease-in"
-                      v-if="tabsStore.tabsets.size === 0">
-            <div class="q-ma-none q-pa-md">
-              <div class="row">
-                <div class="col-12 text-h6">
-                  Welcome to Tabsets Extension
-                </div>
+        <!-- first time -->
+        <transition appear enter-active-class="fadeIn" style="transition-delay: 1.5s;transition: all 2s ease-in"
+                    v-if="tabsStore.tabsets.size === 0">
+          <div class="q-ma-none q-pa-md">
+            <div class="row">
+              <div class="col-12 text-h6">
+                Welcome to Tabsets Extension
               </div>
-              <div class="row q-mb-lg">
-                <div class="col-12 text-subtitle1">
-                  Bookmarks next generation
-                </div>
+            </div>
+            <div class="row q-mb-lg">
+              <div class="col-12 text-subtitle1">
+                Bookmarks next generation
               </div>
+            </div>
 
-              <div class="row items-center">
-                <div class="col-12 text-subtitle2 q-mb-md">
-                  To get started:
-                </div>
+            <div class="row items-center">
+              <div class="col-12 text-subtitle2 q-mb-md">
+                To get started:
               </div>
+            </div>
 
-              <q-btn class="text-primary"
-                     outline
-                     data-testid="createFirstTabsetBtn"
-                     @click="addFirstTabset"
-                     label="create your first tabset"></q-btn>
+            <q-btn class="text-primary"
+                   outline
+                   data-testid="createFirstTabsetBtn"
+                   @click="addFirstTabset"
+                   label="create your first tabset"></q-btn>
 
-              <div class="row q-mt-lg">
-                <div class="col-12 items-center q-mb-md">
-                  This will create a new tabset containing some pre-chosen tabs.
+            <div class="row q-mt-lg">
+              <div class="col-12 items-center q-mb-md">
+                This will create a new tabset containing some pre-chosen tabs.
+              </div>
+            </div>
+          </div>
+        </transition>
+
+        <!-- we have at least one tabset -->
+        <div v-else class="q-ma-none">
+
+          <q-toolbar class="text-primary lightgrey">
+            <div class="row fit">
+              <q-toolbar-title>
+                <div class="row">
+                  <div class="col-8">
+                    <SearchWidget v-if="searching"
+                                  :fromPanel="true"
+                                  style="position: absolute; left:5px;top:5px;max-width:310px"/>
+                    <TabsetsSelectorWidget v-else :fromPanel="true"/>
+                  </div>
+                  <div class="col-4 text-right">
+                    <q-icon v-if="usePermissionsStore().hasFeature(FeatureIdent.SPACES)"
+                            class="q-ma-xs cursor-pointer" name="expand_less" size="16px" @click="showTabsets">
+                      <q-tooltip class="tooltip">Manage Spaces</q-tooltip>
+                    </q-icon>
+                    <q-icon v-if="tabsStore.tabsets.size > 1"
+                            class="q-ma-xs cursor-pointer" name="search" size="16px" @click="toggleSearch">
+                      <q-tooltip class="tooltip">Search</q-tooltip>
+                    </q-icon>
+                    <q-icon v-if="usePermissionsStore().hasFeature(FeatureIdent.SESSIONS)"
+                            class="q-ma-xs cursor-pointer"
+                            :color="existingSession ? (tabsStore.getCurrentTabset?.type === TabsetType.SESSION ? 'red':'grey-5') :'primary'"
+                            :name="existingSession ? 'o_stop_circle':'o_play_circle'" size="16px" @click="toggleSessionState">
+                      <q-tooltip class="tooltip" v-if="existingSession">Stop Session</q-tooltip>
+                      <q-tooltip class="tooltip" v-else>Start new Session</q-tooltip>
+                    </q-icon>
+                    <q-icon v-if="useSettingsStore().isEnabled('dev')"
+                            class="q-ma-xs cursor-pointer" name="filter_center_focus" size="16px" @click="createClip">
+                      <q-tooltip class="tooltip">Create website clip</q-tooltip>
+                    </q-icon>
+<!--                    <q-icon v-if="useSettingsStore().isEnabled('dev')"-->
+<!--                            class="q-ma-xs cursor-pointer" name="open_in_new" size="16px" @click="openExtensionTab">-->
+<!--                      <q-tooltip class="tooltip">Open Tabsets</q-tooltip>-->
+<!--                    </q-icon>-->
+                  </div>
                 </div>
+              </q-toolbar-title>
+            </div>
+          </q-toolbar>
+
+
+          <div class="col-12">
+            <q-input borderless v-if="usePermissionsStore().hasFeature(FeatureIdent.NOTES)"
+                     class="q-ma-xs"
+                     style="height:20px;border: 1px dotted lightgray; border-radius: 3px;" v-model="dragTarget"/>
+          </div>
+
+          <div class="row q-ma-sm" v-if="tabsStore.getCurrentTabset">
+            <div class="col-12">
+              <SidePanelDynamicTabset v-if="tabsStore.getCurrentTabset?.type === TabsetType.DYNAMIC"
+                                      :tabset="tabsStore.getCurrentTabset"/>
+              <PanelTabList v-else
+                            :tabs="tabsStore.getCurrentTabset.tabs"/>
+            </div>
+          </div>
+
+          <transition v-else
+                      appear enter-active-class="fadeIn" style="transition-delay: 1.5s">
+            <div class="row q-ma-sm">
+              <div class="col-12">
+                Add a new tabset to assign tabs to
               </div>
             </div>
           </transition>
 
-          <!-- we have at least one tabset -->
-          <div v-else class="q-ma-none">
+        </div>
 
-            <q-toolbar class="text-primary lightgrey">
-              <div class="row fit">
-                <q-toolbar-title>
-                  <div class="row">
-                    <div class="col-9">
-                      <SearchWidget v-if="searching"
-                                    :fromPanel="true"
-                                    style="position: absolute; left:5px;top:5px;max-width:310px"/>
-                      <TabsetsSelectorWidget v-else :fromPanel="true"/>
-                    </div>
-                    <div class="col-3 text-right">
-                      <q-icon v-if="usePermissionsStore().hasFeature(FeatureIdent.SPACES)"
-                              class="q-ma-xs cursor-pointer" name="expand_less" size="16px" @click="showTabsets">
-                        <q-tooltip class="tooltip">Manage Spaces</q-tooltip>
-                      </q-icon>
-                      <q-icon v-if="tabsStore.tabsets.size > 1"
-                              class="q-ma-xs cursor-pointer" name="search" size="16px" @click="toggleSearch">
-                        <q-tooltip class="tooltip">Search</q-tooltip>
-                      </q-icon>
-                      <q-icon v-if="useSettingsStore().isEnabled('dev')"
-                              class="q-ma-xs cursor-pointer" name="filter_center_focus" size="16px" @click="createClip">
-                        <q-tooltip class="tooltip">Create website clip</q-tooltip>
-                      </q-icon>
-                      <q-icon v-if="useSettingsStore().isEnabled('dev')"
-                              class="q-ma-xs cursor-pointer" name="open_in_new" size="16px" @click="openExtensionTab">
-                        <q-tooltip class="tooltip">Open Tabsets</q-tooltip>
-                      </q-icon>
-                    </div>
-                  </div>
-                </q-toolbar-title>
-              </div>
-            </q-toolbar>
+      </template>
 
+      <template v-slot:after>
+        <div v-if="tabFromChromeTab() && tabsStore.getCurrentTabset"
+             class="row q-ma-sm q-mt-lg"
+             :class="alreadyInTabset() ? 'bg-grey-1':'bg-yellow-1'"
+             style="border:1px solid gray;border-radius: 5px">
 
-            <div class="col-12">
-              &nbsp
-            </div>
-
-            <div class="row q-ma-sm" v-if="tabsStore.getCurrentTabset">
-              <div class="col-12">
-                <SidePanelDynamicTabset v-if="tabsStore.getCurrentTabset?.type === TabsetType.DYNAMIC"
-                                        :tabset="tabsStore.getCurrentTabset"/>
-                <PanelTabList v-else
-                              :tabs="tabsStore.getCurrentTabset.tabs"/>
-              </div>
-            </div>
-
-            <transition v-else
-                        appear enter-active-class="fadeIn" style="transition-delay: 1.5s">
-              <div class="row q-ma-sm">
-                <div class="col-12">
-                  Add a new tabset to assign tabs to
-                </div>
-              </div>
-            </transition>
-
+          <div class="col-10">
+            <q-list>
+              <q-item
+                v-ripple
+                class="q-ma-none q-pa-xs">
+                <PanelTabListElementWidget header="Current Tab:" :tab="tabFromChromeTab()" :hideMenu="true"/>
+              </q-item>
+            </q-list>
           </div>
-
-        </template>
-
-        <template v-slot:after>
-          <div v-if="tabFromChromeTab() && tabsStore.getCurrentTabset"
-               class="row q-ma-sm q-mt-lg"
-               :class="alreadyInTabset() ? 'bg-grey-1':'bg-yellow-1'"
-               style="border:1px solid gray;border-radius: 5px">
-
-            <div class="col-10">
-              <q-list>
-                <q-item
-                  v-ripple
-                  class="q-ma-none q-pa-xs">
-                  <PanelTabListElementWidget header="Current Tab:" :tab="tabFromChromeTab()" :hideMenu="true"/>
-                </q-item>
-              </q-list>
-            </div>
-            <div class="col-2">
-              <q-btn :disable="alreadyInTabset()" :label="alreadyInTabset() ? 'saved' :'save'" color="primary" flat
-                     size="10px" @click="saveFromPanel()"></q-btn>
-            </div>
+          <div class="col-2">
+            <q-btn :disable="alreadyInTabset()" :label="alreadyInTabset() ? 'saved' :'save'" color="primary" flat
+                   size="10px" @click="saveFromPanel()"></q-btn>
           </div>
+        </div>
 
-          <div v-else-if="selectedTab"
-               class="row q-ma-sm q-mt-lg"
-               :class="alreadyInTabset() ? 'bg-grey-1':'bg-yellow-1'"
-               style="border:1px solid gray;border-radius: 5px">
+        <div v-else-if="selectedTab"
+             class="row q-ma-sm q-mt-lg"
+             :class="alreadyInTabset() ? 'bg-grey-1':'bg-yellow-1'"
+             style="border:1px solid gray;border-radius: 5px">
 
-            <div class="col-12">
-              <q-list>
-                <q-item
-                  v-ripple
-                  class="q-ma-none q-pa-xs">
-                  <SidePanelTabListElementDetails :tab="selectedTab"/>
-                </q-item>
-              </q-list>
-            </div>
+          <div class="col-12">
+            <q-list>
+              <q-item
+                v-ripple
+                class="q-ma-none q-pa-xs">
+                <SidePanelTabListElementDetails :tab="selectedTab"/>
+              </q-item>
+            </q-list>
           </div>
-        </template>
+        </div>
+      </template>
 
-      </q-splitter>
-<!--    </div>-->
+    </q-splitter>
+    <!--    </div>-->
   </q-page>
 
 
@@ -159,13 +168,13 @@
 import NavigationService from "src/services/NavigationService";
 import {ref, watchEffect} from "vue";
 import {useTabsStore} from "src/stores/tabsStore";
-import {Tab} from "src/models/Tab";
+import {Tab, UrlExtension} from "src/models/Tab";
 import _ from "lodash"
 import {Tabset, TabsetType} from "src/models/Tabset";
 import ChromeApi from "src/services/ChromeApi";
 import {useRouter} from "vue-router";
 import {useUtils} from "src/services/Utils";
-import {uid, useQuasar} from "quasar";
+import {date, uid, useQuasar} from "quasar";
 import {useTabsetService} from "src/services/TabsetService2";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {AddTabToTabsetCommand} from "src/domain/tabs/AddTabToTabset";
@@ -180,10 +189,12 @@ import {useSettingsStore} from "stores/settingsStore";
 import SearchWidget from "components/widgets/SearchWidget.vue";
 import {useSpacesStore} from "stores/spacesStore";
 import SidePanelTabListElementDetails from "components/widgets/SidePanelTabListElementDetails.vue";
-import DynamicTabsetPageCards from "pages/DynamicTabsetPageCards.vue";
 import SidePanelDynamicTabset from "components/layouts/sidepanel/SidePanelDynamicTabset.vue";
+import AddUrlDialog from "components/dialogues/AddUrlDialog.vue";
+import NewSessionDialog from "components/dialogues/NewSessionDialog.vue";
+import {StopSessionCommand} from "src/domain/commands/StopSessionCommand";
 
-const {inBexMode} = useUtils()
+const {inBexMode, sanitize} = useUtils()
 
 const $q = useQuasar()
 const router = useRouter()
@@ -199,9 +210,11 @@ const openTabs = ref<chrome.tabs.Tab[]>([])
 const currentTabset = ref<Tabset | undefined>(undefined)
 const currentChromeTab = ref<chrome.tabs.Tab>(null as unknown as chrome.tabs.Tab)
 const searching = ref(false)
-// const chromeVersion = ref('unknown')
+const existingSession = ref(false)
+
 const splitterModel = ref(160)
 const selectedTab = ref<Tab | undefined>(undefined)
+const dragTarget = ref('')
 
 console.log("adding listener")
 
@@ -213,6 +226,10 @@ watchEffect(() => {
   if (selectedTab.value) {
     currentChromeTab.value = null as unknown as chrome.tabs.Tab
   }
+})
+
+watchEffect(() => {
+  existingSession.value = _.filter([...tabsStore.tabsets.values()], (ts: Tabset) => ts.type === TabsetType.SESSION).length > 0
 })
 
 if (inBexMode()) {
@@ -265,6 +282,59 @@ watchEffect(() => {
       tabsetName.value = tabsetNameOptions.value[0]
     }
   }
+})
+
+
+watchEffect(() => {
+  if (dragTarget.value.trim() === "") {
+    return
+  }
+  try {
+    const url = new URL(dragTarget.value)
+    $q.dialog({component: AddUrlDialog, componentProps: {providedUrl: url.toString()}})
+  } catch (err) {
+    // not an url, create a "fake" url and save as note
+    if (tabsStore.getCurrentTabset) {
+      const id = uid()
+      const url = chrome.runtime.getURL('www/index.html') + "#/mainpanel/notes/" + id
+      const text = sanitize(dragTarget.value.trim())
+
+      const titleCandidate = text.split(".")[0]
+      let title = "note " + date.formatDate(new Date().getTime(), 'DD.MM.YYYY HH:mm')
+      // console.log("titleCandidate", titleCandidate.length, titleCandidate)
+      // if (titleCandidate.length > 0 && titleCandidate.length < 60) {
+      //   title = titleCandidate
+      // }
+
+      const chromeTab = ChromeApi.createChromeTabObject(title, url,
+        "https://img.icons8.com/?size=512&id=86843&format=png")
+      const tab = new Tab(id, chromeTab)
+      tab.description = text
+
+      if (inBexMode()) {
+        chrome.tabs.query({active: true, lastFocusedWindow: true}, (openTabs) => {
+          if (openTabs.length > 0) {
+            const currentChromeTab = openTabs[0]
+            tab.chromeTab.favIconUrl = currentChromeTab.favIconUrl
+            if (currentChromeTab.url) {
+              tab.history.push(currentChromeTab.url)
+            }
+            tab.tags.push("Note")
+            tab.extension = UrlExtension.NOTE
+            //tab.description =  tab.description + openTabs[0].url + "\n\n"
+          }
+          // @ts-ignore
+          useCommandExecutor().executeFromUi(new AddTabToTabsetCommand(tab, tabsStore.getCurrentTabset))
+        })
+      } else {
+        useCommandExecutor().executeFromUi(new AddTabToTabsetCommand(tab, tabsStore.getCurrentTabset))
+      }
+
+    } else {
+      console.log("no current tabset")
+    }
+  }
+  dragTarget.value = ''
 })
 
 const openExtensionTab = () => {
@@ -357,6 +427,24 @@ const tabFromChromeTab = () => currentChromeTab.value ? new Tab(uid(), currentCh
 const showTabsets = () => router.push("/sidepanel/tabsets")
 
 const toggleSearch = () => searching.value = !searching.value
+
+const onDrop = (evt: any) => console.log("dropped", evt)
+
+const toggleSessionState = () => {
+  console.log("hier", existingSession)
+  existingSession ? stopSession() : startSession()
+}
+
+const startSession = () => $q.dialog({component: NewSessionDialog, componentProps: {replaceSession: false, inSidePanel: true}})
+
+const stopSession = () => {
+  const tabsetWithSession = _.filter([...tabsStore.tabsets.values()], (ts: Tabset) => ts.type === TabsetType.SESSION)
+  console.log("tabsetWithSession", tabsetWithSession)
+  if (tabsetWithSession && tabsetWithSession.length > 0) { // should be one at most
+    useCommandExecutor().executeFromUi(new StopSessionCommand(tabsetWithSession[0]))
+  }
+}
+const replaceSession = () => $q.dialog({component: NewSessionDialog, componentProps: {replaceSession: true}})
 
 </script>
 

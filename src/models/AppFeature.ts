@@ -28,7 +28,7 @@ export enum FeatureIdent {
   TABSET_PAGE = "TABSET_PAGE",
   NOTES = "NOTES",
   TAGS = "TAGS",
-  SIDE_PANEL = "SIDE_PANEL"
+  SIDE_PANEL = "SIDE_PANEL",
 }
 
 export enum FeatureType {

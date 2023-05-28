@@ -7,11 +7,6 @@
                :highlightUrl="highlightUrl"
                :tabs="currentTabs()"/>
 
-      <TabTable v-else-if="props.tabset?.view === 'table'"
-                group="otherTabs"
-                :highlightUrl="highlightUrl"
-                :tabs="currentTabs()"/>
-
       <TabGroups v-else-if="props.tabset?.view === 'group'"
                  group="otherTabs"
                  :highlightUrl="highlightUrl"

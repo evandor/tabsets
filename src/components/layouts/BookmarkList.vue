@@ -27,7 +27,7 @@ import {VueDraggableNext} from 'vue-draggable-next'
 import {useQuasar} from "quasar";
 import {useTabsStore} from "src/stores/tabsStore";
 import {useUiService} from "src/services/useUiService";
-import {LeftDrawerState, DrawerTabs} from "src/stores/uiStore";
+import {DrawerTabs} from "src/stores/uiStore";
 import {useTabsetService} from "src/services/TabsetService2";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import BookmarkListElementWidget from "components/widgets/BookmarkListElementWidget.vue";
@@ -113,14 +113,6 @@ const handleDragAndDrop = (event: any) => {
 }
 
 const openOrShowOpenTabs = () => {
-  // const activeTab = uiService.leftDrawerActiveTab()
-  const drawerModel = uiService.drawerModel()
-  if (drawerModel.state === LeftDrawerState.SMALL || drawerModel.activeTab !== DrawerTabs.OPEN_TABS) {
-    uiService.leftDrawerSetActiveTab(DrawerTabs.OPEN_TABS)
-  } else {
-    uiService.leftDrawerAnimateLabel()
-  }
-  // useUiService().setWideDrawer()
 }
 
 const startDrag = (evt: any, tab: Bookmark) => {

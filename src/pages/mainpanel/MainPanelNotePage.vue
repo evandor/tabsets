@@ -32,8 +32,8 @@
 
     <div class="col-12">
       <div class="text-overline ellipsis">
-        {{ tab?.chromeTab?.url }}&nbsp;<q-icon name="launch" color="secondary"
-                                               @click.stop="NavigationService.openOrCreateTab(tab.chromeTab?.url )"></q-icon>
+        {{ tab?.history[0] }}&nbsp;<q-icon name="launch" color="secondary"
+                                               @click.stop="NavigationService.openOrCreateTab(tab?.history[0] || '' )"></q-icon>
       </div>
     </div>
   </div>

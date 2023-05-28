@@ -7,7 +7,7 @@
         <q-toolbar-title>
           <div class="row">
             <div class="col-2">
-              <q-icon name="chevron_left" class="cursor-pointer" @click="router.push('/sidepanel')">
+              <q-icon name="chevron_left" class="cursor-pointer" @click="useUiStore().sidePanelSetActiveView(SidePanelView.MAIN)">
                 <q-tooltip>Back</q-tooltip>
               </q-icon>
             </div>
@@ -53,6 +53,7 @@ import {Tabset, TabsetStatus} from "src/models/Tabset";
 import OpenTabCard from "components/layouts/OpenTabCard.vue";
 import {useRouter} from "vue-router";
 import InfoMessageWidget from "components/widgets/InfoMessageWidget.vue";
+import {SidePanelView, useUiStore} from "stores/uiStore";
 
 const tabsStore = useTabsStore()
 const router = useRouter()

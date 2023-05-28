@@ -6,8 +6,10 @@
         <div class="text-h6" v-else>Start a new Session</div>
       </q-card-section>
       <q-card-section>
-        <div class="text-body">Please provide a name for the new Session or keep the suggested name.<br><br>A session is a special tabset
-        which will keep track of your tabs automatically as long it is active.</div>
+        <div class="text-body">Please provide a name for the new Session or keep the suggested name.<br><br>A session is
+          a special tabset
+          which will keep track of your tabs automatically as long it is active.
+        </div>
       </q-card-section>
 
       <q-card-section class="q-pt-none">
@@ -63,14 +65,9 @@ defineEmits([
 ])
 
 const props = defineProps({
-  setEmptyByDefault: {
-    type: Boolean,
-    default: false
-  },
-  replaceSession: {
-    type: Boolean,
-    default: false
-  }
+  setEmptyByDefault: {type: Boolean, default: false},
+  replaceSession: {type: Boolean, default: false},
+  inSidePanel: {type: Boolean, default: false}
 })
 
 const {dialogRef, onDialogHide, onDialogCancel} = useDialogPluginComponent()
@@ -79,7 +76,7 @@ const tabsStore = useTabsStore()
 const router = useRouter()
 const $q = useQuasar()
 
-const newTabsetName = ref( 'Session ' + new Date().getDate() + '.' + (new Date().getMonth() + 1) )
+const newTabsetName = ref('Session ' + new Date().getDate() + '.' + (new Date().getMonth() + 1))
 const newTabsetNameExists = ref(false)
 const hideWarning = ref(false)
 const addAutomatically = ref(props.setEmptyByDefault)
@@ -96,14 +93,19 @@ const createNewTabset = () => {
 
   useCommandExecutor()
     .executeFromUi(new CreateSessionCommand(newTabsetName.value, tabsToUse))
-    .then(() => {
+    .then((res) => {
       if (!addAutomatically.value) {
         TabsetService.createPendingFromBrowserTabs()
       } else {
         // clear pending tabset - why neccessary?
         tabsStore.pendingTabset.tabs = []
       }
-      router.push("/tabsets" + useTabsStore().currentTabsetId)
+      // router.push("/tabsets" + useTabsStore().currentTabsetId)
+      if (!props.inSidePanel) {
+        router.push("/tabsets/" + res.result.tabsetId )
+      } else {
+        router.push("/sidepanel")
+      }
     })
 }
 

@@ -12,20 +12,6 @@
                       :collectionId="collectionId"
                       :entities="getEntities()"/>
 
-      <!--      <TabTable v-else-if="entitiesStore.getCurrentCollection(collectionType)?.view === 'table'"-->
-      <!--                group="otherTabs"-->
-
-      <!--                :tabs="getEntities()"/>-->
-
-      <!--      <TabGroups v-else-if="entitiesStore.getCurrentCollection(collectionType)?.view === 'group'"-->
-      <!--                 group="otherTabs"-->
-
-      <!--                 :tabs="getEntities()"/>-->
-
-      <!--      <TabsExporter v-else-if="entitiesStore.getCurrentCollection(collectionType)?.view === 'exporter'"-->
-      <!--                    group="otherTabs"-->
-      <!--                    :tabs="getEntities()"/>-->
-
     </q-card-section>
 
   </q-card>
@@ -34,20 +20,8 @@
 
 <script lang="ts" setup>
 
-import TabList from "components/layouts/TabList.vue";
-import TabTable from "components/layouts/TabTable.vue";
-import TabGroups from "components/layouts/TabGroups.vue";
-import TabsExporter from "components/layouts/TabsExporter.vue";
-import {useTabsStore} from "src/stores/tabsStore";
 import {ref, watchEffect} from "vue";
-import {Tab} from "src/models/Tab";
-import _ from "lodash";
-import PageForTabset from "components/layouts/PageForTabset.vue";
-import TabsCanvas from "components/layouts/TabsCanvas.vue";
-import {useUiStore} from "src/stores/uiStore";
 import {useRoute} from "vue-router";
-import {useCommandExecutor} from "src/services/CommandExecutor";
-import {ToggleSortingCommand} from "src/domain/tabsets/ToggleSorting";
 import {useEntitiesStore} from "src/stores/entitiesStore";
 import CollectionList from "components/layouts/CollectionList.vue";
 

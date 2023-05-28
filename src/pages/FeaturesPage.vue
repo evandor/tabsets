@@ -283,6 +283,11 @@ text.set(FeatureIdent.TAGS.toLowerCase(), {
   description: 'Assign tags to tabs',
   permissions: []
 })
+text.set(FeatureIdent.NOTES.toLowerCase(), {
+  name: 'Quick Notes with Drag&Drop',
+  description: 'Drag and drop a text selection from a website to create a note',
+  permissions: []
+})
 
 
 watchEffect(() => {
