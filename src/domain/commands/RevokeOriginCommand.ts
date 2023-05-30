@@ -2,7 +2,6 @@ import Command from "src/domain/Command";
 import {ExecutionResult} from "src/domain/ExecutionResult";
 import {usePermissionsStore} from "src/stores/permissionsStore";
 import {GrantOriginCommand} from "src/domain/commands/GrantOriginCommand";
-import ChromeApi from "src/services/ChromeApi";
 import {FeatureIdent} from "src/models/AppFeature";
 
 class UndoCommand implements Command<boolean> {
@@ -18,10 +17,7 @@ class UndoCommand implements Command<boolean> {
           case "thumbnails":
             usePermissionsStore().activateFeature(this.feature)
             break;
-          case "analyseTabs":
-            //ChromeApi.startWebRequestListener()
-            usePermissionsStore().activateFeature(this.feature)
-            break;
+
           default:
             Promise.reject("feature " + this.feature + " is unknown")
         }
@@ -46,15 +42,9 @@ export class RevokeOriginCommand implements Command<boolean> {
             msg = "Thumbnail permission was removed, subsequently tabs will not have thumbnails"
             usePermissionsStore().deactivateFeature(this.feature)
             break;
-          case "analyseTabs":
-            //ChromeApi.stopWebRequestListener()
-            usePermissionsStore().deactivateFeature(this.feature)
-            msg = "Permission was added, subsequently accessed tabs will not be analysed"
-            break;
           case "all":
             usePermissionsStore().deactivateFeature(FeatureIdent.THUMBNAILS)
-            usePermissionsStore().deactivateFeature(FeatureIdent.ANALYSE_TABS)
-            msg = "Permissions thumbnails and analyseTabs were revoked (if allowed)"
+            msg = "Permission thumbnail was revoked (if allowed)"
             return new ExecutionResult(true, msg)
           default:
             Promise.reject("feature " + this.feature + " is unknown")

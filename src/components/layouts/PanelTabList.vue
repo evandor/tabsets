@@ -24,7 +24,7 @@
       </q-item>
 
       <q-item
-        :clickable="usePermissionsStore().hasFeature(FeatureIdent.DETAILS)"
+        clickable
         v-ripple
         v-for="tab in props.tabs"
         class="q-ma-none q-pa-xs"
@@ -145,10 +145,8 @@ const startDrag = (evt: any, tab: Tab) => {
 }
 
 const showDetails = (tab: Tab) => {
-  if (usePermissionsStore().hasFeature(FeatureIdent.DETAILS)) {
-    useUiStore().setSelectedTab(tab)
-    useUiStore().rightDrawerSetActiveTab(DrawerTabs.TAB_DETAILS)
-  }
+  useUiStore().setSelectedTab(tab)
+  useUiStore().rightDrawerSetActiveTab(DrawerTabs.TAB_DETAILS)
 }
 
 const itemStyle = (tab: Tab) => "border-bottom: 1px solid #fafafa"

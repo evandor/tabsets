@@ -9,7 +9,7 @@
   <q-list separator>
 
     <q-item
-      :clickable="usePermissionsStore().hasFeature(FeatureIdent.DETAILS)"
+      clickable
       v-ripple
       v-for="tab in currentTabs()"
       class="q-ma-none q-pa-xs"
@@ -68,7 +68,7 @@ function currentTabs(): Tab[] {
   console.log("current", props.tabset, props.tabset.dynamicTabs, props.tabset.dynamicTabs?.type)
   if (props.tabset && props.tabset.dynamicTabs && props.tabset.dynamicTabs.type === DynamicTabSourceType.TAG) {
     const results: Tab[] = []
-    console.log("checking", props.tabset.dynamicTabs )
+    console.log("checking", props.tabset.dynamicTabs)
     const tag = props.tabset.dynamicTabs?.config['tags' as keyof object][0]
     console.log("using tag", tag)
     _.forEach([...tabsStore.tabsets.values()], (tabset: Tabset) => {
@@ -87,10 +87,8 @@ function currentTabs(): Tab[] {
 }
 
 const showDetails = (tab: Tab) => {
-  if (usePermissionsStore().hasFeature(FeatureIdent.DETAILS)) {
-    useUiStore().setSelectedTab(tab)
-    useUiStore().rightDrawerSetActiveTab(DrawerTabs.TAB_DETAILS)
-  }
+  useUiStore().setSelectedTab(tab)
+  useUiStore().rightDrawerSetActiveTab(DrawerTabs.TAB_DETAILS)
 }
 
 const itemStyle = (tab: Tab) => "border-bottom: 1px solid #fafafa"

@@ -79,7 +79,7 @@
             </q-item>
 
             <q-item
-              :clickable="usePermissionsStore().hasFeature(FeatureIdent.DETAILS)"
+              clickable
               v-ripple
               v-for="(tab,index) in tabsFor(element)"
               @click.stop="showDetails(tab)"
@@ -254,10 +254,8 @@ const startDrag = (evt: any, tab: Tab) => {
 
 
 const showDetails = (tab: Tab) => {
-  if (usePermissionsStore().hasFeature(FeatureIdent.DETAILS)) {
-    useUiStore().setSelectedTab(tab)
-    useUiStore().rightDrawerSetActiveTab(DrawerTabs.TAB_DETAILS)
-  }
+  useUiStore().setSelectedTab(tab)
+  useUiStore().rightDrawerSetActiveTab(DrawerTabs.TAB_DETAILS)
 }
 const setNewName = (newValue: string) => {
   if (tabsStore?.getCurrentTabset) {

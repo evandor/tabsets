@@ -2,8 +2,6 @@ import Command from "src/domain/Command";
 import {ExecutionResult} from "src/domain/ExecutionResult";
 import {usePermissionsStore} from "src/stores/permissionsStore";
 import {RevokeOriginCommand} from "src/domain/commands/RevokeOriginCommand";
-import ChromeApi from "src/services/ChromeApi";
-
 
 class UndoCommand implements Command<boolean> {
 
@@ -16,10 +14,6 @@ class UndoCommand implements Command<boolean> {
       .then(res => {
         switch (this.feature) {
           case "thumbnails":
-            usePermissionsStore().deactivateFeature(this.feature)
-            break;
-          case "analyseTabs":
-           // ChromeApi.stopWebRequestListener()
             usePermissionsStore().deactivateFeature(this.feature)
             break;
           default:
@@ -45,11 +39,6 @@ export class GrantOriginCommand implements Command<boolean> {
             case "thumbnails":
               msg = "Thumbnail permission was added, subsequently stored tabs should have thumbnails"
               usePermissionsStore().activateFeature(this.feature)
-              break;
-            case "analyseTabs":
-              //ChromeApi.startWebRequestListener()
-              usePermissionsStore().activateFeature(this.feature)
-              msg = "Permission was added, subsequently accessed tabs will be analysed"
               break;
             case "none":
               msg: "All Origins Permission was granted"

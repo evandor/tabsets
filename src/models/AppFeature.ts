@@ -7,24 +7,18 @@ export enum FeatureIdent {
   SAVE_TAB = "SAVE_TAB",
   CREATE_PDF = "CREATE_PDF",
   GROUP_BY_DOMAIN = "GROUP_BY_DOMAIN",
-  // SIDEBAR = "SIDEBAR",
   OPENTABS_THRESHOLD = "OPENTABS_THRESHOLD",
   EXPERIMENTAL_VIEWS = "EXPERIMENTAL_VIEWS",
-  // NEW_TAB = "NEW_TAB",
   RSS = "RSS",
   SESSIONS = "SESSIONS",
   SPACES = "SPACES",
-  DETAILS = "DETAILS",
   THUMBNAILS = "THUMBNAILS",
-  ANALYSE_TABS = "ANALYSE_TABS",
-  // HISTORY = "HISTORY",
   DYNAMIC = "DYNAMIC",
   WINDOWS = "WINDOWS",
   SCHEDULED = "SCHEDULED",
   OLD_TABS = "OLD_TABS",
   BACKUP = "BACKUP",
   IGNORE = "IGNORE",
-  //SORT_TABS = "SORT_TABS",
   TABSET_PAGE = "TABSET_PAGE",
   NOTES = "NOTES",
   TAGS = "TAGS",
@@ -32,14 +26,10 @@ export enum FeatureIdent {
 }
 
 export enum FeatureType {
-  DEFAULT = "DEFAULT",          // Default features are active by default and can be disabled by the user
   RECOMMENDED = "RECOMMENDED",
   OPTIONAL = "OPTIONAL",
-
   EXPERIMENTAL = "EXPERIMENTAL",
-
   PLANNED = "PLANNED"
-
 }
 
 

@@ -8,7 +8,7 @@
     @change="handleDragAndDrop">
 
     <div
-      :clickable="usePermissionsStore().hasFeature(FeatureIdent.DETAILS)"
+      clickable
       v-for="(tab,index) in props.tabs"
       class="item"
       :style="itemStyle(tab)"
@@ -34,7 +34,7 @@ import {useQuasar} from "quasar";
 import _ from "lodash"
 import {useTabsStore} from "src/stores/tabsStore";
 import {useUiService} from "src/services/useUiService";
-import {DrawerTabs,  useUiStore} from "src/stores/uiStore";
+import {DrawerTabs, useUiStore} from "src/stores/uiStore";
 import {useTabsetService} from "src/services/TabsetService2";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {CreateTabFromOpenTabsCommand} from "src/domain/commands/CreateTabFromOpenTabs";
@@ -136,10 +136,8 @@ const startDrag = (evt: any, tab: Tab) => {
 }
 
 const showDetails = (tab: Tab) => {
-  if (usePermissionsStore().hasFeature(FeatureIdent.DETAILS)) {
-    useUiStore().setSelectedTab(tab)
-    useUiStore().rightDrawerSetActiveTab(DrawerTabs.TAB_DETAILS)
-  }
+  useUiStore().setSelectedTab(tab)
+  useUiStore().rightDrawerSetActiveTab(DrawerTabs.TAB_DETAILS)
 }
 
 const itemStyle = (tab: Tab) => {
@@ -162,6 +160,7 @@ const itemStyle = (tab: Tab) => {
   margin: 20px auto 0;
   padding: 2rem;
 }
+
 .container .item {
   display: inline-block;
   margin: 0 0 20px;
@@ -170,22 +169,26 @@ const itemStyle = (tab: Tab) => {
   break-inside: avoid;
   width: 100%;
 }
+
 .container .item img {
   width: 100%;
   height: auto;
 }
+
 @media (min-width: 600px) {
   .container {
     -moz-column-count: 2;
     column-count: 2;
   }
 }
+
 @media (min-width: 900px) {
   .container {
     -moz-column-count: 3;
     column-count: 3;
   }
 }
+
 @media (min-width: 1200px) {
   .container {
     -moz-column-count: 4;

@@ -1,29 +1,6 @@
 <template>
 
   <div class="q-ma-md">
-    <b>Default Features</b>
-  </div>
-
-  <q-list>
-    <q-item
-      v-for="f in featuresByType(FeatureType.DEFAULT)"
-      clickable v-ripple
-      :active="f === selected2"
-      :disable="wrongMode(f)"
-      @click="showFeature2(f)">
-
-      <q-item-section avatar>
-        <q-icon :name="f.icon" size="1.3em" :color="iconColor2(f)"/>
-      </q-item-section>
-      <q-item-section>{{ f.name }}</q-item-section>
-      <q-tooltip class="tooltip" v-if="wrongMode(f)">
-        This feature is not available in this mode of tabsets
-      </q-tooltip>
-    </q-item>
-
-  </q-list>
-
-  <div class="q-ma-md">
     <b>Recommended Features</b>
   </div>
 
@@ -141,17 +118,7 @@ const open = (ident: string) => {
 //@ts-ignore
 const appVersion = import.meta.env.PACKAGE_VERSION
 
-
-const iconColor2 = (f: AppFeature) => {
-  switch (f) {
-    // case "Bookmarks":
-    //   return usePermissionsStore().hasFeature('bookmarks') ? 'green' : 'primary'
-    // case "Bookmarks":
-    //   return usePermissionsStore().hasFeature('bookmarks') ? 'green' : 'primary'
-    default:
-      return usePermissionsStore().hasFeature(f.ident) ? 'green' : 'primary'
-  }
-}
+const iconColor2 = (f: AppFeature) => usePermissionsStore().hasFeature(f.ident) ? 'green' : 'primary'
 
 const showFeature2 = (f: AppFeature) => {
   selected2.value = f

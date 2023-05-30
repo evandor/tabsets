@@ -29,11 +29,9 @@ const {
 
 const {sanitize} = useUtils()
 
-
 function setCurrentTab() {
   chrome.tabs.query({active: true, lastFocusedWindow: true}, (tabs) => {
     if (tabs && tabs[0]) {
-      //console.log("setting current tab", tabs)
       useTabsStore().setCurrentChromeTab(tabs[0] as unknown as chrome.tabs.Tab)
     }
   });
@@ -47,7 +45,6 @@ class ChromeListeners {
 
   throttleOnePerSecond = throttledQueue(1, 1000, true)
 
-  //injectedScripts = new ExpiringMap<number>(10000)
   injectedScripts: Map<number, string[]> = new Map()
 
   initListeners(isNewTabPage: boolean = false) {
@@ -109,16 +106,6 @@ class ChromeListeners {
     this.eventTriggered()
     console.log(`onCreated: tab ${tab.id}: >>> ${tab.pendingUrl}`)
     const tabsStore = useTabsStore()
-    const maybeTab = tabsStore.tabForUrlInSelectedTabset(tab.pendingUrl || '')
-    if (maybeTab) {
-      console.log(`onCreated: tab ${tab.id}: updating existing chromeTab.id: ${maybeTab.chromeTab.id} -> ${tab.id}`)
-      // TODO check: this breaks an e2e test (with tab "about:blank") when activated
-      // why was this here in the first place?
-      // maybeTab.chromeTab.id = tab.id
-      // maybeTab.chromeTab.windowId = tab.windowId
-      // saveCurrentTabset()
-      // return
-    }
 
     let foundSession = false
     _.forEach([...tabsStore.tabsets.values()], (ts: Tabset) => {
@@ -130,7 +117,6 @@ class ChromeListeners {
     })
     if (!foundSession) {
       console.debug("pushing to pending", tab)
-      //tabsStore.addToPendingTabset(new Tab(uid(),tab))
       tabsStore.pendingTabset.tabs.push(new Tab(uid(), tab))
     }
   }
@@ -144,7 +130,6 @@ class ChromeListeners {
     // get current tab
     setCurrentTab()
 
-
     const selfUrl = chrome.runtime.getURL("")
     if (chromeTab.url?.startsWith(selfUrl)) {
       console.debug(`onUpdated:   tab ${number}: >>> chromeTab.url starts with '${selfUrl}' <<<`)
@@ -156,11 +141,8 @@ class ChromeListeners {
 
     if (!info.status || (Object.keys(info).length > 1)) {
       console.debug(`onUpdated:   tab ${number}: >>> ${JSON.stringify(info)} <<<`)
-
       this.handleUpdate(tabsStore.pendingTabset as Tabset, chromeTab)
-
       this.handleUpdateInjectScripts(tabsStore.pendingTabset as Tabset, info, chromeTab)
-
       let foundSession = false
       _.forEach([...tabsStore.tabsets.values()], (ts: Tabset) => {
         if (ts.type === TabsetType.SESSION) {
@@ -168,7 +150,6 @@ class ChromeListeners {
           this.handleUpdate(ts, chromeTab)
         }
       })
-
     }
   }
 
@@ -191,48 +172,6 @@ class ChromeListeners {
         tabset.tabs.splice(index, 1, updatedTab);
       }
 
-      if (usePermissionsStore().hasFeature(FeatureIdent.SORT_TABS)) {
-        console.log("sorting...")
-        chrome.tabs.query({currentWindow: true}, (result: chrome.tabs.Tab[]) => {
-          const tabs = _.map(result, (t: chrome.tabs.Tab) => {
-
-            const url = t.url || 'https://unknown.tld'
-            let domain = "unknown.tld"
-            try {
-              const hostname = new URL(url).hostname
-              const splits = hostname.split(".")
-              if (splits.length >= 2) {
-                domain = splits[splits.length - 2] + "." + splits[splits.length - 1]
-              } else {
-                domain = hostname
-              }
-            } catch (err) {
-            }
-
-            return {
-              id: t.id,
-              index: t.index,
-              url: (t.url || 'unknown'),
-              domain: domain,
-              pinned: t.pinned
-            }
-          })
-          const sortedTabs = _.orderBy(tabs, ['pinned', 'domain'], ['desc', 'desc'])
-
-          let newIndex = 1
-          sortedTabs.forEach((t: any) => {
-            if (!t.pinned) {
-              t.index = newIndex
-            }
-            newIndex++
-          })
-          // @ts-ignore
-          const sortedIds: number[] = _.map(sortedTabs, (t: any) => t.id).reverse()
-          chrome.tabs.move(sortedIds, {index: -1})
-        })
-      }
-
-
     } else {
       console.log(`onUpdated: tab ${tab.id}: pending tab cannot be found in ${tabset.name}`)
       if (tab.url !== undefined) {
@@ -243,9 +182,10 @@ class ChromeListeners {
   }
 
   private handleUpdateInjectScripts(tabset: Tabset, info: chrome.tabs.TabChangeInfo, tab: chrome.tabs.Tab) {
-    if (this.ignoreUrl(tab, info)) {
-      return
-    }
+    // TODO ignoring urls !?
+    // if (this.ignoreUrl(tab, info)) {
+    //   return
+    // }
     if (info.status !== "loading") {
       return
     }
@@ -258,17 +198,11 @@ class ChromeListeners {
     if (usePermissionsStore().hasFeature(FeatureIdent.THUMBNAILS)) {
       scripts.push("content-script-thumbnails.js")
     }
-    if (usePermissionsStore().hasFeature(FeatureIdent.ANALYSE_TABS)) {
-      scripts.push("content-script.js")
-      scripts.push("tabsets-content-script.js")
-    }
+    scripts.push("content-script.js")
+    scripts.push("tabsets-content-script.js")
     if (scripts.length > 0 && tab.id !== null) { // && !this.injectedScripts.get(chromeTab.id)) {
 
       scripts.forEach((script: string) => {
-        // // @ts-ignore
-        // if (tab.id && this.injectedScripts.get(tab.id) && this.injectedScripts.get(tab.id).indexOf(script) >= 0) {
-        //   console.log("omitting script " + script + " on tab " + tab.id)
-        // } else {
         console.debug("executing scripts", tab.id, script)
         // @ts-ignore
         chrome.scripting.executeScript({
@@ -278,14 +212,7 @@ class ChromeListeners {
           if (chrome.runtime.lastError) {
             console.warn("could not execute script: " + chrome.runtime.lastError.message, info.url);
           }
-          //console.debug("callback", callback)
         });
-        // const activeScripts = this.injectedScripts.get(tab.id || 0) || []
-        // if (activeScripts.indexOf(script) < 0) {
-        //  // this.injectedScripts.set(tab.id || 0, activeScripts.concat(script))
-        //   //console.log("adding injectedScripts", this.injectedScripts)
-        // }
-        // }
       })
     }
   }
@@ -335,13 +262,11 @@ class ChromeListeners {
         }
       })
     })
-    //new TabsetApi(this.localStorage).saveTabset(this.currentTabset)
   }
 
   onMoved(number: number, info: chrome.tabs.TabMoveInfo) {
     this.eventTriggered()
     const tabsStore = useTabsStore()
-
     console.debug(`onMoved: tab ${number} moved: ${JSON.stringify(info)}`)
     tabsStore.loadTabs('onMoved');
   }
@@ -431,24 +356,6 @@ class ChromeListeners {
       }
     }
 
-    // console.log("sender", sender)
-    // if (sender && sender.url && request.html) {
-    //   try {
-    //     const hostname = new URL(sender.url).hostname
-    //     console.log("hostname", hostname)
-    //     if (hostname === "www.youtube.com") {
-    //       const regex = /"shortDescription":"([^"]*)/mg
-    //       const matches = request.html.matchAll(regex)
-    //       for (const match of matches) {
-    //         console.log("found desc", match[1])
-    //         request.metas['tabsets:longDescription'] = match[1]
-    //       }
-    //     }
-    //   } catch (err) {
-    //     console.log("error", err)
-    //   }
-    // }
-
     const text = convert(request.html, {
       wordwrap: 130
     });
@@ -460,8 +367,6 @@ class ChromeListeners {
       .replaceAll("\n", " ")
       .replace(/[`~!@#$%^&*()_|+\-=?;:'",.<>»«{}\[\]\\\/]/gi, ' ')
       .split(" ")
-    //console.log("text2", text2)
-    //console.log("tokens", tokens)
     let res = ""
     const tokenSet = new Set()
     tokens.forEach((t: string) => {
@@ -470,7 +375,6 @@ class ChromeListeners {
         tokenSet.add(t.toLowerCase())
       }
     })
-    //console.log("res", res)
     saveText(sender.tab, [...tokenSet].join(" "), request.metas)
     sendResponse({html2text: 'done'});
   }
@@ -496,37 +400,6 @@ class ChromeListeners {
     console.log("handleAddTabToTabset", request, sender)
     if (sender.tab) {
       this.addToTabset(request.tabsetId, new Tab(uid(), sender.tab))
-      /* addToTabsetId(request.tabsetId, new Tab(uid(), sender.tab))
-         .then(() => {
-           const ts = useTabsetService().getTabset(request.tabsetId)
-           if (ts) {
-             useTabsetService().saveTabset(ts)
-           }
-         })
-         .then(() => {
-           chrome.notifications.create(
-             {
-               title: "Tabset Extension Message",
-               type: "basic",
-               //iconUrl: "chrome-extension://" + selfId + "/www/favicon.ico",
-               iconUrl: chrome.runtime.getURL("www/favicon.ico"),
-               message: "the tab has been created successfully"
-             }
-           )
-         })
-         .catch((err: any) => {
-           console.log("catching rejection", err)
-           chrome.notifications.create(
-             {
-               title: "Tabset Extension Message",
-               type: "basic",
-               //iconUrl: "chrome-extension://" + selfId + "/www/favicon.ico",
-               iconUrl: chrome.runtime.getURL("www/favicon.ico"),
-               message: "tab could not be added: " + err
-             }
-           )
-
-         })*/
     }
     sendResponse({addTabToCurrent: 'done'});
   }
@@ -614,38 +487,6 @@ class ChromeListeners {
       newTab.selection = serialTx
       console.log("newTab with selection", newTab)
       this.addToTabset(currentTS.id, newTab)
-      /*addToTabsetId(currentTS.id, newTab)
-        .then(() => {
-          const ts = useTabsetService().getTabset(currentTS.id)
-          if (ts) {
-            useTabsetService().saveTabset(ts)
-          }
-        })
-        .then(() => {
-          chrome.notifications.create(
-            {
-              title: "Tabset Extension Message",
-              type: "basic",
-              //iconUrl: "chrome-extension://" + selfId + "/www/favicon.ico",
-              iconUrl: chrome.runtime.getURL("www/favicon.ico"),
-              message: "the tab has been created successfully"
-            }
-          )
-        })
-        .catch((err: any) => {
-          console.log("catching rejection", err)
-          chrome.notifications.create(
-            {
-              title: "Tabset Extension Message",
-              type: "basic",
-              //iconUrl: "chrome-extension://" + selfId + "/www/favicon.ico",
-              iconUrl: chrome.runtime.getURL("www/favicon.ico"),
-              message: "tab could not be added: " + err
-            }
-          )
-
-        })*/
-
     }
     sendResponse({websiteQuote: 'done'});
   }

@@ -79,7 +79,7 @@ const {inBexMode} = useUtils()
 
 const newTabsetName = ref('')
 const merge = ref(false)
-const splitterModel = ref(permissonsStore.hasFeature(FeatureIdent.DETAILS) ? 350 : 1)
+const splitterModel = ref(350)
 
 $q.loadingBar.setDefaults({
   color: 'green',

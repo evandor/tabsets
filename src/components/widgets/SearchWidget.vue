@@ -189,7 +189,7 @@ const inputPlaceholder = () => {
   if (Math.random() < 0.1) {
     return "use the key '/' for quick access to search"
   }
-  if (usePermissionsStore().hasFeature(FeatureIdent.BOOKMARKS) && usePermissionsStore().hasFeature(FeatureIdent.ANALYSE_TABS)) {
+  if (usePermissionsStore().hasFeature(FeatureIdent.BOOKMARKS)) {
     const contentCount = useSearchStore().stats.get("content.count")
     // return `Search in ${tabsStore.allTabsCount} tabs (${contentCount} analysed) and ${useBookmarksStore().bookmarksLeaves.length} bookmarks`
     return `Search in ${tabsStore.allTabsCount} tabs and ${useBookmarksStore().bookmarksLeaves.length} bookmarks`

@@ -14,7 +14,6 @@
       </div>
       <div class="col-xs-12 col-md-7 text-right">
 
-
       </div>
     </div>
   </q-toolbar>
@@ -47,9 +46,6 @@
     </div>
 
     <div class="col-12 q-my-md">
-      <div v-if="appFeature.type === FeatureType.DEFAULT">
-        This feature is considered stable and useful. It is activated by default and can be switched off if wanted.
-      </div>
       <div v-if="appFeature.type === FeatureType.RECOMMENDED">
         This feature is considered stable and useful, but not activated by default. To use it, switch this feature on.
       </div>
@@ -159,13 +155,13 @@ text.set(FeatureIdent.BOOKMARKS.toLowerCase(), {
     'take the URLs and titles of your bookmarks into account as well.',
   permissions: ['bookmarks']
 })
-text.set(FeatureIdent.DETAILS.toLowerCase(), {
-  name: 'Tab and Tabset Details',
-  img: 'details.png',
-  description: 'When clicking on a tab, a detail view will open providing you with meta information about the tab.',
-  activatedMsg: 'Now open a tabset and select a tab by clicking somewhere outside of the text',
-  permissions: []
-})
+// text.set(FeatureIdent.DETAILS.toLowerCase(), {
+//   name: 'Tab and Tabset Details',
+//   img: 'details.png',
+//   description: 'When clicking on a tab, a detail view will open providing you with meta information about the tab.',
+//   activatedMsg: 'Now open a tabset and select a tab by clicking somewhere outside of the text',
+//   permissions: []
+// })
 text.set(FeatureIdent.GROUP_BY_DOMAIN.toLowerCase(), {
   name: 'Group By Domain',
   img: 'groupedByDomain.png',
@@ -192,16 +188,16 @@ text.set(FeatureIdent.THUMBNAILS.toLowerCase(), {
     'Please note that only tabs that you visit (or revisit) after the activation of this feature are going to have thumbnails.',
   permissions: ['thumbnails']
 })
-text.set(FeatureIdent.ANALYSE_TABS.toLowerCase(), {
-  experimental: false,
-  name: 'Analyse Tabs',
-  img: 'analyse.png',
-  img_width: '700px',
-  description: 'This extension can analyse the tabs you visit, so that the search can be improved significantly. The tab\'s content, ' +
-    'its links and the received http headers are taken into account. ' +
-    'Please note that only tabs that you visit (or revisit) after the activation of this feature are going to be analysed.',
-  permissions: ['allOrigins']
-})
+// text.set(FeatureIdent.ANALYSE_TABS.toLowerCase(), {
+//   experimental: false,
+//   name: 'Analyse Tabs',
+//   img: 'analyse.png',
+//   img_width: '700px',
+//   description: 'This extension can analyse the tabs you visit, so that the search can be improved significantly. The tab\'s content, ' +
+//     'its links and the received http headers are taken into account. ' +
+//     'Please note that only tabs that you visit (or revisit) after the activation of this feature are going to be analysed.',
+//   permissions: ['allOrigins']
+// })
 
 text.set(FeatureIdent.EXPERIMENTAL_VIEWS.toLowerCase(), {
   experimental: true,

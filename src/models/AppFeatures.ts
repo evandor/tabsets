@@ -9,11 +9,6 @@ import {AppFeature, FeatureIdent, FeatureType} from "src/models/AppFeature"
 
 export class AppFeatures {
   features: AppFeature[] = [
-    new AppFeature(FeatureIdent.DETAILS, FeatureType.DEFAULT, 'Tab(set) Details View', 'o_info', ['all']),
-    new AppFeature(FeatureIdent.ANALYSE_TABS, FeatureType.DEFAULT, 'Analyse Tabs', 'o_analytics', ['bex'])
-      .setActivateCommand(new GrantOriginCommand('analyseTabs'))
-      .setDeactivateCommand(new RevokeOriginCommand('analyseTabs')),
-
     new AppFeature(FeatureIdent.BOOKMARKS, FeatureType.RECOMMENDED, 'Bookmarks', 'o_bookmarks', ['bex'])
       .setActivateCommand(new GrantPermissionCommand('bookmarks'))
       .setDeactivateCommand(new RevokePermissionCommand('bookmarks')),
@@ -25,14 +20,9 @@ export class AppFeatures {
       .setActivateCommand(new GrantPermissionCommand('pageCapture'))
       .setDeactivateCommand(new RevokePermissionCommand('pageCapture')),
     new AppFeature(FeatureIdent.GROUP_BY_DOMAIN, FeatureType.OPTIONAL, 'Group By Domain View', 'o_dns', ['all']),
-    //new AppFeature(FeatureIdent.SIDEBAR, FeatureType.OPTIONAL, 'Sidebar View', 'o_input', ['electron']),
     new AppFeature(FeatureIdent.OPENTABS_THRESHOLD, FeatureType.OPTIONAL, 'Open Tabs Warnings', 'o_tab', ['bex']),
-    // new AppFeature(FeatureIdent.SORT_TABS, FeatureType.OPTIONAL, 'Sort Tabs', 'o_tab', ['bex']),
 
     new AppFeature(FeatureIdent.EXPERIMENTAL_VIEWS, FeatureType.EXPERIMENTAL, 'Experimental Views', 'o_explore', ['all']),
-    // does not work properly right now (keeps re-catching the source)
-    // new AppFeature(FeatureIdent.NEW_TAB, FeatureType.EXPERIMENTAL, 'New Tab', 'o_create_new_folder', ['bex']),
-    // does not work properly right now in electron (keeps re-catching the source)
     new AppFeature(FeatureIdent.RSS, FeatureType.EXPERIMENTAL, 'RSS View', 'o_rss_feed', ['bex', 'spa']),
     new AppFeature(FeatureIdent.SESSIONS, FeatureType.EXPERIMENTAL, 'Sessions', 'o_explore', ['all']),//,[FeatureIdent.OPENTABS_THRESHOLD]),
     new AppFeature(FeatureIdent.SPACES, FeatureType.OPTIONAL, 'Spaces', 'o_space_dashboard', ['all']),
@@ -43,14 +33,6 @@ export class AppFeatures {
 
     new AppFeature(FeatureIdent.TAGS, FeatureType.OPTIONAL, 'Use Tags for Tabs', 'o_label', ['all']),
     new AppFeature(FeatureIdent.NOTES, FeatureType.OPTIONAL, 'Quick Notes with Drag&Drop', 'o_note', ['bex']),
-
-    // new AppFeature(FeatureIdent.ANALYSE_TABS, FeatureType.PLANNED, 'Multiple Windows', 'o_history', ['bex']),
-    // new AppFeature(FeatureIdent.ANALYSE_TABS, FeatureType.PLANNED, 'Scheduled Tabs', 'o_history', ['bex']),
-    // new AppFeature(FeatureIdent.ANALYSE_TABS, FeatureType.PLANNED, 'Old Tabs View', 'o_history', ['bex']),
-
-    // {ident: 'stats', name: 'Gather and show stats', icon: 'o_history'},
-    // {ident: 'tagcloud', name: 'Tag clouds from titles', icon: 'o_history'},
-    // {ident: 'tagcloud', name: 'Tag clouds from content', icon: 'o_history'}
 
   ]
 

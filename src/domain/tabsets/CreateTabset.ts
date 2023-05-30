@@ -34,9 +34,7 @@ export class CreateTabsetCommand implements Command<object> {
       const result = await useTabsetService()
         .saveOrReplaceFromChromeTabs(this.tabsetName, this.tabsToUse, this.merge)
         .then(res => {
-          if (useTabsStore().tabsets.size === 3 && !usePermissionsStore().hasFeature(FeatureIdent.DETAILS)) {
-            useSuggestionsStore().addSuggestion(Suggestion.getStaticSuggestion(StaticSuggestionIdent.TRY_TAB_DETAILS_FEATURE))
-          } else if (useTabsStore().tabsets.size === 5 && !usePermissionsStore().hasFeature(FeatureIdent.BOOKMARKS) && process.env.MODE === 'bex') {
+          if (useTabsStore().tabsets.size === 5 && !usePermissionsStore().hasFeature(FeatureIdent.BOOKMARKS) && process.env.MODE === 'bex') {
             useSuggestionsStore().addSuggestion(Suggestion.getStaticSuggestion(StaticSuggestionIdent.TRY_BOOKMARKS_FEATURE))
           }
           return res
