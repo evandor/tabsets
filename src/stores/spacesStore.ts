@@ -41,6 +41,12 @@ export const useSpacesStore = defineStore('spaces', () => {
     return newSpace
   }
 
+  function addSpaceFrom(space: Space): Space {
+    console.log("adding space", space)
+    spaces.value.set(space.id, space)
+    return space
+  }
+
   function putSpace(s: Space) {
     // console.log("putting space", s.id, s)
     spaces.value.set(s.id, s)
@@ -68,5 +74,5 @@ export const useSpacesStore = defineStore('spaces', () => {
     }
   }
 
-  return {spaces, space, nameExists, initialize, addSpace, putSpace, setSpace, deleteById}
+  return {spaces, space, nameExists, initialize, addSpace, putSpace, setSpace, deleteById, addSpaceFrom}
 })

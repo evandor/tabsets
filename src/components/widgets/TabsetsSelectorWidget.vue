@@ -25,7 +25,7 @@
           <q-item-section class="q-ml-sm">{{ ts.label }}</q-item-section>
         </q-item>
         <q-separator/>
-        <q-item clickable v-close-popup @click="openEditTabsetDialog()">
+        <q-item v-if="tabsStore.currentTabsetName" clickable v-close-popup @click="openEditTabsetDialog()">
           <q-item-section>Edit Tabset Name</q-item-section>
         </q-item>
         <q-separator/>

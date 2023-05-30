@@ -50,6 +50,10 @@ const {dialogRef, onDialogHide, onDialogCancel} = useDialogPluginComponent()
 const tabsStore = useTabsStore()
 const router = useRouter()
 
+const props = defineProps({
+  inSidePanel: {type: Boolean, default: false}
+})
+
 const importData = () => {
   // @ts-ignore
   var file = document.getElementById("json2import").files[0];

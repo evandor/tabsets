@@ -13,6 +13,7 @@ const {getTabset, getCurrentTabset, saveTabset, saveCurrentTabset, tabsetsFor, a
 
 import {useDB} from "src/services/usePersistenceService";
 import {api} from "boot/axios";
+import {useSpacesStore} from "stores/spacesStore";
 
 const {db} = useDB()
 
@@ -60,7 +61,7 @@ class TabsetService {
   async saveToCurrentTabset(tab: Tab, useIndex: number | undefined = undefined): Promise<number> {
     const currentTs = getCurrentTabset()
     if (currentTs) {
-        return addToTabset(currentTs, tab, useIndex)
+      return addToTabset(currentTs, tab, useIndex)
     }
     return Promise.reject("could not get current tabset")
   }
@@ -262,10 +263,15 @@ class TabsetService {
     console.log("exporting as ", exportAs)
 
     const tabsStore = useTabsStore()
+    const spacesStore = useSpacesStore()
+
     let data = ''
     let filename = 'tabsets.' + appVersion + '.json'
     if (exportAs === 'json') {
-      data = JSON.stringify([...tabsStore.tabsets.values()])
+      data = JSON.stringify({
+        tabsets: [...tabsStore.tabsets.values()],
+        spaces: [...spacesStore.spaces.values()]
+      })
       return this.createFile(data, filename);
     } else if (exportAs === 'csv') {
       data = "not implemented yet"
@@ -312,7 +318,15 @@ class TabsetService {
   importData(json: string) {
     console.log("importing from json")
     const tabsStore = useTabsStore()
-    let tabsets = JSON.parse(json)
+    const spacesStore = useSpacesStore()
+    let data = JSON.parse(json)
+    let tabsets = data.tabsets || data
+    let spaces = data.spaces || []
+
+    _.forEach(spaces, space => {
+      spacesStore.addSpaceFrom(space)
+    })
+
     _.forEach(tabsets, tabset => {
       tabsStore.addTabset(tabset)
       saveTabset(tabset)

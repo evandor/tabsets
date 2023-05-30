@@ -11,43 +11,8 @@
 
       <template v-slot:before>
 
-        <!-- first time -->
-        <transition appear enter-active-class="fadeIn" style="transition-delay: 1.5s;transition: all 2s ease-in"
-                    v-if="tabsStore.tabsets.size === 0">
-          <div class="q-ma-none q-pa-md">
-            <div class="row">
-              <div class="col-12 text-h6">
-                Welcome to Tabsets Extension
-              </div>
-            </div>
-            <div class="row q-mb-lg">
-              <div class="col-12 text-subtitle1">
-                Bookmarks next generation
-              </div>
-            </div>
-
-            <div class="row items-center">
-              <div class="col-12 text-subtitle2 q-mb-md">
-                To get started:
-              </div>
-            </div>
-
-            <q-btn class="text-primary"
-                   outline
-                   data-testid="createFirstTabsetBtn"
-                   @click="addFirstTabset"
-                   label="create your first tabset"></q-btn>
-
-            <div class="row q-mt-lg">
-              <div class="col-12 items-center q-mb-md">
-                This will create a new tabset containing some pre-chosen tabs.
-              </div>
-            </div>
-          </div>
-        </transition>
-
-        <!-- we have at least one tabset -->
-        <div v-else class="q-ma-none">
+        <!-- assuming here we have at least one tabset -->
+        <div class="q-ma-none">
 
           <q-toolbar class="text-primary lightgrey">
             <div class="row fit">
@@ -71,7 +36,8 @@
                     <q-icon v-if="usePermissionsStore().hasFeature(FeatureIdent.SESSIONS)"
                             class="q-ma-xs cursor-pointer"
                             :color="existingSession ? (tabsStore.getCurrentTabset?.type === TabsetType.SESSION ? 'red':'grey-5') :'primary'"
-                            :name="existingSession ? 'o_stop_circle':'o_play_circle'" size="16px" @click="toggleSessionState">
+                            :name="existingSession ? 'o_stop_circle':'o_play_circle'" size="16px"
+                            @click="toggleSessionState">
                       <q-tooltip class="tooltip" v-if="existingSession">Stop Session</q-tooltip>
                       <q-tooltip class="tooltip" v-else>Start new Session</q-tooltip>
                     </q-icon>
@@ -79,10 +45,10 @@
                             class="q-ma-xs cursor-pointer" name="filter_center_focus" size="16px" @click="createClip">
                       <q-tooltip class="tooltip">Create website clip</q-tooltip>
                     </q-icon>
-<!--                    <q-icon v-if="useSettingsStore().isEnabled('dev')"-->
-<!--                            class="q-ma-xs cursor-pointer" name="open_in_new" size="16px" @click="openExtensionTab">-->
-<!--                      <q-tooltip class="tooltip">Open Tabsets</q-tooltip>-->
-<!--                    </q-icon>-->
+                    <!--                    <q-icon v-if="useSettingsStore().isEnabled('dev')"-->
+                    <!--                            class="q-ma-xs cursor-pointer" name="open_in_new" size="16px" @click="openExtensionTab">-->
+                    <!--                      <q-tooltip class="tooltip">Open Tabsets</q-tooltip>-->
+                    <!--                    </q-icon>-->
                   </div>
                 </div>
               </q-toolbar-title>
@@ -96,8 +62,12 @@
                      style="height:20px;border: 1px dotted lightgray; border-radius: 3px;" v-model="dragTarget"/>
           </div>
 
-          <div class="row q-ma-sm" v-if="tabsStore.getCurrentTabset">
-            <div class="col-12">
+          <div class="text-caption q-ma-md" v-if="tabsStore.getCurrentTabset?.tabs.length === 0">
+            Start browsing and add the tabs you like to this tabset
+          </div>
+
+          <div class="row q-ma-none q-pa-sm" v-if="tabsStore.getCurrentTabset">
+            <div class="col-12 q-ma-none">
               <SidePanelDynamicTabset v-if="tabsStore.getCurrentTabset?.type === TabsetType.DYNAMIC"
                                       :tabset="tabsStore.getCurrentTabset"/>
               <PanelTabList v-else
@@ -119,7 +89,7 @@
       </template>
 
       <template v-slot:after>
-        <div v-if="tabFromChromeTab() && tabsStore.getCurrentTabset"
+        <div v-if="tabFromChromeTab() && tabsStore.getCurrentTabset && currentChromeTab.url !== 'chrome://newtab/'"
              class="row q-ma-sm q-mt-lg"
              :class="alreadyInTabset() ? 'bg-grey-1':'bg-yellow-1'"
              style="border:1px solid gray;border-radius: 5px">
@@ -435,7 +405,10 @@ const toggleSessionState = () => {
   existingSession ? stopSession() : startSession()
 }
 
-const startSession = () => $q.dialog({component: NewSessionDialog, componentProps: {replaceSession: false, inSidePanel: true}})
+const startSession = () => $q.dialog({
+  component: NewSessionDialog,
+  componentProps: {replaceSession: false, inSidePanel: true}
+})
 
 const stopSession = () => {
   const tabsetWithSession = _.filter([...tabsStore.tabsets.values()], (ts: Tabset) => ts.type === TabsetType.SESSION)

@@ -6,22 +6,22 @@
     ident="paneltablist_dnd"
     hint="You can select the favicon images and drag and drop the entries to reorder the list to your wishes"/>
 
-  <q-list separator>
+  <q-list separator class="q-ma-none">
     <vue-draggable-next
-      class="dragArea list-group w-full"
+      class="q-ma-none"
       :list="props.tabs as Array<Tab>"
       :group="{ name: 'tabs', pull: 'clone' }"
 
       @change="handleDragAndDrop">
 
-      <q-item v-if="props.tabs?.length === 0 &&
-                      inBexMode() &&
-                      useUiStore().rightDrawer.activeTab === DrawerTabs.UNASSIGNED_TABS &&
-                      tabsStore.pendingTabset?.tabs.length > 0">
-        <div class="row fit q-ma-lg q-pa-lg text-subtitle2 text-grey-8">
-          You can drag and drop items from the "Tabs to add" view to add them to this tabset by clicking on the icons
-        </div>
-      </q-item>
+<!--      <q-item v-if="props.tabs?.length === 0 &&-->
+<!--                      inBexMode() &&-->
+<!--                      useUiStore().rightDrawer.activeTab === DrawerTabs.UNASSIGNED_TABS &&-->
+<!--                      tabsStore.pendingTabset?.tabs.length > 0">-->
+<!--        <div class="row fit q-ma-lg q-pa-lg text-subtitle2 text-grey-8">-->
+<!--          You can drag and drop items from the "Tabs to add" view to add them to this tabset by clicking on the icons...-->
+<!--        </div>-->
+<!--      </q-item>-->
 
       <q-item
         clickable

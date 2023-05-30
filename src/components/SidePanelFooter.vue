@@ -3,7 +3,8 @@
   <q-footer class="lightgrey text-primary q-pa-xs">
     <div class="row fit">
       <div class="col-6">
-        <q-btn icon="o_playlist_add"
+        <q-btn v-if="tabsStore.tabs.length > 1"
+          icon="o_playlist_add"
                class="q-my-xs q-ml-xs"
                style="width:20px"
                :color="isActive(SidePanelView.TABS_LIST) ? 'secondary':'primary'"
@@ -29,14 +30,16 @@
                @click="toggleView(SidePanelView.BY_DOMAIN_LIST)">
           <q-tooltip class="tooltip">List all your tabs URLs by domain</q-tooltip>
         </q-btn>
-        <span class="q-ma-none" v-if="permissionsStore.hasFeature(FeatureIdent.OPENTABS_THRESHOLD) && tabsStore.tabsets.size > 0">
+        <span class="q-ma-none"
+              v-if="permissionsStore.hasFeature(FeatureIdent.OPENTABS_THRESHOLD) && tabsStore.tabsets.size > 0">
           <OpenTabsThresholdWidget :showLabel="false" :in-side-panel="true">
-            <q-tooltip>{{tabsStore.tabs.length}} open tabs</q-tooltip>
+            <q-tooltip>{{ tabsStore.tabs.length }} open tabs</q-tooltip>
           </OpenTabsThresholdWidget>
         </span>
       </div>
       <div class="col text-right">
-        <q-btn icon="crop_7_5"
+        <q-btn v-if="tabsStore.getCurrentTabset?.tabs.length > 0"
+               icon="crop_7_5"
                class="q-my-xs q-mx-none"
                style="width:20px"
                color="primary"
@@ -44,7 +47,8 @@
                @click="setListDetailLevel(ListDetailLevel.SMALL)">
           <q-tooltip class="tooltip">Show only title and url</q-tooltip>
         </q-btn>
-        <q-btn icon="crop_16_9"
+        <q-btn v-if="tabsStore.getCurrentTabset?.tabs.length > 0"
+               icon="crop_16_9"
                class="q-my-xs q-mx-none"
                style="width:20px"
                color="primary"
@@ -52,7 +56,8 @@
                @click="setListDetailLevel(ListDetailLevel.MEDIUM)">
           <q-tooltip class="tooltip">Show image, title and url</q-tooltip>
         </q-btn>
-        <q-btn icon="crop_portrait"
+        <q-btn v-if="tabsStore.getCurrentTabset?.tabs.length > 0"
+               icon="crop_portrait"
                class="q-my-xs q-mx-none"
                style="width:20px"
                color="primary"

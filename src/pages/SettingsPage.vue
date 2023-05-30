@@ -16,12 +16,12 @@
             v-model="tab"
             no-caps>
       <q-tab name="appearance" label="Appearance"/>
-      <q-tab name="permissions" label="Permissions" v-if="devEnabled" />
-      <q-tab name="thirdparty" label="Third Party Services" />
-<!--      <q-tab name="ignored" label="Ignored Urls"/>-->
+      <q-tab name="permissions" label="Permissions" v-if="devEnabled"/>
+      <q-tab name="thirdparty" label="Third Party Services"/>
+      <!--      <q-tab name="ignored" label="Ignored Urls"/>-->
       <q-tab name="archived" label="Archived Tabsets"/>
-      <q-tab name="search" label="Search Engine"  v-if="devEnabled" />
-<!--      <q-tab name="importExport" label="Import/Export"/>-->
+      <q-tab name="search" label="Search Engine" v-if="devEnabled"/>
+      <q-tab name="importExport" label="Import/Export"/>
       <q-tab name="featureToggles" label="Feature Toggles"/>
     </q-tabs>
   </div>
@@ -58,11 +58,11 @@
           Restore Info Messages
         </div>
         <div class="col-3">
-         If you accidentally closed an info message box with a hint, you can restore them all by clicking here:
+          If you accidentally closed an info message box with a hint, you can restore them all by clicking here:
         </div>
         <div class="col-1"></div>
         <div class="col">
-          <q-btn label="Restore Hints" @click.stop="restoreHints" />
+          <q-btn label="Restore Hints" @click.stop="restoreHints"/>
         </div>
       </div>
 
@@ -118,7 +118,8 @@
   <div v-if="tab === 'permissions'">
 
     <div class="q-pa-md q-gutter-sm">
-      <q-banner rounded class="bg-grey-1 text-primary">On this settings page, you can adjust some of the permissions needed for the tabsets extension.
+      <q-banner rounded class="bg-grey-1 text-primary">On this settings page, you can adjust some of the permissions
+        needed for the tabsets extension.
       </q-banner>
 
       <div class="row items-baseline q-ma-md">
@@ -258,8 +259,10 @@
 
       <div class="row q-pa-md">
         <div class="col-3"><b>DuckDuckGo FavIcon Service</b></div>
-        <div class="col-5">Usually, the favicon (the little icon displayed next to a tab url) is provided by the page you are visiting.
-          Sometimes, Tabsets does not have the information (yet) and might defer to a third party service, here duckduckgo. Switch this off
+        <div class="col-5">Usually, the favicon (the little icon displayed next to a tab url) is provided by the page
+          you are visiting.
+          Sometimes, Tabsets does not have the information (yet) and might defer to a third party service, here
+          duckduckgo. Switch this off
           if you do not want to use this service.
         </div>
         <div class="col-1"></div>
@@ -272,13 +275,58 @@
 
   </div>
 
+  <div v-if="tab === 'importExport'">
+
+    <div class="q-pa-md q-gutter-sm">
+
+      <q-banner rounded class="bg-grey-1 text-primary">You can export your data in various formats and re-import them
+        from json. Please
+        note that it is not guaranteed that older exports can be imported with newer versions of the tabsets
+        extension.
+      </q-banner>
+
+      <div class="row q-pa-md">
+        <div class="col-3"><b>Export</b></div>
+        <div class="col-3">json or as bookmarks</div>
+        <div class="col-1"></div>
+        <div class="col-5">
+          <q-btn
+            @click="showExportDialog"
+            flat round dense icon="file_download" color="primary">
+            <q-tooltip>Export your tabsets</q-tooltip>
+          </q-btn>
+        </div>
+      </div>
+
+      <div class="row q-pa-md">
+        <div class="col-3"><b>Import</b></div>
+        <div class="col-3">from json</div>
+        <div class="col-1"></div>
+        <div class="col-5">
+          <q-btn
+            @click="showImportDialog"
+            flat round dense icon="file_upload" color="primary">
+            <q-tooltip>Import your tabsets backup</q-tooltip>
+          </q-btn>
+        </div>
+      </div>
+
+    </div>
+
+
+  </div>
+
+
   <div v-if="tab === 'featureToggles'">
 
     <div class="q-pa-md q-gutter-sm">
 
-      <q-banner rounded class="bg-grey-1 text-primary">Switch on experimental features (or off). These feature toggles are meant for developers
-        only as they might break functionality and/or destroy data. Once they are considered 'safe enough', they will be available at the
-        "experimental features" view on the left.</q-banner>
+      <q-banner rounded class="bg-grey-1 text-primary">Switch on experimental features (or off). These feature toggles
+        are meant for developers
+        only as they might break functionality and/or destroy data. Once they are considered 'safe enough', they will be
+        available at the
+        "experimental features" view on the left.
+      </q-banner>
 
       <div class="row q-pa-md">
         <div class="col-3"><b>Developer Mode</b></div>
@@ -304,6 +352,8 @@ import {ref, watch, watchEffect} from "vue";
 import {useQuasar} from "quasar";
 import {useSearchStore} from "src/stores/searchStore";
 import TabsetService from "src/services/TabsetService";
+import ExportDialog from "components/dialogues/ExportDialog.vue";
+import ImportDialog from "components/dialogues/ImportDialog.vue";
 import _ from "lodash";
 import {Tabset, TabsetStatus} from "src/models/Tabset";
 import {MarkTabsetAsDefaultCommand} from "src/domain/tabsets/MarkTabsetAsDefault";
@@ -450,6 +500,9 @@ const unarchive = (tabset: Tabset) => useCommandExecutor().executeFromUi(new Mar
 const simulateNewVersion = (version: string) => NavigationService.updateAvailable({version: version})
 
 const restoreHints = () => useUiStore().restoreHints()
+
+const showExportDialog = () => $q.dialog({component: ExportDialog, componentProps: {inSidePanel: true}})
+const showImportDialog = () => $q.dialog({component: ImportDialog, componentProps: {inSidePanel: true}})
 
 </script>
 

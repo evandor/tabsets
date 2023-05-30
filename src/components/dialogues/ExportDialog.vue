@@ -18,7 +18,7 @@
       </q-card-section>
 
       <q-card-section class="q-pt-none text-warning" v-if="warning !== ''">
-        {{warning}}
+        {{ warning }}
       </q-card-section>
 
       <q-card-actions align="right" class="text-primary">
@@ -60,6 +60,11 @@ const exportAs = ref('json')
 const hideWarning = ref(false)
 const warning = ref('')
 
+
+const props = defineProps({
+  inSidePanel: {type: Boolean, default: false}
+})
+
 watchEffect(() => {
   if (exportAs.value === 'bookmarks') {
     warning.value = "Warning! This will replace the bookmarks at '/tabsets'!"
@@ -74,7 +79,7 @@ const exportData = () => {
   const appVersion = import.meta.env.PACKAGE_VERSION
   TabsetService.exportData(exportAs.value, appVersion)
     .then(() => {
-      router.push("/tabsets/" + tabsStore.currentTabsetId)
+      //router.push("/tabsets/" + tabsStore.currentTabsetId)
       $q.notify({
         message: 'export successful',
         type: 'positive'
@@ -83,13 +88,12 @@ const exportData = () => {
     console.error("ex", ex)
     hideWarning.value = false
     $q.notify({
-      message: 'Sorry, there was a problem exporting your data' ,
+      message: 'Sorry, there was a problem exporting your data',
       type: 'warning',
     })
 
   })
 }
-
 
 
 </script>

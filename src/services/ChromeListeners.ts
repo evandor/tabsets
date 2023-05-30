@@ -202,17 +202,22 @@ class ChromeListeners {
     scripts.push("tabsets-content-script.js")
     if (scripts.length > 0 && tab.id !== null) { // && !this.injectedScripts.get(chromeTab.id)) {
 
-      scripts.forEach((script: string) => {
-        console.debug("executing scripts", tab.id, script)
-        // @ts-ignore
-        chrome.scripting.executeScript({
-          target: {tabId: tab.id, allFrames: false},
-          files: [script] //["tabsets-content-script.js","content-script-thumbnails.js"],
-        }, (callback: any) => {
-          if (chrome.runtime.lastError) {
-            console.warn("could not execute script: " + chrome.runtime.lastError.message, info.url);
-          }
-        });
+      chrome.tabs.get(tab.id, (chromeTab: chrome.tabs.Tab) => {
+        console.log("got tab", tab)
+        if (!tab.url?.startsWith("chrome")) {
+          scripts.forEach((script: string) => {
+            console.debug("executing scripts", tab.id, script)
+            // @ts-ignore
+            chrome.scripting.executeScript({
+              target: {tabId: tab.id, allFrames: false},
+              files: [script] //["tabsets-content-script.js","content-script-thumbnails.js"],
+            }, (callback: any) => {
+              if (chrome.runtime.lastError) {
+                console.warn("could not execute script: " + chrome.runtime.lastError.message, info.url);
+              }
+            });
+          })
+        }
       })
     }
   }

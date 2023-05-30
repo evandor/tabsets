@@ -7,7 +7,7 @@
     </div>
     <div class="row q-mb-lg">
       <div class="col-12 text-subtitle1">
-        Bookmarks next generation
+        <i>Bookmarks next generation</i>
       </div>
     </div>
 
