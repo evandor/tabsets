@@ -37,7 +37,7 @@ timer = setTimeout(() => {
       useTabsStore().selectCurrentTabset(selectedTS)
       router.push("/tabsets/" + selectedTS)
     } else {
-      router.push("/tabsets/none")
+      router.push("/tabsets")
     }
   }
   setTimeout(() => {

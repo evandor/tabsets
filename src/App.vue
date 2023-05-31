@@ -27,6 +27,7 @@ import {INDEX_DB_NAME} from "boot/constants";
 import {useSettingsStore} from "src/stores/settingsStore";
 import BookmarksService from "src/services/BookmarksService";
 import {useUtils} from "src/services/Utils";
+import {EventEmitter} from "events";
 
 const {inBexMode} = useUtils()
 
@@ -41,6 +42,10 @@ const uiStore = useUiStore()
 const router = useRouter()
 const route = useRoute()
 const $q = useQuasar()
+
+// https://stackoverflow.com/questions/9768444/possible-eventemitter-memory-leak-detected
+const emitter = new EventEmitter()
+emitter.setMaxListeners(12)
 
 $q.dark.set($q.localStorage.getItem('darkMode') || false)
 

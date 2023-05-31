@@ -5,6 +5,8 @@ import {useQuasar} from "quasar";
 
 export const useSettingsStore = defineStore('settings', () => {
 
+  const localStorage= useQuasar().localStorage
+
   const activeToggles = ref<string[]>([])
   const thresholds = ref(localStorage.getItem('thresholds') || {
     min: 0,
@@ -16,7 +18,7 @@ export const useSettingsStore = defineStore('settings', () => {
   watch(
     activeToggles,
     (activeTogglesVal: string[]) => {
-      localStorage.setItem("settings", _.join(activeTogglesVal, ","))
+      localStorage.set("settings", _.join(activeTogglesVal, ","))
     }, {deep: true}
   )
 
@@ -24,6 +26,7 @@ export const useSettingsStore = defineStore('settings', () => {
     thresholds,
     (thresholdsVal: Object) => {
       localStorage.set("thresholds", thresholdsVal)
+      //console.log("thresholds set to ", thresholdsVal)
     }, {deep: true}
   )
 

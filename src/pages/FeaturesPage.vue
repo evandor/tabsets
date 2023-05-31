@@ -3,17 +3,17 @@
   <!-- toolbar -->
   <q-toolbar class="text-primary lightgrey">
     <div class="row fit">
-      <div class="col-xs-12 col-md-5">
+      <div class="col-12">
         <q-toolbar-title>
           <div class="row justify-start items-baseline">
-            <div class="col-1"><span class="text-dark">{{ title }}</span> <span
+            <q-icon name="chevron_left" class="cursor-pointer q-mr-lg" size="24px" @click="router.push('/mainpanel/settings')">
+              <q-tooltip>Back</q-tooltip>
+            </q-icon>
+            <span class="text-dark">{{ title }}</span> <span
               class="text-primary">
-            </span></div>
+            </span>
           </div>
         </q-toolbar-title>
-      </div>
-      <div class="col-xs-12 col-md-7 text-right">
-
       </div>
     </div>
   </q-toolbar>

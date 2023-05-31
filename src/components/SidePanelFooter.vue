@@ -39,31 +39,13 @@
       </div>
       <div class="col text-right">
         <q-btn v-if="tabsStore.getCurrentTabset?.tabs.length > 0"
-               icon="crop_7_5"
+               :icon="getDetailLevelIcon()"
                class="q-my-xs q-mx-none"
                style="width:20px"
                color="primary"
-               :outline="useUiStore().listDetailLevel !== ListDetailLevel.SMALL" size="8px"
-               @click="setListDetailLevel(ListDetailLevel.SMALL)">
-          <q-tooltip class="tooltip">Show only title and url</q-tooltip>
-        </q-btn>
-        <q-btn v-if="tabsStore.getCurrentTabset?.tabs.length > 0"
-               icon="crop_16_9"
-               class="q-my-xs q-mx-none"
-               style="width:20px"
-               color="primary"
-               :outline="useUiStore().listDetailLevel !== ListDetailLevel.MEDIUM" size="8px"
-               @click="setListDetailLevel(ListDetailLevel.MEDIUM)">
-          <q-tooltip class="tooltip">Show image, title and url</q-tooltip>
-        </q-btn>
-        <q-btn v-if="tabsStore.getCurrentTabset?.tabs.length > 0"
-               icon="crop_portrait"
-               class="q-my-xs q-mx-none"
-               style="width:20px"
-               color="primary"
-               :outline="useUiStore().listDetailLevel !== ListDetailLevel.LARGE" size="8px"
-               @click="setListDetailLevel(ListDetailLevel.LARGE)">
-          <q-tooltip class="tooltip">All available info</q-tooltip>
+               size="8px"
+               @click="toggleListDetailLevel()">
+          <q-tooltip class="tooltip">Toggle the detail level for the tabs</q-tooltip>
         </q-btn>
 
         <q-btn icon="o_settings"
@@ -93,12 +75,33 @@ const tabsStore = useTabsStore()
 const permissionsStore = usePermissionsStore()
 const router = useRouter()
 
-const activeView = ref<string | undefined>(undefined)
 const currentChromeTabs = ref<chrome.tabs.Tab[]>([])
 const currentTabs = ref<Tab[]>([])
 const currentChromeTab = ref<chrome.tabs.Tab>(null as unknown as chrome.tabs.Tab)
 
-const setListDetailLevel = (val: ListDetailLevel) => useUiStore().setListDetailLevel(val)
+const toggleListDetailLevel = () => {
+  switch (useUiStore().listDetailLevel) {
+    case ListDetailLevel.LARGE:
+      useUiStore().setListDetailLevel(ListDetailLevel.MEDIUM)
+      break;
+    case ListDetailLevel.MEDIUM:
+      useUiStore().setListDetailLevel(ListDetailLevel.SMALL)
+      break;
+    default:
+      useUiStore().setListDetailLevel(ListDetailLevel.LARGE)
+  }
+}
+
+const getDetailLevelIcon = () => {
+  switch (useUiStore().listDetailLevel) {
+    case ListDetailLevel.LARGE:
+      return "crop_portrait"
+    case ListDetailLevel.MEDIUM:
+      return "crop16_9"
+    default:
+      return "crop_7_5"
+  }
+}
 
 watchEffect(() => {
   if (currentChromeTabs.value[0]?.url) {

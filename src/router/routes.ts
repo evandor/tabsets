@@ -3,7 +3,8 @@ import { RouteRecordRaw } from 'vue-router';
 const routes: RouteRecordRaw[] = [
   {
     path: '/',
-    redirect: '/sidepanel'
+    // @ts-ignore
+    redirect: (chrome.sidePanel && chrome.sidePanel.setPanelBehavior) ? '/sidepanel' : '/start'
   },
   {
     path: '/start',
@@ -99,11 +100,6 @@ const routes: RouteRecordRaw[] = [
     path: '/settings',
     component: () => import('layouts/DefaultLayout.vue'),
     children: [{ path: '', component: () => import('pages/SettingsPage.vue') }],
-  },
-  {
-    path: '/stats',
-    component: () => import('layouts/DefaultLayout.vue'),
-    children: [{ path: '', component: () => import('pages/StatsPage.vue') }],
   },
   {
     path: '/tabsets/:tabsetId',

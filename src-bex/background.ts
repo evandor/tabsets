@@ -17,25 +17,25 @@ chrome.runtime.onInstalled.addListener((details) => {
       }
     );
 
-    // @ts-ignore
-    chrome.action.setPopup(
-      // {popup: "www/index.html#/popup"},
-      {popup: "www/popup.html"},
-      () => {
-        console.log("popup set", chrome.runtime.lastError)
-      })
+    // // @ts-ignore
+    // chrome.action.setPopup(
+    //   // {popup: "www/index.html#/popup"},
+    //   {popup: "www/popup.html"},
+    //   () => {
+    //     console.log("popup set", chrome.runtime.lastError)
+    //   })
   });
 
 });
 
 chrome.runtime.onStartup.addListener(() => {
   console.log("onStartup: adding listener in background.ts")
-  // @ts-ignore
-  chrome.action.setPopup(
-    {popup: ''},
-    () => {
-      console.log("popup unset", chrome.runtime.lastError)
-    })
+  // // @ts-ignore
+  // chrome.action.setPopup(
+  //   {popup: ''},
+  //   () => {
+  //     console.log("popup unset", chrome.runtime.lastError)
+  //   })
 
   // @ts-ignore
   chrome.action.onClicked.addListener((tab) => {
@@ -51,13 +51,13 @@ chrome.runtime.onStartup.addListener(() => {
       }
     );
 
-    // @ts-ignore
-    chrome.action.setPopup(
-      // {popup: "www/index.html#/popup"},
-      {popup: "www/popup.html"},
-      () => {
-        console.log("popup set", chrome.runtime.lastError)
-      })
+    // // @ts-ignore
+    // chrome.action.setPopup(
+    //   // {popup: "www/index.html#/popup"},
+    //   {popup: "www/popup.html"},
+    //   () => {
+    //     console.log("popup set", chrome.runtime.lastError)
+    //   })
   });
 
 })

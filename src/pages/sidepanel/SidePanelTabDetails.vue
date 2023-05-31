@@ -108,7 +108,7 @@
         <!--          <q-tooltip>Schedule this tab</q-tooltip>-->
         <!--        </q-btn>-->
 
-        <q-btn v-if="usePermissionsStore().hasPermission('pageCapture')"
+        <q-btn v-if="usePermissionsStore().hasPermission('pageCapture') && usePermissionsStore().hasFeature(FeatureIdent.SAVE_TAB)"
                @click.stop="saveTab(useUiStore().getSelectedTab)"
                flat round color="primary" size="11px" icon="save"
                :disabled="!isOpen(useUiStore().getSelectedTab)">

@@ -1,6 +1,7 @@
 import {uid} from "quasar";
 import {useSpacesStore} from "src/stores/spacesStore";
 import {useDB} from "src/services/usePersistenceService";
+import {Space} from "src/models/Space";
 
 const {db} = useDB(undefined)
 
@@ -24,6 +25,15 @@ class SpacesService {
     }
     const spaceId = uid()
     const newSpace = spacesStore.addSpace(spaceId, name)
+    return storage.addSpace(newSpace)
+  }
+
+  addNewSpaceFrom(s: Space): Promise<void> {
+    const spacesStore = useSpacesStore()
+    if (spacesStore.nameExists(s.label)) {
+      return Promise.reject("name does already exist")
+    }
+    const newSpace = spacesStore.addSpaceFrom(s)
     return storage.addSpace(newSpace)
   }
 
