@@ -28,6 +28,17 @@
         This will create a new tabset containing some pre-chosen tabs.
       </div>
     </div>
+
+    <div class="row q-mt-lg" v-if="$q.screen.gt.sm">
+      <div class="col-12 items-center q-ma-sm q-pa-lg bg-yellow-4"
+           style="border:1px solid grey;border-radius: 3px;">
+        If you are using a recent version of chrome and this opened in the main window (not in the
+        sidepanel), please try opening it again.
+      </div>
+    </div>
+
+
+
   </div>
 </template>
 

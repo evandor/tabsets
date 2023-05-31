@@ -10,11 +10,11 @@
     "activeTab",
     "alarms",
     "scripting",
-    "notifications",
-    "pageCapture",
     "sidePanel"
   ],
   "optional_permissions": [
+    "pageCapture",
+    "notifications",
     "bookmarks"
   ],
   "host_permissions": [

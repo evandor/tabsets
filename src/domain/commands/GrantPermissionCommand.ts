@@ -41,8 +41,8 @@ export class GrantPermissionCommand implements Command<boolean> {
                 ChromeBookmarkListeners.initListeners()
               })
             useSuggestionsStore().removeSuggestion(StaticSuggestionIdent.TRY_BOOKMARKS_FEATURE)
-          } else if ("history" === this.permission) {
-            usePermissionsStore().activateFeature('history')
+//          } else if ("history" === this.permission) {
+//            usePermissionsStore().activateFeature('history')
           }
           return new ExecutionResult(
             granted,

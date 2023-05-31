@@ -41,7 +41,7 @@
                       <q-tooltip class="tooltip" v-if="existingSession">Stop Session</q-tooltip>
                       <q-tooltip class="tooltip" v-else>Start new Session</q-tooltip>
                     </q-icon>
-                    <q-icon v-if="useSettingsStore().isEnabled('dev')"
+                    <q-icon v-if="usePermissionsStore().hasFeature(FeatureIdent.WEBSITE_CLIP)"
                             class="q-ma-xs cursor-pointer" name="filter_center_focus" size="16px" @click="createClip">
                       <q-tooltip class="tooltip">Create website clip</q-tooltip>
                     </q-icon>
@@ -155,7 +155,6 @@ import PanelTabList from "components/layouts/PanelTabList.vue";
 import PanelTabListElementWidget from "components/widgets/PanelTabListElementWidget.vue";
 import {usePermissionsStore} from "stores/permissionsStore";
 import {FeatureIdent} from "src/models/AppFeature";
-import {useSettingsStore} from "stores/settingsStore";
 import SearchWidget from "components/widgets/SearchWidget.vue";
 import {useSpacesStore} from "stores/spacesStore";
 import SidePanelTabListElementDetails from "components/widgets/SidePanelTabListElementDetails.vue";
@@ -339,6 +338,7 @@ const alreadyInTabset = () => {
   return false
 }
 
+/*
 const save = () => {
   console.log("saving...", tabsetName.value['value' as keyof object])
   if (tabsetName.value && tabsetName.value['value' as keyof object]) {
@@ -369,6 +369,7 @@ const save = () => {
   }
 
 }
+*/
 
 const createClip = () => {
   if (currentChromeTabs.value[0]?.id) {

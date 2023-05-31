@@ -12,11 +12,6 @@ const routes: RouteRecordRaw[] = [
     children: [{ path: '', component: () => import('pages/Start.vue') }],
   },
   {
-    path: '/popup',
-    component: () => import('layouts/PlainLayout.vue'),
-    children: [{ path: '', component: () => import('pages/PopupPage.vue') }],
-  },
-  {
     path: '/sidepanel',
     component: () => import('layouts/SidePanelLayout.vue'),
     children: [{ path: '', component: () => import('pages/SidePanelPage.vue') }],

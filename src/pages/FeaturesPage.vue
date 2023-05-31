@@ -171,7 +171,7 @@ text.set(FeatureIdent.GROUP_BY_DOMAIN.toLowerCase(), {
 text.set(FeatureIdent.SAVE_TAB.toLowerCase(), {
   name: 'Save Tabs',
   description: 'You can save tabs in a format called MHtml.',
-  permissions: []
+  permissions: ['pageCapture']
 })
 text.set(FeatureIdent.RSS.toLowerCase(), {
   name: 'RSS View',
@@ -283,6 +283,11 @@ text.set(FeatureIdent.NOTES.toLowerCase(), {
   name: 'Quick Notes with Drag&Drop',
   description: 'Drag and drop a text selection from a website to create a note',
   permissions: []
+})
+text.set(FeatureIdent.WEBSITE_CLIP.toLowerCase(), {
+  name: 'Wesite Clip',
+  description: 'Create an image clip from a website and store it',
+  permissions: ['notification']
 })
 
 

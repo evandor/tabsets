@@ -17,8 +17,8 @@ export class AppFeatures {
       .setDeactivateCommand(new RevokeOriginCommand('thumbnails')),
 
     new AppFeature(FeatureIdent.SAVE_TAB, FeatureType.EXPERIMENTAL, 'Save Tabs', 'o_save', ['bex'])
-      .setActivateCommand(new GrantPermissionCommand('pageCapture'))
-      .setDeactivateCommand(new RevokePermissionCommand('pageCapture')),
+      .setActivateCommand(new GrantPermissionCommand('pageCapture')),
+      //.setDeactivateCommand(new RevokePermissionCommand('pageCapture')),
     new AppFeature(FeatureIdent.GROUP_BY_DOMAIN, FeatureType.OPTIONAL, 'Group By Domain View', 'o_dns', ['all']),
     new AppFeature(FeatureIdent.OPENTABS_THRESHOLD, FeatureType.OPTIONAL, 'Open Tabs Warnings', 'o_tab', ['bex']),
 
@@ -33,6 +33,8 @@ export class AppFeatures {
 
     new AppFeature(FeatureIdent.TAGS, FeatureType.OPTIONAL, 'Use Tags for Tabs', 'o_label', ['all']),
     new AppFeature(FeatureIdent.NOTES, FeatureType.EXPERIMENTAL, 'Quick Notes with Drag&Drop', 'o_note', ['bex']),
+    new AppFeature(FeatureIdent.WEBSITE_CLIP, FeatureType.EXPERIMENTAL, 'Create an image clip from a website and store it', 'filter_center_focus', ['bex'])
+      .setActivateCommand(new GrantPermissionCommand('notifications'))
 
   ]
 
