@@ -123,7 +123,6 @@
               </q-item>
             </q-list>
           </div>
-          <v-tour name="myTour" :steps="steps"></v-tour>
         </div>
       </template>
 
@@ -136,7 +135,7 @@
 <script lang="ts" setup>
 
 import NavigationService from "src/services/NavigationService";
-import {inject, onMounted, ref, watchEffect} from "vue";
+import {ref, watchEffect} from "vue";
 import {useTabsStore} from "src/stores/tabsStore";
 import {Tab, UrlExtension} from "src/models/Tab";
 import _ from "lodash"
@@ -153,7 +152,7 @@ import {useUiStore} from "stores/uiStore";
 import TabsetsSelectorWidget from "components/widgets/TabsetsSelectorWidget.vue";
 import PanelTabList from "components/layouts/PanelTabList.vue";
 import PanelTabListElementWidget from "components/widgets/PanelTabListElementWidget.vue";
-import {usePermissionsStore} from "stores/permissionsStore";
+import {usePermissionsStore} from "src/stores/permissionsStore";
 import {FeatureIdent} from "src/models/AppFeature";
 import SearchWidget from "components/widgets/SearchWidget.vue";
 import {useSpacesStore} from "stores/spacesStore";
@@ -185,26 +184,7 @@ const splitterModel = ref(160)
 const selectedTab = ref<Tab | undefined>(undefined)
 const dragTarget = ref('')
 
-const tours = inject('tours')
-
-const steps = [
-  {
-    target: '#v-step-0',  // We're using document.querySelector() under the hood
-    header: {
-      title: 'Get Started',
-    },
-    content: `Discover <strong>Vue Tour</strong>!`
-  }
-]
-
 console.log("adding listener")
-
-watchEffect(() => {
-  if (selectedTab && tours &&  tours['myTour' as keyof object]) {
-    console.log("hier!!!", tours, tours['myTour'])
-    tours['myTour' as keyof object].start()
-  }
-})
 
 const chromeVersion = (/Chrome\/([0-9]+)/.exec(navigator.userAgent) || [, 0])[1];
 

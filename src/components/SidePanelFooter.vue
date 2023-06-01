@@ -63,11 +63,11 @@
 </template>
 <script setup lang="ts">
 import {ListDetailLevel, SidePanelView, useUiStore} from "stores/uiStore";
-import {useTabsStore} from "stores/tabsStore";
+import {useTabsStore} from "src/stores/tabsStore";
 import {Tab} from "src/models/Tab";
 import {ref, watchEffect} from "vue";
 import {useRouter} from "vue-router";
-import {usePermissionsStore} from "stores/permissionsStore";
+import {usePermissionsStore} from "src/stores/permissionsStore";
 import {FeatureIdent} from "src/models/AppFeature";
 import OpenTabsThresholdWidget from "components/widgets/OpenTabsThresholdWidget.vue";
 

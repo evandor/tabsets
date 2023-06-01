@@ -5,6 +5,8 @@ import {MarkTabsetAsDefaultCommand} from "src/domain/tabsets/MarkTabsetAsDefault
 import {TabsetType} from "src/models/Tabset";
 import {usePermissionsStore} from "src/stores/permissionsStore";
 import {FeatureIdent} from "src/models/AppFeature";
+import {useTabsStore} from "src/stores/tabsStore";
+import {useTabsetService} from "src/services/TabsetService2";
 
 class UndoCommand implements Command<any> {
 
@@ -28,12 +30,16 @@ export class MarkTabsetDeletedCommand implements Command<boolean> {
   async execute(): Promise<ExecutionResult<boolean>> {
     return TabsetService.markAsDeleted(this.tabsetId)
       .then((tabset) => {
-        console.log("deleting", tabset.type, tabset.id)
+        console.log("deleting", tabset.type, tabset.status, tabset.id, useTabsStore().currentTabsetId)
         if (tabset.type === TabsetType.SPECIAL && tabset.id === "BACKUP") {
           //console.log("deactivating")
           usePermissionsStore().deactivateFeature(FeatureIdent.BACKUP.toLowerCase())
         } else if (tabset.type === TabsetType.SPECIAL && tabset.id === "IGNORE") {
           usePermissionsStore().deactivateFeature(FeatureIdent.IGNORE.toLowerCase())
+        }
+        if (this.tabsetId === useTabsStore().currentTabsetId || useTabsStore().currentTabsetId === null) {
+          // useTabsStore().currentTabsetId = null as unknown as string
+          useTabsetService().selectTabset(undefined)
         }
         return tabset
       })

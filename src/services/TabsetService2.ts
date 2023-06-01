@@ -10,8 +10,6 @@ import {TabPredicate} from "src/domain/Types";
 import {Tabset, TabsetStatus, TabsetType} from "src/models/Tabset";
 import {useNotificationsStore} from "src/stores/notificationsStore";
 import {MetaLink} from "src/models/MetaLink";
-import {RequestInfo} from "src/models/RequestInfo";
-
 import {useDB} from "src/services/usePersistenceService";
 import {SpecialTabsetIdent} from "src/domain/tabsets/CreateSpecialTabset";
 // @ts-ignore
@@ -185,12 +183,16 @@ export function useTabsetService() {
     useNotificationsStore().setSelectedTab(null as unknown as Tab)
   }
 
-  const selectTabset = (tabsetId: string): void => {
+  const selectTabset = (tabsetId: string | undefined): void => {
     console.debug("selecting tabset", tabsetId)
     const tabsStore = useTabsStore()
     resetSelectedTabs()
-    tabsStore.currentTabsetId = tabsetId;
-    localStorage.setItem("selectedTabset", tabsetId)
+    tabsStore.currentTabsetId = tabsetId || null as unknown as string;
+    if (tabsetId) {
+      localStorage.setItem("selectedTabset", tabsetId)
+    } else {
+      localStorage.removeItem("selectedTabset")
+    }
   }
 
   const removeThumbnailsFor = (url: string): Promise<any> => {

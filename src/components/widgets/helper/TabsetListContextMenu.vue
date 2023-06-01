@@ -117,7 +117,7 @@
 <script lang="ts" setup>
 
 import {Tabset, TabsetStatus, TabsetType} from "src/models/Tabset";
-import {usePermissionsStore} from "stores/permissionsStore";
+import {usePermissionsStore} from "src/stores/permissionsStore";
 import {FeatureIdent} from "src/models/AppFeature";
 import {PropType, ref} from "vue";
 import {useUtils} from "src/services/Utils";

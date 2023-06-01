@@ -1,6 +1,6 @@
 {
   "name": "tabsets",
-  "version": "0.3.3",
+  "version": "0.4.0",
   "description": "Bookmarks next generation - Tabsets is a browser extension which helps you organize your links, utilizing the new chrome side panel.",
   "productName": "Tabsets Extension",
   "author": "evandor <evandor@gmail.com>",
@@ -54,7 +54,6 @@
     "vue-router": "^4.0.0",
     "vue-timeago3": "^2.3.0",
     "vue3-apexcharts": "^1.4.1",
-    "vue3-tour": "^0.3.4",
     "xpath": "^0.0.32"
   },
   "devDependencies": {

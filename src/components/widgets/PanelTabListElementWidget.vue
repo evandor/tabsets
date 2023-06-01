@@ -3,17 +3,17 @@
   <q-item-section v-if="useUiStore().listDetailLevelGreaterEqual(ListDetailLevel.MEDIUM)"
                   @mouseover="hoveredTab = tab.id"
                   @mouseleave="hoveredTab = undefined"
-                  class="q-mr-sm text-right" style="justify-content:start;width:40px;max-width:40px">
+                  class="q-mr-sm text-right" style="justify-content:start;width:25px;max-width:25px">
     <q-img v-if="props.tab?.image && props.tab.image.startsWith('blob://')"
            style="border:3px dotted white;border-radius:3px"
-           :src="imgFromBlob" width="40px"/>
+           :src="imgFromBlob" width="25px"/>
     <q-img v-else-if="props.tab.image"
            style="border:1px dotted white;border-radius:3px"
-           :src="props.tab.image" width="40px"/>
+           :src="props.tab.image" width="25px"/>
     <q-img v-else-if="thumbnail" style="border:1px dotted white;border-radius:3px"
-           :src="thumbnail" width="40px"/>
+           :src="thumbnail" width="25px"/>
     <TabFaviconWidget v-else
-                      :tab="props.tab" width="40px" height="40px"/>
+                      :tab="props.tab" width="25px" height="25px"/>
   </q-item-section>
 
   <!-- name, title, description, url && note -->

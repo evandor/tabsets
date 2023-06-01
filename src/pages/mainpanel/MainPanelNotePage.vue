@@ -144,7 +144,7 @@ import {ref, watchEffect} from "vue";
 import {useRoute} from "vue-router";
 import NavigationService from "src/services/NavigationService";
 import {date} from "quasar";
-import {useTabsStore} from "stores/tabsStore";
+import {useTabsStore} from "src/stores/tabsStore";
 import {Tab} from "src/models/Tab";
 import {useUtils} from "src/services/Utils";
 

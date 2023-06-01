@@ -32,6 +32,10 @@
         <q-item clickable v-close-popup @click="openNewTabsetDialog()">
           <q-item-section>Add Tabset</q-item-section>
         </q-item>
+        <q-separator/>
+        <q-item v-if="tabsStore.currentTabsetName" clickable v-close-popup @click="deleteTabsetDialog()">
+          <q-item-section>Delete this Tabset...</q-item-section>
+        </q-item>
       </q-list>
     </q-menu>
   </span>
@@ -48,12 +52,13 @@ import _ from "lodash";
 import {SelectTabsetCommand} from "src/domain/tabsets/SelectTabset";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import NewTabsetDialog from "components/dialogues/NewTabsetDialog.vue";
-import {usePermissionsStore} from "stores/permissionsStore";
+import {usePermissionsStore} from "src/stores/permissionsStore";
 import {FeatureIdent} from "src/models/AppFeature";
 import {Tabset, TabsetStatus, TabsetType} from "src/models/Tabset";
 import {useSpacesStore} from "src/stores/spacesStore";
 import {ExecutionResult} from "src/domain/ExecutionResult";
 import EditTabsetDialog from "components/dialogues/EditTabsetDialog.vue";
+import DeleteTabsetDialog from "components/dialogues/DeleteTabsetDialog.vue";
 
 const tabsStore = useTabsStore()
 const spacesStore = useSpacesStore()
@@ -61,7 +66,6 @@ const router = useRouter()
 const $q = useQuasar()
 
 const tabsetsOptions = ref<object[]>([])
-const dragTarget = ref('')
 
 const props = defineProps({
   fromPanel: {type: Boolean, default: false}
@@ -104,11 +108,22 @@ const openNewTabsetDialog = () => {
   })
 }
 
+const deleteTabsetDialog = () => {
+  $q.dialog({
+    component: DeleteTabsetDialog,
+    componentProps: {
+      tabsetId: tabsStore.currentTabsetId,
+      tabsetName: tabsStore.currentTabsetName
+    }
+  })
+}
+
 const openEditTabsetDialog = () => {
   $q.dialog({
     component: EditTabsetDialog,
     componentProps: {
       tabsetId: tabsStore.currentTabsetId,
+      tabsetName: tabsStore.currentTabsetName,
       fromPanel: props.fromPanel
     }
   })

@@ -17,7 +17,7 @@
 
 import {ref, watchEffect} from "vue";
 import SidePanelFooter from "components/SidePanelFooter.vue";
-import {useTabsStore} from "stores/tabsStore";
+import {useTabsStore} from "src/stores/tabsStore";
 import {useMeta} from "quasar";
 
 const tabsStore = useTabsStore()

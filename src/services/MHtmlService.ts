@@ -1,7 +1,7 @@
 import {MHtml} from "src/models/MHtml";
 import {Tab} from "src/models/Tab";
 import {useDB} from "src/services/usePersistenceService";
-import {useTabsStore} from "stores/tabsStore";
+import {useTabsStore} from "src/stores/tabsStore";
 import _ from "lodash"
 import {useTabsetService} from "src/services/TabsetService2";
 
