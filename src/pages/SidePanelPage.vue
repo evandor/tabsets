@@ -109,7 +109,7 @@
           </div>
         </div>
 
-        <div v-else-if="selectedTab"
+        <div v-else-if="selectedTab" id="v-step-0"
              class="row q-ma-sm q-mt-lg"
              :class="alreadyInTabset() ? 'bg-grey-1':'bg-yellow-1'"
              style="border:1px solid gray;border-radius: 5px">
@@ -123,6 +123,7 @@
               </q-item>
             </q-list>
           </div>
+          <v-tour name="myTour" :steps="steps"></v-tour>
         </div>
       </template>
 
@@ -130,13 +131,12 @@
     <!--    </div>-->
   </q-page>
 
-
 </template>
 
 <script lang="ts" setup>
 
 import NavigationService from "src/services/NavigationService";
-import {ref, watchEffect} from "vue";
+import {inject, onMounted, ref, watchEffect} from "vue";
 import {useTabsStore} from "src/stores/tabsStore";
 import {Tab, UrlExtension} from "src/models/Tab";
 import _ from "lodash"
@@ -185,7 +185,26 @@ const splitterModel = ref(160)
 const selectedTab = ref<Tab | undefined>(undefined)
 const dragTarget = ref('')
 
+const tours = inject('tours')
+
+const steps = [
+  {
+    target: '#v-step-0',  // We're using document.querySelector() under the hood
+    header: {
+      title: 'Get Started',
+    },
+    content: `Discover <strong>Vue Tour</strong>!`
+  }
+]
+
 console.log("adding listener")
+
+watchEffect(() => {
+  if (selectedTab && tours &&  tours['myTour' as keyof object]) {
+    console.log("hier!!!", tours, tours['myTour'])
+    tours['myTour' as keyof object].start()
+  }
+})
 
 const chromeVersion = (/Chrome\/([0-9]+)/.exec(navigator.userAgent) || [, 0])[1];
 

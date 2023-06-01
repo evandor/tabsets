@@ -54,6 +54,7 @@
     "vue-router": "^4.0.0",
     "vue-timeago3": "^2.3.0",
     "vue3-apexcharts": "^1.4.1",
+    "vue3-tour": "^0.3.4",
     "xpath": "^0.0.32"
   },
   "devDependencies": {
