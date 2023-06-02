@@ -33,7 +33,6 @@ const {inBexMode} = useUtils()
 
 const tabsStore = useTabsStore()
 const settingsStore = useSettingsStore()
-const suggestionsStore = useSuggestionsStore()
 const bookmarksStore = useBookmarksStore()
 const windowsStore = useWindowsStore()
 const searchStore = useSearchStore()
@@ -56,11 +55,6 @@ usePermissionsStore().initialize()
     ChromeBookmarkListeners.initListeners()
     bookmarksStore.init()
     BookmarksService.init()
-
-    // console.log("activating dom script", usePermissionsStore().hasFeature(FeatureIdent.ANALYSE_TABS))
-    // if (usePermissionsStore().hasFeature(FeatureIdent.ANALYSE_TABS)) {
-    //   $q.bex.send('initDomScripts')
-    // }
   })
 settingsStore.initialize(useQuasar().localStorage);
 tabsStore.initialize(useQuasar().localStorage);

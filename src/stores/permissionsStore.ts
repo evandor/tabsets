@@ -10,23 +10,23 @@ import {TabsetType} from "src/models/Tabset";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {AppFeatures} from "src/models/AppFeatures";
 import {useDB} from "src/services/usePersistenceService";
+import {useUtils} from "src/services/Utils";
 
 
-function sendMsg(msgName: string, data: object) {
-  // if (inBexMode()) {
+/*function sendMsg(msgName: string, data: object) {
   chrome.runtime.sendMessage({
     name: msgName, data: data
   }, (callback) => {
     console.log("got callback", callback)
-    if (chrome.runtime.lastError) { /* ignore */
+    if (chrome.runtime.lastError) {
     }
   });
-  // }
-}
+}*/
 
 export const usePermissionsStore = defineStore('permissions', () => {
 
   const $q = useQuasar()
+  const {sendMsg} = useUtils()
 
   const {localDb} = useDB($q)
 

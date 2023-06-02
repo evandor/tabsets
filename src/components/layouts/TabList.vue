@@ -152,7 +152,7 @@ const startDrag = (evt: any, tab: Tab) => {
     evt.dataTransfer.dropEffect = 'all'
     evt.dataTransfer.effectAllowed = 'all'
     evt.dataTransfer.setData('text/plain', tab.id)
-    useUiService().draggingTab(tab.id, evt)
+    useUiService().draggingTab(tab.id, evt, true)
   }
   console.log("evt.dataTransfer.getData('text/plain')", evt.dataTransfer.getData('text/plain'))
 }

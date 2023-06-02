@@ -4,6 +4,7 @@ import {useRoute, useRouter} from "vue-router";
 import {Tab} from "src/models/Tab";
 import _ from "lodash"
 import {LocalStorage} from "quasar";
+import {useUtils} from "src/services/Utils";
 
 export enum DrawerTabs {
   BOOKMARKS = "bookmarks",
@@ -60,6 +61,7 @@ export class SidePanel {
 export const useUiStore = defineStore('ui', () => {
 
   const router = useRouter()
+  const {sendMsg} = useUtils()
 
   const selectedTab = ref<Tab | undefined>(undefined)
   const tabsFilter = ref<string | undefined>(undefined)
@@ -140,9 +142,14 @@ export const useUiStore = defineStore('ui', () => {
     }, {deep: true}
   )
 
-  function draggingTab(tabId: string, evt: DragEvent) {
+  function draggingTab(tabId: string, evt: DragEvent, doSendMessage = false) {
     tabBeingDragged.value = tabId
     dragEvent.value = evt
+    if (doSendMessage) {
+      sendMsg("tab-being-dragged", {
+        tabId: tabId
+      })
+    }
   }
 
   function droppingTab() {

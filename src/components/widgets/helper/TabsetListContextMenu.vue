@@ -19,7 +19,7 @@
 <!--        Open in sidePanel-->
 <!--      </q-item>-->
 
-      <q-item
+      <q-item v-if="!props.inSidePanel"
         clickable v-close-popup @click="showDetails(props.tabset.id)">
         <q-icon name="o_info" class="q-my-xs q-mr-xs" color="grey-5" style="position:relative;top:-1px"/>
         Tabset Details...
@@ -141,18 +141,10 @@ import {RestoreTabsetCommand} from "src/domain/tabsets/RestoreTabset";
 const {inBexMode} = useUtils()
 
 const props = defineProps({
-  tabset: {
-    type: Object as PropType<Tabset>,
-    required: true
-  },
-  index: {
-    type: Number,
-    required: true
-  },
-  hoveredTab: {
-    type: String,
-    required: false
-  }
+  tabset: {type: Object as PropType<Tabset>, required: true},
+  index: {type: Number, required: true},
+  hoveredTab: {type: String, required: false},
+  inSidePanel: {type: Boolean, default: false}
 })
 
 const emit = defineEmits(['toggleExpand']);

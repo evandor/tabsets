@@ -72,6 +72,7 @@
               :tabset="tabset"
               :index="index"
               :hoveredTab="hoveredTab"
+              :in-side-panel="props.fromPanel"
               @toggleExpand="(index:number) => toggleExpand(index)"/>
 
           </q-item-section>
@@ -150,6 +151,7 @@ const {selectTabset} = useTabsetService()
 
 const props = defineProps({
   tabsets: {type: Array as PropType<Array<Tabset>>, required: true},
+  spaceId: {type: String, required: false},
   fromPanel: {type: Boolean, default: false}
 })
 
@@ -162,9 +164,9 @@ watchEffect(() => {
 })
 
 const selectTS = (tabset: Tabset) => {
-  console.log("selecting", tabset.id)
+  console.log("selecting", tabset.id, props.spaceId)
   useCommandExecutor()
-    .execute(new SelectTabsetCommand(tabset.id))
+    .execute(new SelectTabsetCommand(tabset.id, props.spaceId))
     .then(() => {
       activeTabset.value = tabset.id
       if (!props.fromPanel) {

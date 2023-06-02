@@ -7,6 +7,8 @@ import {useNotificationsStore} from "src/stores/notificationsStore";
 import {useUiStore} from "src/stores/uiStore";
 import {useUtils} from "src/services/Utils";
 import {Tabset} from "src/models/Tabset";
+import {useSpacesStore} from "stores/spacesStore";
+import SpacesService from "src/services/SpacesService";
 
 const {inBexMode} = useUtils()
 
@@ -15,10 +17,10 @@ export class SelectTabsetCommand implements Command<Tabset | undefined> {
   public merge: boolean = true
 
   constructor(
-    public tabsetId: string) {
+    public tabsetId: string,
+    public spaceId: string | undefined) {
   }
 
-  // TODO selecting a tabset from a different space should change space
   async execute(): Promise<ExecutionResult<Tabset | undefined>> {
     console.debug("selecting tabset", this.tabsetId)
     const tabsStore = useTabsStore()
@@ -33,7 +35,9 @@ export class SelectTabsetCommand implements Command<Tabset | undefined> {
 
     tabsStore.currentTabsetId = this.tabsetId;
     localStorage.setItem("selectedTabset", this.tabsetId)
-    //useUiService().rightDrawerSetActiveTab(DrawerTabs.UNASSIGNED_TABS)
+    if (this.spaceId) {
+      SpacesService.setSpaceFrom(this.spaceId)
+    }
 
     if (inBexMode()) {
       const msg = {
@@ -55,5 +59,5 @@ export class SelectTabsetCommand implements Command<Tabset | undefined> {
 }
 
 SelectTabsetCommand.prototype.toString = function cmdToString() {
-  return `SelectTabsetCommand: {tabsetId=${this.tabsetId}}`;
+  return `SelectTabsetCommand: {tabsetId=${this.tabsetId}}, {spaceId=${this.spaceId}}`;
 };

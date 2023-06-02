@@ -11,43 +11,73 @@
                 <q-tooltip>Back</q-tooltip>
               </q-icon>
             </div>
-<!--            <div class="col-2" style="font-size: small">-->
-<!--              Space-->
-<!--            </div>-->
-            <div class="col-10">
-              <SidePanelSpacesSelectorWidget />
+            <div class="col-9">
+              <!--<SidePanelSpacesSelectorWidget/>-->
+              Spaces
             </div>
             <div class="col-1 text-right">
-<!--              <q-icon class="q-ma-xs cursor-pointer" name="open_in_new" size="16px" @click="openExtensionTab">-->
-<!--                <q-tooltip class="tooltip">Open Tabsets</q-tooltip>-->
-<!--              </q-icon>-->
+              <q-icon
+                class="q-ma-xs cursor-pointer" name="o_add" size="16px"
+                @click="addSpace">
+                <q-tooltip class="tooltip">Add Space</q-tooltip>
+              </q-icon>
             </div>
           </div>
         </q-toolbar-title>
       </div>
     </q-toolbar>
 
-    <div class="col-12">
-      &nbsp;
+    <div class="q-pa-none">
+      <q-list>
+        <q-expansion-item
+          v-for="space in spacesStore.spaces.values()"
+          expand-separator
+          :default-opened="spacesStore.space.id === space.id"
+          :label="space.label"
+          :caption="tabsetsForSpace(space.id).length + ' tabsets'">
+          <q-card>
+            <q-card-section>
+              <NavTabsetsListWidgetNonBex
+                :tabsets="tabsetsForSpace(space.id)"
+                :spaceId="space.id"
+                :fromPanel="true"/>
+            </q-card-section>
+          </q-card>
+        </q-expansion-item>
+
+        <q-expansion-item dense
+                          expand-separator
+                          label="Unassigned Tabsets"
+                          :caption="tabsetsWithoutSpaces().length + ' tabsets'">
+          <q-card>
+            <q-card-section>
+              <NavTabsetsListWidgetNonBex :tabsets="tabsetsWithoutSpaces()" :fromPanel="true"/>
+            </q-card-section>
+          </q-card>
+        </q-expansion-item>
+
+
+      </q-list>
     </div>
 
-    <div class="row q-ma-sm">
-      <div class="col-12">
-        Tabsets associated with this space {{useSpacesStore().space?.name}}:
-      </div>
-      <div class="col-12">
-        <NavTabsetsListWidgetNonBex :tabsets="tabsets()" :fromPanel="true"/>
-      </div>
-    </div>
 
-    <div class="row q-ma-sm">
-      <div class="col-12">
-        Tabsets without assigned spaces:
-      </div>
-      <div class="col-12">
-        <NavTabsetsListWidgetNonBex :tabsets="tabsetsWithoutSpaces()" :fromPanel="true"/>
-      </div>
-    </div>
+    <!-- <div class="row q-ma-sm">
+       <div class="col-12">
+         Tabsets associated with this space {{ useSpacesStore().space?.name }}:
+       </div>
+       <div class="col-12">
+         <NavTabsetsListWidgetNonBex :tabsets="tabsets()" :fromPanel="true"/>
+       </div>
+     </div>
+
+     <div class="row q-ma-sm">
+       <div class="col-12">
+         Tabsets without assigned spaces:
+       </div>
+       <div class="col-12">
+         <NavTabsetsListWidgetNonBex :tabsets="tabsetsWithoutSpaces()" :fromPanel="true"/>
+       </div>
+     </div>-->
 
   </div>
 
@@ -69,6 +99,7 @@ import {usePermissionsStore} from "src/stores/permissionsStore";
 import {FeatureIdent} from "src/models/AppFeature";
 import {useSpacesStore} from "stores/spacesStore";
 import SidePanelSpacesSelectorWidget from "components/widgets/SidePanelSpacesSelectorWidget.vue";
+import NewSpaceDialog from "components/dialogues/NewSpaceDialog.vue";
 
 const {inBexMode} = useUtils()
 
@@ -179,7 +210,7 @@ const save = () => {
 
 const navigate = (target: string) => router.push(target)
 
-const tabsets = ():Tabset[] => {
+const tabsets = (): Tabset[] => {
   let tabsets = [...tabsStore.tabsets.values()]
   if (usePermissionsStore().hasFeature(FeatureIdent.SPACES) && spacesStore.spaces && spacesStore.spaces.size > 0) {
     if (spacesStore.space && spacesStore.space.id && spacesStore.space.id.length > 0) {
@@ -202,7 +233,7 @@ const tabsets = ():Tabset[] => {
     ])
 }
 
-const tabsetsWithoutSpaces = ():Tabset[] => {
+const tabsetsWithoutSpaces = (): Tabset[] => {
   let tabsets = [...tabsStore.tabsets.values()]
   return _.sortBy(_.filter(tabsets, (ts: Tabset) =>
       ts.spaces.length === 0 &&
@@ -217,6 +248,21 @@ const tabsetsWithoutSpaces = ():Tabset[] => {
         return o.name.toLowerCase()
       }
     ])
+}
+
+const tabsetsForSpace = (tsId: string): Tabset[] => {
+  return _.filter([...useTabsStore().tabsets.values()], (ts: Tabset) =>
+    ts.spaces.indexOf(tsId) >= 0)
+}
+
+const addSpace = () => {
+  $q.dialog({
+    component: NewSpaceDialog,
+    componentProps: {
+      tabsetId: tabsStore.currentTabsetId,
+      fromPanel: true
+    }
+  })
 }
 
 </script>

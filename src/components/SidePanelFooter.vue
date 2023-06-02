@@ -97,7 +97,7 @@ const getDetailLevelIcon = () => {
     case ListDetailLevel.LARGE:
       return "crop_portrait"
     case ListDetailLevel.MEDIUM:
-      return "crop16_9"
+      return "crop_16_9"
     default:
       return "crop_7_5"
   }

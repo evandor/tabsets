@@ -243,7 +243,9 @@ text.set(FeatureIdent.IGNORE.toLowerCase(), {
 text.set(FeatureIdent.SPACES.toLowerCase(), {
   experimental: true,
   name: 'Spaces',
-  description: 'The "Spaces" Feature lets you organize your tabsets in a larger structure, which might become handy if you start having many tabsets.',
+  description: 'The "Spaces" Feature lets you organize your tabsets in a larger structure, which might become handy ' +
+    'if you start having many tabsets. The main difference to bookmark folders is that there is only two ' +
+    'levels, but you can assign a tabset to multiple spaces.',
   permissions: []
 })
 text.set(FeatureIdent.WINDOWS.toLowerCase(), {

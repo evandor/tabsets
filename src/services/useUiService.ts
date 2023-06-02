@@ -30,7 +30,9 @@ export function useUiService() {
     //}
   }
 
-  const  draggingTab = (tabId: string, evt: DragEvent) => useUiStore().draggingTab(tabId, evt)
+  const  draggingTab = (tabId: string, evt: DragEvent, doSendMessage = false) =>
+    useUiStore().draggingTab(tabId, evt, doSendMessage)
+
   const  droppingTab = ():string | undefined => useUiStore().droppingTab()
 
   // const closeCurrentView = () => {

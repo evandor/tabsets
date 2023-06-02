@@ -4,8 +4,8 @@
     <q-select dark dense standout filled autofocus
               :placeholder="inputPlaceholder()"
               class="fit q-mx-md"
-              :color="props.fromPanel ? 'blue' : ''"
-              :bg-color="props.fromPanel ? 'primary' : ''"
+              color="primary"
+              :bg-color="props.fromPanel ? 'grey-7' : ''"
               :model-value="search"
               ref="searchBox"
               hide-dropdown-icon
@@ -195,9 +195,9 @@ const inputPlaceholder = () => {
     return `Search in ${tabsStore.allTabsCount} tabs and ${useBookmarksStore().bookmarksLeaves.length} bookmarks`
   }
   if (usePermissionsStore().hasFeature(FeatureIdent.BOOKMARKS)) {
-    return "Search in all of " + tabsStore.allTabsCount + " tabs and " + useBookmarksStore().bookmarksLeaves.length + " bookmarks"
+    return "Search in " + tabsStore.allTabsCount + " tabs and " + useBookmarksStore().bookmarksLeaves.length + " bookmarks"
   }
-  return "Search in all of " + tabsStore.allTabsCount + " tabs"
+  return "Search in " + tabsStore.allTabsCount + " tabs"
 }
 
 const clearSearch = () => {

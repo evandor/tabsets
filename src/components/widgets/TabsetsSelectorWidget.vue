@@ -8,7 +8,7 @@
 
     <q-menu :offset="[0,10]">
       <q-list dense>
-        <q-item disable v-if="tabsetsOptions.length > 1 && usePermissionsStore().hasFeature(FeatureIdent.SPACES)">
+        <q-item disable v-if="tabsetsOptions.length > 0 && usePermissionsStore().hasFeature(FeatureIdent.SPACES)">
           {{ useSpacesStore().space?.label ? 'Tabsets of ' + useSpacesStore().space.label : 'Tabsets w/o Space' }}
         </q-item>
         <q-item disable v-if="tabsetsOptions.length > 1 && !usePermissionsStore().hasFeature(FeatureIdent.SPACES)">
@@ -23,6 +23,11 @@
             <q-icon name="o_stop_circle" color="red"/>
           </q-item-section>
           <q-item-section class="q-ml-sm">{{ ts.label }}</q-item-section>
+        </q-item>
+        <q-separator v-if="usePermissionsStore().hasFeature(FeatureIdent.SPACES)"/>
+        <q-item v-if="usePermissionsStore().hasFeature(FeatureIdent.SPACES)"
+                clickable v-close-popup @click="router.push('/sidepanel/tabsets')">
+          <q-item-section>Switch Space</q-item-section>
         </q-item>
         <q-separator/>
         <q-item v-if="tabsStore.currentTabsetName" clickable v-close-popup @click="openEditTabsetDialog()">

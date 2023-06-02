@@ -3,7 +3,6 @@ import {CLEANUP_PERIOD_IN_MINUTES} from "boot/constants";
 import {useTabsStore} from "src/stores/tabsStore";
 import _ from "lodash"
 import NavigationService from "src/services/NavigationService";
-import StatsService from "src/services/StatsService";
 import TabService from "src/services/TabService";
 import IndexedDbPersistenceService from "src/services/IndexedDbPersistenceService";
 import {useSearchStore} from "src/stores/searchStore";

@@ -2,6 +2,7 @@ import {uid} from "quasar";
 import {useSpacesStore} from "src/stores/spacesStore";
 import {useDB} from "src/services/usePersistenceService";
 import {Space} from "src/models/Space";
+import _ from "lodash"
 
 const {db} = useDB(undefined)
 
@@ -40,6 +41,12 @@ class SpacesService {
   deleteById(spaceId: string) {
     useSpacesStore().deleteById(spaceId)
     return storage.deleteSpace(spaceId)
+  }
+  setSpaceFrom(spaceId:string) {
+    const space = _.filter([...useSpacesStore().spaces.values()], (s:Space) => s.id === spaceId)
+    if (space && space.length > 0) {
+      useSpacesStore().space = space[0]
+    }
   }
 }
 
