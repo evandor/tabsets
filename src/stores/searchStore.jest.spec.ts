@@ -8,8 +8,6 @@ import {useJestHelper} from "src/domain/JestHelper";
 import ChromeApi from "src/services/ChromeApi";
 import {useSearchStore} from "src/stores/searchStore";
 import {Tab} from "src/models/Tab";
-import {UpdateTabNameCommand} from "src/domain/tabs/UpdateTabName";
-
 
 
 function indexAt(pos: number, ident: string) {

@@ -8,7 +8,6 @@ import {useUiStore} from "src/stores/uiStore";
 import {useUtils} from "src/services/Utils";
 import {Tabset} from "src/models/Tabset";
 import {useSpacesStore} from "stores/spacesStore";
-import SpacesService from "src/services/SpacesService";
 
 const {inBexMode} = useUtils()
 
@@ -36,7 +35,7 @@ export class SelectTabsetCommand implements Command<Tabset | undefined> {
     tabsStore.currentTabsetId = this.tabsetId;
     localStorage.setItem("selectedTabset", this.tabsetId)
     if (this.spaceId) {
-      SpacesService.setSpaceFrom(this.spaceId)
+      useSpacesStore().setSpace(this.spaceId)
     }
 
     if (inBexMode()) {

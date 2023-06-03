@@ -20,7 +20,7 @@ describe('CreateGroupCommand', () => {
     request.onupgradeneeded = async function () {
       await useJestHelper().dbInit(request)
     }
-    await IndexedDbPersistenceService.init()
+    await IndexedDbPersistenceService.init('db')
     process.env.MODE = "bex"
     chrome.tabs.query.mockImplementation(async (o: object) => [])
   })

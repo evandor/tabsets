@@ -6,7 +6,6 @@
 import {useTabsStore} from "src/stores/tabsStore";
 import {useQuasar} from "quasar";
 import tabsetService from "src/services/TabsetService";
-import spacesService from "src/services/SpacesService";
 import {useBookmarksStore} from "src/stores/bookmarksStore";
 import {useSearchStore} from "src/stores/searchStore";
 import {useNotificationsStore} from "src/stores/notificationsStore";
@@ -28,15 +27,16 @@ import {useSettingsStore} from "src/stores/settingsStore";
 import BookmarksService from "src/services/BookmarksService";
 import {useUtils} from "src/services/Utils";
 import {EventEmitter} from "events";
+import {useDB} from "src/services/usePersistenceService";
 
 const {inBexMode} = useUtils()
 
+const spacesStore = useSpacesStore()
 const tabsStore = useTabsStore()
 const settingsStore = useSettingsStore()
 const bookmarksStore = useBookmarksStore()
 const windowsStore = useWindowsStore()
 const searchStore = useSearchStore()
-const spacesStore = useSpacesStore()
 const uiStore = useUiStore()
 const router = useRouter()
 const route = useRoute()
@@ -71,7 +71,7 @@ IndexedDbPersistenceService.init(INDEX_DB_NAME)
     NotificationsService.init()
     useSuggestionsStore().init()
     tabsetService.setLocalStorage(localStorage)
-    spacesService.init()
+    spacesStore.initialize(useDB(undefined).db)
       .then(() => {
         useTabsetService().init(false)
           .then(() => {

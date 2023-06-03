@@ -37,6 +37,7 @@ interface PersistenceService {
   loadSpaces(): Promise<any>
 
   addSpace(space: Space): Promise<any>
+  deleteSpace(spaceId: string): void;
 
   cleanUpRequests(): Promise<void>
 

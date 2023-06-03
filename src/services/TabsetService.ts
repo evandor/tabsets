@@ -14,7 +14,6 @@ const {getTabset, getCurrentTabset, saveTabset, saveCurrentTabset, tabsetsFor, a
 import {useDB} from "src/services/usePersistenceService";
 import {api} from "boot/axios";
 import {useSpacesStore} from "stores/spacesStore";
-import SpacesService from "src/services/SpacesService";
 
 const {db} = useDB()
 
@@ -325,8 +324,7 @@ class TabsetService {
     let spaces = data.spaces || []
 
     _.forEach(spaces, space => {
-      // spacesStore.addSpaceFrom(space)
-      SpacesService.addNewSpaceFrom(space)
+      useSpacesStore().addSpace(space)
     })
 
     _.forEach(tabsets, tabset => {

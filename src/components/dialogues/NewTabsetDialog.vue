@@ -50,10 +50,8 @@ import {STRIP_CHARS_IN_USER_INPUT} from "boot/constants";
 import {CreateTabsetCommand} from "src/domain/tabsets/CreateTabset";
 import TabsetService from "src/services/TabsetService";
 import {useCommandExecutor} from "src/services/CommandExecutor";
-import {useUiStore} from "src/stores/uiStore";
 import {TabsetStatus} from "src/models/Tabset";
 import {useSpacesStore} from "src/stores/spacesStore";
-import spacesService from "src/services/SpacesService";
 import ChromeApi from "src/services/ChromeApi";
 
 defineEmits([

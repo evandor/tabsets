@@ -3,20 +3,15 @@ import _ from 'lodash'
 import {computed, ref, watch} from "vue";
 import {Space} from "src/models/Space";
 import {useTabsStore} from "src/stores/tabsStore";
-import {useDB} from "src/services/usePersistenceService";
+import PersistenceService from "src/services/PersistenceService";
+import {uid} from "quasar";
 
 /**
  * a pinia store for "Spaces".
  *
- * TODO: what's in here, and what belongs to the SpacesService?
- * TODO: where are things persisted?
- *
- * Idea: keep state private and use the service to get and change things
+ * Elements are persisted to the storage provided in the initialize function; the currently
+ * selected space id is written to (and read from) local storage.
  */
-
-const {db} = useDB(undefined)
-
-const storage = db
 
 export const useSpacesStore = defineStore('spaces', () => {
 
@@ -36,10 +31,26 @@ export const useSpacesStore = defineStore('spaces', () => {
    */
   const currentFromLocalStorage = localStorage.getItem("currentSpace")
 
-  function initialize() {
-    console.log("initializing spacesStore", storage)
+  /**
+   * the (internal) storage for this store to use
+   */
+  let storage: PersistenceService = null as unknown as PersistenceService
+
+  /**
+   * initialize store with
+   * @param ps a persistence storage
+   */
+  async function initialize(ps: PersistenceService) {
+    console.debug("initializing spacesStore", ps)
+    storage = ps
+    await storage.loadSpaces()
   }
 
+  /**
+   * persist changes of current space to local storage to reuse on restart
+   * // TODO pinia best practice 'do not use watch' !?
+   * // https://climbtheladder.com/10-pinia-best-practices/
+   */
   watch(
     space,
     (spaceVal: Space) => {
@@ -52,31 +63,37 @@ export const useSpacesStore = defineStore('spaces', () => {
     }, {deep: true}
   )
 
+  /**
+   * does this label already exist as a space label?
+   */
   const nameExists = computed(() => {
-    return (searchName: string) => {
-      const spaceArray = [...spaces.value.values()]
-      return _.find(spaceArray, s => s.label === searchName?.trim())
-    }
+    return (searchName: string) =>
+      _.find([...spaces.value.values()], s => s.label === searchName?.trim())
   })
 
-  function addSpace(key: string, label: string): Space {
-    console.log("adding space", key, label)
-    const newSpace = new Space(key, label)
-    spaces.value.set(key, newSpace)
-    return newSpace
-  }
+  function addSpace(label: string):Promise<any>;
+  function addSpace(space: Space):Promise<any>;
 
-  function addSpaceFrom(space: Space): Space {
-    console.log("adding space", space)
-    spaces.value.set(space.id, space)
-    return space
+  /**
+   * create a new space; checks if label already exists
+   *
+   * @param s
+   */
+  function addSpace(s: string | Space):Promise<any> {
+    const spaceId = s instanceof Space ? s.id : uid()
+    const label =  s instanceof Space ? s.label : s
+    console.log("adding space", spaceId, label)
+    if (nameExists.value(label)) {
+      return Promise.reject("name does already exist")
+    }
+    const newSpace = s instanceof Space ? s : new Space(spaceId, label)
+    spaces.value.set(spaceId, newSpace)
+    return storage.addSpace(newSpace)
   }
 
   function putSpace(s: Space) {
-    // console.log("putting space", s.id, s)
     spaces.value.set(s.id, s)
     if (s.id === currentFromLocalStorage) {
-      // console.log("setting current space to ", s)
       space.value = s
     }
   }
@@ -97,6 +114,7 @@ export const useSpacesStore = defineStore('spaces', () => {
       console.log("setting current space to null")
       space.value = null as unknown as Space
     }
+    storage.deleteSpace(spaceId)
   }
 
   return {
@@ -107,7 +125,6 @@ export const useSpacesStore = defineStore('spaces', () => {
     addSpace,
     putSpace,
     setSpace,
-    deleteById,
-    addSpaceFrom
+    deleteById
   }
 })

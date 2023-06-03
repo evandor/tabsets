@@ -62,7 +62,6 @@ import {Space} from "src/models/Space"
 import {Tabset} from "src/models/Tabset";
 import TabsetService from "src/services/TabsetService";
 import {useRouter} from "vue-router";
-import SpacesService from "src/services/SpacesService";
 import {useTabsetService} from "src/services/TabsetService2";
 
 const spacesStore = useSpacesStore()
@@ -108,7 +107,7 @@ const updateSpaces = () => {
   _.forEach([...spacesStore.spaces.values()], (space: Space, spaceIndex: number) => {
     if (deleteSpace.value[spaceIndex]) {
       console.log("deleting space", space)
-      SpacesService.deleteById(space.id)
+      useSpacesStore().deleteById(space.id)
     }
   })
 

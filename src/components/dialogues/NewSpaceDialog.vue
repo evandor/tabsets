@@ -45,8 +45,7 @@
 <script lang="ts" setup>
 
 import {computed, ref, watchEffect} from "vue";
-import SpacesService from "src/services/SpacesService";
-import {useQuasar} from "quasar";
+import {uid, useQuasar} from "quasar";
 import {useRouter} from "vue-router";
 
 import {useDialogPluginComponent} from 'quasar'
@@ -81,7 +80,7 @@ watchEffect(() => {
 
 const createNewSpace = () => {
   hideWarning.value = true
-  SpacesService.addNewSpace(newSpaceName.value)
+  useSpacesStore().addSpace(newSpaceName.value)
     .then(() => {
       newSpaceName.value = ''
       let message = 'New Space ' + newSpaceName.value + ' created successfully'
