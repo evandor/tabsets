@@ -25,18 +25,6 @@ class TabsetService {
     this.localStorage = localStorage;
   }
 
-  /**
-   * Init, called when extension is loaded (via App.vue)
-   */
-  // async init(doNotInitSearchIndex: boolean = false) {
-  //   console.debug("initializing tabsetService")
-  //   await db.loadTabsets()
-  //   if (!doNotInitSearchIndex) {
-  //     useSearchStore().populate(db.getContents())
-  //   }
-  // }
-
-
   async restore(tabsetId: string, closeOldTabs: boolean = true) {
     console.log("restoring from tabset", tabsetId)
     const tabsStore = useTabsStore()
@@ -64,16 +52,6 @@ class TabsetService {
       return addToTabset(currentTs, tab, useIndex)
     }
     return Promise.reject("could not get current tabset")
-  }
-
-
-  togglePin(tabId: number) {
-    const currentTabset: Tabset = getCurrentTabset() || new Tabset("", "", [], [])
-    _.filter(currentTabset.tabs, t => t.chromeTab.id === tabId)
-      .forEach(t => {
-        t.chromeTab.pinned = !t.chromeTab.pinned
-        chrome.tabs.update(tabId, {pinned: t.chromeTab.pinned})
-      })
   }
 
   isOpen(tabUrl: string): boolean {

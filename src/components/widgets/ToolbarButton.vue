@@ -30,12 +30,9 @@
 <script lang="ts" setup>
 import {DrawerTabs, useUiStore} from "src/stores/uiStore";
 import {usePermissionsStore} from "src/stores/permissionsStore";
-import {PropType} from "vue";
-import {useUiService} from "src/services/useUiService";
 import {FeatureIdent} from "src/models/AppFeature";
 
 const permissionsStore = usePermissionsStore()
-const uiService = useUiService()
 const uiStore = useUiStore()
 
 const props = defineProps({
@@ -56,7 +53,7 @@ const outlinedIfActive = (): boolean => {
   return false
 }
 
-const tabsClicked = (tab: DrawerTabs, data: object = {}) => uiService.rightDrawerSetActiveTab(tab, data)
+const tabsClicked = (tab: DrawerTabs, data: object = {}) => useUiStore().rightDrawerSetActiveTab(tab, data)
 
 
 </script>

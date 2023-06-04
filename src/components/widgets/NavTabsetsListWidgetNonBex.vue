@@ -121,7 +121,6 @@ import DeleteTabsetDialog from "components/dialogues/DeleteTabsetDialog.vue";
 import {useNotificationHandler} from "src/services/ErrorHandler";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {useTabsetService} from "src/services/TabsetService2";
-import {useUiService} from "src/services/useUiService";
 import {SelectTabsetCommand} from "src/domain/tabsets/SelectTabset";
 import TabFaviconWidget from "components/widgets/TabFaviconWidget.vue";
 import {useSearchStore} from "src/stores/searchStore";
@@ -130,6 +129,7 @@ import {useUtils} from "src/services/Utils";
 import TabsetListContextMenu from "components/widgets/helper/TabsetListContextMenu.vue";
 import {Tab} from "src/models/Tab";
 import {DeleteTabCommand} from "src/domain/commands/DeleteTabCommand";
+import {useUiStore} from "stores/uiStore";
 
 const {handleError, handleSuccess} = useNotificationHandler()
 const {inBexMode} = useUtils()
@@ -182,7 +182,7 @@ const selectTS = (tabset: Tabset) => {
 }
 
 const onDrop = (evt: DragEvent, tabsetId: string) => {
-  const tabId = useUiService().droppingTab()
+  const tabId = useUiStore().droppingTab()
   if (evt.dataTransfer && tabId) {
     useCommandExecutor().executeFromUi(new MoveToTabsetCommand(tabId, tabsetId, tabsStore.currentTabsetId, evt.shiftKey))
   }

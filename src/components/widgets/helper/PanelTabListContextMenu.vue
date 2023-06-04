@@ -27,8 +27,7 @@ import {useUtils} from "src/services/Utils";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import RestoreTabsetDialog from "components/dialogues/RestoreTabsetDialog.vue";
 import {useQuasar} from "quasar";
-import {useUiService} from "src/services/useUiService";
-import {DrawerTabs} from "stores/uiStore";
+import {DrawerTabs, useUiStore} from "stores/uiStore";
 import {Tab} from "src/models/Tab";
 import {DeleteTabCommand} from "src/domain/commands/DeleteTabCommand";
 import EditNoteDialog from "components/dialogues/EditNoteDialog.vue";
@@ -55,7 +54,7 @@ const toggleExpand = (index: number): void => {
   emit('toggleExpand', index)
 }
 
-const showDetails = (tabsetId: string) => useUiService().rightDrawerSetActiveTab(DrawerTabs.TABSET_DETAILS, {tabsetId})
+const showDetails = (tabsetId: string) => useUiStore().rightDrawerSetActiveTab(DrawerTabs.TABSET_DETAILS, {tabsetId})
 
 const restoreDialog = (tabsetId: string) => $q.dialog({
   component: RestoreTabsetDialog,

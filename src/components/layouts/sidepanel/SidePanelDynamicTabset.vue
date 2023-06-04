@@ -31,7 +31,6 @@ import {PropType, ref} from "vue";
 import {useQuasar} from "quasar";
 import _ from "lodash"
 import {useTabsStore} from "src/stores/tabsStore";
-import {useUiService} from "src/services/useUiService";
 import {DrawerTabs, useUiStore} from "src/stores/uiStore";
 import {useUtils} from "src/services/Utils"
 import InfoMessageWidget from "components/widgets/InfoMessageWidget.vue";
@@ -46,7 +45,6 @@ const {inBexMode} = useUtils()
 
 const $q = useQuasar()
 const tabsStore = useTabsStore()
-const uiService = useUiService()
 const route = useRoute()
 
 const highlightUrl = ref('')

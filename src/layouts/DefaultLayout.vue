@@ -219,7 +219,6 @@ import {useSpacesStore} from "src/stores/spacesStore"
 import OpenTabsThresholdWidget from 'src/components/widgets/OpenTabsThresholdWidget.vue'
 import SpacesSelectorWidget from 'src/components/widgets/SpacesSelectorWidget.vue'
 import SearchWidget from 'src/components/widgets/SearchWidget.vue'
-import {useUiService} from "src/services/useUiService";
 import {DrawerTabs, useUiStore} from "src/stores/uiStore";
 import NotificationDialog from "components/dialogues/NotificationDialog.vue"
 import {usePermissionsStore} from "src/stores/permissionsStore";
@@ -252,7 +251,6 @@ const notificationsStore = useNotificationsStore()
 const permissionsStore = usePermissionsStore()
 const settingsStore = useSettingsStore()
 const spacesStore = useSpacesStore()
-const uiService = useUiService()
 const route = useRoute()
 
 const spacesOptions = ref<object[]>([])
@@ -307,7 +305,7 @@ const goHome = () => router.push("/")
 
 const toggleLeftDrawer = () => {
   leftDrawerOpen.value = !leftDrawerOpen.value
-  useUiService().toggleLeftDrawer()
+  useUiStore().toggleLeftDrawer()
 }
 
 const toggleRightDrawer = () => {
@@ -331,7 +329,7 @@ const showNotificationDialog = (nId: string) => $q.dialog({
   }
 })
 
-const tabsClicked = (tab: DrawerTabs, data: object = {}) => uiService.rightDrawerSetActiveTab(tab, data)
+const tabsClicked = (tab: DrawerTabs, data: object = {}) => useUiStore().rightDrawerSetActiveTab(tab, data)
 
 const showExportDialog = () => $q.dialog({component: ExportDialog})
 const showImportDialog = () => $q.dialog({component: ImportDialog})

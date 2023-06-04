@@ -33,7 +33,6 @@ import {VueDraggableNext} from 'vue-draggable-next'
 import {useQuasar} from "quasar";
 import _ from "lodash"
 import {useTabsStore} from "src/stores/tabsStore";
-import {useUiService} from "src/services/useUiService";
 import {DrawerTabs, useUiStore} from "src/stores/uiStore";
 import {useTabsetService} from "src/services/TabsetService2";
 import {useCommandExecutor} from "src/services/CommandExecutor";
@@ -47,7 +46,6 @@ const {inBexMode} = useUtils()
 
 const $q = useQuasar()
 const tabsStore = useTabsStore()
-const uiService = useUiService()
 
 const {saveCurrentTabset} = useTabsetService()
 
@@ -130,7 +128,7 @@ const startDrag = (evt: any, tab: Tab) => {
     evt.dataTransfer.dropEffect = 'all'
     evt.dataTransfer.effectAllowed = 'all'
     evt.dataTransfer.setData('text/plain', tab.id)
-    useUiService().draggingTab(tab.id, evt)
+    useUiStore().draggingTab(tab.id, evt)
   }
   console.log("evt.dataTransfer.getData('text/plain')", evt.dataTransfer.getData('text/plain'))
 }

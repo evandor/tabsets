@@ -370,20 +370,17 @@ import {GrantOriginCommand} from "src/domain/commands/GrantOriginCommand";
 import {RevokeOriginCommand} from "src/domain/commands/RevokeOriginCommand";
 import {FeatureIdent} from "src/models/AppFeature";
 import {useSettingsStore} from "src/stores/settingsStore"
-import {useUiService} from "src/services/useUiService";
-
 
 const tabsStore = useTabsStore()
 const featuresStore = useSettingsStore()
 const searchStore = useSearchStore()
 const settingsStore = useSettingsStore()
-const uiService = useUiService()
 
 const router = useRouter()
 const localStorage = useQuasar().localStorage
 const $q = useQuasar()
 
-uiService.rightDrawerSetActiveTab(DrawerTabs.FEATURES)
+useUiStore().rightDrawerSetActiveTab(DrawerTabs.FEATURES)
 
 const view = ref('grid')
 const indexSize = ref(0)

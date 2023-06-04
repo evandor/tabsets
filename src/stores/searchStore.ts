@@ -93,7 +93,6 @@ export const useSearchStore = defineStore('search', () => {
     //console.log("adding to index", doc)
     // @ts-ignore
     const indexLength = fuse.value.getIndex().size()
-    //console.log("adding to index: ", indexLength, doc)
     fuse.value.add(doc)
     return indexLength
   }
@@ -122,11 +121,6 @@ export const useSearchStore = defineStore('search', () => {
     }
   }
 
-  // function reindexAll() {
-  //   const values = Array.from(useTabsStore().tabsets.values())
-  //   reindex(values)
-  // }
-  //
   function reindexTabset(tabsetId: string) {
     const ts = useTabsStore().getTabset(tabsetId)
     const values: Tabset[] = ts ? [ts] : []

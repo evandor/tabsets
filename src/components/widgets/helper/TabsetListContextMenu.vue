@@ -133,8 +133,7 @@ import {useTabsetService} from "src/services/TabsetService2";
 import {useQuasar} from "quasar";
 import DeleteTabsetDialog from "components/dialogues/DeleteTabsetDialog.vue";
 import {StopSessionCommand} from "src/domain/commands/StopSessionCommand";
-import {useUiService} from "src/services/useUiService";
-import {DrawerTabs} from "stores/uiStore";
+import {DrawerTabs, useUiStore} from "stores/uiStore";
 import {CopyTabsetCommand} from "src/domain/tabsets/CopyTabset";
 import {RestoreTabsetCommand} from "src/domain/tabsets/RestoreTabset";
 
@@ -173,7 +172,7 @@ const markAsFavorite = (tabsetId: string) => useCommandExecutor().executeFromUi(
 const markAsDefault = (tabsetId: string) => useCommandExecutor().executeFromUi(new MarkTabsetAsDefaultCommand(tabsetId))
 const archiveTabset = (tabsetId: string) => useCommandExecutor().executeFromUi(new MarkTabsetAsArchivedCommand(tabsetId))
 
-const showDetails = (tabsetId: string) => useUiService().rightDrawerSetActiveTab(DrawerTabs.TABSET_DETAILS, {tabsetId})
+const showDetails = (tabsetId: string) => useUiStore().rightDrawerSetActiveTab(DrawerTabs.TABSET_DETAILS, {tabsetId})
 
 const stopSession = (tabsetId: string) => {
   const tabset = useTabsetService().getTabset(tabsetId)

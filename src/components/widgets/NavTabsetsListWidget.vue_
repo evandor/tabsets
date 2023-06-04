@@ -99,11 +99,11 @@ import {MarkTabsetAsFavoriteCommand} from "src/domain/tabsets/MarkTabsetAsFavori
 import {MarkTabsetAsDefaultCommand} from "src/domain/tabsets/MarkTabsetAsDefault";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {useTabsetService} from "src/services/TabsetService2";
-import {useUiService} from "src/services/useUiService";
 import {StopSessionCommand} from "src/domain/commands/StopSessionCommand";
 import {SelectTabsetCommand} from "src/domain/tabsets/SelectTabset";
 import {MoveToTabsetCommand} from "src/domain/tabs/MoveToTabset";
 import {useSettingsStore} from "src/stores/settingsStore"
+import {useUiStore} from "stores/uiStore";
 
 const {handleError, handleSuccess} = useNotificationHandler()
 
@@ -155,7 +155,7 @@ const tabsetLabel = (tabset: Tabset) => {
 }
 
 const onDrop = (evt: DragEvent, tabsetId: string) => {
-  const tabId = useUiService().droppingTab()
+  const tabId = useUiStore().droppingTab()
   if (evt.dataTransfer && tabId) {
     useCommandExecutor().executeFromUi(new MoveToTabsetCommand(tabId, tabsetId, tabsStore.currentTabsetId, evt.shiftKey))
   }

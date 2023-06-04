@@ -13,15 +13,12 @@ export const useWindowsStore = defineStore('windows', {
 
   }),
 
-  getters: {
-
-  },
+  getters: {},
 
   actions: {
     async init() {
       if (process.env.MODE === 'bex') {
         console.debug("initializing chrome windows listeners")
-
         chrome.windows.getAll((windows) => {
           this.windows = windows
         })
@@ -31,10 +28,7 @@ export const useWindowsStore = defineStore('windows', {
       if (process.env.MODE === 'bex') {
         chrome.windows.onCreated.addListener((window: chrome.windows.Window) => this.init())
         chrome.windows.onRemoved.addListener((window: number) => this.init())
-        //chrome.windows.onFocusChanged.addListener((window: number) => this.init())
       }
-
-    },
-
+    }
   }
 });

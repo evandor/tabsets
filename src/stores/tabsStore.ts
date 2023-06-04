@@ -5,7 +5,6 @@ import {Tabset, TabsetStatus, TabsetType} from "src/models/Tabset";
 import {Tab, UrlExtension} from "src/models/Tab";
 import ChromeApi from "src/services/ChromeApi";
 import {NewOrReplacedTabset} from "src/models/NewOrReplacedTabset";
-import {Group} from "src/models/Group";
 import {useSpacesStore} from "src/stores/spacesStore";
 import {SpecialTabsetIdent} from "src/domain/tabsets/CreateSpecialTabset";
 import {usePermissionsStore} from "src/stores/permissionsStore";

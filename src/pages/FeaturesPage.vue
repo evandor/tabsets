@@ -118,8 +118,7 @@ import {AppFeatures} from "src/models/AppFeatures";
 import {ExecutionResult} from "src/domain/ExecutionResult";
 import {useSettingsStore} from "src/stores/settingsStore"
 import InfoMessageWidget from "components/widgets/InfoMessageWidget.vue";
-import {useUiService} from "src/services/useUiService";
-import {DrawerTabs} from "stores/uiStore";
+import {DrawerTabs, useUiStore} from "stores/uiStore";
 
 const route = useRoute();
 const router = useRouter();
@@ -127,13 +126,13 @@ const localStorage = useQuasar().localStorage
 const tabsStore = useTabsStore()
 const featuresStore = useSettingsStore()
 const permissionsStore = usePermissionsStore()
-const uiService = useUiService()
+const uiStore = useUiStore()
 
 const title = ref('')
 const filter = ref('')
 const $q = useQuasar()
 
-uiService.rightDrawerSetActiveTab(DrawerTabs.FEATURES)
+useUiStore().rightDrawerSetActiveTab(DrawerTabs.FEATURES)
 
 const feature = ref(null as unknown as string)
 const appFeature = ref<AppFeature | undefined>(undefined)

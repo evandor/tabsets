@@ -31,7 +31,6 @@ export const useSuggestionsStore = defineStore('suggestions', () => {
   }
 
   function removeSuggestion(ident: StaticSuggestionIdent) {
-    // console.log("removing suggestion if exists: ", ident)
     db.removeSuggestion(ident)
       .then(() => suggestions.value = _.filter(suggestions.value, s => s.id !== ident))
   }

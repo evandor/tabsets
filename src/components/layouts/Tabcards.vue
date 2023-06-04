@@ -40,15 +40,12 @@ import TabCardWidget from "src/components/widgets/TabCardWidget.vue"
 import {useQuasar} from "quasar";
 import _ from "lodash"
 import {useTabsStore} from "src/stores/tabsStore";
-import {useUiService} from "src/services/useUiService";
-import {LeftDrawerState, DrawerTabs} from "src/stores/uiStore";
 import {useTabsetService} from "src/services/TabsetService2";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {CreateTabFromOpenTabsCommand} from "src/domain/commands/CreateTabFromOpenTabs";
 
 const $q = useQuasar()
 const tabsStore = useTabsStore()
-const uiService = useUiService()
 
 const {saveCurrentTabset} = useTabsetService()
 
@@ -129,7 +126,7 @@ const startDrag = (evt: any, tab: Tab) => {
     evt.dataTransfer.dropEffect = 'move'
     evt.dataTransfer.effectAllowed = 'move'
     evt.dataTransfer.setData('text/plain', tab.id)
-    useUiService().draggingTab(tab.id)
+    useUiStore().draggingTab(tab.id)
   }
   console.log("evt.dataTransfer.getData('text/plain')", evt.dataTransfer.getData('text/plain'))
 }

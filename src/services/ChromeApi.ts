@@ -46,7 +46,6 @@ function runHousekeeping(alarm: chrome.alarms.Alarm) {
       })
 
 
-    StatsService.count()
     TabService.checkScheduled()
   }
 }

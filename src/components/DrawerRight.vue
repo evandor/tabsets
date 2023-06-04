@@ -95,7 +95,6 @@ import {useRoute, useRouter} from "vue-router";
 import {useTabsStore} from "src/stores/tabsStore";
 import {useSettingsStore} from "src/stores/settingsStore";
 import {DrawerTabs, useUiStore} from "src/stores/uiStore";
-import {useUiService} from "src/services/useUiService";
 import TabsGroupedByHost from "components/TabsGroupedByHost.vue";
 import Features from "components/Features.vue";
 import UnassignedAndOpenTabs from "components/views/UnassignedAndOpenTabs.vue";
@@ -107,19 +106,17 @@ import TabsetDetails from "components/views/TabsetDetails.vue";
 const router = useRouter()
 const route = useRoute()
 
-const uiService = useUiService()
-
 const featureToggles = useSettingsStore()
 const tabsStore = useTabsStore()
 const settingsStore = useSettingsStore()
 const uiStore = useUiStore()
 
 const openTabsCountRatio = ref(0)
-const tab = ref<DrawerTabs>(uiService.rightDrawerActiveTab())
+const tab = ref<DrawerTabs>(useUiStore().rightDrawer.activeTab)
 const rssTabsCount = ref(0)
 const filter = ref<string>('')
 
-watchEffect(() => tab.value = uiService.rightDrawerActiveTab())
+watchEffect(() => tab.value = useUiStore().rightDrawer.activeTab)
 
 watchEffect(() => {
   openTabsCountRatio.value = Math.min(tabsStore.tabs.length / settingsStore.thresholds['max' as keyof object], 1)
@@ -178,7 +175,7 @@ const setFilter2 = (newVal: string) => {
   filter.value = newVal
 }
 // const closeCurrentView = () => useUiService().closeCurrentView()
-const closeRightDrawer = () => useUiService().closeRightDrawer()
+const closeRightDrawer = () => useUiStore().rightDrawerOpen = false
 
 </script>
 

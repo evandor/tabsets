@@ -21,12 +21,10 @@ import TabCardWidget from "src/components/widgets/TabCardWidget.vue"
 import {useQuasar} from "quasar";
 import _ from "lodash"
 import {useTabsStore} from "src/stores/tabsStore";
-import {useUiService} from "src/services/useUiService";
 import {useTabsetService} from "src/services/TabsetService2";
 
 const $q = useQuasar()
 const tabsStore = useTabsStore()
-const uiService = useUiService()
 
 const {saveCurrentTabset} = useTabsetService()
 

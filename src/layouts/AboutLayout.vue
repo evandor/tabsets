@@ -42,7 +42,6 @@ import {useSearchStore} from "src/stores/searchStore";
 import _ from "lodash";
 import {useSpacesStore} from "src/stores/spacesStore"
 import {useSettingsStore} from "src/stores/settingsStore"
-import {useUiService} from "src/services/useUiService";
 import {useUiStore} from "src/stores/uiStore";
 
 const router = useRouter()
@@ -61,7 +60,6 @@ const notificationsStore = useNotificationsStore()
 const featuresStore = useSettingsStore()
 const settingsStore = useSettingsStore()
 const spacesStore = useSpacesStore()
-const uiService = useUiService()
 const route = useRoute()
 
 const spacesOptions = ref<object[]>([])

@@ -26,8 +26,7 @@ import {PropType, ref} from "vue";
 import {VueDraggableNext} from 'vue-draggable-next'
 import {useQuasar} from "quasar";
 import {useTabsStore} from "src/stores/tabsStore";
-import {useUiService} from "src/services/useUiService";
-import {DrawerTabs} from "src/stores/uiStore";
+import {DrawerTabs, useUiStore} from "src/stores/uiStore";
 import {useTabsetService} from "src/services/TabsetService2";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import BookmarkListElementWidget from "components/widgets/BookmarkListElementWidget.vue";
@@ -35,7 +34,6 @@ import {CreateBookmarkFromOpenTabsCommand} from "src/domain/commands/CreateBookm
 
 const $q = useQuasar()
 const tabsStore = useTabsStore()
-const uiService = useUiService()
 
 const {saveCurrentTabset} = useTabsetService()
 
@@ -121,7 +119,7 @@ const startDrag = (evt: any, tab: Bookmark) => {
     evt.dataTransfer.dropEffect = 'move'
     evt.dataTransfer.effectAllowed = 'move'
     evt.dataTransfer.setData('text/plain', tab.id)
-    useUiService().draggingTab(tab.id)
+    useUiStore().draggingTab(tab.id,null as unknown as DragEvent)
   }
   console.log("evt.dataTransfer.getData('text/plain')", evt.dataTransfer.getData('text/plain'))
 }

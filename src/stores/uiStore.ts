@@ -75,7 +75,6 @@ export const useUiStore = defineStore('ui', () => {
   // SidePanel
   let sidePanel = ref<SidePanel>(new SidePanel())
 
-
   const highlightTerm = ref<string | undefined>(undefined)
 
   const newTabsetEmptyByDefault = ref<boolean>(LocalStorage.getItem('ui.newTabsetEmptyByDefault') as unknown as boolean || false)
@@ -289,6 +288,10 @@ export const useUiStore = defineStore('ui', () => {
     ignoreKeypress.value = b
   }
 
+  function toggleLeftDrawer() {
+    leftDrawerOpen.value = !leftDrawerOpen.value
+  }
+
   return {
     rightDrawer,
     rightDrawerOpen,
@@ -329,6 +332,7 @@ export const useUiStore = defineStore('ui', () => {
     dbReady,
     sidePanel,
     sidePanelSetActiveView,
-    sidePanelIsActive
+    sidePanelIsActive,
+    toggleLeftDrawer
   }
 })

@@ -182,7 +182,6 @@ import TabsetService from "src/services/TabsetService";
 import {Tab} from "src/models/Tab";
 import RestoreTabsetDialog from "components/dialogues/RestoreTabsetDialog.vue";
 import AddUrlDialog from "components/dialogues/AddUrlDialog.vue";
-import {useUiService} from "src/services/useUiService";
 import {usePermissionsStore} from "src/stores/permissionsStore";
 import TabList from "components/layouts/TabList.vue";
 import {useCommandExecutor} from "src/services/CommandExecutor";
@@ -319,7 +318,7 @@ const restoreDialog = () => $q.dialog({component: RestoreTabsetDialog})
 const addUrlDialog = () => $q.dialog({component: AddUrlDialog})
 
 const setAsNewTabPage = () => {
-  useUiService().setTabsetForNewTabPage(tabsetId.value)
+  //useUiService().setTabsetForNewTabPage(tabsetId.value)
 }
 
 
