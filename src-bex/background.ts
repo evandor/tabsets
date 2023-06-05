@@ -27,7 +27,7 @@ chrome.runtime.onInstalled.addListener((details) => {
     });
   } else {
     // @ts-ignore
-    //browser.browserAction.onClicked.addListener(openMyPage);
+    browser.browserAction.onClicked.addListener(openMyPage);
   }
 
 });
