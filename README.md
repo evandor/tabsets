@@ -37,6 +37,14 @@ and add to chrome as local extension:
 
 see https://quasar.dev/quasar-cli-vite/developing-browser-extensions/build-commands#chrome
 
+### build for xcode
+
+xcrun /Applications/Xcode.app/Contents/Developer/usr/bin/safari-web-extension-converter /Users/carstengraef/projects/github/tabsets/dist/bex
+
+see
+
+https://alvarotrigo.com/blog/chrome-extensions-ipad/#:~:text=No%2C%20Chrome%20extensions%20are%20not,apps%2C%20including%20Chrome%20iPad%20extensions.
+
 ### chrome extension link
 
 You can try the current version directly at

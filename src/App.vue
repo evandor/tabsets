@@ -89,9 +89,6 @@ IndexedDbPersistenceService.init(INDEX_DB_NAME)
 
 useNotificationsStore().bookmarksExpanded = $q.localStorage.getItem("bookmarks.expanded") || []
 
-// @ts-ignore
-if (!inBexMode() || (!chrome.sidePanel && chrome.action)) {
-  router.push("/start")
-}
+router.push("/start")
 
 </script>
