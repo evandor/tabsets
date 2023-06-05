@@ -102,6 +102,11 @@ const routes: RouteRecordRaw[] = [
     children: [{ path: '', component: () => import('pages/TabsetPage.vue') }],
   },
   {
+    path: '/tabsets',
+    component: () => import('layouts/DefaultLayout.vue'),
+    children: [{ path: '', component: () => import('pages/TabsetPage.vue') }],
+  },
+  {
     path: '/dynamicTs/:tabsetId',
     component: () => import('layouts/DefaultLayout.vue'),
     children: [{ path: '', component: () => import('pages/TabsetPage.vue') }],

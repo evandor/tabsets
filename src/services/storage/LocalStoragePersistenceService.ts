@@ -16,6 +16,10 @@ export class LocalStoragePersistenceService implements PersistenceService {
     this.quasar = quasar
   }
 
+  deleteSpace(spaceId: string): void {
+    throw new Error("Method not implemented.");
+  }
+
   saveActiveFeatures(val: string[]) {
     this.quasar.localStorage.set("ui.activeFeatures", val)
   }
@@ -25,11 +29,11 @@ export class LocalStoragePersistenceService implements PersistenceService {
   }
 
   getActiveFeatures(): Promise<string[]> {
-    return Promise.resolve( this.quasar.localStorage?.getItem('ui.activeFeatures') as string[] || [])
+    return Promise.resolve(this.quasar.localStorage?.getItem('ui.activeFeatures') as string[] || [])
   }
 
   getInactiveDefaultFeatures(): Promise<string[]> {
-    return Promise.resolve( this.quasar.localStorage?.getItem('ui.inActiveDefaultFeatures') as string[] || [])
+    return Promise.resolve(this.quasar.localStorage?.getItem('ui.inActiveDefaultFeatures') as string[] || [])
   }
 
   addNotification(notification: Notification): Promise<any> {

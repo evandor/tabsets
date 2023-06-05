@@ -15,64 +15,73 @@
         <div class="q-ma-none">
 
           <q-toolbar class="text-primary lightgrey q-py-none q-pl-sm q-pr-xs">
-            <div class="row fit">
-              <q-toolbar-title>
-                <div class="row">
-                  <div class="col-8">
-                    <SearchWidget v-if="searching"
-                                  :fromPanel="true"
-                                  style="position: absolute; left:5px;top:5px;max-width:240px"/>
-                    <TabsetsSelectorWidget v-else :fromPanel="true"/>
-                  </div>
-                  <div class="col-4 text-right">
-                    <q-btn v-if="tabsStore.tabsets.size > 1"
-                           icon="search"
-                           flat
-                           class="q-ma-none q-pa-xs cursor-pointer"
-                           style="max-width:20px"
-                           size="10px"
-                           @click="toggleSearch">
-                      <q-tooltip class="tooltip">Search</q-tooltip>
-                    </q-btn>
-                    <q-icon v-if="usePermissionsStore().hasFeature(FeatureIdent.SESSIONS)"
-                            class="q-ma-xs cursor-pointer"
-                            :color="existingSession ? (tabsStore.getCurrentTabset?.type === TabsetType.SESSION ? 'red':'grey-5') :'primary'"
-                            :name="existingSession ? 'o_stop_circle':'o_play_circle'" size="16px"
-                            @click="toggleSessionState">
-                      <q-tooltip class="tooltip" v-if="existingSession">Stop Session</q-tooltip>
-                      <q-tooltip class="tooltip" v-else>Start new Session</q-tooltip>
-                    </q-icon>
-                    <q-btn v-if="usePermissionsStore().hasFeature(FeatureIdent.WEBSITE_CLIP) && webClipActive()"
-                           icon="filter_center_focus"
-                           flat
-                           class="q-ma-none q-pa-xs cursor-pointer"
-                           style="max-width:20px"
-                           size="10px"
-                           @click="createClip">
-                      <q-tooltip class="tooltip">{{ createWebsiteClipTooltip() }}</q-tooltip>
-                    </q-btn>
-                    <q-btn v-if="usePermissionsStore().hasFeature(FeatureIdent.WEBSITE_CLIP) && !webClipActive()"
-                           icon="filter_center_focus"
-                           color="grey-5"
-                           flat
-                           class="q-ma-none q-pa-xs cursor-pointer"
-                           style="max-width:20px"
-                           size="10px">
-                      <q-tooltip class="tooltip">cannot create web clip for this tab</q-tooltip>
-                    </q-btn>
-                    <!--                    <q-icon v-if="useSettingsStore().isEnabled('dev')"-->
-                    <!--                            class="q-ma-xs cursor-pointer" name="open_in_new" size="16px" @click="openExtensionTab">-->
-                    <!--                      <q-tooltip class="tooltip">Open Tabsets</q-tooltip>-->
-                    <!--                    </q-icon>-->
+            <q-toolbar-title>
+              <div class="row q-ma-none q-pa-none">
+                <div v-if="usePermissionsStore().hasFeature(FeatureIdent.SPACES)"
+                     class="col-8 q-ma-none q-pa-none">
+                  <SearchWidget v-if="searching"
+                                :fromPanel="true"
+                                style="position: absolute; left:5px;top:5px;max-width:240px"/>
+                  <div class="column q-ma-none q-pa-none" v-else>
+                    <div class="col text-caption q-ma-none q-pa-none" style="border:1px solid green">
+                      {{ useSpacesStore().space?.label }}
+                    </div>
+                    <div class="col text-caption q-ma-none q-pa-none" style="border:1px solid green">
+                      {{ useSpacesStore().space?.label }}
+                      <!--<TabsetsSelectorWidget :fromPanel="true"/>-->
+                    </div>
                   </div>
                 </div>
-              </q-toolbar-title>
-            </div>
+                <div v-else class="col-8 q-ma-none q-pa-none">
+                  <SearchWidget v-if="searching"
+                                :fromPanel="true"
+                                style="position: absolute; left:5px;top:5px;max-width:240px"/>
+                  <TabsetsSelectorWidget v-else :fromPanel="true"/>
+                </div>
+                <div class="col-4 text-right">
+                  <q-btn v-if="tabsStore.tabsets.size > 1"
+                         icon="search"
+                         flat
+                         class="q-ma-none q-pa-xs cursor-pointer"
+                         style="max-width:20px"
+                         size="10px"
+                         @click="toggleSearch">
+                    <q-tooltip class="tooltip">Search</q-tooltip>
+                  </q-btn>
+                  <q-icon v-if="usePermissionsStore().hasFeature(FeatureIdent.SESSIONS)"
+                          class="q-ma-xs cursor-pointer"
+                          :color="existingSession ? (tabsStore.getCurrentTabset?.type === TabsetType.SESSION ? 'red':'grey-5') :'primary'"
+                          :name="existingSession ? 'o_stop_circle':'o_play_circle'" size="16px"
+                          @click="toggleSessionState">
+                    <q-tooltip class="tooltip" v-if="existingSession">Stop Session</q-tooltip>
+                    <q-tooltip class="tooltip" v-else>Start new Session</q-tooltip>
+                  </q-icon>
+                  <q-btn v-if="usePermissionsStore().hasFeature(FeatureIdent.WEBSITE_CLIP) && webClipActive()"
+                         icon="filter_center_focus"
+                         flat
+                         class="q-ma-none q-pa-xs cursor-pointer"
+                         style="max-width:20px"
+                         size="10px"
+                         @click="createClip">
+                    <q-tooltip class="tooltip">{{ createWebsiteClipTooltip() }}</q-tooltip>
+                  </q-btn>
+                  <q-btn v-if="usePermissionsStore().hasFeature(FeatureIdent.WEBSITE_CLIP) && !webClipActive()"
+                         icon="filter_center_focus"
+                         color="grey-5"
+                         flat
+                         class="q-ma-none q-pa-xs cursor-pointer"
+                         style="max-width:20px"
+                         size="10px">
+                    <q-tooltip class="tooltip">cannot create web clip for this tab</q-tooltip>
+                  </q-btn>
+                  <!--                    <q-icon v-if="useSettingsStore().isEnabled('dev')"-->
+                  <!--                            class="q-ma-xs cursor-pointer" name="open_in_new" size="16px" @click="openExtensionTab">-->
+                  <!--                      <q-tooltip class="tooltip">Open Tabsets</q-tooltip>-->
+                  <!--                    </q-icon>-->
+                </div>
+              </div>
+            </q-toolbar-title>
           </q-toolbar>
-
-          <div class="col-12" v-if="usePermissionsStore().hasFeature(FeatureIdent.SPACES)">
-            {{useSpacesStore().space?.label}}
-          </div>
 
           <div class="col-12">
             <q-input borderless v-if="usePermissionsStore().hasFeature(FeatureIdent.NOTES)"

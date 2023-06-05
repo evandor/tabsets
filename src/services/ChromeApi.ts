@@ -151,10 +151,26 @@ class ChromeApi {
     if (process.env.MODE !== 'bex') {
       return Promise.reject("not in bex mode, but " + process.env.MODE)
     }
-    let queryOptions = {active: true, lastFocusedWindow: true};
-    // @ts-ignore
-    let [tab] = await chrome.tabs.query(queryOptions);
-    return tab;
+
+    return new Promise((resolve, reject) => {
+      let queryOptions = {active: true, lastFocusedWindow: true};
+      try {
+        chrome.tabs.query(queryOptions, function (tabs) {
+          console.log("got tab", tabs[0])
+          resolve(tabs[0]);
+        })
+      } catch (e) {
+        reject(e);
+      }
+    })
+
+
+    // let queryOptions = {active: true, lastFocusedWindow: true};
+    //  chrome.tabs.query(queryOptions,
+    //   (c) => return Promise.resolve(c[0]))
+    // // @ts-ignore
+    // let [tab] = await chrome.tabs.query(queryOptions);
+    // return tab;
   }
 
   highlight(tabIndex: number | undefined) {

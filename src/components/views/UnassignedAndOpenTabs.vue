@@ -212,7 +212,7 @@ const showMissingSomeTabsAction = () => {
   if (route?.query?.first) {
     return false
   }
-  if ((!tabsStore.pendingTabset || tabsStore.pendingTabset.tabs.length === 0) && tabsStore.tabs.length > 1) {
+  if ((!tabsStore.pendingTabset || tabsStore.pendingTabset.tabs.length === 0) && (tabsStore.tabs?.length || 0) > 1) {
     return true
   }
   return false

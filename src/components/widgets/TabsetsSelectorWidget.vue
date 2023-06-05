@@ -2,7 +2,7 @@
 
   <span class="cursor-pointer">
     <q-badge
-      class="q-mr-md q-mt-none q-pt-sm q-pb-sm q-px-sm"
+      class="q-mr-md q-mt-none q-pt-none q-pb-sm q-px-sm"
       color="white" text-color="primary" :label="tabsetLabel()">
     </q-badge>
 

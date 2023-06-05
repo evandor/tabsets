@@ -119,7 +119,7 @@ const filter = ref<string>('')
 watchEffect(() => tab.value = useUiStore().rightDrawer.activeTab)
 
 watchEffect(() => {
-  openTabsCountRatio.value = Math.min(tabsStore.tabs.length / settingsStore.thresholds['max' as keyof object], 1)
+  openTabsCountRatio.value = Math.min((tabsStore.tabs?.length || 0) / settingsStore.thresholds['max' as keyof object], 1)
 })
 
 watchEffect(() => rssTabsCount.value = tabsStore.rssTabs?.length)

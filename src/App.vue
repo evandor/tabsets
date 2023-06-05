@@ -68,7 +68,8 @@ const localStorage = useQuasar().localStorage
 IndexedDbPersistenceService.init(INDEX_DB_NAME)
   .then(() => {
     // init services
-    NotificationsService.init()
+    //NotificationsService.init()
+    useNotificationsStore().initialize(useDB(undefined).db)
     useSuggestionsStore().init()
     tabsetService.setLocalStorage(localStorage)
     spacesStore.initialize(useDB(undefined).db)
@@ -89,7 +90,7 @@ IndexedDbPersistenceService.init(INDEX_DB_NAME)
 useNotificationsStore().bookmarksExpanded = $q.localStorage.getItem("bookmarks.expanded") || []
 
 // @ts-ignore
-if (!inBexMode() || !chrome.sidePanel) {
+if (!inBexMode() || (!chrome.sidePanel && chrome.action)) {
   router.push("/start")
 }
 

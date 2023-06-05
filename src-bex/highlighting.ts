@@ -1,7 +1,7 @@
 // @ts-ignore
 import {bexContent} from 'quasar/wrappers'
 
-import * as rangy from 'rangy'
+//import * as rangy from 'rangy'
 
 
 class Caret {
