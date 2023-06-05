@@ -1,8 +1,8 @@
 <template>
 
-  <span class="cursor-pointer">
+  <div class="cursor-pointer">
     <q-badge
-      class="q-mr-md q-mt-none q-pt-none q-pb-sm q-px-sm"
+      class="q-ml-none q-ma-xs q-pa-sm"
       color="white" text-color="primary" :label="tabsetLabel()">
     </q-badge>
 
@@ -43,7 +43,7 @@
         </q-item>
       </q-list>
     </q-menu>
-  </span>
+  </div>
 
 </template>
 

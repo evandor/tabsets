@@ -23,12 +23,13 @@
                                 :fromPanel="true"
                                 style="position: absolute; left:5px;top:5px;max-width:240px"/>
                   <div class="column q-ma-none q-pa-none" v-else>
-                    <div class="col text-caption q-ma-none q-pa-none" style="border:1px solid green">
+                    <div class="col q-ma-none q-pa-none"
+                         style="position: absolute; left:8px;top:3px;font-size: 10px">
                       {{ useSpacesStore().space?.label }}
                     </div>
-                    <div class="col text-caption q-ma-none q-pa-none" style="border:1px solid green">
-                      {{ useSpacesStore().space?.label }}
-                      <!--<TabsetsSelectorWidget :fromPanel="true"/>-->
+                    <div class="col q-ma-none q-pa-none">
+                      <TabsetsSelectorWidget class="q-ma-none q-pa-none"
+                        style="position: absolute; left:3px;top:14px;" :fromPanel="true"/>
                     </div>
                   </div>
                 </div>
