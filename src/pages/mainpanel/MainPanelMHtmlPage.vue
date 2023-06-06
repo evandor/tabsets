@@ -40,7 +40,7 @@ import {ref, watchEffect} from "vue";
 import {useRoute} from "vue-router";
 import {date} from "quasar"
 import MHtmlService from "src/services/MHtmlService";
-import {useUiStore} from "stores/uiStore";
+import {useUiStore} from "src/stores/uiStore";
 
 const route = useRoute()
 

@@ -45,7 +45,7 @@
 <script lang="ts" setup>
 
 import NewTabsetDialog from "components/dialogues/NewTabsetDialog.vue";
-import {useUiStore} from "stores/uiStore";
+import {useUiStore} from "src/stores/uiStore";
 import {useQuasar} from "quasar";
 
 const $q = useQuasar()

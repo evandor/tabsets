@@ -1,109 +1,58 @@
 <template>
   <div class="q-ma-none q-pa-none" style="max-width:300px">
-    <q-list>
-      <q-expansion-item v-for="(tabset,index) in tabsets" group="thegroup"
-                        dense-toggle dense hide-expand-icon
-                        v-model="expanded[index]"
-                        class="darken-on-hover"
-                        :style="activeTabset === tabset.id ? 'background-color: #efefef' : 'background-color:#f9f9f9'"
-                        header-class="q-ma-none q-pa-none q-ml-md q-mb-xs"
-                        :expand-icon="activeTabset === tabset.id ? 'expand_more' : 'none'"
-                        expand-icon-toggle>
+    <q-list dense>
+      <!--      <q-expansion-item v-for="(tabset,index) in tabsets" group="thegroup"-->
+      <!--                        dense-toggle dense hide-expand-icon-->
+      <!--                        :style="activeTabset === tabset.id ? 'background-color: #efefef' : 'background-color:#f9f9f9'"-->
+      <!--                        header-class="q-ma-none q-pa-none q-ml-md q-mb-xs"-->
+      <!--                        :expand-icon="activeTabset === tabset.id ? 'expand_more' : 'none'"-->
+      <!--                        expand-icon-toggle>-->
 
-        <template v-slot:header>
-          <q-item-section class="cursor-pointer q-ma-none q-pa-none"
-                          @drop="onDrop($event, tabset.id)"
-                          @dragover.prevent
-                          @dragenter.prevent
-                          :class="activeTabset === tabset.id ? 'active-list-element' : ''"
-                          @click="selectTS(tabset)">
-            <q-item-label>
-              <template v-slot>
+      <q-item v-for="(tabset,index) in tabsets" class="darken-on-hover">
+        <q-item-section class="cursor-pointer q-ma-none q-pa-none"
+                        @drop="onDrop($event, tabset.id)"
+                        @dragover.prevent
+                        @dragenter.prevent
+                        :class="activeTabset === tabset.id ? 'active-list-element' : ''"
+                        @click="selectTS(tabset)">
+          <q-item-label>
+            <template v-slot>
 
-                <div class="row">
-                  <div class="col-10 ellipsis">
-                    <q-icon name="stars" color="warning" class="q-ml-none q-mr-sm"
-                            v-if="tabset.status === TabsetStatus.FAVORITE">
-                      <q-tooltip class="tooltip">This tabset is marked as 'favorite'</q-tooltip>
-                    </q-icon>
-                    <q-icon name="explore" color="primary" class="q-ml-none q-mr-sm"
-                            v-if="tabset.type === TabsetType.SESSION">
-                      <q-tooltip>This is a 'session' tabset, keeping track of your tabs automatically</q-tooltip>
-                    </q-icon>
-                    <q-icon name="share" color="primary" class="q-ml-none q-mr-sm"
-                            v-if="tabset.sharedBy">
-                      <q-tooltip>This tabset is shared by {{ tabset.sharedBy }}</q-tooltip>
-                    </q-icon>
-                    <q-icon name="build_circle" color="primary" class="q-ml-none q-mr-sm"
-                            v-if="tabset.type === TabsetType.DYNAMIC">
-                      <q-tooltip class="tooltip">The tabs of this tabset have been generated automatically</q-tooltip>
-                    </q-icon>
-                    <!--                    <q-icon name="local_library" color="blue-10" class="q-ml-none q-mr-sm"-->
-                    <!--                            style="position:relative;top:-5px;left:-2px;"-->
-                    <!--                            v-if="tabset.type === TabsetType.DYNAMIC">-->
-                    <!--                      <q-tooltip class="tooltip">This tabset is readonly</q-tooltip>-->
-                    <!--                    </q-icon>-->
-                    {{ tabset.name }}
-                  </div>
-                </div>
-
-
-                <!-- !MIT -->
-
-              </template>
-            </q-item-label>
-
-          </q-item-section>
-          <q-item-section class="text-right q-mx-sm cursor-pointer"
-                          @mouseover="hoveredTab = tabset.id"
-                          @mouseleave="hoveredTab = undefined"
-                          style="max-width:25px;font-size: 12px;color:#bfbfbf">
-            <span v-if="hoveredOver(tabset.id)">
-              <q-icon name="more_horiz" color="primary" size="16px"/>
-            </span>
-            <span v-else-if="tabset.type === TabsetType.DYNAMIC">
-              -
-            </span>
-            <span v-else>
-                {{ tabset.tabs.length }}
-            </span>
-
-            <TabsetListContextMenu
-              :tabset="tabset"
-              :index="index"
-              :hoveredTab="hoveredTab"
-              :in-side-panel="props.fromPanel"
-              @toggleExpand="(index:number) => toggleExpand(index)"/>
-
-          </q-item-section>
-        </template>
-
-        <div v-for="tab in tabset.tabs">
-          <q-card flat class="q-mt-none q-ml-lg q-mb-sm q-pa-none" style="max-width:260px">
-            <q-card-section class="q-ma-none q-pa-none">
-              <div class="row items-baseline cursor-pointer" @click.stop="open(tab)">
-                <div class="col-1">
-                  <TabFaviconWidget height="12px" width="12px" :tab="tab"/>
-                </div>
+              <div class="row">
                 <div class="col-10 ellipsis">
-                  {{ tab.chromeTab.title }}
-                  <q-tooltip class="tooltip">{{ tab.chromeTab.url }}</q-tooltip>
-                </div>
-                <div class="col-1">
-                  <q-icon
-                    @click="deleteTab(tab)"
-                    name="o_delete" color="grey-5">
-                    <q-tooltip class="tooltip">Delete this tab from this tabset</q-tooltip>
+                  <q-icon name="stars" color="warning" class="q-ml-none q-mr-sm"
+                          v-if="tabset.status === TabsetStatus.FAVORITE">
+                    <q-tooltip class="tooltip">This tabset is marked as 'favorite'</q-tooltip>
                   </q-icon>
+                  <q-icon name="explore" color="primary" class="q-ml-none q-mr-sm"
+                          v-if="tabset.type === TabsetType.SESSION">
+                    <q-tooltip>This is a 'session' tabset, keeping track of your tabs automatically</q-tooltip>
+                  </q-icon>
+                  <q-icon name="share" color="primary" class="q-ml-none q-mr-sm"
+                          v-if="tabset.sharedBy">
+                    <q-tooltip>This tabset is shared by {{ tabset.sharedBy }}</q-tooltip>
+                  </q-icon>
+                  <q-icon name="build_circle" color="primary" class="q-ml-none q-mr-sm"
+                          v-if="tabset.type === TabsetType.DYNAMIC">
+                    <q-tooltip class="tooltip">The tabs of this tabset have been generated automatically</q-tooltip>
+                  </q-icon>
+                  <!--                    <q-icon name="local_library" color="blue-10" class="q-ml-none q-mr-sm"-->
+                  <!--                            style="position:relative;top:-5px;left:-2px;"-->
+                  <!--                            v-if="tabset.type === TabsetType.DYNAMIC">-->
+                  <!--                      <q-tooltip class="tooltip">This tabset is readonly</q-tooltip>-->
+                  <!--                    </q-icon>-->
+                  {{ tabset.name }}
                 </div>
               </div>
 
-            </q-card-section>
-          </q-card>
-        </div>
 
-      </q-expansion-item>
+              <!-- !MIT -->
 
+            </template>
+          </q-item-label>
+
+        </q-item-section>
+      </q-item>
     </q-list>
   </div>
 
@@ -129,7 +78,7 @@ import {useUtils} from "src/services/Utils";
 import TabsetListContextMenu from "components/widgets/helper/TabsetListContextMenu.vue";
 import {Tab} from "src/models/Tab";
 import {DeleteTabCommand} from "src/domain/commands/DeleteTabCommand";
-import {useUiStore} from "stores/uiStore";
+import {useUiStore} from "src/stores/uiStore";
 
 const {handleError, handleSuccess} = useNotificationHandler()
 const {inBexMode} = useUtils()
@@ -144,7 +93,6 @@ const localStorage = $q.localStorage
 const newTabsetName = ref('')
 const activeTabset = ref<string | undefined>(tabsStore.currentTabsetId)
 const merge = ref(false)
-const expanded = ref<boolean[]>([])
 const hoveredTab = ref<string | undefined>(undefined)
 
 const {selectTabset} = useTabsetService()
@@ -155,19 +103,16 @@ const props = defineProps({
   fromPanel: {type: Boolean, default: false}
 })
 
-onMounted(() => {
-  expanded.value = new Array(props.tabsets?.length).fill(false);
-})
-
 watchEffect(() => {
   activeTabset.value = tabsStore.currentTabsetId
 })
 
 const selectTS = (tabset: Tabset) => {
-  console.log("selecting", tabset.id, props.spaceId)
+  console.log("selecting tabset/space", tabset.id, props.spaceId)
   useCommandExecutor()
     .execute(new SelectTabsetCommand(tabset.id, props.spaceId))
     .then(() => {
+      console.log("tabset was selected")
       activeTabset.value = tabset.id
       if (!props.fromPanel) {
         tabset.type === TabsetType.DYNAMIC ?
@@ -207,12 +152,6 @@ const open = (tab: Tab) => {
     //router.push("/iframe/" + tabId)
   }
 }
-
-const toggleExpand = (index: number): void => {
-  expanded.value[index] = !expanded.value[index]
-}
-
-const hoveredOver = (tabsetId: string) => hoveredTab.value === tabsetId
 
 const deleteTab = (tab: Tab) => useCommandExecutor().executeFromUi(new DeleteTabCommand(tab))
 

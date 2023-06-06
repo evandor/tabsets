@@ -1,12 +1,12 @@
 <template>
 
   <div class="cursor-pointer">
-    <q-badge
-      class="q-ml-none q-ma-xs q-pa-sm"
-      color="white" text-color="primary" :label="tabsetLabel()">
-    </q-badge>
+    <div
+      class="q-ma-none q-pa-none text-subtitle2 q-pl-sm cursor-pointer" style="border:1px solid lightgray;background-color:white;border-radius:4px;min-width:200px">
+      {{ tabsetLabel()}}
+    </div>
 
-    <q-menu :offset="[0,10]">
+    <q-menu :offset="[0,0]">
       <q-list dense>
         <q-item disable v-if="tabsetsOptions.length > 0 && usePermissionsStore().hasFeature(FeatureIdent.SPACES)">
           {{ useSpacesStore().space?.label ? 'Tabsets of ' + useSpacesStore().space.label : 'Tabsets w/o Space' }}

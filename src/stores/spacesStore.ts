@@ -1,10 +1,11 @@
 import {defineStore} from 'pinia';
 import _ from 'lodash'
-import {computed, ref, watch} from "vue";
+import {computed, ref, watch, watchEffect} from "vue";
 import {Space} from "src/models/Space";
 import {useTabsStore} from "src/stores/tabsStore";
 import PersistenceService from "src/services/PersistenceService";
 import {uid} from "quasar";
+import {Tabset} from "src/models/Tabset";
 
 /**
  * a pinia store for "Spaces".
@@ -59,7 +60,8 @@ export const useSpacesStore = defineStore('spaces', () => {
       } else {
         localStorage.removeItem("currentSpace")
       }
-      useTabsStore().currentTabsetId = null as unknown as string
+      // console.log("setting tabsetid to null")
+      //useTabsStore().currentTabsetId = null as unknown as string
     }, {deep: true}
   )
 
@@ -67,28 +69,43 @@ export const useSpacesStore = defineStore('spaces', () => {
    * does this label already exist as a space label?
    */
   const nameExists = computed(() => {
-    return (searchName: string) =>
-      _.find([...spaces.value.values()], s => s.label === searchName?.trim())
+    return (searchName: string) => {
+      console.log("searchName", searchName)
+      return _.find([...spaces.value.values()], s => s.label === searchName?.trim())
+    }
   })
 
-  function addSpace(label: string):Promise<any>;
-  function addSpace(space: Space):Promise<any>;
+  // function addSpace(label: string): Promise<any>;
+  // function addSpace(space: Space): Promise<any>;
 
   /**
    * create a new space; checks if label already exists
    *
    * @param s
    */
-  function addSpace(s: string | Space):Promise<any> {
-    const spaceId = s instanceof Space ? s.id : uid()
-    const label =  s instanceof Space ? s.label : s
+  function createSpace(label: string): Promise<any> {
+    const spaceId = uid()
     console.log("adding space", spaceId, label)
     if (nameExists.value(label)) {
       return Promise.reject("name does already exist")
     }
-    const newSpace = s instanceof Space ? s : new Space(spaceId, label)
+    const newSpace = new Space(spaceId, label)
     spaces.value.set(spaceId, newSpace)
     return storage.addSpace(newSpace)
+  }
+
+  /**
+   * create a new space; checks if label already exists
+   *
+   * @param s
+   */
+  function addSpace(s: Space): Promise<any> {
+    console.log("adding space", s.id, s.label)
+    if (nameExists.value(s.label)) {
+      return Promise.reject("name does already exist")
+    }
+    spaces.value.set(s.id, s)
+    return storage.addSpace(s)
   }
 
   function putSpace(s: Space) {
@@ -122,6 +139,7 @@ export const useSpacesStore = defineStore('spaces', () => {
     space,
     nameExists,
     initialize,
+    createSpace,
     addSpace,
     putSpace,
     setSpace,

@@ -23,13 +23,12 @@
                                 :fromPanel="true"
                                 style="position: absolute; left:5px;top:5px;max-width:240px"/>
                   <div class="column q-ma-none q-pa-none" v-else>
-                    <div class="col q-ma-none q-pa-none"
-                         style="position: absolute; left:8px;top:3px;font-size: 10px">
-                      {{ useSpacesStore().space?.label }}
+                    <div class="col q-ma-none q-pa-none text-black"
+                         style="font-size: 12px">
+                      {{ useSpacesStore().space ? useSpacesStore().space.label : 'no space selected' }}
                     </div>
                     <div class="col q-ma-none q-pa-none">
-                      <TabsetsSelectorWidget class="q-ma-none q-pa-none"
-                        style="position: absolute; left:3px;top:14px;" :fromPanel="true"/>
+                      <TabsetsSelectorWidget class="q-ma-none q-pa-none" :fromPanel="true"/>
                     </div>
                   </div>
                 </div>
@@ -94,8 +93,8 @@
             Start browsing and add the tabs you like to this tabset
           </div>
 
-          <div class="row q-ma-none q-pa-sm" v-if="tabsStore.getCurrentTabset">
-            <div class="col-12 q-ma-none">
+          <div class="row q-ma-none q-pa-none" v-if="tabsStore.getCurrentTabset">
+            <div class="col-12 q-ma-none q-pa-none q-pt-lg">
               <SidePanelDynamicTabset v-if="tabsStore.getCurrentTabset?.type === TabsetType.DYNAMIC"
                                       :tabset="tabsStore.getCurrentTabset"/>
               <PanelTabList v-else
@@ -126,7 +125,7 @@
             <q-list>
               <q-item
                 v-ripple
-                class="q-ma-none q-pa-xs">
+                class="q-ma-none q-pa-sm">
                 <PanelTabListElementWidget header="Current Tab:" :tab="tabFromChromeTab()" :hideMenu="true"/>
               </q-item>
             </q-list>
@@ -176,14 +175,14 @@ import {useTabsetService} from "src/services/TabsetService2";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {AddTabToTabsetCommand} from "src/domain/tabs/AddTabToTabset";
 import NewTabsetDialog from "components/dialogues/NewTabsetDialog.vue";
-import {useUiStore} from "stores/uiStore";
+import {useUiStore} from "src/stores/uiStore";
 import TabsetsSelectorWidget from "components/widgets/TabsetsSelectorWidget.vue";
 import PanelTabList from "components/layouts/PanelTabList.vue";
 import PanelTabListElementWidget from "components/widgets/PanelTabListElementWidget.vue";
 import {usePermissionsStore} from "src/stores/permissionsStore";
 import {FeatureIdent} from "src/models/AppFeature";
 import SearchWidget from "components/widgets/SearchWidget.vue";
-import {useSpacesStore} from "stores/spacesStore";
+import {useSpacesStore} from "src/stores/spacesStore";
 import SidePanelTabListElementDetails from "components/widgets/SidePanelTabListElementDetails.vue";
 import SidePanelDynamicTabset from "components/layouts/sidepanel/SidePanelDynamicTabset.vue";
 import AddUrlDialog from "components/dialogues/AddUrlDialog.vue";

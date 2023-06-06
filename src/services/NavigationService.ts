@@ -1,7 +1,6 @@
 import {Tab} from "src/models/Tab";
 import {useNotificationsStore} from "src/stores/notificationsStore";
 import {openURL} from "quasar";
-import {useTabsetService} from "src/services/TabsetService2";
 import {useTabsStore} from "src/stores/tabsStore";
 
 class NavigationService {

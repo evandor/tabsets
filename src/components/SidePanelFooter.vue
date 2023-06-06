@@ -62,7 +62,7 @@
   </q-footer>
 </template>
 <script setup lang="ts">
-import {ListDetailLevel, SidePanelView, useUiStore} from "stores/uiStore";
+import {ListDetailLevel, SidePanelView, useUiStore} from "src/stores/uiStore";
 import {useTabsStore} from "src/stores/tabsStore";
 import {Tab} from "src/models/Tab";
 import {ref, watchEffect} from "vue";
@@ -110,8 +110,9 @@ watchEffect(() => {
 })
 
 watchEffect(() => {
-  console.log("tabset id", useTabsStore().currentTabsetId)
+  console.log("change in current tabset id", useTabsStore().currentTabsetId)
 })
+
 watchEffect(() => {
   currentChromeTab.value = useTabsStore().currentChromeTab
 })

@@ -176,11 +176,11 @@ export function useTabsetService() {
   }
 
   const resetSelectedTabs = () => {
-    const currentTabset = getCurrentTabset()
-    if (currentTabset) {
-      _.forEach(currentTabset.tabs, (t: Tab) => t.selected = false)
-    }
-    useNotificationsStore().setSelectedTab(null as unknown as Tab)
+    // const currentTabset = getCurrentTabset()
+    // if (currentTabset) {
+    //   _.forEach(currentTabset.tabs, (t: Tab) => t.selected = false)
+    // }
+    // useNotificationsStore().setSelectedTab(null as unknown as Tab)
   }
 
   const selectTabset = (tabsetId: string | undefined): void => {
@@ -487,7 +487,7 @@ export function useTabsetService() {
     const tabset = tabsetFor(tab.id)
     if (tabset) {
       useTabsStore().removeTab(tabset, tab.id)
-      useNotificationsStore().unsetSelectedTab()
+      //useNotificationsStore().unsetSelectedTab()
       return saveTabset(tabset)
         .then(() => tabset)
     }
@@ -509,7 +509,7 @@ export function useTabsetService() {
     const tabset = tabsetFor(tab.id)
     if (tabset) {
       useTabsStore().removeTab(tabset, tab.id)
-      useNotificationsStore().unsetSelectedTab()
+      //useNotificationsStore().unsetSelectedTab()
       return saveTabset(tabset)
         .then(() => tabset)
     }
