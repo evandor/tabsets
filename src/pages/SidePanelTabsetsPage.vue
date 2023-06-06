@@ -12,7 +12,6 @@
               </q-icon>
             </div>
             <div class="col-9">
-              <!--<SidePanelSpacesSelectorWidget/>-->
               Spaces
             </div>
             <div class="col-1 text-right">
@@ -34,50 +33,31 @@
           expand-separator
           :default-opened="spacesStore.space?.id === space.id"
           :label="space.label"
-          :caption="tabsetsForSpace(space.id).length + ' tabsets'">
+          :caption="(tabsetsForSpace.get(space.id) || []).length + ' tabsets'">
           <q-card>
             <q-card-section>
               <NavTabsetsListWidgetNonBex
-                :tabsets="tabsetsForSpace(space.id)"
+                :tabsets="tabsetsForSpace.get(space.id) || []"
                 :spaceId="space.id"
                 :fromPanel="true"/>
             </q-card-section>
           </q-card>
         </q-expansion-item>
 
-        <q-expansion-item dense
-                          expand-separator
-                          label="Unassigned Tabsets"
-                          :caption="tabsetsWithoutSpaces().length + ' tabsets'">
-          <q-card>
-            <q-card-section>
-              <NavTabsetsListWidgetNonBex :tabsets="tabsetsWithoutSpaces()" :fromPanel="true"/>
-            </q-card-section>
-          </q-card>
-        </q-expansion-item>
+                <q-expansion-item dense
+                                  expand-separator
+                                  label="Unassigned Tabsets"
+                                  :caption="tabsetsWithoutSpaces().length + ' tabsets'">
+                  <q-card>
+                    <q-card-section>
+<!--                      <NavTabsetsListWidgetNonBex :tabsets="tabsetsWithoutSpaces()" :fromPanel="true"/>-->
+                    </q-card-section>
+                  </q-card>
+                </q-expansion-item>
 
 
       </q-list>
     </div>
-
-
-    <!-- <div class="row q-ma-sm">
-       <div class="col-12">
-         Tabsets associated with this space {{ useSpacesStore().space?.name }}:
-       </div>
-       <div class="col-12">
-         <NavTabsetsListWidgetNonBex :tabsets="tabsets()" :fromPanel="true"/>
-       </div>
-     </div>
-
-     <div class="row q-ma-sm">
-       <div class="col-12">
-         Tabsets without assigned spaces:
-       </div>
-       <div class="col-12">
-         <NavTabsetsListWidgetNonBex :tabsets="tabsetsWithoutSpaces()" :fromPanel="true"/>
-       </div>
-     </div>-->
 
   </div>
 
@@ -114,8 +94,9 @@ const tabsetNameOptions = ref<object[]>([])
 const openTabs = ref<chrome.tabs.Tab[]>([])
 const currentTabset = ref<Tabset | undefined>(undefined)
 const currentChromeTab = ref<chrome.tabs.Tab>(null as unknown as chrome.tabs.Tab)
+const tabsetsForSpace = ref<Map<string, Tabset[]>>(new Map())
 
-console.log("adding listener")
+// console.log("adding listener")
 
 // if (inBexMode()) {
 //   chrome.runtime.onMessage.addListener(({name, data}) => {
@@ -131,26 +112,52 @@ console.log("adding listener")
 //   useRouter().push("/start")
 // }
 
+
+// const tabsetsForSpace = (spaceId: string): Tabset[] => {
+//   console.log("calling xxx")
+//   return [] //_.filter([...useTabsStore().tabsets.values()], (ts: Tabset) =>
+//     // ts.spaces.indexOf(spaceId) >= 0)
+// }
+
+watchEffect(() => {
+  const start = new Date().getTime()
+  console.log("calulating", start)
+  let res: Map<string, Tabset[]> = new Map()
+  _.forEach([...useTabsStore().tabsets.values()], (ts: Tabset) => {
+    _.forEach(ts.spaces, (spaceId: string) => {
+      if (res.has(spaceId)) {
+        res.set(spaceId, (res.get(spaceId) || []).concat([ts]))
+      } else {
+        res.set(spaceId, [ts])
+      }
+      console.log("calulating", new Date().getTime() - start)
+    })
+  })
+  tabsetsForSpace.value = res // useSpacesStore().tabsetsForSpaces()
+})
+
 watchEffect(() => {
   if (currentChromeTabs.value[0]?.url) {
-    currentTabs.value = useTabsStore().tabsForUrl(currentChromeTabs.value[0].url) || []
+    console.log("calling tabsFotUrl")
+    //currentTabs.value = useTabsStore().tabsForUrl(currentChromeTabs.value[0].url) || []
   }
 })
 
 watchEffect(() => {
   openTabs.value = useTabsStore().tabs
   currentTabset.value = useTabsStore().getCurrentTabset
+  console.log("calling 1")
 })
+
 watchEffect(() => {
-  console.log("tabset id", useTabsStore().currentTabsetId)
-})
-watchEffect(() => {
-  //console.log("currentChromeTab", useTabsStore().currentChromeTab)
+  console.log("currentChromeTab", useTabsStore().currentChromeTab)
   currentChromeTab.value = useTabsStore().currentChromeTab
 })
 
 watchEffect(() => {
   if (useTabsStore().tabsets) {
+    console.log("calling 2")
+
     tabsetNameOptions.value = _.map([...useTabsStore().tabsets.values()], (ts: Tabset) => {
       return {
         label: ts.name,
@@ -164,6 +171,7 @@ watchEffect(() => {
 })
 
 if (inBexMode()) {
+  console.log("calling tabsQuery")
   let queryOptions = {active: true, lastFocusedWindow: true};
   chrome.tabs.query(queryOptions, (tab) => {
     currentChromeTabs.value = tab
@@ -201,15 +209,11 @@ const save = () => {
 
 }
 
-// const createClip = () => {
-//   if (currentChromeTabs.value[0]?.id) {
-//     ChromeApi.executeClippingJS(currentChromeTabs.value[0]?.id)
-//   }
-// }
-
 const navigate = (target: string) => router.push(target)
 
 const tabsets = (): Tabset[] => {
+  console.log("calling tabsets")
+
   let tabsets = [...tabsStore.tabsets.values()]
   if (usePermissionsStore().hasFeature(FeatureIdent.SPACES) && spacesStore.spaces && spacesStore.spaces.size > 0) {
     if (spacesStore.space && spacesStore.space.id && spacesStore.space.id.length > 0) {
@@ -233,6 +237,8 @@ const tabsets = (): Tabset[] => {
 }
 
 const tabsetsWithoutSpaces = (): Tabset[] => {
+  console.log("calling tabsetsWithoutSpaces")
+
   let tabsets = [...tabsStore.tabsets.values()]
   return _.sortBy(_.filter(tabsets, (ts: Tabset) =>
       ts.spaces.length === 0 &&
@@ -247,11 +253,6 @@ const tabsetsWithoutSpaces = (): Tabset[] => {
         return o.name.toLowerCase()
       }
     ])
-}
-
-const tabsetsForSpace = (tsId: string): Tabset[] => {
-  return _.filter([...useTabsStore().tabsets.values()], (ts: Tabset) =>
-    ts.spaces.indexOf(tsId) >= 0)
 }
 
 const addSpace = () => {

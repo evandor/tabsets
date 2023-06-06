@@ -1,10 +1,11 @@
 import {defineStore} from 'pinia';
 import _ from 'lodash'
-import {computed, ref, watch} from "vue";
+import {computed, ref, watch, watchEffect} from "vue";
 import {Space} from "src/models/Space";
 import {useTabsStore} from "src/stores/tabsStore";
 import PersistenceService from "src/services/PersistenceService";
 import {uid} from "quasar";
+import {Tabset} from "src/models/Tabset";
 
 /**
  * a pinia store for "Spaces".
@@ -72,7 +73,25 @@ export const useSpacesStore = defineStore('spaces', () => {
       console.log("searchName", searchName)
       return _.find([...spaces.value.values()], s => s.label === searchName?.trim())
     }
+  })
 
+  const tabsetsForSpaces = computed(() => {
+    return () => {
+        const start = new Date().getTime()
+        console.log("calulating", start)
+        let res: Map<string, Tabset[]> = new Map()
+        _.forEach([...useTabsStore().tabsets.values()], (ts: Tabset) => {
+          _.forEach(ts.spaces, (spaceId: string) => {
+            if (res.has(spaceId)) {
+              res.set(spaceId, (res.get(spaceId) || []).concat([ts]))
+            } else {
+              res.set(spaceId, [ts])
+            }
+            console.log("calulating", new Date().getTime() - start)
+          })
+        })
+        return res
+    }
   })
 
   // function addSpace(label: string): Promise<any>;
@@ -143,6 +162,7 @@ export const useSpacesStore = defineStore('spaces', () => {
     addSpace,
     putSpace,
     setSpace,
-    deleteById
+    deleteById,
+    tabsetsForSpaces
   }
 })

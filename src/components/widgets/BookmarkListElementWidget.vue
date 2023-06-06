@@ -152,8 +152,6 @@ function isOpen(tab: Tab): boolean {
 
 const selectTab = (tab: Tab) => {
   TabsetService.setOnlySelectedTab(tab)
-  // const notificationStore = useNotificationsStore()
-  // notificationStore.setSelectedTab(tab)
 }
 
 const setCustomTitle = (tab: Tab, newValue: string) => {

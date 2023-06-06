@@ -2,16 +2,16 @@
   <q-menu :offset="[0, 0]">
     <q-list dense style="min-width: 200px">
 
-      <q-item v-if="props.tabset?.tabs.length > 0 && expanded[index]"
-              clickable v-close-popup @click="toggleExpand(index)">
-        <q-icon name="o_expand_less" class="q-my-xs q-mr-xs" color="grey-5" style="position:relative;top:-1px"/>
-        Collapse
-      </q-item>
-      <q-item v-if="props.tabset?.tabs.length > 0 && !expanded[index]"
-              clickable v-close-popup @click="toggleExpand(index)">
-        <q-icon name="o_expand_more" class="q-my-xs q-mr-xs" color="grey-5" style="position:relative;top:-1px"/>
-        Expand
-      </q-item>
+<!--      <q-item v-if="props.tabset?.tabs.length > 0 && expanded[index]"-->
+<!--              clickable v-close-popup @click="toggleExpand(index)">-->
+<!--        <q-icon name="o_expand_less" class="q-my-xs q-mr-xs" color="grey-5" style="position:relative;top:-1px"/>-->
+<!--        Collapse-->
+<!--      </q-item>-->
+<!--      <q-item v-if="props.tabset?.tabs.length > 0 && !expanded[index]"-->
+<!--              clickable v-close-popup @click="toggleExpand(index)">-->
+<!--        <q-icon name="o_expand_more" class="q-my-xs q-mr-xs" color="grey-5" style="position:relative;top:-1px"/>-->
+<!--        Expand-->
+<!--      </q-item>-->
 
 <!--      <q-item v-if="props.tabset?.tabs.length > 0 && !expanded[index]"-->
 <!--              clickable v-close-popup @click="openInSidePanel(index)">-->
@@ -146,27 +146,16 @@ const props = defineProps({
   inSidePanel: {type: Boolean, default: false}
 })
 
-const emit = defineEmits(['toggleExpand']);
+// const emit = defineEmits(['toggleExpand']);
 
 const $q = useQuasar()
 
 const expanded = ref<boolean[]>([])
 
-const toggleExpand = (index: number): void => {
-  expanded.value[index] = !expanded.value[index]
-  emit('toggleExpand', index)
-}
-
-const openInSidePanel = async (index: number) => {
-  console.log("got ", index)
-  if (chrome.sidePanel) {
-    chrome.sidePanel.setOptions({
-      path: 'www/sidepanel.html',
-      enabled: true
-    }, (c: any) => console.log("c", c));
-  }
-
-}
+// const toggleExpand = (index: number): void => {
+//   expanded.value[index] = !expanded.value[index]
+//   emit('toggleExpand', index)
+// }
 
 const markAsFavorite = (tabsetId: string) => useCommandExecutor().executeFromUi(new MarkTabsetAsFavoriteCommand(tabsetId))
 const markAsDefault = (tabsetId: string) => useCommandExecutor().executeFromUi(new MarkTabsetAsDefaultCommand(tabsetId))
