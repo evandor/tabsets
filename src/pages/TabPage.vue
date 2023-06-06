@@ -494,17 +494,6 @@ const logsColumns = ref([
 //   })
 //.catch((err) => logger.warning(err))
 
-
-watchEffect(() => {
-  const tabId = route.params.id
-  if (tabId) {
-    const tab = tabsStore.getTab(tabId as unknown as string)
-    if (tab) {
-      notificationStore.setSelectedTab(tab)
-    }
-  }
-})
-
 watchEffect(() => {
   const selectedTab = useUiStore().getSelectedTab
   if (selectedTab) {

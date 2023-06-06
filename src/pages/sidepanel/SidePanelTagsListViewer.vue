@@ -83,7 +83,7 @@ import {useNotificationHandler} from "src/services/ErrorHandler";
 import {useUtils} from "src/services/Utils";
 import _ from "lodash"
 import {Tab} from "src/models/Tab";
-import {SidePanelView, useUiStore} from "stores/uiStore";
+import {SidePanelView, useUiStore} from "src/stores/uiStore";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {CreateDynamicTabset} from "src/domain/commands/CreateDynamicTabset";
 

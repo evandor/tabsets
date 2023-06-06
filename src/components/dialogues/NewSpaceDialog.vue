@@ -80,7 +80,7 @@ watchEffect(() => {
 
 const createNewSpace = () => {
   hideWarning.value = true
-  useSpacesStore().addSpace(newSpaceName.value)
+  useSpacesStore().createSpace(newSpaceName.value)
     .then(() => {
       newSpaceName.value = ''
       let message = 'New Space ' + newSpaceName.value + ' created successfully'

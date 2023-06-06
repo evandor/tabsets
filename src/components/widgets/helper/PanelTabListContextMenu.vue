@@ -27,7 +27,7 @@ import {useUtils} from "src/services/Utils";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import RestoreTabsetDialog from "components/dialogues/RestoreTabsetDialog.vue";
 import {useQuasar} from "quasar";
-import {DrawerTabs, useUiStore} from "stores/uiStore";
+import {DrawerTabs, useUiStore} from "src/stores/uiStore";
 import {Tab} from "src/models/Tab";
 import {DeleteTabCommand} from "src/domain/commands/DeleteTabCommand";
 import EditNoteDialog from "components/dialogues/EditNoteDialog.vue";

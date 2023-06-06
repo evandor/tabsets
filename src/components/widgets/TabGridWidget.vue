@@ -113,10 +113,7 @@ const setCustomTitle = (tab: Tab, newValue: string) => {
 
 
 const selectTab = (tab: Tab) => {
-  //console.log("tab selected", tab)
   TabsetService.setOnlySelectedTab(tab)
-  const notificationStore = useNotificationsStore()
-  notificationStore.setSelectedTab(tab)
 }
 
 

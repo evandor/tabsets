@@ -49,13 +49,13 @@ describe('SpacesStore', () => {
 
   it('adding space with new label', async () => {
     const spaceStore = useSpacesStore()
-    await spaceStore.addSpace("test")
+    await spaceStore.createSpace("test")
     expect(spaceStore.spaces.size).toEqual(1)
   })
 
   it('adding space with existing label', async () => {
-    await useSpacesStore().addSpace("test")
-    await expect(useSpacesStore().addSpace("test")).rejects.toEqual("name does already exist")
+    await useSpacesStore().createSpace("test")
+    await expect(useSpacesStore().createSpace("test")).rejects.toEqual("name does already exist")
   })
 
   it('adding space object', async () => {

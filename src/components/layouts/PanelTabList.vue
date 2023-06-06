@@ -27,7 +27,7 @@
         clickable
         v-ripple
         v-for="tab in props.tabs"
-        class="q-ma-none q-pa-xs"
+        class="q-ma-none q-pa-sm"
         :style="itemStyle(tab)"
         @click.stop="showDetails(tab)"
         @dragstart="startDrag($event, tab)"

@@ -137,8 +137,6 @@ const drawerLabel = () => {
       return "Grouped by Host"
     case DrawerTabs.SAVED_TABS:
       return "Saved Pages"
-    case DrawerTabs.SIDEBAR:
-      return "Tabset Sidebar"
     case DrawerTabs.RSS:
       return "RSS Sidebar"
     case DrawerTabs.SCHEDULED:
@@ -155,10 +153,6 @@ const drawerLabel = () => {
       return "Urls on New Tab Page"
     case DrawerTabs.HELP:
       return "Help"
-    case DrawerTabs.NOTES:
-      return "Note Collections"
-    case DrawerTabs.TODOS:
-      return "TODOs Collections"
     case DrawerTabs.TAGS_VIEWER:
       return "Tags Viewer"
     default:

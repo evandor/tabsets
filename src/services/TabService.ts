@@ -34,7 +34,7 @@ class TabService {
         dueTabs.push(t)
       }
     })
-    if (dueTabs.length > 0) {
+    if (dueTabs.length > 0 && chrome.notifications) {
       chrome.notifications.create(
         dueTabs[0].id,
         {
@@ -59,6 +59,8 @@ class TabService {
           })*/
         }
       )
+    } else if (dueTabs.length > 0) {
+      console.warn("could not send notification, chrome.notifications not defined")
     }
   }
 }
