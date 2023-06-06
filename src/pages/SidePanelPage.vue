@@ -23,7 +23,8 @@
                                 :fromPanel="true"
                                 style="position: absolute; left:5px;top:5px;max-width:240px"/>
                   <div class="column q-ma-none q-pa-none" v-else>
-                    <div class="col q-ma-none q-pa-none text-black"
+                    <div class="col q-ma-none q-pa-none text-black cursor-pointer"
+                         @click="router.push('/sidepanel/tabsets')"
                          style="font-size: 12px">
                       {{ useSpacesStore().space ? useSpacesStore().space.label : 'no space selected' }}
                     </div>

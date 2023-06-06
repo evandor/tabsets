@@ -24,11 +24,7 @@
           </q-item-section>
           <q-item-section class="q-ml-sm">{{ ts.label }}</q-item-section>
         </q-item>
-        <q-separator v-if="usePermissionsStore().hasFeature(FeatureIdent.SPACES)"/>
-        <q-item v-if="usePermissionsStore().hasFeature(FeatureIdent.SPACES)"
-                clickable v-close-popup @click="router.push('/sidepanel/tabsets')">
-          <q-item-section>Switch Space</q-item-section>
-        </q-item>
+
         <q-separator/>
         <q-item v-if="tabsStore.currentTabsetName" clickable v-close-popup @click="openEditTabsetDialog()">
           <q-item-section>Edit Tabset Name</q-item-section>

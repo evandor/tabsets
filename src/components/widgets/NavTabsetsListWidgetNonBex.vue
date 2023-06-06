@@ -52,6 +52,28 @@
           </q-item-label>
 
         </q-item-section>
+        <q-item-section class="text-right q-mx-sm cursor-pointer"
+                        @mouseover="hoveredTab = tabset.id"
+                        @mouseleave="hoveredTab = undefined"
+                        style="max-width:25px;font-size: 12px;color:#bfbfbf">
+            <span v-if="hoveredOver(tabset.id)">
+              <q-icon name="more_horiz" color="primary" size="16px"/>
+            </span>
+          <span v-else-if="tabset.type === TabsetType.DYNAMIC">
+              -
+            </span>
+          <span v-else>
+                {{ tabset.tabs.length }}
+            </span>
+
+          <TabsetListContextMenu
+            :tabset="tabset"
+            :index="index"
+            :hoveredTab="hoveredTab"
+            :in-side-panel="props.fromPanel"
+            @toggleExpand="(index:number) => toggleExpand(index)"/>
+
+        </q-item-section>
       </q-item>
     </q-list>
   </div>
@@ -152,6 +174,8 @@ const open = (tab: Tab) => {
     //router.push("/iframe/" + tabId)
   }
 }
+
+const hoveredOver = (tabsetId: string) => hoveredTab.value === tabsetId
 
 const deleteTab = (tab: Tab) => useCommandExecutor().executeFromUi(new DeleteTabCommand(tab))
 
