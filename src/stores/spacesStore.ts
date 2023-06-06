@@ -75,25 +75,6 @@ export const useSpacesStore = defineStore('spaces', () => {
     }
   })
 
-  const tabsetsForSpaces = computed(() => {
-    return () => {
-        const start = new Date().getTime()
-        console.log("calulating", start)
-        let res: Map<string, Tabset[]> = new Map()
-        _.forEach([...useTabsStore().tabsets.values()], (ts: Tabset) => {
-          _.forEach(ts.spaces, (spaceId: string) => {
-            if (res.has(spaceId)) {
-              res.set(spaceId, (res.get(spaceId) || []).concat([ts]))
-            } else {
-              res.set(spaceId, [ts])
-            }
-            console.log("calulating", new Date().getTime() - start)
-          })
-        })
-        return res
-    }
-  })
-
   // function addSpace(label: string): Promise<any>;
   // function addSpace(space: Space): Promise<any>;
 
@@ -162,7 +143,6 @@ export const useSpacesStore = defineStore('spaces', () => {
     addSpace,
     putSpace,
     setSpace,
-    deleteById,
-    tabsetsForSpaces
+    deleteById
   }
 })
