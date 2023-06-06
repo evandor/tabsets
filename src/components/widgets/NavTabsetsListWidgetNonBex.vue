@@ -129,7 +129,7 @@ import {useUtils} from "src/services/Utils";
 import TabsetListContextMenu from "components/widgets/helper/TabsetListContextMenu.vue";
 import {Tab} from "src/models/Tab";
 import {DeleteTabCommand} from "src/domain/commands/DeleteTabCommand";
-import {useUiStore} from "stores/uiStore";
+import {useUiStore} from "src/stores/uiStore";
 
 const {handleError, handleSuccess} = useNotificationHandler()
 const {inBexMode} = useUtils()
@@ -164,10 +164,11 @@ watchEffect(() => {
 })
 
 const selectTS = (tabset: Tabset) => {
-  console.log("selecting", tabset.id, props.spaceId)
+  console.log("selecting tabset/space", tabset.id, props.spaceId)
   useCommandExecutor()
     .execute(new SelectTabsetCommand(tabset.id, props.spaceId))
     .then(() => {
+      console.log("tabset was selected")
       activeTabset.value = tabset.id
       if (!props.fromPanel) {
         tabset.type === TabsetType.DYNAMIC ?

@@ -218,8 +218,6 @@ const setInfo = (tab: Tab) => {
 
 const selectTab = (tab: Tab) => {
   TabsetService.setOnlySelectedTab(tab)
-  const notificationStore = useNotificationsStore()
-  notificationStore.setSelectedTab(tab)
 }
 
 

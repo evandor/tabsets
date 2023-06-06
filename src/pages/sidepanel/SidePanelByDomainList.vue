@@ -53,7 +53,7 @@ import {Tabset, TabsetStatus} from "src/models/Tabset";
 import OpenTabCard from "components/layouts/OpenTabCard.vue";
 import {useRouter} from "vue-router";
 import InfoMessageWidget from "components/widgets/InfoMessageWidget.vue";
-import {SidePanelView, useUiStore} from "stores/uiStore";
+import {SidePanelView, useUiStore} from "src/stores/uiStore";
 
 const tabsStore = useTabsStore()
 const router = useRouter()

@@ -21,14 +21,14 @@ describe('CreateTabsetCommand', () => {
     request.onupgradeneeded = async function () {
       await useJestHelper().dbInit(request)
     }
-    await IndexedDbPersistenceService.init()
+    await IndexedDbPersistenceService.init('db')
     process.env.MODE = "bex"
     chrome.tabs.query.mockImplementation(async (o: object) => [])
   })
 
   it('adds new Tab to existing tabset', async () => {
     const newTabsetRes: any = await new CreateTabsetCommand('emptyTabsetId', []).execute()
-    const res:any = await new SelectTabsetCommand(newTabsetRes.result['tabsetId']).execute()
+    const res:any = await new SelectTabsetCommand(newTabsetRes.result['tabsetId'], undefined).execute()
     expect(res.message).toBe("done")
     expect(useTabsStore().currentTabsetId).toBe(newTabsetRes.result['tabsetId'])
   })

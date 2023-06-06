@@ -143,7 +143,7 @@ import {useRoute, useRouter} from "vue-router";
 import {usePermissionsStore} from "src/stores/permissionsStore";
 import {FeatureIdent} from "src/models/AppFeature";
 import OpenTabDialog from "components/dialogues/OpenTabDialog.vue";
-import {SidePanelView, useUiStore} from "stores/uiStore";
+import {SidePanelView, useUiStore} from "src/stores/uiStore";
 
 const {inBexMode} = useUtils()
 

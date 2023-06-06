@@ -32,7 +32,7 @@
         <q-expansion-item
           v-for="space in spacesStore.spaces.values()"
           expand-separator
-          :default-opened="spacesStore.space.id === space.id"
+          :default-opened="spacesStore.space?.id === space.id"
           :label="space.label"
           :caption="tabsetsForSpace(space.id).length + ' tabsets'">
           <q-card>
@@ -97,8 +97,7 @@ import {uid, useQuasar} from "quasar";
 import NavTabsetsListWidgetNonBex from "components/widgets/NavTabsetsListWidgetNonBex.vue";
 import {usePermissionsStore} from "src/stores/permissionsStore";
 import {FeatureIdent} from "src/models/AppFeature";
-import {useSpacesStore} from "stores/spacesStore";
-import SidePanelSpacesSelectorWidget from "components/widgets/SidePanelSpacesSelectorWidget.vue";
+import {useSpacesStore} from "src/stores/spacesStore";
 import NewSpaceDialog from "components/dialogues/NewSpaceDialog.vue";
 
 const {inBexMode} = useUtils()
