@@ -63,9 +63,10 @@
                 @click="NavigationService.openOrCreateTab(props.tab.chromeTab?.url)">open Note</span>
           <short-url v-else :url="props.tab.chromeTab?.url" :hostname-only="true"/>
 
-          <q-icon class="q-ml-xs" name="open_in_new"/>
+         <!-- <q-icon class="q-ml-xs" name="open_in_new"/>-->
         </div>
-        <div class="col text-right q-mx-sm cursor-pointer"
+        <div v-if="!props.hideMenu"
+             class="col text-right q-mx-sm cursor-pointer"
              @mouseover="hoveredTab = tab.id"
              @mouseleave="hoveredTab = undefined"
              style="max-width:25px;font-size: 12px;color:#bfbfbf">
@@ -88,8 +89,15 @@
       <q-icon color="blue-10" name="edit_note"/>
       {{ props['tab']['note'] }}
     </q-item-label>
-  </q-item-section>
 
+    <q-item-label v-if="props.showTabsets">
+      <template v-for="badge in tsBadges">
+        <q-chip class="cursor-pointer q-ml-none q-mr-xs" size="9px" icon="tab">
+          {{ badge.label }}
+        </q-chip>
+      </template>
+    </q-item-label>
+  </q-item-section>
 
 </template>
 
@@ -110,11 +118,13 @@ import {useTabsetService} from "src/services/TabsetService2";
 import ShortUrl from "components/utils/ShortUrl.vue";
 import {useTabsStore} from "src/stores/tabsStore";
 import PanelTabListContextMenu from "components/widgets/helper/PanelTabListContextMenu.vue";
+import _ from "lodash";
 
 const props = defineProps({
   tab: {type: Object, required: true},
   header: {type: String, required: false},
-  hideMenu: {type: Boolean, default: false}
+  hideMenu: {type: Boolean, default: false},
+  showTabsets: {type: Boolean, default: false}
 })
 
 const emits = defineEmits(['sendCaption'])
@@ -126,6 +136,7 @@ const showButtonsProp = ref<boolean>(false)
 const thumbnail = ref<string | undefined>(undefined)
 const imgFromBlob = ref<string>("")
 const hoveredTab = ref<string | undefined>(undefined)
+const tsBadges = ref<object[]>([])
 
 onMounted(() => {
   const blobImgPath = props.tab.image
@@ -142,6 +153,21 @@ onMounted(() => {
         }
       })
       .catch((err) => console.error(err))
+  }
+})
+
+watchEffect(() => {
+  console.log("checking", props.tab)
+  if (props.tab && props.tab.chromeTab.url) {
+    const url = props.tab.chromeTab.url
+    const tabsetIds = useTabsetService().tabsetsFor(url)
+    //console.log("tabsets", tabsetIds)
+    tsBadges.value = []
+    _.forEach(tabsetIds, tsId => tsBadges.value.push({
+      label: TabsetService.nameForTabsetId(tsId),
+      tabsetId: tsId,
+      encodedUrl: btoa(url || '')
+    }))
   }
 })
 

@@ -127,7 +127,11 @@
               <q-item
                 v-ripple
                 class="q-ma-none q-pa-sm">
-                <PanelTabListElementWidget header="Current Tab:" :tab="tabFromChromeTab()" :hideMenu="true"/>
+                <PanelTabListElementWidget
+                  header="Current Tab:"
+                  :tab="tabFromChromeTab()"
+                  :show-tabsets="true"
+                  :hideMenu="true"/>
               </q-item>
             </q-list>
           </div>
@@ -137,7 +141,7 @@
           </div>
         </div>
 
-        <div v-else-if="selectedTab" id="v-step-0"
+        <div v-else-if="selectedTab"
              class="row q-ma-sm q-mt-lg"
              :class="alreadyInTabset() ? 'bg-grey-1':'bg-yellow-1'"
              style="border:1px solid gray;border-radius: 5px">

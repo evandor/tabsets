@@ -50,7 +50,7 @@
                                   :caption="tabsetsWithoutSpaces().length + ' tabsets'">
                   <q-card>
                     <q-card-section>
-<!--                      <NavTabsetsListWidgetNonBex :tabsets="tabsetsWithoutSpaces()" :fromPanel="true"/>-->
+                      <NavTabsetsListWidgetNonBex :tabsets="tabsetsWithoutSpaces()" :fromPanel="true"/>
                     </q-card-section>
                   </q-card>
                 </q-expansion-item>
