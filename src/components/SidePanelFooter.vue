@@ -3,7 +3,7 @@
   <q-footer class="lightgrey text-primary q-pa-xs">
     <div class="row fit">
       <div class="col-6">
-        <q-btn v-if="tabsStore.tabs.length > 1"
+        <q-btn v-if="tabsStore.tabs?.length > 1"
           icon="o_playlist_add"
                class="q-my-xs q-ml-xs"
                style="width:20px"
@@ -31,14 +31,14 @@
           <q-tooltip class="tooltip">List all your tabs URLs by domain</q-tooltip>
         </q-btn>
         <span class="q-ma-none"
-              v-if="permissionsStore.hasFeature(FeatureIdent.OPENTABS_THRESHOLD) && tabsStore.tabsets.size > 0">
+              v-if="permissionsStore.hasFeature(FeatureIdent.OPENTABS_THRESHOLD) && tabsStore.tabsets?.size > 0">
           <OpenTabsThresholdWidget :showLabel="false" :in-side-panel="true">
-            <q-tooltip>{{ tabsStore.tabs.length }} open tabs</q-tooltip>
+            <q-tooltip>{{ tabsStore.tabs?.length }} open tabs</q-tooltip>
           </OpenTabsThresholdWidget>
         </span>
       </div>
       <div class="col text-right">
-        <q-btn v-if="tabsStore.getCurrentTabset?.tabs.length > 0"
+        <q-btn v-if="tabsStore.getCurrentTabset?.tabs?.length > 0"
                :icon="getDetailLevelIcon()"
                class="q-my-xs q-mx-none"
                style="width:20px"

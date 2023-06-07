@@ -252,7 +252,6 @@ import {FeatureIdent} from "src/models/AppFeature";
 import {useTabsStore} from "src/stores/tabsStore";
 import {useSettingsStore} from "src/stores/settingsStore"
 import {SelectTabsetCommand} from "src/domain/tabsets/SelectTabset";
-import MHtmlPage from "pages/MHtmlPage.vue";
 import MHtmlViewHelper from "pages/sidepanel/helper/MHtmlViewHelper.vue";
 
 const {inBexMode} = useUtils()

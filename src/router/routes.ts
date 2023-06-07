@@ -4,7 +4,7 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/',
     // @ts-ignore
-    redirect: (chrome.sidePanel && chrome.sidePanel.setPanelBehavior) ? '/sidepanel' : '/start'
+    redirect: '/start'
   },
   {
     path: '/start',
@@ -125,16 +125,6 @@ const routes: RouteRecordRaw[] = [
     path: '/spaces',
     component: () => import('layouts/DefaultLayout.vue'),
     children: [{ path: '', component: () => import('pages/Spaces.vue') }],
-  },
-  {
-    path: '/mhtml/:encodedUrl',
-    component: () => import('layouts/DefaultLayout.vue'),
-    children: [{ path: '', component: () => import('pages/MHtmlPage.vue') }],
-  },
-  {
-    path: '/rss/:encodedUrl',
-    component: () => import('layouts/DefaultLayout.vue'),
-    children: [{ path: '', component: () => import('pages/RssPage.vue') }],
   },
   {
     path: '/bydomain/:encodedUrl',

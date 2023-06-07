@@ -1,7 +1,7 @@
 {
   "name": "tabsets",
   "version": "0.4.0",
-  "description": "Bookmarks next generation - Tabsets is a browser extension which helps you organize your links, utilizing the new chrome side panel.",
+  "description": "Bookmarks next generation - Tabsets is a browser extension which helps you organize your links, utilizing the firefox sidebar.",
   "productName": "Tabsets",
   "author": "evandor <evandor@gmail.com>",
   "private": true,
@@ -10,7 +10,9 @@
     "dev spa (only for testing)": "quasar dev -m spa",
     "dev stage prod": "stage=production quasar dev -m bex",
     "dev electron": "quasar dev -m electron",
+    "web-ext run": "cd dist/bex && web-ext run",
     "build": "quasar build -m bex",
+    "web-ext build": "quasar build -m bex &&  zip dist/tabset.src.zip -r src/ src-bex/ package.json && cd dist/bex && web-ext build",
     "icon": "icongenie generate -i src/assets/icon.png",
     "test": "echo \"See package.json => scripts for available tests.\" && exit 0",
     "test:unit:ui": "majestic",

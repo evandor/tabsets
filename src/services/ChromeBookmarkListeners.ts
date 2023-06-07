@@ -22,7 +22,7 @@ class ChromeBookmarkListeners {
           chrome.bookmarks.onMoved.addListener(this.onMovedListener)
           chrome.bookmarks.onRemoved.addListener(this.onRemovedListener)
           chrome.bookmarks.onChanged.addListener(this.onChangedListener)
-          chrome.bookmarks.onChildrenReordered.addListener(this.onChildrenReorderedListener)
+          //chrome.bookmarks.onChildrenReordered.addListener(this.onChildrenReorderedListener)
         }
       })
     }
@@ -35,7 +35,7 @@ class ChromeBookmarkListeners {
       chrome.bookmarks.onMoved.removeListener(this.onMovedListener)
       chrome.bookmarks.onRemoved.removeListener(this.onRemovedListener)
       chrome.bookmarks.onChanged.removeListener(this.onChangedListener)
-      chrome.bookmarks.onChildrenReordered.removeListener(this.onChildrenReorderedListener)
+      //chrome.bookmarks.onChildrenReordered.removeListener(this.onChildrenReorderedListener)
     }
   }
 

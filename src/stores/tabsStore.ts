@@ -14,7 +14,17 @@ import {Space} from "src/models/Space";
 
 async function queryTabs(): Promise<chrome.tabs.Tab[]> {
   // @ts-ignore
-  return await chrome.tabs.query({currentWindow: true});
+  //return await chrome.tabs.query({currentWindow: true});
+  return new Promise((resolve, reject) => {
+    let queryOptions = {currentWindow: true};
+    try {
+      chrome.tabs.query(queryOptions, function (tabs) {
+        resolve(tabs);
+      })
+    } catch (e) {
+      reject(e);
+    }
+  })
 }
 
 function markDuplicates(tabset: Tabset) {

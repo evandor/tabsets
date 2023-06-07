@@ -9,11 +9,18 @@
     "tabs",
     "activeTab",
     "alarms",
-    "scripting"
+    "scripting",
+    "*://*/*"
   ],
   "background": {
     "scripts": ["background.js"]
   },
+  "content_scripts": [
+    {
+      "matches": ["*://*/*"],
+      "js": ["tabsets-content-script.js", "content-script.js"]
+    }
+  ],
   "sidebar_action": {
     "default_icon": "icons/icon-48x48.png",
     "default_title" : "Tabsets",

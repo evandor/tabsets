@@ -368,10 +368,11 @@
   <div v-else-if="tab === 'debug'" v-if="useSettingsStore().isEnabled('dev')">
     <div class="q-pa-md q-gutter-sm">
       <q-banner rounded class="bg-grey-1 text-primary">The tabs internal representation</q-banner>
-      <vue-json-pretty style="font-size: 80%"
-                       v-model:data="state.data"
-                       :show-double-quotes="true"
-      />
+      <!-- not used as of firefox extension submission warning -->
+<!--      <vue-json-pretty style="font-size: 80%"-->
+<!--                       v-model:data="state.data"-->
+<!--                       :show-double-quotes="true"-->
+<!--      />-->
     </div>
   </div>
 
@@ -391,8 +392,8 @@ import {useUtils} from "src/services/Utils";
 import {useUiStore} from "src/stores/uiStore";
 import {openURL} from "quasar";
 import {useSettingsStore} from "src/stores/settingsStore"
-import VueJsonPretty from "vue-json-pretty";
-import 'vue-json-pretty/lib/styles.css';
+// import VueJsonPretty from "vue-json-pretty";
+// import 'vue-json-pretty/lib/styles.css';
 
 const tabsStore = useTabsStore()
 const notificationStore = useNotificationsStore()

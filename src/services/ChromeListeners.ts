@@ -68,13 +68,6 @@ class ChromeListeners {
 
       chrome.runtime.onMessage.addListener((request, sender, sendResponse) => this.onMessage(request, sender, sendResponse))
 
-      // @ts-ignore
-      if (chrome.sidePanel && chrome.sidePanel.setPanelBehavior) {
-        // @ts-ignore
-        chrome.sidePanel
-          .setPanelBehavior({openPanelOnActionClick: true})
-          .catch((error: any) => console.error(error));
-      }
     }
 
   }
@@ -215,6 +208,7 @@ class ChromeListeners {
               if (chrome.runtime.lastError) {
                 console.warn("could not execute script: " + chrome.runtime.lastError.message, info.url);
               }
+              console.log("script execution callback", callback)
             });
           })
         }
@@ -293,7 +287,7 @@ class ChromeListeners {
   }
 
   onMessage(request: any, sender: chrome.runtime.MessageSender, sendResponse: any) {
-    //console.log("handling request", request.msg)
+    console.log("handling request", request.msg)
     if (request.msg === 'captureThumbnail') {
       const screenShotWindow = useWindowsStore().screenshotWindow
       this.handleCapture(sender, screenShotWindow, sendResponse)
