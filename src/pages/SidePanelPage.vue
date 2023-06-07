@@ -63,15 +63,25 @@
                   </q-btn>
 
                   <q-btn
-                    v-if="usePermissionsStore().hasFeature(FeatureIdent.STANDALONE_APP)"
-                    icon="o_open_in_new"
+                    icon="o_keyboard_double_arrow_right"
                     flat
                     class="q-ma-none q-pa-xs cursor-pointer"
                     style="max-width:20px"
                     size="11px"
-                    @click="openExtensionTab()">
-                    <q-tooltip class="tooltip">Open Tabsets as full-page application</q-tooltip>
+                    @click="openTabsetPage()">
+                    <q-tooltip class="tooltip">Open this Tabset as Standalone page</q-tooltip>
                   </q-btn>
+
+<!--                  <q-btn-->
+<!--                    v-if="usePermissionsStore().hasFeature(FeatureIdent.STANDALONE_APP)"-->
+<!--                    icon="o_open_in_new"-->
+<!--                    flat-->
+<!--                    class="q-ma-none q-pa-xs cursor-pointer"-->
+<!--                    style="max-width:20px"-->
+<!--                    size="11px"-->
+<!--                    @click="openExtensionTab()">-->
+<!--                    <q-tooltip class="tooltip">Open Tabsets as full-page application</q-tooltip>-->
+<!--                  </q-btn>-->
 
                 </div>
               </div>
@@ -155,6 +165,10 @@
               </q-btn>
 
             </div>
+          </div>
+
+          <div class="text-caption q-ma-md" v-if="tabsStore.getCurrentTabset?.tabs.length === 0">
+            <q-img src="cat.png" />
           </div>
 
           <div class="text-caption q-ma-md" v-if="tabsStore.getCurrentTabset?.tabs.length === 0">
@@ -405,6 +419,14 @@ watchEffect(() => {
 const openExtensionTab = () => {
   const extensionUrl = chrome.runtime.getURL('www/index.html#/start')
   NavigationService.openOrCreateTab(extensionUrl)
+}
+
+const openTabsetPage = () => {
+  const tabsetId = tabsStore.getCurrentTabset?.id
+  if (tabsetId) {
+    const extensionUrl = chrome.runtime.getURL('www/index.html#/mainpanel/tabsets/' + tabsetId)
+    NavigationService.openOrCreateTab(extensionUrl)
+  }
 }
 
 if (inBexMode()) {

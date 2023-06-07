@@ -77,6 +77,11 @@ const routes: RouteRecordRaw[] = [
     children: [{ path: '', component: () => import('pages/mainpanel/MainPanelNotePage.vue') }],
   },
   {
+    path: '/mainpanel/tabsets/:tabsetId',
+    component: () => import('layouts/PlainLayout.vue'),
+    children: [{ path: '', component: () => import('pages/TabsetPage.vue') }],
+  },
+  {
     path: '/mainpanel/mhtml/:encodedUrl',
     component: () => import('layouts/PlainLayout.vue'),
     children: [{ path: '', component: () => import('pages/mainpanel/MainPanelMHtmlPage.vue') }],
