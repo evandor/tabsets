@@ -37,7 +37,9 @@
                   <SearchWidget v-if="searching"
                                 :fromPanel="true"
                                 style="position: absolute; left:5px;top:5px;max-width:240px"/>
-                  <TabsetsSelectorWidget v-else :fromPanel="true"/>
+                  <TabsetsSelectorWidget v-else
+                                         style="position: absolute; left:5px;top:14px"
+                                         :fromPanel="true"/>
                 </div>
                 <div class="col-4 text-right">
                   <q-btn v-if="tabsStore.tabsets.size > 1"
@@ -45,15 +47,32 @@
                          flat
                          class="q-ma-none q-pa-xs cursor-pointer"
                          style="max-width:20px"
-                         size="10px"
+                         size="11px"
                          @click="toggleSearch">
                     <q-tooltip class="tooltip">Search</q-tooltip>
                   </q-btn>
 
-                  <!--                    <q-icon v-if="useSettingsStore().isEnabled('dev')"-->
-                  <!--                            class="q-ma-xs cursor-pointer" name="open_in_new" size="16px" @click="openExtensionTab">-->
-                  <!--                      <q-tooltip class="tooltip">Open Tabsets</q-tooltip>-->
-                  <!--                    </q-icon>-->
+                  <q-btn
+                    icon="o_add"
+                    flat
+                    class="q-ma-none q-pa-xs cursor-pointer"
+                    style="max-width:20px"
+                    size="11px"
+                    @click="openNewTabsetDialog()">
+                    <q-tooltip class="tooltip">Add new Tabset</q-tooltip>
+                  </q-btn>
+
+                  <q-btn
+                    v-if="usePermissionsStore().hasFeature(FeatureIdent.STANDALONE_APP)"
+                    icon="o_open_in_new"
+                    flat
+                    class="q-ma-none q-pa-xs cursor-pointer"
+                    style="max-width:20px"
+                    size="11px"
+                    @click="openExtensionTab()">
+                    <q-tooltip class="tooltip">Open Tabsets as full-page application</q-tooltip>
+                  </q-btn>
+
                 </div>
               </div>
             </q-toolbar-title>
@@ -71,10 +90,11 @@
 
               <!--              v-if="tabsStore.currentTabsetId !== '' && tabsStore.getTabset(tabsStore.currentTabsetId) && tabsStore.getCurrentTabset?.tabs.length > 0 && $q.screen.gt.xs"-->
               <q-btn
+                v-if="tabsStore.getCurrentTabset?.tabs.length > 2"
                 flat
                 class="q-ma-none q-pa-xs cursor-pointer"
                 style="width:20px;max-width:220px"
-                size="10px"
+                size="11px"
                 :text-color="useUiStore().tabsFilter ? 'accent' : 'primary'"
                 :disable="tabsStore.getCurrentTabset?.type === TabsetType.DYNAMIC"
                 :label="useUiStore().tabsFilter"
@@ -87,7 +107,7 @@
                   class="tooltip"
                   :delay="200"
                   anchor="center left" self="center right">
-                  Filter this tabset!
+                  Filter this tabset
                 </q-tooltip>
               </q-btn>
 
@@ -497,7 +517,7 @@ const toggleSorting = () => useCommandExecutor().executeFromUi(new ToggleSorting
 
 const toggleOrder = () => orderDesc.value = !orderDesc.value
 
-const showSorting = () => true//tabsStore.getCurrentTabs.length > 10 && $q.screen.gt.xs
+const showSorting = () => tabsStore.getCurrentTabs.length > 3
 
 function getOrder() {
   if (tabsStore.getCurrentTabset) {
@@ -511,6 +531,16 @@ function getOrder() {
     }
     return (t: Tab) => 1
   }
+}
+
+const openNewTabsetDialog = () => {
+  $q.dialog({
+    component: NewTabsetDialog,
+    componentProps: {
+      tabsetId: tabsStore.currentTabsetId,
+      fromPanel: true
+    }
+  })
 }
 
 </script>

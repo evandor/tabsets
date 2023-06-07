@@ -286,9 +286,14 @@ text.set(FeatureIdent.NOTES.toLowerCase(), {
   permissions: []
 })
 text.set(FeatureIdent.WEBSITE_CLIP.toLowerCase(), {
-  name: 'Wesite Clip',
+  name: 'Website Clip',
   description: 'Create an image clip from a website and store it',
   permissions: ['notification']
+})
+text.set(FeatureIdent.STANDALONE_APP.toLowerCase(), {
+  name: 'Standalone App',
+  description: 'Tabsets as full-page application',
+  permissions: []
 })
 
 

@@ -23,7 +23,8 @@ export enum FeatureIdent {
   NOTES = "NOTES",
   TAGS = "TAGS",
   SIDE_PANEL = "SIDE_PANEL",
-  WEBSITE_CLIP = "WEBSITE_CLIP"
+  WEBSITE_CLIP = "WEBSITE_CLIP",
+  STANDALONE_APP = "STANDALONE_APP"
 }
 
 export enum FeatureType {

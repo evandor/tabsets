@@ -160,11 +160,9 @@ onMounted(() => {
 })
 
 watchEffect(() => {
-  console.log("checking", props.tab)
   if (props.tab && props.tab.chromeTab.url) {
     const url = props.tab.chromeTab.url
     const tabsetIds = useTabsetService().tabsetsFor(url)
-    //console.log("tabsets", tabsetIds)
     tsBadges.value = []
     _.forEach(tabsetIds, tsId => tsBadges.value.push({
       label: TabsetService.nameForTabsetId(tsId),
