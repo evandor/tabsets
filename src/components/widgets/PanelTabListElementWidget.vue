@@ -27,6 +27,9 @@
       <div>
         <div class="q-pr-sm cursor-pointer ellipsis">
           <span v-if="props.header" class="text-bold">{{ props.header }}<br></span>
+          <span v-if="useTabsStore().getCurrentTabset?.sorting === 'alphabeticalTitle'">
+              <q-icon name="arrow_right" size="16px"/>
+           </span>
           {{ nameOrTitle(props.tab) }}
           <q-popup-edit
             v-if="props.tab.extension !== UrlExtension.NOTE"

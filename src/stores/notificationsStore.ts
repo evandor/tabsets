@@ -71,7 +71,8 @@ export const useNotificationsStore = defineStore('notifications', () => {
     notifications,
     getNotification,
     updateAvailable,
-    bookmarksExpanded
+    bookmarksExpanded,
+    updateToVersion
   }
 })
 

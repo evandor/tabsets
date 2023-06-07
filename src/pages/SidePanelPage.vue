@@ -49,32 +49,7 @@
                          @click="toggleSearch">
                     <q-tooltip class="tooltip">Search</q-tooltip>
                   </q-btn>
-                  <q-icon v-if="usePermissionsStore().hasFeature(FeatureIdent.SESSIONS)"
-                          class="q-ma-xs cursor-pointer"
-                          :color="existingSession ? (tabsStore.getCurrentTabset?.type === TabsetType.SESSION ? 'red':'grey-5') :'primary'"
-                          :name="existingSession ? 'o_stop_circle':'o_play_circle'" size="16px"
-                          @click="toggleSessionState">
-                    <q-tooltip class="tooltip" v-if="existingSession">Stop Session</q-tooltip>
-                    <q-tooltip class="tooltip" v-else>Start new Session</q-tooltip>
-                  </q-icon>
-                  <q-btn v-if="usePermissionsStore().hasFeature(FeatureIdent.WEBSITE_CLIP) && webClipActive()"
-                         icon="filter_center_focus"
-                         flat
-                         class="q-ma-none q-pa-xs cursor-pointer"
-                         style="max-width:20px"
-                         size="10px"
-                         @click="createClip">
-                    <q-tooltip class="tooltip">{{ createWebsiteClipTooltip() }}</q-tooltip>
-                  </q-btn>
-                  <q-btn v-if="usePermissionsStore().hasFeature(FeatureIdent.WEBSITE_CLIP) && !webClipActive()"
-                         icon="filter_center_focus"
-                         color="grey-5"
-                         flat
-                         class="q-ma-none q-pa-xs cursor-pointer"
-                         style="max-width:20px"
-                         size="10px">
-                    <q-tooltip class="tooltip">cannot create web clip for this tab</q-tooltip>
-                  </q-btn>
+
                   <!--                    <q-icon v-if="useSettingsStore().isEnabled('dev')"-->
                   <!--                            class="q-ma-xs cursor-pointer" name="open_in_new" size="16px" @click="openExtensionTab">-->
                   <!--                      <q-tooltip class="tooltip">Open Tabsets</q-tooltip>-->
@@ -84,10 +59,82 @@
             </q-toolbar-title>
           </q-toolbar>
 
-          <div class="col-12">
-            <q-input borderless v-if="usePermissionsStore().hasFeature(FeatureIdent.NOTES)"
-                     class="q-ma-xs"
-                     style="height:20px;border: 1px dotted lightgray; border-radius: 3px;" v-model="dragTarget"/>
+          <!-- second toolbar line -->
+          <div class="row q-ma-none q-pa-none">
+            <div class="col-6" style="border-bottom: 1px dotted lightgray">
+              <q-input borderless v-if="usePermissionsStore().hasFeature(FeatureIdent.NOTES)"
+                       class="q-ma-xs"
+                       style="height:20px;border: 1px dotted lightgray; border-radius: 3px;" v-model="dragTarget"/>
+            </div>
+            <div class="col-6 text-right" style="border-bottom: 1px dotted lightgray">
+
+
+              <!--              v-if="tabsStore.currentTabsetId !== '' && tabsStore.getTabset(tabsStore.currentTabsetId) && tabsStore.getCurrentTabset?.tabs.length > 0 && $q.screen.gt.xs"-->
+              <q-btn
+                flat
+                class="q-ma-none q-pa-xs cursor-pointer"
+                style="width:20px;max-width:220px"
+                size="10px"
+                :text-color="useUiStore().tabsFilter ? 'accent' : 'primary'"
+                :disable="tabsStore.getCurrentTabset?.type === TabsetType.DYNAMIC"
+                :label="useUiStore().tabsFilter"
+                icon="o_filter_alt">
+                <q-popup-edit :model-value="useUiStore().tabsFilter" v-slot="scope"
+                              @update:model-value="val => setFilter(  val)">
+                  <q-input v-model="scope.value" dense autofocus counter @keyup.enter="scope.set"/>
+                </q-popup-edit>
+                <q-tooltip
+                  class="tooltip"
+                  :delay="200"
+                  anchor="center left" self="center right">
+                  Filter this tabset!
+                </q-tooltip>
+              </q-btn>
+
+              <q-btn v-if="showSorting()"
+                     flat
+                     size="10px"
+                     class="q-ma-none q-pa-xs cursor-pointer"
+                     style="max-width:20px"
+                     text-color="primary"
+                     @click="toggleSorting()"
+                     outline
+                     icon="o_sort">
+                <q-tooltip class="tooltip">Toggle through sorting</q-tooltip>
+              </q-btn>
+
+              <q-btn v-if="usePermissionsStore().hasFeature(FeatureIdent.SESSIONS)"
+                     flat
+                     style="max-width:20px"
+                     size="10px"
+                     class="q-ma-none q-pa-xs cursor-pointer"
+                     :color="existingSession ? (tabsStore.getCurrentTabset?.type === TabsetType.SESSION ? 'red':'grey-5') :'primary'"
+                     :icon="existingSession ? 'o_stop_circle':'o_play_circle'"
+                     @click="toggleSessionState">
+                <q-tooltip class="tooltip" v-if="existingSession">Stop Session</q-tooltip>
+                <q-tooltip class="tooltip" v-else>Start new Session</q-tooltip>
+              </q-btn>
+
+              <q-btn v-if="usePermissionsStore().hasFeature(FeatureIdent.WEBSITE_CLIP) && webClipActive()"
+                     icon="filter_center_focus"
+                     flat
+                     class="q-ma-none q-pa-xs cursor-pointer"
+                     style="max-width:20px"
+                     size="10px"
+                     @click="createClip">
+                <q-tooltip class="tooltip">{{ createWebsiteClipTooltip() }}</q-tooltip>
+              </q-btn>
+              <q-btn v-if="usePermissionsStore().hasFeature(FeatureIdent.WEBSITE_CLIP) && !webClipActive()"
+                     icon="filter_center_focus"
+                     color="grey-5"
+                     flat
+                     class="q-ma-none q-pa-xs cursor-pointer"
+                     style="max-width:20px"
+                     size="10px">
+                <q-tooltip class="tooltip">cannot create web clip for this tab</q-tooltip>
+              </q-btn>
+
+            </div>
           </div>
 
           <div class="text-caption q-ma-md" v-if="tabsStore.getCurrentTabset?.tabs.length === 0">
@@ -99,7 +146,7 @@
               <SidePanelDynamicTabset v-if="tabsStore.getCurrentTabset?.type === TabsetType.DYNAMIC"
                                       :tabset="tabsStore.getCurrentTabset"/>
               <PanelTabList v-else
-                            :tabs="tabsStore.getCurrentTabset.tabs"/>
+                            :tabs="filteredTabs()"/>
             </div>
           </div>
 
@@ -193,6 +240,8 @@ import SidePanelDynamicTabset from "components/layouts/sidepanel/SidePanelDynami
 import AddUrlDialog from "components/dialogues/AddUrlDialog.vue";
 import NewSessionDialog from "components/dialogues/NewSessionDialog.vue";
 import {StopSessionCommand} from "src/domain/commands/StopSessionCommand";
+import JsUtils from "src/utils/JsUtils";
+import {ToggleSortingCommand} from "src/domain/tabsets/ToggleSorting";
 
 const {inBexMode, sanitize} = useUtils()
 
@@ -203,7 +252,6 @@ const spacesStore = useSpacesStore()
 const show = ref(false)
 
 const currentChromeTabs = ref<chrome.tabs.Tab[]>([])
-//const currentTabs = ref<Tab[]>([])
 const tabsetName = ref<object>(null as unknown as object)
 const tabsetNameOptions = ref<object[]>([])
 const openTabs = ref<chrome.tabs.Tab[]>([])
@@ -211,6 +259,7 @@ const currentTabset = ref<Tabset | undefined>(undefined)
 const currentChromeTab = ref<chrome.tabs.Tab>(null as unknown as chrome.tabs.Tab)
 const searching = ref(false)
 const existingSession = ref(false)
+const orderDesc = ref(false)
 
 const splitterModel = ref(160)
 const selectedTab = ref<Tab | undefined>(undefined)
@@ -365,38 +414,13 @@ const alreadyInTabset = () => {
   return false
 }
 
-/*
-const save = () => {
-  console.log("saving...", tabsetName.value['value' as keyof object])
-  if (tabsetName.value && tabsetName.value['value' as keyof object]) {
-    //console.log("tabId", currentChromeTabs.value[0]?.id)
-    // @ts-ignore
-    chrome.scripting.executeScript({
-      target: {tabId: currentChromeTabs.value[0]?.id, allFrames: true},
-      args: [currentChromeTabs.value[0], tabsetName.value['value' as keyof object]],
-      func: (tabId: number, tabsetId: string) => {
-        //console.log("calling func", tabId, tabsetId)
-        //if (window.getSelection()?.anchorNode && window.getSelection()?.anchorNode !== null) {
-        const msg = {
-          msg: "addTabToTabset",
-          tabId: tabId,
-          tabsetId: tabsetId
-        }
-        //console.log("sending message", msg)
-        chrome.runtime.sendMessage(msg, function (response) {
-          console.log("created new tab in current tabset:", response)
-        });
-        // }
-      }
-    }, (result: any) => {
-      console.log("result", result)
-      //window.close()
-    });
-
-  }
-
+const setFilter = (newValue: string) => {
+  console.log("filter", newValue)
+  const useValue = newValue && newValue.trim().length > 0 ? newValue.trim() : undefined
+  useUiStore().tabsFilter = useValue
+  useUiStore().setHighlightTerm(useValue)
+  JsUtils.runCssHighlight()
 }
-*/
 
 const createClip = () => {
   //console.log("creating clip", currentChromeTabs.value[0])
@@ -454,6 +478,40 @@ const createWebsiteClipTooltip = () => {
 }
 
 const webClipActive = () => tabsStore.currentChromeTab
+
+function filteredTabs(): Tab[] {
+  //console.log("got", props.tabset.tabs)
+  const filter = useUiStore().tabsFilter
+  if (filter && filter.trim() !== '') {
+    return _.orderBy(_.filter(tabsStore.getCurrentTabset?.tabs, (t: Tab) => {
+        return (t.chromeTab.url || '')?.indexOf(filter) >= 0 ||
+          (t.chromeTab.title || '')?.indexOf(filter) >= 0 ||
+          t.description.indexOf(filter) >= 0
+      })
+      , getOrder(), [orderDesc.value ? 'desc' : 'asc'])
+  }
+  return _.orderBy(tabsStore.getCurrentTabset?.tabs, getOrder(), [orderDesc.value ? 'desc' : 'asc'])
+}
+
+const toggleSorting = () => useCommandExecutor().executeFromUi(new ToggleSortingCommand(tabsStore.currentTabsetId))
+
+const toggleOrder = () => orderDesc.value = !orderDesc.value
+
+const showSorting = () => true//tabsStore.getCurrentTabs.length > 10 && $q.screen.gt.xs
+
+function getOrder() {
+  if (tabsStore.getCurrentTabset) {
+    switch (tabsStore.getCurrentTabset.sorting) {
+      case 'alphabeticalUrl':
+        return (t: Tab) => t.chromeTab.url?.replace("https://", "").replace("http://", "").toUpperCase()
+      case 'alphabeticalTitle':
+        return (t: Tab) => t.chromeTab.title?.toUpperCase()
+      default:
+        return (t: Tab) => 1
+    }
+    return (t: Tab) => 1
+  }
+}
 
 </script>
 
