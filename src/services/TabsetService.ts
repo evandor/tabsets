@@ -301,6 +301,12 @@ class TabsetService {
     let tabsets = data.tabsets || data
     let spaces = data.spaces || []
 
+    // TODO
+    let importedSpaces = 0
+    let importedTabsets = 0
+    let failedSpaces = 0
+    let failedTabsets = 0
+
     _.forEach(spaces, space => {
       useSpacesStore().addSpace(space)
     })

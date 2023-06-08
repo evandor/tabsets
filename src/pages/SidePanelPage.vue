@@ -63,6 +63,7 @@
                   </q-btn>
 
                   <q-btn
+                    v-if="tabsStore.tabsets.size > 1"
                     icon="o_keyboard_double_arrow_right"
                     flat
                     class="q-ma-none q-pa-xs cursor-pointer"
@@ -71,17 +72,6 @@
                     @click="openTabsetPage()">
                     <q-tooltip class="tooltip">Open this Tabset as Standalone page</q-tooltip>
                   </q-btn>
-
-<!--                  <q-btn-->
-<!--                    v-if="usePermissionsStore().hasFeature(FeatureIdent.STANDALONE_APP)"-->
-<!--                    icon="o_open_in_new"-->
-<!--                    flat-->
-<!--                    class="q-ma-none q-pa-xs cursor-pointer"-->
-<!--                    style="max-width:20px"-->
-<!--                    size="11px"-->
-<!--                    @click="openExtensionTab()">-->
-<!--                    <q-tooltip class="tooltip">Open Tabsets as full-page application</q-tooltip>-->
-<!--                  </q-btn>-->
 
                 </div>
               </div>
@@ -100,7 +90,7 @@
 
               <!--              v-if="tabsStore.currentTabsetId !== '' && tabsStore.getTabset(tabsStore.currentTabsetId) && tabsStore.getCurrentTabset?.tabs.length > 0 && $q.screen.gt.xs"-->
               <q-btn
-                v-if="tabsStore.getCurrentTabset?.tabs.length > 2"
+                v-if="tabsStore.getCurrentTabset?.tabs.length > 7"
                 flat
                 class="q-ma-none q-pa-xs cursor-pointer"
                 style="width:20px;max-width:220px"
@@ -198,6 +188,7 @@
       </template>
 
       <template v-slot:after>
+        <!-- selected tab or current tab from chrome -->
         <div v-if="tabFromChromeTab() && tabsStore.getCurrentTabset && currentChromeTab.url !== 'chrome://newtab/'"
              class="row q-ma-sm q-mt-lg"
              :class="alreadyInTabset() ? 'bg-grey-1':'bg-yellow-1'"
@@ -325,6 +316,9 @@ if (inBexMode()) {
     } else if (name === 'feature-activated' || name === "feature-deactivated") {
       console.log("message data", data)
       usePermissionsStore().initialize()
+    } else if (name === "tabsets-imported") {
+      useSpacesStore().reload()
+      useTabsetService().init()
     } else if (name === "tab-being-dragged") {
       useUiStore().draggingTab(data.tabId, null as unknown as any)
     }
@@ -415,11 +409,6 @@ watchEffect(() => {
   }
   dragTarget.value = ''
 })
-
-const openExtensionTab = () => {
-  const extensionUrl = chrome.runtime.getURL('www/index.html#/start')
-  NavigationService.openOrCreateTab(extensionUrl)
-}
 
 const openTabsetPage = () => {
   const tabsetId = tabsStore.getCurrentTabset?.id

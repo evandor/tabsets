@@ -365,9 +365,13 @@ class IndexedDbPersistenceService implements PersistenceService {
     console.log("getMHtmlInline", url, this.db)
     try {
       const mhtml = await this.db.get('mhtml', url)
+      console.log("got mhtml", mhtml)
       const mhtmlString = await mhtml.content.text()
+      console.log("got mhtmlString", mhtmlString)
       const html = mhtml2html.convert(mhtmlString)
+      console.log("got html", html)
       const innerHtml = html.window.document.documentElement.innerHTML
+      console.log("got innerHtml", innerHtml)
       return Promise.resolve({
         html: innerHtml,
         title: mhtml.title,

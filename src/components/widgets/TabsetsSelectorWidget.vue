@@ -2,8 +2,9 @@
 
   <div class="cursor-pointer">
     <div
-      class="q-ma-none q-pa-none text-subtitle2 q-pl-sm cursor-pointer" style="border:1px solid lightgray;background-color:white;border-radius:4px;min-width:200px">
-      {{ tabsetLabel()}}
+      class="q-ma-none q-pa-none text-subtitle2 q-pl-sm cursor-pointer"
+      style="border:1px solid lightgray;background-color:white;border-radius:4px;min-width:200px">
+      {{ tabsetLabel() }}
     </div>
 
     <q-menu :offset="[0,0]">
@@ -24,6 +25,18 @@
           </q-item-section>
           <q-item-section class="q-ml-sm">{{ ts.label }}</q-item-section>
         </q-item>
+
+        <template
+          v-if="usePermissionsStore().hasFeature(FeatureIdent.BACKUP) || usePermissionsStore().hasFeature(FeatureIdent.IGNORE)">
+          <q-separator/>
+          <q-item disable>
+            Special Tabsets
+          </q-item>
+          <q-item v-for="ts in tabsetsWithTypes([TabsetType.SPECIAL])" clickable v-close-popup
+                  @click="switchTabset(ts)">
+            <q-item-section class="q-ml-sm">{{ts.name}}</q-item-section>
+          </q-item>
+        </template>
 
         <q-separator/>
         <q-item v-if="tabsStore.currentTabsetName" clickable v-close-popup @click="openEditTabsetDialog()">
@@ -129,12 +142,20 @@ const openEditTabsetDialog = () => {
 const switchTabset = (ts: any) => {
   console.log("settings tabset to ", ts)
   useCommandExecutor()
-    .execute(new SelectTabsetCommand(ts.id))
+    .execute(new SelectTabsetCommand(ts.id, useSpacesStore().space?.id))
     .then((res: ExecutionResult<Tabset | undefined>) => {
       if (!props.fromPanel) {
         router.push("/tabsets/" + ts.id)
       }
     })
+}
+
+const tabsetsWithTypes = (types: TabsetType[]) => {
+  let tabsets = [...tabsStore.tabsets.values()]
+  return _.sortBy(
+    _.filter(tabsets, (ts: Tabset) =>
+      types.findIndex(t => ts.type === t && TabsetStatus.DELETED !== ts.status) >= 0),
+    ['name'])
 }
 
 </script>

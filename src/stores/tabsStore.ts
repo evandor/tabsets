@@ -264,11 +264,6 @@ export const useTabsStore = defineStore('tabs', {
         _.map(this.tabs, t => new Tab(uid(), t)))
 
       this.pendingTabset = new Tabset("pending", "pending", [], [])
-
-      // this.ignoredTabset = new Tabset("ignored", "ignored", [], [])
-
-      // this.backupTabset = new Tabset("backup", "backup", [], [])
-
     },
 
     async loadTabs(eventName: string) {

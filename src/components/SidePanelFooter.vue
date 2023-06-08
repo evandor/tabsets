@@ -2,9 +2,9 @@
 
   <q-footer class="lightgrey text-primary q-pa-xs">
     <div class="row fit">
-      <div class="col-6">
+      <div class="col-7">
         <q-btn v-if="tabsStore.tabs.length > 1"
-          icon="o_playlist_add"
+               icon="o_playlist_add"
                class="q-my-xs q-ml-xs"
                style="width:20px"
                :color="isActive(SidePanelView.TABS_LIST) ? 'secondary':'primary'"
@@ -30,6 +30,15 @@
                @click="toggleView(SidePanelView.BY_DOMAIN_LIST)">
           <q-tooltip class="tooltip">List all your tabs URLs by domain</q-tooltip>
         </q-btn>
+        <q-btn icon="o_rss_feed"
+               v-if="permissionsStore.hasFeature(FeatureIdent.RSS)"
+               class="q-my-xs q-ml-xs"
+               style="width:20px"
+               :color="isActive(SidePanelView.RSS_LIST) ? 'secondary':'primary'"
+               size="8px"
+               @click="toggleView(SidePanelView.RSS_LIST)">
+          <q-tooltip class="tooltip">List all your RSS feeds</q-tooltip>
+        </q-btn>
         <span class="q-ma-none"
               v-if="permissionsStore.hasFeature(FeatureIdent.OPENTABS_THRESHOLD) && tabsStore.tabsets.size > 0">
           <OpenTabsThresholdWidget :showLabel="false" :in-side-panel="true">
@@ -49,13 +58,25 @@
         </q-btn>
 
         <q-btn icon="o_settings"
-               class="q-my-xs q-mx-xs"
+               class="q-my-xs q-ml-xs q-mr-none"
                color="primary"
                size="8px"
                style="width:20px"
                @click="openOptionsPage()">
           <q-tooltip class="tooltip" anchor="top left" self="bottom left">Open Settings</q-tooltip>
         </q-btn>
+
+        <q-btn
+          v-if="usePermissionsStore().hasFeature(FeatureIdent.STANDALONE_APP)"
+          icon="o_open_in_new"
+          class="q-my-xs q-ml-xs q-mr-none"
+          color="primary"
+          size="8px"
+          style="width:20px"
+          @click="openExtensionTab()">
+          <q-tooltip class="tooltip">Tabsets as full-page app</q-tooltip>
+        </q-btn>
+
       </div>
     </div>
 
@@ -70,6 +91,7 @@ import {useRouter} from "vue-router";
 import {usePermissionsStore} from "src/stores/permissionsStore";
 import {FeatureIdent} from "src/models/AppFeature";
 import OpenTabsThresholdWidget from "components/widgets/OpenTabsThresholdWidget.vue";
+import NavigationService from "src/services/NavigationService";
 
 const tabsStore = useTabsStore()
 const permissionsStore = usePermissionsStore()
@@ -138,5 +160,8 @@ const toggleView = (view: SidePanelView) => {
 
 const isActive = (view: SidePanelView) => useUiStore().sidePanelIsActive(view)
 const activateView = (view: SidePanelView) => useUiStore().sidePanelSetActiveView(view)
+
+const openExtensionTab = () => NavigationService.openOrCreateTab(chrome.runtime.getURL('www/index.html#/start'))
+
 
 </script>

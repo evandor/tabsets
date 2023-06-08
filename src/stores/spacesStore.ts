@@ -48,6 +48,14 @@ export const useSpacesStore = defineStore('spaces', () => {
   }
 
   /**
+   * reloads store
+   */
+  async function reload() {
+    console.debug("reloading spacesStore")
+    await storage.loadSpaces()
+  }
+
+  /**
    * persist changes of current space to local storage to reuse on restart
    * // TODO pinia best practice 'do not use watch' !?
    * // https://climbtheladder.com/10-pinia-best-practices/
@@ -139,6 +147,7 @@ export const useSpacesStore = defineStore('spaces', () => {
     space,
     nameExists,
     initialize,
+    reload,
     createSpace,
     addSpace,
     putSpace,

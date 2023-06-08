@@ -121,7 +121,6 @@ const tabsetsForSpace = ref<Map<string, Tabset[]>>(new Map())
 
 watchEffect(() => {
   const start = new Date().getTime()
-  console.log("calulating", start)
   let res: Map<string, Tabset[]> = new Map()
   _.forEach([...useTabsStore().tabsets.values()], (ts: Tabset) => {
     _.forEach(ts.spaces, (spaceId: string) => {
@@ -130,7 +129,6 @@ watchEffect(() => {
       } else {
         res.set(spaceId, [ts])
       }
-      console.log("calulating", new Date().getTime() - start)
     })
   })
   tabsetsForSpace.value = res // useSpacesStore().tabsetsForSpaces()

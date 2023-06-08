@@ -52,6 +52,16 @@ const routes: RouteRecordRaw[] = [
     children: [{ path: '', component: () => import('pages/sidepanel/SidePanelTagsPage.vue') }],
   },
   {
+    path: '/sidepanel/rsslist',
+    component: () => import('layouts/SidePanelLayout.vue'),
+    children: [{ path: '', component: () => import('pages/sidepanel/SidePanelRssListViewer.vue') }],
+  },
+  {
+    path: '/sidepanel/rss/:encodedUrl',
+    component: () => import('layouts/SidePanelLayout.vue'),
+    children: [{ path: '', component: () => import('pages/sidepanel/SidePanelRssPage.vue') }],
+  },
+  {
     path: '/sidepanel/byDomainList',
     component: () => import('layouts/SidePanelLayout.vue'),
     children: [{ path: '', component: () => import('pages/sidepanel/SidePanelByDomainList.vue') }],
@@ -85,6 +95,11 @@ const routes: RouteRecordRaw[] = [
     path: '/mainpanel/mhtml/:encodedUrl',
     component: () => import('layouts/PlainLayout.vue'),
     children: [{ path: '', component: () => import('pages/mainpanel/MainPanelMHtmlPage.vue') }],
+  },
+  {
+    path: '/mainpanel/tab/:id',
+    component: () => import('layouts/PlainLayout.vue'),
+    children: [{ path: '', component: () => import('pages/mainpanel/MainPanelTabPage.vue') }],
   },
   {
     path: '/about',
