@@ -517,7 +517,7 @@ function filteredTabs(): Tab[] {
     return _.orderBy(_.filter(tabsStore.getCurrentTabset?.tabs, (t: Tab) => {
         return (t.chromeTab.url || '')?.indexOf(filter) >= 0 ||
           (t.chromeTab.title || '')?.indexOf(filter) >= 0 ||
-          t.description.indexOf(filter) >= 0
+          t.description?.indexOf(filter) >= 0
       })
       , getOrder(), [orderDesc.value ? 'desc' : 'asc'])
   }

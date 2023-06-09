@@ -348,7 +348,8 @@ function getHost(urlAsString: string, shorten: Boolean = true): string {
 const formatDate = (timestamp: number | undefined) =>
   timestamp ? formatDistance(timestamp, new Date(), {addSuffix: true}) : ""
 
-const showTabDetails = () => router.push("/mainpanel/tab/" + uiStore.getSelectedTab?.id)
+const showTabDetails = () =>
+  NavigationService.openOrCreateTab(chrome.runtime.getURL("/www/index.html#/mainpanel/tab/" + uiStore.getSelectedTab?.id))
 
 watchEffect(() => {
   const fuseIndex = useSearchStore().getIndex()

@@ -75,7 +75,8 @@
             <div class="col-3 text-subtitle1">
               Long Description
             </div>
-            <div class="col-9 text-subtitle2" v-if="useUiStore().getSelectedTab?.longDescription" v-html="useUiStore().getSelectedTab?.longDescription"></div>
+            <div class="col-9 text-subtitle2" v-if="useUiStore().getSelectedTab?.longDescription"
+                 v-html="useUiStore().getSelectedTab?.longDescription"></div>
           </div>
           <div class="row items-baseline q-ma-lg" v-if="useUiStore().getSelectedTab?.author">
             <div class="col-3 text-subtitle1">
@@ -393,6 +394,7 @@ import {openURL} from "quasar";
 import {useSettingsStore} from "src/stores/settingsStore"
 import VueJsonPretty from "vue-json-pretty";
 import 'vue-json-pretty/lib/styles.css';
+import {useTabsetService} from "src/services/TabsetService2";
 
 const tabsStore = useTabsStore()
 const notificationStore = useNotificationsStore()
@@ -424,10 +426,15 @@ const state = reactive({
 })
 
 watchEffect(() => {
-  const selectedTab = useUiStore().getSelectedTab
-  if (selectedTab) {
-    json.value = JSON.parse(JSON.stringify(selectedTab))
-    tags.value = selectedTab.tags
+  const tabId = route.params.id as string
+  if (tabId) {
+    const selectedTab = useTabsStore().getTab(tabId)
+    console.log("hier", selectedTab)
+    if (selectedTab) {
+      json.value = JSON.parse(JSON.stringify(selectedTab))
+      tags.value = selectedTab.tags
+      useUiStore().setSelectedTab(selectedTab)
+    }
   }
 })
 

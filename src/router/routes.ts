@@ -102,6 +102,11 @@ const routes: RouteRecordRaw[] = [
     children: [{ path: '', component: () => import('pages/mainpanel/MainPanelTabPage.vue') }],
   },
   {
+    path: '/mainpanel/spaces',
+    component: () => import('layouts/PlainLayout.vue'),
+    children: [{ path: '', component: () => import('pages/mainpanel/MainPanelSpacesPage.vue') }],
+  },
+  {
     path: '/about',
     component: () => import('layouts/AboutLayout.vue'),
     children: [{ path: '', component: () => import('pages/AboutPage.vue') }],
