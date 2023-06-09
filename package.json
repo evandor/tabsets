@@ -1,7 +1,7 @@
 {
   "name": "tabsets",
-  "version": "0.4.0",
-  "description": "Bookmarks next generation - Tabsets is a browser extension which helps you organize your links, utilizing the new chrome side panel.",
+  "version": "0.4.1",
+  "description": "Bookmarks next generation - Tabsets is a browser extension which helps you get your links really organized.",
   "productName": "Tabsets",
   "author": "evandor <evandor@gmail.com>",
   "private": true,

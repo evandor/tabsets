@@ -161,7 +161,7 @@ const openTabset = (badge: any) => {
   if (!inBexMode() || !chrome.sidePanel) {
     router.push("/tabsets/" + badge.tabsetId + "?highlight=" + badge.encodedUrl)
   } else {
-    // router.push("/sidepanel/tabsets/" + badge.tabsetId + "?highlight=" + badge.encodedUrl)
+    // router.push("/sidepanel/spaces/" + badge.tabsetId + "?highlight=" + badge.encodedUrl)
     router.push("/sidepanel" + "?highlight=" + badge.encodedUrl)
   }
 

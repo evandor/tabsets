@@ -24,7 +24,7 @@
                                 style="position: absolute; left:5px;top:5px;max-width:240px"/>
                   <div class="column q-ma-none q-pa-none" v-else>
                     <div class="col q-ma-none q-pa-none text-black cursor-pointer"
-                         @click="router.push('/sidepanel/tabsets')"
+                         @click="router.push('/sidepanel/spaces')"
                          style="font-size: 12px">
                       {{ useSpacesStore().space ? useSpacesStore().space.label : 'no space selected' }}
                     </div>
@@ -416,6 +416,7 @@ const openTabsetPage = () => {
     const extensionUrl = chrome.runtime.getURL('www/index.html#/mainpanel/tabsets/' + tabsetId)
     NavigationService.openOrCreateTab(extensionUrl)
   }
+  router.push("/sidepanel/spaces")
 }
 
 if (inBexMode()) {
@@ -478,7 +479,7 @@ const addFirstTabset = () => $q.dialog({
 
 const tabFromChromeTab = () => currentChromeTab.value ? new Tab(uid(), currentChromeTab.value) : undefined
 
-const showTabsets = () => router.push("/sidepanel/tabsets")
+const showTabsets = () => router.push("/sidepanel/spaces")
 
 const toggleSearch = () => searching.value = !searching.value
 
