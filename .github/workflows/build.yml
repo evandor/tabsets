@@ -2,9 +2,9 @@ name: Node.js CI
 run-name: CI Build
 on:
   push:
-    branches: [ main ]
+    branches: [ main, chrome-extension ]
   pull_request:
-    branches: [ main ]
+    branches: [ main, chrome-extension ]
 
 jobs:
   build:
