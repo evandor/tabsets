@@ -10,5 +10,8 @@
       "typescript",
       "majestic"
     ]
+  },
+  "@quasar/qmarkdown": {
+    "import_md": true
   }
 }

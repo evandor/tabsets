@@ -39,6 +39,28 @@
                @click="toggleView(SidePanelView.RSS_LIST)">
           <q-tooltip class="tooltip">List all your RSS feeds</q-tooltip>
         </q-btn>
+        <q-btn
+          v-if="usePermissionsStore().hasFeature(FeatureIdent.NEWEST_TABS)"
+          icon="o_schedule"
+          class="q-my-xs q-ml-xs"
+          style="width:20px"
+          :color="isActive(SidePanelView.NEWEST_TABS_LIST) ? 'secondary':'primary'"
+          size="8px"
+          @click="toggleView(SidePanelView.NEWEST_TABS_LIST)">
+          <q-tooltip class="tooltip">Newest Tabs List</q-tooltip>
+        </q-btn>
+
+        <q-btn
+          v-if="usePermissionsStore().hasFeature(FeatureIdent.TOP10)"
+          icon="o_workspace_premium"
+          class="q-my-xs q-ml-xs"
+          style="width:20px"
+          :color="isActive(SidePanelView.TOP_10_TABS_LIST) ? 'secondary':'primary'"
+          size="8px"
+          @click="toggleView(SidePanelView.TOP_10_TABS_LIST)">
+          <q-tooltip class="tooltip">Top 10 Tabs List</q-tooltip>
+        </q-btn>
+
         <span class="q-ma-none"
               v-if="permissionsStore.hasFeature(FeatureIdent.OPENTABS_THRESHOLD) && tabsStore.tabsets.size > 0">
           <OpenTabsThresholdWidget :showLabel="false" :in-side-panel="true">
@@ -47,15 +69,6 @@
         </span>
       </div>
       <div class="col text-right">
-        <q-btn v-if="tabsStore.getCurrentTabset?.tabs.length > 0"
-               :icon="getDetailLevelIcon()"
-               class="q-my-xs q-mx-none"
-               style="width:20px"
-               color="primary"
-               size="8px"
-               @click="toggleListDetailLevel()">
-          <q-tooltip class="tooltip">Toggle the detail level for the tabs</q-tooltip>
-        </q-btn>
 
         <q-btn icon="o_settings"
                class="q-my-xs q-ml-xs q-mr-none"
@@ -83,7 +96,7 @@
   </q-footer>
 </template>
 <script setup lang="ts">
-import {ListDetailLevel, SidePanelView, useUiStore} from "src/stores/uiStore";
+import {SidePanelView, useUiStore} from "src/stores/uiStore";
 import {useTabsStore} from "src/stores/tabsStore";
 import {Tab} from "src/models/Tab";
 import {ref, watchEffect} from "vue";
@@ -101,30 +114,6 @@ const currentChromeTabs = ref<chrome.tabs.Tab[]>([])
 const currentTabs = ref<Tab[]>([])
 const currentChromeTab = ref<chrome.tabs.Tab>(null as unknown as chrome.tabs.Tab)
 
-const toggleListDetailLevel = () => {
-  switch (useUiStore().listDetailLevel) {
-    case ListDetailLevel.LARGE:
-      useUiStore().setListDetailLevel(ListDetailLevel.MEDIUM)
-      break;
-    case ListDetailLevel.MEDIUM:
-      useUiStore().setListDetailLevel(ListDetailLevel.SMALL)
-      break;
-    default:
-      useUiStore().setListDetailLevel(ListDetailLevel.LARGE)
-  }
-}
-
-const getDetailLevelIcon = () => {
-  switch (useUiStore().listDetailLevel) {
-    case ListDetailLevel.LARGE:
-      return "crop_portrait"
-    case ListDetailLevel.MEDIUM:
-      return "crop_16_9"
-    default:
-      return "crop_7_5"
-  }
-}
-
 watchEffect(() => {
   if (currentChromeTabs.value[0]?.url) {
     currentTabs.value = useTabsStore().tabsForUrl(currentChromeTabs.value[0].url) || []
@@ -139,14 +128,8 @@ watchEffect(() => {
   currentChromeTab.value = useTabsStore().currentChromeTab
 })
 
-const openOptionsPage = () => {
-  // if (chrome.runtime.openOptionsPage) {
-  //   chrome.runtime.openOptionsPage();
-  // } else {
-  //   window.open(chrome.runtime.getURL('www/options.html'));
-  // }
-  window.open(chrome.runtime.getURL('www/index.html#/mainpanel/settings'));
-}
+const openOptionsPage = () => window.open(chrome.runtime.getURL('www/index.html#/mainpanel/settings'));
+
 
 const toggleView = (view: SidePanelView) => {
   if (isActive(view)) {

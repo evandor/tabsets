@@ -217,14 +217,6 @@ text.set(FeatureIdent.SESSIONS.toLowerCase(), {
   description: 'A session is a special type of tabsets where your newly opened tabs will be tracked automatically',
   permissions: []
 })
-// text.set('useGroups', {
-//   experimental: true,
-//   name: 'Use Browser Groups',
-//   img: 'useGroups.png',
-//   img_width: '700px',
-//   description: 'Some Browsers can groups tabs to help you organize them. Activate this feature to use groups and pinned tabs inside this extension',
-//   permissions: []
-// })
 text.set(FeatureIdent.BACKUP.toLowerCase(), {
   experimental: true,
   name: 'Backup Tabset',
@@ -293,6 +285,16 @@ text.set(FeatureIdent.WEBSITE_CLIP.toLowerCase(), {
 text.set(FeatureIdent.STANDALONE_APP.toLowerCase(), {
   name: 'Standalone App',
   description: 'Tabsets as full-page application',
+  permissions: []
+})
+text.set(FeatureIdent.NEWEST_TABS.toLowerCase(), {
+  name: 'Newest Tabs',
+  description: 'Get a view to list all tabs by their creation date',
+  permissions: []
+})
+text.set(FeatureIdent.TOP10.toLowerCase(), {
+  name: 'Top 10 Tabs',
+  description: 'Get a view to list all tabs by how often they have been accessed',
   permissions: []
 })
 

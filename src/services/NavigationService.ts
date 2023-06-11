@@ -17,9 +17,9 @@ class NavigationService {
         }
       })
 
-      chrome.tabs.query({currentWindow: true}, (t: chrome.tabs.Tab[]) => {
+      chrome.tabs.query({}, (t: chrome.tabs.Tab[]) => {
         let found = false;
-        t.filter(r => r.url && !r.url.startsWith("chrome"))
+        t.filter(r => r.url)
           .map(r => {
             if (withUrl === r.url) {
               if (!found) { // highlight only first hit

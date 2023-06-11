@@ -31,6 +31,8 @@ export class SidePanelView {
   static readonly TAG = new SidePanelView('tag', '/sidepanel/tags');
   static readonly BY_DOMAIN_LIST = new SidePanelView('byDomainList', '/sidepanel/byDomainList');
   static readonly RSS_LIST = new SidePanelView('rssList', '/sidepanel/rsslist');
+  static readonly NEWEST_TABS_LIST = new SidePanelView('newestList', '/sidepanel/newestList');
+  static readonly TOP_10_TABS_LIST = new SidePanelView('top10List', '/sidepanel/top10List');
 
   private constructor(public readonly ident: string, public readonly path: any) {
   }

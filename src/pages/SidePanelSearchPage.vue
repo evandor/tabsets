@@ -11,54 +11,11 @@
           </div>
           <div class="col-10" style="font-size:smaller">
             <span class="text-dark">Found '{{ searchStore.term }}' {{ tabsetHits.length }} time(s)</span>
-
-
-
-<!--            <q-icon v-if="tabsStore.tabsets.size > 1"-->
-<!--                    class="q-ma-xs cursor-pointer" name="search" size="16px" @click="toggleSearch">-->
-<!--              <q-tooltip class="tooltip">Search</q-tooltip>-->
-<!--            </q-icon>-->
-<!--            <q-icon class="q-ma-xs cursor-pointer" name="filter_center_focus" size="16px" @click="createClip">-->
-<!--              <q-tooltip class="tooltip">Create website clip</q-tooltip>-->
-<!--            </q-icon>-->
-<!--            <q-icon class="q-ma-xs cursor-pointer" name="open_in_new" size="16px" @click="openExtensionTab">-->
-<!--              <q-tooltip class="tooltip">Open Tabsets</q-tooltip>-->
-<!--            </q-icon>-->
           </div>
         </div>
       </q-toolbar-title>
     </div>
   </q-toolbar>
-
-
-<!--  <q-toolbar class="text-primary lightgrey">-->
-<!--    <div class="row fit">-->
-<!--      <div class="col-xs-12 col-md-5">-->
-<!--        <q-toolbar-title>-->
-<!--          <div class="row justify-start items-baseline">-->
-<!--            <div><span class="text-dark">Search Results for '{{-->
-<!--                searchStore.term-->
-<!--              }}': {{ tabsetHits.length }} hit(s)</span>-->
-<!--            </div>-->
-<!--            &lt;!&ndash;              <div class="text-caption q-mb-md">Not happy with the search results? Try <span&ndash;&gt;-->
-<!--            &lt;!&ndash;                class="text-blue-9 cursor-pointer" @click="showReindexDialog = true"><u>re-indexing</u></span>.&ndash;&gt;-->
-<!--            &lt;!&ndash;              </div>&ndash;&gt;-->
-<!--          </div>-->
-<!--        </q-toolbar-title>-->
-<!--      </div>-->
-<!--      <div class="col-xs-12 col-md-7 text-right">-->
-
-<!--        <q-btn-->
-<!--          flat dense icon="restore_page"-->
-<!--          color="green" :label="$q.screen.gt.sm ? 'Search with browser...' : ''"-->
-<!--          class="q-mr-md"-->
-<!--          @click="searchWithBrowser">-->
-<!--          <q-tooltip>Use your browsers default search provider to search for {{ searchStore.term }}</q-tooltip>-->
-<!--        </q-btn>-->
-
-<!--      </div>-->
-<!--    </div>-->
-<!--  </q-toolbar>-->
 
   <div class="row fit greyBorderTop"></div>
 

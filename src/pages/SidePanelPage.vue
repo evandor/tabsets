@@ -123,6 +123,17 @@
                 <q-tooltip class="tooltip">Toggle through sorting</q-tooltip>
               </q-btn>
 
+              <q-btn v-if="tabsStore.getCurrentTabset?.tabs.length > 0"
+                     :icon="getDetailLevelIcon()"
+                     flat
+                     size="10px"
+                     class="q-ma-none q-pa-xs cursor-pointer"
+                     style="max-width:20px"
+                     text-color="primary"
+                     @click="toggleListDetailLevel()">
+                <q-tooltip class="tooltip">Toggle the detail level for the tabs</q-tooltip>
+              </q-btn>
+
               <q-btn v-if="usePermissionsStore().hasFeature(FeatureIdent.SESSIONS)"
                      flat
                      style="max-width:20px"
@@ -158,7 +169,7 @@
           </div>
 
           <div class="text-caption q-ma-md" v-if="tabsStore.getCurrentTabset?.tabs.length === 0">
-            <q-img src="cat.png" />
+            <q-img src="cat.png"/>
           </div>
 
           <div class="text-caption q-ma-md" v-if="tabsStore.getCurrentTabset?.tabs.length === 0">
@@ -252,7 +263,7 @@ import {useTabsetService} from "src/services/TabsetService2";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {AddTabToTabsetCommand} from "src/domain/tabs/AddTabToTabset";
 import NewTabsetDialog from "components/dialogues/NewTabsetDialog.vue";
-import {useUiStore} from "src/stores/uiStore";
+import {ListDetailLevel, useUiStore} from "src/stores/uiStore";
 import TabsetsSelectorWidget from "components/widgets/TabsetsSelectorWidget.vue";
 import PanelTabList from "components/layouts/PanelTabList.vue";
 import PanelTabListElementWidget from "components/widgets/PanelTabListElementWidget.vue";
@@ -321,6 +332,17 @@ if (inBexMode()) {
       useTabsetService().init()
     } else if (name === "tab-being-dragged") {
       useUiStore().draggingTab(data.tabId, null as unknown as any)
+    } else if (name === "tab-changed") {
+      const tabset = useTabsetService().getTabset(data.tabsetId) as Tabset
+      // replace tab (seems necessary !?) TODO
+      tabset.tabs = _.map(tabset.tabs, (t: Tab) => (t.id === data.tab.id) ? data.tab : t)
+      useTabsetService().saveTabset(tabset)
+        .then((res) => {
+          console.log("saved tabset", tabset)
+        })
+        .catch((err) => {
+          console.error("got error " + err)
+        })
     }
     return true
   })
@@ -554,6 +576,31 @@ const openNewTabsetDialog = () => {
     }
   })
 }
+
+const getDetailLevelIcon = () => {
+  switch (useUiStore().listDetailLevel) {
+    case ListDetailLevel.LARGE:
+      return "crop_portrait"
+    case ListDetailLevel.MEDIUM:
+      return "crop_16_9"
+    default:
+      return "crop_7_5"
+  }
+}
+
+const toggleListDetailLevel = () => {
+  switch (useUiStore().listDetailLevel) {
+    case ListDetailLevel.LARGE:
+      useUiStore().setListDetailLevel(ListDetailLevel.MEDIUM)
+      break;
+    case ListDetailLevel.MEDIUM:
+      useUiStore().setListDetailLevel(ListDetailLevel.SMALL)
+      break;
+    default:
+      useUiStore().setListDetailLevel(ListDetailLevel.LARGE)
+  }
+}
+
 
 </script>
 

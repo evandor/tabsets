@@ -176,12 +176,15 @@ export const useTabsStore = defineStore('tabs', {
       }
     },
     getTab: (state) => {
-      return (tabId: string): Tab | undefined => {
+      return (tabId: string): object | undefined => {
 
         for (const [key, value] of state.tabsets) {
           const found: Tab | undefined = _.find(value.tabs, t => t.id === tabId)
           if (found) {
-            return found
+            return {
+              tab: found,
+              tabsetId: value.id
+            }
           }
         }
         return undefined
@@ -190,6 +193,7 @@ export const useTabsStore = defineStore('tabs', {
     tabsetFor: (state) => {
       return (tabId: string): Tabset | undefined => {
         for (const [key, value] of state.tabsets) {
+          console.log("checking", key, tabId)
           if (_.find(value.tabs, t => t.id === tabId)) {
             return value
           }
