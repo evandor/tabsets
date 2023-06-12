@@ -64,7 +64,7 @@ class ChromeListeners {
       chrome.tabs.onAttached.addListener((number, info) => this.onAttached(number, info))
       chrome.tabs.onDetached.addListener((number, info) => this.onDetached(number, info))
       chrome.tabs.onHighlighted.addListener((info) => this.onHighlighted(info))
-      chrome.tabs.onZoomChange.addListener((info) => this.onZoomChange(info))
+      //chrome.tabs.onZoomChange.addListener((info) => this.onZoomChange(info))
 
       chrome.runtime.onMessage.addListener((request, sender, sendResponse) => this.onMessage(request, sender, sendResponse))
 
