@@ -10,13 +10,13 @@
 
       <q-card-section class="q-pt-none">
 
-<!--        <q-uploader-->
-<!--          url="."-->
-<!--          label="skysail cms file"-->
-<!--          style="max-width: 300px"-->
-<!--        />-->
+        <!--        <q-uploader-->
+        <!--          url="."-->
+        <!--          label="skysail cms file"-->
+        <!--          style="max-width: 300px"-->
+        <!--        />-->
 
-        <input id="json2import" type="file" />
+        <input id="json2import" type="file"/>
 
       </q-card-section>
 
@@ -38,6 +38,9 @@ import {useRouter} from "vue-router";
 import {useTabsStore} from "src/stores/tabsStore";
 
 import {useDialogPluginComponent} from 'quasar'
+import {useCommandExecutor} from "src/services/CommandExecutor";
+import {ImportTabsetsCommand} from "src/domain/tabsets/ImportTabsets";
+import {useUtils} from "src/services/Utils";
 
 defineEmits([
   // REQUIRED; need to specify some events that your
@@ -46,6 +49,8 @@ defineEmits([
 ])
 
 const {dialogRef, onDialogHide, onDialogCancel} = useDialogPluginComponent()
+
+const {sendMsg} = useUtils()
 
 const tabsStore = useTabsStore()
 const router = useRouter()
@@ -58,11 +63,13 @@ const importData = () => {
   // @ts-ignore
   var file = document.getElementById("json2import").files[0];
   var reader = new FileReader();
-  reader.onload = function(e){
+  reader.onload = function (e) {
     // @ts-ignore
     const json = e.target.result
-    TabsetService.importData(json as unknown as string)
-
+    useCommandExecutor().executeFromUi(new ImportTabsetsCommand(json as unknown as string))
+      .then(() => {
+        sendMsg('tabsets-imported', {})
+      })
   }
   reader.readAsText(file);
 }

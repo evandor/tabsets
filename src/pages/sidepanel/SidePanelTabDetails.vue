@@ -108,7 +108,8 @@
         <!--          <q-tooltip>Schedule this tab</q-tooltip>-->
         <!--        </q-btn>-->
 
-        <q-btn v-if="usePermissionsStore().hasPermission('pageCapture') && usePermissionsStore().hasFeature(FeatureIdent.SAVE_TAB)"
+        <q-btn v-if="usePermissionsStore().hasPermission('pageCapture') &&
+                    usePermissionsStore().hasFeature(FeatureIdent.SAVE_TAB)"
                @click.stop="saveTab(useUiStore().getSelectedTab)"
                flat round color="primary" size="11px" icon="save"
                :disabled="!isOpen(useUiStore().getSelectedTab)">
@@ -151,7 +152,7 @@
     </q-expansion-item>
 
     <q-expansion-item label="Archived Snapshots"
-                      v-if="usePermissionsStore().hasFeature(FeatureIdent.SAVE_TAB) && useUiStore().getSelectedTab?.mhtmls.length > 0"
+                      v-if="usePermissionsStore().hasFeature(FeatureIdent.SAVE_TAB) && useUiStore().getSelectedTab?.mhtmls?.length > 0"
                       :default-opened="true">
       <q-card>
         <q-card-section>
@@ -346,7 +347,8 @@ function getHost(urlAsString: string, shorten: Boolean = true): string {
 const formatDate = (timestamp: number | undefined) =>
   timestamp ? formatDistance(timestamp, new Date(), {addSuffix: true}) : ""
 
-const showTabDetails = () => router.push("/tab/" + uiStore.getSelectedTab?.id)
+const showTabDetails = () =>
+  NavigationService.openOrCreateTab(chrome.runtime.getURL("/www/index.html#/mainpanel/tab/" + uiStore.getSelectedTab?.id))
 
 watchEffect(() => {
   const fuseIndex = useSearchStore().getIndex()

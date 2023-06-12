@@ -27,6 +27,9 @@
       <div>
         <div class="q-pr-sm cursor-pointer ellipsis">
           <span v-if="props.header" class="text-bold">{{ props.header }}<br></span>
+          <span v-if="useTabsStore().getCurrentTabset?.sorting === 'alphabeticalTitle'">
+              <q-icon name="arrow_right" size="16px"/>
+           </span>
           {{ nameOrTitle(props.tab) }}
           <q-popup-edit
             v-if="props.tab.extension !== UrlExtension.NOTE"
@@ -59,8 +62,7 @@
               <q-icon name="arrow_right" size="16px"/>
            </span>
 
-          <span v-if="props.tab.extension === UrlExtension.NOTE"
-                @click="NavigationService.openOrCreateTab(props.tab.chromeTab?.url)">open Note</span>
+          <span v-if="props.tab.extension === UrlExtension.NOTE">open Note</span>
           <short-url v-else :url="props.tab.chromeTab?.url" :hostname-only="true"/>
 
          <!-- <q-icon class="q-ml-xs" name="open_in_new"/>-->
@@ -157,11 +159,9 @@ onMounted(() => {
 })
 
 watchEffect(() => {
-  console.log("checking", props.tab)
   if (props.tab && props.tab.chromeTab.url) {
     const url = props.tab.chromeTab.url
     const tabsetIds = useTabsetService().tabsetsFor(url)
-    //console.log("tabsets", tabsetIds)
     tsBadges.value = []
     _.forEach(tabsetIds, tsId => tsBadges.value.push({
       label: TabsetService.nameForTabsetId(tsId),

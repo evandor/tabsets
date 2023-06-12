@@ -359,15 +359,15 @@ const updateSelectionCount = () => {
 }
 
 
-const filteredTabs = () => {
-  const noDupliatesTabs = _.filter(tabsStore.pendingTabset?.tabs, (t: Tab) => !t.isDuplicate)
-  if (filter.value && filter.value.trim() !== '') {
-    return _.filter(noDupliatesTabs, (t: Tab) =>
-      (t?.chromeTab.url && t?.chromeTab.url.indexOf(filter.value) >= 0) ||
-      (t?.chromeTab.title && t?.chromeTab.title.indexOf(filter.value) >= 0))
-  }
-  return noDupliatesTabs
-}
+// const filteredTabs = () => {
+//   const noDupliatesTabs = _.filter(tabsStore.pendingTabset?.tabs, (t: Tab) => !t.isDuplicate)
+//   if (filter.value && filter.value.trim() !== '') {
+//     return _.filter(noDupliatesTabs, (t: Tab) =>
+//       (t?.chromeTab.url && t?.chromeTab.url.indexOf(filter.value) >= 0) ||
+//       (t?.chromeTab.title && t?.chromeTab.title.indexOf(filter.value) >= 0))
+//   }
+//   return noDupliatesTabs
+// }
 
 const restoreDialog = () => $q.dialog({component: RestoreTabsetDialog})
 const addUrlDialog = () => $q.dialog({component: AddUrlDialog})
@@ -378,23 +378,6 @@ const setView = (view: string) => TabsetService.setView(tabsetId.value, view)
 const toggleSorting = () => useCommandExecutor().executeFromUi(new ToggleSortingCommand(tabsetId.value))
 
 const toggleOrder = () => orderDesc.value = !orderDesc.value
-
-const sortingInfo = (): string => {
-  switch (tabset.value?.sorting) {
-    case 'custom':
-      return ", sorted by Index" + (orderDesc.value ? ', descending' : '')
-      break
-    case 'alphabeticalUrl':
-      return ", sorted by URL" + (orderDesc.value ? ', descending' : '')
-      break
-    case 'alphabeticalTitle':
-      return ", sorted by Title" + (orderDesc.value ? ', descending' : '')
-      break
-    default:
-      return "";
-      break
-  }
-}
 
 const showSorting = () => tabsStore.getCurrentTabs.length > 10 && $q.screen.gt.xs
 

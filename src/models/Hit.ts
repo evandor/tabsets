@@ -16,6 +16,7 @@ export class Hit {
     public updated: number,
     public score: number,
     public tabsets: string[],
+    public spaces: string[],
     public matches: object[],
     public description: string,
     public keywords: string

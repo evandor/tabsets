@@ -11,14 +11,19 @@
                 <q-tooltip>Back</q-tooltip>
               </q-icon>
             </div>
-            <div class="col-9">
+            <div class="col-8">
               Spaces
             </div>
-            <div class="col-1 text-right">
+            <div class="col-2 text-right">
               <q-icon
                 class="q-ma-xs cursor-pointer" name="o_add" size="16px"
                 @click="addSpace">
                 <q-tooltip class="tooltip">Add Space</q-tooltip>
+              </q-icon>
+              <q-icon
+                class="q-ma-xs cursor-pointer" name="more_horiz" size="16px"
+                @click="manageSpaces">
+                <q-tooltip class="tooltip">Manage Spaces</q-tooltip>
               </q-icon>
             </div>
           </div>
@@ -34,6 +39,16 @@
           :default-opened="spacesStore.space?.id === space.id"
           :label="space.label"
           :caption="(tabsetsForSpace.get(space.id) || []).length + ' tabsets'">
+          <div class="row">
+            <div class="col text-right" style="border-bottom:1px solid lightgray">
+              <q-icon
+                class="q-ma-xs cursor-pointer" name="o_add" size="16px"
+                color="primary"
+                @click="openNewTabsetDialog(space.id)">
+                <q-tooltip class="tooltip">Add Tabset</q-tooltip>
+              </q-icon>
+            </div>
+          </div>
           <q-card>
             <q-card-section>
               <NavTabsetsListWidgetNonBex
@@ -44,16 +59,16 @@
           </q-card>
         </q-expansion-item>
 
-                <q-expansion-item dense
-                                  expand-separator
-                                  label="Unassigned Tabsets"
-                                  :caption="tabsetsWithoutSpaces().length + ' tabsets'">
-                  <q-card>
-                    <q-card-section>
-                      <NavTabsetsListWidgetNonBex :tabsets="tabsetsWithoutSpaces()" :fromPanel="true"/>
-                    </q-card-section>
-                  </q-card>
-                </q-expansion-item>
+        <q-expansion-item dense
+                          expand-separator
+                          label="Unassigned Tabsets"
+                          :caption="tabsetsWithoutSpaces().length + ' tabsets'">
+          <q-card>
+            <q-card-section>
+              <NavTabsetsListWidgetNonBex :tabsets="tabsetsWithoutSpaces()" :fromPanel="true"/>
+            </q-card-section>
+          </q-card>
+        </q-expansion-item>
 
 
       </q-list>
@@ -79,6 +94,8 @@ import {usePermissionsStore} from "src/stores/permissionsStore";
 import {FeatureIdent} from "src/models/AppFeature";
 import {useSpacesStore} from "src/stores/spacesStore";
 import NewSpaceDialog from "components/dialogues/NewSpaceDialog.vue";
+import NavigationService from "src/services/NavigationService";
+import NewTabsetDialog from "components/dialogues/NewTabsetDialog.vue";
 
 const {inBexMode} = useUtils()
 
@@ -121,7 +138,6 @@ const tabsetsForSpace = ref<Map<string, Tabset[]>>(new Map())
 
 watchEffect(() => {
   const start = new Date().getTime()
-  console.log("calulating", start)
   let res: Map<string, Tabset[]> = new Map()
   _.forEach([...useTabsStore().tabsets.values()], (ts: Tabset) => {
     _.forEach(ts.spaces, (spaceId: string) => {
@@ -130,7 +146,6 @@ watchEffect(() => {
       } else {
         res.set(spaceId, [ts])
       }
-      console.log("calulating", new Date().getTime() - start)
     })
   })
   tabsetsForSpace.value = res // useSpacesStore().tabsetsForSpaces()
@@ -260,6 +275,20 @@ const addSpace = () => {
     component: NewSpaceDialog,
     componentProps: {
       tabsetId: tabsStore.currentTabsetId,
+      fromPanel: true
+    }
+  })
+}
+
+const manageSpaces = () =>
+  NavigationService.openOrCreateTab(chrome.runtime.getURL('www/index.html#/mainpanel/spaces'))
+
+const openNewTabsetDialog = (spaceId: string) => {
+  $q.dialog({
+    component: NewTabsetDialog,
+    componentProps: {
+      tabsetId: tabsStore.currentTabsetId,
+      spaceId: spaceId,
       fromPanel: true
     }
   })

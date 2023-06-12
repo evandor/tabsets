@@ -92,6 +92,7 @@ const newSearch = (term: string) => {
         0, 0,
         100,
         tabsets, //h.chromeTab.tabsets,
+        [],
         _.map(h['matches' as keyof object], (m: any) => {
           return {
             key: m['key' as keyof object],

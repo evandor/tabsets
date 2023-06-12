@@ -36,7 +36,6 @@ export function useTabsetService() {
       console.log("setting selected tabset from storage", selectedTS)
       useTabsStore().selectCurrentTabset(selectedTS)
     }
-
   }
 
   /**

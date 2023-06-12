@@ -50,27 +50,20 @@ import {STRIP_CHARS_IN_USER_INPUT} from "boot/constants";
 import {CreateTabsetCommand} from "src/domain/tabsets/CreateTabset";
 import TabsetService from "src/services/TabsetService";
 import {useCommandExecutor} from "src/services/CommandExecutor";
-import {TabsetStatus} from "src/models/Tabset";
+import {Tabset, TabsetStatus} from "src/models/Tabset";
 import {useSpacesStore} from "src/stores/spacesStore";
 import ChromeApi from "src/services/ChromeApi";
+import {useTabsetService} from "src/services/TabsetService2";
 
 defineEmits([
   ...useDialogPluginComponent.emits
 ])
 
 const props = defineProps({
-  setEmptyByDefault: {
-    type: Boolean,
-    default: false
-  },
-  firstTabset: {
-    type: Boolean,
-    default: false
-  },
-  fromPanel: {
-    type: Boolean,
-    default: false
-  }
+  setEmptyByDefault: {type: Boolean, default: false},
+  firstTabset: {type: Boolean, default: false},
+  spaceId: {type: String, required: false},
+  fromPanel: {type: Boolean, default: false}
 })
 
 const {dialogRef, onDialogHide, onDialogCancel} = useDialogPluginComponent()
@@ -104,6 +97,11 @@ const createNewTabset = () => {
     .executeFromUi(new CreateTabsetCommand(newTabsetName.value, props.firstTabset ? firstTabset : tabsToUse))
     .then((res) => {
       //useUiStore().setNewTabsetEmptyByDefault(addEmptyTabset.value)
+      if (props.spaceId) {
+        const ts:Tabset = res.result.tabset
+        ts.spaces.push(props.spaceId)
+        useTabsetService().saveTabset(ts)
+      }
       if (!addAllOpenTabs.value) {
         TabsetService.createPendingFromBrowserTabs()
       } else {

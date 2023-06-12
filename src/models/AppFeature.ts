@@ -12,6 +12,8 @@ export enum FeatureIdent {
   RSS = "RSS",
   SESSIONS = "SESSIONS",
   SPACES = "SPACES",
+  TOP10 = "TOP10",
+  NEWEST_TABS = "NEWEST_TABS",
   THUMBNAILS = "THUMBNAILS",
   DYNAMIC = "DYNAMIC",
   WINDOWS = "WINDOWS",
@@ -23,7 +25,8 @@ export enum FeatureIdent {
   NOTES = "NOTES",
   TAGS = "TAGS",
   SIDE_PANEL = "SIDE_PANEL",
-  WEBSITE_CLIP = "WEBSITE_CLIP"
+  WEBSITE_CLIP = "WEBSITE_CLIP",
+  STANDALONE_APP = "STANDALONE_APP"
 }
 
 export enum FeatureType {

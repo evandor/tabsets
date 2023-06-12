@@ -186,12 +186,15 @@ export const useTabsStore = defineStore('tabs', {
       }
     },
     getTab: (state) => {
-      return (tabId: string): Tab | undefined => {
+      return (tabId: string): object | undefined => {
 
         for (const [key, value] of state.tabsets) {
           const found: Tab | undefined = _.find(value.tabs, t => t.id === tabId)
           if (found) {
-            return found
+            return {
+              tab: found,
+              tabsetId: value.id
+            }
           }
         }
         return undefined
@@ -200,6 +203,7 @@ export const useTabsStore = defineStore('tabs', {
     tabsetFor: (state) => {
       return (tabId: string): Tabset | undefined => {
         for (const [key, value] of state.tabsets) {
+          console.log("checking", key, tabId)
           if (_.find(value.tabs, t => t.id === tabId)) {
             return value
           }
@@ -274,11 +278,6 @@ export const useTabsStore = defineStore('tabs', {
         _.map(this.tabs, t => new Tab(uid(), t)))
 
       this.pendingTabset = new Tabset("pending", "pending", [], [])
-
-      // this.ignoredTabset = new Tabset("ignored", "ignored", [], [])
-
-      // this.backupTabset = new Tabset("backup", "backup", [], [])
-
     },
 
     async loadTabs(eventName: string) {

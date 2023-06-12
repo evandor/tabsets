@@ -24,7 +24,7 @@
                                 style="position: absolute; left:5px;top:5px;max-width:240px"/>
                   <div class="column q-ma-none q-pa-none" v-else>
                     <div class="col q-ma-none q-pa-none text-black cursor-pointer"
-                         @click="router.push('/sidepanel/tabsets')"
+                         @click="router.push('/sidepanel/spaces')"
                          style="font-size: 12px">
                       {{ useSpacesStore().space ? useSpacesStore().space.label : 'no space selected' }}
                     </div>
@@ -37,7 +37,9 @@
                   <SearchWidget v-if="searching"
                                 :fromPanel="true"
                                 style="position: absolute; left:5px;top:5px;max-width:240px"/>
-                  <TabsetsSelectorWidget v-else :fromPanel="true"/>
+                  <TabsetsSelectorWidget v-else
+                                         style="position: absolute; left:5px;top:14px"
+                                         :fromPanel="true"/>
                 </div>
                 <div class="col-4 text-right">
                   <q-btn v-if="tabsStore.tabsets.size > 1"
@@ -45,49 +47,129 @@
                          flat
                          class="q-ma-none q-pa-xs cursor-pointer"
                          style="max-width:20px"
-                         size="10px"
+                         size="11px"
                          @click="toggleSearch">
                     <q-tooltip class="tooltip">Search</q-tooltip>
                   </q-btn>
-                  <q-icon v-if="usePermissionsStore().hasFeature(FeatureIdent.SESSIONS)"
-                          class="q-ma-xs cursor-pointer"
-                          :color="existingSession ? (tabsStore.getCurrentTabset?.type === TabsetType.SESSION ? 'red':'grey-5') :'primary'"
-                          :name="existingSession ? 'o_stop_circle':'o_play_circle'" size="16px"
-                          @click="toggleSessionState">
-                    <q-tooltip class="tooltip" v-if="existingSession">Stop Session</q-tooltip>
-                    <q-tooltip class="tooltip" v-else>Start new Session</q-tooltip>
-                  </q-icon>
-                  <q-btn v-if="usePermissionsStore().hasFeature(FeatureIdent.WEBSITE_CLIP) && webClipActive()"
-                         icon="filter_center_focus"
-                         flat
-                         class="q-ma-none q-pa-xs cursor-pointer"
-                         style="max-width:20px"
-                         size="10px"
-                         @click="createClip">
-                    <q-tooltip class="tooltip">{{ createWebsiteClipTooltip() }}</q-tooltip>
+
+                  <q-btn
+                    icon="o_add"
+                    flat
+                    class="q-ma-none q-pa-xs cursor-pointer"
+                    style="max-width:20px"
+                    size="11px"
+                    @click="openNewTabsetDialog()">
+                    <q-tooltip class="tooltip">Add new Tabset</q-tooltip>
                   </q-btn>
-                  <q-btn v-if="usePermissionsStore().hasFeature(FeatureIdent.WEBSITE_CLIP) && !webClipActive()"
-                         icon="filter_center_focus"
-                         color="grey-5"
-                         flat
-                         class="q-ma-none q-pa-xs cursor-pointer"
-                         style="max-width:20px"
-                         size="10px">
-                    <q-tooltip class="tooltip">cannot create web clip for this tab</q-tooltip>
+
+                  <q-btn
+                    v-if="tabsStore.tabsets.size > 1"
+                    icon="o_keyboard_double_arrow_right"
+                    flat
+                    class="q-ma-none q-pa-xs cursor-pointer"
+                    style="max-width:20px"
+                    size="11px"
+                    @click="openTabsetPage()">
+                    <q-tooltip class="tooltip">Open this Tabset as Standalone page</q-tooltip>
                   </q-btn>
-                  <!--                    <q-icon v-if="useSettingsStore().isEnabled('dev')"-->
-                  <!--                            class="q-ma-xs cursor-pointer" name="open_in_new" size="16px" @click="openExtensionTab">-->
-                  <!--                      <q-tooltip class="tooltip">Open Tabsets</q-tooltip>-->
-                  <!--                    </q-icon>-->
+
                 </div>
               </div>
             </q-toolbar-title>
           </q-toolbar>
 
-          <div class="col-12">
-            <q-input borderless v-if="usePermissionsStore().hasFeature(FeatureIdent.NOTES)"
-                     class="q-ma-xs"
-                     style="height:20px;border: 1px dotted lightgray; border-radius: 3px;" v-model="dragTarget"/>
+          <!-- second toolbar line -->
+          <div class="row q-ma-none q-pa-none">
+            <div class="col-6" style="border-bottom: 1px dotted lightgray">
+              <q-input borderless v-if="usePermissionsStore().hasFeature(FeatureIdent.NOTES)"
+                       class="q-ma-xs"
+                       style="height:20px;border: 1px dotted lightgray; border-radius: 3px;" v-model="dragTarget"/>
+            </div>
+            <div class="col-6 text-right" style="border-bottom: 1px dotted lightgray">
+
+
+              <!--              v-if="tabsStore.currentTabsetId !== '' && tabsStore.getTabset(tabsStore.currentTabsetId) && tabsStore.getCurrentTabset?.tabs.length > 0 && $q.screen.gt.xs"-->
+              <q-btn
+                v-if="tabsStore.getCurrentTabset?.tabs.length > 7"
+                flat
+                class="q-ma-none q-pa-xs cursor-pointer"
+                style="width:20px;max-width:220px"
+                size="11px"
+                :text-color="useUiStore().tabsFilter ? 'accent' : 'primary'"
+                :disable="tabsStore.getCurrentTabset?.type === TabsetType.DYNAMIC"
+                :label="useUiStore().tabsFilter"
+                icon="o_filter_alt">
+                <q-popup-edit :model-value="useUiStore().tabsFilter" v-slot="scope"
+                              @update:model-value="val => setFilter(  val)">
+                  <q-input v-model="scope.value" dense autofocus counter @keyup.enter="scope.set"/>
+                </q-popup-edit>
+                <q-tooltip
+                  class="tooltip"
+                  :delay="200"
+                  anchor="center left" self="center right">
+                  Filter this tabset
+                </q-tooltip>
+              </q-btn>
+
+              <q-btn v-if="showSorting()"
+                     flat
+                     size="10px"
+                     class="q-ma-none q-pa-xs cursor-pointer"
+                     style="max-width:20px"
+                     text-color="primary"
+                     @click="toggleSorting()"
+                     outline
+                     icon="o_sort">
+                <q-tooltip class="tooltip">Toggle through sorting</q-tooltip>
+              </q-btn>
+
+              <q-btn v-if="tabsStore.getCurrentTabset?.tabs.length > 0"
+                     :icon="getDetailLevelIcon()"
+                     flat
+                     size="10px"
+                     class="q-ma-none q-pa-xs cursor-pointer"
+                     style="max-width:20px"
+                     text-color="primary"
+                     @click="toggleListDetailLevel()">
+                <q-tooltip class="tooltip">Toggle the detail level for the tabs</q-tooltip>
+              </q-btn>
+
+              <q-btn v-if="usePermissionsStore().hasFeature(FeatureIdent.SESSIONS)"
+                     flat
+                     style="max-width:20px"
+                     size="10px"
+                     class="q-ma-none q-pa-xs cursor-pointer"
+                     :color="existingSession ? (tabsStore.getCurrentTabset?.type === TabsetType.SESSION ? 'red':'grey-5') :'primary'"
+                     :icon="existingSession ? 'o_stop_circle':'o_play_circle'"
+                     @click="toggleSessionState">
+                <q-tooltip class="tooltip" v-if="existingSession">Stop Session</q-tooltip>
+                <q-tooltip class="tooltip" v-else>Start new Session</q-tooltip>
+              </q-btn>
+
+              <q-btn v-if="usePermissionsStore().hasFeature(FeatureIdent.WEBSITE_CLIP) && webClipActive()"
+                     icon="filter_center_focus"
+                     flat
+                     class="q-ma-none q-pa-xs cursor-pointer"
+                     style="max-width:20px"
+                     size="10px"
+                     @click="createClip">
+                <q-tooltip class="tooltip">{{ createWebsiteClipTooltip() }}</q-tooltip>
+              </q-btn>
+              <q-btn v-if="usePermissionsStore().hasFeature(FeatureIdent.WEBSITE_CLIP) && !webClipActive()"
+                     icon="filter_center_focus"
+                     color="grey-5"
+                     flat
+                     class="q-ma-none q-pa-xs cursor-pointer"
+                     style="max-width:20px"
+                     size="10px">
+                <q-tooltip class="tooltip">cannot create web clip for this tab</q-tooltip>
+              </q-btn>
+
+            </div>
+          </div>
+
+          <div class="text-caption q-ma-md" v-if="tabsStore.getCurrentTabset?.tabs.length === 0">
+            <q-img src="cat.png"/>
           </div>
 
           <div class="text-caption q-ma-md" v-if="tabsStore.getCurrentTabset?.tabs.length === 0">
@@ -99,7 +181,7 @@
               <SidePanelDynamicTabset v-if="tabsStore.getCurrentTabset?.type === TabsetType.DYNAMIC"
                                       :tabset="tabsStore.getCurrentTabset"/>
               <PanelTabList v-else
-                            :tabs="tabsStore.getCurrentTabset.tabs"/>
+                            :tabs="filteredTabs()"/>
             </div>
           </div>
 
@@ -117,6 +199,7 @@
       </template>
 
       <template v-slot:after>
+        <!-- selected tab or current tab from chrome -->
         <div v-if="tabFromChromeTab() && tabsStore.getCurrentTabset && currentChromeTab.url !== 'chrome://newtab/'"
              class="row q-ma-sm q-mt-lg"
              :class="alreadyInTabset() ? 'bg-grey-1':'bg-yellow-1'"
@@ -180,7 +263,7 @@ import {useTabsetService} from "src/services/TabsetService2";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {AddTabToTabsetCommand} from "src/domain/tabs/AddTabToTabset";
 import NewTabsetDialog from "components/dialogues/NewTabsetDialog.vue";
-import {useUiStore} from "src/stores/uiStore";
+import {ListDetailLevel, useUiStore} from "src/stores/uiStore";
 import TabsetsSelectorWidget from "components/widgets/TabsetsSelectorWidget.vue";
 import PanelTabList from "components/layouts/PanelTabList.vue";
 import PanelTabListElementWidget from "components/widgets/PanelTabListElementWidget.vue";
@@ -193,6 +276,8 @@ import SidePanelDynamicTabset from "components/layouts/sidepanel/SidePanelDynami
 import AddUrlDialog from "components/dialogues/AddUrlDialog.vue";
 import NewSessionDialog from "components/dialogues/NewSessionDialog.vue";
 import {StopSessionCommand} from "src/domain/commands/StopSessionCommand";
+import JsUtils from "src/utils/JsUtils";
+import {ToggleSortingCommand} from "src/domain/tabsets/ToggleSorting";
 
 const {inBexMode, sanitize} = useUtils()
 
@@ -203,7 +288,6 @@ const spacesStore = useSpacesStore()
 const show = ref(false)
 
 const currentChromeTabs = ref<chrome.tabs.Tab[]>([])
-//const currentTabs = ref<Tab[]>([])
 const tabsetName = ref<object>(null as unknown as object)
 const tabsetNameOptions = ref<object[]>([])
 const openTabs = ref<chrome.tabs.Tab[]>([])
@@ -211,6 +295,7 @@ const currentTabset = ref<Tabset | undefined>(undefined)
 const currentChromeTab = ref<chrome.tabs.Tab>(null as unknown as chrome.tabs.Tab)
 const searching = ref(false)
 const existingSession = ref(false)
+const orderDesc = ref(false)
 
 const splitterModel = ref(160)
 const selectedTab = ref<Tab | undefined>(undefined)
@@ -242,8 +327,22 @@ if (inBexMode()) {
     } else if (name === 'feature-activated' || name === "feature-deactivated") {
       console.log("message data", data)
       usePermissionsStore().initialize()
+    } else if (name === "tabsets-imported") {
+      useSpacesStore().reload()
+      useTabsetService().init()
     } else if (name === "tab-being-dragged") {
       useUiStore().draggingTab(data.tabId, null as unknown as any)
+    } else if (name === "tab-changed") {
+      const tabset = useTabsetService().getTabset(data.tabsetId) as Tabset
+      // replace tab (seems necessary !?) TODO
+      tabset.tabs = _.map(tabset.tabs, (t: Tab) => (t.id === data.tab.id) ? data.tab : t)
+      useTabsetService().saveTabset(tabset)
+        .then((res) => {
+          console.log("saved tabset", tabset)
+        })
+        .catch((err) => {
+          console.error("got error " + err)
+        })
     }
     return true
   })
@@ -333,9 +432,13 @@ watchEffect(() => {
   dragTarget.value = ''
 })
 
-const openExtensionTab = () => {
-  const extensionUrl = chrome.runtime.getURL('www/index.html#/start')
-  NavigationService.openOrCreateTab(extensionUrl)
+const openTabsetPage = () => {
+  const tabsetId = tabsStore.getCurrentTabset?.id
+  if (tabsetId) {
+    const extensionUrl = chrome.runtime.getURL('www/index.html#/mainpanel/tabsets/' + tabsetId)
+    NavigationService.openOrCreateTab(extensionUrl)
+  }
+  router.push("/sidepanel/spaces")
 }
 
 if (inBexMode()) {
@@ -365,38 +468,13 @@ const alreadyInTabset = () => {
   return false
 }
 
-/*
-const save = () => {
-  console.log("saving...", tabsetName.value['value' as keyof object])
-  if (tabsetName.value && tabsetName.value['value' as keyof object]) {
-    //console.log("tabId", currentChromeTabs.value[0]?.id)
-    // @ts-ignore
-    chrome.scripting.executeScript({
-      target: {tabId: currentChromeTabs.value[0]?.id, allFrames: true},
-      args: [currentChromeTabs.value[0], tabsetName.value['value' as keyof object]],
-      func: (tabId: number, tabsetId: string) => {
-        //console.log("calling func", tabId, tabsetId)
-        //if (window.getSelection()?.anchorNode && window.getSelection()?.anchorNode !== null) {
-        const msg = {
-          msg: "addTabToTabset",
-          tabId: tabId,
-          tabsetId: tabsetId
-        }
-        //console.log("sending message", msg)
-        chrome.runtime.sendMessage(msg, function (response) {
-          console.log("created new tab in current tabset:", response)
-        });
-        // }
-      }
-    }, (result: any) => {
-      console.log("result", result)
-      //window.close()
-    });
-
-  }
-
+const setFilter = (newValue: string) => {
+  console.log("filter", newValue)
+  const useValue = newValue && newValue.trim().length > 0 ? newValue.trim() : undefined
+  useUiStore().tabsFilter = useValue
+  useUiStore().setHighlightTerm(useValue)
+  JsUtils.runCssHighlight()
 }
-*/
 
 const createClip = () => {
   //console.log("creating clip", currentChromeTabs.value[0])
@@ -423,7 +501,7 @@ const addFirstTabset = () => $q.dialog({
 
 const tabFromChromeTab = () => currentChromeTab.value ? new Tab(uid(), currentChromeTab.value) : undefined
 
-const showTabsets = () => router.push("/sidepanel/tabsets")
+const showTabsets = () => router.push("/sidepanel/spaces")
 
 const toggleSearch = () => searching.value = !searching.value
 
@@ -454,6 +532,75 @@ const createWebsiteClipTooltip = () => {
 }
 
 const webClipActive = () => tabsStore.currentChromeTab
+
+function filteredTabs(): Tab[] {
+  //console.log("got", props.tabset.tabs)
+  const filter = useUiStore().tabsFilter
+  if (filter && filter.trim() !== '') {
+    return _.orderBy(_.filter(tabsStore.getCurrentTabset?.tabs, (t: Tab) => {
+        return (t.chromeTab.url || '')?.indexOf(filter) >= 0 ||
+          (t.chromeTab.title || '')?.indexOf(filter) >= 0 ||
+          t.description?.indexOf(filter) >= 0
+      })
+      , getOrder(), [orderDesc.value ? 'desc' : 'asc'])
+  }
+  return _.orderBy(tabsStore.getCurrentTabset?.tabs, getOrder(), [orderDesc.value ? 'desc' : 'asc'])
+}
+
+const toggleSorting = () => useCommandExecutor().executeFromUi(new ToggleSortingCommand(tabsStore.currentTabsetId))
+
+const toggleOrder = () => orderDesc.value = !orderDesc.value
+
+const showSorting = () => tabsStore.getCurrentTabs.length > 3
+
+function getOrder() {
+  if (tabsStore.getCurrentTabset) {
+    switch (tabsStore.getCurrentTabset.sorting) {
+      case 'alphabeticalUrl':
+        return (t: Tab) => t.chromeTab.url?.replace("https://", "").replace("http://", "").toUpperCase()
+      case 'alphabeticalTitle':
+        return (t: Tab) => t.chromeTab.title?.toUpperCase()
+      default:
+        return (t: Tab) => 1
+    }
+    return (t: Tab) => 1
+  }
+}
+
+const openNewTabsetDialog = () => {
+  $q.dialog({
+    component: NewTabsetDialog,
+    componentProps: {
+      tabsetId: tabsStore.currentTabsetId,
+      fromPanel: true
+    }
+  })
+}
+
+const getDetailLevelIcon = () => {
+  switch (useUiStore().listDetailLevel) {
+    case ListDetailLevel.LARGE:
+      return "crop_portrait"
+    case ListDetailLevel.MEDIUM:
+      return "crop_16_9"
+    default:
+      return "crop_7_5"
+  }
+}
+
+const toggleListDetailLevel = () => {
+  switch (useUiStore().listDetailLevel) {
+    case ListDetailLevel.LARGE:
+      useUiStore().setListDetailLevel(ListDetailLevel.MEDIUM)
+      break;
+    case ListDetailLevel.MEDIUM:
+      useUiStore().setListDetailLevel(ListDetailLevel.SMALL)
+      break;
+    default:
+      useUiStore().setListDetailLevel(ListDetailLevel.LARGE)
+  }
+}
+
 
 </script>
 
