@@ -8,6 +8,14 @@ function openMyPage() {
   });
 }
 
+// @ts-ignore
+if (chrome.sidePanel && chrome.sidePanel.setPanelBehavior) {
+  // @ts-ignore
+  chrome.sidePanel
+    .setPanelBehavior({openPanelOnActionClick: true})
+    .catch((error: any) => console.error(error));
+}
+
 chrome.runtime.onInstalled.addListener((details) => {
   console.log("adding listener in background.ts", details)
   // @ts-ignore

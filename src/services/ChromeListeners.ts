@@ -68,13 +68,6 @@ class ChromeListeners {
 
       chrome.runtime.onMessage.addListener((request, sender, sendResponse) => this.onMessage(request, sender, sendResponse))
 
-      // @ts-ignore
-      if (chrome.sidePanel && chrome.sidePanel.setPanelBehavior) {
-        // @ts-ignore
-        chrome.sidePanel
-          .setPanelBehavior({openPanelOnActionClick: true})
-          .catch((error: any) => console.error(error));
-      }
     }
 
   }
