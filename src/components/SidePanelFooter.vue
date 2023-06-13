@@ -76,7 +76,12 @@
                size="8px"
                style="width:20px"
                @click="openOptionsPage()">
-          <q-tooltip class="tooltip" anchor="top left" self="bottom left">Open Settings</q-tooltip>
+          <q-badge v-if="logsStore.errors.length > 0 && settingsStore.isEnabled('dev')"
+            color="red" floating>{{logsStore.errors.length}}</q-badge>
+          <q-badge v-if="logsStore.errors.length === 0 && logsStore.warnings.length > 0
+                  && settingsStore.isEnabled('dev')"
+                   color="orange" floating>{{logsStore.warnings.length}}</q-badge>
+          <q-tooltip class="tooltip" anchor="top left" self="bottom left">{{ settingsTooltip() }}</q-tooltip>
         </q-btn>
 
         <q-btn
@@ -105,8 +110,13 @@ import {usePermissionsStore} from "src/stores/permissionsStore";
 import {FeatureIdent} from "src/models/AppFeature";
 import OpenTabsThresholdWidget from "components/widgets/OpenTabsThresholdWidget.vue";
 import NavigationService from "src/services/NavigationService";
+import {useLogsStore} from "stores/logsStore";
+import {useSettingsStore} from "stores/settingsStore";
 
 const tabsStore = useTabsStore()
+const logsStore = useLogsStore()
+const settingsStore = useSettingsStore()
+
 const permissionsStore = usePermissionsStore()
 const router = useRouter()
 
@@ -146,5 +156,14 @@ const activateView = (view: SidePanelView) => useUiStore().sidePanelSetActiveVie
 
 const openExtensionTab = () => NavigationService.openOrCreateTab(chrome.runtime.getURL('www/index.html#/start'))
 
+const settingsTooltip = () => {
+  if (logsStore.errors.length > 0  && settingsStore.isEnabled('dev')) {
+    return "Open Settings (" + logsStore.errors.length + " errors)"
+  }
+  if (logsStore.warnings.length > 0  && settingsStore.isEnabled('dev')) {
+    return "Open Settings (" + logsStore.warnings.length + " warnings)"
+  }
+  return "Open Settings"
+}
 
 </script>

@@ -22,6 +22,7 @@
       <q-tab name="archived" label="Archived Tabsets"/>
       <q-tab name="search" label="Search Engine" v-if="devEnabled"/>
       <q-tab name="importExport" label="Import/Export"/>
+      <q-tab name="logs" label="Log: Errors & Warnings"/>
       <q-tab name="featureToggles" label="Feature Toggles"/>
     </q-tabs>
   </div>
@@ -316,6 +317,30 @@
 
   </div>
 
+  <div v-if="tab === 'logs'">
+
+    <div class="q-pa-md q-gutter-sm">
+
+      <q-banner rounded class="bg-grey-1 text-primary">Tabsets checks for errors and warnings in the log
+        and can display them here.
+      </q-banner>
+
+      <div class="row q-pa-md">
+        <div class="col-12">
+          {{ useLogsStore().errors}}
+        </div>
+      </div>
+
+      <div class="row q-pa-md">
+        <div class="col-12">
+          {{ useLogsStore().warnings}}
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
 
   <div v-if="tab === 'featureToggles'">
 
@@ -370,6 +395,7 @@ import {GrantOriginCommand} from "src/domain/commands/GrantOriginCommand";
 import {RevokeOriginCommand} from "src/domain/commands/RevokeOriginCommand";
 import {FeatureIdent} from "src/models/AppFeature";
 import {useSettingsStore} from "src/stores/settingsStore"
+import {useLogsStore} from "../stores/logsStore";
 
 const tabsStore = useTabsStore()
 const featuresStore = useSettingsStore()

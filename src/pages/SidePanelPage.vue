@@ -178,10 +178,13 @@
 
           <div class="row q-ma-none q-pa-none" v-if="tabsStore.getCurrentTabset">
             <div class="col-12 q-ma-none q-pa-none q-pt-lg">
+              *{{ useLogsStore().errors }}*
               <SidePanelDynamicTabset v-if="tabsStore.getCurrentTabset?.type === TabsetType.DYNAMIC"
                                       :tabset="tabsStore.getCurrentTabset"/>
               <PanelTabList v-else
                             :tabs="filteredTabs()"/>
+
+
             </div>
           </div>
 
@@ -278,6 +281,7 @@ import NewSessionDialog from "components/dialogues/NewSessionDialog.vue";
 import {StopSessionCommand} from "src/domain/commands/StopSessionCommand";
 import JsUtils from "src/utils/JsUtils";
 import {ToggleSortingCommand} from "src/domain/tabsets/ToggleSorting";
+import {useLogsStore} from "stores/logsStore";
 
 const {inBexMode, sanitize} = useUtils()
 
