@@ -611,7 +611,7 @@ const toggleListDetailLevel = () => {
 const sendMessage = () => {
   const data = {text: "tabset is cool"}
   console.log("about to send message...", data)
-  sendMsg('yeah', data)
+  sendMsg('zero-shot-classification', data)
 }
 
 

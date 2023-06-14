@@ -9,59 +9,54 @@ function openMyPage() {
 }
 
 // if (typeof ServiceWorkerGlobalScope !== 'undefined' && self instanceof ServiceWorkerGlobalScope) {
-  // Load the library
-  const { pipeline, env } = require('@xenova/transformers');
+// Load the library
+const {pipeline, env} = require('@xenova/transformers');
 
 console.log("here!!!")
 
-// from transformers import AutoTokenizer, AutoModelForSequenceClassification
+// Set environment variables to only use local models.
+env.useBrowserCache = false;
+env.remoteModels = false;
+//env.localModelPath = chrome.runtime.getURL('models/')
+env.backends.onnx.wasm.wasmPaths = chrome.runtime.getURL('www/wasm/')
+env.backends.onnx.wasm.numThreads = 1;
 
-// const tokenizer = AutoTokenizer.from_pretrained("distilbert-base-uncased-finetuned-sst-2-english")
-//
-// const model2 = AutoModelForSequenceClassification.from_pretrained("distilbert-base-uncased-finetuned-sst-2-english")
+// const task = 'text-classification';
+// const model = 'Xenova/distilbert-base-uncased-finetuned-sst-2-english';
 
+const task = 'zero-shot-classification';
+const model = 'Xenova/bart-large-mnli';
 
-
-  // Set environment variables to only use local models.
-  env.useBrowserCache = false;
-  env.remoteModels = false;
-  //env.localModelPath = chrome.runtime.getURL('models/')
-  env.backends.onnx.wasm.wasmPaths = chrome.runtime.getURL('www/wasm/')
-  env.backends.onnx.wasm.numThreads = 1;
-
-  // TODO: Replace this with your own task and model
-  const task = 'text-classification';
-  // const model = 'distilbert-base-uncased-finetuned-sst-2-english';
-  const model = 'Xenova/distilbert-base-uncased-finetuned-sst-2-english';
-
-  // Load model, storing the promise that is returned from the pipeline function.
-  // Doing it this way will load the model in the background as soon as the worker is created.
-  // To actually use the model, you must call `await modelPromise` to get the actual classifier.
-  const modelPromise = pipeline(task, null, {
-    progress_callback: (data: any) => {
-      console.log("got progress_callback", data)
-      // If you would like to add a progress bar for model loading,
-      // you can send `data` back to the UI.
-    }
-  });
+// Load model, storing the promise that is returned from the pipeline function.
+// Doing it this way will load the model in the background as soon as the worker is created.
+// To actually use the model, you must call `await modelPromise` to get the actual classifier.
+const modelPromise = pipeline(task, model, {
+  progress_callback: (data: any) => {
+    console.log("got progress_callback", data)
+    // If you would like to add a progress bar for model loading,
+    // you can send `data` back to the UI.
+  }
+});
 
 
-  // Listen for messages from the UI, process it, and send the result back.
-  chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+// Listen for messages from the UI, process it, and send the result back.
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
-    // Run model prediction asynchronously
-    (async function () {
+  // Run model prediction asynchronously
+  (async function () {
+    if (message.name === 'zero-shot-classification') {
       console.log("got messaghes", message)
       let model = await modelPromise;     // 1. Load model if not already loaded
-      let result = await model(message.data.text);  // 2. Run model prediction
+      let result = await model(message.data.text, ['nothing', 'tab']);  // 2. Run model prediction
       console.log("result:", result)
       sendResponse(result);               // 3. Send response back to UI
-    })();
-    console.log("!!!")
-    // return true to indicate we will send a response asynchronously
-    // see https://stackoverflow.com/a/46628145 for more information
-    return true;
-  });
+    }
+  })();
+  console.log("!!!")
+  // return true to indicate we will send a response asynchronously
+  // see https://stackoverflow.com/a/46628145 for more information
+  return true;
+});
 // }
 
 // @ts-ignore
