@@ -8,7 +8,7 @@ import overrideLogs from "src/utils/overrideConsole"
 
 export const useLogsStore = defineStore('logs', () => {
 
-  overrideLogs()
+  //overrideLogs()
 
   const logs = ref<Array<object>>([])
   const errors = ref<Array<object>>([])

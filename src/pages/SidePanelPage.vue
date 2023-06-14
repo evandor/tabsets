@@ -178,7 +178,10 @@
 
           <div class="row q-ma-none q-pa-none" v-if="tabsStore.getCurrentTabset">
             <div class="col-12 q-ma-none q-pa-none q-pt-lg">
-              *{{ useLogsStore().errors }}*
+
+              <q-btn label="send" @click="sendMessage()"></q-btn>
+
+
               <SidePanelDynamicTabset v-if="tabsStore.getCurrentTabset?.type === TabsetType.DYNAMIC"
                                       :tabset="tabsStore.getCurrentTabset"/>
               <PanelTabList v-else
@@ -283,7 +286,7 @@ import JsUtils from "src/utils/JsUtils";
 import {ToggleSortingCommand} from "src/domain/tabsets/ToggleSorting";
 import {useLogsStore} from "stores/logsStore";
 
-const {inBexMode, sanitize} = useUtils()
+const {inBexMode, sanitize, sendMsg} = useUtils()
 
 const $q = useQuasar()
 const router = useRouter()
@@ -603,6 +606,12 @@ const toggleListDetailLevel = () => {
     default:
       useUiStore().setListDetailLevel(ListDetailLevel.LARGE)
   }
+}
+
+const sendMessage = () => {
+  const data = {text: "tabset is cool"}
+  console.log("about to send message...", data)
+  sendMsg('yeah', data)
 }
 
 
