@@ -178,7 +178,6 @@
 
           <div class="row q-ma-none q-pa-none" v-if="tabsStore.getCurrentTabset">
             <div class="col-12 q-ma-none q-pa-none q-pt-lg">
-              *{{ useLogsStore().errors }}*
               <SidePanelDynamicTabset v-if="tabsStore.getCurrentTabset?.type === TabsetType.DYNAMIC"
                                       :tabset="tabsStore.getCurrentTabset"/>
               <PanelTabList v-else
@@ -300,6 +299,7 @@ const currentChromeTab = ref<chrome.tabs.Tab>(null as unknown as chrome.tabs.Tab
 const searching = ref(false)
 const existingSession = ref(false)
 const orderDesc = ref(false)
+const logs = ref<object[]>([])
 
 const splitterModel = ref(160)
 const selectedTab = ref<Tab | undefined>(undefined)
@@ -319,6 +319,10 @@ watchEffect(() => {
 
 watchEffect(() => {
   existingSession.value = _.filter([...tabsStore.tabsets.values()], (ts: Tabset) => ts.type === TabsetType.SESSION).length > 0
+})
+
+watchEffect(() => {
+  logs.value = useLogsStore().logs
 })
 
 if (inBexMode()) {
