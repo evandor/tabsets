@@ -25,7 +25,8 @@ env.backends.onnx.wasm.numThreads = 1;
 // const model = 'Xenova/distilbert-base-uncased-finetuned-sst-2-english';
 
 const task = 'zero-shot-classification';
-const model = 'Xenova/bart-large-mnli';
+//const model = 'Xenova/bart-large-mnli';
+const model = 'Xenova/finbert';
 
 // Load model, storing the promise that is returned from the pipeline function.
 // Doing it this way will load the model in the background as soon as the worker is created.
@@ -47,7 +48,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (message.name === 'zero-shot-classification') {
       console.log("got messaghes", message)
       let model = await modelPromise;     // 1. Load model if not already loaded
-      let result = await model(message.data.text, ['nothing', 'tab']);  // 2. Run model prediction
+      let result = await model(message.data.text, message.data.candiates);  // 2. Run model prediction
       console.log("result:", result)
       sendResponse(result);               // 3. Send response back to UI
     }

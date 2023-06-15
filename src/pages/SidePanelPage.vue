@@ -227,6 +227,8 @@
           <div class="col-2">
             <q-btn :disable="alreadyInTabset()" :label="alreadyInTabset() ? 'saved' :'save'" color="primary" flat
                    size="10px" @click="saveFromPanel()"></q-btn>
+            <br>
+            <q-btn :label="c.candidateName" v-for="c in tabsetCandidates()"/>
           </div>
         </div>
 
@@ -285,6 +287,7 @@ import {StopSessionCommand} from "src/domain/commands/StopSessionCommand";
 import JsUtils from "src/utils/JsUtils";
 import {ToggleSortingCommand} from "src/domain/tabsets/ToggleSorting";
 import {useLogsStore} from "stores/logsStore";
+import TabsetService from "src/services/TabsetService";
 
 const {inBexMode, sanitize, sendMsg} = useUtils()
 
@@ -475,6 +478,15 @@ const alreadyInTabset = () => {
   return false
 }
 
+const tabsetCandidates = async ():Promise<[]> => {
+  if (currentChromeTab.value?.url) {
+    const c = await TabsetService.getContentForUrl(currentChromeTab.value.url)
+    console.log("found content for ", c, c['tabsetCandidates' as keyof object] )
+    return c ? (c['tabsetCandidates' as keyof object] || []) : []
+  }
+  return []
+}
+
 const setFilter = (newValue: string) => {
   console.log("filter", newValue)
   const useValue = newValue && newValue.trim().length > 0 ? newValue.trim() : undefined
@@ -609,7 +621,7 @@ const toggleListDetailLevel = () => {
 }
 
 const sendMessage = () => {
-  const data = {text: "tabset is cool"}
+  const data = {text: "tabset is cool", candidates: ['cool', 'tab']}
   console.log("about to send message...", data)
   sendMsg('zero-shot-classification', data)
 }
