@@ -1,6 +1,7 @@
 import {defineStore} from 'pinia';
 import {ref} from "vue";
 import overrideLogs from "src/utils/overrideConsole"
+
 /**
  * a pinia store for (error) logs.
  *
@@ -14,16 +15,16 @@ export const useLogsStore = defineStore('logs', () => {
   const errors = ref<Array<object>>([])
   const warnings = ref<Array<object>>([])
 
-  function appendLog(data:object) {
+  function appendLog(data: object) {
     logs.value.push(data)
   }
 
-  function appendError(data:object) {
-    errors.value.push(data)
+  function appendWarning(data: object) {
+    warnings.value.push(data)
   }
 
-  function appendWarning(data:object) {
-    warnings.value.push(data)
+  function appendError(data: object) {
+    errors.value.push(data)
   }
 
   return {

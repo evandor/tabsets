@@ -314,6 +314,7 @@ const currentChromeTab = ref<chrome.tabs.Tab>(null as unknown as chrome.tabs.Tab
 const searching = ref(false)
 const existingSession = ref(false)
 const orderDesc = ref(false)
+const logs = ref<object[]>([])
 const tabsetCandidates = ref<object[]>([])
 const progress = ref<number | undefined>(undefined)
 const progressLabel = ref<string | undefined>(undefined)
@@ -340,6 +341,10 @@ watchEffect(() => {
 
 watchEffect(() => {
   existingSession.value = _.filter([...tabsStore.tabsets.values()], (ts: Tabset) => ts.type === TabsetType.SESSION).length > 0
+})
+
+watchEffect(() => {
+  logs.value = useLogsStore().logs
 })
 
 if (inBexMode()) {
@@ -653,12 +658,6 @@ const toggleListDetailLevel = () => {
     default:
       useUiStore().setListDetailLevel(ListDetailLevel.LARGE)
   }
-}
-
-const sendMessage = () => {
-  const data = {text: "tabset is cool", candidates: ['cool', 'tab']}
-  console.log("about to send message...", data)
-  sendMsg('zero-shot-classification', data)
 }
 
 
