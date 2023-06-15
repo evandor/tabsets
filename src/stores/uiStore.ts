@@ -110,6 +110,9 @@ export const useUiStore = defineStore('ui', () => {
   // system management
   const dbReady = ref<boolean>(false)
 
+  const progress = ref<number | undefined>(undefined)
+  const progressLabel = ref<string | undefined>(undefined)
+
   watch(rightDrawer.value, (val: Object) => {
     LocalStorage.set("ui.rightDrawer", val)
   }, {deep: true})
@@ -336,6 +339,8 @@ export const useUiStore = defineStore('ui', () => {
     sidePanel,
     sidePanelSetActiveView,
     sidePanelIsActive,
-    toggleLeftDrawer
+    toggleLeftDrawer,
+    progress,
+    progressLabel
   }
 })

@@ -302,8 +302,12 @@ class ChromeListeners {
       this.handleMessageWebsiteQuote(request, sender, sendResponse)
     } else if (request.msg === 'websiteImg') {
       this.handleMessageWebsiteImage(request, sender, sendResponse)
+    } else if (request.name === 'progress-indicator') { // TODO name vs. msg!
+      // ignore here
+      return true
     } else {
-      console.log("got unknown message", request.msg)
+      console.log("got unknown message", request)
+      return true
     }
     return true;
   }

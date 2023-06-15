@@ -8,7 +8,6 @@ import {useSearchStore} from "src/stores/searchStore";
 import ChromeApi from "src/services/ChromeApi";
 import {TabPredicate} from "src/domain/Types";
 import {Tabset, TabsetStatus, TabsetType} from "src/models/Tabset";
-import {useNotificationsStore} from "src/stores/notificationsStore";
 import {MetaLink} from "src/models/MetaLink";
 import {useDB} from "src/services/usePersistenceService";
 import {SpecialTabsetIdent} from "src/domain/tabsets/CreateSpecialTabset";
@@ -18,6 +17,8 @@ import {useSettingsStore} from "src/stores/settingsStore"
 import {Space} from "src/models/Space";
 import {useSpacesStore} from "src/stores/spacesStore";
 import {useUtils} from "src/services/Utils";
+import {usePermissionsStore} from "stores/permissionsStore";
+import {FeatureIdent} from "src/models/AppFeature";
 
 const {db} = useDB()
 const {sendMsg} = useUtils()
@@ -287,12 +288,12 @@ export function useTabsetService() {
     })
 
     // try to apply AI logic
-    if (metas['description' as keyof object]) {
+    if (metas['description' as keyof object] && usePermissionsStore().hasFeature(FeatureIdent.AI_MODULE)) {
       const data = {
         text: metas['description' as keyof object],
-        candidates: _.map(candidates, (c:any) => c.name)
+        candidates: _.map(candidates, (c: any) => c.name)
       }
-      console.log("about to apply KI logic...", data)
+      console.log("about to apply KI logic on meta description...", data)
       //sendMsg('zero-shot-classification', data)
 
       chrome.runtime.sendMessage({
@@ -385,14 +386,16 @@ export function useTabsetService() {
                 console.log("saved tabset", tabset._id, tabset._rev)
                 //tabset._rev = res._rev
 
-                // try to apply AI logic
-                if (metas['description' as keyof object]) {
-                  const data = {
-                    text: metas['description' as keyof object],
-                    candidates: _.map([...useTabsStore().tabsets.values()], (ts: Tabset) => ts.name)
+                if (usePermissionsStore().hasFeature(FeatureIdent.AI_MODULE)) {
+                  // try to apply AI logic
+                  if (metas['description' as keyof object]) {
+                    const data = {
+                      text: metas['description' as keyof object],
+                      candidates: _.map([...useTabsStore().tabsets.values()], (ts: Tabset) => ts.name)
+                    }
+                    console.log("about to apply KI logic...", data)
+                    sendMsg('zero-shot-classification', data)
                   }
-                  console.log("about to apply KI logic...", data)
-                  sendMsg('zero-shot-classification', data)
                 }
 
               }))

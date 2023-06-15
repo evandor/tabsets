@@ -1,64 +1,82 @@
 import {bexBackground} from 'quasar/wrappers';
 
-function openMyPage() {
-  console.log("injecting");
-  // @ts-ignore
-  browser.tabs.create({
-    "url": "/www/index.html#/sidepanel"
-  });
-}
+// function openMyPage() {
+//   console.log("injecting");
+//   // @ts-ignore
+//   browser.tabs.create({
+//     "url": "/www/index.html#/sidepanel"
+//   });
+// }
 
-// if (typeof ServiceWorkerGlobalScope !== 'undefined' && self instanceof ServiceWorkerGlobalScope) {
-// Load the library
-const {pipeline, env} = require('@xenova/transformers');
+let modelPromise: any = null
 
-console.log("here!!!")
+function loadAIModule() {
+  const {pipeline, env} = require('@xenova/transformers');
+
+  console.log("initializing transformers....")
 
 // Set environment variables to only use local models.
-env.useBrowserCache = false;
-env.remoteModels = false;
+  env.useBrowserCache = false;
+  env.remoteModels = false;
 //env.localModelPath = chrome.runtime.getURL('models/')
-env.backends.onnx.wasm.wasmPaths = chrome.runtime.getURL('www/wasm/')
-env.backends.onnx.wasm.numThreads = 1;
+  env.backends.onnx.wasm.wasmPaths = chrome.runtime.getURL('www/wasm/')
+  env.backends.onnx.wasm.numThreads = 1;
 
 // const task = 'text-classification';
 // const model = 'Xenova/distilbert-base-uncased-finetuned-sst-2-english';
 
-const task = 'zero-shot-classification';
+  const task = 'zero-shot-classification';
 //const model = 'Xenova/bart-large-mnli';
-const model = 'Xenova/finbert';
+  const model = 'Xenova/finbert';
 
 // Load model, storing the promise that is returned from the pipeline function.
 // Doing it this way will load the model in the background as soon as the worker is created.
 // To actually use the model, you must call `await modelPromise` to get the actual classifier.
-const modelPromise = pipeline(task, model, {
-  progress_callback: (data: any) => {
-    console.log("got progress_callback", data)
-    // If you would like to add a progress bar for model loading,
-    // you can send `data` back to the UI.
-  }
-});
-
+  modelPromise = pipeline(task, model, {
+    progress_callback: (data: any) => {
+      if (data.status !== 'progress') {
+        console.log("got progress_callback", "*" + data.status + "*")
+      }
+      // If you would like to add a progress bar for model loading,
+      // you can send `data` back to the UI.
+      const msg = {
+        "name": 'progress-indicator',
+        "percent": data.progress,
+        status: data.status,
+        "label": "Loading AI Module..."
+      }
+      //console.log("sending", msg)
+      //chrome.runtime.sendMessage(msg)
+      chrome.runtime.sendMessage(msg, (callback) => {
+        if (chrome.runtime.lastError) { /* ignore */
+          //console.log("hier!!!", chrome.runtime.lastError)
+        } else {
+          console.log("cb", callback)
+        }
+      })
+    }
+  });
+}
 
 // Listen for messages from the UI, process it, and send the result back.
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
   // Run model prediction asynchronously
   (async function () {
-    if (message.name === 'zero-shot-classification') {
+    if (message.name === 'init-ai-module') {
+      loadAIModule()
+    } else if (message.name === 'zero-shot-classification') {
       console.log("got messaghes", message)
-      let model = await modelPromise;     // 1. Load model if not already loaded
-      let result = await model(message.data.text, message.data.candiates);  // 2. Run model prediction
+      let model = await modelPromise;
+      let result = await model(message.data.text, message.data.candiates);
       console.log("result:", result)
-      sendResponse(result);               // 3. Send response back to UI
+      sendResponse(result);
     }
   })();
-  console.log("!!!")
   // return true to indicate we will send a response asynchronously
-  // see https://stackoverflow.com/a/46628145 for more information
+  // see https://stackoverflow.com/a/46628145
   return true;
 });
-// }
 
 // @ts-ignore
 if (chrome.sidePanel && chrome.sidePanel.setPanelBehavior) {
@@ -89,7 +107,6 @@ chrome.runtime.onInstalled.addListener((details) => {
     // @ts-ignore
     //browser.browserAction.onClicked.addListener(openMyPage);
   }
-
 });
 
 chrome.runtime.onStartup.addListener(() => {

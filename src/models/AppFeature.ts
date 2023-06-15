@@ -26,7 +26,8 @@ export enum FeatureIdent {
   TAGS = "TAGS",
   SIDE_PANEL = "SIDE_PANEL",
   WEBSITE_CLIP = "WEBSITE_CLIP",
-  STANDALONE_APP = "STANDALONE_APP"
+  STANDALONE_APP = "STANDALONE_APP",
+  AI_MODULE = "AI_MODULE"
 }
 
 export enum FeatureType {

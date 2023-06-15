@@ -134,6 +134,13 @@ export const usePermissionsStore = defineStore('permissions', () => {
         if (FeatureIdent.BACKUP.toLowerCase() === feature) {
           //useSuggestionsStore().removeSuggestion(StaticSuggestionIdent.TRY_TAB_DETAILS_FEATURE)
           useCommandExecutor().executeFromUi(new CreateSpecialTabsetCommand(SpecialTabsetIdent.BACKUP, TabsetType.SPECIAL))
+        } else if (FeatureIdent.AI_MODULE.toLowerCase() === feature) {
+          chrome.runtime.sendMessage({name: 'init-ai-module'},
+            (callback: any) => {
+            if (chrome.runtime.lastError) {
+              console.warn("got error", chrome.runtime.lastError)
+            }
+          })
         } else if (FeatureIdent.IGNORE.toLowerCase() === feature) {
           //useSuggestionsStore().removeSuggestion(StaticSuggestionIdent.TRY_TAB_DETAILS_FEATURE)
           useCommandExecutor().executeFromUi(new CreateSpecialTabsetCommand(SpecialTabsetIdent.IGNORE, TabsetType.SPECIAL))

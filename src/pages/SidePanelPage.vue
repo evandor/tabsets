@@ -42,6 +42,7 @@
                                          :fromPanel="true"/>
                 </div>
                 <div class="col-4 text-right">
+
                   <q-btn v-if="tabsStore.tabsets.size > 1"
                          icon="search"
                          flat
@@ -81,7 +82,14 @@
           <!-- second toolbar line -->
           <div class="row q-ma-none q-pa-none">
             <div class="col-6" style="border-bottom: 1px dotted lightgray">
-              <q-input borderless v-if="usePermissionsStore().hasFeature(FeatureIdent.NOTES)"
+              <template v-if="progress">
+                <q-linear-progress size="20px" :value="progress" color="primary">
+                  <div class="absolute-full flex flex-center">
+                    <q-badge color="white" text-color="accent" :label="progressLabel" />
+                  </div>
+                </q-linear-progress>
+              </template>
+              <q-input borderless v-if="!progress && usePermissionsStore().hasFeature(FeatureIdent.NOTES)"
                        class="q-ma-xs"
                        style="height:20px;border: 1px dotted lightgray; border-radius: 3px;" v-model="dragTarget"/>
             </div>
@@ -179,7 +187,7 @@
           <div class="row q-ma-none q-pa-none" v-if="tabsStore.getCurrentTabset">
             <div class="col-12 q-ma-none q-pa-none q-pt-lg">
 
-              <q-btn label="send" @click="sendMessage()"></q-btn>
+              <!--              <q-btn label="send" @click="sendMessage()"></q-btn>-->
 
 
               <SidePanelDynamicTabset v-if="tabsStore.getCurrentTabset?.type === TabsetType.DYNAMIC"
@@ -228,7 +236,7 @@
             <q-btn :disable="alreadyInTabset()" :label="alreadyInTabset() ? 'saved' :'save'" color="primary" flat
                    size="10px" @click="saveFromPanel()"></q-btn>
             <br>
-            <q-btn :label="c.candidateName" v-for="c in tabsetCandidates()"/>
+            <q-btn :label="c.candidateName" v-for="c in tabsetCandidates" color="primary" flat size="10px"/>
           </div>
         </div>
 
@@ -286,7 +294,6 @@ import NewSessionDialog from "components/dialogues/NewSessionDialog.vue";
 import {StopSessionCommand} from "src/domain/commands/StopSessionCommand";
 import JsUtils from "src/utils/JsUtils";
 import {ToggleSortingCommand} from "src/domain/tabsets/ToggleSorting";
-import {useLogsStore} from "stores/logsStore";
 import TabsetService from "src/services/TabsetService";
 
 const {inBexMode, sanitize, sendMsg} = useUtils()
@@ -295,6 +302,7 @@ const $q = useQuasar()
 const router = useRouter()
 const tabsStore = useTabsStore()
 const spacesStore = useSpacesStore()
+const uiStore = useUiStore()
 const show = ref(false)
 
 const currentChromeTabs = ref<chrome.tabs.Tab[]>([])
@@ -306,6 +314,9 @@ const currentChromeTab = ref<chrome.tabs.Tab>(null as unknown as chrome.tabs.Tab
 const searching = ref(false)
 const existingSession = ref(false)
 const orderDesc = ref(false)
+const tabsetCandidates = ref<object[]>([])
+const progress = ref<number | undefined>(undefined)
+const progressLabel = ref<string | undefined>(undefined)
 
 const splitterModel = ref(160)
 const selectedTab = ref<Tab | undefined>(undefined)
@@ -316,7 +327,6 @@ console.log("adding listener")
 const chromeVersion = (/Chrome\/([0-9]+)/.exec(navigator.userAgent) || [, 0])[1];
 
 watchEffect(() => {
-  //console.log("watching", useUiStore().getSelectedTab)
   selectedTab.value = useUiStore().getSelectedTab
   if (selectedTab.value) {
     currentChromeTab.value = null as unknown as chrome.tabs.Tab
@@ -324,28 +334,38 @@ watchEffect(() => {
 })
 
 watchEffect(() => {
+  progress.value = (uiStore.progress || 0.0) / 100.0
+  progressLabel.value = uiStore.progressLabel + " " + Math.round(100 * progress.value) + "%"
+})
+
+watchEffect(() => {
   existingSession.value = _.filter([...tabsStore.tabsets.values()], (ts: Tabset) => ts.type === TabsetType.SESSION).length > 0
 })
 
 if (inBexMode()) {
-  chrome.runtime.onMessage.addListener(({name, data}) => {
-    console.log("got message", name, data)
-    if (name === 'current-tabset-id-change') {
-      const tsId = data.tabsetId
+  //chrome.runtime.onMessage.addListener(({name, data}) => {
+  chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    if (message.name === 'current-tabset-id-change') {
+      console.log(">>>>>", message)
+      const tsId = message.data.tabsetId
       console.log("hier", useTabsStore().getCurrentTabset, tsId)
       useTabsStore().selectCurrentTabset(tsId)
-    } else if (name === 'feature-activated' || name === "feature-deactivated") {
-      console.log("message data", data)
+    } else if (message.name === 'feature-activated' || message.name === "feature-deactivated") {
+      console.log(">>>>>", message)
+      console.log("message data", message.data)
       usePermissionsStore().initialize()
-    } else if (name === "tabsets-imported") {
+    } else if (message.name === "tabsets-imported") {
+      console.log(">>>>>", message)
       useSpacesStore().reload()
       useTabsetService().init()
-    } else if (name === "tab-being-dragged") {
-      useUiStore().draggingTab(data.tabId, null as unknown as any)
-    } else if (name === "tab-changed") {
-      const tabset = useTabsetService().getTabset(data.tabsetId) as Tabset
+    } else if (message.name === "tab-being-dragged") {
+      console.log(">>>>>", message)
+      useUiStore().draggingTab(message.data.tabId, null as unknown as any)
+    } else if (message.name === "tab-changed") {
+      console.log(">>>>>", message)
+      const tabset = useTabsetService().getTabset(message.data.tabsetId) as Tabset
       // replace tab (seems necessary !?) TODO
-      tabset.tabs = _.map(tabset.tabs, (t: Tab) => (t.id === data.tab.id) ? data.tab : t)
+      tabset.tabs = _.map(tabset.tabs, (t: Tab) => (t.id === message.data.tab.id) ? message.data.tab : t)
       useTabsetService().saveTabset(tabset)
         .then((res) => {
           console.log("saved tabset", tabset)
@@ -353,6 +373,23 @@ if (inBexMode()) {
         .catch((err) => {
           console.error("got error " + err)
         })
+    } else if (message.name === "progress-indicator") {
+      //console.log(" > got message '" + message.name + "'", message)
+      if (message.percent) {
+        uiStore.progress = message.percent
+        uiStore.progressLabel = message.label
+      }
+      if (message.status === "done") {
+        uiStore.progress = undefined
+        uiStore.progressLabel = undefined
+      }
+      return true
+    } else if (message.name === "html2text") {
+      // ignore
+    } else if (message.name === "html2links") {
+      // ignore
+    } else {
+      console.log("got unmatched message", message)
     }
     return true
   })
@@ -386,6 +423,13 @@ watchEffect(() => {
     if (tabsetNameOptions.value.length > 0) {
       tabsetName.value = tabsetNameOptions.value[0]
     }
+  }
+})
+
+watchEffect(async () => {
+  if (currentChromeTab.value?.url) {
+    const c = await TabsetService.getContentForUrl(currentChromeTab.value.url)
+    tabsetCandidates.value = c ? (c['tabsetCandidates' as keyof object] || []) : []
   }
 })
 
@@ -476,15 +520,6 @@ const alreadyInTabset = () => {
     return useTabsetService().urlExistsInCurrentTabset(currentChromeTab.value.url)
   }
   return false
-}
-
-const tabsetCandidates = async ():Promise<[]> => {
-  if (currentChromeTab.value?.url) {
-    const c = await TabsetService.getContentForUrl(currentChromeTab.value.url)
-    console.log("found content for ", c, c['tabsetCandidates' as keyof object] )
-    return c ? (c['tabsetCandidates' as keyof object] || []) : []
-  }
-  return []
 }
 
 const setFilter = (newValue: string) => {
