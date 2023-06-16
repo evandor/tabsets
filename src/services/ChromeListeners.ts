@@ -37,6 +37,18 @@ function setCurrentTab() {
   });
 }
 
+function inIgnoredMessages(request: any) {
+  // TODO name vs. msg!
+  return request.name === 'progress-indicator' ||
+    request.name === 'current-tabset-id-change' ||
+    request.name === 'tab-being-dragged' ||
+    request.name === 'tab-changed' ||
+    request.name === 'feature-activated' ||
+    request.name === 'feature-deactivated' ||
+    request.name === 'tabsets-imported'
+
+}
+
 class ChromeListeners {
 
   inProgress = false;
@@ -196,7 +208,7 @@ class ChromeListeners {
     if (scripts.length > 0 && tab.id !== null) { // && !this.injectedScripts.get(chromeTab.id)) {
 
       chrome.tabs.get(tab.id, (chromeTab: chrome.tabs.Tab) => {
-        console.log("got tab", tab)
+       // console.log("got tab", tab)
         if (!tab.url?.startsWith("chrome")) {
           scripts.forEach((script: string) => {
             console.debug("executing scripts", tab.id, script)
@@ -287,6 +299,9 @@ class ChromeListeners {
 
   onMessage(request: any, sender: chrome.runtime.MessageSender, sendResponse: any) {
     //console.log("handling request", request.msg)
+    if (inIgnoredMessages(request)) {
+      return true
+    }
     if (request.msg === 'captureThumbnail') {
       const screenShotWindow = useWindowsStore().screenshotWindow
       this.handleCapture(sender, screenShotWindow, sendResponse)
@@ -302,12 +317,8 @@ class ChromeListeners {
       this.handleMessageWebsiteQuote(request, sender, sendResponse)
     } else if (request.msg === 'websiteImg') {
       this.handleMessageWebsiteImage(request, sender, sendResponse)
-    } else if (request.name === 'progress-indicator') { // TODO name vs. msg!
-      // ignore here
-      return true
     } else {
       console.log("got unknown message", request)
-      return true
     }
     return true;
   }

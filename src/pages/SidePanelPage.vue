@@ -1,7 +1,6 @@
 <template>
 
   <q-page>
-    <!--    <div class="fullimageBackground">-->
     <q-splitter class="window-height" style="position:absolute;left:0;right:0"
                 v-model="splitterModel"
                 separator-class="bg-grey-1"
@@ -9,6 +8,7 @@
                 unit="px"
                 reverse>
 
+      <!-- list of tabs -->
       <template v-slot:before>
 
         <!-- assuming here we have at least one tabset -->
@@ -85,7 +85,7 @@
               <template v-if="progress">
                 <q-linear-progress size="20px" :value="progress" color="primary">
                   <div class="absolute-full flex flex-center">
-                    <q-badge color="white" text-color="accent" :label="progressLabel" />
+                    <q-badge color="white" text-color="accent" :label="progressLabel"/>
                   </div>
                 </q-linear-progress>
               </template>
@@ -212,53 +212,12 @@
 
       </template>
 
+      <!-- selected tab or current tab from chrome -->
       <template v-slot:after>
-        <!-- selected tab or current tab from chrome -->
-        <div v-if="tabFromChromeTab() && tabsStore.getCurrentTabset && currentChromeTab.url !== 'chrome://newtab/'"
-             class="row q-ma-sm q-mt-lg"
-             :class="alreadyInTabset() ? 'bg-grey-1':'bg-yellow-1'"
-             style="border:1px solid gray;border-radius: 5px">
-
-          <div class="col-10">
-            <q-list>
-              <q-item
-                v-ripple
-                class="q-ma-none q-pa-sm">
-                <PanelTabListElementWidget
-                  header="Current Tab:"
-                  :tab="tabFromChromeTab()"
-                  :show-tabsets="true"
-                  :hideMenu="true"/>
-              </q-item>
-            </q-list>
-          </div>
-          <div class="col-2">
-            <q-btn :disable="alreadyInTabset()" :label="alreadyInTabset() ? 'saved' :'save'" color="primary" flat
-                   size="10px" @click="saveFromPanel()"></q-btn>
-            <br>
-            <q-btn :label="c.candidateName" v-for="c in tabsetCandidates" color="primary" flat size="10px"/>
-          </div>
-        </div>
-
-        <div v-else-if="selectedTab"
-             class="row q-ma-sm q-mt-lg"
-             :class="alreadyInTabset() ? 'bg-grey-1':'bg-yellow-1'"
-             style="border:1px solid gray;border-radius: 5px">
-
-          <div class="col-12">
-            <q-list>
-              <q-item
-                v-ripple
-                class="q-ma-none q-pa-xs">
-                <SidePanelTabListElementDetails :tab="selectedTab"/>
-              </q-item>
-            </q-list>
-          </div>
-        </div>
+        <SidePanelTabInfo/>
       </template>
 
     </q-splitter>
-    <!--    </div>-->
   </q-page>
 
 </template>
@@ -282,19 +241,18 @@ import NewTabsetDialog from "components/dialogues/NewTabsetDialog.vue";
 import {ListDetailLevel, useUiStore} from "src/stores/uiStore";
 import TabsetsSelectorWidget from "components/widgets/TabsetsSelectorWidget.vue";
 import PanelTabList from "components/layouts/PanelTabList.vue";
-import PanelTabListElementWidget from "components/widgets/PanelTabListElementWidget.vue";
 import {usePermissionsStore} from "src/stores/permissionsStore";
 import {FeatureIdent} from "src/models/AppFeature";
 import SearchWidget from "components/widgets/SearchWidget.vue";
 import {useSpacesStore} from "src/stores/spacesStore";
-import SidePanelTabListElementDetails from "components/widgets/SidePanelTabListElementDetails.vue";
 import SidePanelDynamicTabset from "components/layouts/sidepanel/SidePanelDynamicTabset.vue";
 import AddUrlDialog from "components/dialogues/AddUrlDialog.vue";
 import NewSessionDialog from "components/dialogues/NewSessionDialog.vue";
 import {StopSessionCommand} from "src/domain/commands/StopSessionCommand";
 import JsUtils from "src/utils/JsUtils";
 import {ToggleSortingCommand} from "src/domain/tabsets/ToggleSorting";
-import TabsetService from "src/services/TabsetService";
+import {useLogsStore} from "stores/logsStore";
+import SidePanelTabInfo from "pages/sidepanel/SidePanelTabInfo.vue";
 
 const {inBexMode, sanitize, sendMsg} = useUtils()
 
@@ -315,7 +273,6 @@ const searching = ref(false)
 const existingSession = ref(false)
 const orderDesc = ref(false)
 const logs = ref<object[]>([])
-const tabsetCandidates = ref<object[]>([])
 const progress = ref<number | undefined>(undefined)
 const progressLabel = ref<string | undefined>(undefined)
 
@@ -351,23 +308,17 @@ if (inBexMode()) {
   //chrome.runtime.onMessage.addListener(({name, data}) => {
   chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (message.name === 'current-tabset-id-change') {
-      console.log(">>>>>", message)
       const tsId = message.data.tabsetId
-      console.log("hier", useTabsStore().getCurrentTabset, tsId)
       useTabsStore().selectCurrentTabset(tsId)
     } else if (message.name === 'feature-activated' || message.name === "feature-deactivated") {
-      console.log(">>>>>", message)
-      console.log("message data", message.data)
       usePermissionsStore().initialize()
     } else if (message.name === "tabsets-imported") {
-      console.log(">>>>>", message)
       useSpacesStore().reload()
       useTabsetService().init()
+      // TODO reload
     } else if (message.name === "tab-being-dragged") {
-      console.log(">>>>>", message)
       useUiStore().draggingTab(message.data.tabId, null as unknown as any)
     } else if (message.name === "tab-changed") {
-      console.log(">>>>>", message)
       const tabset = useTabsetService().getTabset(message.data.tabsetId) as Tabset
       // replace tab (seems necessary !?) TODO
       tabset.tabs = _.map(tabset.tabs, (t: Tab) => (t.id === message.data.tab.id) ? message.data.tab : t)
@@ -389,9 +340,9 @@ if (inBexMode()) {
         uiStore.progressLabel = undefined
       }
       return true
-    } else if (message.name === "html2text") {
+    } else if (message.msg === "html2text") {
       // ignore
-    } else if (message.name === "html2links") {
+    } else if (message.msg === "html2links") {
       // ignore
     } else {
       console.log("got unmatched message", message)
@@ -401,12 +352,6 @@ if (inBexMode()) {
 } else {
   useRouter().push("/start")
 }
-
-/*watchEffect(() => {
-  if (currentChromeTabs.value[0]?.url) {
-    currentTabs.value = useTabsStore().tabsForUrl(currentChromeTabs.value[0].url) || []
-  }
-})*/
 
 watchEffect(() => {
   openTabs.value = useTabsStore().tabs
@@ -428,13 +373,6 @@ watchEffect(() => {
     if (tabsetNameOptions.value.length > 0) {
       tabsetName.value = tabsetNameOptions.value[0]
     }
-  }
-})
-
-watchEffect(async () => {
-  if (currentChromeTab.value?.url) {
-    const c = await TabsetService.getContentForUrl(currentChromeTab.value.url)
-    tabsetCandidates.value = c ? (c['tabsetCandidates' as keyof object] || []) : []
   }
 })
 
@@ -507,25 +445,6 @@ if (inBexMode()) {
   })
 }
 
-const saveFromPanel = () => {
-  const currentChromeTab = useTabsStore().currentChromeTab
-  console.log("saving from panel...", currentChromeTab)
-  if (currentChromeTab && tabsStore.getCurrentTabset) {
-    const tabsetId = tabsStore.getCurrentTabset.id // tabsetName.value['value' as keyof object]
-    // useTabsetService().addToTabsetId(tabset['value' as keyof object], new Tab(uid(), currentChromeTab))
-    const useTS = useTabsetService().getTabset(tabsetId)
-    if (useTS) {
-      useCommandExecutor().executeFromUi(new AddTabToTabsetCommand(new Tab(uid(), currentChromeTab), useTS))
-    }
-  }
-}
-
-const alreadyInTabset = () => {
-  if (currentChromeTab.value?.url && tabsStore.getCurrentTabset) {
-    return useTabsetService().urlExistsInCurrentTabset(currentChromeTab.value.url)
-  }
-  return false
-}
 
 const setFilter = (newValue: string) => {
   console.log("filter", newValue)
@@ -557,10 +476,6 @@ const addFirstTabset = () => $q.dialog({
     fromPanel: true
   }
 })
-
-const tabFromChromeTab = () => currentChromeTab.value ? new Tab(uid(), currentChromeTab.value) : undefined
-
-const showTabsets = () => router.push("/sidepanel/spaces")
 
 const toggleSearch = () => searching.value = !searching.value
 

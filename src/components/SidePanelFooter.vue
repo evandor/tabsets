@@ -131,10 +131,6 @@ watchEffect(() => {
 })
 
 watchEffect(() => {
-  console.log("change in current tabset id", useTabsStore().currentTabsetId)
-})
-
-watchEffect(() => {
   currentChromeTab.value = useTabsStore().currentChromeTab
 })
 

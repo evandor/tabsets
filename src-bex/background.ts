@@ -66,7 +66,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (message.name === 'init-ai-module') {
       loadAIModule()
     } else if (message.name === 'zero-shot-classification') {
-      console.log("got messaghes", message)
+      console.log("got zero-shot-classification message", message)
       let model = await modelPromise;
       let result = await model(message.data.text, message.data.candiates);
       console.log("result:", result)

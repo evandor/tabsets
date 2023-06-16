@@ -283,9 +283,12 @@ export function useTabsetService() {
     }
     const title = tab.title || ''
     const tabsetIds: string[] = tabsetsFor(tab.url)
-    const candidates = _.map([...useTabsStore().tabsets.values()], (ts: Tabset) => {
-      return {"name": ts.name, "id": ts.id}
-    })
+    const candidates = _.map(
+      _.filter([...useTabsStore().tabsets.values()], (ts: Tabset) =>
+        ts.type === TabsetType.DEFAULT || ts.type === TabsetType.SESSION),
+      (ts: Tabset) => {
+        return {"name": ts.name, "id": ts.id}
+      })
 
     // try to apply AI logic
     if (metas['description' as keyof object] && usePermissionsStore().hasFeature(FeatureIdent.AI_MODULE)) {
@@ -383,7 +386,7 @@ export function useTabsetService() {
             savePromises.push(saveTabset(tabset)
               .then((res) => {
                 // @ts-ignore
-                console.log("saved tabset", tabset._id, tabset._rev)
+                console.log(`saved tabset with _id: ${tabset._id}, _rev: ${tabset._rev}`)
                 //tabset._rev = res._rev
 
                 if (usePermissionsStore().hasFeature(FeatureIdent.AI_MODULE)) {
