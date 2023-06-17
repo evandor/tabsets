@@ -39,11 +39,11 @@ export class CreateTabsetCommand implements Command<object> {
           }
           return res
         })
-      let doneMsg = 'Tabset ' + this.tabsetName + ' created successfully'
+      let doneMsg = 'Tabset \'' + this.tabsetName + '\' created successfully'
       if (result['replaced' as keyof object] && result['merged' as keyof object]) {
-        doneMsg = 'Existing Tabset ' + this.tabsetName + ' can be updated now'
+        doneMsg = 'Existing Tabset \'' + this.tabsetName + '\' can be updated now'
       } else if (result['replaced' as keyof object]) {
-        doneMsg = 'Existing Tabset ' + this.tabsetName + ' was overwritten'
+        doneMsg = 'Existing Tabset \' ' + this.tabsetName + '\' was overwritten'
       }
       const executionResult = new ExecutionResult(result, doneMsg, new UndoCreateTabsetCommand(result['tabset' as keyof object]['id']))
       return Promise.resolve(executionResult)

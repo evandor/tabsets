@@ -1,13 +1,5 @@
 import {bexBackground} from 'quasar/wrappers';
 
-// function openMyPage() {
-//   console.log("injecting");
-//   // @ts-ignore
-//   browser.tabs.create({
-//     "url": "/www/index.html#/sidepanel"
-//   });
-// }
-
 let modelPromise: any = null
 
 function loadAIModule() {
@@ -26,7 +18,7 @@ function loadAIModule() {
 // const model = 'Xenova/distilbert-base-uncased-finetuned-sst-2-english';
 
   const task = 'zero-shot-classification';
-//const model = 'Xenova/bart-large-mnli';
+  //const model = 'Xenova/bart-large-mnli';
   const model = 'Xenova/finbert';
 
 // Load model, storing the promise that is returned from the pipeline function.
@@ -35,7 +27,7 @@ function loadAIModule() {
   modelPromise = pipeline(task, model, {
     progress_callback: (data: any) => {
       if (data.status !== 'progress') {
-        console.log("got progress_callback", "*" + data.status + "*")
+        console.log("got progress_callback", data)
       }
       // If you would like to add a progress bar for model loading,
       // you can send `data` back to the UI.
@@ -43,7 +35,7 @@ function loadAIModule() {
         "name": 'progress-indicator',
         "percent": data.progress,
         status: data.status,
-        "label": "Loading AI Module..."
+        "label": "AI Module " + data.name
       }
       //console.log("sending", msg)
       //chrome.runtime.sendMessage(msg)
@@ -59,17 +51,22 @@ function loadAIModule() {
 }
 
 // Listen for messages from the UI, process it, and send the result back.
+console.log("adding listener for init-ai-module...")
+
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
   // Run model prediction asynchronously
   (async function () {
     if (message.name === 'init-ai-module') {
+      console.log("got message init-ai-module")
       loadAIModule()
+      sendResponse("ai module loaded")
     } else if (message.name === 'zero-shot-classification') {
-      console.log("got zero-shot-classification message", message)
+      console.log("got zero-shot-classification message", message, modelPromise)
       let model = await modelPromise;
       let result = await model(message.data.text, message.data.candiates);
       console.log("result:", result)
+      alert(JSON.stringify(result))
       sendResponse(result);
     }
   })();

@@ -45,7 +45,8 @@ function inIgnoredMessages(request: any) {
     request.name === 'tab-changed' ||
     request.name === 'feature-activated' ||
     request.name === 'feature-deactivated' ||
-    request.name === 'tabsets-imported'
+    request.name === 'tabsets-imported' ||
+    request.name === 'init-ai-module'
 
 }
 

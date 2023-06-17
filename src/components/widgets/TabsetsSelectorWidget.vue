@@ -39,6 +39,10 @@
         </template>
 
         <q-separator/>
+        <q-item clickable v-close-popup @click="openNewTabsetDialog()">
+          <q-item-section>Add new Tabset</q-item-section>
+        </q-item>
+        <q-separator/>
         <q-item v-if="tabsStore.currentTabsetName" clickable v-close-popup @click="openEditTabsetDialog()">
           <q-item-section>Edit Tabset Name</q-item-section>
         </q-item>

@@ -53,15 +53,15 @@
                     <q-tooltip class="tooltip">Search</q-tooltip>
                   </q-btn>
 
-                  <q-btn
-                    icon="o_add"
-                    flat
-                    class="q-ma-none q-pa-xs cursor-pointer"
-                    style="max-width:20px"
-                    size="11px"
-                    @click="openNewTabsetDialog()">
-                    <q-tooltip class="tooltip">Add new Tabset</q-tooltip>
-                  </q-btn>
+                  <!--                  <q-btn-->
+                  <!--                    icon="o_add"-->
+                  <!--                    flat-->
+                  <!--                    class="q-ma-none q-pa-xs cursor-pointer"-->
+                  <!--                    style="max-width:20px"-->
+                  <!--                    size="11px"-->
+                  <!--                    @click="openNewTabsetDialog()">-->
+                  <!--                    <q-tooltip class="tooltip">Add new Tabset</q-tooltip>-->
+                  <!--                  </q-btn>-->
 
                   <q-btn
                     v-if="tabsStore.tabsets.size > 1"
@@ -81,99 +81,109 @@
 
           <!-- second toolbar line -->
           <div class="row q-ma-none q-pa-none">
-            <div class="col-6" style="border-bottom: 1px dotted lightgray">
-              <template v-if="progress">
+            <!-- show progress or info messages if any -->
+            <template v-if="progress">
+              <div class="col-12" style="border-bottom: 1px dotted lightgray;border-left: 1px dotted lightgray">
                 <q-linear-progress size="20px" :value="progress" color="primary">
                   <div class="absolute-full flex flex-center">
                     <q-badge color="white" text-color="accent" :label="progressLabel"/>
                   </div>
                 </q-linear-progress>
-              </template>
-              <q-input borderless v-if="!progress && usePermissionsStore().hasFeature(FeatureIdent.NOTES)"
-                       class="q-ma-xs"
-                       style="height:20px;border: 1px dotted lightgray; border-radius: 3px;" v-model="dragTarget"/>
-            </div>
-            <div class="col-6 text-right" style="border-bottom: 1px dotted lightgray">
+                <q-input borderless v-if="!progress && usePermissionsStore().hasFeature(FeatureIdent.NOTES)"
+                         class="q-ma-xs"
+                         style="height:20px;border: 1px dotted lightgray; border-radius: 3px;" v-model="dragTarget"/>
+              </div>
+            </template>
+            <template v-else>
+              <div class="col-6" style="border-bottom: 1px dotted lightgray;border-left: 1px dotted lightgray">
+                <q-input borderless v-if="!progress && usePermissionsStore().hasFeature(FeatureIdent.NOTES)"
+                         class="q-ma-xs"
+                         style="height:20px;border: 1px dotted lightgray; border-radius: 3px;" v-model="dragTarget"/>
+              </div>
+              <div class="col-6 text-right"
+                   style="border-bottom: 1px dotted lightgray;border-right: 1px dotted lightgray">
 
 
-              <!--              v-if="tabsStore.currentTabsetId !== '' && tabsStore.getTabset(tabsStore.currentTabsetId) && tabsStore.getCurrentTabset?.tabs.length > 0 && $q.screen.gt.xs"-->
-              <q-btn
-                v-if="tabsStore.getCurrentTabset?.tabs.length > 7"
-                flat
-                class="q-ma-none q-pa-xs cursor-pointer"
-                style="width:20px;max-width:220px"
-                size="11px"
-                :text-color="useUiStore().tabsFilter ? 'accent' : 'primary'"
-                :disable="tabsStore.getCurrentTabset?.type === TabsetType.DYNAMIC"
-                :label="useUiStore().tabsFilter"
-                icon="o_filter_alt">
-                <q-popup-edit :model-value="useUiStore().tabsFilter" v-slot="scope"
-                              @update:model-value="val => setFilter(  val)">
-                  <q-input v-model="scope.value" dense autofocus counter @keyup.enter="scope.set"/>
-                </q-popup-edit>
-                <q-tooltip
-                  class="tooltip"
-                  :delay="200"
-                  anchor="center left" self="center right">
-                  Filter this tabset
-                </q-tooltip>
-              </q-btn>
+                <!--              v-if="tabsStore.currentTabsetId !== '' && tabsStore.getTabset(tabsStore.currentTabsetId) && tabsStore.getCurrentTabset?.tabs.length > 0 && $q.screen.gt.xs"-->
+                <q-btn
+                  v-if="tabsStore.getCurrentTabset?.tabs.length > 7"
+                  flat
+                  class="q-ma-none q-pa-xs cursor-pointer"
+                  style="width:20px;max-width:220px"
+                  size="11px"
+                  :text-color="useUiStore().tabsFilter ? 'accent' : 'primary'"
+                  :disable="tabsStore.getCurrentTabset?.type === TabsetType.DYNAMIC"
+                  :label="useUiStore().tabsFilter"
+                  icon="o_filter_alt">
+                  <q-popup-edit :model-value="useUiStore().tabsFilter" v-slot="scope"
+                                @update:model-value="val => setFilter(  val)">
+                    <q-input v-model="scope.value" dense autofocus counter @keyup.enter="scope.set"/>
+                  </q-popup-edit>
+                  <q-tooltip
+                    class="tooltip"
+                    :delay="200"
+                    anchor="center left" self="center right">
+                    Filter this tabset
+                  </q-tooltip>
+                </q-btn>
 
-              <q-btn v-if="showSorting()"
-                     flat
-                     size="10px"
-                     class="q-ma-none q-pa-xs cursor-pointer"
-                     style="max-width:20px"
-                     text-color="primary"
-                     @click="toggleSorting()"
-                     outline
-                     icon="o_sort">
-                <q-tooltip class="tooltip">Toggle through sorting</q-tooltip>
-              </q-btn>
+                <q-btn v-if="showSorting()"
+                       flat
+                       size="10px"
+                       class="q-ma-none q-pa-xs cursor-pointer"
+                       style="max-width:20px"
+                       text-color="primary"
+                       @click="toggleSorting()"
+                       outline
+                       icon="o_sort">
+                  <q-tooltip class="tooltip">Toggle through sorting</q-tooltip>
+                </q-btn>
 
-              <q-btn v-if="tabsStore.getCurrentTabset?.tabs.length > 0"
-                     :icon="getDetailLevelIcon()"
-                     flat
-                     size="10px"
-                     class="q-ma-none q-pa-xs cursor-pointer"
-                     style="max-width:20px"
-                     text-color="primary"
-                     @click="toggleListDetailLevel()">
-                <q-tooltip class="tooltip">Toggle the detail level for the tabs</q-tooltip>
-              </q-btn>
+                <q-btn v-if="tabsStore.getCurrentTabset?.tabs.length > 0"
+                       :icon="getDetailLevelIcon()"
+                       flat
+                       size="10px"
+                       class="q-ma-none q-pa-xs cursor-pointer"
+                       style="max-width:20px"
+                       text-color="primary"
+                       @click="toggleListDetailLevel()">
+                  <q-tooltip class="tooltip">Toggle the detail level for the tabs</q-tooltip>
+                </q-btn>
 
-              <q-btn v-if="usePermissionsStore().hasFeature(FeatureIdent.SESSIONS)"
-                     flat
-                     style="max-width:20px"
-                     size="10px"
-                     class="q-ma-none q-pa-xs cursor-pointer"
-                     :color="existingSession ? (tabsStore.getCurrentTabset?.type === TabsetType.SESSION ? 'red':'grey-5') :'primary'"
-                     :icon="existingSession ? 'o_stop_circle':'o_play_circle'"
-                     @click="toggleSessionState">
-                <q-tooltip class="tooltip" v-if="existingSession">Stop Session</q-tooltip>
-                <q-tooltip class="tooltip" v-else>Start new Session</q-tooltip>
-              </q-btn>
+                <q-btn v-if="usePermissionsStore().hasFeature(FeatureIdent.SESSIONS)"
+                       flat
+                       style="max-width:20px"
+                       size="10px"
+                       class="q-ma-none q-pa-xs cursor-pointer"
+                       :color="existingSession ? (tabsStore.getCurrentTabset?.type === TabsetType.SESSION ? 'red':'grey-5') :'primary'"
+                       :icon="existingSession ? 'o_stop_circle':'o_play_circle'"
+                       @click="toggleSessionState">
+                  <q-tooltip class="tooltip" v-if="existingSession">Stop Session</q-tooltip>
+                  <q-tooltip class="tooltip" v-else>Start new Session</q-tooltip>
+                </q-btn>
 
-              <q-btn v-if="usePermissionsStore().hasFeature(FeatureIdent.WEBSITE_CLIP) && webClipActive()"
-                     icon="filter_center_focus"
-                     flat
-                     class="q-ma-none q-pa-xs cursor-pointer"
-                     style="max-width:20px"
-                     size="10px"
-                     @click="createClip">
-                <q-tooltip class="tooltip">{{ createWebsiteClipTooltip() }}</q-tooltip>
-              </q-btn>
-              <q-btn v-if="usePermissionsStore().hasFeature(FeatureIdent.WEBSITE_CLIP) && !webClipActive()"
-                     icon="filter_center_focus"
-                     color="grey-5"
-                     flat
-                     class="q-ma-none q-pa-xs cursor-pointer"
-                     style="max-width:20px"
-                     size="10px">
-                <q-tooltip class="tooltip">cannot create web clip for this tab</q-tooltip>
-              </q-btn>
+                <q-btn v-if="usePermissionsStore().hasFeature(FeatureIdent.WEBSITE_CLIP) && webClipActive()"
+                       icon="filter_center_focus"
+                       flat
+                       class="q-ma-none q-pa-xs cursor-pointer"
+                       style="max-width:20px"
+                       size="10px"
+                       @click="createClip">
+                  <q-tooltip class="tooltip">{{ createWebsiteClipTooltip() }}</q-tooltip>
+                </q-btn>
+                <q-btn v-if="usePermissionsStore().hasFeature(FeatureIdent.WEBSITE_CLIP) && !webClipActive()"
+                       icon="filter_center_focus"
+                       color="grey-5"
+                       flat
+                       class="q-ma-none q-pa-xs cursor-pointer"
+                       style="max-width:20px"
+                       size="10px">
+                  <q-tooltip class="tooltip">cannot create web clip for this tab</q-tooltip>
+                </q-btn>
 
-            </div>
+              </div>
+
+            </template>
           </div>
 
           <div class="text-caption q-ma-md" v-if="tabsStore.getCurrentTabset?.tabs.length === 0">
@@ -339,10 +349,11 @@ if (inBexMode()) {
         uiStore.progress = undefined
         uiStore.progressLabel = undefined
       }
-      return true
     } else if (message.msg === "html2text") {
       // ignore
     } else if (message.msg === "html2links") {
+      // ignore
+    } else if (message.msg === "init-ai-module") {
       // ignore
     } else {
       console.log("got unmatched message", message)

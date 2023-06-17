@@ -53,11 +53,15 @@ usePermissionsStore().initialize()
   .then(() => {
     ChromeListeners.initListeners(false)
     ChromeBookmarkListeners.initListeners()
+    //console.log("checking ai permissions", usePermissionsStore().hasFeature(FeatureIdent.AI_MODULE))
     if (usePermissionsStore().hasFeature(FeatureIdent.AI_MODULE)) {
-      chrome.runtime.sendMessage({name: 'init-ai-module'},
+      console.log("sending init-ai-module message")
+      chrome.runtime.sendMessage({name: 'init-ai-module'}, // nobody listening yet??
         (callback: any) => {
           if (chrome.runtime.lastError) {
             console.warn("got error", chrome.runtime.lastError)
+          } else {
+            console.log("successfully send init-ai-module message")
           }
         })
     }
