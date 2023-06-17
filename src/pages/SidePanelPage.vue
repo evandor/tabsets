@@ -315,7 +315,7 @@ watchEffect(() => {
 })
 
 if (inBexMode()) {
-  //chrome.runtime.onMessage.addListener(({name, data}) => {
+  // seems we need to define these listeners here to get the matching messages reliably
   chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (message.name === 'current-tabset-id-change') {
       const tsId = message.data.tabsetId
