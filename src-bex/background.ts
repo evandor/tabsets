@@ -51,7 +51,7 @@ function loadAIModule() {
 }
 
 // Listen for messages from the UI, process it, and send the result back.
-console.log("adding listener for init-ai-module...")
+console.debug("adding listener for init-ai-module in background.js")
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
@@ -84,7 +84,7 @@ if (chrome.sidePanel && chrome.sidePanel.setPanelBehavior) {
 }
 
 chrome.runtime.onInstalled.addListener((details) => {
-  console.log("adding listener in background.ts", details)
+  console.debug("adding onInstalled listener in background.ts", details)
   // @ts-ignore
   if (chrome.action) {
     // @ts-ignore
@@ -107,7 +107,7 @@ chrome.runtime.onInstalled.addListener((details) => {
 });
 
 chrome.runtime.onStartup.addListener(() => {
-  console.log("onStartup: adding listener in background.ts")
+  console.log("adding onStartup listener in background.ts")
   // @ts-ignore
   if (chrome.action) {
     // @ts-ignore

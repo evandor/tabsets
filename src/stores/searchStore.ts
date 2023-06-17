@@ -215,7 +215,7 @@ export const useSearchStore = defineStore('search', () => {
       }
     )
 
-    console.log(`populated from tabsets with ${minimalIndex.length} entries`)
+    console.log(`populating search index from tabsets with ${minimalIndex.length} entries`)
     minimalIndex.forEach((doc: SearchDoc) => {
       const removed = fuse.value.remove((d) => {
         return d.url === doc.url
@@ -242,7 +242,7 @@ export const useSearchStore = defineStore('search', () => {
         }
       }
     )
-    console.log(`populated from bookmarks with ${indexFromBookmarks.length} entries`)
+    console.log(`populating search index from bookmarks with ${indexFromBookmarks.length} entries`)
     indexFromBookmarks.forEach((doc: SearchDoc) => fuse.value.add(doc))
   }
 
@@ -279,16 +279,10 @@ export const useSearchStore = defineStore('search', () => {
         countFiltered++
       }
     })
-    console.log(`populated from content with ${count} entries (${overwritten} of which overwritten), ${countFiltered} is/are filtered (not in any tab)`)
-    //useUiStore().setContentCount(count - countFiltered)
+    console.log(`populating search index from content with ${count} entries (${overwritten} of which overwritten), ${countFiltered} is/are filtered (not in any tab)`)
     stats.value.set("content.count", count)
     stats.value.set("content.overwritten", overwritten)
     stats.value.set("content.filtered", countFiltered)
-    // })
-
-    // await populateFromTabsets()
-    //
-    // await populateFromBookmarks()
 
   }
 

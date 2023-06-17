@@ -290,8 +290,6 @@ const splitterModel = ref(160)
 const selectedTab = ref<Tab | undefined>(undefined)
 const dragTarget = ref('')
 
-console.log("adding listener")
-
 const chromeVersion = (/Chrome\/([0-9]+)/.exec(navigator.userAgent) || [, 0])[1];
 
 watchEffect(() => {
