@@ -4,14 +4,14 @@
       "unit-jest@alpha"
     ]
   },
-  "@quasar/testing-unit-jest": {
+  "@quasar/qmarkdown": {
+    "import_md": true
+  },
+  "@quasar/testing-unit-vitest": {
     "options": [
       "scripts",
       "typescript",
-      "majestic"
+      "ui"
     ]
-  },
-  "@quasar/qmarkdown": {
-    "import_md": true
   }
 }
