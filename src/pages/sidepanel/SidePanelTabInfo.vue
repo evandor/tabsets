@@ -1,28 +1,25 @@
 <template>
   <div v-if="tabFromChromeTab() && tabsStore.getCurrentTabset && currentChromeTab.url !== 'chrome://newtab/'"
-       class="row q-ma-sm q-mt-lg"
-       :class="alreadyInTabset() ? 'bg-grey-1':'bg-yellow-1'"
+       class="row q-ma-sm q-mt-lg bg-yellow-1"
        style="border:1px solid gray;border-radius: 5px">
 
-    <div class="col-10">
+    <div class="col-12">
       <q-list>
         <q-item
           v-ripple
-          class="q-ma-none q-pa-sm">
-          <PanelTabListElementWidget
-            header="Current Tab:"
-            :tab="tabFromChromeTab()"
-            :show-tabsets="true"
-            :hideMenu="true"/>
+          class="q-ma-none q-pa-xs">
+          <CurrentTabElementHelper :tab="tabFromChromeTab()" />
         </q-item>
       </q-list>
     </div>
-    <div class="col-2">
-      <q-btn :disable="alreadyInTabset()" :label="alreadyInTabset() ? 'saved' :'save'" color="primary" flat
-             size="10px" @click="saveFromPanel()"></q-btn>
-      <br>
-      <q-btn :label="c.candidateName" v-for="c in tabsetCandidates" color="primary" flat size="10px"/>
-    </div>
+<!--    <div class="col-2">-->
+<!--      <q-btn :disable="alreadyInTabset()" :label="alreadyInTabset() ? 'saved' :'save'" color="primary" flat-->
+<!--             size="10px" @click="saveFromPanel()"></q-btn>-->
+<!--      <br>-->
+<!--      <q-btn :label="c.candidateName" v-for="c in tabsetCandidates" color="primary" flat size="10px">-->
+<!--        <q-tooltip>got score {{c.score}}</q-tooltip>-->
+<!--      </q-btn>-->
+<!--    </div>-->
   </div>
 
   <div v-else-if="selectedTab"
@@ -56,6 +53,7 @@ import {AddTabToTabsetCommand} from "src/domain/tabs/AddTabToTabset";
 import {ref, watchEffect} from "vue";
 import {useUiStore} from "stores/uiStore";
 import TabsetService from "src/services/TabsetService";
+import CurrentTabElementHelper from "pages/sidepanel/helper/CurrentTabElementHelper.vue";
 
 const router = useRouter()
 const tabsStore = useTabsStore()
@@ -81,23 +79,13 @@ watchEffect(() => {
 
 watchEffect(async () => {
   if (currentChromeTab.value?.url) {
+    console.log("hier", currentChromeTab.value?.url)
     const c = await TabsetService.getContentForUrl(currentChromeTab.value.url)
+    console.log("c", c)
     tabsetCandidates.value = c ? (c['tabsetCandidates' as keyof object] || []) : []
   }
 })
 
-const saveFromPanel = () => {
-  const currentChromeTab = useTabsStore().currentChromeTab
-  console.log("saving from panel...", currentChromeTab)
-  if (currentChromeTab && tabsStore.getCurrentTabset) {
-    const tabsetId = tabsStore.getCurrentTabset.id // tabsetName.value['value' as keyof object]
-    // useTabsetService().addToTabsetId(tabset['value' as keyof object], new Tab(uid(), currentChromeTab))
-    const useTS = useTabsetService().getTabset(tabsetId)
-    if (useTS) {
-      useCommandExecutor().executeFromUi(new AddTabToTabsetCommand(new Tab(uid(), currentChromeTab), useTS))
-    }
-  }
-}
 
 const alreadyInTabset = () => {
   if (currentChromeTab.value?.url && tabsStore.getCurrentTabset) {

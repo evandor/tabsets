@@ -46,6 +46,7 @@ function inIgnoredMessages(request: any) {
     request.name === 'feature-activated' ||
     request.name === 'feature-deactivated' ||
     request.name === 'tabsets-imported' ||
+    request.name === 'zero-shot-classification' ||
     request.name === 'init-ai-module'
 
 }
@@ -299,10 +300,10 @@ class ChromeListeners {
   }
 
   onMessage(request: any, sender: chrome.runtime.MessageSender, sendResponse: any) {
-    //console.log("handling request", request.msg)
     if (inIgnoredMessages(request)) {
       return true
     }
+    console.log("handling request", request)
     if (request.msg === 'captureThumbnail') {
       const screenShotWindow = useWindowsStore().screenshotWindow
       this.handleCapture(sender, screenShotWindow, sendResponse)

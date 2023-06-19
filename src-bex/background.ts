@@ -1,53 +1,52 @@
 import {bexBackground} from 'quasar/wrappers';
+import {pipeline, env as env2} from "@xenova/transformers";
 
 let modelPromise: any = null
 
-function loadAIModule() {
+async function loadAIModule() {
   const {pipeline, env} = require('@xenova/transformers');
 
   console.log("initializing transformers....")
 
-// Set environment variables to only use local models.
-  env.useBrowserCache = false;
-  env.remoteModels = false;
-//env.localModelPath = chrome.runtime.getURL('models/')
+  env.useBrowserCache = true//false;
+  env.remoteModels = true//false;
+  //env.localModelPath = chrome.runtime.getURL('models/')
   env.backends.onnx.wasm.wasmPaths = chrome.runtime.getURL('www/wasm/')
   env.backends.onnx.wasm.numThreads = 1;
 
-// const task = 'text-classification';
-// const model = 'Xenova/distilbert-base-uncased-finetuned-sst-2-english';
-
+  // const task = 'text-classification';
+  // const model = 'Xenova/distilbert-base-uncased-finetuned-sst-2-english';
   const task = 'zero-shot-classification';
-  //const model = 'Xenova/bart-large-mnli';
-  const model = 'Xenova/finbert';
+  const model = 'Xenova/bart-large-mnli';
+  //const model = 'Xenova/finbert';
 
-// Load model, storing the promise that is returned from the pipeline function.
-// Doing it this way will load the model in the background as soon as the worker is created.
-// To actually use the model, you must call `await modelPromise` to get the actual classifier.
-  modelPromise = pipeline(task, model, {
-    progress_callback: (data: any) => {
-      if (data.status !== 'progress') {
-        console.log("got progress_callback", data)
-      }
-      // If you would like to add a progress bar for model loading,
-      // you can send `data` back to the UI.
-      const msg = {
-        "name": 'progress-indicator',
-        "percent": data.progress,
-        status: data.status,
-        "label": "AI Module " + data.name
-      }
-      //console.log("sending", msg)
-      //chrome.runtime.sendMessage(msg)
-      chrome.runtime.sendMessage(msg, (callback) => {
-        if (chrome.runtime.lastError) { /* ignore */
-          //console.log("hier!!!", chrome.runtime.lastError)
-        } else {
-          console.log("cb", callback)
+  try {
+    modelPromise = pipeline(task, model, {
+      progress_callback: (data: any) => {
+        if (data.status !== 'progress') {
+          console.log("got progress_callback", data)
         }
-      })
-    }
-  });
+
+        const msg = {
+          "name": 'progress-indicator',
+          "percent": data.progress,
+          status: data.status,
+          "label": "AI Module " + data.name
+        }
+        //chrome.runtime.sendMessage(msg)
+        chrome.runtime.sendMessage(msg, (callback) => {
+          if (chrome.runtime.lastError) { /* ignore */
+            // TODO we get tons of errors here
+            console.log("hier!!!", chrome.runtime.lastError)
+          } else {
+            //console.log("cb", callback)
+          }
+        })
+      }
+    })
+  } catch(err) {
+    console.error("hier: error", JSON.stringify(err))
+  }
 }
 
 // Listen for messages from the UI, process it, and send the result back.
@@ -55,19 +54,32 @@ console.debug("adding listener for init-ai-module in background.js")
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
-  // Run model prediction asynchronously
   (async function () {
     if (message.name === 'init-ai-module') {
-      console.log("got message init-ai-module")
-      loadAIModule()
-      sendResponse("ai module loaded")
+      console.log("got message init-ai-module!!")
+      try {
+        await loadAIModule()
+        sendResponse("ai module loaded")
+      } catch (err) {
+        sendResponse("error: " + err)
+      }
     } else if (message.name === 'zero-shot-classification') {
-      console.log("got zero-shot-classification message", message, modelPromise)
-      let model = await modelPromise;
-      let result = await model(message.data.text, message.data.candiates);
-      console.log("result:", result)
-      alert(JSON.stringify(result))
-      sendResponse(result);
+      console.log("got zero-shot-classification message", message.data.text, typeof (message.data.candidates as string[]))
+
+      try {
+        let model = await modelPromise;
+        let result = await model(message.data.text, message.data.candidates as string[]);
+        console.log("result:", result)
+        //let reviewer2 = await pipeline('zero-shot-classification', 'Xenova/bart-large-mnli');
+        //let result3 = await model('View the latest news and breaking news today for, entertainment, politics and health at CNN.com.', ['News','Nachrichten','wasanderes']);
+        //console.log("result3", result3)
+        sendResponse(result);
+      } catch (err) {
+        console.log("got error", err)
+        sendResponse(err)
+      }
+
+
     }
   })();
   // return true to indicate we will send a response asynchronously

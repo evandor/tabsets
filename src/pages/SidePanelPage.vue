@@ -224,7 +224,7 @@
 
       <!-- selected tab or current tab from chrome -->
       <template v-slot:after>
-        <SidePanelTabInfo/>
+        <SidePanelTabInfo />
       </template>
 
     </q-splitter>
@@ -312,9 +312,19 @@ watchEffect(() => {
   logs.value = useLogsStore().logs
 })
 
+function inIgnoredMessages(message: any) {
+  return message.msg === "html2text" ||
+    message.msg === "html2links" ||
+    message.name === "zero-shot-classification" ||
+    message.msg === "init-ai-module";
+}
+
 if (inBexMode()) {
   // seems we need to define these listeners here to get the matching messages reliably
   chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    if (inIgnoredMessages(message)) {
+      return true
+    }
     if (message.name === 'current-tabset-id-change') {
       const tsId = message.data.tabsetId
       useTabsStore().selectCurrentTabset(tsId)
@@ -347,12 +357,7 @@ if (inBexMode()) {
         uiStore.progress = undefined
         uiStore.progressLabel = undefined
       }
-    } else if (message.msg === "html2text") {
-      // ignore
-    } else if (message.msg === "html2links") {
-      // ignore
-    } else if (message.msg === "init-ai-module") {
-      // ignore
+      sendResponse("ui store progress set to " + uiStore.progress)
     } else {
       console.log("got unmatched message", message)
     }

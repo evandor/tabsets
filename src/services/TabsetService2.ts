@@ -283,6 +283,7 @@ export function useTabsetService() {
     }
     const title = tab.title || ''
     const tabsetIds: string[] = tabsetsFor(tab.url)
+    //console.log("checking candidates", useTabsStore().tabsets.values())
     const candidates = _.map(
       _.filter([...useTabsStore().tabsets.values()], (ts: Tabset) =>
         ts.type === TabsetType.DEFAULT || ts.type === TabsetType.SESSION),
@@ -306,16 +307,18 @@ export function useTabsetService() {
         if (chrome.runtime.lastError) { /* ignore */
         }
         const tabsetScores: object[] = []
-        callback.scores.forEach((score: number, index: number) => {
-          console.log("got score", score)
-          if (score > .9) {
-            tabsetScores.push({
-              score: score,
-              candidateName: candidates[index].name,
-              candidateId: candidates[index].id
-            })
-          }
-        })
+        if (callback.scores) {
+          callback.scores.forEach((score: number, index: number) => {
+            console.log("got score", score)
+            if (score > .1) {
+              tabsetScores.push({
+                score: score,
+                candidateName: candidates[index].name,
+                candidateId: candidates[index].id
+              })
+            }
+          })
+        }
         db.saveContent(tab, text, metas, title, tabsetIds, tabsetScores)
           .catch((err: any) => console.log("err", err))
       });
@@ -389,17 +392,17 @@ export function useTabsetService() {
                 console.log(`saved tabset with _id: ${tabset._id}, _rev: ${tabset._rev}`)
                 //tabset._rev = res._rev
 
-                if (usePermissionsStore().hasFeature(FeatureIdent.AI_MODULE)) {
-                  // try to apply AI logic
-                  if (metas['description' as keyof object]) {
-                    const data = {
-                      text: metas['description' as keyof object],
-                      candidates: _.map([...useTabsStore().tabsets.values()], (ts: Tabset) => ts.name)
-                    }
-                    console.log("about to apply KI logic...", data)
-                    sendMsg('zero-shot-classification', data)
-                  }
-                }
+                // if (usePermissionsStore().hasFeature(FeatureIdent.AI_MODULE)) {
+                //   // try to apply AI logic
+                //   if (metas['description' as keyof object]) {
+                //     const data = {
+                //       text: metas['description' as keyof object],
+                //       candidates: _.map([...useTabsStore().tabsets.values()], (ts: Tabset) => ts.name)
+                //     }
+                //     console.log("about to apply KI logic...", data)
+                //     sendMsg('zero-shot-classification', data)
+                //   }
+                // }
 
               }))
           }
