@@ -1,15 +1,6 @@
 <template>
 
-  <q-item-section class="q-mr-sm text-right" style="justify-content:start;width:45px;max-width:45px">
-    <!--    <q-img v-if="currentChromeTab.image && currentChromeTab.image.startsWith('blob://')"-->
-    <!--           style="border:3px dotted white;border-radius:3px"-->
-    <!--           :src="imgFromBlob" width="25px"/>-->
-    <!--    <q-img v-else-if="currentChromeTab.image"-->
-    <!--           style="border:1px dotted white;border-radius:3px"-->
-    <!--           :src="currentChromeTab.image" width="25px"/>-->
-    <!--    <q-img v-else-if="thumbnail" style="border:1px dotted white;border-radius:3px"-->
-    <!--           :src="thumbnail" width="25px"/>-->
-    <!--    <TabFaviconWidget                      :tab="currentChromeTab" width="25px" height="25px"/>-->
+  <q-item-section class="q-mr-sm text-right" style="justify-content:start;width:50px;max-width:50px">
 
     <q-img
       class="rounded-borders q-ml-sm"
@@ -18,25 +9,32 @@
       :src="currentChromeTab.favIconUrl">
     </q-img>
 
-    <div class="col q-mt-md text-caption">
+    <div class="col text-caption" style="position:relative;top:25px">
       {{ alreadyInTabset() ? 'saved in' : 'save in' }}
     </div>
   </q-item-section>
 
-  <!-- name, title, description, url && note -->
   <q-item-section class="q-mb-sm">
 
-    <!-- name or title -->
+    <!-- title -->
     <q-item-label>
       <div>
         <div class="q-pr-sm cursor-pointer ellipsis">
           <span class="text-bold">Current Tab:<br></span>
           {{ currentChromeTab.title }}
         </div>
-
+      </div>
+    </q-item-label>
+    <!-- url -->
+    <q-item-label>
+      <div>
+        <div class="q-pr-sm ellipsis">
+          <short-url :url="currentChromeTab.url || ''" :hostname-only="true"/>
+        </div>
       </div>
     </q-item-label>
 
+    <!-- saved in / save to tabset -->
     <q-item-label>
       <template v-if="!alreadyInTabset()">
         <q-chip clickable
@@ -69,15 +67,14 @@
 <script setup lang="ts">
 import {Tab} from "src/models/Tab";
 import TabsetService from "src/services/TabsetService";
-import {onMounted, ref, watchEffect} from "vue";
+import {ref, watchEffect} from "vue";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {uid, useQuasar} from "quasar";
-import {ListDetailLevel, useUiStore} from "src/stores/uiStore";
-import TabFaviconWidget from "components/widgets/TabFaviconWidget.vue";
 import {useTabsetService} from "src/services/TabsetService2";
 import {useTabsStore} from "src/stores/tabsStore";
 import _ from "lodash";
 import {AddTabToTabsetCommand} from "src/domain/tabs/AddTabToTabset";
+import ShortUrl from "components/utils/ShortUrl.vue";
 
 const emits = defineEmits(['sendCaption'])
 
@@ -85,7 +82,6 @@ const $q = useQuasar()
 
 const line = ref(null)
 const thumbnail = ref<string | undefined>(undefined)
-const imgFromBlob = ref<string>("")
 const tsBadges = ref<object[]>([])
 const tabsetCandidates = ref<object[]>([])
 const currentChromeTab = ref<chrome.tabs.Tab>(null as unknown as chrome.tabs.Tab)
@@ -113,7 +109,7 @@ watchEffect(async () => {
     const c = await TabsetService.getContentForUrl(currentChromeTab.value.url)
     if (c && c['tabsetCandidates' as keyof object]) {
       tabsetCandidates.value = _.filter(c['tabsetCandidates' as keyof object],
-        (c: object) => (c['candidateName' as keyof object] || '') !== "*" + tabsStore.currentTabsetName)
+        (c: object) => (c['candidateName' as keyof object] || '') !== tabsStore.currentTabsetName)
     } else {
       tabsetCandidates.value = []
     }
@@ -131,17 +127,6 @@ const setInfo = (tab: Tab) => {
   }
 }
 
-const selectTab = (tab: Tab) => useUiStore().setSelectedTab(tab)
-
-const getFaviconUrl = (chromeTab: chrome.tabs.Tab | undefined) => {
-  if (chromeTab && chromeTab.favIconUrl && !chromeTab.favIconUrl.startsWith("chrome")) {
-    return chromeTab.favIconUrl
-  }
-  return ''//'favicon-unknown-32x32.png'
-}
-
-
-const nameOrTitle = (tab: Tab) => tab.name
 
 const thumbnailFor = async (tab: Tab): Promise<object> => {
   return await TabsetService.getThumbnailFor(tab)
@@ -165,14 +150,10 @@ watchEffect(() => {
 
 const saveInTabset = (tabsetId: string) => {
   console.log("saving to tabset ", tabsetId)
-  //if (currentChromeTab && tabsStore.getCurrentTabset) {
-  //const tabsetId = tabsStore.getCurrentTabset.id // tabsetName.value['value' as keyof object]
-  // useTabsetService().addToTabsetId(tabset['value' as keyof object], new Tab(uid(), currentChromeTab))
   const useTS = useTabsetService().getTabset(tabsetId)
   if (useTS) {
     useCommandExecutor().executeFromUi(new AddTabToTabsetCommand(new Tab(uid(), currentChromeTab.value), useTS))
   }
-  // }
 }
 
 const alreadyInTabset = () => {

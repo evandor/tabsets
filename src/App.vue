@@ -51,7 +51,7 @@ $q.dark.set($q.localStorage.getItem('darkMode') || false)
 // init of stores and some listeners
 usePermissionsStore().initialize()
   .then(() => {
-    ChromeListeners.initListeners(false)
+    ChromeListeners.initListeners()
     ChromeBookmarkListeners.initListeners()
     if (usePermissionsStore().hasFeature(FeatureIdent.AI_MODULE)) {
       console.log("sending init-ai-module message")

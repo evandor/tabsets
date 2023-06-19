@@ -318,6 +318,8 @@ export function useTabsetService() {
               })
             }
           })
+          // force reload in other pages (like CurrentTabElementHelper)
+          useTabsStore().setCurrentChromeTab(tab)
         }
         db.saveContent(tab, text, metas, title, tabsetIds, tabsetScores)
           .catch((err: any) => console.log("err", err))

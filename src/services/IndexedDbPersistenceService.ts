@@ -171,8 +171,10 @@ class IndexedDbPersistenceService implements PersistenceService {
 
   getContent(url: string): Promise<object> {
     const encodedUrl = btoa(url)
-    //console.log("checking content for ", encodedUrl)
-    return this.db.get('content', encodedUrl)
+    if (this.db) {
+      return this.db.get('content', encodedUrl)
+    }
+    return Promise.reject("db not ready (yet)")
   }
 
   deleteThumbnail(url: string): Promise<void> {

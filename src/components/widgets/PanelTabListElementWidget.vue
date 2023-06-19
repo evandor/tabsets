@@ -99,13 +99,6 @@
         </q-chip>
       </template>
     </q-item-label>
-    <q-item-label>
-      <template v-for="c in tabsetCandidates">
-        <q-chip class="cursor-pointer q-ml-none q-mr-xs" size="9px" icon="tab">
-          {{ c.candidateName }}
-        </q-chip>
-      </template>
-    </q-item-label>
   </q-item-section>
 
 </template>

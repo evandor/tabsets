@@ -59,15 +59,14 @@ class ChromeListeners {
 
   throttleOnePerSecond = throttledQueue(1, 1000, true)
 
-  injectedScripts: Map<number, string[]> = new Map()
-
-  initListeners(isNewTabPage: boolean = false) {
+  initListeners() {
 
     if (process.env.MODE === 'bex') {
-      chrome.runtime.setUninstallURL("https://tabsets.web.app/#/uninstall")
-    }
-    if (process.env.MODE === 'bex' && !isNewTabPage) {
       console.debug("initializing chrome tab listeners")
+
+      chrome.runtime.setUninstallURL("https://tabsets.web.app/#/uninstall")
+
+      setCurrentTab()
 
       chrome.tabs.onCreated.addListener((tab: chrome.tabs.Tab) => this.onCreated(tab))
       chrome.tabs.onUpdated.addListener((number, info, tab) => this.onUpdated(number, info, tab))
@@ -303,7 +302,7 @@ class ChromeListeners {
     if (inIgnoredMessages(request)) {
       return true
     }
-    console.log("handling request", request)
+    //console.log("handling request", request)
     if (request.msg === 'captureThumbnail') {
       const screenShotWindow = useWindowsStore().screenshotWindow
       this.handleCapture(sender, screenShotWindow, sendResponse)

@@ -64,3 +64,4 @@ yarn-error.log*
 /public/models/Xenova/distilbert-base-uncased-finetuned-sst-2-english/pytorch_model.bin
 /public/models/Xenova/distilbert-base-uncased-finetuned-sst-2-english/rust_model.ot
 /public/models/Xenova/distilbert-base-uncased-finetuned-sst-2-english/tf_model.h5
+/public/vids/
