@@ -8,7 +8,7 @@
         <q-item
           v-ripple
           class="q-ma-none q-pa-xs">
-          <CurrentTabElementHelper :tab="tabFromChromeTab()" />
+          <CurrentTabElementHelper />
         </q-item>
       </q-list>
     </div>
@@ -64,8 +64,6 @@ const tabsetCandidates = ref<object[]>([])
 
 const tabFromChromeTab = () => currentChromeTab.value ? new Tab(uid(), currentChromeTab.value) : undefined
 
-const showTabsets = () => router.push("/sidepanel/spaces")
-
 watchEffect(() => {
   selectedTab.value = useUiStore().getSelectedTab
   if (selectedTab.value) {
@@ -79,9 +77,9 @@ watchEffect(() => {
 
 watchEffect(async () => {
   if (currentChromeTab.value?.url) {
-    console.log("hier", currentChromeTab.value?.url)
+    //console.log("hier", currentChromeTab.value?.url)
     const c = await TabsetService.getContentForUrl(currentChromeTab.value.url)
-    console.log("c", c)
+    //console.log("c", c)
     tabsetCandidates.value = c ? (c['tabsetCandidates' as keyof object] || []) : []
   }
 })
