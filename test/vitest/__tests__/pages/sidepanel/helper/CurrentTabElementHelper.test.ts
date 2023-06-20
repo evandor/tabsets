@@ -5,11 +5,7 @@ import {createPinia, setActivePinia} from "pinia";
 import CurrentTabElementHelper from "pages/sidepanel/helper/CurrentTabElementHelper.vue";
 import {useTabsStore} from "stores/tabsStore";
 import ChromeApi from "src/services/ChromeApi";
-import {INDEX_DB_VERSION} from "boot/constants";
-import {useJestHelper} from "src/domain/JestHelper";
-import "fake-indexeddb/auto"
 import IndexedDbPersistenceService from "src/services/IndexedDbPersistenceService";
-import TabsetService from "src/services/TabsetService";
 import {useTabsetService} from "src/services/TabsetService2";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {CreateTabsetCommand} from "src/domain/tabsets/CreateTabset";
@@ -24,16 +20,11 @@ describe('CurrentTabElementHelper', () => {
   const skysailChromeTab = ChromeApi.createChromeTabObject("title", "https://www.skysail.io", "favicon")
 
   beforeAll(async () => {
-    const request = indexedDB.open('db', INDEX_DB_VERSION);
-    request.onupgradeneeded = async function () {
-      await useJestHelper().dbInit(request)
-    }
-    process.env.MODE = "bex"
+
   })
 
   beforeEach(async () => {
     setActivePinia(createPinia())
-    //chrome.tabs.query.mockImplementation(async (o: object) => [])
   })
 
   it('should be mounted from chrome tab', async () => {
@@ -60,6 +51,7 @@ describe('CurrentTabElementHelper', () => {
     await useTabsetService().saveText(skysailChromeTab, "the text", {})
     const wrapper = mount(CurrentTabElementHelper);
     expect(wrapper.text()).toContain("saved in");
+    expect(wrapper.text()).toContain("ts1");
   });
 
 });
