@@ -19,10 +19,6 @@ describe('CurrentTabElementHelper', () => {
 
   const skysailChromeTab = ChromeApi.createChromeTabObject("title", "https://www.skysail.io", "favicon")
 
-  beforeAll(async () => {
-
-  })
-
   beforeEach(async () => {
     setActivePinia(createPinia())
   })
