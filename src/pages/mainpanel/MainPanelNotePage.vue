@@ -161,7 +161,7 @@
 
 <script lang="ts" setup>
 
-import {inject, ref, watchEffect} from "vue";
+import {ref, watchEffect} from "vue";
 import {useRoute} from "vue-router";
 import NavigationService from "src/services/NavigationService";
 import {date} from "quasar";

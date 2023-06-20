@@ -6,7 +6,7 @@
       class="rounded-borders q-ml-sm"
       width="24px"
       height="24px"
-      :src="currentChromeTab.favIconUrl">
+      :src="currentChromeTab?.favIconUrl">
     </q-img>
 
     <div class="col text-caption" style="position:relative;top:25px">
@@ -21,7 +21,7 @@
       <div>
         <div class="q-pr-sm cursor-pointer ellipsis">
           <span class="text-bold">Current Tab:<br></span>
-          {{ currentChromeTab.title }}
+          {{ currentChromeTab?.title }}
         </div>
       </div>
     </q-item-label>
@@ -29,7 +29,7 @@
     <q-item-label>
       <div>
         <div class="q-pr-sm ellipsis">
-          <short-url :url="currentChromeTab.url || ''" :hostname-only="true"/>
+          <short-url :url="currentChromeTab?.url || ''" :hostname-only="true"/>
         </div>
       </div>
     </q-item-label>
@@ -91,7 +91,7 @@ const tabsStore = useTabsStore()
 watchEffect(() => currentChromeTab.value = useTabsStore().currentChromeTab)
 
 watchEffect(() => {
-  if (currentChromeTab.value.url) {
+  if (currentChromeTab.value?.url) {
     const url = currentChromeTab.value.url
     const tabsetIds = useTabsetService().tabsetsFor(url)
     tsBadges.value = []
@@ -105,7 +105,7 @@ watchEffect(() => {
 
 
 watchEffect(async () => {
-  if (currentChromeTab.value.url) {
+  if (currentChromeTab.value?.url) {
     const c = await TabsetService.getContentForUrl(currentChromeTab.value.url)
     if (c && c['tabsetCandidates' as keyof object]) {
       tabsetCandidates.value = _.filter(c['tabsetCandidates' as keyof object],
@@ -131,22 +131,6 @@ const setInfo = (tab: Tab) => {
 const thumbnailFor = async (tab: Tab): Promise<object> => {
   return await TabsetService.getThumbnailFor(tab)
 }
-
-watchEffect(() => {
-  if (currentChromeTab) {
-    // @ts-ignore
-    thumbnailFor(currentChromeTab)
-      .then((tn: object) => {
-        //console.log("tn", tn)
-        if (tn && tn['thumbnail' as keyof object]) {
-          thumbnail.value = tn['thumbnail' as keyof object]
-        }
-      })
-      .catch((err) => {
-        //console.log("could not get thumbnail for ", currentChromeTab)
-      })
-  }
-})
 
 const saveInTabset = (tabsetId: string) => {
   console.log("saving to tabset ", tabsetId)

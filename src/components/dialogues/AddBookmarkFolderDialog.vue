@@ -20,7 +20,7 @@
         <q-btn flat label="Add Folder"
                data-testid="add_folder_submit"
                :disable="folderName.trim().length === 0" v-close-popup
-               @click="createNewFolder()"  />
+               @click="createNewFolder()"/>
       </q-card-actions>
     </q-card>
 
@@ -30,16 +30,12 @@
 
 <script lang="ts" setup>
 
-import {computed, ref, watchEffect} from "vue";
-import TabsetService from "src/services/TabsetService";
-import {uid, useQuasar} from "quasar";
+import {ref, watchEffect} from "vue";
+import {useQuasar} from "quasar";
 import {useRouter} from "vue-router";
 import {useTabsStore} from "src/stores/tabsStore";
 
 import {useDialogPluginComponent} from 'quasar'
-import {STRIP_CHARS_IN_USER_INPUT} from "boot/constants";
-import {Tab} from "src/models/Tab";
-import ChromeApi from "src/services/ChromeApi";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {CreateBookmarkFolderCommand} from "src/domain/commands/CreateBookmarkFolderCommand";
 
@@ -48,10 +44,7 @@ defineEmits([
 ])
 
 const props = defineProps({
-  parentFolderId: {
-    type: String,
-    required: true
-  }
+  parentFolderId: {type: String, required: true}
 })
 
 const {dialogRef, onDialogHide, onDialogOK, onDialogCancel} = useDialogPluginComponent()

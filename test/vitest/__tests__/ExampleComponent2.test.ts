@@ -1,7 +1,7 @@
 import { installQuasarPlugin } from '@quasar/quasar-app-extension-testing-unit-vitest';
 import { mount } from '@vue/test-utils';
 import { describe, expect, it } from 'vitest';
-import ExampleComponent2 from "components/ExampleComponent2.vue";
+import ExampleComponent2 from "src/components/ExampleComponent2.vue";
 
 installQuasarPlugin();
 
