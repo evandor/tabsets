@@ -139,6 +139,7 @@ const thumbnail = ref<string | undefined>(undefined)
 const imgFromBlob = ref<string>("")
 const hoveredTab = ref<string | undefined>(undefined)
 const tsBadges = ref<object[]>([])
+const tabsetCandidates = ref<object[]>([])
 
 onMounted(() => {
   const blobImgPath = props.tab.image
@@ -168,6 +169,14 @@ watchEffect(() => {
       tabsetId: tsId,
       encodedUrl: btoa(url || '')
     }))
+  }
+})
+
+
+watchEffect(async () => {
+  if (props.tab.chromeTab.url) {
+    const c = await TabsetService.getContentForUrl(props.tab.chromeTab.url)
+    tabsetCandidates.value = c ? (c['tabsetCandidates' as keyof object] || []) : []
   }
 })
 

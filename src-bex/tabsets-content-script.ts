@@ -14,7 +14,8 @@ export default bexContent((bridge: any) => {
       console.log("tabsets: received message for content", document.documentElement.outerHTML)
       sendResponse({content: document.documentElement.outerHTML});
     }
-    return sendResponse({content: "unknown request in tabsets-content-scripts: " + request.msg});
+    sendResponse({content: "unknown request in tabsets-content-scripts: " + request.msg});
+    return true
   })
 
   function getMetas(document: Document) {

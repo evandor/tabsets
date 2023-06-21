@@ -308,7 +308,7 @@ export const useTabsStore = defineStore('tabs', {
         return ts.id === tabsetId
       })
       if (found) {
-        console.log("found", found)
+       // console.log("found", found)
         this.currentTabsetId = tabsetId //this.tabsets.get(found) || new Tabset("", "", [])
         return found
       } else {

@@ -119,6 +119,7 @@ export default bexContent((bridge: any) => {
       })
 
       sendResponse({content: ""});
+      return true
     }
     return sendResponse({content: "unknown request in highlighting.ts: " + request.msg});
   })

@@ -1,7 +1,6 @@
 <template>
 
   <q-page>
-    <!--    <div class="fullimageBackground">-->
     <q-splitter class="window-height" style="position:absolute;left:0;right:0"
                 v-model="splitterModel"
                 separator-class="bg-grey-1"
@@ -9,6 +8,7 @@
                 unit="px"
                 reverse>
 
+      <!-- list of tabs -->
       <template v-slot:before>
 
         <!-- assuming here we have at least one tabset -->
@@ -42,6 +42,7 @@
                                          :fromPanel="true"/>
                 </div>
                 <div class="col-4 text-right">
+
                   <q-btn v-if="tabsStore.tabsets.size > 1"
                          icon="search"
                          flat
@@ -52,15 +53,15 @@
                     <q-tooltip class="tooltip">Search</q-tooltip>
                   </q-btn>
 
-                  <q-btn
-                    icon="o_add"
-                    flat
-                    class="q-ma-none q-pa-xs cursor-pointer"
-                    style="max-width:20px"
-                    size="11px"
-                    @click="openNewTabsetDialog()">
-                    <q-tooltip class="tooltip">Add new Tabset</q-tooltip>
-                  </q-btn>
+                  <!--                  <q-btn-->
+                  <!--                    icon="o_add"-->
+                  <!--                    flat-->
+                  <!--                    class="q-ma-none q-pa-xs cursor-pointer"-->
+                  <!--                    style="max-width:20px"-->
+                  <!--                    size="11px"-->
+                  <!--                    @click="openNewTabsetDialog()">-->
+                  <!--                    <q-tooltip class="tooltip">Add new Tabset</q-tooltip>-->
+                  <!--                  </q-btn>-->
 
                   <q-btn
                     v-if="tabsStore.tabsets.size > 1"
@@ -80,92 +81,109 @@
 
           <!-- second toolbar line -->
           <div class="row q-ma-none q-pa-none">
-            <div class="col-6" style="border-bottom: 1px dotted lightgray">
-              <q-input borderless v-if="usePermissionsStore().hasFeature(FeatureIdent.NOTES)"
-                       class="q-ma-xs"
-                       style="height:20px;border: 1px dotted lightgray; border-radius: 3px;" v-model="dragTarget"/>
-            </div>
-            <div class="col-6 text-right" style="border-bottom: 1px dotted lightgray">
+            <!-- show progress or info messages if any -->
+            <template v-if="progress">
+              <div class="col-12" style="border-bottom: 1px dotted lightgray;border-left: 1px dotted lightgray">
+                <q-linear-progress size="20px" :value="progress" color="primary">
+                  <div class="absolute-full flex flex-center">
+                    <q-badge color="white" text-color="accent" :label="progressLabel"/>
+                  </div>
+                </q-linear-progress>
+                <q-input borderless v-if="!progress && usePermissionsStore().hasFeature(FeatureIdent.NOTES)"
+                         class="q-ma-xs"
+                         style="height:20px;border: 1px dotted lightgray; border-radius: 3px;" v-model="dragTarget"/>
+              </div>
+            </template>
+            <template v-else>
+              <div class="col-6" style="border-bottom: 1px dotted lightgray;border-left: 1px dotted lightgray">
+                <q-input borderless v-if="!progress && usePermissionsStore().hasFeature(FeatureIdent.NOTES)"
+                         class="q-ma-xs"
+                         style="height:20px;border: 1px dotted lightgray; border-radius: 3px;" v-model="dragTarget"/>
+              </div>
+              <div class="col-6 text-right"
+                   style="border-bottom: 1px dotted lightgray;border-right: 1px dotted lightgray">
 
 
-              <!--              v-if="tabsStore.currentTabsetId !== '' && tabsStore.getTabset(tabsStore.currentTabsetId) && tabsStore.getCurrentTabset?.tabs.length > 0 && $q.screen.gt.xs"-->
-              <q-btn
-                v-if="tabsStore.getCurrentTabset?.tabs.length > 7"
-                flat
-                class="q-ma-none q-pa-xs cursor-pointer"
-                style="width:20px;max-width:220px"
-                size="11px"
-                :text-color="useUiStore().tabsFilter ? 'accent' : 'primary'"
-                :disable="tabsStore.getCurrentTabset?.type === TabsetType.DYNAMIC"
-                :label="useUiStore().tabsFilter"
-                icon="o_filter_alt">
-                <q-popup-edit :model-value="useUiStore().tabsFilter" v-slot="scope"
-                              @update:model-value="val => setFilter(  val)">
-                  <q-input v-model="scope.value" dense autofocus counter @keyup.enter="scope.set"/>
-                </q-popup-edit>
-                <q-tooltip
-                  class="tooltip"
-                  :delay="200"
-                  anchor="center left" self="center right">
-                  Filter this tabset
-                </q-tooltip>
-              </q-btn>
+                <!--              v-if="tabsStore.currentTabsetId !== '' && tabsStore.getTabset(tabsStore.currentTabsetId) && tabsStore.getCurrentTabset?.tabs.length > 0 && $q.screen.gt.xs"-->
+                <q-btn
+                  v-if="tabsStore.getCurrentTabset?.tabs.length > 7"
+                  flat
+                  class="q-ma-none q-pa-xs cursor-pointer"
+                  style="width:20px;max-width:220px"
+                  size="11px"
+                  :text-color="useUiStore().tabsFilter ? 'accent' : 'primary'"
+                  :disable="tabsStore.getCurrentTabset?.type === TabsetType.DYNAMIC"
+                  :label="useUiStore().tabsFilter"
+                  icon="o_filter_alt">
+                  <q-popup-edit :model-value="useUiStore().tabsFilter" v-slot="scope"
+                                @update:model-value="val => setFilter(  val)">
+                    <q-input v-model="scope.value" dense autofocus counter @keyup.enter="scope.set"/>
+                  </q-popup-edit>
+                  <q-tooltip
+                    class="tooltip"
+                    :delay="200"
+                    anchor="center left" self="center right">
+                    Filter this tabset
+                  </q-tooltip>
+                </q-btn>
 
-              <q-btn v-if="showSorting()"
-                     flat
-                     size="10px"
-                     class="q-ma-none q-pa-xs cursor-pointer"
-                     style="max-width:20px"
-                     text-color="primary"
-                     @click="toggleSorting()"
-                     outline
-                     icon="o_sort">
-                <q-tooltip class="tooltip">Toggle through sorting</q-tooltip>
-              </q-btn>
+                <q-btn v-if="showSorting()"
+                       flat
+                       size="10px"
+                       class="q-ma-none q-pa-xs cursor-pointer"
+                       style="max-width:20px"
+                       text-color="primary"
+                       @click="toggleSorting()"
+                       outline
+                       icon="o_sort">
+                  <q-tooltip class="tooltip">Toggle through sorting</q-tooltip>
+                </q-btn>
 
-              <q-btn v-if="tabsStore.getCurrentTabset?.tabs.length > 0"
-                     :icon="getDetailLevelIcon()"
-                     flat
-                     size="10px"
-                     class="q-ma-none q-pa-xs cursor-pointer"
-                     style="max-width:20px"
-                     text-color="primary"
-                     @click="toggleListDetailLevel()">
-                <q-tooltip class="tooltip">Toggle the detail level for the tabs</q-tooltip>
-              </q-btn>
+                <q-btn v-if="tabsStore.getCurrentTabset?.tabs.length > 0"
+                       :icon="getDetailLevelIcon()"
+                       flat
+                       size="10px"
+                       class="q-ma-none q-pa-xs cursor-pointer"
+                       style="max-width:20px"
+                       text-color="primary"
+                       @click="toggleListDetailLevel()">
+                  <q-tooltip class="tooltip">Toggle the detail level for the tabs</q-tooltip>
+                </q-btn>
 
-              <q-btn v-if="usePermissionsStore().hasFeature(FeatureIdent.SESSIONS)"
-                     flat
-                     style="max-width:20px"
-                     size="10px"
-                     class="q-ma-none q-pa-xs cursor-pointer"
-                     :color="existingSession ? (tabsStore.getCurrentTabset?.type === TabsetType.SESSION ? 'red':'grey-5') :'primary'"
-                     :icon="existingSession ? 'o_stop_circle':'o_play_circle'"
-                     @click="toggleSessionState">
-                <q-tooltip class="tooltip" v-if="existingSession">Stop Session</q-tooltip>
-                <q-tooltip class="tooltip" v-else>Start new Session</q-tooltip>
-              </q-btn>
+                <q-btn v-if="usePermissionsStore().hasFeature(FeatureIdent.SESSIONS)"
+                       flat
+                       style="max-width:20px"
+                       size="10px"
+                       class="q-ma-none q-pa-xs cursor-pointer"
+                       :color="existingSession ? (tabsStore.getCurrentTabset?.type === TabsetType.SESSION ? 'red':'grey-5') :'primary'"
+                       :icon="existingSession ? 'o_stop_circle':'o_play_circle'"
+                       @click="toggleSessionState">
+                  <q-tooltip class="tooltip" v-if="existingSession">Stop Session</q-tooltip>
+                  <q-tooltip class="tooltip" v-else>Start new Session</q-tooltip>
+                </q-btn>
 
-              <q-btn v-if="usePermissionsStore().hasFeature(FeatureIdent.WEBSITE_CLIP) && webClipActive()"
-                     icon="filter_center_focus"
-                     flat
-                     class="q-ma-none q-pa-xs cursor-pointer"
-                     style="max-width:20px"
-                     size="10px"
-                     @click="createClip">
-                <q-tooltip class="tooltip">{{ createWebsiteClipTooltip() }}</q-tooltip>
-              </q-btn>
-              <q-btn v-if="usePermissionsStore().hasFeature(FeatureIdent.WEBSITE_CLIP) && !webClipActive()"
-                     icon="filter_center_focus"
-                     color="grey-5"
-                     flat
-                     class="q-ma-none q-pa-xs cursor-pointer"
-                     style="max-width:20px"
-                     size="10px">
-                <q-tooltip class="tooltip">cannot create web clip for this tab</q-tooltip>
-              </q-btn>
+                <q-btn v-if="usePermissionsStore().hasFeature(FeatureIdent.WEBSITE_CLIP) && webClipActive()"
+                       icon="filter_center_focus"
+                       flat
+                       class="q-ma-none q-pa-xs cursor-pointer"
+                       style="max-width:20px"
+                       size="10px"
+                       @click="createClip">
+                  <q-tooltip class="tooltip">{{ createWebsiteClipTooltip() }}</q-tooltip>
+                </q-btn>
+                <q-btn v-if="usePermissionsStore().hasFeature(FeatureIdent.WEBSITE_CLIP) && !webClipActive()"
+                       icon="filter_center_focus"
+                       color="grey-5"
+                       flat
+                       class="q-ma-none q-pa-xs cursor-pointer"
+                       style="max-width:20px"
+                       size="10px">
+                  <q-tooltip class="tooltip">cannot create web clip for this tab</q-tooltip>
+                </q-btn>
 
-            </div>
+              </div>
+
+            </template>
           </div>
 
           <div class="text-caption q-ma-md" v-if="tabsStore.getCurrentTabset?.tabs.length === 0">
@@ -178,10 +196,16 @@
 
           <div class="row q-ma-none q-pa-none" v-if="tabsStore.getCurrentTabset">
             <div class="col-12 q-ma-none q-pa-none q-pt-lg">
+
+              <!--              <q-btn label="send" @click="sendMessage()"></q-btn>-->
+
+
               <SidePanelDynamicTabset v-if="tabsStore.getCurrentTabset?.type === TabsetType.DYNAMIC"
                                       :tabset="tabsStore.getCurrentTabset"/>
               <PanelTabList v-else
                             :tabs="filteredTabs()"/>
+
+
             </div>
           </div>
 
@@ -198,51 +222,12 @@
 
       </template>
 
+      <!-- selected tab or current tab from chrome -->
       <template v-slot:after>
-        <!-- selected tab or current tab from chrome -->
-        <div v-if="tabFromChromeTab() && tabsStore.getCurrentTabset && currentChromeTab.url !== 'chrome://newtab/'"
-             class="row q-ma-sm q-mt-lg"
-             :class="alreadyInTabset() ? 'bg-grey-1':'bg-yellow-1'"
-             style="border:1px solid gray;border-radius: 5px">
-
-          <div class="col-10">
-            <q-list>
-              <q-item
-                v-ripple
-                class="q-ma-none q-pa-sm">
-                <PanelTabListElementWidget
-                  header="Current Tab:"
-                  :tab="tabFromChromeTab()"
-                  :show-tabsets="true"
-                  :hideMenu="true"/>
-              </q-item>
-            </q-list>
-          </div>
-          <div class="col-2">
-            <q-btn :disable="alreadyInTabset()" :label="alreadyInTabset() ? 'saved' :'save'" color="primary" flat
-                   size="10px" @click="saveFromPanel()"></q-btn>
-          </div>
-        </div>
-
-        <div v-else-if="selectedTab"
-             class="row q-ma-sm q-mt-lg"
-             :class="alreadyInTabset() ? 'bg-grey-1':'bg-yellow-1'"
-             style="border:1px solid gray;border-radius: 5px">
-
-          <div class="col-12">
-            <q-list>
-              <q-item
-                v-ripple
-                class="q-ma-none q-pa-xs">
-                <SidePanelTabListElementDetails :tab="selectedTab"/>
-              </q-item>
-            </q-list>
-          </div>
-        </div>
+        <SidePanelTabInfo />
       </template>
 
     </q-splitter>
-    <!--    </div>-->
   </q-page>
 
 </template>
@@ -266,25 +251,26 @@ import NewTabsetDialog from "components/dialogues/NewTabsetDialog.vue";
 import {ListDetailLevel, useUiStore} from "src/stores/uiStore";
 import TabsetsSelectorWidget from "components/widgets/TabsetsSelectorWidget.vue";
 import PanelTabList from "components/layouts/PanelTabList.vue";
-import PanelTabListElementWidget from "components/widgets/PanelTabListElementWidget.vue";
 import {usePermissionsStore} from "src/stores/permissionsStore";
 import {FeatureIdent} from "src/models/AppFeature";
 import SearchWidget from "components/widgets/SearchWidget.vue";
 import {useSpacesStore} from "src/stores/spacesStore";
-import SidePanelTabListElementDetails from "components/widgets/SidePanelTabListElementDetails.vue";
 import SidePanelDynamicTabset from "components/layouts/sidepanel/SidePanelDynamicTabset.vue";
 import AddUrlDialog from "components/dialogues/AddUrlDialog.vue";
 import NewSessionDialog from "components/dialogues/NewSessionDialog.vue";
 import {StopSessionCommand} from "src/domain/commands/StopSessionCommand";
 import JsUtils from "src/utils/JsUtils";
 import {ToggleSortingCommand} from "src/domain/tabsets/ToggleSorting";
+import {useLogsStore} from "stores/logsStore";
+import SidePanelTabInfo from "pages/sidepanel/SidePanelTabInfo.vue";
 
-const {inBexMode, sanitize} = useUtils()
+const {inBexMode, sanitize, sendMsg} = useUtils()
 
 const $q = useQuasar()
 const router = useRouter()
 const tabsStore = useTabsStore()
 const spacesStore = useSpacesStore()
+const uiStore = useUiStore()
 const show = ref(false)
 
 const currentChromeTabs = ref<chrome.tabs.Tab[]>([])
@@ -296,17 +282,17 @@ const currentChromeTab = ref<chrome.tabs.Tab>(null as unknown as chrome.tabs.Tab
 const searching = ref(false)
 const existingSession = ref(false)
 const orderDesc = ref(false)
+const logs = ref<object[]>([])
+const progress = ref<number | undefined>(undefined)
+const progressLabel = ref<string | undefined>(undefined)
 
 const splitterModel = ref(160)
 const selectedTab = ref<Tab | undefined>(undefined)
 const dragTarget = ref('')
 
-console.log("adding listener")
-
 const chromeVersion = (/Chrome\/([0-9]+)/.exec(navigator.userAgent) || [, 0])[1];
 
 watchEffect(() => {
-  //console.log("watching", useUiStore().getSelectedTab)
   selectedTab.value = useUiStore().getSelectedTab
   if (selectedTab.value) {
     currentChromeTab.value = null as unknown as chrome.tabs.Tab
@@ -314,28 +300,46 @@ watchEffect(() => {
 })
 
 watchEffect(() => {
+  progress.value = (uiStore.progress || 0.0) / 100.0
+  progressLabel.value = uiStore.progressLabel + " " + Math.round(100 * progress.value) + "%"
+})
+
+watchEffect(() => {
   existingSession.value = _.filter([...tabsStore.tabsets.values()], (ts: Tabset) => ts.type === TabsetType.SESSION).length > 0
 })
 
+watchEffect(() => {
+  logs.value = useLogsStore().logs
+})
+
+function inIgnoredMessages(message: any) {
+  return message.msg === "html2text" ||
+    message.msg === "html2links" ||
+    message.name === "zero-shot-classification" ||
+    message.msg === "init-ai-module";
+}
+
 if (inBexMode()) {
-  chrome.runtime.onMessage.addListener(({name, data}) => {
-    console.log("got message", name, data)
-    if (name === 'current-tabset-id-change') {
-      const tsId = data.tabsetId
-      console.log("hier", useTabsStore().getCurrentTabset, tsId)
+  // seems we need to define these listeners here to get the matching messages reliably
+  chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    if (inIgnoredMessages(message)) {
+      return true
+    }
+    if (message.name === 'current-tabset-id-change') {
+      const tsId = message.data.tabsetId
       useTabsStore().selectCurrentTabset(tsId)
-    } else if (name === 'feature-activated' || name === "feature-deactivated") {
-      console.log("message data", data)
+    } else if (message.name === 'feature-activated' || message.name === "feature-deactivated") {
       usePermissionsStore().initialize()
-    } else if (name === "tabsets-imported") {
+    } else if (message.name === "tabsets-imported") {
       useSpacesStore().reload()
       useTabsetService().init()
-    } else if (name === "tab-being-dragged") {
-      useUiStore().draggingTab(data.tabId, null as unknown as any)
-    } else if (name === "tab-changed") {
-      const tabset = useTabsetService().getTabset(data.tabsetId) as Tabset
+      // TODO reload
+    } else if (message.name === "tab-being-dragged") {
+      useUiStore().draggingTab(message.data.tabId, null as unknown as any)
+    } else if (message.name === "tab-changed") {
+      const tabset = useTabsetService().getTabset(message.data.tabsetId) as Tabset
       // replace tab (seems necessary !?) TODO
-      tabset.tabs = _.map(tabset.tabs, (t: Tab) => (t.id === data.tab.id) ? data.tab : t)
+      tabset.tabs = _.map(tabset.tabs, (t: Tab) => (t.id === message.data.tab.id) ? message.data.tab : t)
       useTabsetService().saveTabset(tabset)
         .then((res) => {
           console.log("saved tabset", tabset)
@@ -343,18 +347,25 @@ if (inBexMode()) {
         .catch((err) => {
           console.error("got error " + err)
         })
+    } else if (message.name === "progress-indicator") {
+      //console.log(" > got message '" + message.name + "'", message)
+      if (message.percent) {
+        uiStore.progress = message.percent
+        uiStore.progressLabel = message.label
+      }
+      if (message.status === "done") {
+        uiStore.progress = undefined
+        uiStore.progressLabel = undefined
+      }
+      sendResponse("ui store progress set to " + uiStore.progress)
+    } else {
+      console.log("got unmatched message", message)
     }
     return true
   })
 } else {
   useRouter().push("/start")
 }
-
-/*watchEffect(() => {
-  if (currentChromeTabs.value[0]?.url) {
-    currentTabs.value = useTabsStore().tabsForUrl(currentChromeTabs.value[0].url) || []
-  }
-})*/
 
 watchEffect(() => {
   openTabs.value = useTabsStore().tabs
@@ -448,25 +459,6 @@ if (inBexMode()) {
   })
 }
 
-const saveFromPanel = () => {
-  const currentChromeTab = useTabsStore().currentChromeTab
-  console.log("saving from panel...", currentChromeTab)
-  if (currentChromeTab && tabsStore.getCurrentTabset) {
-    const tabsetId = tabsStore.getCurrentTabset.id // tabsetName.value['value' as keyof object]
-    // useTabsetService().addToTabsetId(tabset['value' as keyof object], new Tab(uid(), currentChromeTab))
-    const useTS = useTabsetService().getTabset(tabsetId)
-    if (useTS) {
-      useCommandExecutor().executeFromUi(new AddTabToTabsetCommand(new Tab(uid(), currentChromeTab), useTS))
-    }
-  }
-}
-
-const alreadyInTabset = () => {
-  if (currentChromeTab.value?.url && tabsStore.getCurrentTabset) {
-    return useTabsetService().urlExistsInCurrentTabset(currentChromeTab.value.url)
-  }
-  return false
-}
 
 const setFilter = (newValue: string) => {
   console.log("filter", newValue)
@@ -498,10 +490,6 @@ const addFirstTabset = () => $q.dialog({
     fromPanel: true
   }
 })
-
-const tabFromChromeTab = () => currentChromeTab.value ? new Tab(uid(), currentChromeTab.value) : undefined
-
-const showTabsets = () => router.push("/sidepanel/spaces")
 
 const toggleSearch = () => searching.value = !searching.value
 

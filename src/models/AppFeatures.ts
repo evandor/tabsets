@@ -38,6 +38,7 @@ export class AppFeatures {
     new AppFeature(FeatureIdent.WEBSITE_CLIP, FeatureType.EXPERIMENTAL, 'Create an image clip from a website and store it', 'filter_center_focus', ['bex'])
       .setActivateCommand(new GrantPermissionCommand('notifications')),
     new AppFeature(FeatureIdent.STANDALONE_APP, FeatureType.EXPERIMENTAL, 'Standalone App', 'o_open_in_new', ['bex']),
+    new AppFeature(FeatureIdent.AI_MODULE, FeatureType.EXPERIMENTAL, 'AI Module', 'o_auto_awesome', ['bex']),
 
   ]
 

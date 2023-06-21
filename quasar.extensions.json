@@ -1,17 +1,12 @@
 {
-  "@quasar/testing": {
-    "harnesses": [
-      "unit-jest@alpha"
-    ]
+  "@quasar/qmarkdown": {
+    "import_md": true
   },
-  "@quasar/testing-unit-jest": {
+  "@quasar/testing-unit-vitest": {
     "options": [
       "scripts",
       "typescript",
-      "majestic"
+      "ui"
     ]
-  },
-  "@quasar/qmarkdown": {
-    "import_md": true
   }
 }

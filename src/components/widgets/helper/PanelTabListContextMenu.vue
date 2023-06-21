@@ -3,18 +3,30 @@
     <q-list dense style="min-width: 200px">
       <q-separator/>
       <q-item clickable v-close-popup @click.stop="showTabDetails(props['tab' as keyof object])">
-        <q-icon name="o_info" class="q-my-xs q-mr-xs" color="blue-5" style="position:relative;top:-1px"/>
-        Show Tab Details
+        <q-item-section avatar style="padding-right:0;min-width:25px;max-width: 25px;">
+          <q-icon size="xs" name="o_info" color="accent"/>
+        </q-item-section>
+        <q-item-section>
+          Show Tab Details
+        </q-item-section>
       </q-item>
       <q-separator/>
       <q-item clickable v-close-popup @click.stop="editNoteDialog(props['tab' as keyof object])">
-        <q-icon name="o_note" class="q-my-xs q-mr-xs" color="accent" style="position:relative;top:-1px"/>
-        Add / Edit Note
+        <q-item-section avatar style="padding-right:0;min-width:25px;max-width: 25px;">
+          <q-icon size="xs" name="o_note" color="accent"/>
+        </q-item-section>
+        <q-item-section>
+          Add / Edit Note
+        </q-item-section>
       </q-item>
       <q-separator/>
       <q-item clickable v-close-popup @click.stop="deleteTab(props['tab' as keyof object])">
-        <q-icon name="o_delete" class="q-my-xs q-mr-xs" color="grey-5" style="position:relative;top:-1px"/>
-        Delete tab
+        <q-item-section avatar style="padding-right:0;min-width:25px;max-width: 25px;">
+          <q-icon size="xs" name="o_delete" color="negative"/>
+        </q-item-section>
+        <q-item-section>
+          Delete Tab
+        </q-item-section>
       </q-item>
     </q-list>
   </q-menu>

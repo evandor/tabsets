@@ -297,6 +297,11 @@ text.set(FeatureIdent.TOP10.toLowerCase(), {
   description: 'Get a view to list all tabs by how often they have been accessed',
   permissions: []
 })
+text.set(FeatureIdent.AI_MODULE.toLowerCase(), {
+  name: 'Artificial Intelligence Module',
+  description: 'Let the AI Module analyse which tabset you want the current tab been added to',
+  permissions: []
+})
 
 
 watchEffect(() => {

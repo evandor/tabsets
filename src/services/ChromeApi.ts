@@ -156,21 +156,13 @@ class ChromeApi {
       let queryOptions = {active: true, lastFocusedWindow: true};
       try {
         chrome.tabs.query(queryOptions, function (tabs) {
-          console.log("got tab", tabs[0])
+          //console.log("got tab", tabs[0])
           resolve(tabs[0]);
         })
       } catch (e) {
         reject(e);
       }
     })
-
-
-    // let queryOptions = {active: true, lastFocusedWindow: true};
-    //  chrome.tabs.query(queryOptions,
-    //   (c) => return Promise.resolve(c[0]))
-    // // @ts-ignore
-    // let [tab] = await chrome.tabs.query(queryOptions);
-    // return tab;
   }
 
   highlight(tabIndex: number | undefined) {

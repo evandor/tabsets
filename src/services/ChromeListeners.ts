@@ -37,6 +37,20 @@ function setCurrentTab() {
   });
 }
 
+function inIgnoredMessages(request: any) {
+  // TODO name vs. msg!
+  return request.name === 'progress-indicator' ||
+    request.name === 'current-tabset-id-change' ||
+    request.name === 'tab-being-dragged' ||
+    request.name === 'tab-changed' ||
+    request.name === 'feature-activated' ||
+    request.name === 'feature-deactivated' ||
+    request.name === 'tabsets-imported' ||
+    request.name === 'zero-shot-classification' ||
+    request.name === 'init-ai-module'
+
+}
+
 class ChromeListeners {
 
   inProgress = false;
@@ -45,15 +59,14 @@ class ChromeListeners {
 
   throttleOnePerSecond = throttledQueue(1, 1000, true)
 
-  injectedScripts: Map<number, string[]> = new Map()
-
-  initListeners(isNewTabPage: boolean = false) {
+  initListeners() {
 
     if (process.env.MODE === 'bex') {
-      chrome.runtime.setUninstallURL("https://tabsets.web.app/#/uninstall")
-    }
-    if (process.env.MODE === 'bex' && !isNewTabPage) {
       console.debug("initializing chrome tab listeners")
+
+      chrome.runtime.setUninstallURL("https://tabsets.web.app/#/uninstall")
+
+      setCurrentTab()
 
       chrome.tabs.onCreated.addListener((tab: chrome.tabs.Tab) => this.onCreated(tab))
       chrome.tabs.onUpdated.addListener((number, info, tab) => this.onUpdated(number, info, tab))
@@ -196,7 +209,7 @@ class ChromeListeners {
     if (scripts.length > 0 && tab.id !== null) { // && !this.injectedScripts.get(chromeTab.id)) {
 
       chrome.tabs.get(tab.id, (chromeTab: chrome.tabs.Tab) => {
-        console.log("got tab", tab)
+       // console.log("got tab", tab)
         if (!tab.url?.startsWith("chrome")) {
           scripts.forEach((script: string) => {
             console.debug("executing scripts", tab.id, script)
@@ -208,7 +221,6 @@ class ChromeListeners {
               if (chrome.runtime.lastError) {
                 console.warn("could not execute script: " + chrome.runtime.lastError.message, info.url);
               }
-              console.log("script execution callback", callback)
             });
           })
         }
@@ -287,7 +299,10 @@ class ChromeListeners {
   }
 
   onMessage(request: any, sender: chrome.runtime.MessageSender, sendResponse: any) {
-    console.log("handling request", request.msg)
+    if (inIgnoredMessages(request)) {
+      return true
+    }
+    //console.log("handling request", request)
     if (request.msg === 'captureThumbnail') {
       const screenShotWindow = useWindowsStore().screenshotWindow
       this.handleCapture(sender, screenShotWindow, sendResponse)
@@ -304,7 +319,7 @@ class ChromeListeners {
     } else if (request.msg === 'websiteImg') {
       this.handleMessageWebsiteImage(request, sender, sendResponse)
     } else {
-      console.log("got unknown message", request.msg)
+      console.log("got unknown message", request)
     }
     return true;
   }

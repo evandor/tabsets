@@ -34,7 +34,7 @@ export function useUtils() {
   const sendMsg = (msgName: string, data: object) => {
     chrome.runtime.sendMessage({
       name: msgName, data: data
-    }, (callback) => {
+    }, (callback:any) => {
       console.log("got callback", callback)
       if (chrome.runtime.lastError) { /* ignore */
       }

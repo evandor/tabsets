@@ -18,7 +18,6 @@ import ChromeListeners from "src/services/ChromeListeners";
 import {useRoute, useRouter} from "vue-router";
 import ChromeBookmarkListeners from "src/services/ChromeBookmarkListeners";
 import {usePermissionsStore} from "src/stores/permissionsStore";
-import NotificationsService from "src/services/NotificationsService";
 import {useSuggestionsStore} from "src/stores/suggestionsStore";
 import {useUiStore} from "src/stores/uiStore";
 import {useTabsetService} from "src/services/TabsetService2";
@@ -28,6 +27,7 @@ import BookmarksService from "src/services/BookmarksService";
 import {useUtils} from "src/services/Utils";
 import {EventEmitter} from "events";
 import {useDB} from "src/services/usePersistenceService";
+import {FeatureIdent} from "src/models/AppFeature";
 
 const {inBexMode} = useUtils()
 
@@ -51,8 +51,19 @@ $q.dark.set($q.localStorage.getItem('darkMode') || false)
 // init of stores and some listeners
 usePermissionsStore().initialize()
   .then(() => {
-    ChromeListeners.initListeners(false)
+    ChromeListeners.initListeners()
     ChromeBookmarkListeners.initListeners()
+    if (usePermissionsStore().hasFeature(FeatureIdent.AI_MODULE)) {
+      console.log("sending init-ai-module message")
+      chrome.runtime.sendMessage({name: 'init-ai-module'}, // nobody listening yet??
+        (callback: any) => {
+          if (chrome.runtime.lastError) {
+            console.warn("got error", chrome.runtime.lastError)
+          } else {
+            console.log("successfully send init-ai-module message")
+          }
+        })
+    }
     bookmarksStore.init()
     BookmarksService.init()
   })
@@ -68,7 +79,6 @@ const localStorage = useQuasar().localStorage
 IndexedDbPersistenceService.init(INDEX_DB_NAME)
   .then(() => {
     // init services
-    //NotificationsService.init()
     useNotificationsStore().initialize(useDB(undefined).db)
     useSuggestionsStore().init()
     tabsetService.setLocalStorage(localStorage)

@@ -8,7 +8,6 @@ import {useSearchStore} from "src/stores/searchStore";
 import ChromeApi from "src/services/ChromeApi";
 import {TabPredicate} from "src/domain/Types";
 import {Tabset, TabsetStatus, TabsetType} from "src/models/Tabset";
-import {useNotificationsStore} from "src/stores/notificationsStore";
 import {MetaLink} from "src/models/MetaLink";
 import {useDB} from "src/services/usePersistenceService";
 import {SpecialTabsetIdent} from "src/domain/tabsets/CreateSpecialTabset";
@@ -17,8 +16,12 @@ import {v5 as uuidv5} from 'uuid';
 import {useSettingsStore} from "src/stores/settingsStore"
 import {Space} from "src/models/Space";
 import {useSpacesStore} from "src/stores/spacesStore";
+import {useUtils} from "src/services/Utils";
+import {usePermissionsStore} from "stores/permissionsStore";
+import {FeatureIdent} from "src/models/AppFeature";
 
 const {db} = useDB()
+const {sendMsg} = useUtils()
 
 export function useTabsetService() {
 
@@ -280,9 +283,51 @@ export function useTabsetService() {
     }
     const title = tab.title || ''
     const tabsetIds: string[] = tabsetsFor(tab.url)
+    //console.log("checking candidates", useTabsStore().tabsets.values())
+    const candidates = _.map(
+      _.filter([...useTabsStore().tabsets.values()], (ts: Tabset) =>
+        ts.type === TabsetType.DEFAULT || ts.type === TabsetType.SESSION),
+      (ts: Tabset) => {
+        return {"name": ts.name, "id": ts.id}
+      })
 
-    db.saveContent(tab, text, metas, title, tabsetIds)
-      .catch((err: any) => console.log("err", err))
+    // try to apply AI logic
+    if (metas['description' as keyof object] && usePermissionsStore().hasFeature(FeatureIdent.AI_MODULE)) {
+      const data = {
+        text: metas['description' as keyof object],
+        candidates: _.map(candidates, (c: any) => c.name)
+      }
+      console.log("about to apply KI logic on meta description...", data)
+      //sendMsg('zero-shot-classification', data)
+
+      chrome.runtime.sendMessage({
+        name: 'zero-shot-classification', data: data
+      }, (callback: any) => {
+        console.log("got callback!", callback)
+        if (chrome.runtime.lastError) { /* ignore */
+        }
+        const tabsetScores: object[] = []
+        if (callback.scores) {
+          callback.scores.forEach((score: number, index: number) => {
+            console.log("got score", score)
+            if (score > .1) {
+              tabsetScores.push({
+                score: score,
+                candidateName: candidates[index].name,
+                candidateId: candidates[index].id
+              })
+            }
+          })
+          // force reload in other pages (like CurrentTabElementHelper)
+          useTabsStore().setCurrentChromeTab(tab)
+        }
+        db.saveContent(tab, text, metas, title, tabsetIds, tabsetScores)
+          .catch((err: any) => console.log("err", err))
+      });
+    } else {
+      db.saveContent(tab, text, metas, title, tabsetIds)
+        .catch((err: any) => console.log("err", err))
+    }
 
     console.debug("updating meta data for ", tabsetIds, tab.url, metas)
     const tabsets = [...useTabsStore().tabsets.values()]
@@ -346,8 +391,21 @@ export function useTabsetService() {
             savePromises.push(saveTabset(tabset)
               .then((res) => {
                 // @ts-ignore
-                console.log("saved tabset", tabset._id, tabset._rev)
+                console.log(`saved tabset with _id: ${tabset._id}, _rev: ${tabset._rev}`)
                 //tabset._rev = res._rev
+
+                // if (usePermissionsStore().hasFeature(FeatureIdent.AI_MODULE)) {
+                //   // try to apply AI logic
+                //   if (metas['description' as keyof object]) {
+                //     const data = {
+                //       text: metas['description' as keyof object],
+                //       candidates: _.map([...useTabsStore().tabsets.values()], (ts: Tabset) => ts.name)
+                //     }
+                //     console.log("about to apply KI logic...", data)
+                //     sendMsg('zero-shot-classification', data)
+                //   }
+                // }
+
               }))
           }
         })

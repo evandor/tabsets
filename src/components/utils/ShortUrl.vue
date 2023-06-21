@@ -1,5 +1,5 @@
 <template>
-  {{ shortenUrl() }}
+  <span class="text-blue-10">{{ shortenUrl() }}</span>
 </template>
 
 <script lang="ts" setup>

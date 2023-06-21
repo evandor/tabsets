@@ -66,3 +66,8 @@
   background-color: yellow;
   color: black;
 }
+
+// for notification (bottom) not to hide the panel footer
+.q-notifications__list {
+  margin-bottom: 145px
+}

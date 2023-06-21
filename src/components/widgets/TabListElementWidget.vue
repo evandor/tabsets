@@ -236,7 +236,7 @@ const editNoteDialog = (tab: Tab) => $q.dialog({
 })
 
 const addToNewTabUrlList = (tab: Tab) => {
-  console.log("got tab", tab)
+ // console.log("got tab", tab)
   useUiStore().addToNewTabUrlList({
     url: tab.chromeTab.url,
     title: tab.chromeTab.title,

@@ -171,7 +171,10 @@ class IndexedDbPersistenceService implements PersistenceService {
 
   getContent(url: string): Promise<object> {
     const encodedUrl = btoa(url)
-    return this.db.get('content', encodedUrl)
+    if (this.db) {
+      return this.db.get('content', encodedUrl)
+    }
+    return Promise.reject("db not ready (yet)")
   }
 
   deleteThumbnail(url: string): Promise<void> {
@@ -182,7 +185,8 @@ class IndexedDbPersistenceService implements PersistenceService {
     return this.db.delete('content', btoa(url))
   }
 
-  saveContent(tab: chrome.tabs.Tab, text: string, metas: object, title: string, tabsetIds: string[]): Promise<IDBValidKey> {
+  saveContent(tab: chrome.tabs.Tab, text: string, metas: object, title: string, tabsetIds: string[],
+              tabsetCandidates: object[] = []): Promise<IDBValidKey> {
     if (tab.url) {
       const encodedTabUrl = btoa(tab.url)
       return this.db.put('content', {
@@ -193,7 +197,8 @@ class IndexedDbPersistenceService implements PersistenceService {
         content: text,
         metas: metas,
         tabsets: tabsetIds,
-        favIconUrl: tab.favIconUrl
+        favIconUrl: tab.favIconUrl,
+        tabsetCandidates: tabsetCandidates
       }, encodedTabUrl)
         .then((res) => {
          // console.info(new Tab(uid(), tab), "saved content for url " + tab.url)
