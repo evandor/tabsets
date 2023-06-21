@@ -9,7 +9,7 @@
       :src="currentChromeTab?.favIconUrl">
     </q-img>
 
-    <div class="col text-caption" style="position:relative;top:25px">
+    <div class="col text-caption" style="position:relative;top:35px">
       {{ alreadyInTabset() ? 'saved in' : 'save in' }}
     </div>
   </q-item-section>

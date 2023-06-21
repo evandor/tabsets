@@ -12,6 +12,15 @@
                @click="toggleView(SidePanelView.TABS_LIST)">
           <q-tooltip class="tooltip">List all open tabs in your browser</q-tooltip>
         </q-btn>
+        <q-btn v-if="permissionsStore.hasFeature(FeatureIdent.BOOKMARKS)"
+               icon="o_bookmark"
+               class="q-my-xs q-ml-xs"
+               style="width:20px"
+               :color="isActive(SidePanelView.BOOKMARKS) ? 'secondary':'primary'"
+               size="8px"
+               @click="toggleView(SidePanelView.BOOKMARKS)">
+          <q-tooltip class="tooltip">List all open tabs in your browser</q-tooltip>
+        </q-btn>
         <q-btn icon="o_label"
                v-if="permissionsStore.hasFeature(FeatureIdent.TAGS)"
                class="q-my-xs q-ml-xs"

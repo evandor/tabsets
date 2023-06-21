@@ -77,10 +77,12 @@ watchEffect(() => {
 
 watchEffect(async () => {
   if (currentChromeTab.value?.url) {
-    //console.log("hier", currentChromeTab.value?.url)
-    const c = await TabsetService.getContentForUrl(currentChromeTab.value.url)
-    //console.log("c", c)
-    tabsetCandidates.value = c ? (c['tabsetCandidates' as keyof object] || []) : []
+    try {
+      const c = await TabsetService.getContentForUrl(currentChromeTab.value.url)
+      tabsetCandidates.value = c ? (c['tabsetCandidates' as keyof object] || []) : []
+    } catch (err) {
+      console.log("got error: ", err)
+    }
   }
 })
 

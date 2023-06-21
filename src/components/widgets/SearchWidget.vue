@@ -198,7 +198,7 @@ const updateSearch = (val: any) => {
     highlight.value = val.name
     useUiStore().setHighlightTerm(val.name)
     JsUtils.runCssHighlight()
-  } else if (val && val.id.startsWith('tabset|')) {
+  } else if (val && val.id?.startsWith('tabset|')) {
     const tsId = val.tabsets[0]
     console.log("got tsid", tsId)
     if (tsId) {
