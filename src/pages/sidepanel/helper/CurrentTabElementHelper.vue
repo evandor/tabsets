@@ -9,8 +9,13 @@
       :src="currentChromeTab?.favIconUrl">
     </q-img>
 
-    <div class="col text-caption" style="position:relative;top:35px">
-      {{ alreadyInTabset() ? 'saved in' : 'save in' }}
+    <div class="col text-caption text-center q-ml-xs"
+         style="position:relative;line-height: normal"
+         :style="alreadyInTabset() ? 'top:32px' : 'top:12px'">
+      {{ alreadyInTabset() ? 'saved in tabset(s)' : 'save in tabset:' }}
+      <div v-if="!alreadyInTabset()">
+        <q-icon name="arrow_drop_down" size="sm" color="primary" class="q-mr-xs" />
+      </div>
     </div>
   </q-item-section>
 
@@ -38,17 +43,18 @@
     <q-item-label>
       <template v-if="!alreadyInTabset()">
         <q-chip clickable
+                color="warning"
                 @click="saveInTabset(tabsStore.currentTabsetId)"
                 class="cursor-pointer q-ml-none q-mr-xs" size="9px" icon="tab">
           {{ tabsStore.currentTabsetName }}
-          <q-tooltip>current tabset</q-tooltip>
+          <q-tooltip class="tooltip">current tabset</q-tooltip>
         </q-chip>
         <template v-for="c in tabsetCandidates">
-          <q-chip clickable color="warning"
+          <q-chip clickable
                   @click="saveInTabset(c.candidateId)"
                   class="cursor-pointer q-ml-none q-mr-xs" size="9px" icon="tab">
             {{ c.candidateName }}
-            <q-tooltip>Suggestion from AI Module (with confidence {{ Math.round(100 * c.score) }}%)</q-tooltip>
+            <q-tooltip class="tooltip">Suggestion from AI Module (with confidence {{ Math.round(100 * c.score) }}%)</q-tooltip>
           </q-chip>
         </template>
       </template>

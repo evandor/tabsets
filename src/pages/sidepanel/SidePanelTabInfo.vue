@@ -1,6 +1,6 @@
 <template>
-  <div v-if="tabFromChromeTab() && tabsStore.getCurrentTabset && currentChromeTab.url !== 'chrome://newtab/'"
-       class="row q-ma-sm q-mt-lg bg-yellow-1"
+  <div v-if="tabFromChromeTab() && currentChromeTab.url !== 'chrome://newtab/'"
+       class="row q-ma-sm q-pt-sm bg-yellow-1"
        style="border:1px solid gray;border-radius: 5px">
 
     <div class="col-12">
@@ -12,31 +12,8 @@
         </q-item>
       </q-list>
     </div>
-<!--    <div class="col-2">-->
-<!--      <q-btn :disable="alreadyInTabset()" :label="alreadyInTabset() ? 'saved' :'save'" color="primary" flat-->
-<!--             size="10px" @click="saveFromPanel()"></q-btn>-->
-<!--      <br>-->
-<!--      <q-btn :label="c.candidateName" v-for="c in tabsetCandidates" color="primary" flat size="10px">-->
-<!--        <q-tooltip>got score {{c.score}}</q-tooltip>-->
-<!--      </q-btn>-->
-<!--    </div>-->
   </div>
 
-  <div v-else-if="selectedTab"
-       class="row q-ma-sm q-mt-lg"
-       :class="alreadyInTabset() ? 'bg-grey-1':'bg-yellow-1'"
-       style="border:1px solid gray;border-radius: 5px">
-
-    <div class="col-12">
-      <q-list>
-        <q-item
-          v-ripple
-          class="q-ma-none q-pa-xs">
-          <SidePanelTabListElementDetails :tab="selectedTab"/>
-        </q-item>
-      </q-list>
-    </div>
-  </div>
 </template>
 
 <script lang="ts" setup>

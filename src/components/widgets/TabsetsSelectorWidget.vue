@@ -2,8 +2,7 @@
 
   <div class="cursor-pointer">
     <div
-      class="q-ma-none q-pa-none text-subtitle2 q-pl-sm cursor-pointer"
-      style="border:1px solid lightgray;background-color:white;border-radius:4px;min-width:200px">
+      class="q-ma-none q-pa-none text-subtitle2 q-pl-sm cursor-pointer">
       {{ tabsetLabel() }}
     </div>
 

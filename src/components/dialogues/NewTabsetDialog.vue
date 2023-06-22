@@ -80,8 +80,8 @@ const addAllOpenTabs = ref(false)
 
 const newTabsetNameIsValid = computed(() => newTabsetName.value.length <= 32 && !STRIP_CHARS_IN_USER_INPUT.test(newTabsetName.value))
 
-const firstTabset = [
-  ChromeApi.createChromeTabObject("Welcome to Tabsets", "https://tabsets.web.app/#/welcome", "")
+const firstTabset: chrome.tabs.Tab[] = [
+//  ChromeApi.createChromeTabObject("Welcome to Tabsets", "https://tabsets.web.app/#/welcome", "")
 ]
 
 watchEffect(() => {
