@@ -25,7 +25,7 @@
 
     <div class="row q-mt-lg">
       <div class="col-12 items-center q-mb-md">
-        This will create a new tabset containing some pre-chosen tabs.
+        This will create a new tabset to which you can add tabs to
       </div>
     </div>
 

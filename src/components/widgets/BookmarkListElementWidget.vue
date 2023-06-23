@@ -92,14 +92,9 @@ import {useTabsetService} from "src/services/TabsetService2";
 const {formatDate} = useUtils()
 
 const props = defineProps({
-  bookmark: {
-    type: Object,
-    required: true
-  },
-  highlightUrl: {
-    type: String,
-    required: false
-  }
+  bookmark: {type: Object, required: true},
+  highlightUrl: {type: String, required: false},
+  inSidePanel: {type: Boolean, default: false}
 })
 
 const router = useRouter()
@@ -184,7 +179,10 @@ const getFaviconUrl = (chromeBookmark: chrome.bookmarks.BookmarkTreeNode | undef
 
 const deleteTab = (tab: Tab) => useCommandExecutor().executeFromUi(new DeleteTabCommand(tab))
 
-const selectBookmark = (bm: Bookmark) => router.push("/bookmarks/" + bm.chromeBookmark.id)
+const selectBookmark = (bm: Bookmark) =>
+  props.inSidePanel ?
+    router.push("/mainpanel/bookmarks/" + bm.chromeBookmark.id) :
+    router.push("/bookmarks/" + bm.chromeBookmark.id)
 
 const deleteBookmark = (bm: Bookmark) => BookmarksService.deleteBookmark(bm)
 

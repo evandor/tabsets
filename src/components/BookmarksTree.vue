@@ -76,6 +76,7 @@ import {useNotificationHandler} from "src/services/ErrorHandler";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {GrantPermissionCommand} from "src/domain/commands/GrantPermissionCommand";
 import {useSettingsStore} from "src/stores/settingsStore"
+import NavigationService from "src/services/NavigationService";
 
 const router = useRouter()
 const tabsStore = useTabsStore()
@@ -95,6 +96,10 @@ const bookmarksPermissionGranted = ref<boolean | undefined>(undefined)
 
 const {handleSuccess, handleError} = useNotificationHandler()
 
+const props = defineProps({
+  inSidePanel: {type: Boolean, default: false}
+})
+
 watchEffect(() => {
   bookmarksPermissionGranted.value = permissionsStore.hasPermission('bookmarks')
   useBookmarksStore().loadBookmarks()
@@ -102,7 +107,9 @@ watchEffect(() => {
 
 watch(() => selected.value, (currentValue, oldValue) => {
   if (currentValue !== oldValue) {
-    router.push("/bookmarks/" + selected.value)
+    props.inSidePanel ?
+      NavigationService.openOrCreateTab(chrome.runtime.getURL("/www/index.html#/mainpanel/bookmarks/" + selected.value)) :
+      router.push("/bookmarks/" + selected.value)
   }
 })
 

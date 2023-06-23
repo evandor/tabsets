@@ -21,7 +21,11 @@ export class LocalStoragePersistenceService implements PersistenceService {
   }
 
   saveActiveFeatures(val: string[]) {
-    this.quasar.localStorage.set("ui.activeFeatures", val)
+    if (this.quasar.localStorage) {
+      this.quasar.localStorage.set("ui.activeFeatures", val)
+    } else {
+      console.warn("local storage not defined")
+    }
   }
 
   setInactiveDefaultFeatures(val: string[]) {

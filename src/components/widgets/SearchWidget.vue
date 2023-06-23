@@ -1,11 +1,12 @@
 <template>
 
   <div class="q-gutter-md row items-start fit">
-    <q-select dark dense standout filled autofocus
+    <q-select dense standout filled autofocus
               :placeholder="inputPlaceholder()"
               class="fit q-mx-md"
               color="primary"
-              :bg-color="props.fromPanel ? 'grey-7' : ''"
+              :bg-color="props.fromPanel ? 'lightgray-1' : ''"
+              label-color="primary"
               :model-value="search"
               ref="searchBox"
               hide-dropdown-icon
@@ -177,12 +178,12 @@ const filterFn = (val: any, update: any, abort: any) => {
       console.log("tabsetsAsHit", tabsetsAsHit)
       options.value = tabsetsAsHit
       options.value = options.value.concat(theHits.value)
-      console.log("options", options.value, typeof options.value)
-      if (options.value) {
-        const pseudoHit = new Hit("highlight", null as unknown as chrome.tabs.Tab, 0, 0, 0, [], [],[], "", "")
-        pseudoHit.name = val
-        options.value = options.value.concat(pseudoHit)
-      }
+      // console.log("options", options.value, typeof options.value)
+      // if (options.value) {
+      //   const pseudoHit = new Hit("highlight", null as unknown as chrome.tabs.Tab, 0, 0, 0, [], [],[], "", "")
+      //   pseudoHit.name = val
+      //   options.value = options.value.concat(pseudoHit)
+      // }
     })
   }, 100)
 }

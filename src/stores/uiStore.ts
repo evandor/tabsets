@@ -5,6 +5,9 @@ import {Tab} from "src/models/Tab";
 import _ from "lodash"
 import {LocalStorage} from "quasar";
 import {useUtils} from "src/services/Utils";
+import {useTabsStore} from "stores/tabsStore";
+import {FeatureIdent} from "src/models/AppFeature";
+import {usePermissionsStore} from "stores/permissionsStore";
 
 export enum DrawerTabs {
   BOOKMARKS = "bookmarks",
@@ -25,21 +28,44 @@ export enum DrawerTabs {
 }
 
 export class SidePanelView {
-  static readonly MAIN = new SidePanelView('main', '/sidepanel');
-  static readonly TABS_LIST = new SidePanelView('tabsList', '/sidepanel/tabslist');
-  static readonly TAGS_LIST = new SidePanelView('tagsList', '/sidepanel/tagslist');
-  static readonly TAG = new SidePanelView('tag', '/sidepanel/tags');
-  static readonly BY_DOMAIN_LIST = new SidePanelView('byDomainList', '/sidepanel/byDomainList');
-  static readonly RSS_LIST = new SidePanelView('rssList', '/sidepanel/rsslist');
-  static readonly NEWEST_TABS_LIST = new SidePanelView('newestList', '/sidepanel/newestList');
-  static readonly TOP_10_TABS_LIST = new SidePanelView('top10List', '/sidepanel/top10List');
-  static readonly BOOKMARKS = new SidePanelView('bookmarks', '/sidepanel/bookmarks');
 
-  private constructor(public readonly ident: string, public readonly path: any) {
+  static readonly MAIN = new SidePanelView('main', '/sidepanel');
+
+  static readonly TABS_LIST = new SidePanelView('tabsList', '/sidepanel/tabslist',
+    () => useTabsStore().tabs?.length > 1);
+
+  static readonly TAGS_LIST = new SidePanelView('tagsList', '/sidepanel/tagslist',
+    () => usePermissionsStore().hasFeature(FeatureIdent.TAGS));
+
+  static readonly TAG = new SidePanelView('tag', '/sidepanel/tags');
+
+  static readonly BY_DOMAIN_LIST = new SidePanelView('byDomainList', '/sidepanel/byDomainList',
+    () => usePermissionsStore().hasFeature(FeatureIdent.GROUP_BY_DOMAIN));
+
+  static readonly RSS_LIST = new SidePanelView('rssList', '/sidepanel/rsslist',
+    () => usePermissionsStore().hasFeature(FeatureIdent.RSS));
+
+  static readonly NEWEST_TABS_LIST = new SidePanelView('newestList', '/sidepanel/newestList',
+    () => usePermissionsStore().hasFeature(FeatureIdent.NEWEST_TABS));
+
+  static readonly TOP_10_TABS_LIST = new SidePanelView('top10List', '/sidepanel/top10List',
+    () => usePermissionsStore().hasFeature(FeatureIdent.TOP10));
+
+  static readonly BOOKMARKS = new SidePanelView('bookmarks', '/sidepanel/bookmarks',
+    () => usePermissionsStore().hasFeature(FeatureIdent.BOOKMARKS));
+
+  private constructor(
+    public readonly ident: string,
+    public readonly path: any,
+    public readonly showButtonFunction: Function = () => true) {
   }
 
   toString() {
     return this.ident;
+  }
+
+  showButton() {
+    return this.showButtonFunction()
   }
 }
 
@@ -207,6 +233,12 @@ export const useUiStore = defineStore('ui', () => {
     router.push(view.path)
   }
 
+  const sidePanelActiveViewIs = computed(() => {
+    return (viewToCompare: SidePanelView) => {
+      return sidePanel.value.activeView?.ident === viewToCompare.ident
+    }
+  })
+
   function setEntityType(type: string) {
     entityType.value = type
   }
@@ -340,6 +372,7 @@ export const useUiStore = defineStore('ui', () => {
     sidePanel,
     sidePanelSetActiveView,
     sidePanelIsActive,
+    sidePanelActiveViewIs,
     toggleLeftDrawer,
     progress,
     progressLabel

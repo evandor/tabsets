@@ -1,10 +1,11 @@
 <template>
 
-  <InfoMessageWidget
-    v-if="props.tabs?.length > 1"
-    :probability="0.3"
-    ident="paneltablist_dnd"
-    hint="You can select the favicon images and drag and drop the entries to reorder the list to your wishes"/>
+<!--  <InfoMessageWidget-->
+<!--    v-if="props.tabs?.length > 1"-->
+<!--    :probability="0.3"-->
+<!--    css-class="q-pa-none"-->
+<!--    ident="paneltablist_dnd"-->
+<!--    hint="You can select the favicon images and drag and drop the entries to reorder the list"/>-->
 
   <q-list separator class="q-ma-none">
     <vue-draggable-next

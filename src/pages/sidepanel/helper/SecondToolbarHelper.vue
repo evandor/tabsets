@@ -1,8 +1,17 @@
 <template>
-  <q-toolbar class="text-primary $lightgrey q-pa-none q-pa-none" style="min-height:revert;">
+  <q-toolbar v-if="showAlternativeText"
+             class="text-primary $lightgrey q-pa-none q-pa-none bg-white" style="min-height:revert;">
+    <div class="col-12 q-pl-sm"
+         style="border-bottom: 1px dotted lightgray;border-left: 1px dotted lightgray;border-right: 1px dotted lightgray;border-radius:4px;min-height:30px;">
+      {{ showAlternativeText }}
+    </div>
+  </q-toolbar>
+  <q-toolbar v-else
+             class="text-primary $lightgrey q-pa-none q-pa-none bg-white" style="min-height:revert;">
     <!-- show progress or info messages if any -->
     <template v-if="progress">
-      <div class="col-12" style="border-bottom: 1px dotted lightgray;border-left: 1px dotted lightgray;min-height:30px;">
+      <div class="col-12"
+           style="border-bottom: 1px dotted lightgray;border-left: 1px dotted lightgray;min-height:30px;">
         <q-linear-progress size="20px" :value="progress" color="primary">
           <div class="absolute-full flex flex-center">
             <q-badge color="white" text-color="accent" :label="progressLabel"/>
@@ -15,7 +24,7 @@
     </template>
     <!-- default second level toolbar -->
     <template v-else>
-      <div class="col-6 q-pl-sm"
+      <div class="col-8 q-pl-sm"
            style="border-bottom: 1px dotted lightgray;border-left: 1px dotted lightgray;border-radius:4px;min-height:30px;">
         <!--            <q-input borderless v-if="!progress && usePermissionsStore().hasFeature(FeatureIdent.NOTES)"-->
         <!--                     class="q-ma-xs"-->
@@ -24,7 +33,7 @@
         <TabsetsSelectorWidget :fromPanel="true" style="position: relative;top:3px"/>
 
       </div>
-      <div class="col-6 text-right"
+      <div class="col-4 text-right"
            style="border-bottom: 1px dotted lightgray;border-right: 1px dotted lightgray;border-radius:4px;min-height:30px">
 
 
@@ -35,19 +44,25 @@
           class="q-ma-none q-pa-xs cursor-pointer"
           style="width:20px;max-width:220px"
           size="11px"
-          :text-color="useUiStore().tabsFilter ? 'accent' : 'primary'"
+          :text-color="useUiStore().tabsFilter ? 'warning' : 'primary'"
           :disable="tabsStore.getCurrentTabset?.type === TabsetType.DYNAMIC"
-          :label="useUiStore().tabsFilter"
           icon="o_filter_alt">
-          <q-popup-edit :model-value="useUiStore().tabsFilter" v-slot="scope"
-                        @update:model-value="val => setFilter(  val)">
-            <q-input v-model="scope.value" dense autofocus counter @keyup.enter="scope.set"/>
+          <q-popup-edit
+            ref="popupEditRef"
+            :model-value="useUiStore().tabsFilter" v-slot="scope"
+            @save="(val, initial)=> setFilter(val)"
+            @update:model-value="val => setFilter(  val)">
+            <q-input v-model="scope.value" dense autofocus counter @keyup.enter="scope.set">
+              <template v-slot:append>
+                <q-icon class="cursor-pointer" name="clear" @click="clearFilter()" size="xs"/>
+              </template>
+            </q-input>
           </q-popup-edit>
           <q-tooltip
             class="tooltip"
             :delay="200"
             anchor="center left" self="center right">
-            Filter this tabset
+            {{ useUiStore().tabsFilter ? 'Filtering for "' + useUiStore().tabsFilter + '"' : 'Filter this tabset' }}
           </q-tooltip>
         </q-btn>
 
@@ -116,14 +131,14 @@
 
 import {usePermissionsStore} from "stores/permissionsStore";
 import {FeatureIdent} from "src/models/AppFeature";
-import {ListDetailLevel, useUiStore} from "stores/uiStore";
+import {ListDetailLevel, SidePanelView, useUiStore} from "stores/uiStore";
 import {Tabset, TabsetType} from "src/models/Tabset";
 import TabsetsSelectorWidget from "components/widgets/TabsetsSelectorWidget.vue";
 import {useTabsStore} from "stores/tabsStore";
 import {ref, watchEffect} from "vue";
 import {Tab, UrlExtension} from "src/models/Tab";
 import AddUrlDialog from "components/dialogues/AddUrlDialog.vue";
-import {date, uid, useQuasar} from "quasar";
+import {date, QInput, QPopupEdit, uid, useQuasar} from "quasar";
 import ChromeApi from "src/services/ChromeApi";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {AddTabToTabsetCommand} from "src/domain/tabs/AddTabToTabset";
@@ -133,6 +148,11 @@ import {StopSessionCommand} from "src/domain/commands/StopSessionCommand";
 import {ToggleSortingCommand} from "src/domain/tabsets/ToggleSorting";
 import {useUtils} from "src/services/Utils";
 import JsUtils from "src/utils/JsUtils";
+
+const props = defineProps({
+  showAlternativeText: {type: String, required: false}
+})
+
 
 const $q = useQuasar()
 
@@ -149,6 +169,7 @@ const currentChromeTab = ref<chrome.tabs.Tab>(null as unknown as chrome.tabs.Tab
 const searching = ref(false)
 const existingSession = ref(false)
 const orderDesc = ref(false)
+const popupEditRef = ref<QPopupEdit>()
 
 watchEffect(() => {
   selectedTab.value = useUiStore().getSelectedTab
@@ -276,7 +297,7 @@ const toggleSorting = () => useCommandExecutor().executeFromUi(new ToggleSorting
 
 const toggleOrder = () => orderDesc.value = !orderDesc.value
 
-const showSorting = () => tabsStore.getCurrentTabs.length > 3
+const showSorting = () => useUiStore().sidePanelActiveViewIs(SidePanelView.MAIN) && tabsStore.getCurrentTabs.length > 3
 
 function getOrder() {
   if (tabsStore.getCurrentTabset) {
@@ -300,7 +321,12 @@ const setFilter = (newValue: string) => {
   useUiStore().setHighlightTerm(useValue)
   JsUtils.runCssHighlight()
 }
-
+const clearFilter = () => {
+  useUiStore().tabsFilter = undefined
+  popupEditRef.value?.set()
+  useUiStore().setHighlightTerm(undefined)
+  JsUtils.runCssHighlight()
+}
 
 const getDetailLevelIcon = () => {
   switch (useUiStore().listDetailLevel) {

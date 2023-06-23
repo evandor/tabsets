@@ -53,14 +53,7 @@ defineEmits([
 ])
 
 const props = defineProps({
-  // folderId: {
-  //   type: String,
-  //   required: true
-  // },
-  // folderName: {
-  //   type: String,
-  //   required: true
-  // }
+  inSidePanel: {type: Boolean, default: false}
 })
 
 const {dialogRef, onDialogHide, onDialogCancel} = useDialogPluginComponent()
@@ -89,39 +82,13 @@ const importBookmarks = async () => {
   console.log("importing bookmarks", bookmarkId.value)
   $q.loadingBar.start()
 
-  // try {
-  //
-  //   const candidates: chrome.bookmarks.BookmarkTreeNode[] = await ChromeApi.childrenFor(bookmarkId.value)
-  //
-  //   const result = await TabsetService.saveOrReplaceFromBookmarks(newTabsetName.value, candidates, true)
-  //   //@ts-ignore
-  //   const replaced = result.replaced
-  //   //@ts-ignore
-  //   const merged = result.merged
-  //   let message = 'Tabset ' + newTabsetName.value + ' created successfully'
-  //   if (replaced && merged) {
-  //     message = 'Tabset ' + newTabsetName.value + ' was updated'
-  //   } else if (replaced) {
-  //     message = 'Tabset ' + newTabsetName.value + ' was overwritten'
-  //   }
-  //   router.push("/tabset")
-  //   $q.notify({
-  //     message: message,
-  //     type: 'positive'
-  //   })
-  // } catch (ex: any) {
-  //   console.error("ex", ex)
-  //   $q.notify({
-  //     message: 'There was a problem creating the tabset ' + newTabsetName.value,
-  //     type: 'warning',
-  //   })
-  // }
-
   const candidates: chrome.bookmarks.BookmarkTreeNode[] = await ChromeApi.childrenFor(bookmarkId.value)
   useCommandExecutor()
     .executeFromUi(new CreateTabsetFromBookmarksCommand(newTabsetName.value, candidates))
     .then(res => {
-      router.push("/tabsets/" + tabsStore.currentTabsetId)
+      props.inSidePanel ?
+        router.push("/mainpanel/tabsets/" + tabsStore.currentTabsetId) :
+        router.push("/tabsets/" + tabsStore.currentTabsetId)
     })
 
   $q.loadingBar.stop()

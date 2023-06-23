@@ -170,7 +170,7 @@
       <q-card>
         <q-card-section>
           <div class="text-caption">
-            {{ useUiStore().getSelectedTab.note }}
+            {{ useUiStore().getSelectedTab?.note }}
           </div>
         </q-card-section>
       </q-card>
@@ -179,7 +179,7 @@
     <q-expansion-item label="Meta Data"
                       group="somegroup"
 
-                      :default-opened="useUiStore().getSelectedTab.note === undefined">
+                      :default-opened="useUiStore().getSelectedTab?.note === undefined">
       <q-card>
         <q-card-section>
           <div class="row q-mx-sm q-mt-none">

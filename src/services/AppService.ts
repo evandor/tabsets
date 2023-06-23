@@ -21,6 +21,9 @@ import {useWindowsStore} from "stores/windowsStores";
 import {useSearchStore} from "stores/searchStore";
 import {useUiStore} from "stores/uiStore";
 import {useRoute, useRouter} from "vue-router";
+import {useUtils} from "src/services/Utils";
+
+const {inBexMode} = useUtils()
 
 class AppService {
 

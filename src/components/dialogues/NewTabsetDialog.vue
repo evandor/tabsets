@@ -54,6 +54,7 @@ import {Tabset, TabsetStatus} from "src/models/Tabset";
 import {useSpacesStore} from "src/stores/spacesStore";
 import ChromeApi from "src/services/ChromeApi";
 import {useTabsetService} from "src/services/TabsetService2";
+import {SidePanelView, useUiStore} from "stores/uiStore";
 
 defineEmits([
   ...useDialogPluginComponent.emits
@@ -113,7 +114,8 @@ const createNewTabset = () => {
       if (!props.fromPanel) {
         router.push("/tabsets/" + res.result.tabsetId + "?first=" + props.firstTabset)
       } else {
-        router.push("/sidepanel")
+        useUiStore().sidePanelSetActiveView(SidePanelView.MAIN)
+        router.push("/sidepanel?first=" + props.firstTabset)
       }
     })
 }

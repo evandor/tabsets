@@ -18,7 +18,27 @@
           <SearchWidget v-if="searching"
                         :fromPanel="true"
                         style="position: absolute; left:5px;top:5px;max-width:240px"/>
-          <span v-else>Tabset</span>
+          <template v-else>
+
+            <div class="row" v-if="props.showBackButton">
+              <div class="col-2">
+                <q-icon
+                  size="md"
+                  name="chevron_left" class="cursor-pointer"
+                  @click="useUiStore().sidePanelSetActiveView(SidePanelView.MAIN)">
+                  <q-tooltip>Back</q-tooltip>
+                </q-icon>
+              </div>
+              <div class="col">
+                {{ props.title }}
+              </div>
+            </div>
+            <div v-else>
+              {{ props.title }}
+            </div>
+
+
+          </template>
         </div>
         <div class="col-4 text-right">
 
@@ -43,7 +63,7 @@
           <!--                  </q-btn>-->
 
           <q-btn
-            v-if="tabsStore.tabsets.size > 1"
+            v-if="tabsStore.tabsets.size > 1 && useSettingsStore().isEnabled('dev')"
             icon="o_keyboard_double_arrow_right"
             flat
             class="q-ma-none q-pa-xs cursor-pointer"
@@ -69,6 +89,13 @@ import {useTabsStore} from "stores/tabsStore";
 import {useRouter} from "vue-router";
 import {ref} from "vue";
 import NavigationService from "src/services/NavigationService";
+import {useSettingsStore} from "stores/settingsStore";
+import {SidePanelView, useUiStore} from "stores/uiStore";
+
+const props = defineProps({
+  title: {type: String, default: "Tabset"},
+  showBackButton: {type: Boolean, default: false}
+})
 
 const router = useRouter()
 const tabsStore = useTabsStore()

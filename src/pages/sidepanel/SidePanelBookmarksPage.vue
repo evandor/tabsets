@@ -19,7 +19,7 @@
     </q-toolbar>
 
     <div class="row q-ma-none q-pa-none">
-      <BookmarksTree />
+      <BookmarksTree :in-side-panel="true"/>
     </div>
   </q-page>
 </template>

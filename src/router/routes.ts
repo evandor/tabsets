@@ -97,29 +97,34 @@ const routes: RouteRecordRaw[] = [
     children: [{ path: '', component: () => import('pages/FeaturesPage.vue') }],
   },
   {
-    path: '/mainpanel/notes/:noteId',
+    path: '/mainpanel/notes/:noteId', // TODO combine with Note page
     component: () => import('layouts/PlainLayout.vue'),
     children: [{ path: '', component: () => import('pages/mainpanel/MainPanelNotePage.vue') }],
   },
   {
-    path: '/mainpanel/tabsets/:tabsetId',
+    path: '/mainpanel/tabsets/:tabsetId', // TODO combine with Tabset page
     component: () => import('layouts/PlainLayout.vue'),
     children: [{ path: '', component: () => import('pages/TabsetPage.vue') }],
   },
   {
-    path: '/mainpanel/mhtml/:encodedUrl',
+    path: '/mainpanel/mhtml/:encodedUrl', // TODO combine with MHtml page
     component: () => import('layouts/PlainLayout.vue'),
     children: [{ path: '', component: () => import('pages/mainpanel/MainPanelMHtmlPage.vue') }],
   },
   {
-    path: '/mainpanel/tab/:id',
+    path: '/mainpanel/tab/:id',// TODO combine with Tag page
     component: () => import('layouts/PlainLayout.vue'),
     children: [{ path: '', component: () => import('pages/mainpanel/MainPanelTabPage.vue') }],
   },
   {
-    path: '/mainpanel/spaces',
+    path: '/mainpanel/spaces', // TODO combine with Spaces page
     component: () => import('layouts/PlainLayout.vue'),
     children: [{ path: '', component: () => import('pages/mainpanel/MainPanelSpacesPage.vue') }],
+  },
+  {
+    path: '/mainpanel/bookmarks/:id',
+    component: () => import('layouts/PlainLayout.vue'),
+    children: [{ path: '', component: () => import('pages/mainpanel/MainPanelBookmarksPage.vue') }],
   },
   {
     path: '/about',

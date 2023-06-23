@@ -1,16 +1,11 @@
 <template>
-  <div v-if="tabFromChromeTab() && currentChromeTab.url !== 'chrome://newtab/'"
-       class="row q-ma-sm q-pt-sm bg-yellow-1"
-       style="border:1px solid gray;border-radius: 5px">
+  <div
+    class="row q-ma-none q-mt-xs q-pt-sm "
+    :class="alreadyInTabset() ? 'bg-grey-1':'bg-yellow-1'"
+    style="border:1px solid lightgray;border-radius: 5px">
 
     <div class="col-12">
-      <q-list>
-        <q-item
-          v-ripple
-          class="q-ma-none q-pa-xs">
-          <CurrentTabElementHelper />
-        </q-item>
-      </q-list>
+      <CurrentTabElementHelper/>
     </div>
   </div>
 

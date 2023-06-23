@@ -12,6 +12,7 @@
         :key="props.group + '_' + bm.id">
 
         <BookmarkListElementWidget
+          :in-side-panel="true"
           :key="props.group + '__' + bm.id" :bookmark="bm" :highlightUrl="highlightUrl"/>
 
       </q-item>
@@ -38,23 +39,13 @@ const tabsStore = useTabsStore()
 const {saveCurrentTabset} = useTabsetService()
 
 const props = defineProps({
-  bookmarks: {
-    type: Array as PropType<Array<Bookmark>>,
-    required: true
-  },
-  group: {
-    type:String,
-    required: true
-  },
-  parent: {
-    type: String,
-    required: true
-  },
-  highlightUrl: {
-    type: String,
-    required: false
-  }
+  bookmarks: {type: Array as PropType<Array<Bookmark>>, required: true},
+  group: {type: String, required: true},
+  parent: {type: String, required: true},
+  highlightUrl: {type: String, required: false},
+  inSidePanel: {type: Boolean, default: false}
 })
+
 const showDeleteButton = ref<Map<string, boolean>>(new Map())
 
 const thumbnails = ref<Map<string, string>>(new Map())
@@ -119,7 +110,7 @@ const startDrag = (evt: any, tab: Bookmark) => {
     evt.dataTransfer.dropEffect = 'move'
     evt.dataTransfer.effectAllowed = 'move'
     evt.dataTransfer.setData('text/plain', tab.id)
-    useUiStore().draggingTab(tab.id,null as unknown as DragEvent)
+    useUiStore().draggingTab(tab.id, null as unknown as DragEvent)
   }
   console.log("evt.dataTransfer.getData('text/plain')", evt.dataTransfer.getData('text/plain'))
 }

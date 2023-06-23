@@ -1,44 +1,42 @@
 <template>
-  <q-page>
-    <q-toolbar class="text-primary lightgrey">
-      <div class="row fit">
-        <q-toolbar-title>
-          <div class="row">
-            <div class="col-1">
-              <q-icon name="chevron_left" class="cursor-pointer"
-                      @click="useUiStore().sidePanelSetActiveView(SidePanelView.MAIN)">
-                <q-tooltip>Back</q-tooltip>
-              </q-icon>
-            </div>
-            <div class="col">
-              Newest Tabs
-            </div>
+
+  <q-page padding style="padding-top: 70px">
+
+    <div class="q-ma-none">
+
+      <div class="q-ma-none">
+        <div class="row q-ma-none q-pa-none">
+          <div class="col-12 q-ma-none q-pa-none q-pt-lg">
+
+            <q-list separator class="q-ma-none">
+              <q-item v-for="tab in newestTabs()"
+                      clickable
+                      v-ripple
+                      class="q-ma-none q-pa-sm">
+
+                <PanelTabListElementWidget
+                  :header="'created ' + formatDate(tab.created)"
+                  :tab="tab"/>
+
+              </q-item>
+            </q-list>
+
           </div>
-        </q-toolbar-title>
-      </div>
-    </q-toolbar>
-
-    <div class="row q-ma-none q-pa-none">
-      <div class="col-12 q-ma-none q-pa-none q-pt-lg">
-
-        <q-list separator class="q-ma-none">
-
-          <q-item v-for="tab in newestTabs()"
-                  clickable
-                  v-ripple
-                  class="q-ma-none q-pa-sm">
-
-            <PanelTabListElementWidget
-              :header="'created ' + formatDate(tab.created)"
-              :tab="tab"/>
-
-          </q-item>
-        </q-list>
-
+        </div>
 
       </div>
+
     </div>
+
+    <!-- place QPageSticky at end of page -->
+    <q-page-sticky expand position="top" style="background-color:white">
+      <FirstToolbarHelper title="Newest Tabs" :show-back-button="true"/>
+      <SecondToolbarHelper />
+    </q-page-sticky>
+
   </q-page>
+
+
 </template>
 
 <script lang="ts" setup>
@@ -46,10 +44,15 @@
 import {SidePanelView, useUiStore} from "stores/uiStore";
 import {useTabsStore} from "stores/tabsStore";
 import _ from "lodash"
-import {Tabset} from "src/models/Tabset";
+import {Tabset, TabsetType} from "src/models/Tabset";
 import {Tab} from "src/models/Tab";
 import PanelTabListElementWidget from "components/widgets/PanelTabListElementWidget.vue";
 import {formatDistance} from "date-fns";
+import PanelTabList from "components/layouts/PanelTabList.vue";
+import SidePanelDynamicTabset from "components/layouts/sidepanel/SidePanelDynamicTabset.vue";
+import SidePanelTabInfo from "pages/sidepanel/SidePanelTabInfo.vue";
+import FirstToolbarHelper from "pages/sidepanel/helper/FirstToolbarHelper.vue";
+import SecondToolbarHelper from "pages/sidepanel/helper/SecondToolbarHelper.vue";
 
 const tabsStore = useTabsStore()
 

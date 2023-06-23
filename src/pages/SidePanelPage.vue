@@ -1,6 +1,6 @@
 <template>
 
-  <q-page padding style="padding-top: 200px">
+  <q-page padding style="padding-top: 210px">
 
     <!-- list of tabs, assuming here we have at least one tabset -->
     <div class="q-ma-none">
@@ -22,28 +22,28 @@
           </div>
         </div>
 
-        <transition v-else
-                    appear enter-active-class="fadeIn" style="transition-delay: 1.5s">
-          <div class="row q-ma-sm">
-            <div class="col-12">
-              Add a new tabset to assign tabs to
-            </div>
-          </div>
-        </transition>
+<!--        <transition v-else-->
+<!--                    appear enter-active-class="fadeIn" style="transition-delay: 1.5s">-->
+<!--          <div class="row q-ma-sm">-->
+<!--            <div class="col-12">-->
+<!--              Add a new tabset to assign tabs to-->
+<!--            </div>-->
+<!--          </div>-->
+<!--        </transition>-->
 
       </div>
 
     </div>
 
     <!-- place QPageSticky at end of page -->
-    <q-page-sticky expand position="top">
+    <q-page-sticky expand position="top" style="background-color:white">
       <FirstToolbarHelper/>
 
-      <SecondToolbarHelper/>
+      <SecondToolbarHelper />
 
       <!-- selected tab or current tab from chrome -->
-      <div class="q-my-none q-mx-sm q-pa-none fit bg-white"
-           style="max-height:130px;min-height:130px; border-bottom: 1px dotted lightgray">
+      <div class="q-my-none q-mx-none q-pa-none fit bg-white"
+           style="max-height:135px;min-height:135px; border-bottom: 1px dotted lightgray">
         <SidePanelTabInfo/>
       </div>
 
@@ -60,7 +60,7 @@ import {useTabsStore} from "src/stores/tabsStore";
 import {Tab} from "src/models/Tab";
 import _ from "lodash"
 import {Tabset, TabsetType} from "src/models/Tabset";
-import {useRouter} from "vue-router";
+import {useRoute, useRouter} from "vue-router";
 import {useUtils} from "src/services/Utils";
 import {useQuasar} from "quasar";
 import {useTabsetService} from "src/services/TabsetService2";
@@ -79,6 +79,7 @@ const {inBexMode, sanitize, sendMsg} = useUtils()
 
 const $q = useQuasar()
 const router = useRouter()
+const route = useRoute()
 
 const tabsStore = useTabsStore()
 const spacesStore = useSpacesStore()
@@ -234,6 +235,9 @@ function getOrder() {
   }
 }
 
+const showTooltip = (nr: number) => {
+  return tooltipToShow.value === nr
+}
 
 </script>
 

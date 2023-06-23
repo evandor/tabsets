@@ -23,6 +23,7 @@
 import {useDialogPluginComponent} from 'quasar'
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {MarkTabsetDeletedCommand} from "src/domain/tabsets/MarkTabsetDeleted";
+import {SidePanelView, useUiStore} from "stores/uiStore";
 
 defineEmits([
   ...useDialogPluginComponent.emits
@@ -41,6 +42,9 @@ const props = defineProps({
 
 const {dialogRef, onDialogHide, onDialogCancel} = useDialogPluginComponent()
 const deleteTabset = () => useCommandExecutor().executeFromUi(new MarkTabsetDeletedCommand(props.tabsetId))
+  .then((res:any) => {
+    useUiStore().sidePanelSetActiveView(SidePanelView.MAIN)
+  })
 
 
 </script>
