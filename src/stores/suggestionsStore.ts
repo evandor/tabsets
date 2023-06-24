@@ -3,21 +3,25 @@ import {computed, ref} from "vue";
 import {StaticSuggestionIdent, Suggestion, SuggestionState} from "src/models/Suggestion";
 import {useDB} from "src/services/usePersistenceService";
 import _ from "lodash";
+import PersistenceService from "src/services/PersistenceService";
 
-const {db} = useDB()
+// seems like it is a good idea to initialize the stores with the db(s) needed
+//const {db} = useDB()
+let storage: PersistenceService = null as unknown as PersistenceService
 
 
 export const useSuggestionsStore = defineStore('suggestions', () => {
 
   const suggestions = ref<Suggestion[]>([])
 
-  function init() {
+  function init(providedDb: PersistenceService) {
     console.debug("initializing SuggestionsService")
+    storage = providedDb
     loadSuggestionsFromDb()
   }
 
   function loadSuggestionsFromDb() {
-    db.getSuggestions()
+    storage.getSuggestions()
       .then((res: Suggestion[]) => {
         suggestions.value = res
       })
@@ -25,29 +29,29 @@ export const useSuggestionsStore = defineStore('suggestions', () => {
 
   function addSuggestion(s: Suggestion | undefined) {
     if (s) {
-      db.addSuggestion(s)
+      storage.addSuggestion(s)
         .then(() => suggestions.value.push(s))
     }
   }
 
   function removeSuggestion(ident: StaticSuggestionIdent) {
-    db.removeSuggestion(ident)
+    storage.removeSuggestion(ident)
       .then(() => suggestions.value = _.filter(suggestions.value, s => s.id !== ident))
   }
 
   function cancelSuggestion(id: string): Promise<void> {
-    return db.setSuggestionState(id, SuggestionState.CANCELED)
-      .then((res) => loadSuggestionsFromDb())
+    return storage.setSuggestionState(id, SuggestionState.CANCELED)
+      .then((res:any) => loadSuggestionsFromDb())
   }
 
   function ignoreSuggestion(id: string): Promise<void> {
-    return db.setSuggestionState(id, SuggestionState.IGNORED)
-      .then((res) => loadSuggestionsFromDb())
+    return storage.setSuggestionState(id, SuggestionState.IGNORED)
+      .then((res:any) => loadSuggestionsFromDb())
   }
 
   function applySuggestion(id: string): Promise<Suggestion> {
-    return db.setSuggestionState(id, SuggestionState.APPLIED)
-      .then((res) => {
+    return storage.setSuggestionState(id, SuggestionState.APPLIED)
+      .then((res:any) => {
         loadSuggestionsFromDb();
         return res
       })

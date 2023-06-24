@@ -4,7 +4,7 @@ import {MHtml} from "src/models/MHtml";
 import {Tab} from "src/models/Tab";
 import {Notification} from "src/models/Notification";
 import {SearchDoc} from "src/models/SearchDoc";
-import {Suggestion} from "src/models/Suggestion";
+import {StaticSuggestionIdent, Suggestion, SuggestionState} from "src/models/Suggestion";
 
 interface PersistenceService {
 
@@ -50,6 +50,8 @@ interface PersistenceService {
   getSuggestions(): Promise<Suggestion[]>
   addSuggestion(suggestion: Suggestion): Promise<any>
 
+  removeSuggestion(ident: StaticSuggestionIdent): any;
+  setSuggestionState(id: string, state: SuggestionState): any;
 }
 
 export default PersistenceService
