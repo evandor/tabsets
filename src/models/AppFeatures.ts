@@ -12,7 +12,7 @@ export class AppFeatures {
       .setActivateCommand(new GrantPermissionCommand('bookmarks'))
       .setDeactivateCommand(new RevokePermissionCommand('bookmarks')),
 
-    new AppFeature(FeatureIdent.THUMBNAILS, FeatureType.RECOMMENDED, 'Thumbnails', 'o_image', ['bex'])
+    new AppFeature(FeatureIdent.THUMBNAILS, FeatureType.OPTIONAL, 'Thumbnails', 'o_image', ['bex'])
       .setActivateCommand(new GrantOriginCommand('thumbnails'))
       .setDeactivateCommand(new RevokeOriginCommand('thumbnails')),
 

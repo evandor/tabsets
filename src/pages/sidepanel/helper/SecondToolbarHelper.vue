@@ -1,13 +1,7 @@
 <template>
-  <q-toolbar v-if="showAlternativeText"
-             class="text-primary $lightgrey q-pa-none q-pa-none bg-white" style="min-height:revert;">
-    <div class="col-12 q-pl-sm"
-         style="border-bottom: 1px dotted lightgray;border-left: 1px dotted lightgray;border-right: 1px dotted lightgray;border-radius:4px;min-height:30px;">
-      {{ showAlternativeText }}
-    </div>
-  </q-toolbar>
-  <q-toolbar v-else
-             class="text-primary $lightgrey q-pa-none q-pa-none bg-white" style="min-height:revert;">
+
+  <q-toolbar
+    class="text-primary $lightgrey q-pa-none q-pa-none bg-white" style="min-height:revert;">
     <!-- show progress or info messages if any -->
     <template v-if="progress">
       <div class="col-12"
@@ -148,10 +142,6 @@ import {StopSessionCommand} from "src/domain/commands/StopSessionCommand";
 import {ToggleSortingCommand} from "src/domain/tabsets/ToggleSorting";
 import {useUtils} from "src/services/Utils";
 import JsUtils from "src/utils/JsUtils";
-
-const props = defineProps({
-  showAlternativeText: {type: String, required: false}
-})
 
 
 const $q = useQuasar()

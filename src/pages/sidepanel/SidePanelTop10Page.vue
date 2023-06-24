@@ -32,7 +32,7 @@
     <!-- place QPageSticky at end of page -->
     <q-page-sticky expand position="top" style="background-color:white">
       <FirstToolbarHelper title="'Top 10' Tabs" :show-back-button="true"/>
-      <SecondToolbarHelper show-alternative-text="your tabs sorted by accessed count"/>
+      <SecondToolbarHelper />
     </q-page-sticky>
 
   </q-page>

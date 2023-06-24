@@ -50,7 +50,7 @@
     </div>
     <div class="col-10">
       <q-btn v-if="tabsStore.getCurrentTabset"
-             label="add to this tabset"
+             label="add tab to this tabset"
              flat
              class="q-ma-none q-pa-none"
              style="cursor: pointer"
@@ -59,7 +59,7 @@
              @click="saveInTabset(tabsStore.currentTabsetId)"
              icon="save"/>
       <div v-else class="text-caption">
-        Create or select a tabset first
+        To add this tab, create or select a tabset first
       </div>
     </div>
   </div>
