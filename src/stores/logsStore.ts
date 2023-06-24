@@ -1,6 +1,5 @@
 import {defineStore} from 'pinia';
 import {ref} from "vue";
-import overrideLogs from "src/utils/overrideConsole"
 
 /**
  * a pinia store for (error) logs.
