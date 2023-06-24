@@ -593,6 +593,10 @@ class IndexedDbPersistenceService implements PersistenceService {
       .catch((err) => Promise.reject("error updating suggestion" + err))
   }
 
+  compactDb(): Promise<any> {
+    return Promise.resolve(undefined);
+  }
+
   // ignoreSuggestion(suggestionId: string): Promise<void> {
   //   console.log("ignoring suggestion", suggestionId)
   //   const objectStore = this.db.transaction('suggestions', 'readwrite').objectStore('suggestions');
