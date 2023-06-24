@@ -8,7 +8,7 @@
       <div class="q-ma-none">
 
         <div class="text-caption q-ma-md"
-             v-if="tabsStore.getCurrentTabset?.tabs.length === 0 && tabsStore.getCurrentTabset?.type === TabsetType.DEFAULT">
+             v-if="!route.query.first && tabsStore.getCurrentTabset?.tabs.length === 0 && tabsStore.getCurrentTabset?.type === TabsetType.DEFAULT">
           Start browsing and add the tabs you like to this tabset
         </div>
 
@@ -22,28 +22,19 @@
           </div>
         </div>
 
-<!--        <transition v-else-->
-<!--                    appear enter-active-class="fadeIn" style="transition-delay: 1.5s">-->
-<!--          <div class="row q-ma-sm">-->
-<!--            <div class="col-12">-->
-<!--              Add a new tabset to assign tabs to-->
-<!--            </div>-->
-<!--          </div>-->
-<!--        </transition>-->
-
       </div>
 
     </div>
 
     <!-- place QPageSticky at end of page -->
     <q-page-sticky expand position="top" style="background-color:white">
-      <FirstToolbarHelper/>
 
-      <SecondToolbarHelper />
+      <FirstToolbarHelper/>
+      <SecondToolbarHelper/>
 
       <!-- selected tab or current tab from chrome -->
       <div class="q-my-none q-mx-none q-pa-none fit bg-white"
-           style="max-height:135px;min-height:135px; border-bottom: 1px dotted lightgray">
+           style="max-height:135px;min-height:135px;">
         <SidePanelTabInfo/>
       </div>
 

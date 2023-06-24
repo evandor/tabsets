@@ -52,10 +52,10 @@
       <q-btn v-if="tabsStore.getCurrentTabset"
              label="add tab to this tabset"
              flat
+             color="warning"
              class="q-ma-none q-pa-none"
              style="cursor: pointer"
              size="10px"
-             color="primary"
              @click="saveInTabset(tabsStore.currentTabsetId)"
              icon="save"/>
       <div v-else class="text-caption">

@@ -4,7 +4,16 @@
     :class="alreadyInTabset() ? 'bg-grey-1':'bg-yellow-1'"
     style="border:1px solid lightgray;border-radius: 5px">
 
-    <div class="col-12">
+    <div class="col-12" v-if="route.query.first && route.query.first === 'true'">
+      <div class="row">
+        <div class="col text-caption q-pa-md">
+          Here you will see the tab currently open in your browser.<br>
+          Decide if you want to add it to the current tabset.<br><br>
+          <q-btn label="try it" @click="router.push('/sidepanel')" />
+        </div>
+      </div>
+    </div>
+    <div class="col-12" v-else>
       <CurrentTabElementHelper/>
     </div>
   </div>
@@ -17,7 +26,7 @@ import PanelTabListElementWidget from "components/widgets/PanelTabListElementWid
 import SidePanelTabListElementDetails from "components/widgets/SidePanelTabListElementDetails.vue";
 import {Tab} from "src/models/Tab";
 import {uid} from "quasar";
-import {useRouter} from "vue-router";
+import {useRoute, useRouter} from "vue-router";
 import {useTabsStore} from "stores/tabsStore";
 import {useTabsetService} from "src/services/TabsetService2";
 import {useCommandExecutor} from "src/services/CommandExecutor";
@@ -26,8 +35,10 @@ import {ref, watchEffect} from "vue";
 import {useUiStore} from "stores/uiStore";
 import TabsetService from "src/services/TabsetService";
 import CurrentTabElementHelper from "pages/sidepanel/helper/CurrentTabElementHelper.vue";
+import ShortUrl from "components/utils/ShortUrl.vue";
 
 const router = useRouter()
+const route = useRoute()
 const tabsStore = useTabsStore()
 
 const currentChromeTab = ref<chrome.tabs.Tab>(null as unknown as chrome.tabs.Tab)

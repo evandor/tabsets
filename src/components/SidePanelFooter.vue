@@ -4,7 +4,6 @@
     <div class="row fit">
       <div class="col-8">
         <SidePanelFooterLeftButton
-          v-if="useSettingsStore().isEnabled('dev')"
           :side-panel-view="SidePanelView.TABS_LIST" icon="o_playlist_add"
           tooltip="List all open tabs in your browser"/>
         <SidePanelFooterLeftButton :side-panel-view="SidePanelView.BOOKMARKS" icon="o_bookmark"
