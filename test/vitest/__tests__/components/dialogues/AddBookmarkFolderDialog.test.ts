@@ -3,6 +3,7 @@ import { mount } from '@vue/test-utils';
 import {beforeEach, describe, expect, it } from 'vitest';
 import AddBookmarkFolderDialog from "components/dialogues/AddBookmarkFolderDialog.vue";
 import {createPinia, setActivePinia} from "pinia";
+import IndexedDbPersistenceService from "src/services/IndexedDbPersistenceService";
 
 installQuasarPlugin();
 
@@ -12,7 +13,8 @@ describe('AddBookmarkFolderDialog', () => {
     setActivePinia(createPinia())
   })
 
-  it('should be mounted with parentFolderId', () => {
+  it('should be mounted with parentFolderId', async () => {
+    await IndexedDbPersistenceService.init("db")
     const wrapper = mount(AddBookmarkFolderDialog, {
       props: {
         parentFolderId: '17'

@@ -21,10 +21,12 @@ export const useSuggestionsStore = defineStore('suggestions', () => {
   }
 
   function loadSuggestionsFromDb() {
-    storage.getSuggestions()
-      .then((res: Suggestion[]) => {
-        suggestions.value = res
-      })
+    if (storage) {
+      storage.getSuggestions()
+        .then((res: Suggestion[]) => {
+          suggestions.value = res
+        })
+    }
   }
 
   function addSuggestion(s: Suggestion | undefined) {
@@ -41,17 +43,17 @@ export const useSuggestionsStore = defineStore('suggestions', () => {
 
   function cancelSuggestion(id: string): Promise<void> {
     return storage.setSuggestionState(id, SuggestionState.CANCELED)
-      .then((res:any) => loadSuggestionsFromDb())
+      .then((res: any) => loadSuggestionsFromDb())
   }
 
   function ignoreSuggestion(id: string): Promise<void> {
     return storage.setSuggestionState(id, SuggestionState.IGNORED)
-      .then((res:any) => loadSuggestionsFromDb())
+      .then((res: any) => loadSuggestionsFromDb())
   }
 
   function applySuggestion(id: string): Promise<Suggestion> {
     return storage.setSuggestionState(id, SuggestionState.APPLIED)
-      .then((res:any) => {
+      .then((res: any) => {
         loadSuggestionsFromDb();
         return res
       })

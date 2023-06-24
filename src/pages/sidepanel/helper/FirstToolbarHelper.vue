@@ -2,24 +2,58 @@
   <q-toolbar class="text-primary lightgrey q-pa-none q-pl-sm q-pr-xs q-pb-none">
     <q-toolbar-title>
       <div class="row q-ma-none q-pa-none">
+
+        <!-- we have spaces -->
         <div v-if="usePermissionsStore().hasFeature(FeatureIdent.SPACES)"
              class="col-8 q-ma-none q-pa-none">
-          <SearchWidget v-if="searching"
-                        :fromPanel="true"
-                        style="position: absolute; left:5px;top:5px;max-width:240px"/>
-          <div class="column q-ma-none q-pa-none" v-else>
-            <div class="col q-ma-none q-pa-none cursor-pointer"
-                 @click="router.push('/sidepanel/spaces')">
-              {{ useSpacesStore().space ? useSpacesStore().space.label : 'no space selected' }}
+          <template v-if="!props.showBackButton">
+            <SearchWidget v-if="searching"
+                          :fromPanel="true"
+                          style="position: absolute; left:5px;top:5px;max-width:240px"/>
+            <div class="column q-ma-none q-pa-none" v-else>
+              <div class="col q-ma-none q-pa-none cursor-pointer"
+                   @click="router.push('/sidepanel/spaces')">
+                {{ useSpacesStore().space ? useSpacesStore().space.label : 'no space selected' }}
+              </div>
             </div>
-          </div>
+          </template>
+
+          <template v-else>
+            <template v-if="searching">
+              <SearchWidget v-if="searching"
+                            :fromPanel="true"
+                            style="position: absolute; left:5px;top:5px;max-width:240px"/>
+            </template>
+            <template v-else>
+              <div class="row">
+                <div class="col-2">
+                  <q-icon
+                    size="md"
+                    name="chevron_left" class="cursor-pointer"
+                    @click="useUiStore().sidePanelSetActiveView(SidePanelView.MAIN)">
+                    <q-tooltip>Back</q-tooltip>
+                  </q-icon>
+                </div>
+                <div class="col">
+                  {{ props.title }}
+                </div>
+              </div>
+            </template>
+          </template>
         </div>
+
+        <!-- no spaces here -->
         <div v-else class="col-8 q-ma-none q-pa-none">
+
+          <!-- no spaces && searching -->
           <SearchWidget v-if="searching"
                         :fromPanel="true"
                         style="position: absolute; left:5px;top:5px;max-width:240px"/>
+
+          <!-- no spaces && not searching -->
           <template v-else>
 
+            <!-- no spaces && not searching && showBackButton -->
             <div class="row" v-if="props.showBackButton">
               <div class="col-2">
                 <q-icon
@@ -33,6 +67,8 @@
                 {{ props.title }}
               </div>
             </div>
+
+            <!-- no spaces && not searching && not showBackButton -->
             <div v-else>
               {{ props.title }}
             </div>

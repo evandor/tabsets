@@ -2,7 +2,7 @@
 
   <q-footer class="lightgrey text-primary q-pa-xs">
     <div class="row fit">
-      <div class="col-7">
+      <div class="col-8">
         <SidePanelFooterLeftButton
           v-if="useSettingsStore().isEnabled('dev')"
           :side-panel-view="SidePanelView.TABS_LIST" icon="o_playlist_add"

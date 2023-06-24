@@ -1,48 +1,48 @@
 <template>
-  <q-page>
-    <q-toolbar class="text-primary lightgrey">
-      <div class="row fit">
-        <q-toolbar-title>
-          <div class="row">
-            <div class="col-2">
-              <q-icon name="chevron_left" class="cursor-pointer" @click="useUiStore().sidePanelSetActiveView(SidePanelView.MAIN)">
-                <q-tooltip>Back</q-tooltip>
-              </q-icon>
+
+  <q-page padding style="padding-top: 70px">
+
+    <div class="q-ma-none">
+
+      <div class="q-ma-none">
+        <div class="row q-ma-none q-pa-none">
+          <div class="col-12 q-ma-none q-pa-none q-pt-lg">
+
+            <div
+              class="col-12 q-pa-xs items-center justify-center"
+              v-for="rssTab in rssTabs">
+
+              <q-card flat @click="open(rssTab)">
+                <q-card-section class="q-pt-xs cursor-pointer">
+                  <div class="row items-baseline">
+                    <div class="col-2">
+                      <TabFaviconWidget :tab="rssTab" width="20px" height="20px" />
+                    </div>
+                    <div class="col-9 text-body2 ellipsis">
+                      {{ rssTab.chromeTab?.title }}
+                    </div>
+                    <div class="col-1">
+                      <q-icon name="close"/>
+                    </div>
+                  </div>
+
+                </q-card-section>
+              </q-card>
             </div>
-            <div class="col-10" style="font-size:smaller">
-              RSS Feeds
-            </div>
+
           </div>
-        </q-toolbar-title>
+        </div>
+
       </div>
-    </q-toolbar>
-
-    <div class="q-ma-none q-pa-xs" style="max-width:300px">
-
-      <div
-        class="col-12 q-pa-xs items-center justify-center"
-        v-for="rssTab in rssTabs">
-
-        <q-card flat @click="open(rssTab)">
-          <q-card-section class="q-pt-xs cursor-pointer">
-            <div class="row items-baseline">
-              <div class="col-2">
-                <TabFaviconWidget :tab="rssTab" width="20px" height="20px" />
-              </div>
-              <div class="col-9 text-body2 ellipsis">
-                {{ rssTab.chromeTab?.title }}
-              </div>
-              <div class="col-1">
-                <q-icon name="close"/>
-              </div>
-            </div>
-
-          </q-card-section>
-        </q-card>
-      </div>
-
 
     </div>
+
+    <!-- place QPageSticky at end of page -->
+    <q-page-sticky expand position="top" style="background-color:white">
+      <FirstToolbarHelper title="RSS Feeds" :show-back-button="true"/>
+      <SecondToolbarHelper />
+    </q-page-sticky>
+
   </q-page>
 
 </template>
@@ -62,6 +62,9 @@ import {SidePanelView, useUiStore} from "src/stores/uiStore";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {CreateDynamicTabset} from "src/domain/commands/CreateDynamicTabset";
 import TabFaviconWidget from "components/widgets/TabFaviconWidget.vue";
+import PanelTabListElementWidget from "components/widgets/PanelTabListElementWidget.vue";
+import FirstToolbarHelper from "pages/sidepanel/helper/FirstToolbarHelper.vue";
+import SecondToolbarHelper from "pages/sidepanel/helper/SecondToolbarHelper.vue";
 
 const {handleError, handleSuccess} = useNotificationHandler()
 const {inBexMode} = useUtils()

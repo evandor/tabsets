@@ -30,10 +30,8 @@
       <div class="col-4 text-right"
            style="border-bottom: 1px dotted lightgray;border-right: 1px dotted lightgray;border-radius:4px;min-height:30px">
 
-
-        <!--              v-if="tabsStore.currentTabsetId !== '' && tabsStore.getTabset(tabsStore.currentTabsetId) && tabsStore.getCurrentTabset?.tabs.length > 0 && $q.screen.gt.xs"-->
         <q-btn
-          v-if="tabsStore.getCurrentTabset?.tabs.length > 7"
+          v-if="useUiStore().sidePanelActiveViewIs(SidePanelView.MAIN) && tabsStore.getCurrentTabset?.tabs.length > 7"
           flat
           class="q-ma-none q-pa-xs cursor-pointer"
           style="width:20px;max-width:220px"
@@ -72,7 +70,7 @@
           <q-tooltip class="tooltip">Toggle through sorting</q-tooltip>
         </q-btn>
 
-        <q-btn v-if="tabsStore.getCurrentTabset?.tabs.length > 0"
+        <q-btn v-if="useUiStore().sidePanelActiveViewIs(SidePanelView.MAIN) && tabsStore.getCurrentTabset?.tabs.length > 0"
                :icon="getDetailLevelIcon()"
                flat
                size="10px"
@@ -83,7 +81,7 @@
           <q-tooltip class="tooltip">Toggle the detail level for the tabs</q-tooltip>
         </q-btn>
 
-        <q-btn v-if="usePermissionsStore().hasFeature(FeatureIdent.SESSIONS)"
+        <q-btn v-if="useUiStore().sidePanelActiveViewIs(SidePanelView.MAIN) && usePermissionsStore().hasFeature(FeatureIdent.SESSIONS)"
                flat
                style="max-width:20px"
                size="10px"
@@ -95,7 +93,7 @@
           <q-tooltip class="tooltip" v-else>Start new Session</q-tooltip>
         </q-btn>
 
-        <q-btn v-if="usePermissionsStore().hasFeature(FeatureIdent.WEBSITE_CLIP) && webClipActive()"
+        <q-btn v-if="useUiStore().sidePanelActiveViewIs(SidePanelView.MAIN) && usePermissionsStore().hasFeature(FeatureIdent.WEBSITE_CLIP) && webClipActive()"
                icon="filter_center_focus"
                flat
                class="q-ma-none q-pa-xs cursor-pointer"
@@ -104,7 +102,7 @@
                @click="createClip">
           <q-tooltip class="tooltip">{{ createWebsiteClipTooltip() }}</q-tooltip>
         </q-btn>
-        <q-btn v-if="usePermissionsStore().hasFeature(FeatureIdent.WEBSITE_CLIP) && !webClipActive()"
+        <q-btn v-if="useUiStore().sidePanelActiveViewIs(SidePanelView.MAIN) && usePermissionsStore().hasFeature(FeatureIdent.WEBSITE_CLIP) && !webClipActive()"
                icon="filter_center_focus"
                color="grey-5"
                flat

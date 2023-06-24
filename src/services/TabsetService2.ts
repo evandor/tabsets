@@ -20,10 +20,10 @@ import {useUtils} from "src/services/Utils";
 import {usePermissionsStore} from "stores/permissionsStore";
 import {FeatureIdent} from "src/models/AppFeature";
 
-const {db} = useDB()
 const {sendMsg} = useUtils()
 
 export function useTabsetService() {
+  const {db} = useDB()
 
   const init = async (doNotInitSearchIndex: boolean = false) => {
     console.debug("initializing tabsetService2")
@@ -247,10 +247,10 @@ export function useTabsetService() {
     return Promise.reject("tabset id not set")
   }
 
-  const addToTabsetId = async (tsId: string, tab: Tab): Promise<number> => {
+  const addToTabsetId = async (tsId: string, tab: Tab, useIndex: number | undefined = undefined): Promise<number> => {
     const ts = getTabset(tsId)
     if (ts) {
-      return addToTabset(ts, tab)
+      return addToTabset(ts, tab, useIndex)
     }
     return Promise.reject("no tabset for give id " + tsId)
   }

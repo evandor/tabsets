@@ -35,30 +35,10 @@ export class AddTabToTabsetCommand implements Command<any> {
   async execute(): Promise<ExecutionResult<any>> {
     const tabsStore = useTabsStore()
     console.info('adding tab to tabset', this.tab.id, this.tabset.id)
-    //console.log("tabs", tabsStore.getCurrentTabs)
     const exists = _.findIndex(this.tabset.tabs, t => t.chromeTab.url === this.tab.chromeTab.url) >= 0
 
-    // let useIndex = this.newIndex
-    // console.log("exists", exists, this.group)
-
     if (!exists) {
-      return useTabsetService().addToTabsetId(this.tabset.id, this.tab)
-      // return TabsetService.saveToCurrentTabset(this.tab, useIndex)
-        .then((res) => {
-          // if (this.tab.chromeTab.url) {
-          //   useUiStore().clearHighlights()
-          //   useUiStore().addHighlight(this.tab.chromeTab.url)
-          //   // useSearchStore().update(this.tab.chromeTab.url, 'name', this.newName)
-          //   useSearchStore().addToIndex(uid(), "", this.tab.chromeTab.title || '',
-          //     this.tab.chromeTab.url, "", "", [tabsStore.currentTabsetId], this.tab.chromeTab.favIconUrl || '')
-          // }
-          return res
-        })
-        .then((res) => {
-          // if (tabsStore.pendingTabset) {
-          //   tabsStore.pendingTabset.tabs = _.filter(tabsStore.pendingTabset.tabs, t => t.chromeTab.url !== this.tab.chromeTab.url)
-          // }
-        })
+      return useTabsetService().addToTabsetId(this.tabset.id, this.tab, 0)
         .then((res) => {
           return TabsetService.getContentFor(this.tab)
             .then((content) => {
