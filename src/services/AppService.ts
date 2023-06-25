@@ -73,7 +73,7 @@ class AppService {
       .then(() => {
         // init services
         useNotificationsStore().initialize(useDB(undefined).db)
-        useSuggestionsStore().init()
+        useSuggestionsStore().init(useDB(undefined).db)
         tabsetService.setLocalStorage(localStorage)
         spacesStore.initialize(useDB(undefined).db)
           .then(() => {

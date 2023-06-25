@@ -26,9 +26,9 @@
 
   <div class="row" v-if="alreadyInSomeTabset()">
     <div class="col-2 text-caption">
-<!--      <q-icon class="q-ml-sm" name="tab" color="primary" size="xs">-->
-<!--        <q-tooltip class="tooltip">The Tabsets this Page added to</q-tooltip>-->
-<!--      </q-icon>-->
+      <q-icon class="q-ma-xs q-ml-sm" size="18px" name="tab" color="primary">
+        <q-tooltip class="tooltip">Saved in tabsets:</q-tooltip>
+      </q-icon>
     </div>
     <div class="col-10">
       <template v-for="badge in tsBadges">
@@ -52,7 +52,7 @@
       <q-btn v-if="tabsStore.getCurrentTabset"
              label="add tab to this tabset"
              flat
-             color="warning"
+             text-color="primary"
              class="q-ma-none q-pa-none"
              style="cursor: pointer"
              size="10px"

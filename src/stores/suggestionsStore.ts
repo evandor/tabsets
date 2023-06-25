@@ -37,8 +37,12 @@ export const useSuggestionsStore = defineStore('suggestions', () => {
   }
 
   function removeSuggestion(ident: StaticSuggestionIdent) {
-    storage.removeSuggestion(ident)
-      .then(() => suggestions.value = _.filter(suggestions.value, s => s.id !== ident))
+    if (storage) {
+      storage.removeSuggestion(ident)
+        .then(() => suggestions.value = _.filter(suggestions.value, s => s.id !== ident))
+    } else {
+      console.warn("could not remove suggestions as storage is not defined")
+    }
   }
 
   function cancelSuggestion(id: string): Promise<void> {
