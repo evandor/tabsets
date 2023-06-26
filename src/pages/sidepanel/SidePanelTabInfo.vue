@@ -22,20 +22,15 @@
 
 <script lang="ts" setup>
 
-import PanelTabListElementWidget from "components/widgets/PanelTabListElementWidget.vue";
-import SidePanelTabListElementDetails from "components/widgets/SidePanelTabListElementDetails.vue";
 import {Tab} from "src/models/Tab";
 import {uid} from "quasar";
 import {useRoute, useRouter} from "vue-router";
 import {useTabsStore} from "stores/tabsStore";
 import {useTabsetService} from "src/services/TabsetService2";
-import {useCommandExecutor} from "src/services/CommandExecutor";
-import {AddTabToTabsetCommand} from "src/domain/tabs/AddTabToTabset";
 import {ref, watchEffect} from "vue";
 import {useUiStore} from "stores/uiStore";
 import TabsetService from "src/services/TabsetService";
 import CurrentTabElementHelper from "pages/sidepanel/helper/CurrentTabElementHelper.vue";
-import ShortUrl from "components/utils/ShortUrl.vue";
 
 const router = useRouter()
 const route = useRoute()

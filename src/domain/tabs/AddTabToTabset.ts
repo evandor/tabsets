@@ -42,7 +42,7 @@ export class AddTabToTabsetCommand implements Command<any> {
         .then((res) => {
           return TabsetService.getContentFor(this.tab)
             .then((content) => {
-              console.log("got content", content)
+              //console.log("got content", content)
               if (content) {
                 return useTabsetService()
                   .saveText(this.tab.chromeTab, content['content' as keyof object], content['metas' as keyof object])

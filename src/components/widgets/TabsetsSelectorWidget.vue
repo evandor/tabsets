@@ -25,6 +25,7 @@
             <q-icon name="o_stop_circle" color="red"/>
           </q-item-section>
           <q-item-section class="q-ml-sm">{{ ts.label }}</q-item-section>
+          <q-item-section class="q-ml-sm text-right"><span style="font-size: smaller">#{{ts.count}}</span></q-item-section>
         </q-item>
 
         <template
@@ -108,7 +109,7 @@ watchEffect(() => {
         return o.name.toLowerCase()
       }
     ]), (key) => {
-    return {id: key.id, label: key.name, type: key.type}
+    return {id: key.id, label: key.name, type: key.type, count: key.tabs.length}
   })
 })
 

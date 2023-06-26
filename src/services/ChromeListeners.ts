@@ -110,7 +110,7 @@ class ChromeListeners {
       return
     }
     this.eventTriggered()
-    console.log(`onCreated: tab ${tab.id}: >>> ${tab.pendingUrl}`)
+    console.debug(`onCreated: tab ${tab.id}: >>> ${tab.pendingUrl}`)
     const tabsStore = useTabsStore()
 
     let foundSession = false

@@ -342,6 +342,7 @@ const hasFeature = () => {
 }
 
 const grant = (ident: string) => {
+  //TODO the default activeCommand always executes "permissionStore.activateFeature" - so we do it twice
   if (appFeature.value && appFeature.value.activateCommand) {
     useCommandExecutor().execute(appFeature.value.activateCommand)
       .then((executionResult: ExecutionResult<any>) => {

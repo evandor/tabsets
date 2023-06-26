@@ -146,7 +146,6 @@ watchEffect(() => {
     _.forEach(tabsetIds, tsId => {
       if (tsId === tabsStore.currentTabsetId) {
         const tabsForUrl = tabsStore.tabsForUrl(currentChromeTab.value.url || '')
-        console.log("===", tsId, tabsForUrl)
         if (tabsForUrl && tabsForUrl.length > 0) {
           created.value = formatDate(tabsForUrl[0].created)
         }
