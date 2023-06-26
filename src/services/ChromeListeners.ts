@@ -209,10 +209,10 @@ class ChromeListeners {
     if (scripts.length > 0 && tab.id !== null) { // && !this.injectedScripts.get(chromeTab.id)) {
 
       chrome.tabs.get(tab.id, (chromeTab: chrome.tabs.Tab) => {
-       // console.log("got tab", tab)
+        console.log("got tab", tab)
         if (!tab.url?.startsWith("chrome")) {
           scripts.forEach((script: string) => {
-            console.debug("executing scripts", tab.id, script)
+            console.info("executing scripts", tab.id, script)
             // @ts-ignore
             chrome.scripting.executeScript({
               target: {tabId: tab.id, allFrames: false},

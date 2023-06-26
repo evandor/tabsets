@@ -37,7 +37,7 @@ async function loadAIModule() {
         chrome.runtime.sendMessage(msg, (callback) => {
           if (chrome.runtime.lastError) { /* ignore */
             // TODO we get tons of errors here
-            console.log("hier!!!", chrome.runtime.lastError)
+            console.log("runtime error encountered", chrome.runtime.lastError)
           } else {
             //console.log("cb", callback)
           }

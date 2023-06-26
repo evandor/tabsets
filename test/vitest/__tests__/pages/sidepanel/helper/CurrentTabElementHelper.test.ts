@@ -30,6 +30,7 @@ describe('CurrentTabElementHelper', () => {
     expect(wrapper.text()).toContain("www.skysail.io");
     expect(wrapper.text()).toContain("title");
     expect(wrapper.text()).toContain("www.skysail.io");
+    console.log("wrapper", wrapper.html())
   });
 
   it('should be mounted with missing chrome tab', async () => {
@@ -42,7 +43,7 @@ describe('CurrentTabElementHelper', () => {
     await IndexedDbPersistenceService.init("db")
     useTabsStore().setCurrentChromeTab(skysailChromeTab)
     const res = await useCommandExecutor().execute(new CreateTabsetCommand("ts1", []))
-    useCommandExecutor().execute(new AddTabToTabsetCommand(new Tab(uid(), skysailChromeTab), res.result.tabset))
+    await useCommandExecutor().execute(new AddTabToTabsetCommand(new Tab(uid(), skysailChromeTab), res.result.tabset))
     await useTabsetService().saveText(skysailChromeTab, "the text", {})
     const wrapper = mount(CurrentTabElementHelper);
     expect(wrapper.text()).toContain("ts1");

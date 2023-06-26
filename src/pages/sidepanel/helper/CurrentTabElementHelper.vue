@@ -63,6 +63,25 @@
       </div>
     </div>
   </div>
+  <div class="row" v-if="!alreadyInSomeTabset()">
+    <div class="col-2">
+
+    </div>
+    <div class="col-10">
+              <template v-for="c in tabsetCandidates">
+                <q-chip clickable
+                        @click="saveInTabset(c.candidateId)"
+                        class="cursor-pointer q-ml-none q-mr-xs" size="9px" icon="o_auto_awesome">
+                  {{ c.candidateName }}
+                  <q-tooltip class="tooltip">Suggestion from AI Module (with confidence {{
+                      Math.round(100 * c.score)
+                    }}%)
+                  </q-tooltip>
+                </q-chip>
+              </template>
+
+    </div>
+  </div>
 
 
   <!--  <q-item-section class="q-mb-sm">-->
