@@ -16,6 +16,16 @@ export default bexContent((bridge: any) => {
 
   console.log("tabsets: initializing content script for highlighting")
 
+  // @ts-ignore
+  if (window.contentScriptHighlightingAlredyCalled) {
+    // https://stackoverflow.com/questions/23208134/avoid-dynamically-injecting-the-same-script-multiple-times-when-using-chrome-tab
+    console.log("stopping execution of script as it is already setup")
+    return
+  }
+  // @ts-ignore
+  window.contentScriptHighlightingAlredyCalled  = true
+
+
   var _caretPosition = new Caret()
 
   function doRestoreRange() {

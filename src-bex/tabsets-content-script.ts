@@ -5,7 +5,18 @@ import {bexContent} from 'quasar/wrappers'
 
 
 export default bexContent((bridge: any) => {
+
+  // @ts-ignore
+  if (window.contentScriptAnalysisAlredyCalled) {
+    // https://stackoverflow.com/questions/23208134/avoid-dynamically-injecting-the-same-script-multiple-times-when-using-chrome-tab
+    console.debug("stopping execution of script as it is already setup")
+    return
+  }
+
   console.log("tabsets: initializing content script for tab analysis")
+  // @ts-ignore
+  window.contentScriptAnalysisAlredyCalled  = true
+
 
   // I guess this is never called  TODO remove
   chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {

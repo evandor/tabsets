@@ -12,6 +12,16 @@ export default bexContent((bridge: any) => {
 
   console.log("tabsets: initializing content script for quoting")
 
+  // @ts-ignore
+  if (window.contentScriptQuotingAlredyCalled) {
+    // https://stackoverflow.com/questions/23208134/avoid-dynamically-injecting-the-same-script-multiple-times-when-using-chrome-tab
+    console.log("stopping execution of script as it is already setup")
+    return
+  }
+  // @ts-ignore
+  window.contentScriptQuotingAlredyCalled  = true
+
+
   var _caretPosition: any;
 
   const sel = window.getSelection()

@@ -182,16 +182,14 @@ const setInfo = (tab: Tab) => {
   }
 }
 
-
-const thumbnailFor = async (tab: Tab): Promise<object> => {
-  return await TabsetService.getThumbnailFor(tab)
-}
-
 const saveInTabset = (tabsetId: string) => {
   console.log("saving to tabset ", tabsetId)
   const useTS = useTabsetService().getTabset(tabsetId)
   if (useTS) {
     useCommandExecutor().executeFromUi(new AddTabToTabsetCommand(new Tab(uid(), currentChromeTab.value), useTS))
+      .then((res:any) => {
+        tabsetCandidates.value = _.filter(tabsetCandidates.value, (c:object) => c['candidateId' as keyof object] !== tabsetId)
+      })
   }
 }
 
