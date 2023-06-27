@@ -22,7 +22,7 @@
     </div>
   </div>
 
-  <q-separator v-if="!alreadyInSomeTabset()" color="lightgray" inset />
+  <q-separator v-if="!alreadyInSomeTabset()" color="lightgray" inset/>
 
   <div class="row" v-if="alreadyInSomeTabset()">
     <div class="col-2 text-caption">
@@ -58,64 +58,24 @@
              size="10px"
              @click="saveInTabset(tabsStore.currentTabsetId)"
              icon="save"/>
-      <div v-else class="text-caption">
+      <template class="text-caption" v-if="tabsetCandidates.length > 0"> or use AI suggestion:
+        <template v-for="c in tabsetCandidates">
+          <q-chip clickable
+                  @click="saveInTabset(c.candidateId)"
+                  class="cursor-pointer q-ml-none q-mr-xs" size="9px" icon="o_auto_awesome">
+            {{ c.candidateName }}
+            <q-tooltip class="tooltip">Suggestion from AI Module (with confidence {{
+                Math.round(100 * c.score)
+              }}%)
+            </q-tooltip>
+          </q-chip>
+        </template>
+      </template>
+      <div v-if="!tabsStore.getCurrentTabset" class="text-caption">
         To add this tab, create or select a tabset first
       </div>
     </div>
   </div>
-  <div class="row" v-if="!alreadyInSomeTabset()">
-    <div class="col-2">
-
-    </div>
-    <div class="col-10">
-              <template v-for="c in tabsetCandidates">
-                <q-chip clickable
-                        @click="saveInTabset(c.candidateId)"
-                        class="cursor-pointer q-ml-none q-mr-xs" size="9px" icon="o_auto_awesome">
-                  {{ c.candidateName }}
-                  <q-tooltip class="tooltip">Suggestion from AI Module (with confidence {{
-                      Math.round(100 * c.score)
-                    }}%)
-                  </q-tooltip>
-                </q-chip>
-              </template>
-
-    </div>
-  </div>
-
-
-  <!--  <q-item-section class="q-mb-sm">-->
-
-
-  <!--    &lt;!&ndash; saved in / save to tabset &ndash;&gt;-->
-  <!--    <q-item-label>-->
-  <!--      <template v-if="!alreadyInTabset()">-->
-  <!--        <q-btn label="add to this tabset!"-->
-  <!--               flat-->
-  <!--               class="q-ma-none q-pa-none"-->
-  <!--               style="cursor: pointer"-->
-  <!--               size="10px"-->
-  <!--               color="primary"-->
-  <!--               @click="saveInTabset(tabsStore.currentTabsetId)"-->
-  <!--               icon="save"/>-->
-
-  <!--        <template v-for="c in tabsetCandidates">-->
-  <!--          <q-chip clickable-->
-  <!--                  @click="saveInTabset(c.candidateId)"-->
-  <!--                  class="cursor-pointer q-ml-none q-mr-xs" size="9px" icon="tab">-->
-  <!--            {{ c.candidateName }}-->
-  <!--            <q-tooltip class="tooltip">Suggestion from AI Module (with confidence {{-->
-  <!--                Math.round(100 * c.score)-->
-  <!--              }}%)-->
-  <!--            </q-tooltip>-->
-  <!--          </q-chip>-->
-  <!--        </template>-->
-  <!--      </template>-->
-  <!--      <template v-else>-->
-
-  <!--      </template>-->
-  <!--    </q-item-label>-->
-  <!--  </q-item-section>-->
 
 </template>
 
@@ -133,6 +93,7 @@ import ShortUrl from "components/utils/ShortUrl.vue";
 import {useUtils} from "src/services/Utils";
 import {SelectTabsetCommand} from "src/domain/tabsets/SelectTabset";
 import {useSpacesStore} from "stores/spacesStore";
+import {Tabset} from "src/models/Tabset";
 
 const {formatDate} = useUtils()
 
@@ -184,11 +145,26 @@ watchEffect(async () => {
     try {
       const c = await TabsetService.getContentForUrl(currentChromeTab.value.url)
       if (c && c['tabsetCandidates' as keyof object]) {
-        tabsetCandidates.value = _.filter(c['tabsetCandidates' as keyof object],
-          (c: object) => (c['candidateName' as keyof object] || '') !== tabsStore.currentTabsetName)
+        //console.log("(0) candidates set to ", c['tabsetCandidates' as keyof object])
+        tabsetCandidates.value = _.sortBy(_.filter(c['tabsetCandidates' as keyof object],
+            (c: object) => (c['candidateName' as keyof object] || '') !== tabsStore.currentTabsetName),
+          ['score'])
       } else {
         tabsetCandidates.value = []
       }
+      //console.log("(1) candidates set to ", JSON.stringify(tabsetCandidates.value))
+      // remove the candidates the tab is already assigned to
+      const tabsetsForUrl = useTabsetService().tabsetsFor(currentChromeTab.value?.url)
+     // console.log("tabsetsforur", tabsetsForUrl)
+      tabsetCandidates.value = _.filter(tabsetCandidates.value, (c: object) => {
+       // console.log("comparing", tabsetsForUrl, c, tabsetsForUrl.indexOf(c.candidateId))
+        return tabsetsForUrl.indexOf(c.candidateId) < 0
+      })
+      //console.log("(2) candidates set to ", JSON.stringify(tabsetCandidates.value))
+      // at max n elements
+      tabsetCandidates.value = _.take(tabsetCandidates.value, 3)
+
+     // console.log("(3) candidates set to ", JSON.stringify(tabsetCandidates.value))
     } catch (err) {
       console.log("err: ", err)
     }
@@ -245,5 +221,5 @@ const switchTabset = (tsId: string, name: string) => {
 }
 
 const tabsetChipColor = (tsId: string) => tsId !== tabsStore.currentTabsetId ? 'white' : ''
-const shorten = (text: string, maxLength: number) => text.length > maxLength ? text.substring(0,maxLength-2) + "..." : text
+const shorten = (text: string, maxLength: number) => text.length > maxLength ? text.substring(0, maxLength - 2) + "..." : text
 </script>

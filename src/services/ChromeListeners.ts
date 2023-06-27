@@ -213,6 +213,10 @@ class ChromeListeners {
         if (!tab.url?.startsWith("chrome")) {
           scripts.forEach((script: string) => {
             console.info("executing scripts", tab.id, script)
+
+
+
+
             // @ts-ignore
             chrome.scripting.executeScript({
               target: {tabId: tab.id, allFrames: false},

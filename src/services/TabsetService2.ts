@@ -292,9 +292,10 @@ export function useTabsetService() {
       })
 
     // try to apply AI logic
-    if (metas['description' as keyof object] && usePermissionsStore().hasFeature(FeatureIdent.AI_MODULE)) {
+    if (usePermissionsStore().hasFeature(FeatureIdent.AI_MODULE)) {
+      const matchAgainst = title + "; " + tab.url + "; " + metas['description' as keyof object] || ''
       const data = {
-        text: metas['description' as keyof object],
+        text: matchAgainst,
         candidates: _.map(candidates, (c: any) => c.name)
       }
       console.log("about to apply KI logic on meta description...", data)

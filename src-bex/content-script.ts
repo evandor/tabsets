@@ -3,9 +3,13 @@
 // @ts-ignore
 import {bexContent} from 'quasar/wrappers'
 
+let called = false
+
 export default bexContent((bridge: any) => {
 
-  console.log("tabsets: initializing content script")
+  console.log("tabsets: initializing content script", called)
+
+  called = true
 
   // @ts-ignore
   bridge.on('websiteImg', ({data, respond}) => {
