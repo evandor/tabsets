@@ -1,9 +1,27 @@
 <template>
 
-  <q-page padding style="padding-top: 210px">
+  <q-page style="padding-top: 50px">
 
     <!-- list of tabs, assuming here we have at least one tabset -->
     <div class="q-ma-none">
+
+      <div class="q-ma-none q-pa-none">
+        <q-list dense class="rounded-borders q-ma-none q-pa-none" v-for="tabset in [...tabsStore.tabsets.values()]">
+          <q-expansion-item
+            expand-separator
+            :label="tabset.name"
+            :caption="tabsetCaption(tabset)">
+
+            <SidePanelTabInfo/>
+
+            <PanelTabList :tabs="filteredTabs(tabset.id)"/>
+
+          </q-expansion-item>
+
+
+        </q-list>
+      </div>
+
 
       <div class="q-ma-none">
 
@@ -12,15 +30,15 @@
           Start browsing and add the tabs you like to this tabset
         </div>
 
-        <div class="row q-ma-none q-pa-none" v-if="tabsStore.getCurrentTabset">
-          <div class="col-12 q-ma-none q-pa-none q-pt-lg">
+        <!-- <div class="row q-ma-none q-pa-none" v-if="tabsStore.getCurrentTabset">
+           <div class="col-12 q-ma-none q-pa-none q-pt-lg">
 
-            <SidePanelDynamicTabset v-if="tabsStore.getCurrentTabset?.type === TabsetType.DYNAMIC"
-                                    :tabset="tabsStore.getCurrentTabset"/>
-            <PanelTabList v-else :tabs="filteredTabs()"/>
+             <SidePanelDynamicTabset v-if="tabsStore.getCurrentTabset?.type === TabsetType.DYNAMIC"
+                                     :tabset="tabsStore.getCurrentTabset"/>
+             <PanelTabList v-else :tabs="filteredTabs()"/>
 
-          </div>
-        </div>
+           </div>
+         </div>-->
 
       </div>
 
@@ -30,13 +48,13 @@
     <q-page-sticky expand position="top" style="background-color:white">
 
       <FirstToolbarHelper/>
-      <SecondToolbarHelper/>
+      <!--<SecondToolbarHelper/>-->
 
-      <!-- selected tab or current tab from chrome -->
+      <!-- selected tab or current tab from chrome
       <div class="q-my-none q-mx-none q-pa-none fit bg-white"
            style="max-height:135px;min-height:135px;">
         <SidePanelTabInfo/>
-      </div>
+      </div>-->
 
     </q-page-sticky>
 
@@ -199,17 +217,18 @@ const tabsets = (): Tabset[] => {
   return tabsets
 }
 
-function filteredTabs(): Tab[] {
+function filteredTabs(tabsetId: string): Tab[] {
   const filter = useUiStore().tabsFilter
+  const tabs = useTabsetService().getTabset(tabsetId)?.tabs || []
   if (filter && filter.trim() !== '') {
-    return _.orderBy(_.filter(tabsStore.getCurrentTabset?.tabs, (t: Tab) => {
+    return _.orderBy(_.filter(tabs, (t: Tab) => {
         return (t.chromeTab.url || '')?.indexOf(filter) >= 0 ||
           (t.chromeTab.title || '')?.indexOf(filter) >= 0 ||
           t.description?.indexOf(filter) >= 0
       })
       , getOrder(), [orderDesc.value ? 'desc' : 'asc'])
   }
-  return _.orderBy(tabsStore.getCurrentTabset?.tabs, getOrder(), [orderDesc.value ? 'desc' : 'asc'])
+  return _.orderBy(tabs, getOrder(), [orderDesc.value ? 'desc' : 'asc'])
 }
 
 function getOrder() {
@@ -229,6 +248,8 @@ function getOrder() {
 const showTooltip = (nr: number) => {
   return tooltipToShow.value === nr
 }
+
+const tabsetCaption = (tabset: Tabset) => tabset.tabs?.length.toString() + ' tab' + (tabset.tabs?.length === 1 ? '' : 's')
 
 </script>
 

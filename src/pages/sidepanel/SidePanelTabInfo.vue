@@ -7,7 +7,7 @@
     <div class="col-12" v-if="route.query.first && route.query.first === 'true'">
       <div class="row">
         <div class="col text-caption q-pa-md">
-          Here you will see the <i>current tab</i> of your browser.
+          Here you will always see the <i>current tab</i> of your browser.
           Click 'START' and add it to your new tabset.<br><br>
           <q-btn label="start" @click="router.push('/sidepanel')" />
         </div>

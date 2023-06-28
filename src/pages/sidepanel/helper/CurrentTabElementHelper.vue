@@ -26,9 +26,9 @@
 
   <div class="row" v-if="alreadyInSomeTabset()">
     <div class="col-2 text-caption">
-      <q-icon class="q-ma-xs q-ml-sm" size="18px" name="tab" color="primary">
+     <!-- <q-icon class="q-ma-xs q-ml-sm" size="18px" name="tab" color="primary">
         <q-tooltip class="tooltip">Saved in tabsets:</q-tooltip>
-      </q-icon>
+      </q-icon>-->
     </div>
     <div class="col-10">
       <template v-for="badge in tsBadges">
@@ -39,6 +39,10 @@
           style="max-width:70px"
           class="cursor-pointer q-ml-none q-mr-xs ellipsis" size="9px">
           {{ shorten(badge.label, 12) }}
+          <q-tooltip v-if="badge.tabsetId !== tabsStore.currentTabsetId"
+            class="tooltip" :delay="1000">This tab has been added to the tabset '{{badge.label}} {{created}}. Click to go to this tabset.'</q-tooltip>
+          <q-tooltip v-else
+            class="tooltip" :delay="1000">This tab has been added to the current tabset '{{badge.label}}' {{created}}</q-tooltip>
         </q-chip>
       </template>
       <!--      <span class="text-caption">{{ created }}</span>-->

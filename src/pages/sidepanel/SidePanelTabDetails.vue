@@ -163,18 +163,18 @@
       </q-card>
     </q-expansion-item>
 
-    <q-expansion-item label="Note"
-                      group="somegroup"
+<!--    <q-expansion-item label="Note"-->
+<!--                      group="somegroup"-->
 
-                      :default-opened="false">
-      <q-card>
-        <q-card-section>
-          <div class="text-caption">
-            {{ useUiStore().getSelectedTab?.note }}
-          </div>
-        </q-card-section>
-      </q-card>
-    </q-expansion-item>
+<!--                      :default-opened="false">-->
+<!--      <q-card>-->
+<!--        <q-card-section>-->
+<!--          <div class="text-caption">-->
+<!--            {{ useUiStore().getSelectedTab?.note }}-->
+<!--          </div>-->
+<!--        </q-card-section>-->
+<!--      </q-card>-->
+<!--    </q-expansion-item>-->
 
     <q-expansion-item label="Meta Data"
                       group="somegroup"

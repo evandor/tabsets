@@ -29,7 +29,7 @@ export const usePermissionsStore = defineStore('permissions', () => {
   const permissions = ref<chrome.permissions.Permissions | undefined>(undefined)
 
   // related to tabsets permissions
-  const activeFeatures = ref<string[]>($q.localStorage?.getItem('ui.activeFeatures') as string[] || [])
+  const activeFeatures = ref<string[]>($q?.localStorage?.getItem('ui.activeFeatures') as string[] || [])
 
   //const inActiveDefaultFeatures = ref<string[]>($q.localStorage?.getItem('ui.inActiveDefaultFeatures') as string[] || [])
 

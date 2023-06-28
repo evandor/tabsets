@@ -70,16 +70,16 @@
           <q-tooltip class="tooltip">Toggle through sorting</q-tooltip>
         </q-btn>
 
-        <q-btn v-if="useUiStore().sidePanelActiveViewIs(SidePanelView.MAIN) && tabsStore.getCurrentTabset?.tabs.length > 0"
-               :icon="getDetailLevelIcon()"
-               flat
-               size="10px"
-               class="q-ma-none q-pa-xs cursor-pointer"
-               style="max-width:20px"
-               text-color="primary"
-               @click="toggleListDetailLevel()">
-          <q-tooltip class="tooltip">Toggle the detail level for the tabs</q-tooltip>
-        </q-btn>
+<!--        <q-btn v-if="useUiStore().sidePanelActiveViewIs(SidePanelView.MAIN) && tabsStore.getCurrentTabset?.tabs.length > 0"-->
+<!--               :icon="getDetailLevelIcon()"-->
+<!--               flat-->
+<!--               size="10px"-->
+<!--               class="q-ma-none q-pa-xs cursor-pointer"-->
+<!--               style="max-width:20px"-->
+<!--               text-color="primary"-->
+<!--               @click="toggleListDetailLevel()">-->
+<!--          <q-tooltip class="tooltip">Toggle the detail level for the tabs</q-tooltip>-->
+<!--        </q-btn>-->
 
         <q-btn v-if="useUiStore().sidePanelActiveViewIs(SidePanelView.MAIN) && usePermissionsStore().hasFeature(FeatureIdent.SESSIONS)"
                flat
