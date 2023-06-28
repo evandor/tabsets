@@ -26,23 +26,27 @@
 
   <div class="row" v-if="alreadyInSomeTabset()">
     <div class="col-2 text-caption">
-     <!-- <q-icon class="q-ma-xs q-ml-sm" size="18px" name="tab" color="primary">
-        <q-tooltip class="tooltip">Saved in tabsets:</q-tooltip>
-      </q-icon>-->
+      <!-- <q-icon class="q-ma-xs q-ml-sm" size="18px" name="tab" color="primary">
+         <q-tooltip class="tooltip">Saved in tabsets:</q-tooltip>
+       </q-icon>-->
     </div>
     <div class="col-10">
       <template v-for="badge in tsBadges">
         <q-chip
-          :clickable="badge.tabsetId !== tabsStore.currentTabsetId"
+          :clickable="badge.tabsetId !== props.tabsetId"
           @click="switchTabset(badge.tabsetId, badge.label)"
           :color="tabsetChipColor(badge.tabsetId)"
           style="max-width:70px"
           class="cursor-pointer q-ml-none q-mr-xs ellipsis" size="9px">
           {{ shorten(badge.label, 12) }}
-          <q-tooltip v-if="badge.tabsetId !== tabsStore.currentTabsetId"
-            class="tooltip" :delay="1000">This tab has been added to the tabset '{{badge.label}} {{created}}. Click to go to this tabset.'</q-tooltip>
+          <q-tooltip v-if="badge.tabsetId !== props.tabsetId"
+                     class="tooltip" :delay="1000">This tab has been added to the tabset '{{ badge.label }}
+            {{ created }}. Click to go to this tabset.'
+          </q-tooltip>
           <q-tooltip v-else
-            class="tooltip" :delay="1000">This tab has been added to the current tabset '{{badge.label}}' {{created}}</q-tooltip>
+                     class="tooltip" :delay="1000">This tab has been added to the current tabset '{{ badge.label }}'
+            {{ created }}
+          </q-tooltip>
         </q-chip>
       </template>
       <!--      <span class="text-caption">{{ created }}</span>-->
@@ -53,15 +57,14 @@
 
     </div>
     <div class="col-10">
-      <q-btn v-if="tabsStore.getCurrentTabset"
-             label="add tab to this tabset"
-             flat
-             text-color="primary"
-             class="q-ma-none q-pa-none"
-             style="cursor: pointer"
-             size="10px"
-             @click="saveInTabset(tabsStore.currentTabsetId)"
-             icon="save"/>
+      <q-btn
+        label="add tab to this tabset"
+        text-color="warning"
+        class="q-ma-none q-pa-none"
+        style="cursor: pointer"
+        size="10px"
+        @click="saveInTabset(props.tabsetId)"
+        icon="save"/>
       <template class="text-caption" v-if="tabsetCandidates.length > 0"> or use AI suggestion:
         <template v-for="c in tabsetCandidates">
           <q-chip clickable
@@ -75,12 +78,24 @@
           </q-chip>
         </template>
       </template>
-      <div v-if="!tabsStore.getCurrentTabset" class="text-caption">
-        To add this tab, create or select a tabset first
-      </div>
+
     </div>
   </div>
 
+<!--  <q-fab-->
+<!--    v-model="fab1"-->
+<!--    square-->
+<!--    vertical-actions-align="right"-->
+<!--    color="secondary"-->
+<!--    icon="keyboard_arrow_down"-->
+<!--    direction="down">-->
+<!--    <q-fab-action square external-label label-position="top" color="primary" props.tabsetIdicon="mail" label="Email"/>-->
+<!--    <q-fab-action square external-label label-position="top" color="secondary" props.tabsetIdicon="alarm"-->
+<!--                  label="Alarm"/>-->
+<!--    <q-fab-action square external-label label-position="top" color="orange" props.tabsetIdicon="airplay"-->
+<!--                  label="Airplay"/>-->
+<!--    <q-fab-action square external-label label-position="top" color="accent" props.tabsetIdicon="room" label="Map"/>-->
+<!--  </q-fab>-->
 </template>
 
 <script setup lang="ts">
@@ -99,6 +114,10 @@ import {SelectTabsetCommand} from "src/domain/tabsets/SelectTabset";
 import {useSpacesStore} from "stores/spacesStore";
 import {Tabset} from "src/models/Tabset";
 
+const props = defineProps({
+  tabsetId: {type: String, required: true}
+})
+
 const {formatDate} = useUtils()
 
 const emits = defineEmits(['sendCaption'])
@@ -111,7 +130,7 @@ const tsBadges = ref<object[]>([])
 const tabsetCandidates = ref<object[]>([])
 const currentChromeTab = ref<chrome.tabs.Tab>(null as unknown as chrome.tabs.Tab)
 const created = ref<string | undefined>(undefined)
-
+const fab1 = ref(false)
 const tabsStore = useTabsStore()
 
 watchEffect(() => {
@@ -128,7 +147,7 @@ watchEffect(() => {
     tsBadges.value = []
     created.value = undefined
     _.forEach(tabsetIds, tsId => {
-      if (tsId === tabsStore.currentTabsetId) {
+      if (tsId === props.tabsetId) {
         const tabsForUrl = tabsStore.tabsForUrl(currentChromeTab.value.url || '')
         if (tabsForUrl && tabsForUrl.length > 0) {
           created.value = formatDate(tabsForUrl[0].created)
@@ -159,16 +178,16 @@ watchEffect(async () => {
       //console.log("(1) candidates set to ", JSON.stringify(tabsetCandidates.value))
       // remove the candidates the tab is already assigned to
       const tabsetsForUrl = useTabsetService().tabsetsFor(currentChromeTab.value?.url)
-     // console.log("tabsetsforur", tabsetsForUrl)
+      // console.log("tabsetsforur", tabsetsForUrl)
       tabsetCandidates.value = _.filter(tabsetCandidates.value, (c: object) => {
-       // console.log("comparing", tabsetsForUrl, c, tabsetsForUrl.indexOf(c.candidateId))
+        // console.log("comparing", tabsetsForUrl, c, tabsetsForUrl.indexOf(c.candidateId))
         return tabsetsForUrl.indexOf(c.candidateId) < 0
       })
       //console.log("(2) candidates set to ", JSON.stringify(tabsetCandidates.value))
       // at max n elements
       tabsetCandidates.value = _.take(tabsetCandidates.value, 3)
 
-     // console.log("(3) candidates set to ", JSON.stringify(tabsetCandidates.value))
+      // console.log("(3) candidates set to ", JSON.stringify(tabsetCandidates.value))
     } catch (err) {
       console.log("err: ", err)
     }
@@ -191,8 +210,8 @@ const saveInTabset = (tabsetId: string) => {
   const useTS = useTabsetService().getTabset(tabsetId)
   if (useTS) {
     useCommandExecutor().executeFromUi(new AddTabToTabsetCommand(new Tab(uid(), currentChromeTab.value), useTS))
-      .then((res:any) => {
-        tabsetCandidates.value = _.filter(tabsetCandidates.value, (c:object) => c['candidateId' as keyof object] !== tabsetId)
+      .then((res: any) => {
+        tabsetCandidates.value = _.filter(tabsetCandidates.value, (c: object) => c['candidateId' as keyof object] !== tabsetId)
       })
   }
 }
@@ -222,6 +241,6 @@ const switchTabset = (tsId: string, name: string) => {
     })
 }
 
-const tabsetChipColor = (tsId: string) => tsId !== tabsStore.currentTabsetId ? 'white' : ''
+const tabsetChipColor = (tsId: string) => tsId !== props.tabsetId ? 'white' : ''
 const shorten = (text: string, maxLength: number) => text.length > maxLength ? text.substring(0, maxLength - 2) + "..." : text
 </script>

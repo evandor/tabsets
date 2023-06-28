@@ -6,13 +6,15 @@
     <div class="q-ma-none">
 
       <div class="q-ma-none q-pa-none">
-        <q-list dense class="rounded-borders q-ma-none q-pa-none" v-for="tabset in [...tabsStore.tabsets.values()]">
+        <q-list dense
+                class="rounded-borders q-ma-none q-pa-none" v-for="tabset in [...tabsStore.tabsets.values()]">
           <q-expansion-item
             expand-separator
+            hide-expand-icon
             :label="tabset.name"
             :caption="tabsetCaption(tabset)">
 
-            <SidePanelTabInfo/>
+            <SidePanelTabInfo :tabsetId="tabset.id"/>
 
             <PanelTabList :tabs="filteredTabs(tabset.id)"/>
 

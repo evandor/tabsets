@@ -9,12 +9,12 @@
         <div class="col text-caption q-pa-md">
           Here you will always see the <i>current tab</i> of your browser.
           Click 'START' and add it to your new tabset.<br><br>
-          <q-btn label="start" @click="router.push('/sidepanel')" />
+          <q-btn label="start" @click="router.push('/sidepanel')"/>
         </div>
       </div>
     </div>
     <div class="col-12" v-else>
-      <CurrentTabElementHelper/>
+      <CurrentTabElementHelper :tabsetId="props.tabsetId"/>
     </div>
   </div>
 
@@ -31,6 +31,10 @@ import {ref, watchEffect} from "vue";
 import {useUiStore} from "stores/uiStore";
 import TabsetService from "src/services/TabsetService";
 import CurrentTabElementHelper from "pages/sidepanel/helper/CurrentTabElementHelper.vue";
+
+const props = defineProps({
+  tabsetId: {type: String, required: true}
+})
 
 const router = useRouter()
 const route = useRoute()
