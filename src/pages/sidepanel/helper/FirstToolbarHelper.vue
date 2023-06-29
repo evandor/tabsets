@@ -89,6 +89,16 @@
           </q-btn>
 
           <q-btn
+            icon="o_cloud"
+            flat
+            class="q-ma-none q-pa-xs cursor-pointer"
+            style="max-width:20px"
+            size="11px"
+            @click="openNewTabsetDialog()">
+            <q-tooltip class="tooltip">Show Tabset Suggestions</q-tooltip>
+          </q-btn>
+
+          <q-btn
             icon="o_add"
             flat
             class="q-ma-none q-pa-xs cursor-pointer"

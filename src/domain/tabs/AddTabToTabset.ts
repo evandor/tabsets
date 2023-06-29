@@ -59,7 +59,7 @@ export class AddTabToTabsetCommand implements Command<any> {
             })
             .then((res) => {
               // TODO CreateTabFromOpentabs: Same logic?
-              if (usePermissionsStore().hasFeature(FeatureIdent.CATEGORIZATION)) {
+              if (usePermissionsStore().hasFeature(FeatureIdent.CATEGORIZATION) && this.tab.chromeTab.url?.startsWith("https://")) {
                 console.log("about to check categorization", this.tab.chromeTab.url)
                 try {
                   const url = new URL(this.tab.chromeTab.url || '')
@@ -70,6 +70,7 @@ export class AddTabToTabsetCommand implements Command<any> {
                   api.post(`${backendUrl}/webshrinker/analyze`,
                     {
                       url: origin,
+                      taxonomy: 'iabv1', // 'iabv1' or 'webshrinker'
                       title: this.tab.chromeTab.title,
                       favIconUrl: this.tab.chromeTab.favIconUrl,
                       description: this.tab.description
