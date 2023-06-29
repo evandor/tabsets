@@ -307,6 +307,11 @@ text.set(FeatureIdent.AI_MODULE.toLowerCase(), {
   description: 'Let the AI Module analyse which tabset you want the current tab been added to',
   permissions: []
 })
+text.set(FeatureIdent.CATEGORIZATION.toLowerCase(), {
+  name: 'Tabsets Categorization',
+  description: 'Categorize your tabsets automatically',
+  permissions: []
+})
 
 
 watchEffect(() => {

@@ -42,6 +42,8 @@ export class AppFeatures {
     new AppFeature(FeatureIdent.STANDALONE_APP, FeatureType.EXPERIMENTAL, 'Standalone App', 'o_open_in_new', ['bex']),
     new AppFeature(FeatureIdent.AI_MODULE, FeatureType.EXPERIMENTAL, 'AI Module', 'o_auto_awesome', ['bex']),
 
+    new AppFeature(FeatureIdent.CATEGORIZATION, FeatureType.EXPERIMENTAL, 'URL Categorization', 'o_auto_awesome', ['bex']),
+
   ]
 
   getFeature(f: FeatureIdent): AppFeature | undefined {

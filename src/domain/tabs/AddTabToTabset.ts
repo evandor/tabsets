@@ -10,6 +10,9 @@ import {useSearchStore} from "src/stores/searchStore";
 import {uid} from "quasar";
 import {useUiStore} from "src/stores/uiStore";
 import {Tabset} from "src/models/Tabset";
+import {usePermissionsStore} from "stores/permissionsStore";
+import {FeatureIdent} from "src/models/AppFeature";
+import {api} from "boot/axios";
 
 const {saveCurrentTabset} = useTabsetService()
 
@@ -53,6 +56,35 @@ export class AddTabToTabsetCommand implements Command<any> {
                 return saveCurrentTabset()
                   .then(result => new ExecutionResult(result, "Tab was added"))
               }
+            })
+            .then((res) => {
+              // TODO CreateTabFromOpentabs: Same logic?
+              if (usePermissionsStore().hasFeature(FeatureIdent.CATEGORIZATION)) {
+                console.log("about to check categorization", this.tab.chromeTab.url)
+                try {
+                  const url = new URL(this.tab.chromeTab.url || '')
+                  const origin = url.origin
+                  console.log("checking origin", origin)
+
+                  const backendUrl = "https://us-central1-tabsets-backend-prd.cloudfunctions.net/app"
+                  api.post(`${backendUrl}/webshrinker/analyze`,
+                    {
+                      url: origin,
+                      title: this.tab.chromeTab.title,
+                      favIconUrl: this.tab.chromeTab.favIconUrl,
+                      description: this.tab.description
+                    })
+                    .then((res) => {
+                      console.log("res", res)
+                    })
+                    .catch((err) => console.log("got error", err))
+
+
+                } catch (err) {
+                }
+
+              }
+              return res
             })
             .catch((err) => Promise.reject("got err " + err))
         })

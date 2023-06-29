@@ -1,6 +1,6 @@
 <template>
 
-  <q-page style="padding-top: 50px">
+  <q-page style="padding-top: 80px">
 
     <!-- list of tabs, assuming here we have at least one tabset -->
     <div class="q-ma-none">
@@ -9,6 +9,9 @@
         <q-list dense
                 class="rounded-borders q-ma-none q-pa-none" v-for="tabset in [...tabsStore.tabsets.values()]">
           <q-expansion-item
+            group="tabsets"
+            v-model="tabsetExpanded[tabset.id]"
+            @update:model-value="val => updateSelectedTabset()"
             expand-separator
             hide-expand-icon
             :label="tabset.name"
@@ -50,7 +53,7 @@
     <q-page-sticky expand position="top" style="background-color:white">
 
       <FirstToolbarHelper/>
-      <!--<SecondToolbarHelper/>-->
+      <SecondToolbarHelper/>
 
       <!-- selected tab or current tab from chrome
       <div class="q-my-none q-mx-none q-pa-none fit bg-white"
@@ -76,7 +79,7 @@ import {useUtils} from "src/services/Utils";
 import {useQuasar} from "quasar";
 import {useTabsetService} from "src/services/TabsetService2";
 import NewTabsetDialog from "components/dialogues/NewTabsetDialog.vue";
-import {useUiStore} from "src/stores/uiStore";
+import {SidePanelView, useUiStore} from "src/stores/uiStore";
 import PanelTabList from "components/layouts/PanelTabList.vue";
 import {usePermissionsStore} from "src/stores/permissionsStore";
 import {useSpacesStore} from "src/stores/spacesStore";
@@ -85,6 +88,9 @@ import {useLogsStore} from "stores/logsStore";
 import SidePanelTabInfo from "pages/sidepanel/SidePanelTabInfo.vue";
 import FirstToolbarHelper from "pages/sidepanel/helper/FirstToolbarHelper.vue";
 import SecondToolbarHelper from "pages/sidepanel/helper/SecondToolbarHelper.vue";
+import {useCommandExecutor} from "src/services/CommandExecutor";
+import {SelectTabsetCommand} from "src/domain/tabsets/SelectTabset";
+import {ExecutionResult} from "src/domain/ExecutionResult";
 
 const {inBexMode, sanitize, sendMsg} = useUtils()
 
@@ -104,6 +110,7 @@ const openTabs = ref<chrome.tabs.Tab[]>([])
 const currentTabset = ref<Tabset | undefined>(undefined)
 const currentChromeTab = ref<chrome.tabs.Tab>(null as unknown as chrome.tabs.Tab)
 const orderDesc = ref(false)
+const tabsetExpanded = ref<object>({})
 
 const logs = ref<object[]>([])
 const progress = ref<number | undefined>(undefined)
@@ -247,8 +254,22 @@ function getOrder() {
   }
 }
 
-const showTooltip = (nr: number) => {
-  return tooltipToShow.value === nr
+const updateSelectedTabset = () => {
+  console.log("updated...", Object.keys(tabsetExpanded.value))
+  let tabsetToChoose = null
+  Object.keys(tabsetExpanded.value).forEach(k => {
+    if (tabsetExpanded.value[k as keyof object] === true) {
+      tabsetToChoose = k
+    }
+  })
+  console.log("tabsetToChoose", tabsetToChoose)
+  if (tabsetToChoose) {
+    useCommandExecutor()
+      .execute(new SelectTabsetCommand(tabsetToChoose, useSpacesStore().space?.id))
+      .then((res: ExecutionResult<Tabset | undefined>) => {
+        useUiStore().sidePanelSetActiveView(SidePanelView.MAIN)
+      })
+  }
 }
 
 const tabsetCaption = (tabset: Tabset) => tabset.tabs?.length.toString() + ' tab' + (tabset.tabs?.length === 1 ? '' : 's')
