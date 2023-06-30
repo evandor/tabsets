@@ -54,6 +54,9 @@ export class SidePanelView {
   static readonly BOOKMARKS = new SidePanelView('bookmarks', '/sidepanel/bookmarks',
     () => usePermissionsStore().hasFeature(FeatureIdent.BOOKMARKS));
 
+  static readonly PUBLIC_TABSETS = new SidePanelView('categorized_tabsets', '/sidepanel/byCategory',
+    () => usePermissionsStore().hasFeature(FeatureIdent.BOOKMARKS));
+
   private constructor(
     public readonly ident: string,
     public readonly path: any,

@@ -39,6 +39,8 @@ interface PersistenceService {
   addSpace(space: Space): Promise<any>
   deleteSpace(spaceId: string): void;
 
+  loadCategories(): Promise<any>
+
   cleanUpRequests(): Promise<void>
 
   saveStats(date: string, dataset: object): void

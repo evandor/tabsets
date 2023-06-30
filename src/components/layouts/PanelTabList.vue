@@ -25,7 +25,7 @@
         @dragstart="startDrag($event, tab)"
         :key="'paneltablist_' + tab.id">
 
-        <PanelTabListElementWidget :key="'ptlew__' + tab.id" :tab="tabAsTab(tab)"/>
+        <PanelTabListElementWidget :key="'ptlew__' + tab.id" :tab="tabAsTab(tab)" :hide-menu="props.hideMenu"/>
 
       </q-item>
     </vue-draggable-next>
@@ -59,10 +59,8 @@ const tabsStore = useTabsStore()
 const {saveCurrentTabset} = useTabsetService()
 
 const props = defineProps({
-  tabs: {
-    type: Array as PropType<Tab[]>,
-    required: true
-  }
+  tabs: {type: Array as PropType<Tab[]>, required: true},
+  hideMenu: {type: Boolean, default: false},
 })
 
 const thumbnails = ref<Map<string, string>>(new Map())

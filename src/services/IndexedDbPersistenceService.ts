@@ -16,6 +16,9 @@ import {uid} from "quasar";
 import {Notification, NotificationStatus} from "src/models/Notification";
 import {StaticSuggestionIdent, Suggestion, SuggestionState} from "src/models/Suggestion";
 import {useUiStore} from "src/stores/uiStore";
+import {useCategoriesStore} from "stores/categoriesStore";
+import {cloudFunctionsApi} from "src/api/cloudfunctionsApi";
+import {Category} from "src/models/Category";
 
 class IndexedDbPersistenceService implements PersistenceService {
   private db: IDBPDatabase = null as unknown as IDBPDatabase
@@ -51,6 +54,20 @@ class IndexedDbPersistenceService implements PersistenceService {
           spacesStore.putSpace(space)
         })
         .catch(err => console.log("err", err))
+    })
+  }
+
+  async loadCategories(): Promise<void> {
+    console.debug("loading categories...")
+    const categoriesStore = useCategoriesStore()
+    const cs: Category[] = await cloudFunctionsApi().getCategories()
+    _.forEach(cs, c => {
+      categoriesStore.putCategory(c)
+      // this.db.get('spaces', key)
+      //   .then((space: Space) => {
+      //     spacesStore.putSpace(space)
+      //   })
+      //   .catch(err => console.log("err", err))
     })
   }
 

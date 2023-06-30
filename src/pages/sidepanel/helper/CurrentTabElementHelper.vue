@@ -57,14 +57,14 @@
 
     </div>
     <div class="col-10">
-      <q-btn
+      <q-btn flat
         label="add tab to this tabset"
         text-color="warning"
         class="q-ma-none q-pa-none"
         style="cursor: pointer"
         size="10px"
         @click="saveInTabset(props.tabsetId)"
-        icon="save"/>
+        icon="o_favorite"/>
       <template class="text-caption" v-if="tabsetCandidates.length > 0"> or use AI suggestion:
         <template v-for="c in tabsetCandidates">
           <q-chip clickable

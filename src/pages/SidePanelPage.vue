@@ -1,14 +1,16 @@
 <template>
 
-  <q-page style="padding-top: 80px">
+  <q-page style="padding-top: 45px">
 
     <!-- list of tabs, assuming here we have at least one tabset -->
     <div class="q-ma-none">
 
       <div class="q-ma-none q-pa-none">
         <q-list dense
-                class="rounded-borders q-ma-none q-pa-none" v-for="tabset in [...tabsStore.tabsets.values()]">
+                class="rounded-borders q-ma-none q-pa-none" v-for="tabset in tabsets()">
           <q-expansion-item
+            :header-class="tabsStore.currentTabsetId === tabset.id ? 'bg-grey-4':''"
+            header-class="q-ma-none q-px-sm"
             group="tabsets"
             v-model="tabsetExpanded[tabset.id]"
             @update:model-value="val => updateSelectedTabset()"
@@ -17,8 +19,74 @@
             :label="tabset.name"
             :caption="tabsetCaption(tabset)">
 
-            <SidePanelTabInfo :tabsetId="tabset.id"/>
+            <template v-slot:header>
+              <!--              <q-item-section avatar>-->
+              <!--                <q-avatar icon="bluetooth" color="primary" text-color="white" />-->
+              <!--              </q-item-section>-->
 
+              <q-item-section
+                @mouseover="hoveredTabset = tabset.id"
+                @mouseleave="hoveredTabset = undefined">
+                <q-item-label :class="tabsStore.currentTabsetId === tabset.id ? 'text-bold text-primary' : ''">
+                  {{ tabset.name }}
+                </q-item-label>
+                <q-item-label class="text-caption text-grey-5">
+                  {{ tabsetCaption(tabset) }}
+                </q-item-label>
+              </q-item-section>
+
+              <q-item-section side
+                              @mouseover="hoveredTabset = tabset.id"
+                              @mouseleave="hoveredTabset = undefined">
+                <Transition appear>
+                  <!--                  <q-fab-->
+                  <!--                    v-if="hoveredOver(tabset.id)"-->
+                  <!--                    v-model="contextMenuFab"-->
+                  <!--                    square-->
+                  <!--                    size="12px"-->
+                  <!--                    vertical-actions-align="right"-->
+                  <!--                    color="secondary"-->
+                  <!--                    icon="more_horiz"-->
+                  <!--                    direction="down">-->
+                  <!--                    <q-fab-action square color="primary" @click="openEditTabsetDialog" icon="edit" label="Edit"-->
+                  <!--                                  label-position="left"/>-->
+                  <!--                    <q-fab-action square color="secondary" @click="deleteTabsetDialog" icon="delete" label="Delete"-->
+                  <!--                                  label-position="left"/>-->
+                  <!--                  </q-fab>-->
+                  <div class="row items-center" v-if="hoveredOver(tabset.id)">
+                    <q-icon name="more_horiz" color="primary" size="16px"/>
+                    <q-menu :offset="[0, 0]">
+                      <q-list dense style="min-width: 200px">
+
+                        <q-item clickable v-close-popup @click.stop="openEditTabsetDialog(tabset)">
+                          <q-item-section avatar style="padding-right:0;min-width:25px;max-width: 25px;">
+                            <q-icon size="xs" name="o_note" color="accent"/>
+                          </q-item-section>
+                          <q-item-section>
+                            Edit Tabset Name
+                          </q-item-section>
+                        </q-item>
+                        <q-separator/>
+                        <q-item clickable v-close-popup @click.stop="deleteTabsetDialog(tabset)">
+                          <q-item-section avatar style="padding-right:0;min-width:25px;max-width: 25px;">
+                            <q-icon size="xs" name="o_delete" color="negative"/>
+                          </q-item-section>
+                          <q-item-section>
+                            Delete Tab
+                          </q-item-section>
+                        </q-item>
+                      </q-list>
+                    </q-menu>
+                  </div>
+
+                </Transition>
+              </q-item-section>
+            </template>
+
+
+            <div class="q-ma-sm">
+              <SidePanelTabInfo :tabsetId="tabset.id"/>
+            </div>
             <PanelTabList :tabs="filteredTabs(tabset.id)"/>
 
           </q-expansion-item>
@@ -53,7 +121,7 @@
     <q-page-sticky expand position="top" style="background-color:white">
 
       <FirstToolbarHelper/>
-      <SecondToolbarHelper/>
+      <!--      <SecondToolbarHelper/>-->
 
       <!-- selected tab or current tab from chrome
       <div class="q-my-none q-mx-none q-pa-none fit bg-white"
@@ -73,17 +141,15 @@ import {ref, watchEffect} from "vue";
 import {useTabsStore} from "src/stores/tabsStore";
 import {Tab} from "src/models/Tab";
 import _ from "lodash"
-import {Tabset, TabsetType} from "src/models/Tabset";
+import {Tabset, TabsetStatus, TabsetType} from "src/models/Tabset";
 import {useRoute, useRouter} from "vue-router";
 import {useUtils} from "src/services/Utils";
 import {useQuasar} from "quasar";
 import {useTabsetService} from "src/services/TabsetService2";
-import NewTabsetDialog from "components/dialogues/NewTabsetDialog.vue";
 import {SidePanelView, useUiStore} from "src/stores/uiStore";
 import PanelTabList from "components/layouts/PanelTabList.vue";
 import {usePermissionsStore} from "src/stores/permissionsStore";
 import {useSpacesStore} from "src/stores/spacesStore";
-import SidePanelDynamicTabset from "components/layouts/sidepanel/SidePanelDynamicTabset.vue";
 import {useLogsStore} from "stores/logsStore";
 import SidePanelTabInfo from "pages/sidepanel/SidePanelTabInfo.vue";
 import FirstToolbarHelper from "pages/sidepanel/helper/FirstToolbarHelper.vue";
@@ -91,6 +157,8 @@ import SecondToolbarHelper from "pages/sidepanel/helper/SecondToolbarHelper.vue"
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {SelectTabsetCommand} from "src/domain/tabsets/SelectTabset";
 import {ExecutionResult} from "src/domain/ExecutionResult";
+import DeleteTabsetDialog from "components/dialogues/DeleteTabsetDialog.vue";
+import EditTabsetDialog from "components/dialogues/EditTabsetDialog.vue";
 
 const {inBexMode, sanitize, sendMsg} = useUtils()
 
@@ -111,6 +179,7 @@ const currentTabset = ref<Tabset | undefined>(undefined)
 const currentChromeTab = ref<chrome.tabs.Tab>(null as unknown as chrome.tabs.Tab)
 const orderDesc = ref(false)
 const tabsetExpanded = ref<object>({})
+const hoveredTabset = ref<string | undefined>(undefined)
 
 const logs = ref<object[]>([])
 const progress = ref<number | undefined>(undefined)
@@ -222,7 +291,9 @@ if (inBexMode()) {
 const navigate = (target: string) => router.push(target)
 
 const tabsets = (): Tabset[] => {
-  let tabsets = [...tabsStore.tabsets.values()]
+  let tabsets = _.orderBy(
+    _.filter([...tabsStore.tabsets.values()], (ts: Tabset) => ts.status !== TabsetStatus.DELETED),
+    ['name'])
   return tabsets
 }
 
@@ -273,6 +344,32 @@ const updateSelectedTabset = () => {
 }
 
 const tabsetCaption = (tabset: Tabset) => tabset.tabs?.length.toString() + ' tab' + (tabset.tabs?.length === 1 ? '' : 's')
+
+const hoveredOver = (tabsetId: string) => {
+  return hoveredTabset.value === tabsetId
+}
+
+const deleteTabsetDialog = (tabset: Tabset) => {
+  $q.dialog({
+    component: DeleteTabsetDialog,
+    componentProps: {
+      tabsetId: tabset.id,
+      tabsetName: tabset.name
+    }
+  })
+}
+
+const openEditTabsetDialog = (tabset: Tabset) => {
+  $q.dialog({
+    component: EditTabsetDialog,
+    componentProps: {
+      tabsetId: tabset.id,
+      tabsetName: tabset.name,
+      fromPanel: true
+    }
+  })
+}
+
 
 </script>
 

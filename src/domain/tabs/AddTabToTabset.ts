@@ -13,6 +13,7 @@ import {Tabset} from "src/models/Tabset";
 import {usePermissionsStore} from "stores/permissionsStore";
 import {FeatureIdent} from "src/models/AppFeature";
 import {api} from "boot/axios";
+import { TAXONOMY } from "src/boot/constants";
 
 const {saveCurrentTabset} = useTabsetService()
 
@@ -70,7 +71,7 @@ export class AddTabToTabsetCommand implements Command<any> {
                   api.post(`${backendUrl}/webshrinker/analyze`,
                     {
                       url: origin,
-                      taxonomy: 'iabv1', // 'iabv1' or 'webshrinker'
+                      taxonomy: TAXONOMY,
                       title: this.tab.chromeTab.title,
                       favIconUrl: this.tab.chromeTab.favIconUrl,
                       description: this.tab.description

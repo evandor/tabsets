@@ -64,12 +64,12 @@
                 </q-icon>
               </div>
               <div class="col text-black text-subtitle1">
-                {{ props.title }}**
+                {{ props.title }}
               </div>
             </div>
 
             <!-- no spaces && not searching && not showBackButton -->
-            <div class="col q-ml-none text-black text-subtitle1">
+            <div v-else class="col q-ml-none text-black text-subtitle1">
               {{ props.title }}
             </div>
 
@@ -89,12 +89,14 @@
           </q-btn>
 
           <q-btn
+            v-if="usePermissionsStore().hasFeature(FeatureIdent.CATEGORIZATION)"
             icon="o_cloud"
+            :color="cloudIconColor()"
             flat
             class="q-ma-none q-pa-xs cursor-pointer"
             style="max-width:20px"
             size="11px"
-            @click="openNewTabsetDialog()">
+            @click="toggleRemote()">
             <q-tooltip class="tooltip">Show Tabset Suggestions</q-tooltip>
           </q-btn>
 
@@ -135,7 +137,6 @@ import {useTabsStore} from "stores/tabsStore";
 import {useRouter} from "vue-router";
 import {ref} from "vue";
 import NavigationService from "src/services/NavigationService";
-import {useSettingsStore} from "stores/settingsStore";
 import {SidePanelView, useUiStore} from "stores/uiStore";
 import NewTabsetDialog from "components/dialogues/NewTabsetDialog.vue";
 import {useQuasar} from "quasar";
@@ -152,6 +153,12 @@ const tabsStore = useTabsStore()
 const searching = ref(false)
 
 const toggleSearch = () => searching.value = !searching.value
+
+const toggleRemote = () => {
+  useUiStore().sidePanel.activeView?.ident === SidePanelView.MAIN.ident ?
+    useUiStore().sidePanelSetActiveView(SidePanelView.PUBLIC_TABSETS) :
+    useUiStore().sidePanelSetActiveView(SidePanelView.MAIN)
+}
 
 const openTabsetPage = () => {
   const tabsetId = tabsStore.getCurrentTabset?.id
@@ -172,4 +179,7 @@ const openNewTabsetDialog = () => {
   })
 }
 
+const cloudIconColor = () => {
+  return useUiStore().sidePanel.activeView?.ident === SidePanelView.PUBLIC_TABSETS.ident ? 'warning' : 'primary'
+}
 </script>

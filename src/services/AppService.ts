@@ -22,6 +22,7 @@ import {useSearchStore} from "stores/searchStore";
 import {useUiStore} from "stores/uiStore";
 import {useRoute, useRouter} from "vue-router";
 import {useUtils} from "src/services/Utils";
+import {useCategoriesStore} from "stores/categoriesStore";
 
 const {inBexMode} = useUtils()
 

@@ -19,6 +19,7 @@
 
     <q-btn class="text-primary"
            outline
+           :disable="categorySelected() && !confirmation"
            data-testid="createFirstTabsetBtn"
            @click="addFirstTabset"
            label="create your first tabset"></q-btn>
@@ -37,8 +38,20 @@
       </div>
     </div>
 
+    <div class="row q-mt-sm" v-if="categories.size > 0">
+      If you want, you can opt in and get suggestions for the following
+      categories:
+    </div>
 
+    <div class="row" v-for="c in categories.values()">
+      <q-checkbox class="q-ma-none q-pa-none" v-model="selectedCategories[c.id]" :label="c.label"/>
+    </div>
 
+    <div class="row q-mt-lg" v-if="categorySelected()">
+      <div class="col-12 items-center q-ma-xs q-pa-xs">
+        <q-checkbox v-model="confirmation" label="Confirm terms & conditions"/>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -47,8 +60,25 @@
 import NewTabsetDialog from "components/dialogues/NewTabsetDialog.vue";
 import {useUiStore} from "src/stores/uiStore";
 import {useQuasar} from "quasar";
+import {useCategoriesStore} from "stores/categoriesStore";
+import {ref, watchEffect} from "vue";
+import {Category} from "src/models/Category";
+import {ca} from "date-fns/locale";
 
 const $q = useQuasar()
+
+const categoriesStore = useCategoriesStore()
+
+const categories = ref<Map<String, Category>>(new Map())
+const selectedCategories = ref<object>({})
+const confirmation = ref(false)
+
+watchEffect(() => {
+  categories.value = categoriesStore.categories
+  categories.value.forEach(c => {
+    //selectedCategories.value
+  })
+})
 
 const addFirstTabset = () => $q.dialog({
   component: NewTabsetDialog, componentProps: {
@@ -57,6 +87,17 @@ const addFirstTabset = () => $q.dialog({
     fromPanel: true
   }
 })
+
+const categorySelected = (): boolean => {
+  let res = false
+  Object.keys(selectedCategories.value).forEach(sc => {
+    console.log("checking", selectedCategories.value[sc as keyof object])
+    if (selectedCategories.value[sc as keyof object] === true) {
+      res = true
+    }
+  })
+  return res
+}
 
 </script>
 

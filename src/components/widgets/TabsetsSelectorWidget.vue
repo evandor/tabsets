@@ -13,20 +13,6 @@
         <q-item disable v-if="tabsetsOptions.length > 0 && usePermissionsStore().hasFeature(FeatureIdent.SPACES)">
           {{ useSpacesStore().space?.label ? 'Tabsets of ' + useSpacesStore().space.label : 'Tabsets w/o Space' }}
         </q-item>
-        <q-item disable v-if="tabsetsOptions.length > 1 && !usePermissionsStore().hasFeature(FeatureIdent.SPACES)">
-          Switch to Tabset:
-        </q-item>
-        <!--        <q-separator v-if="tabsetsOptions.length > 1"/>-->
-        <q-item v-for="ts in tabsetsOptions"
-                :disable="ts.id === tabsStore.currentTabsetId"
-                clickable v-close-popup @click="switchTabset(ts)">
-          <q-item-section v-if="ts.type === TabsetType.SESSION"
-                          class="q-ml-sm" style="max-width:20px">
-            <q-icon name="o_stop_circle" color="red"/>
-          </q-item-section>
-          <q-item-section class="q-ml-sm">{{ ts.label }}</q-item-section>
-          <q-item-section class="q-ml-sm text-right"><span style="font-size: smaller">#{{ts.count}}</span></q-item-section>
-        </q-item>
 
         <template
           v-if="usePermissionsStore().hasFeature(FeatureIdent.BACKUP) || usePermissionsStore().hasFeature(FeatureIdent.IGNORE)">
