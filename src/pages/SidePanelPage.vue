@@ -20,10 +20,6 @@
             :caption="tabsetCaption(tabset)">
 
             <template v-slot:header>
-              <!--              <q-item-section avatar>-->
-              <!--                <q-avatar icon="bluetooth" color="primary" text-color="white" />-->
-              <!--              </q-item-section>-->
-
               <q-item-section
                 @mouseover="hoveredTabset = tabset.id"
                 @mouseleave="hoveredTabset = undefined">
@@ -39,20 +35,6 @@
                               @mouseover="hoveredTabset = tabset.id"
                               @mouseleave="hoveredTabset = undefined">
                 <Transition appear>
-                  <!--                  <q-fab-->
-                  <!--                    v-if="hoveredOver(tabset.id)"-->
-                  <!--                    v-model="contextMenuFab"-->
-                  <!--                    square-->
-                  <!--                    size="12px"-->
-                  <!--                    vertical-actions-align="right"-->
-                  <!--                    color="secondary"-->
-                  <!--                    icon="more_horiz"-->
-                  <!--                    direction="down">-->
-                  <!--                    <q-fab-action square color="primary" @click="openEditTabsetDialog" icon="edit" label="Edit"-->
-                  <!--                                  label-position="left"/>-->
-                  <!--                    <q-fab-action square color="secondary" @click="deleteTabsetDialog" icon="delete" label="Delete"-->
-                  <!--                                  label-position="left"/>-->
-                  <!--                  </q-fab>-->
                   <div class="row items-center" v-if="hoveredOver(tabset.id)">
                     <q-icon name="more_horiz" color="primary" size="16px"/>
                     <q-menu :offset="[0, 0]">
@@ -153,12 +135,12 @@ import {useSpacesStore} from "src/stores/spacesStore";
 import {useLogsStore} from "stores/logsStore";
 import SidePanelTabInfo from "pages/sidepanel/SidePanelTabInfo.vue";
 import FirstToolbarHelper from "pages/sidepanel/helper/FirstToolbarHelper.vue";
-import SecondToolbarHelper from "pages/sidepanel/helper/SecondToolbarHelper.vue";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {SelectTabsetCommand} from "src/domain/tabsets/SelectTabset";
 import {ExecutionResult} from "src/domain/ExecutionResult";
 import DeleteTabsetDialog from "components/dialogues/DeleteTabsetDialog.vue";
 import EditTabsetDialog from "components/dialogues/EditTabsetDialog.vue";
+import {FeatureIdent} from "src/models/AppFeature";
 
 const {inBexMode, sanitize, sendMsg} = useUtils()
 
@@ -291,10 +273,20 @@ if (inBexMode()) {
 const navigate = (target: string) => router.push(target)
 
 const tabsets = (): Tabset[] => {
-  let tabsets = _.orderBy(
+  if (usePermissionsStore().hasFeature(FeatureIdent.SPACES)) {
+    const currentSpace = useSpacesStore().space
+    return _.orderBy(
+      _.filter([...tabsStore.tabsets.values()], (ts: Tabset) => {
+        if (ts.spaces.indexOf(currentSpace.id) < 0) {
+          return false
+        }
+        return ts.status !== TabsetStatus.DELETED
+      }),
+      ['name'])
+  }
+  return _.orderBy(
     _.filter([...tabsStore.tabsets.values()], (ts: Tabset) => ts.status !== TabsetStatus.DELETED),
     ['name'])
-  return tabsets
 }
 
 function filteredTabs(tabsetId: string): Tab[] {
