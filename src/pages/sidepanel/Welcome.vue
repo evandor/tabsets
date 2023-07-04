@@ -50,7 +50,8 @@
     <div class="row q-mt-lg" v-if="categorySelected()">
       <div class="col-12 items-center q-ma-xs q-pa-xs">
         <q-checkbox v-model="confirmation">
-          <a @click.stop="(event) => event.stopPropagation()"  href="https://tabsets.web.app/#/tos"> Confirm to terms & conditions </a>
+          <a @click.stop="(event) => event.stopPropagation()" href="https://tabsets.web.app/#/tos"> Confirm to terms &
+            conditions </a>
         </q-checkbox>
         <br>
         <span class="text-caption text-grey-8">
@@ -79,21 +80,30 @@ const categoriesStore = useCategoriesStore()
 
 onMounted(() => categoriesStore.initialize(useDB(undefined).db))
 
-const categories = ref<Map<String, Category>>(new Map())
-const selectedCategories = ref<object>({})
+const categories: Map<String, Category> = new Map()
+
+const selectedCategories = ref<object>({
+  "business": false,
+  "education": false,
+  "entertainment": false,
+  "informationtech": false,
+  "newandmedia": false,
+  "shopping": false
+})
 const confirmation = ref(false)
 
-watchEffect(() => {
-  categories.value = categoriesStore.categories
-  categories.value.forEach(c => {
-    //selectedCategories.value
-  })
-})
+categories.set("business", new Category("business", "Business"))
+categories.set("education", new Category("education", "Education"))
+categories.set("entertainment", new Category("entertainment", "Entertainment"))
+categories.set("informationtech", new Category("informationtech", "Information / Tech"))
+categories.set("newandmedia", new Category("newandmedia", "News & Media"))
+categories.set("shopping", new Category("shopping", "Shopping"))
 
 const addFirstTabset = () => $q.dialog({
   component: NewTabsetDialog, componentProps: {
     setEmptyByDefault: useUiStore().newTabsetEmptyByDefault,
     firstTabset: true,
+    selectedCategories: selectedCategories.value,
     fromPanel: true
   }
 })
