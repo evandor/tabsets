@@ -13,7 +13,7 @@
             <div class="column q-ma-none q-pa-none" v-else>
               <div class="col q-ma-none q-pa-none cursor-pointer"
                    @click="router.push('/sidepanel/spaces')">
-                {{ useSpacesStore().space ? useSpacesStore().space.label : 'no space selected' }}
+                {{ titleForSpaces() }}
               </div>
             </div>
           </template>
@@ -35,7 +35,7 @@
                   </q-icon>
                 </div>
                 <div class="col text-black text-subtitle1">
-                  {{ props.title }}*
+                  {{ props.title }}
                 </div>
               </div>
             </template>
@@ -143,6 +143,7 @@ import {useQuasar} from "quasar";
 
 const props = defineProps({
   title: {type: String, default: "My Tabsets"},
+  forceTitle: {type: Boolean, default: false},
   showBackButton: {type: Boolean, default: false}
 })
 
@@ -181,5 +182,12 @@ const openNewTabsetDialog = () => {
 
 const cloudIconColor = () => {
   return useUiStore().sidePanel.activeView?.ident === SidePanelView.PUBLIC_TABSETS.ident ? 'warning' : 'primary'
+}
+
+const titleForSpaces = () => {
+  if (props.title && props.forceTitle) {
+    return props.title
+  }
+  return useSpacesStore().space ? useSpacesStore().space.label : 'no space selected'
 }
 </script>

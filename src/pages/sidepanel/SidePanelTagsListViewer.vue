@@ -1,6 +1,6 @@
 <template>
 
-  <q-page padding style="padding-top: 70px">
+  <q-page padding style="padding-top: 45px">
 
     <div class="q-ma-none">
 
@@ -68,7 +68,6 @@
     <!-- place QPageSticky at end of page -->
     <q-page-sticky expand position="top" style="background-color:white">
       <FirstToolbarHelper title="Tags List" :show-back-button="true"/>
-      <SecondToolbarHelper />
     </q-page-sticky>
 
   </q-page>

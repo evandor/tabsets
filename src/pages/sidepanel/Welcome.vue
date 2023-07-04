@@ -49,7 +49,14 @@
 
     <div class="row q-mt-lg" v-if="categorySelected()">
       <div class="col-12 items-center q-ma-xs q-pa-xs">
-        <q-checkbox v-model="confirmation" label="Confirm terms & conditions"/>
+        <q-checkbox v-model="confirmation">
+          <a @click.stop="(event) => event.stopPropagation()"  href="https://tabsets.web.app/#/tos"> Confirm to terms & conditions </a>
+        </q-checkbox>
+        <br>
+        <span class="text-caption text-grey-8">
+          Tabs you add will be sent anonymously to our servers to improve the categories we
+          provide for all users.
+        </span>
       </div>
     </div>
   </div>
@@ -61,13 +68,16 @@ import NewTabsetDialog from "components/dialogues/NewTabsetDialog.vue";
 import {useUiStore} from "src/stores/uiStore";
 import {useQuasar} from "quasar";
 import {useCategoriesStore} from "stores/categoriesStore";
-import {ref, watchEffect} from "vue";
+import {onMounted, ref, watchEffect} from "vue";
 import {Category} from "src/models/Category";
 import {ca} from "date-fns/locale";
+import {useDB} from "src/services/usePersistenceService";
 
 const $q = useQuasar()
 
 const categoriesStore = useCategoriesStore()
+
+onMounted(() => categoriesStore.initialize(useDB(undefined).db))
 
 const categories = ref<Map<String, Category>>(new Map())
 const selectedCategories = ref<object>({})

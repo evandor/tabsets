@@ -9,6 +9,7 @@
         <q-list dense
                 class="rounded-borders q-ma-none q-pa-none" v-for="category in publicCategories">
           <q-expansion-item
+            :header-class="tabsStore.currentTabsetId === category.id ? 'bg-grey-4':''"
             header-class="q-ma-none q-px-sm"
             group="publicCategories"
             v-model="tabsetExpanded[category.id]"
@@ -18,12 +19,9 @@
             :caption="tabsetCaption(category as Tabset)">
 
             <template v-slot:header>
-              <!--              <q-item-section avatar>-->
-              <!--                <q-avatar icon="bluetooth" color="primary" text-color="white" />-->
-              <!--              </q-item-section>-->
-
               <q-item-section
-                @mouseover="hoveredTabset = category.id">
+                @mouseover="hoveredTabset = category.id"
+                @mouseleave="hoveredTabset = undefined">
                 <q-item-label :class="tabsStore.currentTabsetId === category.id ? 'text-bold text-primary' : ''">
                   {{ category.name }}
                 </q-item-label>
@@ -33,11 +31,17 @@
               </q-item-section>
 
               <q-item-section side
-                              @mouseover="hoveredTabset = category.id">
+                              @mouseover="hoveredTabset = category.id"
+                              @mouseleave="hoveredTabset = undefined">
                 <Transition appear>
-                  <div class="row items-center" v-if="hoveredOver(category.id)">
-                    <q-icon name="more_horiz" color="primary" size="16px"/>
-                    <q-menu :offset="[0, 0]">
+                  <div class="row items-center">
+                    <span v-if="hoveredOver(category.id)">
+                      <q-icon name="more_horiz" color="primary" size="16px"/>
+                    </span>
+                    <span v-else>
+                      <q-icon color="primary" size="16px"/>
+                    </span>
+                    <q-menu :offset="[10, -5]">
                       <q-list dense style="min-width: 200px">
 
                         <q-item clickable v-close-popup @click.stop="copyTabset(category as Tabset)">
@@ -57,7 +61,7 @@
               </q-item-section>
             </template>
 
-            <PanelTabList :tabs="category.tabs" :hideMenu="true"/>
+            <PanelTabList :tabs="category.tabs" :hideMenu="true" type="categories" />
 
           </q-expansion-item>
 
@@ -70,7 +74,7 @@
 
     <!-- place QPageSticky at end of page -->
     <q-page-sticky expand position="top" style="background-color:white">
-      <FirstToolbarHelper title="Public Categories"/>
+      <FirstToolbarHelper title="Public Tabsets" :forceTitle="true"/>
     </q-page-sticky>
 
   </q-page>

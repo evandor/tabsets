@@ -35,9 +35,14 @@
                               @mouseover="hoveredTabset = tabset.id"
                               @mouseleave="hoveredTabset = undefined">
                 <Transition appear>
-                  <div class="row items-center" v-if="hoveredOver(tabset.id)">
-                    <q-icon name="more_horiz" color="primary" size="16px"/>
-                    <q-menu :offset="[0, 0]">
+                  <div class="row items-center">
+                    <span  v-if="hoveredOver(tabset.id)">
+                      <q-icon name="more_horiz" color="primary" size="16px"/>
+                    </span>
+                    <span v-else>
+                      <q-icon color="primary" size="16px"/>
+                    </span>
+                    <q-menu :offset="[10, -5]">
                       <q-list dense style="min-width: 200px">
 
                         <q-item clickable v-close-popup @click.stop="openEditTabsetDialog(tabset)">
@@ -60,7 +65,6 @@
                       </q-list>
                     </q-menu>
                   </div>
-
                 </Transition>
               </q-item-section>
             </template>

@@ -4,16 +4,7 @@
                   @mouseover="hoveredTab = tab.id"
                   @mouseleave="hoveredTab = undefined"
                   class="q-mr-sm text-right" style="justify-content:start;width:25px;max-width:25px">
-<!--    <q-img v-if="props.tab?.image && props.tab.image.startsWith('blob://')"-->
-<!--           style="border:3px dotted white;border-radius:3px"-->
-<!--           :src="imgFromBlob" width="25px"/>-->
-<!--    <q-img v-else-if="props.tab.image"-->
-<!--           style="border:1px dotted white;border-radius:3px"-->
-<!--           :src="props.tab.image" width="25px"/>-->
-<!--    <q-img v-else-if="thumbnail" style="border:1px dotted white;border-radius:3px"-->
-<!--           :src="thumbnail" width="25px"/>-->
-    <TabFaviconWidget
-                      :tab="props.tab" width="25px" height="25px"/>
+    <TabFaviconWidget :tab="props.tab" width="25px" height="25px"/>
   </q-item-section>
 
   <!-- name, title, description, url && note -->
@@ -23,7 +14,18 @@
                   @mouseleave="hoveredTab = undefined">
 
     <!-- name or title -->
-    <q-item-label>
+    <q-item-label v-if="props.type === 'categories'">
+      <div>
+        <div class="q-pr-sm cursor-pointer ellipsis" :class="classForCategoryTab(props.tab)">
+          <span v-if="props.header" class="text-bold">{{ props.header }}<br></span>
+          <span v-if="useTabsStore().getCurrentTabset?.sorting === 'alphabeticalTitle'">
+              <q-icon name="arrow_right" size="16px"/>
+           </span>
+          {{ nameOrTitle(props.tab) }}
+        </div>
+      </div>
+    </q-item-label>
+    <q-item-label v-else>
       <div>
         <div class="q-pr-sm cursor-pointer ellipsis">
           <span v-if="props.header" class="text-bold">{{ props.header }}<br></span>
@@ -44,7 +46,8 @@
 
     <!-- description -->
     <q-item-label class="ellipsis-2-lines text-grey-8"
-                  v-if="useUiStore().listDetailLevelGreaterEqual(ListDetailLevel.LARGE)">
+                  v-if="useUiStore().listDetailLevelGreaterEqual(ListDetailLevel.LARGE)"
+                  @click.stop="NavigationService.openOrCreateTab(props.tab.chromeTab?.url )">
       {{ props.tab.description }}
     </q-item-label>
 
@@ -65,7 +68,7 @@
           <span v-if="props.tab.extension === UrlExtension.NOTE">open Note</span>
           <short-url v-else :url="props.tab.chromeTab?.url" :hostname-only="true"/>
 
-         <!-- <q-icon class="q-ml-xs" name="open_in_new"/>-->
+          <!-- <q-icon class="q-ml-xs" name="open_in_new"/>-->
         </div>
         <div v-if="!props.hideMenu"
              class="col text-right q-mx-sm cursor-pointer"
@@ -75,7 +78,7 @@
             <span v-if="hoveredOver(tab.id)">
               <q-icon name="more_horiz" color="primary" size="16px"/>
             </span>
-          <span v-else>
+            <span v-else>
               <q-icon color="primary" size="16px"/>
             </span>
           <PanelTabListContextMenu :tab="tab" v-if="!props.hideMenu"/>
@@ -125,6 +128,7 @@ import _ from "lodash";
 const props = defineProps({
   tab: {type: Object, required: true},
   header: {type: String, required: false},
+  type: {type: String, default: 'sidepanel'},
   hideMenu: {type: Boolean, default: false},
   showTabsets: {type: Boolean, default: false}
 })
@@ -268,5 +272,11 @@ watchEffect(() => {
 
 const hoveredOver = (tabsetId: string) => hoveredTab.value === tabsetId
 
-
+const classForCategoryTab = (tab: Tab) => {
+  const url = tab.chromeTab.url
+  if (url && useTabsetService().tabsetsFor(url).length > 0) {
+    return "text-grey-5"
+  }
+  return ""
+}
 </script>
