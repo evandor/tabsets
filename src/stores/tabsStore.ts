@@ -398,10 +398,18 @@ export const useTabsStore = defineStore('tabs', {
       this.listenersOn = true
     },
     addTabset(ts: Tabset) {
-      // console.log("adding tabset", ts)
+      console.log("adding tabset", ts)
       ts.tabs = _.filter(ts.tabs, (t: Tab) => t !== null)
       this.tabsets.set(ts.id, ts)
       markDuplicates(ts)
+    },
+    setTabsets(ts: Tabset[]) {
+      console.log("adding tabsets", ts.length)
+      //ts.tabs = _.filter(ts.tabs, (t: Tab) => t !== null)
+      const tabsetMap = new Map<string, Tabset>()
+      ts.forEach(ts => tabsetMap.set(ts.id, ts))
+      this.tabsets = tabsetMap
+      //markDuplicates(ts)
     },
     addToPendingTabset(tab: Tab) {
       if (usePermissionsStore().hasFeature(FeatureIdent.IGNORE)) {

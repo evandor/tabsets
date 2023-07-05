@@ -7,16 +7,17 @@
 
       <div class="q-ma-none q-pa-none">
         <q-list dense
-                class="rounded-borders q-ma-none q-pa-none" v-for="tabset in tabsets()">
+                class="rounded-borders q-ma-none q-pa-none" v-for="tabset in tabsets">
+          <!-- :model-value="isExpanded(tabset.id)" -->
           <q-expansion-item
             :header-class="tabsStore.currentTabsetId === tabset.id ? 'bg-grey-4':''"
             header-class="q-ma-none q-px-sm"
             group="tabsets"
-            v-model="tabsetExpanded[tabset.id]"
-            @update:model-value="val => updateSelectedTabset()"
+            :default-opened="false"
+            @update:model-value="val => updateSelectedTabset(tabset.id, val)"
             expand-separator
             :label="tabset.name"
-            :caption="tabsetCaption(tabset)">
+            :caption="tabsetCaption(tabset as Tabset)">
 
             <template v-slot:header>
               <q-item-section
@@ -26,7 +27,7 @@
                   {{ tabset.name }}
                 </q-item-label>
                 <q-item-label class="text-caption text-grey-5">
-                  {{ tabsetCaption(tabset) }}
+                  {{ tabsetCaption(tabset as Tabset) }}
                 </q-item-label>
               </q-item-section>
 
@@ -35,7 +36,7 @@
                               @mouseleave="hoveredTabset = undefined">
                 <Transition appear>
                   <div class="row items-center">
-                    <span  v-if="hoveredOver(tabset.id)">
+                    <span v-if="hoveredOver(tabset.id)">
                       <q-icon name="more_horiz" color="primary" size="16px"/>
                     </span>
                     <span v-else>
@@ -78,6 +79,9 @@
 
 
         </q-list>
+        {{ tabsStore.currentTabsetName }}/{{ tabsStore.currentTabsetId }}
+        <br>
+        {{ tabsetExpanded }}
       </div>
 
 
@@ -115,14 +119,13 @@
       </div>-->
 
     </q-page-sticky>
-
   </q-page>
 
 </template>
 
 <script lang="ts" setup>
 
-import {ref, watchEffect} from "vue";
+import {onMounted, ref, watchEffect} from "vue";
 import {useTabsStore} from "src/stores/tabsStore";
 import {Tab} from "src/models/Tab";
 import _ from "lodash"
@@ -163,8 +166,9 @@ const openTabs = ref<chrome.tabs.Tab[]>([])
 const currentTabset = ref<Tabset | undefined>(undefined)
 const currentChromeTab = ref<chrome.tabs.Tab>(null as unknown as chrome.tabs.Tab)
 const orderDesc = ref(false)
-const tabsetExpanded = ref<object>({})
+const tabsetExpanded = ref<Map<string, boolean>>(new Map())
 const hoveredTabset = ref<string | undefined>(undefined)
+const tabsets = ref<Tabset[]>([])
 
 const logs = ref<object[]>([])
 const progress = ref<number | undefined>(undefined)
@@ -253,6 +257,34 @@ watchEffect(() => {
 })
 
 watchEffect(() => {
+  console.log("checking tabsets names...", tabsStore.tabsetNames.length)
+})
+watchEffect(() => {
+  console.log("checking tabsets...", [...tabsStore.tabsets.values()].length)
+  if (usePermissionsStore().hasFeature(FeatureIdent.SPACES)) {
+    const currentSpace = useSpacesStore().space
+    tabsets.value = _.orderBy(
+      _.filter([...tabsStore.tabsets.values()], (ts: Tabset) => {
+        if (ts.spaces.indexOf(currentSpace.id) < 0) {
+          return false
+        }
+        return ts.status !== TabsetStatus.DELETED
+      }),
+      ['name'])
+  } else {
+    tabsets.value = _.orderBy(
+      _.filter([...tabsStore.tabsets.values()], (ts: Tabset) => ts.status !== TabsetStatus.DELETED),
+      ['name'])
+  }
+  tabsetExpanded.value.clear()
+  if (tabsets.value.length === 1) {
+    const onlyTabsetId: string = (tabsets.value[0] as Tabset).id
+    console.log("onlyTabsetidf", onlyTabsetId)
+    tabsetExpanded.value.set(onlyTabsetId, true)
+  }
+})
+
+watchEffect(() => {
   if (useTabsStore().tabsets) {
     tabsetNameOptions.value = _.map([...useTabsStore().tabsets.values()], (ts: Tabset) => {
       return {
@@ -271,25 +303,6 @@ if (inBexMode()) {
   chrome.tabs.query(queryOptions, (tab) => {
     currentChromeTabs.value = tab
   })
-}
-
-const navigate = (target: string) => router.push(target)
-
-const tabsets = (): Tabset[] => {
-  if (usePermissionsStore().hasFeature(FeatureIdent.SPACES)) {
-    const currentSpace = useSpacesStore().space
-    return _.orderBy(
-      _.filter([...tabsStore.tabsets.values()], (ts: Tabset) => {
-        if (ts.spaces.indexOf(currentSpace.id) < 0) {
-          return false
-        }
-        return ts.status !== TabsetStatus.DELETED
-      }),
-      ['name'])
-  }
-  return _.orderBy(
-    _.filter([...tabsStore.tabsets.values()], (ts: Tabset) => ts.status !== TabsetStatus.DELETED),
-    ['name'])
 }
 
 function filteredTabs(tabsetId: string): Tab[] {
@@ -320,8 +333,8 @@ function getOrder() {
   }
 }
 
-const updateSelectedTabset = () => {
-  console.log("updated...", Object.keys(tabsetExpanded.value))
+const updateSelectedTabset = (tabsetId: string, open: boolean) => {
+  console.log("updated...", tabsetId, open, Object.keys(tabsetExpanded.value))
   let tabsetToChoose = null
   Object.keys(tabsetExpanded.value).forEach(k => {
     if (tabsetExpanded.value[k as keyof object] === true) {
@@ -329,12 +342,13 @@ const updateSelectedTabset = () => {
     }
   })
   console.log("tabsetToChoose", tabsetToChoose)
-  if (tabsetToChoose) {
+  tabsetExpanded.value.set(tabsetId, open)
+  if (open) {
     useCommandExecutor()
-      .execute(new SelectTabsetCommand(tabsetToChoose, useSpacesStore().space?.id))
-      .then((res: ExecutionResult<Tabset | undefined>) => {
-        useUiStore().sidePanelSetActiveView(SidePanelView.MAIN)
-      })
+      .execute(new SelectTabsetCommand(tabsetId, useSpacesStore().space?.id))
+    // .then((res: ExecutionResult<Tabset | undefined>) => {
+    //   useUiStore().sidePanelSetActiveView(SidePanelView.MAIN)
+    // })
   }
 }
 
@@ -343,6 +357,8 @@ const tabsetCaption = (tabset: Tabset) => tabset.tabs?.length.toString() + ' tab
 const hoveredOver = (tabsetId: string) => {
   return hoveredTabset.value === tabsetId
 }
+
+const isExpanded = (tabsetId: string) => !!tabsetExpanded.value.get(tabsetId)
 
 const deleteTabsetDialog = (tabset: Tabset) => {
   $q.dialog({

@@ -37,11 +37,20 @@ class IndexedDbPersistenceService implements PersistenceService {
           if (!ts.status) {
             ts.status = TabsetStatus.DEFAULT
           }
-          tabsStore.addTabset(ts)
+          // tabsStore.addTabset(ts)
+          return ts
         })
         .catch(err => console.log("err", err))
     })
+
     return Promise.all(res)
+      .then((r: Tabset[]) => {
+        console.log("adding all tabsets", r)
+        tabsStore.setTabsets(r)
+        return r
+      })
+
+    //return Promise.all(res)
   }
 
   async loadSpaces(): Promise<void> {
@@ -73,7 +82,15 @@ class IndexedDbPersistenceService implements PersistenceService {
 
 
   async saveTabset(tabset: Tabset): Promise<IDBValidKey> {
-    return await this.db.put('tabsets', JSON.parse(JSON.stringify(tabset)), tabset.id);
+    try {
+      const rawTabset = tabset
+      rawTabset.tabs = []
+      await this.db.put('tabsets', JSON.parse(JSON.stringify(tabset)), tabset.id);
+      const tabsRes = await this.db.put('tabsetsmeta', JSON.parse(JSON.stringify(rawTabset)), tabset.id);
+      return tabsRes
+    } catch (err) {
+      return Promise.reject("got error: " + err)
+    }
   }
 
   deleteTabset(tabsetId: string): Promise<void> {
@@ -464,6 +481,10 @@ class IndexedDbPersistenceService implements PersistenceService {
         if (!db.objectStoreNames.contains('tabsets')) {
           console.log("creating db tabsets")
           db.createObjectStore('tabsets');
+        }
+        if (!db.objectStoreNames.contains('tabsetsmeta')) {
+          console.log("creating db tabsetsmeta")
+          db.createObjectStore('tabsetsmeta');
         }
         if (!db.objectStoreNames.contains('thumbnails')) {
           console.log("creating db thumbnails")

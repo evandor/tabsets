@@ -16,7 +16,7 @@
              :disable="categorySelected() && !confirmation"
              data-testid="createFirstTabsetBtn"
              @click="addFirstTabset"
-             label="Create New Tabset"></q-btn>
+             label="Create your first Tabset"></q-btn>
     </div>
 
 <!--    <div class="row q-mb-md" v-if="categories.size > 0">-->
@@ -83,7 +83,7 @@ const addFirstTabset = () => $q.dialog({
   component: NewTabsetDialog, componentProps: {
     setEmptyByDefault: useUiStore().newTabsetEmptyByDefault,
     firstTabset: true,
-    selectedCategories: selectedCategories.value,
+    //selectedCategories: selectedCategories.value,
     fromPanel: true
   }
 })

@@ -19,7 +19,7 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/sidepanel/welcome',
     component: () => import('layouts/SidePanelLayout.vue'),
-    children: [{ path: '', component: () => import('pages/sidepanel/Welcome.vue') }],
+    children: [{ path: '', component: () => import('pages/sidepanel/WelcomePage.vue') }],
   },
   {
     path: '/sidepanel/spaces',
