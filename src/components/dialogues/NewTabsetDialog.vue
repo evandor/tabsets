@@ -25,9 +25,9 @@
         </q-icon>
       </q-card-section>
 
-      <q-card-actions align="right" class="text-primary">
-        <q-btn flat label="Cancel" @click="onDialogCancel"/>
-        <q-btn flat
+      <q-card-actions align="right" >
+        <q-btn label="Cancel" @click="onDialogCancel"/>
+        <q-btn color="warning"
                data-testid="newTabsetNameSubmit"
                :label="newTabsetNameExists ? 'Alter Tabset' : 'Create new Tabset'"
                :disable="newTabsetName.trim().length === 0" v-close-popup

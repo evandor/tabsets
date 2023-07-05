@@ -6,60 +6,41 @@
       </div>
     </div>
     <div class="row q-mb-lg">
-      <div class="col-12 text-subtitle1">
-        <i>Bookmarks next generation</i>
+      <div class="col-12">
+        Next Generation Bookmarks
       </div>
     </div>
 
-    <div class="row items-center">
-      <div class="col-12 text-subtitle2 q-mb-md">
-        To get started:
-      </div>
+    <div class="row items-center justify-center q-ma-xl">
+      <q-btn color="warning"
+             :disable="categorySelected() && !confirmation"
+             data-testid="createFirstTabsetBtn"
+             @click="addFirstTabset"
+             label="Create New Tabset"></q-btn>
     </div>
 
-    <q-btn class="text-primary"
-           outline
-           :disable="categorySelected() && !confirmation"
-           data-testid="createFirstTabsetBtn"
-           @click="addFirstTabset"
-           label="create your first tabset"></q-btn>
+<!--    <div class="row q-mb-md" v-if="categories.size > 0">-->
+<!--      If you want, you can opt in and get suggestions for the following-->
+<!--      categories:-->
+<!--    </div>-->
 
-    <div class="row q-mt-lg">
-      <div class="col-12 items-center q-mb-md">
-        This will create a new tabset to which you can add tabs to
-      </div>
-    </div>
+<!--    <div class="row" v-for="c in categories.values()">-->
+<!--      <q-checkbox class="q-ma-none q-pa-none" v-model="selectedCategories[c.id]" :label="c.label"/>-->
+<!--    </div>-->
 
-    <div class="row q-mt-lg" v-if="$q.screen.gt.sm">
-      <div class="col-12 items-center q-ma-sm q-pa-lg bg-yellow-4"
-           style="border:1px solid grey;border-radius: 3px;">
-        If you are using a recent version of chrome and this opened in the main window (not in the
-        sidepanel), please try opening it again.
-      </div>
-    </div>
-
-    <div class="row q-mt-sm" v-if="categories.size > 0">
-      If you want, you can opt in and get suggestions for the following
-      categories:
-    </div>
-
-    <div class="row" v-for="c in categories.values()">
-      <q-checkbox class="q-ma-none q-pa-none" v-model="selectedCategories[c.id]" :label="c.label"/>
-    </div>
-
-    <div class="row q-mt-lg" v-if="categorySelected()">
-      <div class="col-12 items-center q-ma-xs q-pa-xs">
-        <q-checkbox v-model="confirmation">
-          <a @click.stop="(event) => event.stopPropagation()" href="https://tabsets.web.app/#/tos"> Confirm to terms &
-            conditions </a>
-        </q-checkbox>
-        <br>
-        <span class="text-caption text-grey-8">
-          Tabs you add will be sent anonymously to our servers to improve the categories we
-          provide for all users.
-        </span>
-      </div>
-    </div>
+<!--    <div class="row q-mt-lg" v-if="categorySelected()">-->
+<!--      <div class="col-12 items-center q-ma-xs q-pa-xs">-->
+<!--        <q-checkbox v-model="confirmation">-->
+<!--          <a @click.stop="(event) => event.stopPropagation()" href="https://tabsets.web.app/#/tos"> Confirm to terms &-->
+<!--            conditions </a>-->
+<!--        </q-checkbox>-->
+<!--        <br>-->
+<!--        <span class="text-grey-8">-->
+<!--          Tabs you add will be sent anonymously to our servers to improve the categories we-->
+<!--          provide for all users.-->
+<!--        </span>-->
+<!--      </div>-->
+<!--    </div>-->
   </div>
 </template>
 
@@ -71,14 +52,13 @@ import {useQuasar} from "quasar";
 import {useCategoriesStore} from "stores/categoriesStore";
 import {onMounted, ref, watchEffect} from "vue";
 import {Category} from "src/models/Category";
-import {ca} from "date-fns/locale";
 import {useDB} from "src/services/usePersistenceService";
 
 const $q = useQuasar()
 
 const categoriesStore = useCategoriesStore()
 
-onMounted(() => categoriesStore.initialize(useDB(undefined).db))
+//onMounted(() => categoriesStore.initialize(useDB(undefined).db))
 
 const categories: Map<String, Category> = new Map()
 

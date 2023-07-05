@@ -22,7 +22,7 @@
     </div>
   </div>
 
-  <q-separator v-if="!alreadyInSomeTabset()" color="lightgray" inset/>
+ <!-- <q-separator v-if="!alreadyInSomeTabset()" color="lightgray" inset/>-->
 
   <div class="row" v-if="alreadyInSomeTabset()">
     <div class="col-2 text-caption">
@@ -56,11 +56,11 @@
     <div class="col-2">
 
     </div>
-    <div class="col-10">
-      <q-btn flat
-        label="add tab to this tabset"
-        text-color="warning"
-        class="q-ma-none q-pa-none"
+    <div class="col-10 text-right">
+      <q-btn
+        label="Add"
+        color="warning"
+        class="q-ma-sm q-px-md"
         style="cursor: pointer"
         size="10px"
         @click="saveInTabset(props.tabsetId)"

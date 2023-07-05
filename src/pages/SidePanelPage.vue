@@ -15,7 +15,6 @@
             v-model="tabsetExpanded[tabset.id]"
             @update:model-value="val => updateSelectedTabset()"
             expand-separator
-            hide-expand-icon
             :label="tabset.name"
             :caption="tabsetCaption(tabset)">
 
@@ -84,10 +83,10 @@
 
       <div class="q-ma-none">
 
-        <div class="text-caption q-ma-md"
+        <!--<div class="text-caption q-ma-md"
              v-if="!route.query.first && tabsStore.getCurrentTabset?.tabs.length === 0 && tabsStore.getCurrentTabset?.type === TabsetType.DEFAULT">
           Start browsing and add the tabs you like to this tabset
-        </div>
+        </div>-->
 
         <!-- <div class="row q-ma-none q-pa-none" v-if="tabsStore.getCurrentTabset">
            <div class="col-12 q-ma-none q-pa-none q-pt-lg">
