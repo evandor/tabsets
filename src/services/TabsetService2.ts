@@ -266,7 +266,7 @@ export function useTabsetService() {
     if (ts) {
       return addToTabset(ts, tab, useIndex)
     }
-    return Promise.reject("no tabset for give id " + tsId)
+    return Promise.reject("no tabset for given id " + tsId)
   }
 
 
@@ -485,6 +485,8 @@ export function useTabsetService() {
   const addToTabset = async (ts: Tabset, tab: Tab, useIndex: number | undefined = undefined): Promise<Tabset> => {
     console.log("adding tab x to tabset y", tab.id, ts.id)
     if (tab.chromeTab.url) {
+      const tabs = await useTabsetService().getTabs(ts.id)
+      ts.tabs = tabs
       const indexInTabset = _.findIndex(ts.tabs, t => t.chromeTab.url === tab.chromeTab.url)
       if (indexInTabset >= 0 && !tab.image) {
         return Promise.reject("tab exists already")
@@ -495,7 +497,6 @@ export function useTabsetService() {
       } else {
         ts.tabs.push(tab)
       }
-console.log("hier", ts.tabs)
       // return saveTabset(ts)
       //   .then(() => Promise.resolve(0)) // TODO
       return Promise.resolve(ts)

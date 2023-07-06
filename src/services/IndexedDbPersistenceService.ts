@@ -45,8 +45,6 @@ class IndexedDbPersistenceService implements PersistenceService {
               console.log("got tabs for ", ts.id, tabs, ts.tabs)
               if (!tabs) {
                 console.log("migrating...", JSON.stringify(ts.tabs))
-                //this.db.put('tabs', JSON.parse(JSON.stringify(ts.tabs)), ts.id)
-                //ts.tabs = []
                 this.saveTabset(ts)
               }
               console.log("adding tabset", ts)
@@ -526,10 +524,6 @@ class IndexedDbPersistenceService implements PersistenceService {
           console.log("creating db requests")
           let store = db.createObjectStore('requests');
           store.createIndex("expires", "expires", {unique: false});
-        }
-        if (!db.objectStoreNames.contains('stats')) {
-          console.log("creating db stats")
-          db.createObjectStore('stats');
         }
         if (!db.objectStoreNames.contains('metalinks')) {
           console.log("creating db metalinks")

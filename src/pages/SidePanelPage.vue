@@ -356,7 +356,13 @@ const updateSelectedTabset = (tabsetId: string, open: boolean) => {
     const alreadyFetched = tabs.value.has(tabsetId)
     if (!alreadyFetched) {
       useTabsetService().getTabs(tabsetId)
-        .then((ts: Tab[]) => tabs.value.set(tabsetId, ts))
+        .then((ts: Tab[]) => {
+          tabs.value.set(tabsetId, ts)
+          const tabset = tabsStore.getTabset(tabsetId)
+          if (tabset) {
+            tabset.tabs = ts
+          }
+        })
     }
     useCommandExecutor()
       .execute(new SelectTabsetCommand(tabsetId, useSpacesStore().space?.id))
