@@ -79,11 +79,7 @@
 
 
         </q-list>
-        {{ tabsStore.currentTabsetName }}/{{ tabsStore.currentTabsetId }}
-        <br>
-        {{ tabsetExpanded }}
       </div>
-
 
       <div class="q-ma-none">
 
@@ -361,6 +357,7 @@ const updateSelectedTabset = (tabsetId: string, open: boolean) => {
           const tabset = tabsStore.getTabset(tabsetId)
           if (tabset) {
             tabset.tabs = ts
+            tabset.tabsCount = ts.length
           }
         })
     }
@@ -372,7 +369,7 @@ const updateSelectedTabset = (tabsetId: string, open: boolean) => {
   }
 }
 
-const tabsetCaption = (tabset: Tabset) => tabset.tabs?.length.toString() + ' tab' + (tabset.tabs?.length === 1 ? '' : 's')
+const tabsetCaption = (tabset: Tabset) => tabset.tabsCount + ' tab' + (tabset.tabsCount === 1 ? '' : 's')
 
 const hoveredOver = (tabsetId: string) => {
   return hoveredTabset.value === tabsetId

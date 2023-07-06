@@ -219,7 +219,7 @@ class ChromeListeners {
 
             // @ts-ignore
             chrome.scripting.executeScript({
-              target: {tabId: tab.id, allFrames: false},
+              target: {tabId: tab.id || 0, allFrames: false},
               files: [script] //["tabsets-content-script.js","content-script-thumbnails.js"],
             }, (callback: any) => {
               if (chrome.runtime.lastError) {

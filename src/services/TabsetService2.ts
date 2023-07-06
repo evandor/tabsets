@@ -174,12 +174,12 @@ export function useTabsetService() {
   const getTabs = async (tabsetId: string): Promise<Tab[]> => {
     const tabsStore = useTabsStore()
     const ts = _.find([...tabsStore.tabsets.values()],
-        ts => ts.id === tabsetId)
+      ts => ts.id === tabsetId)
     if (ts) {
-      // try to lazy load tabs if we don't have any tabs yet
-      if (ts.tabs.length === 0) {
-        return db.loadTabs(tabsetId)
-      }
+      return (ts.tabs.length === 0) ?
+        // try to lazy load tabs if we don't have any tabs yet
+        db.loadTabs(tabsetId) :
+        ts.tabs
     }
     return Promise.resolve([])
   }
@@ -484,6 +484,7 @@ export function useTabsetService() {
     console.log("adding tab x to tabset y", tab.id, ts.id)
     if (tab.chromeTab.url) {
       const tabs = await useTabsetService().getTabs(ts.id)
+      console.log("existing tabs", _.map(tabs, t => t.chromeTab.url))
       ts.tabs = tabs
       const indexInTabset = _.findIndex(ts.tabs, t => t.chromeTab.url === tab.chromeTab.url)
       if (indexInTabset >= 0 && !tab.image) {

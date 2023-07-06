@@ -70,7 +70,16 @@
 
             <!-- no spaces && not searching && not showBackButton -->
             <div v-else class="col q-ml-none text-black text-subtitle1">
-              {{ props.title }}
+              {{ props.title }} <q-btn
+                  icon="o_add_circle"
+                  color="primary"
+                  flat
+                  class="q-ma-none q-pa-xs cursor-pointer"
+                  style="max-width:20px"
+                  size="10px"
+                  @click="openNewTabsetDialog()">
+                  <q-tooltip class="tooltip">Add new Tabset</q-tooltip>
+                </q-btn>
             </div>
 
 
@@ -100,15 +109,7 @@
             <q-tooltip class="tooltip">Show Tabset Suggestions</q-tooltip>
           </q-btn>
 
-          <q-btn
-            icon="o_add"
-            flat
-            class="q-ma-none q-pa-xs cursor-pointer"
-            style="max-width:20px"
-            size="11px"
-            @click="openNewTabsetDialog()">
-            <q-tooltip class="tooltip">Add new Tabset</q-tooltip>
-          </q-btn>
+
 
 <!--          <q-btn-->
 <!--            v-if="tabsStore.tabsets.size > 1 && useSettingsStore().isEnabled('dev')"-->

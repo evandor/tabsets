@@ -22,7 +22,8 @@ export class Tabset {
   name: string
   created: number
   updated: number
-  tabs: Tab[]
+  tabs: Tab[] // lazy loaded from "tabs" datastore
+  tabsCount = 0 // trying to keep track of the tabs count
   dynamicTabs: DynamicTabSource | undefined
   groups: Group[]
   spaces: string[] // got json problems with set<string>
