@@ -167,6 +167,8 @@ const currentTabset = ref<Tabset | undefined>(undefined)
 const currentChromeTab = ref<chrome.tabs.Tab>(null as unknown as chrome.tabs.Tab)
 const orderDesc = ref(false)
 const tabsetExpanded = ref<Map<string, boolean>>(new Map())
+const tabs = ref<Map<string, Tab[]>>(new Map())
+
 const hoveredTabset = ref<string | undefined>(undefined)
 const tabsets = ref<Tabset[]>([])
 
@@ -306,17 +308,24 @@ if (inBexMode()) {
 }
 
 function filteredTabs(tabsetId: string): Tab[] {
+  const expanded = tabsetExpanded.value.get(tabsetId)
+  if (!expanded) {
+    return []
+  }
+  console.log("filtering tabs", tabsetId, expanded)
   const filter = useUiStore().tabsFilter
-  const tabs = useTabsetService().getTabset(tabsetId)?.tabs || []
+  //const tabs = useTabsetService().getTabset(tabsetId)?.tabs || []
+  const ts = tabs.value.get(tabsetId) || []
+
   if (filter && filter.trim() !== '') {
-    return _.orderBy(_.filter(tabs, (t: Tab) => {
+    return _.orderBy(_.filter(ts, (t: Tab) => {
         return (t.chromeTab.url || '')?.indexOf(filter) >= 0 ||
           (t.chromeTab.title || '')?.indexOf(filter) >= 0 ||
           t.description?.indexOf(filter) >= 0
       })
       , getOrder(), [orderDesc.value ? 'desc' : 'asc'])
   }
-  return _.orderBy(tabs, getOrder(), [orderDesc.value ? 'desc' : 'asc'])
+  return _.orderBy(ts, getOrder(), [orderDesc.value ? 'desc' : 'asc'])
 }
 
 function getOrder() {
@@ -344,6 +353,11 @@ const updateSelectedTabset = (tabsetId: string, open: boolean) => {
   console.log("tabsetToChoose", tabsetToChoose)
   tabsetExpanded.value.set(tabsetId, open)
   if (open) {
+    const alreadyFetched = tabs.value.has(tabsetId)
+    if (!alreadyFetched) {
+      useTabsetService().getTabs(tabsetId)
+        .then((ts: Tab[]) => tabs.value.set(tabsetId, ts))
+    }
     useCommandExecutor()
       .execute(new SelectTabsetCommand(tabsetId, useSpacesStore().space?.id))
     // .then((res: ExecutionResult<Tabset | undefined>) => {

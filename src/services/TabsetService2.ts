@@ -26,8 +26,9 @@ export function useTabsetService() {
   const {db} = useDB()
 
   const init = async (doNotInitSearchIndex: boolean = false) => {
-    console.debug("initializing tabsetService2")
+    console.log("initializing tabsetService2")
     await db.loadTabsets()
+    console.log("after db.loadTabsets()")
     if (!doNotInitSearchIndex) {
       useSearchStore().populateFromContent(db.getContents())
       useSearchStore().populateFromTabsets()
@@ -172,6 +173,19 @@ export function useTabsetService() {
     return _.find([...tabsStore.tabsets.values()], ts => ts.id === tabsetId)
   }
 
+  const getTabs = async (tabsetId: string): Promise<Tab[]> => {
+    const tabsStore = useTabsStore()
+    const ts = _.find([...tabsStore.tabsets.values()],
+        ts => ts.id === tabsetId)
+    if (ts) {
+      // try to lazy load tabs if we don't have any tabs yet
+      if (ts.tabs.length === 0) {
+        return db.loadTabs(tabsetId)
+      }
+    }
+    return Promise.resolve([])
+  }
+
   const getCurrentTabset = (): Tabset | undefined => {
     const tabsStore = useTabsStore()
     return tabsStore.tabsets.get(tabsStore.currentTabsetId)
@@ -247,7 +261,7 @@ export function useTabsetService() {
     return Promise.reject("tabset id not set")
   }
 
-  const addToTabsetId = async (tsId: string, tab: Tab, useIndex: number | undefined = undefined): Promise<number> => {
+  const addToTabsetId = async (tsId: string, tab: Tab, useIndex: number | undefined = undefined): Promise<Tabset> => {
     const ts = getTabset(tsId)
     if (ts) {
       return addToTabset(ts, tab, useIndex)
@@ -260,6 +274,7 @@ export function useTabsetService() {
     const tabsStore = useTabsStore()
     const currentTabset = tabsStore.getCurrentTabset
     if (currentTabset) {
+      console.log("saving current tabset", currentTabset)
       return saveTabset(currentTabset)
     }
     return Promise.reject("current tabset could not be found")
@@ -467,8 +482,8 @@ export function useTabsetService() {
    * @param tab
    * @param useIndex
    */
-  const addToTabset = async (ts: Tabset, tab: Tab, useIndex: number | undefined = undefined): Promise<number> => {
-    //console.log("adding tab x to tabset y", tab.id, ts.id)
+  const addToTabset = async (ts: Tabset, tab: Tab, useIndex: number | undefined = undefined): Promise<Tabset> => {
+    console.log("adding tab x to tabset y", tab.id, ts.id)
     if (tab.chromeTab.url) {
       const indexInTabset = _.findIndex(ts.tabs, t => t.chromeTab.url === tab.chromeTab.url)
       if (indexInTabset >= 0 && !tab.image) {
@@ -480,10 +495,10 @@ export function useTabsetService() {
       } else {
         ts.tabs.push(tab)
       }
-
+console.log("hier", ts.tabs)
       // return saveTabset(ts)
       //   .then(() => Promise.resolve(0)) // TODO
-      return Promise.resolve(0)
+      return Promise.resolve(ts)
     }
     return Promise.reject("tab.chromeTab.url undefined")
   }
@@ -634,7 +649,8 @@ export function useTabsetService() {
     urlExistsInCurrentTabset,
     getOrCreateSpecialTabset,
     saveBlob,
-    getBlob
+    getBlob,
+    getTabs
   }
 
 }

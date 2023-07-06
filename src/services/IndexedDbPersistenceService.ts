@@ -22,6 +22,7 @@ import {Category} from "src/models/Category";
 
 class IndexedDbPersistenceService implements PersistenceService {
   private db: IDBPDatabase = null as unknown as IDBPDatabase
+
   async init(dbName: string) {
     console.log("initializing indexeddb database", dbName)
     this.db = await this.initDatabase(dbName)
@@ -37,20 +38,34 @@ class IndexedDbPersistenceService implements PersistenceService {
           if (!ts.status) {
             ts.status = TabsetStatus.DEFAULT
           }
-          // tabsStore.addTabset(ts)
-          return ts
+          // migration from tabsets.tabs to tabs
+          // TODO check can be removed in the future when we had a couple of releases
+          this.db.get('tabs', ts.id)
+            .then((tabs: Tab[]) => {
+              console.log("got tabs for ", ts.id, tabs, ts.tabs)
+              if (!tabs) {
+                console.log("migrating...", JSON.stringify(ts.tabs))
+                //this.db.put('tabs', JSON.parse(JSON.stringify(ts.tabs)), ts.id)
+                //ts.tabs = []
+                this.saveTabset(ts)
+              }
+              console.log("adding tabset", ts)
+              tabsStore.addTabset(ts)
+              return ts
+            })
         })
         .catch(err => console.log("err", err))
     })
 
+    // return Promise.all(res)
+    //   .then((r: Tabset[]) => {
+    //     console.log("adding all tabsets", r)
+    //     tabsStore.setTabsets(r)
+    //     return r
+    //   })
+    await Promise.all(res)
+    console.log("returning from loadtabsets")
     return Promise.all(res)
-      .then((r: Tabset[]) => {
-        console.log("adding all tabsets", r)
-        tabsStore.setTabsets(r)
-        return r
-      })
-
-    //return Promise.all(res)
   }
 
   async loadSpaces(): Promise<void> {
@@ -82,11 +97,14 @@ class IndexedDbPersistenceService implements PersistenceService {
 
 
   async saveTabset(tabset: Tabset): Promise<IDBValidKey> {
+    console.log("saving tabset1", tabset)
+    console.log("saving tabset2", tabset.tabs)
+    console.log("saving tabset3", JSON.stringify(tabset.tabs))
     try {
-      const rawTabset = tabset
-      rawTabset.tabs = []
-      await this.db.put('tabsets', JSON.parse(JSON.stringify(tabset)), tabset.id);
-      const tabsRes = await this.db.put('tabsetsmeta', JSON.parse(JSON.stringify(rawTabset)), tabset.id);
+      const tabsRes = await this.db.put('tabs', JSON.parse(JSON.stringify(tabset.tabs)), tabset.id);
+      const tabsetClone = Object.assign({}, tabset);
+      tabsetClone.tabs = []
+      await this.db.put('tabsets', JSON.parse(JSON.stringify(tabsetClone)), tabset.id);
       return tabsRes
     } catch (err) {
       return Promise.reject("got error: " + err)
@@ -235,7 +253,7 @@ class IndexedDbPersistenceService implements PersistenceService {
         tabsetCandidates: tabsetCandidates
       }, encodedTabUrl)
         .then((res) => {
-         // console.info(new Tab(uid(), tab), "saved content for url " + tab.url)
+          // console.info(new Tab(uid(), tab), "saved content for url " + tab.url)
           return res
         })
     }
@@ -350,17 +368,17 @@ class IndexedDbPersistenceService implements PersistenceService {
     return Promise.reject("tab.url missing")
   }
 
-  saveBlob(id: string, url: string, data: Blob, type: string):Promise<any> {
-      //const encodedTabUrl = btoa(tab.chromeTab.url)
-      return this.db.put('blobs', {
-        id: id,
-        type: type,
-        //title: tab.name ? tab.name : tab.chromeTab.title,
-        //favIconUrl: tab.chromeTab.favIconUrl,
-        url: url,
-        created: new Date().getTime(),
-        content: data
-      }, id)
+  saveBlob(id: string, url: string, data: Blob, type: string): Promise<any> {
+    //const encodedTabUrl = btoa(tab.chromeTab.url)
+    return this.db.put('blobs', {
+      id: id,
+      type: type,
+      //title: tab.name ? tab.name : tab.chromeTab.title,
+      //favIconUrl: tab.chromeTab.favIconUrl,
+      url: url,
+      created: new Date().getTime(),
+      content: data
+    }, id)
   }
 
   async getMHtml(id: string): Promise<any> {
@@ -368,7 +386,7 @@ class IndexedDbPersistenceService implements PersistenceService {
     return this.db.get('mhtml', id)
   }
 
-  async deleteMHtml(id: string):Promise<void> {
+  async deleteMHtml(id: string): Promise<void> {
     return this.db.delete('mhtml', id)
   }
 
@@ -430,13 +448,13 @@ class IndexedDbPersistenceService implements PersistenceService {
     }
   }
 
-  getBlobs(type: string):Promise<any[]> {
+  getBlobs(type: string): Promise<any[]> {
     if (!this.db) { // can happen for some reason
       return Promise.resolve([])
     }
     try {
       return this.db.getAll('blobs')
-        .then((b:any[]) => {
+        .then((b: any[]) => {
           return _.filter(b, d => d.type === type)
         })
     } catch (ex) {
@@ -445,13 +463,13 @@ class IndexedDbPersistenceService implements PersistenceService {
     }
   }
 
-  getBlob(blobId: string):Promise<any> {
+  getBlob(blobId: string): Promise<any> {
     if (!this.db) { // can happen for some reason
       return Promise.resolve([])
     }
     try {
       return this.db.getAll('blobs')
-        .then((b:any[]) => {
+        .then((b: any[]) => {
           const found = _.filter(b, d => d.id === blobId)
           if (found && found.length === 1) {
             return Promise.resolve(found[0])
@@ -482,9 +500,9 @@ class IndexedDbPersistenceService implements PersistenceService {
           console.log("creating db tabsets")
           db.createObjectStore('tabsets');
         }
-        if (!db.objectStoreNames.contains('tabsetsmeta')) {
-          console.log("creating db tabsetsmeta")
-          db.createObjectStore('tabsetsmeta');
+        if (!db.objectStoreNames.contains('tabs')) {
+          console.log("creating db tabs")
+          db.createObjectStore('tabs');
         }
         if (!db.objectStoreNames.contains('thumbnails')) {
           console.log("creating db thumbnails")
@@ -656,6 +674,9 @@ class IndexedDbPersistenceService implements PersistenceService {
   //     })
   //     .catch((err) => Promise.reject("error applying suggestion" + err))
   // }
+  async loadTabs(tabsetId: string): Promise<Tab[]> {
+    return await this.db.get("tabs", tabsetId)
+  }
 }
 
 export default new IndexedDbPersistenceService()

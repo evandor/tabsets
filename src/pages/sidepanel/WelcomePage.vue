@@ -49,16 +49,13 @@
 import NewTabsetDialog from "components/dialogues/NewTabsetDialog.vue";
 import {useUiStore} from "src/stores/uiStore";
 import {useQuasar} from "quasar";
-import {useCategoriesStore} from "stores/categoriesStore";
-import {onMounted, ref, watchEffect} from "vue";
+import {ref, watchEffect} from "vue";
 import {Category} from "src/models/Category";
-import {useDB} from "src/services/usePersistenceService";
+import {useTabsStore} from "stores/tabsStore";
+import {useRouter} from "vue-router";
 
 const $q = useQuasar()
-
-const categoriesStore = useCategoriesStore()
-
-//onMounted(() => categoriesStore.initialize(useDB(undefined).db))
+const router = useRouter()
 
 const categories: Map<String, Category> = new Map()
 
@@ -78,6 +75,14 @@ categories.set("entertainment", new Category("entertainment", "Entertainment"))
 categories.set("informationtech", new Category("informationtech", "Information / Tech"))
 categories.set("newandmedia", new Category("newandmedia", "News & Media"))
 categories.set("shopping", new Category("shopping", "Shopping"))
+
+watchEffect(() => {
+  // we might have been redirected here too early, redirecting
+  // back as soon we know we actually do have some tabsets
+  if (useTabsStore().tabsets.size > 0) {
+    router.back()
+  }
+})
 
 const addFirstTabset = () => $q.dialog({
   component: NewTabsetDialog, componentProps: {

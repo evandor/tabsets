@@ -15,7 +15,7 @@ import {FeatureIdent} from "src/models/AppFeature";
 import {api} from "boot/axios";
 import { TAXONOMY } from "src/boot/constants";
 
-const {saveCurrentTabset} = useTabsetService()
+const {saveCurrentTabset, saveTabset} = useTabsetService()
 
 // class UndoCommand implements Command<any> {
 //
@@ -44,17 +44,20 @@ export class AddTabToTabsetCommand implements Command<any> {
     if (!exists) {
       return useTabsetService().addToTabsetId(this.tabset.id, this.tab, 0)
         .then((res) => {
+          console.log("res",res.tabs)
           return TabsetService.getContentFor(this.tab)
             .then((content) => {
-              //console.log("got content", content)
+              console.log("got content", content)
               if (content) {
                 return useTabsetService()
                   .saveText(this.tab.chromeTab, content['content' as keyof object], content['metas' as keyof object])
                   .then((res) => {
-                    return new ExecutionResult("result", "Tab was added",)
+                    return new ExecutionResult("result", "Tab was added1",)
                   })
               } else {
-                return saveCurrentTabset()
+                console.log("this tabset tabs",this.tabset.tabs)
+                return saveTabset(this.tabset)
+                //return saveCurrentTabset()
                   .then(result => new ExecutionResult(result, "Tab was added"))
               }
             })

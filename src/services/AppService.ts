@@ -82,6 +82,7 @@ class AppService {
               .then(() => {
                 MHtmlService.init()
                 ChromeApi.init()
+                console.log("checking tabset size...")
                 // @ts-ignore
                 if (tabsStore.tabsets.size === 0 && chrome.sidePanel && chrome.sidePanel.setPanelBehavior) {
                   router.push("/sidepanel/welcome")
