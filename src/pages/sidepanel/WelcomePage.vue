@@ -96,7 +96,7 @@ const addFirstTabset = () => $q.dialog({
 const categorySelected = (): boolean => {
   let res = false
   Object.keys(selectedCategories.value).forEach(sc => {
-    console.log("checking", selectedCategories.value[sc as keyof object])
+    //console.log("checking", selectedCategories.value[sc as keyof object])
     if (selectedCategories.value[sc as keyof object] === true) {
       res = true
     }

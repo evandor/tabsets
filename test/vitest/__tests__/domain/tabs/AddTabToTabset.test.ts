@@ -1,16 +1,12 @@
 import {installQuasarPlugin} from '@quasar/quasar-app-extension-testing-unit-vitest';
-import {mount} from '@vue/test-utils';
-import {beforeAll, beforeEach, describe, expect, vi, it} from 'vitest';
+import {beforeEach, describe, expect, it, vi} from 'vitest';
 import {createPinia, setActivePinia} from "pinia";
-import {useTabsStore} from "stores/tabsStore";
 import ChromeApi from "src/services/ChromeApi";
 import IndexedDbPersistenceService from "src/services/IndexedDbPersistenceService";
-import SidePanelTabInfo from "pages/sidepanel/SidePanelTabInfo.vue";
-import {useRoute, useRouter} from "vue-router";
-import WelcomePage from "pages/sidepanel/WelcomePage.vue";
 import {AddTabToTabsetCommand} from "src/domain/tabs/AddTabToTabset";
 import {Tab} from "src/models/Tab";
-import {Tabset} from "src/models/Tabset";
+import {CreateTabsetCommand} from "src/domain/tabsets/CreateTabset";
+import {useTabsetService} from "src/services/TabsetService2";
 
 installQuasarPlugin();
 
@@ -21,34 +17,34 @@ describe('AddTabToTabsetCommand', () => {
   const skysailChromeTab = ChromeApi.createChromeTabObject("title", "https://www.skysail.io", "favicon")
 
   // @ts-ignore
-  useRouter.mockReturnValue({
-    push: vi.fn(),
-  })
+  // useRouter.mockReturnValue({
+  //   push: vi.fn(),
+  // })
 
-  // @ts-ignore
-  useRoute.mockReturnValue({
-    query: {
-      name,
-    },
-  })
+  // // @ts-ignore
+  // useRoute.mockReturnValue({
+  //   query: {
+  //     name,
+  //   },
+  // })
 
   beforeEach(async () => {
     setActivePinia(createPinia())
     // @ts-ignore
-    useRouter().push.mockReset()
+    //useRouter().push.mockReset()
   })
 
-  it('adding', async () => {
+  it('adding new tab to tabset in empty db', async () => {
     await IndexedDbPersistenceService.init("db")
-    const cmd = new AddTabToTabsetCommand(
-      new Tab("tabId",ChromeApi.createChromeTabObject("title","https://www.skysail.io","")),
-      new Tabset("tsId","tabset",[]))
-    cmd.execute()
-      .then((res) => {
-        console.log("res", res)
-      })
-  });
 
+    const executionResult = await new CreateTabsetCommand("new Tabset", []).execute()
+
+    const result = await new AddTabToTabsetCommand(new Tab("tabId", skysailChromeTab), executionResult.result.tabset).execute()
+    expect(result.message).toBe("Tab was added")
+
+    const tabsetFromDB = useTabsetService().getTabset("new Tabset")
+    console.log("tabsetFromDB", tabsetFromDB)
+  });
 
 
 });

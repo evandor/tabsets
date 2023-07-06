@@ -19,6 +19,7 @@ import {useSpacesStore} from "src/stores/spacesStore";
 import {useUtils} from "src/services/Utils";
 import {usePermissionsStore} from "stores/permissionsStore";
 import {FeatureIdent} from "src/models/AppFeature";
+import {SaveOrReplaceResult} from "src/models/SaveOrReplaceResult";
 
 const {sendMsg} = useUtils()
 
@@ -54,13 +55,13 @@ export function useTabsetService() {
    * @param name the tabset's name
    * @param chromeTabs an array of Chrome tabs
    * @param merge if true, the old values (if existent) and the new ones will be merged.
-   * @param startSession if true, create a special 'session' tabset
+   * @param type
    */
   const saveOrReplaceFromChromeTabs = async (
     name: string,
     chromeTabs: chrome.tabs.Tab[],
     merge: boolean = false,
-    type: TabsetType = TabsetType.DEFAULT): Promise<object> => {
+    type: TabsetType = TabsetType.DEFAULT): Promise<SaveOrReplaceResult> => {
 
     const trustedName = name.replace(STRIP_CHARS_IN_USER_INPUT, '')
     const tabs: Tab[] = _.filter(
@@ -81,11 +82,8 @@ export function useTabsetService() {
         // })
         selectTabset(result.tabset.id)
         useSearchStore().indexTabs(result.tabset.id, tabs)
-        return {
-          replaced: result.replaced,
-          tabset: result.tabset,
-          merged: merge
-        }
+        return new SaveOrReplaceResult(result.replaced, result.tabset, merge)
+
       }
       return Promise.reject("could not update or create tabset")
     } catch (err) {

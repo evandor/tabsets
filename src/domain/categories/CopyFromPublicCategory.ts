@@ -22,8 +22,8 @@ export class CopyFromPublicCategory implements Command<any> {
     ))
     const result = await useTabsetService()
       .saveOrReplaceFromChromeTabs(this.category.name, ts, true)
-    const replaced = result['replaced' as keyof object]
-    const tabset = result['tabset' as keyof object] as Tabset
+    const replaced = result.replaced
+    const tabset = result.tabset
     tabset.taxonomy = TAXONOMY + "|" + this.category.id
     return useTabsetService().saveTabset(tabset)
       .then((res) => {

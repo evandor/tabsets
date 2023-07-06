@@ -40,14 +40,13 @@ class IndexedDbPersistenceService implements PersistenceService {
           }
           // migration from tabsets.tabs to tabs
           // TODO check can be removed in the future when we had a couple of releases
-          this.db.get('tabs', ts.id)
+          return this.db.get('tabs', ts.id)
             .then((tabs: Tab[]) => {
               console.log("got tabs for ", ts.id, tabs, ts.tabs)
               if (!tabs) {
                 console.log("migrating...", JSON.stringify(ts.tabs))
                 this.saveTabset(ts)
               }
-              console.log("adding tabset", ts)
               tabsStore.addTabset(ts)
               return ts
             })
@@ -55,15 +54,7 @@ class IndexedDbPersistenceService implements PersistenceService {
         .catch(err => console.log("err", err))
     })
 
-    // return Promise.all(res)
-    //   .then((r: Tabset[]) => {
-    //     console.log("adding all tabsets", r)
-    //     tabsStore.setTabsets(r)
-    //     return r
-    //   })
-    await Promise.all(res)
-    console.log("returning from loadtabsets")
-    return Promise.all(res)
+    return await Promise.all(res)
   }
 
   async loadSpaces(): Promise<void> {
@@ -95,9 +86,9 @@ class IndexedDbPersistenceService implements PersistenceService {
 
 
   async saveTabset(tabset: Tabset): Promise<IDBValidKey> {
-    console.log("saving tabset1", tabset)
-    console.log("saving tabset2", tabset.tabs)
-    console.log("saving tabset3", JSON.stringify(tabset.tabs))
+    // console.log("saving tabset1", tabset)
+    // console.log("saving tabset2", tabset.tabs)
+    // console.log("saving tabset3", JSON.stringify(tabset.tabs))
     try {
       const tabsRes = await this.db.put('tabs', JSON.parse(JSON.stringify(tabset.tabs)), tabset.id);
       const tabsetClone = Object.assign({}, tabset);
@@ -670,6 +661,10 @@ class IndexedDbPersistenceService implements PersistenceService {
   // }
   async loadTabs(tabsetId: string): Promise<Tab[]> {
     return await this.db.get("tabs", tabsetId)
+  }
+
+  clear(name: string) {
+    this.db.clear(name).catch((e) => console.warn(e))
   }
 }
 
