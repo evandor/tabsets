@@ -12,6 +12,10 @@ export class AppFeatures {
       .setActivateCommand(new GrantPermissionCommand('bookmarks'))
       .setDeactivateCommand(new RevokePermissionCommand('bookmarks')),
 
+    new AppFeature(FeatureIdent.PAGE_MARKER, FeatureType.EXPERIMENTAL, 'Page Marker', 'o_note', ['bex'])
+      .setActivateCommand(new GrantPermissionCommand('contextMenus'))
+      .setDeactivateCommand(new RevokePermissionCommand('contextMenus')),
+
     new AppFeature(FeatureIdent.THUMBNAILS, FeatureType.OPTIONAL, 'Thumbnails', 'o_image', ['bex'])
       .setActivateCommand(new GrantOriginCommand('thumbnails'))
       .setDeactivateCommand(new RevokeOriginCommand('thumbnails')),

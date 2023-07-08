@@ -111,7 +111,7 @@ export class Tab {
           ext = UrlExtension.IMAGE
         }
       } catch (err) {
-        console.error("checking extension url: ", err)
+        console.error("checking extension url: ", chromeTab.url, err)
       }
     }
     return ext

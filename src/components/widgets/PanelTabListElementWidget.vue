@@ -4,7 +4,9 @@
                   @mouseover="hoveredTab = tab.id"
                   @mouseleave="hoveredTab = undefined"
                   class="q-mr-sm text-right" style="justify-content:start;width:25px;max-width:25px">
-    <TabFaviconWidget :tab="props.tab" width="25px" height="25px"/>
+    <div class="bg-grey-3 q-pa-xs" style="border:0 solid grey;border-radius:3px">
+      <TabFaviconWidget :tab="props.tab" width="16px" height="16px"/>
+    </div>
   </q-item-section>
 
   <!-- name, title, description, url && note -->
@@ -66,8 +68,10 @@
            </span>
 
           <span v-if="props.tab.extension === UrlExtension.NOTE">open Note</span>
-          <short-url v-else :url="props.tab.chromeTab?.url" :hostname-only="true"/>
-
+          <short-url v-else :url="props.tab.chromeTab?.url" :hostname-only="true" />
+          <div class="text-caption text-grey-5">
+            {{ formatDate(props.tab.created) }}
+          </div>
           <!-- <q-icon class="q-ml-xs" name="open_in_new"/>-->
         </div>
         <div v-if="!props.hideMenu"
@@ -124,6 +128,7 @@ import ShortUrl from "components/utils/ShortUrl.vue";
 import {useTabsStore} from "src/stores/tabsStore";
 import PanelTabListContextMenu from "components/widgets/helper/PanelTabListContextMenu.vue";
 import _ from "lodash";
+import {formatDistance} from "date-fns";
 
 const props = defineProps({
   tab: {type: Object, required: true},
@@ -279,4 +284,8 @@ const classForCategoryTab = (tab: Tab) => {
   }
   return ""
 }
+
+const formatDate = (timestamp: number | undefined) =>
+  timestamp ? formatDistance(timestamp, new Date(), {addSuffix: true}) : ""
+
 </script>

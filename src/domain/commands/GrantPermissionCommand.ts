@@ -8,6 +8,7 @@ import ChromeBookmarkListeners from "src/services/ChromeBookmarkListeners";
 import {useSuggestionsStore} from "src/stores/suggestionsStore";
 import {StaticSuggestionIdent} from "src/models/Suggestion";
 import {useTabsetService} from "src/services/TabsetService2";
+import ChromeApi from "src/services/ChromeApi";
 
 
 class UndoCommand implements Command<boolean> {
@@ -43,6 +44,9 @@ export class GrantPermissionCommand implements Command<boolean> {
             useSuggestionsStore().removeSuggestion(StaticSuggestionIdent.TRY_BOOKMARKS_FEATURE)
 //          } else if ("history" === this.permission) {
 //            usePermissionsStore().activateFeature('history')
+          } else if ("contextMenus" === this.permission) {
+            //usePermissionsStore().grantPermission("notifications")
+            ChromeApi.buildContextMenu()
           }
           return new ExecutionResult(
             granted,

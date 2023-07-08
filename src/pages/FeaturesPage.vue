@@ -273,8 +273,8 @@ text.set(FeatureIdent.TAGS.toLowerCase(), {
   permissions: []
 })
 text.set(FeatureIdent.NOTES.toLowerCase(), {
-  name: 'Quick Notes with Drag&Drop',
-  description: 'Drag and drop a text selection from a website to create a note',
+  name: 'Use Notes additionally to Tabs',
+  description: 'Create notes and treat them like tabs',
   permissions: []
 })
 text.set(FeatureIdent.WEBSITE_CLIP.toLowerCase(), {
@@ -311,6 +311,11 @@ text.set(FeatureIdent.CATEGORIZATION.toLowerCase(), {
   name: 'Tabsets Categorization',
   description: 'Categorize your tabsets automatically',
   permissions: []
+})
+text.set(FeatureIdent.PAGE_MARKER.toLowerCase(), {
+  name: 'Page Marker',
+  description: 'Highlight parts of a page and add notes',
+  permissions: ['contextMenus','notifications']
 })
 
 

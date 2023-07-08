@@ -7,23 +7,28 @@
 
       <div class="q-ma-none q-pa-none">
         <q-list dense
-                class="rounded-borders q-ma-none q-pa-none" v-for="tabset in tabsets">
+                class="rounded-borders q-ma-none q-pa-none" v-for="(tabset,index) in tabsets">
           <!-- :model-value="isExpanded(tabset.id)" -->
           <q-expansion-item
             :header-class="tabsStore.currentTabsetId === tabset.id ? 'bg-grey-4':''"
             header-class="q-ma-none q-px-sm"
+            :header-style="tabsetExpanded.get(tabset.id) ?
+              'border:0 solid grey;border-top-left-radius:4px;border-top-right-radius:4px' :
+              'border:0 solid grey;border-radius:4px'"
             group="tabsets"
             :default-opened="false"
-            @update:model-value="val => updateSelectedTabset(tabset.id, val)"
-            expand-separator
-            :label="tabset.name"
-            :caption="tabsetCaption(tabset as Tabset)">
+            @update:model-value="val => updateSelectedTabset(tabset.id, val, index)"
+            expand-separator>
 
             <template v-slot:header>
               <q-item-section
                 @mouseover="hoveredTabset = tabset.id"
                 @mouseleave="hoveredTabset = undefined">
                 <q-item-label :class="tabsStore.currentTabsetId === tabset.id ? 'text-bold text-primary' : ''">
+                  <q-icon
+                          :color="tabset.status === TabsetStatus.DEFAULT ? 'primary':'warning'"
+                          :name="tabset.status === TabsetStatus.DEFAULT ? 'tab':'push_pin'"
+                          style="position: relative;top:-2px"/>
                   {{ tabset.name }}
                 </q-item-label>
                 <q-item-label class="text-caption text-grey-5">
@@ -45,12 +50,41 @@
                     <q-menu :offset="[10, -5]">
                       <q-list dense style="min-width: 200px">
 
-                        <q-item clickable v-close-popup @click.stop="openEditTabsetDialog(tabset)">
+                        <q-item v-if="usePermissionsStore().hasFeature(FeatureIdent.NOTES)"
+                          clickable v-close-popup @click.stop="startTabsetNote(tabset as Tabset)">
+                          <q-item-section avatar style="padding-right:0;min-width:25px;max-width: 25px;">
+                            <q-icon size="xs" name="o_add_circle" color="accent"/>
+                          </q-item-section>
+                          <q-item-section>
+                            Create Note
+                          </q-item-section>
+                        </q-item>
+                        <q-separator/>
+                        <q-item clickable v-close-popup @click.stop="openEditTabsetDialog(tabset as Tabset)">
                           <q-item-section avatar style="padding-right:0;min-width:25px;max-width: 25px;">
                             <q-icon size="xs" name="o_note" color="accent"/>
                           </q-item-section>
                           <q-item-section>
                             Edit Tabset Name
+                          </q-item-section>
+                        </q-item>
+                        <q-separator/>
+                        <q-item v-if="tabset.status === TabsetStatus.DEFAULT"
+                                clickable v-close-popup @click.stop="pin(tabset as Tabset)">
+                          <q-item-section avatar style="padding-right:0;min-width:25px;max-width: 25px;">
+                            <q-icon size="xs" name="o_push_pin" color="warning"/>
+                          </q-item-section>
+                          <q-item-section>
+                            Pin
+                          </q-item-section>
+                        </q-item>
+                        <q-item v-if="tabset.status === TabsetStatus.FAVORITE"
+                                clickable v-close-popup @click.stop="unpin(tabset as Tabset)">
+                          <q-item-section avatar style="padding-right:0;min-width:25px;max-width: 25px;">
+                            <q-icon size="xs" name="push_pin" color="warning"/>
+                          </q-item-section>
+                          <q-item-section>
+                            Unpin
                           </q-item-section>
                         </q-item>
                         <q-separator/>
@@ -70,10 +104,12 @@
             </template>
 
 
-            <div class="q-ma-sm">
-              <SidePanelTabInfo :tabsetId="tabset.id"/>
+            <div class="q-ma-none q-pa-none" style="border:1px solid lightgrey">
+              <div class="q-ma-xs">
+                <SidePanelTabInfo :tabsetId="tabset.id"/>
+              </div>
+              <PanelTabList :tabs="filteredTabs(tabset.id)"/>
             </div>
-            <PanelTabList :tabs="filteredTabs(tabset.id)"/>
 
           </q-expansion-item>
 
@@ -81,24 +117,7 @@
         </q-list>
       </div>
 
-      <div class="q-ma-none">
 
-        <!--<div class="text-caption q-ma-md"
-             v-if="!route.query.first && tabsStore.getCurrentTabset?.tabs.length === 0 && tabsStore.getCurrentTabset?.type === TabsetType.DEFAULT">
-          Start browsing and add the tabs you like to this tabset
-        </div>-->
-
-        <!-- <div class="row q-ma-none q-pa-none" v-if="tabsStore.getCurrentTabset">
-           <div class="col-12 q-ma-none q-pa-none q-pt-lg">
-
-             <SidePanelDynamicTabset v-if="tabsStore.getCurrentTabset?.type === TabsetType.DYNAMIC"
-                                     :tabset="tabsStore.getCurrentTabset"/>
-             <PanelTabList v-else :tabs="filteredTabs()"/>
-
-           </div>
-         </div>-->
-
-      </div>
 
     </div>
 
@@ -106,7 +125,7 @@
     <q-page-sticky expand position="top" style="background-color:white">
 
       <FirstToolbarHelper/>
-      <!--      <SecondToolbarHelper/>-->
+<!--      <SecondToolbarHelper/>-->
 
       <!-- selected tab or current tab from chrome
       <div class="q-my-none q-mx-none q-pa-none fit bg-white"
@@ -121,16 +140,16 @@
 
 <script lang="ts" setup>
 
-import {onMounted, ref, watchEffect} from "vue";
+import {ref, watchEffect} from "vue";
 import {useTabsStore} from "src/stores/tabsStore";
 import {Tab} from "src/models/Tab";
 import _ from "lodash"
-import {Tabset, TabsetStatus, TabsetType} from "src/models/Tabset";
+import {Tabset, TabsetStatus} from "src/models/Tabset";
 import {useRoute, useRouter} from "vue-router";
 import {useUtils} from "src/services/Utils";
-import {useQuasar} from "quasar";
+import {scroll, useQuasar} from "quasar";
 import {useTabsetService} from "src/services/TabsetService2";
-import {SidePanelView, useUiStore} from "src/stores/uiStore";
+import {useUiStore} from "src/stores/uiStore";
 import PanelTabList from "components/layouts/PanelTabList.vue";
 import {usePermissionsStore} from "src/stores/permissionsStore";
 import {useSpacesStore} from "src/stores/spacesStore";
@@ -139,10 +158,15 @@ import SidePanelTabInfo from "pages/sidepanel/SidePanelTabInfo.vue";
 import FirstToolbarHelper from "pages/sidepanel/helper/FirstToolbarHelper.vue";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {SelectTabsetCommand} from "src/domain/tabsets/SelectTabset";
-import {ExecutionResult} from "src/domain/ExecutionResult";
 import DeleteTabsetDialog from "components/dialogues/DeleteTabsetDialog.vue";
 import EditTabsetDialog from "components/dialogues/EditTabsetDialog.vue";
 import {FeatureIdent} from "src/models/AppFeature";
+import {MarkTabsetAsFavoriteCommand} from "src/domain/tabsets/MarkTabsetAsFavorite";
+import {MarkTabsetAsDefaultCommand} from "src/domain/tabsets/MarkTabsetAsDefault";
+import getScrollTarget = scroll.getScrollTarget;
+import NavigationService from "src/services/NavigationService";
+
+const {setVerticalScrollPosition} = scroll
 
 const {inBexMode, sanitize, sendMsg} = useUtils()
 
@@ -164,6 +188,7 @@ const currentChromeTab = ref<chrome.tabs.Tab>(null as unknown as chrome.tabs.Tab
 const orderDesc = ref(false)
 const tabsetExpanded = ref<Map<string, boolean>>(new Map())
 const tabs = ref<Map<string, Tab[]>>(new Map())
+const headerSection = ref<any>()
 
 const hoveredTabset = ref<string | undefined>(undefined)
 const tabsets = ref<Tabset[]>([])
@@ -217,7 +242,9 @@ if (inBexMode()) {
     } else if (message.name === "tab-changed") {
       const tabset = useTabsetService().getTabset(message.data.tabsetId) as Tabset
       // replace tab (seems necessary !?) TODO
-      tabset.tabs = _.map(tabset.tabs, (t: Tab) => (t.id === message.data.tab.id) ? message.data.tab : t)
+      //tabset.tabs = _.map(tabset.tabs, (t: Tab) => (t.id === message.data.tab.id) ? message.data.tab : t)
+      console.log("adding tab", message.data.tab)
+      tabset.tabs.push(message.data.tab)
       useTabsetService().saveTabset(tabset)
         .then((res) => {
           console.log("saved tabset", tabset)
@@ -254,25 +281,34 @@ watchEffect(() => {
   currentChromeTab.value = useTabsStore().currentChromeTab
 })
 
+const getTabsetOrder =
+  [
+    function (o: Tabset) {
+      return o.status === TabsetStatus.FAVORITE ? 0 : 1
+    },
+    function (o: Tabset) {
+      return o.name.toLowerCase()
+    }
+  ]
+
+
 watchEffect(() => {
-  console.log("checking tabsets names...", tabsStore.tabsetNames.length)
-})
-watchEffect(() => {
-  console.log("checking tabsets...", [...tabsStore.tabsets.values()].length)
+  // console.log("checking tabsets...", [...tabsStore.tabsets.values()].length)
   if (usePermissionsStore().hasFeature(FeatureIdent.SPACES)) {
     const currentSpace = useSpacesStore().space
-    tabsets.value = _.orderBy(
+    tabsets.value = _.sortBy(
       _.filter([...tabsStore.tabsets.values()], (ts: Tabset) => {
         if (ts.spaces.indexOf(currentSpace.id) < 0) {
           return false
         }
         return ts.status !== TabsetStatus.DELETED
       }),
-      ['name'])
+      getTabsetOrder, ["asc"])
   } else {
-    tabsets.value = _.orderBy(
-      _.filter([...tabsStore.tabsets.values()], (ts: Tabset) => ts.status !== TabsetStatus.DELETED),
-      ['name'])
+    tabsets.value = _.sortBy(
+      _.filter([...tabsStore.tabsets.values()],
+        (ts: Tabset) => ts.status !== TabsetStatus.DELETED),
+      getTabsetOrder, ["asc"])
   }
   tabsetExpanded.value.clear()
   if (tabsets.value.length === 1) {
@@ -338,7 +374,7 @@ function getOrder() {
   }
 }
 
-const updateSelectedTabset = (tabsetId: string, open: boolean) => {
+const updateSelectedTabset = (tabsetId: string, open: boolean, index: number) => {
   console.log("updated...", tabsetId, open, Object.keys(tabsetExpanded.value))
   let tabsetToChoose = null
   Object.keys(tabsetExpanded.value).forEach(k => {
@@ -349,6 +385,7 @@ const updateSelectedTabset = (tabsetId: string, open: boolean) => {
   console.log("tabsetToChoose", tabsetToChoose)
   tabsetExpanded.value.set(tabsetId, open)
   if (open) {
+    scrollToElement(document.getElementsByClassName("q-expansion-item")[index], 300)
     const alreadyFetched = tabs.value.has(tabsetId)
     if (!alreadyFetched) {
       useTabsetService().getTabs(tabsetId)
@@ -377,6 +414,17 @@ const hoveredOver = (tabsetId: string) => {
 
 const isExpanded = (tabsetId: string) => !!tabsetExpanded.value.get(tabsetId)
 
+const pin = (tabset: Tabset) =>
+  useCommandExecutor().executeFromUi(new MarkTabsetAsFavoriteCommand(tabset.id))
+
+const unpin = (tabset: Tabset) =>
+  useCommandExecutor().executeFromUi(new MarkTabsetAsDefaultCommand(tabset.id))
+
+const startTabsetNote = (tabset: Tabset) => {
+  const url = chrome.runtime.getURL('www/index.html') + "#/mainpanel/notes/?tsId=" + tabset.id
+  NavigationService.openOrCreateTab(url)
+}
+
 const deleteTabsetDialog = (tabset: Tabset) => {
   $q.dialog({
     component: DeleteTabsetDialog,
@@ -398,6 +446,15 @@ const openEditTabsetDialog = (tabset: Tabset) => {
   })
 }
 
+const scrollToElement = (el: any, delay: number) => {
+  setTimeout(() => {
+    const target = getScrollTarget(el)
+    const offset = el.offsetTop
+    const duration = 200
+    setVerticalScrollPosition(target, offset - 120, duration)
+  }, delay);
+
+}
 
 </script>
 

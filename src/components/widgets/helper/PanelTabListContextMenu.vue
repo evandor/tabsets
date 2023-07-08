@@ -1,8 +1,9 @@
 <template>
   <q-menu :offset="[0, 0]">
     <q-list dense style="min-width: 200px">
-      <q-separator/>
-      <q-item clickable v-close-popup @click.stop="showTabDetails(props['tab' as keyof object])">
+      <q-separator v-if="useSettingsStore().isEnabled('dev')"/>
+      <q-item v-if="useSettingsStore().isEnabled('dev')"
+              clickable v-close-popup @click.stop="showTabDetails(props['tab' as keyof object])">
         <q-item-section avatar style="padding-right:0;min-width:25px;max-width: 25px;">
           <q-icon size="xs" name="o_info" color="accent"/>
         </q-item-section>
@@ -17,6 +18,15 @@
         </q-item-section>
         <q-item-section>
           Add / Edit Note
+        </q-item-section>
+      </q-item>
+      <q-separator/>
+      <q-item clickable v-close-popup @click.stop="copyToClipboard(props['tab' as keyof object])">
+        <q-item-section avatar style="padding-right:0;min-width:25px;max-width: 25px;">
+          <q-icon size="xs" name="o_link" color="accent"/>
+        </q-item-section>
+        <q-item-section>
+          Copy URL to Clipboard
         </q-item-section>
       </q-item>
       <q-separator/>
@@ -44,6 +54,8 @@ import {Tab} from "src/models/Tab";
 import {DeleteTabCommand} from "src/domain/commands/DeleteTabCommand";
 import EditNoteDialog from "components/dialogues/EditNoteDialog.vue";
 import {useRouter} from "vue-router";
+import {useSettingsStore} from "stores/settingsStore";
+import {CopyToClipboardCommand} from "src/domain/commands/CopyToClipboard";
 
 const {inBexMode} = useUtils()
 
@@ -86,5 +98,8 @@ const showTabDetails = (tab: Tab) => {
   console.log("showing tab details for", tab)
   router.push("/sidepanel/tab/" + tab.id)
 }
+
+const copyToClipboard = (tab: Tab) =>
+  useCommandExecutor().executeFromUi(new CopyToClipboardCommand(tab.chromeTab?.url || 'unknown'))
 
 </script>

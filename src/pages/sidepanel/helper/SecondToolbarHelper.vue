@@ -3,14 +3,14 @@
   <q-toolbar
     class="text-primary $lightgrey q-pa-none q-pa-none bg-white" style="min-height:revert;">
     <!-- show progress or info messages if any -->
-    <template v-if="progress">
+    <template v-if="true">
       <div class="col-12"
            style="border-bottom: 1px dotted lightgray;border-left: 1px dotted lightgray;min-height:30px;">
-        <q-linear-progress size="20px" :value="progress" color="primary">
-          <div class="absolute-full flex flex-center">
-            <q-badge color="white" text-color="accent" :label="progressLabel"/>
-          </div>
-        </q-linear-progress>
+<!--        <q-linear-progress size="20px" :value="progress" color="primary">-->
+<!--          <div class="absolute-full flex flex-center">-->
+<!--            <q-badge color="white" text-color="accent" :label="progressLabel"/>-->
+<!--          </div>-->
+<!--        </q-linear-progress>-->
         <q-input borderless v-if="!progress && usePermissionsStore().hasFeature(FeatureIdent.NOTES)"
                  class="q-ma-xs"
                  style="height:20px;border: 1px dotted lightgray; border-radius: 3px;" v-model="dragTarget"/>

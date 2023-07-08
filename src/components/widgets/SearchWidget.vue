@@ -5,7 +5,7 @@
               :placeholder="inputPlaceholder()"
               class="fit q-mx-md"
               color="primary"
-              :bg-color="props.fromPanel ? 'lightgray-1' : ''"
+              :bg-color="props.fromPanel ? 'white' : ''"
               label-color="primary"
               :model-value="search"
               ref="searchBox"

@@ -52,12 +52,11 @@ export class AddTabToTabsetCommand implements Command<any> {
                 return useTabsetService()
                   .saveText(this.tab.chromeTab, content['content' as keyof object], content['metas' as keyof object])
                   .then((res) => {
-                    return new ExecutionResult("result", "Tab was added1",)
+                    return new ExecutionResult("result", "Tab was added",)
                   })
               } else {
                 console.log("this tabset tabs",this.tabset.tabs)
                 return saveTabset(this.tabset)
-                //return saveCurrentTabset()
                   .then(result => new ExecutionResult(result, "Tab was added"))
               }
             })

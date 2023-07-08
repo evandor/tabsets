@@ -84,6 +84,103 @@ class ChromeApi {
 
   }
 
+  buildContextMenu() {
+    if (process.env.MODE !== 'bex') {
+      return
+    }
+    console.log("building context menu")
+    const tabsStore = useTabsStore()
+    if (chrome.contextMenus) {
+      chrome.contextMenus.removeAll(
+        () => {
+          chrome.contextMenus.create({id: 'tabset_extension', title: 'Tabset Extension', contexts: ['all']},
+            () => {
+              chrome.contextMenus.create({
+                id: 'open_tabsets_page',
+                parentId: 'tabset_extension',
+                title: 'Open Tabsets Extension',
+                contexts: ['all']
+              })
+              //if (usePermissionsStore().hasFeature(FeatureIdent.ANALYSE_TABS)) {
+              chrome.contextMenus.create({
+                id: 'website_clip',
+                parentId: 'tabset_extension',
+                title: 'Create Website Clip',
+                contexts: ['all']
+              })
+              chrome.contextMenus.create({
+                id: 'website_quote',
+                parentId: 'tabset_extension',
+                title: 'Create Website Quote',
+                contexts: ['all']
+              })
+              //}
+              chrome.contextMenus.create({
+                id: 'save_to_currentTS',
+                parentId: 'tabset_extension',
+                title: 'Save to current Tabset',
+                contexts: ['all']
+              })
+              //console.log("building context menu from ", tabsStore.tabsets)
+              _.forEach([...tabsStore.tabsets.values()], (ts: Tabset) => {
+                //console.log("new submenu from", ts.id)
+                chrome.contextMenus.create({
+                  id: 'save_as_tab|' + ts.id,
+                  parentId: 'tabset_extension',
+                  title: 'Save to Tabset ' + ts.name,
+                  contexts: ['page']
+                })
+              })
+              //chrome.contextMenus.create({id: 'capture_text', parentId: 'tabset_extension', title: 'Save selection as/to Tabset', contexts: ['all']})
+
+            })
+        }
+      )
+      chrome.contextMenus.onClicked.addListener(
+        (e: chrome.contextMenus.OnClickData, tab: chrome.tabs.Tab | undefined) => {
+          //console.log("listening to", e, tab)
+          if (e.menuItemId === "open_tabsets_page") {
+            chrome.tabs.query({title: `Tabsets Extension`}, (result: chrome.tabs.Tab[]) => {
+              if (result && result[0]) {
+                chrome.tabs.highlight({tabs: result[0].index});
+              } else {
+                // const selfId = localStorage.getItem("selfId")
+                // if (selfId) {
+                chrome.tabs.create({
+                  active: true,
+                  pinned: false,
+                  //url: "chrome-extension://" + selfId + "/www/index.html#/start"
+                  url: chrome.runtime.getURL("www/index.html#/start")
+                })
+                // }
+              }
+            })
+          } else if (e.menuItemId === "website_clip") {
+            console.log("creating Clip", tab)
+            if (tab && tab.id) {
+              this.executeClippingJS(tab.id)
+            }
+          } else if (e.menuItemId === "website_quote") {
+            console.log("creating Quote", tab)
+            if (tab && tab.id) {
+              this.executeQuoteJS(tab.id)
+            }
+          } else if (e.menuItemId === 'save_to_currentTS') {
+            const tabId = tab?.id || 0
+            this.executeAddToTS(tabId, useTabsStore().currentTabsetId)
+          } else if (e.menuItemId.startsWith("save_as_tab|")) {
+            //console.log("got", e, e.menuItemId.split("|"))
+            const tabId = tab?.id || 0
+            const tabsetId = e.menuItemId.split("|")[1]
+            console.log("got tabsetId", tabsetId, e.menuItemId)
+            this.executeAddToTS(tabId, tabsetId)
+          }
+        })
+    }
+
+  }
+
+
   async closeAllTabs() {
     console.log(" --- closing all tabs: start ---")
     const currentTab = await this.getCurrentTab()

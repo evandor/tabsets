@@ -1,6 +1,6 @@
 <template>
   <div
-    class="row q-ma-none q-mt-xs q-pt-sm "
+    class="row q-ma-none q-mt-xs q-pt-sm"
     :class="alreadyInTabset() ? 'bg-grey-1':'bg-yellow-1'"
     style="border:1px solid lightgray;border-radius: 5px">
 

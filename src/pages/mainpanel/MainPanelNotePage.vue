@@ -164,14 +164,14 @@
 import {ref, watchEffect} from "vue";
 import {useRoute} from "vue-router";
 import NavigationService from "src/services/NavigationService";
-import {date} from "quasar";
+import {date, uid} from "quasar";
 import {useTabsStore} from "src/stores/tabsStore";
-import {Tab} from "src/models/Tab";
+import {Tab, UrlExtension} from "src/models/Tab";
 import {useUtils} from "src/services/Utils";
 import '@quasar/quasar-ui-qmarkdown/dist/index.css'
 import {useTabsetService} from "src/services/TabsetService2";
-import _ from "lodash"
 import {Tabset} from "src/models/Tabset";
+import ChromeApi from "src/services/ChromeApi";
 // import markdownItMermaid from '@datatraccorporation/markdown-it-mermaid'
 
 const {formatDate, sendMsg} = useUtils()
@@ -180,7 +180,7 @@ const route = useRoute()
 
 const noteId = ref<string | undefined>(undefined)
 const tab = ref<Tab | undefined>(undefined)
-const tabsetId = ref<string | undefined>(undefined)
+const tabsetId = ref<string | undefined>(route.query.tsId as string)
 const editMode = ref(false)
 
 const splitterModel = ref(50)
@@ -219,13 +219,23 @@ watchEffect(() => {
 })
 
 const save = () => {
+  console.log("saving", tabsetId.value)
   if (tabsetId.value) {
     const tabset = useTabsetService().getTabset(tabsetId.value) as Tabset | undefined
+    console.log("tabset", tabset)
     if (tabset && tab.value) {
       tab.value.longDescription = markdown.value
       console.log("saving note", tabset, tabsetId.value, markdown.value)
       // needed to update the note in the side panel
       sendMsg('tab-changed', {tab: tab.value, tabsetId: tabsetId.value})
+    } else if (tabset) { // new note
+      const url = chrome.runtime.getURL('www/index.html') + "#" + route.fullPath
+      const newTab = new Tab(uid(), ChromeApi.createChromeTabObject("title", url, ""))
+      newTab.tags.push("Note")
+      newTab.extension = UrlExtension.NOTE
+      console.log("saving note2", tabset, tabsetId.value, markdown.value)
+      // needed to update the note in the side panel
+      sendMsg('tab-changed', {tab: newTab, tabsetId: tabsetId.value})
     }
   }
 }

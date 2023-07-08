@@ -42,7 +42,7 @@ class IndexedDbPersistenceService implements PersistenceService {
           // TODO check can be removed in the future when we had a couple of releases
           return this.db.get('tabs', ts.id)
             .then((tabs: Tab[]) => {
-              console.log("got tabs for ", ts.id, tabs, ts.tabs)
+              //console.log("got tabs for ", ts.id, tabs, ts.tabs)
               if (!tabs) {
                 console.log("migrating...", JSON.stringify(ts.tabs))
                 this.saveTabset(ts)

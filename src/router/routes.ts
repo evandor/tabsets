@@ -107,6 +107,11 @@ const routes: RouteRecordRaw[] = [
     children: [{ path: '', component: () => import('pages/mainpanel/MainPanelNotePage.vue') }],
   },
   {
+    path: '/mainpanel/notes/', // TODO combine with Note page
+    component: () => import('layouts/PlainLayout.vue'),
+    children: [{ path: '', component: () => import('pages/mainpanel/MainPanelNotePage.vue') }],
+  },
+  {
     path: '/mainpanel/tabsets/:tabsetId', // TODO combine with Tabset page
     component: () => import('layouts/PlainLayout.vue'),
     children: [{ path: '', component: () => import('pages/TabsetPage.vue') }],

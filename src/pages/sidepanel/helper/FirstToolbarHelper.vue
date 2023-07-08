@@ -20,9 +20,11 @@
 
           <template v-else>
             <template v-if="searching">
-              <SearchWidget v-if="searching"
-                            :fromPanel="true"
-                            style="position: absolute; left:5px;top:5px;max-width:240px"/>
+              <Transition appear enter-active-class="animated fadeInRight">
+                <SearchWidget v-if="searching"
+                              :fromPanel="true"
+                              style="position: absolute; left:5px;top:5px;max-width:240px"/>
+              </Transition>
             </template>
             <template v-else>
               <div class="row">
@@ -46,9 +48,14 @@
         <div v-else class="col-8 q-ma-none q-pa-none">
 
           <!-- no spaces && searching -->
-          <SearchWidget v-if="searching"
-                        :fromPanel="true"
-                        style="position: absolute; left:5px;top:5px;max-width:240px"/>
+          <Transition v-if="searching"
+                      appear
+                      enter-active-class="animated fadeInRight"
+                      leave-active-class="animated fadeOutRight">
+            <SearchWidget
+              :fromPanel="true"
+              style="position: absolute; left:20px;top:5px;max-width:280px"/>
+          </Transition>
 
           <!-- no spaces && not searching -->
           <template v-else>
@@ -70,32 +77,23 @@
 
             <!-- no spaces && not searching && not showBackButton -->
             <div v-else class="col q-ml-none text-black text-subtitle1">
-              {{ props.title }} <q-btn
-                  icon="o_add_circle"
-                  color="primary"
-                  flat
-                  class="q-ma-none q-pa-xs cursor-pointer"
-                  style="max-width:20px"
-                  size="10px"
-                  @click="openNewTabsetDialog()">
-                  <q-tooltip class="tooltip">Add new Tabset</q-tooltip>
-                </q-btn>
+              {{ props.title }}
+              <q-btn
+                icon="o_add_circle"
+                color="primary"
+                flat
+                class="q-ma-none q-pa-xs cursor-pointer"
+                style="max-width:20px"
+                size="10px"
+                @click="openNewTabsetDialog()">
+                <q-tooltip class="tooltip">Add new Tabset</q-tooltip>
+              </q-btn>
             </div>
 
 
           </template>
         </div>
         <div class="col-4 text-right">
-
-          <q-btn v-if="tabsStore.tabsets.size > 1"
-                 icon="search"
-                 flat
-                 class="q-ma-none q-pa-xs cursor-pointer"
-                 style="max-width:20px"
-                 size="11px"
-                 @click="toggleSearch">
-            <q-tooltip class="tooltip">Search</q-tooltip>
-          </q-btn>
 
           <q-btn
             v-if="usePermissionsStore().hasFeature(FeatureIdent.CATEGORIZATION)"
@@ -109,18 +107,26 @@
             <q-tooltip class="tooltip">Show Tabset Suggestions</q-tooltip>
           </q-btn>
 
+          <q-btn v-if="tabsStore.tabsets.size > 1"
+                 icon="search"
+                 flat
+                 class="q-ma-none q-pa-xs q-mr-md cursor-pointer"
+                 style="max-width:20px"
+                 size="11px"
+                 @click="toggleSearch">
+            <q-tooltip class="tooltip">Search</q-tooltip>
+          </q-btn>
 
-
-<!--          <q-btn-->
-<!--            v-if="tabsStore.tabsets.size > 1 && useSettingsStore().isEnabled('dev')"-->
-<!--            icon="o_keyboard_double_arrow_right"-->
-<!--            flat-->
-<!--            class="q-ma-none q-pa-xs cursor-pointer"-->
-<!--            style="max-width:20px"-->
-<!--            size="11px"-->
-<!--            @click="openTabsetPage()">-->
-<!--            <q-tooltip class="tooltip">Open this Tabset as Standalone page</q-tooltip>-->
-<!--          </q-btn>-->
+          <!--          <q-btn-->
+          <!--            v-if="tabsStore.tabsets.size > 1 && useSettingsStore().isEnabled('dev')"-->
+          <!--            icon="o_keyboard_double_arrow_right"-->
+          <!--            flat-->
+          <!--            class="q-ma-none q-pa-xs cursor-pointer"-->
+          <!--            style="max-width:20px"-->
+          <!--            size="11px"-->
+          <!--            @click="openTabsetPage()">-->
+          <!--            <q-tooltip class="tooltip">Open this Tabset as Standalone page</q-tooltip>-->
+          <!--          </q-btn>-->
 
         </div>
       </div>
@@ -192,3 +198,16 @@ const titleForSpaces = () => {
   return useSpacesStore().space ? useSpacesStore().space.label : 'no space selected'
 }
 </script>
+
+<style scoped>
+
+.v-enter-active,
+.v-leave-active {
+  transition: opacity 3.5s ease;
+}
+
+.v-enter-from,
+.v-leave-to {
+  opacity: 0;
+}
+</style>
