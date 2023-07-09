@@ -25,7 +25,7 @@ export enum FeatureIdent {
   IGNORE = "IGNORE",
   TABSET_PAGE = "TABSET_PAGE",
   NOTES = "NOTES",
-  TAGS = "TAGS",
+  //TAGS = "TAGS", // activated by default
   SIDE_PANEL = "SIDE_PANEL",
   WEBSITE_CLIP = "WEBSITE_CLIP",
   STANDALONE_APP = "STANDALONE_APP",

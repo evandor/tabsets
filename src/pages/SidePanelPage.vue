@@ -421,7 +421,7 @@ const unpin = (tabset: Tabset) =>
   useCommandExecutor().executeFromUi(new MarkTabsetAsDefaultCommand(tabset.id))
 
 const startTabsetNote = (tabset: Tabset) => {
-  const url = chrome.runtime.getURL('www/index.html') + "#/mainpanel/notes/?tsId=" + tabset.id
+  const url = chrome.runtime.getURL('www/index.html') + "#/mainpanel/notes/?tsId=" + tabset.id + "&edit=true"
   NavigationService.openOrCreateTab(url)
 }
 

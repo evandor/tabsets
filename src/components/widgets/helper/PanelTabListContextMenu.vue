@@ -12,6 +12,16 @@
         </q-item-section>
       </q-item>
       <q-separator/>
+      <q-item v-if="useSettingsStore().isEnabled('dev')"
+              clickable v-close-popup @click.stop="openInReadingMode(props['tab' as keyof object])">
+        <q-item-section avatar style="padding-right:0;min-width:25px;max-width: 25px;">
+          <q-icon size="xs" name="o_article" color="accent"/>
+        </q-item-section>
+        <q-item-section>
+          Open in Reading Mode
+        </q-item-section>
+      </q-item>
+      <q-separator/>
       <q-item clickable v-close-popup @click.stop="editNoteDialog(props['tab' as keyof object])">
         <q-item-section avatar style="padding-right:0;min-width:25px;max-width: 25px;">
           <q-icon size="xs" name="o_note" color="accent"/>
@@ -56,6 +66,7 @@ import EditNoteDialog from "components/dialogues/EditNoteDialog.vue";
 import {useRouter} from "vue-router";
 import {useSettingsStore} from "stores/settingsStore";
 import {CopyToClipboardCommand} from "src/domain/commands/CopyToClipboard";
+import NavigationService from "src/services/NavigationService";
 
 const {inBexMode} = useUtils()
 
@@ -97,6 +108,12 @@ const editNoteDialog = (tab: Tab) => $q.dialog({
 const showTabDetails = (tab: Tab) => {
   console.log("showing tab details for", tab)
   router.push("/sidepanel/tab/" + tab.id)
+}
+
+const openInReadingMode = (tab: Tab) => {
+  console.log("showing tab in reading mode", tab)
+  const url = chrome.runtime.getURL("/www/index.html#/mainpanel/readingmode/" + tab.id)
+  NavigationService.openOrCreateTab(url)
 }
 
 const copyToClipboard = (tab: Tab) =>

@@ -11,6 +11,7 @@ import {usePermissionsStore} from "src/stores/permissionsStore";
 import {FeatureIdent} from "src/models/AppFeature";
 import {STRIP_CHARS_IN_USER_INPUT} from "boot/constants";
 import {Space} from "src/models/Space";
+import {useTabsetService} from "src/services/TabsetService2";
 
 async function queryTabs(): Promise<chrome.tabs.Tab[]> {
   // @ts-ignore
@@ -176,18 +177,32 @@ export const useTabsStore = defineStore('tabs', {
       }
     },
     getTab: (state) => {
-      return (tabId: string): object | undefined => {
+      return async (tabId: string): Promise<object | undefined> => {
 
         for (const [key, value] of state.tabsets) {
-          const found: Tab | undefined = _.find(value.tabs, t => t.id === tabId)
-          if (found) {
-            return {
-              tab: found,
-              tabsetId: value.id
+          //console.log("key/value", key, value)
+
+          // lazy loading?
+          if (value.tabs.length === 0) {
+            const useTabs = await useTabsetService().getTabs(key)
+            const found: Tab | undefined = _.find(useTabs, t => t.id === tabId)
+            if (found) {
+              return Promise.resolve({
+                tab: found,
+                tabsetId: value.id
+              })
+            }
+          } else {
+            const found: Tab | undefined = _.find(value.tabs, t => t.id === tabId)
+            if (found) {
+              return Promise.resolve({
+                tab: found,
+                tabsetId: value.id
+              })
             }
           }
         }
-        return undefined
+        return Promise.resolve(undefined)
       }
     },
     tabsetFor: (state) => {

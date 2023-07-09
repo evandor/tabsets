@@ -35,7 +35,7 @@ export class SidePanelView {
     () => usePermissionsStore().hasFeature(FeatureIdent.OPEN_TABS) && useTabsStore().tabs?.length > 1);
 
   static readonly TAGS_LIST = new SidePanelView('tagsList', '/sidepanel/tagslist',
-    () => usePermissionsStore().hasFeature(FeatureIdent.TAGS));
+    () => useTabsStore().tabsets.size > 1);
 
   static readonly TAG = new SidePanelView('tag', '/sidepanel/tags');
 

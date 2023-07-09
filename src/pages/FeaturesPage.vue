@@ -267,11 +267,6 @@ text.set(FeatureIdent.NOTES.toLowerCase(), {
   description: 'Add Notes to tabsets',
   permissions: []
 })
-text.set(FeatureIdent.TAGS.toLowerCase(), {
-  name: 'Tags for Tabs',
-  description: 'Assign tags to tabs',
-  permissions: []
-})
 text.set(FeatureIdent.NOTES.toLowerCase(), {
   name: 'Use Notes additionally to Tabs',
   description: 'Create notes and treat them like tabs',

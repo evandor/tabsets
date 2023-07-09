@@ -137,6 +137,11 @@ const routes: RouteRecordRaw[] = [
     children: [{ path: '', component: () => import('pages/mainpanel/MainPanelBookmarksPage.vue') }],
   },
   {
+    path: '/mainpanel/readingmode/:tabId', // TODO combine with Note page
+    component: () => import('layouts/PlainLayout.vue'),
+    children: [{ path: '', component: () => import('pages/mainpanel/MainPanelReadingModePage.vue') }],
+  },
+  {
     path: '/about',
     component: () => import('layouts/AboutLayout.vue'),
     children: [{ path: '', component: () => import('pages/AboutPage.vue') }],

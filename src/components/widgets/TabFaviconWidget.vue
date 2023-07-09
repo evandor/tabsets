@@ -8,6 +8,9 @@
   <q-icon v-else-if="UrlExtension.PDF === tab?.extension"
           size="22px"
           name="pdf"/>
+  <q-icon v-else-if="UrlExtension.NOTE === tab?.extension"
+          size="22px"
+          name="o_note"/>
   <q-img v-else
          class="rounded-borders"
          style="cursor: move"

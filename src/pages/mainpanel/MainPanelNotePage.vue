@@ -18,31 +18,15 @@
   </q-toolbar>
 
   <div class="row items-baseline q-ma-lg">
-    <div class="col-2">
-      <q-img
-        class="rounded-borders"
-        width="32px"
-        height="32px"
-        :src="tab?.chromeTab?.favIconUrl">
-        <q-tooltip>
-          {{ tab?.chromeTab?.favIconUrl }} / {{
-            tab?.chromeTab?.id
-          }} / {{ tab.id }}
-        </q-tooltip>
-      </q-img>
-    </div>
-    <div class="col-10">
-      <hr>
-    </div>
 
-    <div class="col-2">
-      Url
+    <div class="col-2 text-subtitle1">
+      Title
     </div>
-    <div class="col-10">
-      <div class="text-overline ellipsis-2-lines">
-        {{ tab?.history[0] }}&nbsp;<q-icon name="launch" color="secondary"
-                                           @click.stop="NavigationService.openOrCreateTab(tab?.history[0] || '' )"></q-icon>
-      </div>
+    <div class="col-10" v-if="!editMode">
+      {{ title }}
+    </div>
+    <div class="col-10 bg-grey-1" v-else>
+      <q-input type="text" v-model="title"/>
     </div>
   </div>
 
@@ -51,12 +35,10 @@
       Description
     </div>
     <div class="col-6" v-if="!editMode">
-      {{ tab?.description }}
+      {{ description }}
     </div>
-    <div class="col-6" v-else>
-      <q-input type="textarea" :model-value="tab?.description"
-               @update:model-value="val => update('description', val)"
-      />
+    <div class="col-6 bg-grey-1" v-else>
+      <q-input type="textarea" v-model="description"/>
     </div>
 
     <div class="col">
@@ -163,7 +145,6 @@
 
 import {ref, watchEffect} from "vue";
 import {useRoute} from "vue-router";
-import NavigationService from "src/services/NavigationService";
 import {date, uid} from "quasar";
 import {useTabsStore} from "src/stores/tabsStore";
 import {Tab, UrlExtension} from "src/models/Tab";
@@ -172,7 +153,6 @@ import '@quasar/quasar-ui-qmarkdown/dist/index.css'
 import {useTabsetService} from "src/services/TabsetService2";
 import {Tabset} from "src/models/Tabset";
 import ChromeApi from "src/services/ChromeApi";
-// import markdownItMermaid from '@datatraccorporation/markdown-it-mermaid'
 
 const {formatDate, sendMsg} = useUtils()
 
@@ -182,6 +162,8 @@ const noteId = ref<string | undefined>(undefined)
 const tab = ref<Tab | undefined>(undefined)
 const tabsetId = ref<string | undefined>(route.query.tsId as string)
 const editMode = ref(false)
+const title = ref('')
+const description = ref('')
 
 const splitterModel = ref(50)
 const markdown = ref('')
@@ -206,15 +188,19 @@ const noMermaid = ref(false)
 const plugins = ref([])
 const count = ref(0)
 
-watchEffect(() => {
-  console.log("watched...")
+watchEffect(async () => {
   noteId.value = route.params.noteId as unknown as string
-  const tabObject = useTabsStore().getTab(noteId.value)
+  console.log("route.params.edit", route.query.edit)
+  editMode.value = route.query.edit ? route.query.edit === "true" : false
+  console.log("watched...", noteId.value)
+  const tabObject = await useTabsStore().getTab(noteId.value)
   if (tabObject) {
     console.log("tabObject", tabObject)
     tab.value = tabObject['tab' as keyof object] as unknown as Tab
     markdown.value = tab.value?.longDescription || ''
     tabsetId.value = tabObject['tabsetId' as keyof object]
+    title.value = tab.value.chromeTab.title || ''
+    description.value = tab.value.description || ''
   }
 })
 
@@ -230,19 +216,25 @@ const save = () => {
       sendMsg('tab-changed', {tab: tab.value, tabsetId: tabsetId.value})
     } else if (tabset) { // new note
       const url = chrome.runtime.getURL('www/index.html') + "#" + route.fullPath
-      const newTab = new Tab(uid(), ChromeApi.createChromeTabObject("title", url, ""))
+      const newTabId = uid()
+      const newTab = new Tab(newTabId, ChromeApi.createChromeTabObject(title.value, url, ""))
       newTab.tags.push("Note")
       newTab.extension = UrlExtension.NOTE
-      console.log("saving note2", tabset, tabsetId.value, markdown.value)
+      newTab.description = description.value
+      //newTab.note = description.value
+      newTab.chromeTab.url = newTab.chromeTab.url?.split('?')[0] + newTabId
       // needed to update the note in the side panel
+      console.log("sending message", {tab: newTab, tabsetId: tabsetId.value})
       sendMsg('tab-changed', {tab: newTab, tabsetId: tabsetId.value})
     }
   }
 }
 
 const update = (ident: string, val: string) => {
-  if (tab.value) {
+  if (tab.value && ident === 'description') {
     tab.value.description = val
+  } else if (tab.value && ident === 'title') {
+    tab.value.chromeTab.title = val
   }
 }
 </script>

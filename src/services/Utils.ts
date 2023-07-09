@@ -31,6 +31,15 @@ export function useUtils() {
     })
   }
 
+  const sanitizeAsText = (input: string): string => {
+    return sanitizeHtml(input, {
+      allowedTags: sanitizeHtml.defaults.allowedTags,//.concat(['img']),
+      allowedAttributes: sanitizeHtml.defaults.allowedAttributes = {
+        a: ['href', 'name', 'target']
+      }
+    })
+  }
+
   const sendMsg = (msgName: string, data: object) => {
     chrome.runtime.sendMessage({
       name: msgName, data: data
@@ -49,6 +58,7 @@ export function useUtils() {
     normalize,
     modeIs,
     sanitize,
+    sanitizeAsText,
     sendMsg
   }
 }

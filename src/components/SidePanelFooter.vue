@@ -34,9 +34,9 @@
           </q-linear-progress>
         </template>
         <template v-else>
-          <q-input borderless v-if="!progress && usePermissionsStore().hasFeature(FeatureIdent.NOTES)"
-                   class="q-ma-xs"
-                   style="height:20px;border: 1px dotted lightgray; border-radius: 3px;" v-model="dragTarget"/>
+<!--          <q-input borderless v-if="!progress && usePermissionsStore().hasFeature(FeatureIdent.NOTES)"-->
+<!--                   class="q-ma-xs"-->
+<!--                   style="height:20px;border: 1px dotted lightgray; border-radius: 3px;" v-model="dragTarget"/>-->
         </template>
 
       </div>

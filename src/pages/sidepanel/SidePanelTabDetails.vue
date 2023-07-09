@@ -130,9 +130,7 @@
 
   <q-list>
 
-    <q-expansion-item label="Tags"
-                      v-if="usePermissionsStore().hasFeature(FeatureIdent.TAGS)"
-                      :default-opened="true">
+    <q-expansion-item label="Tags" :default-opened="true">
       <q-card>
         <q-card-section>
           <q-select
