@@ -1,0 +1,167 @@
+{
+  "type": "excalidraw",
+  "version": 2,
+  "source": "https://excalidraw-jetbrains-plugin",
+  "elements": [
+    {
+      "type": "text",
+      "version": 34,
+      "versionNonce": 392495879,
+      "isDeleted": false,
+      "id": "ftypv1lQwRwL5mAwKgA40",
+      "fillStyle": "hachure",
+      "strokeWidth": 1,
+      "strokeStyle": "solid",
+      "roughness": 1,
+      "opacity": 100,
+      "angle": 0,
+      "x": 473,
+      "y": 128,
+      "strokeColor": "#000000",
+      "backgroundColor": "transparent",
+      "width": 148.65989685058594,
+      "height": 25,
+      "seed": 1118430990,
+      "groupIds": [],
+      "frameId": null,
+      "roundness": null,
+      "boundElements": [
+        {
+          "type": "arrow",
+          "id": "AUuhrHAvpwqC9ph_VDa1I"
+        }
+      ],
+      "updated": 1689089410350,
+      "link": null,
+      "locked": false,
+      "fontSize": 20,
+      "fontFamily": 1,
+      "text": "add Tab event",
+      "textAlign": "left",
+      "verticalAlign": "top",
+      "containerId": null,
+      "originalText": "add Tab event",
+      "lineHeight": 1.25,
+      "baseline": 18
+    },
+    {
+      "type": "arrow",
+      "version": 27,
+      "versionNonce": 2015393998,
+      "isDeleted": false,
+      "id": "AUuhrHAvpwqC9ph_VDa1I",
+      "fillStyle": "hachure",
+      "strokeWidth": 1,
+      "strokeStyle": "solid",
+      "roughness": 1,
+      "opacity": 100,
+      "angle": 0,
+      "x": 542.7010674439371,
+      "y": 162.82658628597855,
+      "strokeColor": "#000000",
+      "backgroundColor": "transparent",
+      "width": 1.7010674439370632,
+      "height": 101.17341371402145,
+      "seed": 1497004366,
+      "groupIds": [],
+      "frameId": null,
+      "roundness": {
+        "type": 2
+      },
+      "boundElements": [],
+      "updated": 1689089410346,
+      "link": null,
+      "locked": false,
+      "startBinding": {
+        "elementId": "ftypv1lQwRwL5mAwKgA40",
+        "focus": 0.033331612070111656,
+        "gap": 9.82658628597855
+      },
+      "endBinding": null,
+      "lastCommittedPoint": null,
+      "startArrowhead": null,
+      "endArrowhead": "arrow",
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          -1.7010674439370632,
+          101.17341371402145
+        ]
+      ]
+    },
+    {
+      "type": "rectangle",
+      "version": 26,
+      "versionNonce": 1909435602,
+      "isDeleted": false,
+      "id": "KnpMAd8egzPdmfHa8t6-A",
+      "fillStyle": "hachure",
+      "strokeWidth": 1,
+      "strokeStyle": "solid",
+      "roughness": 1,
+      "opacity": 100,
+      "angle": 0,
+      "x": 385,
+      "y": 273,
+      "strokeColor": "#000000",
+      "backgroundColor": "transparent",
+      "width": 327,
+      "height": 134,
+      "seed": 225785870,
+      "groupIds": [],
+      "frameId": null,
+      "roundness": {
+        "type": 1
+      },
+      "boundElements": [],
+      "updated": 1689089410346,
+      "link": null,
+      "locked": false
+    },
+    {
+      "type": "text",
+      "version": 131,
+      "versionNonce": 1188421481,
+      "isDeleted": false,
+      "id": "KWP2hXIYh0M_05ZOy0mq8",
+      "fillStyle": "hachure",
+      "strokeWidth": 1,
+      "strokeStyle": "solid",
+      "roughness": 1,
+      "opacity": 100,
+      "angle": 0,
+      "x": 416,
+      "y": 293,
+      "strokeColor": "#000000",
+      "backgroundColor": "transparent",
+      "width": 246.51980590820312,
+      "height": 100,
+      "seed": 1805918290,
+      "groupIds": [],
+      "frameId": null,
+      "roundness": {
+        "type": 2
+      },
+      "boundElements": [],
+      "updated": 1689089435552,
+      "link": null,
+      "locked": false,
+      "fontSize": 20,
+      "fontFamily": 1,
+      "text": "add to content db: title,\nurl, content, favicon, \nexpiresIn\nkey: atob(url)",
+      "textAlign": "left",
+      "verticalAlign": "top",
+      "containerId": null,
+      "originalText": "add to content db: title,\nurl, content, favicon, \nexpiresIn\nkey: atob(url)",
+      "lineHeight": 1.25,
+      "baseline": 93
+    }
+  ],
+  "appState": {
+    "gridSize": null,
+    "viewBackgroundColor": "#ffffff"
+  }
+}
