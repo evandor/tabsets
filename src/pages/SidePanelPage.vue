@@ -124,14 +124,8 @@
     <!-- place QPageSticky at end of page -->
     <q-page-sticky expand position="top" style="background-color:white">
 
-      <FirstToolbarHelper/>
+      <FirstToolbarHelper :title="'My Tabsets (' + tabsets.length.toString() + ')'"/>
 <!--      <SecondToolbarHelper/>-->
-
-      <!-- selected tab or current tab from chrome
-      <div class="q-my-none q-mx-none q-pa-none fit bg-white"
-           style="max-height:135px;min-height:135px;">
-        <SidePanelTabInfo/>
-      </div>-->
 
     </q-page-sticky>
   </q-page>

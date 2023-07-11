@@ -85,7 +85,7 @@
             <span v-else>
               <q-icon color="primary" size="16px"/>
             </span>
-          <PanelTabListContextMenu :tab="tab" v-if="!props.hideMenu"/>
+            <PanelTabListContextMenu :tab="tab" v-if="!props.hideMenu"/>
 
         </div>
       </div>
