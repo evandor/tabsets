@@ -483,10 +483,10 @@ export function useTabsetService() {
    * @param useIndex
    */
   const addToTabset = async (ts: Tabset, tab: Tab, useIndex: number | undefined = undefined): Promise<Tabset> => {
-    console.log("adding tab x to tabset y", tab.id, ts.id)
+    //console.log("adding tab x to tabset y", tab.id, ts.id)
     if (tab.chromeTab.url) {
       const tabs = await useTabsetService().getTabs(ts.id)
-      console.log("existing tabs", _.map(tabs, t => t.chromeTab.url))
+      //console.log("existing tabs", _.map(tabs, t => t.chromeTab.url))
       ts.tabs = tabs
       const indexInTabset = _.findIndex(ts.tabs, t => t.chromeTab.url === tab.chromeTab.url)
       if (indexInTabset >= 0 && !tab.image) {

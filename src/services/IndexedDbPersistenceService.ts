@@ -544,9 +544,10 @@ class IndexedDbPersistenceService implements PersistenceService {
   }
 
   private urlExistsInATabset(url: string): boolean {
-    //console.log("checking url", url)
+    console.log("urlExistsInATabset: checking url", url)
     for (let ts of [...useTabsStore().tabsets.values()]) {
       if (_.find(ts.tabs, t => t.chromeTab.url === url)) {
+        console.log("urlExistsInATabset: found!")
         return true;
       }
     }

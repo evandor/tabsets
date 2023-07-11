@@ -38,13 +38,13 @@ export class AddTabToTabsetCommand implements Command<any> {
 
   async execute(): Promise<ExecutionResult<any>> {
     const tabsStore = useTabsStore()
-    console.info('adding tab to tabset', this.tab.id, this.tabset.id)
+    console.info(`adding tab '${this.tab.id}' to tabset '${this.tabset.id}'`)
     const exists = _.findIndex(this.tabset.tabs, t => t.chromeTab.url === this.tab.chromeTab.url) >= 0
-    console.log("exists yields", exists)
+    console.log("checking 'tab exists' yields", exists)
     if (!exists) {
       return useTabsetService().addToTabsetId(this.tabset.id, this.tab, 0)
         .then((res) => {
-          console.log("res",res.tabs)
+          //console.log("res",res.tabs)
           return TabsetService.getContentFor(this.tab)
             .then((content) => {
               console.log("got content", content)
@@ -66,6 +66,7 @@ export class AddTabToTabsetCommand implements Command<any> {
             })
             .then((res) => {
               // TODO CreateTabFromOpentabs: Same logic?
+              // TODO remove logic, will not be used that way
               if (usePermissionsStore().hasFeature(FeatureIdent.CATEGORIZATION) && this.tab.chromeTab.url?.startsWith("https://")) {
                 console.log("about to check categorization", this.tab.chromeTab.url)
                 try {
