@@ -47,7 +47,7 @@ class NavigationService {
               console.log("selections", selections)
               // @ts-ignore
               chrome.scripting.executeScript({
-                target: {tabId: tab.id},
+                target: {tabId: tab.id || 0},
                 files: ['highlighting.js']
               }, (result: any) => {
                 console.log("sending Message highlightSelections", tab.id)

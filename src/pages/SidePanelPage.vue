@@ -26,9 +26,9 @@
                 @mouseleave="hoveredTabset = undefined">
                 <q-item-label :class="tabsStore.currentTabsetId === tabset.id ? 'text-bold text-primary' : ''">
                   <q-icon
-                          :color="tabset.status === TabsetStatus.DEFAULT ? 'primary':'warning'"
-                          :name="tabset.status === TabsetStatus.DEFAULT ? 'tab':'push_pin'"
-                          style="position: relative;top:-2px"/>
+                    :color="tabset.status === TabsetStatus.DEFAULT ? 'primary':'warning'"
+                    :name="tabset.status === TabsetStatus.DEFAULT ? 'tab':'push_pin'"
+                    style="position: relative;top:-2px"/>
                   {{ tabset.name }}
                 </q-item-label>
                 <q-item-label class="text-caption text-grey-5">
@@ -51,7 +51,7 @@
                       <q-list dense style="min-width: 200px">
 
                         <q-item v-if="usePermissionsStore().hasFeature(FeatureIdent.NOTES)"
-                          clickable v-close-popup @click.stop="startTabsetNote(tabset as Tabset)">
+                                clickable v-close-popup @click.stop="startTabsetNote(tabset as Tabset)">
                           <q-item-section avatar style="padding-right:0;min-width:25px;max-width: 25px;">
                             <q-icon size="xs" name="o_add_circle" color="accent"/>
                           </q-item-section>
@@ -118,14 +118,13 @@
       </div>
 
 
-
     </div>
 
     <!-- place QPageSticky at end of page -->
     <q-page-sticky expand position="top" style="background-color:white">
 
       <FirstToolbarHelper :title="'My Tabsets (' + tabsets.length.toString() + ')'"/>
-<!--      <SecondToolbarHelper/>-->
+      <!--      <SecondToolbarHelper/>-->
 
     </q-page-sticky>
   </q-page>
@@ -281,19 +280,20 @@ const getTabsetOrder =
       return o.status === TabsetStatus.FAVORITE ? 0 : 1
     },
     function (o: Tabset) {
-      return o.name.toLowerCase()
+      return o.name?.toLowerCase()
     }
   ]
 
 
 watchEffect(() => {
-  // console.log("checking tabsets...", [...tabsStore.tabsets.values()].length)
   if (usePermissionsStore().hasFeature(FeatureIdent.SPACES)) {
     const currentSpace = useSpacesStore().space
     tabsets.value = _.sortBy(
       _.filter([...tabsStore.tabsets.values()], (ts: Tabset) => {
-        if (ts.spaces.indexOf(currentSpace.id) < 0) {
-          return false
+        if (currentSpace) {
+          if (ts.spaces.indexOf(currentSpace.id) < 0) {
+            return false
+          }
         }
         return ts.status !== TabsetStatus.DELETED
       }),
@@ -304,12 +304,13 @@ watchEffect(() => {
         (ts: Tabset) => ts.status !== TabsetStatus.DELETED),
       getTabsetOrder, ["asc"])
   }
-  tabsetExpanded.value.clear()
-  if (tabsets.value.length === 1) {
-    const onlyTabsetId: string = (tabsets.value[0] as Tabset).id
-    console.log("onlyTabsetidf", onlyTabsetId)
-    tabsetExpanded.value.set(onlyTabsetId, true)
-  }
+  // console.log("clearing tabsetExpanded.value", tabsetExpanded.value)
+  // tabsetExpanded.value.clear()
+  // if (tabsets.value.length === 1) {
+  //   const onlyTabsetId: string = (tabsets.value[0] as Tabset).id
+  //   console.log("onlyTabsetidf", onlyTabsetId)
+  //   tabsetExpanded.value.set(onlyTabsetId, true)
+  // }
 })
 
 watchEffect(() => {
@@ -334,11 +335,12 @@ if (inBexMode()) {
 }
 
 function filteredTabs(tabsetId: string): Tab[] {
+  console.log("filtering tabs", tabsetId, tabsetExpanded.value)
   const expanded = tabsetExpanded.value.get(tabsetId)
   if (!expanded) {
     return []
   }
-  console.log("filtering tabs", tabsetId, expanded)
+  console.log("filtering tabs", expanded)
   const filter = useUiStore().tabsFilter
   //const tabs = useTabsetService().getTabset(tabsetId)?.tabs || []
   const ts = tabs.value.get(tabsetId) || []
@@ -351,7 +353,9 @@ function filteredTabs(tabsetId: string): Tab[] {
       })
       , getOrder(), [orderDesc.value ? 'desc' : 'asc'])
   }
-  return _.orderBy(ts, getOrder(), [orderDesc.value ? 'desc' : 'asc'])
+  const result = _.orderBy(ts, getOrder(), [orderDesc.value ? 'desc' : 'asc'])
+  console.log("result", result)
+  return result
 }
 
 function getOrder() {
@@ -370,18 +374,19 @@ function getOrder() {
 
 const updateSelectedTabset = (tabsetId: string, open: boolean, index: number) => {
   console.log("updated...", tabsetId, open, Object.keys(tabsetExpanded.value))
-  let tabsetToChoose = null
-  Object.keys(tabsetExpanded.value).forEach(k => {
-    if (tabsetExpanded.value[k as keyof object] === true) {
-      tabsetToChoose = k
-    }
-  })
-  console.log("tabsetToChoose", tabsetToChoose)
+  // let tabsetToChoose = null
+  // Object.keys(tabsetExpanded.value).forEach(k => {
+  //   if (tabsetExpanded.value[k as keyof object] === true) {
+  //     tabsetToChoose = k
+  //   }
+  // })
+  // console.log("tabsetToChoose", tabsetToChoose)
   tabsetExpanded.value.set(tabsetId, open)
   if (open) {
     scrollToElement(document.getElementsByClassName("q-expansion-item")[index], 300)
     const alreadyFetched = tabs.value.has(tabsetId)
     if (!alreadyFetched) {
+      console.log("fetching tabs for tabset", tabsetId)
       useTabsetService().getTabs(tabsetId)
         .then((ts: Tab[]) => {
           tabs.value.set(tabsetId, ts)
@@ -390,6 +395,9 @@ const updateSelectedTabset = (tabsetId: string, open: boolean, index: number) =>
             tabset.tabs = ts
             tabset.tabsCount = ts.length
           }
+        })
+        .catch((err) => {
+          console.log("encountered error", err)
         })
     }
     useCommandExecutor()

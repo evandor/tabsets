@@ -168,10 +168,10 @@ class ChromeApi {
           } else if (e.menuItemId === 'save_to_currentTS') {
             const tabId = tab?.id || 0
             this.executeAddToTS(tabId, useTabsStore().currentTabsetId)
-          } else if (e.menuItemId.startsWith("save_as_tab|")) {
+          } else if (e.menuItemId.toString().startsWith("save_as_tab|")) {
             //console.log("got", e, e.menuItemId.split("|"))
             const tabId = tab?.id || 0
-            const tabsetId = e.menuItemId.split("|")[1]
+            const tabsetId = e.menuItemId.toString().split("|")[1]
             console.log("got tabsetId", tabsetId, e.menuItemId)
             this.executeAddToTS(tabId, tabsetId)
           }

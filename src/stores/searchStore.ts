@@ -140,13 +140,7 @@ export const useSearchStore = defineStore('search', () => {
         // @ts-ignore
         const promise = dummyPromise(3000, tabToClose.id)
         return promise.then((res) => {
-          // try {
-          //   chrome.windows.remove(window.id);
-          // } catch (err) {
-          //   console.log("err", err)
-          // }
-          // @ts-ignore
-          return window.id
+          return window.id || 0
         })
       }
       return Promise.reject("could not get tab")

@@ -15,7 +15,7 @@ export class ImportTabsetsCommand implements Command<string> {
     return Promise.resolve(
       new ExecutionResult(
         "done",
-        "Tabsets were imported"))
+        "Tabsets were imported - please reload the extension"))
   }
 
 }

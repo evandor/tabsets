@@ -40,7 +40,7 @@ export class AddTabToTabsetCommand implements Command<any> {
     const tabsStore = useTabsStore()
     console.info('adding tab to tabset', this.tab.id, this.tabset.id)
     const exists = _.findIndex(this.tabset.tabs, t => t.chromeTab.url === this.tab.chromeTab.url) >= 0
-
+    console.log("exists yields", exists)
     if (!exists) {
       return useTabsetService().addToTabsetId(this.tabset.id, this.tab, 0)
         .then((res) => {
@@ -58,6 +58,10 @@ export class AddTabToTabsetCommand implements Command<any> {
                 console.log("this tabset tabs",this.tabset.tabs)
                 return saveTabset(this.tabset)
                   .then(result => new ExecutionResult(result, "Tab was added"))
+                  .catch((err:any) => {
+                    console.error("we are here", err)
+                    return Promise.reject("problem")
+                  })
               }
             })
             .then((res) => {
