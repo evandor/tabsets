@@ -60,6 +60,7 @@ import {AppFeatures} from "src/models/AppFeatures";
 import {CopyFromPublicCategory} from "src/domain/categories/CopyFromPublicCategory";
 import {useCategoriesStore} from "stores/categoriesStore";
 import {useDB} from "src/services/usePersistenceService";
+import NavigationService from "src/services/NavigationService";
 
 defineEmits([
   ...useDialogPluginComponent.emits
@@ -116,6 +117,9 @@ const createNewTabset = () => {
           // clear pending tabset - why necessary?
           tabsStore.pendingTabset.tabs = []
         }
+      }
+      if (props.firstTabset) {
+        NavigationService.openOrCreateTab("https://tabsets.web.app/#/welcome")
       }
       if (props.selectedCategories) {
 

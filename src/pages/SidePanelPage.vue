@@ -88,7 +88,7 @@
                           </q-item-section>
                         </q-item>
                         <q-separator/>
-                        <q-item clickable v-close-popup @click.stop="deleteTabsetDialog(tabset)">
+                        <q-item clickable v-close-popup @click.stop="deleteTabsetDialog(tabset as Tabset)">
                           <q-item-section avatar style="padding-right:0;min-width:25px;max-width: 25px;">
                             <q-icon size="xs" name="o_delete" color="negative"/>
                           </q-item-section>
@@ -105,12 +105,11 @@
 
 
             <div class="q-ma-none q-pa-none" style="border:1px solid lightgrey">
-              <div class="q-ma-xs">
+              <div class="q-ma-xs shrink" :class="showTabInfo(tabset.id) ? '':'collapsed'">
                 <SidePanelTabInfo :tabsetId="tabset.id"/>
               </div>
-              <PanelTabList :tabs="filteredTabs(tabset.id)"/>
+              <PanelTabList :tabs="currentTabs"/>
             </div>
-
           </q-expansion-item>
 
 
@@ -123,8 +122,9 @@
     <!-- place QPageSticky at end of page -->
     <q-page-sticky expand position="top" style="background-color:white">
 
-      <FirstToolbarHelper :title="'My Tabsets (' + tabsets.length.toString() + ')'"/>
-      <!--      <SecondToolbarHelper/>-->
+      <FirstToolbarHelper
+        :title="tabsets.length > 6 ? 'My Tabsets (' + tabsets.length.toString() + ')' : 'My Tabsets'"/>
+<!--      <SecondToolbarHelper/>-->
 
     </q-page-sticky>
   </q-page>
@@ -158,6 +158,7 @@ import {MarkTabsetAsFavoriteCommand} from "src/domain/tabsets/MarkTabsetAsFavori
 import {MarkTabsetAsDefaultCommand} from "src/domain/tabsets/MarkTabsetAsDefault";
 import getScrollTarget = scroll.getScrollTarget;
 import NavigationService from "src/services/NavigationService";
+import SecondToolbarHelper from "pages/sidepanel/helper/SecondToolbarHelper.vue";
 
 const {setVerticalScrollPosition} = scroll
 
@@ -180,8 +181,9 @@ const currentTabset = ref<Tabset | undefined>(undefined)
 const currentChromeTab = ref<chrome.tabs.Tab>(null as unknown as chrome.tabs.Tab)
 const orderDesc = ref(false)
 const tabsetExpanded = ref<Map<string, boolean>>(new Map())
+const filteredTabs = ref<Map<string, Tab[]>>(new Map())
 const tabs = ref<Map<string, Tab[]>>(new Map())
-const headerSection = ref<any>()
+const currentTabs = ref<Tab[]>([])
 
 const hoveredTabset = ref<string | undefined>(undefined)
 const tabsets = ref<Tabset[]>([])
@@ -334,16 +336,17 @@ if (inBexMode()) {
   })
 }
 
-function filteredTabs(tabsetId: string): Tab[] {
-  console.log("filtering tabs", tabsetId, tabsetExpanded.value)
-  const expanded = tabsetExpanded.value.get(tabsetId)
-  if (!expanded) {
-    return []
-  }
-  console.log("filtering tabs", expanded)
+watchEffect(() => {
+  console.log("watching filtering tabs", useTabsStore().getCurrentTabset?.tabs)
+  //currentTabs.value = useTabsStore().getCurrentTabset?.tabs || []
+  // TODO filter!
+  // const expanded = tabsetExpanded.value.get(tabsetId)
+  // if (!expanded) {
+  //   return []
+  // }
   const filter = useUiStore().tabsFilter
   //const tabs = useTabsetService().getTabset(tabsetId)?.tabs || []
-  const ts = tabs.value.get(tabsetId) || []
+  const ts = useTabsStore().getCurrentTabset?.tabs || []
 
   if (filter && filter.trim() !== '') {
     return _.orderBy(_.filter(ts, (t: Tab) => {
@@ -355,8 +358,8 @@ function filteredTabs(tabsetId: string): Tab[] {
   }
   const result = _.orderBy(ts, getOrder(), [orderDesc.value ? 'desc' : 'asc'])
   console.log("result", result)
-  return result
-}
+  currentTabs.value = result
+})
 
 function getOrder() {
   if (tabsStore.getCurrentTabset) {
@@ -374,13 +377,6 @@ function getOrder() {
 
 const updateSelectedTabset = (tabsetId: string, open: boolean, index: number) => {
   console.log("updated...", tabsetId, open, Object.keys(tabsetExpanded.value))
-  // let tabsetToChoose = null
-  // Object.keys(tabsetExpanded.value).forEach(k => {
-  //   if (tabsetExpanded.value[k as keyof object] === true) {
-  //     tabsetToChoose = k
-  //   }
-  // })
-  // console.log("tabsetToChoose", tabsetToChoose)
   tabsetExpanded.value.set(tabsetId, open)
   if (open) {
     scrollToElement(document.getElementsByClassName("q-expansion-item")[index], 300)
@@ -456,6 +452,14 @@ const scrollToElement = (el: any, delay: number) => {
     setVerticalScrollPosition(target, offset - 120, duration)
   }, delay);
 
+}
+
+const showTabInfo = (tsId: string) => {
+  if (tabsStore.getCurrentTabset && tabsStore.getCurrentTabset.tabs.length > 0) {
+    if (tabsStore.getCurrentTabset.tabs[0].chromeTab.url === useTabsStore()?.currentChromeTab.url)
+      return false
+  }
+  return true
 }
 
 </script>

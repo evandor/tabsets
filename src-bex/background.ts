@@ -1,6 +1,12 @@
 import {bexBackground} from 'quasar/wrappers';
 import {pipeline, env as env2} from "@xenova/transformers";
 
+chrome.omnibox.onInputEntered.addListener((text) => {
+  const newURL = chrome.runtime.getURL("/www/index.html#/searchresult?t=" + encodeURIComponent(text))
+  chrome.tabs.create({ url: newURL })
+    .catch((err) => console.log("background.js error", err))
+});
+
 let modelPromise: any = null
 
 async function loadAIModule() {

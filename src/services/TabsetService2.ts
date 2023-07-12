@@ -350,12 +350,13 @@ export function useTabsetService() {
 
     const savePromises: Promise<any>[] = []
 
+    // iterate all tabsets and update meta data for given url
     tabsets.forEach((tabset: Tabset) => {
       if (tabset) {
         _.forEach(tabset.tabs, (t: Tab) => {
           //console.log("comparing", t.chromeTab.url, tab.url)
           if (t.chromeTab.url === tab.url) {
-            console.log(" ... in tab", tab.id, metas['tabsets:longDescription' as keyof object], metas)
+            console.log("updating meta data in tab", tab.id, metas)
             if (metas['description' as keyof object]) {
               t.description = metas['description' as keyof object]
               // @ts-ignore

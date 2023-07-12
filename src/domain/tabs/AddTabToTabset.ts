@@ -44,7 +44,7 @@ export class AddTabToTabsetCommand implements Command<any> {
     if (!exists) {
       return useTabsetService().addToTabsetId(this.tabset.id, this.tab, 0)
         .then((res) => {
-          //console.log("res",res.tabs)
+          // the tab has been added to the tabset, but not saved yet
           return TabsetService.getContentFor(this.tab)
             .then((content) => {
               console.log("got content", content)

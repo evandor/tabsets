@@ -19,6 +19,7 @@
     <q-item-label v-if="props.type === 'categories'">
       <div>
         <div class="q-pr-sm cursor-pointer ellipsis" :class="classForCategoryTab(props.tab)">
+
           <span v-if="props.header" class="text-bold">{{ props.header }}<br></span>
           <span v-if="useTabsStore().getCurrentTabset?.sorting === 'alphabeticalTitle'">
               <q-icon name="arrow_right" size="16px"/>
@@ -30,6 +31,9 @@
     <q-item-label v-else>
       <div>
         <div class="q-pr-sm cursor-pointer ellipsis">
+
+          <span class="text-bold" v-if="isCurrentTab(props.tab as Tab)">Current Tab:<br></span>
+
           <span v-if="props.header" class="text-bold">{{ props.header }}<br></span>
           <span v-if="useTabsStore().getCurrentTabset?.sorting === 'alphabeticalTitle'">
               <q-icon name="arrow_right" size="16px"/>
@@ -68,7 +72,7 @@
            </span>
 
           <span v-if="props.tab.extension === UrlExtension.NOTE">open Note</span>
-          <short-url v-else :url="props.tab.chromeTab?.url" :hostname-only="true" />
+          <short-url v-else :url="props.tab.chromeTab?.url" :hostname-only="true"/>
           <div class="text-caption text-grey-5">
             {{ formatDate(props.tab.created) }}
           </div>
@@ -82,10 +86,10 @@
             <span v-if="hoveredOver(tab.id)">
               <q-icon name="more_horiz" color="primary" size="16px"/>
             </span>
-            <span v-else>
+          <span v-else>
               <q-icon color="primary" size="16px"/>
             </span>
-            <PanelTabListContextMenu :tab="tab" v-if="!props.hideMenu"/>
+          <PanelTabListContextMenu :tab="tab" v-if="!props.hideMenu"/>
 
         </div>
       </div>
@@ -141,6 +145,7 @@ const props = defineProps({
 const emits = defineEmits(['sendCaption'])
 
 const $q = useQuasar()
+const tabsStore = useTabsStore()
 
 const line = ref(null)
 const showButtonsProp = ref<boolean>(false)
@@ -288,4 +293,9 @@ const classForCategoryTab = (tab: Tab) => {
 const formatDate = (timestamp: number | undefined) =>
   timestamp ? formatDistance(timestamp, new Date(), {addSuffix: true}) : ""
 
+const isCurrentTab = (tab: Tab) => {
+    //console.log("xxx", tabsStore.getCurrentTabset.tabs[0].chromeTab.url, tab.chromeTab.url)
+    return tabsStore.currentChromeTab.url === tab.chromeTab.url;
+
+}
 </script>

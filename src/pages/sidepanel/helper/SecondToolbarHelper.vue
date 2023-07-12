@@ -1,9 +1,8 @@
 <template>
-
   <q-toolbar
     class="text-primary $lightgrey q-pa-none q-pa-none bg-white" style="min-height:revert;">
     <!-- show progress or info messages if any -->
-    <template v-if="true">
+    <template v-if="false">
       <div class="col-12"
            style="border-bottom: 1px dotted lightgray;border-left: 1px dotted lightgray;min-height:30px;">
 <!--        <q-linear-progress size="20px" :value="progress" color="primary">-->
@@ -24,14 +23,15 @@
         <!--                     class="q-ma-xs"-->
         <!--                     style="height:20px;border: 1px dotted lightgray; border-radius: 3px;" v-model="dragTarget"/>-->
         <!--            <div v-else>&nbsp;</div>-->
-        <TabsetsSelectorWidget :fromPanel="true" style="position: relative;top:3px"/>
+<!--       <TabsetsSelectorWidget :fromPanel="true" style="position: relative;top:3px"/>-->
 
       </div>
       <div class="col-4 text-right"
            style="border-bottom: 1px dotted lightgray;border-right: 1px dotted lightgray;border-radius:4px;min-height:30px">
 
+<!--        && tabsStore.getCurrentTabset?.tabs.length > 7-->
         <q-btn
-          v-if="useUiStore().sidePanelActiveViewIs(SidePanelView.MAIN) && tabsStore.getCurrentTabset?.tabs.length > 7"
+          v-if="useUiStore().sidePanelActiveViewIs(SidePanelView.MAIN) "
           flat
           class="q-ma-none q-pa-xs cursor-pointer"
           style="width:20px;max-width:220px"
@@ -57,8 +57,8 @@
             {{ useUiStore().tabsFilter ? 'Filtering for "' + useUiStore().tabsFilter + '"' : 'Filter this tabset' }}
           </q-tooltip>
         </q-btn>
-
-        <q-btn v-if="showSorting()"
+<!--        v-if="showSorting()"-->
+        <q-btn
                flat
                size="10px"
                class="q-ma-none q-pa-xs cursor-pointer"
@@ -81,7 +81,8 @@
 <!--          <q-tooltip class="tooltip">Toggle the detail level for the tabs</q-tooltip>-->
 <!--        </q-btn>-->
 
-        <q-btn v-if="useUiStore().sidePanelActiveViewIs(SidePanelView.MAIN) && usePermissionsStore().hasFeature(FeatureIdent.SESSIONS)"
+<!--        && usePermissionsStore().hasFeature(FeatureIdent.SESSIONS)"-->
+        <q-btn v-if="useUiStore().sidePanelActiveViewIs(SidePanelView.MAIN)"
                flat
                style="max-width:20px"
                size="10px"
@@ -93,7 +94,8 @@
           <q-tooltip class="tooltip" v-else>Start new Session</q-tooltip>
         </q-btn>
 
-        <q-btn v-if="useUiStore().sidePanelActiveViewIs(SidePanelView.MAIN) && usePermissionsStore().hasFeature(FeatureIdent.WEBSITE_CLIP) && webClipActive()"
+<!--        && usePermissionsStore().hasFeature(FeatureIdent.WEBSITE_CLIP) && webClipActive()-->
+        <q-btn v-if="useUiStore().sidePanelActiveViewIs(SidePanelView.MAIN)"
                icon="filter_center_focus"
                flat
                class="q-ma-none q-pa-xs cursor-pointer"

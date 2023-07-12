@@ -159,6 +159,12 @@ class ChromeListeners {
     }
   }
 
+  /**
+   *
+   * @param tabset: usually the "pendingTabset", or any one which is a session
+   * @param tab
+   * @private
+   */
   private handleUpdate(tabset: Tabset, tab: chrome.tabs.Tab) {
     // find tab which was created by "onCreate" moments ago
     const index = _.findIndex(tabset?.tabs, t => t.chromeTab.id === tab.id);
@@ -399,6 +405,7 @@ class ChromeListeners {
 
   private handleHtml2Links(request: any, sender: chrome.runtime.MessageSender, sendResponse: any) {
     if (sender.tab) {
+      console.log("handleHtml2Links")
       saveMetaLinksFor(sender.tab, request.links)
       saveLinksFor(sender.tab, request.anchors)
 

@@ -72,3 +72,16 @@
 .q-notifications__list {
   margin-bottom: 45px
 }
+
+// shrink
+
+.shrink {
+  max-height:650px;
+  transition:all 700ms ease;
+}
+
+.shrink.collapsed {
+  max-height:0;
+  overflow:hidden;
+  background-color:transparent;
+}
