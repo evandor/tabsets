@@ -31,31 +31,44 @@ class IndexedDbPersistenceService implements PersistenceService {
 
   async loadTabsets(): Promise<any> {
     const tabsStore = useTabsStore()
-    const keys: IDBValidKey[] = await this.db.getAllKeys('tabsets')
-    const res: Promise<any>[] = _.map(keys, key => {
-      return this.db.get('tabsets', key)
-        .then(ts => {
-          if (!ts.status) {
-            ts.status = TabsetStatus.DEFAULT
-          }
-          console.log("loading tabset", ts)
-          // migration from tabsets.tabs to tabs
-          // TODO check can be removed in the future when we had a couple of releases
-          return this.db.get('tabs', ts.id)
-            .then((tabs: Tab[]) => {
-              //console.log("got tabs for ", ts.id, tabs, ts.tabs)
-              if (!tabs) {
-                console.log("migrating...", JSON.stringify(ts.tabs))
-                this.saveTabset(ts)
-              }
-              tabsStore.addTabset(ts)
-              return ts
-            })
-        })
-        .catch(err => console.log("err", err))
-    })
+    const start = Date.now();
 
-    return await Promise.all(res)
+    const s = Date.now()
+    return await this.db.getAll('tabsets')
+      .then((res:any) => {
+        console.log("got all tabsets", res)
+        res.forEach((r:Tabset) => tabsStore.addTabset(r))
+        console.log(`done: ${Date.now() - s} ms`);
+      })
+
+
+    // const keys: IDBValidKey[] = await this.db.getAllKeys('tabsets')
+    // console.log(`got keys: ${Date.now() - start} ms`);
+    // const res: Promise<any>[] = _.map(keys, key => {
+    //   return this.db.get('tabsets', key)
+    //     .then(ts => {
+    //       if (!ts.status) {
+    //         ts.status = TabsetStatus.DEFAULT
+    //       }
+    //       console.log("loading tabset", ts)
+    //       console.log(`got tabset: ${Date.now() - start} ms`);
+    //       // migration from tabsets.tabs to tabs
+    //       // TODO check can be removed in the future when we had a couple of releases
+    //       return this.db.get('tabs', ts.id)
+    //         .then((tabs: Tab[]) => {
+    //           //console.log("got tabs for ", ts.id, tabs, ts.tabs)
+    //           if (!tabs) {
+    //             console.log("migrating...", JSON.stringify(ts.tabs))
+    //             this.saveTabset(ts)
+    //           }
+    //           tabsStore.addTabset(ts)
+    //           return ts
+    //         })
+    //     })
+    //     .catch(err => console.log("err", err))
+    // })
+
+    //return await Promise.all(res)
   }
 
   async loadSpaces(): Promise<void> {
@@ -87,19 +100,21 @@ class IndexedDbPersistenceService implements PersistenceService {
 
 
   async saveTabset(tabset: Tabset): Promise<IDBValidKey> {
+    return await this.db.put('tabsets', JSON.parse(JSON.stringify(tabset)), tabset.id);
+
     // console.log("saving tabset1", tabset)
     // console.log("saving tabset2", tabset.tabs)
     // console.log("saving tabset3", JSON.stringify(tabset.tabs))
-    try {
-      const tabsRes = await this.db.put('tabs', JSON.parse(JSON.stringify(tabset.tabs)), tabset.id);
-      const tabsetClone = Object.assign({}, tabset);
-      tabsetClone.tabs = []
-      tabsetClone.tabsCount = tabset.tabs.length
-      await this.db.put('tabsets', JSON.parse(JSON.stringify(tabsetClone)), tabset.id);
-      return tabsRes
-    } catch (err) {
-      return Promise.reject("got error: " + err)
-    }
+    // try {
+    //   const tabsRes = await this.db.put('tabs', JSON.parse(JSON.stringify(tabset.tabs)), tabset.id);
+    //   const tabsetClone = Object.assign({}, tabset);
+    //   tabsetClone.tabs = []
+    //   tabsetClone.tabsCount = tabset.tabs.length
+    //   await this.db.put('tabsets', JSON.parse(JSON.stringify(tabsetClone)), tabset.id);
+    //   return tabsRes
+    // } catch (err) {
+    //   return Promise.reject("got error: " + err)
+    // }
   }
 
   deleteTabset(tabsetId: string): Promise<void> {
@@ -660,10 +675,10 @@ class IndexedDbPersistenceService implements PersistenceService {
   //     })
   //     .catch((err) => Promise.reject("error applying suggestion" + err))
   // }
-  async loadTabs(tabsetId: string): Promise<Tab[]> {
-    console.log("loading tabs...")
-    return await this.db.get("tabs", tabsetId)
-  }
+  // async loadTabs(tabsetId: string): Promise<Tab[]> {
+  //   console.log("loading tabs...")
+  //   return await this.db.get("tabs", tabsetId)
+  // }
 
   clear(name: string) {
     this.db.clear(name).catch((e) => console.warn(e))

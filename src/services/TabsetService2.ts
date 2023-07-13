@@ -179,9 +179,9 @@ export function useTabsetService() {
     const ts = _.find([...tabsStore.tabsets.values()],
       ts => ts.id === tabsetId)
     if (ts) {
-      return (ts.tabs.length === 0) ?
+      //return (ts.tabs.length === 0) ?
         // try to lazy load tabs if we don't have any tabs yet
-        db.loadTabs(tabsetId) :
+        //db.loadTabs(tabsetId) :
         ts.tabs
     }
     return Promise.resolve([])

@@ -33,7 +33,7 @@ describe('CreateTabFromOpenTabs', () => {
     var newTabsetRes:any  = await new CreateTabsetCommand('emptyTabsetId', []).execute()
     await new SelectTabsetCommand(newTabsetRes.result['tabset']['id']).execute()
     var testTab: Tab = new Tab(uid(), ChromeApi.createChromeTabObject("title", "https://www.skysail.io",""))
-    const res:any = await new CreateTabFromOpenTabsCommand(testTab, 0, "group").execute()
+    const res:any = await new CreateTabFromOpenTabsCommand(testTab, 0).execute()
     expect(res.message).toBe("Tab was added")
   })
 

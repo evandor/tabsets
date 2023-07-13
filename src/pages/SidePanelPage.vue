@@ -1,13 +1,12 @@
 <template>
 
   <q-page style="padding-top: 45px">
-
     <!-- list of tabs, assuming here we have at least one tabset -->
     <div class="q-ma-none">
 
       <div class="q-ma-none q-pa-none">
         <q-list dense
-                class="rounded-borders q-ma-none q-pa-none" v-for="(tabset,index) in tabsets">
+                class="rounded-borders q-ma-none q-pa-none" :key="tabset.id" v-for="(tabset,index) in tabsets" >
           <!-- :model-value="isExpanded(tabset.id)" -->
           <q-expansion-item
             :header-class="tabsStore.currentTabsetId === tabset.id ? 'bg-grey-4':''"
@@ -108,7 +107,8 @@
               <div class="q-ma-xs">
                 <SidePanelTabInfo :tabsetId="tabset.id"/>
               </div>
-              <PanelTabList :tabs="currentTabs"/>
+              <PanelTabList :tabs="tabset.tabs"/>
+<!--              <SidePanelTabList ref="tabLists" :key="'sptl_' +  tabset.id" :tabsetId="tabset.id" />-->
             </div>
           </q-expansion-item>
 
@@ -133,7 +133,7 @@
 
 <script lang="ts" setup>
 
-import {ref, watchEffect} from "vue";
+import {onMounted, ref, watchEffect} from "vue";
 import {useTabsStore} from "src/stores/tabsStore";
 import {Tab} from "src/models/Tab";
 import _ from "lodash"
@@ -158,7 +158,8 @@ import {MarkTabsetAsFavoriteCommand} from "src/domain/tabsets/MarkTabsetAsFavori
 import {MarkTabsetAsDefaultCommand} from "src/domain/tabsets/MarkTabsetAsDefault";
 import getScrollTarget = scroll.getScrollTarget;
 import NavigationService from "src/services/NavigationService";
-import SecondToolbarHelper from "pages/sidepanel/helper/SecondToolbarHelper.vue";
+import SidePanelTabList from "components/layouts/sidepanel/SidePanelTabList.vue";
+
 
 const {setVerticalScrollPosition} = scroll
 
@@ -185,6 +186,8 @@ const filteredTabs = ref<Map<string, Tab[]>>(new Map())
 const tabs = ref<Map<string, Tab[]>>(new Map())
 const currentTabs = ref<Tab[]>([])
 
+const tabLists = ref([])
+
 const hoveredTabset = ref<string | undefined>(undefined)
 const tabsets = ref<Tabset[]>([])
 
@@ -195,6 +198,7 @@ const progressLabel = ref<string | undefined>(undefined)
 const selectedTab = ref<Tab | undefined>(undefined)
 
 watchEffect(() => {
+  console.log("hier: 1")
   selectedTab.value = useUiStore().getSelectedTab
   if (selectedTab.value) {
     currentChromeTab.value = null as unknown as chrome.tabs.Tab
@@ -202,15 +206,18 @@ watchEffect(() => {
 })
 
 watchEffect(() => {
+  console.log("hier: 2")
   progress.value = (uiStore.progress || 0.0) / 100.0
   progressLabel.value = uiStore.progressLabel + " " + Math.round(100 * progress.value) + "%"
 })
 
 watchEffect(() => {
+  console.log("hier: 3")
   logs.value = useLogsStore().logs
 })
 
 function inIgnoredMessages(message: any) {
+  console.log("hier: 4")
   return message.msg === "html2text" ||
     message.msg === "html2links" ||
     message.name === "zero-shot-classification" ||
@@ -218,6 +225,7 @@ function inIgnoredMessages(message: any) {
 }
 
 if (inBexMode()) {
+  console.log("hier: 5")
   // seems we need to define these listeners here to get the matching messages reliably
   chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (inIgnoredMessages(message)) {
@@ -268,11 +276,13 @@ if (inBexMode()) {
 }
 
 watchEffect(() => {
+  console.log("hier: 6")
   openTabs.value = useTabsStore().tabs
   currentTabset.value = useTabsStore().getCurrentTabset
 })
 
 watchEffect(() => {
+  console.log("hier: 7")
   currentChromeTab.value = useTabsStore().currentChromeTab
 })
 
@@ -288,6 +298,7 @@ const getTabsetOrder =
 
 
 watchEffect(() => {
+  console.log("hier: 8")
   if (usePermissionsStore().hasFeature(FeatureIdent.SPACES)) {
     const currentSpace = useSpacesStore().space
     tabsets.value = _.sortBy(
@@ -316,6 +327,8 @@ watchEffect(() => {
 })
 
 watchEffect(() => {
+  console.log("hier: 9")
+
   if (useTabsStore().tabsets) {
     tabsetNameOptions.value = _.map([...useTabsStore().tabsets.values()], (ts: Tabset) => {
       return {
@@ -330,6 +343,8 @@ watchEffect(() => {
 })
 
 if (inBexMode()) {
+  console.log("hier: 10")
+
   let queryOptions = {active: true, lastFocusedWindow: true};
   chrome.tabs.query(queryOptions, (tab) => {
     currentChromeTabs.value = tab
@@ -337,6 +352,8 @@ if (inBexMode()) {
 }
 
 watchEffect(() => {
+  console.log("hier: 11")
+
   console.log("watching filtering tabs", useTabsStore().getCurrentTabset?.tabs)
   //currentTabs.value = useTabsStore().getCurrentTabset?.tabs || []
   // TODO filter!
@@ -362,6 +379,8 @@ watchEffect(() => {
 })
 
 function getOrder() {
+  console.log("hier: 12")
+
   if (tabsStore.getCurrentTabset) {
     switch (tabsStore.getCurrentTabset.sorting) {
       case 'alphabeticalUrl':
@@ -380,22 +399,24 @@ const updateSelectedTabset = (tabsetId: string, open: boolean, index: number) =>
   tabsetExpanded.value.set(tabsetId, open)
   if (open) {
     scrollToElement(document.getElementsByClassName("q-expansion-item")[index], 300)
-    const alreadyFetched = tabs.value.has(tabsetId)
-    if (!alreadyFetched) {
-      console.log("fetching tabs for tabset", tabsetId)
-      useTabsetService().getTabs(tabsetId)
-        .then((ts: Tab[]) => {
-          tabs.value.set(tabsetId, ts)
-          const tabset = tabsStore.getTabset(tabsetId)
-          if (tabset) {
-            tabset.tabs = ts
-            tabset.tabsCount = ts.length
-          }
-        })
-        .catch((err) => {
-          console.log("encountered error", err)
-        })
-    }
+    //const sidePanelTabList = tabLists.value[0] as SidePanelTabList
+    //sidePanelTabList.load(tabsetId)
+    // const alreadyFetched = tabs.value.has(tabsetId)
+    // if (!alreadyFetched) {
+    //   console.log("fetching tabs for tabset", tabsetId)
+    //   useTabsetService().getTabs(tabsetId)
+    //     .then((ts: Tab[]) => {
+    //       tabs.value.set(tabsetId, ts)
+    //       const tabset = tabsStore.getTabset(tabsetId)
+    //       if (tabset) {
+    //         tabset.tabs = ts
+    //         tabset.tabsCount = ts.length
+    //       }
+    //     })
+    //     .catch((err) => {
+    //       console.log("encountered error", err)
+    //     })
+    // }
     useCommandExecutor()
       .execute(new SelectTabsetCommand(tabsetId, useSpacesStore().space?.id))
     // .then((res: ExecutionResult<Tabset | undefined>) => {
@@ -404,11 +425,9 @@ const updateSelectedTabset = (tabsetId: string, open: boolean, index: number) =>
   }
 }
 
-const tabsetCaption = (tabset: Tabset) => tabset.tabsCount + ' tab' + (tabset.tabsCount === 1 ? '' : 's')
+const tabsetCaption = (tabset: Tabset) => tabset.tabs.length + ' tab' + (tabset.tabs.length === 1 ? '' : 's')
 
-const hoveredOver = (tabsetId: string) => {
-  return hoveredTabset.value === tabsetId
-}
+const hoveredOver = (tabsetId: string) => hoveredTabset.value === tabsetId
 
 const isExpanded = (tabsetId: string) => !!tabsetExpanded.value.get(tabsetId)
 
@@ -445,6 +464,7 @@ const openEditTabsetDialog = (tabset: Tabset) => {
 }
 
 const scrollToElement = (el: any, delay: number) => {
+  console.log("hier: 14")
   setTimeout(() => {
     const target = getScrollTarget(el)
     const offset = el.offsetTop

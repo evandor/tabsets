@@ -38,17 +38,17 @@ function adjustIndex(newIndex: number, tabs: Tab[]) {
 
 export class CreateTabFromOpenTabsCommand implements Command<any> {
 
-  constructor(public tab: Tab, public newIndex: number, public group: string) {
+  constructor(public tab: Tab, public newIndex: number) {
   }
 
   async execute(): Promise<ExecutionResult<any>> {
     const tabsStore = useTabsStore()
-    console.info(this.tab, 'adding tab by d&d, group ' + this.group)
+    console.info(this.tab, 'adding tab by d&d')
     //console.log("tabs", tabsStore.getCurrentTabs)
     const exists = _.findIndex(tabsStore.getCurrentTabs, t => t.chromeTab.url === this.tab.chromeTab.url) >= 0
 
     let useIndex = this.newIndex
-    console.log("exists", exists, this.group)
+    console.log("exists", exists)
 
     if (!exists) {
       return TabsetService.saveToCurrentTabset(this.tab, useIndex)

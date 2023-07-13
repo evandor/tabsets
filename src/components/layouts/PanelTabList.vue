@@ -121,7 +121,7 @@ const handleDragAndDrop = (event: any) => {
   }
   if (added) {
     useCommandExecutor()
-      .executeFromUi(new CreateTabFromOpenTabsCommand(added.element, added.newIndex, props.group))
+      .executeFromUi(new CreateTabFromOpenTabsCommand(added.element, added.newIndex))
   }
 }
 
@@ -137,6 +137,7 @@ const startDrag = (evt: any, tab: Tab) => {
 }
 
 const showDetails = (tab: Tab) => {
+  console.log("hier: A1")
   useUiStore().setSelectedTab(tab)
   useUiStore().rightDrawerSetActiveTab(DrawerTabs.TAB_DETAILS)
 }

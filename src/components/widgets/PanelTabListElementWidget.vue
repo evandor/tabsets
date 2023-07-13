@@ -175,6 +175,7 @@ onMounted(() => {
 
 watchEffect(() => {
   if (props.tab && props.tab.chromeTab.url) {
+    console.log("hier: B1", props.tab.chromeTab.url)
     const url = props.tab.chromeTab.url
     const tabsetIds = useTabsetService().tabsetsFor(url)
     tsBadges.value = []
@@ -189,6 +190,7 @@ watchEffect(() => {
 
 watchEffect(async () => {
   if (props.tab.chromeTab.url) {
+    console.log("hier: B2", props.tab.chromeTab.url)
     const c = await TabsetService.getContentForUrl(props.tab.chromeTab.url)
     tabsetCandidates.value = c ? (c['tabsetCandidates' as keyof object] || []) : []
   }
@@ -196,6 +198,7 @@ watchEffect(async () => {
 
 
 function getShortHostname(host: string) {
+  console.log("hier: B3")
   const nrOfDots = (host.match(/\./g) || []).length
   if (nrOfDots >= 2) {
     return host.substring(host.indexOf(".", nrOfDots - 2) + 1)
@@ -205,6 +208,7 @@ function getShortHostname(host: string) {
 
 function getHost(urlAsString: string, shorten: Boolean = true): string {
   try {
+    console.log("hier: B4")
     const url = new URL(urlAsString)
     if (!shorten) {
       return url.protocol + "://" + url.host.toString()
@@ -216,6 +220,8 @@ function getHost(urlAsString: string, shorten: Boolean = true): string {
 }
 
 const itemStyle = (tab: Tab) => {
+  console.log("hier: B5")
+
   let border = ""
   let background = ''
   return `${border};${background}`
@@ -224,6 +230,8 @@ const itemStyle = (tab: Tab) => {
 const isOpen = (tab: Tab): boolean => TabsetService.isOpen(tab?.chromeTab?.url || '')
 
 const setInfo = (tab: Tab) => {
+  console.log("hier: B6", tab.chromeTab.url)
+
   const parts = (tab.chromeTab?.url || '').split('?')
   if (parts.length > 1) {
     emits('sendCaption', parts[0] + "[... params omitted....]")
@@ -266,6 +274,8 @@ const thumbnailFor = async (tab: Tab): Promise<object> => {
 
 watchEffect(() => {
   if (props.tab) {
+    console.log("hier: B7")
+
     // @ts-ignore
     thumbnailFor(props.tab)
       .then((tn: object) => {
@@ -283,6 +293,8 @@ watchEffect(() => {
 const hoveredOver = (tabsetId: string) => hoveredTab.value === tabsetId
 
 const classForCategoryTab = (tab: Tab) => {
+  console.log("hier: B8")
+
   const url = tab.chromeTab.url
   if (url && useTabsetService().tabsetsFor(url).length > 0) {
     return "text-grey-5"
@@ -294,7 +306,9 @@ const formatDate = (timestamp: number | undefined) =>
   timestamp ? formatDistance(timestamp, new Date(), {addSuffix: true}) : ""
 
 const isCurrentTab = (tab: Tab) => {
-    //console.log("xxx", tabsStore.getCurrentTabset.tabs[0].chromeTab.url, tab.chromeTab.url)
+  console.log("hier: B9")
+
+  //console.log("xxx", tabsStore.getCurrentTabset.tabs[0].chromeTab.url, tab.chromeTab.url)
     return tabsStore.currentChromeTab.url === tab.chromeTab.url;
 
 }

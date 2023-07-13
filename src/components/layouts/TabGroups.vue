@@ -230,7 +230,7 @@ const handleDragAndDrop = (event: any, group: Group) => {
       useTabsetService().saveCurrentTabset()
     } else {
       useCommandExecutor()
-        .executeFromUi(new CreateTabFromOpenTabsCommand(added.element, added.newIndex, props.group))
+        .executeFromUi(new CreateTabFromOpenTabsCommand(added.element, added.newIndex))
     }
   }
 }

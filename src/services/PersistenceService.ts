@@ -56,7 +56,7 @@ interface PersistenceService {
 
   compactDb(): Promise<any>
 
-  loadTabs(tabsetId: string): Promise<Tab[]>
+  //loadTabs(tabsetId: string): Promise<Tab[]>
 }
 
 export default PersistenceService

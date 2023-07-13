@@ -109,7 +109,7 @@ const isSelf = (url: string) => url.startsWith(self)
 const emitInfo = (msg: string | undefined) => useUiStore().footerInfo = msg
 
 const addToCurrentTabset = () => {
-  useCommandExecutor().executeFromUi(new CreateTabFromOpenTabsCommand(props.tab as unknown as Tab, 0, 'openTabs'))
+  useCommandExecutor().executeFromUi(new CreateTabFromOpenTabsCommand(props.tab as unknown as Tab, 0))
     .then((res) => emits('addedToTabset', {tabId: props.tab.id, tabUrl: props.tab.chromeTab.url}))
 }
 

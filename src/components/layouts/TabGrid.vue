@@ -118,7 +118,7 @@ const handleDragAndDrop = (event: any) => {
   }
   if (added) {
     useCommandExecutor()
-      .executeFromUi(new CreateTabFromOpenTabsCommand(added.element, added.newIndex, props.group))
+      .executeFromUi(new CreateTabFromOpenTabsCommand(added.element, added.newIndex))
   }
 }
 
