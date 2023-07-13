@@ -38,6 +38,7 @@ class IndexedDbPersistenceService implements PersistenceService {
           if (!ts.status) {
             ts.status = TabsetStatus.DEFAULT
           }
+          console.log("loading tabset", ts)
           // migration from tabsets.tabs to tabs
           // TODO check can be removed in the future when we had a couple of releases
           return this.db.get('tabs', ts.id)
@@ -660,6 +661,7 @@ class IndexedDbPersistenceService implements PersistenceService {
   //     .catch((err) => Promise.reject("error applying suggestion" + err))
   // }
   async loadTabs(tabsetId: string): Promise<Tab[]> {
+    console.log("loading tabs...")
     return await this.db.get("tabs", tabsetId)
   }
 

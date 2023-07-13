@@ -105,7 +105,7 @@
 
 
             <div class="q-ma-none q-pa-none" style="border:1px solid lightgrey">
-              <div class="q-ma-xs shrink" :class="showTabInfo(tabset.id) ? '':'collapsed'">
+              <div class="q-ma-xs">
                 <SidePanelTabInfo :tabsetId="tabset.id"/>
               </div>
               <PanelTabList :tabs="currentTabs"/>

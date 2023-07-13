@@ -174,6 +174,7 @@ export function useTabsetService() {
   }
 
   const getTabs = async (tabsetId: string): Promise<Tab[]> => {
+    console.log("getting tabs for ", tabsetId)
     const tabsStore = useTabsStore()
     const ts = _.find([...tabsStore.tabsets.values()],
       ts => ts.id === tabsetId)
