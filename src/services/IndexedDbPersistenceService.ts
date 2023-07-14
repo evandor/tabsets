@@ -506,10 +506,10 @@ class IndexedDbPersistenceService implements PersistenceService {
           console.log("creating db tabsets")
           db.createObjectStore('tabsets');
         }
-        if (!db.objectStoreNames.contains('tabs')) {
+/*        if (!db.objectStoreNames.contains('tabs')) {
           console.log("creating db tabs")
           db.createObjectStore('tabs');
-        }
+        }*/
         if (!db.objectStoreNames.contains('thumbnails')) {
           console.log("creating db thumbnails")
           let store = db.createObjectStore('thumbnails');

@@ -143,7 +143,7 @@ const props = defineProps({
 })
 
 const emits = defineEmits(['sendCaption'])
-
+const cnt = ref(0)
 const $q = useQuasar()
 const tabsStore = useTabsStore()
 
@@ -175,7 +175,8 @@ onMounted(() => {
 
 watchEffect(() => {
   if (props.tab && props.tab.chromeTab.url) {
-    console.log("hier: B1", props.tab.chromeTab.url)
+    console.log("hier: B1", cnt.value, props.tab.chromeTab.url)
+    cnt.value = cnt.value + 1
     const url = props.tab.chromeTab.url
     const tabsetIds = useTabsetService().tabsetsFor(url)
     tsBadges.value = []
@@ -267,28 +268,6 @@ const setCustomTitle = (tab: Tab, newValue: string) =>
 
 const copyToClipboard = (text: string) =>
   useCommandExecutor().executeFromUi(new CopyToClipboardCommand(text))
-
-const thumbnailFor = async (tab: Tab): Promise<object> => {
-  return await TabsetService.getThumbnailFor(tab)
-}
-
-watchEffect(() => {
-  if (props.tab) {
-    console.log("hier: B7")
-
-    // @ts-ignore
-    thumbnailFor(props.tab)
-      .then((tn: object) => {
-        //console.log("tn", tn)
-        if (tn && tn['thumbnail' as keyof object]) {
-          thumbnail.value = tn['thumbnail' as keyof object]
-        }
-      })
-      .catch((err) => {
-        //console.log("could not get thumbnail for ", props.tab)
-      })
-  }
-})
 
 const hoveredOver = (tabsetId: string) => hoveredTab.value === tabsetId
 

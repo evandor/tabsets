@@ -7,12 +7,12 @@ export enum UrlExtension {
   UNKNOWN = "UNKNOWN"
 }
 
+
 export class Tab {
   created: number
   updated: number
   lastActive: number
   activatedCount: number
-  lastLoaded: number
   loadedCount: number
   chromeTab: chrome.tabs.Tab
   isDuplicate: boolean
@@ -31,8 +31,6 @@ export class Tab {
   author: string
   note: string
   scheduledFor: number | undefined
-  canvasLeft: number
-  canvasTop: number
   extension: UrlExtension
   groupId: string | undefined
   selection: string | undefined
@@ -48,7 +46,6 @@ export class Tab {
     this.updated = new Date().getTime()
     this.lastActive = new Date().getTime()
     this.activatedCount = 1
-    this.lastLoaded = 0
     this.loadedCount = 0
     this.chromeTab = chromeTab
     this.isDuplicate = false
@@ -63,8 +60,6 @@ export class Tab {
     this.author = ''
     this.note = ''
     this.scheduledFor = undefined
-    this.canvasTop = 0
-    this.canvasLeft = 0
     this.extension = this.determineUrlExtension(chromeTab)
     this.mhtmls = []
     this.contentHash = ''

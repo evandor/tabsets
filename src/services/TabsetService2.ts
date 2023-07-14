@@ -173,7 +173,7 @@ export function useTabsetService() {
     return _.find([...tabsStore.tabsets.values()], ts => ts.id === tabsetId)
   }
 
-  const getTabs = async (tabsetId: string): Promise<Tab[]> => {
+ /* const getTabs = async (tabsetId: string): Promise<Tab[]> => {
     console.log("getting tabs for ", tabsetId)
     const tabsStore = useTabsStore()
     const ts = _.find([...tabsStore.tabsets.values()],
@@ -185,7 +185,7 @@ export function useTabsetService() {
         ts.tabs
     }
     return Promise.resolve([])
-  }
+  }*/
 
   const getCurrentTabset = (): Tabset | undefined => {
     const tabsStore = useTabsStore()
@@ -485,11 +485,7 @@ export function useTabsetService() {
    * @param useIndex
    */
   const addToTabset = async (ts: Tabset, tab: Tab, useIndex: number | undefined = undefined): Promise<Tabset> => {
-    //console.log("adding tab x to tabset y", tab.id, ts.id)
     if (tab.chromeTab.url) {
-      const tabs = await useTabsetService().getTabs(ts.id)
-      //console.log("existing tabs", _.map(tabs, t => t.chromeTab.url))
-      ts.tabs = tabs
       const indexInTabset = _.findIndex(ts.tabs, t => t.chromeTab.url === tab.chromeTab.url)
       if (indexInTabset >= 0 && !tab.image) {
         return Promise.reject("tab exists already")
@@ -653,8 +649,7 @@ export function useTabsetService() {
     urlExistsInCurrentTabset,
     getOrCreateSpecialTabset,
     saveBlob,
-    getBlob,
-    getTabs
+    getBlob
   }
 
 }

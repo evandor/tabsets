@@ -224,11 +224,6 @@
         hint="This is a special type of tabset - it's meant for those tabs which you don't want to track. You can add urls and whenever
 a tab's url starts with one of the urls of this tabset, it will be ignored and not added to the tabs to be added."/>
 
-      <template
-        v-if="usePermissionsStore().hasFeature(FeatureIdent.TABSET_PAGE) && tabset?.showPageAsHeader">
-        <div v-html="tabset?.page"></div>
-      </template>
-
       <DynamicTabsetPageCards
         v-if="tabset?.type === TabsetType.DYNAMIC"
         :tabset="tabset as unknown as Tabset"/>

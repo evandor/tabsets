@@ -46,7 +46,7 @@ class TabsetService {
   }
 
 
-  async saveToCurrentTabset(tab: Tab, useIndex: number | undefined = undefined): Promise<number> {
+  async saveToCurrentTabset(tab: Tab, useIndex: number | undefined = undefined): Promise<Tabset> {
     const currentTs = getCurrentTabset()
     if (currentTs) {
       return addToTabset(currentTs, tab, useIndex)
@@ -469,27 +469,27 @@ class TabsetService {
     return undefined
   }
 
-  setPosition(tabId: string, top: number, left: number) {
-    const tab = _.find(getCurrentTabset()?.tabs, t => t.id === tabId)
-    if (tab) {
-      tab.canvasLeft = left
-      tab.canvasTop = top
-      saveCurrentTabset()
-        .catch((err) => console.error("problem saving tabset", err))
-    } else {
-      console.log("warning: could not set position for", tabId)
-    }
-  }
-
-  saveCanvasLayer(tabsetId: string, layerInfo: string) {
-    const tabset = getTabset(tabsetId)
-    if (tabset) {
-      tabset.canvas = layerInfo
-      saveTabset(tabset)
-    } else {
-      console.log("warning: could not set save canvas for", tabsetId)
-    }
-  }
+  // setPosition(tabId: string, top: number, left: number) {
+  //   const tab = _.find(getCurrentTabset()?.tabs, t => t.id === tabId)
+  //   if (tab) {
+  //     tab.canvasLeft = left
+  //     tab.canvasTop = top
+  //     saveCurrentTabset()
+  //       .catch((err) => console.error("problem saving tabset", err))
+  //   } else {
+  //     console.log("warning: could not set position for", tabId)
+  //   }
+  // }
+  //
+  // saveCanvasLayer(tabsetId: string, layerInfo: string) {
+  //   const tabset = getTabset(tabsetId)
+  //   if (tabset) {
+  //     tabset.canvas = layerInfo
+  //     saveTabset(tabset)
+  //   } else {
+  //     console.log("warning: could not set save canvas for", tabsetId)
+  //   }
+  // }
 
   saveNote(tabId: string, note: string, scheduledFor: Date | undefined): Promise<void> {
     // console.log("got", tabId, note)

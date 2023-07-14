@@ -61,10 +61,6 @@
 <!--    <q-card flat bordered>-->
 <!--      <q-card-section v-html="editor"/>-->
 <!--    </q-card>-->
-    <q-checkbox v-model="tabsStore.getCurrentTabset.showPageAsHeader"
-                @update:model-value="(val) => showAsPageHeaderChanged(val)"
-                color="primary"
-                label="Show this page as a header in 'Tabs'"/>
   </div>
 
 </template>
@@ -140,13 +136,6 @@ const saveWork = () => {
   }
 }
 
-const showAsPageHeaderChanged = (val: boolean) => {
-  if (tabsStore.getCurrentTabset) {
-    console.log("saving", val)
-    tabsStore.getCurrentTabset.showPageAsHeader = val
-    useTabsetService().saveCurrentTabset()
-  }
-}
 </script>
 
 <style lang="sass" scoped>

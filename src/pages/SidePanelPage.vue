@@ -104,11 +104,11 @@
 
 
             <div class="q-ma-none q-pa-none" style="border:1px solid lightgrey">
+ <!--             <div class="q-ma-xs shrink" :class="showTabInfo(tabset.id) ? '':'collapsed'">-->
               <div class="q-ma-xs">
                 <SidePanelTabInfo :tabsetId="tabset.id"/>
               </div>
-              <PanelTabList :tabs="tabset.tabs"/>
-<!--              <SidePanelTabList ref="tabLists" :key="'sptl_' +  tabset.id" :tabsetId="tabset.id" />-->
+              <PanelTabList :tabs="tabset.tabs" v-if="tabsetExpanded.get(tabset.id)"/>
             </div>
           </q-expansion-item>
 
