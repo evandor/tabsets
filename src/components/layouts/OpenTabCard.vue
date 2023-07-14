@@ -4,7 +4,7 @@
           :style="cardStyle(tab)">
 
     <q-card-section class="q-pt-xs cursor-pointer"
-                    :data-testid="useUtils().createDataTestIdentifier('openTabCard', props.tab.chromeTab.url)"
+                    :data-testid="useUtils().createDataTestIdentifier('openTabCard', props.tab.url)"
                     style="width:100%;">
 
       <div class="row items-baseline">
@@ -30,19 +30,19 @@
         </div>
 
         <div class="col-7 text-body2 ellipsis cursor-pointer"
-             @mouseenter="emitInfo(tab.chromeTab?.url)"
+             @mouseenter="emitInfo(tab?.url)"
              @mouseout="emitInfo(undefined)"
-             @click="NavigationService.openOrCreateTab(tab.chromeTab?.url)">
-          {{ tab.chromeTab?.title }}
+             @click="NavigationService.openOrCreateTab(tab?.url)">
+          {{ tab?.title }}
           <q-tooltip class="tooltip" v-if="useSettingsStore().isEnabled('dev')">
-            {{tab.chromeTab.id}} / {{tab.chromeTab.url}}
+            {{tab.chromeTabId}} / {{tab.url}}
           </q-tooltip>
           <q-tooltip class="tooltip" v-else>
-            {{tab.chromeTab.url}}
+            {{tab.url}}
           </q-tooltip>
         </div>
         <div class="col-1" v-if="!props.useSelection">
-          <q-icon name="close" @click="closeTab(tab)" v-if="!isSelf(tab.chromeTab.url)">
+          <q-icon name="close" @click="closeTab(tab)" v-if="!isSelf(tab.url)">
             <q-tooltip class="tooltip">Close this tab in the browser</q-tooltip>
           </q-icon>
         </div>
@@ -85,7 +85,7 @@ const tabsStore = useTabsStore()
 
 const closeTab = (tab: Tab) => {
   NavigationService.closeChromeTab(tab)
-  tabsStore.pendingTabset.tabs = _.filter(tabsStore.pendingTabset.tabs, t => t.chromeTab.url !== tab.chromeTab.url)
+  tabsStore.pendingTabset.tabs = _.filter(tabsStore.pendingTabset.tabs, t => t.url !== tab.url)
 }
 
 const cardStyle = (tab: Tab) => {
@@ -94,7 +94,7 @@ const cardStyle = (tab: Tab) => {
   if (tab.isDuplicate) {
     background = "background: radial-gradient(circle, #FFFFFF 0%, #FFECB3 100%)"
   }
-  if (useTabsetService().urlExistsInCurrentTabset(tab.chromeTab?.url || '')) {
+  if (useTabsetService().urlExistsInCurrentTabset(tab.url || '')) {
     background = "background: #efefef"
   } else {
     emits('hasSelectable', true)
@@ -110,7 +110,7 @@ const emitInfo = (msg: string | undefined) => useUiStore().footerInfo = msg
 
 const addToCurrentTabset = () => {
   useCommandExecutor().executeFromUi(new CreateTabFromOpenTabsCommand(props.tab as unknown as Tab, 0))
-    .then((res) => emits('addedToTabset', {tabId: props.tab.id, tabUrl: props.tab.chromeTab.url}))
+    .then((res) => emits('addedToTabset', {tabId: props.tab.id, tabUrl: props.tab.url}))
 }
 
 const selectionChanged = (val: any) => {
@@ -119,10 +119,10 @@ const selectionChanged = (val: any) => {
 }
 
 const showAddToTabsetIcon = (tab: Tab) => {
-  return tabsStore.currentTabsetId && !props.useSelection && !useTabsetService().urlExistsInCurrentTabset(tab.chromeTab?.url || '')
+  return tabsStore.currentTabsetId && !props.useSelection && !useTabsetService().urlExistsInCurrentTabset(tab.url || '')
 }
 
-const showSelectIcon = (tab: Tab) => props.useSelection && !useTabsetService().urlExistsInCurrentTabset(tab.chromeTab?.url || '')
+const showSelectIcon = (tab: Tab) => props.useSelection && !useTabsetService().urlExistsInCurrentTabset(tab.url || '')
 
 </script>
 

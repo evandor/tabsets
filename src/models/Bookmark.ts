@@ -1,6 +1,6 @@
 
 export class Bookmark {
-  // id: string // internal id, do not want to rely on chromeTab.id
+  // id: string // internal id, do not want to rely on .chromeTabId
   created: number
   updated: number
   lastActive: number

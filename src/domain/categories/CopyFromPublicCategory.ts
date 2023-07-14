@@ -16,9 +16,9 @@ export class CopyFromPublicCategory implements Command<any> {
 
   async execute(): Promise<ExecutionResult<any>> {
     const ts = _.map(this.category.tabs, t => ChromeApi.createChromeTabObject(
-      t.chromeTab.title || '?',
-      t.chromeTab.url || '',
-      t.chromeTab.favIconUrl || ''
+      t.title || '?',
+      t.url || '',
+      t.favIconUrl || ''
     ))
     const result = await useTabsetService()
       .saveOrReplaceFromChromeTabs(this.category.name, ts, true)

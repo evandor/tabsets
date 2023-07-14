@@ -71,7 +71,7 @@ class TabsetService {
       _.forEach(
         tabsStore.pendingTabset.tabs,
         t => {
-          if (t?.chromeTab?.id) {
+          if (t?.chromeTabId) {
             if (!onlySelected || (onlySelected && t.selected)) {
               //currentTabset.tabs.push(t)
               this.saveToCurrentTabset(t)
@@ -119,16 +119,16 @@ class TabsetService {
 
 
   async getThumbnailFor(selectedTab: Tab): Promise<any> {
-    //console.log("checking thumbnail for", selectedTab.chromeTab.url)
-    if (selectedTab.chromeTab.url) {
-      return db.getThumbnail(selectedTab.chromeTab.url)
+    //console.log("checking thumbnail for", selectedTab.url)
+    if (selectedTab.url) {
+      return db.getThumbnail(selectedTab.url)
     }
     return Promise.reject("url not provided");
   }
 
   async getRequestFor(selectedTab: Tab): Promise<any> {
-    if (selectedTab.chromeTab.url) {
-      return this.getRequestForUrl(selectedTab.chromeTab.url)
+    if (selectedTab.url) {
+      return this.getRequestForUrl(selectedTab.url)
     }
     return Promise.reject("url not provided");
   }
@@ -138,8 +138,8 @@ class TabsetService {
   }
 
   async getContentFor(selectedTab: Tab): Promise<object> {
-    if (selectedTab.chromeTab.url) {
-      return this.getContentForUrl(selectedTab.chromeTab.url)
+    if (selectedTab.url) {
+      return this.getContentForUrl(selectedTab.url)
     }
     return Promise.reject("url not provided");
   }
@@ -150,8 +150,8 @@ class TabsetService {
 
 
   async getMetaLinksFor(selectedTab: Tab): Promise<any> {
-    if (selectedTab.chromeTab.url) {
-      return this.getMetaLinksForUrl(selectedTab.chromeTab.url)
+    if (selectedTab.url) {
+      return this.getMetaLinksForUrl(selectedTab.url)
     }
     return Promise.reject("url not provided");
   }
@@ -161,8 +161,8 @@ class TabsetService {
   }
 
   async getLinksFor(selectedTab: Tab): Promise<any> {
-    if (selectedTab.chromeTab.url) {
-      return this.getLinksForUrl(selectedTab.chromeTab.url)
+    if (selectedTab.url) {
+      return this.getLinksForUrl(selectedTab.url)
     }
     return Promise.reject("url not provided");
   }
@@ -277,9 +277,9 @@ class TabsetService {
           }, (folder: chrome.bookmarks.BookmarkTreeNode) => {
             _.forEach(ts.tabs, tab => {
               chrome.bookmarks.create({
-                title: tab.name || tab.chromeTab.title,
+                title: tab.name || tab.title,
                 parentId: folder.id,
-                url: tab.chromeTab.url
+                url: tab.url
               })
             })
           })
@@ -319,13 +319,13 @@ class TabsetService {
         //console.log("adding to index", tab)
         useSearchStore().addToIndex(
           tab.id,
-          tab.chromeTab.title || '',
-          tab.chromeTab.title || '',
-          tab.chromeTab.url || '',
+          tab.title || '',
+          tab.title || '',
+          tab.url || '',
           '',
           '',
           [tabset.id],
-          tab.chromeTab.favIconUrl || '')
+          tab.favIconUrl || '')
       })
     })
   }

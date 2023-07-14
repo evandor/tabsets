@@ -92,13 +92,13 @@ const handleDragAndDrop = (event: any) => {
     switch (props.group) {
       case 'otherTabs':
         // @ts-ignore
-        const unpinnedNoGroup: Tab[] = _.filter(tabsStore.getCurrentTabs, (t: Tab) => !t.chromeTab.pinned && t.chromeTab.groupId === -1)
+        const unpinnedNoGroup: Tab[] = _.filter(tabsStore.getCurrentTabs, (t: Tab) => !t.pinned && t.groupId === -1)
         if (unpinnedNoGroup.length > 0) {
           useIndex = adjustIndex(moved, unpinnedNoGroup);
         }
         break;
       case 'pinnedTabs':
-        const filteredTabs: Tab[] = _.filter(tabsStore.getCurrentTabs, (t: Tab) => t.chromeTab.pinned)
+        const filteredTabs: Tab[] = _.filter(tabsStore.getCurrentTabs, (t: Tab) => t.pinned)
         if (filteredTabs.length > 0) {
           useIndex = adjustIndex(moved, filteredTabs);
         }
@@ -107,7 +107,7 @@ const handleDragAndDrop = (event: any) => {
         if (props.group.startsWith('groupedTabs_')) {
           const groupId = props.group.split('_')[1]
           // @ts-ignore
-          const filteredTabs: Tab[] = _.filter(tabsStore.getCurrentTabs, (t: Tab) => t.chromeTab.groupId === parseInt(groupId))
+          const filteredTabs: Tab[] = _.filter(tabsStore.getCurrentTabs, (t: Tab) => t.groupId === parseInt(groupId))
           if (filteredTabs.length > 0) {
             useIndex = adjustIndex(moved, filteredTabs);
           }
@@ -139,7 +139,7 @@ const showDetails = (tab: Tab) => {
 }
 
 const itemStyle = (tab: Tab) => {
-  if (tab.chromeTab.url === props.highlightUrl) {
+  if (tab.url === props.highlightUrl) {
     return "border: 1px dotted orange; padding:15px; border-radius:5px"
   }
   return ""

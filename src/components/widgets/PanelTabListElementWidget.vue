@@ -53,26 +53,26 @@
     <!-- description -->
     <q-item-label class="ellipsis-2-lines text-grey-8"
                   v-if="useUiStore().listDetailLevelGreaterEqual(ListDetailLevel.LARGE)"
-                  @click.stop="NavigationService.openOrCreateTab(props.tab.chromeTab?.url )">
+                  @click.stop="NavigationService.openOrCreateTab(props.tab.url )">
       {{ props.tab.description }}
     </q-item-label>
 
     <!-- url -->
     <q-item-label
       style="width:100%"
-      v-if="props.tab.chromeTab?.url"
+      v-if="props.tab.url"
       caption class="ellipsis-2-lines text-blue-10"
       @mouseover="showButtonsProp = true"
       @mouseleave="showButtonsProp = false">
       <div class="row q-ma-none">
         <div class="col-10 q-pr-lg cursor-pointer"
-             @click.stop="NavigationService.openOrCreateTab(props.tab.chromeTab?.url )">
+             @click.stop="NavigationService.openOrCreateTab(props.tab.url )">
            <span v-if="useTabsStore().getCurrentTabset?.sorting === 'alphabeticalUrl'">
               <q-icon name="arrow_right" size="16px"/>
            </span>
 
           <span v-if="props.tab.extension === UrlExtension.NOTE">open Note</span>
-          <short-url v-else :url="props.tab.chromeTab?.url" :hostname-only="true"/>
+          <short-url v-else :url="props.tab.url" :hostname-only="true"/>
           <div class="text-caption text-grey-5">
             {{ formatDate(props.tab.created) }}
           </div>
@@ -174,10 +174,9 @@ onMounted(() => {
 })
 
 watchEffect(() => {
-  if (props.tab && props.tab.chromeTab.url) {
-    console.log("hier: B1", cnt.value, props.tab.chromeTab.url)
+  if (props.tab && props.tab.url) {
     cnt.value = cnt.value + 1
-    const url = props.tab.chromeTab.url
+    const url = props.tab.url
     const tabsetIds = useTabsetService().tabsetsFor(url)
     tsBadges.value = []
     _.forEach(tabsetIds, tsId => tsBadges.value.push({
@@ -190,16 +189,14 @@ watchEffect(() => {
 
 
 watchEffect(async () => {
-  if (props.tab.chromeTab.url) {
-    console.log("hier: B2", props.tab.chromeTab.url)
-    const c = await TabsetService.getContentForUrl(props.tab.chromeTab.url)
+  if (props.tab.url) {
+    const c = await TabsetService.getContentForUrl(props.tab.url)
     tabsetCandidates.value = c ? (c['tabsetCandidates' as keyof object] || []) : []
   }
 })
 
 
 function getShortHostname(host: string) {
-  console.log("hier: B3")
   const nrOfDots = (host.match(/\./g) || []).length
   if (nrOfDots >= 2) {
     return host.substring(host.indexOf(".", nrOfDots - 2) + 1)
@@ -209,7 +206,6 @@ function getShortHostname(host: string) {
 
 function getHost(urlAsString: string, shorten: Boolean = true): string {
   try {
-    console.log("hier: B4")
     const url = new URL(urlAsString)
     if (!shorten) {
       return url.protocol + "://" + url.host.toString()
@@ -221,19 +217,16 @@ function getHost(urlAsString: string, shorten: Boolean = true): string {
 }
 
 const itemStyle = (tab: Tab) => {
-  console.log("hier: B5")
 
   let border = ""
   let background = ''
   return `${border};${background}`
 }
 
-const isOpen = (tab: Tab): boolean => TabsetService.isOpen(tab?.chromeTab?.url || '')
+const isOpen = (tab: Tab): boolean => TabsetService.isOpen(tab?.url || '')
 
 const setInfo = (tab: Tab) => {
-  console.log("hier: B6", tab.chromeTab.url)
-
-  const parts = (tab.chromeTab?.url || '').split('?')
+  const parts = (tab?.url || '').split('?')
   if (parts.length > 1) {
     emits('sendCaption', parts[0] + "[... params omitted....]")
   } else if (parts.length === 1) {
@@ -259,9 +252,9 @@ const getFaviconUrl = (chromeTab: chrome.tabs.Tab | undefined) => {
 const deleteTab = (tab: Tab) => useCommandExecutor().executeFromUi(new DeleteTabCommand(tab))
 
 
-const nameOrTitle = (tab: Tab) => tab.name ? tab.name : tab.chromeTab?.title
+const nameOrTitle = (tab: Tab) => tab.name ? tab.name : tab.title
 
-const dynamicNameOrTitleModel = (tab: Tab) => tab.name ? tab.name : tab.chromeTab?.title
+const dynamicNameOrTitleModel = (tab: Tab) => tab.name ? tab.name : tab.title
 
 const setCustomTitle = (tab: Tab, newValue: string) =>
   useCommandExecutor().executeFromUi(new UpdateTabNameCommand(tab, newValue))
@@ -272,9 +265,7 @@ const copyToClipboard = (text: string) =>
 const hoveredOver = (tabsetId: string) => hoveredTab.value === tabsetId
 
 const classForCategoryTab = (tab: Tab) => {
-  console.log("hier: B8")
-
-  const url = tab.chromeTab.url
+  const url = tab.url
   if (url && useTabsetService().tabsetsFor(url).length > 0) {
     return "text-grey-5"
   }
@@ -285,10 +276,8 @@ const formatDate = (timestamp: number | undefined) =>
   timestamp ? formatDistance(timestamp, new Date(), {addSuffix: true}) : ""
 
 const isCurrentTab = (tab: Tab) => {
-  console.log("hier: B9")
-
   //console.log("xxx", tabsStore.getCurrentTabset.tabs[0].chromeTab.url, tab.chromeTab.url)
-    return tabsStore.currentChromeTab.url === tab.chromeTab.url;
+    return tabsStore.currentChromeTab.url === tab.url;
 
 }
 </script>

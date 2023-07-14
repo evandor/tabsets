@@ -198,7 +198,6 @@ const progressLabel = ref<string | undefined>(undefined)
 const selectedTab = ref<Tab | undefined>(undefined)
 
 watchEffect(() => {
-  console.log("hier: 1")
   selectedTab.value = useUiStore().getSelectedTab
   if (selectedTab.value) {
     currentChromeTab.value = null as unknown as chrome.tabs.Tab
@@ -206,18 +205,15 @@ watchEffect(() => {
 })
 
 watchEffect(() => {
-  console.log("hier: 2")
   progress.value = (uiStore.progress || 0.0) / 100.0
   progressLabel.value = uiStore.progressLabel + " " + Math.round(100 * progress.value) + "%"
 })
 
 watchEffect(() => {
-  console.log("hier: 3")
   logs.value = useLogsStore().logs
 })
 
 function inIgnoredMessages(message: any) {
-  console.log("hier: 4")
   return message.msg === "html2text" ||
     message.msg === "html2links" ||
     message.name === "zero-shot-classification" ||
@@ -225,7 +221,6 @@ function inIgnoredMessages(message: any) {
 }
 
 if (inBexMode()) {
-  console.log("hier: 5")
   // seems we need to define these listeners here to get the matching messages reliably
   chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (inIgnoredMessages(message)) {
@@ -276,13 +271,11 @@ if (inBexMode()) {
 }
 
 watchEffect(() => {
-  console.log("hier: 6")
   openTabs.value = useTabsStore().tabs
   currentTabset.value = useTabsStore().getCurrentTabset
 })
 
 watchEffect(() => {
-  console.log("hier: 7")
   currentChromeTab.value = useTabsStore().currentChromeTab
 })
 
@@ -298,7 +291,6 @@ const getTabsetOrder =
 
 
 watchEffect(() => {
-  console.log("hier: 8")
   if (usePermissionsStore().hasFeature(FeatureIdent.SPACES)) {
     const currentSpace = useSpacesStore().space
     tabsets.value = _.sortBy(
@@ -327,8 +319,6 @@ watchEffect(() => {
 })
 
 watchEffect(() => {
-  console.log("hier: 9")
-
   if (useTabsStore().tabsets) {
     tabsetNameOptions.value = _.map([...useTabsStore().tabsets.values()], (ts: Tabset) => {
       return {
@@ -343,8 +333,6 @@ watchEffect(() => {
 })
 
 if (inBexMode()) {
-  console.log("hier: 10")
-
   let queryOptions = {active: true, lastFocusedWindow: true};
   chrome.tabs.query(queryOptions, (tab) => {
     currentChromeTabs.value = tab
@@ -352,41 +340,26 @@ if (inBexMode()) {
 }
 
 watchEffect(() => {
-  console.log("hier: 11")
-
-  console.log("watching filtering tabs", useTabsStore().getCurrentTabset?.tabs)
-  //currentTabs.value = useTabsStore().getCurrentTabset?.tabs || []
-  // TODO filter!
-  // const expanded = tabsetExpanded.value.get(tabsetId)
-  // if (!expanded) {
-  //   return []
-  // }
   const filter = useUiStore().tabsFilter
-  //const tabs = useTabsetService().getTabset(tabsetId)?.tabs || []
   const ts = useTabsStore().getCurrentTabset?.tabs || []
-
   if (filter && filter.trim() !== '') {
     return _.orderBy(_.filter(ts, (t: Tab) => {
-        return (t.chromeTab.url || '')?.indexOf(filter) >= 0 ||
-          (t.chromeTab.title || '')?.indexOf(filter) >= 0 ||
+        return (t.url || '')?.indexOf(filter) >= 0 ||
+          (t.title || '')?.indexOf(filter) >= 0 ||
           t.description?.indexOf(filter) >= 0
       })
       , getOrder(), [orderDesc.value ? 'desc' : 'asc'])
   }
-  const result = _.orderBy(ts, getOrder(), [orderDesc.value ? 'desc' : 'asc'])
-  console.log("result", result)
-  currentTabs.value = result
+  return _.orderBy(ts, getOrder(), [orderDesc.value ? 'desc' : 'asc'])
 })
 
 function getOrder() {
-  console.log("hier: 12")
-
   if (tabsStore.getCurrentTabset) {
     switch (tabsStore.getCurrentTabset.sorting) {
       case 'alphabeticalUrl':
-        return (t: Tab) => t.chromeTab.url?.replace("https://", "").replace("http://", "").toUpperCase()
+        return (t: Tab) => t.url?.replace("https://", "").replace("http://", "").toUpperCase()
       case 'alphabeticalTitle':
-        return (t: Tab) => t.chromeTab.title?.toUpperCase()
+        return (t: Tab) => t.title?.toUpperCase()
       default:
         return (t: Tab) => 1
     }
@@ -464,7 +437,6 @@ const openEditTabsetDialog = (tabset: Tabset) => {
 }
 
 const scrollToElement = (el: any, delay: number) => {
-  console.log("hier: 14")
   setTimeout(() => {
     const target = getScrollTarget(el)
     const offset = el.offsetTop
@@ -476,7 +448,7 @@ const scrollToElement = (el: any, delay: number) => {
 
 const showTabInfo = (tsId: string) => {
   if (tabsStore.getCurrentTabset && tabsStore.getCurrentTabset.tabs.length > 0) {
-    if (tabsStore.getCurrentTabset.tabs[0].chromeTab.url === useTabsStore()?.currentChromeTab.url)
+    if (tabsStore.getCurrentTabset.tabs[0].url === useTabsStore()?.currentChromeTab.url)
       return false
   }
   return true

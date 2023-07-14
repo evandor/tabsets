@@ -19,8 +19,8 @@ export class CreateBookmarkFromOpenTabsCommand implements Command<any> {
     const newBookmark = {
       parentId: this.parentBookmark,
       index: useIndex,
-      title: this.tab.chromeTab.title,
-      url: this.tab.chromeTab.url
+      title: this.tab.title,
+      url: this.tab.url
     }
     console.log("newBookmark", newBookmark)
     // @ts-ignore

@@ -13,17 +13,17 @@
                 class="rounded-borders"
                 width="20px"
                 height="20px"
-                :src="tab.chromeTab?.favIconUrl">
+                :src="tab.favIconUrl">
               </q-img>
             </div>
             <div class="col-9 text-body2 ellipsis">
-              {{ maxChar(20, tab.chromeTab?.title) }}
+              {{ maxChar(20, tab.title) }}
             </div>
             <div class="col-1">
               <q-icon name="close" @click="closeTab(tab)"/>
             </div>
             <q-tooltip>
-              {{ getHost(tab.chromeTab?.url, true) }}
+              {{ getHost(tab.url, true) }}
             </q-tooltip>
 
           </div>
@@ -101,7 +101,7 @@ function cardStyle(tab: Tab) {
 }
 
 function isOpen(tab: Tab): boolean {
-  return TabsetService.isOpen(tab?.chromeTab?.url || '')
+  return TabsetService.isOpen(tab?.url || '')
 }
 
 const hightlightTab = (tab: Tab) => {
@@ -110,7 +110,7 @@ const hightlightTab = (tab: Tab) => {
 
 const setInfo = (tab: Tab) => {
   const notificationsStore = useNotificationsStore()
-  notificationsStore.setInfo(`${tab.chromeTab.url}`)
+  notificationsStore.setInfo(`${tab.url}`)
 }
 
 const resetInfo = () => {

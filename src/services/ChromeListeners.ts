@@ -138,7 +138,7 @@ class ChromeListeners {
 
     const selfUrl = chrome.runtime.getURL("")
     if (chromeTab.url?.startsWith(selfUrl)) {
-      console.debug(`onUpdated:   tab ${number}: >>> chromeTab.url starts with '${selfUrl}' <<<`)
+      console.debug(`onUpdated:   tab ${number}: >>> .url starts with '${selfUrl}' <<<`)
       return
     }
 
@@ -167,17 +167,17 @@ class ChromeListeners {
    */
   private handleUpdate(tabset: Tabset, tab: chrome.tabs.Tab) {
     // find tab which was created by "onCreate" moments ago
-    const index = _.findIndex(tabset?.tabs, t => t.chromeTab.id === tab.id);
+    const index = _.findIndex(tabset?.tabs, t => t.chromeTabId === tab.id);
     if (index >= 0) {
       const existingPendingTab = tabset.tabs[index]
       const updatedTab = new Tab(uid(), tab)
       updatedTab.setHistoryFrom(existingPendingTab)
-      if (existingPendingTab.chromeTab.url !== updatedTab.chromeTab.url && existingPendingTab.chromeTab.url !== 'chrome://newtab/') {
-        if (existingPendingTab.chromeTab.url) {
-          updatedTab.addToHistory(existingPendingTab.chromeTab.url)
+      if (existingPendingTab.url !== updatedTab.url && existingPendingTab.url !== 'chrome://newtab/') {
+        if (existingPendingTab.url) {
+          updatedTab.addToHistory(existingPendingTab.url)
         }
       }
-      const urlExistsAlready = _.filter(tabset.tabs, pT => pT.chromeTab.url === tab.url).length >= 2
+      const urlExistsAlready = _.filter(tabset.tabs, pT => pT.url === tab.url).length >= 2
       if (urlExistsAlready) {
         tabset.tabs.splice(index, 1);
       } else {
@@ -212,15 +212,13 @@ class ChromeListeners {
     }
     scripts.push("content-script.js")
     scripts.push("tabsets-content-script.js")
-    if (scripts.length > 0 && tab.id !== null) { // && !this.injectedScripts.get(chromeTab.id)) {
+    if (scripts.length > 0 && tab.id !== null) { // && !this.injectedScripts.get(.chromeTabId)) {
 
       chrome.tabs.get(tab.id, (chromeTab: chrome.tabs.Tab) => {
         console.log("got tab", tab)
         if (!tab.url?.startsWith("chrome")) {
           scripts.forEach((script: string) => {
             console.info("executing scripts", tab.id, script)
-
-
 
 
             // @ts-ignore
@@ -242,7 +240,7 @@ class ChromeListeners {
     this.eventTriggered()
     const tabsStore = useTabsStore()
     const currentTabset: Tabset = tabsStore.tabsets.get(tabsStore.currentTabsetId) || new Tabset("", "", [], [])
-    const index = _.findIndex(currentTabset.tabs, t => t.chromeTab.id === number);
+    const index = _.findIndex(currentTabset.tabs, t => t.chromeTabId === number);
     if (index >= 0) {
       const updatedTab = currentTabset.tabs.at(index)
       if (updatedTab) {
@@ -268,7 +266,7 @@ class ChromeListeners {
       _.forEach([...tabsStore.tabsets.keys()], key => {
         const ts = tabsStore.tabsets.get(key)
         if (ts) {
-          const hits = _.filter(ts.tabs, (t: Tab) => t.chromeTab.url === url)
+          const hits = _.filter(ts.tabs, (t: Tab) => t.url === url)
           let hit = false
           _.forEach(hits, h => {
             h.activatedCount = 1 + h.activatedCount
@@ -430,8 +428,8 @@ class ChromeListeners {
   }
 
   private ignoreUrl(tab: Tab, info: chrome.tabs.TabChangeInfo) {
-    return (tab.chromeTab && tab.chromeTab.url?.startsWith("chrome")) ||
-      (tab.chromeTab && tab.chromeTab?.url?.startsWith("about")) ||
+    return (tab.url?.startsWith("chrome")) ||
+      (tab.url?.startsWith("about")) ||
       info.url?.startsWith("chrome") ||
       info.url?.startsWith("about") ||
       info.url?.startsWith("https://skysail.eu.auth0.com/")

@@ -117,6 +117,6 @@ const openInReadingMode = (tab: Tab) => {
 }
 
 const copyToClipboard = (tab: Tab) =>
-  useCommandExecutor().executeFromUi(new CopyToClipboardCommand(tab.chromeTab?.url || 'unknown'))
+  useCommandExecutor().executeFromUi(new CopyToClipboardCommand(tab.url || 'unknown'))
 
 </script>

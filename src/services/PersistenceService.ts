@@ -21,7 +21,7 @@ interface PersistenceService {
   getContent(url: string):Promise<object>
   updateContent(url: string):Promise<object>
   deleteContent(url: string):Promise<void>
-  saveContent(tab: chrome.tabs.Tab, text: string, metas: object, title: string, tabsetIds: string[]):Promise<any>
+  saveContent(tab: Tab, text: string, metas: object, title: string, tabsetIds: string[]):Promise<any>
   cleanUpContent(): Promise<SearchDoc[]>
   getContents(): Promise<any[]>
 

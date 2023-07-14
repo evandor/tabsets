@@ -9,7 +9,7 @@
           <!-- title or name if given -->
           <div class="text-subtitle1 ellipsis">
             {{ nameOrTitle(tab) }}
-            <q-tooltip>{{ tab.chromeTab.title }}</q-tooltip>
+            <q-tooltip>{{ tab.title }}</q-tooltip>
             <q-badge v-if="tab.bookmarkId"
                      color="info" floating>
               <q-icon name="o_bookmark" size="14px" color="white">
@@ -26,11 +26,11 @@
         </div>
 
         <div class="text-subtitle2 ellipsis text-secondary"
-             @click.stop="goto(tab.chromeTab?.url)">
-          {{ tab.chromeTab?.url.replace("https://www.", '').replace("https://", '') }}
+             @click.stop="goto(tab.url)">
+          {{ tab.url.replace("https://www.", '').replace("https://", '') }}
           <q-icon name="launch" color="secondary"></q-icon>
           <q-tooltip>
-            {{ tab.chromeTab?.url }}
+            {{ tab.url }}
           </q-tooltip>
         </div>
       </div>
@@ -73,16 +73,16 @@ const thumbnails = ref<Map<string, string>>(new Map())
 
 const thumbnailFor = (tab: Tab): string => {
   if (tab.extension === UrlExtension.IMAGE) {
-    return tab.chromeTab.url || 'favicon-unknown-32x32.png'
+    return tab.url || 'favicon-unknown-32x32.png'
   }
-  const key = btoa(tab.chromeTab.url || '')
+  const key = btoa(tab.url || '')
   return thumbnails.value.get(key) || "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+ip1sAAAAASUVORK5CYII="
 }
 
 const loadThumbnail = (tab: Tab) => {
   TabsetService.getThumbnailFor(tab)
     .then(data => {
-      const key = btoa(tab.chromeTab.url || '')
+      const key = btoa(tab.url || '')
       if (data && data.thumbnail) {
         thumbnails.value.set(key, data.thumbnail)
       }
@@ -96,12 +96,12 @@ function cardStyle(tab: Tab) {
 }
 
 function isOpen(tab: Tab): boolean {
-  return TabsetService.isOpen(tab?.chromeTab?.url || '')
+  return TabsetService.isOpen(tab?.url || '')
 }
 
 
-const nameOrTitle = (tab: Tab) => tab.name ? tab.name : tab.chromeTab?.title
-const dynamicNameOrTitleModel = (tab: Tab) => tab.name ? tab.name : tab.chromeTab?.title
+const nameOrTitle = (tab: Tab) => tab.name ? tab.name : tab.title
+const dynamicNameOrTitleModel = (tab: Tab) => tab.name ? tab.name : tab.title
 
 const goto = (url: string) => {
   chrome.tabs.update({url: url})

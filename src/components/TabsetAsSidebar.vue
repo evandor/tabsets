@@ -15,11 +15,11 @@
               class="rounded-borders"
               width="20px"
               height="20px"
-              :src="tab.chromeTab.favIconUrl">
+              :src="tab.favIconUrl">
             </q-img>
           </div>
           <div class="col-9 text-body2 ellipsis">
-            {{ tab.chromeTab.title }}
+            {{ tab.title }}
           </div>
           <div class="col-1">
 

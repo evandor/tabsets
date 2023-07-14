@@ -14,17 +14,17 @@
 <!--        <TabFaviconWidget :tab="notificationStore.selectedTab" width="24ps" height="24px"/>-->
 <!--      </div>-->
 <!--      <div class="col-10 text-body1 ellipsis">-->
-<!--        {{ getHost(notificationStore.selectedTab.chromeTab?.url, true) }}-->
+<!--        {{ getHost(notificationStore.selectedTab.url, true) }}-->
 <!--      </div>-->
 <!--      <div class="col-12 text-body2 ellipsis">-->
-<!--        {{ notificationStore.selectedTab.chromeTab?.title }}-->
+<!--        {{ notificationStore.selectedTab.title }}-->
 <!--      </div>-->
 
 <!--      <div class="col-12">-->
 <!--        <div class="text-overline ellipsis">-->
-<!--          {{ notificationStore.selectedTab.chromeTab.url }}&nbsp;<q-icon name="launch" color="secondary"-->
+<!--          {{ notificationStore.selectedTab.url }}&nbsp;<q-icon name="launch" color="secondary"-->
 <!--                                                                         class="cursor-pointer"-->
-<!--                                                                         @click.stop="NavigationService.openOrCreateTab(notificationStore.selectedTab.chromeTab?.url )"></q-icon>-->
+<!--                                                                         @click.stop="NavigationService.openOrCreateTab(notificationStore.selectedTab.url )"></q-icon>-->
 <!--        </div>-->
 <!--      </div>-->
 <!--    </div>-->
@@ -153,7 +153,7 @@
 <!--})-->
 <!--const tabsetChips = (): object[] => {-->
 <!--  const badges: object[] = []-->
-<!--  const url = notificationStore.selectedTab.chromeTab.url-->
+<!--  const url = notificationStore.selectedTab.url-->
 <!--  if (url) {-->
 <!--    _.forEach(useTabsetService().tabsetsFor(url), ts => badges.push({-->
 <!--      label: TabsetService.nameForTabsetId(ts),-->
@@ -165,7 +165,7 @@
 <!--  //   badges.push({-->
 <!--  //     label: 'bookmark',-->
 <!--  //     bookmarkId: hit.bookmarkId,-->
-<!--  //     encodedUrl: btoa(hit.chromeTab.url || '')-->
+<!--  //     encodedUrl: btoa(hit.url || '')-->
 <!--  //   })-->
 <!--  // }-->
 <!--  return badges;-->
@@ -213,10 +213,10 @@
 <!--const saveTab = (tab: Tab) => {-->
 <!--  if (!usePermissionsStore().hasPermission('pageCapture')) {-->
 <!--    console.log("missing permission pageCapture")-->
-<!--  } else if (tab.chromeTab.id) {-->
+<!--  } else if (tab.chromeTabId) {-->
 <!--    console.log("capturing", tab.chromeTab)-->
 <!--    chrome.pageCapture.saveAsMHTML(-->
-<!--      {tabId: tab.chromeTab.id},-->
+<!--      {tabId: tab.chromeTabId},-->
 <!--      (html: any) => {-->
 <!--        MHtmlService.saveMHtml(tab, html)-->
 <!--      }-->
@@ -225,7 +225,7 @@
 <!--}-->
 
 <!--function isOpen(tab: Tab): boolean {-->
-<!--  return TabsetService.isOpen(tab?.chromeTab?.url || '')-->
+<!--  return TabsetService.isOpen(tab?.url || '')-->
 <!--}-->
 
 <!--const scheduleTab = () => {-->

@@ -316,7 +316,7 @@ const stopSession = () => {
 }
 
 const createWebsiteClipTooltip = () => {
-  //return "Create Website Clip for tab " + currentTabs.value[0].chromeTab.url
+  //return "Create Website Clip for tab " + currentTabs.value[0].url
   return "Create Website Clip for tab " + tabsStore.currentChromeTab?.url
 }
 
@@ -324,8 +324,8 @@ const webClipActive = () => tabsStore.currentChromeTab
 
 const createClip = () => {
   //console.log("creating clip", currentChromeTabs.value[0])
-  if (tabsStore.currentChromeTab?.id) {
-    ChromeApi.executeClippingJS(tabsStore.currentChromeTab.id)
+  if (tabsStore.current.chromeTabId) {
+    ChromeApi.executeClippingJS(tabsStore.current.chromeTabId)
   }
 }
 

@@ -134,7 +134,7 @@ export const useSearchStore = defineStore('search', () => {
       // @ts-ignore
       useWindowsStore().screenshotWindow = window.id
       // @ts-ignore
-      let tabToClose = await chrome.tabs.create({windowId: window.id, url: tab.chromeTab.url})
+      let tabToClose = await chrome.tabs.create({windowId: window.id, url: tab.url})
       // @ts-ignore
       if (tabToClose) {
         // @ts-ignore
@@ -158,7 +158,7 @@ export const useSearchStore = defineStore('search', () => {
       const res: Promise<any>[] = values.flatMap((ts: Tabset) => {
         return ts.tabs.map((t) => {
           return throttleOnePerXSeconds(async () => {
-            chrome.tabs.create({windowId: window.id, url: t.chromeTab.url}, (tab: chrome.tabs.Tab) => {
+            chrome.tabs.create({windowId: window.id, url: t.url}, (tab: chrome.tabs.Tab) => {
               tabToClose = tab.id
               dummyPromise(3000, tab.id)
             })
@@ -183,10 +183,10 @@ export const useSearchStore = defineStore('search', () => {
     //const res = fuse.value.remove((doc) => true)
     _.forEach([...useTabsStore().tabsets.values()], (tabset: Tabset) => {
         tabset.tabs.forEach((tab: Tab) => {
-          if (tab.chromeTab?.url) {
-            if (urlSet.has(tab.chromeTab.url)) {
+          if (tab.url) {
+            if (urlSet.has(tab.url)) {
               const existingDocIndex = _.findIndex(minimalIndex, d => {
-                return d.url === tab.chromeTab.title
+                return d.url === tab.title
               })
               if (existingDocIndex >= 0) {
                 const existingDoc = minimalIndex[existingDocIndex]
@@ -196,13 +196,13 @@ export const useSearchStore = defineStore('search', () => {
                   minimalIndex.splice(existingDocIndex, 1, existingDoc)
                 }
               } else {
-                const doc = new SearchDoc(uid(), tab.name || '', tab.chromeTab.title || '', tab.chromeTab.url, "", "", "", [tabset.id], '', "")
+                const doc = new SearchDoc(uid(), tab.name || '', tab.title || '', tab.url, "", "", "", [tabset.id], '', "")
                 minimalIndex.push(doc)
               }
             } else {
-              const doc = new SearchDoc(uid(), tab.name || '', tab.chromeTab.title || '', tab.chromeTab.url, "", "", "", [tabset.id], '', "")
+              const doc = new SearchDoc(uid(), tab.name || '', tab.title || '', tab.url, "", "", "", [tabset.id], '', "")
               minimalIndex.push(doc)
-              urlSet.add(tab.chromeTab.url)
+              urlSet.add(tab.url)
             }
           }
         })
@@ -284,11 +284,11 @@ export const useSearchStore = defineStore('search', () => {
     const minimalIndex: SearchDoc[] = []
     const urlSet: Set<string> = new Set()
     tabs.forEach((tab: Tab) => {
-      if (tab.chromeTab?.url) {
-        if (!urlSet.has(tab.chromeTab.url)) {
-          const doc = new SearchDoc("", "", tab.chromeTab.title || '', tab.chromeTab.url, "", "", "", [tsId], '', "")
+      if (tab.url) {
+        if (!urlSet.has(tab.url)) {
+          const doc = new SearchDoc("", "", tab.title || '', tab.url, "", "", "", [tsId], '', "")
           minimalIndex.push(doc)
-          urlSet.add(tab.chromeTab.url)
+          urlSet.add(tab.url)
         }
       }
     })

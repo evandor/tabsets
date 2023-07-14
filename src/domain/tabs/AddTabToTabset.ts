@@ -39,7 +39,7 @@ export class AddTabToTabsetCommand implements Command<any> {
   async execute(): Promise<ExecutionResult<any>> {
     const tabsStore = useTabsStore()
     console.info(`adding tab '${this.tab.id}' to tabset '${this.tabset.id}'`)
-    const exists = _.findIndex(this.tabset.tabs, t => t.chromeTab.url === this.tab.chromeTab.url) >= 0
+    const exists = _.findIndex(this.tabset.tabs, t => t.url === this.tab.url) >= 0
     console.log("checking 'tab exists' yields", exists)
     if (!exists) {
       return useTabsetService().addToTabsetId(this.tabset.id, this.tab, 0)
@@ -50,7 +50,7 @@ export class AddTabToTabsetCommand implements Command<any> {
               console.log("got content", content)
               if (content) {
                 return useTabsetService()
-                  .saveText(this.tab.chromeTab, content['content' as keyof object], content['metas' as keyof object])
+                  .saveText(this.tab, content['content' as keyof object], content['metas' as keyof object])
                   .then((res) => {
                     return new ExecutionResult("result", "Tab was added",)
                   })
@@ -67,10 +67,10 @@ export class AddTabToTabsetCommand implements Command<any> {
             .then((res) => {
               // TODO CreateTabFromOpentabs: Same logic?
               // TODO remove logic, will not be used that way
-              if (usePermissionsStore().hasFeature(FeatureIdent.CATEGORIZATION) && this.tab.chromeTab.url?.startsWith("https://")) {
-                console.log("about to check categorization", this.tab.chromeTab.url)
+              if (usePermissionsStore().hasFeature(FeatureIdent.CATEGORIZATION) && this.tab.url?.startsWith("https://")) {
+                console.log("about to check categorization", this.tab.url)
                 try {
-                  const url = new URL(this.tab.chromeTab.url || '')
+                  const url = new URL(this.tab.url || '')
                   const origin = url.origin
                   console.log("checking origin", origin)
 
@@ -79,8 +79,8 @@ export class AddTabToTabsetCommand implements Command<any> {
                     {
                       url: origin,
                       taxonomy: TAXONOMY,
-                      title: this.tab.chromeTab.title,
-                      favIconUrl: this.tab.chromeTab.favIconUrl,
+                      title: this.tab.title,
+                      favIconUrl: this.tab.favIconUrl,
                       description: this.tab.description
                     })
                     .then((res) => {

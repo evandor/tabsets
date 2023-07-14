@@ -83,8 +83,8 @@ const newSearch = (term: string) => {
     _.forEach(results, h => {
       //console.log("h", h.item.bookmarkId)
       let tabsets: string[] = []
-      if (h.chromeTab.url) {
-        tabsets = useTabsetService().tabsetsFor(h.chromeTab.url)
+      if (h.url) {
+        tabsets = useTabsetService().tabsetsFor(h.url)
       }
       const theHit = new Hit(
         uid(),

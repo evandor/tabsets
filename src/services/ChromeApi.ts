@@ -204,7 +204,7 @@ class ChromeApi {
     console.log("restoring tabset ", tabset.id, inNewWindow)
 
     if (inNewWindow) {
-      const urls: string[] = _.map(_.filter(tabset.tabs, (t: Tab) => t.chromeTab !== undefined), (t: Tab) => t.chromeTab.url || '')
+      const urls: string[] = _.map(tabset.tabs, (t: Tab) => t.url || '')
       chrome.windows.create({
         focused: true,
         left: 50,
@@ -220,13 +220,13 @@ class ChromeApi {
 
           tabset.tabs.forEach(async t => {
 
-            if (t.chromeTab.url !== currentTab.url) {
-              //console.log("creating tab", t.chromeTab.id)
+            if (t.url !== currentTab.url) {
+              //console.log("creating tab", t.chromeTabId)
               const newTabPromise: Promise<chrome.tabs.Tab> = this.chromeTabsCreateAsync({
                 active: false,
-                index: t.chromeTab.index,
-                pinned: t.chromeTab.pinned,
-                url: t.chromeTab.url
+                index: t.id,
+                pinned: t.pinned,
+                url: t.url
               })
               //console.log("got new tab", newTabPromise)
               promisedTabs.push(newTabPromise)

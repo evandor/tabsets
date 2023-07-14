@@ -108,8 +108,8 @@ function currentTabs(): Tab[] {
   const filter = useUiStore().tabsFilter
   if (filter && filter.trim() !== '') {
     return _.orderBy(_.filter(props.tabset.tabs, (t: Tab) => {
-      return (t.chromeTab.url || '')?.indexOf(filter) >= 0 ||
-        (t.chromeTab.title || '')?.indexOf(filter) >= 0 ||
+      return (t.url || '')?.indexOf(filter) >= 0 ||
+        (t.title || '')?.indexOf(filter) >= 0 ||
         t.description.indexOf(filter) >= 0
     }), getOrder(), [orderDesc.value ? 'desc' : 'asc'])
   }
@@ -120,10 +120,10 @@ function getOrder() {
   if (props.tabset) {
     switch (props.tabset?.sorting) {
       case 'alphabeticalUrl':
-        return (t: Tab) => t.chromeTab.url?.replace("https://", "").replace("http://", "").toUpperCase()
+        return (t: Tab) => t.url?.replace("https://", "").replace("http://", "").toUpperCase()
         break
       case 'alphabeticalTitle':
-        return (t: Tab) => t.chromeTab.title?.toUpperCase()
+        return (t: Tab) => t.title?.toUpperCase()
         break
       default:
         return (t: Tab) => 1
@@ -137,7 +137,7 @@ function tabsForGroup(groupId: number): Tab[] {
     _.filter(
       tabsStore.getTabset(tabsetId.value)?.tabs,
       // @ts-ignore
-      (t: Tab) => t?.chromeTab.groupId === groupId),
+      (t: Tab) => t?.groupId === groupId),
     getOrder(), [orderDesc.value ? 'desc' : 'asc'])
 }
 

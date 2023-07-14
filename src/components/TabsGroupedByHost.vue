@@ -50,9 +50,9 @@ watchEffect(() => {
     //_.orderBy(
 
     _.groupBy(allTabs, (t: Tab) => {
-      if (t.chromeTab.url) {
+      if (t.url) {
         try {
-          const hostname = new URL(t.chromeTab.url).hostname
+          const hostname = new URL(t.url).hostname
           const splits = hostname.split('.')
           switch (splits.length) {
             case 3:

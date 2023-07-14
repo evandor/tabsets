@@ -41,7 +41,7 @@
           <q-item-section avatar>
             <q-icon v-if="scope.opt.id === 'highlight'" name="flashlight_on" color="black"/>
             <q-icon v-else-if="scope.opt.id.startsWith('tabset|')" name="o_tab" color="black"/>
-            <q-img v-else :src="scope.opt.chromeTab?.favIconUrl"/>
+            <q-img v-else :src="scope.opt.favIconUrl"/>
           </q-item-section>
           <q-item-section>
             <q-item-label v-if="scope.opt.id === 'highlight'" class="text-subtitle2 text-black">highlight in page
@@ -49,9 +49,9 @@
             <q-item-label v-else-if="scope.opt.id.startsWith('tabset|')" class="text-subtitle2 text-black">
               {{ tabsetName(scope.opt.id) }}
             </q-item-label>
-            <q-item-label v-else class="text-subtitle2 text-black">{{ scope.opt.chromeTab?.title }}</q-item-label>
+            <q-item-label v-else class="text-subtitle2 text-black">{{ scope.opt.title }}</q-item-label>
 
-            <q-item-label caption class="text-blue-8">{{ scope.opt.chromeTab?.url }}</q-item-label>
+            <q-item-label caption class="text-blue-8">{{ scope.opt.url }}</q-item-label>
             <q-rating v-if="scope.opt.id !== 'highlight' && !scope.opt.id.startsWith('tabset|')"
                       :model-value="Math.round(scope.opt.score / 18)"
                       size="13px"
@@ -193,7 +193,7 @@ const updateSearch = (val: any) => {
   console.log("updateSearch", typedOrSelected.value)
   if (val?.chromeTab) {
     searchStore.term = ''
-    NavigationService.openOrCreateTab(val.chromeTab.url)
+    NavigationService.openOrCreateTab(val.url)
   } else if (val?.id === "highlight") {
     console.log("setting highlight", val.name)
     highlight.value = val.name

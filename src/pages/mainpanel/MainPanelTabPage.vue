@@ -4,7 +4,7 @@
     <div class="row fit">
       <q-toolbar-title>
         <div class="row justify-start items-baseline">
-          Tab Info for '{{ useUiStore().getSelectedTab?.chromeTab?.url }}' (experimental)
+          Tab Info for '{{ useUiStore().getSelectedTab?.url }}' (experimental)
         </div>
       </q-toolbar-title>
     </div>
@@ -38,25 +38,25 @@
             class="rounded-borders"
             width="32px"
             height="32px"
-            :src="useUiStore().getSelectedTab?.chromeTab?.favIconUrl">
+            :src="useUiStore().getSelectedTab?.favIconUrl">
             <q-tooltip>
-              {{ useUiStore().getSelectedTab?.chromeTab?.favIconUrl }} / {{
-                useUiStore().getSelectedTab?.chromeTab?.id
+              {{ useUiStore().getSelectedTab?.favIconUrl }} / {{
+                useUiStore().getSelectedTab?.chromeTabId
               }} / {{ useUiStore().getSelectedTab.id }}
             </q-tooltip>
           </q-img>
         </div>
         <div class="col-10 text-body1 ellipsis">
-          {{ getHost(useUiStore().getSelectedTab?.chromeTab?.url, true) }}
+          {{ getHost(useUiStore().getSelectedTab?.url, true) }}
         </div>
         <div class="col-12 text-body2 ellipsis">
-          {{ useUiStore().getSelectedTab?.chromeTab?.title }}
+          {{ useUiStore().getSelectedTab?.title }}
         </div>
 
         <div class="col-12">
           <div class="text-overline ellipsis">
-            {{ useUiStore().getSelectedTab?.chromeTab?.url }}&nbsp;<q-icon name="launch" color="secondary"
-                                                                           @click.stop="NavigationService.openOrCreateTab(tab.chromeTab?.url )"></q-icon>
+            {{ useUiStore().getSelectedTab?.url }}&nbsp;<q-icon name="launch" color="secondary"
+                                                                           @click.stop="NavigationService.openOrCreateTab(tab.url )"></q-icon>
           </div>
         </div>
       </div>
@@ -299,7 +299,7 @@
           <q-td :props="props">
             <div class="cursor-pointer text-blue-10">
               <span v-if="props.row.href.length > 0 && props.row.href.startsWith('/')"
-                    @click="openLink(useUiStore().getSelectedTab.chromeTab.url + '/' + props.row.href.substring(1))">
+                    @click="openLink(useUiStore().getSelectedTab.url + '/' + props.row.href.substring(1))">
                 {{ props.row.href }}
               </span>
               <span v-else @click="openLink(props.row.href)">{{ props.row.href }}</span>
@@ -335,7 +335,7 @@
           <q-td :props="props">
             <div class="cursor-pointer text-blue-10">
               <span v-if="props.row.link.length > 0 && props.row.link.startsWith('/')"
-                    @click="openLink(useUiStore().getSelectedTab.chromeTab.url + '/' + props.row.link.substring(1))">
+                    @click="openLink(useUiStore().getSelectedTab.url + '/' + props.row.link.substring(1))">
                 {{ props.row.link }}
               </span>
               <span v-else @click="openLink(props.row.link)">{{ props.row.link }}</span>
@@ -495,7 +495,7 @@ const logsColumns = ref([
 ])
 
 // useQueryExecutor()
-//   .queryFromUi(new TabLogsQuery(useUiStore().getSelectedTab?.chromeTab.url || ''))
+//   .queryFromUi(new TabLogsQuery(useUiStore().getSelectedTab?.url || ''))
 //   .then(res => {
 //     logs.value = res.result
 //   })
@@ -576,7 +576,7 @@ watchEffect(() => {
   keys.value = fuseIndex['keys' as keyof object]
   keysMap.value = fuseIndex['_keysMap' as keyof object]
   const res = _.filter(fuseIndex['records' as keyof object], (r: any) => {
-    return useUiStore().getSelectedTab?.chromeTab.url === r.$[2]?.v
+    return useUiStore().getSelectedTab?.url === r.$[2]?.v
   })
   if (res && res.length > 0) {
     index.value = res[0]

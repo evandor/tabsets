@@ -14,7 +14,15 @@ export class Tab {
   lastActive: number
   activatedCount: number
   loadedCount: number
-  chromeTab: chrome.tabs.Tab
+
+  // from chrome tab
+  chromeTabId: number | undefined
+  favIconUrl: string | undefined
+  url: string | undefined
+  title: string | undefined
+  pinned: boolean
+  groupId: number
+
   isDuplicate: boolean
   history: string[] = []
   selected: boolean = false
@@ -32,14 +40,12 @@ export class Tab {
   note: string
   scheduledFor: number | undefined
   extension: UrlExtension
-  groupId: string | undefined
   selection: string | undefined
 
   mhtmls: string[]
 
   contentHash: string
 
-  //executionResult: string | undefined
 
   constructor(public id: string, chromeTab: chrome.tabs.Tab) {
     this.created = new Date().getTime()
@@ -47,7 +53,15 @@ export class Tab {
     this.lastActive = new Date().getTime()
     this.activatedCount = 1
     this.loadedCount = 0
-    this.chromeTab = chromeTab
+
+    this.chromeTabId = chromeTab.id
+    this.favIconUrl = chromeTab.favIconUrl
+    this.url = chromeTab.url
+    this.title = chromeTab.title
+    this.pinned = chromeTab.pinned
+    this.groupId = chromeTab.groupId
+
+    //this.chromeTab = chromeTab
     this.isDuplicate = false
     this.history = []
     this.name = undefined
@@ -124,5 +138,5 @@ export class Tab {
 }
 
 Tab.prototype.toString = function tabToString() {
-  return `Tab: {id=${this.id}, url=${this.chromeTab.url}, #history=${this.history.length}}`;
+  return `Tab: {id=${this.id}, url=${this.url}, #history=${this.history.length}}`;
 };

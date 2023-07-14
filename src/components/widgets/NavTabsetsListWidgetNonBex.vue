@@ -169,8 +169,8 @@ const open = (tab: Tab) => {
   console.log("clicked", process.env.MODE, tab.id)
   if ("electron" === process.env.MODE) {
     router.push("/browser/" + tab.id)
-  } else if (tab.chromeTab.url) {
-    openURL(tab.chromeTab.url)
+  } else if (tab.url) {
+    openURL(tab.url)
     //router.push("/iframe/" + tabId)
   }
 }

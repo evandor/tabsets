@@ -45,7 +45,7 @@ export class CreateTabFromOpenTabsCommand implements Command<any> {
     const tabsStore = useTabsStore()
     console.info(this.tab, 'adding tab by d&d')
     //console.log("tabs", tabsStore.getCurrentTabs)
-    const exists = _.findIndex(tabsStore.getCurrentTabs, t => t.chromeTab.url === this.tab.chromeTab.url) >= 0
+    const exists = _.findIndex(tabsStore.getCurrentTabs, t => t.url === this.tab.url) >= 0
 
     let useIndex = this.newIndex
     console.log("exists", exists)
@@ -53,18 +53,18 @@ export class CreateTabFromOpenTabsCommand implements Command<any> {
     if (!exists) {
       return TabsetService.saveToCurrentTabset(this.tab, useIndex)
         .then((res) => {
-          if (this.tab.chromeTab.url) {
+          if (this.tab.url) {
             useUiStore().clearHighlights()
-            useUiStore().addHighlight(this.tab.chromeTab.url)
-            // useSearchStore().update(this.tab.chromeTab.url, 'name', this.newName)
-            useSearchStore().addToIndex(uid(), "", this.tab.chromeTab.title || '',
-              this.tab.chromeTab.url, "", "", [tabsStore.currentTabsetId], this.tab.chromeTab.favIconUrl || '')
+            useUiStore().addHighlight(this.tab.url)
+            // useSearchStore().update(this.tab.url, 'name', this.newName)
+            useSearchStore().addToIndex(uid(), "", this.tab.title || '',
+              this.tab.url, "", "", [tabsStore.currentTabsetId], this.tab.favIconUrl || '')
           }
           return res
         })
         .then((res) => {
           if (tabsStore.pendingTabset) {
-            tabsStore.pendingTabset.tabs = _.filter(tabsStore.pendingTabset.tabs, t => t.chromeTab.url !== this.tab.chromeTab.url)
+            tabsStore.pendingTabset.tabs = _.filter(tabsStore.pendingTabset.tabs, t => t.url !== this.tab.url)
           }
         })
         .then((res) => {

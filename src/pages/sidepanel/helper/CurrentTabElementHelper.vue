@@ -194,10 +194,10 @@ watchEffect(async () => {
   }
 })
 
-const isOpen = (tab: Tab): boolean => TabsetService.isOpen(tab?.chromeTab?.url || '')
+const isOpen = (tab: Tab): boolean => TabsetService.isOpen(tab?.url || '')
 
 const setInfo = (tab: Tab) => {
-  const parts = (tab.chromeTab?.url || '').split('?')
+  const parts = (tab.url || '').split('?')
   if (parts.length > 1) {
     emits('sendCaption', parts[0] + "[... params omitted....]")
   } else if (parts.length === 1) {

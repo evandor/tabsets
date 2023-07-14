@@ -28,16 +28,16 @@
           :tab="uiStore.getSelectedTab" width="24px" height="24px"/>
       </div>
       <div class="col-10 text-body1 ellipsis-3">
-        {{ getHost(useUiStore().getSelectedTab?.chromeTab?.url, true) }}
+        {{ getHost(useUiStore().getSelectedTab?.url, true) }}
       </div>
       <div class="col-12 text-body2 ellipsis-3">
-        {{ useUiStore().getSelectedTab?.chromeTab?.title }}
+        {{ useUiStore().getSelectedTab?.title }}
       </div>
 
       <div class="col-12">
         <div class="text-overline ellipsis text-blue-10 cursor-pointer"
-             @click.stop="NavigationService.openOrCreateTab(useUiStore().getSelectedTab.chromeTab?.url )">
-          {{ useUiStore().getSelectedTab?.chromeTab?.url }}&nbsp;<q-icon name="launch" color="secondary"
+             @click.stop="NavigationService.openOrCreateTab(useUiStore().getSelectedTab.url )">
+          {{ useUiStore().getSelectedTab?.url }}&nbsp;<q-icon name="launch" color="secondary"
                                                                          class="cursor-pointer"></q-icon>
         </div>
       </div>
@@ -182,19 +182,19 @@
         <q-card-section>
           <div class="row q-mx-sm q-mt-none">
             <div class="col-5 text-caption text-bold">created</div>
-            <div class="col-7 text-right text-caption">{{ formatDate(useUiStore().getSelectedTab.created) }}</div>
+            <div class="col-7 text-right text-caption">{{ formatDate(useUiStore().getSelectedTab?.created) }}</div>
           </div>
           <div class="row q-mx-sm">
             <div class="col-5 text-caption text-bold">changed</div>
-            <div class="col-7 text-right text-caption">{{ formatDate(useUiStore().getSelectedTab.changed) }}</div>
+            <div class="col-7 text-right text-caption">{{ formatDate(useUiStore().getSelectedTab?.updated) }}</div>
           </div>
           <div class="row q-mx-sm">
             <div class="col-5 text-caption text-bold">last active</div>
-            <div class="col-7 text-right text-caption">{{ formatDate(useUiStore().getSelectedTab.lastActive) }}</div>
+            <div class="col-7 text-right text-caption">{{ formatDate(useUiStore().getSelectedTab?.lastActive) }}</div>
           </div>
           <div class="row q-mx-sm">
             <div class="col-5 text-caption text-bold">opened</div>
-            <div class="col-7 text-right text-caption">{{ useUiStore().getSelectedTab.activatedCount }}x</div>
+            <div class="col-7 text-right text-caption">{{ useUiStore().getSelectedTab?.activatedCount }}x</div>
           </div>
         </q-card-section>
       </q-card>
@@ -300,12 +300,12 @@ watchEffect(() => {
 })
 
 function isOpen(tab: Tab): boolean {
-  return TabsetService.isOpen(tab?.chromeTab?.url || '')
+  return TabsetService.isOpen(tab?.url || '')
 }
 
 const tabsetChips = (): object[] => {
   const badges: object[] = []
-  const url = uiStore.getSelectedTab?.chromeTab.url
+  const url = uiStore.getSelectedTab?.url
   if (url) {
     _.forEach(useTabsetService().tabsetsFor(url), ts => badges.push({
       label: TabsetService.nameForTabsetId(ts),
@@ -317,7 +317,7 @@ const tabsetChips = (): object[] => {
   //   badges.push({
   //     label: 'bookmark',
   //     bookmarkId: hit.bookmarkId,
-  //     encodedUrl: btoa(hit.chromeTab.url || '')
+  //     encodedUrl: btoa(hit.url || '')
   //   })
   // }
   return badges;
@@ -353,7 +353,7 @@ watchEffect(() => {
   const fuseIndex = useSearchStore().getIndex()
   const keyMaps = fuseIndex['_keysMap' as keyof object]
   const res = _.filter(fuseIndex['records' as keyof object], (r: any) => {
-    return useUiStore().getSelectedTab?.chromeTab.url === r.$[2]?.v
+    return useUiStore().getSelectedTab?.url === r.$[2]?.v
   })
   const keys: Map<number, object> = new Map()
   Object.keys(keyMaps).forEach((k: any) => {
@@ -390,7 +390,7 @@ const updatedTags = (val: string[]) => {
 const openTabset = (chip:any) => {
   console.log("chip", chip)
   useCommandExecutor()
-    .execute(new SelectTabsetCommand(chip['tabsetId']))
+    .execute(new SelectTabsetCommand(chip['tabsetId'], undefined))
 }
 
 </script>

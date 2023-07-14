@@ -154,9 +154,9 @@ watchEffect(() => {
         chrome.tabs.query({active: true, lastFocusedWindow: true}, (openTabs) => {
           if (openTabs.length > 0) {
             const currentChromeTab = openTabs[0]
-            tab.chromeTab.favIconUrl = currentChromeTab.favIconUrl
-            if (currentChromeTab.url) {
-              tab.history.push(currentChromeTab.url)
+            tab.favIconUrl = current.favIconUrl
+            if (current.url) {
+              tab.history.push(current.url)
             }
             tab.tags.push("Note")
             tab.extension = UrlExtension.NOTE

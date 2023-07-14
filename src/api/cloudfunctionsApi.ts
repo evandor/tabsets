@@ -36,8 +36,8 @@ export function cloudFunctionsApi() {
   //   {
   //     url: origin,
   //     taxonomy: 'iabv1', // 'iabv1' or 'webshrinker'
-  //     title: this.tab.chromeTab.title,
-  //     favIconUrl: this.tab.chromeTab.favIconUrl,
+  //     title: this.tab.title,
+  //     favIconUrl: this.tab.favIconUrl,
   //     description: this.tab.description
   //   })
   //   .then((res) => {

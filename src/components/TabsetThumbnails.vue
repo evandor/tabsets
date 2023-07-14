@@ -185,13 +185,13 @@
 <!--  return _.filter(-->
 <!--    _.map(tabsStore.getCurrentTabs, t => t),-->
 <!--    // @ts-ignore-->
-<!--    (t: Tab) => !t.chromeTab.pinned && t.chromeTab.groupId === -1 && (t.status === TabStatus.DEFAULT || !t.status))-->
+<!--    (t: Tab) => !t.pinned && t.groupId === -1 && (t.status === TabStatus.DEFAULT || !t.status))-->
 <!--}-->
 
 <!--function tabsForGroup(groupId: number): Tab[] {-->
 <!--  return _.filter(tabsStore.getCurrentTabs,-->
 <!--    //@ts-ignore-->
-<!--    (t: Tab) => t.chromeTab.groupId === groupId)-->
+<!--    (t: Tab) => t.groupId === groupId)-->
 <!--}-->
 
 <!--const update = (tabsetIdent: object) => {-->

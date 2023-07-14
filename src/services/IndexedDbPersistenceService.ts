@@ -33,13 +33,8 @@ class IndexedDbPersistenceService implements PersistenceService {
     const tabsStore = useTabsStore()
     const start = Date.now();
 
-    const s = Date.now()
     return await this.db.getAll('tabsets')
-      .then((res:any) => {
-        console.log("got all tabsets", res)
-        res.forEach((r:Tabset) => tabsStore.addTabset(r))
-        console.log(`done: ${Date.now() - s} ms`);
-      })
+      .then((res: any) => res.forEach((r: Tabset) => tabsStore.addTabset(r)))
 
 
     // const keys: IDBValidKey[] = await this.db.getAllKeys('tabsets')
@@ -243,7 +238,7 @@ class IndexedDbPersistenceService implements PersistenceService {
     return this.db.delete('content', btoa(url))
   }
 
-  saveContent(tab: chrome.tabs.Tab, text: string, metas: object, title: string, tabsetIds: string[],
+  saveContent(tab: Tab, text: string, metas: object, title: string, tabsetIds: string[],
               tabsetCandidates: object[] = []): Promise<IDBValidKey> {
     if (tab.url) {
       const encodedTabUrl = btoa(tab.url)
@@ -354,7 +349,7 @@ class IndexedDbPersistenceService implements PersistenceService {
   }
 
   async saveMHtml(tab: Tab, mhtml: Blob): Promise<string> {
-    if (tab.chromeTab.url) {
+    if (tab.url) {
       // console.log("TextDecoder('utf-8')", new TextDecoder('utf-8'), typeof mhtml)
       // console.log("mhtml", mhtml)
 
@@ -362,9 +357,9 @@ class IndexedDbPersistenceService implements PersistenceService {
       const mhtmlId = uid()
       this.db.put('mhtml', {
         id: mhtmlId,
-        title: tab.name ? tab.name : tab.chromeTab.title,
-        favIconUrl: tab.chromeTab.favIconUrl,
-        url: tab.chromeTab.url,
+        title: tab.name ? tab.name : tab.title,
+        favIconUrl: tab.favIconUrl,
+        url: tab.url,
         created: new Date().getTime(),
         content: mhtml
         //hash: uuidv5(mhtmlAsString, 'da42d8e8-2afd-446f-b72e-8b437aa03e46')
@@ -375,12 +370,12 @@ class IndexedDbPersistenceService implements PersistenceService {
   }
 
   saveBlob(id: string, url: string, data: Blob, type: string): Promise<any> {
-    //const encodedTabUrl = btoa(tab.chromeTab.url)
+    //const encodedTabUrl = btoa(tab.url)
     return this.db.put('blobs', {
       id: id,
       type: type,
-      //title: tab.name ? tab.name : tab.chromeTab.title,
-      //favIconUrl: tab.chromeTab.favIconUrl,
+      //title: tab.name ? tab.name : tab.title,
+      //favIconUrl: tab.favIconUrl,
       url: url,
       created: new Date().getTime(),
       content: data
@@ -506,10 +501,10 @@ class IndexedDbPersistenceService implements PersistenceService {
           console.log("creating db tabsets")
           db.createObjectStore('tabsets');
         }
-/*        if (!db.objectStoreNames.contains('tabs')) {
-          console.log("creating db tabs")
-          db.createObjectStore('tabs');
-        }*/
+        /*        if (!db.objectStoreNames.contains('tabs')) {
+                  console.log("creating db tabs")
+                  db.createObjectStore('tabs');
+                }*/
         if (!db.objectStoreNames.contains('thumbnails')) {
           console.log("creating db thumbnails")
           let store = db.createObjectStore('thumbnails');
@@ -561,7 +556,7 @@ class IndexedDbPersistenceService implements PersistenceService {
 
   private urlExistsInATabset(url: string): boolean {
     for (let ts of [...useTabsStore().tabsets.values()]) {
-      if (_.find(ts.tabs, t => t.chromeTab.url === url)) {
+      if (_.find(ts.tabs, t => t.url === url)) {
         return true;
       }
     }

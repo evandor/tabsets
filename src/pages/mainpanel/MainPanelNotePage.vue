@@ -4,7 +4,7 @@
       <q-toolbar-title>
         <div class="row justify-start items-baseline">
           <div class="col-10">
-            Note {{ tab?.chromeTab?.title }}
+            Note {{ tab?.title }}
           </div>
           <div class="col" v-if="!editMode" @click="editMode = true">
             Edit
@@ -199,7 +199,7 @@ watchEffect(async () => {
     tab.value = tabObject['tab' as keyof object] as unknown as Tab
     markdown.value = tab.value?.longDescription || ''
     tabsetId.value = tabObject['tabsetId' as keyof object]
-    title.value = tab.value.chromeTab.title || ''
+    title.value = tab.value.title || ''
     description.value = tab.value.description || ''
   }
 })
@@ -222,7 +222,7 @@ const save = () => {
       newTab.extension = UrlExtension.NOTE
       newTab.description = description.value
       //newTab.note = description.value
-      newTab.chromeTab.url = newTab.chromeTab.url?.split('?')[0] + newTabId
+      newTab.url = newTab.url?.split('?')[0] + newTabId
       // needed to update the note in the side panel
       console.log("sending message", {tab: newTab, tabsetId: tabsetId.value})
       sendMsg('tab-changed', {tab: newTab, tabsetId: tabsetId.value})
@@ -234,7 +234,7 @@ const update = (ident: string, val: string) => {
   if (tab.value && ident === 'description') {
     tab.value.description = val
   } else if (tab.value && ident === 'title') {
-    tab.value.chromeTab.title = val
+    tab.value.title = val
   }
 }
 </script>

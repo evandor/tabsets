@@ -22,14 +22,14 @@
     transition-next="jump-up">
     <q-tab-panel name="simple">
       <div class="row" v-for="(t,index) in props.tabs">
-        {{ t.chromeTab.url }}
+        {{ t.url }}
       </div>
     </q-tab-panel>
 
     <q-tab-panel name="list">
       <ul>
         <li v-for="(t,index) in props.tabs">
-          {{ t.chromeTab.url }}
+          {{ t.url }}
         </li>
       </ul>
     </q-tab-panel>
@@ -38,7 +38,7 @@
       <ul>
         <li class="row" v-for="(t,index) in props.tabs">
           {{ t.note}}<br>
-          {{ t.chromeTab.url }}
+          {{ t.url }}
         </li>
       </ul>
     </q-tab-panel>
@@ -115,13 +115,13 @@ const handleDragAndDrop = (event: any) => {
     switch (props.group) {
       case 'otherTabs':
         // @ts-ignore
-        const unpinnedNoGroup: Tab[] = _.filter(tabsStore.getCurrentTabs, (t: Tab) => !t.chromeTab.pinned && t.chromeTab.groupId === -1)
+        const unpinnedNoGroup: Tab[] = _.filter(tabsStore.getCurrentTabs, (t: Tab) => !t.pinned && t.groupId === -1)
         if (unpinnedNoGroup.length > 0) {
           useIndex = adjustIndex(moved, unpinnedNoGroup);
         }
         break;
       case 'pinnedTabs':
-        const filteredTabs: Tab[] = _.filter(tabsStore.getCurrentTabs, (t: Tab) => t.chromeTab.pinned)
+        const filteredTabs: Tab[] = _.filter(tabsStore.getCurrentTabs, (t: Tab) => t.pinned)
         if (filteredTabs.length > 0) {
           useIndex = adjustIndex(moved, filteredTabs);
         }
@@ -130,7 +130,7 @@ const handleDragAndDrop = (event: any) => {
         if (props.group.startsWith('groupedTabs_')) {
           const groupId = props.group.split('_')[1]
           // @ts-ignore
-          const filteredTabs: Tab[] = _.filter(tabsStore.getCurrentTabs, (t: Tab) => t.chromeTab.groupId === parseInt(groupId))
+          const filteredTabs: Tab[] = _.filter(tabsStore.getCurrentTabs, (t: Tab) => t.groupId === parseInt(groupId))
           if (filteredTabs.length > 0) {
             useIndex = adjustIndex(moved, filteredTabs);
           }

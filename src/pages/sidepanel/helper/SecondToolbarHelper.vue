@@ -214,9 +214,9 @@ watchEffect(() => {
         chrome.tabs.query({active: true, lastFocusedWindow: true}, (openTabs) => {
           if (openTabs.length > 0) {
             const currentChromeTab = openTabs[0]
-            tab.chromeTab.favIconUrl = currentChromeTab.favIconUrl
-            if (currentChromeTab.url) {
-              tab.history.push(currentChromeTab.url)
+            tab.favIconUrl = current.favIconUrl
+            if (current.url) {
+              tab.history.push(current.url)
             }
             tab.tags.push("Note")
             tab.extension = UrlExtension.NOTE
@@ -238,8 +238,8 @@ watchEffect(() => {
 
 const createClip = () => {
   //console.log("creating clip", currentChromeTabs.value[0])
-  if (tabsStore.currentChromeTab?.id) {
-    ChromeApi.executeClippingJS(tabsStore.currentChromeTab.id)
+  if (tabsStore.current.chromeTabId) {
+    ChromeApi.executeClippingJS(tabsStore.current.chromeTabId)
   }
 }
 
@@ -263,7 +263,7 @@ const stopSession = () => {
 const replaceSession = () => $q.dialog({component: NewSessionDialog, componentProps: {replaceSession: true}})
 
 const createWebsiteClipTooltip = () => {
-  //return "Create Website Clip for tab " + currentTabs.value[0].chromeTab.url
+  //return "Create Website Clip for tab " + currentTabs.value[0].url
   return "Create Website Clip for tab " + tabsStore.currentChromeTab?.url
 }
 
@@ -274,8 +274,8 @@ function filteredTabs(): Tab[] {
   const filter = useUiStore().tabsFilter
   if (filter && filter.trim() !== '') {
     return _.orderBy(_.filter(tabsStore.getCurrentTabset?.tabs, (t: Tab) => {
-        return (t.chromeTab.url || '')?.indexOf(filter) >= 0 ||
-          (t.chromeTab.title || '')?.indexOf(filter) >= 0 ||
+        return (t.url || '')?.indexOf(filter) >= 0 ||
+          (t.title || '')?.indexOf(filter) >= 0 ||
           t.description?.indexOf(filter) >= 0
       })
       , getOrder(), [orderDesc.value ? 'desc' : 'asc'])
@@ -293,9 +293,9 @@ function getOrder() {
   if (tabsStore.getCurrentTabset) {
     switch (tabsStore.getCurrentTabset.sorting) {
       case 'alphabeticalUrl':
-        return (t: Tab) => t.chromeTab.url?.replace("https://", "").replace("http://", "").toUpperCase()
+        return (t: Tab) => t.url?.replace("https://", "").replace("http://", "").toUpperCase()
       case 'alphabeticalTitle':
-        return (t: Tab) => t.chromeTab.title?.toUpperCase()
+        return (t: Tab) => t.title?.toUpperCase()
       default:
         return (t: Tab) => 1
     }
