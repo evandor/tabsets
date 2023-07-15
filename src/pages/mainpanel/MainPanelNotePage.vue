@@ -65,7 +65,8 @@
 
         </div>
         <div class="col-7 text-subtitle2">
-          <q-btn v-if="markdown !== tab?.longDescription" label="save" @click="save"/>
+          <q-btn v-if="markdown !== tab?.longDescription || title !== tab?.title || description !== tab?.description"
+                 label="save" @click="save"/>
         </div>
       </div>
 
@@ -210,10 +211,11 @@ const save = () => {
     const tabset = useTabsetService().getTabset(tabsetId.value) as Tabset | undefined
     console.log("tabset", tabset)
     if (tabset && tab.value) {
+      tab.value.description = description.value
       tab.value.longDescription = markdown.value
       console.log("saving note", tabset, tabsetId.value, markdown.value)
       // needed to update the note in the side panel
-      sendMsg('tab-changed', {tab: tab.value, tabsetId: tabsetId.value})
+      sendMsg('tab-changed', {tab: tab.value, tabsetId: tabsetId.value, noteId: noteId.value})
     } else if (tabset) { // new note
       const url = chrome.runtime.getURL('www/index.html') + "#" + route.fullPath
       const newTabId = uid()
@@ -221,6 +223,7 @@ const save = () => {
       newTab.tags.push("Note")
       newTab.extension = UrlExtension.NOTE
       newTab.description = description.value
+      newTab.longDescription = markdown.value
       //newTab.note = description.value
       newTab.url = newTab.url?.split('?')[0] + newTabId
       // needed to update the note in the side panel

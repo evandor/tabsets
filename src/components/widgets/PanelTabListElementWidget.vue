@@ -7,6 +7,18 @@
     <div class="bg-grey-3 q-pa-xs" style="border:0 solid grey;border-radius:3px">
       <TabFaviconWidget :tab="props.tab" width="16px" height="16px"/>
     </div>
+    <div v-if="props.tab.httpInfo === 'UPDATED'"
+         class="q-my-xs q-mx-none q-pa-none text-white bg-positive"
+         style="border-radius: 3px;max-height:15px">
+      NEW
+    </div>
+    <div v-else-if="props.tab.httpStatus >= 300"
+         class="q-my-xs q-mx-none q-pa-none text-white"
+         :class="props.tab.httpStatus >= 500 ? 'bg-red' : 'bg-warning'"
+         style="border-radius: 3px;max-height:15px">
+      {{ props.tab.httpStatus }}
+    </div>
+
   </q-item-section>
 
   <!-- name, title, description, url && note -->
@@ -71,11 +83,17 @@
               <q-icon name="arrow_right" size="16px"/>
            </span>
 
-          <span v-if="props.tab.extension === UrlExtension.NOTE">open Note</span>
-          <short-url v-else :url="props.tab.url" :hostname-only="true"/>
+          <!-- url or note -->
+          <template v-if="props.tab.extension === UrlExtension.NOTE">
+            <span>open Note</span>
+          </template>
+          <template v-else>
+            <short-url :url="props.tab.url" :hostname-only="true"/>
+          </template>
           <div class="text-caption text-grey-5">
             {{ formatDate(props.tab.created) }}
           </div>
+
           <!-- <q-icon class="q-ml-xs" name="open_in_new"/>-->
         </div>
         <div v-if="!props.hideMenu"
@@ -112,6 +130,10 @@
     </q-item-label>
   </q-item-section>
 
+  <q-item-section v-if="isCurrentTab(props.tab as Tab)"
+                  style="justify-content:start;width:25px;max-width:25px">
+    <q-icon name="navigate_next" color="primary" size="lg"/>
+  </q-item-section>
 </template>
 
 <script setup lang="ts">
@@ -277,7 +299,7 @@ const formatDate = (timestamp: number | undefined) =>
 
 const isCurrentTab = (tab: Tab) => {
   //console.log("xxx", tabsStore.getCurrentTabset.tabs[0].chromeTab.url, tab.chromeTab.url)
-    return tabsStore.currentChromeTab.url === tab.url;
+  return tabsStore.currentChromeTab.url === tab.url;
 
 }
 </script>

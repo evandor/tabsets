@@ -38,7 +38,7 @@
         <div class="text-overline ellipsis text-blue-10 cursor-pointer"
              @click.stop="NavigationService.openOrCreateTab(useUiStore().getSelectedTab.url )">
           {{ useUiStore().getSelectedTab?.url }}&nbsp;<q-icon name="launch" color="secondary"
-                                                                         class="cursor-pointer"></q-icon>
+                                                              class="cursor-pointer"></q-icon>
         </div>
       </div>
 
@@ -161,18 +161,18 @@
       </q-card>
     </q-expansion-item>
 
-<!--    <q-expansion-item label="Note"-->
-<!--                      group="somegroup"-->
+    <!--    <q-expansion-item label="Note"-->
+    <!--                      group="somegroup"-->
 
-<!--                      :default-opened="false">-->
-<!--      <q-card>-->
-<!--        <q-card-section>-->
-<!--          <div class="text-caption">-->
-<!--            {{ useUiStore().getSelectedTab?.note }}-->
-<!--          </div>-->
-<!--        </q-card-section>-->
-<!--      </q-card>-->
-<!--    </q-expansion-item>-->
+    <!--                      :default-opened="false">-->
+    <!--      <q-card>-->
+    <!--        <q-card-section>-->
+    <!--          <div class="text-caption">-->
+    <!--            {{ useUiStore().getSelectedTab?.note }}-->
+    <!--          </div>-->
+    <!--        </q-card-section>-->
+    <!--      </q-card>-->
+    <!--    </q-expansion-item>-->
 
     <q-expansion-item label="Meta Data"
                       group="somegroup"
@@ -195,6 +195,56 @@
           <div class="row q-mx-sm">
             <div class="col-5 text-caption text-bold">opened</div>
             <div class="col-7 text-right text-caption">{{ useUiStore().getSelectedTab?.activatedCount }}x</div>
+          </div>
+        </q-card-section>
+      </q-card>
+    </q-expansion-item>
+
+    <q-expansion-item label="Http Status"
+                      group="somegroup">
+      <q-card>
+        <q-card-section>
+          <div class="row q-mx-sm q-mt-none">
+            <div class="col-5 text-caption text-bold">Http Status</div>
+            <div class="col-7 text-right text-caption">{{ useUiStore().getSelectedTab?.httpStatus }}</div>
+          </div>
+          <div class="row q-mx-sm q-mt-none">
+            <div class="col-5 text-caption text-bold">Checked At</div>
+            <div class="col-7 text-right text-caption">{{
+                formatDate(useUiStore().getSelectedTab?.httpCheckedAt)
+              }}
+            </div>
+          </div>
+          <div class="row q-mx-sm q-mt-none">
+            <div class="col-5 text-caption text-bold">Info</div>
+            <div class="col-7 text-right text-caption">{{ useUiStore().getSelectedTab?.httpInfo }}</div>
+          </div>
+          <div class="row q-mx-sm q-mt-none">
+            <div class="col-5 text-caption text-bold">Content Type</div>
+            <div class="col-7 text-right text-caption">{{ useUiStore().getSelectedTab?.httpContentType }}</div>
+          </div>
+          <div class="row q-mx-sm q-mt-none">
+            <div class="col-5 text-caption text-bold">Last Modified</div>
+            <div class="col-7 text-right text-caption">{{ useUiStore().getSelectedTab?.httpLastModified }}</div>
+          </div>
+          <div class="row q-mx-sm q-mt-none">
+            <div class="col-5 text-caption text-bold">Error</div>
+            <div class="col-7 text-right text-caption">{{ useUiStore().getSelectedTab?.httpError }}</div>
+          </div>
+        </q-card-section>
+      </q-card>
+    </q-expansion-item>
+
+    <q-expansion-item label="Selections" v-if="useUiStore().getSelectedTab?.selections.length > 0"
+                      group="somegroup">
+      <q-card>
+        <q-card-section>
+          <div class="row q-mx-sm q-mt-none">
+            <div class="col-5 text-caption text-bold">Selections</div>
+            <div class="col-7 text-right text-caption">{{ useUiStore().getSelectedTab?.selections.length }}</div>
+          </div>
+          <div class="row q-mx-sm q-mt-none" v-for="selection in useUiStore().getSelectedTab?.selections">
+            <div class="col-12 text-caption">{{selection.text}}</div>
           </div>
         </q-card-section>
       </q-card>
@@ -387,7 +437,7 @@ const updatedTags = (val: string[]) => {
   }
 }
 
-const openTabset = (chip:any) => {
+const openTabset = (chip: any) => {
   console.log("chip", chip)
   useCommandExecutor()
     .execute(new SelectTabsetCommand(chip['tabsetId'], undefined))

@@ -95,12 +95,12 @@ class ChromeApi {
         () => {
           chrome.contextMenus.create({id: 'tabset_extension', title: 'Tabset Extension', contexts: ['all']},
             () => {
-              chrome.contextMenus.create({
-                id: 'open_tabsets_page',
-                parentId: 'tabset_extension',
-                title: 'Open Tabsets Extension',
-                contexts: ['all']
-              })
+              // chrome.contextMenus.create({
+              //   id: 'open_tabsets_page',
+              //   parentId: 'tabset_extension',
+              //   title: 'Open Tabsets Extension',
+              //   contexts: ['all']
+              // })
               //if (usePermissionsStore().hasFeature(FeatureIdent.ANALYSE_TABS)) {
               chrome.contextMenus.create({
                 id: 'website_clip',

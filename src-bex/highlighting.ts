@@ -1,5 +1,6 @@
 // @ts-ignore
 import {bexContent} from 'quasar/wrappers'
+import {HTMLSelection} from "src/models/Tab";
 
 //import * as rangy from 'rangy'
 
@@ -29,7 +30,7 @@ export default bexContent((bridge: any) => {
   var _caretPosition = new Caret()
 
   function doRestoreRange() {
-    console.log("tabsets: got editor", document.body)
+    //console.log("tabsets: got editor", document.body)
     var editor = document.body
     var caretPosition = _caretPosition;
     var sel = window.getSelection();
@@ -104,11 +105,12 @@ export default bexContent((bridge: any) => {
     }
   }
 
-  function doRestoreFromString(selection: string) {
-    _caretPosition.sC = selection.split(';')[0].split(',');
-    _caretPosition.sO = selection.split(';')[1].split(',');
-    _caretPosition.eC = selection.split(';')[2].split(',');
-    _caretPosition.eO = selection.split(';')[3].split(',');
+  function doRestoreFromString(selection: HTMLSelection) {
+    const sel = selection.selection
+    _caretPosition.sC = sel.split(';')[0].split(',');
+    _caretPosition.sO = sel.split(';')[1].split(',');
+    _caretPosition.eC = sel.split(';')[2].split(',');
+    _caretPosition.eO = sel.split(';')[3].split(',');
 
     console.log('tabsets: sC=' + _caretPosition.sC);
     console.log('tabsets: sO=' + _caretPosition.sO);
@@ -123,7 +125,7 @@ export default bexContent((bridge: any) => {
     if (request.msg === 'highlightSelections') {
       console.log("tabsets: received message for highlightSelections")
 
-      request.selections.forEach((selection: any) => {
+      request.selections.forEach((selection: HTMLSelection) => {
         console.log("restoring selection", selection)
         doRestoreFromString(selection)
       })

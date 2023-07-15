@@ -6,7 +6,7 @@
 
       <div class="q-ma-none q-pa-none">
         <q-list dense
-                class="rounded-borders q-ma-none q-pa-none" :key="tabset.id" v-for="(tabset,index) in tabsets" >
+                class="rounded-borders q-ma-none q-pa-none" :key="tabset.id" v-for="(tabset,index) in tabsets">
           <!-- :model-value="isExpanded(tabset.id)" -->
           <q-expansion-item
             :header-class="tabsStore.currentTabsetId === tabset.id ? 'bg-grey-4':''"
@@ -104,7 +104,7 @@
 
 
             <div class="q-ma-none q-pa-none" style="border:1px solid lightgrey">
- <!--             <div class="q-ma-xs shrink" :class="showTabInfo(tabset.id) ? '':'collapsed'">-->
+              <!--             <div class="q-ma-xs shrink" :class="showTabInfo(tabset.id) ? '':'collapsed'">-->
               <div class="q-ma-xs">
                 <SidePanelTabInfo :tabsetId="tabset.id"/>
               </div>
@@ -124,7 +124,7 @@
 
       <FirstToolbarHelper
         :title="tabsets.length > 6 ? 'My Tabsets (' + tabsets.length.toString() + ')' : 'My Tabsets'"/>
-<!--      <SecondToolbarHelper/>-->
+      <!--      <SecondToolbarHelper/>-->
 
     </q-page-sticky>
   </q-page>
@@ -159,6 +159,7 @@ import {MarkTabsetAsDefaultCommand} from "src/domain/tabsets/MarkTabsetAsDefault
 import getScrollTarget = scroll.getScrollTarget;
 import NavigationService from "src/services/NavigationService";
 import SidePanelTabList from "components/layouts/sidepanel/SidePanelTabList.vue";
+import {ExecutionResult} from "src/domain/ExecutionResult";
 
 
 const {setVerticalScrollPosition} = scroll
@@ -217,6 +218,7 @@ function inIgnoredMessages(message: any) {
   return message.msg === "html2text" ||
     message.msg === "html2links" ||
     message.name === "zero-shot-classification" ||
+    message.msg === "websiteQuote";
     message.msg === "init-ai-module";
 }
 
@@ -239,17 +241,24 @@ if (inBexMode()) {
       useUiStore().draggingTab(message.data.tabId, null as unknown as any)
     } else if (message.name === "tab-changed") {
       const tabset = useTabsetService().getTabset(message.data.tabsetId) as Tabset
-      // replace tab (seems necessary !?) TODO
-      //tabset.tabs = _.map(tabset.tabs, (t: Tab) => (t.id === message.data.tab.id) ? message.data.tab : t)
-      console.log("adding tab", message.data.tab)
-      tabset.tabs.push(message.data.tab)
-      useTabsetService().saveTabset(tabset)
-        .then((res) => {
-          console.log("saved tabset", tabset)
-        })
-        .catch((err) => {
-          console.error("got error " + err)
-        })
+      if (message.data.noteId) {
+        console.log("updating note", message.data.noteId)
+        useTabsStore().getTab(message.data.noteId)
+          .then((res:object|undefined) => {
+            if (res) {
+              const note = res['tab' as keyof object] as Tab
+              note.title = message.data.tab.title
+              note.description = message.data.tab.description
+              note.longDescription = message.data.tab.longDescription
+            }
+            useTabsetService().saveTabset(tabset)
+          })
+      } else {
+        console.log("adding tab", message.data.tab)
+        tabset.tabs.push(message.data.tab)
+        useTabsetService().saveTabset(tabset)
+      }
+
     } else if (message.name === "progress-indicator") {
       //console.log(" > got message '" + message.name + "'", message)
       if (message.percent) {
@@ -372,29 +381,57 @@ const updateSelectedTabset = (tabsetId: string, open: boolean, index: number) =>
   tabsetExpanded.value.set(tabsetId, open)
   if (open) {
     scrollToElement(document.getElementsByClassName("q-expansion-item")[index], 300)
-    //const sidePanelTabList = tabLists.value[0] as SidePanelTabList
-    //sidePanelTabList.load(tabsetId)
-    // const alreadyFetched = tabs.value.has(tabsetId)
-    // if (!alreadyFetched) {
-    //   console.log("fetching tabs for tabset", tabsetId)
-    //   useTabsetService().getTabs(tabsetId)
-    //     .then((ts: Tab[]) => {
-    //       tabs.value.set(tabsetId, ts)
-    //       const tabset = tabsStore.getTabset(tabsetId)
-    //       if (tabset) {
-    //         tabset.tabs = ts
-    //         tabset.tabsCount = ts.length
-    //       }
-    //     })
-    //     .catch((err) => {
-    //       console.log("encountered error", err)
-    //     })
-    // }
     useCommandExecutor()
       .execute(new SelectTabsetCommand(tabsetId, useSpacesStore().space?.id))
-    // .then((res: ExecutionResult<Tabset | undefined>) => {
-    //   useUiStore().sidePanelSetActiveView(SidePanelView.MAIN)
-    // })
+      .then((res: ExecutionResult<Tabset | undefined>) => {
+        if (res.result) {
+          const promises: Promise<any>[] = []
+
+          res.result?.tabs.forEach((t: Tab) => {
+            if (t.url) {
+              const p = fetch(t.url, {method: 'HEAD'})
+                .then(function (response) {
+                  console.log("got results from HEAD (" + t.url + ") : ", response.status)
+
+                  const oldLastModified = t.httpLastModified
+
+                  t.httpStatus = response.status
+                  t.httpContentType = response.headers.get("content-type") || 'unknown'
+                  t.httpLastModified = response.headers.get("Last-Modified") || 'unknown'
+                  t.httpCheckedAt = new Date().getTime()
+
+                  try {
+                    if (t.httpLastModified && oldLastModified) {
+                      if (Date.parse(t.httpLastModified) > Date.parse(oldLastModified)) {
+                        t.httpInfo = "UPDATED"
+                      }
+                    }
+                  } catch (err) {
+                  }
+
+                  return Promise.resolve()
+                }).catch(
+                  function (error) {
+                    console.log('got a Problem: \n', error);
+                    t.httpError = error.toString()
+                    return Promise.resolve()
+                  });
+              promises.push(p)
+            }
+          })
+
+          Promise.all(promises)
+            .then((allRes) => {
+              if (res.result) {
+                const tabset = res.result
+                console.log("saving tabset after http HEAD check")
+                useTabsetService().saveTabset(tabset)
+              }
+            })
+        }
+      })
+
+
   }
 }
 

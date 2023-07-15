@@ -7,6 +7,24 @@ export enum UrlExtension {
   UNKNOWN = "UNKNOWN"
 }
 
+export class HTMLSelectionComment {
+
+  date: number = 0
+
+  constructor(
+    public author: string = '',
+    public comment: string = '') {
+    this.date = new Date().getTime()
+  }
+}
+
+export class HTMLSelection {
+  constructor(
+    public selection: string = '',
+    public text: string = '',
+    public comments: HTMLSelectionComment[] = []) {
+  }
+}
 
 export class Tab {
   created: number
@@ -40,12 +58,18 @@ export class Tab {
   note: string
   scheduledFor: number | undefined
   extension: UrlExtension
-  selection: string | undefined
+  selections: HTMLSelection[] = []
 
   mhtmls: string[]
 
   contentHash: string
 
+  httpStatus: number = 200
+  httpContentType: string = 'undefined'
+  httpLastModified: string = 'undefined'
+  httpCheckedAt: number = 0
+  httpError: string = ''
+  httpInfo: string = 'undefined'
 
   constructor(public id: string, chromeTab: chrome.tabs.Tab) {
     this.created = new Date().getTime()
@@ -77,7 +101,6 @@ export class Tab {
     this.extension = this.determineUrlExtension(chromeTab)
     this.mhtmls = []
     this.contentHash = ''
-    this.selection = undefined
   }
 
   setHistoryFrom(existingTab: Tab) {

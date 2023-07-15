@@ -310,7 +310,12 @@ text.set(FeatureIdent.CATEGORIZATION.toLowerCase(), {
 text.set(FeatureIdent.PAGE_MARKER.toLowerCase(), {
   name: 'Page Marker',
   description: 'Highlight parts of a page and add notes',
-  permissions: ['contextMenus','notifications']
+  permissions: ['contextMenus']
+})
+text.set(FeatureIdent.NOTIFICATIONS.toLowerCase(), {
+  name: 'Browser Notifications',
+  description: 'Allow Tabsets to send Notifications via your Browser. Recommended.',
+  permissions: ['notifications']
 })
 
 

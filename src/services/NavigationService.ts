@@ -1,7 +1,8 @@
-import {Tab} from "src/models/Tab";
+import {HTMLSelection, Tab} from "src/models/Tab";
 import {useNotificationsStore} from "src/stores/notificationsStore";
 import {openURL} from "quasar";
 import {useTabsStore} from "src/stores/tabsStore";
+import {useTabsetService} from "src/services/TabsetService2";
 
 class NavigationService {
 
@@ -10,12 +11,26 @@ class NavigationService {
     if (process.env.MODE === "bex") {
       // get all tabs with this url
       const tabsForUrl = useTabsStore().tabsForUrl(withUrl) || []
-      const selections: string[] = []
+      const selections: HTMLSelection[] = []
       tabsForUrl.forEach(t => {
-        if (t.selection) {
-          selections.push(t.selection)
+        if (t.selections) {
+          console.log("found", t.selections)
+          t.selections.forEach(s => selections.push(s))
+          //selections.concat(t.selections)
+        }
+        if (t.httpInfo) {
+          t.httpError = ''
+          t.httpInfo = ''
+
+          const ts = useTabsStore().tabsetFor(t.id)
+          if (ts) {
+            console.log("saving tabset ", ts)
+            useTabsetService().saveTabset(ts)
+          }
         }
       })
+
+      console.log("selections are", selections)
 
       chrome.tabs.query({}, (t: chrome.tabs.Tab[]) => {
         let found = false;
@@ -41,17 +56,17 @@ class NavigationService {
             active: true,
             pinned: false,
             url: withUrl
-          }, (tab:chrome.tabs.Tab) => {
+          }, (tab: chrome.tabs.Tab) => {
             // pass selections and execute quoting script
             if (selections.length > 0) {
-              console.log("selections", selections)
+              console.log("selections", selections, tab.id)
               // @ts-ignore
               chrome.scripting.executeScript({
                 target: {tabId: tab.id || 0},
                 files: ['highlighting.js']
               }, (result: any) => {
-                console.log("sending Message highlightSelections", tab.id)
                 if (tab.id) {
+                  console.log("sending Message highlightSelections", tab.id)
                   chrome.tabs.sendMessage(tab.id, {
                     msg: "highlightSelections",
                     selections: selections
@@ -88,7 +103,7 @@ class NavigationService {
     console.log("closing chrome tab", tab.id, tab?.id)
     if (tab?.id) {
       try {
-        chrome.tabs.remove(tab.chromeTabId)
+        chrome.tabs.remove(tab.chromeTabId || 0)
       } catch (err) {
         console.log("error clsosing chrome tab", err)
       }

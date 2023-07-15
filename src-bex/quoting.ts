@@ -1,7 +1,7 @@
 // @ts-ignore
 import {bexContent} from 'quasar/wrappers'
 
-import * as rangy from 'rangy'
+//import * as rangy from 'rangy'
 //import * as rangySelection from 'rangy-selectionsaverestore'
 //import 'rangy'
 //import rangySerializer from 'rangy'
@@ -41,7 +41,10 @@ export default bexContent((bridge: any) => {
     return _caretPosition.sC+';'+_caretPosition.sO+';'+_caretPosition.eC+';'+_caretPosition.eO;
   }
 
+  let text = ''
   if (sel && sel.rangeCount > 0) {
+
+    text = sel.toString()
     var range = sel.getRangeAt(0);
     var sC: Node | null = range.startContainer
     var eC: Node | null = range.endContainer;
@@ -72,6 +75,7 @@ export default bexContent((bridge: any) => {
 
   const msg = {
     msg: 'websiteQuote',
+    text: text,
     selection: getCP2String()
   }
   console.log("sending", msg)

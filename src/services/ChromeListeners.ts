@@ -1,7 +1,7 @@
 import {Tabset, TabsetType} from "src/models/Tabset";
 import {useTabsStore} from "src/stores/tabsStore";
 import _ from "lodash";
-import {Tab} from "src/models/Tab";
+import {HTMLSelection, HTMLSelectionComment, Tab} from "src/models/Tab";
 import {uid} from "quasar";
 import throttledQueue from 'throttled-queue';
 // @ts-ignore
@@ -507,9 +507,10 @@ class ChromeListeners {
       // https://stackoverflow.com/questions/965968/serialize-internal-javascript-objects-like-range
 
       const newTab = new Tab(uid(), sender.tab)
-      newTab.selection = serialTx
-      console.log("newTab with selection", newTab)
-      this.addToTabset(currentTS.id, newTab)
+//      newTab.selection = serialTx
+      newTab.selections.push(new HTMLSelection(serialTx, request.text,[new HTMLSelectionComment("owner", "added")]))
+      console.log("newTab with selection", serialTx)
+      this.addSelectionToTabset(currentTS.id, sender.tab.url || '', newTab)
     }
     sendResponse({websiteQuote: 'done'});
   }
@@ -520,7 +521,7 @@ class ChromeListeners {
       console.log("request", request)
       const newTab = new Tab(uid(), sender.tab)
       newTab.image = request.img
-      console.log("newTab with selection", newTab)
+      console.log("newTab with image", newTab)
       this.addToTabset(currentTS.id, newTab)
     }
     sendResponse({websiteImg: 'done'});
@@ -612,7 +613,32 @@ class ChromeListeners {
     img.src = dataUrl//"https://i.imgur.com/SHo6Fub.jpg";
   }
 
+  private addSelectionToTabset(currentTSId: string, url: string, newTab: Tab) {
+    console.log("addSelectionToTabset", currentTSId, url, newTab)
+    const tabsetIds = useTabsetService().tabsetsFor(url)
+    console.log("got tabsetIds", tabsetIds)
+    if (tabsetIds.length > 0) {
+      tabsetIds.forEach(tsId => {
+        const ts = useTabsetService().getTabset(tsId)
+        if (ts) {
+          const tabs = _.filter(ts.tabs, t => t.url === url)
+          tabs.forEach(t => {
+            if (!t.selections) {
+              t.selections = []
+            }
+            t.selections = t.selections.concat(newTab.selections)
+          })
+          useTabsetService().saveTabset(ts)
+        }
+      })
+    } else {
+      this.addToTabset(currentTSId, newTab)
+    }
+
+  }
+
   private addToTabset(currentTSId: string, newTab: Tab) {
+    console.log("addToTabset", currentTSId, newTab)
     addToTabsetId(currentTSId, newTab)
       .then(() => {
         const ts = useTabsetService().getTabset(currentTSId)

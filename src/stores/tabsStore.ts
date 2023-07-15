@@ -144,7 +144,7 @@ export const useTabsStore = defineStore('tabs', {
       return (url: string) => _.find(tabs, t => t.url === url)
     },
 
-    tabsForUrl: (state): (url: string) => Tab[] | undefined => {
+    tabsForUrl: (state): (url: string) => Tab[] => {
       return (url: string) => {
         const tabs: Tab[] = []
         forEach([...state.tabsets.values()], (ts: Tabset) => {
