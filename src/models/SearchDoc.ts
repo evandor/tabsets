@@ -1,6 +1,7 @@
 export class SearchDoc {
 
   created: number
+  note: string
 
   constructor(
     public id: string,
@@ -15,6 +16,7 @@ export class SearchDoc {
     public favIconUrl: string) {
 
     this.created = new Date().getTime()
+    this.note = ''
 
   }
 }

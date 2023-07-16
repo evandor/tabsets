@@ -499,6 +499,9 @@ class TabsetService {
       if (scheduledFor) {
         tab.scheduledFor = scheduledFor.getTime()
       }
+      if (tab.url) {
+        useSearchStore().update(tab.url, 'note', note)
+      }
       return saveCurrentTabset()
     }
     return Promise.reject("did not find tab with id " + tabId)

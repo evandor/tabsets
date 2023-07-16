@@ -413,7 +413,6 @@ watchEffect(() => {
   })
 
   if (res && res.length > 0) {
-    console.log(" > res", res, keys)
     Object.keys(res[0]['$' as keyof object]).forEach(k => {
       const tmp = res[0]['$' as keyof object][k as keyof object]
       const v: any = keys.get(+k)
@@ -422,7 +421,6 @@ watchEffect(() => {
       v.v = c //? (c.length > 100 ? c.substring(0,98) + "..." : c) : ''
       keys.set(+k, v)
     })
-    console.log(" > res2", keys)
     searchIndex.value = keys
   }
 })

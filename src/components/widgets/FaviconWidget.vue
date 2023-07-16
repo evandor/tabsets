@@ -45,7 +45,6 @@ const getFaviconUrl = () => {
     let theUrl = props.url
     let theRealUrl
     try {
-      console.log("chcking", props)
       theRealUrl = new URL(theUrl)
     } catch (err) {
       if (!theUrl.startsWith('http')) {

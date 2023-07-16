@@ -51,7 +51,8 @@ export const useSearchStore = defineStore('search', () => {
       {name: 'url', weight: 4},
       {name: 'description', weight: 3},
       {name: 'keywords', weight: 2},
-      {name: 'content', weight: 1}
+      {name: 'content', weight: 1},
+      {name: 'note', weight: 10}
     ],
     includeScore: true,
     includeMatches: true,
@@ -98,15 +99,20 @@ export const useSearchStore = defineStore('search', () => {
   }
 
   function update(url: string, key: string, value: string) {
+    console.log("updating search index", url, key, value)
     if (!fuse || !fuse.value) {
       return // called too early?
     }
     const removed: SearchDoc[] = fuse.value.remove((doc: SearchDoc) => doc.url === url)
+    console.log("found removed: ", removed)
     if (removed && removed.length > 0) {
       let newDoc: SearchDoc = removed[0]
       switch (key) {
         case 'name':
           newDoc.name = value
+          break
+        case 'note':
+          newDoc.note = value
           break
         case 'description':
           newDoc.description = value
@@ -117,6 +123,7 @@ export const useSearchStore = defineStore('search', () => {
         default:
           console.log("could not update", key)
       }
+      console.log("adding new doc", newDoc)
       fuse.value.add(newDoc)
     }
   }

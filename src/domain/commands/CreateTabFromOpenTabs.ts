@@ -72,7 +72,7 @@ export class CreateTabFromOpenTabsCommand implements Command<any> {
             .then((content) => {
               if (content) {
                 return useTabsetService()
-                  .saveText(this.tab.chromeTab, content['content' as keyof object], content['metas' as keyof object])
+                  .saveText(this.tab, content['content' as keyof object], content['metas' as keyof object])
                   .then((res) => {
                     return new ExecutionResult("result", "Tab was added", new UndoCommand(this.tab))
                   })

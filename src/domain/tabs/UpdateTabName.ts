@@ -34,7 +34,7 @@ export class UpdateTabNameCommand implements Command<any> {
     const oldTitle = this.tab.name ? this.tab.name : this.tab.title || '?'
     return TabsetService.setCustomTitle(this.tab, this.newName)
       .then(ignored => {
-        console.log("custom title", this.tab.chromeTab)
+        console.log("custom title", this.tab)
         if (this.tab.url) {
           useSearchStore().update(this.tab.url, 'name', this.newName)
         }
