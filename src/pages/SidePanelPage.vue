@@ -67,6 +67,16 @@
                             Edit Tabset Name
                           </q-item-section>
                         </q-item>
+                        <q-separator v-if="useSettingsStore().isEnabled('dev')"/>
+                        <q-item v-if="useSettingsStore().isEnabled('dev')"
+                                clickable v-close-popup @click.stop="useSearchStore().reindexTabset(tabset.id)">
+                          <q-item-section avatar style="padding-right:0;min-width:25px;max-width: 25px;">
+                            <q-icon size="xs" name="o_note" color="accent"/>
+                          </q-item-section>
+                          <q-item-section>
+                            Re-Index Search
+                          </q-item-section>
+                        </q-item>
                         <q-separator/>
                         <q-item v-if="tabset.status === TabsetStatus.DEFAULT"
                                 clickable v-close-popup @click.stop="pin(tabset as Tabset)">
@@ -160,6 +170,8 @@ import getScrollTarget = scroll.getScrollTarget;
 import NavigationService from "src/services/NavigationService";
 import SidePanelTabList from "components/layouts/sidepanel/SidePanelTabList.vue";
 import {ExecutionResult} from "src/domain/ExecutionResult";
+import {useSettingsStore} from "stores/settingsStore";
+import {useSearchStore} from "stores/searchStore";
 
 
 const {setVerticalScrollPosition} = scroll

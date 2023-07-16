@@ -91,7 +91,7 @@
             <short-url :url="props.tab.url" :hostname-only="true"/>
           </template>
           <div class="text-caption text-grey-5">
-            {{ formatDate(props.tab.created) }}
+            {{ formatDate(props.tab.lastActive) }}
           </div>
 
           <!-- <q-icon class="q-ml-xs" name="open_in_new"/>-->

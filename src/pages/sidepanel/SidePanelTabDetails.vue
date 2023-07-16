@@ -235,13 +235,13 @@
       </q-card>
     </q-expansion-item>
 
-    <q-expansion-item label="Selections" v-if="useUiStore().getSelectedTab?.selections.length > 0"
+    <q-expansion-item label="Selections" v-if="useUiStore().getSelectedTab?.selections?.length > 0"
                       group="somegroup">
       <q-card>
         <q-card-section>
           <div class="row q-mx-sm q-mt-none">
             <div class="col-5 text-caption text-bold">Selections</div>
-            <div class="col-7 text-right text-caption">{{ useUiStore().getSelectedTab?.selections.length }}</div>
+            <div class="col-7 text-right text-caption">{{ useUiStore().getSelectedTab?.selections?.length }}</div>
           </div>
           <div class="row q-mx-sm q-mt-none" v-for="selection in useUiStore().getSelectedTab?.selections">
             <div class="col-12 text-caption">{{selection.text}}</div>
