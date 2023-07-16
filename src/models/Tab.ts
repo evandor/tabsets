@@ -50,7 +50,7 @@ export class Tab {
   description: string
   longDescription: string | undefined
   keywords: string
-  tags: string[]
+  tags: string[] // Set<string> got issues in indexeddb
   image: string
   date: string
   lastModified: string

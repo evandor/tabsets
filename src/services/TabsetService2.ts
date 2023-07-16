@@ -371,11 +371,14 @@ export function useTabsetService() {
             }
             if (metas['keywords' as keyof object]) {
               t.keywords = metas['keywords' as keyof object]
-              if (t.tags && t.tags.length === 0 && t.keywords) {
+              if (t.keywords) {
                 const blankSeparated = t.keywords.split(" ")
                 const commaSeparated = t.keywords.split(",")
                 const splits = (t.keywords.indexOf(",") >= 0) ? commaSeparated : blankSeparated
-                t.tags = _.union(_.filter(_.map(splits, (split) => split.trim()), (split: string) => split.length > 0))
+                if (!t.tags) {
+                  t.tags = []
+                }
+                t.tags = t.tags.concat(_.union(_.filter(_.map(splits, (split) => split.trim()), (split: string) => split.length > 0)))
               }
             }
             const author = getIfAvailable(metas, 'author')
@@ -493,6 +496,12 @@ export function useTabsetService() {
       if (indexInTabset >= 0 && !tab.image) {
         return Promise.reject("tab exists already")
       }
+
+      // add tabset's name to tab's tags
+      tab.tags.push(ts.name)
+      try {
+        tab.tags.push(new URL(tab.url).hostname.replace("www.",""))
+      } catch (err) {}
 
       if (useIndex !== undefined && useIndex >= 0) {
         ts.tabs.splice(useIndex, 0, tab)

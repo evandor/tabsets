@@ -218,7 +218,7 @@ watchEffect(() => {
             if (current.url) {
               tab.history.push(current.url)
             }
-            tab.tags.push("Note")
+            tab.tags.add("Note")
             tab.extension = UrlExtension.NOTE
             //tab.description =  tab.description + openTabs[0].url + "\n\n"
           }
