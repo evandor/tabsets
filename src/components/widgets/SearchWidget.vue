@@ -170,7 +170,9 @@ const filterFn = (val: any, update: any, abort: any) => {
       const tabsets = [...tabsStore.tabsets.values()]
       tabsets.forEach(ts => {
         if (ts.name.indexOf(val) >= 0) {
-          const pseudoHit = new Hit("tabset|" + ts.name, null as unknown as chrome.tabs.Tab,
+          const pseudoHit = new Hit("tabset|" + ts.name,
+            //null as unknown as chrome.tabs.Tab,
+            '','','',
             0, 0, 0, [ts.id], ts.spaces,[], "", "")
           tabsetsAsHit.push(pseudoHit)
         }

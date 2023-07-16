@@ -88,7 +88,10 @@ const newSearch = (term: string) => {
       }
       const theHit = new Hit(
         uid(),
-        h.chromeTab,
+ //       h.chromeTab,
+        h.title || '',
+        h.url || '',
+        h.favIconUrl || '',
         0, 0,
         100,
         tabsets, //h.chromeTab.tabsets,

@@ -10,7 +10,10 @@ export class Hit {
 
   constructor(
     public id: string,
-    public chromeTab: chrome.tabs.Tab,
+    //public chromeTab: chrome.tabs.Tab,
+    public title: string,
+    public url: string,
+    public favIconUrl: string,
     public created: number,
     public updated: number,
     public score: number,
