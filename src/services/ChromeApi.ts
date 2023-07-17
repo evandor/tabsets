@@ -224,7 +224,6 @@ class ChromeApi {
               //console.log("creating tab", t.chromeTabId)
               const newTabPromise: Promise<chrome.tabs.Tab> = this.chromeTabsCreateAsync({
                 active: false,
-                index: t.id,
                 pinned: t.pinned,
                 url: t.url
               })

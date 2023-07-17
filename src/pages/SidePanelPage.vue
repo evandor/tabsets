@@ -46,67 +46,9 @@
                     <span v-else>
                       <q-icon color="primary" size="16px"/>
                     </span>
-                    <q-menu :offset="[10, -5]">
-                      <q-list dense style="min-width: 200px">
 
-                        <q-item v-if="usePermissionsStore().hasFeature(FeatureIdent.NOTES)"
-                                clickable v-close-popup @click.stop="startTabsetNote(tabset as Tabset)">
-                          <q-item-section avatar style="padding-right:0;min-width:25px;max-width: 25px;">
-                            <q-icon size="xs" name="o_add_circle" color="accent"/>
-                          </q-item-section>
-                          <q-item-section>
-                            Create Note
-                          </q-item-section>
-                        </q-item>
-                        <q-separator/>
-                        <q-item clickable v-close-popup @click.stop="openEditTabsetDialog(tabset as Tabset)">
-                          <q-item-section avatar style="padding-right:0;min-width:25px;max-width: 25px;">
-                            <q-icon size="xs" name="o_note" color="accent"/>
-                          </q-item-section>
-                          <q-item-section>
-                            Edit Tabset Name
-                          </q-item-section>
-                        </q-item>
-                        <q-separator v-if="useSettingsStore().isEnabled('dev')"/>
-                        <q-item v-if="useSettingsStore().isEnabled('dev')"
-                                clickable v-close-popup @click.stop="useSearchStore().reindexTabset(tabset.id)">
-                          <q-item-section avatar style="padding-right:0;min-width:25px;max-width: 25px;">
-                            <q-icon size="xs" name="o_note" color="accent"/>
-                          </q-item-section>
-                          <q-item-section>
-                            Re-Index Search
-                          </q-item-section>
-                        </q-item>
-                        <q-separator/>
-                        <q-item v-if="tabset.status === TabsetStatus.DEFAULT"
-                                clickable v-close-popup @click.stop="pin(tabset as Tabset)">
-                          <q-item-section avatar style="padding-right:0;min-width:25px;max-width: 25px;">
-                            <q-icon size="xs" name="o_push_pin" color="warning"/>
-                          </q-item-section>
-                          <q-item-section>
-                            Pin
-                          </q-item-section>
-                        </q-item>
-                        <q-item v-if="tabset.status === TabsetStatus.FAVORITE"
-                                clickable v-close-popup @click.stop="unpin(tabset as Tabset)">
-                          <q-item-section avatar style="padding-right:0;min-width:25px;max-width: 25px;">
-                            <q-icon size="xs" name="push_pin" color="warning"/>
-                          </q-item-section>
-                          <q-item-section>
-                            Unpin
-                          </q-item-section>
-                        </q-item>
-                        <q-separator/>
-                        <q-item clickable v-close-popup @click.stop="deleteTabsetDialog(tabset as Tabset)">
-                          <q-item-section avatar style="padding-right:0;min-width:25px;max-width: 25px;">
-                            <q-icon size="xs" name="o_delete" color="negative"/>
-                          </q-item-section>
-                          <q-item-section>
-                            Delete Tab
-                          </q-item-section>
-                        </q-item>
-                      </q-list>
-                    </q-menu>
+                    <SidePanelPageContextMenu :tabset="tabset as Tabset"/>
+
                   </div>
                 </Transition>
               </q-item-section>
@@ -172,6 +114,9 @@ import SidePanelTabList from "components/layouts/sidepanel/SidePanelTabList.vue"
 import {ExecutionResult} from "src/domain/ExecutionResult";
 import {useSettingsStore} from "stores/settingsStore";
 import {useSearchStore} from "stores/searchStore";
+import RestoreTabsetDialog from "components/dialogues/RestoreTabsetDialog.vue";
+import {RestoreTabsetCommand} from "src/domain/tabsets/RestoreTabset";
+import SidePanelPageContextMenu from "pages/sidepanel/SidePanelPageContextMenu.vue";
 
 
 const {setVerticalScrollPosition} = scroll
@@ -451,40 +396,6 @@ const tabsetCaption = (tabset: Tabset) => tabset.tabs.length + ' tab' + (tabset.
 
 const hoveredOver = (tabsetId: string) => hoveredTabset.value === tabsetId
 
-const isExpanded = (tabsetId: string) => !!tabsetExpanded.value.get(tabsetId)
-
-const pin = (tabset: Tabset) =>
-  useCommandExecutor().executeFromUi(new MarkTabsetAsFavoriteCommand(tabset.id))
-
-const unpin = (tabset: Tabset) =>
-  useCommandExecutor().executeFromUi(new MarkTabsetAsDefaultCommand(tabset.id))
-
-const startTabsetNote = (tabset: Tabset) => {
-  const url = chrome.runtime.getURL('www/index.html') + "#/mainpanel/notes/?tsId=" + tabset.id + "&edit=true"
-  NavigationService.openOrCreateTab(url)
-}
-
-const deleteTabsetDialog = (tabset: Tabset) => {
-  $q.dialog({
-    component: DeleteTabsetDialog,
-    componentProps: {
-      tabsetId: tabset.id,
-      tabsetName: tabset.name
-    }
-  })
-}
-
-const openEditTabsetDialog = (tabset: Tabset) => {
-  $q.dialog({
-    component: EditTabsetDialog,
-    componentProps: {
-      tabsetId: tabset.id,
-      tabsetName: tabset.name,
-      fromPanel: true
-    }
-  })
-}
-
 const scrollToElement = (el: any, delay: number) => {
   setTimeout(() => {
     const target = getScrollTarget(el)
@@ -493,14 +404,6 @@ const scrollToElement = (el: any, delay: number) => {
     setVerticalScrollPosition(target, offset - 120, duration)
   }, delay);
 
-}
-
-const showTabInfo = (tsId: string) => {
-  if (tabsStore.getCurrentTabset && tabsStore.getCurrentTabset.tabs.length > 0) {
-    if (tabsStore.getCurrentTabset.tabs[0].url === useTabsStore()?.currentChromeTab.url)
-      return false
-  }
-  return true
 }
 
 </script>

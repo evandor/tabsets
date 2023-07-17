@@ -2,7 +2,7 @@
   <div class="q-ma-none q-pa-md fullimageBackground">
     <div class="row">
       <div class="col-12 text-h6">
-        Welcome to Tabsets Extension
+        Welcome to Tabsets
       </div>
     </div>
     <div class="row q-mb-lg">

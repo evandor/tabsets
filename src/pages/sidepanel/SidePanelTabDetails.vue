@@ -196,6 +196,20 @@
             <div class="col-5 text-caption text-bold">opened</div>
             <div class="col-7 text-right text-caption">{{ useUiStore().getSelectedTab?.activatedCount }}x</div>
           </div>
+
+          <template v-if="useSettingsStore().isEnabled('dev')">
+            <div class="row q-mx-sm">
+              <div class="col-12 text-caption text-bold q-px-xl"><hr></div>
+            </div>
+            <div class="row q-mx-sm" v-for="metaRow in metaRows">
+              <div class="col-5 text-caption text-bold">{{ metaRow.name }}</div>
+              <div class="col-7 text-right text-caption ellipsis">
+                {{ metaRow.value }}
+                <q-tooltip>{{ metaRow.value }}</q-tooltip>
+              </div>
+            </div>
+          </template>
+
         </q-card-section>
       </q-card>
     </q-expansion-item>
@@ -244,7 +258,7 @@
             <div class="col-7 text-right text-caption">{{ useUiStore().getSelectedTab?.selections?.length }}</div>
           </div>
           <div class="row q-mx-sm q-mt-none" v-for="selection in useUiStore().getSelectedTab?.selections">
-            <div class="col-12 text-caption">{{selection.text}}</div>
+            <div class="col-12 text-caption">{{ selection.text }}</div>
           </div>
         </q-card-section>
       </q-card>
@@ -316,6 +330,9 @@ const hasAllUrlsPermission = ref<boolean | undefined>(false)
 const thumbnail = ref('')
 const content = ref('')
 const searchIndex = ref<any>()
+const metaRows = ref<object[]>([])
+const metas = ref({})
+
 const {selectTabset} = useTabsetService()
 
 const tags = ref<string[]>([])
@@ -343,7 +360,17 @@ watchEffect(() => {
     TabsetService.getContentFor(uiStore.getSelectedTab)
       .then(data => {
         if (data) {
-          content.value = data.content
+          content.value = data['content' as keyof object]
+          //metas.value = data['metas' as keyof object]
+          metaRows.value = []
+          _.forEach(Object.keys(data['metas' as keyof object]), k => {
+            //console.log("k", k, data.metas[k])
+            metaRows.value.push({
+              name: k,
+              value: data['metas' as keyof object][k]
+            })
+          })
+          metaRows.value = _.sortBy(metaRows.value, s => s['name' as keyof object])
         }
       })
   }
