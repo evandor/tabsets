@@ -67,7 +67,11 @@ export function useTabsetService() {
 
     const trustedName = name.replace(STRIP_CHARS_IN_USER_INPUT, '')
     const tabs: Tab[] = _.filter(
-      _.map(chromeTabs, t => new Tab(uid(), t)),
+      _.map(chromeTabs, t => {
+        const tab = new Tab(uid(), t)
+        tab.tags.push(name)
+        return tab
+      }),
       (t: Tab) => {
         if (!useSettingsStore().isEnabled('extensionsAsTabs')) {
           return !t.url?.startsWith("chrome-extension://")

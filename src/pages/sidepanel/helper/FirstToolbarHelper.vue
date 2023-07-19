@@ -54,7 +54,7 @@
                       leave-active-class="animated fadeOutRight">
             <SearchWidget
               :fromPanel="true"
-              style="position: absolute; left:20px;top:5px;max-width:280px"/>
+              style="position: absolute; left:10px;top:5px;max-width:260px"/>
           </Transition>
 
           <!-- no spaces && not searching -->
@@ -93,12 +93,12 @@
 
           </template>
         </div>
-        <div class="col-4 text-right">
+        <div class="col-4 text-right q-pr-sm">
 
           <q-btn v-if="tabsStore.tabsets.size > 1"
                  icon="search"
                  flat
-                 class="q-ma-none q-pa-xs q-mr-md cursor-pointer"
+                 class="q-ma-none q-pa-xs cursor-pointer"
                  style="max-width:20px"
                  size="11px"
                  @click="toggleSearch">
@@ -106,7 +106,7 @@
           </q-btn>
 
           <q-btn
-            v-if="useUiStore().sidePanelActiveViewIs(SidePanelView.MAIN) && tabsStore.getCurrentTabset?.tabs.length > 7"
+            v-if="useUiStore().sidePanelActiveViewIs(SidePanelView.MAIN)"
             flat
             class="q-ma-none q-pa-xs cursor-pointer"
             style="width:20px;max-width:220px"
@@ -216,7 +216,7 @@ import {useSpacesStore} from "stores/spacesStore";
 import SearchWidget from "components/widgets/SearchWidget.vue";
 import {useTabsStore} from "stores/tabsStore";
 import {useRouter} from "vue-router";
-import {ref} from "vue";
+import {ref, watchEffect} from "vue";
 import NavigationService from "src/services/NavigationService";
 import {SidePanelView, useUiStore} from "stores/uiStore";
 import NewTabsetDialog from "components/dialogues/NewTabsetDialog.vue";
@@ -233,7 +233,8 @@ import ChromeApi from "src/services/ChromeApi";
 const props = defineProps({
   title: {type: String, default: "My Tabsets"},
   forceTitle: {type: Boolean, default: false},
-  showBackButton: {type: Boolean, default: false}
+  showBackButton: {type: Boolean, default: false},
+  showSearchBox: {type: Boolean, default: false}
 })
 
 const $q = useQuasar()
@@ -245,6 +246,13 @@ const popupEditRef = ref<QPopupEdit>()
 const existingSession = ref(false)
 
 const toggleSearch = () => searching.value = !searching.value
+
+watchEffect(() => {
+  //console.log("props.showSearchBox", props.showSearchBox)
+  if (props.showSearchBox && !searching.value) {
+    searching.value = true
+  }
+})
 
 const toggleRemote = () => {
   useUiStore().sidePanel.activeView?.ident === SidePanelView.MAIN.ident ?
@@ -284,7 +292,7 @@ const titleForSpaces = () => {
 
 
 const setFilter = (newValue: string) => {
-  console.log("filter", newValue)
+  console.log("filtering tabs", newValue)
   const useValue = newValue && newValue.trim().length > 0 ? newValue.trim() : undefined
   useUiStore().tabsFilter = useValue
   useUiStore().setHighlightTerm(useValue)
@@ -329,7 +337,9 @@ const createClip = () => {
   }
 }
 
-const showSorting = () => useUiStore().sidePanelActiveViewIs(SidePanelView.MAIN) && tabsStore.getCurrentTabs.length > 3
+const showSorting = () => useUiStore().sidePanelActiveViewIs(SidePanelView.MAIN) &&
+  tabsStore.getCurrentTabs.length > 3 &&
+  useUiStore().tabsetsExpanded
 
 </script>
 

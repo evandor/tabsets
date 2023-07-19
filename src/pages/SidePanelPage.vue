@@ -1,14 +1,15 @@
 <template>
 
-  <q-page style="padding-top: 45px">
+  <q-page style="padding-top: 50px">
     <!-- list of tabs, assuming here we have at least one tabset -->
     <div class="q-ma-none">
 
       <div class="q-ma-none q-pa-none">
         <q-list dense
-                class="rounded-borders q-ma-none q-pa-none" :key="tabset.id" v-for="(tabset,index) in tabsets">
+                class="rounded-borders q-ma-none q-pa-none" :key="tabset.id"
+                v-for="(tabset,index) in tabsets">
           <!-- :model-value="isExpanded(tabset.id)" -->
-          <q-expansion-item
+          <q-expansion-item v-if="showTabset(tabset as Tabset)"
             :header-class="tabsStore.currentTabsetId === tabset.id ? 'bg-grey-4':''"
             header-class="q-ma-none q-px-sm"
             :header-style="tabsetExpanded.get(tabset.id) ?
@@ -31,7 +32,7 @@
                   {{ tabset.name }}
                 </q-item-label>
                 <q-item-label class="text-caption text-grey-5">
-                  {{ tabsetCaption(tabset as Tabset) }}
+                  {{ tabsetCaption(filteredTabs(tabset.tabs)) }}
                 </q-item-label>
               </q-item-section>
 
@@ -60,7 +61,7 @@
               <div class="q-ma-xs">
                 <SidePanelTabInfo :tabsetId="tabset.id"/>
               </div>
-              <PanelTabList :tabs="tabset.tabs" v-if="tabsetExpanded.get(tabset.id)"/>
+              <PanelTabList :tabs="filteredTabs(tabset.tabs)" v-if="tabsetExpanded.get(tabset.id)"/>
             </div>
           </q-expansion-item>
 
@@ -75,6 +76,7 @@
     <q-page-sticky expand position="top" style="background-color:white">
 
       <FirstToolbarHelper
+        :showSearchBox="showSearchBox"
         :title="tabsets.length > 6 ? 'My Tabsets (' + tabsets.length.toString() + ')' : 'My Tabsets'"/>
       <!--      <SecondToolbarHelper/>-->
 
@@ -85,7 +87,7 @@
 
 <script lang="ts" setup>
 
-import {onMounted, ref, watchEffect} from "vue";
+import {onMounted, onUnmounted, ref, watchEffect} from "vue";
 import {useTabsStore} from "src/stores/tabsStore";
 import {Tab} from "src/models/Tab";
 import _ from "lodash"
@@ -131,6 +133,7 @@ const tabsStore = useTabsStore()
 const spacesStore = useSpacesStore()
 const uiStore = useUiStore()
 const show = ref(false)
+const showSearchBox = ref(false)
 
 const currentChromeTabs = ref<chrome.tabs.Tab[]>([])
 const tabsetName = ref<object>(null as unknown as object)
@@ -138,13 +141,8 @@ const tabsetNameOptions = ref<object[]>([])
 const openTabs = ref<chrome.tabs.Tab[]>([])
 const currentTabset = ref<Tabset | undefined>(undefined)
 const currentChromeTab = ref<chrome.tabs.Tab>(null as unknown as chrome.tabs.Tab)
-const orderDesc = ref(false)
 const tabsetExpanded = ref<Map<string, boolean>>(new Map())
-const filteredTabs = ref<Map<string, Tab[]>>(new Map())
 const tabs = ref<Map<string, Tab[]>>(new Map())
-const currentTabs = ref<Tab[]>([])
-
-const tabLists = ref([])
 
 const hoveredTabset = ref<string | undefined>(undefined)
 const tabsets = ref<Tabset[]>([])
@@ -154,6 +152,16 @@ const progress = ref<number | undefined>(undefined)
 const progressLabel = ref<string | undefined>(undefined)
 
 const selectedTab = ref<Tab | undefined>(undefined)
+
+
+onMounted(() => {
+  window.addEventListener('keypress', checkKeystroke);
+})
+
+onUnmounted(() => {
+  window.removeEventListener('keypress', checkKeystroke);
+})
+
 
 watchEffect(() => {
   selectedTab.value = useUiStore().getSelectedTab
@@ -176,7 +184,7 @@ function inIgnoredMessages(message: any) {
     message.msg === "html2links" ||
     message.name === "zero-shot-classification" ||
     message.msg === "websiteQuote";
-    message.msg === "init-ai-module";
+  message.msg === "init-ai-module";
 }
 
 if (inBexMode()) {
@@ -201,7 +209,7 @@ if (inBexMode()) {
       if (message.data.noteId) {
         console.log("updating note", message.data.noteId)
         useTabsStore().getTab(message.data.noteId)
-          .then((res:object|undefined) => {
+          .then((res: object | undefined) => {
             if (res) {
               const note = res['tab' as keyof object] as Tab
               note.title = message.data.tab.title
@@ -275,13 +283,25 @@ watchEffect(() => {
         (ts: Tabset) => ts.status !== TabsetStatus.DELETED),
       getTabsetOrder, ["asc"])
   }
-  // console.log("clearing tabsetExpanded.value", tabsetExpanded.value)
-  // tabsetExpanded.value.clear()
-  // if (tabsets.value.length === 1) {
-  //   const onlyTabsetId: string = (tabsets.value[0] as Tabset).id
-  //   console.log("onlyTabsetidf", onlyTabsetId)
-  //   tabsetExpanded.value.set(onlyTabsetId, true)
-  // }
+})
+
+const filteredTabs = (tabs: Tab[]): Tab[] => {
+  // TODO order??
+  const filter = useUiStore().tabsFilter
+  if (!filter || filter.trim() === '') {
+    return tabs
+  }
+  return _.filter(tabs, (t: Tab) => {
+    return (t.url || '')?.indexOf(filter) >= 0 ||
+      (t.title || '')?.indexOf(filter) >= 0 ||
+      t.description?.indexOf(filter) >= 0
+  })
+}
+
+watchEffect(() => {
+  if (useUiStore().tabsFilter) {
+    console.log("filtering:::", useUiStore().tabsFilter)
+  }
 })
 
 watchEffect(() => {
@@ -305,19 +325,20 @@ if (inBexMode()) {
   })
 }
 
-watchEffect(() => {
-  const filter = useUiStore().tabsFilter
-  const ts = useTabsStore().getCurrentTabset?.tabs || []
-  if (filter && filter.trim() !== '') {
-    return _.orderBy(_.filter(ts, (t: Tab) => {
-        return (t.url || '')?.indexOf(filter) >= 0 ||
-          (t.title || '')?.indexOf(filter) >= 0 ||
-          t.description?.indexOf(filter) >= 0
-      })
-      , getOrder(), [orderDesc.value ? 'desc' : 'asc'])
-  }
-  return _.orderBy(ts, getOrder(), [orderDesc.value ? 'desc' : 'asc'])
-})
+// watchEffect(() => {
+//   const filter = useUiStore().tabsFilter
+//   console.log("using filter from uiStore", filter)
+//   const ts = useTabsStore().getCurrentTabset?.tabs || []
+//   if (filter && filter.trim() !== '') {
+//     return _.orderBy(_.filter(ts, (t: Tab) => {
+//         return (t.url || '')?.indexOf(filter) >= 0 ||
+//           (t.title || '')?.indexOf(filter) >= 0 ||
+//           t.description?.indexOf(filter) >= 0
+//       })
+//       , getOrder(), [orderDesc.value ? 'desc' : 'asc'])
+//   }
+//   return _.orderBy(ts, getOrder(), [orderDesc.value ? 'desc' : 'asc'])
+// })
 
 function getOrder() {
   if (tabsStore.getCurrentTabset) {
@@ -338,6 +359,9 @@ const updateSelectedTabset = (tabsetId: string, open: boolean, index: number) =>
   tabsetExpanded.value.set(tabsetId, open)
   if (open) {
     scrollToElement(document.getElementsByClassName("q-expansion-item")[index], 300)
+
+    useUiStore().tabsetsExpanded = true
+
     useCommandExecutor()
       .execute(new SelectTabsetCommand(tabsetId, useSpacesStore().space?.id))
       .then((res: ExecutionResult<Tabset | undefined>) => {
@@ -345,7 +369,7 @@ const updateSelectedTabset = (tabsetId: string, open: boolean, index: number) =>
           const promises: Promise<any>[] = []
 
           res.result?.tabs.forEach((t: Tab) => {
-            if (t.url) {
+            if (t.url && !t.url.startsWith("chrome://")) {
               const p = fetch(t.url, {method: 'HEAD'})
                 .then(function (response) {
                   console.log("got results from HEAD (" + t.url + ") : ", response.status)
@@ -390,9 +414,19 @@ const updateSelectedTabset = (tabsetId: string, open: boolean, index: number) =>
 
 
   }
+  else {
+    useUiStore().tabsetsExpanded = false
+  }
 }
 
-const tabsetCaption = (tabset: Tabset) => tabset.tabs.length + ' tab' + (tabset.tabs.length === 1 ? '' : 's')
+const tabsetCaption = (tabs: Tab[]) => {
+  const filter = useUiStore().tabsFilter
+  if (!filter || filter.trim() === '') {
+    return tabs.length + ' tab' + (tabs.length === 1 ? '' : 's')
+  } else {
+    return tabs.length + ' tab' + (tabs.length === 1 ? '' : 's') + ' (filtered)'
+  }
+}
 
 const hoveredOver = (tabsetId: string) => hoveredTabset.value === tabsetId
 
@@ -405,6 +439,24 @@ const scrollToElement = (el: any, delay: number) => {
   }, delay);
 
 }
+
+function checkKeystroke(e: KeyboardEvent) {
+  if (useUiStore().ignoreKeypressListener()) {
+    return
+  }
+  if (e.key === '/') {
+    // TODO does not work properly yet
+    //showSearchBox.value = true
+    // e.preventDefault()
+    // // @ts-ignore
+    // searchBox.value.focus()
+    // search.value = ''
+  }
+}
+
+const showTabset = (tabset:Tabset) => !useUiStore().tabsFilter ?
+  true :
+  (useUiStore().tabsFilter === '' || filteredTabs(tabset.tabs).length > 0)
 
 </script>
 

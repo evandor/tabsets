@@ -35,7 +35,7 @@ export class SidePanelView {
     () => usePermissionsStore().hasFeature(FeatureIdent.OPEN_TABS) && useTabsStore().tabs?.length > 1);
 
   static readonly TAGS_LIST = new SidePanelView('tagsList', '/sidepanel/tagslist',
-    () => useTabsStore().tabsets.size > 1);
+    () => useTabsStore().tabsets.size > 4);
 
   static readonly TAG = new SidePanelView('tag', '/sidepanel/tags');
 
@@ -99,6 +99,7 @@ export const useUiStore = defineStore('ui', () => {
   const selectedTab = ref<Tab | undefined>(undefined)
   const tabsFilter = ref<string | undefined>(undefined)
   const selectedTag = ref<string | undefined>(undefined)
+  const tabsetsExpanded = ref<boolean>(false)
 
   // RightDrawer
   let rightDrawer = ref<RightDrawer>(new RightDrawer())
@@ -378,6 +379,7 @@ export const useUiStore = defineStore('ui', () => {
     sidePanelActiveViewIs,
     toggleLeftDrawer,
     progress,
-    progressLabel
+    progressLabel,
+    tabsetsExpanded
   }
 })

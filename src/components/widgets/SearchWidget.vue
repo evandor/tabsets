@@ -13,7 +13,6 @@
               @update:model-value="val => updateSearch( val)"
               @keydown.enter.prevent="submitSearch()"
               use-input
-              new-value-mode="add"
               :options="options"
               @filter="filterFn">
 
@@ -102,6 +101,10 @@ const props = defineProps({
   fromPanel: {type: Boolean, default: false}
 })
 
+watchEffect(() => {
+  console.log("search", search.value)
+})
+
 function submitSearch() {
   setTimeout(() => {
     console.log("submitting search", searchStore, typedOrSelected.value)
@@ -121,26 +124,6 @@ function submitSearch() {
 
 }
 
-function checkKeystroke(e: KeyboardEvent) {
-  if (useUiStore().ignoreKeypressListener()) {
-    return
-  }
-  if (e.key === '/' && searchBox.value) {
-    e.preventDefault()
-    // @ts-ignore
-    searchBox.value.focus()
-    search.value = ''
-  }
-}
-
-onMounted(() => {
-  window.addEventListener('keypress', checkKeystroke);
-})
-
-onUnmounted(() => {
-  window.removeEventListener('keypress', checkKeystroke);
-})
-
 const options = ref<Hit[]>([])
 const model = ref(null)
 
@@ -159,6 +142,10 @@ const runSearch = (term: string) => {
 
 const filterFn = (val: any, update: any, abort: any) => {
   console.log("filterFn", val)
+  if (val === '/') {
+    //search.value = ""
+    return
+  }
   runSearch(val)
   highlight.value = undefined
   useUiStore().highlightTerm = undefined
