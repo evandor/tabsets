@@ -10,15 +10,15 @@
                 v-for="(tabset,index) in tabsets">
           <!-- :model-value="isExpanded(tabset.id)" -->
           <q-expansion-item v-if="showTabset(tabset as Tabset)"
-            :header-class="tabsStore.currentTabsetId === tabset.id ? 'bg-grey-4':''"
-            header-class="q-ma-none q-px-sm"
-            :header-style="tabsetExpanded.get(tabset.id) ?
+                            :header-class="tabsStore.currentTabsetId === tabset.id ? 'bg-grey-4':''"
+                            header-class="q-ma-none q-px-sm"
+                            :header-style="tabsetExpanded.get(tabset.id) ?
               'border:0 solid grey;border-top-left-radius:4px;border-top-right-radius:4px' :
               'border:0 solid grey;border-radius:4px'"
-            group="tabsets"
-            :default-opened="false"
-            @update:model-value="val => updateSelectedTabset(tabset.id, val, index)"
-            expand-separator>
+                            group="tabsets"
+                            :default-opened="false"
+                            @update:model-value="val => updateSelectedTabset(tabset.id, val, index)"
+                            expand-separator>
 
             <template v-slot:header>
               <q-item-section
@@ -413,8 +413,7 @@ const updateSelectedTabset = (tabsetId: string, open: boolean, index: number) =>
       })
 
 
-  }
-  else {
+  } else {
     useUiStore().tabsetsExpanded = false
   }
 }
@@ -454,7 +453,7 @@ function checkKeystroke(e: KeyboardEvent) {
   }
 }
 
-const showTabset = (tabset:Tabset) => !useUiStore().tabsFilter ?
+const showTabset = (tabset: Tabset) => !useUiStore().tabsFilter ?
   true :
   (useUiStore().tabsFilter === '' || filteredTabs(tabset.tabs).length > 0)
 

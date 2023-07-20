@@ -1,27 +1,10 @@
 <template>
 
-  <q-page>
-    <q-toolbar class="text-primary lightgrey">
-      <div class="row fit">
-        <q-toolbar-title>
-          <div class="row">
-            <div class="col-2">
-              <q-icon name="chevron_left" class="cursor-pointer" @click="router.push('/sidepanel/tagslist')">
-                <q-tooltip>Back</q-tooltip>
-              </q-icon>
-            </div>
-            <div class="col-10" style="font-size:smaller">
-              Tags List
-            </div>
-          </div>
-        </q-toolbar-title>
-      </div>
-    </q-toolbar>
+  <q-page style="padding-top: 35px">
 
-    <div class="row fit greyBorderTop"></div>
+    <div class="row q-ma-none q-pa-none">
+      <div class="col-12 q-ma-none q-pa-none q-pt-sm">
 
-    <div class="row">
-      <div class="col-8 q-ma-md">
         <template v-for="hit in tabsetHits">
           <q-list>
             <SearchHit :hit="hit"/>
@@ -29,10 +12,19 @@
         </template>
 
       </div>
-      <div class="col-4 q-ma-md">
-
-      </div>
     </div>
+
+
+    <!-- place QPageSticky at end of page -->
+    <q-page-sticky expand position="top" style="background-color:white">
+
+      <FirstToolbarHelper
+        :title="useUiStore().selectedTag + ' (Tags List)'"
+        @was-clicked="router.push('/sidepanel/tagslist')"
+        :show-back-button="true"/>
+
+    </q-page-sticky>
+
   </q-page>
 
 </template>
@@ -55,6 +47,8 @@ import {GrantPermissionCommand} from "src/domain/commands/GrantPermissionCommand
 import {useUiStore} from "src/stores/uiStore";
 import {Tab} from "src/models/Tab";
 import {useTabsetService} from "src/services/TabsetService2";
+import InfoMessageWidget from "components/widgets/InfoMessageWidget.vue";
+import FirstToolbarHelper from "pages/sidepanel/helper/FirstToolbarHelper.vue";
 
 const route = useRoute()
 const tabsStore = useTabsStore()
@@ -88,7 +82,7 @@ const newSearch = (term: string) => {
       }
       const theHit = new Hit(
         uid(),
- //       h.chromeTab,
+        //       h.chromeTab,
         h.title || '',
         h.url || '',
         h.favIconUrl || '',

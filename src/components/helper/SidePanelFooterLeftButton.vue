@@ -7,6 +7,7 @@
          @click="toggleView()">
     <q-tooltip v-if="props.tooltip" class="tooltip">{{ props.tooltip}}</q-tooltip>
   </q-btn>
+
 </template>
 
 <script lang="ts" setup>

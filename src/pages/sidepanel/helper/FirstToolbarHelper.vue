@@ -6,13 +6,13 @@
         <!-- we have spaces -->
         <div v-if="usePermissionsStore().hasFeature(FeatureIdent.SPACES)"
              class="col-8 q-ma-none q-pa-none">
-          <template v-if="!props.showBackButton">
+          <template v-if="props.showBackButton">
             <SearchWidget v-if="searching"
                           :fromPanel="true"
                           style="position: absolute; left:5px;top:5px;max-width:240px"/>
             <div class="column q-ma-none q-pa-none" v-else>
               <div class="col q-ma-none q-pa-none cursor-pointer"
-                   @click="router.push('/sidepanel/spaces')">
+                   @click.stop="emits('wasClicked')">
                 {{ titleForSpaces() }}
               </div>
             </div>
@@ -32,7 +32,7 @@
                   <q-icon
                     size="md"
                     name="chevron_left" class="cursor-pointer"
-                    @click="useUiStore().sidePanelSetActiveView(SidePanelView.MAIN)">
+                    @click.stop="emits('wasClicked')">
                     <q-tooltip>Back</q-tooltip>
                   </q-icon>
                 </div>
@@ -62,15 +62,13 @@
 
             <!-- no spaces && not searching && showBackButton -->
             <div class="row" v-if="props.showBackButton">
-              <div class="col-2">
+              <div class="col-12 text-black text-subtitle1">
                 <q-icon
-                  size="md"
+                  size="18px" color="primary"
                   name="chevron_left" class="cursor-pointer"
-                  @click="useUiStore().sidePanelSetActiveView(SidePanelView.MAIN)">
+                  @click.stop="emits('wasClicked')">
                   <q-tooltip>Back</q-tooltip>
                 </q-icon>
-              </div>
-              <div class="col text-black text-subtitle1">
                 {{ props.title }}
               </div>
             </div>
@@ -95,7 +93,7 @@
         </div>
         <div class="col-4 text-right q-pr-sm">
 
-          <q-btn v-if="tabsStore.tabsets.size > 1"
+          <q-btn v-if="showSearchIcon()"
                  icon="search"
                  flat
                  class="q-ma-none q-pa-xs cursor-pointer"
@@ -106,7 +104,7 @@
           </q-btn>
 
           <q-btn
-            v-if="useUiStore().sidePanelActiveViewIs(SidePanelView.MAIN)"
+            v-if="showFilterIcon()"
             flat
             class="q-ma-none q-pa-xs cursor-pointer"
             style="width:20px;max-width:220px"
@@ -133,7 +131,7 @@
             </q-tooltip>
           </q-btn>
 
-          <q-btn v-if="showSorting()"
+          <q-btn v-if="showSortIcon()"
                  flat
                  size="10px"
                  class="q-ma-none q-pa-xs cursor-pointer"
@@ -145,25 +143,27 @@
             <q-tooltip class="tooltip">Toggle through sorting</q-tooltip>
           </q-btn>
 
-          <q-btn v-if="useUiStore().sidePanelActiveViewIs(SidePanelView.MAIN) && usePermissionsStore().hasFeature(FeatureIdent.SESSIONS)"
-                 flat
-                 style="max-width:20px"
-                 size="10px"
-                 class="q-ma-none q-pa-xs cursor-pointer"
-                 :color="existingSession ? (tabsStore.getCurrentTabset?.type === TabsetType.SESSION ? 'red':'grey-5') :'primary'"
-                 :icon="existingSession ? 'o_stop_circle':'o_play_circle'"
-                 @click="toggleSessionState">
+          <q-btn
+            v-if="showToggleSessionIcon()"
+            flat
+            style="max-width:20px"
+            size="10px"
+            class="q-ma-none q-pa-xs cursor-pointer"
+            :color="existingSession ? (tabsStore.getCurrentTabset?.type === TabsetType.SESSION ? 'red':'grey-5') :'primary'"
+            :icon="existingSession ? 'o_stop_circle':'o_play_circle'"
+            @click="toggleSessionState">
             <q-tooltip class="tooltip" v-if="existingSession">Stop Session</q-tooltip>
             <q-tooltip class="tooltip" v-else>Start new Session</q-tooltip>
           </q-btn>
 
-          <q-btn v-if="useUiStore().sidePanelActiveViewIs(SidePanelView.MAIN) && usePermissionsStore().hasFeature(FeatureIdent.WEBSITE_CLIP) && webClipActive()"
-                 icon="filter_center_focus"
-                 flat
-                 class="q-ma-none q-pa-xs cursor-pointer"
-                 style="max-width:20px"
-                 size="10px"
-                 @click="createClip">
+          <q-btn
+            v-if="useUiStore().sidePanelActiveViewIs(SidePanelView.MAIN) && usePermissionsStore().hasFeature(FeatureIdent.WEBSITE_CLIP) && webClipActive()"
+            icon="filter_center_focus"
+            flat
+            class="q-ma-none q-pa-xs cursor-pointer"
+            style="max-width:20px"
+            size="10px"
+            @click="createClip">
             <q-tooltip class="tooltip">{{ createWebsiteClipTooltip() }}</q-tooltip>
           </q-btn>
           <q-btn
@@ -177,18 +177,17 @@
             <q-tooltip class="tooltip">cannot create web clip for this tab</q-tooltip>
           </q-btn>
 
-<!--          <q-btn-->
-<!--            v-if="usePermissionsStore().hasFeature(FeatureIdent.CATEGORIZATION)"-->
-<!--            icon="o_cloud"-->
-<!--            :color="cloudIconColor()"-->
-<!--            flat-->
-<!--            class="q-ma-none q-pa-xs cursor-pointer"-->
-<!--            style="max-width:20px"-->
-<!--            size="11px"-->
-<!--            @click="toggleRemote()">-->
-<!--            <q-tooltip class="tooltip">Show Tabset Suggestions</q-tooltip>-->
-<!--          </q-btn>-->
-
+          <!--          <q-btn-->
+          <!--            v-if="usePermissionsStore().hasFeature(FeatureIdent.CATEGORIZATION)"-->
+          <!--            icon="o_cloud"-->
+          <!--            :color="cloudIconColor()"-->
+          <!--            flat-->
+          <!--            class="q-ma-none q-pa-xs cursor-pointer"-->
+          <!--            style="max-width:20px"-->
+          <!--            size="11px"-->
+          <!--            @click="toggleRemote()">-->
+          <!--            <q-tooltip class="tooltip">Show Tabset Suggestions</q-tooltip>-->
+          <!--          </q-btn>-->
 
 
           <!--          <q-btn-->
@@ -236,6 +235,9 @@ const props = defineProps({
   showBackButton: {type: Boolean, default: false},
   showSearchBox: {type: Boolean, default: false}
 })
+
+const emits = defineEmits(['wasClicked'])
+
 
 const $q = useQuasar()
 const router = useRouter()
@@ -332,14 +334,26 @@ const webClipActive = () => tabsStore.currentChromeTab
 
 const createClip = () => {
   //console.log("creating clip", currentChromeTabs.value[0])
-  if (tabsStore.current.chromeTabId) {
-    ChromeApi.executeClippingJS(tabsStore.current.chromeTabId)
+  if (tabsStore.currentChromeTab.id) {
+    ChromeApi.executeClippingJS(tabsStore.currentChromeTab.id)
   }
 }
 
-const showSorting = () => useUiStore().sidePanelActiveViewIs(SidePanelView.MAIN) &&
+const showSortIcon = () => useUiStore().sidePanelActiveViewIs(SidePanelView.MAIN) &&
+  !props.showBackButton &&
   tabsStore.getCurrentTabs.length > 3 &&
   useUiStore().tabsetsExpanded
+
+const showFilterIcon = () => !props.showBackButton &&
+  useUiStore().sidePanelActiveViewIs(SidePanelView.MAIN) &&
+  tabsStore.tabsets.size > 1 &&
+  useUiStore().tabsetsExpanded
+
+const showSearchIcon = () => !props.showBackButton && tabsStore.tabsets.size > 1
+
+const showToggleSessionIcon = () => !props.showBackButton &&
+  useUiStore().sidePanelActiveViewIs(SidePanelView.MAIN) &&
+  usePermissionsStore().hasFeature(FeatureIdent.SESSIONS)
 
 </script>
 

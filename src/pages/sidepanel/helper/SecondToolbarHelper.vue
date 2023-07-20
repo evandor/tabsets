@@ -238,8 +238,8 @@ watchEffect(() => {
 
 const createClip = () => {
   //console.log("creating clip", currentChromeTabs.value[0])
-  if (tabsStore.current.chromeTabId) {
-    ChromeApi.executeClippingJS(tabsStore.current.chromeTabId)
+  if (tabsStore.currentChromeTab.id) {
+    ChromeApi.executeClippingJS(tabsStore.currentChromeTab.id)
   }
 }
 
