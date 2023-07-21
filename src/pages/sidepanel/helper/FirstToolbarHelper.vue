@@ -6,38 +6,38 @@
         <!-- we have spaces -->
         <div v-if="usePermissionsStore().hasFeature(FeatureIdent.SPACES)"
              class="col-8 q-ma-none q-pa-none">
-          <template v-if="props.showBackButton">
-            <SearchWidget v-if="searching"
-                          :fromPanel="true"
-                          style="position: absolute; left:5px;top:5px;max-width:240px"/>
-            <div class="column q-ma-none q-pa-none" v-else>
-              <div class="col q-ma-none q-pa-none cursor-pointer"
-                   @click.stop="emits('wasClicked')">
-                {{ titleForSpaces() }}
+          <template v-if="!props.showBackButton">
+
+            <SearchWithTransitionHelper v-if="searching"/>
+
+            <template v-else>
+              <div class="column q-ma-none q-pa-none">
+                <div class="col q-ma-none q-pa-none cursor-pointer text-black text-subtitle1"
+                     @click.stop="router.push('/sidepanel/spaces')">
+
+                  <slot name="title">{{ props.title }}</slot>
+
+                </div>
               </div>
-            </div>
+            </template>
           </template>
 
           <template v-else>
             <template v-if="searching">
-              <Transition appear enter-active-class="animated fadeInRight">
-                <SearchWidget v-if="searching"
-                              :fromPanel="true"
-                              style="position: absolute; left:5px;top:5px;max-width:240px"/>
-              </Transition>
+              <SearchWithTransitionHelper />
             </template>
             <template v-else>
               <div class="row">
-                <div class="col-2">
+                <div class="col-12 text-black text-subtitle1">
                   <q-icon
-                    size="md"
+                    size="18px" color="primary"
                     name="chevron_left" class="cursor-pointer"
                     @click.stop="emits('wasClicked')">
                     <q-tooltip>Back</q-tooltip>
                   </q-icon>
-                </div>
-                <div class="col text-black text-subtitle1">
-                  {{ props.title }}
+
+                  <slot name="title">{{ props.title }}</slot>
+
                 </div>
               </div>
             </template>
@@ -48,14 +48,7 @@
         <div v-else class="col-8 q-ma-none q-pa-none">
 
           <!-- no spaces && searching -->
-          <Transition v-if="searching"
-                      appear
-                      enter-active-class="animated fadeInRight"
-                      leave-active-class="animated fadeOutRight">
-            <SearchWidget
-              :fromPanel="true"
-              style="position: absolute; left:10px;top:5px;max-width:260px"/>
-          </Transition>
+          <SearchWithTransitionHelper v-if="searching"/>
 
           <!-- no spaces && not searching -->
           <template v-else>
@@ -69,31 +62,26 @@
                   @click.stop="emits('wasClicked')">
                   <q-tooltip>Back</q-tooltip>
                 </q-icon>
-                {{ props.title }}
+
+                <slot name="title">{{ props.title }}</slot>
+
               </div>
             </div>
 
             <!-- no spaces && not searching && not showBackButton -->
             <div v-else class="col q-ml-none text-black text-subtitle1">
-              {{ props.title }}
-              <q-btn
-                icon="o_add"
-                color="primary"
-                flat
-                class="q-ma-none q-pa-xs cursor-pointer"
-                style="max-width:20px"
-                size="10px"
-                @click="openNewTabsetDialog()">
-                <q-tooltip class="tooltip">Add new Tabset</q-tooltip>
-              </q-btn>
+              <slot name="title">{{ props.title }}</slot>
             </div>
 
 
           </template>
         </div>
+
+        <!-- spaces or not, here's the icons on the right side -->
         <div class="col-4 text-right q-pr-sm">
 
           <q-btn v-if="showSearchIcon()"
+                 id="toggleSearchBtn"
                  icon="search"
                  flat
                  class="q-ma-none q-pa-xs cursor-pointer"
@@ -177,30 +165,6 @@
             <q-tooltip class="tooltip">cannot create web clip for this tab</q-tooltip>
           </q-btn>
 
-          <!--          <q-btn-->
-          <!--            v-if="usePermissionsStore().hasFeature(FeatureIdent.CATEGORIZATION)"-->
-          <!--            icon="o_cloud"-->
-          <!--            :color="cloudIconColor()"-->
-          <!--            flat-->
-          <!--            class="q-ma-none q-pa-xs cursor-pointer"-->
-          <!--            style="max-width:20px"-->
-          <!--            size="11px"-->
-          <!--            @click="toggleRemote()">-->
-          <!--            <q-tooltip class="tooltip">Show Tabset Suggestions</q-tooltip>-->
-          <!--          </q-btn>-->
-
-
-          <!--          <q-btn-->
-          <!--            v-if="tabsStore.tabsets.size > 1 && useSettingsStore().isEnabled('dev')"-->
-          <!--            icon="o_keyboard_double_arrow_right"-->
-          <!--            flat-->
-          <!--            class="q-ma-none q-pa-xs cursor-pointer"-->
-          <!--            style="max-width:20px"-->
-          <!--            size="11px"-->
-          <!--            @click="openTabsetPage()">-->
-          <!--            <q-tooltip class="tooltip">Open this Tabset as Standalone page</q-tooltip>-->
-          <!--          </q-btn>-->
-
         </div>
       </div>
     </q-toolbar-title>
@@ -228,6 +192,7 @@ import NewSessionDialog from "components/dialogues/NewSessionDialog.vue";
 import _ from "lodash";
 import {StopSessionCommand} from "src/domain/commands/StopSessionCommand";
 import ChromeApi from "src/services/ChromeApi";
+import SearchWithTransitionHelper from "pages/sidepanel/helper/SearchWithTransitionHelper.vue";
 
 const props = defineProps({
   title: {type: String, default: "My Tabsets"},
@@ -250,7 +215,6 @@ const existingSession = ref(false)
 const toggleSearch = () => searching.value = !searching.value
 
 watchEffect(() => {
-  //console.log("props.showSearchBox", props.showSearchBox)
   if (props.showSearchBox && !searching.value) {
     searching.value = true
   }
@@ -271,16 +235,6 @@ const openTabsetPage = () => {
   router.push("/sidepanel/spaces")
 }
 
-const openNewTabsetDialog = () => {
-  $q.dialog({
-    component: NewTabsetDialog,
-    componentProps: {
-      tabsetId: tabsStore.currentTabsetId,
-      fromPanel: true
-    }
-  })
-}
-
 const cloudIconColor = () => {
   return useUiStore().sidePanel.activeView?.ident === SidePanelView.PUBLIC_TABSETS.ident ? 'warning' : 'primary'
 }
@@ -292,7 +246,6 @@ const titleForSpaces = () => {
   return useSpacesStore().space ? useSpacesStore().space.label : 'no space selected'
 }
 
-
 const setFilter = (newValue: string) => {
   console.log("filtering tabs", newValue)
   const useValue = newValue && newValue.trim().length > 0 ? newValue.trim() : undefined
@@ -300,6 +253,7 @@ const setFilter = (newValue: string) => {
   useUiStore().setHighlightTerm(useValue)
   JsUtils.runCssHighlight()
 }
+
 const clearFilter = () => {
   useUiStore().tabsFilter = undefined
   popupEditRef.value?.set()
@@ -310,7 +264,6 @@ const clearFilter = () => {
 const toggleSorting = () => useCommandExecutor().executeFromUi(new ToggleSortingCommand(tabsStore.currentTabsetId))
 
 const toggleSessionState = () => existingSession ? stopSession() : startSession()
-
 
 const startSession = () => $q.dialog({
   component: NewSessionDialog,
@@ -325,15 +278,11 @@ const stopSession = () => {
   }
 }
 
-const createWebsiteClipTooltip = () => {
-  //return "Create Website Clip for tab " + currentTabs.value[0].url
-  return "Create Website Clip for tab " + tabsStore.currentChromeTab?.url
-}
+const createWebsiteClipTooltip = () => "Create Website Clip for tab " + tabsStore.currentChromeTab?.url
 
 const webClipActive = () => tabsStore.currentChromeTab
 
 const createClip = () => {
-  //console.log("creating clip", currentChromeTabs.value[0])
   if (tabsStore.currentChromeTab.id) {
     ChromeApi.executeClippingJS(tabsStore.currentChromeTab.id)
   }

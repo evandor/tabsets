@@ -2,17 +2,11 @@ import {installQuasarPlugin} from '@quasar/quasar-app-extension-testing-unit-vit
 import {mount} from '@vue/test-utils';
 import {beforeAll, beforeEach, describe, expect, it} from 'vitest';
 import {createPinia, setActivePinia} from "pinia";
-import CurrentTabElementHelper from "pages/sidepanel/helper/CurrentTabElementHelper.vue";
 import {useTabsStore} from "stores/tabsStore";
 import ChromeApi from "src/services/ChromeApi";
 import IndexedDbPersistenceService from "src/services/IndexedDbPersistenceService";
-import {useTabsetService} from "src/services/TabsetService2";
-import {useCommandExecutor} from "src/services/CommandExecutor";
-import {CreateTabsetCommand} from "src/domain/tabsets/CreateTabset";
-import {AddTabToTabsetCommand} from "src/domain/tabs/AddTabToTabset";
-import {Tab} from "src/models/Tab";
-import {uid} from "quasar";
 import FirstToolbarHelper from "pages/sidepanel/helper/FirstToolbarHelper.vue";
+import {CreateTabsetCommand} from "src/domain/tabsets/CreateTabset";
 
 installQuasarPlugin();
 
@@ -24,18 +18,28 @@ describe('FirstToolbarHelper', () => {
     setActivePinia(createPinia())
   })
 
-  it('should be mounted from chrome tab', async () => {
+  it('should be mounted', async () => {
     await IndexedDbPersistenceService.init("db")
     useTabsStore().setCurrentChromeTab(skysailChromeTab)
     const wrapper = mount(FirstToolbarHelper);
-    /*console.log("hier", wrapper.html())
-    expect(wrapper.text()).toContain("www.skysail.io");
-    expect(wrapper.text()).toContain("save in");
-    expect(wrapper.text()).toContain("title");
-    expect(wrapper.text()).toContain("www.skysail.io");*/
-    expect(wrapper.text()).toContain("Tabset");
+    console.log("hier", wrapper.html())
+    expect(wrapper.text()).toContain("My Tabsets");
+    expect(wrapper.text()).not.toContain("search");
   });
 
+  it('should allow toggling of search', async () => {
+    await IndexedDbPersistenceService.init("db")
+    const wrapper = mount(FirstToolbarHelper);
+
+    // need at least two tabsets
+    await new CreateTabsetCommand("new Tabset A", []).execute()
+    await new CreateTabsetCommand("new Tabset B", []).execute()
+
+    await wrapper.get('#toggleSearchBtn').trigger("click")
+
+    expect(wrapper.text()).toContain("search");
+    expect(wrapper.text()).not.toContain("My Tabsets");
+  });
 
 
 });

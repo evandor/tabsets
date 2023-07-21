@@ -7,22 +7,24 @@
     <div class="bg-grey-3 q-pa-xs" style="border:0 solid grey;border-radius:3px">
       <TabFaviconWidget :tab="props.tab" width="16px" height="16px"/>
     </div>
-    <div v-if="props.tab.httpInfo === 'UPDATED'"
-         class="q-my-xs q-mx-none q-pa-none text-white bg-positive"
-         style="border-radius: 3px;max-height:15px">
+    <div v-if="props.tab?.httpInfo === 'UPDATED'"
+         class="q-my-xs q-mx-none q-pa-none text-white bg-positive items-center justify-center"
+         style="border-radius: 3px;max-height:15px;font-size:8px;text-align: center;">
       NEW
+      <q-tooltip class="tooltip">This page indicates that its content has changed in the meantime.</q-tooltip>
     </div>
-    <div v-else-if="props.tab.httpStatus >= 300"
-         class="q-my-xs q-mx-none q-pa-none text-white"
-         :class="props.tab.httpStatus >= 500 ? 'bg-red' : 'bg-warning'"
-         style="border-radius: 3px;max-height:15px">
+    <div v-else-if="props.tab?.httpStatus >= 300"
+         class="q-my-xs q-mx-none q-pa-none text-white items-center justify-center"
+         :class="props.tab?.httpStatus >= 500 ? 'bg-red' : 'bg-warning'"
+         style="border-radius: 3px;max-height:15px;font-size:8px;text-align: center;">
       {{ props.tab.httpStatus }}
+      <q-tooltip class="tooltip">Tabsets has problems accessing this site.</q-tooltip>
     </div>
 
   </q-item-section>
 
   <!-- name, title, description, url && note -->
-  <q-item-section class="q-mb-sm" :style="itemStyle(props.tab)"
+  <q-item-section class="q-mb-sm"
                   @click="selectTab(tab)"
                   @mouseover="hoveredTab = tab.id"
                   @mouseleave="hoveredTab = undefined">
@@ -52,7 +54,7 @@
            </span>
           {{ nameOrTitle(props.tab) }}
           <q-popup-edit
-            v-if="props.tab.extension !== UrlExtension.NOTE"
+            v-if="props.tab?.extension !== UrlExtension.NOTE"
             :model-value="dynamicNameOrTitleModel(tab)" v-slot="scope"
             @update:model-value="val => setCustomTitle( tab, val)">
             <q-input v-model="scope.value" dense autofocus counter @keyup.enter="scope.set"/>
@@ -65,14 +67,14 @@
     <!-- description -->
     <q-item-label class="ellipsis-2-lines text-grey-8"
                   v-if="useUiStore().listDetailLevelGreaterEqual(ListDetailLevel.LARGE)"
-                  @click.stop="NavigationService.openOrCreateTab(props.tab.url )">
+                  @click.stop="NavigationService.openOrCreateTab(props.tab?.url || '' )">
       {{ props.tab.description }}
     </q-item-label>
 
     <!-- url -->
     <q-item-label
       style="width:100%"
-      v-if="props.tab.url"
+      v-if="props.tab?.url"
       caption class="ellipsis-2-lines text-blue-10"
       @mouseover="showButtonsProp = true"
       @mouseleave="showButtonsProp = false">
@@ -115,7 +117,8 @@
     </q-item-label>
 
     <!-- note -->
-    <q-item-label v-if="useUiStore().listDetailLevelGreaterEqual(ListDetailLevel.LARGE) && props['tab']['note']"
+    <q-item-label v-if="useUiStore().listDetailLevelGreaterEqual(ListDetailLevel.LARGE) &&
+      props['tab' as keyof object]['note']"
                   class="text-grey-10" text-subtitle1>
       <q-icon color="blue-10" name="edit_note"/>
       {{ props['tab']['note'] }}
@@ -141,7 +144,7 @@ import NavigationService from "src/services/NavigationService";
 import {Tab, UrlExtension} from "src/models/Tab";
 import TabsetService from "src/services/TabsetService";
 import {useNotificationsStore} from "src/stores/notificationsStore";
-import {onMounted, ref, watchEffect} from "vue";
+import {onMounted, PropType, ref, watchEffect} from "vue";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {DeleteTabCommand} from "src/domain/commands/DeleteTabCommand";
 import {useQuasar} from "quasar";
@@ -157,7 +160,7 @@ import _ from "lodash";
 import {formatDistance} from "date-fns";
 
 const props = defineProps({
-  tab: {type: Object, required: true},
+  tab: {type: Object as PropType<Tab>, required: true},
   header: {type: String, required: false},
   type: {type: String, default: 'sidepanel'},
   hideMenu: {type: Boolean, default: false},
@@ -238,13 +241,6 @@ function getHost(urlAsString: string, shorten: Boolean = true): string {
   }
 }
 
-const itemStyle = (tab: Tab) => {
-
-  let border = ""
-  let background = ''
-  return `${border};${background}`
-}
-
 const isOpen = (tab: Tab): boolean => TabsetService.isOpen(tab?.url || '')
 
 const setInfo = (tab: Tab) => {
@@ -286,7 +282,10 @@ const copyToClipboard = (text: string) =>
 
 const hoveredOver = (tabsetId: string) => hoveredTab.value === tabsetId
 
-const classForCategoryTab = (tab: Tab) => {
+const classForCategoryTab = (tab: Tab | undefined) => {
+  if (!tab) {
+    return ""
+  }
   const url = tab.url
   if (url && useTabsetService().tabsetsFor(url).length > 0) {
     return "text-grey-5"

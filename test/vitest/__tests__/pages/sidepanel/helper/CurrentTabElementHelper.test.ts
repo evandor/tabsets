@@ -43,8 +43,9 @@ describe('CurrentTabElementHelper', () => {
     await IndexedDbPersistenceService.init("db")
     useTabsStore().setCurrentChromeTab(skysailChromeTab)
     const res = await useCommandExecutor().execute(new CreateTabsetCommand("ts1", []))
-    await useCommandExecutor().execute(new AddTabToTabsetCommand(new Tab(uid(), skysailChromeTab), res.result.tabset))
-    await useTabsetService().saveText(skysailChromeTab, "the text", {})
+    const newTab = new Tab(uid(), skysailChromeTab)
+    await useCommandExecutor().execute(new AddTabToTabsetCommand(newTab, res.result.tabset))
+    await useTabsetService().saveText(newTab, "the text", {})
     const wrapper = mount(CurrentTabElementHelper);
     expect(wrapper.text()).toContain("ts1");
   });

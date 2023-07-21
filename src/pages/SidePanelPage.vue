@@ -2,82 +2,110 @@
 
   <q-page style="padding-top: 50px">
     <!-- list of tabs, assuming here we have at least one tabset -->
-    <div class="q-ma-none">
-
-      <div class="q-ma-none q-pa-none">
-        <q-list dense
-                class="rounded-borders q-ma-none q-pa-none" :key="tabset.id"
-                v-for="(tabset,index) in tabsets">
-          <!-- :model-value="isExpanded(tabset.id)" -->
-          <q-expansion-item v-if="showTabset(tabset as Tabset)"
-                            :header-class="tabsStore.currentTabsetId === tabset.id ? 'bg-grey-4':''"
-                            header-class="q-ma-none q-px-sm"
-                            :header-style="tabsetExpanded.get(tabset.id) ?
+    <div class="q-ma-none q-pa-none">
+      <q-list dense
+              class="rounded-borders q-ma-none q-pa-none" :key="tabset.id"
+              v-for="(tabset,index) in tabsets">
+        <!-- :model-value="isExpanded(tabset.id)" -->
+        <q-expansion-item v-if="showTabset(tabset as Tabset)"
+                          :header-class="tabsStore.currentTabsetId === tabset.id ? 'bg-grey-4':''"
+                          header-class="q-ma-none q-px-sm"
+                          :header-style="tabsetExpanded.get(tabset.id) ?
               'border:0 solid grey;border-top-left-radius:4px;border-top-right-radius:4px' :
               'border:0 solid grey;border-radius:4px'"
-                            group="tabsets"
-                            :default-opened="false"
-                            @update:model-value="val => updateSelectedTabset(tabset.id, val, index)"
-                            expand-separator>
+                          group="tabsets"
+                          :default-opened="false"
+                          @update:model-value="val => updateSelectedTabset(tabset.id, val, index)"
+                          expand-separator>
 
-            <template v-slot:header>
-              <q-item-section
-                @mouseover="hoveredTabset = tabset.id"
-                @mouseleave="hoveredTabset = undefined">
-                <q-item-label :class="tabsStore.currentTabsetId === tabset.id ? 'text-bold text-primary' : ''">
-                  <q-icon
-                    :color="tabset.status === TabsetStatus.DEFAULT ? 'primary':'warning'"
-                    :name="tabset.status === TabsetStatus.DEFAULT ? 'tab':'push_pin'"
-                    style="position: relative;top:-2px"/>
-                  {{ tabset.name }}
-                </q-item-label>
-                <q-item-label class="text-caption text-grey-5">
-                  {{ tabsetCaption(filteredTabs(tabset.tabs)) }}
-                </q-item-label>
-              </q-item-section>
+          <template v-slot:header>
+            <q-item-section
+              @mouseover="hoveredTabset = tabset.id"
+              @mouseleave="hoveredTabset = undefined">
+              <q-item-label :class="tabsStore.currentTabsetId === tabset.id ? 'text-bold text-primary' : ''">
+                <q-icon
+                  :color="tabset.status === TabsetStatus.DEFAULT ? 'primary':'warning'"
+                  :name="tabset.status === TabsetStatus.DEFAULT ? 'tab':'push_pin'"
+                  style="position: relative;top:-2px"/>
+                {{ tabset.name }}
+              </q-item-label>
+              <q-item-label class="text-caption text-grey-5">
+                {{ tabsetCaption(filteredTabs(tabset.tabs)) }}
+              </q-item-label>
+            </q-item-section>
 
-              <q-item-section side
-                              @mouseover="hoveredTabset = tabset.id"
-                              @mouseleave="hoveredTabset = undefined">
-                <Transition appear>
-                  <div class="row items-center">
+            <q-item-section side
+                            @mouseover="hoveredTabset = tabset.id"
+                            @mouseleave="hoveredTabset = undefined">
+              <Transition appear>
+                <div class="row items-center">
                     <span v-if="hoveredOver(tabset.id)">
                       <q-icon name="more_horiz" color="primary" size="16px"/>
                     </span>
-                    <span v-else>
+                  <span v-else>
                       <q-icon color="primary" size="16px"/>
                     </span>
 
-                    <SidePanelPageContextMenu :tabset="tabset as Tabset"/>
+                  <SidePanelPageContextMenu :tabset="tabset as Tabset"/>
 
-                  </div>
-                </Transition>
-              </q-item-section>
-            </template>
+                </div>
+              </Transition>
+            </q-item-section>
+          </template>
 
 
-            <div class="q-ma-none q-pa-none" style="border:1px solid lightgrey">
-              <!--             <div class="q-ma-xs shrink" :class="showTabInfo(tabset.id) ? '':'collapsed'">-->
-              <div class="q-ma-xs">
-                <SidePanelTabInfo :tabsetId="tabset.id"/>
-              </div>
-              <PanelTabList :tabs="filteredTabs(tabset.tabs)" v-if="tabsetExpanded.get(tabset.id)"/>
+          <div class="q-ma-none q-pa-none" style="border:1px solid lightgrey">
+            <!--             <div class="q-ma-xs shrink" :class="showTabInfo(tabset.id) ? '':'collapsed'">-->
+            <div class="q-ma-xs">
+              <SidePanelTabInfo :tabsetId="tabset.id"/>
             </div>
-          </q-expansion-item>
+            <PanelTabList :tabs="filteredTabs(tabset.tabs)" v-if="tabsetExpanded.get(tabset.id)"/>
+          </div>
+        </q-expansion-item>
 
 
-        </q-list>
-      </div>
-
-
+      </q-list>
     </div>
 
     <!-- place QPageSticky at end of page -->
     <q-page-sticky expand position="top" style="background-color:white">
 
       <FirstToolbarHelper
-        :showSearchBox="showSearchBox"
-        :title="tabsets.length > 6 ? 'My Tabsets (' + tabsets.length.toString() + ')' : 'My Tabsets'"/>
+        :showSearchBox="showSearchBox">
+
+        <template v-slot:title v-if="usePermissionsStore().hasFeature(FeatureIdent.SPACES)">
+          <q-icon name="o_space_dashboard" color="positive"/>
+          {{ toolbarTitle(tabsets as Tabset[]) }}
+          <q-btn
+            icon="o_add"
+            color="primary"
+            flat
+            class="q-ma-none q-pa-xs cursor-pointer"
+            style="max-width:20px"
+            size="10px"
+            @click.stop="openNewTabsetDialog()">
+            <q-tooltip class="tooltip">
+              {{ useSpacesStore().space ? 'Add new Tabset in this space' : 'Add new unassigned Tabset' }}
+            </q-tooltip>
+          </q-btn>
+        </template>
+        <template v-slot:title v-else>
+          {{ toolbarTitle(tabsets as Tabset[]) }}
+          <q-btn
+            icon="o_add"
+            color="primary"
+            flat
+            class="q-ma-none q-pa-xs cursor-pointer"
+            style="max-width:20px"
+            size="10px"
+            @click="openNewTabsetDialog()">
+            <q-tooltip class="tooltip">Add new Tabset</q-tooltip>
+          </q-btn>
+
+
+        </template>
+
+      </FirstToolbarHelper>
       <!--      <SecondToolbarHelper/>-->
 
     </q-page-sticky>
@@ -105,20 +133,10 @@ import SidePanelTabInfo from "pages/sidepanel/SidePanelTabInfo.vue";
 import FirstToolbarHelper from "pages/sidepanel/helper/FirstToolbarHelper.vue";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {SelectTabsetCommand} from "src/domain/tabsets/SelectTabset";
-import DeleteTabsetDialog from "components/dialogues/DeleteTabsetDialog.vue";
-import EditTabsetDialog from "components/dialogues/EditTabsetDialog.vue";
 import {FeatureIdent} from "src/models/AppFeature";
-import {MarkTabsetAsFavoriteCommand} from "src/domain/tabsets/MarkTabsetAsFavorite";
-import {MarkTabsetAsDefaultCommand} from "src/domain/tabsets/MarkTabsetAsDefault";
-import getScrollTarget = scroll.getScrollTarget;
-import NavigationService from "src/services/NavigationService";
-import SidePanelTabList from "components/layouts/sidepanel/SidePanelTabList.vue";
-import {ExecutionResult} from "src/domain/ExecutionResult";
-import {useSettingsStore} from "stores/settingsStore";
-import {useSearchStore} from "stores/searchStore";
-import RestoreTabsetDialog from "components/dialogues/RestoreTabsetDialog.vue";
-import {RestoreTabsetCommand} from "src/domain/tabsets/RestoreTabset";
 import SidePanelPageContextMenu from "pages/sidepanel/SidePanelPageContextMenu.vue";
+import getScrollTarget = scroll.getScrollTarget;
+import NewTabsetDialog from "components/dialogues/NewTabsetDialog.vue";
 
 
 const {setVerticalScrollPosition} = scroll
@@ -183,8 +201,8 @@ function inIgnoredMessages(message: any) {
   return message.msg === "html2text" ||
     message.msg === "html2links" ||
     message.name === "zero-shot-classification" ||
-    message.msg === "websiteQuote";
-  message.msg === "init-ai-module";
+    message.msg === "websiteQuote" ||
+    message.msg === "init-ai-module";
 }
 
 if (inBexMode()) {
@@ -354,6 +372,48 @@ function getOrder() {
   }
 }
 
+async function handleHeadRequests(selectedTabset: Tabset) {
+  //selectedTabset.tabs.forEach((t: Tab) => {
+  for (const t: Tab of selectedTabset.tabs) {
+    if (t.url && !t.url.startsWith("chrome")) {
+      console.log("checking HEAD", t.url)
+      try {
+        const response = await fetch(t.url, {
+          method: 'HEAD',
+          cache: 'no-cache',
+//          mode: 'no-cors',
+          redirect: 'manual'
+        })
+        console.log("got response", t.url)
+        const oldLastModified = t.httpLastModified
+
+        t.httpStatus = response.status
+        t.httpContentType = response.headers.get("content-type") || 'unknown'
+        t.httpLastModified = response.headers.get("Last-Modified") || 'unknown'
+        t.httpCheckedAt = new Date().getTime()
+
+        if (response.status !== 200) {
+          console.log(`checking HEAD found status ${response.status} for url ${t.url}`)
+        }
+
+        try {
+          if (t.httpLastModified && oldLastModified) {
+            if (Date.parse(t.httpLastModified) > Date.parse(oldLastModified)) {
+              t.httpInfo = "UPDATED"
+            }
+          }
+        } catch (err) {
+        }
+      } catch (error) {
+        console.log('got a Problem: \n', error);
+        //t.httpError = error.toString()
+        //return Promise.resolve()
+      }
+    }
+  }
+  useTabsetService().saveTabset(selectedTabset)
+}
+
 const updateSelectedTabset = (tabsetId: string, open: boolean, index: number) => {
   console.log("updated...", tabsetId, open, Object.keys(tabsetExpanded.value))
   tabsetExpanded.value.set(tabsetId, open)
@@ -364,54 +424,14 @@ const updateSelectedTabset = (tabsetId: string, open: boolean, index: number) =>
 
     useCommandExecutor()
       .execute(new SelectTabsetCommand(tabsetId, useSpacesStore().space?.id))
-      .then((res: ExecutionResult<Tabset | undefined>) => {
-        if (res.result) {
-          const promises: Promise<any>[] = []
-
-          res.result?.tabs.forEach((t: Tab) => {
-            if (t.url && !t.url.startsWith("chrome://")) {
-              const p = fetch(t.url, {method: 'HEAD'})
-                .then(function (response) {
-                  console.log("got results from HEAD (" + t.url + ") : ", response.status)
-
-                  const oldLastModified = t.httpLastModified
-
-                  t.httpStatus = response.status
-                  t.httpContentType = response.headers.get("content-type") || 'unknown'
-                  t.httpLastModified = response.headers.get("Last-Modified") || 'unknown'
-                  t.httpCheckedAt = new Date().getTime()
-
-                  try {
-                    if (t.httpLastModified && oldLastModified) {
-                      if (Date.parse(t.httpLastModified) > Date.parse(oldLastModified)) {
-                        t.httpInfo = "UPDATED"
-                      }
-                    }
-                  } catch (err) {
-                  }
-
-                  return Promise.resolve()
-                }).catch(
-                  function (error) {
-                    console.log('got a Problem: \n', error);
-                    t.httpError = error.toString()
-                    return Promise.resolve()
-                  });
-              promises.push(p)
-            }
-          })
-
-          Promise.all(promises)
-            .then((allRes) => {
-              if (res.result) {
-                const tabset = res.result
-                console.log("saving tabset after http HEAD check")
-                useTabsetService().saveTabset(tabset)
-              }
-            })
+      .then(() => {
+        const promises: Promise<any>[] = []
+        //console.log("selecteded tabset > ", tabsetId)
+        const selectedTabset = useTabsStore().getTabset(tabsetId)
+        if (selectedTabset) {
+          handleHeadRequests(selectedTabset)
         }
       })
-
 
   } else {
     useUiStore().tabsetsExpanded = false
@@ -456,6 +476,28 @@ function checkKeystroke(e: KeyboardEvent) {
 const showTabset = (tabset: Tabset) => !useUiStore().tabsFilter ?
   true :
   (useUiStore().tabsFilter === '' || filteredTabs(tabset.tabs).length > 0)
+
+const toolbarTitle = (tabsets: Tabset[]) => {
+  console.log("tabsets length", tabsets.length)
+  if (usePermissionsStore().hasFeature(FeatureIdent.SPACES)) {
+    const spaceName = useSpacesStore().space ? useSpacesStore().space.label : 'no space selected'
+    return tabsets.length > 6 ?
+      spaceName + ' (' + tabsets.length.toString() + ')' :
+      spaceName
+  }
+  return tabsets.length > 6 ? 'My Tabsets (' + tabsets.length.toString() + ')' : 'My Tabsets'
+}
+
+const openNewTabsetDialog = () => {
+  $q.dialog({
+    component: NewTabsetDialog,
+    componentProps: {
+      tabsetId: tabsStore.currentTabsetId,
+      spaceId: useSpacesStore().space?.id,
+      fromPanel: true
+    }
+  })
+}
 
 </script>
 

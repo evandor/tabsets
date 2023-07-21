@@ -21,6 +21,7 @@ export class SelectTabsetCommand implements Command<Tabset | undefined> {
     public spaceId: string | undefined) {
   }
 
+  // TODO this return the old currentTabset - why? needed?
   async execute(): Promise<ExecutionResult<Tabset | undefined>> {
     console.debug(this.toString())
     const tabsStore = useTabsStore()
