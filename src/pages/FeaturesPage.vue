@@ -267,14 +267,9 @@ text.set(FeatureIdent.NOTES.toLowerCase(), {
   description: 'Add Notes to tabsets',
   permissions: []
 })
-text.set(FeatureIdent.TAGS.toLowerCase(), {
-  name: 'Tags for Tabs',
-  description: 'Assign tags to tabs',
-  permissions: []
-})
 text.set(FeatureIdent.NOTES.toLowerCase(), {
-  name: 'Quick Notes with Drag&Drop',
-  description: 'Drag and drop a text selection from a website to create a note',
+  name: 'Use Notes additionally to Tabs',
+  description: 'Create notes and treat them like tabs',
   permissions: []
 })
 text.set(FeatureIdent.WEBSITE_CLIP.toLowerCase(), {
@@ -297,10 +292,30 @@ text.set(FeatureIdent.TOP10.toLowerCase(), {
   description: 'Get a view to list all tabs by how often they have been accessed',
   permissions: []
 })
+text.set(FeatureIdent.OPEN_TABS.toLowerCase(), {
+  name: 'Open Tabs',
+  description: 'Quick access to all your open tabs of the current browsers window',
+  permissions: []
+})
 text.set(FeatureIdent.AI_MODULE.toLowerCase(), {
   name: 'Artificial Intelligence Module',
   description: 'Let the AI Module analyse which tabset you want the current tab been added to',
   permissions: []
+})
+text.set(FeatureIdent.CATEGORIZATION.toLowerCase(), {
+  name: 'Tabsets Categorization',
+  description: 'Categorize your tabsets automatically',
+  permissions: []
+})
+text.set(FeatureIdent.PAGE_MARKER.toLowerCase(), {
+  name: 'Page Marker',
+  description: 'Highlight parts of a page and add notes',
+  permissions: ['contextMenus']
+})
+text.set(FeatureIdent.NOTIFICATIONS.toLowerCase(), {
+  name: 'Browser Notifications',
+  description: 'Allow Tabsets to send Notifications via your Browser. Recommended.',
+  permissions: ['notifications']
 })
 
 
@@ -337,6 +352,7 @@ const hasFeature = () => {
 }
 
 const grant = (ident: string) => {
+  //TODO the default activeCommand always executes "permissionStore.activateFeature" - so we do it twice
   if (appFeature.value && appFeature.value.activateCommand) {
     useCommandExecutor().execute(appFeature.value.activateCommand)
       .then((executionResult: ExecutionResult<any>) => {

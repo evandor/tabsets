@@ -45,10 +45,10 @@ function unassignedTabs(): Tab[] {
       if (props.filter && props.filter.trim().length > 0) {
         const f = props.filter.toLowerCase()
         const chromeTab = t.chromeTab
-        if (chromeTab && chromeTab.title && chromeTab.title.toLowerCase().indexOf(f) >= 0) {
+        if (chromeTab && .title && .title.toLowerCase().indexOf(f) >= 0) {
           return true
         }
-        if (chromeTab && chromeTab.url && chromeTab.url.indexOf(f) >= 0) {
+        if (chromeTab && .url && .url.indexOf(f) >= 0) {
           return true
         }
         if (t.name && t.name.toLowerCase().indexOf(f) >= 0) {

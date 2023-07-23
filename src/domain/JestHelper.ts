@@ -4,6 +4,7 @@ export function useJestHelper() {
     const db = request.result;
     //tabsetsDbStore =
     db.createObjectStore("tabsets");
+    db.createObjectStore("tabs");
     db.createObjectStore("content");
     db.createObjectStore("thumbnails");
     db.createObjectStore("mhtml");

@@ -224,11 +224,6 @@
         hint="This is a special type of tabset - it's meant for those tabs which you don't want to track. You can add urls and whenever
 a tab's url starts with one of the urls of this tabset, it will be ignored and not added to the tabs to be added."/>
 
-      <template
-        v-if="usePermissionsStore().hasFeature(FeatureIdent.TABSET_PAGE) && tabset?.showPageAsHeader">
-        <div v-html="tabset?.page"></div>
-      </template>
-
       <DynamicTabsetPageCards
         v-if="tabset?.type === TabsetType.DYNAMIC"
         :tabset="tabset as unknown as Tabset"/>
@@ -321,10 +316,10 @@ function getOrder() {
   if (tabset.value) {
     switch (tabset.value?.sorting) {
       case 'alphabeticalUrl':
-        return (t: Tab) => t.chromeTab.url?.replace("https://", "").replace("http://", "").toUpperCase()
+        return (t: Tab) => t.url?.replace("https://", "").replace("http://", "").toUpperCase()
         break
       case 'alphabeticalTitle':
-        return (t: Tab) => t.chromeTab.title?.toUpperCase()
+        return (t: Tab) => t.title?.toUpperCase()
         break
       default:
         return (t: Tab) => 1
@@ -338,7 +333,7 @@ function tabsForGroup(groupId: number): Tab[] {
     _.filter(
       tabsStore.getTabset(tabsetId.value)?.tabs,
       // @ts-ignore
-      (t: Tab) => t?.chromeTab.groupId === groupId),
+      (t: Tab) => t?.groupId === groupId),
     getOrder(), [orderDesc.value ? 'desc' : 'asc'])
 }
 
@@ -363,8 +358,8 @@ const updateSelectionCount = () => {
 //   const noDupliatesTabs = _.filter(tabsStore.pendingTabset?.tabs, (t: Tab) => !t.isDuplicate)
 //   if (filter.value && filter.value.trim() !== '') {
 //     return _.filter(noDupliatesTabs, (t: Tab) =>
-//       (t?.chromeTab.url && t?.chromeTab.url.indexOf(filter.value) >= 0) ||
-//       (t?.chromeTab.title && t?.chromeTab.title.indexOf(filter.value) >= 0))
+//       (t?.url && t?.url.indexOf(filter.value) >= 0) ||
+//       (t?.title && t?.title.indexOf(filter.value) >= 0))
 //   }
 //   return noDupliatesTabs
 // }

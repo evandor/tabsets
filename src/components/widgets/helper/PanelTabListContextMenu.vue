@@ -1,8 +1,9 @@
 <template>
   <q-menu :offset="[0, 0]">
     <q-list dense style="min-width: 200px">
-      <q-separator/>
-      <q-item clickable v-close-popup @click.stop="showTabDetails(props['tab' as keyof object])">
+      <q-separator v-if="useSettingsStore().isEnabled('dev')"/>
+      <q-item v-if="useSettingsStore().isEnabled('dev')"
+              clickable v-close-popup @click.stop="showTabDetails(props['tab' as keyof object])">
         <q-item-section avatar style="padding-right:0;min-width:25px;max-width: 25px;">
           <q-icon size="xs" name="o_info" color="accent"/>
         </q-item-section>
@@ -11,12 +12,36 @@
         </q-item-section>
       </q-item>
       <q-separator/>
-      <q-item clickable v-close-popup @click.stop="editNoteDialog(props['tab' as keyof object])">
+      <q-item v-if="useSettingsStore().isEnabled('dev')"
+              clickable v-close-popup @click.stop="openInReadingMode(props['tab' as keyof object])">
         <q-item-section avatar style="padding-right:0;min-width:25px;max-width: 25px;">
-          <q-icon size="xs" name="o_note" color="accent"/>
+          <q-icon size="xs" name="o_article" color="accent"/>
         </q-item-section>
         <q-item-section>
-          Add / Edit Note
+          Open in Reading Mode
+        </q-item-section>
+      </q-item>
+
+      <template v-if="props.tabsetType !== TabsetType.DYNAMIC">
+        <q-separator/>
+        <q-item clickable
+                v-close-popup @click.stop="editNoteDialog(props['tab' as keyof object])">
+          <q-item-section avatar style="padding-right:0;min-width:25px;max-width: 25px;">
+            <q-icon size="xs" name="o_note" color="accent"/>
+          </q-item-section>
+          <q-item-section>
+            Add / Edit Note
+          </q-item-section>
+        </q-item>
+      </template>
+
+      <q-separator/>
+      <q-item clickable v-close-popup @click.stop="copyToClipboard(props['tab' as keyof object])">
+        <q-item-section avatar style="padding-right:0;min-width:25px;max-width: 25px;">
+          <q-icon size="xs" name="o_link" color="accent"/>
+        </q-item-section>
+        <q-item-section>
+          Copy URL to Clipboard
         </q-item-section>
       </q-item>
       <q-separator/>
@@ -44,14 +69,16 @@ import {Tab} from "src/models/Tab";
 import {DeleteTabCommand} from "src/domain/commands/DeleteTabCommand";
 import EditNoteDialog from "components/dialogues/EditNoteDialog.vue";
 import {useRouter} from "vue-router";
+import {useSettingsStore} from "stores/settingsStore";
+import {CopyToClipboardCommand} from "src/domain/commands/CopyToClipboard";
+import NavigationService from "src/services/NavigationService";
+import {TabsetType} from "src/models/Tabset";
 
 const {inBexMode} = useUtils()
 
 const props = defineProps({
-  tab: {
-    type: Object as PropType<Tab>,
-    required: true
-  }
+  tab: {type: Object as PropType<Tab>, required: true},
+  tabsetType: {type: Object as PropType<TabsetType>, default: TabsetType.DEFAULT}
 })
 
 const emit = defineEmits(['toggleExpand']);
@@ -86,5 +113,14 @@ const showTabDetails = (tab: Tab) => {
   console.log("showing tab details for", tab)
   router.push("/sidepanel/tab/" + tab.id)
 }
+
+const openInReadingMode = (tab: Tab) => {
+  console.log("showing tab in reading mode", tab)
+  const url = chrome.runtime.getURL("/www/index.html#/mainpanel/readingmode/" + tab.id)
+  NavigationService.openOrCreateTab(url)
+}
+
+const copyToClipboard = (tab: Tab) =>
+  useCommandExecutor().executeFromUi(new CopyToClipboardCommand(tab.url || 'unknown'))
 
 </script>

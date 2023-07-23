@@ -10,8 +10,12 @@ import {useSearchStore} from "src/stores/searchStore";
 import {uid} from "quasar";
 import {useUiStore} from "src/stores/uiStore";
 import {Tabset} from "src/models/Tabset";
+import {usePermissionsStore} from "stores/permissionsStore";
+import {FeatureIdent} from "src/models/AppFeature";
+import {api} from "boot/axios";
+import { TAXONOMY } from "src/boot/constants";
 
-const {saveCurrentTabset} = useTabsetService()
+const {saveCurrentTabset, saveTabset} = useTabsetService()
 
 // class UndoCommand implements Command<any> {
 //
@@ -34,45 +38,62 @@ export class AddTabToTabsetCommand implements Command<any> {
 
   async execute(): Promise<ExecutionResult<any>> {
     const tabsStore = useTabsStore()
-    console.info('adding tab to tabset', this.tab.id, this.tabset.id)
-    //console.log("tabs", tabsStore.getCurrentTabs)
-    const exists = _.findIndex(this.tabset.tabs, t => t.chromeTab.url === this.tab.chromeTab.url) >= 0
-
-    // let useIndex = this.newIndex
-    // console.log("exists", exists, this.group)
-
+    console.info(`adding tab '${this.tab.id}' to tabset '${this.tabset.id}'`)
+    const exists = _.findIndex(this.tabset.tabs, t => t.url === this.tab.url) >= 0
+    console.log("checking 'tab exists' yields", exists)
     if (!exists) {
-      return useTabsetService().addToTabsetId(this.tabset.id, this.tab)
-      // return TabsetService.saveToCurrentTabset(this.tab, useIndex)
+      return useTabsetService().addToTabsetId(this.tabset.id, this.tab, 0)
         .then((res) => {
-          // if (this.tab.chromeTab.url) {
-          //   useUiStore().clearHighlights()
-          //   useUiStore().addHighlight(this.tab.chromeTab.url)
-          //   // useSearchStore().update(this.tab.chromeTab.url, 'name', this.newName)
-          //   useSearchStore().addToIndex(uid(), "", this.tab.chromeTab.title || '',
-          //     this.tab.chromeTab.url, "", "", [tabsStore.currentTabsetId], this.tab.chromeTab.favIconUrl || '')
-          // }
-          return res
-        })
-        .then((res) => {
-          // if (tabsStore.pendingTabset) {
-          //   tabsStore.pendingTabset.tabs = _.filter(tabsStore.pendingTabset.tabs, t => t.chromeTab.url !== this.tab.chromeTab.url)
-          // }
-        })
-        .then((res) => {
+          // the tab has been added to the tabset, but not saved yet
           return TabsetService.getContentFor(this.tab)
             .then((content) => {
               console.log("got content", content)
               if (content) {
                 return useTabsetService()
-                  .saveText(this.tab.chromeTab, content['content' as keyof object], content['metas' as keyof object])
+                  .saveText(this.tab, content['content' as keyof object], content['metas' as keyof object])
                   .then((res) => {
                     return new ExecutionResult("result", "Tab was added",)
                   })
               } else {
-                return saveCurrentTabset()
+                console.log("this tabset tabs",this.tabset.tabs)
+                return saveTabset(this.tabset)
                   .then(result => new ExecutionResult(result, "Tab was added"))
+                  .catch((err:any) => {
+                    console.error("we are here", err)
+                    return Promise.reject("problem")
+                  })
               }
+            })
+            .then((res) => {
+              // TODO CreateTabFromOpentabs: Same logic?
+              // TODO remove logic, will not be used that way
+              if (usePermissionsStore().hasFeature(FeatureIdent.CATEGORIZATION) && this.tab.url?.startsWith("https://")) {
+                console.log("about to check categorization", this.tab.url)
+                try {
+                  const url = new URL(this.tab.url || '')
+                  const origin = url.origin
+                  console.log("checking origin", origin)
+
+                  const backendUrl = "https://us-central1-tabsets-backend-prd.cloudfunctions.net/app"
+                  api.post(`${backendUrl}/webshrinker/analyze`,
+                    {
+                      url: origin,
+                      taxonomy: TAXONOMY,
+                      title: this.tab.title,
+                      favIconUrl: this.tab.favIconUrl,
+                      description: this.tab.description
+                    })
+                    .then((res) => {
+                      console.log("res", res)
+                    })
+                    .catch((err) => console.log("got error", err))
+
+
+                } catch (err) {
+                }
+
+              }
+              return res
             })
             .catch((err) => Promise.reject("got err " + err))
         })

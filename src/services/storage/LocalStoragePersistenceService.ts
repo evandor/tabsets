@@ -1,6 +1,6 @@
 import PersistenceService from "src/services/PersistenceService";
 import {Space} from "src/models/Space";
-import {Suggestion} from "src/models/Suggestion";
+import {StaticSuggestionIdent, Suggestion, SuggestionState} from "src/models/Suggestion";
 import {SearchDoc} from "src/models/SearchDoc";
 import {QVueGlobals, useQuasar} from "quasar";
 import {Tabset} from "src/models/Tabset";
@@ -21,7 +21,11 @@ export class LocalStoragePersistenceService implements PersistenceService {
   }
 
   saveActiveFeatures(val: string[]) {
-    this.quasar.localStorage.set("ui.activeFeatures", val)
+    if (this.quasar.localStorage) {
+      this.quasar.localStorage.set("ui.activeFeatures", val)
+    } else {
+      console.warn("local storage not defined")
+    }
   }
 
   setInactiveDefaultFeatures(val: string[]) {
@@ -46,6 +50,14 @@ export class LocalStoragePersistenceService implements PersistenceService {
 
   addSuggestion(suggestion: Suggestion): Promise<any> {
     return Promise.resolve(undefined);
+  }
+
+  removeSuggestion(ident: StaticSuggestionIdent) {
+    throw new Error("Method not implemented.");
+  }
+
+  setSuggestionState(id: string, state: SuggestionState) {
+    throw new Error("Method not implemented.");
   }
 
   cleanUpContent(): Promise<SearchDoc[]> {

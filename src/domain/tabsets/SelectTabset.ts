@@ -21,6 +21,7 @@ export class SelectTabsetCommand implements Command<Tabset | undefined> {
     public spaceId: string | undefined) {
   }
 
+  // TODO this return the old currentTabset - why? needed?
   async execute(): Promise<ExecutionResult<Tabset | undefined>> {
     console.debug(this.toString())
     const tabsStore = useTabsStore()
@@ -45,7 +46,7 @@ export class SelectTabsetCommand implements Command<Tabset | undefined> {
         name: 'current-tabset-id-change',
         data: {tabsetId: this.tabsetId}
       }
-      console.log("sending message", msg)
+      //console.log("sending message", msg)
       chrome.runtime.sendMessage(msg, (callback) => {
         console.log("got callback", callback)
         if (chrome.runtime.lastError) {

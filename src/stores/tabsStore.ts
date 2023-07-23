@@ -11,20 +11,11 @@ import {usePermissionsStore} from "src/stores/permissionsStore";
 import {FeatureIdent} from "src/models/AppFeature";
 import {STRIP_CHARS_IN_USER_INPUT} from "boot/constants";
 import {Space} from "src/models/Space";
+import {useTabsetService} from "src/services/TabsetService2";
 
 async function queryTabs(): Promise<chrome.tabs.Tab[]> {
   // @ts-ignore
-  //return await chrome.tabs.query({currentWindow: true});
-  return new Promise((resolve, reject) => {
-    let queryOptions = {currentWindow: true};
-    try {
-      chrome.tabs.query(queryOptions, function (tabs) {
-        resolve(tabs);
-      })
-    } catch (e) {
-      reject(e);
-    }
-  })
+  return await chrome.tabs.query({currentWindow: true});
 }
 
 function markDuplicates(tabset: Tabset) {
@@ -32,15 +23,15 @@ function markDuplicates(tabset: Tabset) {
   const urls = new Set<string>()
   const duplicates = new Set<string>()
   _.forEach(tabset.tabs, t => {
-    if (urls.has((t.chromeTab.url || 'undefined') + '-' + t.image)) {
-      duplicates.add(t.chromeTab.url || 'undefined')
+    if (urls.has((t.url || 'undefined') + '-' + t.image)) {
+      duplicates.add(t.url || 'undefined')
     } else {
-      urls.add((t.chromeTab.url || 'undefined') + '-' + t.image)
+      urls.add((t.url || 'undefined') + '-' + t.image)
     }
   })
   //console.log("found duplicates", urls, duplicates)
   _.forEach(tabset.tabs, t => {
-    t.isDuplicate = duplicates.has(t.chromeTab.url || 'undefined');
+    t.isDuplicate = duplicates.has(t.url || 'undefined');
   })
 }
 
@@ -93,11 +84,12 @@ export const useTabsStore = defineStore('tabs', {
   getters: {
 
     pinnedTabs(state): Tab[] {
-      const currentTabset: Tabset = state.tabsets.get(state.currentTabsetId) || new Tabset("", "", [])
-      return _.filter(currentTabset.tabs, (t: Tab) => {
-        //console.log("t", t.chromeTab, t)
-        return t?.chromeTab?.pinned
-      })
+      return []
+      // const currentTabset: Tabset = state.tabsets.get(state.currentTabsetId) || new Tabset("", "", [])
+      // return _.filter(currentTabset.tabs, (t: Tab) => {
+      //   //console.log("t", t.chromeTab, t)
+      //   return t?.pinned
+      // })
     },
 
     mostAccessedTabs(state): Tab[] {
@@ -149,15 +141,15 @@ export const useTabsStore = defineStore('tabs', {
 
     tabForUrlInSelectedTabset: (state): (url: string) => Tab | undefined => {
       const tabs: Tab[] = state.tabsets.get(state.currentTabsetId)?.tabs || []
-      return (url: string) => _.find(tabs, t => t.chromeTab.url === url)
+      return (url: string) => _.find(tabs, t => t.url === url)
     },
 
-    tabsForUrl: (state): (url: string) => Tab[] | undefined => {
+    tabsForUrl: (state): (url: string) => Tab[] => {
       return (url: string) => {
         const tabs: Tab[] = []
         forEach([...state.tabsets.values()], (ts: Tabset) => {
           forEach(ts.tabs, (t: Tab) => {
-            if (t.chromeTab.url === url) {
+            if (t.url === url) {
               tabs.push(t)
             }
           })
@@ -186,18 +178,32 @@ export const useTabsStore = defineStore('tabs', {
       }
     },
     getTab: (state) => {
-      return (tabId: string): object | undefined => {
+      return async (tabId: string): Promise<object | undefined> => {
 
         for (const [key, value] of state.tabsets) {
-          const found: Tab | undefined = _.find(value.tabs, t => t.id === tabId)
-          if (found) {
-            return {
-              tab: found,
-              tabsetId: value.id
+          //console.log("key/value", key, value)
+
+          // lazy loading?
+          // if (value.tabs.length === 0) {
+          //   const useTabs = await useTabsetService().getTabs(key)
+          //   const found: Tab | undefined = _.find(useTabs, t => t.id === tabId)
+          //   if (found) {
+          //     return Promise.resolve({
+          //       tab: found,
+          //       tabsetId: value.id
+          //     })
+          //   }
+          // } else {
+            const found: Tab | undefined = _.find(value.tabs, t => t.id === tabId)
+            if (found) {
+              return Promise.resolve({
+                tab: found,
+                tabsetId: value.id
+              })
             }
-          }
+          //}
         }
-        return undefined
+        return Promise.resolve(undefined)
       }
     },
     tabsetFor: (state) => {
@@ -344,7 +350,7 @@ export const useTabsStore = defineStore('tabs', {
         }
         if (merge) {
           _.forEach(tabs, t => {
-            const exists = _.find(foundTS.tabs, existing => existing.chromeTab.url === t.chromeTab?.url)
+            const exists = _.find(foundTS.tabs, existing => existing.url === t.url)
             if (!exists) {
               foundTS.tabs.push(t)
             }
@@ -408,18 +414,43 @@ export const useTabsStore = defineStore('tabs', {
       this.listenersOn = true
     },
     addTabset(ts: Tabset) {
-      // console.log("adding tabset", ts)
+      //console.log("adding tabset", ts)
       ts.tabs = _.filter(ts.tabs, (t: Tab) => t !== null)
+
+      // TODO can be removed sometime soon
+      let foundOldRep = false
+      ts.tabs.forEach((t:Tab) => {
+        if (t['chromeTab' as keyof object]) {
+          foundOldRep = true
+          console.log("found old representation of tab")
+          t.title = t['chromeTab' as keyof object]['title']
+          t.url = t['chromeTab' as keyof object]['url']
+          t.favIconUrl = t['chromeTab' as keyof object]['favIconUrl']
+          delete t['chromeTab' as keyof object]
+        }
+      })
+      if (foundOldRep) {
+        useTabsetService().saveTabset(ts)
+      }
+
       this.tabsets.set(ts.id, ts)
       markDuplicates(ts)
+    },
+    setTabsets(ts: Tabset[]) {
+      console.log("adding tabsets", ts.length)
+      //ts.tabs = _.filter(ts.tabs, (t: Tab) => t !== null)
+      const tabsetMap = new Map<string, Tabset>()
+      ts.forEach(ts => tabsetMap.set(ts.id, ts))
+      this.tabsets = tabsetMap
+      //markDuplicates(ts)
     },
     addToPendingTabset(tab: Tab) {
       if (usePermissionsStore().hasFeature(FeatureIdent.IGNORE)) {
         const ignoreTS = this.getTabset('IGNORE')
-        if (ignoreTS && tab.chromeTab.url) {
-          const foundIndex = ignoreTS.tabs.findIndex((ignoreTab: Tab) => ignoreTab.chromeTab.url?.startsWith(tab.chromeTab.url || 'xxx'))
+        if (ignoreTS && tab.url) {
+          const foundIndex = ignoreTS.tabs.findIndex((ignoreTab: Tab) => ignoreTab.url?.startsWith(tab.url || 'xxx'))
           if (foundIndex >= 0) {
-            console.log("ignoring", tab.chromeTab.url, ignoreTS.tabs[foundIndex].chromeTab.url)
+            console.log("ignoring", tab.url, ignoreTS.tabs[foundIndex].url)
             return false
           }
         }

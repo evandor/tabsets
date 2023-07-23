@@ -2,11 +2,7 @@ import Command from "src/domain/Command";
 import {ExecutionResult} from "src/domain/ExecutionResult";
 import {DeleteTabsetCommand} from "src/domain/tabsets/DeleteTabset";
 import {useTabsetService} from "src/services/TabsetService2";
-import {useTabsStore} from "src/stores/tabsStore";
-import {useSuggestionsStore} from "src/stores/suggestionsStore";
-import {StaticSuggestionIdent, Suggestion} from "src/models/Suggestion";
-import {usePermissionsStore} from "src/stores/permissionsStore";
-import {FeatureIdent} from "src/models/AppFeature";
+import {SaveOrReplaceResult} from "src/models/SaveOrReplaceResult";
 
 class UndoCreateTabsetCommand implements Command<object> {
 
@@ -20,7 +16,7 @@ class UndoCreateTabsetCommand implements Command<object> {
 
 }
 
-export class CreateTabsetCommand implements Command<object> {
+export class CreateTabsetCommand implements Command<SaveOrReplaceResult> {
 
   public merge: boolean = true
 
@@ -29,24 +25,23 @@ export class CreateTabsetCommand implements Command<object> {
     public tabsToUse: chrome.tabs.Tab[]) {
   }
 
-  async execute(): Promise<ExecutionResult<object>> {
+  async execute(): Promise<ExecutionResult<SaveOrReplaceResult>> {
     try {
-      const result = await useTabsetService()
+      const result: SaveOrReplaceResult = await useTabsetService()
         .saveOrReplaceFromChromeTabs(this.tabsetName, this.tabsToUse, this.merge)
-        .then(res => {
-          if (useTabsStore().tabsets.size === 5 && !usePermissionsStore().hasFeature(FeatureIdent.BOOKMARKS) && process.env.MODE === 'bex') {
-            useSuggestionsStore().addSuggestion(Suggestion.getStaticSuggestion(StaticSuggestionIdent.TRY_BOOKMARKS_FEATURE))
-          }
-          return res
-        })
+        // .then(res => {
+        //   if (useTabsStore().tabsets.size === 5 && !usePermissionsStore().hasFeature(FeatureIdent.BOOKMARKS) && process.env.MODE === 'bex') {
+        //     useSuggestionsStore().addSuggestion(Suggestion.getStaticSuggestion(StaticSuggestionIdent.TRY_BOOKMARKS_FEATURE))
+        //   }
+        //   return res
+        // })
       let doneMsg = 'Tabset \'' + this.tabsetName + '\' created successfully'
       if (result['replaced' as keyof object] && result['merged' as keyof object]) {
         doneMsg = 'Existing Tabset \'' + this.tabsetName + '\' can be updated now'
       } else if (result['replaced' as keyof object]) {
         doneMsg = 'Existing Tabset \' ' + this.tabsetName + '\' was overwritten'
       }
-      const executionResult = new ExecutionResult(result, doneMsg, new UndoCreateTabsetCommand(result['tabset' as keyof object]['id']))
-      return Promise.resolve(executionResult)
+      return Promise.resolve(new ExecutionResult<SaveOrReplaceResult>(result, doneMsg, new UndoCreateTabsetCommand(result.tabset.id)))
     } catch (err) {
       return Promise.reject(err)
     }

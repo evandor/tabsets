@@ -1,10 +1,11 @@
 <template>
 
-  <InfoMessageWidget
-    v-if="props.tabs?.length > 1"
-    :probability="0.3"
-    ident="paneltablist_dnd"
-    hint="You can select the favicon images and drag and drop the entries to reorder the list to your wishes"/>
+<!--  <InfoMessageWidget-->
+<!--    v-if="props.tabs?.length > 1"-->
+<!--    :probability="0.3"-->
+<!--    css-class="q-pa-none"-->
+<!--    ident="paneltablist_dnd"-->
+<!--    hint="You can select the favicon images and drag and drop the entries to reorder the list"/>-->
 
   <q-list separator class="q-ma-none">
     <vue-draggable-next
@@ -24,7 +25,11 @@
         @dragstart="startDrag($event, tab)"
         :key="'paneltablist_' + tab.id">
 
-        <PanelTabListElementWidget :key="'ptlew__' + tab.id" :tab="tabAsTab(tab)"/>
+        <PanelTabListElementWidget :key="'ptlew__' + tab.id"
+                                   :tab="tabAsTab(tab)"
+                                   :type="props.type"
+                                   :tabsetType="props.tabsetType"
+                                   :hide-menu="props.hideMenu"/>
 
       </q-item>
     </vue-draggable-next>
@@ -49,6 +54,7 @@ import InfoMessageWidget from "components/widgets/InfoMessageWidget.vue";
 import {usePermissionsStore} from "src/stores/permissionsStore";
 import {FeatureIdent} from "src/models/AppFeature";
 import PanelTabListElementWidget from "components/widgets/PanelTabListElementWidget.vue";
+import {TabsetType} from "src/models/Tabset";
 
 const {inBexMode} = useUtils()
 
@@ -58,10 +64,10 @@ const tabsStore = useTabsStore()
 const {saveCurrentTabset} = useTabsetService()
 
 const props = defineProps({
-  tabs: {
-    type: Array as PropType<Tab[]>,
-    required: true
-  }
+  tabs: {type: Array as PropType<Tab[]>, required: true},
+  hideMenu: {type: Boolean, default: false},
+  type: {type: String, default: 'sidepanel'},
+  tabsetType: {type: Object as PropType<TabsetType>, default: TabsetType.DEFAULT},
 })
 
 const thumbnails = ref<Map<string, string>>(new Map())
@@ -92,13 +98,13 @@ const handleDragAndDrop = (event: any) => {
     // switch (props.group) {
     //   case 'otherTabs':
     //     // @ts-ignore
-    //     const unpinnedNoGroup: Tab[] = _.filter(tabsStore.getCurrentTabs, (t: Tab) => !t.chromeTab.pinned && t.chromeTab.groupId === -1)
+    //     const unpinnedNoGroup: Tab[] = _.filter(tabsStore.getCurrentTabs, (t: Tab) => !t.pinned && t.groupId === -1)
     //     if (unpinnedNoGroup.length > 0) {
     //       useIndex = adjustIndex(moved, unpinnedNoGroup);
     //     }
     //     break;
     //   case 'pinnedTabs':
-    //     const filteredTabs: Tab[] = _.filter(tabsStore.getCurrentTabs, (t: Tab) => t.chromeTab.pinned)
+    //     const filteredTabs: Tab[] = _.filter(tabsStore.getCurrentTabs, (t: Tab) => t.pinned)
     //     if (filteredTabs.length > 0) {
     //       useIndex = adjustIndex(moved, filteredTabs);
     //     }
@@ -107,7 +113,7 @@ const handleDragAndDrop = (event: any) => {
     //     if (props.group.startsWith('groupedTabs_')) {
     //       const groupId = props.group.split('_')[1]
     //       // @ts-ignore
-    //       const filteredTabs: Tab[] = _.filter(tabsStore.getCurrentTabs, (t: Tab) => t.chromeTab.groupId === parseInt(groupId))
+    //       const filteredTabs: Tab[] = _.filter(tabsStore.getCurrentTabs, (t: Tab) => t.groupId === parseInt(groupId))
     //       if (filteredTabs.length > 0) {
     //         useIndex = adjustIndex(moved, filteredTabs);
     //       }
@@ -118,7 +124,7 @@ const handleDragAndDrop = (event: any) => {
   }
   if (added) {
     useCommandExecutor()
-      .executeFromUi(new CreateTabFromOpenTabsCommand(added.element, added.newIndex, props.group))
+      .executeFromUi(new CreateTabFromOpenTabsCommand(added.element, added.newIndex))
   }
 }
 

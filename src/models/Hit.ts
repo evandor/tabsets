@@ -1,7 +1,6 @@
 export class Hit {
   lastActive: number
   activatedCount: number
-  lastLoaded: number
   loadedCount: number
   history: string[] = []
   selected: boolean = false
@@ -11,7 +10,10 @@ export class Hit {
 
   constructor(
     public id: string,
-    public chromeTab: chrome.tabs.Tab,
+    //public chromeTab: chrome.tabs.Tab,
+    public title: string,
+    public url: string,
+    public favIconUrl: string,
     public created: number,
     public updated: number,
     public score: number,
@@ -25,7 +27,6 @@ export class Hit {
     this.updated = new Date().getTime()
     this.lastActive = 0
     this.activatedCount = 0
-    this.lastLoaded = 0
     this.loadedCount = 0
     this.name = undefined
   }

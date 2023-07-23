@@ -15,6 +15,7 @@
 .tooltip {
   background-color: white;
   color: black;
+  font-size: smaller;
   box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.2), 0 4px 5px rgba(0, 0, 0, 0.14), 0 1px 10px rgba(0, 0, 0, 0.12);
 }
 
@@ -69,5 +70,18 @@
 
 // for notification (bottom) not to hide the panel footer
 .q-notifications__list {
-  margin-bottom: 145px
+  margin-bottom: 45px
+}
+
+// shrink
+
+.shrink {
+  max-height:650px;
+  transition:all 700ms ease;
+}
+
+.shrink.collapsed {
+  max-height:0;
+  overflow:hidden;
+  background-color:transparent;
 }

@@ -118,10 +118,10 @@ const itemStyle = (tab: Tab) => {
   return `${border};${background}`
 }
 
-const isOpen = (tab: Tab): boolean => TabsetService.isOpen(tab?.chromeTab?.url || '')
+const isOpen = (tab: Tab): boolean => TabsetService.isOpen(tab?.url || '')
 
 const setInfo = (tab: Tab) => {
-  const parts = (tab.chromeTab?.url || '').split('?')
+  const parts = (tab.url || '').split('?')
   if (parts.length > 1) {
     emits('sendCaption', parts[0] + "[... params omitted....]")
   } else if (parts.length === 1) {
@@ -130,8 +130,8 @@ const setInfo = (tab: Tab) => {
 }
 
 const getFaviconUrl = (chromeTab: chrome.tabs.Tab | undefined) => {
-  if (chromeTab && chromeTab.favIconUrl && !chromeTab.favIconUrl.startsWith("chrome")) {
-    return chromeTab.favIconUrl
+  if (chromeTab && .favIconUrl && !.favIconUrl.startsWith("chrome")) {
+    return .favIconUrl
   }
   return ''//'favicon-unknown-32x32.png'
 }
@@ -139,9 +139,9 @@ const getFaviconUrl = (chromeTab: chrome.tabs.Tab | undefined) => {
 const deleteTab = (tab: Tab) => useCommandExecutor().executeFromUi(new DeleteTabCommand(tab))
 
 
-const nameOrTitle = (tab: Tab) => tab.name ? tab.name : tab.chromeTab?.title
+const nameOrTitle = (tab: Tab) => tab.name ? tab.name : tab.title
 
-const dynamicNameOrTitleModel = (tab: Tab) => tab.name ? tab.name : tab.chromeTab?.title
+const dynamicNameOrTitleModel = (tab: Tab) => tab.name ? tab.name : tab.title
 
 const thumbnailFor = async (tab: Tab): Promise<object> => {
   return await TabsetService.getThumbnailFor(tab)

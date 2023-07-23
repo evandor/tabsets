@@ -1,6 +1,12 @@
 import {bexBackground} from 'quasar/wrappers';
 import {pipeline, env as env2} from "@xenova/transformers";
 
+chrome.omnibox.onInputEntered.addListener((text) => {
+  const newURL = chrome.runtime.getURL("/www/index.html#/searchresult?t=" + encodeURIComponent(text))
+  chrome.tabs.create({ url: newURL })
+    .catch((err) => console.log("background.js error", err))
+});
+
 let modelPromise: any = null
 
 async function loadAIModule() {
@@ -37,7 +43,7 @@ async function loadAIModule() {
         chrome.runtime.sendMessage(msg, (callback) => {
           if (chrome.runtime.lastError) { /* ignore */
             // TODO we get tons of errors here
-            console.log("hier!!!", chrome.runtime.lastError)
+            console.log("runtime error encountered", chrome.runtime.lastError)
           } else {
             //console.log("cb", callback)
           }

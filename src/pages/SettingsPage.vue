@@ -198,7 +198,7 @@
       </q-banner>
 
       <div class="row q-pa-md" v-for="tabset in ignoredUrls()">
-        <div class="col-3"><b>{{ tabset.chromeTab?.url }}</b></div>
+        <div class="col-3"><b>{{ tabset.url }}</b></div>
         <div class="col-3"></div>
         <div class="col-1"></div>
         <div class="col-5">

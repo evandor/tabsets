@@ -13,21 +13,12 @@ import {useDB} from "src/services/usePersistenceService";
 import {useUtils} from "src/services/Utils";
 
 
-/*function sendMsg(msgName: string, data: object) {
-  chrome.runtime.sendMessage({
-    name: msgName, data: data
-  }, (callback) => {
-    console.log("got callback", callback)
-    if (chrome.runtime.lastError) {
-    }
-  });
-}*/
-
 export const usePermissionsStore = defineStore('permissions', () => {
 
   const $q = useQuasar()
   const {sendMsg} = useUtils()
 
+  // maybe assign db in init function / setup
   const {localDb} = useDB($q)
 
   const storage = localDb
@@ -38,7 +29,7 @@ export const usePermissionsStore = defineStore('permissions', () => {
   const permissions = ref<chrome.permissions.Permissions | undefined>(undefined)
 
   // related to tabsets permissions
-  const activeFeatures = ref<string[]>($q.localStorage?.getItem('ui.activeFeatures') as string[] || [])
+  const activeFeatures = ref<string[]>($q?.localStorage?.getItem('ui.activeFeatures') as string[] || [])
 
   //const inActiveDefaultFeatures = ref<string[]>($q.localStorage?.getItem('ui.inActiveDefaultFeatures') as string[] || [])
 

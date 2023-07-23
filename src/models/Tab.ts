@@ -7,14 +7,40 @@ export enum UrlExtension {
   UNKNOWN = "UNKNOWN"
 }
 
+export class HTMLSelectionComment {
+
+  date: number = 0
+
+  constructor(
+    public author: string = '',
+    public comment: string = '') {
+    this.date = new Date().getTime()
+  }
+}
+
+export class HTMLSelection {
+  constructor(
+    public selection: string = '',
+    public text: string = '',
+    public comments: HTMLSelectionComment[] = []) {
+  }
+}
+
 export class Tab {
   created: number
   updated: number
   lastActive: number
   activatedCount: number
-  lastLoaded: number
   loadedCount: number
-  chromeTab: chrome.tabs.Tab
+
+  // from chrome tab
+  chromeTabId: number | undefined
+  favIconUrl: string | undefined
+  url: string | undefined
+  title: string | undefined
+  pinned: boolean
+  groupId: number
+
   isDuplicate: boolean
   history: string[] = []
   selected: boolean = false
@@ -24,33 +50,42 @@ export class Tab {
   description: string
   longDescription: string | undefined
   keywords: string
-  tags: string[]
+  tags: string[] // Set<string> got issues in indexeddb
   image: string
   date: string
   lastModified: string
   author: string
   note: string
   scheduledFor: number | undefined
-  canvasLeft: number
-  canvasTop: number
   extension: UrlExtension
-  groupId: string | undefined
-  selection: string | undefined
+  selections: HTMLSelection[] = []
 
   mhtmls: string[]
 
   contentHash: string
 
-  //executionResult: string | undefined
+  httpStatus: number = 200
+  httpContentType: string = 'undefined'
+  httpLastModified: string = 'undefined'
+  httpCheckedAt: number = 0
+  httpError: string = ''
+  httpInfo: string = 'undefined'
 
   constructor(public id: string, chromeTab: chrome.tabs.Tab) {
     this.created = new Date().getTime()
     this.updated = new Date().getTime()
     this.lastActive = new Date().getTime()
     this.activatedCount = 1
-    this.lastLoaded = 0
     this.loadedCount = 0
-    this.chromeTab = chromeTab
+
+    this.chromeTabId = chromeTab.id
+    this.favIconUrl = chromeTab.favIconUrl
+    this.url = chromeTab.url
+    this.title = chromeTab.title
+    this.pinned = chromeTab.pinned
+    this.groupId = chromeTab.groupId
+
+    //this.chromeTab = chromeTab
     this.isDuplicate = false
     this.history = []
     this.name = undefined
@@ -63,12 +98,9 @@ export class Tab {
     this.author = ''
     this.note = ''
     this.scheduledFor = undefined
-    this.canvasTop = 0
-    this.canvasLeft = 0
     this.extension = this.determineUrlExtension(chromeTab)
     this.mhtmls = []
     this.contentHash = ''
-    this.selection = undefined
   }
 
   setHistoryFrom(existingTab: Tab) {
@@ -111,7 +143,7 @@ export class Tab {
           ext = UrlExtension.IMAGE
         }
       } catch (err) {
-        console.error("checking extension url: ", err)
+        console.error("checking extension url: ", chromeTab.url, err)
       }
     }
     return ext
@@ -129,5 +161,5 @@ export class Tab {
 }
 
 Tab.prototype.toString = function tabToString() {
-  return `Tab: {id=${this.id}, url=${this.chromeTab.url}, #history=${this.history.length}}`;
+  return `Tab: {id=${this.id}, url=${this.url}, #history=${this.history.length}}`;
 };

@@ -11,6 +11,7 @@ export function useCommandExecutor() {
       .then((res) => handleSuccess(res))
       //.then(() => logger.debug("command finished"))
       .catch(err => {
+        console.log("error in command", command.toString())
         handleError(err)
         return new ExecutionResult(null, err)
       })
@@ -19,6 +20,7 @@ export function useCommandExecutor() {
   const execute = (command: Command<any>): Promise<ExecutionResult<any>> => {
     return command.execute()
       .catch(err => {
+        console.log("error in command", command.toString())
         handleError(err)
         return new ExecutionResult(null, err)
       })

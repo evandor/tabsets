@@ -275,10 +275,10 @@ function getOrder() {
   if (tabsStore.getCurrentTabset) {
     switch (tabsStore.getCurrentTabset?.sorting) {
       case 'alphabeticalUrl':
-        return (t: Tab) => t.chromeTab.url?.replace("https://", "").replace("http://", "").toUpperCase()
+        return (t: Tab) => t.url?.replace("https://", "").replace("http://", "").toUpperCase()
         break
       case 'alphabeticalTitle':
-        return (t: Tab) => t.chromeTab.title?.toUpperCase()
+        return (t: Tab) => t.title?.toUpperCase()
         break
       default:
         return (t: Tab) => 1
@@ -308,8 +308,8 @@ const filteredTabs = () => {
   const noDupliatesTabs = _.filter(tabsStore.pendingTabset?.tabs, (t: Tab) => !t.isDuplicate)
   if (filter.value && filter.value.trim() !== '') {
     return _.filter(noDupliatesTabs, (t: Tab) =>
-      (t?.chromeTab.url && t?.chromeTab.url.indexOf(filter.value) >= 0) ||
-      (t?.chromeTab.title && t?.chromeTab.title.indexOf(filter.value) >= 0))
+      (t?.url && t?.url.indexOf(filter.value) >= 0) ||
+      (t?.title && t?.title.indexOf(filter.value) >= 0))
   }
   return noDupliatesTabs
 }

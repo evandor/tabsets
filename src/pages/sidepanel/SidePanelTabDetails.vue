@@ -28,17 +28,17 @@
           :tab="uiStore.getSelectedTab" width="24px" height="24px"/>
       </div>
       <div class="col-10 text-body1 ellipsis-3">
-        {{ getHost(useUiStore().getSelectedTab?.chromeTab?.url, true) }}
+        {{ getHost(useUiStore().getSelectedTab?.url, true) }}
       </div>
       <div class="col-12 text-body2 ellipsis-3">
-        {{ useUiStore().getSelectedTab?.chromeTab?.title }}
+        {{ useUiStore().getSelectedTab?.title }}
       </div>
 
       <div class="col-12">
         <div class="text-overline ellipsis text-blue-10 cursor-pointer"
-             @click.stop="NavigationService.openOrCreateTab(useUiStore().getSelectedTab.chromeTab?.url )">
-          {{ useUiStore().getSelectedTab?.chromeTab?.url }}&nbsp;<q-icon name="launch" color="secondary"
-                                                                         class="cursor-pointer"></q-icon>
+             @click.stop="NavigationService.openOrCreateTab(useUiStore().getSelectedTab.url )">
+          {{ useUiStore().getSelectedTab?.url }}&nbsp;<q-icon name="launch" color="secondary"
+                                                              class="cursor-pointer"></q-icon>
         </div>
       </div>
 
@@ -130,9 +130,7 @@
 
   <q-list>
 
-    <q-expansion-item label="Tags"
-                      v-if="usePermissionsStore().hasFeature(FeatureIdent.TAGS)"
-                      :default-opened="true">
+    <q-expansion-item label="Tags" :default-opened="true">
       <q-card>
         <q-card-section>
           <q-select
@@ -163,40 +161,104 @@
       </q-card>
     </q-expansion-item>
 
-    <q-expansion-item label="Note"
+    <!--    <q-expansion-item label="Note"-->
+    <!--                      group="somegroup"-->
+
+    <!--                      :default-opened="false">-->
+    <!--      <q-card>-->
+    <!--        <q-card-section>-->
+    <!--          <div class="text-caption">-->
+    <!--            {{ useUiStore().getSelectedTab?.note }}-->
+    <!--          </div>-->
+    <!--        </q-card-section>-->
+    <!--      </q-card>-->
+    <!--    </q-expansion-item>-->
+
+    <q-expansion-item label="Meta Data"
                       group="somegroup"
 
-                      :default-opened="false">
+                      :default-opened="useUiStore().getSelectedTab?.note === undefined">
       <q-card>
         <q-card-section>
-          <div class="text-caption">
-            {{ useUiStore().getSelectedTab.note }}
+          <div class="row q-mx-sm q-mt-none">
+            <div class="col-5 text-caption text-bold">created</div>
+            <div class="col-7 text-right text-caption">{{ formatDate(useUiStore().getSelectedTab?.created) }}</div>
+          </div>
+          <div class="row q-mx-sm">
+            <div class="col-5 text-caption text-bold">changed</div>
+            <div class="col-7 text-right text-caption">{{ formatDate(useUiStore().getSelectedTab?.updated) }}</div>
+          </div>
+          <div class="row q-mx-sm">
+            <div class="col-5 text-caption text-bold">last active</div>
+            <div class="col-7 text-right text-caption">{{ formatDate(useUiStore().getSelectedTab?.lastActive) }}</div>
+          </div>
+          <div class="row q-mx-sm">
+            <div class="col-5 text-caption text-bold">opened</div>
+            <div class="col-7 text-right text-caption">{{ useUiStore().getSelectedTab?.activatedCount }}x</div>
+          </div>
+
+          <template v-if="useSettingsStore().isEnabled('dev')">
+            <div class="row q-mx-sm">
+              <div class="col-12 text-caption text-bold q-px-xl"><hr></div>
+            </div>
+            <div class="row q-mx-sm" v-for="metaRow in metaRows">
+              <div class="col-5 text-caption text-bold">{{ metaRow.name }}</div>
+              <div class="col-7 text-right text-caption ellipsis">
+                {{ metaRow.value }}
+                <q-tooltip>{{ metaRow.value }}</q-tooltip>
+              </div>
+            </div>
+          </template>
+
+        </q-card-section>
+      </q-card>
+    </q-expansion-item>
+
+    <q-expansion-item label="Http Status"
+                      group="somegroup">
+      <q-card>
+        <q-card-section>
+          <div class="row q-mx-sm q-mt-none">
+            <div class="col-5 text-caption text-bold">Http Status</div>
+            <div class="col-7 text-right text-caption">{{ useUiStore().getSelectedTab?.httpStatus }}</div>
+          </div>
+          <div class="row q-mx-sm q-mt-none">
+            <div class="col-5 text-caption text-bold">Checked At</div>
+            <div class="col-7 text-right text-caption">{{
+                formatDate(useUiStore().getSelectedTab?.httpCheckedAt)
+              }}
+            </div>
+          </div>
+          <div class="row q-mx-sm q-mt-none">
+            <div class="col-5 text-caption text-bold">Info</div>
+            <div class="col-7 text-right text-caption">{{ useUiStore().getSelectedTab?.httpInfo }}</div>
+          </div>
+          <div class="row q-mx-sm q-mt-none">
+            <div class="col-5 text-caption text-bold">Content Type</div>
+            <div class="col-7 text-right text-caption">{{ useUiStore().getSelectedTab?.httpContentType }}</div>
+          </div>
+          <div class="row q-mx-sm q-mt-none">
+            <div class="col-5 text-caption text-bold">Last Modified</div>
+            <div class="col-7 text-right text-caption">{{ useUiStore().getSelectedTab?.httpLastModified }}</div>
+          </div>
+          <div class="row q-mx-sm q-mt-none">
+            <div class="col-5 text-caption text-bold">Error</div>
+            <div class="col-7 text-right text-caption">{{ useUiStore().getSelectedTab?.httpError }}</div>
           </div>
         </q-card-section>
       </q-card>
     </q-expansion-item>
 
-    <q-expansion-item label="Meta Data"
-                      group="somegroup"
-
-                      :default-opened="useUiStore().getSelectedTab.note === undefined">
+    <q-expansion-item label="Selections" v-if="useUiStore().getSelectedTab?.selections?.length > 0"
+                      group="somegroup">
       <q-card>
         <q-card-section>
           <div class="row q-mx-sm q-mt-none">
-            <div class="col-5 text-caption text-bold">created</div>
-            <div class="col-7 text-right text-caption">{{ formatDate(useUiStore().getSelectedTab.created) }}</div>
+            <div class="col-5 text-caption text-bold">Selections</div>
+            <div class="col-7 text-right text-caption">{{ useUiStore().getSelectedTab?.selections?.length }}</div>
           </div>
-          <div class="row q-mx-sm">
-            <div class="col-5 text-caption text-bold">changed</div>
-            <div class="col-7 text-right text-caption">{{ formatDate(useUiStore().getSelectedTab.changed) }}</div>
-          </div>
-          <div class="row q-mx-sm">
-            <div class="col-5 text-caption text-bold">last active</div>
-            <div class="col-7 text-right text-caption">{{ formatDate(useUiStore().getSelectedTab.lastActive) }}</div>
-          </div>
-          <div class="row q-mx-sm">
-            <div class="col-5 text-caption text-bold">opened</div>
-            <div class="col-7 text-right text-caption">{{ useUiStore().getSelectedTab.activatedCount }}x</div>
+          <div class="row q-mx-sm q-mt-none" v-for="selection in useUiStore().getSelectedTab?.selections">
+            <div class="col-12 text-caption">{{ selection.text }}</div>
           </div>
         </q-card-section>
       </q-card>
@@ -253,6 +315,7 @@ import {FeatureIdent} from "src/models/AppFeature";
 import {useTabsStore} from "src/stores/tabsStore";
 import {useSettingsStore} from "src/stores/settingsStore"
 import {SelectTabsetCommand} from "src/domain/tabsets/SelectTabset";
+import MHtmlPage from "pages/MHtmlPage.vue";
 import MHtmlViewHelper from "pages/sidepanel/helper/MHtmlViewHelper.vue";
 
 const {inBexMode} = useUtils()
@@ -267,6 +330,9 @@ const hasAllUrlsPermission = ref<boolean | undefined>(false)
 const thumbnail = ref('')
 const content = ref('')
 const searchIndex = ref<any>()
+const metaRows = ref<object[]>([])
+const metas = ref({})
+
 const {selectTabset} = useTabsetService()
 
 const tags = ref<string[]>([])
@@ -294,19 +360,29 @@ watchEffect(() => {
     TabsetService.getContentFor(uiStore.getSelectedTab)
       .then(data => {
         if (data) {
-          content.value = data.content
+          content.value = data['content' as keyof object]
+          //metas.value = data['metas' as keyof object]
+          metaRows.value = []
+          _.forEach(Object.keys(data['metas' as keyof object]), k => {
+            //console.log("k", k, data.metas[k])
+            metaRows.value.push({
+              name: k,
+              value: data['metas' as keyof object][k]
+            })
+          })
+          metaRows.value = _.sortBy(metaRows.value, s => s['name' as keyof object])
         }
       })
   }
 })
 
 function isOpen(tab: Tab): boolean {
-  return TabsetService.isOpen(tab?.chromeTab?.url || '')
+  return TabsetService.isOpen(tab?.url || '')
 }
 
 const tabsetChips = (): object[] => {
   const badges: object[] = []
-  const url = uiStore.getSelectedTab?.chromeTab.url
+  const url = uiStore.getSelectedTab?.url
   if (url) {
     _.forEach(useTabsetService().tabsetsFor(url), ts => badges.push({
       label: TabsetService.nameForTabsetId(ts),
@@ -318,7 +394,7 @@ const tabsetChips = (): object[] => {
   //   badges.push({
   //     label: 'bookmark',
   //     bookmarkId: hit.bookmarkId,
-  //     encodedUrl: btoa(hit.chromeTab.url || '')
+  //     encodedUrl: btoa(hit.url || '')
   //   })
   // }
   return badges;
@@ -354,7 +430,7 @@ watchEffect(() => {
   const fuseIndex = useSearchStore().getIndex()
   const keyMaps = fuseIndex['_keysMap' as keyof object]
   const res = _.filter(fuseIndex['records' as keyof object], (r: any) => {
-    return useUiStore().getSelectedTab?.chromeTab.url === r.$[2]?.v
+    return useUiStore().getSelectedTab?.url === r.$[2]?.v
   })
   const keys: Map<number, object> = new Map()
   Object.keys(keyMaps).forEach((k: any) => {
@@ -388,10 +464,10 @@ const updatedTags = (val: string[]) => {
   }
 }
 
-const openTabset = (chip:any) => {
+const openTabset = (chip: any) => {
   console.log("chip", chip)
   useCommandExecutor()
-    .execute(new SelectTabsetCommand(chip['tabsetId']))
+    .execute(new SelectTabsetCommand(chip['tabsetId'], undefined))
 }
 
 </script>

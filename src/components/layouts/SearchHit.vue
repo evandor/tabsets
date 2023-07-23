@@ -5,14 +5,14 @@
 
     <q-item-section>
       <q-item-label class="ellipsis text-black" caption
-                    v-html="formatText(hit, 'url',hit.chromeTab.url || '', '#FFFFDD')"></q-item-label>
+                    v-html="formatText(hit, 'url',hit.url || '', '#FFFFDD')"></q-item-label>
       <q-item-label class="text-blue-9 text-h6">
 
-        <FaviconWidget :url="hit.chromeTab.url" :favicon="hit.chromeTab.favIconUrl" />
+        <FaviconWidget :url="hit.url" :favicon="hit.favIconUrl" />
 
         <span class="cursor-pointer underline-on-hover q-ml-sm text-subtitle1" style="font-weight:400"
-              @click="NavigationService.openOrCreateTab(hit.chromeTab?.url )"
-              v-html="formatText(hit, 'title',hit.chromeTab.title || '', '#FFFFDD')"></span>
+              @click="NavigationService.openOrCreateTab(hit.url )"
+              v-html="formatText(hit, 'title',hit.title || '', '#FFFFDD')"></span>
         <template v-for="badge in tabsetBadges(hit)">
           <q-chip v-if="badge.bookmarkId"
                   class="cursor-pointer q-ml-md" size="9px" clickable icon="o_bookmark" color="warning" @click="openBookmark(badge)">
@@ -125,12 +125,12 @@ function cardStyle(tab: Tab) {
 }
 
 function isOpen(tab: Tab): boolean {
-  //console.log("tabUrl", tab.chromeTab?.url);
-  return TabsetService.isOpen(tab?.chromeTab?.url || '')
+  //console.log("tabUrl", tab.url);
+  return TabsetService.isOpen(tab?.url || '')
 }
 
 const setInfo = (tab: Tab) => {
-  const parts = (tab.chromeTab?.url || '').split('?')
+  const parts = (tab.url || '').split('?')
   if (parts.length > 1) {
     emits('sendCaption', parts[0] + "[... params omitted....]")
   } else if (parts.length === 1) {
@@ -143,13 +143,13 @@ const tabsetBadges = (hit: Hit): object[] => {
   _.forEach(hit.tabsets, ts => badges.push({
     label: TabsetService.nameForTabsetId(ts),
     tabsetId: ts,
-    encodedUrl: btoa(hit.chromeTab.url || '')
+    encodedUrl: btoa(hit.url || '')
   }))
   if (hit.bookmarkId) {
     badges.push({
       label: 'bookmark',
       bookmarkId: hit.bookmarkId,
-      encodedUrl: btoa(hit.chromeTab.url || '')
+      encodedUrl: btoa(hit.url || '')
     })
   }
   return badges;

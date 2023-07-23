@@ -13,8 +13,8 @@ class UndoCommand implements Command<any> {
     console.info(this.tab, `reverting changed tab name to ${this.oldName}`)
     return TabsetService.setCustomTitle(this.tab, this.oldName)
       .then(res => {
-        if (this.tab.chromeTab.url) {
-          useSearchStore().update(this.tab.chromeTab.url, 'name', this.oldName)
+        if (this.tab.url) {
+          useSearchStore().update(this.tab.url, 'name', this.oldName)
         }
         return res
       })
@@ -31,12 +31,12 @@ export class UpdateTabNameCommand implements Command<any> {
   }
 
   async execute(): Promise<ExecutionResult<string>> {
-    const oldTitle = this.tab.name ? this.tab.name : this.tab.chromeTab.title || '?'
+    const oldTitle = this.tab.name ? this.tab.name : this.tab.title || '?'
     return TabsetService.setCustomTitle(this.tab, this.newName)
       .then(ignored => {
-        console.log("custom title", this.tab.chromeTab)
-        if (this.tab.chromeTab.url) {
-          useSearchStore().update(this.tab.chromeTab.url, 'name', this.newName)
+        console.log("custom title", this.tab)
+        if (this.tab.url) {
+          useSearchStore().update(this.tab.url, 'name', this.newName)
         }
       })
       .then(ignored => Promise.resolve(

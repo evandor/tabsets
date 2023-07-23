@@ -1,18 +1,18 @@
 <template>
 
   <div class="q-gutter-md row items-start fit">
-    <q-select dark dense standout filled autofocus
+    <q-select dense standout filled autofocus
               :placeholder="inputPlaceholder()"
               class="fit q-mx-md"
               color="primary"
-              :bg-color="props.fromPanel ? 'grey-7' : ''"
+              :bg-color="props.fromPanel ? 'white' : ''"
+              label-color="primary"
               :model-value="search"
               ref="searchBox"
               hide-dropdown-icon
               @update:model-value="val => updateSearch( val)"
               @keydown.enter.prevent="submitSearch()"
               use-input
-              new-value-mode="add"
               :options="options"
               @filter="filterFn">
 
@@ -40,7 +40,7 @@
           <q-item-section avatar>
             <q-icon v-if="scope.opt.id === 'highlight'" name="flashlight_on" color="black"/>
             <q-icon v-else-if="scope.opt.id.startsWith('tabset|')" name="o_tab" color="black"/>
-            <q-img v-else :src="scope.opt.chromeTab?.favIconUrl"/>
+            <q-img v-else :src="scope.opt.favIconUrl"/>
           </q-item-section>
           <q-item-section>
             <q-item-label v-if="scope.opt.id === 'highlight'" class="text-subtitle2 text-black">highlight in page
@@ -48,9 +48,9 @@
             <q-item-label v-else-if="scope.opt.id.startsWith('tabset|')" class="text-subtitle2 text-black">
               {{ tabsetName(scope.opt.id) }}
             </q-item-label>
-            <q-item-label v-else class="text-subtitle2 text-black">{{ scope.opt.chromeTab?.title }}</q-item-label>
+            <q-item-label v-else class="text-subtitle2 text-black">{{ scope.opt.title }}</q-item-label>
 
-            <q-item-label caption class="text-blue-8">{{ scope.opt.chromeTab?.url }}</q-item-label>
+            <q-item-label caption class="text-blue-8">{{ scope.opt.url }}</q-item-label>
             <q-rating v-if="scope.opt.id !== 'highlight' && !scope.opt.id.startsWith('tabset|')"
                       :model-value="Math.round(scope.opt.score / 18)"
                       size="13px"
@@ -101,6 +101,10 @@ const props = defineProps({
   fromPanel: {type: Boolean, default: false}
 })
 
+watchEffect(() => {
+  console.log("search", search.value)
+})
+
 function submitSearch() {
   setTimeout(() => {
     console.log("submitting search", searchStore, typedOrSelected.value)
@@ -120,26 +124,6 @@ function submitSearch() {
 
 }
 
-function checkKeystroke(e: KeyboardEvent) {
-  if (useUiStore().ignoreKeypressListener()) {
-    return
-  }
-  if (e.key === '/' && searchBox.value) {
-    e.preventDefault()
-    // @ts-ignore
-    searchBox.value.focus()
-    search.value = ''
-  }
-}
-
-onMounted(() => {
-  window.addEventListener('keypress', checkKeystroke);
-})
-
-onUnmounted(() => {
-  window.removeEventListener('keypress', checkKeystroke);
-})
-
 const options = ref<Hit[]>([])
 const model = ref(null)
 
@@ -158,6 +142,10 @@ const runSearch = (term: string) => {
 
 const filterFn = (val: any, update: any, abort: any) => {
   console.log("filterFn", val)
+  if (val === '/') {
+    //search.value = ""
+    return
+  }
   runSearch(val)
   highlight.value = undefined
   useUiStore().highlightTerm = undefined
@@ -169,7 +157,9 @@ const filterFn = (val: any, update: any, abort: any) => {
       const tabsets = [...tabsStore.tabsets.values()]
       tabsets.forEach(ts => {
         if (ts.name.indexOf(val) >= 0) {
-          const pseudoHit = new Hit("tabset|" + ts.name, null as unknown as chrome.tabs.Tab,
+          const pseudoHit = new Hit("tabset|" + ts.name,
+            //null as unknown as chrome.tabs.Tab,
+            '','','',
             0, 0, 0, [ts.id], ts.spaces,[], "", "")
           tabsetsAsHit.push(pseudoHit)
         }
@@ -177,12 +167,12 @@ const filterFn = (val: any, update: any, abort: any) => {
       console.log("tabsetsAsHit", tabsetsAsHit)
       options.value = tabsetsAsHit
       options.value = options.value.concat(theHits.value)
-      console.log("options", options.value, typeof options.value)
-      if (options.value) {
-        const pseudoHit = new Hit("highlight", null as unknown as chrome.tabs.Tab, 0, 0, 0, [], [],[], "", "")
-        pseudoHit.name = val
-        options.value = options.value.concat(pseudoHit)
-      }
+      // console.log("options", options.value, typeof options.value)
+      // if (options.value) {
+      //   const pseudoHit = new Hit("highlight", null as unknown as chrome.tabs.Tab, 0, 0, 0, [], [],[], "", "")
+      //   pseudoHit.name = val
+      //   options.value = options.value.concat(pseudoHit)
+      // }
     })
   }, 100)
 }
@@ -192,13 +182,13 @@ const updateSearch = (val: any) => {
   console.log("updateSearch", typedOrSelected.value)
   if (val?.chromeTab) {
     searchStore.term = ''
-    NavigationService.openOrCreateTab(val.chromeTab.url)
+    NavigationService.openOrCreateTab(val.url)
   } else if (val?.id === "highlight") {
     console.log("setting highlight", val.name)
     highlight.value = val.name
     useUiStore().setHighlightTerm(val.name)
     JsUtils.runCssHighlight()
-  } else if (val && val.id.startsWith('tabset|')) {
+  } else if (val && val.id?.startsWith('tabset|')) {
     const tsId = val.tabsets[0]
     console.log("got tsid", tsId)
     if (tsId) {

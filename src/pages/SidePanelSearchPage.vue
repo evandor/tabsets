@@ -21,6 +21,8 @@
 
   <div class="row">
     <div class="col-12 q-ma-md">
+      <template>
+      </template>
       <template v-for="hit in tabsetHits">
         <q-list>
           <SearchHit :hit="hit"/>
@@ -71,7 +73,11 @@ const newSearch = (term: string) => {
       //console.log("h", h.item.bookmarkId)
       const theHit = new Hit(
         uid(),
-        ChromeApi.createChromeTabObject(h.item.title, h.item.url, h.item.favIconUrl), 0, 0,
+ //       ChromeApi.createChromeTabObject(h.item.title, h.item.url, h.item.favIconUrl),
+        h.item.title,
+        h.item.url,
+        h.item.favIconUrl,
+        0, 0,
         Math.round(100 - (100 * (h?.score || 1))),
         h.item.tabsets,
         [],
@@ -89,6 +95,7 @@ const newSearch = (term: string) => {
       }
       tabsetHits.value.push(theHit)
     })
+    console.log("added hits", tabsetHits.value)
   }
 }
 

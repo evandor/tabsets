@@ -12,7 +12,10 @@
       </div>
       <div class="row q-pa-xs">
         <div class="2"></div>
-        <div class="col text-caption">{{ props.hint }}</div>
+        <div class="col text-caption">
+          {{ props.hint }}
+          <slot></slot>
+        </div>
       </div>
     </q-banner>
   </div>
@@ -24,14 +27,8 @@ import {useUiStore} from "src/stores/uiStore";
 import {useTabsStore} from "src/stores/tabsStore";
 
 const props = defineProps({
-  ident: {
-    type: String,
-    required: true
-  },
-  hint: {
-    type: String,
-    required: true
-  },
+  ident: {type: String, required: true},
+  hint: {type: String, required: false},
   cssClass: {type: String, default: 'q-pa-md q-gutter-sm'},
   // even if this is set to 1.0, showMessage might return "false", e.g.
   // when another message is already shown

@@ -1,61 +1,43 @@
 <template>
-  <div v-if="tabFromChromeTab() && tabsStore.getCurrentTabset && currentChromeTab.url !== 'chrome://newtab/'"
-       class="row q-ma-sm q-mt-lg bg-yellow-1"
-       style="border:1px solid gray;border-radius: 5px">
+  <div
+    class="row q-ma-none q-mt-xs q-pt-sm"
+    :class="alreadyInTabset() ? 'bg-grey-1':'bg-yellow-1'"
+    style="border:1px solid lightgray;border-radius: 5px">
 
-    <div class="col-12">
-      <q-list>
-        <q-item
-          v-ripple
-          class="q-ma-none q-pa-xs">
-          <CurrentTabElementHelper />
-        </q-item>
-      </q-list>
+    <div class="col-12" v-if="route.query.first && route.query.first === 'true'">
+      <div class="row">
+        <div class="col text-caption q-pa-md">
+          Here you will always see the <i>current tab</i> of your browser.
+          Click 'START' and add it to your new tabset.<br><br>
+          <q-btn label="start" @click="router.push('/sidepanel')"/>
+        </div>
+      </div>
     </div>
-<!--    <div class="col-2">-->
-<!--      <q-btn :disable="alreadyInTabset()" :label="alreadyInTabset() ? 'saved' :'save'" color="primary" flat-->
-<!--             size="10px" @click="saveFromPanel()"></q-btn>-->
-<!--      <br>-->
-<!--      <q-btn :label="c.candidateName" v-for="c in tabsetCandidates" color="primary" flat size="10px">-->
-<!--        <q-tooltip>got score {{c.score}}</q-tooltip>-->
-<!--      </q-btn>-->
-<!--    </div>-->
-  </div>
-
-  <div v-else-if="selectedTab"
-       class="row q-ma-sm q-mt-lg"
-       :class="alreadyInTabset() ? 'bg-grey-1':'bg-yellow-1'"
-       style="border:1px solid gray;border-radius: 5px">
-
-    <div class="col-12">
-      <q-list>
-        <q-item
-          v-ripple
-          class="q-ma-none q-pa-xs">
-          <SidePanelTabListElementDetails :tab="selectedTab"/>
-        </q-item>
-      </q-list>
+    <div class="col-12" v-else :style="alreadyInTabset() ? 'opacity: 0.2':''">
+      <CurrentTabElementHelper :tabsetId="props.tabsetId"/>
     </div>
   </div>
+
 </template>
 
 <script lang="ts" setup>
 
-import PanelTabListElementWidget from "components/widgets/PanelTabListElementWidget.vue";
-import SidePanelTabListElementDetails from "components/widgets/SidePanelTabListElementDetails.vue";
 import {Tab} from "src/models/Tab";
 import {uid} from "quasar";
-import {useRouter} from "vue-router";
+import {useRoute, useRouter} from "vue-router";
 import {useTabsStore} from "stores/tabsStore";
 import {useTabsetService} from "src/services/TabsetService2";
-import {useCommandExecutor} from "src/services/CommandExecutor";
-import {AddTabToTabsetCommand} from "src/domain/tabs/AddTabToTabset";
 import {ref, watchEffect} from "vue";
 import {useUiStore} from "stores/uiStore";
 import TabsetService from "src/services/TabsetService";
 import CurrentTabElementHelper from "pages/sidepanel/helper/CurrentTabElementHelper.vue";
 
+const props = defineProps({
+  tabsetId: {type: String, required: true}
+})
+
 const router = useRouter()
+const route = useRoute()
 const tabsStore = useTabsStore()
 
 const currentChromeTab = ref<chrome.tabs.Tab>(null as unknown as chrome.tabs.Tab)
@@ -77,10 +59,12 @@ watchEffect(() => {
 
 watchEffect(async () => {
   if (currentChromeTab.value?.url) {
-    //console.log("hier", currentChromeTab.value?.url)
-    const c = await TabsetService.getContentForUrl(currentChromeTab.value.url)
-    //console.log("c", c)
-    tabsetCandidates.value = c ? (c['tabsetCandidates' as keyof object] || []) : []
+    try {
+      const c = await TabsetService.getContentForUrl(currentChromeTab.value.url)
+      tabsetCandidates.value = c ? (c['tabsetCandidates' as keyof object] || []) : []
+    } catch (err) {
+      console.log("got error: ", err)
+    }
   }
 })
 

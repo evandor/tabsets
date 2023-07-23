@@ -8,15 +8,21 @@ import {AppFeature, FeatureIdent, FeatureType} from "src/models/AppFeature"
 
 export class AppFeatures {
   features: AppFeature[] = [
-    new AppFeature(FeatureIdent.BOOKMARKS, FeatureType.EXPERIMENTAL, 'Bookmarks', 'o_bookmarks', ['bex'])
+    new AppFeature(FeatureIdent.BOOKMARKS, FeatureType.OPTIONAL, 'Bookmarks', 'o_bookmarks', ['bex'])
       .setActivateCommand(new GrantPermissionCommand('bookmarks'))
       .setDeactivateCommand(new RevokePermissionCommand('bookmarks')),
-    new AppFeature(FeatureIdent.THUMBNAILS, FeatureType.RECOMMENDED, 'Thumbnails', 'o_image', ['bex'])
+
+    new AppFeature(FeatureIdent.PAGE_MARKER, FeatureType.EXPERIMENTAL, 'Page Marker', 'o_note', ['bex'])
+      .setActivateCommand(new GrantPermissionCommand('contextMenus'))
+      .setDeactivateCommand(new RevokePermissionCommand('contextMenus')),
+
+    new AppFeature(FeatureIdent.THUMBNAILS, FeatureType.OPTIONAL, 'Thumbnails', 'o_image', ['bex'])
       .setActivateCommand(new GrantOriginCommand('thumbnails'))
       .setDeactivateCommand(new RevokeOriginCommand('thumbnails')),
 
     new AppFeature(FeatureIdent.NEWEST_TABS, FeatureType.RECOMMENDED, 'Newest Tabs', 'o_schedule', ['all']),
     new AppFeature(FeatureIdent.TOP10, FeatureType.RECOMMENDED, 'Top 10 Tabs', 'o_workspace_premium', ['all']),
+    new AppFeature(FeatureIdent.OPEN_TABS, FeatureType.RECOMMENDED, 'Open Tabs', 'o_playlist_add', ['bex']),
 
     new AppFeature(FeatureIdent.SAVE_TAB, FeatureType.EXPERIMENTAL, 'Save Tabs', 'o_save', ['bex'])
       .setActivateCommand(new GrantPermissionCommand('pageCapture')),
@@ -33,12 +39,19 @@ export class AppFeatures {
 
     new AppFeature(FeatureIdent.TABSET_PAGE, FeatureType.EXPERIMENTAL, 'Use Tabset Pages', 'o_article', ['all']),
 
-    new AppFeature(FeatureIdent.TAGS, FeatureType.OPTIONAL, 'Use Tags for Tabs', 'o_label', ['all']),
-    new AppFeature(FeatureIdent.NOTES, FeatureType.EXPERIMENTAL, 'Quick Notes with Drag&Drop', 'o_note', ['bex']),
+    //new AppFeature(FeatureIdent.TAGS, FeatureType.OPTIONAL, 'Use Tags for Tabs', 'o_label', ['all']),
+    new AppFeature(FeatureIdent.NOTES, FeatureType.EXPERIMENTAL, 'Activate Notes', 'o_note', ['bex']),
     new AppFeature(FeatureIdent.WEBSITE_CLIP, FeatureType.EXPERIMENTAL, 'Create an image clip from a website and store it', 'filter_center_focus', ['bex'])
       .setActivateCommand(new GrantPermissionCommand('notifications')),
     new AppFeature(FeatureIdent.STANDALONE_APP, FeatureType.EXPERIMENTAL, 'Standalone App', 'o_open_in_new', ['bex']),
     new AppFeature(FeatureIdent.AI_MODULE, FeatureType.EXPERIMENTAL, 'AI Module', 'o_auto_awesome', ['bex']),
+
+    new AppFeature(FeatureIdent.CATEGORIZATION, FeatureType.EXPERIMENTAL, 'URL Categorization', 'o_auto_awesome', ['bex']),
+
+    new AppFeature(FeatureIdent.NOTIFICATIONS, FeatureType.RECOMMENDED, 'Chrome Notifications', 'o_notifications', ['all'])
+      .setActivateCommand(new GrantPermissionCommand('notifications'))
+      .setDeactivateCommand(new RevokePermissionCommand('notifications')),
+
 
   ]
 

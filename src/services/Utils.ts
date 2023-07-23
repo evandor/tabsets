@@ -27,6 +27,18 @@ export function useUtils() {
       allowedAttributes: sanitizeHtml.defaults.allowedAttributes = {
         a: ['href', 'name', 'target'],
         img: ['src', 'srcset', 'alt', 'title', 'width', 'height', 'loading']
+      },
+      allowedSchemesByTag: {
+        img: [ 'data' ]
+      }
+    })
+  }
+
+  const sanitizeAsText = (input: string): string => {
+    return sanitizeHtml(input, {
+      allowedTags: sanitizeHtml.defaults.allowedTags,//.concat(['img']),
+      allowedAttributes: sanitizeHtml.defaults.allowedAttributes = {
+        a: ['href', 'name', 'target']
       }
     })
   }
@@ -49,6 +61,7 @@ export function useUtils() {
     normalize,
     modeIs,
     sanitize,
+    sanitizeAsText,
     sendMsg
   }
 }

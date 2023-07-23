@@ -3,9 +3,19 @@
 // @ts-ignore
 import {bexContent} from 'quasar/wrappers'
 
+
 export default bexContent((bridge: any) => {
 
+  // @ts-ignore
+  if (window.contentScriptAlredyCalled) {
+    // https://stackoverflow.com/questions/23208134/avoid-dynamically-injecting-the-same-script-multiple-times-when-using-chrome-tab
+    console.debug("stopping execution of script as it is already setup")
+    return
+  }
+
   console.log("tabsets: initializing content script")
+  // @ts-ignore
+  window.contentScriptAlredyCalled  = true
 
   // @ts-ignore
   bridge.on('websiteImg', ({data, respond}) => {

@@ -35,7 +35,7 @@ export class Tabset {
 
   page: string | undefined = undefined
 
-  showPageAsHeader = false
+  taxonomy: string | undefined = undefined
 
   constructor(id: string, name: string, tabs: Tab[], groups: Group[] = [], spaces: string[] = []) {
     this.id = id

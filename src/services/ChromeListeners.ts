@@ -1,7 +1,7 @@
 import {Tabset, TabsetType} from "src/models/Tabset";
 import {useTabsStore} from "src/stores/tabsStore";
 import _ from "lodash";
-import {Tab} from "src/models/Tab";
+import {HTMLSelection, HTMLSelectionComment, Tab} from "src/models/Tab";
 import {uid} from "quasar";
 import throttledQueue from 'throttled-queue';
 // @ts-ignore
@@ -110,7 +110,7 @@ class ChromeListeners {
       return
     }
     this.eventTriggered()
-    console.log(`onCreated: tab ${tab.id}: >>> ${tab.pendingUrl}`)
+    console.debug(`onCreated: tab ${tab.id}: >>> ${tab.pendingUrl}`)
     const tabsStore = useTabsStore()
 
     let foundSession = false
@@ -138,7 +138,7 @@ class ChromeListeners {
 
     const selfUrl = chrome.runtime.getURL("")
     if (chromeTab.url?.startsWith(selfUrl)) {
-      console.debug(`onUpdated:   tab ${number}: >>> chromeTab.url starts with '${selfUrl}' <<<`)
+      console.debug(`onUpdated:   tab ${number}: >>> .url starts with '${selfUrl}' <<<`)
       return
     }
 
@@ -159,19 +159,25 @@ class ChromeListeners {
     }
   }
 
+  /**
+   *
+   * @param tabset: usually the "pendingTabset", or any one which is a session
+   * @param tab
+   * @private
+   */
   private handleUpdate(tabset: Tabset, tab: chrome.tabs.Tab) {
     // find tab which was created by "onCreate" moments ago
-    const index = _.findIndex(tabset?.tabs, t => t.chromeTab.id === tab.id);
+    const index = _.findIndex(tabset?.tabs, t => t.chromeTabId === tab.id);
     if (index >= 0) {
       const existingPendingTab = tabset.tabs[index]
       const updatedTab = new Tab(uid(), tab)
       updatedTab.setHistoryFrom(existingPendingTab)
-      if (existingPendingTab.chromeTab.url !== updatedTab.chromeTab.url && existingPendingTab.chromeTab.url !== 'chrome://newtab/') {
-        if (existingPendingTab.chromeTab.url) {
-          updatedTab.addToHistory(existingPendingTab.chromeTab.url)
+      if (existingPendingTab.url !== updatedTab.url && existingPendingTab.url !== 'chrome://newtab/') {
+        if (existingPendingTab.url) {
+          updatedTab.addToHistory(existingPendingTab.url)
         }
       }
-      const urlExistsAlready = _.filter(tabset.tabs, pT => pT.chromeTab.url === tab.url).length >= 2
+      const urlExistsAlready = _.filter(tabset.tabs, pT => pT.url === tab.url).length >= 2
       if (urlExistsAlready) {
         tabset.tabs.splice(index, 1);
       } else {
@@ -206,16 +212,18 @@ class ChromeListeners {
     }
     scripts.push("content-script.js")
     scripts.push("tabsets-content-script.js")
-    if (scripts.length > 0 && tab.id !== null) { // && !this.injectedScripts.get(chromeTab.id)) {
+    if (scripts.length > 0 && tab.id !== null) { // && !this.injectedScripts.get(.chromeTabId)) {
 
       chrome.tabs.get(tab.id, (chromeTab: chrome.tabs.Tab) => {
-       // console.log("got tab", tab)
+        console.log("got tab", tab)
         if (!tab.url?.startsWith("chrome")) {
           scripts.forEach((script: string) => {
-            console.debug("executing scripts", tab.id, script)
+            console.info("executing scripts", tab.id, script)
+
+
             // @ts-ignore
             chrome.scripting.executeScript({
-              target: {tabId: tab.id, allFrames: false},
+              target: {tabId: tab.id || 0, allFrames: false},
               files: [script] //["tabsets-content-script.js","content-script-thumbnails.js"],
             }, (callback: any) => {
               if (chrome.runtime.lastError) {
@@ -232,7 +240,7 @@ class ChromeListeners {
     this.eventTriggered()
     const tabsStore = useTabsStore()
     const currentTabset: Tabset = tabsStore.tabsets.get(tabsStore.currentTabsetId) || new Tabset("", "", [], [])
-    const index = _.findIndex(currentTabset.tabs, t => t.chromeTab.id === number);
+    const index = _.findIndex(currentTabset.tabs, t => t.chromeTabId === number);
     if (index >= 0) {
       const updatedTab = currentTabset.tabs.at(index)
       if (updatedTab) {
@@ -258,7 +266,7 @@ class ChromeListeners {
       _.forEach([...tabsStore.tabsets.keys()], key => {
         const ts = tabsStore.tabsets.get(key)
         if (ts) {
-          const hits = _.filter(ts.tabs, (t: Tab) => t.chromeTab.url === url)
+          const hits = _.filter(ts.tabs, (t: Tab) => t.url === url)
           let hit = false
           _.forEach(hits, h => {
             h.activatedCount = 1 + h.activatedCount
@@ -395,6 +403,7 @@ class ChromeListeners {
 
   private handleHtml2Links(request: any, sender: chrome.runtime.MessageSender, sendResponse: any) {
     if (sender.tab) {
+      console.log("handleHtml2Links")
       saveMetaLinksFor(sender.tab, request.links)
       saveLinksFor(sender.tab, request.anchors)
 
@@ -419,8 +428,8 @@ class ChromeListeners {
   }
 
   private ignoreUrl(tab: Tab, info: chrome.tabs.TabChangeInfo) {
-    return (tab.chromeTab && tab.chromeTab.url?.startsWith("chrome")) ||
-      (tab.chromeTab && tab.chromeTab?.url?.startsWith("about")) ||
+    return (tab.url?.startsWith("chrome")) ||
+      (tab.url?.startsWith("about")) ||
       info.url?.startsWith("chrome") ||
       info.url?.startsWith("about") ||
       info.url?.startsWith("https://skysail.eu.auth0.com/")
@@ -498,9 +507,10 @@ class ChromeListeners {
       // https://stackoverflow.com/questions/965968/serialize-internal-javascript-objects-like-range
 
       const newTab = new Tab(uid(), sender.tab)
-      newTab.selection = serialTx
-      console.log("newTab with selection", newTab)
-      this.addToTabset(currentTS.id, newTab)
+//      newTab.selection = serialTx
+      newTab.selections.push(new HTMLSelection(serialTx, request.text,[new HTMLSelectionComment("owner", "added")]))
+      console.log("newTab with selection", serialTx)
+      this.addSelectionToTabset(currentTS.id, sender.tab.url || '', newTab)
     }
     sendResponse({websiteQuote: 'done'});
   }
@@ -511,7 +521,7 @@ class ChromeListeners {
       console.log("request", request)
       const newTab = new Tab(uid(), sender.tab)
       newTab.image = request.img
-      console.log("newTab with selection", newTab)
+      console.log("newTab with image", newTab)
       this.addToTabset(currentTS.id, newTab)
     }
     sendResponse({websiteImg: 'done'});
@@ -603,7 +613,32 @@ class ChromeListeners {
     img.src = dataUrl//"https://i.imgur.com/SHo6Fub.jpg";
   }
 
+  private addSelectionToTabset(currentTSId: string, url: string, newTab: Tab) {
+    console.log("addSelectionToTabset", currentTSId, url, newTab)
+    const tabsetIds = useTabsetService().tabsetsFor(url)
+    console.log("got tabsetIds", tabsetIds)
+    if (tabsetIds.length > 0) {
+      tabsetIds.forEach(tsId => {
+        const ts = useTabsetService().getTabset(tsId)
+        if (ts) {
+          const tabs = _.filter(ts.tabs, t => t.url === url)
+          tabs.forEach(t => {
+            if (!t.selections) {
+              t.selections = []
+            }
+            t.selections = t.selections.concat(newTab.selections)
+          })
+          useTabsetService().saveTabset(ts)
+        }
+      })
+    } else {
+      this.addToTabset(currentTSId, newTab)
+    }
+
+  }
+
   private addToTabset(currentTSId: string, newTab: Tab) {
+    console.log("addToTabset", currentTSId, newTab)
     addToTabsetId(currentTSId, newTab)
       .then(() => {
         const ts = useTabsetService().getTabset(currentTSId)
