@@ -40,7 +40,7 @@
           class="cursor-pointer q-ml-none q-mr-xs ellipsis" size="9px">
           {{ shorten(badge.label, 12) }}
           <q-tooltip v-if="badge.tabsetId !== props.tabsetId"
-                     class="tooltip" :delay="1000">This tab has been added to the tabset '{{ badge.label }}
+                     class="tooltip" :delay="1000">This tab has been added to the tabset '{{ badge.label }}'
             {{ created }}. Click to go to this tabset.'
           </q-tooltip>
           <q-tooltip v-else

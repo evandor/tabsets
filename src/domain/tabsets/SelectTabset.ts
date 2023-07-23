@@ -46,7 +46,7 @@ export class SelectTabsetCommand implements Command<Tabset | undefined> {
         name: 'current-tabset-id-change',
         data: {tabsetId: this.tabsetId}
       }
-      console.log("sending message", msg)
+      //console.log("sending message", msg)
       chrome.runtime.sendMessage(msg, (callback) => {
         console.log("got callback", callback)
         if (chrome.runtime.lastError) {

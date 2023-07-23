@@ -109,7 +109,9 @@
           <span v-else>
               <q-icon color="primary" size="16px"/>
             </span>
-          <PanelTabListContextMenu :tab="tab" v-if="!props.hideMenu"/>
+          <PanelTabListContextMenu
+            :tabsetType="props.tabsetType"
+            :tab="tab" v-if="!props.hideMenu"/>
 
         </div>
       </div>
@@ -158,13 +160,15 @@ import {useTabsStore} from "src/stores/tabsStore";
 import PanelTabListContextMenu from "components/widgets/helper/PanelTabListContextMenu.vue";
 import _ from "lodash";
 import {formatDistance} from "date-fns";
+import {TabsetType} from "src/models/Tabset";
 
 const props = defineProps({
   tab: {type: Object as PropType<Tab>, required: true},
   header: {type: String, required: false},
   type: {type: String, default: 'sidepanel'},
   hideMenu: {type: Boolean, default: false},
-  showTabsets: {type: Boolean, default: false}
+  showTabsets: {type: Boolean, default: false},
+  tabsetType: {type: Object as PropType<TabsetType>, default: TabsetType.DEFAULT}
 })
 
 const emits = defineEmits(['sendCaption'])

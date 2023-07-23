@@ -127,6 +127,18 @@
             <q-tooltip class="tooltip">Create new Space</q-tooltip>
           </q-btn>
         </template>
+        <template v-slot:iconsRight>
+          <q-btn
+            icon="more_horiz"
+            color="primary"
+            flat
+            class="q-ma-none q-pa-xs cursor-pointer"
+            style="max-width:20px"
+            size="10px"
+            @click="manageSpaces()">
+            <q-tooltip class="tooltip">Manage Spaces</q-tooltip>
+          </q-btn>
+        </template>
       </FirstToolbarHelper>
 
     </q-page-sticky>
@@ -139,20 +151,7 @@
   <!--      <div class="row fit">-->
   <!--        <q-toolbar-title>-->
   <!--          <div class="row">-->
-  <!--            <div class="col-2">-->
-  <!--              <q-icon name="chevron_left" class="cursor-pointer" @click="router.push('/sidepanel')">-->
-  <!--                <q-tooltip>Back</q-tooltip>-->
-  <!--              </q-icon>-->
-  <!--            </div>-->
-  <!--            <div class="col-8">-->
-  <!--              {{ usePermissionsStore().hasFeature(FeatureIdent.SPACES) ? 'Spaces' : 'Tabset List' }}-->
-  <!--            </div>-->
   <!--            <div class="col-2 text-right">-->
-  <!--              <q-icon-->
-  <!--                class="q-ma-xs cursor-pointer" name="o_add" size="16px"-->
-  <!--                @click="addSpace">-->
-  <!--                <q-tooltip class="tooltip">Add Space</q-tooltip>-->
-  <!--              </q-icon>-->
   <!--              <q-icon-->
   <!--                class="q-ma-xs cursor-pointer" name="more_horiz" size="16px"-->
   <!--                @click="manageSpaces">-->
@@ -164,10 +163,6 @@
   <!--      </div>-->
   <!--    </q-toolbar>-->
 
-  <!--    <div class="q-pa-none">-->
-  <!--    </div>-->
-
-  <!--  </div>-->
 
 </template>
 
@@ -210,29 +205,6 @@ const currentTabset = ref<Tabset | undefined>(undefined)
 const currentChromeTab = ref<chrome.tabs.Tab>(null as unknown as chrome.tabs.Tab)
 const tabsetsForSpace = ref<Map<string, Tabset[]>>(new Map())
 const hoveredSpace = ref<string | undefined>(undefined)
-
-// console.log("adding listener")
-
-// if (inBexMode()) {
-//   chrome.runtime.onMessage.addListener(({name, data}) => {
-//     console.log("got message", name)
-//     if (name === 'current-tabset-id-change') {
-//       const tsId = data.tabsetId
-//       console.log("hier", useTabsStore().getCurrentTabset, tsId)
-//       useTabsStore().selectCurrentTabset(tsId)
-//     }
-//     return true
-//   })
-// } else {
-//   useRouter().push("/start")
-// }
-
-
-// const tabsetsForSpace = (spaceId: string): Tabset[] => {
-//   console.log("calling xxx")
-//   return [] //_.filter([...useTabsStore().tabsets.values()], (ts: Tabset) =>
-//     // ts.spaces.indexOf(spaceId) >= 0)
-// }
 
 watchEffect(() => {
   const start = new Date().getTime()

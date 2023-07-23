@@ -21,15 +21,20 @@
           Open in Reading Mode
         </q-item-section>
       </q-item>
-      <q-separator/>
-      <q-item clickable v-close-popup @click.stop="editNoteDialog(props['tab' as keyof object])">
-        <q-item-section avatar style="padding-right:0;min-width:25px;max-width: 25px;">
-          <q-icon size="xs" name="o_note" color="accent"/>
-        </q-item-section>
-        <q-item-section>
-          Add / Edit Note
-        </q-item-section>
-      </q-item>
+
+      <template v-if="props.tabsetType !== TabsetType.DYNAMIC">
+        <q-separator/>
+        <q-item clickable
+                v-close-popup @click.stop="editNoteDialog(props['tab' as keyof object])">
+          <q-item-section avatar style="padding-right:0;min-width:25px;max-width: 25px;">
+            <q-icon size="xs" name="o_note" color="accent"/>
+          </q-item-section>
+          <q-item-section>
+            Add / Edit Note
+          </q-item-section>
+        </q-item>
+      </template>
+
       <q-separator/>
       <q-item clickable v-close-popup @click.stop="copyToClipboard(props['tab' as keyof object])">
         <q-item-section avatar style="padding-right:0;min-width:25px;max-width: 25px;">
@@ -67,14 +72,13 @@ import {useRouter} from "vue-router";
 import {useSettingsStore} from "stores/settingsStore";
 import {CopyToClipboardCommand} from "src/domain/commands/CopyToClipboard";
 import NavigationService from "src/services/NavigationService";
+import {TabsetType} from "src/models/Tabset";
 
 const {inBexMode} = useUtils()
 
 const props = defineProps({
-  tab: {
-    type: Object as PropType<Tab>,
-    required: true
-  }
+  tab: {type: Object as PropType<Tab>, required: true},
+  tabsetType: {type: Object as PropType<TabsetType>, default: TabsetType.DEFAULT}
 })
 
 const emit = defineEmits(['toggleExpand']);

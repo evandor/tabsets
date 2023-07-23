@@ -32,7 +32,7 @@ export class CreateDynamicTabset implements Command<object> {
   async execute(): Promise<ExecutionResult<object>> {
     try {
       const result: NewOrReplacedTabset = await useTabsStore()
-        .updateOrCreateTabset("Tag: " + this.tabsetName, [], false, TabsetType.DYNAMIC)
+        .updateOrCreateTabset(this.tabsetName + " (Tag)", [], false, TabsetType.DYNAMIC)
       if (result && result.tabset) {
         if (this.sourceType === DynamicTabSourceType.TAG) {
           result.tabset.dynamicTabs = new DynamicTabSource(this.sourceType, {tags: [this.tabsetName]})
@@ -43,7 +43,7 @@ export class CreateDynamicTabset implements Command<object> {
         await useTabsetService().saveTabset(result.tabset)
       }
 
-      const executionResult = new ExecutionResult(result, "doneMsg", new UndoCreateTabsetCommand(result['tabsetId' as keyof object]))
+      const executionResult = new ExecutionResult(result, "Dynamic Tabset was created", new UndoCreateTabsetCommand(result['tabsetId' as keyof object]))
       return Promise.resolve(executionResult)
     } catch (err) {
       return Promise.reject(err)

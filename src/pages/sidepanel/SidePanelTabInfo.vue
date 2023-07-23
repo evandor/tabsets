@@ -13,7 +13,7 @@
         </div>
       </div>
     </div>
-    <div class="col-12" v-else>
+    <div class="col-12" v-else :style="alreadyInTabset() ? 'opacity: 0.2':''">
       <CurrentTabElementHelper :tabsetId="props.tabsetId"/>
     </div>
   </div>

@@ -15,6 +15,7 @@
               'border:0 solid grey;border-radius:4px'"
                           group="tabsets"
                           :default-opened="false"
+                          v-model="selected_model[tabset.id]"
                           @update:model-value="val => updateSelectedTabset(tabset.id, val, index)"
                           expand-separator>
 
@@ -25,12 +26,12 @@
               <q-item-label :class="tabsStore.currentTabsetId === tabset.id ? 'text-bold text-primary' : ''">
                 <q-icon
                   :color="tabset.status === TabsetStatus.DEFAULT ? 'primary':'warning'"
-                  :name="tabset.status === TabsetStatus.DEFAULT ? 'tab':'push_pin'"
+                  :name="tabsetIcon(tabset as Tabset)"
                   style="position: relative;top:-2px"/>
                 {{ tabset.name }}
               </q-item-label>
               <q-item-label class="text-caption text-grey-5">
-                {{ tabsetCaption(filteredTabs(tabset.tabs)) }}
+                {{ tabsetCaption(filteredTabs(tabset as Tabset)) }}
               </q-item-label>
             </q-item-section>
 
@@ -59,7 +60,12 @@
             <div class="q-ma-xs">
               <SidePanelTabInfo :tabsetId="tabset.id"/>
             </div>
-            <PanelTabList :tabs="filteredTabs(tabset.tabs)" v-if="tabsetExpanded.get(tabset.id)"/>
+
+            <PanelTabList
+              v-if="tabsetExpanded.get(tabset.id)"
+              :tabsetType="tabset.type"
+              :tabs="filteredTabs(tabset as Tabset)"/>
+
           </div>
         </q-expansion-item>
 
@@ -119,7 +125,7 @@ import {onMounted, onUnmounted, ref, watchEffect} from "vue";
 import {useTabsStore} from "src/stores/tabsStore";
 import {Tab} from "src/models/Tab";
 import _ from "lodash"
-import {Tabset, TabsetStatus} from "src/models/Tabset";
+import {Tabset, TabsetStatus, TabsetType} from "src/models/Tabset";
 import {useRoute, useRouter} from "vue-router";
 import {useUtils} from "src/services/Utils";
 import {scroll, useQuasar} from "quasar";
@@ -128,15 +134,15 @@ import {useUiStore} from "src/stores/uiStore";
 import PanelTabList from "components/layouts/PanelTabList.vue";
 import {usePermissionsStore} from "src/stores/permissionsStore";
 import {useSpacesStore} from "src/stores/spacesStore";
-import {useLogsStore} from "stores/logsStore";
 import SidePanelTabInfo from "pages/sidepanel/SidePanelTabInfo.vue";
 import FirstToolbarHelper from "pages/sidepanel/helper/FirstToolbarHelper.vue";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {SelectTabsetCommand} from "src/domain/tabsets/SelectTabset";
 import {FeatureIdent} from "src/models/AppFeature";
 import SidePanelPageContextMenu from "pages/sidepanel/SidePanelPageContextMenu.vue";
-import getScrollTarget = scroll.getScrollTarget;
 import NewTabsetDialog from "components/dialogues/NewTabsetDialog.vue";
+import getScrollTarget = scroll.getScrollTarget;
+import {DynamicTabSourceType} from "src/models/DynamicTabSource";
 
 
 const {setVerticalScrollPosition} = scroll
@@ -162,10 +168,17 @@ const currentChromeTab = ref<chrome.tabs.Tab>(null as unknown as chrome.tabs.Tab
 const tabsetExpanded = ref<Map<string, boolean>>(new Map())
 const tabs = ref<Map<string, Tab[]>>(new Map())
 
+// https://stackoverflow.com/questions/12710905/how-do-i-dynamically-assign-properties-to-an-object-in-typescript
+interface SelectionObject {
+  [key: string]: boolean
+}
+
+const selected_model = ref<SelectionObject>({})
+
 const hoveredTabset = ref<string | undefined>(undefined)
 const tabsets = ref<Tabset[]>([])
 
-const logs = ref<object[]>([])
+//const logs = ref<object[]>([])
 const progress = ref<number | undefined>(undefined)
 const progressLabel = ref<string | undefined>(undefined)
 
@@ -180,11 +193,94 @@ onUnmounted(() => {
   window.removeEventListener('keypress', checkKeystroke);
 })
 
-
 watchEffect(() => {
+  console.log(" >>> change in getSelectedTab", useUiStore().getSelectedTab)
   selectedTab.value = useUiStore().getSelectedTab
   if (selectedTab.value) {
     currentChromeTab.value = null as unknown as chrome.tabs.Tab
+  }
+})
+
+const scrollToElement = (el: any, delay: number) => {
+  if (!el) {
+    return
+  }
+  setTimeout(() => {
+    const target = getScrollTarget(el)
+    const offset = el.offsetTop
+    const duration = 200
+    setVerticalScrollPosition(target, offset - 120, duration)
+  }, delay);
+
+}
+
+const updateSelectedTabset = (tabsetId: string, open: boolean, index: number) => {
+  //console.log("updated...", tabsetId, open, Object.keys(tabsetExpanded.value))
+  tabsetExpanded.value.set(tabsetId, open)
+  if (open) {
+    scrollToElement(document.getElementsByClassName("q-expansion-item")[index], 300)
+
+    useUiStore().tabsetsExpanded = true
+
+    useCommandExecutor()
+      .execute(new SelectTabsetCommand(tabsetId, useSpacesStore().space?.id))
+      .then(() => {
+        const promises: Promise<any>[] = []
+        //console.log("selecteded tabset > ", tabsetId)
+        const selectedTabset = useTabsStore().getTabset(tabsetId)
+        if (selectedTabset) {
+          handleHeadRequests(selectedTabset)
+        }
+      })
+
+  } else {
+    useUiStore().tabsetsExpanded = false
+  }
+}
+
+watchEffect(() => {
+  // should trigger if currentTabsetId is changed from "the outside"
+  const currentTabsetId = useTabsStore().currentTabsetId
+  selected_model.value = {}
+  selected_model.value[currentTabsetId] = true
+  //updateSelectedTabset(useTabsStore().currentTabsetId,true, 0)
+  tabsetExpanded.value.set(currentTabsetId, true)
+  const index = _.findIndex(tabsets.value as Tabset[], (ts: Tabset) => ts.id === currentTabsetId)
+  scrollToElement(document.getElementsByClassName("q-expansion-item")[index], 300)
+  useUiStore().tabsetsExpanded = true
+  useCommandExecutor()
+    .execute(new SelectTabsetCommand(currentTabsetId, useSpacesStore().space?.id))
+})
+
+watchEffect(() => {
+  //console.log(" >>> change in opentabs or currenttabset", useTabsStore().tabs, useTabsStore().getCurrentTabset)
+  openTabs.value = useTabsStore().tabs
+  currentTabset.value = useTabsStore().getCurrentTabset
+})
+
+watchEffect(() => {
+  //console.log(" >>> change in currentChromeTab", useTabsStore().currentChromeTab)
+  currentChromeTab.value = useTabsStore().currentChromeTab
+})
+
+watchEffect(() => {
+  if (useUiStore().tabsFilter) {
+    console.log("filtering:::", useUiStore().tabsFilter)
+  }
+})
+
+watchEffect(() => {
+  if (useTabsStore().tabsets) {
+    //console.log(" >>> change in tabsets...")
+    tabsetNameOptions.value = _.map([...useTabsStore().tabsets.values()], (ts: Tabset) => {
+      return {
+        label: ts.name,
+        value: ts.id
+      }
+    })
+    if (tabsetNameOptions.value.length > 0) {
+      tabsetName.value = tabsetNameOptions.value[0]
+    }
   }
 })
 
@@ -193,9 +289,38 @@ watchEffect(() => {
   progressLabel.value = uiStore.progressLabel + " " + Math.round(100 * progress.value) + "%"
 })
 
+const getTabsetOrder =
+  [
+    function (o: Tabset) {
+      return o.status === TabsetStatus.FAVORITE ? 0 : 1
+    },
+    function (o: Tabset) {
+      return o.name?.toLowerCase()
+    }
+  ]
+
 watchEffect(() => {
-  logs.value = useLogsStore().logs
+  //console.log(" >>> change in xxx")
+  if (usePermissionsStore().hasFeature(FeatureIdent.SPACES)) {
+    const currentSpace = useSpacesStore().space
+    tabsets.value = _.sortBy(
+      _.filter([...tabsStore.tabsets.values()], (ts: Tabset) => {
+        if (currentSpace) {
+          if (ts.spaces.indexOf(currentSpace.id) < 0) {
+            return false
+          }
+        }
+        return ts.status !== TabsetStatus.DELETED
+      }),
+      getTabsetOrder, ["asc"])
+  } else {
+    tabsets.value = _.sortBy(
+      _.filter([...tabsStore.tabsets.values()],
+        (ts: Tabset) => ts.status !== TabsetStatus.DELETED),
+      getTabsetOrder, ["asc"])
+  }
 })
+
 
 function inIgnoredMessages(message: any) {
   return message.msg === "html2text" ||
@@ -207,13 +332,18 @@ function inIgnoredMessages(message: any) {
 
 if (inBexMode()) {
   // seems we need to define these listeners here to get the matching messages reliably
+  // these messages are created by triggering events in the mainpanel
   chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (inIgnoredMessages(message)) {
       return true
     }
     if (message.name === 'current-tabset-id-change') {
+      console.log(" >>> got message", message)
       const tsId = message.data.tabsetId
       useTabsStore().selectCurrentTabset(tsId)
+      //tabsetExpanded.value.set(tsId, true)
+      console.log("xxx", selected_model.value)
+      //selected_model.value[tsId as keyof object] = true
     } else if (message.name === 'feature-activated' || message.name === "feature-deactivated") {
       usePermissionsStore().initialize()
     } else if (message.name === "tabsets-imported") {
@@ -262,48 +392,24 @@ if (inBexMode()) {
   useRouter().push("/start")
 }
 
-watchEffect(() => {
-  openTabs.value = useTabsStore().tabs
-  currentTabset.value = useTabsStore().getCurrentTabset
-})
-
-watchEffect(() => {
-  currentChromeTab.value = useTabsStore().currentChromeTab
-})
-
-const getTabsetOrder =
-  [
-    function (o: Tabset) {
-      return o.status === TabsetStatus.FAVORITE ? 0 : 1
-    },
-    function (o: Tabset) {
-      return o.name?.toLowerCase()
-    }
-  ]
-
-
-watchEffect(() => {
-  if (usePermissionsStore().hasFeature(FeatureIdent.SPACES)) {
-    const currentSpace = useSpacesStore().space
-    tabsets.value = _.sortBy(
-      _.filter([...tabsStore.tabsets.values()], (ts: Tabset) => {
-        if (currentSpace) {
-          if (ts.spaces.indexOf(currentSpace.id) < 0) {
-            return false
-          }
+const filteredTabs = (tabset: Tabset): Tab[] => {
+  if (tabset.type === TabsetType.DYNAMIC &&
+    tabset.dynamicTabs && tabset.dynamicTabs.type === DynamicTabSourceType.TAG) {
+    const results: Tab[] = []
+    console.log("checking", tabset.dynamicTabs)
+    const tag = tabset.dynamicTabs?.config['tags' as keyof object][0]
+    console.log("using tag", tag)
+    _.forEach([...tabsStore.tabsets.values()], (tabset: Tabset) => {
+      _.forEach(tabset.tabs, (tab: Tab) => {
+        if (tab.tags?.indexOf(tag) >= 0) {
+          results.push(tab)
         }
-        return ts.status !== TabsetStatus.DELETED
-      }),
-      getTabsetOrder, ["asc"])
-  } else {
-    tabsets.value = _.sortBy(
-      _.filter([...tabsStore.tabsets.values()],
-        (ts: Tabset) => ts.status !== TabsetStatus.DELETED),
-      getTabsetOrder, ["asc"])
+      })
+    })
+    //return _.orderBy(results, getOrder(), [orderDesc.value ? 'desc' : 'asc'])
+    return results
   }
-})
-
-const filteredTabs = (tabs: Tab[]): Tab[] => {
+  const tabs: Tab[] = tabset.tabs
   // TODO order??
   const filter = useUiStore().tabsFilter
   if (!filter || filter.trim() === '') {
@@ -316,47 +422,12 @@ const filteredTabs = (tabs: Tab[]): Tab[] => {
   })
 }
 
-watchEffect(() => {
-  if (useUiStore().tabsFilter) {
-    console.log("filtering:::", useUiStore().tabsFilter)
-  }
-})
-
-watchEffect(() => {
-  if (useTabsStore().tabsets) {
-    tabsetNameOptions.value = _.map([...useTabsStore().tabsets.values()], (ts: Tabset) => {
-      return {
-        label: ts.name,
-        value: ts.id
-      }
-    })
-    if (tabsetNameOptions.value.length > 0) {
-      tabsetName.value = tabsetNameOptions.value[0]
-    }
-  }
-})
-
 if (inBexMode()) {
   let queryOptions = {active: true, lastFocusedWindow: true};
   chrome.tabs.query(queryOptions, (tab) => {
     currentChromeTabs.value = tab
   })
 }
-
-// watchEffect(() => {
-//   const filter = useUiStore().tabsFilter
-//   console.log("using filter from uiStore", filter)
-//   const ts = useTabsStore().getCurrentTabset?.tabs || []
-//   if (filter && filter.trim() !== '') {
-//     return _.orderBy(_.filter(ts, (t: Tab) => {
-//         return (t.url || '')?.indexOf(filter) >= 0 ||
-//           (t.title || '')?.indexOf(filter) >= 0 ||
-//           t.description?.indexOf(filter) >= 0
-//       })
-//       , getOrder(), [orderDesc.value ? 'desc' : 'asc'])
-//   }
-//   return _.orderBy(ts, getOrder(), [orderDesc.value ? 'desc' : 'asc'])
-// })
 
 function getOrder() {
   if (tabsStore.getCurrentTabset) {
@@ -376,7 +447,7 @@ async function handleHeadRequests(selectedTabset: Tabset) {
   //selectedTabset.tabs.forEach((t: Tab) => {
   for (const t: Tab of selectedTabset.tabs) {
     if (t.url && !t.url.startsWith("chrome")) {
-      console.log("checking HEAD", t.url)
+      // console.log("checking HEAD", t.url)
       try {
         const response = await fetch(t.url, {
           method: 'HEAD',
@@ -384,7 +455,7 @@ async function handleHeadRequests(selectedTabset: Tabset) {
 //          mode: 'no-cors',
           redirect: 'manual'
         })
-        console.log("got response", t.url)
+        //console.log("got response", t.url)
         const oldLastModified = t.httpLastModified
 
         t.httpStatus = response.status
@@ -393,7 +464,7 @@ async function handleHeadRequests(selectedTabset: Tabset) {
         t.httpCheckedAt = new Date().getTime()
 
         if (response.status !== 200) {
-          console.log(`checking HEAD found status ${response.status} for url ${t.url}`)
+          // console.log(`checking HEAD found status ${response.status} for url ${t.url}`)
         }
 
         try {
@@ -414,32 +485,11 @@ async function handleHeadRequests(selectedTabset: Tabset) {
   useTabsetService().saveTabset(selectedTabset)
 }
 
-const updateSelectedTabset = (tabsetId: string, open: boolean, index: number) => {
-  console.log("updated...", tabsetId, open, Object.keys(tabsetExpanded.value))
-  tabsetExpanded.value.set(tabsetId, open)
-  if (open) {
-    scrollToElement(document.getElementsByClassName("q-expansion-item")[index], 300)
-
-    useUiStore().tabsetsExpanded = true
-
-    useCommandExecutor()
-      .execute(new SelectTabsetCommand(tabsetId, useSpacesStore().space?.id))
-      .then(() => {
-        const promises: Promise<any>[] = []
-        //console.log("selecteded tabset > ", tabsetId)
-        const selectedTabset = useTabsStore().getTabset(tabsetId)
-        if (selectedTabset) {
-          handleHeadRequests(selectedTabset)
-        }
-      })
-
-  } else {
-    useUiStore().tabsetsExpanded = false
-  }
-}
-
 const tabsetCaption = (tabs: Tab[]) => {
   const filter = useUiStore().tabsFilter
+  if (!tabs) {
+    return '-'
+  }
   if (!filter || filter.trim() === '') {
     return tabs.length + ' tab' + (tabs.length === 1 ? '' : 's')
   } else {
@@ -448,16 +498,6 @@ const tabsetCaption = (tabs: Tab[]) => {
 }
 
 const hoveredOver = (tabsetId: string) => hoveredTabset.value === tabsetId
-
-const scrollToElement = (el: any, delay: number) => {
-  setTimeout(() => {
-    const target = getScrollTarget(el)
-    const offset = el.offsetTop
-    const duration = 200
-    setVerticalScrollPosition(target, offset - 120, duration)
-  }, delay);
-
-}
 
 function checkKeystroke(e: KeyboardEvent) {
   if (useUiStore().ignoreKeypressListener()) {
@@ -478,7 +518,6 @@ const showTabset = (tabset: Tabset) => !useUiStore().tabsFilter ?
   (useUiStore().tabsFilter === '' || filteredTabs(tabset.tabs).length > 0)
 
 const toolbarTitle = (tabsets: Tabset[]) => {
-  console.log("tabsets length", tabsets.length)
   if (usePermissionsStore().hasFeature(FeatureIdent.SPACES)) {
     const spaceName = useSpacesStore().space ? useSpacesStore().space.label : 'no space selected'
     return tabsets.length > 6 ?
@@ -486,6 +525,16 @@ const toolbarTitle = (tabsets: Tabset[]) => {
       spaceName
   }
   return tabsets.length > 6 ? 'My Tabsets (' + tabsets.length.toString() + ')' : 'My Tabsets'
+}
+const tabsetIcon = (tabset: Tabset) => {
+  let icon = 'tab'
+  if (tabset.status === TabsetStatus.FAVORITE) {
+    icon = 'push_pin'
+  }
+  if (tabset.type === TabsetType.DYNAMIC) {
+    icon = 'o_label'
+  }
+  return icon
 }
 
 const openNewTabsetDialog = () => {

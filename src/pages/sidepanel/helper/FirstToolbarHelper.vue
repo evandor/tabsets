@@ -24,7 +24,7 @@
 
           <template v-else>
             <template v-if="searching">
-              <SearchWithTransitionHelper />
+              <SearchWithTransitionHelper/>
             </template>
             <template v-else>
               <div class="row">
@@ -80,91 +80,92 @@
         <!-- spaces or not, here's the icons on the right side -->
         <div class="col-4 text-right q-pr-sm">
 
-          <q-btn v-if="showSearchIcon()"
-                 id="toggleSearchBtn"
-                 icon="search"
-                 flat
-                 class="q-ma-none q-pa-xs cursor-pointer"
-                 style="max-width:20px"
-                 size="11px"
-                 @click="toggleSearch">
-            <q-tooltip class="tooltip">Search</q-tooltip>
-          </q-btn>
+          <slot name="iconsRight">
+            <q-btn v-if="showSearchIcon()"
+                   id="toggleSearchBtn"
+                   icon="search"
+                   flat
+                   class="q-ma-none q-pa-xs cursor-pointer"
+                   style="max-width:20px"
+                   size="11px"
+                   @click="toggleSearch">
+              <q-tooltip class="tooltip">Search</q-tooltip>
+            </q-btn>
 
-          <q-btn
-            v-if="showFilterIcon()"
-            flat
-            class="q-ma-none q-pa-xs cursor-pointer"
-            style="width:20px;max-width:220px"
-            size="11px"
-            :text-color="useUiStore().tabsFilter ? 'warning' : 'primary'"
-            :disable="tabsStore.getCurrentTabset?.type === TabsetType.DYNAMIC"
-            icon="o_filter_alt">
-            <q-popup-edit
-              ref="popupEditRef"
-              :model-value="useUiStore().tabsFilter" v-slot="scope"
-              @save="(val, initial)=> setFilter(val)"
-              @update:model-value="val => setFilter(  val)">
-              <q-input v-model="scope.value" dense autofocus counter @keyup.enter="scope.set">
-                <template v-slot:append>
-                  <q-icon class="cursor-pointer" name="clear" @click="clearFilter()" size="xs"/>
-                </template>
-              </q-input>
-            </q-popup-edit>
-            <q-tooltip
-              class="tooltip"
-              :delay="200"
-              anchor="center left" self="center right">
-              {{ useUiStore().tabsFilter ? 'Filtering for "' + useUiStore().tabsFilter + '"' : 'Filter this tabset' }}
-            </q-tooltip>
-          </q-btn>
+            <q-btn
+              v-if="showFilterIcon()"
+              flat
+              class="q-ma-none q-pa-xs cursor-pointer"
+              style="width:20px;max-width:220px"
+              size="11px"
+              :text-color="useUiStore().tabsFilter ? 'warning' : 'primary'"
+              :disable="tabsStore.getCurrentTabset?.type === TabsetType.DYNAMIC"
+              icon="o_filter_alt">
+              <q-popup-edit
+                ref="popupEditRef"
+                :model-value="useUiStore().tabsFilter" v-slot="scope"
+                @save="(val, initial)=> setFilter(val)"
+                @update:model-value="val => setFilter(  val)">
+                <q-input v-model="scope.value" dense autofocus counter @keyup.enter="scope.set">
+                  <template v-slot:append>
+                    <q-icon class="cursor-pointer" name="clear" @click="clearFilter()" size="xs"/>
+                  </template>
+                </q-input>
+              </q-popup-edit>
+              <q-tooltip
+                class="tooltip"
+                :delay="200"
+                anchor="center left" self="center right">
+                {{ useUiStore().tabsFilter ? 'Filtering for "' + useUiStore().tabsFilter + '"' : 'Filter this tabset' }}
+              </q-tooltip>
+            </q-btn>
 
-          <q-btn v-if="showSortIcon()"
-                 flat
-                 size="10px"
-                 class="q-ma-none q-pa-xs cursor-pointer"
-                 style="max-width:20px"
-                 text-color="primary"
-                 @click="toggleSorting()"
-                 outline
-                 icon="o_sort">
-            <q-tooltip class="tooltip">Toggle through sorting</q-tooltip>
-          </q-btn>
+            <q-btn v-if="showSortIcon()"
+                   flat
+                   size="10px"
+                   class="q-ma-none q-pa-xs cursor-pointer"
+                   style="max-width:20px"
+                   text-color="primary"
+                   @click="toggleSorting()"
+                   outline
+                   icon="o_sort">
+              <q-tooltip class="tooltip">Toggle through sorting</q-tooltip>
+            </q-btn>
 
-          <q-btn
-            v-if="showToggleSessionIcon()"
-            flat
-            style="max-width:20px"
-            size="10px"
-            class="q-ma-none q-pa-xs cursor-pointer"
-            :color="existingSession ? (tabsStore.getCurrentTabset?.type === TabsetType.SESSION ? 'red':'grey-5') :'primary'"
-            :icon="existingSession ? 'o_stop_circle':'o_play_circle'"
-            @click="toggleSessionState">
-            <q-tooltip class="tooltip" v-if="existingSession">Stop Session</q-tooltip>
-            <q-tooltip class="tooltip" v-else>Start new Session</q-tooltip>
-          </q-btn>
+            <q-btn
+              v-if="showToggleSessionIcon()"
+              flat
+              style="max-width:20px"
+              size="10px"
+              class="q-ma-none q-pa-xs cursor-pointer"
+              :color="existingSession ? (tabsStore.getCurrentTabset?.type === TabsetType.SESSION ? 'red':'grey-5') :'primary'"
+              :icon="existingSession ? 'o_stop_circle':'o_play_circle'"
+              @click="toggleSessionState">
+              <q-tooltip class="tooltip" v-if="existingSession">Stop Session</q-tooltip>
+              <q-tooltip class="tooltip" v-else>Start new Session</q-tooltip>
+            </q-btn>
 
-          <q-btn
-            v-if="useUiStore().sidePanelActiveViewIs(SidePanelView.MAIN) && usePermissionsStore().hasFeature(FeatureIdent.WEBSITE_CLIP) && webClipActive()"
-            icon="filter_center_focus"
-            flat
-            class="q-ma-none q-pa-xs cursor-pointer"
-            style="max-width:20px"
-            size="10px"
-            @click="createClip">
-            <q-tooltip class="tooltip">{{ createWebsiteClipTooltip() }}</q-tooltip>
-          </q-btn>
-          <q-btn
-            v-if="useUiStore().sidePanelActiveViewIs(SidePanelView.MAIN) && usePermissionsStore().hasFeature(FeatureIdent.WEBSITE_CLIP) && !webClipActive()"
-            icon="filter_center_focus"
-            color="grey-5"
-            flat
-            class="q-ma-none q-pa-xs cursor-pointer"
-            style="max-width:20px"
-            size="10px">
-            <q-tooltip class="tooltip">cannot create web clip for this tab</q-tooltip>
-          </q-btn>
-
+            <q-btn
+              v-if="useUiStore().sidePanelActiveViewIs(SidePanelView.MAIN) && usePermissionsStore().hasFeature(FeatureIdent.WEBSITE_CLIP) && webClipActive()"
+              icon="filter_center_focus"
+              flat
+              class="q-ma-none q-pa-xs cursor-pointer"
+              style="max-width:20px"
+              size="10px"
+              @click="createClip">
+              <q-tooltip class="tooltip">{{ createWebsiteClipTooltip() }}</q-tooltip>
+            </q-btn>
+            <q-btn
+              v-if="useUiStore().sidePanelActiveViewIs(SidePanelView.MAIN) && usePermissionsStore().hasFeature(FeatureIdent.WEBSITE_CLIP) && !webClipActive()"
+              icon="filter_center_focus"
+              color="grey-5"
+              flat
+              class="q-ma-none q-pa-xs cursor-pointer"
+              style="max-width:20px"
+              size="10px">
+              <q-tooltip class="tooltip">cannot create web clip for this tab</q-tooltip>
+            </q-btn>
+          </slot>
         </div>
       </div>
     </q-toolbar-title>

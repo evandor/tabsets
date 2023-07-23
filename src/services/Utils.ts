@@ -27,6 +27,9 @@ export function useUtils() {
       allowedAttributes: sanitizeHtml.defaults.allowedAttributes = {
         a: ['href', 'name', 'target'],
         img: ['src', 'srcset', 'alt', 'title', 'width', 'height', 'loading']
+      },
+      allowedSchemesByTag: {
+        img: [ 'data' ]
       }
     })
   }

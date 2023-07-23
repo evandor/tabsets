@@ -28,6 +28,7 @@
         <PanelTabListElementWidget :key="'ptlew__' + tab.id"
                                    :tab="tabAsTab(tab)"
                                    :type="props.type"
+                                   :tabsetType="props.tabsetType"
                                    :hide-menu="props.hideMenu"/>
 
       </q-item>
@@ -53,6 +54,7 @@ import InfoMessageWidget from "components/widgets/InfoMessageWidget.vue";
 import {usePermissionsStore} from "src/stores/permissionsStore";
 import {FeatureIdent} from "src/models/AppFeature";
 import PanelTabListElementWidget from "components/widgets/PanelTabListElementWidget.vue";
+import {TabsetType} from "src/models/Tabset";
 
 const {inBexMode} = useUtils()
 
@@ -65,6 +67,7 @@ const props = defineProps({
   tabs: {type: Array as PropType<Tab[]>, required: true},
   hideMenu: {type: Boolean, default: false},
   type: {type: String, default: 'sidepanel'},
+  tabsetType: {type: Object as PropType<TabsetType>, default: TabsetType.DEFAULT},
 })
 
 const thumbnails = ref<Map<string, string>>(new Map())
