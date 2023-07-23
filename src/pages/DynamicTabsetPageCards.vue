@@ -101,9 +101,9 @@ watchEffect(() => {
 function currentTabs(): Tab[] {
   if (props.tabset && props.tabset.dynamicTabs && props.tabset.dynamicTabs.type === DynamicTabSourceType.TAG) {
     const results: Tab[] = []
-    console.log("checking", props.tabset.dynamicTabs )
+    //console.log("checking", props.tabset.dynamicTabs )
     const tag = props.tabset.dynamicTabs?.config['tags' as keyof object][0]
-    console.log("using tag", tag)
+    //console.log("using tag", tag)
     _.forEach([...tabsStore.tabsets.values()], (tabset: Tabset) => {
       _.forEach(tabset.tabs, (tab: Tab) => {
         if (tab.tags?.indexOf(tag) >= 0) {

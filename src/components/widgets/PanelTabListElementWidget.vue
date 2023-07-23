@@ -168,7 +168,7 @@ const props = defineProps({
   type: {type: String, default: 'sidepanel'},
   hideMenu: {type: Boolean, default: false},
   showTabsets: {type: Boolean, default: false},
-  tabsetType: {type: Object as PropType<TabsetType>, default: TabsetType.DEFAULT}
+  tabsetType: {type: String, default: TabsetType.DEFAULT.toString()}
 })
 
 const emits = defineEmits(['sendCaption'])

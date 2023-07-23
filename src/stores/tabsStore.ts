@@ -209,7 +209,6 @@ export const useTabsStore = defineStore('tabs', {
     tabsetFor: (state) => {
       return (tabId: string): Tabset | undefined => {
         for (const [key, value] of state.tabsets) {
-          console.log("checking", key, tabId)
           if (_.find(value.tabs, t => t.id === tabId)) {
             return value
           }

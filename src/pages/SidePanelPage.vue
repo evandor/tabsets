@@ -194,7 +194,7 @@ onUnmounted(() => {
 })
 
 watchEffect(() => {
-  console.log(" >>> change in getSelectedTab", useUiStore().getSelectedTab)
+  //console.log(" >>> change in getSelectedTab", useUiStore().getSelectedTab)
   selectedTab.value = useUiStore().getSelectedTab
   if (selectedTab.value) {
     currentChromeTab.value = null as unknown as chrome.tabs.Tab
@@ -338,11 +338,11 @@ if (inBexMode()) {
       return true
     }
     if (message.name === 'current-tabset-id-change') {
-      console.log(" >>> got message", message)
+      //console.log(" >>> got message", message)
       const tsId = message.data.tabsetId
       useTabsStore().selectCurrentTabset(tsId)
       //tabsetExpanded.value.set(tsId, true)
-      console.log("xxx", selected_model.value)
+      //console.log("xxx", selected_model.value)
       //selected_model.value[tsId as keyof object] = true
     } else if (message.name === 'feature-activated' || message.name === "feature-deactivated") {
       usePermissionsStore().initialize()
@@ -396,9 +396,9 @@ const filteredTabs = (tabset: Tabset): Tab[] => {
   if (tabset.type === TabsetType.DYNAMIC &&
     tabset.dynamicTabs && tabset.dynamicTabs.type === DynamicTabSourceType.TAG) {
     const results: Tab[] = []
-    console.log("checking", tabset.dynamicTabs)
+    //console.log("checking", tabset.dynamicTabs)
     const tag = tabset.dynamicTabs?.config['tags' as keyof object][0]
-    console.log("using tag", tag)
+    //console.log("using tag", tag)
     _.forEach([...tabsStore.tabsets.values()], (tabset: Tabset) => {
       _.forEach(tabset.tabs, (tab: Tab) => {
         if (tab.tags?.indexOf(tag) >= 0) {

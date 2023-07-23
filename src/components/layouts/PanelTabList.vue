@@ -67,7 +67,7 @@ const props = defineProps({
   tabs: {type: Array as PropType<Tab[]>, required: true},
   hideMenu: {type: Boolean, default: false},
   type: {type: String, default: 'sidepanel'},
-  tabsetType: {type: Object as PropType<TabsetType>, default: TabsetType.DEFAULT},
+  tabsetType: {type: String, default: TabsetType.DEFAULT.toString()},
 })
 
 const thumbnails = ref<Map<string, string>>(new Map())
