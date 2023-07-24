@@ -35,6 +35,15 @@
               </q-item-label>
             </q-item-section>
 
+            <q-item-section side v-if="tabsetExpanded.get(tabset.id)">
+              <q-icon
+                @click.stop="saveInTabset(tabset.id)"
+                name="add_box" size="md" color="warning"></q-icon>
+              <q-tooltip class="tooltip">
+                Add the current tab to this tabset
+              </q-tooltip>
+            </q-item-section>
+
             <q-item-section side
                             @mouseover="hoveredTabset = tabset.id"
                             @mouseleave="hoveredTabset = undefined">
@@ -57,9 +66,9 @@
 
           <div class="q-ma-none q-pa-none" style="border:1px solid lightgrey">
             <!--             <div class="q-ma-xs shrink" :class="showTabInfo(tabset.id) ? '':'collapsed'">-->
-            <div class="q-ma-xs">
-              <SidePanelTabInfo :tabsetId="tabset.id"/>
-            </div>
+<!--            <div class="q-ma-xs">-->
+<!--              <SidePanelTabInfo :tabsetId="tabset.id"/>-->
+<!--            </div>-->
 
             <PanelTabList
               v-if="tabsetExpanded.get(tabset.id)"
@@ -128,7 +137,7 @@ import _ from "lodash"
 import {Tabset, TabsetStatus, TabsetType} from "src/models/Tabset";
 import {useRoute, useRouter} from "vue-router";
 import {useUtils} from "src/services/Utils";
-import {scroll, useQuasar} from "quasar";
+import {scroll, uid, useQuasar} from "quasar";
 import {useTabsetService} from "src/services/TabsetService2";
 import {useUiStore} from "src/stores/uiStore";
 import PanelTabList from "components/layouts/PanelTabList.vue";
@@ -143,6 +152,7 @@ import SidePanelPageContextMenu from "pages/sidepanel/SidePanelPageContextMenu.v
 import NewTabsetDialog from "components/dialogues/NewTabsetDialog.vue";
 import getScrollTarget = scroll.getScrollTarget;
 import {DynamicTabSourceType} from "src/models/DynamicTabSource";
+import {AddTabToTabsetCommand} from "src/domain/tabs/AddTabToTabset";
 
 
 const {setVerticalScrollPosition} = scroll
@@ -533,6 +543,18 @@ const tabsetIcon = (tabset: Tabset) => {
     icon = 'o_label'
   }
   return icon
+}
+
+const saveInTabset = (tabsetId: string) => {
+  const useTS = useTabsetService().getTabset(tabsetId)
+  if (useTS) {
+    useCommandExecutor().executeFromUi(new AddTabToTabsetCommand(new Tab(uid(), currentChromeTab.value), useTS))
+      // .then((res: any) => {
+      //   tabsetCandidates.value = _.filter(tabsetCandidates.value, (c: object) => c['candidateId' as keyof object] !== tabsetId)
+      // })
+  } else {
+    console.warn("expected to find tabsetId", tabsetId)
+  }
 }
 
 const openNewTabsetDialog = () => {

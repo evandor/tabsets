@@ -135,10 +135,10 @@
     </q-item-label>
   </q-item-section>
 
-  <q-item-section v-if="isCurrentTab(props.tab as Tab)"
-                  style="justify-content:start;width:25px;max-width:25px">
-    <q-icon name="navigate_next" color="primary" size="lg"/>
-  </q-item-section>
+<!--  <q-item-section class="q-ma-none q-pa-none" v-if="isCurrentTab(props.tab as Tab)"-->
+<!--                  style="justify-content:start;width:15px;max-width:15px">-->
+<!--    <q-icon name="navigate_next" color="primary" size="lg"/>-->
+<!--  </q-item-section>-->
 </template>
 
 <script setup lang="ts">

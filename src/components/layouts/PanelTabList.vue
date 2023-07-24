@@ -1,11 +1,11 @@
 <template>
 
-<!--  <InfoMessageWidget-->
-<!--    v-if="props.tabs?.length > 1"-->
-<!--    :probability="0.3"-->
-<!--    css-class="q-pa-none"-->
-<!--    ident="paneltablist_dnd"-->
-<!--    hint="You can select the favicon images and drag and drop the entries to reorder the list"/>-->
+  <!--  <InfoMessageWidget-->
+  <!--    v-if="props.tabs?.length > 1"-->
+  <!--    :probability="0.3"-->
+  <!--    css-class="q-pa-none"-->
+  <!--    ident="paneltablist_dnd"-->
+  <!--    hint="You can select the favicon images and drag and drop the entries to reorder the list"/>-->
 
   <q-list separator class="q-ma-none">
     <vue-draggable-next
@@ -20,6 +20,7 @@
         v-ripple
         v-for="tab in props.tabs"
         class="q-ma-none q-pa-sm"
+        :class="isCurrentTab(tab) ? 'bg-yellow-1':''"
         :style="itemStyle(tab)"
         @click.stop="showDetails(tab)"
         @dragstart="startDrag($event, tab)"
@@ -144,8 +145,9 @@ const showDetails = (tab: Tab) => {
   useUiStore().rightDrawerSetActiveTab(DrawerTabs.TAB_DETAILS)
 }
 
-const itemStyle = (tab: Tab) => "border-bottom: 1px solid #fafafa"
+const isCurrentTab = (tab: Tab) => tabsStore.currentChromeTab.url === tab.url;
 
+const itemStyle = (tab: Tab) => "border-bottom: 1px solid #fafafa"
 
 </script>
 

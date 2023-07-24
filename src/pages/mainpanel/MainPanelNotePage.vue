@@ -77,7 +77,6 @@ import {date, uid, useQuasar} from "quasar";
 import {useTabsStore} from "src/stores/tabsStore";
 import {Tab, UrlExtension} from "src/models/Tab";
 import {useUtils} from "src/services/Utils";
-import '@quasar/quasar-ui-qmarkdown/dist/index.css'
 import {useTabsetService} from "src/services/TabsetService2";
 import {Tabset} from "src/models/Tabset";
 import ChromeApi from "src/services/ChromeApi";
