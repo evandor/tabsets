@@ -397,7 +397,10 @@ class ChromeListeners {
         tokenSet.add(t.toLowerCase())
       }
     })
-    saveText(sender.tab, [...tokenSet].join(" "), request.metas)
+    if (sender.tab) {
+      const tab = new Tab(uid(), sender.tab)
+      saveText(tab, [...tokenSet].join(" "), request.metas)
+    }
     sendResponse({html2text: 'done'});
   }
 

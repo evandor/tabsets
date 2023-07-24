@@ -3,7 +3,7 @@ import {LocalStorage, uid} from "quasar";
 import ChromeApi from "src/services/ChromeApi";
 import _ from "lodash";
 import {Tab} from "src/models/Tab";
-import {Tabset, TabsetStatus, TabsetType} from "src/models/Tabset";
+import {Tabset, TabsetSharing, TabsetStatus, TabsetType} from "src/models/Tabset";
 import {useSearchStore} from "src/stores/searchStore";
 import {useBookmarksStore} from "src/stores/bookmarksStore";
 import {STRIP_CHARS_IN_USER_INPUT} from "boot/constants";
@@ -14,6 +14,7 @@ const {getTabset, getCurrentTabset, saveTabset, saveCurrentTabset, tabsetsFor, a
 import {useDB} from "src/services/usePersistenceService";
 import {api} from "boot/axios";
 import {useSpacesStore} from "stores/spacesStore";
+import {FirebaseCall} from "src/services/firebase/FirebaseCall";
 
 const {db} = useDB()
 
@@ -535,7 +536,32 @@ class TabsetService {
     return Promise.reject("could not change status : " + tabsetId)
   }
 
+  share(tabsetId: string, sharing: TabsetSharing, sharedBy: string | undefined): Promise<TabsetSharing> {
+    console.debug(`sharing ${tabsetId} as ${sharing}`)
+    const ts = getTabset(tabsetId)
+    if (ts) {
+      const oldSharing = ts.sharing
+      ts.sharing = sharing
+      ts.sharedBy = sharedBy
+      if (sharing === TabsetSharing.UNSHARED) {
+        return FirebaseCall.delete("/share/public/xxx")
+      } else {
+        return FirebaseCall.post("/share/public", ts)
+          .then((res: any) => {
+            ts.sharedId = res.data.sharedId
+            return saveTabset(ts)
+              .then(() => oldSharing)
+          })
+      }
+    }
+    return Promise.reject("could not change sharing : " + tabsetId)
+  }
 
+  createInvitation(email: string, tabsetName: string, tabsetId: string): Promise<void> {
+    // TODO
+    return Promise.reject("not implemented")
+    // return db.createInvitation(email, tabsetName, tabsetId)
+  }
 }
 
 export default new TabsetService();

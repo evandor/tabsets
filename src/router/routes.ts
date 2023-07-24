@@ -143,7 +143,7 @@ const routes: RouteRecordRaw[] = [
   },
   {
     path: '/about',
-    component: () => import('layouts/AboutLayout.vue'),
+    component: () => import('layouts/PlainLayout.vue'),
     children: [{ path: '', component: () => import('pages/AboutPage.vue') }],
   },
   {
