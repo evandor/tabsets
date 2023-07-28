@@ -39,6 +39,28 @@
 
       </template>
 
+      <template v-if="false">
+        <q-separator/>
+        <ContextMenuItem
+          icon="keyboard_arrow_right"
+          label="Sharing...">
+
+          <q-item-section side>
+            <q-icon name="keyboard_arrow_right"/>
+          </q-item-section>
+          <q-menu anchor="top end" self="top start">
+            <q-list>
+              <q-item dense clickable v-close-popup @click="sharePublicly(tabset.id)">
+                <q-item-section>Share publicly</q-item-section>
+              </q-item>
+            </q-list>
+          </q-menu>
+
+        </ContextMenuItem>
+
+      </template>
+
+
       <template v-if="useSettingsStore().isEnabled('dev')">
         <q-separator/>
         <ContextMenuItem v-close-popup
@@ -92,7 +114,7 @@
 
 import {usePermissionsStore} from "stores/permissionsStore";
 import {FeatureIdent} from "src/models/AppFeature";
-import {Tabset, TabsetStatus} from "src/models/Tabset";
+import {Tabset, TabsetSharing, TabsetStatus} from "src/models/Tabset";
 import {useSettingsStore} from "stores/settingsStore";
 import {useSearchStore} from "stores/searchStore";
 import NavigationService from "src/services/NavigationService";
@@ -106,6 +128,8 @@ import {MarkTabsetAsDefaultCommand} from "src/domain/tabsets/MarkTabsetAsDefault
 import DeleteTabsetDialog from "components/dialogues/DeleteTabsetDialog.vue";
 import ContextMenuItem from "pages/sidepanel/helper/ContextMenuItem.vue";
 import {PropType} from "vue";
+import {ShareTabsetCommand} from "src/domain/tabsets/ShareTabset";
+import {UnShareTabsetCommand} from "src/domain/tabsets/UnShareTabset";
 
 const {inBexMode, sanitize, sendMsg} = useUtils()
 
@@ -140,6 +164,9 @@ const pin = (tabset: Tabset) =>
 
 const unpin = (tabset: Tabset) =>
   useCommandExecutor().executeFromUi(new MarkTabsetAsDefaultCommand(tabset.id))
+
+const sharePublicly = (tabsetId: string) => useCommandExecutor().executeFromUi(new ShareTabsetCommand(tabsetId, TabsetSharing.PUBLIC))
+const removePublicShare = (tabsetId: string) => useCommandExecutor().executeFromUi(new UnShareTabsetCommand(tabsetId))
 
 const deleteTabsetDialog = (tabset: Tabset) => {
   $q.dialog({

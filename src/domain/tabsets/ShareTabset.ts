@@ -1,0 +1,33 @@
+import Command from "src/domain/Command";
+import {ExecutionResult} from "src/domain/ExecutionResult";
+import TabsetService from "src/services/TabsetService";
+import {TabsetSharing} from "src/models/Tabset";
+import {useAuthStore} from "stores/auth";
+import {UnShareTabsetCommand} from "src/domain/tabsets/UnShareTabset";
+
+
+export class ShareTabsetCommand implements Command<any> {
+
+  constructor(
+    public tabsetId: string,
+    public sharing: TabsetSharing) {
+  }
+
+  async execute(): Promise<ExecutionResult<any>> {
+    const sharedBy = useAuthStore().user.name
+    return TabsetService.share(this.tabsetId, this.sharing, sharedBy || "unknown")
+      .then(oldSharing => Promise.resolve(
+        new ExecutionResult(
+          oldSharing,
+          "The tabset is shared now.",
+          new UnShareTabsetCommand(this.tabsetId)))
+      )
+      .catch(err => Promise.reject(err))
+  }
+
+
+}
+
+ShareTabsetCommand.prototype.toString = function cmdToString() {
+  return `ShareTabsetCommand: {tabsetId=${this.tabsetId}}, {sharing=${this.sharing}}`;
+};

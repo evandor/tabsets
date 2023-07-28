@@ -27,6 +27,8 @@
     "concurrently:dev:jest": "concurrently \"quasar dev\" \"jest --watch\""
   },
   "dependencies": {
+    "@editorjs/editorjs": "^2.27.2",
+    "@editorjs/header": "^2.7.0",
     "@extractus/feed-extractor": "^6.2.1",
     "@mozilla/readability": "^0.4.4",
     "@quasar/extras": "^1.16.4",

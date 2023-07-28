@@ -28,7 +28,7 @@
               v-model="editor"
               ref="editorRef"
               min-height="15rem"
-              toolbar-text-color="white"
+              toolbar-text-color="black"
               toolbar-toggle-color="yellow-8"
               toolbar-bg="white"
               placeholder="start typing..."
@@ -67,6 +67,15 @@
     </q-editor>
   </div>
 
+  <!-- https://medium.com/code4mk-org/editorjs-vue-a78110c3fff8 -->
+  <div class="editorx_body">
+    <div class id="editorjs"/>
+  </div>
+  <button style="margin-left: 30%;" type="button" name="button" @click="save()">save</button>
+  <div class="editorx_body">
+    <pre>{{ value }}</pre>
+  </div>
+
 </template>
 
 <script lang="ts" setup>
@@ -81,6 +90,9 @@ import {useTabsetService} from "src/services/TabsetService2";
 import {Tabset} from "src/models/Tabset";
 import ChromeApi from "src/services/ChromeApi";
 import {useSettingsStore} from "stores/settingsStore";
+import EditorJS from "@editorjs/editorjs";
+// @ts-ignore
+import Header from "@editorjs/header";
 
 const {formatDate, sendMsg, sanitize} = useUtils()
 
@@ -103,6 +115,35 @@ const editor = ref<any>(tabsStore.getCurrentTabset?.page || '')
 const editorRef = ref<any>(null)
 const tokenRef = ref(null)
 
+const value = ref(null)
+
+
+const editorJS = new EditorJS({
+  holder: 'editorjs',
+  autofocus: true,
+  initialBlock: "paragraph",
+  tools: {
+    header: {
+      class: Header,
+      shortcut: "CMD+SHIFT+H"
+    },
+    // list: {
+    //   class: List
+    // },
+    // paragraph: {
+    //   class: Paragraph,
+    //   config: {
+    //     placeholder: "."
+    //   }
+    // }
+  },
+  onReady: function () {
+    console.log("ready");
+  },
+  onChange: function () {
+    console.log("change");
+  }
+});
 
 watchEffect(async () => {
   noteId.value = route.params.noteId as unknown as string
@@ -198,3 +239,23 @@ const add = (tab: Tab) => {
   }
 }
 </script>
+
+<style scoped>
+.editorx_body {
+  /* width: 62%;
+  margin-left: 15%; */
+  width: 60%;
+  margin-left: 20%;
+  border: 2px solid #f1f3f5;
+  box-sizing: border-box;
+}
+
+.ce-block--focused {
+  background: linear-gradient(
+    90deg,
+    rgba(2, 0, 36, 1) 0%,
+    rgba(9, 9, 121, 0.5438550420168067) 35%,
+    rgba(0, 212, 255, 1) 100%
+  );
+}
+</style>

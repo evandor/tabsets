@@ -4,6 +4,7 @@ import {Subscription} from "src/models/Subscription";
 export const useAuthStore = defineStore('auth', {
   state: () => ({
     authenticated: true, // dummy imple
+    user:  {name: "unknown"},
     subscription: null as unknown as Subscription,
     idToken: null as unknown as string
   }),

@@ -35,6 +35,7 @@ export abstract class FirebaseCall<T> {
   static post(path: string, data: object, resType = "json") {
     console.log("firebase call to ", path)
     return useAuthStore().getToken(api).then((token: string) => {
+      console.log("posting to", `${process.env.BACKEND_URL}${path}`)
       // @ts-ignore
       return api.post(`${process.env.BACKEND_URL}${path}`, data, {headers: {'AuthToken': token}, responseType: resType})
         .catch((err: any) => {
