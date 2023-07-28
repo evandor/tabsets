@@ -4,8 +4,9 @@
       <div class="row q-ma-none q-pa-none">
 
         <!-- we have spaces -->
-        <div v-if="usePermissionsStore().hasFeature(FeatureIdent.SPACES)"
-             class="col-8 q-ma-none q-pa-none">
+        <div v-if="usePermissionsStore().hasFeature(FeatureIdent.SPACES)" class="col-6 q-ma-none q-pa-none">
+
+          <!-- spaces and no back button -->
           <template v-if="!props.showBackButton">
 
             <SearchWithTransitionHelper v-if="searching"/>
@@ -45,7 +46,7 @@
         </div>
 
         <!-- no spaces here -->
-        <div v-else class="col-7 q-ma-none q-pa-none">
+        <div v-else class="col q-ma-none q-pa-none">
 
           <!-- no spaces && searching -->
           <SearchWithTransitionHelper v-if="searching"/>
@@ -101,16 +102,16 @@
                    style="max-width:20px"
                    size="10px"
                    class="q-ma-none q-pa-xs cursor-pointer"
-                   :color="existingSession ? (tabsStore.getCurrentTabset?.type === TabsetType.SESSION ? 'red':'grey-5') :'primary'"
+                   :color="existingSession ? (tabsStore.getCurrentTabset?.type === TabsetType.SESSION ? 'red':'grey-5') :'black'"
                    :icon="existingSession ? 'o_stop_circle':'o_play_circle'"
                    @click="toggleSessionState">
               <q-tooltip class="tooltip" v-if="existingSession">Stop Session</q-tooltip>
               <q-tooltip class="tooltip" v-else>Start new Session</q-tooltip>
             </q-btn>
 
-            <q-btn
-              v-if="useUiStore().sidePanelActiveViewIs(SidePanelView.MAIN) && usePermissionsStore().hasFeature(FeatureIdent.WEBSITE_CLIP) && webClipActive()"
+            <q-btn v-if="showCreateClipButton()"
               icon="filter_center_focus"
+              color="black"
               flat
               class="q-ma-none q-pa-xs cursor-pointer"
               style="max-width:20px"
@@ -120,7 +121,7 @@
             </q-btn>
 
             <q-btn
-              v-if="useUiStore().sidePanelActiveViewIs(SidePanelView.MAIN) && usePermissionsStore().hasFeature(FeatureIdent.WEBSITE_CLIP) && !webClipActive()"
+              v-if="showCreateClipButtonInActive()"
               icon="filter_center_focus"
               color="grey-5"
               flat
@@ -131,7 +132,7 @@
             </q-btn>
 
             <span v-if="showFilterIcon() || showSearchIcon()"
-              class="q-ma-none q-pa-none q-mx-sm text-grey-5">|</span>
+                  class="q-ma-none q-pa-none q-mx-sm text-grey-5">|</span>
 
             <q-btn v-if="showFilterIcon()"
                    flat
@@ -173,7 +174,7 @@
             </q-btn>
 
             <span v-if="showFilterIcon() || showSearchIcon()"
-              class="q-ma-none q-pa-none q-mx-sm text-grey-5">|</span>
+                  class="q-ma-none q-pa-none q-mx-sm text-grey-5">|</span>
 
             <q-btn
               icon="o_add_circle"
@@ -183,7 +184,7 @@
               style="max-width:20px"
               size="10px"
               @click="openNewTabsetDialog()">
-              <q-tooltip class="tooltip">Add new Tabset</q-tooltip>
+              <q-tooltip class="tooltip">{{ newTabsetTooltip() }}</q-tooltip>
             </q-btn>
 
 
@@ -199,7 +200,6 @@
 import {usePermissionsStore} from "stores/permissionsStore";
 import {FeatureIdent} from "src/models/AppFeature";
 import {useSpacesStore} from "stores/spacesStore";
-import SearchWidget from "components/widgets/SearchWidget.vue";
 import {useTabsStore} from "stores/tabsStore";
 import {useRouter} from "vue-router";
 import {ref, watchEffect} from "vue";
@@ -326,14 +326,30 @@ const showSortIcon = () => false
 
 const showFilterIcon = () => !props.showBackButton &&
   useUiStore().sidePanelActiveViewIs(SidePanelView.MAIN) &&
-  tabsStore.tabsets.size > 1
-//  useUiStore().tabsetsExpanded
+  tabsStore.tabsets.size > 1 &&
+  !searching.value
 
 const showSearchIcon = () => !props.showBackButton && tabsStore.tabsets.size > 1
 
 const showToggleSessionIcon = () => !props.showBackButton &&
   useUiStore().sidePanelActiveViewIs(SidePanelView.MAIN) &&
-  usePermissionsStore().hasFeature(FeatureIdent.SESSIONS)
+  usePermissionsStore().hasFeature(FeatureIdent.SESSIONS) &&
+  !searching.value
+
+const showCreateClipButton = () =>
+  useUiStore().sidePanelActiveViewIs(SidePanelView.MAIN) &&
+  usePermissionsStore().hasFeature(FeatureIdent.WEBSITE_CLIP) && webClipActive() &&
+  !searching.value
+
+const showCreateClipButtonInActive = () =>
+  useUiStore().sidePanelActiveViewIs(SidePanelView.MAIN) &&
+  usePermissionsStore().hasFeature(FeatureIdent.WEBSITE_CLIP) && !webClipActive() &&
+  !searching.value
+
+const newTabsetTooltip = () =>
+  usePermissionsStore().hasFeature(FeatureIdent.SPACES) ?
+    (useSpacesStore().space ? 'Add new Tabset in this space' : 'Add new unassigned Tabset') :
+    'Add new Tabset'
 
 const openNewTabsetDialog = () => {
   $q.dialog({

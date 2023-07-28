@@ -31,7 +31,7 @@ const {sanitize} = useUtils()
 
 function setCurrentTab() {
   chrome.tabs.query({active: true, lastFocusedWindow: true}, (tabs) => {
-    console.log("setting current tab", tabs)
+    //console.log("setting current tab", tabs)
     if (tabs && tabs[0]) {
       useTabsStore().setCurrentChromeTab(tabs[0] as unknown as chrome.tabs.Tab)
     }

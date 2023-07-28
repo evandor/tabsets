@@ -11,6 +11,7 @@
     "dev stage prod": "stage=production quasar dev -m bex",
     "dev electron": "quasar dev -m electron",
     "build": "quasar build -m bex",
+    "build electron": "quasar build -m electron",
     "icon": "icongenie generate -i src/assets/icon.png",
     "test": "echo \"See package.json => scripts for available tests.\" && exit 0",
     "test:unit:ui": "vitest --ui",

@@ -30,7 +30,7 @@
               min-height="15rem"
               toolbar-text-color="white"
               toolbar-toggle-color="yellow-8"
-              toolbar-bg="primary"
+              toolbar-bg="white"
               placeholder="start typing..."
               :definitions="{
         save: {

@@ -54,7 +54,7 @@
           v-if="usePermissionsStore().hasFeature(FeatureIdent.STANDALONE_APP)"
           icon="o_open_in_new"
           :class="rightButtonClass()"
-          color="primary"
+          color="black"
           size="8px"
           @click="openExtensionTab()">
           <q-tooltip class="tooltip">Tabsets as full-page app</q-tooltip>

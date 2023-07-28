@@ -6,8 +6,6 @@
       <q-list dense
               class="rounded-borders q-ma-none q-pa-none" :key="tabset.id"
               v-for="(tabset,index) in tabsets">
-        <!-- :model-value="isExpanded(tabset.id)" -->
-<!--        :header-class="tabsStore.currentTabsetId === tabset.id ? 'bg-grey-4':''"-->
         <q-expansion-item v-if="showTabset(tabset as Tabset)"
                           header-class="q-ma-none q-pa-none q-pr-md bg-grey-2"
                           :header-style="tabsetExpanded.get(tabset.id) ?
@@ -72,20 +70,21 @@
         :showSearchBox="showSearchBox">
 
         <template v-slot:title v-if="permissionsStore && permissionsStore.hasFeature(FeatureIdent.SPACES)">
-          <q-icon name="o_space_dashboard" color="positive"/>
-          {{ toolbarTitle(tabsets as Tabset[]) }}
-          <q-btn
-            icon="o_add"
-            color="primary"
-            flat
-            class="q-ma-none q-pa-xs cursor-pointer"
-            style="max-width:20px"
-            size="10px"
-            @click.stop="openNewTabsetDialog()">
-            <q-tooltip class="tooltip">
-              {{ useSpacesStore().space ? 'Add new Tabset in this space' : 'Add new unassigned Tabset' }}
-            </q-tooltip>
-          </q-btn>
+          <div class="text-subtitle1 text-black">
+            {{ toolbarTitle(tabsets as Tabset[]) }}
+          </div>
+          <!--          <q-btn-->
+          <!--            icon="o_add"-->
+          <!--            color="primary"-->
+          <!--            flat-->
+          <!--            class="q-ma-none q-pa-xs cursor-pointer"-->
+          <!--            style="max-width:20px"-->
+          <!--            size="10px"-->
+          <!--            @click.stop="openNewTabsetDialog()">-->
+          <!--            <q-tooltip class="tooltip">-->
+          <!--              {{ useSpacesStore().space ? 'Add new Tabset in this space' : 'Add new unassigned Tabset' }}-->
+          <!--            </q-tooltip>-->
+          <!--          </q-btn>-->
         </template>
         <template v-slot:title v-else>
           <div class="text-subtitle1 text-black">

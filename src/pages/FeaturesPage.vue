@@ -378,6 +378,9 @@ const revoke = (ident: string) => {
 }
 
 const permissionText = (f: any) => {
+  if (!f) {
+    return "???"
+  }
   const permissions: string[] = f.permissions
   if (permissions.length === 0) {
     return "This feature does not need additional browser permissions."
