@@ -44,7 +44,7 @@
 
         <q-btn icon="o_settings"
                :class="rightButtonClass()"
-               color="primary"
+               color="black"
                size="8px"
                @click="openOptionsPage()">
           <q-tooltip class="tooltip" anchor="top left" self="bottom left">{{ settingsTooltip() }}</q-tooltip>
@@ -120,6 +120,7 @@ watchEffect(() => {
   progressLabel.value = uiStore.progressLabel + " " + Math.round(100 * progress.value) + "%"
 })
 
+// TODO what's that?
 watchEffect(() => {
   if (dragTarget.value.trim() === "") {
     return

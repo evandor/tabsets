@@ -357,7 +357,7 @@ export function useTabsetService() {
         .catch((err: any) => console.log("err", err))
     }
 
-    console.debug("updating meta data for ", tabsetIds, tab.url, metas)
+    //console.debug("updating meta data for ", tabsetIds, tab.url, metas)
     const tabsets = [...useTabsStore().tabsets.values()]
 
     const savePromises: Promise<any>[] = []
@@ -368,7 +368,7 @@ export function useTabsetService() {
         _.forEach(tabset.tabs, (t: Tab) => {
           //console.log("comparing", t.url, tab.url)
           if (t.url === tab.url) {
-            console.log("updating meta data in tab", tab.id, metas)
+            //console.log("updating meta data in tab", tab.id, metas)
             if (metas['description' as keyof object]) {
               t.description = metas['description' as keyof object]
               // @ts-ignore
@@ -571,11 +571,11 @@ export function useTabsetService() {
     const tabUrl = tab.url || ''
     if (tabsetsFor(tabUrl).length <= 1) {
       removeThumbnailsFor(tabUrl)
-        .then(() => console.log("deleting thumbnail for ", tabUrl))
+        .then(() => console.debug("deleting thumbnail for ", tabUrl))
         .catch(err => console.log("error deleting thumbnail", err))
 
       removeContentFor(tabUrl)
-        .then(() => console.log("deleting content for ", tabUrl))
+        .then(() => console.debug("deleting content for ", tabUrl))
         .catch(err => console.log("error deleting content", err))
     }
     const tabset = tabsetFor(tab.id)
@@ -593,11 +593,11 @@ export function useTabsetService() {
     const tabUrl = tab.url || ''
     if (tabsetsFor(tabUrl).length <= 1) {
       removeThumbnailsFor(tabUrl)
-        .then(() => console.log("deleting thumbnail for ", tabUrl))
+        .then(() => console.debug("deleting thumbnail for ", tabUrl))
         .catch(err => console.log("error deleting thumbnail", err))
 
       removeContentFor(tabUrl)
-        .then(() => console.log("deleting content for ", tabUrl))
+        .then(() => console.debug("deleting content for ", tabUrl))
         .catch(err => console.log("error deleting content", err))
     }
     const tabset = tabsetFor(tab.id)

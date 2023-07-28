@@ -127,6 +127,8 @@ import getScrollTarget = scroll.getScrollTarget;
 import {DynamicTabSourceType} from "src/models/DynamicTabSource";
 import {AddTabToTabsetCommand} from "src/domain/tabs/AddTabToTabset";
 import {useWindowsStore} from "../stores/windowsStores";
+import {MarkTabsetDeletedCommand} from "src/domain/tabsets/MarkTabsetDeleted";
+import TabsetService from "src/services/TabsetService";
 
 
 const {setVerticalScrollPosition} = scroll
@@ -223,7 +225,7 @@ const updateSelectedTabset = (tabsetId: string, open: boolean, index: number | u
 watchEffect(() => {
   // should trigger if currentTabsetId is changed from "the outside"
   const currentTabsetId = useTabsStore().currentTabsetId
-  console.log("triggered", currentTabsetId)
+  //console.log("triggered", currentTabsetId)
   selected_model.value = {}
   selected_model.value[currentTabsetId] = true
   //updateSelectedTabset(useTabsStore().currentTabsetId,true, 0)
@@ -285,7 +287,6 @@ const getTabsetOrder =
   ]
 
 watchEffect(() => {
-  console.log(" >>> change in xxx")
   if (usePermissionsStore().hasFeature(FeatureIdent.SPACES)) {
     const currentSpace = useSpacesStore().space
     tabsets.value = _.sortBy(
@@ -360,14 +361,15 @@ if (chrome) {
       } else if (message.name === "tab-added") {
         // hmm - getting this twice...
         console.log(" > got message '" + message.name + "'", message)
-        // useTabsStore().selectCurrentTabset(message.data.tabsetId)
-        //updateSelectedTabset(message.data.tabsetId, true)
-        //useTabsStore().currentTabsetId = message.data.tabsetId
         useTabsetService().reloadTabset(message.data.tabsetId)
       } else if (message.name === "tab-deleted") {
         useTabsetService().reloadTabset(message.data.tabsetId)
       } else if (message.name === "tabset-added") {
         useTabsetService().reloadTabset(message.data.tabsetId)
+      } else if (message.name === "mark-tabset-deleted") {
+        TabsetService.markAsDeleted(message.data.tabsetId)
+      } else if (message.name === "tabset-renamed") {
+        TabsetService.rename(message.data.tabsetId, message.data.newName)
       } else if (message.name === "progress-indicator") {
         if (message.percent) {
           uiStore.progress = message.percent
@@ -532,24 +534,6 @@ const tabsetIcon = (tabset: Tabset) => {
   }
   return icon
 }
-
-const saveInTabset = (tabsetId: string) => {
-  //console.log("currentChromeTab.value", currentChromeTab.value)
-  const useTS = useTabsetService().getTabset(tabsetId)
-  if (useTS) {
-    useCommandExecutor().executeFromUi(new AddTabToTabsetCommand(new Tab(uid(), currentChromeTab.value), useTS))
-    // .then((res: any) => {
-    //   tabsetCandidates.value = _.filter(tabsetCandidates.value, (c: object) => c['candidateId' as keyof object] !== tabsetId)
-    // })
-  } else {
-    console.warn("expected to find tabsetId", tabsetId)
-  }
-}
-
-const alreadyInTabset = () =>
-  (currentChromeTab.value?.url && tabsStore.getCurrentTabset) ?
-    useTabsetService().urlExistsInCurrentTabset(currentChromeTab.value.url) :
-    false
 
 </script>
 

@@ -345,7 +345,7 @@ const isCurrentTab = (tab: Tab) => {
   stroke-dashoffset: 66;
   stroke-width: 2;
   stroke-miterlimit: 10;
-  stroke: #7ac142;
+  stroke: #8ACB88;
   fill: none;
   animation: stroke 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards;
 }
@@ -359,7 +359,7 @@ const isCurrentTab = (tab: Tab) => {
   stroke: #fff;
   stroke-miterlimit: 10;
   margin: 10% auto;
-  box-shadow: inset 0px 0px 0px #7ac142;
+  box-shadow: inset 0px 0px 0px #8ACB88;
   animation: fill .4s ease-in-out .4s forwards, scale .3s ease-in-out .9s both;
 }
 
@@ -387,7 +387,7 @@ const isCurrentTab = (tab: Tab) => {
 
 @keyframes fill {
   100% {
-    box-shadow: inset 0px 0px 0px 30px #7ac142;
+    box-shadow: inset 0px 0px 0px 30px #8ACB88;
   }
 }
 </style>

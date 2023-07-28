@@ -47,6 +47,8 @@ function inIgnoredMessages(request: any) {
     request.name === 'tab-added' ||
     request.name === 'tab-deleted' ||
     request.name === 'tabset-added' ||
+    request.name === 'tabset-renamed' ||
+    request.name === 'mark-tabset-deleted' ||
     request.name === 'feature-activated' ||
     request.name === 'feature-deactivated' ||
     request.name === 'tabsets-imported' ||

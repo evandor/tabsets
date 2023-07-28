@@ -1,6 +1,9 @@
 import Command from "src/domain/Command";
 import {ExecutionResult} from "src/domain/ExecutionResult";
 import TabsetService from "src/services/TabsetService";
+import {useUtils} from "src/services/Utils";
+
+const {sendMsg} = useUtils()
 
 class UndoRenameTabsetCommand implements Command<any> {
 
@@ -24,6 +27,10 @@ export class RenameTabsetCommand implements Command<any> {
 
   async execute(): Promise<ExecutionResult<string>> {
     return TabsetService.rename(this.tabsetId, this.newName)
+      .then(res => {
+        sendMsg('tabset-renamed', {tabsetId: this.tabsetId, newName: this.newName})
+        return res
+      })
       .then(oldName => Promise.resolve(
         new ExecutionResult(
           oldName,

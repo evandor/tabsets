@@ -2,7 +2,6 @@
 import {INDEX_DB_VERSION} from "boot/constants";
 import {useJestHelper} from "src/domain/JestHelper";
 import "fake-indexeddb/auto"
-import {beforeAll} from "vitest/index";
 
 const request = indexedDB.open('db', INDEX_DB_VERSION);
 request.onupgradeneeded = async function () {
@@ -10,9 +9,5 @@ request.onupgradeneeded = async function () {
 }
 process.env.MODE = "bex"
 
-//beforeAll(() => {
-  // https://vitest.dev/guide/browser.html
-  // @ts-ignore - needed as 'chrome' is undefined in vitest
-  global.chrome = undefined
-  // global.browser = browser
-//r})
+// @ts-ignore - needed as 'chrome' is undefined in vitest
+global.chrome = undefined

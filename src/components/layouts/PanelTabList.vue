@@ -36,7 +36,7 @@
   </q-list>
 
   <audio id="myAudio">
-    <source src="https://www.fesliyanstudios.com/play-mp3/387" type="audio/mp3">
+    <source src="mp3/click.mp3" type="audio/mp3">
   </audio>
 
 </template>
