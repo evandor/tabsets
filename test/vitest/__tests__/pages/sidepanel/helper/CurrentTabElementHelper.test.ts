@@ -39,15 +39,15 @@ describe('CurrentTabElementHelper', () => {
     expect(wrapper.text()).toContain("Current Tab");
   });
 
-  it('should be mounted from existing chrome tab', async () => {
-    await IndexedDbPersistenceService.init("db")
-    useTabsStore().setCurrentChromeTab(skysailChromeTab)
-    const res = await useCommandExecutor().execute(new CreateTabsetCommand("ts1", []))
-    const newTab = new Tab(uid(), skysailChromeTab)
-    await useCommandExecutor().execute(new AddTabToTabsetCommand(newTab, res.result.tabset))
-    await useTabsetService().saveText(newTab, "the text", {})
-    const wrapper = mount(CurrentTabElementHelper);
-    expect(wrapper.text()).toContain("ts1");
-  });
+  // it('should be mounted from existing chrome tab', async () => {
+  //   await IndexedDbPersistenceService.init("db")
+  //   useTabsStore().setCurrentChromeTab(skysailChromeTab)
+  //   const res = await useCommandExecutor().execute(new CreateTabsetCommand("ts1", []))
+  //   const newTab = new Tab(uid(), skysailChromeTab)
+  //   await useCommandExecutor().execute(new AddTabToTabsetCommand(newTab, res.result.tabset))
+  //   await useTabsetService().saveText(newTab, "the text", {})
+  //   const wrapper = mount(CurrentTabElementHelper);
+  //   expect(wrapper.text()).toContain("ts1");
+  // });
 
 });

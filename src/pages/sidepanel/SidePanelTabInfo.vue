@@ -1,20 +1,20 @@
 <template>
   <div
-    class="row q-ma-none q-mt-xs q-pt-sm"
-    :class="alreadyInTabset() ? 'bg-grey-1':'bg-yellow-1'"
+    v-if="!alreadyInTabset()"
+    class="row q-ma-none q-pt-sm q-ma-sm"
     style="border:1px solid lightgray;border-radius: 5px">
 
     <div class="col-12" v-if="route && route.query.first && route.query.first === 'true'">
       <div class="row">
         <div class="col text-caption q-pa-md">
-          Here you will always see the <i>current tab</i> of your browser.
+          Here you will see the <i>current tab</i> of your browser.
           Click 'START' and add it to your new tabset.<br><br>
           <q-btn label="start" @click="router.push('/sidepanel')"/>
         </div>
       </div>
     </div>
-    <div class="col-12" v-else :style="alreadyInTabset() ? 'opacity: 0.2':''">
-      <CurrentTabElementHelper :tabsetId="props.tabsetId"/>
+    <div class="col-12" v-else>
+      <CurrentTabElementHelper :tabsetId="props.tabsetId" />
     </div>
   </div>
 

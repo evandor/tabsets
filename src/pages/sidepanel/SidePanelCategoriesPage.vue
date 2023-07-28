@@ -108,6 +108,7 @@ import {ExecutionResult} from "src/domain/ExecutionResult";
 import {useCategoriesStore} from "stores/categoriesStore";
 import {useDB} from "src/services/usePersistenceService";
 import {CopyFromPublicCategory} from "src/domain/categories/CopyFromPublicCategory";
+import {useWindowsStore} from "stores/windowsStores";
 
 const {inBexMode, sanitize, sendMsg} = useUtils()
 
@@ -159,7 +160,8 @@ watchEffect(() => {
 })
 
 watchEffect(() => {
-  currentChromeTab.value = useTabsStore().currentChromeTab
+  const windowId = useWindowsStore().currentWindow.id || 0
+  currentChromeTab.value = useTabsStore().getCurrentChromeTab(windowId) || useTabsStore().currentChromeTab
 })
 
 const tabsetCaption = (tabset: Tabset) => tabset.tabs?.length.toString() + ' tab' + (tabset.tabs?.length === 1 ? '' : 's')

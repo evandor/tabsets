@@ -28,7 +28,7 @@ describe('AddTabToTabsetCommand', () => {
 
   afterEach(async () => {
     db.clear("tabsets")
-    db.clear("tabs")
+    //rdb.clear("tabs")
   })
 
   it('adding new tab to empty tabset', async () => {
@@ -50,6 +50,20 @@ describe('AddTabToTabsetCommand', () => {
 
     await new AddTabToTabsetCommand(new Tab("tabId1", skysailChromeTab), tabset).execute()
     const result = await new AddTabToTabsetCommand(new Tab("tabId2", testDeChromeTab), tabset).execute()
+    expect(result.message).toBe("Tab was added")
+
+    const tabsetFromDB = useTabsetService().getTabset("new Tabset")
+    console.log("tabsetFromDB", tabsetFromDB)
+  });
+
+  it('adding tab with content to tabset', async () => {
+    const theTab = new Tab("tabId3", testDeChromeTab)
+    await db.saveContent(theTab, "text", {}, "title", [])
+
+    const createdTabset = (await new CreateTabsetCommand("new Tabset2", []).execute()).result.tabset
+
+    //await new AddTabToTabsetCommand(new Tab("tabId1", skysailChromeTab), createdTabset).execute()
+    const result = await new AddTabToTabsetCommand(theTab, createdTabset).execute()
     expect(result.message).toBe("Tab was added")
 
     const tabsetFromDB = useTabsetService().getTabset("new Tabset")

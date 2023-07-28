@@ -47,13 +47,6 @@
                color="primary"
                size="8px"
                @click="openOptionsPage()">
-          <q-badge v-if="logsStore.errors.length > 0 && settingsStore.isEnabled('dev')"
-                   color="red" floating>{{ logsStore.errors.length }}
-          </q-badge>
-          <q-badge v-if="logsStore.errors.length === 0 && logsStore.warnings.length > 0
-                  && settingsStore.isEnabled('dev')"
-                   color="orange" floating>{{ logsStore.warnings.length }}
-          </q-badge>
           <q-tooltip class="tooltip" anchor="top left" self="bottom left">{{ settingsTooltip() }}</q-tooltip>
         </q-btn>
 
@@ -91,6 +84,7 @@ import ChromeApi from "src/services/ChromeApi";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {AddTabToTabsetCommand} from "src/domain/tabs/AddTabToTabset";
 import {useUtils} from "src/services/Utils";
+import {useWindowsStore} from "stores/windowsStores";
 
 const {inBexMode, sanitize, sendMsg} = useUtils()
 
@@ -116,7 +110,9 @@ watchEffect(() => {
 })
 
 watchEffect(() => {
-  currentChromeTab.value = useTabsStore().currentChromeTab
+  //currentChromeTab.value = useTabsStore().currentChromeTab
+  const windowId = useWindowsStore().currentWindow.id || 0
+  currentChromeTab.value = useTabsStore().getCurrentChromeTab(windowId) || useTabsStore().currentChromeTab
 })
 
 watchEffect(() => {
@@ -183,13 +179,7 @@ const openOptionsPage = () => window.open(chrome.runtime.getURL('www/index.html#
 const openExtensionTab = () => NavigationService.openOrCreateTab(chrome.runtime.getURL('www/index.html#/start'))
 
 const settingsTooltip = () => {
-  if (logsStore.errors.length > 0 && settingsStore.isEnabled('dev')) {
-    return "Open Settings (" + logsStore.errors.length + " errors)"
-  }
-  if (logsStore.warnings.length > 0 && settingsStore.isEnabled('dev')) {
-    return "Open Settings (" + logsStore.warnings.length + " warnings)"
-  }
-  return "Open Settings"
+  return "Open Settings of Tabsets " +  import.meta.env.PACKAGE_VERSION
 }
 
 const rightButtonClass = () => "q-my-xs q-ml-xs q-px-xs q-mr-none"

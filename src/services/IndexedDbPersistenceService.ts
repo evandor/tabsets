@@ -31,39 +31,18 @@ class IndexedDbPersistenceService implements PersistenceService {
 
   async loadTabsets(): Promise<any> {
     const tabsStore = useTabsStore()
-    const start = Date.now();
-
     return await this.db.getAll('tabsets')
       .then((res: any) => res.forEach((r: Tabset) => tabsStore.addTabset(r)))
+  }
 
-
-    // const keys: IDBValidKey[] = await this.db.getAllKeys('tabsets')
-    // console.log(`got keys: ${Date.now() - start} ms`);
-    // const res: Promise<any>[] = _.map(keys, key => {
-    //   return this.db.get('tabsets', key)
-    //     .then(ts => {
-    //       if (!ts.status) {
-    //         ts.status = TabsetStatus.DEFAULT
-    //       }
-    //       console.log("loading tabset", ts)
-    //       console.log(`got tabset: ${Date.now() - start} ms`);
-    //       // migration from tabsets.tabs to tabs
-    //       // TODO check can be removed in the future when we had a couple of releases
-    //       return this.db.get('tabs', ts.id)
-    //         .then((tabs: Tab[]) => {
-    //           //console.log("got tabs for ", ts.id, tabs, ts.tabs)
-    //           if (!tabs) {
-    //             console.log("migrating...", JSON.stringify(ts.tabs))
-    //             this.saveTabset(ts)
-    //           }
-    //           tabsStore.addTabset(ts)
-    //           return ts
-    //         })
-    //     })
-    //     .catch(err => console.log("err", err))
-    // })
-
-    //return await Promise.all(res)
+  async reloadTabset(tabsetId: string) {
+    const ts = await this.db.get('tabsets', tabsetId) as Tabset | undefined
+    if (ts) {
+      console.log("reloaded tabset", ts.id, ts.tabs.length)
+      useTabsStore().tabsets.set(ts.id, ts)
+    } else {
+      console.warn("could not reload tabset with id", tabsetId)
+    }
   }
 
   async loadSpaces(): Promise<void> {
@@ -95,21 +74,15 @@ class IndexedDbPersistenceService implements PersistenceService {
 
 
   async saveTabset(tabset: Tabset): Promise<IDBValidKey> {
+    console.log("db: saving tabset", tabset.id, tabset.tabs.length)
     return await this.db.put('tabsets', JSON.parse(JSON.stringify(tabset)), tabset.id);
 
-    // console.log("saving tabset1", tabset)
-    // console.log("saving tabset2", tabset.tabs)
-    // console.log("saving tabset3", JSON.stringify(tabset.tabs))
-    // try {
     //   const tabsRes = await this.db.put('tabs', JSON.parse(JSON.stringify(tabset.tabs)), tabset.id);
     //   const tabsetClone = Object.assign({}, tabset);
     //   tabsetClone.tabs = []
     //   tabsetClone.tabsCount = tabset.tabs.length
     //   await this.db.put('tabsets', JSON.parse(JSON.stringify(tabsetClone)), tabset.id);
     //   return tabsRes
-    // } catch (err) {
-    //   return Promise.reject("got error: " + err)
-    // }
   }
 
   deleteTabset(tabsetId: string): Promise<void> {

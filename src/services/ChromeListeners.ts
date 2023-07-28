@@ -31,6 +31,7 @@ const {sanitize} = useUtils()
 
 function setCurrentTab() {
   chrome.tabs.query({active: true, lastFocusedWindow: true}, (tabs) => {
+    console.log("setting current tab", tabs)
     if (tabs && tabs[0]) {
       useTabsStore().setCurrentChromeTab(tabs[0] as unknown as chrome.tabs.Tab)
     }
@@ -43,6 +44,9 @@ function inIgnoredMessages(request: any) {
     request.name === 'current-tabset-id-change' ||
     request.name === 'tab-being-dragged' ||
     request.name === 'tab-changed' ||
+    request.name === 'tab-added' ||
+    request.name === 'tab-deleted' ||
+    request.name === 'tabset-added' ||
     request.name === 'feature-activated' ||
     request.name === 'feature-deactivated' ||
     request.name === 'tabsets-imported' ||

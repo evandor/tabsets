@@ -188,6 +188,7 @@ import InfoMessageWidget from "components/widgets/InfoMessageWidget.vue";
 import PanelTabListElementWidget from "components/widgets/PanelTabListElementWidget.vue";
 import FirstToolbarHelper from "pages/sidepanel/helper/FirstToolbarHelper.vue";
 import SidePanelPageContextMenu from "pages/sidepanel/SidePanelPageContextMenu.vue";
+import {useWindowsStore} from "stores/windowsStores";
 
 const {inBexMode} = useUtils()
 
@@ -234,7 +235,11 @@ watchEffect(() => {
   console.log("calling 1")
 })
 
-watchEffect(() => currentChromeTab.value = useTabsStore().currentChromeTab)
+watchEffect(() => {
+  //currentChromeTab.value = useTabsStore().currentChromeTab
+  const windowId = useWindowsStore().currentWindow.id || 0
+  currentChromeTab.value = useTabsStore().getCurrentChromeTab(windowId) || useTabsStore().currentChromeTab
+})
 
 watchEffect(() => {
   if (useTabsStore().tabsets) {

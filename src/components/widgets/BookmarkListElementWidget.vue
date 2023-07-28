@@ -81,7 +81,7 @@ import {useNotificationsStore} from "src/stores/notificationsStore";
 import {ref} from "vue";
 import {useUtils} from "src/services/Utils"
 import {useCommandExecutor} from "src/services/CommandExecutor";
-import {DeleteTabCommand} from "src/domain/commands/DeleteTabCommand";
+import {DeleteTabCommand} from "src/domain/tabs/DeleteTabCommand";
 import {Bookmark} from "src/models/Bookmark";
 import {useRouter} from "vue-router";
 import {date} from "quasar";

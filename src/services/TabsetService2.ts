@@ -179,19 +179,23 @@ export function useTabsetService() {
     return _.find([...tabsStore.tabsets.values()], ts => ts.id === tabsetId)
   }
 
- /* const getTabs = async (tabsetId: string): Promise<Tab[]> => {
-    console.log("getting tabs for ", tabsetId)
-    const tabsStore = useTabsStore()
-    const ts = _.find([...tabsStore.tabsets.values()],
-      ts => ts.id === tabsetId)
-    if (ts) {
-      //return (ts.tabs.length === 0) ?
-        // try to lazy load tabs if we don't have any tabs yet
-        //db.loadTabs(tabsetId) :
-        ts.tabs
-    }
-    return Promise.resolve([])
-  }*/
+  const reloadTabset = async (tabsetId: string) => {
+    return db.reloadTabset(tabsetId)
+  }
+
+  /* const getTabs = async (tabsetId: string): Promise<Tab[]> => {
+     console.log("getting tabs for ", tabsetId)
+     const tabsStore = useTabsStore()
+     const ts = _.find([...tabsStore.tabsets.values()],
+       ts => ts.id === tabsetId)
+     if (ts) {
+       //return (ts.tabs.length === 0) ?
+         // try to lazy load tabs if we don't have any tabs yet
+         //db.loadTabs(tabsetId) :
+         ts.tabs
+     }
+     return Promise.resolve([])
+   }*/
 
   const getCurrentTabset = (): Tabset | undefined => {
     const tabsStore = useTabsStore()
@@ -504,8 +508,9 @@ export function useTabsetService() {
       // add tabset's name to tab's tags
       tab.tags.push(ts.name)
       try {
-        tab.tags.push(new URL(tab.url).hostname.replace("www.",""))
-      } catch (err) {}
+        tab.tags.push(new URL(tab.url).hostname.replace("www.", ""))
+      } catch (err) {
+      }
 
       if (useIndex !== undefined && useIndex >= 0) {
         ts.tabs.splice(useIndex, 0, tab)
@@ -665,7 +670,8 @@ export function useTabsetService() {
     urlExistsInCurrentTabset,
     getOrCreateSpecialTabset,
     saveBlob,
-    getBlob
+    getBlob,
+    reloadTabset
   }
 
 }

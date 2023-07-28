@@ -3,8 +3,10 @@ import {ExecutionResult} from "src/domain/ExecutionResult";
 import {Tab} from "src/models/Tab";
 import {Tabset} from "src/models/Tabset";
 import {useTabsetService} from "src/services/TabsetService2";
+import {useUtils} from "src/services/Utils";
 
 const {addToTabset, deleteTab} = useTabsetService()
+const {inBexMode, sendMsg} = useUtils()
 
 class UndoCommand implements Command<any> {
 
@@ -31,6 +33,10 @@ export class DeleteTabCommand implements Command<Tabset> {
         tabset,
         "Tab was deleted",
         new UndoCommand(tabset, this.tab))))
+      .then((res) => {
+        sendMsg('tab-deleted', {tabsetId: res.result.id})
+        return res
+      })
       .catch(err => Promise.reject(err))
   }
 }

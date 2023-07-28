@@ -5,7 +5,7 @@ import {Tab} from "src/models/Tab";
 import _ from "lodash";
 import {useTabsStore} from "src/stores/tabsStore";
 import {useTabsetService} from "src/services/TabsetService2";
-import {DeleteTabCommand} from "src/domain/commands/DeleteTabCommand";
+import {DeleteTabCommand} from "src/domain/tabs/DeleteTabCommand";
 import {useSearchStore} from "src/stores/searchStore";
 import {uid} from "quasar";
 import {useUiStore} from "src/stores/uiStore";
@@ -14,23 +14,16 @@ import {usePermissionsStore} from "stores/permissionsStore";
 import {FeatureIdent} from "src/models/AppFeature";
 import {api} from "boot/axios";
 import { TAXONOMY } from "src/boot/constants";
+import {useUtils} from "src/services/Utils";
 
 const {saveCurrentTabset, saveTabset} = useTabsetService()
+const {inBexMode,sendMsg} = useUtils()
 
-// class UndoCommand implements Command<any> {
-//
-//   constructor(public tab: Tab) {
-//   }
-//
-//   execute(): Promise<ExecutionResult<any>> {
-//     console.info(this.tab, "execution undo command")
-//     return new DeleteTabCommand(this.tab).execute()
-//       .then(res => Promise.resolve(new ExecutionResult(res, "Tab was deleted again")))
-//   }
-//
-// }
+// No undo command, tab can be deleted manually easily
 
-
+/**
+ * Add provided Tab to provided Tabset.
+ */
 export class AddTabToTabsetCommand implements Command<any> {
 
   constructor(public tab: Tab, public tabset: Tabset) {
@@ -43,7 +36,7 @@ export class AddTabToTabsetCommand implements Command<any> {
     console.log("checking 'tab exists' yields", exists)
     if (!exists) {
       return useTabsetService().addToTabsetId(this.tabset.id, this.tab, 0)
-        .then((res) => {
+        .then((tabset) => {
           // the tab has been added to the tabset, but not saved yet
           return TabsetService.getContentFor(this.tab)
             .then((content) => {
@@ -65,34 +58,7 @@ export class AddTabToTabsetCommand implements Command<any> {
               }
             })
             .then((res) => {
-              // TODO CreateTabFromOpentabs: Same logic?
-              // TODO remove logic, will not be used that way
-              if (usePermissionsStore().hasFeature(FeatureIdent.CATEGORIZATION) && this.tab.url?.startsWith("https://")) {
-                console.log("about to check categorization", this.tab.url)
-                try {
-                  const url = new URL(this.tab.url || '')
-                  const origin = url.origin
-                  console.log("checking origin", origin)
-
-                  const backendUrl = "https://us-central1-tabsets-backend-prd.cloudfunctions.net/app"
-                  api.post(`${backendUrl}/webshrinker/analyze`,
-                    {
-                      url: origin,
-                      taxonomy: TAXONOMY,
-                      title: this.tab.title,
-                      favIconUrl: this.tab.favIconUrl,
-                      description: this.tab.description
-                    })
-                    .then((res) => {
-                      console.log("res", res)
-                    })
-                    .catch((err) => console.log("got error", err))
-
-
-                } catch (err) {
-                }
-
-              }
+              sendMsg('tab-added', {tabsetId: tabset.id})
               return res
             })
             .catch((err) => Promise.reject("got err " + err))

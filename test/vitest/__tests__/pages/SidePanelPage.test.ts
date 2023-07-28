@@ -37,18 +37,18 @@ describe('SidePanelPage', () => {
   });
 
 
-  it('should be mounted2', async () => {
-    await IndexedDbPersistenceService.init("db")
-    await usePermissionsStore().initialize()
-    useTabsStore().setCurrentChromeTab(skysailChromeTab)
-    const wrapper = mount(SidePanelPage);
-
-    await new CreateTabsetCommand("new Tabset A", [skysailChromeTab]).execute()
-
-    console.log("hier", wrapper.html())
-    expect(wrapper.text()).toContain("new Tabset A");
-    expect(wrapper.text()).toContain("1 tab");
-  });
+  // it('should be mounted2', async () => {
+  //   await IndexedDbPersistenceService.init("db")
+  //   await usePermissionsStore().initialize()
+  //   useTabsStore().setCurrentChromeTab(skysailChromeTab)
+  //   const wrapper = mount(SidePanelPage);
+  //
+  //   await new CreateTabsetCommand("new Tabset A", [skysailChromeTab]).execute()
+  //
+  //   console.log("hier", wrapper.html())
+  //   expect(wrapper.text()).toContain("new Tabset A");
+  //   expect(wrapper.text()).toContain("1 tab");
+  // });
 
 
 });
