@@ -52,7 +52,7 @@ import {Tab} from "src/models/Tab";
 import TabsetService from "src/services/TabsetService";
 import {onMounted, ref, watchEffect} from "vue";
 import {useCommandExecutor} from "src/services/CommandExecutor";
-import {DeleteTabCommand} from "src/domain/commands/DeleteTabCommand";
+import {DeleteTabCommand} from "src/domain/tabs/DeleteTabCommand";
 import {useQuasar} from "quasar";
 import {ListDetailLevel, useUiStore} from "src/stores/uiStore";
 import TabFaviconWidget from "components/widgets/TabFaviconWidget.vue";

@@ -144,7 +144,7 @@ export class LocalStoragePersistenceService implements PersistenceService {
     return Promise.resolve(undefined);
   }
 
-  saveContent(tab: chrome.tabs.Tab, text: string, metas: object, title: string, tabsetIds: string[]): Promise<any> {
+  saveContent(tab: Tab, text: string, metas: object, title: string, tabsetIds: string[]): Promise<any> {
     return Promise.resolve(undefined);
   }
 
@@ -169,6 +169,13 @@ export class LocalStoragePersistenceService implements PersistenceService {
 
   updateThumbnail(url: string): Promise<void> {
     return Promise.resolve(undefined);
+  }
+
+  loadCategories(): Promise<any> {
+    return Promise.resolve(undefined);
+  }
+
+  reloadTabset(tabsetId: string): void {
   }
 
 }

@@ -99,7 +99,7 @@ import {MoveToTabsetCommand} from "src/domain/tabs/MoveToTabset";
 import {useUtils} from "src/services/Utils";
 import TabsetListContextMenu from "components/widgets/helper/TabsetListContextMenu.vue";
 import {Tab} from "src/models/Tab";
-import {DeleteTabCommand} from "src/domain/commands/DeleteTabCommand";
+import {DeleteTabCommand} from "src/domain/tabs/DeleteTabCommand";
 import {useUiStore} from "src/stores/uiStore";
 
 const {handleError, handleSuccess} = useNotificationHandler()

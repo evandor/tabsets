@@ -72,9 +72,19 @@ const routes: RouteRecordRaw[] = [
     children: [{ path: '', component: () => import('pages/sidepanel/SidePanelNewestTabsPage.vue') }],
   },
   {
+    path: '/sidepanel/bookmarks',
+    component: () => import('layouts/SidePanelLayout.vue'),
+    children: [{ path: '', component: () => import('pages/sidepanel/SidePanelBookmarksPage.vue') }],
+  },
+  {
     path: '/sidepanel/top10List',
     component: () => import('layouts/SidePanelLayout.vue'),
     children: [{ path: '', component: () => import('pages/sidepanel/SidePanelTop10Page.vue') }],
+  },
+  {
+    path: '/sidepanel/byCategory',
+    component: () => import('layouts/SidePanelLayout.vue'),
+    children: [{ path: '', component: () => import('pages/sidepanel/SidePanelCategoriesPage.vue') }],
   },
   {
     path: '/sidepanel/byDomain/:encodedUrl',
@@ -92,33 +102,48 @@ const routes: RouteRecordRaw[] = [
     children: [{ path: '', component: () => import('pages/FeaturesPage.vue') }],
   },
   {
-    path: '/mainpanel/notes/:noteId',
+    path: '/mainpanel/notes/:noteId', // TODO combine with Note page
     component: () => import('layouts/PlainLayout.vue'),
     children: [{ path: '', component: () => import('pages/mainpanel/MainPanelNotePage.vue') }],
   },
   {
-    path: '/mainpanel/tabsets/:tabsetId',
+    path: '/mainpanel/notes/', // TODO combine with Note page
+    component: () => import('layouts/PlainLayout.vue'),
+    children: [{ path: '', component: () => import('pages/mainpanel/MainPanelNotePage.vue') }],
+  },
+  {
+    path: '/mainpanel/tabsets/:tabsetId', // TODO combine with Tabset page
     component: () => import('layouts/PlainLayout.vue'),
     children: [{ path: '', component: () => import('pages/TabsetPage.vue') }],
   },
   {
-    path: '/mainpanel/mhtml/:encodedUrl',
+    path: '/mainpanel/mhtml/:encodedUrl', // TODO combine with MHtml page
     component: () => import('layouts/PlainLayout.vue'),
     children: [{ path: '', component: () => import('pages/mainpanel/MainPanelMHtmlPage.vue') }],
   },
   {
-    path: '/mainpanel/tab/:id',
+    path: '/mainpanel/tab/:id',// TODO combine with Tag page
     component: () => import('layouts/PlainLayout.vue'),
     children: [{ path: '', component: () => import('pages/mainpanel/MainPanelTabPage.vue') }],
   },
   {
-    path: '/mainpanel/spaces',
+    path: '/mainpanel/spaces', // TODO combine with Spaces page
     component: () => import('layouts/PlainLayout.vue'),
     children: [{ path: '', component: () => import('pages/mainpanel/MainPanelSpacesPage.vue') }],
   },
   {
+    path: '/mainpanel/bookmarks/:id',
+    component: () => import('layouts/PlainLayout.vue'),
+    children: [{ path: '', component: () => import('pages/mainpanel/MainPanelBookmarksPage.vue') }],
+  },
+  {
+    path: '/mainpanel/readingmode/:tabId', // TODO combine with Note page
+    component: () => import('layouts/PlainLayout.vue'),
+    children: [{ path: '', component: () => import('pages/mainpanel/MainPanelReadingModePage.vue') }],
+  },
+  {
     path: '/about',
-    component: () => import('layouts/AboutLayout.vue'),
+    component: () => import('layouts/PlainLayout.vue'),
     children: [{ path: '', component: () => import('pages/AboutPage.vue') }],
   },
   {
@@ -180,6 +205,11 @@ const routes: RouteRecordRaw[] = [
     path: '/search',
     component: () => import('layouts/DefaultLayout.vue'),
     children: [{ path: '', component: () => import('pages/SearchPage.vue') }],
+  },
+  {
+    path: '/searchresult',
+    component: () => import('layouts/PlainLayout.vue'),
+    children: [{ path: '', component: () => import('pages/SearchResultPage.vue') }],
   },
   {
     path: '/iframe/:tabId',

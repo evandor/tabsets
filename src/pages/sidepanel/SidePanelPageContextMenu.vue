@@ -3,26 +3,17 @@
     <q-list dense style="min-width: 180px">
 
       <ContextMenuItem v-close-popup
-        v-if="usePermissionsStore().hasFeature(FeatureIdent.NOTES)"
-        @was-clicked="startTabsetNote(tabset)"
-        icon="o_add_circle"
-        label="Create Note"/>
+                       v-if="usePermissionsStore().hasFeature(FeatureIdent.NOTES)"
+                       @was-clicked="startTabsetNote(tabset)"
+                       icon="o_add_circle"
+                       label="Create Note"/>
 
       <q-separator/>
 
       <ContextMenuItem v-close-popup
-        @was-clicked="openEditTabsetDialog(tabset)"
-        icon="o_note"
-        label="Edit Tabset Name"/>
-
-      <!--      <q-item clickable v-close-popup @click.stop="openEditTabsetDialog(tabset as Tabset)">-->
-      <!--        <q-item-section avatar style="padding-right:0;min-width:25px;max-width: 25px;">-->
-      <!--          <q-icon size="xs" name="o_note" color="accent"/>-->
-      <!--        </q-item-section>-->
-      <!--        <q-item-section>-->
-      <!--          Edit Tabset Name-->
-      <!--        </q-item-section>-->
-      <!--      </q-item>-->
+                       @was-clicked="openEditTabsetDialog(tabset)"
+                       icon="o_note"
+                       label="Edit Tabset Name"/>
 
       <template v-if="tabset.tabs.length > 0 && inBexMode()">
         <q-separator/>
@@ -48,37 +39,34 @@
 
       </template>
 
-<!--      <template v-if="tabset.tabs.length > 0 && inBexMode()">-->
-<!--        <q-separator/>-->
-<!--        <q-item clickable>-->
-<!--          <q-item-section avatar style="padding-right:0;min-width:25px;max-width: 25px;">-->
-<!--            <q-icon size="xs" name="open_in_new" color="accent"/>-->
-<!--          </q-item-section>-->
-<!--          <q-item-section>Open all in...</q-item-section>-->
-<!--          <q-item-section side>-->
-<!--            <q-icon name="keyboard_arrow_right"/>-->
-<!--          </q-item-section>-->
+      <template v-if="false">
+        <q-separator/>
+        <ContextMenuItem
+          icon="keyboard_arrow_right"
+          label="Sharing...">
 
-<!--          <q-menu anchor="top end" self="top start">-->
-<!--            <q-list>-->
-<!--              <q-item dense clickable @click="restoreInNewWindow(tabset.id)">-->
-<!--                <q-item-section>new window</q-item-section>-->
-<!--              </q-item>-->
-<!--              <q-item dense clickable @click="restoreInGroup(tabset.id)">-->
-<!--                <q-item-section>current window</q-item-section>-->
-<!--              </q-item>-->
-<!--            </q-list>-->
-<!--          </q-menu>-->
+          <q-item-section side>
+            <q-icon name="keyboard_arrow_right"/>
+          </q-item-section>
+          <q-menu anchor="top end" self="top start">
+            <q-list>
+              <q-item dense clickable v-close-popup @click="sharePublicly(tabset.id)">
+                <q-item-section>Share publicly</q-item-section>
+              </q-item>
+            </q-list>
+          </q-menu>
 
-<!--        </q-item>-->
-<!--      </template>-->
+        </ContextMenuItem>
+
+      </template>
+
 
       <template v-if="useSettingsStore().isEnabled('dev')">
         <q-separator/>
         <ContextMenuItem v-close-popup
-          @was-clicked="useSearchStore().reindexTabset(tabset.id)"
-          icon="o_note"
-          label="Re-Index Search"/>
+                         @was-clicked="useSearchStore().reindexTabset(tabset.id)"
+                         icon="o_note"
+                         label="Re-Index Search"/>
       </template>
 
       <!--      <q-item v-if="useSettingsStore().isEnabled('dev')"-->
@@ -95,55 +83,28 @@
       <q-separator/>
       <template v-if="tabset.status === TabsetStatus.DEFAULT">
         <ContextMenuItem v-close-popup
-          @was-clicked="pin(tabset)"
-          icon="o_push_pin"
-          color="warning"
-          label="Pin"/>
+                         @was-clicked="pin(tabset)"
+                         icon="o_push_pin"
+                         color="warning"
+                         label="Pin"/>
       </template>
       <template v-else-if="tabset.status === TabsetStatus.FAVORITE">
         <ContextMenuItem v-close-popup
-          @was-clicked="unpin(tabset)"
-          icon="push_pin"
-          color="warning"
-          label="Unpin"/>
+                         @was-clicked="unpin(tabset)"
+                         icon="push_pin"
+                         color="warning"
+                         label="Unpin"/>
 
       </template>
-
-      <!--      <q-item v-if="tabset.status === TabsetStatus.DEFAULT"-->
-      <!--              clickable v-close-popup @click.stop="pin(tabset as Tabset)">-->
-      <!--        <q-item-section avatar style="padding-right:0;min-width:25px;max-width: 25px;">-->
-      <!--          <q-icon size="xs" name="o_push_pin" color="warning"/>-->
-      <!--        </q-item-section>-->
-      <!--        <q-item-section>-->
-      <!--          Pin-->
-      <!--        </q-item-section>-->
-      <!--      </q-item>-->
-      <!--      <q-item v-if="tabset.status === TabsetStatus.FAVORITE"-->
-      <!--              clickable v-close-popup @click.stop="unpin(tabset as Tabset)">-->
-      <!--        <q-item-section avatar style="padding-right:0;min-width:25px;max-width: 25px;">-->
-      <!--          <q-icon size="xs" name="push_pin" color="warning"/>-->
-      <!--        </q-item-section>-->
-      <!--        <q-item-section>-->
-      <!--          Unpin-->
-      <!--        </q-item-section>-->
-      <!--      </q-item>-->
 
       <q-separator/>
 
       <ContextMenuItem v-close-popup
-        @was-clicked="deleteTabsetDialog(tabset as Tabset)"
-        icon="o_delete"
-        color="negative"
-        label="Delete Tab"/>
+                       @was-clicked="deleteTabsetDialog(tabset as Tabset)"
+                       icon="o_delete"
+                       color="negative"
+                       label="Delete Tabset"/>
 
-      <!--      <q-item clickable v-close-popup @click.stop="deleteTabsetDialog(tabset as Tabset)">-->
-      <!--        <q-item-section avatar style="padding-right:0;min-width:25px;max-width: 25px;">-->
-      <!--          <q-icon size="xs" name="o_delete" color="negative"/>-->
-      <!--        </q-item-section>-->
-      <!--        <q-item-section>-->
-      <!--          Delete Tab-->
-      <!--        </q-item-section>-->
-      <!--      </q-item>-->
     </q-list>
   </q-menu>
 
@@ -153,7 +114,7 @@
 
 import {usePermissionsStore} from "stores/permissionsStore";
 import {FeatureIdent} from "src/models/AppFeature";
-import {Tabset, TabsetStatus} from "src/models/Tabset";
+import {Tabset, TabsetSharing, TabsetStatus} from "src/models/Tabset";
 import {useSettingsStore} from "stores/settingsStore";
 import {useSearchStore} from "stores/searchStore";
 import NavigationService from "src/services/NavigationService";
@@ -167,6 +128,8 @@ import {MarkTabsetAsDefaultCommand} from "src/domain/tabsets/MarkTabsetAsDefault
 import DeleteTabsetDialog from "components/dialogues/DeleteTabsetDialog.vue";
 import ContextMenuItem from "pages/sidepanel/helper/ContextMenuItem.vue";
 import {PropType} from "vue";
+import {ShareTabsetCommand} from "src/domain/tabsets/ShareTabset";
+import {UnShareTabsetCommand} from "src/domain/tabsets/UnShareTabset";
 
 const {inBexMode, sanitize, sendMsg} = useUtils()
 
@@ -201,6 +164,9 @@ const pin = (tabset: Tabset) =>
 
 const unpin = (tabset: Tabset) =>
   useCommandExecutor().executeFromUi(new MarkTabsetAsDefaultCommand(tabset.id))
+
+const sharePublicly = (tabsetId: string) => useCommandExecutor().executeFromUi(new ShareTabsetCommand(tabsetId, TabsetSharing.PUBLIC))
+const removePublicShare = (tabsetId: string) => useCommandExecutor().executeFromUi(new UnShareTabsetCommand(tabsetId))
 
 const deleteTabsetDialog = (tabset: Tabset) => {
   $q.dialog({

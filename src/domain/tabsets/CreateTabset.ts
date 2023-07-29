@@ -3,6 +3,9 @@ import {ExecutionResult} from "src/domain/ExecutionResult";
 import {DeleteTabsetCommand} from "src/domain/tabsets/DeleteTabset";
 import {useTabsetService} from "src/services/TabsetService2";
 import {SaveOrReplaceResult} from "src/models/SaveOrReplaceResult";
+import {useUtils} from "src/services/Utils";
+
+const {inBexMode, sendMsg} = useUtils()
 
 class UndoCreateTabsetCommand implements Command<object> {
 
@@ -29,12 +32,13 @@ export class CreateTabsetCommand implements Command<SaveOrReplaceResult> {
     try {
       const result: SaveOrReplaceResult = await useTabsetService()
         .saveOrReplaceFromChromeTabs(this.tabsetName, this.tabsToUse, this.merge)
-        // .then(res => {
-        //   if (useTabsStore().tabsets.size === 5 && !usePermissionsStore().hasFeature(FeatureIdent.BOOKMARKS) && process.env.MODE === 'bex') {
-        //     useSuggestionsStore().addSuggestion(Suggestion.getStaticSuggestion(StaticSuggestionIdent.TRY_BOOKMARKS_FEATURE))
-        //   }
-        //   return res
-        // })
+        .then(res => {
+          //   if (useTabsStore().tabsets.size === 5 && !usePermissionsStore().hasFeature(FeatureIdent.BOOKMARKS) && process.env.MODE === 'bex') {
+          //     useSuggestionsStore().addSuggestion(Suggestion.getStaticSuggestion(StaticSuggestionIdent.TRY_BOOKMARKS_FEATURE))
+          //   }
+          sendMsg('tabset-added', {tabsetId: res.tabset.id})
+          return res
+        })
       let doneMsg = 'Tabset \'' + this.tabsetName + '\' created successfully'
       if (result['replaced' as keyof object] && result['merged' as keyof object]) {
         doneMsg = 'Existing Tabset \'' + this.tabsetName + '\' can be updated now'

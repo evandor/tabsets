@@ -9,6 +9,7 @@ import {StaticSuggestionIdent, Suggestion, SuggestionState} from "src/models/Sug
 interface PersistenceService {
 
   loadTabsets():Promise<void>
+  reloadTabset(tabsetId: string): void
   saveTabset(tabset: Tabset): Promise<any>
   deleteTabset(tabsetId: string):Promise<any>
 

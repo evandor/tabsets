@@ -36,7 +36,7 @@ export class SelectTabsetCommand implements Command<Tabset | undefined> {
 
     //tabsStore.currentTabsetId = this.tabsetId;
     useTabsetService().selectTabset(this.tabsetId)
-    localStorage.setItem("selectedTabset", this.tabsetId)
+    //localStorage.setItem("selectedTabset", this.tabsetId)
     if (this.spaceId) {
       useSpacesStore().setSpace(this.spaceId)
     }
@@ -44,6 +44,7 @@ export class SelectTabsetCommand implements Command<Tabset | undefined> {
     if (inBexMode()) {
       const msg = {
         name: 'current-tabset-id-change',
+        ignore: true, // doing this to keep the logic, might be needed again
         data: {tabsetId: this.tabsetId}
       }
       //console.log("sending message", msg)

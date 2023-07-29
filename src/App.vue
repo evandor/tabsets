@@ -3,43 +3,13 @@
 </template>
 
 <script setup lang="ts">
-import {useTabsStore} from "src/stores/tabsStore";
 import {useQuasar} from "quasar";
-import tabsetService from "src/services/TabsetService";
-import {useBookmarksStore} from "src/stores/bookmarksStore";
-import {useSearchStore} from "src/stores/searchStore";
-import {useNotificationsStore} from "src/stores/notificationsStore";
-import ChromeApi from "src/services/ChromeApi";
-import {useWindowsStore} from "src/stores/windowsStores";
-import {useSpacesStore} from "src/stores/spacesStore";
-import MHtmlService from "src/services/MHtmlService";
-import IndexedDbPersistenceService from "src/services/IndexedDbPersistenceService";
-import ChromeListeners from "src/services/ChromeListeners";
-import {useRoute, useRouter} from "vue-router";
-import ChromeBookmarkListeners from "src/services/ChromeBookmarkListeners";
-import {usePermissionsStore} from "src/stores/permissionsStore";
-import {useSuggestionsStore} from "src/stores/suggestionsStore";
-import {useUiStore} from "src/stores/uiStore";
-import {useTabsetService} from "src/services/TabsetService2";
-import {INDEX_DB_NAME} from "boot/constants";
-import {useSettingsStore} from "src/stores/settingsStore";
-import BookmarksService from "src/services/BookmarksService";
 import {useUtils} from "src/services/Utils";
 import {EventEmitter} from "events";
-import {useDB} from "src/services/usePersistenceService";
-import {FeatureIdent} from "src/models/AppFeature";
+import AppService from "src/services/AppService";
 
 const {inBexMode} = useUtils()
 
-const spacesStore = useSpacesStore()
-const tabsStore = useTabsStore()
-const settingsStore = useSettingsStore()
-const bookmarksStore = useBookmarksStore()
-const windowsStore = useWindowsStore()
-const searchStore = useSearchStore()
-const uiStore = useUiStore()
-const router = useRouter()
-const route = useRoute()
 const $q = useQuasar()
 
 // https://stackoverflow.com/questions/9768444/possible-eventemitter-memory-leak-detected
@@ -48,60 +18,7 @@ emitter.setMaxListeners(12)
 
 $q.dark.set($q.localStorage.getItem('darkMode') || false)
 
-// init of stores and some listeners
-usePermissionsStore().initialize()
-  .then(() => {
-    ChromeListeners.initListeners()
-    ChromeBookmarkListeners.initListeners()
-    if (usePermissionsStore().hasFeature(FeatureIdent.AI_MODULE)) {
-      console.log("sending init-ai-module message")
-      chrome.runtime.sendMessage({name: 'init-ai-module'}, // nobody listening yet??
-        (callback: any) => {
-          if (chrome.runtime.lastError) {
-            console.warn("got error", chrome.runtime.lastError)
-          } else {
-            console.log("successfully send init-ai-module message")
-          }
-        })
-    }
-    bookmarksStore.init()
-    BookmarksService.init()
-  })
-settingsStore.initialize(useQuasar().localStorage);
-tabsStore.initialize(useQuasar().localStorage);
-
-searchStore.init()
-windowsStore.init()
-
-const localStorage = useQuasar().localStorage
-
-// init db
-IndexedDbPersistenceService.init(INDEX_DB_NAME)
-  .then(() => {
-    // init services
-    useNotificationsStore().initialize(useDB(undefined).db)
-    useSuggestionsStore().init()
-    tabsetService.setLocalStorage(localStorage)
-    spacesStore.initialize(useDB(undefined).db)
-      .then(() => {
-        useTabsetService().init(false)
-          .then(() => {
-            MHtmlService.init()
-            ChromeApi.init()
-            // @ts-ignore
-            if (tabsStore.tabsets.size === 0) {
-              router.push("/sidepanel/welcome")
-            }
-          })
-      })
-  })
-
-
-useNotificationsStore().bookmarksExpanded = $q.localStorage.getItem("bookmarks.expanded") || []
-
-// @ts-ignore
-if (!inBexMode() || (!chrome.sidePanel && chrome.action)) {
-  router.push("/start")
-}
+console.log("calling appService init")
+AppService.init()
 
 </script>

@@ -26,6 +26,7 @@
     "default_title" : "Tabsets",
     "default_panel": "www/index.html#/sidepanel"
   },
+  "omnibox": { "keyword": "ts" },
   "commands": {
     "_execute_sidebar_action": {
       "suggested_key": {

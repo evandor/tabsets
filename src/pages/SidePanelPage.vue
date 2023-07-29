@@ -6,15 +6,15 @@
       <q-list dense
               class="rounded-borders q-ma-none q-pa-none" :key="tabset.id"
               v-for="(tabset,index) in tabsets">
-        <!-- :model-value="isExpanded(tabset.id)" -->
         <q-expansion-item v-if="showTabset(tabset as Tabset)"
-                          :header-class="tabsStore.currentTabsetId === tabset.id ? 'bg-grey-4':''"
-                          header-class="q-ma-none q-px-sm"
+                          header-class="q-ma-none q-pa-none q-pr-md bg-grey-2"
                           :header-style="tabsetExpanded.get(tabset.id) ?
-              'border:0 solid grey;border-top-left-radius:4px;border-top-right-radius:4px' :
-              'border:0 solid grey;border-radius:4px'"
+                            'border:0 solid grey;border-top-left-radius:4px;border-top-right-radius:4px' :
+                            'border:0 solid grey;border-radius:4px'"
                           group="tabsets"
-                          :default-opened="false"
+                          :default-opened="tabsStore.tabsets.size === 1"
+                          switch-toggle-side
+                          dense-toggle
                           v-model="selected_model[tabset.id]"
                           @update:model-value="val => updateSelectedTabset(tabset.id, val, index)"
                           expand-separator>
@@ -23,11 +23,11 @@
             <q-item-section
               @mouseover="hoveredTabset = tabset.id"
               @mouseleave="hoveredTabset = undefined">
-              <q-item-label :class="tabsStore.currentTabsetId === tabset.id ? 'text-bold text-primary' : ''">
-                <q-icon
-                  :color="tabset.status === TabsetStatus.DEFAULT ? 'primary':'warning'"
-                  :name="tabsetIcon(tabset as Tabset)"
-                  style="position: relative;top:-2px"/>
+              <q-item-label :class="tabsStore.currentTabsetId === tabset.id ? 'text-bold' : ''">
+                <q-icon v-if="tabset.status === TabsetStatus.FAVORITE"
+                        color="warning"
+                        name="push_pin"
+                        style="position: relative;top:-2px"/>
                 {{ tabset.name }}
               </q-item-label>
               <q-item-label class="text-caption text-grey-5">
@@ -38,26 +38,16 @@
             <q-item-section side
                             @mouseover="hoveredTabset = tabset.id"
                             @mouseleave="hoveredTabset = undefined">
-              <Transition appear>
-                <div class="row items-center">
-                    <span v-if="hoveredOver(tabset.id)">
-                      <q-icon name="more_horiz" color="primary" size="16px"/>
-                    </span>
-                  <span v-else>
-                      <q-icon color="primary" size="16px"/>
-                    </span>
-
-                  <SidePanelPageContextMenu :tabset="tabset as Tabset"/>
-
-                </div>
-              </Transition>
+              <q-icon name="more_horiz" color="black" size="16px"/>
+              <SidePanelPageContextMenu :tabset="tabset as Tabset"/>
             </q-item-section>
+
           </template>
 
 
-          <div class="q-ma-none q-pa-none" style="border:1px solid lightgrey">
+          <div class="q-ma-none q-pa-none">
             <!--             <div class="q-ma-xs shrink" :class="showTabInfo(tabset.id) ? '':'collapsed'">-->
-            <div class="q-ma-xs">
+            <div class="q-ma-none">
               <SidePanelTabInfo :tabsetId="tabset.id"/>
             </div>
 
@@ -79,36 +69,27 @@
       <FirstToolbarHelper
         :showSearchBox="showSearchBox">
 
-        <template v-slot:title v-if="usePermissionsStore().hasFeature(FeatureIdent.SPACES)">
-          <q-icon name="o_space_dashboard" color="positive"/>
-          {{ toolbarTitle(tabsets as Tabset[]) }}
-          <q-btn
-            icon="o_add"
-            color="primary"
-            flat
-            class="q-ma-none q-pa-xs cursor-pointer"
-            style="max-width:20px"
-            size="10px"
-            @click.stop="openNewTabsetDialog()">
-            <q-tooltip class="tooltip">
-              {{ useSpacesStore().space ? 'Add new Tabset in this space' : 'Add new unassigned Tabset' }}
-            </q-tooltip>
-          </q-btn>
+        <template v-slot:title v-if="permissionsStore && permissionsStore.hasFeature(FeatureIdent.SPACES)">
+          <div class="text-subtitle1 text-black">
+            {{ toolbarTitle(tabsets as Tabset[]) }}
+          </div>
+          <!--          <q-btn-->
+          <!--            icon="o_add"-->
+          <!--            color="primary"-->
+          <!--            flat-->
+          <!--            class="q-ma-none q-pa-xs cursor-pointer"-->
+          <!--            style="max-width:20px"-->
+          <!--            size="10px"-->
+          <!--            @click.stop="openNewTabsetDialog()">-->
+          <!--            <q-tooltip class="tooltip">-->
+          <!--              {{ useSpacesStore().space ? 'Add new Tabset in this space' : 'Add new unassigned Tabset' }}-->
+          <!--            </q-tooltip>-->
+          <!--          </q-btn>-->
         </template>
         <template v-slot:title v-else>
-          {{ toolbarTitle(tabsets as Tabset[]) }}
-          <q-btn
-            icon="o_add"
-            color="primary"
-            flat
-            class="q-ma-none q-pa-xs cursor-pointer"
-            style="max-width:20px"
-            size="10px"
-            @click="openNewTabsetDialog()">
-            <q-tooltip class="tooltip">Add new Tabset</q-tooltip>
-          </q-btn>
-
-
+          <div class="text-subtitle1 text-black">
+            {{ toolbarTitle(tabsets as Tabset[]) }}
+          </div>
         </template>
 
       </FirstToolbarHelper>
@@ -128,7 +109,7 @@ import _ from "lodash"
 import {Tabset, TabsetStatus, TabsetType} from "src/models/Tabset";
 import {useRoute, useRouter} from "vue-router";
 import {useUtils} from "src/services/Utils";
-import {scroll, useQuasar} from "quasar";
+import {scroll, uid, useQuasar} from "quasar";
 import {useTabsetService} from "src/services/TabsetService2";
 import {useUiStore} from "src/stores/uiStore";
 import PanelTabList from "components/layouts/PanelTabList.vue";
@@ -143,6 +124,10 @@ import SidePanelPageContextMenu from "pages/sidepanel/SidePanelPageContextMenu.v
 import NewTabsetDialog from "components/dialogues/NewTabsetDialog.vue";
 import getScrollTarget = scroll.getScrollTarget;
 import {DynamicTabSourceType} from "src/models/DynamicTabSource";
+import {AddTabToTabsetCommand} from "src/domain/tabs/AddTabToTabset";
+import {useWindowsStore} from "../stores/windowsStores";
+import {MarkTabsetDeletedCommand} from "src/domain/tabsets/MarkTabsetDeleted";
+import TabsetService from "src/services/TabsetService";
 
 
 const {setVerticalScrollPosition} = scroll
@@ -155,6 +140,7 @@ const route = useRoute()
 
 const tabsStore = useTabsStore()
 const spacesStore = useSpacesStore()
+const permissionsStore = usePermissionsStore()
 const uiStore = useUiStore()
 const show = ref(false)
 const showSearchBox = ref(false)
@@ -174,16 +160,11 @@ interface SelectionObject {
 }
 
 const selected_model = ref<SelectionObject>({})
-
 const hoveredTabset = ref<string | undefined>(undefined)
 const tabsets = ref<Tabset[]>([])
-
-//const logs = ref<object[]>([])
 const progress = ref<number | undefined>(undefined)
 const progressLabel = ref<string | undefined>(undefined)
-
 const selectedTab = ref<Tab | undefined>(undefined)
-
 
 onMounted(() => {
   window.addEventListener('keypress', checkKeystroke);
@@ -194,7 +175,7 @@ onUnmounted(() => {
 })
 
 watchEffect(() => {
-  console.log(" >>> change in getSelectedTab", useUiStore().getSelectedTab)
+  //console.log(" >>> change in getSelectedTab", useUiStore().getSelectedTab)
   selectedTab.value = useUiStore().getSelectedTab
   if (selectedTab.value) {
     currentChromeTab.value = null as unknown as chrome.tabs.Tab
@@ -214,11 +195,13 @@ const scrollToElement = (el: any, delay: number) => {
 
 }
 
-const updateSelectedTabset = (tabsetId: string, open: boolean, index: number) => {
-  //console.log("updated...", tabsetId, open, Object.keys(tabsetExpanded.value))
+const updateSelectedTabset = (tabsetId: string, open: boolean, index: number | undefined = undefined) => {
+  console.log("updated...", tabsetId, open, Object.keys(tabsetExpanded.value))
   tabsetExpanded.value.set(tabsetId, open)
   if (open) {
-    scrollToElement(document.getElementsByClassName("q-expansion-item")[index], 300)
+    if (index) {
+      scrollToElement(document.getElementsByClassName("q-expansion-item")[index], 300)
+    }
 
     useUiStore().tabsetsExpanded = true
 
@@ -241,6 +224,7 @@ const updateSelectedTabset = (tabsetId: string, open: boolean, index: number) =>
 watchEffect(() => {
   // should trigger if currentTabsetId is changed from "the outside"
   const currentTabsetId = useTabsStore().currentTabsetId
+  //console.log("triggered", currentTabsetId)
   selected_model.value = {}
   selected_model.value[currentTabsetId] = true
   //updateSelectedTabset(useTabsStore().currentTabsetId,true, 0)
@@ -248,8 +232,8 @@ watchEffect(() => {
   const index = _.findIndex(tabsets.value as Tabset[], (ts: Tabset) => ts.id === currentTabsetId)
   scrollToElement(document.getElementsByClassName("q-expansion-item")[index], 300)
   useUiStore().tabsetsExpanded = true
-  useCommandExecutor()
-    .execute(new SelectTabsetCommand(currentTabsetId, useSpacesStore().space?.id))
+  // useCommandExecutor()
+  //   .execute(new SelectTabsetCommand(currentTabsetId, useSpacesStore().space?.id))
 })
 
 watchEffect(() => {
@@ -259,8 +243,10 @@ watchEffect(() => {
 })
 
 watchEffect(() => {
-  //console.log(" >>> change in currentChromeTab", useTabsStore().currentChromeTab)
-  currentChromeTab.value = useTabsStore().currentChromeTab
+  //console.log(" >>> change in currentChromeTab", windowId, useTabsStore().getCurrentChromeTab(windowId || 0))
+  //if (windowId) {
+  const windowId = useWindowsStore().currentWindow?.id || 0
+  currentChromeTab.value = useTabsStore().getCurrentChromeTab(windowId) || useTabsStore().currentChromeTab
 })
 
 watchEffect(() => {
@@ -300,7 +286,6 @@ const getTabsetOrder =
   ]
 
 watchEffect(() => {
-  //console.log(" >>> change in xxx")
   if (usePermissionsStore().hasFeature(FeatureIdent.SPACES)) {
     const currentSpace = useSpacesStore().space
     tabsets.value = _.sortBy(
@@ -330,75 +315,87 @@ function inIgnoredMessages(message: any) {
     message.msg === "init-ai-module";
 }
 
-if (inBexMode()) {
-  // seems we need to define these listeners here to get the matching messages reliably
-  // these messages are created by triggering events in the mainpanel
-  chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-    if (inIgnoredMessages(message)) {
-      return true
-    }
-    if (message.name === 'current-tabset-id-change') {
-      console.log(" >>> got message", message)
-      const tsId = message.data.tabsetId
-      useTabsStore().selectCurrentTabset(tsId)
-      //tabsetExpanded.value.set(tsId, true)
-      console.log("xxx", selected_model.value)
-      //selected_model.value[tsId as keyof object] = true
-    } else if (message.name === 'feature-activated' || message.name === "feature-deactivated") {
-      usePermissionsStore().initialize()
-    } else if (message.name === "tabsets-imported") {
-      useSpacesStore().reload()
-      useTabsetService().init()
-      // TODO reload
-    } else if (message.name === "tab-being-dragged") {
-      useUiStore().draggingTab(message.data.tabId, null as unknown as any)
-    } else if (message.name === "tab-changed") {
-      const tabset = useTabsetService().getTabset(message.data.tabsetId) as Tabset
-      if (message.data.noteId) {
-        console.log("updating note", message.data.noteId)
-        useTabsStore().getTab(message.data.noteId)
-          .then((res: object | undefined) => {
-            if (res) {
-              const note = res['tab' as keyof object] as Tab
-              note.title = message.data.tab.title
-              note.description = message.data.tab.description
-              note.longDescription = message.data.tab.longDescription
-            }
-            useTabsetService().saveTabset(tabset)
-          })
+if (chrome) {
+  if (inBexMode()) {
+    // seems we need to define these listeners here to get the matching messages reliably
+    // these messages are created by triggering events in the mainpanel
+    chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+      if (inIgnoredMessages(message)) {
+        return true
+      }
+      if (message.name === 'current-tabset-id-change') {
+        console.log(" >>> got message", message)
+        if (message.ignore) {
+          return true
+        }
+        const tsId = message.data.tabsetId
+        useTabsStore().selectCurrentTabset(tsId)
+      } else if (message.name === 'feature-activated' || message.name === "feature-deactivated") {
+        usePermissionsStore().initialize()
+      } else if (message.name === "tabsets-imported") {
+        useSpacesStore().reload()
+        useTabsetService().init()
+        // TODO reload
+      } else if (message.name === "tab-being-dragged") {
+        useUiStore().draggingTab(message.data.tabId, null as unknown as any)
+      } else if (message.name === "tab-changed") {
+        const tabset = useTabsetService().getTabset(message.data.tabsetId) as Tabset
+        if (message.data.noteId) {
+          console.log("updating note", message.data.noteId)
+          useTabsStore().getTab(message.data.noteId)
+            .then((res: object | undefined) => {
+              if (res) {
+                const note = res['tab' as keyof object] as Tab
+                note.title = message.data.tab.title
+                note.description = message.data.tab.description
+                note.longDescription = message.data.tab.longDescription
+              }
+              useTabsetService().saveTabset(tabset)
+            })
+        } else {
+          console.log("adding tab", message.data.tab)
+          tabset.tabs.push(message.data.tab)
+          useTabsetService().saveTabset(tabset)
+        }
+      } else if (message.name === "tab-added") {
+        // hmm - getting this twice...
+        console.log(" > got message '" + message.name + "'", message)
+        useTabsetService().reloadTabset(message.data.tabsetId)
+      } else if (message.name === "tab-deleted") {
+        useTabsetService().reloadTabset(message.data.tabsetId)
+      } else if (message.name === "tabset-added") {
+        useTabsetService().reloadTabset(message.data.tabsetId)
+      } else if (message.name === "mark-tabset-deleted") {
+        TabsetService.markAsDeleted(message.data.tabsetId)
+      } else if (message.name === "tabset-renamed") {
+        TabsetService.rename(message.data.tabsetId, message.data.newName)
+      } else if (message.name === "progress-indicator") {
+        if (message.percent) {
+          uiStore.progress = message.percent
+          uiStore.progressLabel = message.label
+        }
+        if (message.status === "done") {
+          uiStore.progress = undefined
+          uiStore.progressLabel = undefined
+        }
+        sendResponse("ui store progress set to " + uiStore.progress)
       } else {
-        console.log("adding tab", message.data.tab)
-        tabset.tabs.push(message.data.tab)
-        useTabsetService().saveTabset(tabset)
+        console.log("got unmatched message", message)
       }
-
-    } else if (message.name === "progress-indicator") {
-      //console.log(" > got message '" + message.name + "'", message)
-      if (message.percent) {
-        uiStore.progress = message.percent
-        uiStore.progressLabel = message.label
-      }
-      if (message.status === "done") {
-        uiStore.progress = undefined
-        uiStore.progressLabel = undefined
-      }
-      sendResponse("ui store progress set to " + uiStore.progress)
-    } else {
-      console.log("got unmatched message", message)
-    }
-    return true
-  })
-} else {
-  useRouter().push("/start")
+      return true
+    })
+  } else {
+    useRouter().push("/start")
+  }
 }
 
 const filteredTabs = (tabset: Tabset): Tab[] => {
   if (tabset.type === TabsetType.DYNAMIC &&
     tabset.dynamicTabs && tabset.dynamicTabs.type === DynamicTabSourceType.TAG) {
     const results: Tab[] = []
-    console.log("checking", tabset.dynamicTabs)
+    //console.log("checking", tabset.dynamicTabs)
     const tag = tabset.dynamicTabs?.config['tags' as keyof object][0]
-    console.log("using tag", tag)
+    //console.log("using tag", tag)
     _.forEach([...tabsStore.tabsets.values()], (tabset: Tabset) => {
       _.forEach(tabset.tabs, (tab: Tab) => {
         if (tab.tags?.indexOf(tag) >= 0) {
@@ -422,7 +419,7 @@ const filteredTabs = (tabset: Tabset): Tab[] => {
   })
 }
 
-if (inBexMode()) {
+if (inBexMode() && chrome) {
   let queryOptions = {active: true, lastFocusedWindow: true};
   chrome.tabs.query(queryOptions, (tab) => {
     currentChromeTabs.value = tab
@@ -515,7 +512,7 @@ function checkKeystroke(e: KeyboardEvent) {
 
 const showTabset = (tabset: Tabset) => !useUiStore().tabsFilter ?
   true :
-  (useUiStore().tabsFilter === '' || filteredTabs(tabset.tabs).length > 0)
+  (useUiStore().tabsFilter === '' || filteredTabs(tabset).length > 0)
 
 const toolbarTitle = (tabsets: Tabset[]) => {
   if (usePermissionsStore().hasFeature(FeatureIdent.SPACES)) {
@@ -527,7 +524,7 @@ const toolbarTitle = (tabsets: Tabset[]) => {
   return tabsets.length > 6 ? 'My Tabsets (' + tabsets.length.toString() + ')' : 'My Tabsets'
 }
 const tabsetIcon = (tabset: Tabset) => {
-  let icon = 'tab'
+  let icon = 'perm_identity'
   if (tabset.status === TabsetStatus.FAVORITE) {
     icon = 'push_pin'
   }
@@ -535,17 +532,6 @@ const tabsetIcon = (tabset: Tabset) => {
     icon = 'o_label'
   }
   return icon
-}
-
-const openNewTabsetDialog = () => {
-  $q.dialog({
-    component: NewTabsetDialog,
-    componentProps: {
-      tabsetId: tabsStore.currentTabsetId,
-      spaceId: useSpacesStore().space?.id,
-      fromPanel: true
-    }
-  })
 }
 
 </script>

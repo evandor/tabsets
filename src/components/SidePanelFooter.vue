@@ -44,16 +44,9 @@
 
         <q-btn icon="o_settings"
                :class="rightButtonClass()"
-               color="primary"
+               color="black"
                size="8px"
                @click="openOptionsPage()">
-          <q-badge v-if="logsStore.errors.length > 0 && settingsStore.isEnabled('dev')"
-                   color="red" floating>{{ logsStore.errors.length }}
-          </q-badge>
-          <q-badge v-if="logsStore.errors.length === 0 && logsStore.warnings.length > 0
-                  && settingsStore.isEnabled('dev')"
-                   color="orange" floating>{{ logsStore.warnings.length }}
-          </q-badge>
           <q-tooltip class="tooltip" anchor="top left" self="bottom left">{{ settingsTooltip() }}</q-tooltip>
         </q-btn>
 
@@ -61,7 +54,7 @@
           v-if="usePermissionsStore().hasFeature(FeatureIdent.STANDALONE_APP)"
           icon="o_open_in_new"
           :class="rightButtonClass()"
-          color="primary"
+          color="black"
           size="8px"
           @click="openExtensionTab()">
           <q-tooltip class="tooltip">Tabsets as full-page app</q-tooltip>
@@ -91,6 +84,7 @@ import ChromeApi from "src/services/ChromeApi";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {AddTabToTabsetCommand} from "src/domain/tabs/AddTabToTabset";
 import {useUtils} from "src/services/Utils";
+import {useWindowsStore} from "stores/windowsStores";
 
 const {inBexMode, sanitize, sendMsg} = useUtils()
 
@@ -116,7 +110,9 @@ watchEffect(() => {
 })
 
 watchEffect(() => {
-  currentChromeTab.value = useTabsStore().currentChromeTab
+  //currentChromeTab.value = useTabsStore().currentChromeTab
+  const windowId = useWindowsStore().currentWindow.id || 0
+  currentChromeTab.value = useTabsStore().getCurrentChromeTab(windowId) || useTabsStore().currentChromeTab
 })
 
 watchEffect(() => {
@@ -124,6 +120,7 @@ watchEffect(() => {
   progressLabel.value = uiStore.progressLabel + " " + Math.round(100 * progress.value) + "%"
 })
 
+// TODO what's that?
 watchEffect(() => {
   if (dragTarget.value.trim() === "") {
     return
@@ -183,13 +180,7 @@ const openOptionsPage = () => window.open(chrome.runtime.getURL('www/index.html#
 const openExtensionTab = () => NavigationService.openOrCreateTab(chrome.runtime.getURL('www/index.html#/start'))
 
 const settingsTooltip = () => {
-  if (logsStore.errors.length > 0 && settingsStore.isEnabled('dev')) {
-    return "Open Settings (" + logsStore.errors.length + " errors)"
-  }
-  if (logsStore.warnings.length > 0 && settingsStore.isEnabled('dev')) {
-    return "Open Settings (" + logsStore.warnings.length + " warnings)"
-  }
-  return "Open Settings"
+  return "Open Settings of Tabsets " +  import.meta.env.PACKAGE_VERSION
 }
 
 const rightButtonClass = () => "q-my-xs q-ml-xs q-px-xs q-mr-none"

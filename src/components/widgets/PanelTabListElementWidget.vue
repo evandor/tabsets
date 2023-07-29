@@ -5,7 +5,20 @@
                   @mouseleave="hoveredTab = undefined"
                   class="q-mr-sm text-right" style="justify-content:start;width:25px;max-width:25px">
     <div class="bg-grey-3 q-pa-xs" style="border:0 solid grey;border-radius:3px">
-      <TabFaviconWidget :tab="props.tab" width="16px" height="16px"/>
+      <!---->
+
+      <transition name="fade" mode="out-in">
+        <div v-if="newState" key="newState">
+          <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20.8 20.8">
+            <circle class="checkmark__circle" cx="10.4" cy="10.4" r="10" fill="none"/>
+            <path class="checkmark__check" fill="none" d="M5.64 10.88l2.84 2.88 6.68-6.72"/>
+          </svg>
+        </div>
+        <div v-else key="oldState">
+          <TabFaviconWidget :tab="props.tab" width="16px" height="16px"/>
+        </div>
+      </transition>
+
     </div>
     <div v-if="props.tab?.httpInfo === 'UPDATED'"
          class="q-my-xs q-mx-none q-pa-none text-white bg-positive items-center justify-center"
@@ -46,13 +59,13 @@
       <div>
         <div class="q-pr-sm cursor-pointer ellipsis">
 
-          <span class="text-bold" v-if="isCurrentTab(props.tab as Tab)">Current Tab:<br></span>
+          <!--          <span class="text-bold" v-if="isCurrentTab(props.tab as Tab)">Current Tab::<br></span>-->
 
           <span v-if="props.header" class="text-bold">{{ props.header }}<br></span>
           <span v-if="useTabsStore().getCurrentTabset?.sorting === 'alphabeticalTitle'">
               <q-icon name="arrow_right" size="16px"/>
            </span>
-          {{ nameOrTitle(props.tab) }}
+          <span v-html="nameOrTitle(props.tab as Tab)"/>
           <q-popup-edit
             v-if="props.tab?.extension !== UrlExtension.NOTE"
             :model-value="dynamicNameOrTitleModel(tab)" v-slot="scope"
@@ -133,12 +146,9 @@
         </q-chip>
       </template>
     </q-item-label>
+
   </q-item-section>
 
-  <q-item-section v-if="isCurrentTab(props.tab as Tab)"
-                  style="justify-content:start;width:25px;max-width:25px">
-    <q-icon name="navigate_next" color="primary" size="lg"/>
-  </q-item-section>
 </template>
 
 <script setup lang="ts">
@@ -148,7 +158,7 @@ import TabsetService from "src/services/TabsetService";
 import {useNotificationsStore} from "src/stores/notificationsStore";
 import {onMounted, PropType, ref, watchEffect} from "vue";
 import {useCommandExecutor} from "src/services/CommandExecutor";
-import {DeleteTabCommand} from "src/domain/commands/DeleteTabCommand";
+import {DeleteTabCommand} from "src/domain/tabs/DeleteTabCommand";
 import {useQuasar} from "quasar";
 import {ListDetailLevel, useUiStore} from "src/stores/uiStore";
 import TabFaviconWidget from "components/widgets/TabFaviconWidget.vue";
@@ -161,6 +171,7 @@ import PanelTabListContextMenu from "components/widgets/helper/PanelTabListConte
 import _ from "lodash";
 import {formatDistance} from "date-fns";
 import {TabsetType} from "src/models/Tabset";
+import {useWindowsStore} from "stores/windowsStores";
 
 const props = defineProps({
   tab: {type: Object as PropType<Tab>, required: true},
@@ -168,7 +179,7 @@ const props = defineProps({
   type: {type: String, default: 'sidepanel'},
   hideMenu: {type: Boolean, default: false},
   showTabsets: {type: Boolean, default: false},
-  tabsetType: {type: Object as PropType<TabsetType>, default: TabsetType.DEFAULT}
+  tabsetType: {type: String, default: TabsetType.DEFAULT.toString()}
 })
 
 const emits = defineEmits(['sendCaption'])
@@ -183,8 +194,18 @@ const imgFromBlob = ref<string>("")
 const hoveredTab = ref<string | undefined>(undefined)
 const tsBadges = ref<object[]>([])
 const tabsetCandidates = ref<object[]>([])
+const newState = ref(false)
 
 onMounted(() => {
+  if ((new Date().getTime() - props.tab.created) < 500) {
+    newState.value = true
+    const audio = document.getElementById('myAudio')
+    if (audio) {
+      // @ts-ignore
+      audio.play()
+    }
+    setTimeout(() => newState.value = false, 2000)
+  }
   const blobImgPath = props.tab.image
   if (blobImgPath && blobImgPath.startsWith('blob://')) {
     useTabsetService().getBlob(blobImgPath.replace("blob://", ""))
@@ -274,7 +295,14 @@ const getFaviconUrl = (chromeTab: chrome.tabs.Tab | undefined) => {
 const deleteTab = (tab: Tab) => useCommandExecutor().executeFromUi(new DeleteTabCommand(tab))
 
 
-const nameOrTitle = (tab: Tab) => tab.name ? tab.name : tab.title
+const nameOrTitle = (tab: Tab) => {
+  const nameOrTitle = tab.name ? tab.name : tab.title
+  if (isCurrentTab(props.tab as Tab)) {
+    return "<span class='text-bold'>Current Tab: </span>" + nameOrTitle
+  } else {
+    return nameOrTitle
+  }
+}
 
 const dynamicNameOrTitleModel = (tab: Tab) => tab.name ? tab.name : tab.title
 
@@ -302,7 +330,64 @@ const formatDate = (timestamp: number | undefined) =>
 
 const isCurrentTab = (tab: Tab) => {
   //console.log("xxx", tabsStore.getCurrentTabset.tabs[0].chromeTab.url, tab.chromeTab.url)
-  return tabsStore.currentChromeTab.url === tab.url;
+  //return tabsStore.currentChromeTab.url === tab.url;
+  const windowId = useWindowsStore().currentWindow.id || 0
+  return (tabsStore.getCurrentChromeTab(windowId) || tabsStore.currentChromeTab).url === tab.url
 
 }
 </script>
+
+<!--https://stackoverflow.com/questions/41078478/css-animated-checkmark -->
+<style>
+
+.checkmark__circle {
+  stroke-dasharray: 66;
+  stroke-dashoffset: 66;
+  stroke-width: 2;
+  stroke-miterlimit: 10;
+  stroke: #8ACB88;
+  fill: none;
+  animation: stroke 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+}
+
+.checkmark {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: block;
+  stroke-width: 2;
+  stroke: #fff;
+  stroke-miterlimit: 10;
+  margin: 10% auto;
+  box-shadow: inset 0px 0px 0px #8ACB88;
+  animation: fill .4s ease-in-out .4s forwards, scale .3s ease-in-out .9s both;
+}
+
+.checkmark__check {
+  transform-origin: 50% 50%;
+  stroke-dasharray: 48;
+  stroke-dashoffset: 48;
+  animation: stroke 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.8s forwards;
+}
+
+@keyframes stroke {
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes scale {
+  0%, 100% {
+    transform: none;
+  }
+  50% {
+    transform: scale3d(1.1, 1.1, 1);
+  }
+}
+
+@keyframes fill {
+  100% {
+    box-shadow: inset 0px 0px 0px 30px #8ACB88;
+  }
+}
+</style>

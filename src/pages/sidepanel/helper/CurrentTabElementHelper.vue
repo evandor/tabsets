@@ -22,49 +22,58 @@
     </div>
   </div>
 
- <!-- <q-separator v-if="!alreadyInSomeTabset()" color="lightgray" inset/>-->
+  <!-- <q-separator v-if="!alreadyInSomeTabset()" color="lightgray" inset/>-->
 
-  <div class="row" v-if="alreadyInSomeTabset()">
-    <div class="col-2 text-caption">
-      <!-- <q-icon class="q-ma-xs q-ml-sm" size="18px" name="tab" color="primary">
-         <q-tooltip class="tooltip">Saved in tabsets:</q-tooltip>
-       </q-icon>-->
-    </div>
-    <div class="col-10">
-      <template v-for="badge in tsBadges">
-        <q-chip
-          :clickable="badge.tabsetId !== props.tabsetId"
-          @click="switchTabset(badge.tabsetId, badge.label)"
-          :color="tabsetChipColor(badge.tabsetId)"
-          style="max-width:70px"
-          class="cursor-pointer q-ml-none q-mr-xs ellipsis" size="9px">
-          {{ shorten(badge.label, 12) }}
-          <q-tooltip v-if="badge.tabsetId !== props.tabsetId"
-                     class="tooltip" :delay="1000">This tab has been added to the tabset '{{ badge.label }}'
-            {{ created }}. Click to go to this tabset.'
-          </q-tooltip>
-          <q-tooltip v-else
-                     class="tooltip" :delay="1000">This tab has been added to the current tabset '{{ badge.label }}'
-            {{ created }}
-          </q-tooltip>
-        </q-chip>
-      </template>
-      <!--      <span class="text-caption">{{ created }}</span>-->
-    </div>
-  </div>
-  <div class="row" v-if="!alreadyInCurrentTabset()">
+<!--  <div class="row" v-if="alreadyInSomeTabset()">-->
+<!--    <div class="col-2 text-caption">-->
+<!--      &lt;!&ndash; <q-icon class="q-ma-xs q-ml-sm" size="18px" name="tab" color="primary">-->
+<!--         <q-tooltip class="tooltip">Saved in tabsets:</q-tooltip>-->
+<!--       </q-icon>&ndash;&gt;-->
+<!--    </div>-->
+<!--    <div class="col-10">-->
+<!--      <template v-for="badge in tsBadges">-->
+<!--        <q-chip-->
+<!--          :clickable="badge.tabsetId !== props.tabsetId"-->
+<!--          @click="switchTabset(badge.tabsetId, badge.label)"-->
+<!--          :color="tabsetChipColor(badge.tabsetId)"-->
+<!--          style="max-width:70px"-->
+<!--          class="cursor-pointer q-ml-none q-mr-xs ellipsis" size="9px">-->
+<!--          {{ shorten(badge.label, 12) }}-->
+<!--          <q-tooltip v-if="badge.tabsetId !== props.tabsetId"-->
+<!--                     class="tooltip" :delay="1000">This tab has been added to the tabset '{{ badge.label }}'-->
+<!--            {{ created }}. Click to go to this tabset.'-->
+<!--          </q-tooltip>-->
+<!--          <q-tooltip v-else-->
+<!--                     class="tooltip" :delay="1000">This tab has been added to the current tabset '{{ badge.label }}'-->
+<!--            {{ created }}-->
+<!--          </q-tooltip>-->
+<!--        </q-chip>-->
+<!--      </template>-->
+<!--      &lt;!&ndash;      <span class="text-caption">{{ created }}</span>&ndash;&gt;-->
+<!--    </div>-->
+<!--    <div class="col-2">-->
+<!--    </div>-->
+<!--    <div class="col-10">-->
+<!--      ***<svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">-->
+<!--      <circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none"/>-->
+<!--      <path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>-->
+<!--    </svg>-->
+<!--    </div>-->
+<!--  </div>-->
+  <div class="row">
     <div class="col-2">
 
     </div>
     <div class="col-10 text-right">
       <q-btn
-        label="Add"
-        color="warning"
-        class="q-ma-sm q-px-md"
-        style="cursor: pointer"
-        size="10px"
-        @click="saveInTabset(props.tabsetId)"
-        icon="o_favorite"/>
+             label="Add"
+             color="warning"
+             class="q-ma-sm q-px-md"
+             style="cursor: pointer"
+             size="10px"
+             @click="saveInTabset(props.tabsetId)"
+             icon="o_favorite"/>
+
       <template class="text-caption" v-if="tabsetCandidates.length > 0"> or use AI suggestion:
         <template v-for="c in tabsetCandidates">
           <q-chip clickable
@@ -82,20 +91,6 @@
     </div>
   </div>
 
-<!--  <q-fab-->
-<!--    v-model="fab1"-->
-<!--    square-->
-<!--    vertical-actions-align="right"-->
-<!--    color="secondary"-->
-<!--    icon="keyboard_arrow_down"-->
-<!--    direction="down">-->
-<!--    <q-fab-action square external-label label-position="top" color="primary" props.tabsetIdicon="mail" label="Email"/>-->
-<!--    <q-fab-action square external-label label-position="top" color="secondary" props.tabsetIdicon="alarm"-->
-<!--                  label="Alarm"/>-->
-<!--    <q-fab-action square external-label label-position="top" color="orange" props.tabsetIdicon="airplay"-->
-<!--                  label="Airplay"/>-->
-<!--    <q-fab-action square external-label label-position="top" color="accent" props.tabsetIdicon="room" label="Map"/>-->
-<!--  </q-fab>-->
 </template>
 
 <script setup lang="ts">
@@ -130,7 +125,6 @@ const tsBadges = ref<object[]>([])
 const tabsetCandidates = ref<object[]>([])
 const currentChromeTab = ref<chrome.tabs.Tab>(null as unknown as chrome.tabs.Tab)
 const created = ref<string | undefined>(undefined)
-const fab1 = ref(false)
 const tabsStore = useTabsStore()
 
 watchEffect(() => {
@@ -208,7 +202,7 @@ const setInfo = (tab: Tab) => {
 const saveInTabset = (tabsetId: string) => {
   const useTS = useTabsetService().getTabset(tabsetId)
   if (useTS) {
-    useCommandExecutor().executeFromUi(new AddTabToTabsetCommand(new Tab(uid(), currentChromeTab.value), useTS))
+    useCommandExecutor().execute(new AddTabToTabsetCommand(new Tab(uid(), currentChromeTab.value), useTS))
       .then((res: any) => {
         tabsetCandidates.value = _.filter(tabsetCandidates.value, (c: object) => c['candidateId' as keyof object] !== tabsetId)
       })

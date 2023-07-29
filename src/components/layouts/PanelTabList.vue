@@ -1,11 +1,11 @@
 <template>
 
-<!--  <InfoMessageWidget-->
-<!--    v-if="props.tabs?.length > 1"-->
-<!--    :probability="0.3"-->
-<!--    css-class="q-pa-none"-->
-<!--    ident="paneltablist_dnd"-->
-<!--    hint="You can select the favicon images and drag and drop the entries to reorder the list"/>-->
+  <!--  <InfoMessageWidget-->
+  <!--    v-if="props.tabs?.length > 1"-->
+  <!--    :probability="0.3"-->
+  <!--    css-class="q-pa-none"-->
+  <!--    ident="paneltablist_dnd"-->
+  <!--    hint="You can select the favicon images and drag and drop the entries to reorder the list"/>-->
 
   <q-list separator class="q-ma-none">
     <vue-draggable-next
@@ -26,7 +26,7 @@
         :key="'paneltablist_' + tab.id">
 
         <PanelTabListElementWidget :key="'ptlew__' + tab.id"
-                                   :tab="tabAsTab(tab)"
+                                   :tab="tab"
                                    :type="props.type"
                                    :tabsetType="props.tabsetType"
                                    :hide-menu="props.hideMenu"/>
@@ -35,12 +35,16 @@
     </vue-draggable-next>
   </q-list>
 
+  <audio id="myAudio">
+    <source src="mp3/click.mp3" type="audio/mp3">
+  </audio>
+
 </template>
 
 <script setup lang="ts">
 import {Tab} from "src/models/Tab";
 import TabsetService from "src/services/TabsetService";
-import {PropType, ref} from "vue";
+import {onMounted, PropType, ref} from "vue";
 import {VueDraggableNext} from 'vue-draggable-next'
 import {useQuasar} from "quasar";
 import _ from "lodash"
@@ -55,6 +59,7 @@ import {usePermissionsStore} from "src/stores/permissionsStore";
 import {FeatureIdent} from "src/models/AppFeature";
 import PanelTabListElementWidget from "components/widgets/PanelTabListElementWidget.vue";
 import {TabsetType} from "src/models/Tabset";
+import {useWindowsStore} from "stores/windowsStores";
 
 const {inBexMode} = useUtils()
 
@@ -67,7 +72,7 @@ const props = defineProps({
   tabs: {type: Array as PropType<Tab[]>, required: true},
   hideMenu: {type: Boolean, default: false},
   type: {type: String, default: 'sidepanel'},
-  tabsetType: {type: Object as PropType<TabsetType>, default: TabsetType.DEFAULT},
+  tabsetType: {type: String, default: TabsetType.DEFAULT.toString()},
 })
 
 const thumbnails = ref<Map<string, string>>(new Map())
@@ -95,31 +100,6 @@ const handleDragAndDrop = (event: any) => {
   if (moved) {
     console.log('d&d tabs moved', moved.element.id, moved.newIndex)
     let useIndex = moved.newIndex
-    // switch (props.group) {
-    //   case 'otherTabs':
-    //     // @ts-ignore
-    //     const unpinnedNoGroup: Tab[] = _.filter(tabsStore.getCurrentTabs, (t: Tab) => !t.pinned && t.groupId === -1)
-    //     if (unpinnedNoGroup.length > 0) {
-    //       useIndex = adjustIndex(moved, unpinnedNoGroup);
-    //     }
-    //     break;
-    //   case 'pinnedTabs':
-    //     const filteredTabs: Tab[] = _.filter(tabsStore.getCurrentTabs, (t: Tab) => t.pinned)
-    //     if (filteredTabs.length > 0) {
-    //       useIndex = adjustIndex(moved, filteredTabs);
-    //     }
-    //     break
-    //   default:
-    //     if (props.group.startsWith('groupedTabs_')) {
-    //       const groupId = props.group.split('_')[1]
-    //       // @ts-ignore
-    //       const filteredTabs: Tab[] = _.filter(tabsStore.getCurrentTabs, (t: Tab) => t.groupId === parseInt(groupId))
-    //       if (filteredTabs.length > 0) {
-    //         useIndex = adjustIndex(moved, filteredTabs);
-    //       }
-    //     }
-    //     break
-    // }
     TabsetService.moveTo(moved.element.id, useIndex)
   }
   if (added) {
@@ -144,8 +124,12 @@ const showDetails = (tab: Tab) => {
   useUiStore().rightDrawerSetActiveTab(DrawerTabs.TAB_DETAILS)
 }
 
-const itemStyle = (tab: Tab) => "border-bottom: 1px solid #fafafa"
+const isCurrentTab = (tab: Tab) => {
+  const windowId = useWindowsStore().currentWindow.id || 0
+  return (useTabsStore().getCurrentChromeTab(windowId) || useTabsStore().currentChromeTab).url === tab.url
+}
 
+const itemStyle = (tab: Tab) => "border-bottom: 1px solid #fafafa"
 
 </script>
 

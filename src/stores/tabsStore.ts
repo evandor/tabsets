@@ -46,6 +46,8 @@ export const useTabsStore = defineStore('tabs', {
 
     // cannot use type chrome.tabs.Tab if not in bex mode
     currentChromeTab: null as unknown as chrome.tabs.Tab,
+    // tab by window id
+    currentChromeTabs: new Map() as Map<number, chrome.tabs.Tab>,
 
     /**
      * a named list of tabsets managed by this extension.
@@ -209,7 +211,6 @@ export const useTabsStore = defineStore('tabs', {
     tabsetFor: (state) => {
       return (tabId: string): Tabset | undefined => {
         for (const [key, value] of state.tabsets) {
-          console.log("checking", key, tabId)
           if (_.find(value.tabs, t => t.id === tabId)) {
             return value
           }
@@ -258,8 +259,12 @@ export const useTabsStore = defineStore('tabs', {
         // }
       })
       return res
+    },
+    getCurrentChromeTab: (state) => {
+      return (windowId: number): chrome.tabs.Tab | undefined => {
+        return state.currentChromeTabs.get(windowId)
+      }
     }
-
   },
 
   actions: {
@@ -306,6 +311,8 @@ export const useTabsStore = defineStore('tabs', {
 
     setCurrentChromeTab(tab: chrome.tabs.Tab) {
       this.currentChromeTab = tab
+      this.currentChromeTabs.set(tab.windowId, tab)
+      //console.log("xxx", this.currentChromeTabs)
     },
 
     selectCurrentTabset(tabsetId: string): Tabset | undefined {

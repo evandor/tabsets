@@ -131,7 +131,7 @@ import {useNotificationsStore} from "src/stores/notificationsStore";
 import {onMounted, ref, watchEffect} from "vue";
 import {useUtils} from "src/services/Utils"
 import {useCommandExecutor} from "src/services/CommandExecutor";
-import {DeleteTabCommand} from "src/domain/commands/DeleteTabCommand";
+import {DeleteTabCommand} from "src/domain/tabs/DeleteTabCommand";
 import EditNoteDialog from "components/dialogues/EditNoteDialog.vue";
 import {useQuasar} from "quasar";
 import {DrawerTabs, useUiStore} from "src/stores/uiStore";

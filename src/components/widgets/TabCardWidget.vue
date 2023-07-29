@@ -79,7 +79,7 @@ import MHtmlService from "src/services/MHtmlService"
 import {useQuasar} from "quasar"
 import TabFaviconWidget from "src/components/widgets/TabFaviconWidget.vue"
 import {useCommandExecutor} from "src/services/CommandExecutor";
-import {DeleteTabCommand} from "src/domain/commands/DeleteTabCommand"
+import {DeleteTabCommand} from "src/domain/tabs/DeleteTabCommand"
 import {useUtils} from "src/services/Utils"
 
 const props = defineProps({

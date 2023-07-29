@@ -179,19 +179,23 @@ export function useTabsetService() {
     return _.find([...tabsStore.tabsets.values()], ts => ts.id === tabsetId)
   }
 
- /* const getTabs = async (tabsetId: string): Promise<Tab[]> => {
-    console.log("getting tabs for ", tabsetId)
-    const tabsStore = useTabsStore()
-    const ts = _.find([...tabsStore.tabsets.values()],
-      ts => ts.id === tabsetId)
-    if (ts) {
-      //return (ts.tabs.length === 0) ?
-        // try to lazy load tabs if we don't have any tabs yet
-        //db.loadTabs(tabsetId) :
-        ts.tabs
-    }
-    return Promise.resolve([])
-  }*/
+  const reloadTabset = async (tabsetId: string) => {
+    return db.reloadTabset(tabsetId)
+  }
+
+  /* const getTabs = async (tabsetId: string): Promise<Tab[]> => {
+     console.log("getting tabs for ", tabsetId)
+     const tabsStore = useTabsStore()
+     const ts = _.find([...tabsStore.tabsets.values()],
+       ts => ts.id === tabsetId)
+     if (ts) {
+       //return (ts.tabs.length === 0) ?
+         // try to lazy load tabs if we don't have any tabs yet
+         //db.loadTabs(tabsetId) :
+         ts.tabs
+     }
+     return Promise.resolve([])
+   }*/
 
   const getCurrentTabset = (): Tabset | undefined => {
     const tabsStore = useTabsStore()
@@ -353,7 +357,7 @@ export function useTabsetService() {
         .catch((err: any) => console.log("err", err))
     }
 
-    console.debug("updating meta data for ", tabsetIds, tab.url, metas)
+    //console.debug("updating meta data for ", tabsetIds, tab.url, metas)
     const tabsets = [...useTabsStore().tabsets.values()]
 
     const savePromises: Promise<any>[] = []
@@ -364,7 +368,7 @@ export function useTabsetService() {
         _.forEach(tabset.tabs, (t: Tab) => {
           //console.log("comparing", t.url, tab.url)
           if (t.url === tab.url) {
-            console.log("updating meta data in tab", tab.id, metas)
+            //console.log("updating meta data in tab", tab.id, metas)
             if (metas['description' as keyof object]) {
               t.description = metas['description' as keyof object]
               // @ts-ignore
@@ -504,8 +508,9 @@ export function useTabsetService() {
       // add tabset's name to tab's tags
       tab.tags.push(ts.name)
       try {
-        tab.tags.push(new URL(tab.url).hostname.replace("www.",""))
-      } catch (err) {}
+        tab.tags.push(new URL(tab.url).hostname.replace("www.", ""))
+      } catch (err) {
+      }
 
       if (useIndex !== undefined && useIndex >= 0) {
         ts.tabs.splice(useIndex, 0, tab)
@@ -566,11 +571,11 @@ export function useTabsetService() {
     const tabUrl = tab.url || ''
     if (tabsetsFor(tabUrl).length <= 1) {
       removeThumbnailsFor(tabUrl)
-        .then(() => console.log("deleting thumbnail for ", tabUrl))
+        .then(() => console.debug("deleting thumbnail for ", tabUrl))
         .catch(err => console.log("error deleting thumbnail", err))
 
       removeContentFor(tabUrl)
-        .then(() => console.log("deleting content for ", tabUrl))
+        .then(() => console.debug("deleting content for ", tabUrl))
         .catch(err => console.log("error deleting content", err))
     }
     const tabset = tabsetFor(tab.id)
@@ -588,11 +593,11 @@ export function useTabsetService() {
     const tabUrl = tab.url || ''
     if (tabsetsFor(tabUrl).length <= 1) {
       removeThumbnailsFor(tabUrl)
-        .then(() => console.log("deleting thumbnail for ", tabUrl))
+        .then(() => console.debug("deleting thumbnail for ", tabUrl))
         .catch(err => console.log("error deleting thumbnail", err))
 
       removeContentFor(tabUrl)
-        .then(() => console.log("deleting content for ", tabUrl))
+        .then(() => console.debug("deleting content for ", tabUrl))
         .catch(err => console.log("error deleting content", err))
     }
     const tabset = tabsetFor(tab.id)
@@ -665,7 +670,8 @@ export function useTabsetService() {
     urlExistsInCurrentTabset,
     getOrCreateSpecialTabset,
     saveBlob,
-    getBlob
+    getBlob,
+    reloadTabset
   }
 
 }

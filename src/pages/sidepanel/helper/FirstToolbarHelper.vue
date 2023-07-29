@@ -4,8 +4,9 @@
       <div class="row q-ma-none q-pa-none">
 
         <!-- we have spaces -->
-        <div v-if="usePermissionsStore().hasFeature(FeatureIdent.SPACES)"
-             class="col-8 q-ma-none q-pa-none">
+        <div v-if="usePermissionsStore().hasFeature(FeatureIdent.SPACES)" class="col-6 q-ma-none q-pa-none">
+
+          <!-- spaces and no back button -->
           <template v-if="!props.showBackButton">
 
             <SearchWithTransitionHelper v-if="searching"/>
@@ -45,7 +46,7 @@
         </div>
 
         <!-- no spaces here -->
-        <div v-else class="col-8 q-ma-none q-pa-none">
+        <div v-else class="col q-ma-none q-pa-none">
 
           <!-- no spaces && searching -->
           <SearchWithTransitionHelper v-if="searching"/>
@@ -69,38 +70,78 @@
             </div>
 
             <!-- no spaces && not searching && not showBackButton -->
-            <div v-else class="col q-ml-none text-black text-subtitle1">
-              <slot name="title">{{ props.title }}</slot>
-            </div>
+            <!--            <div v-else class="col q-ml-none text-black text-subtitle1">-->
+            <slot name="title">{{ props.title }}</slot>
+            <!--            </div>-->
 
 
           </template>
         </div>
 
         <!-- spaces or not, here's the icons on the right side -->
-        <div class="col-4 text-right q-pr-sm">
+        <div class="col text-subtitle1 text-right q-ma-none q-pa-none q-pr-sm">
 
           <slot name="iconsRight">
-            <q-btn v-if="showSearchIcon()"
-                   id="toggleSearchBtn"
-                   icon="search"
+
+            <!--            <q-separator vertical inset/>-->
+
+            <q-btn v-if="showSortIcon()"
                    flat
+                   size="10px"
                    class="q-ma-none q-pa-xs cursor-pointer"
                    style="max-width:20px"
-                   size="11px"
-                   @click="toggleSearch">
-              <q-tooltip class="tooltip">Search</q-tooltip>
+                   text-color="primary"
+                   @click="toggleSorting()"
+                   outline
+                   icon="o_sort">
+              <q-tooltip class="tooltip">Toggle through sorting</q-tooltip>
+            </q-btn>
+
+            <q-btn v-if="showToggleSessionIcon()"
+                   flat
+                   style="max-width:20px"
+                   size="10px"
+                   class="q-ma-none q-pa-xs cursor-pointer"
+                   :color="existingSession ? (tabsStore.getCurrentTabset?.type === TabsetType.SESSION ? 'red':'grey-5') :'black'"
+                   :icon="existingSession ? 'o_stop_circle':'o_play_circle'"
+                   @click="toggleSessionState">
+              <q-tooltip class="tooltip" v-if="existingSession">Stop Session</q-tooltip>
+              <q-tooltip class="tooltip" v-else>Start new Session</q-tooltip>
+            </q-btn>
+
+            <q-btn v-if="showCreateClipButton()"
+              icon="filter_center_focus"
+              color="black"
+              flat
+              class="q-ma-none q-pa-xs cursor-pointer"
+              style="max-width:20px"
+              size="10px"
+              @click="createClip">
+              <q-tooltip class="tooltip">{{ createWebsiteClipTooltip() }}</q-tooltip>
             </q-btn>
 
             <q-btn
-              v-if="showFilterIcon()"
+              v-if="showCreateClipButtonInActive()"
+              icon="filter_center_focus"
+              color="grey-5"
               flat
               class="q-ma-none q-pa-xs cursor-pointer"
-              style="width:20px;max-width:220px"
-              size="11px"
-              :text-color="useUiStore().tabsFilter ? 'warning' : 'primary'"
-              :disable="tabsStore.getCurrentTabset?.type === TabsetType.DYNAMIC"
-              icon="o_filter_alt">
+              style="max-width:20px"
+              size="10px">
+              <q-tooltip class="tooltip">cannot create web clip for this tab</q-tooltip>
+            </q-btn>
+
+            <span v-if="showFilterIcon() || showSearchIcon()"
+                  class="q-ma-none q-pa-none q-mx-sm text-grey-5">|</span>
+
+            <q-btn v-if="showFilterIcon()"
+                   flat
+                   class="q-ma-none q-pa-xs cursor-pointer"
+                   style="width:20px;max-width:220px"
+                   size="11px"
+                   :text-color="useUiStore().tabsFilter ? 'warning' : 'black'"
+                   :disable="tabsStore.getCurrentTabset?.type === TabsetType.DYNAMIC"
+                   icon="o_filter_alt">
               <q-popup-edit
                 ref="popupEditRef"
                 :model-value="useUiStore().tabsFilter" v-slot="scope"
@@ -120,51 +161,33 @@
               </q-tooltip>
             </q-btn>
 
-            <q-btn v-if="showSortIcon()"
+            <q-btn v-if="showSearchIcon()"
+                   id="toggleSearchBtn"
+                   icon="search"
+                   color="black"
                    flat
-                   size="10px"
                    class="q-ma-none q-pa-xs cursor-pointer"
                    style="max-width:20px"
-                   text-color="primary"
-                   @click="toggleSorting()"
-                   outline
-                   icon="o_sort">
-              <q-tooltip class="tooltip">Toggle through sorting</q-tooltip>
+                   size="11px"
+                   @click="toggleSearch">
+              <q-tooltip class="tooltip">Search</q-tooltip>
             </q-btn>
 
-            <q-btn
-              v-if="showToggleSessionIcon()"
-              flat
-              style="max-width:20px"
-              size="10px"
-              class="q-ma-none q-pa-xs cursor-pointer"
-              :color="existingSession ? (tabsStore.getCurrentTabset?.type === TabsetType.SESSION ? 'red':'grey-5') :'primary'"
-              :icon="existingSession ? 'o_stop_circle':'o_play_circle'"
-              @click="toggleSessionState">
-              <q-tooltip class="tooltip" v-if="existingSession">Stop Session</q-tooltip>
-              <q-tooltip class="tooltip" v-else>Start new Session</q-tooltip>
-            </q-btn>
+            <span v-if="showFilterIcon() || showSearchIcon()"
+                  class="q-ma-none q-pa-none q-mx-sm text-grey-5">|</span>
 
             <q-btn
-              v-if="useUiStore().sidePanelActiveViewIs(SidePanelView.MAIN) && usePermissionsStore().hasFeature(FeatureIdent.WEBSITE_CLIP) && webClipActive()"
-              icon="filter_center_focus"
+              icon="o_add_circle"
+              color="black"
               flat
               class="q-ma-none q-pa-xs cursor-pointer"
               style="max-width:20px"
               size="10px"
-              @click="createClip">
-              <q-tooltip class="tooltip">{{ createWebsiteClipTooltip() }}</q-tooltip>
+              @click="openNewTabsetDialog()">
+              <q-tooltip class="tooltip">{{ newTabsetTooltip() }}</q-tooltip>
             </q-btn>
-            <q-btn
-              v-if="useUiStore().sidePanelActiveViewIs(SidePanelView.MAIN) && usePermissionsStore().hasFeature(FeatureIdent.WEBSITE_CLIP) && !webClipActive()"
-              icon="filter_center_focus"
-              color="grey-5"
-              flat
-              class="q-ma-none q-pa-xs cursor-pointer"
-              style="max-width:20px"
-              size="10px">
-              <q-tooltip class="tooltip">cannot create web clip for this tab</q-tooltip>
-            </q-btn>
+
+
           </slot>
         </div>
       </div>
@@ -177,7 +200,6 @@
 import {usePermissionsStore} from "stores/permissionsStore";
 import {FeatureIdent} from "src/models/AppFeature";
 import {useSpacesStore} from "stores/spacesStore";
-import SearchWidget from "components/widgets/SearchWidget.vue";
 import {useTabsStore} from "stores/tabsStore";
 import {useRouter} from "vue-router";
 import {ref, watchEffect} from "vue";
@@ -194,6 +216,7 @@ import _ from "lodash";
 import {StopSessionCommand} from "src/domain/commands/StopSessionCommand";
 import ChromeApi from "src/services/ChromeApi";
 import SearchWithTransitionHelper from "pages/sidepanel/helper/SearchWithTransitionHelper.vue";
+import {useWindowsStore} from "../../../stores/windowsStores";
 
 const props = defineProps({
   title: {type: String, default: "My Tabsets"},
@@ -279,31 +302,66 @@ const stopSession = () => {
   }
 }
 
-const createWebsiteClipTooltip = () => "Create Website Clip for tab " + tabsStore.currentChromeTab?.url
+const createWebsiteClipTooltip = () => {
+  const windowId = useWindowsStore().currentWindow.id || 0
+  const currentChromeTab = useTabsStore().getCurrentChromeTab(windowId) || useTabsStore().currentChromeTab
+  return "Create Website Clip for tab " + currentChromeTab.url
+}
 
 const webClipActive = () => tabsStore.currentChromeTab
 
 const createClip = () => {
-  if (tabsStore.currentChromeTab.id) {
-    ChromeApi.executeClippingJS(tabsStore.currentChromeTab.id)
+  const windowId = useWindowsStore().currentWindow.id || 0
+  const currentChromeTab = useTabsStore().getCurrentChromeTab(windowId) || useTabsStore().currentChromeTab
+  if (currentChromeTab && currentChromeTab.id) {
+    ChromeApi.executeClippingJS(currentChromeTab.id)
   }
 }
 
-const showSortIcon = () => useUiStore().sidePanelActiveViewIs(SidePanelView.MAIN) &&
-  !props.showBackButton &&
-  tabsStore.getCurrentTabs.length > 3 &&
-  useUiStore().tabsetsExpanded
+const showSortIcon = () => false
+// useUiStore().sidePanelActiveViewIs(SidePanelView.MAIN) &&
+// !props.showBackButton &&
+// tabsStore.getCurrentTabs.length > 3 &&
+// useUiStore().tabsetsExpanded
 
 const showFilterIcon = () => !props.showBackButton &&
   useUiStore().sidePanelActiveViewIs(SidePanelView.MAIN) &&
   tabsStore.tabsets.size > 1 &&
-  useUiStore().tabsetsExpanded
+  !searching.value
 
 const showSearchIcon = () => !props.showBackButton && tabsStore.tabsets.size > 1
 
 const showToggleSessionIcon = () => !props.showBackButton &&
   useUiStore().sidePanelActiveViewIs(SidePanelView.MAIN) &&
-  usePermissionsStore().hasFeature(FeatureIdent.SESSIONS)
+  usePermissionsStore().hasFeature(FeatureIdent.SESSIONS) &&
+  !searching.value
+
+const showCreateClipButton = () =>
+  useUiStore().sidePanelActiveViewIs(SidePanelView.MAIN) &&
+  usePermissionsStore().hasFeature(FeatureIdent.WEBSITE_CLIP) && webClipActive() &&
+  !searching.value
+
+const showCreateClipButtonInActive = () =>
+  useUiStore().sidePanelActiveViewIs(SidePanelView.MAIN) &&
+  usePermissionsStore().hasFeature(FeatureIdent.WEBSITE_CLIP) && !webClipActive() &&
+  !searching.value
+
+const newTabsetTooltip = () =>
+  usePermissionsStore().hasFeature(FeatureIdent.SPACES) ?
+    (useSpacesStore().space ? 'Add new Tabset in this space' : 'Add new unassigned Tabset') :
+    'Add new Tabset'
+
+const openNewTabsetDialog = () => {
+  $q.dialog({
+    component: NewTabsetDialog,
+    componentProps: {
+      tabsetId: tabsStore.currentTabsetId,
+      spaceId: useSpacesStore().space?.id,
+      fromPanel: true
+    }
+  })
+}
+
 
 </script>
 

@@ -8,3 +8,6 @@ request.onupgradeneeded = async function () {
   await useJestHelper().dbInit(request)
 }
 process.env.MODE = "bex"
+
+// @ts-ignore - needed as 'chrome' is undefined in vitest
+global.chrome = undefined

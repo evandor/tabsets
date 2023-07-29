@@ -22,7 +22,7 @@
         </q-item-section>
       </q-item>
 
-      <template v-if="props.tabsetType !== TabsetType.DYNAMIC">
+      <template v-if="props.tabsetType.toString() !== TabsetType.DYNAMIC.toString()">
         <q-separator/>
         <q-item clickable
                 v-close-popup @click.stop="editNoteDialog(props['tab' as keyof object])">
@@ -66,7 +66,7 @@ import RestoreTabsetDialog from "components/dialogues/RestoreTabsetDialog.vue";
 import {useQuasar} from "quasar";
 import {DrawerTabs, useUiStore} from "src/stores/uiStore";
 import {Tab} from "src/models/Tab";
-import {DeleteTabCommand} from "src/domain/commands/DeleteTabCommand";
+import {DeleteTabCommand} from "src/domain/tabs/DeleteTabCommand";
 import EditNoteDialog from "components/dialogues/EditNoteDialog.vue";
 import {useRouter} from "vue-router";
 import {useSettingsStore} from "stores/settingsStore";
@@ -78,7 +78,7 @@ const {inBexMode} = useUtils()
 
 const props = defineProps({
   tab: {type: Object as PropType<Tab>, required: true},
-  tabsetType: {type: Object as PropType<TabsetType>, default: TabsetType.DEFAULT}
+  tabsetType: {type: String, default: TabsetType.DEFAULT.toString()}
 })
 
 const emit = defineEmits(['toggleExpand']);

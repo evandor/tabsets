@@ -66,6 +66,8 @@ class AppService {
 
     searchStore.init()
     windowsStore.init()
+    // TODO best place here?
+    windowsStore.initListeners()
 
     const localStorage = useQuasar().localStorage
 
