@@ -52,6 +52,8 @@ export class AppFeatures {
       .setActivateCommand(new GrantPermissionCommand('notifications'))
       .setDeactivateCommand(new RevokePermissionCommand('notifications')),
 
+    new AppFeature(FeatureIdent.ANNOTATIONS, FeatureType.EXPERIMENTAL, 'Annotate Websites', 'o_auto_awesome', ['bex']),
+
 
   ]
 

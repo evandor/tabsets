@@ -38,6 +38,49 @@ function setCurrentTab() {
   });
 }
 
+function annotationScript (tabId: string, annotations: object[]) {
+  console.log("!!! here in annotation script", tabId, annotations)
+
+  var l: HTMLLinkElement = document.createElement('link');
+  l.setAttribute("href","https://cdn.jsdelivr.net/npm/@recogito/recogito-js@1.8.2/dist/recogito.min.css")
+  l.setAttribute("rel","stylesheet")
+  document.head.appendChild(l)
+
+  var s = document.createElement('script');
+  s.src = chrome.runtime.getURL('www/js/recogito/recogito.min.js');
+  (document.head || document.documentElement).appendChild(s);
+
+  var s2 = document.createElement('script');
+  s2.src = chrome.runtime.getURL('www/js/recogito/recogito.content.js');
+  document.body.appendChild(s2);
+
+  // var s3 = document.createElement('script');
+  // s3.type = 'text/javascript';
+  // var code = 'alert("hello world!");';
+  // try {
+  //   s3.appendChild(document.createTextNode(code));
+  //   document.body.appendChild(s3);
+  // } catch (e) {
+  //   s.text = code;
+  //   document.body.appendChild(s3);
+  // }
+  //document.body.appendChild(s3);
+
+  window.addEventListener(
+    "message",
+    (event) => {
+      if (event.data && event.data.name && event.data.name.startsWith('recogito-')) {
+        console.log("sending", event.data)
+        chrome.runtime.sendMessage(event.data, (callback) => console.log("xxx callback", callback))
+      }
+    },
+    false,
+  );
+
+
+
+}
+
 function inIgnoredMessages(request: any) {
   // TODO name vs. msg!
   return request.name === 'progress-indicator' ||
@@ -53,7 +96,8 @@ function inIgnoredMessages(request: any) {
     request.name === 'feature-deactivated' ||
     request.name === 'tabsets-imported' ||
     request.name === 'zero-shot-classification' ||
-    request.name === 'init-ai-module'
+    request.name === 'init-ai-module' //||
+    //request.name === 'recogito-annotation-created'
 
 }
 
@@ -211,12 +255,39 @@ class ChromeListeners {
       return
     }
 
+    if (usePermissionsStore().hasFeature(FeatureIdent.ANNOTATIONS)) {
+      const tabForUrl = useTabsStore().tabForUrlInSelectedTabset(tab.url || '')
+      if (tabForUrl) {
+        console.log("got tab for url", tabForUrl)
+        chrome.scripting.executeScript({
+          target : {tabId : (tab.id || 0)},
+          func : annotationScript,
+          args : [ tabForUrl.id, tabForUrl.annotations ],
+        })
+          .then(() => console.log("injected a function"));
+
+        // https://stackoverflow.com/questions/73586171/pass-arguments-to-a-file-script-executed-by-chrome-scripting-executescripts-ma
+        // chrome.scripting.executeScript({
+        //   target: {tabId: (tab.id || 0)},
+        //   files: ['recogito2.js']}, () => {
+        //   chrome.scripting.executeScript({
+        //     target: {tabId: (tab.id || 0)},
+        //     args: ["eleID", "type", 10],
+        //     func: (...args:any[]) => scrollToTarget(...args),
+        //   });
+        // });
+
+
+      }
+    }
+
     const scripts: string[] = []
 
     if (usePermissionsStore().hasFeature(FeatureIdent.THUMBNAILS)) {
       scripts.push("content-script-thumbnails.js")
     }
     scripts.push("content-script.js")
+    scripts.push("recogito2.js")
     scripts.push("tabsets-content-script.js")
     if (scripts.length > 0 && tab.id !== null) { // && !this.injectedScripts.get(.chromeTabId)) {
 
@@ -316,7 +387,7 @@ class ChromeListeners {
     if (inIgnoredMessages(request)) {
       return true
     }
-    //console.log("handling request", request)
+    console.log("handling request", request)
     if (request.msg === 'captureThumbnail') {
       const screenShotWindow = useWindowsStore().screenshotWindow
       this.handleCapture(sender, screenShotWindow, sendResponse)
@@ -332,6 +403,9 @@ class ChromeListeners {
       this.handleMessageWebsiteQuote(request, sender, sendResponse)
     } else if (request.msg === 'websiteImg') {
       this.handleMessageWebsiteImage(request, sender, sendResponse)
+    } else if (request.name === 'recogito-annotation-created') {
+      //this.handleMessageWebsiteImage(request, sender, sendResponse)
+      useTabsetService().handleAnnotationMessage(request)
     } else {
       console.log("got unknown message", request)
     }

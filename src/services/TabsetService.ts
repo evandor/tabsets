@@ -562,6 +562,7 @@ class TabsetService {
     return Promise.reject("not implemented")
     // return db.createInvitation(email, tabsetName, tabsetId)
   }
+
 }
 
 export default new TabsetService();

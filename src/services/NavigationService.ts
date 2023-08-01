@@ -12,11 +12,16 @@ class NavigationService {
       // get all tabs with this url
       const tabsForUrl = useTabsStore().tabsForUrl(withUrl) || []
       const selections: HTMLSelection[] = []
+      const annotations: any[] = []
       tabsForUrl.forEach(t => {
         if (t.selections) {
           console.log("found", t.selections)
           t.selections.forEach(s => selections.push(s))
           //selections.concat(t.selections)
+        }
+        if (t.annotations) {
+          console.log("found", t.annotations)
+          t.annotations.forEach(s => annotations.push(s))
         }
         if (t.httpInfo) {
           t.httpError = ''
@@ -76,6 +81,26 @@ class NavigationService {
                 }
               });
             }
+
+            // if (annotations.length > 0) {
+            //   console.log("annotations", annotations, tab.id)
+            //   // @ts-ignore
+            //   chrome.scripting.executeScript({
+            //     target: {tabId: tab.id || 0},
+            //     files: ['recogito2.js']
+            //   }, (result: any) => {
+            //     if (tab.id) {
+            //       console.log("sending Message sendAnnotations", tab.id)
+            //       chrome.tabs.sendMessage(tab.id, {
+            //         msg: "sendAnnotations",
+            //         annotations: annotations
+            //       }, (res: any) => {
+            //         //console.log("got response2", res)
+            //       })
+            //     }
+            //   });
+            // }
+
           })
         }
       })
