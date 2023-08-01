@@ -4,7 +4,7 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/',
     // @ts-ignore
-    redirect: (chrome.sidePanel && chrome.sidePanel.setPanelBehavior) ? '/sidepanel' : '/start'
+    redirect: (chrome && chrome.sidePanel && chrome.sidePanel.setPanelBehavior) ? '/sidepanel' : '/start'
   },
   {
     path: '/start',

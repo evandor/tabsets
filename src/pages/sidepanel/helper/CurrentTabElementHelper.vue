@@ -108,6 +108,7 @@ import {useUtils} from "src/services/Utils";
 import {SelectTabsetCommand} from "src/domain/tabsets/SelectTabset";
 import {useSpacesStore} from "stores/spacesStore";
 import {Tabset} from "src/models/Tabset";
+import {useWindowsStore} from "stores/windowsStores";
 
 const props = defineProps({
   tabsetId: {type: String, required: true}
@@ -128,10 +129,8 @@ const created = ref<string | undefined>(undefined)
 const tabsStore = useTabsStore()
 
 watchEffect(() => {
-  const current = useTabsStore()?.currentChromeTab
-  if (current) {
-    currentChromeTab.value = current
-  }
+  const windowId = useWindowsStore().currentWindow?.id || 0
+  currentChromeTab.value = useTabsStore().getCurrentChromeTab(windowId) || useTabsStore().currentChromeTab
 })
 
 watchEffect(() => {

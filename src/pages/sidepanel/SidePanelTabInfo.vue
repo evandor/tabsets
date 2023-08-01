@@ -31,6 +31,7 @@ import {ref, watchEffect} from "vue";
 import {useUiStore} from "stores/uiStore";
 import TabsetService from "src/services/TabsetService";
 import CurrentTabElementHelper from "pages/sidepanel/helper/CurrentTabElementHelper.vue";
+import {useWindowsStore} from "stores/windowsStores";
 
 const props = defineProps({
   tabsetId: {type: String, required: true}
@@ -54,7 +55,8 @@ watchEffect(() => {
 })
 
 watchEffect(() => {
-  currentChromeTab.value = useTabsStore().currentChromeTab
+  const windowId = useWindowsStore().currentWindow?.id || 0
+  currentChromeTab.value = useTabsStore().getCurrentChromeTab(windowId) || useTabsStore().currentChromeTab
 })
 
 watchEffect(async () => {
