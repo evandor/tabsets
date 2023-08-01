@@ -32,7 +32,7 @@ class NavigationService {
 
       console.log("selections are", selections)
 
-      chrome.tabs.query({}, (t: chrome.tabs.Tab[]) => {
+      chrome.tabs.query({currentWindow: true}, (t: chrome.tabs.Tab[]) => {
         let found = false;
         t.filter(r => r.url)
           .map(r => {
