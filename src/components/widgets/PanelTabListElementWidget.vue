@@ -300,7 +300,7 @@ const deleteTab = (tab: Tab) => useCommandExecutor().executeFromUi(new DeleteTab
 
 const nameOrTitle = (tab: Tab) => {
   let nameOrTitle = tab.name ? tab.name : tab.title
-  if (usePermissionsStore().hasFeature(FeatureIdent.ANNOTATIONS) && tab.annotations.length > 0) {
+  if (usePermissionsStore().hasFeature(FeatureIdent.ANNOTATIONS) && tab.annotations?.length > 0) {
     nameOrTitle = "("+tab.annotations.length+") " + nameOrTitle
   }
   if (isCurrentTab(props.tab as Tab)) {

@@ -256,6 +256,7 @@ class ChromeListeners {
     }
 
     if (usePermissionsStore().hasFeature(FeatureIdent.ANNOTATIONS)) {
+      console.log(">>>",tab.url)
       const tabForUrl = useTabsStore().tabForUrlInSelectedTabset(tab.url || '')
       if (tabForUrl) {
         console.log("got tab for url", tabForUrl)

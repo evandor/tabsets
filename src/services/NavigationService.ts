@@ -1,6 +1,6 @@
 import {HTMLSelection, Tab} from "src/models/Tab";
 import {useNotificationsStore} from "src/stores/notificationsStore";
-import {openURL} from "quasar";
+import {openURL, useQuasar} from "quasar";
 import {useTabsStore} from "src/stores/tabsStore";
 import {useTabsetService} from "src/services/TabsetService2";
 
@@ -82,24 +82,30 @@ class NavigationService {
               });
             }
 
-            // if (annotations.length > 0) {
-            //   console.log("annotations", annotations, tab.id)
-            //   // @ts-ignore
-            //   chrome.scripting.executeScript({
-            //     target: {tabId: tab.id || 0},
-            //     files: ['recogito2.js']
-            //   }, (result: any) => {
-            //     if (tab.id) {
-            //       console.log("sending Message sendAnnotations", tab.id)
-            //       chrome.tabs.sendMessage(tab.id, {
-            //         msg: "sendAnnotations",
-            //         annotations: annotations
-            //       }, (res: any) => {
-            //         //console.log("got response2", res)
-            //       })
-            //     }
-            //   });
-            // }
+            //if (annotations.length > 0) {
+              console.log("annotations!!!", annotations, tab.id)
+chrome.tabs.sendMessage(tab.id || 0, "hi")
+              useQuasar().bex.send('wb.drawer.toggle', {
+                annotations: {}
+              })
+            chrome.runtime.sendMessage({msg: "tabsets.annotations", data: {}})
+
+              // @ts-ignore
+              // chrome.scripting.executeScript({
+              //   target: {tabId: tab.id || 0},
+              //   files: ['recogito2.js']
+              // }, (result: any) => {
+              //   if (tab.id) {
+              //     console.log("sending Message sendAnnotations", tab.id)
+              //     chrome.tabs.sendMessage(tab.id, {
+              //       msg: "sendAnnotations",
+              //       annotations: annotations
+              //     }, (res: any) => {
+              //       //console.log("got response2", res)
+              //     })
+              //   }
+              // });
+          //  }
 
           })
         }

@@ -3,6 +3,8 @@ import {HTMLSelection} from "src/models/Tab";
 
 console.log( "?========?")
 
+
+
 const
   iFrame = document.createElement('iframe'),
   defaultFrameHeight = '62px'
@@ -49,11 +51,13 @@ Object.assign(iFrame.style, {
 
 ;(function () {
   const url = document.location.href
+  console.log(" === url == ", url)
   const urlParams = new URLSearchParams(window.location.search);
   const tabId = urlParams.get('tabId');
   console.log("got url2", url, tabId)
   iFrame.src = chrome.runtime.getURL('/www/index.html#/annotations/' + tabId)
   document.body.prepend(iFrame)
+
 
   var l = document.createElement('link');
   l.setAttribute("href","https://cdn.jsdelivr.net/npm/@recogito/recogito-js@1.8.2/dist/recogito.min.css")
@@ -65,9 +69,10 @@ Object.assign(iFrame.style, {
   (document.head || document.documentElement).appendChild(s);
 
   var s2 = document.createElement('script');
+  s2.dataset.variable = 'some string variable!';
+  s2.dataset.not_a_string = JSON.stringify({some: 'object!'});
   s2.src = chrome.runtime.getURL('www/js/recogito/recogito.content.js');
   document.body.appendChild(s2);
-
 
 
 
@@ -75,12 +80,25 @@ Object.assign(iFrame.style, {
 
 export default bexContent((bridge) => {
 
-  console.log(" **++++++")
+  console.log("tabsets: initializing content script for recogito2")
+  // @ts-ignore
+  if (window.contentScriptRecogito2AlredyCalled) {
+    // https://stackoverflow.com/questions/23208134/avoid-dynamically-injecting-the-same-script-multiple-times-when-using-chrome-tab
+    console.log("stopping execution of recogito2 script as it is already setup")
+    return
+  }
+
+  // @ts-ignore
+  window.contentScriptRecogito2AlredyCalled  = true
+
+  chrome.runtime.onMessage.addListener(function (response, sendResponse) { console.log("***",response);
+  });
   /**
    * When the drawer is toggled set the iFrame height to take the whole page.
    * Reset when the drawer is closed.
    */
   bridge.on('wb.drawer.toggle', ({ data, respond }) => {
+    console.log(" $%&/(/&%$%&/( ")
     if (data.open) {
       setIFrameHeight('100%')
     } else {

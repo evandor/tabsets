@@ -1,6 +1,9 @@
 (function (arg) {
 
-  console.log("arg", arg)
+  var variable = document.currentScript.dataset.variable;
+  var not_a_string = JSON.parse(document.currentScript.dataset.not_a_string);
+
+  console.log("arg", arg,variable, not_a_string)
 
   var r = Recogito.init({
     //content: document.getElementById('my-content') // ID or DOM element
