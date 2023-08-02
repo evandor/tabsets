@@ -135,7 +135,7 @@ const openInReadingMode = (tab: Tab) => {
 const openInAnnotationMode = (tab: Tab) => {
   console.log("showing tab in annotation mode", tab)
   //const url = chrome.runtime.getURL("/www/index.html#/mainpanel/readingmode/" + tab.id)
-  NavigationService.openOrCreateTab(tab.url + "?tabId=" + tab.id)
+  NavigationService.openOrCreateTab(tab.url || '')// + "?tabId=" + tab.id)
 }
 
 const copyToClipboard = (tab: Tab) =>

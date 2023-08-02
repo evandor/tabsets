@@ -38,7 +38,7 @@ function setCurrentTab() {
   });
 }
 
-function annotationScript (tabId: string, annotations: object[]) {
+function annotationScript (tabId: string, annotations: any[]) {
   console.log("!!! here in annotation script", tabId, annotations)
 
   var l: HTMLLinkElement = document.createElement('link');
@@ -50,7 +50,21 @@ function annotationScript (tabId: string, annotations: object[]) {
   s.src = chrome.runtime.getURL('www/js/recogito/recogito.min.js');
   (document.head || document.documentElement).appendChild(s);
 
+  // var s2 = document.createElement('script');
+  // s2.src = chrome.runtime.getURL('www/js/recogito/recogito.content.js');
+  // document.body.appendChild(s2);
+
   var s2 = document.createElement('script');
+  s2.dataset.variable = 'some string variable!';
+  s2.dataset.annotations = JSON.stringify(annotations);
+
+  console.log("x1", annotations)
+  console.log("x2",  JSON.stringify(annotations))
+  console.log("x3",  JSON.parse(JSON.stringify(annotations)))
+
+
+
+
   s2.src = chrome.runtime.getURL('www/js/recogito/recogito.content.js');
   document.body.appendChild(s2);
 
@@ -256,8 +270,9 @@ class ChromeListeners {
     }
 
     if (usePermissionsStore().hasFeature(FeatureIdent.ANNOTATIONS)) {
-      console.log(">>>",tab.url)
+      console.log(">>>***<<<",tab.url)
       const tabForUrl = useTabsStore().tabForUrlInSelectedTabset(tab.url || '')
+      console.log(">>>***<<<",tabForUrl,tabForUrl?.annotations)
       if (tabForUrl) {
         console.log("got tab for url", tabForUrl)
         chrome.scripting.executeScript({
@@ -288,7 +303,7 @@ class ChromeListeners {
       scripts.push("content-script-thumbnails.js")
     }
     scripts.push("content-script.js")
-    scripts.push("recogito2.js")
+    //scripts.push("recogito2.js")
     scripts.push("tabsets-content-script.js")
     if (scripts.length > 0 && tab.id !== null) { // && !this.injectedScripts.get(.chromeTabId)) {
 
