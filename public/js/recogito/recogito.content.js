@@ -33,7 +33,6 @@
 
   //}, 100)
 
-  // Add an event handler
   r.on('createAnnotation', function (annotation) {
     console.log("annotation", annotation)
     annotations.push(annotation)
@@ -47,4 +46,32 @@
     //chrome.runtime.sendMessage(msg, (callback) => console.log("callback", callback))
     window.postMessage(msg)
   });
+
+  r.on('deleteAnnotation', function(annotation) {
+    //
+    console.log("deleteAnnotation", annotation)
+  });
+
+  r.on('selectAnnotation', function(annotation, element) {
+    console.log("selectAnnotation", annotation)
+  });
+
+  r.on('updateAnnotation', function(annotation, previous) {
+    console.log("updateAnnotation", annotation, previous)
+  });
+
+  r.on('removeAnnotation', function (annotation) {
+    console.log("removeAnnotation", annotation)
+    // annotations.push(annotation)
+    // const msg = {
+    //   name: 'recogito-annotation-created',
+    //   annotation: annotation,
+    //   url: window.location.href
+    // }
+    //
+    // console.log("sending", msg)
+    // //chrome.runtime.sendMessage(msg, (callback) => console.log("callback", callback))
+    // window.postMessage(msg)
+  });
+
 })();

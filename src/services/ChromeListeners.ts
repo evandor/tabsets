@@ -41,6 +41,33 @@ function setCurrentTab() {
 function annotationScript (tabId: string, annotations: any[]) {
   console.log("!!! here in annotation script", tabId, annotations)
 
+  const
+    iFrame = document.createElement('iframe'),
+    defaultFrameHeight = '62px'
+
+  iFrame.id = 'bex-app-iframe'
+  iFrame.width = '100%'
+ // resetIFrameHeight()
+
+// Assign some styling so it looks seamless
+  Object.assign(iFrame.style, {
+    position: 'fixed',
+    top: '0',
+    right: '0',
+    bottom: '0',
+    left: '0',
+    border: '0',
+    zIndex: '9999999', // Make sure it's on top
+    overflow: 'visible'
+  })
+
+  //const url = document.location.href
+  //console.log(" === url == ", url)
+  //const urlParams = new URLSearchParams(window.location.search);
+  //console.log("got url2", url, tabId)
+  iFrame.src = chrome.runtime.getURL('/www/index.html#/annotations/' + tabId)
+  document.body.prepend(iFrame)
+
   var l: HTMLLinkElement = document.createElement('link');
   l.setAttribute("href","https://cdn.jsdelivr.net/npm/@recogito/recogito-js@1.8.2/dist/recogito.min.css")
   l.setAttribute("rel","stylesheet")

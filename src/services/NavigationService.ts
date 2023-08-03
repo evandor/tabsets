@@ -82,31 +82,6 @@ class NavigationService {
               });
             }
 
-            //if (annotations.length > 0) {
-              console.log("annotations!!!", annotations, tab.id)
-chrome.tabs.sendMessage(tab.id || 0, "hi")
-              useQuasar().bex.send('wb.drawer.toggle', {
-                annotations: {}
-              })
-            chrome.runtime.sendMessage({msg: "tabsets.annotations", data: {}})
-
-              // @ts-ignore
-              // chrome.scripting.executeScript({
-              //   target: {tabId: tab.id || 0},
-              //   files: ['recogito2.js']
-              // }, (result: any) => {
-              //   if (tab.id) {
-              //     console.log("sending Message sendAnnotations", tab.id)
-              //     chrome.tabs.sendMessage(tab.id, {
-              //       msg: "sendAnnotations",
-              //       annotations: annotations
-              //     }, (res: any) => {
-              //       //console.log("got response2", res)
-              //     })
-              //   }
-              // });
-          //  }
-
           })
         }
       })
