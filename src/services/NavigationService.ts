@@ -1,6 +1,6 @@
 import {HTMLSelection, Tab} from "src/models/Tab";
 import {useNotificationsStore} from "src/stores/notificationsStore";
-import {openURL} from "quasar";
+import {openURL, useQuasar} from "quasar";
 import {useTabsStore} from "src/stores/tabsStore";
 import {useTabsetService} from "src/services/TabsetService2";
 
@@ -12,11 +12,16 @@ class NavigationService {
       // get all tabs with this url
       const tabsForUrl = useTabsStore().tabsForUrl(withUrl) || []
       const selections: HTMLSelection[] = []
+      const annotations: any[] = []
       tabsForUrl.forEach(t => {
         if (t.selections) {
           console.log("found", t.selections)
           t.selections.forEach(s => selections.push(s))
           //selections.concat(t.selections)
+        }
+        if (t.annotations) {
+          console.log("found", t.annotations)
+          t.annotations.forEach(s => annotations.push(s))
         }
         if (t.httpInfo) {
           t.httpError = ''
@@ -76,6 +81,7 @@ class NavigationService {
                 }
               });
             }
+
           })
         }
       })

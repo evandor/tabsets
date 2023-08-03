@@ -317,6 +317,11 @@ text.set(FeatureIdent.NOTIFICATIONS.toLowerCase(), {
   description: 'Allow Tabsets to send Notifications via your Browser. Recommended.',
   permissions: ['notifications']
 })
+text.set(FeatureIdent.ANNOTATIONS.toLowerCase(), {
+  name: 'Websites Annotations',
+  description: 'Annotate Websites',
+  permissions: []
+})
 
 
 watchEffect(() => {

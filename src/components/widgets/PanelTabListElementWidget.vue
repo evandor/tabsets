@@ -136,7 +136,9 @@
       props['tab' as keyof object]['note']"
                   class="text-grey-10" text-subtitle1>
       <q-icon color="blue-10" name="edit_note"/>
-      {{ props['tab']['note'] }}
+      <div class="ellipsis-2-lines">
+        {{ props['tab']['note'] }}
+      </div>
     </q-item-label>
 
     <q-item-label v-if="props.showTabsets">
@@ -155,7 +157,6 @@
 import NavigationService from "src/services/NavigationService";
 import {Tab, UrlExtension} from "src/models/Tab";
 import TabsetService from "src/services/TabsetService";
-import {useNotificationsStore} from "src/stores/notificationsStore";
 import {onMounted, PropType, ref, watchEffect} from "vue";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {DeleteTabCommand} from "src/domain/tabs/DeleteTabCommand";
@@ -172,6 +173,8 @@ import _ from "lodash";
 import {formatDistance} from "date-fns";
 import {TabsetType} from "src/models/Tabset";
 import {useWindowsStore} from "stores/windowsStores";
+import {usePermissionsStore} from "stores/permissionsStore";
+import {FeatureIdent} from "src/models/AppFeature";
 
 const props = defineProps({
   tab: {type: Object as PropType<Tab>, required: true},
@@ -296,12 +299,14 @@ const deleteTab = (tab: Tab) => useCommandExecutor().executeFromUi(new DeleteTab
 
 
 const nameOrTitle = (tab: Tab) => {
-  const nameOrTitle = tab.name ? tab.name : tab.title
-  if (isCurrentTab(props.tab as Tab)) {
-    return "<span class='text-bold'>Current Tab: </span>" + nameOrTitle
-  } else {
-    return nameOrTitle
+  let nameOrTitle = tab.name ? tab.name : tab.title
+  if (usePermissionsStore().hasFeature(FeatureIdent.ANNOTATIONS) && tab.annotations?.length > 0) {
+    nameOrTitle = "("+tab.annotations.length+") " + nameOrTitle
   }
+  if (isCurrentTab(props.tab as Tab)) {
+    nameOrTitle = "<span class='text-bold'>Current Tab: </span>" + nameOrTitle
+  }
+  return nameOrTitle
 }
 
 const dynamicNameOrTitleModel = (tab: Tab) => tab.name ? tab.name : tab.title

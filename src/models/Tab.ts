@@ -59,6 +59,7 @@ export class Tab {
   scheduledFor: number | undefined
   extension: UrlExtension
   selections: HTMLSelection[] = []
+  annotations: any[] = []
 
   mhtmls: string[]
 

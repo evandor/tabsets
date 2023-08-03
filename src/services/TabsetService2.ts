@@ -267,6 +267,7 @@ export function useTabsetService() {
       if (!tabset.type) {
         tabset.type = TabsetType.DEFAULT
       }
+      console.log("saving tabset", tabset)
       return db.saveTabset(tabset)
     }
     return Promise.reject("tabset id not set")
@@ -641,6 +642,30 @@ export function useTabsetService() {
     return false;
   }
 
+  const handleAnnotationMessage = (msg: object) => {
+    console.log("yyy", msg)
+    switch (msg['name' as keyof object]) {
+      case "recogito-annotation-created":
+        const url = msg['url' as keyof object]
+        console.log("url", url)
+        const tab = useTabsStore().tabForUrlInSelectedTabset(url)
+        if (tab) {
+          // if (!tab.annotations) {
+          //   tab.annotations = new Map()
+          // }
+          console.log("tab.annotations", tab.annotations)
+          //tab.annotations.set(msg['annotation' as keyof object]['id'], msg['annotation' as keyof object])
+          tab.annotations.push(msg['annotation' as keyof object])
+        }
+        console.log("got tab", tab)
+        saveCurrentTabset()
+        break
+      default:
+        console.log("unhandled massage", msg)
+    }
+  }
+
+
   return {
     init,
     saveOrReplaceFromChromeTabs,
@@ -671,7 +696,8 @@ export function useTabsetService() {
     getOrCreateSpecialTabset,
     saveBlob,
     getBlob,
-    reloadTabset
+    reloadTabset,
+    handleAnnotationMessage
   }
 
 }

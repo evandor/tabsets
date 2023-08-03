@@ -14,6 +14,7 @@
                           group="tabsets"
                           :default-opened="tabsStore.tabsets.size === 1"
                           switch-toggle-side
+                          expand-icon-toggle
                           dense-toggle
                           v-model="selected_model[tabset.id]"
                           @update:model-value="val => updateSelectedTabset(tabset.id, val, index)"
@@ -38,7 +39,7 @@
             <q-item-section side
                             @mouseover="hoveredTabset = tabset.id"
                             @mouseleave="hoveredTabset = undefined">
-              <q-icon name="more_horiz" color="black" size="16px"/>
+              <q-icon class="cursor-pointer" name="more_horiz" color="black" size="16px"/>
               <SidePanelPageContextMenu :tabset="tabset as Tabset"/>
             </q-item-section>
 
@@ -312,6 +313,7 @@ function inIgnoredMessages(message: any) {
     message.msg === "html2links" ||
     message.name === "zero-shot-classification" ||
     message.msg === "websiteQuote" ||
+    message.name === "recogito-annotation-created" ||
     message.msg === "init-ai-module";
 }
 
