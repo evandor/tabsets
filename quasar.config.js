@@ -216,9 +216,7 @@ module.exports = configure(function (/* ctx */) {
         'content-script-thumbnails',
         'clipping',
         'quoting',
-        'highlighting',
-        'recogito',
-        'recogito2'
+        'highlighting'
       ],
       css: ['clipping.css']
 
