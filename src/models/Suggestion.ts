@@ -18,6 +18,7 @@ export enum SuggestionType {
 export enum StaticSuggestionIdent {
   TRY_TAB_DETAILS_FEATURE = "TRY_TAB_DETAILS_FEATURE",
   TRY_BOOKMARKS_FEATURE = "TRY_BOOKMARKS_FEATURE",
+  TRY_SPACES_FEATURE = "TRY_SPACES_FEATURE",
 }
 
 export class Suggestion {
@@ -37,7 +38,13 @@ export class Suggestion {
       "Maybe you want to try the optional 'Bookmarks' feature?",
       "/features/bookmarks",
       SuggestionType.FEATURE)
-      .setImage('o_bookmarks')
+      .setImage('o_bookmarks'),
+    new Suggestion(StaticSuggestionIdent.TRY_SPACES_FEATURE,
+      "Want to try a new feature?",
+      "Check out the optional 'Spaces' feature and get another level of organization",
+      "/features/spaces",
+      SuggestionType.FEATURE)
+      .setImage('o_space_dashboard')
   ]
 
   constructor(public id: string, public title: string, public msg: string, public url: string, public type: SuggestionType = SuggestionType.RSS) {
@@ -50,6 +57,7 @@ export class Suggestion {
   }
 
   static getStaticSuggestion(ident: StaticSuggestionIdent): Suggestion | undefined {
+    console.log("hier", this.staticSuggestions, ident)
     return _.find(this.staticSuggestions, s => s.id === ident)
   }
 }

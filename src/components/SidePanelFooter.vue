@@ -44,6 +44,7 @@
 
         <q-btn icon="o_settings"
                :class="rightButtonClass()"
+               flat
                color="black"
                size="8px"
                @click="openOptionsPage()">
@@ -54,6 +55,7 @@
           v-if="usePermissionsStore().hasFeature(FeatureIdent.STANDALONE_APP)"
           icon="o_open_in_new"
           :class="rightButtonClass()"
+          flat
           color="black"
           size="8px"
           @click="openExtensionTab()">

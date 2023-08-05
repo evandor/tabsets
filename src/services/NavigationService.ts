@@ -12,16 +12,11 @@ class NavigationService {
       // get all tabs with this url
       const tabsForUrl = useTabsStore().tabsForUrl(withUrl) || []
       const selections: HTMLSelection[] = []
-      const annotations: any[] = []
       tabsForUrl.forEach(t => {
         if (t.selections) {
-          console.log("found", t.selections)
+          //console.log("found", t.selections)
           t.selections.forEach(s => selections.push(s))
           //selections.concat(t.selections)
-        }
-        if (t.annotations) {
-          console.log("found", t.annotations)
-          t.annotations.forEach(s => annotations.push(s))
         }
         if (t.httpInfo) {
           t.httpError = ''
@@ -29,13 +24,11 @@ class NavigationService {
 
           const ts = useTabsStore().tabsetFor(t.id)
           if (ts) {
-            console.log("saving tabset ", ts)
+            //console.log("saving tabset ", ts)
             useTabsetService().saveTabset(ts)
           }
         }
       })
-
-      console.log("selections are", selections)
 
       chrome.tabs.query({currentWindow: true}, (t: chrome.tabs.Tab[]) => {
         let found = false;

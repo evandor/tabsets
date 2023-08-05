@@ -5,7 +5,6 @@
                   @mouseleave="hoveredTab = undefined"
                   class="q-mr-sm text-right" style="justify-content:start;width:25px;max-width:25px">
     <div class="bg-grey-3 q-pa-xs" style="border:0 solid grey;border-radius:3px">
-      <!---->
 
       <transition name="fade" mode="out-in">
         <div v-if="newState" key="newState">

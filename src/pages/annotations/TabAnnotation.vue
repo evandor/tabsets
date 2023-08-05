@@ -30,7 +30,7 @@ watchEffect(async () => {
       // $q.bex.send('tabsets.annotations', {
       //   annotations: tab.value['annotations']
       // })
-      chrome.runtime.sendMessage({msg: "tabsets.annotations", data: tab.value['annotations']})
+      //chrome.runtime.sendMessage({msg: "tabsets.annotations", data: tab.value['annotations']})
 
     }
 

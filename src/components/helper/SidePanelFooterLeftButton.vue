@@ -2,8 +2,9 @@
   <q-btn v-if="showButton()"
          :icon="props.icon"
          :class="leftButtonClass()"
+         flat
          :color="isActive() ? 'secondary':'black'"
-         size="8px"
+         size="9px"
          @click="toggleView()">
     <q-tooltip v-if="props.tooltip" class="tooltip">{{ props.tooltip}}</q-tooltip>
   </q-btn>

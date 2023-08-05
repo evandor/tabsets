@@ -297,30 +297,14 @@ class ChromeListeners {
     }
 
     if (usePermissionsStore().hasFeature(FeatureIdent.ANNOTATIONS)) {
-      console.log(">>>***<<<",tab.url)
       const tabForUrl = useTabsStore().tabForUrlInSelectedTabset(tab.url || '')
-      console.log(">>>***<<<",tabForUrl,tabForUrl?.annotations)
       if (tabForUrl) {
-        console.log("got tab for url", tabForUrl)
         chrome.scripting.executeScript({
           target : {tabId : (tab.id || 0)},
           func : annotationScript,
           args : [ tabForUrl.id, tabForUrl.annotations ],
         })
           .then(() => console.log("injected a function"));
-
-        // https://stackoverflow.com/questions/73586171/pass-arguments-to-a-file-script-executed-by-chrome-scripting-executescripts-ma
-        // chrome.scripting.executeScript({
-        //   target: {tabId: (tab.id || 0)},
-        //   files: ['recogito2.js']}, () => {
-        //   chrome.scripting.executeScript({
-        //     target: {tabId: (tab.id || 0)},
-        //     args: ["eleID", "type", 10],
-        //     func: (...args:any[]) => scrollToTarget(...args),
-        //   });
-        // });
-
-
       }
     }
 

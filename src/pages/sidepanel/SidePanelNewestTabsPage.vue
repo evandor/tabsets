@@ -31,10 +31,22 @@
     <!-- place QPageSticky at end of page -->
     <q-page-sticky expand position="top" style="background-color:white">
 
-      <FirstToolbarHelper
-        title="Newest Tabs"
-        @was-clicked="useUiStore().sidePanelSetActiveView(SidePanelView.MAIN)"
-        :show-back-button="true"/>
+      <FirstToolbarHelper title="Newest Tabs">
+
+        <template v-slot:iconsRight>
+          <q-btn
+            icon="close"
+            @click="useUiStore().sidePanelSetActiveView(SidePanelView.MAIN)"
+            color="black"
+            flat
+            class="q-ma-none q-pa-xs cursor-pointer"
+            style="max-width:20px"
+            size="10px">
+            <q-tooltip class="tooltip">Close this view</q-tooltip>
+          </q-btn>
+        </template>
+
+      </FirstToolbarHelper>
 
     </q-page-sticky>
 

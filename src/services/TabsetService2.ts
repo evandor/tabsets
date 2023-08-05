@@ -267,7 +267,7 @@ export function useTabsetService() {
       if (!tabset.type) {
         tabset.type = TabsetType.DEFAULT
       }
-      console.log("saving tabset", tabset)
+      //console.log("saving tabset", tabset)
       return db.saveTabset(tabset)
     }
     return Promise.reject("tabset id not set")
@@ -420,7 +420,6 @@ export function useTabsetService() {
               //     t.url, SuggestionType.CONTENT_CHANGE))
             }
 
-            console.log("about to save tabset", tabset.id)
             savePromises.push(saveTabset(tabset)
               .then((res) => {
                 // @ts-ignore
@@ -635,7 +634,10 @@ export function useTabsetService() {
   const urlExistsInCurrentTabset = (url: string): boolean => {
     const currentTabset = getCurrentTabset()
     if (currentTabset) {
-      if (_.find(currentTabset.tabs, t => t.url === url)) {
+      if (_.find(currentTabset.tabs, t => {
+        //console.log(" = ", t.url === url, t.url, url)
+        return t.url === url
+      })) {
         return true
       }
     }

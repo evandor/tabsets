@@ -31,6 +31,7 @@ export const useSuggestionsStore = defineStore('suggestions', () => {
 
   function addSuggestion(s: Suggestion | undefined) {
     if (s) {
+      console.log("about to add suggestion", s)
       storage.addSuggestion(s)
         .then(() => suggestions.value.push(s))
     }

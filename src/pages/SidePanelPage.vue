@@ -74,18 +74,6 @@
           <div class="text-subtitle1 text-black">
             {{ toolbarTitle(tabsets as Tabset[]) }}
           </div>
-          <!--          <q-btn-->
-          <!--            icon="o_add"-->
-          <!--            color="primary"-->
-          <!--            flat-->
-          <!--            class="q-ma-none q-pa-xs cursor-pointer"-->
-          <!--            style="max-width:20px"-->
-          <!--            size="10px"-->
-          <!--            @click.stop="openNewTabsetDialog()">-->
-          <!--            <q-tooltip class="tooltip">-->
-          <!--              {{ useSpacesStore().space ? 'Add new Tabset in this space' : 'Add new unassigned Tabset' }}-->
-          <!--            </q-tooltip>-->
-          <!--          </q-btn>-->
         </template>
         <template v-slot:title v-else>
           <div class="text-subtitle1 text-black">

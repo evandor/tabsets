@@ -34,16 +34,15 @@ import {useRouter} from "vue-router";
 import {useNotificationsStore} from "src/stores/notificationsStore";
 import {useSuggestionsStore} from "src/stores/suggestionsStore";
 import {Suggestion} from "src/models/Suggestion";
+import NavigationService from "src/services/NavigationService";
 
 defineEmits([
   ...useDialogPluginComponent.emits
 ])
 
 const props = defineProps({
-  suggestion: {
-    type: Object,
-    required: true
-  }
+  suggestion: {type: Object, required: true},
+  fromPanel: {type: Boolean, default: false}
 })
 
 const {dialogRef, onDialogHide, onDialogCancel} = useDialogPluginComponent()
@@ -58,16 +57,20 @@ const cancelSuggestion = () => useSuggestionsStore().cancelSuggestion(props.sugg
 const ignoreSuggestion = () => useSuggestionsStore().ignoreSuggestion(props.suggestion.id)
 
 const addSuggestion = () => useSuggestionsStore()
-  .applySuggestion(props.suggestion.id)
-  .then((res: Suggestion) => {
-    if (res.url.startsWith("/")) {
-      router.push(res.url)
-    } else {
-      openURL((res.url))
-    }
-  })
-
-
+    .applySuggestion(props.suggestion.id)
+    .then((res: Suggestion) => {
+      if (props.fromPanel) {
+        console.log("xxx", res, chrome.runtime.getURL(res.url))
+        //router.push(chrome.runtime.getURL(res.url))
+        NavigationService.openOrCreateTab(chrome.runtime.getURL("/www/index.html#/mainpanel" + res.url))
+      } else {
+        if (res.url.startsWith("/")) {
+          router.push(res.url)
+        } else {
+          openURL((res.url))
+        }
+      }
+    })
 
 
 </script>

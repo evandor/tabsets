@@ -45,8 +45,6 @@ const currentChromeTab = ref<chrome.tabs.Tab>(null as unknown as chrome.tabs.Tab
 const selectedTab = ref<Tab | undefined>(undefined)
 const tabsetCandidates = ref<object[]>([])
 
-const tabFromChromeTab = () => currentChromeTab.value ? new Tab(uid(), currentChromeTab.value) : undefined
-
 watchEffect(() => {
   selectedTab.value = useUiStore().getSelectedTab
   if (selectedTab.value) {
@@ -73,8 +71,10 @@ watchEffect(async () => {
 
 const alreadyInTabset = () => {
   if (currentChromeTab.value?.url && tabsStore.getCurrentTabset) {
+    //console.log("result: ", useTabsetService().urlExistsInCurrentTabset(currentChromeTab.value.url))
     return useTabsetService().urlExistsInCurrentTabset(currentChromeTab.value.url)
   }
+  //console.log("alreadyInTabset: false", currentChromeTab.value.url, tabsStore.getCurrentTabset?.id)
   return false
 }
 </script>
