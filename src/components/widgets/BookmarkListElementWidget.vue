@@ -4,7 +4,7 @@
   <template v-if="!props.bookmark.chromeBookmark.url">
     <q-item-section
       avatar class="text-primary">
-      <q-icon name="o_folder_open" size="24px"></q-icon>
+      <q-icon name="o_folder_open" size="24px" color="warning"></q-icon>
     </q-item-section>
     <q-item-section
       :data-testid="useUtils().createDataTestIdentifier('tabListElementWidget', props.bookmark.chromeBookmark.title)"

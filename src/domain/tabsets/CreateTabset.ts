@@ -38,15 +38,23 @@ export class CreateTabsetCommand implements Command<SaveOrReplaceResult> {
             const result: SaveOrReplaceResult = await useTabsetService()
                 .saveOrReplaceFromChromeTabs(this.tabsetName, this.tabsToUse, this.merge)
                 .then(res => {
-                    //   if (useTabsStore().tabsets.size === 5 && !usePermissionsStore().hasFeature(FeatureIdent.BOOKMARKS) && process.env.MODE === 'bex') {
-                    //     useSuggestionsStore().addSuggestion(Suggestion.getStaticSuggestion(StaticSuggestionIdent.TRY_BOOKMARKS_FEATURE))
-                    //   }
-                    if (useTabsStore().tabsets.size >= 15 && !usePermissionsStore().hasFeature(FeatureIdent.SPACES) && process.env.MODE === 'bex') {
-                        useSuggestionsStore().addSuggestion(Suggestion.getStaticSuggestion(StaticSuggestionIdent.TRY_SPACES_FEATURE))
+                        //   if (useTabsStore().tabsets.size === 5 && !usePermissionsStore().hasFeature(FeatureIdent.BOOKMARKS) && process.env.MODE === 'bex') {
+                        //     useSuggestionsStore().addSuggestion(Suggestion.getStaticSuggestion(StaticSuggestionIdent.TRY_BOOKMARKS_FEATURE))
+                        //   }
+                        if (useTabsStore().tabsets.size >= 15 &&
+                            !usePermissionsStore().hasFeature(FeatureIdent.SPACES) &&
+                            process.env.MODE === 'bex') {
+                            useSuggestionsStore().addSuggestion(Suggestion.getStaticSuggestion(StaticSuggestionIdent.TRY_SPACES_FEATURE))
+                        } else if (useTabsStore().tabsets.size >= 3 &&
+                            useTabsStore().allTabsCount > 10 &&
+                            !usePermissionsStore().hasFeature(FeatureIdent.NEWEST_TABS) &&
+                            process.env.MODE === 'bex') {
+                            useSuggestionsStore().addSuggestion(Suggestion.getStaticSuggestion(StaticSuggestionIdent.TRY_NEWEST_TABS_FEATURE))
+                        }
+                        sendMsg('tabset-added', {tabsetId: res.tabset.id})
+                        return res
                     }
-                    sendMsg('tabset-added', {tabsetId: res.tabset.id})
-                    return res
-                })
+                )
             let doneMsg = 'Tabset \'' + this.tabsetName + '\' created successfully'
             if (result['replaced' as keyof object] && result['merged' as keyof object]) {
                 doneMsg = 'Existing Tabset \'' + this.tabsetName + '\' can be updated now'

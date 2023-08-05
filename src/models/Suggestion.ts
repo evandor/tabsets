@@ -19,6 +19,7 @@ export enum StaticSuggestionIdent {
   TRY_TAB_DETAILS_FEATURE = "TRY_TAB_DETAILS_FEATURE",
   TRY_BOOKMARKS_FEATURE = "TRY_BOOKMARKS_FEATURE",
   TRY_SPACES_FEATURE = "TRY_SPACES_FEATURE",
+  TRY_NEWEST_TABS_FEATURE = "TRY_NEWEST_TABS_FEATURE",
 }
 
 export class Suggestion {
@@ -44,7 +45,13 @@ export class Suggestion {
       "Check out the optional 'Spaces' feature and get another level of organization",
       "/features/spaces",
       SuggestionType.FEATURE)
-      .setImage('o_space_dashboard')
+      .setImage('o_space_dashboard'),
+    new Suggestion(StaticSuggestionIdent.TRY_NEWEST_TABS_FEATURE,
+        "Want to try a new feature?",
+        "Check out the recommended 'Newest Tabs' feature to get a view of your tabs sorted by creation date",
+        "/features/newest_tabs",
+        SuggestionType.FEATURE)
+        .setImage('o_schedule')
   ]
 
   constructor(public id: string, public title: string, public msg: string, public url: string, public type: SuggestionType = SuggestionType.RSS) {

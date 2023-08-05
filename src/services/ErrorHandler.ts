@@ -5,6 +5,7 @@ export function useNotificationHandler() {
 
   const handleError = (error: any) => {
     console.log("got error: ", error ? error.toString() : 'unknown error')
+    console.trace()
     Notify.create({
       position: 'bottom',
       color: 'red-5',

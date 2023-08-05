@@ -22,13 +22,22 @@
 
           <template v-slot:header>
             <q-item-section
-              @mouseover="hoveredTabset = tabset.id"
-              @mouseleave="hoveredTabset = undefined">
-              <q-item-label :class="tabsStore.currentTabsetId === tabset.id ? 'text-bold' : ''">
+                @mouseover="hoveredTabset = tabset.id"
+                @mouseleave="hoveredTabset = undefined">
+              <q-item-label :class="tabsStore.currentTabsetId === tabset.id ? 'text-bold' : ''"
+                            @dblclick="focusOnTabset(tabset as Tabset)">
                 <q-icon v-if="tabset.status === TabsetStatus.FAVORITE"
                         color="warning"
                         name="push_pin"
-                        style="position: relative;top:-2px"/>
+                        style="position: relative;top:-2px">
+                  <q-tooltip class="tooltip">This tabset is pinned for easier access</q-tooltip>
+                </q-icon>
+                <q-icon v-if="tabset.sharedId"
+                        color="primary"
+                        name="share"
+                        style="position: relative;top:-2px">
+                  <q-tooltip class="tooltip">This tabset is shared</q-tooltip>
+                </q-icon>
                 {{ tabset.name }}
               </q-item-label>
               <q-item-label class="text-caption text-grey-5">
@@ -53,9 +62,9 @@
             </div>
 
             <PanelTabList
-              v-if="tabsetExpanded.get(tabset.id)"
-              :tabsetType="tabset.type"
-              :tabs="filteredTabs(tabset as Tabset)"/>
+                v-if="tabsetExpanded.get(tabset.id)"
+                :tabsetType="tabset.type"
+                :tabs="filteredTabs(tabset as Tabset)"/>
 
           </div>
         </q-expansion-item>
@@ -68,7 +77,7 @@
     <q-page-sticky expand position="top" style="background-color:white">
 
       <FirstToolbarHelper
-        :showSearchBox="showSearchBox">
+          :showSearchBox="showSearchBox">
 
         <template v-slot:title v-if="permissionsStore && permissionsStore.hasFeature(FeatureIdent.SPACES)">
           <div class="text-subtitle1 text-black">
@@ -195,15 +204,15 @@ const updateSelectedTabset = (tabsetId: string, open: boolean, index: number | u
     useUiStore().tabsetsExpanded = true
 
     useCommandExecutor()
-      .execute(new SelectTabsetCommand(tabsetId, useSpacesStore().space?.id))
-      .then(() => {
-        const promises: Promise<any>[] = []
-        //console.log("selecteded tabset > ", tabsetId)
-        const selectedTabset = useTabsStore().getTabset(tabsetId)
-        if (selectedTabset) {
-          handleHeadRequests(selectedTabset)
-        }
-      })
+        .execute(new SelectTabsetCommand(tabsetId, useSpacesStore().space?.id))
+        .then(() => {
+          const promises: Promise<any>[] = []
+          //console.log("selecteded tabset > ", tabsetId)
+          const selectedTabset = useTabsStore().getTabset(tabsetId)
+          if (selectedTabset) {
+            handleHeadRequests(selectedTabset)
+          }
+        })
 
   } else {
     useUiStore().tabsetsExpanded = false
@@ -265,44 +274,44 @@ watchEffect(() => {
 })
 
 const getTabsetOrder =
-  [
-    function (o: Tabset) {
-      return o.status === TabsetStatus.FAVORITE ? 0 : 1
-    },
-    function (o: Tabset) {
-      return o.name?.toLowerCase()
-    }
-  ]
+    [
+      function (o: Tabset) {
+        return o.status === TabsetStatus.FAVORITE ? 0 : 1
+      },
+      function (o: Tabset) {
+        return o.name?.toLowerCase()
+      }
+    ]
 
 watchEffect(() => {
   if (usePermissionsStore().hasFeature(FeatureIdent.SPACES)) {
     const currentSpace = useSpacesStore().space
     tabsets.value = _.sortBy(
-      _.filter([...tabsStore.tabsets.values()], (ts: Tabset) => {
-        if (currentSpace) {
-          if (ts.spaces.indexOf(currentSpace.id) < 0) {
-            return false
+        _.filter([...tabsStore.tabsets.values()], (ts: Tabset) => {
+          if (currentSpace) {
+            if (ts.spaces.indexOf(currentSpace.id) < 0) {
+              return false
+            }
           }
-        }
-        return ts.status !== TabsetStatus.DELETED
-      }),
-      getTabsetOrder, ["asc"])
+          return ts.status !== TabsetStatus.DELETED
+        }),
+        getTabsetOrder, ["asc"])
   } else {
     tabsets.value = _.sortBy(
-      _.filter([...tabsStore.tabsets.values()],
-        (ts: Tabset) => ts.status !== TabsetStatus.DELETED),
-      getTabsetOrder, ["asc"])
+        _.filter([...tabsStore.tabsets.values()],
+            (ts: Tabset) => ts.status !== TabsetStatus.DELETED),
+        getTabsetOrder, ["asc"])
   }
 })
 
 
 function inIgnoredMessages(message: any) {
   return message.msg === "html2text" ||
-    message.msg === "html2links" ||
-    message.name === "zero-shot-classification" ||
-    message.msg === "websiteQuote" ||
-    message.name === "recogito-annotation-created" ||
-    message.msg === "init-ai-module";
+      message.msg === "html2links" ||
+      message.name === "zero-shot-classification" ||
+      message.msg === "websiteQuote" ||
+      message.name === "recogito-annotation-created" ||
+      message.msg === "init-ai-module";
 }
 
 if (chrome) {
@@ -333,15 +342,15 @@ if (chrome) {
         if (message.data.noteId) {
           console.log("updating note", message.data.noteId)
           useTabsStore().getTab(message.data.noteId)
-            .then((res: object | undefined) => {
-              if (res) {
-                const note = res['tab' as keyof object] as Tab
-                note.title = message.data.tab.title
-                note.description = message.data.tab.description
-                note.longDescription = message.data.tab.longDescription
-              }
-              useTabsetService().saveTabset(tabset)
-            })
+              .then((res: object | undefined) => {
+                if (res) {
+                  const note = res['tab' as keyof object] as Tab
+                  note.title = message.data.tab.title
+                  note.description = message.data.tab.description
+                  note.longDescription = message.data.tab.longDescription
+                }
+                useTabsetService().saveTabset(tabset)
+              })
         } else {
           console.log("adding tab", message.data.tab)
           tabset.tabs.push(message.data.tab)
@@ -381,7 +390,7 @@ if (chrome) {
 
 const filteredTabs = (tabset: Tabset): Tab[] => {
   if (tabset.type === TabsetType.DYNAMIC &&
-    tabset.dynamicTabs && tabset.dynamicTabs.type === DynamicTabSourceType.TAG) {
+      tabset.dynamicTabs && tabset.dynamicTabs.type === DynamicTabSourceType.TAG) {
     const results: Tab[] = []
     //console.log("checking", tabset.dynamicTabs)
     const tag = tabset.dynamicTabs?.config['tags' as keyof object][0]
@@ -404,8 +413,8 @@ const filteredTabs = (tabset: Tabset): Tab[] => {
   }
   return _.filter(tabs, (t: Tab) => {
     return (t.url || '')?.indexOf(filter) >= 0 ||
-      (t.title || '')?.indexOf(filter) >= 0 ||
-      t.description?.indexOf(filter) >= 0
+        (t.title || '')?.indexOf(filter) >= 0 ||
+        t.description?.indexOf(filter) >= 0
   })
 }
 
@@ -501,15 +510,15 @@ function checkKeystroke(e: KeyboardEvent) {
 }
 
 const showTabset = (tabset: Tabset) => !useUiStore().tabsFilter ?
-  true :
-  (useUiStore().tabsFilter === '' || filteredTabs(tabset).length > 0)
+    true :
+    (useUiStore().tabsFilter === '' || filteredTabs(tabset).length > 0)
 
 const toolbarTitle = (tabsets: Tabset[]) => {
   if (usePermissionsStore().hasFeature(FeatureIdent.SPACES)) {
     const spaceName = useSpacesStore().space ? useSpacesStore().space.label : 'no space selected'
     return tabsets.length > 6 ?
-      spaceName + ' (' + tabsets.length.toString() + ')' :
-      spaceName
+        spaceName + ' (' + tabsets.length.toString() + ')' :
+        spaceName
   }
   return tabsets.length > 6 ? 'My Tabsets (' + tabsets.length.toString() + ')' : 'My Tabsets'
 }
@@ -523,6 +532,9 @@ const tabsetIcon = (tabset: Tabset) => {
   }
   return icon
 }
+
+const focusOnTabset = (tabset: Tabset) => router.push("/sidepanel/tabsets/" + tabset.id)
+
 
 </script>
 

@@ -39,7 +39,7 @@
 
       </template>
 
-      <template v-if="false">
+      <template v-if="true">
         <q-separator/>
         <ContextMenuItem
           icon="keyboard_arrow_right"
@@ -53,6 +53,24 @@
               <q-item dense clickable v-close-popup @click="sharePublicly(tabset.id)">
                 <q-item-section>Share publicly</q-item-section>
               </q-item>
+
+              <q-item v-if="tabset.sharing === TabsetSharing.PUBLIC"
+                      @click="openPublicShare(tabset.id)"
+                      clickable v-close-popup>
+                <q-item-section>Open public page</q-item-section>
+              </q-item>
+              <q-item v-if="tabset.sharing === TabsetSharing.PUBLIC"
+                      @click="copyPublicShareToClipboard(tabset.id)"
+                      clickable v-close-popup>
+                <q-item-section>Copy public page link</q-item-section>
+              </q-item>
+              <q-item v-if="tabset.sharing === TabsetSharing.PUBLIC"
+                      clickable v-close-popup
+                      @click="removePublicShare(tabset.id)">
+                <q-item-section>Remove public share</q-item-section>
+              </q-item>
+
+
             </q-list>
           </q-menu>
 
@@ -119,7 +137,7 @@ import {useSettingsStore} from "stores/settingsStore";
 import {useSearchStore} from "stores/searchStore";
 import NavigationService from "src/services/NavigationService";
 import EditTabsetDialog from "components/dialogues/EditTabsetDialog.vue";
-import {useQuasar} from "quasar";
+import {openURL, useQuasar} from "quasar";
 import {useUtils} from "src/services/Utils";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {RestoreTabsetCommand} from "src/domain/tabsets/RestoreTabset";
@@ -130,6 +148,9 @@ import ContextMenuItem from "pages/sidepanel/helper/ContextMenuItem.vue";
 import {PropType} from "vue";
 import {ShareTabsetCommand} from "src/domain/tabsets/ShareTabset";
 import {UnShareTabsetCommand} from "src/domain/tabsets/UnShareTabset";
+import {useTabsetService} from "src/services/TabsetService2";
+import {Tab} from "src/models/Tab";
+import {CopyToClipboardCommand} from "src/domain/commands/CopyToClipboard";
 
 const {inBexMode, sanitize, sendMsg} = useUtils()
 
@@ -138,6 +159,8 @@ const $q = useQuasar()
 const props = defineProps({
   tabset: {type: Object as PropType<Tabset>, required: true}
 })
+
+const publictabsetsPath = "https://tabsets.web.app/#/tabsets/"
 
 const startTabsetNote = (tabset: Tabset) => {
   const url = chrome.runtime.getURL('www/index.html') + "#/mainpanel/notes/?tsId=" + tabset.id + "&edit=true"
@@ -167,6 +190,34 @@ const unpin = (tabset: Tabset) =>
 
 const sharePublicly = (tabsetId: string) => useCommandExecutor().executeFromUi(new ShareTabsetCommand(tabsetId, TabsetSharing.PUBLIC))
 const removePublicShare = (tabsetId: string) => useCommandExecutor().executeFromUi(new UnShareTabsetCommand(tabsetId))
+
+const openPublicShare = (tabsetId: string) => {
+  const ts = useTabsetService().getTabset(tabsetId)
+  if (ts && ts.sharedId) {
+    openURL(getPublicTabsetLink(ts))
+  }
+}
+
+const copyPublicShareToClipboard = (tabsetId: string) => {
+  const ts = useTabsetService().getTabset(tabsetId)
+  if (ts && ts.sharedId) {
+    useCommandExecutor().executeFromUi(new CopyToClipboardCommand(getPublicTabsetLink(ts)))
+  }
+}
+
+const getPublicTabsetLink = (ts: Tabset) => {
+  let image = "https://tabsets.web.app/favicon.ico"
+  if (ts && ts.sharedId) {
+    ts.tabs.reverse().forEach((t: Tab) => {
+      if (t.image) {
+        image = t.image
+      }
+    })
+    return publictabsetsPath + ts.sharedId + "?n=" + btoa(ts.name) + "&i=" + btoa(image)
+  }
+  return image
+}
+
 
 const deleteTabsetDialog = (tabset: Tabset) => {
   $q.dialog({

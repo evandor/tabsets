@@ -75,16 +75,19 @@
               <q-tooltip class="tooltip" v-else>Start new Session</q-tooltip>
             </q-btn>
 
-            <q-btn v-if="showCreateClipButton()"
-                   icon="filter_center_focus"
-                   color="black"
-                   flat
-                   class="q-ma-none q-pa-xs cursor-pointer"
-                   style="max-width:20px"
-                   size="10px"
-                   @click="createClip">
-              <q-tooltip class="tooltip">{{ createWebsiteClipTooltip() }}</q-tooltip>
-            </q-btn>
+            <template v-if="showCreateClipButton()">
+              <q-btn
+                  icon="filter_center_focus"
+                  color="black"
+                  flat
+                  class="q-ma-none q-pa-xs cursor-pointer"
+                  style="max-width:20px"
+                  size="10px"
+                  @click="createClip">
+                <q-tooltip class="tooltip">{{ createWebsiteClipTooltip() }}</q-tooltip>
+              </q-btn>
+              <span class="q-ma-none q-pa-none q-mx-sm text-grey-5">|</span>
+            </template>
 
             <q-btn
                 v-if="showCreateClipButtonInActive()"
@@ -97,22 +100,23 @@
               <q-tooltip class="tooltip">cannot create web clip for this tab</q-tooltip>
             </q-btn>
 
-            <span v-if=" showSearchIcon()" class="q-ma-none q-pa-none q-mx-sm text-grey-5">|</span>
 
-            <q-btn v-if="showSearchIcon()"
-                   id="toggleSearchBtn"
-                   icon="search"
-                   color="black"
-                   flat
-                   class="q-ma-none q-pa-xs cursor-pointer"
-                   style="max-width:20px"
-                   size="11px"
-                   @click="toggleSearch">
-              <q-tooltip class="tooltip">Search</q-tooltip>
-            </q-btn>
+            <template v-if=" showSearchIcon()">
+              <q-btn
+                  id="toggleSearchBtn"
+                  icon="search"
+                  color="black"
+                  flat
+                  class="q-ma-none q-pa-xs cursor-pointer"
+                  style="max-width:20px"
+                  size="11px"
+                  @click="toggleSearch">
+                <q-tooltip class="tooltip">Search</q-tooltip>
+              </q-btn>
+              <span class="q-ma-none q-pa-none q-mx-sm text-grey-5">|</span>
+            </template>
 
             <template v-if="showSuggestionIcon()">
-              <span class="q-ma-none q-pa-none q-mx-sm text-grey-5">|</span>
 
               <q-btn
                   icon="o_assistant"
@@ -139,10 +143,10 @@
                   </q-item>
                 </q-list>
               </q-menu>
-            </template>
 
-            <span v-if="showSearchIcon()"
-                  class="q-ma-none q-pa-none q-mx-sm text-grey-5">|</span>
+              <span class="q-ma-none q-pa-none q-mx-sm text-grey-5">|</span>
+
+            </template>
 
             <q-btn
                 icon="o_add_circle"
@@ -184,7 +188,7 @@ import ChromeApi from "src/services/ChromeApi";
 import SearchWithTransitionHelper from "pages/sidepanel/helper/SearchWithTransitionHelper.vue";
 import {useWindowsStore} from "../../../stores/windowsStores";
 import {useSuggestionsStore} from "stores/suggestionsStore";
-import {Suggestion, SuggestionState} from "src/models/Suggestion";
+import {Suggestion, SuggestionState, SuggestionType} from "src/models/Suggestion";
 import SuggestionDialog from "components/dialogues/SuggestionDialog.vue";
 
 const props = defineProps({
@@ -261,7 +265,14 @@ const showSortIcon = () => false
 
 const showSuggestionIcon = () =>
     useUiStore().sidePanelActiveViewIs(SidePanelView.MAIN) &&
-    _.findIndex(useSuggestionsStore().getSuggestions(), s => s.state === SuggestionState.NEW) >= 0
+    _.findIndex(useSuggestionsStore().getSuggestions(), s => {
+      if (!usePermissionsStore().hasFeature(FeatureIdent.RSS)) {
+        return s.state === SuggestionState.NEW && s.type !== SuggestionType.RSS
+      }
+      return s.state === SuggestionState.NEW
+    }) >= 0 &&
+    !searching.value
+
 !searching.value
 
 const showSearchIcon = () => tabsStore.tabsets.size > 1

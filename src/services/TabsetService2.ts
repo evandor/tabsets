@@ -150,16 +150,14 @@ export function useTabsetService() {
     const tabsStore = useTabsStore()
     const now = new Date().getTime()
     const tabs = _.map(_.filter(bms, bm => bm.url !== undefined), c => {
-      const tab = new Tab(uid(), null as unknown as chrome.tabs.Tab)
+      const tab = new Tab(uid(), ChromeApi.createChromeTabObject(c.title, c.url || '', ""))
       tab.bookmarkUrl = c.url
       tab.bookmarkId = c.id
       tab.created = c.dateAdded || 0
       tab.updated = now
-      tab.title = c.title
-      tab.url = c.url
-      //tab.chromeTab = ChromeApi.createChromeTabObject(c.title || '', c.url || '', '')
       return tab
     })
+
     const result = await tabsStore.updateOrCreateTabset(name, tabs, merge)
     if (result && result.tabset) {
       await saveTabset(result.tabset)

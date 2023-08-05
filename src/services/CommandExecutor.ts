@@ -12,7 +12,7 @@ export function useCommandExecutor() {
             .then((res) => handleSuccess(res))
             //.then(() => logger.debug("command finished"))
             .catch(err => {
-                console.log("error in command", command.toString())
+                console.log("error in command", command)
                 handleError(err)
                 return new ExecutionResult(null, err)
             })
@@ -22,7 +22,7 @@ export function useCommandExecutor() {
         console.debug("executing command", command)
         return command.execute()
             .catch(err => {
-                console.log("error in command", command.toString())
+                console.log("error in command", command)
                 handleError(err)
                 return new ExecutionResult(null, err)
             })
