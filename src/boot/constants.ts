@@ -8,7 +8,7 @@ const EXPIRE_DATA_PERIOD_IN_MINUTES = 60 // in prod: 60
 
 const SPECIAL_ID_FOR_NO_GROUP_ASSIGNED = "no_group_assigned_identifier"
 
-const STRIP_CHARS_IN_USER_INPUT = /[`@#$%^*=\[\]{};':"\\|<>\/~]/;
+const STRIP_CHARS_IN_USER_INPUT = /[`@#$%^*=\[\]{};:"\\|<>\/~]/;
 
 const TAXONOMY = 'webshrinker' // or 'iabv1'
 

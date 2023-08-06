@@ -1,9 +1,10 @@
 import Command from "src/domain/Command";
 import {ExecutionResult} from "src/domain/ExecutionResult";
 import {Tab} from "src/models/Tab";
-import {Tabset} from "src/models/Tabset";
+import {Tabset, TabsetSharing} from "src/models/Tabset";
 import {useTabsetService} from "src/services/TabsetService2";
 import {useUtils} from "src/services/Utils";
+import {useTabsStore} from "stores/tabsStore";
 
 const {addToTabset, deleteTab} = useTabsetService()
 const {inBexMode, sendMsg} = useUtils()
@@ -29,6 +30,13 @@ export class DeleteTabCommand implements Command<Tabset> {
 
   async execute(): Promise<ExecutionResult<Tabset>> {
     return deleteTab(this.tab)
+      .then((tabset: Tabset) => {
+        // sharing
+        if (tabset.sharedId && tabset.sharing === TabsetSharing.PUBLIC) {
+          tabset.sharing = TabsetSharing.PUBLIC_OUTDATED
+        }
+        return tabset
+      })
       .then(tabset => Promise.resolve(new ExecutionResult(
         tabset,
         "Tab was deleted",

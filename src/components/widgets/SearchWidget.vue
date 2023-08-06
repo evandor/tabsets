@@ -1,7 +1,8 @@
 <template>
 
   <div class="q-gutter-md row items-start fit">
-    <q-select dense standout filled autofocus
+<!--    <q-select dense standout filled autofocus-->
+    <q-input dense standout filled autofocus
               :placeholder="inputPlaceholder()"
               class="fit q-mx-md"
               color="primary"
@@ -73,7 +74,7 @@
         </q-item>
       </template>
 
-    </q-select>
+    </q-input>
   </div>
 
 
@@ -232,12 +233,12 @@ const inputPlaceholder = () => {
   if (usePermissionsStore().hasFeature(FeatureIdent.BOOKMARKS)) {
     const contentCount = useSearchStore().stats.get("content.count")
     // return `Search in ${tabsStore.allTabsCount} tabs (${contentCount} analysed) and ${useBookmarksStore().bookmarksLeaves.length} bookmarks`
-    return `Search in ${tabsStore.allTabsCount} tabs and ${useBookmarksStore().bookmarksLeaves.length} bookmarks`
+    return `Search in all tabs and bookmarks`
   }
   if (usePermissionsStore().hasFeature(FeatureIdent.BOOKMARKS)) {
-    return "Search in " + tabsStore.allTabsCount + " tabs and " + useBookmarksStore().bookmarksLeaves.length + " bookmarks"
+    return "Search in all tabs and bookmarks"
   }
-  return "Search in " + tabsStore.allTabsCount + " tabs"
+  return "Search in all tabs"
 }
 
 const clearSearch = () => {

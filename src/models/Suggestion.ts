@@ -48,7 +48,7 @@ export class Suggestion {
       .setImage('o_space_dashboard'),
     new Suggestion(StaticSuggestionIdent.TRY_NEWEST_TABS_FEATURE,
         "Want to try a new feature?",
-        "Check out the recommended 'Newest Tabs' feature to get a view of your tabs sorted by creation date",
+        "Click here to check it out",
         "/features/newest_tabs",
         SuggestionType.FEATURE)
         .setImage('o_schedule')

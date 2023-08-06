@@ -2,14 +2,14 @@
   <q-dialog ref="dialogRef" @hide="onDialogHide">
     <q-card class="q-dialog-plugin">
       <q-card-section>
-        <div class="text-h6">Deleting Tabset</div>
+        <div class="text-h6">Delete Tabset</div>
       </q-card-section>
       <q-card-section>
-        <div class="text-body">Would you like to delete the tabset {{ props.tabsetName }}?</div>
+        <div class="text-body">Would you like to delete the tabset: {{ props.tabsetName }}?</div>
       </q-card-section>
       <q-card-actions align="right" class="text-primary">
-        <q-btn flat label="Cancel" @click="onDialogCancel"/>
-        <q-btn flat label="Delete Tabset"
+        <q-btn outline color="accent" label="Cancel" @click="onDialogCancel"/>
+        <q-btn outline color="negative" label="Delete"
                v-close-popup
                @click="deleteTabset()"/>
       </q-card-actions>

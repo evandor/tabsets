@@ -111,7 +111,6 @@
                   style="max-width:20px"
                   size="11px"
                   @click="toggleSearch">
-                <q-tooltip class="tooltip">Search</q-tooltip>
               </q-btn>
               <span class="q-ma-none q-pa-none q-mx-sm text-grey-5">|</span>
             </template>
@@ -119,15 +118,12 @@
             <template v-if="showSuggestionIcon()">
 
               <q-btn
-                  icon="o_assistant"
+                  icon="o_lightbulb"
                   :color="dependingOnStates()"
                   flat
                   class="q-ma-none q-pa-xs cursor-pointer"
                   style="max-width:20px"
                   size="10px">
-                <q-tooltip class="tooltip" anchor="center right" self="center left" :delay="200">You have suggestions
-                </q-tooltip>
-
               </q-btn>
               <q-menu :offset="[-30, 7]">
                 <q-list style="min-width: 200px">
@@ -150,11 +146,11 @@
 
             <q-btn
                 icon="o_add_circle"
-                color="black"
+                color="warning"
                 flat
                 class="q-ma-none q-pa-xs cursor-pointer"
                 style="max-width:20px"
-                size="10px"
+                size="12px"
                 @click="openNewTabsetDialog()">
               <q-tooltip class="tooltip">{{ newTabsetTooltip() }}</q-tooltip>
             </q-btn>
@@ -177,7 +173,7 @@ import {useRouter} from "vue-router";
 import {ref, watchEffect} from "vue";
 import {SidePanelView, useUiStore} from "stores/uiStore";
 import NewTabsetDialog from "components/dialogues/NewTabsetDialog.vue";
-import {QPopupEdit, useQuasar} from "quasar";
+import {useQuasar} from "quasar";
 import {Tabset, TabsetType} from "src/models/Tabset";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {ToggleSortingCommand} from "src/domain/tabsets/ToggleSorting";
@@ -206,7 +202,6 @@ const router = useRouter()
 const tabsStore = useTabsStore()
 
 const searching = ref(false)
-const popupEditRef = ref<QPopupEdit>()
 const existingSession = ref(false)
 
 const toggleSearch = () => searching.value = !searching.value
@@ -266,6 +261,9 @@ const showSortIcon = () => false
 const showSuggestionIcon = () =>
     useUiStore().sidePanelActiveViewIs(SidePanelView.MAIN) &&
     _.findIndex(useSuggestionsStore().getSuggestions(), s => {
+      if (s.state === SuggestionState.APPLIED || s.state === SuggestionState.IGNORED) {
+        return false
+      }
       if (!usePermissionsStore().hasFeature(FeatureIdent.RSS)) {
         return s.state === SuggestionState.NEW && s.type !== SuggestionType.RSS
       }

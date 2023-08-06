@@ -1,6 +1,6 @@
 <template>
 
-  <q-item v-ripple autofocus class="q-mb-lg">
+  <q-item v-ripple class="q-mb-lg" @click="NavigationService.openOrCreateTab(hit.url )">
 
     <q-item-section v-if="useUiStore().listDetailLevelGreaterEqual(ListDetailLevel.MEDIUM)"
                     class="q-mr-sm text-right" style="justify-content:start;width:25px;max-width:25px">

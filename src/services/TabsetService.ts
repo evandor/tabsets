@@ -435,6 +435,15 @@ class TabsetService {
     if (oldIndex >= 0) {
       const tab = tabs.splice(oldIndex, 1)[0];
       tabs.splice(newIndex, 0, tab);
+
+      // Sharing
+      const currentTs = useTabsStore().getCurrentTabset
+      if (currentTs) {
+        if (currentTs.sharedId && currentTs.sharing === TabsetSharing.PUBLIC) {
+          currentTs.sharing = TabsetSharing.PUBLIC_OUTDATED
+        }
+      }
+
       saveCurrentTabset()
     }
   }
@@ -536,7 +545,7 @@ class TabsetService {
     return Promise.reject("could not change status : " + tabsetId)
   }
 
-  share(tabsetId: string, sharing: TabsetSharing, sharedBy: string | undefined): Promise<TabsetSharing> {
+  share(tabsetId: string, sharing: TabsetSharing, sharedId: string | undefined, sharedBy: string | undefined): Promise<TabsetSharing> {
     console.debug(`sharing ${tabsetId} as ${sharing}`)
     const ts = getTabset(tabsetId)
     if (ts) {
@@ -544,7 +553,14 @@ class TabsetService {
       ts.sharing = sharing
       ts.sharedBy = sharedBy
       if (sharing === TabsetSharing.UNSHARED) {
-        return FirebaseCall.delete("/share/public/xxx")
+        return FirebaseCall.delete("/share/public/" + sharedId)
+      } else if (sharedId) {
+        return FirebaseCall.put("/share/public/" + sharedId, ts)
+          .then((res: any) => {
+            //ts.sharedId = res.data.sharedId
+            return saveTabset(ts)
+              .then(() => oldSharing)
+          })
       } else {
         return FirebaseCall.post("/share/public", ts)
           .then((res: any) => {

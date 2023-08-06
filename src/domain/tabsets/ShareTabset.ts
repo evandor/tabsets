@@ -10,16 +10,18 @@ export class ShareTabsetCommand implements Command<any> {
 
   constructor(
     public tabsetId: string,
-    public sharing: TabsetSharing) {
+    public sharedId: string | undefined,
+    public sharing: TabsetSharing,
+    public republish: boolean = false) {
   }
 
   async execute(): Promise<ExecutionResult<any>> {
     const sharedBy = useAuthStore().user.name
-    return TabsetService.share(this.tabsetId, this.sharing, sharedBy || "unknown")
+    return TabsetService.share(this.tabsetId, this.sharing, this.sharedId, sharedBy || "unknown")
       .then(oldSharing => Promise.resolve(
         new ExecutionResult(
           oldSharing,
-          "The tabset is shared now.",
+          this.republish ? "The tabset has been republished" : "The tabset is shared now.",
           new UnShareTabsetCommand(this.tabsetId)))
       )
       .catch(err => Promise.reject(err))

@@ -33,10 +33,13 @@
                   <q-tooltip class="tooltip">This tabset is pinned for easier access</q-tooltip>
                 </q-icon>
                 <q-icon v-if="tabset.sharedId"
-                        color="primary"
+                        :color="tabset.sharing.toString().toLowerCase().indexOf('_outdated') >= 0 ? 'warning' : 'primary'"
                         name="share"
                         style="position: relative;top:-2px">
-                  <q-tooltip class="tooltip">This tabset is shared</q-tooltip>
+                  <q-tooltip class="tooltip" v-if="tabset.sharing.toString().toLowerCase().indexOf('_outdated') >= 0">
+                    This tabset is shared but has been changed in the meantime. You need to re-publish.
+                  </q-tooltip>
+                  <q-tooltip v-else class="tooltip">This tabset is shared</q-tooltip>
                 </q-icon>
                 {{ tabset.name }}
               </q-item-label>
@@ -104,10 +107,10 @@ import {onMounted, onUnmounted, ref, watchEffect} from "vue";
 import {useTabsStore} from "src/stores/tabsStore";
 import {Tab} from "src/models/Tab";
 import _ from "lodash"
-import {Tabset, TabsetStatus, TabsetType} from "src/models/Tabset";
+import {Tabset, TabsetSharing, TabsetStatus, TabsetType} from "src/models/Tabset";
 import {useRoute, useRouter} from "vue-router";
 import {useUtils} from "src/services/Utils";
-import {scroll, uid, useQuasar} from "quasar";
+import {scroll, useQuasar} from "quasar";
 import {useTabsetService} from "src/services/TabsetService2";
 import {useUiStore} from "src/stores/uiStore";
 import PanelTabList from "components/layouts/PanelTabList.vue";
@@ -119,13 +122,10 @@ import {useCommandExecutor} from "src/services/CommandExecutor";
 import {SelectTabsetCommand} from "src/domain/tabsets/SelectTabset";
 import {FeatureIdent} from "src/models/AppFeature";
 import SidePanelPageContextMenu from "pages/sidepanel/SidePanelPageContextMenu.vue";
-import NewTabsetDialog from "components/dialogues/NewTabsetDialog.vue";
-import getScrollTarget = scroll.getScrollTarget;
 import {DynamicTabSourceType} from "src/models/DynamicTabSource";
-import {AddTabToTabsetCommand} from "src/domain/tabs/AddTabToTabset";
 import {useWindowsStore} from "../stores/windowsStores";
-import {MarkTabsetDeletedCommand} from "src/domain/tabsets/MarkTabsetDeleted";
 import TabsetService from "src/services/TabsetService";
+import getScrollTarget = scroll.getScrollTarget;
 
 
 const {setVerticalScrollPosition} = scroll

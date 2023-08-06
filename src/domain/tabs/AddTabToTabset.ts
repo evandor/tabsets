@@ -5,15 +5,7 @@ import {Tab} from "src/models/Tab";
 import _ from "lodash";
 import {useTabsStore} from "src/stores/tabsStore";
 import {useTabsetService} from "src/services/TabsetService2";
-import {DeleteTabCommand} from "src/domain/tabs/DeleteTabCommand";
-import {useSearchStore} from "src/stores/searchStore";
-import {uid} from "quasar";
-import {useUiStore} from "src/stores/uiStore";
-import {Tabset} from "src/models/Tabset";
-import {usePermissionsStore} from "stores/permissionsStore";
-import {FeatureIdent} from "src/models/AppFeature";
-import {api} from "boot/axios";
-import { TAXONOMY } from "src/boot/constants";
+import {Tabset, TabsetSharing} from "src/models/Tabset";
 import {useUtils} from "src/services/Utils";
 
 const {saveCurrentTabset, saveTabset} = useTabsetService()
@@ -37,6 +29,12 @@ export class AddTabToTabsetCommand implements Command<any> {
     if (!exists) {
       return useTabsetService().addToTabsetId(this.tabset.id, this.tab, 0)
         .then((tabset) => {
+
+          // Sharing
+          if (tabset.sharedId && tabset.sharing === TabsetSharing.PUBLIC) {
+            tabset.sharing = TabsetSharing.PUBLIC_OUTDATED
+          }
+
           // the tab has been added to the tabset, but not saved yet
           return TabsetService.getContentFor(this.tab)
             .then((content) => {

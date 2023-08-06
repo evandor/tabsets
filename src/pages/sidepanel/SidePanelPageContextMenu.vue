@@ -50,21 +50,25 @@
           </q-item-section>
           <q-menu anchor="top end" self="top start">
             <q-list>
-              <q-item dense clickable v-close-popup @click="sharePublicly(tabset.id)">
+              <q-item v-if="tabset.sharing === TabsetSharing.UNSHARED"
+                      dense clickable v-close-popup @click="shareTabsetPubliclyDialog(tabset)">
                 <q-item-section>Share publicly</q-item-section>
               </q-item>
-
-              <q-item v-if="tabset.sharing === TabsetSharing.PUBLIC"
+              <q-item v-if="tabset.sharing === TabsetSharing.PUBLIC_OUTDATED"
+                      dense clickable v-close-popup @click="shareTabsetPubliclyDialog(tabset, true)">
+                <q-item-section>Republish shared tabset</q-item-section>
+              </q-item>
+              <q-item v-if="tabset.sharing === TabsetSharing.PUBLIC || tabset.sharing === TabsetSharing.PUBLIC_OUTDATED"
                       @click="openPublicShare(tabset.id)"
                       clickable v-close-popup>
                 <q-item-section>Open public page</q-item-section>
               </q-item>
-              <q-item v-if="tabset.sharing === TabsetSharing.PUBLIC"
+              <q-item v-if="tabset.sharing === TabsetSharing.PUBLIC || tabset.sharing === TabsetSharing.PUBLIC_OUTDATED"
                       @click="copyPublicShareToClipboard(tabset.id)"
                       clickable v-close-popup>
                 <q-item-section>Copy public page link</q-item-section>
               </q-item>
-              <q-item v-if="tabset.sharing === TabsetSharing.PUBLIC"
+              <q-item v-if="tabset.sharing === TabsetSharing.PUBLIC || tabset.sharing === TabsetSharing.PUBLIC_OUTDATED"
                       clickable v-close-popup
                       @click="removePublicShare(tabset.id)">
                 <q-item-section>Remove public share</q-item-section>
@@ -146,11 +150,11 @@ import {MarkTabsetAsDefaultCommand} from "src/domain/tabsets/MarkTabsetAsDefault
 import DeleteTabsetDialog from "components/dialogues/DeleteTabsetDialog.vue";
 import ContextMenuItem from "pages/sidepanel/helper/ContextMenuItem.vue";
 import {PropType} from "vue";
-import {ShareTabsetCommand} from "src/domain/tabsets/ShareTabset";
 import {UnShareTabsetCommand} from "src/domain/tabsets/UnShareTabset";
 import {useTabsetService} from "src/services/TabsetService2";
 import {Tab} from "src/models/Tab";
 import {CopyToClipboardCommand} from "src/domain/commands/CopyToClipboard";
+import ShareTabsetPubliclyDialog from "components/dialogues/ShareTabsetPubliclyDialog.vue";
 
 const {inBexMode, sanitize, sendMsg} = useUtils()
 
@@ -160,7 +164,8 @@ const props = defineProps({
   tabset: {type: Object as PropType<Tabset>, required: true}
 })
 
-const publictabsetsPath = "https://tabsets.web.app/#/tabsets/"
+//const publictabsetsPath = "https://tabsets.web.app/#/tabsets/"
+const publictabsetsPath = "https://public.tabsets.net/tabsets/"
 
 const startTabsetNote = (tabset: Tabset) => {
   const url = chrome.runtime.getURL('www/index.html') + "#/mainpanel/notes/?tsId=" + tabset.id + "&edit=true"
@@ -188,7 +193,6 @@ const pin = (tabset: Tabset) =>
 const unpin = (tabset: Tabset) =>
   useCommandExecutor().executeFromUi(new MarkTabsetAsDefaultCommand(tabset.id))
 
-const sharePublicly = (tabsetId: string) => useCommandExecutor().executeFromUi(new ShareTabsetCommand(tabsetId, TabsetSharing.PUBLIC))
 const removePublicShare = (tabsetId: string) => useCommandExecutor().executeFromUi(new UnShareTabsetCommand(tabsetId))
 
 const openPublicShare = (tabsetId: string) => {
@@ -225,6 +229,18 @@ const deleteTabsetDialog = (tabset: Tabset) => {
     componentProps: {
       tabsetId: tabset.id,
       tabsetName: tabset.name
+    }
+  })
+}
+
+const shareTabsetPubliclyDialog = (tabset: Tabset, republish: boolean = false) => {
+  $q.dialog({
+    component: ShareTabsetPubliclyDialog,
+    componentProps: {
+      tabsetId: tabset.id,
+      sharedId: tabset.sharedId,
+      tabsetName: tabset.name,
+      republish: republish
     }
   })
 }
