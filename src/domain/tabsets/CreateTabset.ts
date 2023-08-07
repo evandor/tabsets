@@ -9,6 +9,7 @@ import {usePermissionsStore} from "stores/permissionsStore";
 import {FeatureIdent} from "src/models/AppFeature";
 import {useSuggestionsStore} from "stores/suggestionsStore";
 import {StaticSuggestionIdent, Suggestion} from "src/models/Suggestion";
+import JsUtils from "src/utils/JsUtils";
 
 const {inBexMode, sendMsg} = useUtils()
 
@@ -37,6 +38,10 @@ export class CreateTabsetCommand implements Command<SaveOrReplaceResult> {
         try {
             const result: SaveOrReplaceResult = await useTabsetService()
                 .saveOrReplaceFromChromeTabs(this.tabsetName, this.tabsToUse, this.merge)
+                .then(res => {
+                    JsUtils.gaEvent('tabset-created', {"tabsCount": this.tabsToUse.length})
+                    return res
+                })
                 .then(res => {
                         //   if (useTabsStore().tabsets.size === 5 && !usePermissionsStore().hasFeature(FeatureIdent.BOOKMARKS) && process.env.MODE === 'bex') {
                         //     useSuggestionsStore().addSuggestion(Suggestion.getStaticSuggestion(StaticSuggestionIdent.TRY_BOOKMARKS_FEATURE))

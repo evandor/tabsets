@@ -1,8 +1,7 @@
 <template>
 
   <div class="q-gutter-md row items-start fit">
-<!--    <q-select dense standout filled autofocus-->
-    <q-input dense standout filled autofocus
+    <q-select dense standout filled autofocus
               :placeholder="inputPlaceholder()"
               class="fit q-mx-md"
               color="primary"
@@ -74,7 +73,7 @@
         </q-item>
       </template>
 
-    </q-input>
+    </q-select>
   </div>
 
 

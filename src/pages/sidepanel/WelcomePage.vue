@@ -28,7 +28,7 @@
           <q-icon name="check" color="primary" class="q-mr-xs"/>
           ... and add tabs later
         </q-card-section>
-        <q-card-section>
+        <q-card-section class="q-pb-none">
           <q-input v-model="tabsetName"
                    dense
                    autofocus
@@ -38,7 +38,7 @@
                    @keydown.enter="addFirstTabset()"
                    label="Name"/>
         </q-card-section>
-        <q-card-actions align="right">
+        <q-card-actions align="right" class="q-pr-md q-pb-md q-ma-none">
           <q-btn
               outline
               :disable="tabsetName.trim().length === 0 || !newTabsetNameIsValid()"

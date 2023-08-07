@@ -177,6 +177,7 @@ const existingSession = ref(false)
 const toggleSearch = () => {
   searching.value = !searching.value
   if (searching.value) {
+    // comment out for old search approach (plus SearchWidget2 -> SearchWidget)
     router.push("/sidepanel/search")
   }
 }

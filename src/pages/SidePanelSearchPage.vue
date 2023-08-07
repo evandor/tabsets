@@ -7,8 +7,17 @@
       <div class="col-12 q-ma-none q-pa-none">
 
         <q-list  class="q-ma-none">
-          <template v-for="hit in tabsetHits">
+          <template v-for="hit in tabsetHits" v-if="tabsetHits.length > 0">
             <SearchHit :hit="hit"/>
+          </template>
+          <template v-else>
+            <div class="q-pa-md row items-start q-gutter-md fit">
+              <q-card class="my-card fit">
+                <q-card-section class="text-caption">
+                  No Hits, please start typing or refine your search
+                </q-card-section>
+              </q-card>
+            </div>
           </template>
         </q-list>
 
@@ -125,20 +134,20 @@ const newSearch = (term: string) => {
       }
       tabsetHits.value.push(theHit)
     })
-    console.log("added hits", tabsetHits.value)
+    //console.log("added hits", tabsetHits.value)
   }
 }
 
 //console.log("termFromParams", termFromParams, route.query)
 watchEffect(() => {
   if (termFromParams && termFromParams.trim() !== '') {
-    console.log("setting search term from params", termFromParams)
+   // console.log("setting search term from params", termFromParams)
     searchStore.term = termFromParams
   }
 })
 
 watchEffect(() => {
-  // console.log("watch effect: searchStore.term", searchStore.term)
+  //console.log("watch effect: searchStore.term", searchStore.term)
   if (searchStore.term?.trim() !== '') {
     newSearch(searchStore.term)
   }
