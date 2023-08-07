@@ -29,26 +29,26 @@ export class Suggestion {
 
   static staticSuggestions: Suggestion[] = [
     new Suggestion(StaticSuggestionIdent.TRY_TAB_DETAILS_FEATURE.toString(),
-      "Want to try a new feature?",
+      "Try a new feature?",
       "Maybe you want to try the optional 'Display Tab Details' feature?",
       "/features/details",
       SuggestionType.FEATURE)
       .setImage('o_info'),
     new Suggestion(StaticSuggestionIdent.TRY_BOOKMARKS_FEATURE,
-      "Want to try a new feature?",
+        "Try a new feature?",
       "Maybe you want to try the optional 'Bookmarks' feature?",
       "/features/bookmarks",
       SuggestionType.FEATURE)
       .setImage('o_bookmarks'),
     new Suggestion(StaticSuggestionIdent.TRY_SPACES_FEATURE,
-      "Want to try a new feature?",
+        "Try a new feature?",
       "Check out the optional 'Spaces' feature and get another level of organization",
       "/features/spaces",
       SuggestionType.FEATURE)
       .setImage('o_space_dashboard'),
     new Suggestion(StaticSuggestionIdent.TRY_NEWEST_TABS_FEATURE,
-        "Want to try a new feature?",
-        "Click here to check it out",
+        "Try a new feature?",
+        "Get a view of your newest tabs",
         "/features/newest_tabs",
         SuggestionType.FEATURE)
         .setImage('o_schedule')

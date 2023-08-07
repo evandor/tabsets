@@ -1,8 +1,9 @@
 <template>
 
-  <q-item v-ripple class="q-mb-lg" @click="NavigationService.openOrCreateTab(hit.url )">
+  <q-item v-ripple class="q-mb-lg">
 
     <q-item-section v-if="useUiStore().listDetailLevelGreaterEqual(ListDetailLevel.MEDIUM)"
+                    @click.stop="NavigationService.openOrCreateTab(hit.url || '' )"
                     class="q-mr-sm text-right" style="justify-content:start;width:25px;max-width:25px">
       <div class="bg-grey-3 q-pa-xs" style="border:0 solid grey;border-radius:3px">
 
@@ -19,7 +20,8 @@
     </q-item-section>
 
     <!-- name, title, description, url && note -->
-    <q-item-section class="q-mb-sm">
+    <q-item-section class="q-mb-sm cursor-pointer ellipsis"
+                    @click.stop="NavigationService.openOrCreateTab(hit.url || '' )">
 
       <!-- name or title -->
 
@@ -45,29 +47,10 @@
         <div class="row q-ma-none">
           <div class="col-10 q-pr-lg cursor-pointer"
                @click.stop="NavigationService.openOrCreateTab(hit.url )">
-
-
-            <!-- url or note -->
-
             <short-url :url="hit.url" :hostname-only="true"/>
-
-            <template v-for="badge in tabsetBadges(hit)">
-              <q-chip v-if="badge.bookmarkId"
-                      class="cursor-pointer q-ml-md" size="9px" clickable icon="o_bookmark" color="warning"
-                      @click="openBookmark(badge)">
-                {{ badge.label }}
-              </q-chip>
-              <q-chip v-else
-                      class="cursor-pointer q-ml-md" size="9px" clickable icon="tab" @click="openTabset(badge)">
-                {{ badge.label }}
-              </q-chip>
-            </template>
-
-
             <!--            <div class="text-caption text-grey-5">-->
             <!--              {{ formatDate(hit.lastActive) }}-->
             <!--            </div>-->
-
             <!-- <q-icon class="q-ml-xs" name="open_in_new"/>-->
           </div>
 
@@ -75,6 +58,19 @@
 
       </q-item-label>
 
+      <q-item-label>
+        <template v-for="badge in tabsetBadges(hit)">
+          <q-chip v-if="badge.bookmarkId"
+                  class="cursor-pointer q-ml-none q-mr-sm" size="9px" clickable icon="o_bookmark" color="warning"
+                  @click="openBookmark(badge)">
+            {{ badge.label }}
+          </q-chip>
+          <q-chip v-else
+                  class="cursor-pointer q-ml-none q-mr-sm" size="9px" clickable icon="tab" @click="openTabset(badge)">
+            {{ badge.label }}
+          </q-chip>
+        </template>
+      </q-item-label>
       <!--      &lt;!&ndash; note &ndash;&gt;-->
       <!--      <q-item-label v-if="useUiStore().listDetailLevelGreaterEqual(ListDetailLevel.LARGE) &&-->
       <!--      props['tab' as keyof object]['note']"-->
@@ -98,51 +94,51 @@
 
   </q-item>
 
-<!--  <q-item v-ripple autofocus class="q-mb-lg">-->
+  <!--  <q-item v-ripple autofocus class="q-mb-lg">-->
 
-<!--    <q-item-section>-->
-<!--      <q-item-label class="ellipsis text-black" caption-->
-<!--                    v-html="formatText(hit, 'url',hit.url || '', '#FFFFDD')"></q-item-label>-->
-<!--      <q-item-label class="text-blue-9 text-h6">-->
+  <!--    <q-item-section>-->
+  <!--      <q-item-label class="ellipsis text-black" caption-->
+  <!--                    v-html="formatText(hit, 'url',hit.url || '', '#FFFFDD')"></q-item-label>-->
+  <!--      <q-item-label class="text-blue-9 text-h6">-->
 
-<!--        <FaviconWidget :url="hit.url" :favicon="hit.favIconUrl"/>-->
+  <!--        <FaviconWidget :url="hit.url" :favicon="hit.favIconUrl"/>-->
 
-<!--        <span class="cursor-pointer underline-on-hover q-ml-sm text-subtitle1" style="font-weight:400"-->
-<!--              @click="NavigationService.openOrCreateTab(hit.url )"-->
-<!--              v-html="formatText(hit, 'title',hit.title || '', '#FFFFDD')"></span>-->
-<!--        <template v-for="badge in tabsetBadges(hit)">-->
-<!--          <q-chip v-if="badge.bookmarkId"-->
-<!--                  class="cursor-pointer q-ml-md" size="9px" clickable icon="o_bookmark" color="warning"-->
-<!--                  @click="openBookmark(badge)">-->
-<!--            {{ badge.label }}-->
-<!--          </q-chip>-->
-<!--          <q-chip v-else-->
-<!--                  class="cursor-pointer q-ml-md" size="9px" clickable icon="tab" @click="openTabset(badge)">-->
-<!--            {{ badge.label }}-->
-<!--          </q-chip>-->
-<!--        </template>-->
-<!--      </q-item-label>-->
+  <!--        <span class="cursor-pointer underline-on-hover q-ml-sm text-subtitle1" style="font-weight:400"-->
+  <!--              @click="NavigationService.openOrCreateTab(hit.url )"-->
+  <!--              v-html="formatText(hit, 'title',hit.title || '', '#FFFFDD')"></span>-->
+  <!--        <template v-for="badge in tabsetBadges(hit)">-->
+  <!--          <q-chip v-if="badge.bookmarkId"-->
+  <!--                  class="cursor-pointer q-ml-md" size="9px" clickable icon="o_bookmark" color="warning"-->
+  <!--                  @click="openBookmark(badge)">-->
+  <!--            {{ badge.label }}-->
+  <!--          </q-chip>-->
+  <!--          <q-chip v-else-->
+  <!--                  class="cursor-pointer q-ml-md" size="9px" clickable icon="tab" @click="openTabset(badge)">-->
+  <!--            {{ badge.label }}-->
+  <!--          </q-chip>-->
+  <!--        </template>-->
+  <!--      </q-item-label>-->
 
-<!--      <q-item-label caption v-html="formatText(hit, 'description', hit.description || '', '#FFFFDD')"></q-item-label>-->
-<!--      <q-item-label style="font-style:italic" caption-->
-<!--                    v-html="formatText(hit, 'keywords', hit.keywords || '', '#FFFFDD')"></q-item-label>-->
-<!--      <q-item-label class="text-blue-2 q-mb-sm" v-if="settingsStore.isEnabled('debug')">Match in:-->
-<!--        {{ _.map(hit['matches'], m => m['key']).join(", ") }}-->
-<!--      </q-item-label>-->
-<!--      &lt;!&ndash;      <q-item-label caption>{{ hit['matches'] }}</q-item-label>&ndash;&gt;-->
+  <!--      <q-item-label caption v-html="formatText(hit, 'description', hit.description || '', '#FFFFDD')"></q-item-label>-->
+  <!--      <q-item-label style="font-style:italic" caption-->
+  <!--                    v-html="formatText(hit, 'keywords', hit.keywords || '', '#FFFFDD')"></q-item-label>-->
+  <!--      <q-item-label class="text-blue-2 q-mb-sm" v-if="settingsStore.isEnabled('debug')">Match in:-->
+  <!--        {{ _.map(hit['matches'], m => m['key']).join(", ") }}-->
+  <!--      </q-item-label>-->
+  <!--      &lt;!&ndash;      <q-item-label caption>{{ hit['matches'] }}</q-item-label>&ndash;&gt;-->
 
-<!--      <span>-->
-<!--        <q-rating-->
-<!--            v-model="scoreAsRating"-->
-<!--            size="13px"-->
-<!--            color="warning"-->
-<!--            readonly-->
-<!--        />-->
-<!--        &lt;!&ndash;        {{ hit.score }}%&ndash;&gt;-->
-<!--      </span>-->
-<!--    </q-item-section>-->
+  <!--      <span>-->
+  <!--        <q-rating-->
+  <!--            v-model="scoreAsRating"-->
+  <!--            size="13px"-->
+  <!--            color="warning"-->
+  <!--            readonly-->
+  <!--        />-->
+  <!--        &lt;!&ndash;        {{ hit.score }}%&ndash;&gt;-->
+  <!--      </span>-->
+  <!--    </q-item-section>-->
 
-<!--  </q-item>-->
+  <!--  </q-item>-->
 
 
 </template>

@@ -101,7 +101,7 @@
             </q-btn>
 
 
-            <template v-if=" showSearchIcon()">
+            <template v-if="showSearchIcon()">
               <q-btn
                   id="toggleSearchBtn"
                   icon="search"
@@ -113,35 +113,6 @@
                   @click="toggleSearch">
               </q-btn>
               <span class="q-ma-none q-pa-none q-mx-sm text-grey-5">|</span>
-            </template>
-
-            <template v-if="showSuggestionIcon()">
-
-              <q-btn
-                  icon="o_lightbulb"
-                  :color="dependingOnStates()"
-                  flat
-                  class="q-ma-none q-pa-xs cursor-pointer"
-                  style="max-width:20px"
-                  size="10px">
-              </q-btn>
-              <q-menu :offset="[-30, 7]">
-                <q-list style="min-width: 200px">
-                  <q-item clickable v-close-popup v-ripple @click="suggestionDialog(s)"
-                          v-for="s in useSuggestionsStore().getSuggestions()">
-                    <q-item-section avatar>
-                      <q-icon color="primary" :name="s.img ? s.img : 'rss_feed'"/>
-                    </q-item-section>
-                    <q-item-section>
-                      <div>{{ s.title }}</div>
-                      <div class="text-caption">{{ s.msg }}</div>
-                    </q-item-section>
-                  </q-item>
-                </q-list>
-              </q-menu>
-
-              <span class="q-ma-none q-pa-none q-mx-sm text-grey-5">|</span>
-
             </template>
 
             <q-btn
@@ -183,7 +154,6 @@ import {StopSessionCommand} from "src/domain/commands/StopSessionCommand";
 import ChromeApi from "src/services/ChromeApi";
 import SearchWithTransitionHelper from "pages/sidepanel/helper/SearchWithTransitionHelper.vue";
 import {useWindowsStore} from "../../../stores/windowsStores";
-import {useSuggestionsStore} from "stores/suggestionsStore";
 import {Suggestion, SuggestionState, SuggestionType} from "src/models/Suggestion";
 import SuggestionDialog from "components/dialogues/SuggestionDialog.vue";
 
@@ -204,18 +174,16 @@ const tabsStore = useTabsStore()
 const searching = ref(false)
 const existingSession = ref(false)
 
-const toggleSearch = () => searching.value = !searching.value
+const toggleSearch = () => {
+  searching.value = !searching.value
+  if (searching.value) {
+    router.push("/sidepanel/search")
+  }
+}
 
 watchEffect(() => {
   if (props.showSearchBox && !searching.value) {
     searching.value = true
-  }
-})
-
-const suggestionDialog = (s: Suggestion) => $q.dialog({
-  component: SuggestionDialog, componentProps: {
-    suggestion: s,
-    fromPanel: true
   }
 })
 
@@ -258,21 +226,6 @@ const showSortIcon = () => false
 // tabsStore.getCurrentTabs.length > 3 &&
 // useUiStore().tabsetsExpanded
 
-const showSuggestionIcon = () =>
-    useUiStore().sidePanelActiveViewIs(SidePanelView.MAIN) &&
-    _.findIndex(useSuggestionsStore().getSuggestions(), s => {
-      if (s.state === SuggestionState.APPLIED || s.state === SuggestionState.IGNORED) {
-        return false
-      }
-      if (!usePermissionsStore().hasFeature(FeatureIdent.RSS)) {
-        return s.state === SuggestionState.NEW && s.type !== SuggestionType.RSS
-      }
-      return s.state === SuggestionState.NEW
-    }) >= 0 &&
-    !searching.value
-
-!searching.value
-
 const showSearchIcon = () => tabsStore.tabsets.size > 1
 
 const showToggleSessionIcon = () =>
@@ -305,10 +258,6 @@ const openNewTabsetDialog = () => {
     }
   })
 }
-
-const dependingOnStates = () =>
-    _.find(useSuggestionsStore().getSuggestions(), s => s.state === SuggestionState.NEW) ? 'warning' : 'white'
-
 
 </script>
 

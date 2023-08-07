@@ -2,20 +2,18 @@
   <q-dialog ref="dialogRef" @hide="onDialogHide">
     <q-card class="q-dialog-plugin">
       <q-card-section>
+        <q-btn icon="close" flat round dense @click="cancelSuggestion" v-close-popup />
+      </q-card-section>
+      <q-card-section>
         <div class="text-h6">{{ suggestion.title }}</div>
       </q-card-section>
-      <!--      <q-card-section>-->
-      <!--        <div class="text-body">Please provide a name</div>-->
-      <!--      </q-card-section>-->
 
       <q-card-section class="q-pt-none">
         <div class="text-body">{{ suggestion.msg }}</div>
-
-
       </q-card-section>
 
       <q-card-actions align="right" class="text-primary">
-        <q-btn flat label="Cancel" v-close-popup @click="cancelSuggestion"/>
+        <!--<q-btn flat label="Cancel" v-close-popup @click="cancelSuggestion"/>-->
         <q-btn flat label="Ignore" v-close-popup @click="ignoreSuggestion"/>
         <q-btn flat label="Check Suggestion" v-close-popup @click="addSuggestion"/>
       </q-card-actions>

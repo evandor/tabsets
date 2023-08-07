@@ -322,6 +322,11 @@ text.set(FeatureIdent.ANNOTATIONS.toLowerCase(), {
   description: 'Annotate Websites',
   permissions: []
 })
+text.set(FeatureIdent.TAGS.toLowerCase(), {
+  name: 'Use Tags',
+  description: 'Tabs can be tagged with labels making it easier to be found again',
+  permissions: []
+})
 
 
 watchEffect(() => {
