@@ -136,8 +136,7 @@ function inIgnoredMessages(request: any) {
     request.name === 'feature-activated' ||
     request.name === 'feature-deactivated' ||
     request.name === 'tabsets-imported' ||
-    request.name === 'zero-shot-classification' ||
-    request.name === 'init-ai-module' //||
+    request.name === 'zero-shot-classification'
     //request.name === 'recogito-annotation-created'
 
 }

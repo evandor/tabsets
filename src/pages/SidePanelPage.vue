@@ -310,8 +310,7 @@ function inIgnoredMessages(message: any) {
       message.msg === "html2links" ||
       message.name === "zero-shot-classification" ||
       message.msg === "websiteQuote" ||
-      message.name === "recogito-annotation-created" ||
-      message.msg === "init-ai-module";
+      message.name === "recogito-annotation-created"
 }
 
 if (chrome) {

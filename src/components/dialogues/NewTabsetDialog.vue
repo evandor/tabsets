@@ -91,6 +91,9 @@ watchEffect(() => {
 })
 
 const createNewTabset = () => {
+  if (!newTabsetNameIsValid) {
+    return
+  }
   hideWarning.value = true
   const tabsToUse = addAllOpenTabs.value ? tabsStore.tabs : []
 
