@@ -320,8 +320,6 @@ export function useTabsetService() {
         db.saveContent(tab, text, metas, title, tabsetIds)
             .catch((err: any) => console.log("err", err))
 
-
-        //console.debug("updating meta data for ", tabsetIds, tab.url, metas)
         const tabsets = [...useTabsStore().tabsets.values()]
 
         const savePromises: Promise<any>[] = []

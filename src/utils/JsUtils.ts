@@ -53,6 +53,9 @@ class JsUtils {
     }
 
     async getOrCreateClientId() {
+        if (!chrome) {
+            return Promise.resolve("")
+        }
         const result = await chrome.storage.local.get('clientId');
         let clientId = result.clientId;
         if (!clientId) {
