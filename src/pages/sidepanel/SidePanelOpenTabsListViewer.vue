@@ -203,10 +203,7 @@ const tabSelectionChanged = (a: any) => {
 
 const tabAddedToTabset = (a: any) => {
   const {tabId, tabUrl} = a
-  // console.log("tabAddedToTabset", tabId, tabUrl, tabsStore.pendingTabset.tabs.length)
   tabSelection.value.delete(tabId)
-  // tabsStore.pendingTabset.tabs = _.filter(tabsStore.pendingTabset.tabs, t => t.url !== tabUrl)
-  // console.log("tabAddedToTabset", tabId, tabsStore.pendingTabset.tabs.length)
 }
 
 const hasSelectable = () => userCanSelect.value = true

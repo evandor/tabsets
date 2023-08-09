@@ -2,7 +2,7 @@
 
   <q-footer class="bg-white q-pa-xs q-mt-sm" style="border-top: 1px solid lightgrey">
     <div class="row fit">
-      <div class="col-9">
+      <div class="col-8">
 
         <template v-if="showSuggestionButton">
           <q-btn
@@ -10,23 +10,10 @@
               icon="o_lightbulb"
               :label="suggestionsLabel()"
               :color="dependingOnStates()"
-              class="q-ma-none q-pa-xs q-ml-md q-pr-md cursor-pointer"
+              @click="suggestionDialog()"
+              class="q-ma-none q-pa-xs q-ml-sm q-mt-xs q-pr-md cursor-pointer"
               size="10px">
           </q-btn>
-          <q-menu :offset="[0, 7]">
-            <q-list style="min-width: 200px">
-              <q-item clickable v-close-popup v-ripple @click="suggestionDialog(s)"
-                      v-for="s in useSuggestionsStore().getSuggestions()">
-                <!--                <q-item-section avatar>-->
-                <!--                  <q-icon color="primary" :name="s.img ? s.img : 'rss_feed'"/>-->
-                <!--                </q-item-section>-->
-                <q-item-section>
-                  <div>{{ s.title }}</div>
-                  <div class="text-caption">Click here to apply the suggestion or delete it</div>
-                </q-item-section>
-              </q-item>
-            </q-list>
-          </q-menu>
 
         </template>
 
@@ -208,11 +195,11 @@ const rightButtonClass = () => "q-my-xs q-ml-xs q-px-xs q-mr-none"
 const dependingOnStates = () =>
     _.find(useSuggestionsStore().getSuggestions(), s => s.state === SuggestionState.NEW) ? 'warning' : 'primary'
 
-const suggestionDialog = (s: Suggestion) => {
+const suggestionDialog = () => {
   doShowSuggestionButton.value = false
   $q.dialog({
     component: SuggestionDialog, componentProps: {
-      suggestion: s,
+      suggestion: useSuggestionsStore().getSuggestions().at(0),
       fromPanel: true
     }
   })

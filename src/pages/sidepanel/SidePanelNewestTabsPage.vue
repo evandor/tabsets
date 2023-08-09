@@ -6,7 +6,7 @@
       <InfoMessageWidget
         :probability="1"
         ident="sidePanelNewestTabsPage_overview"
-        hint="Here you can check the 100 newest of your tabs sorted by creation."/>
+        hint="Here you can check the 100 newest of your tabs sorted by creation date."/>
     </div>
 
     <div class="row q-ma-none q-pa-none">

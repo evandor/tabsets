@@ -8,8 +8,8 @@
         <div class="text-body">Would you like to delete the tabset: {{ props.tabsetName }}?</div>
       </q-card-section>
       <q-card-actions align="right" class="text-primary">
-        <q-btn outline color="accent" label="Cancel" @click="onDialogCancel"/>
-        <q-btn outline color="negative" label="Delete"
+        <q-btn outline color="accent" size="sm" label="Cancel" @click="onDialogCancel"/>
+        <q-btn outline color="negative" size="sm" label="Delete"
                v-close-popup
                @click="deleteTabset()"/>
       </q-card-actions>
@@ -42,9 +42,9 @@ const props = defineProps({
 
 const {dialogRef, onDialogHide, onDialogCancel} = useDialogPluginComponent()
 const deleteTabset = () => useCommandExecutor().executeFromUi(new MarkTabsetDeletedCommand(props.tabsetId))
-  .then((res:any) => {
-    useUiStore().sidePanelSetActiveView(SidePanelView.MAIN)
-  })
+    .then((res: any) => {
+      useUiStore().sidePanelSetActiveView(SidePanelView.MAIN)
+    })
 
 
 </script>

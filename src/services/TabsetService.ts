@@ -180,17 +180,19 @@ class TabsetService {
   createPendingFromBrowserTabs() {
     console.log(`createPendingFromBrowserTabs`)
     const tabsStore = useTabsStore()
-    tabsStore.pendingTabset.tabs = []
-    const urlSet = new Set<string>()
-    _.forEach(tabsStore.tabs, t => {
-      if (t.url) {
-        if (!urlSet.has(t.url) && !t.url.startsWith("chrome")) {
-          urlSet.add(t.url)
-          tabsStore.addToPendingTabset(new Tab(uid(), t))
-          //tabsStore.pendingTabset.tabs.push(new Tab(uid(), t))
+    if (tabsStore.pendingTabset) {
+      tabsStore.pendingTabset.tabs = []
+      const urlSet = new Set<string>()
+      _.forEach(tabsStore.tabs, t => {
+        if (t.url) {
+          if (!urlSet.has(t.url) && !t.url.startsWith("chrome")) {
+            urlSet.add(t.url)
+            tabsStore.addToPendingTabset(new Tab(uid(), t))
+            //tabsStore.pendingTabset.tabs.push(new Tab(uid(), t))
+          }
         }
-      }
-    })
+      })
+    }
   }
 
   getSelectedPendingTabs(): Tab[] {

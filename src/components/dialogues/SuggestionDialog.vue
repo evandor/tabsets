@@ -2,9 +2,6 @@
   <q-dialog ref="dialogRef" @hide="onDialogHide">
     <q-card class="q-dialog-plugin">
       <q-card-section>
-        <q-btn icon="close" flat round dense @click="cancelSuggestion" v-close-popup />
-      </q-card-section>
-      <q-card-section>
         <div class="text-h6">{{ suggestion.title }}</div>
       </q-card-section>
 
@@ -13,9 +10,15 @@
       </q-card-section>
 
       <q-card-actions align="right" class="text-primary">
-        <!--<q-btn flat label="Cancel" v-close-popup @click="cancelSuggestion"/>-->
-        <q-btn flat label="Ignore" v-close-popup @click="ignoreSuggestion"/>
-        <q-btn flat label="Check Suggestion" v-close-popup @click="addSuggestion"/>
+        <q-btn outline label="Cancel" size="sm" v-close-popup @click="cancelSuggestion">
+          <q-tooltip class="tooltip-small" :delay="500">Click here to decide later</q-tooltip>
+        </q-btn>
+        <q-btn outline label="Ignore" size="sm" color="negative" v-close-popup @click="ignoreSuggestion">
+          <q-tooltip class="tooltip-small" :delay="500">This suggestion will not show up again</q-tooltip>
+        </q-btn>
+        <q-btn outline label="Check" size="sm" color="warning" v-close-popup @click="addSuggestion">
+          <q-tooltip class="tooltip-small" :delay="500">Get Details about this suggestion and decide what to do</q-tooltip>
+        </q-btn>
       </q-card-actions>
 
 

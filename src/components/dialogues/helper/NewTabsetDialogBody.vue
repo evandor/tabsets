@@ -1,6 +1,6 @@
 <template>
   <div>
-    <q-form ref="theForm">
+    <q-form @submit.prevent="createNewTabset()" ref="theForm">
 
       <q-card class="q-dialog-plugin" style="max-width:100%">
         <q-card-section>
@@ -30,13 +30,12 @@
         </q-card-section>
 
         <q-card-actions align="right">
-          <q-btn label="Cancel" outline color="accent" v-close-popup/>
-          <q-btn type="submit" color="warning"
+          <q-btn label="Cancel" size="sm" outline color="accent" v-close-popup/>
+          <q-btn type="submit" size="sm" color="warning"
                  outline
                  data-testid="newTabsetNameSubmit"
                  :disable="!isValid"
                  label="Add"
-                 @click="createNewTabset()"
                  v-close-popup/>
         </q-card-actions>
 
@@ -95,10 +94,6 @@ const doesNotExistYet = (val: string) => {
 }
 
 const createNewTabset = () => {
-  console.log("*** here we are***")
-  if (!newTabsetNameIsValid) {
-    return
-  }
   const tabsToUse = addAllOpenTabs.value ? tabsStore.tabs : []
 
   useCommandExecutor()

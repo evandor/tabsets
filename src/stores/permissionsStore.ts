@@ -4,7 +4,7 @@ import {computed, ref, watchEffect} from "vue";
 import {useQuasar} from "quasar";
 import {FeatureIdent, FeatureType} from "src/models/AppFeature";
 import {useSuggestionsStore} from "src/stores/suggestionsStore";
-import {StaticSuggestionIdent} from "src/models/Suggestion";
+import {StaticSuggestionIdent, Suggestion} from "src/models/Suggestion";
 import {CreateSpecialTabsetCommand, SpecialTabsetIdent} from "src/domain/tabsets/CreateSpecialTabset";
 import {TabsetType} from "src/models/Tabset";
 import {useCommandExecutor} from "src/services/CommandExecutor";
@@ -124,7 +124,12 @@ export const usePermissionsStore = defineStore('permissions', () => {
     return (feature: string): void => {
       if (activeFeatures.value.indexOf(feature) < 0) {
         activeFeatures.value.push(feature)
-        sendMsg('feature-activated', {feature: feature})
+        if (FeatureIdent.NEWEST_TABS.toLowerCase() === feature) {
+          useSuggestionsStore().inactivateSuggestion(Suggestion.getStaticSuggestion(StaticSuggestionIdent.TRY_NEWEST_TABS_FEATURE))
+        }
+        if (FeatureIdent.SPACES.toLowerCase() === feature) {
+          useSuggestionsStore().inactivateSuggestion(Suggestion.getStaticSuggestion(StaticSuggestionIdent.TRY_SPACES_FEATURE))
+        }
         if (FeatureIdent.BACKUP.toLowerCase() === feature) {
           //useSuggestionsStore().removeSuggestion(StaticSuggestionIdent.TRY_TAB_DETAILS_FEATURE)
           useCommandExecutor().executeFromUi(new CreateSpecialTabsetCommand(SpecialTabsetIdent.BACKUP, TabsetType.SPECIAL))
@@ -132,6 +137,7 @@ export const usePermissionsStore = defineStore('permissions', () => {
           //useSuggestionsStore().removeSuggestion(StaticSuggestionIdent.TRY_TAB_DETAILS_FEATURE)
           useCommandExecutor().executeFromUi(new CreateSpecialTabsetCommand(SpecialTabsetIdent.IGNORE, TabsetType.SPECIAL))
         }
+        sendMsg('feature-activated', {feature: feature})
       }
     }
   })
