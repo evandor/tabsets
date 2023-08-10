@@ -9,7 +9,7 @@
           <div class="col-10 text-h6" v-else>
             {{ tab?.title }}
           </div>
-          <div class="col" v-if="!editMode" @click="openInEditMode()">
+          <div class="col" v-if="!editMode" @click="editMode = true">
             Edit
           </div>
           <div class="col" v-else>
@@ -21,6 +21,7 @@
   </q-toolbar>
 
   <!-- https://medium.com/code4mk-org/editorjs-vue-a78110c3fff8 -->
+  <button style="margin-left: 30%;" type="button" name="button" @click="saveWork()">save</button>
   <div class="editorx_body">
     <div class id="editorjs"/>
   </div>
@@ -67,6 +68,8 @@ const tokenRef = ref(null)
 const value = ref(null)
 const editorJS = ref<any>(null)
 
+let editorJS2: EditorJS
+
 watchEffect(async () => {
   noteId.value = route.params.noteId as unknown as string
   console.log("route.params.edit", route.query.edit)
@@ -79,18 +82,33 @@ watchEffect(async () => {
     editor.value = tab.value?.longDescription || ''
     tabsetId.value = tabObject['tabsetId' as keyof object]
     title.value = tab.value.title || ''
+   // editorJS.value.readOnly = true
 
-    editorJS.value = new EditorJS({
+    editorJS2 = new EditorJS({
       holder: 'editorjs',
       autofocus: true,
       initialBlock: "paragraph",
-      readOnly: true,
       data: (tab.value?.longDescription || {}) as OutputData,
       tools: {
         header: {
           class: Header,
           shortcut: "CMD+SHIFT+H"
-        }
+        },
+        // list: {
+        //   class: List
+        // },
+        // paragraph: {
+        //   class: Paragraph,
+        //   config: {
+        //     placeholder: "."
+        //   }
+        // }
+      },
+      onReady: function () {
+        console.log("ready");
+      },
+      onChange: function () {
+        console.log("change");
       }
     });
   } else {
@@ -109,7 +127,7 @@ const saveWork = () => {
 
   console.log("saving", tabsetId.value)
 
-  editorJS.value.save().then((outputData: any) => {
+  editorJS2.save().then((outputData: any) => {
     console.log('Article data: ', outputData)
 
     if (tabsetId.value) {
@@ -155,15 +173,16 @@ const add = (tab: Tab) => {
     edit.focus()
   }
 }
-
-const openInEditMode = () => router.push('./'+tab.value?.id+'/edit')
 </script>
 
 <style scoped>
 .editorx_body {
+  /* width: 62%;
+  margin-left: 15%; */
   width: 80%;
   height:200px;
   margin-left: 10%;
+  border: 2px solid blue;
   box-sizing: border-box;
 }
 

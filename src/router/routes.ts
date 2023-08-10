@@ -107,14 +107,19 @@ const routes: RouteRecordRaw[] = [
     children: [{ path: '', component: () => import('pages/FeaturesPage.vue') }],
   },
   {
-    path: '/mainpanel/notes/:noteId', // TODO combine with Note page
+    path: '/mainpanel/notes/:noteId/edit', // editorjs setup cannot toggle between readonly/write mode
+    component: () => import('layouts/PlainLayout.vue'),
+    children: [{ path: '', component: () => import('pages/mainpanel/MainPanelNoteEditPage.vue') }],
+  },
+  {
+    path: '/mainpanel/notes/:noteId',
     component: () => import('layouts/PlainLayout.vue'),
     children: [{ path: '', component: () => import('pages/mainpanel/MainPanelNotePage.vue') }],
   },
   {
-    path: '/mainpanel/notes/', // TODO combine with Note page
+    path: '/mainpanel/notes/',
     component: () => import('layouts/PlainLayout.vue'),
-    children: [{ path: '', component: () => import('pages/mainpanel/MainPanelNotePage.vue') }],
+    children: [{ path: '', component: () => import('pages/mainpanel/MainPanelNoteEditPage.vue') }],
   },
   {
     path: '/mainpanel/tabsets/:tabsetId', // TODO combine with Tabset page
