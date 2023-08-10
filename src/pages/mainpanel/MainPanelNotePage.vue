@@ -1,5 +1,5 @@
 <template>
-  <q-toolbar class="text-primary lightgrey">
+  <q-toolbar class="text-primary">
     <div class="row fit">
       <q-toolbar-title>
         <div class="row justify-start items-baseline">
@@ -9,11 +9,11 @@
           <div class="col-10 text-h6" v-else>
             {{ tab?.title }}
           </div>
-          <div class="col" v-if="!editMode" @click="openInEditMode()">
+          <div class="col cursor-pointer" v-if="!editMode" @click="openInEditMode()">
             Edit
           </div>
-          <div class="col" v-else>
-
+          <div class="col cursor-pointer" v-else @click="saveWork()">
+            Save
           </div>
         </div>
       </q-toolbar-title>
@@ -25,21 +25,19 @@
     <div class id="editorjs"/>
   </div>
 
-
 </template>
 
 <script lang="ts" setup>
 
 import {ref, watchEffect} from "vue";
 import {useRoute, useRouter} from "vue-router";
-import {date, uid, useQuasar} from "quasar";
+import {uid, useQuasar} from "quasar";
 import {useTabsStore} from "src/stores/tabsStore";
 import {Tab, UrlExtension} from "src/models/Tab";
 import {useUtils} from "src/services/Utils";
 import {useTabsetService} from "src/services/TabsetService2";
 import {Tabset} from "src/models/Tabset";
 import ChromeApi from "src/services/ChromeApi";
-import {useSettingsStore} from "stores/settingsStore";
 import EditorJS, {OutputData} from "@editorjs/editorjs";
 // @ts-ignore
 import Header from "@editorjs/header";
@@ -56,47 +54,89 @@ const tab = ref<Tab | undefined>(undefined)
 const tabsetId = ref<string | undefined>(route.query.tsId as string)
 const editMode = ref(false)
 const title = ref('')
-
 const plugins = ref([])
 const count = ref(0)
-
 const editor = ref<any>(tabsStore.getCurrentTabset?.page || '')
-const editorRef = ref<any>(null)
-const tokenRef = ref(null)
-
 const value = ref(null)
-const editorJS = ref<any>(null)
+
+let editorJS2: EditorJS = undefined as unknown as EditorJS
 
 watchEffect(async () => {
   noteId.value = route.params.noteId as unknown as string
-  console.log("route.params.edit", route.query.edit)
   editMode.value = route.query.edit ? route.query.edit === "true" : false
-  console.log("watched...", noteId.value)
-  const tabObject = await useTabsStore().getTab(noteId.value)
-  if (tabObject) {
-    console.log("tabObject", tabObject)
-    tab.value = tabObject['tab' as keyof object] as unknown as Tab
-    editor.value = tab.value?.longDescription || ''
-    tabsetId.value = tabObject['tabsetId' as keyof object]
-    title.value = tab.value.title || ''
 
-    editorJS.value = new EditorJS({
-      holder: 'editorjs',
-      autofocus: true,
-      initialBlock: "paragraph",
-      readOnly: true,
-      data: (tab.value?.longDescription || {}) as OutputData,
-      tools: {
-        header: {
-          class: Header,
-          shortcut: "CMD+SHIFT+H"
-        }
-      }
-    });
+  if (noteId.value) {
+    useTabsStore().getTab(noteId.value)
+        .then((tabObject: object | undefined) => {
+
+          if (tabObject) {
+            console.log("got tabobject1")
+            tab.value = tabObject['tab' as keyof object] as unknown as Tab
+            tabsetId.value = tabObject['tabsetId' as keyof object]
+            if (!editorJS2) {
+              // @ts-ignore
+              editorJS2 = new EditorJS({
+                holder: "editorjs",
+                readOnly: !editMode.value,
+                data: (tab.value.longDescription || {}) as OutputData,
+                tools: {
+                  header: {
+                    class: Header,
+                    shortcut: "CMD+SHIFT+H"
+                  }
+                }
+              });
+            } else {
+              editorJS2.readOnly.toggle(!editMode.value)
+            }
+          }
+        })
   } else {
+    console.log("new Note")
 
+    if (!editorJS2) { // && !editorJS2.isReady) {
+      // @ts-ignore
+      editorJS2 = new EditorJS({
+        holder: "editorjs",
+        autofocus: true,
+        readOnly: false,
+        data: {} as OutputData
+      });
+    }
   }
+
 })
+
+// watchEffect(async () => {
+//   noteId.value = route.params.noteId as unknown as string
+//   console.log("route.params.edit", route.query.edit)
+//   editMode.value = route.query.edit ? route.query.edit === "true" : false
+//   console.log("watched...", noteId.value)
+//   const tabObject = await useTabsStore().getTab(noteId.value)
+//   if (tabObject) {
+//     console.log("tabObject", tabObject)
+//     tab.value = tabObject['tab' as keyof object] as unknown as Tab
+//     editor.value = tab.value?.longDescription || ''
+//     tabsetId.value = tabObject['tabsetId' as keyof object]
+//     title.value = tab.value.title || ''
+//
+//     editorJS.value = new EditorJS({
+//       holder: 'editorjs',
+//       autofocus: true,
+//       initialBlock: "paragraph",
+//       readOnly: true,
+//       data: (tab.value?.longDescription || {}) as OutputData,
+//       tools: {
+//         header: {
+//           class: Header,
+//           shortcut: "CMD+SHIFT+H"
+//         }
+//       }
+//     });
+//   } else {
+//
+//   }
+// })
 
 const update = (ident: string, val: string) => {
   if (tab.value && ident === 'description') {
@@ -109,8 +149,7 @@ const saveWork = () => {
 
   console.log("saving", tabsetId.value)
 
-  editorJS.value.save().then((outputData: any) => {
-    console.log('Article data: ', outputData)
+  editorJS2.save().then((outputData: any) => {
 
     if (tabsetId.value) {
       const tabset = useTabsetService().getTabset(tabsetId.value) as Tabset | undefined
@@ -137,32 +176,22 @@ const saveWork = () => {
         // redirect after save
         router.push("/mainpanel/notes/" + newTabId)
       }
+    } else {
+      console.warn("tabset id missing")
     }
-
   }).catch((error: any) => {
     console.log('Saving failed: ', error)
   });
 
 }
-const add = (tab: Tab) => {
-  const edit = editorRef.value
-  if (edit) {
-    // @ts-ignore
-    tokenRef.value.hide()
-    edit.caret.restore()
-    edit.runCmd('insertHTML', `&nbsp;<div class="editor_token row inline items-center" contenteditable="false">&nbsp;
-        <img src="${tab.favIconUrl}" height="24px" width="24px">&nbsp;<span>${tab.title}</span></div>&nbsp;`)
-    edit.focus()
-  }
-}
 
-const openInEditMode = () => router.push('./'+tab.value?.id+'/edit')
+const openInEditMode = () => router.push('./' + tab.value?.id + '?edit=true&tsId=' + tabsetId.value)
 </script>
 
 <style scoped>
 .editorx_body {
   width: 80%;
-  height:200px;
+  height: 200px;
   margin-left: 10%;
   box-sizing: border-box;
 }
