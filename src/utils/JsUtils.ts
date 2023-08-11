@@ -72,8 +72,8 @@ class JsUtils {
 
     gaEvent(name: string, params: object) {
         const GA_ENDPOINT = 'https://www.google-analytics.com/mp/collect';
-        const MEASUREMENT_ID = "G-MYH87Q5L2P";
-        const API_SECRET = "NHrsvOEPRm-Tl_sQ6W325A";
+        const MEASUREMENT_ID = "G-XBYXVZ86J1";
+        const API_SECRET = "1N_ivSMnT2GHqZMcoXJDTw";
         this.getOrCreateClientId()
             .then(clientId => {
                 fetch(`${GA_ENDPOINT}?measurement_id=${MEASUREMENT_ID}&api_secret=${API_SECRET}`,
