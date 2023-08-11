@@ -1,6 +1,6 @@
 <template>
 
-  <q-page style="padding-top: 25px">
+  <q-page style="padding-top: 50px">
 
     <div class="q-mt-md q-ma-none q-pa-none">
       <InfoMessageWidget

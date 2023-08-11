@@ -16,19 +16,19 @@ export class AppFeatures {
       .setActivateCommand(new GrantPermissionCommand('contextMenus'))
       .setDeactivateCommand(new RevokePermissionCommand('contextMenus')),
 
-    new AppFeature(FeatureIdent.THUMBNAILS, FeatureType.OPTIONAL, 'Thumbnails', 'o_image', ['bex'])
+    new AppFeature(FeatureIdent.THUMBNAILS, FeatureType.EXPERIMENTAL, 'Thumbnails', 'o_image', ['bex'])
       .setActivateCommand(new GrantOriginCommand('thumbnails'))
       .setDeactivateCommand(new RevokeOriginCommand('thumbnails')),
 
     new AppFeature(FeatureIdent.NEWEST_TABS, FeatureType.RECOMMENDED, 'Newest Tabs', 'o_schedule', ['all']),
     new AppFeature(FeatureIdent.TOP10, FeatureType.RECOMMENDED, 'Top 10 Tabs', 'o_workspace_premium', ['all']),
-    new AppFeature(FeatureIdent.OPEN_TABS, FeatureType.RECOMMENDED, 'Open Tabs', 'o_playlist_add', ['bex']),
+    new AppFeature(FeatureIdent.OPEN_TABS, FeatureType.EXPERIMENTAL, 'Open Tabs', 'o_playlist_add', ['bex']),
 
     new AppFeature(FeatureIdent.SAVE_TAB, FeatureType.EXPERIMENTAL, 'Save Tabs', 'o_save', ['bex'])
       .setActivateCommand(new GrantPermissionCommand('pageCapture')),
       //.setDeactivateCommand(new RevokePermissionCommand('pageCapture')),
     new AppFeature(FeatureIdent.GROUP_BY_DOMAIN, FeatureType.OPTIONAL, 'Group By Domain View', 'o_dns', ['all']),
-    new AppFeature(FeatureIdent.OPENTABS_THRESHOLD, FeatureType.OPTIONAL, 'Open Tabs Warnings', 'o_tab', ['bex']),
+    new AppFeature(FeatureIdent.OPENTABS_THRESHOLD, FeatureType.EXPERIMENTAL, 'Open Tabs Warnings', 'o_tab', ['bex']),
 
     new AppFeature(FeatureIdent.EXPERIMENTAL_VIEWS, FeatureType.EXPERIMENTAL, 'Experimental Views', 'o_explore', ['all']),
     new AppFeature(FeatureIdent.RSS, FeatureType.EXPERIMENTAL, 'RSS View', 'o_rss_feed', ['bex', 'spa']),

@@ -1,6 +1,6 @@
 <template>
 
-  <q-page style="padding-top: 35px">
+  <q-page style="padding-top: 50px">
 
     <div class="row q-ma-none q-pa-none">
       <div class="col-12 q-ma-none q-pa-none q-pt-sm">
@@ -18,10 +18,22 @@
     <!-- place QPageSticky at end of page -->
     <q-page-sticky expand position="top" style="background-color:white">
 
-      <FirstToolbarHelper
-        :title="useUiStore().selectedTag + ' (Tags List)'"
-        @was-clicked="router.push('/sidepanel/tagslist')"
-        :show-back-button="true"/>
+      <FirstToolbarHelper :title="useUiStore().selectedTag + ' (Tags List)'">
+
+        <template v-slot:iconsRight>
+          <q-btn
+              icon="close"
+              @click="useUiStore().sidePanelSetActiveView(SidePanelView.MAIN)"
+              color="black"
+              flat
+              class="q-ma-none q-pa-xs cursor-pointer"
+              style="max-width:20px"
+              size="10px">
+            <q-tooltip class="tooltip">Close this view</q-tooltip>
+          </q-btn>
+        </template>
+
+      </FirstToolbarHelper>
 
     </q-page-sticky>
 
@@ -44,7 +56,7 @@ import ReindexDialog from "components/dialogues/ReindexDialog.vue";
 import {usePermissionsStore} from "src/stores/permissionsStore";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {GrantPermissionCommand} from "src/domain/commands/GrantPermissionCommand";
-import {useUiStore} from "src/stores/uiStore";
+import {SidePanelView, useUiStore} from "src/stores/uiStore";
 import {Tab} from "src/models/Tab";
 import {useTabsetService} from "src/services/TabsetService2";
 import InfoMessageWidget from "components/widgets/InfoMessageWidget.vue";
@@ -69,6 +81,7 @@ const newSearch = (term: string) => {
     _.forEach([...tabsStore.tabsets.values()], (tabset: Tabset) => {
       _.forEach(tabset.tabs, (tab: Tab) => {
         if (tab.tags?.indexOf(term) >= 0) {
+          console.log("found tab", term, tab.tags)
           results.push(tab)
         }
       })
@@ -81,23 +94,23 @@ const newSearch = (term: string) => {
         tabsets = useTabsetService().tabsetsFor(h.url)
       }
       const theHit = new Hit(
-        uid(),
-        //       h.chromeTab,
-        h.title || '',
-        h.url || '',
-        h.favIconUrl || '',
-        0, 0,
-        100,
-        tabsets, //h.chromeTab.tabsets,
-        [],
-        _.map(h['matches' as keyof object], (m: any) => {
-          return {
-            key: m['key' as keyof object],
-            indices: m['indices' as keyof object]
-          }
-        }),
-        h.description,
-        h.keywords
+          uid(),
+          //       h.chromeTab,
+          h.title || '',
+          h.url || '',
+          h.favIconUrl || '',
+          0, 0,
+          100,
+          tabsets, //h.chromeTab.tabsets,
+          [],
+          _.map(h['matches' as keyof object], (m: any) => {
+            return {
+              key: m['key' as keyof object],
+              indices: m['indices' as keyof object]
+            }
+          }),
+          h.description,
+          h.keywords
       )
       if (h.bookmarkId) {
         theHit.bookmarkId = h.bookmarkId

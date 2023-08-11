@@ -241,34 +241,6 @@ const addOpenTabs = () => {
   if (process.env.MODE !== 'bex') {
     console.log("useTabsStore().pendingTabset", useTabsStore().pendingTabset)
     useTabsStore().pendingTabset = new Tabset("dummy", "dummy", [])
-    useTabsStore().pendingTabset?.tabs.push(new Tab(uid(), {
-      id: 10000,
-      url: "https://www.example.com",
-      title: "example.com",
-      index: 1,
-      pinned: false,
-      highlighted: false,
-      windowId: 1,
-      active: false,
-      incognito: false,
-      selected: false,
-      discarded: false,
-      autoDiscardable: false
-    }))
-    useTabsStore().pendingTabset?.tabs.push(new Tab(uid(), {
-      id: 10001,
-      url: "https://www.skysail.io",
-      title: "skysail.io",
-      index: 2,
-      pinned: false,
-      highlighted: false,
-      windowId: 1,
-      active: false,
-      incognito: false,
-      selected: false,
-      discarded: false,
-      autoDiscardable: false
-    }))
   } else {
     TabsetService.createPendingFromBrowserTabs()
   }

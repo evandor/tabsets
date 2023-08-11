@@ -1,13 +1,13 @@
 <template>
 
-  <q-page style="padding-top: 25px">
+  <q-page style="padding-top: 50px">
 
 
     <div class="q-mt-md q-ma-none q-pa-none">
       <InfoMessageWidget
-        :probability="1"
-        ident="sidePanelTagsListViewer_overview"
-        hint="Tabs you add are being tagged automatically (or you can tag them
+          :probability="1"
+          ident="sidePanelTagsListViewer_overview"
+          hint="Tabs you add are being tagged automatically (or you can tag them
             yourself). This is a list of the most used tags."/>
     </div>
 
@@ -28,9 +28,9 @@
                   <div class="row">
                     <div class="col-12 ellipsis">
                       <q-icon
-                        color="primary"
-                        name="o_label"
-                        style="position: relative;top:-2px"/>
+                          color="primary"
+                          name="o_label"
+                          style="position: relative;top:-2px"/>
                       {{ tag }}
                     </div>
                   </div>
@@ -52,7 +52,7 @@
                 <q-list dense style="min-width: 200px">
 
                   <q-item
-                    clickable v-close-popup @click="createDynamicTabsetFrom(tag)">
+                      clickable v-close-popup @click="createDynamicTabsetFrom(tag)">
                     Turn into (dynamic) tabset
                   </q-item>
 
@@ -74,10 +74,22 @@
     <!-- place QPageSticky at end of page -->
     <q-page-sticky expand position="top" style="background-color:white">
 
-      <FirstToolbarHelper
-        title="Tags List"
-        @was-clicked="useUiStore().sidePanelSetActiveView(SidePanelView.MAIN)"
-        :show-back-button="true"/>
+      <FirstToolbarHelper title="Tags List">
+
+        <template v-slot:iconsRight>
+          <q-btn
+              icon="close"
+              @click="useUiStore().sidePanelSetActiveView(SidePanelView.MAIN)"
+              color="black"
+              flat
+              class="q-ma-none q-pa-xs cursor-pointer"
+              style="max-width:20px"
+              size="10px">
+            <q-tooltip class="tooltip">Close this view</q-tooltip>
+          </q-btn>
+        </template>
+
+      </FirstToolbarHelper>
 
     </q-page-sticky>
 
@@ -139,6 +151,6 @@ const selectTag = (tag: string) => {
 }
 
 const createDynamicTabsetFrom = (tag: string) =>
-  useCommandExecutor().executeFromUi(new CreateDynamicTabset(tag))
+    useCommandExecutor().executeFromUi(new CreateDynamicTabset(tag))
 
 </script>

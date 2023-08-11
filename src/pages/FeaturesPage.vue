@@ -284,12 +284,14 @@ text.set(FeatureIdent.STANDALONE_APP.toLowerCase(), {
 })
 text.set(FeatureIdent.NEWEST_TABS.toLowerCase(), {
   name: 'Newest Tabs',
-  description: 'Get a view to list all tabs by their creation date',
+  img: 'newest_tabs.png',
+  description: 'Activate a view to get quick access to your 100 newest tabs',
   permissions: []
 })
 text.set(FeatureIdent.TOP10.toLowerCase(), {
   name: 'Top 10 Tabs',
-  description: 'Get a view to list all tabs by how often they have been accessed',
+  img: 'top10.png',
+  description: 'Activate a view to list all tabs by how often they have been accessed',
   permissions: []
 })
 text.set(FeatureIdent.OPEN_TABS.toLowerCase(), {
@@ -319,6 +321,7 @@ text.set(FeatureIdent.ANNOTATIONS.toLowerCase(), {
 })
 text.set(FeatureIdent.TAGS.toLowerCase(), {
   name: 'Use Tags',
+  img: 'tags.png',
   description: 'Tabs can be tagged with labels making it easier to be found again',
   permissions: []
 })
