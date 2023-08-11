@@ -56,13 +56,18 @@ class JsUtils {
         if (!chrome) {
             return Promise.resolve("")
         }
-        const result = await chrome.storage.local.get('clientId');
-        let clientId = result.clientId;
-        if (!clientId) {
-            clientId = self.crypto.randomUUID();
-            await chrome.storage.local.set({clientId});
+        try {
+            const result = await chrome.storage.local.get('clientId');
+            let clientId = result.clientId;
+            if (!clientId) {
+                clientId = self.crypto.randomUUID();
+                await chrome.storage.local.set({clientId});
+            }
+            return Promise.resolve(clientId);
+        } catch (err) {
+            console.log("got error in getOrCreateClientId", err)
+            return Promise.resolve()
         }
-        return clientId;
     }
 
     gaEvent(name: string, params: object) {
