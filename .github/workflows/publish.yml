@@ -18,12 +18,12 @@ jobs:
           node-version: 12
       - name: Build
         run: |
-          npm ci
+          npm install
           npm run build
       - name: Upload & release
         uses: mnao305/chrome-extension-upload@v4.0.1
         with:
-          file-path: dist/file.zip
+          file-path: dist/Packaged.tabsets.zip
           extension-id: afkknkdbgondbbfjehipnjmojndnjhjg
           client-id: ${{ secrets.CLIENT_ID }}
           client-secret: ${{ secrets.CLIENT_SECRET }}
