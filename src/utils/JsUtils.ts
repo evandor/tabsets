@@ -53,22 +53,28 @@ class JsUtils {
     }
 
     async getOrCreateClientId() {
+        console.log("getOrCreateClientId1", chrome)
         if (!chrome) {
+            console.log("getOrCreateClientId2")
             return Promise.resolve("")
         }
         const result = await chrome.storage.local.get('clientId');
+        console.log("getOrCreateClientId3", result)
         let clientId = result.clientId;
         if (!clientId) {
             clientId = self.crypto.randomUUID();
+            console.log("getOrCreateClientId", clientId)
             await chrome.storage.local.set({clientId});
         }
+        console.log("returning getOrCreateClientId", clientId)
+
         return clientId;
     }
 
     gaEvent(name: string, params: object) {
         const GA_ENDPOINT = 'https://www.google-analytics.com/mp/collect';
-        const MEASUREMENT_ID = "G-MYH87Q5L2P";
-        const API_SECRET = "NHrsvOEPRm-Tl_sQ6W325A";
+        const MEASUREMENT_ID = "G-XBYXVZ86J1";
+        const API_SECRET = "1N_ivSMnT2GHqZMcoXJDTw";
         this.getOrCreateClientId()
             .then(clientId => {
                 fetch(`${GA_ENDPOINT}?measurement_id=${MEASUREMENT_ID}&api_secret=${API_SECRET}`,
