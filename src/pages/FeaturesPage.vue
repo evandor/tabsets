@@ -311,6 +311,7 @@ text.set(FeatureIdent.PAGE_MARKER.toLowerCase(), {
 })
 text.set(FeatureIdent.NOTIFICATIONS.toLowerCase(), {
   name: 'Browser Notifications',
+  img: 'notification.png',
   description: 'Allow Tabsets to send Notifications via your Browser. Recommended.',
   permissions: ['notifications']
 })
