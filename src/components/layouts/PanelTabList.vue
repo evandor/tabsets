@@ -21,7 +21,7 @@
         v-for="tab in props.tabs"
         class="q-ma-none q-pa-sm"
         :style="itemStyle(tab)"
-        @click.stop="showDetails(tab)"
+
         @dragstart="startDrag($event, tab)"
         :key="'paneltablist_' + tab.id">
 
@@ -119,15 +119,11 @@ const startDrag = (evt: any, tab: Tab) => {
   console.log("evt.dataTransfer.getData('text/plain')", evt.dataTransfer.getData('text/plain'))
 }
 
-const showDetails = (tab: Tab) => {
-  useUiStore().setSelectedTab(tab)
-  useUiStore().rightDrawerSetActiveTab(DrawerTabs.TAB_DETAILS)
-}
-
-const isCurrentTab = (tab: Tab) => {
-  const windowId = useWindowsStore().currentWindow.id || 0
-  return (useTabsStore().getCurrentChromeTab(windowId) || useTabsStore().currentChromeTab).url === tab.url
-}
+// const showDetails = (tab: Tab) => {
+//   console.log("showing details - what for?")
+//   useUiStore().setSelectedTab(tab)
+//   useUiStore().rightDrawerSetActiveTab(DrawerTabs.TAB_DETAILS)
+// }
 
 const itemStyle = (tab: Tab) => "border-bottom: 1px solid #fafafa"
 

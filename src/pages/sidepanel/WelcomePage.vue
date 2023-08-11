@@ -6,75 +6,70 @@
       </div>
     </div>
     <div class="row q-mb-lg">
-      <div class="col-12">
-        Next Generation Bookmarks
+      <div class="col-12 text-caption">
+        Handle more links, with less tabs open
       </div>
     </div>
 
-    <div class="row items-center justify-center q-ma-xl">
-      <q-btn color="warning"
-             :disable="categorySelected() && !confirmation"
-             data-testid="createFirstTabsetBtn"
-             @click="addFirstTabset"
-             label="Create your first Tabset"></q-btn>
+    <div class="q-pa-sm row items-start q-gutter-md">
+      <q-card class="my-card fit">
+        <q-card-section>
+          <span class="text-subtitle2">Add a Tabset</span>
+        </q-card-section>
+        <q-card-section class="q-ma-none q-pa-none q-ml-md">
+          <q-icon name="check" color="primary" class="q-mr-xs"/>
+          Create your first tabset:
+        </q-card-section>
+        <q-card-section class="q-ma-none q-pa-none q-ml-md">
+          <q-icon name="check" color="primary" class="q-mr-xs"/>
+          Provide a name...
+        </q-card-section>
+        <q-card-section class="q-ma-none q-pa-none q-ml-md">
+          <q-icon name="check" color="primary" class="q-mr-xs"/>
+          ... and add tabs later
+        </q-card-section>
+        <q-card-section class="q-pb-none">
+          <q-input v-model="tabsetName"
+                   dense
+                   autofocus
+                   error-message="Please do not use special Characters, maximum length is 32"
+                   :error="!newTabsetNameIsValid()"
+                   data-testid="newTabsetName"
+                   @keydown.enter="addFirstTabset()"
+                   label="Name"/>
+        </q-card-section>
+        <q-card-actions align="right" class="q-pr-md q-pb-md q-ma-none">
+          <q-btn
+              outline
+              :disable="tabsetName.trim().length === 0 || !newTabsetNameIsValid()"
+              @click="addFirstTabset"
+              color="warning">
+            Add
+          </q-btn>
+        </q-card-actions>
+      </q-card>
     </div>
-
-<!--    <div class="row q-mb-md" v-if="categories.size > 0">-->
-<!--      If you want, you can opt in and get suggestions for the following-->
-<!--      categories:-->
-<!--    </div>-->
-
-<!--    <div class="row" v-for="c in categories.values()">-->
-<!--      <q-checkbox class="q-ma-none q-pa-none" v-model="selectedCategories[c.id]" :label="c.label"/>-->
-<!--    </div>-->
-
-<!--    <div class="row q-mt-lg" v-if="categorySelected()">-->
-<!--      <div class="col-12 items-center q-ma-xs q-pa-xs">-->
-<!--        <q-checkbox v-model="confirmation">-->
-<!--          <a @click.stop="(event) => event.stopPropagation()" href="https://tabsets.web.app/#/tos"> Confirm to terms &-->
-<!--            conditions </a>-->
-<!--        </q-checkbox>-->
-<!--        <br>-->
-<!--        <span class="text-grey-8">-->
-<!--          Tabs you add will be sent anonymously to our servers to improve the categories we-->
-<!--          provide for all users.-->
-<!--        </span>-->
-<!--      </div>-->
-<!--    </div>-->
   </div>
 </template>
 
 <script lang="ts" setup>
 
-import NewTabsetDialog from "components/dialogues/NewTabsetDialog.vue";
-import {useUiStore} from "src/stores/uiStore";
+import {SidePanelView, useUiStore} from "src/stores/uiStore";
 import {useQuasar} from "quasar";
 import {ref, watchEffect} from "vue";
-import {Category} from "src/models/Category";
 import {useTabsStore} from "stores/tabsStore";
 import {useRouter} from "vue-router";
+import {useCommandExecutor} from "src/services/CommandExecutor";
+import {CreateTabsetCommand} from "src/domain/tabsets/CreateTabset";
+import NavigationService from "src/services/NavigationService";
+import {STRIP_CHARS_IN_USER_INPUT} from "boot/constants";
+import {useSpacesStore} from "stores/spacesStore";
+import {TabsetStatus} from "src/models/Tabset";
 
 const $q = useQuasar()
 const router = useRouter()
 
-const categories: Map<String, Category> = new Map()
-
-const selectedCategories = ref<object>({
-  "business": false,
-  "education": false,
-  "entertainment": false,
-  "informationtech": false,
-  "newandmedia": false,
-  "shopping": false
-})
-const confirmation = ref(false)
-
-categories.set("business", new Category("business", "Business"))
-categories.set("education", new Category("education", "Education"))
-categories.set("entertainment", new Category("entertainment", "Entertainment"))
-categories.set("informationtech", new Category("informationtech", "Information / Tech"))
-categories.set("newandmedia", new Category("newandmedia", "News & Media"))
-categories.set("shopping", new Category("shopping", "Shopping"))
+const tabsetName = ref('')
 
 watchEffect(() => {
   // we might have been redirected here too early, redirecting
@@ -84,24 +79,19 @@ watchEffect(() => {
   }
 })
 
-const addFirstTabset = () => $q.dialog({
-  component: NewTabsetDialog, componentProps: {
-    setEmptyByDefault: useUiStore().newTabsetEmptyByDefault,
-    firstTabset: true,
-    //selectedCategories: selectedCategories.value,
-    fromPanel: true
-  }
-})
+const addFirstTabset = () => {
+  useCommandExecutor()
+      .executeFromUi(new CreateTabsetCommand(tabsetName.value, []))
+      .then((res) => {
+        NavigationService.openOrCreateTab("https://tabsets.web.app/#/welcome")
+        useUiStore().sidePanelSetActiveView(SidePanelView.MAIN)
+        router.push("/sidepanel?first=true")
+      })
+}
 
-const categorySelected = (): boolean => {
-  let res = false
-  Object.keys(selectedCategories.value).forEach(sc => {
-    //console.log("checking", selectedCategories.value[sc as keyof object])
-    if (selectedCategories.value[sc as keyof object] === true) {
-      res = true
-    }
-  })
-  return res
+const newTabsetNameIsValid = () => {
+  console.log("check: ", tabsetName.value, !STRIP_CHARS_IN_USER_INPUT.test(tabsetName.value))
+  return tabsetName.value.length <= 32 && !STRIP_CHARS_IN_USER_INPUT.test(tabsetName.value)
 }
 
 </script>

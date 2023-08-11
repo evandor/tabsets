@@ -22,6 +22,11 @@ const routes: RouteRecordRaw[] = [
     children: [{ path: '', component: () => import('pages/sidepanel/WelcomePage.vue') }],
   },
   {
+    path: '/sidepanel/tabsets/:tabsetId',
+    component: () => import('layouts/SidePanelLayout.vue'),
+    children: [{ path: '', component: () => import('pages/SidePanelTabsetPage.vue') }],
+  },
+  {
     path: '/sidepanel/spaces',
     component: () => import('layouts/SidePanelLayout.vue'),
     children: [{ path: '', component: () => import('pages/SidePanelSpacesPage.vue') }],
@@ -102,12 +107,17 @@ const routes: RouteRecordRaw[] = [
     children: [{ path: '', component: () => import('pages/FeaturesPage.vue') }],
   },
   {
-    path: '/mainpanel/notes/:noteId', // TODO combine with Note page
+    path: '/mainpanel/notes/:noteId/edit', // editorjs setup cannot toggle between readonly/write mode
     component: () => import('layouts/PlainLayout.vue'),
     children: [{ path: '', component: () => import('pages/mainpanel/MainPanelNotePage.vue') }],
   },
   {
-    path: '/mainpanel/notes/', // TODO combine with Note page
+    path: '/mainpanel/notes/:noteId',
+    component: () => import('layouts/PlainLayout.vue'),
+    children: [{ path: '', component: () => import('pages/mainpanel/MainPanelNotePage.vue') }],
+  },
+  {
+    path: '/mainpanel/notes/',
     component: () => import('layouts/PlainLayout.vue'),
     children: [{ path: '', component: () => import('pages/mainpanel/MainPanelNotePage.vue') }],
   },
@@ -210,6 +220,11 @@ const routes: RouteRecordRaw[] = [
     path: '/searchresult',
     component: () => import('layouts/PlainLayout.vue'),
     children: [{ path: '', component: () => import('pages/SearchResultPage.vue') }],
+  },
+  {
+    path: '/annotations/:tabId',
+    component: () => import('layouts/PlainLayout.vue'),
+    children: [{ path: '', component: () => import('pages/annotations/TabAnnotation.vue') }],
   },
   {
     path: '/iframe/:tabId',

@@ -31,6 +31,7 @@ import {ref, watchEffect} from "vue";
 import {useUiStore} from "stores/uiStore";
 import TabsetService from "src/services/TabsetService";
 import CurrentTabElementHelper from "pages/sidepanel/helper/CurrentTabElementHelper.vue";
+import {useWindowsStore} from "stores/windowsStores";
 
 const props = defineProps({
   tabsetId: {type: String, required: true}
@@ -44,8 +45,6 @@ const currentChromeTab = ref<chrome.tabs.Tab>(null as unknown as chrome.tabs.Tab
 const selectedTab = ref<Tab | undefined>(undefined)
 const tabsetCandidates = ref<object[]>([])
 
-const tabFromChromeTab = () => currentChromeTab.value ? new Tab(uid(), currentChromeTab.value) : undefined
-
 watchEffect(() => {
   selectedTab.value = useUiStore().getSelectedTab
   if (selectedTab.value) {
@@ -54,7 +53,8 @@ watchEffect(() => {
 })
 
 watchEffect(() => {
-  currentChromeTab.value = useTabsStore().currentChromeTab
+  const windowId = useWindowsStore().currentWindow?.id || 0
+  currentChromeTab.value = useTabsStore().getCurrentChromeTab(windowId) || useTabsStore().currentChromeTab
 })
 
 watchEffect(async () => {
@@ -71,8 +71,10 @@ watchEffect(async () => {
 
 const alreadyInTabset = () => {
   if (currentChromeTab.value?.url && tabsStore.getCurrentTabset) {
+    //console.log("result: ", useTabsetService().urlExistsInCurrentTabset(currentChromeTab.value.url))
     return useTabsetService().urlExistsInCurrentTabset(currentChromeTab.value.url)
   }
+  //console.log("alreadyInTabset: false", currentChromeTab.value.url, tabsStore.getCurrentTabset?.id)
   return false
 }
 </script>

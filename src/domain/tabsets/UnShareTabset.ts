@@ -2,8 +2,6 @@ import Command from "src/domain/Command";
 import {ExecutionResult} from "src/domain/ExecutionResult";
 import TabsetService from "src/services/TabsetService";
 import {TabsetSharing} from "src/models/Tabset";
-import {useAuth0} from "@auth0/auth0-vue";
-import {useAuthStore} from "stores/auth";
 
 export class UnShareTabsetCommand implements Command<any> {
 
@@ -12,7 +10,7 @@ export class UnShareTabsetCommand implements Command<any> {
   }
 
   async execute(): Promise<ExecutionResult<any>> {
-    return TabsetService.share(this.tabsetId, TabsetSharing.UNSHARED, undefined)
+    return TabsetService.share(this.tabsetId, TabsetSharing.UNSHARED, undefined, undefined)
       .then(oldSharing => Promise.resolve(
         new ExecutionResult(
           oldSharing,

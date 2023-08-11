@@ -20,6 +20,7 @@ export enum TabsetType {
 export enum TabsetSharing {
   UNSHARED = "UNSHARED",
   PUBLIC = "PUBLIC",
+  PUBLIC_OUTDATED = "PUBLIC_OUTDATED",
   USER = "USER",
   ROLE = "ROLE"
 }

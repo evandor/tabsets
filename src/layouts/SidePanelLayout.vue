@@ -18,7 +18,7 @@
 import {ref, watchEffect} from "vue";
 import SidePanelFooter from "components/SidePanelFooter.vue";
 import {useTabsStore} from "src/stores/tabsStore";
-import {useMeta} from "quasar";
+import {useMeta, useQuasar} from "quasar";
 
 const tabsStore = useTabsStore()
 
@@ -35,5 +35,7 @@ useMeta(() => {
 
 
 watchEffect(() => location.value = window.location.href.split('/www/')[1] || window.location.href)
+
+
 
 </script>

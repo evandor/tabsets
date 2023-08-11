@@ -47,17 +47,6 @@ class AppService {
       .then(() => {
         ChromeListeners.initListeners()
         ChromeBookmarkListeners.initListeners()
-        if (usePermissionsStore().hasFeature(FeatureIdent.AI_MODULE)) {
-          console.log("sending init-ai-module message")
-          chrome.runtime.sendMessage({name: 'init-ai-module'}, // nobody listening yet??
-            (callback: any) => {
-              if (chrome.runtime.lastError) {
-                console.warn("got error", chrome.runtime.lastError)
-              } else {
-                console.log("successfully send init-ai-module message")
-              }
-            })
-        }
         bookmarksStore.init()
         BookmarksService.init()
       })

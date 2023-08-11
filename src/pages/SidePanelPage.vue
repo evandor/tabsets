@@ -14,6 +14,7 @@
                           group="tabsets"
                           :default-opened="tabsStore.tabsets.size === 1"
                           switch-toggle-side
+                          expand-icon-toggle
                           dense-toggle
                           v-model="selected_model[tabset.id]"
                           @update:model-value="val => updateSelectedTabset(tabset.id, val, index)"
@@ -21,13 +22,25 @@
 
           <template v-slot:header>
             <q-item-section
-              @mouseover="hoveredTabset = tabset.id"
-              @mouseleave="hoveredTabset = undefined">
-              <q-item-label :class="tabsStore.currentTabsetId === tabset.id ? 'text-bold' : ''">
+                @mouseover="hoveredTabset = tabset.id"
+                @mouseleave="hoveredTabset = undefined">
+              <q-item-label :class="tabsStore.currentTabsetId === tabset.id ? 'text-bold' : ''"
+                            @dblclick="focusOnTabset(tabset as Tabset)">
                 <q-icon v-if="tabset.status === TabsetStatus.FAVORITE"
                         color="warning"
                         name="push_pin"
-                        style="position: relative;top:-2px"/>
+                        style="position: relative;top:-2px">
+                  <q-tooltip class="tooltip">This tabset is pinned for easier access</q-tooltip>
+                </q-icon>
+                <q-icon v-if="tabset.sharedId"
+                        :color="tabset.sharing.toString().toLowerCase().indexOf('_outdated') >= 0 ? 'warning' : 'primary'"
+                        name="share"
+                        style="position: relative;top:-2px">
+                  <q-tooltip class="tooltip" v-if="tabset.sharing.toString().toLowerCase().indexOf('_outdated') >= 0">
+                    This tabset is shared but has been changed in the meantime. You need to re-publish.
+                  </q-tooltip>
+                  <q-tooltip v-else class="tooltip">This tabset is shared</q-tooltip>
+                </q-icon>
                 {{ tabset.name }}
               </q-item-label>
               <q-item-label class="text-caption text-grey-5">
@@ -38,7 +51,7 @@
             <q-item-section side
                             @mouseover="hoveredTabset = tabset.id"
                             @mouseleave="hoveredTabset = undefined">
-              <q-icon name="more_horiz" color="black" size="16px"/>
+              <q-icon class="cursor-pointer" name="more_horiz" color="black" size="16px"/>
               <SidePanelPageContextMenu :tabset="tabset as Tabset"/>
             </q-item-section>
 
@@ -52,9 +65,9 @@
             </div>
 
             <PanelTabList
-              v-if="tabsetExpanded.get(tabset.id)"
-              :tabsetType="tabset.type"
-              :tabs="filteredTabs(tabset as Tabset)"/>
+                v-if="tabsetExpanded.get(tabset.id)"
+                :tabsetType="tabset.type"
+                :tabs="filteredTabs(tabset as Tabset)"/>
 
           </div>
         </q-expansion-item>
@@ -67,24 +80,12 @@
     <q-page-sticky expand position="top" style="background-color:white">
 
       <FirstToolbarHelper
-        :showSearchBox="showSearchBox">
+          :showSearchBox="showSearchBox">
 
         <template v-slot:title v-if="permissionsStore && permissionsStore.hasFeature(FeatureIdent.SPACES)">
           <div class="text-subtitle1 text-black">
             {{ toolbarTitle(tabsets as Tabset[]) }}
           </div>
-          <!--          <q-btn-->
-          <!--            icon="o_add"-->
-          <!--            color="primary"-->
-          <!--            flat-->
-          <!--            class="q-ma-none q-pa-xs cursor-pointer"-->
-          <!--            style="max-width:20px"-->
-          <!--            size="10px"-->
-          <!--            @click.stop="openNewTabsetDialog()">-->
-          <!--            <q-tooltip class="tooltip">-->
-          <!--              {{ useSpacesStore().space ? 'Add new Tabset in this space' : 'Add new unassigned Tabset' }}-->
-          <!--            </q-tooltip>-->
-          <!--          </q-btn>-->
         </template>
         <template v-slot:title v-else>
           <div class="text-subtitle1 text-black">
@@ -106,10 +107,10 @@ import {onMounted, onUnmounted, ref, watchEffect} from "vue";
 import {useTabsStore} from "src/stores/tabsStore";
 import {Tab} from "src/models/Tab";
 import _ from "lodash"
-import {Tabset, TabsetStatus, TabsetType} from "src/models/Tabset";
+import {Tabset, TabsetSharing, TabsetStatus, TabsetType} from "src/models/Tabset";
 import {useRoute, useRouter} from "vue-router";
 import {useUtils} from "src/services/Utils";
-import {scroll, uid, useQuasar} from "quasar";
+import {scroll, useQuasar} from "quasar";
 import {useTabsetService} from "src/services/TabsetService2";
 import {useUiStore} from "src/stores/uiStore";
 import PanelTabList from "components/layouts/PanelTabList.vue";
@@ -121,13 +122,10 @@ import {useCommandExecutor} from "src/services/CommandExecutor";
 import {SelectTabsetCommand} from "src/domain/tabsets/SelectTabset";
 import {FeatureIdent} from "src/models/AppFeature";
 import SidePanelPageContextMenu from "pages/sidepanel/SidePanelPageContextMenu.vue";
-import NewTabsetDialog from "components/dialogues/NewTabsetDialog.vue";
-import getScrollTarget = scroll.getScrollTarget;
 import {DynamicTabSourceType} from "src/models/DynamicTabSource";
-import {AddTabToTabsetCommand} from "src/domain/tabs/AddTabToTabset";
 import {useWindowsStore} from "../stores/windowsStores";
-import {MarkTabsetDeletedCommand} from "src/domain/tabsets/MarkTabsetDeleted";
 import TabsetService from "src/services/TabsetService";
+import getScrollTarget = scroll.getScrollTarget;
 
 
 const {setVerticalScrollPosition} = scroll
@@ -206,15 +204,15 @@ const updateSelectedTabset = (tabsetId: string, open: boolean, index: number | u
     useUiStore().tabsetsExpanded = true
 
     useCommandExecutor()
-      .execute(new SelectTabsetCommand(tabsetId, useSpacesStore().space?.id))
-      .then(() => {
-        const promises: Promise<any>[] = []
-        //console.log("selecteded tabset > ", tabsetId)
-        const selectedTabset = useTabsStore().getTabset(tabsetId)
-        if (selectedTabset) {
-          handleHeadRequests(selectedTabset)
-        }
-      })
+        .execute(new SelectTabsetCommand(tabsetId, useSpacesStore().space?.id))
+        .then(() => {
+          const promises: Promise<any>[] = []
+          //console.log("selecteded tabset > ", tabsetId)
+          const selectedTabset = useTabsStore().getTabset(tabsetId)
+          if (selectedTabset) {
+            handleHeadRequests(selectedTabset)
+          }
+        })
 
   } else {
     useUiStore().tabsetsExpanded = false
@@ -276,43 +274,43 @@ watchEffect(() => {
 })
 
 const getTabsetOrder =
-  [
-    function (o: Tabset) {
-      return o.status === TabsetStatus.FAVORITE ? 0 : 1
-    },
-    function (o: Tabset) {
-      return o.name?.toLowerCase()
-    }
-  ]
+    [
+      function (o: Tabset) {
+        return o.status === TabsetStatus.FAVORITE ? 0 : 1
+      },
+      function (o: Tabset) {
+        return o.name?.toLowerCase()
+      }
+    ]
 
 watchEffect(() => {
   if (usePermissionsStore().hasFeature(FeatureIdent.SPACES)) {
     const currentSpace = useSpacesStore().space
     tabsets.value = _.sortBy(
-      _.filter([...tabsStore.tabsets.values()], (ts: Tabset) => {
-        if (currentSpace) {
-          if (ts.spaces.indexOf(currentSpace.id) < 0) {
-            return false
+        _.filter([...tabsStore.tabsets.values()], (ts: Tabset) => {
+          if (currentSpace) {
+            if (ts.spaces.indexOf(currentSpace.id) < 0) {
+              return false
+            }
           }
-        }
-        return ts.status !== TabsetStatus.DELETED
-      }),
-      getTabsetOrder, ["asc"])
+          return ts.status !== TabsetStatus.DELETED
+        }),
+        getTabsetOrder, ["asc"])
   } else {
     tabsets.value = _.sortBy(
-      _.filter([...tabsStore.tabsets.values()],
-        (ts: Tabset) => ts.status !== TabsetStatus.DELETED),
-      getTabsetOrder, ["asc"])
+        _.filter([...tabsStore.tabsets.values()],
+            (ts: Tabset) => ts.status !== TabsetStatus.DELETED),
+        getTabsetOrder, ["asc"])
   }
 })
 
 
 function inIgnoredMessages(message: any) {
   return message.msg === "html2text" ||
-    message.msg === "html2links" ||
-    message.name === "zero-shot-classification" ||
-    message.msg === "websiteQuote" ||
-    message.msg === "init-ai-module";
+      message.msg === "html2links" ||
+      message.name === "zero-shot-classification" ||
+      message.msg === "websiteQuote" ||
+      message.name === "recogito-annotation-created"
 }
 
 if (chrome) {
@@ -343,15 +341,15 @@ if (chrome) {
         if (message.data.noteId) {
           console.log("updating note", message.data.noteId)
           useTabsStore().getTab(message.data.noteId)
-            .then((res: object | undefined) => {
-              if (res) {
-                const note = res['tab' as keyof object] as Tab
-                note.title = message.data.tab.title
-                note.description = message.data.tab.description
-                note.longDescription = message.data.tab.longDescription
-              }
-              useTabsetService().saveTabset(tabset)
-            })
+              .then((res: object | undefined) => {
+                if (res) {
+                  const note = res['tab' as keyof object] as Tab
+                  note.title = message.data.tab.title
+                  note.description = message.data.tab.description
+                  note.longDescription = message.data.tab.longDescription
+                }
+                useTabsetService().saveTabset(tabset)
+              })
         } else {
           console.log("adding tab", message.data.tab)
           tabset.tabs.push(message.data.tab)
@@ -391,7 +389,7 @@ if (chrome) {
 
 const filteredTabs = (tabset: Tabset): Tab[] => {
   if (tabset.type === TabsetType.DYNAMIC &&
-    tabset.dynamicTabs && tabset.dynamicTabs.type === DynamicTabSourceType.TAG) {
+      tabset.dynamicTabs && tabset.dynamicTabs.type === DynamicTabSourceType.TAG) {
     const results: Tab[] = []
     //console.log("checking", tabset.dynamicTabs)
     const tag = tabset.dynamicTabs?.config['tags' as keyof object][0]
@@ -414,8 +412,8 @@ const filteredTabs = (tabset: Tabset): Tab[] => {
   }
   return _.filter(tabs, (t: Tab) => {
     return (t.url || '')?.indexOf(filter) >= 0 ||
-      (t.title || '')?.indexOf(filter) >= 0 ||
-      t.description?.indexOf(filter) >= 0
+        (t.title || '')?.indexOf(filter) >= 0 ||
+        t.description?.indexOf(filter) >= 0
   })
 }
 
@@ -511,15 +509,15 @@ function checkKeystroke(e: KeyboardEvent) {
 }
 
 const showTabset = (tabset: Tabset) => !useUiStore().tabsFilter ?
-  true :
-  (useUiStore().tabsFilter === '' || filteredTabs(tabset).length > 0)
+    true :
+    (useUiStore().tabsFilter === '' || filteredTabs(tabset).length > 0)
 
 const toolbarTitle = (tabsets: Tabset[]) => {
   if (usePermissionsStore().hasFeature(FeatureIdent.SPACES)) {
     const spaceName = useSpacesStore().space ? useSpacesStore().space.label : 'no space selected'
     return tabsets.length > 6 ?
-      spaceName + ' (' + tabsets.length.toString() + ')' :
-      spaceName
+        spaceName + ' (' + tabsets.length.toString() + ')' :
+        spaceName
   }
   return tabsets.length > 6 ? 'My Tabsets (' + tabsets.length.toString() + ')' : 'My Tabsets'
 }
@@ -533,6 +531,9 @@ const tabsetIcon = (tabset: Tabset) => {
   }
   return icon
 }
+
+const focusOnTabset = (tabset: Tabset) => router.push("/sidepanel/tabsets/" + tabset.id)
+
 
 </script>
 

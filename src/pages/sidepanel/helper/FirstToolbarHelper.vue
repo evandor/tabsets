@@ -1,5 +1,5 @@
 <template>
-  <q-toolbar class="text-primary q-pa-none q-pl-sm q-pr-xs q-pb-none">
+  <q-toolbar class="text-primary q-pa-none q-pl-sm q-pr-xs q-pb-none greyBorderBottom">
     <q-toolbar-title>
       <div class="row q-ma-none q-pa-none">
 
@@ -7,41 +7,21 @@
         <div v-if="usePermissionsStore().hasFeature(FeatureIdent.SPACES)" class="col-6 q-ma-none q-pa-none">
 
           <!-- spaces and no back button -->
-          <template v-if="!props.showBackButton">
 
-            <SearchWithTransitionHelper v-if="searching"/>
-
-            <template v-else>
-              <div class="column q-ma-none q-pa-none">
-                <div class="col q-ma-none q-pa-none cursor-pointer text-black text-subtitle1"
-                     @click.stop="router.push('/sidepanel/spaces')">
-
-                  <slot name="title">{{ props.title }}</slot>
-
-                </div>
-              </div>
-            </template>
-          </template>
+          <SearchWithTransitionHelper v-if="searching"/>
 
           <template v-else>
-            <template v-if="searching">
-              <SearchWithTransitionHelper/>
-            </template>
-            <template v-else>
-              <div class="row">
-                <div class="col-12 text-black text-subtitle1">
-                  <q-icon
-                    size="18px" color="primary"
-                    name="chevron_left" class="cursor-pointer"
-                    @click.stop="emits('wasClicked')">
-                    <q-tooltip>Back</q-tooltip>
-                  </q-icon>
+            <div class="column q-ma-none q-pa-none">
+              <div class="col q-ma-none q-pa-none cursor-pointer text-black text-subtitle1"
+                   @click.stop="router.push('/sidepanel/spaces')">
 
-                  <slot name="title">{{ props.title }}</slot>
+                <!--                  <slot name="title">{{ props.title }}</slot>-->
 
-                </div>
+                <!--                </div>-->
+                <!--              </div>-->
+                <slot name="title">{{ props.title }}</slot>
               </div>
-            </template>
+            </div>
           </template>
         </div>
 
@@ -49,31 +29,17 @@
         <div v-else class="col q-ma-none q-pa-none">
 
           <!-- no spaces && searching -->
-          <SearchWithTransitionHelper v-if="searching"/>
+          <SearchWithTransitionHelper v-if="searching"
+                                      :search-term="props.searchTerm"
+                                      :search-hits="props.searchHits"/>
 
           <!-- no spaces && not searching -->
           <template v-else>
 
-            <!-- no spaces && not searching && showBackButton -->
-            <div class="row" v-if="props.showBackButton">
-              <div class="col-12 text-black text-subtitle1">
-                <q-icon
-                  size="18px" color="primary"
-                  name="chevron_left" class="cursor-pointer"
-                  @click.stop="emits('wasClicked')">
-                  <q-tooltip>Back</q-tooltip>
-                </q-icon>
-
-                <slot name="title">{{ props.title }}</slot>
-
-              </div>
+            <!-- no spaces && not searching -->
+            <div class="col-12 text-black text-subtitle1">
+              <slot name="title">{{ props.title }}</slot>
             </div>
-
-            <!-- no spaces && not searching && not showBackButton -->
-            <!--            <div v-else class="col q-ml-none text-black text-subtitle1">-->
-            <slot name="title">{{ props.title }}</slot>
-            <!--            </div>-->
-
 
           </template>
         </div>
@@ -109,81 +75,54 @@
               <q-tooltip class="tooltip" v-else>Start new Session</q-tooltip>
             </q-btn>
 
-            <q-btn v-if="showCreateClipButton()"
-              icon="filter_center_focus"
-              color="black"
-              flat
-              class="q-ma-none q-pa-xs cursor-pointer"
-              style="max-width:20px"
-              size="10px"
-              @click="createClip">
-              <q-tooltip class="tooltip">{{ createWebsiteClipTooltip() }}</q-tooltip>
-            </q-btn>
+            <template v-if="showCreateClipButton()">
+              <q-btn
+                  icon="filter_center_focus"
+                  color="black"
+                  flat
+                  class="q-ma-none q-pa-xs cursor-pointer"
+                  style="max-width:20px"
+                  size="10px"
+                  @click="createClip">
+                <q-tooltip class="tooltip">{{ createWebsiteClipTooltip() }}</q-tooltip>
+              </q-btn>
+              <span class="q-ma-none q-pa-none q-mx-sm text-grey-5">|</span>
+            </template>
 
             <q-btn
-              v-if="showCreateClipButtonInActive()"
-              icon="filter_center_focus"
-              color="grey-5"
-              flat
-              class="q-ma-none q-pa-xs cursor-pointer"
-              style="max-width:20px"
-              size="10px">
+                v-if="showCreateClipButtonInActive()"
+                icon="filter_center_focus"
+                color="grey-5"
+                flat
+                class="q-ma-none q-pa-xs cursor-pointer"
+                style="max-width:20px"
+                size="10px">
               <q-tooltip class="tooltip">cannot create web clip for this tab</q-tooltip>
             </q-btn>
 
-            <span v-if="showFilterIcon() || showSearchIcon()"
-                  class="q-ma-none q-pa-none q-mx-sm text-grey-5">|</span>
 
-            <q-btn v-if="showFilterIcon()"
-                   flat
-                   class="q-ma-none q-pa-xs cursor-pointer"
-                   style="width:20px;max-width:220px"
-                   size="11px"
-                   :text-color="useUiStore().tabsFilter ? 'warning' : 'black'"
-                   :disable="tabsStore.getCurrentTabset?.type === TabsetType.DYNAMIC"
-                   icon="o_filter_alt">
-              <q-popup-edit
-                ref="popupEditRef"
-                :model-value="useUiStore().tabsFilter" v-slot="scope"
-                @save="(val, initial)=> setFilter(val)"
-                @update:model-value="val => setFilter(  val)">
-                <q-input v-model="scope.value" dense autofocus counter @keyup.enter="scope.set">
-                  <template v-slot:append>
-                    <q-icon class="cursor-pointer" name="clear" @click="clearFilter()" size="xs"/>
-                  </template>
-                </q-input>
-              </q-popup-edit>
-              <q-tooltip
-                class="tooltip"
-                :delay="200"
-                anchor="center left" self="center right">
-                {{ useUiStore().tabsFilter ? 'Filtering for "' + useUiStore().tabsFilter + '"' : 'Filter this tabset' }}
-              </q-tooltip>
-            </q-btn>
-
-            <q-btn v-if="showSearchIcon()"
-                   id="toggleSearchBtn"
-                   icon="search"
-                   color="black"
-                   flat
-                   class="q-ma-none q-pa-xs cursor-pointer"
-                   style="max-width:20px"
-                   size="11px"
-                   @click="toggleSearch">
-              <q-tooltip class="tooltip">Search</q-tooltip>
-            </q-btn>
-
-            <span v-if="showFilterIcon() || showSearchIcon()"
-                  class="q-ma-none q-pa-none q-mx-sm text-grey-5">|</span>
+            <template v-if="showSearchIcon()">
+              <q-btn
+                  id="toggleSearchBtn"
+                  icon="search"
+                  color="black"
+                  flat
+                  class="q-ma-none q-pa-xs cursor-pointer"
+                  style="max-width:20px"
+                  size="11px"
+                  @click="toggleSearch">
+              </q-btn>
+              <span class="q-ma-none q-pa-none q-mx-sm text-grey-5">|</span>
+            </template>
 
             <q-btn
-              icon="o_add_circle"
-              color="black"
-              flat
-              class="q-ma-none q-pa-xs cursor-pointer"
-              style="max-width:20px"
-              size="10px"
-              @click="openNewTabsetDialog()">
+                icon="o_add_circle"
+                color="warning"
+                flat
+                class="q-ma-none q-pa-xs cursor-pointer"
+                style="max-width:20px"
+                size="12px"
+                @click="openNewTabsetDialog()">
               <q-tooltip class="tooltip">{{ newTabsetTooltip() }}</q-tooltip>
             </q-btn>
 
@@ -203,12 +142,10 @@ import {useSpacesStore} from "stores/spacesStore";
 import {useTabsStore} from "stores/tabsStore";
 import {useRouter} from "vue-router";
 import {ref, watchEffect} from "vue";
-import NavigationService from "src/services/NavigationService";
 import {SidePanelView, useUiStore} from "stores/uiStore";
 import NewTabsetDialog from "components/dialogues/NewTabsetDialog.vue";
-import {QInput, QPopupEdit, useQuasar} from "quasar";
+import {useQuasar} from "quasar";
 import {Tabset, TabsetType} from "src/models/Tabset";
-import JsUtils from "src/utils/JsUtils";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {ToggleSortingCommand} from "src/domain/tabsets/ToggleSorting";
 import NewSessionDialog from "components/dialogues/NewSessionDialog.vue";
@@ -217,73 +154,39 @@ import {StopSessionCommand} from "src/domain/commands/StopSessionCommand";
 import ChromeApi from "src/services/ChromeApi";
 import SearchWithTransitionHelper from "pages/sidepanel/helper/SearchWithTransitionHelper.vue";
 import {useWindowsStore} from "../../../stores/windowsStores";
+import {Suggestion, SuggestionState, SuggestionType} from "src/models/Suggestion";
+import SuggestionDialog from "components/dialogues/SuggestionDialog.vue";
 
 const props = defineProps({
   title: {type: String, default: "My Tabsets"},
   forceTitle: {type: Boolean, default: false},
-  showBackButton: {type: Boolean, default: false},
-  showSearchBox: {type: Boolean, default: false}
+  showSearchBox: {type: Boolean, default: false},
+  searchTerm: {type: String, default: ''},
+  searchHits: {type: Number, required: false}
 })
 
 const emits = defineEmits(['wasClicked'])
-
 
 const $q = useQuasar()
 const router = useRouter()
 const tabsStore = useTabsStore()
 
 const searching = ref(false)
-const popupEditRef = ref<QPopupEdit>()
 const existingSession = ref(false)
 
-const toggleSearch = () => searching.value = !searching.value
+const toggleSearch = () => {
+  searching.value = !searching.value
+  if (searching.value) {
+    // comment out for old search approach (plus SearchWidget2 -> SearchWidget)
+    router.push("/sidepanel/search")
+  }
+}
 
 watchEffect(() => {
   if (props.showSearchBox && !searching.value) {
     searching.value = true
   }
 })
-
-const toggleRemote = () => {
-  useUiStore().sidePanel.activeView?.ident === SidePanelView.MAIN.ident ?
-    useUiStore().sidePanelSetActiveView(SidePanelView.PUBLIC_TABSETS) :
-    useUiStore().sidePanelSetActiveView(SidePanelView.MAIN)
-}
-
-const openTabsetPage = () => {
-  const tabsetId = tabsStore.getCurrentTabset?.id
-  if (tabsetId) {
-    const extensionUrl = chrome.runtime.getURL('www/index.html#/mainpanel/tabsets/' + tabsetId)
-    NavigationService.openOrCreateTab(extensionUrl)
-  }
-  router.push("/sidepanel/spaces")
-}
-
-const cloudIconColor = () => {
-  return useUiStore().sidePanel.activeView?.ident === SidePanelView.PUBLIC_TABSETS.ident ? 'warning' : 'primary'
-}
-
-const titleForSpaces = () => {
-  if (props.title && props.forceTitle) {
-    return props.title
-  }
-  return useSpacesStore().space ? useSpacesStore().space.label : 'no space selected'
-}
-
-const setFilter = (newValue: string) => {
-  console.log("filtering tabs", newValue)
-  const useValue = newValue && newValue.trim().length > 0 ? newValue.trim() : undefined
-  useUiStore().tabsFilter = useValue
-  useUiStore().setHighlightTerm(useValue)
-  JsUtils.runCssHighlight()
-}
-
-const clearFilter = () => {
-  useUiStore().tabsFilter = undefined
-  popupEditRef.value?.set()
-  useUiStore().setHighlightTerm(undefined)
-  JsUtils.runCssHighlight()
-}
 
 const toggleSorting = () => useCommandExecutor().executeFromUi(new ToggleSortingCommand(tabsStore.currentTabsetId))
 
@@ -324,32 +227,27 @@ const showSortIcon = () => false
 // tabsStore.getCurrentTabs.length > 3 &&
 // useUiStore().tabsetsExpanded
 
-const showFilterIcon = () => !props.showBackButton &&
-  useUiStore().sidePanelActiveViewIs(SidePanelView.MAIN) &&
-  tabsStore.tabsets.size > 1 &&
-  !searching.value
+const showSearchIcon = () => tabsStore.tabsets.size > 1
 
-const showSearchIcon = () => !props.showBackButton && tabsStore.tabsets.size > 1
-
-const showToggleSessionIcon = () => !props.showBackButton &&
-  useUiStore().sidePanelActiveViewIs(SidePanelView.MAIN) &&
-  usePermissionsStore().hasFeature(FeatureIdent.SESSIONS) &&
-  !searching.value
+const showToggleSessionIcon = () =>
+    useUiStore().sidePanelActiveViewIs(SidePanelView.MAIN) &&
+    usePermissionsStore().hasFeature(FeatureIdent.SESSIONS) &&
+    !searching.value
 
 const showCreateClipButton = () =>
-  useUiStore().sidePanelActiveViewIs(SidePanelView.MAIN) &&
-  usePermissionsStore().hasFeature(FeatureIdent.WEBSITE_CLIP) && webClipActive() &&
-  !searching.value
+    useUiStore().sidePanelActiveViewIs(SidePanelView.MAIN) &&
+    usePermissionsStore().hasFeature(FeatureIdent.WEBSITE_CLIP) && webClipActive() &&
+    !searching.value
 
 const showCreateClipButtonInActive = () =>
-  useUiStore().sidePanelActiveViewIs(SidePanelView.MAIN) &&
-  usePermissionsStore().hasFeature(FeatureIdent.WEBSITE_CLIP) && !webClipActive() &&
-  !searching.value
+    useUiStore().sidePanelActiveViewIs(SidePanelView.MAIN) &&
+    usePermissionsStore().hasFeature(FeatureIdent.WEBSITE_CLIP) && !webClipActive() &&
+    !searching.value
 
 const newTabsetTooltip = () =>
-  usePermissionsStore().hasFeature(FeatureIdent.SPACES) ?
-    (useSpacesStore().space ? 'Add new Tabset in this space' : 'Add new unassigned Tabset') :
-    'Add new Tabset'
+    usePermissionsStore().hasFeature(FeatureIdent.SPACES) ?
+        (useSpacesStore().space ? 'Add new Tabset in this space' : 'Add new unassigned Tabset') :
+        'Add new Tabset'
 
 const openNewTabsetDialog = () => {
   $q.dialog({
@@ -361,7 +259,6 @@ const openNewTabsetDialog = () => {
     }
   })
 }
-
 
 </script>
 

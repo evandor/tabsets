@@ -23,22 +23,22 @@
     <div class="row items-baseline q-mx-sm q-my-sm">
 
       <div class="col-2">
-        <TabFaviconWidget
-          class="q-mr-md q-mb-md"
-          :tab="uiStore.getSelectedTab" width="24px" height="24px"/>
+        <TabFaviconWidget v-if="tab"
+                          class="q-mr-md q-mb-md"
+                          :tab="tab" width="24px" height="24px"/>
       </div>
       <div class="col-10 text-body1 ellipsis-3">
-        {{ getHost(useUiStore().getSelectedTab?.url, true) }}
+        {{ getHost(tab?.url, true) }}
       </div>
       <div class="col-12 text-body2 ellipsis-3">
-        {{ useUiStore().getSelectedTab?.title }}
+        {{ tab?.title }}
       </div>
 
       <div class="col-12">
         <div class="text-overline ellipsis text-blue-10 cursor-pointer"
-             @click.stop="NavigationService.openOrCreateTab(useUiStore().getSelectedTab.url )">
-          {{ useUiStore().getSelectedTab?.url }}&nbsp;<q-icon name="launch" color="secondary"
-                                                              class="cursor-pointer"></q-icon>
+             @click.stop="NavigationService.openOrCreateTab(tab.url )">
+          {{ tab?.url }}&nbsp;<q-icon name="launch" color="secondary"
+                                      class="cursor-pointer"></q-icon>
         </div>
       </div>
 
@@ -96,11 +96,11 @@
       </div>
       <div class="col-9 text-right">
         <!--        <q-btn round size="11px"-->
-        <!--               :color="useUiStore().getSelectedTab?.note && useUiStore().getSelectedTab.note.length > 0 ? 'white' : 'warning'"-->
-        <!--               :style="useUiStore().getSelectedTab?.note && useUiStore().getSelectedTab.note.length > 0 ? 'background: #FFBF46' : 'background: #ffffff'"-->
+        <!--               :color="tab?.note && tab.note.length > 0 ? 'white' : 'warning'"-->
+        <!--               :style="tab?.note && tab.note.length > 0 ? 'background: #FFBF46' : 'background: #ffffff'"-->
         <!--               flat-->
         <!--               icon="edit_note"-->
-        <!--               @click.stop="editNoteDialog(useUiStore().getSelectedTab)">-->
+        <!--               @click.stop="editNoteDialog(tab)">-->
         <!--          <q-tooltip>Add a note to this tab or edit it</q-tooltip>-->
         <!--        </q-btn>-->
 
@@ -110,10 +110,10 @@
 
         <q-btn v-if="usePermissionsStore().hasPermission('pageCapture') &&
                     usePermissionsStore().hasFeature(FeatureIdent.SAVE_TAB)"
-               @click.stop="saveTab(useUiStore().getSelectedTab)"
+               @click.stop="saveTab(tab)"
                flat round color="primary" size="11px" icon="save"
-               :disabled="!isOpen(useUiStore().getSelectedTab)">
-          <q-tooltip v-if="isOpen(useUiStore().getSelectedTab)">Save this tab</q-tooltip>
+               :disabled="!isOpen(tab)">
+          <q-tooltip v-if="isOpen(tab)">Save this tab</q-tooltip>
           <q-tooltip v-else>The tab must be open if you want to save it. Click on the link and come back here to save
             it.
           </q-tooltip>
@@ -134,28 +134,28 @@
       <q-card>
         <q-card-section>
           <q-select
-            filled
-            v-model="tags"
-            use-input
-            use-chips
-            multiple
-            hide-dropdown-icon
-            input-debounce="0"
-            new-value-mode="add-unique"
-            @update:model-value="val => updatedTags(val)"
-            style="width: 250px"
+              filled
+              v-model="tags"
+              use-input
+              use-chips
+              multiple
+              hide-dropdown-icon
+              input-debounce="0"
+              new-value-mode="add-unique"
+              @update:model-value="val => updatedTags(val)"
+              style="width: 250px"
           />
         </q-card-section>
       </q-card>
     </q-expansion-item>
 
     <q-expansion-item label="Archived Snapshots"
-                      v-if="usePermissionsStore().hasFeature(FeatureIdent.SAVE_TAB) && useUiStore().getSelectedTab?.mhtmls?.length > 0"
+                      v-if="usePermissionsStore().hasFeature(FeatureIdent.SAVE_TAB) && tab?.mhtmls?.length > 0"
                       :default-opened="true">
       <q-card>
         <q-card-section>
-          <div class="row q-mx-sm q-mt-xs" v-for="mhtml in useUiStore().getSelectedTab?.mhtmls">
-            <MHtmlViewHelper :mhtmlId="mhtml" :tabId="useUiStore().getSelectedTab?.id || 'unknown'"/>
+          <div class="row q-mx-sm q-mt-xs" v-for="mhtml in tab?.mhtmls">
+            <MHtmlViewHelper :mhtmlId="mhtml" :tabId="tab?.id || 'unknown'"/>
           </div>
         </q-card-section>
       </q-card>
@@ -168,7 +168,7 @@
     <!--      <q-card>-->
     <!--        <q-card-section>-->
     <!--          <div class="text-caption">-->
-    <!--            {{ useUiStore().getSelectedTab?.note }}-->
+    <!--            {{ tab?.note }}-->
     <!--          </div>-->
     <!--        </q-card-section>-->
     <!--      </q-card>-->
@@ -177,35 +177,37 @@
     <q-expansion-item label="Meta Data"
                       group="somegroup"
 
-                      :default-opened="useUiStore().getSelectedTab?.note === undefined">
+                      :default-opened="tab?.note === undefined">
       <q-card>
         <q-card-section>
           <div class="row q-mx-sm q-mt-none">
             <div class="col-5 text-caption text-bold">created</div>
-            <div class="col-7 text-right text-caption">{{ formatDate(useUiStore().getSelectedTab?.created) }}</div>
+            <div class="col-7 text-right text-caption">{{ formatDate(tab?.created) }}</div>
           </div>
           <div class="row q-mx-sm">
             <div class="col-5 text-caption text-bold">changed</div>
-            <div class="col-7 text-right text-caption">{{ formatDate(useUiStore().getSelectedTab?.updated) }}</div>
+            <div class="col-7 text-right text-caption">{{ formatDate(tab?.updated) }}</div>
           </div>
           <div class="row q-mx-sm">
             <div class="col-5 text-caption text-bold">last active</div>
-            <div class="col-7 text-right text-caption">{{ formatDate(useUiStore().getSelectedTab?.lastActive) }}</div>
+            <div class="col-7 text-right text-caption">{{ formatDate(tab?.lastActive) }}</div>
           </div>
           <div class="row q-mx-sm">
             <div class="col-5 text-caption text-bold">opened</div>
-            <div class="col-7 text-right text-caption">{{ useUiStore().getSelectedTab?.activatedCount }}x</div>
+            <div class="col-7 text-right text-caption">{{ tab?.activatedCount }}x</div>
           </div>
 
           <template v-if="useSettingsStore().isEnabled('dev')">
             <div class="row q-mx-sm">
-              <div class="col-12 text-caption text-bold q-px-xl"><hr></div>
+              <div class="col-12 text-caption text-bold q-px-xl">
+                <hr>
+              </div>
             </div>
             <div class="row q-mx-sm" v-for="metaRow in metaRows">
               <div class="col-5 text-caption text-bold">{{ metaRow.name }}</div>
               <div class="col-7 text-right text-caption ellipsis">
-                {{ metaRow.value }}
-                <q-tooltip>{{ metaRow.value }}</q-tooltip>
+                {{ metaRow }}
+                <q-tooltip>{{ metaRow }}</q-tooltip>
               </div>
             </div>
           </template>
@@ -220,44 +222,44 @@
         <q-card-section>
           <div class="row q-mx-sm q-mt-none">
             <div class="col-5 text-caption text-bold">Http Status</div>
-            <div class="col-7 text-right text-caption">{{ useUiStore().getSelectedTab?.httpStatus }}</div>
+            <div class="col-7 text-right text-caption">{{ tab?.httpStatus }}</div>
           </div>
           <div class="row q-mx-sm q-mt-none">
             <div class="col-5 text-caption text-bold">Checked At</div>
             <div class="col-7 text-right text-caption">{{
-                formatDate(useUiStore().getSelectedTab?.httpCheckedAt)
+                formatDate(tab?.httpCheckedAt)
               }}
             </div>
           </div>
           <div class="row q-mx-sm q-mt-none">
             <div class="col-5 text-caption text-bold">Info</div>
-            <div class="col-7 text-right text-caption">{{ useUiStore().getSelectedTab?.httpInfo }}</div>
+            <div class="col-7 text-right text-caption">{{ tab?.httpInfo }}</div>
           </div>
           <div class="row q-mx-sm q-mt-none">
             <div class="col-5 text-caption text-bold">Content Type</div>
-            <div class="col-7 text-right text-caption">{{ useUiStore().getSelectedTab?.httpContentType }}</div>
+            <div class="col-7 text-right text-caption">{{ tab?.httpContentType }}</div>
           </div>
           <div class="row q-mx-sm q-mt-none">
             <div class="col-5 text-caption text-bold">Last Modified</div>
-            <div class="col-7 text-right text-caption">{{ useUiStore().getSelectedTab?.httpLastModified }}</div>
+            <div class="col-7 text-right text-caption">{{ tab?.httpLastModified }}</div>
           </div>
           <div class="row q-mx-sm q-mt-none">
             <div class="col-5 text-caption text-bold">Error</div>
-            <div class="col-7 text-right text-caption">{{ useUiStore().getSelectedTab?.httpError }}</div>
+            <div class="col-7 text-right text-caption">{{ tab?.httpError }}</div>
           </div>
         </q-card-section>
       </q-card>
     </q-expansion-item>
 
-    <q-expansion-item label="Selections" v-if="useUiStore().getSelectedTab?.selections?.length > 0"
+    <q-expansion-item label="Selections" v-if="tab?.selections?.length > 0"
                       group="somegroup">
       <q-card>
         <q-card-section>
           <div class="row q-mx-sm q-mt-none">
             <div class="col-5 text-caption text-bold">Selections</div>
-            <div class="col-7 text-right text-caption">{{ useUiStore().getSelectedTab?.selections?.length }}</div>
+            <div class="col-7 text-right text-caption">{{ tab?.selections?.length }}</div>
           </div>
-          <div class="row q-mx-sm q-mt-none" v-for="selection in useUiStore().getSelectedTab?.selections">
+          <div class="row q-mx-sm q-mt-none" v-for="selection in tab?.selections">
             <div class="col-12 text-caption">{{ selection.text }}</div>
           </div>
         </q-card-section>
@@ -302,7 +304,7 @@ import {useTabsetService} from "src/services/TabsetService2";
 import TabsetService from "src/services/TabsetService";
 import {ref, watchEffect} from "vue";
 import {usePermissionsStore} from "src/stores/permissionsStore";
-import {useRouter} from "vue-router";
+import {useRoute, useRouter} from "vue-router";
 import {useQuasar} from "quasar";
 import {Tab} from "src/models/Tab";
 import {formatDistance} from "date-fns";
@@ -323,6 +325,7 @@ const {inBexMode} = useUtils()
 const uiStore = useUiStore()
 const featuresStore = useSettingsStore()
 const router = useRouter()
+const route = useRoute()
 const $q = useQuasar()
 
 const hasAllUrlsPermission = ref<boolean | undefined>(false)
@@ -332,47 +335,59 @@ const content = ref('')
 const searchIndex = ref<any>()
 const metaRows = ref<object[]>([])
 const metas = ref({})
+const tab = ref<Tab | undefined>(undefined)
 
 const {selectTabset} = useTabsetService()
 
 const tags = ref<string[]>([])
 
 watchEffect(() => {
-  const selectedTab = useUiStore().getSelectedTab
-  if (selectedTab) {
-    tags.value = selectedTab.tags
-  }
+  const tabId = route.params.tabId as unknown as string
+  console.log("tabid", tabId)
+  useTabsStore().getTab(tabId)
+      .then((tabObject: object | undefined) => {
+        if (tabObject) {
+          tab.value = tabObject['tab' as keyof object] as Tab
+          tags.value = tab.value.tags
+        }
+      })
+
+  // const selectedTab = tab.value
+  // console.log("selectedTab", selectedTab)
+  // if (selectedTab) {
+  //   tags.value = selectedTab.tags
+  // }
 })
 
 
 watchEffect(() => hasAllUrlsPermission.value = usePermissionsStore().hasAllOrigins())
 
 watchEffect(() => {
-  if (uiStore.getSelectedTab) {
-    TabsetService.getThumbnailFor(uiStore.getSelectedTab)
-      .then(data => {
-        if (data) {
-          thumbnail.value = data.thumbnail
-        } else {
-          thumbnail.value = ''
-        }
-      })
-    TabsetService.getContentFor(uiStore.getSelectedTab)
-      .then(data => {
-        if (data) {
-          content.value = data['content' as keyof object]
-          //metas.value = data['metas' as keyof object]
-          metaRows.value = []
-          _.forEach(Object.keys(data['metas' as keyof object]), k => {
-            //console.log("k", k, data.metas[k])
-            metaRows.value.push({
-              name: k,
-              value: data['metas' as keyof object][k]
+  if (tab.value) {
+    TabsetService.getThumbnailFor(tab.value)
+        .then(data => {
+          if (data) {
+            thumbnail.value = data.thumbnail
+          } else {
+            thumbnail.value = ''
+          }
+        })
+    TabsetService.getContentFor(tab.value)
+        .then(data => {
+          if (data) {
+            content.value = data['content' as keyof object]
+            //metas.value = data['metas' as keyof object]
+            metaRows.value = []
+            _.forEach(Object.keys(data['metas' as keyof object]), k => {
+              //console.log("k", k, data.metas[k])
+              metaRows.value.push({
+                name: k,
+                value: data['metas' as keyof object][k]
+              })
             })
-          })
-          metaRows.value = _.sortBy(metaRows.value, s => s['name' as keyof object])
-        }
-      })
+            metaRows.value = _.sortBy(metaRows.value, s => s['name' as keyof object])
+          }
+        })
   }
 })
 
@@ -382,7 +397,7 @@ function isOpen(tab: Tab): boolean {
 
 const tabsetChips = (): object[] => {
   const badges: object[] = []
-  const url = uiStore.getSelectedTab?.url
+  const url = tab.value?.url
   if (url) {
     _.forEach(useTabsetService().tabsetsFor(url), ts => badges.push({
       label: TabsetService.nameForTabsetId(ts),
@@ -421,16 +436,16 @@ function getHost(urlAsString: string, shorten: Boolean = true): string {
 }
 
 const formatDate = (timestamp: number | undefined) =>
-  timestamp ? formatDistance(timestamp, new Date(), {addSuffix: true}) : ""
+    timestamp ? formatDistance(timestamp, new Date(), {addSuffix: true}) : ""
 
 const showTabDetails = () =>
-  NavigationService.openOrCreateTab(chrome.runtime.getURL("/www/index.html#/mainpanel/tab/" + uiStore.getSelectedTab?.id))
+    NavigationService.openOrCreateTab(chrome.runtime.getURL("/www/index.html#/mainpanel/tab/" + tab.value?.id))
 
 watchEffect(() => {
   const fuseIndex = useSearchStore().getIndex()
   const keyMaps = fuseIndex['_keysMap' as keyof object]
   const res = _.filter(fuseIndex['records' as keyof object], (r: any) => {
-    return useUiStore().getSelectedTab?.url === r.$[2]?.v
+    return tab.value?.url === r.$[2]?.v
   })
   const keys: Map<number, object> = new Map()
   Object.keys(keyMaps).forEach((k: any) => {
@@ -455,19 +470,18 @@ watchEffect(() => {
 const saveTab = (tab: Tab) => useCommandExecutor().execute(new SaveTabCommand(useTabsStore().getCurrentTabset, tab))
 
 const updatedTags = (val: string[]) => {
-  const tab = useUiStore().getSelectedTab
-  if (tab) {
+  if (tab.value) {
     console.log("updating tag", val)
-    tab.tags = val
+    tab.value.tags = val
     useTabsetService().saveCurrentTabset()
-      .catch((err) => console.error(err))
+        .catch((err) => console.error(err))
   }
 }
 
 const openTabset = (chip: any) => {
   console.log("chip", chip)
   useCommandExecutor()
-    .execute(new SelectTabsetCommand(chip['tabsetId'], undefined))
+      .execute(new SelectTabsetCommand(chip['tabsetId'], undefined))
 }
 
 </script>

@@ -13,7 +13,10 @@ const { configure } = require('quasar/wrappers');
 const path = require('path');
 const fs = require("fs");
 
-module.exports = configure(function (/* ctx */) {
+module.exports = configure(function (ctx) {
+
+  require('dotenv').config()
+
   return {
 
 
@@ -64,10 +67,17 @@ module.exports = configure(function (/* ctx */) {
 
       //publicPath: '/www/',
       // analyze: true,
-      env: require('dotenv').config({
-        //path: (process.env.stage) ? 'config/.env.' + process.env.stage : 'config/.env',
-        //BACKEND_URL: process.env.BACKEND_URL
-      }).parsed,
+      env: {
+        BUILD_TIMESTAMP: new Date().toISOString().split('T')[0],
+        BACKEND_URL: process.env.BACKEND_URL,
+        LOGZ_URL: process.env.LOGZ_URL,
+        COUCHDB_PROTOCOL: process.env.COUCHDB_PROTOCOL,
+        COUCHDB_URL: process.env.COUCHDB_URL,
+        STRIPE_PUBLISHABLE_KEY: process.env.STRIPE_PUBLISHABLE_KEY,
+        STRIPE_ACCOUNT: process.env.STRIPE_ACCOUNT,
+        STRIPE_API_VERSION: process.env.STRIPE_API_VERSION,
+        LOCALE: process.env.LOCALE,
+      },
       // rawDefine: {}
       // ignorePublicFolder: true,
       // minify: false,

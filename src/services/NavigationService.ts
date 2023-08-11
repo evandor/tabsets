@@ -1,6 +1,6 @@
 import {HTMLSelection, Tab} from "src/models/Tab";
 import {useNotificationsStore} from "src/stores/notificationsStore";
-import {openURL} from "quasar";
+import {openURL, useQuasar} from "quasar";
 import {useTabsStore} from "src/stores/tabsStore";
 import {useTabsetService} from "src/services/TabsetService2";
 
@@ -14,7 +14,7 @@ class NavigationService {
       const selections: HTMLSelection[] = []
       tabsForUrl.forEach(t => {
         if (t.selections) {
-          console.log("found", t.selections)
+          //console.log("found", t.selections)
           t.selections.forEach(s => selections.push(s))
           //selections.concat(t.selections)
         }
@@ -24,13 +24,11 @@ class NavigationService {
 
           const ts = useTabsStore().tabsetFor(t.id)
           if (ts) {
-            console.log("saving tabset ", ts)
+            //console.log("saving tabset ", ts)
             useTabsetService().saveTabset(ts)
           }
         }
       })
-
-      console.log("selections are", selections)
 
       chrome.tabs.query({currentWindow: true}, (t: chrome.tabs.Tab[]) => {
         let found = false;
@@ -76,6 +74,7 @@ class NavigationService {
                 }
               });
             }
+
           })
         }
       })

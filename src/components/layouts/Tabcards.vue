@@ -17,16 +17,6 @@
 
     </div>
 
-<!--    <div v-else-if="tabsStore.pendingTabset?.tabs.length === 0" class="q-ma-md q-pa-xl fit"-->
-<!--         style="border: 2px dotted grey; border-radius: 7px">-->
-<!--      <div class="row fit text-subtitle2 justify-center items-center">-->
-<!--        <div class="col-12">drag and drop new tabs from</div>-->
-<!--      </div>-->
-<!--      <div class="row">-->
-<!--        <div class="col-12 cursor-pointer text-blue-8" @click="openOrShowOpenTabs()">here</div>-->
-<!--      </div>-->
-<!--    </div>-->
-
   </vue-draggable-next>
 
 </template>

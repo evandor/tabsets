@@ -35,6 +35,18 @@
         <q-icon v-else name="clear" class="cursor-pointer" color="grey" size="12px" @click="clearSearch"/>
       </template>
 
+      <template v-slot:append>
+        <q-avatar v-if="searchStore.term && route.fullPath === '/sidepanel'">
+          <q-icon name="o_filter_alt" size="18px"
+                  :color="(useUiStore().tabsFilter) ? 'red':'black'"
+                  class="cursor-pointer" @click="filterNotSearch()"/>
+          <q-tooltip v-if="useUiStore().tabsFilter"
+                     class="tooltip">Click again to remove filter</q-tooltip>
+          <q-tooltip v-else
+            class="tooltip">Filter for '{{searchStore.term}}' instead of searching</q-tooltip>
+        </q-avatar>
+      </template>
+
       <template v-slot:option="scope">
         <q-item v-bind="scope.itemProps" class="bg-grey-2">
           <q-item-section avatar>
@@ -81,13 +93,18 @@ import {usePermissionsStore} from "src/stores/permissionsStore";
 import {useUiStore} from "src/stores/uiStore";
 import {FeatureIdent} from "src/models/AppFeature";
 import JsUtils from "src/utils/JsUtils";
-import {useTabsetService} from "src/services/TabsetService2";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {SelectTabsetCommand} from "src/domain/tabsets/SelectTabset";
 
+const props = defineProps({
+  fromPanel: {type: Boolean, default: false},
+  searchTerm: {type: String, default: ''},
+  searchHits: {type: Number, required: false}
+})
+
 const tabsStore = useTabsStore()
 const searchStore = useSearchStore()
-const search = ref('')
+const search = ref(props.searchTerm)
 const typed = ref('')
 const theHits = ref<Hit[]>([])
 const moreHits = ref<boolean>(false)
@@ -96,10 +113,6 @@ const route = useRoute()
 const typedOrSelected = ref<any>()
 const searchBox = ref(null)
 const highlight = ref<string | undefined>(undefined)
-
-const props = defineProps({
-  fromPanel: {type: Boolean, default: false}
-})
 
 watchEffect(() => {
   console.log("search", search.value)
@@ -112,7 +125,11 @@ function submitSearch() {
       searchStore.term = typedOrSelected.value
     }
     if (props.fromPanel) {
-      router.push("/sidepanel/search")
+      if (route.fullPath === '/sidepanel/search') {
+        //router.go(0)
+      } else {
+        router.push("/sidepanel/search")
+      }
     } else {
       if (route.path === "/search") {
         runSearch(searchStore.term)
@@ -140,8 +157,9 @@ const runSearch = (term: string) => {
   }
 }
 
-const filterFn = (val: any, update: any, abort: any) => {
+const filterFn = (val: string, update: any, abort: any) => {
   console.log("filterFn", val)
+  search.value = ''
   if (val === '/') {
     //search.value = ""
     return
@@ -156,20 +174,20 @@ const filterFn = (val: any, update: any, abort: any) => {
       let tabsetsAsHit: Hit[] = []
       const tabsets = [...tabsStore.tabsets.values()]
       tabsets.forEach(ts => {
-        if (ts.name.indexOf(val) >= 0) {
+        if (ts.name.toLowerCase().indexOf(val.toLowerCase()) >= 0) {
           const pseudoHit = new Hit("tabset|" + ts.name,
             //null as unknown as chrome.tabs.Tab,
-            '','','',
-            0, 0, 0, [ts.id], ts.spaces,[], "", "")
+            '', '', '',
+            0, 0, 0, [ts.id], ts.spaces, [], "", "")
           tabsetsAsHit.push(pseudoHit)
         }
       })
-      console.log("tabsetsAsHit", tabsetsAsHit)
+      //console.log("tabsetsAsHit", tabsetsAsHit)
       options.value = tabsetsAsHit
       options.value = options.value.concat(theHits.value)
-      // console.log("options", options.value, typeof options.value)
+      //console.log("options", options.value, typeof options.value)
       // if (options.value) {
-      //   const pseudoHit = new Hit("highlight", null as unknown as chrome.tabs.Tab, 0, 0, 0, [], [],[], "", "")
+      //   const pseudoHit = new Hit("highlight", "title", "", "", 0, 0, 0, [], [], [], "", "")
       //   pseudoHit.name = val
       //   options.value = options.value.concat(pseudoHit)
       // }
@@ -178,6 +196,9 @@ const filterFn = (val: any, update: any, abort: any) => {
 }
 
 const updateSearch = (val: any) => {
+  if (val === null) {
+    search.value = ''
+  }
   typedOrSelected.value = val
   console.log("updateSearch", typedOrSelected.value)
   if (val?.chromeTab) {
@@ -202,18 +223,21 @@ const inputPlaceholder = () => {
   if (highlight.value) {
     return highlight.value
   }
-  if (Math.random() < 0.1) {
-    return "use the key '/' for quick access to search"
+  // if (Math.random() < 0.1) {
+  //   return "use the key '/' for quick access to search"
+  // }
+  if (props.searchHits && props.searchHits > 0) {
+    return `Found ${props.searchTerm} ${props.searchHits} time(s)`
   }
   if (usePermissionsStore().hasFeature(FeatureIdent.BOOKMARKS)) {
     const contentCount = useSearchStore().stats.get("content.count")
     // return `Search in ${tabsStore.allTabsCount} tabs (${contentCount} analysed) and ${useBookmarksStore().bookmarksLeaves.length} bookmarks`
-    return `Search in ${tabsStore.allTabsCount} tabs and ${useBookmarksStore().bookmarksLeaves.length} bookmarks`
+    return `Search in all tabs and bookmarks`
   }
   if (usePermissionsStore().hasFeature(FeatureIdent.BOOKMARKS)) {
-    return "Search in " + tabsStore.allTabsCount + " tabs and " + useBookmarksStore().bookmarksLeaves.length + " bookmarks"
+    return "Search in all tabs and bookmarks"
   }
-  return "Search in " + tabsStore.allTabsCount + " tabs"
+  return "Search in all tabs"
 }
 
 const clearSearch = () => {
@@ -223,5 +247,19 @@ const clearSearch = () => {
 
 const tabsetName = (id: string) => id.split('|')[1] || '???'
 
+const filterNotSearch = () => {
+  console.log("filtering1", searchStore.term, useUiStore().tabsFilter)
+  if (useUiStore().tabsFilter) {
+    useUiStore().tabsFilter = undefined
+    useUiStore().setHighlightTerm(undefined)
+    JsUtils.runCssHighlight()
+  } else{
+    const useValue = searchStore.term && searchStore.term.trim().length > 0 ? searchStore.term.trim() : undefined
+    useUiStore().tabsFilter = useValue
+    useUiStore().setHighlightTerm(useValue)
+    JsUtils.runCssHighlight()
+  }
+
+}
 
 </script>

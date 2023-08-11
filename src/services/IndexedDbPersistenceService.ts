@@ -1,7 +1,7 @@
 import {IDBPDatabase, openDB} from "idb";
 import {useTabsStore} from "src/stores/tabsStore";
 import _ from "lodash";
-import {INDEX_DB_VERSION, EXPIRE_DATA_PERIOD_IN_MINUTES} from "boot/constants";
+import {EXPIRE_DATA_PERIOD_IN_MINUTES, INDEX_DB_VERSION} from "boot/constants";
 import PersistenceService from "src/services/PersistenceService";
 import {Tabset, TabsetStatus} from "src/models/Tabset";
 import mhtml2html from 'mhtml2html';
@@ -590,13 +590,23 @@ class IndexedDbPersistenceService implements PersistenceService {
   addSuggestion(suggestion: Suggestion): Promise<void> {
     return this.getSuggestions()
       .then((suggestions) => {
+        const foundExistingInStateNewOrCanceled = _.find(suggestions,
+            (s: Suggestion) => s.state === SuggestionState.NEW || s.state === SuggestionState.CANCELED)
+        if (foundExistingInStateNewOrCanceled) {
+          if (foundExistingInStateNewOrCanceled && foundExistingInStateNewOrCanceled.url === suggestion.url) {
+            foundExistingInStateNewOrCanceled.state = SuggestionState.APPLIED
+            this.db.put('suggestions', foundExistingInStateNewOrCanceled, foundExistingInStateNewOrCanceled.id)
+            return Promise.reject("updated existing suggestion to 'applied'")
+          }
+          return Promise.reject("there's already a suggestion in state NEW, not adding (yet)")
+        }
         const found = _.find(suggestions, (s: Suggestion) => s.url === suggestion.url)
         if (!found) {
           return this.db.add('suggestions', suggestion, suggestion.id)
             .then((res) => Promise.resolve())
         }
-        console.log("suggestion already exists")
-        return Promise.resolve()
+        //console.log("suggestion already exists")
+        return Promise.reject("suggestion already exists")
       })
     // .catch((err) => Promise.reject(err))
   }

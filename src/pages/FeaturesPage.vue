@@ -284,22 +284,19 @@ text.set(FeatureIdent.STANDALONE_APP.toLowerCase(), {
 })
 text.set(FeatureIdent.NEWEST_TABS.toLowerCase(), {
   name: 'Newest Tabs',
-  description: 'Get a view to list all tabs by their creation date',
+  img: 'newest_tabs.png',
+  description: 'Activate a view to get quick access to your 100 newest tabs',
   permissions: []
 })
 text.set(FeatureIdent.TOP10.toLowerCase(), {
   name: 'Top 10 Tabs',
-  description: 'Get a view to list all tabs by how often they have been accessed',
+  img: 'top10.png',
+  description: 'Activate a view to list all tabs by how often they have been accessed',
   permissions: []
 })
 text.set(FeatureIdent.OPEN_TABS.toLowerCase(), {
   name: 'Open Tabs',
   description: 'Quick access to all your open tabs of the current browsers window',
-  permissions: []
-})
-text.set(FeatureIdent.AI_MODULE.toLowerCase(), {
-  name: 'Artificial Intelligence Module',
-  description: 'Let the AI Module analyse which tabset you want the current tab been added to',
   permissions: []
 })
 text.set(FeatureIdent.CATEGORIZATION.toLowerCase(), {
@@ -314,8 +311,20 @@ text.set(FeatureIdent.PAGE_MARKER.toLowerCase(), {
 })
 text.set(FeatureIdent.NOTIFICATIONS.toLowerCase(), {
   name: 'Browser Notifications',
+  img: 'notification.png',
   description: 'Allow Tabsets to send Notifications via your Browser. Recommended.',
   permissions: ['notifications']
+})
+text.set(FeatureIdent.ANNOTATIONS.toLowerCase(), {
+  name: 'Websites Annotations',
+  description: 'Annotate Websites',
+  permissions: []
+})
+text.set(FeatureIdent.TAGS.toLowerCase(), {
+  name: 'Use Tags',
+  img: 'tags.png',
+  description: 'Tabs can be tagged with labels making it easier to be found again',
+  permissions: []
 })
 
 

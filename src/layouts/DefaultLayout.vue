@@ -41,11 +41,6 @@
           </div>
         </Transition>
 
-        <!--        <div v-if="tabsStore.pendingTabset?.tabs.length > 0 && tabsStore.tabsets.size >= 1"-->
-        <!--             class="q-mr-lg cursor-pointer no-wrap" style="min-width:200px">-->
-        <!--          <UnassignedTabsWidget/>-->
-        <!--        </div>-->
-
         <div v-if="tabsStore.audibleTabs.length > 0">
           <span v-if="tabsStore.audibleTabs.length > 1">{{ tabsStore.audibleTabs.length }}x</span>
           <q-icon name="volume_up" size="22px" class="q-mr-md">

@@ -29,8 +29,10 @@ export class CreateTabsetFromBookmarksCommand implements Command<object> {
 
   async execute(): Promise<ExecutionResult<object>> {
     try {
+      console.log("hier1")
       const result = await useTabsetService()
         .saveOrReplaceFromBookmarks(this.tabsetName, this.bmsToUse, this.merge)
+      console.log("hier2")
       let doneMsg = 'Tabset ' + this.tabsetName + ' created successfully from bookmarks folder'
       if (result['replaced' as keyof object] && result['merged' as keyof object]) {
         doneMsg = 'Existing Tabset ' + this.tabsetName + ' was updated'
