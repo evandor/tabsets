@@ -54,8 +54,6 @@ export class AppFeatures {
     new AppFeature(FeatureIdent.ANNOTATIONS, FeatureType.EXPERIMENTAL, 'Annotate Websites', 'o_auto_awesome', ['bex']),
 
 
-    new AppFeature(FeatureIdent.CATEGORIZATION, FeatureType.EXPERIMENTAL, 'URL Categorization', 'o_auto_awesome', ['bex']),
-
     new AppFeature(FeatureIdent.NOTIFICATIONS, FeatureType.RECOMMENDED, 'Chrome Notifications', 'o_notifications', ['all'])
       .setActivateCommand(new GrantPermissionCommand('notifications'))
       .setDeactivateCommand(new RevokePermissionCommand('notifications')),
