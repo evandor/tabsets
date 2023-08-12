@@ -3985,10 +3985,10 @@ electron-to-chromium@^1.4.477:
   resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.4.490.tgz#d99286f6e915667fa18ea4554def1aa60eb4d5f1"
   integrity sha512-6s7NVJz+sATdYnIwhdshx/N/9O6rvMxmhVoDSDFdj6iA45gHR8EQje70+RYsF4GeB+k0IeNSBnP7yG9ZXJFr7A==
 
-electron@^24.1.3:
-  version "24.7.1"
-  resolved "https://registry.yarnpkg.com/electron/-/electron-24.7.1.tgz#62b6f7e444f99909e738afae1e3a5a38f9581bba"
-  integrity sha512-v7nMXqTl5e1sudOMe5P77ofb6WOKCCTOqBrxVwwBRvShm5udFa2EkNrzYpO53w2fdIVlKbfLhD5DdlmYAROGvQ==
+electron@^25.5.0:
+  version "25.5.0"
+  resolved "https://registry.yarnpkg.com/electron/-/electron-25.5.0.tgz#6465d49c0731424e3e48776628c35771697caf11"
+  integrity sha512-w1DNj1LuAk0Vaas1rQ0pAkTe2gZ5YG75J27mC2m88y0G6Do5b5YoFDaF84fOGQHeQ4j8tC5LngSgWhbwmqDlrw==
   dependencies:
     "@electron/get" "^2.0.0"
     "@types/node" "^18.11.18"
@@ -9107,10 +9107,10 @@ typed-array-length@^1.0.4:
     for-each "^0.3.3"
     is-typed-array "^1.1.9"
 
-typescript@^4.9.5:
-  version "4.9.5"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.9.5.tgz#095979f9bcc0d09da324d58d03ce8f8374cbe65a"
-  integrity sha512-1FXk9E2Hm+QzZQ7z+McJiHL4NW1F2EzMu9Nq9i3zAaGqibafqYwCVU6WyWAuyQRRzOlxou8xZSyXLEN8oKj24g==
+typescript@^5.1.6:
+  version "5.1.6"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-5.1.6.tgz#02f8ac202b6dad2c0dd5e0913745b47a37998274"
+  integrity sha512-zaWCozRZ6DLEWAWFrVDz1H6FVXzUSfTy5FUMWsQlU8Ym5JP9eO4xkTIROFCQvhQf61z6O/G6ugw3SgAnvvm+HA==
 
 typeson-registry@^1.0.0-alpha.20:
   version "1.0.0-alpha.39"
