@@ -1,6 +1,6 @@
 {
   "name": "tabsets",
-  "version": "0.4.4",
+  "version": "0.4.5",
   "description": "Bookmarks next generation - Tabsets is a browser extension which helps you get your links really organized.",
   "productName": "Tabsets - Manage Tabs and Bookmarks with Ease",
   "author": "evandor <evandor@gmail.com>",
@@ -32,7 +32,7 @@
   "dependencies": {
     "@editorjs/editorjs": "^2.27.2",
     "@editorjs/header": "^2.7.0",
-    "@extractus/feed-extractor": "^6.2.1",
+    "@extractus/feed-extractor": "^7.0.1",
     "@mozilla/readability": "^0.4.4",
     "@quasar/extras": "^1.16.4",
     "@recogito/recogito-js": "^1.8.2",
@@ -70,7 +70,7 @@
     "@quasar/babel-preset-app": "^2.0.2",
     "@quasar/quasar-app-extension-qmarkdown": "^2.0.0-beta.10",
     "@quasar/quasar-app-extension-testing-unit-vitest": "^0.3.0",
-    "@types/node": "^12.20.21",
+    "@types/node": "^20.4.10",
     "@types/uuid": "^9.0.1",
     "@vitest/coverage-c8": "^0.32.2",
     "@vitest/ui": "^0.31.0",
