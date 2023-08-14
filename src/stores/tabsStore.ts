@@ -125,10 +125,11 @@ export const useTabsStore = defineStore('tabs', {
             return state.tabsets.get(state.currentTabsetId)?.tabs || []
         },
         getCurrentTabset: (state): Tabset | undefined => {
-            console.log("calling getcurrenttabset", state.currentTabsetId)
+            //console.log("calling getcurrenttabset", state.currentTabsetId)
             return state.tabsets.get(state.currentTabsetId)
         },
         getTabset: (state) => {
+            console.log("checking ", state.tabsets)
             return (tabsetId: string): Tabset | undefined => {
                 return state.tabsets.get(tabsetId)
             }
@@ -347,6 +348,7 @@ export const useTabsStore = defineStore('tabs', {
             tabsetName: string,
             tabs: Tab[],
             merge: boolean = false,
+            windowId: string = 'current',
             type: TabsetType = TabsetType.DEFAULT): Promise<NewOrReplacedTabset> {
 
             const foundTS: Tabset | undefined = _.find([...this.tabsets.values()], ts => ts.name === tabsetName)
@@ -389,11 +391,13 @@ export const useTabsStore = defineStore('tabs', {
             }
 
             ts.type = type
+            ts.window = windowId
 
             return new NewOrReplacedTabset(foundTS !== undefined, ts)
         },
 
         getOrCreateSpecialTabset(ident: SpecialTabsetIdent, type: TabsetType): Tabset {
+            console.log("creating special tabset", ident, type)
             const foundTS: Tabset | undefined = _.find([...this.tabsets.values()], ts => ts.id === ident.toString())
             let ts: Tabset = null as unknown as Tabset
             if (foundTS) {
@@ -402,6 +406,22 @@ export const useTabsStore = defineStore('tabs', {
             } else {
                 const id = ident.toString()
                 ts = new Tabset(id, id, [])
+                if (ident === SpecialTabsetIdent.HELP) {
+                    ts = new Tabset(id, id, [
+                        new Tab(uid(), ChromeApi.createChromeTabObject(
+                            "Glossary","https://tabsets.web.app/#/glossary")),
+                        new Tab(uid(), ChromeApi.createChromeTabObject(
+                            "Features","https://tabsets.web.app/#/features")),
+                        new Tab(uid(), ChromeApi.createChromeTabObject(
+                            "FAQ","https://tabsets.web.app/#/faq")),
+                        new Tab(uid(), ChromeApi.createChromeTabObject(
+                            "Pricacy","https://tabsets.web.app/#/privacy")),
+                        new Tab(uid(), ChromeApi.createChromeTabObject(
+                            "Terms of service","https://tabsets.web.app/#/tos")),
+                    ])
+                    ts.status = TabsetStatus.HIDDEN
+                }
+
                 this.tabsets.set(id, ts)
             }
             ts.type = type

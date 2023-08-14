@@ -1,6 +1,6 @@
 <template>
   <q-layout view="hHh LpR lFr">
-    <q-header elevated>
+    <q-header elevated class="bg-white text-black">
       <q-toolbar>
 
         <template v-if="leftDrawerOpen">
@@ -172,7 +172,7 @@
       </q-toolbar>
     </q-header>
 
-    <q-drawer v-model="leftDrawerOpen" side="left" bordered >
+    <q-drawer v-model="leftDrawerOpen" side="left" behavior="desktop" bordered >
       <Navigation></Navigation>
     </q-drawer>
 

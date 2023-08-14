@@ -3,7 +3,7 @@ import {computed, ref, watch} from "vue";
 import {useRoute, useRouter} from "vue-router";
 import {Tab} from "src/models/Tab";
 import _ from "lodash"
-import {LocalStorage} from "quasar";
+import {LocalStorage, useQuasar} from "quasar";
 import {useUtils} from "src/services/Utils";
 import {useTabsStore} from "stores/tabsStore";
 import {FeatureIdent} from "src/models/AppFeature";
@@ -73,9 +73,9 @@ export class SidePanelView {
 }
 
 export enum ListDetailLevel {
-  SMALL = "SMALL",
-  MEDIUM = "MEDIUM",
-  LARGE = "LARGE"
+  MINIMAL = "MINIMAL",
+  SOME = "SOME",
+  MAXIMAL = "MAXIMAL"
 }
 
 export class RightDrawer {
@@ -94,6 +94,7 @@ export class SidePanel {
 export const useUiStore = defineStore('ui', () => {
 
   const router = useRouter()
+
   const {sendMsg} = useUtils()
 
   const selectedTab = ref<Tab | undefined>(undefined)
@@ -118,7 +119,7 @@ export const useUiStore = defineStore('ui', () => {
 
   const contentCount = ref<number>(0)
 
-  const listDetailLevel = ref<ListDetailLevel>(ListDetailLevel.LARGE)
+  const listDetailLevel = ref<ListDetailLevel>(LocalStorage.getItem('detailLevel') || ListDetailLevel.MAXIMAL)
 
   // info Messages
   const hiddenMessages = ref<string[]>(LocalStorage.getItem('ui.hiddenInfoMessages') as unknown as string[] || [])
@@ -262,12 +263,12 @@ export const useUiStore = defineStore('ui', () => {
   const listDetailLevelGreaterEqual = computed(() => {
     return (level: ListDetailLevel) => {
       switch (listDetailLevel.value) {
-        case ListDetailLevel.LARGE:
+        case ListDetailLevel.MAXIMAL:
           return true
-        case ListDetailLevel.MEDIUM:
-          return level === ListDetailLevel.MEDIUM || level === ListDetailLevel.SMALL
-        case ListDetailLevel.SMALL:
-          return level === ListDetailLevel.SMALL
+        case ListDetailLevel.SOME:
+          return level === ListDetailLevel.SOME || level === ListDetailLevel.MINIMAL
+        case ListDetailLevel.MINIMAL:
+          return level === ListDetailLevel.MINIMAL
       }
     }
   })

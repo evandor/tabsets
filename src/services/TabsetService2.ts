@@ -63,7 +63,8 @@ export function useTabsetService() {
         name: string,
         chromeTabs: chrome.tabs.Tab[],
         merge: boolean = false,
-        type: TabsetType = TabsetType.DEFAULT): Promise<SaveOrReplaceResult> => {
+        windowId: string = 'current',
+        tsType: TabsetType = TabsetType.DEFAULT): Promise<SaveOrReplaceResult> => {
 
         const trustedName = name.replace(STRIP_CHARS_IN_USER_INPUT, '')
         const tabs: Tab[] = _.filter(
@@ -80,7 +81,7 @@ export function useTabsetService() {
             })
         try {
             const result: NewOrReplacedTabset = await useTabsStore()
-                .updateOrCreateTabset(trustedName, tabs, merge, type)
+                .updateOrCreateTabset(trustedName, tabs, merge, windowId, tsType)
             if (result && result.tabset) {
                 await saveTabset(result.tabset)
                 // result.tabset.tabs.forEach((tab: Tab) => {
@@ -386,18 +387,6 @@ export function useTabsetService() {
                                 // @ts-ignore
                                 console.log(`saved tabset with _id: ${tabset._id}, _rev: ${tabset._rev}`)
                                 //tabset._rev = res._rev
-
-                                // if (usePermissionsStore().hasFeature(FeatureIdent.AI_MODULE)) {
-                                //   // try to apply AI logic
-                                //   if (metas['description' as keyof object]) {
-                                //     const data = {
-                                //       text: metas['description' as keyof object],
-                                //       candidates: _.map([...useTabsStore().tabsets.values()], (ts: Tabset) => ts.name)
-                                //     }
-                                //     console.log("about to apply KI logic...", data)
-                                //     sendMsg('zero-shot-classification', data)
-                                //   }
-                                // }
 
                             }))
                     }

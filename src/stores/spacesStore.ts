@@ -1,11 +1,9 @@
 import {defineStore} from 'pinia';
 import _ from 'lodash'
-import {computed, ref, watch, watchEffect} from "vue";
+import {computed, ref, watch} from "vue";
 import {Space} from "src/models/Space";
-import {useTabsStore} from "src/stores/tabsStore";
 import PersistenceService from "src/services/PersistenceService";
 import {uid} from "quasar";
-import {Tabset} from "src/models/Tabset";
 
 /**
  * a pinia store for "Spaces".

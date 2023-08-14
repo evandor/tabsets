@@ -89,10 +89,8 @@ const addFirstTabset = () => {
       })
 }
 
-const newTabsetNameIsValid = () => {
-  console.log("check: ", tabsetName.value, !STRIP_CHARS_IN_USER_INPUT.test(tabsetName.value))
-  return tabsetName.value.length <= 32 && !STRIP_CHARS_IN_USER_INPUT.test(tabsetName.value)
-}
+const newTabsetNameIsValid = () =>
+   tabsetName.value.length <= 32 && !STRIP_CHARS_IN_USER_INPUT.test(tabsetName.value)
 
 </script>
 

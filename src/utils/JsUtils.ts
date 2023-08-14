@@ -53,21 +53,15 @@ class JsUtils {
     }
 
     async getOrCreateClientId() {
-        console.log("getOrCreateClientId1", chrome)
         if (!chrome) {
-            console.log("getOrCreateClientId2")
             return Promise.resolve("")
         }
         const result = await chrome.storage.local.get('clientId');
-        console.log("getOrCreateClientId3", result)
         let clientId = result.clientId;
         if (!clientId) {
             clientId = self.crypto.randomUUID();
-            console.log("getOrCreateClientId", clientId)
             await chrome.storage.local.set({clientId});
         }
-        console.log("returning getOrCreateClientId", clientId)
-
         return clientId;
     }
 

@@ -8,6 +8,8 @@ import {AppFeature, FeatureIdent, FeatureType} from "src/models/AppFeature"
 
 export class AppFeatures {
   features: AppFeature[] = [
+    new AppFeature(FeatureIdent.HELP, FeatureType.RECOMMENDED, 'Help Pages', 'o_help', ['all']),
+
     new AppFeature(FeatureIdent.BOOKMARKS, FeatureType.OPTIONAL, 'Bookmarks', 'o_bookmarks', ['bex'])
       .setActivateCommand(new GrantPermissionCommand('bookmarks'))
       .setDeactivateCommand(new RevokePermissionCommand('bookmarks')),
@@ -32,7 +34,7 @@ export class AppFeatures {
 
     new AppFeature(FeatureIdent.EXPERIMENTAL_VIEWS, FeatureType.EXPERIMENTAL, 'Experimental Views', 'o_explore', ['all']),
     new AppFeature(FeatureIdent.RSS, FeatureType.EXPERIMENTAL, 'RSS View', 'o_rss_feed', ['bex', 'spa']),
-    new AppFeature(FeatureIdent.SESSIONS, FeatureType.EXPERIMENTAL, 'Sessions', 'o_explore', ['all']),//,[FeatureIdent.OPENTABS_THRESHOLD]),
+    new AppFeature(FeatureIdent.SESSIONS, FeatureType.DISABLED, 'Sessions', 'o_explore', ['all']),//,[FeatureIdent.OPENTABS_THRESHOLD]),
     new AppFeature(FeatureIdent.SPACES, FeatureType.EXPERIMENTAL, 'Spaces', 'o_space_dashboard', ['all']),
     new AppFeature(FeatureIdent.BACKUP, FeatureType.EXPERIMENTAL, 'Backup Tabset', 'o_inventory_2', ['bex']),//, [FeatureIdent.OPENTABS_THRESHOLD]),
     new AppFeature(FeatureIdent.IGNORE, FeatureType.EXPERIMENTAL, 'Ignore Tabset', 'o_pause_circle', ['bex']),
@@ -53,6 +55,8 @@ export class AppFeatures {
 
     new AppFeature(FeatureIdent.ANNOTATIONS, FeatureType.EXPERIMENTAL, 'Annotate Websites', 'o_auto_awesome', ['bex']),
 
+    new AppFeature(FeatureIdent.ARCHIVE_TABSET, FeatureType.OPTIONAL, 'Archive Tabsets', 'o_inventory_2', ['all']),
+    new AppFeature(FeatureIdent.WINDOW_MANAGEMENT, FeatureType.EXPERIMENTAL, 'Window Management', 'o_grid_view', ['all'])
 
   ]
 

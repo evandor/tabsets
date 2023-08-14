@@ -10,6 +10,8 @@ import {FeatureIdent} from "src/models/AppFeature";
 import {useSuggestionsStore} from "stores/suggestionsStore";
 import {StaticSuggestionIdent, Suggestion} from "src/models/Suggestion";
 import JsUtils from "src/utils/JsUtils";
+import {WindowIdent} from "src/models/WindowIdent";
+import {useWindowsStore} from "stores/windowsStores";
 
 const {inBexMode, sendMsg} = useUtils()
 
@@ -31,13 +33,15 @@ export class CreateTabsetCommand implements Command<SaveOrReplaceResult> {
 
     constructor(
         public tabsetName: string,
-        public tabsToUse: chrome.tabs.Tab[]) {
+        public tabsToUse: chrome.tabs.Tab[],
+        public windowToOpen: WindowIdent) {
     }
 
     async execute(): Promise<ExecutionResult<SaveOrReplaceResult>> {
         try {
+            const windowId = useWindowsStore().check(this.windowToOpen)
             const result: SaveOrReplaceResult = await useTabsetService()
-                .saveOrReplaceFromChromeTabs(this.tabsetName, this.tabsToUse, this.merge)
+                .saveOrReplaceFromChromeTabs(this.tabsetName, this.tabsToUse, this.merge, windowId)
                 .then(res => {
                     JsUtils.gaEvent('tabset-created', {"tabsCount": this.tabsToUse.length})
                     return res
@@ -74,5 +78,6 @@ export class CreateTabsetCommand implements Command<SaveOrReplaceResult> {
 }
 
 CreateTabsetCommand.prototype.toString = function cmdToString() {
-    return `CreateTabsetCommand: {merge=${this.merge}, tabsetName=${this.tabsetName}, tabs#=${this.tabsToUse.length}}`;
+    return `CreateTabsetCommand: {merge=${this.merge}, tabsetName=${this.tabsetName}, 
+            tabs#=${this.tabsToUse.length}, windowToOpen#=${this.windowToOpen}}`;
 };

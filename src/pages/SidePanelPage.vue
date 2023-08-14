@@ -107,7 +107,7 @@ import {onMounted, onUnmounted, ref, watchEffect} from "vue";
 import {useTabsStore} from "src/stores/tabsStore";
 import {Tab} from "src/models/Tab";
 import _ from "lodash"
-import {Tabset, TabsetSharing, TabsetStatus, TabsetType} from "src/models/Tabset";
+import {Tabset, TabsetStatus, TabsetType} from "src/models/Tabset";
 import {useRoute, useRouter} from "vue-router";
 import {useUtils} from "src/services/Utils";
 import {scroll, useQuasar} from "quasar";
@@ -222,27 +222,20 @@ const updateSelectedTabset = (tabsetId: string, open: boolean, index: number | u
 watchEffect(() => {
   // should trigger if currentTabsetId is changed from "the outside"
   const currentTabsetId = useTabsStore().currentTabsetId
-  //console.log("triggered", currentTabsetId)
   selected_model.value = {}
   selected_model.value[currentTabsetId] = true
-  //updateSelectedTabset(useTabsStore().currentTabsetId,true, 0)
   tabsetExpanded.value.set(currentTabsetId, true)
   const index = _.findIndex(tabsets.value as Tabset[], (ts: Tabset) => ts.id === currentTabsetId)
   scrollToElement(document.getElementsByClassName("q-expansion-item")[index], 300)
   useUiStore().tabsetsExpanded = true
-  // useCommandExecutor()
-  //   .execute(new SelectTabsetCommand(currentTabsetId, useSpacesStore().space?.id))
 })
 
 watchEffect(() => {
-  //console.log(" >>> change in opentabs or currenttabset", useTabsStore().tabs, useTabsStore().getCurrentTabset)
   openTabs.value = useTabsStore().tabs
   currentTabset.value = useTabsStore().getCurrentTabset
 })
 
 watchEffect(() => {
-  //console.log(" >>> change in currentChromeTab", windowId, useTabsStore().getCurrentChromeTab(windowId || 0))
-  //if (windowId) {
   const windowId = useWindowsStore().currentWindow?.id || 0
   currentChromeTab.value = useTabsStore().getCurrentChromeTab(windowId) || useTabsStore().currentChromeTab
 })
@@ -293,13 +286,17 @@ watchEffect(() => {
               return false
             }
           }
-          return ts.status !== TabsetStatus.DELETED
+          return ts.status !== TabsetStatus.DELETED &&
+              ts.status !== TabsetStatus.HIDDEN &&
+              ts.status !== TabsetStatus.ARCHIVED
         }),
         getTabsetOrder, ["asc"])
   } else {
     tabsets.value = _.sortBy(
         _.filter([...tabsStore.tabsets.values()],
-            (ts: Tabset) => ts.status !== TabsetStatus.DELETED),
+            (ts: Tabset) => ts.status !== TabsetStatus.DELETED
+                && ts.status !== TabsetStatus.HIDDEN &&
+                ts.status !== TabsetStatus.ARCHIVED),
         getTabsetOrder, ["asc"])
   }
 })
@@ -308,7 +305,6 @@ watchEffect(() => {
 function inIgnoredMessages(message: any) {
   return message.msg === "html2text" ||
       message.msg === "html2links" ||
-      message.name === "zero-shot-classification" ||
       message.msg === "websiteQuote" ||
       message.name === "recogito-annotation-created"
 }
@@ -377,6 +373,9 @@ if (chrome) {
           uiStore.progressLabel = undefined
         }
         sendResponse("ui store progress set to " + uiStore.progress)
+      } else if (message.name === "detail-level-changed") {
+        console.log("setting list detail level to ", message.data.level)
+        useUiStore().setListDetailLevel(message.data.level)
       } else {
         console.log("got unmatched message", message)
       }

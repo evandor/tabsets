@@ -287,7 +287,7 @@ class ChromeApi {
     return chrome.tabs.get(tabId)
   }
 
-  createChromeTabObject(title: string, url: string, favIconUrl: string) {
+  createChromeTabObject(title: string, url: string, favIconUrl: string = "https://tabsets.web.app/icons/favicon-128x128.png") {
     return {
       active: false,
       discarded: true,

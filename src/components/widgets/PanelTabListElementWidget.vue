@@ -1,6 +1,6 @@
 <template>
 
-  <q-item-section v-if="useUiStore().listDetailLevelGreaterEqual(ListDetailLevel.MEDIUM)"
+  <q-item-section v-if="useUiStore().listDetailLevelGreaterEqual(ListDetailLevel.SOME)"
                   @mouseover="hoveredTab = tab.id"
                   @mouseleave="hoveredTab = undefined"
                   class="q-mr-sm text-right" style="justify-content:start;width:25px;max-width:25px">
@@ -78,7 +78,7 @@
 
     <!-- description -->
     <q-item-label class="ellipsis-2-lines text-grey-8"
-                  v-if="useUiStore().listDetailLevelGreaterEqual(ListDetailLevel.LARGE)"
+                  v-if="useUiStore().listDetailLevelGreaterEqual(ListDetailLevel.MAXIMAL)"
                   @click.stop="NavigationService.openOrCreateTab(props.tab?.url || '' )">
       {{ props.tab.description }}
     </q-item-label>
@@ -104,7 +104,7 @@
           <template v-else>
             <short-url :url="props.tab.url" :hostname-only="true"/>
           </template>
-          <div class="text-caption text-grey-5">
+          <div class="text-caption text-grey-5" v-if="useUiStore().listDetailLevelGreaterEqual(ListDetailLevel.SOME)">
             {{ formatDate(props.tab.lastActive) }}
           </div>
 
@@ -131,7 +131,7 @@
     </q-item-label>
 
     <!-- note -->
-    <q-item-label v-if="useUiStore().listDetailLevelGreaterEqual(ListDetailLevel.LARGE) &&
+    <q-item-label v-if="useUiStore().listDetailLevelGreaterEqual(ListDetailLevel.MAXIMAL) &&
       props['tab' as keyof object]['note']"
                   class="text-grey-10" text-subtitle1>
       <q-icon color="blue-10" name="edit_note"/>
@@ -189,9 +189,7 @@ const cnt = ref(0)
 const $q = useQuasar()
 const tabsStore = useTabsStore()
 
-const line = ref(null)
 const showButtonsProp = ref<boolean>(false)
-const thumbnail = ref<string | undefined>(undefined)
 const imgFromBlob = ref<string>("")
 const hoveredTab = ref<string | undefined>(undefined)
 const tsBadges = ref<object[]>([])

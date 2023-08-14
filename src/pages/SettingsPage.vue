@@ -5,7 +5,10 @@
     <div class="row fit">
       <q-toolbar-title>
         <div class="row justify-start items-baseline">
-          Tabsets Extension Settings
+          <div class="col-10">Tabsets Extension Settings</div>
+          <div class="col-2 text-right">
+            <OpenRightDrawerWidget/>
+          </div>
         </div>
       </q-toolbar-title>
     </div>
@@ -42,6 +45,17 @@
         <div class="col-9">
           <q-radio v-model="darkMode" :val="true" label="Enabled"/>
           <q-radio v-model="darkMode" :val="false" label="Disabled"/>
+        </div>
+      </div>
+
+      <div class="row items-baseline q-ma-md">
+        <div class="col-3">
+          Tab Info Detail Level
+        </div>
+        <div class="col-9">
+          <q-radio v-model="detailLevel" :val="ListDetailLevel.MINIMAL" label="Minimal Details"/>
+          <q-radio v-model="detailLevel" :val="ListDetailLevel.SOME" label="Some Details"/>
+          <q-radio v-model="detailLevel" :val="ListDetailLevel.MAXIMAL" label="All Details"/>
         </div>
       </div>
 
@@ -385,7 +399,7 @@ import {MarkTabsetAsDefaultCommand} from "src/domain/tabsets/MarkTabsetAsDefault
 import {useNotificationHandler} from "src/services/ErrorHandler";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import NavigationService from "src/services/NavigationService";
-import {DrawerTabs, useUiStore} from "src/stores/uiStore";
+import {DrawerTabs, ListDetailLevel, useUiStore} from "src/stores/uiStore";
 import {useBookmarksStore} from "src/stores/bookmarksStore";
 import {usePermissionsStore} from "src/stores/permissionsStore";
 import {GrantPermissionCommand} from "src/domain/commands/GrantPermissionCommand";
@@ -396,6 +410,10 @@ import {RevokeOriginCommand} from "src/domain/commands/RevokeOriginCommand";
 import {FeatureIdent} from "src/models/AppFeature";
 import {useSettingsStore} from "src/stores/settingsStore"
 import {useLogsStore} from "../stores/logsStore";
+import OpenRightDrawerWidget from "components/widgets/OpenRightDrawerWidget.vue";
+import {useUtils} from "src/services/Utils";
+
+const {inBexMode,sendMsg} = useUtils()
 
 const tabsStore = useTabsStore()
 const featuresStore = useSettingsStore()
@@ -411,22 +429,17 @@ useUiStore().rightDrawerSetActiveTab(DrawerTabs.FEATURES)
 const view = ref('grid')
 const indexSize = ref(0)
 
-const errors = ref<object[]>([])
-const warnings = ref<object[]>([])
-
-//const syncEnabled = ref<boolean>(featuresStore.isEnabled('sync'))
-// const statsEnabled = ref<boolean>(featuresStore.isEnabled('stats'))
 const devEnabled = ref<boolean>(featuresStore.isEnabled('dev'))
 const ddgEnabled = ref<boolean>(!featuresStore.isEnabled('noDDG'))
 const ignoreExtensionsEnabled = ref<boolean>(!featuresStore.isEnabled('extensionsAsTabs'))
 const permissionsList = ref<string[]>([])
 
 const darkMode = ref<boolean>(localStorage.getItem('darkMode') || false)
+const detailLevel = ref<ListDetailLevel>(localStorage.getItem('detailLevel') || ListDetailLevel.MAXIMAL)
+
 const bookmarksPermissionGranted = ref<boolean | undefined>(usePermissionsStore().hasPermission('bookmarks'))
-// const historyPermissionGranted = ref<boolean | undefined>(usePermissionsStore().hasPermission('history'))
 const pageCapturePermissionGranted = ref<boolean | undefined>(usePermissionsStore().hasPermission('history'))
 const allUrlsOriginGranted = ref<boolean | undefined>(usePermissionsStore().hasAllOrigins())
-// const showBookmarks = ref<boolean>(localStorage.getItem('showBookmarks') || false)
 const tab = ref('appearance')
 
 const {handleError} = useNotificationHandler()
@@ -489,6 +502,11 @@ watch(() => allUrlsOriginGranted.value, (newValue, oldValue) => {
 watchEffect(() => {
   $q.dark.set(darkMode.value)
   localStorage.set('darkMode', darkMode.value)
+})
+
+watchEffect(() => {
+  localStorage.set('detailLevel', detailLevel.value)
+  sendMsg('detail-level-changed', {level: detailLevel.value})
 })
 
 watchEffect(() => {

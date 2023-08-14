@@ -18,11 +18,6 @@ const props = defineProps({
   fromPanel: {type: Boolean, default: false}
 })
 
-const {dialogRef, onDialogHide, onDialogCancel} = useDialogPluginComponent()
-
-// watchEffect(() => {
-//   const existsInTabset = tabsStore.existingInTabset(newTabsetName.value)
-//   newTabsetNameExists.value = !!existsInTabset && existsInTabset.status !== TabsetStatus.DELETED
-// })
+const {dialogRef, onDialogHide} = useDialogPluginComponent()
 
 </script>

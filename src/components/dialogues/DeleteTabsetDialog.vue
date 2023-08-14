@@ -30,14 +30,8 @@ defineEmits([
 ])
 
 const props = defineProps({
-  tabsetId: {
-    type: String,
-    required: true
-  },
-  tabsetName: {
-    type: String,
-    required: true
-  }
+  tabsetId: {type: String, required: true},
+  tabsetName: {type: String, required: true}
 })
 
 const {dialogRef, onDialogHide, onDialogCancel} = useDialogPluginComponent()

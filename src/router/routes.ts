@@ -12,6 +12,11 @@ const routes: RouteRecordRaw[] = [
     children: [{ path: '', component: () => import('pages/Start.vue') }],
   },
   {
+    path: '/fullpage',
+    component: () => import('layouts/PlainLayout.vue'),
+    children: [{ path: '', component: () => import('pages/FullpageStart.vue') }],
+  },
+  {
     path: '/sidepanel',
     component: () => import('layouts/SidePanelLayout.vue'),
     children: [{ path: '', component: () => import('pages/SidePanelPage.vue') }],
@@ -168,7 +173,7 @@ const routes: RouteRecordRaw[] = [
   },
   {
     path: '/tabsets/:tabsetId',
-    component: () => import('layouts/DefaultLayout.vue'),
+    component: () => import('layouts/FullPageLayout.vue'),
     children: [{ path: '', component: () => import('pages/TabsetPage.vue') }],
   },
   {
@@ -188,7 +193,7 @@ const routes: RouteRecordRaw[] = [
   },
   {
     path: '/bookmarks/:id',
-    component: () => import('layouts/DefaultLayout.vue'),
+    component: () => import('layouts/FullPageLayout.vue'),
     children: [{ path: '', component: () => import('pages/BookmarksPage.vue') }],
   },
   {

@@ -1,7 +1,6 @@
 import {usePermissionsStore} from "stores/permissionsStore";
 import ChromeListeners from "src/services/ChromeListeners";
 import ChromeBookmarkListeners from "src/services/ChromeBookmarkListeners";
-import {FeatureIdent} from "src/models/AppFeature";
 import BookmarksService from "src/services/BookmarksService";
 import {useQuasar} from "quasar";
 import IndexedDbPersistenceService from "src/services/IndexedDbPersistenceService";
@@ -22,7 +21,6 @@ import {useSearchStore} from "stores/searchStore";
 import {useUiStore} from "stores/uiStore";
 import {useRoute, useRouter} from "vue-router";
 import {useUtils} from "src/services/Utils";
-import {useCategoriesStore} from "stores/categoriesStore";
 
 const {inBexMode} = useUtils()
 
@@ -54,7 +52,7 @@ class AppService {
     tabsStore.initialize(useQuasar().localStorage);
 
     searchStore.init()
-    windowsStore.init()
+    windowsStore.initialize(useDB(undefined).db)
     // TODO best place here?
     windowsStore.initListeners()
 

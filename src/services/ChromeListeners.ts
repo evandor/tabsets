@@ -136,7 +136,7 @@ function inIgnoredMessages(request: any) {
     request.name === 'feature-activated' ||
     request.name === 'feature-deactivated' ||
     request.name === 'tabsets-imported' ||
-    request.name === 'zero-shot-classification'
+    request.name === 'detail-level-changed'
     //request.name === 'recogito-annotation-created'
 
 }
@@ -519,7 +519,7 @@ class ChromeListeners {
       if (usePermissionsStore().hasFeature(FeatureIdent.RSS)) {
         request.links.forEach((metaLink: MetaLink) => {
           if ("application/rss+xml" === metaLink.type) {
-            //console.log("hier!!!", metaLink)
+            console.log("hier!!!", metaLink)
             useSuggestionsStore().addSuggestion(new Suggestion(uid(), metaLink.title || 'Found RSS Feed', "An RSS Link was found in one of your tabs", metaLink.href, SuggestionType.RSS))
           }
         })

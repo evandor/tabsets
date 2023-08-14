@@ -18,8 +18,8 @@
       <template v-if="tabset.tabs.length > 0 && inBexMode()">
         <q-separator/>
         <ContextMenuItem
-          icon="open_in_new"
-          label="Open all in...">
+            icon="open_in_new"
+            label="Open all in...">
 
           <q-item-section side>
             <q-icon name="keyboard_arrow_right"/>
@@ -42,8 +42,8 @@
       <template v-if="true">
         <q-separator/>
         <ContextMenuItem
-          icon="keyboard_arrow_right"
-          label="Sharing...">
+            icon="keyboard_arrow_right"
+            label="Sharing...">
 
           <q-item-section side>
             <q-icon name="keyboard_arrow_right"/>
@@ -119,6 +119,17 @@
 
       </template>
 
+      <template v-if="usePermissionsStore().hasFeature(FeatureIdent.ARCHIVE_TABSET) &&
+        tabset.status === TabsetStatus.DEFAULT">
+        <q-separator/>
+        <ContextMenuItem
+            v-close-popup
+            @was-clicked="archiveTabset(tabset)"
+            icon="o_inventory_2"
+            color="warning"
+            label="Archive"/>
+      </template>
+
       <q-separator/>
 
       <ContextMenuItem v-close-popup
@@ -155,6 +166,7 @@ import {useTabsetService} from "src/services/TabsetService2";
 import {Tab} from "src/models/Tab";
 import {CopyToClipboardCommand} from "src/domain/commands/CopyToClipboard";
 import ShareTabsetPubliclyDialog from "components/dialogues/ShareTabsetPubliclyDialog.vue";
+import {MarkTabsetAsArchivedCommand} from "src/domain/tabsets/MarkTabsetAsArchived";
 
 const {inBexMode, sanitize, sendMsg} = useUtils()
 
@@ -188,10 +200,10 @@ const restoreInNewWindow = (tabsetId: string) => useCommandExecutor().execute(ne
 const restoreInGroup = (tabsetId: string) => useCommandExecutor().execute(new RestoreTabsetCommand(tabsetId, false))
 
 const pin = (tabset: Tabset) =>
-  useCommandExecutor().executeFromUi(new MarkTabsetAsFavoriteCommand(tabset.id))
+    useCommandExecutor().executeFromUi(new MarkTabsetAsFavoriteCommand(tabset.id))
 
 const unpin = (tabset: Tabset) =>
-  useCommandExecutor().executeFromUi(new MarkTabsetAsDefaultCommand(tabset.id))
+    useCommandExecutor().executeFromUi(new MarkTabsetAsDefaultCommand(tabset.id))
 
 const removePublicShare = (tabsetId: string) => useCommandExecutor().executeFromUi(new UnShareTabsetCommand(tabsetId))
 
@@ -221,6 +233,9 @@ const getPublicTabsetLink = (ts: Tabset) => {
   }
   return image
 }
+
+const archiveTabset = (tabset: Tabset) =>
+    useCommandExecutor().executeFromUi(new MarkTabsetAsArchivedCommand(tabset.id))
 
 
 const deleteTabsetDialog = (tabset: Tabset) => {

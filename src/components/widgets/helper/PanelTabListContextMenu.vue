@@ -73,7 +73,7 @@ import {PropType, ref} from "vue";
 import {useUtils} from "src/services/Utils";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import RestoreTabsetDialog from "components/dialogues/RestoreTabsetDialog.vue";
-import {useQuasar} from "quasar";
+import {Notify, useQuasar} from "quasar";
 import {DrawerTabs, useUiStore} from "src/stores/uiStore";
 import {Tab} from "src/models/Tab";
 import {DeleteTabCommand} from "src/domain/tabs/DeleteTabCommand";
@@ -85,6 +85,7 @@ import NavigationService from "src/services/NavigationService";
 import {TabsetType} from "src/models/Tabset";
 import {usePermissionsStore} from "stores/permissionsStore";
 import {FeatureIdent} from "src/models/AppFeature";
+import {useBookmarksStore} from "stores/bookmarksStore";
 
 const {inBexMode} = useUtils()
 
@@ -113,7 +114,32 @@ const restoreDialog = (tabsetId: string) => $q.dialog({
 })
 
 
-const deleteTab = (tab: Tab) => useCommandExecutor().executeFromUi(new DeleteTabCommand(tab))
+const deleteTab = async (tab: Tab) => {
+  useCommandExecutor().executeFromUi(new DeleteTabCommand(tab))
+  if (tab && tab.url && usePermissionsStore().hasFeature(FeatureIdent.BOOKMARKS)) {
+    const res = await useBookmarksStore().findBookmarksForUrl(tab.url)
+    console.log("existing bookmarks", res)
+    if (res.length > 0) {
+      $q.dialog({
+        title: res.length === 1 ? 'Found Bookmark with same URL' : 'Found Bookmarks with same URL',
+        cancel:true,
+        message: res.length === 1 ?
+            'Do you want to delete this bookmark as well?':
+            'Do you want to delete these ' + res.length + ' bookmarks as well?'
+      }).onOk(() => {
+        res.forEach(bm => {
+          chrome.bookmarks.remove(bm.id)
+        })
+        Notify.create({
+          color: 'positive',
+          message: res.length === 1 ? 'Deleted one bookmark' : 'Deleted ' + res.length + ' bookmarks'
+        })
+      }).onCancel(() => {
+      }).onDismiss(() => {
+      })
+    }
+  }
+}
 
 
 const editNoteDialog = (tab: Tab) => $q.dialog({

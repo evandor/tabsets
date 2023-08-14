@@ -29,6 +29,22 @@
           </q-icon>
         </q-card-section>
 
+        <q-card-section v-if="usePermissionsStore().hasFeature(FeatureIdent.WINDOW_MANAGEMENT)">
+          <q-select
+              dense
+              options-dense
+              label="Open in Window"
+              filled
+              v-model="windowModel"
+              map-options
+              use-input
+              :options="windowOptions"
+              input-debounce="0"
+              new-value-mode="add"
+              @new-value="createWindowOption"
+          />
+        </q-card-section>
+
         <q-card-actions align="right">
           <q-btn label="Cancel" size="sm" outline color="accent" v-close-popup/>
           <q-btn type="submit" size="sm" color="warning"
@@ -48,15 +64,18 @@
 
 import {useTabsStore} from "stores/tabsStore";
 import {useRouter} from "vue-router";
-import {QForm, useDialogPluginComponent, useQuasar} from "quasar";
+import {QForm, uid, useDialogPluginComponent, useQuasar} from "quasar";
 import {STRIP_CHARS_IN_USER_INPUT} from "boot/constants";
 import {Tabset, TabsetStatus} from "src/models/Tabset";
-import {ref, watchEffect} from "vue";
+import {ref} from "vue";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {CreateTabsetCommand} from "src/domain/tabsets/CreateTabset";
 import {useTabsetService} from "src/services/TabsetService2";
 import TabsetService from "src/services/TabsetService";
 import {SidePanelView, useUiStore} from "stores/uiStore";
+import {usePermissionsStore} from "stores/permissionsStore";
+import {FeatureIdent} from "src/models/AppFeature";
+import {WindowIdent} from "src/models/WindowIdent";
 
 const {dialogRef, onDialogHide, onDialogCancel} = useDialogPluginComponent()
 
@@ -67,13 +86,17 @@ const props = defineProps({
 
 const tabsStore = useTabsStore()
 const router = useRouter()
-const $q = useQuasar()
 
 const newTabsetName = ref('')
-const newTabsetNameExists = ref(false)
 const isValid = ref(false)
 const addAllOpenTabs = ref(false)
 const theForm = ref<QForm>(null as unknown as QForm)
+const windowModel = ref<WindowIdent>(new WindowIdent('current','Current Window'))
+const windowOptions = ref([
+  new WindowIdent ('current','Current Window'),
+  new WindowIdent ('default','Default Window'),
+  new WindowIdent ('Sport','Sport')
+])
 
 const checkIsValid =() => {
   if (theForm.value) {
@@ -95,9 +118,9 @@ const doesNotExistYet = (val: string) => {
 
 const createNewTabset = () => {
   const tabsToUse = addAllOpenTabs.value ? tabsStore.tabs : []
-
+  console.log("windowModel", windowModel.value)
   useCommandExecutor()
-      .executeFromUi(new CreateTabsetCommand(newTabsetName.value, tabsToUse))
+      .executeFromUi(new CreateTabsetCommand(newTabsetName.value, tabsToUse, windowModel.value))
       .then((res) => {
         if (props.spaceId) {
           const ts: Tabset = res.result.tabset
@@ -121,5 +144,12 @@ const createNewTabset = () => {
       })
 }
 
+const createWindowOption = (val: any, done: any) => {
+  console.log("created", val)
+  // TODO sanitize val
+  const newOption = new WindowIdent(val, val)
+  windowOptions.value.push(newOption)
+  done(newOption, 'add-unique')
+}
 
 </script>
