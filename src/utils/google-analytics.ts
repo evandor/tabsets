@@ -1,7 +1,13 @@
+// !== MIT
+import {useUtils} from "src/services/Utils";
+
+const {inBexMode} = useUtils()
+
 const GA_ENDPOINT = 'https://www.google-analytics.com/mp/collect';
 const GA_DEBUG_ENDPOINT = 'https://www.google-analytics.com/debug/mp/collect';
 
 // Get via https://developers.google.com/analytics/devguides/collection/protocol/ga4/sending-events?client_type=gtag#recommended_parameters_for_reports
+// !== MIT
 const MEASUREMENT_ID = "G-XBYXVZ86J1";
 const API_SECRET = "1N_ivSMnT2GHqZMcoXJDTw";
 const DEFAULT_ENGAGEMENT_TIME_MSEC = 100;
@@ -22,8 +28,8 @@ class Analytics {
     // Stores client id in local storage to keep the same client id as long as
     // the extension is installed.
     async getOrCreateClientId() {
-        if (!chrome) {
-            return
+        if (!chrome || !inBexMode()) {
+            return Promise.reject("not creating client id")
         }
         let { clientId } = await chrome.storage.local.get('clientId');
         if (!clientId) {
@@ -37,10 +43,10 @@ class Analytics {
     // Returns the current session id, or creates a new one if one doesn't exist or
     // the previous one has expired.
     async getOrCreateSessionId() {
-        // Use storage.session because it is only in memory
-        if (!chrome) {
-            return
+        if (!chrome || !inBexMode()) {
+            return Promise.reject("not creating session id")
         }
+        // Use storage.session because it is only in memory
         let { sessionData } = await chrome.storage.session.get('sessionData');
         const currentTimeInMs = Date.now();
         // Check if session exists and is still valid
@@ -73,7 +79,12 @@ class Analytics {
         // Configure session id and engagement time if not present, for more details see:
         // https://developers.google.com/analytics/devguides/collection/protocol/ga4/sending-events?client_type=gtag#recommended_parameters_for_reports
         if (!params.session_id) {
-            params.session_id = await this.getOrCreateSessionId();
+            try {
+                params.session_id = await this.getOrCreateSessionId();
+            } catch (e) {
+                // ignore
+                return Promise.resolve(e)
+            }
         }
         if (!params.engagement_time_msec) {
             params.engagement_time_msec = DEFAULT_ENGAGEMENT_TIME_MSEC;

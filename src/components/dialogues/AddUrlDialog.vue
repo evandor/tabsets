@@ -80,10 +80,10 @@ watchEffect(() => {
 const createNewUrl = () => {
   let useUrl = normalize(url.value)
   console.log("normalizing url", url.value, useUrl)
-  const tab = new Tab(uid(), null as unknown as chrome.tabs.Tab)
+  const chromeTab = ChromeApi.createChromeTabObject(useUrl, useUrl, null as unknown as string)
+  const tab = new Tab(uid(), chromeTab)
   tab.created = new Date().getTime()
-  tab.chromeTab = ChromeApi.createChromeTabObject(useUrl, useUrl, null as unknown as string)
-  tab.extension = tab.determineUrlExtension(tab.chromeTab)
+  tab.extension = tab.determineUrlExtension(chromeTab)
   TabsetService.saveToCurrentTabset(tab)
     .then((res) => useTabsetService().saveCurrentTabset())
   useUiStore().setIgnoreKeypress(false)

@@ -93,6 +93,7 @@ export class SidePanel {
 
 export const useUiStore = defineStore('ui', () => {
 
+  const $q = useQuasar()
   const router = useRouter()
 
   const {sendMsg} = useUtils()
@@ -104,7 +105,7 @@ export const useUiStore = defineStore('ui', () => {
 
   // RightDrawer
   let rightDrawer = ref<RightDrawer>(new RightDrawer())
-  let rightDrawerOpen = ref(true)
+  let rightDrawerOpen = ref($q.screen.gt.md)
   let leftDrawerOpen = ref(true)
 
   // SidePanel

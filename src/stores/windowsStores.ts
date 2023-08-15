@@ -1,6 +1,4 @@
 import {defineStore} from 'pinia';
-import {WindowIdent} from "src/models/WindowIdent";
-import PersistenceService from "src/services/PersistenceService";
 import {ref} from "vue";
 
 /**
@@ -31,19 +29,12 @@ export const useWindowsStore = defineStore('windows', () => {
     const windowSet = ref<Set<string>> (new Set())
 
     /**
-     * the (internal) storage for this store to use
-     */
-    let storage: PersistenceService = null as unknown as PersistenceService
-
-    /**
      * initialize store with
      * @param ps a persistence storage
      */
-    async function initialize(ps: PersistenceService) {
-        console.log("initializing windowsStore", ps)
-        storage = ps
+    async function initialize() {
+        console.log("initializing windowsStore")
         init("initialization")
-        //await storage.loadSpaces()
     }
 
     function init(trigger: string = "") {
