@@ -286,6 +286,9 @@ const save = () => {
         //console.log("sending message", msg)
         chrome.runtime.sendMessage(msg, function (response) {
           console.log("created new tab in current tabset:", response)
+          if (chrome.runtime.lastError) {
+            console.warn("got runtime error", chrome.runtime.lastError)
+          }
         });
         // }
       }

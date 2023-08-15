@@ -22,6 +22,9 @@ class Analytics {
     // Stores client id in local storage to keep the same client id as long as
     // the extension is installed.
     async getOrCreateClientId() {
+        if (!chrome) {
+            return
+        }
         let { clientId } = await chrome.storage.local.get('clientId');
         if (!clientId) {
             // Generate a unique client ID, the actual value is not relevant
@@ -35,6 +38,9 @@ class Analytics {
     // the previous one has expired.
     async getOrCreateSessionId() {
         // Use storage.session because it is only in memory
+        if (!chrome) {
+            return
+        }
         let { sessionData } = await chrome.storage.session.get('sessionData');
         const currentTimeInMs = Date.now();
         // Check if session exists and is still valid

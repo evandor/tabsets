@@ -22,6 +22,9 @@ export default bexContent((bridge: any) => {
     console.log('Event received, responding...', data)
     chrome.runtime.sendMessage(data, (res) => {
       console.log("2", res)
+      if (chrome.runtime.lastError) {
+        console.warn("got runtime error", chrome.runtime.lastError)
+      }
     })
     respond('sent')
   })

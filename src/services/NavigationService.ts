@@ -66,6 +66,9 @@ class NavigationService {
                                     selections: selections
                                 }, (res: any) => {
                                     //console.log("got response1", res)
+                                    if (chrome.runtime.lastError) {
+                                        console.warn("got runtime error", chrome.runtime.lastError)
+                                    }
                                 })
                             }
                         }

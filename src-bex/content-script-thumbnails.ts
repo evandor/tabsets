@@ -20,6 +20,9 @@ export default bexContent((bridge: any) => {
 
   chrome.runtime.sendMessage({msg: "captureThumbnail"}, function (response) {
     console.log("tabsets: created thumbnail for tabsets")
+    if (chrome.runtime.lastError) {
+      console.warn("got runtime error", chrome.runtime.lastError)
+    }
   });
 
 })

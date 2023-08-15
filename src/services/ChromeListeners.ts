@@ -112,7 +112,12 @@ function annotationScript (tabId: string, annotations: any[]) {
     (event) => {
       if (event.data && event.data.name && event.data.name.startsWith('recogito-')) {
         console.log("sending", event.data)
-        chrome.runtime.sendMessage(event.data, (callback) => console.log("xxx callback", callback))
+        chrome.runtime.sendMessage(event.data, (callback) => {
+          console.log("xxx callback", callback)
+          if (chrome.runtime.lastError) {
+            console.warn("got runtime error", chrome.runtime.lastError)
+          }
+        })
       }
     },
     false,

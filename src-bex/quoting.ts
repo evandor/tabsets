@@ -79,5 +79,9 @@ export default bexContent((bridge: any) => {
     selection: getCP2String()
   }
   console.log("sending", msg)
-  chrome.runtime.sendMessage(msg)
+  chrome.runtime.sendMessage(msg, (callback) => {
+    if (chrome.runtime.lastError) {
+      console.warn("got runtime error", chrome.runtime.lastError)
+    }
+  })
 })
