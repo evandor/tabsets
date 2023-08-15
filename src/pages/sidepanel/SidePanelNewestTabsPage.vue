@@ -70,8 +70,14 @@ import SidePanelTabInfo from "pages/sidepanel/SidePanelTabInfo.vue";
 import FirstToolbarHelper from "pages/sidepanel/helper/FirstToolbarHelper.vue";
 import SecondToolbarHelper from "pages/sidepanel/helper/SecondToolbarHelper.vue";
 import InfoMessageWidget from "components/widgets/InfoMessageWidget.vue";
+import {onMounted} from "vue";
+import Analytics from "src/utils/google-analytics";
 
 const tabsStore = useTabsStore()
+
+onMounted(() => {
+  Analytics.firePageViewEvent('SidePanelNewestTabsPage', document.location.href);
+})
 
 const newestTabs = () =>
   _.take(_.orderBy(

@@ -1,6 +1,5 @@
 import {defineStore} from 'pinia';
 import {WindowIdent} from "src/models/WindowIdent";
-import {Space} from "src/models/Space";
 import PersistenceService from "src/services/PersistenceService";
 import {ref} from "vue";
 
@@ -25,6 +24,11 @@ export const useWindowsStore = defineStore('windows', () => {
      * Map between window name and actual chrome window
      */
     const windowMap = ref<Map<string, chrome.windows.Window>>(new Map())
+
+    /**
+     * Set of all names for windows from all tabsets
+     */
+    const windowSet = ref<Set<string>> (new Set())
 
     /**
      * the (internal) storage for this store to use
@@ -65,33 +69,31 @@ export const useWindowsStore = defineStore('windows', () => {
         }
     }
 
-    function check(windowToOpen: WindowIdent): string {
-        return windowToOpen.label
-    }
-
     function assignWindow (windowOpened: string, w: chrome.windows.Window) {
         windowMap.value.set(windowOpened, w)
     }
 
     async function windowFor(windowToOpen: string) {
-        console.log("windowFor", windowToOpen)
         if (windowToOpen === 'current') {
             return chrome.windows.getCurrent()
         } else if (windowMap.value.has(windowToOpen)) {
-            console.log("windowFor2", windowMap.value.get(windowToOpen))
+            // console.log("windowFor2", windowMap.value.get(windowToOpen))
             return windowMap.value.get(windowToOpen)
         }
-        console.log("windowFor3 undef")
         return Promise.resolve(undefined)
     }
 
+    function addToWindowSet (windowName: string) {
+        windowSet.value.add(windowName)
+    }
 
     return {
         initialize,
         initListeners,
         currentWindow,
-        check,
         assignWindow,
-        windowFor
+        windowFor,
+        addToWindowSet,
+        windowSet
     }
 })

@@ -240,7 +240,7 @@ a tab's url starts with one of the urls of this tabset, it will be ignored and n
 </template>
 
 <script setup lang="ts">
-import {onUpdated, ref, unref, watchEffect} from 'vue'
+import {onMounted, onUpdated, ref, unref, watchEffect} from 'vue'
 import {useRoute, useRouter} from "vue-router";
 import {uid, useQuasar} from "quasar";
 import _ from "lodash"
@@ -267,6 +267,7 @@ import {useUiStore} from "src/stores/uiStore";
 import TabsetsSelectorWidget from "components/widgets/TabsetsSelectorWidget.vue";
 import DynamicTabsetPageCards from "pages/DynamicTabsetPageCards.vue";
 import {useTabsetService} from "src/services/TabsetService2";
+import Analytics from "src/utils/google-analytics";
 
 const route = useRoute();
 const router = useRouter();
@@ -287,6 +288,10 @@ const orderDesc = ref(false)
 const showEditButton = ref(false)
 
 const tab = ref('tabset')
+
+onMounted(() => {
+  Analytics.firePageViewEvent('TabsetPage', document.location.href);
+})
 
 
 onUpdated(() => {

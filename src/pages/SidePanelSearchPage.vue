@@ -70,38 +70,33 @@
 </template>
 
 <script setup lang="ts">
-import {ref, watchEffect} from 'vue';
-import {useRoute, useRouter} from "vue-router";
-import {useTabsStore} from "src/stores/tabsStore";
+import {onMounted, ref, watchEffect} from 'vue';
+import {useRoute} from "vue-router";
 import _ from "lodash"
 import {useSearchStore} from "src/stores/searchStore";
-import {Tabset} from "src/models/Tabset";
 import {uid, useQuasar} from "quasar";
 import SearchHit from "src/components/layouts/SearchHit.vue"
-import ChromeApi from "src/services/ChromeApi";
 import {Hit} from "src/models/Hit";
 import ReindexDialog from "components/dialogues/ReindexDialog.vue";
 import {usePermissionsStore} from "src/stores/permissionsStore";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {GrantPermissionCommand} from "src/domain/commands/GrantPermissionCommand";
-import {FeatureIdent} from "src/models/AppFeature";
-import SearchWidget from "components/widgets/SearchWidget.vue";
-import TabsetsSelectorWidget from "components/widgets/TabsetsSelectorWidget.vue";
 import {SidePanelView, useUiStore} from "stores/uiStore";
-import InfoMessageWidget from "components/widgets/InfoMessageWidget.vue";
-import PanelTabListElementWidget from "components/widgets/PanelTabListElementWidget.vue";
 import FirstToolbarHelper from "pages/sidepanel/helper/FirstToolbarHelper.vue";
+import Analytics from "src/utils/google-analytics";
 
 const route = useRoute()
-const tabsStore = useTabsStore()
 const searchStore = useSearchStore()
-const router = useRouter()
 
 const termFromParams = route.query.t as string
 
 const $q = useQuasar()
 const tabsetHits = ref<Hit[]>([])
 const showReindexDialog = ref(false)
+
+onMounted(() => {
+  Analytics.firePageViewEvent('SidePanelSearchPage', document.location.href);
+})
 
 const newSearch = (term: string) => {
   tabsetHits.value = []

@@ -44,7 +44,7 @@
                 {{ tabset.name }}
               </q-item-label>
               <q-item-label class="text-caption text-grey-5">
-                {{ tabsetCaption(filteredTabs(tabset as Tabset)) }}
+                {{ tabsetCaption(filteredTabs(tabset as Tabset), tabset.window) }}
               </q-item-label>
             </q-item-section>
 
@@ -126,21 +126,18 @@ import {DynamicTabSourceType} from "src/models/DynamicTabSource";
 import {useWindowsStore} from "../stores/windowsStores";
 import TabsetService from "src/services/TabsetService";
 import getScrollTarget = scroll.getScrollTarget;
-
+import Analytics from "src/utils/google-analytics";
 
 const {setVerticalScrollPosition} = scroll
 
-const {inBexMode, sanitize, sendMsg} = useUtils()
+const {inBexMode} = useUtils()
 
 const $q = useQuasar()
 const router = useRouter()
-const route = useRoute()
 
 const tabsStore = useTabsStore()
-const spacesStore = useSpacesStore()
 const permissionsStore = usePermissionsStore()
 const uiStore = useUiStore()
-const show = ref(false)
 const showSearchBox = ref(false)
 
 const currentChromeTabs = ref<chrome.tabs.Tab[]>([])
@@ -150,7 +147,6 @@ const openTabs = ref<chrome.tabs.Tab[]>([])
 const currentTabset = ref<Tabset | undefined>(undefined)
 const currentChromeTab = ref<chrome.tabs.Tab>(null as unknown as chrome.tabs.Tab)
 const tabsetExpanded = ref<Map<string, boolean>>(new Map())
-const tabs = ref<Map<string, Tab[]>>(new Map())
 
 // https://stackoverflow.com/questions/12710905/how-do-i-dynamically-assign-properties-to-an-object-in-typescript
 interface SelectionObject {
@@ -166,6 +162,7 @@ const selectedTab = ref<Tab | undefined>(undefined)
 
 onMounted(() => {
   window.addEventListener('keypress', checkKeystroke);
+  Analytics.firePageViewEvent('SidePanelPage', document.location.href);
 })
 
 onUnmounted(() => {
@@ -439,7 +436,7 @@ function getOrder() {
 
 async function handleHeadRequests(selectedTabset: Tabset) {
   //selectedTabset.tabs.forEach((t: Tab) => {
-  for (const t: Tab of selectedTabset.tabs) {
+  for (const t of selectedTabset.tabs) {
     if (t.url && !t.url.startsWith("chrome")) {
       // console.log("checking HEAD", t.url)
       try {
@@ -479,16 +476,21 @@ async function handleHeadRequests(selectedTabset: Tabset) {
   useTabsetService().saveTabset(selectedTabset)
 }
 
-const tabsetCaption = (tabs: Tab[]) => {
+const tabsetCaption = (tabs: Tab[], window: string) => {
   const filter = useUiStore().tabsFilter
   if (!tabs) {
     return '-'
   }
+  let caption = ''
   if (!filter || filter.trim() === '') {
-    return tabs.length + ' tab' + (tabs.length === 1 ? '' : 's')
+    caption = tabs.length + ' tab' + (tabs.length === 1 ? '' : 's')
   } else {
-    return tabs.length + ' tab' + (tabs.length === 1 ? '' : 's') + ' (filtered)'
+    caption = tabs.length + ' tab' + (tabs.length === 1 ? '' : 's') + ' (filtered)'
   }
+  if (window && window !== 'current' && usePermissionsStore().hasFeature(FeatureIdent.WINDOW_MANAGEMENT)) {
+    caption = caption + " - opens in: " + window
+  }
+  return caption
 }
 
 const hoveredOver = (tabsetId: string) => hoveredTabset.value === tabsetId

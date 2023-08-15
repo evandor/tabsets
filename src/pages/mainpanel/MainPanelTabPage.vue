@@ -382,7 +382,7 @@
 import {useTabsStore} from "src/stores/tabsStore"
 import {useNotificationsStore} from "src/stores/notificationsStore";
 import {useRoute, useRouter} from "vue-router";
-import {reactive, ref, watchEffect} from "vue";
+import {onMounted, reactive, ref, watchEffect} from "vue";
 import TabsetService from "src/services/TabsetService";
 import NavigationService from "src/services/NavigationService"
 import {date} from "quasar";
@@ -395,6 +395,7 @@ import {useSettingsStore} from "src/stores/settingsStore"
 import VueJsonPretty from "vue-json-pretty";
 import 'vue-json-pretty/lib/styles.css';
 import {useTabsetService} from "src/services/TabsetService2";
+import Analytics from "src/utils/google-analytics";
 
 const tabsStore = useTabsStore()
 const notificationStore = useNotificationsStore()
@@ -423,6 +424,10 @@ const tags = ref<string[]>([])
 const state = reactive({
   val: JSON.stringify(json),
   data: json
+})
+
+onMounted(() => {
+  Analytics.firePageViewEvent('MainPanelTabPage', document.location.href);
 })
 
 watchEffect(() => {

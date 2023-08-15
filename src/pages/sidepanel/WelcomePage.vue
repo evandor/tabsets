@@ -56,7 +56,7 @@
 
 import {SidePanelView, useUiStore} from "src/stores/uiStore";
 import {useQuasar} from "quasar";
-import {ref, watchEffect} from "vue";
+import {onMounted, ref, watchEffect} from "vue";
 import {useTabsStore} from "stores/tabsStore";
 import {useRouter} from "vue-router";
 import {useCommandExecutor} from "src/services/CommandExecutor";
@@ -65,11 +65,16 @@ import NavigationService from "src/services/NavigationService";
 import {STRIP_CHARS_IN_USER_INPUT} from "boot/constants";
 import {useSpacesStore} from "stores/spacesStore";
 import {TabsetStatus} from "src/models/Tabset";
+import Analytics from "src/utils/google-analytics";
 
 const $q = useQuasar()
 const router = useRouter()
 
 const tabsetName = ref('')
+
+onMounted(() => {
+  Analytics.firePageViewEvent('WelcomePage', document.location.href);
+})
 
 watchEffect(() => {
   // we might have been redirected here too early, redirecting

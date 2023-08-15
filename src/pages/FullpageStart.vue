@@ -16,12 +16,18 @@
 import {useQuasar} from "quasar";
 import {useRouter} from "vue-router";
 import {useTabsStore} from "src/stores/tabsStore";
+import {onMounted} from "vue";
+import Analytics from "src/utils/google-analytics";
 
 const $q = useQuasar()
 const router = useRouter()
 
 let timer
 const tabsStore = useTabsStore()
+
+onMounted(() => {
+  Analytics.firePageViewEvent('FullPageStart', document.location.href);
+})
 
 
 $q.loading.show({

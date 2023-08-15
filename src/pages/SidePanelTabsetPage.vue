@@ -47,14 +47,13 @@
 
 <script lang="ts" setup>
 
-import {ref, watchEffect} from "vue";
+import {onMounted, ref, watchEffect} from "vue";
 import {useTabsStore} from "src/stores/tabsStore";
 import {Tab} from "src/models/Tab";
 import _ from "lodash"
 import {Tabset, TabsetStatus, TabsetType} from "src/models/Tabset";
 import {useRoute, useRouter} from "vue-router";
 import {useUtils} from "src/services/Utils";
-import {scroll, uid, useQuasar} from "quasar";
 import {SidePanelView, useUiStore} from "src/stores/uiStore";
 import PanelTabList from "components/layouts/PanelTabList.vue";
 import {usePermissionsStore} from "src/stores/permissionsStore";
@@ -64,17 +63,13 @@ import FirstToolbarHelper from "pages/sidepanel/helper/FirstToolbarHelper.vue";
 import {FeatureIdent} from "src/models/AppFeature";
 import {DynamicTabSourceType} from "src/models/DynamicTabSource";
 import {useWindowsStore} from "../stores/windowsStores";
+import Analytics from "src/utils/google-analytics";
 
-const {inBexMode, sanitize, sendMsg} = useUtils()
+const {inBexMode} = useUtils()
 
-const $q = useQuasar()
-const router = useRouter()
 const route = useRoute()
 
 const tabsStore = useTabsStore()
-const spacesStore = useSpacesStore()
-const permissionsStore = usePermissionsStore()
-const uiStore = useUiStore()
 
 const tabsetId = ref<string | undefined>(undefined)
 const tabset = ref<Tabset | undefined>(undefined)
@@ -83,7 +78,10 @@ const currentChromeTabs = ref<chrome.tabs.Tab[]>([])
 const openTabs = ref<chrome.tabs.Tab[]>([])
 const currentTabset = ref<Tabset | undefined>(undefined)
 const currentChromeTab = ref<chrome.tabs.Tab>(null as unknown as chrome.tabs.Tab)
-const tabs = ref<Map<string, Tab[]>>(new Map())
+
+onMounted(() => {
+  Analytics.firePageViewEvent('SidePanelTabsetPage', document.location.href);
+})
 
 watchEffect(() => {
   tabsetId.value = route.params.tabsetId as string

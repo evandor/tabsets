@@ -42,6 +42,10 @@
               input-debounce="0"
               new-value-mode="add"
               @new-value="createWindowOption"
+              :rules="[
+                       val => newTabsetNameIsValid(val) || 'Please do not use special Characters',
+                       val => newTabsetNameIsShortEnough(val) || 'the maximum length is 32'
+                       ]"
           />
         </q-card-section>
 
@@ -67,7 +71,7 @@ import {useRouter} from "vue-router";
 import {QForm, uid, useDialogPluginComponent, useQuasar} from "quasar";
 import {STRIP_CHARS_IN_USER_INPUT} from "boot/constants";
 import {Tabset, TabsetStatus} from "src/models/Tabset";
-import {ref} from "vue";
+import {ref, watchEffect} from "vue";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {CreateTabsetCommand} from "src/domain/tabsets/CreateTabset";
 import {useTabsetService} from "src/services/TabsetService2";
@@ -75,7 +79,8 @@ import TabsetService from "src/services/TabsetService";
 import {SidePanelView, useUiStore} from "stores/uiStore";
 import {usePermissionsStore} from "stores/permissionsStore";
 import {FeatureIdent} from "src/models/AppFeature";
-import {WindowIdent} from "src/models/WindowIdent";
+import {useWindowsStore} from "stores/windowsStores";
+import _ from "lodash"
 
 const {dialogRef, onDialogHide, onDialogCancel} = useDialogPluginComponent()
 
@@ -91,25 +96,32 @@ const newTabsetName = ref('')
 const isValid = ref(false)
 const addAllOpenTabs = ref(false)
 const theForm = ref<QForm>(null as unknown as QForm)
-const windowModel = ref<WindowIdent>(new WindowIdent('current','Current Window'))
-const windowOptions = ref([
-  new WindowIdent ('current','Current Window'),
-  new WindowIdent ('default','Default Window'),
-  new WindowIdent ('Sport','Sport')
-])
+const windowModel = ref<string>('current')
+const windowOptions = ref<string[]>([])
 
-const checkIsValid =() => {
+watchEffect(() => {
+  const windows: Set<string> = useWindowsStore().windowSet
+  windowOptions.value = []
+  windowOptions.value.push('current')
+  const sortedWindowNames = Array.from(windows).sort();
+  sortedWindowNames.forEach(windowName => {
+    if (windowName !== "current") {
+      windowOptions.value.push(windowName)
+    }
+  })
+})
+
+const checkIsValid = () => {
   if (theForm.value) {
     theForm.value.validate()
         .then((res) => {
-          console.log("validated", res)
           isValid.value = res
         })
   }
 }
 
 const newTabsetNameIsValid = (val: string) => !STRIP_CHARS_IN_USER_INPUT.test(val)
-const newTabsetNameIsShortEnough = (val: string) => val.length <= 32
+const newTabsetNameIsShortEnough = (val: string) => val ? val.length <= 32 : true
 
 const doesNotExistYet = (val: string) => {
   const existsInTabset = tabsStore.existingInTabset(val)
@@ -145,11 +157,9 @@ const createNewTabset = () => {
 }
 
 const createWindowOption = (val: any, done: any) => {
-  console.log("created", val)
-  // TODO sanitize val
-  const newOption = new WindowIdent(val, val)
-  windowOptions.value.push(newOption)
-  done(newOption, 'add-unique')
+  const sanitized = val.replace(STRIP_CHARS_IN_USER_INPUT, '')
+  windowOptions.value.push(sanitized)
+  done(sanitized, 'add-unique')
 }
 
 </script>

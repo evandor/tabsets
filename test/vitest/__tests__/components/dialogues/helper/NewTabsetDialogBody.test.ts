@@ -3,7 +3,7 @@ import {DOMWrapper, mount, VueWrapper} from '@vue/test-utils';
 import {beforeEach, afterEach, describe, expect, it, vi} from 'vitest';
 import {createPinia, setActivePinia} from "pinia";
 import IndexedDbPersistenceService from "src/services/IndexedDbPersistenceService";
-import {useRoute, useRouter} from "vue-router";
+import {useRouter} from "vue-router";
 import {Dialog, Notify} from "quasar";
 import NewTabsetDialogBody from "components/dialogues/helper/NewTabsetDialogBody.vue";
 import {useDB} from "src/services/usePersistenceService";

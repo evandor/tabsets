@@ -12,6 +12,7 @@ import {FeatureIdent} from "src/models/AppFeature";
 import {STRIP_CHARS_IN_USER_INPUT} from "boot/constants";
 import {Space} from "src/models/Space";
 import {useTabsetService} from "src/services/TabsetService2";
+import {useWindowsStore} from "stores/windowsStores";
 
 async function queryTabs(): Promise<chrome.tabs.Tab[]> {
     // @ts-ignore
@@ -462,6 +463,8 @@ export const useTabsStore = defineStore('tabs', {
             if (foundOldRep) {
                 useTabsetService().saveTabset(ts)
             }
+
+            useWindowsStore().addToWindowSet(ts.window)
 
             this.tabsets.set(ts.id, ts)
             markDuplicates(ts)

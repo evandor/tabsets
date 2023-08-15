@@ -28,7 +28,7 @@ describe('AddTabToTabsetCommand', () => {
 
   it('command has proper toString representation', async () => {
     const cmd = await new CreateTabsetCommand("tabsetName", [])
-    expect(cmd.toString()).toBe("CreateTabsetCommand: {merge=true, tabsetName=tabsetName, tabs#=0}")
+    expect(cmd.toString()).toBe("CreateTabsetCommand: {merge=true, tabsetName=tabsetName, tabs#=0, windowToOpen#=current}")
   })
 
   it('creates new tabset in empty DB', async () => {

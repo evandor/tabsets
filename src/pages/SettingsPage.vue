@@ -387,7 +387,7 @@
 <script setup lang="ts">
 import {useTabsStore} from "src/stores/tabsStore"
 import {useRouter} from "vue-router";
-import {ref, watch, watchEffect} from "vue";
+import {onMounted, ref, watch, watchEffect} from "vue";
 import {useQuasar} from "quasar";
 import {useSearchStore} from "src/stores/searchStore";
 import TabsetService from "src/services/TabsetService";
@@ -412,6 +412,7 @@ import {useSettingsStore} from "src/stores/settingsStore"
 import {useLogsStore} from "../stores/logsStore";
 import OpenRightDrawerWidget from "components/widgets/OpenRightDrawerWidget.vue";
 import {useUtils} from "src/services/Utils";
+import Analytics from "src/utils/google-analytics";
 
 const {inBexMode,sendMsg} = useUtils()
 
@@ -443,6 +444,11 @@ const allUrlsOriginGranted = ref<boolean | undefined>(usePermissionsStore().hasA
 const tab = ref('appearance')
 
 const {handleError} = useNotificationHandler()
+
+onMounted(() => {
+  Analytics.firePageViewEvent('SettingsPage', document.location.href);
+})
+
 
 watchEffect(() => permissionsList.value = usePermissionsStore().permissions?.permissions || [])
 

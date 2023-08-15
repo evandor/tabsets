@@ -73,12 +73,17 @@ import PanelTabListElementWidget from "components/widgets/PanelTabListElementWid
 import FirstToolbarHelper from "pages/sidepanel/helper/FirstToolbarHelper.vue";
 import SecondToolbarHelper from "pages/sidepanel/helper/SecondToolbarHelper.vue";
 import InfoMessageWidget from "components/widgets/InfoMessageWidget.vue";
-import {ref, watchEffect} from "vue";
+import {onMounted, ref, watchEffect} from "vue";
+import Analytics from "src/utils/google-analytics";
 
 const tabsStore = useTabsStore()
 
 const top10 = ref<Tab[]>([])
 const loading = ref(true)
+
+onMounted(() => {
+  Analytics.firePageViewEvent('SidePanelTop10Page', document.location.href);
+})
 
 // https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Using_web_workers
 // https://medium.com/@adamorlowskipoland/outside-main-thread-heavy-task-calculations-in-vue-25a600350db9

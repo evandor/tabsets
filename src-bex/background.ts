@@ -1,5 +1,26 @@
 import {bexBackground} from 'quasar/wrappers';
-import {pipeline, env as env2} from "@xenova/transformers";
+import Analytics from "src/utils/google-analytics";
+
+// https://developer.chrome.com/docs/extensions/mv3/tut_analytics/
+console.log("ga: installing google analytics")
+
+addEventListener('unhandledrejection', async (event) => {
+  console.log("ga: fire error event")
+  Analytics.fireErrorEvent(event.reason);
+});
+
+chrome.runtime.onInstalled.addListener(() => {
+  console.log("ga: fire event install")
+  Analytics.fireEvent('install');
+});
+
+// Throw an exception after a timeout to trigger an exception analytics event
+// setTimeout(throwAnException, 2000);
+//
+// async function throwAnException() {
+//   throw new Error("👋 I'm an error");
+// }
+
 
 chrome.omnibox.onInputEntered.addListener((text) => {
   const newURL = chrome.runtime.getURL("/www/index.html#/searchresult?t=" + encodeURIComponent(text))

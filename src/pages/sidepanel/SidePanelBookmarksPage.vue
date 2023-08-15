@@ -42,5 +42,11 @@ import BookmarksTree from "components/BookmarksTree.vue";
 import FirstToolbarHelper from "pages/sidepanel/helper/FirstToolbarHelper.vue";
 import SecondToolbarHelper from "pages/sidepanel/helper/SecondToolbarHelper.vue";
 import {SidePanelView, useUiStore} from "stores/uiStore";
+import {onMounted} from "vue";
+import Analytics from "src/utils/google-analytics";
+
+onMounted(() => {
+  Analytics.firePageViewEvent('SidePanelBookmarksPage', document.location.href);
+})
 
 </script>

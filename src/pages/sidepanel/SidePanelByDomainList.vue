@@ -58,7 +58,7 @@
 
 import {useTabsStore} from "src/stores/tabsStore";
 import _ from "lodash"
-import {ref, watchEffect} from "vue";
+import {onMounted, ref, watchEffect} from "vue";
 import {Tab} from "src/models/Tab";
 import {Tabset, TabsetStatus} from "src/models/Tabset";
 import OpenTabCard from "components/layouts/OpenTabCard.vue";
@@ -68,11 +68,16 @@ import {SidePanelView, useUiStore} from "src/stores/uiStore";
 import PanelTabListElementWidget from "components/widgets/PanelTabListElementWidget.vue";
 import FirstToolbarHelper from "pages/sidepanel/helper/FirstToolbarHelper.vue";
 import SecondToolbarHelper from "pages/sidepanel/helper/SecondToolbarHelper.vue";
+import Analytics from "src/utils/google-analytics";
 
 const tabsStore = useTabsStore()
 const router = useRouter()
 
 const groupedTabs = ref<Map<String, Tab[]>>(new Map())
+
+onMounted(() => {
+  Analytics.firePageViewEvent('SidePanelByDomainList', document.location.href);
+})
 
 watchEffect(() => {
   console.log("checkin tabs....")

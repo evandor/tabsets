@@ -111,7 +111,7 @@
 </template>
 
 <script setup lang="ts">
-import {ref, watchEffect} from 'vue'
+import {onMounted, ref, watchEffect} from 'vue'
 import {useRoute, useRouter} from "vue-router";
 import {useQuasar} from "quasar";
 import {useTabsStore} from "src/stores/tabsStore";
@@ -124,6 +124,7 @@ import {useSettingsStore} from "src/stores/settingsStore"
 import InfoMessageWidget from "components/widgets/InfoMessageWidget.vue";
 import {DrawerTabs, useUiStore} from "src/stores/uiStore";
 import OpenRightDrawerWidget from "components/widgets/OpenRightDrawerWidget.vue";
+import Analytics from "src/utils/google-analytics";
 
 const route = useRoute();
 const router = useRouter();
@@ -143,6 +144,11 @@ const feature = ref(null as unknown as string)
 const appFeature = ref<AppFeature | undefined>(undefined)
 
 const text: Map<string, object> = new Map()
+
+onMounted(() => {
+  Analytics.firePageViewEvent('FeaturesPage', document.location.href);
+})
+
 
 text.set(FeatureIdent.OPENTABS_THRESHOLD.toLowerCase(), {
   name: 'Open Tabs Warning',

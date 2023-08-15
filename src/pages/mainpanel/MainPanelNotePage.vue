@@ -29,7 +29,7 @@
 
 <script lang="ts" setup>
 
-import {ref, watchEffect} from "vue";
+import {onMounted, ref, watchEffect} from "vue";
 import {useRoute, useRouter} from "vue-router";
 import {uid, useQuasar} from "quasar";
 import {useTabsStore} from "src/stores/tabsStore";
@@ -41,6 +41,7 @@ import ChromeApi from "src/services/ChromeApi";
 import EditorJS, {OutputData} from "@editorjs/editorjs";
 // @ts-ignore
 import Header from "@editorjs/header";
+import Analytics from "src/utils/google-analytics";
 
 const {formatDate, sendMsg, sanitize} = useUtils()
 
@@ -60,6 +61,10 @@ const editor = ref<any>(tabsStore.getCurrentTabset?.page || '')
 const value = ref(null)
 
 let editorJS2: EditorJS = undefined as unknown as EditorJS
+
+onMounted(() => {
+  Analytics.firePageViewEvent('MainPanelNotePage', document.location.href);
+})
 
 watchEffect(async () => {
   noteId.value = route.params.noteId as unknown as string
