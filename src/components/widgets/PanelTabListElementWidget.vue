@@ -174,6 +174,9 @@ import {TabsetType} from "src/models/Tabset";
 import {useWindowsStore} from "stores/windowsStores";
 import {usePermissionsStore} from "stores/permissionsStore";
 import {FeatureIdent} from "src/models/AppFeature";
+import {useUtils} from "src/services/Utils";
+
+const {inBexMode} = useUtils()
 
 const props = defineProps({
   tab: {type: Object as PropType<Tab>, required: true},
@@ -331,9 +334,10 @@ const formatDate = (timestamp: number | undefined) =>
   timestamp ? formatDistance(timestamp, new Date(), {addSuffix: true}) : ""
 
 const isCurrentTab = (tab: Tab) => {
-  //console.log("xxx", tabsStore.getCurrentTabset.tabs[0].chromeTab.url, tab.chromeTab.url)
-  //return tabsStore.currentChromeTab.url === tab.url;
-  const windowId = useWindowsStore().currentWindow.id || 0
+  if (!inBexMode()) {
+    return false
+  }
+  const windowId = useWindowsStore().currentWindow?.id || 0
   return (tabsStore.getCurrentChromeTab(windowId) || tabsStore.currentChromeTab).url === tab.url
 
 }

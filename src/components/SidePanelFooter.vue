@@ -185,7 +185,9 @@ watchEffect(() => {
 })
 
 watchEffect(() => {
-  //currentChromeTab.value = useTabsStore().currentChromeTab
+  if (!inBexMode()) {
+    return
+  }
   const windowId = useWindowsStore().currentWindow.id || 0
   currentChromeTab.value = useTabsStore().getCurrentChromeTab(windowId) || useTabsStore().currentChromeTab
 })

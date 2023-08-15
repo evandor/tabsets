@@ -379,7 +379,7 @@ if (chrome) {
       return true
     })
   } else {
-    useRouter().push("/start")
+    //useRouter().push("/start")
   }
 }
 

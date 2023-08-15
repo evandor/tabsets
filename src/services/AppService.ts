@@ -82,10 +82,10 @@ class AppService {
 
     useNotificationsStore().bookmarksExpanded = $q.localStorage.getItem("bookmarks.expanded") || []
 
-// @ts-ignore
-    if (!inBexMode() || (!chrome.sidePanel && chrome.action)) {
-      router.push("/start")
-    }
+    // @ts-ignore
+    // if (!inBexMode() || (!chrome.sidePanel && chrome.action)) {
+    //   router.push("/start")
+    // }
 
 
   }
