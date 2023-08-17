@@ -50,7 +50,7 @@ class AppService {
         tabsStore.initialize(useQuasar().localStorage);
 
         searchStore.init()
-        windowsStore.initialize(useDB(undefined).db)
+        windowsStore.initialize()
         // TODO best place here?
         windowsStore.initListeners()
 
