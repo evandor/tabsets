@@ -13,7 +13,7 @@ export const test = base.extend<{
         const pathToExtension = path.join(__dirname, "../dist/bex");
 
         const context = await chromium.launchPersistentContext("", {
-            headless: false,
+            headless: true,
             args: [
                 `--disable-extensions-except=${pathToExtension}`,
                 `--load-extension=${pathToExtension}`,
