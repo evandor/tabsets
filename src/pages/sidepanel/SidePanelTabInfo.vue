@@ -9,7 +9,7 @@
         <div class="col text-caption q-pa-md">
           Here you will see the <i>current tab</i> of your browser.
           Click 'START' and add it to your new tabset.<br><br>
-          <q-btn label="start" @click="router.push('/sidepanel')"/>
+          <q-btn label="start" data-testid='startAddingTabsBtn' @click="router.push('/sidepanel')"/>
         </div>
       </div>
     </div>

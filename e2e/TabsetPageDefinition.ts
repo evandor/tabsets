@@ -1,6 +1,6 @@
 import {Page} from "@playwright/test";
 
-export class TabsetPage {
+export class TabsetPageDefinition {
 
   async fillByTestId(page: Page, ident: string, text: string) {
     const selector = '[data-testid=' + ident + ']'

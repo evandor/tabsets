@@ -197,7 +197,8 @@ watchEffect(() => {
   progressLabel.value = uiStore.progressLabel + " " + Math.round(100 * progress.value) + "%"
 })
 
-const openOptionsPage = () => window.open(chrome.runtime.getURL('www/index.html#/mainpanel/settings'));
+//const openOptionsPage = () => window.open(chrome.runtime.getURL('www/index.html#/mainpanel/settings'));
+const openOptionsPage = () => window.open('#/mainpanel/settings');
 
 const openExtensionTab = () => NavigationService.openOrCreateTab(chrome.runtime.getURL('www/index.html#/fullpage'))
 

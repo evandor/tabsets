@@ -43,6 +43,7 @@
               outline
               :disable="tabsetName.trim().length === 0 || !newTabsetNameIsValid()"
               @click="addFirstTabset"
+              data-testid="addTabsetSubmitBtn"
               color="warning">
             Add
           </q-btn>
@@ -80,7 +81,8 @@ watchEffect(() => {
   // we might have been redirected here too early, redirecting
   // back as soon we know we actually do have some tabsets
   if (useTabsStore().tabsets.size > 0) {
-    router.back()
+    console.log("routing back! We have tabsets!")
+   // router.back()
   }
 })
 

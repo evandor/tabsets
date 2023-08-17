@@ -23,7 +23,8 @@
     "test:unit:watchAll": "vitest --watchAll",
     "test:e2e": "npx playwright test",
     "test:e2e:showReport": "npx playwright show-report",
-    "test:specificTest": "npx playwright test addTab"
+    "test:specificTest": "npx playwright test addFirstTabset",
+    "test:specificTest:debug": "npx playwright test addFirstTabset --debug"
   },
   "dependencies": {
     "@editorjs/editorjs": "^2.27.2",

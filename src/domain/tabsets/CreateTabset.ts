@@ -52,7 +52,7 @@ export class CreateTabsetCommand implements Command<SaveOrReplaceResult> {
                 .then(res => {
                         //   if (useTabsStore().tabsets.size === 5 && !usePermissionsStore().hasFeature(FeatureIdent.BOOKMARKS) && process.env.MODE === 'bex') {
                         //     useSuggestionsStore().addSuggestion(Suggestion.getStaticSuggestion(StaticSuggestionIdent.TRY_BOOKMARKS_FEATURE))
-                        //   }
+                //         }
                         if (useTabsStore().tabsets.size >= 15 &&
                             !usePermissionsStore().hasFeature(FeatureIdent.SPACES) &&
                             process.env.MODE === 'bex') {
