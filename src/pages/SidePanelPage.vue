@@ -59,8 +59,8 @@
 
 
           <div class="q-ma-none q-pa-none">
-            <!--             <div class="q-ma-xs shrink" :class="showTabInfo(tabset.id) ? '':'collapsed'">-->
-            <div class="q-ma-none">
+
+            <div class="q-ma-none" v-if="inBexMode()">
               <SidePanelTabInfo :tabsetId="tabset.id"/>
             </div>
 
