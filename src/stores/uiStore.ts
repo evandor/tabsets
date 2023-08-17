@@ -105,7 +105,7 @@ export const useUiStore = defineStore('ui', () => {
 
   // RightDrawer
   let rightDrawer = ref<RightDrawer>(new RightDrawer())
-  let rightDrawerOpen = ref($q.screen.gt.md)
+  let rightDrawerOpen = ref($q ? $q.screen.gt.md : true)
   let leftDrawerOpen = ref(true)
 
   // SidePanel
