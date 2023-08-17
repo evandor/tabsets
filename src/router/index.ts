@@ -33,7 +33,7 @@ export default route(function (/* { store, ssrContext } */) {
   });
 
   Router.beforeEach((to, from) => {
-    console.log(`router event ${from.fullPath} -> ${to.fullPath}`)
+    console.log(` >>> router event ${from.fullPath} -> ${to.fullPath}`)
   })
 
   return Router;

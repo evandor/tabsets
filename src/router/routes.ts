@@ -4,7 +4,18 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/',
     // @ts-ignore
-    redirect: (chrome && chrome.sidePanel && chrome.sidePanel.setPanelBehavior) ? '/sidepanel' : '/start'
+    redirect: (process.env.MODE === 'pwa') ?
+        //'/tabsets' :
+        '/sidepanel' :
+        // @ts-ignore
+        (chrome.sidePanel && chrome.sidePanel.setPanelBehavior) ?
+            '/authenticate' :
+            '/tabsets'
+  },
+  {
+    path: '/authenticate',
+    component: () => import('layouts/SidePanelLayout.vue'),
+    children: [{ path: '', component: () => import('pages/Authenticate.vue') }],
   },
   {
     path: '/start',

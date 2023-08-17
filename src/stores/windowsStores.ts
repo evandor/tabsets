@@ -66,7 +66,7 @@ export const useWindowsStore = defineStore('windows', () => {
 
     async function windowFor(windowToOpen: string) {
         if (windowToOpen === 'current') {
-            return chrome.windows.getCurrent()
+            return chrome.windows?.getCurrent()
         } else if (windowMap.value.has(windowToOpen)) {
             // console.log("windowFor2", windowMap.value.get(windowToOpen))
             return windowMap.value.get(windowToOpen)

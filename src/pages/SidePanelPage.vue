@@ -127,6 +127,7 @@ import {useWindowsStore} from "../stores/windowsStores";
 import TabsetService from "src/services/TabsetService";
 import getScrollTarget = scroll.getScrollTarget;
 import Analytics from "src/utils/google-analytics";
+import {useAuthStore} from "stores/auth";
 
 const {setVerticalScrollPosition} = scroll
 
@@ -162,7 +163,11 @@ const selectedTab = ref<Tab | undefined>(undefined)
 
 onMounted(() => {
   window.addEventListener('keypress', checkKeystroke);
-  Analytics.firePageViewEvent('SidePanelPage', document.location.href);
+  if (!useAuthStore().isAuthenticated) {
+    router.push("/authenticate")
+  } else {
+    Analytics.firePageViewEvent('SidePanelPage', document.location.href);
+  }
 })
 
 onUnmounted(() => {
@@ -306,7 +311,7 @@ function inIgnoredMessages(message: any) {
       message.name === "recogito-annotation-created"
 }
 
-if (chrome) {
+if ($q.platform.is.chrome) {
   if (inBexMode()) {
     // seems we need to define these listeners here to get the matching messages reliably
     // these messages are created by triggering events in the mainpanel
