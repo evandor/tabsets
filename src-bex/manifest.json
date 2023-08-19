@@ -1,60 +1,39 @@
 {
-  "manifest_version": 3,
+  "manifest_version": 2,
   "icons": {
     "16": "icons/icon-16x16.png",
     "48": "icons/icon-48x48.png",
     "128": "icons/icon-128x128.png"
   },
   "permissions": [
+    "storage",
     "tabs",
     "activeTab",
     "alarms",
     "scripting",
-    "sidePanel"
-  ],
-  "optional_permissions": [
-    "pageCapture",
-    "notifications",
-    "bookmarks"
-  ],
-  "host_permissions": [
-    "<all_urls>",
     "*://*/*"
   ],
-  "side_panel": {
-    "default_path": "www/sidepanel.html"
-  },
-  "action": {
-    "default_title": "Open Tabsets Extension",
-    "default_icon": {
-      "16": "icons/icon-16x16.png",
-      "48": "icons/icon-48x48.png",
-      "128": "icons/icon-128x128.png"
-    }
-  },
   "background": {
-    "service_worker": "background.js"
+    "scripts": ["background.js"]
   },
-  "content_security_policy": {
-    "extension_pages": "script-src 'self'; object-src 'self';"
+  "content_scripts": [
+    {
+      "matches": ["*://*/*"],
+      "js": ["tabsets-content-script.js", "content-script.js"]
+    }
+  ],
+  "sidebar_action": {
+    "default_icon": "icons/icon-48x48.png",
+    "default_title" : "Tabsets",
+    "default_panel": "www/index.html#/sidepanel"
   },
+  "omnibox": { "keyword": "ts" },
   "commands": {
-    "_execute_action": {
+    "_execute_sidebar_action": {
       "suggested_key": {
-        "default": "Ctrl+B",
-        "mac": "Command+B"
+        "default": "Ctrl+Shift+T"
       }
     }
   },
-  "options_page": "www/index.html#/mainpanel/settings",
-  "web_accessible_resources": [
-    {
-      "resources": [
-        "*"
-      ],
-      "matches": [
-        "*://*/*"
-      ]
-    }
-  ]
+  "content_security_policy": "script-src 'self' 'wasm-unsafe-eval'"
 }
