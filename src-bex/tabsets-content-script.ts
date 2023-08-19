@@ -5,17 +5,29 @@ import {bexContent} from 'quasar/wrappers'
 
 
 export default bexContent((bridge: any) => {
+
+  // @ts-ignore
+  if (window.contentScriptAnalysisAlredyCalled) {
+    // https://stackoverflow.com/questions/23208134/avoid-dynamically-injecting-the-same-script-multiple-times-when-using-chrome-tab
+    console.debug("stopping execution of tabsets-content-script as it is already setup")
+    return
+  }
+
   console.log("tabsets: initializing content script for tab analysis")
+  // @ts-ignore
+  window.contentScriptAnalysisAlredyCalled  = true
+
 
   // I guess this is never called  TODO remove
-  chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-    console.log("tabsets: !!!", request.msg)
-    if (request.msg === 'getContent') {
-      console.log("tabsets: received message for content", document.documentElement.outerHTML)
-      sendResponse({content: document.documentElement.outerHTML});
-    }
-    return sendResponse({content: "unknown request in tabsets-content-scripts: " + request.msg});
-  })
+  // chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  //   console.log("tabsets: !!!", request.msg)
+  //   if (request.msg === 'getContent') {
+  //     console.log("tabsets: received message for content", document.documentElement.outerHTML)
+  //     sendResponse({content: document.documentElement.outerHTML});
+  //   }
+  //   sendResponse({content: "unknown request in tabsets-content-scripts: " + request.msg});
+  //   return true
+  // })
 
   function getMetas(document: Document) {
     const result: { [k: string]: string } = {}
@@ -82,6 +94,9 @@ export default bexContent((bridge: any) => {
     metas: getMetas(document)
   }, function (response) {
     console.log("tabsets: created text excerpt for tabsets")
+    if (chrome.runtime.lastError) {
+      console.warn("got runtime error", chrome.runtime.lastError)
+    }
   });
 
   chrome.runtime.sendMessage({
@@ -90,6 +105,9 @@ export default bexContent((bridge: any) => {
     links: getLinks(document)
   }, function (response) {
     console.log("tabsets: created links excerpt for tabsets")
+    if (chrome.runtime.lastError) {
+      console.warn("got runtime error", chrome.runtime.lastError)
+    }
   });
 
 

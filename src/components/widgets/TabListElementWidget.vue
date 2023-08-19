@@ -15,7 +15,7 @@
 
   <!-- name, title, description, url && note -->
   <q-item-section :style="itemStyle(props.tab)"
-                  :data-testid="useUtils().createDataTestIdentifier('tabListElementWidget', props.tab.chromeTab.title)">
+                  :data-testid="useUtils().createDataTestIdentifier('tabListElementWidget', props.tab.title)">
 
     <!-- name or title -->
     <q-item-label>
@@ -25,7 +25,7 @@
                   class="q-my-none q-py-none q-ml-none q-mr-sm"
                   clickable
                   style="float:left;position: relative;top:3px"
-                  @click="NavigationService.openOrCreateTab(props.tab.chromeTab?.url)"
+                  @click="NavigationService.openOrCreateTab(props.tab?.url)"
                   size="xs" icon="tab">
             opened
             <q-tooltip class="tooltip">This tab is open in your browser. Click to open the corresponding tab.
@@ -59,22 +59,22 @@
 
     <!-- url -->
     <q-item-label
-      v-if="props.tab.chromeTab.url"
+      v-if="props.tab.url"
       caption class="ellipsis-2-lines text-blue-10"
       @mouseover="showButtonsProp = true"
       @mouseleave="showButtonsProp = false">
       <div class="q-pr-lg cursor-pointer" style="display: inline-block;"
-           @click.stop="NavigationService.openOrCreateTab(props.tab.chromeTab?.url )">
+           @click.stop="open(props.tab)">
 
         <span v-if="useTabsStore().getCurrentTabset?.sorting === 'alphabeticalUrl'">
           <q-icon name="arrow_right" size="16px" />
         </span>
-        <short-url :url="props.tab.chromeTab?.url" :hostname-only="true" />
+        <short-url :url="props.tab?.url" :hostname-only="true" />
 
         <q-icon class="q-ml-xs" name="open_in_new"/>
         <q-icon v-if="showButtonsProp"
                 class="q-ml-md" name="content_copy"
-                @click.stop="copyToClipboard(props.tab.chromeTab?.url)">
+                @click.stop="copyToClipboard(props.tab?.url)">
           <q-tooltip class="tooltip">Copy URL to clipboard</q-tooltip>
         </q-icon>
         <q-icon v-else class="q-ml-md"/>
@@ -131,7 +131,7 @@ import {useNotificationsStore} from "src/stores/notificationsStore";
 import {onMounted, ref, watchEffect} from "vue";
 import {useUtils} from "src/services/Utils"
 import {useCommandExecutor} from "src/services/CommandExecutor";
-import {DeleteTabCommand} from "src/domain/commands/DeleteTabCommand";
+import {DeleteTabCommand} from "src/domain/tabs/DeleteTabCommand";
 import EditNoteDialog from "components/dialogues/EditNoteDialog.vue";
 import {useQuasar} from "quasar";
 import {DrawerTabs, useUiStore} from "src/stores/uiStore";
@@ -143,6 +143,7 @@ import {CopyToClipboardCommand} from "src/domain/commands/CopyToClipboard";
 import {useTabsetService} from "src/services/TabsetService2";
 import ShortUrl from "components/utils/ShortUrl.vue";
 import {useTabsStore} from "src/stores/tabsStore";
+import {useRouter} from "vue-router";
 
 const props = defineProps({
   tab: {type: Object, required: true},
@@ -155,10 +156,10 @@ const emits = defineEmits(['sendCaption'])
 
 const $q = useQuasar()
 
-const line = ref(null)
 const showButtonsProp = ref<boolean>(false)
 const thumbnail = ref<string | undefined>(undefined)
 const imgFromBlob = ref<string>("")
+const router = useRouter()
 
 onMounted(() => {
   const blobImgPath = props.tab.image
@@ -205,10 +206,10 @@ const itemStyle = (tab: Tab) => {
   return `${border};${background}`
 }
 
-const isOpen = (tab: Tab): boolean => TabsetService.isOpen(tab?.chromeTab?.url || '')
+const isOpen = (tab: Tab): boolean => TabsetService.isOpen(tab?.url || '')
 
 const setInfo = (tab: Tab) => {
-  const parts = (tab.chromeTab?.url || '').split('?')
+  const parts = (tab?.url || '').split('?')
   if (parts.length > 1) {
     emits('sendCaption', parts[0] + "[... params omitted....]")
   } else if (parts.length === 1) {
@@ -236,11 +237,11 @@ const editNoteDialog = (tab: Tab) => $q.dialog({
 })
 
 const addToNewTabUrlList = (tab: Tab) => {
-  console.log("got tab", tab)
+ // console.log("got tab", tab)
   useUiStore().addToNewTabUrlList({
-    url: tab.chromeTab.url,
-    title: tab.chromeTab.title,
-    favIconUrl: tab.chromeTab.favIconUrl
+    url: tab.url,
+    title: tab.title,
+    favIconUrl: tab.favIconUrl
   })
 }
 
@@ -248,10 +249,10 @@ const nameOrTitle = (tab: Tab) => {
   // if (tab.executionResult) {
   //   return tab.executionResult[0]['email' as keyof object] + " <img src='"+tab.executionResult[0]['picture' as keyof object]['medium' as keyof object]+"' />"
   // }
-  return tab.name ? tab.name : tab.chromeTab?.title
+  return tab.name ? tab.name : tab?.title
 }
 
-const dynamicNameOrTitleModel = (tab: Tab) => tab.name ? tab.name : tab.chromeTab?.title
+const dynamicNameOrTitleModel = (tab: Tab) => tab.name ? tab.name : tab?.title
 
 const setCustomTitle = (tab: Tab, newValue: string) =>
   useCommandExecutor().executeFromUi(new UpdateTabNameCommand(tab, newValue))
@@ -278,5 +279,17 @@ watchEffect(() => {
       })
   }
 })
+
+const open = (tab: Tab) => {
+  if (process.env.MODE === 'electron') {
+    //const candidates = useTabsStore().tabsForUrl(withUrl)
+    //console.log("found candidates", candidates)
+    //if (candidates.length > 0) {
+      router.push("/browser/" + tab.id)
+      return Promise.resolve()
+    //}
+  }
+  NavigationService.openOrCreateTab(props.tab?.url )
+}
 
 </script>

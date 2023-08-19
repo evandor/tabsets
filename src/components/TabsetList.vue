@@ -189,13 +189,13 @@ const $q = useQuasar()
 function unpinnedNoGroup() {
   return _.filter(
     _.map(tabsStore.getCurrentTabs, t => t),
-    (t: Tab) => !t.chromeTab.pinned && t.chromeTab.groupId === -1)
+    (t: Tab) => !t.pinned && t.groupId === -1)
 }
 
 function tabsForGroup(groupId: number): Tab[] {
   return _.filter(tabsStore.getCurrentTabs,
     //@ts-ignore
-    (t: Tab) => t.chromeTab.groupId === groupId)
+    (t: Tab) => t.groupId === groupId)
 }
 
 const update = (tabsetIdent: object) => {

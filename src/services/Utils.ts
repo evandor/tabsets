@@ -7,12 +7,12 @@ export function useUtils() {
     timestamp ? formatDistance(timestamp, new Date(), {addSuffix: true}) : ""
 
   const createDataTestIdentifier = (prefix: string, url: string) =>
-    prefix + "_" + url.replace("https://", "").replaceAll('.','').replaceAll("/", "")
+    prefix + "_" + url.replace("https://", "").replaceAll('.', '').replaceAll("/", "")
 
   const inBexMode = () => process.env.MODE === 'bex'
   const modeIs = (ident: string) => process.env.MODE === ident
 
-  const normalize = (url: string):string => {
+  const normalize = (url: string): string => {
     try {
       new URL(url)
       return url
@@ -27,20 +27,34 @@ export function useUtils() {
       allowedAttributes: sanitizeHtml.defaults.allowedAttributes = {
         a: ['href', 'name', 'target'],
         img: ['src', 'srcset', 'alt', 'title', 'width', 'height', 'loading']
+      },
+      allowedSchemesByTag: {
+        img: ['data']
+      }
+    })
+  }
+
+  const sanitizeAsText = (input: string): string => {
+    return sanitizeHtml(input, {
+      allowedTags: sanitizeHtml.defaults.allowedTags,//.concat(['img']),
+      allowedAttributes: sanitizeHtml.defaults.allowedAttributes = {
+        a: ['href', 'name', 'target']
       }
     })
   }
 
   const sendMsg = (msgName: string, data: object) => {
-    chrome.runtime.sendMessage({
-      name: msgName, data: data
-    }, (callback) => {
-      console.log("got callback", callback)
-      if (chrome.runtime.lastError) { /* ignore */
-      }
-    });
+    if (inBexMode() && chrome) {
+      console.log("sending message", {name: msgName, data})
+      chrome.runtime.sendMessage({
+        name: msgName, data: data
+      }, (callback: any) => {
+        console.log("got callback", callback)
+        if (chrome.runtime.lastError) { /* ignore */
+        }
+      });
+    }
   }
-
 
   return {
     formatDate,
@@ -49,6 +63,7 @@ export function useUtils() {
     normalize,
     modeIs,
     sanitize,
+    sanitizeAsText,
     sendMsg
   }
 }

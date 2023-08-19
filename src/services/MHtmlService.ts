@@ -40,6 +40,7 @@ class MHtmlService {
   deleteMHtml(tabId: string, mhtmlId: string) {
     const tab = useTabsStore().getTab(tabId)
     if (tab) {
+      // @ts-ignore
       tab.mhtmls = _.filter(tab.mhtmls, (e:string) => e !== mhtmlId)
       // assuming tab is in current tabset (TODO)
       useTabsetService().saveCurrentTabset()

@@ -2,8 +2,10 @@
 
   <div class="cursor-pointer">
     <div
-      class="q-ma-none q-pa-none text-subtitle2 q-pl-sm cursor-pointer" style="border:1px solid lightgray;background-color:white;border-radius:4px;min-width:200px">
-      {{ tabsetLabel()}}
+      class="q-ma-none q-pa-none text-subtitle2 q-pl-sm cursor-pointer ellipsis"
+      :class="useUiStore().sidePanelActiveViewIs(SidePanelView.MAIN) ? '' : 'text-grey-5'">
+      {{ tabsetLabel() }}
+      <q-icon name="arrow_drop_down" class="q-mr-xs " size="xs" color="primary"/>
     </div>
 
     <q-menu :offset="[0,0]">
@@ -11,31 +13,26 @@
         <q-item disable v-if="tabsetsOptions.length > 0 && usePermissionsStore().hasFeature(FeatureIdent.SPACES)">
           {{ useSpacesStore().space?.label ? 'Tabsets of ' + useSpacesStore().space.label : 'Tabsets w/o Space' }}
         </q-item>
-        <q-item disable v-if="tabsetsOptions.length > 1 && !usePermissionsStore().hasFeature(FeatureIdent.SPACES)">
-          Switch to Tabset:
-        </q-item>
-        <!--        <q-separator v-if="tabsetsOptions.length > 1"/>-->
-        <q-item v-for="ts in tabsetsOptions"
-                :disable="ts.id === tabsStore.currentTabsetId"
-                clickable v-close-popup @click="switchTabset(ts)">
-          <q-item-section v-if="ts.type === TabsetType.SESSION"
-                          class="q-ml-sm" style="max-width:20px">
-            <q-icon name="o_stop_circle" color="red"/>
-          </q-item-section>
-          <q-item-section class="q-ml-sm">{{ ts.label }}</q-item-section>
-        </q-item>
-        <q-separator v-if="usePermissionsStore().hasFeature(FeatureIdent.SPACES)"/>
-        <q-item v-if="usePermissionsStore().hasFeature(FeatureIdent.SPACES)"
-                clickable v-close-popup @click="router.push('/sidepanel/tabsets')">
-          <q-item-section>Switch Space</q-item-section>
+
+        <template
+          v-if="usePermissionsStore().hasFeature(FeatureIdent.BACKUP) || usePermissionsStore().hasFeature(FeatureIdent.IGNORE)">
+          <q-separator/>
+          <q-item disable>
+            Special Tabsets
+          </q-item>
+          <q-item v-for="ts in tabsetsWithTypes([TabsetType.SPECIAL])" clickable v-close-popup
+                  @click="switchTabset(ts)">
+            <q-item-section class="q-ml-sm">{{ ts.name }}</q-item-section>
+          </q-item>
+        </template>
+
+        <q-separator/>
+        <q-item clickable v-close-popup @click="openNewTabsetDialog()">
+          <q-item-section>Add new Tabset</q-item-section>
         </q-item>
         <q-separator/>
         <q-item v-if="tabsStore.currentTabsetName" clickable v-close-popup @click="openEditTabsetDialog()">
           <q-item-section>Edit Tabset Name</q-item-section>
-        </q-item>
-        <q-separator/>
-        <q-item clickable v-close-popup @click="openNewTabsetDialog()">
-          <q-item-section>Add Tabset</q-item-section>
         </q-item>
         <q-separator/>
         <q-item v-if="tabsStore.currentTabsetName" clickable v-close-popup @click="deleteTabsetDialog()">
@@ -64,6 +61,7 @@ import {useSpacesStore} from "src/stores/spacesStore";
 import {ExecutionResult} from "src/domain/ExecutionResult";
 import EditTabsetDialog from "components/dialogues/EditTabsetDialog.vue";
 import DeleteTabsetDialog from "components/dialogues/DeleteTabsetDialog.vue";
+import {SidePanelView, useUiStore} from "stores/uiStore";
 
 const tabsStore = useTabsStore()
 const spacesStore = useSpacesStore()
@@ -97,7 +95,7 @@ watchEffect(() => {
         return o.name.toLowerCase()
       }
     ]), (key) => {
-    return {id: key.id, label: key.name, type: key.type}
+    return {id: key.id, label: key.name, type: key.type, count: key.tabs.length}
   })
 })
 
@@ -137,12 +135,21 @@ const openEditTabsetDialog = () => {
 const switchTabset = (ts: any) => {
   console.log("settings tabset to ", ts)
   useCommandExecutor()
-    .execute(new SelectTabsetCommand(ts.id))
+    .execute(new SelectTabsetCommand(ts.id, useSpacesStore().space?.id))
     .then((res: ExecutionResult<Tabset | undefined>) => {
+      useUiStore().sidePanelSetActiveView(SidePanelView.MAIN)
       if (!props.fromPanel) {
         router.push("/tabsets/" + ts.id)
       }
     })
+}
+
+const tabsetsWithTypes = (types: TabsetType[]) => {
+  let tabsets = [...tabsStore.tabsets.values()]
+  return _.sortBy(
+    _.filter(tabsets, (ts: Tabset) =>
+      types.findIndex(t => ts.type === t && TabsetStatus.DELETED !== ts.status) >= 0),
+    ['name'])
 }
 
 </script>

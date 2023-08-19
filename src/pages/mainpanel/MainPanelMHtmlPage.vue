@@ -36,11 +36,12 @@
 
 <script lang="ts" setup>
 
-import {ref, watchEffect} from "vue";
+import {onMounted, ref, watchEffect} from "vue";
 import {useRoute} from "vue-router";
 import {date} from "quasar"
 import MHtmlService from "src/services/MHtmlService";
 import {useUiStore} from "src/stores/uiStore";
+import Analytics from "src/utils/google-analytics";
 
 const route = useRoute()
 
@@ -48,6 +49,9 @@ const encodedUrl = ref()
 const title = ref()
 const created = ref('')
 
+onMounted(() => {
+  Analytics.firePageViewEvent('MainPanelMHtmlPage', document.location.href);
+})
 
 watchEffect(() => {
   encodedUrl.value = route.params.encodedUrl as string

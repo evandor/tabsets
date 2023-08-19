@@ -5,7 +5,10 @@
     <div class="row fit">
       <q-toolbar-title>
         <div class="row justify-start items-baseline">
-          Tabsets Extension Settings
+          <div class="col-10">Tabsets Extension Settings</div>
+          <div class="col-2 text-right">
+            <OpenRightDrawerWidget/>
+          </div>
         </div>
       </q-toolbar-title>
     </div>
@@ -22,6 +25,7 @@
       <q-tab name="archived" label="Archived Tabsets"/>
       <q-tab name="search" label="Search Engine" v-if="devEnabled"/>
       <q-tab name="importExport" label="Import/Export"/>
+<!--      <q-tab name="logs" label="Log: Errors & Warnings"/>-->
       <q-tab name="featureToggles" label="Feature Toggles"/>
     </q-tabs>
   </div>
@@ -41,6 +45,17 @@
         <div class="col-9">
           <q-radio v-model="darkMode" :val="true" label="Enabled"/>
           <q-radio v-model="darkMode" :val="false" label="Disabled"/>
+        </div>
+      </div>
+
+      <div class="row items-baseline q-ma-md">
+        <div class="col-3">
+          Tab Info Detail Level
+        </div>
+        <div class="col-9">
+          <q-radio v-model="detailLevel" :val="ListDetailLevel.MINIMAL" label="Minimal Details"/>
+          <q-radio v-model="detailLevel" :val="ListDetailLevel.SOME" label="Some Details"/>
+          <q-radio v-model="detailLevel" :val="ListDetailLevel.MAXIMAL" label="All Details"/>
         </div>
       </div>
 
@@ -197,7 +212,7 @@
       </q-banner>
 
       <div class="row q-pa-md" v-for="tabset in ignoredUrls()">
-        <div class="col-3"><b>{{ tabset.chromeTab?.url }}</b></div>
+        <div class="col-3"><b>{{ tabset.url }}</b></div>
         <div class="col-3"></div>
         <div class="col-1"></div>
         <div class="col-5">
@@ -316,6 +331,30 @@
 
   </div>
 
+<!--  <div v-if="tab === 'logs'">-->
+
+<!--    <div class="q-pa-md q-gutter-sm">-->
+
+<!--      <q-banner rounded class="bg-grey-1 text-primary">Tabsets checks for errors and warnings in the log-->
+<!--        and can display them here.-->
+<!--      </q-banner>-->
+
+<!--      <div class="row q-pa-md">-->
+<!--        <div class="col-12">-->
+<!--          {{ errors }}-->
+<!--        </div>-->
+<!--      </div>-->
+
+<!--      <div class="row q-pa-md">-->
+<!--        <div class="col-12">-->
+<!--          {{ warnings }}-->
+<!--        </div>-->
+<!--      </div>-->
+
+<!--    </div>-->
+
+<!--  </div>-->
+
 
   <div v-if="tab === 'featureToggles'">
 
@@ -348,7 +387,7 @@
 <script setup lang="ts">
 import {useTabsStore} from "src/stores/tabsStore"
 import {useRouter} from "vue-router";
-import {ref, watch, watchEffect} from "vue";
+import {onMounted, ref, watch, watchEffect} from "vue";
 import {useQuasar} from "quasar";
 import {useSearchStore} from "src/stores/searchStore";
 import TabsetService from "src/services/TabsetService";
@@ -360,7 +399,7 @@ import {MarkTabsetAsDefaultCommand} from "src/domain/tabsets/MarkTabsetAsDefault
 import {useNotificationHandler} from "src/services/ErrorHandler";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import NavigationService from "src/services/NavigationService";
-import {DrawerTabs, useUiStore} from "src/stores/uiStore";
+import {DrawerTabs, ListDetailLevel, useUiStore} from "src/stores/uiStore";
 import {useBookmarksStore} from "src/stores/bookmarksStore";
 import {usePermissionsStore} from "src/stores/permissionsStore";
 import {GrantPermissionCommand} from "src/domain/commands/GrantPermissionCommand";
@@ -370,6 +409,12 @@ import {GrantOriginCommand} from "src/domain/commands/GrantOriginCommand";
 import {RevokeOriginCommand} from "src/domain/commands/RevokeOriginCommand";
 import {FeatureIdent} from "src/models/AppFeature";
 import {useSettingsStore} from "src/stores/settingsStore"
+import {useLogsStore} from "../stores/logsStore";
+import OpenRightDrawerWidget from "components/widgets/OpenRightDrawerWidget.vue";
+import {useUtils} from "src/services/Utils";
+import Analytics from "src/utils/google-analytics";
+
+const {inBexMode,sendMsg} = useUtils()
 
 const tabsStore = useTabsStore()
 const featuresStore = useSettingsStore()
@@ -385,22 +430,25 @@ useUiStore().rightDrawerSetActiveTab(DrawerTabs.FEATURES)
 const view = ref('grid')
 const indexSize = ref(0)
 
-//const syncEnabled = ref<boolean>(featuresStore.isEnabled('sync'))
-// const statsEnabled = ref<boolean>(featuresStore.isEnabled('stats'))
 const devEnabled = ref<boolean>(featuresStore.isEnabled('dev'))
 const ddgEnabled = ref<boolean>(!featuresStore.isEnabled('noDDG'))
 const ignoreExtensionsEnabled = ref<boolean>(!featuresStore.isEnabled('extensionsAsTabs'))
 const permissionsList = ref<string[]>([])
 
 const darkMode = ref<boolean>(localStorage.getItem('darkMode') || false)
+const detailLevel = ref<ListDetailLevel>(localStorage.getItem('detailLevel') || ListDetailLevel.MAXIMAL)
+
 const bookmarksPermissionGranted = ref<boolean | undefined>(usePermissionsStore().hasPermission('bookmarks'))
-// const historyPermissionGranted = ref<boolean | undefined>(usePermissionsStore().hasPermission('history'))
 const pageCapturePermissionGranted = ref<boolean | undefined>(usePermissionsStore().hasPermission('history'))
 const allUrlsOriginGranted = ref<boolean | undefined>(usePermissionsStore().hasAllOrigins())
-// const showBookmarks = ref<boolean>(localStorage.getItem('showBookmarks') || false)
 const tab = ref('appearance')
 
 const {handleError} = useNotificationHandler()
+
+onMounted(() => {
+  Analytics.firePageViewEvent('SettingsPage', document.location.href);
+})
+
 
 watchEffect(() => permissionsList.value = usePermissionsStore().permissions?.permissions || [])
 
@@ -460,6 +508,11 @@ watch(() => allUrlsOriginGranted.value, (newValue, oldValue) => {
 watchEffect(() => {
   $q.dark.set(darkMode.value)
   localStorage.set('darkMode', darkMode.value)
+})
+
+watchEffect(() => {
+  localStorage.set('detailLevel', detailLevel.value)
+  sendMsg('detail-level-changed', {level: detailLevel.value})
 })
 
 watchEffect(() => {

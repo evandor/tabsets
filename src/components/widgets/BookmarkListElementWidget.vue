@@ -4,7 +4,7 @@
   <template v-if="!props.bookmark.chromeBookmark.url">
     <q-item-section
       avatar class="text-primary">
-      <q-icon name="o_folder_open" size="24px"></q-icon>
+      <q-icon name="o_folder_open" size="24px" color="warning"></q-icon>
     </q-item-section>
     <q-item-section
       :data-testid="useUtils().createDataTestIdentifier('tabListElementWidget', props.bookmark.chromeBookmark.title)"
@@ -81,7 +81,7 @@ import {useNotificationsStore} from "src/stores/notificationsStore";
 import {ref} from "vue";
 import {useUtils} from "src/services/Utils"
 import {useCommandExecutor} from "src/services/CommandExecutor";
-import {DeleteTabCommand} from "src/domain/commands/DeleteTabCommand";
+import {DeleteTabCommand} from "src/domain/tabs/DeleteTabCommand";
 import {Bookmark} from "src/models/Bookmark";
 import {useRouter} from "vue-router";
 import {date} from "quasar";
@@ -92,14 +92,9 @@ import {useTabsetService} from "src/services/TabsetService2";
 const {formatDate} = useUtils()
 
 const props = defineProps({
-  bookmark: {
-    type: Object,
-    required: true
-  },
-  highlightUrl: {
-    type: String,
-    required: false
-  }
+  bookmark: {type: Object, required: true},
+  highlightUrl: {type: String, required: false},
+  inSidePanel: {type: Boolean, default: false}
 })
 
 const router = useRouter()
@@ -184,7 +179,10 @@ const getFaviconUrl = (chromeBookmark: chrome.bookmarks.BookmarkTreeNode | undef
 
 const deleteTab = (tab: Tab) => useCommandExecutor().executeFromUi(new DeleteTabCommand(tab))
 
-const selectBookmark = (bm: Bookmark) => router.push("/bookmarks/" + bm.chromeBookmark.id)
+const selectBookmark = (bm: Bookmark) =>
+  props.inSidePanel ?
+    router.push("/mainpanel/bookmarks/" + bm.chromeBookmark.id) :
+    router.push("/bookmarks/" + bm.chromeBookmark.id)
 
 const deleteBookmark = (bm: Bookmark) => BookmarksService.deleteBookmark(bm)
 

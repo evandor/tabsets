@@ -1,11 +1,9 @@
 import {defineStore} from 'pinia';
 import _ from 'lodash'
-import {computed, ref, watch, watchEffect} from "vue";
+import {computed, ref, watch} from "vue";
 import {Space} from "src/models/Space";
-import {useTabsStore} from "src/stores/tabsStore";
 import PersistenceService from "src/services/PersistenceService";
 import {uid} from "quasar";
-import {Tabset} from "src/models/Tabset";
 
 /**
  * a pinia store for "Spaces".
@@ -44,6 +42,14 @@ export const useSpacesStore = defineStore('spaces', () => {
   async function initialize(ps: PersistenceService) {
     console.debug("initializing spacesStore", ps)
     storage = ps
+    await storage.loadSpaces()
+  }
+
+  /**
+   * reloads store
+   */
+  async function reload() {
+    console.debug("reloading spacesStore")
     await storage.loadSpaces()
   }
 
@@ -139,6 +145,7 @@ export const useSpacesStore = defineStore('spaces', () => {
     space,
     nameExists,
     initialize,
+    reload,
     createSpace,
     addSpace,
     putSpace,

@@ -1,18 +1,18 @@
 <template>
 
   <div class="q-gutter-md row items-start fit">
-    <q-select dark dense standout filled autofocus
+    <q-select dense standout filled autofocus
               :placeholder="inputPlaceholder()"
               class="fit q-mx-md"
               color="primary"
-              :bg-color="props.fromPanel ? 'grey-7' : ''"
+              :bg-color="props.fromPanel ? 'white' : ''"
+              label-color="primary"
               :model-value="search"
               ref="searchBox"
               hide-dropdown-icon
               @update:model-value="val => updateSearch( val)"
               @keydown.enter.prevent="submitSearch()"
               use-input
-              new-value-mode="add"
               :options="options"
               @filter="filterFn">
 
@@ -30,27 +30,44 @@
       </template>
 
       <template v-slot:prepend>
-        <q-icon v-if="highlight" name="flashlight_on" />
-        <q-icon v-else-if="!searchStore.term" name="search" />
+        <q-icon v-if="highlight" name="flashlight_on"/>
+        <q-icon v-else-if="!searchStore.term" name="search"/>
         <q-icon v-else name="clear" class="cursor-pointer" color="grey" size="12px" @click="clearSearch"/>
+      </template>
+
+      <template v-slot:append>
+        <q-avatar v-if="searchStore.term && route.fullPath === '/sidepanel'">
+          <q-icon name="o_filter_alt" size="18px"
+                  :color="(useUiStore().tabsFilter) ? 'red':'black'"
+                  class="cursor-pointer" @click="filterNotSearch()"/>
+          <q-tooltip v-if="useUiStore().tabsFilter"
+                     class="tooltip">Click again to remove filter</q-tooltip>
+          <q-tooltip v-else
+            class="tooltip">Filter for '{{searchStore.term}}' instead of searching</q-tooltip>
+        </q-avatar>
       </template>
 
       <template v-slot:option="scope">
         <q-item v-bind="scope.itemProps" class="bg-grey-2">
           <q-item-section avatar>
             <q-icon v-if="scope.opt.id === 'highlight'" name="flashlight_on" color="black"/>
-            <q-img v-else :src="scope.opt.chromeTab?.favIconUrl"/>
+            <q-icon v-else-if="scope.opt.id.startsWith('tabset|')" name="o_tab" color="black"/>
+            <q-img v-else :src="scope.opt.favIconUrl"/>
           </q-item-section>
           <q-item-section>
-            <q-item-label v-if="scope.opt.id === 'highlight'" class="text-subtitle2 text-black">highlight in page</q-item-label>
-            <q-item-label v-else class="text-subtitle2 text-black">{{ scope.opt.chromeTab?.title }}</q-item-label>
+            <q-item-label v-if="scope.opt.id === 'highlight'" class="text-subtitle2 text-black">highlight in page
+            </q-item-label>
+            <q-item-label v-else-if="scope.opt.id.startsWith('tabset|')" class="text-subtitle2 text-black">
+              {{ tabsetName(scope.opt.id) }}
+            </q-item-label>
+            <q-item-label v-else class="text-subtitle2 text-black">{{ scope.opt.title }}</q-item-label>
 
-            <q-item-label caption class="text-blue-8">{{ scope.opt.chromeTab?.url }}</q-item-label>
-            <q-rating v-if="scope.opt.id !== 'highlight'"
-              :model-value="Math.round(scope.opt.score / 18)"
-              size="13px"
-              color="warning"
-              readonly
+            <q-item-label caption class="text-blue-8">{{ scope.opt.url }}</q-item-label>
+            <q-rating v-if="scope.opt.id !== 'highlight' && !scope.opt.id.startsWith('tabset|')"
+                      :model-value="Math.round(scope.opt.score / 18)"
+                      size="13px"
+                      color="warning"
+                      readonly
             />
           </q-item-section>
         </q-item>
@@ -76,10 +93,18 @@ import {usePermissionsStore} from "src/stores/permissionsStore";
 import {useUiStore} from "src/stores/uiStore";
 import {FeatureIdent} from "src/models/AppFeature";
 import JsUtils from "src/utils/JsUtils";
+import {useCommandExecutor} from "src/services/CommandExecutor";
+import {SelectTabsetCommand} from "src/domain/tabsets/SelectTabset";
+
+const props = defineProps({
+  fromPanel: {type: Boolean, default: false},
+  searchTerm: {type: String, default: ''},
+  searchHits: {type: Number, required: false}
+})
 
 const tabsStore = useTabsStore()
 const searchStore = useSearchStore()
-const search = ref('')
+const search = ref(props.searchTerm)
 const typed = ref('')
 const theHits = ref<Hit[]>([])
 const moreHits = ref<boolean>(false)
@@ -89,8 +114,8 @@ const typedOrSelected = ref<any>()
 const searchBox = ref(null)
 const highlight = ref<string | undefined>(undefined)
 
-const props = defineProps({
-  fromPanel: {type: Boolean, default: false}
+watchEffect(() => {
+  console.log("search", search.value)
 })
 
 function submitSearch() {
@@ -100,7 +125,11 @@ function submitSearch() {
       searchStore.term = typedOrSelected.value
     }
     if (props.fromPanel) {
-      router.push("/sidepanel/search")
+      if (route.fullPath === '/sidepanel/search') {
+        //router.go(0)
+      } else {
+        router.push("/sidepanel/search")
+      }
     } else {
       if (route.path === "/search") {
         runSearch(searchStore.term)
@@ -111,26 +140,6 @@ function submitSearch() {
   }, 200)
 
 }
-
-function checkKeystroke(e: KeyboardEvent) {
-  if (useUiStore().ignoreKeypressListener()) {
-    return
-  }
-  if (e.key === '/' && searchBox.value) {
-    e.preventDefault()
-    // @ts-ignore
-    searchBox.value.focus()
-    search.value = ''
-  }
-}
-
-onMounted(() => {
-  window.addEventListener('keypress', checkKeystroke);
-})
-
-onUnmounted(() => {
-  window.removeEventListener('keypress', checkKeystroke);
-})
 
 const options = ref<Hit[]>([])
 const model = ref(null)
@@ -148,8 +157,13 @@ const runSearch = (term: string) => {
   }
 }
 
-const filterFn = (val: any, update: any, abort: any) => {
+const filterFn = (val: string, update: any, abort: any) => {
   console.log("filterFn", val)
+  search.value = ''
+  if (val === '/') {
+    //search.value = ""
+    return
+  }
   runSearch(val)
   highlight.value = undefined
   useUiStore().highlightTerm = undefined
@@ -157,28 +171,51 @@ const filterFn = (val: any, update: any, abort: any) => {
   setTimeout(() => {
     update(() => {
       //options.value = moreHits ? theHits.value.concat(new Hit()) : theHits.value
-      options.value = theHits.value
+      let tabsetsAsHit: Hit[] = []
+      const tabsets = [...tabsStore.tabsets.values()]
+      tabsets.forEach(ts => {
+        if (ts.name.toLowerCase().indexOf(val.toLowerCase()) >= 0) {
+          const pseudoHit = new Hit("tabset|" + ts.name,
+            //null as unknown as chrome.tabs.Tab,
+            '', '', '',
+            0, 0, 0, [ts.id], ts.spaces, [], "", "")
+          tabsetsAsHit.push(pseudoHit)
+        }
+      })
+      //console.log("tabsetsAsHit", tabsetsAsHit)
+      options.value = tabsetsAsHit
+      options.value = options.value.concat(theHits.value)
       //console.log("options", options.value, typeof options.value)
-      if (options.value) {
-        const pseudoHit = new Hit("highlight", null as unknown as chrome.tabs.Tab, 0,0,0,[], [], "","")
-        pseudoHit.name = val
-        options.value = options.value.concat(pseudoHit)
-      }
+      // if (options.value) {
+      //   const pseudoHit = new Hit("highlight", "title", "", "", 0, 0, 0, [], [], [], "", "")
+      //   pseudoHit.name = val
+      //   options.value = options.value.concat(pseudoHit)
+      // }
     })
   }, 100)
 }
 
 const updateSearch = (val: any) => {
+  if (val === null) {
+    search.value = ''
+  }
   typedOrSelected.value = val
   console.log("updateSearch", typedOrSelected.value)
   if (val?.chromeTab) {
     searchStore.term = ''
-    NavigationService.openOrCreateTab(val.chromeTab.url)
+    NavigationService.openOrCreateTab(val.url)
   } else if (val?.id === "highlight") {
     console.log("setting highlight", val.name)
     highlight.value = val.name
     useUiStore().setHighlightTerm(val.name)
     JsUtils.runCssHighlight()
+  } else if (val && val.id?.startsWith('tabset|')) {
+    const tsId = val.tabsets[0]
+    console.log("got tsid", tsId)
+    if (tsId) {
+      useCommandExecutor()
+        .execute(new SelectTabsetCommand(tsId, val.spaces[0] || undefined))
+    }
   }
 }
 
@@ -186,23 +223,43 @@ const inputPlaceholder = () => {
   if (highlight.value) {
     return highlight.value
   }
-  if (Math.random() < 0.1) {
-    return "use the key '/' for quick access to search"
+  // if (Math.random() < 0.1) {
+  //   return "use the key '/' for quick access to search"
+  // }
+  if (props.searchHits && props.searchHits > 0) {
+    return `Found ${props.searchTerm} ${props.searchHits} time(s)`
   }
   if (usePermissionsStore().hasFeature(FeatureIdent.BOOKMARKS)) {
     const contentCount = useSearchStore().stats.get("content.count")
     // return `Search in ${tabsStore.allTabsCount} tabs (${contentCount} analysed) and ${useBookmarksStore().bookmarksLeaves.length} bookmarks`
-    return `Search in ${tabsStore.allTabsCount} tabs and ${useBookmarksStore().bookmarksLeaves.length} bookmarks`
+    return `Search in all tabs and bookmarks`
   }
   if (usePermissionsStore().hasFeature(FeatureIdent.BOOKMARKS)) {
-    return "Search in " + tabsStore.allTabsCount + " tabs and " + useBookmarksStore().bookmarksLeaves.length + " bookmarks"
+    return "Search in all tabs and bookmarks"
   }
-  return "Search in " + tabsStore.allTabsCount + " tabs"
+  return "Search in all tabs"
 }
 
 const clearSearch = () => {
   searchStore.term = ''
   typedOrSelected.value = null
+}
+
+const tabsetName = (id: string) => id.split('|')[1] || '???'
+
+const filterNotSearch = () => {
+  console.log("filtering1", searchStore.term, useUiStore().tabsFilter)
+  if (useUiStore().tabsFilter) {
+    useUiStore().tabsFilter = undefined
+    useUiStore().setHighlightTerm(undefined)
+    JsUtils.runCssHighlight()
+  } else{
+    const useValue = searchStore.term && searchStore.term.trim().length > 0 ? searchStore.term.trim() : undefined
+    useUiStore().tabsFilter = useValue
+    useUiStore().setHighlightTerm(useValue)
+    JsUtils.runCssHighlight()
+  }
+
 }
 
 </script>

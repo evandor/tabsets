@@ -101,9 +101,9 @@ watchEffect(() => {
 function currentTabs(): Tab[] {
   if (props.tabset && props.tabset.dynamicTabs && props.tabset.dynamicTabs.type === DynamicTabSourceType.TAG) {
     const results: Tab[] = []
-    console.log("checking", props.tabset.dynamicTabs )
+    //console.log("checking", props.tabset.dynamicTabs )
     const tag = props.tabset.dynamicTabs?.config['tags' as keyof object][0]
-    console.log("using tag", tag)
+    //console.log("using tag", tag)
     _.forEach([...tabsStore.tabsets.values()], (tabset: Tabset) => {
       _.forEach(tabset.tabs, (tab: Tab) => {
         if (tab.tags?.indexOf(tag) >= 0) {
@@ -122,10 +122,10 @@ function getOrder() {
   if (props.tabset) {
     switch (props.tabset?.sorting) {
       case 'alphabeticalUrl':
-        return (t: Tab) => t.chromeTab.url?.replace("https://", "").replace("http://", "").toUpperCase()
+        return (t: Tab) => t.url?.replace("https://", "").replace("http://", "").toUpperCase()
         break
       case 'alphabeticalTitle':
-        return (t: Tab) => t.chromeTab.title?.toUpperCase()
+        return (t: Tab) => t.title?.toUpperCase()
         break
       default:
         return (t: Tab) => 1
@@ -139,7 +139,7 @@ function tabsForGroup(groupId: number): Tab[] {
     _.filter(
       tabsStore.getTabset(tabsetId.value)?.tabs,
       // @ts-ignore
-      (t: Tab) => t?.chromeTab.groupId === groupId),
+      (t: Tab) => t?.groupId === groupId),
     getOrder(), [orderDesc.value ? 'desc' : 'asc'])
 }
 

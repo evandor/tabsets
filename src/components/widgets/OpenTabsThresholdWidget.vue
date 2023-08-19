@@ -12,12 +12,13 @@
       :show-value="props.showLabel"
       reverse
       :value="openTabsCountRatio2"
-      :size="props.inSidePanel ? '22px':'20px'"
-      :thickness="0.7"
+      :size="props.inSidePanel ? '16px':'20px'"
+      :thickness="0.5"
       :style="thresholdStyle()"
-      :track-color="props.inSidePanel? 'primary':'grey-3'"
+      :track-color="props.inSidePanel? 'black':'grey-3'"
       class="q-ml-xs">
     </q-circular-progress>
+    <q-tooltip class="tooltip">Open Tabs: {{useTabsStore().tabs.length}} - click to manage</q-tooltip>
   </span>
   <q-menu :offset="[0, 15]">
     <q-list style="min-width: 200px">

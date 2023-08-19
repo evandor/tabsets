@@ -1,11 +1,10 @@
 
 export class Bookmark {
-  // id: string // internal id, do not want to rely on chromeTab.id
+  // id: string // internal id, do not want to rely on .chromeTabId
   created: number
   updated: number
   lastActive: number
   activatedCount: number
-  lastLoaded: number
   loadedCount: number
   chromeBookmark: chrome.bookmarks.BookmarkTreeNode
   selected: boolean = false
@@ -16,7 +15,6 @@ export class Bookmark {
     this.updated = new Date().getTime()
     this.lastActive = 0
     this.activatedCount = 0
-    this.lastLoaded = 0
     this.loadedCount = 0
     this.chromeBookmark = chromeBookmark
     this.name = undefined

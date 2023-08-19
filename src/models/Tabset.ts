@@ -6,7 +6,8 @@ export enum TabsetStatus {
   DEFAULT = "DEFAULT",
   FAVORITE = "FAVORITE",
   ARCHIVED = "ARCHIVED",
-  DELETED = "DELETED"
+  DELETED = "DELETED",
+  HIDDEN = "HIDDEN"
 }
 
 export enum TabsetType {
@@ -17,8 +18,18 @@ export enum TabsetType {
   DYNAMIC = "DYNAMIC"
 }
 
+export enum TabsetSharing {
+  UNSHARED = "UNSHARED",
+  PUBLIC = "PUBLIC",
+  PUBLIC_OUTDATED = "PUBLIC_OUTDATED",
+  USER = "USER",
+  ROLE = "ROLE"
+}
+
+
 export class Tabset {
   id: string
+
   name: string
   created: number
   updated: number
@@ -30,12 +41,16 @@ export class Tabset {
   sorting: string = 'custom'
   status: TabsetStatus = TabsetStatus.DEFAULT
   type: TabsetType = TabsetType.DEFAULT
+  sharing: TabsetSharing = TabsetSharing.UNSHARED
   sharedBy: string | undefined = undefined
+  sharedId: string | undefined = undefined
   canvas: string | undefined = undefined
 
   page: string | undefined = undefined
 
-  showPageAsHeader = false
+  taxonomy: string | undefined = undefined
+
+  window: string = 'current'
 
   constructor(id: string, name: string, tabs: Tab[], groups: Group[] = [], spaces: string[] = []) {
     this.id = id

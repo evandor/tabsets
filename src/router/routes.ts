@@ -4,12 +4,28 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/',
     // @ts-ignore
-    redirect: (chrome.sidePanel && chrome.sidePanel.setPanelBehavior) ? '/sidepanel' : '/start'
+    redirect: (process.env.MODE === 'pwa') ?
+        //'/tabsets' :
+        '/sidepanel' :
+        // @ts-ignore
+        (chrome.sidePanel && chrome.sidePanel.setPanelBehavior) ?
+            '/authenticate' :
+            '/tabsets'
+  },
+  {
+    path: '/authenticate',
+    component: () => import('layouts/SidePanelLayout.vue'),
+    children: [{ path: '', component: () => import('pages/Authenticate.vue') }],
   },
   {
     path: '/start',
     component: () => import('layouts/PlainLayout.vue'),
     children: [{ path: '', component: () => import('pages/Start.vue') }],
+  },
+  {
+    path: '/fullpage',
+    component: () => import('layouts/PlainLayout.vue'),
+    children: [{ path: '', component: () => import('pages/FullpageStart.vue') }],
   },
   {
     path: '/sidepanel',
@@ -19,12 +35,17 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/sidepanel/welcome',
     component: () => import('layouts/SidePanelLayout.vue'),
-    children: [{ path: '', component: () => import('pages/sidepanel/Welcome.vue') }],
+    children: [{ path: '', component: () => import('pages/sidepanel/WelcomePage.vue') }],
   },
   {
-    path: '/sidepanel/tabsets',
+    path: '/sidepanel/tabsets/:tabsetId',
     component: () => import('layouts/SidePanelLayout.vue'),
-    children: [{ path: '', component: () => import('pages/SidePanelTabsetsPage.vue') }],
+    children: [{ path: '', component: () => import('pages/SidePanelTabsetPage.vue') }],
+  },
+  {
+    path: '/sidepanel/spaces',
+    component: () => import('layouts/SidePanelLayout.vue'),
+    children: [{ path: '', component: () => import('pages/SidePanelSpacesPage.vue') }],
   },
   {
     path: '/sidepanel/search',
@@ -52,9 +73,39 @@ const routes: RouteRecordRaw[] = [
     children: [{ path: '', component: () => import('pages/sidepanel/SidePanelTagsPage.vue') }],
   },
   {
+    path: '/sidepanel/rsslist',
+    component: () => import('layouts/SidePanelLayout.vue'),
+    children: [{ path: '', component: () => import('pages/sidepanel/SidePanelRssListViewer.vue') }],
+  },
+  {
+    path: '/sidepanel/rss/:encodedUrl',
+    component: () => import('layouts/SidePanelLayout.vue'),
+    children: [{ path: '', component: () => import('pages/sidepanel/SidePanelRssPage.vue') }],
+  },
+  {
     path: '/sidepanel/byDomainList',
     component: () => import('layouts/SidePanelLayout.vue'),
     children: [{ path: '', component: () => import('pages/sidepanel/SidePanelByDomainList.vue') }],
+  },
+  {
+    path: '/sidepanel/newestList',
+    component: () => import('layouts/SidePanelLayout.vue'),
+    children: [{ path: '', component: () => import('pages/sidepanel/SidePanelNewestTabsPage.vue') }],
+  },
+  {
+    path: '/sidepanel/bookmarks',
+    component: () => import('layouts/SidePanelLayout.vue'),
+    children: [{ path: '', component: () => import('pages/sidepanel/SidePanelBookmarksPage.vue') }],
+  },
+  {
+    path: '/sidepanel/top10List',
+    component: () => import('layouts/SidePanelLayout.vue'),
+    children: [{ path: '', component: () => import('pages/sidepanel/SidePanelTop10Page.vue') }],
+  },
+  {
+    path: '/sidepanel/byCategory',
+    component: () => import('layouts/SidePanelLayout.vue'),
+    children: [{ path: '', component: () => import('pages/sidepanel/SidePanelCategoriesPage.vue') }],
   },
   {
     path: '/sidepanel/byDomain/:encodedUrl',
@@ -72,18 +123,53 @@ const routes: RouteRecordRaw[] = [
     children: [{ path: '', component: () => import('pages/FeaturesPage.vue') }],
   },
   {
+    path: '/mainpanel/notes/:noteId/edit', // editorjs setup cannot toggle between readonly/write mode
+    component: () => import('layouts/PlainLayout.vue'),
+    children: [{ path: '', component: () => import('pages/mainpanel/MainPanelNotePage.vue') }],
+  },
+  {
     path: '/mainpanel/notes/:noteId',
     component: () => import('layouts/PlainLayout.vue'),
     children: [{ path: '', component: () => import('pages/mainpanel/MainPanelNotePage.vue') }],
   },
   {
-    path: '/mainpanel/mhtml/:encodedUrl',
+    path: '/mainpanel/notes/',
+    component: () => import('layouts/PlainLayout.vue'),
+    children: [{ path: '', component: () => import('pages/mainpanel/MainPanelNotePage.vue') }],
+  },
+  {
+    path: '/mainpanel/tabsets/:tabsetId', // TODO combine with Tabset page
+    component: () => import('layouts/PlainLayout.vue'),
+    children: [{ path: '', component: () => import('pages/TabsetPage.vue') }],
+  },
+  {
+    path: '/mainpanel/mhtml/:encodedUrl', // TODO combine with MHtml page
     component: () => import('layouts/PlainLayout.vue'),
     children: [{ path: '', component: () => import('pages/mainpanel/MainPanelMHtmlPage.vue') }],
   },
   {
+    path: '/mainpanel/tab/:id',// TODO combine with Tag page
+    component: () => import('layouts/PlainLayout.vue'),
+    children: [{ path: '', component: () => import('pages/mainpanel/MainPanelTabPage.vue') }],
+  },
+  {
+    path: '/mainpanel/spaces', // TODO combine with Spaces page
+    component: () => import('layouts/PlainLayout.vue'),
+    children: [{ path: '', component: () => import('pages/mainpanel/MainPanelSpacesPage.vue') }],
+  },
+  {
+    path: '/mainpanel/bookmarks/:id',
+    component: () => import('layouts/PlainLayout.vue'),
+    children: [{ path: '', component: () => import('pages/mainpanel/MainPanelBookmarksPage.vue') }],
+  },
+  {
+    path: '/mainpanel/readingmode/:tabId', // TODO combine with Note page
+    component: () => import('layouts/PlainLayout.vue'),
+    children: [{ path: '', component: () => import('pages/mainpanel/MainPanelReadingModePage.vue') }],
+  },
+  {
     path: '/about',
-    component: () => import('layouts/AboutLayout.vue'),
+    component: () => import('layouts/PlainLayout.vue'),
     children: [{ path: '', component: () => import('pages/AboutPage.vue') }],
   },
   {
@@ -98,7 +184,7 @@ const routes: RouteRecordRaw[] = [
   },
   {
     path: '/tabsets/:tabsetId',
-    component: () => import('layouts/DefaultLayout.vue'),
+    component: () => import('layouts/FullPageLayout.vue'),
     children: [{ path: '', component: () => import('pages/TabsetPage.vue') }],
   },
   {
@@ -118,7 +204,7 @@ const routes: RouteRecordRaw[] = [
   },
   {
     path: '/bookmarks/:id',
-    component: () => import('layouts/DefaultLayout.vue'),
+    component: () => import('layouts/FullPageLayout.vue'),
     children: [{ path: '', component: () => import('pages/BookmarksPage.vue') }],
   },
   {
@@ -153,8 +239,18 @@ const routes: RouteRecordRaw[] = [
   },
   {
     path: '/search',
-    component: () => import('layouts/DefaultLayout.vue'),
+    component: () => import('layouts/FullPageLayout.vue'),
     children: [{ path: '', component: () => import('pages/SearchPage.vue') }],
+  },
+  {
+    path: '/searchresult',
+    component: () => import('layouts/FullPageLayout.vue'),
+    children: [{ path: '', component: () => import('pages/SearchResultPage.vue') }],
+  },
+  {
+    path: '/annotations/:tabId',
+    component: () => import('layouts/PlainLayout.vue'),
+    children: [{ path: '', component: () => import('pages/annotations/TabAnnotation.vue') }],
   },
   {
     path: '/iframe/:tabId',
@@ -165,6 +261,11 @@ const routes: RouteRecordRaw[] = [
     path: '/preview/:tabId',
     component: () => import('layouts/DefaultLayout.vue'),
     children: [{ path: '', component: () => import('pages/PreviewPage.vue') }],
+  },
+  {
+    path: '/browser/:tabId',
+    component: () => import('layouts/FullPageLayout.vue'),
+    children: [{ path: '', component: () => import('pages/BrowserViewPage.vue') }],
   },
   {
     path: '/help/:ident',

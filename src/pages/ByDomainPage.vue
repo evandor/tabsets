@@ -52,32 +52,24 @@
 </template>
 
 <script setup lang="ts">
-import {ref, watchEffect} from 'vue'
+import {onMounted, ref, watchEffect} from 'vue'
 import {useRoute, useRouter} from "vue-router";
 import {useQuasar} from "quasar";
-import TabsCanvas from "src/components/layouts/TabsCanvas.vue";
 import _ from "lodash"
 import {useTabsStore} from "src/stores/tabsStore";
 import {Tab} from "src/models/Tab";
 import {Tabset, TabsetStatus} from "src/models/Tabset";
 import TabList from "components/layouts/TabList.vue";
-import {useSettingsStore} from "src/stores/settingsStore"
+import Analytics from "src/utils/google-analytics"
 
 const route = useRoute();
-const router = useRouter();
-const localStorage = useQuasar().localStorage
 const tabsStore = useTabsStore()
-const featuresStore = useSettingsStore()
-
-const tabsetname = ref(tabsStore.currentTabsetName)
-const filter = ref('')
-const $q = useQuasar()
-
-const highlightUrl = ref('')
 
 const domain = ref(null as unknown as string)
 
-//domain.value = atob(route.params.encodedUrl as string)
+onMounted(() => {
+  Analytics.firePageViewEvent('ByDomainPage', document.location.href);
+})
 
 watchEffect(() => {
     domain.value = route.params.encodedUrl as string
@@ -102,9 +94,9 @@ watchEffect(() => {
       (t: Tab) => t.activatedCount, ['desc'])
   groupedTabs.value =
     _.filter(allTabs, (t: Tab) => {
-      if (t.chromeTab.url) {
+      if (t.url) {
         try {
-          const hostname = new URL(t.chromeTab.url).hostname
+          const hostname = new URL(t.url).hostname
           const splits = hostname.split('.')
           switch (splits.length) {
             case 3:

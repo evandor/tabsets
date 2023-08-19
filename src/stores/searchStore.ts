@@ -51,7 +51,8 @@ export const useSearchStore = defineStore('search', () => {
       {name: 'url', weight: 4},
       {name: 'description', weight: 3},
       {name: 'keywords', weight: 2},
-      {name: 'content', weight: 1}
+      {name: 'content', weight: 1},
+      {name: 'note', weight: 10}
     ],
     includeScore: true,
     includeMatches: true,
@@ -98,15 +99,20 @@ export const useSearchStore = defineStore('search', () => {
   }
 
   function update(url: string, key: string, value: string) {
+    console.log("updating search index", url, key, value)
     if (!fuse || !fuse.value) {
       return // called too early?
     }
     const removed: SearchDoc[] = fuse.value.remove((doc: SearchDoc) => doc.url === url)
+    console.log("found removed: ", removed)
     if (removed && removed.length > 0) {
       let newDoc: SearchDoc = removed[0]
       switch (key) {
         case 'name':
           newDoc.name = value
+          break
+        case 'note':
+          newDoc.note = value
           break
         case 'description':
           newDoc.description = value
@@ -117,6 +123,7 @@ export const useSearchStore = defineStore('search', () => {
         default:
           console.log("could not update", key)
       }
+      console.log("adding new doc", newDoc)
       fuse.value.add(newDoc)
     }
   }
@@ -134,19 +141,13 @@ export const useSearchStore = defineStore('search', () => {
       // @ts-ignore
       useWindowsStore().screenshotWindow = window.id
       // @ts-ignore
-      let tabToClose = await chrome.tabs.create({windowId: window.id, url: tab.chromeTab.url})
+      let tabToClose = await chrome.tabs.create({windowId: window.id, url: tab.url})
       // @ts-ignore
       if (tabToClose) {
         // @ts-ignore
         const promise = dummyPromise(3000, tabToClose.id)
         return promise.then((res) => {
-          // try {
-          //   chrome.windows.remove(window.id);
-          // } catch (err) {
-          //   console.log("err", err)
-          // }
-          // @ts-ignore
-          return window.id
+          return window.id || 0
         })
       }
       return Promise.reject("could not get tab")
@@ -164,7 +165,7 @@ export const useSearchStore = defineStore('search', () => {
       const res: Promise<any>[] = values.flatMap((ts: Tabset) => {
         return ts.tabs.map((t) => {
           return throttleOnePerXSeconds(async () => {
-            chrome.tabs.create({windowId: window.id, url: t.chromeTab.url}, (tab: chrome.tabs.Tab) => {
+            chrome.tabs.create({windowId: window.id, url: t.url}, (tab: chrome.tabs.Tab) => {
               tabToClose = tab.id
               dummyPromise(3000, tab.id)
             })
@@ -189,10 +190,10 @@ export const useSearchStore = defineStore('search', () => {
     //const res = fuse.value.remove((doc) => true)
     _.forEach([...useTabsStore().tabsets.values()], (tabset: Tabset) => {
         tabset.tabs.forEach((tab: Tab) => {
-          if (tab.chromeTab?.url) {
-            if (urlSet.has(tab.chromeTab.url)) {
+          if (tab.url) {
+            if (urlSet.has(tab.url)) {
               const existingDocIndex = _.findIndex(minimalIndex, d => {
-                return d.url === tab.chromeTab.title
+                return d.url === tab.title
               })
               if (existingDocIndex >= 0) {
                 const existingDoc = minimalIndex[existingDocIndex]
@@ -202,20 +203,20 @@ export const useSearchStore = defineStore('search', () => {
                   minimalIndex.splice(existingDocIndex, 1, existingDoc)
                 }
               } else {
-                const doc = new SearchDoc(uid(), tab.name || '', tab.chromeTab.title || '', tab.chromeTab.url, "", "", "", [tabset.id], '', "")
+                const doc = new SearchDoc(uid(), tab.name || '', tab.title || '', tab.url, "", "", "", [tabset.id], '', "")
                 minimalIndex.push(doc)
               }
             } else {
-              const doc = new SearchDoc(uid(), tab.name || '', tab.chromeTab.title || '', tab.chromeTab.url, "", "", "", [tabset.id], '', "")
+              const doc = new SearchDoc(uid(), tab.name || '', tab.title || '', tab.url, "", "", "", [tabset.id], '', "")
               minimalIndex.push(doc)
-              urlSet.add(tab.chromeTab.url)
+              urlSet.add(tab.url)
             }
           }
         })
       }
     )
 
-    console.log(`populated from tabsets with ${minimalIndex.length} entries`)
+    console.log(`populating search index from tabsets with ${minimalIndex.length} entries`)
     minimalIndex.forEach((doc: SearchDoc) => {
       const removed = fuse.value.remove((d) => {
         return d.url === doc.url
@@ -242,7 +243,7 @@ export const useSearchStore = defineStore('search', () => {
         }
       }
     )
-    console.log(`populated from bookmarks with ${indexFromBookmarks.length} entries`)
+    console.log(`populating search index from bookmarks with ${indexFromBookmarks.length} entries`)
     indexFromBookmarks.forEach((doc: SearchDoc) => fuse.value.add(doc))
   }
 
@@ -279,16 +280,10 @@ export const useSearchStore = defineStore('search', () => {
         countFiltered++
       }
     })
-    console.log(`populated from content with ${count} entries (${overwritten} of which overwritten), ${countFiltered} is/are filtered (not in any tab)`)
-    //useUiStore().setContentCount(count - countFiltered)
+    console.log(`populating search index from content with ${count} entries (${overwritten} of which overwritten), ${countFiltered} is/are filtered (not in any tab)`)
     stats.value.set("content.count", count)
     stats.value.set("content.overwritten", overwritten)
     stats.value.set("content.filtered", countFiltered)
-    // })
-
-    // await populateFromTabsets()
-    //
-    // await populateFromBookmarks()
 
   }
 
@@ -296,11 +291,11 @@ export const useSearchStore = defineStore('search', () => {
     const minimalIndex: SearchDoc[] = []
     const urlSet: Set<string> = new Set()
     tabs.forEach((tab: Tab) => {
-      if (tab.chromeTab?.url) {
-        if (!urlSet.has(tab.chromeTab.url)) {
-          const doc = new SearchDoc("", "", tab.chromeTab.title || '', tab.chromeTab.url, "", "", "", [tsId], '', "")
+      if (tab.url) {
+        if (!urlSet.has(tab.url)) {
+          const doc = new SearchDoc("", "", tab.title || '', tab.url, "", "", "", [tsId], '', "")
           minimalIndex.push(doc)
-          urlSet.add(tab.chromeTab.url)
+          urlSet.add(tab.url)
         }
       }
     })

@@ -138,6 +138,5 @@ const addTabset = () => $q.dialog({
   }
 })
 
-
 </script>
 

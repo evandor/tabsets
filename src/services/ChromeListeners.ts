@@ -1,7 +1,7 @@
 import {Tabset, TabsetType} from "src/models/Tabset";
 import {useTabsStore} from "src/stores/tabsStore";
 import _ from "lodash";
-import {Tab} from "src/models/Tab";
+import {HTMLSelection, HTMLSelectionComment, Tab} from "src/models/Tab";
 import {uid} from "quasar";
 import throttledQueue from 'throttled-queue';
 // @ts-ignore
@@ -31,10 +31,119 @@ const {sanitize} = useUtils()
 
 function setCurrentTab() {
   chrome.tabs.query({active: true, lastFocusedWindow: true}, (tabs) => {
+    //console.log("setting current tab", tabs)
     if (tabs && tabs[0]) {
       useTabsStore().setCurrentChromeTab(tabs[0] as unknown as chrome.tabs.Tab)
     }
   });
+}
+
+function annotationScript (tabId: string, annotations: any[]) {
+  console.log("!!! here in annotation script", tabId, annotations)
+
+  const
+    iFrame = document.createElement('iframe'),
+    defaultFrameHeight = '62px'
+
+  iFrame.id = 'bex-app-iframe'
+  iFrame.width = '100%'
+ // resetIFrameHeight()
+
+// Assign some styling so it looks seamless
+  Object.assign(iFrame.style, {
+    position: 'fixed',
+    top: '0',
+    right: '0',
+    bottom: '0',
+    left: '0',
+    border: '0',
+    zIndex: '9999999', // Make sure it's on top
+    overflow: 'visible'
+  })
+
+  //const url = document.location.href
+  //console.log(" === url == ", url)
+  //const urlParams = new URLSearchParams(window.location.search);
+  //console.log("got url2", url, tabId)
+  iFrame.src = chrome.runtime.getURL('/www/index.html#/annotations/' + tabId)
+  document.body.prepend(iFrame)
+
+  var l: HTMLLinkElement = document.createElement('link');
+  l.setAttribute("href","https://cdn.jsdelivr.net/npm/@recogito/recogito-js@1.8.2/dist/recogito.min.css")
+  l.setAttribute("rel","stylesheet")
+  document.head.appendChild(l)
+
+  var s = document.createElement('script');
+  s.src = chrome.runtime.getURL('www/js/recogito/recogito.min.js');
+  (document.head || document.documentElement).appendChild(s);
+
+  // var s2 = document.createElement('script');
+  // s2.src = chrome.runtime.getURL('www/js/recogito/recogito.content.js');
+  // document.body.appendChild(s2);
+
+  var s2 = document.createElement('script');
+  s2.dataset.variable = 'some string variable!';
+  s2.dataset.annotations = JSON.stringify(annotations);
+
+  console.log("x1", annotations)
+  console.log("x2",  JSON.stringify(annotations))
+  console.log("x3",  JSON.parse(JSON.stringify(annotations)))
+
+
+
+
+  s2.src = chrome.runtime.getURL('www/js/recogito/recogito.content.js');
+  document.body.appendChild(s2);
+
+  // var s3 = document.createElement('script');
+  // s3.type = 'text/javascript';
+  // var code = 'alert("hello world!");';
+  // try {
+  //   s3.appendChild(document.createTextNode(code));
+  //   document.body.appendChild(s3);
+  // } catch (e) {
+  //   s.text = code;
+  //   document.body.appendChild(s3);
+  // }
+  //document.body.appendChild(s3);
+
+  window.addEventListener(
+    "message",
+    (event) => {
+      if (event.data && event.data.name && event.data.name.startsWith('recogito-')) {
+        console.log("sending", event.data)
+        chrome.runtime.sendMessage(event.data, (callback) => {
+          console.log("xxx callback", callback)
+          if (chrome.runtime.lastError) {
+            console.warn("got runtime error", chrome.runtime.lastError)
+          }
+        })
+      }
+    },
+    false,
+  );
+
+
+
+}
+
+function inIgnoredMessages(request: any) {
+  // TODO name vs. msg!
+  return request.name === 'progress-indicator' ||
+    request.name === 'current-tabset-id-change' ||
+    request.name === 'tab-being-dragged' ||
+    request.name === 'tab-changed' ||
+    request.name === 'tab-added' ||
+    request.name === 'tab-deleted' ||
+    request.name === 'tabset-added' ||
+    request.name === 'tabset-renamed' ||
+    request.name === 'mark-tabset-deleted' ||
+    request.name === 'feature-activated' ||
+    request.name === 'feature-deactivated' ||
+    request.name === 'tabsets-imported' ||
+    request.name === 'detail-level-changed'
+    //request.name === 'recogito-annotation-created'
+
 }
 
 class ChromeListeners {
@@ -45,15 +154,14 @@ class ChromeListeners {
 
   throttleOnePerSecond = throttledQueue(1, 1000, true)
 
-  injectedScripts: Map<number, string[]> = new Map()
-
-  initListeners(isNewTabPage: boolean = false) {
+  initListeners() {
 
     if (process.env.MODE === 'bex') {
-      chrome.runtime.setUninstallURL("https://tabsets.web.app/#/uninstall")
-    }
-    if (process.env.MODE === 'bex' && !isNewTabPage) {
       console.debug("initializing chrome tab listeners")
+
+      chrome.runtime.setUninstallURL("https://tabsets.web.app/#/uninstall")
+
+      setCurrentTab()
 
       chrome.tabs.onCreated.addListener((tab: chrome.tabs.Tab) => this.onCreated(tab))
       chrome.tabs.onUpdated.addListener((number, info, tab) => this.onUpdated(number, info, tab))
@@ -68,13 +176,6 @@ class ChromeListeners {
 
       chrome.runtime.onMessage.addListener((request, sender, sendResponse) => this.onMessage(request, sender, sendResponse))
 
-      // @ts-ignore
-      if (chrome.sidePanel && chrome.sidePanel.setPanelBehavior) {
-        // @ts-ignore
-        chrome.sidePanel
-          .setPanelBehavior({openPanelOnActionClick: true})
-          .catch((error: any) => console.error(error));
-      }
     }
 
   }
@@ -104,7 +205,7 @@ class ChromeListeners {
       return
     }
     this.eventTriggered()
-    console.log(`onCreated: tab ${tab.id}: >>> ${tab.pendingUrl}`)
+    console.debug(`onCreated: tab ${tab.id}: >>> ${tab.pendingUrl}`)
     const tabsStore = useTabsStore()
 
     let foundSession = false
@@ -132,7 +233,7 @@ class ChromeListeners {
 
     const selfUrl = chrome.runtime.getURL("")
     if (chromeTab.url?.startsWith(selfUrl)) {
-      console.debug(`onUpdated:   tab ${number}: >>> chromeTab.url starts with '${selfUrl}' <<<`)
+      console.debug(`onUpdated:   tab ${number}: >>> .url starts with '${selfUrl}' <<<`)
       return
     }
 
@@ -153,19 +254,25 @@ class ChromeListeners {
     }
   }
 
+  /**
+   *
+   * @param tabset: usually the "pendingTabset", or any one which is a session
+   * @param tab
+   * @private
+   */
   private handleUpdate(tabset: Tabset, tab: chrome.tabs.Tab) {
     // find tab which was created by "onCreate" moments ago
-    const index = _.findIndex(tabset?.tabs, t => t.chromeTab.id === tab.id);
+    const index = _.findIndex(tabset?.tabs, t => t.chromeTabId === tab.id);
     if (index >= 0) {
       const existingPendingTab = tabset.tabs[index]
       const updatedTab = new Tab(uid(), tab)
       updatedTab.setHistoryFrom(existingPendingTab)
-      if (existingPendingTab.chromeTab.url !== updatedTab.chromeTab.url && existingPendingTab.chromeTab.url !== 'chrome://newtab/') {
-        if (existingPendingTab.chromeTab.url) {
-          updatedTab.addToHistory(existingPendingTab.chromeTab.url)
+      if (existingPendingTab.url !== updatedTab.url && existingPendingTab.url !== 'chrome://newtab/') {
+        if (existingPendingTab.url) {
+          updatedTab.addToHistory(existingPendingTab.url)
         }
       }
-      const urlExistsAlready = _.filter(tabset.tabs, pT => pT.chromeTab.url === tab.url).length >= 2
+      const urlExistsAlready = _.filter(tabset.tabs, pT => pT.url === tab.url).length >= 2
       if (urlExistsAlready) {
         tabset.tabs.splice(index, 1);
       } else {
@@ -193,23 +300,38 @@ class ChromeListeners {
       return
     }
 
+    if (usePermissionsStore().hasFeature(FeatureIdent.ANNOTATIONS)) {
+      const tabForUrl = useTabsStore().tabForUrlInSelectedTabset(tab.url || '')
+      if (tabForUrl) {
+        chrome.scripting.executeScript({
+          target : {tabId : (tab.id || 0)},
+          func : annotationScript,
+          args : [ tabForUrl.id, tabForUrl.annotations ],
+        })
+          .then(() => console.log("injected a function"));
+      }
+    }
+
     const scripts: string[] = []
 
     if (usePermissionsStore().hasFeature(FeatureIdent.THUMBNAILS)) {
       scripts.push("content-script-thumbnails.js")
     }
     scripts.push("content-script.js")
+    //scripts.push("recogito2.js")
     scripts.push("tabsets-content-script.js")
-    if (scripts.length > 0 && tab.id !== null) { // && !this.injectedScripts.get(chromeTab.id)) {
+    if (scripts.length > 0 && tab.id !== null) { // && !this.injectedScripts.get(.chromeTabId)) {
 
       chrome.tabs.get(tab.id, (chromeTab: chrome.tabs.Tab) => {
         console.log("got tab", tab)
         if (!tab.url?.startsWith("chrome")) {
           scripts.forEach((script: string) => {
-            console.debug("executing scripts", tab.id, script)
+            console.info("executing scripts", tab.id, script)
+
+
             // @ts-ignore
             chrome.scripting.executeScript({
-              target: {tabId: tab.id, allFrames: false},
+              target: {tabId: tab.id || 0, allFrames: false},
               files: [script] //["tabsets-content-script.js","content-script-thumbnails.js"],
             }, (callback: any) => {
               if (chrome.runtime.lastError) {
@@ -226,7 +348,7 @@ class ChromeListeners {
     this.eventTriggered()
     const tabsStore = useTabsStore()
     const currentTabset: Tabset = tabsStore.tabsets.get(tabsStore.currentTabsetId) || new Tabset("", "", [], [])
-    const index = _.findIndex(currentTabset.tabs, t => t.chromeTab.id === number);
+    const index = _.findIndex(currentTabset.tabs, t => t.chromeTabId === number);
     if (index >= 0) {
       const updatedTab = currentTabset.tabs.at(index)
       if (updatedTab) {
@@ -252,7 +374,7 @@ class ChromeListeners {
       _.forEach([...tabsStore.tabsets.keys()], key => {
         const ts = tabsStore.tabsets.get(key)
         if (ts) {
-          const hits = _.filter(ts.tabs, (t: Tab) => t.chromeTab.url === url)
+          const hits = _.filter(ts.tabs, (t: Tab) => t.url === url)
           let hit = false
           _.forEach(hits, h => {
             h.activatedCount = 1 + h.activatedCount
@@ -293,7 +415,10 @@ class ChromeListeners {
   }
 
   onMessage(request: any, sender: chrome.runtime.MessageSender, sendResponse: any) {
-    //console.log("handling request", request.msg)
+    if (inIgnoredMessages(request)) {
+      return true
+    }
+    console.log("handling request", request)
     if (request.msg === 'captureThumbnail') {
       const screenShotWindow = useWindowsStore().screenshotWindow
       this.handleCapture(sender, screenShotWindow, sendResponse)
@@ -309,8 +434,11 @@ class ChromeListeners {
       this.handleMessageWebsiteQuote(request, sender, sendResponse)
     } else if (request.msg === 'websiteImg') {
       this.handleMessageWebsiteImage(request, sender, sendResponse)
+    } else if (request.name === 'recogito-annotation-created') {
+      //this.handleMessageWebsiteImage(request, sender, sendResponse)
+      useTabsetService().handleAnnotationMessage(request)
     } else {
-      console.log("got unknown message", request.msg)
+      console.log("got unknown message", request)
     }
     return true;
   }
@@ -380,19 +508,23 @@ class ChromeListeners {
         tokenSet.add(t.toLowerCase())
       }
     })
-    saveText(sender.tab, [...tokenSet].join(" "), request.metas)
+    if (sender.tab) {
+      const tab = new Tab(uid(), sender.tab)
+      saveText(tab, [...tokenSet].join(" "), request.metas)
+    }
     sendResponse({html2text: 'done'});
   }
 
   private handleHtml2Links(request: any, sender: chrome.runtime.MessageSender, sendResponse: any) {
     if (sender.tab) {
+      console.log("handleHtml2Links")
       saveMetaLinksFor(sender.tab, request.links)
       saveLinksFor(sender.tab, request.anchors)
 
       if (usePermissionsStore().hasFeature(FeatureIdent.RSS)) {
         request.links.forEach((metaLink: MetaLink) => {
           if ("application/rss+xml" === metaLink.type) {
-            //console.log("hier!!!", metaLink)
+            console.log("hier!!!", metaLink)
             useSuggestionsStore().addSuggestion(new Suggestion(uid(), metaLink.title || 'Found RSS Feed', "An RSS Link was found in one of your tabs", metaLink.href, SuggestionType.RSS))
           }
         })
@@ -410,8 +542,8 @@ class ChromeListeners {
   }
 
   private ignoreUrl(tab: Tab, info: chrome.tabs.TabChangeInfo) {
-    return (tab.chromeTab && tab.chromeTab.url?.startsWith("chrome")) ||
-      (tab.chromeTab && tab.chromeTab?.url?.startsWith("about")) ||
+    return (tab.url?.startsWith("chrome")) ||
+      (tab.url?.startsWith("about")) ||
       info.url?.startsWith("chrome") ||
       info.url?.startsWith("about") ||
       info.url?.startsWith("https://skysail.eu.auth0.com/")
@@ -489,9 +621,10 @@ class ChromeListeners {
       // https://stackoverflow.com/questions/965968/serialize-internal-javascript-objects-like-range
 
       const newTab = new Tab(uid(), sender.tab)
-      newTab.selection = serialTx
-      console.log("newTab with selection", newTab)
-      this.addToTabset(currentTS.id, newTab)
+//      newTab.selection = serialTx
+      newTab.selections.push(new HTMLSelection(serialTx, request.text,[new HTMLSelectionComment("owner", "added")]))
+      console.log("newTab with selection", serialTx)
+      this.addSelectionToTabset(currentTS.id, sender.tab.url || '', newTab)
     }
     sendResponse({websiteQuote: 'done'});
   }
@@ -502,7 +635,7 @@ class ChromeListeners {
       console.log("request", request)
       const newTab = new Tab(uid(), sender.tab)
       newTab.image = request.img
-      console.log("newTab with selection", newTab)
+      console.log("newTab with image", newTab)
       this.addToTabset(currentTS.id, newTab)
     }
     sendResponse({websiteImg: 'done'});
@@ -594,7 +727,32 @@ class ChromeListeners {
     img.src = dataUrl//"https://i.imgur.com/SHo6Fub.jpg";
   }
 
+  private addSelectionToTabset(currentTSId: string, url: string, newTab: Tab) {
+    console.log("addSelectionToTabset", currentTSId, url, newTab)
+    const tabsetIds = useTabsetService().tabsetsFor(url)
+    console.log("got tabsetIds", tabsetIds)
+    if (tabsetIds.length > 0) {
+      tabsetIds.forEach(tsId => {
+        const ts = useTabsetService().getTabset(tsId)
+        if (ts) {
+          const tabs = _.filter(ts.tabs, t => t.url === url)
+          tabs.forEach(t => {
+            if (!t.selections) {
+              t.selections = []
+            }
+            t.selections = t.selections.concat(newTab.selections)
+          })
+          useTabsetService().saveTabset(ts)
+        }
+      })
+    } else {
+      this.addToTabset(currentTSId, newTab)
+    }
+
+  }
+
   private addToTabset(currentTSId: string, newTab: Tab) {
+    console.log("addToTabset", currentTSId, newTab)
     addToTabsetId(currentTSId, newTab)
       .then(() => {
         const ts = useTabsetService().getTabset(currentTSId)

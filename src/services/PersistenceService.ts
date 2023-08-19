@@ -4,11 +4,12 @@ import {MHtml} from "src/models/MHtml";
 import {Tab} from "src/models/Tab";
 import {Notification} from "src/models/Notification";
 import {SearchDoc} from "src/models/SearchDoc";
-import {Suggestion} from "src/models/Suggestion";
+import {StaticSuggestionIdent, Suggestion, SuggestionState} from "src/models/Suggestion";
 
 interface PersistenceService {
 
   loadTabsets():Promise<void>
+  reloadTabset(tabsetId: string): void
   saveTabset(tabset: Tabset): Promise<any>
   deleteTabset(tabsetId: string):Promise<any>
 
@@ -21,7 +22,7 @@ interface PersistenceService {
   getContent(url: string):Promise<object>
   updateContent(url: string):Promise<object>
   deleteContent(url: string):Promise<void>
-  saveContent(tab: chrome.tabs.Tab, text: string, metas: object, title: string, tabsetIds: string[]):Promise<any>
+  saveContent(tab: Tab, text: string, metas: object, title: string, tabsetIds: string[]):Promise<any>
   cleanUpContent(): Promise<SearchDoc[]>
   getContents(): Promise<any[]>
 
@@ -39,6 +40,8 @@ interface PersistenceService {
   addSpace(space: Space): Promise<any>
   deleteSpace(spaceId: string): void;
 
+  loadCategories(): Promise<any>
+
   cleanUpRequests(): Promise<void>
 
   saveStats(date: string, dataset: object): void
@@ -49,7 +52,12 @@ interface PersistenceService {
 
   getSuggestions(): Promise<Suggestion[]>
   addSuggestion(suggestion: Suggestion): Promise<any>
+  removeSuggestion(ident: StaticSuggestionIdent): any;
+  setSuggestionState(id: string, state: SuggestionState): any;
 
+  compactDb(): Promise<any>
+
+  //loadTabs(tabsetId: string): Promise<Tab[]>
 }
 
 export default PersistenceService

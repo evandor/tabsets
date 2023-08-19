@@ -13,7 +13,10 @@ const { configure } = require('quasar/wrappers');
 const path = require('path');
 const fs = require("fs");
 
-module.exports = configure(function (/* ctx */) {
+module.exports = configure(function (ctx) {
+
+  require('dotenv').config()
+
   return {
 
 
@@ -24,9 +27,8 @@ module.exports = configure(function (/* ctx */) {
     // --> boot files are part of "main.js"
     // https://v2.quasar.dev/quasar-cli-vite/boot-files
     boot: [
-      'i18n',
-      'constants',
-      'firebase'
+      //'i18n',
+      'constants'
     ],
 
     // https://v2.quasar.dev/quasar-cli-vite/quasar-config-js#css
@@ -52,8 +54,16 @@ module.exports = configure(function (/* ctx */) {
     // Full list of options: https://v2.quasar.dev/quasar-cli-vite/quasar-config-js#build
     build: {
       target: {
-        browser: [ 'es2019', 'edge88', 'firefox78', 'chrome87', 'safari13.1' ],
+        browser: [ 'es2020', 'edge88', 'firefox78', 'chrome87' ],
         node: 'node16'
+      },
+
+      viteVuePluginOptions: {
+        template: {
+          compilerOptions: {
+            isCustomElement: (tag) => tag.startsWith('webview')
+          }
+        }
       },
 
       vueRouterMode: 'hash', // available values: 'hash', 'history'
@@ -65,10 +75,17 @@ module.exports = configure(function (/* ctx */) {
 
       //publicPath: '/www/',
       // analyze: true,
-      env: require('dotenv').config({
-        //path: (process.env.stage) ? 'config/.env.' + process.env.stage : 'config/.env',
-        //BACKEND_URL: process.env.BACKEND_URL
-      }).parsed,
+      env: {
+        BUILD_TIMESTAMP: new Date().toISOString().split('T')[0],
+        BACKEND_URL: process.env.BACKEND_URL,
+        LOGZ_URL: process.env.LOGZ_URL,
+        COUCHDB_PROTOCOL: process.env.COUCHDB_PROTOCOL,
+        COUCHDB_URL: process.env.COUCHDB_URL,
+        STRIPE_PUBLISHABLE_KEY: process.env.STRIPE_PUBLISHABLE_KEY,
+        STRIPE_ACCOUNT: process.env.STRIPE_ACCOUNT,
+        STRIPE_API_VERSION: process.env.STRIPE_API_VERSION,
+        LOCALE: process.env.LOCALE,
+      },
       // rawDefine: {}
       // ignorePublicFolder: true,
       // minify: false,

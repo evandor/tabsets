@@ -1,163 +1,212 @@
 <template>
-  <q-toolbar class="text-primary lightgrey">
+  <q-toolbar class="text-primary">
     <div class="row fit">
       <q-toolbar-title>
         <div class="row justify-start items-baseline">
-          Note
+          <div class="col-10" v-if="editMode">
+            <q-input type="text" class="text-h6" v-model="title" placeholder="title..." autofocus/>
+          </div>
+          <div class="col-10 text-h6" v-else>
+            {{ tab?.title }}
+          </div>
+          <div class="col cursor-pointer" v-if="!editMode" @click="openInEditMode()">
+            Edit
+          </div>
+          <div class="col cursor-pointer" v-else @click="saveWork()">
+            Save
+          </div>
         </div>
       </q-toolbar-title>
     </div>
   </q-toolbar>
 
-  <div class="row items-baseline q-ma-lg">
-    <div class="col-2">
-      <q-img
-        class="rounded-borders"
-        width="32px"
-        height="32px"
-        :src="tab?.chromeTab?.favIconUrl">
-        <q-tooltip>
-          {{ tab?.chromeTab?.favIconUrl }} / {{
-            tab?.chromeTab?.id
-          }} / {{ tab.id }}
-        </q-tooltip>
-      </q-img>
-    </div>
-    <div class="col-10 text-body1 ellipsis">
-      ---
-    </div>
-    <div class="col-12 text-body2 ellipsis">
-      {{ tab?.chromeTab?.title }}
-    </div>
-
-    <div class="col-12">
-      <div class="text-overline ellipsis">
-        {{ tab?.history[0] }}&nbsp;<q-icon name="launch" color="secondary"
-                                               @click.stop="NavigationService.openOrCreateTab(tab?.history[0] || '' )"></q-icon>
-      </div>
-    </div>
-  </div>
-
-  <div class="row items-baseline q-ma-none">
-    <div class="col-7">
-      <div class="row items-baseline q-ma-lg">
-        <div class="col-3 text-subtitle1">
-          Description
-        </div>
-        <div class="col-9 text-subtitle2">
-          {{ tab?.description }}
-        </div>
-      </div>
-      <div class="row items-baseline q-ma-lg" v-if="tab?.longDescription">
-        <div class="col-3 text-subtitle1">
-          Long Description
-        </div>
-        <div class="col-9 text-subtitle2" v-if="tab?.longDescription" v-html="tab?.longDescription"></div>
-      </div>
-      <div class="row items-baseline q-ma-lg" v-if="tab?.author">
-        <div class="col-3 text-subtitle1">
-          Author
-        </div>
-        <div class="col-9 text-subtitle2">
-          {{ tab?.author }}
-        </div>
-      </div>
-      <div class="row items-baseline q-ma-lg" v-if="tab?.date">
-        <div class="col-3 text-subtitle1">
-          Date
-        </div>
-        <div class="col-9 text-subtitle2">
-          {{ tab?.date }}
-        </div>
-      </div>
-      <div class="row items-baseline q-ma-lg" v-if="tab?.lastModified">
-        <div class="col-3 text-subtitle1">
-          Last Modified
-        </div>
-        <div class="col-9 text-subtitle2">
-          {{ tab?.lastModified }}
-        </div>
-      </div>
-      <div class="row items-baseline q-ma-lg" v-if="tab?.keywords">
-        <div class="col-3 text-subtitle1">
-          Keywords
-        </div>
-        <div class="col-9 text-subtitle2">
-          {{ tab?.keywords }}
-        </div>
-      </div>
-      <div class="row items-baseline q-ma-lg" v-if="tab?.image">
-        <div class="col-3 text-subtitle1">
-          Image
-        </div>
-        <div class="col-9 text-subtitle2">
-          {{ tab?.image }}<br>
-          <q-img :src="tab?.image"/>
-        </div>
-      </div>
-    </div>
-    <div class="col-1"></div>
-    <div class="col-4">
-      <div class="row q-ma-lg">
-        <div class="col-5 text-subtitle1">
-          Created
-        </div>
-        <div class="col-7 text-subtitle2">
-          {{ formatDate(tab?.created) }}
-          <q-tooltip>
-            {{ date.formatDate(tab?.created, 'DD.MM.YYYY HH:mm') }}
-          </q-tooltip>
-        </div>
-        <div class="col-5 text-subtitle1">
-          Updated
-        </div>
-        <div class="col-7 text-subtitle2">
-          {{ formatDate(tab?.updated) }}
-          <q-tooltip>
-            {{ date.formatDate(tab?.updated, 'DD.MM.YYYY HH:mm') }}
-          </q-tooltip>
-        </div>
-        <div class="col-5 text-subtitle1">
-          last Active
-        </div>
-        <div class="col-7 text-subtitle2">
-          {{ formatDate(tab?.lastActive) }}
-          <q-tooltip>
-            {{ date.formatDate(tab?.lastActive, 'DD.MM.YYYY HH:mm') }}
-          </q-tooltip>
-        </div>
-        <div class="col-5 text-subtitle1">
-          activated#
-        </div>
-        <div class="col-7 text-subtitle2">
-          {{ tab?.activatedCount }}
-        </div>
-      </div>
-    </div>
+  <!-- https://medium.com/code4mk-org/editorjs-vue-a78110c3fff8 -->
+  <div class="editorx_body">
+    <div class id="editorjs"/>
   </div>
 
 </template>
 
 <script lang="ts" setup>
 
-import {ref, watchEffect} from "vue";
-import {useRoute} from "vue-router";
-import NavigationService from "src/services/NavigationService";
-import {date} from "quasar";
+import {onMounted, ref, watchEffect} from "vue";
+import {useRoute, useRouter} from "vue-router";
+import {uid, useQuasar} from "quasar";
 import {useTabsStore} from "src/stores/tabsStore";
-import {Tab} from "src/models/Tab";
+import {Tab, UrlExtension} from "src/models/Tab";
 import {useUtils} from "src/services/Utils";
+import {useTabsetService} from "src/services/TabsetService2";
+import {Tabset} from "src/models/Tabset";
+import ChromeApi from "src/services/ChromeApi";
+import EditorJS, {OutputData} from "@editorjs/editorjs";
+// @ts-ignore
+import Header from "@editorjs/header";
+import Analytics from "src/utils/google-analytics";
 
-const {formatDate} = useUtils()
+const {formatDate, sendMsg, sanitize} = useUtils()
 
+const $q = useQuasar()
 const route = useRoute()
+const router = useRouter()
+const tabsStore = useTabsStore()
 
 const noteId = ref<string | undefined>(undefined)
 const tab = ref<Tab | undefined>(undefined)
+const tabsetId = ref<string | undefined>(route.query.tsId as string)
+const editMode = ref(false)
+const title = ref('')
+const plugins = ref([])
+const count = ref(0)
+const editor = ref<any>(tabsStore.getCurrentTabset?.page || '')
+const value = ref(null)
 
-watchEffect(() => {
-  noteId.value = route.params.noteId as unknown as string
-  tab.value = useTabsStore().getTab(noteId.value)
+let editorJS2: EditorJS = undefined as unknown as EditorJS
+
+onMounted(() => {
+  Analytics.firePageViewEvent('MainPanelNotePage', document.location.href);
 })
 
+watchEffect(async () => {
+  noteId.value = route.params.noteId as unknown as string
+  editMode.value = route.query.edit ? route.query.edit === "true" : false
+
+  if (noteId.value) {
+    useTabsStore().getTab(noteId.value)
+        .then((tabObject: object | undefined) => {
+
+          if (tabObject) {
+            console.log("got tabobject1")
+            tab.value = tabObject['tab' as keyof object] as unknown as Tab
+            tabsetId.value = tabObject['tabsetId' as keyof object]
+            if (!editorJS2) {
+              // @ts-ignore
+              editorJS2 = new EditorJS({
+                holder: "editorjs",
+                readOnly: !editMode.value,
+                data: (tab.value.longDescription || {}) as OutputData,
+                tools: {
+                  header: {
+                    class: Header,
+                    shortcut: "CMD+SHIFT+H"
+                  }
+                }
+              });
+            } else {
+              editorJS2.readOnly.toggle(!editMode.value)
+            }
+          }
+        })
+  } else {
+    console.log("new Note")
+
+    if (!editorJS2) { // && !editorJS2.isReady) {
+      // @ts-ignore
+      editorJS2 = new EditorJS({
+        holder: "editorjs",
+        autofocus: true,
+        readOnly: false,
+        data: {} as OutputData
+      });
+    }
+  }
+
+})
+
+// watchEffect(async () => {
+//   noteId.value = route.params.noteId as unknown as string
+//   console.log("route.params.edit", route.query.edit)
+//   editMode.value = route.query.edit ? route.query.edit === "true" : false
+//   console.log("watched...", noteId.value)
+//   const tabObject = await useTabsStore().getTab(noteId.value)
+//   if (tabObject) {
+//     console.log("tabObject", tabObject)
+//     tab.value = tabObject['tab' as keyof object] as unknown as Tab
+//     editor.value = tab.value?.longDescription || ''
+//     tabsetId.value = tabObject['tabsetId' as keyof object]
+//     title.value = tab.value.title || ''
+//
+//     editorJS.value = new EditorJS({
+//       holder: 'editorjs',
+//       autofocus: true,
+//       initialBlock: "paragraph",
+//       readOnly: true,
+//       data: (tab.value?.longDescription || {}) as OutputData,
+//       tools: {
+//         header: {
+//           class: Header,
+//           shortcut: "CMD+SHIFT+H"
+//         }
+//       }
+//     });
+//   } else {
+//
+//   }
+// })
+
+const update = (ident: string, val: string) => {
+  if (tab.value && ident === 'description') {
+    tab.value.description = val
+  } else if (tab.value && ident === 'title') {
+    tab.value.title = val
+  }
+}
+const saveWork = () => {
+
+  console.log("saving", tabsetId.value)
+
+  editorJS2.save().then((outputData: any) => {
+
+    if (tabsetId.value) {
+      const tabset = useTabsetService().getTabset(tabsetId.value) as Tabset | undefined
+      console.log("tabset", tabset, tab.value)
+      if (tabset && tab.value) {
+        //tab.value.description = description.value
+        tab.value.title = sanitize(title.value)
+        tab.value.longDescription = outputData //sanitize(outputData)
+        console.log("saving note", tabset, tabsetId.value)
+        // needed to update the note in the side panel
+        sendMsg('tab-changed', {tab: tab.value, tabsetId: tabsetId.value, noteId: noteId.value})
+      } else if (tabset) { // new note
+        const url = chrome.runtime.getURL('www/index.html') + "#" + route.fullPath
+        const newTabId = uid()
+        const newTab = new Tab(newTabId, ChromeApi.createChromeTabObject(sanitize(title.value), url, ""))
+        newTab.tags.push("Note")
+        newTab.extension = UrlExtension.NOTE
+        newTab.longDescription = outputData
+        //   useTabsetService().saveCurrentTabset()
+        newTab.url = newTab.url?.split('?')[0] + newTabId
+        // needed to update the note in the side panel
+        console.log("sending message", {tab: newTab, tabsetId: tabsetId.value})
+        sendMsg('tab-changed', {tab: newTab, tabsetId: tabsetId.value})
+        // redirect after save
+        router.push("/mainpanel/notes/" + newTabId)
+      }
+    } else {
+      console.warn("tabset id missing")
+    }
+  }).catch((error: any) => {
+    console.log('Saving failed: ', error)
+  });
+
+}
+
+const openInEditMode = () => router.push('./' + tab.value?.id + '?edit=true&tsId=' + tabsetId.value)
 </script>
+
+<style scoped>
+.editorx_body {
+  width: 80%;
+  height: 200px;
+  margin-left: 10%;
+  box-sizing: border-box;
+}
+
+.ce-block--focused {
+  background: linear-gradient(
+      90deg,
+      rgba(2, 0, 36, 1) 0%,
+      rgba(9, 9, 121, 0.5438550420168067) 35%,
+      rgba(0, 212, 255, 1) 100%
+  );
+}
+</style>

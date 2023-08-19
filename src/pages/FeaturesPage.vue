@@ -6,12 +6,16 @@
       <div class="col-12">
         <q-toolbar-title>
           <div class="row justify-start items-baseline">
-            <q-icon name="chevron_left" class="cursor-pointer q-mr-lg" size="24px" @click="router.push('/mainpanel/settings')">
-              <q-tooltip>Back</q-tooltip>
-            </q-icon>
-            <span class="text-dark">{{ title }}</span> <span
-              class="text-primary">
-            </span>
+            <div class="col-1">
+              <q-icon name="chevron_left" class="cursor-pointer q-mr-lg" size="24px"
+                      @click="router.push('/mainpanel/settings')">
+                <q-tooltip>Back</q-tooltip>
+              </q-icon>
+            </div>
+            <div class="col-9">{{ title }}</div>
+            <div class="col text-right">
+              <OpenRightDrawerWidget/>
+            </div>
           </div>
         </q-toolbar-title>
       </div>
@@ -21,9 +25,9 @@
   <div class="row fit greyBorderTop"></div>
 
   <InfoMessageWidget
-    :probability="1"
-    ident="featuresPage_overview"
-    hint="The Tabsets Extension starts simple - you can manage tabs - but it has more to offer. Check out the optional or
+      :probability="1"
+      ident="featuresPage_overview"
+      hint="The Tabsets Extension starts simple - you can manage tabs - but it has more to offer. Check out the optional or
       experimental features described below. Some of the features may require additional browser permissions which you will have to grant."/>
 
   <div class="row q-ma-lg">
@@ -107,7 +111,7 @@
 </template>
 
 <script setup lang="ts">
-import {ref, watchEffect} from 'vue'
+import {onMounted, ref, watchEffect} from 'vue'
 import {useRoute, useRouter} from "vue-router";
 import {useQuasar} from "quasar";
 import {useTabsStore} from "src/stores/tabsStore";
@@ -119,6 +123,8 @@ import {ExecutionResult} from "src/domain/ExecutionResult";
 import {useSettingsStore} from "src/stores/settingsStore"
 import InfoMessageWidget from "components/widgets/InfoMessageWidget.vue";
 import {DrawerTabs, useUiStore} from "src/stores/uiStore";
+import OpenRightDrawerWidget from "components/widgets/OpenRightDrawerWidget.vue";
+import Analytics from "src/utils/google-analytics";
 
 const route = useRoute();
 const router = useRouter();
@@ -139,11 +145,16 @@ const appFeature = ref<AppFeature | undefined>(undefined)
 
 const text: Map<string, object> = new Map()
 
+onMounted(() => {
+  Analytics.firePageViewEvent('FeaturesPage', document.location.href);
+})
+
+
 text.set(FeatureIdent.OPENTABS_THRESHOLD.toLowerCase(), {
   name: 'Open Tabs Warning',
   description: 'The Idea behind the tabset extension is to keep your tabs count small - and still deal with all the URLs you need to handle. Tabsets' +
-    ' can help you by tracking your open tabs count and alert you when it gets too big. Furthermore, it offers you ways to reduce your tab count on the fly. This ' +
-    'feature is customizable in the settings.',
+      ' can help you by tracking your open tabs count and alert you when it gets too big. Furthermore, it offers you ways to reduce your tab count on the fly. This ' +
+      'feature is customizable in the settings.',
   img: 'open_tabs_warning.png',
   permissions: []
 })
@@ -151,7 +162,7 @@ text.set(FeatureIdent.BOOKMARKS.toLowerCase(), {
   name: 'Bookmarks',
   img: 'bookmarks.png',
   description: 'The Bookmarks Feature lets you access the browsers bookmarks to view (or delete) them and to turn them into tabsets if you wish. Futhermore, the search will ' +
-    'take the URLs and titles of your bookmarks into account as well.',
+      'take the URLs and titles of your bookmarks into account as well.',
   permissions: ['bookmarks']
 })
 // text.set(FeatureIdent.DETAILS.toLowerCase(), {
@@ -176,7 +187,7 @@ text.set(FeatureIdent.RSS.toLowerCase(), {
   name: 'RSS View',
   img: 'rss.png',
   description: 'The "RSS View" list all your RSS Pages. It is recommended to enable the "analyse Tabs" feature as well to automatically find ' +
-    'linked rss feeds from your tabsets.',
+      'linked rss feeds from your tabsets.',
   permissions: []
 })
 text.set(FeatureIdent.THUMBNAILS.toLowerCase(), {
@@ -184,7 +195,7 @@ text.set(FeatureIdent.THUMBNAILS.toLowerCase(), {
   name: 'Thumbnails',
   img: 'thumbnails.png',
   description: 'This extension can create thumbnails of the tabs you visit, so that they can presented in an more appealing way. ' +
-    'Please note that only tabs that you visit (or revisit) after the activation of this feature are going to have thumbnails.',
+      'Please note that only tabs that you visit (or revisit) after the activation of this feature are going to have thumbnails.',
   permissions: ['thumbnails']
 })
 // text.set(FeatureIdent.ANALYSE_TABS.toLowerCase(), {
@@ -208,7 +219,7 @@ text.set(FeatureIdent.DYNAMIC.toLowerCase(), {
   experimental: true,
   name: 'Dynamic Tabsets',
   description: 'The idea is to provide you with tabset data which is defined outside the scope of this extension - e.g. defined by a website like wikipedia. ' +
-    'For now, there is only one example; the wikipedia "List of most visited websites" is added to your tabsets as a readonly tab.',
+      'For now, there is only one example; the wikipedia "List of most visited websites" is added to your tabsets as a readonly tab.',
   permissions: []
 })
 text.set(FeatureIdent.SESSIONS.toLowerCase(), {
@@ -217,14 +228,6 @@ text.set(FeatureIdent.SESSIONS.toLowerCase(), {
   description: 'A session is a special type of tabsets where your newly opened tabs will be tracked automatically',
   permissions: []
 })
-// text.set('useGroups', {
-//   experimental: true,
-//   name: 'Use Browser Groups',
-//   img: 'useGroups.png',
-//   img_width: '700px',
-//   description: 'Some Browsers can groups tabs to help you organize them. Activate this feature to use groups and pinned tabs inside this extension',
-//   permissions: []
-// })
 text.set(FeatureIdent.BACKUP.toLowerCase(), {
   experimental: true,
   name: 'Backup Tabset',
@@ -239,12 +242,18 @@ text.set(FeatureIdent.IGNORE.toLowerCase(), {
   permissions: []
 })
 
+text.set(FeatureIdent.HELP.toLowerCase(), {
+  name: 'Help Pages',
+  description: 'A readonly Tabset will be created containing the links to Tabsets Help',
+  permissions: []
+})
+
 text.set(FeatureIdent.SPACES.toLowerCase(), {
   experimental: true,
   name: 'Spaces',
   description: 'The "Spaces" Feature lets you organize your tabsets in a larger structure, which might become handy ' +
-    'if you start having many tabsets. The main difference to bookmark folders is that there is only two ' +
-    'levels, but you can assign a tabset to multiple spaces.',
+      'if you start having many tabsets. The main difference to bookmark folders is that there is only two ' +
+      'levels, but you can assign a tabset to multiple spaces.',
   permissions: []
 })
 text.set(FeatureIdent.WINDOWS.toLowerCase(), {
@@ -275,46 +284,105 @@ text.set(FeatureIdent.NOTES.toLowerCase(), {
   description: 'Add Notes to tabsets',
   permissions: []
 })
-text.set(FeatureIdent.TAGS.toLowerCase(), {
-  name: 'Tags for Tabs',
-  description: 'Assign tags to tabs',
-  permissions: []
-})
 text.set(FeatureIdent.NOTES.toLowerCase(), {
-  name: 'Quick Notes with Drag&Drop',
-  description: 'Drag and drop a text selection from a website to create a note',
+  name: 'Use Notes additionally to Tabs',
+  description: 'Create notes and treat them like tabs',
   permissions: []
 })
 text.set(FeatureIdent.WEBSITE_CLIP.toLowerCase(), {
-  name: 'Wesite Clip',
+  name: 'Website Clip',
   description: 'Create an image clip from a website and store it',
   permissions: ['notification']
+})
+text.set(FeatureIdent.STANDALONE_APP.toLowerCase(), {
+  name: 'Standalone App',
+  description: 'Tabsets as full-page application',
+  permissions: []
+})
+text.set(FeatureIdent.NEWEST_TABS.toLowerCase(), {
+  name: 'Newest Tabs',
+  img: 'newest_tabs.png',
+  description: 'Activate a view to get quick access to your 100 newest tabs',
+  permissions: []
+})
+text.set(FeatureIdent.TOP10.toLowerCase(), {
+  name: 'Top 10 Tabs',
+  img: 'top10.png',
+  description: 'Activate a view to list all tabs by how often they have been accessed',
+  permissions: []
+})
+text.set(FeatureIdent.OPEN_TABS.toLowerCase(), {
+  name: 'Open Tabs',
+  description: 'Quick access to all your open tabs of the current browsers window',
+  permissions: []
+})
+text.set(FeatureIdent.CATEGORIZATION.toLowerCase(), {
+  name: 'Tabsets Categorization',
+  description: 'Categorize your tabsets automatically',
+  permissions: []
+})
+text.set(FeatureIdent.PAGE_MARKER.toLowerCase(), {
+  name: 'Page Marker',
+  description: 'Highlight parts of a page and add notes',
+  permissions: ['contextMenus']
+})
+text.set(FeatureIdent.NOTIFICATIONS.toLowerCase(), {
+  name: 'Browser Notifications',
+  img: 'notification.png',
+  description: 'Allow Tabsets to send Notifications via your Browser. Recommended.',
+  permissions: ['notifications']
+})
+text.set(FeatureIdent.ANNOTATIONS.toLowerCase(), {
+  name: 'Websites Annotations',
+  description: 'Annotate Websites',
+  permissions: []
+})
+text.set(FeatureIdent.TAGS.toLowerCase(), {
+  name: 'Use Tags',
+  img: 'tags.png',
+  description: 'Tabs can be tagged with labels making it easier to be found again',
+  permissions: []
+})
+
+
+text.set(FeatureIdent.ARCHIVE_TABSET.toLowerCase(), {
+  name: 'Archive Tabsets',
+  img: 'archive.png',
+  description: 'Push Tabsets you don\'t need into an archive and restore them later if you want',
+  permissions: []
+})
+
+text.set(FeatureIdent.WINDOW_MANAGEMENT.toLowerCase(), {
+  name: 'Advanced Window Management',
+  description: 'Work with multiple named Windows and assign them to tabsets so that specific tabsets always ' +
+      'are opened in the same window',
+  permissions: []
 })
 
 
 watchEffect(() => {
-    feature.value = route.params.feature as string
-    const f = feature.value?.toUpperCase() as FeatureIdent
-    if (f) {
-      appFeature.value = new AppFeatures().getFeature(f)
-      if (appFeature.value) {
-        switch (appFeature.value.type) {
-          case FeatureType.EXPERIMENTAL:
-            title.value = "Experimental Feature"
-            break;
-          case FeatureType.RECOMMENDED:
-            title.value = "Recommended Feature"
-            break;
-          case FeatureType.OPTIONAL:
-            title.value = "Optional Feature"
-            break;
-          case FeatureType.PLANNED:
-            title.value = "Planned Feature"
-            break;
+      feature.value = route.params.feature as string
+      const f = feature.value?.toUpperCase() as FeatureIdent
+      if (f) {
+        appFeature.value = new AppFeatures().getFeature(f)
+        if (appFeature.value) {
+          switch (appFeature.value.type) {
+            case FeatureType.EXPERIMENTAL:
+              title.value = "Experimental Feature"
+              break;
+            case FeatureType.RECOMMENDED:
+              title.value = "Recommended Feature"
+              break;
+            case FeatureType.OPTIONAL:
+              title.value = "Optional Feature"
+              break;
+            case FeatureType.PLANNED:
+              title.value = "Planned Feature"
+              break;
+          }
         }
       }
     }
-  }
 )
 
 const hasFeature = () => {
@@ -325,13 +393,14 @@ const hasFeature = () => {
 }
 
 const grant = (ident: string) => {
+  //TODO the default activeCommand always executes "permissionStore.activateFeature" - so we do it twice
   if (appFeature.value && appFeature.value.activateCommand) {
     useCommandExecutor().execute(appFeature.value.activateCommand)
-      .then((executionResult: ExecutionResult<any>) => {
-        if (executionResult.result) {
-          permissionsStore.activateFeature(ident)
-        }
-      })
+        .then((executionResult: ExecutionResult<any>) => {
+          if (executionResult.result) {
+            permissionsStore.activateFeature(ident)
+          }
+        })
   } else {
     permissionsStore.activateFeature(ident)
   }
@@ -342,7 +411,7 @@ const revoke = (ident: string) => {
   if (appFeature.value && appFeature.value.deactivateCommand) {
     console.log("revoking1", ident, appFeature.value.deactivateCommand)
     useCommandExecutor().execute(appFeature.value.deactivateCommand)
-      .then(() => permissionsStore.deactivateFeature(ident))
+        .then(() => permissionsStore.deactivateFeature(ident))
   } else {
     console.log("revoking2", ident)
     permissionsStore.deactivateFeature(ident)
@@ -350,6 +419,9 @@ const revoke = (ident: string) => {
 }
 
 const permissionText = (f: any) => {
+  if (!f) {
+    return "???"
+  }
   const permissions: string[] = f.permissions
   if (permissions.length === 0) {
     return "This feature does not need additional browser permissions."

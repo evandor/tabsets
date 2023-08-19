@@ -3,17 +3,17 @@ import {LocalStorage, uid} from "quasar";
 import ChromeApi from "src/services/ChromeApi";
 import _ from "lodash";
 import {Tab} from "src/models/Tab";
-import {Tabset, TabsetStatus, TabsetType} from "src/models/Tabset";
+import {Tabset, TabsetSharing, TabsetStatus, TabsetType} from "src/models/Tabset";
 import {useSearchStore} from "src/stores/searchStore";
 import {useBookmarksStore} from "src/stores/bookmarksStore";
 import {STRIP_CHARS_IN_USER_INPUT} from "boot/constants";
 import {useTabsetService} from "src/services/TabsetService2";
+import {useDB} from "src/services/usePersistenceService";
+import {useSpacesStore} from "stores/spacesStore";
+import {FirebaseCall} from "src/services/firebase/FirebaseCall";
+import {Placeholders, PlaceholdersType} from "src/models/Placeholders";
 
 const {getTabset, getCurrentTabset, saveTabset, saveCurrentTabset, tabsetsFor, addToTabset} = useTabsetService()
-
-import {useDB} from "src/services/usePersistenceService";
-import {api} from "boot/axios";
-import {useSpacesStore} from "stores/spacesStore";
 
 const {db} = useDB()
 
@@ -46,7 +46,7 @@ class TabsetService {
   }
 
 
-  async saveToCurrentTabset(tab: Tab, useIndex: number | undefined = undefined): Promise<number> {
+  async saveToCurrentTabset(tab: Tab, useIndex: number | undefined = undefined): Promise<Tabset> {
     const currentTs = getCurrentTabset()
     if (currentTs) {
       return addToTabset(currentTs, tab, useIndex)
@@ -71,7 +71,7 @@ class TabsetService {
       _.forEach(
         tabsStore.pendingTabset.tabs,
         t => {
-          if (t?.chromeTab?.id) {
+          if (t?.chromeTabId) {
             if (!onlySelected || (onlySelected && t.selected)) {
               //currentTabset.tabs.push(t)
               this.saveToCurrentTabset(t)
@@ -119,16 +119,16 @@ class TabsetService {
 
 
   async getThumbnailFor(selectedTab: Tab): Promise<any> {
-    //console.log("checking thumbnail for", selectedTab.chromeTab.url)
-    if (selectedTab.chromeTab.url) {
-      return db.getThumbnail(selectedTab.chromeTab.url)
+    //console.log("checking thumbnail for", selectedTab.url)
+    if (selectedTab.url) {
+      return db.getThumbnail(selectedTab.url)
     }
     return Promise.reject("url not provided");
   }
 
   async getRequestFor(selectedTab: Tab): Promise<any> {
-    if (selectedTab.chromeTab.url) {
-      return this.getRequestForUrl(selectedTab.chromeTab.url)
+    if (selectedTab.url) {
+      return this.getRequestForUrl(selectedTab.url)
     }
     return Promise.reject("url not provided");
   }
@@ -138,8 +138,8 @@ class TabsetService {
   }
 
   async getContentFor(selectedTab: Tab): Promise<object> {
-    if (selectedTab.chromeTab.url) {
-      return this.getContentForUrl(selectedTab.chromeTab.url)
+    if (selectedTab.url) {
+      return this.getContentForUrl(selectedTab.url)
     }
     return Promise.reject("url not provided");
   }
@@ -150,8 +150,8 @@ class TabsetService {
 
 
   async getMetaLinksFor(selectedTab: Tab): Promise<any> {
-    if (selectedTab.chromeTab.url) {
-      return this.getMetaLinksForUrl(selectedTab.chromeTab.url)
+    if (selectedTab.url) {
+      return this.getMetaLinksForUrl(selectedTab.url)
     }
     return Promise.reject("url not provided");
   }
@@ -161,8 +161,8 @@ class TabsetService {
   }
 
   async getLinksFor(selectedTab: Tab): Promise<any> {
-    if (selectedTab.chromeTab.url) {
-      return this.getLinksForUrl(selectedTab.chromeTab.url)
+    if (selectedTab.url) {
+      return this.getLinksForUrl(selectedTab.url)
     }
     return Promise.reject("url not provided");
   }
@@ -176,20 +176,33 @@ class TabsetService {
     return saveCurrentTabset()
   }
 
+  setUrl(tab: Tab, url: string, placeholders: string[] = [], placeholderValues: Map<string,string> = new Map()): Promise<any> {
+    tab.url = url
+    var config: {[k: string]: any} = {};
+    for(const p of placeholders) {
+      config[p] = placeholderValues.get(p)
+    }
+    const phs = new Placeholders(PlaceholdersType.URL_SUBSTITUTION, tab.id, config)
+    tab.placeholders = phs
+    return saveCurrentTabset()
+  }
+
   createPendingFromBrowserTabs() {
     console.log(`createPendingFromBrowserTabs`)
     const tabsStore = useTabsStore()
-    tabsStore.pendingTabset.tabs = []
-    const urlSet = new Set<string>()
-    _.forEach(tabsStore.tabs, t => {
-      if (t.url) {
-        if (!urlSet.has(t.url) && !t.url.startsWith("chrome")) {
-          urlSet.add(t.url)
-          tabsStore.addToPendingTabset(new Tab(uid(), t))
-          //tabsStore.pendingTabset.tabs.push(new Tab(uid(), t))
+    if (tabsStore.pendingTabset) {
+      tabsStore.pendingTabset.tabs = []
+      const urlSet = new Set<string>()
+      _.forEach(tabsStore.tabs, t => {
+        if (t.url) {
+          if (!urlSet.has(t.url) && !t.url.startsWith("chrome")) {
+            urlSet.add(t.url)
+            tabsStore.addToPendingTabset(new Tab(uid(), t))
+            //tabsStore.pendingTabset.tabs.push(new Tab(uid(), t))
+          }
         }
-      }
-    })
+      })
+    }
   }
 
   getSelectedPendingTabs(): Tab[] {
@@ -277,9 +290,9 @@ class TabsetService {
           }, (folder: chrome.bookmarks.BookmarkTreeNode) => {
             _.forEach(ts.tabs, tab => {
               chrome.bookmarks.create({
-                title: tab.name || tab.chromeTab.title,
+                title: tab.name || tab.title,
                 parentId: folder.id,
-                url: tab.chromeTab.url
+                url: tab.url
               })
             })
           })
@@ -301,6 +314,12 @@ class TabsetService {
     let tabsets = data.tabsets || data
     let spaces = data.spaces || []
 
+    // TODO
+    let importedSpaces = 0
+    let importedTabsets = 0
+    let failedSpaces = 0
+    let failedTabsets = 0
+
     _.forEach(spaces, space => {
       useSpacesStore().addSpace(space)
     })
@@ -313,13 +332,13 @@ class TabsetService {
         //console.log("adding to index", tab)
         useSearchStore().addToIndex(
           tab.id,
-          tab.chromeTab.title || '',
-          tab.chromeTab.title || '',
-          tab.chromeTab.url || '',
+          tab.title || '',
+          tab.title || '',
+          tab.url || '',
           '',
           '',
           [tabset.id],
-          tab.chromeTab.favIconUrl || '')
+          tab.favIconUrl || '')
       })
     })
   }
@@ -428,6 +447,15 @@ class TabsetService {
     if (oldIndex >= 0) {
       const tab = tabs.splice(oldIndex, 1)[0];
       tabs.splice(newIndex, 0, tab);
+
+      // Sharing
+      const currentTs = useTabsStore().getCurrentTabset
+      if (currentTs) {
+        if (currentTs.sharedId && currentTs.sharing === TabsetSharing.PUBLIC) {
+          currentTs.sharing = TabsetSharing.PUBLIC_OUTDATED
+        }
+      }
+
       saveCurrentTabset()
     }
   }
@@ -463,27 +491,27 @@ class TabsetService {
     return undefined
   }
 
-  setPosition(tabId: string, top: number, left: number) {
-    const tab = _.find(getCurrentTabset()?.tabs, t => t.id === tabId)
-    if (tab) {
-      tab.canvasLeft = left
-      tab.canvasTop = top
-      saveCurrentTabset()
-        .catch((err) => console.error("problem saving tabset", err))
-    } else {
-      console.log("warning: could not set position for", tabId)
-    }
-  }
-
-  saveCanvasLayer(tabsetId: string, layerInfo: string) {
-    const tabset = getTabset(tabsetId)
-    if (tabset) {
-      tabset.canvas = layerInfo
-      saveTabset(tabset)
-    } else {
-      console.log("warning: could not set save canvas for", tabsetId)
-    }
-  }
+  // setPosition(tabId: string, top: number, left: number) {
+  //   const tab = _.find(getCurrentTabset()?.tabs, t => t.id === tabId)
+  //   if (tab) {
+  //     tab.canvasLeft = left
+  //     tab.canvasTop = top
+  //     saveCurrentTabset()
+  //       .catch((err) => console.error("problem saving tabset", err))
+  //   } else {
+  //     console.log("warning: could not set position for", tabId)
+  //   }
+  // }
+  //
+  // saveCanvasLayer(tabsetId: string, layerInfo: string) {
+  //   const tabset = getTabset(tabsetId)
+  //   if (tabset) {
+  //     tabset.canvas = layerInfo
+  //     saveTabset(tabset)
+  //   } else {
+  //     console.log("warning: could not set save canvas for", tabsetId)
+  //   }
+  // }
 
   saveNote(tabId: string, note: string, scheduledFor: Date | undefined): Promise<void> {
     // console.log("got", tabId, note)
@@ -492,6 +520,9 @@ class TabsetService {
       tab.note = note
       if (scheduledFor) {
         tab.scheduledFor = scheduledFor.getTime()
+      }
+      if (tab.url) {
+        useSearchStore().update(tab.url, 'note', note)
       }
       return saveCurrentTabset()
     }
@@ -526,6 +557,39 @@ class TabsetService {
     return Promise.reject("could not change status : " + tabsetId)
   }
 
+  share(tabsetId: string, sharing: TabsetSharing, sharedId: string | undefined, sharedBy: string | undefined): Promise<TabsetSharing> {
+    console.debug(`sharing ${tabsetId} as ${sharing}`)
+    const ts = getTabset(tabsetId)
+    if (ts) {
+      const oldSharing = ts.sharing
+      ts.sharing = sharing
+      ts.sharedBy = sharedBy
+      if (sharing === TabsetSharing.UNSHARED) {
+        return FirebaseCall.delete("/share/public/" + sharedId)
+      } else if (sharedId) {
+        return FirebaseCall.put("/share/public/" + sharedId, ts)
+          .then((res: any) => {
+            //ts.sharedId = res.data.sharedId
+            return saveTabset(ts)
+              .then(() => oldSharing)
+          })
+      } else {
+        return FirebaseCall.post("/share/public", ts)
+          .then((res: any) => {
+            ts.sharedId = res.data.sharedId
+            return saveTabset(ts)
+              .then(() => oldSharing)
+          })
+      }
+    }
+    return Promise.reject("could not change sharing : " + tabsetId)
+  }
+
+  createInvitation(email: string, tabsetName: string, tabsetId: string): Promise<void> {
+    // TODO
+    return Promise.reject("not implemented")
+    // return db.createInvitation(email, tabsetName, tabsetId)
+  }
 
 }
 

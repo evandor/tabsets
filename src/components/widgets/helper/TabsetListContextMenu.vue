@@ -2,25 +2,25 @@
   <q-menu :offset="[0, 0]">
     <q-list dense style="min-width: 200px">
 
-<!--      <q-item v-if="props.tabset?.tabs.length > 0 && expanded[index]"-->
-<!--              clickable v-close-popup @click="toggleExpand(index)">-->
-<!--        <q-icon name="o_expand_less" class="q-my-xs q-mr-xs" color="grey-5" style="position:relative;top:-1px"/>-->
-<!--        Collapse-->
-<!--      </q-item>-->
-<!--      <q-item v-if="props.tabset?.tabs.length > 0 && !expanded[index]"-->
-<!--              clickable v-close-popup @click="toggleExpand(index)">-->
-<!--        <q-icon name="o_expand_more" class="q-my-xs q-mr-xs" color="grey-5" style="position:relative;top:-1px"/>-->
-<!--        Expand-->
-<!--      </q-item>-->
+      <!--      <q-item v-if="props.tabset?.tabs.length > 0 && expanded[index]"-->
+      <!--              clickable v-close-popup @click="toggleExpand(index)">-->
+      <!--        <q-icon name="o_expand_less" class="q-my-xs q-mr-xs" color="grey-5" style="position:relative;top:-1px"/>-->
+      <!--        Collapse-->
+      <!--      </q-item>-->
+      <!--      <q-item v-if="props.tabset?.tabs.length > 0 && !expanded[index]"-->
+      <!--              clickable v-close-popup @click="toggleExpand(index)">-->
+      <!--        <q-icon name="o_expand_more" class="q-my-xs q-mr-xs" color="grey-5" style="position:relative;top:-1px"/>-->
+      <!--        Expand-->
+      <!--      </q-item>-->
 
-<!--      <q-item v-if="props.tabset?.tabs.length > 0 && !expanded[index]"-->
-<!--              clickable v-close-popup @click="openInSidePanel(index)">-->
-<!--        <q-icon name="left_panel_close" class="q-my-xs q-mr-xs" color="grey-5" style="position:relative;top:-1px"/>-->
-<!--        Open in sidePanel-->
-<!--      </q-item>-->
+      <!--      <q-item v-if="props.tabset?.tabs.length > 0 && !expanded[index]"-->
+      <!--              clickable v-close-popup @click="openInSidePanel(index)">-->
+      <!--        <q-icon name="left_panel_close" class="q-my-xs q-mr-xs" color="grey-5" style="position:relative;top:-1px"/>-->
+      <!--        Open in sidePanel-->
+      <!--      </q-item>-->
 
       <q-item v-if="!props.inSidePanel"
-        clickable v-close-popup @click="showDetails(props.tabset.id)">
+              clickable v-close-popup @click="showDetails(props.tabset.id)">
         <q-icon name="o_info" class="q-my-xs q-mr-xs" color="grey-5" style="position:relative;top:-1px"/>
         Tabset Details...
       </q-item>
@@ -43,6 +43,41 @@
       <q-item v-if="props.tabset.type === TabsetType.DEFAULT && props.tabset.status !== TabsetStatus.DELETED"
               clickable v-close-popup @click="archiveTabset(props.tabset.id)">
         Archive Tabset
+      </q-item>
+
+      <q-separator v-if="props.tabset.type !== TabsetType.DYNAMIC" />
+      <q-item v-if="props.tabset.type !== TabsetType.DYNAMIC"
+              clickable>
+        <q-item-section>Sharing</q-item-section>
+        <q-item-section side>
+          <q-icon name="keyboard_arrow_right"/>
+        </q-item-section>
+
+        <q-menu anchor="top end" self="top start">
+          <q-list dense>
+            <q-item v-if="props.tabset.sharing === TabsetSharing.UNSHARED || !props.tabset.sharing"
+                    clickable v-close-popup
+                    @click="sharePublicly(props.tabset.id)">
+              <q-item-section>Share publicly</q-item-section>
+            </q-item>
+            <q-item v-if="props.tabset.sharing === TabsetSharing.PUBLIC"
+                    @click="openPublicShare(props.tabset.id)"
+                    clickable v-close-popup>
+              <q-item-section>Open public page</q-item-section>
+            </q-item>
+            <q-item v-if="props.tabset.sharing === TabsetSharing.PUBLIC"
+                    @click="copyPublicShareToClipboard(props.tabset.id)"
+                    clickable v-close-popup>
+              <q-item-section>Copy public page link</q-item-section>
+            </q-item>
+            <q-item v-if="props.tabset.sharing === TabsetSharing.PUBLIC"
+                    clickable v-close-popup
+                    @click="removePublicShare(props.tabset.id)">
+              <q-item-section>Remove public share</q-item-section>
+            </q-item>
+          </q-list>
+        </q-menu>
+
       </q-item>
 
       <q-separator v-if="usePermissionsStore().hasFeature(FeatureIdent.SPACES)"/>
@@ -116,7 +151,7 @@
 
 <script lang="ts" setup>
 
-import {Tabset, TabsetStatus, TabsetType} from "src/models/Tabset";
+import {Tabset, TabsetSharing, TabsetStatus, TabsetType} from "src/models/Tabset";
 import {usePermissionsStore} from "src/stores/permissionsStore";
 import {FeatureIdent} from "src/models/AppFeature";
 import {PropType, ref} from "vue";
@@ -130,12 +165,16 @@ import {Space} from "src/models/Space";
 import {useSpacesStore} from "src/stores/spacesStore";
 import _ from "lodash";
 import {useTabsetService} from "src/services/TabsetService2";
-import {useQuasar} from "quasar";
+import {openURL, useQuasar} from "quasar";
 import DeleteTabsetDialog from "components/dialogues/DeleteTabsetDialog.vue";
+import {ShareTabsetCommand} from "src/domain/tabsets/ShareTabset";
+import {UnShareTabsetCommand} from "src/domain/tabsets/UnShareTabset";
+import {CopyToClipboardCommand} from "src/domain/commands/CopyToClipboard";
 import {StopSessionCommand} from "src/domain/commands/StopSessionCommand";
 import {DrawerTabs, useUiStore} from "src/stores/uiStore";
 import {CopyTabsetCommand} from "src/domain/tabsets/CopyTabset";
 import {RestoreTabsetCommand} from "src/domain/tabsets/RestoreTabset";
+import {Tab} from "src/models/Tab";
 
 const {inBexMode} = useUtils()
 
@@ -167,6 +206,25 @@ const stopSession = (tabsetId: string) => {
   const tabset = useTabsetService().getTabset(tabsetId)
   if (tabset) {
     useCommandExecutor().executeFromUi(new StopSessionCommand(tabset))
+  }
+}
+
+const sharePublicly = (tabsetId: string) => useCommandExecutor().executeFromUi(new ShareTabsetCommand(tabsetId, TabsetSharing.PUBLIC))
+const removePublicShare = (tabsetId: string) => useCommandExecutor().executeFromUi(new UnShareTabsetCommand(tabsetId))
+
+const publictabsetsPath = "https://tabsets.web.app/#/tabsets/"
+
+const openPublicShare = (tabsetId: string) => {
+  const ts = useTabsetService().getTabset(tabsetId)
+  if (ts && ts.sharedId) {
+    openURL(getPublicTabsetLink(ts))
+  }
+}
+
+const copyPublicShareToClipboard = (tabsetId: string) => {
+  const ts = useTabsetService().getTabset(tabsetId)
+  if (ts && ts.sharedId) {
+    useCommandExecutor().executeFromUi(new CopyToClipboardCommand(getPublicTabsetLink(ts)))
   }
 }
 
@@ -231,5 +289,17 @@ const deleteDialog = (tabset: Tabset) =>
     }
   })
 
+const getPublicTabsetLink = (ts: Tabset) => {
+  let image = "https://tabsets.web.app/favicon.ico"
+  if (ts && ts.sharedId) {
+    ts.tabs.reverse().forEach((t: Tab) => {
+      if (t.image) {
+        image = t.image
+      }
+    })
+    return publictabsetsPath + ts.sharedId + "?n=" + btoa(ts.name) + "&i=" + btoa(image)
+  }
+  return image
+}
 
 </script>

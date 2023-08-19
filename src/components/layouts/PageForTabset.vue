@@ -45,7 +45,7 @@
               <!--              <q-item-section side>-->
               <!--                <q-icon name="tab"/>-->
               <!--              </q-item-section>-->
-              <q-item-section>{{tab.chromeTab.title}} - {{ tab.chromeTab.url }}*</q-item-section>
+              <q-item-section>{{tab.title}} - {{ tab.url }}*</q-item-section>
             </q-item>
           </q-list>
         </q-btn-dropdown>
@@ -61,10 +61,6 @@
 <!--    <q-card flat bordered>-->
 <!--      <q-card-section v-html="editor"/>-->
 <!--    </q-card>-->
-    <q-checkbox v-model="tabsStore.getCurrentTabset.showPageAsHeader"
-                @update:model-value="(val) => showAsPageHeaderChanged(val)"
-                color="primary"
-                label="Show this page as a header in 'Tabs'"/>
   </div>
 
 </template>
@@ -105,13 +101,13 @@ function unpinnedNoGroup() {
   return _.filter(
     _.map(tabsStore.getCurrentTabs, t => t),
     // @ts-ignore
-    (t: Tab) => !t?.chromeTab.pinned && t?.chromeTab.groupId === -1)
+    (t: Tab) => !t?.pinned && t?.groupId === -1)
 }
 
 function tabsForGroup(groupId: number): Tab[] {
   return _.filter(tabsStore.getTabset(tabsetId.value)?.tabs,
     //@ts-ignore
-    (t: Tab) => t?.chromeTab.groupId === groupId)
+    (t: Tab) => t?.groupId === groupId)
 }
 
 const pasteCapture = (e: any) => console.log("pasteCapture", e)
@@ -123,7 +119,7 @@ const add = (tab: Tab) => {
     tokenRef.value.hide()
     edit.caret.restore()
     edit.runCmd('insertHTML', `&nbsp;<div class="editor_token row inline items-center" contenteditable="false">&nbsp;
-        <img src="${tab.chromeTab.favIconUrl}" height="24px" width="24px">&nbsp;<span>${tab.chromeTab.title}</span></div>&nbsp;`)
+        <img src="${tab.favIconUrl}" height="24px" width="24px">&nbsp;<span>${tab.title}</span></div>&nbsp;`)
     edit.focus()
   }
 }
@@ -140,13 +136,6 @@ const saveWork = () => {
   }
 }
 
-const showAsPageHeaderChanged = (val: boolean) => {
-  if (tabsStore.getCurrentTabset) {
-    console.log("saving", val)
-    tabsStore.getCurrentTabset.showPageAsHeader = val
-    useTabsetService().saveCurrentTabset()
-  }
-}
 </script>
 
 <style lang="sass" scoped>

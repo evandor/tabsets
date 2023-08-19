@@ -2,11 +2,14 @@ import Command from "src/domain/Command";
 import {ExecutionResult} from "src/domain/ExecutionResult";
 import TabsetService from "src/services/TabsetService";
 import {MarkTabsetAsDefaultCommand} from "src/domain/tabsets/MarkTabsetAsDefault";
-import {TabsetType} from "src/models/Tabset";
+import {Tabset, TabsetType} from "src/models/Tabset";
 import {usePermissionsStore} from "src/stores/permissionsStore";
 import {FeatureIdent} from "src/models/AppFeature";
 import {useTabsStore} from "src/stores/tabsStore";
 import {useTabsetService} from "src/services/TabsetService2";
+import {useUtils} from "src/services/Utils";
+
+const {sendMsg} = useUtils()
 
 class UndoCommand implements Command<any> {
 
@@ -21,13 +24,13 @@ class UndoCommand implements Command<any> {
 
 }
 
-export class MarkTabsetDeletedCommand implements Command<boolean> {
+export class MarkTabsetDeletedCommand implements Command<Tabset> {
 
   constructor(
     public tabsetId: string) {
   }
 
-  async execute(): Promise<ExecutionResult<boolean>> {
+  async execute(): Promise<ExecutionResult<Tabset>> {
     return TabsetService.markAsDeleted(this.tabsetId)
       .then((tabset) => {
         console.log("deleting", tabset.type, tabset.status, tabset.id, useTabsStore().currentTabsetId)
@@ -42,6 +45,10 @@ export class MarkTabsetDeletedCommand implements Command<boolean> {
           useTabsetService().selectTabset(undefined)
         }
         return tabset
+      })
+      .then(res => {
+        sendMsg('mark-tabset-deleted', {tabsetId: this.tabsetId})
+        return res
       })
       .then(res => Promise.resolve(
         new ExecutionResult(

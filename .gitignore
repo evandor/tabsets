@@ -59,3 +59,12 @@ yarn-error.log*
 /releases/0.3.1/
 /releases/0.3.2/
 /releases/0.4.0/
+/public/cat.png
+/public/models/Xenova/distilbert-base-uncased-finetuned-sst-2-english/model.safetensors
+/public/models/Xenova/distilbert-base-uncased-finetuned-sst-2-english/pytorch_model.bin
+/public/models/Xenova/distilbert-base-uncased-finetuned-sst-2-english/rust_model.ot
+/public/models/Xenova/distilbert-base-uncased-finetuned-sst-2-english/tf_model.h5
+/public/vids/
+/coverage/
+/docs/vids/
+/Tabsets - Manage Tabs and Bookmarks with Ease/

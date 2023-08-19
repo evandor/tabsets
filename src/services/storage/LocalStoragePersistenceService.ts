@@ -1,6 +1,6 @@
 import PersistenceService from "src/services/PersistenceService";
 import {Space} from "src/models/Space";
-import {Suggestion} from "src/models/Suggestion";
+import {StaticSuggestionIdent, Suggestion, SuggestionState} from "src/models/Suggestion";
 import {SearchDoc} from "src/models/SearchDoc";
 import {QVueGlobals, useQuasar} from "quasar";
 import {Tabset} from "src/models/Tabset";
@@ -21,7 +21,11 @@ export class LocalStoragePersistenceService implements PersistenceService {
   }
 
   saveActiveFeatures(val: string[]) {
-    this.quasar.localStorage.set("ui.activeFeatures", val)
+    if (this.quasar.localStorage) {
+      this.quasar.localStorage.set("ui.activeFeatures", val)
+    } else {
+      console.warn("local storage not defined")
+    }
   }
 
   setInactiveDefaultFeatures(val: string[]) {
@@ -46,6 +50,14 @@ export class LocalStoragePersistenceService implements PersistenceService {
 
   addSuggestion(suggestion: Suggestion): Promise<any> {
     return Promise.resolve(undefined);
+  }
+
+  removeSuggestion(ident: StaticSuggestionIdent) {
+    throw new Error("Method not implemented.");
+  }
+
+  setSuggestionState(id: string, state: SuggestionState) {
+    throw new Error("Method not implemented.");
   }
 
   cleanUpContent(): Promise<SearchDoc[]> {
@@ -132,7 +144,7 @@ export class LocalStoragePersistenceService implements PersistenceService {
     return Promise.resolve(undefined);
   }
 
-  saveContent(tab: chrome.tabs.Tab, text: string, metas: object, title: string, tabsetIds: string[]): Promise<any> {
+  saveContent(tab: Tab, text: string, metas: object, title: string, tabsetIds: string[]): Promise<any> {
     return Promise.resolve(undefined);
   }
 
@@ -157,6 +169,13 @@ export class LocalStoragePersistenceService implements PersistenceService {
 
   updateThumbnail(url: string): Promise<void> {
     return Promise.resolve(undefined);
+  }
+
+  loadCategories(): Promise<any> {
+    return Promise.resolve(undefined);
+  }
+
+  reloadTabset(tabsetId: string): void {
   }
 
 }

@@ -3,8 +3,11 @@ import {computed, ref, watch} from "vue";
 import {useRoute, useRouter} from "vue-router";
 import {Tab} from "src/models/Tab";
 import _ from "lodash"
-import {LocalStorage} from "quasar";
+import {LocalStorage, useQuasar} from "quasar";
 import {useUtils} from "src/services/Utils";
+import {useTabsStore} from "stores/tabsStore";
+import {FeatureIdent} from "src/models/AppFeature";
+import {usePermissionsStore} from "stores/permissionsStore";
 
 export enum DrawerTabs {
   BOOKMARKS = "bookmarks",
@@ -25,24 +28,54 @@ export enum DrawerTabs {
 }
 
 export class SidePanelView {
-  static readonly MAIN = new SidePanelView('main', '/sidepanel');
-  static readonly TABS_LIST = new SidePanelView('tabsList', '/sidepanel/tabslist');
-  static readonly TAGS_LIST = new SidePanelView('tagsList', '/sidepanel/tagslist');
-  static readonly TAG = new SidePanelView('tag', '/sidepanel/tags');
-  static readonly BY_DOMAIN_LIST = new SidePanelView('byDomainList', '/sidepanel/byDomainList');
 
-  private constructor(public readonly ident: string, public readonly path: any) {
+  static readonly MAIN = new SidePanelView('main', '/sidepanel');
+
+  static readonly TABS_LIST = new SidePanelView('tabsList', '/sidepanel/tabslist',
+    () => usePermissionsStore().hasFeature(FeatureIdent.OPEN_TABS) && useTabsStore().tabs?.length > 1);
+
+  static readonly TAGS_LIST = new SidePanelView('tagsList', '/sidepanel/tagslist',
+    () => usePermissionsStore().hasFeature(FeatureIdent.TAGS) && useTabsStore().allTabsCount > 0);
+
+  static readonly TAG = new SidePanelView('tag', '/sidepanel/tags');
+
+  static readonly BY_DOMAIN_LIST = new SidePanelView('byDomainList', '/sidepanel/byDomainList',
+    () => usePermissionsStore().hasFeature(FeatureIdent.GROUP_BY_DOMAIN));
+
+  static readonly RSS_LIST = new SidePanelView('rssList', '/sidepanel/rsslist',
+    () => usePermissionsStore().hasFeature(FeatureIdent.RSS));
+
+  static readonly NEWEST_TABS_LIST = new SidePanelView('newestList', '/sidepanel/newestList',
+    () => usePermissionsStore().hasFeature(FeatureIdent.NEWEST_TABS));
+
+  static readonly TOP_10_TABS_LIST = new SidePanelView('top10List', '/sidepanel/top10List',
+    () => usePermissionsStore().hasFeature(FeatureIdent.TOP10));
+
+  static readonly BOOKMARKS = new SidePanelView('bookmarks', '/sidepanel/bookmarks',
+    () => usePermissionsStore().hasFeature(FeatureIdent.BOOKMARKS));
+
+  static readonly PUBLIC_TABSETS = new SidePanelView('categorized_tabsets', '/sidepanel/byCategory',
+    () => usePermissionsStore().hasFeature(FeatureIdent.BOOKMARKS));
+
+  private constructor(
+    public readonly ident: string,
+    public readonly path: any,
+    public readonly showButtonFunction: Function = () => true) {
   }
 
   toString() {
     return this.ident;
   }
+
+  showButton() {
+    return this.showButtonFunction()
+  }
 }
 
 export enum ListDetailLevel {
-  SMALL = "SMALL",
-  MEDIUM = "MEDIUM",
-  LARGE = "LARGE"
+  MINIMAL = "MINIMAL",
+  SOME = "SOME",
+  MAXIMAL = "MAXIMAL"
 }
 
 export class RightDrawer {
@@ -60,16 +93,19 @@ export class SidePanel {
 
 export const useUiStore = defineStore('ui', () => {
 
+  const $q = useQuasar()
   const router = useRouter()
+
   const {sendMsg} = useUtils()
 
   const selectedTab = ref<Tab | undefined>(undefined)
   const tabsFilter = ref<string | undefined>(undefined)
   const selectedTag = ref<string | undefined>(undefined)
+  const tabsetsExpanded = ref<boolean>(false)
 
   // RightDrawer
   let rightDrawer = ref<RightDrawer>(new RightDrawer())
-  let rightDrawerOpen = ref(true)
+  let rightDrawerOpen = ref($q ? $q.screen.gt.md : true)
   let leftDrawerOpen = ref(true)
 
   // SidePanel
@@ -84,7 +120,7 @@ export const useUiStore = defineStore('ui', () => {
 
   const contentCount = ref<number>(0)
 
-  const listDetailLevel = ref<ListDetailLevel>(ListDetailLevel.LARGE)
+  const listDetailLevel = ref<ListDetailLevel>(LocalStorage.getItem('detailLevel') || ListDetailLevel.MAXIMAL)
 
   // info Messages
   const hiddenMessages = ref<string[]>(LocalStorage.getItem('ui.hiddenInfoMessages') as unknown as string[] || [])
@@ -106,6 +142,9 @@ export const useUiStore = defineStore('ui', () => {
 
   // system management
   const dbReady = ref<boolean>(false)
+
+  const progress = ref<number | undefined>(undefined)
+  const progressLabel = ref<string | undefined>(undefined)
 
   watch(rightDrawer.value, (val: Object) => {
     LocalStorage.set("ui.rightDrawer", val)
@@ -200,6 +239,12 @@ export const useUiStore = defineStore('ui', () => {
     router.push(view.path)
   }
 
+  const sidePanelActiveViewIs = computed(() => {
+    return (viewToCompare: SidePanelView) => {
+      return sidePanel.value.activeView?.ident === viewToCompare.ident
+    }
+  })
+
   function setEntityType(type: string) {
     entityType.value = type
   }
@@ -219,12 +264,12 @@ export const useUiStore = defineStore('ui', () => {
   const listDetailLevelGreaterEqual = computed(() => {
     return (level: ListDetailLevel) => {
       switch (listDetailLevel.value) {
-        case ListDetailLevel.LARGE:
+        case ListDetailLevel.MAXIMAL:
           return true
-        case ListDetailLevel.MEDIUM:
-          return level === ListDetailLevel.MEDIUM || level === ListDetailLevel.SMALL
-        case ListDetailLevel.SMALL:
-          return level === ListDetailLevel.SMALL
+        case ListDetailLevel.SOME:
+          return level === ListDetailLevel.SOME || level === ListDetailLevel.MINIMAL
+        case ListDetailLevel.MINIMAL:
+          return level === ListDetailLevel.MINIMAL
       }
     }
   })
@@ -333,6 +378,10 @@ export const useUiStore = defineStore('ui', () => {
     sidePanel,
     sidePanelSetActiveView,
     sidePanelIsActive,
-    toggleLeftDrawer
+    sidePanelActiveViewIs,
+    toggleLeftDrawer,
+    progress,
+    progressLabel,
+    tabsetsExpanded
   }
 })

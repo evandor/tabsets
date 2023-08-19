@@ -4,7 +4,7 @@
           @click="selectTab(tab)">
     {{ loadThumbnail(tab) }}
     <q-card-section
-      :data-testid="useUtils().createDataTestIdentifier('tabcardwidget', tab.chromeTab.title)"
+      :data-testid="useUtils().createDataTestIdentifier('tabcardwidget', tab.title)"
       class="q-pt-xs cursor-pointer bg-primary text-white"
       style="width:100%;">
 
@@ -20,7 +20,7 @@
                         @update:model-value="val => setCustomTitle( tab, val)">
             <q-input v-model="scope.value" dense autofocus counter @keyup.enter="scope.set"/>
           </q-popup-edit>
-          <q-tooltip>{{ tab.chromeTab.title }}</q-tooltip>
+          <q-tooltip>{{ tab.title }}</q-tooltip>
 
           <q-badge v-if="tab.bookmarkId"
                    color="info" floating>
@@ -37,11 +37,11 @@
 
 
       <div class="text-subtitle2 ellipsis text-secondary"
-           @click.stop="NavigationService.openOrCreateTab(tab.chromeTab?.url )">
-        {{ tab.chromeTab?.url.replace("https://www.", '').replace("https://", '') }}
+           @click.stop="NavigationService.openOrCreateTab(tab.url )">
+        {{ tab.url.replace("https://www.", '').replace("https://", '') }}
         <q-icon name="launch" color="secondary"></q-icon>
         <q-tooltip>
-          {{ tab.chromeTab?.url }}
+          {{ tab.url }}
         </q-tooltip>
       </div>
 
@@ -79,7 +79,7 @@ import MHtmlService from "src/services/MHtmlService"
 import {useQuasar} from "quasar"
 import TabFaviconWidget from "src/components/widgets/TabFaviconWidget.vue"
 import {useCommandExecutor} from "src/services/CommandExecutor";
-import {DeleteTabCommand} from "src/domain/commands/DeleteTabCommand"
+import {DeleteTabCommand} from "src/domain/tabs/DeleteTabCommand"
 import {useUtils} from "src/services/Utils"
 
 const props = defineProps({
@@ -98,17 +98,17 @@ const thumbnails = ref<Map<string, string>>(new Map())
 
 const thumbnailFor = (tab: Tab): string => {
   if (tab.extension === UrlExtension.IMAGE) {
-    return tab.chromeTab.url || 'favicon-unknown-32x32.png'
+    return tab.url || 'favicon-unknown-32x32.png'
   }
-  const key = btoa(tab.chromeTab.url || '')
+  const key = btoa(tab.url || '')
   return thumbnails.value.get(key) || "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+ip1sAAAAASUVORK5CYII="
 }
 
 const loadThumbnail = (tab: Tab) => {
   TabsetService.getThumbnailFor(tab)
     .then(data => {
-      //console.log("loading tn for ", tab.chromeTab.url)
-      const key = btoa(tab.chromeTab.url || '')
+      //console.log("loading tn for ", tab.url)
+      const key = btoa(tab.url || '')
       if (data && data.thumbnail) {
         //console.log("found key", key, data)
         thumbnails.value.set(key, data.thumbnail)
@@ -130,19 +130,19 @@ function cardStyle(tab: Tab) {
   let background = ''
   if (tab?.isDuplicate) {
     background = "background: radial-gradient(circle, #FFFFFF 0%, #FFECB3 100%)"
-  } else if (tab?.chromeTab.url === props.highlightUrl) {
+  } else if (tab?.url === props.highlightUrl) {
     background = "background: radial-gradient(circle, #FFBF46 0%, #FFBF46 100%)"
   }
   return `${borderColor};${background}`
 }
 
 function isOpen(tab: Tab): boolean {
-  //console.log("tabUrl", tab.chromeTab?.url);
-  return TabsetService.isOpen(tab?.chromeTab?.url || '')
+  //console.log("tabUrl", tab.url);
+  return TabsetService.isOpen(tab?.url || '')
 }
 
 const setInfo = (tab: Tab) => {
-  const parts = (tab.chromeTab?.url || '').split('?')
+  const parts = (tab.url || '').split('?')
   if (parts.length > 1) {
     emits('sendCaption', parts[0] + "[... params omitted....]")
   } else if (parts.length === 1) {
@@ -161,8 +161,8 @@ const selectTab = (tab: Tab) => {
 }
 
 
-const nameOrTitle = (tab: Tab) => tab.name ? tab.name : tab.chromeTab?.title
-const dynamicNameOrTitleModel = (tab: Tab) => tab.name ? tab.name : tab.chromeTab?.title
+const nameOrTitle = (tab: Tab) => tab.name ? tab.name : tab.title
+const dynamicNameOrTitleModel = (tab: Tab) => tab.name ? tab.name : tab.title
 
 function deleteTab(tab: Tab) {
   // NavigationService.closeTab(tab)
@@ -173,10 +173,10 @@ function deleteTab(tab: Tab) {
 }
 
 const saveTab = (tab: Tab) => {
-  if (tab.chromeTab.id) {
+  if (tab.chromeTabId) {
     console.log("capturing", tab.chromeTab)
     chrome.pageCapture.saveAsMHTML(
-      {tabId: tab.chromeTab.id},
+      {tabId: tab.chromeTabId},
       (html: any) => {
         MHtmlService.saveMHtml(tab, html)
       }

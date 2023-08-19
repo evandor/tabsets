@@ -16,16 +16,16 @@
           :tab="uiStore.getSelectedTab" width="24px" height="24px"/>
       </div>
       <div class="col-10 text-body1 ellipsis">
-        {{ getHost(useUiStore().getSelectedTab?.chromeTab?.url, true) }}
+        {{ getHost(useUiStore().getSelectedTab?.url, true) }}
       </div>
       <div class="col-12 text-body2 ellipsis">
-        {{ useUiStore().getSelectedTab?.chromeTab?.title }}
+        {{ useUiStore().getSelectedTab?.title }}
       </div>
 
       <div class="col-12">
         <div class="text-overline ellipsis text-blue-10 cursor-pointer"
-             @click.stop="NavigationService.openOrCreateTab(useUiStore().getSelectedTab.chromeTab?.url )">
-          {{ useUiStore().getSelectedTab?.chromeTab?.url }}&nbsp;<q-icon name="launch" color="secondary"
+             @click.stop="NavigationService.openOrCreateTab(useUiStore().getSelectedTab.url )">
+          {{ useUiStore().getSelectedTab?.url }}&nbsp;<q-icon name="launch" color="secondary"
                                                                          class="cursor-pointer"></q-icon>
         </div>
       </div>
@@ -273,12 +273,12 @@ watchEffect(() => {
 })
 
 function isOpen(tab: Tab): boolean {
-  return TabsetService.isOpen(tab?.chromeTab?.url || '')
+  return TabsetService.isOpen(tab?.url || '')
 }
 
 const tabsetChips = (): object[] => {
   const badges: object[] = []
-  const url = uiStore.getSelectedTab?.chromeTab.url
+  const url = uiStore.getSelectedTab?.url
   if (url) {
     _.forEach(useTabsetService().tabsetsFor(url), ts => badges.push({
       label: TabsetService.nameForTabsetId(ts),
@@ -290,7 +290,7 @@ const tabsetChips = (): object[] => {
   //   badges.push({
   //     label: 'bookmark',
   //     bookmarkId: hit.bookmarkId,
-  //     encodedUrl: btoa(hit.chromeTab.url || '')
+  //     encodedUrl: btoa(hit.url || '')
   //   })
   // }
   return badges;
@@ -325,7 +325,7 @@ watchEffect(() => {
   const fuseIndex = useSearchStore().getIndex()
   const keyMaps = fuseIndex['_keysMap' as keyof object]
   const res = _.filter(fuseIndex['records' as keyof object], (r: any) => {
-    return useUiStore().getSelectedTab?.chromeTab.url === r.$[2]?.v
+    return useUiStore().getSelectedTab?.url === r.$[2]?.v
   })
   const keys: Map<number, object> = new Map()
   Object.keys(keyMaps).forEach((k: any) => {

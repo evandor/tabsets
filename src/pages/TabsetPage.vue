@@ -224,11 +224,6 @@
         hint="This is a special type of tabset - it's meant for those tabs which you don't want to track. You can add urls and whenever
 a tab's url starts with one of the urls of this tabset, it will be ignored and not added to the tabs to be added."/>
 
-      <template
-        v-if="usePermissionsStore().hasFeature(FeatureIdent.TABSET_PAGE) && tabset?.showPageAsHeader">
-        <div v-html="tabset?.page"></div>
-      </template>
-
       <DynamicTabsetPageCards
         v-if="tabset?.type === TabsetType.DYNAMIC"
         :tabset="tabset as unknown as Tabset"/>
@@ -245,7 +240,7 @@ a tab's url starts with one of the urls of this tabset, it will be ignored and n
 </template>
 
 <script setup lang="ts">
-import {onUpdated, ref, unref, watchEffect} from 'vue'
+import {onMounted, onUpdated, ref, unref, watchEffect} from 'vue'
 import {useRoute, useRouter} from "vue-router";
 import {uid, useQuasar} from "quasar";
 import _ from "lodash"
@@ -272,18 +267,13 @@ import {useUiStore} from "src/stores/uiStore";
 import TabsetsSelectorWidget from "components/widgets/TabsetsSelectorWidget.vue";
 import DynamicTabsetPageCards from "pages/DynamicTabsetPageCards.vue";
 import {useTabsetService} from "src/services/TabsetService2";
+import Analytics from "src/utils/google-analytics";
 
 const route = useRoute();
-const router = useRouter();
-const localStorage = useQuasar().localStorage
 const tabsStore = useTabsStore()
-const featuresStore = useSettingsStore()
 const permissionsStore = usePermissionsStore()
 
-const {inBexMode} = useUtils()
-
 const tabsetname = ref(tabsStore.currentTabsetName)
-const filter = ref('')
 const $q = useQuasar()
 
 const tabsetId = ref(null as unknown as string)
@@ -292,6 +282,10 @@ const orderDesc = ref(false)
 const showEditButton = ref(false)
 
 const tab = ref('tabset')
+
+onMounted(() => {
+  Analytics.firePageViewEvent('TabsetPage', document.location.href);
+})
 
 
 onUpdated(() => {
@@ -321,10 +315,10 @@ function getOrder() {
   if (tabset.value) {
     switch (tabset.value?.sorting) {
       case 'alphabeticalUrl':
-        return (t: Tab) => t.chromeTab.url?.replace("https://", "").replace("http://", "").toUpperCase()
+        return (t: Tab) => t.url?.replace("https://", "").replace("http://", "").toUpperCase()
         break
       case 'alphabeticalTitle':
-        return (t: Tab) => t.chromeTab.title?.toUpperCase()
+        return (t: Tab) => t.title?.toUpperCase()
         break
       default:
         return (t: Tab) => 1
@@ -338,7 +332,7 @@ function tabsForGroup(groupId: number): Tab[] {
     _.filter(
       tabsStore.getTabset(tabsetId.value)?.tabs,
       // @ts-ignore
-      (t: Tab) => t?.chromeTab.groupId === groupId),
+      (t: Tab) => t?.groupId === groupId),
     getOrder(), [orderDesc.value ? 'desc' : 'asc'])
 }
 
@@ -358,17 +352,6 @@ const updateSelectionCount = () => {
   selectedCount.value = TabsetService.getSelectedPendingTabs().length
 }
 
-
-const filteredTabs = () => {
-  const noDupliatesTabs = _.filter(tabsStore.pendingTabset?.tabs, (t: Tab) => !t.isDuplicate)
-  if (filter.value && filter.value.trim() !== '') {
-    return _.filter(noDupliatesTabs, (t: Tab) =>
-      (t?.chromeTab.url && t?.chromeTab.url.indexOf(filter.value) >= 0) ||
-      (t?.chromeTab.title && t?.chromeTab.title.indexOf(filter.value) >= 0))
-  }
-  return noDupliatesTabs
-}
-
 const restoreDialog = () => $q.dialog({component: RestoreTabsetDialog})
 const addUrlDialog = () => $q.dialog({component: AddUrlDialog})
 
@@ -378,23 +361,6 @@ const setView = (view: string) => TabsetService.setView(tabsetId.value, view)
 const toggleSorting = () => useCommandExecutor().executeFromUi(new ToggleSortingCommand(tabsetId.value))
 
 const toggleOrder = () => orderDesc.value = !orderDesc.value
-
-const sortingInfo = (): string => {
-  switch (tabset.value?.sorting) {
-    case 'custom':
-      return ", sorted by Index" + (orderDesc.value ? ', descending' : '')
-      break
-    case 'alphabeticalUrl':
-      return ", sorted by URL" + (orderDesc.value ? ', descending' : '')
-      break
-    case 'alphabeticalTitle':
-      return ", sorted by Title" + (orderDesc.value ? ', descending' : '')
-      break
-    default:
-      return "";
-      break
-  }
-}
 
 const showSorting = () => tabsStore.getCurrentTabs.length > 10 && $q.screen.gt.xs
 

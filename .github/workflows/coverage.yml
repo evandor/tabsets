@@ -5,21 +5,26 @@ on:
 #      - master
 #      - main
   push:
-    branches: [ main ]
+    branches: [ main, chrome-extension,vitest ]
 jobs:
   coverage:
     runs-on: ubuntu-latest
+    permissions:
+      # Required to checkout the code
+      contents: read
+      # Required to put a comment into the pull-request
+      pull-requests: write
+
     steps:
       - uses: actions/checkout@v3
-      - uses: ArtiomTr/jest-coverage-report-action@v2
-        id: coverage
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
         with:
-          package-manager: yarn
-          test-script: yarn jest
-          output: comment, report-markdown
-      - uses: peter-evans/commit-comment@v2
-        with:
-            body: ${{ steps.coverage.outputs.report }}
-#      - uses: marocchino/sticky-pull-request-comment@v2
-#        with:
-#          message: ${{ steps.coverage.outputs.report }}
+          node-version: '16.x'
+      - name: 'Install Deps'
+        run: yarn install
+      - name: 'Test'
+        run: npx vitest --coverage
+      - name: 'Report Coverage'
+        if: always() # Also generate the report if tests are failing
+        uses:  davelosert/vitest-coverage-report-action@v2

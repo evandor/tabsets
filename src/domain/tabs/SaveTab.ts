@@ -35,10 +35,10 @@ export class SaveTabCommand implements Command<any> {
     if (!usePermissionsStore().hasPermission('pageCapture')) {
       handleError("missing permission pageCapture")
       return Promise.reject("missing permission pageCapture!")
-    } else if (this.tab.chromeTab.id) {
-      console.log("capturing", typeof this.tab, this.tab.chromeTab.id)
+    } else if (this.tab.chromeTabId) {
+      console.log("capturing", typeof this.tab, this.tab.chromeTabId)
       // TODO cannot return from "saveAsHTML" as the callback cannot be turned into a promise
-      chrome.pageCapture.saveAsMHTML({tabId: this.tab.chromeTab.id},
+      chrome.pageCapture.saveAsMHTML({tabId: this.tab.chromeTabId},
         (html: Blob) => {
           return MHtmlService.saveMHtml(this.tab, html)
             .then((res) => {

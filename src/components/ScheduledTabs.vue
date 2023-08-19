@@ -10,8 +10,8 @@
           <div class="col-2">
             <TabFaviconWidget :tab="tab" width="20px" height="20px" />
           </div>
-          <div class="col-9 text-body2 ellipsis" @click="NavigationService.openOrCreateTab(tab.chromeTab?.url)">
-            {{ tab.chromeTab?.title }}
+          <div class="col-9 text-body2 ellipsis" @click="NavigationService.openOrCreateTab(tab.url)">
+            {{ tab.title }}
           </div>
           <div class="col-1">
             <q-checkbox
@@ -56,8 +56,8 @@ const done = ref(false)
 watchEffect(() => scheduledTabs.value = tabsStore.scheduledTabs)
 
 const open = (tab: Tab) => {
-  if (tab.chromeTab?.url) {
-    router.push("/rss/" + btoa(tab.chromeTab?.url))
+  if (tab.url) {
+    router.push("/rss/" + btoa(tab.url))
   }
 }
 

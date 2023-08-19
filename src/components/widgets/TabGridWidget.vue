@@ -30,7 +30,7 @@
       <div class="row fit">
         <div class="col-12 cursor-pointer ellipsis">
           <TabFaviconWidget :tab="tab" width="16px" height="16px" class="q-mr-sm"/>
-          <span @click="NavigationService.openOrCreateTab(props.tab.chromeTab?.url || '')">{{shortUrl()}}</span>
+          <span @click="NavigationService.openOrCreateTab(props.tab.url || '')">{{shortUrl()}}</span>
         </div>
       </div>
 
@@ -51,7 +51,7 @@ import MHtmlService from "src/services/MHtmlService"
 import {useQuasar} from "quasar"
 import TabFaviconWidget from "src/components/widgets/TabFaviconWidget.vue"
 import {useCommandExecutor} from "src/services/CommandExecutor";
-import {DeleteTabCommand} from "src/domain/commands/DeleteTabCommand"
+import {DeleteTabCommand} from "src/domain/tabs/DeleteTabCommand"
 import {useUtils} from "src/services/Utils"
 import {useTabsetService} from "src/services/TabsetService2";
 
@@ -93,12 +93,12 @@ onMounted(() => {
 
 
 function isOpen(tab: Tab): boolean {
-  //console.log("tabUrl", tab.chromeTab?.url);
-  return TabsetService.isOpen(tab?.chromeTab?.url || '')
+  //console.log("tabUrl", tab.url);
+  return TabsetService.isOpen(tab?.url || '')
 }
 
 const setInfo = (tab: Tab) => {
-  const parts = (tab.chromeTab?.url || '').split('?')
+  const parts = (tab.url || '').split('?')
   if (parts.length > 1) {
     emits('sendCaption', parts[0] + "[... params omitted....]")
   } else if (parts.length === 1) {
@@ -117,8 +117,8 @@ const selectTab = (tab: Tab) => {
 }
 
 
-const nameOrTitle = (tab: Tab) => tab.name ? tab.name : tab.chromeTab?.title
-const dynamicNameOrTitleModel = (tab: Tab) => tab.name ? tab.name : tab.chromeTab?.title
+const nameOrTitle = (tab: Tab) => tab.name ? tab.name : tab.title
+const dynamicNameOrTitleModel = (tab: Tab) => tab.name ? tab.name : tab.title
 
 function deleteTab(tab: Tab) {
   // NavigationService.closeTab(tab)
@@ -129,10 +129,10 @@ function deleteTab(tab: Tab) {
 }
 
 const saveTab = (tab: Tab) => {
-  if (tab.chromeTab.id) {
+  if (tab.chromeTabId) {
     console.log("capturing", tab.chromeTab)
     chrome.pageCapture.saveAsMHTML(
-      {tabId: tab.chromeTab.id},
+      {tabId: tab.chromeTabId},
       (html: any) => {
         MHtmlService.saveMHtml(tab, html)
       }
@@ -141,8 +141,8 @@ const saveTab = (tab: Tab) => {
 }
 
 const shortUrl = () => {
-  if (props.tab.chromeTab.url) {
-    return props.tab.chromeTab.url
+  if (props.tab.url) {
+    return props.tab.url
       .replace("https://www.", "")
       .replace("http://www.", "")
       .replace("https://", "")

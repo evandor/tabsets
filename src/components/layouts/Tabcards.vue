@@ -17,16 +17,6 @@
 
     </div>
 
-<!--    <div v-else-if="tabsStore.pendingTabset?.tabs.length === 0" class="q-ma-md q-pa-xl fit"-->
-<!--         style="border: 2px dotted grey; border-radius: 7px">-->
-<!--      <div class="row fit text-subtitle2 justify-center items-center">-->
-<!--        <div class="col-12">drag and drop new tabs from</div>-->
-<!--      </div>-->
-<!--      <div class="row">-->
-<!--        <div class="col-12 cursor-pointer text-blue-8" @click="openOrShowOpenTabs()">here</div>-->
-<!--      </div>-->
-<!--    </div>-->
-
   </vue-draggable-next>
 
 </template>
@@ -87,13 +77,13 @@ const handleDragAndDrop = (event: any) => {
     switch (props.group) {
       case 'otherTabs':
         // @ts-ignore
-        const unpinnedNoGroup: Tab[] = _.filter(tabsStore.getCurrentTabs, (t: Tab) => !t.chromeTab.pinned && t.chromeTab.groupId === -1)
+        const unpinnedNoGroup: Tab[] = _.filter(tabsStore.getCurrentTabs, (t: Tab) => !t.pinned && t.groupId === -1)
         if (unpinnedNoGroup.length > 0) {
           useIndex = adjustIndex(moved, unpinnedNoGroup);
         }
         break;
       case 'pinnedTabs':
-        const filteredTabs: Tab[] = _.filter(tabsStore.getCurrentTabs, (t: Tab) => t.chromeTab.pinned)
+        const filteredTabs: Tab[] = _.filter(tabsStore.getCurrentTabs, (t: Tab) => t.pinned)
         if (filteredTabs.length > 0) {
           useIndex = adjustIndex(moved, filteredTabs);
         }
@@ -102,7 +92,7 @@ const handleDragAndDrop = (event: any) => {
         if (props.group.startsWith('groupedTabs_')) {
           const groupId = props.group.split('_')[1]
           // @ts-ignore
-          const filteredTabs: Tab[] = _.filter(tabsStore.getCurrentTabs, (t: Tab) => t.chromeTab.groupId === parseInt(groupId))
+          const filteredTabs: Tab[] = _.filter(tabsStore.getCurrentTabs, (t: Tab) => t.groupId === parseInt(groupId))
           if (filteredTabs.length > 0) {
             useIndex = adjustIndex(moved, filteredTabs);
           }
@@ -113,7 +103,7 @@ const handleDragAndDrop = (event: any) => {
   }
   if (added) {
     useCommandExecutor()
-      .executeFromUi(new CreateTabFromOpenTabsCommand(added.element, added.newIndex, props.group))
+      .executeFromUi(new CreateTabFromOpenTabsCommand(added.element, added.newIndex))
   }
 }
 

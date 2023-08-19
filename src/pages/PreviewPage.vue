@@ -82,14 +82,14 @@ watchEffect(async () => {
   console.log("checking tabId", tabId.value)
   const found = _.find(useTabsStore().getCurrentTabs, t => t.id === route.params.tabId)
   console.log("found", found)
-  if (found && found.chromeTab.url) {
-    title.value = found.chromeTab?.title || 'unknown'
-    const request = await TabsetService.getRequestForUrl(found.chromeTab.url)
+  if (found && found.url) {
+    title.value = found.title || 'unknown'
+    const request = await TabsetService.getRequestForUrl(found.url)
     if (request && request.requestInfo && _.find(Object.values(request.requestInfo.headers), (v: any) => v.name === 'x-frame-options')) {
       src.value = 'data:text/html,<p>cannot open this page in iFrame ;(</p>'
     } else {
-      if (found.chromeTab.url) {
-        src.value = `${process.env.BACKEND_URL}/preview/${btoa(found.chromeTab.url)}`
+      if (found.url) {
+        src.value = `${process.env.BACKEND_URL}/preview/${btoa(found.url)}`
       } else {
         src.value = 'data:text/html,<p>loading....</p>'
       }

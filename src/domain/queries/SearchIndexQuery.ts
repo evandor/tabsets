@@ -23,9 +23,14 @@ export class SearchIndexQuery implements Query<Hits> {
     _.forEach(results, h => {
       const theHit = new Hit(
         uid(),
-        ChromeApi.createChromeTabObject(h.item.title, h.item.url, h.item.favIconUrl), 0, 0,
+        //ChromeApi.createChromeTabObject(h.item.title, h.item.url, h.item.favIconUrl),
+        h.item.title,
+        h.item.url,
+        h.item.favIconUrl,
+        0, 0,
         Math.round(100 - (100 * (h?.score || 1))),
         h.item.tabsets,
+        [],
         _.map(h['matches' as keyof object], (m: any) => {
           return {
             key: m['key' as keyof object],

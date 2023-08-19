@@ -1,7 +1,7 @@
 import {IDBPDatabase, openDB} from "idb";
 import {useTabsStore} from "src/stores/tabsStore";
 import _ from "lodash";
-import {INDEX_DB_VERSION, EXPIRE_DATA_PERIOD_IN_MINUTES} from "boot/constants";
+import {EXPIRE_DATA_PERIOD_IN_MINUTES, INDEX_DB_VERSION} from "boot/constants";
 import PersistenceService from "src/services/PersistenceService";
 import {Tabset, TabsetStatus} from "src/models/Tabset";
 import mhtml2html from 'mhtml2html';
@@ -16,9 +16,13 @@ import {uid} from "quasar";
 import {Notification, NotificationStatus} from "src/models/Notification";
 import {StaticSuggestionIdent, Suggestion, SuggestionState} from "src/models/Suggestion";
 import {useUiStore} from "src/stores/uiStore";
+import {useCategoriesStore} from "stores/categoriesStore";
+import {cloudFunctionsApi} from "src/api/cloudfunctionsApi";
+import {Category} from "src/models/Category";
 
 class IndexedDbPersistenceService implements PersistenceService {
   private db: IDBPDatabase = null as unknown as IDBPDatabase
+
   async init(dbName: string) {
     console.log("initializing indexeddb database", dbName)
     this.db = await this.initDatabase(dbName)
@@ -27,18 +31,18 @@ class IndexedDbPersistenceService implements PersistenceService {
 
   async loadTabsets(): Promise<any> {
     const tabsStore = useTabsStore()
-    const keys: IDBValidKey[] = await this.db.getAllKeys('tabsets')
-    const res: Promise<any>[] = _.map(keys, key => {
-      return this.db.get('tabsets', key)
-        .then(ts => {
-          if (!ts.status) {
-            ts.status = TabsetStatus.DEFAULT
-          }
-          tabsStore.addTabset(ts)
-        })
-        .catch(err => console.log("err", err))
-    })
-    return Promise.all(res)
+    return await this.db.getAll('tabsets')
+      .then((res: any) => res.forEach((r: Tabset) => tabsStore.addTabset(r)))
+  }
+
+  async reloadTabset(tabsetId: string) {
+    const ts = await this.db.get('tabsets', tabsetId) as Tabset | undefined
+    if (ts) {
+      console.log("reloaded tabset", ts.id, ts.tabs.length)
+      useTabsStore().tabsets.set(ts.id, ts)
+    } else {
+      console.warn("could not reload tabset with id", tabsetId)
+    }
   }
 
   async loadSpaces(): Promise<void> {
@@ -54,9 +58,31 @@ class IndexedDbPersistenceService implements PersistenceService {
     })
   }
 
+  async loadCategories(): Promise<void> {
+    console.debug("loading categories...")
+    const categoriesStore = useCategoriesStore()
+    const cs: Category[] = await cloudFunctionsApi().getCategories()
+    _.forEach(cs, c => {
+      categoriesStore.putCategory(c)
+      // this.db.get('spaces', key)
+      //   .then((space: Space) => {
+      //     spacesStore.putSpace(space)
+      //   })
+      //   .catch(err => console.log("err", err))
+    })
+  }
+
 
   async saveTabset(tabset: Tabset): Promise<IDBValidKey> {
+    console.log("db: saving tabset", tabset.id, tabset.tabs.length)
     return await this.db.put('tabsets', JSON.parse(JSON.stringify(tabset)), tabset.id);
+
+    //   const tabsRes = await this.db.put('tabs', JSON.parse(JSON.stringify(tabset.tabs)), tabset.id);
+    //   const tabsetClone = Object.assign({}, tabset);
+    //   tabsetClone.tabs = []
+    //   tabsetClone.tabsCount = tabset.tabs.length
+    //   await this.db.put('tabsets', JSON.parse(JSON.stringify(tabsetClone)), tabset.id);
+    //   return tabsRes
   }
 
   deleteTabset(tabsetId: string): Promise<void> {
@@ -171,7 +197,10 @@ class IndexedDbPersistenceService implements PersistenceService {
 
   getContent(url: string): Promise<object> {
     const encodedUrl = btoa(url)
-    return this.db.get('content', encodedUrl)
+    if (this.db) {
+      return this.db.get('content', encodedUrl)
+    }
+    return Promise.reject("db not ready (yet)")
   }
 
   deleteThumbnail(url: string): Promise<void> {
@@ -182,7 +211,8 @@ class IndexedDbPersistenceService implements PersistenceService {
     return this.db.delete('content', btoa(url))
   }
 
-  saveContent(tab: chrome.tabs.Tab, text: string, metas: object, title: string, tabsetIds: string[]): Promise<IDBValidKey> {
+  saveContent(tab: Tab, text: string, metas: object, title: string, tabsetIds: string[],
+              tabsetCandidates: object[] = []): Promise<IDBValidKey> {
     if (tab.url) {
       const encodedTabUrl = btoa(tab.url)
       return this.db.put('content', {
@@ -193,10 +223,11 @@ class IndexedDbPersistenceService implements PersistenceService {
         content: text,
         metas: metas,
         tabsets: tabsetIds,
-        favIconUrl: tab.favIconUrl
+        favIconUrl: tab.favIconUrl,
+        tabsetCandidates: tabsetCandidates
       }, encodedTabUrl)
         .then((res) => {
-         // console.info(new Tab(uid(), tab), "saved content for url " + tab.url)
+          // console.info(new Tab(uid(), tab), "saved content for url " + tab.url)
           return res
         })
     }
@@ -291,7 +322,7 @@ class IndexedDbPersistenceService implements PersistenceService {
   }
 
   async saveMHtml(tab: Tab, mhtml: Blob): Promise<string> {
-    if (tab.chromeTab.url) {
+    if (tab.url) {
       // console.log("TextDecoder('utf-8')", new TextDecoder('utf-8'), typeof mhtml)
       // console.log("mhtml", mhtml)
 
@@ -299,9 +330,9 @@ class IndexedDbPersistenceService implements PersistenceService {
       const mhtmlId = uid()
       this.db.put('mhtml', {
         id: mhtmlId,
-        title: tab.name ? tab.name : tab.chromeTab.title,
-        favIconUrl: tab.chromeTab.favIconUrl,
-        url: tab.chromeTab.url,
+        title: tab.name ? tab.name : tab.title,
+        favIconUrl: tab.favIconUrl,
+        url: tab.url,
         created: new Date().getTime(),
         content: mhtml
         //hash: uuidv5(mhtmlAsString, 'da42d8e8-2afd-446f-b72e-8b437aa03e46')
@@ -311,17 +342,17 @@ class IndexedDbPersistenceService implements PersistenceService {
     return Promise.reject("tab.url missing")
   }
 
-  saveBlob(id: string, url: string, data: Blob, type: string):Promise<any> {
-      //const encodedTabUrl = btoa(tab.chromeTab.url)
-      return this.db.put('blobs', {
-        id: id,
-        type: type,
-        //title: tab.name ? tab.name : tab.chromeTab.title,
-        //favIconUrl: tab.chromeTab.favIconUrl,
-        url: url,
-        created: new Date().getTime(),
-        content: data
-      }, id)
+  saveBlob(id: string, url: string, data: Blob, type: string): Promise<any> {
+    //const encodedTabUrl = btoa(tab.url)
+    return this.db.put('blobs', {
+      id: id,
+      type: type,
+      //title: tab.name ? tab.name : tab.title,
+      //favIconUrl: tab.favIconUrl,
+      url: url,
+      created: new Date().getTime(),
+      content: data
+    }, id)
   }
 
   async getMHtml(id: string): Promise<any> {
@@ -329,7 +360,7 @@ class IndexedDbPersistenceService implements PersistenceService {
     return this.db.get('mhtml', id)
   }
 
-  async deleteMHtml(id: string):Promise<void> {
+  async deleteMHtml(id: string): Promise<void> {
     return this.db.delete('mhtml', id)
   }
 
@@ -391,13 +422,13 @@ class IndexedDbPersistenceService implements PersistenceService {
     }
   }
 
-  getBlobs(type: string):Promise<any[]> {
+  getBlobs(type: string): Promise<any[]> {
     if (!this.db) { // can happen for some reason
       return Promise.resolve([])
     }
     try {
       return this.db.getAll('blobs')
-        .then((b:any[]) => {
+        .then((b: any[]) => {
           return _.filter(b, d => d.type === type)
         })
     } catch (ex) {
@@ -406,13 +437,13 @@ class IndexedDbPersistenceService implements PersistenceService {
     }
   }
 
-  getBlob(blobId: string):Promise<any> {
+  getBlob(blobId: string): Promise<any> {
     if (!this.db) { // can happen for some reason
       return Promise.resolve([])
     }
     try {
       return this.db.getAll('blobs')
-        .then((b:any[]) => {
+        .then((b: any[]) => {
           const found = _.filter(b, d => d.id === blobId)
           if (found && found.length === 1) {
             return Promise.resolve(found[0])
@@ -443,6 +474,10 @@ class IndexedDbPersistenceService implements PersistenceService {
           console.log("creating db tabsets")
           db.createObjectStore('tabsets');
         }
+        /*        if (!db.objectStoreNames.contains('tabs')) {
+                  console.log("creating db tabs")
+                  db.createObjectStore('tabs');
+                }*/
         if (!db.objectStoreNames.contains('thumbnails')) {
           console.log("creating db thumbnails")
           let store = db.createObjectStore('thumbnails');
@@ -465,10 +500,6 @@ class IndexedDbPersistenceService implements PersistenceService {
           console.log("creating db requests")
           let store = db.createObjectStore('requests');
           store.createIndex("expires", "expires", {unique: false});
-        }
-        if (!db.objectStoreNames.contains('stats')) {
-          console.log("creating db stats")
-          db.createObjectStore('stats');
         }
         if (!db.objectStoreNames.contains('metalinks')) {
           console.log("creating db metalinks")
@@ -497,9 +528,8 @@ class IndexedDbPersistenceService implements PersistenceService {
   }
 
   private urlExistsInATabset(url: string): boolean {
-    //console.log("checking url", url)
     for (let ts of [...useTabsStore().tabsets.values()]) {
-      if (_.find(ts.tabs, t => t.chromeTab.url === url)) {
+      if (_.find(ts.tabs, t => t.url === url)) {
         return true;
       }
     }
@@ -560,13 +590,23 @@ class IndexedDbPersistenceService implements PersistenceService {
   addSuggestion(suggestion: Suggestion): Promise<void> {
     return this.getSuggestions()
       .then((suggestions) => {
+        const foundExistingInStateNewOrCanceled = _.find(suggestions,
+            (s: Suggestion) => s.state === SuggestionState.NEW || s.state === SuggestionState.CANCELED)
+        if (foundExistingInStateNewOrCanceled) {
+          if (foundExistingInStateNewOrCanceled && foundExistingInStateNewOrCanceled.url === suggestion.url) {
+            foundExistingInStateNewOrCanceled.state = SuggestionState.APPLIED
+            this.db.put('suggestions', foundExistingInStateNewOrCanceled, foundExistingInStateNewOrCanceled.id)
+            return Promise.reject("updated existing suggestion to 'applied'")
+          }
+          return Promise.reject("there's already a suggestion in state NEW, not adding (yet)")
+        }
         const found = _.find(suggestions, (s: Suggestion) => s.url === suggestion.url)
         if (!found) {
           return this.db.add('suggestions', suggestion, suggestion.id)
             .then((res) => Promise.resolve())
         }
-        console.log("suggestion already exists")
-        return Promise.resolve()
+        //console.log("suggestion already exists")
+        return Promise.reject("suggestion already exists")
       })
     // .catch((err) => Promise.reject(err))
   }
@@ -586,6 +626,10 @@ class IndexedDbPersistenceService implements PersistenceService {
         return res
       })
       .catch((err) => Promise.reject("error updating suggestion" + err))
+  }
+
+  compactDb(): Promise<any> {
+    return Promise.resolve(undefined);
   }
 
   // ignoreSuggestion(suggestionId: string): Promise<void> {
@@ -609,6 +653,14 @@ class IndexedDbPersistenceService implements PersistenceService {
   //     })
   //     .catch((err) => Promise.reject("error applying suggestion" + err))
   // }
+  // async loadTabs(tabsetId: string): Promise<Tab[]> {
+  //   console.log("loading tabs...")
+  //   return await this.db.get("tabs", tabsetId)
+  // }
+
+  clear(name: string) {
+    this.db.clear(name).catch((e) => console.warn(e))
+  }
 }
 
 export default new IndexedDbPersistenceService()

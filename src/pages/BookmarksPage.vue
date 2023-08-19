@@ -12,7 +12,9 @@
                     <q-breadcrumbs-el v-for="bm in bookmarksForBreadcrumb"
                                       :label="bm.chromeBookmark.title"
                                       class="cursor-pointer"
-                                      @click="router.push('/bookmarks/' + bm.chromeBookmark.id)"
+                                      @click="props.inSidePanel ?
+                                        router.push('/mainpanel/bookmarks/' + bm.chromeBookmark.id) :
+                                        router.push('/bookmarks/' + bm.chromeBookmark.id)"
                     />
                   </q-breadcrumbs>
                 </span>
@@ -73,7 +75,9 @@
         <BookmarkList
           :parent="bookmarkId"
           group="bookmarkFolders"
-          :bookmarks="folders()"/>
+          :bookmarks="folders()"
+          :in-side-panel="props.inSidePanel"
+        />
 
       </q-card-section>
     </q-card>
@@ -98,11 +102,13 @@
     <q-card>
       <q-card-section>
 
-<!--          :highlightId="highlightId"-->
+        <!--          :highlightId="highlightId"-->
         <BookmarkList
           group="bookmarks"
           :parent="bookmarkId"
-          :bookmarks="nonFolders()"/>
+          :bookmarks="nonFolders()"
+          :in-side-panel="props.inSidePanel"
+        />
 
       </q-card-section>
     </q-card>
@@ -117,10 +123,15 @@ import _ from "lodash"
 import {useTabsStore} from "src/stores/tabsStore";
 import {useBookmarksStore} from "src/stores/bookmarksStore";
 import {Bookmark} from "src/models/Bookmark";
-import {ref, watchEffect} from "vue";
+import {onMounted, ref, watchEffect} from "vue";
 import AddBookmarkFolderDialog from "components/dialogues/AddBookmarkFolderDialog.vue";
 import BookmarkList from "components/layouts/BookmarkList.vue";
 import ImportFromBookmarks from "components/dialogues/ImportFromBookmarks.vue";
+import Analytics from "src/utils/google-analytics";
+
+const props = defineProps({
+  inSidePanel: {type: Boolean, default: false}
+})
 
 const route = useRoute();
 const router = useRouter();
@@ -135,6 +146,11 @@ const bookmarksForBreadcrumb = ref<Bookmark[]>([])
 const bookmarkId = ref('')
 
 const highlightId = ref<string>('')
+
+onMounted(() => {
+  Analytics.firePageViewEvent('BookmarksPage', document.location.href);
+})
+
 
 watchEffect(() => {
   const highlight = route.query['highlight'] as unknown as string
@@ -195,7 +211,7 @@ const deleteBookmarkFolder = () => {
     console.log("deleting", folderId)
     chrome.bookmarks.removeTree(bookmarksStore.currentBookmark.chromeBookmark.id)
     if (parentId) {
-      router.push("/bookmarks/" + parentId)
+      router.push(props.inSidePanel ? "/mainpanel/bookmarks/" + parentId : "/bookmarks/" + parentId)
     }
   }).onCancel(() => {
   }).onDismiss(() => {
@@ -207,9 +223,9 @@ const addUrlDialog = () => $q.dialog({
   componentProps: {parentFolderId: bookmarkId.value}
 })
 
-const folders = ():Bookmark[] => _.filter(bookmarksStore.bookmarksForFolder, (bm: Bookmark) => !bm.chromeBookmark.url)
-const nonFolders = ():Bookmark[] => _.filter(bookmarksStore.bookmarksForFolder, (bm: Bookmark) => !!bm.chromeBookmark.url)
+const folders = (): Bookmark[] => _.filter(bookmarksStore.bookmarksForFolder, (bm: Bookmark) => !bm.chromeBookmark.url)
+const nonFolders = (): Bookmark[] => _.filter(bookmarksStore.bookmarksForFolder, (bm: Bookmark) => !!bm.chromeBookmark.url)
 
-const importBookmarks = () => $q.dialog({component: ImportFromBookmarks})
+const importBookmarks = () => $q.dialog({component: ImportFromBookmarks, componentProps: {inSidePanel:props.inSidePanel}})
 
 </script>

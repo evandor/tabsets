@@ -12,6 +12,7 @@
         :key="props.group + '_' + bm.id">
 
         <BookmarkListElementWidget
+          :in-side-panel="true"
           :key="props.group + '__' + bm.id" :bookmark="bm" :highlightUrl="highlightUrl"/>
 
       </q-item>
@@ -38,23 +39,13 @@ const tabsStore = useTabsStore()
 const {saveCurrentTabset} = useTabsetService()
 
 const props = defineProps({
-  bookmarks: {
-    type: Array as PropType<Array<Bookmark>>,
-    required: true
-  },
-  group: {
-    type:String,
-    required: true
-  },
-  parent: {
-    type: String,
-    required: true
-  },
-  highlightUrl: {
-    type: String,
-    required: false
-  }
+  bookmarks: {type: Array as PropType<Array<Bookmark>>, required: true},
+  group: {type: String, required: true},
+  parent: {type: String, required: true},
+  highlightUrl: {type: String, required: false},
+  inSidePanel: {type: Boolean, default: false}
 })
+
 const showDeleteButton = ref<Map<string, boolean>>(new Map())
 
 const thumbnails = ref<Map<string, string>>(new Map())
@@ -80,13 +71,13 @@ const handleDragAndDrop = (event: any) => {
     // switch (props.group) {
     //   case 'otherTabs':
     //     // @ts-ignore
-    //     const unpinnedNoGroup: Tab[] = _.filter(tabsStore.getCurrentTabs, (t: Tab) => !t.chromeTab.pinned && t.chromeTab.groupId === -1)
+    //     const unpinnedNoGroup: Tab[] = _.filter(tabsStore.getCurrentTabs, (t: Tab) => !t.pinned && t.groupId === -1)
     //     if (unpinnedNoGroup.length > 0) {
     //       //useIndex = adjustIndex(moved, unpinnedNoGroup);
     //     }
     //     break;
     //   case 'pinnedTabs':
-    //     const filteredTabs: Tab[] = _.filter(tabsStore.getCurrentTabs, (t: Tab) => t.chromeTab.pinned)
+    //     const filteredTabs: Tab[] = _.filter(tabsStore.getCurrentTabs, (t: Tab) => t.pinned)
     //     if (filteredTabs.length > 0) {
     //       // useIndex = adjustIndex(moved, filteredTabs);
     //     }
@@ -95,7 +86,7 @@ const handleDragAndDrop = (event: any) => {
     //     if (props.group.startsWith('groupedTabs_')) {
     //       const groupId = props.group.split('_')[1]
     //       // @ts-ignore
-    //       const filteredTabs: Tab[] = _.filter(tabsStore.getCurrentTabs, (t: Tab) => t.chromeTab.groupId === parseInt(groupId))
+    //       const filteredTabs: Tab[] = _.filter(tabsStore.getCurrentTabs, (t: Tab) => t.groupId === parseInt(groupId))
     //       if (filteredTabs.length > 0) {
     //         // useIndex = adjustIndex(moved, filteredTabs);
     //       }
@@ -119,7 +110,7 @@ const startDrag = (evt: any, tab: Bookmark) => {
     evt.dataTransfer.dropEffect = 'move'
     evt.dataTransfer.effectAllowed = 'move'
     evt.dataTransfer.setData('text/plain', tab.id)
-    useUiStore().draggingTab(tab.id,null as unknown as DragEvent)
+    useUiStore().draggingTab(tab.id, null as unknown as DragEvent)
   }
   console.log("evt.dataTransfer.getData('text/plain')", evt.dataTransfer.getData('text/plain'))
 }

@@ -12,7 +12,7 @@
 <!--            width="100%"-->
 
 <!--            :src="thumbnailFor(tab)">-->
-<!--            <q-tooltip>{{ tab.chromeTab?.id }} / {{ tab.id }}</q-tooltip>-->
+<!--            <q-tooltip>{{ tab.chromeTabId }} / {{ tab.id }}</q-tooltip>-->
 <!--          </q-img>-->
 <!--        </div>-->
 
@@ -20,11 +20,11 @@
 
 
 <!--      <div class="text-subtitle2 ellipsis text-blue-9"-->
-<!--           @click.stop="NavigationService.openOrCreateTab(tab.chromeTab?.url )">-->
-<!--        {{ tab.chromeTab?.url.replace("https://www.", '').replace("https://", '') }}-->
+<!--           @click.stop="NavigationService.openOrCreateTab(tab.url )">-->
+<!--        {{ tab.url.replace("https://www.", '').replace("https://", '') }}-->
 <!--        <q-icon name="launch" color="secondary"></q-icon>-->
 <!--        <q-tooltip>-->
-<!--          {{ tab.chromeTab?.url }}-->
+<!--          {{ tab.url }}-->
 <!--        </q-tooltip>-->
 
 <!--      </div>-->
@@ -61,7 +61,7 @@
 <!--const thumbnails = ref<Map<string, string>>(new Map())-->
 
 <!--const thumbnailFor = (tab: Tab): string => {-->
-<!--  const key = btoa(tab.chromeTab.url || '')-->
+<!--  const key = btoa(tab.url || '')-->
 <!--  // return thumbnails.value.get(key) || "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+ip1sAAAAASUVORK5CYII="-->
 <!--  return thumbnails.value.get(key) || "thumbnail-not-available.png"-->
 <!--}-->
@@ -69,8 +69,8 @@
 <!--const loadThumbnail = (tab: Tab) => {-->
 <!--  TabsetService.getThumbnailFor(tab)-->
 <!--    .then(data => {-->
-<!--      //console.log("loading tn for ", tab.chromeTab.url)-->
-<!--      const key = btoa(tab.chromeTab.url || '')-->
+<!--      //console.log("loading tn for ", tab.url)-->
+<!--      const key = btoa(tab.url || '')-->
 <!--      if (data && data.thumbnail) {-->
 <!--        //console.log("found key", key, data)-->
 <!--        thumbnails.value.set(key, data.thumbnail)-->
@@ -92,19 +92,19 @@
 <!--  let background = ''-->
 <!--  if (tab?.isDuplicate) {-->
 <!--    background = "background: radial-gradient(circle, #FFFFFF 0%, #FFECB3 100%)"-->
-<!--  } else if (tab?.chromeTab.url === props.highlightUrl) {-->
+<!--  } else if (tab?.url === props.highlightUrl) {-->
 <!--    background = "background: radial-gradient(circle, #FFBF46 0%, #FFBF46 100%)"-->
 <!--  }-->
 <!--  return `${borderColor};${background}`-->
 <!--}-->
 
 <!--function isOpen(tab: Tab): boolean {-->
-<!--  //console.log("tabUrl", tab.chromeTab?.url);-->
-<!--  return TabsetService.isOpen(tab?.chromeTab?.url || '')-->
+<!--  //console.log("tabUrl", tab.url);-->
+<!--  return TabsetService.isOpen(tab?.url || '')-->
 <!--}-->
 
 <!--const setInfo = (tab: Tab) => {-->
-<!--  const parts = (tab.chromeTab?.url || '').split('?')-->
+<!--  const parts = (tab.url || '').split('?')-->
 <!--  if (parts.length > 1) {-->
 <!--    emits('sendCaption', parts[0] + "[... params omitted....]")-->
 <!--  } else if (parts.length === 1) {-->
@@ -126,25 +126,25 @@
 <!--}-->
 
 <!--const getFaviconUrl = (chromeTab: chrome.tabs.Tab | undefined) => {-->
-<!--  if (chromeTab && chromeTab.favIconUrl && !chromeTab.favIconUrl.startsWith("chrome")) {-->
-<!--    //console.log("chromeTab.favIconUrl", chromeTab.favIconUrl)-->
-<!--    return chromeTab.favIconUrl-->
+<!--  if (chromeTab && .favIconUrl && !.favIconUrl.startsWith("chrome")) {-->
+<!--    //console.log(".favIconUrl", .favIconUrl)-->
+<!--    return .favIconUrl-->
 <!--  }-->
 <!--  return ''-->
 <!--}-->
 
-<!--const nameOrTitle = (tab: Tab) => tab.name ? tab.name : tab.chromeTab?.title-->
-<!--const dynamicNameOrTitleModel = (tab: Tab) => tab.name ? tab.name : tab.chromeTab?.title-->
+<!--const nameOrTitle = (tab: Tab) => tab.name ? tab.name : tab.title-->
+<!--const dynamicNameOrTitleModel = (tab: Tab) => tab.name ? tab.name : tab.title-->
 
 <!--function closeTab(tab: Tab) {-->
 <!--  NavigationService.closeTab(tab)-->
 <!--}-->
 
 <!--const saveTab = (tab: Tab) => {-->
-<!--  if (tab.chromeTab.id) {-->
+<!--  if (tab.chromeTabId) {-->
 <!--    console.log("capturing", tab.chromeTab)-->
 <!--    chrome.pageCapture.saveAsMHTML(-->
-<!--      {tabId: tab.chromeTab.id},-->
+<!--      {tabId: tab.chromeTabId},-->
 <!--      (html: any) => {-->
 <!--        MHtmlService.saveMHtml(tab, html)-->
 <!--      }-->

@@ -1,5 +1,7 @@
 <template>
-  {{ shortenUrl() }}
+  <span class="text-blue-10">{{ shortenUrl() }}
+    <q-tooltip class="tooltip">{{ url }}</q-tooltip>
+  </span>
 </template>
 
 <script lang="ts" setup>

@@ -63,28 +63,28 @@ https://chrome.google.com/webstore/detail/tabsets-extension/afkknkdbgondbbfjehip
 
 ## quasar info
 
-Operating System - Darwin(22.4.0) - darwin/x64
-NodeJs - 16.18.1
+Operating System - Darwin(22.5.0) - darwin/arm64
+NodeJs - 16.20.1
 
 Global packages
-NPM - 8.19.2
+NPM - 8.19.4
 yarn - 1.22.19
-@quasar/cli - 2.2.1
-@quasar/icongenie - 2.5.3
+@quasar/cli - undefined
+@quasar/icongenie - Not installed
 cordova - 11.1.0
 
 Important local packages
-quasar - 2.12.0 -- Build high-performance VueJS user interfaces (SPA, PWA, SSR, Mobile and Desktop) in record time
+quasar - 2.12.4 -- Build high-performance VueJS user interfaces (SPA, PWA, SSR, Mobile and Desktop) in record time
 @quasar/app-vite - 1.4.3 -- Quasar Framework App CLI with Vite
-@quasar/extras - 1.16.4 -- Quasar Framework fonts, icons and animations
+@quasar/extras - 1.16.5 -- Quasar Framework fonts, icons and animations
 eslint-plugin-quasar - Not installed
 vue - 3.3.4 -- The progressive JavaScript framework for building modern web UI.
-vue-router - 4.2.1
-pinia - 2.1.3 -- Intuitive, type safe and flexible Store for Vue
+vue-router - 4.2.4
+pinia - 2.1.6 -- Intuitive, type safe and flexible Store for Vue
 vuex - Not installed
-vite - 2.9.15 -- Native-ESM powered web dev build tool
+vite - 2.9.16 -- Native-ESM powered web dev build tool
 eslint - Not installed
-electron - 24.3.1 -- Build cross platform desktop apps with JavaScript, HTML, and CSS
+electron - 25.5.0 -- Build cross platform desktop apps with JavaScript, HTML, and CSS
 electron-packager - 17.1.1 -- Customize and package your Electron app with OS-specific bundles (.app, .exe, etc.) via JS or CLI
 electron-builder - Not installed
 register-service-worker - 1.7.2 -- Script for registering service worker, with hooks
@@ -94,7 +94,6 @@ register-service-worker - 1.7.2 -- Script for registering service worker, with h
 @capacitor/ios - Not installed
 
 Quasar App Extensions
-@quasar/quasar-app-extension-testing - 2.1.0 -- A Quasar App Extension for managing Test Harnesses
-@quasar/quasar-app-extension-testing-unit-jest - 3.0.0-beta.5 -- A Quasar App Extension for running Jest tests
+@quasar/quasar-app-extension-testing-unit-vitest - 0.3.0 -- A Quasar App Extension for running tests with Vitest
 
 

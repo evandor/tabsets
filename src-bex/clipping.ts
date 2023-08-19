@@ -49,7 +49,11 @@ class Clipper {
       dpr: window.devicePixelRatio
     }
     console.log("sending", msg)
-    chrome.runtime.sendMessage(msg)
+    chrome.runtime.sendMessage(msg, (callback) => {
+      if (chrome.runtime.lastError) {
+        console.warn("got runtime error", chrome.runtime.lastError)
+      }
+    })
     this.crossHair.remove()
     this.remove()
     this.keydownCheck.removeListener()

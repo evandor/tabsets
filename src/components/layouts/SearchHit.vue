@@ -1,57 +1,151 @@
 <template>
 
+  <q-item v-ripple class="q-mb-lg">
 
-  <q-item v-ripple autofocus class="q-mb-lg">
+    <q-item-section v-if="useUiStore().listDetailLevelGreaterEqual(ListDetailLevel.MEDIUM)"
+                    @click.stop="NavigationService.openOrCreateTab(hit.url || '' )"
+                    class="q-mr-sm text-right" style="justify-content:start;width:25px;max-width:25px">
+      <div class="bg-grey-3 q-pa-xs" style="border:0 solid grey;border-radius:3px">
 
-    <q-item-section>
-      <q-item-label class="ellipsis text-black" caption
-                    v-html="formatText(hit, 'url',hit.chromeTab.url || '', '#FFFFDD')"></q-item-label>
-      <q-item-label class="text-blue-9 text-h6">
+        <q-img
+            class="rounded-borders"
+            style="cursor: move"
+            width="16px"
+            height="16px"
+            :src="getFaviconUrl(hit.url, hit.favIconUrl)">
+          <q-tooltip>drag and drop to tabset</q-tooltip>
+        </q-img>
 
-        <FaviconWidget :url="hit.chromeTab.url" :favicon="hit.chromeTab.favIconUrl" />
+      </div>
+    </q-item-section>
 
-        <span class="cursor-pointer underline-on-hover q-ml-sm text-subtitle1" style="font-weight:400"
-              @click="NavigationService.openOrCreateTab(hit.chromeTab?.url )"
-              v-html="formatText(hit, 'title',hit.chromeTab.title || '', '#FFFFDD')"></span>
+    <!-- name, title, description, url && note -->
+    <q-item-section class="q-mb-sm cursor-pointer ellipsis"
+                    @click.stop="NavigationService.openOrCreateTab(hit.url || '' )">
+
+      <!-- name or title -->
+
+      <q-item-label>
+        <div>
+          <div class="q-pr-sm cursor-pointer ellipsis">
+            <span>{{ hit.name ? hit.name : hit.title }}</span>
+          </div>
+
+        </div>
+      </q-item-label>
+
+      <!-- description -->
+      <q-item-label class="ellipsis-2-lines text-grey-8"
+                    @click.stop="NavigationService.openOrCreateTab(hit.url || '' )">
+        {{ hit.description }}
+      </q-item-label>
+
+      <!-- url -->
+      <q-item-label
+          style="width:100%"
+          caption class="ellipsis-2-lines text-blue-10">
+        <div class="row q-ma-none">
+          <div class="col-10 q-pr-lg cursor-pointer"
+               @click.stop="NavigationService.openOrCreateTab(hit.url )">
+            <short-url :url="hit.url" :hostname-only="true"/>
+            <!--            <div class="text-caption text-grey-5">-->
+            <!--              {{ formatDate(hit.lastActive) }}-->
+            <!--            </div>-->
+            <!-- <q-icon class="q-ml-xs" name="open_in_new"/>-->
+          </div>
+
+        </div>
+
+      </q-item-label>
+
+      <q-item-label>
         <template v-for="badge in tabsetBadges(hit)">
           <q-chip v-if="badge.bookmarkId"
-                  class="cursor-pointer q-ml-md" size="9px" clickable icon="o_bookmark" color="warning" @click="openBookmark(badge)">
+                  class="cursor-pointer q-ml-none q-mr-sm" size="9px" clickable icon="o_bookmark" color="warning"
+                  @click="openBookmark(badge)">
             {{ badge.label }}
           </q-chip>
           <q-chip v-else
-                  class="cursor-pointer q-ml-md" size="9px" clickable icon="tab" @click="openTabset(badge)">
+                  class="cursor-pointer q-ml-none q-mr-sm" size="9px" clickable icon="tab" @click="openTabset(badge)">
             {{ badge.label }}
           </q-chip>
         </template>
       </q-item-label>
+      <!--      &lt;!&ndash; note &ndash;&gt;-->
+      <!--      <q-item-label v-if="useUiStore().listDetailLevelGreaterEqual(ListDetailLevel.LARGE) &&-->
+      <!--      props['tab' as keyof object]['note']"-->
+      <!--                    class="text-grey-10" text-subtitle1>-->
+      <!--        <q-icon color="blue-10" name="edit_note"/>-->
+      <!--        <div class="ellipsis-2-lines">-->
+      <!--          {{ props['tab']['note'] }}-->
+      <!--        </div>-->
+      <!--      </q-item-label>-->
 
-      <q-item-label caption v-html="formatText(hit, 'description', hit.description || '', '#FFFFDD')"></q-item-label>
-      <q-item-label style="font-style:italic" caption
-                    v-html="formatText(hit, 'keywords', hit.keywords || '', '#FFFFDD')"></q-item-label>
-      <q-item-label class="text-blue-2 q-mb-sm" v-if="settingsStore.isEnabled('debug')">Match in:
-        {{ _.map(hit['matches'], m => m['key']).join(", ") }}
-      </q-item-label>
-      <!--      <q-item-label caption>{{ hit['matches'] }}</q-item-label>-->
+      <!--      <q-item-label v-if="props.showTabsets">-->
+      <!--        <template v-for="badge in tsBadges">-->
+      <!--          <q-chip class="cursor-pointer q-ml-none q-mr-xs" size="9px" icon="tab">-->
+      <!--            {{ badge.label }}-->
+      <!--          </q-chip>-->
+      <!--        </template>-->
+      <!--      </q-item-label>-->
 
-      <span>
-        <q-rating
-          v-model="scoreAsRating"
-          size="13px"
-          color="warning"
-          readonly
-        />
-        <!--        {{ hit.score }}%-->
-      </span>
     </q-item-section>
 
+
   </q-item>
+
+  <!--  <q-item v-ripple autofocus class="q-mb-lg">-->
+
+  <!--    <q-item-section>-->
+  <!--      <q-item-label class="ellipsis text-black" caption-->
+  <!--                    v-html="formatText(hit, 'url',hit.url || '', '#FFFFDD')"></q-item-label>-->
+  <!--      <q-item-label class="text-blue-9 text-h6">-->
+
+  <!--        <FaviconWidget :url="hit.url" :favicon="hit.favIconUrl"/>-->
+
+  <!--        <span class="cursor-pointer underline-on-hover q-ml-sm text-subtitle1" style="font-weight:400"-->
+  <!--              @click="NavigationService.openOrCreateTab(hit.url )"-->
+  <!--              v-html="formatText(hit, 'title',hit.title || '', '#FFFFDD')"></span>-->
+  <!--        <template v-for="badge in tabsetBadges(hit)">-->
+  <!--          <q-chip v-if="badge.bookmarkId"-->
+  <!--                  class="cursor-pointer q-ml-md" size="9px" clickable icon="o_bookmark" color="warning"-->
+  <!--                  @click="openBookmark(badge)">-->
+  <!--            {{ badge.label }}-->
+  <!--          </q-chip>-->
+  <!--          <q-chip v-else-->
+  <!--                  class="cursor-pointer q-ml-md" size="9px" clickable icon="tab" @click="openTabset(badge)">-->
+  <!--            {{ badge.label }}-->
+  <!--          </q-chip>-->
+  <!--        </template>-->
+  <!--      </q-item-label>-->
+
+  <!--      <q-item-label caption v-html="formatText(hit, 'description', hit.description || '', '#FFFFDD')"></q-item-label>-->
+  <!--      <q-item-label style="font-style:italic" caption-->
+  <!--                    v-html="formatText(hit, 'keywords', hit.keywords || '', '#FFFFDD')"></q-item-label>-->
+  <!--      <q-item-label class="text-blue-2 q-mb-sm" v-if="settingsStore.isEnabled('debug')">Match in:-->
+  <!--        {{ _.map(hit['matches'], m => m['key']).join(", ") }}-->
+  <!--      </q-item-label>-->
+  <!--      &lt;!&ndash;      <q-item-label caption>{{ hit['matches'] }}</q-item-label>&ndash;&gt;-->
+
+  <!--      <span>-->
+  <!--        <q-rating-->
+  <!--            v-model="scoreAsRating"-->
+  <!--            size="13px"-->
+  <!--            color="warning"-->
+  <!--            readonly-->
+  <!--        />-->
+  <!--        &lt;!&ndash;        {{ hit.score }}%&ndash;&gt;-->
+  <!--      </span>-->
+  <!--    </q-item-section>-->
+
+  <!--  </q-item>-->
 
 
 </template>
 
 <script setup lang="ts">
 import NavigationService from "src/services/NavigationService";
-import {Tab} from "src/models/Tab";
+import {Tab, UrlExtension} from "src/models/Tab";
 import TabsetService from "src/services/TabsetService";
 import {ref} from "vue";
 import {Hit} from "src/models/Hit";
@@ -63,6 +157,12 @@ import TabFaviconWidget from "components/widgets/TabFaviconWidget.vue";
 import FaviconWidget from "components/widgets/FaviconWidget.vue";
 import {useSettingsStore} from "src/stores/settingsStore"
 import {useUtils} from "src/services/Utils";
+import {ListDetailLevel, useUiStore} from "stores/uiStore";
+import {useTabsStore} from "stores/tabsStore";
+import ShortUrl from "components/utils/ShortUrl.vue";
+import PanelTabListContextMenu from "components/widgets/helper/PanelTabListContextMenu.vue";
+import {usePermissionsStore} from "stores/permissionsStore";
+import {FeatureIdent} from "src/models/AppFeature";
 
 const props = defineProps({
   hit: {
@@ -125,12 +225,12 @@ function cardStyle(tab: Tab) {
 }
 
 function isOpen(tab: Tab): boolean {
-  //console.log("tabUrl", tab.chromeTab?.url);
-  return TabsetService.isOpen(tab?.chromeTab?.url || '')
+  //console.log("tabUrl", tab.url);
+  return TabsetService.isOpen(tab?.url || '')
 }
 
 const setInfo = (tab: Tab) => {
-  const parts = (tab.chromeTab?.url || '').split('?')
+  const parts = (tab.url || '').split('?')
   if (parts.length > 1) {
     emits('sendCaption', parts[0] + "[... params omitted....]")
   } else if (parts.length === 1) {
@@ -143,13 +243,13 @@ const tabsetBadges = (hit: Hit): object[] => {
   _.forEach(hit.tabsets, ts => badges.push({
     label: TabsetService.nameForTabsetId(ts),
     tabsetId: ts,
-    encodedUrl: btoa(hit.chromeTab.url || '')
+    encodedUrl: btoa(hit.url || '')
   }))
   if (hit.bookmarkId) {
     badges.push({
       label: 'bookmark',
       bookmarkId: hit.bookmarkId,
-      encodedUrl: btoa(hit.chromeTab.url || '')
+      encodedUrl: btoa(hit.url || '')
     })
   }
   return badges;
@@ -161,7 +261,7 @@ const openTabset = (badge: any) => {
   if (!inBexMode() || !chrome.sidePanel) {
     router.push("/tabsets/" + badge.tabsetId + "?highlight=" + badge.encodedUrl)
   } else {
-    // router.push("/sidepanel/tabsets/" + badge.tabsetId + "?highlight=" + badge.encodedUrl)
+    // router.push("/sidepanel/spaces/" + badge.tabsetId + "?highlight=" + badge.encodedUrl)
     router.push("/sidepanel" + "?highlight=" + badge.encodedUrl)
   }
 
@@ -170,9 +270,9 @@ const openTabset = (badge: any) => {
 const openBookmark = (badge: any) => {
   console.log("badge", badge)
   BookmarksService.expandTreeForBookmarkId(badge.bookmarkId)
-    .then(parentId => {
-      router.push("/bookmarks/" +  parentId + "?highlight=" + badge.bookmarkId)
-    })
+      .then(parentId => {
+        router.push("/bookmarks/" + parentId + "?highlight=" + badge.bookmarkId)
+      })
 }
 
 const formatText = (hit: Hit, key: string, text: string, color: string) => {
@@ -203,6 +303,32 @@ const formatText = (hit: Hit, key: string, text: string, color: string) => {
   }
 
   return text
+}
+
+const getFaviconUrl = (url: string, favIconUrl: string | undefined) => {
+  if (url.startsWith("chrome")) {
+    return 'favicon-unknown-32x32.png'
+  }
+  if (favIconUrl) {
+    return favIconUrl
+  }
+  if (!useSettingsStore().isEnabled('noDDG')) {
+    let theUrl = url
+    let theRealUrl
+    try {
+      theRealUrl = new URL(theUrl)
+    } catch (err) {
+      if (!theUrl.startsWith('http')) {
+        theUrl = 'https://' + theUrl
+        try {
+          theRealUrl = new URL(theUrl)
+        } catch (err) {
+        }
+      }
+    }
+    return theRealUrl ? "https://icons.duckduckgo.com/ip3/" + theRealUrl.hostname + ".ico" : 'favicon-unknown-32x32.png'
+  }
+  return 'favicon-unknown-32x32.png'
 }
 
 

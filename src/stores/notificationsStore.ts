@@ -9,10 +9,6 @@ export const useNotificationsStore = defineStore('notifications', () => {
 
   const info = ref('')
   const selectedTab = ref(null as unknown as Tab)
-  //const showBookmarks = ref(false)
-  //const showOpenTabs = ref(false)
-  //const showDrawer = ref(false)
-  //const bookmarksActive = ref(false)
   const bookmarksExpanded = ref([] as unknown as string[])
   const fabHasElementAnimation = ref(false)
   const updateToVersion = ref('')
@@ -71,7 +67,8 @@ export const useNotificationsStore = defineStore('notifications', () => {
     notifications,
     getNotification,
     updateAvailable,
-    bookmarksExpanded
+    bookmarksExpanded,
+    updateToVersion
   }
 })
 

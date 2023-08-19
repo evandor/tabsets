@@ -13,7 +13,7 @@
             <TabFaviconWidget :tab="rssTab" width="20px" height="20px" />
           </div>
           <div class="col-9 text-body2 ellipsis">
-            {{ rssTab.chromeTab?.title }}
+            {{ rssTab.title }}
           </div>
           <div class="col-1">
             <q-icon name="close"/>
@@ -44,8 +44,8 @@ watchEffect(() => rssTabs.value = tabsStore.rssTabs)
 
 
 const open = (tab: Tab) => {
-  if (tab.chromeTab?.url) {
-    router.push("/rss/" + btoa(tab.chromeTab?.url))
+  if (tab.url) {
+    router.push("/rss/" + btoa(tab.url))
   }
 }
 

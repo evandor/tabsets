@@ -141,11 +141,11 @@ function unassignedTabs(): Tab[] {
     (tab: Tab) => {
       if (usePermissionsStore().hasFeature(FeatureIdent.IGNORE)) {
         const ignoreTS = useTabsetService().getTabset('IGNORE')
-        if (ignoreTS && tab.chromeTab.url !== undefined) {
+        if (ignoreTS && tab.url !== undefined) {
           const foundIndex = ignoreTS.tabs.findIndex((ignoreTab: Tab) =>
-            tab.chromeTab.url?.startsWith(ignoreTab.chromeTab.url || 'somestrangestring'))
+            tab.url?.startsWith(ignoreTab.url || 'somestrangestring'))
           if (foundIndex >= 0) {
-            console.log("ignoring", tab.chromeTab.url, ignoreTS.tabs[foundIndex].chromeTab.url)
+            console.log("ignoring", tab.url, ignoreTS.tabs[foundIndex].url)
             return false
           }
         }
@@ -196,10 +196,7 @@ const tabSelectionChanged = (a: any) => {
 
 const tabAddedToTabset = (a: any) => {
   const {tabId, tabUrl} = a
-  // console.log("tabAddedToTabset", tabId, tabUrl, tabsStore.pendingTabset.tabs.length)
   tabSelection.value.delete(tabId)
-  // tabsStore.pendingTabset.tabs = _.filter(tabsStore.pendingTabset.tabs, t => t.chromeTab.url !== tabUrl)
-  // console.log("tabAddedToTabset", tabId, tabsStore.pendingTabset.tabs.length)
 }
 
 const hasSelectable = () => userCanSelect.value = true
@@ -226,7 +223,7 @@ const saveSelectedTabs = () => {
 
 const toggleInvert = (invert: boolean) => {
   tabsStore.pendingTabset?.tabs.forEach(t => {
-    if (!useTabsetService().urlExistsInCurrentTabset(t.chromeTab?.url || '')) {
+    if (!useTabsetService().urlExistsInCurrentTabset(t.url || '')) {
       t.selected = !t.selected
       tabSelectionChanged({tabId: t.id, selected: t.selected})
     }
@@ -237,34 +234,6 @@ const addOpenTabs = () => {
   if (process.env.MODE !== 'bex') {
     console.log("useTabsStore().pendingTabset", useTabsStore().pendingTabset)
     useTabsStore().pendingTabset = new Tabset("dummy", "dummy", [])
-    useTabsStore().pendingTabset?.tabs.push(new Tab(uid(), {
-      id: 10000,
-      url: "https://www.example.com",
-      title: "example.com",
-      index: 1,
-      pinned: false,
-      highlighted: false,
-      windowId: 1,
-      active: false,
-      incognito: false,
-      selected: false,
-      discarded: false,
-      autoDiscardable: false
-    }))
-    useTabsStore().pendingTabset?.tabs.push(new Tab(uid(), {
-      id: 10001,
-      url: "https://www.skysail.io",
-      title: "skysail.io",
-      index: 2,
-      pinned: false,
-      highlighted: false,
-      windowId: 1,
-      active: false,
-      incognito: false,
-      selected: false,
-      discarded: false,
-      autoDiscardable: false
-    }))
   } else {
     TabsetService.createPendingFromBrowserTabs()
   }

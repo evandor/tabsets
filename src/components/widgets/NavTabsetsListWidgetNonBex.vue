@@ -52,6 +52,28 @@
           </q-item-label>
 
         </q-item-section>
+        <q-item-section class="text-right q-mx-sm cursor-pointer"
+                        @mouseover="hoveredTab = tabset.id"
+                        @mouseleave="hoveredTab = undefined"
+                        style="max-width:25px;font-size: 12px;color:#bfbfbf">
+            <span v-if="hoveredOver(tabset.id)">
+              <q-icon name="more_horiz" color="primary" size="16px"/>
+            </span>
+          <span v-else-if="tabset.type === TabsetType.DYNAMIC">
+              -
+            </span>
+          <span v-else>
+                {{ tabset.tabs.length }}
+            </span>
+
+          <TabsetListContextMenu
+            :tabset="tabset"
+            :index="index"
+            :hoveredTab="hoveredTab"
+            :in-side-panel="props.fromPanel"
+            @toggleExpand="(index:number) => toggleExpand(index)"/>
+
+        </q-item-section>
       </q-item>
     </q-list>
   </div>
@@ -77,7 +99,7 @@ import {MoveToTabsetCommand} from "src/domain/tabs/MoveToTabset";
 import {useUtils} from "src/services/Utils";
 import TabsetListContextMenu from "components/widgets/helper/TabsetListContextMenu.vue";
 import {Tab} from "src/models/Tab";
-import {DeleteTabCommand} from "src/domain/commands/DeleteTabCommand";
+import {DeleteTabCommand} from "src/domain/tabs/DeleteTabCommand";
 import {useUiStore} from "src/stores/uiStore";
 
 const {handleError, handleSuccess} = useNotificationHandler()
@@ -147,11 +169,13 @@ const open = (tab: Tab) => {
   console.log("clicked", process.env.MODE, tab.id)
   if ("electron" === process.env.MODE) {
     router.push("/browser/" + tab.id)
-  } else if (tab.chromeTab.url) {
-    openURL(tab.chromeTab.url)
+  } else if (tab.url) {
+    openURL(tab.url)
     //router.push("/iframe/" + tabId)
   }
 }
+
+const hoveredOver = (tabsetId: string) => hoveredTab.value === tabsetId
 
 const deleteTab = (tab: Tab) => useCommandExecutor().executeFromUi(new DeleteTabCommand(tab))
 
