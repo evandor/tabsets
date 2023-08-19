@@ -7,7 +7,7 @@
     hint="You can select the favicon images and drag and drop the entries to reorder the list to your wishes"/>
 
   <q-list separator>
-    <vue-draggable-next :disabled="$q.platform.is.mobile"
+    <vue-draggable-next
       class="dragArea list-group w-full"
       :list="props.tabs as Array<Tab>"
       :group="{ name: 'tabs', pull: 'clone' }"

@@ -42,6 +42,11 @@
                   <q-tooltip v-else class="tooltip">This tabset is shared</q-tooltip>
                 </q-icon>
                 {{ tabset.name }}
+                <span v-if="tabset.type === TabsetType.DYNAMIC">
+                  <q-icon name="o_label" color="warning">
+                    <q-tooltip class="tooltip">Dynamic Tabset, listing all tabsets containing this tag</q-tooltip>
+                  </q-icon>
+                </span>
               </q-item-label>
               <q-item-label class="text-caption text-grey-5">
                 {{ tabsetCaption(filteredTabs(tabset as Tabset), tabset.window) }}
@@ -108,9 +113,9 @@ import {useTabsStore} from "src/stores/tabsStore";
 import {Tab} from "src/models/Tab";
 import _ from "lodash"
 import {Tabset, TabsetStatus, TabsetType} from "src/models/Tabset";
-import {useRoute, useRouter} from "vue-router";
+import {useRouter} from "vue-router";
 import {useUtils} from "src/services/Utils";
-import {scroll, useQuasar} from "quasar";
+import {scroll, uid, useQuasar} from "quasar";
 import {useTabsetService} from "src/services/TabsetService2";
 import {useUiStore} from "src/stores/uiStore";
 import PanelTabList from "components/layouts/PanelTabList.vue";
@@ -125,9 +130,10 @@ import SidePanelPageContextMenu from "pages/sidepanel/SidePanelPageContextMenu.v
 import {DynamicTabSourceType} from "src/models/DynamicTabSource";
 import {useWindowsStore} from "../stores/windowsStores";
 import TabsetService from "src/services/TabsetService";
-import getScrollTarget = scroll.getScrollTarget;
 import Analytics from "src/utils/google-analytics";
 import {useAuthStore} from "stores/auth";
+import {PlaceholdersType} from "src/models/Placeholders";
+import getScrollTarget = scroll.getScrollTarget;
 
 const {setVerticalScrollPosition} = scroll
 
@@ -405,7 +411,42 @@ const filteredTabs = (tabset: Tabset): Tab[] => {
     //return _.orderBy(results, getOrder(), [orderDesc.value ? 'desc' : 'asc'])
     return results
   }
-  const tabs: Tab[] = tabset.tabs
+  let tabs: Tab[] = tabset.tabs
+
+  // Tabs with placeholder
+  let placeholderTabs: Tab[] = []
+  let removeTabIds: string[] = []
+  tabs.forEach((t: Tab) => {
+    if (t.placeholders && t.placeholders.type === PlaceholdersType.URL_SUBSTITUTION) {
+      const subs = t.placeholders.config
+      Object.entries(subs).forEach(e => {
+        const name = e[0]
+        const val = e[1]
+        val.split(",").forEach((v: string) => {
+          const substitution = v.trim()
+          if (substitution.length > 0) {
+            const clonedTab = JSON.parse(JSON.stringify(t));
+            clonedTab.id = uid()
+            clonedTab.description = undefined
+            let useUrl = t.url || ''
+            let useName = t.name || t.title || ''
+            Object.entries(subs).forEach(e1 => {
+              useUrl = useUrl.replaceAll("${" + e1[0] + "}", substitution)
+              useName = useName.replaceAll("${" + e1[0] + "}", substitution)
+            })
+            clonedTab.url = useUrl
+            clonedTab.name = useName
+            placeholderTabs.push(clonedTab)
+            removeTabIds.push(t.id)
+          }
+        })
+      })
+    }
+  })
+  tabs = _.filter(tabs, (t: Tab) => removeTabIds.indexOf(t.id) < 0)
+  tabs = tabs.concat(placeholderTabs)
+
+
   // TODO order??
   const filter = useUiStore().tabsFilter
   if (!filter || filter.trim() === '') {

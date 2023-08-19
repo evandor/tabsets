@@ -239,12 +239,12 @@ const routes: RouteRecordRaw[] = [
   },
   {
     path: '/search',
-    component: () => import('layouts/DefaultLayout.vue'),
+    component: () => import('layouts/FullPageLayout.vue'),
     children: [{ path: '', component: () => import('pages/SearchPage.vue') }],
   },
   {
     path: '/searchresult',
-    component: () => import('layouts/PlainLayout.vue'),
+    component: () => import('layouts/FullPageLayout.vue'),
     children: [{ path: '', component: () => import('pages/SearchResultPage.vue') }],
   },
   {
@@ -261,6 +261,11 @@ const routes: RouteRecordRaw[] = [
     path: '/preview/:tabId',
     component: () => import('layouts/DefaultLayout.vue'),
     children: [{ path: '', component: () => import('pages/PreviewPage.vue') }],
+  },
+  {
+    path: '/browser/:tabId',
+    component: () => import('layouts/FullPageLayout.vue'),
+    children: [{ path: '', component: () => import('pages/BrowserViewPage.vue') }],
   },
   {
     path: '/help/:ident',

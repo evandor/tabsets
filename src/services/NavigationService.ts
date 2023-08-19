@@ -4,12 +4,13 @@ import {openURL, useQuasar} from "quasar";
 import {useTabsStore} from "src/stores/tabsStore";
 import {useTabsetService} from "src/services/TabsetService2";
 import {useWindowsStore} from "stores/windowsStores";
+import {useRouter} from "vue-router";
 
 class NavigationService {
 
     async openOrCreateTab(withUrl: string) {
         const useWindow = useTabsStore().getCurrentTabset?.window || 'current'
-        console.log("opening", withUrl, useWindow)
+        console.log("opening", withUrl, useWindow, process.env.MODE)
 
         const existingWindow = await useWindowsStore().windowFor(useWindow)
         if (useWindow !== 'current') {

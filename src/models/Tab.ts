@@ -1,3 +1,5 @@
+import {Placeholders} from "src/models/Placeholders";
+
 export enum UrlExtension {
   HTML = "HTML",
   RSS = "RSS",
@@ -71,6 +73,8 @@ export class Tab {
   httpCheckedAt: number = 0
   httpError: string = ''
   httpInfo: string = 'undefined'
+
+  placeholders: Placeholders | undefined
 
   constructor(public id: string, chromeTab: chrome.tabs.Tab) {
     this.created = new Date().getTime()

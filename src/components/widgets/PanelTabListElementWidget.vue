@@ -25,7 +25,7 @@
       NEW
       <q-tooltip class="tooltip">This page indicates that its content has changed in the meantime.</q-tooltip>
     </div>
-    <div v-else-if="props.tab?.httpStatus >= 300"
+    <div v-else-if="props.tab?.httpStatus >= 300 && !props.tab?.placeholders"
          class="q-my-xs q-mx-none q-pa-none text-white items-center justify-center"
          :class="props.tab?.httpStatus >= 500 ? 'bg-red' : 'bg-warning'"
          style="border-radius: 3px;max-height:15px;font-size:8px;text-align: center;">
@@ -42,19 +42,7 @@
                   @mouseleave="hoveredTab = undefined">
 
     <!-- name or title -->
-    <q-item-label v-if="props.type === 'categories'">
-      <div>
-        <div class="q-pr-sm cursor-pointer ellipsis" :class="classForCategoryTab(props.tab)">
-
-          <span v-if="props.header" class="text-bold">{{ props.header }}<br></span>
-          <span v-if="useTabsStore().getCurrentTabset?.sorting === 'alphabeticalTitle'">
-              <q-icon name="arrow_right" size="16px"/>
-           </span>
-          {{ nameOrTitle(props.tab) }}
-        </div>
-      </div>
-    </q-item-label>
-    <q-item-label v-else>
+    <q-item-label>
       <div>
         <div class="q-pr-sm cursor-pointer ellipsis">
 
@@ -65,8 +53,11 @@
               <q-icon name="arrow_right" size="16px"/>
            </span>
           <span v-html="nameOrTitle(props.tab as Tab)"/>
+          <q-icon name="published_with_changes" class="q-ml-sm" color="accent">
+            <q-tooltip>This tab is created by substituting parts of its URL</q-tooltip>
+          </q-icon>
           <q-popup-edit
-            v-if="props.tab?.extension !== UrlExtension.NOTE"
+            v-if="props.tab?.extension !== UrlExtension.NOTE && !props.tab.placeholders"
             :model-value="dynamicNameOrTitleModel(tab)" v-slot="scope"
             @update:model-value="val => setCustomTitle( tab, val)">
             <q-input v-model="scope.value" dense autofocus counter @keyup.enter="scope.set"/>

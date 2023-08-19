@@ -21,7 +21,10 @@ class UndoCommand implements Command<any> {
   execute(): Promise<ExecutionResult<any>> {
     console.log("execution undo command", this.tab, this.tabset)
     return addToTabset(this.tabset, this.tab)
-      .then((res) => new ExecutionResult(res, "Tab has been restored again"))
+      .then((res) => {
+        useTabsetService().saveCurrentTabset()
+        return new ExecutionResult(res, "Tab has been restored again")
+      })
   }
 
 }

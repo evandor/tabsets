@@ -1,16 +1,18 @@
 <template>
   <q-menu :offset="[0, 0]">
     <q-list dense style="min-width: 200px">
-      <q-separator v-if="useSettingsStore().isEnabled('dev')"/>
-      <q-item v-if="useSettingsStore().isEnabled('dev')"
-              clickable v-close-popup @click.stop="showTabDetails(props['tab' as keyof object])">
-        <q-item-section avatar style="padding-right:0;min-width:25px;max-width: 25px;">
-          <q-icon size="xs" name="o_info" color="accent"/>
-        </q-item-section>
-        <q-item-section>
-          Show Tab Details
-        </q-item-section>
-      </q-item>
+      <template v-if="showTabDetailsMenuEntry(props['tab' as keyof object])">
+        <q-separator />
+        <q-item clickable v-close-popup @click.stop="showTabDetails(props['tab' as keyof object])">
+          <q-item-section avatar style="padding-right:0;min-width:25px;max-width: 25px;">
+            <q-icon size="xs" name="o_info" color="accent"/>
+          </q-item-section>
+          <q-item-section>
+            Show Tab Details
+          </q-item-section>
+        </q-item>
+      </template>
+
       <q-separator/>
       <q-item v-if="useSettingsStore().isEnabled('dev')"
               clickable v-close-popup @click.stop="openInReadingMode(props['tab' as keyof object])">
@@ -54,13 +56,24 @@
           Copy URL to Clipboard
         </q-item-section>
       </q-item>
+
+      <q-separator/>
+      <q-item clickable v-close-popup @click.stop="editURL(props['tab' as keyof object])">
+        <q-item-section avatar style="padding-right:0;min-width:25px;max-width: 25px;">
+          <q-icon size="xs" name="o_link" color="accent"/>
+        </q-item-section>
+        <q-item-section>
+          Edit URL
+        </q-item-section>
+      </q-item>
+
       <q-separator/>
       <q-item clickable v-close-popup @click.stop="deleteTab(props['tab' as keyof object])">
         <q-item-section avatar style="padding-right:0;min-width:25px;max-width: 25px;">
           <q-icon size="xs" name="o_delete" color="negative"/>
         </q-item-section>
         <q-item-section>
-          Delete Tab
+          {{ deleteTabLabel(props['tab' as keyof object])}}
         </q-item-section>
       </q-item>
     </q-list>
@@ -69,8 +82,7 @@
 
 <script lang="ts" setup>
 
-import {PropType, ref} from "vue";
-import {useUtils} from "src/services/Utils";
+import {PropType} from "vue";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import RestoreTabsetDialog from "components/dialogues/RestoreTabsetDialog.vue";
 import {Notify, useQuasar} from "quasar";
@@ -86,8 +98,9 @@ import {TabsetType} from "src/models/Tabset";
 import {usePermissionsStore} from "stores/permissionsStore";
 import {FeatureIdent} from "src/models/AppFeature";
 import {useBookmarksStore} from "stores/bookmarksStore";
-
-const {inBexMode} = useUtils()
+import EditUrlDialog from "components/dialogues/EditUrlDialog.vue";
+import {useTabsStore} from "stores/tabsStore";
+import {PlaceholdersType} from "src/models/Placeholders";
 
 const props = defineProps({
   tab: {type: Object as PropType<Tab>, required: true},
@@ -99,14 +112,20 @@ const emit = defineEmits(['toggleExpand']);
 const $q = useQuasar()
 const router = useRouter()
 
-const expanded = ref<boolean[]>([])
-
-const toggleExpand = (index: number): void => {
-  expanded.value[index] = !expanded.value[index]
-  emit('toggleExpand', index)
+async function tabToUse(tab: Tab) {
+  let useTab: Tab = tab
+  if (tab.placeholders?.templateId) {
+    const tabInfo = await useTabsStore().getTab(tab.placeholders?.templateId)
+    if (tabInfo) {
+      useTab = tabInfo['tab' as keyof object]
+      console.log("useTab", useTab, tab.placeholders?.templateId)
+    }
+  }
+  return useTab;
 }
 
-const showDetails = (tabsetId: string) => useUiStore().rightDrawerSetActiveTab(DrawerTabs.TABSET_DETAILS, {tabsetId})
+const showDetails = (tabsetId: string) =>
+    useUiStore().rightDrawerSetActiveTab(DrawerTabs.TABSET_DETAILS)
 
 const restoreDialog = (tabsetId: string) => $q.dialog({
   component: RestoreTabsetDialog,
@@ -114,10 +133,11 @@ const restoreDialog = (tabsetId: string) => $q.dialog({
 })
 
 
-const deleteTab = async (tab: Tab) => {
-  useCommandExecutor().executeFromUi(new DeleteTabCommand(tab))
-  if (tab && tab.url && usePermissionsStore().hasFeature(FeatureIdent.BOOKMARKS)) {
-    const res = await useBookmarksStore().findBookmarksForUrl(tab.url)
+const deleteTab = async (tabIn: Tab) => {
+  const useTab = await tabToUse(tabIn)
+  useCommandExecutor().executeFromUi(new DeleteTabCommand(useTab))
+  if (useTab && useTab.url && usePermissionsStore().hasFeature(FeatureIdent.BOOKMARKS)) {
+    const res = await useBookmarksStore().findBookmarksForUrl(useTab.url)
     console.log("existing bookmarks", res)
     if (res.length > 0) {
       $q.dialog({
@@ -147,9 +167,10 @@ const editNoteDialog = (tab: Tab) => $q.dialog({
   componentProps: {tabId: tab.id, note: tab.note}
 })
 
-const showTabDetails = (tab: Tab) => {
-  console.log("showing tab details for", tab)
-  router.push("/sidepanel/tab/" + tab.id)
+const showTabDetails = async (tab: Tab) => {
+  const useTab:Tab = await tabToUse(tab)
+  console.log("showing tab details for", useTab)
+  router.push("/sidepanel/tab/" + useTab.id)
 }
 
 const openInReadingMode = (tab: Tab) => {
@@ -166,5 +187,26 @@ const openInAnnotationMode = (tab: Tab) => {
 
 const copyToClipboard = (tab: Tab) =>
   useCommandExecutor().executeFromUi(new CopyToClipboardCommand(tab.url || 'unknown'))
+
+const showTabDetailsMenuEntry = (tab:Tab) =>
+    useSettingsStore().isEnabled('dev')
+    //&& !(tab.placeholders?.type === PlaceholdersType.URL_SUBSTITUTION)
+
+const deleteTabLabel = (tab:Tab) => {
+  if (tab.placeholders && tab.placeholders.type === PlaceholdersType.URL_SUBSTITUTION) {
+    return 'Delete substituted Tabs'
+  }
+  return 'Delete Tab'
+}
+
+const editURL = async (tab: Tab) => {
+  let useTab = await tabToUse(tab);
+  $q.dialog({
+    component: EditUrlDialog,
+    componentProps: {
+      tab: useTab
+    }
+  })
+}
 
 </script>

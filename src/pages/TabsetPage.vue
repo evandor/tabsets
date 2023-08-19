@@ -270,16 +270,10 @@ import {useTabsetService} from "src/services/TabsetService2";
 import Analytics from "src/utils/google-analytics";
 
 const route = useRoute();
-const router = useRouter();
-const localStorage = useQuasar().localStorage
 const tabsStore = useTabsStore()
-const featuresStore = useSettingsStore()
 const permissionsStore = usePermissionsStore()
 
-const {inBexMode} = useUtils()
-
 const tabsetname = ref(tabsStore.currentTabsetName)
-const filter = ref('')
 const $q = useQuasar()
 
 const tabsetId = ref(null as unknown as string)

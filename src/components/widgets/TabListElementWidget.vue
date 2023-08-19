@@ -64,7 +64,7 @@
       @mouseover="showButtonsProp = true"
       @mouseleave="showButtonsProp = false">
       <div class="q-pr-lg cursor-pointer" style="display: inline-block;"
-           @click.stop="NavigationService.openOrCreateTab(props.tab?.url )">
+           @click.stop="open(props.tab)">
 
         <span v-if="useTabsStore().getCurrentTabset?.sorting === 'alphabeticalUrl'">
           <q-icon name="arrow_right" size="16px" />
@@ -143,6 +143,7 @@ import {CopyToClipboardCommand} from "src/domain/commands/CopyToClipboard";
 import {useTabsetService} from "src/services/TabsetService2";
 import ShortUrl from "components/utils/ShortUrl.vue";
 import {useTabsStore} from "src/stores/tabsStore";
+import {useRouter} from "vue-router";
 
 const props = defineProps({
   tab: {type: Object, required: true},
@@ -155,10 +156,10 @@ const emits = defineEmits(['sendCaption'])
 
 const $q = useQuasar()
 
-const line = ref(null)
 const showButtonsProp = ref<boolean>(false)
 const thumbnail = ref<string | undefined>(undefined)
 const imgFromBlob = ref<string>("")
+const router = useRouter()
 
 onMounted(() => {
   const blobImgPath = props.tab.image
@@ -278,5 +279,17 @@ watchEffect(() => {
       })
   }
 })
+
+const open = (tab: Tab) => {
+  if (process.env.MODE === 'electron') {
+    //const candidates = useTabsStore().tabsForUrl(withUrl)
+    //console.log("found candidates", candidates)
+    //if (candidates.length > 0) {
+      router.push("/browser/" + tab.id)
+      return Promise.resolve()
+    //}
+  }
+  NavigationService.openOrCreateTab(props.tab?.url )
+}
 
 </script>

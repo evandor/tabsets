@@ -369,30 +369,23 @@ export const useTabsStore = defineStore('tabs', {
                         }
                     })
                     ts = foundTS
-                    // _.forEach(tabGroupsStore.tabGroups, tg => {
-                    //   const exists = _.find(foundTS.groups, existing => existing.chromeGroup.title === tg.title)
-                    //   if (!exists) {
-                    //     foundTS.groups.push(new Group(uid(), tg))
-                    //   }
-                    // })
-
-
                 } else {
                     ts = new Tabset(foundTS.id, tabsetName, _.map(tabs, t => t), [])
+                    ts.type = type
+                    ts.window = windowId
                     this.tabsets.set(foundTS.id, ts)
-                    //TabsetService.saveTabset(ts)
                 }
             } else {
                 const useId = uid()
                 ts = new Tabset(useId, tabsetName, tabs, [])
+                ts.type = type
+                ts.window = windowId
                 this.tabsets.set(useId, ts)
             }
             if (currentSpace && currentSpace.id && ts.spaces.findIndex(s => s === currentSpace.id) < 0) {
                 ts.spaces.push(currentSpace.id)
             }
 
-            ts.type = type
-            ts.window = windowId
 
             return new NewOrReplacedTabset(foundTS !== undefined, ts)
         },

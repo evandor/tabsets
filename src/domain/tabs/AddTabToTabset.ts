@@ -46,7 +46,7 @@ export class AddTabToTabsetCommand implements Command<any> {
                     return new ExecutionResult("result", "Tab was added",)
                   })
               } else {
-                console.log("this tabset tabs",this.tabset.tabs)
+                //console.log("this tabset tabs",this.tabset.tabs)
                 return saveTabset(this.tabset)
                   .then(result => new ExecutionResult(result, "Tab was added"))
                   .catch((err:any) => {

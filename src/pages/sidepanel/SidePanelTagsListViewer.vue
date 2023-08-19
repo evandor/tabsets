@@ -111,9 +111,7 @@ import {Tab} from "src/models/Tab";
 import {SidePanelView, useUiStore} from "src/stores/uiStore";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {CreateDynamicTabset} from "src/domain/commands/CreateDynamicTabset";
-import PanelTabListElementWidget from "components/widgets/PanelTabListElementWidget.vue";
 import FirstToolbarHelper from "pages/sidepanel/helper/FirstToolbarHelper.vue";
-import SecondToolbarHelper from "pages/sidepanel/helper/SecondToolbarHelper.vue";
 import InfoMessageWidget from "components/widgets/InfoMessageWidget.vue";
 
 const {handleError, handleSuccess} = useNotificationHandler()
@@ -130,12 +128,15 @@ watchEffect(() => {
   console.log("calculating tags")
   tags.value = new Map()
   _.forEach([...tabsStore.tabsets.values()], (tabset: Tabset) => {
-    _.forEach(tabset.tabs, (tab: Tab) => {
-      _.forEach(tab.tags, (tag: string) => {
-        const newCount = (tags.value.get(tag) || 0) + 1
-        tags.value.set(tag, newCount)
+    if (tabset.type === TabsetType.DEFAULT &&
+        (tabset.status === TabsetStatus.DEFAULT || tabset.status === TabsetStatus.FAVORITE)) {
+      _.forEach(tabset.tabs, (tab: Tab) => {
+        _.forEach(tab.tags, (tag: string) => {
+          const newCount = (tags.value.get(tag) || 0) + 1
+          tags.value.set(tag, newCount)
+        })
       })
-    })
+    }
   })
   tags.value = new Map([...tags.value.entries()].sort((a, b) => b[1] - a[1]));
 })
