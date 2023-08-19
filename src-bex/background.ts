@@ -1,95 +1,62 @@
 import {bexBackground} from 'quasar/wrappers';
 import Analytics from "src/utils/google-analytics";
+import {useQuasar} from "quasar";
 
 // https://stackoverflow.com/questions/49739438/when-and-how-does-a-pwa-update-itself
-const updateTrigger = 7
-
-// https://developer.chrome.com/docs/extensions/mv3/tut_analytics/
-console.log("ga: installing google analytics")
-
-addEventListener('unhandledrejection', async (event) => {
-  console.log("ga: fire error event")
-  Analytics.fireErrorEvent(event.reason);
-});
-
-chrome.runtime.onInstalled.addListener(() => {
-  console.log("ga: fire event install")
-  Analytics.fireEvent('install');
-});
-
-// Throw an exception after a timeout to trigger an exception analytics event
-// setTimeout(throwAnException, 2000);
-//
-// async function throwAnException() {
-//   throw new Error("👋 I'm an error");
-// }
-
-
-chrome.omnibox.onInputEntered.addListener((text) => {
-  const newURL = chrome.runtime.getURL("/www/index.html#/searchresult?t=" + encodeURIComponent(text))
-  chrome.tabs.create({ url: newURL })
-    .catch((err) => console.log("background.js error", err))
-});
-
-let modelPromise: any = null
-
-// @ts-ignore
-if (chrome.sidePanel && chrome.sidePanel.setPanelBehavior) {
-  // @ts-ignore
-  chrome.sidePanel
-    .setPanelBehavior({openPanelOnActionClick: true})
-    .catch((error: any) => console.error(error));
-}
+const updateTrigger = 8
 
 chrome.runtime.onInstalled.addListener((details) => {
-  console.debug("adding onInstalled listener in background.ts", details)
-  // @ts-ignore
-  if (chrome.action) {
+    console.debug("adding onInstalled listener in background.ts", details)
     // @ts-ignore
-    chrome.action.onClicked.addListener((tab) => {
-      // Opens our extension in a new browser window.
-      // Only if a popup isn't defined in the manifest.
-      chrome.tabs.create(
-        {
-          url: chrome.runtime.getURL('www/index.html'),
-        },
-        (newTab) => {
-          console.log("newTab", newTab)
-        }
-      );
-    });
-  } else {
-    // @ts-ignore
-    browser.browserAction.onClicked.addListener(openMyPage);
-  }
+    console.debug("hier", chrome.runtime.getURL('www/index.html'))
+    if (chrome.action) {
+        console.debug("hier1")
+        console.log("hier2")
+        // @ts-ignore
+        chrome.action.onClicked.addListener((tab) => {
+            // Opens our extension in a new browser window.
+            // Only if a popup isn't defined in the manifest.
+            chrome.tabs.create(
+                {
+                    url: chrome.runtime.getURL('www/index.html'),
+                },
+                (newTab) => {
+                    console.log("newTab", newTab)
+                }
+            );
+        });
+    } else {
+        // @ts-ignore
+        browser.browserAction.onClicked.addListener(openMyPage);
+    }
 });
 
 chrome.runtime.onStartup.addListener(() => {
-  console.log("adding onStartup listener in background.ts")
-  // @ts-ignore
-  if (chrome.action) {
+    console.log("adding onStartup listener in background.ts")
     // @ts-ignore
-    chrome.action.onClicked.addListener((tab) => {
-      // Opens our extension in a new browser window.
-      // Only if a popup isn't defined in the manifest.
+    if (chrome.action) {
+        // @ts-ignore
+        chrome.action.onClicked.addListener((tab) => {
+            // Opens our extension in a new browser window.
+            // Only if a popup isn't defined in the manifest.
 
-      chrome.tabs.create(
-        {
-          url: chrome.runtime.getURL('www/index.html'),
-        },
-        (newTab) => {
-          console.log("newTab", newTab)
-        }
-      );
-    });
-  }
+            chrome.tabs.create(
+                {
+                    url: chrome.runtime.getURL('www/index.html'),
+                },
+                (newTab) => {
+                    console.log("newTab", newTab)
+                }
+            );
+        });
+    }
 })
 
 export default bexBackground((bridge, cons/* , allActiveConnections */) => {
-  //console.log("bexBackgroundBridge!")
-  bridge.on('some.event', ({data, respond}) => {
-    console.log('Event receieved, responding...')
-    respond(data.someKey + ' hey!')
-  })
+    //console.log("bexBackgroundBridge!")
+    bridge.on('some.event', ({data, respond}) => {
+        console.log('Event receieved, responding...')
+        respond(data.someKey + ' hey!')
+    })
 
 });
