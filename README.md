@@ -88,4 +88,8 @@ register-service-worker - 1.7.2 -- Script for registering service worker, with h
 Quasar App Extensions
 @quasar/quasar-app-extension-testing-unit-vitest - 0.3.0 -- A Quasar App Extension for running tests with Vitest
 
+## Safari
 
+check out branch "safari-extension"
+
+xcrun safari-web-extension-converter --project-location ./dist/Safari --app-name Tabsets /Users/carstengraef/projects/github/tabsets/dist/bex

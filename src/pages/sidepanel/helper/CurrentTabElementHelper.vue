@@ -10,8 +10,17 @@
       </q-img>
     </div>
     <div class="col-10">
+      <div class="row">
+        <div class="col-11 text-bold">Current Tab:</div>
+        <div class="col">
+          <q-icon name="close"
+                  @click="hideCurrentTabBox()"
+                  class="cursor-pointer" color="accent">
+            <q-tooltip>Hide this box temporarily</q-tooltip>
+          </q-icon>
+        </div>
+      </div>
       <div class="q-pr-sm cursor-pointer ellipsis">
-        <span class="text-bold">Current Tab:<br></span>
         {{ currentChromeTab?.title }}
       </div>
       <div>
@@ -22,44 +31,6 @@
     </div>
   </div>
 
-  <!-- <q-separator v-if="!alreadyInSomeTabset()" color="lightgray" inset/>-->
-
-<!--  <div class="row" v-if="alreadyInSomeTabset()">-->
-<!--    <div class="col-2 text-caption">-->
-<!--      &lt;!&ndash; <q-icon class="q-ma-xs q-ml-sm" size="18px" name="tab" color="primary">-->
-<!--         <q-tooltip class="tooltip">Saved in tabsets:</q-tooltip>-->
-<!--       </q-icon>&ndash;&gt;-->
-<!--    </div>-->
-<!--    <div class="col-10">-->
-<!--      <template v-for="badge in tsBadges">-->
-<!--        <q-chip-->
-<!--          :clickable="badge.tabsetId !== props.tabsetId"-->
-<!--          @click="switchTabset(badge.tabsetId, badge.label)"-->
-<!--          :color="tabsetChipColor(badge.tabsetId)"-->
-<!--          style="max-width:70px"-->
-<!--          class="cursor-pointer q-ml-none q-mr-xs ellipsis" size="9px">-->
-<!--          {{ shorten(badge.label, 12) }}-->
-<!--          <q-tooltip v-if="badge.tabsetId !== props.tabsetId"-->
-<!--                     class="tooltip" :delay="1000">This tab has been added to the tabset '{{ badge.label }}'-->
-<!--            {{ created }}. Click to go to this tabset.'-->
-<!--          </q-tooltip>-->
-<!--          <q-tooltip v-else-->
-<!--                     class="tooltip" :delay="1000">This tab has been added to the current tabset '{{ badge.label }}'-->
-<!--            {{ created }}-->
-<!--          </q-tooltip>-->
-<!--        </q-chip>-->
-<!--      </template>-->
-<!--      &lt;!&ndash;      <span class="text-caption">{{ created }}</span>&ndash;&gt;-->
-<!--    </div>-->
-<!--    <div class="col-2">-->
-<!--    </div>-->
-<!--    <div class="col-10">-->
-<!--      ***<svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">-->
-<!--      <circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none"/>-->
-<!--      <path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>-->
-<!--    </svg>-->
-<!--    </div>-->
-<!--  </div>-->
   <div class="row">
     <div class="col-2">
 
@@ -74,19 +45,6 @@
              @click="saveInTabset(props.tabsetId)"
              icon="o_favorite"/>
 
-      <template class="text-caption" v-if="tabsetCandidates.length > 0"> or use AI suggestion:
-        <template v-for="c in tabsetCandidates">
-          <q-chip clickable
-                  @click="saveInTabset(c.candidateId)"
-                  class="cursor-pointer q-ml-none q-mr-xs" size="9px" icon="o_auto_awesome">
-            {{ c.candidateName }}
-            <q-tooltip class="tooltip">Suggestion from AI Module (with confidence {{
-                Math.round(100 * c.score)
-              }}%)
-            </q-tooltip>
-          </q-chip>
-        </template>
-      </template>
 
     </div>
   </div>
@@ -109,6 +67,7 @@ import {SelectTabsetCommand} from "src/domain/tabsets/SelectTabset";
 import {useSpacesStore} from "stores/spacesStore";
 import {Tabset} from "src/models/Tabset";
 import {useWindowsStore} from "stores/windowsStores";
+import {HideCurrentTabBoxCommand} from "src/domain/commands/ui/HideCurrentTabBoxCommand";
 
 const props = defineProps({
   tabsetId: {type: String, required: true}
@@ -210,31 +169,6 @@ const saveInTabset = (tabsetId: string) => {
   }
 }
 
-const alreadyInCurrentTabset = () => {
-  if (currentChromeTab.value?.url) {
-    return useTabsetService().urlExistsInCurrentTabset(currentChromeTab.value.url)
-  }
-  return false
-}
+const hideCurrentTabBox = () => useCommandExecutor().execute(new HideCurrentTabBoxCommand(true))
 
-const alreadyInSomeTabset = () => {
-  if (currentChromeTab.value?.url) {
-    return useTabsetService().tabsetsFor(currentChromeTab.value.url).length > 0
-  }
-  return false
-}
-
-const switchTabset = (tsId: string, name: string) => {
-  useCommandExecutor()
-    .execute(new SelectTabsetCommand(tsId, useSpacesStore().space?.id))
-    .then((res: any) => {
-      Notify.create({
-        color: 'positive',
-        message: "switched to tabset " + name
-      })
-    })
-}
-
-const tabsetChipColor = (tsId: string) => tsId !== props.tabsetId ? 'white' : ''
-const shorten = (text: string, maxLength: number) => text.length > maxLength ? text.substring(0, maxLength - 2) + "..." : text
 </script>

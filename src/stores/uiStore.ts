@@ -15,7 +15,6 @@ export enum DrawerTabs {
   UNASSIGNED_TABS = "unassignedTabs",
   GROUP_BY_HOST_TABS = "groupedByHostTabs",
   SAVED_TABS = "savedTabs",
-  PDF_TABS = "pdfTabs",
   RSS = "rss",
   SCHEDULED = "scheduled",
   HISTORY = "history",
@@ -145,6 +144,8 @@ export const useUiStore = defineStore('ui', () => {
 
   const progress = ref<number | undefined>(undefined)
   const progressLabel = ref<string | undefined>(undefined)
+
+  const showCurrentTabBox = ref<boolean>(true)
 
   watch(rightDrawer.value, (val: Object) => {
     LocalStorage.set("ui.rightDrawer", val)
@@ -337,6 +338,10 @@ export const useUiStore = defineStore('ui', () => {
     leftDrawerOpen.value = !leftDrawerOpen.value
   }
 
+  function hideCurrentTabBox(b: boolean) {
+    showCurrentTabBox.value = !b
+  }
+
   return {
     rightDrawer,
     rightDrawerOpen,
@@ -345,13 +350,11 @@ export const useUiStore = defineStore('ui', () => {
     draggingTab,
     droppingTab,
     newTabsetEmptyByDefault,
-    setNewTabsetEmptyByDefault,
     hideInfoMessage,
     restoreHints,
     showMessage,
     footerInfo,
     getContentCount,
-    setContentCount,
     setSelectedTab,
     getSelectedTab,
     newTabUrlList,
@@ -362,13 +365,11 @@ export const useUiStore = defineStore('ui', () => {
     getHighlightUrls,
     ignoreKeypressListener,
     setIgnoreKeypress,
-    setEntityType,
     entityType,
     highlightTerm,
     setHighlightTerm,
     selectedTag,
     setSelectedTag,
-    setSelectedTabsetId,
     selectedTabsetId,
     tabsFilter,
     setListDetailLevel,
@@ -382,6 +383,8 @@ export const useUiStore = defineStore('ui', () => {
     toggleLeftDrawer,
     progress,
     progressLabel,
-    tabsetsExpanded
+    tabsetsExpanded,
+    hideCurrentTabBox,
+    showCurrentTabBox
   }
 })
