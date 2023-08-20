@@ -281,7 +281,8 @@ function submitSearch() {
 }
 
 const title = () => {
-  return inBexMode() ? 'Tabsets' : process.env.MODE === 'spa' ? 'Tabsets Web' : 'Tabsets (' + process.env.MODE + ')'
+  return inBexMode() ? 'Tabsets' : process.env.MODE === 'spa' ?
+      'Tabsets Web' : 'Tabsets'
 }
 
 const goHome = () => router.push("/")

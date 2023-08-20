@@ -189,7 +189,7 @@ const routes: RouteRecordRaw[] = [
   },
   {
     path: '/tabsets',
-    component: () => import('layouts/DefaultLayout.vue'),
+    component: () => import('layouts/FullPageLayout.vue'),
     children: [{ path: '', component: () => import('pages/TabsetPage.vue') }],
   },
   {
@@ -234,7 +234,7 @@ const routes: RouteRecordRaw[] = [
   },
   {
     path: '/features/:feature',
-    component: () => import('layouts/DefaultLayout.vue'),
+    component: () => import('layouts/FullPageLayout.vue'),
     children: [{ path: '', component: () => import('pages/FeaturesPage.vue') }],
   },
   {

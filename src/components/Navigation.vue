@@ -1,22 +1,22 @@
 <template>
-  <div class="column" style="height:100%;background-color: #f9f9f9">
+  <div class="column" style="height:100%">
     <div class="col">
 
-      <q-toolbar class="text-primary lightgrey">
+      <q-toolbar class="text-black">
         <div class="row fit">
           <div class="col-xs-12 col-md-6">
             <q-toolbar-title>
               <div class="row justify-start items-baseline">
-                Your Tabsets
+                My Tabsets
               </div>
             </q-toolbar-title>
           </div>
           <div class="col-xs-12 col-md-6 text-right">
 
             <q-icon
-              class="cursor-pointer" size="18px"
+              class="cursor-pointer" size="22px" color="warning"
               style="position: relative;top:5px;right:-2px"
-              name="add" @click="addTabset">
+              name="add_circle" @click="addTabset">
               <q-tooltip
                 class="tooltip"
                 :delay="200"

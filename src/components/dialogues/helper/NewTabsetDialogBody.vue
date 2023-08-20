@@ -20,13 +20,15 @@
                        ]"
                    data-testid="newTabsetName"/>
 
-          <q-checkbox
-              data-testid="newTabsetAutoAdd"
-              v-model="addAllOpenTabs" label="Add all open tabs"/>&nbsp;
-          <q-icon
-              name="help" color="primary" size="1em">
-            <q-tooltip>If you select this option, all currently open tabs will be added to your new tabset</q-tooltip>
-          </q-icon>
+          <template v-if="inBexMode()">
+            <q-checkbox
+                data-testid="newTabsetAutoAdd"
+                v-model="addAllOpenTabs" label="Add all open tabs"/>&nbsp;
+            <q-icon
+                name="help" color="primary" size="1em">
+              <q-tooltip>If you select this option, all currently open tabs will be added to your new tabset</q-tooltip>
+            </q-icon>
+          </template>
         </q-card-section>
 
         <q-card-section v-if="usePermissionsStore().hasFeature(FeatureIdent.WINDOW_MANAGEMENT)">
@@ -81,8 +83,10 @@ import {usePermissionsStore} from "stores/permissionsStore";
 import {FeatureIdent} from "src/models/AppFeature";
 import {useWindowsStore} from "stores/windowsStores";
 import _ from "lodash"
+import {useUtils} from "src/services/Utils";
 
 const {dialogRef, onDialogHide, onDialogCancel} = useDialogPluginComponent()
+const {inBexMode} = useUtils()
 
 const props = defineProps({
   spaceId: {type: String, required: false},
