@@ -130,7 +130,6 @@ export const useTabsStore = defineStore('tabs', {
             return state.tabsets.get(state.currentTabsetId)
         },
         getTabset: (state) => {
-            console.log("checking ", state.tabsets)
             return (tabsetId: string): Tabset | undefined => {
                 return state.tabsets.get(tabsetId)
             }

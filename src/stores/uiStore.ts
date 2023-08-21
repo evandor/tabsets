@@ -23,6 +23,7 @@ export enum DrawerTabs {
   TABSET_DETAILS = "tabsetDetails",
   NEW_TAB_URLS = "newTabUrls",
   TAGS_VIEWER = "tagsViewer",
+  TAG_VIEWER = "tagViewer",
   HELP = "help"
 }
 
@@ -55,6 +56,9 @@ export class SidePanelView {
 
   static readonly PUBLIC_TABSETS = new SidePanelView('categorized_tabsets', '/sidepanel/byCategory',
     () => usePermissionsStore().hasFeature(FeatureIdent.BOOKMARKS));
+
+  static readonly TAGS_VIEWER = new SidePanelView('categorized_tabsets', '/sidepanel/byCategory',
+    () => usePermissionsStore().hasFeature(FeatureIdent.TAGS));
 
   private constructor(
     public readonly ident: string,

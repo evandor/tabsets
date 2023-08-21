@@ -15,12 +15,12 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/authenticate',
     component: () => import('layouts/SidePanelLayout.vue'),
-    children: [{ path: '', component: () => import('pages/Authenticate.vue') }],
+    children: [{ path: '', component: () => import('pages/AuthenticatePage.vue') }],
   },
   {
     path: '/start',
     component: () => import('layouts/PlainLayout.vue'),
-    children: [{ path: '', component: () => import('pages/Start.vue') }],
+    children: [{ path: '', component: () => import('pages/StartPage.vue') }],
   },
   {
     path: '/fullpage',
@@ -224,7 +224,7 @@ const routes: RouteRecordRaw[] = [
   },
   {
     path: '/bydomain/:encodedUrl',
-    component: () => import('layouts/DefaultLayout.vue'),
+    component: () => import('layouts/FullPageLayout.vue'),
     children: [{ path: '', component: () => import('pages/ByDomainPage.vue') }],
   },
   {

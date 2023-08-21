@@ -6,7 +6,10 @@
         <div class="row fit">
           <div class="col-xs-12 col-md-6">
             <q-toolbar-title>
-              <div class="row justify-start items-baseline">
+              <div class="row justify-start items-baseline" v-if="usePermissionsStore().hasFeature(FeatureIdent.SPACES)">
+                <SpacesSelectorWidget />
+              </div>
+              <div class="row justify-start items-baseline" v-else>
                 My Tabsets
               </div>
             </q-toolbar-title>
@@ -21,7 +24,9 @@
                 class="tooltip"
                 :delay="200"
                 anchor="center left" self="center right">
-                Click here to add a new tabset
+                {{ usePermissionsStore().hasFeature(FeatureIdent.SPACES) ?
+                  'Click here to add a new tabset to the current Space':
+                  'Click here to add a new tabset'}}
               </q-tooltip>
             </q-icon>
 
@@ -55,7 +60,6 @@ import {useQuasar} from "quasar";
 import {Tabset, TabsetStatus, TabsetType} from "src/models/Tabset";
 import {useSpacesStore} from "src/stores/spacesStore";
 import NewTabsetDialog from "components/dialogues/NewTabsetDialog.vue";
-import NavTabsetsListWidget from "components/widgets/NavTabsetsListWidget.vue"
 import {useUiStore} from "src/stores/uiStore";
 import {useNotificationsStore} from "src/stores/notificationsStore";
 import {usePermissionsStore} from "src/stores/permissionsStore";
@@ -63,7 +67,7 @@ import {useUtils} from "src/services/Utils";
 import NavTabsetsListWidgetNonBex from "components/widgets/NavTabsetsListWidgetNonBex.vue";
 import {FeatureIdent} from "src/models/AppFeature";
 import {useSettingsStore} from "src/stores/settingsStore"
-import TabsetsSelectorWidget from "components/widgets/TabsetsSelectorWidget.vue";
+import SpacesSelectorWidget from "components/widgets/SpacesSelectorWidget.vue";
 
 const router = useRouter()
 const tabsStore = useTabsStore()

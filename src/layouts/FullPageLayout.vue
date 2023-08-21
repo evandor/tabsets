@@ -17,7 +17,7 @@
             <q-tooltip class="tooltip">Reload Tabsets Extension</q-tooltip>
           </q-toolbar-title>
           <q-toolbar-title v-else>
-            <SpacesSelectorWidget />
+            {{ title() }}
           </q-toolbar-title>
         </template>
         <template v-else>
@@ -137,6 +137,12 @@
           tooltip="Show add tabs view"
           :restricted="false"/>
 
+        <ToolbarButton
+          :drawer="DrawerTabs.TAGS_VIEWER"
+          icon="o_label"
+          tooltip="Show tags viewer"
+          :restricted="false"/>
+
         <div>
           <q-btn
             @click="toggleSettings"
@@ -187,7 +193,7 @@
 
     <q-page-container>
       <router-view/>
-      <div id="fixed-footer" class="q-pl-md q-pa-xs">{{ useUiStore().footerInfo }}</div>
+<!--      <div id="fixed-footer" class="q-pl-md q-pa-xs">{{ useUiStore().footerInfo }}</div>-->
     </q-page-container>
 
   </q-layout>

@@ -1,11 +1,11 @@
 <template>
 
   <!-- toolbar -->
-  <q-toolbar class="text-primary lightgrey" v-if="!tabsStore.currentTabsetId">
+  <q-toolbar class="text-primary" v-if="!tabsStore.currentTabsetId">
     <div class="row fit">
       <q-toolbar-title>
         <div class="row justify-start items-baseline">
-          <div class="col-10"><span class="text-dark">Tabs</span> (no tabset selected)</div>
+          <div class="col-10"><span class="text-black">Tabs</span> (no tabset selected)</div>
           <div class="col-2 text-right">
             <OpenRightDrawerWidget/>
           </div>
@@ -13,7 +13,7 @@
       </q-toolbar-title>
     </div>
   </q-toolbar>
-  <q-toolbar class="text-primary lightgrey" v-else>
+  <q-toolbar class="text-black" v-else>
     <div class="row fit">
       <div class="col-xs-12 col-md-6 q-mt-xs">
         <q-toolbar-title>

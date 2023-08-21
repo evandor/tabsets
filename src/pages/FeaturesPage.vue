@@ -1,7 +1,7 @@
 <template>
 
   <!-- toolbar -->
-  <q-toolbar class="text-primary lightgrey">
+  <q-toolbar class="text-primary">
     <div class="row fit">
       <div class="col-12">
         <q-toolbar-title>

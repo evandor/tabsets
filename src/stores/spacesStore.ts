@@ -1,9 +1,10 @@
 import {defineStore} from 'pinia';
 import _ from 'lodash'
-import {computed, ref, watch} from "vue";
+import {computed, ref, watch, watchEffect} from "vue";
 import {Space} from "src/models/Space";
 import PersistenceService from "src/services/PersistenceService";
 import {uid} from "quasar";
+import throttledQueue from "throttled-queue";
 
 /**
  * a pinia store for "Spaces".
@@ -35,6 +36,8 @@ export const useSpacesStore = defineStore('spaces', () => {
    */
   let storage: PersistenceService = null as unknown as PersistenceService
 
+  const throttleOne10Millis = throttledQueue(1, 10, true)
+
   /**
    * initialize store with
    * @param ps a persistence storage
@@ -59,16 +62,16 @@ export const useSpacesStore = defineStore('spaces', () => {
    * // https://climbtheladder.com/10-pinia-best-practices/
    */
   watch(
-    space,
-    (spaceVal: Space) => {
-      if (spaceVal && spaceVal['id']) {
-        localStorage.setItem("currentSpace", spaceVal['id'])
-      } else {
-        localStorage.removeItem("currentSpace")
-      }
-      // console.log("setting tabsetid to null")
-      //useTabsStore().currentTabsetId = null as unknown as string
-    }, {deep: true}
+      space,
+      (spaceVal: Space) => {
+        if (spaceVal && spaceVal['id']) {
+          localStorage.setItem("currentSpace", spaceVal['id'])
+        } else {
+          localStorage.removeItem("currentSpace")
+        }
+        // console.log("setting tabsetid to null")
+        //useTabsStore().currentTabsetId = null as unknown as string
+      }, {deep: true}
   )
 
   /**
@@ -93,7 +96,7 @@ export const useSpacesStore = defineStore('spaces', () => {
     const spaceId = uid()
     console.log("adding space", spaceId, label)
     if (nameExists.value(label)) {
-      return Promise.reject("name does already exist")
+      return Promise.reject(`name '${label}'does already exist`)
     }
     const newSpace = new Space(spaceId, label)
     spaces.value.set(spaceId, newSpace)
@@ -106,12 +109,14 @@ export const useSpacesStore = defineStore('spaces', () => {
    * @param s
    */
   function addSpace(s: Space): Promise<any> {
-    console.log("adding space", s.id, s.label)
-    if (nameExists.value(s.label)) {
-      return Promise.reject("name does already exist")
-    }
-    spaces.value.set(s.id, s)
-    return storage.addSpace(s)
+    return throttleOne10Millis(async () => {
+      console.log("adding space", s.id, s.label)
+      if (nameExists.value(s.label)) {
+        return Promise.reject(`name '${s.label}'does already exist`)
+      }
+      spaces.value.set(s.id, s)
+      return storage.addSpace(s)
+    })
   }
 
   function putSpace(s: Space) {
