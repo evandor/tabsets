@@ -84,6 +84,10 @@ export class LocalStoragePersistenceService implements PersistenceService {
     return Promise.resolve(undefined);
   }
 
+  cleanUpTabsets(): Promise<void> {
+    return Promise.resolve(undefined);
+  }
+
   deleteThumbnail(url: string): Promise<void> {
     return Promise.resolve(undefined);
   }

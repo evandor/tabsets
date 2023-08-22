@@ -134,11 +134,9 @@ const {inBexMode, sanitize, sendMsg} = useUtils()
 const $q = useQuasar()
 
 const tabsStore = useTabsStore()
-const settingsStore = useSettingsStore()
 const permissionsStore = usePermissionsStore()
 const router = useRouter()
 const uiStore = useUiStore()
-const searchStore = useSearchStore()
 
 const currentChromeTabs = ref<chrome.tabs.Tab[]>([])
 const currentTabs = ref<Tab[]>([])

@@ -332,8 +332,10 @@ if ($q.platform.is.chrome) {
         }
         const tsId = message.data.tabsetId
         useTabsStore().selectCurrentTabset(tsId)
-      } else if (message.name === 'feature-activated' || message.name === "feature-deactivated") {
-        usePermissionsStore().initialize()
+      } else if (message.name === 'feature-activated') {
+        usePermissionsStore().addActivateFeature(message.data.feature)
+      } else if (message.name === "feature-deactivated") {
+        usePermissionsStore().removeActivateFeature(message.data.feature)
       } else if (message.name === "tabsets-imported") {
         useSpacesStore().reload()
         useTabsetService().init()

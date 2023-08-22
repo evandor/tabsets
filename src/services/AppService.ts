@@ -39,7 +39,7 @@ class AppService {
         const $q = useQuasar()
 
         // init of stores and some listeners
-        usePermissionsStore().initialize()
+        usePermissionsStore().initialize(useDB(useQuasar()).localDb)
             .then(() => {
                 ChromeListeners.initListeners()
                 ChromeBookmarkListeners.initListeners()

@@ -659,6 +659,15 @@ class IndexedDbPersistenceService implements PersistenceService {
   clear(name: string) {
     this.db.clear(name).catch((e) => console.warn(e))
   }
+
+  getActiveFeatures(): Promise<string[]> {
+    return Promise.reject("not implemented")
+  }
+
+  saveActiveFeatures(val: string[]): any {
+    console.warn("not implemented")
+  }
+
 }
 
 export default new IndexedDbPersistenceService()

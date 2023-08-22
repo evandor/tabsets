@@ -57,7 +57,9 @@ interface PersistenceService {
 
   compactDb(): Promise<any>
 
-  //loadTabs(tabsetId: string): Promise<Tab[]>
+  getActiveFeatures(): Promise<string[]>
+  saveActiveFeatures(val: string[]): any
+
 }
 
 export default PersistenceService

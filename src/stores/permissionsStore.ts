@@ -12,6 +12,7 @@ import {AppFeatures} from "src/models/AppFeatures";
 import {useDB} from "src/services/usePersistenceService";
 import {useUtils} from "src/services/Utils";
 import {useTabsetService} from "src/services/TabsetService2";
+import PersistenceService from "src/services/PersistenceService";
 
 
 export const usePermissionsStore = defineStore('permissions', () => {
@@ -19,10 +20,7 @@ export const usePermissionsStore = defineStore('permissions', () => {
     const $q = useQuasar()
     const {sendMsg} = useUtils()
 
-    // maybe assign db in init function / setup
-    const {localDb} = useDB($q)
-
-    const storage = localDb
+    let storage = null as unknown as PersistenceService
 
     // related to chrome permissions
     const grantedOptionalPermissions = ref<string[] | undefined>([])
@@ -34,14 +32,14 @@ export const usePermissionsStore = defineStore('permissions', () => {
 
     //const inActiveDefaultFeatures = ref<string[]>($q.localStorage?.getItem('ui.inActiveDefaultFeatures') as string[] || [])
 
-    async function initialize() {
-        if (storage) {
-            //storage.getActiveFeatures().then((res) => activeFeatures.value = res)
-            activeFeatures.value = await storage.getActiveFeatures()
-            console.log("initialized active features with", activeFeatures.value)
-        } else {
-            console.warn("storage not provided")
-        }
+    async function initialize(ps: PersistenceService) {
+        storage = ps
+        await load()
+    }
+
+    async function load() {
+        activeFeatures.value = await storage.getActiveFeatures()
+        console.log("initialized active features with", activeFeatures.value)
         if (process.env.MODE !== 'bex') {
             return
         }
@@ -76,37 +74,30 @@ export const usePermissionsStore = defineStore('permissions', () => {
     async function grantPermission(permission: string): Promise<boolean> {
         // @ts-ignore
         const granted: boolean = await chrome.permissions.request({permissions: [permission]})
-        return initialize()
+        return load()
             .then(() => Promise.resolve(granted))
     }
 
     async function grantAllOrigins(): Promise<boolean> {
         // @ts-ignore
         const granted: boolean = await chrome.permissions.request({origins: ["*://*/*", "<all_urls>"]})
-        return initialize()
+        return load()
             .then(() => Promise.resolve(granted))
     }
 
     async function revokePermission(permission: string): Promise<void> {
         // @ts-ignore
         await chrome.permissions.remove({permissions: [permission]})
-        await initialize()
+        await load()
         return Promise.resolve()
     }
 
     async function revokeAllOrigins(): Promise<void> {
         // @ts-ignore
         await chrome.permissions.remove({origins: ["*://*/*", "<all_urls>"]})
-        await initialize()
+        await load()
         return Promise.resolve()
     }
-
-    // watchEffect(() => {
-    //     if (storage) {
-    //         console.log("saving activeFeatures", activeFeatures.value)
-    //         storage.saveActiveFeatures(activeFeatures.value)
-    //     }
-    // })
 
     const hasFeature = computed(() => {
         return (feature: FeatureIdent): boolean => {
@@ -122,13 +113,15 @@ export const usePermissionsStore = defineStore('permissions', () => {
         }
     })
 
-    const featuresCount = computed(() => (): number => activeFeatures.value.length)
+    const featuresCount = computed(() => (): number =>
+        activeFeatures.value.length)
 
     const activateFeature = computed(() => {
         return (feature: string): void => {
             if (activeFeatures.value.indexOf(feature) < 0) {
                 activeFeatures.value.push(feature)
-                saveActiveFeatures()
+                storage.saveActiveFeatures(activeFeatures.value)
+
                 if (FeatureIdent.NEWEST_TABS.toLowerCase() === feature) {
                     useSuggestionsStore().inactivateSuggestion(Suggestion.getStaticSuggestion(StaticSuggestionIdent.TRY_NEWEST_TABS_FEATURE))
                 }
@@ -166,7 +159,7 @@ export const usePermissionsStore = defineStore('permissions', () => {
                 // })
             }
             activeFeatures.value.splice(index, 1)
-            saveActiveFeatures()
+            storage.saveActiveFeatures(activeFeatures.value)
             sendMsg('feature-deactivated', {feature: feature})
             new AppFeatures().getFeatures().forEach(f => {
                 if (f.requires.findIndex((r: FeatureIdent) => r === deactivatedIdent) >= 0) {
@@ -186,15 +179,24 @@ export const usePermissionsStore = defineStore('permissions', () => {
         }
     })
 
-    function saveActiveFeatures() {
-        if (storage) {
-            storage.saveActiveFeatures(activeFeatures.value)
-        } else {
-            console.warn("could not save change in active features")
+    function addActivateFeature(feature: string): boolean {
+        if (activeFeatures.value.indexOf(feature) < 0) {
+            activeFeatures.value.push(feature)
+            return true
         }
+        return false
     }
 
-    return {
+    function removeActivateFeature(feature: string) {
+        const index = activeFeatures.value.indexOf(feature)
+        if (index >= 0) {
+            activeFeatures.value.splice(index, 1)
+            return true
+        }
+        return false
+    }
+
+   return {
         initialize,
         hasPermission,
         grantPermission,
@@ -206,6 +208,8 @@ export const usePermissionsStore = defineStore('permissions', () => {
         hasFeature,
         activateFeature,
         deactivateFeature,
-        featuresCount
+        featuresCount,
+        addActivateFeature,
+        removeActivateFeature
     }
 })
