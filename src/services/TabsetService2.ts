@@ -20,14 +20,16 @@ import {useUtils} from "src/services/Utils";
 import {usePermissionsStore} from "stores/permissionsStore";
 import {FeatureIdent} from "src/models/AppFeature";
 import {SaveOrReplaceResult} from "src/models/SaveOrReplaceResult";
+import PersistenceService from "src/services/PersistenceService";
 
-const {sendMsg} = useUtils()
+let db: PersistenceService = null as unknown as PersistenceService
 
 export function useTabsetService() {
-    const {db} = useDB()
 
-    const init = async (doNotInitSearchIndex: boolean = false) => {
+    const init = async (providedDb: PersistenceService,
+                        doNotInitSearchIndex: boolean = false) => {
         console.log("initializing tabsetService2")
+        db = providedDb
         await db.loadTabsets()
         console.log("after db.loadTabsets()")
         if (!doNotInitSearchIndex) {

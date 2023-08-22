@@ -134,6 +134,7 @@ import Analytics from "src/utils/google-analytics";
 import {useAuthStore} from "stores/auth";
 import {PlaceholdersType} from "src/models/Placeholders";
 import getScrollTarget = scroll.getScrollTarget;
+import {useDB} from "src/services/usePersistenceService";
 
 const {setVerticalScrollPosition} = scroll
 
@@ -338,7 +339,7 @@ if ($q.platform.is.chrome) {
         usePermissionsStore().removeActivateFeature(message.data.feature)
       } else if (message.name === "tabsets-imported") {
         useSpacesStore().reload()
-        useTabsetService().init()
+        useTabsetService().init(useDB(undefined).db)
         // TODO reload
       } else if (message.name === "tab-being-dragged") {
         useUiStore().draggingTab(message.data.tabId, null as unknown as any)

@@ -65,7 +65,7 @@ class AppService {
                 tabsetService.setLocalStorage(localStorage)
                 spacesStore.initialize(useDB(undefined).db)
                     .then(() => {
-                        useTabsetService().init(false)
+                        useTabsetService().init(useDB(undefined).db, false)
                             .then(() => {
                                 MHtmlService.init()
                                 ChromeApi.init()
