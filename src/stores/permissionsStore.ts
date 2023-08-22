@@ -36,7 +36,9 @@ export const usePermissionsStore = defineStore('permissions', () => {
 
     async function initialize() {
         if (storage) {
-            storage.getActiveFeatures().then((res) => activeFeatures.value = res)
+            //storage.getActiveFeatures().then((res) => activeFeatures.value = res)
+            activeFeatures.value = await storage.getActiveFeatures()
+            console.log("initialized active features with", activeFeatures.value)
         } else {
             console.warn("storage not provided")
         }
@@ -99,11 +101,12 @@ export const usePermissionsStore = defineStore('permissions', () => {
         return Promise.resolve()
     }
 
-    watchEffect(() => {
-        if (storage) {
-            storage.saveActiveFeatures(activeFeatures.value)
-        }
-    })
+    // watchEffect(() => {
+    //     if (storage) {
+    //         console.log("saving activeFeatures", activeFeatures.value)
+    //         storage.saveActiveFeatures(activeFeatures.value)
+    //     }
+    // })
 
     const hasFeature = computed(() => {
         return (feature: FeatureIdent): boolean => {
@@ -125,6 +128,7 @@ export const usePermissionsStore = defineStore('permissions', () => {
         return (feature: string): void => {
             if (activeFeatures.value.indexOf(feature) < 0) {
                 activeFeatures.value.push(feature)
+                saveActiveFeatures()
                 if (FeatureIdent.NEWEST_TABS.toLowerCase() === feature) {
                     useSuggestionsStore().inactivateSuggestion(Suggestion.getStaticSuggestion(StaticSuggestionIdent.TRY_NEWEST_TABS_FEATURE))
                 }
@@ -147,7 +151,7 @@ export const usePermissionsStore = defineStore('permissions', () => {
     })
 
     function deactivateRecursive(feature: string) {
-        //console.log("deactivate recursive: ", feature)
+        console.log("deactivate recursive: ", feature)
         const deactivatedIdent = feature.toUpperCase() as FeatureIdent
         const appFeature = new AppFeatures().getFeature(deactivatedIdent)
 
@@ -162,8 +166,8 @@ export const usePermissionsStore = defineStore('permissions', () => {
                 // })
             }
             activeFeatures.value.splice(index, 1)
+            saveActiveFeatures()
             sendMsg('feature-deactivated', {feature: feature})
-
             new AppFeatures().getFeatures().forEach(f => {
                 if (f.requires.findIndex((r: FeatureIdent) => r === deactivatedIdent) >= 0) {
                     console.log("need to deactivate as well:", f)
@@ -181,6 +185,14 @@ export const usePermissionsStore = defineStore('permissions', () => {
             deactivateRecursive(feature)
         }
     })
+
+    function saveActiveFeatures() {
+        if (storage) {
+            storage.saveActiveFeatures(activeFeatures.value)
+        } else {
+            console.warn("could not save change in active features")
+        }
+    }
 
     return {
         initialize,

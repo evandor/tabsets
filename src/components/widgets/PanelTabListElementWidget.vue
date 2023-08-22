@@ -187,7 +187,6 @@ const showButtonsProp = ref<boolean>(false)
 const imgFromBlob = ref<string>("")
 const hoveredTab = ref<string | undefined>(undefined)
 const tsBadges = ref<object[]>([])
-const tabsetCandidates = ref<object[]>([])
 const newState = ref(false)
 
 onMounted(() => {
@@ -230,15 +229,6 @@ watchEffect(() => {
     }))
   }
 })
-
-
-watchEffect(async () => {
-  if (props.tab.url) {
-    const c = await TabsetService.getContentForUrl(props.tab.url)
-    tabsetCandidates.value = c ? (c['tabsetCandidates' as keyof object] || []) : []
-  }
-})
-
 
 function getShortHostname(host: string) {
   const nrOfDots = (host.match(/\./g) || []).length

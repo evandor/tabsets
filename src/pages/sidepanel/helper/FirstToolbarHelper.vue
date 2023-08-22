@@ -122,6 +122,7 @@
                 class="q-ma-none q-pa-xs cursor-pointer"
                 style="max-width:20px"
                 size="12px"
+                data-testid="addTabsetBtn"
                 @click="openNewTabsetDialog()">
               <q-tooltip class="tooltip">{{ newTabsetTooltip() }}</q-tooltip>
             </q-btn>

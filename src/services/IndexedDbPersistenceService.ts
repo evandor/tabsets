@@ -211,8 +211,7 @@ class IndexedDbPersistenceService implements PersistenceService {
     return this.db.delete('content', btoa(url))
   }
 
-  saveContent(tab: Tab, text: string, metas: object, title: string, tabsetIds: string[],
-              tabsetCandidates: object[] = []): Promise<IDBValidKey> {
+  saveContent(tab: Tab, text: string, metas: object, title: string, tabsetIds: string[]): Promise<IDBValidKey> {
     if (tab.url) {
       const encodedTabUrl = btoa(tab.url)
       return this.db.put('content', {
@@ -223,8 +222,7 @@ class IndexedDbPersistenceService implements PersistenceService {
         content: text,
         metas: metas,
         tabsets: tabsetIds,
-        favIconUrl: tab.favIconUrl,
-        tabsetCandidates: tabsetCandidates
+        favIconUrl: tab.favIconUrl
       }, encodedTabUrl)
         .then((res) => {
           // console.info(new Tab(uid(), tab), "saved content for url " + tab.url)

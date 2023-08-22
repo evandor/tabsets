@@ -8,6 +8,7 @@ import {Tab} from "src/models/Tab";
 import {CreateTabsetCommand} from "src/domain/tabsets/CreateTabset";
 import {useTabsetService} from "src/services/TabsetService2";
 import {useDB} from "src/services/usePersistenceService";
+import {useSearchStore} from "stores/searchStore";
 
 installQuasarPlugin();
 
@@ -24,23 +25,27 @@ describe('AddTabToTabsetCommand', () => {
     setActivePinia(createPinia())
     await IndexedDbPersistenceService.init("db")
     db = useDB(undefined).db
+    await useSearchStore().init()
   })
 
   afterEach(async () => {
     db.clear("tabsets")
+    db.clear("content")
     //rdb.clear("tabs")
   })
 
   it('adding new tab to empty tabset', async () => {
-
     const createTabsetResult = await new CreateTabsetCommand("new Tabset", []).execute()
     const tabset = createTabsetResult.result.tabset
 
     const result = await new AddTabToTabsetCommand(new Tab("tabId", skysailChromeTab), tabset).execute()
     expect(result.message).toBe("Tab was added")
 
-    const tabsetFromDB = useTabsetService().getTabset("new Tabset")
+    const tabsetFromDB = useTabsetService().getTabset(tabset.id)
     console.log("tabsetFromDB", tabsetFromDB)
+    // @ts-ignore
+    expect(useSearchStore().getIndex().size()).toBe(1)
+
   });
 
   it('adding second tab to tabset', async () => {
@@ -66,8 +71,12 @@ describe('AddTabToTabsetCommand', () => {
     const result = await new AddTabToTabsetCommand(theTab, createdTabset).execute()
     expect(result.message).toBe("Tab was added")
 
-    const tabsetFromDB = useTabsetService().getTabset("new Tabset")
+    const tabsetFromDB = useTabsetService().getTabset(createdTabset.id)
     console.log("tabsetFromDB", tabsetFromDB)
+    expect(tabsetFromDB?.tabs.length).toBe(1)
+    expect(tabsetFromDB?.name).toBe("new Tabset2")
+    // @ts-ignore
+    expect(useSearchStore().getIndex().size()).toBe(1)
   });
 
 

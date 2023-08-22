@@ -69,8 +69,7 @@
         </template>
 
       </div>
-      <div class="col text-right">
-
+      <div class="col text-right text-black">
         <q-btn icon="o_help" v-if="usePermissionsStore().hasFeature(FeatureIdent.HELP)"
                :class="rightButtonClass()"
                flat
@@ -128,6 +127,7 @@ import {DeactivateFeatureCommand} from "src/domain/features/DeactivateFeature";
 import {AppFeatures} from "src/models/AppFeatures";
 import {TabsetStatus} from "src/models/Tabset";
 import {useTabsetService} from "src/services/TabsetService2";
+import {useSearchStore} from "stores/searchStore";
 
 const {inBexMode, sanitize, sendMsg} = useUtils()
 
@@ -138,6 +138,7 @@ const settingsStore = useSettingsStore()
 const permissionsStore = usePermissionsStore()
 const router = useRouter()
 const uiStore = useUiStore()
+const searchStore = useSearchStore()
 
 const currentChromeTabs = ref<chrome.tabs.Tab[]>([])
 const currentTabs = ref<Tab[]>([])

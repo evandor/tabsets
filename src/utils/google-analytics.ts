@@ -1,4 +1,3 @@
-// !== MIT
 import {useUtils} from "src/services/Utils";
 
 const {inBexMode} = useUtils()

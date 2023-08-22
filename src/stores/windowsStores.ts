@@ -85,6 +85,7 @@ export const useWindowsStore = defineStore('windows', () => {
         assignWindow,
         windowFor,
         addToWindowSet,
-        windowSet
+        windowSet,
+        screenshotWindow
     }
 })

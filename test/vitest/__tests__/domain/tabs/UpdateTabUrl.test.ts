@@ -9,6 +9,7 @@ import {CreateTabsetCommand} from "src/domain/tabsets/CreateTabset";
 import {useTabsetService} from "src/services/TabsetService2";
 import {useDB} from "src/services/usePersistenceService";
 import {UpdateTabUrlCommand} from "src/domain/tabs/UpdateTabUrl";
+import {useSearchStore} from "stores/searchStore";
 
 installQuasarPlugin();
 
@@ -24,6 +25,7 @@ describe('UpdateTabUrl', () => {
     setActivePinia(createPinia())
     await IndexedDbPersistenceService.init("db")
     db = useDB(undefined).db
+    await useSearchStore().init()
   })
 
   afterEach(async () => {
@@ -36,7 +38,8 @@ describe('UpdateTabUrl', () => {
     const tab = new Tab("tabId", skysailChromeTab)
     await new AddTabToTabsetCommand(tab, tabset).execute()
 
-    const result = await new UpdateTabUrlCommand(tab, "https://skysail.io").execute()
+    const result = await new UpdateTabUrlCommand(
+        tab, "https://skysail.io", "newName").execute()
     expect(result.message).toBe("Tab's URL was updated")
     expect(result.result).toBe("https://skysail.io")
 
@@ -50,7 +53,8 @@ describe('UpdateTabUrl', () => {
     const tab = new Tab("tabId", skysailChromeTab)
     await new AddTabToTabsetCommand(tab, tabset).execute()
 
-    const result = await new UpdateTabUrlCommand(tab, "https://skysail.io").execute()
+    const result = await new UpdateTabUrlCommand(
+        tab, "https://skysail.io", "newName").execute()
     await result.undoCommand?.execute()
 
     const tabsetFromDB = useTabsetService().getTabset(createTabsetResult.result.tabset.id)
