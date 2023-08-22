@@ -12,6 +12,7 @@ interface PersistenceService {
   reloadTabset(tabsetId: string): void
   saveTabset(tabset: Tabset): Promise<any>
   deleteTabset(tabsetId: string):Promise<any>
+  cleanUpTabsets(): Promise<void>
 
   updateThumbnail(url: string):Promise<void>
   saveThumbnail(tab: chrome.tabs.Tab, thumbnail: string):Promise<void>

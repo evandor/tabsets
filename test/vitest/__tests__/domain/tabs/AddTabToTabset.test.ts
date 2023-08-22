@@ -9,6 +9,7 @@ import {CreateTabsetCommand} from "src/domain/tabsets/CreateTabset";
 import {useTabsetService} from "src/services/TabsetService2";
 import {useDB} from "src/services/usePersistenceService";
 import {useSearchStore} from "stores/searchStore";
+import PersistenceService from "src/services/PersistenceService";
 
 installQuasarPlugin();
 
@@ -19,12 +20,13 @@ describe('AddTabToTabsetCommand', () => {
   const skysailChromeTab = ChromeApi.createChromeTabObject("title", "https://www.skysail.io", "favicon")
   const testDeChromeTab = ChromeApi.createChromeTabObject("title", "https://www.test.de", "favicon")
 
-  let db = null as unknown as typeof IndexedDbPersistenceService
+  let db = null as unknown as PersistenceService
 
   beforeEach(async () => {
     setActivePinia(createPinia())
     await IndexedDbPersistenceService.init("db")
     db = useDB(undefined).db
+    await useTabsetService().init(db)
     await useSearchStore().init()
   })
 

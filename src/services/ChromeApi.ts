@@ -9,7 +9,7 @@ import {useSearchStore} from "src/stores/searchStore";
 import {SearchDoc} from "src/models/SearchDoc";
 import {usePermissionsStore} from "src/stores/permissionsStore";
 import {Tab} from "src/models/Tab";
-import {uid} from "quasar";
+import {uid, useQuasar} from "quasar";
 import {FeatureIdent} from "src/models/AppFeature";
 
 function runHousekeeping(alarm: chrome.alarms.Alarm) {
@@ -90,7 +90,7 @@ class ChromeApi {
     }
     console.log("building context menu")
     const tabsStore = useTabsStore()
-    if (chrome.contextMenus) {
+    if (chrome && chrome.contextMenus) {
       chrome.contextMenus.removeAll(
         () => {
           chrome.contextMenus.create({id: 'tabset_extension', title: 'Tabset Extension', contexts: ['all']},

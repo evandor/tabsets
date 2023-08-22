@@ -26,6 +26,7 @@ describe('UpdateTabUrl', () => {
     setActivePinia(createPinia())
     await IndexedDbPersistenceService.init("db")
     db = useDB(undefined).db
+    await useTabsetService().init(db)
     await useSearchStore().init()
   })
 
