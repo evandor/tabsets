@@ -182,4 +182,7 @@ export class LocalStoragePersistenceService implements PersistenceService {
   reloadTabset(tabsetId: string): void {
   }
 
+  clear(name: string) {
+  }
+
 }

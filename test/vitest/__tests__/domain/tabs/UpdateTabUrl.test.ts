@@ -10,6 +10,7 @@ import {useTabsetService} from "src/services/TabsetService2";
 import {useDB} from "src/services/usePersistenceService";
 import {UpdateTabUrlCommand} from "src/domain/tabs/UpdateTabUrl";
 import {useSearchStore} from "stores/searchStore";
+import PersistenceService from "src/services/PersistenceService";
 
 installQuasarPlugin();
 
@@ -19,7 +20,7 @@ describe('UpdateTabUrl', () => {
 
   const skysailChromeTab = ChromeApi.createChromeTabObject("title", "https://www.skysail.io", "favicon")
 
-  let db = null as unknown as typeof IndexedDbPersistenceService
+  let db = null as unknown as PersistenceService
 
   beforeEach(async () => {
     setActivePinia(createPinia())

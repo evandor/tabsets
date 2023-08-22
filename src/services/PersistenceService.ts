@@ -60,6 +60,7 @@ interface PersistenceService {
   getActiveFeatures(): Promise<string[]>
   saveActiveFeatures(val: string[]): any
 
+  clear(name: string):any
 }
 
 export default PersistenceService
