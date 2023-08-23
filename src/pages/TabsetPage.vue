@@ -13,7 +13,7 @@
       </q-toolbar-title>
     </div>
   </q-toolbar>
-  <q-toolbar class="text-black" v-else>
+  <q-toolbar class="text-black" v-else> <!-- we've got a current tabset id -->
     <div class="row fit">
       <div class="col-xs-12 col-md-6 q-mt-xs">
         <q-toolbar-title>
@@ -36,7 +36,6 @@
           </template>
           <q-icon v-if="showEditButton" style="position:relative;top:-11px;left:-5px" color="primary" name="edit"
                   size="16px"/>
-          <q-icon v-else size="16px"/>
 
         </q-toolbar-title>
       </div>

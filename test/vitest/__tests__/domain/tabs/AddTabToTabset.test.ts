@@ -33,7 +33,6 @@ describe('AddTabToTabsetCommand', () => {
   afterEach(async () => {
     db.clear("tabsets")
     db.clear("content")
-    //rdb.clear("tabs")
   })
 
   it('adding new tab to empty tabset', async () => {

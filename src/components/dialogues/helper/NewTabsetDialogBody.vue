@@ -52,9 +52,8 @@
         </q-card-section>
 
         <q-card-actions align="right">
-          <q-btn label="Cancel" size="sm" outline color="accent" v-close-popup/>
+          <q-btn label="Cancel" size="sm" color="accent" v-close-popup/>
           <q-btn type="submit" size="sm" color="warning"
-                 outline
                  data-testid="newTabsetNameSubmit"
                  :disable="!isValid"
                  label="Add"

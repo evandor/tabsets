@@ -7,6 +7,9 @@ import {Tabset} from "src/models/Tabset";
 import {Tab} from "src/models/Tab";
 import {Notification} from "src/models/Notification";
 import {MHtml} from "src/models/MHtml";
+import {MetaLink} from "src/models/MetaLink";
+import {quasar} from "@quasar/vite-plugin";
+import * as console from "console";
 
 export class LocalStoragePersistenceService implements PersistenceService {
 
@@ -183,6 +186,26 @@ export class LocalStoragePersistenceService implements PersistenceService {
   }
 
   clear(name: string) {
+  }
+
+  getBlob(blobId: string): Promise<any> {
+    return Promise.resolve(undefined);
+  }
+
+  saveBlob(id: string, url: string, data: Blob, type: string): Promise<any> {
+    return Promise.resolve(undefined);
+  }
+
+  saveLinks(url: string, links: any): Promise<void> {
+    return Promise.resolve(undefined);
+  }
+
+  saveMetaLinks(url: string, metaLinks: MetaLink[]): Promise<void> {
+    return Promise.resolve(undefined);
+  }
+
+  saveRequest(url: string, requestInfo: RequestInfo): Promise<void> {
+    return Promise.resolve(undefined);
   }
 
 }

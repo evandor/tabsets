@@ -5,14 +5,14 @@
 
         <template v-if="leftDrawerOpen">
           <q-img
-            class="q-ml-xs q-mr-none cursor-pointer" style="margin-top:-7px"
-            @click="toggleLeftDrawer"
-            src="favicon.ico" height="32px" width="32px">
+              class="q-ml-xs q-mr-none cursor-pointer" style="margin-top:-7px"
+              @click="toggleLeftDrawer"
+              src="favicon.ico" height="32px" width="32px">
             <q-tooltip class="tooltip">Toggle the tabset list view by clicking here</q-tooltip>
           </q-img>
           <q-toolbar-title v-if="!usePermissionsStore().hasFeature(FeatureIdent.SPACES)"
-            @click.stop="goHome()" class="cursor-pointer"
-            style="min-width:200px" shrink>
+                           @click.stop="goHome()" class="cursor-pointer"
+                           style="min-width:200px" shrink>
             {{ title() }}
             <q-tooltip class="tooltip">Reload Tabsets Extension</q-tooltip>
           </q-toolbar-title>
@@ -20,13 +20,16 @@
             {{ title() }}
           </q-toolbar-title>
         </template>
+        <!-- left drawer closed -->
         <template v-else>
           <q-icon
-            class="q-ml-xs q-mr-none cursor-pointer"
-            name="menu" size="18px" @click="toggleLeftDrawer">
+              class="q-ml-xs q-mr-none cursor-pointer"
+              name="menu" size="18px" @click="toggleLeftDrawer">
             <q-tooltip class="tooltip">Toggle the tabset list view by clicking here</q-tooltip>
           </q-icon>
-          <SpacesSelectorWidget class="q-mx-md"/>
+          <template v-if="usePermissionsStore().hasFeature(FeatureIdent.SPACES)">
+            <SpacesSelectorWidget class="q-mx-md"/>
+          </template>
         </template>
 
 
@@ -84,9 +87,9 @@
 
         <span v-if="useSuggestionsStore().getSuggestions().length > 0">
           <q-btn
-            flat
-            :color="dependingOnStates()"
-            name="rss" icon="o_assistant">
+              flat
+              :color="dependingOnStates()"
+              name="rss" icon="o_assistant">
             <q-tooltip class="tooltip" anchor="center right" self="center left" :delay="200">You have suggestions
             </q-tooltip>
             <q-badge :label="useSuggestionsStore().getSuggestions().length"/>
@@ -108,47 +111,47 @@
         </span>
 
         <ToolbarButton
-          :feature="FeatureIdent.SAVE_TAB"
-          :drawer="DrawerTabs.SAVED_TABS"
-          icon="o_save"
-          tooltip="The List of Urls displayed when you open a new tab in your Browser"/>
+            :feature="FeatureIdent.SAVE_TAB"
+            :drawer="DrawerTabs.SAVED_TABS"
+            icon="o_save"
+            tooltip="The List of Urls displayed when you open a new tab in your Browser"/>
 
         <ToolbarButton
-          :feature="FeatureIdent.GROUP_BY_DOMAIN"
-          :drawer="DrawerTabs.GROUP_BY_HOST_TABS"
-          icon="o_dns"
-          tooltip="Your tabs grouped by domain"/>
+            :feature="FeatureIdent.GROUP_BY_DOMAIN"
+            :drawer="DrawerTabs.GROUP_BY_HOST_TABS"
+            icon="o_dns"
+            tooltip="Your tabs grouped by domain"/>
 
         <ToolbarButton
-          :feature=FeatureIdent.RSS
-          :drawer="DrawerTabs.RSS"
-          icon="o_rss_feed"
-          tooltip="Access to your rss feed"/>
+            :feature=FeatureIdent.RSS
+            :drawer="DrawerTabs.RSS"
+            icon="o_rss_feed"
+            tooltip="Access to your rss feed"/>
 
         <ToolbarButton
-          :feature="FeatureIdent.BOOKMARKS"
-          :drawer="DrawerTabs.BOOKMARKS"
-          icon="o_bookmark"
-          tooltip="Access to your bookmarks"/>
+            :feature="FeatureIdent.BOOKMARKS"
+            :drawer="DrawerTabs.BOOKMARKS"
+            icon="o_bookmark"
+            tooltip="Access to your bookmarks"/>
 
         <ToolbarButton
-          :drawer="DrawerTabs.UNASSIGNED_TABS"
-          icon="o_playlist_add"
-          tooltip="Show add tabs view"
-          :restricted="false"/>
+            :drawer="DrawerTabs.UNASSIGNED_TABS"
+            icon="o_playlist_add"
+            tooltip="Show add tabs view"
+            :restricted="false"/>
 
         <ToolbarButton
-          :drawer="DrawerTabs.TAGS_VIEWER"
-          icon="o_label"
-          tooltip="Show tags viewer"
-          :restricted="false"/>
+            :drawer="DrawerTabs.TAGS_VIEWER"
+            icon="o_label"
+            tooltip="Show tags viewer"
+            :restricted="false"/>
 
         <div>
           <q-btn
-            @click="toggleSettings"
-            flat
-            size="12px"
-            class="q-mr-md" icon="o_settings" >
+              @click="toggleSettings"
+              flat
+              size="12px"
+              class="q-mr-md" icon="o_settings">
           </q-btn>
           <q-menu :offset="[0, 7]">
             <q-list style="min-width: 200px">
@@ -171,14 +174,14 @@
 
         <div class="cursor-pointer" @click="router.push('/about')" v-if="notificationsStore.updateToVersion !== ''">
           <q-btn
-            class="text-primary bg-warning"
-            @click="installNewVersion(notificationsStore.updateToVersion)"
-            :label="'New Version ' + notificationsStore.updateToVersion + ' available. Click here to update'"/>
+              class="text-primary bg-warning"
+              @click="installNewVersion(notificationsStore.updateToVersion)"
+              :label="'New Version ' + notificationsStore.updateToVersion + ' available. Click here to update'"/>
         </div>
       </q-toolbar>
     </q-header>
 
-    <q-drawer v-model="leftDrawerOpen" side="left" behavior="desktop" bordered >
+    <q-drawer v-model="leftDrawerOpen" side="left" behavior="desktop" bordered>
       <Navigation></Navigation>
     </q-drawer>
 
@@ -193,7 +196,7 @@
 
     <q-page-container>
       <router-view/>
-<!--      <div id="fixed-footer" class="q-pl-md q-pa-xs">{{ useUiStore().footerInfo }}</div>-->
+      <!--      <div id="fixed-footer" class="q-pl-md q-pa-xs">{{ useUiStore().footerInfo }}</div>-->
     </q-page-container>
 
   </q-layout>
@@ -266,8 +269,8 @@ watchEffect(() => {
     const label = spacesStore.spaces.get(key)?.label || 'undef'
     return {id: key, label: label}
   })
-    .concat({id: '', label: '(unassigned)'})
-    .concat({id: '', label: 'create new space'})
+      .concat({id: '', label: '(unassigned)'})
+      .concat({id: '', label: 'create new space'})
 })
 
 //@ts-ignore
@@ -331,10 +334,9 @@ const suggestionDialog = (s: Suggestion) => $q.dialog({
 })
 
 const dependingOnStates = () =>
-  _.find(useSuggestionsStore().getSuggestions(), s => s.state === SuggestionState.NEW) ? 'warning' : 'white'
+    _.find(useSuggestionsStore().getSuggestions(), s => s.state === SuggestionState.NEW) ? 'warning' : 'white'
 
 const toggleSettings = () => settingsClicked.value = !settingsClicked.value
-
 
 
 </script>
