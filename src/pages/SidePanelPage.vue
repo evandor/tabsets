@@ -42,9 +42,14 @@
                   <q-tooltip v-else class="tooltip">This tabset is shared</q-tooltip>
                 </q-icon>
                 {{ tabset.name }}
+                <span v-if="tabset.type === TabsetType.DYNAMIC">
+                  <q-icon name="o_label" color="warning">
+                    <q-tooltip class="tooltip">Dynamic Tabset, listing all tabsets containing this tag</q-tooltip>
+                  </q-icon>
+                </span>
               </q-item-label>
               <q-item-label class="text-caption text-grey-5">
-                {{ tabsetCaption(filteredTabs(tabset as Tabset)) }}
+                {{ tabsetCaption(filteredTabs(tabset as Tabset), tabset.window) }}
               </q-item-label>
             </q-item-section>
 
@@ -59,8 +64,8 @@
 
 
           <div class="q-ma-none q-pa-none">
-            <!--             <div class="q-ma-xs shrink" :class="showTabInfo(tabset.id) ? '':'collapsed'">-->
-            <div class="q-ma-none">
+
+            <div class="q-ma-none" v-if="inBexMode()">
               <SidePanelTabInfo :tabsetId="tabset.id"/>
             </div>
 
@@ -107,10 +112,10 @@ import {onMounted, onUnmounted, ref, watchEffect} from "vue";
 import {useTabsStore} from "src/stores/tabsStore";
 import {Tab} from "src/models/Tab";
 import _ from "lodash"
-import {Tabset, TabsetSharing, TabsetStatus, TabsetType} from "src/models/Tabset";
-import {useRoute, useRouter} from "vue-router";
+import {Tabset, TabsetStatus, TabsetType} from "src/models/Tabset";
+import {useRouter} from "vue-router";
 import {useUtils} from "src/services/Utils";
-import {scroll, useQuasar} from "quasar";
+import {scroll, uid, useQuasar} from "quasar";
 import {useTabsetService} from "src/services/TabsetService2";
 import {useUiStore} from "src/stores/uiStore";
 import PanelTabList from "components/layouts/PanelTabList.vue";
@@ -125,22 +130,22 @@ import SidePanelPageContextMenu from "pages/sidepanel/SidePanelPageContextMenu.v
 import {DynamicTabSourceType} from "src/models/DynamicTabSource";
 import {useWindowsStore} from "../stores/windowsStores";
 import TabsetService from "src/services/TabsetService";
+import Analytics from "src/utils/google-analytics";
+import {useAuthStore} from "stores/auth";
+import {PlaceholdersType} from "src/models/Placeholders";
 import getScrollTarget = scroll.getScrollTarget;
-
+import {useDB} from "src/services/usePersistenceService";
 
 const {setVerticalScrollPosition} = scroll
 
-const {inBexMode, sanitize, sendMsg} = useUtils()
+const {inBexMode} = useUtils()
 
 const $q = useQuasar()
 const router = useRouter()
-const route = useRoute()
 
 const tabsStore = useTabsStore()
-const spacesStore = useSpacesStore()
 const permissionsStore = usePermissionsStore()
 const uiStore = useUiStore()
-const show = ref(false)
 const showSearchBox = ref(false)
 
 const currentChromeTabs = ref<chrome.tabs.Tab[]>([])
@@ -150,7 +155,6 @@ const openTabs = ref<chrome.tabs.Tab[]>([])
 const currentTabset = ref<Tabset | undefined>(undefined)
 const currentChromeTab = ref<chrome.tabs.Tab>(null as unknown as chrome.tabs.Tab)
 const tabsetExpanded = ref<Map<string, boolean>>(new Map())
-const tabs = ref<Map<string, Tab[]>>(new Map())
 
 // https://stackoverflow.com/questions/12710905/how-do-i-dynamically-assign-properties-to-an-object-in-typescript
 interface SelectionObject {
@@ -166,6 +170,11 @@ const selectedTab = ref<Tab | undefined>(undefined)
 
 onMounted(() => {
   window.addEventListener('keypress', checkKeystroke);
+  if (!useAuthStore().isAuthenticated) {
+    router.push("/authenticate")
+  } else {
+    Analytics.firePageViewEvent('SidePanelPage', document.location.href);
+  }
 })
 
 onUnmounted(() => {
@@ -222,27 +231,20 @@ const updateSelectedTabset = (tabsetId: string, open: boolean, index: number | u
 watchEffect(() => {
   // should trigger if currentTabsetId is changed from "the outside"
   const currentTabsetId = useTabsStore().currentTabsetId
-  //console.log("triggered", currentTabsetId)
   selected_model.value = {}
   selected_model.value[currentTabsetId] = true
-  //updateSelectedTabset(useTabsStore().currentTabsetId,true, 0)
   tabsetExpanded.value.set(currentTabsetId, true)
   const index = _.findIndex(tabsets.value as Tabset[], (ts: Tabset) => ts.id === currentTabsetId)
   scrollToElement(document.getElementsByClassName("q-expansion-item")[index], 300)
   useUiStore().tabsetsExpanded = true
-  // useCommandExecutor()
-  //   .execute(new SelectTabsetCommand(currentTabsetId, useSpacesStore().space?.id))
 })
 
 watchEffect(() => {
-  //console.log(" >>> change in opentabs or currenttabset", useTabsStore().tabs, useTabsStore().getCurrentTabset)
   openTabs.value = useTabsStore().tabs
   currentTabset.value = useTabsStore().getCurrentTabset
 })
 
 watchEffect(() => {
-  //console.log(" >>> change in currentChromeTab", windowId, useTabsStore().getCurrentChromeTab(windowId || 0))
-  //if (windowId) {
   const windowId = useWindowsStore().currentWindow?.id || 0
   currentChromeTab.value = useTabsStore().getCurrentChromeTab(windowId) || useTabsStore().currentChromeTab
 })
@@ -293,13 +295,17 @@ watchEffect(() => {
               return false
             }
           }
-          return ts.status !== TabsetStatus.DELETED
+          return ts.status !== TabsetStatus.DELETED &&
+              ts.status !== TabsetStatus.HIDDEN &&
+              ts.status !== TabsetStatus.ARCHIVED
         }),
         getTabsetOrder, ["asc"])
   } else {
     tabsets.value = _.sortBy(
         _.filter([...tabsStore.tabsets.values()],
-            (ts: Tabset) => ts.status !== TabsetStatus.DELETED),
+            (ts: Tabset) => ts.status !== TabsetStatus.DELETED
+                && ts.status !== TabsetStatus.HIDDEN &&
+                ts.status !== TabsetStatus.ARCHIVED),
         getTabsetOrder, ["asc"])
   }
 })
@@ -308,12 +314,11 @@ watchEffect(() => {
 function inIgnoredMessages(message: any) {
   return message.msg === "html2text" ||
       message.msg === "html2links" ||
-      message.name === "zero-shot-classification" ||
       message.msg === "websiteQuote" ||
       message.name === "recogito-annotation-created"
 }
 
-if (chrome) {
+if ($q.platform.is.chrome) {
   if (inBexMode()) {
     // seems we need to define these listeners here to get the matching messages reliably
     // these messages are created by triggering events in the mainpanel
@@ -328,11 +333,13 @@ if (chrome) {
         }
         const tsId = message.data.tabsetId
         useTabsStore().selectCurrentTabset(tsId)
-      } else if (message.name === 'feature-activated' || message.name === "feature-deactivated") {
-        usePermissionsStore().initialize()
+      } else if (message.name === 'feature-activated') {
+        usePermissionsStore().addActivateFeature(message.data.feature)
+      } else if (message.name === "feature-deactivated") {
+        usePermissionsStore().removeActivateFeature(message.data.feature)
       } else if (message.name === "tabsets-imported") {
         useSpacesStore().reload()
-        useTabsetService().init()
+        useTabsetService().init(useDB(undefined).db)
         // TODO reload
       } else if (message.name === "tab-being-dragged") {
         useUiStore().draggingTab(message.data.tabId, null as unknown as any)
@@ -377,13 +384,16 @@ if (chrome) {
           uiStore.progressLabel = undefined
         }
         sendResponse("ui store progress set to " + uiStore.progress)
+      } else if (message.name === "detail-level-changed") {
+        console.log("setting list detail level to ", message.data.level)
+        useUiStore().setListDetailLevel(message.data.level)
       } else {
         console.log("got unmatched message", message)
       }
       return true
     })
   } else {
-    useRouter().push("/start")
+    //useRouter().push("/start")
   }
 }
 
@@ -404,7 +414,42 @@ const filteredTabs = (tabset: Tabset): Tab[] => {
     //return _.orderBy(results, getOrder(), [orderDesc.value ? 'desc' : 'asc'])
     return results
   }
-  const tabs: Tab[] = tabset.tabs
+  let tabs: Tab[] = tabset.tabs
+
+  // Tabs with placeholder
+  let placeholderTabs: Tab[] = []
+  let removeTabIds: string[] = []
+  tabs.forEach((t: Tab) => {
+    if (t.placeholders && t.placeholders.type === PlaceholdersType.URL_SUBSTITUTION) {
+      const subs = t.placeholders.config
+      Object.entries(subs).forEach(e => {
+        const name = e[0]
+        const val = e[1]
+        val.split(",").forEach((v: string) => {
+          const substitution = v.trim()
+          if (substitution.length > 0) {
+            const clonedTab = JSON.parse(JSON.stringify(t));
+            clonedTab.id = uid()
+            clonedTab.description = undefined
+            let useUrl = t.url || ''
+            let useName = t.name || t.title || ''
+            Object.entries(subs).forEach(e1 => {
+              useUrl = useUrl.replaceAll("${" + e1[0] + "}", substitution)
+              useName = useName.replaceAll("${" + e1[0] + "}", substitution)
+            })
+            clonedTab.url = useUrl
+            clonedTab.name = useName
+            placeholderTabs.push(clonedTab)
+            removeTabIds.push(t.id)
+          }
+        })
+      })
+    }
+  })
+  tabs = _.filter(tabs, (t: Tab) => removeTabIds.indexOf(t.id) < 0)
+  tabs = tabs.concat(placeholderTabs)
+
+
   // TODO order??
   const filter = useUiStore().tabsFilter
   if (!filter || filter.trim() === '') {
@@ -440,7 +485,7 @@ function getOrder() {
 
 async function handleHeadRequests(selectedTabset: Tabset) {
   //selectedTabset.tabs.forEach((t: Tab) => {
-  for (const t: Tab of selectedTabset.tabs) {
+  for (const t of selectedTabset.tabs) {
     if (t.url && !t.url.startsWith("chrome")) {
       // console.log("checking HEAD", t.url)
       try {
@@ -480,16 +525,21 @@ async function handleHeadRequests(selectedTabset: Tabset) {
   useTabsetService().saveTabset(selectedTabset)
 }
 
-const tabsetCaption = (tabs: Tab[]) => {
+const tabsetCaption = (tabs: Tab[], window: string) => {
   const filter = useUiStore().tabsFilter
   if (!tabs) {
     return '-'
   }
+  let caption = ''
   if (!filter || filter.trim() === '') {
-    return tabs.length + ' tab' + (tabs.length === 1 ? '' : 's')
+    caption = tabs.length + ' tab' + (tabs.length === 1 ? '' : 's')
   } else {
-    return tabs.length + ' tab' + (tabs.length === 1 ? '' : 's') + ' (filtered)'
+    caption = tabs.length + ' tab' + (tabs.length === 1 ? '' : 's') + ' (filtered)'
   }
+  if (window && window !== 'current' && usePermissionsStore().hasFeature(FeatureIdent.WINDOW_MANAGEMENT)) {
+    caption = caption + " - opens in: " + window
+  }
+  return caption
 }
 
 const hoveredOver = (tabsetId: string) => hoveredTabset.value === tabsetId

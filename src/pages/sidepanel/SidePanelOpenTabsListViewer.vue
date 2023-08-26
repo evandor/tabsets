@@ -131,7 +131,7 @@ import {useTabsStore} from "src/stores/tabsStore";
 import {Tab} from "src/models/Tab";
 import {Tabset} from "src/models/Tabset";
 import _ from "lodash";
-import {ref, watchEffect} from "vue"
+import {onMounted, ref, watchEffect} from "vue"
 import OpenTabCard from "components/layouts/OpenTabCard.vue";
 import {VueDraggableNext} from 'vue-draggable-next'
 import TabsetService from "src/services/TabsetService";
@@ -144,6 +144,7 @@ import {usePermissionsStore} from "src/stores/permissionsStore";
 import {FeatureIdent} from "src/models/AppFeature";
 import OpenTabDialog from "components/dialogues/OpenTabDialog.vue";
 import {SidePanelView, useUiStore} from "src/stores/uiStore";
+import Analytics from "src/utils/google-analytics";
 
 const {inBexMode} = useUtils()
 
@@ -157,6 +158,11 @@ const invert = ref(false)
 const userCanSelect = ref(false)
 
 const tabSelection = ref<Set<string>>(new Set<string>())
+
+onMounted(() => {
+  Analytics.firePageViewEvent('SidePanelOpenTabsListViewer', document.location.href);
+})
+
 
 function unassignedTabs(): Tab[] {
   return _.filter(

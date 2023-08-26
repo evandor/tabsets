@@ -1,5 +1,29 @@
 import {bexBackground} from 'quasar/wrappers';
-import {pipeline, env as env2} from "@xenova/transformers";
+import Analytics from "src/utils/google-analytics";
+
+// https://stackoverflow.com/questions/49739438/when-and-how-does-a-pwa-update-itself
+const updateTrigger = 9
+
+// https://developer.chrome.com/docs/extensions/mv3/tut_analytics/
+console.log("ga: installing google analytics")
+
+addEventListener('unhandledrejection', async (event) => {
+  console.log("ga: fire error event")
+  Analytics.fireErrorEvent(event.reason);
+});
+
+chrome.runtime.onInstalled.addListener(() => {
+  console.log("ga: fire event install")
+  Analytics.fireEvent('install');
+});
+
+// Throw an exception after a timeout to trigger an exception analytics event
+// setTimeout(throwAnException, 2000);
+//
+// async function throwAnException() {
+//   throw new Error("👋 I'm an error");
+// }
+
 
 chrome.omnibox.onInputEntered.addListener((text) => {
   const newURL = chrome.runtime.getURL("/www/index.html#/searchresult?t=" + encodeURIComponent(text))
@@ -8,34 +32,6 @@ chrome.omnibox.onInputEntered.addListener((text) => {
 });
 
 let modelPromise: any = null
-
-// Listen for messages from the UI, process it, and send the result back.
-chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-
-  (async function () {
-    if (message.name === 'zero-shot-classification') {
-      console.log("got zero-shot-classification message", message.data.text, typeof (message.data.candidates as string[]))
-
-      try {
-        let model = await modelPromise;
-        let result = await model(message.data.text, message.data.candidates as string[]);
-        console.log("result:", result)
-        //let reviewer2 = await pipeline('zero-shot-classification', 'Xenova/bart-large-mnli');
-        //let result3 = await model('View the latest news and breaking news today for, entertainment, politics and health at CNN.com.', ['News','Nachrichten','wasanderes']);
-        //console.log("result3", result3)
-        sendResponse(result);
-      } catch (err) {
-        console.log("got error", err)
-        sendResponse(err)
-      }
-
-
-    }
-  })();
-  // return true to indicate we will send a response asynchronously
-  // see https://stackoverflow.com/a/46628145
-  return true;
-});
 
 // @ts-ignore
 if (chrome.sidePanel && chrome.sidePanel.setPanelBehavior) {

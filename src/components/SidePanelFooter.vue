@@ -69,7 +69,14 @@
         </template>
 
       </div>
-      <div class="col text-right">
+      <div class="col text-right text-black">
+        <q-btn icon="o_help" v-if="usePermissionsStore().hasFeature(FeatureIdent.HELP)"
+               :class="rightButtonClass()"
+               flat
+               color="black"
+               size="8px"
+               @click="openHelpView()">
+        </q-btn>
 
         <q-btn icon="o_settings"
                :class="rightButtonClass()"
@@ -108,20 +115,25 @@ import OpenTabsThresholdWidget from "components/widgets/OpenTabsThresholdWidget.
 import NavigationService from "src/services/NavigationService";
 import {useSettingsStore} from "stores/settingsStore";
 import SidePanelFooterLeftButton from "components/helper/SidePanelFooterLeftButton.vue";
-import {useQuasar} from "quasar";
+import {Notify, useQuasar} from "quasar";
 import {useUtils} from "src/services/Utils";
 import {useWindowsStore} from "stores/windowsStores";
 import {useSuggestionsStore} from "stores/suggestionsStore";
 import _ from "lodash";
-import {Suggestion, SuggestionState, SuggestionType} from "src/models/Suggestion";
+import {SuggestionState, SuggestionType} from "src/models/Suggestion";
 import SuggestionDialog from "components/dialogues/SuggestionDialog.vue";
+import {useCommandExecutor} from "src/services/CommandExecutor";
+import {DeactivateFeatureCommand} from "src/domain/features/DeactivateFeature";
+import {AppFeatures} from "src/models/AppFeatures";
+import {TabsetStatus} from "src/models/Tabset";
+import {useTabsetService} from "src/services/TabsetService2";
+import {useSearchStore} from "stores/searchStore";
 
 const {inBexMode, sanitize, sendMsg} = useUtils()
 
 const $q = useQuasar()
 
 const tabsStore = useTabsStore()
-const settingsStore = useSettingsStore()
 const permissionsStore = usePermissionsStore()
 const router = useRouter()
 const uiStore = useUiStore()
@@ -172,7 +184,9 @@ watchEffect(() => {
 })
 
 watchEffect(() => {
-  //currentChromeTab.value = useTabsStore().currentChromeTab
+  if (!inBexMode()) {
+    return
+  }
   const windowId = useWindowsStore().currentWindow.id || 0
   currentChromeTab.value = useTabsStore().getCurrentChromeTab(windowId) || useTabsStore().currentChromeTab
 })
@@ -182,9 +196,10 @@ watchEffect(() => {
   progressLabel.value = uiStore.progressLabel + " " + Math.round(100 * progress.value) + "%"
 })
 
-const openOptionsPage = () => window.open(chrome.runtime.getURL('www/index.html#/mainpanel/settings'));
+//const openOptionsPage = () => window.open(chrome.runtime.getURL('www/index.html#/mainpanel/settings'));
+const openOptionsPage = () => window.open('#/mainpanel/settings');
 
-const openExtensionTab = () => NavigationService.openOrCreateTab(chrome.runtime.getURL('www/index.html#/start'))
+const openExtensionTab = () => NavigationService.openOrCreateTab(chrome.runtime.getURL('www/index.html#/fullpage'))
 
 const settingsTooltip = () => {
   return "Open Settings of Tabsets " + import.meta.env.PACKAGE_VERSION
@@ -210,6 +225,37 @@ const suggestionsLabel = () => {
       suggestions.length + " New Suggestion" :
       suggestions.length + " New Suggestions"
 
+}
+
+  // function deactivateHelpFeature() {
+  //   const helpFeature = new AppFeatures().getFeature(FeatureIdent.HELP)
+  //   if (helpFeature) {
+  //     useCommandExecutor().execute(new DeactivateFeatureCommand(helpFeature))
+  //         .then((res) => {
+  //           useTabsetService().deleteTabset("HELP")
+  //           Notify.create({
+  //             color: 'warning',
+  //             message: "The Help pages have been deleted"
+  //           })
+  //         })
+  //         .catch((err) => {
+  //           console.log("error deactivating help", err)
+  //           Notify.create({
+  //             color: 'warning',
+  //             message: "There was a problem"
+  //           })
+  //         })
+  //   }
+  // }
+
+const openHelpView = () => {
+  const helpTabset = useTabsStore().getTabset("HELP")
+  console.log("got helpTabset", helpTabset)
+  if (helpTabset && helpTabset.status !== TabsetStatus.DELETED) {
+    router.push("/sidepanel/tabsets/HELP")
+  } else {
+    //deactivateHelpFeature();
+  }
 }
 
 </script>

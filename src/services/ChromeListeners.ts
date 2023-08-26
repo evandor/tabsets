@@ -112,7 +112,12 @@ function annotationScript (tabId: string, annotations: any[]) {
     (event) => {
       if (event.data && event.data.name && event.data.name.startsWith('recogito-')) {
         console.log("sending", event.data)
-        chrome.runtime.sendMessage(event.data, (callback) => console.log("xxx callback", callback))
+        chrome.runtime.sendMessage(event.data, (callback) => {
+          console.log("xxx callback", callback)
+          if (chrome.runtime.lastError) {
+            console.warn("got runtime error", chrome.runtime.lastError)
+          }
+        })
       }
     },
     false,
@@ -136,7 +141,7 @@ function inIgnoredMessages(request: any) {
     request.name === 'feature-activated' ||
     request.name === 'feature-deactivated' ||
     request.name === 'tabsets-imported' ||
-    request.name === 'zero-shot-classification'
+    request.name === 'detail-level-changed'
     //request.name === 'recogito-annotation-created'
 
 }
@@ -440,7 +445,7 @@ class ChromeListeners {
 
   private handleHtml2Text(request: any, sender: chrome.runtime.MessageSender, sendResponse: any) {
 
-    console.log("handleHtml2Text")
+    console.debug("handleHtml2Text")
 
     if (sender && sender.url && request.html) {
       try {
@@ -519,7 +524,7 @@ class ChromeListeners {
       if (usePermissionsStore().hasFeature(FeatureIdent.RSS)) {
         request.links.forEach((metaLink: MetaLink) => {
           if ("application/rss+xml" === metaLink.type) {
-            //console.log("hier!!!", metaLink)
+            console.log("hier!!!", metaLink)
             useSuggestionsStore().addSuggestion(new Suggestion(uid(), metaLink.title || 'Found RSS Feed', "An RSS Link was found in one of your tabs", metaLink.href, SuggestionType.RSS))
           }
         })

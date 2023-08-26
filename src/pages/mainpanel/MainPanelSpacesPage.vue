@@ -56,19 +56,24 @@
 
 import {useTabsStore} from "src/stores/tabsStore";
 import {useSpacesStore} from "src/stores/spacesStore";
-import {ref, watchEffect} from "vue"
+import {onMounted, ref, watchEffect} from "vue"
 import _ from "lodash"
 import {Space} from "src/models/Space"
 import {Tabset} from "src/models/Tabset";
 import TabsetService from "src/services/TabsetService";
 import {useRouter} from "vue-router";
 import {useTabsetService} from "src/services/TabsetService2";
+import Analytics from "src/utils/google-analytics";
 
 const spacesStore = useSpacesStore()
 const tabsStore = useTabsStore()
 const checked = ref<boolean[][]>([[]])
 const deleteSpace = ref<boolean[]>([])
 const router = useRouter()
+
+onMounted(() => {
+  Analytics.firePageViewEvent('MainPanelSpacesPage', document.location.href);
+})
 
 watchEffect(() => {
   const spaceArray: boolean[][] = []

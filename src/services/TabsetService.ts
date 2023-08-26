@@ -8,13 +8,12 @@ import {useSearchStore} from "src/stores/searchStore";
 import {useBookmarksStore} from "src/stores/bookmarksStore";
 import {STRIP_CHARS_IN_USER_INPUT} from "boot/constants";
 import {useTabsetService} from "src/services/TabsetService2";
-
-const {getTabset, getCurrentTabset, saveTabset, saveCurrentTabset, tabsetsFor, addToTabset} = useTabsetService()
-
 import {useDB} from "src/services/usePersistenceService";
-import {api} from "boot/axios";
 import {useSpacesStore} from "stores/spacesStore";
 import {FirebaseCall} from "src/services/firebase/FirebaseCall";
+import {Placeholders, PlaceholdersType} from "src/models/Placeholders";
+
+const {getTabset, getCurrentTabset, saveTabset, saveCurrentTabset, tabsetsFor, addToTabset} = useTabsetService()
 
 const {db} = useDB()
 
@@ -174,6 +173,17 @@ class TabsetService {
 
   setCustomTitle(tab: Tab, title: string): Promise<any> {
     tab.name = title
+    return saveCurrentTabset()
+  }
+
+  setUrl(tab: Tab, url: string, placeholders: string[] = [], placeholderValues: Map<string,string> = new Map()): Promise<any> {
+    tab.url = url
+    var config: {[k: string]: any} = {};
+    for(const p of placeholders) {
+      config[p] = placeholderValues.get(p)
+    }
+    const phs = new Placeholders(PlaceholdersType.URL_SUBSTITUTION, tab.id, config)
+    tab.placeholders = phs
     return saveCurrentTabset()
   }
 

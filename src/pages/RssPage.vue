@@ -61,18 +61,23 @@
 
 <script lang="ts" setup>
 
-import {ref, watch, watchEffect} from "vue";
+import {onMounted, ref, watch, watchEffect} from "vue";
 import {useRoute} from "vue-router";
 import {date} from "quasar"
 import {extract} from '@extractus/feed-extractor'
 import NavigationService from "src/services/NavigationService";
 import {formatDistance, parseISO} from "date-fns";
+import Analytics from "src/utils/google-analytics";
 
 const route = useRoute()
 
 const encodedUrl = ref()
 const title = ref()
 const rss = ref({})
+
+onMounted(() => {
+  Analytics.firePageViewEvent('RssPage', document.location.href);
+})
 
 const opts = {
   includeEntryContent: true,

@@ -6,7 +6,8 @@ export enum TabsetStatus {
   DEFAULT = "DEFAULT",
   FAVORITE = "FAVORITE",
   ARCHIVED = "ARCHIVED",
-  DELETED = "DELETED"
+  DELETED = "DELETED",
+  HIDDEN = "HIDDEN"
 }
 
 export enum TabsetType {
@@ -48,6 +49,8 @@ export class Tabset {
   page: string | undefined = undefined
 
   taxonomy: string | undefined = undefined
+
+  window: string = 'current'
 
   constructor(id: string, name: string, tabs: Tab[], groups: Group[] = [], spaces: string[] = []) {
     this.id = id

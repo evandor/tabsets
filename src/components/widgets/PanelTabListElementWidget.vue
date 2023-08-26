@@ -1,6 +1,6 @@
 <template>
 
-  <q-item-section v-if="useUiStore().listDetailLevelGreaterEqual(ListDetailLevel.MEDIUM)"
+  <q-item-section v-if="useUiStore().listDetailLevelGreaterEqual(ListDetailLevel.SOME)"
                   @mouseover="hoveredTab = tab.id"
                   @mouseleave="hoveredTab = undefined"
                   class="q-mr-sm text-right" style="justify-content:start;width:25px;max-width:25px">
@@ -14,7 +14,9 @@
           </svg>
         </div>
         <div v-else key="oldState">
-          <TabFaviconWidget :tab="props.tab" width="16px" height="16px"/>
+          <TabFaviconWidget
+              :preventDragAndDrop="props.preventDragAndDrop"
+              :tab="props.tab" width="16px" height="16px"/>
         </div>
       </transition>
 
@@ -25,7 +27,7 @@
       NEW
       <q-tooltip class="tooltip">This page indicates that its content has changed in the meantime.</q-tooltip>
     </div>
-    <div v-else-if="props.tab?.httpStatus >= 300"
+    <div v-else-if="props.tab?.httpStatus >= 300 && !props.tab?.placeholders"
          class="q-my-xs q-mx-none q-pa-none text-white items-center justify-center"
          :class="props.tab?.httpStatus >= 500 ? 'bg-red' : 'bg-warning'"
          style="border-radius: 3px;max-height:15px;font-size:8px;text-align: center;">
@@ -42,31 +44,21 @@
                   @mouseleave="hoveredTab = undefined">
 
     <!-- name or title -->
-    <q-item-label v-if="props.type === 'categories'">
-      <div>
-        <div class="q-pr-sm cursor-pointer ellipsis" :class="classForCategoryTab(props.tab)">
-
-          <span v-if="props.header" class="text-bold">{{ props.header }}<br></span>
-          <span v-if="useTabsStore().getCurrentTabset?.sorting === 'alphabeticalTitle'">
-              <q-icon name="arrow_right" size="16px"/>
-           </span>
-          {{ nameOrTitle(props.tab) }}
-        </div>
-      </div>
-    </q-item-label>
-    <q-item-label v-else>
+    <q-item-label>
       <div>
         <div class="q-pr-sm cursor-pointer ellipsis">
-
-          <!--          <span class="text-bold" v-if="isCurrentTab(props.tab as Tab)">Current Tab::<br></span>-->
-
           <span v-if="props.header" class="text-bold">{{ props.header }}<br></span>
-          <span v-if="useTabsStore().getCurrentTabset?.sorting === 'alphabeticalTitle'">
+<!--          <span v-if="useTabsStore().getCurrentTabset?.sorting === 'alphabeticalTitle'">-->
+          <span v-if="props.sorting === TabSorting.TITLE">
               <q-icon name="arrow_right" size="16px"/>
            </span>
           <span v-html="nameOrTitle(props.tab as Tab)"/>
+          <q-icon v-if="(props.tab as Tab).placeholders"
+              name="published_with_changes" class="q-ml-sm" color="accent">
+            <q-tooltip>This tab is created by substituting parts of its URL</q-tooltip>
+          </q-icon>
           <q-popup-edit
-            v-if="props.tab?.extension !== UrlExtension.NOTE"
+            v-if="props.tab?.extension !== UrlExtension.NOTE && !props.tab.placeholders"
             :model-value="dynamicNameOrTitleModel(tab)" v-slot="scope"
             @update:model-value="val => setCustomTitle( tab, val)">
             <q-input v-model="scope.value" dense autofocus counter @keyup.enter="scope.set"/>
@@ -78,7 +70,7 @@
 
     <!-- description -->
     <q-item-label class="ellipsis-2-lines text-grey-8"
-                  v-if="useUiStore().listDetailLevelGreaterEqual(ListDetailLevel.LARGE)"
+                  v-if="useUiStore().listDetailLevelGreaterEqual(ListDetailLevel.MAXIMAL)"
                   @click.stop="NavigationService.openOrCreateTab(props.tab?.url || '' )">
       {{ props.tab.description }}
     </q-item-label>
@@ -93,7 +85,7 @@
       <div class="row q-ma-none">
         <div class="col-10 q-pr-lg cursor-pointer"
              @click.stop="NavigationService.openOrCreateTab(props.tab.url )">
-           <span v-if="useTabsStore().getCurrentTabset?.sorting === 'alphabeticalUrl'">
+           <span v-if="props.sorting === TabSorting.URL">
               <q-icon name="arrow_right" size="16px"/>
            </span>
 
@@ -104,7 +96,10 @@
           <template v-else>
             <short-url :url="props.tab.url" :hostname-only="true"/>
           </template>
-          <div class="text-caption text-grey-5">
+          <div class="text-caption text-grey-5" v-if="useUiStore().listDetailLevelGreaterEqual(ListDetailLevel.SOME)">
+            <span v-if="props.sorting === TabSorting.AGE">
+              <q-icon name="arrow_right" size="16px"/>
+           </span>
             {{ formatDate(props.tab.lastActive) }}
           </div>
 
@@ -131,7 +126,7 @@
     </q-item-label>
 
     <!-- note -->
-    <q-item-label v-if="useUiStore().listDetailLevelGreaterEqual(ListDetailLevel.LARGE) &&
+    <q-item-label v-if="useUiStore().listDetailLevelGreaterEqual(ListDetailLevel.MAXIMAL) &&
       props['tab' as keyof object]['note']"
                   class="text-grey-10" text-subtitle1>
       <q-icon color="blue-10" name="edit_note"/>
@@ -154,7 +149,7 @@
 
 <script setup lang="ts">
 import NavigationService from "src/services/NavigationService";
-import {Tab, UrlExtension} from "src/models/Tab";
+import {Tab, TabSorting, UrlExtension} from "src/models/Tab";
 import TabsetService from "src/services/TabsetService";
 import {onMounted, PropType, ref, watchEffect} from "vue";
 import {useCommandExecutor} from "src/services/CommandExecutor";
@@ -174,13 +169,18 @@ import {TabsetType} from "src/models/Tabset";
 import {useWindowsStore} from "stores/windowsStores";
 import {usePermissionsStore} from "stores/permissionsStore";
 import {FeatureIdent} from "src/models/AppFeature";
+import {useUtils} from "src/services/Utils";
+
+const {inBexMode} = useUtils()
 
 const props = defineProps({
   tab: {type: Object as PropType<Tab>, required: true},
   header: {type: String, required: false},
   type: {type: String, default: 'sidepanel'},
   hideMenu: {type: Boolean, default: false},
+  sorting: {type: String as PropType<TabSorting>, default: TabSorting.CUSTOM},
   showTabsets: {type: Boolean, default: false},
+  preventDragAndDrop: {type: Boolean, default: false},
   tabsetType: {type: String, default: TabsetType.DEFAULT.toString()}
 })
 
@@ -189,13 +189,10 @@ const cnt = ref(0)
 const $q = useQuasar()
 const tabsStore = useTabsStore()
 
-const line = ref(null)
 const showButtonsProp = ref<boolean>(false)
-const thumbnail = ref<string | undefined>(undefined)
 const imgFromBlob = ref<string>("")
 const hoveredTab = ref<string | undefined>(undefined)
 const tsBadges = ref<object[]>([])
-const tabsetCandidates = ref<object[]>([])
 const newState = ref(false)
 
 onMounted(() => {
@@ -238,15 +235,6 @@ watchEffect(() => {
     }))
   }
 })
-
-
-watchEffect(async () => {
-  if (props.tab.url) {
-    const c = await TabsetService.getContentForUrl(props.tab.url)
-    tabsetCandidates.value = c ? (c['tabsetCandidates' as keyof object] || []) : []
-  }
-})
-
 
 function getShortHostname(host: string) {
   const nrOfDots = (host.match(/\./g) || []).length
@@ -333,10 +321,11 @@ const formatDate = (timestamp: number | undefined) =>
   timestamp ? formatDistance(timestamp, new Date(), {addSuffix: true}) : ""
 
 const isCurrentTab = (tab: Tab) => {
-  //console.log("xxx", tabsStore.getCurrentTabset.tabs[0].chromeTab.url, tab.chromeTab.url)
-  //return tabsStore.currentChromeTab.url === tab.url;
-  const windowId = useWindowsStore().currentWindow.id || 0
-  return (tabsStore.getCurrentChromeTab(windowId) || tabsStore.currentChromeTab).url === tab.url
+  if (!inBexMode()) {
+    return false
+  }
+  const windowId = useWindowsStore().currentWindow?.id || 0
+  return (tabsStore.getCurrentChromeTab(windowId) || tabsStore.currentChromeTab)?.url === tab.url
 
 }
 </script>

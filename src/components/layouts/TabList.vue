@@ -11,7 +11,6 @@
       class="dragArea list-group w-full"
       :list="props.tabs as Array<Tab>"
       :group="{ name: 'tabs', pull: 'clone' }"
-
       @change="handleDragAndDrop">
 
       <q-item v-if="props.tabs?.length === 0 &&

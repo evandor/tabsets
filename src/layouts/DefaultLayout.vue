@@ -137,12 +137,6 @@
           tooltip="Show add tabs view"
           :restricted="false"/>
 
-        <ToolbarButton
-          :drawer="DrawerTabs.HELP"
-          icon="o_help"
-          tooltip="Help Pages"
-          :restricted="false"/>
-
         <div>
           <q-btn
             @click="toggleSettings"
@@ -230,28 +224,22 @@ import {useSettingsStore} from "src/stores/settingsStore"
 import TabsetsSelectorWidget from "components/widgets/TabsetsSelectorWidget.vue";
 import ToolbarButton from "components/widgets/ToolbarButton.vue";
 
+const $q = useQuasar()
 const router = useRouter()
 const tabsStore = useTabsStore()
 const searchStore = useSearchStore()
-const uiStore = useUiStore()
 
-const localStorage = useQuasar().localStorage
-
-const rightDrawerOpen = ref(true)
-const leftDrawerOpen = ref(true)
-const filter = ref<string>('')
-const model = ref(85)
+const rightDrawerOpen = ref($q.screen.gt.md)
+const leftDrawerOpen = ref($q.screen.gt.md)
 
 const notificationsStore = useNotificationsStore()
 const permissionsStore = usePermissionsStore()
 const settingsStore = useSettingsStore()
 const spacesStore = useSpacesStore()
-const route = useRoute()
 
 const spacesOptions = ref<object[]>([])
 const suggestions = ref<Suggestion[]>(useSuggestionsStore().getSuggestions())
 const search = ref('')
-const $q = useQuasar()
 
 const {inBexMode} = useUtils()
 

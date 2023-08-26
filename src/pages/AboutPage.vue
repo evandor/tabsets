@@ -154,6 +154,7 @@ const bookmarksStore = useBookmarksStore()
 const router = useRouter()
 const $q = useQuasar()
 
+
 const addTabset = () => $q.dialog({
   component: NewTabsetDialog, componentProps: {
     setEmptyByDefault: useUiStore().newTabsetEmptyByDefault,

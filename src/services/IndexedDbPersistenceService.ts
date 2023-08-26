@@ -149,7 +149,7 @@ class IndexedDbPersistenceService implements PersistenceService {
         .then(() => console.log(new Tab(uid(), tab), `saved thumbnail for url ${tab.url}, ${Math.round(thumbnail.length / 1024)}kB`))
         .catch(err => console.error(new Tab(uid(), tab), err))
     }
-    return Promise.reject("no url provided")
+    return Promise.reject("no url provided or db not ready")
   }
 
   saveRequest(url: string, requestInfo: RequestInfo): Promise<void> {
@@ -164,6 +164,9 @@ class IndexedDbPersistenceService implements PersistenceService {
   }
 
   saveMetaLinks(url: string, metaLinks: MetaLink[]): Promise<void> {
+    if (!this.db) {
+      console.log("saveMetaLinks: db not ready yet")
+    }
     const encodedTabUrl = btoa(url)
     return this.db.put('metalinks', {
       expires: new Date().getTime() + 1000 * 60 * EXPIRE_DATA_PERIOD_IN_MINUTES,
@@ -175,6 +178,9 @@ class IndexedDbPersistenceService implements PersistenceService {
   }
 
   saveLinks(url: string, links: any): Promise<void> {
+    if (!this.db) {
+      console.log("saveLinks: db not ready yet")
+    }
     const encodedTabUrl = btoa(url)
     return this.db.put('links', {
       expires: new Date().getTime() + 1000 * 60 * EXPIRE_DATA_PERIOD_IN_MINUTES,
@@ -211,8 +217,7 @@ class IndexedDbPersistenceService implements PersistenceService {
     return this.db.delete('content', btoa(url))
   }
 
-  saveContent(tab: Tab, text: string, metas: object, title: string, tabsetIds: string[],
-              tabsetCandidates: object[] = []): Promise<IDBValidKey> {
+  saveContent(tab: Tab, text: string, metas: object, title: string, tabsetIds: string[]): Promise<IDBValidKey> {
     if (tab.url) {
       const encodedTabUrl = btoa(tab.url)
       return this.db.put('content', {
@@ -223,8 +228,7 @@ class IndexedDbPersistenceService implements PersistenceService {
         content: text,
         metas: metas,
         tabsets: tabsetIds,
-        favIconUrl: tab.favIconUrl,
-        tabsetCandidates: tabsetCandidates
+        favIconUrl: tab.favIconUrl
       }, encodedTabUrl)
         .then((res) => {
           // console.info(new Tab(uid(), tab), "saved content for url " + tab.url)
@@ -565,7 +569,11 @@ class IndexedDbPersistenceService implements PersistenceService {
   }
 
   getNotifications(onlyNew: boolean = true): Promise<Notification[]> {
-    return this.db.getAll('notifications')
+    if (this.db) {
+      return this.db.getAll('notifications')
+    }
+    console.log("db not ready yet, returning empty notification array")
+    return Promise.resolve([])
   }
 
   addNotification(notification: Notification): Promise<void> {
@@ -661,6 +669,15 @@ class IndexedDbPersistenceService implements PersistenceService {
   clear(name: string) {
     this.db.clear(name).catch((e) => console.warn(e))
   }
+
+  getActiveFeatures(): Promise<string[]> {
+    return Promise.reject("not implemented")
+  }
+
+  saveActiveFeatures(val: string[]): any {
+    console.warn("not implemented")
+  }
+
 }
 
 export default new IndexedDbPersistenceService()

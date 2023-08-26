@@ -94,6 +94,9 @@ export default bexContent((bridge: any) => {
     metas: getMetas(document)
   }, function (response) {
     console.log("tabsets: created text excerpt for tabsets")
+    if (chrome.runtime.lastError) {
+      console.warn("got runtime error", chrome.runtime.lastError)
+    }
   });
 
   chrome.runtime.sendMessage({
@@ -102,6 +105,9 @@ export default bexContent((bridge: any) => {
     links: getLinks(document)
   }, function (response) {
     console.log("tabsets: created links excerpt for tabsets")
+    if (chrome.runtime.lastError) {
+      console.warn("got runtime error", chrome.runtime.lastError)
+    }
   });
 
 

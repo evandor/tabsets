@@ -20,14 +20,16 @@ import {useUtils} from "src/services/Utils";
 import {usePermissionsStore} from "stores/permissionsStore";
 import {FeatureIdent} from "src/models/AppFeature";
 import {SaveOrReplaceResult} from "src/models/SaveOrReplaceResult";
+import PersistenceService from "src/services/PersistenceService";
 
-const {sendMsg} = useUtils()
+let db: PersistenceService = null as unknown as PersistenceService
 
 export function useTabsetService() {
-    const {db} = useDB()
 
-    const init = async (doNotInitSearchIndex: boolean = false) => {
+    const init = async (providedDb: PersistenceService,
+                        doNotInitSearchIndex: boolean = false) => {
         console.log("initializing tabsetService2")
+        db = providedDb
         await db.loadTabsets()
         console.log("after db.loadTabsets()")
         if (!doNotInitSearchIndex) {
@@ -63,7 +65,8 @@ export function useTabsetService() {
         name: string,
         chromeTabs: chrome.tabs.Tab[],
         merge: boolean = false,
-        type: TabsetType = TabsetType.DEFAULT): Promise<SaveOrReplaceResult> => {
+        windowId: string = 'current',
+        tsType: TabsetType = TabsetType.DEFAULT): Promise<SaveOrReplaceResult> => {
 
         const trustedName = name.replace(STRIP_CHARS_IN_USER_INPUT, '')
         const tabs: Tab[] = _.filter(
@@ -80,7 +83,7 @@ export function useTabsetService() {
             })
         try {
             const result: NewOrReplacedTabset = await useTabsStore()
-                .updateOrCreateTabset(trustedName, tabs, merge, type)
+                .updateOrCreateTabset(trustedName, tabs, merge, windowId, tsType)
             if (result && result.tabset) {
                 await saveTabset(result.tabset)
                 // result.tabset.tabs.forEach((tab: Tab) => {
@@ -284,7 +287,7 @@ export function useTabsetService() {
         const tabsStore = useTabsStore()
         const currentTabset = tabsStore.getCurrentTabset
         if (currentTabset) {
-            console.log("saving current tabset", currentTabset)
+            //console.log("saving current tabset", currentTabset)
             return saveTabset(currentTabset)
         }
         return Promise.reject("current tabset could not be found")
@@ -386,18 +389,6 @@ export function useTabsetService() {
                                 // @ts-ignore
                                 console.log(`saved tabset with _id: ${tabset._id}, _rev: ${tabset._rev}`)
                                 //tabset._rev = res._rev
-
-                                // if (usePermissionsStore().hasFeature(FeatureIdent.AI_MODULE)) {
-                                //   // try to apply AI logic
-                                //   if (metas['description' as keyof object]) {
-                                //     const data = {
-                                //       text: metas['description' as keyof object],
-                                //       candidates: _.map([...useTabsStore().tabsets.values()], (ts: Tabset) => ts.name)
-                                //     }
-                                //     console.log("about to apply KI logic...", data)
-                                //     sendMsg('zero-shot-classification', data)
-                                //   }
-                                // }
 
                             }))
                     }

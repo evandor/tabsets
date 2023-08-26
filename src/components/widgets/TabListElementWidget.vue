@@ -1,6 +1,6 @@
 <template>
 
-  <q-item-section class="q-mr-sm text-right" style="justify-content:start;width:70px;max-width:70px;">
+  <q-item-section class="q-ml-sm q-mt-sm text-right" style="justify-content:start;width:70px;max-width:70px;">
     <q-img v-if="props.tab.image && props.tab.image.startsWith('blob://')"
            style="border:3px dotted white;border-radius:3px"
            :src="imgFromBlob" width="70px"/>
@@ -14,13 +14,13 @@
   </q-item-section>
 
   <!-- name, title, description, url && note -->
-  <q-item-section :style="itemStyle(props.tab)"
+  <q-item-section :style="itemStyle(props.tab as Tab)" class="q-pa-sm q-ma-none"
                   :data-testid="useUtils().createDataTestIdentifier('tabListElementWidget', props.tab.title)">
 
     <!-- name or title -->
     <q-item-label>
       <div>
-        <div class="q-pr-lg cursor-pointer" style="font-size: larger;line-height: 120%;">
+        <div class="q-pr-lg cursor-pointer" >
           <q-chip v-if="isOpen(props.tab) && props.showIsOpened"
                   class="q-my-none q-py-none q-ml-none q-mr-sm"
                   clickable
@@ -64,7 +64,7 @@
       @mouseover="showButtonsProp = true"
       @mouseleave="showButtonsProp = false">
       <div class="q-pr-lg cursor-pointer" style="display: inline-block;"
-           @click.stop="NavigationService.openOrCreateTab(props.tab?.url )">
+           @click.stop="open(props.tab)">
 
         <span v-if="useTabsStore().getCurrentTabset?.sorting === 'alphabeticalUrl'">
           <q-icon name="arrow_right" size="16px" />
@@ -91,34 +91,19 @@
   <!-- new tab and edit note buttons -->
   <q-item-section side v-if="props.showButtons">
     <div class="row">
-      <q-btn v-if="usePermissionsStore().hasFeature(FeatureIdent.NEW_TAB)"
-             flat round color="primary" size="11px" icon="o_create_new_folder"
-             @click.stop="addToNewTabUrlList(tab)">
-        <q-tooltip class="tooltip">Add this tab to the list of tabs showing when you open a new tab in your browser
-        </q-tooltip>
-      </q-btn>
       <q-btn flat round :color="props.tab.note ? 'secondary':'primary'" size="11px" icon="edit_note"
-             @click.stop="editNoteDialog(tab)">
+             @click.stop="editNoteDialog(tab as Tab)">
         <q-tooltip v-if="props.tab.note">Edit note</q-tooltip>
         <q-tooltip v-else>Add a note to this tab</q-tooltip>
       </q-btn>
     </div>
   </q-item-section>
-  <q-item-section side v-else>
-    <div v-if="usePermissionsStore().hasFeature(FeatureIdent.NEW_TAB)"
-         style="min-width:35px;">&nbsp;
-    </div>
-    <div style="min-width:35px;">&nbsp;</div>
-  </q-item-section>
 
   <!-- Delete button -->
   <q-item-section side v-if="props.showButtons">
-    <q-btn flat round color="red" size="11px" icon="delete_outline" @click.stop="deleteTab(tab)">
+    <q-btn flat round color="red" size="11px" icon="delete_outline" @click.stop="deleteTab(tab as Tab)">
       <q-tooltip>Delete this tab from this list</q-tooltip>
     </q-btn>
-  </q-item-section>
-  <q-item-section side v-else>
-    <q-btn flat round color="red" size="11px"/>
   </q-item-section>
 
 </template>
@@ -143,6 +128,7 @@ import {CopyToClipboardCommand} from "src/domain/commands/CopyToClipboard";
 import {useTabsetService} from "src/services/TabsetService2";
 import ShortUrl from "components/utils/ShortUrl.vue";
 import {useTabsStore} from "src/stores/tabsStore";
+import {useRouter} from "vue-router";
 
 const props = defineProps({
   tab: {type: Object, required: true},
@@ -155,10 +141,10 @@ const emits = defineEmits(['sendCaption'])
 
 const $q = useQuasar()
 
-const line = ref(null)
 const showButtonsProp = ref<boolean>(false)
 const thumbnail = ref<string | undefined>(undefined)
 const imgFromBlob = ref<string>("")
+const router = useRouter()
 
 onMounted(() => {
   const blobImgPath = props.tab.image
@@ -278,5 +264,17 @@ watchEffect(() => {
       })
   }
 })
+
+const open = (tab: Tab) => {
+  if (process.env.MODE === 'electron') {
+    //const candidates = useTabsStore().tabsForUrl(withUrl)
+    //console.log("found candidates", candidates)
+    //if (candidates.length > 0) {
+      router.push("/browser/" + tab.id)
+      return Promise.resolve()
+    //}
+  }
+  NavigationService.openOrCreateTab(props.tab?.url )
+}
 
 </script>

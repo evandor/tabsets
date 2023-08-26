@@ -5,6 +5,9 @@ import {Tabset, TabsetSharing} from "src/models/Tabset";
 import {useTabsetService} from "src/services/TabsetService2";
 import {useUtils} from "src/services/Utils";
 import {useTabsStore} from "stores/tabsStore";
+import BookmarksService from "src/services/BookmarksService";
+import {useBookmarksStore} from "stores/bookmarksStore";
+import {useQuasar} from "quasar";
 
 const {addToTabset, deleteTab} = useTabsetService()
 const {inBexMode, sendMsg} = useUtils()
@@ -18,7 +21,10 @@ class UndoCommand implements Command<any> {
   execute(): Promise<ExecutionResult<any>> {
     console.log("execution undo command", this.tab, this.tabset)
     return addToTabset(this.tabset, this.tab)
-      .then((res) => new ExecutionResult(res, "Tab has been restored again"))
+      .then((res) => {
+        useTabsetService().saveCurrentTabset()
+        return new ExecutionResult(res, "Tab has been restored again")
+      })
   }
 
 }

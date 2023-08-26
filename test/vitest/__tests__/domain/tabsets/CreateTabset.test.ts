@@ -6,6 +6,8 @@ import {AddTabToTabsetCommand} from "src/domain/tabs/AddTabToTabset";
 import {CreateTabsetCommand} from "src/domain/tabsets/CreateTabset";
 import {useDB} from "src/services/usePersistenceService";
 import {useTabsStore} from "stores/tabsStore";
+import PersistenceService from "src/services/PersistenceService";
+import {useTabsetService} from "src/services/TabsetService2";
 
 installQuasarPlugin();
 
@@ -13,12 +15,13 @@ vi.mock('vue-router')
 
 describe('AddTabToTabsetCommand', () => {
 
-  let db = null as unknown as typeof IndexedDbPersistenceService
+  let db = null as unknown as PersistenceService
 
   beforeEach(async () => {
     setActivePinia(createPinia())
     await IndexedDbPersistenceService.init("db")
     db = useDB(undefined).db
+    await useTabsetService().init(db)
   })
 
   afterEach(async() => {
@@ -28,7 +31,7 @@ describe('AddTabToTabsetCommand', () => {
 
   it('command has proper toString representation', async () => {
     const cmd = await new CreateTabsetCommand("tabsetName", [])
-    expect(cmd.toString()).toBe("CreateTabsetCommand: {merge=true, tabsetName=tabsetName, tabs#=0}")
+    expect(cmd.toString()).toBe("CreateTabsetCommand: {merge=true, tabsetName=tabsetName, tabs#=0, windowToOpen#=current}")
   })
 
   it('creates new tabset in empty DB', async () => {

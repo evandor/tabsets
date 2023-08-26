@@ -3,10 +3,10 @@
   <div class="q-ma-sm">
 
     <InfoMessageWidget
-      :probability="1"
-      css-class="q-pa-none q-gutter-sm q-mb-md"
-      ident="tabgroups_info"
-      hint="You can create and reorder groups which you can use to assign tabs to by dragging and dropping. Create
+        :probability="1"
+        css-class="q-pa-none q-gutter-sm q-mb-md"
+        ident="tabgroups_info"
+        hint="You can create and reorder groups which you can use to assign tabs to by dragging and dropping. Create
               a new group by clicking on the plus sign."/>
 
     <div class="row q-mb-lg q-mr-lg">
@@ -23,33 +23,33 @@
 
     <div>
       <vue-draggable-next
-        class="row q-gutter-md"
-        :list="tabsetGroups">
+          class="row q-gutter-md"
+          :list="tabsetGroups">
         <div
-          class="col text-bold bg-primary text-white upper-border q-pa-sm" style="cursor: move"
-          v-for="element in tabsetGroups"
-          :key="element.id">
+            class="col text-bold bg-primary text-white upper-border q-pa-sm" style="cursor: move"
+            v-for="element in tabsetGroups"
+            :key="element.id">
           {{ element.title }}
           <q-popup-edit :model-value="element.title" v-slot="scope"
                         @update:model-value="val => rename(element.id, val)">
             <q-input
-              v-model="scope.value" dense autofocus counter @keyup.enter="scope.set"
-              :hint="element.id !== SPECIAL_ID_FOR_NO_GROUP_ASSIGNED ?
+                v-model="scope.value" dense autofocus counter @keyup.enter="scope.set"
+                :hint="element.id !== SPECIAL_ID_FOR_NO_GROUP_ASSIGNED ?
               'Provide the new name of the group or delete it':
               'Provide a new name. This group cannot be deleted'">
               <template v-slot:after>
                 <q-btn
-                  flat dense color="warning" icon="cancel"
-                  @click.stop.prevent="scope.cancel"/>
+                    flat dense color="warning" icon="cancel"
+                    @click.stop.prevent="scope.cancel"/>
 
                 <q-btn v-if="element.id !== SPECIAL_ID_FOR_NO_GROUP_ASSIGNED"
                        flat dense color="negative" icon="delete"
                        @click.stop.prevent="deleteGroup(element)"/>
 
                 <q-btn
-                  flat dense color="positive" icon="check_circle"
-                  @click.stop.prevent="scope.set"
-                  :disable="scope.validate(scope.value) === false || scope.initialValue === scope.value"/>
+                    flat dense color="positive" icon="check_circle"
+                    @click.stop.prevent="scope.set"
+                    :disable="scope.validate(scope.value) === false || scope.initialValue === scope.value"/>
               </template>
             </q-input>
           </q-popup-edit>
@@ -63,10 +63,10 @@
         <q-list separator>
           <vue-draggable-next
 
-            :list="tabsFor(element)"
-            :group="{ name: 'tabs', pull: 'clone' }"
+              :list="tabsFor(element)"
+              :group="{ name: 'tabs', pull: 'clone' }"
 
-            @change="handleDragAndDrop($event, element)">
+              @change="handleDragAndDrop($event, element)">
 
             <q-item v-if="props.tabs.length === 0 &&
                       inBexMode() &&
@@ -78,15 +78,15 @@
               </div>
             </q-item>
 
-            <q-item
-              clickable
-              v-ripple
-              v-for="(tab,index) in tabsFor(element)"
-              @click.stop="showDetails(tab)"
-              @mouseover="showButtons(  tab.id,true)"
-              @mouseleave="showButtons( tab.id, false)"
-              @dragstart="startDrag($event, tab)"
-              :key="props.group + '_' + tab.id">
+            <q-item class="q-ma-none q-pa-none"
+                    clickable
+                    v-ripple
+                    v-for="(tab,index) in tabsFor(element)"
+                    @click.stop="showDetails(tab)"
+                    @mouseover="showButtons(  tab.id,true)"
+                    @mouseleave="showButtons( tab.id, false)"
+                    @dragstart="startDrag($event, tab)"
+                    :key="props.group + '_' + tab.id">
 
               <TabListElementWidget :showButtons="false"
                                     :showIsOpened="false"
@@ -230,7 +230,7 @@ const handleDragAndDrop = (event: any, group: Group) => {
       useTabsetService().saveCurrentTabset()
     } else {
       useCommandExecutor()
-        .executeFromUi(new CreateTabFromOpenTabsCommand(added.element, added.newIndex))
+          .executeFromUi(new CreateTabFromOpenTabsCommand(added.element, added.newIndex))
     }
   }
 }
@@ -269,9 +269,9 @@ const rename = (groupId: string, newValue: string) => {
 const deleteGroup = (g: Group) => {
   if (tabsStore?.getCurrentTabset) {
     useCommandExecutor().executeFromUi(new DeleteGroupCommand(tabsStore.getCurrentTabset, g.id))
-      .then(() => {
-        tabsetGroups.value = _.filter(tabsetGroups.value, group => group.id !== g.id)
-      })
+        .then(() => {
+          tabsetGroups.value = _.filter(tabsetGroups.value, group => group.id !== g.id)
+        })
   }
 }
 

@@ -5,6 +5,7 @@ import {Tab} from "src/models/Tab";
 import {Notification} from "src/models/Notification";
 import {SearchDoc} from "src/models/SearchDoc";
 import {StaticSuggestionIdent, Suggestion, SuggestionState} from "src/models/Suggestion";
+import {MetaLink} from "src/models/MetaLink";
 
 interface PersistenceService {
 
@@ -12,6 +13,7 @@ interface PersistenceService {
   reloadTabset(tabsetId: string): void
   saveTabset(tabset: Tabset): Promise<any>
   deleteTabset(tabsetId: string):Promise<any>
+  cleanUpTabsets(): Promise<void>
 
   updateThumbnail(url: string):Promise<void>
   saveThumbnail(tab: chrome.tabs.Tab, thumbnail: string):Promise<void>
@@ -29,11 +31,18 @@ interface PersistenceService {
   getRequest(url: string): Promise<string>
 
   getMetaLinks(url: string): Promise<object>
+  saveMetaLinks(url: string, metaLinks: MetaLink[]): Promise<void>
   getLinks(url: string): Promise<object>
+  saveLinks(url: string, links: any): Promise<void>
   saveMHtml(tab: Tab, mhtml: Blob): Promise<string>
   getMHtml(url: string):Promise<object>
   getMHtmlInline(url: string): Promise<object>
   getMHtmls(): Promise<MHtml[]>
+
+  saveBlob(id: string, url: string, data: Blob, type: string): Promise<any>
+  getBlob(blobId: string): Promise<any>
+
+  saveRequest(url: string, requestInfo: RequestInfo): Promise<void>
 
   loadSpaces(): Promise<any>
 
@@ -57,7 +66,10 @@ interface PersistenceService {
 
   compactDb(): Promise<any>
 
-  //loadTabs(tabsetId: string): Promise<Tab[]>
+  getActiveFeatures(): Promise<string[]>
+  saveActiveFeatures(val: string[]): any
+
+  clear(name: string):any
 }
 
 export default PersistenceService

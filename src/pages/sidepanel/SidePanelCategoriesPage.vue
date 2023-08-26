@@ -109,6 +109,7 @@ import {useCategoriesStore} from "stores/categoriesStore";
 import {useDB} from "src/services/usePersistenceService";
 import {CopyFromPublicCategory} from "src/domain/categories/CopyFromPublicCategory";
 import {useWindowsStore} from "stores/windowsStores";
+import Analytics from "src/utils/google-analytics";
 
 const {inBexMode, sanitize, sendMsg} = useUtils()
 
@@ -134,6 +135,7 @@ const selectedTab = ref<Tab | undefined>(undefined)
 
 onMounted(() => {
   useCategoriesStore().initialize(useDB(undefined).db)
+  Analytics.firePageViewEvent('SidePanelCategoriesPage', document.location.href);
 })
 
 watchEffect(() => {

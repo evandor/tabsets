@@ -168,7 +168,7 @@
 
 <script lang="ts" setup>
 
-import {ref, watchEffect} from "vue";
+import {onMounted, ref, watchEffect} from "vue";
 import {useTabsStore} from "src/stores/tabsStore";
 import {Tab} from "src/models/Tab";
 import _ from "lodash"
@@ -189,6 +189,7 @@ import PanelTabListElementWidget from "components/widgets/PanelTabListElementWid
 import FirstToolbarHelper from "pages/sidepanel/helper/FirstToolbarHelper.vue";
 import SidePanelPageContextMenu from "pages/sidepanel/SidePanelPageContextMenu.vue";
 import {useWindowsStore} from "stores/windowsStores";
+import Analytics from "src/utils/google-analytics";
 
 const {inBexMode} = useUtils()
 
@@ -198,7 +199,6 @@ const tabsStore = useTabsStore()
 const spacesStore = useSpacesStore()
 
 const currentChromeTabs = ref<chrome.tabs.Tab[]>([])
-const currentTabs = ref<Tab[]>([])
 const tabsetName = ref<object>(null as unknown as object)
 const tabsetNameOptions = ref<object[]>([])
 const openTabs = ref<chrome.tabs.Tab[]>([])
@@ -206,6 +206,10 @@ const currentTabset = ref<Tabset | undefined>(undefined)
 const currentChromeTab = ref<chrome.tabs.Tab>(null as unknown as chrome.tabs.Tab)
 const tabsetsForSpace = ref<Map<string, Tabset[]>>(new Map())
 const hoveredSpace = ref<string | undefined>(undefined)
+
+onMounted(() => {
+  Analytics.firePageViewEvent('SidePanelSpacesPage', document.location.href);
+})
 
 watchEffect(() => {
   const start = new Date().getTime()
@@ -282,6 +286,9 @@ const save = () => {
         //console.log("sending message", msg)
         chrome.runtime.sendMessage(msg, function (response) {
           console.log("created new tab in current tabset:", response)
+          if (chrome.runtime.lastError) {
+            console.warn("got runtime error", chrome.runtime.lastError)
+          }
         });
         // }
       }

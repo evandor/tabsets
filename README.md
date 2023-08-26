@@ -56,7 +56,7 @@ https://chrome.google.com/webstore/detail/tabsets-extension/afkknkdbgondbbfjehip
 ## quasar info
 
 Operating System - Darwin(22.5.0) - darwin/arm64
-NodeJs - 16.20.0
+NodeJs - 16.20.1
 
 Global packages
 NPM - 8.19.4
@@ -66,17 +66,17 @@ yarn - 1.22.19
 cordova - 11.1.0
 
 Important local packages
-quasar - 2.12.3 -- Build high-performance VueJS user interfaces (SPA, PWA, SSR, Mobile and Desktop) in record time
+quasar - 2.12.4 -- Build high-performance VueJS user interfaces (SPA, PWA, SSR, Mobile and Desktop) in record time
 @quasar/app-vite - 1.4.3 -- Quasar Framework App CLI with Vite
 @quasar/extras - 1.16.5 -- Quasar Framework fonts, icons and animations
 eslint-plugin-quasar - Not installed
 vue - 3.3.4 -- The progressive JavaScript framework for building modern web UI.
 vue-router - 4.2.4
-pinia - 2.1.4 -- Intuitive, type safe and flexible Store for Vue
+pinia - 2.1.6 -- Intuitive, type safe and flexible Store for Vue
 vuex - Not installed
 vite - 2.9.16 -- Native-ESM powered web dev build tool
 eslint - Not installed
-electron - 24.6.4 -- Build cross platform desktop apps with JavaScript, HTML, and CSS
+electron - 25.5.0 -- Build cross platform desktop apps with JavaScript, HTML, and CSS
 electron-packager - 17.1.1 -- Customize and package your Electron app with OS-specific bundles (.app, .exe, etc.) via JS or CLI
 electron-builder - Not installed
 register-service-worker - 1.7.2 -- Script for registering service worker, with hooks
@@ -86,7 +86,10 @@ register-service-worker - 1.7.2 -- Script for registering service worker, with h
 @capacitor/ios - Not installed
 
 Quasar App Extensions
-@quasar/quasar-app-extension-qmarkdown - 2.0.0-beta.10 -- Display inline markdown in your Quasar App
 @quasar/quasar-app-extension-testing-unit-vitest - 0.3.0 -- A Quasar App Extension for running tests with Vitest
 
+## Safari
 
+check out branch "safari-extension"
+
+xcrun safari-web-extension-converter --project-location ./dist/Safari --app-name Tabsets /Users/carstengraef/projects/github/tabsets/dist/bex

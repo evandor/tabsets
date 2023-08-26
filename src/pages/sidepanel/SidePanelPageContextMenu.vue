@@ -18,8 +18,8 @@
       <template v-if="tabset.tabs.length > 0 && inBexMode()">
         <q-separator/>
         <ContextMenuItem
-          icon="open_in_new"
-          label="Open all in...">
+            icon="open_in_new"
+            label="Open all in...">
 
           <q-item-section side>
             <q-icon name="keyboard_arrow_right"/>
@@ -39,11 +39,11 @@
 
       </template>
 
-      <template v-if="true">
+      <template v-if="useSettingsStore().isEnabled('dev')">
         <q-separator/>
         <ContextMenuItem
-          icon="keyboard_arrow_right"
-          label="Sharing...">
+            icon="keyboard_arrow_right"
+            label="Sharing...">
 
           <q-item-section side>
             <q-icon name="keyboard_arrow_right"/>
@@ -82,6 +82,32 @@
 
       </template>
 
+      <template v-if="usePermissionsStore().hasFeature(FeatureIdent.WINDOW_MANAGEMENT)">
+        <q-separator/>
+        <ContextMenuItem
+            icon="o_grid_view"
+            label="Open in window...">
+
+          <q-item-section side>
+            <q-icon name="keyboard_arrow_right"/>
+          </q-item-section>
+          <q-menu anchor="top end" self="top start">
+            <q-list>
+              <q-item v-for="window in useWindowsStore().windowSet"
+                      @click="changeWindow(tabset, window)"
+                  dense clickable v-close-popup :disable="tabset.window === window">
+                <q-item-section>{{ window }}</q-item-section>
+              </q-item>
+              <q-separator />
+              <q-item @click="openNewWindowDialog()" dense clickable v-close-popup>
+                <q-item-section>Create New...</q-item-section>
+              </q-item>
+            </q-list>
+          </q-menu>
+
+        </ContextMenuItem>
+
+      </template>
 
       <template v-if="useSettingsStore().isEnabled('dev')">
         <q-separator/>
@@ -90,17 +116,6 @@
                          icon="o_note"
                          label="Re-Index Search"/>
       </template>
-
-      <!--      <q-item v-if="useSettingsStore().isEnabled('dev')"-->
-      <!--              clickable v-close-popup @click.stop="useSearchStore().reindexTabset(tabset.id)">-->
-      <!--        <q-item-section avatar style="padding-right:0;min-width:25px;max-width: 25px;">-->
-      <!--          <q-icon size="xs" name="o_note" color="accent"/>-->
-      <!--        </q-item-section>-->
-      <!--        <q-item-section>-->
-      <!--          Re-Index Search-->
-      <!--        </q-item-section>-->
-      <!--      </q-item>-->
-      <!--      -->
 
       <q-separator/>
       <template v-if="tabset.status === TabsetStatus.DEFAULT">
@@ -117,6 +132,17 @@
                          color="warning"
                          label="Unpin"/>
 
+      </template>
+
+      <template v-if="usePermissionsStore().hasFeature(FeatureIdent.ARCHIVE_TABSET) &&
+        tabset.status === TabsetStatus.DEFAULT">
+        <q-separator/>
+        <ContextMenuItem
+            v-close-popup
+            @was-clicked="archiveTabset(tabset)"
+            icon="o_inventory_2"
+            color="warning"
+            label="Archive"/>
       </template>
 
       <q-separator/>
@@ -155,6 +181,13 @@ import {useTabsetService} from "src/services/TabsetService2";
 import {Tab} from "src/models/Tab";
 import {CopyToClipboardCommand} from "src/domain/commands/CopyToClipboard";
 import ShareTabsetPubliclyDialog from "components/dialogues/ShareTabsetPubliclyDialog.vue";
+import {MarkTabsetAsArchivedCommand} from "src/domain/tabsets/MarkTabsetAsArchived";
+import {useWindowsStore} from "stores/windowsStores";
+import {useTabsStore} from "stores/tabsStore";
+import TabsetService from "src/services/TabsetService";
+import NewTabsetDialog from "components/dialogues/NewTabsetDialog.vue";
+import {useSpacesStore} from "stores/spacesStore";
+import NewWindowDialog from "components/dialogues/NewWindowDialog.vue";
 
 const {inBexMode, sanitize, sendMsg} = useUtils()
 
@@ -188,10 +221,10 @@ const restoreInNewWindow = (tabsetId: string) => useCommandExecutor().execute(ne
 const restoreInGroup = (tabsetId: string) => useCommandExecutor().execute(new RestoreTabsetCommand(tabsetId, false))
 
 const pin = (tabset: Tabset) =>
-  useCommandExecutor().executeFromUi(new MarkTabsetAsFavoriteCommand(tabset.id))
+    useCommandExecutor().executeFromUi(new MarkTabsetAsFavoriteCommand(tabset.id))
 
 const unpin = (tabset: Tabset) =>
-  useCommandExecutor().executeFromUi(new MarkTabsetAsDefaultCommand(tabset.id))
+    useCommandExecutor().executeFromUi(new MarkTabsetAsDefaultCommand(tabset.id))
 
 const removePublicShare = (tabsetId: string) => useCommandExecutor().executeFromUi(new UnShareTabsetCommand(tabsetId))
 
@@ -222,6 +255,13 @@ const getPublicTabsetLink = (ts: Tabset) => {
   return image
 }
 
+const archiveTabset = (tabset: Tabset) =>
+    useCommandExecutor().executeFromUi(new MarkTabsetAsArchivedCommand(tabset.id))
+
+const changeWindow = (tabset:Tabset, window: string) => {
+  tabset.window = window
+  useTabsetService().saveTabset(tabset)
+}
 
 const deleteTabsetDialog = (tabset: Tabset) => {
   $q.dialog({
@@ -241,6 +281,15 @@ const shareTabsetPubliclyDialog = (tabset: Tabset, republish: boolean = false) =
       sharedId: tabset.sharedId,
       tabsetName: tabset.name,
       republish: republish
+    }
+  })
+}
+
+const openNewWindowDialog = () => {
+  $q.dialog({
+    component: NewWindowDialog,
+    componentProps: {
+      tabsetId: useTabsStore().currentTabsetId
     }
   })
 }

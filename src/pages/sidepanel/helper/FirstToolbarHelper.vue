@@ -75,19 +75,19 @@
               <q-tooltip class="tooltip" v-else>Start new Session</q-tooltip>
             </q-btn>
 
-            <template v-if="showCreateClipButton()">
-              <q-btn
-                  icon="filter_center_focus"
-                  color="black"
-                  flat
-                  class="q-ma-none q-pa-xs cursor-pointer"
-                  style="max-width:20px"
-                  size="10px"
-                  @click="createClip">
-                <q-tooltip class="tooltip">{{ createWebsiteClipTooltip() }}</q-tooltip>
-              </q-btn>
-              <span class="q-ma-none q-pa-none q-mx-sm text-grey-5">|</span>
-            </template>
+<!--            <template v-if="showCreateClipButton()">-->
+<!--              <q-btn-->
+<!--                  icon="filter_center_focus"-->
+<!--                  color="black"-->
+<!--                  flat-->
+<!--                  class="q-ma-none q-pa-xs cursor-pointer"-->
+<!--                  style="max-width:20px"-->
+<!--                  size="10px"-->
+<!--                  @click="createClip">-->
+<!--                <q-tooltip class="tooltip">{{ createWebsiteClipTooltip() }}</q-tooltip>-->
+<!--              </q-btn>-->
+<!--              <span class="q-ma-none q-pa-none q-mx-sm text-grey-5">|</span>-->
+<!--            </template>-->
 
             <q-btn
                 v-if="showCreateClipButtonInActive()"
@@ -122,6 +122,7 @@
                 class="q-ma-none q-pa-xs cursor-pointer"
                 style="max-width:20px"
                 size="12px"
+                data-testid="addTabsetBtn"
                 @click="openNewTabsetDialog()">
               <q-tooltip class="tooltip">{{ newTabsetTooltip() }}</q-tooltip>
             </q-btn>

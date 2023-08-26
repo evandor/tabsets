@@ -67,11 +67,12 @@
 
 import {useRoute} from "vue-router";
 import {useTabsStore} from "stores/tabsStore";
-import {ref, watchEffect} from "vue";
+import {onMounted, ref, watchEffect} from "vue";
 import {Tab} from "src/models/Tab";
 import {Readability} from "@mozilla/readability";
 import {useUtils} from "src/services/Utils";
 import NavigationService from "src/services/NavigationService";
+import Analytics from "src/utils/google-analytics";
 
 const {sanitizeAsText} = useUtils()
 
@@ -86,6 +87,11 @@ const excerpt = ref('')
 const content = ref('')
 const byline = ref('')
 const siteName = ref('')
+
+onMounted(() => {
+  Analytics.firePageViewEvent('MainPanelReadingModePage', document.location.href);
+})
+
 
 watchEffect(async () => {
   const res = await useTabsStore().getTab(tabId)

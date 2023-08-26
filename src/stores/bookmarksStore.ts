@@ -4,6 +4,7 @@ import {TreeNode} from "src/models/Tree";
 import {Bookmark} from "src/models/Bookmark";
 import {usePermissionsStore} from "src/stores/permissionsStore";
 import {FeatureIdent} from "src/models/AppFeature";
+import {Tabset} from "src/models/Tabset";
 
 function getChildren(
   parent: chrome.bookmarks.BookmarkTreeNode,
@@ -39,7 +40,14 @@ export const  useBookmarksStore = defineStore('bookmarks', {
     bookmarksForFolder: null as unknown as Bookmark[]
   }),
 
-  getters: {},
+  getters: {
+    findBookmarksForUrl: (state) => {
+      return async (url: string): Promise<chrome.bookmarks.BookmarkTreeNode[]> => {
+        const res = await chrome.bookmarks.search({url:url})
+        return res
+      }
+    }
+  },
 
   actions: {
     init() {

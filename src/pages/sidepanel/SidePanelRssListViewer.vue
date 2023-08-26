@@ -48,7 +48,7 @@
 
 <script lang="ts" setup>
 
-import {ref, watchEffect} from "vue";
+import {onMounted, ref, watchEffect} from "vue";
 import {Tabset, TabsetStatus, TabsetType} from "src/models/Tabset";
 import {useRouter} from "vue-router";
 import {useQuasar} from "quasar";
@@ -64,6 +64,7 @@ import TabFaviconWidget from "components/widgets/TabFaviconWidget.vue";
 import PanelTabListElementWidget from "components/widgets/PanelTabListElementWidget.vue";
 import FirstToolbarHelper from "pages/sidepanel/helper/FirstToolbarHelper.vue";
 import SecondToolbarHelper from "pages/sidepanel/helper/SecondToolbarHelper.vue";
+import Analytics from "src/utils/google-analytics";
 
 const {handleError, handleSuccess} = useNotificationHandler()
 const {inBexMode} = useUtils()
@@ -76,6 +77,11 @@ const $q = useQuasar();
 const localStorage = $q.localStorage
 
 const rssTabs = ref<Tab[]>([])
+
+onMounted(() => {
+  Analytics.firePageViewEvent('SidePanelRssListViewer', document.location.href);
+})
+
 
 watchEffect(() => rssTabs.value = tabsStore.rssTabs)
 

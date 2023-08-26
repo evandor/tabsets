@@ -27,7 +27,7 @@ module.exports = configure(function (ctx) {
     // --> boot files are part of "main.js"
     // https://v2.quasar.dev/quasar-cli-vite/boot-files
     boot: [
-      'i18n',
+      //'i18n',
       'constants'
     ],
 
@@ -58,6 +58,14 @@ module.exports = configure(function (ctx) {
         node: 'node16'
       },
 
+      viteVuePluginOptions: {
+        template: {
+          compilerOptions: {
+            isCustomElement: (tag) => tag.startsWith('webview')
+          }
+        }
+      },
+
       vueRouterMode: 'hash', // available values: 'hash', 'history'
       // vueRouterBase,
       // vueDevtools,
@@ -84,7 +92,14 @@ module.exports = configure(function (ctx) {
       // polyfillModulePreload: true,
       // distDir
 
-      // extendViteConf (viteConf) {},
+      // !== MIT
+      extendViteConf (viteConf) {
+        //console.log("hier", viteConf)
+        if ((ctx.mode.spa || ctx.mode.pwa || ctx.mode.electron) && viteConf && viteConf.mode === "development") {
+          // https://dev.to/richardbray/how-to-fix-the-referenceerror-global-is-not-defined-error-in-sveltekitvite-2i49
+          viteConf.define.global = {}
+        }
+      },
       // viteVuePluginOptions: {},
 
       vitePlugins: [

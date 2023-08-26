@@ -30,20 +30,19 @@ defineEmits([
 ])
 
 const props = defineProps({
-  tabsetId: {
-    type: String,
-    required: true
-  },
-  tabsetName: {
-    type: String,
-    required: true
-  }
+  tabsetId: {type: String, required: true},
+  tabsetName: {type: String, required: true},
+  sidePanelMode: {type: Boolean, default: true}
 })
 
 const {dialogRef, onDialogHide, onDialogCancel} = useDialogPluginComponent()
+
 const deleteTabset = () => useCommandExecutor().executeFromUi(new MarkTabsetDeletedCommand(props.tabsetId))
     .then((res: any) => {
-      useUiStore().sidePanelSetActiveView(SidePanelView.MAIN)
+      if (props.sidePanelMode) {
+        useUiStore().sidePanelSetActiveView(SidePanelView.MAIN)
+      }
+      return res
     })
 
 

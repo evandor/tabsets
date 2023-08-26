@@ -142,7 +142,7 @@
       </q-item>
       <q-separator/>
       <q-item clickable v-close-popup @click.stop="deleteDialog(tabset)">
-        <q-icon name="o_delete" class="q-my-xs q-mr-xs" color="grey-5" style="position:relative;top:-1px"/>
+        <q-icon name="o_delete" class="q-my-xs q-mr-xs" color="red" style="position:relative;top:-1px"/>
         Delete tabset...
       </q-item>
     </q-list>
@@ -285,7 +285,8 @@ const deleteDialog = (tabset: Tabset) =>
     component: DeleteTabsetDialog,
     componentProps: {
       tabsetId: tabset.id,
-      tabsetName: tabset.name
+      tabsetName: tabset.name,
+      sidePanelMode: false
     }
   })
 

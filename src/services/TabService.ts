@@ -60,7 +60,7 @@ class TabService {
         }
       )
     } else if (dueTabs.length > 0) {
-      console.warn("could not send notification, chrome.notifications not defined")
+      console.warn("could not send 'due tab' notification, chrome.notifications not defined")
     }
   }
 }

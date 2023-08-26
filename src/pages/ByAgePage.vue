@@ -50,7 +50,7 @@
 </template>
 
 <script setup lang="ts">
-import {ref, watchEffect} from 'vue'
+import {onMounted, ref, watchEffect} from 'vue'
 import {useRoute, useRouter} from "vue-router";
 import {useQuasar} from "quasar";
 import TabsCanvas from "src/components/layouts/TabsCanvas.vue";
@@ -60,6 +60,7 @@ import {Tab} from "src/models/Tab";
 import {Tabset, TabsetStatus} from "src/models/Tabset";
 import TabList from "components/layouts/TabList.vue";
 import {useSettingsStore} from "src/stores/settingsStore"
+import Analytics from "src/utils/google-analytics";
 
 const route = useRoute();
 const router = useRouter();
@@ -76,6 +77,10 @@ const highlightUrl = ref('')
 const age = ref(null as unknown as string)
 
 //age.value = atob(route.params.encodedAge as string)
+
+onMounted(() => {
+  Analytics.firePageViewEvent('ByAgePage', document.location.href);
+})
 
 watchEffect(() => {
   age.value = route.params.encodedAge as string

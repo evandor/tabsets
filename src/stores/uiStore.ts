@@ -3,7 +3,7 @@ import {computed, ref, watch} from "vue";
 import {useRoute, useRouter} from "vue-router";
 import {Tab} from "src/models/Tab";
 import _ from "lodash"
-import {LocalStorage} from "quasar";
+import {LocalStorage, useQuasar} from "quasar";
 import {useUtils} from "src/services/Utils";
 import {useTabsStore} from "stores/tabsStore";
 import {FeatureIdent} from "src/models/AppFeature";
@@ -15,7 +15,6 @@ export enum DrawerTabs {
   UNASSIGNED_TABS = "unassignedTabs",
   GROUP_BY_HOST_TABS = "groupedByHostTabs",
   SAVED_TABS = "savedTabs",
-  PDF_TABS = "pdfTabs",
   RSS = "rss",
   SCHEDULED = "scheduled",
   HISTORY = "history",
@@ -24,6 +23,7 @@ export enum DrawerTabs {
   TABSET_DETAILS = "tabsetDetails",
   NEW_TAB_URLS = "newTabUrls",
   TAGS_VIEWER = "tagsViewer",
+  TAG_VIEWER = "tagViewer",
   HELP = "help"
 }
 
@@ -57,6 +57,9 @@ export class SidePanelView {
   static readonly PUBLIC_TABSETS = new SidePanelView('categorized_tabsets', '/sidepanel/byCategory',
     () => usePermissionsStore().hasFeature(FeatureIdent.BOOKMARKS));
 
+  static readonly TAGS_VIEWER = new SidePanelView('categorized_tabsets', '/sidepanel/byCategory',
+    () => usePermissionsStore().hasFeature(FeatureIdent.TAGS));
+
   private constructor(
     public readonly ident: string,
     public readonly path: any,
@@ -73,9 +76,9 @@ export class SidePanelView {
 }
 
 export enum ListDetailLevel {
-  SMALL = "SMALL",
-  MEDIUM = "MEDIUM",
-  LARGE = "LARGE"
+  MINIMAL = "MINIMAL",
+  SOME = "SOME",
+  MAXIMAL = "MAXIMAL"
 }
 
 export class RightDrawer {
@@ -93,7 +96,9 @@ export class SidePanel {
 
 export const useUiStore = defineStore('ui', () => {
 
+  const $q = useQuasar()
   const router = useRouter()
+
   const {sendMsg} = useUtils()
 
   const selectedTab = ref<Tab | undefined>(undefined)
@@ -103,7 +108,7 @@ export const useUiStore = defineStore('ui', () => {
 
   // RightDrawer
   let rightDrawer = ref<RightDrawer>(new RightDrawer())
-  let rightDrawerOpen = ref(true)
+  let rightDrawerOpen = ref($q ? $q.screen.gt.md : true)
   let leftDrawerOpen = ref(true)
 
   // SidePanel
@@ -118,7 +123,7 @@ export const useUiStore = defineStore('ui', () => {
 
   const contentCount = ref<number>(0)
 
-  const listDetailLevel = ref<ListDetailLevel>(ListDetailLevel.LARGE)
+  const listDetailLevel = ref<ListDetailLevel>(LocalStorage.getItem('detailLevel') || ListDetailLevel.MAXIMAL)
 
   // info Messages
   const hiddenMessages = ref<string[]>(LocalStorage.getItem('ui.hiddenInfoMessages') as unknown as string[] || [])
@@ -143,6 +148,8 @@ export const useUiStore = defineStore('ui', () => {
 
   const progress = ref<number | undefined>(undefined)
   const progressLabel = ref<string | undefined>(undefined)
+
+  const showCurrentTabBox = ref<boolean>(true)
 
   watch(rightDrawer.value, (val: Object) => {
     LocalStorage.set("ui.rightDrawer", val)
@@ -262,12 +269,12 @@ export const useUiStore = defineStore('ui', () => {
   const listDetailLevelGreaterEqual = computed(() => {
     return (level: ListDetailLevel) => {
       switch (listDetailLevel.value) {
-        case ListDetailLevel.LARGE:
+        case ListDetailLevel.MAXIMAL:
           return true
-        case ListDetailLevel.MEDIUM:
-          return level === ListDetailLevel.MEDIUM || level === ListDetailLevel.SMALL
-        case ListDetailLevel.SMALL:
-          return level === ListDetailLevel.SMALL
+        case ListDetailLevel.SOME:
+          return level === ListDetailLevel.SOME || level === ListDetailLevel.MINIMAL
+        case ListDetailLevel.MINIMAL:
+          return level === ListDetailLevel.MINIMAL
       }
     }
   })
@@ -335,6 +342,10 @@ export const useUiStore = defineStore('ui', () => {
     leftDrawerOpen.value = !leftDrawerOpen.value
   }
 
+  function hideCurrentTabBox(b: boolean) {
+    showCurrentTabBox.value = !b
+  }
+
   return {
     rightDrawer,
     rightDrawerOpen,
@@ -343,13 +354,11 @@ export const useUiStore = defineStore('ui', () => {
     draggingTab,
     droppingTab,
     newTabsetEmptyByDefault,
-    setNewTabsetEmptyByDefault,
     hideInfoMessage,
     restoreHints,
     showMessage,
     footerInfo,
     getContentCount,
-    setContentCount,
     setSelectedTab,
     getSelectedTab,
     newTabUrlList,
@@ -360,13 +369,11 @@ export const useUiStore = defineStore('ui', () => {
     getHighlightUrls,
     ignoreKeypressListener,
     setIgnoreKeypress,
-    setEntityType,
     entityType,
     highlightTerm,
     setHighlightTerm,
     selectedTag,
     setSelectedTag,
-    setSelectedTabsetId,
     selectedTabsetId,
     tabsFilter,
     setListDetailLevel,
@@ -380,6 +387,8 @@ export const useUiStore = defineStore('ui', () => {
     toggleLeftDrawer,
     progress,
     progressLabel,
-    tabsetsExpanded
+    tabsetsExpanded,
+    hideCurrentTabBox,
+    showCurrentTabBox
   }
 })

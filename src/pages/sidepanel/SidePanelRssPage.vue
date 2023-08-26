@@ -60,7 +60,7 @@
 </template>
 
 <script setup lang="ts">
-import {ref, watchEffect} from 'vue'
+import {onMounted, ref, watchEffect} from 'vue'
 import {useRoute, useRouter} from "vue-router";
 import {date, useQuasar} from "quasar";
 import TabsCanvas from "src/components/layouts/TabsCanvas.vue";
@@ -74,6 +74,7 @@ import PanelTabList from "components/layouts/PanelTabList.vue";
 import {extract} from "@extractus/feed-extractor";
 import NavigationService from "src/services/NavigationService";
 import {formatDistance, parseISO} from "date-fns";
+import Analytics from "src/utils/google-analytics";
 
 const route = useRoute();
 const router = useRouter();
@@ -88,6 +89,10 @@ const $q = useQuasar()
 const encodedUrl = ref()
 const title = ref()
 const rss = ref({})
+
+onMounted(() => {
+  Analytics.firePageViewEvent('SidePanelRssPage', document.location.href);
+})
 
 const opts = {
   includeEntryContent: true,

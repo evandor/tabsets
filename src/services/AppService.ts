@@ -1,7 +1,6 @@
 import {usePermissionsStore} from "stores/permissionsStore";
 import ChromeListeners from "src/services/ChromeListeners";
 import ChromeBookmarkListeners from "src/services/ChromeBookmarkListeners";
-import {FeatureIdent} from "src/models/AppFeature";
 import BookmarksService from "src/services/BookmarksService";
 import {useQuasar} from "quasar";
 import IndexedDbPersistenceService from "src/services/IndexedDbPersistenceService";
@@ -22,75 +21,73 @@ import {useSearchStore} from "stores/searchStore";
 import {useUiStore} from "stores/uiStore";
 import {useRoute, useRouter} from "vue-router";
 import {useUtils} from "src/services/Utils";
-import {useCategoriesStore} from "stores/categoriesStore";
 
 const {inBexMode} = useUtils()
 
 class AppService {
 
 
-  async init() {
+    async init() {
 
-    const spacesStore = useSpacesStore()
-    const tabsStore = useTabsStore()
-    const settingsStore = useSettingsStore()
-    const bookmarksStore = useBookmarksStore()
-    const windowsStore = useWindowsStore()
-    const searchStore = useSearchStore()
-    const uiStore = useUiStore()
-    const router = useRouter()
-    const route = useRoute()
-    const $q = useQuasar()
+        const spacesStore = useSpacesStore()
+        const tabsStore = useTabsStore()
+        const settingsStore = useSettingsStore()
+        const bookmarksStore = useBookmarksStore()
+        const windowsStore = useWindowsStore()
+        const searchStore = useSearchStore()
+        const router = useRouter()
+        const $q = useQuasar()
 
-    // init of stores and some listeners
-    usePermissionsStore().initialize()
-      .then(() => {
-        ChromeListeners.initListeners()
-        ChromeBookmarkListeners.initListeners()
-        bookmarksStore.init()
-        BookmarksService.init()
-      })
-    settingsStore.initialize(useQuasar().localStorage);
-    tabsStore.initialize(useQuasar().localStorage);
+        // init of stores and some listeners
+        usePermissionsStore().initialize(useDB(useQuasar()).localDb)
+            .then(() => {
+                ChromeListeners.initListeners()
+                ChromeBookmarkListeners.initListeners()
+                bookmarksStore.init()
+                BookmarksService.init()
+            })
+        settingsStore.initialize(useQuasar().localStorage);
+        tabsStore.initialize(useQuasar().localStorage);
 
-    searchStore.init()
-    windowsStore.init()
-    // TODO best place here?
-    windowsStore.initListeners()
+        searchStore.init()
+        windowsStore.initialize()
+        // TODO best place here?
+        windowsStore.initListeners()
 
-    const localStorage = useQuasar().localStorage
+        const localStorage = useQuasar().localStorage
 
 // init db
-    IndexedDbPersistenceService.init(INDEX_DB_NAME)
-      .then(() => {
-        // init services
-        useNotificationsStore().initialize(useDB(undefined).db)
-        useSuggestionsStore().init(useDB(undefined).db)
-        tabsetService.setLocalStorage(localStorage)
-        spacesStore.initialize(useDB(undefined).db)
-          .then(() => {
-            useTabsetService().init(false)
-              .then(() => {
-                MHtmlService.init()
-                ChromeApi.init()
-                // @ts-ignore
-                if (tabsStore.tabsets.size === 0 && chrome.sidePanel && chrome.sidePanel.setPanelBehavior) {
-                  router.push("/sidepanel/welcome")
-                }
-              })
-          })
-      })
+        IndexedDbPersistenceService.init(INDEX_DB_NAME)
+            .then(() => {
+                // init services
+                useNotificationsStore().initialize(useDB(undefined).db)
+                useSuggestionsStore().init(useDB(undefined).db)
+                tabsetService.setLocalStorage(localStorage)
+                spacesStore.initialize(useDB(undefined).db)
+                    .then(() => {
+                        useTabsetService().init(useDB(undefined).db, false)
+                            .then(() => {
+                                MHtmlService.init()
+                                ChromeApi.init()
+                                // @ts-ignore
+                                if (tabsStore.tabsets.size === 0 && chrome.sidePanel && chrome.sidePanel.setPanelBehavior) {
+                                    console.log("pushing to sidepanel/welcome")
+                                    router.push("/sidepanel/welcome")
+                                }
+                            })
+                    })
+            })
 
 
-    useNotificationsStore().bookmarksExpanded = $q.localStorage.getItem("bookmarks.expanded") || []
+        useNotificationsStore().bookmarksExpanded = $q.localStorage.getItem("bookmarks.expanded") || []
 
-// @ts-ignore
-    if (!inBexMode() || (!chrome.sidePanel && chrome.action)) {
-      router.push("/start")
+        // @ts-ignore
+        // if (!inBexMode() || (!chrome.sidePanel && chrome.action)) {
+        //   router.push("/start")
+        // }
+
+
     }
-
-
-  }
 
 }
 

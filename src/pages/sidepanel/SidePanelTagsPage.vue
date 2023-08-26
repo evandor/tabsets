@@ -42,7 +42,7 @@
 </template>
 
 <script setup lang="ts">
-import {ref, watchEffect} from 'vue';
+import {onMounted, ref, watchEffect} from 'vue';
 import {useRoute, useRouter} from "vue-router";
 import {useTabsStore} from "src/stores/tabsStore";
 import _ from "lodash"
@@ -61,6 +61,7 @@ import {Tab} from "src/models/Tab";
 import {useTabsetService} from "src/services/TabsetService2";
 import InfoMessageWidget from "components/widgets/InfoMessageWidget.vue";
 import FirstToolbarHelper from "pages/sidepanel/helper/FirstToolbarHelper.vue";
+import Analytics from "src/utils/google-analytics";
 
 const route = useRoute()
 const tabsStore = useTabsStore()
@@ -71,6 +72,10 @@ const router = useRouter()
 const $q = useQuasar()
 const tabsetHits = ref<Hit[]>([])
 const showReindexDialog = ref(false)
+
+onMounted(() => {
+  Analytics.firePageViewEvent('SidePanelTagsPage', document.location.href);
+})
 
 const newSearch = (term: string) => {
   tabsetHits.value = []

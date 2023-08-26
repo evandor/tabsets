@@ -12,6 +12,7 @@ import {FeatureIdent} from "src/models/AppFeature";
 import {STRIP_CHARS_IN_USER_INPUT} from "boot/constants";
 import {Space} from "src/models/Space";
 import {useTabsetService} from "src/services/TabsetService2";
+import {useWindowsStore} from "stores/windowsStores";
 
 async function queryTabs(): Promise<chrome.tabs.Tab[]> {
     // @ts-ignore
@@ -125,7 +126,7 @@ export const useTabsStore = defineStore('tabs', {
             return state.tabsets.get(state.currentTabsetId)?.tabs || []
         },
         getCurrentTabset: (state): Tabset | undefined => {
-            console.log("calling getcurrenttabset", state.currentTabsetId)
+            //console.log("calling getcurrenttabset", state.currentTabsetId)
             return state.tabsets.get(state.currentTabsetId)
         },
         getTabset: (state) => {
@@ -347,6 +348,7 @@ export const useTabsStore = defineStore('tabs', {
             tabsetName: string,
             tabs: Tab[],
             merge: boolean = false,
+            windowId: string = 'current',
             type: TabsetType = TabsetType.DEFAULT): Promise<NewOrReplacedTabset> {
 
             const foundTS: Tabset | undefined = _.find([...this.tabsets.values()], ts => ts.name === tabsetName)
@@ -366,34 +368,29 @@ export const useTabsStore = defineStore('tabs', {
                         }
                     })
                     ts = foundTS
-                    // _.forEach(tabGroupsStore.tabGroups, tg => {
-                    //   const exists = _.find(foundTS.groups, existing => existing.chromeGroup.title === tg.title)
-                    //   if (!exists) {
-                    //     foundTS.groups.push(new Group(uid(), tg))
-                    //   }
-                    // })
-
-
                 } else {
                     ts = new Tabset(foundTS.id, tabsetName, _.map(tabs, t => t), [])
+                    ts.type = type
+                    ts.window = windowId
                     this.tabsets.set(foundTS.id, ts)
-                    //TabsetService.saveTabset(ts)
                 }
             } else {
                 const useId = uid()
                 ts = new Tabset(useId, tabsetName, tabs, [])
+                ts.type = type
+                ts.window = windowId
                 this.tabsets.set(useId, ts)
             }
             if (currentSpace && currentSpace.id && ts.spaces.findIndex(s => s === currentSpace.id) < 0) {
                 ts.spaces.push(currentSpace.id)
             }
 
-            ts.type = type
 
             return new NewOrReplacedTabset(foundTS !== undefined, ts)
         },
 
         getOrCreateSpecialTabset(ident: SpecialTabsetIdent, type: TabsetType): Tabset {
+            console.log("creating special tabset", ident, type)
             const foundTS: Tabset | undefined = _.find([...this.tabsets.values()], ts => ts.id === ident.toString())
             let ts: Tabset = null as unknown as Tabset
             if (foundTS) {
@@ -402,6 +399,22 @@ export const useTabsStore = defineStore('tabs', {
             } else {
                 const id = ident.toString()
                 ts = new Tabset(id, id, [])
+                if (ident === SpecialTabsetIdent.HELP) {
+                    ts = new Tabset(id, id, [
+                        new Tab(uid(), ChromeApi.createChromeTabObject(
+                            "Glossary","https://tabsets.web.app/#/glossary")),
+                        new Tab(uid(), ChromeApi.createChromeTabObject(
+                            "Features","https://tabsets.web.app/#/features")),
+                        new Tab(uid(), ChromeApi.createChromeTabObject(
+                            "FAQ","https://tabsets.web.app/#/faq")),
+                        new Tab(uid(), ChromeApi.createChromeTabObject(
+                            "Pricacy","https://tabsets.web.app/#/privacy")),
+                        new Tab(uid(), ChromeApi.createChromeTabObject(
+                            "Terms of service","https://tabsets.web.app/#/tos")),
+                    ])
+                    ts.status = TabsetStatus.HIDDEN
+                }
+
                 this.tabsets.set(id, ts)
             }
             ts.type = type
@@ -442,6 +455,8 @@ export const useTabsStore = defineStore('tabs', {
             if (foundOldRep) {
                 useTabsetService().saveTabset(ts)
             }
+
+            useWindowsStore().addToWindowSet(ts.window)
 
             this.tabsets.set(ts.id, ts)
             markDuplicates(ts)
