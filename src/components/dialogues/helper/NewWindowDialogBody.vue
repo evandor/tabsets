@@ -7,34 +7,29 @@
           <div class="text-h6">Add Window</div>
         </q-card-section>
 
+        <q-card-section>
+          <div class="text-caption">Provide a name for a window you can open new tabs in </div>
+        </q-card-section>
+
         <q-card-section class="q-pt-none">
           <div class="text-body">Name:</div>
-          <q-input v-model="newTabsetName"
+          <q-input v-model="newWindowName"
                    class="q-mb-md q-pb-none"
                    dense autofocus
                    @update:model-value="val => checkIsValid()"
                    :rules="[
-                       val => newTabsetNameIsValid(val) || 'Please do not use special Characters',
-                       val => newTabsetNameIsShortEnough(val) || 'the maximum length is 32',
+                       val => newWindowNameIsValid(val) || 'Please do not use special Characters',
+                       val => newWindowNameIsShortEnough(val) || 'the maximum length is 32',
                        val => doesNotExistYet(val) || 'Tabset already exists'
                        ]"
-                   data-testid="newTabsetName"/>
+                   data-testid="newWindowName"/>
 
-          <template v-if="inBexMode()">
-            <q-checkbox
-                data-testid="newTabsetAutoAdd"
-                v-model="addAllOpenTabs" label="Add all open tabs"/>&nbsp;
-            <q-icon
-                name="help" color="primary" size="1em">
-              <q-tooltip>If you select this option, all currently open tabs will be added to your new tabset</q-tooltip>
-            </q-icon>
-          </template>
         </q-card-section>
 
         <q-card-actions align="right">
           <q-btn label="Cancel" size="sm" color="accent" v-close-popup/>
           <q-btn type="submit" size="sm" color="warning"
-                 data-testid="newTabsetNameSubmit"
+                 data-testid="newWindowNameSubmit"
                  :disable="!isValid"
                  label="Add"
                  v-close-popup/>
@@ -75,7 +70,7 @@ const props = defineProps({
 const tabsStore = useTabsStore()
 const router = useRouter()
 
-const newTabsetName = ref('')
+const newWindowName = ref('')
 const isValid = ref(false)
 const addAllOpenTabs = ref(false)
 const theForm = ref<QForm>(null as unknown as QForm)
@@ -103,8 +98,8 @@ const checkIsValid = () => {
   }
 }
 
-const newTabsetNameIsValid = (val: string) => !STRIP_CHARS_IN_USER_INPUT.test(val)
-const newTabsetNameIsShortEnough = (val: string) => val ? val.length <= 32 : true
+const newWindowNameIsValid = (val: string) => !STRIP_CHARS_IN_USER_INPUT.test(val)
+const newWindowNameIsShortEnough = (val: string) => val ? val.length <= 32 : true
 
 const doesNotExistYet = (val: string) => {
   const existsInTabset = tabsStore.existingInTabset(val)
@@ -115,7 +110,7 @@ const createNewTabset = () => {
   const tabsToUse = addAllOpenTabs.value ? tabsStore.tabs : []
   console.log("windowModel", windowModel.value)
   useCommandExecutor()
-      .executeFromUi(new CreateTabsetCommand(newTabsetName.value, tabsToUse, windowModel.value))
+      .executeFromUi(new CreateTabsetCommand(newWindowName.value, tabsToUse, windowModel.value))
       .then((res) => {
         if (props.spaceId) {
           const ts: Tabset = res.result.tabset
