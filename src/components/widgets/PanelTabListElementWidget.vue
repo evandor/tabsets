@@ -14,7 +14,9 @@
           </svg>
         </div>
         <div v-else key="oldState">
-          <TabFaviconWidget :tab="props.tab" width="16px" height="16px"/>
+          <TabFaviconWidget
+              :preventDragAndDrop="props.preventDragAndDrop"
+              :tab="props.tab" width="16px" height="16px"/>
         </div>
       </transition>
 
@@ -45,15 +47,14 @@
     <q-item-label>
       <div>
         <div class="q-pr-sm cursor-pointer ellipsis">
-
-          <!--          <span class="text-bold" v-if="isCurrentTab(props.tab as Tab)">Current Tab::<br></span>-->
-
           <span v-if="props.header" class="text-bold">{{ props.header }}<br></span>
-          <span v-if="useTabsStore().getCurrentTabset?.sorting === 'alphabeticalTitle'">
+<!--          <span v-if="useTabsStore().getCurrentTabset?.sorting === 'alphabeticalTitle'">-->
+          <span v-if="props.sorting === TabSorting.TITLE">
               <q-icon name="arrow_right" size="16px"/>
            </span>
           <span v-html="nameOrTitle(props.tab as Tab)"/>
-          <q-icon name="published_with_changes" class="q-ml-sm" color="accent">
+          <q-icon v-if="(props.tab as Tab).placeholders"
+              name="published_with_changes" class="q-ml-sm" color="accent">
             <q-tooltip>This tab is created by substituting parts of its URL</q-tooltip>
           </q-icon>
           <q-popup-edit
@@ -84,7 +85,7 @@
       <div class="row q-ma-none">
         <div class="col-10 q-pr-lg cursor-pointer"
              @click.stop="NavigationService.openOrCreateTab(props.tab.url )">
-           <span v-if="useTabsStore().getCurrentTabset?.sorting === 'alphabeticalUrl'">
+           <span v-if="props.sorting === TabSorting.URL">
               <q-icon name="arrow_right" size="16px"/>
            </span>
 
@@ -96,6 +97,9 @@
             <short-url :url="props.tab.url" :hostname-only="true"/>
           </template>
           <div class="text-caption text-grey-5" v-if="useUiStore().listDetailLevelGreaterEqual(ListDetailLevel.SOME)">
+            <span v-if="props.sorting === TabSorting.AGE">
+              <q-icon name="arrow_right" size="16px"/>
+           </span>
             {{ formatDate(props.tab.lastActive) }}
           </div>
 
@@ -145,7 +149,7 @@
 
 <script setup lang="ts">
 import NavigationService from "src/services/NavigationService";
-import {Tab, UrlExtension} from "src/models/Tab";
+import {Tab, TabSorting, UrlExtension} from "src/models/Tab";
 import TabsetService from "src/services/TabsetService";
 import {onMounted, PropType, ref, watchEffect} from "vue";
 import {useCommandExecutor} from "src/services/CommandExecutor";
@@ -174,7 +178,9 @@ const props = defineProps({
   header: {type: String, required: false},
   type: {type: String, default: 'sidepanel'},
   hideMenu: {type: Boolean, default: false},
+  sorting: {type: String as PropType<TabSorting>, default: TabSorting.CUSTOM},
   showTabsets: {type: Boolean, default: false},
+  preventDragAndDrop: {type: Boolean, default: false},
   tabsetType: {type: String, default: TabsetType.DEFAULT.toString()}
 })
 
@@ -319,7 +325,7 @@ const isCurrentTab = (tab: Tab) => {
     return false
   }
   const windowId = useWindowsStore().currentWindow?.id || 0
-  return (tabsStore.getCurrentChromeTab(windowId) || tabsStore.currentChromeTab).url === tab.url
+  return (tabsStore.getCurrentChromeTab(windowId) || tabsStore.currentChromeTab)?.url === tab.url
 
 }
 </script>

@@ -16,8 +16,9 @@
          style="cursor: move"
          :width="props.width"
          :height="props.height"
-         :src="getFaviconUrl(tab)">
-    <q-tooltip>drag and drop to tabset</q-tooltip>
+         :src="getFaviconUrl(tab as Tab)">
+    <q-tooltip v-if="!props.preventDragAndDrop">drag and drop to tabset</q-tooltip>
+    <q-tooltip v-else>This is a sorted list, you cannot drag and drop</q-tooltip>
   </q-img>
 
 
@@ -29,18 +30,10 @@ import {Tab, UrlExtension} from "src/models/Tab";
 import {useSettingsStore} from "src/stores/settingsStore"
 
 const props = defineProps({
-  tab: {
-    type: Object,
-    required: true
-  },
-  width: {
-    type: String,
-    default: '22px'
-  },
-  height: {
-    type: String,
-    default: '22px'
-  }
+  tab: {type: Object, required: true},
+  width: {type: String, default: '22px'},
+  height: {type: String, default: '22px'},
+  preventDragAndDrop: {type: Boolean, default: false},
 })
 
 const getFaviconUrl = (tab: Tab) => {

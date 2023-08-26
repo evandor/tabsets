@@ -12,8 +12,8 @@ import {Tab} from "src/models/Tab";
 import {uid, useQuasar} from "quasar";
 import {FeatureIdent} from "src/models/AppFeature";
 
-function runHousekeeping(alarm: chrome.alarms.Alarm) {
-  if (alarm.name === "housekeeping") {
+function runHousekeeping(name:string) {
+  if (name === "housekeeping") {
     //housekeeping()
 
     console.log("housekeeping now...")
@@ -75,7 +75,7 @@ class ChromeApi {
     chrome.alarms.create("housekeeping", {periodInMinutes: CLEANUP_PERIOD_IN_MINUTES})
 
     chrome.alarms.onAlarm.addListener(
-      (alarm: chrome.alarms.Alarm) => runHousekeeping(alarm)
+      (alarm: chrome.alarms.Alarm) => runHousekeeping("housekeeping")
     )
 
     chrome.runtime.onUpdateAvailable.addListener(

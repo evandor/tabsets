@@ -23,9 +23,7 @@
       <div class="col text-right text-caption text-grey-6">
         show current tab <q-icon name="expand_more"
                 @click="showCurrentTabBox()"
-                color="accent" class="cursor-pointer" size="xs">
-          <q-tooltip>Show current tab again</q-tooltip>
-        </q-icon>
+                color="accent" class="cursor-pointer" size="xs" />
       </div>
     </div>
   </div>

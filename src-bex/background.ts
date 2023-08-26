@@ -2,7 +2,7 @@ import {bexBackground} from 'quasar/wrappers';
 import Analytics from "src/utils/google-analytics";
 
 // https://stackoverflow.com/questions/49739438/when-and-how-does-a-pwa-update-itself
-const updateTrigger = 7
+const updateTrigger = 9
 
 // https://developer.chrome.com/docs/extensions/mv3/tut_analytics/
 console.log("ga: installing google analytics")

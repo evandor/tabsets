@@ -5,7 +5,7 @@
         <div class="text-h6">Export your Tabsets</div>
       </q-card-section>
       <q-card-section>
-        <div class="text-caption">*{{ foundLabel() }}</div>
+        <div class="text-caption">{{ foundLabel() }}</div>
       </q-card-section>
       <q-card-section>
         <div class="text-body">Please choose</div>
