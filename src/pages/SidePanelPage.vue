@@ -191,12 +191,14 @@ watchEffect(() => {
 })
 
 watchEffect(() => {
-  chrome.windows.getCurrent()
-      .then((currentWindow) => {
-        if (currentWindow && currentWindow.id) {
-          windowName.value = useWindowsStore().windowNameFor(currentWindow.id)
-        }
-      })
+  if (chrome && chrome.windows) {
+    chrome.windows.getCurrent()
+        .then((currentWindow) => {
+          if (currentWindow && currentWindow.id) {
+            windowName.value = useWindowsStore().windowNameFor(currentWindow.id)
+          }
+        })
+  }
 })
 
 const scrollToElement = (el: any, delay: number) => {
@@ -581,7 +583,7 @@ const toolbarTitle = (tabsets: Tabset[]) => {
   }
   let text = tabsets.length > 6 ? 'My Tabsets (' + tabsets.length.toString() + ')' : 'My Tabsets'
   if (windowName.value) {
-    text = text + " ["+windowName.value+"]"
+    text = text + " [" + windowName.value + "]"
   }
   return text
 }
