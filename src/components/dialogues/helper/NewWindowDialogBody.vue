@@ -1,14 +1,14 @@
 <template>
   <div>
-    <q-form @submit.prevent="createNewTabset()" ref="theForm">
+    <q-form @submit.prevent="createNewWindow()" ref="theForm">
 
       <q-card class="q-dialog-plugin" style="max-width:100%">
         <q-card-section>
-          <div class="text-h6">Add Window</div>
+          <div class="text-h6">Associate Window</div>
         </q-card-section>
 
         <q-card-section>
-          <div class="text-caption">Provide a name for a window you can open new tabs in </div>
+          <div class="text-caption">Provide a new name for a window you can open tabs in</div>
         </q-card-section>
 
         <q-card-section class="q-pt-none">
@@ -49,22 +49,13 @@ import {STRIP_CHARS_IN_USER_INPUT} from "boot/constants";
 import {Tabset, TabsetStatus} from "src/models/Tabset";
 import {ref, watchEffect} from "vue";
 import {useCommandExecutor} from "src/services/CommandExecutor";
-import {CreateTabsetCommand} from "src/domain/tabsets/CreateTabset";
-import {useTabsetService} from "src/services/TabsetService2";
-import TabsetService from "src/services/TabsetService";
-import {SidePanelView, useUiStore} from "stores/uiStore";
-import {usePermissionsStore} from "stores/permissionsStore";
-import {FeatureIdent} from "src/models/AppFeature";
 import {useWindowsStore} from "stores/windowsStores";
-import _ from "lodash"
-import {useUtils} from "src/services/Utils";
+import {AssociateWindowWithTabsetCommand} from "src/domain/tabsets/AssociateWindowWithTabsetCommand";
 
 const {dialogRef, onDialogHide, onDialogCancel} = useDialogPluginComponent()
-const {inBexMode} = useUtils()
 
 const props = defineProps({
-  spaceId: {type: String, required: false},
-  fromPanel: {type: Boolean, default: false}
+  tabsetId: {type: String, required: true}
 })
 
 const tabsStore = useTabsStore()
@@ -106,38 +97,9 @@ const doesNotExistYet = (val: string) => {
   return !(existsInTabset && existsInTabset.status !== TabsetStatus.DELETED)
 }
 
-const createNewTabset = () => {
-  const tabsToUse = addAllOpenTabs.value ? tabsStore.tabs : []
-  console.log("windowModel", windowModel.value)
+const createNewWindow = () => {
   useCommandExecutor()
-      .executeFromUi(new CreateTabsetCommand(newWindowName.value, tabsToUse, windowModel.value))
-      .then((res) => {
-        if (props.spaceId) {
-          const ts: Tabset = res.result.tabset
-          ts.spaces.push(props.spaceId)
-          useTabsetService().saveTabset(ts)
-        }
-        if (!addAllOpenTabs.value) {
-          TabsetService.createPendingFromBrowserTabs()
-        } else {
-          if (tabsStore.pendingTabset) {
-            // clear pending tabset - why necessary?
-            tabsStore.pendingTabset.tabs = []
-          }
-        }
-        if (!props.fromPanel) {
-          router.push("/tabsets/" + res.result.tabsetId)
-        } else {
-          useUiStore().sidePanelSetActiveView(SidePanelView.MAIN)
-          router.push("/sidepanel?first=")
-        }
-      })
-}
-
-const createWindowOption = (val: any, done: any) => {
-  const sanitized = val.replace(STRIP_CHARS_IN_USER_INPUT, '')
-  windowOptions.value.push(sanitized)
-  done(sanitized, 'add-unique')
+      .executeFromUi(new AssociateWindowWithTabsetCommand(props.tabsetId, newWindowName.value))
 }
 
 </script>
