@@ -3,8 +3,8 @@ run-name: CI Build Publish
 on:
   push:
     branches: [ chrome-extension ]
-  pull_request:
-    branches: [ chrome-extension ]
+  #pull_request:
+  #  branches: [ chrome-extension ]
 
 jobs:
   build:
