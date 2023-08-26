@@ -9,17 +9,17 @@ import {useRouter} from "vue-router";
 class NavigationService {
 
     async openOrCreateTab(withUrl: string) {
-        const useWindow = useTabsStore().getCurrentTabset?.window || 'current'
-        console.log("opening", withUrl, useWindow, process.env.MODE)
+        const useWindowIdent = useTabsStore().getCurrentTabset?.window || 'current'
+        console.log("opening", withUrl, useWindowIdent, process.env.MODE)
 
-        const existingWindow = await useWindowsStore().windowFor(useWindow)
-        if (useWindow !== 'current') {
+        const existingWindow = await useWindowsStore().windowFor(useWindowIdent)
+        if (useWindowIdent !== 'current') {
             console.log("existingWindow", existingWindow)
             if (!existingWindow) {
                 chrome.windows.create({url: withUrl}, (callback) => {
                     console.log("callback", callback)
                     if (callback) {
-                        useWindowsStore().assignWindow(useWindow, callback)
+                        useWindowsStore().assignWindow(useWindowIdent, callback.id || 0)
                     }
                 })
                 return
@@ -47,7 +47,7 @@ class NavigationService {
                     }
                 }
             })
-            const useWindowId = existingWindow?.id || chrome.windows.WINDOW_ID_CURRENT
+            const useWindowId = existingWindow || chrome.windows.WINDOW_ID_CURRENT
             const queryInfo = {windowId: useWindowId}
             console.log("using query info ", queryInfo)
             chrome.tabs.query(queryInfo, (t: chrome.tabs.Tab[]) => {
@@ -82,6 +82,7 @@ class NavigationService {
                         url: withUrl,
                         windowId: useWindowId
                     }, (tab: chrome.tabs.Tab) => {
+                        chrome.windows.update(useWindowId, {focused: true})
                         // pass selections and execute quoting script
                         if (selections.length > 0) {
                             console.log("selections", selections, tab.id)
