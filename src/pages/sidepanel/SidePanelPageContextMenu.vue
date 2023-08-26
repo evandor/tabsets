@@ -289,9 +289,7 @@ const openNewWindowDialog = () => {
   $q.dialog({
     component: NewWindowDialog,
     componentProps: {
-      tabsetId: useTabsStore().currentTabsetId,
-      spaceId: useSpacesStore().space?.id,
-      fromPanel: true
+      tabsetId: useTabsStore().currentTabsetId
     }
   })
 }

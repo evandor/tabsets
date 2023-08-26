@@ -1,6 +1,6 @@
 <template>
     <q-dialog ref="dialogRef" @hide="onDialogHide">
-      <NewWindowDialogBody :space-id="props.spaceId" :from-panel="props.fromPanel"/>
+      <NewWindowDialogBody :tabset-id="props.tabsetId" />
     </q-dialog>
 </template>
 
@@ -15,8 +15,7 @@ defineEmits([
 ])
 
 const props = defineProps({
-  spaceId: {type: String, required: false},
-  fromPanel: {type: Boolean, default: false}
+  tabsetId: {type: String, required: true}
 })
 
 const {dialogRef, onDialogHide} = useDialogPluginComponent()
