@@ -98,6 +98,10 @@
                   dense clickable v-close-popup :disable="tabset.window === window">
                 <q-item-section>{{ window }}</q-item-section>
               </q-item>
+              <q-separator />
+              <q-item @click="openNewWindowDialog()" dense clickable v-close-popup>
+                <q-item-section>Create New...</q-item-section>
+              </q-item>
             </q-list>
           </q-menu>
 
@@ -181,6 +185,9 @@ import {MarkTabsetAsArchivedCommand} from "src/domain/tabsets/MarkTabsetAsArchiv
 import {useWindowsStore} from "stores/windowsStores";
 import {useTabsStore} from "stores/tabsStore";
 import TabsetService from "src/services/TabsetService";
+import NewTabsetDialog from "components/dialogues/NewTabsetDialog.vue";
+import {useSpacesStore} from "stores/spacesStore";
+import NewWindowDialog from "components/dialogues/NewWindowDialog.vue";
 
 const {inBexMode, sanitize, sendMsg} = useUtils()
 
@@ -274,6 +281,17 @@ const shareTabsetPubliclyDialog = (tabset: Tabset, republish: boolean = false) =
       sharedId: tabset.sharedId,
       tabsetName: tabset.name,
       republish: republish
+    }
+  })
+}
+
+const openNewWindowDialog = () => {
+  $q.dialog({
+    component: NewWindowDialog,
+    componentProps: {
+      tabsetId: useTabsStore().currentTabsetId,
+      spaceId: useSpacesStore().space?.id,
+      fromPanel: true
     }
   })
 }
