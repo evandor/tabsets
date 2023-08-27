@@ -1,6 +1,6 @@
 {
   "name": "tabsets",
-  "version": "0.4.5",
+  "version": "0.4.6",
   "description": "Bookmarks next generation - Tabsets is a browser extension which helps you get your links really organized.",
   "productName": "Tabsets - Manage Tabs and Bookmarks with Ease",
   "author": "evandor <evandor@gmail.com>",
@@ -79,13 +79,13 @@
     "fake-indexeddb": "^4.0.0",
     "typescript": "^5.1.6",
     "vitest": "^0.31.0",
-    "workbox-build": "^6.5.0",
-    "workbox-cacheable-response": "^6.5.0",
-    "workbox-core": "^6.5.0",
-    "workbox-expiration": "^6.5.0",
-    "workbox-precaching": "^6.5.0",
-    "workbox-routing": "^6.5.0",
-    "workbox-strategies": "^6.5.0"
+    "workbox-build": "^7.0.0",
+    "workbox-cacheable-response": "^7.0.0",
+    "workbox-core": "^7.0.0",
+    "workbox-expiration": "^7.0.0",
+    "workbox-precaching": "^7.0.0",
+    "workbox-routing": "^7.0.0",
+    "workbox-strategies": "^7.0.0"
   },
   "engines": {
     "node": "^20 || ^18 || ^16",
