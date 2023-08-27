@@ -74,7 +74,7 @@
     "@wdio/cli": "^8.13.5",
     "autoprefixer": "^10.4.2",
     "canvas": "^2.11.0",
-    "electron": "^25.5.0",
+    "electron": "^26.1.0",
     "electron-packager": "^17.1.1",
     "fake-indexeddb": "^4.0.0",
     "typescript": "^5.1.6",
