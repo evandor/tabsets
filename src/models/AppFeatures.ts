@@ -56,12 +56,7 @@ export class AppFeatures {
     new AppFeature(FeatureIdent.ANNOTATIONS, FeatureType.EXPERIMENTAL, 'Annotate Websites', 'o_auto_awesome', ['bex']),
 
     new AppFeature(FeatureIdent.ARCHIVE_TABSET, FeatureType.OPTIONAL, 'Archive Tabsets', 'o_inventory_2', ['all']),
-    new AppFeature(FeatureIdent.WINDOW_MANAGEMENT, FeatureType.EXPERIMENTAL, 'Window Management', 'o_grid_view', ['all']),
-
-    new AppFeature(FeatureIdent.NOTIFICATIONS, FeatureType.RECOMMENDED, 'Chrome Notifications', 'o_notifications', ['all'])
-      .setActivateCommand(new GrantPermissionCommand('notifications'))
-      .setDeactivateCommand(new RevokePermissionCommand('notifications')),
-
+    new AppFeature(FeatureIdent.WINDOW_MANAGEMENT, FeatureType.OPTIONAL, 'Window Management', 'o_grid_view', ['all'])
 
   ]
 

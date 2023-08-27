@@ -167,6 +167,7 @@ const tabsets = ref<Tabset[]>([])
 const progress = ref<number | undefined>(undefined)
 const progressLabel = ref<string | undefined>(undefined)
 const selectedTab = ref<Tab | undefined>(undefined)
+const windowName = ref<string | undefined>(undefined)
 
 onMounted(() => {
   window.addEventListener('keypress', checkKeystroke);
@@ -186,6 +187,17 @@ watchEffect(() => {
   selectedTab.value = useUiStore().getSelectedTab
   if (selectedTab.value) {
     currentChromeTab.value = null as unknown as chrome.tabs.Tab
+  }
+})
+
+watchEffect(() => {
+  if (chrome && chrome.windows) {
+    chrome.windows.getCurrent()
+        .then((currentWindow) => {
+          if (currentWindow && currentWindow.id) {
+            windowName.value = useWindowsStore().windowNameFor(currentWindow.id)
+          }
+        })
   }
 })
 
@@ -569,7 +581,11 @@ const toolbarTitle = (tabsets: Tabset[]) => {
         spaceName + ' (' + tabsets.length.toString() + ')' :
         spaceName
   }
-  return tabsets.length > 6 ? 'My Tabsets (' + tabsets.length.toString() + ')' : 'My Tabsets'
+  let text = tabsets.length > 6 ? 'My Tabsets (' + tabsets.length.toString() + ')' : 'My Tabsets'
+  if (windowName.value) {
+    text = text + " [" + windowName.value + "]"
+  }
+  return text
 }
 const tabsetIcon = (tabset: Tabset) => {
   let icon = 'perm_identity'

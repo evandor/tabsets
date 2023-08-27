@@ -20,7 +20,7 @@
                    :rules="[
                        val => newWindowNameIsValid(val) || 'Please do not use special Characters',
                        val => newWindowNameIsShortEnough(val) || 'the maximum length is 32',
-                       val => doesNotExistYet(val) || 'Tabset already exists'
+                       val => doesNotExistYet(val) || 'Window Name already exists'
                        ]"
                    data-testid="newWindowName"/>
 
@@ -92,10 +92,7 @@ const checkIsValid = () => {
 const newWindowNameIsValid = (val: string) => !STRIP_CHARS_IN_USER_INPUT.test(val)
 const newWindowNameIsShortEnough = (val: string) => val ? val.length <= 32 : true
 
-const doesNotExistYet = (val: string) => {
-  const existsInTabset = tabsStore.existingInTabset(val)
-  return !(existsInTabset && existsInTabset.status !== TabsetStatus.DELETED)
-}
+const doesNotExistYet = (val: string) => !useWindowsStore().windowSet.has(val)
 
 const createNewWindow = () => {
   useCommandExecutor()
