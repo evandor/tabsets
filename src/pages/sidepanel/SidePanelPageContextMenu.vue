@@ -201,7 +201,9 @@ const props = defineProps({
 const publictabsetsPath = "https://public.tabsets.net/tabsets/"
 
 const startTabsetNote = (tabset: Tabset) => {
-  const url = chrome.runtime.getURL('www/index.html') + "#/mainpanel/notes/?tsId=" + tabset.id + "&edit=true"
+  const url = chrome && chrome.runtime && chrome.runtime.getURL ?
+    chrome.runtime.getURL('www/index.html') + "#/mainpanel/notes/?tsId=" + tabset.id + "&edit=true" :
+    "#/mainpanel/notes/?tsId=" + tabset.id + "&edit=true"
   NavigationService.openOrCreateTab(url)
 }
 

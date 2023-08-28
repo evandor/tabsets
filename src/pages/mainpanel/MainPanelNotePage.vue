@@ -1,14 +1,8 @@
 <template>
-  <q-toolbar class="text-primary">
+  <q-toolbar class="text-primary bg-yellow-1">
     <div class="row fit">
       <q-toolbar-title>
         <div class="row justify-start items-baseline">
-          <div class="col-10" v-if="editMode">
-            <q-input type="text" class="text-h6" v-model="title" placeholder="title..." autofocus/>
-          </div>
-          <div class="col-10 text-h6" v-else>
-            {{ tab?.title }}
-          </div>
           <div class="col cursor-pointer" v-if="!editMode" @click="openInEditMode()">
             Edit
           </div>
@@ -22,13 +16,20 @@
 
   <!-- https://medium.com/code4mk-org/editorjs-vue-a78110c3fff8 -->
   <div class="editorx_body">
-    <div class id="editorjs"/>
+    <div v-if="editMode">
+      <q-input type="text" class="text-h6" v-model="title" placeholder="title..." autofocus/>
+    </div>
+    <div class="text-h6" v-else>
+      {{ tab?.title }}
+    </div>
+    <div id="editorjs" />
   </div>
 
 </template>
 
 <script lang="ts" setup>
 
+import 'regenerator-runtime/runtime'
 import {onMounted, ref, watchEffect} from "vue";
 import {useRoute, useRouter} from "vue-router";
 import {uid, useQuasar} from "quasar";
@@ -39,32 +40,77 @@ import {useTabsetService} from "src/services/TabsetService2";
 import {Tabset} from "src/models/Tabset";
 import ChromeApi from "src/services/ChromeApi";
 import EditorJS, {OutputData} from "@editorjs/editorjs";
+//import 'regenerator-runtime/runtime'
 // @ts-ignore
 import Header from "@editorjs/header";
+// @ts-ignore
+import Quote from "@editorjs/quote";
+// @ts-ignore
+import ImageTool from "@editorjs/image";
 import Analytics from "src/utils/google-analytics";
 
 const {formatDate, sendMsg, sanitize} = useUtils()
 
-const $q = useQuasar()
 const route = useRoute()
 const router = useRouter()
-const tabsStore = useTabsStore()
 
 const noteId = ref<string | undefined>(undefined)
 const tab = ref<Tab | undefined>(undefined)
 const tabsetId = ref<string | undefined>(route.query.tsId as string)
 const editMode = ref(false)
 const title = ref('')
-const plugins = ref([])
-const count = ref(0)
-const editor = ref<any>(tabsStore.getCurrentTabset?.page || '')
-const value = ref(null)
 
 let editorJS2: EditorJS = undefined as unknown as EditorJS
 
 onMounted(() => {
   Analytics.firePageViewEvent('MainPanelNotePage', document.location.href);
 })
+
+const toolsconfig = {
+  header: {
+    class: Header,
+    shortcut: "CMD+SHIFT+H"
+  },
+  quote: {
+    class: Quote,
+    inlineToolbar: true,
+    shortcut: 'CMD+SHIFT+O',
+    config: {
+      quotePlaceholder: 'Enter a quote',
+      captionPlaceholder: 'Quote\'s author',
+    }
+  },
+  image: {
+    class: ImageTool,
+    config: {
+      /**
+       * Custom uploader
+       */
+      uploader: {
+        /**
+         * Upload file to the server and return an uploaded image data
+         * @param {File} file - file selected from the device or pasted by drag-n-drop
+         * @return {Promise.<{success, file: {url}}>}
+         */
+        uploadByFile(file:any) {
+          // your own uploading logic here
+
+        },
+
+        /**
+         * Send URL-string to the server. Backend should load image by this URL and return an uploaded image data
+         * @param {string} url - pasted image URL
+         * @return {Promise.<{success, file: {url}}>}
+         */
+        uploadByUrl(url:string) {
+          // your ajax request for uploading
+
+
+        }
+      }
+    }
+  }
+}
 
 watchEffect(async () => {
   noteId.value = route.params.noteId as unknown as string
@@ -84,12 +130,7 @@ watchEffect(async () => {
                 holder: "editorjs",
                 readOnly: !editMode.value,
                 data: (tab.value.longDescription || {}) as OutputData,
-                tools: {
-                  header: {
-                    class: Header,
-                    shortcut: "CMD+SHIFT+H"
-                  }
-                }
+                tools: toolsconfig
               });
             } else {
               editorJS2.readOnly.toggle(!editMode.value)
@@ -105,7 +146,8 @@ watchEffect(async () => {
         holder: "editorjs",
         autofocus: true,
         readOnly: false,
-        data: {} as OutputData
+        data: {} as OutputData,
+        tools: toolsconfig
       });
     }
   }
@@ -193,20 +235,24 @@ const saveWork = () => {
 const openInEditMode = () => router.push('./' + tab.value?.id + '?edit=true&tsId=' + tabsetId.value)
 </script>
 
-<style scoped>
+<style>
 .editorx_body {
-  width: 80%;
+  max-width:1000px;
+  margin: 0 auto;
   height: 200px;
-  margin-left: 10%;
   box-sizing: border-box;
 }
 
-.ce-block--focused {
+.ce-block--focused--disabled {
   background: linear-gradient(
       90deg,
       rgba(2, 0, 36, 1) 0%,
       rgba(9, 9, 121, 0.5438550420168067) 35%,
       rgba(0, 212, 255, 1) 100%
   );
+}
+.ce-block__content,
+.ce-toolbar__content {
+  max-width: none;
 }
 </style>
