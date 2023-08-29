@@ -1,28 +1,37 @@
 <template>
   <q-toolbar class="text-primary bg-yellow-1">
-    <div class="row fit">
-      <q-toolbar-title>
-        <div class="row justify-start items-baseline">
-          <div class="col cursor-pointer" v-if="!editMode" @click="openInEditMode()">
-            Edit
-          </div>
-          <div class="col cursor-pointer" v-else @click="saveWork()">
-            Save
-          </div>
-        </div>
-      </q-toolbar-title>
+<!--    <div class="row fit">-->
+<!--      <q-toolbar-title>-->
+<!--        <div class="row justify-start items-baseline">-->
+<!--          <div class="col cursor-pointer" v-if="!editMode" @click="openInEditMode()">-->
+<!--            Edit-->
+<!--          </div>-->
+<!--          <div class="col cursor-pointer" v-else @click="saveWork()">-->
+<!--            Save-->
+<!--          </div>-->
+<!--        </div>-->
+<!--      </q-toolbar-title>-->
+<!--    </div>-->
+    <q-toolbar-title></q-toolbar-title>
+    <div v-if="editMode" class="cursor-pointer" @click="saveWork()">
+      Save <q-icon name="save" size="24px" color="warning"/>
+    </div>
+    <div v-else class="cursor-pointer" @click="openInEditMode()" >
+      Edit <q-icon name="edit" size="24px" />
     </div>
   </q-toolbar>
 
   <!-- https://medium.com/code4mk-org/editorjs-vue-a78110c3fff8 -->
-  <div class="editorx_body">
-    <div v-if="editMode">
-      <q-input type="text" class="text-h6" v-model="title" placeholder="title..." autofocus/>
+  <div class="q-mx-xl q-px-md">
+    <div class="editorx_body">
+      <div v-if="editMode">
+        <q-input type="text" class="text-h6" v-model="title" placeholder="title..." autofocus/>
+      </div>
+      <div class="text-h6" v-else>
+        {{ tab?.title }}
+      </div>
+      <div id="editorjs"/>
     </div>
-    <div class="text-h6" v-else>
-      {{ tab?.title }}
-    </div>
-    <div id="editorjs" />
   </div>
 
 </template>
@@ -44,9 +53,13 @@ import EditorJS, {OutputData} from "@editorjs/editorjs";
 // @ts-ignore
 import Header from "@editorjs/header";
 // @ts-ignore
+import LinkTool from "@editorjs/link";
+// @ts-ignore
 import Quote from "@editorjs/quote";
 // @ts-ignore
 import ImageTool from "@editorjs/image";
+// @ts-ignore
+import Table from "@editorjs/table";
 import Analytics from "src/utils/google-analytics";
 
 const {formatDate, sendMsg, sanitize} = useUtils()
@@ -80,6 +93,20 @@ const toolsconfig = {
       captionPlaceholder: 'Quote\'s author',
     }
   },
+  linkTool: {
+    class: LinkTool,
+    config: {
+      endpoint: `${process.env.BACKEND_URL}/editorjs/linkdata`, // Your backend endpoint for url data fetching,
+    }
+  },
+  table: {
+    class: Table,
+    inlineToolbar: true,
+    config: {
+      rows: 2,
+      cols: 3,
+    },
+  },
   image: {
     class: ImageTool,
     config: {
@@ -92,7 +119,7 @@ const toolsconfig = {
          * @param {File} file - file selected from the device or pasted by drag-n-drop
          * @return {Promise.<{success, file: {url}}>}
          */
-        uploadByFile(file:any) {
+        uploadByFile(file: any) {
           // your own uploading logic here
 
         },
@@ -102,7 +129,7 @@ const toolsconfig = {
          * @param {string} url - pasted image URL
          * @return {Promise.<{success, file: {url}}>}
          */
-        uploadByUrl(url:string) {
+        uploadByUrl(url: string) {
           // your ajax request for uploading
 
 
@@ -121,9 +148,10 @@ watchEffect(async () => {
         .then((tabObject: object | undefined) => {
 
           if (tabObject) {
-            console.log("got tabobject1")
+            console.log("got tabobject1", tabObject)
             tab.value = tabObject['tab' as keyof object] as unknown as Tab
             tabsetId.value = tabObject['tabsetId' as keyof object]
+            title.value = tabObject['tab' as keyof object]['title'] || 'unknown'
             if (!editorJS2) {
               // @ts-ignore
               editorJS2 = new EditorJS({
@@ -237,8 +265,8 @@ const openInEditMode = () => router.push('./' + tab.value?.id + '?edit=true&tsId
 
 <style>
 .editorx_body {
-  max-width:1000px;
-  margin: 0 auto;
+  max-width: 1000px;
+  margin: 0px auto;
   height: 200px;
   box-sizing: border-box;
 }
@@ -251,6 +279,7 @@ const openInEditMode = () => router.push('./' + tab.value?.id + '?edit=true&tsId
       rgba(0, 212, 255, 1) 100%
   );
 }
+
 .ce-block__content,
 .ce-toolbar__content {
   max-width: none;

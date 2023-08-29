@@ -63,7 +63,9 @@
   "devDependencies": {
     "@babel/preset-env": "^7.19.0",
     "@editorjs/image": "^2.8.1",
+    "@editorjs/link": "^2.5.0",
     "@editorjs/quote": "^2.5.0",
+    "@editorjs/table": "^2.2.2",
     "@intlify/vite-plugin-vue-i18n": "^7.0.0",
     "@playwright/test": "^1.27.1",
     "@quasar/app-vite": "^1.4.3",
