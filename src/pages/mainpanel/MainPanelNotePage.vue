@@ -1,36 +1,28 @@
 <template>
-  <q-toolbar class="text-primary bg-yellow-1">
-<!--    <div class="row fit">-->
-<!--      <q-toolbar-title>-->
-<!--        <div class="row justify-start items-baseline">-->
-<!--          <div class="col cursor-pointer" v-if="!editMode" @click="openInEditMode()">-->
-<!--            Edit-->
-<!--          </div>-->
-<!--          <div class="col cursor-pointer" v-else @click="saveWork()">-->
-<!--            Save-->
-<!--          </div>-->
-<!--        </div>-->
-<!--      </q-toolbar-title>-->
-<!--    </div>-->
-    <q-toolbar-title></q-toolbar-title>
-    <div v-if="editMode" class="cursor-pointer" @click="saveWork()">
-      Save <q-icon name="save" size="24px" color="warning"/>
+
+  <div class="row">
+    <div class="col text-right">
+      <div v-if="editMode" class="cursor-pointer" @click="saveWork()">
+        Save
+        <q-icon name="save" size="24px" color="warning"/>
+      </div>
+      <div v-else class="cursor-pointer" @click="openInEditMode()">
+        Edit
+        <q-icon name="edit" size="24px"/>
+      </div>
     </div>
-    <div v-else class="cursor-pointer" @click="openInEditMode()" >
-      Edit <q-icon name="edit" size="24px" />
-    </div>
-  </q-toolbar>
+  </div>
 
   <!-- https://medium.com/code4mk-org/editorjs-vue-a78110c3fff8 -->
   <div class="q-mx-xl q-px-md">
     <div class="editorx_body">
       <div v-if="editMode">
-        <q-input type="text" class="text-h6" v-model="title" placeholder="title..." autofocus/>
+        <q-input type="text" class="text-h6" borderless v-model="title" placeholder="title..." autofocus/>
       </div>
       <div class="text-h6" v-else>
         {{ tab?.title }}
       </div>
-      <div id="editorjs"/>
+      <div id="editorjs" ref="editorJsRef"/>
     </div>
   </div>
 
@@ -60,7 +52,12 @@ import Quote from "@editorjs/quote";
 import ImageTool from "@editorjs/image";
 // @ts-ignore
 import Table from "@editorjs/table";
+// @ts-ignore
+import editorjsColumns from "@calumk/editorjs-columns";
 import Analytics from "src/utils/google-analytics";
+import {LinkTool2} from "src/pages/mainpanel/editorjs/linkTool"
+
+import './editorjs/linkTool.css';
 
 const {formatDate, sendMsg, sanitize} = useUtils()
 
@@ -72,12 +69,26 @@ const tab = ref<Tab | undefined>(undefined)
 const tabsetId = ref<string | undefined>(route.query.tsId as string)
 const editMode = ref(false)
 const title = ref('')
+const editorJsRef = ref(null)
 
 let editorJS2: EditorJS = undefined as unknown as EditorJS
 
 onMounted(() => {
   Analytics.firePageViewEvent('MainPanelNotePage', document.location.href);
 })
+
+const column_tools = {
+  header: Header,
+  linkTool2: {
+    class: LinkTool2,
+    config: {
+      endpoint: `/www/editor.html`, // Your backend endpoint for url data fetching,
+    }
+  }
+  //alert : Alert,
+  //paragraph : editorjsParagraphLinebreakable,
+  //delimiter : Delimiter
+}
 
 const toolsconfig = {
   header: {
@@ -93,10 +104,10 @@ const toolsconfig = {
       captionPlaceholder: 'Quote\'s author',
     }
   },
-  linkTool: {
-    class: LinkTool,
+  linkTool2: {
+    class: LinkTool2,
     config: {
-      endpoint: `${process.env.BACKEND_URL}/editorjs/linkdata`, // Your backend endpoint for url data fetching,
+      endpoint: `/www/editor.html`, // Your backend endpoint for url data fetching,
     }
   },
   table: {
@@ -106,6 +117,13 @@ const toolsconfig = {
       rows: 2,
       cols: 3,
     },
+  },
+  columns: {
+    class: editorjsColumns,
+    config: {
+      EditorJsLibrary: EditorJS,
+      tools: column_tools
+    }
   },
   image: {
     class: ImageTool,
@@ -269,19 +287,71 @@ const openInEditMode = () => router.push('./' + tab.value?.id + '?edit=true&tsId
   margin: 0px auto;
   height: 200px;
   box-sizing: border-box;
-}
-
-.ce-block--focused--disabled {
-  background: linear-gradient(
-      90deg,
-      rgba(2, 0, 36, 1) 0%,
-      rgba(9, 9, 121, 0.5438550420168067) 35%,
-      rgba(0, 212, 255, 1) 100%
-  );
+  border: 0 solid #eee;
+  border-radius: 5px;
+  padding: 10px;
+  /* box-shadow: 0 6px 18px #e8edfa80; */
 }
 
 .ce-block__content,
 .ce-toolbar__content {
   max-width: none;
 }
+
+/* editorjsColumns */
+
+.ce-editorjsColumns_col {
+  border: 1px solid #eee;
+  border-radius: 5px;
+  gap: 10px;
+  padding-top: 10px;
+}
+
+.ce-editorjsColumns_col:focus-within {
+  box-shadow: 0 6px 18px #e8edfa80;
+}
+
+@media (max-width: 800px) {
+  .ce-editorjsColumns_wrapper {
+    flex-direction: column;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+}
+
+.ce-inline-toolbar {
+  z-index: 1000
+}
+
+.ce-block__content,
+.ce-toolbar__content {
+  max-width: calc(100% - 50px); /* example value, adjust for your own use case */
+}
+
+/*   */
+.ce-toolbar__actions {
+  right: calc(100% + 30px);
+  background-color: rgba(255, 255, 255, 0.5);
+  border-radius: 4px;
+}
+
+/* Would be better to remove --narrow mode */
+/* Issue Raised */
+/* // This causes an error which is good i think? */
+.codex-editor--narrow .codex-editor__redactor {
+  margin: 0;
+}
+
+/* Required to prevent clipping */
+.ce-toolbar {
+  z-index: 4;
+}
+
+.codex-editor {
+  /* background:#f00 !important; */
+  z-index: auto !important;
+}
+
+
 </style>
