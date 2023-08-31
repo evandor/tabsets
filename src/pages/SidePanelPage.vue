@@ -65,7 +65,10 @@
 
           <div class="q-ma-none q-pa-none">
 
-            <div class="q-ma-none" v-if="inBexMode()">
+            <div class="q-ma-none" v-if="inBexMode() &&
+              currentChromeTab &&
+              currentChromeTab.url !== 'chrome://newtab/' &&
+              currentChromeTab.url !== ''">
               <SidePanelTabInfo :tabsetId="tabset.id"/>
             </div>
 
@@ -347,6 +350,9 @@ if ($q.platform.is.chrome) {
         useTabsStore().selectCurrentTabset(tsId)
       } else if (message.name === 'feature-activated') {
         usePermissionsStore().addActivateFeature(message.data.feature)
+        if (message.data.feature === 'help') {
+          useTabsetService().reloadTabset("HELP")
+        }
       } else if (message.name === "feature-deactivated") {
         usePermissionsStore().removeActivateFeature(message.data.feature)
       } else if (message.name === "tabsets-imported") {
