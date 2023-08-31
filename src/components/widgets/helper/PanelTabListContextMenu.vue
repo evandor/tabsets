@@ -20,7 +20,7 @@
           <q-icon size="xs" name="o_article" color="accent"/>
         </q-item-section>
         <q-item-section>
-          Open in Reading Mode
+          Reading Mode (dev)
         </q-item-section>
       </q-item>
 

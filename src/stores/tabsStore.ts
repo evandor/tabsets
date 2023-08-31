@@ -416,6 +416,7 @@ export const useTabsStore = defineStore('tabs', {
                 }
 
                 this.tabsets.set(id, ts)
+                console.log("tabsets set to ", this.tabsets)
             }
             ts.type = type
             return ts

@@ -22,6 +22,7 @@ export class CreateSpecialTabsetCommand implements Command<object> {
     try {
       const result = await useTabsetService()
           .getOrCreateSpecialTabset(this.tabsetIdent, this.tabsetType)
+
       return Promise.resolve(new ExecutionResult(result, 'Special Tabset created successfully'))
     } catch (err) {
       return Promise.reject(err)

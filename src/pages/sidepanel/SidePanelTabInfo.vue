@@ -49,8 +49,6 @@ const props = defineProps({
   tabsetId: {type: String, required: true}
 })
 
-const router = useRouter()
-const route = useRoute()
 const tabsStore = useTabsStore()
 
 const currentChromeTab = ref<chrome.tabs.Tab>(null as unknown as chrome.tabs.Tab)

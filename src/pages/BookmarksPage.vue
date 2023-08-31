@@ -2,8 +2,7 @@
 
   <!-- toolbar -->
   <q-toolbar class="text-primary lightgrey">
-    <div class="row fit">
-      <div class="col-xs-12 col-md-7">
+
         <q-toolbar-title>
           <div class="row justify-start items-baseline">
             <div class="col-12">
@@ -21,8 +20,6 @@
             </div>
           </div>
         </q-toolbar-title>
-      </div>
-      <div class="col-xs-12 col-md-5 text-right">
 
         <q-btn
           flat dense icon="upload_file"
@@ -48,8 +45,6 @@
           <q-tooltip>Delete this Bookmark Folder</q-tooltip>
         </q-btn>
 
-      </div>
-    </div>
   </q-toolbar>
 
   <!-- bookmark folders -->
