@@ -103,11 +103,6 @@ const routes: RouteRecordRaw[] = [
     children: [{ path: '', component: () => import('pages/sidepanel/SidePanelTop10Page.vue') }],
   },
   {
-    path: '/sidepanel/byCategory',
-    component: () => import('layouts/SidePanelLayout.vue'),
-    children: [{ path: '', component: () => import('pages/sidepanel/SidePanelCategoriesPage.vue') }],
-  },
-  {
     path: '/sidepanel/byDomain/:encodedUrl',
     component: () => import('layouts/SidePanelLayout.vue'),
     children: [{ path: '', component: () => import('pages/sidepanel/SidePanelByDomainPage.vue') }],

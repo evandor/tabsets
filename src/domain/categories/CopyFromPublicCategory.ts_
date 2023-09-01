@@ -4,10 +4,6 @@ import {useTabsetService} from "src/services/TabsetService2";
 import {Tabset} from "src/models/Tabset";
 import _ from "lodash"
 import ChromeApi from "src/services/ChromeApi";
-import {TAXONOMY} from "boot/constants";
-
-const {saveCurrentTabset} = useTabsetService()
-
 
 export class CopyFromPublicCategory implements Command<any> {
 

@@ -13,7 +13,7 @@
       <ContextMenuItem v-close-popup
                        @was-clicked="openEditTabsetDialog(tabset)"
                        icon="o_note"
-                       label="Edit Tabset Name"/>
+                       label="Update Tabset"/>
 
       <template v-if="tabset.tabs.length > 0 && inBexMode()">
         <q-separator/>
@@ -213,6 +213,7 @@ const openEditTabsetDialog = (tabset: Tabset) => {
     componentProps: {
       tabsetId: tabset.id,
       tabsetName: tabset.name,
+      tabsetColor: tabset.color,
       fromPanel: true
     }
   })

@@ -8,9 +8,7 @@
               v-for="(tabset,index) in tabsets">
         <q-expansion-item v-if="showTabset(tabset as Tabset)"
                           header-class="q-ma-none q-pa-none q-pr-md bg-grey-2"
-                          :header-style="tabsetExpanded.get(tabset.id) ?
-                            'border:0 solid grey;border-top-left-radius:4px;border-top-right-radius:4px' :
-                            'border:0 solid grey;border-radius:4px'"
+                          :header-style="headerStyle(tabset as Tabset)"
                           group="tabsets"
                           :default-opened="tabsStore.tabsets.size === 1"
                           switch-toggle-side
@@ -136,8 +134,8 @@ import TabsetService from "src/services/TabsetService";
 import Analytics from "src/utils/google-analytics";
 import {useAuthStore} from "stores/auth";
 import {PlaceholdersType} from "src/models/Placeholders";
-import getScrollTarget = scroll.getScrollTarget;
 import {useDB} from "src/services/usePersistenceService";
+import getScrollTarget = scroll.getScrollTarget;
 
 const {setVerticalScrollPosition} = scroll
 
@@ -391,7 +389,7 @@ if ($q.platform.is.chrome) {
       } else if (message.name === "mark-tabset-deleted") {
         TabsetService.markAsDeleted(message.data.tabsetId)
       } else if (message.name === "tabset-renamed") {
-        TabsetService.rename(message.data.tabsetId, message.data.newName)
+        TabsetService.rename(message.data.tabsetId, message.data.newName, message.data.newColor)
       } else if (message.name === "progress-indicator") {
         if (message.percent) {
           uiStore.progress = message.percent
@@ -485,20 +483,6 @@ if (inBexMode() && chrome) {
   chrome.tabs.query(queryOptions, (tab) => {
     currentChromeTabs.value = tab
   })
-}
-
-function getOrder() {
-  if (tabsStore.getCurrentTabset) {
-    switch (tabsStore.getCurrentTabset.sorting) {
-      case 'alphabeticalUrl':
-        return (t: Tab) => t.url?.replace("https://", "").replace("http://", "").toUpperCase()
-      case 'alphabeticalTitle':
-        return (t: Tab) => t.title?.toUpperCase()
-      default:
-        return (t: Tab) => 1
-    }
-    return (t: Tab) => 1
-  }
 }
 
 async function handleHeadRequests(selectedTabset: Tabset) {
@@ -606,7 +590,15 @@ const tabsetIcon = (tabset: Tabset) => {
 
 const focusOnTabset = (tabset: Tabset) => router.push("/sidepanel/tabsets/" + tabset.id)
 
-
+const headerStyle = (tabset: Tabset) => {
+  let style = tabsetExpanded.value.get(tabset.id) ?
+      'border:0 solid grey;border-top-left-radius:4px;border-top-right-radius:4px;' :
+      'border:0 solid grey;border-radius:4px;'
+  if (tabset.color && usePermissionsStore().hasFeature(FeatureIdent.COLOR_TAGS)) {
+    style = style + 'border-left:4px solid ' + tabset.color
+  }
+  return style
+}
 </script>
 
 <style scoped>

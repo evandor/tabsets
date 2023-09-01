@@ -74,7 +74,8 @@ class IndexedDbPersistenceService implements PersistenceService {
 
 
   async saveTabset(tabset: Tabset): Promise<IDBValidKey> {
-    console.log("db: saving tabset", tabset.id, tabset.tabs.length)
+    console.log("db: saving tabset", tabset.id, tabset.tabs.length, tabset.color)
+    console.log("db2: saving", JSON.parse(JSON.stringify(tabset)))
     return await this.db.put('tabsets', JSON.parse(JSON.stringify(tabset)), tabset.id);
 
     //   const tabsRes = await this.db.put('tabs', JSON.parse(JSON.stringify(tabset.tabs)), tabset.id);

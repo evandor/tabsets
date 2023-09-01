@@ -1,4 +1,4 @@
-import {STRIP_CHARS_IN_USER_INPUT} from "boot/constants";
+import {STRIP_CHARS_IN_COLOR_INPUT, STRIP_CHARS_IN_USER_INPUT} from "boot/constants";
 import {useTabsStore} from "src/stores/tabsStore";
 import {Tab} from "src/models/Tab";
 import _ from "lodash";
@@ -66,9 +66,15 @@ export function useTabsetService() {
         chromeTabs: chrome.tabs.Tab[],
         merge: boolean = false,
         windowId: string = 'current',
-        tsType: TabsetType = TabsetType.DEFAULT): Promise<SaveOrReplaceResult> => {
+        tsType: TabsetType = TabsetType.DEFAULT,
+        color: string | undefined = undefined
+    ): Promise<SaveOrReplaceResult> => {
 
         const trustedName = name.replace(STRIP_CHARS_IN_USER_INPUT, '')
+            .substring(0,31)
+        const trustedColor = color ?
+            color.replace(STRIP_CHARS_IN_COLOR_INPUT, '').substring(0,31)
+            : undefined
         const tabs: Tab[] = _.filter(
             _.map(chromeTabs, t => {
                 const tab = new Tab(uid(), t)
@@ -83,7 +89,7 @@ export function useTabsetService() {
             })
         try {
             const result: NewOrReplacedTabset = await useTabsStore()
-                .updateOrCreateTabset(trustedName, tabs, merge, windowId, tsType)
+                .updateOrCreateTabset(trustedName, tabs, merge, windowId, tsType, trustedColor)
             if (result && result.tabset) {
                 await saveTabset(result.tabset)
                 // result.tabset.tabs.forEach((tab: Tab) => {
