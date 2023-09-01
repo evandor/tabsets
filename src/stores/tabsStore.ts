@@ -349,7 +349,9 @@ export const useTabsStore = defineStore('tabs', {
             tabs: Tab[],
             merge: boolean = false,
             windowId: string = 'current',
-            type: TabsetType = TabsetType.DEFAULT): Promise<NewOrReplacedTabset> {
+            type: TabsetType = TabsetType.DEFAULT,
+            color: string | undefined = undefined
+        ): Promise<NewOrReplacedTabset> {
 
             const foundTS: Tabset | undefined = _.find([...this.tabsets.values()], ts => ts.name === tabsetName)
             let ts: Tabset = null as unknown as Tabset
@@ -372,6 +374,7 @@ export const useTabsStore = defineStore('tabs', {
                     ts = new Tabset(foundTS.id, tabsetName, _.map(tabs, t => t), [])
                     ts.type = type
                     ts.window = windowId
+                    ts.color = color
                     this.tabsets.set(foundTS.id, ts)
                 }
             } else {
@@ -379,6 +382,7 @@ export const useTabsStore = defineStore('tabs', {
                 ts = new Tabset(useId, tabsetName, tabs, [])
                 ts.type = type
                 ts.window = windowId
+                ts.color = color
                 this.tabsets.set(useId, ts)
             }
             if (currentSpace && currentSpace.id && ts.spaces.findIndex(s => s === currentSpace.id) < 0) {

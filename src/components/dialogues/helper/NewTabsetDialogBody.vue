@@ -51,6 +51,13 @@
           />
         </q-card-section>
 
+        <q-card-section v-if="usePermissionsStore().hasFeature(FeatureIdent.COLOR_TAGS)">
+          Assign Color (optional)
+          <div class="row q-pa-xs q-mt-none q-pl-sm q-gutter-sm">
+            <ColorSelector @colorSet="(color:string) => theColor = color"/>
+          </div>
+        </q-card-section>
+
         <q-card-actions align="right">
           <q-btn label="Cancel" size="sm" color="accent" v-close-popup/>
           <q-btn type="submit" size="sm" color="warning"
@@ -83,6 +90,7 @@ import {FeatureIdent} from "src/models/AppFeature";
 import {useWindowsStore} from "stores/windowsStores";
 import _ from "lodash"
 import {useUtils} from "src/services/Utils";
+import ColorSelector from "components/dialogues/helper/ColorSelector.vue";
 
 const {dialogRef, onDialogHide, onDialogCancel} = useDialogPluginComponent()
 const {inBexMode} = useUtils()
@@ -101,6 +109,7 @@ const addAllOpenTabs = ref(false)
 const theForm = ref<QForm>(null as unknown as QForm)
 const windowModel = ref<string>('current')
 const windowOptions = ref<string[]>([])
+const theColor = ref<string | undefined>(undefined)
 
 watchEffect(() => {
   const windows: Set<string> = useWindowsStore().windowSet
@@ -135,7 +144,7 @@ const createNewTabset = () => {
   const tabsToUse = addAllOpenTabs.value ? tabsStore.tabs : []
   console.log("windowModel", windowModel.value)
   useCommandExecutor()
-      .executeFromUi(new CreateTabsetCommand(newTabsetName.value, tabsToUse, windowModel.value))
+      .executeFromUi(new CreateTabsetCommand(newTabsetName.value, tabsToUse, windowModel.value, theColor.value))
       .then((res) => {
         if (props.spaceId) {
           const ts: Tabset = res.result.tabset

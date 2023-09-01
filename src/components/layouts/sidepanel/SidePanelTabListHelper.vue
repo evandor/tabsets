@@ -3,7 +3,7 @@
       clickable
       v-ripple
       class="q-ma-none q-pa-sm"
-      :style="itemStyle(tab)"
+      :style="itemStyle()"
       @dragstart="startDrag($event, tab)"
       :key="'paneltablist_' + tab.id">
 
@@ -25,6 +25,8 @@ import {TabsetType} from "src/models/Tabset";
 import {useUiStore} from "src/stores/uiStore";
 import {PropType} from "vue";
 import PanelTabListElementWidget from "components/widgets/PanelTabListElementWidget.vue";
+import {usePermissionsStore} from "stores/permissionsStore";
+import {FeatureIdent} from "src/models/AppFeature";
 
 const props = defineProps({
   tab: {type: Object as PropType<Tab>, required: true},
@@ -43,9 +45,15 @@ const startDrag = (evt: any, tab: Tab) => {
     evt.dataTransfer.setData('text/plain', tab.id)
     useUiStore().draggingTab(tab.id, evt)
   }
-  console.log("evt.dataTransfer.getData('text/plain')", evt.dataTransfer.getData('text/plain'))
+  //console.log("evt.dataTransfer.getData('text/plain')", evt.dataTransfer.getData('text/plain'))
 }
 
-const itemStyle = (tab: Tab) => "border-bottom: 1px solid #fafafa"
+const itemStyle = () => {
+  let style = "border-bottom: 1px solid #fafafa;"
+  if (props.tab.color && usePermissionsStore().hasFeature(FeatureIdent.COLOR_TAGS)) {
+    style = style + 'border-left:4px solid ' + props.tab.color + ';border-radius:4px;'
+  }
+  return style
+}
 
 </script>

@@ -2,7 +2,7 @@
   <q-menu :offset="[0, 0]">
     <q-list dense style="min-width: 200px">
       <template v-if="showTabDetailsMenuEntry(props['tab' as keyof object])">
-        <q-separator />
+        <q-separator/>
         <q-item clickable v-close-popup @click.stop="showTabDetails(props['tab' as keyof object])">
           <q-item-section avatar style="padding-right:0;min-width:25px;max-width: 25px;">
             <q-icon size="xs" name="o_info" color="accent"/>
@@ -67,13 +67,27 @@
         </q-item-section>
       </q-item>
 
+      <template v-if="usePermissionsStore().hasFeature(FeatureIdent.COLOR_TAGS)">
+        <q-separator/>
+        <q-item clickable v-close-popup @click.stop="setColor(props['tab' as keyof object])">
+          <q-item-section avatar style="padding-right:0;min-width:25px;max-width: 25px;">
+            <q-icon size="xs" name="o_colorize" color="blue"/>
+          </q-item-section>
+          <q-item-section>
+            <div class="row q-pa-xs q-mt-none q-pl-sm q-gutter-sm">
+              <ColorSelector @colorSet="(color:string) => theColor = color"/>
+            </div>
+          </q-item-section>
+        </q-item>
+      </template>
+
       <q-separator/>
       <q-item clickable v-close-popup @click.stop="deleteTab(props['tab' as keyof object])">
         <q-item-section avatar style="padding-right:0;min-width:25px;max-width: 25px;">
           <q-icon size="xs" name="o_delete" color="negative"/>
         </q-item-section>
         <q-item-section>
-          {{ deleteTabLabel(props['tab' as keyof object])}}
+          {{ deleteTabLabel(props['tab' as keyof object]) }}
         </q-item-section>
       </q-item>
     </q-list>
@@ -82,7 +96,7 @@
 
 <script lang="ts" setup>
 
-import {PropType} from "vue";
+import {PropType, ref} from "vue";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import RestoreTabsetDialog from "components/dialogues/RestoreTabsetDialog.vue";
 import {Notify, useQuasar} from "quasar";
@@ -101,6 +115,8 @@ import {useBookmarksStore} from "stores/bookmarksStore";
 import EditUrlDialog from "components/dialogues/EditUrlDialog.vue";
 import {useTabsStore} from "stores/tabsStore";
 import {PlaceholdersType} from "src/models/Placeholders";
+import ColorSelector from "components/dialogues/helper/ColorSelector.vue";
+import {UpdateTabColorCommand} from "src/domain/tabs/UpdateTabColor";
 
 const props = defineProps({
   tab: {type: Object as PropType<Tab>, required: true},
@@ -111,6 +127,8 @@ const emit = defineEmits(['toggleExpand']);
 
 const $q = useQuasar()
 const router = useRouter()
+
+const theColor = ref<string | undefined>(undefined)
 
 async function tabToUse(tab: Tab) {
   let useTab: Tab = tab
@@ -124,15 +142,6 @@ async function tabToUse(tab: Tab) {
   return useTab;
 }
 
-const showDetails = (tabsetId: string) =>
-    useUiStore().rightDrawerSetActiveTab(DrawerTabs.TABSET_DETAILS)
-
-const restoreDialog = (tabsetId: string) => $q.dialog({
-  component: RestoreTabsetDialog,
-  componentProps: {tabsetId: tabsetId}
-})
-
-
 const deleteTab = async (tabIn: Tab) => {
   const useTab = await tabToUse(tabIn)
   useCommandExecutor().executeFromUi(new DeleteTabCommand(useTab))
@@ -142,9 +151,9 @@ const deleteTab = async (tabIn: Tab) => {
     if (res.length > 0) {
       $q.dialog({
         title: res.length === 1 ? 'Found Bookmark with same URL' : 'Found Bookmarks with same URL',
-        cancel:true,
+        cancel: true,
         message: res.length === 1 ?
-            'Do you want to delete this bookmark as well?':
+            'Do you want to delete this bookmark as well?' :
             'Do you want to delete these ' + res.length + ' bookmarks as well?'
       }).onOk(() => {
         res.forEach(bm => {
@@ -168,7 +177,7 @@ const editNoteDialog = (tab: Tab) => $q.dialog({
 })
 
 const showTabDetails = async (tab: Tab) => {
-  const useTab:Tab = await tabToUse(tab)
+  const useTab: Tab = await tabToUse(tab)
   console.log("showing tab details for", useTab)
   router.push("/sidepanel/tab/" + useTab.id)
 }
@@ -186,18 +195,18 @@ const openInAnnotationMode = (tab: Tab) => {
 }
 
 const copyToClipboard = (tab: Tab) =>
-  useCommandExecutor().executeFromUi(new CopyToClipboardCommand(tab.url || 'unknown'))
+    useCommandExecutor().executeFromUi(new CopyToClipboardCommand(tab.url || 'unknown'))
 
-const showTabDetailsMenuEntry = (tab:Tab) =>
+const showTabDetailsMenuEntry = (tab: Tab) =>
     useSettingsStore().isEnabled('dev')
-    //&& !(tab.placeholders?.type === PlaceholdersType.URL_SUBSTITUTION)
+//&& !(tab.placeholders?.type === PlaceholdersType.URL_SUBSTITUTION)
 
-const deleteTabLabel = (tab:Tab) => {
-  if (tab.placeholders && tab.placeholders.type === PlaceholdersType.URL_SUBSTITUTION) {
-    return 'Delete substituted Tabs'
-  }
-  return 'Delete Tab'
-}
+const deleteTabLabel = (tab: Tab) =>
+    (tab.placeholders && tab.placeholders.type === PlaceholdersType.URL_SUBSTITUTION) ?
+        'Delete substituted Tabs'
+        :
+        'Delete Tab'
+
 
 const editURL = async (tab: Tab) => {
   let useTab = await tabToUse(tab);
@@ -208,5 +217,8 @@ const editURL = async (tab: Tab) => {
     }
   })
 }
+
+const setColor = (tab: Tab) => useCommandExecutor().execute(new UpdateTabColorCommand(tab, theColor.value))
+
 
 </script>
