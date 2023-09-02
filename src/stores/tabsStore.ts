@@ -406,6 +406,8 @@ export const useTabsStore = defineStore('tabs', {
                 if (ident === SpecialTabsetIdent.HELP) {
                     ts = new Tabset(id, id, [
                         new Tab(uid(), ChromeApi.createChromeTabObject(
+                            "Philosophy","https://tabsets.web.app/#/philosophy")),
+                        new Tab(uid(), ChromeApi.createChromeTabObject(
                             "Glossary","https://tabsets.web.app/#/glossary")),
                         new Tab(uid(), ChromeApi.createChromeTabObject(
                             "Features","https://tabsets.web.app/#/features")),
