@@ -4,7 +4,6 @@ import ChromeBookmarkListeners from "src/services/ChromeBookmarkListeners";
 import BookmarksService from "src/services/BookmarksService";
 import {useQuasar} from "quasar";
 import IndexedDbPersistenceService from "src/services/IndexedDbPersistenceService";
-import {INDEX_DB_NAME} from "boot/constants";
 import {useNotificationsStore} from "stores/notificationsStore";
 import {useDB} from "src/services/usePersistenceService";
 import {useSuggestionsStore} from "stores/suggestionsStore";
@@ -57,7 +56,7 @@ class AppService {
         const localStorage = useQuasar().localStorage
 
 // init db
-        IndexedDbPersistenceService.init(INDEX_DB_NAME)
+        IndexedDbPersistenceService.init("db")
             .then(() => {
                 // init services
                 useNotificationsStore().initialize(useDB(undefined).db)
