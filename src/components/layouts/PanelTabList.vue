@@ -15,6 +15,7 @@
                               :sorting="props.sorting"
                               :preventDragAndDrop="false"
                               :tabsetType="props.tabsetType"
+                              :show-tabsets="props.showTabsets"
                               :hide-menu="props.hideMenu"/>
     </vue-draggable-next>
 
@@ -26,6 +27,7 @@
                             :sorting="props.sorting"
                             :preventDragAndDrop="true"
                             :tabsetType="props.tabsetType"
+                            :show-tabsets="props.showTabsets"
                             :hide-menu="props.hideMenu"/>
   </q-list>
 
@@ -50,6 +52,7 @@ const props = defineProps({
   hideMenu: {type: Boolean, default: false},
   sorting: {type: String as PropType<TabSorting>, default: TabSorting.CUSTOM},
   type: {type: String, default: 'sidepanel'},
+  showTabsets: {type: Boolean, default: false},
   preventDragAndDrop: {type: Boolean, default: false},
   tabsetType: {type: String, default: TabsetType.DEFAULT.toString()},
 })
