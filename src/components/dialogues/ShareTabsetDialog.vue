@@ -19,8 +19,8 @@
       </q-card-section>
 
       <q-card-actions align="right" class="text-primary">
-        <q-btn flat label="Cancel" @click="onDialogCancel"/>
-        <q-btn flat label="Share Tabset"
+        <q-btn size="md" color="accent" label="Cancel" @click="onDialogCancel"/>
+        <q-btn size="md" color="warning"  label="Share Tabset"
                v-close-popup
                @click="invite()"/>
       </q-card-actions>

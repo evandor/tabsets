@@ -43,7 +43,7 @@
         <q-separator/>
         <ContextMenuItem
             icon="keyboard_arrow_right"
-            label="Sharing...">
+            label="Sharing... (dev)">
 
           <q-item-section side>
             <q-icon name="keyboard_arrow_right"/>

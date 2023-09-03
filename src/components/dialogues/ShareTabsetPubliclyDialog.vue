@@ -14,8 +14,8 @@
         <div class="text-body">Anyone with the link to this shared tabset will be able to see its tabs.</div>
       </q-card-section>
       <q-card-actions align="right" class="text-primary">
-        <q-btn flat label="Cancel" @click="onDialogCancel"/>
-        <q-btn flat :label="props.republish ? 'Republish Tabset':'Share Tabset'"
+        <q-btn size="md" color="accent" label="Cancel" @click="onDialogCancel"/>
+        <q-btn size="md" color="warning" :label="props.republish ? 'Republish Tabset':'Share Tabset'"
                v-close-popup
                @click="shareTabset()"/>
       </q-card-actions>
@@ -46,10 +46,10 @@ const props = defineProps({
 
 const {dialogRef, onDialogHide, onDialogCancel} = useDialogPluginComponent()
 const shareTabset = () => useCommandExecutor()
-  .executeFromUi(new ShareTabsetCommand(props.tabsetId, props.sharedId, TabsetSharing.PUBLIC, props.republish))
-  .then((res: any) => {
-    //useUiStore().sidePanelSetActiveView(SidePanelView.MAIN)
-  })
+    .executeFromUi(new ShareTabsetCommand(props.tabsetId, props.sharedId, TabsetSharing.PUBLIC, props.republish))
+    .then((res: any) => {
+      //useUiStore().sidePanelSetActiveView(SidePanelView.MAIN)
+    })
 
 
 </script>
