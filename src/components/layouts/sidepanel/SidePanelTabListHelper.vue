@@ -11,6 +11,7 @@
                                :tab="tab"
                                :type="props.type"
                                :sorting="props.sorting"
+                               :show-tabsets="props.showTabsets"
                                :preventDragAndDrop="props.preventDragAndDrop"
                                :tabsetType="props.tabsetType"
                                :hide-menu="props.hideMenu"/>
@@ -34,6 +35,7 @@ const props = defineProps({
   sorting: {type: String as PropType<TabSorting>, default: TabSorting.CUSTOM},
   type: {type: String, default: 'sidepanel'},
   tabsetType: {type: String, default: TabsetType.DEFAULT.toString()},
+  showTabsets: {type: Boolean, default: false},
   preventDragAndDrop: {type: Boolean, default: false},
 })
 

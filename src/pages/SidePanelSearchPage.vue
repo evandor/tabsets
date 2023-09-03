@@ -7,9 +7,11 @@
       <div class="col-12 q-ma-none q-pa-none">
 
         <q-list  class="q-ma-none">
+
           <template v-for="hit in tabsetHits" v-if="tabsetHits.length > 0">
             <SearchHit :hit="hit"/>
           </template>
+
           <template v-else>
             <div class="q-pa-md row items-start q-gutter-md fit">
               <q-card class="my-card fit">
@@ -49,23 +51,6 @@
     </q-page-sticky>
 
   </q-page>
-
-  <!--  <q-toolbar class="text-primary lightgrey">-->
-  <!--    <div class="row fit">-->
-  <!--      <q-toolbar-title>-->
-  <!--        <div class="row">-->
-  <!--          <div class="col-2">-->
-  <!--            <q-icon name="chevron_left" class="cursor-pointer" @click="router.push('/sidepanel')">-->
-  <!--              <q-tooltip>Back</q-tooltip>-->
-  <!--            </q-icon>-->
-  <!--          </div>-->
-  <!--          <div class="col-10" style="font-size:smaller">-->
-  <!--            <span class="text-dark">Found '{{ searchStore.term }}' {{ tabsetHits.length }} time(s)</span>-->
-  <!--          </div>-->
-  <!--        </div>-->
-  <!--      </q-toolbar-title>-->
-  <!--    </div>-->
-  <!--  </q-toolbar>-->
 
 </template>
 

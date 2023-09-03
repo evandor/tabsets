@@ -2,7 +2,7 @@
 
   <q-item v-ripple class="q-mb-lg">
 
-    <q-item-section v-if="useUiStore().listDetailLevelGreaterEqual(ListDetailLevel.MEDIUM)"
+    <q-item-section v-if="useUiStore().listDetailLevelGreaterEqual(ListDetailLevel.SOME)"
                     @click.stop="NavigationService.openOrCreateTab(hit.url || '' )"
                     class="q-mr-sm text-right" style="justify-content:start;width:25px;max-width:25px">
       <div class="bg-grey-3 q-pa-xs" style="border:0 solid grey;border-radius:3px">
@@ -71,98 +71,27 @@
           </q-chip>
         </template>
       </q-item-label>
-      <!--      &lt;!&ndash; note &ndash;&gt;-->
-      <!--      <q-item-label v-if="useUiStore().listDetailLevelGreaterEqual(ListDetailLevel.LARGE) &&-->
-      <!--      props['tab' as keyof object]['note']"-->
-      <!--                    class="text-grey-10" text-subtitle1>-->
-      <!--        <q-icon color="blue-10" name="edit_note"/>-->
-      <!--        <div class="ellipsis-2-lines">-->
-      <!--          {{ props['tab']['note'] }}-->
-      <!--        </div>-->
-      <!--      </q-item-label>-->
-
-      <!--      <q-item-label v-if="props.showTabsets">-->
-      <!--        <template v-for="badge in tsBadges">-->
-      <!--          <q-chip class="cursor-pointer q-ml-none q-mr-xs" size="9px" icon="tab">-->
-      <!--            {{ badge.label }}-->
-      <!--          </q-chip>-->
-      <!--        </template>-->
-      <!--      </q-item-label>-->
 
     </q-item-section>
 
 
   </q-item>
 
-  <!--  <q-item v-ripple autofocus class="q-mb-lg">-->
-
-  <!--    <q-item-section>-->
-  <!--      <q-item-label class="ellipsis text-black" caption-->
-  <!--                    v-html="formatText(hit, 'url',hit.url || '', '#FFFFDD')"></q-item-label>-->
-  <!--      <q-item-label class="text-blue-9 text-h6">-->
-
-  <!--        <FaviconWidget :url="hit.url" :favicon="hit.favIconUrl"/>-->
-
-  <!--        <span class="cursor-pointer underline-on-hover q-ml-sm text-subtitle1" style="font-weight:400"-->
-  <!--              @click="NavigationService.openOrCreateTab(hit.url )"-->
-  <!--              v-html="formatText(hit, 'title',hit.title || '', '#FFFFDD')"></span>-->
-  <!--        <template v-for="badge in tabsetBadges(hit)">-->
-  <!--          <q-chip v-if="badge.bookmarkId"-->
-  <!--                  class="cursor-pointer q-ml-md" size="9px" clickable icon="o_bookmark" color="warning"-->
-  <!--                  @click="openBookmark(badge)">-->
-  <!--            {{ badge.label }}-->
-  <!--          </q-chip>-->
-  <!--          <q-chip v-else-->
-  <!--                  class="cursor-pointer q-ml-md" size="9px" clickable icon="tab" @click="openTabset(badge)">-->
-  <!--            {{ badge.label }}-->
-  <!--          </q-chip>-->
-  <!--        </template>-->
-  <!--      </q-item-label>-->
-
-  <!--      <q-item-label caption v-html="formatText(hit, 'description', hit.description || '', '#FFFFDD')"></q-item-label>-->
-  <!--      <q-item-label style="font-style:italic" caption-->
-  <!--                    v-html="formatText(hit, 'keywords', hit.keywords || '', '#FFFFDD')"></q-item-label>-->
-  <!--      <q-item-label class="text-blue-2 q-mb-sm" v-if="settingsStore.isEnabled('debug')">Match in:-->
-  <!--        {{ _.map(hit['matches'], m => m['key']).join(", ") }}-->
-  <!--      </q-item-label>-->
-  <!--      &lt;!&ndash;      <q-item-label caption>{{ hit['matches'] }}</q-item-label>&ndash;&gt;-->
-
-  <!--      <span>-->
-  <!--        <q-rating-->
-  <!--            v-model="scoreAsRating"-->
-  <!--            size="13px"-->
-  <!--            color="warning"-->
-  <!--            readonly-->
-  <!--        />-->
-  <!--        &lt;!&ndash;        {{ hit.score }}%&ndash;&gt;-->
-  <!--      </span>-->
-  <!--    </q-item-section>-->
-
-  <!--  </q-item>-->
-
-
 </template>
 
 <script setup lang="ts">
 import NavigationService from "src/services/NavigationService";
-import {Tab, UrlExtension} from "src/models/Tab";
+import {Tab} from "src/models/Tab";
 import TabsetService from "src/services/TabsetService";
-import {ref} from "vue";
 import {Hit} from "src/models/Hit";
 import _ from "lodash"
 import {useRouter} from "vue-router";
 import BookmarksService from "src/services/BookmarksService";
 import {useTabsetService} from "src/services/TabsetService2";
-import TabFaviconWidget from "components/widgets/TabFaviconWidget.vue";
-import FaviconWidget from "components/widgets/FaviconWidget.vue";
 import {useSettingsStore} from "src/stores/settingsStore"
 import {useUtils} from "src/services/Utils";
 import {ListDetailLevel, useUiStore} from "stores/uiStore";
-import {useTabsStore} from "stores/tabsStore";
 import ShortUrl from "components/utils/ShortUrl.vue";
-import PanelTabListContextMenu from "components/widgets/helper/PanelTabListContextMenu.vue";
-import {usePermissionsStore} from "stores/permissionsStore";
-import {FeatureIdent} from "src/models/AppFeature";
 
 const props = defineProps({
   hit: {
@@ -174,9 +103,6 @@ const props = defineProps({
 const emits = defineEmits(['sendCaption'])
 
 const router = useRouter()
-const settingsStore = useSettingsStore()
-const line = ref(null);
-const scoreAsRating = ref(Math.round(props.hit.score / 18))
 const {inBexMode} = useUtils()
 
 const {selectTabset} = useTabsetService()
@@ -264,7 +190,6 @@ const openTabset = (badge: any) => {
     // router.push("/sidepanel/spaces/" + badge.tabsetId + "?highlight=" + badge.encodedUrl)
     router.push("/sidepanel" + "?highlight=" + badge.encodedUrl)
   }
-
 }
 
 const openBookmark = (badge: any) => {
@@ -273,36 +198,6 @@ const openBookmark = (badge: any) => {
       .then(parentId => {
         router.push("/bookmarks/" + parentId + "?highlight=" + badge.bookmarkId)
       })
-}
-
-const formatText = (hit: Hit, key: string, text: string, color: string) => {
-
-  let urlMatch: object[] = _.filter(hit.matches, (m: object) => m['key' as keyof object] === key)
-  if (urlMatch && urlMatch.length > 0) {
-    //console.log("urlMatch", urlMatch[0])
-    //console.log("indices", urlMatch[0]['indices' as keyof object])
-    let res = ''
-    let offset = 0
-    let begin = '<span style="background-color:' + color + '">'
-    let end = '</span>'
-
-    const indices = urlMatch[0]['indices' as keyof object] as unknown as any[]
-
-    let startString = text
-
-    indices.forEach(match => {
-      const from = match[0] + offset
-      const to = match[1] + offset
-      res = startString.substring(0, from) + begin
-      res += startString.substring(from, to + 1) + end
-      res += startString.substring(to + 1)
-      offset += begin.length + end.length
-      startString = res
-    })
-    return res
-  }
-
-  return text
 }
 
 const getFaviconUrl = (url: string, favIconUrl: string | undefined) => {

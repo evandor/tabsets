@@ -39,7 +39,6 @@
 
   <!-- name, title, description, url && note -->
   <q-item-section class="q-mb-sm"
-                  @click="selectTab(tab)"
                   @mouseover="hoveredTab = tab.id"
                   @mouseleave="hoveredTab = undefined">
 
@@ -48,19 +47,19 @@
       <div>
         <div class="q-pr-sm cursor-pointer ellipsis">
           <span v-if="props.header" class="text-bold">{{ props.header }}<br></span>
-<!--          <span v-if="useTabsStore().getCurrentTabset?.sorting === 'alphabeticalTitle'">-->
+          <!--          <span v-if="useTabsStore().getCurrentTabset?.sorting === 'alphabeticalTitle'">-->
           <span v-if="props.sorting === TabSorting.TITLE">
               <q-icon name="arrow_right" size="16px"/>
            </span>
           <span v-html="nameOrTitle(props.tab as Tab)"/>
           <q-icon v-if="(props.tab as Tab).placeholders"
-              name="published_with_changes" class="q-ml-sm" color="accent">
+                  name="published_with_changes" class="q-ml-sm" color="accent">
             <q-tooltip>This tab is created by substituting parts of its URL</q-tooltip>
           </q-icon>
           <q-popup-edit
-            v-if="props.tab?.extension !== UrlExtension.NOTE && !props.tab.placeholders"
-            :model-value="dynamicNameOrTitleModel(tab)" v-slot="scope"
-            @update:model-value="val => setCustomTitle( tab, val)">
+              v-if="props.tab?.extension !== UrlExtension.NOTE && !props.tab.placeholders"
+              :model-value="dynamicNameOrTitleModel(tab)" v-slot="scope"
+              @update:model-value="val => setCustomTitle( tab, val)">
             <q-input v-model="scope.value" dense autofocus counter @keyup.enter="scope.set"/>
           </q-popup-edit>
         </div>
@@ -77,11 +76,11 @@
 
     <!-- url -->
     <q-item-label
-      style="width:100%"
-      v-if="props.tab?.url"
-      caption class="ellipsis-2-lines text-blue-10"
-      @mouseover="showButtonsProp = true"
-      @mouseleave="showButtonsProp = false">
+        style="width:100%"
+        v-if="props.tab?.url"
+        caption class="ellipsis-2-lines text-blue-10"
+        @mouseover="showButtonsProp = true"
+        @mouseleave="showButtonsProp = false">
       <div class="row q-ma-none">
         <div class="col-10 q-pr-lg cursor-pointer"
              @click.stop="NavigationService.openOrCreateTab(props.tab.url )">
@@ -117,8 +116,8 @@
               <q-icon color="primary" size="16px"/>
             </span>
           <PanelTabListContextMenu
-            :tabsetType="props.tabsetType"
-            :tab="tab" v-if="!props.hideMenu"/>
+              :tabsetType="props.tabsetType"
+              :tab="tab" v-if="!props.hideMenu"/>
 
         </div>
       </div>
@@ -137,7 +136,8 @@
 
     <q-item-label v-if="props.showTabsets">
       <template v-for="badge in tsBadges">
-        <q-chip class="cursor-pointer q-ml-none q-mr-xs" size="9px" icon="tab">
+        <q-chip clickable @click.stop="openTabset(badge)"
+                class="cursor-pointer q-ml-none q-mr-xs" size="9px" icon="tab">
           {{ badge.label }}
         </q-chip>
       </template>
@@ -170,6 +170,7 @@ import {useWindowsStore} from "stores/windowsStores";
 import {usePermissionsStore} from "stores/permissionsStore";
 import {FeatureIdent} from "src/models/AppFeature";
 import {useUtils} from "src/services/Utils";
+import {useRouter} from "vue-router";
 
 const {inBexMode} = useUtils()
 
@@ -184,10 +185,9 @@ const props = defineProps({
   tabsetType: {type: String, default: TabsetType.DEFAULT.toString()}
 })
 
-const emits = defineEmits(['sendCaption'])
 const cnt = ref(0)
-const $q = useQuasar()
 const tabsStore = useTabsStore()
+const router = useRouter()
 
 const showButtonsProp = ref<boolean>(false)
 const imgFromBlob = ref<string>("")
@@ -208,17 +208,17 @@ onMounted(() => {
   const blobImgPath = props.tab.image
   if (blobImgPath && blobImgPath.startsWith('blob://')) {
     useTabsetService().getBlob(blobImgPath.replace("blob://", ""))
-      .then((res) => {
-        var reader = new FileReader();
-        reader.readAsDataURL(res.content);
-        reader.onloadend = function () {
-          var base64data = reader.result;
-          if (base64data) {
-            imgFromBlob.value = base64data.toString()
+        .then((res) => {
+          var reader = new FileReader();
+          reader.readAsDataURL(res.content);
+          reader.onloadend = function () {
+            var base64data = reader.result;
+            if (base64data) {
+              imgFromBlob.value = base64data.toString()
+            }
           }
-        }
-      })
-      .catch((err) => console.error(err))
+        })
+        .catch((err) => console.error(err))
   }
 })
 
@@ -244,51 +244,10 @@ function getShortHostname(host: string) {
   return host
 }
 
-function getHost(urlAsString: string, shorten: Boolean = true): string {
-  try {
-    const url = new URL(urlAsString)
-    if (!shorten) {
-      return url.protocol + "://" + url.host.toString()
-    }
-    return getShortHostname(url.host)
-  } catch (e) {
-    return "---";
-  }
-}
-
-const isOpen = (tab: Tab): boolean => TabsetService.isOpen(tab?.url || '')
-
-const setInfo = (tab: Tab) => {
-  const parts = (tab?.url || '').split('?')
-  if (parts.length > 1) {
-    emits('sendCaption', parts[0] + "[... params omitted....]")
-  } else if (parts.length === 1) {
-    emits('sendCaption', parts[0].toString());
-  }
-}
-
-const selectTab = (tab: Tab) => {
-  // useUiStore().setSelectedTab(tab)
-  // TabsetService.setOnlySelectedTab(tab)
-  // const notificationStore = useNotificationsStore()
-  // notificationStore.setSelectedTab(tab)
-}
-
-
-const getFaviconUrl = (chromeTab: chrome.tabs.Tab | undefined) => {
-  if (chromeTab && chromeTab.favIconUrl && !chromeTab.favIconUrl.startsWith("chrome")) {
-    return chromeTab.favIconUrl
-  }
-  return ''//'favicon-unknown-32x32.png'
-}
-
-const deleteTab = (tab: Tab) => useCommandExecutor().executeFromUi(new DeleteTabCommand(tab))
-
-
 const nameOrTitle = (tab: Tab) => {
   let nameOrTitle = tab.name ? tab.name : tab.title
   if (usePermissionsStore().hasFeature(FeatureIdent.ANNOTATIONS) && tab.annotations?.length > 0) {
-    nameOrTitle = "("+tab.annotations.length+") " + nameOrTitle
+    nameOrTitle = "(" + tab.annotations.length + ") " + nameOrTitle
   }
   if (isCurrentTab(props.tab as Tab)) {
     nameOrTitle = "<span class='text-bold'>Current Tab: </span>" + nameOrTitle
@@ -299,10 +258,10 @@ const nameOrTitle = (tab: Tab) => {
 const dynamicNameOrTitleModel = (tab: Tab) => tab.name ? tab.name : tab.title
 
 const setCustomTitle = (tab: Tab, newValue: string) =>
-  useCommandExecutor().executeFromUi(new UpdateTabNameCommand(tab, newValue))
+    useCommandExecutor().executeFromUi(new UpdateTabNameCommand(tab, newValue))
 
 const copyToClipboard = (text: string) =>
-  useCommandExecutor().executeFromUi(new CopyToClipboardCommand(text))
+    useCommandExecutor().executeFromUi(new CopyToClipboardCommand(text))
 
 const hoveredOver = (tabsetId: string) => hoveredTab.value === tabsetId
 
@@ -318,7 +277,7 @@ const classForCategoryTab = (tab: Tab | undefined) => {
 }
 
 const formatDate = (timestamp: number | undefined) =>
-  timestamp ? formatDistance(timestamp, new Date(), {addSuffix: true}) : ""
+    timestamp ? formatDistance(timestamp, new Date(), {addSuffix: true}) : ""
 
 const isCurrentTab = (tab: Tab) => {
   if (!inBexMode()) {
@@ -326,8 +285,19 @@ const isCurrentTab = (tab: Tab) => {
   }
   const windowId = useWindowsStore().currentWindow?.id || 0
   return (tabsStore.getCurrentChromeTab(windowId) || tabsStore.currentChromeTab)?.url === tab.url
-
 }
+
+const openTabset = (badge: any) => {
+  console.log("clicked badge", badge)
+  useTabsetService().selectTabset(badge.tabsetId)
+  // @ts-ignore
+  if (!inBexMode() || !chrome.sidePanel) {
+    router.push("/tabsets/" + badge.tabsetId + "?highlight=" + badge.encodedUrl)
+  } else {
+    router.push("/sidepanel" + "?highlight=" + badge.encodedUrl)
+  }
+}
+
 </script>
 
 <!--https://stackoverflow.com/questions/41078478/css-animated-checkmark -->
