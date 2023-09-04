@@ -264,7 +264,6 @@ const saveWork = () => {
         //   useTabsetService().saveCurrentTabset()
         newTab.url = newTab.url?.split('?')[0] + newTabId
         // needed to update the note in the side panel
-        console.log("sending message", {tab: newTab, tabsetId: tabsetId.value})
         sendMsg('tab-changed', {tab: newTab, tabsetId: tabsetId.value})
         // redirect after save
         router.push("/mainpanel/notes/" + newTabId)

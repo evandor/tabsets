@@ -8,9 +8,9 @@ import {useRouter} from "vue-router";
 
 class NavigationService {
 
-    async openOrCreateTab(withUrl: string) {
+    async openOrCreateTab(withUrl: string, ignoreQuery = false) {
         const useWindowIdent = useTabsStore().getCurrentTabset?.window || 'current'
-        console.log("opening", withUrl, useWindowIdent, process.env.MODE)
+        console.log("opening", withUrl, useWindowIdent, ignoreQuery, process.env.MODE)
 
         const existingWindow = await useWindowsStore().windowFor(useWindowIdent)
         if (useWindowIdent !== 'current') {
@@ -47,6 +47,7 @@ class NavigationService {
                     }
                 }
             })
+
             const useWindowId = existingWindow || chrome.windows.WINDOW_ID_CURRENT
             const queryInfo = {windowId: useWindowId}
             console.log("using query info ", queryInfo)
@@ -54,7 +55,11 @@ class NavigationService {
                 let found = false;
                 t.filter(r => r.url)
                     .map(r => {
-                        if (withUrl === r.url) {
+                        let findCondition = withUrl === r.url
+                        if (ignoreQuery) {
+                            findCondition = withUrl.split("?")[0] === r.url?.split("?")[0]
+                        }
+                        if (findCondition) {
                             if (!found) { // highlight only first hit
                                 found = true
                                 console.log("found something", r)

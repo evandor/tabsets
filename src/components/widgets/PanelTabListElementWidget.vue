@@ -83,7 +83,9 @@
         @mouseleave="showButtonsProp = false">
       <div class="row q-ma-none">
         <div class="col-10 q-pr-lg cursor-pointer"
-             @click.stop="NavigationService.openOrCreateTab(props.tab.url )">
+             @click.stop="props.tab.extension === UrlExtension.NOTE ?
+             NavigationService.openOrCreateTab(props.tab.url, true):
+             NavigationService.openOrCreateTab(props.tab.url, false)">
            <span v-if="props.sorting === TabSorting.URL">
               <q-icon name="arrow_right" size="16px"/>
            </span>

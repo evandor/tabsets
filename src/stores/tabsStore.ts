@@ -198,7 +198,6 @@ export const useTabsStore = defineStore('tabs', {
                     //   }
                     // } else {
                     const found: Tab | undefined = _.find(value.tabs, t => {
-                        console.log("cmp", t.id, tabId)
                         return t.id === tabId
                     })
                     if (found) {
