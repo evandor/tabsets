@@ -85,6 +85,8 @@ export class Tab {
 
   color: string | undefined = undefined
 
+  parent: string | undefined = undefined
+
   constructor(public id: string, chromeTab: chrome.tabs.Tab) {
     this.created = new Date().getTime()
     this.updated = new Date().getTime()

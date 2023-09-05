@@ -1,14 +1,28 @@
 <template>
 
-  <div class="row">
-    <div class="col text-right">
-      <div v-if="editMode" class="cursor-pointer" @click="saveWork()">
-        Save
-        <q-icon name="save" size="24px" color="warning"/>
+  <div class="row" style="border-bottom: 1px solid #efefef">
+    <div class="col q-ma-sm text-h6">
+      {{ tabset?.name }}
+    </div>
+    <div class="col text-right q-ma-sm">
+      <div v-if="editMode">
+        <template v-if="dirty">
+          <q-btn  class="cursor-pointer" @click="saveWork()"
+                  icon="save" color="warning" size="sm" text-color="white" label="Save"/>
+        </template>
+        <template v-else>
+          <q-btn  class="cursor-pointer q-mr-md" @click="newPage()"
+                  icon="add" color="accent" size="sm" text-color="white" label="new Page..."/>
+          <q-btn :disable="true" icon="save" color="warning" size="sm" text-color="white" label="Save"/>
+        </template>
       </div>
-      <div v-else class="cursor-pointer" @click="openInEditMode()">
-        Edit
-        <q-icon name="edit" size="24px"/>
+      <div v-else>
+        <q-btn class="cursor-pointer q-mr-md" @click="newPage()"
+               icon="add" color="accent" size="sm" text-color="white" label="new Page..."/>
+        <q-btn class="cursor-pointer q-mr-md" @click="newPage(true)"
+               icon="add" color="accent" size="sm" text-color="white" label="new Sub-Page..."/>
+        <q-btn class="cursor-pointer" @click="openInEditMode()"
+               icon="edit" color="warning" size="sm" text-color="white" label="Edit"/>
       </div>
     </div>
   </div>
@@ -33,7 +47,7 @@
 import 'regenerator-runtime/runtime'
 import {onMounted, ref, watchEffect} from "vue";
 import {useRoute, useRouter} from "vue-router";
-import {uid, useQuasar} from "quasar";
+import {uid, useMeta, useQuasar} from "quasar";
 import {useTabsStore} from "src/stores/tabsStore";
 import {Tab, UrlExtension} from "src/models/Tab";
 import {useUtils} from "src/services/Utils";
@@ -58,6 +72,7 @@ import Analytics from "src/utils/google-analytics";
 import {LinkTool2} from "src/pages/mainpanel/editorjs/linkTool"
 
 import './editorjs/linkTool.css';
+import NavigationService from "src/services/NavigationService";
 
 const {formatDate, sendMsg, sanitize} = useUtils()
 
@@ -67,14 +82,35 @@ const router = useRouter()
 const noteId = ref<string | undefined>(undefined)
 const tab = ref<Tab | undefined>(undefined)
 const tabsetId = ref<string | undefined>(route.query.tsId as string)
+const parentId = ref<string | undefined>(route.query.parent as string)
+const tabset = ref<Tabset | undefined>(undefined)
 const editMode = ref(false)
+const closeOnSave = ref(false)
 const title = ref('')
+const originalTitle = ref('')
 const editorJsRef = ref(null)
+const dirty = ref(false)
 
 let editorJS2: EditorJS = undefined as unknown as EditorJS
 
+useMeta(() => {
+  console.debug("using meta...")
+  return {
+    // @ts-ignore
+    title: 'Documentation: ' + tabsetId.value
+  }
+})
+
 onMounted(() => {
   Analytics.firePageViewEvent('MainPanelNotePage', document.location.href);
+})
+
+watchEffect(() => {
+  dirty.value = (title.value !== originalTitle.value)
+  console.log("set to dirty", dirty.value)
+  // dirty.value ? window.onbeforeunload = (e) => {
+  //   return '';
+  // } : window.onbeforeunload = null
 })
 
 const column_tools = {
@@ -160,16 +196,21 @@ const toolsconfig = {
 watchEffect(async () => {
   noteId.value = route.params.noteId as unknown as string
   editMode.value = route.query.edit ? route.query.edit === "true" : false
+  closeOnSave.value = route.query.closeOnSave ? route.query.edit === "true" : false
 
   if (noteId.value) {
     useTabsStore().getTab(noteId.value)
         .then((tabObject: object | undefined) => {
 
           if (tabObject) {
-            console.log("got tabobject1", tabObject)
+            //console.log("got tabobject1", tabObject)
             tab.value = tabObject['tab' as keyof object] as unknown as Tab
             tabsetId.value = tabObject['tabsetId' as keyof object]
+            tabset.value = useTabsetService().getTabset(tabsetId.value) as Tabset | undefined
             title.value = tabObject['tab' as keyof object]['title'] || 'unknown'
+            if (!originalTitle.value) {
+              originalTitle.value = title.value
+            }
             if (!editorJS2) {
               // @ts-ignore
               editorJS2 = new EditorJS({
@@ -200,50 +241,13 @@ watchEffect(async () => {
 
 })
 
-// watchEffect(async () => {
-//   noteId.value = route.params.noteId as unknown as string
-//   console.log("route.params.edit", route.query.edit)
-//   editMode.value = route.query.edit ? route.query.edit === "true" : false
-//   console.log("watched...", noteId.value)
-//   const tabObject = await useTabsStore().getTab(noteId.value)
-//   if (tabObject) {
-//     console.log("tabObject", tabObject)
-//     tab.value = tabObject['tab' as keyof object] as unknown as Tab
-//     editor.value = tab.value?.longDescription || ''
-//     tabsetId.value = tabObject['tabsetId' as keyof object]
-//     title.value = tab.value.title || ''
-//
-//     editorJS.value = new EditorJS({
-//       holder: 'editorjs',
-//       autofocus: true,
-//       initialBlock: "paragraph",
-//       readOnly: true,
-//       data: (tab.value?.longDescription || {}) as OutputData,
-//       tools: {
-//         header: {
-//           class: Header,
-//           shortcut: "CMD+SHIFT+H"
-//         }
-//       }
-//     });
-//   } else {
-//
-//   }
-// })
-
-const update = (ident: string, val: string) => {
-  if (tab.value && ident === 'description') {
-    tab.value.description = val
-  } else if (tab.value && ident === 'title') {
-    tab.value.title = val
-  }
-}
 const saveWork = () => {
 
   console.log("saving", tabsetId.value)
 
   editorJS2.save().then((outputData: any) => {
-
+    console.log("setting original", title.value, sanitize(title.value))
+    originalTitle.value = sanitize(title.value)
     if (tabsetId.value) {
       const tabset = useTabsetService().getTabset(tabsetId.value) as Tabset | undefined
       console.log("tabset", tabset, tab.value)
@@ -251,6 +255,7 @@ const saveWork = () => {
         //tab.value.description = description.value
         tab.value.title = sanitize(title.value)
         tab.value.longDescription = outputData //sanitize(outputData)
+        tab.parent = parentId.value
         console.log("saving note", tabset, tabsetId.value)
         // needed to update the note in the side panel
         sendMsg('tab-changed', {tab: tab.value, tabsetId: tabsetId.value, noteId: noteId.value})
@@ -263,10 +268,14 @@ const saveWork = () => {
         newTab.longDescription = outputData
         //   useTabsetService().saveCurrentTabset()
         newTab.url = newTab.url?.split('?')[0] + newTabId
+        newTab.parent = parentId.value
         // needed to update the note in the side panel
         sendMsg('tab-changed', {tab: newTab, tabsetId: tabsetId.value})
         // redirect after save
-        router.push("/mainpanel/notes/" + newTabId)
+        //router.push("/mainpanel/notes/" + newTabId)
+        chrome.tabs.getCurrent((tab:chrome.tabs.Tab | undefined) => {
+          chrome.tabs.remove(tab?.id || 0, function() { });
+        });
       }
     } else {
       console.warn("tabset id missing")
@@ -278,6 +287,19 @@ const saveWork = () => {
 }
 
 const openInEditMode = () => router.push('./' + tab.value?.id + '?edit=true&tsId=' + tabsetId.value)
+
+const newPage = (subpage: boolean = false) => {
+  console.log("xxx")
+  let url = chrome && chrome.runtime && chrome.runtime.getURL ?
+      chrome.runtime.getURL('www/index.html') + "#/mainpanel/notes/?tsId=" + tabsetId.value + "&edit=true" :
+      "#/mainpanel/notes/?tsId=" + tabsetId.value + "&edit=true&closeOnSave=true"
+  if (subpage) {
+    url = url + "&parent=" + tab.value?.id
+  }
+  console.log("newPage", url)
+  // NavigationService.openOrCreateDocumentation(tabsetId.value || '', url)
+  NavigationService.openOrCreateTab(url)
+}
 </script>
 
 <style>
@@ -295,6 +317,10 @@ const openInEditMode = () => router.push('./' + tab.value?.id + '?edit=true&tsId
 .ce-block__content,
 .ce-toolbar__content {
   max-width: none;
+}
+
+.ce-paragraph {
+  font-size: 16px;
 }
 
 /* editorjsColumns */

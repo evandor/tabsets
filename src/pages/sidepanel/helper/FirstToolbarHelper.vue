@@ -127,6 +127,11 @@
               <q-tooltip class="tooltip">{{ newTabsetTooltip() }}</q-tooltip>
             </q-btn>
 
+<!--            <q-fab stlye="max-height:24px" color="warning" icon="keyboard_arrow_left" direction="left">-->
+<!--              <q-fab-action color="amber" text-color="black" @click="onClick" icon="mail" />-->
+<!--              <q-fab-action color="amber" text-color="black" @click="onClick" icon="alarm" />-->
+<!--            </q-fab>-->
+
 
           </slot>
         </div>

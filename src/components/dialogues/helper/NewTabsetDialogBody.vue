@@ -23,10 +23,18 @@
           <template v-if="inBexMode()">
             <q-checkbox
                 data-testid="newTabsetAutoAdd"
+                :disable="documentation"
                 v-model="addAllOpenTabs" label="Add all open tabs"/>&nbsp;
             <q-icon
                 name="help" color="primary" size="1em">
               <q-tooltip>If you select this option, all currently open tabs will be added to your new tabset</q-tooltip>
+            </q-icon>
+            <q-checkbox
+                data-testid="createDocumentation"
+                v-model="documentation" label="Use as Documentation"/>&nbsp;
+            <q-icon
+                name="help" color="primary" size="1em">
+              <q-tooltip>Create a Documentation Tabset with multiple pages</q-tooltip>
             </q-icon>
           </template>
         </q-card-section>
@@ -91,6 +99,7 @@ import {useWindowsStore} from "stores/windowsStores";
 import _ from "lodash"
 import {useUtils} from "src/services/Utils";
 import ColorSelector from "components/dialogues/helper/ColorSelector.vue";
+import {CreateDocumentationCommand} from "src/domain/documentation/CreateDocumentationCommand";
 
 const {dialogRef, onDialogHide, onDialogCancel} = useDialogPluginComponent()
 const {inBexMode} = useUtils()
@@ -106,6 +115,7 @@ const router = useRouter()
 const newTabsetName = ref('')
 const isValid = ref(false)
 const addAllOpenTabs = ref(false)
+const documentation = ref(false)
 const theForm = ref<QForm>(null as unknown as QForm)
 const windowModel = ref<string>('current')
 const windowOptions = ref<string[]>([])
@@ -143,29 +153,49 @@ const doesNotExistYet = (val: string) => {
 const createNewTabset = () => {
   const tabsToUse = addAllOpenTabs.value ? tabsStore.tabs : []
   console.log("windowModel", windowModel.value)
-  useCommandExecutor()
-      .executeFromUi(new CreateTabsetCommand(newTabsetName.value, tabsToUse, windowModel.value, theColor.value))
-      .then((res) => {
-        if (props.spaceId) {
-          const ts: Tabset = res.result.tabset
-          ts.spaces.push(props.spaceId)
-          useTabsetService().saveTabset(ts)
-        }
-        if (!addAllOpenTabs.value) {
-          TabsetService.createPendingFromBrowserTabs()
-        } else {
-          if (tabsStore.pendingTabset) {
-            // clear pending tabset - why necessary?
-            tabsStore.pendingTabset.tabs = []
+  if (documentation) {
+    useCommandExecutor()
+        .executeFromUi(new CreateDocumentationCommand(newTabsetName.value, windowModel.value, theColor.value))
+        .then((res) => {
+          if (props.spaceId) {
+            const ts: Tabset = res.result.tabset
+            ts.spaces.push(props.spaceId)
+            useTabsetService().saveTabset(ts)
           }
-        }
-        if (!props.fromPanel) {
-          router.push("/tabsets/" + res.result.tabsetId)
-        } else {
-          useUiStore().sidePanelSetActiveView(SidePanelView.MAIN)
-          router.push("/sidepanel?first=")
-        }
-      })
+          if (!props.fromPanel) {
+            router.push("/tabsets/" + res.result.tabsetId)
+          } else {
+            useUiStore().sidePanelSetActiveView(SidePanelView.MAIN)
+            router.push("/sidepanel?first=")
+          }
+        })
+
+  } else {
+
+    useCommandExecutor()
+        .executeFromUi(new CreateTabsetCommand(newTabsetName.value, tabsToUse, windowModel.value, theColor.value))
+        .then((res) => {
+          if (props.spaceId) {
+            const ts: Tabset = res.result.tabset
+            ts.spaces.push(props.spaceId)
+            useTabsetService().saveTabset(ts)
+          }
+          if (!addAllOpenTabs.value) {
+            TabsetService.createPendingFromBrowserTabs()
+          } else {
+            if (tabsStore.pendingTabset) {
+              // clear pending tabset - why necessary?
+              tabsStore.pendingTabset.tabs = []
+            }
+          }
+          if (!props.fromPanel) {
+            router.push("/tabsets/" + res.result.tabsetId)
+          } else {
+            useUiStore().sidePanelSetActiveView(SidePanelView.MAIN)
+            router.push("/sidepanel?first=")
+          }
+        })
+  }
 }
 
 const createWindowOption = (val: any, done: any) => {

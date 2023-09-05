@@ -39,7 +39,9 @@
                   </q-tooltip>
                   <q-tooltip v-else class="tooltip">This tabset is shared</q-tooltip>
                 </q-icon>
+
                 {{ tabset.name }}
+
                 <span v-if="tabset.type === TabsetType.DYNAMIC">
                   <q-icon name="o_label" color="warning">
                     <q-tooltip class="tooltip">Dynamic Tabset, listing all tabsets containing this tag</q-tooltip>
@@ -47,7 +49,7 @@
                 </span>
               </q-item-label>
               <q-item-label class="text-caption text-grey-5">
-                {{ tabsetCaption(filteredTabs(tabset as Tabset), tabset.window) }}
+                {{ tabsetCaption(filteredTabs(tabset as Tabset), tabset) }}
               </q-item-label>
             </q-item-section>
 
@@ -66,13 +68,18 @@
             <div class="q-ma-none" v-if="inBexMode() &&
               currentChromeTab &&
               currentChromeTab.url !== 'chrome://newtab/' &&
-              currentChromeTab.url !== ''">
+              currentChromeTab.url !== '' &&
+              tabset.type !== TabsetType.DOCUMENTATION">
               <SidePanelTabInfo :tabsetId="tabset.id"/>
+            </div>
+            <div v-else-if="tabset.type === TabsetType.DOCUMENTATION && tabset.tabs.length === 0">
+              Create your first page
             </div>
 
             <PanelTabList
                 v-if="tabsetExpanded.get(tabset.id)"
                 :tabsetType="tabset.type"
+                :tabsetId="tabset.id"
                 :tabs="filteredTabs(tabset as Tabset)"/>
 
           </div>
@@ -469,6 +476,7 @@ const filteredTabs = (tabset: Tabset): Tab[] => {
   // TODO order??
   const filter = useUiStore().tabsFilter
   if (!filter || filter.trim() === '') {
+    //console.log("returning", tabs)
     return tabs
   }
   return _.filter(tabs, (t: Tab) => {
@@ -527,18 +535,19 @@ async function handleHeadRequests(selectedTabset: Tabset) {
   useTabsetService().saveTabset(selectedTabset)
 }
 
-const tabsetCaption = (tabs: Tab[], window: string) => {
+const tabsetCaption = (tabs: Tab[], tabset: Tabset) => {
   const filter = useUiStore().tabsFilter
   if (!tabs) {
     return '-'
   }
+  const ident = tabset.type === TabsetType.DOCUMENTATION ? 'page' : 'tab'
   let caption = ''
   if (!filter || filter.trim() === '') {
-    caption = tabs.length + ' tab' + (tabs.length === 1 ? '' : 's')
+    caption = tabs.length + ' ' + ident + (tabs.length === 1 ? '' : 's')
   } else {
-    caption = tabs.length + ' tab' + (tabs.length === 1 ? '' : 's') + ' (filtered)'
+    caption = tabs.length + ' ' + ident + (tabs.length === 1 ? '' : 's') + ' (filtered)'
   }
-  if (window && window !== 'current' && usePermissionsStore().hasFeature(FeatureIdent.WINDOW_MANAGEMENT)) {
+  if (window && tabset.window !== 'current' && usePermissionsStore().hasFeature(FeatureIdent.WINDOW_MANAGEMENT)) {
     caption = caption + " - opens in: " + window
   }
   return caption

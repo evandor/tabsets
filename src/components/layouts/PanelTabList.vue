@@ -10,11 +10,13 @@
                         @change="handleDragAndDrop">
 
       <SidePanelTabListHelper v-for="tab in props.tabs"
+                              :parentId="undefined"
                               :tab="tab"
                               :type="props.type"
                               :sorting="props.sorting"
                               :preventDragAndDrop="false"
                               :tabsetType="props.tabsetType"
+                              :tabsetId="props.tabsetId"
                               :show-tabsets="props.showTabsets"
                               :hide-menu="props.hideMenu"/>
     </vue-draggable-next>
@@ -22,11 +24,13 @@
     <!-- no drag & drop on mobile -->
     <SidePanelTabListHelper v-else
                             v-for="tab in props.tabs"
+                            :parentId="undefined"
                             :tab="tab"
                             :type="props.type"
                             :sorting="props.sorting"
                             :preventDragAndDrop="true"
                             :tabsetType="props.tabsetType"
+                            :tabsetId="pros.tabsetId"
                             :show-tabsets="props.showTabsets"
                             :hide-menu="props.hideMenu"/>
   </q-list>
@@ -54,6 +58,7 @@ const props = defineProps({
   type: {type: String, default: 'sidepanel'},
   showTabsets: {type: Boolean, default: false},
   preventDragAndDrop: {type: Boolean, default: false},
+  tabsetId: {type: String, required: true},
   tabsetType: {type: String, default: TabsetType.DEFAULT.toString()},
 })
 

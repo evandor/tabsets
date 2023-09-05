@@ -15,7 +15,8 @@ export enum TabsetType {
   SESSION = "SESSION",
 
   SPECIAL = "SPECIAL",
-  DYNAMIC = "DYNAMIC"
+  DYNAMIC = "DYNAMIC",
+  DOCUMENTATION = "DOCUMENTATION"
 }
 
 export enum TabsetSharing {

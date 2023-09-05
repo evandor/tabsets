@@ -3,7 +3,7 @@
   <q-page style="padding-top: 50px">
     <div class="q-ma-none q-pa-none">
 
-      <div class="q-ma-none" v-if="tabsetId">
+      <div class="q-ma-none" v-if="tabsetId &&  tabset?.type !== TabsetType.DOCUMENTATION">
         <SidePanelTabInfo :tabsetId="tabsetId"/>
       </div>
 

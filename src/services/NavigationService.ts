@@ -116,6 +116,47 @@ class NavigationService {
         }
     }
 
+    async openOrCreateDocumentation(tabsetId: string, withUrl: string) {
+        console.log("opening documentation", withUrl, process.env.MODE)
+
+        if (process.env.MODE === "bex") {
+            // get all tabs with this url
+            const tabsForUrl = useTabsStore().tabsForUrl(withUrl) || []
+
+            const useWindowId = chrome.windows.WINDOW_ID_CURRENT
+            const queryInfo = {windowId: useWindowId, title: 'Documentation: ' + tabsetId}
+            console.log("using query info ", queryInfo)
+            chrome.tabs.query(queryInfo, (t: chrome.tabs.Tab[]) => {
+                let found = t.length > 0;
+                if (!found) {
+                    console.log("tab not found, creating new one")
+                    chrome.tabs.create({
+                        active: true,
+                        pinned: false,
+                        url: withUrl,
+                        windowId: useWindowId
+                    }, (tab: chrome.tabs.Tab) => {
+                        chrome.windows.update(useWindowId, {focused: true})
+                        // pass selections and execute quoting script
+                    })
+                } else {
+                    console.log("updating tab", t[0].id, withUrl)
+                    chrome.tabs.update(
+                        t[0].id || 0,
+                        {url: withUrl}, (callback) => {
+                            if (callback) {
+                                chrome.tabs.reload(callback.index)
+                                chrome.tabs.highlight({tabs: callback.index});
+                            }
+                        }
+                )
+                }
+            })
+        } else {
+            openURL(withUrl)//, undefined, {target: "_ts"}) - does not work
+        }
+    }
+
     openTab(tabId: number) {
         chrome.tabs.update(tabId, {active: true})
     }
