@@ -80,7 +80,7 @@ watchEffect(async () => {
   noteId.value = route.params.noteId as unknown as string
   console.log("route.params.edit", route.query.edit)
   editMode.value = route.query.edit ? route.query.edit === "true" : false
-  console.log("watched...", noteId.value)
+  //console.log("watched...", noteId.value)
   const tabObject = await useTabsStore().getTab(noteId.value)
   if (tabObject) {
     console.log("tabObject", tabObject)
@@ -157,7 +157,7 @@ const saveWork = () => {
         newTab.url = newTab.url?.split('?')[0] + newTabId
         // needed to update the note in the side panel
         console.log("sending message", {tab: newTab, tabsetId: tabsetId.value})
-        sendMsg('tab-changed', {tab: newTab, tabsetId: tabsetId.value})
+        sendMsg('page-added', {tab: newTab, tabsetId: tabsetId.value, src: 'MainPenalNoteEditPage'})
         // redirect after save
         router.push("/mainpanel/notes/" + newTabId)
       }

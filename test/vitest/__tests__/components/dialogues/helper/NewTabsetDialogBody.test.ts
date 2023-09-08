@@ -21,6 +21,7 @@ describe('NewTabsetDialog', () => {
     let db = null as unknown as PersistenceService
     let wrapper: VueWrapper<any, any> = null as unknown as VueWrapper
     let input: DOMWrapper<Element> = null as unknown as DOMWrapper<Element>
+    let docCheckbox: DOMWrapper<HTMLFormElement> = null as unknown as DOMWrapper<HTMLFormElement>
     let submitButton: DOMWrapper<Element> = null as unknown as DOMWrapper<Element>
 
     // @ts-ignore
@@ -36,6 +37,7 @@ describe('NewTabsetDialog', () => {
         wrapper = mount(NewTabsetDialogBody, {props: {}});
 
         input = wrapper.find('[data-testid=newTabsetName]')
+        docCheckbox = wrapper.find('[data-testid=createDocumentationTestId]')
         submitButton = wrapper.find('[data-testid=newTabsetNameSubmit]')
     })
 

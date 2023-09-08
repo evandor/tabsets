@@ -13,6 +13,9 @@
              @click.stop="NavigationService.openOrCreateDocumentation(props.tabsetId,props.tab?.url || '')">
           {{ tab.title }}/{{tab.parent}}
         </div>
+<!--        <q-item>-->
+<!--          <q-item-section>***</q-item-section>-->
+<!--        </q-item>-->
       </q-item-section>
     </template>
     <template v-else>

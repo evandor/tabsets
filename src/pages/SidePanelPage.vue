@@ -80,6 +80,7 @@
                 v-if="tabsetExpanded.get(tabset.id)"
                 :tabsetType="tabset.type"
                 :tabsetId="tabset.id"
+                :prevent-drag-and-drop="tabset.type === TabsetType.DOCUMENTATION"
                 :tabs="filteredTabs(tabset as Tabset)"/>
 
           </div>
@@ -346,6 +347,7 @@ if ($q.platform.is.chrome) {
       if (inIgnoredMessages(message)) {
         return true
       }
+        console.log(" >>> xxx got message", message, sender)
       if (message.name === 'current-tabset-id-change') {
         console.log(" >>> got message", message)
         if (message.ignore) {
@@ -381,10 +383,21 @@ if ($q.platform.is.chrome) {
                 useTabsetService().saveTabset(tabset)
               })
         } else {
-          console.log("adding tab", message.data.tab)
-          tabset.tabs.push(message.data.tab)
-          useTabsetService().saveTabset(tabset)
+          // console.log("adding tab", message.data.tab)
+          console.error("should not end up here any more")
+          // tabset.tabs.push(message.data.tab)
+          // useTabsetService().saveTabset(tabset)
         }
+      } else if (message.name === "page-added") {
+        console.log("adding page", message.data.tab, message.data.tab.id)
+        const tabId = message.data.tab.id
+         // const tabset = useTabsetService().getTabset(message.data.tabsetId) as Tabset
+          // don't do this logic here: this can be called more than once
+          // console.log("pushing", message.data.tab.id)
+          // tabset.tabs.push(message.data.tab)
+          // useTabsetService().saveTabset(tabset)
+        useTabsetService().reloadTabset(message.data.tabsetId)
+          sendResponse("done")
       } else if (message.name === "tab-added") {
         // hmm - getting this twice...
         console.log(" > got message '" + message.name + "'", message)

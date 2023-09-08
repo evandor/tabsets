@@ -133,6 +133,7 @@ function inIgnoredMessages(request: any) {
     request.name === 'current-tabset-id-change' ||
     request.name === 'tab-being-dragged' ||
     request.name === 'tab-changed' ||
+    request.name === 'page-added' ||
     request.name === 'tab-added' ||
     request.name === 'tab-deleted' ||
     request.name === 'tabset-added' ||

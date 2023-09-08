@@ -269,13 +269,20 @@ const saveWork = () => {
         //   useTabsetService().saveCurrentTabset()
         newTab.url = newTab.url?.split('?')[0] + newTabId
         newTab.parent = parentId.value
+
+        // lesson learned: execute code here and send message only to update dependent parts
+        const tabset = useTabsetService().getTabset(tabsetId.value) as Tabset
+        console.log("pushing")
+        tabset.tabs.push(newTab)
+        useTabsetService().saveTabset(tabset)
+
         // needed to update the note in the side panel
-        sendMsg('tab-changed', {tab: newTab, tabsetId: tabsetId.value})
+        sendMsg('page-added', {tab: newTab, tabsetId: tabsetId.value, src: 'MainPenalNoteEditPage'})
         // redirect after save
-        //router.push("/mainpanel/notes/" + newTabId)
-        chrome.tabs.getCurrent((tab:chrome.tabs.Tab | undefined) => {
-          chrome.tabs.remove(tab?.id || 0, function() { });
-        });
+        router.push("/mainpanel/notes/" + newTabId)
+        // chrome.tabs.getCurrent((tab:chrome.tabs.Tab | undefined) => {
+        //   chrome.tabs.remove(tab?.id || 0, function() { });
+        // });
       }
     } else {
       console.warn("tabset id missing")

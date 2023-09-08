@@ -30,7 +30,7 @@
               <q-tooltip>If you select this option, all currently open tabs will be added to your new tabset</q-tooltip>
             </q-icon>
             <q-checkbox
-                data-testid="createDocumentation"
+                data-testid="createDocumentationTestId"
                 v-model="documentation" label="Use as Documentation"/>&nbsp;
             <q-icon
                 name="help" color="primary" size="1em">
@@ -99,7 +99,7 @@ import {useWindowsStore} from "stores/windowsStores";
 import _ from "lodash"
 import {useUtils} from "src/services/Utils";
 import ColorSelector from "components/dialogues/helper/ColorSelector.vue";
-import {CreateDocumentationCommand} from "src/domain/documentation/CreateDocumentationCommand";
+import {CreateDocumentationCommand} from "src/domain/pages/CreateDocumentationCommand";
 
 const {dialogRef, onDialogHide, onDialogCancel} = useDialogPluginComponent()
 const {inBexMode} = useUtils()
@@ -153,7 +153,7 @@ const doesNotExistYet = (val: string) => {
 const createNewTabset = () => {
   const tabsToUse = addAllOpenTabs.value ? tabsStore.tabs : []
   console.log("windowModel", windowModel.value)
-  if (documentation) {
+  if (documentation.value) {
     useCommandExecutor()
         .executeFromUi(new CreateDocumentationCommand(newTabsetName.value, windowModel.value, theColor.value))
         .then((res) => {

@@ -10,9 +10,10 @@
       <PanelTabList
           v-if="tabset"
           :tabsetType="tabset.type"
+          :tabset-id="tabset.id"
           :sorting="sorting"
           :show-tabsets="true"
-          :preventDragAndDrop="$q.platform.is.mobile || sorting !== TabSorting.CUSTOM"
+          :preventDragAndDrop="$q.platform.is.mobile || sorting !== TabSorting.CUSTOM "
           :tabs="filteredTabs(tabset as Tabset)"/>
 
     </div>
