@@ -141,8 +141,8 @@ const doesNotExistYet = (val: string) => {
 }
 
 const createNewTabset = () => {
+  console.log("createNewTabset", addAllOpenTabs.value, tabsStore.tabs, windowModel.value)
   const tabsToUse = addAllOpenTabs.value ? tabsStore.tabs : []
-  console.log("windowModel", windowModel.value)
   useCommandExecutor()
       .executeFromUi(new CreateTabsetCommand(newTabsetName.value, tabsToUse, windowModel.value, theColor.value))
       .then((res) => {
