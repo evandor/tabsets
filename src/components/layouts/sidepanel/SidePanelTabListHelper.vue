@@ -3,7 +3,7 @@
       clickable
       v-ripple
       class="q-ma-none q-pa-sm"
-      :style="itemStyle(tab)"
+      :style="itemStyle()"
       @dragstart="startDrag($event, tab)"
       :key="'paneltablist_' + tab.id">
 
@@ -11,6 +11,7 @@
                                :tab="tab"
                                :type="props.type"
                                :sorting="props.sorting"
+                               :show-tabsets="props.showTabsets"
                                :preventDragAndDrop="props.preventDragAndDrop"
                                :tabsetType="props.tabsetType"
                                :hide-menu="props.hideMenu"/>
@@ -25,6 +26,8 @@ import {TabsetType} from "src/models/Tabset";
 import {useUiStore} from "src/stores/uiStore";
 import {PropType} from "vue";
 import PanelTabListElementWidget from "components/widgets/PanelTabListElementWidget.vue";
+import {usePermissionsStore} from "stores/permissionsStore";
+import {FeatureIdent} from "src/models/AppFeature";
 
 const props = defineProps({
   tab: {type: Object as PropType<Tab>, required: true},
@@ -32,6 +35,7 @@ const props = defineProps({
   sorting: {type: String as PropType<TabSorting>, default: TabSorting.CUSTOM},
   type: {type: String, default: 'sidepanel'},
   tabsetType: {type: String, default: TabsetType.DEFAULT.toString()},
+  showTabsets: {type: Boolean, default: false},
   preventDragAndDrop: {type: Boolean, default: false},
 })
 
@@ -43,9 +47,15 @@ const startDrag = (evt: any, tab: Tab) => {
     evt.dataTransfer.setData('text/plain', tab.id)
     useUiStore().draggingTab(tab.id, evt)
   }
-  console.log("evt.dataTransfer.getData('text/plain')", evt.dataTransfer.getData('text/plain'))
+  //console.log("evt.dataTransfer.getData('text/plain')", evt.dataTransfer.getData('text/plain'))
 }
 
-const itemStyle = (tab: Tab) => "border-bottom: 1px solid #fafafa"
+const itemStyle = () => {
+  let style = "border-bottom: 1px solid #fafafa;"
+  if (props.tab.color && usePermissionsStore().hasFeature(FeatureIdent.COLOR_TAGS)) {
+    style = style + 'border-left:4px solid ' + props.tab.color + ';border-radius:4px;'
+  }
+  return style
+}
 
 </script>

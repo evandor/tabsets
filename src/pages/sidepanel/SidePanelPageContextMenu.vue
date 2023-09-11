@@ -13,7 +13,7 @@
       <ContextMenuItem v-close-popup
                        @was-clicked="openEditTabsetDialog(tabset)"
                        icon="o_note"
-                       label="Edit Tabset Name"/>
+                       label="Update Tabset"/>
 
       <template v-if="tabset.tabs.length > 0 && inBexMode()">
         <q-separator/>
@@ -43,7 +43,7 @@
         <q-separator/>
         <ContextMenuItem
             icon="keyboard_arrow_right"
-            label="Sharing...">
+            label="Sharing... (dev)">
 
           <q-item-section side>
             <q-icon name="keyboard_arrow_right"/>
@@ -201,7 +201,9 @@ const props = defineProps({
 const publictabsetsPath = "https://public.tabsets.net/tabsets/"
 
 const startTabsetNote = (tabset: Tabset) => {
-  const url = chrome.runtime.getURL('www/index.html') + "#/mainpanel/notes/?tsId=" + tabset.id + "&edit=true"
+  const url = chrome && chrome.runtime && chrome.runtime.getURL ?
+    chrome.runtime.getURL('www/index.html') + "#/mainpanel/notes/?tsId=" + tabset.id + "&edit=true" :
+    "#/mainpanel/notes/?tsId=" + tabset.id + "&edit=true"
   NavigationService.openOrCreateTab(url)
 }
 
@@ -211,6 +213,7 @@ const openEditTabsetDialog = (tabset: Tabset) => {
     componentProps: {
       tabsetId: tabset.id,
       tabsetName: tabset.name,
+      tabsetColor: tabset.color,
       fromPanel: true
     }
   })

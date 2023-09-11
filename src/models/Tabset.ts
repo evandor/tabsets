@@ -48,9 +48,8 @@ export class Tabset {
 
   page: string | undefined = undefined
 
-  taxonomy: string | undefined = undefined
-
   window: string = 'current'
+  color: string | undefined = undefined
 
   constructor(id: string, name: string, tabs: Tab[], groups: Group[] = [], spaces: string[] = []) {
     this.id = id

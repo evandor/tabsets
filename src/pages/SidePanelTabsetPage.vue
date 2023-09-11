@@ -11,6 +11,7 @@
           v-if="tabset"
           :tabsetType="tabset.type"
           :sorting="sorting"
+          :show-tabsets="true"
           :preventDragAndDrop="$q.platform.is.mobile || sorting !== TabSorting.CUSTOM"
           :tabs="filteredTabs(tabset as Tabset)"/>
 

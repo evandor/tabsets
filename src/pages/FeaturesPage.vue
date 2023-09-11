@@ -359,6 +359,13 @@ text.set(FeatureIdent.WINDOW_MANAGEMENT.toLowerCase(), {
   permissions: []
 })
 
+text.set(FeatureIdent.COLOR_TAGS.toLowerCase(), {
+  name: 'Color Tags for Tabsets and Tabs',
+  description: 'Assign colors to Tabsets and Tabs as an additional organization level',
+  img: 'colortags.png',
+  permissions: []
+})
+
 
 watchEffect(() => {
       feature.value = route.params.feature as string

@@ -3,7 +3,6 @@ import {Category} from "src/models/Category";
 import {uid} from "quasar";
 import {Tab} from "src/models/Tab";
 import ChromeApi from "src/services/ChromeApi";
-import {TAXONOMY} from "boot/constants";
 
 export function cloudFunctionsApi() {
 

@@ -37,14 +37,14 @@
     </div>
     <div class="col-10 text-right">
       <q-btn
-             label="Add"
+             label="Save"
              color="warning"
              class="q-ma-sm q-px-md"
              style="cursor: pointer"
              size="10px"
              data-testid="saveInTabsetBtn"
              @click="saveInTabset(props.tabsetId)"
-             icon="o_favorite"/>
+             icon="o_save"/>
 
 
     </div>
