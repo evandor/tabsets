@@ -404,15 +404,20 @@ export const useTabsStore = defineStore('tabs', {
                 const id = ident.toString()
                 ts = new Tabset(id, id, [])
                 if (ident === SpecialTabsetIdent.HELP) {
+                    const documentation = ChromeApi.createChromeTabObject(
+                        "Documentation","https://docs.tabsets.net")
+                    const documentationTab = new Tab(uid(), documentation)
+                    documentationTab.description = "find out about Tabsets' Features"
                     ts = new Tabset(id, id, [
+                        documentationTab,
                         new Tab(uid(), ChromeApi.createChromeTabObject(
                             "Philosophy","https://tabsets.web.app/#/philosophy")),
-                        new Tab(uid(), ChromeApi.createChromeTabObject(
-                            "Glossary","https://tabsets.web.app/#/glossary")),
-                        new Tab(uid(), ChromeApi.createChromeTabObject(
-                            "Features","https://tabsets.web.app/#/features")),
-                        new Tab(uid(), ChromeApi.createChromeTabObject(
-                            "FAQ","https://tabsets.web.app/#/faq")),
+                        // new Tab(uid(), ChromeApi.createChromeTabObject(
+                        //     "Glossary","https://tabsets.web.app/#/glossary")),
+                        // new Tab(uid(), ChromeApi.createChromeTabObject(
+                        //     "Features","https://tabsets.web.app/#/features")),
+                        // new Tab(uid(), ChromeApi.createChromeTabObject(
+                        //     "FAQ","https://tabsets.web.app/#/faq")),
                         new Tab(uid(), ChromeApi.createChromeTabObject(
                             "Pricacy","https://tabsets.web.app/#/privacy")),
                         new Tab(uid(), ChromeApi.createChromeTabObject(
