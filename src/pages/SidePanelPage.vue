@@ -192,7 +192,7 @@ watchEffect(() => {
 })
 
 watchEffect(() => {
-  if (chrome && chrome.windows) {
+  if ($q.platform.is.chrome) {
     chrome.windows.getCurrent()
         .then((currentWindow) => {
           if (currentWindow && currentWindow.id) {
@@ -331,11 +331,12 @@ function inIgnoredMessages(message: any) {
       message.name === "recogito-annotation-created"
 }
 
-if ($q.platform.is.chrome) {
+//if ($q.platform.is.chrome) {
   if (inBexMode()) {
     // seems we need to define these listeners here to get the matching messages reliably
     // these messages are created by triggering events in the mainpanel
-    chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    // @ts-ignore
+    browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
       if (inIgnoredMessages(message)) {
         return true
       }
@@ -411,7 +412,7 @@ if ($q.platform.is.chrome) {
   } else {
     //useRouter().push("/start")
   }
-}
+//}
 
 const filteredTabs = (tabset: Tabset): Tab[] => {
   if (tabset.type === TabsetType.DYNAMIC &&

@@ -8,6 +8,7 @@
   "permissions": [
     "storage",
     "tabs",
+    "<all_urls>",
     "activeTab",
     "alarms",
     "scripting",
