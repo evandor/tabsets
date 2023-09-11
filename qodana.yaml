@@ -29,3 +29,7 @@ profile:
 linter: jetbrains/qodana-jvm:latest
 include:
   - name: DuplicatedCode
+  - name: JsCoverageInspection
+  - name: CheckDependencyLicenses
+  - name: JSRemoveUnnecessaryParentheses
+  - name: UnterminatedStatementJS
