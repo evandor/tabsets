@@ -1,5 +1,4 @@
 name: Publish
-run-name: CI Build Publish
 on:
   push:
     branches: [ chrome-extension ]
