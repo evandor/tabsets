@@ -4,9 +4,9 @@
           @click="selectTab(tab)">
     {{ loadThumbnail(tab) }}
     <q-card-section
-      :data-testid="useUtils().createDataTestIdentifier('tabcardwidget', tab.title)"
-      class="q-pt-xs cursor-pointer bg-primary text-white"
-      style="width:100%;">
+        :data-testid="useUtils().createDataTestIdentifier('tabcardwidget', tab.title || '')"
+        class="q-pt-xs cursor-pointer bg-primary text-white"
+        style="width:100%;">
 
       <div class="row items-baseline">
 
@@ -28,17 +28,17 @@
               <q-tooltip>You have a bookmark with this url</q-tooltip>
             </q-icon>
           </q-badge>
-<!--          <q-badge-->
-<!--            color="warning" floating>-->
-<!--            {{ tab.activatedCount }}-->
-<!--          </q-badge>-->
+          <!--          <q-badge-->
+          <!--            color="warning" floating>-->
+          <!--            {{ tab.activatedCount }}-->
+          <!--          </q-badge>-->
         </div>
       </div>
 
 
       <div class="text-subtitle2 ellipsis text-secondary"
-           @click.stop="NavigationService.openOrCreateTab(tab.url )">
-        {{ tab.url.replace("https://www.", '').replace("https://", '') }}
+           @click.stop="NavigationService.openOrCreateTab(tab.url  || '')">
+        {{ tab.url?.replace("https://www.", '').replace("https://", '') }}
         <q-icon name="launch" color="secondary"></q-icon>
         <q-tooltip>
           {{ tab.url }}
@@ -72,27 +72,18 @@
 
 import {Tab, UrlExtension} from "src/models/Tab"
 import TabsetService from "src/services/TabsetService"
-import {useNotificationsStore} from "src/stores/notificationsStore"
-import {ref} from "vue"
+import {PropType, ref} from "vue"
 import NavigationService from "src/services/NavigationService"
-import MHtmlService from "src/services/MHtmlService"
-import {useQuasar} from "quasar"
 import TabFaviconWidget from "src/components/widgets/TabFaviconWidget.vue"
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {DeleteTabCommand} from "src/domain/tabs/DeleteTabCommand"
 import {useUtils} from "src/services/Utils"
 
 const props = defineProps({
-  tab: {
-    type: Object,
-    required: true
-  },
-  highlightUrl: {
-    type: String,
-    required: false
-  }
+  tab: {type: Object as PropType<Tab>, required: true},
+  highlightUrl: {type: String, required: false}
 })
-const $q = useQuasar()
+
 const emits = defineEmits(['sendCaption'])
 const thumbnails = ref<Map<string, string>>(new Map())
 
@@ -106,15 +97,15 @@ const thumbnailFor = (tab: Tab): string => {
 
 const loadThumbnail = (tab: Tab) => {
   TabsetService.getThumbnailFor(tab)
-    .then(data => {
-      //console.log("loading tn for ", tab.url)
-      const key = btoa(tab.url || '')
-      if (data && data.thumbnail) {
-        //console.log("found key", key, data)
-        thumbnails.value.set(key, data.thumbnail)
-      }
-    })
-    .catch(err => console.log("err", err))
+      .then(data => {
+        //console.log("loading tn for ", tab.url)
+        const key = btoa(tab.url || '')
+        if (data && data.thumbnail) {
+          //console.log("found key", key, data)
+          thumbnails.value.set(key, data.thumbnail)
+        }
+      })
+      .catch(err => console.log("err", err))
 }
 
 
@@ -165,23 +156,8 @@ const nameOrTitle = (tab: Tab) => tab.name ? tab.name : tab.title
 const dynamicNameOrTitleModel = (tab: Tab) => tab.name ? tab.name : tab.title
 
 function deleteTab(tab: Tab) {
-  // NavigationService.closeTab(tab)
-
   useCommandExecutor()
-    .executeFromUi(new DeleteTabCommand(tab))
-
-}
-
-const saveTab = (tab: Tab) => {
-  if (tab.chromeTabId) {
-    console.log("capturing", tab.chromeTab)
-    chrome.pageCapture.saveAsMHTML(
-      {tabId: tab.chromeTabId},
-      (html: any) => {
-        MHtmlService.saveMHtml(tab, html)
-      }
-    )
-  }
+      .executeFromUi(new DeleteTabCommand(tab))
 }
 
 </script>
