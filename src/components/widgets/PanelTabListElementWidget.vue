@@ -153,12 +153,9 @@ import {Tab, TabSorting, UrlExtension} from "src/models/Tab";
 import TabsetService from "src/services/TabsetService";
 import {onMounted, PropType, ref, watchEffect} from "vue";
 import {useCommandExecutor} from "src/services/CommandExecutor";
-import {DeleteTabCommand} from "src/domain/tabs/DeleteTabCommand";
-import {useQuasar} from "quasar";
 import {ListDetailLevel, useUiStore} from "src/stores/uiStore";
 import TabFaviconWidget from "components/widgets/TabFaviconWidget.vue";
 import {UpdateTabNameCommand} from "src/domain/tabs/UpdateTabName";
-import {CopyToClipboardCommand} from "src/domain/commands/CopyToClipboard";
 import {useTabsetService} from "src/services/TabsetService2";
 import ShortUrl from "components/utils/ShortUrl.vue";
 import {useTabsStore} from "src/stores/tabsStore";
@@ -212,7 +209,7 @@ onMounted(() => {
           var reader = new FileReader();
           reader.readAsDataURL(res.content);
           reader.onloadend = function () {
-            var base64data = reader.result;
+            const base64data = reader.result;
             if (base64data) {
               imgFromBlob.value = base64data.toString()
             }
@@ -260,21 +257,7 @@ const dynamicNameOrTitleModel = (tab: Tab) => tab.name ? tab.name : tab.title
 const setCustomTitle = (tab: Tab, newValue: string) =>
     useCommandExecutor().executeFromUi(new UpdateTabNameCommand(tab, newValue))
 
-const copyToClipboard = (text: string) =>
-    useCommandExecutor().executeFromUi(new CopyToClipboardCommand(text))
-
 const hoveredOver = (tabsetId: string) => hoveredTab.value === tabsetId
-
-const classForCategoryTab = (tab: Tab | undefined) => {
-  if (!tab) {
-    return ""
-  }
-  const url = tab.url
-  if (url && useTabsetService().tabsetsFor(url).length > 0) {
-    return "text-grey-5"
-  }
-  return ""
-}
 
 const formatDate = (timestamp: number | undefined) =>
     timestamp ? formatDistance(timestamp, new Date(), {addSuffix: true}) : ""
@@ -322,7 +305,7 @@ const openTabset = (badge: any) => {
   stroke: #fff;
   stroke-miterlimit: 10;
   margin: 10% auto;
-  box-shadow: inset 0px 0px 0px #8ACB88;
+  box-shadow: inset 0 0 0 #8ACB88;
   animation: fill .4s ease-in-out .4s forwards, scale .3s ease-in-out .9s both;
 }
 
@@ -350,7 +333,7 @@ const openTabset = (badge: any) => {
 
 @keyframes fill {
   100% {
-    box-shadow: inset 0px 0px 0px 30px #8ACB88;
+    box-shadow: inset 0 0 0 30px #8ACB88;
   }
 }
 </style>
