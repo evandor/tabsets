@@ -61,6 +61,15 @@
 
       <div class="row items-baseline q-ma-md">
         <div class="col-3">
+          URLs
+        </div>
+        <div class="col-9">
+          <q-checkbox v-model="fullUrls" label="Show full URLs in Tab Details"/>
+        </div>
+      </div>
+
+      <div class="row items-baseline q-ma-md">
+        <div class="col-3">
           Ignore Browser Extensions as tabs
         </div>
         <div class="col-9">
@@ -328,32 +337,7 @@
 
     </div>
 
-
   </div>
-
-<!--  <div v-if="tab === 'logs'">-->
-
-<!--    <div class="q-pa-md q-gutter-sm">-->
-
-<!--      <q-banner rounded class="bg-grey-1 text-primary">Tabsets checks for errors and warnings in the log-->
-<!--        and can display them here.-->
-<!--      </q-banner>-->
-
-<!--      <div class="row q-pa-md">-->
-<!--        <div class="col-12">-->
-<!--          {{ errors }}-->
-<!--        </div>-->
-<!--      </div>-->
-
-<!--      <div class="row q-pa-md">-->
-<!--        <div class="col-12">-->
-<!--          {{ warnings }}-->
-<!--        </div>-->
-<!--      </div>-->
-
-<!--    </div>-->
-
-<!--  </div>-->
 
 
   <div v-if="tab === 'featureToggles'">
@@ -436,12 +420,13 @@ const ignoreExtensionsEnabled = ref<boolean>(!featuresStore.isEnabled('extension
 const permissionsList = ref<string[]>([])
 
 const darkMode = ref<boolean>(localStorage.getItem('darkMode') || false)
-const detailLevel = ref<ListDetailLevel>(localStorage.getItem('detailLevel') || ListDetailLevel.MAXIMAL)
+const detailLevel = ref<ListDetailLevel>(localStorage.getItem('ui.detailLevel') || ListDetailLevel.MAXIMAL)
 
 const bookmarksPermissionGranted = ref<boolean | undefined>(usePermissionsStore().hasPermission('bookmarks'))
 const pageCapturePermissionGranted = ref<boolean | undefined>(usePermissionsStore().hasPermission('history'))
 const allUrlsOriginGranted = ref<boolean | undefined>(usePermissionsStore().hasAllOrigins())
 const tab = ref('appearance')
+const fullUrls = ref(localStorage.getItem('ui.fullUrls') || false)
 
 const {handleError} = useNotificationHandler()
 
@@ -511,8 +496,13 @@ watchEffect(() => {
 })
 
 watchEffect(() => {
-  localStorage.set('detailLevel', detailLevel.value)
+  localStorage.set('ui.detailLevel', detailLevel.value)
   sendMsg('detail-level-changed', {level: detailLevel.value})
+})
+
+watchEffect(() => {
+  localStorage.set('ui.fullUrls', fullUrls.value)
+  sendMsg('fullUrls-changed', {value: fullUrls.value})
 })
 
 watchEffect(() => {

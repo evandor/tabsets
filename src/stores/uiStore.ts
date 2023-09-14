@@ -123,7 +123,8 @@ export const useUiStore = defineStore('ui', () => {
 
   const contentCount = ref<number>(0)
 
-  const listDetailLevel = ref<ListDetailLevel>(LocalStorage.getItem('detailLevel') || ListDetailLevel.MAXIMAL)
+  const listDetailLevel = ref<ListDetailLevel>(LocalStorage.getItem('ui.detailLevel') || ListDetailLevel.MAXIMAL)
+  const showFullUrls = ref<boolean>(LocalStorage.getItem('ui.fullUrls') || false)
 
   // info Messages
   const hiddenMessages = ref<string[]>(LocalStorage.getItem('ui.hiddenInfoMessages') as unknown as string[] || [])
@@ -266,6 +267,10 @@ export const useUiStore = defineStore('ui', () => {
     listDetailLevel.value = val
   }
 
+  function setShowFullUrls(val: boolean) {
+    showFullUrls.value = val
+  }
+
   const listDetailLevelGreaterEqual = computed(() => {
     return (level: ListDetailLevel) => {
       switch (listDetailLevel.value) {
@@ -377,7 +382,9 @@ export const useUiStore = defineStore('ui', () => {
     selectedTabsetId,
     tabsFilter,
     setListDetailLevel,
+    setShowFullUrls,
     listDetailLevel,
+    showFullUrls,
     listDetailLevelGreaterEqual,
     dbReady,
     sidePanel,

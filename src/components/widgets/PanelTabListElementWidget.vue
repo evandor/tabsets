@@ -93,7 +93,7 @@
             <span>open Note</span>
           </template>
           <template v-else>
-            <short-url :url="props.tab.url" :hostname-only="true"/>
+            <short-url :url="props.tab.url" :hostname-only="!useUiStore().showFullUrls"/>
           </template>
           <div class="text-caption text-grey-5" v-if="useUiStore().listDetailLevelGreaterEqual(ListDetailLevel.SOME)">
             <span v-if="props.sorting === TabSorting.AGE">

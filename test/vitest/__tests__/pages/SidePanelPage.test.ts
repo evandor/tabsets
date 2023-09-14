@@ -6,7 +6,6 @@ import {useTabsStore} from "stores/tabsStore";
 import ChromeApi from "src/services/ChromeApi";
 import IndexedDbPersistenceService from "src/services/IndexedDbPersistenceService";
 import SidePanelPage from "pages/SidePanelPage.vue";
-import {usePermissionsStore} from "stores/permissionsStore";
 import {useDB} from "src/services/usePersistenceService";
 import PersistenceService from "src/services/PersistenceService";
 import {useQuasar} from "quasar";
@@ -15,7 +14,8 @@ installQuasarPlugin();
 
 describe('SidePanelPage', () => {
 
-  const skysailChromeTab = ChromeApi.createChromeTabObject("title", "https://www.skysail.io", "favicon")
+  const skysailChromeTab = ChromeApi.createChromeTabObject(
+      "title", "https://www.skysail.io/some-subpage", "favicon")
 
   let db = null as unknown as PersistenceService
 
