@@ -6,6 +6,7 @@ on:
     branches:
       - main
       - chrome-extension
+      - TAB-**
 
 jobs:
   qodana:
