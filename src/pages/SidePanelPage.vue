@@ -404,6 +404,9 @@ if (inBexMode()) {
       } else if (message.name === "detail-level-changed") {
         console.log("setting list detail level to ", message.data.level)
         useUiStore().setListDetailLevel(message.data.level)
+      } else if (message.name === "fullUrls-changed") {
+        console.log("setting fullUrls to ", message.data.value)
+        useUiStore().setShowFullUrls(message.data.value)
       } else {
         console.log("got unmatched message", message)
       }

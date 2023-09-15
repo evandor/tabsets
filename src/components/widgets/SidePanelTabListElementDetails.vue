@@ -1,6 +1,6 @@
 <template>
 
-  <q-item-section v-if="useUiStore().listDetailLevelGreaterEqual(ListDetailLevel.MEDIUM)"
+  <q-item-section v-if="useUiStore().listDetailLevelGreaterEqual(ListDetailLevel.SOME)"
                   @mouseover="hoveredTab = tab.id"
                   @mouseleave="hoveredTab = undefined"
                   class="q-mr-sm text-right" style="justify-content:start;width:40px;max-width:40px">
@@ -50,25 +50,16 @@
 <script setup lang="ts">
 import {Tab} from "src/models/Tab";
 import TabsetService from "src/services/TabsetService";
-import {onMounted, ref, watchEffect} from "vue";
-import {useCommandExecutor} from "src/services/CommandExecutor";
-import {DeleteTabCommand} from "src/domain/tabs/DeleteTabCommand";
-import {useQuasar} from "quasar";
+import {onMounted, PropType, ref, watchEffect} from "vue";
 import {ListDetailLevel, useUiStore} from "src/stores/uiStore";
 import TabFaviconWidget from "components/widgets/TabFaviconWidget.vue";
 import {useTabsetService} from "src/services/TabsetService2";
 import {formatDistance} from "date-fns";
 
 const props = defineProps({
-  tab: {type: Object, required: true}
+  tab: {type: Object as PropType<Tab>, required: true}
 })
 
-const emits = defineEmits(['sendCaption'])
-
-const $q = useQuasar()
-
-const line = ref(null)
-const showButtonsProp = ref<boolean>(false)
 const thumbnail = ref<string | undefined>(undefined)
 const imgFromBlob = ref<string>("")
 const hoveredTab = ref<string | undefined>(undefined)
@@ -78,7 +69,7 @@ onMounted(() => {
   if (blobImgPath && blobImgPath.startsWith('blob://')) {
     useTabsetService().getBlob(blobImgPath.replace("blob://", ""))
       .then((res) => {
-        var reader = new FileReader();
+        const reader = new FileReader();
         reader.readAsDataURL(res.content);
         reader.onloadend = function () {
           var base64data = reader.result;
@@ -91,57 +82,13 @@ onMounted(() => {
   }
 })
 
-
-function getShortHostname(host: string) {
-  const nrOfDots = (host.match(/\./g) || []).length
-  if (nrOfDots >= 2) {
-    return host.substring(host.indexOf(".", nrOfDots - 2) + 1)
-  }
-  return host
-}
-
-function getHost(urlAsString: string, shorten: Boolean = true): string {
-  try {
-    const url = new URL(urlAsString)
-    if (!shorten) {
-      return url.protocol + "://" + url.host.toString()
-    }
-    return getShortHostname(url.host)
-  } catch (e) {
-    return "---";
-  }
-}
-
 const itemStyle = (tab: Tab) => {
   let border = ""
   let background = ''
   return `${border};${background}`
 }
 
-const isOpen = (tab: Tab): boolean => TabsetService.isOpen(tab?.url || '')
-
-const setInfo = (tab: Tab) => {
-  const parts = (tab.url || '').split('?')
-  if (parts.length > 1) {
-    emits('sendCaption', parts[0] + "[... params omitted....]")
-  } else if (parts.length === 1) {
-    emits('sendCaption', parts[0].toString());
-  }
-}
-
-const getFaviconUrl = (chromeTab: chrome.tabs.Tab | undefined) => {
-  if (chromeTab && .favIconUrl && !.favIconUrl.startsWith("chrome")) {
-    return .favIconUrl
-  }
-  return ''//'favicon-unknown-32x32.png'
-}
-
-const deleteTab = (tab: Tab) => useCommandExecutor().executeFromUi(new DeleteTabCommand(tab))
-
-
 const nameOrTitle = (tab: Tab) => tab.name ? tab.name : tab.title
-
-const dynamicNameOrTitleModel = (tab: Tab) => tab.name ? tab.name : tab.title
 
 const thumbnailFor = async (tab: Tab): Promise<object> => {
   return await TabsetService.getThumbnailFor(tab)
@@ -157,7 +104,7 @@ watchEffect(() => {
           thumbnail.value = tn['thumbnail' as keyof object]
         }
       })
-      .catch((err) => {
+      .catch(() => {
         //console.log("could not get thumbnail for ", props.tab)
       })
   }
