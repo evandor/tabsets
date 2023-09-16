@@ -16,6 +16,8 @@ import {useSuggestionsStore} from "src/stores/suggestionsStore";
 import {FeatureIdent} from "src/models/AppFeature";
 import {Extractor, Extractors, ExtractorType} from "src/config/Extractors";
 import {useUtils} from "src/services/Utils";
+import Analytics from "src/utils/google-analytics";
+import OnInstalledReason = chrome.runtime.OnInstalledReason;
 
 const {
   saveCurrentTabset,
@@ -176,6 +178,18 @@ class ChromeListeners {
       //chrome.tabs.onZoomChange.addListener((info) => this.onZoomChange(info))
 
       chrome.runtime.onMessage.addListener((request, sender, sendResponse) => this.onMessage(request, sender, sendResponse))
+
+      // seems to belong in background.ts
+      // chrome.runtime.onInstalled.addListener((callback) => {
+      //   console.log("ga: fire event install", callback.previousVersion, callback.reason)
+      //   Analytics.fireEvent('install-' + callback.reason);
+      //   if (callback.reason == OnInstalledReason.INSTALL) {
+      //     chrome.tabs.create({
+      //       active: true,
+      //       url: "https://tabsets.web.app/#/updatedTo/" + callback.previousVersion
+      //     })
+      //   }
+      // });
 
     }
 

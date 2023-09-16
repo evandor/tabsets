@@ -64,6 +64,7 @@
           <div class="q-ma-none q-pa-none">
 
             <div class="q-ma-none" v-if="inBexMode() &&
+              tabset.type !== TabsetType.DYNAMIC &&
               currentChromeTab &&
               currentChromeTab.url !== 'chrome://newtab/' &&
               currentChromeTab.url !== ''">

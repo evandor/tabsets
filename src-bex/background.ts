@@ -1,8 +1,9 @@
 import {bexBackground} from 'quasar/wrappers';
 import Analytics from "src/utils/google-analytics";
+import OnInstalledReason = chrome.runtime.OnInstalledReason;
 
 // https://stackoverflow.com/questions/49739438/when-and-how-does-a-pwa-update-itself
-const updateTrigger = 9
+const updateTrigger = 10
 
 // https://developer.chrome.com/docs/extensions/mv3/tut_analytics/
 console.log("ga: installing google analytics")
@@ -12,18 +13,18 @@ addEventListener('unhandledrejection', async (event) => {
   Analytics.fireErrorEvent(event.reason);
 });
 
-chrome.runtime.onInstalled.addListener(() => {
-  console.log("ga: fire event install")
-  Analytics.fireEvent('install');
+chrome.runtime.onInstalled.addListener((callback) => {
+  console.log("ga: fire event install", callback.reason, callback.previousVersion)
+  Analytics.fireEvent('install-' + callback.reason);
+  if (callback.reason !== OnInstalledReason.CHROME_UPDATE) {
+    chrome.tabs.create({
+      active: true,
+      url: callback.previousVersion ?
+          "https://tabsets.web.app/#/updatedFrom/" +  callback.previousVersion :
+          "https://tabsets.web.app/#/installed/"
+    })
+  }
 });
-
-// Throw an exception after a timeout to trigger an exception analytics event
-// setTimeout(throwAnException, 2000);
-//
-// async function throwAnException() {
-//   throw new Error("👋 I'm an error");
-// }
-
 
 chrome.omnibox.onInputEntered.addListener((text) => {
   const newURL = chrome.runtime.getURL("/www/index.html#/searchresult?t=" + encodeURIComponent(text))

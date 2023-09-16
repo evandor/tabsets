@@ -32,10 +32,22 @@
   </div>
 
   <div class="row">
-    <div class="col-2">
-
+    <div class="col-2"></div>
+    <div class="col-5">
+      <template v-if="tsBadges.length > 0">
+        <q-chip class="cursor-pointer q-ml-none q-mr-sm q-mt-md" size="9px" clickable icon="tab" @click="openTabset(tsBadges[0])">
+          {{ tsBadges[0]['label' as keyof object] }}
+          <q-tooltip class="tooltip">This tab is already contained in this tabset</q-tooltip>
+        </q-chip>
+        <template v-if="tsBadges.length > 1">
+          <q-chip class="q-ml-none q-mr-sm q-mt-md" size="9px">
+            +{{ tsBadges.length -1 }}
+            <q-tooltip class="tooltip">{{tooltipForMoreTabsets()}}</q-tooltip>
+          </q-chip>
+        </template>
+      </template>
     </div>
-    <div class="col-10 text-right">
+    <div class="col-5 text-right">
       <q-btn
              label="Save"
              color="warning"
@@ -69,6 +81,7 @@ import {useSpacesStore} from "stores/spacesStore";
 import {Tabset} from "src/models/Tabset";
 import {useWindowsStore} from "stores/windowsStores";
 import {HideCurrentTabBoxCommand} from "src/domain/commands/ui/HideCurrentTabBoxCommand";
+import {useRouter} from "vue-router";
 
 const props = defineProps({
   tabsetId: {type: String, required: true}
@@ -76,9 +89,7 @@ const props = defineProps({
 
 const {formatDate} = useUtils()
 
-const emits = defineEmits(['sendCaption'])
-
-const $q = useQuasar()
+const router = useRouter()
 
 const tsBadges = ref<object[]>([])
 const currentChromeTab = ref<chrome.tabs.Tab>(null as unknown as chrome.tabs.Tab)
@@ -122,5 +133,24 @@ const saveInTabset = (tabsetId: string) => {
 }
 
 const hideCurrentTabBox = () => useCommandExecutor().execute(new HideCurrentTabBoxCommand(true))
+
+const tooltipForMoreTabsets = () => {
+  let res = "There are more tabsets this tab is already contained in: "
+  if (tsBadges.value.length > 1) {
+    const allButFirst = tsBadges.value.slice(1)
+    return res + _.join(_.map(allButFirst, (e) => e['label' as keyof object]), ', ')
+  }
+  return res
+}
+
+const openTabset = (badge: any) => {
+  useTabsetService().selectTabset(badge.tabsetId)
+  // @ts-ignore
+  if (!inBexMode() || !chrome.sidePanel) {
+    router.push("/tabsets/" + badge.tabsetId + "?highlight=" + badge.encodedUrl)
+  } else {
+    router.push("/sidepanel" + "?highlight=" + badge.encodedUrl)
+  }
+}
 
 </script>
