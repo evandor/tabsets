@@ -9,9 +9,17 @@
 
         <q-card-section class="q-pt-none">
           <div class="text-body">New Tabset's name:</div>
-          <q-input dense v-model="newTabsetName"
-                   data-testid="newTabsetName"
-                   autofocus @keyup.enter="prompt = false"/>
+
+          <q-input v-model="newTabsetName"
+                   class="q-mb-md q-pb-none"
+                   dense autofocus
+                   @update:model-value="val => checkIsValid()"
+                   :rules="[
+                       val => Tabset.newTabsetNameIsValid(val) || 'Please do not use special Characters',
+                       val => Tabset.newTabsetNameIsShortEnough(val) || 'the maximum length is 32',
+                       val => doesNotExistYet(val) || 'Tabset already exists'
+                       ]"
+                   data-testid="newTabsetName"/>
 
           <q-checkbox
               data-testid="newTabsetAutoAdd"
@@ -54,6 +62,7 @@ import ChromeApi from "src/services/ChromeApi";
 import {useBookmarksStore} from "stores/bookmarksStore";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {CreateTabsetFromBookmarksCommand} from "src/domain/tabsets/CreateTabsetFromBookmarks";
+import {Tabset, TabsetStatus} from "src/models/Tabset";
 
 defineEmits([
   ...useDialogPluginComponent.emits
@@ -96,6 +105,12 @@ const checkIsValid = () => {
         })
   }
 }
+
+const doesNotExistYet = (val: string) => {
+  const existsInTabset = tabsStore.existingInTabset(val)
+  return !(existsInTabset && existsInTabset.status !== TabsetStatus.DELETED)
+}
+
 
 const importBookmarks = async () => {
   // const bookmarkId = props.folderId //route.params.id as string
