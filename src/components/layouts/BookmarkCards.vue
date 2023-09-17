@@ -145,13 +145,13 @@ import TabsetService from "src/services/TabsetService";
 import {Bookmark} from "src/models/Bookmark";
 import {useRouter} from "vue-router";
 import {useQuasar} from "quasar";
-import ImportFromBookmarks from "components/dialogues/ImportFromBookmarks.vue";
 import BookmarksService from "src/services/BookmarksService";
 import NavigationService from "src/services/NavigationService";
 import {useBookmarksStore} from "src/stores/bookmarksStore";
 import _ from "lodash"
 import {formatDistance, subDays} from 'date-fns'
 import {useTabsetService} from "src/services/TabsetService2";
+import ImportFromBookmarksDialog from "components/dialogues/ImportFromBookmarksDialog.vue";
 
 const emits = defineEmits(['sendCaption'])
 
@@ -217,7 +217,7 @@ const startDrag = (evt: DragEvent, bm: Bookmark) => {
 }
 
 const importBookmarks = () => {
-  $q.dialog({component: ImportFromBookmarks})
+  $q.dialog({component: ImportFromBookmarksDialog})
 }
 
 const formatDate = (timestamp: number | undefined) =>

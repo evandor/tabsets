@@ -77,6 +77,7 @@ import {useCommandExecutor} from "src/services/CommandExecutor";
 import {GrantPermissionCommand} from "src/domain/commands/GrantPermissionCommand";
 import {useSettingsStore} from "src/stores/settingsStore"
 import NavigationService from "src/services/NavigationService";
+import {FeatureIdent} from "src/models/AppFeature";
 
 const router = useRouter()
 const tabsStore = useTabsStore()
@@ -101,7 +102,7 @@ const props = defineProps({
 })
 
 watchEffect(() => {
-  bookmarksPermissionGranted.value = permissionsStore.hasPermission('bookmarks')
+  bookmarksPermissionGranted.value = permissionsStore.hasFeature(FeatureIdent.BOOKMARKS)
   useBookmarksStore().loadBookmarks()
 })
 
