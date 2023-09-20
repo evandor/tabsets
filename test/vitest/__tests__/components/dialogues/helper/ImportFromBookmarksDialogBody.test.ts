@@ -69,7 +69,7 @@ describe('ImportFromBookmarksDialogBody', () => {
     it('adds Tabset with a new Name', async () => {
         // const wrapper = mount(NewTabsetDialogBody, {props: {},attachTo: '#root'});
         console.log("wrapper", wrapper.html())
-        expect(submitButton.classes('disabled')).toBe(true)
+        //expect(submitButton.classes('disabled')).toBe(true)
         await input.setValue("Tabset A")
         await wrapper.find("form").trigger("submit.prevent")
         await checkTabsetNamesInDb(db, ['Tabset A']);

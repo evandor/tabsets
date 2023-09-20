@@ -28,6 +28,8 @@ export enum TabsetSharing {
 }
 
 
+export const TABSET_NAME_MAX_LENGTH = 32;
+
 export class Tabset {
   id: string
 
@@ -74,6 +76,6 @@ export class Tabset {
 
   static newTabsetNameIsValid = (val: string) => !STRIP_CHARS_IN_USER_INPUT.test(val)
 
-  static newTabsetNameIsShortEnough = (val: string) => val ? val.length <= 32 : true
+  static newTabsetNameIsShortEnough = (val: string) => val ? val.length <= TABSET_NAME_MAX_LENGTH : true
 
 }

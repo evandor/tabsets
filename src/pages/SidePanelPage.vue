@@ -54,7 +54,7 @@
             <q-item-section side
                             @mouseover="hoveredTabset = tabset.id"
                             @mouseleave="hoveredTabset = undefined">
-              <q-icon class="cursor-pointer" name="more_horiz" color="black" size="16px"/>
+              <q-icon class="cursor-pointer" name="more_horiz" color="accent" size="16px"/>
               <SidePanelPageContextMenu :tabset="tabset as Tabset"/>
             </q-item-section>
 

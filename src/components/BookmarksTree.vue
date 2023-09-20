@@ -78,6 +78,8 @@ import {GrantPermissionCommand} from "src/domain/commands/GrantPermissionCommand
 import {useSettingsStore} from "src/stores/settingsStore"
 import NavigationService from "src/services/NavigationService";
 import {FeatureIdent} from "src/models/AppFeature";
+import NewTabsetDialog from "components/dialogues/NewTabsetDialog.vue";
+import DeleteBookmarkFolderDialog from "components/dialogues/bookmarks/DeleteBookmarkFolderDialog.vue";
 
 const router = useRouter()
 const tabsStore = useTabsStore()
@@ -128,26 +130,30 @@ $q.loadingBar.setDefaults({
   position: 'bottom'
 })
 
-const tabsets = () => {
-  return _.sortBy([...tabsStore.tabsets.values()], ['name'])
-}
-
-
-const tabNameExists = () => tabsStore.nameExistsInContextTabset(newTabsetName.value)
-
 const deleteBookmarksFolderDialog = () => {
   $q.dialog({
-    title: 'Delete Bookmark Folder',
-    message: 'Would you like to delete this folder and its subfolders and bookmarks? This cannot be undone',
-    cancel: true,
-    persistent: true
-  }).onOk(() => {
-    BookmarksService.deleteBookmarksFolder(selected.value)
-    router.push("/start")
-  }).onCancel(() => {
-  }).onDismiss(() => {
+    component: DeleteBookmarkFolderDialog,
+    componentProps: {
+      //tabsetId: tabsStore.currentTabsetId,
+      //fromPanel: props.fromPanel
+    }
   })
 }
+
+
+// const deleteBookmarksFolderDialog = () => {
+//   $q.dialog({
+//     title: 'Delete Bookmark Folder',
+//     message: 'Would you like to delete this folder and its subfolders and bookmarks? This cannot be undone',
+//     cancel: true,
+//     persistent: true
+//   }).onOk(() => {
+//     BookmarksService.deleteBookmarksFolder(selected.value)
+//     router.push("/start")
+//   }).onCancel(() => {
+//   }).onDismiss(() => {
+//   })
+// }
 
 const entered = (b: boolean) => mouseHover.value = b
 

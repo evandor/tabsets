@@ -2,44 +2,18 @@
   <div>
     <q-form @submit.prevent="importBookmarks()" ref="theForm">
 
-      <q-card style="min-width: 350px">
+      <q-card class="q-dialog-plugin">
         <q-card-section>
-          <div class="text-h6">Import these {{ props.count }} Bookmarks as Tabset</div>
+          <div class="text-h6">Delete Bookmark Folder</div>
         </q-card-section>
-
-        <q-card-section class="q-pt-none">
-          <div class="text-body">New Tabset's name:</div>
-
-          <q-input v-model="newTabsetName"
-                   class="q-mb-md q-pb-none"
-                   dense autofocus
-                   @update:model-value="val => checkIsValid()"
-                   :rules="[
-                       val => Tabset.newTabsetNameIsValid(val) || 'Please do not use special Characters',
-                       val => Tabset.newTabsetNameIsShortEnough(val) || 'the maximum length is ' + TABSET_NAME_MAX_LENGTH
-                       ]"
-                   data-testid="newTabsetName"/>
-
-          <q-checkbox
-              data-testid="newTabsetAutoAdd"
-              v-model="deleteBookmarks" label="Delete Bookmarks"/>&nbsp;
-          <q-icon name="help" color="primary" size="1em">
-            <q-tooltip class="tooltip">If you select this option, the bookmarks will be imported as a new tabset and
-              deleted from your bookmarks automatically
-            </q-tooltip>
-          </q-icon>
-
-          <!--        <q-checkbox v-model="clearTabs" label="close current Tabs"/>-->
-          <div class="text-body2 text-warning"> {{ newTabsetDialogWarning() }}</div>
-
-
+        <q-card-section>
+          <div class="text-body">Would you like to delete this folder?</div>
         </q-card-section>
-
         <q-card-actions align="right" class="text-primary">
-          <q-btn label="Cancel" size="sm" color="accent" v-close-popup/>
-          <q-btn type="submit" label="Create new Tabset" color="warning" size="sm"
-                 data-testid="newTabsetNameSubmit"
-                 :disable="!isValid" v-close-popup/>
+          <q-btn outline color="accent" size="sm" label="Cancel" @click="onDialogCancel"/>
+          <q-btn outline color="negative" size="sm" label="Delete"
+                 v-close-popup
+                 @click="deleteTabset()"/>
         </q-card-actions>
       </q-card>
     </q-form>
@@ -118,7 +92,7 @@ const importBookmarks = async () => {
       .then(res => {
         if (deleteBookmarks.value) {
           console.log("deleting bookmarks", candidates)
-          candidates.forEach((c:chrome.bookmarks.BookmarkTreeNode) => chrome.bookmarks.remove(c.id))
+          candidates.forEach((c: chrome.bookmarks.BookmarkTreeNode) => chrome.bookmarks.remove(c.id))
         }
         props.inSidePanel ?
             router.push("/mainpanel/tabsets/" + tabsStore.currentTabsetId) :
