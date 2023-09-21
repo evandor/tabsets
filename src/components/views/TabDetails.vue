@@ -157,19 +157,19 @@
         <q-card-section>
           <div class="row q-mx-sm q-mt-none">
             <div class="col-5 text-caption text-bold">created</div>
-            <div class="col-7 text-right text-caption">{{ formatDate(useUiStore().getSelectedTab.created) }}</div>
+            <div class="col-7 text-right text-caption">{{ formatDate(useUiStore().getSelectedTab?.created) }}</div>
           </div>
           <div class="row q-mx-sm">
             <div class="col-5 text-caption text-bold">changed</div>
-            <div class="col-7 text-right text-caption">{{ formatDate(useUiStore().getSelectedTab.changed) }}</div>
+            <div class="col-7 text-right text-caption">{{ formatDate(useUiStore().getSelectedTab?.updated) }}</div>
           </div>
           <div class="row q-mx-sm">
             <div class="col-5 text-caption text-bold">last active</div>
-            <div class="col-7 text-right text-caption">{{ formatDate(useUiStore().getSelectedTab.lastActive) }}</div>
+            <div class="col-7 text-right text-caption">{{ formatDate(useUiStore().getSelectedTab?.lastActive) }}</div>
           </div>
           <div class="row q-mx-sm">
             <div class="col-5 text-caption text-bold">opened</div>
-            <div class="col-7 text-right text-caption">{{ useUiStore().getSelectedTab.activatedCount }}x</div>
+            <div class="col-7 text-right text-caption">{{ useUiStore().getSelectedTab?.activatedCount }}x</div>
           </div>
         </q-card-section>
       </q-card>

@@ -106,7 +106,7 @@
 
           <div class="text-subtitle2 ellipsis text-secondary"
                @click.stop="NavigationService.openOrCreateTab(bm.chromeBookmark?.url )">
-            {{ bm.chromeBookmark?.url.replace("https://www.", '').replace("https://", '') }}
+            {{ bm.chromeBookmark?.url?.replace("https://www.", '').replace("https://", '') }}
             <q-icon name="launch" color="secondary"
                     @click.stop="NavigationService.openOrCreateTab(bm.chromeBookmark?.url )"></q-icon>
             <q-tooltip>
