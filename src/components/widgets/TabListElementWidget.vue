@@ -113,7 +113,7 @@ import NavigationService from "src/services/NavigationService";
 import {Tab} from "src/models/Tab";
 import TabsetService from "src/services/TabsetService";
 import {useNotificationsStore} from "src/stores/notificationsStore";
-import {onMounted, ref, watchEffect} from "vue";
+import {onMounted, PropType, ref, watchEffect} from "vue";
 import {useUtils} from "src/services/Utils"
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {DeleteTabCommand} from "src/domain/tabs/DeleteTabCommand";
@@ -131,7 +131,7 @@ import {useTabsStore} from "src/stores/tabsStore";
 import {useRouter} from "vue-router";
 
 const props = defineProps({
-  tab: {type: Object, required: true},
+  tab: {type: Object as PropType<Tab>, required: true},
   showButtons: {type: Boolean, default: false},
   showIsOpened: {type: Boolean, default: true},
   highlightUrl: {type: String, required: false}

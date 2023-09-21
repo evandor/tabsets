@@ -54,7 +54,7 @@
             <q-item-section side
                             @mouseover="hoveredTabset = tabset.id"
                             @mouseleave="hoveredTabset = undefined">
-              <q-icon class="cursor-pointer" name="more_horiz" color="black" size="16px"/>
+              <q-icon class="cursor-pointer" name="more_horiz" color="accent" size="16px"/>
               <SidePanelPageContextMenu :tabset="tabset as Tabset"/>
             </q-item-section>
 
@@ -137,6 +137,7 @@ import {useAuthStore} from "stores/auth";
 import {PlaceholdersType} from "src/models/Placeholders";
 import {useDB} from "src/services/usePersistenceService";
 import getScrollTarget = scroll.getScrollTarget;
+import {useBookmarksStore} from "stores/bookmarksStore";
 
 const {setVerticalScrollPosition} = scroll
 
@@ -352,6 +353,12 @@ if (inBexMode()) {
         usePermissionsStore().addActivateFeature(message.data.feature)
         if (message.data.feature === 'help') {
           useTabsetService().reloadTabset("HELP")
+        } else if (message.data.feature === 'bookmarks') {
+          usePermissionsStore().load()
+              .then(() => {
+                useBookmarksStore().init()
+                useBookmarksStore().loadBookmarks()
+              })
         }
       } else if (message.name === "feature-deactivated") {
         usePermissionsStore().removeActivateFeature(message.data.feature)

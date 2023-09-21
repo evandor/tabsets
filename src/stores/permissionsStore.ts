@@ -196,8 +196,9 @@ export const usePermissionsStore = defineStore('permissions', () => {
         return false
     }
 
-   return {
+    return {
         initialize,
+        load,
         hasPermission,
         grantPermission,
         revokePermission,

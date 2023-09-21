@@ -28,7 +28,7 @@
         <b>Substitutions for</b>
       </q-card-section>
       <q-card-section class="q-pt-none" v-else>
-        You can use placeholder like this as well: http://dax.de/${wkn}
+        You can use placeholder like this as well: https://dax.de/${wkn}
       </q-card-section>
 
       <q-card-section class="q-pt-none" v-for="(placeholder,index) in placeholders">

@@ -110,7 +110,7 @@
              @mouseleave="hoveredTab = undefined"
              style="max-width:25px;font-size: 12px;color:#bfbfbf">
             <span v-if="hoveredOver(tab.id)">
-              <q-icon name="more_horiz" color="primary" size="16px"/>
+              <q-icon name="more_horiz" color="accent" size="16px"/>
             </span>
           <span v-else>
               <q-icon color="primary" size="16px"/>
