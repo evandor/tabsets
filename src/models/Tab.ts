@@ -84,6 +84,7 @@ export class Tab {
   placeholders: Placeholders | undefined
 
   color: string | undefined = undefined
+  matcher: string | undefined = undefined
 
   constructor(public id: string, chromeTab: chrome.tabs.Tab) {
     this.created = new Date().getTime()

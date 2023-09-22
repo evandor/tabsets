@@ -128,42 +128,6 @@ function getHost(urlAsString: string, shorten: Boolean = true): string {
   }
 }
 
-function closeTab(tab: Tab) {
-  NavigationService.closeTab(tab)
-}
-
-function cardStyle(tab: Tab) {
-  const height = "100px"
-  let borderColor = ""
-  if (isOpen(tab)) {
-    borderColor = "border-color:#8f8f8f"
-  }
-  if (tab.selected) {
-    borderColor = "border-color:#000066"
-  }
-
-  let background = ''
-  if (tab.isDuplicate) {
-    background = "background: radial-gradient(circle, #FFFFFF 0%, #FFECB3 100%)"
-  }
-  // style=""
-  return `height: ${height};max-height:${height}; min-height: ${height};${borderColor};${background}`
-}
-
-function isOpen(tab: Tab): boolean {
-  //console.log("tabUrl", tab.url);
-  return TabsetService.isOpen(tab?.url || '')
-}
-
-const setInfo = (tab: Tab) => {
-  const parts = (tab.url || '').split('?')
-  if (parts.length > 1) {
-    emits('sendCaption', parts[0] + "[... params omitted....]")
-  } else if (parts.length === 1) {
-    emits('sendCaption', parts[0].toString());
-  }
-}
-
 const tabsetBadges = (hit: Hit): object[] => {
   const badges: object[] = []
   _.forEach(hit.tabsets, ts => badges.push({

@@ -37,11 +37,11 @@
                  @update:model-value="val => updatePlaceholder(placeholder, val)"/>
       </q-card-section>
 
-      <q-card-actions align="right" class="text-primary">
-        <q-btn outline label="Cancel" @click="onDialogCancel" color="accent"/>
+      <q-card-actions align="right">
+        <q-btn label="Cancel" size="md" @click="onDialogCancel" color="accent"/>
         <!--        :disable="newTabUrl?.trim().length === 0 || newTabUrl?.trim() === props.tabsetName || newTabsetDialogWarning() !== ''"-->
 
-        <q-btn outline label="Update" color="warning"
+        <q-btn label="Update" color="warning" size="md"
                v-close-popup
                @click="updateTab()"/>
       </q-card-actions>

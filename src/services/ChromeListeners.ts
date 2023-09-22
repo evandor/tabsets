@@ -1,4 +1,4 @@
-import {Tabset, TabsetType} from "src/models/Tabset";
+import {Tabset, TabsetStatus, TabsetType} from "src/models/Tabset";
 import {useTabsStore} from "src/stores/tabsStore";
 import _ from "lodash";
 import {HTMLSelection, HTMLSelectionComment, Tab} from "src/models/Tab";
@@ -16,8 +16,6 @@ import {useSuggestionsStore} from "src/stores/suggestionsStore";
 import {FeatureIdent} from "src/models/AppFeature";
 import {Extractor, Extractors, ExtractorType} from "src/config/Extractors";
 import {useUtils} from "src/services/Utils";
-import Analytics from "src/utils/google-analytics";
-import OnInstalledReason = chrome.runtime.OnInstalledReason;
 
 const {
   saveCurrentTabset,
@@ -388,7 +386,7 @@ class ChromeListeners {
       const url = tab.url
       _.forEach([...tabsStore.tabsets.keys()], key => {
         const ts = tabsStore.tabsets.get(key)
-        if (ts) {
+        if (ts && ts.status !== TabsetStatus.DELETED) {
           const hits = _.filter(ts.tabs, (t: Tab) => t.url === url)
           let hit = false
           _.forEach(hits, h => {
