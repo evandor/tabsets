@@ -622,7 +622,6 @@ export function useTabsetService() {
         //saveRequestFor,
         removeThumbnailsFor,
         removeContentFor,
-        closeTab,
         deleteTab,
         urlExistsInATabset,
         urlExistsInCurrentTabset,
