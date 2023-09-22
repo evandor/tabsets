@@ -366,6 +366,12 @@ text.set(FeatureIdent.COLOR_TAGS.toLowerCase(), {
   permissions: []
 })
 
+text.set(FeatureIdent.ADVANCED_TAB_MANAGEMENT.toLowerCase(), {
+  name: 'Advanced Tab Management',
+  description: 'Sometimes you want pages to open in the same tab, even if the URLs are (slightly) different',
+  permissions: []
+})
+
 
 watchEffect(() => {
       feature.value = route.params.feature as string

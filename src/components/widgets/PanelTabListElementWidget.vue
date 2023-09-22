@@ -70,7 +70,7 @@
     <!-- description -->
     <q-item-label class="ellipsis-2-lines text-grey-8"
                   v-if="useUiStore().listDetailLevelGreaterEqual(ListDetailLevel.MAXIMAL)"
-                  @click.stop="NavigationService.openOrCreateTab(props.tab?.url || '' )">
+                  @click.stop="NavigationService.openOrCreateTab(props.tab?.url || '', props.tab?.matcher || '' )">
       {{ props.tab.description }}
     </q-item-label>
 
@@ -83,7 +83,7 @@
         @mouseleave="showButtonsProp = false">
       <div class="row q-ma-none">
         <div class="col-10 q-pr-lg cursor-pointer"
-             @click.stop="NavigationService.openOrCreateTab(props.tab.url )">
+             @click.stop="NavigationService.openOrCreateTab(props.tab.url,props.tab.matcher )">
            <span v-if="props.sorting === TabSorting.URL">
               <q-icon name="arrow_right" size="16px"/>
            </span>
@@ -94,6 +94,11 @@
           </template>
           <template v-else>
             <short-url :url="props.tab.url" :hostname-only="!useUiStore().showFullUrls"/>
+            <q-icon v-if="props.tab.matcher && usePermissionsStore().hasFeature(FeatureIdent.ADVANCED_TAB_MANAGEMENT)"
+                    @click.stop="openTabAssignmentPage(props.tab)"
+                    name="o_settings">
+              <q-tooltip class="tooltip">This tab will open in any tab which url matches {{props.tab.matcher}}</q-tooltip>
+            </q-icon>
           </template>
           <div class="text-caption text-grey-5" v-if="useUiStore().listDetailLevelGreaterEqual(ListDetailLevel.SOME)">
             <span v-if="props.sorting === TabSorting.AGE">
@@ -280,6 +285,10 @@ const openTabset = (badge: any) => {
     router.push("/sidepanel" + "?highlight=" + badge.encodedUrl)
   }
 }
+
+const openTabAssignmentPage = (tab: Tab) =>
+   NavigationService.openOrCreateTab(chrome.runtime.getURL("/www/index.html#/mainpanel/tabAssignment/" + tab.id))
+
 
 </script>
 

@@ -52,6 +52,24 @@ class JsUtils {
         CSS.highlights.set("search-result-highlight", highlight);
     }
 
+    match(patternStr: string , path:string): boolean {
+        const split = patternStr.split("|")
+        if (split.length !== 2) {
+            return false
+        }
+        const type = split[0]
+        const pattern = split[1]
+        if (pattern === path) {
+            return true
+        }
+        switch (type) {
+            case "sw":
+                return path.startsWith(pattern)
+            default:
+                return false
+        }
+    }
+
     // async getOrCreateClientId() {
     //     if (!chrome) {
     //         return Promise.resolve("")

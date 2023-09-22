@@ -131,8 +131,6 @@ const props = defineProps({
 
 const route = useRoute();
 const router = useRouter();
-const localStorage = useQuasar().localStorage
-const tabsStore = useTabsStore()
 const bookmarksStore = useBookmarksStore()
 
 const $q = useQuasar()
