@@ -518,33 +518,6 @@ export function useTabsetService() {
     }
 
 
-    /**
-     * https://skysail.atlassian.net/wiki/spaces/TAB/pages/800849921/Tab+Handling
-     *
-     * @param tab to deal with
-     */
-    const closeTab = (tab: Tab) => {
-        console.log("closing tab", tab.id, tab.chromeTabId)
-        const tabUrl = tab.url || ''
-        if (tabsetsFor(tabUrl).length <= 1) {
-            removeThumbnailsFor(tabUrl)
-                .then(() => console.debug("deleting thumbnail for ", tabUrl))
-                .catch(err => console.log("error deleting thumbnail", err))
-
-            removeContentFor(tabUrl)
-                .then(() => console.debug("deleting content for ", tabUrl))
-                .catch(err => console.log("error deleting content", err))
-        }
-        const tabset = tabsetFor(tab.id)
-        if (tabset) {
-            useTabsStore().removeTab(tabset, tab.id)
-            //useNotificationsStore().unsetSelectedTab()
-            return saveTabset(tabset)
-                .then(() => tabset)
-        }
-        return Promise.reject("could not access current tabset")
-    }
-
     const deleteTab = (tab: Tab): Promise<Tabset> => {
         console.log("deleting tab", tab.id, tab.chromeTabId)
         const tabUrl = tab.url || ''
