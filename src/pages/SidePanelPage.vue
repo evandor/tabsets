@@ -333,11 +333,10 @@ function inIgnoredMessages(message: any) {
       message.name === "recogito-annotation-created"
 }
 
-if (inBexMode()) {
-  // seems we need to define these listeners here to get the matching messages reliably
-  // these messages are created by triggering events in the mainpanel
-  // @ts-ignore
-  if (chrome) {
+if ($q.platform.is.chrome) {
+  if (inBexMode()) {
+    // seems we need to define these listeners here to get the matching messages reliably
+    // these messages are created by triggering events in the mainpanel
     chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       if (inIgnoredMessages(message)) {
         return true

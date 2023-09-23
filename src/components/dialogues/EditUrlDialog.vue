@@ -86,7 +86,7 @@ const hideWarning = ref(false)
 const placeholders = ref<string[]>([])
 const placeholderValues = ref<Map<string, string>>(new Map())
 
-const placeholderReg = /\$\{(.*?)\}/gm
+const placeholderReg = /\$\{(.*?)}/gm
 
 watchEffect(() => {
   newTabUrlExists.value = !!tabsStore.nameExistsInContextTabset(newTabUrl.value);

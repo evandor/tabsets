@@ -17,7 +17,7 @@
   </q-item-section>
 
   <!-- name, title, description, url && note -->
-  <q-item-section class="q-mb-sm" :style="itemStyle(props.tab)">
+  <q-item-section class="q-mb-sm" :style="itemStyle()">
 
     <!-- name or title -->
     <q-item-label>
@@ -72,7 +72,7 @@ onMounted(() => {
         const reader = new FileReader();
         reader.readAsDataURL(res.content);
         reader.onloadend = function () {
-          var base64data = reader.result;
+          let base64data = reader.result;
           if (base64data) {
             imgFromBlob.value = base64data.toString()
           }
@@ -82,7 +82,7 @@ onMounted(() => {
   }
 })
 
-const itemStyle = (tab: Tab) => {
+const itemStyle = () => {
   let border = ""
   let background = ''
   return `${border};${background}`

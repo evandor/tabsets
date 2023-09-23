@@ -211,7 +211,7 @@ onMounted(() => {
   if (blobImgPath && blobImgPath.startsWith('blob://')) {
     useTabsetService().getBlob(blobImgPath.replace("blob://", ""))
         .then((res) => {
-          var reader = new FileReader();
+          let reader = new FileReader();
           reader.readAsDataURL(res.content);
           reader.onloadend = function () {
             const base64data = reader.result;
