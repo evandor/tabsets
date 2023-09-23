@@ -9,6 +9,7 @@
       <q-item
         clickable v-ripple
         v-for="(bm,index) in props.bookmarks"
+        :style="checkHighlighting(bm)"
         :key="props.group + '_' + bm.id">
 
         <BookmarkListElementWidget
@@ -42,6 +43,7 @@ const props = defineProps({
   bookmarks: {type: Array as PropType<Array<Bookmark>>, required: true},
   group: {type: String, required: true},
   parent: {type: String, required: true},
+  highlightId: {type: Number, required: false},
   highlightUrl: {type: String, required: false},
   inSidePanel: {type: Boolean, default: false}
 })
@@ -115,6 +117,12 @@ const startDrag = (evt: any, tab: Bookmark) => {
   console.log("evt.dataTransfer.getData('text/plain')", evt.dataTransfer.getData('text/plain'))
 }
 
+const checkHighlighting = (bm: Bookmark) => {
+  if (bm.chromeBookmark.id === props.highlightId) {
+    return "border: 1px solid orange;border-radius:5px;"
+  }
+  return ""
+}
 
 </script>
 

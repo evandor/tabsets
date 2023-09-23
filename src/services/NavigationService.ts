@@ -56,6 +56,7 @@ class NavigationService {
                     .map(r => {
                         let matchCondition = withUrl === r.url
                         if (matcher && r.url) {
+                            //console.log("matcher yielded", JsUtils.match(matcher, r.url))
                             matchCondition = JsUtils.match(matcher, r.url)
                         }
                         if (matchCondition) {

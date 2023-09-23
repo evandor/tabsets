@@ -9,10 +9,9 @@
 
         <q-img
             class="rounded-borders"
-            style="cursor: move"
             width="16px"
             height="16px"
-            :src="getFaviconUrl(hit.url, hit.favIconUrl)">
+            :src="getFaviconUrl(hit.id, hit.url, hit.favIconUrl)">
           <q-tooltip>drag and drop to tabset</q-tooltip>
         </q-img>
 
@@ -27,23 +26,29 @@
 
       <q-item-label>
         <div>
-          <div class="q-pr-sm cursor-pointer ellipsis">
+          <div class="q-pr-sm cursor-pointer ellipsis" v-if="hit.id.startsWith('tabset|')">
+            <span class="text-bold">{{ hit.name ? hit.name : hit.title }}</span>
+          </div>
+          <div class="q-pr-sm cursor-pointer ellipsis" v-else>
             <span>{{ hit.name ? hit.name : hit.title }}</span>
           </div>
-
         </div>
       </q-item-label>
 
       <!-- description -->
-      <q-item-label class="ellipsis-2-lines text-grey-8"
+      <q-item-label class="ellipsis-2-lines text-grey-8" v-if="hit.id.startsWith('tabset|')"
+                    @click.stop="NavigationService.openOrCreateTab(hit.url || '' )">
+        Tabset
+      </q-item-label>
+      <q-item-label class="ellipsis-2-lines text-grey-8" v-else
                     @click.stop="NavigationService.openOrCreateTab(hit.url || '' )">
         {{ hit.description }}
       </q-item-label>
 
       <!-- url -->
-      <q-item-label
-          style="width:100%"
-          caption class="ellipsis-2-lines text-blue-10">
+      <q-item-label v-if="hit.url"
+                    style="width:100%"
+                    caption class="ellipsis-2-lines text-blue-10">
         <div class="row q-ma-none">
           <div class="col-10 q-pr-lg cursor-pointer"
                @click.stop="NavigationService.openOrCreateTab(hit.url )">
@@ -59,10 +64,10 @@
       </q-item-label>
 
       <q-item-label>
-        <template v-for="badge in tabsetBadges(hit)">
+        <template v-for="badge in tabsetBadges(hit)" v-if="!hit.id.startsWith('tabset|')">
           <q-chip v-if="badge.bookmarkId"
                   class="cursor-pointer q-ml-none q-mr-sm" size="9px" clickable icon="o_bookmark" color="warning"
-                  @click="openBookmark(badge)">
+                  @click.stop="openBookmark(badge)">
             {{ badge.label }}
           </q-chip>
           <q-chip v-else
@@ -94,10 +99,8 @@ import {ListDetailLevel, useUiStore} from "stores/uiStore";
 import ShortUrl from "components/utils/ShortUrl.vue";
 
 const props = defineProps({
-  hit: {
-    type: Hit,
-    required: true
-  }
+  hit: {type: Hit, required: true},
+  inSidePanel: {type: Boolean, default: false}
 })
 
 const emits = defineEmits(['sendCaption'])
@@ -160,11 +163,19 @@ const openBookmark = (badge: any) => {
   console.log("badge", badge)
   BookmarksService.expandTreeForBookmarkId(badge.bookmarkId)
       .then(parentId => {
-        router.push("/bookmarks/" + parentId + "?highlight=" + badge.bookmarkId)
+        if (props.inSidePanel) {
+          const url = chrome.runtime.getURL("www/index.html#/mainpanel/bookmarks/" + parentId + "?highlight=" + badge.bookmarkId)
+          NavigationService.openOrCreateTab(url)
+        } else {
+          router.push("/bookmarks/" + parentId + "?highlight=" + badge.bookmarkId)
+        }
       })
 }
 
-const getFaviconUrl = (url: string, favIconUrl: string | undefined) => {
+const getFaviconUrl = (hitId: string, url: string, favIconUrl: string | undefined) => {
+  if (hitId.startsWith("tabset|")) {
+    return 'folder.png'
+  }
   if (url.startsWith("chrome")) {
     return 'favicon-unknown-32x32.png'
   }

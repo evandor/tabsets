@@ -97,11 +97,11 @@
     <q-card>
       <q-card-section>
 
-        <!--          :highlightId="highlightId"-->
         <BookmarkList
             group="bookmarks"
             :parent="bookmarkId"
             :bookmarks="nonFolders()"
+            :highlightId="highlightId"
             :in-side-panel="props.inSidePanel"
         />
 
