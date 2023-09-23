@@ -50,6 +50,7 @@ include:
   - name: VueDuplicateTag
   - name: VueMissingComponentImportInspection
   - name: VueUnrecognizedDirective
+  - name: RegExpRedundantEscape
 exclude:
   - name: JavaeeApplicationDomInspection
   - name: MimeType

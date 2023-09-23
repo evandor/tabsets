@@ -28,8 +28,6 @@
 
 import {useDialogPluginComponent} from 'quasar'
 import {useCommandExecutor} from "src/services/CommandExecutor";
-import {MarkTabsetDeletedCommand} from "src/domain/tabsets/MarkTabsetDeleted";
-import {SidePanelView, useUiStore} from "stores/uiStore";
 import {ShareTabsetCommand} from "src/domain/tabsets/ShareTabset";
 import {TabsetSharing} from "src/models/Tabset";
 

@@ -26,7 +26,7 @@
 
       <q-item-label>
         <div>
-          <div class="q-pr-sm cursor-pointer ellipsis" v-if="hit.id.startsWith('tabset|')">
+          <div class="q-pr-sm cursor-pointer ellipsis" v-if="isTabsetHit(hit)">
             <span class="text-bold">{{ hit.name ? hit.name : hit.title }}</span>
           </div>
           <div class="q-pr-sm cursor-pointer ellipsis" v-else>
@@ -36,7 +36,7 @@
       </q-item-label>
 
       <!-- description -->
-      <q-item-label class="ellipsis-2-lines text-grey-8" v-if="hit.id.startsWith('tabset|')"
+      <q-item-label class="ellipsis-2-lines text-grey-8" v-if="isTabsetHit(hit)"
                     @click.stop="NavigationService.openOrCreateTab(hit.url || '' )">
         Tabset
       </q-item-label>
@@ -64,7 +64,7 @@
       </q-item-label>
 
       <q-item-label>
-        <template v-for="badge in tabsetBadges(hit)" v-if="!hit.id.startsWith('tabset|')">
+        <template v-for="badge in tabsetBadges(hit)" v-if="!isTabsetHit(hit)">
           <q-chip v-if="badge.bookmarkId"
                   class="cursor-pointer q-ml-none q-mr-sm" size="9px" clickable icon="o_bookmark" color="warning"
                   @click.stop="openBookmark(badge)">
@@ -86,7 +86,6 @@
 
 <script setup lang="ts">
 import NavigationService from "src/services/NavigationService";
-import {Tab} from "src/models/Tab";
 import TabsetService from "src/services/TabsetService";
 import {Hit} from "src/models/Hit";
 import _ from "lodash"
@@ -109,27 +108,6 @@ const router = useRouter()
 const {inBexMode} = useUtils()
 
 const {selectTabset} = useTabsetService()
-
-function getShortHostname(host: string) {
-
-  const nrOfDots = (host.match(/\./g) || []).length
-  if (nrOfDots >= 2) {
-    return host.substring(host.indexOf(".", nrOfDots - 2) + 1)
-  }
-  return host
-}
-
-function getHost(urlAsString: string, shorten: Boolean = true): string {
-  try {
-    const url = new URL(urlAsString)
-    if (!shorten) {
-      return url.protocol + "://" + url.host.toString()
-    }
-    return getShortHostname(url.host)
-  } catch (e) {
-    return "---";
-  }
-}
 
 const tabsetBadges = (hit: Hit): object[] => {
   const badges: object[] = []
@@ -201,6 +179,7 @@ const getFaviconUrl = (hitId: string, url: string, favIconUrl: string | undefine
   return 'favicon-unknown-32x32.png'
 }
 
+const isTabsetHit = (hit: Hit) => hit.id.startsWith('tabset|')
 
 </script>
 
