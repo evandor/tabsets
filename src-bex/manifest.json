@@ -17,6 +17,7 @@
     "pageCapture",
     "contextMenus",
     "notifications",
+    "webRequest",
     "bookmarks"
   ],
   "host_permissions": [
