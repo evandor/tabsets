@@ -41,21 +41,6 @@
           </div>
         </Transition>
 
-        <div v-if="tabsStore.audibleTabs.length > 0">
-          <span v-if="tabsStore.audibleTabs.length > 1">{{ tabsStore.audibleTabs.length }}x</span>
-          <q-icon name="volume_up" size="22px" class="q-mr-md">
-            <!--            <q-tooltip>{{tabsStore.audibleTabs}}</q-tooltip>-->
-          </q-icon>
-          <q-menu :offset="[0, 15]">
-            <q-list style="min-width: 200px">
-              <q-item v-for="tab in tabsStore.audibleTabs"
-                      clickable v-close-popup @click="NavigationService.openTab(tab.id)">
-                <q-item-section>{{ tab.title }}</q-item-section>
-              </q-item>
-            </q-list>
-          </q-menu>
-        </div>
-
         <q-btn v-if="settingsStore.isEnabled('stats')"
                class="q-mr-md" icon="o_query_stats" size="12px" style="min-width:24px" flat
                @click="router.push('/stats')">
@@ -198,11 +183,9 @@
 import {ref, watchEffect} from 'vue';
 import {useMeta, useQuasar} from "quasar";
 import {useTabsStore} from "src/stores/tabsStore";
-import {useRoute, useRouter} from "vue-router";
+import {useRouter} from "vue-router";
 import {useNotificationsStore} from "src/stores/notificationsStore";
 import Navigation from "src/components/Navigation.vue"
-import NavigationService from "src/services/NavigationService"
-import {useSearchStore} from "src/stores/searchStore";
 import _ from "lodash";
 import {useSpacesStore} from "src/stores/spacesStore"
 import OpenTabsThresholdWidget from 'src/components/widgets/OpenTabsThresholdWidget.vue'
@@ -221,15 +204,12 @@ import SuggestionDialog from "components/dialogues/SuggestionDialog.vue";
 import {useSuggestionsStore} from "src/stores/suggestionsStore";
 import {FeatureIdent} from "src/models/AppFeature";
 import {useSettingsStore} from "src/stores/settingsStore"
-import TabsetsSelectorWidget from "components/widgets/TabsetsSelectorWidget.vue";
 import ToolbarButton from "components/widgets/ToolbarButton.vue";
 
 const $q = useQuasar()
 const router = useRouter()
 const tabsStore = useTabsStore()
-const searchStore = useSearchStore()
 
-const rightDrawerOpen = ref($q.screen.gt.md)
 const leftDrawerOpen = ref($q.screen.gt.md)
 
 const notificationsStore = useNotificationsStore()
@@ -239,7 +219,6 @@ const spacesStore = useSpacesStore()
 
 const spacesOptions = ref<object[]>([])
 const suggestions = ref<Suggestion[]>(useSuggestionsStore().getSuggestions())
-const search = ref('')
 
 const {inBexMode} = useUtils()
 
@@ -264,21 +243,12 @@ watchEffect(() => {
     .concat({id: '', label: 'create new space'})
 })
 
-//@ts-ignore
-const appVersion = import.meta.env.PACKAGE_VERSION
-
 useMeta(() => {
   return {
     // @ts-ignore
     title: 'Tabsets Extension' //+ appVersion
   }
 })
-
-
-function submitSearch() {
-  searchStore.term = search.value
-  router.push("/search")
-}
 
 const title = () => {
   return inBexMode() ? 'Tabsets' : process.env.MODE === 'spa' ? 'Tabsets Web' : 'Tabsets (' + process.env.MODE + ')'
@@ -289,10 +259,6 @@ const goHome = () => router.push("/")
 const toggleLeftDrawer = () => {
   leftDrawerOpen.value = !leftDrawerOpen.value
   useUiStore().toggleLeftDrawer()
-}
-
-const toggleRightDrawer = () => {
-  rightDrawerOpen.value = !rightDrawerOpen.value
 }
 
 const installNewVersion = (version: string) => {
@@ -312,7 +278,7 @@ const showNotificationDialog = (nId: string) => $q.dialog({
   }
 })
 
-const tabsClicked = (tab: DrawerTabs, data: object = {}) => useUiStore().rightDrawerSetActiveTab(tab, data)
+const tabsClicked = (tab: DrawerTabs, data: object = {}) => useUiStore().rightDrawerSetActiveTab(tab)
 
 const showExportDialog = () => $q.dialog({component: ExportDialog})
 const showImportDialog = () => $q.dialog({component: ImportDialog})

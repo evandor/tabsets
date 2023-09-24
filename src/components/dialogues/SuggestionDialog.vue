@@ -10,14 +10,15 @@
       </q-card-section>
 
       <q-card-actions align="right" class="text-primary">
-        <q-btn outline label="Cancel" size="sm" v-close-popup @click="cancelSuggestion">
+        <q-btn label="Cancel" size="sm" v-close-popup @click="cancelSuggestion">
           <q-tooltip class="tooltip-small" :delay="500">Click here to decide later</q-tooltip>
         </q-btn>
-        <q-btn outline label="Ignore" size="sm" color="negative" v-close-popup @click="ignoreSuggestion">
+        <q-btn label="Ignore" size="sm" color="negative" v-close-popup @click="ignoreSuggestion">
           <q-tooltip class="tooltip-small" :delay="500">This suggestion will not show up again</q-tooltip>
         </q-btn>
-        <q-btn outline label="Check" size="sm" color="warning" v-close-popup @click="addSuggestion">
-          <q-tooltip class="tooltip-small" :delay="500">Get Details about this suggestion and decide what to do</q-tooltip>
+        <q-btn label="Check" size="sm" color="warning" v-close-popup @click="addSuggestion">
+          <q-tooltip class="tooltip-small" :delay="500">Get Details about this suggestion and decide what to do
+          </q-tooltip>
         </q-btn>
       </q-card-actions>
 
@@ -48,30 +49,27 @@ const props = defineProps({
 
 const {dialogRef, onDialogHide, onDialogCancel} = useDialogPluginComponent()
 
-const notificationsStore = useNotificationsStore()
 const router = useRouter()
-const $q = useQuasar()
-
-const newTabsetNameExists = ref(false)
 
 const cancelSuggestion = () => useSuggestionsStore().cancelSuggestion(props.suggestion.id)
 const ignoreSuggestion = () => useSuggestionsStore().ignoreSuggestion(props.suggestion.id)
 
-const addSuggestion = () => useSuggestionsStore()
-    .applySuggestion(props.suggestion.id)
-    .then((res: Suggestion) => {
-      if (props.fromPanel) {
-        console.log("xxx", res, chrome.runtime.getURL(res.url))
-        //router.push(chrome.runtime.getURL(res.url))
-        NavigationService.openOrCreateTab(chrome.runtime.getURL("/www/index.html#/mainpanel" + res.url))
-      } else {
-        if (res.url.startsWith("/")) {
-          router.push(res.url)
-        } else {
-          openURL((res.url))
-        }
-      }
-    })
-
+const addSuggestion = () => {
+//useSuggestionsStore()
+// .applySuggestion(props.suggestion.id)
+// .then((res: Suggestion) => {
+  const res = props.suggestion
+  if (props.fromPanel) {
+    console.log("xxx", res, chrome.runtime.getURL(res.url))
+    //router.push(chrome.runtime.getURL(res.url))
+    NavigationService.openOrCreateTab(chrome.runtime.getURL("/www/index.html#/mainpanel" + res.url))
+  } else {
+    if (res.url.startsWith("/")) {
+      router.push(res.url)
+    } else {
+      openURL((res.url))
+    }
+  }
+}
 
 </script>

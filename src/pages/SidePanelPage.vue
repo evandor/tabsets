@@ -138,6 +138,7 @@ import {PlaceholdersType} from "src/models/Placeholders";
 import {useDB} from "src/services/usePersistenceService";
 import getScrollTarget = scroll.getScrollTarget;
 import {useBookmarksStore} from "stores/bookmarksStore";
+import {useSuggestionsStore} from "stores/suggestionsStore";
 
 const {setVerticalScrollPosition} = scroll
 
@@ -414,6 +415,9 @@ if ($q.platform.is.chrome) {
       } else if (message.name === "fullUrls-changed") {
         console.log("setting fullUrls to ", message.data.value)
         useUiStore().setShowFullUrls(message.data.value)
+      } else if (message.name === "reload-suggestions") {
+        console.log("reload-suggestions message received")
+        useSuggestionsStore().loadSuggestionsFromDb()
       } else {
         console.log("got unmatched message", message)
       }

@@ -14,11 +14,13 @@ import {MetaLink} from "src/models/MetaLink";
 import {StatsEntry} from "src/models/StatsEntry";
 import {uid} from "quasar";
 import {Notification, NotificationStatus} from "src/models/Notification";
-import {StaticSuggestionIdent, Suggestion, SuggestionState} from "src/models/Suggestion";
+import {StaticSuggestionIdent, Suggestion, SuggestionState, SuggestionType} from "src/models/Suggestion";
 import {useUiStore} from "src/stores/uiStore";
 import {useCategoriesStore} from "stores/categoriesStore";
 import {cloudFunctionsApi} from "src/api/cloudfunctionsApi";
 import {Category} from "src/models/Category";
+import {RequestInfo} from "src/models/RequestInfo";
+import {useSuggestionsStore} from "stores/suggestionsStore";
 
 class IndexedDbPersistenceService implements PersistenceService {
   private db: IDBPDatabase = null as unknown as IDBPDatabase
@@ -151,7 +153,32 @@ class IndexedDbPersistenceService implements PersistenceService {
       url: url,
       requestInfo
     }, encodedTabUrl)
-      .then(() => console.debug("added request"))
+      .then(() => {
+        console.debug("added request", requestInfo)
+        if (requestInfo.statusCode.toString().startsWith("30") && requestInfo.headers.length > 0) {
+          const suggestionId = uid()
+          const suggestion = new Suggestion(suggestionId,
+              "Bookmark URL changed", "A bookmark has changed accoring to the server. Should the bookmark be updated?",
+              "/suggestions/" + suggestionId,
+              SuggestionType.REDIRECT_HAPPENED_FOR_BOOKMARK)
+          let location = undefined
+          requestInfo.headers.forEach(headerObject => {
+            //console.log("checking", headerObject.name.toLowerCase())
+            if (headerObject.name.toLowerCase() === 'location') {
+              location = headerObject.value
+            }
+          })
+          console.log("location", location)
+          if (location) {
+            suggestion.setData({
+              url,
+              status: requestInfo.statusCode,
+              location
+            })
+            useSuggestionsStore().addSuggestion(suggestion)
+          }
+        }
+      })
       .catch(err => console.log("err", err))
   }
 

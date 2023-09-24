@@ -82,42 +82,26 @@
 
 <script lang="ts" setup>
 
-import {onMounted, PropType, ref, watchEffect} from "vue";
+import {PropType, ref, watchEffect} from "vue";
 import {Tabset, TabsetStatus, TabsetType} from "src/models/Tabset";
 import {useRouter} from "vue-router";
 import {openURL, useQuasar} from "quasar";
 import {useTabsStore} from "src/stores/tabsStore";
-import {useSpacesStore} from "src/stores/spacesStore";
 import DeleteTabsetDialog from "components/dialogues/DeleteTabsetDialog.vue";
-import {useNotificationHandler} from "src/services/ErrorHandler";
 import {useCommandExecutor} from "src/services/CommandExecutor";
-import {useTabsetService} from "src/services/TabsetService2";
 import {SelectTabsetCommand} from "src/domain/tabsets/SelectTabset";
-import TabFaviconWidget from "components/widgets/TabFaviconWidget.vue";
-import {useSearchStore} from "src/stores/searchStore";
 import {MoveToTabsetCommand} from "src/domain/tabs/MoveToTabset";
-import {useUtils} from "src/services/Utils";
 import TabsetListContextMenu from "components/widgets/helper/TabsetListContextMenu.vue";
 import {Tab} from "src/models/Tab";
 import {DeleteTabCommand} from "src/domain/tabs/DeleteTabCommand";
 import {useUiStore} from "src/stores/uiStore";
 
-const {handleError, handleSuccess} = useNotificationHandler()
-const {inBexMode} = useUtils()
-
 const router = useRouter()
 const tabsStore = useTabsStore()
-const featuresStore = useSearchStore()
-const spacesStore = useSpacesStore()
 
 const $q = useQuasar();
-const localStorage = $q.localStorage
-const newTabsetName = ref('')
 const activeTabset = ref<string | undefined>(tabsStore.currentTabsetId)
-const merge = ref(false)
 const hoveredTab = ref<string | undefined>(undefined)
-
-const {selectTabset} = useTabsetService()
 
 const props = defineProps({
   tabsets: {type: Array as PropType<Array<Tabset>>, required: true},
