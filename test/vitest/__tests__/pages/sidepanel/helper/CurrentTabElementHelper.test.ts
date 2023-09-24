@@ -6,12 +6,6 @@ import CurrentTabElementHelper from "pages/sidepanel/helper/CurrentTabElementHel
 import {useTabsStore} from "stores/tabsStore";
 import ChromeApi from "src/services/ChromeApi";
 import IndexedDbPersistenceService from "src/services/IndexedDbPersistenceService";
-import {useTabsetService} from "src/services/TabsetService2";
-import {useCommandExecutor} from "src/services/CommandExecutor";
-import {CreateTabsetCommand} from "src/domain/tabsets/CreateTabset";
-import {AddTabToTabsetCommand} from "src/domain/tabs/AddTabToTabset";
-import {Tab} from "src/models/Tab";
-import {uid} from "quasar";
 
 installQuasarPlugin();
 

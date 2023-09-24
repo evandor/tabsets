@@ -41,7 +41,6 @@ include:
   - name: TypeScriptMissingConfigOption
   - name: TypeScriptUnresolvedReference
   - name: TypeScriptJSXUnresolvedComponent
-  - name: TypeScriptCheckImport
   - name: TypeScriptLibrary
   - name: TypeScriptMissingAugmentationImport
   - name: TypeScriptValidateGenericTypes
@@ -51,6 +50,7 @@ include:
   - name: VueDuplicateTag
   - name: VueMissingComponentImportInspection
   - name: VueUnrecognizedDirective
+  - name: RegExpRedundantEscape
 exclude:
   - name: JavaeeApplicationDomInspection
   - name: MimeType

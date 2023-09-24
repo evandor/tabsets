@@ -1,14 +1,14 @@
 import {HTMLSelection, Tab} from "src/models/Tab";
 import {useNotificationsStore} from "src/stores/notificationsStore";
-import {openURL, useQuasar} from "quasar";
+import {openURL} from "quasar";
 import {useTabsStore} from "src/stores/tabsStore";
 import {useTabsetService} from "src/services/TabsetService2";
 import {useWindowsStore} from "stores/windowsStores";
-import {useRouter} from "vue-router";
+import JsUtils from "src/utils/JsUtils";
 
 class NavigationService {
 
-    async openOrCreateTab(withUrl: string) {
+    async openOrCreateTab(withUrl: string, matcher: string | undefined = undefined) {
         const useWindowIdent = useTabsStore().getCurrentTabset?.window || 'current'
         console.log("opening", withUrl, useWindowIdent, process.env.MODE)
 
@@ -54,7 +54,12 @@ class NavigationService {
                 let found = false;
                 t.filter(r => r.url)
                     .map(r => {
-                        if (withUrl === r.url) {
+                        let matchCondition = withUrl === r.url
+                        if (matcher && r.url) {
+                            //console.log("matcher yielded", JsUtils.match(matcher, r.url))
+                            matchCondition = JsUtils.match(matcher, r.url)
+                        }
+                        if (matchCondition) {
                             if (!found) { // highlight only first hit
                                 found = true
                                 console.log("found something", r)

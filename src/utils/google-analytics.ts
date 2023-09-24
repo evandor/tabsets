@@ -17,7 +17,7 @@ const SESSION_EXPIRATION_IN_MIN = 30;
 
 class Analytics {
 
-    private debug: boolean;
+    private readonly debug: boolean;
 
     constructor(debug = false) {
         this.debug = debug;

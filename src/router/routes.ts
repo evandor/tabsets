@@ -148,6 +148,11 @@ const routes: RouteRecordRaw[] = [
     children: [{ path: '', component: () => import('pages/mainpanel/MainPanelTabPage.vue') }],
   },
   {
+    path: '/mainpanel/suggestions/:suggestionId',
+    component: () => import('layouts/PlainLayout.vue'),
+    children: [{ path: '', component: () => import('pages/mainpanel/MainPanelCheckSuggestionPage.vue') }],
+  },
+  {
     path: '/mainpanel/spaces', // TODO combine with Spaces page
     component: () => import('layouts/PlainLayout.vue'),
     children: [{ path: '', component: () => import('pages/mainpanel/MainPanelSpacesPage.vue') }],
@@ -156,6 +161,11 @@ const routes: RouteRecordRaw[] = [
     path: '/mainpanel/bookmarks/:id',
     component: () => import('layouts/PlainLayout.vue'),
     children: [{ path: '', component: () => import('pages/mainpanel/MainPanelBookmarksPage.vue') }],
+  },
+  {
+    path: '/mainpanel/tabAssignment/:id',
+    component: () => import('layouts/PlainLayout.vue'),
+    children: [{ path: '', component: () => import('pages/mainpanel/MainPanelTabAssignmentPage.vue') }],
   },
   {
     path: '/mainpanel/readingmode/:tabId', // TODO combine with Note page

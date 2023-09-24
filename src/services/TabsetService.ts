@@ -181,6 +181,11 @@ class TabsetService {
     return saveCurrentTabset()
   }
 
+  setMatcher(tab: Tab, matcher: string): Promise<any> {
+    tab.matcher = matcher
+    return saveCurrentTabset()
+  }
+
   setUrl(tab: Tab, url: string, placeholders: string[] = [], placeholderValues: Map<string,string> = new Map()): Promise<any> {
     tab.url = url
     var config: {[k: string]: any} = {};

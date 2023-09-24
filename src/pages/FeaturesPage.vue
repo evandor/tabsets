@@ -198,16 +198,16 @@ text.set(FeatureIdent.THUMBNAILS.toLowerCase(), {
       'Please note that only tabs that you visit (or revisit) after the activation of this feature are going to have thumbnails.',
   permissions: ['thumbnails']
 })
-// text.set(FeatureIdent.ANALYSE_TABS.toLowerCase(), {
-//   experimental: false,
-//   name: 'Analyse Tabs',
-//   img: 'analyse.png',
-//   img_width: '700px',
-//   description: 'This extension can analyse the tabs you visit, so that the search can be improved significantly. The tab\'s content, ' +
-//     'its links and the received http headers are taken into account. ' +
-//     'Please note that only tabs that you visit (or revisit) after the activation of this feature are going to be analysed.',
-//   permissions: ['allOrigins']
-// })
+text.set(FeatureIdent.ANALYSE_TABS.toLowerCase(), {
+  experimental: false,
+  name: 'Analyse Tabs',
+  img: 'analyse.png',
+  img_width: '700px',
+  description: 'This extension can analyse the tabs you visit, so that the search can be improved significantly. The tab\'s content, ' +
+    'its links and the received http headers are taken into account. ' +
+    'Please note that only tabs that you visit (or revisit) after the activation of this feature are going to be analysed.',
+  permissions: ['allOrigins']
+})
 
 text.set(FeatureIdent.EXPERIMENTAL_VIEWS.toLowerCase(), {
   experimental: true,
@@ -363,6 +363,12 @@ text.set(FeatureIdent.COLOR_TAGS.toLowerCase(), {
   name: 'Color Tags for Tabsets and Tabs',
   description: 'Assign colors to Tabsets and Tabs as an additional organization level',
   img: 'colortags.png',
+  permissions: []
+})
+
+text.set(FeatureIdent.ADVANCED_TAB_MANAGEMENT.toLowerCase(), {
+  name: 'Advanced Tab Management',
+  description: 'Sometimes you want pages to open in the same tab, even if the URLs are (slightly) different',
   permissions: []
 })
 

@@ -1,6 +1,7 @@
 import {Tab} from "src/models/Tab";
 import {Group} from "src/models/Group";
 import {DynamicTabSource} from "src/models/DynamicTabSource";
+import {STRIP_CHARS_IN_USER_INPUT} from "boot/constants";
 
 export enum TabsetStatus {
   DEFAULT = "DEFAULT",
@@ -27,6 +28,8 @@ export enum TabsetSharing {
 }
 
 
+export const TABSET_NAME_MAX_LENGTH = 32;
+
 export class Tabset {
   id: string
 
@@ -52,6 +55,16 @@ export class Tabset {
   color: string | undefined = undefined
 
   constructor(id: string, name: string, tabs: Tab[], groups: Group[] = [], spaces: string[] = []) {
+
+    // some guards
+    if (!Tabset.newTabsetNameIsValid) {
+      throw new Error(`Tabset name '${name}' is not valid`)
+    }
+    if (!Tabset.newTabsetNameIsShortEnough) {
+      throw new Error(`Tabset name '${name}' is too long`)
+    }
+
+    // assignments
     this.id = id
     this.name = name
     this.created = new Date().getTime()
@@ -60,5 +73,9 @@ export class Tabset {
     this.groups = groups
     this.spaces = spaces
   }
+
+  static newTabsetNameIsValid = (val: string) => !STRIP_CHARS_IN_USER_INPUT.test(val)
+
+  static newTabsetNameIsShortEnough = (val: string) => val ? val.length <= TABSET_NAME_MAX_LENGTH : true
 
 }

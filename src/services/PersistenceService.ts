@@ -6,6 +6,7 @@ import {Notification} from "src/models/Notification";
 import {SearchDoc} from "src/models/SearchDoc";
 import {StaticSuggestionIdent, Suggestion, SuggestionState} from "src/models/Suggestion";
 import {MetaLink} from "src/models/MetaLink";
+import {RequestInfo} from "src/models/RequestInfo";
 
 interface PersistenceService {
 

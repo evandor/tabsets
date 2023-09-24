@@ -9,18 +9,18 @@ import ChromeApi from "src/services/ChromeApi";
 import {TabPredicate} from "src/domain/Types";
 import {Tabset, TabsetStatus, TabsetType} from "src/models/Tabset";
 import {MetaLink} from "src/models/MetaLink";
-import {useDB} from "src/services/usePersistenceService";
 import {SpecialTabsetIdent} from "src/domain/tabsets/CreateSpecialTabset";
 // @ts-ignore
 import {v5 as uuidv5} from 'uuid';
 import {useSettingsStore} from "src/stores/settingsStore"
 import {Space} from "src/models/Space";
 import {useSpacesStore} from "src/stores/spacesStore";
-import {useUtils} from "src/services/Utils";
-import {usePermissionsStore} from "stores/permissionsStore";
-import {FeatureIdent} from "src/models/AppFeature";
 import {SaveOrReplaceResult} from "src/models/SaveOrReplaceResult";
 import PersistenceService from "src/services/PersistenceService";
+import JsUtils from "src/utils/JsUtils";
+import {usePermissionsStore} from "stores/permissionsStore";
+import {FeatureIdent} from "src/models/AppFeature";
+import {RequestInfo} from "src/models/RequestInfo";
 
 let db: PersistenceService = null as unknown as PersistenceService
 
@@ -71,9 +71,9 @@ export function useTabsetService() {
     ): Promise<SaveOrReplaceResult> => {
 
         const trustedName = name.replace(STRIP_CHARS_IN_USER_INPUT, '')
-            .substring(0,31)
+            .substring(0, 31)
         const trustedColor = color ?
-            color.replace(STRIP_CHARS_IN_COLOR_INPUT, '').substring(0,31)
+            color.replace(STRIP_CHARS_IN_COLOR_INPUT, '').substring(0, 31)
             : undefined
         const tabs: Tab[] = _.filter(
             _.map(chromeTabs, t => {
@@ -274,7 +274,7 @@ export function useTabsetService() {
             if (!tabset.type) {
                 tabset.type = TabsetType.DEFAULT
             }
-            //console.log("saving tabset", tabset)
+            console.log("saving tabset", tabset.name, tabset)
             return db.saveTabset(tabset)
         }
         return Promise.reject("tabset id not set")
@@ -519,33 +519,6 @@ export function useTabsetService() {
     }
 
 
-    /**
-     * https://skysail.atlassian.net/wiki/spaces/TAB/pages/800849921/Tab+Handling
-     *
-     * @param tab to deal with
-     */
-    const closeTab = (tab: Tab) => {
-        console.log("closing tab", tab.id, tab.chromeTabId)
-        const tabUrl = tab.url || ''
-        if (tabsetsFor(tabUrl).length <= 1) {
-            removeThumbnailsFor(tabUrl)
-                .then(() => console.debug("deleting thumbnail for ", tabUrl))
-                .catch(err => console.log("error deleting thumbnail", err))
-
-            removeContentFor(tabUrl)
-                .then(() => console.debug("deleting content for ", tabUrl))
-                .catch(err => console.log("error deleting content", err))
-        }
-        const tabset = tabsetFor(tab.id)
-        if (tabset) {
-            useTabsStore().removeTab(tabset, tab.id)
-            //useNotificationsStore().unsetSelectedTab()
-            return saveTabset(tabset)
-                .then(() => tabset)
-        }
-        return Promise.reject("could not access current tabset")
-    }
-
     const deleteTab = (tab: Tab): Promise<Tabset> => {
         console.log("deleting tab", tab.id, tab.chromeTabId)
         const tabUrl = tab.url || ''
@@ -562,6 +535,7 @@ export function useTabsetService() {
         if (tabset) {
             useTabsStore().removeTab(tabset, tab.id)
             //useNotificationsStore().unsetSelectedTab()
+            console.log("deletion: saving tabset", tabset)
             return saveTabset(tabset)
                 .then(() => tabset)
         }
@@ -593,8 +567,9 @@ export function useTabsetService() {
         const currentTabset = getCurrentTabset()
         if (currentTabset) {
             if (_.find(currentTabset.tabs, t => {
-                //console.log(" = ", t.url === url, t.url, url)
-                return t.url === url
+                return (t.matcher && usePermissionsStore().hasFeature(FeatureIdent.ADVANCED_TAB_MANAGEMENT)) ?
+                    JsUtils.match(t.matcher, url) :
+                    t.url === url
             })) {
                 return true
             }
@@ -649,7 +624,6 @@ export function useTabsetService() {
         //saveRequestFor,
         removeThumbnailsFor,
         removeContentFor,
-        closeTab,
         deleteTab,
         urlExistsInATabset,
         urlExistsInCurrentTabset,

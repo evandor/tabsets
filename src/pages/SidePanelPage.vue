@@ -54,7 +54,7 @@
             <q-item-section side
                             @mouseover="hoveredTabset = tabset.id"
                             @mouseleave="hoveredTabset = undefined">
-              <q-icon class="cursor-pointer" name="more_horiz" color="black" size="16px"/>
+              <q-icon class="cursor-pointer" name="more_horiz" color="accent" size="16px"/>
               <SidePanelPageContextMenu :tabset="tabset as Tabset"/>
             </q-item-section>
 
@@ -64,6 +64,7 @@
           <div class="q-ma-none q-pa-none">
 
             <div class="q-ma-none" v-if="inBexMode() &&
+              tabset.type !== TabsetType.DYNAMIC &&
               currentChromeTab &&
               currentChromeTab.url !== 'chrome://newtab/' &&
               currentChromeTab.url !== ''">
@@ -136,6 +137,8 @@ import {useAuthStore} from "stores/auth";
 import {PlaceholdersType} from "src/models/Placeholders";
 import {useDB} from "src/services/usePersistenceService";
 import getScrollTarget = scroll.getScrollTarget;
+import {useBookmarksStore} from "stores/bookmarksStore";
+import {useSuggestionsStore} from "stores/suggestionsStore";
 
 const {setVerticalScrollPosition} = scroll
 

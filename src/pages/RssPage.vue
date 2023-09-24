@@ -72,7 +72,6 @@ import Analytics from "src/utils/google-analytics";
 const route = useRoute()
 
 const encodedUrl = ref()
-const title = ref()
 const rss = ref({})
 
 onMounted(() => {

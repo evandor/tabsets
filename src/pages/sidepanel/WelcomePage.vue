@@ -102,7 +102,6 @@ const addFirstTabset = () => {
   useCommandExecutor()
       .executeFromUi(new CreateTabsetCommand(tabsetName.value, []))
       .then((res) => {
-        //NavigationService.openOrCreateTab("https://tabsets.web.app/#/welcome")
         useUiStore().sidePanelSetActiveView(SidePanelView.MAIN)
         router.push("/sidepanel?first=true")
       })

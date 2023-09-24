@@ -14,8 +14,8 @@
                    dense autofocus
                    @update:model-value="val => checkIsValid()"
                    :rules="[
-                       val => newTabsetNameIsValid(val) || 'Please do not use special Characters',
-                       val => newTabsetNameIsShortEnough(val) || 'the maximum length is 32',
+                       val => Tabset.newTabsetNameIsValid(val) || 'Please do not use special Characters',
+                       val => Tabset.newTabsetNameIsShortEnough(val) || 'the maximum length is 32',
                        val => doesNotExistYet(val) || 'Tabset already exists'
                        ]"
                    data-testid="newTabsetName"/>
@@ -45,8 +45,8 @@
               new-value-mode="add"
               @new-value="createWindowOption"
               :rules="[
-                       val => newTabsetNameIsValid(val) || 'Please do not use special Characters',
-                       val => newTabsetNameIsShortEnough(val) || 'the maximum length is 32'
+                       val => Tabset.newTabsetNameIsValid(val) || 'Please do not use special Characters',
+                       val => Tabset.newTabsetNameIsShortEnough(val) || 'the maximum length is 32'
                        ]"
           />
         </q-card-section>
@@ -88,7 +88,6 @@ import {SidePanelView, useUiStore} from "stores/uiStore";
 import {usePermissionsStore} from "stores/permissionsStore";
 import {FeatureIdent} from "src/models/AppFeature";
 import {useWindowsStore} from "stores/windowsStores";
-import _ from "lodash"
 import {useUtils} from "src/services/Utils";
 import ColorSelector from "components/dialogues/helper/ColorSelector.vue";
 
@@ -131,9 +130,6 @@ const checkIsValid = () => {
         })
   }
 }
-
-const newTabsetNameIsValid = (val: string) => !STRIP_CHARS_IN_USER_INPUT.test(val)
-const newTabsetNameIsShortEnough = (val: string) => val ? val.length <= 32 : true
 
 const doesNotExistYet = (val: string) => {
   const existsInTabset = tabsStore.existingInTabset(val)

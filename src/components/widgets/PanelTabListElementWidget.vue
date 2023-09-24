@@ -70,7 +70,7 @@
     <!-- description -->
     <q-item-label class="ellipsis-2-lines text-grey-8"
                   v-if="useUiStore().listDetailLevelGreaterEqual(ListDetailLevel.MAXIMAL)"
-                  @click.stop="NavigationService.openOrCreateTab(props.tab?.url || '' )">
+                  @click.stop="NavigationService.openOrCreateTab(props.tab?.url || '', props.tab?.matcher || '' )">
       {{ props.tab.description }}
     </q-item-label>
 
@@ -83,7 +83,7 @@
         @mouseleave="showButtonsProp = false">
       <div class="row q-ma-none">
         <div class="col-10 q-pr-lg cursor-pointer"
-             @click.stop="NavigationService.openOrCreateTab(props.tab.url )">
+             @click.stop="NavigationService.openOrCreateTab(props.tab.url,props.tab.matcher )">
            <span v-if="props.sorting === TabSorting.URL">
               <q-icon name="arrow_right" size="16px"/>
            </span>
@@ -93,7 +93,12 @@
             <span>open Note</span>
           </template>
           <template v-else>
-            <short-url :url="props.tab.url" :hostname-only="true"/>
+            <short-url :url="props.tab.url" :hostname-only="!useUiStore().showFullUrls"/>
+            <q-icon v-if="props.tab.matcher && usePermissionsStore().hasFeature(FeatureIdent.ADVANCED_TAB_MANAGEMENT)"
+                    @click.stop="openTabAssignmentPage(props.tab)"
+                    name="o_settings">
+              <q-tooltip class="tooltip">This tab will open in any tab which url matches {{props.tab.matcher}}</q-tooltip>
+            </q-icon>
           </template>
           <div class="text-caption text-grey-5" v-if="useUiStore().listDetailLevelGreaterEqual(ListDetailLevel.SOME)">
             <span v-if="props.sorting === TabSorting.AGE">
@@ -110,7 +115,7 @@
              @mouseleave="hoveredTab = undefined"
              style="max-width:25px;font-size: 12px;color:#bfbfbf">
             <span v-if="hoveredOver(tab.id)">
-              <q-icon name="more_horiz" color="primary" size="16px"/>
+              <q-icon name="more_horiz" color="accent" size="16px"/>
             </span>
           <span v-else>
               <q-icon color="primary" size="16px"/>
@@ -153,12 +158,9 @@ import {Tab, TabSorting, UrlExtension} from "src/models/Tab";
 import TabsetService from "src/services/TabsetService";
 import {onMounted, PropType, ref, watchEffect} from "vue";
 import {useCommandExecutor} from "src/services/CommandExecutor";
-import {DeleteTabCommand} from "src/domain/tabs/DeleteTabCommand";
-import {useQuasar} from "quasar";
 import {ListDetailLevel, useUiStore} from "src/stores/uiStore";
 import TabFaviconWidget from "components/widgets/TabFaviconWidget.vue";
 import {UpdateTabNameCommand} from "src/domain/tabs/UpdateTabName";
-import {CopyToClipboardCommand} from "src/domain/commands/CopyToClipboard";
 import {useTabsetService} from "src/services/TabsetService2";
 import ShortUrl from "components/utils/ShortUrl.vue";
 import {useTabsStore} from "src/stores/tabsStore";
@@ -209,10 +211,10 @@ onMounted(() => {
   if (blobImgPath && blobImgPath.startsWith('blob://')) {
     useTabsetService().getBlob(blobImgPath.replace("blob://", ""))
         .then((res) => {
-          var reader = new FileReader();
+          let reader = new FileReader();
           reader.readAsDataURL(res.content);
           reader.onloadend = function () {
-            var base64data = reader.result;
+            const base64data = reader.result;
             if (base64data) {
               imgFromBlob.value = base64data.toString()
             }
@@ -260,21 +262,7 @@ const dynamicNameOrTitleModel = (tab: Tab) => tab.name ? tab.name : tab.title
 const setCustomTitle = (tab: Tab, newValue: string) =>
     useCommandExecutor().executeFromUi(new UpdateTabNameCommand(tab, newValue))
 
-const copyToClipboard = (text: string) =>
-    useCommandExecutor().executeFromUi(new CopyToClipboardCommand(text))
-
 const hoveredOver = (tabsetId: string) => hoveredTab.value === tabsetId
-
-const classForCategoryTab = (tab: Tab | undefined) => {
-  if (!tab) {
-    return ""
-  }
-  const url = tab.url
-  if (url && useTabsetService().tabsetsFor(url).length > 0) {
-    return "text-grey-5"
-  }
-  return ""
-}
 
 const formatDate = (timestamp: number | undefined) =>
     timestamp ? formatDistance(timestamp, new Date(), {addSuffix: true}) : ""
@@ -297,6 +285,10 @@ const openTabset = (badge: any) => {
     router.push("/sidepanel" + "?highlight=" + badge.encodedUrl)
   }
 }
+
+const openTabAssignmentPage = (tab: Tab) =>
+   NavigationService.openOrCreateTab(chrome.runtime.getURL("/www/index.html#/mainpanel/tabAssignment/" + tab.id))
+
 
 </script>
 
@@ -322,7 +314,7 @@ const openTabset = (badge: any) => {
   stroke: #fff;
   stroke-miterlimit: 10;
   margin: 10% auto;
-  box-shadow: inset 0px 0px 0px #8ACB88;
+  box-shadow: inset 0 0 0 #8ACB88;
   animation: fill .4s ease-in-out .4s forwards, scale .3s ease-in-out .9s both;
 }
 
@@ -350,7 +342,7 @@ const openTabset = (badge: any) => {
 
 @keyframes fill {
   100% {
-    box-shadow: inset 0px 0px 0px 30px #8ACB88;
+    box-shadow: inset 0 0 0 30px #8ACB88;
   }
 }
 </style>

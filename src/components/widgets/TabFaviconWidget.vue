@@ -28,9 +28,10 @@
 
 import {Tab, UrlExtension} from "src/models/Tab";
 import {useSettingsStore} from "src/stores/settingsStore"
+import {PropType} from "vue";
 
 const props = defineProps({
-  tab: {type: Object, required: true},
+  tab: {type: Object as PropType<Tab>, required: true},
   width: {type: String, default: '22px'},
   height: {type: String, default: '22px'},
   preventDragAndDrop: {type: Boolean, default: false},

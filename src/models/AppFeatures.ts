@@ -58,7 +58,11 @@ export class AppFeatures {
     new AppFeature(FeatureIdent.ARCHIVE_TABSET, FeatureType.OPTIONAL, 'Archive Tabsets', 'o_inventory_2', ['all']),
     new AppFeature(FeatureIdent.WINDOW_MANAGEMENT, FeatureType.OPTIONAL, 'Window Management', 'o_grid_view', ['all']),
 
-    new AppFeature(FeatureIdent.COLOR_TAGS, FeatureType.OPTIONAL, 'Color Tags', 'o_colorize', ['all'])
+    new AppFeature(FeatureIdent.COLOR_TAGS, FeatureType.OPTIONAL, 'Color Tags', 'o_colorize', ['all']),
+    new AppFeature(FeatureIdent.ADVANCED_TAB_MANAGEMENT, FeatureType.OPTIONAL, 'Advanced Tab Management', 'o_tab', ['all']),
+    new AppFeature(FeatureIdent.ANALYSE_TABS, FeatureType.EXPERIMENTAL, 'Analyse Tabs', 'o_tab', ['bex'])
+        .setActivateCommand(new GrantPermissionCommand('webRequest'))
+
 
   ]
 

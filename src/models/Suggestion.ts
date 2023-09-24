@@ -11,7 +11,7 @@ export enum SuggestionState {
 
 export enum SuggestionType {
   RSS = "RSS",
-
+  REDIRECT_HAPPENED_FOR_BOOKMARK = "REDIRECT_HAPPENED_FOR_BOOKMARK",
   CONTENT_CHANGE = "CONTENT_CHANGE",
   FEATURE = "FEATURE"
 }
@@ -27,6 +27,7 @@ export class Suggestion {
 
   public state: SuggestionState;
   public img: string | undefined = undefined;
+  public data: object = {}
 
   static staticSuggestions: Suggestion[] = [
     new Suggestion(StaticSuggestionIdent.TRY_TAB_DETAILS_FEATURE.toString(),
@@ -64,8 +65,13 @@ export class Suggestion {
     return this
   }
 
+  setData(data: object): Suggestion {
+    this.data = data
+    return this
+  }
+
   static getStaticSuggestion(ident: StaticSuggestionIdent): Suggestion | undefined {
-    console.log("hier", this.staticSuggestions, ident)
+    //console.log("hier", this.staticSuggestions, ident)
     return _.find(this.staticSuggestions, s => s.id === ident)
   }
 }

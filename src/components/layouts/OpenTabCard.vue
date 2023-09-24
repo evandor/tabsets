@@ -1,27 +1,27 @@
 <template>
 
   <q-card class="tabBorder" flat
-          :style="cardStyle(tab)">
+          :style="cardStyle(tab as Tab)">
 
     <q-card-section class="q-pt-xs cursor-pointer"
-                    :data-testid="useUtils().createDataTestIdentifier('openTabCard', props.tab.url)"
+                    :data-testid="useUtils().createDataTestIdentifier('openTabCard', props.tab.url || '')"
                     style="width:100%;">
 
       <div class="row items-baseline">
         <div class="col-1 q-mr-md q-ml-none">
-          <q-icon v-if="showAddToTabsetIcon(tab)" color="primary"
+          <q-icon v-if="showAddToTabsetIcon(tab as Tab)" color="primary"
                   name="o_arrow_left" @click="addToCurrentTabset" size="2em">
             <q-tooltip class="tooltip">
-              Click here to add the tab to your current tabset {{tabsStore.currentTabsetName}}
+              Click here to add the tab to your current tabset {{ tabsStore.currentTabsetName }}
             </q-tooltip>
           </q-icon>
           <q-checkbox
-            v-if="showSelectIcon(tab)"
-            v-model="tab.selected"
-            size="30px"
-            checked-icon="task_alt"
-            @update:model-value="val => selectionChanged(val)"
-            unchecked-icon="check_box_outline_blank"
+              v-if="showSelectIcon(tab as Tab)"
+              v-model="tab.selected"
+              size="30px"
+              checked-icon="task_alt"
+              @update:model-value="val => selectionChanged(val)"
+              unchecked-icon="check_box_outline_blank"
           />
         </div>
 
@@ -32,17 +32,17 @@
         <div class="col-7 text-body2 ellipsis cursor-pointer"
              @mouseenter="emitInfo(tab?.url)"
              @mouseout="emitInfo(undefined)"
-             @click="NavigationService.openOrCreateTab(tab?.url)">
+             @click="NavigationService.openOrCreateTab(tab?.url || '')">
           {{ tab?.title }}
           <q-tooltip class="tooltip" v-if="useSettingsStore().isEnabled('dev')">
-            {{tab.chromeTabId}} / {{tab.url}}
+            {{ tab.chromeTabId }} / {{ tab.url }}
           </q-tooltip>
           <q-tooltip class="tooltip" v-else>
-            {{tab.url}}
+            {{ tab.url }}
           </q-tooltip>
         </div>
         <div class="col-1" v-if="!props.useSelection">
-          <q-icon name="close" @click="closeTab(tab)" v-if="!isSelf(tab.url)">
+          <q-icon name="close" @click="closeTab(tab)" v-if="!isSelf(tab.url || '')">
             <q-tooltip class="tooltip">Close this tab in the browser</q-tooltip>
           </q-icon>
         </div>
@@ -67,16 +67,11 @@ import {useTabsStore} from "src/stores/tabsStore";
 import _ from "lodash"
 import {useUtils} from "src/services/Utils"
 import {useSettingsStore} from "src/stores/settingsStore"
+import {PropType} from "vue";
 
 const props = defineProps({
-  tab: {
-    type: Object,
-    required: true
-  },
-  useSelection: {
-    type: Boolean,
-    default: false
-  }
+  tab: {type: Object as PropType<Tab>, required: true},
+  useSelection: {type: Boolean, default: false}
 })
 
 const emits = defineEmits(['selectionChanged', 'addedToTabset', 'hasSelectable'])
@@ -110,7 +105,7 @@ const emitInfo = (msg: string | undefined) => useUiStore().footerInfo = msg
 
 const addToCurrentTabset = () => {
   useCommandExecutor().executeFromUi(new CreateTabFromOpenTabsCommand(props.tab as unknown as Tab, 0))
-    .then((res) => emits('addedToTabset', {tabId: props.tab.id, tabUrl: props.tab.url}))
+      .then(() => emits('addedToTabset', {tabId: props.tab.id, tabUrl: props.tab.url}))
 }
 
 const selectionChanged = (val: any) => {
@@ -131,6 +126,6 @@ const showSelectIcon = (tab: Tab) => props.useSelection && !useTabsetService().u
 .tabBorder
   border-radius: 5px 5px 0 0
   border: 1px solid $lightgrey
-  border-bottom: 0px
+  border-bottom: 0
 
 </style>

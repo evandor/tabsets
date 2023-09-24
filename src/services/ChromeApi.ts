@@ -11,6 +11,7 @@ import {usePermissionsStore} from "src/stores/permissionsStore";
 import {Tab} from "src/models/Tab";
 import {uid, useQuasar} from "quasar";
 import {FeatureIdent} from "src/models/AppFeature";
+import {RequestInfo} from "src/models/RequestInfo";
 
 function runHousekeeping(name:string) {
   if (name === "housekeeping") {
@@ -55,14 +56,14 @@ const persistenceService = IndexedDbPersistenceService
 
 class ChromeApi {
 
-  // onHeadersReceivedListener = function (details: any) {
-  //   //console.log("headerDetails", details)
-  //   // if (details.url) {
-  //   //   persistenceService.saveRequest(details.url, new RequestInfo(details.statusCode, details.responseHeaders || []))
-  //   //     .then(() => console.debug("added request"))
-  //   //     .catch(err => console.log("err", err))
-  //   // }
-  // }
+  onHeadersReceivedListener = function (details: any) {
+    console.log("headerDetails", details)
+    if (details.url) {
+      persistenceService.saveRequest(details.url, new RequestInfo(details.statusCode as number, details.responseHeaders || []))
+        .then(() => console.debug("added request"))
+        .catch(err => console.warn("err", err))
+    }
+  }
 
   init() {
 
@@ -75,13 +76,30 @@ class ChromeApi {
     chrome.alarms.create("housekeeping", {periodInMinutes: CLEANUP_PERIOD_IN_MINUTES})
 
     chrome.alarms.onAlarm.addListener(
-      (alarm: chrome.alarms.Alarm) => runHousekeeping("housekeeping")
+        (alarm: chrome.alarms.Alarm) => runHousekeeping("housekeeping")
     )
 
     chrome.runtime.onUpdateAvailable.addListener(
-      (details: any) => NavigationService.updateAvailable(details)
+        (details: any) => NavigationService.updateAvailable(details)
     )
 
+    if (usePermissionsStore().hasAllOrigins() && usePermissionsStore().hasFeature(FeatureIdent.ANALYSE_TABS)) {
+      this.startWebRequestListener()
+    }
+  }
+
+  startWebRequestListener() {
+    console.log("adding WebRequestListener")
+    chrome.webRequest.onHeadersReceived.addListener(
+        this.onHeadersReceivedListener,
+        {urls: ['*://*/*'], types: ['main_frame']},
+        ['responseHeaders']
+    )
+  }
+
+  stopWebRequestListener() {
+    console.log("removing WebRequestListener")
+    chrome.webRequest.onHeadersReceived.removeListener(this.onHeadersReceivedListener)
   }
 
   buildContextMenu() {
