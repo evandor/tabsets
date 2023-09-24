@@ -20,6 +20,7 @@ import PersistenceService from "src/services/PersistenceService";
 import JsUtils from "src/utils/JsUtils";
 import {usePermissionsStore} from "stores/permissionsStore";
 import {FeatureIdent} from "src/models/AppFeature";
+import {RequestInfo} from "src/models/RequestInfo";
 
 let db: PersistenceService = null as unknown as PersistenceService
 
@@ -534,6 +535,7 @@ export function useTabsetService() {
         if (tabset) {
             useTabsStore().removeTab(tabset, tab.id)
             //useNotificationsStore().unsetSelectedTab()
+            console.log("deletion: saving tabset", tabset)
             return saveTabset(tabset)
                 .then(() => tabset)
         }

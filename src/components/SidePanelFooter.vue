@@ -148,10 +148,12 @@ const showSuggestionIcon = ref(false)
 const doShowSuggestionButton = ref(false)
 
 watchEffect(() => {
+  const suggestions = useSuggestionsStore().getSuggestions()
+  console.log("watcheffect for", suggestions)
   showSuggestionButton.value =
       doShowSuggestionButton.value ||
       (useUiStore().sidePanelActiveViewIs(SidePanelView.MAIN) &&
-          _.findIndex(useSuggestionsStore().getSuggestions(), s => {
+          _.findIndex(suggestions, s => {
             if (s.state === SuggestionState.APPLIED || s.state === SuggestionState.IGNORED) {
               return false
             }
@@ -165,7 +167,7 @@ watchEffect(() => {
   showSuggestionIcon.value =
       !doShowSuggestionButton.value &&
       useUiStore().sidePanelActiveViewIs(SidePanelView.MAIN) &&
-      _.findIndex(useSuggestionsStore().getSuggestions(), s => {
+      _.findIndex(suggestions, s => {
         if (s.state === SuggestionState.APPLIED || s.state === SuggestionState.IGNORED) {
           return false
         }
@@ -226,27 +228,6 @@ const suggestionsLabel = () => {
       suggestions.length + " New Suggestions"
 
 }
-
-  // function deactivateHelpFeature() {
-  //   const helpFeature = new AppFeatures().getFeature(FeatureIdent.HELP)
-  //   if (helpFeature) {
-  //     useCommandExecutor().execute(new DeactivateFeatureCommand(helpFeature))
-  //         .then((res) => {
-  //           useTabsetService().deleteTabset("HELP")
-  //           Notify.create({
-  //             color: 'warning',
-  //             message: "The Help pages have been deleted"
-  //           })
-  //         })
-  //         .catch((err) => {
-  //           console.log("error deactivating help", err)
-  //           Notify.create({
-  //             color: 'warning',
-  //             message: "There was a problem"
-  //           })
-  //         })
-  //   }
-  // }
 
 const openHelpView = () => {
   const helpTabset = useTabsStore().getTabset("HELP")

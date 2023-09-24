@@ -142,6 +142,7 @@ function inIgnoredMessages(request: any) {
     request.name === 'feature-deactivated' ||
     request.name === 'tabsets-imported' ||
     request.name === 'fullUrls-changed' ||
+    request.name === 'reload-suggestions' ||
     request.name === 'detail-level-changed'
     //request.name === 'recogito-annotation-created'
 

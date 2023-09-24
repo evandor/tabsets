@@ -99,7 +99,7 @@ export const useSearchStore = defineStore('search', () => {
   }
 
   function update(url: string, key: string, value: string) {
-    console.log("updating search index", url, key, value)
+    //console.log("updating search index", url, key, value)
     if (!fuse || !fuse.value) {
       return // called too early?
     }
