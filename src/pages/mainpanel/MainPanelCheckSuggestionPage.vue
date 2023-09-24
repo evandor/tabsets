@@ -63,9 +63,9 @@
       </div>
       <div class="col-9">
 
-        <template v-if="!applied">
+        <template v-if="!decided">
           <q-btn label="Ignore" class="q-mr-md" size="sm" @click="ignoreSuggestion()">
-            <q-tooltip class="tooltip-small" :delay="500">Click here to decide later</q-tooltip>
+            <q-tooltip class="tooltip-small" :delay="500">Ignore this suggestion</q-tooltip>
           </q-btn>
           <q-btn label="Apply Suggestion"
                  size="sm" color="warning" @click="applySuggestion"></q-btn>
@@ -96,13 +96,14 @@ import {Suggestion} from "src/models/Suggestion";
 import {useSuggestionsStore} from "stores/suggestionsStore";
 import {useBookmarksStore} from "stores/bookmarksStore";
 import {ApplySuggestionCommand} from "src/domain/suggestions/ApplySuggestionCommand";
+import {IgnoreSuggestionCommand} from "src/domain/suggestions/IgnoreSuggestionCommand";
 
 const route = useRoute()
 
 const suggestionId = ref<string | undefined>(undefined)
 const suggestion = ref<Suggestion | undefined>(undefined)
 
-const applied = ref(false)
+const decided = ref(false)
 
 onMounted(() => {
   Analytics.firePageViewEvent('MainPanelTabAssignmentPage', document.location.href);
@@ -118,13 +119,17 @@ watchEffect(() => {
 const closeWindow = () => window.close()
 
 const applySuggestion = () => {
-  const s = suggestion.value
-  if (s) {
-    useCommandExecutor().executeFromUi(new ApplySuggestionCommand(s))
-        .then(() => applied.value = true)
+  if (suggestion.value) {
+    useCommandExecutor().executeFromUi(new ApplySuggestionCommand(suggestion.value))
+        .then(() => decided.value = true)
   }
 }
 
-const ignoreSuggestion = () => useSuggestionsStore().ignoreSuggestion(suggestionId.value || '')
+const ignoreSuggestion = () => {
+  if (suggestion.value) {
+    useCommandExecutor().executeFromUi(new IgnoreSuggestionCommand(suggestion.value))
+        .then(() => decided.value = true)
+  }
+}
 
 </script>
