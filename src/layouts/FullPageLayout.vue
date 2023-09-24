@@ -44,21 +44,6 @@
           </div>
         </Transition>
 
-        <div v-if="tabsStore.audibleTabs.length > 0">
-          <span v-if="tabsStore.audibleTabs.length > 1">{{ tabsStore.audibleTabs.length }}x</span>
-          <q-icon name="volume_up" size="22px" class="q-mr-md">
-            <!--            <q-tooltip>{{tabsStore.audibleTabs}}</q-tooltip>-->
-          </q-icon>
-          <q-menu :offset="[0, 15]">
-            <q-list style="min-width: 200px">
-              <q-item v-for="tab in tabsStore.audibleTabs"
-                      clickable v-close-popup @click="NavigationService.openTab(tab.id)">
-                <q-item-section>{{ tab.title }}</q-item-section>
-              </q-item>
-            </q-list>
-          </q-menu>
-        </div>
-
         <q-btn v-if="settingsStore.isEnabled('stats')"
                class="q-mr-md" icon="o_query_stats" size="12px" style="min-width:24px" flat
                @click="router.push('/stats')">
