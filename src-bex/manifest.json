@@ -16,6 +16,7 @@
   ],
   "optional_permissions": [
     "bookmarks",
+    "notifications",
     "webRequest"
   ],
   "background": {
