@@ -65,11 +65,11 @@ export const  useBookmarksStore = defineStore('bookmarks', {
       console.debug("loading bookmarks", accessGranted)//, (new Error()).stack)
       if (accessGranted) {
         // @ts-ignore
-        const bookmarks: object[] = await chrome.bookmarks.search({})//, async (bookmarks) => {
+        const bookmarks: object[] = await browser.bookmarks.search({})//, async (bookmarks) => {
         this.bookmarksLeaves = bookmarks
 
         // @ts-ignore
-        const tree: chrome.bookmarks.BookmarkTreeNode[] = await chrome.bookmarks.getTree()
+        const tree: chrome.bookmarks.BookmarkTreeNode[] = await browser.bookmarks.getTree()
 
         _.forEach(tree[0].children, parent => {
           const children: TreeNode[] = getChildren(parent)
@@ -88,7 +88,7 @@ export const  useBookmarksStore = defineStore('bookmarks', {
     async bookmarksLeavesFor(bookmarkId: string): Promise<chrome.bookmarks.BookmarkTreeNode[]> {
       this.bookmarksLeaves = []
       // @ts-ignore
-      const res = await chrome.bookmarks.getChildren(bookmarkId)
+      const res = await browser.bookmarks.getChildren(bookmarkId)
       // @ts-ignore
       return res
     },
@@ -99,9 +99,9 @@ export const  useBookmarksStore = defineStore('bookmarks', {
       // moved to chromeBookmarkListeners
     },
     updateUrl(from: string, to: string) {
-      chrome.bookmarks.search({url: from}, (results: chrome.bookmarks.BookmarkTreeNode[]) => {
+      browser.bookmarks.search({url: from}, (results: chrome.bookmarks.BookmarkTreeNode[]) => {
         results.forEach((r: chrome.bookmarks.BookmarkTreeNode) => {
-          chrome.bookmarks.update(r.id, {url: to}, updateResult => {
+          browser.bookmarks.update(r.id, {url: to}, updateResult => {
             console.log("updated bookmark", updateResult)
           })
         })

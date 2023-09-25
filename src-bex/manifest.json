@@ -14,6 +14,11 @@
     "scripting",
     "*://*/*"
   ],
+  "optional_permissions": [
+    "bookmarks",
+    "notifications",
+    "webRequest"
+  ],
   "background": {
     "scripts": ["background.js"]
   },
