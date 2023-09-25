@@ -90,7 +90,7 @@
           :showSearchBox="showSearchBox">
 
         <template v-slot:title v-if="permissionsStore && permissionsStore.hasFeature(FeatureIdent.SPACES)">
-          <div class="text-subtitle1 text-black">
+          <div class="text-subtitle1 text-black" @click.stop="router.push('/sidepanel/spaces')">
             {{ toolbarTitle(tabsets as Tabset[]) }}
           </div>
         </template>
