@@ -24,20 +24,20 @@
 
         <template v-slot:title>
           <div class="text-subtitle1 text-black">
-            <SidePanelTabsetsSelectorWidget/>
+            Tabset: {{ tabset?.name }}
           </div>
         </template>
 
         <template v-slot:iconsRight>
 
           <q-btn v-if="sorting !== TabSorting.CUSTOM"
-                 :icon="descending ? 'arrow_upward' : 'arrow_downward'"
-                 @click="toggleOrder()"
-                 color="accent"
-                 flat
-                 class="q-ma-none q-pa-xs cursor-pointer"
-                 style="max-width:20px"
-                 size="10px">
+              :icon="descending ? 'arrow_upward' : 'arrow_downward'"
+              @click="toggleOrder()"
+              color="accent"
+              flat
+              class="q-ma-none q-pa-xs cursor-pointer"
+              style="max-width:20px"
+              size="10px">
             <q-tooltip class="tooltip" v-if="descending">Descending</q-tooltip>
             <q-tooltip class="tooltip" v-else>Ascending</q-tooltip>
           </q-btn>
@@ -90,8 +90,6 @@ import FirstToolbarHelper from "pages/sidepanel/helper/FirstToolbarHelper.vue";
 import {DynamicTabSourceType} from "src/models/DynamicTabSource";
 import {useWindowsStore} from "../stores/windowsStores";
 import Analytics from "src/utils/google-analytics";
-import TabsetsSelectorWidget from "components/widgets/TabsetsSelectorWidget.vue";
-import SidePanelTabsetsSelectorWidget from "components/widgets/SidePanelTabsetsSelectorWidget.vue";
 
 const {inBexMode} = useUtils()
 
@@ -194,17 +192,17 @@ const toggleSorting = () => {
 }
 
 function getOrder() {
-  switch (sorting.value) {
-    case TabSorting.URL:
-      return (t: Tab) => t.url?.replace("https://", "").replace("http://", "").toUpperCase()
-    case TabSorting.TITLE:
-      return (t: Tab) => t.title?.toUpperCase()
-    case TabSorting.AGE:
-      return (t: Tab) => t.created
-    default:
-      return (t: Tab) => 1
-  }
-  return (t: Tab) => 1
+    switch (sorting.value) {
+      case TabSorting.URL:
+        return (t: Tab) => t.url?.replace("https://", "").replace("http://", "").toUpperCase()
+      case TabSorting.TITLE:
+        return (t: Tab) => t.title?.toUpperCase()
+      case TabSorting.AGE:
+        return (t: Tab) => t.created
+      default:
+        return (t: Tab) => 1
+    }
+    return (t: Tab) => 1
 }
 
 const toggleOrder = () => descending.value = !descending.value

@@ -12,8 +12,13 @@
 
           <template v-else>
             <div class="column q-ma-none q-pa-none">
-              <!-- @click.stop="router.push('/sidepanel/spaces')" -->
-              <div class="col q-ma-none q-pa-none cursor-pointer text-black text-subtitle1">
+              <div class="col q-ma-none q-pa-none cursor-pointer text-black text-subtitle1"
+                   @click.stop="router.push('/sidepanel/spaces')">
+
+                <!--                  <slot name="title">{{ props.title }}</slot>-->
+
+                <!--                </div>-->
+                <!--              </div>-->
                 <slot name="title">{{ props.title }}</slot>
               </div>
             </div>
