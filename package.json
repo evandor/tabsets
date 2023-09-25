@@ -11,8 +11,6 @@
     "dev pwa (only for testing)": "quasar dev -m pwa",
     "dev stage prod": "stage=production quasar dev -m bex",
     "dev electron": "quasar dev -m electron",
-    "web-ext run": "cd dist/bex && web-ext run",
-    "web-ext build": "quasar build -m bex &&  zip dist/tabset.src.zip -r src/ src-bex/ package.json && cd dist/bex && web-ext build",
     "build": "quasar build -m bex",
     "build electron": "quasar build -m electron",
     "icon": "icongenie generate -i src/assets/icon.png",

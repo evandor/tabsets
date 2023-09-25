@@ -1,5 +1,5 @@
 {
-  "manifest_version": 2,
+  "manifest_version": 3,
   "icons": {
     "16": "icons/icon-16x16.png",
     "48": "icons/icon-48x48.png",
@@ -8,38 +8,54 @@
   "permissions": [
     "storage",
     "tabs",
-    "<all_urls>",
     "activeTab",
     "alarms",
     "scripting",
-    "*://*/*"
+    "sidePanel"
   ],
   "optional_permissions": [
-    "bookmarks",
+    "pageCapture",
+    "contextMenus",
     "notifications",
-    "webRequest"
+    "webRequest",
+    "bookmarks"
   ],
-  "background": {
-    "scripts": ["background.js"]
+  "host_permissions": [
+    "<all_urls>",
+    "*://*/*"
+  ],
+  "side_panel": {
+    "default_path": "www/sidepanel.html"
   },
-  "content_scripts": [
-    {
-      "matches": ["*://*/*"],
-      "js": ["tabsets-content-script.js", "content-script.js"]
-    }
-  ],
   "sidebar_action": {
     "default_icon": "icons/icon-48x48.png",
-    "default_title" : "Tabsets",
-    "default_panel": "www/index.html#/sidepanel"
+    "default_title": "My Sample Extension",
+    "default_panel": "www/sidepanel.html"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_security_policy": {
+    "extension_pages": "script-src 'self' 'wasm-unsafe-eval'"
   },
   "omnibox": { "keyword": "ts" },
   "commands": {
-    "_execute_sidebar_action": {
+    "_execute_action": {
       "suggested_key": {
-        "default": "Ctrl+Shift+T"
+        "default": "Ctrl+B",
+        "mac": "Command+B"
       }
     }
   },
-  "content_security_policy": "script-src 'self' 'wasm-unsafe-eval'"
+  "options_page": "www/index.html#/mainpanel/settings",
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "*"
+      ],
+      "matches": [
+        "*://*/*"
+      ]
+    }
+  ]
 }
