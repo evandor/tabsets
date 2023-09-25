@@ -74,7 +74,8 @@ export const useWindowsStore = defineStore('windows', () => {
 
     async function windowFor(windowToOpen: string) {
         if (windowToOpen === 'current' && chrome && chrome.windows) {
-            return (await chrome.windows?.getCurrent()).id
+            // @ts-ignore
+            return (await browser.windows?.getCurrent()).id
         } else if (windowMap.value[windowToOpen as keyof object]) {
             const potentialWindowId = windowMap.value[windowToOpen as keyof object]
             console.log("windowFor2", potentialWindowId)

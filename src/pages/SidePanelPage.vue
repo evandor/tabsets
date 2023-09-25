@@ -90,7 +90,7 @@
           :showSearchBox="showSearchBox">
 
         <template v-slot:title v-if="permissionsStore && permissionsStore.hasFeature(FeatureIdent.SPACES)">
-          <div class="text-subtitle1 text-black">
+          <div class="text-subtitle1 text-black" @click.stop="router.push('/sidepanel/spaces')">
             {{ toolbarTitle(tabsets as Tabset[]) }}
           </div>
         </template>
@@ -334,96 +334,83 @@ function inIgnoredMessages(message: any) {
       message.name === "recogito-annotation-created"
 }
 
-if ($q.platform.is.chrome) {
-  if (inBexMode()) {
-    // seems we need to define these listeners here to get the matching messages reliably
-    // these messages are created by triggering events in the mainpanel
-    chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-      if (inIgnoredMessages(message)) {
+if (inBexMode()) {
+  // seems we need to define these listeners here to get the matching messages reliably
+  // these messages are created by triggering events in the mainpanel
+  // @ts-ignore
+  browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    if (inIgnoredMessages(message)) {
+      return true
+    }
+    if (message.name === 'current-tabset-id-change') {
+      console.log(" >>> got message", message)
+      if (message.ignore) {
         return true
       }
-      if (message.name === 'current-tabset-id-change') {
-        console.log(" >>> got message", message)
-        if (message.ignore) {
-          return true
-        }
-        const tsId = message.data.tabsetId
-        useTabsStore().selectCurrentTabset(tsId)
-      } else if (message.name === 'feature-activated') {
-        usePermissionsStore().addActivateFeature(message.data.feature)
-        if (message.data.feature === 'help') {
-          useTabsetService().reloadTabset("HELP")
-        } else if (message.data.feature === 'bookmarks') {
-          usePermissionsStore().load()
-              .then(() => {
-                useBookmarksStore().init()
-                useBookmarksStore().loadBookmarks()
-              })
-        }
-      } else if (message.name === "feature-deactivated") {
-        usePermissionsStore().removeActivateFeature(message.data.feature)
-      } else if (message.name === "tabsets-imported") {
-        useSpacesStore().reload()
-        useTabsetService().init(useDB(undefined).db)
-        // TODO reload
-      } else if (message.name === "tab-being-dragged") {
-        useUiStore().draggingTab(message.data.tabId, null as unknown as any)
-      } else if (message.name === "tab-changed") {
-        const tabset = useTabsetService().getTabset(message.data.tabsetId) as Tabset
-        if (message.data.noteId) {
-          console.log("updating note", message.data.noteId)
-          useTabsStore().getTab(message.data.noteId)
-              .then((res: object | undefined) => {
-                if (res) {
-                  const note = res['tab' as keyof object] as Tab
-                  note.title = message.data.tab.title
-                  note.description = message.data.tab.description
-                  note.longDescription = message.data.tab.longDescription
-                }
-                useTabsetService().saveTabset(tabset)
-              })
-        } else {
-          console.log("adding tab", message.data.tab)
-          tabset.tabs.push(message.data.tab)
-          useTabsetService().saveTabset(tabset)
-        }
-      } else if (message.name === "tab-added") {
-        // hmm - getting this twice...
-        console.log(" > got message '" + message.name + "'", message)
-        useTabsetService().reloadTabset(message.data.tabsetId)
-      } else if (message.name === "tab-deleted") {
-        useTabsetService().reloadTabset(message.data.tabsetId)
-      } else if (message.name === "tabset-added") {
-        useTabsetService().reloadTabset(message.data.tabsetId)
-      } else if (message.name === "mark-tabset-deleted") {
-        TabsetService.markAsDeleted(message.data.tabsetId)
-      } else if (message.name === "tabset-renamed") {
-        TabsetService.rename(message.data.tabsetId, message.data.newName, message.data.newColor)
-      } else if (message.name === "progress-indicator") {
-        if (message.percent) {
-          uiStore.progress = message.percent
-          uiStore.progressLabel = message.label
-        }
-        if (message.status === "done") {
-          uiStore.progress = undefined
-          uiStore.progressLabel = undefined
-        }
-        sendResponse("ui store progress set to " + uiStore.progress)
-      } else if (message.name === "detail-level-changed") {
-        console.log("setting list detail level to ", message.data.level)
-        useUiStore().setListDetailLevel(message.data.level)
-      } else if (message.name === "fullUrls-changed") {
-        console.log("setting fullUrls to ", message.data.value)
-        useUiStore().setShowFullUrls(message.data.value)
-      } else if (message.name === "reload-suggestions") {
-        console.log("reload-suggestions message received")
-        useSuggestionsStore().loadSuggestionsFromDb()
-      } else {
-        console.log("got unmatched message", message)
+      const tsId = message.data.tabsetId
+      useTabsStore().selectCurrentTabset(tsId)
+    } else if (message.name === 'feature-activated') {
+      usePermissionsStore().addActivateFeature(message.data.feature)
+      if (message.data.feature === 'help') {
+        useTabsetService().reloadTabset("HELP")
       }
-      return true
-    })
-  }
+    } else if (message.name === "feature-deactivated") {
+      usePermissionsStore().removeActivateFeature(message.data.feature)
+    } else if (message.name === "tabsets-imported") {
+      useSpacesStore().reload()
+      useTabsetService().init(useDB(undefined).db)
+      // TODO reload
+    } else if (message.name === "tab-being-dragged") {
+      useUiStore().draggingTab(message.data.tabId, null as unknown as any)
+    } else if (message.name === "tab-changed") {
+      const tabset = useTabsetService().getTabset(message.data.tabsetId) as Tabset
+      if (message.data.noteId) {
+        console.log("updating note", message.data.noteId)
+        useTabsStore().getTab(message.data.noteId)
+            .then((res: object | undefined) => {
+              if (res) {
+                const note = res['tab' as keyof object] as Tab
+                note.title = message.data.tab.title
+                note.description = message.data.tab.description
+                note.longDescription = message.data.tab.longDescription
+              }
+              useTabsetService().saveTabset(tabset)
+            })
+      } else {
+        console.log("adding tab", message.data.tab)
+        tabset.tabs.push(message.data.tab)
+        useTabsetService().saveTabset(tabset)
+      }
+    } else if (message.name === "tab-added") {
+      // hmm - getting this twice...
+      console.log(" > got message '" + message.name + "'", message)
+      useTabsetService().reloadTabset(message.data.tabsetId)
+    } else if (message.name === "tab-deleted") {
+      useTabsetService().reloadTabset(message.data.tabsetId)
+    } else if (message.name === "tabset-added") {
+      useTabsetService().reloadTabset(message.data.tabsetId)
+    } else if (message.name === "mark-tabset-deleted") {
+      TabsetService.markAsDeleted(message.data.tabsetId)
+    } else if (message.name === "tabset-renamed") {
+      TabsetService.rename(message.data.tabsetId, message.data.newName, message.data.newColor)
+    } else if (message.name === "progress-indicator") {
+      if (message.percent) {
+        uiStore.progress = message.percent
+        uiStore.progressLabel = message.label
+      }
+      if (message.status === "done") {
+        uiStore.progress = undefined
+        uiStore.progressLabel = undefined
+      }
+      sendResponse("ui store progress set to " + uiStore.progress)
+    } else if (message.name === "detail-level-changed") {
+      console.log("setting list detail level to ", message.data.level)
+      useUiStore().setListDetailLevel(message.data.level)
+    } else {
+      console.log("got unmatched message", message)
+    }
+    return true
+  })
 } else {
   //useRouter().push("/start")
 }

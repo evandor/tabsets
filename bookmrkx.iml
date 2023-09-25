@@ -29,8 +29,10 @@
       <excludeFolder url="file://$MODULE_DIR$/releases/0.4.0" />
       <excludeFolder url="file://$MODULE_DIR$/test-results" />
       <excludeFolder url="file://$MODULE_DIR$/test/jest/coverage/lcov-report" />
+      <excludeFolder url="file://$MODULE_DIR$/public/vids" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
 </module>
+
