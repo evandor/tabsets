@@ -8,7 +8,7 @@
             <q-icon size="xs" name="o_info" color="accent"/>
           </q-item-section>
           <q-item-section>
-            Show Tab Details
+            Show Tab Details (dev)
           </q-item-section>
         </q-item>
       </template>
@@ -102,6 +102,7 @@
           {{ deleteTabLabel(props['tab' as keyof object]) }}
         </q-item-section>
       </q-item>
+
     </q-list>
   </q-menu>
 </template>

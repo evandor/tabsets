@@ -113,7 +113,7 @@
 <script setup lang="ts">
 import {onMounted, ref, watchEffect} from 'vue'
 import {useRoute, useRouter} from "vue-router";
-import {useQuasar} from "quasar";
+import {Notify, useQuasar} from "quasar";
 import {useTabsStore} from "src/stores/tabsStore";
 import {usePermissionsStore} from "src/stores/permissionsStore";
 import {useCommandExecutor} from "src/services/CommandExecutor";
@@ -125,6 +125,7 @@ import InfoMessageWidget from "components/widgets/InfoMessageWidget.vue";
 import {DrawerTabs, useUiStore} from "src/stores/uiStore";
 import OpenRightDrawerWidget from "components/widgets/OpenRightDrawerWidget.vue";
 import Analytics from "src/utils/google-analytics";
+import Command from "src/domain/Command";
 
 const route = useRoute();
 const router = useRouter();
@@ -406,8 +407,20 @@ const hasFeature = () => {
 }
 
 const grant = (ident: string) => {
+  if (appFeature.value) {
+    try {
+      appFeature.value.activateCommands.forEach((c: Command<any>) => {
+        useCommandExecutor().execute(c)
+      })
+    } catch (err) {
+      Notify.create({
+        color: 'negative',
+        message: "got error: " + err
+      })
+    }
+  }
   //TODO the default activeCommand always executes "permissionStore.activateFeature" - so we do it twice
-  if (appFeature.value && appFeature.value.activateCommand) {
+ /* if (appFeature.value && appFeature.value.activateCommand) {
     useCommandExecutor().execute(appFeature.value.activateCommand)
         .then((executionResult: ExecutionResult<any>) => {
           if (executionResult.result) {
@@ -417,7 +430,7 @@ const grant = (ident: string) => {
   } else {
     permissionsStore.activateFeature(ident)
   }
-
+*/
 }
 
 const revoke = (ident: string) => {
