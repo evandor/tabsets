@@ -42,7 +42,7 @@
             <q-tooltip>
               {{ selectedTab?.favIconUrl }} / {{
                 selectedTab?.chromeTabId
-              }} / {{ selectedTab.id }}
+              }} / {{ selectedTab?.id }}
             </q-tooltip>
           </q-img>
         </div>

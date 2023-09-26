@@ -191,9 +191,6 @@ import ShareTabsetPubliclyDialog from "components/dialogues/ShareTabsetPubliclyD
 import {MarkTabsetAsArchivedCommand} from "src/domain/tabsets/MarkTabsetAsArchived";
 import {useWindowsStore} from "stores/windowsStores";
 import {useTabsStore} from "stores/tabsStore";
-import TabsetService from "src/services/TabsetService";
-import NewTabsetDialog from "components/dialogues/NewTabsetDialog.vue";
-import {useSpacesStore} from "stores/spacesStore";
 import NewWindowDialog from "components/dialogues/NewWindowDialog.vue";
 import {useRouter} from "vue-router";
 
@@ -206,7 +203,6 @@ const props = defineProps({
   tabset: {type: Object as PropType<Tabset>, required: true}
 })
 
-//const publictabsetsPath = "https://tabsets.web.app/#/tabsets/"
 const publictabsetsPath = "https://public.tabsets.net/tabsets/"
 
 const startTabsetNote = (tabset: Tabset) => {
