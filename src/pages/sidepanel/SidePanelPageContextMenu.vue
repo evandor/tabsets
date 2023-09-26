@@ -114,8 +114,15 @@
         <ContextMenuItem v-close-popup
                          @was-clicked="useSearchStore().reindexTabset(tabset.id)"
                          icon="o_note"
-                         label="Re-Index Search"/>
+                         label="Re-Index Search (dev)"/>
       </template>
+
+      <q-separator />
+      <ContextMenuItem v-close-popup
+                       @was-clicked="focus(tabset)"
+                       icon="filter_center_focus"
+                       color="accent"
+                       label="Focus on tabset"/>
 
       <q-separator/>
       <template v-if="tabset.status === TabsetStatus.DEFAULT">
@@ -184,20 +191,18 @@ import ShareTabsetPubliclyDialog from "components/dialogues/ShareTabsetPubliclyD
 import {MarkTabsetAsArchivedCommand} from "src/domain/tabsets/MarkTabsetAsArchived";
 import {useWindowsStore} from "stores/windowsStores";
 import {useTabsStore} from "stores/tabsStore";
-import TabsetService from "src/services/TabsetService";
-import NewTabsetDialog from "components/dialogues/NewTabsetDialog.vue";
-import {useSpacesStore} from "stores/spacesStore";
 import NewWindowDialog from "components/dialogues/NewWindowDialog.vue";
+import {useRouter} from "vue-router";
 
-const {inBexMode, sanitize, sendMsg} = useUtils()
+const {inBexMode} = useUtils()
 
 const $q = useQuasar()
+const router = useRouter()
 
 const props = defineProps({
   tabset: {type: Object as PropType<Tabset>, required: true}
 })
 
-//const publictabsetsPath = "https://tabsets.web.app/#/tabsets/"
 const publictabsetsPath = "https://public.tabsets.net/tabsets/"
 
 const startTabsetNote = (tabset: Tabset) => {
@@ -222,6 +227,9 @@ const openEditTabsetDialog = (tabset: Tabset) => {
 const restoreInNewWindow = (tabsetId: string) => useCommandExecutor().execute(new RestoreTabsetCommand(tabsetId))
 
 const restoreInGroup = (tabsetId: string) => useCommandExecutor().execute(new RestoreTabsetCommand(tabsetId, false))
+
+const focus = (tabset: Tabset) =>
+    router.push("/sidepanel/tabsets/" + tabset.id)
 
 const pin = (tabset: Tabset) =>
     useCommandExecutor().executeFromUi(new MarkTabsetAsFavoriteCommand(tabset.id))

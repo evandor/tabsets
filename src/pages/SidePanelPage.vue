@@ -22,8 +22,7 @@
             <q-item-section
                 @mouseover="hoveredTabset = tabset.id"
                 @mouseleave="hoveredTabset = undefined">
-              <q-item-label :class="tabsStore.currentTabsetId === tabset.id ? 'text-bold' : ''"
-                            @dblclick="focusOnTabset(tabset as Tabset)">
+              <q-item-label :class="tabsStore.currentTabsetId === tabset.id ? 'text-bold' : ''">
                 <q-icon v-if="tabset.status === TabsetStatus.FAVORITE"
                         color="warning"
                         name="push_pin"
@@ -90,7 +89,7 @@
           :showSearchBox="showSearchBox">
 
         <template v-slot:title v-if="permissionsStore && permissionsStore.hasFeature(FeatureIdent.SPACES)">
-          <div class="text-subtitle1 text-black">
+          <div class="text-subtitle1 text-black" @click.stop="router.push('/sidepanel/spaces')">
             {{ toolbarTitle(tabsets as Tabset[]) }}
           </div>
         </template>

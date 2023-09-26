@@ -30,7 +30,7 @@
 
 <script lang="ts" setup>
 
-import {computed, ref, watchEffect} from "vue";
+import {computed, PropType, ref, watchEffect} from "vue";
 import {openURL, useDialogPluginComponent, useQuasar} from "quasar";
 import {useRouter} from "vue-router";
 import {useNotificationsStore} from "src/stores/notificationsStore";
@@ -43,7 +43,7 @@ defineEmits([
 ])
 
 const props = defineProps({
-  suggestion: {type: Object, required: true},
+  suggestion: {type: Object as PropType<Suggestion>, required: true},
   fromPanel: {type: Boolean, default: false}
 })
 

@@ -143,14 +143,12 @@ import {useQuasar} from "quasar"
 import {useUiStore} from "src/stores/uiStore"
 import NewTabsetDialog from "src/components/dialogues/NewTabsetDialog.vue"
 import {useTabsStore} from "src/stores/tabsStore";
-import {useBookmarksStore} from "src/stores/bookmarksStore";
 import {useRouter} from "vue-router";
 
 //@ts-ignore
 const appVersion = import.meta.env.PACKAGE_VERSION
 
 const tabsStore = useTabsStore()
-const bookmarksStore = useBookmarksStore()
 const router = useRouter()
 const $q = useQuasar()
 

@@ -11,23 +11,23 @@ export class AppFeatures {
     new AppFeature(FeatureIdent.HELP, FeatureType.RECOMMENDED, 'Help Pages', 'o_help', ['all']),
 
     new AppFeature(FeatureIdent.BOOKMARKS, FeatureType.OPTIONAL, 'Bookmarks', 'o_bookmarks', ['bex'])
-      .setActivateCommand(new GrantPermissionCommand('bookmarks'))
-      .setDeactivateCommand(new RevokePermissionCommand('bookmarks')),
+      .setActivateCommands([new GrantPermissionCommand('bookmarks')])
+      .setDeactivateCommands([new RevokePermissionCommand('bookmarks')]),
 
     new AppFeature(FeatureIdent.PAGE_MARKER, FeatureType.EXPERIMENTAL, 'Page Marker', 'o_note', ['bex'])
-      .setActivateCommand(new GrantPermissionCommand('contextMenus'))
-      .setDeactivateCommand(new RevokePermissionCommand('contextMenus')),
+      .setActivateCommands([new GrantPermissionCommand('contextMenus')])
+      .setDeactivateCommands([new RevokePermissionCommand('contextMenus')]),
 
     new AppFeature(FeatureIdent.THUMBNAILS, FeatureType.EXPERIMENTAL, 'Thumbnails', 'o_image', ['bex'])
-      .setActivateCommand(new GrantOriginCommand('thumbnails'))
-      .setDeactivateCommand(new RevokeOriginCommand('thumbnails')),
+      .setActivateCommands([new GrantOriginCommand('thumbnails')])
+      .setDeactivateCommands([new RevokeOriginCommand('thumbnails')]),
 
     new AppFeature(FeatureIdent.NEWEST_TABS, FeatureType.RECOMMENDED, 'Newest Tabs', 'o_schedule', ['all']),
     new AppFeature(FeatureIdent.TOP10, FeatureType.RECOMMENDED, 'Top 10 Tabs', 'o_workspace_premium', ['all']),
     new AppFeature(FeatureIdent.OPEN_TABS, FeatureType.EXPERIMENTAL, 'Open Tabs', 'o_playlist_add', ['bex']),
 
     new AppFeature(FeatureIdent.SAVE_TAB, FeatureType.EXPERIMENTAL, 'Save Tabs', 'o_save', ['bex'])
-      .setActivateCommand(new GrantPermissionCommand('pageCapture')),
+      .setActivateCommands([new GrantPermissionCommand('pageCapture')]),
       //.setDeactivateCommand(new RevokePermissionCommand('pageCapture')),
     new AppFeature(FeatureIdent.GROUP_BY_DOMAIN, FeatureType.OPTIONAL, 'Group By Domain View', 'o_dns', ['all']),
     new AppFeature(FeatureIdent.OPENTABS_THRESHOLD, FeatureType.EXPERIMENTAL, 'Open Tabs Warnings', 'o_tab', ['bex']),
@@ -44,14 +44,14 @@ export class AppFeatures {
     new AppFeature(FeatureIdent.TAGS, FeatureType.RECOMMENDED, 'Use Tags for Tabs', 'o_label', ['all']),
     new AppFeature(FeatureIdent.NOTES, FeatureType.EXPERIMENTAL, 'Activate Notes', 'o_note', ['all']),
     new AppFeature(FeatureIdent.WEBSITE_CLIP, FeatureType.EXPERIMENTAL, 'Create an image clip from a website and store it', 'filter_center_focus', ['bex'])
-      .setActivateCommand(new GrantPermissionCommand('notifications')),
+      .setActivateCommands([new GrantPermissionCommand('notifications'),new GrantPermissionCommand('contextMenus')]),
     new AppFeature(FeatureIdent.STANDALONE_APP, FeatureType.EXPERIMENTAL, 'Standalone App', 'o_open_in_new', ['bex']),
 
     new AppFeature(FeatureIdent.CATEGORIZATION, FeatureType.DISABLED, 'URL Categorization', 'o_auto_awesome', ['bex']),
 
     new AppFeature(FeatureIdent.NOTIFICATIONS, FeatureType.RECOMMENDED, 'Chrome Notifications', 'o_notifications', ['all'])
-      .setActivateCommand(new GrantPermissionCommand('notifications'))
-      .setDeactivateCommand(new RevokePermissionCommand('notifications')),
+      .setActivateCommands([new GrantPermissionCommand('notifications')])
+      .setDeactivateCommands([new RevokePermissionCommand('notifications')]),
 
     new AppFeature(FeatureIdent.ANNOTATIONS, FeatureType.EXPERIMENTAL, 'Annotate Websites', 'o_auto_awesome', ['bex']),
 
@@ -61,9 +61,7 @@ export class AppFeatures {
     new AppFeature(FeatureIdent.COLOR_TAGS, FeatureType.OPTIONAL, 'Color Tags', 'o_colorize', ['all']),
     new AppFeature(FeatureIdent.ADVANCED_TAB_MANAGEMENT, FeatureType.OPTIONAL, 'Advanced Tab Management', 'o_tab', ['all']),
     new AppFeature(FeatureIdent.ANALYSE_TABS, FeatureType.EXPERIMENTAL, 'Analyse Tabs', 'o_tab', ['bex'])
-        .setActivateCommand(new GrantPermissionCommand('webRequest'))
-
-
+        .setActivateCommands([new GrantPermissionCommand('webRequest')])
   ]
 
   getFeature(f: FeatureIdent): AppFeature | undefined {

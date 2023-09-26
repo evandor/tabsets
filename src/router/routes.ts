@@ -145,7 +145,7 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/mainpanel/tab/:id',// TODO combine with Tag page
     component: () => import('layouts/PlainLayout.vue'),
-    children: [{ path: '', component: () => import('pages/mainpanel/MainPanelTabPage.vue') }],
+    children: [{ path: '', component: () => import('pages/TabPage.vue') }],
   },
   {
     path: '/mainpanel/suggestions/:suggestionId',

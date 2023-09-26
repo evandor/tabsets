@@ -35,10 +35,10 @@
       <div class="row items-baseline q-ma-lg">
         <div class="col-2">
           <q-img
-            class="rounded-borders"
-            width="32px"
-            height="32px"
-            :src="useUiStore().getSelectedTab?.favIconUrl">
+              class="rounded-borders"
+              width="32px"
+              height="32px"
+              :src="useUiStore().getSelectedTab?.favIconUrl">
             <q-tooltip>
               {{ useUiStore().getSelectedTab?.favIconUrl }} / {{
                 useUiStore().getSelectedTab?.chromeTabId
@@ -56,7 +56,7 @@
         <div class="col-12">
           <div class="text-overline ellipsis">
             {{ useUiStore().getSelectedTab?.url }}&nbsp;<q-icon name="launch" color="secondary"
-                                                                           @click.stop="NavigationService.openOrCreateTab(tab.url )"></q-icon>
+                                                                @click.stop="NavigationService.openOrCreateTab(tab.url )"></q-icon>
           </div>
         </div>
       </div>
@@ -192,13 +192,13 @@
       </q-banner>
 
       <q-table
-        title="Meta data from the website source"
-        :rows="metaRows"
-        :columns="metaColumns"
-        row-key="name"
-        :pagination="metaInitialPagination"
-        :filter="filter"
-        dense>
+          title="Meta data from the website source"
+          :rows="metaRows"
+          :columns="metaColumns"
+          row-key="name"
+          :pagination="metaInitialPagination"
+          :filter="filter"
+          dense>
 
         <template v-slot:top-right>
           <q-input borderless dense debounce="300" v-model="filter" placeholder="Search">
@@ -244,13 +244,13 @@
       Status Code: {{ request['statusCode'] }}<br><br>
 
       <q-table
-        title="Request data"
-        :rows="requestRows"
-        :columns="metaColumns"
-        row-key="name"
-        :pagination="metaInitialPagination"
-        :filter="filterRequest"
-        dense
+          title="Request data"
+          :rows="requestRows"
+          :columns="metaColumns"
+          row-key="name"
+          :pagination="metaInitialPagination"
+          :filter="filterRequest"
+          dense
       >
         <template v-slot:top-right>
           <q-input borderless dense debounce="300" v-model="filterRequest" placeholder="Search">
@@ -280,13 +280,13 @@
       </q-banner>
 
       <q-table
-        title="Meta Links"
-        :rows="metaLinkRows"
-        :columns="metaLinkColumns"
-        row-key="name"
-        :pagination="metaInitialPagination"
-        :filter="filterMetaLinks"
-        dense>
+          title="Meta Links"
+          :rows="metaLinkRows"
+          :columns="metaLinkColumns"
+          row-key="name"
+          :pagination="metaInitialPagination"
+          :filter="filterMetaLinks"
+          dense>
         <template v-slot:top-right>
           <q-input borderless dense debounce="300" v-model="filterMetaLinks" placeholder="Search">
             <template v-slot:append>
@@ -316,13 +316,13 @@
       <q-banner rounded class="bg-grey-1 text-primary">This is a data derived from the tab's html content</q-banner>
 
       <q-table
-        title="Links"
-        :rows="links()"
-        :columns="linkColumns"
-        row-key="name"
-        :pagination="metaInitialPagination"
-        :filter="filterMetaLinks"
-        dense>
+          title="Links"
+          :rows="links()"
+          :columns="linkColumns"
+          row-key="name"
+          :pagination="metaInitialPagination"
+          :filter="filterMetaLinks"
+          dense>
         <template v-slot:top-right>
           <q-input borderless dense debounce="300" v-model="filterMetaLinks" placeholder="Search">
             <template v-slot:append>
@@ -396,6 +396,7 @@ import VueJsonPretty from "vue-json-pretty";
 import 'vue-json-pretty/lib/styles.css';
 import {useTabsetService} from "src/services/TabsetService2";
 import Analytics from "src/utils/google-analytics";
+import {Tab} from "src/models/Tab";
 
 const tabsStore = useTabsStore()
 const notificationStore = useNotificationsStore()
@@ -433,13 +434,15 @@ onMounted(() => {
 watchEffect(() => {
   const tabId = route.params.id as string
   if (tabId) {
-    const selectedTab = useTabsStore().getTab(tabId)
-    console.log("hier", selectedTab)
-    if (selectedTab) {
-      json.value = JSON.parse(JSON.stringify(selectedTab))
-      tags.value = selectedTab.tags
-      useUiStore().setSelectedTab(selectedTab)
-    }
+    useTabsStore().getTab(tabId)
+        .then(selectedTab => {
+          console.log("hier", selectedTab)
+          if (selectedTab) {
+            json.value = JSON.parse(JSON.stringify(selectedTab))
+            tags.value = selectedTab.tags
+            useUiStore().setSelectedTab(selectedTab as Tab)
+          }
+        })
   }
 })
 
@@ -490,78 +493,65 @@ const requestRows = ref<object[]>([])
 const metaLinkRows = ref<object[]>([])
 const linkRows = ref<object[]>([])
 
-const logs = ref<any[]>([])
-const logsFilter = ref('')
-const logsColumns = ref([
-  {name: 'timestamp', align: 'left', label: 'Timestamp', field: 'timestamp', sortable: true},
-  // {name: 'context', align: 'left', label: 'Context', field: 'context', sortable: true},
-  {name: 'level', align: 'left', label: 'Level', field: 'level', sortable: true},
-  {name: 'msg', align: 'left', label: 'Message', field: 'msg', sortable: true}
-])
+watchEffect(async () => {
+  let selectedTab = useUiStore().getSelectedTab
 
-// useQueryExecutor()
-//   .queryFromUi(new TabLogsQuery(useUiStore().getSelectedTab?.url || ''))
-//   .then(res => {
-//     logs.value = res.result
-//   })
-//.catch((err) => logger.warning(err))
 
-watchEffect(() => {
-  const selectedTab = useUiStore().getSelectedTab
   if (selectedTab) {
     TabsetService.getThumbnailFor(selectedTab)
-      .then(data => {
-        if (data) {
-          thumbnail.value = data.thumbnail
-        }
-      })
+        .then(data => {
+          if (data) {
+            thumbnail.value = data.thumbnail
+          }
+        })
     TabsetService.getContentFor(selectedTab)
-      .then(data => {
-        if (data) {
-          content.value = data.content
-          metas.value = data.metas
-          metaRows.value = []
-          _.forEach(Object.keys(data.metas), k => {
-            //console.log("k", k, data.metas[k])
-            metaRows.value.push({
-              name: k,
-              value: data.metas[k]
+        .then(data => {
+          if (data) {
+            content.value = data.content
+            metas.value = data.metas
+            metaRows.value = []
+            _.forEach(Object.keys(data.metas), k => {
+              //console.log("k", k, data.metas[k])
+              metaRows.value.push({
+                name: k,
+                value: data.metas[k]
+              })
             })
-          })
-        }
-      })
+          }
+        })
     TabsetService.getRequestFor(selectedTab)
-      .then(data => {
-        if (data) {
-          //console.log("got data", data)
-          request.value = data.requestInfo
+        .then(data => {
+          if (data) {
+            //console.log("got data", data)
+            request.value = data.requestInfo
 
-          _.forEach(data.requestInfo['headers'], h => {
-            requestRows.value.push({
-              name: h.name,
-              value: h.value
+            _.forEach(data.requestInfo['headers'], h => {
+              requestRows.value.push({
+                name: h.name,
+                value: h.value
+              })
             })
-          })
-        }
-      })
+          }
+        })
 
     TabsetService.getMetaLinksFor(selectedTab)
-      .then(data => {
-        if (data) {
-          metaLinkRows.value = data.metaLinks
-        }
-      })
+        .then(data => {
+          if (data) {
+            metaLinkRows.value = data.metaLinks
+          }
+        })
 
     TabsetService.getLinksFor(selectedTab)
-      .then(data => {
-        if (data) {
-          linkRows.value = data.links
-        }
-      })
+        .then(data => {
+          if (data) {
+            linkRows.value = data.links
+          }
+        })
 
   } else {
     //router.push("/tabset")
   }
+
 })
 
 const links = (): object[] => {
@@ -611,7 +601,7 @@ function getHost(urlAsString: string, shorten: Boolean = true): string {
 
 const getForKey = (key: any) => {
   if ((keysMap.value[key as keyof object] || keysMap.value[key as keyof object] === 0)
-    && index.value['$' as keyof object]) {
+      && index.value['$' as keyof object]) {
     return index.value['$' as keyof object][keysMap.value[key as keyof object]]
   }
   return ""
@@ -638,8 +628,8 @@ const analyseTab = () => {
   const selectedTab = useUiStore().getSelectedTab
   if (selectedTab) {
     searchStore.reindexTab(selectedTab)
-      .then((windowId: number) => {
-      })
+        .then((windowId: number) => {
+        })
   }
 }
 
