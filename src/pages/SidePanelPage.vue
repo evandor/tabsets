@@ -367,7 +367,7 @@ if ($q.platform.is.chrome) {
         // TODO reload
       } else if (message.name === "tab-being-dragged") {
         useUiStore().draggingTab(message.data.tabId, null as unknown as any)
-      } else if (message.name === "tab-changed") {
+      } else if (message.name === "note-changed") {
         const tabset = useTabsetService().getTabset(message.data.tabsetId) as Tabset
         if (message.data.noteId) {
           console.log("updating note", message.data.noteId)

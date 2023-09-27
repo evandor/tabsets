@@ -132,7 +132,7 @@ function inIgnoredMessages(request: any) {
   return request.name === 'progress-indicator' ||
     request.name === 'current-tabset-id-change' ||
     request.name === 'tab-being-dragged' ||
-    request.name === 'tab-changed' ||
+    request.name === 'note-changed' ||
     request.name === 'tab-added' ||
     request.name === 'tab-deleted' ||
     request.name === 'tabset-added' ||

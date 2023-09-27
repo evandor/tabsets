@@ -35,11 +35,11 @@
     <div class="row q-mb-lg">
       <div class="col">
         <div class="text-subtitle1">{{ rss.description }}</div>
-        <div class="text-caption">Created {{ date.formatDate(rss.published, 'DD.MM.YYYY HH:mm') }}</div>
+        <div class="text-caption">Created {{ date.formatDate(rss['published' as keyof object], 'DD.MM.YYYY HH:mm') }}</div>
       </div>
     </div>
 
-    <div class="row q-mb-md q-gutter-lg" v-for="entry in rss.entries">
+    <div class="row q-mb-md q-gutter-lg" v-for="entry in rss['entries' as keyof object]">
       <div class="col-2">
         <q-img v-if="imageEnclosure(entry)"
                :src="imageEnclosure(entry)"

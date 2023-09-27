@@ -326,34 +326,7 @@ function getOrder() {
   }
 }
 
-function tabsForGroup(groupId: number): Tab[] {
-  return _.orderBy(
-      _.filter(
-          tabsStore.getTabset(tabsetId.value)?.tabs,
-          // @ts-ignore
-          (t: Tab) => t?.groupId === groupId),
-      getOrder(), [orderDesc.value ? 'desc' : 'asc'])
-}
-
-const update = (tabsetIdent: object) => {
-  console.log("selected tabset now: ", tabsetIdent)
-  tabsetname.value = tabsetIdent['label' as keyof object]
-  tabsStore.selectCurrentTabset(tabsetIdent['value' as keyof object])
-}
-
-const formatLength = (length: number, singular: string, plural: string) => {
-  return (length > 1 || length === 0) ? length + ' ' + plural : length + ' ' + singular
-}
-
-const selectedCount = ref(0)
-
-const updateSelectionCount = () => {
-  selectedCount.value = TabsetService.getSelectedPendingTabs().length
-}
-
-const restoreDialog = () => $q.dialog({component: RestoreTabsetDialog})
 const addUrlDialog = () => $q.dialog({component: AddUrlDialog})
-
 
 const setView = (view: string) => TabsetService.setView(tabsetId.value, view)
 
@@ -364,26 +337,6 @@ const toggleOrder = () => orderDesc.value = !orderDesc.value
 const showSorting = () => tabsStore.getCurrentTabs.length > 10 && $q.screen.gt.xs
 
 const GOOGLE_ORIGIN = 'https://www.skysail.io';
-
-// chrome.tabs.onUpdated.addListener(async (tabId, info, tab) => {
-//   if (!tab.url) return;
-//   const url = new URL(tab.url);
-//   // Enables the side panel on google.com
-//   // if (url.origin === GOOGLE_ORIGIN) {
-//     console.log("got ", tab.url)
-//     await chrome.sidePanel.setOptions({
-//       path: 'www/sidepanel.html',
-//       enabled: true
-//     });
-//   // } else {
-//   //   // Disables the side panel on all other sites
-//   //   await chrome.sidePanel.setOptions({
-//   //     tabId,
-//   //     enabled: false
-//   //   });
-//   // }
-// });
-
 
 </script>
 
