@@ -168,7 +168,7 @@ const routes: RouteRecordRaw[] = [
     children: [{ path: '', component: () => import('pages/mainpanel/MainPanelTabAssignmentPage.vue') }],
   },
   {
-    path: '/mainpanel/readingmode/:tabId', // TODO combine with Note page
+    path: '/mainpanel/readingmode/:tabId',
     component: () => import('layouts/PlainLayout.vue'),
     children: [{ path: '', component: () => import('pages/mainpanel/MainPanelReadingModePage.vue') }],
   },

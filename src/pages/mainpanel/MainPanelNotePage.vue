@@ -6,20 +6,20 @@
     <div class="col text-right q-ma-sm">
       <div v-if="editMode">
         <template v-if="dirty">
-          <q-btn  class="cursor-pointer" @click="saveWork()"
-                  icon="save" color="warning" size="sm" text-color="white" label="Save"/>
+          <q-btn class="cursor-pointer" @click="saveWork()"
+                 icon="save" color="warning" size="sm" text-color="white" label="Save"/>
         </template>
         <template v-else>
-<!--          <q-btn  class="cursor-pointer q-mr-md" @click="newPage()"-->
-<!--                  icon="add" color="accent" size="sm" text-color="white" label="new Page..."/>-->
+          <!--          <q-btn  class="cursor-pointer q-mr-md" @click="newPage()"-->
+          <!--                  icon="add" color="accent" size="sm" text-color="white" label="new Page..."/>-->
           <q-btn :disable="true" icon="save" color="warning" size="sm" text-color="white" label="Save"/>
         </template>
       </div>
       <div v-else>
-<!--        <q-btn class="cursor-pointer q-mr-md" @click="newPage()"-->
-<!--               icon="add" color="accent" size="sm" text-color="white" label="new Page..."/>-->
-<!--        <q-btn class="cursor-pointer q-mr-md" @click="newPage(true)"-->
-<!--               icon="add" color="accent" size="sm" text-color="white" label="new Sub-Page..."/>-->
+        <!--        <q-btn class="cursor-pointer q-mr-md" @click="newPage()"-->
+        <!--               icon="add" color="accent" size="sm" text-color="white" label="new Page..."/>-->
+        <!--        <q-btn class="cursor-pointer q-mr-md" @click="newPage(true)"-->
+        <!--               icon="add" color="accent" size="sm" text-color="white" label="new Sub-Page..."/>-->
         <q-btn class="cursor-pointer" @click="openInEditMode()"
                icon="edit" color="warning" size="sm" text-color="white" label="Edit"/>
       </div>
@@ -30,12 +30,12 @@
   <div class="q-mx-xl q-px-md">
     <div class="editorx_body">
       <div v-if="editMode">
-        <q-input type="text" class="text-h6" borderless v-model="title" placeholder="title..." autofocus/>
+        <q-input type="text" class="text-h6 q-ml-lg" borderless v-model="title" placeholder="title..." autofocus/>
       </div>
-      <div class="text-h6" v-else>
+      <div class="text-h6 q-ml-lg" v-else>
         {{ tab?.title }}
       </div>
-      <div id="editorjs" ref="editorJsRef"/>
+      <div id="editorjs" ref="editorJsRef" @keyup="v => keyUpEvent()"/>
     </div>
   </div>
 
@@ -66,12 +66,23 @@ import ImageTool from "@editorjs/image";
 // @ts-ignore
 import Table from "@editorjs/table";
 // @ts-ignore
+import RawTool from "@editorjs/raw";
+// @ts-ignore
+import Checklist from "@editorjs/checklist";
+// @ts-ignore
 import editorjsColumns from "@calumk/editorjs-columns";
+// @ts-ignore
+import editorjsCodeflask from '@calumk/editorjs-codeflask';
+// @ts-ignore
+import Alert from "editorjs-alert";
+// @ts-ignore
+import ColorPlugin from "editorjs-text-color-plugin";
+
 import Analytics from "src/utils/google-analytics";
 import {LinkTool2} from "src/pages/mainpanel/editorjs/linkTool"
 
 import './editorjs/linkTool.css';
-import NavigationService from "src/services/NavigationService";
+import {v5 as uuidv5} from "uuid";
 
 const {formatDate, sendMsg, sanitize} = useUtils()
 
@@ -89,6 +100,7 @@ const title = ref('')
 const originalTitle = ref('')
 const editorJsRef = ref(null)
 const dirty = ref(false)
+const initialHash = ref<string | undefined>(undefined)
 
 let editorJS2: EditorJS = undefined as unknown as EditorJS
 
@@ -96,7 +108,7 @@ useMeta(() => {
   console.debug("using meta...")
   return {
     // @ts-ignore
-    title: 'Documentation: ' + tabsetId.value
+    title: 'Note: ' + title.value
   }
 })
 
@@ -105,12 +117,13 @@ onMounted(() => {
 })
 
 watchEffect(() => {
-  dirty.value = (title.value !== originalTitle.value)
-  console.log("set to dirty", dirty.value)
+  dirty.value = dirty.value || (title.value !== originalTitle.value)
+  //console.log("set to dirty", dirty.value)
   // dirty.value ? window.onbeforeunload = (e) => {
   //   return '';
   // } : window.onbeforeunload = null
 })
+
 
 const column_tools = {
   header: Header,
@@ -189,6 +202,30 @@ const toolsconfig = {
         }
       }
     }
+  },
+  code : editorjsCodeflask,
+  raw: RawTool,
+  checklist: {
+    class: Checklist,
+    inlineToolbar: true,
+  },
+  alert: Alert,
+  Color: {
+    class: ColorPlugin, // if load from CDN, please try: window.ColorPlugin
+    config: {
+      colorCollections: ['#EC7878','#9C27B0','#673AB7','#3F51B5','#0070FF','#03A9F4','#00BCD4','#4CAF50','#8BC34A','#CDDC39', '#FFF'],
+      defaultColor: '#FF1300',
+      type: 'text',
+      customPicker: true // add a button to allow selecting any colour
+    }
+  },
+  Marker: {
+    class: ColorPlugin, // if load from CDN, please try: window.ColorPlugin
+    config: {
+      defaultColor: '#FFBF00',
+      type: 'marker',
+      icon: `<svg fill="#000000" height="200px" width="200px" version="1.1" id="Icons" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 32 32" xml:space="preserve"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <g> <path d="M17.6,6L6.9,16.7c-0.2,0.2-0.3,0.4-0.3,0.6L6,23.9c0,0.3,0.1,0.6,0.3,0.8C6.5,24.9,6.7,25,7,25c0,0,0.1,0,0.1,0l6.6-0.6 c0.2,0,0.5-0.1,0.6-0.3L25,13.4L17.6,6z"></path> <path d="M26.4,12l1.4-1.4c1.2-1.2,1.1-3.1-0.1-4.3l-3-3c-0.6-0.6-1.3-0.9-2.2-0.9c-0.8,0-1.6,0.3-2.2,0.9L19,4.6L26.4,12z"></path> </g> <g> <path d="M28,29H4c-0.6,0-1-0.4-1-1s0.4-1,1-1h24c0.6,0,1,0.4,1,1S28.6,29,28,29z"></path> </g> </g></svg>`
+    }
   }
 }
 
@@ -207,6 +244,14 @@ watchEffect(async () => {
             tabsetId.value = tabObject['tabsetId' as keyof object]
             tabset.value = useTabsetService().getTabset(tabsetId.value) as Tabset | undefined
             title.value = tabObject['tab' as keyof object]['title'] || 'unknown'
+
+            if (tab.value.longDescription) {
+              const json = JSON.stringify(tab.value.longDescription)
+              console.log("tab.value.longDescription",json)
+              initialHash.value = uuidv5(json, 'da42d8e8-2afd-446f-b72e-8b437aa03e46')
+              console.log("initialHash", initialHash.value)
+            }
+
             if (!originalTitle.value) {
               originalTitle.value = title.value
             }
@@ -257,7 +302,7 @@ const saveWork = () => {
         tab.parent = parentId.value
         console.log("saving note", tabset, tabsetId.value)
         // needed to update the note in the side panel
-        sendMsg('tab-changed', {tab: tab.value, tabsetId: tabsetId.value, noteId: noteId.value})
+        sendMsg('note-changed', {tab: tab.value, tabsetId: tabsetId.value, noteId: noteId.value})
       } else if (tabset) { // new note
         const url = chrome.runtime.getURL('www/index.html') + "#" + route.fullPath
         const newTabId = uid()
@@ -276,7 +321,7 @@ const saveWork = () => {
         useTabsetService().saveTabset(tabset)
 
         // needed to update the note in the side panel
-        sendMsg('page-added', {tab: newTab, tabsetId: tabsetId.value, src: 'MainPenalNoteEditPage'})
+        sendMsg('note-changed', {tab: newTab, tabsetId: tabsetId.value, src: 'MainPenalNoteEditPage'})
         // redirect after save
         router.push("/mainpanel/notes/" + newTabId)
         // chrome.tabs.getCurrent((tab:chrome.tabs.Tab | undefined) => {
@@ -294,17 +339,13 @@ const saveWork = () => {
 
 const openInEditMode = () => router.push('./' + tab.value?.id + '?edit=true&tsId=' + tabsetId.value)
 
-const newPage = (subpage: boolean = false) => {
-  console.log("xxx")
-  let url = chrome && chrome.runtime && chrome.runtime.getURL ?
-      chrome.runtime.getURL('www/index.html') + "#/mainpanel/notes/?tsId=" + tabsetId.value + "&edit=true" :
-      "#/mainpanel/notes/?tsId=" + tabsetId.value + "&edit=true&closeOnSave=true"
-  if (subpage) {
-    url = url + "&parent=" + tab.value?.id
-  }
-  console.log("newPage", url)
-  // NavigationService.openOrCreateDocumentation(tabsetId.value || '', url)
-  NavigationService.openOrCreateTab(url)
+const keyUpEvent = () => {
+  // editorJS2.save().then((outputData: any) => {
+  //   console.log("outputData", outputData)
+  //   console.log("outputData", uuidv5(JSON.stringify(outputData), 'da42d8e8-2afd-446f-b72e-8b437aa03e46'))
+  //   dirty.value = uuidv5(JSON.stringify(outputData), 'da42d8e8-2afd-446f-b72e-8b437aa03e46') !== initialHash.value
+  // })
+  dirty.value = true
 }
 </script>
 

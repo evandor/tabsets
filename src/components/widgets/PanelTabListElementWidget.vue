@@ -51,7 +51,12 @@
           <span v-if="props.sorting === TabSorting.TITLE">
               <q-icon name="arrow_right" size="16px"/>
            </span>
-          <span v-html="nameOrTitle(props.tab as Tab)"/>
+          <span v-if="props.tab?.extension === UrlExtension.NOTE"
+              @click.stop="NavigationService.openOrCreateTab(props.tab.url,props.tab.matcher )"
+              v-html="nameOrTitle(props.tab as Tab)"/>
+          <span v-else
+                v-html="nameOrTitle(props.tab as Tab)"
+          />
           <q-icon v-if="(props.tab as Tab).placeholders"
                   name="published_with_changes" class="q-ml-sm" color="accent">
             <q-tooltip>This tab is created by substituting parts of its URL</q-tooltip>
@@ -89,10 +94,10 @@
            </span>
 
           <!-- url or note -->
-          <template v-if="props.tab.extension === UrlExtension.NOTE">
-            <span>open Note</span>
-          </template>
-          <template v-else>
+<!--          <template v-if="props.tab.extension === UrlExtension.NOTE">-->
+<!--            <span>open Note</span>-->
+<!--          </template>-->
+          <template v-if="props.tab.extension !== UrlExtension.NOTE">
             <short-url :url="props.tab.url" :hostname-only="!useUiStore().showFullUrls"/>
             <q-icon v-if="props.tab.matcher && usePermissionsStore().hasFeature(FeatureIdent.ADVANCED_TAB_MANAGEMENT)"
                     @click.stop="openTabAssignmentPage(props.tab)"

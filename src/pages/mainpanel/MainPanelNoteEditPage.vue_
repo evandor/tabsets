@@ -145,7 +145,7 @@ const saveWork = () => {
         tab.value.longDescription = outputData //sanitize(outputData)
         console.log("saving note", tabset, tabsetId.value)
         // needed to update the note in the side panel
-        sendMsg('tab-changed', {tab: tab.value, tabsetId: tabsetId.value, noteId: noteId.value})
+        sendMsg('note-changed', {tab: tab.value, tabsetId: tabsetId.value, noteId: noteId.value})
       } else if (tabset) { // new note
         const url = chrome.runtime.getURL('www/index.html') + "#" + route.fullPath
         const newTabId = uid()
