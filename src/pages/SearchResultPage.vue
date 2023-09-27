@@ -51,13 +51,10 @@
 <script setup lang="ts">
 import {ref, watchEffect} from 'vue';
 import {useRoute} from "vue-router";
-import {useTabsStore} from "src/stores/tabsStore";
 import _ from "lodash"
 import {useSearchStore} from "src/stores/searchStore";
-import {Tabset} from "src/models/Tabset";
 import {uid, useQuasar} from "quasar";
 import SearchHit from "src/components/layouts/SearchHit.vue"
-import ChromeApi from "src/services/ChromeApi";
 import {Hit} from "src/models/Hit";
 import ReindexDialog from "components/dialogues/ReindexDialog.vue";
 import {usePermissionsStore} from "src/stores/permissionsStore";
@@ -65,7 +62,6 @@ import {useCommandExecutor} from "src/services/CommandExecutor";
 import {GrantPermissionCommand} from "src/domain/commands/GrantPermissionCommand";
 
 const route = useRoute()
-const tabsStore = useTabsStore()
 const searchStore = useSearchStore()
 
 const termFromParams = route.query.t as string
