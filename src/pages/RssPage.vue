@@ -48,9 +48,9 @@
       <div class="col">
         <div class="text-subtitle1 cursor-pointer link" @click="openInNewTab(entry.link)">{{ entry.title }}</div>
         <div class="text-subtitle2"> {{ entry.description }}</div>
-        <div class="text-caption text-grey-8"> {{ formatDate(entry.published) }}</div>
+        <div class="text-caption text-grey-8"> {{ formatDate(entry['published' as keyof object]) }}</div>
         <q-tooltip>this entry was created at
-          {{ date.formatDate(entry.published, 'DD.MM.YYYY HH:mm') }}
+          {{ date.formatDate(entry['published' as keyof object], 'DD.MM.YYYY HH:mm') }}
         </q-tooltip>
       </div>
     </div>
