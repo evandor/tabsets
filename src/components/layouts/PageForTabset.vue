@@ -1,142 +1,186 @@
 <template>
 
-  <div class="q-pa-none q-ma-none" style="width:100%">
-    <q-editor
-      v-model="editor"
-      ref="editorRef"
-      min-height="15rem"
-      toolbar-text-color="white"
-      toolbar-toggle-color="yellow-8"
-      toolbar-bg="primary"
-      :definitions="{
-        save: {
-          tip: 'Save your work',
-          icon: 'save',
-          label: 'Save',
-          handler: saveWork
-        }
-      }"
-      :toolbar="[
-        ['tabs'],
-        ['bold', 'italic', 'underline'],
-        [{
-          label: $q.lang.editor.formatting,
-          icon: $q.iconSet.editor.formatting,
-          list: 'no-icons',
-          options: ['p', 'h3', 'h4', 'h5', 'h6', 'code']
-        }],
-        ['save']
-      ]"
-    >
-      <template v-slot:tabs>
-        <q-btn-dropdown
-          dense no-caps
-          ref="tokenRef"
-          no-wrap
-          unelevated
-          color="white"
-          text-color="primary"
-          label="Tabs"
-          size="sm"
-        >
-          <q-list dense>
-            <q-item v-for="tab in tabsStore.getCurrentTabset.tabs"
-                    tag="label" clickable @click="add(tab)">
-              <!--              <q-item-section side>-->
-              <!--                <q-icon name="tab"/>-->
-              <!--              </q-item-section>-->
-              <q-item-section>{{tab.title}} - {{ tab.url }}*</q-item-section>
-            </q-item>
-          </q-list>
-        </q-btn-dropdown>
-      </template>
-    </q-editor>
-
-<!--    <q-card flat bordered>-->
-<!--      <q-card-section>-->
-<!--        <pre style="white-space: pre-line">{{ editor }}</pre>-->
-<!--      </q-card-section>-->
-<!--    </q-card>-->
-
-<!--    <q-card flat bordered>-->
-<!--      <q-card-section v-html="editor"/>-->
-<!--    </q-card>-->
+  <div class="q-mx-xl q-px-md">
+    <div class="editorx_body">
+      <div id="editorjs" ref="editorJsRef" @keyup="v => keyUpEvent()"/>
+    </div>
   </div>
 
 </template>
 
 <script setup lang="ts">
-import {Tab} from "src/models/Tab";
-import {ref, watchEffect} from "vue";
-import {useQuasar} from "quasar";
-import _ from "lodash"
-import {useTabsStore} from "src/stores/tabsStore";
-import {useRoute} from "vue-router";
-import {useTabsetService} from "src/services/TabsetService2";
-import sanitizeHtml from 'sanitize-html';
-import {useUtils} from "src/services/Utils";
 
-const {sanitize} = useUtils()
+// without this, getting "EvalError: Refused to evaluate a string as JavaScript because 'unsafe-eval' is not an allowed"
+import 'regenerator-runtime/runtime'
+import {ref, watchEffect} from "vue";
+import {useRoute} from "vue-router";
+import {useQuasar} from "quasar";
+import {useTabsStore} from "src/stores/tabsStore";
+import {Tab} from "src/models/Tab";
+import {useUtils} from "src/services/Utils";
+import {Tabset} from "src/models/Tabset";
+import EditorJS, {OutputData} from "@editorjs/editorjs";
+
+import EditorJsConfig from "src/utils/EditorConfig";
+import {useTabsetService} from "src/services/TabsetService2";
+//import './editorjs/linkTool.css';
+
+const {formatDate, sendMsg, sanitize} = useUtils()
 
 const $q = useQuasar()
 const tabsStore = useTabsStore()
 const route = useRoute()
 
-const thumbnails = ref<Map<string, string>>(new Map())
-
-const tabsetId = ref(null as unknown as string)
 const editor = ref<any>(tabsStore.getCurrentTabset?.page || '')
 const editorRef = ref<any>(null)
-const tokenRef = ref(null)
+
+const tab = ref<Tab | undefined>(undefined)
+const tabsetId = ref<string | undefined>(route.query.tsId as string)
+const parentId = ref<string | undefined>(route.query.parent as string)
+const tabset = ref<Tabset | undefined>(undefined)
+const dirty = ref(false)
+
+let savingInterval:NodeJS.Timeout | undefined = undefined
+
+let editorJS2: EditorJS = undefined as unknown as EditorJS
 
 watchEffect(() => {
   tabsetId.value = route.params.tabsetId as string
   if (tabsetId.value) {
     console.debug("got tabset id", tabsetId.value)
+    tabset.value = useTabsetService().getTabset(tabsetId.value) as Tabset | undefined
     tabsStore.selectCurrentTabset(tabsetId.value)
+
+    if (tabset.value && !editorJS2) { // && !editorJS2.isReady) {
+      // @ts-ignore
+      editorJS2 = new EditorJS({
+        holder: "editorjs",
+        autofocus: true,
+        readOnly: false,
+        data: (tabset.value.page || {}) as OutputData,
+        tools: EditorJsConfig.toolsconfig
+      });
+    }
   }
 })
 
-function unpinnedNoGroup() {
-  return _.filter(
-    _.map(tabsStore.getCurrentTabs, t => t),
-    // @ts-ignore
-    (t: Tab) => !t?.pinned && t?.groupId === -1)
-}
-
-function tabsForGroup(groupId: number): Tab[] {
-  return _.filter(tabsStore.getTabset(tabsetId.value)?.tabs,
-    //@ts-ignore
-    (t: Tab) => t?.groupId === groupId)
-}
-
-const pasteCapture = (e: any) => console.log("pasteCapture", e)
-const dropCapture = (e: any) => console.log("dropCapture", e)
-const add = (tab: Tab) => {
-  const edit = editorRef.value
-  if (edit) {
-    // @ts-ignore
-    tokenRef.value.hide()
-    edit.caret.restore()
-    edit.runCmd('insertHTML', `&nbsp;<div class="editor_token row inline items-center" contenteditable="false">&nbsp;
-        <img src="${tab.favIconUrl}" height="24px" width="24px">&nbsp;<span>${tab.title}</span></div>&nbsp;`)
-    edit.focus()
+const keyUpEvent = () => {
+  if (!dirty.value) {
+    console.log("setting dirty, starting save interval")
+    savingInterval = setInterval(() => {
+      saveWork()
+    }, 2000)
   }
+  dirty.value = true
 }
+
 const saveWork = () => {
-  if (tabsStore.getCurrentTabset) {
-    tabsStore.getCurrentTabset.page = sanitize(editor.value)
-    useTabsetService().saveCurrentTabset()
-    $q.notify({
-      message: 'Saved your text to local storage',
-      color: 'green-4',
-      textColor: 'white',
-      icon: 'cloud_done'
-    })
-  }
+
+  console.log("saving", tabsetId.value)
+
+  editorJS2.save().then((outputData: any) => {
+    if (tabsetId.value) {
+
+      console.log("tabset", tabset, tab.value)
+      if (tabset.value) {
+        tabset.value.page = outputData // sanitize?
+        console.log("saving note", tabset, tabsetId.value)
+        // needed to update the note in the side panel
+        //sendMsg('note-changed', {tab: tab.value, tabsetId: tabsetId.value, noteId: noteId.value})
+        useTabsetService().saveTabset(tabset.value as Tabset)
+        dirty.value = false
+        if (savingInterval) {
+          console.log("clearing interval")
+          clearInterval(savingInterval)
+        }
+      }
+    } else {
+      console.warn("tabset id missing")
+    }
+  }).catch((error: any) => {
+    console.log('Saving failed: ', error)
+  });
+
 }
+
 
 </script>
 
-<style lang="sass" scoped>
+<style>
+.editorx_body {
+  max-width: 1000px;
+  margin: 0px auto;
+  height: 200px;
+  box-sizing: border-box;
+  border: 0 solid #eee;
+  border-radius: 5px;
+  padding: 10px;
+  /* box-shadow: 0 6px 18px #e8edfa80; */
+}
+
+.ce-block__content,
+.ce-toolbar__content {
+  max-width: none;
+}
+
+.ce-paragraph {
+  font-size: 16px;
+}
+
+/* editorjsColumns */
+
+.ce-editorjsColumns_col {
+  border: 1px solid #eee;
+  border-radius: 5px;
+  gap: 10px;
+  padding-top: 10px;
+}
+
+.ce-editorjsColumns_col:focus-within {
+  box-shadow: 0 6px 18px #e8edfa80;
+}
+
+@media (max-width: 800px) {
+  .ce-editorjsColumns_wrapper {
+    flex-direction: column;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+}
+
+.ce-inline-toolbar {
+  z-index: 1000
+}
+
+.ce-block__content,
+.ce-toolbar__content {
+  max-width: calc(100% - 50px); /* example value, adjust for your own use case */
+}
+
+/*   */
+.ce-toolbar__actions {
+  right: calc(100% + 30px);
+  background-color: rgba(255, 255, 255, 0.5);
+  border-radius: 4px;
+}
+
+/* Would be better to remove --narrow mode */
+/* Issue Raised */
+/* // This causes an error which is good i think? */
+.codex-editor--narrow .codex-editor__redactor {
+  margin: 0;
+}
+
+/* Required to prevent clipping */
+.ce-toolbar {
+  z-index: 4;
+}
+
+.codex-editor {
+  /* background:#f00 !important; */
+  z-index: auto !important;
+}
+
+
 </style>
