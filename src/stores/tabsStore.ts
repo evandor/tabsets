@@ -16,7 +16,7 @@ import {useWindowsStore} from "stores/windowsStores";
 
 async function queryTabs(): Promise<chrome.tabs.Tab[]> {
     // @ts-ignore
-    return await chrome.tabs.query({currentWindow: true});
+    return await browser.tabs.query({currentWindow: true});
 }
 
 function markDuplicates(tabset: Tabset) {
