@@ -5,8 +5,8 @@
     <div class="q-ma-none q-pa-none">
 
       <InfoMessageWidget
-        :probability="1"
-        ident="sidePanelSpacesPage_overview">
+          :probability="1"
+          ident="sidePanelSpacesPage_overview">
         <b>Spaces</b> are a way to <b>organize your tabsets</b> if you have many. A Space is a
         collection of tabsets, and <b>each tabset can be assigned to multiple Spaces</b>.
         Deleting a Space does not delete any associated tabsets.
@@ -14,18 +14,18 @@
 
       <q-list dense v-if="usePermissionsStore().hasFeature(FeatureIdent.SPACES)">
         <q-expansion-item
-          v-for="space in spacesStore.spaces.values()"
-          expand-separator>
+            v-for="space in sortedSpaces()"
+            expand-separator>
 
           <template v-slot:header>
             <q-item-section
-              @mouseover="hoveredSpace = space.id"
-              @mouseleave="hoveredSpace = undefined">
+                @mouseover="hoveredSpace = space.id"
+                @mouseleave="hoveredSpace = undefined">
               <q-item-label :class="spacesStore.space?.id === space.id ? 'text-bold text-primary' : ''">
                 <q-icon
-                  color="positive"
-                  name="o_space_dashboard"
-                  style="position: relative;top:-2px"/>
+                    color="positive"
+                    name="o_space_dashboard"
+                    style="position: relative;top:-2px"/>
                 {{ space.label }}
               </q-item-label>
               <q-item-label class="text-caption text-grey-5">
@@ -33,32 +33,32 @@
               </q-item-label>
             </q-item-section>
 
-            <q-item-section side
-                            @mouseover="hoveredSpace = space.id"
-                            @mouseleave="hoveredSpace = undefined">
-              <Transition appear>
-                <div class="row items-center">
-                    <span v-if="hoveredOver(space.id)">
-                      <q-icon name="more_horiz" color="primary" size="16px"/>
-                    </span>
-                  <span v-else>
-                      <q-icon color="primary" size="16px"/>
-                    </span>
+<!--            <q-item-section side-->
+<!--                            @mouseover="hoveredSpace = space.id"-->
+<!--                            @mouseleave="hoveredSpace = undefined">-->
+<!--              <Transition appear>-->
+<!--                <div class="row items-center">-->
+<!--                    <span v-if="hoveredOver(space.id)">-->
+<!--                      <q-icon name="more_horiz" color="primary" size="16px"/>-->
+<!--                    </span>-->
+<!--                  <span v-else>-->
+<!--                      <q-icon color="primary" size="16px"/>-->
+<!--                    </span>-->
 
-                  <!--                    <SidePanelPageContextMenu :tabset="tabset as Tabset"/>-->
+<!--                  &lt;!&ndash;                    <SidePanelPageContextMenu :tabset="tabset as Tabset"/>&ndash;&gt;-->
 
-                </div>
-              </Transition>
-            </q-item-section>
+<!--                </div>-->
+<!--              </Transition>-->
+<!--            </q-item-section>-->
           </template>
 
 
           <div class="row">
             <div class="col text-right" style="border-bottom:1px solid lightgray">
               <q-icon
-                class="q-ma-xs cursor-pointer" name="o_add" size="16px"
-                color="primary"
-                @click="openNewTabsetDialog(space.id)">
+                  class="q-ma-xs cursor-pointer" name="o_add" size="16px"
+                  color="primary"
+                  @click="openNewTabsetDialog(space.id)">
                 <q-tooltip class="tooltip">Add Tabset</q-tooltip>
               </q-icon>
             </div>
@@ -66,9 +66,9 @@
           <q-card>
             <q-card-section>
               <NavTabsetsListWidgetNonBex
-                :tabsets="tabsetsForSpace.get(space.id) || []"
-                :spaceId="space.id"
-                :fromPanel="true"/>
+                  :tabsets="tabsetsForSpace.get(space.id) || []"
+                  :spaceId="space.id"
+                  :fromPanel="true"/>
             </q-card-section>
           </q-card>
         </q-expansion-item>
@@ -79,8 +79,8 @@
                           :caption="tabsetsWithoutSpaces().length + ' tabsets'">
 
           <InfoMessageWidget v-if="useSpacesStore().spaces.size === 0"
-            :probability="1"
-            ident="sidePanelSpacesPage_unassignedTabsets">
+                             :probability="1"
+                             ident="sidePanelSpacesPage_unassignedTabsets">
             Start by creating a new Space by clicking on the plus sign and
             add tabsets to it.
           </InfoMessageWidget>
@@ -99,8 +99,8 @@
         <q-card>
           <q-card-section>
             <NavTabsetsListWidgetNonBex
-              :tabsets="[...tabsStore.tabsets.values()]"
-              :fromPanel="true"/>
+                :tabsets="[...tabsStore.tabsets.values()]"
+                :fromPanel="true"/>
           </q-card-section>
         </q-card>
       </q-list>
@@ -111,33 +111,33 @@
     <q-page-sticky expand position="top" style="background-color:white">
 
       <FirstToolbarHelper
-        @was-clicked="useUiStore().sidePanelSetActiveView(SidePanelView.MAIN)"
-        :show-back-button="true">
+          @was-clicked="useUiStore().sidePanelSetActiveView(SidePanelView.MAIN)"
+          :show-back-button="true">
         <template v-slot:title>
           <!--          <q-icon name="o_space_dashboard" color="primary" size="18px"/>-->
           {{ usePermissionsStore().hasFeature(FeatureIdent.SPACES) ? 'Spaces' : 'Tabset List' }}
           <q-btn
-            icon="o_add"
-            color="primary"
-            flat
-            class="q-ma-none q-pa-xs cursor-pointer"
-            style="max-width:20px"
-            size="10px"
-            @click="addSpace()">
+              icon="o_add"
+              color="primary"
+              flat
+              class="q-ma-none q-pa-xs cursor-pointer"
+              style="max-width:20px"
+              size="10px"
+              @click="addSpace()">
             <q-tooltip class="tooltip">Create new Space</q-tooltip>
           </q-btn>
         </template>
         <template v-slot:iconsRight>
-          <q-btn
-            icon="more_horiz"
-            color="primary"
-            flat
-            class="q-ma-none q-pa-xs cursor-pointer"
-            style="max-width:20px"
-            size="10px"
-            @click="manageSpaces()">
-            <q-tooltip class="tooltip">Manage Spaces</q-tooltip>
-          </q-btn>
+<!--          <q-btn-->
+<!--              icon="more_horiz"-->
+<!--              color="primary"-->
+<!--              flat-->
+<!--              class="q-ma-none q-pa-xs cursor-pointer"-->
+<!--              style="max-width:20px"-->
+<!--              size="10px"-->
+<!--              @click="manageSpaces()">-->
+<!--            <q-tooltip class="tooltip">Manage Spaces</q-tooltip>-->
+<!--          </q-btn>-->
         </template>
       </FirstToolbarHelper>
 
@@ -170,7 +170,6 @@
 
 import {onMounted, ref, watchEffect} from "vue";
 import {useTabsStore} from "src/stores/tabsStore";
-import {Tab} from "src/models/Tab";
 import _ from "lodash"
 import {Tabset, TabsetStatus, TabsetType} from "src/models/Tabset";
 import {useRouter} from "vue-router";
@@ -185,9 +184,7 @@ import NavigationService from "src/services/NavigationService";
 import NewTabsetDialog from "components/dialogues/NewTabsetDialog.vue";
 import {SidePanelView, useUiStore} from "stores/uiStore";
 import InfoMessageWidget from "components/widgets/InfoMessageWidget.vue";
-import PanelTabListElementWidget from "components/widgets/PanelTabListElementWidget.vue";
 import FirstToolbarHelper from "pages/sidepanel/helper/FirstToolbarHelper.vue";
-import SidePanelPageContextMenu from "pages/sidepanel/SidePanelPageContextMenu.vue";
 import {useWindowsStore} from "stores/windowsStores";
 import Analytics from "src/utils/google-analytics";
 
@@ -215,14 +212,27 @@ watchEffect(() => {
   const start = new Date().getTime()
   let res: Map<string, Tabset[]> = new Map()
   _.forEach([...useTabsStore().tabsets.values()], (ts: Tabset) => {
-    _.forEach(ts.spaces, (spaceId: string) => {
-      if (res.has(spaceId)) {
-        res.set(spaceId, (res.get(spaceId) || []).concat([ts]))
-      } else {
-        res.set(spaceId, [ts])
-      }
-    })
+    if (ts.status !== TabsetStatus.DELETED) {
+      _.forEach(ts.spaces, (spaceId: string) => {
+        if (res.has(spaceId)) {
+          const exisitingTabsets: Tabset[] = res.get(spaceId) || []
+          if (exisitingTabsets.findIndex(t => t.id === ts.id) < 0) {
+            res.set(spaceId, (res.get(spaceId) || []).concat([ts]))
+          }
+        } else {
+          res.set(spaceId, [ts])
+        }
+      })
+    }
   })
+  res.forEach((value: Tabset[], key: string) => {
+    console.log(key, value);
+    res.set(key, _.sortBy(value, [
+      function (o) {
+        return o.name.toLowerCase()
+      }
+    ]))
+  });
   tabsetsForSpace.value = res // useSpacesStore().tabsetsForSpaces()
 })
 
@@ -241,7 +251,7 @@ watchEffect(() => {
 
 watchEffect(() => {
   //currentChromeTab.value = useTabsStore().currentChromeTab
-  const windowId = useWindowsStore().currentWindow.id || 0
+  const windowId = useWindowsStore().currentWindow?.id || 0
   currentChromeTab.value = useTabsStore().getCurrentChromeTab(windowId) || useTabsStore().currentChromeTab
 })
 
@@ -315,17 +325,17 @@ const tabsets = (): Tabset[] => {
     }
   }
   return _.sortBy(_.filter(tabsets, (ts: Tabset) =>
-      ts.type !== TabsetType.SPECIAL &&
-      ts.status !== TabsetStatus.ARCHIVED &&
-      ts.status !== TabsetStatus.DELETED),
-    [
-      function (o) {
-        return o.status === TabsetStatus.FAVORITE ? 0 : 1
-      },
-      function (o) {
-        return o.name.toLowerCase()
-      }
-    ])
+          ts.type !== TabsetType.SPECIAL &&
+          ts.status !== TabsetStatus.ARCHIVED &&
+          ts.status !== TabsetStatus.DELETED),
+      [
+        function (o) {
+          return o.status === TabsetStatus.FAVORITE ? 0 : 1
+        },
+        function (o) {
+          return o.name.toLowerCase()
+        }
+      ])
 }
 
 const tabsetsWithoutSpaces = (): Tabset[] => {
@@ -333,18 +343,18 @@ const tabsetsWithoutSpaces = (): Tabset[] => {
 
   let tabsets = [...tabsStore.tabsets.values()]
   return _.sortBy(_.filter(tabsets, (ts: Tabset) =>
-      ts.spaces.length === 0 &&
-      ts.type !== TabsetType.SPECIAL &&
-      ts.status !== TabsetStatus.ARCHIVED &&
-      ts.status !== TabsetStatus.DELETED),
-    [
-      function (o) {
-        return o.status === TabsetStatus.FAVORITE ? 0 : 1
-      },
-      function (o) {
-        return o.name.toLowerCase()
-      }
-    ])
+          ts.spaces.length === 0 &&
+          ts.type !== TabsetType.SPECIAL &&
+          ts.status !== TabsetStatus.ARCHIVED &&
+          ts.status !== TabsetStatus.DELETED),
+      [
+        function (o) {
+          return o.status === TabsetStatus.FAVORITE ? 0 : 1
+        },
+        function (o) {
+          return o.name.toLowerCase()
+        }
+      ])
 }
 
 const addSpace = () => {
@@ -358,7 +368,7 @@ const addSpace = () => {
 }
 
 const manageSpaces = () =>
-  NavigationService.openOrCreateTab(chrome.runtime.getURL('www/index.html#/mainpanel/spaces'))
+    NavigationService.openOrCreateTab(chrome.runtime.getURL('www/index.html#/mainpanel/spaces'))
 
 const openNewTabsetDialog = (spaceId: string) => {
   $q.dialog({
@@ -373,5 +383,8 @@ const openNewTabsetDialog = (spaceId: string) => {
 
 const hoveredOver = (spaceId: string) => hoveredSpace.value === spaceId
 
-
+const sortedSpaces = () => _.sortBy([...spacesStore.spaces.values()],
+    [function (o) {
+      return o.label?.toLowerCase()
+    }])
 </script>

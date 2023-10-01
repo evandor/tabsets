@@ -6,20 +6,20 @@
     <div class="col text-right q-ma-sm">
       <div v-if="editMode">
         <template v-if="dirty">
-          <q-btn  class="cursor-pointer" @click="saveWork()"
-                  icon="save" color="warning" size="sm" text-color="white" label="Save"/>
+          <q-btn class="cursor-pointer" @click="saveWork()"
+                 icon="save" color="warning" size="sm" text-color="white" label="Save"/>
         </template>
         <template v-else>
-<!--          <q-btn  class="cursor-pointer q-mr-md" @click="newPage()"-->
-<!--                  icon="add" color="accent" size="sm" text-color="white" label="new Page..."/>-->
+          <!--          <q-btn  class="cursor-pointer q-mr-md" @click="newPage()"-->
+          <!--                  icon="add" color="accent" size="sm" text-color="white" label="new Page..."/>-->
           <q-btn :disable="true" icon="save" color="warning" size="sm" text-color="white" label="Save"/>
         </template>
       </div>
       <div v-else>
-<!--        <q-btn class="cursor-pointer q-mr-md" @click="newPage()"-->
-<!--               icon="add" color="accent" size="sm" text-color="white" label="new Page..."/>-->
-<!--        <q-btn class="cursor-pointer q-mr-md" @click="newPage(true)"-->
-<!--               icon="add" color="accent" size="sm" text-color="white" label="new Sub-Page..."/>-->
+        <!--        <q-btn class="cursor-pointer q-mr-md" @click="newPage()"-->
+        <!--               icon="add" color="accent" size="sm" text-color="white" label="new Page..."/>-->
+        <!--        <q-btn class="cursor-pointer q-mr-md" @click="newPage(true)"-->
+        <!--               icon="add" color="accent" size="sm" text-color="white" label="new Sub-Page..."/>-->
         <q-btn class="cursor-pointer" @click="openInEditMode()"
                icon="edit" color="warning" size="sm" text-color="white" label="Edit"/>
       </div>
@@ -30,12 +30,12 @@
   <div class="q-mx-xl q-px-md">
     <div class="editorx_body">
       <div v-if="editMode">
-        <q-input type="text" class="text-h6" borderless v-model="title" placeholder="title..." autofocus/>
+        <q-input type="text" class="text-h6 q-ml-lg" borderless v-model="title" placeholder="title..." autofocus/>
       </div>
-      <div class="text-h6" v-else>
+      <div class="text-h6 q-ml-lg" v-else>
         {{ tab?.title }}
       </div>
-      <div id="editorjs" ref="editorJsRef"/>
+      <div id="editorjs" ref="editorJsRef" @keyup="v => keyUpEvent()"/>
     </div>
   </div>
 
@@ -55,23 +55,12 @@ import {Tabset} from "src/models/Tabset";
 import ChromeApi from "src/services/ChromeApi";
 import EditorJS, {OutputData} from "@editorjs/editorjs";
 //import 'regenerator-runtime/runtime'
-// @ts-ignore
-import Header from "@editorjs/header";
-// @ts-ignore
-import LinkTool from "@editorjs/link";
-// @ts-ignore
-import Quote from "@editorjs/quote";
-// @ts-ignore
-import ImageTool from "@editorjs/image";
-// @ts-ignore
-import Table from "@editorjs/table";
-// @ts-ignore
-import editorjsColumns from "@calumk/editorjs-columns";
 import Analytics from "src/utils/google-analytics";
-import {LinkTool2} from "src/pages/mainpanel/editorjs/linkTool"
+
+import EditorJsConfig from "src/utils/EditorJsConfig";
 
 import './editorjs/linkTool.css';
-import NavigationService from "src/services/NavigationService";
+import {v5 as uuidv5} from "uuid";
 
 const {formatDate, sendMsg, sanitize} = useUtils()
 
@@ -89,6 +78,7 @@ const title = ref('')
 const originalTitle = ref('')
 const editorJsRef = ref(null)
 const dirty = ref(false)
+const initialHash = ref<string | undefined>(undefined)
 
 let editorJS2: EditorJS = undefined as unknown as EditorJS
 
@@ -96,7 +86,7 @@ useMeta(() => {
   console.debug("using meta...")
   return {
     // @ts-ignore
-    title: 'Documentation: ' + tabsetId.value
+    title: 'Note: ' + title.value
   }
 })
 
@@ -105,92 +95,12 @@ onMounted(() => {
 })
 
 watchEffect(() => {
-  dirty.value = (title.value !== originalTitle.value)
-  console.log("set to dirty", dirty.value)
+  dirty.value = dirty.value || (title.value !== originalTitle.value)
+  //console.log("set to dirty", dirty.value)
   // dirty.value ? window.onbeforeunload = (e) => {
   //   return '';
   // } : window.onbeforeunload = null
 })
-
-const column_tools = {
-  header: Header,
-  linkTool2: {
-    class: LinkTool2,
-    config: {
-      endpoint: `/www/editor.html`, // Your backend endpoint for url data fetching,
-    }
-  }
-  //alert : Alert,
-  //paragraph : editorjsParagraphLinebreakable,
-  //delimiter : Delimiter
-}
-
-const toolsconfig = {
-  header: {
-    class: Header,
-    shortcut: "CMD+SHIFT+H"
-  },
-  quote: {
-    class: Quote,
-    inlineToolbar: true,
-    shortcut: 'CMD+SHIFT+O',
-    config: {
-      quotePlaceholder: 'Enter a quote',
-      captionPlaceholder: 'Quote\'s author',
-    }
-  },
-  linkTool2: {
-    class: LinkTool2,
-    config: {
-      endpoint: `/www/editor.html`, // Your backend endpoint for url data fetching,
-    }
-  },
-  table: {
-    class: Table,
-    inlineToolbar: true,
-    config: {
-      rows: 2,
-      cols: 3,
-    },
-  },
-  columns: {
-    class: editorjsColumns,
-    config: {
-      EditorJsLibrary: EditorJS,
-      tools: column_tools
-    }
-  },
-  image: {
-    class: ImageTool,
-    config: {
-      /**
-       * Custom uploader
-       */
-      uploader: {
-        /**
-         * Upload file to the server and return an uploaded image data
-         * @param {File} file - file selected from the device or pasted by drag-n-drop
-         * @return {Promise.<{success, file: {url}}>}
-         */
-        uploadByFile(file: any) {
-          // your own uploading logic here
-
-        },
-
-        /**
-         * Send URL-string to the server. Backend should load image by this URL and return an uploaded image data
-         * @param {string} url - pasted image URL
-         * @return {Promise.<{success, file: {url}}>}
-         */
-        uploadByUrl(url: string) {
-          // your ajax request for uploading
-
-
-        }
-      }
-    }
-  }
-}
 
 watchEffect(async () => {
   noteId.value = route.params.noteId as unknown as string
@@ -207,6 +117,14 @@ watchEffect(async () => {
             tabsetId.value = tabObject['tabsetId' as keyof object]
             tabset.value = useTabsetService().getTabset(tabsetId.value) as Tabset | undefined
             title.value = tabObject['tab' as keyof object]['title'] || 'unknown'
+
+            if (tab.value.longDescription) {
+              const json = JSON.stringify(tab.value.longDescription)
+              console.log("tab.value.longDescription",json)
+              initialHash.value = uuidv5(json, 'da42d8e8-2afd-446f-b72e-8b437aa03e46')
+              console.log("initialHash", initialHash.value)
+            }
+
             if (!originalTitle.value) {
               originalTitle.value = title.value
             }
@@ -216,7 +134,7 @@ watchEffect(async () => {
                 holder: "editorjs",
                 readOnly: !editMode.value,
                 data: (tab.value.longDescription || {}) as OutputData,
-                tools: toolsconfig
+                tools: EditorJsConfig.toolsconfig
               });
             } else {
               editorJS2.readOnly.toggle(!editMode.value)
@@ -233,7 +151,7 @@ watchEffect(async () => {
         autofocus: true,
         readOnly: false,
         data: {} as OutputData,
-        tools: toolsconfig
+        tools: EditorJsConfig.toolsconfig
       });
     }
   }
@@ -254,10 +172,10 @@ const saveWork = () => {
         //tab.value.description = description.value
         tab.value.title = sanitize(title.value)
         tab.value.longDescription = outputData //sanitize(outputData)
-        tab.parent = parentId.value
+        //tab.value.parent = parentId.value
         console.log("saving note", tabset, tabsetId.value)
         // needed to update the note in the side panel
-        sendMsg('tab-changed', {tab: tab.value, tabsetId: tabsetId.value, noteId: noteId.value})
+        sendMsg('note-changed', {tab: tab.value, tabsetId: tabsetId.value, noteId: noteId.value})
       } else if (tabset) { // new note
         const url = chrome.runtime.getURL('www/index.html') + "#" + route.fullPath
         const newTabId = uid()
@@ -267,7 +185,7 @@ const saveWork = () => {
         newTab.longDescription = outputData
         //   useTabsetService().saveCurrentTabset()
         newTab.url = newTab.url?.split('?')[0] + newTabId
-        newTab.parent = parentId.value
+        //newTab.parent = parentId.value
 
         // lesson learned: execute code here and send message only to update dependent parts
         const tabset = useTabsetService().getTabset(tabsetId.value) as Tabset
@@ -276,7 +194,7 @@ const saveWork = () => {
         useTabsetService().saveTabset(tabset)
 
         // needed to update the note in the side panel
-        sendMsg('page-added', {tab: newTab, tabsetId: tabsetId.value, src: 'MainPenalNoteEditPage'})
+        sendMsg('note-changed', {tab: newTab, tabsetId: tabsetId.value, src: 'MainPenalNoteEditPage'})
         // redirect after save
         router.push("/mainpanel/notes/" + newTabId)
         // chrome.tabs.getCurrent((tab:chrome.tabs.Tab | undefined) => {
@@ -294,17 +212,13 @@ const saveWork = () => {
 
 const openInEditMode = () => router.push('./' + tab.value?.id + '?edit=true&tsId=' + tabsetId.value)
 
-const newPage = (subpage: boolean = false) => {
-  console.log("xxx")
-  let url = chrome && chrome.runtime && chrome.runtime.getURL ?
-      chrome.runtime.getURL('www/index.html') + "#/mainpanel/notes/?tsId=" + tabsetId.value + "&edit=true" :
-      "#/mainpanel/notes/?tsId=" + tabsetId.value + "&edit=true&closeOnSave=true"
-  if (subpage) {
-    url = url + "&parent=" + tab.value?.id
-  }
-  console.log("newPage", url)
-  // NavigationService.openOrCreateDocumentation(tabsetId.value || '', url)
-  NavigationService.openOrCreateTab(url)
+const keyUpEvent = () => {
+  // editorJS2.save().then((outputData: any) => {
+  //   console.log("outputData", outputData)
+  //   console.log("outputData", uuidv5(JSON.stringify(outputData), 'da42d8e8-2afd-446f-b72e-8b437aa03e46'))
+  //   dirty.value = uuidv5(JSON.stringify(outputData), 'da42d8e8-2afd-446f-b72e-8b437aa03e46') !== initialHash.value
+  // })
+  dirty.value = true
 }
 </script>
 

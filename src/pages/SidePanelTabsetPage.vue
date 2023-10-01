@@ -12,7 +12,7 @@
           :tabsetType="tabset.type"
           :sorting="sorting"
           :show-tabsets="true"
-          :preventDragAndDrop="$q.platform.is.mobile || sorting !== TabSorting.CUSTOM"
+          :preventDragAndDrop="preventDragAndDrop(sorting)"
           :tabs="filteredTabs(tabset as Tabset)"/>
 
     </div>
@@ -53,18 +53,8 @@
             <q-tooltip class="tooltip">Toggle Sorting - now: {{ sorting }}</q-tooltip>
           </q-btn>
 
-          <span class="q-ma-none q-pa-none q-mx-sm text-grey-5">|</span>
+<!--          <span class="q-ma-none q-pa-none q-mx-sm text-grey-5">|</span>-->
 
-          <q-btn
-              icon="close"
-              @click="useUiStore().sidePanelSetActiveView(SidePanelView.MAIN)"
-              color="black"
-              flat
-              class="q-ma-none q-pa-xs cursor-pointer"
-              style="max-width:20px"
-              size="10px">
-            <q-tooltip class="tooltip">Close this view</q-tooltip>
-          </q-btn>
         </template>
 
       </FirstToolbarHelper>
@@ -83,18 +73,19 @@ import _ from "lodash"
 import {Tabset, TabsetType} from "src/models/Tabset";
 import {useRoute} from "vue-router";
 import {useUtils} from "src/services/Utils";
-import {SidePanelView, useUiStore} from "src/stores/uiStore";
+import {useUiStore} from "src/stores/uiStore";
 import PanelTabList from "components/layouts/PanelTabList.vue";
 import SidePanelTabInfo from "pages/sidepanel/SidePanelTabInfo.vue";
 import FirstToolbarHelper from "pages/sidepanel/helper/FirstToolbarHelper.vue";
 import {DynamicTabSourceType} from "src/models/DynamicTabSource";
-import {useWindowsStore} from "../stores/windowsStores";
+import {useWindowsStore} from "src/stores/windowsStores";
 import Analytics from "src/utils/google-analytics";
-import TabsetsSelectorWidget from "components/widgets/TabsetsSelectorWidget.vue";
 import SidePanelTabsetsSelectorWidget from "components/widgets/SidePanelTabsetsSelectorWidget.vue";
+import {useQuasar} from "quasar";
 
 const {inBexMode} = useUtils()
 
+const $q = useQuasar()
 const route = useRoute()
 
 const tabsStore = useTabsStore()
@@ -204,9 +195,10 @@ function getOrder() {
     default:
       return (t: Tab) => 1
   }
-  return (t: Tab) => 1
 }
 
 const toggleOrder = () => descending.value = !descending.value
+
+const preventDragAndDrop = (sorting:TabSorting) => $q.platform.is.mobile || sorting !== TabSorting.CUSTOM
 
 </script>

@@ -15,7 +15,7 @@
           {{ useSpacesStore().space?.label ? 'Tabsets of ' + useSpacesStore().space.label : 'Tabsets w/o Space' }}
         </q-item>
         <q-item disable
-                v-else-if="useTabsStore().tabsets.size > 1 && usePermissionsStore().hasFeature(FeatureIdent.SPACES)">
+                v-else-if="!usePermissionsStore().hasFeature(FeatureIdent.SPACES)">
           Switch to other Tabset:
         </q-item>
         <q-item clickable v-for="ts in allTabsetsButCurrent" @click="switchToTabset(ts as Tabset)">
@@ -28,6 +28,11 @@
             Switch Space...
           </q-item>
         </template>
+
+        <q-separator />
+        <q-item clickable @click.stop="router.push('/sidepanel')">
+          Show all Tabsets
+        </q-item>
 
         <template
             v-if="usePermissionsStore().hasFeature(FeatureIdent.BACKUP) || usePermissionsStore().hasFeature(FeatureIdent.IGNORE)">

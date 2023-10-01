@@ -71,10 +71,10 @@
     <div v-for="bm in _.filter(bookmarksStore.bookmarksForFolder, (bm:Bookmark) => bm.chromeBookmark.url)"
          :key="bm.id"
          draggable="true"
-         @dragstart="startDrag($event, bm)"
+         @dragstart="startDrag($event, bm as Bookmark)"
          class="col-xs-12 col-sm-4 col-md-3 col-lg-2 q-pa-xs">
 
-      <q-card class="my-card" flat bordered :style="cardStyle(bm)" @mouseover="setInfo(bm)">
+      <q-card class="my-card" flat bordered :style="cardStyle(bm as Bookmark)" @mouseover="setInfo(bm)">
 
         <q-card-section class="q-pt-xs cursor-pointer bg-amber-1 text-black">
           <div class="row items-baseline">

@@ -51,6 +51,9 @@ include:
   - name: VueMissingComponentImportInspection
   - name: VueUnrecognizedDirective
   - name: RegExpRedundantEscape
+  - name: StandardJS
+  - name: TailRecursionJS
+  - name: JSAnnotator
 exclude:
   - name: JavaeeApplicationDomInspection
   - name: MimeType

@@ -145,7 +145,7 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/mainpanel/tab/:id',// TODO combine with Tag page
     component: () => import('layouts/PlainLayout.vue'),
-    children: [{ path: '', component: () => import('pages/mainpanel/MainPanelTabPage.vue') }],
+    children: [{ path: '', component: () => import('pages/TabPage.vue') }],
   },
   {
     path: '/mainpanel/suggestions/:suggestionId',
@@ -168,7 +168,7 @@ const routes: RouteRecordRaw[] = [
     children: [{ path: '', component: () => import('pages/mainpanel/MainPanelTabAssignmentPage.vue') }],
   },
   {
-    path: '/mainpanel/readingmode/:tabId', // TODO combine with Note page
+    path: '/mainpanel/readingmode/:tabId',
     component: () => import('layouts/PlainLayout.vue'),
     children: [{ path: '', component: () => import('pages/mainpanel/MainPanelReadingModePage.vue') }],
   },
@@ -216,6 +216,16 @@ const routes: RouteRecordRaw[] = [
     path: '/spaces',
     component: () => import('layouts/DefaultLayout.vue'),
     children: [{ path: '', component: () => import('pages/Spaces.vue') }],
+  },
+  {
+    path: '/mhtml/:encodedUrl',
+    component: () => import('layouts/DefaultLayout.vue'),
+    children: [{ path: '', component: () => import('pages/MHtmlPage.vue') }],
+  },
+  {
+    path: '/rss/:encodedUrl',
+    component: () => import('layouts/DefaultLayout.vue'),
+    children: [{ path: '', component: () => import('pages/RssPage.vue') }],
   },
   {
     path: '/bydomain/:encodedUrl',

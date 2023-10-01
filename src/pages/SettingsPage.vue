@@ -25,7 +25,7 @@
       <q-tab name="archived" label="Archived Tabsets"/>
       <q-tab name="search" label="Search Engine" v-if="devEnabled"/>
       <q-tab name="importExport" label="Import/Export"/>
-<!--      <q-tab name="logs" label="Log: Errors & Warnings"/>-->
+      <!--      <q-tab name="logs" label="Log: Errors & Warnings"/>-->
       <q-tab name="featureToggles" label="Feature Toggles"/>
     </q-tabs>
   </div>
@@ -100,11 +100,11 @@
         </div>
         <div class="col q-ma-xl">
           <q-range
-            v-model="settingsStore.thresholds"
-            :step=10
-            marker-labels
-            :min=0
-            :max=100
+              v-model="settingsStore.thresholds"
+              :step=10
+              marker-labels
+              :min=0
+              :max=100
           />
         </div>
       </div>
@@ -142,8 +142,8 @@
   <div v-if="tab === 'permissions'">
 
     <div class="q-pa-md q-gutter-sm">
-      <q-banner rounded class="bg-grey-1 text-primary">On this settings page, you can adjust some of the permissions
-        needed for the tabsets extension.
+      <q-banner rounded class="bg-grey-1 text-primary">On this settings page, you can see the active permissions
+         for the tabsets extension.
       </q-banner>
 
       <div class="row items-baseline q-ma-md">
@@ -164,52 +164,8 @@
         </div>
       </div>
 
-      <div class="row items-baseline q-ma-md">
-        <div class="col-3">
-          Bookmarks (optional permission)
-        </div>
-        <div class="col-9">
-          <q-radio v-model="bookmarksPermissionGranted" :val="true" label="Granted"/>
-          <q-radio v-model="bookmarksPermissionGranted" :val="false" label="Revoked"/>
-        </div>
-      </div>
-
-      <div class="row items-baseline q-ma-md">
-        <div class="col-3">
-          All URLs
-        </div>
-        <div class="col-9">
-          <q-radio v-model="allUrlsOriginGranted" :val="true" label="Granted"/>
-          <q-radio v-model="allUrlsOriginGranted" :val="false" label="Revoked"/>
-        </div>
-      </div>
-
-      <div class="row items-baseline q-ma-md">
-        <div class="col-3">
-          Page Capture
-        </div>
-        <div class="col-9">
-          <q-radio v-model="pageCapturePermissionGranted" :val="true" label="Granted"/>
-          <q-radio v-model="pageCapturePermissionGranted" :val="false" label="Revoked"/>
-        </div>
-      </div>
-
     </div>
 
-
-    <div class="row items-baseline q-ma-lg">
-      <div class="col-3 text-h6">All URLs</div>
-      <div class="col-9">
-
-      </div>
-    </div>
-
-    <div class="row items-baseline q-ma-lg">
-      <div class="col-3 text-h6">History</div>
-      <div class="col-9">
-
-      </div>
-    </div>
   </div>
 
   <div v-if="tab === 'ignored'">
@@ -220,14 +176,14 @@
         notifiy you about changes.
       </q-banner>
 
-      <div class="row q-pa-md" v-for="tabset in ignoredUrls()">
-        <div class="col-3"><b>{{ tabset.url }}</b></div>
-        <div class="col-3"></div>
-        <div class="col-1"></div>
-        <div class="col-5">
-          <!--          <q-btn label="Un-Archive" @click="unarchive(tabset)"/>-->
-        </div>
-      </div>
+<!--      <div class="row q-pa-md" v-for="tabset in ignoredUrls()">-->
+<!--        <div class="col-3"><b>{{ tabset.url }}</b></div>-->
+<!--        <div class="col-3"></div>-->
+<!--        <div class="col-1"></div>-->
+<!--        <div class="col-5">-->
+<!--          &lt;!&ndash;          <q-btn label="Un-Archive" @click="unarchive(tabset)"/>&ndash;&gt;-->
+<!--        </div>-->
+<!--      </div>-->
     </div>
 
   </div>
@@ -315,8 +271,8 @@
         <div class="col-1"></div>
         <div class="col-5">
           <q-btn
-            @click="showExportDialog"
-            flat round dense icon="file_download" color="primary">
+              @click="showExportDialog"
+              flat round dense icon="file_download" color="primary">
             <q-tooltip>Export your tabsets</q-tooltip>
           </q-btn>
         </div>
@@ -328,8 +284,8 @@
         <div class="col-1"></div>
         <div class="col-5">
           <q-btn
-            @click="showImportDialog"
-            flat round dense icon="file_upload" color="primary">
+              @click="showImportDialog"
+              flat round dense icon="file_upload" color="primary">
             <q-tooltip>Import your tabsets backup</q-tooltip>
           </q-btn>
         </div>
@@ -398,7 +354,7 @@ import OpenRightDrawerWidget from "components/widgets/OpenRightDrawerWidget.vue"
 import {useUtils} from "src/services/Utils";
 import Analytics from "src/utils/google-analytics";
 
-const {inBexMode,sendMsg} = useUtils()
+const {inBexMode, sendMsg} = useUtils()
 
 const tabsStore = useTabsStore()
 const featuresStore = useSettingsStore()
@@ -447,14 +403,14 @@ watch(() => bookmarksPermissionGranted.value, (newValue, oldValue) => {
   }
   if (bookmarksPermissionGranted.value && !usePermissionsStore().hasPermission('bookmarks')) {
     useCommandExecutor()
-      .executeFromUi(new GrantPermissionCommand("bookmarks"))
-      .then((res: ExecutionResult<boolean>) => bookmarksPermissionGranted.value = res.result)
+        .executeFromUi(new GrantPermissionCommand("bookmarks"))
+        .then((res: ExecutionResult<boolean>) => bookmarksPermissionGranted.value = res.result)
   } else if (!bookmarksPermissionGranted.value) {
     useCommandExecutor()
-      .executeFromUi(new RevokePermissionCommand("bookmarks"))
-      .then(() => {
-        useBookmarksStore().loadBookmarks()
-      })
+        .executeFromUi(new RevokePermissionCommand("bookmarks"))
+        .then(() => {
+          useBookmarksStore().loadBookmarks()
+        })
   }
 })
 
@@ -465,11 +421,11 @@ watch(() => pageCapturePermissionGranted.value, (newValue, oldValue) => {
   }
   if (pageCapturePermissionGranted.value && !usePermissionsStore().hasPermission('pageCapture')) {
     useCommandExecutor()
-      .executeFromUi(new GrantPermissionCommand("pageCapture"))
-      .then((res: ExecutionResult<boolean>) => pageCapturePermissionGranted.value = res.result)
+        .executeFromUi(new GrantPermissionCommand("pageCapture"))
+        .then((res: ExecutionResult<boolean>) => pageCapturePermissionGranted.value = res.result)
   } else if (!pageCapturePermissionGranted.value) {
     useCommandExecutor()
-      .executeFromUi(new RevokePermissionCommand("pageCapture"))
+        .executeFromUi(new RevokePermissionCommand("pageCapture"))
   }
 })
 
@@ -479,14 +435,14 @@ watch(() => allUrlsOriginGranted.value, (newValue, oldValue) => {
   }
   if (allUrlsOriginGranted.value && !usePermissionsStore().hasAllOrigins()) {
     useCommandExecutor()
-      .executeFromUi(new GrantOriginCommand("none"))
-      .then((res: ExecutionResult<boolean>) => allUrlsOriginGranted.value = res.result)
+        .executeFromUi(new GrantOriginCommand("none"))
+        .then((res: ExecutionResult<boolean>) => allUrlsOriginGranted.value = res.result)
   } else if (!allUrlsOriginGranted.value) {
     useCommandExecutor()
-      .executeFromUi(new RevokeOriginCommand("all"))
-      .then(() => {
-        // useBookmarksStore().loadBookmarks()
-      })
+        .executeFromUi(new RevokeOriginCommand("all"))
+        .then(() => {
+          // useBookmarksStore().loadBookmarks()
+        })
   }
 })
 

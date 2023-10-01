@@ -53,7 +53,7 @@ const startDrag = (evt: any, tab: Tab) => {
 const itemStyle = () => {
   let style = "border-bottom: 1px solid #fafafa;"
   if (props.tab.color && usePermissionsStore().hasFeature(FeatureIdent.COLOR_TAGS)) {
-    style = style + 'border-left:4px solid ' + props.tab.color + ';border-radius:4px;'
+    style = style + 'border-left:3px solid ' + props.tab.color + ';border-radius:4px;'
   }
   return style
 }

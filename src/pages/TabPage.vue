@@ -4,7 +4,7 @@
     <div class="row fit">
       <q-toolbar-title>
         <div class="row justify-start items-baseline">
-          Tab Info for '{{ useUiStore().getSelectedTab?.url }}' (experimental)
+          Tab Info for '{{ selectedTab?.url }}' (experimental)
         </div>
       </q-toolbar-title>
     </div>
@@ -35,28 +35,28 @@
       <div class="row items-baseline q-ma-lg">
         <div class="col-2">
           <q-img
-            class="rounded-borders"
-            width="32px"
-            height="32px"
-            :src="useUiStore().getSelectedTab?.favIconUrl">
+              class="rounded-borders"
+              width="32px"
+              height="32px"
+              :src="selectedTab?.favIconUrl">
             <q-tooltip>
-              {{ useUiStore().getSelectedTab?.favIconUrl }} / {{
-                useUiStore().getSelectedTab?.chromeTabId
-              }} / {{ useUiStore().getSelectedTab.id }}
+              {{ selectedTab?.favIconUrl }} / {{
+                selectedTab?.chromeTabId
+              }} / {{ selectedTab?.id }}
             </q-tooltip>
           </q-img>
         </div>
         <div class="col-10 text-body1 ellipsis">
-          {{ getHost(useUiStore().getSelectedTab?.url, true) }}
+          {{ getHost(selectedTab?.url, true) }}
         </div>
         <div class="col-12 text-body2 ellipsis">
-          {{ useUiStore().getSelectedTab?.title }}
+          {{ selectedTab?.title }}
         </div>
 
         <div class="col-12">
           <div class="text-overline ellipsis">
-            {{ useUiStore().getSelectedTab?.url }}&nbsp;<q-icon name="launch" color="secondary"
-                                                                           @click.stop="NavigationService.openOrCreateTab(tab.url )"></q-icon>
+            {{ selectedTab?.url }}&nbsp;<q-icon name="launch" color="secondary"
+                                                @click.stop="NavigationService.openOrCreateTab(tab.url )"></q-icon>
           </div>
         </div>
       </div>
@@ -68,54 +68,55 @@
               Description
             </div>
             <div class="col-9 text-subtitle2">
-              {{ useUiStore().getSelectedTab?.description }}
+              {{ selectedTab?.description }}
             </div>
           </div>
-          <div class="row items-baseline q-ma-lg" v-if="useUiStore().getSelectedTab?.longDescription">
+          <div class="row items-baseline q-ma-lg" v-if="selectedTab?.longDescription">
             <div class="col-3 text-subtitle1">
               Long Description
             </div>
-            <div class="col-9 text-subtitle2" v-if="useUiStore().getSelectedTab?.longDescription" v-html="useUiStore().getSelectedTab?.longDescription"></div>
+            <div class="col-9 text-subtitle2" v-if="selectedTab?.longDescription"
+                 v-html="selectedTab?.longDescription"></div>
           </div>
-          <div class="row items-baseline q-ma-lg" v-if="useUiStore().getSelectedTab?.author">
+          <div class="row items-baseline q-ma-lg" v-if="selectedTab?.author">
             <div class="col-3 text-subtitle1">
               Author
             </div>
             <div class="col-9 text-subtitle2">
-              {{ useUiStore().getSelectedTab?.author }}
+              {{ selectedTab?.author }}
             </div>
           </div>
-          <div class="row items-baseline q-ma-lg" v-if="useUiStore().getSelectedTab?.date">
+          <div class="row items-baseline q-ma-lg" v-if="selectedTab?.date">
             <div class="col-3 text-subtitle1">
               Date
             </div>
             <div class="col-9 text-subtitle2">
-              {{ useUiStore().getSelectedTab?.date }}
+              {{ selectedTab?.date }}
             </div>
           </div>
-          <div class="row items-baseline q-ma-lg" v-if="useUiStore().getSelectedTab?.lastModified">
+          <div class="row items-baseline q-ma-lg" v-if="selectedTab?.lastModified">
             <div class="col-3 text-subtitle1">
               Last Modified
             </div>
             <div class="col-9 text-subtitle2">
-              {{ useUiStore().getSelectedTab?.lastModified }}
+              {{ selectedTab?.lastModified }}
             </div>
           </div>
-          <div class="row items-baseline q-ma-lg" v-if="useUiStore().getSelectedTab?.keywords">
+          <div class="row items-baseline q-ma-lg" v-if="selectedTab?.keywords">
             <div class="col-3 text-subtitle1">
               Keywords
             </div>
             <div class="col-9 text-subtitle2">
-              {{ useUiStore().getSelectedTab?.keywords }}
+              {{ selectedTab?.keywords }}
             </div>
           </div>
-          <div class="row items-baseline q-ma-lg" v-if="useUiStore().getSelectedTab?.image">
+          <div class="row items-baseline q-ma-lg" v-if="selectedTab?.image">
             <div class="col-3 text-subtitle1">
               Image
             </div>
             <div class="col-9 text-subtitle2">
-              {{ useUiStore().getSelectedTab?.image }}<br>
-              <q-img :src="useUiStore().getSelectedTab?.image"/>
+              {{ selectedTab?.image }}<br>
+              <q-img :src="selectedTab?.image"/>
             </div>
           </div>
         </div>
@@ -126,34 +127,34 @@
               Created
             </div>
             <div class="col-7 text-subtitle2">
-              {{ formatDate(useUiStore().getSelectedTab?.created) }}
+              {{ formatDate(selectedTab?.created) }}
               <q-tooltip>
-                {{ date.formatDate(useUiStore().getSelectedTab?.created, 'DD.MM.YYYY HH:mm') }}
+                {{ date.formatDate(selectedTab?.created, 'DD.MM.YYYY HH:mm') }}
               </q-tooltip>
             </div>
             <div class="col-5 text-subtitle1">
               Updated
             </div>
             <div class="col-7 text-subtitle2">
-              {{ formatDate(useUiStore().getSelectedTab?.updated) }}
+              {{ formatDate(selectedTab?.updated) }}
               <q-tooltip>
-                {{ date.formatDate(useUiStore().getSelectedTab?.updated, 'DD.MM.YYYY HH:mm') }}
+                {{ date.formatDate(selectedTab?.updated, 'DD.MM.YYYY HH:mm') }}
               </q-tooltip>
             </div>
             <div class="col-5 text-subtitle1">
               last Active
             </div>
             <div class="col-7 text-subtitle2">
-              {{ formatDate(useUiStore().getSelectedTab?.lastActive) }}
+              {{ formatDate(selectedTab?.lastActive) }}
               <q-tooltip>
-                {{ date.formatDate(useUiStore().getSelectedTab?.lastActive, 'DD.MM.YYYY HH:mm') }}
+                {{ date.formatDate(selectedTab?.lastActive, 'DD.MM.YYYY HH:mm') }}
               </q-tooltip>
             </div>
             <div class="col-5 text-subtitle1">
               activated#
             </div>
             <div class="col-7 text-subtitle2">
-              {{ useUiStore().getSelectedTab?.activatedCount }}
+              {{ selectedTab?.activatedCount }}
             </div>
           </div>
         </div>
@@ -191,13 +192,13 @@
       </q-banner>
 
       <q-table
-        title="Meta data from the website source"
-        :rows="metaRows"
-        :columns="metaColumns"
-        row-key="name"
-        :pagination="metaInitialPagination"
-        :filter="filter"
-        dense>
+          title="Meta data from the website source"
+          :rows="metaRows"
+          :columns="metaColumns"
+          row-key="name"
+          :pagination="metaInitialPagination"
+          :filter="filter"
+          dense>
 
         <template v-slot:top-right>
           <q-input borderless dense debounce="300" v-model="filter" placeholder="Search">
@@ -243,13 +244,13 @@
       Status Code: {{ request['statusCode'] }}<br><br>
 
       <q-table
-        title="Request data"
-        :rows="requestRows"
-        :columns="metaColumns"
-        row-key="name"
-        :pagination="metaInitialPagination"
-        :filter="filterRequest"
-        dense
+          title="Request data"
+          :rows="requestRows"
+          :columns="metaColumns"
+          row-key="name"
+          :pagination="metaInitialPagination"
+          :filter="filterRequest"
+          dense
       >
         <template v-slot:top-right>
           <q-input borderless dense debounce="300" v-model="filterRequest" placeholder="Search">
@@ -279,13 +280,13 @@
       </q-banner>
 
       <q-table
-        title="Meta Links"
-        :rows="metaLinkRows"
-        :columns="metaLinkColumns"
-        row-key="name"
-        :pagination="metaInitialPagination"
-        :filter="filterMetaLinks"
-        dense>
+          title="Meta Links"
+          :rows="metaLinkRows"
+          :columns="metaLinkColumns"
+          row-key="name"
+          :pagination="metaInitialPagination"
+          :filter="filterMetaLinks"
+          dense>
         <template v-slot:top-right>
           <q-input borderless dense debounce="300" v-model="filterMetaLinks" placeholder="Search">
             <template v-slot:append>
@@ -298,7 +299,7 @@
           <q-td :props="props">
             <div class="cursor-pointer text-blue-10">
               <span v-if="props.row.href.length > 0 && props.row.href.startsWith('/')"
-                    @click="openLink(useUiStore().getSelectedTab.url + '/' + props.row.href.substring(1))">
+                    @click="openLink(selectedTab.url + '/' + props.row.href.substring(1))">
                 {{ props.row.href }}
               </span>
               <span v-else @click="openLink(props.row.href)">{{ props.row.href }}</span>
@@ -315,13 +316,13 @@
       <q-banner rounded class="bg-grey-1 text-primary">This is a data derived from the tab's html content</q-banner>
 
       <q-table
-        title="Links"
-        :rows="links()"
-        :columns="linkColumns"
-        row-key="name"
-        :pagination="metaInitialPagination"
-        :filter="filterMetaLinks"
-        dense>
+          title="Links"
+          :rows="links()"
+          :columns="linkColumns"
+          row-key="name"
+          :pagination="metaInitialPagination"
+          :filter="filterMetaLinks"
+          dense>
         <template v-slot:top-right>
           <q-input borderless dense debounce="300" v-model="filterMetaLinks" placeholder="Search">
             <template v-slot:append>
@@ -334,7 +335,7 @@
           <q-td :props="props">
             <div class="cursor-pointer text-blue-10">
               <span v-if="props.row.link.length > 0 && props.row.link.startsWith('/')"
-                    @click="openLink(useUiStore().getSelectedTab.url + '/' + props.row.link.substring(1))">
+                    @click="openLink(selectedTab.url + '/' + props.row.link.substring(1))">
                 {{ props.row.link }}
               </span>
               <span v-else @click="openLink(props.row.link)">{{ props.row.link }}</span>
@@ -368,7 +369,7 @@
   <div v-else-if="tab === 'debug'" v-if="useSettingsStore().isEnabled('dev')">
     <div class="q-pa-md q-gutter-sm">
       <q-banner rounded class="bg-grey-1 text-primary">The tabs internal representation</q-banner>
-      <vue-json-pretty style="font-size: 80%"
+      <vue-json-pretty style="font-size: 80%" :show-length="true"
                        v-model:data="state.data"
                        :show-double-quotes="true"
       />
@@ -381,7 +382,7 @@
 import {useTabsStore} from "src/stores/tabsStore"
 import {useNotificationsStore} from "src/stores/notificationsStore";
 import {useRoute, useRouter} from "vue-router";
-import {reactive, ref, watchEffect} from "vue";
+import {onMounted, reactive, ref, watchEffect} from "vue";
 import TabsetService from "src/services/TabsetService";
 import NavigationService from "src/services/NavigationService"
 import {date} from "quasar";
@@ -393,6 +394,9 @@ import {openURL} from "quasar";
 import {useSettingsStore} from "src/stores/settingsStore"
 import VueJsonPretty from "vue-json-pretty";
 import 'vue-json-pretty/lib/styles.css';
+import {useTabsetService} from "src/services/TabsetService2";
+import Analytics from "src/utils/google-analytics";
+import {Tab} from "src/models/Tab";
 
 const tabsStore = useTabsStore()
 const notificationStore = useNotificationsStore()
@@ -403,6 +407,7 @@ const route = useRoute()
 
 const {formatDate} = useUtils()
 
+const selectedTab = ref<Tab | undefined>(undefined)
 const thumbnail = ref('')
 const content = ref('')
 const request = ref({})
@@ -423,12 +428,22 @@ const state = reactive({
   data: json
 })
 
+onMounted(() => {
+  Analytics.firePageViewEvent('TabPage', document.location.href);
+})
+
 watchEffect(() => {
-  const selectedTab = useUiStore().getSelectedTab
-  if (selectedTab) {
-    json.value = JSON.parse(JSON.stringify(selectedTab))
-    tags.value = selectedTab.tags
-  }
+  const tabId = route.params.id.toString() || ''
+  console.log("got tabId", tabId)
+  useTabsStore().getTab(tabId).then(tabInfo => {
+    if (tabInfo) {
+      console.log("got tab", tabInfo['tab' as keyof object])
+      //useUiStore().setSelectedTab(tabInfo['tab' as keyof object] as Tab)
+      json.value = JSON.parse(JSON.stringify(tabInfo['tab' as keyof object] as Tab))
+      tags.value = tabInfo['tab' as keyof object]['tags' as keyof object]
+      selectedTab.value = tabInfo['tab' as keyof object] as Tab
+    }
+  })
 })
 
 
@@ -478,74 +493,58 @@ const requestRows = ref<object[]>([])
 const metaLinkRows = ref<object[]>([])
 const linkRows = ref<object[]>([])
 
-const logs = ref<any[]>([])
-const logsFilter = ref('')
-const logsColumns = ref([
-  {name: 'timestamp', align: 'left', label: 'Timestamp', field: 'timestamp', sortable: true},
-  // {name: 'context', align: 'left', label: 'Context', field: 'context', sortable: true},
-  {name: 'level', align: 'left', label: 'Level', field: 'level', sortable: true},
-  {name: 'msg', align: 'left', label: 'Message', field: 'msg', sortable: true}
-])
+watchEffect(async () => {
 
-// useQueryExecutor()
-//   .queryFromUi(new TabLogsQuery(useUiStore().getSelectedTab?.url || ''))
-//   .then(res => {
-//     logs.value = res.result
-//   })
-//.catch((err) => logger.warning(err))
-
-watchEffect(() => {
-  const selectedTab = useUiStore().getSelectedTab
-  if (selectedTab) {
-    TabsetService.getThumbnailFor(selectedTab)
-      .then(data => {
-        if (data) {
-          thumbnail.value = data.thumbnail
-        }
-      })
-    TabsetService.getContentFor(selectedTab)
-      .then(data => {
-        if (data) {
-          content.value = data.content
-          metas.value = data.metas
-          metaRows.value = []
-          _.forEach(Object.keys(data.metas), k => {
-            //console.log("k", k, data.metas[k])
-            metaRows.value.push({
-              name: k,
-              value: data.metas[k]
+  if (selectedTab.value) {
+    TabsetService.getThumbnailFor(selectedTab.value)
+        .then(data => {
+          if (data) {
+            thumbnail.value = data.thumbnail
+          }
+        })
+    TabsetService.getContentFor(selectedTab.value)
+        .then(data => {
+          if (data) {
+            content.value = data.content
+            metas.value = data.metas
+            metaRows.value = []
+            _.forEach(Object.keys(data.metas), k => {
+              //console.log("k", k, data.metas[k])
+              metaRows.value.push({
+                name: k,
+                value: data.metas[k]
+              })
             })
-          })
-        }
-      })
-    TabsetService.getRequestFor(selectedTab)
-      .then(data => {
-        if (data) {
-          //console.log("got data", data)
-          request.value = data.requestInfo
+          }
+        })
+    TabsetService.getRequestFor(selectedTab.value)
+        .then(data => {
+          if (data) {
+            //console.log("got data", data)
+            request.value = data.requestInfo
 
-          _.forEach(data.requestInfo['headers'], h => {
-            requestRows.value.push({
-              name: h.name,
-              value: h.value
+            _.forEach(data.requestInfo['headers'], h => {
+              requestRows.value.push({
+                name: h.name,
+                value: h.value
+              })
             })
-          })
-        }
-      })
+          }
+        })
 
-    TabsetService.getMetaLinksFor(selectedTab)
-      .then(data => {
-        if (data) {
-          metaLinkRows.value = data.metaLinks
-        }
-      })
+    TabsetService.getMetaLinksFor(selectedTab.value)
+        .then(data => {
+          if (data) {
+            metaLinkRows.value = data.metaLinks
+          }
+        })
 
-    TabsetService.getLinksFor(selectedTab)
-      .then(data => {
-        if (data) {
-          linkRows.value = data.links
-        }
-      })
+    TabsetService.getLinksFor(selectedTab.value)
+        .then(data => {
+          if (data) {
+            linkRows.value = data.links
+          }
+        })
 
   } else {
     //router.push("/tabset")
@@ -569,7 +568,7 @@ watchEffect(() => {
   keys.value = fuseIndex['keys' as keyof object]
   keysMap.value = fuseIndex['_keysMap' as keyof object]
   const res = _.filter(fuseIndex['records' as keyof object], (r: any) => {
-    return useUiStore().getSelectedTab?.url === r.$[2]?.v
+    return selectedTab?.url === r.$[2]?.v
   })
   if (res && res.length > 0) {
     index.value = res[0]
@@ -599,7 +598,7 @@ function getHost(urlAsString: string, shorten: Boolean = true): string {
 
 const getForKey = (key: any) => {
   if ((keysMap.value[key as keyof object] || keysMap.value[key as keyof object] === 0)
-    && index.value['$' as keyof object]) {
+      && index.value['$' as keyof object]) {
     return index.value['$' as keyof object][keysMap.value[key as keyof object]]
   }
   return ""
@@ -623,12 +622,9 @@ const openValueLink = (name: any, value: string) => {
 const showValueLink = (name: string) => "fb:page_id" === name || "twitter:account_id" === name
 
 const analyseTab = () => {
-  const selectedTab = useUiStore().getSelectedTab
-  if (selectedTab) {
-    searchStore.reindexTab(selectedTab)
+  searchStore.reindexTab(selectedTab.value)
       .then((windowId: number) => {
       })
-  }
 }
 
 const openLink = (url: string) => openURL(url)

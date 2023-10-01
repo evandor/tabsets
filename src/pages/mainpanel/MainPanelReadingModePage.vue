@@ -73,9 +73,11 @@ import {Readability} from "@mozilla/readability";
 import {useUtils} from "src/services/Utils";
 import NavigationService from "src/services/NavigationService";
 import Analytics from "src/utils/google-analytics";
+import {useQuasar} from "quasar";
 
 const {sanitizeAsText} = useUtils()
 
+const $q = useQuasar()
 const route = useRoute()
 
 const tabId = route.params.tabId as string
