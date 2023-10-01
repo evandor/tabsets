@@ -602,20 +602,20 @@ const tabsetIcon = (tabset: Tabset) => {
   return icon
 }
 
-const focusOnTabset = (tabset: Tabset) => router.push("/sidepanel/tabsets/" + tabset.id)
-
 const headerStyle = (tabset: Tabset) => {
   let style = tabsetExpanded.value.get(tabset.id) ?
       'border:0 solid grey;border-top-left-radius:4px;border-top-right-radius:4px;' :
       'border:0 solid grey;border-radius:4px;'
   if (tabset.color && usePermissionsStore().hasFeature(FeatureIdent.COLOR_TAGS)) {
     style = style + 'border-left:4px solid ' + tabset.color
+  } else {
+    style = style + 'border-left:4px solid #f5f5f5'
   }
   return style
 }
 </script>
 
-<style scoped>
+<style>
 
 .v-enter-active,
 .v-leave-active {
@@ -625,5 +625,11 @@ const headerStyle = (tabset: Tabset) => {
 .v-enter-from,
 .v-leave-to {
   opacity: 0;
+}
+
+.q-item__section--avatar {
+  min-width:46px !important;
+  padding-right:12px !important;
+  margin-bottom:14px;
 }
 </style>

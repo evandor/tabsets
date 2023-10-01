@@ -21,7 +21,7 @@ import {useUtils} from "src/services/Utils";
 import {Tabset} from "src/models/Tabset";
 import EditorJS, {OutputData} from "@editorjs/editorjs";
 
-import EditorJsConfig from "src/utils/EditorConfig";
+import EditorJsConfig from "src/utils/EditorJsConfig";
 import {useTabsetService} from "src/services/TabsetService2";
 //import './editorjs/linkTool.css';
 

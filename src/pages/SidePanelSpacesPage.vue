@@ -33,23 +33,23 @@
               </q-item-label>
             </q-item-section>
 
-            <q-item-section side
-                            @mouseover="hoveredSpace = space.id"
-                            @mouseleave="hoveredSpace = undefined">
-              <Transition appear>
-                <div class="row items-center">
-                    <span v-if="hoveredOver(space.id)">
-                      <q-icon name="more_horiz" color="primary" size="16px"/>
-                    </span>
-                  <span v-else>
-                      <q-icon color="primary" size="16px"/>
-                    </span>
+<!--            <q-item-section side-->
+<!--                            @mouseover="hoveredSpace = space.id"-->
+<!--                            @mouseleave="hoveredSpace = undefined">-->
+<!--              <Transition appear>-->
+<!--                <div class="row items-center">-->
+<!--                    <span v-if="hoveredOver(space.id)">-->
+<!--                      <q-icon name="more_horiz" color="primary" size="16px"/>-->
+<!--                    </span>-->
+<!--                  <span v-else>-->
+<!--                      <q-icon color="primary" size="16px"/>-->
+<!--                    </span>-->
 
-                  <!--                    <SidePanelPageContextMenu :tabset="tabset as Tabset"/>-->
+<!--                  &lt;!&ndash;                    <SidePanelPageContextMenu :tabset="tabset as Tabset"/>&ndash;&gt;-->
 
-                </div>
-              </Transition>
-            </q-item-section>
+<!--                </div>-->
+<!--              </Transition>-->
+<!--            </q-item-section>-->
           </template>
 
 
@@ -128,16 +128,16 @@
           </q-btn>
         </template>
         <template v-slot:iconsRight>
-          <q-btn
-              icon="more_horiz"
-              color="primary"
-              flat
-              class="q-ma-none q-pa-xs cursor-pointer"
-              style="max-width:20px"
-              size="10px"
-              @click="manageSpaces()">
-            <q-tooltip class="tooltip">Manage Spaces</q-tooltip>
-          </q-btn>
+<!--          <q-btn-->
+<!--              icon="more_horiz"-->
+<!--              color="primary"-->
+<!--              flat-->
+<!--              class="q-ma-none q-pa-xs cursor-pointer"-->
+<!--              style="max-width:20px"-->
+<!--              size="10px"-->
+<!--              @click="manageSpaces()">-->
+<!--            <q-tooltip class="tooltip">Manage Spaces</q-tooltip>-->
+<!--          </q-btn>-->
         </template>
       </FirstToolbarHelper>
 
@@ -170,7 +170,6 @@
 
 import {onMounted, ref, watchEffect} from "vue";
 import {useTabsStore} from "src/stores/tabsStore";
-import {Tab} from "src/models/Tab";
 import _ from "lodash"
 import {Tabset, TabsetStatus, TabsetType} from "src/models/Tabset";
 import {useRouter} from "vue-router";
@@ -185,9 +184,7 @@ import NavigationService from "src/services/NavigationService";
 import NewTabsetDialog from "components/dialogues/NewTabsetDialog.vue";
 import {SidePanelView, useUiStore} from "stores/uiStore";
 import InfoMessageWidget from "components/widgets/InfoMessageWidget.vue";
-import PanelTabListElementWidget from "components/widgets/PanelTabListElementWidget.vue";
 import FirstToolbarHelper from "pages/sidepanel/helper/FirstToolbarHelper.vue";
-import SidePanelPageContextMenu from "pages/sidepanel/SidePanelPageContextMenu.vue";
 import {useWindowsStore} from "stores/windowsStores";
 import Analytics from "src/utils/google-analytics";
 
@@ -215,23 +212,25 @@ watchEffect(() => {
   const start = new Date().getTime()
   let res: Map<string, Tabset[]> = new Map()
   _.forEach([...useTabsStore().tabsets.values()], (ts: Tabset) => {
-    _.forEach(ts.spaces, (spaceId: string) => {
-      if (res.has(spaceId)) {
-        const exisitingTabsets:Tabset[] = res.get(spaceId) || []
-        if (exisitingTabsets.findIndex(t => t.id === ts.id) < 0) {
-          res.set(spaceId, (res.get(spaceId) || []).concat([ts]))
+    if (ts.status !== TabsetStatus.DELETED) {
+      _.forEach(ts.spaces, (spaceId: string) => {
+        if (res.has(spaceId)) {
+          const exisitingTabsets: Tabset[] = res.get(spaceId) || []
+          if (exisitingTabsets.findIndex(t => t.id === ts.id) < 0) {
+            res.set(spaceId, (res.get(spaceId) || []).concat([ts]))
+          }
+        } else {
+          res.set(spaceId, [ts])
         }
-      } else {
-        res.set(spaceId, [ts])
-      }
-    })
+      })
+    }
   })
   res.forEach((value: Tabset[], key: string) => {
     console.log(key, value);
     res.set(key, _.sortBy(value, [
-        function (o) {
-          return o.name.toLowerCase()
-        }
+      function (o) {
+        return o.name.toLowerCase()
+      }
     ]))
   });
   tabsetsForSpace.value = res // useSpacesStore().tabsetsForSpaces()
@@ -386,6 +385,6 @@ const hoveredOver = (spaceId: string) => hoveredSpace.value === spaceId
 
 const sortedSpaces = () => _.sortBy([...spacesStore.spaces.values()],
     [function (o) {
-      return o.label.toLowerCase()
+      return o.label?.toLowerCase()
     }])
 </script>
