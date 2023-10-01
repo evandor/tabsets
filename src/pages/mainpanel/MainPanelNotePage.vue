@@ -57,7 +57,7 @@ import EditorJS, {OutputData} from "@editorjs/editorjs";
 //import 'regenerator-runtime/runtime'
 import Analytics from "src/utils/google-analytics";
 
-import EditorJsConfig from "src/utils/EditorConfig";
+import EditorJsConfig from "src/utils/EditorJsConfig";
 
 import './editorjs/linkTool.css';
 import {v5 as uuidv5} from "uuid";
