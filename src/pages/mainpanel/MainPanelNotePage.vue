@@ -172,7 +172,7 @@ const saveWork = () => {
         //tab.value.description = description.value
         tab.value.title = sanitize(title.value)
         tab.value.longDescription = outputData //sanitize(outputData)
-        tab.parent = parentId.value
+        //tab.value.parent = parentId.value
         console.log("saving note", tabset, tabsetId.value)
         // needed to update the note in the side panel
         sendMsg('note-changed', {tab: tab.value, tabsetId: tabsetId.value, noteId: noteId.value})
@@ -185,7 +185,7 @@ const saveWork = () => {
         newTab.longDescription = outputData
         //   useTabsetService().saveCurrentTabset()
         newTab.url = newTab.url?.split('?')[0] + newTabId
-        newTab.parent = parentId.value
+        //newTab.parent = parentId.value
 
         // lesson learned: execute code here and send message only to update dependent parts
         const tabset = useTabsetService().getTabset(tabsetId.value) as Tabset
