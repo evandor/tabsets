@@ -55,7 +55,7 @@ export default bexContent((bridge: any) => {
     linkNodes.forEach((node: Node) => {
       const element = <Element>node
       const hrefAttr = element.attributes.getNamedItem('href')
-      if (hrefAttr && hrefAttr.value.trim() != "") {
+      if (hrefAttr && hrefAttr.value.trim() !== "") {
         const key: string = hrefAttr.value
         if (result[key]) {
           result[key] = result[key] + 1
@@ -76,7 +76,7 @@ export default bexContent((bridge: any) => {
       const hrefAttr = element.attributes.getNamedItem('href')
       const typeAttr = element.attributes.getNamedItem('type')
       const relAttr = element.attributes.getNamedItem('rel')
-      if (hrefAttr && hrefAttr.value.trim() != "") {
+      if (hrefAttr && hrefAttr.value.trim() !== "") {
         result.push({
           title: titleAttr?.value || '',
           href: hrefAttr?.value || '',

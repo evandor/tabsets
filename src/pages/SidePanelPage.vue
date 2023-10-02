@@ -417,6 +417,9 @@ if ($q.platform.is.chrome) {
       } else if (message.name === "reload-suggestions") {
         console.log("reload-suggestions message received")
         useSuggestionsStore().loadSuggestionsFromDb()
+      } else if (message.name === "reload-tabset") {
+        console.log("reload-tabset message received")
+        useTabsetService().reloadTabset(message.data.tabsetId)
       } else {
         console.log("got unmatched message", message)
       }
