@@ -2395,13 +2395,13 @@
     vue-component-type-helpers "1.8.4"
 
 "@wdio/cli@^8.13.5":
-  version "8.16.17"
-  resolved "https://registry.yarnpkg.com/@wdio/cli/-/cli-8.16.17.tgz#5a9ede2088737ccf81d2a03a0b6add5e5c74cd1a"
-  integrity sha512-grgOF+rYEN5KX8CPuoGQYx7tnZLzn5Njwmxfk5D0M52aUrCl0Yg2HKXvjckHYZiEhhloCs4hRKvcbRg1bbhYnA==
+  version "8.16.18"
+  resolved "https://registry.yarnpkg.com/@wdio/cli/-/cli-8.16.18.tgz#210395468b4162d76c4124f3217206dbfa40c032"
+  integrity sha512-BqVFyotsbm8fj2I3zGtCCdr1PozfDFO93uqYRO5EUMs3AFRuPbQXNmqybQhv/tPwolmajDYgFNA/ygyZqVlmzw==
   dependencies:
     "@types/node" "^20.1.1"
     "@wdio/config" "8.16.17"
-    "@wdio/globals" "8.16.17"
+    "@wdio/globals" "8.16.18"
     "@wdio/logger" "8.16.17"
     "@wdio/protocols" "8.16.5"
     "@wdio/types" "8.16.12"
@@ -2420,7 +2420,7 @@
     lodash.union "^4.6.0"
     read-pkg-up "10.1.0"
     recursive-readdir "^2.2.3"
-    webdriverio "8.16.17"
+    webdriverio "8.16.18"
     yargs "^17.7.2"
     yarn-install "^1.0.0"
 
@@ -2438,13 +2438,13 @@
     import-meta-resolve "^3.0.0"
     read-pkg-up "^10.0.0"
 
-"@wdio/globals@8.16.17", "@wdio/globals@^8.16.7":
-  version "8.16.17"
-  resolved "https://registry.yarnpkg.com/@wdio/globals/-/globals-8.16.17.tgz#b2bcad3e5ceba6aef87b673dbf7f83a688329408"
-  integrity sha512-pcfAdwUrYb77syHvoEXoLJr7aap85mjhe1NhUQOzYt0WMzmtyORBnBc0mv4k721j69gy5b6kC5zfEgXnF3IxCA==
+"@wdio/globals@8.16.18", "@wdio/globals@^8.16.7":
+  version "8.16.18"
+  resolved "https://registry.yarnpkg.com/@wdio/globals/-/globals-8.16.18.tgz#353098af3bda4bfaa1e599c168fbc3b975e66889"
+  integrity sha512-sEeKIY5RDrQdp290/AjwM7xH1jxuzK6cydfvdZ428V1ud19i1liaSCBttbTs98FJQ3hSMiczidOyxEUAXtaluw==
   optionalDependencies:
     expect-webdriverio "^4.2.5"
-    webdriverio "8.16.17"
+    webdriverio "8.16.18"
 
 "@wdio/logger@8.16.17", "@wdio/logger@^8.11.0":
   version "8.16.17"
@@ -3094,7 +3094,7 @@ browser-process-hrtime@^1.0.0:
   resolved "https://registry.yarnpkg.com/browser-process-hrtime/-/browser-process-hrtime-1.0.0.tgz#3c9b4b7d782c8121e56f10106d84c0d0ffc94626"
   integrity sha512-9o5UecI3GhkpM6DrXr69PblIuWxPKk9Y0jHBRhdocZ2y7YECBFCsHm79Pr3OyR2AvjhDkabFJaDJMYRazHgsow==
 
-browserslist@^4.21.10, browserslist@^4.21.9:
+browserslist@^4.21.10, browserslist@^4.21.9, browserslist@^4.22.1:
   version "4.22.1"
   resolved "https://registry.yarnpkg.com/browserslist/-/browserslist-4.22.1.tgz#ba91958d1a59b87dab6fed8dfbcb3da5e2e9c619"
   integrity sha512-FEVc202+2iuClEhZhrWy6ZiAcRLvNMyYcxZ8raemul1DYVOVdFsbqckWLdsixQZCpJlwe77Z3UTalE7jsjnKfQ==
@@ -3264,9 +3264,9 @@ camelcase@^5.0.0:
   integrity sha512-L28STB170nwWS63UjtlEOE3dldQApaJXZkOI1uMFfzf3rRuPegHaHesyee+YxQ+W6SvRDQV6UrdOdRiR153wJg==
 
 caniuse-lite@^1.0.30001538, caniuse-lite@^1.0.30001541:
-  version "1.0.30001541"
-  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001541.tgz#b1aef0fadd87fb72db4dcb55d220eae17b81cdb1"
-  integrity sha512-bLOsqxDgTqUBkzxbNlSBt8annkDpQB9NdzdTbO2ooJ+eC/IQcvDspDc058g84ejCelF7vHUx57KIOjEecOHXaw==
+  version "1.0.30001542"
+  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001542.tgz#823ddb5aed0a70d5e2bfb49126478e84e9514b85"
+  integrity sha512-UrtAXVcj1mvPBFQ4sKd38daP8dEcXXr5sQe6QNNinaPd0iA/cxg9/l3VrSdL73jgw5sKyuQ6jNgiKO12W3SsVA==
 
 canvas@^2.11.0:
   version "2.11.2"
@@ -3662,16 +3662,16 @@ cookie@0.5.0:
   integrity sha512-YZ3GUyn/o8gfKJlnlX7g7xq4gyO6OSuhGPKaaGssGB2qgDUS0gPgtTvoyZLTt9Ab6dC4hfc9dV5arkvc/OCmrw==
 
 core-js-compat@^3.31.0, core-js-compat@^3.32.2, core-js-compat@^3.6.5:
-  version "3.32.2"
-  resolved "https://registry.yarnpkg.com/core-js-compat/-/core-js-compat-3.32.2.tgz#8047d1a8b3ac4e639f0d4f66d4431aa3b16e004c"
-  integrity sha512-+GjlguTDINOijtVRUxrQOv3kfu9rl+qPNdX2LTbJ/ZyVTuxK+ksVSAGX1nHstu4hrv1En/uPTtWgq2gI5wt4AQ==
+  version "3.33.0"
+  resolved "https://registry.yarnpkg.com/core-js-compat/-/core-js-compat-3.33.0.tgz#24aa230b228406450b2277b7c8bfebae932df966"
+  integrity sha512-0w4LcLXsVEuNkIqwjjf9rjCoPhK8uqA4tMRh4Ge26vfLtUutshn+aRJU21I9LCJlh2QQHfisNToLjw1XEJLTWw==
   dependencies:
-    browserslist "^4.21.10"
+    browserslist "^4.22.1"
 
 core-js@^3.18.3, core-js@^3.6.5:
-  version "3.32.2"
-  resolved "https://registry.yarnpkg.com/core-js/-/core-js-3.32.2.tgz#172fb5949ef468f93b4be7841af6ab1f21992db7"
-  integrity sha512-pxXSw1mYZPDGvTQqEc5vgIb83jGQKFGYWY76z4a7weZXUolw3G+OvpZqSRcfYOoOVUQJYEPsWeQK8pKEnUtWxQ==
+  version "3.33.0"
+  resolved "https://registry.yarnpkg.com/core-js/-/core-js-3.33.0.tgz#70366dbf737134761edb017990cf5ce6c6369c40"
+  integrity sha512-HoZr92+ZjFEKar5HS6MC776gYslNOKHt75mEBKWKnPeFDpZ6nH5OeF3S6HFT1mUAUZKrzkez05VboaX8myjSuw==
 
 core-util-is@1.0.2:
   version "1.0.2"
@@ -7721,9 +7721,9 @@ postcss@^8.1.10, postcss@^8.3.11, postcss@^8.4.13, postcss@^8.4.21, postcss@^8.4
     source-map-js "^1.0.2"
 
 preact@^10.5.13:
-  version "10.18.0"
-  resolved "https://registry.yarnpkg.com/preact/-/preact-10.18.0.tgz#20aaf95e3ef310a8127489376f54331682c353c7"
-  integrity sha512-O4dGFmErPd3RNVDvXmCbOW6hetnve6vYtjx5qf51mCUmBS96s66MrNQkEII5UThDGoNF7953ptA+aNupiDxVeg==
+  version "10.18.1"
+  resolved "https://registry.yarnpkg.com/preact/-/preact-10.18.1.tgz#3b84bb305f0b05f4ad5784b981d15fcec4e105da"
+  integrity sha512-mKUD7RRkQQM6s7Rkmi7IFkoEHjuFqRQUaXamO61E6Nn7vqF/bo7EZCmSyrUnp2UWHw0O7XjZ2eeXis+m7tf4lg==
 
 prebuild-install@^7.1.1:
   version "7.1.1"
@@ -9894,10 +9894,10 @@ webdriver@8.16.17:
     ky "^0.33.0"
     ws "^8.8.0"
 
-webdriverio@8.16.17, webdriverio@^8.16.7:
-  version "8.16.17"
-  resolved "https://registry.yarnpkg.com/webdriverio/-/webdriverio-8.16.17.tgz#ec36d8d27422cb675a9e8c337299461844cef7bf"
-  integrity sha512-AV66CkFM9z9W+oOG1j+IokQ6zihTtR6co3mlmN0IvXKdHH6ReV1pMc4kt+efk/y3+ilVcODKca7+rQ/Stzpx3A==
+webdriverio@8.16.18, webdriverio@^8.16.7:
+  version "8.16.18"
+  resolved "https://registry.yarnpkg.com/webdriverio/-/webdriverio-8.16.18.tgz#09cdd7972d05612bb57d051e5cfd0879b2ac011e"
+  integrity sha512-4HvywcNYJtEALbBQ7k5CE+XhiU2Ypr3hpd3P2wZkvN7+U2BSIS1cz9V1EtBDmR56e7pLz1La9kS1D3ShWm9NJA==
   dependencies:
     "@types/node" "^20.1.0"
     "@wdio/config" "8.16.17"
