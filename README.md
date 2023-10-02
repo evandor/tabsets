@@ -92,4 +92,4 @@ Quasar App Extensions
 
 check out branch "safari-extension"
 
-xcrun safari-web-extension-converter --project-location ./dist/Safari --app-name Tabsets /Users/carstengraef/projects/github/tabsets/dist/bex
+xcrun safari-web-extension-converter --project-location ./dist/Safari --app-name Tabsets ./dist/bex
