@@ -3,7 +3,7 @@
   <q-list separator class="q-ma-none">
 
     <!-- supporting drag & drop when not on mobile -->
-    <vue-draggable-next v-if="!$q.platform.is.mobile"
+    <vue-draggable-next v-if="!props.preventDragAndDrop"
                         class="q-ma-none"
                         :list="props.tabs as Array<Tab>"
                         :group="{ name: 'tabs', pull: 'clone' }"
@@ -12,7 +12,10 @@
       <SidePanelTabListHelper v-for="tab in props.tabs"
                               :tab="tab"
                               :type="props.type"
+                              :sorting="props.sorting"
+                              :preventDragAndDrop="false"
                               :tabsetType="props.tabsetType"
+                              :show-tabsets="props.showTabsets"
                               :hide-menu="props.hideMenu"/>
     </vue-draggable-next>
 
@@ -21,7 +24,10 @@
                             v-for="tab in props.tabs"
                             :tab="tab"
                             :type="props.type"
+                            :sorting="props.sorting"
+                            :preventDragAndDrop="true"
                             :tabsetType="props.tabsetType"
+                            :show-tabsets="props.showTabsets"
                             :hide-menu="props.hideMenu"/>
   </q-list>
 
@@ -32,7 +38,7 @@
 </template>
 
 <script setup lang="ts">
-import {Tab} from "src/models/Tab";
+import {Tab, TabSorting} from "src/models/Tab";
 import TabsetService from "src/services/TabsetService";
 import {PropType} from "vue";
 import {VueDraggableNext} from 'vue-draggable-next'
@@ -44,7 +50,10 @@ import SidePanelTabListHelper from "components/layouts/sidepanel/SidePanelTabLis
 const props = defineProps({
   tabs: {type: Array as PropType<Tab[]>, required: true},
   hideMenu: {type: Boolean, default: false},
+  sorting: {type: String as PropType<TabSorting>, default: TabSorting.CUSTOM},
   type: {type: String, default: 'sidepanel'},
+  showTabsets: {type: Boolean, default: false},
+  preventDragAndDrop: {type: Boolean, default: false},
   tabsetType: {type: String, default: TabsetType.DEFAULT.toString()},
 })
 

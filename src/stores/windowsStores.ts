@@ -1,5 +1,6 @@
 import {defineStore} from 'pinia';
-import {ref} from "vue";
+import {ref, watchEffect} from "vue";
+import {LocalStorage} from "quasar";
 
 /**
  * a pinia store for "Windows".
@@ -21,12 +22,12 @@ export const useWindowsStore = defineStore('windows', () => {
     /**
      * Map between window name and actual chrome window
      */
-    const windowMap = ref<Map<string, chrome.windows.Window>>(new Map())
+    const windowMap = ref<object>(LocalStorage.getItem("ui.windowMap") || {})
 
     /**
      * Set of all names for windows from all tabsets
      */
-    const windowSet = ref<Set<string>> (new Set())
+    const windowSet = ref<Set<string>>(new Set())
 
     /**
      * initialize store with
@@ -36,6 +37,11 @@ export const useWindowsStore = defineStore('windows', () => {
         console.log("initializing windowsStore")
         init("initialization")
     }
+
+    watchEffect(() => {
+        console.log("updating windowMap", windowMap.value)
+        LocalStorage.set("ui.windowMap", windowMap.value)
+    })
 
     function init(trigger: string = "") {
         if (process.env.MODE === 'bex') {
@@ -60,21 +66,41 @@ export const useWindowsStore = defineStore('windows', () => {
         }
     }
 
-    function assignWindow (windowOpened: string, w: chrome.windows.Window) {
-        windowMap.value.set(windowOpened, w)
+    function assignWindow(windowOpened: string, windowId: number) {
+        // @ts-ignore
+        windowMap.value[windowOpened as keyof object] = windowId
+        console.log("windowMap", windowMap.value)
     }
 
     async function windowFor(windowToOpen: string) {
-        if (windowToOpen === 'current') {
-            return chrome.windows?.getCurrent()
-        } else if (windowMap.value.has(windowToOpen)) {
-            // console.log("windowFor2", windowMap.value.get(windowToOpen))
-            return windowMap.value.get(windowToOpen)
+        if (windowToOpen === 'current' && chrome && chrome.windows) {
+            return (await chrome.windows?.getCurrent()).id
+        } else if (windowMap.value[windowToOpen as keyof object]) {
+            const potentialWindowId = windowMap.value[windowToOpen as keyof object]
+            console.log("windowFor2", potentialWindowId)
+            try {
+                const realWindow = await chrome.windows.get(potentialWindowId)
+                return Promise.resolve(potentialWindowId)
+            } catch (err) {
+                // @ts-ignore
+                //windowMap.value[potentialWindowId as keyof object] = null
+                delete windowMap.value.potentialWindowId
+                return Promise.resolve(undefined)
+            }
         }
         return Promise.resolve(undefined)
     }
 
-    function addToWindowSet (windowName: string) {
+    function windowNameFor (id: number) {
+        for (const key in windowMap.value) {
+            if (windowMap.value[key as keyof object] === id) {
+                return key
+            }
+        }
+        return undefined
+    }
+
+    function addToWindowSet(windowName: string) {
         windowSet.value.add(windowName)
     }
 
@@ -84,7 +110,9 @@ export const useWindowsStore = defineStore('windows', () => {
         currentWindow,
         assignWindow,
         windowFor,
+        windowNameFor,
         addToWindowSet,
-        windowSet
+        windowSet,
+        screenshotWindow
     }
 })

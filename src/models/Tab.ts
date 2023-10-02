@@ -1,5 +1,12 @@
 import {Placeholders} from "src/models/Placeholders";
 
+export enum TabSorting {
+  URL = "URL",
+  TITLE = "TITLE",
+  AGE = "AGE",
+  CUSTOM = "CUSTOM"
+}
+
 export enum UrlExtension {
   HTML = "HTML",
   RSS = "RSS",
@@ -75,6 +82,9 @@ export class Tab {
   httpInfo: string = 'undefined'
 
   placeholders: Placeholders | undefined
+
+  color: string | undefined = undefined
+  matcher: string | undefined = undefined
 
   constructor(public id: string, chromeTab: chrome.tabs.Tab) {
     this.created = new Date().getTime()
@@ -154,15 +164,6 @@ export class Tab {
     return ext
   }
 
-  // hasHistory(): boolean {
-  //   // console.log("has", this.history)
-  //   return true //this.history && this.history.length > 0
-  // }
-  //
-  // public setName(newName: string): void {
-  //   // TODO validate
-  //   this.name = newName
-  // }
 }
 
 Tab.prototype.toString = function tabToString() {

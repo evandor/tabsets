@@ -2,8 +2,8 @@
 
   <div class="cursor-pointer">
     <q-badge outline
-      class="q-mr-md q-mt-none q-pt-sm q-pb-sm q-px-sm"
-      color="white" text-color="white" :label="spacesLabel()">
+      class="q-mr-md q-mt-none q-mb-sm q-pt-sm q-pb-sm q-px-sm"
+      color="black" :label="spacesLabel()">
     </q-badge>
 
     <q-menu :offset="[0,10]">
@@ -66,7 +66,9 @@ watchEffect(() => {
 })
 
 const spacesLabel = () => {
-  return spacesStore.space?.label || 'no space selected'
+  return spacesStore.space?.label ?
+      'Space: ' + spacesStore.space.label :
+      'no space selected'
 }
 
 const openNewSpaceDialog = () => {

@@ -45,7 +45,7 @@ export default bexContent((bridge: any) => {
         var t = C[x];
         if (sC) {
           var a = sC.childNodes[t];
-          if (a == undefined) {
+          if (a === undefined) {
             caretPosition.sO = 0;
             break;
           }
@@ -62,7 +62,7 @@ export default bexContent((bridge: any) => {
       while (x--) {
         if (!eC) break;
         var a = eC.childNodes[C[x]];
-        if (a == undefined) {
+        if (a === undefined) {
           caretPosition.eO = 0;
           break;
         }

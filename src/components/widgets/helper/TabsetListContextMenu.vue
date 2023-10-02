@@ -1,5 +1,5 @@
 <template>
-  <q-menu :offset="[0, 0]">
+  <q-menu :offset="[40, 0]">
     <q-list dense style="min-width: 200px">
 
       <!--      <q-item v-if="props.tabset?.tabs.length > 0 && expanded[index]"-->
@@ -88,26 +88,30 @@
           <q-icon name="keyboard_arrow_right"/>
         </q-item-section>
 
-        <q-menu anchor="top end" self="top start">
+        <q-menu :offset="[10,10]">
           <q-list>
+            <q-item>Add to Space...</q-item>
+            <q-separator />
             <q-item
               v-for="space in addToSpaces(tabset)"
-              :key="space['spaceId']"
+              :key="space['spaceId' as keyof object]"
               dense
-              @click="addToSpace(tabset, space['spaceId'])"
+              @click="addToSpace(tabset, space['spaceId' as keyof object])"
               clickable>
-              <q-item-section>Add to Space <i>{{ space['spaceName'] }}</i></q-item-section>
+              <q-item-section><i>{{ space['spaceName' as keyof object] }}</i></q-item-section>
             </q-item>
           </q-list>
           <q-separator/>
+          <q-item>Remove from Space...</q-item>
+          <q-separator />
           <q-list>
             <q-item
               v-for="space in removeFromSpaces(tabset)"
-              :key="space['spaceId']"
+              :key="space['spaceId' as keyof object]"
               dense
-              @click="removeFromSpace(tabset, space['spaceId'])"
+              @click="removeFromSpace(tabset, space['spaceId' as keyof object])"
               clickable>
-              <q-item-section>Remove from Space <i>{{ space['spaceName'] }}</i></q-item-section>
+              <q-item-section><i>{{ space['spaceName' as keyof object] }}</i></q-item-section>
             </q-item>
           </q-list>
         </q-menu>
@@ -142,7 +146,7 @@
       </q-item>
       <q-separator/>
       <q-item clickable v-close-popup @click.stop="deleteDialog(tabset)">
-        <q-icon name="o_delete" class="q-my-xs q-mr-xs" color="grey-5" style="position:relative;top:-1px"/>
+        <q-icon name="o_delete" class="q-my-xs q-mr-xs" color="red" style="position:relative;top:-1px"/>
         Delete tabset...
       </q-item>
     </q-list>
@@ -285,7 +289,8 @@ const deleteDialog = (tabset: Tabset) =>
     component: DeleteTabsetDialog,
     componentProps: {
       tabsetId: tabset.id,
-      tabsetName: tabset.name
+      tabsetName: tabset.name,
+      sidePanelMode: false
     }
   })
 

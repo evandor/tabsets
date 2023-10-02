@@ -5,6 +5,9 @@
         <div class="text-h6">Export your Tabsets</div>
       </q-card-section>
       <q-card-section>
+        <div class="text-caption">{{ foundLabel() }}</div>
+      </q-card-section>
+      <q-card-section>
         <div class="text-body">Please choose</div>
       </q-card-section>
 
@@ -43,6 +46,7 @@ import {useTabsStore} from "src/stores/tabsStore";
 import {useDialogPluginComponent} from 'quasar'
 import {usePermissionsStore} from "src/stores/permissionsStore";
 import {FeatureIdent} from "src/models/AppFeature";
+import {useSpacesStore} from "stores/spacesStore";
 
 defineEmits([
   // REQUIRED; need to specify some events that your
@@ -93,6 +97,16 @@ const exportData = () => {
     })
 
   })
+}
+
+const foundLabel = () => {
+  const spacesCount = useSpacesStore().spaces.size
+  const allTabsCount = tabsStore.allTabsCount
+  const tabsetsCount = tabsStore.tabsets.size
+  if (spacesCount > 0) {
+    return "Found " + allTabsCount + " tabs in " + tabsetsCount + " Tabsets and " + spacesCount + " Spaces"
+  }
+  return "Found " + allTabsCount + " tabs in " + tabsetsCount + " Tabsets"
 }
 
 

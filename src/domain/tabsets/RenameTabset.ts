@@ -7,38 +7,39 @@ const {sendMsg} = useUtils()
 
 class UndoRenameTabsetCommand implements Command<any> {
 
-  constructor(public tabsetId: string, public oldName: string) {
-  }
+    constructor(public tabsetId: string, public oldName: string, public oldColor: string | undefined) {
+    }
 
-  execute(): Promise<ExecutionResult<any>> {
-    console.log("execution undo command", this.tabsetId, this.oldName)
-    return new RenameTabsetCommand(this.tabsetId, this.oldName).execute()
-      .then(res => new ExecutionResult(res, "Tabset was renamed back again"))
-  }
+    execute(): Promise<ExecutionResult<any>> {
+        console.log("execution undo command", this.tabsetId, this.oldName)
+        return new RenameTabsetCommand(this.tabsetId, this.oldName, this.oldColor).execute()
+            .then(res => new ExecutionResult(res, "Tabset was renamed back again"))
+    }
 
 }
 
 export class RenameTabsetCommand implements Command<any> {
 
-  constructor(
-    public tabsetId: string,
-    public newName: string) {
-  }
+    constructor(
+        public tabsetId: string,
+        public newName: string,
+        public newColor: string | undefined) {
+    }
 
-  async execute(): Promise<ExecutionResult<string>> {
-    return TabsetService.rename(this.tabsetId, this.newName)
-      .then(res => {
-        sendMsg('tabset-renamed', {tabsetId: this.tabsetId, newName: this.newName})
-        return res
-      })
-      .then(oldName => Promise.resolve(
-        new ExecutionResult(
-          oldName,
-          "Tabset was renamed",
-          new UndoRenameTabsetCommand(this.tabsetId, oldName)))
-      )
-      .catch(err => Promise.reject(err))
-  }
+    async execute(): Promise<ExecutionResult<string>> {
+        return TabsetService.rename(this.tabsetId, this.newName, this.newColor)
+            .then(res => {
+                sendMsg('tabset-renamed', {tabsetId: this.tabsetId, newName: this.newName, newColor: this.newColor})
+                return res
+            })
+            .then((oldValues: any) => Promise.resolve(
+                new ExecutionResult(
+                    oldValues.oldName,
+                    "Tabset was updated",
+                    new UndoRenameTabsetCommand(this.tabsetId, oldValues.oldName, oldValues.oldColor)))
+            )
+            .catch(err => Promise.reject(err))
+    }
 
 
 }

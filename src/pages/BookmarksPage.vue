@@ -2,11 +2,10 @@
 
   <!-- toolbar -->
   <q-toolbar class="text-primary lightgrey">
-    <div class="row fit">
-      <div class="col-xs-12 col-md-7">
-        <q-toolbar-title>
-          <div class="row justify-start items-baseline">
-            <div class="col-12">
+
+    <q-toolbar-title>
+      <div class="row justify-start items-baseline">
+        <div class="col-12">
                 <span class="text-primary">
                   <q-breadcrumbs separator=">">
                     <q-breadcrumbs-el v-for="bm in bookmarksForBreadcrumb"
@@ -18,38 +17,34 @@
                     />
                   </q-breadcrumbs>
                 </span>
-            </div>
-          </div>
-        </q-toolbar-title>
+        </div>
       </div>
-      <div class="col-xs-12 col-md-5 text-right">
+    </q-toolbar-title>
 
-        <q-btn
-          flat dense icon="upload_file"
-          color="primary" :label="$q.screen.gt.lg ? 'Import as Tabset...' : ''"
-          class="q-mr-sm"
-          @click="importBookmarks">
-          <q-tooltip>Import these bookmarks as Tabset</q-tooltip>
-        </q-btn>
+    <q-btn v-if="nonFolders().length > 0"
+           flat dense icon="upload_file"
+           color="primary" :label="$q.screen.gt.lg ? 'Import as Tabset...' : ''"
+           class="q-mr-sm"
+           @click="importBookmarks">
+      <q-tooltip>Import these bookmarks as Tabset</q-tooltip>
+    </q-btn>
 
-        <q-btn
-          flat dense icon="o_add"
-          color="primary" :label="$q.screen.gt.lg ? 'Add Folder...' : ''"
-          class="q-mr-md"
-          @click="addUrlDialog">
-          <q-tooltip>Create a new Bookmark Folder</q-tooltip>
-        </q-btn>
+    <q-btn
+        flat dense icon="o_add"
+        color="primary" :label="$q.screen.gt.lg ? 'Add Folder...' : ''"
+        class="q-mr-md"
+        @click="addUrlDialog">
+      <q-tooltip>Create a new Bookmark Folder</q-tooltip>
+    </q-btn>
 
-        <q-btn
-          flat dense icon="delete_outline"
-          color="negative" :label="$q.screen.gt.lg ? 'Delete Folder...' : ''"
-          class="q-mr-md"
-          @click="deleteBookmarkFolder">
-          <q-tooltip>Delete this Bookmark Folder</q-tooltip>
-        </q-btn>
+    <q-btn
+        flat dense icon="delete_outline"
+        color="negative" :label="$q.screen.gt.lg ? 'Delete Folder...' : ''"
+        class="q-mr-md"
+        @click="deleteBookmarkFolder">
+      <q-tooltip>Delete this Bookmark Folder</q-tooltip>
+    </q-btn>
 
-      </div>
-    </div>
   </q-toolbar>
 
   <!-- bookmark folders -->
@@ -73,10 +68,10 @@
       <q-card-section>
 
         <BookmarkList
-          :parent="bookmarkId"
-          group="bookmarkFolders"
-          :bookmarks="folders()"
-          :in-side-panel="props.inSidePanel"
+            :parent="bookmarkId"
+            group="bookmarkFolders"
+            :bookmarks="folders()"
+            :in-side-panel="props.inSidePanel"
         />
 
       </q-card-section>
@@ -85,10 +80,10 @@
 
   <!-- bookmarks  -->
   <q-expansion-item
-    header-class="text-black"
-    expand-icon-class="text-black"
-    expand-separator
-    default-opened>
+      header-class="text-black"
+      expand-icon-class="text-black"
+      expand-separator
+      default-opened>
     <template v-slot:header="{ expanded }">
       <q-item-section>
         <div>
@@ -102,12 +97,12 @@
     <q-card>
       <q-card-section>
 
-        <!--          :highlightId="highlightId"-->
         <BookmarkList
-          group="bookmarks"
-          :parent="bookmarkId"
-          :bookmarks="nonFolders()"
-          :in-side-panel="props.inSidePanel"
+            group="bookmarks"
+            :parent="bookmarkId"
+            :bookmarks="nonFolders()"
+            :highlightId="highlightId"
+            :in-side-panel="props.inSidePanel"
         />
 
       </q-card-section>
@@ -126,8 +121,9 @@ import {Bookmark} from "src/models/Bookmark";
 import {onMounted, ref, watchEffect} from "vue";
 import AddBookmarkFolderDialog from "components/dialogues/AddBookmarkFolderDialog.vue";
 import BookmarkList from "components/layouts/BookmarkList.vue";
-import ImportFromBookmarks from "components/dialogues/ImportFromBookmarks.vue";
+import ImportFromBookmarks from "components/dialogues/helper/ImportFromBookmarks.vue";
 import Analytics from "src/utils/google-analytics";
+import ImportFromBookmarksDialog from "components/dialogues/ImportFromBookmarksDialog.vue";
 
 const props = defineProps({
   inSidePanel: {type: Boolean, default: false}
@@ -135,8 +131,6 @@ const props = defineProps({
 
 const route = useRoute();
 const router = useRouter();
-const localStorage = useQuasar().localStorage
-const tabsStore = useTabsStore()
 const bookmarksStore = useBookmarksStore()
 
 const $q = useQuasar()
@@ -186,9 +180,9 @@ watchEffect(() => {
       if (results && results[0]) {
         bookmarksStore.currentBookmark = new Bookmark(uid(), results[0])
         getParentChain(bookmarkId.value)
-          .then(res => {
-            bookmarksForBreadcrumb.value = res.reverse()
-          })
+            .then(res => {
+              bookmarksForBreadcrumb.value = res.reverse()
+            })
       }
     })
     chrome.bookmarks.getChildren(bookmarkId.value, (bms: chrome.bookmarks.BookmarkTreeNode[]) => {
@@ -226,6 +220,12 @@ const addUrlDialog = () => $q.dialog({
 const folders = (): Bookmark[] => _.filter(bookmarksStore.bookmarksForFolder, (bm: Bookmark) => !bm.chromeBookmark.url)
 const nonFolders = (): Bookmark[] => _.filter(bookmarksStore.bookmarksForFolder, (bm: Bookmark) => !!bm.chromeBookmark.url)
 
-const importBookmarks = () => $q.dialog({component: ImportFromBookmarks, componentProps: {inSidePanel:props.inSidePanel}})
+const importBookmarks = () => $q.dialog({
+  component: ImportFromBookmarksDialog,
+  componentProps: {
+    count: nonFolders().length,
+    inSidePanel: props.inSidePanel
+  }
+})
 
 </script>

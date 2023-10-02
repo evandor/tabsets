@@ -62,7 +62,7 @@ export default bexContent((bridge: any) => {
       B.push(getNodeIndex(eC));
       eC = eC.parentNode;
     }
-    if (B.length == 0) {
+    if (B.length === 0) {
       B = A;
       eC = sC;
     }

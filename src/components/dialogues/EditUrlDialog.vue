@@ -28,7 +28,7 @@
         <b>Substitutions for</b>
       </q-card-section>
       <q-card-section class="q-pt-none" v-else>
-        You can use placeholder like this as well: http://dax.de/${wkn}
+        You can use placeholder like this as well: https://dax.de/${wkn}
       </q-card-section>
 
       <q-card-section class="q-pt-none" v-for="(placeholder,index) in placeholders">
@@ -37,11 +37,11 @@
                  @update:model-value="val => updatePlaceholder(placeholder, val)"/>
       </q-card-section>
 
-      <q-card-actions align="right" class="text-primary">
-        <q-btn outline label="Cancel" @click="onDialogCancel" color="accent"/>
+      <q-card-actions align="right">
+        <q-btn label="Cancel" size="md" @click="onDialogCancel" color="accent"/>
         <!--        :disable="newTabUrl?.trim().length === 0 || newTabUrl?.trim() === props.tabsetName || newTabsetDialogWarning() !== ''"-->
 
-        <q-btn outline label="Update" color="warning"
+        <q-btn label="Update" color="warning" size="md"
                v-close-popup
                @click="updateTab()"/>
       </q-card-actions>
@@ -86,7 +86,7 @@ const hideWarning = ref(false)
 const placeholders = ref<string[]>([])
 const placeholderValues = ref<Map<string, string>>(new Map())
 
-const placeholderReg = /\$\{(.*?)\}/gm
+const placeholderReg = /\$\{(.*?)}/gm
 
 watchEffect(() => {
   newTabUrlExists.value = !!tabsStore.nameExistsInContextTabset(newTabUrl.value);

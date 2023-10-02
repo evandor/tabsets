@@ -1,7 +1,7 @@
 <template>
 
   <!-- toolbar -->
-  <q-toolbar class="text-primary lightgrey">
+  <q-toolbar class="text-primary">
     <div class="row fit">
       <div class="col-12">
         <q-toolbar-title>
@@ -113,7 +113,7 @@
 <script setup lang="ts">
 import {onMounted, ref, watchEffect} from 'vue'
 import {useRoute, useRouter} from "vue-router";
-import {useQuasar} from "quasar";
+import {Notify, useQuasar} from "quasar";
 import {useTabsStore} from "src/stores/tabsStore";
 import {usePermissionsStore} from "src/stores/permissionsStore";
 import {useCommandExecutor} from "src/services/CommandExecutor";
@@ -125,6 +125,7 @@ import InfoMessageWidget from "components/widgets/InfoMessageWidget.vue";
 import {DrawerTabs, useUiStore} from "src/stores/uiStore";
 import OpenRightDrawerWidget from "components/widgets/OpenRightDrawerWidget.vue";
 import Analytics from "src/utils/google-analytics";
+import Command from "src/domain/Command";
 
 const route = useRoute();
 const router = useRouter();
@@ -198,16 +199,16 @@ text.set(FeatureIdent.THUMBNAILS.toLowerCase(), {
       'Please note that only tabs that you visit (or revisit) after the activation of this feature are going to have thumbnails.',
   permissions: ['thumbnails']
 })
-// text.set(FeatureIdent.ANALYSE_TABS.toLowerCase(), {
-//   experimental: false,
-//   name: 'Analyse Tabs',
-//   img: 'analyse.png',
-//   img_width: '700px',
-//   description: 'This extension can analyse the tabs you visit, so that the search can be improved significantly. The tab\'s content, ' +
-//     'its links and the received http headers are taken into account. ' +
-//     'Please note that only tabs that you visit (or revisit) after the activation of this feature are going to be analysed.',
-//   permissions: ['allOrigins']
-// })
+text.set(FeatureIdent.ANALYSE_TABS.toLowerCase(), {
+  experimental: false,
+  name: 'Analyse Tabs',
+  img: 'analyse.png',
+  img_width: '700px',
+  description: 'This extension can analyse the tabs you visit, so that the search can be improved significantly. The tab\'s content, ' +
+    'its links and the received http headers are taken into account. ' +
+    'Please note that only tabs that you visit (or revisit) after the activation of this feature are going to be analysed.',
+  permissions: ['allOrigins']
+})
 
 text.set(FeatureIdent.EXPERIMENTAL_VIEWS.toLowerCase(), {
   experimental: true,
@@ -359,6 +360,19 @@ text.set(FeatureIdent.WINDOW_MANAGEMENT.toLowerCase(), {
   permissions: []
 })
 
+text.set(FeatureIdent.COLOR_TAGS.toLowerCase(), {
+  name: 'Color Tags for Tabsets and Tabs',
+  description: 'Assign colors to Tabsets and Tabs as an additional organization level',
+  img: 'colortags.png',
+  permissions: []
+})
+
+text.set(FeatureIdent.ADVANCED_TAB_MANAGEMENT.toLowerCase(), {
+  name: 'Advanced Tab Management',
+  description: 'Sometimes you want pages to open in the same tab, even if the URLs are (slightly) different',
+  permissions: []
+})
+
 
 watchEffect(() => {
       feature.value = route.params.feature as string
@@ -393,8 +407,20 @@ const hasFeature = () => {
 }
 
 const grant = (ident: string) => {
+  if (appFeature.value) {
+    try {
+      appFeature.value.activateCommands.forEach((c: Command<any>) => {
+        useCommandExecutor().execute(c)
+      })
+    } catch (err) {
+      Notify.create({
+        color: 'negative',
+        message: "got error: " + err
+      })
+    }
+  }
   //TODO the default activeCommand always executes "permissionStore.activateFeature" - so we do it twice
-  if (appFeature.value && appFeature.value.activateCommand) {
+ /* if (appFeature.value && appFeature.value.activateCommand) {
     useCommandExecutor().execute(appFeature.value.activateCommand)
         .then((executionResult: ExecutionResult<any>) => {
           if (executionResult.result) {
@@ -404,7 +430,7 @@ const grant = (ident: string) => {
   } else {
     permissionsStore.activateFeature(ident)
   }
-
+*/
 }
 
 const revoke = (ident: string) => {

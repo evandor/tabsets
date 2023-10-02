@@ -9,6 +9,7 @@ import {useSuggestionsStore} from "src/stores/suggestionsStore";
 import {StaticSuggestionIdent} from "src/models/Suggestion";
 import {useTabsetService} from "src/services/TabsetService2";
 import ChromeApi from "src/services/ChromeApi";
+import {useDB} from "src/services/usePersistenceService";
 
 
 class UndoCommand implements Command<boolean> {
@@ -38,7 +39,7 @@ export class GrantPermissionCommand implements Command<boolean> {
             useBookmarksStore().loadBookmarks()
               .then(() => {
                // TabsetService.init()
-                useTabsetService().init()
+                useTabsetService().init(useDB(undefined).db)
                 ChromeBookmarkListeners.initListeners()
               })
             useSuggestionsStore().removeSuggestion(StaticSuggestionIdent.TRY_BOOKMARKS_FEATURE)

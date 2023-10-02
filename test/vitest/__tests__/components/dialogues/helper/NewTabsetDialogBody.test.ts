@@ -9,6 +9,8 @@ import NewTabsetDialogBody from "components/dialogues/helper/NewTabsetDialogBody
 import {useDB} from "src/services/usePersistenceService";
 import {useTabsStore} from "stores/tabsStore";
 import {CreateTabsetCommand} from "src/domain/tabsets/CreateTabset";
+import PersistenceService from "src/services/PersistenceService";
+import {useTabsetService} from "src/services/TabsetService2";
 
 installQuasarPlugin({plugins: {Dialog, Notify}})
 
@@ -16,7 +18,7 @@ vi.mock('vue-router')
 
 describe('NewTabsetDialog', () => {
 
-    let db = null as unknown as typeof IndexedDbPersistenceService
+    let db = null as unknown as PersistenceService
     let wrapper: VueWrapper<any, any> = null as unknown as VueWrapper
     let input: DOMWrapper<Element> = null as unknown as DOMWrapper<Element>
     let submitButton: DOMWrapper<Element> = null as unknown as DOMWrapper<Element>
@@ -30,6 +32,7 @@ describe('NewTabsetDialog', () => {
         useRouter().push.mockReset()
         await IndexedDbPersistenceService.init("db")
         db = useDB(undefined).db
+        await useTabsetService().init(db)
         wrapper = mount(NewTabsetDialogBody, {props: {}});
 
         input = wrapper.find('[data-testid=newTabsetName]')
@@ -88,7 +91,7 @@ describe('NewTabsetDialog', () => {
 
 });
 
-async function checkTabsetNamesInDb(db: typeof IndexedDbPersistenceService, tabsetNames: string[]) {
+async function checkTabsetNamesInDb(db: PersistenceService, tabsetNames: string[]) {
     await db.loadTabsets()
     const tabsets = useTabsStore().tabsets
     expect(tabsets.size).toBe(tabsetNames.length)

@@ -1,5 +1,5 @@
 <template>
-  <div class="q-ma-none q-pa-md fullimageBackground">
+  <div class="q-ma-none q-pa-md fullimageBackground" @click="selected()">
     <div class="row">
       <div class="col-12 text-h6">
         Welcome to Tabsets
@@ -32,6 +32,7 @@
           <q-input v-model="tabsetName"
                    dense
                    autofocus
+                   ref="tabsetNameRef"
                    error-message="Please do not use special Characters, maximum length is 32"
                    :error="!newTabsetNameIsValid()"
                    data-testid="newTabsetName"
@@ -40,7 +41,6 @@
         </q-card-section>
         <q-card-actions align="right" class="q-pr-md q-pb-md q-ma-none">
           <q-btn
-              outline
               :disable="tabsetName.trim().length === 0 || !newTabsetNameIsValid()"
               @click="addFirstTabset"
               data-testid="addTabsetSubmitBtn"
@@ -67,15 +67,27 @@ import {STRIP_CHARS_IN_USER_INPUT} from "boot/constants";
 import {useSpacesStore} from "stores/spacesStore";
 import {TabsetStatus} from "src/models/Tabset";
 import Analytics from "src/utils/google-analytics";
+import { nextTick } from 'vue'
 
 const $q = useQuasar()
 const router = useRouter()
 
 const tabsetName = ref('')
+const tabsetNameRef = ref<HTMLElement>(null as unknown as HTMLInputElement)
 
 onMounted(() => {
   Analytics.firePageViewEvent('WelcomePage', document.location.href);
 })
+
+setTimeout(() => {
+  console.log("focusing", tabsetNameRef.value)
+  //document.getElementsByTagName("input")[0].focus()
+  nextTick(() => {
+    window.document.getElementsByTagName("input")[0].focus()
+    tabsetNameRef.value.focus()
+  });
+
+}, 2000)
 
 watchEffect(() => {
   // we might have been redirected here too early, redirecting
@@ -90,7 +102,6 @@ const addFirstTabset = () => {
   useCommandExecutor()
       .executeFromUi(new CreateTabsetCommand(tabsetName.value, []))
       .then((res) => {
-        NavigationService.openOrCreateTab("https://tabsets.web.app/#/welcome")
         useUiStore().sidePanelSetActiveView(SidePanelView.MAIN)
         router.push("/sidepanel?first=true")
       })
@@ -99,6 +110,10 @@ const addFirstTabset = () => {
 const newTabsetNameIsValid = () =>
    tabsetName.value.length <= 32 && !STRIP_CHARS_IN_USER_INPUT.test(tabsetName.value)
 
+//https://groups.google.com/a/chromium.org/g/chromium-extensions/c/nb058-YrrWc
+const selected = () => {
+  tabsetNameRef.value.focus()
+}
 </script>
 
 <style scoped>

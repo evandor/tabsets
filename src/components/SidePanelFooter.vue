@@ -69,8 +69,7 @@
         </template>
 
       </div>
-      <div class="col text-right">
-
+      <div class="col text-right text-black">
         <q-btn icon="o_help" v-if="usePermissionsStore().hasFeature(FeatureIdent.HELP)"
                :class="rightButtonClass()"
                flat
@@ -114,27 +113,21 @@ import {usePermissionsStore} from "src/stores/permissionsStore";
 import {FeatureIdent} from "src/models/AppFeature";
 import OpenTabsThresholdWidget from "components/widgets/OpenTabsThresholdWidget.vue";
 import NavigationService from "src/services/NavigationService";
-import {useSettingsStore} from "stores/settingsStore";
 import SidePanelFooterLeftButton from "components/helper/SidePanelFooterLeftButton.vue";
-import {Notify, useQuasar} from "quasar";
+import {useQuasar} from "quasar";
 import {useUtils} from "src/services/Utils";
 import {useWindowsStore} from "stores/windowsStores";
 import {useSuggestionsStore} from "stores/suggestionsStore";
 import _ from "lodash";
 import {SuggestionState, SuggestionType} from "src/models/Suggestion";
 import SuggestionDialog from "components/dialogues/SuggestionDialog.vue";
-import {useCommandExecutor} from "src/services/CommandExecutor";
-import {DeactivateFeatureCommand} from "src/domain/features/DeactivateFeature";
-import {AppFeatures} from "src/models/AppFeatures";
 import {TabsetStatus} from "src/models/Tabset";
-import {useTabsetService} from "src/services/TabsetService2";
 
-const {inBexMode, sanitize, sendMsg} = useUtils()
+const {inBexMode} = useUtils()
 
 const $q = useQuasar()
 
 const tabsStore = useTabsStore()
-const settingsStore = useSettingsStore()
 const permissionsStore = usePermissionsStore()
 const router = useRouter()
 const uiStore = useUiStore()
@@ -149,10 +142,12 @@ const showSuggestionIcon = ref(false)
 const doShowSuggestionButton = ref(false)
 
 watchEffect(() => {
+  const suggestions = useSuggestionsStore().getSuggestions()
+  console.log("watcheffect for", suggestions)
   showSuggestionButton.value =
       doShowSuggestionButton.value ||
       (useUiStore().sidePanelActiveViewIs(SidePanelView.MAIN) &&
-          _.findIndex(useSuggestionsStore().getSuggestions(), s => {
+          _.findIndex(suggestions, s => {
             if (s.state === SuggestionState.APPLIED || s.state === SuggestionState.IGNORED) {
               return false
             }
@@ -166,7 +161,7 @@ watchEffect(() => {
   showSuggestionIcon.value =
       !doShowSuggestionButton.value &&
       useUiStore().sidePanelActiveViewIs(SidePanelView.MAIN) &&
-      _.findIndex(useSuggestionsStore().getSuggestions(), s => {
+      _.findIndex(suggestions, s => {
         if (s.state === SuggestionState.APPLIED || s.state === SuggestionState.IGNORED) {
           return false
         }
@@ -227,27 +222,6 @@ const suggestionsLabel = () => {
       suggestions.length + " New Suggestions"
 
 }
-
-  // function deactivateHelpFeature() {
-  //   const helpFeature = new AppFeatures().getFeature(FeatureIdent.HELP)
-  //   if (helpFeature) {
-  //     useCommandExecutor().execute(new DeactivateFeatureCommand(helpFeature))
-  //         .then((res) => {
-  //           useTabsetService().deleteTabset("HELP")
-  //           Notify.create({
-  //             color: 'warning',
-  //             message: "The Help pages have been deleted"
-  //           })
-  //         })
-  //         .catch((err) => {
-  //           console.log("error deactivating help", err)
-  //           Notify.create({
-  //             color: 'warning',
-  //             message: "There was a problem"
-  //           })
-  //         })
-  //   }
-  // }
 
 const openHelpView = () => {
   const helpTabset = useTabsStore().getTabset("HELP")

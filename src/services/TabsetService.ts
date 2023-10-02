@@ -6,7 +6,7 @@ import {Tab} from "src/models/Tab";
 import {Tabset, TabsetSharing, TabsetStatus, TabsetType} from "src/models/Tabset";
 import {useSearchStore} from "src/stores/searchStore";
 import {useBookmarksStore} from "src/stores/bookmarksStore";
-import {STRIP_CHARS_IN_USER_INPUT} from "boot/constants";
+import {STRIP_CHARS_IN_COLOR_INPUT, STRIP_CHARS_IN_USER_INPUT} from "boot/constants";
 import {useTabsetService} from "src/services/TabsetService2";
 import {useDB} from "src/services/usePersistenceService";
 import {useSpacesStore} from "stores/spacesStore";
@@ -173,6 +173,16 @@ class TabsetService {
 
   setCustomTitle(tab: Tab, title: string): Promise<any> {
     tab.name = title
+    return saveCurrentTabset()
+  }
+
+  setColor(tab: Tab, color: string): Promise<any> {
+    tab.color = color
+    return saveCurrentTabset()
+  }
+
+  setMatcher(tab: Tab, matcher: string | undefined): Promise<any> {
+    tab.matcher = matcher
     return saveCurrentTabset()
   }
 
@@ -373,20 +383,6 @@ class TabsetService {
   async closeTrackedTabs(): Promise<chrome.tabs.Tab[]> {
     // TODO long-Running action
     const currentTab = await ChromeApi.getCurrentTab()
-    // chrome.tabs.query({}, (result: chrome.tabs.Tab[]) => {
-    //   const tabsToClose: chrome.tabs.Tab[] = []
-    //   _.forEach(result, (tab: chrome.tabs.Tab) => {
-    //     if (tab && tab.url && tab.url !== currentTab.url && tabsetsFor(tab.url).length > 0) {
-    //       tabsToClose.push(tab)
-    //     }
-    //   })
-    //   // console.log("tabsToClose", tabsToClose)
-    //   _.forEach(tabsToClose, (t: chrome.tabs.Tab) => {
-    //     if (t.id) {
-    //       chrome.tabs.remove(t.id)
-    //     }
-    //   })
-    // })
 
     // @ts-ignore
     const result: chrome.tabs.Tab[] = await chrome.tabs.query({})
@@ -420,14 +416,25 @@ class TabsetService {
    * @param tabsetId
    * @param tabsetName
    */
-  rename(tabsetId: string, tabsetName: string): Promise<string> {
+  rename(tabsetId: string, tabsetName: string,newColor: string | undefined): Promise<object> {
     const trustedName = tabsetName.replace(STRIP_CHARS_IN_USER_INPUT, '')
+    let trustedColor = newColor ? newColor.replace(STRIP_CHARS_IN_COLOR_INPUT, '') : undefined
+    trustedColor = trustedColor && trustedColor.length > 20 ?
+        trustedColor?.substring(0,19) :
+        trustedColor
+
     const tabset = getTabset(tabsetId)
     if (tabset) {
       const oldName = tabset.name
+      const oldColor = tabset.color
       tabset.name = trustedName
+      tabset.color = trustedColor
+      console.log("saving tabset", tabset)
       return saveTabset(tabset)
-        .then(() => Promise.resolve(oldName))
+        .then(() => Promise.resolve({
+          oldName: oldName,
+          oldColor: oldColor
+        }))
     }
     return Promise.reject("could not find tabset for id " + tabsetId)
   }

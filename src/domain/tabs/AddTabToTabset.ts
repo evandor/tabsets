@@ -7,9 +7,11 @@ import {useTabsStore} from "src/stores/tabsStore";
 import {useTabsetService} from "src/services/TabsetService2";
 import {Tabset, TabsetSharing} from "src/models/Tabset";
 import {useUtils} from "src/services/Utils";
+import {useSearchStore} from "stores/searchStore";
+import {uid} from "quasar";
 
 const {saveCurrentTabset, saveTabset} = useTabsetService()
-const {inBexMode,sendMsg} = useUtils()
+const {inBexMode, sendMsg} = useUtils()
 
 // No undo command, tab can be deleted manually easily
 
@@ -18,59 +20,81 @@ const {inBexMode,sendMsg} = useUtils()
  */
 export class AddTabToTabsetCommand implements Command<any> {
 
-  constructor(public tab: Tab, public tabset: Tabset) {
-  }
-
-  async execute(): Promise<ExecutionResult<any>> {
-    const tabsStore = useTabsStore()
-    console.info(`adding tab '${this.tab.id}' to tabset '${this.tabset.id}'`)
-    const exists = _.findIndex(this.tabset.tabs, t => t.url === this.tab.url) >= 0
-    console.log("checking 'tab exists' yields", exists)
-    if (!exists) {
-      return useTabsetService().addToTabsetId(this.tabset.id, this.tab, 0)
-        .then((tabset) => {
-
-          // Sharing
-          if (tabset.sharedId && tabset.sharing === TabsetSharing.PUBLIC) {
-            tabset.sharing = TabsetSharing.PUBLIC_OUTDATED
-          }
-
-          // the tab has been added to the tabset, but not saved yet
-          return TabsetService.getContentFor(this.tab)
-            .then((content) => {
-              //console.log("got content", content)
-              if (content) {
-                return useTabsetService()
-                  .saveText(this.tab, content['content' as keyof object], content['metas' as keyof object])
-                  .then((res) => {
-                    return new ExecutionResult("result", "Tab was added",)
-                  })
-              } else {
-                //console.log("this tabset tabs",this.tabset.tabs)
-                return saveTabset(this.tabset)
-                  .then(result => new ExecutionResult(result, "Tab was added"))
-                  .catch((err:any) => {
-                    console.error("we are here", err)
-                    return Promise.reject("problem")
-                  })
-              }
-            })
-            .then((res) => {
-              sendMsg('tab-added', {tabsetId: tabset.id})
-              return res
-            })
-            .catch((err) => Promise.reject("got err " + err))
-        })
-    } else {
-      return Promise.reject("tab already exists in this tabset")
+    constructor(public tab: Tab, public tabset: Tabset) {
     }
 
+    async execute(): Promise<ExecutionResult<any>> {
+        const tabsStore = useTabsStore()
+        console.info(`adding tab '${this.tab.id}' to tabset '${this.tabset.id}'`)
+        const exists = _.findIndex(this.tabset.tabs, t => t.url === this.tab.url) >= 0
+        console.log("checking 'tab exists' yields", exists)
+        if (!exists) {
+            return useTabsetService().addToTabsetId(this.tabset.id, this.tab, 0)
+                .then((tabset) => {
 
-  }
+                    // Sharing
+                    if (tabset.sharedId && tabset.sharing === TabsetSharing.PUBLIC) {
+                        tabset.sharing = TabsetSharing.PUBLIC_OUTDATED
+                    }
+
+                    // the tab has been added to the tabset, but not saved yet
+                    return TabsetService.getContentFor(this.tab)
+                        .then((content) => {
+                            //console.log("got content", content)
+                            if (content) {
+                                return useTabsetService()
+                                    .saveText(this.tab, content['content' as keyof object], content['metas' as keyof object])
+                                    .then((res) => {
+                                        // add to search index
+                                        useSearchStore().addToIndex(
+                                            uid(),this.tab.name || '',
+                                            this.tab.title || '',
+                                            this.tab.url || '',
+                                            this.tab.description, content['content' as keyof object],
+                                            [this.tabset.id],
+                                            this.tab.favIconUrl || '')
+                                        return res
+                                    })
+                                    .then((res) => {
+                                        return new ExecutionResult("result", "Tab was added",)
+                                    })
+                            } else {
+                                //console.log("this tabset tabs",this.tabset.tabs)
+                                return saveTabset(this.tabset)
+                                    .then((res) => {
+                                        // add to search index
+                                        useSearchStore().addToIndex(
+                                            uid(),this.tab.name || '',
+                                            this.tab.title || '',
+                                            this.tab.url || '',
+                                            this.tab.description, '',
+                                            [this.tabset.id],
+                                            this.tab.favIconUrl || '')
+                                        return res
+                                    })
+                                    .then(result => new ExecutionResult(result, "Tab was added"))
+                                    .catch((err: any) => {
+                                        console.error("we are here", err)
+                                        return Promise.reject("problem")
+                                    })
+                            }
+                        })
+                        .then((res) => {
+                            sendMsg('tab-added', {tabsetId: tabset.id})
+                            return res
+                        })
+                        .catch((err) => Promise.reject("got err " + err))
+                })
+        } else {
+            return Promise.reject("tab already exists in this tabset")
+        }
+
+
+    }
 
 
 }
 
 AddTabToTabsetCommand.prototype.toString = function cmdToString() {
-  return `AddTabToTabsetCommand: {tab=${this.tab.toString()}}`;
+    return `AddTabToTabsetCommand: {tab=${this.tab.toString()}}`;
 };

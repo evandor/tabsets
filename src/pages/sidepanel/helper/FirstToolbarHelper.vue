@@ -12,13 +12,8 @@
 
           <template v-else>
             <div class="column q-ma-none q-pa-none">
-              <div class="col q-ma-none q-pa-none cursor-pointer text-black text-subtitle1"
-                   @click.stop="router.push('/sidepanel/spaces')">
-
-                <!--                  <slot name="title">{{ props.title }}</slot>-->
-
-                <!--                </div>-->
-                <!--              </div>-->
+              <!-- @click.stop="router.push('/sidepanel/spaces')" -->
+              <div class="col q-ma-none q-pa-none cursor-pointer text-black text-subtitle1">
                 <slot name="title">{{ props.title }}</slot>
               </div>
             </div>
@@ -122,6 +117,7 @@
                 class="q-ma-none q-pa-xs cursor-pointer"
                 style="max-width:20px"
                 size="12px"
+                data-testid="addTabsetBtn"
                 @click="openNewTabsetDialog()">
               <q-tooltip class="tooltip">{{ newTabsetTooltip() }}</q-tooltip>
             </q-btn>

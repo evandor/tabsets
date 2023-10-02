@@ -35,7 +35,10 @@ export enum FeatureIdent {
   NOTIFICATIONS = "NOTIFICATIONS",
   ANNOTATIONS = "ANNOTATIONS",
   ARCHIVE_TABSET = "ARCHIVE_TABSET",
-  WINDOW_MANAGEMENT = "WINDOW_MANAGEMENT"
+  WINDOW_MANAGEMENT = "WINDOW_MANAGEMENT",
+  COLOR_TAGS = "COLOR_TAGS",
+  ADVANCED_TAB_MANAGEMENT = "ADVANCED_TAB_MANAGEMENT",
+  ANALYSE_TABS = "ANALYSE_TABS"
 }
 
 export enum FeatureType {
@@ -48,8 +51,9 @@ export enum FeatureType {
 
 
 export class AppFeature {
-  public activateCommand: Command<any> | undefined = undefined
-  public deactivateCommand: Command<any> | undefined = undefined
+
+  public activateCommands: Array<Command<any>> = []
+  public deactivateCommands: Array<Command<any>> = []
 
   constructor(
     public ident: FeatureIdent,
@@ -59,17 +63,17 @@ export class AppFeature {
     public useIn: string[],
     public requires: FeatureIdent[] = []
   ) {
-    this.activateCommand = new ActivateFeatureCommand(this)
-    this.deactivateCommand = new DeactivateFeatureCommand(this)
+    this.activateCommands = [new ActivateFeatureCommand(this)]
+    this.deactivateCommands = [new DeactivateFeatureCommand(this)]
   }
 
-  setActivateCommand(cmd: Command<any>): AppFeature {
-    this.activateCommand = cmd
+  setActivateCommands(cmds: Array<Command<any>>): AppFeature {
+    this.activateCommands = cmds.concat(this.activateCommands)
     return this
   }
 
-  setDeactivateCommand(cmd: Command<any>): AppFeature {
-    this.deactivateCommand = cmd
+  setDeactivateCommands(cmds: Array<Command<any>>): AppFeature {
+    this.deactivateCommands = cmds.concat(this.deactivateCommands)
     return this
   }
 }

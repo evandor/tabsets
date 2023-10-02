@@ -1,10 +1,6 @@
 <template>
 
-  <!--  <div class="row q-ma-none q-pa-none fit">-->
-
-  <!--    <div class="col-12 q-mt-none q-mx-none greyBorderTop">-->
-
-  <q-toolbar class="text-primary lightgrey">
+  <q-toolbar class="text-primary">
     <div class="row fit">
       <div class="col-xs-12 col-md-9">
         <q-toolbar-title>
@@ -67,7 +63,7 @@
   <BookmarksTree v-else-if="tab === DrawerTabs.BOOKMARKS"/>
   <!--      <OpenTabs v-else-if="tab ===  DrawerTabs.OPEN_TABS" :filter="filter"/>-->
   <!--      <UnassignedTabs v-else-if="tab ===  DrawerTabs.UNASSIGNED_TABS" :filter="filter"/>-->
-  <TabsGroupedByHost v-else-if="tab ===  DrawerTabs.GROUP_BY_HOST_TABS"/>
+  <ByDomainList v-else-if="tab ===  DrawerTabs.GROUP_BY_HOST_TABS"/>
   <SavedTabs v-else-if="tab ===  DrawerTabs.SAVED_TABS"/>
 <!--  <TabsetAsSidebar v-else-if="tab ===  DrawerTabs.SIDEBAR"/>-->
 <!--  <NewTabUrls v-else-if="tab ===  DrawerTabs.NEW_TAB_URLS"/>-->
@@ -76,6 +72,9 @@
   <Features v-else-if="tab ===  DrawerTabs.FEATURES"/>
   <TabDetails v-else-if="tab ===  DrawerTabs.TAB_DETAILS"/>
   <TabsetDetails v-else-if="tab ===  DrawerTabs.TABSET_DETAILS"/>
+
+  <TagsListViewer v-else-if="tab ===  DrawerTabs.TAGS_VIEWER"/>
+  <TagListViewer v-else-if="tab ===  DrawerTabs.TAG_VIEWER"/>
 
   <TabsetHelp v-else-if="tab ===  DrawerTabs.HELP"/>
 
@@ -102,6 +101,10 @@ import BookmarksTree from "components/BookmarksTree.vue";
 import TabDetails from "components/views/TabDetails.vue";
 import TabsetHelp from "components/TabsetHelp.vue";
 import TabsetDetails from "components/views/TabsetDetails.vue";
+import TagsListViewer from "components/views/TagsListViewer.vue";
+import SidePanelTagsListViewer from "pages/sidepanel/SidePanelTagsListViewer.vue";
+import TagListViewer from "components/views/TagListViewer.vue";
+import ByDomainList from "components/ByDomainList.vue";
 
 const router = useRouter()
 const route = useRoute()
@@ -155,6 +158,8 @@ const drawerLabel = () => {
       return "Help"
     case DrawerTabs.TAGS_VIEWER:
       return "Tags Viewer"
+    case DrawerTabs.TAG_VIEWER:
+      return "Tag Viewer"
     default:
       return tab.value
   }

@@ -75,13 +75,8 @@
 </template>
 
 <script setup lang="ts">
-import {Tab} from "src/models/Tab";
-import TabsetService from "src/services/TabsetService";
-import {useNotificationsStore} from "src/stores/notificationsStore";
-import {ref} from "vue";
+import {PropType, ref} from "vue";
 import {useUtils} from "src/services/Utils"
-import {useCommandExecutor} from "src/services/CommandExecutor";
-import {DeleteTabCommand} from "src/domain/tabs/DeleteTabCommand";
 import {Bookmark} from "src/models/Bookmark";
 import {useRouter} from "vue-router";
 import {date} from "quasar";
@@ -92,7 +87,7 @@ import {useTabsetService} from "src/services/TabsetService2";
 const {formatDate} = useUtils()
 
 const props = defineProps({
-  bookmark: {type: Object, required: true},
+  bookmark: {type: Object as PropType<Bookmark>, required: true},
   highlightUrl: {type: String, required: false},
   inSidePanel: {type: Boolean, default: false}
 })
@@ -100,59 +95,6 @@ const props = defineProps({
 const router = useRouter()
 
 const showDeleteButton = ref<Map<string, boolean>>(new Map())
-
-const line = ref(null);
-
-function getShortHostname(host: string) {
-  const nrOfDots = (host.match(/\./g) || []).length
-  if (nrOfDots >= 2) {
-    return host.substring(host.indexOf(".", nrOfDots - 2) + 1)
-  }
-  return host
-}
-
-function getHost(urlAsString: string, shorten: Boolean = true): string {
-  try {
-    const url = new URL(urlAsString)
-    if (!shorten) {
-      return url.protocol + "://" + url.host.toString()
-    }
-    return getShortHostname(url.host)
-  } catch (e) {
-    return "---";
-  }
-}
-
-function cardStyle(tab: Tab) {
-  const height = "66px"
-  let borderColor = ""
-  if (isOpen(tab)) {
-    borderColor = "border-color:#8f8f8f"
-  }
-  if (tab.selected) {
-    borderColor = "border-color:#000066"
-  }
-
-  let background = ''
-  if (tab.isDuplicate) {
-    background = "background: radial-gradient(circle, #FFFFFF 0%, #FFECB3 100%)"
-  }
-  // style=""
-  return `height: ${height};max-height:${height}; min-height: ${height};${borderColor};${background}`
-}
-
-function isOpen(tab: Tab): boolean {
-  return false//TabsetService.isOpen(tab?.chromeBookmark?.url || '')
-}
-
-const selectTab = (tab: Tab) => {
-  TabsetService.setOnlySelectedTab(tab)
-}
-
-const setCustomTitle = (tab: Tab, newValue: string) => {
-  console.log(" -> ", newValue)
-  TabsetService.setCustomTitle(tab, newValue)
-}
 
 const getFaviconUrl = (chromeBookmark: chrome.bookmarks.BookmarkTreeNode | undefined) => {
   // if (chromeBookmark && chromeBookmark.favIconUrl && !chromeBookmark.favIconUrl.startsWith("chrome")) {
@@ -176,8 +118,6 @@ const getFaviconUrl = (chromeBookmark: chrome.bookmarks.BookmarkTreeNode | undef
   }
   return 'favicon-unknown-32x32.png'
 }
-
-const deleteTab = (tab: Tab) => useCommandExecutor().executeFromUi(new DeleteTabCommand(tab))
 
 const selectBookmark = (bm: Bookmark) =>
   props.inSidePanel ?

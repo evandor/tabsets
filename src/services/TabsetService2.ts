@@ -1,4 +1,4 @@
-import {STRIP_CHARS_IN_USER_INPUT} from "boot/constants";
+import {STRIP_CHARS_IN_COLOR_INPUT, STRIP_CHARS_IN_USER_INPUT} from "boot/constants";
 import {useTabsStore} from "src/stores/tabsStore";
 import {Tab} from "src/models/Tab";
 import _ from "lodash";
@@ -9,25 +9,27 @@ import ChromeApi from "src/services/ChromeApi";
 import {TabPredicate} from "src/domain/Types";
 import {Tabset, TabsetStatus, TabsetType} from "src/models/Tabset";
 import {MetaLink} from "src/models/MetaLink";
-import {useDB} from "src/services/usePersistenceService";
 import {SpecialTabsetIdent} from "src/domain/tabsets/CreateSpecialTabset";
 // @ts-ignore
 import {v5 as uuidv5} from 'uuid';
 import {useSettingsStore} from "src/stores/settingsStore"
 import {Space} from "src/models/Space";
 import {useSpacesStore} from "src/stores/spacesStore";
-import {useUtils} from "src/services/Utils";
+import {SaveOrReplaceResult} from "src/models/SaveOrReplaceResult";
+import PersistenceService from "src/services/PersistenceService";
+import JsUtils from "src/utils/JsUtils";
 import {usePermissionsStore} from "stores/permissionsStore";
 import {FeatureIdent} from "src/models/AppFeature";
-import {SaveOrReplaceResult} from "src/models/SaveOrReplaceResult";
+import {RequestInfo} from "src/models/RequestInfo";
 
-const {sendMsg} = useUtils()
+let db: PersistenceService = null as unknown as PersistenceService
 
 export function useTabsetService() {
-    const {db} = useDB()
 
-    const init = async (doNotInitSearchIndex: boolean = false) => {
+    const init = async (providedDb: PersistenceService,
+                        doNotInitSearchIndex: boolean = false) => {
         console.log("initializing tabsetService2")
+        db = providedDb
         await db.loadTabsets()
         console.log("after db.loadTabsets()")
         if (!doNotInitSearchIndex) {
@@ -64,9 +66,15 @@ export function useTabsetService() {
         chromeTabs: chrome.tabs.Tab[],
         merge: boolean = false,
         windowId: string = 'current',
-        tsType: TabsetType = TabsetType.DEFAULT): Promise<SaveOrReplaceResult> => {
+        tsType: TabsetType = TabsetType.DEFAULT,
+        color: string | undefined = undefined
+    ): Promise<SaveOrReplaceResult> => {
 
         const trustedName = name.replace(STRIP_CHARS_IN_USER_INPUT, '')
+            .substring(0, 31)
+        const trustedColor = color ?
+            color.replace(STRIP_CHARS_IN_COLOR_INPUT, '').substring(0, 31)
+            : undefined
         const tabs: Tab[] = _.filter(
             _.map(chromeTabs, t => {
                 const tab = new Tab(uid(), t)
@@ -81,7 +89,7 @@ export function useTabsetService() {
             })
         try {
             const result: NewOrReplacedTabset = await useTabsStore()
-                .updateOrCreateTabset(trustedName, tabs, merge, windowId, tsType)
+                .updateOrCreateTabset(trustedName, tabs, merge, windowId, tsType, trustedColor)
             if (result && result.tabset) {
                 await saveTabset(result.tabset)
                 // result.tabset.tabs.forEach((tab: Tab) => {
@@ -266,7 +274,7 @@ export function useTabsetService() {
             if (!tabset.type) {
                 tabset.type = TabsetType.DEFAULT
             }
-            //console.log("saving tabset", tabset)
+            console.log("saving tabset", tabset.name, tabset)
             return db.saveTabset(tabset)
         }
         return Promise.reject("tabset id not set")
@@ -511,33 +519,6 @@ export function useTabsetService() {
     }
 
 
-    /**
-     * https://skysail.atlassian.net/wiki/spaces/TAB/pages/800849921/Tab+Handling
-     *
-     * @param tab to deal with
-     */
-    const closeTab = (tab: Tab) => {
-        console.log("closing tab", tab.id, tab.chromeTabId)
-        const tabUrl = tab.url || ''
-        if (tabsetsFor(tabUrl).length <= 1) {
-            removeThumbnailsFor(tabUrl)
-                .then(() => console.debug("deleting thumbnail for ", tabUrl))
-                .catch(err => console.log("error deleting thumbnail", err))
-
-            removeContentFor(tabUrl)
-                .then(() => console.debug("deleting content for ", tabUrl))
-                .catch(err => console.log("error deleting content", err))
-        }
-        const tabset = tabsetFor(tab.id)
-        if (tabset) {
-            useTabsStore().removeTab(tabset, tab.id)
-            //useNotificationsStore().unsetSelectedTab()
-            return saveTabset(tabset)
-                .then(() => tabset)
-        }
-        return Promise.reject("could not access current tabset")
-    }
-
     const deleteTab = (tab: Tab): Promise<Tabset> => {
         console.log("deleting tab", tab.id, tab.chromeTabId)
         const tabUrl = tab.url || ''
@@ -554,6 +535,7 @@ export function useTabsetService() {
         if (tabset) {
             useTabsStore().removeTab(tabset, tab.id)
             //useNotificationsStore().unsetSelectedTab()
+            console.log("deletion: saving tabset", tabset)
             return saveTabset(tabset)
                 .then(() => tabset)
         }
@@ -585,8 +567,9 @@ export function useTabsetService() {
         const currentTabset = getCurrentTabset()
         if (currentTabset) {
             if (_.find(currentTabset.tabs, t => {
-                //console.log(" = ", t.url === url, t.url, url)
-                return t.url === url
+                return (t.matcher && usePermissionsStore().hasFeature(FeatureIdent.ADVANCED_TAB_MANAGEMENT)) ?
+                    JsUtils.match(t.matcher, url) :
+                    t.url === url
             })) {
                 return true
             }
@@ -641,7 +624,6 @@ export function useTabsetService() {
         //saveRequestFor,
         removeThumbnailsFor,
         removeContentFor,
-        closeTab,
         deleteTab,
         urlExistsInATabset,
         urlExistsInCurrentTabset,

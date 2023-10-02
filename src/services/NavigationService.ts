@@ -1,25 +1,25 @@
 import {HTMLSelection, Tab} from "src/models/Tab";
 import {useNotificationsStore} from "src/stores/notificationsStore";
-import {openURL, useQuasar} from "quasar";
+import {openURL} from "quasar";
 import {useTabsStore} from "src/stores/tabsStore";
 import {useTabsetService} from "src/services/TabsetService2";
 import {useWindowsStore} from "stores/windowsStores";
-import {useRouter} from "vue-router";
+import JsUtils from "src/utils/JsUtils";
 
 class NavigationService {
 
-    async openOrCreateTab(withUrl: string) {
-        const useWindow = useTabsStore().getCurrentTabset?.window || 'current'
-        console.log("opening", withUrl, useWindow, process.env.MODE)
+    async openOrCreateTab(withUrl: string, matcher: string | undefined = undefined) {
+        const useWindowIdent = useTabsStore().getCurrentTabset?.window || 'current'
+        console.log("opening", withUrl, useWindowIdent, process.env.MODE)
 
-        const existingWindow = await useWindowsStore().windowFor(useWindow)
-        if (useWindow !== 'current') {
+        const existingWindow = await useWindowsStore().windowFor(useWindowIdent)
+        if (useWindowIdent !== 'current') {
             console.log("existingWindow", existingWindow)
             if (!existingWindow) {
                 chrome.windows.create({url: withUrl}, (callback) => {
                     console.log("callback", callback)
                     if (callback) {
-                        useWindowsStore().assignWindow(useWindow, callback)
+                        useWindowsStore().assignWindow(useWindowIdent, callback.id || 0)
                     }
                 })
                 return
@@ -47,14 +47,19 @@ class NavigationService {
                     }
                 }
             })
-            const useWindowId = existingWindow?.id || chrome.windows.WINDOW_ID_CURRENT
+            const useWindowId = existingWindow || chrome.windows.WINDOW_ID_CURRENT
             const queryInfo = {windowId: useWindowId}
             console.log("using query info ", queryInfo)
             chrome.tabs.query(queryInfo, (t: chrome.tabs.Tab[]) => {
                 let found = false;
                 t.filter(r => r.url)
                     .map(r => {
-                        if (withUrl === r.url) {
+                        let matchCondition = withUrl === r.url
+                        if (matcher && r.url) {
+                            //console.log("matcher yielded", JsUtils.match(matcher, r.url))
+                            matchCondition = JsUtils.match(matcher, r.url)
+                        }
+                        if (matchCondition) {
                             if (!found) { // highlight only first hit
                                 found = true
                                 console.log("found something", r)
@@ -82,6 +87,7 @@ class NavigationService {
                         url: withUrl,
                         windowId: useWindowId
                     }, (tab: chrome.tabs.Tab) => {
+                        chrome.windows.update(useWindowId, {focused: true})
                         // pass selections and execute quoting script
                         if (selections.length > 0) {
                             console.log("selections", selections, tab.id)

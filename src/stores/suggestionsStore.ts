@@ -84,11 +84,17 @@ export const useSuggestionsStore = defineStore('suggestions', () => {
             (s: Suggestion) => s.state === SuggestionState.NEW || s.state === SuggestionState.CANCELED)
     })
 
+    const getSuggestion = computed(() => {
+        return (suggestionId: string) => _.find(suggestions.value, s => s.id === suggestionId)
+    })
+
 
     return {
         init,
+        loadSuggestionsFromDb,
         addSuggestion,
         getSuggestions,
+        getSuggestion,
         ignoreSuggestion,
         cancelSuggestion,
         removeSuggestion,

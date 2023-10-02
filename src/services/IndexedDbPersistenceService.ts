@@ -14,11 +14,13 @@ import {MetaLink} from "src/models/MetaLink";
 import {StatsEntry} from "src/models/StatsEntry";
 import {uid} from "quasar";
 import {Notification, NotificationStatus} from "src/models/Notification";
-import {StaticSuggestionIdent, Suggestion, SuggestionState} from "src/models/Suggestion";
+import {StaticSuggestionIdent, Suggestion, SuggestionState, SuggestionType} from "src/models/Suggestion";
 import {useUiStore} from "src/stores/uiStore";
 import {useCategoriesStore} from "stores/categoriesStore";
 import {cloudFunctionsApi} from "src/api/cloudfunctionsApi";
 import {Category} from "src/models/Category";
+import {RequestInfo} from "src/models/RequestInfo";
+import {useSuggestionsStore} from "stores/suggestionsStore";
 
 class IndexedDbPersistenceService implements PersistenceService {
   private db: IDBPDatabase = null as unknown as IDBPDatabase
@@ -74,15 +76,7 @@ class IndexedDbPersistenceService implements PersistenceService {
 
 
   async saveTabset(tabset: Tabset): Promise<IDBValidKey> {
-    console.log("db: saving tabset", tabset.id, tabset.tabs.length)
     return await this.db.put('tabsets', JSON.parse(JSON.stringify(tabset)), tabset.id);
-
-    //   const tabsRes = await this.db.put('tabs', JSON.parse(JSON.stringify(tabset.tabs)), tabset.id);
-    //   const tabsetClone = Object.assign({}, tabset);
-    //   tabsetClone.tabs = []
-    //   tabsetClone.tabsCount = tabset.tabs.length
-    //   await this.db.put('tabsets', JSON.parse(JSON.stringify(tabsetClone)), tabset.id);
-    //   return tabsRes
   }
 
   deleteTabset(tabsetId: string): Promise<void> {
@@ -149,7 +143,7 @@ class IndexedDbPersistenceService implements PersistenceService {
         .then(() => console.log(new Tab(uid(), tab), `saved thumbnail for url ${tab.url}, ${Math.round(thumbnail.length / 1024)}kB`))
         .catch(err => console.error(new Tab(uid(), tab), err))
     }
-    return Promise.reject("no url provided")
+    return Promise.reject("no url provided or db not ready")
   }
 
   saveRequest(url: string, requestInfo: RequestInfo): Promise<void> {
@@ -159,11 +153,39 @@ class IndexedDbPersistenceService implements PersistenceService {
       url: url,
       requestInfo
     }, encodedTabUrl)
-      .then(() => console.debug("added request"))
+      .then(() => {
+        console.debug("added request", requestInfo)
+        if (requestInfo.statusCode.toString().startsWith("30") && requestInfo.headers.length > 0) {
+          const suggestionId = uid()
+          const suggestion = new Suggestion(suggestionId,
+              "Bookmark URL changed", "A bookmark has changed accoring to the server. Should the bookmark be updated?",
+              "/suggestions/" + suggestionId,
+              SuggestionType.REDIRECT_HAPPENED_FOR_BOOKMARK)
+          let location = undefined
+          requestInfo.headers.forEach(headerObject => {
+            //console.log("checking", headerObject.name.toLowerCase())
+            if (headerObject.name.toLowerCase() === 'location') {
+              location = headerObject.value
+            }
+          })
+          console.log("location", location)
+          if (location) {
+            suggestion.setData({
+              url,
+              status: requestInfo.statusCode,
+              location
+            })
+            useSuggestionsStore().addSuggestion(suggestion)
+          }
+        }
+      })
       .catch(err => console.log("err", err))
   }
 
   saveMetaLinks(url: string, metaLinks: MetaLink[]): Promise<void> {
+    if (!this.db) {
+      console.log("saveMetaLinks: db not ready yet")
+    }
     const encodedTabUrl = btoa(url)
     return this.db.put('metalinks', {
       expires: new Date().getTime() + 1000 * 60 * EXPIRE_DATA_PERIOD_IN_MINUTES,
@@ -175,6 +197,9 @@ class IndexedDbPersistenceService implements PersistenceService {
   }
 
   saveLinks(url: string, links: any): Promise<void> {
+    if (!this.db) {
+      console.log("saveLinks: db not ready yet")
+    }
     const encodedTabUrl = btoa(url)
     return this.db.put('links', {
       expires: new Date().getTime() + 1000 * 60 * EXPIRE_DATA_PERIOD_IN_MINUTES,
@@ -211,8 +236,7 @@ class IndexedDbPersistenceService implements PersistenceService {
     return this.db.delete('content', btoa(url))
   }
 
-  saveContent(tab: Tab, text: string, metas: object, title: string, tabsetIds: string[],
-              tabsetCandidates: object[] = []): Promise<IDBValidKey> {
+  saveContent(tab: Tab, text: string, metas: object, title: string, tabsetIds: string[]): Promise<IDBValidKey> {
     if (tab.url) {
       const encodedTabUrl = btoa(tab.url)
       return this.db.put('content', {
@@ -223,8 +247,7 @@ class IndexedDbPersistenceService implements PersistenceService {
         content: text,
         metas: metas,
         tabsets: tabsetIds,
-        favIconUrl: tab.favIconUrl,
-        tabsetCandidates: tabsetCandidates
+        favIconUrl: tab.favIconUrl
       }, encodedTabUrl)
         .then((res) => {
           // console.info(new Tab(uid(), tab), "saved content for url " + tab.url)
@@ -565,7 +588,11 @@ class IndexedDbPersistenceService implements PersistenceService {
   }
 
   getNotifications(onlyNew: boolean = true): Promise<Notification[]> {
-    return this.db.getAll('notifications')
+    if (this.db) {
+      return this.db.getAll('notifications')
+    }
+    console.log("db not ready yet, returning empty notification array")
+    return Promise.resolve([])
   }
 
   addNotification(notification: Notification): Promise<void> {
@@ -661,6 +688,15 @@ class IndexedDbPersistenceService implements PersistenceService {
   clear(name: string) {
     this.db.clear(name).catch((e) => console.warn(e))
   }
+
+  getActiveFeatures(): Promise<string[]> {
+    return Promise.reject("not implemented")
+  }
+
+  saveActiveFeatures(val: string[]): any {
+    console.warn("not implemented")
+  }
+
 }
 
 export default new IndexedDbPersistenceService()

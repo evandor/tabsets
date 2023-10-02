@@ -15,12 +15,12 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/authenticate',
     component: () => import('layouts/SidePanelLayout.vue'),
-    children: [{ path: '', component: () => import('pages/Authenticate.vue') }],
+    children: [{ path: '', component: () => import('pages/AuthenticatePage.vue') }],
   },
   {
     path: '/start',
     component: () => import('layouts/PlainLayout.vue'),
-    children: [{ path: '', component: () => import('pages/Start.vue') }],
+    children: [{ path: '', component: () => import('pages/StartPage.vue') }],
   },
   {
     path: '/fullpage',
@@ -103,11 +103,6 @@ const routes: RouteRecordRaw[] = [
     children: [{ path: '', component: () => import('pages/sidepanel/SidePanelTop10Page.vue') }],
   },
   {
-    path: '/sidepanel/byCategory',
-    component: () => import('layouts/SidePanelLayout.vue'),
-    children: [{ path: '', component: () => import('pages/sidepanel/SidePanelCategoriesPage.vue') }],
-  },
-  {
     path: '/sidepanel/byDomain/:encodedUrl',
     component: () => import('layouts/SidePanelLayout.vue'),
     children: [{ path: '', component: () => import('pages/sidepanel/SidePanelByDomainPage.vue') }],
@@ -150,7 +145,12 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/mainpanel/tab/:id',// TODO combine with Tag page
     component: () => import('layouts/PlainLayout.vue'),
-    children: [{ path: '', component: () => import('pages/mainpanel/MainPanelTabPage.vue') }],
+    children: [{ path: '', component: () => import('pages/TabPage.vue') }],
+  },
+  {
+    path: '/mainpanel/suggestions/:suggestionId',
+    component: () => import('layouts/PlainLayout.vue'),
+    children: [{ path: '', component: () => import('pages/mainpanel/MainPanelCheckSuggestionPage.vue') }],
   },
   {
     path: '/mainpanel/spaces', // TODO combine with Spaces page
@@ -163,7 +163,12 @@ const routes: RouteRecordRaw[] = [
     children: [{ path: '', component: () => import('pages/mainpanel/MainPanelBookmarksPage.vue') }],
   },
   {
-    path: '/mainpanel/readingmode/:tabId', // TODO combine with Note page
+    path: '/mainpanel/tabAssignment/:id',
+    component: () => import('layouts/PlainLayout.vue'),
+    children: [{ path: '', component: () => import('pages/mainpanel/MainPanelTabAssignmentPage.vue') }],
+  },
+  {
+    path: '/mainpanel/readingmode/:tabId',
     component: () => import('layouts/PlainLayout.vue'),
     children: [{ path: '', component: () => import('pages/mainpanel/MainPanelReadingModePage.vue') }],
   },
@@ -189,12 +194,12 @@ const routes: RouteRecordRaw[] = [
   },
   {
     path: '/tabsets',
-    component: () => import('layouts/DefaultLayout.vue'),
+    component: () => import('layouts/FullPageLayout.vue'),
     children: [{ path: '', component: () => import('pages/TabsetPage.vue') }],
   },
   {
     path: '/dynamicTs/:tabsetId',
-    component: () => import('layouts/DefaultLayout.vue'),
+    component: () => import('layouts/FullPageLayout.vue'),
     children: [{ path: '', component: () => import('pages/TabsetPage.vue') }],
   },
   {
@@ -224,7 +229,7 @@ const routes: RouteRecordRaw[] = [
   },
   {
     path: '/bydomain/:encodedUrl',
-    component: () => import('layouts/DefaultLayout.vue'),
+    component: () => import('layouts/FullPageLayout.vue'),
     children: [{ path: '', component: () => import('pages/ByDomainPage.vue') }],
   },
   {
@@ -234,7 +239,7 @@ const routes: RouteRecordRaw[] = [
   },
   {
     path: '/features/:feature',
-    component: () => import('layouts/DefaultLayout.vue'),
+    component: () => import('layouts/FullPageLayout.vue'),
     children: [{ path: '', component: () => import('pages/FeaturesPage.vue') }],
   },
   {

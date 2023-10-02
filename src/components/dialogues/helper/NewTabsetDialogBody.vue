@@ -14,19 +14,21 @@
                    dense autofocus
                    @update:model-value="val => checkIsValid()"
                    :rules="[
-                       val => newTabsetNameIsValid(val) || 'Please do not use special Characters',
-                       val => newTabsetNameIsShortEnough(val) || 'the maximum length is 32',
+                       val => Tabset.newTabsetNameIsValid(val) || 'Please do not use special Characters',
+                       val => Tabset.newTabsetNameIsShortEnough(val) || 'the maximum length is 32',
                        val => doesNotExistYet(val) || 'Tabset already exists'
                        ]"
                    data-testid="newTabsetName"/>
 
-          <q-checkbox
-              data-testid="newTabsetAutoAdd"
-              v-model="addAllOpenTabs" label="Add all open tabs"/>&nbsp;
-          <q-icon
-              name="help" color="primary" size="1em">
-            <q-tooltip>If you select this option, all currently open tabs will be added to your new tabset</q-tooltip>
-          </q-icon>
+          <template v-if="inBexMode()">
+            <q-checkbox
+                data-testid="newTabsetAutoAdd"
+                v-model="addAllOpenTabs" label="Add all open tabs"/>&nbsp;
+            <q-icon
+                name="help" color="primary" size="1em">
+              <q-tooltip>If you select this option, all currently open tabs will be added to your new tabset</q-tooltip>
+            </q-icon>
+          </template>
         </q-card-section>
 
         <q-card-section v-if="usePermissionsStore().hasFeature(FeatureIdent.WINDOW_MANAGEMENT)">
@@ -43,16 +45,22 @@
               new-value-mode="add"
               @new-value="createWindowOption"
               :rules="[
-                       val => newTabsetNameIsValid(val) || 'Please do not use special Characters',
-                       val => newTabsetNameIsShortEnough(val) || 'the maximum length is 32'
+                       val => Tabset.newTabsetNameIsValid(val) || 'Please do not use special Characters',
+                       val => Tabset.newTabsetNameIsShortEnough(val) || 'the maximum length is 32'
                        ]"
           />
         </q-card-section>
 
+        <q-card-section v-if="usePermissionsStore().hasFeature(FeatureIdent.COLOR_TAGS)">
+          Assign Color (optional)
+          <div class="row q-pa-xs q-mt-none q-pl-sm q-gutter-sm">
+            <ColorSelector @colorSet="(color:string) => theColor = color"/>
+          </div>
+        </q-card-section>
+
         <q-card-actions align="right">
-          <q-btn label="Cancel" size="sm" outline color="accent" v-close-popup/>
+          <q-btn label="Cancel" size="sm" color="accent" v-close-popup/>
           <q-btn type="submit" size="sm" color="warning"
-                 outline
                  data-testid="newTabsetNameSubmit"
                  :disable="!isValid"
                  label="Add"
@@ -80,9 +88,11 @@ import {SidePanelView, useUiStore} from "stores/uiStore";
 import {usePermissionsStore} from "stores/permissionsStore";
 import {FeatureIdent} from "src/models/AppFeature";
 import {useWindowsStore} from "stores/windowsStores";
-import _ from "lodash"
+import {useUtils} from "src/services/Utils";
+import ColorSelector from "components/dialogues/helper/ColorSelector.vue";
 
 const {dialogRef, onDialogHide, onDialogCancel} = useDialogPluginComponent()
+const {inBexMode} = useUtils()
 
 const props = defineProps({
   spaceId: {type: String, required: false},
@@ -98,6 +108,7 @@ const addAllOpenTabs = ref(false)
 const theForm = ref<QForm>(null as unknown as QForm)
 const windowModel = ref<string>('current')
 const windowOptions = ref<string[]>([])
+const theColor = ref<string | undefined>(undefined)
 
 watchEffect(() => {
   const windows: Set<string> = useWindowsStore().windowSet
@@ -120,19 +131,16 @@ const checkIsValid = () => {
   }
 }
 
-const newTabsetNameIsValid = (val: string) => !STRIP_CHARS_IN_USER_INPUT.test(val)
-const newTabsetNameIsShortEnough = (val: string) => val ? val.length <= 32 : true
-
 const doesNotExistYet = (val: string) => {
   const existsInTabset = tabsStore.existingInTabset(val)
   return !(existsInTabset && existsInTabset.status !== TabsetStatus.DELETED)
 }
 
 const createNewTabset = () => {
+  console.log("createNewTabset", addAllOpenTabs.value, tabsStore.tabs, windowModel.value)
   const tabsToUse = addAllOpenTabs.value ? tabsStore.tabs : []
-  console.log("windowModel", windowModel.value)
   useCommandExecutor()
-      .executeFromUi(new CreateTabsetCommand(newTabsetName.value, tabsToUse, windowModel.value))
+      .executeFromUi(new CreateTabsetCommand(newTabsetName.value, tabsToUse, windowModel.value, theColor.value))
       .then((res) => {
         if (props.spaceId) {
           const ts: Tabset = res.result.tabset

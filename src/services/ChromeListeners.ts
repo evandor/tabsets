@@ -1,4 +1,4 @@
-import {Tabset, TabsetType} from "src/models/Tabset";
+import {Tabset, TabsetStatus, TabsetType} from "src/models/Tabset";
 import {useTabsStore} from "src/stores/tabsStore";
 import _ from "lodash";
 import {HTMLSelection, HTMLSelectionComment, Tab} from "src/models/Tab";
@@ -132,7 +132,7 @@ function inIgnoredMessages(request: any) {
   return request.name === 'progress-indicator' ||
     request.name === 'current-tabset-id-change' ||
     request.name === 'tab-being-dragged' ||
-    request.name === 'tab-changed' ||
+    request.name === 'note-changed' ||
     request.name === 'tab-added' ||
     request.name === 'tab-deleted' ||
     request.name === 'tabset-added' ||
@@ -141,6 +141,9 @@ function inIgnoredMessages(request: any) {
     request.name === 'feature-activated' ||
     request.name === 'feature-deactivated' ||
     request.name === 'tabsets-imported' ||
+    request.name === 'fullUrls-changed' ||
+    request.name === 'reload-suggestions' ||
+    request.name === 'reload-tabset' ||
     request.name === 'detail-level-changed'
     //request.name === 'recogito-annotation-created'
 
@@ -175,6 +178,18 @@ class ChromeListeners {
       //chrome.tabs.onZoomChange.addListener((info) => this.onZoomChange(info))
 
       chrome.runtime.onMessage.addListener((request, sender, sendResponse) => this.onMessage(request, sender, sendResponse))
+
+      // seems to belong in background.ts
+      // chrome.runtime.onInstalled.addListener((callback) => {
+      //   console.log("ga: fire event install", callback.previousVersion, callback.reason)
+      //   Analytics.fireEvent('install-' + callback.reason);
+      //   if (callback.reason == OnInstalledReason.INSTALL) {
+      //     chrome.tabs.create({
+      //       active: true,
+      //       url: "https://tabsets.web.app/#/updatedTo/" + callback.previousVersion
+      //     })
+      //   }
+      // });
 
     }
 
@@ -373,7 +388,7 @@ class ChromeListeners {
       const url = tab.url
       _.forEach([...tabsStore.tabsets.keys()], key => {
         const ts = tabsStore.tabsets.get(key)
-        if (ts) {
+        if (ts && ts.status !== TabsetStatus.DELETED) {
           const hits = _.filter(ts.tabs, (t: Tab) => t.url === url)
           let hit = false
           _.forEach(hits, h => {
@@ -445,7 +460,7 @@ class ChromeListeners {
 
   private handleHtml2Text(request: any, sender: chrome.runtime.MessageSender, sendResponse: any) {
 
-    console.log("handleHtml2Text")
+    console.debug("handleHtml2Text")
 
     if (sender && sender.url && request.html) {
       try {

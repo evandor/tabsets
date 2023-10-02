@@ -71,10 +71,10 @@
     <div v-for="bm in _.filter(bookmarksStore.bookmarksForFolder, (bm:Bookmark) => bm.chromeBookmark.url)"
          :key="bm.id"
          draggable="true"
-         @dragstart="startDrag($event, bm)"
+         @dragstart="startDrag($event, bm as Bookmark)"
          class="col-xs-12 col-sm-4 col-md-3 col-lg-2 q-pa-xs">
 
-      <q-card class="my-card" flat bordered :style="cardStyle(bm)" @mouseover="setInfo(bm)">
+      <q-card class="my-card" flat bordered :style="cardStyle(bm as Bookmark)" @mouseover="setInfo(bm)">
 
         <q-card-section class="q-pt-xs cursor-pointer bg-amber-1 text-black">
           <div class="row items-baseline">
@@ -106,7 +106,7 @@
 
           <div class="text-subtitle2 ellipsis text-secondary"
                @click.stop="NavigationService.openOrCreateTab(bm.chromeBookmark?.url )">
-            {{ bm.chromeBookmark?.url.replace("https://www.", '').replace("https://", '') }}
+            {{ bm.chromeBookmark?.url?.replace("https://www.", '').replace("https://", '') }}
             <q-icon name="launch" color="secondary"
                     @click.stop="NavigationService.openOrCreateTab(bm.chromeBookmark?.url )"></q-icon>
             <q-tooltip>
@@ -145,13 +145,13 @@ import TabsetService from "src/services/TabsetService";
 import {Bookmark} from "src/models/Bookmark";
 import {useRouter} from "vue-router";
 import {useQuasar} from "quasar";
-import ImportFromBookmarks from "components/dialogues/ImportFromBookmarks.vue";
 import BookmarksService from "src/services/BookmarksService";
 import NavigationService from "src/services/NavigationService";
 import {useBookmarksStore} from "src/stores/bookmarksStore";
 import _ from "lodash"
 import {formatDistance, subDays} from 'date-fns'
 import {useTabsetService} from "src/services/TabsetService2";
+import ImportFromBookmarksDialog from "components/dialogues/ImportFromBookmarksDialog.vue";
 
 const emits = defineEmits(['sendCaption'])
 
@@ -217,7 +217,7 @@ const startDrag = (evt: DragEvent, bm: Bookmark) => {
 }
 
 const importBookmarks = () => {
-  $q.dialog({component: ImportFromBookmarks})
+  $q.dialog({component: ImportFromBookmarksDialog})
 }
 
 const formatDate = (timestamp: number | undefined) =>

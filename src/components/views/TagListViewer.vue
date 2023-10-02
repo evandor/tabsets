@@ -1,0 +1,95 @@
+<template>
+  <div class="q-ma-none" style="height:100%;max-width:100%">
+    <q-scroll-area style="height: 100%">
+
+      <template v-for="hit in tabsetHits">
+        <q-list>
+          <SearchHit :hit="hit"/>
+        </q-list>
+      </template>
+
+    </q-scroll-area>
+  </div>
+</template>
+
+<script setup lang="ts">
+
+import {useTabsStore} from "stores/tabsStore";
+import {uid, useQuasar} from "quasar";
+import {onMounted, ref, watchEffect} from "vue";
+import {Hit} from "src/models/Hit";
+import Analytics from "src/utils/google-analytics";
+import {Tab} from "src/models/Tab";
+import _ from "lodash";
+import {Tabset} from "src/models/Tabset";
+import {useTabsetService} from "src/services/TabsetService2";
+import {useUiStore} from "stores/uiStore";
+import ReindexDialog from "components/dialogues/ReindexDialog.vue";
+import SearchHit from "components/layouts/SearchHit.vue";
+
+const tabsStore = useTabsStore()
+
+const $q = useQuasar()
+const tabsetHits = ref<Hit[]>([])
+const showReindexDialog = ref(false)
+
+onMounted(() => {
+  Analytics.firePageViewEvent('TagListViewer', document.location.href);
+})
+
+const newSearch = (term: string) => {
+  tabsetHits.value = []
+
+  if (term && term.trim() !== '') {
+    const results: Tab[] = []
+
+    _.forEach([...tabsStore.tabsets.values()], (tabset: Tabset) => {
+      _.forEach(tabset.tabs, (tab: Tab) => {
+        if (tab.tags?.indexOf(term) >= 0) {
+          console.log("found tab", term, tab.tags)
+          results.push(tab)
+        }
+      })
+    })
+
+    _.forEach(results, h => {
+      //console.log("h", h.item.bookmarkId)
+      let tabsets: string[] = []
+      if (h.url) {
+        tabsets = useTabsetService().tabsetsFor(h.url)
+      }
+      const theHit = new Hit(
+          uid(),
+          //       h.chromeTab,
+          h.title || '',
+          h.url || '',
+          h.favIconUrl || '',
+          0, 0,
+          100,
+          tabsets, //h.chromeTab.tabsets,
+          [],
+          _.map(h['matches' as keyof object], (m: any) => {
+            return {
+              key: m['key' as keyof object],
+              indices: m['indices' as keyof object]
+            }
+          }),
+          h.description,
+          h.keywords
+      )
+      if (h.bookmarkId) {
+        theHit.bookmarkId = h.bookmarkId
+      }
+      tabsetHits.value.push(theHit)
+    })
+  }
+}
+
+watchEffect(() => {
+  const tag = useUiStore().selectedTag
+  if (tag && tag.trim() !== '') {
+    newSearch(tag)
+  }
+})
+
+</script>

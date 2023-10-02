@@ -7,9 +7,6 @@ import {useQuasar} from "quasar";
 import {useUtils} from "src/services/Utils";
 import {EventEmitter} from "events";
 import AppService from "src/services/AppService";
-import {Analytics} from "app/src-bex/google-analytics";
-
-const {inBexMode} = useUtils()
 
 const $q = useQuasar()
 

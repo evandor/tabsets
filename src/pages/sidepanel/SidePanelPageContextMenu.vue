@@ -13,7 +13,7 @@
       <ContextMenuItem v-close-popup
                        @was-clicked="openEditTabsetDialog(tabset)"
                        icon="o_note"
-                       label="Edit Tabset Name"/>
+                       label="Update Tabset"/>
 
       <template v-if="tabset.tabs.length > 0 && inBexMode()">
         <q-separator/>
@@ -43,7 +43,7 @@
         <q-separator/>
         <ContextMenuItem
             icon="keyboard_arrow_right"
-            label="Sharing...">
+            label="Sharing... (dev)">
 
           <q-item-section side>
             <q-icon name="keyboard_arrow_right"/>
@@ -98,6 +98,10 @@
                   dense clickable v-close-popup :disable="tabset.window === window">
                 <q-item-section>{{ window }}</q-item-section>
               </q-item>
+              <q-separator />
+              <q-item @click="openNewWindowDialog()" dense clickable v-close-popup>
+                <q-item-section>Create New...</q-item-section>
+              </q-item>
             </q-list>
           </q-menu>
 
@@ -110,8 +114,15 @@
         <ContextMenuItem v-close-popup
                          @was-clicked="useSearchStore().reindexTabset(tabset.id)"
                          icon="o_note"
-                         label="Re-Index Search"/>
+                         label="Re-Index Search (dev)"/>
       </template>
+
+      <q-separator />
+      <ContextMenuItem v-close-popup
+                       @was-clicked="focus(tabset)"
+                       icon="filter_center_focus"
+                       color="accent"
+                       label="Focus on tabset"/>
 
       <q-separator/>
       <template v-if="tabset.status === TabsetStatus.DEFAULT">
@@ -180,21 +191,24 @@ import ShareTabsetPubliclyDialog from "components/dialogues/ShareTabsetPubliclyD
 import {MarkTabsetAsArchivedCommand} from "src/domain/tabsets/MarkTabsetAsArchived";
 import {useWindowsStore} from "stores/windowsStores";
 import {useTabsStore} from "stores/tabsStore";
-import TabsetService from "src/services/TabsetService";
+import NewWindowDialog from "components/dialogues/NewWindowDialog.vue";
+import {useRouter} from "vue-router";
 
-const {inBexMode, sanitize, sendMsg} = useUtils()
+const {inBexMode} = useUtils()
 
 const $q = useQuasar()
+const router = useRouter()
 
 const props = defineProps({
   tabset: {type: Object as PropType<Tabset>, required: true}
 })
 
-//const publictabsetsPath = "https://tabsets.web.app/#/tabsets/"
 const publictabsetsPath = "https://public.tabsets.net/tabsets/"
 
 const startTabsetNote = (tabset: Tabset) => {
-  const url = chrome.runtime.getURL('www/index.html') + "#/mainpanel/notes/?tsId=" + tabset.id + "&edit=true"
+  const url = chrome && chrome.runtime && chrome.runtime.getURL ?
+    chrome.runtime.getURL('www/index.html') + "#/mainpanel/notes/?tsId=" + tabset.id + "&edit=true" :
+    "#/mainpanel/notes/?tsId=" + tabset.id + "&edit=true"
   NavigationService.openOrCreateTab(url)
 }
 
@@ -204,6 +218,7 @@ const openEditTabsetDialog = (tabset: Tabset) => {
     componentProps: {
       tabsetId: tabset.id,
       tabsetName: tabset.name,
+      tabsetColor: tabset.color,
       fromPanel: true
     }
   })
@@ -212,6 +227,9 @@ const openEditTabsetDialog = (tabset: Tabset) => {
 const restoreInNewWindow = (tabsetId: string) => useCommandExecutor().execute(new RestoreTabsetCommand(tabsetId))
 
 const restoreInGroup = (tabsetId: string) => useCommandExecutor().execute(new RestoreTabsetCommand(tabsetId, false))
+
+const focus = (tabset: Tabset) =>
+    router.push("/sidepanel/tabsets/" + tabset.id)
 
 const pin = (tabset: Tabset) =>
     useCommandExecutor().executeFromUi(new MarkTabsetAsFavoriteCommand(tabset.id))
@@ -274,6 +292,15 @@ const shareTabsetPubliclyDialog = (tabset: Tabset, republish: boolean = false) =
       sharedId: tabset.sharedId,
       tabsetName: tabset.name,
       republish: republish
+    }
+  })
+}
+
+const openNewWindowDialog = () => {
+  $q.dialog({
+    component: NewWindowDialog,
+    componentProps: {
+      tabsetId: useTabsStore().currentTabsetId
     }
   })
 }

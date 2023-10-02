@@ -8,9 +8,7 @@
               v-for="(tabset,index) in tabsets">
         <q-expansion-item v-if="showTabset(tabset as Tabset)"
                           header-class="q-ma-none q-pa-none q-pr-md bg-grey-2"
-                          :header-style="tabsetExpanded.get(tabset.id) ?
-                            'border:0 solid grey;border-top-left-radius:4px;border-top-right-radius:4px' :
-                            'border:0 solid grey;border-radius:4px'"
+                          :header-style="headerStyle(tabset as Tabset)"
                           group="tabsets"
                           :default-opened="tabsStore.tabsets.size === 1"
                           switch-toggle-side
@@ -24,8 +22,7 @@
             <q-item-section
                 @mouseover="hoveredTabset = tabset.id"
                 @mouseleave="hoveredTabset = undefined">
-              <q-item-label :class="tabsStore.currentTabsetId === tabset.id ? 'text-bold' : ''"
-                            @dblclick="focusOnTabset(tabset as Tabset)">
+              <q-item-label :class="tabsStore.currentTabsetId === tabset.id ? 'text-bold' : ''">
                 <q-icon v-if="tabset.status === TabsetStatus.FAVORITE"
                         color="warning"
                         name="push_pin"
@@ -56,7 +53,7 @@
             <q-item-section side
                             @mouseover="hoveredTabset = tabset.id"
                             @mouseleave="hoveredTabset = undefined">
-              <q-icon class="cursor-pointer" name="more_horiz" color="black" size="16px"/>
+              <q-icon class="cursor-pointer" name="more_horiz" color="accent" size="16px"/>
               <SidePanelPageContextMenu :tabset="tabset as Tabset"/>
             </q-item-section>
 
@@ -65,7 +62,11 @@
 
           <div class="q-ma-none q-pa-none">
 
-            <div class="q-ma-none" v-if="inBexMode()">
+            <div class="q-ma-none" v-if="inBexMode() &&
+              tabset.type !== TabsetType.DYNAMIC &&
+              currentChromeTab &&
+              currentChromeTab.url !== 'chrome://newtab/' &&
+              currentChromeTab.url !== ''">
               <SidePanelTabInfo :tabsetId="tabset.id"/>
             </div>
 
@@ -88,7 +89,7 @@
           :showSearchBox="showSearchBox">
 
         <template v-slot:title v-if="permissionsStore && permissionsStore.hasFeature(FeatureIdent.SPACES)">
-          <div class="text-subtitle1 text-black">
+          <div class="text-subtitle1 text-black" @click.stop="router.push('/sidepanel/spaces')">
             {{ toolbarTitle(tabsets as Tabset[]) }}
           </div>
         </template>
@@ -133,7 +134,10 @@ import TabsetService from "src/services/TabsetService";
 import Analytics from "src/utils/google-analytics";
 import {useAuthStore} from "stores/auth";
 import {PlaceholdersType} from "src/models/Placeholders";
+import {useDB} from "src/services/usePersistenceService";
 import getScrollTarget = scroll.getScrollTarget;
+import {useBookmarksStore} from "stores/bookmarksStore";
+import {useSuggestionsStore} from "stores/suggestionsStore";
 
 const {setVerticalScrollPosition} = scroll
 
@@ -166,6 +170,7 @@ const tabsets = ref<Tabset[]>([])
 const progress = ref<number | undefined>(undefined)
 const progressLabel = ref<string | undefined>(undefined)
 const selectedTab = ref<Tab | undefined>(undefined)
+const windowName = ref<string | undefined>(undefined)
 
 onMounted(() => {
   window.addEventListener('keypress', checkKeystroke);
@@ -185,6 +190,17 @@ watchEffect(() => {
   selectedTab.value = useUiStore().getSelectedTab
   if (selectedTab.value) {
     currentChromeTab.value = null as unknown as chrome.tabs.Tab
+  }
+})
+
+watchEffect(() => {
+  if ($q.platform.is.chrome) {
+    chrome.windows.getCurrent()
+        .then((currentWindow) => {
+          if (currentWindow && currentWindow.id) {
+            windowName.value = useWindowsStore().windowNameFor(currentWindow.id)
+          }
+        })
   }
 })
 
@@ -332,15 +348,26 @@ if ($q.platform.is.chrome) {
         }
         const tsId = message.data.tabsetId
         useTabsStore().selectCurrentTabset(tsId)
-      } else if (message.name === 'feature-activated' || message.name === "feature-deactivated") {
-        usePermissionsStore().initialize()
+      } else if (message.name === 'feature-activated') {
+        usePermissionsStore().addActivateFeature(message.data.feature)
+        if (message.data.feature === 'help') {
+          useTabsetService().reloadTabset("HELP")
+        } else if (message.data.feature === 'bookmarks') {
+          usePermissionsStore().load()
+              .then(() => {
+                useBookmarksStore().init()
+                useBookmarksStore().loadBookmarks()
+              })
+        }
+      } else if (message.name === "feature-deactivated") {
+        usePermissionsStore().removeActivateFeature(message.data.feature)
       } else if (message.name === "tabsets-imported") {
         useSpacesStore().reload()
-        useTabsetService().init()
+        useTabsetService().init(useDB(undefined).db)
         // TODO reload
       } else if (message.name === "tab-being-dragged") {
         useUiStore().draggingTab(message.data.tabId, null as unknown as any)
-      } else if (message.name === "tab-changed") {
+      } else if (message.name === "note-changed") {
         const tabset = useTabsetService().getTabset(message.data.tabsetId) as Tabset
         if (message.data.noteId) {
           console.log("updating note", message.data.noteId)
@@ -370,7 +397,7 @@ if ($q.platform.is.chrome) {
       } else if (message.name === "mark-tabset-deleted") {
         TabsetService.markAsDeleted(message.data.tabsetId)
       } else if (message.name === "tabset-renamed") {
-        TabsetService.rename(message.data.tabsetId, message.data.newName)
+        TabsetService.rename(message.data.tabsetId, message.data.newName, message.data.newColor)
       } else if (message.name === "progress-indicator") {
         if (message.percent) {
           uiStore.progress = message.percent
@@ -384,14 +411,23 @@ if ($q.platform.is.chrome) {
       } else if (message.name === "detail-level-changed") {
         console.log("setting list detail level to ", message.data.level)
         useUiStore().setListDetailLevel(message.data.level)
+      } else if (message.name === "fullUrls-changed") {
+        console.log("setting fullUrls to ", message.data.value)
+        useUiStore().setShowFullUrls(message.data.value)
+      } else if (message.name === "reload-suggestions") {
+        console.log("reload-suggestions message received")
+        useSuggestionsStore().loadSuggestionsFromDb()
+      } else if (message.name === "reload-tabset") {
+        console.log("reload-tabset message received")
+        useTabsetService().reloadTabset(message.data.tabsetId)
       } else {
         console.log("got unmatched message", message)
       }
       return true
     })
-  } else {
-    //useRouter().push("/start")
   }
+} else {
+  //useRouter().push("/start")
 }
 
 const filteredTabs = (tabset: Tabset): Tab[] => {
@@ -464,20 +500,6 @@ if (inBexMode() && chrome) {
   chrome.tabs.query(queryOptions, (tab) => {
     currentChromeTabs.value = tab
   })
-}
-
-function getOrder() {
-  if (tabsStore.getCurrentTabset) {
-    switch (tabsStore.getCurrentTabset.sorting) {
-      case 'alphabeticalUrl':
-        return (t: Tab) => t.url?.replace("https://", "").replace("http://", "").toUpperCase()
-      case 'alphabeticalTitle':
-        return (t: Tab) => t.title?.toUpperCase()
-      default:
-        return (t: Tab) => 1
-    }
-    return (t: Tab) => 1
-  }
 }
 
 async function handleHeadRequests(selectedTabset: Tabset) {
@@ -566,7 +588,11 @@ const toolbarTitle = (tabsets: Tabset[]) => {
         spaceName + ' (' + tabsets.length.toString() + ')' :
         spaceName
   }
-  return tabsets.length > 6 ? 'My Tabsets (' + tabsets.length.toString() + ')' : 'My Tabsets'
+  let text = tabsets.length > 6 ? 'My Tabsets (' + tabsets.length.toString() + ')' : 'My Tabsets'
+  if (windowName.value) {
+    text = text + " [" + windowName.value + "]"
+  }
+  return text
 }
 const tabsetIcon = (tabset: Tabset) => {
   let icon = 'perm_identity'
@@ -579,12 +605,20 @@ const tabsetIcon = (tabset: Tabset) => {
   return icon
 }
 
-const focusOnTabset = (tabset: Tabset) => router.push("/sidepanel/tabsets/" + tabset.id)
-
-
+const headerStyle = (tabset: Tabset) => {
+  let style = tabsetExpanded.value.get(tabset.id) ?
+      'border:0 solid grey;border-top-left-radius:4px;border-top-right-radius:4px;' :
+      'border:0 solid grey;border-radius:4px;'
+  if (tabset.color && usePermissionsStore().hasFeature(FeatureIdent.COLOR_TAGS)) {
+    style = style + 'border-left:4px solid ' + tabset.color
+  } else {
+    style = style + 'border-left:4px solid #f5f5f5'
+  }
+  return style
+}
 </script>
 
-<style scoped>
+<style>
 
 .v-enter-active,
 .v-leave-active {
@@ -594,5 +628,11 @@ const focusOnTabset = (tabset: Tabset) => router.push("/sidepanel/tabsets/" + ta
 .v-enter-from,
 .v-leave-to {
   opacity: 0;
+}
+
+.q-item__section--avatar {
+  min-width:46px !important;
+  padding-right:12px !important;
+  margin-bottom:14px;
 }
 </style>

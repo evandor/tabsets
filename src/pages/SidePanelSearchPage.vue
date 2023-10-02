@@ -6,10 +6,12 @@
     <div class="row q-ma-none q-pa-none">
       <div class="col-12 q-ma-none q-pa-none">
 
-        <q-list  class="q-ma-none">
+        <q-list class="q-ma-none">
+
           <template v-for="hit in tabsetHits" v-if="tabsetHits.length > 0">
-            <SearchHit :hit="hit"/>
+            <SearchHit :hit="hit" :in-side-panel="true"/>
           </template>
+
           <template v-else>
             <div class="q-pa-md row items-start q-gutter-md fit">
               <q-card class="my-card fit">
@@ -50,23 +52,6 @@
 
   </q-page>
 
-  <!--  <q-toolbar class="text-primary lightgrey">-->
-  <!--    <div class="row fit">-->
-  <!--      <q-toolbar-title>-->
-  <!--        <div class="row">-->
-  <!--          <div class="col-2">-->
-  <!--            <q-icon name="chevron_left" class="cursor-pointer" @click="router.push('/sidepanel')">-->
-  <!--              <q-tooltip>Back</q-tooltip>-->
-  <!--            </q-icon>-->
-  <!--          </div>-->
-  <!--          <div class="col-10" style="font-size:smaller">-->
-  <!--            <span class="text-dark">Found '{{ searchStore.term }}' {{ tabsetHits.length }} time(s)</span>-->
-  <!--          </div>-->
-  <!--        </div>-->
-  <!--      </q-toolbar-title>-->
-  <!--    </div>-->
-  <!--  </q-toolbar>-->
-
 </template>
 
 <script setup lang="ts">
@@ -84,24 +69,53 @@ import {GrantPermissionCommand} from "src/domain/commands/GrantPermissionCommand
 import {SidePanelView, useUiStore} from "stores/uiStore";
 import FirstToolbarHelper from "pages/sidepanel/helper/FirstToolbarHelper.vue";
 import Analytics from "src/utils/google-analytics";
+import {useTabsStore} from "stores/tabsStore";
+import {Tabset} from "src/models/Tabset";
 
 const route = useRoute()
 const searchStore = useSearchStore()
+const tabsStore = useTabsStore()
 
 const termFromParams = route.query.t as string
 
 const $q = useQuasar()
 const tabsetHits = ref<Hit[]>([])
 const showReindexDialog = ref(false)
+const tabsetIdents = ref<object[]>([])
 
 onMounted(() => {
   Analytics.firePageViewEvent('SidePanelSearchPage', document.location.href);
+})
+
+watchEffect(() => {
+  const tabsets = [...tabsStore.tabsets.values()]
+  console.log("tabsets", tabsets)
+  tabsetIdents.value = _.map(tabsets, (t: Tabset) => {
+    return {
+      name: t.name,
+      id: t.id
+    }
+  })
+  console.log("tabsetIdents", tabsetIdents.value)
 })
 
 const newSearch = (term: string) => {
   tabsetHits.value = []
 
   if (term && term.trim() !== '') {
+
+    // tabsets' names hits
+    tabsetIdents.value.forEach((tabsetIdent:any) => {
+      const name = tabsetIdent['name' as keyof object]
+      const id = tabsetIdent['id' as keyof object]
+      if (name.toLowerCase().indexOf(term.toLowerCase()) >= 0) {
+        const pseudoHit = new Hit("tabset|" + name,
+            name, '', '',
+            0, 0, 0, [id], [], [], "", "")
+        tabsetHits.value.push(pseudoHit)
+      }
+    })
+
     const results = searchStore.search(term)
     _.forEach(results, h => {
       //console.log("h", h.item.bookmarkId)
@@ -129,6 +143,7 @@ const newSearch = (term: string) => {
       }
       tabsetHits.value.push(theHit)
     })
+
     //console.log("added hits", tabsetHits.value)
   }
 }
@@ -136,7 +151,7 @@ const newSearch = (term: string) => {
 //console.log("termFromParams", termFromParams, route.query)
 watchEffect(() => {
   if (termFromParams && termFromParams.trim() !== '') {
-   // console.log("setting search term from params", termFromParams)
+    // console.log("setting search term from params", termFromParams)
     searchStore.term = termFromParams
   }
 })

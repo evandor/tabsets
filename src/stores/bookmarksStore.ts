@@ -97,6 +97,16 @@ export const  useBookmarksStore = defineStore('bookmarks', {
     },
     initListeners() {
       // moved to chromeBookmarkListeners
+    },
+    updateUrl(from: string, to: string) {
+      chrome.bookmarks.search({url: from}, (results: chrome.bookmarks.BookmarkTreeNode[]) => {
+        results.forEach((r: chrome.bookmarks.BookmarkTreeNode) => {
+          chrome.bookmarks.update(r.id, {url: to}, updateResult => {
+            console.log("updated bookmark", updateResult)
+          })
+        })
+      })
     }
+
   }
 });
