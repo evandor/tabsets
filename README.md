@@ -51,11 +51,11 @@ https://chrome.google.com/webstore/detail/tabsets-extension/afkknkdbgondbbfjehip
 
 #### quasar --version
 
-@quasar/app-vite 1.4.3 (@quasar/cli 2.2.1)
+@quasar/app-vite 1.6.2
 
 ## quasar info
 
-Operating System - Darwin(22.5.0) - darwin/arm64
+Operating System - Darwin(22.6.0) - darwin/arm64
 NodeJs - 16.20.1
 
 Global packages
@@ -66,18 +66,18 @@ yarn - 1.22.19
 cordova - 11.1.0
 
 Important local packages
-quasar - 2.12.4 -- Build high-performance VueJS user interfaces (SPA, PWA, SSR, Mobile and Desktop) in record time
-@quasar/app-vite - 1.4.3 -- Quasar Framework App CLI with Vite
-@quasar/extras - 1.16.5 -- Quasar Framework fonts, icons and animations
+quasar - 2.12.7 -- Build high-performance VueJS user interfaces (SPA, PWA, SSR, Mobile and Desktop) in record time
+@quasar/app-vite - 1.6.2 -- Quasar Framework App CLI with Vite
+@quasar/extras - 1.16.7 -- Quasar Framework fonts, icons and animations
 eslint-plugin-quasar - Not installed
 vue - 3.3.4 -- The progressive JavaScript framework for building modern web UI.
-vue-router - 4.2.4
+vue-router - 4.2.5
 pinia - 2.1.6 -- Intuitive, type safe and flexible Store for Vue
 vuex - Not installed
 vite - 2.9.16 -- Native-ESM powered web dev build tool
 eslint - Not installed
-electron - 25.5.0 -- Build cross platform desktop apps with JavaScript, HTML, and CSS
-electron-packager - 17.1.1 -- Customize and package your Electron app with OS-specific bundles (.app, .exe, etc.) via JS or CLI
+electron - 26.2.4 -- Build cross platform desktop apps with JavaScript, HTML, and CSS
+electron-packager - 17.1.2 -- Customize and package your Electron app with OS-specific bundles (.app, .exe, etc.) via JS or CLI
 electron-builder - Not installed
 register-service-worker - 1.7.2 -- Script for registering service worker, with hooks
 @capacitor/core - Not installed
@@ -86,7 +86,7 @@ register-service-worker - 1.7.2 -- Script for registering service worker, with h
 @capacitor/ios - Not installed
 
 Quasar App Extensions
-@quasar/quasar-app-extension-testing-unit-vitest - 0.3.0 -- A Quasar App Extension for running tests with Vitest
+@quasar/quasar-app-extension-testing-unit-vitest - 0.4.0 -- A Quasar App Extension for running tests with Vitest
 
 ## Safari
 
