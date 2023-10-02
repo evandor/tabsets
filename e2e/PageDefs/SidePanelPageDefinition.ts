@@ -5,7 +5,7 @@ import {TabsetPageDefinition} from "e2e/TabsetPageDefinition";
 export class SidePanelPageDefinition extends TabsetPageDefinition {
 
     readonly page: Page;
-    private extensionId: string;
+    private readonly extensionId: string;
     private saveInTabsetBtn: Locator;
 
     constructor(page: Page, extensionId:string) {
