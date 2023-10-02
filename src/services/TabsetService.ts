@@ -181,7 +181,7 @@ class TabsetService {
     return saveCurrentTabset()
   }
 
-  setMatcher(tab: Tab, matcher: string): Promise<any> {
+  setMatcher(tab: Tab, matcher: string | undefined): Promise<any> {
     tab.matcher = matcher
     return saveCurrentTabset()
   }
