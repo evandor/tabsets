@@ -41,24 +41,28 @@
         </div>
       </div>
 
-      <div class="row items-baseline q-ma-md">
-        <div class="col-3 text-bold">
-          Example
-        </div>
-        <div class="col-9">
-          <q-input v-model="example" @update:model-value="val => checkIsValid()"/>
-          {{ matchResult }}
-        </div>
-      </div>
+<!--      <div class="row items-baseline q-ma-md">-->
+<!--        <div class="col-3 text-bold">-->
+<!--          Example-->
+<!--        </div>-->
+<!--        <div class="col-9">-->
+<!--          <q-input v-model="example" @update:model-value="val => checkIsValid()"/>-->
+<!--          {{ matchResult }}-->
+<!--        </div>-->
+<!--      </div>-->
 
       <div class="row items-baseline q-ma-md">
         <div class="col-3 text-bold">
 
         </div>
         <div class="col-9">
-          <q-btn label="Cancel" size="sm" color="accent" @click="closeWindow()"/>
-          <q-btn type="submit" size="sm" color="warning"
-                 data-testid="newTabsetNameSubmit"
+          <q-btn label="Cancel" class="q-mr-md" size="sm" color="accent" @click="closeWindow()"/>
+
+          <q-btn class="q-mr-md" size="sm" color="accent" @click="removeMatcher()"
+                 :disable="!tab?.matcher"
+                 label="Remove Matcher"/>
+
+          <q-btn type="submit" class="q-mr-md" size="sm" color="warning"
                  :disable="!isValid"
                  label="Set Matcher"/>
         </div>
@@ -86,6 +90,7 @@ const route = useRoute()
 
 const tabId = ref<string | undefined>(undefined)
 const tab = ref<Tab | undefined>(undefined)
+const tabsetId = ref<string | undefined>(undefined)
 
 const theForm = ref<QForm>(null as unknown as QForm)
 const matcher = ref<string | undefined>(undefined)
@@ -105,6 +110,7 @@ watchEffect(() => {
     useTabsStore().getTab(tabId.value).then(t => {
       if (t) {
         tab.value = t['tab' as keyof object] as Tab
+        tabsetId.value = t['tabsetId' as keyof object]
         matcher.value = tab.value.matcher ? tab.value.matcher.split('|')[1] : tab.value.url
         // let queryOptions = {active: true, lastFocusedWindow: true};
         // chrome.tabs.query(queryOptions, (result: chrome.tabs.Tab[]) => {
@@ -154,8 +160,29 @@ const validUrl = (url: string) => {
 const setMatcher = () => {
   console.log("matcher is ", matcher.value)
   if (tab.value && matcher.value) {
-    useCommandExecutor().execute(new TabAssignmentCommand(tab.value, "sw|" + matcher.value))
-        .then((res) => window.close())
+    useCommandExecutor().execute(new TabAssignmentCommand(tab.value, tabsetId.value || '', "sw|" + matcher.value))
+        .then((res) => {
+          setTimeout(() => window.close(), 500)
+        })
+        .catch((err) => {
+          Notify.create({
+            position: 'bottom',
+            color: 'red-5',
+            textColor: 'white',
+            icon: 'error',
+            message: "There was an error"
+          })
+        })
+  }
+}
+
+const removeMatcher = () => {
+  console.log("removing matcher")
+  if (tab.value) {
+    useCommandExecutor().execute(new TabAssignmentCommand(tab.value, tabsetId.value || '', undefined))
+        .then((res) => {
+          setTimeout(() => window.close(), 500)
+        })
         .catch((err) => {
           Notify.create({
             position: 'bottom',

@@ -143,6 +143,7 @@ function inIgnoredMessages(request: any) {
     request.name === 'tabsets-imported' ||
     request.name === 'fullUrls-changed' ||
     request.name === 'reload-suggestions' ||
+    request.name === 'reload-tabset' ||
     request.name === 'detail-level-changed'
     //request.name === 'recogito-annotation-created'
 

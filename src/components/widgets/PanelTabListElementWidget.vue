@@ -102,7 +102,7 @@
             <q-icon v-if="props.tab.matcher && usePermissionsStore().hasFeature(FeatureIdent.ADVANCED_TAB_MANAGEMENT)"
                     @click.stop="openTabAssignmentPage(props.tab)"
                     name="o_settings">
-              <q-tooltip class="tooltip">This tab will open in any tab which url matches {{props.tab.matcher}}</q-tooltip>
+              <q-tooltip class="tooltip">{{matcherTooltip()}}</q-tooltip>
             </q-icon>
           </template>
           <div class="text-caption text-grey-5" v-if="useUiStore().listDetailLevelGreaterEqual(ListDetailLevel.SOME)">
@@ -294,6 +294,15 @@ const openTabset = (badge: any) => {
 const openTabAssignmentPage = (tab: Tab) =>
    NavigationService.openOrCreateTab(chrome.runtime.getURL("/www/index.html#/mainpanel/tabAssignment/" + tab.id))
 
+const matcherTooltip = () => {
+  const split = props.tab.matcher?.split("|")
+  if (split && split.length > 1) {
+    if (split[0] === 'sw') {
+      return "This tab will open in any tab with an URL starting with " + split[1]
+    }
+  }
+  return "This tab will open in any tab which url matches " + props.tab.matcher
+}
 
 </script>
 
