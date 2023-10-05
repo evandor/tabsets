@@ -8,9 +8,10 @@ import {useTabsetService} from "src/services/TabsetService2";
 import {Tabset, TabsetSharing} from "src/models/Tabset";
 import {useUtils} from "src/services/Utils";
 import {useSearchStore} from "stores/searchStore";
-import {uid} from "quasar";
+import {uid, useQuasar} from "quasar";
+import {useGroupsStore} from "stores/groupsStore";
 
-const {saveCurrentTabset, saveTabset} = useTabsetService()
+const {saveTabset} = useTabsetService()
 const {inBexMode, sendMsg} = useUtils()
 
 // No undo command, tab can be deleted manually easily
@@ -19,6 +20,7 @@ const {inBexMode, sendMsg} = useUtils()
  * Add provided Tab to provided Tabset.
  */
 export class AddTabToTabsetCommand implements Command<any> {
+
 
     constructor(public tab: Tab, public tabset: Tabset) {
     }
@@ -31,10 +33,16 @@ export class AddTabToTabsetCommand implements Command<any> {
         if (!exists) {
             return useTabsetService().addToTabsetId(this.tabset.id, this.tab, 0)
                 .then((tabset) => {
-
+                    console.log("sharing...")
                     // Sharing
                     if (tabset.sharedId && tabset.sharing === TabsetSharing.PUBLIC) {
                         tabset.sharing = TabsetSharing.PUBLIC_OUTDATED
+                    }
+
+                    // (chrome) Group
+                    const group = useGroupsStore().groupFor(this.tab.groupId)
+                    if (group) {
+                        this.tab.group = group
                     }
 
                     // the tab has been added to the tabset, but not saved yet

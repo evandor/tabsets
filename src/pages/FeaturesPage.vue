@@ -373,6 +373,12 @@ text.set(FeatureIdent.ADVANCED_TAB_MANAGEMENT.toLowerCase(), {
   permissions: []
 })
 
+text.set(FeatureIdent.TAB_GROUPS.toLowerCase(), {
+  name: 'Chrome Tab Groups',
+  description: 'Utilize Chrome Tab Groups',
+  permissions: ['tabGroups']
+})
+
 
 watchEffect(() => {
       feature.value = route.params.feature as string

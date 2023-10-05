@@ -122,9 +122,6 @@ function annotationScript (tabId: string, annotations: any[]) {
     },
     false,
   );
-
-
-
 }
 
 function inIgnoredMessages(request: any) {

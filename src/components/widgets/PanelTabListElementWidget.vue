@@ -52,7 +52,7 @@
               <q-icon name="arrow_right" size="16px"/>
            </span>
           <span v-if="props.tab?.extension === UrlExtension.NOTE"
-              @click.stop="NavigationService.openOrCreateTab(props.tab.url,props.tab.matcher )"
+              @click.stop="NavigationService.openOrCreateTab(props.tab.url,props.tab.matcher,props.tab.group )"
               v-html="nameOrTitle(props.tab as Tab)"/>
           <span v-else
                 v-html="nameOrTitle(props.tab as Tab)"
@@ -75,7 +75,7 @@
     <!-- description -->
     <q-item-label class="ellipsis-2-lines text-grey-8"
                   v-if="useUiStore().listDetailLevelGreaterEqual(ListDetailLevel.MAXIMAL)"
-                  @click.stop="NavigationService.openOrCreateTab(props.tab?.url || '', props.tab?.matcher || '' )">
+                  @click.stop="NavigationService.openOrCreateTab(props.tab?.url || '', props.tab?.matcher || '', props.tab?.group )">
       {{ props.tab.description }}
     </q-item-label>
 
@@ -88,7 +88,7 @@
         @mouseleave="showButtonsProp = false">
       <div class="row q-ma-none">
         <div class="col-10 q-pr-lg cursor-pointer"
-             @click.stop="NavigationService.openOrCreateTab(props.tab.url,props.tab.matcher )">
+             @click.stop="NavigationService.openOrCreateTab(props.tab.url,props.tab.matcher,props.tab.group )">
            <span v-if="props.sorting === TabSorting.URL">
               <q-icon name="arrow_right" size="16px"/>
            </span>
@@ -109,6 +109,9 @@
             <span v-if="props.sorting === TabSorting.AGE">
               <q-icon name="arrow_right" size="16px"/>
            </span>
+            <template v-if="props.tab.group && usePermissionsStore().hasFeature(FeatureIdent.TAB_GROUPS)">
+              Group {{props.tab.group.title}} -
+            </template>
             {{ formatDate(props.tab.lastActive) }}
           </div>
 
