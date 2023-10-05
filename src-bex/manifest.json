@@ -18,7 +18,8 @@
     "contextMenus",
     "notifications",
     "webRequest",
-    "bookmarks"
+    "bookmarks",
+    "tabGroups"
   ],
   "host_permissions": [
     "<all_urls>",

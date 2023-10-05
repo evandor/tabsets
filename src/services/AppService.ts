@@ -17,9 +17,10 @@ import {useSettingsStore} from "stores/settingsStore";
 import {useBookmarksStore} from "stores/bookmarksStore";
 import {useWindowsStore} from "stores/windowsStores";
 import {useSearchStore} from "stores/searchStore";
-import {useUiStore} from "stores/uiStore";
-import {useRoute, useRouter} from "vue-router";
+import {useRouter} from "vue-router";
 import {useUtils} from "src/services/Utils";
+import {useGroupsStore} from "stores/groupsStore";
+import {FeatureIdent} from "src/models/AppFeature";
 
 const {inBexMode} = useUtils()
 
@@ -33,6 +34,7 @@ class AppService {
         const settingsStore = useSettingsStore()
         const bookmarksStore = useBookmarksStore()
         const windowsStore = useWindowsStore()
+        const groupsStore = useGroupsStore()
         const searchStore = useSearchStore()
         const router = useRouter()
         const $q = useQuasar()
@@ -44,6 +46,11 @@ class AppService {
                 ChromeBookmarkListeners.initListeners()
                 bookmarksStore.init()
                 BookmarksService.init()
+
+                if (usePermissionsStore().hasFeature(FeatureIdent.TAB_GROUPS)) {
+                    groupsStore.initialize()
+                    groupsStore.initListeners()
+                }
             })
         settingsStore.initialize(useQuasar().localStorage);
         tabsStore.initialize(useQuasar().localStorage);

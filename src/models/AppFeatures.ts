@@ -61,7 +61,9 @@ export class AppFeatures {
     new AppFeature(FeatureIdent.COLOR_TAGS, FeatureType.OPTIONAL, 'Color Tags', 'o_colorize', ['all']),
     new AppFeature(FeatureIdent.ADVANCED_TAB_MANAGEMENT, FeatureType.OPTIONAL, 'Advanced Tab Management', 'o_tab', ['all']),
     new AppFeature(FeatureIdent.ANALYSE_TABS, FeatureType.EXPERIMENTAL, 'Analyse Tabs', 'o_tab', ['bex'])
-        .setActivateCommands([new GrantPermissionCommand('webRequest')])
+        .setActivateCommands([new GrantPermissionCommand('webRequest')]),
+    new AppFeature(FeatureIdent.TAB_GROUPS, FeatureType.EXPERIMENTAL, 'Chrome Tab Groups', 'o_view_list', ['chrome_bex'])
+        .setActivateCommands([new GrantPermissionCommand('tabGroups')])
   ]
 
   getFeature(f: FeatureIdent): AppFeature | undefined {

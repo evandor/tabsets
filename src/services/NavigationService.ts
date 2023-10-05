@@ -5,17 +5,25 @@ import {useTabsStore} from "src/stores/tabsStore";
 import {useTabsetService} from "src/services/TabsetService2";
 import {useWindowsStore} from "stores/windowsStores";
 import JsUtils from "src/utils/JsUtils";
+import {useGroupsStore} from "stores/groupsStore";
+import {usePermissionsStore} from "stores/permissionsStore";
+import {FeatureIdent} from "src/models/AppFeature";
 
 class NavigationService {
 
-    async openOrCreateTab(withUrl: string, matcher: string | undefined = undefined) {
+    async openOrCreateTab(
+        withUrl: string,
+        matcher: string | undefined = undefined,
+        group: chrome.tabGroups.TabGroup | undefined = undefined
+    ) {
         const useWindowIdent = useTabsStore().getCurrentTabset?.window || 'current'
-        console.log("opening", withUrl, useWindowIdent, process.env.MODE)
+        console.log(`opening url ${withUrl} in window ${useWindowIdent}, group: ${group}, mode: ${process.env.MODE}`)
 
         const existingWindow = await useWindowsStore().windowFor(useWindowIdent)
         if (useWindowIdent !== 'current') {
             console.log("existingWindow", existingWindow)
             if (!existingWindow) {
+                // create a new window with a single url
                 chrome.windows.create({url: withUrl}, (callback) => {
                     console.log("callback", callback)
                     if (callback) {
@@ -47,6 +55,7 @@ class NavigationService {
                     }
                 }
             })
+
             const useWindowId = existingWindow || chrome.windows.WINDOW_ID_CURRENT
             const queryInfo = {windowId: useWindowId}
             console.log("using query info ", queryInfo)
@@ -65,6 +74,8 @@ class NavigationService {
                                 console.log("found something", r)
                                 chrome.tabs.highlight({tabs: r.index, windowId: useWindowId});
                                 chrome.windows.update(useWindowId, {focused: true})
+
+                                this.handleGroup(group, useWindowId, r);
 
                                 console.log("sending Message highlightSelections")
                                 chrome.runtime.sendMessage({
@@ -88,6 +99,9 @@ class NavigationService {
                         windowId: useWindowId
                     }, (tab: chrome.tabs.Tab) => {
                         chrome.windows.update(useWindowId, {focused: true})
+
+                        this.handleGroup(group, useWindowId, tab);
+
                         // pass selections and execute quoting script
                         if (selections.length > 0) {
                             console.log("selections", selections, tab.id)
@@ -109,6 +123,7 @@ class NavigationService {
                         }
 
                     })
+
                 }
             })
         } else {
@@ -116,20 +131,41 @@ class NavigationService {
         }
     }
 
+    private handleGroup(group: chrome.tabGroups.TabGroup | undefined, useWindowId: number, r: chrome.tabs.Tab) {
+        if (group && usePermissionsStore().hasFeature(FeatureIdent.TAB_GROUPS) && chrome?.tabs?.group) {
+            console.log("handling Group", group)
+            const optionalGroup = useGroupsStore().groupFor(group.id, group.title)
+            if (!optionalGroup) {
+                const props = {
+                    createProperties: {
+                        windowId: useWindowId
+                    },
+                    tabIds: [r.id || 0]
+                }
+                console.log("group not found, creating with", props)
+                chrome.tabs.group(props, groupId => {
+                    console.log("groupId", groupId)
+                    chrome.tabGroups.update(groupId, {
+                        collapsed: false,
+                        color: group.color,
+                        title: group.title
+                    }, c => console.log("c", c))
+                })
+            } else {
+                const props = {
+                    groupId: optionalGroup.id,
+                    tabIds: [r.id || 0]
+                }
+                console.log("updating group with", props)
+
+                chrome.tabs.group(props, c => console.log("c", c))
+            }
+        }
+    }
+
     openTab(tabId: number) {
         chrome.tabs.update(tabId, {active: true})
     }
-
-    muteAll() {
-        chrome.tabs.query({audible: true}, (tabs: chrome.tabs.Tab[]) => {
-            tabs.forEach((t: chrome.tabs.Tab) => {
-                if (t && t.id) {
-                    chrome.tabs.update(t.id, {muted: true})
-                }
-            })
-        })
-    }
-
 
     closeChromeTab(tab: Tab) {
         console.log("closing chrome tab", tab.id, tab?.id)

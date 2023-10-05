@@ -52,8 +52,8 @@
               <q-icon name="arrow_right" size="16px"/>
            </span>
           <span v-if="props.tab?.extension === UrlExtension.NOTE"
-              @click.stop="NavigationService.openOrCreateTab(props.tab.url,props.tab.matcher )"
-              v-html="nameOrTitle(props.tab as Tab)"/>
+                @click.stop="NavigationService.openOrCreateTab(props.tab.url,props.tab.matcher,props.tab.group )"
+                v-html="nameOrTitle(props.tab as Tab)"/>
           <span v-else
                 v-html="nameOrTitle(props.tab as Tab)"
           />
@@ -75,7 +75,7 @@
     <!-- description -->
     <q-item-label class="ellipsis-2-lines text-grey-8"
                   v-if="useUiStore().listDetailLevelGreaterEqual(ListDetailLevel.MAXIMAL)"
-                  @click.stop="NavigationService.openOrCreateTab(props.tab?.url || '', props.tab?.matcher || '' )">
+                  @click.stop="NavigationService.openOrCreateTab(props.tab?.url || '', props.tab?.matcher || '', props.tab?.group )">
       {{ props.tab.description }}
     </q-item-label>
 
@@ -88,27 +88,48 @@
         @mouseleave="showButtonsProp = false">
       <div class="row q-ma-none">
         <div class="col-10 q-pr-lg cursor-pointer"
-             @click.stop="NavigationService.openOrCreateTab(props.tab.url,props.tab.matcher )">
+             @click.stop="NavigationService.openOrCreateTab(props.tab.url,props.tab.matcher,props.tab.group )">
            <span v-if="props.sorting === TabSorting.URL">
               <q-icon name="arrow_right" size="16px"/>
            </span>
 
           <!-- url or note -->
-<!--          <template v-if="props.tab.extension === UrlExtension.NOTE">-->
-<!--            <span>open Note</span>-->
-<!--          </template>-->
+          <!--          <template v-if="props.tab.extension === UrlExtension.NOTE">-->
+          <!--            <span>open Note</span>-->
+          <!--          </template>-->
           <template v-if="props.tab.extension !== UrlExtension.NOTE">
             <short-url :url="props.tab.url" :hostname-only="!useUiStore().showFullUrls"/>
             <q-icon v-if="props.tab.matcher && usePermissionsStore().hasFeature(FeatureIdent.ADVANCED_TAB_MANAGEMENT)"
                     @click.stop="openTabAssignmentPage(props.tab)"
                     name="o_settings">
-              <q-tooltip class="tooltip">{{matcherTooltip()}}</q-tooltip>
+              <q-tooltip class="tooltip">{{ matcherTooltip() }}</q-tooltip>
             </q-icon>
           </template>
           <div class="text-caption text-grey-5" v-if="useUiStore().listDetailLevelGreaterEqual(ListDetailLevel.SOME)">
             <span v-if="props.sorting === TabSorting.AGE">
               <q-icon name="arrow_right" size="16px"/>
            </span>
+            <template v-if="props.tab.group && usePermissionsStore().hasFeature(FeatureIdent.TAB_GROUPS)">
+              Group <em>{{ props.tab.group.title }}</em>
+              <q-icon name="arrow_drop_down" class="q-mr-none" size="xs" color="text-grey-5"/>
+              <q-menu :offset="[0,10]">
+                <q-list dense>
+                  <q-item v-if="groups.length > 1" class="text-grey-5" style="font-size: smaller">
+                    Change group to...
+                  </q-item>
+                  <q-item clickable v-for="group in groupsWithout(props.tab.group)"
+                          @click="switchGroup(group)"
+                          style="font-size: smaller">
+                    ...{{ group.title }}
+                  </q-item>
+                  <q-separator v-if="groups.length > 1" />
+                  <q-item clickable style="font-size: smaller" @click="removeGroup()">
+                    Remove Group...
+                  </q-item>
+                </q-list>
+              </q-menu>
+              -
+            </template>
             {{ formatDate(props.tab.lastActive) }}
           </div>
 
@@ -178,6 +199,7 @@ import {usePermissionsStore} from "stores/permissionsStore";
 import {FeatureIdent} from "src/models/AppFeature";
 import {useUtils} from "src/services/Utils";
 import {useRouter} from "vue-router";
+import {useGroupsStore} from "stores/groupsStore";
 
 const {inBexMode} = useUtils()
 
@@ -201,6 +223,7 @@ const imgFromBlob = ref<string>("")
 const hoveredTab = ref<string | undefined>(undefined)
 const tsBadges = ref<object[]>([])
 const newState = ref(false)
+const groups = ref<chrome.tabGroups.TabGroup[]>([])
 
 onMounted(() => {
   if ((new Date().getTime() - props.tab.created) < 500) {
@@ -227,6 +250,10 @@ onMounted(() => {
         })
         .catch((err) => console.error(err))
   }
+})
+
+watchEffect(() => {
+  groups.value = useGroupsStore().tabGroups
 })
 
 watchEffect(() => {
@@ -292,7 +319,7 @@ const openTabset = (badge: any) => {
 }
 
 const openTabAssignmentPage = (tab: Tab) =>
-   NavigationService.openOrCreateTab(chrome.runtime.getURL("/www/index.html#/mainpanel/tabAssignment/" + tab.id))
+    NavigationService.openOrCreateTab(chrome.runtime.getURL("/www/index.html#/mainpanel/tabAssignment/" + tab.id))
 
 const matcherTooltip = () => {
   const split = props.tab.matcher?.split("|")
@@ -304,6 +331,46 @@ const matcherTooltip = () => {
   return "This tab will open in any tab which url matches " + props.tab.matcher
 }
 
+const removeGroup = () => {
+  if (props.tab) {
+    props.tab.group = undefined
+    useTabsStore().getTab(props.tab.id)
+        .then((res: any) => {
+          if (res) {
+            const tab = res['tab' as keyof object] as Tab
+            const tabsetId = res['tabsetId' as keyof object]
+            tab.group = undefined
+            tab.groupId = -1
+            const ts = useTabsetService().getTabset(tabsetId)
+            if (ts) {
+              useTabsetService().saveTabset(ts)
+            }
+          }
+        })
+  }
+}
+
+const groupsWithout = (group: chrome.tabGroups.TabGroup): chrome.tabGroups.TabGroup[] =>
+    _.filter([...groups.value], (g: chrome.tabGroups.TabGroup) => g.title !== group.title)
+
+const switchGroup = (group: chrome.tabGroups.TabGroup): void => {
+  if (props.tab) {
+    props.tab.group = group
+    useTabsStore().getTab(props.tab.id)
+        .then((res: any) => {
+          if (res) {
+            const tab = res['tab' as keyof object] as Tab
+            const tabsetId = res['tabsetId' as keyof object]
+            tab.group = group
+            tab.groupId = group.id
+            const ts = useTabsetService().getTabset(tabsetId)
+            if (ts) {
+              useTabsetService().saveTabset(ts)
+            }
+          }
+        })
+  }
+}
 </script>
 
 <!--https://stackoverflow.com/questions/41078478/css-animated-checkmark -->
