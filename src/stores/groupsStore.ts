@@ -27,7 +27,7 @@ export const useGroupsStore = defineStore('groups', () => {
     }
 
     function init(trigger: string = "") {
-        if (inBexMode()) {
+        if (inBexMode() && chrome?.tabGroups) {
             chrome.tabGroups.query({}, (groups) => {
                 //console.table(groups)
                 tabGroups.value = groups
@@ -36,7 +36,7 @@ export const useGroupsStore = defineStore('groups', () => {
     }
 
     function initListeners() {
-        if (inBexMode()) {
+        if (inBexMode() && chrome && chrome.tabGroups) {
             chrome.tabGroups.onCreated.addListener((window: chrome.tabGroups.TabGroup) => init("onCreated"))
             chrome.tabGroups.onRemoved.addListener((window: chrome.tabGroups.TabGroup) => init("onRemoved"))
             chrome.tabGroups.onMoved.addListener((window: chrome.tabGroups.TabGroup) => init("onMoved"))
@@ -44,8 +44,8 @@ export const useGroupsStore = defineStore('groups', () => {
         }
     }
 
-    function groupFor(groupId: number, groupName: string | undefined): chrome.tabGroups.TabGroup | undefined {
-        if (inBexMode() && usePermissionsStore().hasFeature(FeatureIdent.TAB_GROUPS)) {
+    function groupFor(groupId: number, groupName: string | undefined = undefined): chrome.tabGroups.TabGroup | undefined {
+        if (inBexMode() && usePermissionsStore().hasFeature(FeatureIdent.TAB_GROUPS) && chrome && chrome.tabGroups) {
             for (const g of tabGroups.value) {
                 if (g.id === groupId) {
                     return g
@@ -66,6 +66,7 @@ export const useGroupsStore = defineStore('groups', () => {
     return {
         initialize,
         initListeners,
-        groupFor
+        groupFor,
+        tabGroups
     }
 })

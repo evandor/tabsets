@@ -50,13 +50,13 @@
     </div>
 
     <div class="col-12 q-my-md">
-      <div v-if="appFeature.type === FeatureType.RECOMMENDED">
+      <div v-if="appFeature?.type === FeatureType.RECOMMENDED">
         This feature is considered stable and useful, but not activated by default. To use it, switch this feature on.
       </div>
-      <div v-if="appFeature.type === FeatureType.OPTIONAL">
+      <div v-if="appFeature?.type === FeatureType.OPTIONAL">
         This feature is considered stable but might not be useful for everybody. To use it, switch this feature on.
       </div>
-      <div v-if="appFeature.type === FeatureType.EXPERIMENTAL">
+      <div v-if="appFeature?.type === FeatureType.EXPERIMENTAL">
         This feature is not considered stable and might break other parts of this extension. To use it at your
         own risk, switch this feature on.
       </div>

@@ -76,6 +76,7 @@ import _ from "lodash"
 import {AppFeatures} from "src/models/AppFeatures";
 import {AppFeature, FeatureIdent, FeatureType} from "src/models/AppFeature";
 import {useSettingsStore} from "src/stores/settingsStore";
+import {useQuasar} from "quasar";
 
 const tabsStore = useTabsStore()
 const router = useRouter()
@@ -102,19 +103,6 @@ const featuresByType = (type: FeatureType) =>
     return typeAndModeMatch
   })
 
-const recommendedFeatures = [
-  {ident: 'bookmarks', name: 'Bookmarks', icon: 'o_bookmarks', useIn: ['bex'], target: '/features/bookmarks'}
-]
-
-const optionalFeatures = [
-  {ident: 'sidebar', name: 'Sidebar View', icon: 'o_input', useIn: ['electron'], target: '/features/sidebar'},
-]
-
-
-const open = (ident: string) => {
-  router.push("/help/" + ident)
-}
-
 //@ts-ignore
 const appVersion = import.meta.env.PACKAGE_VERSION
 
@@ -127,7 +115,12 @@ const showFeature2 = (f: AppFeature) => {
     router.push("/features/" + f.ident.toLowerCase())
 }
 
-const wrongMode = (f: any) => {
-  return f.useIn?.indexOf('all') < 0 && f.useIn?.indexOf(process.env.MODE) < 0
+const wrongMode = (f: AppFeature) => {
+  if (f.useIn.indexOf('chrome_bex') >= 0) {
+    if (useQuasar().platform.is.chrome) {
+      return false
+    }
+  }
+  return f.useIn?.indexOf('all') < 0 && f.useIn?.indexOf(process.env.MODE || '') < 0
 }
 </script>

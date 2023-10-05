@@ -132,7 +132,7 @@ class NavigationService {
     }
 
     private handleGroup(group: chrome.tabGroups.TabGroup | undefined, useWindowId: number, r: chrome.tabs.Tab) {
-        if (group && usePermissionsStore().hasFeature(FeatureIdent.TAB_GROUPS)) {
+        if (group && usePermissionsStore().hasFeature(FeatureIdent.TAB_GROUPS) && chrome?.tabs?.group) {
             console.log("handling Group", group)
             const optionalGroup = useGroupsStore().groupFor(group.id, group.title)
             if (!optionalGroup) {
