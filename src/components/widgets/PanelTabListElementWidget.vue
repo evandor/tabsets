@@ -87,7 +87,7 @@
         @mouseover="showButtonsProp = true"
         @mouseleave="showButtonsProp = false">
       <div class="row q-ma-none">
-        <div class="col-10 q-pr-lg cursor-pointer"
+        <div class="col-11 q-pr-lg cursor-pointer"
              @click.stop="NavigationService.openOrCreateTab(props.tab.url,props.tab.matcher,props.tab.group )">
            <span v-if="props.sorting === TabSorting.URL">
               <q-icon name="arrow_right" size="16px"/>
@@ -105,34 +105,6 @@
               <q-tooltip class="tooltip">{{ matcherTooltip() }}</q-tooltip>
             </q-icon>
           </template>
-          <div class="text-caption text-grey-5" v-if="useUiStore().listDetailLevelGreaterEqual(ListDetailLevel.SOME)">
-            <span v-if="props.sorting === TabSorting.AGE">
-              <q-icon name="arrow_right" size="16px"/>
-           </span>
-            <template v-if="props.tab.group && usePermissionsStore().hasFeature(FeatureIdent.TAB_GROUPS)">
-              Group <em>{{ props.tab.group.title }}</em>
-              <q-icon name="arrow_drop_down" class="q-mr-none" size="xs" color="text-grey-5"/>
-              <q-menu :offset="[0,10]">
-                <q-list dense>
-                  <q-item v-if="groups.length > 1" class="text-grey-5" style="font-size: smaller">
-                    Change group to...
-                  </q-item>
-                  <q-item clickable v-for="group in groupsWithout(props.tab.group)"
-                          @click="switchGroup(group)"
-                          style="font-size: smaller">
-                    ...{{ group.title }}
-                  </q-item>
-                  <q-separator v-if="groups.length > 1" />
-                  <q-item clickable style="font-size: smaller" @click="removeGroup()">
-                    Remove Group...
-                  </q-item>
-                </q-list>
-              </q-menu>
-              -
-            </template>
-            {{ formatDate(props.tab.lastActive) }}
-          </div>
-
           <!-- <q-icon class="q-ml-xs" name="open_in_new"/>-->
         </div>
         <div v-if="!props.hideMenu"
@@ -153,6 +125,50 @@
         </div>
       </div>
 
+    </q-item-label>
+
+    <q-item-label
+        style="width:100%"
+        v-if="props.tab?.url"
+        caption class="ellipsis-2-lines text-blue-10"
+        @mouseover="showButtonsProp = true"
+        @mouseleave="showButtonsProp = false">
+      <div class="row q-ma-none">
+        <div class="col-12 q-pr-lg q-mt-none q-pt-none cursor-pointer">
+          <div class="text-caption text-grey-5 ellipsis"
+               v-if="useUiStore().listDetailLevelGreaterEqual(ListDetailLevel.SOME)">
+            <span v-if="props.sorting === TabSorting.AGE">
+              <q-icon name="arrow_right" size="16px"/>
+           </span>
+            <template v-if="props.tab.group && usePermissionsStore().hasFeature(FeatureIdent.TAB_GROUPS)">
+              Group <em>{{ props.tab.group.title }}</em>
+              <q-icon name="arrow_drop_down" class="q-mr-none" size="xs" color="text-grey-5"/>
+              <q-menu :offset="[0,10]">
+                <q-list dense>
+                  <q-item v-if="groups.length > 1" class="text-grey-5" style="font-size: smaller">
+                    Change group to...
+                  </q-item>
+                  <q-item clickable v-for="group in groupsWithout(props.tab.group)"
+                          @click="switchGroup(group)"
+                          style="font-size: smaller">
+                    ...{{ group.title }}
+                  </q-item>
+                  <q-separator v-if="groups.length > 1"/>
+                  <q-item clickable style="font-size: smaller" @click="unsetGroup()">
+                    Unset Group
+                  </q-item>
+                  <q-separator />
+                  <q-item clickable style="font-size: smaller" @click="removeGroup(props.tab.group)">
+                    Remove Group
+                  </q-item>
+                </q-list>
+              </q-menu>
+              -
+            </template>
+            {{ formatDate(props.tab.lastActive) }}
+          </div>
+        </div>
+      </div>
     </q-item-label>
 
     <!-- note -->
@@ -200,6 +216,7 @@ import {FeatureIdent} from "src/models/AppFeature";
 import {useUtils} from "src/services/Utils";
 import {useRouter} from "vue-router";
 import {useGroupsStore} from "stores/groupsStore";
+import {DeleteChromeGroupCommand} from "src/domain/groups/DeleteChromeGroupCommand";
 
 const {inBexMode} = useUtils()
 
@@ -331,7 +348,7 @@ const matcherTooltip = () => {
   return "This tab will open in any tab which url matches " + props.tab.matcher
 }
 
-const removeGroup = () => {
+const unsetGroup = () => {
   if (props.tab) {
     props.tab.group = undefined
     useTabsStore().getTab(props.tab.id)
@@ -349,6 +366,12 @@ const removeGroup = () => {
         })
   }
 }
+
+const removeGroup = (group: chrome.tabGroups.TabGroup) => {
+  unsetGroup()
+  if (props.tab && group.title) {
+    useCommandExecutor().executeFromUi(new DeleteChromeGroupCommand(group.title))
+  }}
 
 const groupsWithout = (group: chrome.tabGroups.TabGroup): chrome.tabGroups.TabGroup[] =>
     _.filter([...groups.value], (g: chrome.tabGroups.TabGroup) => g.title !== group.title)

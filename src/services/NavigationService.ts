@@ -77,16 +77,16 @@ class NavigationService {
 
                                 this.handleGroup(group, useWindowId, r);
 
-                                console.log("sending Message highlightSelections")
-                                chrome.runtime.sendMessage({
-                                    msg: "highlightSelections",
-                                    selections: selections
-                                }, (res: any) => {
-                                    //console.log("got response1", res)
-                                    if (chrome.runtime.lastError) {
-                                        console.warn("got runtime error", chrome.runtime.lastError)
-                                    }
-                                })
+                                // console.log("sending Message highlightSelections")
+                                // chrome.runtime.sendMessage({
+                                //     msg: "highlightSelections",
+                                //     selections: selections
+                                // }, (res: any) => {
+                                //     //console.log("got response1", res)
+                                //     if (chrome.runtime.lastError) {
+                                //         console.warn("got runtime error", chrome.runtime.lastError)
+                                //     }
+                                // })
                             }
                         }
                     });
@@ -134,7 +134,7 @@ class NavigationService {
     private handleGroup(group: chrome.tabGroups.TabGroup | undefined, useWindowId: number, r: chrome.tabs.Tab) {
         if (group && usePermissionsStore().hasFeature(FeatureIdent.TAB_GROUPS) && chrome?.tabs?.group) {
             console.log("handling Group", group)
-            const optionalGroup = useGroupsStore().groupFor(group.id, group.title)
+            const optionalGroup = useGroupsStore().currentGroupFor(group.title)
             if (!optionalGroup) {
                 const props = {
                     createProperties: {

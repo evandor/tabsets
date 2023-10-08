@@ -488,6 +488,38 @@ class IndexedDbPersistenceService implements PersistenceService {
     return this.db.delete('spaces', spaceId)
   }
 
+  addGroup(group: chrome.tabGroups.TabGroup): Promise<boolean> {
+    if (!group.title) {
+      console.log("no group title given")
+      return Promise.resolve(false)
+    }
+    return this.db.getAll('groups')
+        .then((gs: any[]) => {
+          const found = _.findIndex(gs, g => g.title === group.title) >= 0
+          if (!found) {
+              this.db.put('groups', group, group.id)
+              return Promise.resolve(true)
+          }
+          console.debug("group exists already")
+          return Promise.resolve(false)
+        })
+        .catch((err) => Promise.reject(err))
+  }
+
+  getGroups(): Promise<chrome.tabGroups.TabGroup[]> {
+    return this.db.getAll('groups')
+  }
+
+  deleteGroupByTitle(title: string): Promise<void> {
+    return this.getGroups().then(groups => {
+      for (const g of groups) {
+        if (g.title === title) {
+          this.db.delete('groups', g.id)
+        }
+      }
+    })
+  }
+
   private async initDatabase(dbName: string): Promise<IDBPDatabase> {
     console.debug("about to initialize indexedDB")
     return await openDB(dbName, INDEX_DB_VERSION, {
@@ -545,6 +577,14 @@ class IndexedDbPersistenceService implements PersistenceService {
         if (!db.objectStoreNames.contains('blobs')) {
           console.log("creating blobs suggestions")
           db.createObjectStore('blobs');
+        }
+        if (!db.objectStoreNames.contains('groups')) {
+          console.log("creating db groups")
+          db.createObjectStore('groups');
+        }
+        if (!db.objectStoreNames.contains('windows')) {
+          console.log("creating db windows")
+          db.createObjectStore('windows');
         }
       },
     });

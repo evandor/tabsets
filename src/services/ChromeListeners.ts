@@ -16,6 +16,7 @@ import {useSuggestionsStore} from "src/stores/suggestionsStore";
 import {FeatureIdent} from "src/models/AppFeature";
 import {Extractor, Extractors, ExtractorType} from "src/config/Extractors";
 import {useUtils} from "src/services/Utils";
+import {useGroupsStore} from "stores/groupsStore";
 
 const {
   saveCurrentTabset,
@@ -31,9 +32,17 @@ const {sanitize} = useUtils()
 
 function setCurrentTab() {
   chrome.tabs.query({active: true, lastFocusedWindow: true}, (tabs) => {
-    //console.log("setting current tab", tabs)
+    console.log("setting current tab", tabs)
     if (tabs && tabs[0]) {
       useTabsStore().setCurrentChromeTab(tabs[0] as unknown as chrome.tabs.Tab)
+    } else {
+      // Seems to be necessary when creating a new chrome group
+      chrome.tabs.query({active: true}, (tabs) => {
+        console.log("setting current tab II", tabs)
+        if (tabs && tabs[0]) {
+          useTabsStore().setCurrentChromeTab(tabs[0] as unknown as chrome.tabs.Tab)
+        }
+      })
     }
   });
 }
@@ -278,6 +287,13 @@ class ChromeListeners {
     if (index >= 0) {
       const existingPendingTab = tabset.tabs[index]
       const updatedTab = new Tab(uid(), tab)
+
+      console.log("updatedTab", updatedTab)
+
+      // (chrome) Group
+      console.log("updating updatedTab group for group id", updatedTab.groupId)
+      updatedTab.group = useGroupsStore().groupFor(updatedTab.groupId)
+
       updatedTab.setHistoryFrom(existingPendingTab)
       if (existingPendingTab.url !== updatedTab.url && existingPendingTab.url !== 'chrome://newtab/') {
         if (existingPendingTab.url) {
