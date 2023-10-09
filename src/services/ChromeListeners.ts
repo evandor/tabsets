@@ -242,13 +242,13 @@ class ChromeListeners {
     }
   }
 
-    async onUpdated(number: number, info: chrome.tabs.TabChangeInfo, chromeTab: chrome.tabs.Tab) {
+  async onUpdated(number: number, info: chrome.tabs.TabChangeInfo, chromeTab: chrome.tabs.Tab) {
     if (!useTabsStore().listenersOn) {
       console.debug(`onUpdated:   tab ${number}: >>> listeners off, returning <<<`)
       return
     }
 
-    // get current tab
+    // set current chrome tab in tabsStore
     await setCurrentTab()
 
     const selfUrl = chrome.runtime.getURL("")
@@ -262,8 +262,26 @@ class ChromeListeners {
 
     if (!info.status || (Object.keys(info).length > 1)) {
       console.debug(`onUpdated:   tab ${number}: >>> ${JSON.stringify(info)} <<<`)
+
+      // handle pending Tabset
       this.handleUpdate(tabsStore.pendingTabset as Tabset, chromeTab)
       this.handleUpdateInjectScripts(tabsStore.pendingTabset as Tabset, info, chromeTab)
+
+      // handle existing tabs
+      const matchingTabs = useTabsStore().tabsForUrl(chromeTab.url || '')
+      for (const t of matchingTabs) {
+        console.log(" --- updating existing tabs for url: ", chromeTab.url, t, info)
+        if (info.groupId) {
+          t.group = useGroupsStore().currentGroupForId(info.groupId)
+          t.updated = new Date().getTime()
+          const tabset = tabsStore.tabsetFor(t.id)
+          if (tabset) {
+            await useTabsetService().saveTabset(tabset)
+          }
+        }
+      }
+
+      // handle sessions
       let foundSession = false
       _.forEach([...tabsStore.tabsets.values()], (ts: Tabset) => {
         if (ts.type === TabsetType.SESSION) {
@@ -303,10 +321,11 @@ class ChromeListeners {
       const urlExistsAlready = _.filter(tabset.tabs, pT => pT.url === tab.url).length >= 2
       if (urlExistsAlready) {
         tabset.tabs.splice(index, 1);
+        console.log("Tabset spliced", tabset.tabs)
       } else {
         tabset.tabs.splice(index, 1, updatedTab);
+        console.log("Tabset spliced and deleted", tabset.tabs)
       }
-      console.log("Tabset", tabset.tabs)
 
     } else {
       console.log(`onUpdated: tab ${tab.id}: pending tab cannot be found in ${tabset.name}`)
