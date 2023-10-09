@@ -52,7 +52,7 @@
               <q-icon name="arrow_right" size="16px"/>
            </span>
           <span v-if="props.tab?.extension === UrlExtension.NOTE"
-                @click.stop="NavigationService.openOrCreateTab(props.tab.url,props.tab.matcher,props.tab.group )"
+                @click.stop="NavigationService.openOrCreateTab(props.tab.url || '',props.tab.matcher,props.tab.group )"
                 v-html="nameOrTitle(props.tab as Tab)"/>
           <span v-else
                 v-html="nameOrTitle(props.tab as Tab)"
@@ -145,7 +145,7 @@
               <q-icon name="arrow_drop_down" class="q-mr-none" size="xs" color="text-grey-5"/>
               <q-menu :offset="[0,10]">
                 <q-list dense>
-                  <q-item v-if="groups.length > 1" class="text-grey-5" style="font-size: smaller">
+                  <q-item v-if="groups.size > 1" class="text-grey-5" style="font-size: smaller">
                     Change group to...
                   </q-item>
                   <q-item clickable v-for="group in groupsWithout(props.tab.group)"
@@ -153,7 +153,7 @@
                           style="font-size: smaller">
                     ...{{ group.title }}
                   </q-item>
-                  <q-separator v-if="groups.length > 1"/>
+                  <q-separator v-if="groups.size > 1"/>
                   <q-item clickable style="font-size: smaller" @click="unsetGroup()">
                     Unset Group
                   </q-item>
@@ -185,7 +185,7 @@
       <template v-for="badge in tsBadges">
         <q-chip clickable @click.stop="openTabset(badge)"
                 class="cursor-pointer q-ml-none q-mr-xs" size="9px" icon="tab">
-          {{ badge.label }}
+          {{ badge['label' as keyof object] }}
         </q-chip>
       </template>
     </q-item-label>
@@ -240,7 +240,7 @@ const imgFromBlob = ref<string>("")
 const hoveredTab = ref<string | undefined>(undefined)
 const tsBadges = ref<object[]>([])
 const newState = ref(false)
-const groups = ref<chrome.tabGroups.TabGroup[]>([])
+const groups = ref<Map<number, chrome.tabGroups.TabGroup>>(new Map())
 
 onMounted(() => {
   if ((new Date().getTime() - props.tab.created) < 500) {
@@ -286,14 +286,6 @@ watchEffect(() => {
     }))
   }
 })
-
-function getShortHostname(host: string) {
-  const nrOfDots = (host.match(/\./g) || []).length
-  if (nrOfDots >= 2) {
-    return host.substring(host.indexOf(".", nrOfDots - 2) + 1)
-  }
-  return host
-}
 
 const nameOrTitle = (tab: Tab) => {
   let nameOrTitle = tab.name ? tab.name : tab.title
@@ -374,7 +366,7 @@ const removeGroup = (group: chrome.tabGroups.TabGroup) => {
   }}
 
 const groupsWithout = (group: chrome.tabGroups.TabGroup): chrome.tabGroups.TabGroup[] =>
-    _.filter([...groups.value], (g: chrome.tabGroups.TabGroup) => g.title !== group.title)
+    _.filter([...groups.value.values()], (g: chrome.tabGroups.TabGroup) => g.title !== group.title)
 
 const switchGroup = (group: chrome.tabGroups.TabGroup): void => {
   if (props.tab) {

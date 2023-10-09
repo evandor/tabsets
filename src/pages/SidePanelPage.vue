@@ -323,6 +323,7 @@ watchEffect(() => {
                 ts.status !== TabsetStatus.ARCHIVED),
         getTabsetOrder, ["asc"])
   }
+  console.log(" *** watchEffect ***", tabsets.value)
 })
 
 

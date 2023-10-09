@@ -30,21 +30,20 @@ const {
 
 const {sanitize} = useUtils()
 
-function setCurrentTab() {
-  chrome.tabs.query({active: true, lastFocusedWindow: true}, (tabs) => {
+async function setCurrentTab() {
+  const tabs = await chrome.tabs.query({active: true, lastFocusedWindow: true})
+
     console.log("setting current tab", tabs)
     if (tabs && tabs[0]) {
       useTabsStore().setCurrentChromeTab(tabs[0] as unknown as chrome.tabs.Tab)
     } else {
       // Seems to be necessary when creating a new chrome group
-      chrome.tabs.query({active: true}, (tabs) => {
-        console.log("setting current tab II", tabs)
-        if (tabs && tabs[0]) {
-          useTabsStore().setCurrentChromeTab(tabs[0] as unknown as chrome.tabs.Tab)
+      const tabs2 = await chrome.tabs.query({active: true})
+        console.log("setting current tab II", tabs2)
+        if (tabs2 && tabs2[0]) {
+          useTabsStore().setCurrentChromeTab(tabs2[0] as unknown as chrome.tabs.Tab)
         }
-      })
     }
-  });
 }
 
 function annotationScript (tabId: string, annotations: any[]) {
@@ -163,14 +162,14 @@ class ChromeListeners {
 
   throttleOnePerSecond = throttledQueue(1, 1000, true)
 
-  initListeners() {
+  async initListeners() {
 
     if (process.env.MODE === 'bex') {
       console.debug("initializing chrome tab listeners")
 
       chrome.runtime.setUninstallURL("https://tabsets.web.app/#/uninstall")
 
-      setCurrentTab()
+      await setCurrentTab()
 
       chrome.tabs.onCreated.addListener((tab: chrome.tabs.Tab) => this.onCreated(tab))
       chrome.tabs.onUpdated.addListener((number, info, tab) => this.onUpdated(number, info, tab))
@@ -243,14 +242,14 @@ class ChromeListeners {
     }
   }
 
-  onUpdated(number: number, info: chrome.tabs.TabChangeInfo, chromeTab: chrome.tabs.Tab) {
+    async onUpdated(number: number, info: chrome.tabs.TabChangeInfo, chromeTab: chrome.tabs.Tab) {
     if (!useTabsStore().listenersOn) {
       console.debug(`onUpdated:   tab ${number}: >>> listeners off, returning <<<`)
       return
     }
 
     // get current tab
-    setCurrentTab()
+    await setCurrentTab()
 
     const selfUrl = chrome.runtime.getURL("")
     if (chromeTab.url?.startsWith(selfUrl)) {
@@ -288,11 +287,12 @@ class ChromeListeners {
       const existingPendingTab = tabset.tabs[index]
       const updatedTab = new Tab(uid(), tab)
 
-      console.log("updatedTab", updatedTab)
+      console.log("updatedTab A", updatedTab)
 
       // (chrome) Group
       console.log("updating updatedTab group for group id", updatedTab.groupId)
-      updatedTab.group = useGroupsStore().groupFor(updatedTab.groupId)
+      updatedTab.group = useGroupsStore().currentGroupForId(updatedTab.groupId)
+      console.log("updatedTab B", updatedTab)
 
       updatedTab.setHistoryFrom(existingPendingTab)
       if (existingPendingTab.url !== updatedTab.url && existingPendingTab.url !== 'chrome://newtab/') {
@@ -306,12 +306,20 @@ class ChromeListeners {
       } else {
         tabset.tabs.splice(index, 1, updatedTab);
       }
+      console.log("Tabset", tabset.tabs)
 
     } else {
       console.log(`onUpdated: tab ${tab.id}: pending tab cannot be found in ${tabset.name}`)
       if (tab.url !== undefined) {
+
+        const newTab = new Tab(uid(), tab)
+
+        // (chrome) Group
+        console.log("updating updatedTab group for group id", tab.groupId)
+        newTab.group = useGroupsStore().groupFor(tab.groupId)
+
         console.log(`onUpdated: tab ${tab.id}: missing tab added for url ${tab.url}`)
-        tabset.tabs.push(new Tab(uid(), tab))
+        tabset.tabs.push(newTab)
       }
     }
   }
@@ -390,12 +398,12 @@ class ChromeListeners {
     tabsStore.loadTabs('onReplaced');
   }
 
-  onActivated(info: chrome.tabs.TabActiveInfo) {
+  async onActivated(info: chrome.tabs.TabActiveInfo) {
     this.eventTriggered()
     const tabsStore = useTabsStore()
     console.debug(`onActivated: tab ${info.tabId} activated: >>> ${JSON.stringify(info)}`)
 
-    setCurrentTab()
+    await setCurrentTab()
 
     chrome.tabs.get(info.tabId, tab => {
       const url = tab.url
