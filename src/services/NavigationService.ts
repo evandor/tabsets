@@ -14,7 +14,7 @@ class NavigationService {
     async openOrCreateTab(
         withUrl: string,
         matcher: string | undefined = undefined,
-        group: chrome.tabGroups.TabGroup | undefined = undefined
+        group: string | undefined = undefined
     ) {
         const useWindowIdent = useTabsStore().getCurrentTabset?.window || 'current'
         console.log(`opening url ${withUrl} in window ${useWindowIdent}, group: ${group}, mode: ${process.env.MODE}`)
@@ -131,10 +131,10 @@ class NavigationService {
         }
     }
 
-    private handleGroup(group: chrome.tabGroups.TabGroup | undefined, useWindowId: number, r: chrome.tabs.Tab) {
+    private handleGroup(group: string | undefined, useWindowId: number, r: chrome.tabs.Tab) {
         if (group && usePermissionsStore().hasFeature(FeatureIdent.TAB_GROUPS) && chrome?.tabs?.group) {
-            console.log("handling Group", group)
-            const optionalGroup = useGroupsStore().currentGroupForName(group.title)
+            console.log("handling current Group", group)
+            const optionalGroup = useGroupsStore().currentGroupForName(group)
             if (!optionalGroup) {
                 const props = {
                     createProperties: {
@@ -147,8 +147,8 @@ class NavigationService {
                     console.log("groupId", groupId)
                     chrome.tabGroups.update(groupId, {
                         collapsed: false,
-                        color: group.color,
-                        title: group.title
+                        //: group.color,
+                        title: group
                     }, c => console.log("c", c))
                 })
             } else {

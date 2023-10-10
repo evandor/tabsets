@@ -21,7 +21,7 @@ export const useGroupsStore = defineStore('groups', () => {
     /**
      * the map of all 'ever used' chrome tab groups, even if they are not currently in use
      */
-    const tabGroups = ref<Map<number, chrome.tabGroups.TabGroup>>(new Map())
+    const tabGroups = ref<Map<string, chrome.tabGroups.TabGroup>>(new Map())
 
     /**
      * the array all actually currently used chrome tab groups
@@ -56,7 +56,7 @@ export const useGroupsStore = defineStore('groups', () => {
                         tabGroups.value = new Map()
                         storage.getGroups().then(res => {
                             console.log("from init: setting groups", res)
-                            res.forEach(r => tabGroups.value.set(r.id, r))
+                            res.forEach(r => tabGroups.value.set(r.title || '', r))
                         })
                     })
 
@@ -73,8 +73,8 @@ export const useGroupsStore = defineStore('groups', () => {
 
             console.log("creating group in storage", group)
             storage.upsertGroup(group)
-                .then((added: boolean) => {
-                    tabGroups.value.set(group.id, group)
+                .then((added: any) => {
+                    tabGroups.value.set(group.title || '', group)
                 })
         }
     }
@@ -90,7 +90,7 @@ export const useGroupsStore = defineStore('groups', () => {
             storage.upsertGroup(group)
                 .then((added: boolean) => {
                     //console.log("setting", group)
-                    tabGroups.value.set(group.id, group)
+                    tabGroups.value.set(group.title || '', group)
                     // const index = _.findIndex(tabGroups.value, g => g.id === group.id)
                     // if (index >= 0) {
                     //     tabGroups.value.splice(index, 1, group)
@@ -128,16 +128,23 @@ export const useGroupsStore = defineStore('groups', () => {
             }
         }
         console.log("no group found for", groupId, groupName)
-        console.log("groups", groups)
-        console.log("tabGroups", tabGroups.value)
-        console.log("currentTabGroups", currentTabGroups.value)
+        // console.log("groups", groups)
+        // console.log("tabGroups", tabGroups.value)
+        // console.log("currentTabGroups", currentTabGroups.value)
 
         return undefined
     }
 
-    function groupFor(groupId: number): chrome.tabGroups.TabGroup | undefined {
-        if (inBexMode() && usePermissionsStore().hasFeature(FeatureIdent.TAB_GROUPS) && chrome && chrome.tabGroups) {
-            return tabGroups.value.get(groupId)
+    // function groupFor(groupId: number): chrome.tabGroups.TabGroup | undefined {
+    //     if (inBexMode() && usePermissionsStore().hasFeature(FeatureIdent.TAB_GROUPS) && chrome && chrome.tabGroups) {
+    //         return tabGroups.value.get(groupId)
+    //     }
+    //     return undefined
+    // }
+
+    function groupForName(groupTitle: string | undefined): chrome.tabGroups.TabGroup | undefined {
+        if (inBexMode() && usePermissionsStore().hasFeature(FeatureIdent.TAB_GROUPS) && chrome && chrome.tabGroups && groupTitle) {
+            return _.find([...tabGroups.value.values()], g => g.title === groupTitle)
         }
         return undefined
     }
@@ -151,6 +158,7 @@ export const useGroupsStore = defineStore('groups', () => {
 
     function currentGroupForId(groupId: number): chrome.tabGroups.TabGroup | undefined {
         if (inBexMode() && usePermissionsStore().hasFeature(FeatureIdent.TAB_GROUPS) && chrome?.tabGroups) {
+            console.log("currentGroupForId", groupId, currentTabGroups.value)
             return findGroup(currentTabGroups.value, groupId, undefined)
         }
         return undefined
@@ -173,7 +181,8 @@ export const useGroupsStore = defineStore('groups', () => {
     return {
         initialize,
         initListeners,
-        groupFor,
+      //  groupFor,
+        groupForName,
         currentGroupForName,
         currentGroupForId,
         tabGroups,

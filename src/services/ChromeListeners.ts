@@ -33,7 +33,7 @@ const {sanitize} = useUtils()
 async function setCurrentTab() {
   const tabs = await chrome.tabs.query({active: true, lastFocusedWindow: true})
 
-    console.log("setting current tab", tabs)
+    console.debug("setting current tab", tabs)
     if (tabs && tabs[0]) {
       useTabsStore().setCurrentChromeTab(tabs[0] as unknown as chrome.tabs.Tab)
     } else {
@@ -270,9 +270,9 @@ class ChromeListeners {
       // handle existing tabs
       const matchingTabs = useTabsStore().tabsForUrl(chromeTab.url || '')
       for (const t of matchingTabs) {
-        console.log(" --- updating existing tabs for url: ", chromeTab.url, t, info)
         if (info.groupId) {
-          t.group = useGroupsStore().currentGroupForId(info.groupId)
+          console.log(" --- updating existing tabs for url: ", chromeTab.url, t, info)
+          t.groupName = useGroupsStore().currentGroupForId(info.groupId)?.title || '???'
           t.updated = new Date().getTime()
           const tabset = tabsStore.tabsetFor(t.id)
           if (tabset) {
@@ -305,12 +305,12 @@ class ChromeListeners {
       const existingPendingTab = tabset.tabs[index]
       const updatedTab = new Tab(uid(), tab)
 
-      console.log("updatedTab A", updatedTab)
+      //console.log("updatedTab A", updatedTab)
 
       // (chrome) Group
       console.log("updating updatedTab group for group id", updatedTab.groupId)
-      updatedTab.group = useGroupsStore().currentGroupForId(updatedTab.groupId)
-      console.log("updatedTab B", updatedTab)
+      updatedTab.groupName = useGroupsStore().currentGroupForId(updatedTab.groupId)?.title || '???'
+      console.log("group set to", updatedTab.groupName)
 
       updatedTab.setHistoryFrom(existingPendingTab)
       if (existingPendingTab.url !== updatedTab.url && existingPendingTab.url !== 'chrome://newtab/') {
@@ -321,10 +321,10 @@ class ChromeListeners {
       const urlExistsAlready = _.filter(tabset.tabs, pT => pT.url === tab.url).length >= 2
       if (urlExistsAlready) {
         tabset.tabs.splice(index, 1);
-        console.log("Tabset spliced", tabset.tabs)
+        //console.log("Tabset spliced", tabset.tabs)
       } else {
         tabset.tabs.splice(index, 1, updatedTab);
-        console.log("Tabset spliced and deleted", tabset.tabs)
+        //console.log("Tabset spliced and deleted", tabset.tabs)
       }
 
     } else {
@@ -334,8 +334,13 @@ class ChromeListeners {
         const newTab = new Tab(uid(), tab)
 
         // (chrome) Group
-        console.log("updating updatedTab group for group id", tab.groupId)
-        newTab.group = useGroupsStore().groupFor(tab.groupId)
+        if (tab.groupId >= 0) {
+          console.log("updating updatedTab group for group id", tab.groupId)
+          //newTab.group = useGroupsStore().groupForId(tab.groupId)
+          //const g = await chrome.tabGroups.get(tab.groupId)
+
+          newTab.groupName = useGroupsStore().currentGroupForId(tab.groupId)?.title || '???'
+        }
 
         console.log(`onUpdated: tab ${tab.id}: missing tab added for url ${tab.url}`)
         tabset.tabs.push(newTab)
@@ -381,7 +386,7 @@ class ChromeListeners {
         console.log("got tab", tab)
         if (!tab.url?.startsWith("chrome")) {
           scripts.forEach((script: string) => {
-            console.info("executing scripts", tab.id, script)
+            console.debug("executing scripts", tab.id, script)
 
 
             // @ts-ignore

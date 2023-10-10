@@ -52,7 +52,7 @@
               <q-icon name="arrow_right" size="16px"/>
            </span>
           <span v-if="props.tab?.extension === UrlExtension.NOTE"
-                @click.stop="NavigationService.openOrCreateTab(props.tab.url || '',props.tab.matcher,props.tab.group )"
+                @click.stop="NavigationService.openOrCreateTab(props.tab.url || '',props.tab.matcher,props.tab.groupName )"
                 v-html="nameOrTitle(props.tab as Tab)"/>
           <span v-else
                 v-html="nameOrTitle(props.tab as Tab)"
@@ -75,7 +75,7 @@
     <!-- description -->
     <q-item-label class="ellipsis-2-lines text-grey-8"
                   v-if="useUiStore().listDetailLevelGreaterEqual(ListDetailLevel.MAXIMAL)"
-                  @click.stop="NavigationService.openOrCreateTab(props.tab?.url || '', props.tab?.matcher || '', props.tab?.group )">
+                  @click.stop="NavigationService.openOrCreateTab(props.tab?.url || '', props.tab?.matcher || '', props.tab?.groupName )">
       {{ props.tab.description }}
     </q-item-label>
 
@@ -88,7 +88,7 @@
         @mouseleave="showButtonsProp = false">
       <div class="row q-ma-none">
         <div class="col-11 q-pr-lg cursor-pointer"
-             @click.stop="NavigationService.openOrCreateTab(props.tab.url,props.tab.matcher,props.tab.group )">
+             @click.stop="NavigationService.openOrCreateTab(props.tab.url,props.tab.matcher,props.tab.groupName )">
            <span v-if="props.sorting === TabSorting.URL">
               <q-icon name="arrow_right" size="16px"/>
            </span>
@@ -98,7 +98,7 @@
           <!--            <span>open Note</span>-->
           <!--          </template>-->
           <template v-if="props.tab.extension !== UrlExtension.NOTE">
-            <short-url :url="props.tab.url" :hostname-only="!useUiStore().showFullUrls"/>
+            <short-url :url="props.tab.url" :hostname-only="!useUiStore().showFullUrls"/> / {{props.tab.groupId}} / {{props.tab.groupName}}
             <q-icon v-if="props.tab.matcher && usePermissionsStore().hasFeature(FeatureIdent.ADVANCED_TAB_MANAGEMENT)"
                     @click.stop="openTabAssignmentPage(props.tab)"
                     name="o_settings">
@@ -140,15 +140,15 @@
             <span v-if="props.sorting === TabSorting.AGE">
               <q-icon name="arrow_right" size="16px"/>
            </span>
-            <template v-if="props.tab.group && usePermissionsStore().hasFeature(FeatureIdent.TAB_GROUPS)">
-              Group <em>{{ props.tab.group.title }}</em>
+            <template v-if="props.tab.groupName && usePermissionsStore().hasFeature(FeatureIdent.TAB_GROUPS)">
+              Group <em>{{ determineGroup(props.tab)?.title || '???' }}</em>
               <q-icon name="arrow_drop_down" class="q-mr-none" size="xs" color="text-grey-5"/>
               <q-menu :offset="[0,10]">
                 <q-list dense>
                   <q-item v-if="groups.size > 1" class="text-grey-5" style="font-size: smaller">
                     Change group to...
                   </q-item>
-                  <q-item clickable v-for="group in groupsWithout(props.tab.group)"
+                  <q-item clickable v-for="group in groupsWithout(props.tab.groupName)"
                           @click="switchGroup(group)"
                           style="font-size: smaller">
                     ...{{ group.title }}
@@ -158,7 +158,7 @@
                     Unset Group
                   </q-item>
                   <q-separator />
-                  <q-item clickable style="font-size: smaller" @click="removeGroup(props.tab.group)">
+                  <q-item clickable style="font-size: smaller" @click="removeGroup(props.tab.groupName)">
                     Remove Group
                   </q-item>
                 </q-list>
@@ -240,7 +240,7 @@ const imgFromBlob = ref<string>("")
 const hoveredTab = ref<string | undefined>(undefined)
 const tsBadges = ref<object[]>([])
 const newState = ref(false)
-const groups = ref<Map<number, chrome.tabGroups.TabGroup>>(new Map())
+const groups = ref<Map<string, chrome.tabGroups.TabGroup>>(new Map())
 
 onMounted(() => {
   if ((new Date().getTime() - props.tab.created) < 500) {
@@ -342,13 +342,13 @@ const matcherTooltip = () => {
 
 const unsetGroup = () => {
   if (props.tab) {
-    props.tab.group = undefined
+    props.tab.groupName = undefined
     useTabsStore().getTab(props.tab.id)
         .then((res: any) => {
           if (res) {
             const tab = res['tab' as keyof object] as Tab
             const tabsetId = res['tabsetId' as keyof object]
-            tab.group = undefined
+            tab.groupName = undefined
             tab.groupId = -1
             const ts = useTabsetService().getTabset(tabsetId)
             if (ts) {
@@ -359,24 +359,24 @@ const unsetGroup = () => {
   }
 }
 
-const removeGroup = (group: chrome.tabGroups.TabGroup) => {
+const removeGroup = (groupName: string) => {
   unsetGroup()
-  if (props.tab && group.title) {
-    useCommandExecutor().executeFromUi(new DeleteChromeGroupCommand(group.title))
+  if (props.tab && groupName) {
+    useCommandExecutor().executeFromUi(new DeleteChromeGroupCommand(groupName))
   }}
 
-const groupsWithout = (group: chrome.tabGroups.TabGroup): chrome.tabGroups.TabGroup[] =>
-    _.filter([...groups.value.values()], (g: chrome.tabGroups.TabGroup) => g.title !== group.title)
+const groupsWithout = (groupName: string): chrome.tabGroups.TabGroup[] =>
+    _.filter([...groups.value.values()], (g: chrome.tabGroups.TabGroup) => g.title !== groupName)
 
 const switchGroup = (group: chrome.tabGroups.TabGroup): void => {
   if (props.tab) {
-    props.tab.group = group
+    props.tab.groupName = group.title
     useTabsStore().getTab(props.tab.id)
         .then((res: any) => {
           if (res) {
             const tab = res['tab' as keyof object] as Tab
             const tabsetId = res['tabsetId' as keyof object]
-            tab.group = group
+            tab.groupName = group.title
             tab.groupId = group.id
             const ts = useTabsetService().getTabset(tabsetId)
             if (ts) {
@@ -386,6 +386,17 @@ const switchGroup = (group: chrome.tabGroups.TabGroup): void => {
         })
   }
 }
+
+const determineGroup = (tab: Tab): chrome.tabGroups.TabGroup | undefined => {
+  if (tab.groupName) {
+    const found = useGroupsStore().groupForName(tab.groupName)
+    if (found) {
+      return found
+    }
+  }
+  return undefined
+}
+
 </script>
 
 <!--https://stackoverflow.com/questions/41078478/css-animated-checkmark -->

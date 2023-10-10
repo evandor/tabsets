@@ -41,7 +41,7 @@ export class AddTabToTabsetCommand implements Command<any> {
 
                     // (chrome) Group
                     console.log("updating tab group for group id", this.tab.groupId)
-                    this.tab.group = useGroupsStore().groupFor(this.tab.groupId)
+                    this.tab.groupName = useGroupsStore().groupFor(this.tab.groupId)?.title || undefined
 
                     // the tab has been added to the tabset, but not saved yet
                     return TabsetService.getContentFor(this.tab)
