@@ -39,9 +39,13 @@ export class AddTabToTabsetCommand implements Command<any> {
                         tabset.sharing = TabsetSharing.PUBLIC_OUTDATED
                     }
 
-                    // (chrome) Group
+                    // manage (chrome) Group
                     console.log("updating tab group for group id", this.tab.groupId)
-                    this.tab.groupName = useGroupsStore().groupFor(this.tab.groupId)?.title || undefined
+                    const currentGroup = useGroupsStore().currentGroupForId(this.tab.groupId)
+                    this.tab.groupName = currentGroup?.title || undefined
+                    if (currentGroup) {
+                        useGroupsStore().persistGroup(currentGroup)
+                    }
 
                     // the tab has been added to the tabset, but not saved yet
                     return TabsetService.getContentFor(this.tab)

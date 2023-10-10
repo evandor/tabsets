@@ -98,7 +98,7 @@
           <!--            <span>open Note</span>-->
           <!--          </template>-->
           <template v-if="props.tab.extension !== UrlExtension.NOTE">
-            <short-url :url="props.tab.url" :hostname-only="!useUiStore().showFullUrls"/> / {{props.tab.groupId}} / {{props.tab.groupName}}
+            <short-url :url="props.tab.url" :hostname-only="!useUiStore().showFullUrls"/>
             <q-icon v-if="props.tab.matcher && usePermissionsStore().hasFeature(FeatureIdent.ADVANCED_TAB_MANAGEMENT)"
                     @click.stop="openTabAssignmentPage(props.tab)"
                     name="o_settings">
@@ -128,7 +128,7 @@
     </q-item-label>
 
     <q-item-label
-        style="width:100%"
+        style="width:100%;margin-top:0"
         v-if="props.tab?.url"
         caption class="ellipsis-2-lines text-blue-10"
         @mouseover="showButtonsProp = true"
@@ -141,7 +141,7 @@
               <q-icon name="arrow_right" size="16px"/>
            </span>
             <template v-if="props.tab.groupName && usePermissionsStore().hasFeature(FeatureIdent.TAB_GROUPS)">
-              Group <em>{{ determineGroup(props.tab)?.title || '???' }}</em>
+              Group <em>{{ props.tab.groupName }}</em>
               <q-icon name="arrow_drop_down" class="q-mr-none" size="xs" color="text-grey-5"/>
               <q-menu :offset="[0,10]">
                 <q-list dense>
@@ -385,16 +385,6 @@ const switchGroup = (group: chrome.tabGroups.TabGroup): void => {
           }
         })
   }
-}
-
-const determineGroup = (tab: Tab): chrome.tabGroups.TabGroup | undefined => {
-  if (tab.groupName) {
-    const found = useGroupsStore().groupForName(tab.groupName)
-    if (found) {
-      return found
-    }
-  }
-  return undefined
 }
 
 </script>

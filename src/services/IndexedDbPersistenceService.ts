@@ -488,40 +488,15 @@ class IndexedDbPersistenceService implements PersistenceService {
     return this.db.delete('spaces', spaceId)
   }
 
-  upsertGroup(group: chrome.tabGroups.TabGroup): Promise<any> {
-    //this.db.put('groups', group, group.id)
-    //return Promise.resolve(true)
-    // if (!group.title) {
-    //   console.debug("no group title given")
-    //   return Promise.resolve(false)
-    // }
-    //return this.db.put('groups', group, group.title)
-        // .then((res) => {
-        //   // remove all with same title if different id
-        //   return this.db.getAll('groups')
-        //       .then((gs: any[]) => {
-        //         for (const g of gs) {
-        //           if (g.id !== group.id && g.title === group.title) {
-        //             this.db.delete('groups', g.id)
-        //           }
-        //         }
-        //         return true
-        //       })
-        // })
-    return this.db.getAll('groups')
-        .then((gs: any[]) => {
-          const found = _.findIndex(gs, g => g.id === group.id)
-          if (!found) {
-              this.db.put('groups', group, group.title)
-              return Promise.resolve(true)
-          }
-          console.debug("group exists already, updating")
-          const existingGroup = gs.g
-
-
-          return Promise.resolve(false)
+  addGroup(group: chrome.tabGroups.TabGroup): Promise<any> {
+    return this.db.add('groups', group, group.title)
+        .catch((err) => {
+          console.log("error adding group", group, err)
         })
-        .catch((err) => Promise.reject(err))
+  }
+
+  updateGroup(group: chrome.tabGroups.TabGroup): Promise<any> {
+    return this.db.put('groups', group, group.title)
   }
 
   getGroups(): Promise<chrome.tabGroups.TabGroup[]> {

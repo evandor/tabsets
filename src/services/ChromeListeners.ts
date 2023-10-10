@@ -270,8 +270,10 @@ class ChromeListeners {
       // handle existing tabs
       const matchingTabs = useTabsStore().tabsForUrl(chromeTab.url || '')
       for (const t of matchingTabs) {
-        if (info.groupId) {
+        // we care only about actually setting a group, not about removal
+        if (info.groupId && info.groupId >= 0) {
           console.log(" --- updating existing tabs for url: ", chromeTab.url, t, info)
+          t.groupId = info.groupId
           t.groupName = useGroupsStore().currentGroupForId(info.groupId)?.title || '???'
           t.updated = new Date().getTime()
           const tabset = tabsStore.tabsetFor(t.id)

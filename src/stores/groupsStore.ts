@@ -5,6 +5,8 @@ import {usePermissionsStore} from "stores/permissionsStore";
 import {FeatureIdent} from "src/models/AppFeature";
 import PersistenceService from "src/services/PersistenceService";
 import _ from "lodash"
+import {useTabsStore} from "stores/tabsStore";
+import {useTabsetService} from "src/services/TabsetService2";
 
 /**
  * a pinia store for chrome groups.
@@ -43,11 +45,10 @@ export const useGroupsStore = defineStore('groups', () => {
             chrome.tabGroups.query({}, (groups) => {
 
                 currentTabGroups.value = groups
-                console.log("currentTabGroups set to ", currentTabGroups.value)
 
                 // adding potentially new groups to storage
                 const res: Promise<any>[] = groups.flatMap((group: chrome.tabGroups.TabGroup) => {
-                    return storage.upsertGroup(group)
+                    return storage.addGroup(group)
                 })
 
                 // setting all (new and older) groups to 'tabGroups'
@@ -55,7 +56,6 @@ export const useGroupsStore = defineStore('groups', () => {
                     .then(() => {
                         tabGroups.value = new Map()
                         storage.getGroups().then(res => {
-                            console.log("from init: setting groups", res)
                             res.forEach(r => tabGroups.value.set(r.title || '', r))
                         })
                     })
@@ -70,12 +70,6 @@ export const useGroupsStore = defineStore('groups', () => {
             chrome.tabGroups.query({}, (groups) => {
                 currentTabGroups.value = groups
             })
-
-            console.log("creating group in storage", group)
-            storage.upsertGroup(group)
-                .then((added: any) => {
-                    tabGroups.value.set(group.title || '', group)
-                })
         }
     }
 
@@ -84,20 +78,34 @@ export const useGroupsStore = defineStore('groups', () => {
             // update currentTabGroups
             chrome.tabGroups.query({}, (groups) => {
                 currentTabGroups.value = groups
-            })
 
-            //console.log("updating group in storage", group)
-            storage.upsertGroup(group)
-                .then((added: boolean) => {
-                    //console.log("setting", group)
-                    tabGroups.value.set(group.title || '', group)
-                    // const index = _.findIndex(tabGroups.value, g => g.id === group.id)
-                    // if (index >= 0) {
-                    //     tabGroups.value.splice(index, 1, group)
-                    // } else {
-                    //     tabGroups.value.push(group)
-                    // }
-                })
+                // update the group names for matching group ids
+                for (const ts of [...useTabsStore().tabsets.values()]) {
+                    let matchForTabset = false
+                    for (const t of ts.tabs) {
+                        for (const g of groups) {
+                            if (t.groupId === g.id && t.groupName !== g.title) {
+                                console.log("found match", g)
+                                t.groupName = g.title
+                                matchForTabset = true
+                            }
+                        }
+                    }
+                    if (matchForTabset) {
+                        useTabsetService().saveTabset(ts)
+                    }
+                }
+
+                // update color changes
+                for (const g of groups) {
+                    const tabGroup =  findGroup([...tabGroups.value.values()], undefined, g.title)
+                    console.log("found tabGroup", tabGroup, g)
+                    if (tabGroup && tabGroup.color !== g.color) {
+                        storage.updateGroup(g)
+                    }
+                }
+
+            })
         }
     }
 
@@ -114,7 +122,6 @@ export const useGroupsStore = defineStore('groups', () => {
         if (groupId) {
             for (const g of groups) {
                 if (g.id === groupId) {
-                    console.log("found group by ID", g)
                     return g
                 }
             }
@@ -122,25 +129,12 @@ export const useGroupsStore = defineStore('groups', () => {
         if (groupName) {
             for (const g of groups) {
                 if (g.title === groupName) {
-                    console.log("found group by name", g)
                     return g
                 }
             }
         }
-        console.log("no group found for", groupId, groupName)
-        // console.log("groups", groups)
-        // console.log("tabGroups", tabGroups.value)
-        // console.log("currentTabGroups", currentTabGroups.value)
-
         return undefined
     }
-
-    // function groupFor(groupId: number): chrome.tabGroups.TabGroup | undefined {
-    //     if (inBexMode() && usePermissionsStore().hasFeature(FeatureIdent.TAB_GROUPS) && chrome && chrome.tabGroups) {
-    //         return tabGroups.value.get(groupId)
-    //     }
-    //     return undefined
-    // }
 
     function groupForName(groupTitle: string | undefined): chrome.tabGroups.TabGroup | undefined {
         if (inBexMode() && usePermissionsStore().hasFeature(FeatureIdent.TAB_GROUPS) && chrome && chrome.tabGroups && groupTitle) {
@@ -158,10 +152,17 @@ export const useGroupsStore = defineStore('groups', () => {
 
     function currentGroupForId(groupId: number): chrome.tabGroups.TabGroup | undefined {
         if (inBexMode() && usePermissionsStore().hasFeature(FeatureIdent.TAB_GROUPS) && chrome?.tabGroups) {
-            console.log("currentGroupForId", groupId, currentTabGroups.value)
             return findGroup(currentTabGroups.value, groupId, undefined)
         }
         return undefined
+    }
+
+    function persistGroup(group: chrome.tabGroups.TabGroup) {
+        storage.addGroup(JSON.parse(JSON.stringify(group)) as chrome.tabGroups.TabGroup)
+    }
+
+    function updateGroup(group: chrome.tabGroups.TabGroup) {
+        storage.updateGroup(group)
     }
 
     // function deleteGroupByTitle(title: string) {
@@ -187,6 +188,8 @@ export const useGroupsStore = defineStore('groups', () => {
         currentGroupForId,
         tabGroups,
         currentTabGroups,
+        persistGroup,
+        updateGroup
         //deleteGroupByTitle
     }
 })
