@@ -21,12 +21,13 @@ export const useGroupsStore = defineStore('groups', () => {
     const {inBexMode} = useUtils()
 
     /**
-     * the map of all 'ever used' chrome tab groups, even if they are not currently in use
+     * the map of all 'ever used' Chrome tab groups, even if they are not currently in use,
+     * using the title as key.
      */
     const tabGroups = ref<Map<string, chrome.tabGroups.TabGroup>>(new Map())
 
     /**
-     * the array all actually currently used chrome tab groups
+     * the array all actually currently used Chrome tab groups.
      */
     const currentTabGroups = ref<chrome.tabGroups.TabGroup[]>([])
 
@@ -60,7 +61,6 @@ export const useGroupsStore = defineStore('groups', () => {
                             res.forEach(r => tabGroups.value.set(r.title || '', r))
                         })
                     })
-
             })
         }
     }
@@ -68,7 +68,6 @@ export const useGroupsStore = defineStore('groups', () => {
     function onCreated(group: chrome.tabGroups.TabGroup) {
         console.debug("group: onCreated", group)
         if (inBexMode() && chrome?.tabGroups && group.title) {
-            // update currentTabGroups
             chrome.tabGroups.query({}, (groups) => {
                 currentTabGroups.value = groups
             })
@@ -76,9 +75,9 @@ export const useGroupsStore = defineStore('groups', () => {
     }
 
     function onUpdated(group: chrome.tabGroups.TabGroup) {
-        console.log("group: onUpdated", group)
+        console.debug("group: onUpdated", group)
         if (inBexMode() && chrome?.tabGroups) {
-            // update currentTabGroups
+
             chrome.tabGroups.query({}, (groups) => {
                 currentTabGroups.value = groups
 
@@ -114,7 +113,6 @@ export const useGroupsStore = defineStore('groups', () => {
                         storage.updateGroup(g)
                     }
                 }
-
             })
         }
     }
@@ -171,7 +169,7 @@ export const useGroupsStore = defineStore('groups', () => {
         if (group.title) {
             const existingGroups = await storage.getGroups()
             if (existingGroups.findIndex(g => g.title === group.title) < 0) {
-                storage.addGroup(JSON.parse(JSON.stringify(group)) as chrome.tabGroups.TabGroup)
+                await storage.addGroup(JSON.parse(JSON.stringify(group)) as chrome.tabGroups.TabGroup)
             } else {
                 console.debug("group '" + group.title + "' exists already")
             }
@@ -179,29 +177,17 @@ export const useGroupsStore = defineStore('groups', () => {
     }
 
     function updateGroup(group: chrome.tabGroups.TabGroup) {
-        storage.updateGroup(group)
+        return storage.updateGroup(group)
     }
 
     function deleteGroupByTitle(title: string) {
-        // const groupFound = findGroup([...tabGroups.value.values()], undefined, title)
-        // console.log("found group to delete", groupFound)
-        //
-        // if (groupFound) {
-        // remove here in groupsStore
         tabGroups.value.delete(title)
-        // delete in DB
         return storage.deleteGroupByTitle(title)
-        // }
-
-        // delete in all tabs?
-
     }
-
 
     return {
         initialize,
         initListeners,
-        //  groupFor,
         groupForName,
         currentGroupForName,
         currentGroupForId,
