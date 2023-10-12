@@ -300,14 +300,11 @@ const getTabsetOrder =
       }
     ]
 
-
-watch(
-    tabsStore.tabsets,
-    (ts: Map<string, Tabset>) => {
+watchEffect(() => {
       if (usePermissionsStore().hasFeature(FeatureIdent.SPACES)) {
         const currentSpace = useSpacesStore().space
         tabsets.value = _.sortBy(
-            _.filter([...ts.values()], (ts: Tabset) => {
+        _.filter([...tabsStore.tabsets.values()], (ts: Tabset) => {
               if (currentSpace) {
                 if (ts.spaces.indexOf(currentSpace.id) < 0) {
                   return false
@@ -320,15 +317,14 @@ watch(
             getTabsetOrder, ["asc"])
       } else {
         tabsets.value = _.sortBy(
-            _.filter([...ts.values()],
+        _.filter([...tabsStore.tabsets.values()],
                 (ts: Tabset) => ts.status !== TabsetStatus.DELETED
                     && ts.status !== TabsetStatus.HIDDEN &&
                     ts.status !== TabsetStatus.ARCHIVED),
             getTabsetOrder, ["asc"])
       }
-      console.log(" *** watch ***", tabsets.value  )
-    }, {deep: true}
-)
+  console.log(" *** watchEffect ***")
+})
 
 
 function inIgnoredMessages(message: any) {

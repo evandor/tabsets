@@ -166,18 +166,20 @@ export const useGroupsStore = defineStore('groups', () => {
         storage.updateGroup(group)
     }
 
-    // function deleteGroupByTitle(title: string) {
-    //     const groupFound = groupFor(undefined, title)
-    //     console.log("found group to delete", groupFound)
-    //
-    //     // remove here in groupsStore
-    //     tabGroups.value.delete()
-    //     // delete in DB
-    //     return storage.deleteGroupByTitle(title)
-    //
-    //     // delete in all tabs?
-    //
-    // }
+    function deleteGroupByTitle(title: string) {
+        // const groupFound = findGroup([...tabGroups.value.values()], undefined, title)
+        // console.log("found group to delete", groupFound)
+        //
+        // if (groupFound) {
+            // remove here in groupsStore
+            tabGroups.value.delete(title)
+            // delete in DB
+            return storage.deleteGroupByTitle(title)
+       // }
+
+        // delete in all tabs?
+
+    }
 
 
     return {
@@ -190,7 +192,7 @@ export const useGroupsStore = defineStore('groups', () => {
         tabGroups,
         currentTabGroups,
         persistGroup,
-        updateGroup
-        //deleteGroupByTitle
+        updateGroup,
+        deleteGroupByTitle
     }
 })

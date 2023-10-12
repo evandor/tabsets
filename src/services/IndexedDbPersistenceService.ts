@@ -503,14 +503,15 @@ class IndexedDbPersistenceService implements PersistenceService {
     return this.db.getAll('groups')
   }
 
-  deleteGroupByTitle(title: string): Promise<void> {
-    return this.getGroups().then(groups => {
+  async deleteGroupByTitle(title: string): Promise<void> {
+    const groups = await this.getGroups()
+    //    .then(groups => {
       for (const g of groups) {
         if (g.title === title) {
-          this.db.delete('groups', g.id)
+          await this.db.delete('groups', g.id)
         }
       }
-    })
+   // })
   }
 
   private async initDatabase(dbName: string): Promise<IDBPDatabase> {
