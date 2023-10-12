@@ -66,6 +66,7 @@ export const useGroupsStore = defineStore('groups', () => {
     }
 
     function onCreated(group: chrome.tabGroups.TabGroup) {
+        console.debug("group: onCreated", group)
         if (inBexMode() && chrome?.tabGroups && group.title) {
             // update currentTabGroups
             chrome.tabGroups.query({}, (groups) => {
@@ -75,10 +76,18 @@ export const useGroupsStore = defineStore('groups', () => {
     }
 
     function onUpdated(group: chrome.tabGroups.TabGroup) {
+        console.log("group: onUpdated", group)
         if (inBexMode() && chrome?.tabGroups) {
             // update currentTabGroups
             chrome.tabGroups.query({}, (groups) => {
                 currentTabGroups.value = groups
+
+                console.log("set currentTabGroups to", groups)
+
+                // update tabGroups
+                for (const g of groups) {
+                    useGroupsStore().persistGroup(g)
+                }
 
                 // update the group names for matching group ids
                 for (const ts of [...useTabsStore().tabsets.values()]) {
@@ -99,7 +108,7 @@ export const useGroupsStore = defineStore('groups', () => {
 
                 // update color changes
                 for (const g of groups) {
-                    const tabGroup =  findGroup([...tabGroups.value.values()], undefined, g.title)
+                    const tabGroup = findGroup([...tabGroups.value.values()], undefined, g.title)
                     if (tabGroup && tabGroup.color !== g.color) {
                         console.log("updating group", tabGroup, g)
                         storage.updateGroup(g)
@@ -159,7 +168,15 @@ export const useGroupsStore = defineStore('groups', () => {
     }
 
     function persistGroup(group: chrome.tabGroups.TabGroup) {
-        storage.addGroup(JSON.parse(JSON.stringify(group)) as chrome.tabGroups.TabGroup)
+        if (group.title) {
+            storage.getGroups().then(existingGroups => {
+                if (existingGroups.findIndex(g => g.title === group.title) < 0) {
+                    storage.addGroup(JSON.parse(JSON.stringify(group)) as chrome.tabGroups.TabGroup)
+                } else {
+                    console.debug("group '" + group.title + "' exists already")
+                }
+            })
+        }
     }
 
     function updateGroup(group: chrome.tabGroups.TabGroup) {
@@ -171,11 +188,11 @@ export const useGroupsStore = defineStore('groups', () => {
         // console.log("found group to delete", groupFound)
         //
         // if (groupFound) {
-            // remove here in groupsStore
-            tabGroups.value.delete(title)
-            // delete in DB
-            return storage.deleteGroupByTitle(title)
-       // }
+        // remove here in groupsStore
+        tabGroups.value.delete(title)
+        // delete in DB
+        return storage.deleteGroupByTitle(title)
+        // }
 
         // delete in all tabs?
 
@@ -185,7 +202,7 @@ export const useGroupsStore = defineStore('groups', () => {
     return {
         initialize,
         initListeners,
-      //  groupFor,
+        //  groupFor,
         groupForName,
         currentGroupForName,
         currentGroupForId,

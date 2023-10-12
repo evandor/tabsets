@@ -44,10 +44,10 @@ describe('DeleteChromeGroupCommand', () => {
         const groups = await  db.getGroups()
         expect(groups.length).toBe(1)
 
-        const cmd = await new DeleteChromeGroupCommand("groupName").execute()
+        await new DeleteChromeGroupCommand("groupName").execute()
 
         const groupsAfterDeletion = await  db.getGroups()
-        //expect(groupsAfterDeletion.length).toBe(0)
+        expect(groupsAfterDeletion.length).toBe(0)
     })
 
 
