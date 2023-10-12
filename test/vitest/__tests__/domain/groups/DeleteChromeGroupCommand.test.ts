@@ -39,7 +39,7 @@ describe('DeleteChromeGroupCommand', () => {
 
     it('removes group by title', async () => {
         useGroupsStore().initialize(db)
-        useGroupsStore().persistGroup(ChromeApi.createChromeTabGroupObject(1, "groupName", 'grey' as chrome.tabGroups.ColorEnum))
+        await useGroupsStore().persistGroup(ChromeApi.createChromeTabGroupObject(1, "groupName", 'grey' as chrome.tabGroups.ColorEnum))
 
         const groups = await  db.getGroups()
         expect(groups.length).toBe(1)

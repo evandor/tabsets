@@ -167,15 +167,14 @@ export const useGroupsStore = defineStore('groups', () => {
         return undefined
     }
 
-    function persistGroup(group: chrome.tabGroups.TabGroup) {
+    async function persistGroup(group: chrome.tabGroups.TabGroup) {
         if (group.title) {
-            storage.getGroups().then(existingGroups => {
-                if (existingGroups.findIndex(g => g.title === group.title) < 0) {
-                    storage.addGroup(JSON.parse(JSON.stringify(group)) as chrome.tabGroups.TabGroup)
-                } else {
-                    console.debug("group '" + group.title + "' exists already")
-                }
-            })
+            const existingGroups = await storage.getGroups()
+            if (existingGroups.findIndex(g => g.title === group.title) < 0) {
+                storage.addGroup(JSON.parse(JSON.stringify(group)) as chrome.tabGroups.TabGroup)
+            } else {
+                console.debug("group '" + group.title + "' exists already")
+            }
         }
     }
 
