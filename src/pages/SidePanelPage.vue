@@ -109,7 +109,7 @@
 
 <script lang="ts" setup>
 
-import {onMounted, onUnmounted, ref, watchEffect} from "vue";
+import {onMounted, onUnmounted, ref, watch, watchEffect} from "vue";
 import {useTabsStore} from "src/stores/tabsStore";
 import {Tab} from "src/models/Tab";
 import _ from "lodash"
@@ -300,31 +300,35 @@ const getTabsetOrder =
       }
     ]
 
-watchEffect(() => {
-  if (usePermissionsStore().hasFeature(FeatureIdent.SPACES)) {
-    const currentSpace = useSpacesStore().space
-    tabsets.value = _.sortBy(
-        _.filter([...tabsStore.tabsets.values()], (ts: Tabset) => {
-          if (currentSpace) {
-            if (ts.spaces.indexOf(currentSpace.id) < 0) {
-              return false
-            }
-          }
-          return ts.status !== TabsetStatus.DELETED &&
-              ts.status !== TabsetStatus.HIDDEN &&
-              ts.status !== TabsetStatus.ARCHIVED
-        }),
-        getTabsetOrder, ["asc"])
-  } else {
-    tabsets.value = _.sortBy(
-        _.filter([...tabsStore.tabsets.values()],
-            (ts: Tabset) => ts.status !== TabsetStatus.DELETED
-                && ts.status !== TabsetStatus.HIDDEN &&
-                ts.status !== TabsetStatus.ARCHIVED),
-        getTabsetOrder, ["asc"])
-  }
-  console.log(" *** watchEffect ***", tabsets.value)
-})
+
+watch(
+    tabsStore.tabsets,
+    (ts: Map<string, Tabset>) => {
+      if (usePermissionsStore().hasFeature(FeatureIdent.SPACES)) {
+        const currentSpace = useSpacesStore().space
+        tabsets.value = _.sortBy(
+            _.filter([...ts.values()], (ts: Tabset) => {
+              if (currentSpace) {
+                if (ts.spaces.indexOf(currentSpace.id) < 0) {
+                  return false
+                }
+              }
+              return ts.status !== TabsetStatus.DELETED &&
+                  ts.status !== TabsetStatus.HIDDEN &&
+                  ts.status !== TabsetStatus.ARCHIVED
+            }),
+            getTabsetOrder, ["asc"])
+      } else {
+        tabsets.value = _.sortBy(
+            _.filter([...ts.values()],
+                (ts: Tabset) => ts.status !== TabsetStatus.DELETED
+                    && ts.status !== TabsetStatus.HIDDEN &&
+                    ts.status !== TabsetStatus.ARCHIVED),
+            getTabsetOrder, ["asc"])
+      }
+      console.log(" *** watch ***", tabsets.value  )
+    }, {deep: true}
+)
 
 
 function inIgnoredMessages(message: any) {
@@ -632,8 +636,8 @@ const headerStyle = (tabset: Tabset) => {
 }
 
 .q-item__section--avatar {
-  min-width:46px !important;
-  padding-right:12px !important;
-  margin-bottom:14px;
+  min-width: 46px !important;
+  padding-right: 12px !important;
+  margin-bottom: 14px;
 }
 </style>

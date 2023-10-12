@@ -39,7 +39,7 @@ async function setCurrentTab() {
     } else {
       // Seems to be necessary when creating a new chrome group
       const tabs2 = await chrome.tabs.query({active: true})
-        console.log("setting current tab II", tabs2)
+        //console.log("setting current tab II", tabs2)
         if (tabs2 && tabs2[0]) {
           useTabsStore().setCurrentChromeTab(tabs2[0] as unknown as chrome.tabs.Tab)
         }
@@ -268,19 +268,21 @@ class ChromeListeners {
       this.handleUpdateInjectScripts(tabsStore.pendingTabset as Tabset, info, chromeTab)
 
       // handle existing tabs
-      const matchingTabs = useTabsStore().tabsForUrl(chromeTab.url || '')
-      for (const t of matchingTabs) {
-        // we care only about actually setting a group, not about removal
-        if (info.groupId && info.groupId >= 0) {
-          console.log(" --- updating existing tabs for url: ", chromeTab.url, t, info)
-          t.groupId = info.groupId
-          t.groupName = useGroupsStore().currentGroupForId(info.groupId)?.title || '???'
-          t.updated = new Date().getTime()
-          const tabset = tabsStore.tabsetFor(t.id)
-          if (tabset) {
-            await useTabsetService().saveTabset(tabset)
+      if (usePermissionsStore().hasFeature(FeatureIdent.TAB_GROUPS)) {
+          const matchingTabs = useTabsStore().tabsForUrl(chromeTab.url || '')
+          for (const t of matchingTabs) {
+            // we care only about actually setting a group, not about removal
+            if (info.groupId && info.groupId >= 0) {
+              console.log(" --- updating existing tabs for url: ", chromeTab.url, t, info)
+              t.groupId = info.groupId
+              t.groupName = useGroupsStore().currentGroupForId(info.groupId)?.title || '???'
+              t.updated = new Date().getTime()
+              const tabset = tabsStore.tabsetFor(t.id)
+              if (tabset) {
+                await useTabsetService().saveTabset(tabset)
+              }
+            }
           }
-        }
       }
 
       // handle sessions
@@ -310,9 +312,9 @@ class ChromeListeners {
       //console.log("updatedTab A", updatedTab)
 
       // (chrome) Group
-      console.log("updating updatedTab group for group id", updatedTab.groupId)
-      updatedTab.groupName = useGroupsStore().currentGroupForId(updatedTab.groupId)?.title || '???'
-      console.log("group set to", updatedTab.groupName)
+      //console.log("updating updatedTab group for group id", updatedTab.groupId)
+      updatedTab.groupName = useGroupsStore().currentGroupForId(updatedTab.groupId)?.title || '?'+updatedTab.groupId+'?'
+      //console.log("group set to", updatedTab.groupName)
 
       updatedTab.setHistoryFrom(existingPendingTab)
       if (existingPendingTab.url !== updatedTab.url && existingPendingTab.url !== 'chrome://newtab/') {
@@ -385,7 +387,7 @@ class ChromeListeners {
     if (scripts.length > 0 && tab.id !== null) { // && !this.injectedScripts.get(.chromeTabId)) {
 
       chrome.tabs.get(tab.id, (chromeTab: chrome.tabs.Tab) => {
-        console.log("got tab", tab)
+        //console.log("got tab", tab)
         if (!tab.url?.startsWith("chrome")) {
           scripts.forEach((script: string) => {
             console.debug("executing scripts", tab.id, script)

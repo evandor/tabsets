@@ -143,7 +143,7 @@ const doShowSuggestionButton = ref(false)
 
 watchEffect(() => {
   const suggestions = useSuggestionsStore().getSuggestions()
-  console.log("watcheffect for", suggestions)
+  //console.log("watcheffect for", suggestions)
   showSuggestionButton.value =
       doShowSuggestionButton.value ||
       (useUiStore().sidePanelActiveViewIs(SidePanelView.MAIN) &&

@@ -140,15 +140,15 @@
             <span v-if="props.sorting === TabSorting.AGE">
               <q-icon name="arrow_right" size="16px"/>
            </span>
-            <template v-if="props.tab.groupName && usePermissionsStore().hasFeature(FeatureIdent.TAB_GROUPS)">
-              Group <em>{{ props.tab.groupName }}</em>
+            <template v-if="groupName && usePermissionsStore().hasFeature(FeatureIdent.TAB_GROUPS)">
+              Group <em>{{ groupName }}</em>
               <q-icon name="arrow_drop_down" class="q-mr-none" size="xs" color="text-grey-5"/>
               <q-menu :offset="[0,10]">
                 <q-list dense>
                   <q-item v-if="groups.size > 1" class="text-grey-5" style="font-size: smaller">
                     Change group to...
                   </q-item>
-                  <q-item clickable v-for="group in groupsWithout(props.tab.groupName)"
+                  <q-item clickable v-for="group in groupsWithout(groupName)"
                           @click="switchGroup(group)"
                           style="font-size: smaller">
                     ...{{ group.title }}
@@ -158,7 +158,7 @@
                     Unset Group
                   </q-item>
                   <q-separator />
-                  <q-item clickable style="font-size: smaller" @click="removeGroup(props.tab.groupName)">
+                  <q-item clickable style="font-size: smaller" @click="removeGroup(groupName)">
                     Remove Group
                   </q-item>
                 </q-list>
@@ -240,6 +240,7 @@ const imgFromBlob = ref<string>("")
 const hoveredTab = ref<string | undefined>(undefined)
 const tsBadges = ref<object[]>([])
 const newState = ref(false)
+const groupName = ref<string | undefined>(undefined)
 const groups = ref<Map<string, chrome.tabGroups.TabGroup>>(new Map())
 
 onMounted(() => {
@@ -271,6 +272,10 @@ onMounted(() => {
 
 watchEffect(() => {
   groups.value = useGroupsStore().tabGroups
+})
+
+watchEffect(() => {
+  groupName.value = props.tab?.groupName
 })
 
 watchEffect(() => {

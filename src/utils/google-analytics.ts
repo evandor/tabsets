@@ -99,7 +99,7 @@ class Analytics {
                     }
                 ]
             }
-            console.log("ga: fireEvent", payload)
+            //console.log("ga: fireEvent", payload)
             const response = await fetch(
                 `${
                     this.debug ? GA_DEBUG_ENDPOINT : GA_ENDPOINT

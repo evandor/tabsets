@@ -45,6 +45,7 @@ export const useGroupsStore = defineStore('groups', () => {
             chrome.tabGroups.query({}, (groups) => {
 
                 currentTabGroups.value = groups
+                console.log("initializing current tab groups with", currentTabGroups.value)
 
                 // adding potentially new groups to storage
                 const res: Promise<any>[] = groups.flatMap((group: chrome.tabGroups.TabGroup) => {
@@ -99,8 +100,8 @@ export const useGroupsStore = defineStore('groups', () => {
                 // update color changes
                 for (const g of groups) {
                     const tabGroup =  findGroup([...tabGroups.value.values()], undefined, g.title)
-                    console.log("found tabGroup", tabGroup, g)
                     if (tabGroup && tabGroup.color !== g.color) {
+                        console.log("updating group", tabGroup, g)
                         storage.updateGroup(g)
                     }
                 }
