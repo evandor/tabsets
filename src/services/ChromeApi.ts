@@ -345,6 +345,16 @@ class ChromeApi {
     }
   }
 
+  createChromeTabGroupObject(id: number, title: string, color: chrome.tabGroups.ColorEnum) {
+    return {
+      id: id,
+      title: title,
+      color: color,
+      collapsed: false,
+      windowId: 1
+    }
+  }
+
   private chromeTabsCreateAsync(createProperties: object): Promise<chrome.tabs.Tab> {
     return new Promise((resolve, reject) => {
       chrome.tabs.create(createProperties, tab => {

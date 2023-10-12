@@ -488,6 +488,25 @@ class IndexedDbPersistenceService implements PersistenceService {
     return this.db.delete('spaces', spaceId)
   }
 
+  addGroup(group: chrome.tabGroups.TabGroup): Promise<any> {
+    return this.db.add('groups', group, group.title)
+        .catch((err) => {
+          console.log("error adding group", group, err)
+        })
+  }
+
+  updateGroup(group: chrome.tabGroups.TabGroup): Promise<any> {
+    return this.db.put('groups', group, group.title)
+  }
+
+  getGroups(): Promise<chrome.tabGroups.TabGroup[]> {
+    return this.db.getAll('groups')
+  }
+
+  async deleteGroupByTitle(title: string): Promise<void> {
+    return this.db.delete('groups', title)
+  }
+
   private async initDatabase(dbName: string): Promise<IDBPDatabase> {
     console.debug("about to initialize indexedDB")
     return await openDB(dbName, INDEX_DB_VERSION, {
@@ -545,6 +564,14 @@ class IndexedDbPersistenceService implements PersistenceService {
         if (!db.objectStoreNames.contains('blobs')) {
           console.log("creating blobs suggestions")
           db.createObjectStore('blobs');
+        }
+        if (!db.objectStoreNames.contains('groups')) {
+          console.log("creating db groups")
+          db.createObjectStore('groups');
+        }
+        if (!db.objectStoreNames.contains('windows')) {
+          console.log("creating db windows")
+          db.createObjectStore('windows');
         }
       },
     });

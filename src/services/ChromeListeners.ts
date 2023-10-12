@@ -16,6 +16,7 @@ import {useSuggestionsStore} from "src/stores/suggestionsStore";
 import {FeatureIdent} from "src/models/AppFeature";
 import {Extractor, Extractors, ExtractorType} from "src/config/Extractors";
 import {useUtils} from "src/services/Utils";
+import {useGroupsStore} from "stores/groupsStore";
 
 const {
   saveCurrentTabset,
@@ -29,13 +30,20 @@ const {
 
 const {sanitize} = useUtils()
 
-function setCurrentTab() {
-  chrome.tabs.query({active: true, lastFocusedWindow: true}, (tabs) => {
-    //console.log("setting current tab", tabs)
+async function setCurrentTab() {
+  const tabs = await chrome.tabs.query({active: true, lastFocusedWindow: true})
+
+    console.debug("setting current tab", tabs)
     if (tabs && tabs[0]) {
       useTabsStore().setCurrentChromeTab(tabs[0] as unknown as chrome.tabs.Tab)
+    } else {
+      // Seems to be necessary when creating a new chrome group
+      const tabs2 = await chrome.tabs.query({active: true})
+        //console.log("setting current tab II", tabs2)
+        if (tabs2 && tabs2[0]) {
+          useTabsStore().setCurrentChromeTab(tabs2[0] as unknown as chrome.tabs.Tab)
+        }
     }
-  });
 }
 
 function annotationScript (tabId: string, annotations: any[]) {
@@ -154,14 +162,14 @@ class ChromeListeners {
 
   throttleOnePerSecond = throttledQueue(1, 1000, true)
 
-  initListeners() {
+  async initListeners() {
 
     if (process.env.MODE === 'bex') {
       console.debug("initializing chrome tab listeners")
 
       chrome.runtime.setUninstallURL("https://tabsets.web.app/#/uninstall")
 
-      setCurrentTab()
+      await setCurrentTab()
 
       chrome.tabs.onCreated.addListener((tab: chrome.tabs.Tab) => this.onCreated(tab))
       chrome.tabs.onUpdated.addListener((number, info, tab) => this.onUpdated(number, info, tab))
@@ -234,14 +242,14 @@ class ChromeListeners {
     }
   }
 
-  onUpdated(number: number, info: chrome.tabs.TabChangeInfo, chromeTab: chrome.tabs.Tab) {
+  async onUpdated(number: number, info: chrome.tabs.TabChangeInfo, chromeTab: chrome.tabs.Tab) {
     if (!useTabsStore().listenersOn) {
       console.debug(`onUpdated:   tab ${number}: >>> listeners off, returning <<<`)
       return
     }
 
-    // get current tab
-    setCurrentTab()
+    // set current chrome tab in tabsStore
+    await setCurrentTab()
 
     const selfUrl = chrome.runtime.getURL("")
     if (chromeTab.url?.startsWith(selfUrl)) {
@@ -254,8 +262,30 @@ class ChromeListeners {
 
     if (!info.status || (Object.keys(info).length > 1)) {
       console.debug(`onUpdated:   tab ${number}: >>> ${JSON.stringify(info)} <<<`)
+
+      // handle pending Tabset
       this.handleUpdate(tabsStore.pendingTabset as Tabset, chromeTab)
       this.handleUpdateInjectScripts(tabsStore.pendingTabset as Tabset, info, chromeTab)
+
+      // handle existing tabs
+      if (usePermissionsStore().hasFeature(FeatureIdent.TAB_GROUPS)) {
+          const matchingTabs = useTabsStore().tabsForUrl(chromeTab.url || '')
+          for (const t of matchingTabs) {
+            // we care only about actually setting a group, not about removal
+            if (info.groupId && info.groupId >= 0) {
+              console.log(" --- updating existing tabs for url: ", chromeTab.url, t, info)
+              t.groupId = info.groupId
+              t.groupName = useGroupsStore().currentGroupForId(info.groupId)?.title || '???'
+              t.updated = new Date().getTime()
+              const tabset = tabsStore.tabsetFor(t.id)
+              if (tabset) {
+                await useTabsetService().saveTabset(tabset)
+              }
+            }
+          }
+      }
+
+      // handle sessions
       let foundSession = false
       _.forEach([...tabsStore.tabsets.values()], (ts: Tabset) => {
         if (ts.type === TabsetType.SESSION) {
@@ -278,6 +308,14 @@ class ChromeListeners {
     if (index >= 0) {
       const existingPendingTab = tabset.tabs[index]
       const updatedTab = new Tab(uid(), tab)
+
+      //console.log("updatedTab A", updatedTab)
+
+      // (chrome) Group
+      //console.log("updating updatedTab group for group id", updatedTab.groupId)
+      updatedTab.groupName = useGroupsStore().currentGroupForId(updatedTab.groupId)?.title || '?'+updatedTab.groupId+'?'
+      //console.log("group set to", updatedTab.groupName)
+
       updatedTab.setHistoryFrom(existingPendingTab)
       if (existingPendingTab.url !== updatedTab.url && existingPendingTab.url !== 'chrome://newtab/') {
         if (existingPendingTab.url) {
@@ -287,15 +325,29 @@ class ChromeListeners {
       const urlExistsAlready = _.filter(tabset.tabs, pT => pT.url === tab.url).length >= 2
       if (urlExistsAlready) {
         tabset.tabs.splice(index, 1);
+        //console.log("Tabset spliced", tabset.tabs)
       } else {
         tabset.tabs.splice(index, 1, updatedTab);
+        //console.log("Tabset spliced and deleted", tabset.tabs)
       }
 
     } else {
       console.log(`onUpdated: tab ${tab.id}: pending tab cannot be found in ${tabset.name}`)
       if (tab.url !== undefined) {
+
+        const newTab = new Tab(uid(), tab)
+
+        // (chrome) Group
+        if (tab.groupId >= 0) {
+          console.log("updating updatedTab group for group id", tab.groupId)
+          //newTab.group = useGroupsStore().groupForId(tab.groupId)
+          //const g = await chrome.tabGroups.get(tab.groupId)
+
+          newTab.groupName = useGroupsStore().currentGroupForId(tab.groupId)?.title || '???'
+        }
+
         console.log(`onUpdated: tab ${tab.id}: missing tab added for url ${tab.url}`)
-        tabset.tabs.push(new Tab(uid(), tab))
+        tabset.tabs.push(newTab)
       }
     }
   }
@@ -335,10 +387,10 @@ class ChromeListeners {
     if (scripts.length > 0 && tab.id !== null) { // && !this.injectedScripts.get(.chromeTabId)) {
 
       chrome.tabs.get(tab.id, (chromeTab: chrome.tabs.Tab) => {
-        console.log("got tab", tab)
+        //console.log("got tab", tab)
         if (!tab.url?.startsWith("chrome")) {
           scripts.forEach((script: string) => {
-            console.info("executing scripts", tab.id, script)
+            console.debug("executing scripts", tab.id, script)
 
 
             // @ts-ignore
@@ -374,12 +426,12 @@ class ChromeListeners {
     tabsStore.loadTabs('onReplaced');
   }
 
-  onActivated(info: chrome.tabs.TabActiveInfo) {
+  async onActivated(info: chrome.tabs.TabActiveInfo) {
     this.eventTriggered()
     const tabsStore = useTabsStore()
     console.debug(`onActivated: tab ${info.tabId} activated: >>> ${JSON.stringify(info)}`)
 
-    setCurrentTab()
+    await setCurrentTab()
 
     chrome.tabs.get(info.tabId, tab => {
       const url = tab.url

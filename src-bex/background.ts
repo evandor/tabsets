@@ -6,7 +6,7 @@ import OnInstalledReason = chrome.runtime.OnInstalledReason;
 const updateTrigger = 10
 
 // https://developer.chrome.com/docs/extensions/mv3/tut_analytics/
-console.log("ga: installing google analytics")
+//console.log("ga: installing google analytics")
 
 addEventListener('unhandledrejection', async (event) => {
   console.log("ga: fire error event")

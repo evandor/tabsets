@@ -19,13 +19,13 @@
             v-model="tab"
             no-caps>
       <q-tab name="appearance" label="Appearance"/>
-      <q-tab name="permissions" label="Permissions" v-if="devEnabled"/>
       <q-tab name="thirdparty" label="Third Party Services"/>
       <!--      <q-tab name="ignored" label="Ignored Urls"/>-->
       <q-tab name="archived" label="Archived Tabsets"/>
       <q-tab name="search" label="Search Engine" v-if="devEnabled"/>
       <q-tab name="importExport" label="Import/Export"/>
       <!--      <q-tab name="logs" label="Log: Errors & Warnings"/>-->
+      <q-tab name="internals" label="Internals" v-if="devEnabled"/>
       <q-tab name="featureToggles" label="Feature Toggles"/>
     </q-tabs>
   </div>
@@ -139,12 +139,13 @@
 
   </div>
 
-  <div v-if="tab === 'permissions'">
+  <div v-if="tab === 'internals'">
 
     <div class="q-pa-md q-gutter-sm">
-      <q-banner rounded class="bg-grey-1 text-primary">On this settings page, you can see the active permissions
-         for the tabsets extension.
-      </q-banner>
+
+      <div class="text-h6">Permissions</div>
+
+      <q-banner rounded class="bg-grey-1 text-primary">The active permissions for the Tabset Extension</q-banner>
 
       <div class="row items-baseline q-ma-md">
         <div class="col-3">
@@ -163,6 +164,31 @@
           {{ usePermissionsStore().permissions?.origins }}
         </div>
       </div>
+
+      <div class="text-h6">Groups</div>
+
+      <q-banner rounded class="bg-grey-1 text-primary">All Chrome Groups, active and non-active</q-banner>
+
+      <div class="row items-baseline q-ma-md">
+        <div class="col-3">
+          All Groups
+        </div>
+        <div class="col-9">
+          {{ useGroupsStore().tabGroups }}
+        </div>
+      </div>
+
+      <q-banner rounded class="bg-grey-1 text-primary">All active Chrome Groups</q-banner>
+
+      <div class="row items-baseline q-ma-md">
+        <div class="col-3">
+          Active Groups
+        </div>
+        <div class="col-9">
+          {{ useGroupsStore().currentTabGroups }}
+        </div>
+      </div>
+
 
     </div>
 
@@ -353,6 +379,7 @@ import {useLogsStore} from "../stores/logsStore";
 import OpenRightDrawerWidget from "components/widgets/OpenRightDrawerWidget.vue";
 import {useUtils} from "src/services/Utils";
 import Analytics from "src/utils/google-analytics";
+import {useGroupsStore} from "../stores/groupsStore";
 
 const {inBexMode, sendMsg} = useUtils()
 

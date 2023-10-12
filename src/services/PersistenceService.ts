@@ -70,6 +70,11 @@ interface PersistenceService {
   getActiveFeatures(): Promise<string[]>
   saveActiveFeatures(val: string[]): any
 
+  addGroup(group: chrome.tabGroups.TabGroup): Promise<any>
+  updateGroup(group: chrome.tabGroups.TabGroup): Promise<any>
+  getGroups(): Promise<chrome.tabGroups.TabGroup[]>
+  deleteGroupByTitle(title: string): Promise<void>
+
   clear(name: string):any
 }
 

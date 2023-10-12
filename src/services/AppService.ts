@@ -46,11 +46,6 @@ class AppService {
                 ChromeBookmarkListeners.initListeners()
                 bookmarksStore.init()
                 BookmarksService.init()
-
-                if (usePermissionsStore().hasFeature(FeatureIdent.TAB_GROUPS)) {
-                    groupsStore.initialize()
-                    groupsStore.initListeners()
-                }
             })
         settingsStore.initialize(useQuasar().localStorage);
         tabsStore.initialize(useQuasar().localStorage);
@@ -75,6 +70,12 @@ class AppService {
                             .then(() => {
                                 MHtmlService.init()
                                 ChromeApi.init()
+
+                                if (usePermissionsStore().hasFeature(FeatureIdent.TAB_GROUPS)) {
+                                    groupsStore.initialize(useDB(undefined).db)
+                                    groupsStore.initListeners()
+                                }
+
                                 // @ts-ignore
                                 if (tabsStore.tabsets.size === 0) {
                                     console.log("pushing to sidepanel/welcome")

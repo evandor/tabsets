@@ -14,7 +14,7 @@ class NavigationService {
     async openOrCreateTab(
         withUrl: string,
         matcher: string | undefined = undefined,
-        group: chrome.tabGroups.TabGroup | undefined = undefined
+        group: string | undefined = undefined
     ) {
         const useWindowIdent = useTabsStore().getCurrentTabset?.window || 'current'
         console.log(`opening url ${withUrl} in window ${useWindowIdent}, group: ${group}, mode: ${process.env.MODE}`)
@@ -24,10 +24,13 @@ class NavigationService {
             console.log("existingWindow", existingWindow)
             if (!existingWindow) {
                 // create a new window with a single url
-                chrome.windows.create({url: withUrl}, (callback) => {
-                    console.log("callback", callback)
-                    if (callback) {
-                        useWindowsStore().assignWindow(useWindowIdent, callback.id || 0)
+                chrome.windows.create({url: withUrl}, (window) => {
+                    console.log("window", window)
+                    if (window) {
+                        useWindowsStore().assignWindow(useWindowIdent, window.id || 0)
+                        if (window.id && window.tabs && window.tabs.length > 0) {
+                            this.handleGroup(group, window.id, window.tabs[0]);
+                        }
                     }
                 })
                 return
@@ -77,16 +80,16 @@ class NavigationService {
 
                                 this.handleGroup(group, useWindowId, r);
 
-                                console.log("sending Message highlightSelections")
-                                chrome.runtime.sendMessage({
-                                    msg: "highlightSelections",
-                                    selections: selections
-                                }, (res: any) => {
-                                    //console.log("got response1", res)
-                                    if (chrome.runtime.lastError) {
-                                        console.warn("got runtime error", chrome.runtime.lastError)
-                                    }
-                                })
+                                // console.log("sending Message highlightSelections")
+                                // chrome.runtime.sendMessage({
+                                //     msg: "highlightSelections",
+                                //     selections: selections
+                                // }, (res: any) => {
+                                //     //console.log("got response1", res)
+                                //     if (chrome.runtime.lastError) {
+                                //         console.warn("got runtime error", chrome.runtime.lastError)
+                                //     }
+                                // })
                             }
                         }
                     });
@@ -131,10 +134,10 @@ class NavigationService {
         }
     }
 
-    private handleGroup(group: chrome.tabGroups.TabGroup | undefined, useWindowId: number, r: chrome.tabs.Tab) {
+    private handleGroup(group: string | undefined, useWindowId: number, r: chrome.tabs.Tab) {
         if (group && usePermissionsStore().hasFeature(FeatureIdent.TAB_GROUPS) && chrome?.tabs?.group) {
-            console.log("handling Group", group)
-            const optionalGroup = useGroupsStore().groupFor(group.id, group.title)
+            console.log("handling current Group", group)
+            const optionalGroup = useGroupsStore().currentGroupForName(group)
             if (!optionalGroup) {
                 const props = {
                     createProperties: {
@@ -145,10 +148,11 @@ class NavigationService {
                 console.log("group not found, creating with", props)
                 chrome.tabs.group(props, groupId => {
                     console.log("groupId", groupId)
+                    const color = useGroupsStore().groupForName(group)?.color || 'grey'
                     chrome.tabGroups.update(groupId, {
                         collapsed: false,
-                        color: group.color,
-                        title: group.title
+                        color: color,
+                        title: group
                     }, c => console.log("c", c))
                 })
             } else {
