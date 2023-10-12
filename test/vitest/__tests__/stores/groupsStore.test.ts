@@ -16,7 +16,7 @@ installQuasarPlugin();
 
 vi.mock('vue-router')
 
-describe('DeleteChromeGroupCommand', () => {
+describe('GroupsStore', () => {
 
     let db = null as unknown as PersistenceService
 
@@ -32,23 +32,25 @@ describe('DeleteChromeGroupCommand', () => {
         db.clear("groups")
     })
 
-    it('command has proper toString representation', async () => {
-        const cmd = await new DeleteChromeGroupCommand("groupName")
-        expect(cmd.toString()).toBe("DeleteChromeGroupCommand: {groupTitle=groupName}")
-    })
-
-    it('removes group by title', async () => {
+    it('persists group', async () => {
         await useGroupsStore().initialize(db)
         await useGroupsStore().persistGroup(ChromeApi.createChromeTabGroupObject(1, "groupName", 'grey' as chrome.tabGroups.ColorEnum))
 
         const groups = await  db.getGroups()
         expect(groups.length).toBe(1)
-
-        await new DeleteChromeGroupCommand("groupName").execute()
-
-        const groupsAfterDeletion = await  db.getGroups()
-        expect(groupsAfterDeletion.length).toBe(0)
     })
+
+    it('persists group with changing title', async () => {
+        await useGroupsStore().initialize(db)
+        await useGroupsStore().persistGroup(ChromeApi.createChromeTabGroupObject(1, "ab", 'grey' as chrome.tabGroups.ColorEnum))
+        await useGroupsStore().persistGroup(ChromeApi.createChromeTabGroupObject(1, "abc", 'grey' as chrome.tabGroups.ColorEnum))
+
+        const groups = await  db.getGroups()
+        expect(groups.length).toBe(1)
+        expect(groups[0].title).toBe("abc")
+    })
+
+
 
 
 

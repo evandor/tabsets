@@ -165,13 +165,27 @@ export const useGroupsStore = defineStore('groups', () => {
         return undefined
     }
 
+    /**
+     * persisting a group means adding it making sure it does not exist, but based on its ID
+     * @param group
+     */
     async function persistGroup(group: chrome.tabGroups.TabGroup) {
         if (group.title) {
+            console.log("persisting group", group)
             const existingGroups = await storage.getGroups()
-            if (existingGroups.findIndex(g => g.title === group.title) < 0) {
+            console.log("got existing groups", existingGroups)
+
+            const index = existingGroups.findIndex(g => {
+                return g.id === group.id && g.title !== group.title
+            })
+            if ( index < 0) {
+                // no group exits yet with same id and different title
                 await storage.addGroup(JSON.parse(JSON.stringify(group)) as chrome.tabGroups.TabGroup)
             } else {
-                console.debug("group '" + group.title + "' exists already")
+                const existingGroup = existingGroups[index]
+                console.debug("replacing group", existingGroup,group)
+                await storage.deleteGroupByTitle(existingGroup.title || '')
+                await persistGroup(group)
             }
         }
     }

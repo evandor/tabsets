@@ -489,6 +489,7 @@ class IndexedDbPersistenceService implements PersistenceService {
   }
 
   addGroup(group: chrome.tabGroups.TabGroup): Promise<any> {
+    console.log("adding group", group)
     return this.db.add('groups', group, group.title)
         .catch((err) => {
           console.log("error adding group", group, err)
@@ -496,6 +497,7 @@ class IndexedDbPersistenceService implements PersistenceService {
   }
 
   updateGroup(group: chrome.tabGroups.TabGroup): Promise<any> {
+    console.log("updating group", group)
     return this.db.put('groups', group, group.title)
   }
 
