@@ -2,7 +2,7 @@
   "name": "tabsets",
   "version": "0.4.7",
   "description": "Bookmarks next generation - Tabsets is a browser extension which helps you get your links really organized.",
-  "productName": "Tabsets - Manage Tabs and Bookmarks with Ease",
+  "productName": "Tabsets",
   "author": "evandor <evandor@gmail.com>",
   "private": true,
   "scripts": {
