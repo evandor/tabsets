@@ -6,7 +6,7 @@ import {uid} from "quasar";
 import throttledQueue from 'throttled-queue';
 // @ts-ignore
 import {convert} from "html-to-text"
-import {useWindowsStore} from "src/stores/windowsStores";
+import {useWindowsStore} from "src/stores/windowsStore";
 import {useTabsetService} from "src/services/TabsetService2";
 import {useSettingsStore} from "src/stores/settingsStore";
 import {usePermissionsStore} from "src/stores/permissionsStore";

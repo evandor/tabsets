@@ -41,7 +41,7 @@ import {ref, watchEffect} from "vue";
 import {useUiStore} from "stores/uiStore";
 import TabsetService from "src/services/TabsetService";
 import CurrentTabElementHelper from "pages/sidepanel/helper/CurrentTabElementHelper.vue";
-import {useWindowsStore} from "stores/windowsStores";
+import {useWindowsStore} from "src/stores/windowsStore";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {HideCurrentTabBoxCommand} from "src/domain/commands/ui/HideCurrentTabBoxCommand";
 

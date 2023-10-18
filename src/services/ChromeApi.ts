@@ -355,6 +355,21 @@ class ChromeApi {
     }
   }
 
+  createChromeWindowObject(id: number, top: number, left: number) {
+    return {
+      id,
+      alwaysOnTop: false,
+      focused: true,
+      incognito: false,
+      height: 400,
+      width:600,
+      top: top,
+      left: left,
+      state: 'normal' as chrome.windows.windowStateEnum,
+      type: 'normal' as chrome.windows.windowTypeEnum
+    }
+  }
+
   private chromeTabsCreateAsync(createProperties: object): Promise<chrome.tabs.Tab> {
     return new Promise((resolve, reject) => {
       chrome.tabs.create(createProperties, tab => {

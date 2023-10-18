@@ -21,6 +21,7 @@ import {cloudFunctionsApi} from "src/api/cloudfunctionsApi";
 import {Category} from "src/models/Category";
 import {RequestInfo} from "src/models/RequestInfo";
 import {useSuggestionsStore} from "stores/suggestionsStore";
+import {Window} from "src/models/Window";
 
 class IndexedDbPersistenceService implements PersistenceService {
   private db: IDBPDatabase = null as unknown as IDBPDatabase
@@ -489,10 +490,12 @@ class IndexedDbPersistenceService implements PersistenceService {
   }
 
   addGroup(group: chrome.tabGroups.TabGroup): Promise<any> {
-    console.log("adding group", group)
+    console.debug("adding group", group)
     return this.db.add('groups', group, group.title)
         .catch((err) => {
-          console.log("error adding group", group, err)
+          if (!err.toString().indexOf('Key already exists')) {
+            console.log("error adding group", group, err)
+          }
         })
   }
 
@@ -507,6 +510,68 @@ class IndexedDbPersistenceService implements PersistenceService {
 
   async deleteGroupByTitle(title: string): Promise<void> {
     return this.db.delete('groups', title)
+  }
+
+  /*** Windows Management ***/
+
+  addWindow(window: Window): Promise<any> {
+    console.debug("adding window", window)
+    return this.db.add('windows', window, window.id)
+        .catch((err) => {
+          if (!err.toString().indexOf('Key already exists')) {
+            console.log("error adding window", window, err)
+          }
+        })
+  }
+
+  // updateGroup(group: chrome.tabGroups.TabGroup): Promise<any> {
+  //   console.log("updating group", group)
+  //   return this.db.put('groups', group, group.title)
+  // }
+
+  getWindows(): Promise<Window[]> {
+    return this.db.getAll('windows')
+  }
+
+  getWindow(windowId: number): Promise<Window | undefined> {
+    return this.db.get('windows', windowId)
+  }
+
+  async removeWindow(windowId: number): Promise<void> {
+    return this.db.delete('windows', windowId)
+  }
+
+  async updateWindow(window: Window): Promise<void> {
+    if (!window.id) {
+      return Promise.reject("window.id not set")
+    }
+    const windowFromDb: Window = await this.db.get('windows', window.id)
+    if (!windowFromDb) {
+      return Promise.reject("could not find window for id " +  window.id)
+    }
+    console.log("got windowFromDb", windowFromDb)
+    if (windowFromDb.title) {
+      const asJson = JSON.parse(JSON.stringify(window))
+      asJson['title'] = windowFromDb.title
+      delete asJson['tabs']
+      console.log("storing window1", asJson, window.id)
+      await this.db.put('windows', asJson, window.id)
+    } else {
+      await this.db.put('windows', window, window.id)
+    }
+  }
+
+  async upsertWindow(window: Window, name: string): Promise<void> {
+    try {
+      console.log("about to rename window", name, window)
+      const asJson = JSON.parse(JSON.stringify(window))
+      asJson['title'] = name
+      delete asJson['tabs']
+      console.log("storing window", asJson, window.id)
+      await this.db.put('windows', asJson, window.id)
+    } catch (err) {
+      console.log("error renaming window", err)
+    }
   }
 
   private async initDatabase(dbName: string): Promise<IDBPDatabase> {
@@ -591,29 +656,6 @@ class IndexedDbPersistenceService implements PersistenceService {
 
   saveStats(date: string, dataset: StatsEntry) {
     this.db.put('stats', dataset, date)
-  }
-
-  async getStats(): Promise<StatsEntry[]> {
-    if (this.db) {
-      const store = this.db.transaction(["stats"]).objectStore("stats");
-      const res: StatsEntry[] = []
-      let cursor = await store.openCursor()
-      while (cursor) {
-        let key = cursor.primaryKey;
-        let value = cursor.value;
-        const logEntry = new StatsEntry(
-          key as string,
-          value.tabsets,
-          value.openTabsCount,
-          value.tabsCount,
-          value.bookmarksCount,
-          value.storageUsage)
-        res.push(logEntry)
-        cursor = await cursor.continue();
-      }
-      return res
-    }
-    return Promise.reject('db not available (yet)')
   }
 
   getNotifications(onlyNew: boolean = true): Promise<Notification[]> {

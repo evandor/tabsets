@@ -76,10 +76,7 @@ import _ from "lodash";
 import {AddTabToTabsetCommand} from "src/domain/tabs/AddTabToTabset";
 import ShortUrl from "components/utils/ShortUrl.vue";
 import {useUtils} from "src/services/Utils";
-import {SelectTabsetCommand} from "src/domain/tabsets/SelectTabset";
-import {useSpacesStore} from "stores/spacesStore";
-import {Tabset} from "src/models/Tabset";
-import {useWindowsStore} from "stores/windowsStores";
+import {useWindowsStore} from "src/stores/windowsStore";
 import {HideCurrentTabBoxCommand} from "src/domain/commands/ui/HideCurrentTabBoxCommand";
 import {useRouter} from "vue-router";
 

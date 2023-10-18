@@ -15,7 +15,7 @@ import {useSpacesStore} from "stores/spacesStore";
 import {useTabsStore} from "stores/tabsStore";
 import {useSettingsStore} from "stores/settingsStore";
 import {useBookmarksStore} from "stores/bookmarksStore";
-import {useWindowsStore} from "stores/windowsStores";
+import {useWindowsStore} from "src/stores/windowsStore";
 import {useSearchStore} from "stores/searchStore";
 import {useRouter} from "vue-router";
 import {useUtils} from "src/services/Utils";
@@ -51,9 +51,6 @@ class AppService {
         tabsStore.initialize(useQuasar().localStorage);
 
         searchStore.init()
-        windowsStore.initialize()
-        // TODO best place here?
-        windowsStore.initListeners()
 
         const localStorage = useQuasar().localStorage
 
@@ -75,6 +72,10 @@ class AppService {
                                     groupsStore.initialize(useDB(undefined).db)
                                     groupsStore.initListeners()
                                 }
+
+                                windowsStore.initialize(useDB(undefined).db)
+                                windowsStore.initListeners()
+
 
                                 // @ts-ignore
                                 if (tabsStore.tabsets.size === 0) {
