@@ -108,7 +108,7 @@ import {ExecutionResult} from "src/domain/ExecutionResult";
 import {useCategoriesStore} from "stores/categoriesStore";
 import {useDB} from "src/services/usePersistenceService";
 import {CopyFromPublicCategory} from "src/domain/categories/CopyFromPublicCategory";
-import {useWindowsStore} from "stores/windowsStores";
+import {useWindowsStore} from "src/stores/windowsStore";
 import Analytics from "src/utils/google-analytics";
 
 const {inBexMode, sanitize, sendMsg} = useUtils()

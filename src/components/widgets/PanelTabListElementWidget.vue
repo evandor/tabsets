@@ -4,7 +4,7 @@
                   @mouseover="hoveredTab = tab.id"
                   @mouseleave="hoveredTab = undefined"
                   class="q-mr-sm text-right" style="justify-content:start;width:25px;max-width:25px">
-    <div class="bg-grey-3 q-pa-xs" style="border:0 solid grey;border-radius:3px">
+    <div class="bg-grey-3 q-pa-xs" :style="iconStyle()">
 
       <transition name="fade" mode="out-in">
         <div v-if="newState" key="newState">
@@ -210,7 +210,7 @@ import PanelTabListContextMenu from "components/widgets/helper/PanelTabListConte
 import _ from "lodash";
 import {formatDistance} from "date-fns";
 import {TabsetType} from "src/models/Tabset";
-import {useWindowsStore} from "stores/windowsStores";
+import {useWindowsStore} from "src/stores/windowsStore";
 import {usePermissionsStore} from "stores/permissionsStore";
 import {FeatureIdent} from "src/models/AppFeature";
 import {useUtils} from "src/services/Utils";
@@ -297,9 +297,6 @@ const nameOrTitle = (tab: Tab) => {
   if (usePermissionsStore().hasFeature(FeatureIdent.ANNOTATIONS) && tab.annotations?.length > 0) {
     nameOrTitle = "(" + tab.annotations.length + ") " + nameOrTitle
   }
-  if (isCurrentTab(props.tab as Tab)) {
-    nameOrTitle = "<span class='text-bold'>Current Tab: </span>" + nameOrTitle
-  }
   return nameOrTitle
 }
 
@@ -319,6 +316,14 @@ const isCurrentTab = (tab: Tab) => {
   }
   const windowId = useWindowsStore().currentWindow?.id || 0
   return (tabsStore.getCurrentChromeTab(windowId) || tabsStore.currentChromeTab)?.url === tab.url
+}
+
+const iconStyle = () => {
+  if (isCurrentTab(props.tab)) {
+    return "border:2px solid orange;border-radius:3px"
+  } else {
+    return "border:0px solid orange;border-radius:3px"
+  }
 }
 
 const openTabset = (badge: any) => {

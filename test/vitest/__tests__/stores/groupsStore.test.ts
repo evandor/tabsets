@@ -25,6 +25,21 @@ describe('GroupsStore', () => {
         await IndexedDbPersistenceService.init("db")
         db = useDB(undefined).db
         await useTabsetService().init(db)
+
+        // https://groups.google.com/a/chromium.org/g/chromium-extensions/c/hssoAlvluW8
+        const chromeMock = {
+            tabGroups: {
+                query: vi.fn((_queryInfo, callback) => {
+                    console.log("mocking chrome.tabGroups.query", _queryInfo)
+                    callback([]);
+                }),
+            },
+            runtime: {
+                sendMessage: vi.fn(() => {})
+            }
+        };
+
+        vi.stubGlobal('chrome', chromeMock);
     })
 
     afterEach(async() => {

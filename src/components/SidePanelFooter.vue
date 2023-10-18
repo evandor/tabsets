@@ -116,7 +116,7 @@ import NavigationService from "src/services/NavigationService";
 import SidePanelFooterLeftButton from "components/helper/SidePanelFooterLeftButton.vue";
 import {useQuasar} from "quasar";
 import {useUtils} from "src/services/Utils";
-import {useWindowsStore} from "stores/windowsStores";
+import {useWindowsStore} from "src/stores/windowsStore";
 import {useSuggestionsStore} from "stores/suggestionsStore";
 import _ from "lodash";
 import {SuggestionState, SuggestionType} from "src/models/Suggestion";
@@ -183,7 +183,7 @@ watchEffect(() => {
   if (!inBexMode()) {
     return
   }
-  const windowId = useWindowsStore().currentWindow.id || 0
+  const windowId = useWindowsStore().currentWindow?.id || 0
   currentChromeTab.value = useTabsStore().getCurrentChromeTab(windowId) || useTabsStore().currentChromeTab
 })
 

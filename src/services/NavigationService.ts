@@ -3,7 +3,7 @@ import {useNotificationsStore} from "src/stores/notificationsStore";
 import {openURL} from "quasar";
 import {useTabsStore} from "src/stores/tabsStore";
 import {useTabsetService} from "src/services/TabsetService2";
-import {useWindowsStore} from "stores/windowsStores";
+import {useWindowsStore} from "src/stores/windowsStore";
 import JsUtils from "src/utils/JsUtils";
 import {useGroupsStore} from "stores/groupsStore";
 import {usePermissionsStore} from "stores/permissionsStore";
@@ -19,15 +19,27 @@ class NavigationService {
         const useWindowIdent = useTabsStore().getCurrentTabset?.window || 'current'
         console.log(`opening url ${withUrl} in window ${useWindowIdent}, group: ${group}, mode: ${process.env.MODE}`)
 
-        const existingWindow = await useWindowsStore().windowFor(useWindowIdent)
+        const existingWindow = await useWindowsStore().currentWindowFor(useWindowIdent)
         if (useWindowIdent !== 'current') {
             console.log("existingWindow", existingWindow)
             if (!existingWindow) {
+                const createData: any = {url: withUrl}
+                const windowFromDb = await useWindowsStore().windowFor(useWindowIdent)
+                if (windowFromDb) {
+                    const w = windowFromDb.browserWindow
+                    createData['left' as keyof object]  =(w.left || 0) < 0 ? 0 : w.left
+                    createData['top' as keyof object]  = (w.top || 0) < 0 ? 0 : w.top
+                    createData['width' as keyof object]  = (w.left || -1) < 0 ? 600 : w.width
+                    createData['height' as keyof object]  = (w.top || -1) < 0 ? 400 : w.height
+                }
                 // create a new window with a single url
-                chrome.windows.create({url: withUrl}, (window) => {
+                console.log("opening new window with", createData)
+                chrome.windows.create(createData, (window) => {
                     console.log("window", window)
                     if (window) {
                         useWindowsStore().assignWindow(useWindowIdent, window.id || 0)
+                        //useWindowsStore().renameWindow(window.id || 0, useWindowIdent)
+                        useWindowsStore().upsertWindow(window, useWindowIdent)
                         if (window.id && window.tabs && window.tabs.length > 0) {
                             this.handleGroup(group, window.id, window.tabs[0]);
                         }
@@ -153,7 +165,7 @@ class NavigationService {
                         collapsed: false,
                         color: color,
                         title: group
-                    }, c => console.log("c", c))
+                    })
                 })
             } else {
                 const props = {

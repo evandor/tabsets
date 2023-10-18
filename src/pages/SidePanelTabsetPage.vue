@@ -78,7 +78,7 @@ import PanelTabList from "components/layouts/PanelTabList.vue";
 import SidePanelTabInfo from "pages/sidepanel/SidePanelTabInfo.vue";
 import FirstToolbarHelper from "pages/sidepanel/helper/FirstToolbarHelper.vue";
 import {DynamicTabSourceType} from "src/models/DynamicTabSource";
-import {useWindowsStore} from "src/stores/windowsStores";
+import {useWindowsStore} from "src/stores/windowsStore";
 import Analytics from "src/utils/google-analytics";
 import SidePanelTabsetsSelectorWidget from "components/widgets/SidePanelTabsetsSelectorWidget.vue";
 import {useQuasar} from "quasar";

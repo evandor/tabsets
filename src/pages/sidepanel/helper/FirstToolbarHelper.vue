@@ -149,7 +149,7 @@ import _ from "lodash";
 import {StopSessionCommand} from "src/domain/commands/StopSessionCommand";
 import ChromeApi from "src/services/ChromeApi";
 import SearchWithTransitionHelper from "pages/sidepanel/helper/SearchWithTransitionHelper.vue";
-import {useWindowsStore} from "../../../stores/windowsStores";
+import {useWindowsStore} from "../../../stores/windowsStore";
 import {Suggestion, SuggestionState, SuggestionType} from "src/models/Suggestion";
 import SuggestionDialog from "components/dialogues/SuggestionDialog.vue";
 

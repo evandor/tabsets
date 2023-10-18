@@ -81,7 +81,7 @@ export const useGroupsStore = defineStore('groups', () => {
             chrome.tabGroups.query({}, (groups) => {
                 currentTabGroups.value = groups
 
-                console.log("set currentTabGroups to", groups)
+                //console.log("set currentTabGroups to", groups)
 
                 // update tabGroups
                 for (const g of groups) {
@@ -94,7 +94,7 @@ export const useGroupsStore = defineStore('groups', () => {
                     for (const t of ts.tabs) {
                         for (const g of groups) {
                             if (t.groupId === g.id && t.groupName !== g.title) {
-                                console.log("found match", g)
+                                //console.log("found match", g)
                                 t.groupName = g.title
                                 matchForTabset = true
                             }
@@ -109,7 +109,7 @@ export const useGroupsStore = defineStore('groups', () => {
                 for (const g of groups) {
                     const tabGroup = findGroup([...tabGroups.value.values()], undefined, g.title)
                     if (tabGroup && tabGroup.color !== g.color) {
-                        console.log("updating group", tabGroup, g)
+                        //console.log("updating group", tabGroup, g)
                         storage.updateGroup(g)
                     }
                 }
@@ -171,9 +171,9 @@ export const useGroupsStore = defineStore('groups', () => {
      */
     async function persistGroup(group: chrome.tabGroups.TabGroup) {
         if (group.title) {
-            console.log("persisting group", group)
+            console.debug("persisting group", group)
             const existingGroups = await storage.getGroups()
-            console.log("got existing groups", existingGroups)
+            //console.log("got existing groups", existingGroups)
 
             const index = existingGroups.findIndex(g => {
                 return g.id === group.id && g.title !== group.title

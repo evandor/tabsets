@@ -12,7 +12,7 @@ import {FeatureIdent} from "src/models/AppFeature";
 import {STRIP_CHARS_IN_USER_INPUT} from "boot/constants";
 import {Space} from "src/models/Space";
 import {useTabsetService} from "src/services/TabsetService2";
-import {useWindowsStore} from "stores/windowsStores";
+import {useWindowsStore} from "src/stores/windowsStore";
 
 async function queryTabs(): Promise<chrome.tabs.Tab[]> {
     // @ts-ignore
