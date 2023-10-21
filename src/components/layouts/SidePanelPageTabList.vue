@@ -76,11 +76,9 @@ const handleDragAndDrop = (event: any) => {
 }
 
 watchEffect(() => {
-  console.log(" === watch effect ===")
   const tabset = useTabsStore().getTabset(props.tabsetId)
   if (tabset) {
     tabs.value = useTabsetService().tabsToShow(tabset)
-    console.log("tabs.value set to ", tabs.value)
   } else {
     console.warn("could not determine tabset for id", props.tabsetId)
     tabs.value = []

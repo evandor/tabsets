@@ -119,7 +119,6 @@ import {useUtils} from "src/services/Utils";
 import {scroll, uid, useQuasar} from "quasar";
 import {useTabsetService} from "src/services/TabsetService2";
 import {useUiStore} from "src/stores/uiStore";
-import PanelTabList from "components/layouts/PanelTabList.vue";
 import {usePermissionsStore} from "src/stores/permissionsStore";
 import {useSpacesStore} from "src/stores/spacesStore";
 import SidePanelTabInfo from "pages/sidepanel/SidePanelTabInfo.vue";

@@ -91,7 +91,6 @@ export const useGroupsStore = defineStore('groups', () => {
             for (const t of ts.tabs) {
                 for (const g of groups) {
                     if (t.groupId === g.id && t.groupName !== g.title) {
-                        //console.log("found match", g)
                         t.groupName = g.title
                         matchForTabset = true
                     }
@@ -106,8 +105,7 @@ export const useGroupsStore = defineStore('groups', () => {
         for (const g of groups) {
             const tabGroup = findGroup([...tabGroups.value.values()], undefined, g.title)
             if (tabGroup && tabGroup.color !== g.color) {
-                //console.log("updating group", tabGroup, g)
-                storage.updateGroup(g)
+                await storage.updateGroup(g)
             }
         }
     }
@@ -171,7 +169,6 @@ export const useGroupsStore = defineStore('groups', () => {
             //console.log("got existing groups", existingGroups)
 
             const index = existingGroups.findIndex(g => {
-                console.log("comparing", g.id, group.id, g.title, group.title)
                 return g.id === group.id && g.title !== group.title
             })
             if (index < 0) {

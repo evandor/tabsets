@@ -68,9 +68,7 @@ import _ from "lodash"
 import {useTabsStore} from "src/stores/tabsStore";
 import {Tab} from "src/models/Tab";
 import {Tabset, TabsetStatus} from "src/models/Tabset";
-import TabList from "components/layouts/TabList.vue";
 import {useSettingsStore} from "src/stores/settingsStore"
-import PanelTabList from "components/layouts/PanelTabList.vue";
 import {extract} from "@extractus/feed-extractor";
 import NavigationService from "src/services/NavigationService";
 import {formatDistance, parseISO} from "date-fns";

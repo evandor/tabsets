@@ -74,7 +74,6 @@ import {Tabset, TabsetType} from "src/models/Tabset";
 import {useRoute} from "vue-router";
 import {useUtils} from "src/services/Utils";
 import {useUiStore} from "src/stores/uiStore";
-import PanelTabList from "components/layouts/PanelTabList.vue";
 import SidePanelTabInfo from "pages/sidepanel/SidePanelTabInfo.vue";
 import FirstToolbarHelper from "pages/sidepanel/helper/FirstToolbarHelper.vue";
 import {DynamicTabSourceType} from "src/models/DynamicTabSource";
