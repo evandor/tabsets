@@ -1,8 +1,6 @@
 import {defineStore} from 'pinia';
 import {ref} from "vue";
 import {useUtils} from "src/services/Utils";
-import {usePermissionsStore} from "stores/permissionsStore";
-import {FeatureIdent} from "src/models/AppFeature";
 import PersistenceService from "src/services/PersistenceService";
 import _ from "lodash"
 import {useTabsStore} from "stores/tabsStore";
@@ -11,7 +9,12 @@ import {useTabsetService} from "src/services/TabsetService2";
 /**
  * a pinia store for chrome groups.
  *
- * Elements are persisted to the storage provided in the initialize function
+ * 'tabGroups' manages all groups the user has (ever) created; 'currentTagGroups'
+ * are the groups currently used in the browser.
+ *
+ * TabGroups are persisted to the storage provided in the initialize function.
+ *
+ * Open: should a group without title be tracked?
  */
 
 let storage: PersistenceService = null as unknown as PersistenceService
@@ -33,38 +36,36 @@ export const useGroupsStore = defineStore('groups', () => {
 
     /**
      * initialize store with
-     * @param ps a persistence storage
+     * @param providedDb a persistence storage
      */
     async function initialize(providedDb: PersistenceService) {
         console.log("initializing groupsStore")
         storage = providedDb
-        init("initialization")
+        await init("initialization")
     }
 
-    function init(trigger: string = "") {
-        if (inBexMode() && chrome?.tabGroups) {
-            chrome.tabGroups.query({}, (groups) => {
-
-                currentTabGroups.value = groups
-                console.log("initializing current tab groups with", currentTabGroups.value)
-
-                // adding potentially new groups to storage
-                const res: Promise<any>[] = groups.flatMap((group: chrome.tabGroups.TabGroup) => {
-                    return storage.addGroup(group)
-                })
-
-                // setting all (new and older) groups to 'tabGroups'
-                Promise.all(res)
-                    .then(() => {
-                        tabGroups.value = new Map()
-                        storage.getGroups().then(res => {
-                            res.forEach(r => tabGroups.value.set(r.title || '', r))
-                        })
-                    })
-            })
+    async function init(trigger: string = "") {
+        if (!inBexMode() || !chrome?.tabGroups) {
+            return
         }
+        const groups = await chrome.tabGroups.query({})//, (groups) => {
+
+        currentTabGroups.value = groups
+        console.log("initializing current tab groups with", currentTabGroups.value)
+
+        // adding potentially new groups to storage
+        const res: Promise<any>[] = groups.flatMap((group: chrome.tabGroups.TabGroup) => {
+            return storage.addGroup(group)
+        })
+
+        // setting all (new and older) groups to 'tabGroups'
+        await Promise.all(res)
+        tabGroups.value = new Map()
+        const res2 = await storage.getGroups()
+        res2.forEach(r => tabGroups.value.set(r.title || '', r))
     }
 
+    // TODO: if groups without title are not tracked at all, this might be unnecessary
     function onCreated(group: chrome.tabGroups.TabGroup) {
         console.debug("group: onCreated", group)
         if (inBexMode() && chrome?.tabGroups && group.title) {
@@ -74,46 +75,40 @@ export const useGroupsStore = defineStore('groups', () => {
         }
     }
 
-    function onUpdated(group: chrome.tabGroups.TabGroup) {
+    async function onUpdated(group: chrome.tabGroups.TabGroup) {
         console.debug("group: onUpdated", group)
-        if (inBexMode() && chrome?.tabGroups) {
+        if (!inBexMode() || !chrome?.tabGroups) {
+            return Promise.resolve()
+        }
+        const groups = await chrome.tabGroups.query({})//, (groups) => {
+        currentTabGroups.value = groups
 
-            chrome.tabGroups.query({}, (groups) => {
-                currentTabGroups.value = groups
+        await useGroupsStore().persistGroup(group)
 
-                //console.log("set currentTabGroups to", groups)
-
-                // update tabGroups
+        // update the group names for matching group ids
+        for (const ts of [...useTabsStore().tabsets.values()]) {
+            let matchForTabset = false
+            for (const t of ts.tabs) {
                 for (const g of groups) {
-                    useGroupsStore().persistGroup(g)
+                    if (t.groupId === g.id && t.groupName !== g.title) {
+                        //console.log("found match", g)
+                        t.groupName = g.title
+                        matchForTabset = true
+                    }
                 }
+            }
+            if (matchForTabset) {
+                await useTabsetService().saveTabset(ts)
+            }
+        }
 
-                // update the group names for matching group ids
-                for (const ts of [...useTabsStore().tabsets.values()]) {
-                    let matchForTabset = false
-                    for (const t of ts.tabs) {
-                        for (const g of groups) {
-                            if (t.groupId === g.id && t.groupName !== g.title) {
-                                //console.log("found match", g)
-                                t.groupName = g.title
-                                matchForTabset = true
-                            }
-                        }
-                    }
-                    if (matchForTabset) {
-                        useTabsetService().saveTabset(ts)
-                    }
-                }
-
-                // update color changes
-                for (const g of groups) {
-                    const tabGroup = findGroup([...tabGroups.value.values()], undefined, g.title)
-                    if (tabGroup && tabGroup.color !== g.color) {
-                        //console.log("updating group", tabGroup, g)
-                        storage.updateGroup(g)
-                    }
-                }
-            })
+        // update color changes
+        for (const g of groups) {
+            const tabGroup = findGroup([...tabGroups.value.values()], undefined, g.title)
+            if (tabGroup && tabGroup.color !== g.color) {
+                //console.log("updating group", tabGroup, g)
+                storage.updateGroup(g)
+            }
         }
     }
 
@@ -145,21 +140,21 @@ export const useGroupsStore = defineStore('groups', () => {
     }
 
     function groupForName(groupTitle: string | undefined): chrome.tabGroups.TabGroup | undefined {
-        if (inBexMode() && usePermissionsStore().hasFeature(FeatureIdent.TAB_GROUPS) && chrome && chrome.tabGroups && groupTitle) {
+        if (inBexMode() && chrome && chrome.tabGroups && groupTitle) {
             return _.find([...tabGroups.value.values()], g => g.title === groupTitle)
         }
         return undefined
     }
 
     function currentGroupForName(groupName: string | undefined = undefined): chrome.tabGroups.TabGroup | undefined {
-        if (inBexMode() && usePermissionsStore().hasFeature(FeatureIdent.TAB_GROUPS) && chrome?.tabGroups && groupName) {
+        if (inBexMode() && chrome?.tabGroups && groupName) {
             return findGroup(currentTabGroups.value, undefined, groupName)
         }
         return undefined
     }
 
     function currentGroupForId(groupId: number): chrome.tabGroups.TabGroup | undefined {
-        if (inBexMode() && usePermissionsStore().hasFeature(FeatureIdent.TAB_GROUPS) && chrome?.tabGroups) {
+        if (inBexMode()  && chrome?.tabGroups) {
             return findGroup(currentTabGroups.value, groupId, undefined)
         }
         return undefined
@@ -176,14 +171,15 @@ export const useGroupsStore = defineStore('groups', () => {
             //console.log("got existing groups", existingGroups)
 
             const index = existingGroups.findIndex(g => {
+                console.log("comparing", g.id, group.id, g.title, group.title)
                 return g.id === group.id && g.title !== group.title
             })
-            if ( index < 0) {
+            if (index < 0) {
                 // no group exits yet with same id and different title
                 await storage.addGroup(JSON.parse(JSON.stringify(group)) as chrome.tabGroups.TabGroup)
             } else {
                 const existingGroup = existingGroups[index]
-                console.debug("replacing group", existingGroup,group)
+                console.debug("replacing group", existingGroup, group)
                 await storage.deleteGroupByTitle(existingGroup.title || '')
                 await persistGroup(group)
             }

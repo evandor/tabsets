@@ -46,7 +46,7 @@
                 </span>
               </q-item-label>
               <q-item-label class="text-caption text-grey-5">
-                {{ tabsetCaption(filteredTabs(tabset as Tabset), tabset.window) }}
+                {{ tabsetCaption(useTabsetService().tabsToShow(tabset as Tabset), tabset.window) }}
               </q-item-label>
             </q-item-section>
 
@@ -70,10 +70,10 @@
               <SidePanelTabInfo :tabsetId="tabset.id"/>
             </div>
 
-            <PanelTabList
+            <SidePanelPageTabList
                 v-if="tabsetExpanded.get(tabset.id)"
                 :tabsetType="tabset.type"
-                :tabs="filteredTabs(tabset as Tabset)"/>
+                :tabsetId="tabset.id"/>
 
           </div>
         </q-expansion-item>
@@ -138,6 +138,8 @@ import {useDB} from "src/services/usePersistenceService";
 import getScrollTarget = scroll.getScrollTarget;
 import {useBookmarksStore} from "stores/bookmarksStore";
 import {useSuggestionsStore} from "stores/suggestionsStore";
+import NavigationService from "src/services/NavigationService";
+import SidePanelPageTabList from "components/layouts/SidePanelPageTabList.vue";
 
 const {setVerticalScrollPosition} = scroll
 
@@ -301,28 +303,28 @@ const getTabsetOrder =
     ]
 
 watchEffect(() => {
-      if (usePermissionsStore().hasFeature(FeatureIdent.SPACES)) {
-        const currentSpace = useSpacesStore().space
-        tabsets.value = _.sortBy(
+  if (usePermissionsStore().hasFeature(FeatureIdent.SPACES)) {
+    const currentSpace = useSpacesStore().space
+    tabsets.value = _.sortBy(
         _.filter([...tabsStore.tabsets.values()], (ts: Tabset) => {
-              if (currentSpace) {
-                if (ts.spaces.indexOf(currentSpace.id) < 0) {
-                  return false
-                }
-              }
-              return ts.status !== TabsetStatus.DELETED &&
-                  ts.status !== TabsetStatus.HIDDEN &&
-                  ts.status !== TabsetStatus.ARCHIVED
-            }),
-            getTabsetOrder, ["asc"])
-      } else {
-        tabsets.value = _.sortBy(
+          if (currentSpace) {
+            if (ts.spaces.indexOf(currentSpace.id) < 0) {
+              return false
+            }
+          }
+          return ts.status !== TabsetStatus.DELETED &&
+              ts.status !== TabsetStatus.HIDDEN &&
+              ts.status !== TabsetStatus.ARCHIVED
+        }),
+        getTabsetOrder, ["asc"])
+  } else {
+    tabsets.value = _.sortBy(
         _.filter([...tabsStore.tabsets.values()],
-                (ts: Tabset) => ts.status !== TabsetStatus.DELETED
-                    && ts.status !== TabsetStatus.HIDDEN &&
-                    ts.status !== TabsetStatus.ARCHIVED),
-            getTabsetOrder, ["asc"])
-      }
+            (ts: Tabset) => ts.status !== TabsetStatus.DELETED
+                && ts.status !== TabsetStatus.HIDDEN &&
+                ts.status !== TabsetStatus.ARCHIVED),
+        getTabsetOrder, ["asc"])
+  }
   console.log(" *** watchEffect ***")
 })
 
@@ -391,6 +393,7 @@ if ($q.platform.is.chrome) {
         // hmm - getting this twice...
         console.log(" > got message '" + message.name + "'", message)
         useTabsetService().reloadTabset(message.data.tabsetId)
+        //updateSelectedTabset(message.data.tabsetId, true)
       } else if (message.name === "tab-deleted") {
         useTabsetService().reloadTabset(message.data.tabsetId)
       } else if (message.name === "tabset-added") {
@@ -429,71 +432,6 @@ if ($q.platform.is.chrome) {
   }
 } else {
   //useRouter().push("/start")
-}
-
-const filteredTabs = (tabset: Tabset): Tab[] => {
-  if (tabset.type === TabsetType.DYNAMIC &&
-      tabset.dynamicTabs && tabset.dynamicTabs.type === DynamicTabSourceType.TAG) {
-    const results: Tab[] = []
-    //console.log("checking", tabset.dynamicTabs)
-    const tag = tabset.dynamicTabs?.config['tags' as keyof object][0]
-    //console.log("using tag", tag)
-    _.forEach([...tabsStore.tabsets.values()], (tabset: Tabset) => {
-      _.forEach(tabset.tabs, (tab: Tab) => {
-        if (tab.tags?.indexOf(tag) >= 0) {
-          results.push(tab)
-        }
-      })
-    })
-    //return _.orderBy(results, getOrder(), [orderDesc.value ? 'desc' : 'asc'])
-    return results
-  }
-  let tabs: Tab[] = tabset.tabs
-
-  // Tabs with placeholder
-  let placeholderTabs: Tab[] = []
-  let removeTabIds: string[] = []
-  tabs.forEach((t: Tab) => {
-    if (t.placeholders && t.placeholders.type === PlaceholdersType.URL_SUBSTITUTION) {
-      const subs = t.placeholders.config
-      Object.entries(subs).forEach(e => {
-        const name = e[0]
-        const val = e[1]
-        val.split(",").forEach((v: string) => {
-          const substitution = v.trim()
-          if (substitution.length > 0) {
-            const clonedTab = JSON.parse(JSON.stringify(t));
-            clonedTab.id = uid()
-            clonedTab.description = undefined
-            let useUrl = t.url || ''
-            let useName = t.name || t.title || ''
-            Object.entries(subs).forEach(e1 => {
-              useUrl = useUrl.replaceAll("${" + e1[0] + "}", substitution)
-              useName = useName.replaceAll("${" + e1[0] + "}", substitution)
-            })
-            clonedTab.url = useUrl
-            clonedTab.name = useName
-            placeholderTabs.push(clonedTab)
-            removeTabIds.push(t.id)
-          }
-        })
-      })
-    }
-  })
-  tabs = _.filter(tabs, (t: Tab) => removeTabIds.indexOf(t.id) < 0)
-  tabs = tabs.concat(placeholderTabs)
-
-
-  // TODO order??
-  const filter = useUiStore().tabsFilter
-  if (!filter || filter.trim() === '') {
-    return tabs
-  }
-  return _.filter(tabs, (t: Tab) => {
-    return (t.url || '')?.indexOf(filter) >= 0 ||
-        (t.title || '')?.indexOf(filter) >= 0 ||
-        t.description?.indexOf(filter) >= 0
-  })
 }
 
 if (inBexMode() && chrome) {
@@ -580,7 +518,7 @@ function checkKeystroke(e: KeyboardEvent) {
 
 const showTabset = (tabset: Tabset) => !useUiStore().tabsFilter ?
     true :
-    (useUiStore().tabsFilter === '' || filteredTabs(tabset).length > 0)
+    (useUiStore().tabsFilter === '' || useTabsetService().tabsToShow(tabset).length > 0)
 
 const toolbarTitle = (tabsets: Tabset[]) => {
   if (usePermissionsStore().hasFeature(FeatureIdent.SPACES)) {
