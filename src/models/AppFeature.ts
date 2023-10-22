@@ -4,7 +4,7 @@ import {DeactivateFeatureCommand} from "src/domain/features/DeactivateFeature";
 
 export enum FeatureIdent {
   BOOKMARKS = "BOOKMARKS",
-  PAGE_MARKER = "PAGE_MARKER",
+  //PAGE_MARKER = "PAGE_MARKER",
   SAVE_TAB = "SAVE_TAB",
   CREATE_PDF = "CREATE_PDF",
   GROUP_BY_DOMAIN = "GROUP_BY_DOMAIN",

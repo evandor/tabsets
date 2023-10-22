@@ -239,9 +239,7 @@ module.exports = configure(function (ctx) {
         'content-script',
         'tabsets-content-script',
         'content-script-thumbnails',
-        'clipping',
-        'quoting',
-        'highlighting'
+        'clipping'
       ],
       css: ['clipping.css']
 

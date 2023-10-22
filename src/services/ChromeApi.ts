@@ -126,12 +126,12 @@ class ChromeApi {
                 title: 'Create Website Clip',
                 contexts: ['all']
               })
-              chrome.contextMenus.create({
-                id: 'website_quote',
-                parentId: 'tabset_extension',
-                title: 'Create Website Quote',
-                contexts: ['all']
-              })
+              // chrome.contextMenus.create({
+              //   id: 'website_quote',
+              //   parentId: 'tabset_extension',
+              //   title: 'Create Website Quote',
+              //   contexts: ['all']
+              // })
               //}
               chrome.contextMenus.create({
                 id: 'save_to_currentTS',
@@ -178,11 +178,11 @@ class ChromeApi {
             if (tab && tab.id) {
               this.executeClippingJS(tab.id)
             }
-          } else if (e.menuItemId === "website_quote") {
-            console.log("creating Quote", tab)
-            if (tab && tab.id) {
-              this.executeQuoteJS(tab.id)
-            }
+          // } else if (e.menuItemId === "website_quote") {
+          //   console.log("creating Quote", tab)
+          //   if (tab && tab.id) {
+          //     this.executeQuoteJS(tab.id)
+          //   }
           } else if (e.menuItemId === 'save_to_currentTS') {
             const tabId = tab?.id || 0
             this.executeAddToTS(tabId, useTabsStore().currentTabsetId)
@@ -401,13 +401,13 @@ class ChromeApi {
     });
   }
 
-  executeQuoteJS(tabId: number) {
-    // @ts-ignore
-    chrome.scripting.executeScript({
-      target: {tabId: tabId},
-      files: ['quoting.js']
-    });
-  }
+  // executeQuoteJS(tabId: number) {
+  //   // @ts-ignore
+  //   chrome.scripting.executeScript({
+  //     target: {tabId: tabId},
+  //     files: ['quoting.js']
+  //   });
+  // }
 
   executeAddToTS(tabId: number, tabsetId: string) {
     // @ts-ignore
