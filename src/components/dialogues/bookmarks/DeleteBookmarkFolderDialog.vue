@@ -1,6 +1,6 @@
 <template>
   <q-dialog ref="dialogRef" @hide="onDialogHide">
-    <DeleteBookmarkFolderDialogBody />
+    <DeleteBookmarkFolderDialogBody :folderId="props.folderId" />
   </q-dialog>
 </template>
 
@@ -14,8 +14,7 @@ defineEmits([
 ])
 
 const props = defineProps({
-  inSidePanel: {type: Boolean, default: false},
-  count: {type: Number, default: 0}
+  folderId: {type: String, required: true}
 })
 
 const {dialogRef, onDialogHide} = useDialogPluginComponent()

@@ -17,8 +17,8 @@
          :width="props.width"
          :height="props.height"
          :src="getFaviconUrl(tab as Tab)">
-    <q-tooltip v-if="!props.preventDragAndDrop">drag and drop to tabset</q-tooltip>
-    <q-tooltip v-else>This is a sorted list, you cannot drag and drop</q-tooltip>
+    <q-tooltip v-if="!props.preventDragAndDrop" class="tooltip">drag and drop to tabset</q-tooltip>
+    <q-tooltip v-else class="tooltip">This is a sorted list, you cannot drag and drop</q-tooltip>
   </q-img>
 
 

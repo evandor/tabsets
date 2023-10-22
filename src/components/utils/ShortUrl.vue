@@ -1,6 +1,6 @@
 <template>
   <span class="text-blue-10">{{ shortenUrl() }}
-    <q-tooltip class="tooltip">{{ url }}</q-tooltip>
+    <q-tooltip v-if="props.hostnameOnly" class="tooltip">{{ url }}</q-tooltip>
   </span>
 </template>
 

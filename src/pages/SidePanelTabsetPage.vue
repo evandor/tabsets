@@ -7,13 +7,13 @@
         <SidePanelTabInfo :tabsetId="tabsetId"/>
       </div>
 
-      <PanelTabList
+      <SidePanelPageTabList
           v-if="tabset"
           :tabsetType="tabset.type"
           :sorting="sorting"
           :show-tabsets="true"
           :preventDragAndDrop="preventDragAndDrop(sorting)"
-          :tabs="filteredTabs(tabset as Tabset)"/>
+          :tabsetId="tabset.id"/>
 
     </div>
 
@@ -69,25 +69,22 @@
 import {onMounted, ref, watchEffect} from "vue";
 import {useTabsStore} from "src/stores/tabsStore";
 import {Tab, TabSorting} from "src/models/Tab";
-import _ from "lodash"
-import {Tabset, TabsetType} from "src/models/Tabset";
+import {Tabset} from "src/models/Tabset";
 import {useRoute} from "vue-router";
 import {useUtils} from "src/services/Utils";
 import {useUiStore} from "src/stores/uiStore";
 import SidePanelTabInfo from "pages/sidepanel/SidePanelTabInfo.vue";
 import FirstToolbarHelper from "pages/sidepanel/helper/FirstToolbarHelper.vue";
-import {DynamicTabSourceType} from "src/models/DynamicTabSource";
 import {useWindowsStore} from "src/stores/windowsStore";
 import Analytics from "src/utils/google-analytics";
 import SidePanelTabsetsSelectorWidget from "components/widgets/SidePanelTabsetsSelectorWidget.vue";
 import {useQuasar} from "quasar";
+import SidePanelPageTabList from "components/layouts/SidePanelPageTabList.vue";
 
 const {inBexMode} = useUtils()
 
 const $q = useQuasar()
 const route = useRoute()
-
-const tabsStore = useTabsStore()
 
 const tabsetId = ref<string | undefined>(undefined)
 const tabset = ref<Tabset | undefined>(undefined)
@@ -107,6 +104,9 @@ onMounted(() => {
 watchEffect(() => {
   tabsetId.value = route.params.tabsetId as string
   tabset.value = useTabsStore().getTabset(tabsetId.value)
+  if (tabset.value) {
+    useTabsStore().selectCurrentTabset(tabset.value.id)
+  }
 })
 
 const tabsets = ref<Tabset[]>([])
@@ -128,34 +128,6 @@ watchEffect(() => {
   const windowId = useWindowsStore().currentWindow?.id || 0
   currentChromeTab.value = useTabsStore().getCurrentChromeTab(windowId) || useTabsStore().currentChromeTab
 })
-
-const filteredTabs = (tabset: Tabset): Tab[] => {
-  // dynamic tabset
-  if (tabset.type === TabsetType.DYNAMIC &&
-      tabset.dynamicTabs && tabset.dynamicTabs.type === DynamicTabSourceType.TAG) {
-    const results: Tab[] = []
-    const tag = tabset.dynamicTabs?.config['tags' as keyof object][0]
-    _.forEach([...tabsStore.tabsets.values()], (tabset: Tabset) => {
-      _.forEach(tabset.tabs, (tab: Tab) => {
-        if (tab.tags?.indexOf(tag) >= 0) {
-          results.push(tab)
-        }
-      })
-    })
-    return results
-  }
-  // tabset with default type
-  const tabs: Tab[] = tabset.tabs
-  const filter = useUiStore().tabsFilter
-  if (!filter || filter.trim() === '') {
-    return _.orderBy(tabs, getOrder(), descending.value ? ['desc'] : ['asc'])
-  }
-  return _.orderBy(_.filter(tabs, (t: Tab) => {
-    return (t.url || '')?.indexOf(filter) >= 0 ||
-        (t.title || '')?.indexOf(filter) >= 0 ||
-        t.description?.indexOf(filter) >= 0
-  }), getOrder(), descending.value ? ['desc'] : ['asc'])
-}
 
 if (inBexMode() && chrome) {
   let queryOptions = {active: true, lastFocusedWindow: true};
@@ -180,19 +152,6 @@ const toggleSorting = () => {
       break
     default:
       sorting.value = TabSorting.CUSTOM
-  }
-}
-
-function getOrder() {
-  switch (sorting.value) {
-    case TabSorting.URL:
-      return (t: Tab) => t.url?.replace("https://", "").replace("http://", "").toUpperCase()
-    case TabSorting.TITLE:
-      return (t: Tab) => t.title?.toUpperCase()
-    case TabSorting.AGE:
-      return (t: Tab) => t.created
-    default:
-      return (t: Tab) => 1
   }
 }
 
