@@ -7,7 +7,7 @@
       <InfoMessageWidget
         :probability="1"
         ident="groupByDomain_atLeastTwo"
-        hint="In this view, you will see your tabs grouped by Domain, for all domains having at least two entries"/>
+        hint="In this view, you will see your tabs grouped by Domain"/>
 
 
       <div class="q-ma-none">

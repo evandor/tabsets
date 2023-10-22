@@ -6,19 +6,10 @@
       <InfoMessageWidget
           :probability="1"
           ident="groupByDomain_atLeastTwo"
-          hint="In this view, you will see your tabs grouped by Domain, for all domains having at least two entries"/>
+          hint="In this view, you will see your tabs grouped by Domain"/>
 
       <div class="q-pa-none">
         <ByDomainListWidget @domainSelected="(value:string) => showByDomainPage(value)" />
-<!--        <q-list>-->
-<!--          <q-item clickable v-ripple v-for="[host,val] in groupedTabs"-->
-<!--                  @click="showByDomainPage(host)">-->
-<!--            <q-item-section>-->
-<!--              <q-item-label overline>{{ host }}</q-item-label>-->
-<!--              <q-item-label caption>{{ captionFor(val) }}</q-item-label>-->
-<!--            </q-item-section>-->
-<!--          </q-item>-->
-<!--        </q-list>-->
       </div>
 
     </q-scroll-area>

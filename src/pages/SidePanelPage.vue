@@ -66,6 +66,7 @@
               tabset.type !== TabsetType.DYNAMIC &&
               currentChromeTab &&
               currentChromeTab.url !== 'chrome://newtab/' &&
+              currentChromeTab.url?.indexOf('/www/index.html#/mainpanel/notes/') < 0 &&
               currentChromeTab.url !== ''">
               <SidePanelTabInfo :tabsetId="tabset.id"/>
             </div>

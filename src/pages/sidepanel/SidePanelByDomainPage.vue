@@ -45,6 +45,7 @@ import {Tab} from "src/models/Tab";
 import {Tabset, TabsetStatus} from "src/models/Tabset";
 import {useSettingsStore} from "src/stores/settingsStore"
 import Analytics from "src/utils/google-analytics"
+import PanelTabList from "components/layouts/PanelTabList.vue";
 
 const route = useRoute();
 const router = useRouter();

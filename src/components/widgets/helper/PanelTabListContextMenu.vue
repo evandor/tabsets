@@ -14,25 +14,6 @@
       </template>
 
       <q-separator/>
-      <q-item v-if="useSettingsStore().isEnabled('dev')"
-              clickable v-close-popup @click.stop="openInReadingMode(props['tab' as keyof object])">
-        <q-item-section avatar style="padding-right:0;min-width:25px;max-width: 25px;">
-          <q-icon size="xs" name="o_article" color="accent"/>
-        </q-item-section>
-        <q-item-section>
-          Reading Mode (dev)
-        </q-item-section>
-      </q-item>
-
-      <q-item v-if="usePermissionsStore().hasFeature(FeatureIdent.ANNOTATIONS)"
-              clickable v-close-popup @click.stop="openInAnnotationMode(props['tab' as keyof object])">
-        <q-item-section avatar style="padding-right:0;min-width:25px;max-width: 25px;">
-          <q-icon size="xs" name="o_article" color="accent"/>
-        </q-item-section>
-        <q-item-section>
-          Open in Annotation Mode
-        </q-item-section>
-      </q-item>
 
       <template v-if="props.tabsetType.toString() !== TabsetType.DYNAMIC.toString()">
         <q-separator/>
@@ -193,18 +174,6 @@ const showTabDetails = async (tab: Tab) => {
   const useTab: Tab = await tabToUse(tab)
   console.log("showing tab details for", useTab)
   router.push("/sidepanel/tab/" + useTab.id)
-}
-
-const openInReadingMode = (tab: Tab) => {
-  console.log("showing tab in reading mode", tab)
-  const url = chrome.runtime.getURL("/www/index.html#/mainpanel/readingmode/" + tab.id)
-  NavigationService.openOrCreateTab(url)
-}
-
-const openInAnnotationMode = (tab: Tab) => {
-  console.log("showing tab in annotation mode", tab)
-  //const url = chrome.runtime.getURL("/www/index.html#/mainpanel/readingmode/" + tab.id)
-  NavigationService.openOrCreateTab(tab.url || '')// + "?tabId=" + tab.id)
 }
 
 const copyToClipboard = (tab: Tab) =>
