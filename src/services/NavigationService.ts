@@ -54,11 +54,6 @@ class NavigationService {
             const tabsForUrl = useTabsStore().tabsForUrl(withUrl) || []
             const selections: HTMLSelection[] = []
             tabsForUrl.forEach(t => {
-                if (t.selections) {
-                    //console.log("found", t.selections)
-                    t.selections.forEach(s => selections.push(s))
-                    //selections.concat(t.selections)
-                }
                 if (t.httpInfo) {
                     t.httpError = ''
                     t.httpInfo = ''
@@ -92,16 +87,6 @@ class NavigationService {
 
                                 this.handleGroup(group, useWindowId, r);
 
-                                // console.log("sending Message highlightSelections")
-                                // chrome.runtime.sendMessage({
-                                //     msg: "highlightSelections",
-                                //     selections: selections
-                                // }, (res: any) => {
-                                //     //console.log("got response1", res)
-                                //     if (chrome.runtime.lastError) {
-                                //         console.warn("got runtime error", chrome.runtime.lastError)
-                                //     }
-                                // })
                             }
                         }
                     });
@@ -116,26 +101,6 @@ class NavigationService {
                         chrome.windows.update(useWindowId, {focused: true})
 
                         this.handleGroup(group, useWindowId, tab);
-
-                        // pass selections and execute quoting script
-                        if (selections.length > 0) {
-                            console.log("selections", selections, tab.id)
-                            // @ts-ignore
-                            chrome.scripting.executeScript({
-                                target: {tabId: tab.id || 0},
-                                files: ['highlighting.js']
-                            }, (result: any) => {
-                                if (tab.id) {
-                                    console.log("sending Message highlightSelections", tab.id)
-                                    chrome.tabs.sendMessage(tab.id, {
-                                        msg: "highlightSelections",
-                                        selections: selections
-                                    }, (res: any) => {
-                                        //console.log("got response2", res)
-                                    })
-                                }
-                            });
-                        }
 
                     })
 

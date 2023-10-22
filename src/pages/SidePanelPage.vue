@@ -331,7 +331,6 @@ watchEffect(() => {
 function inIgnoredMessages(message: any) {
   return message.msg === "html2text" ||
       message.msg === "html2links" ||
-      message.msg === "websiteQuote" ||
       message.name === "recogito-annotation-created"
 }
 

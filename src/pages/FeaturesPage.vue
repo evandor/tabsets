@@ -322,11 +322,11 @@ text.set(FeatureIdent.CATEGORIZATION.toLowerCase(), {
   description: 'Categorize your tabsets automatically',
   permissions: []
 })
-text.set(FeatureIdent.PAGE_MARKER.toLowerCase(), {
-  name: 'Page Marker',
-  description: 'Highlight parts of a page and add notes',
-  permissions: ['contextMenus']
-})
+// text.set(FeatureIdent.PAGE_MARKER.toLowerCase(), {
+//   name: 'Page Marker',
+//   description: 'Highlight parts of a page and add notes',
+//   permissions: ['contextMenus']
+// })
 text.set(FeatureIdent.NOTIFICATIONS.toLowerCase(), {
   name: 'Browser Notifications',
   img: 'notification.png',
