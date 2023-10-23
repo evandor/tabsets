@@ -29,7 +29,7 @@
                 {{ space.label }}
               </q-item-label>
               <q-item-label class="text-caption text-grey-5">
-                {{ (tabsetsForSpace.get(space.id) || []).length + ' tabsets' }}
+                {{ (tabsetsForSpace.get(space.id) || []).length + ' tabset(s)' }}
               </q-item-label>
             </q-item-section>
 
@@ -73,10 +73,13 @@
           </q-card>
         </q-expansion-item>
 
+        <q-separator v-if="sortedSpaces().length > 1 && tabsetsWithoutSpaces().length > 0" />
+
         <q-expansion-item dense
+                          v-if="tabsetsWithoutSpaces().length > 0"
                           expand-separator
                           label="Unassigned Tabsets"
-                          :caption="tabsetsWithoutSpaces().length + ' tabsets'">
+                          :caption="tabsetsWithoutSpaces().length + ' tabset(s)'">
 
           <InfoMessageWidget v-if="useSpacesStore().spaces.size === 0"
                              :probability="1"
@@ -116,28 +119,38 @@
         <template v-slot:title>
           <!--          <q-icon name="o_space_dashboard" color="primary" size="18px"/>-->
           {{ usePermissionsStore().hasFeature(FeatureIdent.SPACES) ? 'Spaces' : 'Tabset List' }}
-          <q-btn
-              icon="o_add"
-              color="primary"
-              flat
-              class="q-ma-none q-pa-xs cursor-pointer"
-              style="max-width:20px"
-              size="10px"
-              @click="addSpace()">
-            <q-tooltip class="tooltip">Create new Space</q-tooltip>
-          </q-btn>
-        </template>
-        <template v-slot:iconsRight>
 <!--          <q-btn-->
-<!--              icon="more_horiz"-->
+<!--              icon="o_add"-->
 <!--              color="primary"-->
 <!--              flat-->
 <!--              class="q-ma-none q-pa-xs cursor-pointer"-->
 <!--              style="max-width:20px"-->
 <!--              size="10px"-->
-<!--              @click="manageSpaces()">-->
-<!--            <q-tooltip class="tooltip">Manage Spaces</q-tooltip>-->
+<!--              @click="addSpace()">-->
+<!--            <q-tooltip class="tooltip">Create new Space</q-tooltip>-->
 <!--          </q-btn>-->
+        </template>
+        <template v-slot:iconsRight>
+          <q-btn
+              icon="more_horiz"
+              color="primary"
+              flat
+              class="q-ma-none q-pa-xs q-mr-sm cursor-pointer"
+              style="max-width:20px"
+              size="10px"
+              @click="manageSpaces()">
+            <q-tooltip class="tooltip">Manage Spaces</q-tooltip>
+          </q-btn>
+          <q-btn
+              icon="o_add_circle"
+              color="warning"
+              flat
+              class="q-ma-none q-pa-xs cursor-pointer"
+              style="max-width:20px"
+              size="12px"
+              data-testid="addTabsetBtn"
+              @click="addSpace()">
+          </q-btn>
         </template>
       </FirstToolbarHelper>
 
