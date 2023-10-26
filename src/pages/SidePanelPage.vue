@@ -499,8 +499,6 @@ const tabsetCaption = (tabs: Tab[], window: string) => {
   return caption
 }
 
-const hoveredOver = (tabsetId: string) => hoveredTabset.value === tabsetId
-
 function checkKeystroke(e: KeyboardEvent) {
   if (useUiStore().ignoreKeypressListener()) {
     return
@@ -544,9 +542,13 @@ const tabsetIcon = (tabset: Tabset) => {
 }
 
 const headerStyle = (tabset: Tabset) => {
+  const tabsetOpened = _.findIndex([...tabsetExpanded.value.keys()],
+      (key: string) => (key !== null) && tabsetExpanded.value.get(key)) >= 0
   let style = tabsetExpanded.value.get(tabset.id) ?
       'border:0 solid grey;border-top-left-radius:4px;border-top-right-radius:4px;' :
-      'border:0 solid grey;border-radius:4px;'
+      tabsetOpened ?
+          'border:0 solid grey;border-radius:4px;opacity:30%;' :
+          'border:0 solid grey;border-radius:4px;'
   if (tabset.color && usePermissionsStore().hasFeature(FeatureIdent.COLOR_TAGS)) {
     style = style + 'border-left:4px solid ' + tabset.color
   } else {
