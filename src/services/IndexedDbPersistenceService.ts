@@ -549,7 +549,6 @@ class IndexedDbPersistenceService implements PersistenceService {
     if (!windowFromDb) {
       return Promise.reject("could not find window for id " +  window.id)
     }
-    console.log("got windowFromDb", windowFromDb)
     if (windowFromDb.title) {
       const asJson = JSON.parse(JSON.stringify(window))
       asJson['title'] = windowFromDb.title

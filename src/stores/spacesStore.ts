@@ -126,12 +126,14 @@ export const useSpacesStore = defineStore('spaces', () => {
     }
   }
 
-  function setSpace(spaceId: string) {
+  function setSpace(spaceId: string | undefined) {
     console.log("setting space to ", spaceId)
     space.value = null as unknown as Space
-    const theSpace: Space | undefined = spaces.value.get(spaceId)
-    if (theSpace) {
-      space.value = theSpace
+    if (spaceId) {
+      const theSpace: Space | undefined = spaces.value.get(spaceId)
+      if (theSpace) {
+        space.value = theSpace
+      }
     }
   }
 

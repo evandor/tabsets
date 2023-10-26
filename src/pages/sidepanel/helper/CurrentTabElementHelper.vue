@@ -13,7 +13,7 @@
       <div class="row">
         <div class="col-11 text-bold">Current Tab:</div>
         <div class="col">
-          <q-icon name="close"
+          <q-icon name="expand_less"
                   @click="hideCurrentTabBox()"
                   class="cursor-pointer" color="accent">
             <q-tooltip>Hide this box temporarily</q-tooltip>

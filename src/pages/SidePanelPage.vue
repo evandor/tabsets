@@ -91,7 +91,8 @@
 
         <template v-slot:title v-if="permissionsStore && permissionsStore.hasFeature(FeatureIdent.SPACES)">
           <div class="text-subtitle1 text-black" @click.stop="router.push('/sidepanel/spaces')">
-            {{ toolbarTitle(tabsets as Tabset[]) }}
+            <q-btn flat color="black" no-caps :label="toolbarTitle(tabsets as Tabset[])" />
+            <q-tooltip  :delay="1000" class="tooltip">Click to open List of all Spaces</q-tooltip>
           </div>
         </template>
         <template v-slot:title v-else>
@@ -325,7 +326,6 @@ watchEffect(() => {
                 ts.status !== TabsetStatus.ARCHIVED),
         getTabsetOrder, ["asc"])
   }
-  console.log(" *** watchEffect ***")
 })
 
 
