@@ -6,7 +6,9 @@
          :color="isActive() ? 'secondary':'black'"
          size="9px"
          @click="toggleView()">
-    <q-tooltip v-if="props.tooltip" class="tooltip">{{ props.tooltip }}</q-tooltip>
+    <q-tooltip v-if="props.tooltip"
+               :delay="700"
+               anchor="top middle" self="bottom middle" class="tooltip-small">{{ props.tooltip }}</q-tooltip>
   </q-btn>
 
 </template>

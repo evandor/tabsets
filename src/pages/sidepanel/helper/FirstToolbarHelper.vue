@@ -44,57 +44,32 @@
 
           <slot name="iconsRight">
 
-            <!--            <q-separator vertical inset/>-->
+            <ToolbarButton
+                v-if="showToggleSessionIcon()"
+                :color="existingSession ? (tabsStore.getCurrentTabset?.type === TabsetType.SESSION ? 'red':'grey-5') :'black'"
+                :icon="existingSession ? 'o_stop_circle':'o_play_circle'"
+                @click="toggleSessionState"
+                :tooltip="existingSession ? 'Stop Session' : 'Start new Session'"/>
 
-            <q-btn v-if="showSortIcon()"
-                   flat
-                   size="10px"
-                   class="q-ma-none q-pa-xs cursor-pointer"
-                   style="max-width:20px"
-                   text-color="primary"
-                   @click="toggleSorting()"
-                   outline
-                   icon="o_sort">
-              <q-tooltip class="tooltip">Toggle through sorting</q-tooltip>
-            </q-btn>
+            <!--            <template v-if="showCreateClipButton()">-->
+            <!--              <q-btn-->
+            <!--                  icon="filter_center_focus"-->
+            <!--                  color="black"-->
+            <!--                  flat-->
+            <!--                  class="q-ma-none q-pa-xs cursor-pointer"-->
+            <!--                  style="max-width:20px"-->
+            <!--                  size="10px"-->
+            <!--                  @click="createClip">-->
+            <!--                <q-tooltip class="tooltip">{{ createWebsiteClipTooltip() }}</q-tooltip>-->
+            <!--              </q-btn>-->
+            <!--              <span class="q-ma-none q-pa-none q-mx-sm text-grey-5">|</span>-->
+            <!--            </template>-->
 
-            <q-btn v-if="showToggleSessionIcon()"
-                   flat
-                   style="max-width:20px"
-                   size="10px"
-                   class="q-ma-none q-pa-xs cursor-pointer"
-                   :color="existingSession ? (tabsStore.getCurrentTabset?.type === TabsetType.SESSION ? 'red':'grey-5') :'black'"
-                   :icon="existingSession ? 'o_stop_circle':'o_play_circle'"
-                   @click="toggleSessionState">
-              <q-tooltip class="tooltip" v-if="existingSession">Stop Session</q-tooltip>
-              <q-tooltip class="tooltip" v-else>Start new Session</q-tooltip>
-            </q-btn>
-
-<!--            <template v-if="showCreateClipButton()">-->
-<!--              <q-btn-->
-<!--                  icon="filter_center_focus"-->
-<!--                  color="black"-->
-<!--                  flat-->
-<!--                  class="q-ma-none q-pa-xs cursor-pointer"-->
-<!--                  style="max-width:20px"-->
-<!--                  size="10px"-->
-<!--                  @click="createClip">-->
-<!--                <q-tooltip class="tooltip">{{ createWebsiteClipTooltip() }}</q-tooltip>-->
-<!--              </q-btn>-->
-<!--              <span class="q-ma-none q-pa-none q-mx-sm text-grey-5">|</span>-->
-<!--            </template>-->
-
-            <q-btn
-                v-if="showCreateClipButtonInActive()"
-                icon="filter_center_focus"
-                color="grey-5"
-                flat
-                class="q-ma-none q-pa-xs cursor-pointer"
-                style="max-width:20px"
-                size="10px">
-              <q-tooltip class="tooltip">cannot create web clip for this tab</q-tooltip>
-            </q-btn>
-
+            <!--            <ToolbarButton-->
+            <!--                v-if="showCreateClipButtonInActive()"-->
+            <!--                icon="filter_center_focus"-->
+            <!--                color="grey-5"-->
+            <!--                tooltip="cannot create web clip for this tab" />-->
 
             <template v-if="showSearchIcon()">
               <q-btn
@@ -110,18 +85,14 @@
               <span class="q-ma-none q-pa-none q-mx-sm text-grey-5">|</span>
             </template>
 
-            <q-btn
-                icon="o_add_circle"
-                color="warning"
-                flat
-                class="q-ma-none q-pa-xs cursor-pointer"
-                style="max-width:20px"
-                size="12px"
-                data-testid="addTabsetBtn"
-                @click="openNewTabsetDialog()">
-              <q-tooltip class="tooltip">{{ newTabsetTooltip() }}</q-tooltip>
-            </q-btn>
+            <SidePanelToolbarTabNavigationHelper/>
 
+            <ToolbarButton
+                icon="o_add_circle"
+                :tooltip="newTabsetTooltip()"
+                color="warning"
+                data-testid="addTabsetBtn"
+                @click="openNewTabsetDialog()"/>
 
           </slot>
         </div>
@@ -150,8 +121,10 @@ import {StopSessionCommand} from "src/domain/commands/StopSessionCommand";
 import ChromeApi from "src/services/ChromeApi";
 import SearchWithTransitionHelper from "pages/sidepanel/helper/SearchWithTransitionHelper.vue";
 import {useWindowsStore} from "../../../stores/windowsStore";
-import {Suggestion, SuggestionState, SuggestionType} from "src/models/Suggestion";
-import SuggestionDialog from "components/dialogues/SuggestionDialog.vue";
+import NavigationService from "src/services/NavigationService";
+import ToolbarButtons from "components/buttons/ToolbarButtons.vue";
+import ToolbarButton from "components/buttons/ToolbarButton.vue";
+import SidePanelToolbarTabNavigationHelper from "pages/sidepanel/helper/SidePanelToolbarTabNavigationHelper.vue";
 
 const props = defineProps({
   title: {type: String, default: "My Tabsets"},
@@ -216,12 +189,6 @@ const createClip = () => {
     ChromeApi.executeClippingJS(currentChromeTab.id)
   }
 }
-
-const showSortIcon = () => false
-// useUiStore().sidePanelActiveViewIs(SidePanelView.MAIN) &&
-// !props.showBackButton &&
-// tabsStore.getCurrentTabs.length > 3 &&
-// useUiStore().tabsetsExpanded
 
 const showSearchIcon = () => tabsStore.tabsets.size > 1
 

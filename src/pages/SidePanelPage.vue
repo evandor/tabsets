@@ -325,7 +325,6 @@ watchEffect(() => {
                 ts.status !== TabsetStatus.ARCHIVED),
         getTabsetOrder, ["asc"])
   }
-  console.log(" *** watchEffect ***")
 })
 
 
@@ -556,6 +555,7 @@ const headerStyle = (tabset: Tabset) => {
   }
   return style
 }
+
 </script>
 
 <style>

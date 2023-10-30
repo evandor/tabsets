@@ -32,7 +32,7 @@ export class SidePanelView {
   static readonly MAIN = new SidePanelView('main', '/sidepanel');
 
   static readonly TABS_LIST = new SidePanelView('tabsList', '/sidepanel/tabslist',
-    () => usePermissionsStore().hasFeature(FeatureIdent.OPEN_TABS) && useTabsStore().tabs?.length > 1);
+    () => usePermissionsStore().hasFeature(FeatureIdent.OPEN_TABS));
 
   static readonly TAGS_LIST = new SidePanelView('tagsList', '/sidepanel/tagslist',
     () => usePermissionsStore().hasFeature(FeatureIdent.TAGS) && useTabsStore().allTabsCount > 0);

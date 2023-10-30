@@ -12,7 +12,7 @@
 
     <div class="row q-ma-none q-pa-none">
       <div class="col-12 q-ma-none q-pa-none q-pt-sm">
-        <TagsListViewerWidget @tagSelected="(value: string) => selectTag(value)" />
+        <TagsListViewerWidget @tagSelected="(value: string) => selectTag(value)"/>
       </div>
     </div>
 
@@ -21,16 +21,9 @@
 
       <FirstToolbarHelper title="Tags List">
         <template v-slot:iconsRight>
-          <q-btn
-              icon="close"
-              @click="useUiStore().sidePanelSetActiveView(SidePanelView.MAIN)"
-              color="black"
-              flat
-              class="q-ma-none q-pa-xs cursor-pointer"
-              style="max-width:20px"
-              size="10px">
-            <q-tooltip class="tooltip">Close this view</q-tooltip>
-          </q-btn>
+
+          <SidePanelToolbarTabNavigationHelper/>
+          <CloseSidePanelViewButton />
         </template>
       </FirstToolbarHelper>
 
@@ -57,6 +50,9 @@ import {CreateDynamicTabset} from "src/domain/commands/CreateDynamicTabset";
 import FirstToolbarHelper from "pages/sidepanel/helper/FirstToolbarHelper.vue";
 import InfoMessageWidget from "components/widgets/InfoMessageWidget.vue";
 import TagsListViewerWidget from "components/widgets/TagsListViewerWidget.vue";
+import ToolbarButton from "components/buttons/ToolbarButton.vue";
+import SidePanelToolbarTabNavigationHelper from "pages/sidepanel/helper/SidePanelToolbarTabNavigationHelper.vue";
+import CloseSidePanelViewButton from "components/buttons/CloseSidePanelViewButton.vue";
 
 const {handleError, handleSuccess} = useNotificationHandler()
 

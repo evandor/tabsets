@@ -17,16 +17,14 @@
       <FirstToolbarHelper title="Bookmarks">
 
         <template v-slot:iconsRight>
-          <q-btn
-            icon="close"
-            @click="useUiStore().sidePanelSetActiveView(SidePanelView.MAIN)"
-            color="black"
-            flat
-            class="q-ma-none q-pa-xs cursor-pointer"
-            style="max-width:20px"
-            size="10px">
-            <q-tooltip class="tooltip">Close this view</q-tooltip>
-          </q-btn>
+
+          <SidePanelToolbarTabNavigationHelper />
+
+          <ToolbarButton
+              icon="close"
+              tooltip="Close this view"
+              @click="useUiStore().sidePanelSetActiveView(SidePanelView.MAIN)"
+              color="black" />
         </template>
 
       </FirstToolbarHelper>
@@ -44,6 +42,12 @@ import SecondToolbarHelper from "pages/sidepanel/helper/SecondToolbarHelper.vue"
 import {SidePanelView, useUiStore} from "stores/uiStore";
 import {onMounted} from "vue";
 import Analytics from "src/utils/google-analytics";
+import {useTabsStore} from "stores/tabsStore";
+import NavigationService from "src/services/NavigationService";
+import {usePermissionsStore} from "stores/permissionsStore";
+import {FeatureIdent} from "src/models/AppFeature";
+import ToolbarButton from "components/buttons/ToolbarButton.vue";
+import SidePanelToolbarTabNavigationHelper from "pages/sidepanel/helper/SidePanelToolbarTabNavigationHelper.vue";
 
 onMounted(() => {
   Analytics.firePageViewEvent('SidePanelBookmarksPage', document.location.href);

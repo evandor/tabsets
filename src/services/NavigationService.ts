@@ -145,7 +145,7 @@ class NavigationService {
     }
 
     openTab(tabId: number) {
-        chrome.tabs.update(tabId, {active: true})
+        return chrome.tabs.update(tabId, {active: true})
     }
 
     closeChromeTab(tab: Tab) {
@@ -162,6 +162,24 @@ class NavigationService {
     updateAvailable(details: any) {
         console.log("details: UpdateAvailableDetails", details)
         useNotificationsStore().updateAvailable(true, details.version)
+    }
+
+    backOneTab() {
+        const [tabId, url] = useTabsStore().tabHistoryBack()
+        this.openTab(tabId)
+            .catch((err) => {
+                useTabsStore().chromeTabsHistoryNavigating = false
+                this.openOrCreateTab(url)
+            })
+    }
+
+    forwardOneTab() {
+        const [tabId, url] = useTabsStore().tabHistoryForward()
+        this.openTab(tabId)
+            .catch((err) => {
+                useTabsStore().chromeTabsHistoryNavigating = false
+                this.openOrCreateTab(url)
+            })
     }
 }
 
