@@ -438,12 +438,12 @@ class ChromeListeners {
       _.forEach([...tabsStore.tabsets.keys()], key => {
         const ts = tabsStore.tabsets.get(key)
         if (ts && ts.status !== TabsetStatus.DELETED) {
+          // increasing hit count
           const hits = _.filter(ts.tabs, (t: Tab) => t.url === url)
           let hit = false
           _.forEach(hits, h => {
             h.activatedCount = 1 + h.activatedCount
             h.lastActive = new Date().getTime()
-            console.debug(`onActivated: tab ${info.tabId}:updating hits`, h)
             hit = true
           })
           if (hit) {

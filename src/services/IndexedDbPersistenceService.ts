@@ -11,7 +11,6 @@ import {MHtml} from "src/models/MHtml";
 import {Tab} from "src/models/Tab";
 import {SearchDoc} from "src/models/SearchDoc";
 import {MetaLink} from "src/models/MetaLink";
-import {StatsEntry} from "src/models/StatsEntry";
 import {uid} from "quasar";
 import {Notification, NotificationStatus} from "src/models/Notification";
 import {StaticSuggestionIdent, Suggestion, SuggestionState, SuggestionType} from "src/models/Suggestion";
@@ -549,7 +548,6 @@ class IndexedDbPersistenceService implements PersistenceService {
     if (!windowFromDb) {
       return Promise.reject("could not find window for id " +  window.id)
     }
-    console.log("got windowFromDb", windowFromDb)
     if (windowFromDb.title) {
       const asJson = JSON.parse(JSON.stringify(window))
       asJson['title'] = windowFromDb.title
@@ -651,11 +649,6 @@ class IndexedDbPersistenceService implements PersistenceService {
       }
     }
     return false;
-  }
-
-
-  saveStats(date: string, dataset: StatsEntry) {
-    this.db.put('stats', dataset, date)
   }
 
   getNotifications(onlyNew: boolean = true): Promise<Notification[]> {

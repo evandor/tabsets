@@ -31,7 +31,7 @@
 
           <SidePanelFooterLeftButton
               :side-panel-view="SidePanelView.TABS_LIST" icon="o_playlist_add"
-              tooltip="List all open tabs in your browser"/>
+              tooltip="All your browser's open tabs"/>
 
           <SidePanelFooterLeftButton :side-panel-view="SidePanelView.BOOKMARKS" icon="o_bookmark"
                                      tooltip="Show the Bookmarks Browser"/>

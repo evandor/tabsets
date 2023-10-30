@@ -604,7 +604,6 @@ export function useTabsetService() {
     }
 
     const tabsToShow = (tabset: Tabset): Tab[] => {
-        console.log(">>> filtering tabs")
         if (tabset.type === TabsetType.DYNAMIC &&
             tabset.dynamicTabs && tabset.dynamicTabs.type === DynamicTabSourceType.TAG) {
             const results: Tab[] = []

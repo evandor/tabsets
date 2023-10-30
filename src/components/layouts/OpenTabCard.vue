@@ -70,7 +70,7 @@ import {useSettingsStore} from "src/stores/settingsStore"
 import {PropType} from "vue";
 
 const props = defineProps({
-  tab: {type: Object as PropType<Tab>, required: true},
+  tab: {type: Object as PropType<chrome.tabs.Tab>, required: true},
   useSelection: {type: Boolean, default: false}
 })
 
@@ -118,6 +118,14 @@ const showAddToTabsetIcon = (tab: Tab) => {
 }
 
 const showSelectIcon = (tab: Tab) => props.useSelection && !useTabsetService().urlExistsInCurrentTabset(tab.url || '')
+
+const historyIndex = (tabId: number | undefined) => {
+  if (!tabId) {
+    return ""
+  }
+  console.log("checking index", tabId, useTabsStore().chromeTabsHistory)
+  return _.findIndex(useTabsStore().chromeTabsHistory, e => e === tabId)
+}
 
 </script>
 
