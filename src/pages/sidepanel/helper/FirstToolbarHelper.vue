@@ -28,6 +28,7 @@
                                       :search-term="props.searchTerm"
                                       :search-hits="props.searchHits"/>
 
+          <FilterWithTransitionHelper v-else-if="showFilter()" />
           <!-- no spaces && not searching -->
           <template v-else>
 
@@ -51,37 +52,12 @@
                 @click="toggleSessionState"
                 :tooltip="existingSession ? 'Stop Session' : 'Start new Session'"/>
 
-            <!--            <template v-if="showCreateClipButton()">-->
-            <!--              <q-btn-->
-            <!--                  icon="filter_center_focus"-->
-            <!--                  color="black"-->
-            <!--                  flat-->
-            <!--                  class="q-ma-none q-pa-xs cursor-pointer"-->
-            <!--                  style="max-width:20px"-->
-            <!--                  size="10px"-->
-            <!--                  @click="createClip">-->
-            <!--                <q-tooltip class="tooltip">{{ createWebsiteClipTooltip() }}</q-tooltip>-->
-            <!--              </q-btn>-->
-            <!--              <span class="q-ma-none q-pa-none q-mx-sm text-grey-5">|</span>-->
-            <!--            </template>-->
-
-            <!--            <ToolbarButton-->
-            <!--                v-if="showCreateClipButtonInActive()"-->
-            <!--                icon="filter_center_focus"-->
-            <!--                color="grey-5"-->
-            <!--                tooltip="cannot create web clip for this tab" />-->
-
             <template v-if="showSearchIcon()">
-              <q-btn
-                  id="toggleSearchBtn"
-                  icon="search"
-                  color="black"
-                  flat
-                  class="q-ma-none q-pa-xs cursor-pointer"
-                  style="max-width:20px"
-                  size="11px"
-                  @click="toggleSearch">
-              </q-btn>
+              <ToolbarButton icon="search"
+                             id="toggleSearchBtn"
+                             size="11px"
+                             color="black"
+                             @click="toggleSearch"/>
               <span class="q-ma-none q-pa-none q-mx-sm text-grey-5">|</span>
             </template>
 
@@ -120,11 +96,10 @@ import _ from "lodash";
 import {StopSessionCommand} from "src/domain/commands/StopSessionCommand";
 import ChromeApi from "src/services/ChromeApi";
 import SearchWithTransitionHelper from "pages/sidepanel/helper/SearchWithTransitionHelper.vue";
-import {useWindowsStore} from "../../../stores/windowsStore";
-import NavigationService from "src/services/NavigationService";
-import ToolbarButtons from "components/buttons/ToolbarButtons.vue";
+import {useWindowsStore} from "src/stores/windowsStore";
 import ToolbarButton from "components/buttons/ToolbarButton.vue";
 import SidePanelToolbarTabNavigationHelper from "pages/sidepanel/helper/SidePanelToolbarTabNavigationHelper.vue";
+import FilterWithTransitionHelper from "pages/sidepanel/helper/FilterWithTransitionHelper.vue";
 
 const props = defineProps({
   title: {type: String, default: "My Tabsets"},
@@ -157,8 +132,6 @@ watchEffect(() => {
   }
 })
 
-const toggleSorting = () => useCommandExecutor().executeFromUi(new ToggleSortingCommand(tabsStore.currentTabsetId))
-
 const toggleSessionState = () => existingSession ? stopSession() : startSession()
 
 const startSession = () => $q.dialog({
@@ -174,21 +147,21 @@ const stopSession = () => {
   }
 }
 
-const createWebsiteClipTooltip = () => {
-  const windowId = useWindowsStore().currentWindow.id || 0
-  const currentChromeTab = useTabsStore().getCurrentChromeTab(windowId) || useTabsStore().currentChromeTab
-  return "Create Website Clip for tab " + currentChromeTab.url
-}
+// const createWebsiteClipTooltip = () => {
+//   const windowId = useWindowsStore().currentWindow.id || 0
+//   const currentChromeTab = useTabsStore().getCurrentChromeTab(windowId) || useTabsStore().currentChromeTab
+//   return "Create Website Clip for tab " + currentChromeTab.url
+// }
 
 const webClipActive = () => tabsStore.currentChromeTab
 
-const createClip = () => {
-  const windowId = useWindowsStore().currentWindow.id || 0
-  const currentChromeTab = useTabsStore().getCurrentChromeTab(windowId) || useTabsStore().currentChromeTab
-  if (currentChromeTab && currentChromeTab.id) {
-    ChromeApi.executeClippingJS(currentChromeTab.id)
-  }
-}
+// const createClip = () => {
+//   const windowId = useWindowsStore().currentWindow.id || 0
+//   const currentChromeTab = useTabsStore().getCurrentChromeTab(windowId) || useTabsStore().currentChromeTab
+//   if (currentChromeTab && currentChromeTab.id) {
+//     ChromeApi.executeClippingJS(currentChromeTab.id)
+//   }
+// }
 
 const showSearchIcon = () => tabsStore.tabsets.size > 1
 
@@ -222,6 +195,8 @@ const openNewTabsetDialog = () => {
     }
   })
 }
+
+const showFilter = () => useUiStore().sidePanelActiveViewIs(SidePanelView.TABS_LIST) && useUiStore().toolbarFilter
 
 </script>
 

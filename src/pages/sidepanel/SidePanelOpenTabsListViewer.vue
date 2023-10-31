@@ -72,7 +72,7 @@
                     v-on:selectionChanged="tabSelectionChanged"
                     v-on:addedToTabset="tabAddedToTabset"
                     v-on:hasSelectable="hasSelectable"
-                    :tab="tab"
+                    :chromeTab="tab"
                     :useSelection="useSelection"/>
 
               </div>
@@ -85,9 +85,6 @@
 
       </div>
 
-      <!--      <div>-->
-      <!--        {{ useTabsStore().chromeTabsHistory}}-->
-      <!--      </div>-->
     </div>
 
     <!-- place QPageSticky at end of page -->
@@ -95,8 +92,12 @@
       <FirstToolbarHelper title="Open Tabs">
 
         <template v-slot:iconsRight>
+          <template v-if="tabs.length > 1">
+            <ToolbarButton icon="filter_list" size="11px" @click="useUiStore().toggleToolbarFilter()"/>
+            <span class="q-ma-none q-pa-none q-mx-sm text-grey-5">|</span>
+          </template>
           <SidePanelToolbarTabNavigationHelper/>
-          <CloseSidePanelViewButton />
+          <CloseSidePanelViewButton/>
         </template>
 
       </FirstToolbarHelper>
@@ -107,7 +108,6 @@
 </template>
 <script setup lang="ts">
 import {useTabsStore} from "src/stores/tabsStore";
-import {Tab} from "src/models/Tab";
 import {Tabset} from "src/models/Tabset";
 import _ from "lodash";
 import {onMounted, ref, watchEffect} from "vue"
@@ -117,11 +117,8 @@ import TabsetService from "src/services/TabsetService";
 import {useTabsetService} from "src/services/TabsetService2";
 import InfoMessageWidget from "components/widgets/InfoMessageWidget.vue";
 import {useRoute, useRouter} from "vue-router";
-import {usePermissionsStore} from "src/stores/permissionsStore";
-import {FeatureIdent} from "src/models/AppFeature";
-import {SidePanelView, useUiStore} from "src/stores/uiStore";
+import {useUiStore} from "src/stores/uiStore";
 import Analytics from "src/utils/google-analytics";
-import NavigationService from "src/services/NavigationService";
 import FirstToolbarHelper from "pages/sidepanel/helper/FirstToolbarHelper.vue";
 import ToolbarButton from "components/buttons/ToolbarButton.vue";
 import SidePanelToolbarTabNavigationHelper from "pages/sidepanel/helper/SidePanelToolbarTabNavigationHelper.vue";
@@ -141,28 +138,14 @@ onMounted(() => {
   Analytics.firePageViewEvent('SidePanelOpenTabsListViewer', document.location.href);
 })
 
-
-function unassignedTabs(): Tab[] {
-  return _.filter(
-      tabsStore.pendingTabset?.tabs,
-      (tab: Tab) => {
-        if (usePermissionsStore().hasFeature(FeatureIdent.IGNORE)) {
-          const ignoreTS = useTabsetService().getTabset('IGNORE')
-          if (ignoreTS && tab.url !== undefined) {
-            const foundIndex = ignoreTS.tabs.findIndex((ignoreTab: Tab) =>
-                tab.url?.startsWith(ignoreTab.url || 'somestrangestring'))
-            if (foundIndex >= 0) {
-              console.log("ignoring", tab.url, ignoreTS.tabs[foundIndex].url)
-              return false
-            }
-          }
-        }
-        return true
-      })
-}
-
 watchEffect(() => {
   tabs.value = useTabsStore().tabs
+  const filterTerm = useUiStore().toolbarFilterTerm.toLowerCase()
+  if (filterTerm.length > 0) {
+    tabs.value = _.filter(tabs.value, (t: chrome.tabs.Tab) =>
+        !!(t.url && t.url?.indexOf(filterTerm) >= 0 ||
+            (t.title && t.title.toLowerCase()?.indexOf(filterTerm) >= 0)))
+  }
 })
 
 watchEffect(() => {
@@ -173,11 +156,6 @@ const addTooltip = () => useSelection.value ?
     `Add ${tabSelection.value.size} tab(s) to ${tabsStore.currentTabsetName}` :
     `Add all tabs to ${tabsStore.currentTabsetName}`
 
-const deleteTabset = () => useSelection.value ?
-    `Remove ${tabSelection.value.size} tabs from this view` :
-    `Remove all tabs from this view`
-
-// const addLabel = () => useSelection.value ? 'add ' + tabSelection.value.size + ' tabs' : 'add'
 const addLabel = () => 'add'
 const checkboxLabel = () => useSelection.value ? '' : 'use selection'
 const tabSelectionChanged = (a: any) => {
@@ -195,22 +173,6 @@ const tabAddedToTabset = (a: any) => {
 }
 
 const hasSelectable = () => userCanSelect.value = true
-
-
-const showMissingSomeTabsAction = () => {
-  if (process.env.MODE !== 'bex') {
-    return false
-  }
-  if (route?.query?.first) {
-    return false
-  }
-  if ((!tabsStore.pendingTabset || tabsStore.pendingTabset.tabs.length === 0) && tabsStore.tabs.length > 1) {
-    return true
-  }
-  return false
-}
-
-const showStartingHint = () => !showMissingSomeTabsAction() && tabsStore.pendingTabset?.tabs.length <= 1
 
 const saveSelectedTabs = () => {
   TabsetService.saveSelectedPendingTabs()

@@ -118,21 +118,6 @@ class IndexedDbPersistenceService implements PersistenceService {
     }
   }
 
-  // saveLog(context: string, level: LogLevel, msg: string, ...args: any[]): Promise<any> {
-  //   if (this.db) {
-  //     const store = this.db.transaction(["logs"], "readwrite")
-  //       .objectStore("logs");
-  //     return store.put({
-  //       timestamp: new Date().getTime(),
-  //       context,
-  //       msg,
-  //       level,
-  //       args
-  //     })
-  //   }
-  //   return Promise.reject("db not available (yet)")
-  // }
-
   saveThumbnail(tab: chrome.tabs.Tab, thumbnail: string): Promise<void> {
     if (tab.url) {
       const encodedTabUrl = btoa(tab.url)
@@ -442,21 +427,6 @@ class IndexedDbPersistenceService implements PersistenceService {
     } catch (ex) {
       console.log("got error in getMHtmls", ex)
       return Promise.reject("got error in getMHtmls")
-    }
-  }
-
-  getBlobs(type: string): Promise<any[]> {
-    if (!this.db) { // can happen for some reason
-      return Promise.resolve([])
-    }
-    try {
-      return this.db.getAll('blobs')
-        .then((b: any[]) => {
-          return _.filter(b, d => d.type === type)
-        })
-    } catch (ex) {
-      console.log("got error in getBlobs", ex)
-      return Promise.reject("got error in getBlobs")
     }
   }
 

@@ -44,7 +44,6 @@
 import {onMounted} from "vue";
 import {useRouter} from "vue-router";
 import InfoMessageWidget from "components/widgets/InfoMessageWidget.vue";
-import {SidePanelView, useUiStore} from "src/stores/uiStore";
 import FirstToolbarHelper from "pages/sidepanel/helper/FirstToolbarHelper.vue";
 import Analytics from "src/utils/google-analytics";
 import ByDomainListWidget from "components/widgets/ByDomainListWidget.vue";
