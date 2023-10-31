@@ -152,6 +152,9 @@ export const useUiStore = defineStore('ui', () => {
 
   const showCurrentTabBox = ref<boolean>(true)
 
+  const toolbarFilter = ref(false)
+  const toolbarFilterTerm = ref('')
+
   watch(rightDrawer.value, (val: Object) => {
     LocalStorage.set("ui.rightDrawer", val)
   }, {deep: true})
@@ -351,6 +354,13 @@ export const useUiStore = defineStore('ui', () => {
     showCurrentTabBox.value = !b
   }
 
+  function toggleToolbarFilter() {
+    toolbarFilter.value = !toolbarFilter.value
+    if (!toolbarFilter.value) {
+      toolbarFilterTerm.value = ''
+    }
+  }
+
   return {
     rightDrawer,
     rightDrawerOpen,
@@ -396,6 +406,9 @@ export const useUiStore = defineStore('ui', () => {
     progressLabel,
     tabsetsExpanded,
     hideCurrentTabBox,
-    showCurrentTabBox
+    showCurrentTabBox,
+    toolbarFilter,
+    toggleToolbarFilter,
+    toolbarFilterTerm
   }
 })

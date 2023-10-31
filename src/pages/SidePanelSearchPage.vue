@@ -165,7 +165,4 @@ watchEffect(() => {
   }
 })
 
-const bookmarksEnabled = () => usePermissionsStore().hasPermission('bookmarks')
-const grant = (permission: string) => useCommandExecutor().executeFromUi(new GrantPermissionCommand(permission))
-
 </script>

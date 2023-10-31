@@ -55,8 +55,6 @@ interface PersistenceService {
 
   cleanUpRequests(): Promise<void>
 
-  saveStats(date: string, dataset: object): void
-
   getNotifications(onlyNew: boolean): Promise<Notification[]>
   addNotification(notification: Notification): Promise<any>
   notificationRead(notificationId: string): Promise<void>
