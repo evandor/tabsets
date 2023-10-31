@@ -129,7 +129,6 @@ export const useUiStore = defineStore('ui', () => {
   // info Messages
   const hiddenMessages = ref<string[]>(LocalStorage.getItem('ui.hiddenInfoMessages') as unknown as string[] || [])
   const messageAlreadyShown = ref<string | undefined>(undefined)
-  const openTabMatchesTabsetTabs = ref(false)
 
   // highlight url(s) feature
   const highlightUrls = ref<string[]>([])

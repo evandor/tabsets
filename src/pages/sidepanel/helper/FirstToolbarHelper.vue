@@ -96,7 +96,7 @@ import _ from "lodash";
 import {StopSessionCommand} from "src/domain/commands/StopSessionCommand";
 import ChromeApi from "src/services/ChromeApi";
 import SearchWithTransitionHelper from "pages/sidepanel/helper/SearchWithTransitionHelper.vue";
-import {useWindowsStore} from "../../../stores/windowsStore";
+import {useWindowsStore} from "src/stores/windowsStore";
 import ToolbarButton from "components/buttons/ToolbarButton.vue";
 import SidePanelToolbarTabNavigationHelper from "pages/sidepanel/helper/SidePanelToolbarTabNavigationHelper.vue";
 import FilterWithTransitionHelper from "pages/sidepanel/helper/FilterWithTransitionHelper.vue";
@@ -132,8 +132,6 @@ watchEffect(() => {
   }
 })
 
-const toggleSorting = () => useCommandExecutor().executeFromUi(new ToggleSortingCommand(tabsStore.currentTabsetId))
-
 const toggleSessionState = () => existingSession ? stopSession() : startSession()
 
 const startSession = () => $q.dialog({
@@ -149,21 +147,21 @@ const stopSession = () => {
   }
 }
 
-const createWebsiteClipTooltip = () => {
-  const windowId = useWindowsStore().currentWindow.id || 0
-  const currentChromeTab = useTabsStore().getCurrentChromeTab(windowId) || useTabsStore().currentChromeTab
-  return "Create Website Clip for tab " + currentChromeTab.url
-}
+// const createWebsiteClipTooltip = () => {
+//   const windowId = useWindowsStore().currentWindow.id || 0
+//   const currentChromeTab = useTabsStore().getCurrentChromeTab(windowId) || useTabsStore().currentChromeTab
+//   return "Create Website Clip for tab " + currentChromeTab.url
+// }
 
 const webClipActive = () => tabsStore.currentChromeTab
 
-const createClip = () => {
-  const windowId = useWindowsStore().currentWindow.id || 0
-  const currentChromeTab = useTabsStore().getCurrentChromeTab(windowId) || useTabsStore().currentChromeTab
-  if (currentChromeTab && currentChromeTab.id) {
-    ChromeApi.executeClippingJS(currentChromeTab.id)
-  }
-}
+// const createClip = () => {
+//   const windowId = useWindowsStore().currentWindow.id || 0
+//   const currentChromeTab = useTabsStore().getCurrentChromeTab(windowId) || useTabsStore().currentChromeTab
+//   if (currentChromeTab && currentChromeTab.id) {
+//     ChromeApi.executeClippingJS(currentChromeTab.id)
+//   }
+// }
 
 const showSearchIcon = () => tabsStore.tabsets.size > 1
 

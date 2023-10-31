@@ -1,4 +1,4 @@
-import {HTMLSelection, Tab} from "src/models/Tab";
+import {HTMLSelection} from "src/models/Tab";
 import {useNotificationsStore} from "src/stores/notificationsStore";
 import {openURL} from "quasar";
 import {useTabsStore} from "src/stores/tabsStore";
@@ -27,10 +27,10 @@ class NavigationService {
                 const windowFromDb = await useWindowsStore().windowFor(useWindowIdent)
                 if (windowFromDb) {
                     const w = windowFromDb.browserWindow
-                    createData['left' as keyof object]  =(w.left || 0) < 0 ? 0 : w.left
-                    createData['top' as keyof object]  = (w.top || 0) < 0 ? 0 : w.top
-                    createData['width' as keyof object]  = (w.left || -1) < 0 ? 600 : w.width
-                    createData['height' as keyof object]  = (w.top || -1) < 0 ? 400 : w.height
+                    createData['left' as keyof object] = (w.left || 0) < 0 ? 0 : w.left
+                    createData['top' as keyof object] = (w.top || 0) < 0 ? 0 : w.top
+                    createData['width' as keyof object] = (w.left || -1) < 0 ? 600 : w.width
+                    createData['height' as keyof object] = (w.top || -1) < 0 ? 400 : w.height
                 }
                 // create a new window with a single url
                 console.log("opening new window with", createData)
@@ -52,7 +52,6 @@ class NavigationService {
         if (process.env.MODE === "bex") {
             // get all tabs with this url
             const tabsForUrl = useTabsStore().tabsForUrl(withUrl) || []
-            const selections: HTMLSelection[] = []
             tabsForUrl.forEach(t => {
                 if (t.httpInfo) {
                     t.httpError = ''
@@ -148,14 +147,12 @@ class NavigationService {
         return chrome.tabs.update(tabId, {active: true})
     }
 
-    closeChromeTab(tab: Tab) {
+    closeChromeTab(tab: chrome.tabs.Tab) {
         console.log("closing chrome tab", tab.id, tab?.id)
-        if (tab?.id) {
-            try {
-                chrome.tabs.remove(tab.chromeTabId || 0)
-            } catch (err) {
-                console.log("error clsosing chrome tab", err)
-            }
+        try {
+            chrome.tabs.remove(tab.id || 0)
+        } catch (err) {
+            console.log("error clsosing chrome tab", err)
         }
     }
 

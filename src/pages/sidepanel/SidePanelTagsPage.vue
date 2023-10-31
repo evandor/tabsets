@@ -42,16 +42,14 @@ import {useSearchStore} from "src/stores/searchStore";
 import {Tabset} from "src/models/Tabset";
 import {uid, useQuasar} from "quasar";
 import SearchHit from "src/components/layouts/SearchHit.vue"
-import ChromeApi from "src/services/ChromeApi";
 import {Hit} from "src/models/Hit";
 import ReindexDialog from "components/dialogues/ReindexDialog.vue";
 import {usePermissionsStore} from "src/stores/permissionsStore";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {GrantPermissionCommand} from "src/domain/commands/GrantPermissionCommand";
-import {SidePanelView, useUiStore} from "src/stores/uiStore";
+import {useUiStore} from "src/stores/uiStore";
 import {Tab} from "src/models/Tab";
 import {useTabsetService} from "src/services/TabsetService2";
-import InfoMessageWidget from "components/widgets/InfoMessageWidget.vue";
 import FirstToolbarHelper from "pages/sidepanel/helper/FirstToolbarHelper.vue";
 import Analytics from "src/utils/google-analytics";
 import SidePanelToolbarTabNavigationHelper from "pages/sidepanel/helper/SidePanelToolbarTabNavigationHelper.vue";
@@ -135,8 +133,5 @@ watchEffect(() => {
     })
   }
 })
-
-const bookmarksEnabled = () => usePermissionsStore().hasPermission('bookmarks')
-const grant = (permission: string) => useCommandExecutor().executeFromUi(new GrantPermissionCommand(permission))
 
 </script>

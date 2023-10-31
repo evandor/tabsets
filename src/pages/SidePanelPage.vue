@@ -110,7 +110,7 @@
 
 <script lang="ts" setup>
 
-import {onMounted, onUnmounted, ref, watch, watchEffect} from "vue";
+import {onMounted, onUnmounted, ref, watchEffect} from "vue";
 import {useTabsStore} from "src/stores/tabsStore";
 import {Tab} from "src/models/Tab";
 import _ from "lodash"
@@ -128,17 +128,14 @@ import {useCommandExecutor} from "src/services/CommandExecutor";
 import {SelectTabsetCommand} from "src/domain/tabsets/SelectTabset";
 import {FeatureIdent} from "src/models/AppFeature";
 import SidePanelPageContextMenu from "pages/sidepanel/SidePanelPageContextMenu.vue";
-import {DynamicTabSourceType} from "src/models/DynamicTabSource";
 import {useWindowsStore} from "src/stores/windowsStore";
 import TabsetService from "src/services/TabsetService";
 import Analytics from "src/utils/google-analytics";
 import {useAuthStore} from "stores/auth";
-import {PlaceholdersType} from "src/models/Placeholders";
 import {useDB} from "src/services/usePersistenceService";
 import getScrollTarget = scroll.getScrollTarget;
 import {useBookmarksStore} from "stores/bookmarksStore";
 import {useSuggestionsStore} from "stores/suggestionsStore";
-import NavigationService from "src/services/NavigationService";
 import SidePanelPageTabList from "components/layouts/SidePanelPageTabList.vue";
 
 const {setVerticalScrollPosition} = scroll
