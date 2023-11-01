@@ -11,7 +11,6 @@ import {MHtml} from "src/models/MHtml";
 import {Tab} from "src/models/Tab";
 import {SearchDoc} from "src/models/SearchDoc";
 import {MetaLink} from "src/models/MetaLink";
-import {StatsEntry} from "src/models/StatsEntry";
 import {uid} from "quasar";
 import {Notification, NotificationStatus} from "src/models/Notification";
 import {StaticSuggestionIdent, Suggestion, SuggestionState, SuggestionType} from "src/models/Suggestion";
@@ -118,21 +117,6 @@ class IndexedDbPersistenceService implements PersistenceService {
       tnCursor = await tnCursor.continue();
     }
   }
-
-  // saveLog(context: string, level: LogLevel, msg: string, ...args: any[]): Promise<any> {
-  //   if (this.db) {
-  //     const store = this.db.transaction(["logs"], "readwrite")
-  //       .objectStore("logs");
-  //     return store.put({
-  //       timestamp: new Date().getTime(),
-  //       context,
-  //       msg,
-  //       level,
-  //       args
-  //     })
-  //   }
-  //   return Promise.reject("db not available (yet)")
-  // }
 
   saveThumbnail(tab: chrome.tabs.Tab, thumbnail: string): Promise<void> {
     if (tab.url) {
@@ -446,21 +430,6 @@ class IndexedDbPersistenceService implements PersistenceService {
     }
   }
 
-  getBlobs(type: string): Promise<any[]> {
-    if (!this.db) { // can happen for some reason
-      return Promise.resolve([])
-    }
-    try {
-      return this.db.getAll('blobs')
-        .then((b: any[]) => {
-          return _.filter(b, d => d.type === type)
-        })
-    } catch (ex) {
-      console.log("got error in getBlobs", ex)
-      return Promise.reject("got error in getBlobs")
-    }
-  }
-
   getBlob(blobId: string): Promise<any> {
     if (!this.db) { // can happen for some reason
       return Promise.resolve([])
@@ -650,11 +619,6 @@ class IndexedDbPersistenceService implements PersistenceService {
       }
     }
     return false;
-  }
-
-
-  saveStats(date: string, dataset: StatsEntry) {
-    this.db.put('stats', dataset, date)
   }
 
   getNotifications(onlyNew: boolean = true): Promise<Notification[]> {

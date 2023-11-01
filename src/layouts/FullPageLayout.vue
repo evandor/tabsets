@@ -126,6 +126,12 @@
             :restricted="false"/>
 
         <ToolbarButton
+            :drawer="DrawerTabs.OPEN_TABS"
+            icon="o_playlist_add"
+            tooltip="Show Open Tabs View"
+            :restricted="false"/>
+
+        <ToolbarButton
             :drawer="DrawerTabs.TAGS_VIEWER"
             icon="o_label"
             tooltip="Show tags viewer"
@@ -174,8 +180,6 @@
               v-model="useUiStore().rightDrawerOpen" side="right" bordered
               content-class="column justify-between no-wrap bg-grey-1">
       <DrawerRight/>
-
-      <!--      <UnassignedTabs v-else-if="tab ===  DrawerTabs.UNASSIGNED_TABS" :filter="filter"/>-->
 
     </q-drawer>
 

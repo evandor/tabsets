@@ -111,7 +111,7 @@
 
 <script lang="ts" setup>
 
-import {onMounted, onUnmounted, ref, watch, watchEffect} from "vue";
+import {onMounted, onUnmounted, ref, watchEffect} from "vue";
 import {useTabsStore} from "src/stores/tabsStore";
 import {Tab} from "src/models/Tab";
 import _ from "lodash"
@@ -129,17 +129,14 @@ import {useCommandExecutor} from "src/services/CommandExecutor";
 import {SelectTabsetCommand} from "src/domain/tabsets/SelectTabset";
 import {FeatureIdent} from "src/models/AppFeature";
 import SidePanelPageContextMenu from "pages/sidepanel/SidePanelPageContextMenu.vue";
-import {DynamicTabSourceType} from "src/models/DynamicTabSource";
 import {useWindowsStore} from "src/stores/windowsStore";
 import TabsetService from "src/services/TabsetService";
 import Analytics from "src/utils/google-analytics";
 import {useAuthStore} from "stores/auth";
-import {PlaceholdersType} from "src/models/Placeholders";
 import {useDB} from "src/services/usePersistenceService";
 import getScrollTarget = scroll.getScrollTarget;
 import {useBookmarksStore} from "stores/bookmarksStore";
 import {useSuggestionsStore} from "stores/suggestionsStore";
-import NavigationService from "src/services/NavigationService";
 import SidePanelPageTabList from "components/layouts/SidePanelPageTabList.vue";
 
 const {setVerticalScrollPosition} = scroll
@@ -499,8 +496,6 @@ const tabsetCaption = (tabs: Tab[], window: string) => {
   return caption
 }
 
-const hoveredOver = (tabsetId: string) => hoveredTabset.value === tabsetId
-
 function checkKeystroke(e: KeyboardEvent) {
   if (useUiStore().ignoreKeypressListener()) {
     return
@@ -544,9 +539,13 @@ const tabsetIcon = (tabset: Tabset) => {
 }
 
 const headerStyle = (tabset: Tabset) => {
+  const tabsetOpened = _.findIndex([...tabsetExpanded.value.keys()],
+      (key: string) => (key !== null) && tabsetExpanded.value.get(key)) >= 0
   let style = tabsetExpanded.value.get(tabset.id) ?
       'border:0 solid grey;border-top-left-radius:4px;border-top-right-radius:4px;' :
-      'border:0 solid grey;border-radius:4px;'
+      tabsetOpened ?
+          'border:0 solid grey;border-radius:4px;opacity:30%;' :
+          'border:0 solid grey;border-radius:4px;'
   if (tabset.color && usePermissionsStore().hasFeature(FeatureIdent.COLOR_TAGS)) {
     style = style + 'border-left:4px solid ' + tabset.color
   } else {
@@ -554,6 +553,7 @@ const headerStyle = (tabset: Tabset) => {
   }
   return style
 }
+
 </script>
 
 <style>

@@ -33,7 +33,6 @@ import {usePermissionsStore} from "src/stores/permissionsStore";
 import {FeatureIdent} from "src/models/AppFeature";
 
 const permissionsStore = usePermissionsStore()
-const uiStore = useUiStore()
 
 const props = defineProps({
   feature: {type: String, required: false},
@@ -53,7 +52,7 @@ const outlinedIfActive = (): boolean => {
   return false
 }
 
-const tabsClicked = (tab: DrawerTabs, data: object = {}) => useUiStore().rightDrawerSetActiveTab(tab, data)
+const tabsClicked = (tab: DrawerTabs, data: object = {}) => useUiStore().rightDrawerSetActiveTab(tab)
 
 
 </script>

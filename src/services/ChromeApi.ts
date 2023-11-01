@@ -9,7 +9,7 @@ import {useSearchStore} from "src/stores/searchStore";
 import {SearchDoc} from "src/models/SearchDoc";
 import {usePermissionsStore} from "src/stores/permissionsStore";
 import {Tab} from "src/models/Tab";
-import {uid, useQuasar} from "quasar";
+import {uid} from "quasar";
 import {FeatureIdent} from "src/models/AppFeature";
 import {RequestInfo} from "src/models/RequestInfo";
 
@@ -97,6 +97,7 @@ class ChromeApi {
     )
   }
 
+  // TODO should be called somewhere, should it not?
   stopWebRequestListener() {
     console.log("removing WebRequestListener")
     chrome.webRequest.onHeadersReceived.removeListener(this.onHeadersReceivedListener)
@@ -284,14 +285,6 @@ class ChromeApi {
     if (tabIndex) {
       chrome.tabs.highlight({tabs: tabIndex})
     }
-  }
-
-  async tabsForUrl(url: string | undefined): Promise<chrome.tabs.Tab[]> {
-    if (url) {
-      // @ts-ignore
-      return chrome.tabs.query({url: url});
-    }
-    return Promise.reject("url not defined")
   }
 
   async childrenFor(bookmarkFolderId: string): Promise<chrome.bookmarks.BookmarkTreeNode[]> {

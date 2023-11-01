@@ -17,6 +17,8 @@ import {FeatureIdent} from "src/models/AppFeature";
 import {Extractor, Extractors, ExtractorType} from "src/config/Extractors";
 import {useUtils} from "src/services/Utils";
 import {useGroupsStore} from "stores/groupsStore";
+import {useUiStore} from "stores/uiStore";
+import NavigationService from "src/services/NavigationService";
 
 const {
   saveCurrentTabset,
@@ -195,6 +197,22 @@ class ChromeListeners {
       //     })
       //   }
       // });
+
+      chrome.commands.onCommand.addListener((command) => {
+        switch (command) {
+          case 'tabHistoryBack':
+            NavigationService.backOneTab()
+            break
+          case 'tabHistoryForward':
+            NavigationService.forwardOneTab()
+            break
+          case 'search':
+            break
+          default:
+            console.log(`unknown Command: ${command}`);
+            break
+        }
+      });
 
     }
 
@@ -438,12 +456,12 @@ class ChromeListeners {
       _.forEach([...tabsStore.tabsets.keys()], key => {
         const ts = tabsStore.tabsets.get(key)
         if (ts && ts.status !== TabsetStatus.DELETED) {
+          // increasing hit count
           const hits = _.filter(ts.tabs, (t: Tab) => t.url === url)
           let hit = false
           _.forEach(hits, h => {
             h.activatedCount = 1 + h.activatedCount
             h.lastActive = new Date().getTime()
-            console.debug(`onActivated: tab ${info.tabId}:updating hits`, h)
             hit = true
           })
           if (hit) {

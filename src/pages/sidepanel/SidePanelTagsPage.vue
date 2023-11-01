@@ -21,16 +21,8 @@
       <FirstToolbarHelper :title="useUiStore().selectedTag + ' (Tags List)'">
 
         <template v-slot:iconsRight>
-          <q-btn
-              icon="close"
-              @click="useUiStore().sidePanelSetActiveView(SidePanelView.MAIN)"
-              color="black"
-              flat
-              class="q-ma-none q-pa-xs cursor-pointer"
-              style="max-width:20px"
-              size="10px">
-            <q-tooltip class="tooltip">Close this view</q-tooltip>
-          </q-btn>
+          <SidePanelToolbarTabNavigationHelper/>
+          <CloseSidePanelViewButton />
         </template>
 
       </FirstToolbarHelper>
@@ -50,18 +42,18 @@ import {useSearchStore} from "src/stores/searchStore";
 import {Tabset} from "src/models/Tabset";
 import {uid, useQuasar} from "quasar";
 import SearchHit from "src/components/layouts/SearchHit.vue"
-import ChromeApi from "src/services/ChromeApi";
 import {Hit} from "src/models/Hit";
 import ReindexDialog from "components/dialogues/ReindexDialog.vue";
 import {usePermissionsStore} from "src/stores/permissionsStore";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {GrantPermissionCommand} from "src/domain/commands/GrantPermissionCommand";
-import {SidePanelView, useUiStore} from "src/stores/uiStore";
+import {useUiStore} from "src/stores/uiStore";
 import {Tab} from "src/models/Tab";
 import {useTabsetService} from "src/services/TabsetService2";
-import InfoMessageWidget from "components/widgets/InfoMessageWidget.vue";
 import FirstToolbarHelper from "pages/sidepanel/helper/FirstToolbarHelper.vue";
 import Analytics from "src/utils/google-analytics";
+import SidePanelToolbarTabNavigationHelper from "pages/sidepanel/helper/SidePanelToolbarTabNavigationHelper.vue";
+import CloseSidePanelViewButton from "components/buttons/CloseSidePanelViewButton.vue";
 
 const route = useRoute()
 const tabsStore = useTabsStore()
@@ -141,8 +133,5 @@ watchEffect(() => {
     })
   }
 })
-
-const bookmarksEnabled = () => usePermissionsStore().hasPermission('bookmarks')
-const grant = (permission: string) => useCommandExecutor().executeFromUi(new GrantPermissionCommand(permission))
 
 </script>

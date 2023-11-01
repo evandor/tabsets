@@ -20,7 +20,7 @@
     <!-- name or title -->
     <q-item-label>
       <div>
-        <div class="q-pr-lg cursor-pointer" >
+        <div class="q-pr-lg cursor-pointer">
           <q-chip v-if="isOpen(props.tab) && props.showIsOpened"
                   class="q-my-none q-py-none q-ml-none q-mr-sm"
                   clickable
@@ -40,7 +40,7 @@
             <q-tooltip class="tooltip">This tab has a duplicate inside this tabset and could be deleted</q-tooltip>
           </q-chip>
           <span v-if="useTabsStore().getCurrentTabset?.sorting === 'alphabeticalTitle'">
-            <q-icon name="arrow_right" size="16px" />
+            <q-icon name="arrow_right" size="16px"/>
           </span>
           {{ nameOrTitle(props.tab) }}
           <q-popup-edit :model-value="dynamicNameOrTitleModel(tab)" v-slot="scope"
@@ -59,17 +59,17 @@
 
     <!-- url -->
     <q-item-label
-      v-if="props.tab.url"
-      caption class="ellipsis-2-lines text-blue-10"
-      @mouseover="showButtonsProp = true"
-      @mouseleave="showButtonsProp = false">
+        v-if="props.tab.url"
+        caption class="ellipsis-2-lines text-blue-10"
+        @mouseover="showButtonsProp = true"
+        @mouseleave="showButtonsProp = false">
       <div class="q-pr-lg cursor-pointer" style="display: inline-block;"
            @click.stop="open(props.tab)">
 
         <span v-if="useTabsStore().getCurrentTabset?.sorting === 'alphabeticalUrl'">
-          <q-icon name="arrow_right" size="16px" />
+          <q-icon name="arrow_right" size="16px"/>
         </span>
-        <short-url :url="props.tab?.url" :hostname-only="true" />
+        <short-url :url="props.tab?.url" :hostname-only="true"/>
 
         <q-icon class="q-ml-xs" name="open_in_new"/>
         <q-icon v-if="showButtonsProp"
@@ -86,6 +86,16 @@
       <q-icon color="blue-10" name="edit_note"/>
       {{ props.tab.note }}
     </q-item-label>
+
+    <!-- tabsets -->
+    <q-item-label class="text-grey-10" text-subtitle1>
+      <q-icon color="blue-10" name="edit_note"/>
+      <q-chip class="cursor-pointer q-ml-none q-mr-sm q-mt-md" size="9px" clickable icon="tab" v-for="badge in tsBadges">
+        {{ badge['label' as keyof object] }}
+        <q-tooltip class="tooltip">This tab is also contained in this tabset</q-tooltip>
+      </q-chip>
+    </q-item-label>
+
   </q-item-section>
 
   <!-- new tab and edit note buttons -->
@@ -129,6 +139,7 @@ import {useTabsetService} from "src/services/TabsetService2";
 import ShortUrl from "components/utils/ShortUrl.vue";
 import {useTabsStore} from "src/stores/tabsStore";
 import {useRouter} from "vue-router";
+import _ from "lodash";
 
 const props = defineProps({
   tab: {type: Object as PropType<Tab>, required: true},
@@ -137,30 +148,52 @@ const props = defineProps({
   highlightUrl: {type: String, required: false}
 })
 
-const emits = defineEmits(['sendCaption'])
-
 const $q = useQuasar()
 
 const showButtonsProp = ref<boolean>(false)
 const thumbnail = ref<string | undefined>(undefined)
 const imgFromBlob = ref<string>("")
+const tsBadges = ref<object[]>([])
+
 const router = useRouter()
+
+watchEffect(() => {
+  if (props.tab.url) {
+    const url = props.tab.url
+    const tabsetIds = useTabsetService().tabsetsFor(url)
+    tsBadges.value = []
+    //created.value = undefined
+    _.forEach(tabsetIds, tsId => {
+      // if (tsId === props.tabsetId) {
+      //   const tabsForUrl = tabsStore.tabsForUrl(currentChromeTab.value.url || '')
+      //   if (tabsForUrl && tabsForUrl.length > 0) {
+      //     //created.value = formatDate(tabsForUrl[0].created)
+      //   }
+      // }
+      tsBadges.value.push({
+        label: TabsetService.nameForTabsetId(tsId),
+        tabsetId: tsId,
+        encodedUrl: btoa(url || '')
+      })
+    })
+  }
+})
 
 onMounted(() => {
   const blobImgPath = props.tab.image
   if (blobImgPath && blobImgPath.startsWith('blob://')) {
     useTabsetService().getBlob(blobImgPath.replace("blob://", ""))
-      .then((res) => {
-        var reader = new FileReader();
-        reader.readAsDataURL(res.content);
-        reader.onloadend = function () {
-          var base64data = reader.result;
-          if (base64data) {
-            imgFromBlob.value = base64data.toString()
+        .then((res) => {
+          var reader = new FileReader();
+          reader.readAsDataURL(res.content);
+          reader.onloadend = function () {
+            var base64data = reader.result;
+            if (base64data) {
+              imgFromBlob.value = base64data.toString()
+            }
           }
-        }
-      })
-      .catch((err) => console.error(err))
+        })
+        .catch((err) => console.error(err))
   }
 })
 
@@ -173,18 +206,6 @@ function getShortHostname(host: string) {
   return host
 }
 
-function getHost(urlAsString: string, shorten: Boolean = true): string {
-  try {
-    const url = new URL(urlAsString)
-    if (!shorten) {
-      return url.protocol + "://" + url.host.toString()
-    }
-    return getShortHostname(url.host)
-  } catch (e) {
-    return "---";
-  }
-}
-
 const itemStyle = (tab: Tab) => {
   let border = ""
   let background = ''
@@ -193,42 +214,12 @@ const itemStyle = (tab: Tab) => {
 
 const isOpen = (tab: Tab): boolean => TabsetService.isOpen(tab?.url || '')
 
-const setInfo = (tab: Tab) => {
-  const parts = (tab?.url || '').split('?')
-  if (parts.length > 1) {
-    emits('sendCaption', parts[0] + "[... params omitted....]")
-  } else if (parts.length === 1) {
-    emits('sendCaption', parts[0].toString());
-  }
-}
-
-const selectTab = (tab: Tab) => {
-  TabsetService.setOnlySelectedTab(tab)
-}
-
-
-const getFaviconUrl = (chromeTab: chrome.tabs.Tab | undefined) => {
-  if (chromeTab && chromeTab.favIconUrl && !chromeTab.favIconUrl.startsWith("chrome")) {
-    return chromeTab.favIconUrl
-  }
-  return ''//'favicon-unknown-32x32.png'
-}
-
 const deleteTab = (tab: Tab) => useCommandExecutor().executeFromUi(new DeleteTabCommand(tab))
 
 const editNoteDialog = (tab: Tab) => $q.dialog({
   component: EditNoteDialog,
   componentProps: {tabId: tab.id, note: tab.note}
 })
-
-const addToNewTabUrlList = (tab: Tab) => {
- // console.log("got tab", tab)
-  useUiStore().addToNewTabUrlList({
-    url: tab.url,
-    title: tab.title,
-    favIconUrl: tab.favIconUrl
-  })
-}
 
 const nameOrTitle = (tab: Tab) => {
   // if (tab.executionResult) {
@@ -240,10 +231,10 @@ const nameOrTitle = (tab: Tab) => {
 const dynamicNameOrTitleModel = (tab: Tab) => tab.name ? tab.name : tab?.title
 
 const setCustomTitle = (tab: Tab, newValue: string) =>
-  useCommandExecutor().executeFromUi(new UpdateTabNameCommand(tab, newValue))
+    useCommandExecutor().executeFromUi(new UpdateTabNameCommand(tab, newValue))
 
 const copyToClipboard = (text: string) =>
-  useCommandExecutor().executeFromUi(new CopyToClipboardCommand(text))
+    useCommandExecutor().executeFromUi(new CopyToClipboardCommand(text))
 
 const thumbnailFor = async (tab: Tab): Promise<object> => {
   return await TabsetService.getThumbnailFor(tab)
@@ -253,28 +244,24 @@ watchEffect(() => {
   if (props.tab) {
     // @ts-ignore
     thumbnailFor(props.tab)
-      .then((tn: object) => {
-        //console.log("tn", tn)
-        if (tn && tn['thumbnail' as keyof object]) {
-          thumbnail.value = tn['thumbnail' as keyof object]
-        }
-      })
-      .catch((err) => {
-        //console.log("could not get thumbnail for ", props.tab)
-      })
+        .then((tn: object) => {
+          //console.log("tn", tn)
+          if (tn && tn['thumbnail' as keyof object]) {
+            thumbnail.value = tn['thumbnail' as keyof object]
+          }
+        })
+        .catch((err) => {
+          //console.log("could not get thumbnail for ", props.tab)
+        })
   }
 })
 
 const open = (tab: Tab) => {
   if (process.env.MODE === 'electron') {
-    //const candidates = useTabsStore().tabsForUrl(withUrl)
-    //console.log("found candidates", candidates)
-    //if (candidates.length > 0) {
-      router.push("/browser/" + tab.id)
-      return Promise.resolve()
-    //}
+    router.push("/browser/" + tab.id)
+    return Promise.resolve()
   }
-  NavigationService.openOrCreateTab(props.tab?.url )
+  NavigationService.openOrCreateTab(props.tab?.url || '')
 }
 
 </script>

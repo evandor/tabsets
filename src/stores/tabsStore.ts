@@ -15,6 +15,7 @@ import {useTabsetService} from "src/services/TabsetService2";
 import {useWindowsStore} from "src/stores/windowsStore";
 
 async function queryTabs(): Promise<chrome.tabs.Tab[]> {
+    console.log("hier")
     // @ts-ignore
     return await chrome.tabs.query({currentWindow: true});
 }
@@ -49,6 +50,13 @@ export const useTabsStore = defineStore('tabs', {
         currentChromeTab: null as unknown as chrome.tabs.Tab,
         // tab by window id
         currentChromeTabs: new Map() as Map<number, chrome.tabs.Tab>,
+
+        // the ids of the tabs the user activated, limited to the last X entries
+        chromeTabsHistory: new Array<[number, string]>(),
+        // where are we in the chromeTabsHistory?
+        chromeTabsHistoryPosition: -1,
+        // we are currently navigating through the history?
+        chromeTabsHistoryNavigating: false,
 
         /**
          * a named list of tabsets managed by this extension.
@@ -310,7 +318,43 @@ export const useTabsStore = defineStore('tabs', {
         setCurrentChromeTab(tab: chrome.tabs.Tab) {
             this.currentChromeTab = tab
             this.currentChromeTabs.set(tab.windowId, tab)
-            //console.log("xxx", this.currentChromeTabs)
+            const MAX_HISTORY_LENGTH = 12
+
+            console.log("%cchromeTabsHistoryPosition", "color:green;font-style:bold;",
+                tab.id, this.chromeTabsHistoryPosition, this.chromeTabsHistory.length, this.chromeTabsHistoryNavigating)
+
+            // tab was activated without using the navigation
+            if (tab.id && !this.chromeTabsHistoryNavigating) {
+
+                // update urls for matching id
+                this.chromeTabsHistory.forEach(([tabId, url], index) => {
+                    if (tabId === tab.id) {
+                        this.chromeTabsHistory[index] = [tabId, tab.url || '']
+                    }
+                });
+
+                const historyLength = this.chromeTabsHistory.length
+                this.chromeTabsHistoryPosition = Math.min(MAX_HISTORY_LENGTH - 1, historyLength)
+                if (historyLength > 0 &&
+                    this.chromeTabsHistory[historyLength - 1][0] !== tab.id &&
+                    this.chromeTabsHistory[historyLength - 1][1] !== tab.url
+                ) {
+                    console.log("pushing tab A", tab.id)
+                    this.chromeTabsHistory.push([tab.id, tab.url || ''])
+                } else if (historyLength === 0) {
+                    console.log("pushing tab B", tab.id)
+                    this.chromeTabsHistory.push([tab.id, tab.url || ''])
+                } else {
+                    console.log("did not add, adjusting position", historyLength - 1)
+                    this.chromeTabsHistoryPosition = historyLength - 1
+                }
+                if (this.chromeTabsHistory.length > MAX_HISTORY_LENGTH) {
+                    console.log("deleting first element")
+                    this.chromeTabsHistory.splice(0, 1)
+                }
+            } else if (this.chromeTabsHistoryNavigating) {
+                this.chromeTabsHistoryNavigating = false
+            }
         },
 
         selectCurrentTabset(tabsetId: string): Tabset | undefined {
@@ -399,13 +443,13 @@ export const useTabsStore = defineStore('tabs', {
                 ts = new Tabset(id, id, [])
                 if (ident === SpecialTabsetIdent.HELP) {
                     const documentation = ChromeApi.createChromeTabObject(
-                        "Documentation","https://docs.tabsets.net")
+                        "Documentation", "https://docs.tabsets.net")
                     const documentationTab = new Tab(uid(), documentation)
                     documentationTab.description = "find out about Tabsets' Features"
                     ts = new Tabset(id, id, [
                         documentationTab,
                         new Tab(uid(), ChromeApi.createChromeTabObject(
-                            "Philosophy","https://tabsets.web.app/#/philosophy")),
+                            "Philosophy", "https://tabsets.web.app/#/philosophy")),
                         // new Tab(uid(), ChromeApi.createChromeTabObject(
                         //     "Glossary","https://tabsets.web.app/#/glossary")),
                         // new Tab(uid(), ChromeApi.createChromeTabObject(
@@ -413,9 +457,9 @@ export const useTabsStore = defineStore('tabs', {
                         // new Tab(uid(), ChromeApi.createChromeTabObject(
                         //     "FAQ","https://tabsets.web.app/#/faq")),
                         new Tab(uid(), ChromeApi.createChromeTabObject(
-                            "Pricacy","https://tabsets.web.app/#/privacy")),
+                            "Pricacy", "https://tabsets.web.app/#/privacy")),
                         new Tab(uid(), ChromeApi.createChromeTabObject(
-                            "Terms of service","https://tabsets.web.app/#/tos")),
+                            "Terms of service", "https://tabsets.web.app/#/tos")),
                     ])
                     ts.status = TabsetStatus.HIDDEN
                 }
@@ -487,6 +531,24 @@ export const useTabsStore = defineStore('tabs', {
                 }
             }
             this.pendingTabset.tabs.push(tab)
+        },
+
+        tabHistoryBack() {
+            if (this.chromeTabsHistoryPosition > 0) {
+            console.log("called tabHistoryBack with", this.chromeTabsHistoryPosition)
+                this.chromeTabsHistoryPosition -= 1
+                this.chromeTabsHistoryNavigating = true
+            }
+            return this.chromeTabsHistory[this.chromeTabsHistoryPosition]
+        },
+
+        tabHistoryForward() {
+            if (this.chromeTabsHistoryPosition < this.chromeTabsHistory.length - 1) {
+            console.log("called tabHistoryForward with", this.chromeTabsHistoryPosition,this.chromeTabsHistory.length)
+                this.chromeTabsHistoryPosition += 1
+                this.chromeTabsHistoryNavigating = true
+            }
+            return this.chromeTabsHistory[this.chromeTabsHistoryPosition]
         }
     }
 });
