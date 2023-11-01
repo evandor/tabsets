@@ -23,7 +23,7 @@ export class RenameTabsetCommand implements Command<any> {
     constructor(
         public tabsetId: string,
         public newName: string,
-        public newColor: string | undefined) {
+        public newColor: string | undefined = undefined) {
     }
 
     async execute(): Promise<ExecutionResult<string>> {

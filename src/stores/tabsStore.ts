@@ -15,6 +15,7 @@ import {useTabsetService} from "src/services/TabsetService2";
 import {useWindowsStore} from "src/stores/windowsStore";
 
 async function queryTabs(): Promise<chrome.tabs.Tab[]> {
+    console.log("hier")
     // @ts-ignore
     return await chrome.tabs.query({currentWindow: true});
 }
@@ -533,14 +534,20 @@ export const useTabsStore = defineStore('tabs', {
         },
 
         tabHistoryBack() {
-            this.chromeTabsHistoryPosition -= 1
-            this.chromeTabsHistoryNavigating = true
+            if (this.chromeTabsHistoryPosition > 0) {
+            console.log("called tabHistoryBack with", this.chromeTabsHistoryPosition)
+                this.chromeTabsHistoryPosition -= 1
+                this.chromeTabsHistoryNavigating = true
+            }
             return this.chromeTabsHistory[this.chromeTabsHistoryPosition]
         },
 
         tabHistoryForward() {
-            this.chromeTabsHistoryPosition += 1
-            this.chromeTabsHistoryNavigating = true
+            if (this.chromeTabsHistoryPosition < this.chromeTabsHistory.length - 1) {
+            console.log("called tabHistoryForward with", this.chromeTabsHistoryPosition,this.chromeTabsHistory.length)
+                this.chromeTabsHistoryPosition += 1
+                this.chromeTabsHistoryNavigating = true
+            }
             return this.chromeTabsHistory[this.chromeTabsHistoryPosition]
         }
     }

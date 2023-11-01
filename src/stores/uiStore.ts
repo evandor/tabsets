@@ -83,7 +83,7 @@ export enum ListDetailLevel {
 
 export class RightDrawer {
   constructor(
-    public activeTab: DrawerTabs = DrawerTabs.UNASSIGNED_TABS) {
+    public activeTab: DrawerTabs = DrawerTabs.OPEN_TABS) {
   }
 }
 

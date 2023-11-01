@@ -20,7 +20,7 @@
 
           <SidePanelToolbarTabNavigationHelper />
 
-          <ToolbarButton
+          <SidePanelToolbarButton
               icon="close"
               tooltip="Close this view"
               @click="useUiStore().sidePanelSetActiveView(SidePanelView.MAIN)"
@@ -41,8 +41,9 @@ import FirstToolbarHelper from "pages/sidepanel/helper/FirstToolbarHelper.vue";
 import {SidePanelView, useUiStore} from "stores/uiStore";
 import {onMounted} from "vue";
 import Analytics from "src/utils/google-analytics";
-import ToolbarButton from "components/buttons/ToolbarButton.vue";
+import ToolbarButton from "components/buttons/SidePanelToolbarButton.vue";
 import SidePanelToolbarTabNavigationHelper from "pages/sidepanel/helper/SidePanelToolbarTabNavigationHelper.vue";
+import SidePanelToolbarButton from "components/buttons/SidePanelToolbarButton.vue";
 
 onMounted(() => {
   Analytics.firePageViewEvent('SidePanelBookmarksPage', document.location.href);

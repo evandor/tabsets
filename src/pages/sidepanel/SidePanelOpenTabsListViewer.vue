@@ -93,7 +93,7 @@
 
         <template v-slot:iconsRight>
           <template v-if="tabs.length > 1">
-            <ToolbarButton icon="filter_list" size="11px" @click="useUiStore().toggleToolbarFilter()"/>
+            <SidePanelToolbarButton icon="filter_list" size="11px" @click="useUiStore().toggleToolbarFilter()"/>
             <span class="q-ma-none q-pa-none q-mx-sm text-grey-5">|</span>
           </template>
           <SidePanelToolbarTabNavigationHelper/>
@@ -120,9 +120,10 @@ import {useRoute, useRouter} from "vue-router";
 import {useUiStore} from "src/stores/uiStore";
 import Analytics from "src/utils/google-analytics";
 import FirstToolbarHelper from "pages/sidepanel/helper/FirstToolbarHelper.vue";
-import ToolbarButton from "components/buttons/ToolbarButton.vue";
+import ToolbarButton from "components/buttons/SidePanelToolbarButton.vue";
 import SidePanelToolbarTabNavigationHelper from "pages/sidepanel/helper/SidePanelToolbarTabNavigationHelper.vue";
 import CloseSidePanelViewButton from "components/buttons/CloseSidePanelViewButton.vue";
+import SidePanelToolbarButton from "components/buttons/SidePanelToolbarButton.vue";
 
 const tabsStore = useTabsStore()
 const route = useRoute()

@@ -45,7 +45,7 @@
 
           <slot name="iconsRight">
 
-            <ToolbarButton
+            <SidePanelToolbarButton
                 v-if="showToggleSessionIcon()"
                 :color="existingSession ? (tabsStore.getCurrentTabset?.type === TabsetType.SESSION ? 'red':'grey-5') :'black'"
                 :icon="existingSession ? 'o_stop_circle':'o_play_circle'"
@@ -53,7 +53,7 @@
                 :tooltip="existingSession ? 'Stop Session' : 'Start new Session'"/>
 
             <template v-if="showSearchIcon()">
-              <ToolbarButton icon="search"
+              <SidePanelToolbarButton icon="search"
                              id="toggleSearchBtn"
                              size="11px"
                              color="black"
@@ -63,7 +63,7 @@
 
             <SidePanelToolbarTabNavigationHelper/>
 
-            <ToolbarButton
+            <SidePanelToolbarButton
                 icon="o_add_circle"
                 :tooltip="newTabsetTooltip()"
                 color="warning"
@@ -97,9 +97,10 @@ import {StopSessionCommand} from "src/domain/commands/StopSessionCommand";
 import ChromeApi from "src/services/ChromeApi";
 import SearchWithTransitionHelper from "pages/sidepanel/helper/SearchWithTransitionHelper.vue";
 import {useWindowsStore} from "src/stores/windowsStore";
-import ToolbarButton from "components/buttons/ToolbarButton.vue";
+import ToolbarButton from "components/buttons/SidePanelToolbarButton.vue";
 import SidePanelToolbarTabNavigationHelper from "pages/sidepanel/helper/SidePanelToolbarTabNavigationHelper.vue";
 import FilterWithTransitionHelper from "pages/sidepanel/helper/FilterWithTransitionHelper.vue";
+import SidePanelToolbarButton from "components/buttons/SidePanelToolbarButton.vue";
 
 const props = defineProps({
   title: {type: String, default: "My Tabsets"},
@@ -121,14 +122,22 @@ const existingSession = ref(false)
 const toggleSearch = () => {
   searching.value = !searching.value
   if (searching.value) {
-    // comment out for old search approach (plus SearchWidget2 -> SearchWidget)
     router.push("/sidepanel/search")
+  } else {
+    router.push("/sidepanel")
   }
 }
 
 watchEffect(() => {
   if (props.showSearchBox && !searching.value) {
     searching.value = true
+  }
+})
+
+chrome.commands.onCommand.addListener((command) => {
+  if(command === 'search') {
+    console.debug(`got Command: ${command}`);
+    toggleSearch()
   }
 })
 
