@@ -4,7 +4,7 @@
       <div class="row q-ma-none q-pa-none">
 
         <!-- we have spaces -->
-        <div v-if="usePermissionsStore().hasFeature(FeatureIdent.SPACES)" class="col-6 q-ma-none q-pa-none">
+        <div v-if="permissionsStore.hasFeature(FeatureIdent.SPACES)" class="col-6 q-ma-none q-pa-none">
 
           <!-- spaces and no back button -->
 
@@ -115,6 +115,7 @@ const emits = defineEmits(['wasClicked'])
 const $q = useQuasar()
 const router = useRouter()
 const tabsStore = useTabsStore()
+const permissionsStore = usePermissionsStore()
 
 const searching = ref(false)
 const existingSession = ref(false)
