@@ -3,14 +3,13 @@ import {ExecutionResult} from "src/domain/ExecutionResult";
 import {useTabsStore} from "src/stores/tabsStore";
 import _ from "lodash"
 import {Tab} from "src/models/Tab";
-import {useNotificationsStore} from "src/stores/notificationsStore";
 import {useUiStore} from "src/stores/uiStore";
 import {useUtils} from "src/services/Utils";
 import {Tabset} from "src/models/Tabset";
 import {useSpacesStore} from "src/stores/spacesStore";
 import {useTabsetService} from "src/services/TabsetService2";
 
-const {inBexMode} = useUtils()
+const {inBexMode, sendMsg} = useUtils()
 
 export class SelectTabsetCommand implements Command<Tabset | undefined> {
 
@@ -37,23 +36,16 @@ export class SelectTabsetCommand implements Command<Tabset | undefined> {
     //tabsStore.currentTabsetId = this.tabsetId;
     useTabsetService().selectTabset(this.tabsetId)
     //localStorage.setItem("selectedTabset", this.tabsetId)
-    if (this.spaceId) {
+    //if (this.spaceId) {
       useSpacesStore().setSpace(this.spaceId)
-    }
+    //}
 
     if (inBexMode()) {
-      const msg = {
-        name: 'current-tabset-id-change',
+      const data = {
         ignore: true, // doing this to keep the logic, might be needed again
         data: {tabsetId: this.tabsetId}
       }
-      //console.log("sending message", msg)
-      chrome.runtime.sendMessage(msg, (callback) => {
-        console.log("got callback", callback)
-        if (chrome.runtime.lastError) {
-          // ignore
-        }
-      });
+      sendMsg('current-tabset-id-change', data);
     }
 
     const executionResult = new ExecutionResult(currentTabset, "done")
