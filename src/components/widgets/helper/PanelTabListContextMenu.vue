@@ -2,9 +2,8 @@
   <q-menu :offset="[0, 0]">
     <q-list dense style="min-width: 200px">
       <template v-if="showTabDetailsMenuEntry(props['tab' as keyof object])">
-        <q-separator/>
         <q-item clickable v-close-popup @click.stop="showTabDetails(props['tab' as keyof object])">
-          <q-item-section avatar style="padding-right:0;min-width:25px;max-width: 25px;">
+          <q-item-section style="padding-right:0;min-width:25px;max-width: 25px;">
             <q-icon size="xs" name="o_info" color="accent"/>
           </q-item-section>
           <q-item-section>
@@ -19,7 +18,7 @@
         <q-separator/>
         <q-item clickable
                 v-close-popup @click.stop="editNoteDialog(props['tab' as keyof object])">
-          <q-item-section avatar style="padding-right:0;min-width:25px;max-width: 25px;">
+          <q-item-section style="padding-right:0;min-width:25px;max-width: 25px;">
             <q-icon size="xs" name="o_note" color="accent"/>
           </q-item-section>
           <q-item-section>
@@ -30,7 +29,7 @@
 
       <q-separator/>
       <q-item clickable v-close-popup @click.stop="copyToClipboard(props['tab' as keyof object])">
-        <q-item-section avatar style="padding-right:0;min-width:25px;max-width: 25px;">
+        <q-item-section style="padding-right:0;min-width:25px;max-width: 25px;">
           <q-icon size="xs" name="o_link" color="accent"/>
         </q-item-section>
         <q-item-section>
@@ -40,7 +39,7 @@
 
       <q-separator/>
       <q-item clickable v-close-popup @click.stop="editURL(props['tab' as keyof object])">
-        <q-item-section avatar style="padding-right:0;min-width:25px;max-width: 25px;">
+        <q-item-section style="padding-right:0;min-width:25px;max-width: 25px;">
           <q-icon size="xs" name="o_link" color="accent"/>
         </q-item-section>
         <q-item-section>
@@ -51,7 +50,7 @@
       <template v-if="usePermissionsStore().hasFeature(FeatureIdent.ADVANCED_TAB_MANAGEMENT)">
         <q-separator/>
         <q-item clickable v-close-popup @click.stop="assignTab(props['tab' as keyof object])">
-          <q-item-section avatar style="padding-right:0;min-width:25px;max-width: 25px;">
+          <q-item-section style="padding-right:0;min-width:25px;max-width: 25px;">
             <q-icon size="xs" name="o_tab" color="accent"/>
           </q-item-section>
           <q-item-section>
@@ -63,7 +62,7 @@
       <template v-if="usePermissionsStore().hasFeature(FeatureIdent.COLOR_TAGS)">
         <q-separator/>
         <q-item clickable v-close-popup @click.stop="setColor(props['tab' as keyof object])">
-          <q-item-section avatar style="padding-right:0;min-width:25px;max-width: 25px;">
+          <q-item-section style="padding-right:0;min-width:25px;max-width: 25px;">
             <q-icon size="xs" name="o_colorize" color="blue"/>
           </q-item-section>
           <q-item-section>
@@ -76,7 +75,7 @@
 
       <q-separator/>
       <q-item clickable v-close-popup @click.stop="deleteTab(props['tab' as keyof object])">
-        <q-item-section avatar style="padding-right:0;min-width:25px;max-width: 25px;">
+        <q-item-section style="padding-right:0;min-width:25px;max-width: 25px;">
           <q-icon size="xs" name="o_delete" color="negative"/>
         </q-item-section>
         <q-item-section>

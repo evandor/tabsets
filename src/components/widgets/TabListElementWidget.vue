@@ -21,16 +21,16 @@
     <q-item-label>
       <div>
         <div class="q-pr-lg cursor-pointer">
-          <q-chip v-if="isOpen(props.tab) && props.showIsOpened"
-                  class="q-my-none q-py-none q-ml-none q-mr-sm"
-                  clickable
-                  style="float:left;position: relative;top:3px"
-                  @click="NavigationService.openOrCreateTab(props.tab?.url)"
-                  size="xs" icon="tab">
-            opened
-            <q-tooltip class="tooltip">This tab is open in your browser. Click to open the corresponding tab.
-            </q-tooltip>
-          </q-chip>
+<!--          <q-chip v-if="isOpen(props.tab) && props.showIsOpened"-->
+<!--                  class="q-my-none q-py-none q-ml-none q-mr-sm"-->
+<!--                  clickable-->
+<!--                  style="float:left;position: relative;top:3px"-->
+<!--                  @click="NavigationService.openOrCreateTab(props.tab?.url)"-->
+<!--                  size="xs" icon="tab">-->
+<!--            opened-->
+<!--            <q-tooltip class="tooltip">This tab is open in your browser. Click to open the corresponding tab.-->
+<!--            </q-tooltip>-->
+<!--          </q-chip>-->
           <q-chip v-if="props.tab.isDuplicate"
                   class="q-my-none q-py-none q-ml-none q-mr-sm" color="warning"
                   clickable
@@ -89,8 +89,8 @@
 
     <!-- tabsets -->
     <q-item-label class="text-grey-10" text-subtitle1>
-      <q-icon color="blue-10" name="edit_note"/>
-      <q-chip class="cursor-pointer q-ml-none q-mr-sm q-mt-md" size="9px" clickable icon="tab" v-for="badge in tsBadges">
+      <q-chip class="cursor-pointer q-ml-none q-mr-sm q-mt-md" size="9px" clickable icon="tab"
+              v-for="badge in tsBadges">
         {{ badge['label' as keyof object] }}
         <q-tooltip class="tooltip">This tab is also contained in this tabset</q-tooltip>
       </q-chip>
@@ -145,7 +145,8 @@ const props = defineProps({
   tab: {type: Object as PropType<Tab>, required: true},
   showButtons: {type: Boolean, default: false},
   showIsOpened: {type: Boolean, default: true},
-  highlightUrl: {type: String, required: false}
+  highlightUrl: {type: String, required: false},
+  tabsetId: {type: String, required: true}
 })
 
 const $q = useQuasar()
@@ -164,17 +165,13 @@ watchEffect(() => {
     tsBadges.value = []
     //created.value = undefined
     _.forEach(tabsetIds, tsId => {
-      // if (tsId === props.tabsetId) {
-      //   const tabsForUrl = tabsStore.tabsForUrl(currentChromeTab.value.url || '')
-      //   if (tabsForUrl && tabsForUrl.length > 0) {
-      //     //created.value = formatDate(tabsForUrl[0].created)
-      //   }
-      // }
-      tsBadges.value.push({
-        label: TabsetService.nameForTabsetId(tsId),
-        tabsetId: tsId,
-        encodedUrl: btoa(url || '')
-      })
+      if (tsId !== props.tabsetId) {
+        tsBadges.value.push({
+          label: TabsetService.nameForTabsetId(tsId),
+          tabsetId: tsId,
+          encodedUrl: btoa(url || '')
+        })
+      }
     })
   }
 })
