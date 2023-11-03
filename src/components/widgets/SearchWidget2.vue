@@ -1,7 +1,8 @@
 <template>
 
   <div class="q-gutter-md row items-start fit">
-    <q-input dense standout filled autofocus
+    <q-input dense standout filled
+             ref="searchInputRef"
              :placeholder="inputPlaceholder()"
              class="fit q-mx-md"
              color="primary"
@@ -16,7 +17,7 @@
 
 <script lang="ts" setup>
 
-import {ref, watchEffect} from "vue";
+import {onMounted, ref, watchEffect} from "vue";
 import {useSearchStore} from "src/stores/searchStore";
 import {usePermissionsStore} from "src/stores/permissionsStore";
 import {FeatureIdent} from "src/models/AppFeature";
@@ -28,8 +29,18 @@ const props = defineProps({
 
 const searchStore = useSearchStore()
 const search = ref(props.searchTerm)
-const typedOrSelected = ref<any>()
+const searchInputRef = ref<HTMLInputElement | null>(null);
 const highlight = ref<string | undefined>(undefined)
+
+onMounted(() => {
+  setTimeout(() => {
+        if (searchInputRef.value) {
+          searchInputRef.value?.focus()
+        }
+      }, 200
+  )
+})
+
 
 watchEffect(() => {
   searchStore.term = search.value
@@ -43,9 +54,10 @@ const inputPlaceholder = () => {
     return `Found ${props.searchTerm} ${props.searchHits} time(s)`
   }
   if (usePermissionsStore().hasFeature(FeatureIdent.BOOKMARKS)) {
-    return "Search in all tabs and bookmarks"
+    return "Search all tabs and bookmarks"
   }
-  return "Search in all tabs"
+
+  return "Search all tabs"
 }
 
 </script>

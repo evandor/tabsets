@@ -2,7 +2,7 @@
   <q-item
     clickable
     @click.stop="emits('wasClicked')">
-    <q-item-section avatar style="padding-right:0;min-width:25px;max-width: 25px;">
+    <q-item-section  style="padding-right:0;min-width:25px;max-width: 25px;">
       <q-icon size="xs" :name="props.icon" :color="color"/>
     </q-item-section>
     <q-item-section>

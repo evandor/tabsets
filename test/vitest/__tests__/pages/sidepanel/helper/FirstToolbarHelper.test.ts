@@ -1,6 +1,6 @@
 import {installQuasarPlugin} from '@quasar/quasar-app-extension-testing-unit-vitest';
 import {mount} from '@vue/test-utils';
-import {beforeAll, beforeEach, describe, expect, it} from 'vitest';
+import {beforeAll, beforeEach, describe, expect, it, vi} from 'vitest';
 import {createPinia, setActivePinia} from "pinia";
 import {useTabsStore} from "stores/tabsStore";
 import ChromeApi from "src/services/ChromeApi";
@@ -16,6 +16,24 @@ describe('FirstToolbarHelper', () => {
 
   beforeEach(async () => {
     setActivePinia(createPinia())
+
+    const chromeMock = {
+      commands: {
+        onCommand: {
+          addListener: vi.fn(() => {
+            return [];
+          }),
+        }
+      },
+      tabs: {
+        query: vi.fn(() => {})
+      },
+      runtime: {
+        sendMessage: vi.fn(() => {})
+      }
+    };
+
+    vi.stubGlobal('chrome', chromeMock);
   })
 
   it('should be mounted', async () => {

@@ -7,7 +7,7 @@ import {useTabsStore} from "src/stores/tabsStore";
 import {ref} from "vue";
 import {Tab} from "src/models/Tab";
 import throttledQueue from "throttled-queue";
-import {useWindowsStore} from "src/stores/windowsStores";
+import {useWindowsStore} from "src/stores/windowsStore";
 import {useBookmarksStore} from "src/stores/bookmarksStore";
 import {useTabsetService} from "src/services/TabsetService2";
 import {uid} from "quasar";
@@ -104,7 +104,7 @@ export const useSearchStore = defineStore('search', () => {
       return // called too early?
     }
     const removed: SearchDoc[] = fuse.value.remove((doc: SearchDoc) => doc.url === url)
-    console.log("found removed: ", removed)
+    console.debug("found removed: ", removed)
     if (removed && removed.length > 0) {
       let newDoc: SearchDoc = removed[0]
       switch (key) {
@@ -123,7 +123,7 @@ export const useSearchStore = defineStore('search', () => {
         default:
           console.log("could not update", key)
       }
-      console.log("adding new doc", newDoc)
+      console.debug("adding new doc", newDoc)
       fuse.value.add(newDoc)
     }
   }

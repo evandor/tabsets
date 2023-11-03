@@ -9,7 +9,7 @@ import {useSearchStore} from "src/stores/searchStore";
 import {SearchDoc} from "src/models/SearchDoc";
 import {usePermissionsStore} from "src/stores/permissionsStore";
 import {Tab} from "src/models/Tab";
-import {uid, useQuasar} from "quasar";
+import {uid} from "quasar";
 import {FeatureIdent} from "src/models/AppFeature";
 import {RequestInfo} from "src/models/RequestInfo";
 
@@ -97,6 +97,7 @@ class ChromeApi {
     )
   }
 
+  // TODO should be called somewhere, should it not?
   stopWebRequestListener() {
     console.log("removing WebRequestListener")
     chrome.webRequest.onHeadersReceived.removeListener(this.onHeadersReceivedListener)
@@ -126,12 +127,12 @@ class ChromeApi {
                 title: 'Create Website Clip',
                 contexts: ['all']
               })
-              chrome.contextMenus.create({
-                id: 'website_quote',
-                parentId: 'tabset_extension',
-                title: 'Create Website Quote',
-                contexts: ['all']
-              })
+              // chrome.contextMenus.create({
+              //   id: 'website_quote',
+              //   parentId: 'tabset_extension',
+              //   title: 'Create Website Quote',
+              //   contexts: ['all']
+              // })
               //}
               chrome.contextMenus.create({
                 id: 'save_to_currentTS',
@@ -178,11 +179,11 @@ class ChromeApi {
             if (tab && tab.id) {
               this.executeClippingJS(tab.id)
             }
-          } else if (e.menuItemId === "website_quote") {
-            console.log("creating Quote", tab)
-            if (tab && tab.id) {
-              this.executeQuoteJS(tab.id)
-            }
+          // } else if (e.menuItemId === "website_quote") {
+          //   console.log("creating Quote", tab)
+          //   if (tab && tab.id) {
+          //     this.executeQuoteJS(tab.id)
+          //   }
           } else if (e.menuItemId === 'save_to_currentTS') {
             const tabId = tab?.id || 0
             this.executeAddToTS(tabId, useTabsStore().currentTabsetId)
@@ -286,14 +287,6 @@ class ChromeApi {
     }
   }
 
-  async tabsForUrl(url: string | undefined): Promise<chrome.tabs.Tab[]> {
-    if (url) {
-      // @ts-ignore
-      return chrome.tabs.query({url: url});
-    }
-    return Promise.reject("url not defined")
-  }
-
   async childrenFor(bookmarkFolderId: string): Promise<chrome.bookmarks.BookmarkTreeNode[]> {
     console.log("bookmarkFolderId", bookmarkFolderId)
     // @ts-ignore
@@ -345,6 +338,31 @@ class ChromeApi {
     }
   }
 
+  createChromeTabGroupObject(id: number, title: string, color: chrome.tabGroups.ColorEnum) {
+    return {
+      id: id,
+      title: title,
+      color: color,
+      collapsed: false,
+      windowId: 1
+    }
+  }
+
+  createChromeWindowObject(id: number, top: number, left: number) {
+    return {
+      id,
+      alwaysOnTop: false,
+      focused: true,
+      incognito: false,
+      height: 400,
+      width:600,
+      top: top,
+      left: left,
+      state: 'normal' as chrome.windows.windowStateEnum,
+      type: 'normal' as chrome.windows.windowTypeEnum
+    }
+  }
+
   private chromeTabsCreateAsync(createProperties: object): Promise<chrome.tabs.Tab> {
     return new Promise((resolve, reject) => {
       chrome.tabs.create(createProperties, tab => {
@@ -376,13 +394,13 @@ class ChromeApi {
     });
   }
 
-  executeQuoteJS(tabId: number) {
-    // @ts-ignore
-    chrome.scripting.executeScript({
-      target: {tabId: tabId},
-      files: ['quoting.js']
-    });
-  }
+  // executeQuoteJS(tabId: number) {
+  //   // @ts-ignore
+  //   chrome.scripting.executeScript({
+  //     target: {tabId: tabId},
+  //     files: ['quoting.js']
+  //   });
+  // }
 
   executeAddToTS(tabId: number, tabsetId: string) {
     // @ts-ignore

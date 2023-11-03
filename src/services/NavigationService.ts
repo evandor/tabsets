@@ -1,9 +1,9 @@
-import {HTMLSelection, Tab} from "src/models/Tab";
+import {HTMLSelection} from "src/models/Tab";
 import {useNotificationsStore} from "src/stores/notificationsStore";
 import {openURL} from "quasar";
 import {useTabsStore} from "src/stores/tabsStore";
 import {useTabsetService} from "src/services/TabsetService2";
-import {useWindowsStore} from "stores/windowsStores";
+import {useWindowsStore} from "src/stores/windowsStore";
 import JsUtils from "src/utils/JsUtils";
 import {useGroupsStore} from "stores/groupsStore";
 import {usePermissionsStore} from "stores/permissionsStore";
@@ -14,20 +14,35 @@ class NavigationService {
     async openOrCreateTab(
         withUrl: string,
         matcher: string | undefined = undefined,
-        group: chrome.tabGroups.TabGroup | undefined = undefined
+        group: string | undefined = undefined
     ) {
         const useWindowIdent = useTabsStore().getCurrentTabset?.window || 'current'
         console.log(`opening url ${withUrl} in window ${useWindowIdent}, group: ${group}, mode: ${process.env.MODE}`)
 
-        const existingWindow = await useWindowsStore().windowFor(useWindowIdent)
+        const existingWindow = await useWindowsStore().currentWindowFor(useWindowIdent)
         if (useWindowIdent !== 'current') {
             console.log("existingWindow", existingWindow)
             if (!existingWindow) {
+                const createData: any = {url: withUrl}
+                const windowFromDb = await useWindowsStore().windowFor(useWindowIdent)
+                if (windowFromDb) {
+                    const w = windowFromDb.browserWindow
+                    createData['left' as keyof object] = (w.left || 0) < 0 ? 0 : w.left
+                    createData['top' as keyof object] = (w.top || 0) < 0 ? 0 : w.top
+                    createData['width' as keyof object] = (w.left || -1) < 0 ? 600 : w.width
+                    createData['height' as keyof object] = (w.top || -1) < 0 ? 400 : w.height
+                }
                 // create a new window with a single url
-                chrome.windows.create({url: withUrl}, (callback) => {
-                    console.log("callback", callback)
-                    if (callback) {
-                        useWindowsStore().assignWindow(useWindowIdent, callback.id || 0)
+                console.log("opening new window with", createData)
+                chrome.windows.create(createData, (window) => {
+                    console.log("window", window)
+                    if (window) {
+                        useWindowsStore().assignWindow(useWindowIdent, window.id || 0)
+                        //useWindowsStore().renameWindow(window.id || 0, useWindowIdent)
+                        useWindowsStore().upsertWindow(window, useWindowIdent)
+                        if (window.id && window.tabs && window.tabs.length > 0) {
+                            this.handleGroup(group, window.id, window.tabs[0]);
+                        }
                     }
                 })
                 return
@@ -37,13 +52,7 @@ class NavigationService {
         if (process.env.MODE === "bex") {
             // get all tabs with this url
             const tabsForUrl = useTabsStore().tabsForUrl(withUrl) || []
-            const selections: HTMLSelection[] = []
             tabsForUrl.forEach(t => {
-                if (t.selections) {
-                    //console.log("found", t.selections)
-                    t.selections.forEach(s => selections.push(s))
-                    //selections.concat(t.selections)
-                }
                 if (t.httpInfo) {
                     t.httpError = ''
                     t.httpInfo = ''
@@ -77,16 +86,6 @@ class NavigationService {
 
                                 this.handleGroup(group, useWindowId, r);
 
-                                console.log("sending Message highlightSelections")
-                                chrome.runtime.sendMessage({
-                                    msg: "highlightSelections",
-                                    selections: selections
-                                }, (res: any) => {
-                                    //console.log("got response1", res)
-                                    if (chrome.runtime.lastError) {
-                                        console.warn("got runtime error", chrome.runtime.lastError)
-                                    }
-                                })
                             }
                         }
                     });
@@ -102,26 +101,6 @@ class NavigationService {
 
                         this.handleGroup(group, useWindowId, tab);
 
-                        // pass selections and execute quoting script
-                        if (selections.length > 0) {
-                            console.log("selections", selections, tab.id)
-                            // @ts-ignore
-                            chrome.scripting.executeScript({
-                                target: {tabId: tab.id || 0},
-                                files: ['highlighting.js']
-                            }, (result: any) => {
-                                if (tab.id) {
-                                    console.log("sending Message highlightSelections", tab.id)
-                                    chrome.tabs.sendMessage(tab.id, {
-                                        msg: "highlightSelections",
-                                        selections: selections
-                                    }, (res: any) => {
-                                        //console.log("got response2", res)
-                                    })
-                                }
-                            });
-                        }
-
                     })
 
                 }
@@ -131,10 +110,10 @@ class NavigationService {
         }
     }
 
-    private handleGroup(group: chrome.tabGroups.TabGroup | undefined, useWindowId: number, r: chrome.tabs.Tab) {
+    private handleGroup(group: string | undefined, useWindowId: number, r: chrome.tabs.Tab) {
         if (group && usePermissionsStore().hasFeature(FeatureIdent.TAB_GROUPS) && chrome?.tabs?.group) {
-            console.log("handling Group", group)
-            const optionalGroup = useGroupsStore().groupFor(group.id, group.title)
+            console.log("handling current Group", group)
+            const optionalGroup = useGroupsStore().currentGroupForName(group)
             if (!optionalGroup) {
                 const props = {
                     createProperties: {
@@ -145,11 +124,12 @@ class NavigationService {
                 console.log("group not found, creating with", props)
                 chrome.tabs.group(props, groupId => {
                     console.log("groupId", groupId)
+                    const color = useGroupsStore().groupForName(group)?.color || 'grey'
                     chrome.tabGroups.update(groupId, {
                         collapsed: false,
-                        color: group.color,
-                        title: group.title
-                    }, c => console.log("c", c))
+                        color: color,
+                        title: group
+                    })
                 })
             } else {
                 const props = {
@@ -164,23 +144,39 @@ class NavigationService {
     }
 
     openTab(tabId: number) {
-        chrome.tabs.update(tabId, {active: true})
+        return chrome.tabs.update(tabId, {active: true})
     }
 
-    closeChromeTab(tab: Tab) {
+    closeChromeTab(tab: chrome.tabs.Tab) {
         console.log("closing chrome tab", tab.id, tab?.id)
-        if (tab?.id) {
-            try {
-                chrome.tabs.remove(tab.chromeTabId || 0)
-            } catch (err) {
-                console.log("error clsosing chrome tab", err)
-            }
+        try {
+            chrome.tabs.remove(tab.id || 0)
+        } catch (err) {
+            console.log("error clsosing chrome tab", err)
         }
     }
 
     updateAvailable(details: any) {
         console.log("details: UpdateAvailableDetails", details)
         useNotificationsStore().updateAvailable(true, details.version)
+    }
+
+    backOneTab() {
+        const [tabId, url] = useTabsStore().tabHistoryBack()
+        this.openTab(tabId)
+            .catch((err) => {
+                useTabsStore().chromeTabsHistoryNavigating = false
+                this.openOrCreateTab(url)
+            })
+    }
+
+    forwardOneTab() {
+        const [tabId, url] = useTabsStore().tabHistoryForward()
+        this.openTab(tabId)
+            .catch((err) => {
+                useTabsStore().chromeTabsHistoryNavigating = false
+                this.openOrCreateTab(url)
+            })
     }
 }
 

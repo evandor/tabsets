@@ -50,13 +50,13 @@
     </div>
 
     <div class="col-12 q-my-md">
-      <div v-if="appFeature.type === FeatureType.RECOMMENDED">
+      <div v-if="appFeature?.type === FeatureType.RECOMMENDED">
         This feature is considered stable and useful, but not activated by default. To use it, switch this feature on.
       </div>
-      <div v-if="appFeature.type === FeatureType.OPTIONAL">
+      <div v-if="appFeature?.type === FeatureType.OPTIONAL">
         This feature is considered stable but might not be useful for everybody. To use it, switch this feature on.
       </div>
-      <div v-if="appFeature.type === FeatureType.EXPERIMENTAL">
+      <div v-if="appFeature?.type === FeatureType.EXPERIMENTAL">
         This feature is not considered stable and might break other parts of this extension. To use it at your
         own risk, switch this feature on.
       </div>
@@ -322,22 +322,18 @@ text.set(FeatureIdent.CATEGORIZATION.toLowerCase(), {
   description: 'Categorize your tabsets automatically',
   permissions: []
 })
-text.set(FeatureIdent.PAGE_MARKER.toLowerCase(), {
-  name: 'Page Marker',
-  description: 'Highlight parts of a page and add notes',
-  permissions: ['contextMenus']
-})
+// text.set(FeatureIdent.PAGE_MARKER.toLowerCase(), {
+//   name: 'Page Marker',
+//   description: 'Highlight parts of a page and add notes',
+//   permissions: ['contextMenus']
+// })
 text.set(FeatureIdent.NOTIFICATIONS.toLowerCase(), {
   name: 'Browser Notifications',
   img: 'notification.png',
   description: 'Allow Tabsets to send Notifications via your Browser. Recommended.',
   permissions: ['notifications']
 })
-text.set(FeatureIdent.ANNOTATIONS.toLowerCase(), {
-  name: 'Websites Annotations',
-  description: 'Annotate Websites',
-  permissions: []
-})
+
 text.set(FeatureIdent.TAGS.toLowerCase(), {
   name: 'Use Tags',
   img: 'tags.png',

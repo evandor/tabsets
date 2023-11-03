@@ -124,6 +124,7 @@ import BookmarkList from "components/layouts/BookmarkList.vue";
 import ImportFromBookmarks from "components/dialogues/helper/ImportFromBookmarks.vue";
 import Analytics from "src/utils/google-analytics";
 import ImportFromBookmarksDialog from "components/dialogues/ImportFromBookmarksDialog.vue";
+import BookmarksService from "src/services/BookmarksService";
 
 const props = defineProps({
   inSidePanel: {type: Boolean, default: false}
@@ -200,10 +201,8 @@ const deleteBookmarkFolder = () => {
     cancel: true,
     persistent: true
   }).onOk(() => {
-    const folderId = bookmarksStore.currentBookmark.chromeBookmark.id
     const parentId = bookmarksStore.currentBookmark.chromeBookmark.parentId
-    console.log("deleting", folderId)
-    chrome.bookmarks.removeTree(bookmarksStore.currentBookmark.chromeBookmark.id)
+    BookmarksService.deleteBookmarksFolder(bookmarksStore.currentBookmark.chromeBookmark.id)
     if (parentId) {
       router.push(props.inSidePanel ? "/mainpanel/bookmarks/" + parentId : "/bookmarks/" + parentId)
     }

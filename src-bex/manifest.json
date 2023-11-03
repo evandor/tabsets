@@ -39,6 +39,27 @@
       "suggested_key": {
         "default": "Ctrl+Shift+T"
       }
+    },
+    "search": {
+      "suggested_key": {
+        "default": "Ctrl+K",
+        "mac": "Command+K"
+      },
+      "description": "Open Search Box"
+    },
+    "tabHistoryBack": {
+      "suggested_key": {
+        "default": "Alt+Left",
+        "mac": "Alt+Left"
+      },
+      "description": "Open last open tab"
+    },
+    "tabHistoryForward": {
+      "suggested_key": {
+        "default": "Alt+Right",
+        "mac": "Alt+Right"
+      },
+      "description": "Forward to next tab (if available)"
     }
   },
   "content_security_policy": "script-src 'self' 'wasm-unsafe-eval'"

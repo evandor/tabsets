@@ -4,7 +4,7 @@
       <div class="row q-ma-none q-pa-none">
 
         <!-- we have spaces -->
-        <div v-if="usePermissionsStore().hasFeature(FeatureIdent.SPACES)" class="col-6 q-ma-none q-pa-none">
+        <div v-if="permissionsStore.hasFeature(FeatureIdent.SPACES)" class="col-6 q-ma-none q-pa-none">
 
           <!-- spaces and no back button -->
 
@@ -28,6 +28,7 @@
                                       :search-term="props.searchTerm"
                                       :search-hits="props.searchHits"/>
 
+          <FilterWithTransitionHelper v-else-if="showFilter()" />
           <!-- no spaces && not searching -->
           <template v-else>
 
@@ -44,84 +45,30 @@
 
           <slot name="iconsRight">
 
-            <!--            <q-separator vertical inset/>-->
-
-            <q-btn v-if="showSortIcon()"
-                   flat
-                   size="10px"
-                   class="q-ma-none q-pa-xs cursor-pointer"
-                   style="max-width:20px"
-                   text-color="primary"
-                   @click="toggleSorting()"
-                   outline
-                   icon="o_sort">
-              <q-tooltip class="tooltip">Toggle through sorting</q-tooltip>
-            </q-btn>
-
-            <q-btn v-if="showToggleSessionIcon()"
-                   flat
-                   style="max-width:20px"
-                   size="10px"
-                   class="q-ma-none q-pa-xs cursor-pointer"
-                   :color="existingSession ? (tabsStore.getCurrentTabset?.type === TabsetType.SESSION ? 'red':'grey-5') :'black'"
-                   :icon="existingSession ? 'o_stop_circle':'o_play_circle'"
-                   @click="toggleSessionState">
-              <q-tooltip class="tooltip" v-if="existingSession">Stop Session</q-tooltip>
-              <q-tooltip class="tooltip" v-else>Start new Session</q-tooltip>
-            </q-btn>
-
-<!--            <template v-if="showCreateClipButton()">-->
-<!--              <q-btn-->
-<!--                  icon="filter_center_focus"-->
-<!--                  color="black"-->
-<!--                  flat-->
-<!--                  class="q-ma-none q-pa-xs cursor-pointer"-->
-<!--                  style="max-width:20px"-->
-<!--                  size="10px"-->
-<!--                  @click="createClip">-->
-<!--                <q-tooltip class="tooltip">{{ createWebsiteClipTooltip() }}</q-tooltip>-->
-<!--              </q-btn>-->
-<!--              <span class="q-ma-none q-pa-none q-mx-sm text-grey-5">|</span>-->
-<!--            </template>-->
-
-            <q-btn
-                v-if="showCreateClipButtonInActive()"
-                icon="filter_center_focus"
-                color="grey-5"
-                flat
-                class="q-ma-none q-pa-xs cursor-pointer"
-                style="max-width:20px"
-                size="10px">
-              <q-tooltip class="tooltip">cannot create web clip for this tab</q-tooltip>
-            </q-btn>
-
+            <SidePanelToolbarButton
+                v-if="showToggleSessionIcon()"
+                :color="existingSession ? (tabsStore.getCurrentTabset?.type === TabsetType.SESSION ? 'red':'grey-5') :'black'"
+                :icon="existingSession ? 'o_stop_circle':'o_play_circle'"
+                @click="toggleSessionState"
+                :tooltip="existingSession ? 'Stop Session' : 'Start new Session'"/>
 
             <template v-if="showSearchIcon()">
-              <q-btn
-                  id="toggleSearchBtn"
-                  icon="search"
-                  color="black"
-                  flat
-                  class="q-ma-none q-pa-xs cursor-pointer"
-                  style="max-width:20px"
-                  size="11px"
-                  @click="toggleSearch">
-              </q-btn>
+              <SidePanelToolbarButton icon="search"
+                             id="toggleSearchBtn"
+                             size="11px"
+                             color="black"
+                             @click="toggleSearch"/>
               <span class="q-ma-none q-pa-none q-mx-sm text-grey-5">|</span>
             </template>
 
-            <q-btn
-                icon="o_add_circle"
-                color="warning"
-                flat
-                class="q-ma-none q-pa-xs cursor-pointer"
-                style="max-width:20px"
-                size="12px"
-                data-testid="addTabsetBtn"
-                @click="openNewTabsetDialog()">
-              <q-tooltip class="tooltip">{{ newTabsetTooltip() }}</q-tooltip>
-            </q-btn>
+            <SidePanelToolbarTabNavigationHelper/>
 
+            <SidePanelToolbarButton
+                icon="o_add_circle"
+                :tooltip="newTabsetTooltip()"
+                color="warning"
+                data-testid="addTabsetBtn"
+                @click="openNewTabsetDialog()"/>
 
           </slot>
         </div>
@@ -149,9 +96,11 @@ import _ from "lodash";
 import {StopSessionCommand} from "src/domain/commands/StopSessionCommand";
 import ChromeApi from "src/services/ChromeApi";
 import SearchWithTransitionHelper from "pages/sidepanel/helper/SearchWithTransitionHelper.vue";
-import {useWindowsStore} from "../../../stores/windowsStores";
-import {Suggestion, SuggestionState, SuggestionType} from "src/models/Suggestion";
-import SuggestionDialog from "components/dialogues/SuggestionDialog.vue";
+import {useWindowsStore} from "src/stores/windowsStore";
+import ToolbarButton from "components/buttons/SidePanelToolbarButton.vue";
+import SidePanelToolbarTabNavigationHelper from "pages/sidepanel/helper/SidePanelToolbarTabNavigationHelper.vue";
+import FilterWithTransitionHelper from "pages/sidepanel/helper/FilterWithTransitionHelper.vue";
+import SidePanelToolbarButton from "components/buttons/SidePanelToolbarButton.vue";
 
 const props = defineProps({
   title: {type: String, default: "My Tabsets"},
@@ -166,6 +115,7 @@ const emits = defineEmits(['wasClicked'])
 const $q = useQuasar()
 const router = useRouter()
 const tabsStore = useTabsStore()
+const permissionsStore = usePermissionsStore()
 
 const searching = ref(false)
 const existingSession = ref(false)
@@ -173,8 +123,9 @@ const existingSession = ref(false)
 const toggleSearch = () => {
   searching.value = !searching.value
   if (searching.value) {
-    // comment out for old search approach (plus SearchWidget2 -> SearchWidget)
     router.push("/sidepanel/search")
+  } else {
+    router.push("/sidepanel")
   }
 }
 
@@ -184,7 +135,12 @@ watchEffect(() => {
   }
 })
 
-const toggleSorting = () => useCommandExecutor().executeFromUi(new ToggleSortingCommand(tabsStore.currentTabsetId))
+chrome.commands.onCommand.addListener((command) => {
+  if(command === 'search') {
+    console.debug(`got Command: ${command}`);
+    toggleSearch()
+  }
+})
 
 const toggleSessionState = () => existingSession ? stopSession() : startSession()
 
@@ -201,27 +157,21 @@ const stopSession = () => {
   }
 }
 
-const createWebsiteClipTooltip = () => {
-  const windowId = useWindowsStore().currentWindow.id || 0
-  const currentChromeTab = useTabsStore().getCurrentChromeTab(windowId) || useTabsStore().currentChromeTab
-  return "Create Website Clip for tab " + currentChromeTab.url
-}
+// const createWebsiteClipTooltip = () => {
+//   const windowId = useWindowsStore().currentWindow.id || 0
+//   const currentChromeTab = useTabsStore().getCurrentChromeTab(windowId) || useTabsStore().currentChromeTab
+//   return "Create Website Clip for tab " + currentChromeTab.url
+// }
 
 const webClipActive = () => tabsStore.currentChromeTab
 
-const createClip = () => {
-  const windowId = useWindowsStore().currentWindow.id || 0
-  const currentChromeTab = useTabsStore().getCurrentChromeTab(windowId) || useTabsStore().currentChromeTab
-  if (currentChromeTab && currentChromeTab.id) {
-    ChromeApi.executeClippingJS(currentChromeTab.id)
-  }
-}
-
-const showSortIcon = () => false
-// useUiStore().sidePanelActiveViewIs(SidePanelView.MAIN) &&
-// !props.showBackButton &&
-// tabsStore.getCurrentTabs.length > 3 &&
-// useUiStore().tabsetsExpanded
+// const createClip = () => {
+//   const windowId = useWindowsStore().currentWindow.id || 0
+//   const currentChromeTab = useTabsStore().getCurrentChromeTab(windowId) || useTabsStore().currentChromeTab
+//   if (currentChromeTab && currentChromeTab.id) {
+//     ChromeApi.executeClippingJS(currentChromeTab.id)
+//   }
+// }
 
 const showSearchIcon = () => tabsStore.tabsets.size > 1
 
@@ -255,6 +205,8 @@ const openNewTabsetDialog = () => {
     }
   })
 }
+
+const showFilter = () => useUiStore().sidePanelActiveViewIs(SidePanelView.TABS_LIST) && useUiStore().toolbarFilter
 
 </script>
 

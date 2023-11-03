@@ -15,7 +15,7 @@ import {useSpacesStore} from "stores/spacesStore";
 import {useTabsStore} from "stores/tabsStore";
 import {useSettingsStore} from "stores/settingsStore";
 import {useBookmarksStore} from "stores/bookmarksStore";
-import {useWindowsStore} from "stores/windowsStores";
+import {useWindowsStore} from "src/stores/windowsStore";
 import {useSearchStore} from "stores/searchStore";
 import {useRouter} from "vue-router";
 import {useUtils} from "src/services/Utils";
@@ -46,19 +46,11 @@ class AppService {
                 ChromeBookmarkListeners.initListeners()
                 bookmarksStore.init()
                 BookmarksService.init()
-
-                if (usePermissionsStore().hasFeature(FeatureIdent.TAB_GROUPS)) {
-                    groupsStore.initialize()
-                    groupsStore.initListeners()
-                }
             })
         settingsStore.initialize(useQuasar().localStorage);
         tabsStore.initialize(useQuasar().localStorage);
 
         searchStore.init()
-        windowsStore.initialize()
-        // TODO best place here?
-        windowsStore.initListeners()
 
         const localStorage = useQuasar().localStorage
 
@@ -75,6 +67,16 @@ class AppService {
                             .then(() => {
                                 MHtmlService.init()
                                 ChromeApi.init()
+
+                                if (usePermissionsStore().hasFeature(FeatureIdent.TAB_GROUPS)) {
+                                    groupsStore.initialize(useDB(undefined).db)
+                                    groupsStore.initListeners()
+                                }
+
+                                windowsStore.initialize(useDB(undefined).db)
+                                windowsStore.initListeners()
+
+
                                 // @ts-ignore
                                 if (tabsStore.tabsets.size === 0) {
                                     console.log("pushing to sidepanel/welcome")

@@ -8,7 +8,7 @@ import {useTabsStore} from "stores/tabsStore";
 import PersistenceService from "src/services/PersistenceService";
 import {useTabsetService} from "src/services/TabsetService2";
 import {AssociateWindowWithTabsetCommand} from "src/domain/tabsets/AssociateWindowWithTabsetCommand";
-import {useWindowsStore} from "stores/windowsStores";
+import {useWindowsStore} from "src/stores/windowsStore";
 
 installQuasarPlugin();
 

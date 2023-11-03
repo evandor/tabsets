@@ -6,6 +6,7 @@
       <TabList v-if="props.tabset?.view === 'list'"
                group="otherTabs"
                :highlightUrl="highlightUrl"
+               :tabsetId="props.tabset?.id"
                :tabs="currentTabs()"/>
 
       <TabGroups v-else-if="props.tabset?.view === 'group'"

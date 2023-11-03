@@ -31,7 +31,7 @@
 
           <SidePanelFooterLeftButton
               :side-panel-view="SidePanelView.TABS_LIST" icon="o_playlist_add"
-              tooltip="List all open tabs in your browser"/>
+              tooltip="All your browser's open tabs"/>
 
           <SidePanelFooterLeftButton :side-panel-view="SidePanelView.BOOKMARKS" icon="o_bookmark"
                                      tooltip="Show the Bookmarks Browser"/>
@@ -116,7 +116,7 @@ import NavigationService from "src/services/NavigationService";
 import SidePanelFooterLeftButton from "components/helper/SidePanelFooterLeftButton.vue";
 import {useQuasar} from "quasar";
 import {useUtils} from "src/services/Utils";
-import {useWindowsStore} from "stores/windowsStores";
+import {useWindowsStore} from "src/stores/windowsStore";
 import {useSuggestionsStore} from "stores/suggestionsStore";
 import _ from "lodash";
 import {SuggestionState, SuggestionType} from "src/models/Suggestion";
@@ -143,7 +143,7 @@ const doShowSuggestionButton = ref(false)
 
 watchEffect(() => {
   const suggestions = useSuggestionsStore().getSuggestions()
-  console.log("watcheffect for", suggestions)
+  //console.log("watcheffect for", suggestions)
   showSuggestionButton.value =
       doShowSuggestionButton.value ||
       (useUiStore().sidePanelActiveViewIs(SidePanelView.MAIN) &&
@@ -183,7 +183,7 @@ watchEffect(() => {
   if (!inBexMode()) {
     return
   }
-  const windowId = useWindowsStore().currentWindow.id || 0
+  const windowId = useWindowsStore().currentWindow?.id || 0
   currentChromeTab.value = useTabsStore().getCurrentChromeTab(windowId) || useTabsStore().currentChromeTab
 })
 

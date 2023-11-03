@@ -99,6 +99,10 @@
                 <q-item-section>{{ window }}</q-item-section>
               </q-item>
               <q-separator />
+              <q-item @click="removeWindow()" dense clickable v-close-popup>
+                <q-item-section>Remove Window Association</q-item-section>
+              </q-item>
+              <q-separator />
               <q-item @click="openNewWindowDialog()" dense clickable v-close-popup>
                 <q-item-section>Create New...</q-item-section>
               </q-item>
@@ -189,7 +193,7 @@ import {Tab} from "src/models/Tab";
 import {CopyToClipboardCommand} from "src/domain/commands/CopyToClipboard";
 import ShareTabsetPubliclyDialog from "components/dialogues/ShareTabsetPubliclyDialog.vue";
 import {MarkTabsetAsArchivedCommand} from "src/domain/tabsets/MarkTabsetAsArchived";
-import {useWindowsStore} from "stores/windowsStores";
+import {useWindowsStore} from "src/stores/windowsStore";
 import {useTabsStore} from "stores/tabsStore";
 import NewWindowDialog from "components/dialogues/NewWindowDialog.vue";
 import {useRouter} from "vue-router";
@@ -294,6 +298,14 @@ const shareTabsetPubliclyDialog = (tabset: Tabset, republish: boolean = false) =
       republish: republish
     }
   })
+}
+
+const removeWindow = () => {
+  const ts = useTabsStore().getCurrentTabset
+  if (ts) {
+    ts.window = 'current'
+    useTabsetService().saveTabset(ts)
+  }
 }
 
 const openNewWindowDialog = () => {

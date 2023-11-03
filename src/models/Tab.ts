@@ -67,7 +67,6 @@ export class Tab {
   note: string
   scheduledFor: number | undefined
   extension: UrlExtension
-  selections: HTMLSelection[] = []
   annotations: any[] = []
 
   mhtmls: string[]
@@ -86,7 +85,7 @@ export class Tab {
   color: string | undefined = undefined
   matcher: string | undefined = undefined
 
-  group: chrome.tabGroups.TabGroup | undefined = undefined
+  groupName: string | undefined = undefined
 
   constructor(public id: string, chromeTab: chrome.tabs.Tab) {
     this.created = new Date().getTime()
@@ -101,7 +100,7 @@ export class Tab {
     this.title = chromeTab.title
     this.pinned = chromeTab.pinned
     this.groupId = chromeTab.groupId
-    this.group = undefined // to be set from 'outside'
+    this.groupName = undefined // to be set from 'outside'
 
     //this.chromeTab = chromeTab
     this.isDuplicate = false

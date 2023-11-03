@@ -6,6 +6,7 @@ import {Notification} from "src/models/Notification";
 import {SearchDoc} from "src/models/SearchDoc";
 import {StaticSuggestionIdent, Suggestion, SuggestionState} from "src/models/Suggestion";
 import {MetaLink} from "src/models/MetaLink";
+import {Window} from "src/models/Window";
 import {RequestInfo} from "src/models/RequestInfo";
 
 interface PersistenceService {
@@ -54,8 +55,6 @@ interface PersistenceService {
 
   cleanUpRequests(): Promise<void>
 
-  saveStats(date: string, dataset: object): void
-
   getNotifications(onlyNew: boolean): Promise<Notification[]>
   addNotification(notification: Notification): Promise<any>
   notificationRead(notificationId: string): Promise<void>
@@ -69,6 +68,19 @@ interface PersistenceService {
 
   getActiveFeatures(): Promise<string[]>
   saveActiveFeatures(val: string[]): any
+
+  addGroup(group: chrome.tabGroups.TabGroup): Promise<any>
+  updateGroup(group: chrome.tabGroups.TabGroup): Promise<any>
+  getGroups(): Promise<chrome.tabGroups.TabGroup[]>
+  deleteGroupByTitle(title: string): Promise<void>
+
+  addWindow(window: Window): Promise<any>
+  //updateWindow(group: chrome.windows.Window): Promise<any>
+  getWindows(): Promise<Window[]>
+  getWindow(windowId: number): Promise<Window | undefined>
+  removeWindow(windowId: number): Promise<void>
+  updateWindow(window: Window): Promise<void>
+  upsertWindow(window: Window, windowName: string): Promise<void>
 
   clear(name: string):any
 }

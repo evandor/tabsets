@@ -59,7 +59,8 @@
   <div class="row greyBorderTop"></div>
 
   <!--  <div>{{useUiStore().rightDrawerViewStack}}*</div>-->
-  <UnassignedAndOpenTabs v-if="tab === DrawerTabs.UNASSIGNED_TABS"/>
+<!--  <UnassignedAndOpenTabs v-if="tab === DrawerTabs.UNASSIGNED_TABS"/>-->
+  <OpenTabsView v-if="tab === DrawerTabs.OPEN_TABS"/>
   <BookmarksTree v-else-if="tab === DrawerTabs.BOOKMARKS"/>
   <!--      <OpenTabs v-else-if="tab ===  DrawerTabs.OPEN_TABS" :filter="filter"/>-->
   <!--      <UnassignedTabs v-else-if="tab ===  DrawerTabs.UNASSIGNED_TABS" :filter="filter"/>-->
@@ -105,14 +106,12 @@ import TagsListViewer from "components/views/TagsListViewer.vue";
 import SidePanelTagsListViewer from "pages/sidepanel/SidePanelTagsListViewer.vue";
 import TagListViewer from "components/views/TagListViewer.vue";
 import ByDomainList from "components/ByDomainList.vue";
+import OpenTabsView from "components/views/OpenTabsView.vue";
 
-const router = useRouter()
 const route = useRoute()
 
-const featureToggles = useSettingsStore()
 const tabsStore = useTabsStore()
 const settingsStore = useSettingsStore()
-const uiStore = useUiStore()
 
 const openTabsCountRatio = ref(0)
 const tab = ref<DrawerTabs>(useUiStore().rightDrawer.activeTab)

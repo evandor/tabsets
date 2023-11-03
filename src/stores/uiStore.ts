@@ -32,7 +32,7 @@ export class SidePanelView {
   static readonly MAIN = new SidePanelView('main', '/sidepanel');
 
   static readonly TABS_LIST = new SidePanelView('tabsList', '/sidepanel/tabslist',
-    () => usePermissionsStore().hasFeature(FeatureIdent.OPEN_TABS) && useTabsStore().tabs?.length > 1);
+    () => usePermissionsStore().hasFeature(FeatureIdent.OPEN_TABS));
 
   static readonly TAGS_LIST = new SidePanelView('tagsList', '/sidepanel/tagslist',
     () => usePermissionsStore().hasFeature(FeatureIdent.TAGS) && useTabsStore().allTabsCount > 0);
@@ -83,7 +83,7 @@ export enum ListDetailLevel {
 
 export class RightDrawer {
   constructor(
-    public activeTab: DrawerTabs = DrawerTabs.UNASSIGNED_TABS) {
+    public activeTab: DrawerTabs = DrawerTabs.OPEN_TABS) {
   }
 }
 
@@ -129,7 +129,6 @@ export const useUiStore = defineStore('ui', () => {
   // info Messages
   const hiddenMessages = ref<string[]>(LocalStorage.getItem('ui.hiddenInfoMessages') as unknown as string[] || [])
   const messageAlreadyShown = ref<string | undefined>(undefined)
-  const openTabMatchesTabsetTabs = ref(false)
 
   // highlight url(s) feature
   const highlightUrls = ref<string[]>([])
@@ -151,6 +150,9 @@ export const useUiStore = defineStore('ui', () => {
   const progressLabel = ref<string | undefined>(undefined)
 
   const showCurrentTabBox = ref<boolean>(true)
+
+  const toolbarFilter = ref(false)
+  const toolbarFilterTerm = ref('')
 
   watch(rightDrawer.value, (val: Object) => {
     LocalStorage.set("ui.rightDrawer", val)
@@ -351,6 +353,13 @@ export const useUiStore = defineStore('ui', () => {
     showCurrentTabBox.value = !b
   }
 
+  function toggleToolbarFilter() {
+    toolbarFilter.value = !toolbarFilter.value
+    if (!toolbarFilter.value) {
+      toolbarFilterTerm.value = ''
+    }
+  }
+
   return {
     rightDrawer,
     rightDrawerOpen,
@@ -396,6 +405,9 @@ export const useUiStore = defineStore('ui', () => {
     progressLabel,
     tabsetsExpanded,
     hideCurrentTabBox,
-    showCurrentTabBox
+    showCurrentTabBox,
+    toolbarFilter,
+    toggleToolbarFilter,
+    toolbarFilterTerm
   }
 })
