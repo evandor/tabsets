@@ -15,12 +15,22 @@
     "*://*/*"
   ],
   "optional_permissions": [
+    "notifications",
+    "webRequest",
     "bookmarks",
     "notifications",
     "webRequest"
   ],
   "background": {
     "scripts": ["background.js"]
+  },
+  "browser_action": {
+    "default_icon": {
+      "16": "icons/icon-16x16.png",
+      "48": "icons/icon-48x48.png",
+      "128": "icons/icon-128x128.png"
+    },
+    "default_title": "Tabsets"
   },
   "content_scripts": [
     {

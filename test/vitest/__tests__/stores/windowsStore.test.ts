@@ -81,6 +81,7 @@ describe('WindowsStore', () => {
         };
 
         vi.stubGlobal('chrome', chromeMock);
+        vi.stubGlobal('browser', chromeMock);
 
         await useWindowsStore().initialize(db)
         useWindowsStore().initListeners()

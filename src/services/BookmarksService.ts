@@ -8,7 +8,7 @@ async function getParentChain(parentId: string, chain: string[] = []): Promise<s
     return chain
   }
   // @ts-ignore
-  const results: any[] = await chrome.bookmarks.get(parentId)
+  const results: any[] = await browser.bookmarks.get(parentId)
   if (results && results.length > 0 && results[0] !== "0") {
     chain.push(results[0].parentId)
     return getParentChain(results[0].parentId, chain)
@@ -41,7 +41,7 @@ class BookmarksService {
 
   async expandTreeForBookmarkId(bookmarkId: string): Promise<number> {
     // @ts-ignore
-    const results: any[] = await chrome.bookmarks.get(bookmarkId)
+    const results: any[] = await browser.bookmarks.get(bookmarkId)
     if (results && results.length > 0) {
       const node = results[0]
       if (node.parentId) {
@@ -58,7 +58,7 @@ class BookmarksService {
   async createBookmarkFolder(folderName: string, parentFolderId: string): Promise<chrome.bookmarks.BookmarkTreeNode> {
     console.log("createing folder", folderName, parentFolderId)
     // @ts-ignore
-    const res: chrome.bookmarks.BookmarkTreeNode = await chrome.bookmarks.create({
+    const res: chrome.bookmarks.BookmarkTreeNode = await browser.bookmarks.create({
       title: folderName,
       parentId: parentFolderId
     })

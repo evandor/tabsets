@@ -24,7 +24,7 @@ export class CreateBookmarkFromOpenTabsCommand implements Command<any> {
     }
     console.log("newBookmark", newBookmark)
     // @ts-ignore
-    const res:chrome.bookmarks.BookmarkTreeNode = await chrome.bookmarks.create(newBookmark)
+    const res:chrome.bookmarks.BookmarkTreeNode = await browser.bookmarks.create(newBookmark)
 
     return new ExecutionResult(
         res,

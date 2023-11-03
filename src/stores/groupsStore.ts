@@ -48,7 +48,7 @@ export const useGroupsStore = defineStore('groups', () => {
         if (!inBexMode() || !chrome?.tabGroups) {
             return
         }
-        const groups = await chrome.tabGroups.query({})//, (groups) => {
+        const groups = await browser.tabGroups.query({})//, (groups) => {
 
         currentTabGroups.value = groups
         console.log("initializing current tab groups with", currentTabGroups.value)
@@ -80,7 +80,7 @@ export const useGroupsStore = defineStore('groups', () => {
         if (!inBexMode() || !chrome?.tabGroups) {
             return Promise.resolve()
         }
-        const groups = await chrome.tabGroups.query({})//, (groups) => {
+        const groups = await browser.tabGroups.query({})//, (groups) => {
         currentTabGroups.value = groups
 
         await useGroupsStore().persistGroup(group)

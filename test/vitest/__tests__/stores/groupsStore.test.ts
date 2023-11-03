@@ -72,6 +72,7 @@ describe('GroupsStore', () => {
         };
 
         vi.stubGlobal('chrome', chromeMock);
+        vi.stubGlobal('browser', chromeMock);
 
         await useGroupsStore().initialize(db)
         useGroupsStore().initListeners()

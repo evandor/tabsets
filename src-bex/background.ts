@@ -86,6 +86,17 @@ chrome.runtime.onStartup.addListener(() => {
   }
 })
 
+// Firefox:
+function handleFirefoxBrowserAction () {
+  //const panel = browser.runtime.getURL("www/index.html#/sidepanel")
+  //browser.sidebarAction.isOpen({})
+  //    .then((sidebarIsOpen: boolean) => {
+  console.log("toggling...")
+  browser.sidebarAction.open()
+}
+browser.browserAction.onClicked.addListener(handleFirefoxBrowserAction);
+// Firefox END
+
 export default bexBackground((bridge, cons/* , allActiveConnections */) => {
   //console.log("bexBackgroundBridge!")
   bridge.on('some.event', ({data, respond}) => {

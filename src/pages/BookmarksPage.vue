@@ -160,7 +160,7 @@ watchEffect(() => {
 
 async function getParentChain(bookmarkId: string, chain: Bookmark[] = []): Promise<Bookmark[]> {
   // @ts-ignore
-  const results = await chrome.bookmarks.get(bookmarkId)
+  const results = await browser.bookmarks.get(bookmarkId)
   // @ts-ignore
   if (results && results[0]) {
     chain.push(new Bookmark(uid(), results[0]))

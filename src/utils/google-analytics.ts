@@ -30,11 +30,11 @@ class Analytics {
         if (!chrome || !inBexMode()) {
             return Promise.reject("not creating client id")
         }
-        let { clientId } = await chrome.storage.local.get('clientId');
+        let { clientId } = await browser.storage.local.get('clientId');
         if (!clientId) {
             // Generate a unique client ID, the actual value is not relevant
             clientId = self.crypto.randomUUID();
-            await chrome.storage.local.set({ clientId });
+            await browser.storage.local.set({ clientId });
         }
         return clientId;
     }
@@ -46,7 +46,7 @@ class Analytics {
             return Promise.reject("not creating session id")
         }
         // Use storage.session because it is only in memory
-        let { sessionData } = await chrome.storage.session.get('sessionData');
+        let { sessionData } = await browser.storage.session.get('sessionData');
         const currentTimeInMs = Date.now();
         // Check if session exists and is still valid
         if (sessionData && sessionData.timestamp) {
@@ -59,7 +59,7 @@ class Analytics {
             } else {
                 // Update timestamp to keep session alive
                 sessionData.timestamp = currentTimeInMs;
-                await chrome.storage.session.set({ sessionData });
+                await browser.storage.session.set({ sessionData });
             }
         }
         if (!sessionData) {
@@ -68,7 +68,7 @@ class Analytics {
                 session_id: currentTimeInMs.toString(),
                 timestamp: currentTimeInMs.toString()
             };
-            await chrome.storage.session.set({ sessionData });
+            await browser.storage.session.set({ sessionData });
         }
         return sessionData.session_id;
     }

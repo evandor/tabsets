@@ -21,7 +21,6 @@ import {useUiStore} from "stores/uiStore";
 import NavigationService from "src/services/NavigationService";
 
 const {
-  saveCurrentTabset,
   saveTabset,
   saveText,
   saveMetaLinksFor,
@@ -33,14 +32,14 @@ const {
 const {sanitize} = useUtils()
 
 async function setCurrentTab() {
-  const tabs = await chrome.tabs.query({active: true, lastFocusedWindow: true})
+  const tabs = await browser.tabs.query({active: true, lastFocusedWindow: true})
 
     console.debug("setting current tab", tabs)
     if (tabs && tabs[0]) {
       useTabsStore().setCurrentChromeTab(tabs[0] as unknown as chrome.tabs.Tab)
     } else {
       // Seems to be necessary when creating a new chrome group
-      const tabs2 = await chrome.tabs.query({active: true})
+      const tabs2 = await browser.tabs.query({active: true})
         //console.log("setting current tab II", tabs2)
         if (tabs2 && tabs2[0]) {
           useTabsStore().setCurrentChromeTab(tabs2[0] as unknown as chrome.tabs.Tab)
@@ -359,7 +358,7 @@ class ChromeListeners {
         if (tab.groupId >= 0) {
           console.log("updating updatedTab group for group id", tab.groupId)
           //newTab.group = useGroupsStore().groupForId(tab.groupId)
-          //const g = await chrome.tabGroups.get(tab.groupId)
+          //const g = await browser.tabGroups.get(tab.groupId)
 
           newTab.groupName = useGroupsStore().currentGroupForId(tab.groupId)?.title || '???'
         }

@@ -43,7 +43,7 @@ export const  useBookmarksStore = defineStore('bookmarks', {
   getters: {
     findBookmarksForUrl: (state) => {
       return async (url: string): Promise<chrome.bookmarks.BookmarkTreeNode[]> => {
-        const res = await chrome.bookmarks.search({url:url})
+        const res = await browser.bookmarks.search({url:url})
         return res
       }
     }

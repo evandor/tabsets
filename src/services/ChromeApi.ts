@@ -204,7 +204,7 @@ class ChromeApi {
     console.log(" --- closing all tabs: start ---")
     const currentTab = await this.getCurrentTab()
     // @ts-ignore
-    const t: chrome.tabs.Tab[] = await chrome.tabs.query({currentWindow: true})//, (t: chrome.tabs.Tab[]) => {
+    const t: chrome.tabs.Tab[] = await browser.tabs.query({currentWindow: true})//, (t: chrome.tabs.Tab[]) => {
     const ids: number[] = t.filter((r: chrome.tabs.Tab) => r.id !== currentTab.id)
       .filter(r => r.id !== undefined)
       .map(r => r.id || 0);

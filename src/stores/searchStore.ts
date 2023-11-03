@@ -135,13 +135,13 @@ export const useSearchStore = defineStore('search', () => {
   }
 
   async function reindexTab(tab: Tab): Promise<number> {
-    const window = await chrome.windows.create({focused: true, width: 1024, height: 800})
+    const window = await browser.windows.create({focused: true, width: 1024, height: 800})
     // @ts-ignore
     if (window) {
       // @ts-ignore
       useWindowsStore().screenshotWindow = window.id
       // @ts-ignore
-      let tabToClose = await chrome.tabs.create({windowId: window.id, url: tab.url})
+      let tabToClose = await browser.tabs.create({windowId: window.id, url: tab.url})
       // @ts-ignore
       if (tabToClose) {
         // @ts-ignore

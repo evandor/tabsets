@@ -49,11 +49,16 @@ describe('SidePanelPage', () => {
                 query: vi.fn(() => {})
             },
             runtime: {
-                sendMessage: vi.fn(() => {})
+                sendMessage: vi.fn(() => {}),
+                onMessage: {
+                    addListener: vi.fn(() => {})
+                }
+
             }
         };
 
         vi.stubGlobal('chrome', chromeMock);
+        vi.stubGlobal('browser', chromeMock);
 
         wrapper = mount(SidePanelPage);
 

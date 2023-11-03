@@ -106,18 +106,18 @@ export const useWindowsStore = defineStore('windows', () => {
     async function onUpdate(windowId: number) {
         if (windowId >= 0) {
             //console.log("updating window for id", windowId)
-            const window = await chrome.windows.get(windowId)
+            const window = await browser.windows.get(windowId)
             //console.log("updating window", window)
             await storage.updateWindow(new Window(windowId, window))
         }
     }
 
     function initListeners() {
-        if (inBexMode()) {
+        if (inBexMode() && chrome && chrome.windows) {
             chrome.windows.onCreated.addListener((window: chrome.windows.Window) => init("onCreated"))
             chrome.windows.onRemoved.addListener((windowId: number) => onRemoved(windowId))
             chrome.windows.onFocusChanged.addListener((windowId) => onUpdate(windowId))
-            chrome.windows.onBoundsChanged.addListener((window: chrome.windows.Window) => onUpdate(window.id || 0))
+            //chrome.windows.onBoundsChanged.addListener((window: chrome.windows.Window) => onUpdate(window.id || 0))
         }
     }
 
@@ -139,12 +139,12 @@ export const useWindowsStore = defineStore('windows', () => {
     async function currentWindowFor(windowToOpen: string) {
         if (windowToOpen === 'current' && chrome && chrome.windows) {
             // @ts-ignore
-            return (await chrome.windows?.getCurrent()).id
+            return (await browser.windows?.getCurrent()).id
         } else if (windowMap.value[windowToOpen as keyof object]) {
             const potentialWindowId = windowMap.value[windowToOpen as keyof object]
             console.log("windowFor2", potentialWindowId)
             try {
-                const realWindow = await chrome.windows.get(potentialWindowId)
+                const realWindow = await browser.windows.get(potentialWindowId)
                 return Promise.resolve(potentialWindowId)
             } catch (err) {
                 // @ts-ignore

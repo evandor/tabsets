@@ -370,7 +370,7 @@ class TabsetService {
 
   async trackedTabsCount(): Promise<number> {
     // @ts-ignore
-    const result: chrome.tabs.Tab[] = await chrome.tabs.query({})
+    const result: chrome.tabs.Tab[] = await browser.tabs.query({})
     let trackedTabs = 0
     _.forEach(result, (tab: chrome.tabs.Tab) => {
       if (tab && tab.url && tabsetsFor(tab.url).length > 0) {
@@ -385,7 +385,7 @@ class TabsetService {
     const currentTab = await ChromeApi.getCurrentTab()
 
     // @ts-ignore
-    const result: chrome.tabs.Tab[] = await chrome.tabs.query({})
+    const result: chrome.tabs.Tab[] = await browser.tabs.query({})
     const tabsToClose: chrome.tabs.Tab[] = []
     const tabsToKeep: chrome.tabs.Tab[] = []
     _.forEach(result, (tab: chrome.tabs.Tab) => {
