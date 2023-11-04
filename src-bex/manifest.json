@@ -16,7 +16,6 @@
   ],
   "optional_permissions": [
     "notifications",
-    "webRequest",
     "bookmarks",
     "webRequest"
   ],
