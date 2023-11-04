@@ -35,16 +35,7 @@
           :search-hits="tabsetHits.length"
           :title="'Found ' + searchStore.term + ' ' + tabsetHits.length + ' time(s)'">
         <template v-slot:iconsRight>
-          <q-btn
-              icon="close"
-              @click="useUiStore().sidePanelSetActiveView(SidePanelView.MAIN)"
-              color="black"
-              flat
-              class="q-ma-none q-pa-xs cursor-pointer"
-              style="max-width:20px"
-              size="10px">
-            <q-tooltip class="tooltip">Close this view</q-tooltip>
-          </q-btn>
+          <CloseSidePanelViewButton />
         </template>
       </FirstToolbarHelper>
 
@@ -63,14 +54,11 @@ import {uid, useQuasar} from "quasar";
 import SearchHit from "src/components/layouts/SearchHit.vue"
 import {Hit} from "src/models/Hit";
 import ReindexDialog from "components/dialogues/ReindexDialog.vue";
-import {usePermissionsStore} from "src/stores/permissionsStore";
-import {useCommandExecutor} from "src/services/CommandExecutor";
-import {GrantPermissionCommand} from "src/domain/commands/GrantPermissionCommand";
-import {SidePanelView, useUiStore} from "stores/uiStore";
 import FirstToolbarHelper from "pages/sidepanel/helper/FirstToolbarHelper.vue";
 import Analytics from "src/utils/google-analytics";
 import {useTabsStore} from "stores/tabsStore";
 import {Tabset} from "src/models/Tabset";
+import CloseSidePanelViewButton from "components/buttons/CloseSidePanelViewButton.vue";
 
 const route = useRoute()
 const searchStore = useSearchStore()
@@ -172,8 +160,5 @@ watchEffect(() => {
     })
   }
 })
-
-const bookmarksEnabled = () => usePermissionsStore().hasPermission('bookmarks')
-const grant = (permission: string) => useCommandExecutor().executeFromUi(new GrantPermissionCommand(permission))
 
 </script>

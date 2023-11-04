@@ -12,6 +12,7 @@ export function useJestHelper() {
     db.createObjectStore("suggestions");
     db.createObjectStore("spaces");
     db.createObjectStore("groups");
+    db.createObjectStore("windows");
     db.createObjectStore("logs", { autoIncrement: true });
     // store.createIndex("by_title", "title", {unique: true});
     // store.put({title: "Quarry Memories", author: "Fred", isbn: 123456});

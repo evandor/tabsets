@@ -12,7 +12,7 @@ import {uid, useQuasar} from "quasar";
 import {useGroupsStore} from "stores/groupsStore";
 
 const {saveTabset} = useTabsetService()
-const {inBexMode, sendMsg} = useUtils()
+const {sendMsg} = useUtils()
 
 // No undo command, tab can be deleted manually easily
 
@@ -32,20 +32,20 @@ export class AddTabToTabsetCommand implements Command<any> {
         console.log("checking 'tab exists' yields", exists)
         if (!exists) {
             try {
+                // manage (chrome) Group
+                console.log("updating tab group for group id", this.tab.groupId)
+                const currentGroup = useGroupsStore().currentGroupForId(this.tab.groupId)
+                this.tab.groupName = currentGroup?.title || undefined
+                if (currentGroup) {
+                    await useGroupsStore().persistGroup(currentGroup)
+                }
+
                 const tabset: Tabset = await useTabsetService().addToTabsetId(this.tabset.id, this.tab, 0)
                 //    .then((tabset) => {
                 console.log("sharing...")
                 // Sharing
                 if (tabset.sharedId && tabset.sharing === TabsetSharing.PUBLIC) {
                     tabset.sharing = TabsetSharing.PUBLIC_OUTDATED
-                }
-
-                // manage (chrome) Group
-                console.log("updating tab group for group id", this.tab.groupId)
-                const currentGroup = useGroupsStore().currentGroupForId(this.tab.groupId)
-                this.tab.groupName = currentGroup?.title || undefined
-                if (currentGroup) {
-                    useGroupsStore().persistGroup(currentGroup)
                 }
 
                 // the tab has been added to the tabset, but not saved yet

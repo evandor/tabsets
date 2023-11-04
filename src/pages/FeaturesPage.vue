@@ -322,22 +322,18 @@ text.set(FeatureIdent.CATEGORIZATION.toLowerCase(), {
   description: 'Categorize your tabsets automatically',
   permissions: []
 })
-text.set(FeatureIdent.PAGE_MARKER.toLowerCase(), {
-  name: 'Page Marker',
-  description: 'Highlight parts of a page and add notes',
-  permissions: ['contextMenus']
-})
+// text.set(FeatureIdent.PAGE_MARKER.toLowerCase(), {
+//   name: 'Page Marker',
+//   description: 'Highlight parts of a page and add notes',
+//   permissions: ['contextMenus']
+// })
 text.set(FeatureIdent.NOTIFICATIONS.toLowerCase(), {
   name: 'Browser Notifications',
   img: 'notification.png',
   description: 'Allow Tabsets to send Notifications via your Browser. Recommended.',
   permissions: ['notifications']
 })
-text.set(FeatureIdent.ANNOTATIONS.toLowerCase(), {
-  name: 'Websites Annotations',
-  description: 'Annotate Websites',
-  permissions: []
-})
+
 text.set(FeatureIdent.TAGS.toLowerCase(), {
   name: 'Use Tags',
   img: 'tags.png',

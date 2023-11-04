@@ -166,7 +166,6 @@
               content-class="column justify-between no-wrap bg-grey-1">
       <DrawerRight/>
 
-      <!--      <UnassignedTabs v-else-if="tab ===  DrawerTabs.UNASSIGNED_TABS" :filter="filter"/>-->
 
     </q-drawer>
 

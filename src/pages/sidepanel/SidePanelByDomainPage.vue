@@ -43,10 +43,9 @@ import _ from "lodash"
 import {useTabsStore} from "src/stores/tabsStore";
 import {Tab} from "src/models/Tab";
 import {Tabset, TabsetStatus} from "src/models/Tabset";
-import TabList from "components/layouts/TabList.vue";
 import {useSettingsStore} from "src/stores/settingsStore"
-import PanelTabList from "components/layouts/PanelTabList.vue";
 import Analytics from "src/utils/google-analytics"
+import PanelTabList from "components/layouts/PanelTabList.vue";
 
 const route = useRoute();
 const router = useRouter();

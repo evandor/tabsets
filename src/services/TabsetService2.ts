@@ -21,6 +21,9 @@ import JsUtils from "src/utils/JsUtils";
 import {usePermissionsStore} from "stores/permissionsStore";
 import {FeatureIdent} from "src/models/AppFeature";
 import {RequestInfo} from "src/models/RequestInfo";
+import {DynamicTabSourceType} from "src/models/DynamicTabSource";
+import {PlaceholdersType} from "src/models/Placeholders";
+import {useUiStore} from "stores/uiStore";
 
 let db: PersistenceService = null as unknown as PersistenceService
 
@@ -600,6 +603,72 @@ export function useTabsetService() {
         }
     }
 
+    const tabsToShow = (tabset: Tabset): Tab[] => {
+        if (tabset.type === TabsetType.DYNAMIC &&
+            tabset.dynamicTabs && tabset.dynamicTabs.type === DynamicTabSourceType.TAG) {
+            const results: Tab[] = []
+            //console.log("checking", tabset.dynamicTabs)
+            const tag = tabset.dynamicTabs?.config['tags' as keyof object][0]
+            //console.log("using tag", tag)
+            _.forEach([...useTabsStore().tabsets.values()], (tabset: Tabset) => {
+                _.forEach(tabset.tabs, (tab: Tab) => {
+                    if (tab.tags?.indexOf(tag) >= 0) {
+                        results.push(tab)
+                    }
+                })
+            })
+            //return _.orderBy(results, getOrder(), [orderDesc.value ? 'desc' : 'asc'])
+            return results
+        }
+        let tabs: Tab[] = tabset.tabs
+
+        // Tabs with placeholder
+        let placeholderTabs: Tab[] = []
+        let removeTabIds: string[] = []
+        tabs.forEach((t: Tab) => {
+            if (t.placeholders && t.placeholders.type === PlaceholdersType.URL_SUBSTITUTION) {
+                const subs = t.placeholders.config
+                Object.entries(subs).forEach(e => {
+                    const name = e[0]
+                    const val = e[1]
+                    val.split(",").forEach((v: string) => {
+                        const substitution = v.trim()
+                        if (substitution.length > 0) {
+                            const clonedTab = JSON.parse(JSON.stringify(t));
+                            clonedTab.id = uid()
+                            clonedTab.description = undefined
+                            let useUrl = t.url || ''
+                            let useName = t.name || t.title || ''
+                            Object.entries(subs).forEach(e1 => {
+                                useUrl = useUrl.replaceAll("${" + e1[0] + "}", substitution)
+                                useName = useName.replaceAll("${" + e1[0] + "}", substitution)
+                            })
+                            clonedTab.url = useUrl
+                            clonedTab.name = useName
+                            placeholderTabs.push(clonedTab)
+                            removeTabIds.push(t.id)
+                        }
+                    })
+                })
+            }
+        })
+        tabs = _.filter(tabs, (t: Tab) => removeTabIds.indexOf(t.id) < 0)
+        tabs = tabs.concat(placeholderTabs)
+
+
+        // TODO order??
+        const filter = useUiStore().tabsFilter
+        if (!filter || filter.trim() === '') {
+            return tabs
+        }
+        return _.filter(tabs, (t: Tab) => {
+            return (t.url || '')?.indexOf(filter) >= 0 ||
+                (t.title || '')?.indexOf(filter) >= 0 ||
+                t.description?.indexOf(filter) >= 0
+        })
+    }
+
+
 
     return {
         init,
@@ -631,7 +700,8 @@ export function useTabsetService() {
         saveBlob,
         getBlob,
         reloadTabset,
-        handleAnnotationMessage
+        handleAnnotationMessage,
+        tabsToShow
     }
 
 }

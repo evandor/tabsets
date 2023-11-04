@@ -9,7 +9,7 @@ export function cloudFunctionsApi() {
   const backendUrl = "https://us-central1-tabsets-backend-prd.cloudfunctions.net/app"
 
   const getCategories = async (): Promise<Category[]> => {
-    const categories = await api.get(`${backendUrl}/webshrinker/categories/${TAXONOMY}`)
+    const categories = await api.get(`${backendUrl}/webshrinker/categories/$TAXONOMY`)
     console.log("cats", categories.data)
     const result: Category[] = []
     categories.data.forEach((e:object) => {

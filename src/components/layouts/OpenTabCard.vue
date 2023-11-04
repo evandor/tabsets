@@ -1,23 +1,23 @@
 <template>
 
   <q-card class="tabBorder" flat
-          :style="cardStyle(tab as Tab)">
+          :style="cardStyle(chromeTab)">
 
     <q-card-section class="q-pt-xs cursor-pointer"
-                    :data-testid="useUtils().createDataTestIdentifier('openTabCard', props.tab.url || '')"
+                    :data-testid="useUtils().createDataTestIdentifier('openTabCard', props.chromeTab.url || '')"
                     style="width:100%;">
 
       <div class="row items-baseline">
         <div class="col-1 q-mr-md q-ml-none">
-          <q-icon v-if="showAddToTabsetIcon(tab as Tab)" color="primary"
+          <q-icon v-if="showAddToTabsetIcon(chromeTab)" color="primary"
                   name="o_arrow_left" @click="addToCurrentTabset" size="2em">
             <q-tooltip class="tooltip">
               Click here to add the tab to your current tabset {{ tabsStore.currentTabsetName }}
             </q-tooltip>
           </q-icon>
           <q-checkbox
-              v-if="showSelectIcon(tab as Tab)"
-              v-model="tab.selected"
+              v-if="showSelectIcon(chromeTab)"
+              v-model="chromeTab.selected"
               size="30px"
               checked-icon="task_alt"
               @update:model-value="val => selectionChanged(val)"
@@ -26,23 +26,23 @@
         </div>
 
         <div class="col-2">
-          <TabFaviconWidget :tab="tab" width="20px" height="20px"/>
+          <TabFaviconWidget :tab="toTab(chromeTab)" width="20px" height="20px"/>
         </div>
 
         <div class="col-7 text-body2 ellipsis cursor-pointer"
-             @mouseenter="emitInfo(tab?.url)"
+             @mouseenter="emitInfo(chromeTab?.url)"
              @mouseout="emitInfo(undefined)"
-             @click="NavigationService.openOrCreateTab(tab?.url || '')">
-          {{ tab?.title }}
+             @click="NavigationService.openOrCreateTab(chromeTab?.url || '')">
+          {{ chromeTab?.title }}
           <q-tooltip class="tooltip" v-if="useSettingsStore().isEnabled('dev')">
-            {{ tab.chromeTabId }} / {{ tab.url }}
+            {{ chromeTab.id }} / {{ chromeTab.url }}
           </q-tooltip>
           <q-tooltip class="tooltip" v-else>
-            {{ tab.url }}
+            {{ chromeTab.url }}
           </q-tooltip>
         </div>
         <div class="col-1" v-if="!props.useSelection">
-          <q-icon name="close" @click="closeTab(tab)" v-if="!isSelf(tab.url || '')">
+          <q-icon name="close" @click="closeTab(chromeTab)" v-if="!isSelf(chromeTab.url || '')">
             <q-tooltip class="tooltip">Close this tab in the browser</q-tooltip>
           </q-icon>
         </div>
@@ -68,9 +68,11 @@ import _ from "lodash"
 import {useUtils} from "src/services/Utils"
 import {useSettingsStore} from "src/stores/settingsStore"
 import {PropType} from "vue";
+import ChromeApi from "src/services/ChromeApi";
+import {uid} from "quasar";
 
 const props = defineProps({
-  tab: {type: Object as PropType<Tab>, required: true},
+  chromeTab: {type: Object as PropType<chrome.tabs.Tab>, required: true},
   useSelection: {type: Boolean, default: false}
 })
 
@@ -78,17 +80,17 @@ const emits = defineEmits(['selectionChanged', 'addedToTabset', 'hasSelectable']
 
 const tabsStore = useTabsStore()
 
-const closeTab = (tab: Tab) => {
+const closeTab = (tab: chrome.tabs.Tab) => {
   NavigationService.closeChromeTab(tab)
   tabsStore.pendingTabset.tabs = _.filter(tabsStore.pendingTabset.tabs, t => t.url !== tab.url)
 }
 
-const cardStyle = (tab: Tab) => {
+const cardStyle = (tab: chrome.tabs.Tab) => {
   const height = "30px";
   let background = ''
-  if (tab.isDuplicate) {
-    background = "background: radial-gradient(circle, #FFFFFF 0%, #FFECB3 100%)"
-  }
+  // if (tab.isDuplicate) {
+  //   background = "background: radial-gradient(circle, #FFFFFF 0%, #FFECB3 100%)"
+  // }
   if (useTabsetService().urlExistsInCurrentTabset(tab.url || '')) {
     background = "background: #efefef"
   } else {
@@ -104,20 +106,22 @@ const isSelf = (url: string) => url.startsWith(self)
 const emitInfo = (msg: string | undefined) => useUiStore().footerInfo = msg
 
 const addToCurrentTabset = () => {
-  useCommandExecutor().executeFromUi(new CreateTabFromOpenTabsCommand(props.tab as unknown as Tab, 0))
-      .then(() => emits('addedToTabset', {tabId: props.tab.id, tabUrl: props.tab.url}))
+  useCommandExecutor().executeFromUi(new CreateTabFromOpenTabsCommand(props.chromeTab as unknown as Tab, 0))
+      .then(() => emits('addedToTabset', {tabId: props.chromeTab.id, tabUrl: props.chromeTab.url}))
 }
 
 const selectionChanged = (val: any) => {
   //console.log("emitting", val)
-  emits('selectionChanged', {tabId: props.tab.id, selected: val})
+  emits('selectionChanged', {tabId: props.chromeTab.id, selected: val})
 }
 
-const showAddToTabsetIcon = (tab: Tab) => {
+const showAddToTabsetIcon = (tab: chrome.tabs.Tab) => {
   return tabsStore.currentTabsetId && !props.useSelection && !useTabsetService().urlExistsInCurrentTabset(tab.url || '')
 }
 
-const showSelectIcon = (tab: Tab) => props.useSelection && !useTabsetService().urlExistsInCurrentTabset(tab.url || '')
+const showSelectIcon = (tab: chrome.tabs.Tab) => props.useSelection && !useTabsetService().urlExistsInCurrentTabset(tab.url || '')
+
+const toTab = (chromeTab: chrome.tabs.Tab) => new Tab(uid(), chromeTab)
 
 </script>
 

@@ -1,33 +1,35 @@
 <template>
   <div class="q-ma-none q-pa-md fullimageBackground" @click="selected()">
     <div class="row">
-      <div class="col-12 text-h6">
-        Welcome to Tabsets
+      <div class="row">
+        <div class="col-12 text-caption">
+          Next Generation Bookmarks Extension
+        </div>
       </div>
-    </div>
-    <div class="row q-mb-lg">
-      <div class="col-12 text-caption">
-        Handle more links, with less tabs open
+      <div class="col-12 text-h6 q-mb-md">
+        Welcome to Tabsets
       </div>
     </div>
 
     <div class="q-pa-sm row items-start q-gutter-md">
       <q-card class="my-card fit">
         <q-card-section>
-          <span class="text-subtitle2">Add a Tabset</span>
+          <span class="text-subtitle2">Create your first Tabset</span>
+          <br>
+          Provide a name and add tabs later
         </q-card-section>
-        <q-card-section class="q-ma-none q-pa-none q-ml-md">
-          <q-icon name="check" color="primary" class="q-mr-xs"/>
-          Create your first tabset:
-        </q-card-section>
-        <q-card-section class="q-ma-none q-pa-none q-ml-md">
-          <q-icon name="check" color="primary" class="q-mr-xs"/>
-          Provide a name...
-        </q-card-section>
-        <q-card-section class="q-ma-none q-pa-none q-ml-md">
-          <q-icon name="check" color="primary" class="q-mr-xs"/>
-          ... and add tabs later
-        </q-card-section>
+        <!--        <q-card-section class="q-ma-none q-pa-none q-ml-md">-->
+        <!--          <q-icon name="check" color="primary" class="q-mr-xs"/>-->
+        <!--          Create your first tabset:-->
+        <!--        </q-card-section>-->
+        <!--        <q-card-section class="q-ma-none q-pa-none q-ml-md">-->
+        <!--          <q-icon name="check" color="primary" class="q-mr-xs"/>-->
+        <!--          Provide a name...-->
+        <!--        </q-card-section>-->
+        <!--        <q-card-section class="q-ma-none q-pa-none q-ml-md">-->
+        <!--          <q-icon name="check" color="primary" class="q-mr-xs"/>-->
+        <!--          ... and add tabs later-->
+        <!--        </q-card-section>-->
         <q-card-section class="q-pb-none">
           <q-input v-model="tabsetName"
                    dense
@@ -37,16 +39,17 @@
                    :error="!newTabsetNameIsValid()"
                    data-testid="newTabsetName"
                    @keydown.enter="addFirstTabset()"
-                   label="Name"/>
+                   label="Tabset name"/>
         </q-card-section>
         <q-card-actions align="right" class="q-pr-md q-pb-md q-ma-none">
-          <q-btn
-              :disable="tabsetName.trim().length === 0 || !newTabsetNameIsValid()"
-              @click="addFirstTabset"
-              data-testid="addTabsetSubmitBtn"
-              color="warning">
-            Add
-          </q-btn>
+          <q-btn padding="xs lg"
+                 :disable="tabsetName.trim().length === 0 || !newTabsetNameIsValid()"
+                 @click="addFirstTabset"
+                 align="around"
+                 size="0.9rem"
+                 data-testid="addTabsetSubmitBtn"
+                 color="warning"
+                 label="Add Tabset&nbsp;"/>
         </q-card-actions>
       </q-card>
     </div>
@@ -67,7 +70,7 @@ import {STRIP_CHARS_IN_USER_INPUT} from "boot/constants";
 import {useSpacesStore} from "stores/spacesStore";
 import {TabsetStatus} from "src/models/Tabset";
 import Analytics from "src/utils/google-analytics";
-import { nextTick } from 'vue'
+import {nextTick} from 'vue'
 
 const $q = useQuasar()
 const router = useRouter()
@@ -94,7 +97,7 @@ watchEffect(() => {
   // back as soon we know we actually do have some tabsets
   if (useTabsStore().tabsets.size > 0) {
     console.log("routing back! We have tabsets!")
-   // router.back()
+    // router.back()
   }
 })
 
@@ -108,7 +111,7 @@ const addFirstTabset = () => {
 }
 
 const newTabsetNameIsValid = () =>
-   tabsetName.value.length <= 32 && !STRIP_CHARS_IN_USER_INPUT.test(tabsetName.value)
+    tabsetName.value.length <= 32 && !STRIP_CHARS_IN_USER_INPUT.test(tabsetName.value)
 
 //https://groups.google.com/a/chromium.org/g/chromium-extensions/c/nb058-YrrWc
 const selected = () => {

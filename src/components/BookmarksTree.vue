@@ -134,26 +134,10 @@ const deleteBookmarksFolderDialog = () => {
   $q.dialog({
     component: DeleteBookmarkFolderDialog,
     componentProps: {
-      //tabsetId: tabsStore.currentTabsetId,
-      //fromPanel: props.fromPanel
+      folderId: selected.value
     }
   })
 }
-
-
-// const deleteBookmarksFolderDialog = () => {
-//   $q.dialog({
-//     title: 'Delete Bookmark Folder',
-//     message: 'Would you like to delete this folder and its subfolders and bookmarks? This cannot be undone',
-//     cancel: true,
-//     persistent: true
-//   }).onOk(() => {
-//     BookmarksService.deleteBookmarksFolder(selected.value)
-//     router.push("/start")
-//   }).onCancel(() => {
-//   }).onDismiss(() => {
-//   })
-// }
 
 const entered = (b: boolean) => mouseHover.value = b
 

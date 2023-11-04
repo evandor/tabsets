@@ -46,7 +46,7 @@
                 </span>
               </q-item-label>
               <q-item-label class="text-caption text-grey-5">
-                {{ tabsetCaption(filteredTabs(tabset as Tabset), tabset.window) }}
+                {{ tabsetCaption(useTabsetService().tabsToShow(tabset as Tabset), tabset.window) }}
               </q-item-label>
             </q-item-section>
 
@@ -66,14 +66,15 @@
               tabset.type !== TabsetType.DYNAMIC &&
               currentChromeTab &&
               currentChromeTab.url !== 'chrome://newtab/' &&
+              currentChromeTab.url?.indexOf('/www/index.html#/mainpanel/notes/') < 0 &&
               currentChromeTab.url !== ''">
               <SidePanelTabInfo :tabsetId="tabset.id"/>
             </div>
 
-            <PanelTabList
+            <SidePanelPageTabList
                 v-if="tabsetExpanded.get(tabset.id)"
                 :tabsetType="tabset.type"
-                :tabs="filteredTabs(tabset as Tabset)"/>
+                :tabsetId="tabset.id"/>
 
           </div>
         </q-expansion-item>
@@ -90,7 +91,8 @@
 
         <template v-slot:title v-if="permissionsStore && permissionsStore.hasFeature(FeatureIdent.SPACES)">
           <div class="text-subtitle1 text-black" @click.stop="router.push('/sidepanel/spaces')">
-            {{ toolbarTitle(tabsets as Tabset[]) }}
+            <q-btn flat color="black" no-caps :label="toolbarTitle(tabsets as Tabset[])" />
+            <q-tooltip  :delay="1000" class="tooltip">Click to open List of all Spaces</q-tooltip>
           </div>
         </template>
         <template v-slot:title v-else>
@@ -109,7 +111,7 @@
 
 <script lang="ts" setup>
 
-import {onMounted, onUnmounted, ref, watch, watchEffect} from "vue";
+import {onMounted, onUnmounted, ref, watchEffect} from "vue";
 import {useTabsStore} from "src/stores/tabsStore";
 import {Tab} from "src/models/Tab";
 import _ from "lodash"
@@ -119,7 +121,6 @@ import {useUtils} from "src/services/Utils";
 import {scroll, uid, useQuasar} from "quasar";
 import {useTabsetService} from "src/services/TabsetService2";
 import {useUiStore} from "src/stores/uiStore";
-import PanelTabList from "components/layouts/PanelTabList.vue";
 import {usePermissionsStore} from "src/stores/permissionsStore";
 import {useSpacesStore} from "src/stores/spacesStore";
 import SidePanelTabInfo from "pages/sidepanel/SidePanelTabInfo.vue";
@@ -128,16 +129,15 @@ import {useCommandExecutor} from "src/services/CommandExecutor";
 import {SelectTabsetCommand} from "src/domain/tabsets/SelectTabset";
 import {FeatureIdent} from "src/models/AppFeature";
 import SidePanelPageContextMenu from "pages/sidepanel/SidePanelPageContextMenu.vue";
-import {DynamicTabSourceType} from "src/models/DynamicTabSource";
-import {useWindowsStore} from "../stores/windowsStores";
+import {useWindowsStore} from "src/stores/windowsStore";
 import TabsetService from "src/services/TabsetService";
 import Analytics from "src/utils/google-analytics";
 import {useAuthStore} from "stores/auth";
-import {PlaceholdersType} from "src/models/Placeholders";
 import {useDB} from "src/services/usePersistenceService";
 import getScrollTarget = scroll.getScrollTarget;
 import {useBookmarksStore} from "stores/bookmarksStore";
 import {useSuggestionsStore} from "stores/suggestionsStore";
+import SidePanelPageTabList from "components/layouts/SidePanelPageTabList.vue";
 
 const {setVerticalScrollPosition} = scroll
 
@@ -301,36 +301,34 @@ const getTabsetOrder =
     ]
 
 watchEffect(() => {
-      if (usePermissionsStore().hasFeature(FeatureIdent.SPACES)) {
-        const currentSpace = useSpacesStore().space
-        tabsets.value = _.sortBy(
+  if (usePermissionsStore().hasFeature(FeatureIdent.SPACES)) {
+    const currentSpace = useSpacesStore().space
+    tabsets.value = _.sortBy(
         _.filter([...tabsStore.tabsets.values()], (ts: Tabset) => {
-              if (currentSpace) {
-                if (ts.spaces.indexOf(currentSpace.id) < 0) {
-                  return false
-                }
-              }
-              return ts.status !== TabsetStatus.DELETED &&
-                  ts.status !== TabsetStatus.HIDDEN &&
-                  ts.status !== TabsetStatus.ARCHIVED
-            }),
-            getTabsetOrder, ["asc"])
-      } else {
-        tabsets.value = _.sortBy(
+          if (currentSpace) {
+            if (ts.spaces.indexOf(currentSpace.id) < 0) {
+              return false
+            }
+          }
+          return ts.status !== TabsetStatus.DELETED &&
+              ts.status !== TabsetStatus.HIDDEN &&
+              ts.status !== TabsetStatus.ARCHIVED
+        }),
+        getTabsetOrder, ["asc"])
+  } else {
+    tabsets.value = _.sortBy(
         _.filter([...tabsStore.tabsets.values()],
-                (ts: Tabset) => ts.status !== TabsetStatus.DELETED
-                    && ts.status !== TabsetStatus.HIDDEN &&
-                    ts.status !== TabsetStatus.ARCHIVED),
-            getTabsetOrder, ["asc"])
-      }
-  console.log(" *** watchEffect ***")
+            (ts: Tabset) => ts.status !== TabsetStatus.DELETED
+                && ts.status !== TabsetStatus.HIDDEN &&
+                ts.status !== TabsetStatus.ARCHIVED),
+        getTabsetOrder, ["asc"])
+  }
 })
 
 
 function inIgnoredMessages(message: any) {
   return message.msg === "html2text" ||
       message.msg === "html2links" ||
-      message.msg === "websiteQuote" ||
       message.name === "recogito-annotation-created"
 }
 
@@ -391,6 +389,7 @@ if ($q.platform.is.chrome) {
         // hmm - getting this twice...
         console.log(" > got message '" + message.name + "'", message)
         useTabsetService().reloadTabset(message.data.tabsetId)
+        //updateSelectedTabset(message.data.tabsetId, true)
       } else if (message.name === "tab-deleted") {
         useTabsetService().reloadTabset(message.data.tabsetId)
       } else if (message.name === "tabset-added") {
@@ -429,71 +428,6 @@ if ($q.platform.is.chrome) {
   }
 } else {
   //useRouter().push("/start")
-}
-
-const filteredTabs = (tabset: Tabset): Tab[] => {
-  if (tabset.type === TabsetType.DYNAMIC &&
-      tabset.dynamicTabs && tabset.dynamicTabs.type === DynamicTabSourceType.TAG) {
-    const results: Tab[] = []
-    //console.log("checking", tabset.dynamicTabs)
-    const tag = tabset.dynamicTabs?.config['tags' as keyof object][0]
-    //console.log("using tag", tag)
-    _.forEach([...tabsStore.tabsets.values()], (tabset: Tabset) => {
-      _.forEach(tabset.tabs, (tab: Tab) => {
-        if (tab.tags?.indexOf(tag) >= 0) {
-          results.push(tab)
-        }
-      })
-    })
-    //return _.orderBy(results, getOrder(), [orderDesc.value ? 'desc' : 'asc'])
-    return results
-  }
-  let tabs: Tab[] = tabset.tabs
-
-  // Tabs with placeholder
-  let placeholderTabs: Tab[] = []
-  let removeTabIds: string[] = []
-  tabs.forEach((t: Tab) => {
-    if (t.placeholders && t.placeholders.type === PlaceholdersType.URL_SUBSTITUTION) {
-      const subs = t.placeholders.config
-      Object.entries(subs).forEach(e => {
-        const name = e[0]
-        const val = e[1]
-        val.split(",").forEach((v: string) => {
-          const substitution = v.trim()
-          if (substitution.length > 0) {
-            const clonedTab = JSON.parse(JSON.stringify(t));
-            clonedTab.id = uid()
-            clonedTab.description = undefined
-            let useUrl = t.url || ''
-            let useName = t.name || t.title || ''
-            Object.entries(subs).forEach(e1 => {
-              useUrl = useUrl.replaceAll("${" + e1[0] + "}", substitution)
-              useName = useName.replaceAll("${" + e1[0] + "}", substitution)
-            })
-            clonedTab.url = useUrl
-            clonedTab.name = useName
-            placeholderTabs.push(clonedTab)
-            removeTabIds.push(t.id)
-          }
-        })
-      })
-    }
-  })
-  tabs = _.filter(tabs, (t: Tab) => removeTabIds.indexOf(t.id) < 0)
-  tabs = tabs.concat(placeholderTabs)
-
-
-  // TODO order??
-  const filter = useUiStore().tabsFilter
-  if (!filter || filter.trim() === '') {
-    return tabs
-  }
-  return _.filter(tabs, (t: Tab) => {
-    return (t.url || '')?.indexOf(filter) >= 0 ||
-        (t.title || '')?.indexOf(filter) >= 0 ||
-        t.description?.indexOf(filter) >= 0
-  })
 }
 
 if (inBexMode() && chrome) {
@@ -562,8 +496,6 @@ const tabsetCaption = (tabs: Tab[], window: string) => {
   return caption
 }
 
-const hoveredOver = (tabsetId: string) => hoveredTabset.value === tabsetId
-
 function checkKeystroke(e: KeyboardEvent) {
   if (useUiStore().ignoreKeypressListener()) {
     return
@@ -580,7 +512,7 @@ function checkKeystroke(e: KeyboardEvent) {
 
 const showTabset = (tabset: Tabset) => !useUiStore().tabsFilter ?
     true :
-    (useUiStore().tabsFilter === '' || filteredTabs(tabset).length > 0)
+    (useUiStore().tabsFilter === '' || useTabsetService().tabsToShow(tabset).length > 0)
 
 const toolbarTitle = (tabsets: Tabset[]) => {
   if (usePermissionsStore().hasFeature(FeatureIdent.SPACES)) {
@@ -607,9 +539,13 @@ const tabsetIcon = (tabset: Tabset) => {
 }
 
 const headerStyle = (tabset: Tabset) => {
+  const tabsetOpened = _.findIndex([...tabsetExpanded.value.keys()],
+      (key: string) => (key !== null) && tabsetExpanded.value.get(key)) >= 0
   let style = tabsetExpanded.value.get(tabset.id) ?
       'border:0 solid grey;border-top-left-radius:4px;border-top-right-radius:4px;' :
-      'border:0 solid grey;border-radius:4px;'
+      tabsetOpened ?
+          'border:0 solid grey;border-radius:4px;opacity:30%;' :
+          'border:0 solid grey;border-radius:4px;'
   if (tabset.color && usePermissionsStore().hasFeature(FeatureIdent.COLOR_TAGS)) {
     style = style + 'border-left:4px solid ' + tabset.color
   } else {
@@ -617,6 +553,7 @@ const headerStyle = (tabset: Tabset) => {
   }
   return style
 }
+
 </script>
 
 <style>

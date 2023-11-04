@@ -42,16 +42,8 @@
       <FirstToolbarHelper title="'Top 10' Tabs">
 
         <template v-slot:iconsRight>
-          <q-btn
-            icon="close"
-            @click="useUiStore().sidePanelSetActiveView(SidePanelView.MAIN)"
-            color="black"
-            flat
-            class="q-ma-none q-pa-xs cursor-pointer"
-            style="max-width:20px"
-            size="10px">
-            <q-tooltip class="tooltip">Close this view</q-tooltip>
-          </q-btn>
+          <SidePanelToolbarTabNavigationHelper/>
+          <CloseSidePanelViewButton/>
         </template>
 
       </FirstToolbarHelper>
@@ -75,6 +67,8 @@ import SecondToolbarHelper from "pages/sidepanel/helper/SecondToolbarHelper.vue"
 import InfoMessageWidget from "components/widgets/InfoMessageWidget.vue";
 import {onMounted, ref, watchEffect} from "vue";
 import Analytics from "src/utils/google-analytics";
+import SidePanelToolbarTabNavigationHelper from "pages/sidepanel/helper/SidePanelToolbarTabNavigationHelper.vue";
+import CloseSidePanelViewButton from "components/buttons/CloseSidePanelViewButton.vue";
 
 const tabsStore = useTabsStore()
 

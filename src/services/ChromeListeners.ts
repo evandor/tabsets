@@ -6,7 +6,7 @@ import {uid} from "quasar";
 import throttledQueue from 'throttled-queue';
 // @ts-ignore
 import {convert} from "html-to-text"
-import {useWindowsStore} from "src/stores/windowsStores";
+import {useWindowsStore} from "src/stores/windowsStore";
 import {useTabsetService} from "src/services/TabsetService2";
 import {useSettingsStore} from "src/stores/settingsStore";
 import {usePermissionsStore} from "src/stores/permissionsStore";
@@ -17,6 +17,8 @@ import {FeatureIdent} from "src/models/AppFeature";
 import {Extractor, Extractors, ExtractorType} from "src/config/Extractors";
 import {useUtils} from "src/services/Utils";
 import {useGroupsStore} from "stores/groupsStore";
+import {useUiStore} from "stores/uiStore";
+import NavigationService from "src/services/NavigationService";
 
 const {
   saveCurrentTabset,
@@ -195,6 +197,22 @@ class ChromeListeners {
       //     })
       //   }
       // });
+
+      chrome.commands.onCommand.addListener((command) => {
+        switch (command) {
+          case 'tabHistoryBack':
+            NavigationService.backOneTab()
+            break
+          case 'tabHistoryForward':
+            NavigationService.forwardOneTab()
+            break
+          case 'search':
+            break
+          default:
+            console.log(`unknown Command: ${command}`);
+            break
+        }
+      });
 
     }
 
@@ -438,12 +456,12 @@ class ChromeListeners {
       _.forEach([...tabsStore.tabsets.keys()], key => {
         const ts = tabsStore.tabsets.get(key)
         if (ts && ts.status !== TabsetStatus.DELETED) {
+          // increasing hit count
           const hits = _.filter(ts.tabs, (t: Tab) => t.url === url)
           let hit = false
           _.forEach(hits, h => {
             h.activatedCount = 1 + h.activatedCount
             h.lastActive = new Date().getTime()
-            console.debug(`onActivated: tab ${info.tabId}:updating hits`, h)
             hit = true
           })
           if (hit) {
@@ -494,8 +512,8 @@ class ChromeListeners {
       this.handleAddTabToTabset(request, sender, sendResponse)
     } else if (request.msg === 'captureClipping') {
       this.handleCaptureClipping(request, sender, sendResponse)
-    } else if (request.msg === 'websiteQuote') {
-      this.handleMessageWebsiteQuote(request, sender, sendResponse)
+    // } else if (request.msg === 'websiteQuote') {
+    //   this.handleMessageWebsiteQuote(request, sender, sendResponse)
     } else if (request.msg === 'websiteImg') {
       this.handleMessageWebsiteImage(request, sender, sendResponse)
     } else if (request.name === 'recogito-annotation-created') {
@@ -677,22 +695,6 @@ class ChromeListeners {
     sendResponse({addTabToCurrent: 'done'});
   }
 
-  private async handleMessageWebsiteQuote(request: any, sender: chrome.runtime.MessageSender, sendResponse: any) {
-    const currentTS = useTabsetService().getCurrentTabset()
-    if (sender.tab && currentTS) {
-      console.log("request", request.selection)
-      const serialTx = request.selection
-      // https://stackoverflow.com/questions/965968/serialize-internal-javascript-objects-like-range
-
-      const newTab = new Tab(uid(), sender.tab)
-//      newTab.selection = serialTx
-      newTab.selections.push(new HTMLSelection(serialTx, request.text,[new HTMLSelectionComment("owner", "added")]))
-      console.log("newTab with selection", serialTx)
-      this.addSelectionToTabset(currentTS.id, sender.tab.url || '', newTab)
-    }
-    sendResponse({websiteQuote: 'done'});
-  }
-
   private async handleMessageWebsiteImage(request: any, sender: chrome.runtime.MessageSender, sendResponse: any) {
     const currentTS = useTabsetService().getCurrentTabset()
     if (sender.tab && currentTS) {
@@ -789,30 +791,6 @@ class ChromeListeners {
       sendResponse({imgSrc: dataUrl});
     }
     img.src = dataUrl//"https://i.imgur.com/SHo6Fub.jpg";
-  }
-
-  private addSelectionToTabset(currentTSId: string, url: string, newTab: Tab) {
-    console.log("addSelectionToTabset", currentTSId, url, newTab)
-    const tabsetIds = useTabsetService().tabsetsFor(url)
-    console.log("got tabsetIds", tabsetIds)
-    if (tabsetIds.length > 0) {
-      tabsetIds.forEach(tsId => {
-        const ts = useTabsetService().getTabset(tsId)
-        if (ts) {
-          const tabs = _.filter(ts.tabs, t => t.url === url)
-          tabs.forEach(t => {
-            if (!t.selections) {
-              t.selections = []
-            }
-            t.selections = t.selections.concat(newTab.selections)
-          })
-          useTabsetService().saveTabset(ts)
-        }
-      })
-    } else {
-      this.addToTabset(currentTSId, newTab)
-    }
-
   }
 
   private addToTabset(currentTSId: string, newTab: Tab) {

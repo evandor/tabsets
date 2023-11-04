@@ -126,7 +126,7 @@
         <!--        <q-separator vertical dark inset />-->
         <!--        <span>{{ useUiStore().tabsFilter }}</span>-->
         <q-btn
-            v-if="tabsStore.currentTabsetId !== '' && tabsStore.getTabset(tabsStore.currentTabsetId) && tabsStore.getCurrentTabset?.tabs.length > 0 && $q.screen.gt.xs"
+            v-if="tabsStore.currentTabsetId !== '' && tabsStore.getTabset(tabsStore.currentTabsetId) && tabsStore.getCurrentTabset?.tabs?.length > 0 && $q.screen.gt.xs"
             flat
             :text-color="useUiStore().tabsFilter ? 'secondary' : 'primary'"
             :disable="tabset?.type === TabsetType.DYNAMIC"

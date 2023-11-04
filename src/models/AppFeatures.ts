@@ -14,9 +14,9 @@ export class AppFeatures {
       .setActivateCommands([new GrantPermissionCommand('bookmarks')])
       .setDeactivateCommands([new RevokePermissionCommand('bookmarks')]),
 
-    new AppFeature(FeatureIdent.PAGE_MARKER, FeatureType.EXPERIMENTAL, 'Page Marker', 'o_note', ['bex'])
-      .setActivateCommands([new GrantPermissionCommand('contextMenus')])
-      .setDeactivateCommands([new RevokePermissionCommand('contextMenus')]),
+    // new AppFeature(FeatureIdent.PAGE_MARKER, FeatureType.EXPERIMENTAL, 'Page Marker', 'o_note', ['bex'])
+    //   .setActivateCommands([new GrantPermissionCommand('contextMenus')])
+    //   .setDeactivateCommands([new RevokePermissionCommand('contextMenus')]),
 
     new AppFeature(FeatureIdent.THUMBNAILS, FeatureType.EXPERIMENTAL, 'Thumbnails', 'o_image', ['bex'])
       .setActivateCommands([new GrantOriginCommand('thumbnails')])
@@ -53,7 +53,7 @@ export class AppFeatures {
       .setActivateCommands([new GrantPermissionCommand('notifications')])
       .setDeactivateCommands([new RevokePermissionCommand('notifications')]),
 
-    new AppFeature(FeatureIdent.ANNOTATIONS, FeatureType.EXPERIMENTAL, 'Annotate Websites', 'o_auto_awesome', ['bex']),
+    //new AppFeature(FeatureIdent.ANNOTATIONS, FeatureType.EXPERIMENTAL, 'Annotate Websites', 'o_auto_awesome', ['bex']),
 
     new AppFeature(FeatureIdent.ARCHIVE_TABSET, FeatureType.OPTIONAL, 'Archive Tabsets', 'o_inventory_2', ['all']),
     new AppFeature(FeatureIdent.WINDOW_MANAGEMENT, FeatureType.OPTIONAL, 'Window Management', 'o_grid_view', ['all']),
