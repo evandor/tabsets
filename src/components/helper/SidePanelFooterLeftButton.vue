@@ -4,7 +4,7 @@
          :class="leftButtonClass()"
          flat
          :color="isActive() ? 'secondary':'black'"
-         size="9px"
+         :size="props.size"
          @click="toggleView()">
     <q-tooltip v-if="props.tooltip"
                :delay="700"
@@ -22,6 +22,7 @@ import {useRouter} from "vue-router";
 const props = defineProps({
   sidePanelView: {type: Object as PropType<SidePanelView>, required: true},
   icon: {type: String, required: true},
+  size: {type: String, default: "9px"},
   tooltip: {type: String, required: false}
 })
 
@@ -31,7 +32,7 @@ const isActive = () => useUiStore().sidePanelIsActive(props.sidePanelView)
 const activateView = (view: SidePanelView) => useUiStore().sidePanelSetActiveView(view)
 
 const showButton = () => props.sidePanelView?.showButton()
-const leftButtonClass = () => "q-my-xs q-ml-xs q-px-xs"
+const leftButtonClass = () => "q-my-xs q-ml-xs q-mr-none q-px-xs"
 
 const toggleView = () => {
   if (isActive()) {
@@ -42,5 +43,6 @@ const toggleView = () => {
     router.push("/sidepanel/" + props.sidePanelView)
   }
 }
+
 
 </script>

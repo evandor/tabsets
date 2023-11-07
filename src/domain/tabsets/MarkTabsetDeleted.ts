@@ -53,7 +53,7 @@ export class MarkTabsetDeletedCommand implements Command<Tabset> {
       .then(res => Promise.resolve(
         new ExecutionResult(
           res,
-          "Tabset was deleted",
+          "Tabset deleted",
           new UndoCommand(this.tabsetId)))
       )
       .catch(err => Promise.reject(err))

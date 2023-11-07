@@ -13,7 +13,7 @@ installQuasarPlugin();
 
 vi.mock('vue-router')
 
-describe('AddTabToTabsetCommand', () => {
+describe('CreateTabsetCommand', () => {
 
   let db = null as unknown as PersistenceService
 
@@ -39,7 +39,7 @@ describe('AddTabToTabsetCommand', () => {
     expect(executionResult.result.replaced).toBe(false)
     expect(executionResult.result.tabset.name).toBe("tabsetName")
     expect(executionResult.result.merged).toBe(true)
-    expect(executionResult.message).toBe("Tabset 'tabsetName' created successfully")
+    expect(executionResult.message).toBe("Tabset created")
 
     const db = useDB(undefined).db
     await db.loadTabsets()
