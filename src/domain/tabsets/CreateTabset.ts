@@ -14,7 +14,7 @@ import {useWindowsStore} from "src/stores/windowsStore";
 import {STRIP_CHARS_IN_USER_INPUT} from "boot/constants";
 import {TabsetType} from "src/models/Tabset";
 
-const {inBexMode, sendMsg} = useUtils()
+const {sendMsg} = useUtils()
 
 class UndoCreateTabsetCommand implements Command<object> {
 
@@ -69,7 +69,7 @@ export class CreateTabsetCommand implements Command<SaveOrReplaceResult> {
                         return res
                     }
                 )
-            let doneMsg = 'Tabset \'' + this.tabsetName + '\' created successfully'
+            let doneMsg = 'Tabset created'
             if (result['replaced' as keyof object] && result['merged' as keyof object]) {
                 doneMsg = 'Existing Tabset \'' + this.tabsetName + '\' can be updated now'
             } else if (result['replaced' as keyof object]) {

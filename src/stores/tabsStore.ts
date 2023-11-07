@@ -200,7 +200,7 @@ export const useTabsStore = defineStore('tabs', {
                     //   }
                     // } else {
                     const found: Tab | undefined = _.find(value.tabs, t => {
-                        console.log("cmp", t.id, tabId)
+                       // console.log("cmp", t.id, tabId)
                         return t.id === tabId
                     })
                     if (found) {
@@ -320,8 +320,8 @@ export const useTabsStore = defineStore('tabs', {
             this.currentChromeTabs.set(tab.windowId, tab)
             const MAX_HISTORY_LENGTH = 12
 
-            console.log("%cchromeTabsHistoryPosition", "color:green;font-style:bold;",
-                tab.id, this.chromeTabsHistoryPosition, this.chromeTabsHistory.length, this.chromeTabsHistoryNavigating)
+           // console.log("%cchromeTabsHistoryPosition", "color:green;font-style:bold;",
+           //     tab.id, this.chromeTabsHistoryPosition, this.chromeTabsHistory.length, this.chromeTabsHistoryNavigating)
 
             // tab was activated without using the navigation
             if (tab.id && !this.chromeTabsHistoryNavigating) {
@@ -339,17 +339,15 @@ export const useTabsStore = defineStore('tabs', {
                     this.chromeTabsHistory[historyLength - 1][0] !== tab.id &&
                     this.chromeTabsHistory[historyLength - 1][1] !== tab.url
                 ) {
-                    console.log("pushing tab A", tab.id)
                     this.chromeTabsHistory.push([tab.id, tab.url || ''])
                 } else if (historyLength === 0) {
-                    console.log("pushing tab B", tab.id)
                     this.chromeTabsHistory.push([tab.id, tab.url || ''])
                 } else {
-                    console.log("did not add, adjusting position", historyLength - 1)
+                    //console.log("did not add, adjusting position", historyLength - 1)
                     this.chromeTabsHistoryPosition = historyLength - 1
                 }
                 if (this.chromeTabsHistory.length > MAX_HISTORY_LENGTH) {
-                    console.log("deleting first element")
+                    // console.log("deleting first element")
                     this.chromeTabsHistory.splice(0, 1)
                 }
             } else if (this.chromeTabsHistoryNavigating) {

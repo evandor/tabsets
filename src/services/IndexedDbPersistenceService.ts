@@ -631,7 +631,7 @@ class IndexedDbPersistenceService implements PersistenceService {
 
   addNotification(notification: Notification): Promise<void> {
     return this.db.add('notifications', notification, notification.id)
-      .then((res) => Promise.resolve())
+      .then(() => Promise.resolve())
   }
 
   notificationRead(notificationId: string): Promise<void> {
@@ -656,15 +656,15 @@ class IndexedDbPersistenceService implements PersistenceService {
         if (foundExistingInStateNewOrCanceled) {
           if (foundExistingInStateNewOrCanceled && foundExistingInStateNewOrCanceled.url === suggestion.url) {
             foundExistingInStateNewOrCanceled.state = SuggestionState.APPLIED
-            this.db.put('suggestions', foundExistingInStateNewOrCanceled, foundExistingInStateNewOrCanceled.id)
-            return Promise.reject("updated existing suggestion to 'applied'")
+            // this.db.put('suggestions', foundExistingInStateNewOrCanceled, foundExistingInStateNewOrCanceled.id)
+            return Promise.reject("TODO: not: updated existing suggestion to 'applied'")
           }
           return Promise.reject("there's already a suggestion in state NEW, not adding (yet)")
         }
         const found = _.find(suggestions, (s: Suggestion) => s.url === suggestion.url)
         if (!found) {
           return this.db.add('suggestions', suggestion, suggestion.id)
-            .then((res) => Promise.resolve())
+            .then(() => Promise.resolve())
         }
         //console.log("suggestion already exists")
         return Promise.reject("suggestion already exists")
