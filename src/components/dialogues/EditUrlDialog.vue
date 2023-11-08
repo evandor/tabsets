@@ -136,6 +136,4 @@ const updatePlaceholder = (placeholder: string, val: any) => {
 
 const modelFor = (ident: string) => placeholderValues.value.get(ident)
 
-const tabTitle = () => props.tab.name || props.tab.title
-
 </script>

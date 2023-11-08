@@ -500,7 +500,6 @@ class ChromeListeners {
     if (inIgnoredMessages(request)) {
       return true
     }
-    console.log("handling request", request)
     if (request.msg === 'captureThumbnail') {
       const screenShotWindow = useWindowsStore().screenshotWindow
       this.handleCapture(sender, screenShotWindow, sendResponse)
@@ -599,7 +598,7 @@ class ChromeListeners {
 
   private handleHtml2Links(request: any, sender: chrome.runtime.MessageSender, sendResponse: any) {
     if (sender.tab) {
-      console.log("handleHtml2Links")
+      console.debug("handleHtml2Links")
       saveMetaLinksFor(sender.tab, request.links)
       saveLinksFor(sender.tab, request.anchors)
 
