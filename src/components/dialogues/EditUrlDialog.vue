@@ -2,21 +2,18 @@
   <q-dialog ref="dialogRef" @hide="onDialogHide">
     <q-card class="q-dialog-plugin">
       <q-card-section>
-        <div class="text-h6">Edit URL</div>
+        <div class="text-h6">Edit Tab</div>
       </q-card-section>
-      <q-card-section v-if="placeholders.length > 0">
+      <q-card-section>
         <div class="text-body">
           <div class="text-body"><b>Tab Name:</b></div>
           <q-input type="text" dense v-model="newTabName"/>
         </div>
       </q-card-section>
-      <q-card-section v-else>
-        <div class="text-body">Tab: {{ tabTitle() }}</div>
-      </q-card-section>
 
       <q-card-section class="q-pt-none">
         <div class="text-body"><b>URL:</b></div>
-        <q-input type="text"
+        <q-input type="url"
                  dense v-model="newTabUrl" autofocus @keydown.enter="updateTab()"
                  error-message="not a valid URL"
                  :error="!newTabUrlIsValid"
@@ -27,7 +24,7 @@
       <q-card-section class="q-pt-none" v-if="placeholders.length > 0">
         <b>Substitutions for</b>
       </q-card-section>
-      <q-card-section class="q-pt-none" v-else>
+      <q-card-section class="q-pt-none text-caption" v-else>
         You can use placeholder like this as well: https://dax.de/${wkn}
       </q-card-section>
 
@@ -38,14 +35,11 @@
       </q-card-section>
 
       <q-card-actions align="right">
-        <q-btn label="Cancel" size="md" @click="onDialogCancel" color="accent"/>
-        <!--        :disable="newTabUrl?.trim().length === 0 || newTabUrl?.trim() === props.tabsetName || newTabsetDialogWarning() !== ''"-->
-
-        <q-btn label="Update" color="warning" size="md"
-               v-close-popup
-               @click="updateTab()"/>
+        <DialogButton label="Cancel" color="accent" v-close-popup/>
+        <DialogButton label="Update"
+                      @was-clicked="updateTab()"
+                      v-close-popup/>
       </q-card-actions>
-
 
     </q-card>
   </q-dialog>
@@ -65,6 +59,7 @@ import {useCommandExecutor} from "src/services/CommandExecutor";
 import {SaveTabCommand} from "src/domain/tabs/SaveTab";
 import {Tab} from "src/models/Tab";
 import {UpdateTabUrlCommand} from "src/domain/tabs/UpdateTabUrl";
+import DialogButton from "components/buttons/DialogButton.vue";
 
 defineEmits([
   ...useDialogPluginComponent.emits
@@ -74,7 +69,7 @@ const props = defineProps({
   tab: {type: Object as PropType<Tab>, required: true}
 })
 
-const {handleError, handleSuccess} = useNotificationHandler()
+const {handleError} = useNotificationHandler()
 const {dialogRef, onDialogHide, onDialogCancel} = useDialogPluginComponent()
 
 const tabsStore = useTabsStore()

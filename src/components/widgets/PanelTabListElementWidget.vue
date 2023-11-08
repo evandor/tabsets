@@ -43,31 +43,24 @@
                   @mouseover="hoveredTab = tab.id"
                   @mouseleave="hoveredTab = undefined">
 
-    <!-- name or title -->
-    <q-item-label>
+    <!-- === name or title === -->
+    <q-item-label @click.stop="gotoTab()">
       <div>
-        <div class="q-pr-sm cursor-pointer ellipsis">
+        <div class="q-pr-lg cursor-pointer ellipsis">
           <span v-if="props.header" class="text-bold">{{ props.header }}<br></span>
           <!--          <span v-if="useTabsStore().getCurrentTabset?.sorting === 'alphabeticalTitle'">-->
           <span v-if="props.sorting === TabSorting.TITLE">
               <q-icon name="arrow_right" size="16px"/>
            </span>
+
           <span v-if="props.tab?.extension === UrlExtension.NOTE"
-                @click.stop="NavigationService.openOrCreateTab(props.tab.url || '',props.tab.matcher,props.tab.groupName )"
                 v-html="nameOrTitle(props.tab as Tab)"/>
-          <span v-else
-                v-html="nameOrTitle(props.tab as Tab)"
-          />
+          <span v-else :class="isCurrentTab(props.tab) ? 'text-bold':''">{{ nameOrTitle(props.tab as Tab) }}</span>
+
           <q-icon v-if="(props.tab as Tab).placeholders"
                   name="published_with_changes" class="q-ml-sm" color="accent">
-            <q-tooltip>This tab is created by substituting parts of its URL</q-tooltip>
+            <q-tooltip class="tooltip-small">This tab is created by substituting parts of its URL</q-tooltip>
           </q-icon>
-          <q-popup-edit
-              v-if="props.tab?.extension !== UrlExtension.NOTE && !props.tab.placeholders"
-              :model-value="dynamicNameOrTitleModel(tab)" v-slot="scope"
-              @update:model-value="val => setCustomTitle( tab, val)">
-            <q-input v-model="scope.value" dense autofocus counter @keyup.enter="scope.set"/>
-          </q-popup-edit>
         </div>
 
       </div>
@@ -166,7 +159,7 @@
                   <q-item clickable style="font-size: smaller" @click="unsetGroup()">
                     Unset Group
                   </q-item>
-                  <q-separator />
+                  <q-separator/>
                   <q-item clickable style="font-size: smaller" @click="removeGroup(groupName)">
                     Remove Group
                   </q-item>
@@ -329,18 +322,7 @@ watchEffect(() => {
   }
 })
 
-const nameOrTitle = (tab: Tab) => {
-  let nameOrTitle = tab.name ? tab.name : tab.title
-  if (usePermissionsStore().hasFeature(FeatureIdent.ANNOTATIONS) && tab.annotations?.length > 0) {
-    nameOrTitle = "(" + tab.annotations.length + ") " + nameOrTitle
-  }
-  return nameOrTitle
-}
-
-const dynamicNameOrTitleModel = (tab: Tab) => tab.name ? tab.name : tab.title
-
-const setCustomTitle = (tab: Tab, newValue: string) =>
-    useCommandExecutor().executeFromUi(new UpdateTabNameCommand(tab, newValue))
+const nameOrTitle = (tab: Tab) => tab.name ? tab.name : tab.title
 
 const hoveredOver = (tabsetId: string) => hoveredTab.value === tabsetId
 
@@ -357,9 +339,9 @@ const isCurrentTab = (tab: Tab) => {
 
 const iconStyle = () => {
   if (isCurrentTab(props.tab)) {
-    return "border:2px solid orange;border-radius:3px"
+    return "border:1px solid #bfbfbf;border-radius:3px"
   } else {
-    return "border:0px solid orange;border-radius:3px"
+    return "border:0px solid white;border-radius:3px"
   }
 }
 
@@ -410,7 +392,8 @@ const removeGroup = (groupName: string) => {
   unsetGroup()
   if (props.tab && groupName) {
     useCommandExecutor().executeFromUi(new DeleteChromeGroupCommand(groupName))
-  }}
+  }
+}
 
 const groupsWithout = (groupName: string): chrome.tabGroups.TabGroup[] =>
     _.filter([...groups.value.values()], (g: chrome.tabGroups.TabGroup) => g.title !== groupName)

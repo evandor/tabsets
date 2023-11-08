@@ -189,12 +189,7 @@ class TabsetService {
 
   setUrl(tab: Tab, url: string, placeholders: string[] = [], placeholderValues: Map<string,string> = new Map()): Promise<any> {
     tab.url = url
-    var config: {[k: string]: any} = {};
-    for(const p of placeholders) {
-      config[p] = placeholderValues.get(p)
-    }
-    const phs = new Placeholders(PlaceholdersType.URL_SUBSTITUTION, tab.id, config)
-    tab.placeholders = phs
+    tab = PlaceholderUtils.apply(tab, placeholders, placeholderValues)
     return saveCurrentTabset()
   }
 

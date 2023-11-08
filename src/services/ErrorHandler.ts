@@ -7,13 +7,13 @@ export function useNotificationHandler() {
     const handleError = (error: any) => {
         console.log("got error: ", error ? error.toString() : 'unknown error')
         console.trace()
-        Notify.create({
-            position: 'bottom',
-            color: 'red-5',
-            textColor: 'white',
-            icon: 'error',
-            message: error ? error.toString() : 'unknown error'
-        })
+        // Notify.create({
+        //     position: 'bottom',
+        //     color: 'red-5',
+        //     textColor: 'white',
+        //     icon: 'error',
+        //     message: error ? error.toString() : 'unknown error'
+        // })
         useUiStore().createErrorToast(error ? error.toString() : 'unknown error')
 
     }

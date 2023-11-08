@@ -59,12 +59,11 @@
         </q-card-section>
 
         <q-card-actions align="right">
-          <q-btn label="Cancel" size="sm" color="accent" v-close-popup/>
-          <q-btn type="submit" size="sm" color="warning"
-                 data-testid="newTabsetNameSubmit"
-                 :disable="!isValid"
-                 label="Add"
-                 v-close-popup/>
+          <DialogButton label="Cancel" color="accent" v-close-popup/>
+          <DialogButton label="Add"
+                        data-testid="newTabsetNameSubmit"
+                        type="submit"
+                        :disable="!isValid"/>
         </q-card-actions>
 
       </q-card>
@@ -90,6 +89,7 @@ import {FeatureIdent} from "src/models/AppFeature";
 import {useWindowsStore} from "src/stores/windowsStore";
 import {useUtils} from "src/services/Utils";
 import ColorSelector from "components/dialogues/helper/ColorSelector.vue";
+import DialogButton from "components/buttons/DialogButton.vue";
 
 const {dialogRef, onDialogHide, onDialogCancel} = useDialogPluginComponent()
 const {inBexMode} = useUtils()

@@ -313,7 +313,7 @@
 
   <div v-else-if="tab === 'links'">
     <div class="q-pa-md q-gutter-sm">
-      <q-banner rounded class="bg-grey-1 text-primary">This is a data derived from the tab's html content</q-banner>
+      <q-banner rounded class="bg-grey-1 text-primary">This is data derived from the tab's html content</q-banner>
 
       <q-table
           title="Links"
@@ -335,7 +335,7 @@
           <q-td :props="props">
             <div class="cursor-pointer text-blue-10">
               <span v-if="props.row.link.length > 0 && props.row.link.startsWith('/')"
-                    @click="openLink(selectedTab.url + '/' + props.row.link.substring(1))">
+                    @click="openLink(domain + '/' + props.row.link.substring(1))">
                 {{ props.row.link }}
               </span>
               <span v-else @click="openLink(props.row.link)">{{ props.row.link }}</span>
@@ -408,6 +408,7 @@ const route = useRoute()
 const {formatDate} = useUtils()
 
 const selectedTab = ref<Tab | undefined>(undefined)
+const domain = ref<string | undefined>(undefined)
 const thumbnail = ref('')
 const content = ref('')
 const request = ref({})
@@ -442,6 +443,12 @@ watchEffect(() => {
       json.value = JSON.parse(JSON.stringify(tabInfo['tab' as keyof object] as Tab))
       tags.value = tabInfo['tab' as keyof object]['tags' as keyof object]
       selectedTab.value = tabInfo['tab' as keyof object] as Tab
+      try {
+        const url = new URL(selectedTab.value.url || '')
+        domain.value = url.protocol + url.host
+      } catch (err) {
+        domain.value = selectedTab.value.url
+      }
     }
   })
 })

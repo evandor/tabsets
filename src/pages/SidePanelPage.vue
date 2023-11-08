@@ -65,8 +65,9 @@
             <div class="q-ma-none" v-if="inBexMode() &&
               tabset.type !== TabsetType.DYNAMIC &&
               currentChromeTab &&
+              currentChromeTab.url &&
               currentChromeTab.url !== 'chrome://newtab/' &&
-              currentChromeTab.url?.indexOf('/www/index.html#/mainpanel/notes/') < 0 &&
+              currentChromeTab.url.indexOf('/www/index.html#/mainpanel/notes/') < 0 &&
               currentChromeTab.url !== ''">
               <SidePanelTabInfo :tabsetId="tabset.id"/>
             </div>

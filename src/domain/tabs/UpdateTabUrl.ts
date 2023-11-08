@@ -46,7 +46,7 @@ export class UpdateTabUrlCommand implements Command<any> {
       .then(ignored => Promise.resolve(
         new ExecutionResult(
           this.newUrl,
-          "Tab's URL was updated",
+          "Tab updated",
           new UndoCommand(this.tab, oldUrl)))
       )
       .catch(err => Promise.reject(err))
