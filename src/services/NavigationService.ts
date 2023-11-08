@@ -11,11 +11,14 @@ import {FeatureIdent} from "src/models/AppFeature";
 
 class NavigationService {
 
+    placeholderPattern = /\${[^}]*}/gm
+
     async openOrCreateTab(
         withUrl: string,
         matcher: string | undefined = undefined,
         group: string | undefined = undefined
     ) {
+        withUrl = withUrl.replace(this.placeholderPattern, "")
         const useWindowIdent = useTabsStore().getCurrentTabset?.window || 'current'
         console.log(`opening url ${withUrl} in window ${useWindowIdent}, group: ${group}, mode: ${process.env.MODE}`)
 

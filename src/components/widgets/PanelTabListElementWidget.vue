@@ -1,5 +1,6 @@
 <template>
 
+  <!-- left part: icon plus various -->
   <q-item-section v-if="useUiStore().listDetailLevelGreaterEqual(ListDetailLevel.SOME)"
                   @mouseover="hoveredTab = tab.id"
                   @mouseleave="hoveredTab = undefined"
@@ -37,75 +38,75 @@
 
   </q-item-section>
 
-  <!-- name, title, description, url && note -->
+  <!-- right part: name, title, description, url && note -->
   <q-item-section class="q-mb-sm"
                   @mouseover="hoveredTab = tab.id"
                   @mouseleave="hoveredTab = undefined">
 
-    <!-- name or title -->
-    <q-item-label>
+    <!-- === name or title === -->
+    <q-item-label @click.stop="gotoTab()">
       <div>
-        <div class="q-pr-sm cursor-pointer ellipsis">
+        <div class="q-pr-lg cursor-pointer ellipsis">
           <span v-if="props.header" class="text-bold">{{ props.header }}<br></span>
           <!--          <span v-if="useTabsStore().getCurrentTabset?.sorting === 'alphabeticalTitle'">-->
           <span v-if="props.sorting === TabSorting.TITLE">
               <q-icon name="arrow_right" size="16px"/>
            </span>
+
           <span v-if="props.tab?.extension === UrlExtension.NOTE"
-                @click.stop="NavigationService.openOrCreateTab(props.tab.url || '',props.tab.matcher,props.tab.groupName )"
                 v-html="nameOrTitle(props.tab as Tab)"/>
-          <span v-else
-                v-html="nameOrTitle(props.tab as Tab)"
-          />
+          <span v-else :class="isCurrentTab(props.tab) ? 'text-bold':''">{{ nameOrTitle(props.tab as Tab) }}</span>
+
           <q-icon v-if="(props.tab as Tab).placeholders"
                   name="published_with_changes" class="q-ml-sm" color="accent">
-            <q-tooltip>This tab is created by substituting parts of its URL</q-tooltip>
+            <q-tooltip class="tooltip-small">This tab is created by substituting parts of its URL</q-tooltip>
           </q-icon>
-          <q-popup-edit
-              v-if="props.tab?.extension !== UrlExtension.NOTE && !props.tab.placeholders"
-              :model-value="dynamicNameOrTitleModel(tab)" v-slot="scope"
-              @update:model-value="val => setCustomTitle( tab, val)">
-            <q-input v-model="scope.value" dense autofocus counter @keyup.enter="scope.set"/>
-          </q-popup-edit>
         </div>
 
       </div>
     </q-item-label>
 
-    <!-- description -->
+    <!-- === description === -->
     <q-item-label class="ellipsis-2-lines text-grey-8"
                   v-if="useUiStore().listDetailLevelGreaterEqual(ListDetailLevel.MAXIMAL)"
-                  @click.stop="NavigationService.openOrCreateTab(props.tab?.url || '', props.tab?.matcher || '', props.tab?.groupName )">
+                  @click.stop="gotoTab()">
       {{ props.tab.description }}
     </q-item-label>
 
-    <!-- url -->
+    <!-- === url(s) === -->
     <q-item-label
         style="width:100%"
         v-if="props.tab?.url"
-        caption class="ellipsis-2-lines text-blue-10"
+        caption class="ellipsis-2-lines text-blue-10 bg-yellow-3"
         @mouseover="showButtonsProp = true"
         @mouseleave="showButtonsProp = false">
       <div class="row q-ma-none">
-        <div class="col-11 q-pr-lg cursor-pointer"
-             @click.stop="NavigationService.openOrCreateTab(props.tab.url,props.tab.matcher,props.tab.groupName )">
+        <div class="col-11 q-pr-lg cursor-pointer">
            <span v-if="props.sorting === TabSorting.URL">
               <q-icon name="arrow_right" size="16px"/>
            </span>
 
-          <!-- url or note -->
-          <!--          <template v-if="props.tab.extension === UrlExtension.NOTE">-->
-          <!--            <span>open Note</span>-->
-          <!--          </template>-->
           <template v-if="props.tab.extension !== UrlExtension.NOTE">
-            <short-url :url="props.tab.url" :hostname-only="!useUiStore().showFullUrls"/>
+            <short-url @click.stop="gotoTab()"
+                       :url="props.tab.url" :hostname-only="!useUiStore().showFullUrls"/>
             <q-icon v-if="props.tab.matcher && usePermissionsStore().hasFeature(FeatureIdent.ADVANCED_TAB_MANAGEMENT)"
                     @click.stop="openTabAssignmentPage(props.tab)"
                     name="o_settings">
               <q-tooltip class="tooltip">{{ matcherTooltip() }}</q-tooltip>
             </q-icon>
+            <!-- <q-icon class="q-ml-xs" name="open_in_new"/>-->
+            <ul>
+              <div v-for="placeholder in placeholders">
+                <li>
+                  <short-url
+                      @click.stop="NavigationService.openOrCreateTab(placeholder['url' as keyof object], props.tab.matcher, props.tab.groupName )"
+                      :label="placeholder['name' as keyof object]"
+                      :url="placeholder['url' as keyof object]"/>
+                </li>
+              </div>
+            </ul>
           </template>
-          <!-- <q-icon class="q-ml-xs" name="open_in_new"/>-->
+
         </div>
         <div v-if="!props.hideMenu"
              class="col text-right q-mx-sm cursor-pointer"
@@ -127,13 +128,14 @@
 
     </q-item-label>
 
+    <!-- === group and last active === -->
     <q-item-label
         style="width:100%;margin-top:0"
         v-if="props.tab?.url"
-        caption class="ellipsis-2-lines text-blue-10"
+        caption class="ellipsis-2-lines text-blue-10 bg-yellow-1"
         @mouseover="showButtonsProp = true"
         @mouseleave="showButtonsProp = false">
-      <div class="row q-ma-none">
+      <div class="row q-ma-none" @click="gotoTab()">
         <div class="col-12 q-pr-lg q-mt-none q-pt-none cursor-pointer">
           <div class="text-caption text-grey-5 ellipsis"
                v-if="useUiStore().listDetailLevelGreaterEqual(ListDetailLevel.SOME)">
@@ -157,7 +159,7 @@
                   <q-item clickable style="font-size: smaller" @click="unsetGroup()">
                     Unset Group
                   </q-item>
-                  <q-separator />
+                  <q-separator/>
                   <q-item clickable style="font-size: smaller" @click="removeGroup(groupName)">
                     Remove Group
                   </q-item>
@@ -171,7 +173,7 @@
       </div>
     </q-item-label>
 
-    <!-- note -->
+    <!-- === note === -->
     <q-item-label v-if="useUiStore().listDetailLevelGreaterEqual(ListDetailLevel.MAXIMAL) &&
       props['tab' as keyof object]['note']"
                   class="text-grey-10" text-subtitle1>
@@ -217,6 +219,8 @@ import {useUtils} from "src/services/Utils";
 import {useRouter} from "vue-router";
 import {useGroupsStore} from "stores/groupsStore";
 import {DeleteChromeGroupCommand} from "src/domain/groups/DeleteChromeGroupCommand";
+import {PlaceholdersType} from "src/models/Placeholders";
+import {uid} from "quasar";
 
 const {inBexMode} = useUtils()
 
@@ -242,6 +246,7 @@ const tsBadges = ref<object[]>([])
 const newState = ref(false)
 const groupName = ref<string | undefined>(undefined)
 const groups = ref<Map<string, chrome.tabGroups.TabGroup>>(new Map())
+const placeholders = ref<Object[]>([])
 
 onMounted(() => {
   if ((new Date().getTime() - props.tab.created) < 500) {
@@ -292,18 +297,32 @@ watchEffect(() => {
   }
 })
 
-const nameOrTitle = (tab: Tab) => {
-  let nameOrTitle = tab.name ? tab.name : tab.title
-  if (usePermissionsStore().hasFeature(FeatureIdent.ANNOTATIONS) && tab.annotations?.length > 0) {
-    nameOrTitle = "(" + tab.annotations.length + ") " + nameOrTitle
+watchEffect(() => {
+  if (props.tab) {
+    const t = props.tab
+    if (t.placeholders && t.placeholders.type === PlaceholdersType.URL_SUBSTITUTION) {
+      const subs = t.placeholders.config
+      Object.entries(subs).forEach(e => {
+        const name = e[0]
+        const val = e[1]
+        val.split(",").forEach((v: string) => {
+          const substitution = v.trim()
+          if (substitution.length > 0) {
+            let useUrl = t.url || ''
+            let useName = t.name || t.title || ''
+            Object.entries(subs).forEach(e1 => {
+              useUrl = useUrl.replaceAll("${" + name + "}", substitution)
+              useName = useName.replaceAll("${" + name + "}", substitution)
+            })
+            placeholders.value.push({url: useUrl, name: substitution})
+          }
+        })
+      })
+    }
   }
-  return nameOrTitle
-}
+})
 
-const dynamicNameOrTitleModel = (tab: Tab) => tab.name ? tab.name : tab.title
-
-const setCustomTitle = (tab: Tab, newValue: string) =>
-    useCommandExecutor().executeFromUi(new UpdateTabNameCommand(tab, newValue))
+const nameOrTitle = (tab: Tab) => tab.name ? tab.name : tab.title
 
 const hoveredOver = (tabsetId: string) => hoveredTab.value === tabsetId
 
@@ -320,9 +339,9 @@ const isCurrentTab = (tab: Tab) => {
 
 const iconStyle = () => {
   if (isCurrentTab(props.tab)) {
-    return "border:2px solid orange;border-radius:3px"
+    return "border:1px solid #bfbfbf;border-radius:3px"
   } else {
-    return "border:0px solid orange;border-radius:3px"
+    return "border:0px solid white;border-radius:3px"
   }
 }
 
@@ -373,7 +392,8 @@ const removeGroup = (groupName: string) => {
   unsetGroup()
   if (props.tab && groupName) {
     useCommandExecutor().executeFromUi(new DeleteChromeGroupCommand(groupName))
-  }}
+  }
+}
 
 const groupsWithout = (groupName: string): chrome.tabGroups.TabGroup[] =>
     _.filter([...groups.value.values()], (g: chrome.tabGroups.TabGroup) => g.title !== groupName)
@@ -396,6 +416,9 @@ const switchGroup = (group: chrome.tabGroups.TabGroup): void => {
         })
   }
 }
+
+const gotoTab = () => NavigationService.openOrCreateTab(props.tab.url || '', props.tab.matcher, props.tab.groupName)
+
 
 </script>
 

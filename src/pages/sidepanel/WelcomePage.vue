@@ -42,14 +42,10 @@
                    label="Tabset name"/>
         </q-card-section>
         <q-card-actions align="right" class="q-pr-md q-pb-md q-ma-none">
-          <q-btn padding="xs lg"
-                 :disable="tabsetName.trim().length === 0 || !newTabsetNameIsValid()"
-                 @click="addFirstTabset"
-                 align="around"
-                 size="0.9rem"
-                 data-testid="addTabsetSubmitBtn"
-                 color="warning"
-                 label="Add Tabset&nbsp;"/>
+          <DialogButton
+              label="Add Tabset"
+              @was-clicked="addFirstTabset"
+              :disable="tabsetName.trim().length === 0 || !newTabsetNameIsValid()"/>
         </q-card-actions>
       </q-card>
     </div>
@@ -71,6 +67,7 @@ import {useSpacesStore} from "stores/spacesStore";
 import {TabsetStatus} from "src/models/Tabset";
 import Analytics from "src/utils/google-analytics";
 import {nextTick} from 'vue'
+import DialogButton from "components/buttons/DialogButton.vue";
 
 const $q = useQuasar()
 const router = useRouter()

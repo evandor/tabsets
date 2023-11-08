@@ -12,6 +12,7 @@ import {useDB} from "src/services/usePersistenceService";
 import {useSpacesStore} from "stores/spacesStore";
 import {FirebaseCall} from "src/services/firebase/FirebaseCall";
 import {Placeholders, PlaceholdersType} from "src/models/Placeholders";
+import PlaceholderUtils from "src/utils/PlaceholderUtils";
 
 const {getTabset, getCurrentTabset, saveTabset, saveCurrentTabset, tabsetsFor, addToTabset} = useTabsetService()
 
@@ -188,12 +189,7 @@ class TabsetService {
 
   setUrl(tab: Tab, url: string, placeholders: string[] = [], placeholderValues: Map<string,string> = new Map()): Promise<any> {
     tab.url = url
-    var config: {[k: string]: any} = {};
-    for(const p of placeholders) {
-      config[p] = placeholderValues.get(p)
-    }
-    const phs = new Placeholders(PlaceholdersType.URL_SUBSTITUTION, tab.id, config)
-    tab.placeholders = phs
+    tab = PlaceholderUtils.apply(tab, placeholders, placeholderValues)
     return saveCurrentTabset()
   }
 

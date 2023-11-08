@@ -623,37 +623,37 @@ export function useTabsetService() {
         let tabs: Tab[] = tabset.tabs
 
         // Tabs with placeholder
-        let placeholderTabs: Tab[] = []
-        let removeTabIds: string[] = []
-        tabs.forEach((t: Tab) => {
-            if (t.placeholders && t.placeholders.type === PlaceholdersType.URL_SUBSTITUTION) {
-                const subs = t.placeholders.config
-                Object.entries(subs).forEach(e => {
-                    const name = e[0]
-                    const val = e[1]
-                    val.split(",").forEach((v: string) => {
-                        const substitution = v.trim()
-                        if (substitution.length > 0) {
-                            const clonedTab = JSON.parse(JSON.stringify(t));
-                            clonedTab.id = uid()
-                            clonedTab.description = undefined
-                            let useUrl = t.url || ''
-                            let useName = t.name || t.title || ''
-                            Object.entries(subs).forEach(e1 => {
-                                useUrl = useUrl.replaceAll("${" + e1[0] + "}", substitution)
-                                useName = useName.replaceAll("${" + e1[0] + "}", substitution)
-                            })
-                            clonedTab.url = useUrl
-                            clonedTab.name = useName
-                            placeholderTabs.push(clonedTab)
-                            removeTabIds.push(t.id)
-                        }
-                    })
-                })
-            }
-        })
-        tabs = _.filter(tabs, (t: Tab) => removeTabIds.indexOf(t.id) < 0)
-        tabs = tabs.concat(placeholderTabs)
+        // let placeholderTabs: Tab[] = []
+        // let removeTabIds: string[] = []
+        // tabs.forEach((t: Tab) => {
+        //     if (t.placeholders && t.placeholders.type === PlaceholdersType.URL_SUBSTITUTION) {
+        //         const subs = t.placeholders.config
+        //         Object.entries(subs).forEach(e => {
+        //             const name = e[0]
+        //             const val = e[1]
+        //             val.split(",").forEach((v: string) => {
+        //                 const substitution = v.trim()
+        //                 if (substitution.length > 0) {
+        //                     const clonedTab = JSON.parse(JSON.stringify(t));
+        //                     clonedTab.id = uid()
+        //                     clonedTab.description = undefined
+        //                     let useUrl = t.url || ''
+        //                     let useName = t.name || t.title || ''
+        //                     Object.entries(subs).forEach(e1 => {
+        //                         useUrl = useUrl.replaceAll("${" + e1[0] + "}", substitution)
+        //                         useName = useName.replaceAll("${" + e1[0] + "}", substitution)
+        //                     })
+        //                     clonedTab.url = useUrl
+        //                     clonedTab.name = useName
+        //                     placeholderTabs.push(clonedTab)
+        //                     removeTabIds.push(t.id)
+        //                 }
+        //             })
+        //         })
+        //     }
+        // })
+        // tabs = _.filter(tabs, (t: Tab) => removeTabIds.indexOf(t.id) < 0)
+        // tabs = tabs.concat(placeholderTabs)
 
 
         // TODO order??

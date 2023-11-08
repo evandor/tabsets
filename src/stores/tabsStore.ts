@@ -15,7 +15,6 @@ import {useTabsetService} from "src/services/TabsetService2";
 import {useWindowsStore} from "src/stores/windowsStore";
 
 async function queryTabs(): Promise<chrome.tabs.Tab[]> {
-    console.log("hier")
     // @ts-ignore
     return await chrome.tabs.query({currentWindow: true});
 }

@@ -57,7 +57,6 @@ const persistenceService = IndexedDbPersistenceService
 class ChromeApi {
 
   onHeadersReceivedListener = function (details: any) {
-    console.log("headerDetails", details)
     if (details.url) {
       persistenceService.saveRequest(details.url, new RequestInfo(details.statusCode as number, details.responseHeaders || []))
         .then(() => console.debug("added request"))

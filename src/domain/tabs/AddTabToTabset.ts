@@ -10,6 +10,7 @@ import {useUtils} from "src/services/Utils";
 import {useSearchStore} from "stores/searchStore";
 import {uid, useQuasar} from "quasar";
 import {useGroupsStore} from "stores/groupsStore";
+import PlaceholderUtils from "src/utils/PlaceholderUtils";
 
 const {saveTabset} = useTabsetService()
 const {sendMsg} = useUtils()
@@ -41,21 +42,20 @@ export class AddTabToTabsetCommand implements Command<any> {
                 }
 
                 const tabset: Tabset = await useTabsetService().addToTabsetId(this.tabset.id, this.tab, 0)
-                //    .then((tabset) => {
                 console.log("sharing...")
                 // Sharing
                 if (tabset.sharedId && tabset.sharing === TabsetSharing.PUBLIC) {
                     tabset.sharing = TabsetSharing.PUBLIC_OUTDATED
                 }
 
+                // Placeholder Defaults Application
+                this.tab = PlaceholderUtils.applyForDefaultDomains(this.tab)
+
                 // the tab has been added to the tabset, but not saved yet
                 const content = await TabsetService.getContentFor(this.tab)
-                //    .then((content) => {
-                //console.log("got content", content)
                 let res: any = null
                 if (content) {
                     const res2 = await useTabsetService().saveText(this.tab, content['content' as keyof object], content['metas' as keyof object])
-                    //    .then((res) => {
                     // add to search index
                     useSearchStore().addToIndex(
                         uid(), this.tab.name || '',
@@ -64,16 +64,9 @@ export class AddTabToTabsetCommand implements Command<any> {
                         this.tab.description, content['content' as keyof object],
                         [this.tabset.id],
                         this.tab.favIconUrl || '')
-                    //      return res
-                    //   })
-                    //   .then((res) => {
                     res = new ExecutionResult("result", "Tab was added",)
-                    //   })
                 } else {
-                    //console.log("this tabset tabs",this.tabset.tabs)
                     const res2 = saveTabset(this.tabset)
-                    //   .then((res) => {
-                    // add to search index
                     useSearchStore().addToIndex(
                         uid(), this.tab.name || '',
                         this.tab.title || '',
@@ -81,18 +74,8 @@ export class AddTabToTabsetCommand implements Command<any> {
                         this.tab.description, '',
                         [this.tabset.id],
                         this.tab.favIconUrl || '')
-                    //      return res
-                    //    })
-                    //   .then(result => {
                     res = new ExecutionResult(res2, "Tab was added")
-                    //   })
-                    // .catch((err: any) => {
-                    //     console.error("we are here", err)
-                    //     return Promise.reject("problem")
-                    // })
                 }
-                // })
-                // .then((res) => {
                 sendMsg('tab-added', {tabsetId: tabset.id})
                 return res
                 // })
