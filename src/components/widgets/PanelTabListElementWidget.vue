@@ -77,7 +77,7 @@
     <q-item-label
         style="width:100%"
         v-if="props.tab?.url"
-        caption class="ellipsis-2-lines text-blue-10 bg-yellow-3"
+        caption class="ellipsis-2-lines text-blue-10"
         @mouseover="showButtonsProp = true"
         @mouseleave="showButtonsProp = false">
       <div class="row q-ma-none">
@@ -95,7 +95,7 @@
               <q-tooltip class="tooltip">{{ matcherTooltip() }}</q-tooltip>
             </q-icon>
             <!-- <q-icon class="q-ml-xs" name="open_in_new"/>-->
-            <ul>
+            <ul v-if="placeholders.length > 0">
               <div v-for="placeholder in placeholders">
                 <li>
                   <short-url
@@ -132,7 +132,7 @@
     <q-item-label
         style="width:100%;margin-top:0"
         v-if="props.tab?.url"
-        caption class="ellipsis-2-lines text-blue-10 bg-yellow-1"
+        caption class="ellipsis-2-lines text-blue-10"
         @mouseover="showButtonsProp = true"
         @mouseleave="showButtonsProp = false">
       <div class="row q-ma-none" @click="gotoTab()">
