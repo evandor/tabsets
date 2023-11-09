@@ -3,6 +3,16 @@
   <q-page style="padding-top: 50px">
     <!-- list of tabs, assuming here we have at least one tabset -->
     <div class="q-ma-none q-pa-none">
+
+      <template v-if="tabsets.length === 0">
+        <div class="q-mt-xl fit row justify-center items-start content-start">
+          <q-img src="sleepingcat.png" width="100px"/>
+        </div>
+        <div class=" fit row justify-center items-start content-start">
+          Nothing to see. No Tabsets.
+        </div>
+      </template>
+
       <q-list dense
               class="rounded-borders q-ma-none q-pa-none" :key="tabset.id"
               v-for="(tabset,index) in tabsets">
@@ -62,13 +72,17 @@
                     :class="alreadyInTabset() ? '':'cursor-pointer'"
                     :color="alreadyInTabset() ? 'grey-5': tsBadges.length > 0 ? 'accent':'warning'"
                     size="xs">
-                </q-icon><span v-if="!alreadyInTabset() && showAddTabButton(tabset as Tabset, currentChromeTab) && tsBadges.length > 0"
-                  style="color: grey;font-size: 7px;position: relative;top:-2px;left:-11px;">{{tsBadges.length}}</span>
+                </q-icon>
+                <span
+                    v-if="!alreadyInTabset() && showAddTabButton(tabset as Tabset, currentChromeTab) && tsBadges.length > 0"
+                    style="color: grey;font-size: 7px;position: relative;top:-2px;left:-11px;">{{
+                    tsBadges.length
+                  }}</span>
                 <q-tooltip class="tooltip-small" v-if="alreadyInTabset()">
                   Tab is already contained in '{{ tabset.name }}'
                 </q-tooltip>
                 <q-tooltip class="tooltip-small" v-else-if="tsBadges.length > 0">
-                  {{ tooltipAlreadyInOtherTabsets(tabset.name)}}
+                  {{ tooltipAlreadyInOtherTabsets(tabset.name) }}
                 </q-tooltip>
                 <q-tooltip class="tooltip-small" v-else>
                   Add current Tab to '{{ tabset.name }}'
@@ -616,10 +630,10 @@ const alreadyInTabset = () => {
 }
 
 const tooltipAlreadyInOtherTabsets = (tabsetName: string) => {
-  const tabsetList = _.join(_.map(tsBadges.value, (b:any) => b['label'] as keyof object), ", ")
+  const tabsetList = _.join(_.map(tsBadges.value, (b: any) => b['label'] as keyof object), ", ")
   return "The current Tab is already contained in " +
-  tsBadges.value.length + " other Tabsets: "+tabsetList+". Click to add " +
-      "it to '"+ tabsetName +"' as well."
+      tsBadges.value.length + " other Tabsets: " + tabsetList + ". Click to add " +
+      "it to '" + tabsetName + "' as well."
 }
 
 </script>
