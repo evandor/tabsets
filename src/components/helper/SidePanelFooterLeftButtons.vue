@@ -11,7 +11,9 @@
   </q-btn>
 
   <SidePanelFooterLeftButton
-      :side-panel-view="SidePanelView.TABS_LIST" icon="o_playlist_add"
+      :side-panel-view="SidePanelView.TABS_LIST"
+      :size="buttonSize"
+      icon="o_playlist_add"
       tooltip="All your browser's open tabs"/>
 
   <SidePanelFooterLeftButton :side-panel-view="SidePanelView.BOOKMARKS"
