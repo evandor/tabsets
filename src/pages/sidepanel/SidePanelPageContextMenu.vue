@@ -197,6 +197,8 @@ import {useWindowsStore} from "src/stores/windowsStore";
 import {useTabsStore} from "stores/tabsStore";
 import NewWindowDialog from "components/dialogues/NewWindowDialog.vue";
 import {useRouter} from "vue-router";
+import {MarkTabsetDeletedCommand} from "src/domain/tabsets/MarkTabsetDeleted";
+import {SidePanelView, useUiStore} from "stores/uiStore";
 
 const {inBexMode} = useUtils()
 
@@ -279,6 +281,14 @@ const changeWindow = (tabset:Tabset, window: string) => {
 }
 
 const deleteTabsetDialog = (tabset: Tabset) => {
+  // $q.dialog({
+  //   title: 'Delete Tabset',
+  //   message: "Would you like to delete the tabset '"+tabset.name +"'?",
+  //   cancel: true
+  // }).onOk(() => {
+  //   deleteTabset(tabset)
+  // })
+
   $q.dialog({
     component: DeleteTabsetDialog,
     componentProps: {
@@ -287,6 +297,15 @@ const deleteTabsetDialog = (tabset: Tabset) => {
     }
   })
 }
+
+const deleteTabset = (tabset: Tabset) => useCommandExecutor().executeFromUi(new MarkTabsetDeletedCommand(tabset.id))
+    .then((res: any) => {
+      //if (props.sidePanelMode) {
+        useUiStore().sidePanelSetActiveView(SidePanelView.MAIN)
+      //}
+      return res
+    })
+
 
 const shareTabsetPubliclyDialog = (tabset: Tabset, republish: boolean = false) => {
   $q.dialog({

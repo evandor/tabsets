@@ -63,7 +63,7 @@
           <DialogButton label="Add"
                         data-testid="newTabsetNameSubmit"
                         type="submit"
-                        :disable="!isValid"/>
+                        :disable="!isValid" v-close-popup/>
         </q-card-actions>
 
       </q-card>
