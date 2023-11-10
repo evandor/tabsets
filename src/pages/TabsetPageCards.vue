@@ -27,6 +27,7 @@
       <TabList v-else
                group="otherTabs"
                :highlightUrl="highlightUrl"
+               :tabsetId="props.tabset?.id"
                :tabs="currentTabs()"/>
 
     </q-card-section>

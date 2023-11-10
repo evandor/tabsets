@@ -185,21 +185,7 @@ export const useTabsStore = defineStore('tabs', {
             return async (tabId: string): Promise<object | undefined> => {
 
                 for (const [key, value] of state.tabsets) {
-                    //console.log("key/value", key, value)
-
-                    // lazy loading?
-                    // if (value.tabs.length === 0) {
-                    //   const useTabs = await useTabsetService().getTabs(key)
-                    //   const found: Tab | undefined = _.find(useTabs, t => t.id === tabId)
-                    //   if (found) {
-                    //     return Promise.resolve({
-                    //       tab: found,
-                    //       tabsetId: value.id
-                    //     })
-                    //   }
-                    // } else {
                     const found: Tab | undefined = _.find(value.tabs, t => {
-                       // console.log("cmp", t.id, tabId)
                         return t.id === tabId
                     })
                     if (found) {
@@ -208,7 +194,6 @@ export const useTabsStore = defineStore('tabs', {
                             tabsetId: value.id
                         })
                     }
-                    //}
                 }
                 return Promise.resolve(undefined)
             }

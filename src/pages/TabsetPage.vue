@@ -101,16 +101,16 @@
         <!--          <q-tooltip>Use the table layout to visualize your tabs</q-tooltip>-->
         <!--        </q-btn>-->
 
-        <q-btn
-            v-if="permissionsStore.hasFeature(FeatureIdent.EXPERIMENTAL_VIEWS) && tabset?.tabs.length > 0"
-            @click="setView('canvas')"
-            style="width:14px"
-            class="q-mr-sm" size="10px"
-            :flat="tabset?.view !== 'canvas'"
-            :outline="tabset?.view === 'canvas'"
-            icon="o_shape_line">
-          <q-tooltip>Use the canvas freestyle layout to visualize your tabs</q-tooltip>
-        </q-btn>
+<!--        <q-btn-->
+<!--            v-if="permissionsStore.hasFeature(FeatureIdent.EXPERIMENTAL_VIEWS) && tabset?.tabs.length > 0"-->
+<!--            @click="setView('canvas')"-->
+<!--            style="width:14px"-->
+<!--            class="q-mr-sm" size="10px"-->
+<!--            :flat="tabset?.view !== 'canvas'"-->
+<!--            :outline="tabset?.view === 'canvas'"-->
+<!--            icon="o_shape_line">-->
+<!--          <q-tooltip>Use the canvas freestyle layout to visualize your tabs</q-tooltip>-->
+<!--        </q-btn>-->
 
         <q-btn
             v-if="permissionsStore.hasFeature(FeatureIdent.EXPERIMENTAL_VIEWS) && tabset?.tabs.length > 0"
@@ -177,6 +177,7 @@
   >
     <q-tab name="tabset" label="Tabs"/>
     <q-tab name="page" label="Page" :disable="!tabsStore.currentTabsetId"/>
+    <q-tab name="canvas" label="Canvas" :disable="!tabsStore.currentTabsetId"/>
   </q-tabs>
 
   <!--  <q-separator class="q-mb-md" />-->
@@ -234,6 +235,9 @@ a tab's url starts with one of the urls of this tabset, it will be ignored and n
     <q-tab-panel name="page">
       <PageForTabset/>
     </q-tab-panel>
+    <q-tab-panel name="canvas">
+      <CanvasForTabset />
+    </q-tab-panel>
   </q-tab-panels>
 
 </template>
@@ -267,6 +271,7 @@ import TabsetsSelectorWidget from "components/widgets/TabsetsSelectorWidget.vue"
 import DynamicTabsetPageCards from "pages/DynamicTabsetPageCards.vue";
 import {useTabsetService} from "src/services/TabsetService2";
 import Analytics from "src/utils/google-analytics";
+import CanvasForTabset from "components/layouts/CanvasForTabset.vue";
 
 const route = useRoute();
 const tabsStore = useTabsStore()
