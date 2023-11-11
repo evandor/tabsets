@@ -47,7 +47,7 @@ export class Tabset {
   sharing: TabsetSharing = TabsetSharing.UNSHARED
   sharedBy: string | undefined = undefined
   sharedId: string | undefined = undefined
-  canvas: string | undefined = undefined
+  canvas: object | undefined = undefined
 
   page: string | undefined = undefined
 

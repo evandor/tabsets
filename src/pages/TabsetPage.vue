@@ -277,7 +277,6 @@ const route = useRoute();
 const tabsStore = useTabsStore()
 const permissionsStore = usePermissionsStore()
 
-const tabsetname = ref(tabsStore.currentTabsetName)
 const $q = useQuasar()
 
 const tabsetId = ref(null as unknown as string)
@@ -302,6 +301,8 @@ watchEffect(() => {
   }
   tabsetId.value = route?.params.tabsetId as string
   tabset.value = useTabsetService().getTabset(tabsetId.value) || new Tabset(uid(), "empty", [])
+  console.log("watch effect in tabsetpage", tabsetId.value)
+  tab.value = 'tabset'
 })
 
 
@@ -315,21 +316,6 @@ const setFilter = (newValue: string) => {
   JsUtils.runCssHighlight()
 }
 
-function getOrder() {
-  if (tabset.value) {
-    switch (tabset.value?.sorting) {
-      case 'alphabeticalUrl':
-        return (t: Tab) => t.url?.replace("https://", "").replace("http://", "").toUpperCase()
-        break
-      case 'alphabeticalTitle':
-        return (t: Tab) => t.title?.toUpperCase()
-        break
-      default:
-        return (t: Tab) => 1
-    }
-    return (t: Tab) => 1
-  }
-}
 
 const addUrlDialog = () => $q.dialog({component: AddUrlDialog})
 
