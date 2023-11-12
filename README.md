@@ -37,29 +37,23 @@ and add to chrome as local extension:
 
 see https://quasar.dev/quasar-cli-vite/developing-browser-extensions/build-commands#chrome
 
-### Tabsets as Chrome Extension
+## Tabsets as Chrome Extension
 
 You can try the current version directly at
 
 https://chrome.google.com/webstore/detail/tabsets-extension/afkknkdbgondbbfjehipnjmojndnjhjg
 
-### Tabsets as Edge Extension
+## Tabsets as Edge Extension
 
 You can try the current version directly at
 
 https://microsoftedge.microsoft.com/addons/detail/tabsets/fpgjmlhdgphgoomhjncpldnhjhklplak
 
-### Tabsets as Firefox Extension
+## Tabsets as Firefox Extension
 
 You can try the current version directly at
 
 https://addons.mozilla.org/de/firefox/addon/tabsets/
-
-### current versions:
-
-#### vue --version
-
-@vue/cli 5.0.8
 
 ## Safari
 
