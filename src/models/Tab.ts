@@ -87,6 +87,11 @@ export class Tab {
 
   groupName: string | undefined = undefined
 
+  canvasLeft: number | undefined
+  canvasTop: number | undefined
+  canvasWidth: number | undefined
+  canvasHeight: number | undefined
+
   constructor(public id: string, chromeTab: chrome.tabs.Tab) {
     this.created = new Date().getTime()
     this.updated = new Date().getTime()

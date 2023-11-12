@@ -118,7 +118,7 @@ const selectTS = (tabset: Tabset) => {
   useCommandExecutor()
     .execute(new SelectTabsetCommand(tabset.id, props.spaceId))
     .then(() => {
-      console.log("tabset was selected")
+      console.log("tabset was selected", tabset.id, tabset.type, props.fromPanel)
       activeTabset.value = tabset.id
       if (!props.fromPanel) {
         tabset.type === TabsetType.DYNAMIC ?

@@ -119,11 +119,11 @@
             icon="o_bookmark"
             tooltip="Access to your bookmarks"/>
 
-        <ToolbarButton
-            :drawer="DrawerTabs.UNASSIGNED_TABS"
-            icon="o_playlist_add"
-            tooltip="Show add tabs view"
-            :restricted="false"/>
+<!--        <ToolbarButton-->
+<!--            :drawer="DrawerTabs.UNASSIGNED_TABS"-->
+<!--            icon="o_playlist_add"-->
+<!--            tooltip="Show add tabs view"-->
+<!--            :restricted="false"/>-->
 
         <ToolbarButton
             :drawer="DrawerTabs.OPEN_TABS"
