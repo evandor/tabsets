@@ -10,6 +10,8 @@
 
           <SearchWithTransitionHelper v-if="searching"/>
 
+          <FilterWithTransitionHelper v-else-if="showFilter"/>
+
           <template v-else>
             <div class="column q-ma-none q-pa-none">
               <!-- @click.stop="router.push('/sidepanel/spaces')" -->
