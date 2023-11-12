@@ -30,7 +30,7 @@
                                       :search-term="props.searchTerm"
                                       :search-hits="props.searchHits"/>
 
-          <FilterWithTransitionHelper v-else-if="showFilter" />
+          <FilterWithTransitionHelper v-else-if="showFilter"/>
           <!-- no spaces && not searching -->
           <template v-else>
 
@@ -56,10 +56,10 @@
 
             <template v-if="showSearchIcon()">
               <SidePanelToolbarButton icon="search"
-                             id="toggleSearchBtn"
-                             size="11px"
-                             color="black"
-                             @click="toggleSearch"/>
+                                      id="toggleSearchBtn"
+                                      size="11px"
+                                      color="black"
+                                      @click="toggleSearch"/>
               <span class="q-ma-none q-pa-none q-mx-sm text-grey-5">|</span>
             </template>
 
@@ -140,15 +140,17 @@ watchEffect(() => {
 
 watchEffect(() => {
   showFilter.value = useUiStore().sidePanelActiveViewIs(SidePanelView.TABS_LIST) &&
-  useUiStore().toolbarFilter
+      useUiStore().toolbarFilter
 })
 
-chrome.commands.onCommand.addListener((command) => {
-  if(command === 'search') {
-    console.debug(`got Command: ${command}`);
-    toggleSearch()
-  }
-})
+if ($q.platform.is.chrome && $q.platform.is.bex) {
+  chrome.commands.onCommand.addListener((command) => {
+    if (command === 'search') {
+      console.debug(`got Command: ${command}`);
+      toggleSearch()
+    }
+  })
+}
 
 const toggleSessionState = () => existingSession ? stopSession() : startSession()
 
