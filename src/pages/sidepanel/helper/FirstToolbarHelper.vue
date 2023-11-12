@@ -28,7 +28,7 @@
                                       :search-term="props.searchTerm"
                                       :search-hits="props.searchHits"/>
 
-          <FilterWithTransitionHelper v-else-if="showFilter()" />
+          <FilterWithTransitionHelper v-else-if="showFilter" />
           <!-- no spaces && not searching -->
           <template v-else>
 
@@ -119,6 +119,7 @@ const permissionsStore = usePermissionsStore()
 
 const searching = ref(false)
 const existingSession = ref(false)
+const showFilter = ref(false)
 
 const toggleSearch = () => {
   searching.value = !searching.value
@@ -133,6 +134,11 @@ watchEffect(() => {
   if (props.showSearchBox && !searching.value) {
     searching.value = true
   }
+})
+
+watchEffect(() => {
+  showFilter.value = useUiStore().sidePanelActiveViewIs(SidePanelView.TABS_LIST) &&
+  useUiStore().toolbarFilter
 })
 
 chrome.commands.onCommand.addListener((command) => {
@@ -205,8 +211,6 @@ const openNewTabsetDialog = () => {
     }
   })
 }
-
-const showFilter = () => useUiStore().sidePanelActiveViewIs(SidePanelView.TABS_LIST) && useUiStore().toolbarFilter
 
 </script>
 

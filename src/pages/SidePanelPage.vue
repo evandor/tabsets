@@ -4,15 +4,6 @@
     <!-- list of tabs, assuming here we have at least one tabset -->
     <div class="q-ma-none q-pa-none">
 
-      <template v-if="tabsets.length === 0">
-        <div class="q-mt-xl fit row justify-center items-start content-start">
-          <q-img src="sleepingcat.png" width="100px"/>
-        </div>
-        <div class=" fit row justify-center items-start content-start">
-          Nothing to see. No Tabsets.
-        </div>
-      </template>
-
       <q-list dense
               class="rounded-borders q-ma-none q-pa-none" :key="tabset.id"
               v-for="(tabset,index) in tabsets">
