@@ -365,6 +365,9 @@ class TabsetService {
   }
 
   async trackedTabsCount(): Promise<number> {
+    if (!chrome.tabs) {
+      return Promise.resolve(0)
+    }
     // @ts-ignore
     const result: chrome.tabs.Tab[] = await chrome.tabs.query({})
     let trackedTabs = 0
