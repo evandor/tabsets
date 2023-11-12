@@ -49,6 +49,12 @@ You can try the current version directly at
 
 https://microsoftedge.microsoft.com/addons/detail/tabsets/fpgjmlhdgphgoomhjncpldnhjhklplak
 
+### Tabsets as Firefox Extension
+
+You can try the current version directly at
+
+https://addons.mozilla.org/de/firefox/addon/tabsets/
+
 ### current versions:
 
 #### vue --version
