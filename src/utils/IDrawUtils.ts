@@ -80,9 +80,9 @@ class IDrawUtils {
                 color: "#3f51b5",
                 fontSize: 14,
                 textAlign: 'center',
-                borderRadius: 5,
-                borderWidth: 2,
-                borderColor: "#3f51b5",
+                borderRadius: 4,
+                borderWidth: 1,
+                borderColor: "black",
             },
             operation: {
                 //lock : true,

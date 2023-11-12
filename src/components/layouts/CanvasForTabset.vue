@@ -3,21 +3,25 @@
   <div class="row q-ma-none q-pa-none" style="border:1px dotted #bfbfbf">
     <div class="col-1 bg-white">
       <div>
-        <q-btn flat icon="maximize" @click="addLine()"/>
+        <q-btn flat icon="horizontal_rule" color="grey-6" @click="addLine()"/>
       </div>
       <div>
-        <q-btn flat icon="o_stop" @click="addRectangle()"/>
+        <q-btn flat icon="o_stop" color="grey-6" @click="addRectangle()"/>
       </div>
       <div>
-        <q-btn flat icon="text_fields" @click="addText()"/>
+        <q-btn flat icon="text_fields" color="grey-6" @click="addText()"/>
       </div>
     </div>
     <div class="col-8 q-ma-none q-pa-none">
       <div id="idraw" ref="mount" class="q-ma-none q-pa-none"></div>
     </div>
     <div class="col-3 bg-white q-pa-sm" style="border-left: 1px solid #bfbfbf">
+      <div v-if="selectedFigure">
+        {{ selectedFigure}}
+        <q-btn icon="delete" @click="deleteFigure(selectedFigure['uuid' as keyof object])"/>
+      </div>
       <PanelTabListElementWidget
-          v-if="selectedTab"
+          v-else-if="selectedTab"
           :key="'cft__' + selectedTab.id"
           :hideMenu="true"
           :preventDragAndDrop="true"
@@ -47,6 +51,7 @@ const mount = ref();
 let idraw: any = undefined;
 const tabsetId = ref<string | undefined>(route.query.tsId as string)
 const tabset = ref<Tabset | undefined>(undefined)
+const selectedFigure = ref<object | undefined>(undefined)
 const selectedTab = ref<Tab | undefined>(undefined)
 const selectedTabsetId = ref<string | undefined>(undefined)
 
@@ -134,8 +139,9 @@ onMounted(() => {
               selectedTabsetId.value = tabData.tabsetId
             }
           })
+      selectedFigure.value = undefined
     } else {
-
+      selectedFigure.value = e.element
     }
 
   });
@@ -177,6 +183,10 @@ const addLine = () => {
   saveCanvasElements();
 }
 
+const deleteFigure = (uuid: string) => {
+  idraw.deleteElement(uuid)
+  saveCanvasElements()
+}
 
 </script>
 
