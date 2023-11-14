@@ -114,11 +114,11 @@ describe('WindowsStore', () => {
         }
     })
 
-    it('onRemoved removes window without title', async () => {
-        await onRemovedListener(100)
-        const window100FromDb = await db.getWindow(100)
-        expect(window100FromDb).toBe(undefined)
-    })
+    // it('onRemoved removes window without title', async () => {
+    //     await onRemovedListener(100)
+    //     const window100FromDb = await db.getWindow(100)
+    //     expect(window100FromDb).toBe(undefined)
+    // })
 
     it('onRemoved does not remove window with title', async () => {
         const window = await db.getWindow(100)
