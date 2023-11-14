@@ -6,6 +6,7 @@
     </q-page-container>
 
     <q-footer elevated  v-if="tabsStore.tabsets?.size > 0">
+      ***
       <SidePanelFooter />
     </q-footer>
 

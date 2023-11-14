@@ -92,14 +92,10 @@ import NewTabsetDialog from "components/dialogues/NewTabsetDialog.vue";
 import {useQuasar} from "quasar";
 import {Tabset, TabsetType} from "src/models/Tabset";
 import {useCommandExecutor} from "src/services/CommandExecutor";
-import {ToggleSortingCommand} from "src/domain/tabsets/ToggleSorting";
 import NewSessionDialog from "components/dialogues/NewSessionDialog.vue";
 import _ from "lodash";
 import {StopSessionCommand} from "src/domain/commands/StopSessionCommand";
-import ChromeApi from "src/services/ChromeApi";
 import SearchWithTransitionHelper from "pages/sidepanel/helper/SearchWithTransitionHelper.vue";
-import {useWindowsStore} from "src/stores/windowsStore";
-import ToolbarButton from "components/buttons/SidePanelToolbarButton.vue";
 import SidePanelToolbarTabNavigationHelper from "pages/sidepanel/helper/SidePanelToolbarTabNavigationHelper.vue";
 import FilterWithTransitionHelper from "pages/sidepanel/helper/FilterWithTransitionHelper.vue";
 import SidePanelToolbarButton from "components/buttons/SidePanelToolbarButton.vue";
@@ -111,8 +107,6 @@ const props = defineProps({
   searchTerm: {type: String, default: ''},
   searchHits: {type: Number, required: false}
 })
-
-const emits = defineEmits(['wasClicked'])
 
 const $q = useQuasar()
 const router = useRouter()

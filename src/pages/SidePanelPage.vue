@@ -70,7 +70,7 @@
                     tsBadges.length
                   }}</span>
                 <q-tooltip class="tooltip-small" v-if="alreadyInTabset()">
-                  Tab is already contained in '{{ tabset.name }}'
+                  Tab is already contained in tabset '{{ tabset.name }}'
                 </q-tooltip>
                 <q-tooltip class="tooltip-small" v-else-if="tsBadges.length > 0">
                   {{ tooltipAlreadyInOtherTabsets(tabset.name) }}
@@ -199,6 +199,7 @@ const progress = ref<number | undefined>(undefined)
 const progressLabel = ref<string | undefined>(undefined)
 const selectedTab = ref<Tab | undefined>(undefined)
 const windowName = ref<string | undefined>(undefined)
+const windowId = ref<number | undefined>(undefined)
 const tsBadges = ref<object[]>([])
 
 onMounted(() => {
@@ -223,14 +224,15 @@ watchEffect(() => {
 })
 
 watchEffect(() => {
-  if ($q.platform.is.chrome) {
-    chrome.windows.getCurrent()
-        .then((currentWindow) => {
-          if (currentWindow && currentWindow.id) {
-            windowName.value = useWindowsStore().windowNameFor(currentWindow.id)
-          }
-        })
-  }
+  // if ($q.platform.is.chrome) {
+  //   chrome.windows.getCurrent()
+  //       .then((currentWindow) => {
+  //         if (currentWindow && currentWindow.id) {
+  //           windowName.value = useWindowsStore().windowNameFor(currentWindow.id)
+  //         }
+  //       })
+  // }
+  windowName.value = useWindowsStore().currentWindowName
 })
 
 watchEffect(() => {

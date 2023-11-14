@@ -477,7 +477,7 @@ export const useTabsStore = defineStore('tabs', {
             ts.tabs.forEach((t: Tab) => {
                 if (t['chromeTab' as keyof object]) {
                     foundOldRep = true
-                    console.log("found old representation of tab")
+                    console.error("found old representation of tab")
                     t.title = t['chromeTab' as keyof object]['title']
                     t.url = t['chromeTab' as keyof object]['url']
                     t.favIconUrl = t['chromeTab' as keyof object]['favIconUrl']
