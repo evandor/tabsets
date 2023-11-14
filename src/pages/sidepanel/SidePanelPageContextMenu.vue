@@ -95,14 +95,16 @@
             <q-list>
               <q-item v-for="window in useWindowsStore().windowSet"
                       @click="changeWindow(tabset, window)"
-                  dense clickable v-close-popup :disable="tabset.window === window">
+                      dense clickable v-close-popup
+                      :disable="tabset.window === window">
                 <q-item-section>{{ window }}</q-item-section>
               </q-item>
-              <q-separator />
-              <q-item @click="removeWindow()" dense clickable v-close-popup>
-                <q-item-section>Remove Window Association</q-item-section>
+              <q-separator/>
+              <q-item v-if="useWindowsStore().windowSet.size > 1"
+                      @click="removeWindow()" dense clickable v-close-popup>
+                <q-item-section>Remove Window Association {{useWindowsStore().windowSet.size}}</q-item-section>
               </q-item>
-              <q-separator />
+              <q-separator/>
               <q-item @click="openNewWindowDialog()" dense clickable v-close-popup>
                 <q-item-section>Create New...</q-item-section>
               </q-item>
@@ -121,7 +123,7 @@
                          label="Re-Index Search (dev)"/>
       </template>
 
-      <q-separator />
+      <q-separator/>
       <ContextMenuItem v-close-popup
                        @was-clicked="focus(tabset)"
                        icon="filter_center_focus"
@@ -213,8 +215,8 @@ const publictabsetsPath = "https://public.tabsets.net/tabsets/"
 
 const startTabsetNote = (tabset: Tabset) => {
   const url = chrome && chrome.runtime && chrome.runtime.getURL ?
-    chrome.runtime.getURL('www/index.html') + "#/mainpanel/notes/?tsId=" + tabset.id + "&edit=true" :
-    "#/mainpanel/notes/?tsId=" + tabset.id + "&edit=true"
+      chrome.runtime.getURL('www/index.html') + "#/mainpanel/notes/?tsId=" + tabset.id + "&edit=true" :
+      "#/mainpanel/notes/?tsId=" + tabset.id + "&edit=true"
   NavigationService.openOrCreateTab(url)
 }
 
@@ -275,7 +277,7 @@ const getPublicTabsetLink = (ts: Tabset) => {
 const archiveTabset = (tabset: Tabset) =>
     useCommandExecutor().executeFromUi(new MarkTabsetAsArchivedCommand(tabset.id))
 
-const changeWindow = (tabset:Tabset, window: string) => {
+const changeWindow = (tabset: Tabset, window: string) => {
   tabset.window = window
   useTabsetService().saveTabset(tabset)
 }
@@ -301,7 +303,7 @@ const deleteTabsetDialog = (tabset: Tabset) => {
 const deleteTabset = (tabset: Tabset) => useCommandExecutor().executeFromUi(new MarkTabsetDeletedCommand(tabset.id))
     .then((res: any) => {
       //if (props.sidePanelMode) {
-        useUiStore().sidePanelSetActiveView(SidePanelView.MAIN)
+      useUiStore().sidePanelSetActiveView(SidePanelView.MAIN)
       //}
       return res
     })

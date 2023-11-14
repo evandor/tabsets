@@ -1,6 +1,22 @@
 <template>
 
   <q-footer class="bg-white q-pa-xs q-mt-sm" style="border-top: 1px solid lightgrey">
+    <div class="row fit" v-if="useWindowsStore().windowSet?.size > 0">
+      <div class="col-12 text-black" v-if="isCurrentWindow() && otherActiveWindows().length > 0">
+        switch to window:
+        <q-chip v-for="w in otherActiveWindows()" dense clickable
+                @click="openWindow(w.id)"
+                :label="w.name"
+        />
+      </div>
+      <div class="col-12 text-black" v-if="!isCurrentWindow()">
+        <q-chip :label="useWindowsStore().currentWindowName" color="warning" />
+        <q-chip v-for="w in otherActiveWindows()" dense
+                :color="w.name === useWindowsStore().currentWindowName ? 'warning' : 'grey'"
+                :label="w.name || 'Main'"
+        />{{otherActiveWindows()}}
+      </div>
+    </div>
     <div class="row fit">
       <div class="col-9">
 
@@ -251,12 +267,32 @@ const toastBannerClass = () => {
       return "bg-negative" + defaults
   }
 }
+
+const isCurrentWindow = () => !useWindowsStore().currentWindowName || useWindowsStore().currentWindowName === 'current'
+
+const otherActiveWindows = () => {
+  return _.map(
+      _.filter(useWindowsStore().currentWindows, (w: chrome.windows.Window) => {
+        return useWindowsStore().currentWindow.id !== w.id
+      }), w => {
+        return w.id ? {
+          name: useWindowsStore().windowNameFor(w.id),
+          id: w.id
+        } : {name: 'unknown', id: 0}
+      })
+}
+
+const openWindow = (windowId: number) =>
+    chrome.windows.update(windowId, {drawAttention: true, focused: true},
+        (callback) => console.log("got callback", callback))
+
 </script>
 
 <style>
 .fade-enter-active {
   transition: opacity 0.5s ease;
 }
+
 .fade-leave-active {
   transition: opacity 1.0s ease;
 }
