@@ -1,20 +1,31 @@
 <template>
 
   <q-footer class="bg-white q-pa-xs q-mt-sm" style="border-top: 1px solid lightgrey">
-    <div class="row fit" v-if="useWindowsStore().windowSet?.size > 0">
+    <div class="row fit q-mb-xs"
+         style="border-bottom: 1px dotted #bfbfbf"
+         v-if="otherActiveWindows().length > 0">
       <div class="col-12 text-black" v-if="isCurrentWindow() && otherActiveWindows().length > 0">
-        switch to window:
-        <q-chip v-for="w in otherActiveWindows()" dense clickable
-                @click="openWindow(w.id)"
-                :label="w.name"
-        />
+        <q-btn v-for="w in otherActiveWindows()" dense flat
+               icon="o_grid_view" size="xs" class="q-ma-sm"
+               text-color="blue"
+               @click="openWindow(w.id)"
+               :label="w.name">
+          <q-tooltip class="tooltip-small">Switch to window '{{ w.name }}'</q-tooltip>
+        </q-btn>
       </div>
       <div class="col-12 text-black" v-if="!isCurrentWindow()">
-        <q-chip :label="useWindowsStore().currentWindowName" color="warning" />
-        <q-chip v-for="w in otherActiveWindows()" dense
-                :color="w.name === useWindowsStore().currentWindowName ? 'warning' : 'grey'"
-                :label="w.name || 'Main'"
-        />{{otherActiveWindows()}}
+        <q-btn icon="o_grid_view" size="xs" class="q-ma-sm" dense
+               color="warning" text-color="white"
+               :label="useWindowsStore().currentWindowName"/>
+
+        <q-btn v-for="w in otherActiveWindows()" dense flat
+               icon="o_grid_view" size="xs" class="q-ma-sm"
+               :color="w.name === useWindowsStore().currentWindowName ? 'warning' : 'grey'"
+               @click="openWindow(w.id)"
+               :label="w.name || 'Main'">
+          <q-tooltip class="tooltip-small">Switch to window '{{ w.name }}'</q-tooltip>
+        </q-btn>
+
       </div>
     </div>
     <div class="row fit">

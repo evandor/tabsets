@@ -115,6 +115,7 @@ export const useWindowsStore = defineStore('windows', () => {
         if (w && !w.title) {
             removeWindow(windowId)
         }
+        init("onRemove")
     }
 
     async function onUpdate(windowId: number) {
