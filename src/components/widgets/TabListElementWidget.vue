@@ -258,7 +258,7 @@ const open = (tab: Tab) => {
     router.push("/browser/" + tab.id)
     return Promise.resolve()
   }
-  NavigationService.openOrCreateTab(props.tab?.url || '')
+  NavigationService.openOrCreateTab([props.tab?.url || ''])
 }
 
 </script>

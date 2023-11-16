@@ -3,30 +3,20 @@
   <q-footer class="bg-white q-pa-xs q-mt-sm" style="border-top: 1px solid lightgrey">
     <div class="row fit q-mb-xs"
          style="border-bottom: 1px dotted #bfbfbf"
-         v-if="otherActiveWindows().length > 0">
-      <div class="col-12 text-black" v-if="isCurrentWindow() && otherActiveWindows().length > 0">
-        <q-btn v-for="w in otherActiveWindows()" dense flat
+         v-if="otherActiveWindows().length > 1">
+      <div class="col-12 text-black">
+        <q-btn v-for="w in otherActiveWindows()" dense
+               :flat="displayFlat(w)"
+               :disable="displayFlat(w)"
                icon="o_grid_view" size="xs" class="q-ma-sm"
                text-color="blue"
                @click="openWindow(w.id)"
                :label="w.name">
-          <q-tooltip class="tooltip-small">Switch to window '{{ w.name }}'</q-tooltip>
+          <q-tooltip class="tooltip-small" v-if="displayFlat(w)">The currently open window: '{{ w.name }}'</q-tooltip>
+          <q-tooltip class="tooltip-small" v-else>Switch to window '{{ w.name }}'</q-tooltip>
         </q-btn>
       </div>
-      <div class="col-12 text-black" v-if="!isCurrentWindow()">
-        <q-btn icon="o_grid_view" size="xs" class="q-ma-sm" dense
-               color="warning" text-color="white"
-               :label="useWindowsStore().currentWindowName"/>
 
-        <q-btn v-for="w in otherActiveWindows()" dense flat
-               icon="o_grid_view" size="xs" class="q-ma-sm"
-               :color="w.name === useWindowsStore().currentWindowName ? 'warning' : 'grey'"
-               @click="openWindow(w.id)"
-               :label="w.name || 'Main'">
-          <q-tooltip class="tooltip-small">Switch to window '{{ w.name }}'</q-tooltip>
-        </q-btn>
-
-      </div>
     </div>
     <div class="row fit">
       <div class="col-9">
@@ -202,7 +192,7 @@ watchEffect(() => {
 //const openOptionsPage = () => window.open(chrome.runtime.getURL('www/index.html#/mainpanel/settings'));
 const openOptionsPage = () => window.open('#/mainpanel/settings');
 
-const openExtensionTab = () => NavigationService.openOrCreateTab(chrome.runtime.getURL('www/index.html#/fullpage'))
+const openExtensionTab = () => NavigationService.openOrCreateTab([chrome.runtime.getURL('www/index.html#/fullpage')])
 
 const settingsTooltip = () => {
   return "Open Settings of Tabsets " + import.meta.env.PACKAGE_VERSION
@@ -250,7 +240,6 @@ const checkToasts = () => {
     showSuggestionButton.value = false
     doShowSuggestionButton.value = false
     setTimeout(() => {
-      console.log(" *** ", useUiStore().toasts.length)
       if (useUiStore().toasts.length === 0) { // only if all toasts are gone
         transitionGraceTime.value = false
         showSuggestionButton.value = oldShowButton
@@ -282,20 +271,26 @@ const toastBannerClass = () => {
 const isCurrentWindow = () => !useWindowsStore().currentWindowName || useWindowsStore().currentWindowName === 'current'
 
 const otherActiveWindows = () => {
-  return _.map(
+  return _.sortBy(_.map(
       _.filter(useWindowsStore().currentWindows, (w: chrome.windows.Window) => {
-        return useWindowsStore().currentWindow.id !== w.id
+        return true //useWindowsStore().currentWindow?.id !== w.id
       }), w => {
         return w.id ? {
-          name: useWindowsStore().windowNameFor(w.id),
+          name: useWindowsStore().windowNameFor(w.id) || 'Main',
           id: w.id
         } : {name: 'unknown', id: 0}
-      })
+      }), o => o.name)
 }
 
 const openWindow = (windowId: number) =>
     chrome.windows.update(windowId, {drawAttention: true, focused: true},
         (callback) => console.log("got callback", callback))
+
+const displayFlat = (w: any): boolean => {
+  let currentWindowName = useWindowsStore().currentWindowName || 'Main'
+  //console.log("===", w, currentWindowName)
+  return w.name === currentWindowName
+}
 
 </script>
 

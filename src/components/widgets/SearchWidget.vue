@@ -203,7 +203,7 @@ const updateSearch = (val: any) => {
   console.log("updateSearch", typedOrSelected.value)
   if (val?.chromeTab) {
     searchStore.term = ''
-    NavigationService.openOrCreateTab(val.url)
+    NavigationService.openOrCreateTab([val.url])
   } else if (val?.id === "highlight") {
     console.log("setting highlight", val.name)
     highlight.value = val.name

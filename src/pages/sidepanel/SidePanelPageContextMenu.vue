@@ -1,6 +1,13 @@
 <template>
-  <q-menu :offset="[60, -5]">
+  <q-menu :offset="[12, 8]">
     <q-list dense style="min-width: 180px">
+
+      <ContextMenuItem v-close-popup
+                       @was-clicked="openEditTabsetDialog(tabset)"
+                       icon="o_note"
+                       label="Edit Tabset"/>
+
+      <q-separator inset/>
 
       <ContextMenuItem v-close-popup
                        v-if="usePermissionsStore().hasFeature(FeatureIdent.NOTES)"
@@ -8,15 +15,9 @@
                        icon="o_add_circle"
                        label="Create Note"/>
 
-      <q-separator/>
 
-      <ContextMenuItem v-close-popup
-                       @was-clicked="openEditTabsetDialog(tabset)"
-                       icon="o_note"
-                       label="Update Tabset"/>
-
-      <template v-if="tabset.tabs.length > 0 && inBexMode()">
-        <q-separator/>
+      <template v-if="tabset.tabs.length > 0 && inBexMode() && (!tabset.window || tabset.window === 'current')">
+        <q-separator inset/>
         <ContextMenuItem
             icon="open_in_new"
             label="Open all in...">
@@ -39,8 +40,82 @@
 
       </template>
 
+      <template v-if="tabset.tabs.length > 0 && inBexMode() && tabset.window && tabset.window !== 'current'">
+        <ContextMenuItem v-close-popup
+                         @was-clicked="restoreInGroup(tabset.id, tabset.window)"
+                         icon="open_in_new"
+                         label="Open in window..."/>
+      </template>
+
+
+      <!--      <template v-if="usePermissionsStore().hasFeature(FeatureIdent.WINDOW_MANAGEMENT)">-->
+      <!--        <q-separator inset/>-->
+      <!--        <ContextMenuItem-->
+      <!--            icon="o_grid_view"-->
+      <!--            label="Open in window...">-->
+
+      <!--          <q-item-section side>-->
+      <!--            <q-icon name="keyboard_arrow_right"/>-->
+      <!--          </q-item-section>-->
+      <!--          <q-menu anchor="top end" self="top start">-->
+      <!--            <q-list>-->
+      <!--              <q-item v-for="window in useWindowsStore().windowSet"-->
+      <!--                      @click="changeWindow(tabset, window)"-->
+      <!--                      dense clickable v-close-popup-->
+      <!--                      :disable="tabset.window === window">-->
+      <!--                <q-item-section>{{ window }}</q-item-section>-->
+      <!--              </q-item>-->
+      <!--              <q-separator inset/>-->
+      <!--              <q-item v-if="useWindowsStore().windowSet.size > 1"-->
+      <!--                      @click="removeWindow()" dense clickable v-close-popup>-->
+      <!--                <q-item-section>Remove Window Association {{useWindowsStore().windowSet.size}}</q-item-section>-->
+      <!--              </q-item>-->
+      <!--              <q-separator inset/>-->
+      <!--              <q-item @click="openNewWindowDialog()" dense clickable v-close-popup>-->
+      <!--                <q-item-section>Create New...</q-item-section>-->
+      <!--              </q-item>-->
+      <!--            </q-list>-->
+      <!--          </q-menu>-->
+
+      <!--        </ContextMenuItem>-->
+
+      <!--      </template>-->
+
+      <ContextMenuItem v-close-popup
+                       @was-clicked="focus(tabset)"
+                       icon="filter_center_focus"
+                       color="accent"
+                       label="Focus on tabset"/>
+
+      <template v-if="tabset.status === TabsetStatus.DEFAULT">
+        <ContextMenuItem v-close-popup
+                         @was-clicked="pin(tabset)"
+                         icon="o_push_pin"
+                         color="warning"
+                         label="Pin"/>
+      </template>
+      <template v-else-if="tabset.status === TabsetStatus.FAVORITE">
+        <ContextMenuItem v-close-popup
+                         @was-clicked="unpin(tabset)"
+                         icon="push_pin"
+                         color="warning"
+                         label="Unpin"/>
+
+      </template>
+
+      <template v-if="usePermissionsStore().hasFeature(FeatureIdent.ARCHIVE_TABSET) &&
+        tabset.status === TabsetStatus.DEFAULT">
+        <q-separator inset/>
+        <ContextMenuItem
+            v-close-popup
+            @was-clicked="archiveTabset(tabset)"
+            icon="o_inventory_2"
+            color="warning"
+            label="Archive"/>
+      </template>
+
       <template v-if="useSettingsStore().isEnabled('dev')">
-        <q-separator/>
+        <q-separator inset/>
         <ContextMenuItem
             icon="keyboard_arrow_right"
             label="Sharing... (dev)">
@@ -80,85 +155,14 @@
 
         </ContextMenuItem>
 
-      </template>
-
-      <template v-if="usePermissionsStore().hasFeature(FeatureIdent.WINDOW_MANAGEMENT)">
-        <q-separator/>
-        <ContextMenuItem
-            icon="o_grid_view"
-            label="Open in window...">
-
-          <q-item-section side>
-            <q-icon name="keyboard_arrow_right"/>
-          </q-item-section>
-          <q-menu anchor="top end" self="top start">
-            <q-list>
-              <q-item v-for="window in useWindowsStore().windowSet"
-                      @click="changeWindow(tabset, window)"
-                      dense clickable v-close-popup
-                      :disable="tabset.window === window">
-                <q-item-section>{{ window }}</q-item-section>
-              </q-item>
-              <q-separator/>
-              <q-item v-if="useWindowsStore().windowSet.size > 1"
-                      @click="removeWindow()" dense clickable v-close-popup>
-                <q-item-section>Remove Window Association {{useWindowsStore().windowSet.size}}</q-item-section>
-              </q-item>
-              <q-separator/>
-              <q-item @click="openNewWindowDialog()" dense clickable v-close-popup>
-                <q-item-section>Create New...</q-item-section>
-              </q-item>
-            </q-list>
-          </q-menu>
-
-        </ContextMenuItem>
-
-      </template>
-
-      <template v-if="useSettingsStore().isEnabled('dev')">
-        <q-separator/>
         <ContextMenuItem v-close-popup
                          @was-clicked="useSearchStore().reindexTabset(tabset.id)"
                          icon="o_note"
                          label="Re-Index Search (dev)"/>
       </template>
 
-      <q-separator/>
-      <ContextMenuItem v-close-popup
-                       @was-clicked="focus(tabset)"
-                       icon="filter_center_focus"
-                       color="accent"
-                       label="Focus on tabset"/>
 
-      <q-separator/>
-      <template v-if="tabset.status === TabsetStatus.DEFAULT">
-        <ContextMenuItem v-close-popup
-                         @was-clicked="pin(tabset)"
-                         icon="o_push_pin"
-                         color="warning"
-                         label="Pin"/>
-      </template>
-      <template v-else-if="tabset.status === TabsetStatus.FAVORITE">
-        <ContextMenuItem v-close-popup
-                         @was-clicked="unpin(tabset)"
-                         icon="push_pin"
-                         color="warning"
-                         label="Unpin"/>
-
-      </template>
-
-      <template v-if="usePermissionsStore().hasFeature(FeatureIdent.ARCHIVE_TABSET) &&
-        tabset.status === TabsetStatus.DEFAULT">
-        <q-separator/>
-        <ContextMenuItem
-            v-close-popup
-            @was-clicked="archiveTabset(tabset)"
-            icon="o_inventory_2"
-            color="warning"
-            label="Archive"/>
-      </template>
-
-      <q-separator/>
+      <q-separator inset/>
 
       <ContextMenuItem v-close-popup
                        @was-clicked="deleteTabsetDialog(tabset as Tabset)"
@@ -217,7 +221,7 @@ const startTabsetNote = (tabset: Tabset) => {
   const url = chrome && chrome.runtime && chrome.runtime.getURL ?
       chrome.runtime.getURL('www/index.html') + "#/mainpanel/notes/?tsId=" + tabset.id + "&edit=true" :
       "#/mainpanel/notes/?tsId=" + tabset.id + "&edit=true"
-  NavigationService.openOrCreateTab(url)
+  NavigationService.openOrCreateTab([url])
 }
 
 const openEditTabsetDialog = (tabset: Tabset) => {
@@ -227,14 +231,17 @@ const openEditTabsetDialog = (tabset: Tabset) => {
       tabsetId: tabset.id,
       tabsetName: tabset.name,
       tabsetColor: tabset.color,
+      window: tabset.window,
       fromPanel: true
     }
   })
 }
 
-const restoreInNewWindow = (tabsetId: string) => useCommandExecutor().execute(new RestoreTabsetCommand(tabsetId))
+const restoreInNewWindow = (tabsetId: string, windowName: string | undefined = undefined) =>
+    useCommandExecutor().execute(new RestoreTabsetCommand(tabsetId, windowName))
 
-const restoreInGroup = (tabsetId: string) => useCommandExecutor().execute(new RestoreTabsetCommand(tabsetId, false))
+const restoreInGroup = (tabsetId: string, windowName: string | undefined = undefined) =>
+    useCommandExecutor().execute(new RestoreTabsetCommand(tabsetId, windowName, false))
 
 const focus = (tabset: Tabset) =>
     router.push("/sidepanel/tabsets/" + tabset.id)

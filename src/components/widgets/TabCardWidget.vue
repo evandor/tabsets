@@ -37,7 +37,7 @@
 
 
       <div class="text-subtitle2 ellipsis text-secondary"
-           @click.stop="NavigationService.openOrCreateTab(tab.url  || '')">
+           @click.stop="NavigationService.openOrCreateTab([tab.url  || ''])">
         {{ tab.url?.replace("https://www.", '').replace("https://", '') }}
         <q-icon name="launch" color="secondary"></q-icon>
         <q-tooltip>

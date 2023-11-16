@@ -10,7 +10,7 @@
           <div class="col-2">
             <TabFaviconWidget :tab="tab" width="20px" height="20px" />
           </div>
-          <div class="col-9 text-body2 ellipsis" @click="NavigationService.openOrCreateTab(tab.url)">
+          <div class="col-9 text-body2 ellipsis" @click="NavigationService.openOrCreateTab([tab.url])">
             {{ tab.title }}
           </div>
           <div class="col-1">

@@ -17,6 +17,24 @@
         <div class="text-body2 text-warning">{{ newTabsetDialogWarning() }}</div>
       </q-card-section>
 
+      <q-card-section v-if="usePermissionsStore().hasFeature(FeatureIdent.WINDOW_MANAGEMENT)">
+        <q-select
+            dense
+            options-dense
+            clearable
+            clear-icon="close"
+            label="Open in Window"
+            filled
+            v-model="windowModel"
+            map-options
+            use-input
+            :options="windowOptions"
+            input-debounce="0"
+            @new-value="createWindowOption"
+        />
+      </q-card-section>
+
+
       <q-card-section v-if="usePermissionsStore().hasFeature(FeatureIdent.COLOR_TAGS)">
         Assign Color (optional)
 
@@ -54,6 +72,8 @@ import {useCommandExecutor} from "src/services/CommandExecutor";
 import ColorSelector from "components/dialogues/helper/ColorSelector.vue";
 import {usePermissionsStore} from "stores/permissionsStore";
 import {FeatureIdent} from "src/models/AppFeature";
+import {Tabset} from "src/models/Tabset";
+import {useWindowsStore} from "stores/windowsStore";
 
 defineEmits([
   ...useDialogPluginComponent.emits
@@ -63,6 +83,7 @@ const props = defineProps({
   tabsetId: {type: String, required: true},
   tabsetName: {type: String, required: true},
   tabsetColor: {type: String, required: false},
+  window: {type: String, required: false},
   fromPanel: {type: Boolean, default: false}
 })
 
@@ -75,13 +96,28 @@ const newTabsetName = ref(props.tabsetName)
 const newTabsetNameExists = ref(false)
 const hideWarning = ref(false)
 const theColor = ref<string | undefined>(props.tabsetColor || undefined)
+const windowModel = ref<string>(props.window || 'current')
+const windowOptions = ref<string[]>([])
 
 watchEffect(() => {
   newTabsetNameExists.value = !!tabsStore.nameExistsInContextTabset(newTabsetName.value);
 })
 
+watchEffect(() => {
+  const windows: Set<string> = useWindowsStore().windowSet
+  windowOptions.value = []
+  windowOptions.value.push('current')
+  const sortedWindowNames = Array.from(windows).sort();
+  sortedWindowNames.forEach(windowName => {
+    if (windowName !== "current") {
+      windowOptions.value.push(windowName)
+    }
+  })
+})
+
 const updateTabset = () =>
-    useCommandExecutor().executeFromUi(new RenameTabsetCommand(props.tabsetId, newTabsetName.value, theColor.value))
+    useCommandExecutor().executeFromUi(
+        new RenameTabsetCommand(props.tabsetId, newTabsetName.value, theColor.value, windowModel.value))
 
 const newTabsetDialogWarning = () => {
   return (!hideWarning.value && newTabsetName.value !== props.tabsetName && tabsStore.nameExistsInContextTabset(newTabsetName.value)) ?
@@ -93,10 +129,17 @@ const newTabsetNameIsValid = computed(() =>
 
 const disableSubmit = () => {
   return newTabsetName.value.trim().length === 0 ||
-      (newTabsetName.value.trim() === props.tabsetName && theColor.value?.trim() === props.tabsetColor)
+      (newTabsetName.value.trim() === props.tabsetName &&
+          windowModel.value.trim() === props.window &&
+          theColor.value?.trim() === props.tabsetColor)
       || newTabsetDialogWarning() !== ''
 }
 
+const createWindowOption = (val: any, done: any) => {
+  const sanitized = val ? val.replace(STRIP_CHARS_IN_USER_INPUT, '') : 'current'
+  windowOptions.value.push(sanitized)
+  done(sanitized, 'add-unique')
+}
 
 </script>
 

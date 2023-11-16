@@ -14,22 +14,25 @@ class NavigationService {
     placeholderPattern = /\${[^}]*}/gm
 
     async openOrCreateTab(
-        withUrl: string,
+        withUrls: string[],
         matcher: string | undefined = undefined,
-        group: string | undefined = undefined
+        groups: string[] = [],
+        forceCurrent: boolean = false
     ) {
-        withUrl = withUrl.replace(this.placeholderPattern, "")
-        const useWindowIdent = useTabsStore().getCurrentTabset?.window || 'current'
-        console.log(`opening url ${withUrl} in window ${useWindowIdent}, group: ${group}, mode: ${process.env.MODE}`)
+        withUrls.map(u => u.replace(this.placeholderPattern, ""));
+        const useWindowIdent = forceCurrent ?
+            'current' :
+            useTabsStore().getCurrentTabset?.window || 'current'
+        console.log(` > opening url ${withUrls} in window: '${useWindowIdent}', groups: '${groups}', mode: '${process.env.MODE}'`)
 
         const windowFromDb = await useWindowsStore().windowFor(useWindowIdent)
         const existingWindow = await useWindowsStore().currentWindowFor(useWindowIdent)
 
         if (useWindowIdent !== 'current') {
-            console.log("existingWindow", existingWindow)
+            //console.log("existingWindow", existingWindow)
             if (!existingWindow) {
 
-                const createData: any = {url: withUrl}
+                const createData: any = {url: withUrls}
                 if (windowFromDb) {
                     const w = windowFromDb.browserWindow
                     createData['left' as keyof object] = (w.left || 0) < 0 ? 0 : w.left
@@ -40,17 +43,25 @@ class NavigationService {
                     await useWindowsStore().removeWindow(windowFromDb.id)
                 }
 
-                // create a new window with a single url
+                // create a new window
                 console.log("opening new window with", createData)
                 chrome.windows.create(createData, (window) => {
-                    console.log("window", window)
+                    //console.log("window", window)
                     if (window) {
                         useWindowsStore().assignWindow(useWindowIdent, window.id || 0)
                         //useWindowsStore().renameWindow(window.id || 0, useWindowIdent)
                         useWindowsStore().upsertWindow(window, useWindowIdent)
-                        if (window.id && window.tabs && window.tabs.length > 0) {
-                            this.handleGroup(group, window.id, window.tabs[0]);
-                        }
+                        const ctx = this
+                        withUrls.forEach(function (url, i) {
+                            if (groups.length > i) {
+                                const group = groups[i]
+                                if (group && window.id && window.tabs && window.tabs.length > i) {
+                                    console.log("assiging group", group, i)
+                                    ctx.handleGroup(group, window.id, window.tabs[i]);
+                                }
+                            }
+                        })
+
                     }
                 })
                 //useWindowsStore().r
@@ -59,63 +70,72 @@ class NavigationService {
         }
 
         if (process.env.MODE === "bex") {
-            // get all tabs with this url
-            const tabsForUrl = useTabsStore().tabsForUrl(withUrl) || []
-            tabsForUrl.forEach(t => {
-                if (t.httpInfo) {
-                    t.httpError = ''
-                    t.httpInfo = ''
+            for (const url of withUrls) {
+                // get all tabs with this url
+                const tabsForUrl = useTabsStore().tabsForUrl(url) || []
+                tabsForUrl.forEach(t => {
+                    if (t.httpInfo) {
+                        t.httpError = ''
+                        t.httpInfo = ''
 
-                    const ts = useTabsStore().tabsetFor(t.id)
-                    if (ts) {
-                        //console.log("saving tabset ", ts)
-                        useTabsetService().saveTabset(ts)
+                        const ts = useTabsStore().tabsetFor(t.id)
+                        if (ts) {
+                            //console.log("saving tabset ", ts)
+                            useTabsetService().saveTabset(ts)
+                        }
                     }
-                }
-            })
+                })
+            }
 
             const useWindowId = existingWindow?.id || chrome.windows.WINDOW_ID_CURRENT
             const queryInfo = {windowId: useWindowId}
             console.log("using query info ", queryInfo)
+
+            // getting all tabs from this window
             chrome.tabs.query(queryInfo, (t: chrome.tabs.Tab[]) => {
-                let found = false;
-                t.filter(r => r.url)
-                    .map(r => {
-                        let matchCondition = withUrl === r.url
-                        if (matcher && r.url) {
-                            //console.log("matcher yielded", JsUtils.match(matcher, r.url))
-                            matchCondition = JsUtils.match(matcher, r.url)
-                        }
-                        if (matchCondition) {
-                            if (!found) { // highlight only first hit
-                                found = true
-                                console.log("found something", r)
-                                chrome.tabs.highlight({tabs: r.index, windowId: useWindowId});
-                                chrome.windows.update(useWindowId, {focused: true})
-
-                                this.handleGroup(group, useWindowId, r);
-
+                const ctx = this
+                withUrls.forEach(function (url, i) {
+                    let found = false;
+                    t.filter(r => r.url)
+                        .map(r => {
+                            let matchCondition = url === r.url
+                            if (matcher && r.url) {
+                                //console.log("matcher yielded", JsUtils.match(matcher, r.url))
+                                matchCondition = JsUtils.match(matcher, r.url)
                             }
-                        }
-                    });
-                if (!found) {
-                    console.log("tab not found, creating new one")
-                    chrome.tabs.create({
-                        active: true,
-                        pinned: false,
-                        url: withUrl,
-                        windowId: useWindowId
-                    }, (tab: chrome.tabs.Tab) => {
-                        chrome.windows.update(useWindowId, {focused: true})
+                            if (matchCondition) {
+                                if (!found) { // highlight only first hit
+                                    found = true
+                                    console.log("found something", r)
+                                    chrome.tabs.highlight({tabs: r.index, windowId: useWindowId});
+                                    chrome.windows.update(useWindowId, {focused: true})
 
-                        this.handleGroup(group, useWindowId, tab);
+                                    if (groups.length > i) {
+                                        ctx.handleGroup(groups[i], useWindowId, r);
+                                    }
+                                }
+                            }
+                        });
+                    if (!found) {
+                        console.log("tab not found, creating new one:", url)
+                        chrome.tabs.create({
+                            active: true,
+                            pinned: false,
+                            url: url,
+                            windowId: useWindowId
+                        }, (tab: chrome.tabs.Tab) => {
+                            chrome.windows.update(useWindowId, {focused: true})
 
-                    })
+                            if (groups.length > i) {
+                                ctx.handleGroup(groups[i], useWindowId, tab);
+                            }
+                        })
 
-                }
+                    }
+                })
             })
         } else {
-            openURL(withUrl)//, undefined, {target: "_ts"}) - does not work
+            openURL(withUrls[0])
         }
     }
 
@@ -175,7 +195,7 @@ class NavigationService {
         this.openTab(tabId)
             .catch((err) => {
                 useTabsStore().chromeTabsHistoryNavigating = false
-                this.openOrCreateTab(url)
+                this.openOrCreateTab([url])
             })
     }
 
@@ -184,7 +204,7 @@ class NavigationService {
         this.openTab(tabId)
             .catch((err) => {
                 useTabsStore().chromeTabsHistoryNavigating = false
-                this.openOrCreateTab(url)
+                this.openOrCreateTab([url])
             })
     }
 }

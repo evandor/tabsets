@@ -34,7 +34,6 @@ export function useTabsetService() {
         console.log("initializing tabsetService2")
         db = providedDb
         await db.loadTabsets()
-        console.log("after db.loadTabsets()")
         if (!doNotInitSearchIndex) {
             useSearchStore().populateFromContent(db.getContents())
             useSearchStore().populateFromTabsets()
@@ -386,6 +385,7 @@ export function useTabsetService() {
                         } else {
                             t.contentHash = ""
                         }
+                        console.log("%ccontenthash set to","color:blue", t.contentHash)
                         if (oldContent && oldContent !== '' && t.contentHash !== '' && t.url) {
                             // TODO not ready yet (like this)
                             // useSuggestionsStore().addSuggestion(

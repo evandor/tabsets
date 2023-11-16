@@ -21,7 +21,7 @@
           color="primary"
           :label="$q.screen.gt.lg ? 'Open Original Page' : ''"
           class="q-mr-sm"
-          @click="NavigationService.openOrCreateTab(tab?.url || '')">
+          @click="NavigationService.openOrCreateTab([tab?.url || ''])">
           <q-tooltip>Open Original Page</q-tooltip>
         </q-btn>
 

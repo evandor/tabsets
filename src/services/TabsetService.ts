@@ -26,25 +26,25 @@ class TabsetService {
     this.localStorage = localStorage;
   }
 
-  async restore(tabsetId: string, closeOldTabs: boolean = true) {
-    console.log("restoring from tabset", tabsetId)
-    const tabsStore = useTabsStore()
-    try {
-      tabsStore.deactivateListeners()
-      if (closeOldTabs) {
-        await ChromeApi.closeAllTabs()
-      }
-      const tabset = getTabset(tabsetId)
-      if (tabset) {
-        console.log("found tabset for id", tabsetId)
-        ChromeApi.restore(tabset)
-      }
-    } catch (ex) {
-      console.log("ex", ex)
-    } finally {
-      //tabsStore.activateListeners()
-    }
-  }
+  // async restore(tabsetId: string, closeOldTabs: boolean = true) {
+  //   console.log("restoring from tabset", tabsetId)
+  //   const tabsStore = useTabsStore()
+  //   try {
+  //     tabsStore.deactivateListeners()
+  //     if (closeOldTabs) {
+  //       await ChromeApi.closeAllTabs()
+  //     }
+  //     const tabset = getTabset(tabsetId)
+  //     if (tabset) {
+  //       console.log("found tabset for id", tabsetId)
+  //       ChromeApi.restore(tabset)
+  //     }
+  //   } catch (ex) {
+  //     console.log("ex", ex)
+  //   } finally {
+  //     //tabsStore.activateListeners()
+  //   }
+  // }
 
 
   async saveToCurrentTabset(tab: Tab, useIndex: number | undefined = undefined): Promise<Tabset> {
@@ -415,7 +415,7 @@ class TabsetService {
    * @param tabsetId
    * @param tabsetName
    */
-  rename(tabsetId: string, tabsetName: string,newColor: string | undefined): Promise<object> {
+  rename(tabsetId: string, tabsetName: string,newColor: string | undefined, window: string = 'current'): Promise<object> {
     const trustedName = tabsetName.replace(STRIP_CHARS_IN_USER_INPUT, '')
     let trustedColor = newColor ? newColor.replace(STRIP_CHARS_IN_COLOR_INPUT, '') : undefined
     trustedColor = trustedColor && trustedColor.length > 20 ?
@@ -428,6 +428,7 @@ class TabsetService {
       const oldColor = tabset.color
       tabset.name = trustedName
       tabset.color = trustedColor
+      tabset.window = window
       console.log("saving tabset", tabset)
       return saveTabset(tabset)
         .then(() => Promise.resolve({

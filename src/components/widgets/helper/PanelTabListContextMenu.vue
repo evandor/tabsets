@@ -198,7 +198,7 @@ const editURL = async (tab: Tab) => {
 }
 
 const assignTab = async (tab: Tab) =>
-  await NavigationService.openOrCreateTab(chrome.runtime.getURL("/www/index.html#/mainpanel/tabAssignment/" + tab.id))
+  await NavigationService.openOrCreateTab([chrome.runtime.getURL("/www/index.html#/mainpanel/tabAssignment/" + tab.id)])
 
 
 const setColor = (tab: Tab) => useCommandExecutor().execute(new UpdateTabColorCommand(tab, theColor.value))
