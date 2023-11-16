@@ -56,7 +56,7 @@
         <div class="col-12">
           <div class="text-overline ellipsis">
             {{ selectedTab?.url }}&nbsp;<q-icon name="launch" color="secondary"
-                                                @click.stop="NavigationService.openOrCreateTab(tab.url )"></q-icon>
+                                                @click.stop="NavigationService.openOrCreateTab([tab.url] )"></q-icon>
           </div>
         </div>
       </div>
@@ -615,14 +615,14 @@ const metaDataLabel = () => "Meta Data (" + metaRows.value.length + ")"
 const requestDataLabel = () => "Request Header (" + requestRows.value.length + ")"
 const metaLinksDataLabel = () => "Meta Links (" + metaLinkRows.value.length + ")"
 const linksDataLabel = () => "Links (" + Object.keys(linkRows.value).length + ")"
-const openNameLink = (key: string) => NavigationService.openOrCreateTab("https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/" + key)
+const openNameLink = (key: string) => NavigationService.openOrCreateTab(["https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/" + key])
 const showNameLink = (key: string) => key.indexOf(":") < 0;
 
 const openValueLink = (name: any, value: string) => {
   if ("fb:page_id" === name) {
-    NavigationService.openOrCreateTab("https://www.facebook.com/" + value)
+    NavigationService.openOrCreateTab(["https://www.facebook.com/" + value])
   } else if ("twitter:account_id" === name) {
-    NavigationService.openOrCreateTab("https://twitter.com/i/user/" + value)
+    NavigationService.openOrCreateTab(["https://twitter.com/i/user/" + value])
   }
   return
 }

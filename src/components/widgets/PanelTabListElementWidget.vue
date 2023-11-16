@@ -99,7 +99,10 @@
               <div v-for="placeholder in placeholders">
                 <li>
                   <short-url
-                      @click.stop="NavigationService.openOrCreateTab(placeholder['url' as keyof object], props.tab.matcher, props.tab.groupName )"
+                      @click.stop="NavigationService.openOrCreateTab(
+                          [placeholder['url' as keyof object]],
+                          props.tab.matcher,
+                          props.tab.groupName ? [props.tab.groupName] : [] )"
                       :label="placeholder['name' as keyof object]"
                       :url="placeholder['url' as keyof object]"/>
                 </li>
@@ -357,12 +360,12 @@ const openTabset = (badge: any) => {
 }
 
 const openTabAssignmentPage = (tab: Tab) =>
-    NavigationService.openOrCreateTab(chrome.runtime.getURL("/www/index.html#/mainpanel/tabAssignment/" + tab.id))
+    NavigationService.openOrCreateTab([chrome.runtime.getURL("/www/index.html#/mainpanel/tabAssignment/" + tab.id)])
 
 const matcherTooltip = () => {
   const split = props.tab.matcher?.split("|")
   if (split && split.length > 1) {
-    if (split[0] === 'sw') {
+    if (split[0] === 'sw') { // 'sw' = 'startsWith'
       return "This tab will open in any tab with an URL starting with " + split[1]
     }
   }
@@ -417,7 +420,10 @@ const switchGroup = (group: chrome.tabGroups.TabGroup): void => {
   }
 }
 
-const gotoTab = () => NavigationService.openOrCreateTab(props.tab.url || '', props.tab.matcher, props.tab.groupName)
+const gotoTab = () => NavigationService.openOrCreateTab(
+    [props.tab.url || ''],
+    props.tab.matcher,
+    props.tab.groupName ? [props.tab.groupName] : [])
 
 
 </script>

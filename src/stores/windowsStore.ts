@@ -85,14 +85,14 @@ export const useWindowsStore = defineStore('windows', () => {
                         storage.getWindows().then(res => {
                             res.forEach(r => {
                                 allWindows.value.set(r.id || 0, r)
-                                console.log("assigned:", r.id)
+                                //console.log("assigned:", r.id)
                             })
-                            console.log("%callWindows assigned", "color:green", allWindows.value)
+                            //console.log("%callWindows assigned", "color:green", allWindows.value)
 
                             chrome.windows.getCurrent({windowTypes: ['normal']}, (window: chrome.windows.Window) => {
                                 currentWindow.value = window
                                 if (currentWindow.value && currentWindow.value.id) {
-                                    console.log("%c******", "color:blue", currentWindow.value.id, windowNameFor(currentWindow.value.id))
+                                    //console.log("%c******", "color:blue", currentWindow.value.id, windowNameFor(currentWindow.value.id))
                                     currentWindowName.value = windowNameFor(currentWindow.value.id)
                                 }
                             })
@@ -122,7 +122,7 @@ export const useWindowsStore = defineStore('windows', () => {
         if (windowId >= 0) {
             //console.log("updating window for id", windowId)
             const window = await chrome.windows.get(windowId)
-            console.log("updating window", window)
+            //console.log("updating window", window)
             await storage.updateWindow(new Window(windowId, window))
         }
     }
@@ -143,16 +143,7 @@ export const useWindowsStore = defineStore('windows', () => {
     }
 
     function windowNameFor(id: number) {
-        console.log("windowNameFor1", allWindows.value)
-        console.log("windowNameFor2", [...allWindows.value.values()])
-        console.log("windowNameFor3", id, allWindows.value.get(0))
         return allWindows.value.get(id)?.title
-        // for (const key in windowMap.value) {
-        //     if (windowMap.value[key as keyof object] === id) {
-        //         return key
-        //     }
-        // }
-        //return undefined
     }
 
     function windowIdFor(name: string): number | undefined {
@@ -168,7 +159,7 @@ export const useWindowsStore = defineStore('windows', () => {
             return await chrome.windows.getCurrent()
         } else if (windowIdFor(windowToOpen)) {
             const potentialWindowId = windowIdFor(windowToOpen)
-            console.log("windowFor2", potentialWindowId)
+            // console.log("windowFor2", potentialWindowId)
             if (potentialWindowId) {
                 try {
                     return await chrome.windows.get(potentialWindowId)

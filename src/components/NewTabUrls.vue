@@ -4,7 +4,7 @@
     class="col-12 q-pa-xs items-center justify-center"
     v-for="url in urls">
 
-    <q-card class="my-card" flat @click="NavigationService.openOrCreateTab(url.url)">
+    <q-card class="my-card" flat @click="NavigationService.openOrCreateTab([url.url])">
       <q-card-section class="q-pt-xs cursor-pointer" style="width:100%;">
         <div class="row items-baseline">
           <div class="col-2">

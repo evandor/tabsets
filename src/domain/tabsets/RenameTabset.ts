@@ -23,11 +23,12 @@ export class RenameTabsetCommand implements Command<any> {
     constructor(
         public tabsetId: string,
         public newName: string,
-        public newColor: string | undefined = undefined) {
+        public newColor: string | undefined = undefined,
+        public window: string = 'current') {
     }
 
     async execute(): Promise<ExecutionResult<string>> {
-        return TabsetService.rename(this.tabsetId, this.newName, this.newColor)
+        return TabsetService.rename(this.tabsetId, this.newName, this.newColor, this.window)
             .then(res => {
                 sendMsg('tabset-renamed', {tabsetId: this.tabsetId, newName: this.newName, newColor: this.newColor})
                 return res

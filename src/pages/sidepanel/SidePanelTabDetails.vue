@@ -36,7 +36,7 @@
 
       <div class="col-12">
         <div class="text-overline ellipsis text-blue-10 cursor-pointer"
-             @click.stop="NavigationService.openOrCreateTab(tab.url )">
+             @click.stop="NavigationService.openOrCreateTab([tab.url] )">
           {{ tab?.url }}&nbsp;<q-icon name="launch" color="secondary"
                                       class="cursor-pointer"></q-icon>
         </div>
@@ -439,7 +439,7 @@ const formatDate = (timestamp: number | undefined) =>
     timestamp ? formatDistance(timestamp, new Date(), {addSuffix: true}) : ""
 
 const showTabDetails = () =>
-    NavigationService.openOrCreateTab(chrome.runtime.getURL("/www/index.html#/mainpanel/tab/" + tab.value?.id))
+    NavigationService.openOrCreateTab([chrome.runtime.getURL("/www/index.html#/mainpanel/tab/" + tab.value?.id)])
 
 watchEffect(() => {
   const fuseIndex = useSearchStore().getIndex()

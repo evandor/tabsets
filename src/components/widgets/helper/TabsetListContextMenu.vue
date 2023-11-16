@@ -232,7 +232,8 @@ const copyPublicShareToClipboard = (tabsetId: string) => {
   }
 }
 
-const restoreInGroup = (tabsetId: string) => useCommandExecutor().execute(new RestoreTabsetCommand(tabsetId, false))
+const restoreInGroup = (tabsetId: string) =>
+    useCommandExecutor().execute(new RestoreTabsetCommand(tabsetId, undefined,false))
 
 const restoreDialog = (tabsetId: string) => $q.dialog({
   component: RestoreTabsetDialog,
