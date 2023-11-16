@@ -1,4 +1,3 @@
-import {HTMLSelection} from "src/models/Tab";
 import {useNotificationsStore} from "src/stores/notificationsStore";
 import {openURL} from "quasar";
 import {useTabsStore} from "src/stores/tabsStore";
@@ -22,7 +21,9 @@ class NavigationService {
         withUrls.map(u => u.replace(this.placeholderPattern, ""));
         const useWindowIdent = forceCurrent ?
             'current' :
-            useTabsStore().getCurrentTabset?.window || 'current'
+            usePermissionsStore().hasFeature(FeatureIdent.WINDOW_MANAGEMENT) ?
+                useTabsStore().getCurrentTabset?.window || 'current' :
+                'current'
         console.log(` > opening url ${withUrls} in window: '${useWindowIdent}', groups: '${groups}', mode: '${process.env.MODE}'`)
 
         const windowFromDb = await useWindowsStore().windowFor(useWindowIdent)
