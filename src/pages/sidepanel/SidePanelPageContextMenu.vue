@@ -16,8 +16,8 @@
                        label="Create Note"/>
 
 
-      <template v-if="tabset.tabs.length > 0 && inBexMode() && (!tabset.window || tabset.window === 'current')">
-        <q-separator inset/>
+      <template v-if="tabset.tabs.length > 0 && inBexMode() && (
+          (!tabset.window || tabset.window === 'current') || !usePermissionsStore().hasFeature(FeatureIdent.WINDOW_MANAGEMENT))">
         <ContextMenuItem
             icon="open_in_new"
             label="Open all in...">
@@ -40,7 +40,8 @@
 
       </template>
 
-      <template v-if="tabset.tabs.length > 0 && inBexMode() && tabset.window && tabset.window !== 'current'">
+      <template v-if="tabset.tabs.length > 0 && inBexMode() && usePermissionsStore().hasFeature(FeatureIdent.WINDOW_MANAGEMENT) &&
+            tabset.window && tabset.window !== 'current'">
         <ContextMenuItem v-close-popup
                          @was-clicked="restoreInGroup(tabset.id, tabset.window)"
                          icon="open_in_new"
@@ -198,7 +199,6 @@ import {Tab} from "src/models/Tab";
 import {CopyToClipboardCommand} from "src/domain/commands/CopyToClipboard";
 import ShareTabsetPubliclyDialog from "components/dialogues/ShareTabsetPubliclyDialog.vue";
 import {MarkTabsetAsArchivedCommand} from "src/domain/tabsets/MarkTabsetAsArchived";
-import {useWindowsStore} from "src/stores/windowsStore";
 import {useTabsStore} from "stores/tabsStore";
 import NewWindowDialog from "components/dialogues/NewWindowDialog.vue";
 import {useRouter} from "vue-router";
