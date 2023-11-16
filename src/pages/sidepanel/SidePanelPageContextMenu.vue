@@ -105,7 +105,6 @@
 
       <template v-if="usePermissionsStore().hasFeature(FeatureIdent.ARCHIVE_TABSET) &&
         tabset.status === TabsetStatus.DEFAULT">
-        <q-separator inset/>
         <ContextMenuItem
             v-close-popup
             @was-clicked="archiveTabset(tabset)"

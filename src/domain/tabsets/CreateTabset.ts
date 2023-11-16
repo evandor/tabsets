@@ -29,7 +29,8 @@ export class CreateTabsetCommand implements Command<SaveOrReplaceResult> {
     async execute(): Promise<ExecutionResult<SaveOrReplaceResult>> {
         try {
             //const trustedWindowName = this.windowToOpen.replace(STRIP_CHARS_IN_USER_INPUT, '')
-            const windowId = this.windowToOpen.replace(STRIP_CHARS_IN_USER_INPUT, '')
+            const windowId = this.windowToOpen ?
+                this.windowToOpen.replace(STRIP_CHARS_IN_USER_INPUT, '') : 'current'
             useWindowsStore().addToWindowSet(windowId)
             const result: SaveOrReplaceResult = await useTabsetService()
                 .saveOrReplaceFromChromeTabs(this.tabsetName, this.tabsToUse, this.merge, windowId, TabsetType.DEFAULT, this.color)
