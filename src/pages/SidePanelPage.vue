@@ -375,8 +375,7 @@ watchEffect(() => {
 
 function inIgnoredMessages(message: any) {
   return message.msg === "html2text" ||
-      message.msg === "html2links" ||
-      message.name === "recogito-annotation-created"
+      message.msg === "html2links"
 }
 
 if ($q.platform.is.chrome) {

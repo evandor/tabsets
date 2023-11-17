@@ -1,7 +1,7 @@
 import {Tabset, TabsetStatus, TabsetType} from "src/models/Tabset";
 import {useTabsStore} from "src/stores/tabsStore";
 import _ from "lodash";
-import {HTMLSelection, HTMLSelectionComment, Tab} from "src/models/Tab";
+import {Tab} from "src/models/Tab";
 import {uid} from "quasar";
 import throttledQueue from 'throttled-queue';
 // @ts-ignore
@@ -48,91 +48,71 @@ async function setCurrentTab() {
     }
 }
 
-function annotationScript (tabId: string, annotations: any[]) {
-  console.log("!!! here in annotation script", tabId, annotations)
-
-  const
-    iFrame = document.createElement('iframe'),
-    defaultFrameHeight = '62px'
-
-  iFrame.id = 'bex-app-iframe'
-  iFrame.width = '100%'
- // resetIFrameHeight()
-
-// Assign some styling so it looks seamless
-  Object.assign(iFrame.style, {
-    position: 'fixed',
-    top: '0',
-    right: '0',
-    bottom: '0',
-    left: '0',
-    border: '0',
-    zIndex: '9999999', // Make sure it's on top
-    overflow: 'visible'
-  })
-
-  //const url = document.location.href
-  //console.log(" === url == ", url)
-  //const urlParams = new URLSearchParams(window.location.search);
-  //console.log("got url2", url, tabId)
-  iFrame.src = chrome.runtime.getURL('/www/index.html#/annotations/' + tabId)
-  document.body.prepend(iFrame)
-
-  var l: HTMLLinkElement = document.createElement('link');
-  l.setAttribute("href","https://cdn.jsdelivr.net/npm/@recogito/recogito-js@1.8.2/dist/recogito.min.css")
-  l.setAttribute("rel","stylesheet")
-  document.head.appendChild(l)
-
-  var s = document.createElement('script');
-  s.src = chrome.runtime.getURL('www/js/recogito/recogito.min.js');
-  (document.head || document.documentElement).appendChild(s);
-
-  // var s2 = document.createElement('script');
-  // s2.src = chrome.runtime.getURL('www/js/recogito/recogito.content.js');
-  // document.body.appendChild(s2);
-
-  var s2 = document.createElement('script');
-  s2.dataset.variable = 'some string variable!';
-  s2.dataset.annotations = JSON.stringify(annotations);
-
-  console.log("x1", annotations)
-  console.log("x2",  JSON.stringify(annotations))
-  console.log("x3",  JSON.parse(JSON.stringify(annotations)))
-
-
-
-
-  s2.src = chrome.runtime.getURL('www/js/recogito/recogito.content.js');
-  document.body.appendChild(s2);
-
-  // var s3 = document.createElement('script');
-  // s3.type = 'text/javascript';
-  // var code = 'alert("hello world!");';
-  // try {
-  //   s3.appendChild(document.createTextNode(code));
-  //   document.body.appendChild(s3);
-  // } catch (e) {
-  //   s.text = code;
-  //   document.body.appendChild(s3);
-  // }
-  //document.body.appendChild(s3);
-
-  window.addEventListener(
-    "message",
-    (event) => {
-      if (event.data && event.data.name && event.data.name.startsWith('recogito-')) {
-        console.log("sending", event.data)
-        chrome.runtime.sendMessage(event.data, (callback) => {
-          console.log("xxx callback", callback)
-          if (chrome.runtime.lastError) {
-            console.warn("got runtime error", chrome.runtime.lastError)
-          }
-        })
-      }
-    },
-    false,
-  );
-}
+// function annotationScript (tabId: string, annotations: any[]) {
+//   console.log("!!! here in annotation script", tabId, annotations)
+//
+//   const
+//     iFrame = document.createElement('iframe'),
+//     defaultFrameHeight = '62px'
+//
+//   iFrame.id = 'bex-app-iframe'
+//   iFrame.width = '100%'
+//  // resetIFrameHeight()
+//
+// // Assign some styling so it looks seamless
+// //   Object.assign(iFrame.style, {
+// //     position: 'fixed',
+// //     top: '0',
+// //     right: '0',
+// //     bottom: '0',
+// //     left: '0',
+// //     border: '0',
+// //     zIndex: '9999999', // Make sure it's on top
+// //     overflow: 'visible'
+// //   })
+//
+//   //iFrame.src = chrome.runtime.getURL('/www/index.html#/annotations/' + tabId)
+//   //document.body.prepend(iFrame)
+//
+//   // var l: HTMLLinkElement = document.createElement('link');
+//   // l.setAttribute("href","https://cdn.jsdelivr.net/npm/@recogito/recogito-js@1.8.2/dist/recogito.min.css")
+//   // l.setAttribute("rel","stylesheet")
+//   // document.head.appendChild(l)
+//
+//   // var s = document.createElement('script');
+//   // s.src = chrome.runtime.getURL('www/js/recogito/recogito.min.js');
+//   // (document.head || document.documentElement).appendChild(s);
+//   //
+//   // var s2 = document.createElement('script');
+//   // s2.dataset.variable = 'some string variable!';
+//   // s2.dataset.annotations = JSON.stringify(annotations);
+//   //
+//   // console.log("x1", annotations)
+//   // console.log("x2",  JSON.stringify(annotations))
+//   // console.log("x3",  JSON.parse(JSON.stringify(annotations)))
+//
+//
+//
+//   //
+//   // s2.src = chrome.runtime.getURL('www/js/recogito/recogito.content.js');
+//   // document.body.appendChild(s2);
+//
+//   // window.addEventListener(
+//   //   "message",
+//   //   (event) => {
+//   //     if (event.data && event.data.name && event.data.name.startsWith('recogito-')) {
+//   //       console.log("sending", event.data)
+//   //       chrome.runtime.sendMessage(event.data, (callback) => {
+//   //         console.log("xxx callback", callback)
+//   //         if (chrome.runtime.lastError) {
+//   //           console.warn("got runtime error", chrome.runtime.lastError)
+//   //         }
+//   //       })
+//   //     }
+//   //   },
+//   //   false,
+//   // );
+// }
 
 function inIgnoredMessages(request: any) {
   // TODO name vs. msg!
@@ -382,17 +362,17 @@ class ChromeListeners {
       return
     }
 
-    if (usePermissionsStore().hasFeature(FeatureIdent.ANNOTATIONS)) {
-      const tabForUrl = useTabsStore().tabForUrlInSelectedTabset(tab.url || '')
-      if (tabForUrl) {
-        chrome.scripting.executeScript({
-          target : {tabId : (tab.id || 0)},
-          func : annotationScript,
-          args : [ tabForUrl.id, tabForUrl.annotations ],
-        })
-          .then(() => console.log("injected a function"));
-      }
-    }
+    // if (usePermissionsStore().hasFeature(FeatureIdent.ANNOTATIONS)) {
+    //   const tabForUrl = useTabsStore().tabForUrlInSelectedTabset(tab.url || '')
+    //   if (tabForUrl) {
+    //     chrome.scripting.executeScript({
+    //       target : {tabId : (tab.id || 0)},
+    //       func : annotationScript,
+    //       args : [ tabForUrl.id, tabForUrl.annotations ],
+    //     })
+    //       .then(() => console.log("injected a function"));
+    //   }
+    // }
 
     const scripts: string[] = []
 
@@ -515,9 +495,9 @@ class ChromeListeners {
     //   this.handleMessageWebsiteQuote(request, sender, sendResponse)
     } else if (request.msg === 'websiteImg') {
       this.handleMessageWebsiteImage(request, sender, sendResponse)
-    } else if (request.name === 'recogito-annotation-created') {
-      //this.handleMessageWebsiteImage(request, sender, sendResponse)
-      useTabsetService().handleAnnotationMessage(request)
+    // } else if (request.name === 'recogito-annotation-created') {
+    //   //this.handleMessageWebsiteImage(request, sender, sendResponse)
+    //   useTabsetService().handleAnnotationMessage(request)
     } else {
       console.log("got unknown message", request)
     }
