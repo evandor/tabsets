@@ -27,13 +27,13 @@ export const useWindowsStore = defineStore('windows', () => {
     /**
      * the array all actually currently used Chrome tab groups.
      */
-    const currentWindows = ref<chrome.windows.Window[]>([])
+    const currentWindows = ref<browser.windows.Window[]>([])
 
-    const currentWindow = ref<chrome.windows.Window>(null as unknown as chrome.windows.Window) //null as unknown as chrome.windows.Window
+    const currentWindow = ref<browser.windows.Window>(null as unknown as browser.windows.Window) //null as unknown as browser.windows.Window
 
     const currentWindowName = ref<string | undefined>(undefined)
 
-    const lastFocusedWindow = ref<chrome.windows.Window>(null as unknown as chrome.windows.Window)
+    const lastFocusedWindow = ref<browser.windows.Window>(null as unknown as browser.windows.Window)
 
     // screenshot Window
     const screenshotWindow = ref<number>(null as unknown as number)
@@ -68,13 +68,13 @@ export const useWindowsStore = defineStore('windows', () => {
     function init(trigger: string = "") {
         if (inBexMode()) {
             console.debug("init chrome windows listeners with trigger", trigger)
-            chrome.windows.getAll((windows) => {
+            browser.windows.getAll((windows) => {
 
                 currentWindows.value = windows
                 console.debug("initializing current windows with", currentWindows.value)
 
                 // adding potentially new windows to storage
-                const res: Promise<any>[] = windows.flatMap((window: chrome.windows.Window) => {
+                const res: Promise<any>[] = windows.flatMap((window: browser.windows.Window) => {
                     return storage.addWindow(new Window(window.id || 0, window, undefined))
                 })
 
@@ -89,7 +89,7 @@ export const useWindowsStore = defineStore('windows', () => {
                             })
                             //console.log("%callWindows assigned", "color:green", allWindows.value)
 
-                            chrome.windows.getCurrent({windowTypes: ['normal']}, (window: chrome.windows.Window) => {
+                            browser.windows.getCurrent({windowTypes: ['normal']}, (window: browser.windows.Window) => {
                                 currentWindow.value = window
                                 if (currentWindow.value && currentWindow.value.id) {
                                     //console.log("%c******", "color:blue", currentWindow.value.id, windowNameFor(currentWindow.value.id))
@@ -102,7 +102,7 @@ export const useWindowsStore = defineStore('windows', () => {
             })
 
 
-            chrome.windows.getLastFocused({windowTypes: ['normal']}, (window: chrome.windows.Window) => {
+            browser.windows.getLastFocused({windowTypes: ['normal']}, (window: browser.windows.Window) => {
                 lastFocusedWindow.value = window
             })
         }
@@ -128,11 +128,11 @@ export const useWindowsStore = defineStore('windows', () => {
     }
 
     function initListeners() {
-        if (inBexMode() && chrome && chrome.windows) {
-            chrome.windows.onCreated.addListener((window: chrome.windows.Window) => init("onCreated"))
-            chrome.windows.onRemoved.addListener((windowId: number) => onRemoved(windowId))
-            chrome.windows.onFocusChanged.addListener((windowId) => onUpdate(windowId))
-            //chrome.windows.onBoundsChanged.addListener((window: chrome.windows.Window) => onUpdate(window.id || 0))
+        if (inBexMode() && chrome && browser.windows) {
+            browser.windows.onCreated.addListener((window: browser.windows.Window) => init("onCreated"))
+            browser.windows.onRemoved.addListener((windowId: number) => onRemoved(windowId))
+            browser.windows.onFocusChanged.addListener((windowId) => onUpdate(windowId))
+            //browser.windows.onBoundsChanged.addListener((window: browser.windows.Window) => onUpdate(window.id || 0))
         }
     }
 
@@ -153,8 +153,8 @@ export const useWindowsStore = defineStore('windows', () => {
         })
     }
 
-    async function currentWindowFor(windowToOpen: string): Promise<chrome.windows.Window | undefined> {
-        if (windowToOpen === 'current' && chrome && chrome.windows) {
+    async function currentWindowFor(windowToOpen: string): Promise<browser.windows.Window | undefined> {
+        if (windowToOpen === 'current' && chrome && browser.windows) {
             // @ts-ignore
             return await browser.windows.getCurrent()
         } else if (windowIdFor(windowToOpen)) {
@@ -168,7 +168,7 @@ export const useWindowsStore = defineStore('windows', () => {
                 }
             }
             // try {
-            //     const realWindow = await chrome.windows.get(potentialWindowId)
+            //     const realWindow = await browser.windows.get(potentialWindowId)
             //     return Promise.resolve(potentialWindowId)
             // } catch (err) {
             //     // @ts-ignore
@@ -196,7 +196,7 @@ export const useWindowsStore = defineStore('windows', () => {
         }
     }
 
-    async function upsertWindow(window: chrome.windows.Window, ident: string) {
+    async function upsertWindow(window: browser.windows.Window, ident: string) {
         await storage.upsertWindow(new Window(window.id || 0, window), ident)
     }
 
