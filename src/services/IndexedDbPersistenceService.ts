@@ -484,7 +484,7 @@ class IndexedDbPersistenceService implements PersistenceService {
   /*** Windows Management ***/
 
   addWindow(window: Window): Promise<any> {
-    console.debug("adding window", window)
+    //console.debug("%cadding window", "background-color:yellow", window)
     return this.db.add('windows', window, window.id)
         .catch((err) => {
           if (!err.toString().indexOf('Key already exists')) {
@@ -522,7 +522,7 @@ class IndexedDbPersistenceService implements PersistenceService {
       const asJson = JSON.parse(JSON.stringify(window))
       asJson['title'] = windowFromDb.title
       delete asJson['tabs']
-      console.log("storing window1", asJson, window.id)
+      //console.log("storing window1", asJson, window.id)
       await this.db.put('windows', asJson, window.id)
     } else {
       await this.db.put('windows', window, window.id)
@@ -531,11 +531,11 @@ class IndexedDbPersistenceService implements PersistenceService {
 
   async upsertWindow(window: Window, name: string): Promise<void> {
     try {
-      console.log("about to rename window", name, window)
+      //console.log("about to rename window", name, window)
       const asJson = JSON.parse(JSON.stringify(window))
       asJson['title'] = name
       delete asJson['tabs']
-      console.log("storing window", asJson, window.id)
+      // console.log("storing window", asJson, window.id)
       await this.db.put('windows', asJson, window.id)
     } catch (err) {
       console.log("error renaming window", err)
@@ -631,7 +631,7 @@ class IndexedDbPersistenceService implements PersistenceService {
 
   addNotification(notification: Notification): Promise<void> {
     return this.db.add('notifications', notification, notification.id)
-      .then((res) => Promise.resolve())
+      .then(() => Promise.resolve())
   }
 
   notificationRead(notificationId: string): Promise<void> {
@@ -656,15 +656,15 @@ class IndexedDbPersistenceService implements PersistenceService {
         if (foundExistingInStateNewOrCanceled) {
           if (foundExistingInStateNewOrCanceled && foundExistingInStateNewOrCanceled.url === suggestion.url) {
             foundExistingInStateNewOrCanceled.state = SuggestionState.APPLIED
-            this.db.put('suggestions', foundExistingInStateNewOrCanceled, foundExistingInStateNewOrCanceled.id)
-            return Promise.reject("updated existing suggestion to 'applied'")
+            // this.db.put('suggestions', foundExistingInStateNewOrCanceled, foundExistingInStateNewOrCanceled.id)
+            return Promise.reject("TODO: not: updated existing suggestion to 'applied'")
           }
           return Promise.reject("there's already a suggestion in state NEW, not adding (yet)")
         }
         const found = _.find(suggestions, (s: Suggestion) => s.url === suggestion.url)
         if (!found) {
           return this.db.add('suggestions', suggestion, suggestion.id)
-            .then((res) => Promise.resolve())
+            .then(() => Promise.resolve())
         }
         //console.log("suggestion already exists")
         return Promise.reject("suggestion already exists")

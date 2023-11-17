@@ -12,6 +12,7 @@
       <TabGroups v-else-if="props.tabset?.view === 'group'"
                  group="otherTabs"
                  :highlightUrl="highlightUrl"
+                 :tabsetId="props.tabset?.id"
                  :tabs="currentTabs()"/>
 
       <TabGrid v-else-if="props.tabset?.view === 'grid'"
@@ -27,6 +28,7 @@
       <TabList v-else
                group="otherTabs"
                :highlightUrl="highlightUrl"
+               :tabsetId="props.tabset?.id"
                :tabs="currentTabs()"/>
 
     </q-card-section>

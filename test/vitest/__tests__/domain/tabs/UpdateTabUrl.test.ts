@@ -42,7 +42,7 @@ describe('UpdateTabUrl', () => {
 
     const result = await new UpdateTabUrlCommand(
         tab, "https://skysail.io", "newName").execute()
-    expect(result.message).toBe("Tab's URL was updated")
+    expect(result.message).toBe("Tab updated")
     expect(result.result).toBe("https://skysail.io")
 
     const tabsetFromDB = useTabsetService().getTabset(createTabsetResult.result.tabset.id)

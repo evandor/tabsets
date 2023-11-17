@@ -12,6 +12,7 @@ import {Tab} from "src/models/Tab";
 import {uid} from "quasar";
 import {FeatureIdent} from "src/models/AppFeature";
 import {RequestInfo} from "src/models/RequestInfo";
+import {useTabsetService} from "src/services/TabsetService2";
 
 function runHousekeeping(name:string) {
   if (name === "housekeeping") {
@@ -57,7 +58,6 @@ const persistenceService = IndexedDbPersistenceService
 class ChromeApi {
 
   onHeadersReceivedListener = function (details: any) {
-    console.log("headerDetails", details)
     if (details.url) {
       persistenceService.saveRequest(details.url, new RequestInfo(details.statusCode as number, details.responseHeaders || []))
         .then(() => console.debug("added request"))
@@ -219,48 +219,39 @@ class ChromeApi {
     console.log(" --- closing all tabs: end ---")
   }
 
-  restore(tabset: Tabset, inNewWindow: boolean = true) {
-    console.log("restoring tabset ", tabset.id, inNewWindow)
+  restore(tabset: Tabset, windowName: string | undefined = undefined, inNewWindow: boolean = true) {
+    console.log("restoring tabset ", tabset.id, windowName, inNewWindow)
 
-    if (inNewWindow) {
-      const urls: string[] = _.map(tabset.tabs, (t: Tab) => t.url || '')
+    const urlAndGroupArray: object[] = _.map(tabset.tabs, (t: Tab) => {
+      return {url: t.url, group: t.groupName} || {url: '', group: undefined}
+    })
+    console.log("restoring urls and groups:", urlAndGroupArray)
+    if (inNewWindow && !windowName) {
+      console.log("creating new window with urls", urlAndGroupArray)
       chrome.windows.create({
         focused: true,
         left: 50,
         top: 50,
-        url: urls
+        url: _.map(urlAndGroupArray, a => a['url' as keyof object])
       })
+    } else if (windowName) { // open in named window
+      useTabsStore().selectCurrentTabset(tabset.id)
+      NavigationService.openOrCreateTab(
+          _.map(urlAndGroupArray, a => a['url' as keyof object]),
+          undefined,
+          _.map(urlAndGroupArray, a => a['group' as keyof object]))
+      // TODO deactivate listeners - needed?
+      // useTabsStore().deactivateListeners()
+      // this.getCurrentTab()
+      //     ...
+      //     Promise.all(promisedTabs)
+      //       .then(() => useTabsStore().activateListeners())
+      //   })
     } else {
-      this.getCurrentTab()
-        .then((currentTab: chrome.tabs.Tab) => {
-          console.log("proceeding...")
-
-          const promisedTabs: Promise<chrome.tabs.Tab>[] = []
-
-          tabset.tabs.forEach(async t => {
-
-            if (t.url !== currentTab.url) {
-              //console.log("creating tab", t.chromeTabId)
-              const newTabPromise: Promise<chrome.tabs.Tab> = this.chromeTabsCreateAsync({
-                active: false,
-                index: t.id,
-                pinned: t.pinned,
-                url: t.url
-              })
-              //console.log("got new tab", newTabPromise)
-              promisedTabs.push(newTabPromise)
-            } else {
-              console.log("omitting opening current tab again")
-            }
-          });
-
-          Promise.all(promisedTabs)
-            .then(() => useTabsStore().activateListeners())
-        })
-
+      console.log("opening urls", urlAndGroupArray)
+      NavigationService.openOrCreateTab(_.map(urlAndGroupArray, a => a['url' as keyof object]),
+          undefined, _.map(urlAndGroupArray, a => a['group' as keyof object]))
     }
-
-
   }
 
   async getCurrentTab(): Promise<chrome.tabs.Tab> {

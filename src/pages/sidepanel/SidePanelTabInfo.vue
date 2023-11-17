@@ -3,16 +3,6 @@
       v-if="!alreadyInTabset() && useUiStore().showCurrentTabBox"
       class="row q-ma-none q-pt-sm q-ma-sm"
       style="border:1px solid lightgray;border-radius: 5px">
-
-<!--    <div class="col-12" v-if="route && route.query.first && route.query.first === 'true'">-->
-<!--      <div class="row">-->
-<!--        <div class="col text-caption q-pa-md">-->
-<!--          Here you will see the <i>current tab</i> of your browser.-->
-<!--          Click 'START' and add it to your new tabset.<br><br>-->
-<!--          <q-btn label="start" data-testid='startAddingTabsBtn' @click="router.push('/sidepanel')"/>-->
-<!--        </div>-->
-<!--      </div>-->
-<!--    </div>-->
     <div class="col-12">
       <CurrentTabElementHelper :tabsetId="props.tabsetId"/>
     </div>

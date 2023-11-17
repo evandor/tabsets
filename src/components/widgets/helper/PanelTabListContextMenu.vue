@@ -13,13 +13,21 @@
       </template>
 
       <q-separator/>
+      <q-item clickable v-close-popup @click.stop="editURL(props['tab' as keyof object])">
+        <q-item-section style="padding-right:0;min-width:25px;max-width: 25px;">
+          <q-icon size="xs" name="o_edit" color="info"/>
+        </q-item-section>
+        <q-item-section>
+          Edit Tab
+        </q-item-section>
+      </q-item>
 
       <template v-if="props.tabsetType.toString() !== TabsetType.DYNAMIC.toString()">
         <q-separator/>
         <q-item clickable
                 v-close-popup @click.stop="editNoteDialog(props['tab' as keyof object])">
           <q-item-section style="padding-right:0;min-width:25px;max-width: 25px;">
-            <q-icon size="xs" name="o_note" color="accent"/>
+            <q-icon size="xs" name="o_note" color="info"/>
           </q-item-section>
           <q-item-section>
             Add / Edit Note
@@ -27,31 +35,21 @@
         </q-item>
       </template>
 
-      <q-separator/>
-      <q-item clickable v-close-popup @click.stop="copyToClipboard(props['tab' as keyof object])">
-        <q-item-section style="padding-right:0;min-width:25px;max-width: 25px;">
-          <q-icon size="xs" name="o_link" color="accent"/>
-        </q-item-section>
-        <q-item-section>
-          Copy URL to Clipboard
-        </q-item-section>
-      </q-item>
-
-      <q-separator/>
-      <q-item clickable v-close-popup @click.stop="editURL(props['tab' as keyof object])">
-        <q-item-section style="padding-right:0;min-width:25px;max-width: 25px;">
-          <q-icon size="xs" name="o_link" color="accent"/>
-        </q-item-section>
-        <q-item-section>
-          Edit URL
-        </q-item-section>
-      </q-item>
+<!--      <q-separator/>-->
+<!--      <q-item clickable v-close-popup @click.stop="copyToClipboard(props['tab' as keyof object])">-->
+<!--        <q-item-section style="padding-right:0;min-width:25px;max-width: 25px;">-->
+<!--          <q-icon size="xs" name="o_link" color="accent"/>-->
+<!--        </q-item-section>-->
+<!--        <q-item-section>-->
+<!--          Copy URL to Clipboard-->
+<!--        </q-item-section>-->
+<!--      </q-item>-->
 
       <template v-if="usePermissionsStore().hasFeature(FeatureIdent.ADVANCED_TAB_MANAGEMENT)">
         <q-separator/>
         <q-item clickable v-close-popup @click.stop="assignTab(props['tab' as keyof object])">
           <q-item-section style="padding-right:0;min-width:25px;max-width: 25px;">
-            <q-icon size="xs" name="o_tab" color="accent"/>
+            <q-icon size="xs" name="o_tab" color="info"/>
           </q-item-section>
           <q-item-section>
             Tab Assignment
@@ -200,7 +198,7 @@ const editURL = async (tab: Tab) => {
 }
 
 const assignTab = async (tab: Tab) =>
-  await NavigationService.openOrCreateTab(chrome.runtime.getURL("/www/index.html#/mainpanel/tabAssignment/" + tab.id))
+  await NavigationService.openOrCreateTab([chrome.runtime.getURL("/www/index.html#/mainpanel/tabAssignment/" + tab.id)])
 
 
 const setColor = (tab: Tab) => useCommandExecutor().execute(new UpdateTabColorCommand(tab, theColor.value))

@@ -1,7 +1,7 @@
 <template>
 
   <div class="row q-ma-xl">
-    <div class="col-2 q-ma-md" v-for="t in urlList" @click="NavigationService.openOrCreateTab(t.url)">
+    <div class="col-2 q-ma-md" v-for="t in urlList" @click="NavigationService.openOrCreateTab([t.url])">
       <q-avatar class="cursor-pointer">
         <img :src="t.favIconUrl">
       </q-avatar>

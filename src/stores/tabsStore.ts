@@ -15,7 +15,6 @@ import {useTabsetService} from "src/services/TabsetService2";
 import {useWindowsStore} from "src/stores/windowsStore";
 
 async function queryTabs(): Promise<chrome.tabs.Tab[]> {
-    console.log("hier")
     // @ts-ignore
     return await browser.tabs.query({currentWindow: true});
 }
@@ -186,21 +185,7 @@ export const useTabsStore = defineStore('tabs', {
             return async (tabId: string): Promise<object | undefined> => {
 
                 for (const [key, value] of state.tabsets) {
-                    //console.log("key/value", key, value)
-
-                    // lazy loading?
-                    // if (value.tabs.length === 0) {
-                    //   const useTabs = await useTabsetService().getTabs(key)
-                    //   const found: Tab | undefined = _.find(useTabs, t => t.id === tabId)
-                    //   if (found) {
-                    //     return Promise.resolve({
-                    //       tab: found,
-                    //       tabsetId: value.id
-                    //     })
-                    //   }
-                    // } else {
                     const found: Tab | undefined = _.find(value.tabs, t => {
-                        console.log("cmp", t.id, tabId)
                         return t.id === tabId
                     })
                     if (found) {
@@ -209,7 +194,6 @@ export const useTabsStore = defineStore('tabs', {
                             tabsetId: value.id
                         })
                     }
-                    //}
                 }
                 return Promise.resolve(undefined)
             }
@@ -320,8 +304,8 @@ export const useTabsStore = defineStore('tabs', {
             this.currentChromeTabs.set(tab.windowId, tab)
             const MAX_HISTORY_LENGTH = 12
 
-            console.log("%cchromeTabsHistoryPosition", "color:green;font-style:bold;",
-                tab.id, this.chromeTabsHistoryPosition, this.chromeTabsHistory.length, this.chromeTabsHistoryNavigating)
+           // console.log("%cchromeTabsHistoryPosition", "color:green;font-style:bold;",
+           //     tab.id, this.chromeTabsHistoryPosition, this.chromeTabsHistory.length, this.chromeTabsHistoryNavigating)
 
             // tab was activated without using the navigation
             if (tab.id && !this.chromeTabsHistoryNavigating) {
@@ -339,17 +323,15 @@ export const useTabsStore = defineStore('tabs', {
                     this.chromeTabsHistory[historyLength - 1][0] !== tab.id &&
                     this.chromeTabsHistory[historyLength - 1][1] !== tab.url
                 ) {
-                    console.log("pushing tab A", tab.id)
                     this.chromeTabsHistory.push([tab.id, tab.url || ''])
                 } else if (historyLength === 0) {
-                    console.log("pushing tab B", tab.id)
                     this.chromeTabsHistory.push([tab.id, tab.url || ''])
                 } else {
-                    console.log("did not add, adjusting position", historyLength - 1)
+                    //console.log("did not add, adjusting position", historyLength - 1)
                     this.chromeTabsHistoryPosition = historyLength - 1
                 }
                 if (this.chromeTabsHistory.length > MAX_HISTORY_LENGTH) {
-                    console.log("deleting first element")
+                    // console.log("deleting first element")
                     this.chromeTabsHistory.splice(0, 1)
                 }
             } else if (this.chromeTabsHistoryNavigating) {
@@ -495,7 +477,7 @@ export const useTabsStore = defineStore('tabs', {
             ts.tabs.forEach((t: Tab) => {
                 if (t['chromeTab' as keyof object]) {
                     foundOldRep = true
-                    console.log("found old representation of tab")
+                    console.error("found old representation of tab")
                     t.title = t['chromeTab' as keyof object]['title']
                     t.url = t['chromeTab' as keyof object]['url']
                     t.favIconUrl = t['chromeTab' as keyof object]['favIconUrl']

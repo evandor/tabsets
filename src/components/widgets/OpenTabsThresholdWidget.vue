@@ -112,7 +112,7 @@ if (!inBexMode()) {
 
 watchEffect(() => {
   openTabsCountRatio.value = Math.min(tabsStore.tabs.length / settingsStore.thresholds['max' as keyof object], 1)
-  console.log("threshold", settingsStore.thresholds['max' as keyof object])
+  //console.log("threshold", settingsStore.thresholds['max' as keyof object])
   openTabsCountRatio2.value = Math.round(100 * Math.min(tabsStore.tabs.length / settingsStore.thresholds['max' as keyof object], 1))
 })
 

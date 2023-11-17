@@ -10,6 +10,8 @@
 
           <SearchWithTransitionHelper v-if="searching"/>
 
+          <FilterWithTransitionHelper v-else-if="showFilter"/>
+
           <template v-else>
             <div class="column q-ma-none q-pa-none">
               <!-- @click.stop="router.push('/sidepanel/spaces')" -->
@@ -28,7 +30,7 @@
                                       :search-term="props.searchTerm"
                                       :search-hits="props.searchHits"/>
 
-          <FilterWithTransitionHelper v-else-if="showFilter()" />
+          <FilterWithTransitionHelper v-else-if="showFilter"/>
           <!-- no spaces && not searching -->
           <template v-else>
 
@@ -54,10 +56,10 @@
 
             <template v-if="showSearchIcon()">
               <SidePanelToolbarButton icon="search"
-                             id="toggleSearchBtn"
-                             size="11px"
-                             color="black"
-                             @click="toggleSearch"/>
+                                      id="toggleSearchBtn"
+                                      size="11px"
+                                      color="black"
+                                      @click="toggleSearch"/>
               <span class="q-ma-none q-pa-none q-mx-sm text-grey-5">|</span>
             </template>
 
@@ -90,14 +92,10 @@ import NewTabsetDialog from "components/dialogues/NewTabsetDialog.vue";
 import {useQuasar} from "quasar";
 import {Tabset, TabsetType} from "src/models/Tabset";
 import {useCommandExecutor} from "src/services/CommandExecutor";
-import {ToggleSortingCommand} from "src/domain/tabsets/ToggleSorting";
 import NewSessionDialog from "components/dialogues/NewSessionDialog.vue";
 import _ from "lodash";
 import {StopSessionCommand} from "src/domain/commands/StopSessionCommand";
-import ChromeApi from "src/services/ChromeApi";
 import SearchWithTransitionHelper from "pages/sidepanel/helper/SearchWithTransitionHelper.vue";
-import {useWindowsStore} from "src/stores/windowsStore";
-import ToolbarButton from "components/buttons/SidePanelToolbarButton.vue";
 import SidePanelToolbarTabNavigationHelper from "pages/sidepanel/helper/SidePanelToolbarTabNavigationHelper.vue";
 import FilterWithTransitionHelper from "pages/sidepanel/helper/FilterWithTransitionHelper.vue";
 import SidePanelToolbarButton from "components/buttons/SidePanelToolbarButton.vue";
@@ -110,8 +108,6 @@ const props = defineProps({
   searchHits: {type: Number, required: false}
 })
 
-const emits = defineEmits(['wasClicked'])
-
 const $q = useQuasar()
 const router = useRouter()
 const tabsStore = useTabsStore()
@@ -119,6 +115,7 @@ const permissionsStore = usePermissionsStore()
 
 const searching = ref(false)
 const existingSession = ref(false)
+const showFilter = ref(false)
 
 const toggleSearch = () => {
   searching.value = !searching.value
@@ -135,12 +132,19 @@ watchEffect(() => {
   }
 })
 
-chrome.commands.onCommand.addListener((command) => {
-  if(command === 'search') {
-    console.debug(`got Command: ${command}`);
-    toggleSearch()
-  }
+watchEffect(() => {
+  showFilter.value = useUiStore().sidePanelActiveViewIs(SidePanelView.TABS_LIST) &&
+      useUiStore().toolbarFilter
 })
+
+if ($q.platform.is.chrome && $q.platform.is.bex) {
+  chrome.commands.onCommand.addListener((command) => {
+    if (command === 'search') {
+      console.debug(`got Command: ${command}`);
+      toggleSearch()
+    }
+  })
+}
 
 const toggleSessionState = () => existingSession ? stopSession() : startSession()
 
@@ -205,8 +209,6 @@ const openNewTabsetDialog = () => {
     }
   })
 }
-
-const showFilter = () => useUiStore().sidePanelActiveViewIs(SidePanelView.TABS_LIST) && useUiStore().toolbarFilter
 
 </script>
 

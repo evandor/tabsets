@@ -35,6 +35,8 @@
           <q-select
               dense
               options-dense
+              clearable
+              clear-icon="close"
               label="Open in Window"
               filled
               v-model="windowModel"
@@ -42,12 +44,7 @@
               use-input
               :options="windowOptions"
               input-debounce="0"
-              new-value-mode="add"
               @new-value="createWindowOption"
-              :rules="[
-                       val => Tabset.newTabsetNameIsValid(val) || 'Please do not use special Characters',
-                       val => Tabset.newTabsetNameIsShortEnough(val) || 'the maximum length is 32'
-                       ]"
           />
         </q-card-section>
 
@@ -59,12 +56,11 @@
         </q-card-section>
 
         <q-card-actions align="right">
-          <q-btn label="Cancel" size="sm" color="accent" v-close-popup/>
-          <q-btn type="submit" size="sm" color="warning"
-                 data-testid="newTabsetNameSubmit"
-                 :disable="!isValid"
-                 label="Add"
-                 v-close-popup/>
+          <DialogButton label="Cancel" color="accent" v-close-popup/>
+          <DialogButton label="Add"
+                        data-testid="newTabsetNameSubmit"
+                        type="submit"
+                        :disable="!isValid" v-close-popup/>
         </q-card-actions>
 
       </q-card>
@@ -90,6 +86,7 @@ import {FeatureIdent} from "src/models/AppFeature";
 import {useWindowsStore} from "src/stores/windowsStore";
 import {useUtils} from "src/services/Utils";
 import ColorSelector from "components/dialogues/helper/ColorSelector.vue";
+import DialogButton from "components/buttons/DialogButton.vue";
 
 const {dialogRef, onDialogHide, onDialogCancel} = useDialogPluginComponent()
 const {inBexMode} = useUtils()
@@ -106,7 +103,7 @@ const newTabsetName = ref('')
 const isValid = ref(false)
 const addAllOpenTabs = ref(false)
 const theForm = ref<QForm>(null as unknown as QForm)
-const windowModel = ref<string>('current')
+const windowModel = ref<string>(null)
 const windowOptions = ref<string[]>([])
 const theColor = ref<string | undefined>(undefined)
 
@@ -165,8 +162,9 @@ const createNewTabset = () => {
 }
 
 const createWindowOption = (val: any, done: any) => {
-  const sanitized = val.replace(STRIP_CHARS_IN_USER_INPUT, '')
+  const sanitized = val ? val.replace(STRIP_CHARS_IN_USER_INPUT, '') : 'current'
   windowOptions.value.push(sanitized)
+  console.log("calling done with", sanitized)
   done(sanitized, 'add-unique')
 }
 

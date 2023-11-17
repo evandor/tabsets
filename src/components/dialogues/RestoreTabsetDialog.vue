@@ -55,11 +55,6 @@ const props = defineProps({
   }
 })
 
-const tabsStore = useTabsStore()
-const router = useRouter()
-
-const warning = ref('')
-
 const openTabset = () => useCommandExecutor().execute(new RestoreTabsetCommand(props.tabsetId))
 
 

@@ -51,25 +51,18 @@ import {Tab} from "src/models/Tab";
 import TabsetService from "src/services/TabsetService";
 import {PropType, ref} from "vue";
 import {VueDraggableNext} from 'vue-draggable-next'
-import {useQuasar} from "quasar";
 import _ from "lodash"
 import {useTabsStore} from "src/stores/tabsStore";
 import {DrawerTabs, useUiStore} from "src/stores/uiStore";
-import {useTabsetService} from "src/services/TabsetService2";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {CreateTabFromOpenTabsCommand} from "src/domain/commands/CreateTabFromOpenTabs";
 import TabListElementWidget from "src/components/widgets/TabListElementWidget.vue";
 import {useUtils} from "src/services/Utils"
 import InfoMessageWidget from "components/widgets/InfoMessageWidget.vue";
-import {usePermissionsStore} from "src/stores/permissionsStore";
-import {FeatureIdent} from "src/models/AppFeature";
 
 const {inBexMode} = useUtils()
 
-const $q = useQuasar()
 const tabsStore = useTabsStore()
-
-const {saveCurrentTabset} = useTabsetService()
 
 const props = defineProps({
   tabs: {type: Array as PropType<Tab[]>, required: true},

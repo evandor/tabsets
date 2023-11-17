@@ -144,7 +144,7 @@ watchEffect(() => {
   }
 })
 
-const openInNewTab = (link: string) => NavigationService.openOrCreateTab(link)
+const openInNewTab = (link: string) => NavigationService.openOrCreateTab([link])
 
 const imageEnclosure = (entry: any): string | undefined => {
   if (entry.enclosure && entry.enclosure.type.indexOf('image') >= 0) {

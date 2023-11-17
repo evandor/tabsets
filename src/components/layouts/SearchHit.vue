@@ -3,7 +3,7 @@
   <q-item v-ripple class="q-mb-lg">
 
     <q-item-section v-if="useUiStore().listDetailLevelGreaterEqual(ListDetailLevel.SOME)"
-                    @click.stop="NavigationService.openOrCreateTab(hit.url || '' )"
+                    @click.stop="NavigationService.openOrCreateTab([hit.url || '' ])"
                     class="q-mr-sm text-right" style="justify-content:start;width:25px;max-width:25px">
       <div class="bg-grey-3 q-pa-xs" style="border:0 solid grey;border-radius:3px">
 
@@ -20,7 +20,7 @@
 
     <!-- name, title, description, url && note -->
     <q-item-section class="q-mb-sm cursor-pointer ellipsis"
-                    @click.stop="NavigationService.openOrCreateTab(hit.url || '' )">
+                    @click.stop="NavigationService.openOrCreateTab([hit.url || ''] )">
 
       <!-- name or title -->
 
@@ -37,11 +37,11 @@
 
       <!-- description -->
       <q-item-label class="ellipsis-2-lines text-grey-8" v-if="isTabsetHit(hit)"
-                    @click.stop="NavigationService.openOrCreateTab(hit.url || '' )">
+                    @click.stop="NavigationService.openOrCreateTab([hit.url || '' ])">
         Tabset
       </q-item-label>
       <q-item-label class="ellipsis-2-lines text-grey-8" v-else
-                    @click.stop="NavigationService.openOrCreateTab(hit.url || '' )">
+                    @click.stop="NavigationService.openOrCreateTab([hit.url || ''] )">
         {{ hit.description }}
       </q-item-label>
 
@@ -51,7 +51,7 @@
                     caption class="ellipsis-2-lines text-blue-10">
         <div class="row q-ma-none">
           <div class="col-10 q-pr-lg cursor-pointer"
-               @click.stop="NavigationService.openOrCreateTab(hit.url )">
+               @click.stop="NavigationService.openOrCreateTab([hit.url] )">
             <short-url :url="hit.url" :hostname-only="true"/>
             <!--            <div class="text-caption text-grey-5">-->
             <!--              {{ formatDate(hit.lastActive) }}-->
@@ -143,7 +143,7 @@ const openBookmark = (badge: any) => {
       .then(parentId => {
         if (props.inSidePanel) {
           const url = chrome.runtime.getURL("www/index.html#/mainpanel/bookmarks/" + parentId + "?highlight=" + badge.bookmarkId)
-          NavigationService.openOrCreateTab(url)
+          NavigationService.openOrCreateTab([url])
         } else {
           router.push("/bookmarks/" + parentId + "?highlight=" + badge.bookmarkId)
         }

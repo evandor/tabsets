@@ -60,9 +60,13 @@ const addSuggestion = () => {
 // .then((res: Suggestion) => {
   const res = props.suggestion
   if (props.fromPanel) {
-    console.log("xxx", res, chrome.runtime.getURL(res.url))
+    //console.log("xxx", res, chrome.runtime.getURL(res.url))
     //router.push(chrome.runtime.getURL(res.url))
-    NavigationService.openOrCreateTab(chrome.runtime.getURL("/www/index.html#/mainpanel" + res.url))
+    NavigationService.openOrCreateTab(
+        [chrome.runtime.getURL("/www/index.html#/mainpanel" + res.url)],
+        undefined,
+        [],
+        true)
   } else {
     if (res.url.startsWith("/")) {
       router.push(res.url)

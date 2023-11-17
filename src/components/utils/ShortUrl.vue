@@ -1,5 +1,5 @@
 <template>
-  <span class="text-blue-10">{{ shortenUrl() }}
+  <span class="text-blue-10">{{ props.label ? props.label : shortenUrl() }}
     <q-tooltip v-if="props.hostnameOnly" class="tooltip">{{ url }}</q-tooltip>
   </span>
 </template>
@@ -8,6 +8,7 @@
 
 const props = defineProps({
   url: {type: String, required: true},
+  label: {type: String, required: false},
   hostnameOnly: {type: Boolean, default: false}
 })
 
