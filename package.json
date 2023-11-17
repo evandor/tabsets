@@ -34,7 +34,6 @@
     "@extractus/feed-extractor": "^7.0.1",
     "@mozilla/readability": "^0.4.4",
     "@quasar/extras": "^1.16.6",
-    "@recogito/recogito-js": "^1.8.2",
     "@types/lodash": "^4.14.182",
     "@types/sanitize-html": "^2.9.0",
     "@xenova/transformers": "^2.2.0",

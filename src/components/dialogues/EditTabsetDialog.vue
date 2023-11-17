@@ -130,7 +130,7 @@ const newTabsetNameIsValid = computed(() =>
 const disableSubmit = () => {
   return newTabsetName.value.trim().length === 0 ||
       (newTabsetName.value.trim() === props.tabsetName &&
-          windowModel.value.trim() === props.window &&
+          windowModel.value?.trim() === props.window &&
           theColor.value?.trim() === props.tabsetColor)
       || newTabsetDialogWarning() !== ''
 }
