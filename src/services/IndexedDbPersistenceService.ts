@@ -404,8 +404,11 @@ class IndexedDbPersistenceService implements PersistenceService {
     console.log("getMHtmlInline", url, this.db)
     try {
       const mhtml = await this.db.get('mhtml', url)
-      const mhtmlString = await mhtml.content.text()
-      const html = mhtml2html.convert(mhtmlString)
+      console.log("mhtml", mhtml)
+      const mhtmlString = mhtml.content ? await mhtml.content?.text() : '<h6>sorry, no content found</h6>'
+      console.log("mhtmlString", mhtmlString)
+      const html = mhtmlString ? mhtml2html.convert(mhtmlString) : 'sorry, no content found'
+      console.log("mhtml3", mhtml)
       const innerHtml = html.window.document.documentElement.innerHTML
       return Promise.resolve({
         html: innerHtml,
@@ -644,16 +647,19 @@ class IndexedDbPersistenceService implements PersistenceService {
       })
   }
 
-  getSuggestions(): Promise<Suggestion[]> {
+  async getSuggestions(): Promise<Suggestion[]> {
     return this.db ? this.db.getAll('suggestions') : Promise.resolve([])
   }
 
-  addSuggestion(suggestion: Suggestion): Promise<void> {
-    return this.getSuggestions()
-      .then((suggestions) => {
+  async addSuggestion(suggestion: Suggestion): Promise<void> {
+    //return
+    const suggestions = await this.getSuggestions()
+     // .then((suggestions) => {
+        console.log("%csuggestions from db", "color:red", suggestions)
         const foundExistingInStateNewOrCanceled = _.find(suggestions,
             (s: Suggestion) => s.state === SuggestionState.NEW || s.state === SuggestionState.CANCELED)
         if (foundExistingInStateNewOrCanceled) {
+          console.log("found existing in state new or canceled", foundExistingInStateNewOrCanceled)
           if (foundExistingInStateNewOrCanceled && foundExistingInStateNewOrCanceled.url === suggestion.url) {
             foundExistingInStateNewOrCanceled.state = SuggestionState.APPLIED
             // this.db.put('suggestions', foundExistingInStateNewOrCanceled, foundExistingInStateNewOrCanceled.id)
@@ -662,13 +668,14 @@ class IndexedDbPersistenceService implements PersistenceService {
           return Promise.reject("there's already a suggestion in state NEW, not adding (yet)")
         }
         const found = _.find(suggestions, (s: Suggestion) => s.url === suggestion.url)
+        console.log("found", found)
         if (!found) {
           return this.db.add('suggestions', suggestion, suggestion.id)
             .then(() => Promise.resolve())
         }
-        //console.log("suggestion already exists")
+        console.log("suggestion already exists")
         return Promise.reject("suggestion already exists")
-      })
+    //  })
     // .catch((err) => Promise.reject(err))
   }
 
@@ -682,8 +689,10 @@ class IndexedDbPersistenceService implements PersistenceService {
     const objectStore = this.db.transaction('suggestions', 'readwrite').objectStore('suggestions');
     return objectStore.get(suggestionId)
       .then((res: Suggestion) => {
-        res.state = state
-        objectStore.put(res, suggestionId)
+        if (res) {
+          res.state = state
+          objectStore.put(res, suggestionId)
+        }
         return res
       })
       .catch((err) => Promise.reject("error updating suggestion" + err))
@@ -692,32 +701,6 @@ class IndexedDbPersistenceService implements PersistenceService {
   compactDb(): Promise<any> {
     return Promise.resolve(undefined);
   }
-
-  // ignoreSuggestion(suggestionId: string): Promise<void> {
-  //   console.log("ignoring suggestion", suggestionId)
-  //   const objectStore = this.db.transaction('suggestions', 'readwrite').objectStore('suggestions');
-  //   return objectStore.get(suggestionId)
-  //     .then((res: Suggestion) => {
-  //       res.state = SuggestionState.IGNORED
-  //       objectStore.put(res, suggestionId)
-  //     })
-  // }
-
-  // applySuggestion(suggestionId: string): Promise<Suggestion> {
-  //   console.log("applying suggestion", suggestionId)
-  //   const objectStore = this.db.transaction('suggestions', 'readwrite').objectStore('suggestions');
-  //   return objectStore.get(suggestionId)
-  //     .then((res: Suggestion) => {
-  //       res.state = SuggestionState.APPLIED
-  //       objectStore.put(res, suggestionId)
-  //       return res
-  //     })
-  //     .catch((err) => Promise.reject("error applying suggestion" + err))
-  // }
-  // async loadTabs(tabsetId: string): Promise<Tab[]> {
-  //   console.log("loading tabs...")
-  //   return await this.db.get("tabs", tabsetId)
-  // }
 
   clear(name: string) {
     this.db.clear(name).catch((e) => console.warn(e))

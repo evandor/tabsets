@@ -319,6 +319,7 @@ import {useSettingsStore} from "src/stores/settingsStore"
 import {SelectTabsetCommand} from "src/domain/tabsets/SelectTabset";
 import MHtmlPage from "pages/MHtmlPage.vue";
 import MHtmlViewHelper from "pages/sidepanel/helper/MHtmlViewHelper.vue";
+import {TabAndTabsetId} from "src/models/TabAndTabsetId";
 
 const {inBexMode} = useUtils()
 
@@ -345,9 +346,9 @@ watchEffect(() => {
   const tabId = route.params.tabId as unknown as string
   console.log("tabid", tabId)
   useTabsStore().getTab(tabId)
-      .then((tabObject: object | undefined) => {
+      .then((tabObject: TabAndTabsetId | undefined) => {
         if (tabObject) {
-          tab.value = tabObject['tab' as keyof object] as Tab
+          tab.value = tabObject.tab
           tags.value = tab.value.tags
         }
       })
@@ -391,7 +392,7 @@ watchEffect(() => {
   }
 })
 
-function isOpen(tab: Tab): boolean {
+function isOpen(tab: Tab | undefined): boolean {
   return TabsetService.isOpen(tab?.url || '')
 }
 
@@ -467,7 +468,8 @@ watchEffect(() => {
   }
 })
 
-const saveTab = (tab: Tab) => useCommandExecutor().execute(new SaveTabCommand(useTabsStore().getCurrentTabset, tab))
+const saveTab = (tab: Tab | undefined) =>
+    useCommandExecutor().execute(new SaveTabCommand(useTabsStore().getCurrentTabset, tab))
 
 const updatedTags = (val: string[]) => {
   if (tab.value) {

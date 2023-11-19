@@ -13,6 +13,7 @@ import {STRIP_CHARS_IN_USER_INPUT} from "boot/constants";
 import {Space} from "src/models/Space";
 import {useTabsetService} from "src/services/TabsetService2";
 import {useWindowsStore} from "src/stores/windowsStore";
+import {TabAndTabsetId} from "src/models/TabAndTabsetId";
 
 async function queryTabs(): Promise<chrome.tabs.Tab[]> {
     // @ts-ignore
@@ -182,17 +183,15 @@ export const useTabsStore = defineStore('tabs', {
             }
         },
         getTab: (state) => {
-            return async (tabId: string): Promise<object | undefined> => {
+            return async (tabId: string): Promise<TabAndTabsetId | undefined> => {
+                console.log("call to getTab1", tabId)
 
                 for (const [key, value] of state.tabsets) {
                     const found: Tab | undefined = _.find(value.tabs, t => {
                         return t.id === tabId
                     })
                     if (found) {
-                        return Promise.resolve({
-                            tab: found,
-                            tabsetId: value.id
-                        })
+                        return Promise.resolve(new TabAndTabsetId(found, value.id))
                     }
                 }
                 return Promise.resolve(undefined)

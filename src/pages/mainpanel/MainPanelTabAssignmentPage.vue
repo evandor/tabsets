@@ -85,6 +85,7 @@ import {Notify, QForm} from "quasar";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {TabAssignmentCommand} from "src/domain/tabs/TabAssignmentCommand";
 import JsUtils from "src/utils/JsUtils";
+import {TabAndTabsetId} from "src/models/TabAndTabsetId";
 
 const route = useRoute()
 
@@ -107,10 +108,10 @@ onMounted(() => {
 watchEffect(() => {
   tabId.value = route.params.id as string
   if (tabId.value) {
-    useTabsStore().getTab(tabId.value).then(t => {
+    useTabsStore().getTab(tabId.value).then((t: TabAndTabsetId | undefined) => {
       if (t) {
-        tab.value = t['tab' as keyof object] as Tab
-        tabsetId.value = t['tabsetId' as keyof object]
+        tab.value = t.tab
+        tabsetId.value = t.tabsetId
         matcher.value = tab.value.matcher ? tab.value.matcher.split('|')[1] : tab.value.url
         // let queryOptions = {active: true, lastFocusedWindow: true};
         // chrome.tabs.query(queryOptions, (result: chrome.tabs.Tab[]) => {

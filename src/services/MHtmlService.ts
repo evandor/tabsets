@@ -37,11 +37,11 @@ class MHtmlService {
     return db.getMHtmlInline(encodedUrl)
   }
 
-  deleteMHtml(tabId: string, mhtmlId: string) {
-    const tab = useTabsStore().getTab(tabId)
-    if (tab) {
+  async deleteMHtml(tabId: string, mhtmlId: string) {
+    const tabAndTabsetId = await useTabsStore().getTab(tabId)
+    if (tabAndTabsetId) {
       // @ts-ignore
-      tab.mhtmls = _.filter(tab.mhtmls, (e:string) => e !== mhtmlId)
+      tabAndTabsetId.tab.mhtmls = _.filter(tabAndTabsetId.tab.mhtmls, (e:string) => e !== mhtmlId)
       // assuming tab is in current tabset (TODO)
       useTabsetService().saveCurrentTabset()
     }

@@ -44,6 +44,7 @@ import PanelTabListElementWidget from "components/widgets/PanelTabListElementWid
 import IDrawUtils from "src/utils/IDrawUtils";
 import {uid} from "quasar";
 import _ from "lodash"
+import {TabAndTabsetId} from "src/models/TabAndTabsetId";
 
 const route = useRoute()
 
@@ -133,7 +134,7 @@ onMounted(() => {
     if (e.element.name.startsWith("tab-")) {
       const tabId = e.element.name.replace("tab-", "")
       useTabsStore().getTab(tabId)
-          .then((tabData: any) => {
+          .then((tabData: TabAndTabsetId | undefined) => {
             if (tabData) {
               selectedTab.value = tabData.tab
               selectedTabsetId.value = tabData.tabsetId

@@ -61,6 +61,7 @@ import EditorJsConfig from "src/utils/EditorJsConfig";
 
 import './editorjs/linkTool.css';
 import {v5 as uuidv5} from "uuid";
+import {TabAndTabsetId} from "src/models/TabAndTabsetId";
 
 const {formatDate, sendMsg, sanitize} = useUtils()
 
@@ -109,14 +110,14 @@ watchEffect(async () => {
 
   if (noteId.value) {
     useTabsStore().getTab(noteId.value)
-        .then((tabObject: object | undefined) => {
+        .then((tabObject: TabAndTabsetId | undefined) => {
 
           if (tabObject) {
             //console.log("got tabobject1", tabObject)
-            tab.value = tabObject['tab' as keyof object] as unknown as Tab
-            tabsetId.value = tabObject['tabsetId' as keyof object]
+            tab.value = tabObject.tab
+            tabsetId.value = tabObject.tabsetId
             tabset.value = useTabsetService().getTabset(tabsetId.value) as Tabset | undefined
-            title.value = tabObject['tab' as keyof object]['title'] || 'unknown'
+            title.value = tabObject.tab?.title || 'unknown'
 
             if (tab.value.longDescription) {
               const json = JSON.stringify(tab.value.longDescription)

@@ -4,8 +4,6 @@ import _ from "lodash";
 import {Tab} from "src/models/Tab";
 import {uid} from "quasar";
 import throttledQueue from 'throttled-queue';
-// @ts-ignore
-import {convert} from "html-to-text"
 import {useWindowsStore} from "src/stores/windowsStore";
 import {useTabsetService} from "src/services/TabsetService2";
 import {useSettingsStore} from "src/stores/settingsStore";
@@ -17,8 +15,8 @@ import {FeatureIdent} from "src/models/AppFeature";
 import {Extractor, Extractors, ExtractorType} from "src/config/Extractors";
 import {useUtils} from "src/services/Utils";
 import {useGroupsStore} from "stores/groupsStore";
-import {useUiStore} from "stores/uiStore";
 import NavigationService from "src/services/NavigationService";
+import ContentUtils from "src/utils/ContentUtils";
 
 const {
   saveCurrentTabset,
@@ -385,7 +383,9 @@ class ChromeListeners {
     if (scripts.length > 0 && tab.id !== null) { // && !this.injectedScripts.get(.chromeTabId)) {
 
       chrome.tabs.get(tab.id, (chromeTab: chrome.tabs.Tab) => {
-        //console.log("got tab", tab)
+        if (chrome.runtime.lastError) {
+          console.warn("got runtime error:" + chrome.runtime.lastError);
+        }
         if (!tab.url?.startsWith("chrome")) {
           scripts.forEach((script: string) => {
             console.debug("executing scripts", tab.id, script)
@@ -432,6 +432,9 @@ class ChromeListeners {
     await setCurrentTab()
 
     chrome.tabs.get(info.tabId, tab => {
+      if (chrome.runtime.lastError) {
+        console.warn("got runtime error:" + chrome.runtime.lastError);
+      }
       const url = tab.url
       _.forEach([...tabsStore.tabsets.keys()], key => {
         const ts = tabsStore.tabsets.get(key)
@@ -506,7 +509,7 @@ class ChromeListeners {
 
   private handleHtml2Text(request: any, sender: chrome.runtime.MessageSender, sendResponse: any) {
 
-    console.debug("handleHtml2Text")
+    console.debug("handleHtml2Text", request, sender)
 
     if (sender && sender.url && request.html) {
       try {
@@ -550,28 +553,10 @@ class ChromeListeners {
       }
     }
 
-    const text = convert(request.html, {
-      wordwrap: 130
-    });
-    const text2 = text.replace(/\[[^\]].*/g, '').replaceAll('*', '')
-    const tokens = text2
-      .replaceAll("\\n", " ")
-      .replaceAll("[0-9a-fA-F]{8}\\b-[0-9a-fA-F]{4}\\b-[0-9a-fA-F]{4}\\b-[0-9a-fA-F]{4}\\b-[0-9a-fA-F]{12}", " ")
-      .replaceAll("[\u00AD\u002D\u2011]", ' ')
-      .replaceAll("\n", " ")
-      .replace(/[`~!@#$%^&*()_|+\-=?;:'",.<>»«{}\[\]\\\/]/gi, ' ')
-      .split(" ")
-    let res = ""
-    const tokenSet = new Set()
-    tokens.forEach((t: string) => {
-      if (t.length >= 4 && t.length <= 24) {
-        res += t + " "
-        tokenSet.add(t.toLowerCase())
-      }
-    })
     if (sender.tab) {
+      const tokens = ContentUtils.html2tokens(request.html)
       const tab = new Tab(uid(), sender.tab)
-      saveText(tab, [...tokenSet].join(" "), request.metas)
+      saveText(tab, [...tokens].join(" "), request.metas)
     }
     sendResponse({html2text: 'done'});
   }

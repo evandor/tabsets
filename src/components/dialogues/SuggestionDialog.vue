@@ -63,7 +63,7 @@ const addSuggestion = () => {
     //console.log("xxx", res, chrome.runtime.getURL(res.url))
     //router.push(chrome.runtime.getURL(res.url))
     NavigationService.openOrCreateTab(
-        [chrome.runtime.getURL("/www/index.html#/mainpanel" + res.url)],
+        [chrome.runtime.getURL("/www/index.html#/mainpanel/suggestions/" + props.suggestion.id)],
         undefined,
         [],
         true)

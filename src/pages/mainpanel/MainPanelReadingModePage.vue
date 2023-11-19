@@ -97,8 +97,8 @@ onMounted(() => {
 
 watchEffect(async () => {
   const res = await useTabsStore().getTab(tabId)
-  if (res && res['tab' as keyof object]) {
-    tab.value = res['tab' as keyof object] as Tab
+  if (res && res.tab) {
+    tab.value = res.tab
     const response = await fetch(tab.value.url || '')
     const s = await response.text()
     const parser = new DOMParser();

@@ -61,6 +61,10 @@
                   name="published_with_changes" class="q-ml-sm" color="accent">
             <q-tooltip class="tooltip-small">This tab is created by substituting parts of its URL</q-tooltip>
           </q-icon>
+          <q-icon v-if="(props.tab as Tab).monitor"
+                  name="o_change_circle" class="q-ml-sm" color="accent">
+            <q-tooltip class="tooltip-small">This tab is being monitored for changes</q-tooltip>
+          </q-icon>
         </div>
 
       </div>
@@ -224,6 +228,7 @@ import {useGroupsStore} from "stores/groupsStore";
 import {DeleteChromeGroupCommand} from "src/domain/groups/DeleteChromeGroupCommand";
 import {PlaceholdersType} from "src/models/Placeholders";
 import {uid} from "quasar";
+import {TabAndTabsetId} from "src/models/TabAndTabsetId";
 
 const {inBexMode} = useUtils()
 
@@ -376,10 +381,10 @@ const unsetGroup = () => {
   if (props.tab) {
     props.tab.groupName = undefined
     useTabsStore().getTab(props.tab.id)
-        .then((res: any) => {
+        .then((res: TabAndTabsetId | undefined) => {
           if (res) {
-            const tab = res['tab' as keyof object] as Tab
-            const tabsetId = res['tabsetId' as keyof object]
+            const tab = res.tab
+            const tabsetId = res.tabsetId
             tab.groupName = undefined
             tab.groupId = -1
             const ts = useTabsetService().getTabset(tabsetId)
@@ -405,10 +410,10 @@ const switchGroup = (group: chrome.tabGroups.TabGroup): void => {
   if (props.tab) {
     props.tab.groupName = group.title
     useTabsStore().getTab(props.tab.id)
-        .then((res: any) => {
+        .then((res: TabAndTabsetId | undefined) => {
           if (res) {
-            const tab = res['tab' as keyof object] as Tab
-            const tabsetId = res['tabsetId' as keyof object]
+            const tab = res.tab
+            const tabsetId = res.tabsetId
             tab.groupName = group.title
             tab.groupId = group.id
             const ts = useTabsetService().getTabset(tabsetId)

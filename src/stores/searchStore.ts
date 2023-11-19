@@ -16,7 +16,7 @@ function dummyPromise(timeout: number, tabToCloseId: number | undefined = undefi
   return new Promise((resolve, reject) => {
     setTimeout(() => {
       if (tabToCloseId) {
-        //chrome.tabs.remove(tabToCloseId)
+        chrome.tabs.remove(tabToCloseId)
       }
       resolve("Success!");
     }, timeout);
@@ -135,6 +135,7 @@ export const useSearchStore = defineStore('search', () => {
   }
 
   async function reindexTab(tab: Tab): Promise<number> {
+    console.log("reindexing tab", tab)
     const window = await chrome.windows.create({focused: true, width: 1024, height: 800})
     // @ts-ignore
     if (window) {
@@ -157,30 +158,32 @@ export const useSearchStore = defineStore('search', () => {
   }
 
   function reindex(values: Tabset[]) {
-    const throttleOnePerXSeconds = throttledQueue(1, 3000, true)
-    chrome.windows.create({focused: true, width: 1024, height: 800}, (window: any) => {
-      useWindowsStore().screenshotWindow = window.id
-      let tabToClose: number | undefined = undefined
-
-      const res: Promise<any>[] = values.flatMap((ts: Tabset) => {
-        return ts.tabs.map((t) => {
-          return throttleOnePerXSeconds(async () => {
-            chrome.tabs.create({windowId: window.id, url: t.url}, (tab: chrome.tabs.Tab) => {
-              tabToClose = tab.id
-              dummyPromise(3000, tab.id)
-            })
-            return dummyPromise(3000)
-          })
-        })
-      })
-
-      Promise.all(res)
-        .then(() => {
-          chrome.windows.remove(window.id)
-          useWindowsStore().screenshotWindow = null as unknown as number
-        })
-
-    })
+    const urls = values.flatMap((ts: Tabset)=>_.map(ts.tabs, t=>t.url || ''))
+    useWindowsStore().openThrottledInWindow(urls)
+    // const throttleOnePerXSeconds = throttledQueue(1, 3000, true)
+    // chrome.windows.create({focused: true, width: 1024, height: 800}, (window: any) => {
+    //   useWindowsStore().screenshotWindow = window.id
+    //   let tabToClose: number | undefined = undefined
+    //
+    //   const res: Promise<any>[] = values.flatMap((ts: Tabset) => {
+    //     return ts.tabs.map((t) => {
+    //       return throttleOnePerXSeconds(async () => {
+    //         chrome.tabs.create({windowId: window.id, url: t.url}, (tab: chrome.tabs.Tab) => {
+    //           tabToClose = tab.id
+    //           dummyPromise(3000, tab.id)
+    //         })
+    //         return dummyPromise(3000)
+    //       })
+    //     })
+    //   })
+    //
+    //   Promise.all(res)
+    //     .then(() => {
+    //       chrome.windows.remove(window.id)
+    //       useWindowsStore().screenshotWindow = null as unknown as number
+    //     })
+    //
+    // })
   }
 
   async function populateFromTabsets() {

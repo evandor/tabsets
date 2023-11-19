@@ -22,8 +22,10 @@ import {usePermissionsStore} from "stores/permissionsStore";
 import {FeatureIdent} from "src/models/AppFeature";
 import {RequestInfo} from "src/models/RequestInfo";
 import {DynamicTabSourceType} from "src/models/DynamicTabSource";
-import {PlaceholdersType} from "src/models/Placeholders";
 import {useUiStore} from "stores/uiStore";
+import {useSuggestionsStore} from "stores/suggestionsStore";
+import {Suggestion, SuggestionType} from "src/models/Suggestion";
+import {MonitoringType} from "src/models/Monitor";
 
 let db: PersistenceService = null as unknown as PersistenceService
 
@@ -317,6 +319,7 @@ export function useTabsetService() {
         if (!tab || !tab.url) {
             return Promise.resolve('done')
         }
+        console.log("%c === saving text", "color:red", tab)
         const title = tab.title || ''
         const tabsetIds: string[] = tabsetsFor(tab.url)
         //console.log("checking candidates", useTabsStore().tabsets.values())
@@ -341,6 +344,7 @@ export function useTabsetService() {
                 _.forEach(tabset.tabs, (t: Tab) => {
                     //console.log("comparing", t.url, tab.url)
                     if (t.url === tab.url) {
+                        console.log("checking tab", tab.id)
                         //console.log("updating meta data in tab", tab.id, metas)
                         if (metas['description' as keyof object]) {
                             t.description = metas['description' as keyof object]
@@ -379,18 +383,20 @@ export function useTabsetService() {
                             t.image = image
                         }
 
-                        const oldContent = t.contentHash
+                        const oldContentHash = t.contentHash
                         if (text && text.length > 0) {
                             t.contentHash = uuidv5(text, 'da42d8e8-2afd-446f-b72e-8b437aa03e46')
                         } else {
                             t.contentHash = ""
                         }
-                        console.log("%ccontenthash set to","color:blue", t.contentHash)
-                        if (oldContent && oldContent !== '' && t.contentHash !== '' && t.url) {
-                            // TODO not ready yet (like this)
-                            // useSuggestionsStore().addSuggestion(
-                            //   new Suggestion(uid(), 'Content Change Detected', "Info: Something might have changed in " + t.url + ".",
-                            //     t.url, SuggestionType.CONTENT_CHANGE))
+                        console.log("%ccontenthash set to", "color:blue", t.contentHash, oldContentHash)
+                        if (usePermissionsStore().hasFeature(FeatureIdent.MONITORING) &&
+                            t.monitor && t.monitor.type === MonitoringType.CONTENT_HASH) {
+                            if (oldContentHash && oldContentHash !== '' && t.contentHash !== '' && t.url) {
+                                useSuggestionsStore().addSuggestion(
+                                    new Suggestion(uid(), 'Content Change Detected', "Info: Something might have changed in " + t.url + ".",
+                                        t.url, SuggestionType.CONTENT_CHANGE))
+                            }
                         }
 
                         savePromises.push(saveTabset(tabset)
@@ -667,7 +673,6 @@ export function useTabsetService() {
                 t.description?.indexOf(filter) >= 0
         })
     }
-
 
 
     return {

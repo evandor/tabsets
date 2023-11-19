@@ -374,6 +374,11 @@ text.set(FeatureIdent.TAB_GROUPS.toLowerCase(), {
   description: 'Utilize Chrome Tab Groups',
   permissions: ['tabGroups']
 })
+text.set(FeatureIdent.MONITORING.toLowerCase(), {
+  name: 'Monitoring Website Changes',
+  description: 'Check periodically for changes of a website',
+  permissions: []
+})
 
 
 watchEffect(() => {

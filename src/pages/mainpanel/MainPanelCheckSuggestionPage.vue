@@ -76,6 +76,12 @@
       </div>
     </div>
 
+    <template v-if="useSettingsStore().isEnabled('dev')">
+      <div class="row" v-for="s in useSuggestionsStore().getSuggestions()">
+        <pre>{{ s }}</pre>
+      </div>
+    </template>
+
 
   </div>
 
@@ -97,6 +103,7 @@ import {useSuggestionsStore} from "stores/suggestionsStore";
 import {useBookmarksStore} from "stores/bookmarksStore";
 import {ApplySuggestionCommand} from "src/domain/suggestions/ApplySuggestionCommand";
 import {IgnoreSuggestionCommand} from "src/domain/suggestions/IgnoreSuggestionCommand";
+import {useSettingsStore} from "stores/settingsStore";
 
 const route = useRoute()
 

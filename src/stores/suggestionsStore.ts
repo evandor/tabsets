@@ -32,7 +32,10 @@ export const useSuggestionsStore = defineStore('suggestions', () => {
         if (s) {
             console.log("about to add suggestion", s)
             storage.addSuggestion(s)
-                .then(() => suggestions.value.push(s))
+                .then(() => {
+                    console.log("%cpushing", "color:red", s)
+                    suggestions.value.push(s)
+                })
                 .catch((err) => {
                     console.log("rejected adding due to ", err)
                 })
