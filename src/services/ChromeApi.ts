@@ -14,7 +14,7 @@ import {FeatureIdent} from "src/models/AppFeature";
 import {RequestInfo} from "src/models/RequestInfo";
 import {useWindowsStore} from "stores/windowsStore";
 import {MonitoringType} from "src/models/Monitor";
-import {useRoute} from "vue-router";
+import {Router} from "vue-router";
 
 function runHousekeeping() {
     //housekeeping()
@@ -53,7 +53,7 @@ function runHousekeeping() {
 }
 
 
-async function checkMonitors() {
+async function checkMonitors(router: Router) {
     const monitoredContentHash: string[] = []
     for (const ts of useTabsStore().tabsets.values()) {
         for (const tab of ts.tabs) {
@@ -64,10 +64,12 @@ async function checkMonitors() {
     }
 
     if (monitoredContentHash.length > 0) {
-        //console.log("%croute", "color:orange", useRoute().name)
-        useWindowsStore().openThrottledInWindow(monitoredContentHash)//, {focused: false, state: "minimized"})
-        //useWindowsStore().openThrottledInWindow(monitoredContentHash, {focused: false, state: "minimized"})
-        //useWindowsStore().openThrottledInWindow(monitoredContentHash, {focused: true, height: 40, width:800})
+        console.log("%croute", "color:orange", router, router.currentRoute.value.path)
+        if (router.currentRoute.value.path.startsWith("/sidepanel")) {
+            useWindowsStore().openThrottledInWindow(monitoredContentHash) // {focused: false, state: "minimized"})
+        } else {
+            console.debug("not running openThrottledInWindow due to path not starting with /sidepanel", router.currentRoute.value.path)
+        }
     }
 }
 
@@ -84,7 +86,7 @@ class ChromeApi {
         }
     }
 
-    init() {
+    init(router: Router) {
 
         if (process.env.MODE !== 'bex') {
             return
@@ -101,7 +103,7 @@ class ChromeApi {
                     runHousekeeping()
                 } else if (alarm.name === "monitoring") {
                     if (usePermissionsStore().hasFeature(FeatureIdent.MONITORING)) {
-                        checkMonitors()
+                        checkMonitors(router)
                     }
                 } else {
                     console.log("unknown alarm", alarm)

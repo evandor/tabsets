@@ -655,26 +655,26 @@ class IndexedDbPersistenceService implements PersistenceService {
     //return
     const suggestions = await this.getSuggestions()
      // .then((suggestions) => {
-        console.log("%csuggestions from db", "color:red", suggestions)
-        const foundExistingInStateNewOrCanceled = _.find(suggestions,
-            (s: Suggestion) => s.state === SuggestionState.NEW || s.state === SuggestionState.CANCELED)
-        if (foundExistingInStateNewOrCanceled) {
-          console.log("found existing in state new or canceled", foundExistingInStateNewOrCanceled)
-          if (foundExistingInStateNewOrCanceled && foundExistingInStateNewOrCanceled.url === suggestion.url) {
-            foundExistingInStateNewOrCanceled.state = SuggestionState.APPLIED
-            // this.db.put('suggestions', foundExistingInStateNewOrCanceled, foundExistingInStateNewOrCanceled.id)
-            return Promise.reject("TODO: not: updated existing suggestion to 'applied'")
-          }
-          return Promise.reject("there's already a suggestion in state NEW, not adding (yet)")
+      console.log("%csuggestions from db", "color:red", suggestions)
+      const foundExistingInStateNewOrCanceled = _.find(suggestions,
+          (s: Suggestion) => s.state === SuggestionState.NEW || s.state === SuggestionState.CANCELED)
+      if (foundExistingInStateNewOrCanceled) {
+        console.log("found existing in state new or canceled", foundExistingInStateNewOrCanceled)
+        if (foundExistingInStateNewOrCanceled && foundExistingInStateNewOrCanceled.url === suggestion.url) {
+          // foundExistingInStateNewOrCanceled.state = SuggestionState.APPLIED
+          // this.db.put('suggestions', foundExistingInStateNewOrCanceled, foundExistingInStateNewOrCanceled.id)
+          return Promise.reject("TODO: not: updated existing suggestion to 'applied'")
         }
-        const found = _.find(suggestions, (s: Suggestion) => s.url === suggestion.url)
-        console.log("found", found)
-        if (!found) {
-          return this.db.add('suggestions', suggestion, suggestion.id)
-            .then(() => Promise.resolve())
-        }
-        console.log("suggestion already exists")
-        return Promise.reject("suggestion already exists")
+        return Promise.reject("there's already a suggestion in state NEW, not adding (yet)")
+      }
+      const found = _.find(suggestions, (s: Suggestion) => s.url === suggestion.url)
+      console.log("found", found)
+      if (!found) {
+        return this.db.add('suggestions', suggestion, suggestion.id)
+          .then(() => Promise.resolve())
+      }
+      console.log("suggestion already exists")
+      return Promise.reject("suggestion already exists")
     //  })
     // .catch((err) => Promise.reject(err))
   }

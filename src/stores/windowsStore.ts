@@ -7,6 +7,7 @@ import _ from "lodash"
 import throttledQueue from "throttled-queue";
 import {Tabset} from "src/models/Tabset";
 import {useRoute, useRouter} from "vue-router";
+import {useQuasar} from "quasar";
 
 /**
  * a pinia store for "Windows".
@@ -223,7 +224,7 @@ export const useWindowsStore = defineStore('windows', () => {
     }
 
     function openThrottledInWindow(urls: string[], windowCreateData: object = {focused: true, width: 1024, height: 800}) {
-        console.log("%copenThrottledInWindow...", "color:green", useRouter())
+        console.log("%copenThrottledInWindow...", "color:green")
         const throttleOnePerXSeconds = throttledQueue(1, 3000, true)
         chrome.windows.create(windowCreateData, (window: any) => {
 
@@ -251,7 +252,7 @@ export const useWindowsStore = defineStore('windows', () => {
                     setTimeout(() => {
                         chrome.windows.remove(window.id)
                         useWindowsStore().screenshotWindow = null as unknown as number
-                    }, 20000)
+                    }, 2000)
                 })
         })
     }

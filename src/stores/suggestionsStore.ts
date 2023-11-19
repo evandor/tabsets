@@ -28,17 +28,17 @@ export const useSuggestionsStore = defineStore('suggestions', () => {
         }
     }
 
-    function addSuggestion(s: Suggestion | undefined) {
-        if (s) {
-            console.log("about to add suggestion", s)
-            storage.addSuggestion(s)
-                .then(() => {
-                    console.log("%cpushing", "color:red", s)
-                    suggestions.value.push(s)
-                })
-                .catch((err) => {
-                    console.log("rejected adding due to ", err)
-                })
+    async function addSuggestion(s: Suggestion | undefined) {
+        if (!s) {
+            return
+        }
+        console.log("about to add suggestion", s)
+        try {
+            await storage.addSuggestion(s)
+            console.log("%cpushing", "color:red", s)
+            suggestions.value.push(s)
+        } catch(err) {
+            console.log("rejected adding due to ", err)
         }
     }
 
@@ -74,6 +74,7 @@ export const useSuggestionsStore = defineStore('suggestions', () => {
     }
 
     function applySuggestion(id: string): Promise<Suggestion> {
+        console.log("$applied suggestion", "background-color:grey", id)
         return storage.setSuggestionState(id, SuggestionState.APPLIED)
             .then((res: any) => {
                 loadSuggestionsFromDb();

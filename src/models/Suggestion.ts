@@ -28,6 +28,7 @@ export class Suggestion {
   public state: SuggestionState;
   public img: string | undefined = undefined;
   public data: object = {}
+  public created : number | undefined = undefined
 
   static staticSuggestions: Suggestion[] = [
     new Suggestion(StaticSuggestionIdent.TRY_TAB_DETAILS_FEATURE.toString(),
@@ -58,6 +59,7 @@ export class Suggestion {
 
   constructor(public id: string, public title: string, public msg: string, public url: string, public type: SuggestionType = SuggestionType.RSS) {
     this.state = SuggestionState.NEW
+    this.created = new Date().getTime()
   }
 
   setImage(img: string): Suggestion {

@@ -104,6 +104,7 @@ import {useBookmarksStore} from "stores/bookmarksStore";
 import {ApplySuggestionCommand} from "src/domain/suggestions/ApplySuggestionCommand";
 import {IgnoreSuggestionCommand} from "src/domain/suggestions/IgnoreSuggestionCommand";
 import {useSettingsStore} from "stores/settingsStore";
+import {useWindowsStore} from "stores/windowsStore";
 
 const route = useRoute()
 
