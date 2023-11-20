@@ -68,7 +68,7 @@
     "@editorjs/checklist": "^1.5.0",
     "@editorjs/image": "^2.9.0",
     "@editorjs/link": "^2.5.0",
-    "@editorjs/quote": "^2.5.0",
+    "@editorjs/quote": "^2.6.0",
     "@editorjs/raw": "^2.4.0",
     "@editorjs/table": "^2.2.2",
     "@intlify/vite-plugin-vue-i18n": "^7.0.0",
