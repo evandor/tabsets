@@ -26,6 +26,7 @@ import {useUiStore} from "stores/uiStore";
 import {useSuggestionsStore} from "stores/suggestionsStore";
 import {Suggestion, SuggestionType} from "src/models/Suggestion";
 import {MonitoringType} from "src/models/Monitor";
+import {useWindowsStore} from "stores/windowsStore";
 
 let db: PersistenceService = null as unknown as PersistenceService
 
@@ -393,9 +394,29 @@ export function useTabsetService() {
                         if (usePermissionsStore().hasFeature(FeatureIdent.MONITORING) &&
                             t.monitor && t.monitor.type === MonitoringType.CONTENT_HASH) {
                             if (oldContentHash && oldContentHash !== '' && t.contentHash !== '' && t.url) {
+                                const id = btoa(t.url)
                                 useSuggestionsStore().addSuggestion(
-                                    new Suggestion(uid(), 'Content Change Detected', "Info: Something might have changed in " + t.url + ".",
+                                    new Suggestion(id, 'Content Change Detected', "Info: Something might have changed in " + t.url + ".",
                                         t.url, SuggestionType.CONTENT_CHANGE))
+                                    .then(() => {
+                                        if (usePermissionsStore().hasFeature(FeatureIdent.NOTIFICATIONS)) {
+                                            chrome.notifications.create(id,{
+                                                title: "Tabset Extension Message",
+                                                type: "basic",
+                                                iconUrl: chrome.runtime.getURL("www/favicon.ico"),
+                                                message: "Info: Something might have changed in " + t.url + ".",
+                                                buttons: [
+                                                    {title: 'open Notification'}
+                                                ]
+                                            }, (callback: any) => {
+                                                //console.log("got callback", callback)
+                                            })
+                                            useSuggestionsStore().suggestionAsNotification(id)
+                                        }
+                                    })
+                                    .catch((err) => {
+                                        console.log("Xgot error", err)
+                                    })
                             }
                         }
 

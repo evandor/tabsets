@@ -1,5 +1,5 @@
 import {defineStore} from 'pinia';
-import {computed, ref} from "vue";
+import {computed, ref, unref} from "vue";
 import {StaticSuggestionIdent, Suggestion, SuggestionState} from "src/models/Suggestion";
 import _ from "lodash";
 import PersistenceService from "src/services/PersistenceService";
@@ -29,16 +29,18 @@ export const useSuggestionsStore = defineStore('suggestions', () => {
     }
 
     async function addSuggestion(s: Suggestion | undefined) {
-        if (!s) {
-            return
-        }
         console.log("about to add suggestion", s)
+        if (!s) {
+            return Promise.reject("suggestion undefined")
+        }
         try {
             await storage.addSuggestion(s)
             console.log("%cpushing", "color:red", s)
             suggestions.value.push(s)
-        } catch(err) {
+            return Promise.resolve(true)
+        } catch (err) {
             console.log("rejected adding due to ", err)
+            return Promise.reject(err)
         }
     }
 
@@ -73,6 +75,11 @@ export const useSuggestionsStore = defineStore('suggestions', () => {
             .then((res: any) => loadSuggestionsFromDb())
     }
 
+    function suggestionAsNotification(id: string): Promise<void> {
+        return storage.setSuggestionState(id, SuggestionState.NOTIFICATION)
+            .then((res: any) => loadSuggestionsFromDb())
+    }
+
     function applySuggestion(id: string): Promise<Suggestion> {
         console.log("$applied suggestion", "background-color:grey", id)
         return storage.setSuggestionState(id, SuggestionState.APPLIED)
@@ -84,8 +91,24 @@ export const useSuggestionsStore = defineStore('suggestions', () => {
     }
 
     const getSuggestions = computed(() => {
-        return () => _.filter(suggestions.value,
-            (s: Suggestion) => s.state === SuggestionState.NEW || s.state === SuggestionState.CANCELED)
+        return () => {
+            const sugs: Suggestion[] = suggestions.value
+            const r = _.groupBy(sugs, s => (s: Suggestion) => {
+                return s.type + "|" + s.url
+            })
+            const result: Suggestion[] = []
+            for (const v of Object.values(r)) {
+                for (let i = v.length; i >= 0; i--) {
+                    if (i == 0) {
+                        result.push(v[0])
+                    } else {
+                        // remove duplicates
+                        //removeSuggestionById(v[i].id)
+                    }
+                }
+            }
+            return result
+        }
     })
 
     const getSuggestion = computed(() => {
@@ -102,6 +125,7 @@ export const useSuggestionsStore = defineStore('suggestions', () => {
         ignoreSuggestion,
         cancelSuggestion,
         removeSuggestion,
+        suggestionAsNotification,
         applySuggestion,
         inactivateSuggestion
     }

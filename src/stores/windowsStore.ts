@@ -228,7 +228,7 @@ export const useWindowsStore = defineStore('windows', () => {
         const throttleOnePerXSeconds = throttledQueue(1, 3000, true)
         chrome.windows.create(windowCreateData, (window: any) => {
 
-            console.log("%cgot window", "color:green", window.id)
+            //console.log("%cgot window", "color:green", window.id)
 
             useWindowsStore().screenshotWindow = window.id
             let tabToClose: number | undefined = undefined
@@ -237,7 +237,7 @@ export const useWindowsStore = defineStore('windows', () => {
             for (const u of urls) {
                 const p = throttleOnePerXSeconds(async () => {
                     const createProperties = {windowId: window.id, url: u}
-                    console.log("createProperties", createProperties)
+                    //console.log("createProperties", createProperties)
                     chrome.tabs.create(createProperties, (tab: chrome.tabs.Tab) => {
                         tabToClose = tab.id
                         dummyPromise(3000, tab.id)

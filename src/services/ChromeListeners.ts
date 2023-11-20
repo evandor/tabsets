@@ -192,6 +192,19 @@ class ChromeListeners {
         }
       });
 
+      if (usePermissionsStore().hasFeature(FeatureIdent.NOTIFICATIONS)) {
+        chrome.notifications.onButtonClicked.addListener(
+            (notificationId, buttonIndex) => {
+              console.log("notification button clicked", notificationId, buttonIndex)
+              const notification = useSuggestionsStore().getSuggestion(notificationId)
+              console.log("found notificastion", notification)
+              if (notification) {
+                const url = chrome.runtime.getURL('www/index.html') + "#/mainpanel/suggestions/" + notificationId
+                NavigationService.openOrCreateTab([url])
+               // useSuggestionsStore().removeSuggestion(notificationId)
+              }
+            })
+      }
     }
 
   }
