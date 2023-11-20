@@ -66,7 +66,7 @@
     "@babel/preset-env": "^7.19.0",
     "@calumk/editorjs-codeflask": "^1.0.9",
     "@editorjs/checklist": "^1.5.0",
-    "@editorjs/image": "^2.8.1",
+    "@editorjs/image": "^2.9.0",
     "@editorjs/link": "^2.5.0",
     "@editorjs/quote": "^2.5.0",
     "@editorjs/raw": "^2.4.0",

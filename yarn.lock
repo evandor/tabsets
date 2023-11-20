@@ -1111,10 +1111,10 @@
   dependencies:
     "@codexteam/icons" "^0.0.5"
 
-"@editorjs/image@^2.8.1":
-  version "2.8.2"
-  resolved "https://registry.yarnpkg.com/@editorjs/image/-/image-2.8.2.tgz#015781a8c33396b0d48f237d20417425d4e6f837"
-  integrity sha512-zWDBEzCuTbdXClgq4ilHDbaKNTl+6hxuuU0KpB4AxizqaTkaDOLsJha+vt7kSTKfpTtVDw1OQMnxI7j4LtAOJw==
+"@editorjs/image@^2.9.0":
+  version "2.9.0"
+  resolved "https://registry.yarnpkg.com/@editorjs/image/-/image-2.9.0.tgz#0c83252d569a0dc3af14c3f7d16b6df033b9c37b"
+  integrity sha512-xItihKJFiWJ06SMtLWQZvzHv4LRPNAFZYaHAXesBFzXvWwUrtVaVMcNSf0eNnw3InrPO3Po1vZRRgpsT+Ya3Bg==
   dependencies:
     "@codexteam/icons" "^0.0.6"
 
