@@ -65,20 +65,23 @@ export const useSuggestionsStore = defineStore('suggestions', () => {
         }
     }
 
-    function cancelSuggestion(id: string): Promise<void> {
-        return storage.setSuggestionState(id, SuggestionState.CANCELED)
+    function updateSuggestionState(id: string, state: SuggestionState) {
+        return storage.setSuggestionState(id, state)
             .then((res: any) => loadSuggestionsFromDb())
     }
 
-    function ignoreSuggestion(id: string): Promise<void> {
-        return storage.setSuggestionState(id, SuggestionState.IGNORED)
-            .then((res: any) => loadSuggestionsFromDb())
-    }
-
-    function suggestionAsNotification(id: string): Promise<void> {
-        return storage.setSuggestionState(id, SuggestionState.NOTIFICATION)
-            .then((res: any) => loadSuggestionsFromDb())
-    }
+    // function delayDecision(id: string): Promise<void> {
+    // }
+    //
+    // function ignoreSuggestion(id: string): Promise<void> {
+    //     return storage.setSuggestionState(id, SuggestionState.IGNORED)
+    //         .then((res: any) => loadSuggestionsFromDb())
+    // }
+    //
+    // function suggestionAsNotification(id: string): Promise<void> {
+    //     return storage.setSuggestionState(id, SuggestionState.NOTIFICATION)
+    //         .then((res: any) => loadSuggestionsFromDb())
+    // }
 
     function applySuggestion(id: string): Promise<Suggestion> {
         console.log("$applied suggestion", "background-color:grey", id)
@@ -122,8 +125,7 @@ export const useSuggestionsStore = defineStore('suggestions', () => {
         addSuggestion,
         getSuggestions,
         getSuggestion,
-        ignoreSuggestion,
-        cancelSuggestion,
+        updateSuggestionState,
         removeSuggestion,
         suggestionAsNotification,
         applySuggestion,

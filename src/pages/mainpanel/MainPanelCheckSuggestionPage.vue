@@ -4,16 +4,16 @@
   <q-toolbar class="text-primary">
 
     <q-toolbar-title>
-      Suggestion
+      {{ suggestion?.state === SuggestionState.NOTIFICATION ? 'Notification' : 'Suggestion' }}
     </q-toolbar-title>
 
   </q-toolbar>
 
 
   <div class="q-pa-md q-gutter-sm">
-    <q-banner rounded class="bg-grey-1 text-primary">
-      Suggestions Info text: TODO
-    </q-banner>
+<!--    <q-banner rounded class="bg-grey-1 text-primary">-->
+<!--      Suggestions Info text: TODO-->
+<!--    </q-banner>-->
 
     <div class="row items-baseline q-ma-md">
       <div class="col-3 text-bold">
@@ -24,12 +24,29 @@
       </div>
     </div>
 
+    <div class="row q-mt-none q-pt-none q-ma-md">
+      <div class="col-3 text-bold">
+        &nbsp;
+      </div>
+      <div class="col-9 text-caption text-grey">
+        {{ date.formatDate(suggestion?.created, 'DD.MM.YYYY HH:mm') }}
+      </div>
+    </div>
+
     <div class="row items-baseline q-ma-md">
       <div class="col-3 text-bold">
         Messsage
       </div>
       <div class="col-9">
         {{ suggestion?.msg }}
+      </div>
+    </div>
+    <div class="row items-baseline q-ma-md" v-if="suggestion?.data['url' as keyof object]">
+      <div class="col-3 text-bold">
+        URL
+      </div>
+      <div class="col-9 text-blue cursor-pointer">
+        <div @click="NavigationService.openOrCreateTab([suggestion?.data['url' as keyof object]])">{{suggestion?.data['url' as keyof object]}}</div>
       </div>
     </div>
 
@@ -94,17 +111,18 @@ import Analytics from "src/utils/google-analytics";
 import {useRoute} from "vue-router";
 import {useTabsStore} from "stores/tabsStore";
 import {Tab} from "src/models/Tab";
-import {Notify, QForm} from "quasar";
+import {date, Notify, QForm} from "quasar";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {TabAssignmentCommand} from "src/domain/tabs/TabAssignmentCommand";
 import JsUtils from "src/utils/JsUtils";
-import {Suggestion} from "src/models/Suggestion";
+import {Suggestion, SuggestionState} from "src/models/Suggestion";
 import {useSuggestionsStore} from "stores/suggestionsStore";
 import {useBookmarksStore} from "stores/bookmarksStore";
 import {ApplySuggestionCommand} from "src/domain/suggestions/ApplySuggestionCommand";
 import {IgnoreSuggestionCommand} from "src/domain/suggestions/IgnoreSuggestionCommand";
 import {useSettingsStore} from "stores/settingsStore";
 import {useWindowsStore} from "stores/windowsStore";
+import NavigationService from "src/services/NavigationService";
 
 const route = useRoute()
 

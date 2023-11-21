@@ -24,9 +24,8 @@ import {RequestInfo} from "src/models/RequestInfo";
 import {DynamicTabSourceType} from "src/models/DynamicTabSource";
 import {useUiStore} from "stores/uiStore";
 import {useSuggestionsStore} from "stores/suggestionsStore";
-import {Suggestion, SuggestionType} from "src/models/Suggestion";
+import {Suggestion, SuggestionState, SuggestionType} from "src/models/Suggestion";
 import {MonitoringType} from "src/models/Monitor";
-import {useWindowsStore} from "stores/windowsStore";
 
 let db: PersistenceService = null as unknown as PersistenceService
 
@@ -395,23 +394,26 @@ export function useTabsetService() {
                             t.monitor && t.monitor.type === MonitoringType.CONTENT_HASH) {
                             if (oldContentHash && oldContentHash !== '' && t.contentHash !== '' && t.url) {
                                 const id = btoa(t.url)
-                                useSuggestionsStore().addSuggestion(
-                                    new Suggestion(id, 'Content Change Detected', "Info: Something might have changed in " + t.url + ".",
-                                        t.url, SuggestionType.CONTENT_CHANGE))
+                                const msg = "Info: Something might have changed in '" + (t.name ? t.name : t.title) + "'."
+                                const suggestion = new Suggestion(id, 'Content Change Detected',
+                                    msg,
+                                    t.url, SuggestionType.CONTENT_CHANGE)
+                                suggestion.setData({url: t.url})
+                                useSuggestionsStore().addSuggestion(suggestion)
                                     .then(() => {
                                         if (usePermissionsStore().hasFeature(FeatureIdent.NOTIFICATIONS)) {
                                             chrome.notifications.create(id,{
                                                 title: "Tabset Extension Message",
                                                 type: "basic",
                                                 iconUrl: chrome.runtime.getURL("www/favicon.ico"),
-                                                message: "Info: Something might have changed in " + t.url + ".",
+                                                message: msg,
                                                 buttons: [
-                                                    {title: 'open Notification'}
+                                                    {title: 'open'}
                                                 ]
                                             }, (callback: any) => {
                                                 //console.log("got callback", callback)
                                             })
-                                            useSuggestionsStore().suggestionAsNotification(id)
+                                            useSuggestionsStore().updateSuggestionState(id, SuggestionState.NOTIFICATION)
                                         }
                                     })
                                     .catch((err) => {

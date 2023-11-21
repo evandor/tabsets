@@ -163,10 +163,10 @@ watchEffect(() => {
           return false
         }
         if (!usePermissionsStore().hasFeature(FeatureIdent.RSS)) {
-          return (s.state === SuggestionState.CANCELED)
+          return (s.state === SuggestionState.DECISION_DELAYED)
               && s.type !== SuggestionType.RSS
         }
-        return s.state === SuggestionState.CANCELED
+        return s.state === SuggestionState.DECISION_DELAYED
       }) >= 0
 })
 

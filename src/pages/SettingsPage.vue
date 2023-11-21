@@ -135,6 +135,18 @@
         </div>
       </div>
 
+      <div class="row items-baseline q-ma-md" v-if="devEnabled">
+        <div class="col-3">
+          New Suggestion Simulation
+        </div>
+        <div class="col-3">
+          Simulate that there is a new suggestion to use a (new) feature
+        </div>
+        <div class="col q-ma-xl">
+          <span class="text-blue cursor-pointer" @click="simulateStaticSuggestion()">Simulate</span>
+        </div>
+      </div>
+
     </div>
 
   </div>
@@ -380,6 +392,8 @@ import OpenRightDrawerWidget from "components/widgets/OpenRightDrawerWidget.vue"
 import {useUtils} from "src/services/Utils";
 import Analytics from "src/utils/google-analytics";
 import {useGroupsStore} from "../stores/groupsStore";
+import {useSuggestionsStore} from "stores/suggestionsStore";
+import {StaticSuggestionIdent, Suggestion} from "src/models/Suggestion";
 
 const {inBexMode, sendMsg} = useUtils()
 
@@ -526,6 +540,9 @@ const restoreHints = () => useUiStore().restoreHints()
 
 const showExportDialog = () => $q.dialog({component: ExportDialog, componentProps: {inSidePanel: true}})
 const showImportDialog = () => $q.dialog({component: ImportDialog, componentProps: {inSidePanel: true}})
+
+const simulateStaticSuggestion = () =>
+    useSuggestionsStore().addSuggestion(Suggestion.getStaticSuggestion(StaticSuggestionIdent.TRY_SPACES_FEATURE))
 
 </script>
 

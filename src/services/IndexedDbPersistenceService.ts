@@ -655,9 +655,9 @@ class IndexedDbPersistenceService implements PersistenceService {
         //return
         const suggestions = await this.getSuggestions()
         // .then((suggestions) => {
-        console.log("%csuggestions from db", "color:red", suggestions)
+        // console.log("%csuggestions from db", "color:red", suggestions)
         const foundExistingInStateNewOrCanceled = _.find(suggestions,
-            (s: Suggestion) => s.state === SuggestionState.NEW || s.state === SuggestionState.CANCELED)
+            (s: Suggestion) => s.state === SuggestionState.NEW || s.state === SuggestionState.DECISION_DELAYED)
         if (foundExistingInStateNewOrCanceled) {
             console.log("found existing in state new or canceled", foundExistingInStateNewOrCanceled)
             if (foundExistingInStateNewOrCanceled && foundExistingInStateNewOrCanceled.url === suggestion.url) {
@@ -668,7 +668,7 @@ class IndexedDbPersistenceService implements PersistenceService {
             return Promise.reject("there's already a suggestion in state NEW, not adding (yet)")
         }
         const found = _.find(suggestions, (s: Suggestion) => s.url === suggestion.url)
-        console.log("===found", found)
+       // console.log("===found", found)
         if (!found) {
             await this.db.add('suggestions', suggestion, suggestion.id)
             return Promise.resolve()

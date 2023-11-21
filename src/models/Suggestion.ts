@@ -4,7 +4,8 @@ export enum SuggestionState {
   NEW = "NEW",
   IGNORED = "IGNORED",
   APPLIED = "APPLIED",
-  CANCELED = "CANCELED",
+  CHECKED = "CHECKED", // we do not know if the suggestion was applied or ignored
+  DECISION_DELAYED = "DECISION_DELAYED",
   INACTIVE = "INACTIVE",
   NOTIFICATION = "NOTIFICATION" // this has been sent as chrome notification
 }
