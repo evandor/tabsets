@@ -30,7 +30,7 @@
         </div>
 
         <div class="col-7 text-body2 ellipsis cursor-pointer"
-             :class="isCurrentTab() ? 'text.bold' : ''"
+             :class="isCurrentTab(toTab(chromeTab)) ? 'text-bold' : ''"
              @mouseenter="emitInfo(chromeTab?.url)"
              @mouseout="emitInfo(undefined)"
              @click="NavigationService.openOrCreateTab([chromeTab?.url || ''])">
