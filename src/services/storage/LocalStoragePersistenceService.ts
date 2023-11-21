@@ -8,8 +8,6 @@ import {Tab} from "src/models/Tab";
 import {Notification} from "src/models/Notification";
 import {MHtml} from "src/models/MHtml";
 import {MetaLink} from "src/models/MetaLink";
-import {quasar} from "@quasar/vite-plugin";
-import * as console from "console";
 
 export class LocalStoragePersistenceService implements PersistenceService {
 

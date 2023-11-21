@@ -30,6 +30,7 @@
         </div>
 
         <div class="col-7 text-body2 ellipsis cursor-pointer"
+             :class="isCurrentTab() ? 'text.bold' : ''"
              @mouseenter="emitInfo(chromeTab?.url)"
              @mouseout="emitInfo(undefined)"
              @click="NavigationService.openOrCreateTab([chromeTab?.url || ''])">
@@ -77,6 +78,8 @@ const props = defineProps({
 })
 
 const emits = defineEmits(['selectionChanged', 'addedToTabset', 'hasSelectable'])
+
+const {isCurrentTab} = useUtils()
 
 const tabsStore = useTabsStore()
 

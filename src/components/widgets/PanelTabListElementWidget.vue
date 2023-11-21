@@ -207,7 +207,6 @@ import {onMounted, PropType, ref, watchEffect} from "vue";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {ListDetailLevel, useUiStore} from "src/stores/uiStore";
 import TabFaviconWidget from "components/widgets/TabFaviconWidget.vue";
-import {UpdateTabNameCommand} from "src/domain/tabs/UpdateTabName";
 import {useTabsetService} from "src/services/TabsetService2";
 import ShortUrl from "components/utils/ShortUrl.vue";
 import {useTabsStore} from "src/stores/tabsStore";
@@ -215,7 +214,6 @@ import PanelTabListContextMenu from "components/widgets/helper/PanelTabListConte
 import _ from "lodash";
 import {formatDistance} from "date-fns";
 import {TabsetType} from "src/models/Tabset";
-import {useWindowsStore} from "src/stores/windowsStore";
 import {usePermissionsStore} from "stores/permissionsStore";
 import {FeatureIdent} from "src/models/AppFeature";
 import {useUtils} from "src/services/Utils";
@@ -223,9 +221,8 @@ import {useRouter} from "vue-router";
 import {useGroupsStore} from "stores/groupsStore";
 import {DeleteChromeGroupCommand} from "src/domain/groups/DeleteChromeGroupCommand";
 import {PlaceholdersType} from "src/models/Placeholders";
-import {uid} from "quasar";
 
-const {inBexMode} = useUtils()
+const {inBexMode, isCurrentTab} = useUtils()
 
 const props = defineProps({
   tab: {type: Object as PropType<Tab>, required: true},
@@ -331,14 +328,6 @@ const hoveredOver = (tabsetId: string) => hoveredTab.value === tabsetId
 
 const formatDate = (timestamp: number | undefined) =>
     timestamp ? formatDistance(timestamp, new Date(), {addSuffix: true}) : ""
-
-const isCurrentTab = (tab: Tab) => {
-  if (!inBexMode()) {
-    return false
-  }
-  const windowId = useWindowsStore().currentWindow?.id || 0
-  return (tabsStore.getCurrentChromeTab(windowId) || tabsStore.currentChromeTab)?.url === tab.url
-}
 
 const iconStyle = () => {
   if (isCurrentTab(props.tab)) {
