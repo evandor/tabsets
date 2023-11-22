@@ -140,7 +140,7 @@
           New Suggestion Simulation
         </div>
         <div class="col-3">
-          Simulate that there is a new suggestion to use a (new) feature
+          Simulate that there is a new suggestion to use a (new) feature (refresh sidebar for effects)
         </div>
         <div class="col q-ma-xl">
           <span class="text-blue cursor-pointer" @click="simulateStaticSuggestion()">Simulate</span>
@@ -214,14 +214,14 @@
         notifiy you about changes.
       </q-banner>
 
-<!--      <div class="row q-pa-md" v-for="tabset in ignoredUrls()">-->
-<!--        <div class="col-3"><b>{{ tabset.url }}</b></div>-->
-<!--        <div class="col-3"></div>-->
-<!--        <div class="col-1"></div>-->
-<!--        <div class="col-5">-->
-<!--          &lt;!&ndash;          <q-btn label="Un-Archive" @click="unarchive(tabset)"/>&ndash;&gt;-->
-<!--        </div>-->
-<!--      </div>-->
+      <!--      <div class="row q-pa-md" v-for="tabset in ignoredUrls()">-->
+      <!--        <div class="col-3"><b>{{ tabset.url }}</b></div>-->
+      <!--        <div class="col-3"></div>-->
+      <!--        <div class="col-1"></div>-->
+      <!--        <div class="col-5">-->
+      <!--          &lt;!&ndash;          <q-btn label="Un-Archive" @click="unarchive(tabset)"/>&ndash;&gt;-->
+      <!--        </div>-->
+      <!--      </div>-->
     </div>
 
   </div>
@@ -402,7 +402,6 @@ const featuresStore = useSettingsStore()
 const searchStore = useSearchStore()
 const settingsStore = useSettingsStore()
 
-const router = useRouter()
 const localStorage = useQuasar().localStorage
 const $q = useQuasar()
 
@@ -431,6 +430,7 @@ onMounted(() => {
   Analytics.firePageViewEvent('SettingsPage', document.location.href);
 })
 
+let suggestionsCounter = 0
 
 watchEffect(() => permissionsList.value = usePermissionsStore().permissions?.permissions || [])
 
@@ -541,8 +541,14 @@ const restoreHints = () => useUiStore().restoreHints()
 const showExportDialog = () => $q.dialog({component: ExportDialog, componentProps: {inSidePanel: true}})
 const showImportDialog = () => $q.dialog({component: ImportDialog, componentProps: {inSidePanel: true}})
 
-const simulateStaticSuggestion = () =>
-    useSuggestionsStore().addSuggestion(Suggestion.getStaticSuggestion(StaticSuggestionIdent.TRY_SPACES_FEATURE))
+const simulateStaticSuggestion = () => {
+  const suggestions: [Suggestion] = [
+    // @ts-ignore
+    Suggestion.getStaticSuggestion(StaticSuggestionIdent.TRY_SPACES_FEATURE),
+    Suggestion.getStaticSuggestion(StaticSuggestionIdent.TRY_BOOKMARKS_FEATURE)
+  ]
+  useSuggestionsStore().addSuggestion(suggestions[suggestionsCounter++ % 2])
+}
 
 </script>
 

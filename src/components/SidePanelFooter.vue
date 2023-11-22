@@ -139,7 +139,7 @@ const doShowSuggestionButton = ref(false)
 const transitionGraceTime = ref(false)
 
 watchEffect(() => {
-  const suggestions = useSuggestionsStore().getSuggestions()
+  const suggestions = useSuggestionsStore().getSuggestions([SuggestionState.NEW, SuggestionState.DECISION_DELAYED])
   console.log("watcheffect for", suggestions)
   showSuggestionButton.value =
       doShowSuggestionButton.value ||
@@ -201,19 +201,19 @@ const settingsTooltip = () => {
 const rightButtonClass = () => "q-my-xs q-ml-xs q-px-xs q-mr-none"
 
 const dependingOnStates = () =>
-    _.find(useSuggestionsStore().getSuggestions(), s => s.state === SuggestionState.NEW) ? 'warning' : 'primary'
+    _.find(useSuggestionsStore().getSuggestions([SuggestionState.NEW, SuggestionState.DECISION_DELAYED]), s => s.state === SuggestionState.NEW) ? 'warning' : 'primary'
 
 const suggestionDialog = () => {
   doShowSuggestionButton.value = false
   $q.dialog({
     component: SuggestionDialog, componentProps: {
-      suggestion: useSuggestionsStore().getSuggestions().at(0),
+      suggestion: useSuggestionsStore().getSuggestions([SuggestionState.NEW, SuggestionState.DECISION_DELAYED]).at(0),
       fromPanel: true
     }
   })
 }
 const suggestionsLabel = () => {
-  const suggestions = useSuggestionsStore().getSuggestions()
+  const suggestions = useSuggestionsStore().getSuggestions([SuggestionState.NEW, SuggestionState.DECISION_DELAYED])
   return suggestions.length === 1 ?
       suggestions.length + " New Suggestion" :
       suggestions.length + " New Suggestions"

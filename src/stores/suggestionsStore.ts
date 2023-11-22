@@ -35,7 +35,7 @@ export const useSuggestionsStore = defineStore('suggestions', () => {
         }
         try {
             await storage.addSuggestion(s)
-            console.log("%cpushing", "color:red", s)
+            //console.log("%cpushing", "color:red", s)
             suggestions.value.push(s)
             return Promise.resolve(true)
         } catch (err) {
@@ -94,24 +94,15 @@ export const useSuggestionsStore = defineStore('suggestions', () => {
     }
 
     const getSuggestions = computed(() => {
-        return () => {
-            const sugs: Suggestion[] = suggestions.value
-            const r = _.groupBy(sugs, s => (s: Suggestion) => {
-                return s.type + "|" + s.url
-            })
-            const result: Suggestion[] = []
-            for (const v of Object.values(r)) {
-                for (let i = v.length; i >= 0; i--) {
-                    if (i == 0) {
-                        result.push(v[0])
-                    } else {
-                        // remove duplicates
-                        //removeSuggestionById(v[i].id)
+        return (states: SuggestionState[]) => _.filter(suggestions.value,
+            (s: Suggestion) => {
+                for (const state of states) {
+                    if (state === s.state) {
+                        return true
                     }
                 }
-            }
-            return result
-        }
+                return false
+            })
     })
 
     const getSuggestion = computed(() => {
@@ -127,7 +118,6 @@ export const useSuggestionsStore = defineStore('suggestions', () => {
         getSuggestion,
         updateSuggestionState,
         removeSuggestion,
-        suggestionAsNotification,
         applySuggestion,
         inactivateSuggestion
     }

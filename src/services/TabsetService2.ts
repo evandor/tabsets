@@ -399,17 +399,16 @@ export function useTabsetService() {
                                     msg,
                                     t.url, SuggestionType.CONTENT_CHANGE)
                                 suggestion.setData({url: t.url})
+                                suggestion.state = SuggestionState.NOTIFICATION
                                 useSuggestionsStore().addSuggestion(suggestion)
                                     .then(() => {
                                         if (usePermissionsStore().hasFeature(FeatureIdent.NOTIFICATIONS)) {
-                                            chrome.notifications.create(id,{
+                                            chrome.notifications.create(id, {
                                                 title: "Tabset Extension Message",
                                                 type: "basic",
                                                 iconUrl: chrome.runtime.getURL("www/favicon.ico"),
                                                 message: msg,
-                                                buttons: [
-                                                    {title: 'open'}
-                                                ]
+                                                buttons: [{title: 'show'},{title: 'ignore'}]
                                             }, (callback: any) => {
                                                 //console.log("got callback", callback)
                                             })

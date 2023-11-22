@@ -9,7 +9,7 @@ import {useTabsetService} from "src/services/TabsetService2";
 import {useSettingsStore} from "src/stores/settingsStore";
 import {usePermissionsStore} from "src/stores/permissionsStore";
 import {MetaLink} from "src/models/MetaLink";
-import {Suggestion, SuggestionType} from "src/models/Suggestion";
+import {Suggestion, SuggestionState, SuggestionType} from "src/models/Suggestion";
 import {useSuggestionsStore} from "src/stores/suggestionsStore";
 import {FeatureIdent} from "src/models/AppFeature";
 import {Extractor, Extractors, ExtractorType} from "src/config/Extractors";
@@ -134,6 +134,23 @@ function inIgnoredMessages(request: any) {
 
 }
 
+function runOnNotificationClick(notificationId: string, buttonIndex: number) {
+  console.log("notification button clicked", notificationId, buttonIndex)
+  const notification = useSuggestionsStore().getSuggestion(notificationId)
+  console.log("found notificastion", notification)
+  if (notification) {
+    switch (buttonIndex) {
+      case 0: // show
+          const url = chrome.runtime.getURL('www/index.html') + "#/mainpanel/suggestions/" + notificationId
+          NavigationService.openOrCreateTab([url])
+          useSuggestionsStore().updateSuggestionState(notificationId, SuggestionState.CHECKED)
+          break;
+      default: // ignore
+            useSuggestionsStore().updateSuggestionState(notificationId, SuggestionState.IGNORED)
+    }
+  }
+}
+
 class ChromeListeners {
 
   inProgress = false;
@@ -195,14 +212,11 @@ class ChromeListeners {
       if (usePermissionsStore().hasFeature(FeatureIdent.NOTIFICATIONS)) {
         chrome.notifications.onButtonClicked.addListener(
             (notificationId, buttonIndex) => {
-              console.log("notification button clicked", notificationId, buttonIndex)
-              const notification = useSuggestionsStore().getSuggestion(notificationId)
-              console.log("found notificastion", notification)
-              if (notification) {
-                const url = chrome.runtime.getURL('www/index.html') + "#/mainpanel/suggestions/" + notificationId
-                NavigationService.openOrCreateTab([url])
-               // useSuggestionsStore().removeSuggestion(notificationId)
-              }
+              runOnNotificationClick(notificationId, buttonIndex);
+            })
+        chrome.notifications.onClicked.addListener(
+            (notificationId) => {
+              runOnNotificationClick(notificationId, 0);
             })
       }
     }

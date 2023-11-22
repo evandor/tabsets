@@ -13,7 +13,7 @@ import {SearchDoc} from "src/models/SearchDoc";
 import {MetaLink} from "src/models/MetaLink";
 import {uid} from "quasar";
 import {Notification, NotificationStatus} from "src/models/Notification";
-import {StaticSuggestionIdent, Suggestion, SuggestionState, SuggestionType} from "src/models/Suggestion";
+import {Suggestion, SuggestionState, SuggestionType} from "src/models/Suggestion";
 import {useUiStore} from "src/stores/uiStore";
 import {useCategoriesStore} from "stores/categoriesStore";
 import {cloudFunctionsApi} from "src/api/cloudfunctionsApi";
@@ -160,7 +160,7 @@ class IndexedDbPersistenceService implements PersistenceService {
                             status: requestInfo.statusCode,
                             location
                         })
-                        useSuggestionsStore().addSuggestion(suggestion)
+                        useSuggestionsStore().addSuggestion(suggestion).catch((err) => {console.log("got error", err)})
                     }
                 }
             })
@@ -658,7 +658,7 @@ class IndexedDbPersistenceService implements PersistenceService {
         // console.log("%csuggestions from db", "color:red", suggestions)
         const foundExistingInStateNewOrCanceled = _.find(suggestions,
             (s: Suggestion) => s.state === SuggestionState.NEW || s.state === SuggestionState.DECISION_DELAYED)
-        if (foundExistingInStateNewOrCanceled) {
+        if (foundExistingInStateNewOrCanceled && suggestion.state === SuggestionState.NEW) {
             console.log("found existing in state new or canceled", foundExistingInStateNewOrCanceled)
             if (foundExistingInStateNewOrCanceled && foundExistingInStateNewOrCanceled.url === suggestion.url) {
                 // foundExistingInStateNewOrCanceled.state = SuggestionState.APPLIED

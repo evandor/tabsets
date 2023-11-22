@@ -8,6 +8,8 @@ import {Tab} from "src/models/Tab";
 import {Notification} from "src/models/Notification";
 import {MHtml} from "src/models/MHtml";
 import {MetaLink} from "src/models/MetaLink";
+import {RequestInfo} from "src/models/RequestInfo";
+import {Window} from "src/models/Window";
 
 export class LocalStoragePersistenceService implements PersistenceService {
 
@@ -203,6 +205,50 @@ export class LocalStoragePersistenceService implements PersistenceService {
   }
 
   saveRequest(url: string, requestInfo: RequestInfo): Promise<void> {
+    return Promise.resolve(undefined);
+  }
+
+  addGroup(group: chrome.tabGroups.TabGroup): Promise<any> {
+    return Promise.resolve(undefined);
+  }
+
+  addWindow(window: Window): Promise<any> {
+    return Promise.resolve(undefined);
+  }
+
+  deleteGroupByTitle(title: string): Promise<void> {
+    return Promise.resolve(undefined);
+  }
+
+  deleteMHtml(id: string): Promise<void> {
+    return Promise.resolve(undefined);
+  }
+
+  getGroups(): Promise<chrome.tabGroups.TabGroup[]> {
+    return Promise.resolve([]);
+  }
+
+  getWindow(windowId: number): Promise<Window | undefined> {
+    return Promise.resolve(undefined);
+  }
+
+  getWindows(): Promise<Window[]> {
+    return Promise.resolve([]);
+  }
+
+  removeWindow(windowId: number): Promise<void> {
+    return Promise.resolve(undefined);
+  }
+
+  updateGroup(group: chrome.tabGroups.TabGroup): Promise<any> {
+    return Promise.resolve(undefined);
+  }
+
+  updateWindow(window: Window): Promise<void> {
+    return Promise.resolve(undefined);
+  }
+
+  upsertWindow(window: Window, windowName: string): Promise<void> {
     return Promise.resolve(undefined);
   }
 

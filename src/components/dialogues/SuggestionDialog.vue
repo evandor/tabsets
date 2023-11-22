@@ -34,7 +34,7 @@ import {PropType} from "vue";
 import {openURL, useDialogPluginComponent} from "quasar";
 import {useRouter} from "vue-router";
 import {useSuggestionsStore} from "src/stores/suggestionsStore";
-import {Suggestion, SuggestionState} from "src/models/Suggestion";
+import {Suggestion, SuggestionState, SuggestionType} from "src/models/Suggestion";
 import NavigationService from "src/services/NavigationService";
 
 defineEmits([
@@ -54,18 +54,24 @@ const delayDecision = () => useSuggestionsStore().updateSuggestionState(props.su
 const ignoreSuggestion = () => useSuggestionsStore().updateSuggestionState(props.suggestion.id, SuggestionState.IGNORED)
 
 const addSuggestion = () => {
-//useSuggestionsStore()
-// .applySuggestion(props.suggestion.id)
-// .then((res: Suggestion) => {
   const res = props.suggestion
   if (props.fromPanel) {
-    //console.log("xxx", res, chrome.runtime.getURL(res.url))
-    //router.push(chrome.runtime.getURL(res.url))
-    NavigationService.openOrCreateTab(
-        [chrome.runtime.getURL("/www/index.html#/mainpanel/suggestions/" + props.suggestion.id)],
-        undefined,
-        [],
-        true)
+    switch (res.type) {
+      case SuggestionType.FEATURE:
+        NavigationService.openOrCreateTab(
+            [chrome.runtime.getURL("/www/index.html#" + props.suggestion.url)],
+            undefined,
+            [],
+            true)
+          useSuggestionsStore().updateSuggestionState(res.id, SuggestionState.CHECKED)
+        break;
+      default:
+        NavigationService.openOrCreateTab(
+            [chrome.runtime.getURL("/www/index.html#/mainpanel/suggestions/" + props.suggestion.id)],
+            undefined,
+            [],
+            true)
+    }
   } else {
     if (res.url.startsWith("/")) {
       router.push(res.url)

@@ -94,7 +94,7 @@
     </div>
 
     <template v-if="useSettingsStore().isEnabled('dev')">
-      <div class="row" v-for="s in useSuggestionsStore().getSuggestions()">
+      <div class="row" v-for="s in useSuggestionsStore().getSuggestions([SuggestionState.NEW, SuggestionState.DECISION_DELAYED])">
         <pre>{{ s }}</pre>
       </div>
     </template>

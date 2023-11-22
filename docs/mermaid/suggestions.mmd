@@ -1,0 +1,17 @@
+---
+title: Suggestions state diagram
+---
+stateDiagram-v2
+%%    s2 : This is a state description
+    [*] --> NEW
+    [*] --> NOTIFICATION
+%%    Still --> [*]
+
+    NEW --> DECIDE_LATER: click on 'later'
+    NEW --> CHECKED: click on 'check'
+    DECIDE_LATER --> DECIDE_LATER
+    DECIDE_LATER --> IGNORE
+    DECIDE_LATER --> CHECKED
+    NOTIFICATION --> IGNORE
+    NOTIFICATION --> CHECKED
+    NEW --> IGNORE
