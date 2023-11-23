@@ -8,6 +8,6 @@ export class Monitor {
 
     constructor(
         public type: MonitoringType = MonitoringType.NONE,
-        public config: object = {}) {
+        public data: object = {}) {
     }
 }

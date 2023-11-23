@@ -329,6 +329,12 @@ class IndexedDbPersistenceService implements PersistenceService {
         return this.db.getAll('content')
     }
 
+    /**
+     *
+     * @param tab
+     * @param mhtml
+     * @return the mhtml id of the generated blob
+     */
     async saveMHtml(tab: Tab, mhtml: Blob): Promise<string> {
         if (tab.url) {
             // console.log("TextDecoder('utf-8')", new TextDecoder('utf-8'), typeof mhtml)

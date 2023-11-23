@@ -398,7 +398,7 @@ export function useTabsetService() {
                                 const suggestion = new Suggestion(id, 'Content Change Detected',
                                     msg,
                                     t.url, SuggestionType.CONTENT_CHANGE)
-                                suggestion.setData({url: t.url})
+                                suggestion.setData({url: t.url, tabId: t.id})
                                 suggestion.state = SuggestionState.NOTIFICATION
                                 useSuggestionsStore().addSuggestion(suggestion)
                                     .then(() => {

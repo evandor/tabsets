@@ -62,6 +62,7 @@
             <q-tooltip class="tooltip-small">This tab is created by substituting parts of its URL</q-tooltip>
           </q-icon>
           <q-icon v-if="(props.tab as Tab).monitor"
+                  @click.stop="monitoringDialog(props.tab as Tab)"
                   name="o_change_circle" class="q-ml-sm" color="accent">
             <q-tooltip class="tooltip-small">This tab is being monitored for changes</q-tooltip>
           </q-icon>
@@ -225,8 +226,9 @@ import {useRouter} from "vue-router";
 import {useGroupsStore} from "stores/groupsStore";
 import {DeleteChromeGroupCommand} from "src/domain/groups/DeleteChromeGroupCommand";
 import {PlaceholdersType} from "src/models/Placeholders";
-import {uid} from "quasar";
+import {uid, useQuasar} from "quasar";
 import {TabAndTabsetId} from "src/models/TabAndTabsetId";
+import MonitoringDialog from "components/dialogues/MonitoringDialog.vue";
 
 const {inBexMode, isCurrentTab} = useUtils()
 
@@ -241,8 +243,8 @@ const props = defineProps({
   tabsetType: {type: String, default: TabsetType.DEFAULT.toString()}
 })
 
+const $q = useQuasar()
 const cnt = ref(0)
-const tabsStore = useTabsStore()
 const router = useRouter()
 
 const showButtonsProp = ref<boolean>(false)
@@ -420,6 +422,14 @@ const gotoTab = () => NavigationService.openOrCreateTab(
     props.tab.matcher,
     props.tab.groupName ? [props.tab.groupName] : [])
 
+
+const monitoringDialog = (tab: Tab) => {
+  console.log("calling dialog with tab", tab)
+  $q.dialog({
+    component: MonitoringDialog,
+    componentProps: {tab: tab, note: tab.note}
+  })
+}
 
 </script>
 

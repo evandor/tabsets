@@ -179,6 +179,7 @@ class TabsetService {
 
   setMonitoring(tab: Tab, monitor: Monitor): Promise<any> {
     tab.monitor = monitor.type === MonitoringType.NONE ? undefined : monitor
+    console.log("tab.monitor", tab.monitor)
     return saveCurrentTabset()
   }
 

@@ -11,31 +11,24 @@ import ChromeApi from "src/services/ChromeApi";
 
 const {handleSuccess, handleError} = useNotificationHandler()
 
-class UndoCommand implements Command<any> {
-
-    constructor(public tab: Tab) {
-    }
-
-    execute(): Promise<ExecutionResult<any>> {
-        return Promise.reject("not yet implemented")
-    }
-
-}
-
 export class SaveTabCommand implements Command<any> {
 
     constructor(
         public tabset: Tabset | undefined,
-        public tab: Tab | undefined) {
+        public tab: Tab | undefined,
+        public callback: (mhtmlId: string) => void = (id) => {}
+        ) {
     }
 
     async execute(): Promise<ExecutionResult<any>> {
         if (!usePermissionsStore().hasPermission('pageCapture')) {
             handleError("missing permission pageCapture")
             return Promise.reject("missing permission pageCapture!")
-        } else if (!this.tab) {
+        }
+        if (!this.tab) {
             return Promise.reject("tab undefined")
-        } else if (this.tab.chromeTabId) {
+        }
+        if (this.tab.chromeTabId) {
             const currentTab = await ChromeApi.getCurrentTab()
             console.log("capturing", typeof this.tab, currentTab)
             console.log("***", useTabsStore().getChromeTabs)
@@ -43,34 +36,30 @@ export class SaveTabCommand implements Command<any> {
             chrome.pageCapture.saveAsMHTML({tabId: currentTab.id || 0},
                 (html: Blob | undefined) => {
                     console.log("blob", html)
-                    if (html) {
+                    if (html && this.tab) {
                         return MHtmlService.saveMHtml(this.tab, html)
-                            .then((res) => {
-                                if (this.tabset) {
+                            .then((mhtmlId) => {
+                                if (this.tabset && this.tab) {
                                     let mhtmls: string[] | undefined = this.tab['mhtmls']
                                     if (!mhtmls) {
                                         mhtmls = []
                                     }
-                                    mhtmls.push(res)
+                                    mhtmls.push(mhtmlId)
                                     this.tab['mhtmls'] = mhtmls
                                     console.log("this.tab", this.tab)
                                     useTabsetService().saveTabset(this.tabset)
                                 }
-                                return res;
+                                return mhtmlId;
                             })
                             .then((res) => {
-                                handleSuccess(
-                                    new ExecutionResult(
-                                        "done",
-                                        "Tab was saved",
-                                        new UndoCommand(this.tab)))
+                                //return handleSuccess(new ExecutionResult(res, "Tab was saved"))
+                                this.callback(res)
                             })
                             .catch(err => {
                                 return handleError(err)
                             })
                     }
-                    return handleError("no html found")
-
+                    return Promise.reject("no html found")
                 })
 
             return Promise.resolve(
@@ -84,5 +73,5 @@ export class SaveTabCommand implements Command<any> {
 }
 
 SaveTabCommand.prototype.toString = function cmdToString() {
-    return `SaveTabCommand: {tabId=${this.tab.id}}`;
+    return `SaveTabCommand: {tabId=${this.tab?.id}}`;
 };

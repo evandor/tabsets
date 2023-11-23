@@ -74,6 +74,17 @@
       </div>
     </template>
 
+    <template v-if="suggestion?.type === SuggestionType.CONTENT_CHANGE">
+      <div class="row">
+        <div class="col-6">
+          <iframe :src="oldSnapshot()" style="width:100%;height:600px" />
+        </div>
+        <div class="col-6">
+          <iframe :src="oldSnapshot()" style="width:100%;height:600px"/>
+        </div>
+      </div>
+    </template>
+
     <div class="row items-baseline q-ma-md">
       <div class="col-3 text-bold">
 
@@ -94,7 +105,9 @@
     </div>
 
     <template v-if="useSettingsStore().isEnabled('dev')">
-      <div class="row" v-for="s in useSuggestionsStore().getSuggestions([SuggestionState.NEW, SuggestionState.DECISION_DELAYED])">
+      <div class="row" v-for="s in useSuggestionsStore().getSuggestions([
+          SuggestionState.NEW, SuggestionState.DECISION_DELAYED, SuggestionState.CHECKED, SuggestionState.IGNORED,
+          SuggestionState.NOTIFICATION, SuggestionState.INACTIVE])">
         <pre>{{ s }}</pre>
       </div>
     </template>
@@ -109,19 +122,13 @@
 import {onMounted, ref, watchEffect} from "vue";
 import Analytics from "src/utils/google-analytics";
 import {useRoute} from "vue-router";
-import {useTabsStore} from "stores/tabsStore";
-import {Tab} from "src/models/Tab";
-import {date, Notify, QForm} from "quasar";
+import {date} from "quasar";
 import {useCommandExecutor} from "src/services/CommandExecutor";
-import {TabAssignmentCommand} from "src/domain/tabs/TabAssignmentCommand";
-import JsUtils from "src/utils/JsUtils";
-import {Suggestion, SuggestionState} from "src/models/Suggestion";
+import {Suggestion, SuggestionState, SuggestionType} from "src/models/Suggestion";
 import {useSuggestionsStore} from "stores/suggestionsStore";
-import {useBookmarksStore} from "stores/bookmarksStore";
 import {ApplySuggestionCommand} from "src/domain/suggestions/ApplySuggestionCommand";
 import {IgnoreSuggestionCommand} from "src/domain/suggestions/IgnoreSuggestionCommand";
 import {useSettingsStore} from "stores/settingsStore";
-import {useWindowsStore} from "stores/windowsStore";
 import NavigationService from "src/services/NavigationService";
 
 const route = useRoute()
@@ -156,6 +163,10 @@ const ignoreSuggestion = () => {
     useCommandExecutor().executeFromUi(new IgnoreSuggestionCommand(suggestion.value))
         .then(() => decided.value = true)
   }
+}
+
+const oldSnapshot = () => {
+  return "chrome-extension://pndffocijjfpmphlhkoijmpfckjafdpl/www/index.html#/mainpanel/mhtml/7b961cb4-243f-430a-b28e-0e9421febdc2"
 }
 
 </script>
