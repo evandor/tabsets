@@ -62,6 +62,12 @@ class TabsetService {
     }).length > 0
   }
 
+  chromeTabIdFor(tabUrl: string): number | undefined {
+    const tabsStore = useTabsStore()
+    const candidates = _.filter(tabsStore.tabs, (t: chrome.tabs.Tab) => t?.url === tabUrl)
+    return candidates.length > 0 ? candidates[0].id : undefined
+  }
+
   saveAllPendingTabs(onlySelected: boolean = false): Promise<void> {
     const tabsStore = useTabsStore()
     const currentTabset = tabsStore.getCurrentTabset

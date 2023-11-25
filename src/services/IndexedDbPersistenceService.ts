@@ -21,6 +21,7 @@ import {Category} from "src/models/Category";
 import {RequestInfo} from "src/models/RequestInfo";
 import {useSuggestionsStore} from "stores/suggestionsStore";
 import {Window} from "src/models/Window";
+import {BlobType, SavedBlob} from "src/models/SavedBlob";
 
 class IndexedDbPersistenceService implements PersistenceService {
     private db: IDBPDatabase = null as unknown as IDBPDatabase
@@ -160,7 +161,9 @@ class IndexedDbPersistenceService implements PersistenceService {
                             status: requestInfo.statusCode,
                             location
                         })
-                        useSuggestionsStore().addSuggestion(suggestion).catch((err) => {console.log("got error", err)})
+                        useSuggestionsStore().addSuggestion(suggestion).catch((err) => {
+                            console.log("got error", err)
+                        })
                     }
                 }
             })
@@ -356,17 +359,17 @@ class IndexedDbPersistenceService implements PersistenceService {
         return Promise.reject("tab.url missing")
     }
 
-    saveBlob(id: string, url: string, data: Blob, type: string): Promise<any> {
+    async saveBlob(id: string, url: string, data: Blob, type: string, remark: string | undefined = undefined): Promise<any> {
         //const encodedTabUrl = btoa(tab.url)
-        return this.db.put('blobs', {
-            id: id,
-            type: type,
-            //title: tab.name ? tab.name : tab.title,
-            //favIconUrl: tab.favIconUrl,
-            url: url,
-            created: new Date().getTime(),
-            content: data
-        }, id)
+        const existing = await this.db.get('blobs', id)
+        const arrayToSave: object[] = []
+        const savedBlob = new SavedBlob(uid(), BlobType.PNG, url, data, remark)
+        if (existing) {
+            existing.push(savedBlob)
+            return this.db.put('blobs', existing, id)
+        } else {
+            return this.db.put('blobs', [savedBlob], id)
+        }
     }
 
     async getMHtml(id: string): Promise<any> {
@@ -412,7 +415,7 @@ class IndexedDbPersistenceService implements PersistenceService {
             const mhtml = await this.db.get('mhtml', url)
             console.log("mhtml", mhtml)
             const mhtmlString = mhtml.content ? await mhtml.content?.text() : '<h6>sorry, no content found</h6>'
-            console.log("mhtmlString", mhtmlString)
+            //console.log("mhtmlString", mhtmlString)
             const html = mhtmlString ? mhtml2html.convert(mhtmlString) : 'sorry, no content found'
             console.log("mhtml3", mhtml)
             const innerHtml = html.window.document.documentElement.innerHTML
@@ -439,23 +442,26 @@ class IndexedDbPersistenceService implements PersistenceService {
         }
     }
 
-    getBlob(blobId: string): Promise<any> {
+    getBlobs(type: string): Promise<any[]> {
         if (!this.db) { // can happen for some reason
             return Promise.resolve([])
         }
         try {
             return this.db.getAll('blobs')
                 .then((b: any[]) => {
-                    const found = _.filter(b, d => d.id === blobId)
-                    if (found && found.length === 1) {
-                        return Promise.resolve(found[0])
-                    }
-                    return Promise.reject("could not find blob for id " + blobId)
+                    return _.filter(b, d => d.type === type)
                 })
         } catch (ex) {
             console.log("got error in getBlobs", ex)
             return Promise.reject("got error in getBlobs")
         }
+    }
+
+    getBlobsForTab(tabId: string): Promise<SavedBlob[]> {
+        if (!this.db) { // can happen for some reason
+            return Promise.resolve([])
+        }
+        return this.db.get('blobs', tabId)
     }
 
     async addSpace(space: Space): Promise<void> {
@@ -674,7 +680,7 @@ class IndexedDbPersistenceService implements PersistenceService {
             return Promise.reject("there's already a suggestion in state NEW, not adding (yet)")
         }
         const found = _.find(suggestions, (s: Suggestion) => s.url === suggestion.url)
-       // console.log("===found", found)
+        // console.log("===found", found)
         if (!found) {
             await this.db.add('suggestions', suggestion, suggestion.id)
             return Promise.resolve()

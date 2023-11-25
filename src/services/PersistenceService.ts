@@ -8,6 +8,7 @@ import {StaticSuggestionIdent, Suggestion, SuggestionState} from "src/models/Sug
 import {MetaLink} from "src/models/MetaLink";
 import {Window} from "src/models/Window";
 import {RequestInfo} from "src/models/RequestInfo";
+import {SavedBlob} from "src/models/SavedBlob";
 
 interface PersistenceService {
 
@@ -43,8 +44,9 @@ interface PersistenceService {
   getMHtmls(): Promise<MHtml[]>
   deleteMHtml(id: string): Promise<void>
 
-  saveBlob(id: string, url: string, data: Blob, type: string): Promise<any>
-  getBlob(blobId: string): Promise<any>
+  getBlobs(type: string): Promise<any[]>
+  saveBlob(id: string, url: string, data: Blob, type: string,remark: string | undefined): Promise<any>
+  getBlobsForTab(tabId: string): Promise<SavedBlob[]>
 
   saveRequest(url: string, requestInfo: RequestInfo): Promise<void>
 

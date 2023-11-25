@@ -10,6 +10,7 @@ import {MHtml} from "src/models/MHtml";
 import {MetaLink} from "src/models/MetaLink";
 import {RequestInfo} from "src/models/RequestInfo";
 import {Window} from "src/models/Window";
+import {SavedBlob} from "src/models/SavedBlob";
 
 export class LocalStoragePersistenceService implements PersistenceService {
 
@@ -188,11 +189,11 @@ export class LocalStoragePersistenceService implements PersistenceService {
   clear(name: string) {
   }
 
-  getBlob(blobId: string): Promise<any> {
-    return Promise.resolve(undefined);
+  getBlobsForTab(blobId: string): Promise<SavedBlob[]> {
+    return Promise.resolve([]);
   }
 
-  saveBlob(id: string, url: string, data: Blob, type: string): Promise<any> {
+  saveBlob(id: string, url: string, data: Blob, type: string,remark: string | undefined = undefined): Promise<any> {
     return Promise.resolve(undefined);
   }
 

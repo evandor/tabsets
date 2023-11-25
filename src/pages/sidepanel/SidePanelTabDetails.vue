@@ -108,16 +108,28 @@
         <!--          <q-tooltip>Schedule this tab</q-tooltip>-->
         <!--        </q-btn>-->
 
-        <q-btn v-if="usePermissionsStore().hasPermission('pageCapture') &&
-                    usePermissionsStore().hasFeature(FeatureIdent.SAVE_TAB)"
-               @click.stop="saveTab(tab)"
-               flat round color="primary" size="11px" icon="save"
-               :disabled="!isOpen(tab)">
-          <q-tooltip v-if="isOpen(tab)">Save this tab</q-tooltip>
-          <q-tooltip v-else>The tab must be open if you want to save it. Click on the link and come back here to save
-            it.
-          </q-tooltip>
-        </q-btn>
+        <template v-if="usePermissionsStore().hasPermission('pageCapture') &&
+                    usePermissionsStore().hasFeature(FeatureIdent.SAVE_TAB)">
+          <q-btn
+              @click.stop="savePng(tab)"
+              flat round color="primary" size="11px" icon="image"
+              :disabled="!isOpen(tab)">
+            <q-tooltip v-if="isOpen(tab)">Save this tab as PNG</q-tooltip>
+            <q-tooltip v-else>The tab must be open if you want to save it. Click on the link and come back here to save
+              it.
+            </q-tooltip>
+          </q-btn>
+
+          <q-btn
+              @click.stop="saveTab(tab)"
+              flat round color="primary" size="11px" icon="save"
+              :disabled="!isOpen(tab)">
+            <q-tooltip v-if="isOpen(tab)">Save this tab</q-tooltip>
+            <q-tooltip v-else>The tab must be open if you want to save it. Click on the link and come back here to save
+              it.
+            </q-tooltip>
+          </q-btn>
+        </template>
 
 
       </div>
@@ -156,6 +168,17 @@
         <q-card-section>
           <div class="row q-mx-sm q-mt-xs" v-for="mhtml in tab?.mhtmls">
             <MHtmlViewHelper :mhtmlId="mhtml" :tabId="tab?.id || 'unknown'"/>
+          </div>
+        </q-card-section>
+      </q-card>
+    </q-expansion-item>
+
+    <q-expansion-item label="Archived Images"
+                      v-if="usePermissionsStore().hasFeature(FeatureIdent.SAVE_TAB) && pngs.length > 0">
+      <q-card>
+        <q-card-section>
+          <div class="row q-mx-sm q-mt-xs" v-for="png in pngs">
+            <PngViewHelper :pngId="png.id" :created="png.created" :tabId="tab?.id || 'unknown'"/>
           </div>
         </q-card-section>
       </q-card>
@@ -320,6 +343,10 @@ import {SelectTabsetCommand} from "src/domain/tabsets/SelectTabset";
 import MHtmlPage from "pages/MHtmlPage.vue";
 import MHtmlViewHelper from "pages/sidepanel/helper/MHtmlViewHelper.vue";
 import {TabAndTabsetId} from "src/models/TabAndTabsetId";
+import PdfService from "src/services/PdfService";
+import {SavedBlob} from "src/models/SavedBlob";
+import PngViewHelper from "pages/sidepanel/helper/PngViewHelper.vue";
+import {SavePngCommand} from "src/domain/tabs/SavePng";
 
 const {inBexMode} = useUtils()
 
@@ -337,6 +364,7 @@ const searchIndex = ref<any>()
 const metaRows = ref<object[]>([])
 const metas = ref({})
 const tab = ref<Tab | undefined>(undefined)
+const pngs = ref<SavedBlob[]>([])
 
 const {selectTabset} = useTabsetService()
 
@@ -389,6 +417,8 @@ watchEffect(() => {
             metaRows.value = _.sortBy(metaRows.value, s => s['name' as keyof object])
           }
         })
+    PdfService.getPngsForTab(tab.value.id)
+        .then((blobs: SavedBlob[]) => pngs.value = blobs)
   }
 })
 
@@ -470,6 +500,12 @@ watchEffect(() => {
 
 const saveTab = (tab: Tab | undefined) =>
     useCommandExecutor().execute(new SaveTabCommand(useTabsStore().getCurrentTabset, tab))
+
+const savePng = (tab: Tab | undefined) => {
+  if (tab) {
+    useCommandExecutor().execute(new SavePngCommand(tab, "saved by user"))
+  }
+}
 
 const updatedTags = (val: string[]) => {
   if (tab.value) {

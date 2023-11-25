@@ -11,9 +11,9 @@
 
 
   <div class="q-pa-md q-gutter-sm">
-<!--    <q-banner rounded class="bg-grey-1 text-primary">-->
-<!--      Suggestions Info text: TODO-->
-<!--    </q-banner>-->
+    <!--    <q-banner rounded class="bg-grey-1 text-primary">-->
+    <!--      Suggestions Info text: TODO-->
+    <!--    </q-banner>-->
 
     <div class="row items-baseline q-ma-md">
       <div class="col-3 text-bold">
@@ -46,7 +46,9 @@
         URL
       </div>
       <div class="col-9 text-blue cursor-pointer">
-        <div @click="NavigationService.openOrCreateTab([suggestion?.data['url' as keyof object]])">{{suggestion?.data['url' as keyof object]}}</div>
+        <div @click="NavigationService.openOrCreateTab([suggestion?.data['url' as keyof object]])">
+          {{ suggestion?.data['url' as keyof object] }}
+        </div>
       </div>
     </div>
 
@@ -77,10 +79,19 @@
     <template v-if="suggestion?.type === SuggestionType.CONTENT_CHANGE">
       <div class="row">
         <div class="col-6">
-          <iframe :src="oldSnapshot()" style="width:100%;height:600px" />
+
+          <q-scroll-area style="height: 630px; width:100%;">
+            <div class="row no-wrap">
+              <img id="monitoringStartImg">
+            </div>
+          </q-scroll-area>
         </div>
         <div class="col-6">
-          <iframe :src="oldSnapshot()" style="width:100%;height:600px"/>
+          <q-btn label="Click to compare with current website" @click="createImageToCompare()"/>
+          <div class="text-caption q-mt-lg">
+            This will open a new tab, load the current version of the monitored website and
+            create an image which will be compared to the older snapshot.
+          </div>
         </div>
       </div>
     </template>
@@ -130,6 +141,7 @@ import {ApplySuggestionCommand} from "src/domain/suggestions/ApplySuggestionComm
 import {IgnoreSuggestionCommand} from "src/domain/suggestions/IgnoreSuggestionCommand";
 import {useSettingsStore} from "stores/settingsStore";
 import NavigationService from "src/services/NavigationService";
+import PdfService from "src/services/PdfService";
 
 const route = useRoute()
 
@@ -142,10 +154,27 @@ onMounted(() => {
   Analytics.firePageViewEvent('MainPanelTabAssignmentPage', document.location.href);
 })
 
-watchEffect(() => {
+watchEffect(async () => {
   suggestionId.value = route.params.suggestionId as string
   if (suggestionId.value) {
     suggestion.value = useSuggestionsStore().getSuggestion(suggestionId.value)
+    console.log("got suggestion", suggestion.value)
+    if (suggestion.value) {
+      const tabId = suggestion.value['data' as keyof object]['tabId' as keyof object]
+      console.log("got tabId", tabId)
+      const pngs = await PdfService.getPngsForTab(tabId)
+      console.log("pngs", pngs)
+
+      var urlCreator = window.URL || window.webkitURL;
+      var imageUrl = urlCreator.createObjectURL(pngs[0].content);
+      console.log("imageUrl", imageUrl)
+      const img1:HTMLImageElement | null = document.querySelector("#monitoringStartImg")
+      if (img1) {
+        img1.src = imageUrl;
+      }
+
+      return "chrome-extension://pndffocijjfpmphlhkoijmpfckjafdpl/www/index.html#/mainpanel/mhtml/7b961cb4-243f-430a-b28e-0e9421febdc2"
+    }
   }
 })
 
@@ -167,6 +196,16 @@ const ignoreSuggestion = () => {
 
 const oldSnapshot = () => {
   return "chrome-extension://pndffocijjfpmphlhkoijmpfckjafdpl/www/index.html#/mainpanel/mhtml/7b961cb4-243f-430a-b28e-0e9421febdc2"
+}
+
+const oldPng = async () => {
+
+}
+
+const createImageToCompare = () => {
+  if (suggestion.value?.url) {
+    NavigationService.openOrCreateTab([suggestion.value?.url], undefined, undefined, true)
+  }
 }
 
 </script>

@@ -57,6 +57,8 @@ import {SaveTabCommand} from "src/domain/tabs/SaveTab";
 import {useTabsStore} from "stores/tabsStore";
 import DialogButton from "components/buttons/DialogButton.vue";
 import {ExecutionResult} from "src/domain/ExecutionResult";
+import {SavePngCommand} from "src/domain/tabs/SavePng";
+import {useTabsetService} from "src/services/TabsetService2";
 
 defineEmits([
   ...useDialogPluginComponent.emits
@@ -82,7 +84,12 @@ const setMonitoring = (type: MonitoringType) => {
       }))
     }
     useCommandExecutor()
-        .execute(new SaveTabCommand(useTabsStore().getCurrentTabset, props.tab, callback))
+        // .execute(new SaveTabCommand(useTabsStore().getCurrentTabset, props.tab, callback))
+        .execute(new SavePngCommand(props.tab, "monitoring start"))
+        .then(() => {
+          useCommandExecutor().executeFromUi(new UpdateMonitoringCommand(props.tab, type, {}))
+          useTabsetService().saveCurrentTabset()
+        })
         .catch((err) => {
           useCommandExecutor().executeFromUi(new UpdateMonitoringCommand(props.tab, type, {
             monitoringSnapshotError: err

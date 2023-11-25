@@ -1,10 +1,7 @@
 import Command from "src/domain/Command";
 import {ExecutionResult} from "src/domain/ExecutionResult";
 import TabsetService from "src/services/TabsetService";
-import {useUtils} from "src/services/Utils";
-import {RestoreTabsetCommand} from "src/domain/tabsets/RestoreTabset";
 import {Monitor, MonitoringType} from "src/models/Monitor";
-import {useTabsStore} from "stores/tabsStore";
 import {Tab} from "src/models/Tab";
 
 export class UpdateMonitoringCommand implements Command<any> {
@@ -18,6 +15,10 @@ export class UpdateMonitoringCommand implements Command<any> {
 
     async execute(): Promise<ExecutionResult<string>> {
         const monitor = new Monitor(this.monitoringType, this.data)
+        if (this.monitoringType === MonitoringType.NONE) {
+            // clear blobs if any
+
+        }
         return TabsetService.setMonitoring(this.tab, monitor)
             .then(res => {
                 //sendMsg('tabset-renamed', {tabsetId: this.tabsetId, newName: this.newName, newColor: this.newColor})
