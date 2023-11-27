@@ -41,7 +41,7 @@ export abstract class FirebaseCall<T> {
       return api.post(urlToUse, data, {headers: {'AuthToken': token}, responseType: resType})
         .catch((err: any) => {
           FirebaseCall.handleError(err)
-          return Promise.reject("user not authenticated")
+          return Promise.reject(err)
         })
     })
   }

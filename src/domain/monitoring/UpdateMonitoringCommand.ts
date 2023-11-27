@@ -9,6 +9,7 @@ export class UpdateMonitoringCommand implements Command<any> {
     constructor(
         public tab: Tab,
         public monitoringType: MonitoringType,
+        public imageSnapshot: boolean = false,
         public data: object = {}
         ) {
     }
@@ -27,7 +28,9 @@ export class UpdateMonitoringCommand implements Command<any> {
             .then((oldValues: any) => Promise.resolve(
                 new ExecutionResult(
                     oldValues.oldName,
-                    "Started Monitoring"))
+                    this.monitoringType === MonitoringType.NONE ?
+                        "Stopped Monitoring" :
+                        this.imageSnapshot ? "Monitoring... creating PNG" : "Started Monitoring"))
             )
             .catch(err => Promise.reject(err))
 

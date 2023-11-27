@@ -25,7 +25,7 @@
           <q-banner
               v-if="checkToasts()"
               inline-actions dense rounded
-              style="font-size: smaller"
+              style="font-size: smaller;text-align: center"
               :class="toastBannerClass()">
             {{ useUiStore().toasts[0]?.msg }}
             <template v-slot:action v-if="useUiStore().toasts[0]?.action">

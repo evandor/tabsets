@@ -45,7 +45,7 @@ interface PersistenceService {
   deleteMHtml(id: string): Promise<void>
 
   getBlobs(type: string): Promise<any[]>
-  saveBlob(id: string, url: string, data: Blob, type: string,remark: string | undefined): Promise<any>
+  saveBlob(id: string, url: string, data: Blob, type: string, remark: string | undefined): Promise<any>
   getBlobsForTab(tabId: string): Promise<SavedBlob[]>
 
   saveRequest(url: string, requestInfo: RequestInfo): Promise<void>

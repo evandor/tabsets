@@ -30,6 +30,20 @@ class ContentUtils {
         // console.log("got token2", tokenSet)
         return tokenSet
     }
+
+    setBaseHref(tabUrl: string, html: string) {
+        try {
+            let url = new URL(tabUrl)
+            // TODO puppeteer seems to have issues with this approach
+            const headWithBase = "<head><base href=\"" + url.protocol + "//" + url.hostname + "/\" />"
+            //const headWithBase = "<head>"
+            console.log("replacing head with ", headWithBase)
+            return html.replace("<head>", headWithBase)
+        } catch (err) {
+            console.log("err", err)
+            return ""
+        }
+    }
 }
 
 export default new ContentUtils();

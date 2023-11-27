@@ -5,6 +5,7 @@ import {usePermissionsStore} from "stores/permissionsStore";
 import {useNotificationHandler} from "src/services/ErrorHandler";
 import PdfService from "src/services/PdfService";
 import TabsetService from "src/services/TabsetService";
+import ContentUtils from "src/utils/ContentUtils";
 
 const {handleSuccess, handleError} = useNotificationHandler()
 
@@ -33,21 +34,8 @@ export class SavePngCommand implements Command<any> {
             "getContent",
             {},
             (res) => {
-                console.log("res", res, this.chromeTabId)
-                let html = res.content
-                try {
-                    let url = new URL(this.tab.url || '')
-                    const headWithBase = "<head><base href=\"" + url.protocol + "//" + url.hostname + "/\" />"
-                    // TODO puppeteer seems to have issues with this approach
-                    //const headWithBase = "<head>"
-                    console.log("replacing head with ", headWithBase)
-                    html = html.replace("<head>", headWithBase)
-                } catch (err) {
-                    console.log("err", err)
-                }
-
-                //console.log("getContent", html)
-
+                console.log("getContent returned result with length", res?.content?.length, this.chromeTabId)
+                let html = ContentUtils.setBaseHref(this.tab.url || '', res.content)
                 return PdfService.screenshotFrom(html)
                     .then((res:any) => {
                         console.log("res", res, typeof res)
@@ -59,7 +47,7 @@ export class SavePngCommand implements Command<any> {
                         handleSuccess(
                             new ExecutionResult(
                                 "done",
-                                "Png was created"))
+                                "Snapshot created"))
                     }).catch((err:any) => {
                         return handleError(err)
                     })

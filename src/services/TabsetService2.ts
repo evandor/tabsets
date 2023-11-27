@@ -278,7 +278,7 @@ export function useTabsetService() {
             if (!tabset.type) {
                 tabset.type = TabsetType.DEFAULT
             }
-            console.log("saving tabset", tabset.name, tabset)
+            console.log("saving tabset", tabset.name)
             return db.saveTabset(tabset)
         }
         return Promise.reject("tabset id not set")
@@ -319,7 +319,7 @@ export function useTabsetService() {
         if (!tab || !tab.url) {
             return Promise.resolve('done')
         }
-        console.log("%c === saving text", "color:red", tab)
+        console.log("saving text", tab.id)
         const title = tab.title || ''
         const tabsetIds: string[] = tabsetsFor(tab.url)
         //console.log("checking candidates", useTabsStore().tabsets.values())
@@ -344,7 +344,7 @@ export function useTabsetService() {
                 _.forEach(tabset.tabs, (t: Tab) => {
                     //console.log("comparing", t.url, tab.url)
                     if (t.url === tab.url) {
-                        console.log("checking tab", tab.id)
+                        //console.log("checking tab", tab.id)
                         //console.log("updating meta data in tab", tab.id, metas)
                         if (metas['description' as keyof object]) {
                             t.description = metas['description' as keyof object]
@@ -392,7 +392,9 @@ export function useTabsetService() {
                         console.log("%ccontenthash set to", "color:blue", t.contentHash, oldContentHash)
                         if (usePermissionsStore().hasFeature(FeatureIdent.MONITORING) &&
                             t.monitor && t.monitor.type === MonitoringType.CONTENT_HASH) {
-                            if (oldContentHash && oldContentHash !== '' && t.contentHash !== '' && t.url) {
+                            if (oldContentHash && oldContentHash !== '' &&
+                                t.contentHash !== oldContentHash &&
+                                t.contentHash !== '' && t.url) {
                                 const id = btoa(t.url)
                                 const msg = "Info: Something might have changed in '" + (t.name ? t.name : t.title) + "'."
                                 const suggestion = new Suggestion(id, 'Content Change Detected',
@@ -524,7 +526,7 @@ export function useTabsetService() {
     const saveBlob = (tab: chrome.tabs.Tab | undefined, blob: Blob): Promise<string> => {
         if (tab && tab.url) {
             const id: string = uid()
-            return db.saveBlob(id, tab.url, blob, 'PNG')
+            return db.saveBlob(id, tab.url, blob, 'PNG','')
                 .then(() => Promise.resolve(id))
                 .catch(err => Promise.reject(err))
         }
@@ -534,7 +536,6 @@ export function useTabsetService() {
     const getBlob = (blobId: string): Promise<any> => {
         return db.getBlob(blobId)
     }
-
 
     const saveRequestFor = (url: string, requestInfo: RequestInfo) => {
         if (url) {
