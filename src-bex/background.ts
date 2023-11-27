@@ -1,5 +1,5 @@
 import {bexBackground} from 'quasar/wrappers';
-import Analytics from "src/utils/google-analytics";
+//import Analytics from "src/utils/google-analytics";
 import OnInstalledReason = chrome.runtime.OnInstalledReason;
 
 // https://stackoverflow.com/questions/49739438/when-and-how-does-a-pwa-update-itself
@@ -10,12 +10,14 @@ const updateTrigger = 10
 
 addEventListener('unhandledrejection', async (event) => {
   console.log("ga: fire error event")
-  Analytics.fireErrorEvent(event.reason);
+  // getting error: Service worker registration failed. Status code: 15
+  //Analytics.fireErrorEvent(event.reason);
 });
 
 chrome.runtime.onInstalled.addListener((callback) => {
   console.log("ga: fire event install", callback.reason, callback.previousVersion)
-  Analytics.fireEvent('install-' + callback.reason);
+  // getting error: "Service worker registration failed. Status code: 15"
+  // Analytics.fireEvent('install-' + callback.reason);
   if (callback.reason !== OnInstalledReason.CHROME_UPDATE) {
     chrome.tabs.create({
       active: true,
@@ -87,10 +89,9 @@ chrome.runtime.onStartup.addListener(() => {
 })
 
 export default bexBackground((bridge, cons/* , allActiveConnections */) => {
-  //console.log("bexBackgroundBridge!")
-  bridge.on('some.event', ({data, respond}) => {
-    console.log('Event receieved, responding...')
-    respond(data.someKey + ' hey!')
-  })
+  // bridge.on('some.event', ({data, respond}) => {
+  //   console.log('Event receieved, responding...')
+  //   respond(data.someKey + ' hey!')
+  // })
 
 });
