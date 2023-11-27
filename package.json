@@ -90,7 +90,7 @@
     "electron": "^27.1.0",
     "electron-packager": "^17.1.1",
     "fake-indexeddb": "^4.0.0",
-    "typescript": "^5.1.6",
+    "typescript": "^5.3.2",
     "vitest": "^0.34.0",
     "workbox-build": "^7.0.0",
     "workbox-cacheable-response": "^7.0.0",
