@@ -11,9 +11,6 @@ import {MetaLink} from "src/models/MetaLink";
 import {RequestInfo} from "src/models/RequestInfo";
 import {Window} from "src/models/Window";
 import {BlobType, SavedBlob} from "src/models/SavedBlob";
-import {quasar} from "@quasar/vite-plugin";
-import * as console from "console";
-import * as console from "console";
 
 export class LocalStoragePersistenceService implements PersistenceService {
 
