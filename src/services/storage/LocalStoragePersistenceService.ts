@@ -10,247 +10,257 @@ import {MHtml} from "src/models/MHtml";
 import {MetaLink} from "src/models/MetaLink";
 import {RequestInfo} from "src/models/RequestInfo";
 import {Window} from "src/models/Window";
-import {SavedBlob} from "src/models/SavedBlob";
+import {BlobType, SavedBlob} from "src/models/SavedBlob";
+import {quasar} from "@quasar/vite-plugin";
+import * as console from "console";
+import * as console from "console";
 
 export class LocalStoragePersistenceService implements PersistenceService {
 
-  private quasar: QVueGlobals;
+    private quasar: QVueGlobals;
 
-  constructor(quasar: QVueGlobals) {
-    this.quasar = quasar
-  }
-
-  deleteSpace(spaceId: string): void {
-    throw new Error("Method not implemented.");
-  }
-
-  saveActiveFeatures(val: string[]) {
-    if (this.quasar.localStorage) {
-      this.quasar.localStorage.set("ui.activeFeatures", val)
-    } else {
-      console.warn("local storage not defined")
+    constructor(quasar: QVueGlobals) {
+        this.quasar = quasar
     }
-  }
 
-  setInactiveDefaultFeatures(val: string[]) {
-    this.quasar.localStorage.set("ui.inActiveDefaultFeatures", val)
-  }
+    deleteSpace(spaceId: string): void {
+        throw new Error("Method not implemented.");
+    }
 
-  getActiveFeatures(): Promise<string[]> {
-    return Promise.resolve(this.quasar.localStorage?.getItem('ui.activeFeatures') as string[] || [])
-  }
+    saveActiveFeatures(val: string[]) {
+        if (this.quasar.localStorage) {
+            this.quasar.localStorage.set("ui.activeFeatures", val)
+        } else {
+            console.warn("local storage not defined")
+        }
+    }
 
-  getInactiveDefaultFeatures(): Promise<string[]> {
-    return Promise.resolve(this.quasar.localStorage?.getItem('ui.inActiveDefaultFeatures') as string[] || [])
-  }
+    setInactiveDefaultFeatures(val: string[]) {
+        this.quasar.localStorage.set("ui.inActiveDefaultFeatures", val)
+    }
 
-  addNotification(notification: Notification): Promise<any> {
-    return Promise.resolve(undefined);
-  }
+    getActiveFeatures(): Promise<string[]> {
+        return Promise.resolve(this.quasar.localStorage?.getItem('ui.activeFeatures') as string[] || [])
+    }
 
-  addSpace(space: Space): Promise<any> {
-    return Promise.resolve(undefined);
-  }
+    getInactiveDefaultFeatures(): Promise<string[]> {
+        return Promise.resolve(this.quasar.localStorage?.getItem('ui.inActiveDefaultFeatures') as string[] || [])
+    }
 
-  addSuggestion(suggestion: Suggestion): Promise<any> {
-    return Promise.resolve(undefined);
-  }
+    addNotification(notification: Notification): Promise<any> {
+        return Promise.resolve(undefined);
+    }
 
-  removeSuggestion(ident: StaticSuggestionIdent) {
-    throw new Error("Method not implemented.");
-  }
+    addSpace(space: Space): Promise<any> {
+        return Promise.resolve(undefined);
+    }
 
-  setSuggestionState(id: string, state: SuggestionState) {
-    throw new Error("Method not implemented.");
-  }
+    addSuggestion(suggestion: Suggestion): Promise<any> {
+        return Promise.resolve(undefined);
+    }
 
-  cleanUpContent(): Promise<SearchDoc[]> {
-    return Promise.resolve([]);
-  }
+    removeSuggestion(ident: StaticSuggestionIdent) {
+        throw new Error("Method not implemented.");
+    }
 
-  cleanUpRequests(): Promise<void> {
-    return Promise.resolve(undefined);
-  }
+    setSuggestionState(id: string, state: SuggestionState) {
+        throw new Error("Method not implemented.");
+    }
 
-  cleanUpThumbnails(): Promise<void> {
-    return Promise.resolve(undefined);
-  }
+    cleanUpContent(): Promise<SearchDoc[]> {
+        return Promise.resolve([]);
+    }
 
-  compactDb(): Promise<any> {
-    return Promise.resolve(undefined);
-  }
+    cleanUpRequests(): Promise<void> {
+        return Promise.resolve(undefined);
+    }
 
-  deleteContent(url: string): Promise<void> {
-    return Promise.resolve(undefined);
-  }
+    cleanUpThumbnails(): Promise<void> {
+        return Promise.resolve(undefined);
+    }
 
-  deleteTabset(tabsetId: string): Promise<any> {
-    return Promise.resolve(undefined);
-  }
+    compactDb(): Promise<any> {
+        return Promise.resolve(undefined);
+    }
 
-  cleanUpTabsets(): Promise<void> {
-    return Promise.resolve(undefined);
-  }
+    deleteContent(url: string): Promise<void> {
+        return Promise.resolve(undefined);
+    }
 
-  deleteThumbnail(url: string): Promise<void> {
-    return Promise.resolve(undefined);
-  }
+    deleteTabset(tabsetId: string): Promise<any> {
+        return Promise.resolve(undefined);
+    }
 
-  getContent(url: string): Promise<object> {
-    return Promise.resolve({});
-  }
+    cleanUpTabsets(): Promise<void> {
+        return Promise.resolve(undefined);
+    }
 
-  getContents(): Promise<any[]> {
-    return Promise.resolve([]);
-  }
+    deleteThumbnail(url: string): Promise<void> {
+        return Promise.resolve(undefined);
+    }
 
-  getLinks(url: string): Promise<object> {
-    return Promise.resolve({});
-  }
+    getContent(url: string): Promise<object> {
+        return Promise.resolve({});
+    }
 
-  getMHtml(url: string): Promise<object> {
-    return Promise.resolve({});
-  }
+    getContents(): Promise<any[]> {
+        return Promise.resolve([]);
+    }
 
-  getMHtmlInline(url: string): Promise<object> {
-    return Promise.resolve({});
-  }
+    getLinks(url: string): Promise<object> {
+        return Promise.resolve({});
+    }
 
-  getMHtmls(): Promise<MHtml[]> {
-    return Promise.resolve([]);
-  }
+    getMHtml(url: string): Promise<object> {
+        return Promise.resolve({});
+    }
 
-  getMetaLinks(url: string): Promise<object> {
-    return Promise.resolve({});
-  }
+    getMHtmlInline(url: string): Promise<object> {
+        return Promise.resolve({});
+    }
 
-  getNotifications(onlyNew: boolean): Promise<Notification[]> {
-    return Promise.resolve([]);
-  }
+    getMHtmls(): Promise<MHtml[]> {
+        return Promise.resolve([]);
+    }
 
-  getRequest(url: string): Promise<string> {
-    return Promise.resolve("");
-  }
+    getMetaLinks(url: string): Promise<object> {
+        return Promise.resolve({});
+    }
 
-  getSuggestions(): Promise<Suggestion[]> {
-    return Promise.resolve([]);
-  }
+    getNotifications(onlyNew: boolean): Promise<Notification[]> {
+        return Promise.resolve([]);
+    }
 
-  getThumbnail(url: string): Promise<string> {
-    return Promise.resolve("");
-  }
+    getRequest(url: string): Promise<string> {
+        return Promise.resolve("");
+    }
 
-  loadSpaces(): Promise<any> {
-    return Promise.resolve(undefined);
-  }
+    getSuggestions(): Promise<Suggestion[]> {
+        return Promise.resolve([]);
+    }
 
-  loadTabsets(): Promise<void> {
-    return Promise.resolve(undefined);
-  }
+    getThumbnail(url: string): Promise<string> {
+        return Promise.resolve("");
+    }
 
-  notificationRead(notificationId: string): Promise<void> {
-    return Promise.resolve(undefined);
-  }
+    loadSpaces(): Promise<any> {
+        return Promise.resolve(undefined);
+    }
 
-  saveContent(tab: Tab, text: string, metas: object, title: string, tabsetIds: string[]): Promise<any> {
-    return Promise.resolve(undefined);
-  }
+    loadTabsets(): Promise<void> {
+        return Promise.resolve(undefined);
+    }
 
-  saveMHtml(tab: Tab, mhtml: Blob): Promise<string> {
-    return Promise.resolve("");
-  }
+    notificationRead(notificationId: string): Promise<void> {
+        return Promise.resolve(undefined);
+    }
 
-  saveStats(date: string, dataset: object): void {
-  }
+    saveContent(tab: Tab, text: string, metas: object, title: string, tabsetIds: string[]): Promise<any> {
+        return Promise.resolve(undefined);
+    }
 
-  saveTabset(tabset: Tabset): Promise<any> {
-    return Promise.resolve(undefined);
-  }
+    saveMHtml(tab: Tab, mhtml: Blob): Promise<string> {
+        return Promise.resolve("");
+    }
 
-  saveThumbnail(tab: chrome.tabs.Tab, thumbnail: string): Promise<void> {
-    return Promise.resolve(undefined);
-  }
+    saveStats(date: string, dataset: object): void {
+    }
 
-  updateContent(url: string): Promise<object> {
-    return Promise.resolve({});
-  }
+    saveTabset(tabset: Tabset): Promise<any> {
+        return Promise.resolve(undefined);
+    }
 
-  updateThumbnail(url: string): Promise<void> {
-    return Promise.resolve(undefined);
-  }
+    saveThumbnail(tab: chrome.tabs.Tab, thumbnail: string): Promise<void> {
+        return Promise.resolve(undefined);
+    }
 
-  loadCategories(): Promise<any> {
-    return Promise.resolve(undefined);
-  }
+    updateContent(url: string): Promise<object> {
+        return Promise.resolve({});
+    }
 
-  reloadTabset(tabsetId: string): void {
-  }
+    updateThumbnail(url: string): Promise<void> {
+        return Promise.resolve(undefined);
+    }
 
-  clear(name: string) {
-  }
+    loadCategories(): Promise<any> {
+        return Promise.resolve(undefined);
+    }
 
-  getBlobsForTab(blobId: string): Promise<SavedBlob[]> {
-    return Promise.resolve([]);
-  }
+    reloadTabset(tabsetId: string): void {
+    }
 
-  saveBlob(id: string, url: string, data: Blob, type: string,remark: string | undefined = undefined): Promise<any> {
-    return Promise.resolve(undefined);
-  }
+    clear(name: string) {
+    }
 
-  saveLinks(url: string, links: any): Promise<void> {
-    return Promise.resolve(undefined);
-  }
+    getBlobsForTab(blobId: string): Promise<SavedBlob[]> {
+        return Promise.resolve([]);
+    }
 
-  saveMetaLinks(url: string, metaLinks: MetaLink[]): Promise<void> {
-    return Promise.resolve(undefined);
-  }
+    saveBlob(id: string, url: string, data: Blob, type: BlobType, remark: string | undefined = undefined): Promise<any> {
+        return Promise.resolve(undefined);
+    }
 
-  saveRequest(url: string, requestInfo: RequestInfo): Promise<void> {
-    return Promise.resolve(undefined);
-  }
+    saveLinks(url: string, links: any): Promise<void> {
+        return Promise.resolve(undefined);
+    }
 
-  addGroup(group: chrome.tabGroups.TabGroup): Promise<any> {
-    return Promise.resolve(undefined);
-  }
+    saveMetaLinks(url: string, metaLinks: MetaLink[]): Promise<void> {
+        return Promise.resolve(undefined);
+    }
 
-  addWindow(window: Window): Promise<any> {
-    return Promise.resolve(undefined);
-  }
+    saveRequest(url: string, requestInfo: RequestInfo): Promise<void> {
+        return Promise.resolve(undefined);
+    }
 
-  deleteGroupByTitle(title: string): Promise<void> {
-    return Promise.resolve(undefined);
-  }
+    addGroup(group: chrome.tabGroups.TabGroup): Promise<any> {
+        return Promise.resolve(undefined);
+    }
 
-  deleteMHtml(id: string): Promise<void> {
-    return Promise.resolve(undefined);
-  }
+    addWindow(window: Window): Promise<any> {
+        return Promise.resolve(undefined);
+    }
 
-  getGroups(): Promise<chrome.tabGroups.TabGroup[]> {
-    return Promise.resolve([]);
-  }
+    deleteGroupByTitle(title: string): Promise<void> {
+        return Promise.resolve(undefined);
+    }
 
-  getWindow(windowId: number): Promise<Window | undefined> {
-    return Promise.resolve(undefined);
-  }
+    deleteMHtml(id: string): Promise<void> {
+        return Promise.resolve(undefined);
+    }
 
-  getWindows(): Promise<Window[]> {
-    return Promise.resolve([]);
-  }
+    getGroups(): Promise<chrome.tabGroups.TabGroup[]> {
+        return Promise.resolve([]);
+    }
 
-  removeWindow(windowId: number): Promise<void> {
-    return Promise.resolve(undefined);
-  }
+    getWindow(windowId: number): Promise<Window | undefined> {
+        return Promise.resolve(undefined);
+    }
 
-  updateGroup(group: chrome.tabGroups.TabGroup): Promise<any> {
-    return Promise.resolve(undefined);
-  }
+    getWindows(): Promise<Window[]> {
+        return Promise.resolve([]);
+    }
 
-  updateWindow(window: Window): Promise<void> {
-    return Promise.resolve(undefined);
-  }
+    removeWindow(windowId: number): Promise<void> {
+        return Promise.resolve(undefined);
+    }
 
-  upsertWindow(window: Window, windowName: string): Promise<void> {
-    return Promise.resolve(undefined);
-  }
+    updateGroup(group: chrome.tabGroups.TabGroup): Promise<any> {
+        return Promise.resolve(undefined);
+    }
+
+    updateWindow(window: Window): Promise<void> {
+        return Promise.resolve(undefined);
+    }
+
+    upsertWindow(window: Window, windowName: string): Promise<void> {
+        return Promise.resolve(undefined);
+    }
+
+    getBlobs(type: BlobType): Promise<any[]> {
+        return Promise.resolve([]);
+    }
+
+    deleteBlob(tabId: string, elementId: string): void {
+    }
 
 }

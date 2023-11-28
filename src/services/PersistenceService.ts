@@ -8,7 +8,7 @@ import {StaticSuggestionIdent, Suggestion, SuggestionState} from "src/models/Sug
 import {MetaLink} from "src/models/MetaLink";
 import {Window} from "src/models/Window";
 import {RequestInfo} from "src/models/RequestInfo";
-import {SavedBlob} from "src/models/SavedBlob";
+import {BlobType, SavedBlob} from "src/models/SavedBlob";
 
 interface PersistenceService {
 
@@ -44,9 +44,10 @@ interface PersistenceService {
   getMHtmls(): Promise<MHtml[]>
   deleteMHtml(id: string): Promise<void>
 
-  getBlobs(type: string): Promise<any[]>
-  saveBlob(id: string, url: string, data: Blob, type: string, remark: string | undefined): Promise<any>
+  getBlobs(type: BlobType): Promise<any[]>
+  saveBlob(id: string, url: string, data: Blob, type: BlobType, remark: string | undefined): Promise<any>
   getBlobsForTab(tabId: string): Promise<SavedBlob[]>
+  deleteBlob(tabId: string, elementId: string): void;
 
   saveRequest(url: string, requestInfo: RequestInfo): Promise<void>
 
@@ -87,6 +88,7 @@ interface PersistenceService {
   upsertWindow(window: Window, windowName: string): Promise<void>
 
   clear(name: string):any
+
 }
 
 export default PersistenceService

@@ -3,10 +3,6 @@
   <q-page style="padding-top: 50px">
     <div class="q-ma-none q-pa-none">
 
-      <div class="q-ma-none" v-if="tabsetId">
-        <SidePanelTabInfo :tabsetId="tabsetId"/>
-      </div>
-
       <SidePanelPageTabList
           v-if="tabset"
           :tabsetType="tabset.type"

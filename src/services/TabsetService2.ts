@@ -414,7 +414,7 @@ export function useTabsetService() {
                                             }, (callback: any) => {
                                                 //console.log("got callback", callback)
                                             })
-                                            useSuggestionsStore().updateSuggestionState(id, SuggestionState.NOTIFICATION)
+                                            //useSuggestionsStore().updateSuggestionState(id, SuggestionState.NOTIFICATION)
                                         }
                                     })
                                     .catch((err) => {

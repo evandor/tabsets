@@ -66,6 +66,7 @@
   <!--      <UnassignedTabs v-else-if="tab ===  DrawerTabs.UNASSIGNED_TABS" :filter="filter"/>-->
   <ByDomainList v-else-if="tab ===  DrawerTabs.GROUP_BY_HOST_TABS"/>
   <SavedTabs v-else-if="tab ===  DrawerTabs.SAVED_TABS"/>
+  <SavedPdfs v-else-if="tab ===  DrawerTabs.SAVED_TABS_AS_PDF"/>
 <!--  <TabsetAsSidebar v-else-if="tab ===  DrawerTabs.SIDEBAR"/>-->
 <!--  <NewTabUrls v-else-if="tab ===  DrawerTabs.NEW_TAB_URLS"/>-->
   <RssTabs v-else-if="tab ===  DrawerTabs.RSS"/>
@@ -107,6 +108,7 @@ import SidePanelTagsListViewer from "pages/sidepanel/SidePanelTagsListViewer.vue
 import TagListViewer from "components/views/TagListViewer.vue";
 import ByDomainList from "components/ByDomainList.vue";
 import OpenTabsView from "components/views/OpenTabsView.vue";
+import SavedPdfs from "components/SavedPdfs.vue";
 
 const route = useRoute()
 
@@ -139,6 +141,10 @@ const drawerLabel = () => {
       return "Grouped by Host"
     case DrawerTabs.SAVED_TABS:
       return "Saved Pages"
+    case DrawerTabs.SAVED_TABS_AS_PDF:
+      return "Saved PDFs"
+    case DrawerTabs.SAVED_TABS_AS_PNG:
+      return "Saved Images"
     case DrawerTabs.RSS:
       return "RSS Sidebar"
     case DrawerTabs.SCHEDULED:

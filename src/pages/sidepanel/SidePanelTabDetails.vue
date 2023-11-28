@@ -108,8 +108,7 @@
         <!--          <q-tooltip>Schedule this tab</q-tooltip>-->
         <!--        </q-btn>-->
 
-        <template v-if="usePermissionsStore().hasPermission('pageCapture') &&
-                    usePermissionsStore().hasFeature(FeatureIdent.SAVE_TAB)">
+        <template v-if="usePermissionsStore().hasFeature(FeatureIdent.SAVE_TAB_AS_PNG)">
           <q-btn
               @click.stop="savePng(tab)"
               flat round color="primary" size="11px" icon="image"
@@ -119,7 +118,21 @@
               it.
             </q-tooltip>
           </q-btn>
+        </template>
 
+        <template v-if="usePermissionsStore().hasFeature(FeatureIdent.SAVE_TAB_AS_PDF)">
+          <q-btn
+              @click.stop="savePdf(tab)"
+              flat round color="primary" size="11px" icon="o_picture_as_pdf"
+              :disabled="!isOpen(tab)">
+            <q-tooltip v-if="isOpen(tab)">Save this tab as a PDF File</q-tooltip>
+            <q-tooltip v-else>The tab must be open if you want to save it. Click on the link and come back here to save
+              it.
+            </q-tooltip>
+          </q-btn>
+        </template>
+
+        <template v-if="usePermissionsStore().hasFeature(FeatureIdent.SAVE_TAB)">
           <q-btn
               @click.stop="saveTab(tab)"
               flat round color="primary" size="11px" icon="save"
@@ -174,11 +187,22 @@
     </q-expansion-item>
 
     <q-expansion-item label="Archived Images"
-                      v-if="usePermissionsStore().hasFeature(FeatureIdent.SAVE_TAB) && pngs.length > 0">
+                      v-if="usePermissionsStore().hasFeature(FeatureIdent.SAVE_TAB_AS_PNG) && pngs.length > 0">
       <q-card>
         <q-card-section>
           <div class="row q-mx-sm q-mt-xs" v-for="png in pngs">
             <PngViewHelper :pngId="png.id" :created="png.created" :tabId="tab?.id || 'unknown'"/>
+          </div>
+        </q-card-section>
+      </q-card>
+    </q-expansion-item>
+
+    <q-expansion-item label="Archived PDFs"
+                      v-if="usePermissionsStore().hasFeature(FeatureIdent.SAVE_TAB_AS_PNG) && pdfs.length > 0">
+      <q-card>
+        <q-card-section>
+          <div class="row q-mx-sm q-mt-xs" v-for="pdf in pdfs">
+            <PngViewHelper :pngId="pdf.id" :created="pdf.created" :tabId="tab?.id || 'unknown'"/>
           </div>
         </q-card-section>
       </q-card>
@@ -347,6 +371,7 @@ import PdfService from "src/services/PdfService";
 import {SavedBlob} from "src/models/SavedBlob";
 import PngViewHelper from "pages/sidepanel/helper/PngViewHelper.vue";
 import {SavePngCommand} from "src/domain/tabs/SavePng";
+import {SavePdfCommand} from "src/domain/tabs/SavePdf";
 
 const {inBexMode} = useUtils()
 
@@ -365,6 +390,7 @@ const metaRows = ref<object[]>([])
 const metas = ref({})
 const tab = ref<Tab | undefined>(undefined)
 const pngs = ref<SavedBlob[]>([])
+const pdfs = ref<SavedBlob[]>([])
 
 const {selectTabset} = useTabsetService()
 
@@ -419,6 +445,8 @@ watchEffect(() => {
         })
     PdfService.getPngsForTab(tab.value.id)
         .then((blobs: SavedBlob[]) => pngs.value = blobs)
+    PdfService.getPdfsForTab(tab.value.id)
+        .then((blobs: SavedBlob[]) => pdfs.value = blobs)
   }
 })
 
@@ -504,6 +532,12 @@ const saveTab = (tab: Tab | undefined) =>
 const savePng = (tab: Tab | undefined) => {
   if (tab) {
     useCommandExecutor().execute(new SavePngCommand(tab, "saved by user"))
+  }
+}
+
+const savePdf = (tab: Tab | undefined) => {
+  if (tab) {
+    useCommandExecutor().execute(new SavePdfCommand(tab, "saved by user"))
   }
 }
 

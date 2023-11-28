@@ -57,15 +57,6 @@
                 v-html="nameOrTitle(props.tab as Tab)"/>
           <span v-else :class="isCurrentTab(props.tab) ? 'text-bold':''">{{ nameOrTitle(props.tab as Tab) }}</span>
 
-          <q-icon v-if="(props.tab as Tab).placeholders"
-                  name="published_with_changes" class="q-ml-sm" color="accent">
-            <q-tooltip class="tooltip-small">This tab is created by substituting parts of its URL</q-tooltip>
-          </q-icon>
-          <q-icon v-if="(props.tab as Tab).monitor"
-                  @click.stop="monitoringDialog(props.tab as Tab)"
-                  name="o_change_circle" class="q-ml-sm" color="accent">
-            <q-tooltip class="tooltip-small">This tab is being monitored for changes</q-tooltip>
-          </q-icon>
         </div>
 
       </div>
@@ -122,7 +113,7 @@
              @mouseleave="hoveredTab = undefined"
              style="max-width:25px;font-size: 12px;color:#bfbfbf">
             <span v-if="hoveredOver(tab.id)">
-              <q-icon name="more_horiz" color="accent" size="16px"/>
+              <q-icon name="more_horiz" color="black" size="16px"/>
             </span>
           <span v-else>
               <q-icon color="primary" size="16px"/>
@@ -136,7 +127,7 @@
 
     </q-item-label>
 
-    <!-- === group and last active === -->
+    <!-- === group, last active & icons === -->
     <q-item-label
         style="width:100%;margin-top:0"
         v-if="props.tab?.url"
@@ -149,7 +140,24 @@
                v-if="useUiStore().listDetailLevelGreaterEqual(ListDetailLevel.SOME)">
             <span v-if="props.sorting === TabSorting.AGE">
               <q-icon name="arrow_right" size="16px"/>
-           </span>
+            </span>
+
+            <template v-if="(props.tab as Tab).monitor">
+              <q-icon
+                  @click.stop="monitoringDialog(props.tab as Tab)"
+                  name="o_change_circle" class="q-mr-xs" color="accent">
+                <q-tooltip class="tooltip-small">This tab is being monitored for changes</q-tooltip>
+              </q-icon>
+              <span>-</span>
+            </template>
+
+            <template v-if="(props.tab as Tab).placeholders">
+              <q-icon name="published_with_changes" class="q-mr-xs" color="accent">
+                <q-tooltip class="tooltip-small">This tab is created by substituting parts of its URL</q-tooltip>
+              </q-icon>
+              <span>-</span>
+            </template>
+
             <template v-if="groupName && usePermissionsStore().hasFeature(FeatureIdent.TAB_GROUPS)">
               Group <em>{{ groupName }}</em>
               <q-icon name="arrow_drop_down" class="q-mr-none" size="xs" color="text-grey-5"/>
@@ -175,7 +183,9 @@
               </q-menu>
               -
             </template>
+
             {{ formatDate(props.tab.lastActive) }}
+
           </div>
         </div>
       </div>

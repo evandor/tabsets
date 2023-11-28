@@ -374,7 +374,6 @@ watchEffect(() => {
 
 
 function inIgnoredMessages(message: any) {
-  console.log("ignoring", message)
   return message.msg === "html2text" ||
       message.msg === "captureThumbnail" ||
       message.msg === "html2links"

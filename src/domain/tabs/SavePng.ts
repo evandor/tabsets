@@ -6,6 +6,7 @@ import {useNotificationHandler} from "src/services/ErrorHandler";
 import PdfService from "src/services/PdfService";
 import TabsetService from "src/services/TabsetService";
 import ContentUtils from "src/utils/ContentUtils";
+import {BlobType} from "src/models/SavedBlob";
 
 const {handleSuccess, handleError} = useNotificationHandler()
 
@@ -41,7 +42,7 @@ export class SavePngCommand implements Command<any> {
                         console.log("res", res, typeof res)
                         console.log("res2", typeof res.data)
 
-                        PdfService.saveBlob(this.tab, res.data, 'PNG', this.remark)
+                        PdfService.saveBlob(this.tab, res.data, BlobType.PNG, this.remark)
 
 
                         handleSuccess(

@@ -67,7 +67,7 @@
     </div>
 
     <div class="col-12 q-my-md">
-      <div>{{ text.get(feature)?.description }}</div>
+      <div v-html="text.get(feature)?.description"></div>
       <div v-if="hasFeature()" class="text-primary q-mt-md">{{ text.get(feature)?.activatedMsg }}</div>
     </div>
 
@@ -183,6 +183,16 @@ text.set(FeatureIdent.SAVE_TAB.toLowerCase(), {
   name: 'Save Tabs',
   description: 'You can save tabs in a format called MHtml.',
   permissions: ['pageCapture']
+})
+text.set(FeatureIdent.SAVE_TAB_AS_PNG.toLowerCase(), {
+  name: 'Save Tab As Image',
+  description: 'You can save tabs as a PNG Image.<br>Creating an image will utilize an external server.',
+  permissions: []
+})
+text.set(FeatureIdent.SAVE_TAB_AS_PDF.toLowerCase(), {
+  name: 'Save Tab As PDF',
+  description: 'You can save tabs as a PDF File.',
+  permissions: []
 })
 text.set(FeatureIdent.RSS.toLowerCase(), {
   name: 'RSS View',

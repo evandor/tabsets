@@ -99,7 +99,19 @@
             :feature="FeatureIdent.SAVE_TAB"
             :drawer="DrawerTabs.SAVED_TABS"
             icon="o_save"
-            tooltip="The List of Urls displayed when you open a new tab in your Browser"/>
+            tooltip="List of MTHML Snapshots"/>
+
+        <ToolbarButton
+            :feature="FeatureIdent.SAVE_TAB_AS_PNG"
+            :drawer="DrawerTabs.SAVED_TABS_AS_PNG"
+            icon="o_image"
+            tooltip="The List of PNGs"/>
+
+        <ToolbarButton
+            :feature="FeatureIdent.SAVE_TAB_AS_PDF"
+            :drawer="DrawerTabs.SAVED_TABS_AS_PDF"
+            icon="o_picture_as_pdf"
+            tooltip="The List of PDFs"/>
 
         <ToolbarButton
             :feature="FeatureIdent.GROUP_BY_DOMAIN"

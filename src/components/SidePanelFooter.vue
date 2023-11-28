@@ -115,7 +115,7 @@ import {useUtils} from "src/services/Utils";
 import {useWindowsStore} from "src/stores/windowsStore";
 import {useSuggestionsStore} from "stores/suggestionsStore";
 import _ from "lodash";
-import {SuggestionState, SuggestionType} from "src/models/Suggestion";
+import {SuggestionState} from "src/models/Suggestion";
 import SuggestionDialog from "components/dialogues/SuggestionDialog.vue";
 import {TabsetStatus} from "src/models/Tabset";
 import {ToastType} from "src/models/Toast";
@@ -139,33 +139,36 @@ const doShowSuggestionButton = ref(false)
 const transitionGraceTime = ref(false)
 
 watchEffect(() => {
-  const suggestions = useSuggestionsStore().getSuggestions([SuggestionState.NEW, SuggestionState.DECISION_DELAYED])
+  const suggestions = useSuggestionsStore().getSuggestions(
+      [SuggestionState.NEW, SuggestionState.DECISION_DELAYED, SuggestionState.NOTIFICATION])
   console.log("watcheffect for", suggestions)
   showSuggestionButton.value =
       doShowSuggestionButton.value ||
       (useUiStore().sidePanelActiveViewIs(SidePanelView.MAIN) &&
           _.findIndex(suggestions, s => {
-            if (s.state === SuggestionState.APPLIED || s.state === SuggestionState.IGNORED) {
-              return false
-            }
-            if (!usePermissionsStore().hasFeature(FeatureIdent.RSS)) {
-              return (s.state === SuggestionState.NEW)
-                  && s.type !== SuggestionType.RSS
-            }
-            return s.state === SuggestionState.NEW
+            // if (s.state === SuggestionState.APPLIED || s.state === SuggestionState.IGNORED) {
+            //   return false
+            // }
+            // if (!usePermissionsStore().hasFeature(FeatureIdent.RSS)) {
+            //   return (s.state === SuggestionState.NEW)
+            //       && s.type !== SuggestionType.RSS
+            // }
+            console.log("s", s, usePermissionsStore().hasFeature(FeatureIdent.NOTIFICATIONS))
+            return s.state === SuggestionState.NEW ||
+                (s.state === SuggestionState.NOTIFICATION && !usePermissionsStore().hasFeature(FeatureIdent.NOTIFICATIONS))
           }) >= 0)
 
   showSuggestionIcon.value =
       !doShowSuggestionButton.value &&
       useUiStore().sidePanelActiveViewIs(SidePanelView.MAIN) &&
       _.findIndex(suggestions, s => {
-        if (s.state === SuggestionState.APPLIED || s.state === SuggestionState.IGNORED) {
-          return false
-        }
-        if (!usePermissionsStore().hasFeature(FeatureIdent.RSS)) {
-          return (s.state === SuggestionState.DECISION_DELAYED)
-              && s.type !== SuggestionType.RSS
-        }
+        // if (s.state === SuggestionState.APPLIED || s.state === SuggestionState.IGNORED) {
+        //   return false
+        // }
+        // if (!usePermissionsStore().hasFeature(FeatureIdent.RSS)) {
+        //   return (s.state === SuggestionState.DECISION_DELAYED)
+        //       && s.type !== SuggestionType.RSS
+        // }
         return s.state === SuggestionState.DECISION_DELAYED
       }) >= 0
 })
@@ -207,13 +210,15 @@ const suggestionDialog = () => {
   doShowSuggestionButton.value = false
   $q.dialog({
     component: SuggestionDialog, componentProps: {
-      suggestion: useSuggestionsStore().getSuggestions([SuggestionState.NEW, SuggestionState.DECISION_DELAYED]).at(0),
+      suggestion: useSuggestionsStore()
+          .getSuggestions([SuggestionState.NEW, SuggestionState.DECISION_DELAYED, SuggestionState.NOTIFICATION]).at(0),
       fromPanel: true
     }
   })
 }
 const suggestionsLabel = () => {
-  const suggestions = useSuggestionsStore().getSuggestions([SuggestionState.NEW, SuggestionState.DECISION_DELAYED])
+  const suggestions = useSuggestionsStore().getSuggestions(
+      [SuggestionState.NEW, SuggestionState.DECISION_DELAYED, SuggestionState.NOTIFICATION])
   return suggestions.length === 1 ?
       suggestions.length + " New Suggestion" :
       suggestions.length + " New Suggestions"

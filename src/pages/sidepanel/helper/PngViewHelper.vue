@@ -3,14 +3,14 @@
   <div class="col-6 text-right text-caption">{{ date.formatDate(created, 'DD.MM.YYYY HH:mm') }}</div>
   <div class="col-3 text-caption">
     <q-icon name="o_open_in_new" class="q-ml-md cursor-pointer" @click="openMhtml"/>
-    <q-icon name="o_delete" class="q-ml-md cursor-pointer" @click="deleteMhtml"/>
+    <q-icon name="o_delete" class="q-ml-md cursor-pointer" @click="deletePdf()"/>
   </div>
 </template>
 
 <script lang="ts" setup>
-import MHtmlService from "src/services/MHtmlService";
 import {ref} from "vue";
 import {date} from "quasar";
+import PdfService from "src/services/PdfService";
 
 const mhtml = ref<any>()
 
@@ -20,12 +20,7 @@ const props = defineProps({
   tabId: {type: String, required: true}
 })
 
-// MHtmlService.getMHtml(props.pngId)
-//     .then((res: any) => {
-//       mhtml.value = res
-//     })
-
 const openMhtml = () => window.open(chrome.runtime.getURL('www/index.html#/mainpanel/png/' + props.tabId + "/" + props.pngId));
-const deleteMhtml = () => MHtmlService.deleteMHtml(props.tabId, props.pngId)
+const deletePdf = () => PdfService.deleteBlob(props.tabId, props.pngId)
 
 </script>

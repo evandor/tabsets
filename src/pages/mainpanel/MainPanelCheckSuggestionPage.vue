@@ -151,13 +151,13 @@
       </div>
     </div>
 
-    <template v-if="useSettingsStore().isEnabled('dev')">
-      <div class="row" v-for="s in useSuggestionsStore().getSuggestions([
-          SuggestionState.NEW, SuggestionState.DECISION_DELAYED, SuggestionState.CHECKED, SuggestionState.IGNORED,
-          SuggestionState.NOTIFICATION, SuggestionState.INACTIVE])">
-        <pre>{{ s }}</pre>
-      </div>
-    </template>
+<!--    <template v-if="useSettingsStore().isEnabled('dev')">-->
+<!--      <div class="row" v-for="s in useSuggestionsStore().getSuggestions([-->
+<!--          SuggestionState.NEW, SuggestionState.DECISION_DELAYED, SuggestionState.CHECKED, SuggestionState.IGNORED,-->
+<!--          SuggestionState.NOTIFICATION, SuggestionState.INACTIVE])">-->
+<!--        <pre>{{ s }}</pre>-->
+<!--      </div>-->
+<!--    </template>-->
 
 
   </div>
@@ -182,7 +182,8 @@ import ContentUtils from "src/utils/ContentUtils";
 import {Tab} from "src/models/Tab";
 import {SavedBlob} from "src/models/SavedBlob";
 import pixelmatch from "pixelmatch";
-import {PNG} from 'pngjs/browser';
+// @ts-ignore
+import {PNG} from "pngjs/browser";
 
 import {Buffer} from 'buffer/'
 

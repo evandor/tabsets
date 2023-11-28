@@ -359,11 +359,11 @@ class IndexedDbPersistenceService implements PersistenceService {
         return Promise.reject("tab.url missing")
     }
 
-    async saveBlob(id: string, url: string, data: Blob, type: string, remark: string | undefined = undefined): Promise<any> {
+    async saveBlob(id: string, url: string, data: Blob, type: BlobType, remark: string | undefined = undefined): Promise<any> {
         //const encodedTabUrl = btoa(tab.url)
         const existing = await this.db.get('blobs', id)
         const arrayToSave: object[] = []
-        const savedBlob = new SavedBlob(uid(), BlobType.PNG, url, data, remark)
+        const savedBlob = new SavedBlob(uid(), type, url, data, remark)
         if (existing) {
             existing.push(savedBlob)
             return this.db.put('blobs', existing, id)
@@ -442,14 +442,17 @@ class IndexedDbPersistenceService implements PersistenceService {
         }
     }
 
-    getBlobs(type: string): Promise<any[]> {
+    getBlobs(type: BlobType): Promise<any[]> {
         if (!this.db) { // can happen for some reason
             return Promise.resolve([])
         }
         try {
+            console.log("hier", type)
             return this.db.getAll('blobs')
                 .then((b: any[]) => {
-                    return _.filter(b, d => d.type === type)
+                    console.log("got b", b)
+                    const blobs = _.flatten(b)
+                    return _.filter(blobs, d => d.type === type)
                 })
         } catch (ex) {
             console.log("got error in getBlobs", ex)
@@ -462,6 +465,12 @@ class IndexedDbPersistenceService implements PersistenceService {
             return Promise.resolve([])
         }
         return this.db.get('blobs', tabId)
+    }
+
+    async deleteBlob(tabId: string, elementId: string) {
+        let blobsForTab = await this.getBlobsForTab(tabId)
+        blobsForTab = _.filter(blobsForTab, b => b.id !== elementId)
+        this.db.put('blobs', blobsForTab, tabId)
     }
 
     async addSpace(space: Space): Promise<void> {
