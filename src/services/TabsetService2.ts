@@ -22,8 +22,10 @@ import {usePermissionsStore} from "stores/permissionsStore";
 import {FeatureIdent} from "src/models/AppFeature";
 import {RequestInfo} from "src/models/RequestInfo";
 import {DynamicTabSourceType} from "src/models/DynamicTabSource";
-import {PlaceholdersType} from "src/models/Placeholders";
 import {useUiStore} from "stores/uiStore";
+import {useSuggestionsStore} from "stores/suggestionsStore";
+import {Suggestion, SuggestionState, SuggestionType} from "src/models/Suggestion";
+import {MonitoringType} from "src/models/Monitor";
 
 let db: PersistenceService = null as unknown as PersistenceService
 
@@ -276,7 +278,7 @@ export function useTabsetService() {
             if (!tabset.type) {
                 tabset.type = TabsetType.DEFAULT
             }
-            console.log("saving tabset", tabset.name, tabset)
+            console.log("saving tabset", tabset.name)
             return db.saveTabset(tabset)
         }
         return Promise.reject("tabset id not set")
@@ -317,6 +319,7 @@ export function useTabsetService() {
         if (!tab || !tab.url) {
             return Promise.resolve('done')
         }
+        console.log("saving text", tab.id)
         const title = tab.title || ''
         const tabsetIds: string[] = tabsetsFor(tab.url)
         //console.log("checking candidates", useTabsStore().tabsets.values())
@@ -341,6 +344,7 @@ export function useTabsetService() {
                 _.forEach(tabset.tabs, (t: Tab) => {
                     //console.log("comparing", t.url, tab.url)
                     if (t.url === tab.url) {
+                        //console.log("checking tab", tab.id)
                         //console.log("updating meta data in tab", tab.id, metas)
                         if (metas['description' as keyof object]) {
                             t.description = metas['description' as keyof object]
@@ -379,18 +383,44 @@ export function useTabsetService() {
                             t.image = image
                         }
 
-                        const oldContent = t.contentHash
+                        const oldContentHash = t.contentHash
                         if (text && text.length > 0) {
                             t.contentHash = uuidv5(text, 'da42d8e8-2afd-446f-b72e-8b437aa03e46')
                         } else {
                             t.contentHash = ""
                         }
-                        console.log("%ccontenthash set to","color:blue", t.contentHash)
-                        if (oldContent && oldContent !== '' && t.contentHash !== '' && t.url) {
-                            // TODO not ready yet (like this)
-                            // useSuggestionsStore().addSuggestion(
-                            //   new Suggestion(uid(), 'Content Change Detected', "Info: Something might have changed in " + t.url + ".",
-                            //     t.url, SuggestionType.CONTENT_CHANGE))
+                        console.log("%ccontenthash set to", "color:blue", t.contentHash, oldContentHash)
+                        if (usePermissionsStore().hasFeature(FeatureIdent.MONITORING) &&
+                            t.monitor && t.monitor.type === MonitoringType.CONTENT_HASH) {
+                            if (oldContentHash && oldContentHash !== '' &&
+                                t.contentHash !== oldContentHash &&
+                                t.contentHash !== '' && t.url) {
+                                const id = btoa(t.url)
+                                const msg = "Info: Something might have changed in '" + (t.name ? t.name : t.title) + "'."
+                                const suggestion = new Suggestion(id, 'Content Change Detected',
+                                    msg,
+                                    t.url, SuggestionType.CONTENT_CHANGE)
+                                suggestion.setData({url: t.url, tabId: t.id})
+                                suggestion.state = SuggestionState.NOTIFICATION
+                                useSuggestionsStore().addSuggestion(suggestion)
+                                    .then(() => {
+                                        if (usePermissionsStore().hasFeature(FeatureIdent.NOTIFICATIONS)) {
+                                            chrome.notifications.create(id, {
+                                                title: "Tabset Extension Message",
+                                                type: "basic",
+                                                iconUrl: chrome.runtime.getURL("www/favicon.ico"),
+                                                message: msg,
+                                                buttons: [{title: 'show'},{title: 'ignore'}]
+                                            }, (callback: any) => {
+                                                //console.log("got callback", callback)
+                                            })
+                                            //useSuggestionsStore().updateSuggestionState(id, SuggestionState.NOTIFICATION)
+                                        }
+                                    })
+                                    .catch((err) => {
+                                        console.log("Xgot error", err)
+                                    })
+                            }
                         }
 
                         savePromises.push(saveTabset(tabset)
@@ -496,7 +526,7 @@ export function useTabsetService() {
     const saveBlob = (tab: chrome.tabs.Tab | undefined, blob: Blob): Promise<string> => {
         if (tab && tab.url) {
             const id: string = uid()
-            return db.saveBlob(id, tab.url, blob, 'PNG')
+            return db.saveBlob(id, tab.url, blob, 'PNG','')
                 .then(() => Promise.resolve(id))
                 .catch(err => Promise.reject(err))
         }
@@ -506,7 +536,6 @@ export function useTabsetService() {
     const getBlob = (blobId: string): Promise<any> => {
         return db.getBlob(blobId)
     }
-
 
     const saveRequestFor = (url: string, requestInfo: RequestInfo) => {
         if (url) {
@@ -667,7 +696,6 @@ export function useTabsetService() {
                 t.description?.indexOf(filter) >= 0
         })
     }
-
 
 
     return {

@@ -26,9 +26,11 @@ export class AppFeatures {
     new AppFeature(FeatureIdent.TOP10, FeatureType.RECOMMENDED, 'Top 10 Tabs', 'o_workspace_premium', ['all']),
     new AppFeature(FeatureIdent.OPEN_TABS, FeatureType.EXPERIMENTAL, 'Open Tabs', 'o_playlist_add', ['bex']),
 
-    new AppFeature(FeatureIdent.SAVE_TAB, FeatureType.EXPERIMENTAL, 'Save Tabs', 'o_save', ['bex'])
+    new AppFeature(FeatureIdent.SAVE_TAB, FeatureType.EXPERIMENTAL, 'Save Tabs as MHTML', 'o_save', ['bex'])
       .setActivateCommands([new GrantPermissionCommand('pageCapture')]),
       //.setDeactivateCommand(new RevokePermissionCommand('pageCapture')),
+    new AppFeature(FeatureIdent.SAVE_TAB_AS_PNG, FeatureType.EXPERIMENTAL, 'Save Tab as Image', 'o_image', ['bex']),
+    //new AppFeature(FeatureIdent.SAVE_TAB_AS_PDF, FeatureType.EXPERIMENTAL, 'Save Tab as PDF', 'o_picture_as_pdf', ['bex']),
     new AppFeature(FeatureIdent.GROUP_BY_DOMAIN, FeatureType.OPTIONAL, 'Group By Domain View', 'o_dns', ['all']),
     new AppFeature(FeatureIdent.OPENTABS_THRESHOLD, FeatureType.EXPERIMENTAL, 'Open Tabs Warnings', 'o_tab', ['bex']),
 
@@ -63,7 +65,9 @@ export class AppFeatures {
     new AppFeature(FeatureIdent.ANALYSE_TABS, FeatureType.EXPERIMENTAL, 'Analyse Tabs', 'o_tab', ['bex'])
         .setActivateCommands([new GrantPermissionCommand('webRequest')]),
     new AppFeature(FeatureIdent.TAB_GROUPS, FeatureType.EXPERIMENTAL, 'Chrome Tab Groups', 'o_view_list', ['chrome_bex'])
-        .setActivateCommands([new GrantPermissionCommand('tabGroups')])
+        .setActivateCommands([new GrantPermissionCommand('tabGroups')]),
+
+    new AppFeature(FeatureIdent.MONITORING, FeatureType.EXPERIMENTAL, 'Monitor Changes', 'o_change_circle', ['bex'])
   ]
 
   getFeature(f: FeatureIdent): AppFeature | undefined {

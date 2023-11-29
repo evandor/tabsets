@@ -57,6 +57,7 @@ import {usePermissionsStore} from "stores/permissionsStore";
 import {useTabsStore} from "stores/tabsStore";
 import {useSuggestionsStore} from "stores/suggestionsStore";
 import {ref, watchEffect} from "vue";
+import {SuggestionState} from "src/models/Suggestion";
 
 const props = defineProps({
   showSuggestionIcon: {type: Boolean, required: true}
@@ -74,7 +75,7 @@ watchEffect(() => {
 })
 
 const suggestionsLabel = () => {
-  const suggestions = useSuggestionsStore().getSuggestions()
+  const suggestions = useSuggestionsStore().getSuggestions([SuggestionState.NEW, SuggestionState.DECISION_DELAYED])
   return suggestions.length === 1 ?
       suggestions.length + " New Suggestion" :
       suggestions.length + " New Suggestions"

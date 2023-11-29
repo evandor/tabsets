@@ -1,13 +1,10 @@
 import {defineStore} from 'pinia';
-import {computed, ref} from "vue";
+import {computed, ref, unref} from "vue";
 import {StaticSuggestionIdent, Suggestion, SuggestionState} from "src/models/Suggestion";
 import _ from "lodash";
 import PersistenceService from "src/services/PersistenceService";
 
-// seems like it is a good idea to initialize the stores with the db(s) needed
-//const {db} = useDB()
 let storage: PersistenceService = null as unknown as PersistenceService
-
 
 export const useSuggestionsStore = defineStore('suggestions', () => {
 
@@ -28,14 +25,19 @@ export const useSuggestionsStore = defineStore('suggestions', () => {
         }
     }
 
-    function addSuggestion(s: Suggestion | undefined) {
-        if (s) {
-            console.log("about to add suggestion", s)
-            storage.addSuggestion(s)
-                .then(() => suggestions.value.push(s))
-                .catch((err) => {
-                    console.log("rejected adding due to ", err)
-                })
+    async function addSuggestion(s: Suggestion | undefined) {
+        console.log("about to add suggestion", s)
+        if (!s) {
+            return Promise.reject("suggestion undefined")
+        }
+        try {
+            await storage.addSuggestion(s)
+            //console.log("%cpushing", "color:red", s)
+            suggestions.value.push(s)
+            return Promise.resolve(true)
+        } catch (err) {
+            console.log("rejected adding due to ", err)
+            return Promise.reject(err)
         }
     }
 
@@ -51,7 +53,7 @@ export const useSuggestionsStore = defineStore('suggestions', () => {
         }
     }
 
-    function removeSuggestion(ident: StaticSuggestionIdent) {
+    function removeSuggestion(ident: string) {
         if (storage) {
             storage.removeSuggestion(ident)
                 .then(() => suggestions.value = _.filter(suggestions.value, s => s.id !== ident))
@@ -60,17 +62,26 @@ export const useSuggestionsStore = defineStore('suggestions', () => {
         }
     }
 
-    function cancelSuggestion(id: string): Promise<void> {
-        return storage.setSuggestionState(id, SuggestionState.CANCELED)
+    function updateSuggestionState(id: string, state: SuggestionState) {
+        return storage.setSuggestionState(id, state)
             .then((res: any) => loadSuggestionsFromDb())
     }
 
-    function ignoreSuggestion(id: string): Promise<void> {
-        return storage.setSuggestionState(id, SuggestionState.IGNORED)
-            .then((res: any) => loadSuggestionsFromDb())
-    }
+    // function delayDecision(id: string): Promise<void> {
+    // }
+    //
+    // function ignoreSuggestion(id: string): Promise<void> {
+    //     return storage.setSuggestionState(id, SuggestionState.IGNORED)
+    //         .then((res: any) => loadSuggestionsFromDb())
+    // }
+    //
+    // function suggestionAsNotification(id: string): Promise<void> {
+    //     return storage.setSuggestionState(id, SuggestionState.NOTIFICATION)
+    //         .then((res: any) => loadSuggestionsFromDb())
+    // }
 
     function applySuggestion(id: string): Promise<Suggestion> {
+        console.log("$applied suggestion", "background-color:grey", id)
         return storage.setSuggestionState(id, SuggestionState.APPLIED)
             .then((res: any) => {
                 loadSuggestionsFromDb();
@@ -80,12 +91,27 @@ export const useSuggestionsStore = defineStore('suggestions', () => {
     }
 
     const getSuggestions = computed(() => {
-        return () => _.filter(suggestions.value,
-            (s: Suggestion) => s.state === SuggestionState.NEW || s.state === SuggestionState.CANCELED)
+        return (states: SuggestionState[]) => _.filter(suggestions.value,
+            (s: Suggestion) => {
+                for (const state of states) {
+                    if (state === s.state) {
+                        return true
+                    }
+                }
+                return false
+            })
     })
 
     const getSuggestion = computed(() => {
         return (suggestionId: string) => _.find(suggestions.value, s => s.id === suggestionId)
+    })
+
+    const getSuggestionForUrl = computed(() => {
+        return (url: string) => {
+            const encodedUrl = btoa(url)
+            console.log("encodedURL", encodedUrl)
+            return _.find(suggestions.value, s => s.id === encodedUrl)
+        }
     })
 
 
@@ -95,11 +121,11 @@ export const useSuggestionsStore = defineStore('suggestions', () => {
         addSuggestion,
         getSuggestions,
         getSuggestion,
-        ignoreSuggestion,
-        cancelSuggestion,
+        updateSuggestionState,
         removeSuggestion,
         applySuggestion,
-        inactivateSuggestion
+        inactivateSuggestion,
+        getSuggestionForUrl
     }
 
 })

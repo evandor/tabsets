@@ -47,7 +47,7 @@ class NavigationService {
                 // create a new window
                 console.log("opening new window with", createData)
                 chrome.windows.create(createData, (window) => {
-                    //console.log("window", window)
+                    console.log("window", window)
                     if (window) {
                         useWindowsStore().assignWindow(useWindowIdent, window.id || 0)
                         //useWindowsStore().renameWindow(window.id || 0, useWindowIdent)

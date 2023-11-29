@@ -1,4 +1,5 @@
 import {Placeholders} from "src/models/Placeholders";
+import {Monitor} from "src/models/Monitor";
 
 export enum TabSorting {
   URL = "URL",
@@ -67,7 +68,6 @@ export class Tab {
   note: string
   scheduledFor: number | undefined
   extension: UrlExtension
-  annotations: any[] = []
 
   mhtmls: string[]
 
@@ -81,6 +81,7 @@ export class Tab {
   httpInfo: string = 'undefined'
 
   placeholders: Placeholders | undefined
+  monitor: Monitor | undefined
 
   color: string | undefined = undefined
   matcher: string | undefined = undefined

@@ -64,12 +64,9 @@ export function useUtils() {
         if (!inBexMode()) {
             return false
         }
-        console.log("tab...", tab)
         const windowId = useWindowsStore().currentWindow?.id || 0
         return (useTabsStore().getCurrentChromeTab(windowId) || useTabsStore().currentChromeTab)?.url === tab?.url
     }
-
-
 
     return {
         formatDate,

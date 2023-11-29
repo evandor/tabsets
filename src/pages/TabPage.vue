@@ -397,6 +397,7 @@ import 'vue-json-pretty/lib/styles.css';
 import {useTabsetService} from "src/services/TabsetService2";
 import Analytics from "src/utils/google-analytics";
 import {Tab} from "src/models/Tab";
+import {TabAndTabsetId} from "src/models/TabAndTabsetId";
 
 const tabsStore = useTabsStore()
 const notificationStore = useNotificationsStore()
@@ -436,13 +437,14 @@ onMounted(() => {
 watchEffect(() => {
   const tabId = route.params.id.toString() || ''
   console.log("got tabId", tabId)
-  useTabsStore().getTab(tabId).then(tabInfo => {
+  const tabInfo = useTabsStore().getTabAndTabsetId(tabId)
+      //.then((tabInfo: TabAndTabsetId | undefined) => {
     if (tabInfo) {
-      console.log("got tab", tabInfo['tab' as keyof object])
+      console.log("got tab", tabInfo.tab)
       //useUiStore().setSelectedTab(tabInfo['tab' as keyof object] as Tab)
-      json.value = JSON.parse(JSON.stringify(tabInfo['tab' as keyof object] as Tab))
-      tags.value = tabInfo['tab' as keyof object]['tags' as keyof object]
-      selectedTab.value = tabInfo['tab' as keyof object] as Tab
+      json.value = JSON.parse(JSON.stringify(tabInfo.tab))
+      tags.value = tabInfo.tab['tags' as keyof object]
+      selectedTab.value = tabInfo.tab
       try {
         const url = new URL(selectedTab.value.url || '')
         domain.value = url.protocol + url.host
@@ -450,7 +452,7 @@ watchEffect(() => {
         domain.value = selectedTab.value.url
       }
     }
-  })
+ // })
 })
 
 
@@ -629,9 +631,11 @@ const openValueLink = (name: any, value: string) => {
 const showValueLink = (name: string) => "fb:page_id" === name || "twitter:account_id" === name
 
 const analyseTab = () => {
-  searchStore.reindexTab(selectedTab.value)
-      .then((windowId: number) => {
-      })
+  if (selectedTab.value) {
+    searchStore.reindexTab(selectedTab.value)
+        .then((windowId: number) => {
+        })
+  }
 }
 
 const openLink = (url: string) => openURL(url)

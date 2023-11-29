@@ -165,6 +165,7 @@ import {useBookmarksStore} from "stores/bookmarksStore";
 import {useSuggestionsStore} from "stores/suggestionsStore";
 import SidePanelPageTabList from "components/layouts/SidePanelPageTabList.vue";
 import {AddTabToTabsetCommand} from "src/domain/tabs/AddTabToTabset";
+import {TabAndTabsetId} from "src/models/TabAndTabsetId";
 
 const {setVerticalScrollPosition} = scroll
 
@@ -374,6 +375,7 @@ watchEffect(() => {
 
 function inIgnoredMessages(message: any) {
   return message.msg === "html2text" ||
+      message.msg === "captureThumbnail" ||
       message.msg === "html2links"
 }
 
@@ -415,16 +417,16 @@ if ($q.platform.is.chrome) {
         const tabset = useTabsetService().getTabset(message.data.tabsetId) as Tabset
         if (message.data.noteId) {
           console.log("updating note", message.data.noteId)
-          useTabsStore().getTab(message.data.noteId)
-              .then((res: object | undefined) => {
+          const res = useTabsStore().getTabAndTabsetId(message.data.noteId)
+              //.then((res: TabAndTabsetId | undefined) => {
                 if (res) {
-                  const note = res['tab' as keyof object] as Tab
+                  const note = res.tab
                   note.title = message.data.tab.title
                   note.description = message.data.tab.description
                   note.longDescription = message.data.tab.longDescription
                 }
                 useTabsetService().saveTabset(tabset)
-              })
+          //    })
         } else {
           console.log("adding tab", message.data.tab)
           tabset.tabs.push(message.data.tab)

@@ -135,6 +135,18 @@
         </div>
       </div>
 
+      <div class="row items-baseline q-ma-md" v-if="devEnabled">
+        <div class="col-3">
+          New Suggestion Simulation
+        </div>
+        <div class="col-3">
+          Simulate that there is a new suggestion to use a (new) feature (refresh sidebar for effects)
+        </div>
+        <div class="col q-ma-xl">
+          <span class="text-blue cursor-pointer" @click="simulateStaticSuggestion()">Simulate</span>
+        </div>
+      </div>
+
     </div>
 
   </div>
@@ -202,14 +214,14 @@
         notifiy you about changes.
       </q-banner>
 
-<!--      <div class="row q-pa-md" v-for="tabset in ignoredUrls()">-->
-<!--        <div class="col-3"><b>{{ tabset.url }}</b></div>-->
-<!--        <div class="col-3"></div>-->
-<!--        <div class="col-1"></div>-->
-<!--        <div class="col-5">-->
-<!--          &lt;!&ndash;          <q-btn label="Un-Archive" @click="unarchive(tabset)"/>&ndash;&gt;-->
-<!--        </div>-->
-<!--      </div>-->
+      <!--      <div class="row q-pa-md" v-for="tabset in ignoredUrls()">-->
+      <!--        <div class="col-3"><b>{{ tabset.url }}</b></div>-->
+      <!--        <div class="col-3"></div>-->
+      <!--        <div class="col-1"></div>-->
+      <!--        <div class="col-5">-->
+      <!--          &lt;!&ndash;          <q-btn label="Un-Archive" @click="unarchive(tabset)"/>&ndash;&gt;-->
+      <!--        </div>-->
+      <!--      </div>-->
     </div>
 
   </div>
@@ -380,6 +392,8 @@ import OpenRightDrawerWidget from "components/widgets/OpenRightDrawerWidget.vue"
 import {useUtils} from "src/services/Utils";
 import Analytics from "src/utils/google-analytics";
 import {useGroupsStore} from "../stores/groupsStore";
+import {useSuggestionsStore} from "stores/suggestionsStore";
+import {StaticSuggestionIdent, Suggestion} from "src/models/Suggestion";
 
 const {inBexMode, sendMsg} = useUtils()
 
@@ -388,7 +402,6 @@ const featuresStore = useSettingsStore()
 const searchStore = useSearchStore()
 const settingsStore = useSettingsStore()
 
-const router = useRouter()
 const localStorage = useQuasar().localStorage
 const $q = useQuasar()
 
@@ -417,6 +430,7 @@ onMounted(() => {
   Analytics.firePageViewEvent('SettingsPage', document.location.href);
 })
 
+let suggestionsCounter = 0
 
 watchEffect(() => permissionsList.value = usePermissionsStore().permissions?.permissions || [])
 
@@ -526,6 +540,15 @@ const restoreHints = () => useUiStore().restoreHints()
 
 const showExportDialog = () => $q.dialog({component: ExportDialog, componentProps: {inSidePanel: true}})
 const showImportDialog = () => $q.dialog({component: ImportDialog, componentProps: {inSidePanel: true}})
+
+const simulateStaticSuggestion = () => {
+  const suggestions: [Suggestion] = [
+    // @ts-ignore
+    Suggestion.getStaticSuggestion(StaticSuggestionIdent.TRY_SPACES_FEATURE),
+    Suggestion.getStaticSuggestion(StaticSuggestionIdent.TRY_BOOKMARKS_FEATURE)
+  ]
+  useSuggestionsStore().addSuggestion(suggestions[suggestionsCounter++ % 2])
+}
 
 </script>
 

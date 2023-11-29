@@ -5,8 +5,9 @@ import {DeactivateFeatureCommand} from "src/domain/features/DeactivateFeature";
 export enum FeatureIdent {
   BOOKMARKS = "BOOKMARKS",
   //PAGE_MARKER = "PAGE_MARKER",
-  SAVE_TAB = "SAVE_TAB",
-  CREATE_PDF = "CREATE_PDF",
+  SAVE_TAB = "SAVE_TAB", // As MHTML
+  SAVE_TAB_AS_PDF = "SAVE_TAB_AS_PDF", // not active yet
+  SAVE_TAB_AS_PNG = "SAVE_TAB_AS_PNG",
   GROUP_BY_DOMAIN = "GROUP_BY_DOMAIN",
   OPENTABS_THRESHOLD = "OPENTABS_THRESHOLD",
   EXPERIMENTAL_VIEWS = "EXPERIMENTAL_VIEWS",
@@ -39,7 +40,8 @@ export enum FeatureIdent {
   COLOR_TAGS = "COLOR_TAGS",
   ADVANCED_TAB_MANAGEMENT = "ADVANCED_TAB_MANAGEMENT",
   ANALYSE_TABS = "ANALYSE_TABS",
-  TAB_GROUPS = "TAB_GROUPS"
+  TAB_GROUPS = "TAB_GROUPS",
+  MONITORING = "MONITORING"
 }
 
 export enum FeatureType {

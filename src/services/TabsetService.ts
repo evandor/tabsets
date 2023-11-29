@@ -11,8 +11,8 @@ import {useTabsetService} from "src/services/TabsetService2";
 import {useDB} from "src/services/usePersistenceService";
 import {useSpacesStore} from "stores/spacesStore";
 import {FirebaseCall} from "src/services/firebase/FirebaseCall";
-import {Placeholders, PlaceholdersType} from "src/models/Placeholders";
 import PlaceholderUtils from "src/utils/PlaceholderUtils";
+import {Monitor, MonitoringType} from "src/models/Monitor";
 
 const {getTabset, getCurrentTabset, saveTabset, saveCurrentTabset, tabsetsFor, addToTabset} = useTabsetService()
 
@@ -60,6 +60,12 @@ class TabsetService {
     return _.filter(tabsStore.tabs, (t: chrome.tabs.Tab) => {
       return t?.url === tabUrl
     }).length > 0
+  }
+
+  chromeTabIdFor(tabUrl: string): number | undefined {
+    const tabsStore = useTabsStore()
+    const candidates = _.filter(tabsStore.tabs, (t: chrome.tabs.Tab) => t?.url === tabUrl)
+    return candidates.length > 0 ? candidates[0].id : undefined
   }
 
   saveAllPendingTabs(onlySelected: boolean = false): Promise<void> {
@@ -174,6 +180,12 @@ class TabsetService {
 
   setCustomTitle(tab: Tab, title: string): Promise<any> {
     tab.name = title
+    return saveCurrentTabset()
+  }
+
+  setMonitoring(tab: Tab, monitor: Monitor): Promise<any> {
+    tab.monitor = monitor.type === MonitoringType.NONE ? undefined : monitor
+    //console.log("tab.monitor", tab.monitor)
     return saveCurrentTabset()
   }
 

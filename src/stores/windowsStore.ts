@@ -1,10 +1,13 @@
 import {defineStore} from 'pinia';
 import {ref, watchEffect} from "vue";
-import {LocalStorage} from "quasar";
 import PersistenceService from "src/services/PersistenceService";
 import {useUtils} from "src/services/Utils";
 import {Window} from "src/models/Window";
 import _ from "lodash"
+import throttledQueue from "throttled-queue";
+import {Tabset} from "src/models/Tabset";
+import {useRoute, useRouter} from "vue-router";
+import {useQuasar} from "quasar";
 
 /**
  * a pinia store for "Windows".
@@ -13,6 +16,21 @@ import _ from "lodash"
  */
 
 let storage: PersistenceService = null as unknown as PersistenceService
+
+function dummyPromise(timeout: number, tabToCloseId: number | undefined = undefined): Promise<string> {
+    return new Promise((resolve, reject) => {
+        setTimeout(() => {
+            if (tabToCloseId) {
+                chrome.tabs.remove(tabToCloseId)
+                    .catch((err) => {
+                        console.debug(err)
+                    })
+            }
+            resolve("Success!");
+        }, timeout);
+    });
+}
+
 
 export const useWindowsStore = defineStore('windows', () => {
 
@@ -205,6 +223,40 @@ export const useWindowsStore = defineStore('windows', () => {
             .catch((err) => console.warn("could not delete window " + windowId + " due to: " + err))
     }
 
+    function openThrottledInWindow(urls: string[], windowCreateData: object = {focused: true, width: 1024, height: 800}) {
+        console.log("%copenThrottledInWindow...", "color:green")
+        const throttleOnePerXSeconds = throttledQueue(1, 3000, true)
+        chrome.windows.create(windowCreateData, (window: any) => {
+
+            //console.log("%cgot window", "color:green", window.id)
+
+            useWindowsStore().screenshotWindow = window.id
+            let tabToClose: number | undefined = undefined
+
+            const promises: Promise<any>[] = []
+            for (const u of urls) {
+                const p = throttleOnePerXSeconds(async () => {
+                    const createProperties = {windowId: window.id, url: u}
+                    //console.log("createProperties", createProperties)
+                    chrome.tabs.create(createProperties, (tab: chrome.tabs.Tab) => {
+                        tabToClose = tab.id
+                        dummyPromise(3000, tab.id)
+                    })
+                    return dummyPromise(3000)
+                })
+                promises.push(p)
+            }
+
+            Promise.all(promises)
+                .then(() => {
+                    setTimeout(() => {
+                        chrome.windows.remove(window.id)
+                        useWindowsStore().screenshotWindow = null as unknown as number
+                    }, 2000)
+                })
+        })
+    }
+
     return {
         initialize,
         initListeners,
@@ -219,6 +271,7 @@ export const useWindowsStore = defineStore('windows', () => {
         windowSet,
         screenshotWindow,
         upsertWindow,
-        removeWindow
+        removeWindow,
+        openThrottledInWindow
     }
 })

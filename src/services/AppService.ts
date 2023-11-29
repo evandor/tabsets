@@ -17,15 +17,12 @@ import {useSettingsStore} from "stores/settingsStore";
 import {useBookmarksStore} from "stores/bookmarksStore";
 import {useWindowsStore} from "src/stores/windowsStore";
 import {useSearchStore} from "stores/searchStore";
-import {useRouter} from "vue-router";
+import {RouteLocationNormalizedLoaded, Router, useRoute, useRouter} from "vue-router";
 import {useUtils} from "src/services/Utils";
 import {useGroupsStore} from "stores/groupsStore";
 import {FeatureIdent} from "src/models/AppFeature";
 
-const {inBexMode} = useUtils()
-
 class AppService {
-
 
     async init() {
 
@@ -66,7 +63,8 @@ class AppService {
                         useTabsetService().init(useDB(undefined).db, false)
                             .then(() => {
                                 MHtmlService.init()
-                                ChromeApi.init()
+                                //console.log("****", useRoute())
+                                ChromeApi.init(router)
 
                                 if (usePermissionsStore().hasFeature(FeatureIdent.TAB_GROUPS)) {
                                     groupsStore.initialize(useDB(undefined).db)
