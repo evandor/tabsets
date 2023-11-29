@@ -56,7 +56,7 @@ export class LocalStoragePersistenceService implements PersistenceService {
         return Promise.resolve(undefined);
     }
 
-    removeSuggestion(ident: StaticSuggestionIdent) {
+    removeSuggestion(ident: string) {
         throw new Error("Method not implemented.");
     }
 

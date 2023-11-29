@@ -30,7 +30,7 @@ export class AppFeatures {
       .setActivateCommands([new GrantPermissionCommand('pageCapture')]),
       //.setDeactivateCommand(new RevokePermissionCommand('pageCapture')),
     new AppFeature(FeatureIdent.SAVE_TAB_AS_PNG, FeatureType.EXPERIMENTAL, 'Save Tab as Image', 'o_image', ['bex']),
-    new AppFeature(FeatureIdent.SAVE_TAB_AS_PDF, FeatureType.EXPERIMENTAL, 'Save Tab as PDF', 'o_picture_as_pdf', ['bex']),
+    //new AppFeature(FeatureIdent.SAVE_TAB_AS_PDF, FeatureType.EXPERIMENTAL, 'Save Tab as PDF', 'o_picture_as_pdf', ['bex']),
     new AppFeature(FeatureIdent.GROUP_BY_DOMAIN, FeatureType.OPTIONAL, 'Group By Domain View', 'o_dns', ['all']),
     new AppFeature(FeatureIdent.OPENTABS_THRESHOLD, FeatureType.EXPERIMENTAL, 'Open Tabs Warnings', 'o_tab', ['bex']),
 

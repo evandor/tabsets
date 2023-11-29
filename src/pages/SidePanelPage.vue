@@ -417,8 +417,8 @@ if ($q.platform.is.chrome) {
         const tabset = useTabsetService().getTabset(message.data.tabsetId) as Tabset
         if (message.data.noteId) {
           console.log("updating note", message.data.noteId)
-          useTabsStore().getTab(message.data.noteId)
-              .then((res: TabAndTabsetId | undefined) => {
+          const res = useTabsStore().getTabAndTabsetId(message.data.noteId)
+              //.then((res: TabAndTabsetId | undefined) => {
                 if (res) {
                   const note = res.tab
                   note.title = message.data.tab.title
@@ -426,7 +426,7 @@ if ($q.platform.is.chrome) {
                   note.longDescription = message.data.tab.longDescription
                 }
                 useTabsetService().saveTabset(tabset)
-              })
+          //    })
         } else {
           console.log("adding tab", message.data.tab)
           tabset.tabs.push(message.data.tab)

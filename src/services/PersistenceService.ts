@@ -66,7 +66,7 @@ interface PersistenceService {
 
   getSuggestions(): Promise<Suggestion[]>
   addSuggestion(suggestion: Suggestion): Promise<any>
-  removeSuggestion(ident: StaticSuggestionIdent): any;
+  removeSuggestion(id: string): any;
   setSuggestionState(id: string, state: SuggestionState): any;
 
   compactDb(): Promise<any>

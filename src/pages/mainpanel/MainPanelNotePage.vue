@@ -109,8 +109,8 @@ watchEffect(async () => {
   closeOnSave.value = route.query.closeOnSave ? route.query.edit === "true" : false
 
   if (noteId.value) {
-    useTabsStore().getTab(noteId.value)
-        .then((tabObject: TabAndTabsetId | undefined) => {
+    const tabObject = useTabsStore().getTabAndTabsetId(noteId.value)
+        //.then((tabObject: TabAndTabsetId | undefined) => {
 
           if (tabObject) {
             //console.log("got tabobject1", tabObject)
@@ -141,7 +141,7 @@ watchEffect(async () => {
               editorJS2.readOnly.toggle(!editMode.value)
             }
           }
-        })
+     //   })
   } else {
     console.log("new Note")
 

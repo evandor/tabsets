@@ -437,7 +437,8 @@ onMounted(() => {
 watchEffect(() => {
   const tabId = route.params.id.toString() || ''
   console.log("got tabId", tabId)
-  useTabsStore().getTab(tabId).then((tabInfo: TabAndTabsetId | undefined) => {
+  const tabInfo = useTabsStore().getTabAndTabsetId(tabId)
+      //.then((tabInfo: TabAndTabsetId | undefined) => {
     if (tabInfo) {
       console.log("got tab", tabInfo.tab)
       //useUiStore().setSelectedTab(tabInfo['tab' as keyof object] as Tab)
@@ -451,7 +452,7 @@ watchEffect(() => {
         domain.value = selectedTab.value.url
       }
     }
-  })
+ // })
 })
 
 

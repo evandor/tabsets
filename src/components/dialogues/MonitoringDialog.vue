@@ -126,11 +126,11 @@ const setMonitoring = (type: MonitoringType) => {
             new SavePngCommand(props.tab, "monitoring start") :
             new NoOpCommand())
         .then(() => {
-          useCommandExecutor().executeFromUi(new UpdateMonitoringCommand(props.tab, type, agree.value,{}))
+          useCommandExecutor().executeFromUi(new UpdateMonitoringCommand(props.tab, type, snapshot.value,{}))
           useTabsetService().saveCurrentTabset()
         })
         .catch((err) => {
-          useCommandExecutor().executeFromUi(new UpdateMonitoringCommand(props.tab, type, {
+          useCommandExecutor().executeFromUi(new UpdateMonitoringCommand(props.tab, type, false,{
             monitoringSnapshotError: err
           }))
         })

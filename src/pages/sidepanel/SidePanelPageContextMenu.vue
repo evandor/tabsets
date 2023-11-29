@@ -7,7 +7,7 @@
                        icon="o_note"
                        label="Edit Tabset"/>
 
-      <q-separator inset/>
+      <q-separator inset v-if="useTabsStore().tabsets.size > 1"/>
 
       <ContextMenuItem v-close-popup
                        v-if="usePermissionsStore().hasFeature(FeatureIdent.NOTES)"
@@ -48,47 +48,14 @@
                          label="Open in window..."/>
       </template>
 
-
-      <!--      <template v-if="usePermissionsStore().hasFeature(FeatureIdent.WINDOW_MANAGEMENT)">-->
-      <!--        <q-separator inset/>-->
-      <!--        <ContextMenuItem-->
-      <!--            icon="o_grid_view"-->
-      <!--            label="Open in window...">-->
-
-      <!--          <q-item-section side>-->
-      <!--            <q-icon name="keyboard_arrow_right"/>-->
-      <!--          </q-item-section>-->
-      <!--          <q-menu anchor="top end" self="top start">-->
-      <!--            <q-list>-->
-      <!--              <q-item v-for="window in useWindowsStore().windowSet"-->
-      <!--                      @click="changeWindow(tabset, window)"-->
-      <!--                      dense clickable v-close-popup-->
-      <!--                      :disable="tabset.window === window">-->
-      <!--                <q-item-section>{{ window }}</q-item-section>-->
-      <!--              </q-item>-->
-      <!--              <q-separator inset/>-->
-      <!--              <q-item v-if="useWindowsStore().windowSet.size > 1"-->
-      <!--                      @click="removeWindow()" dense clickable v-close-popup>-->
-      <!--                <q-item-section>Remove Window Association {{useWindowsStore().windowSet.size}}</q-item-section>-->
-      <!--              </q-item>-->
-      <!--              <q-separator inset/>-->
-      <!--              <q-item @click="openNewWindowDialog()" dense clickable v-close-popup>-->
-      <!--                <q-item-section>Create New...</q-item-section>-->
-      <!--              </q-item>-->
-      <!--            </q-list>-->
-      <!--          </q-menu>-->
-
-      <!--        </ContextMenuItem>-->
-
-      <!--      </template>-->
-
-      <ContextMenuItem v-close-popup
+      <ContextMenuItem v-if="useTabsStore().tabsets.size > 1"
+                       v-close-popup
                        @was-clicked="focus(tabset)"
                        icon="filter_center_focus"
                        color="accent"
                        label="Focus on tabset"/>
 
-      <template v-if="tabset.status === TabsetStatus.DEFAULT">
+      <template v-if="tabset.status === TabsetStatus.DEFAULT && useTabsStore().tabsets.size > 1">
         <ContextMenuItem v-close-popup
                          @was-clicked="pin(tabset)"
                          icon="o_push_pin"

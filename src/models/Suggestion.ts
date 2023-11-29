@@ -59,7 +59,12 @@ export class Suggestion {
         .setImage('o_schedule')
   ]
 
-  constructor(public id: string, public title: string, public msg: string, public url: string, public type: SuggestionType = SuggestionType.RSS) {
+  constructor(
+      public id: string, // could be random, could be an encoded URL or a predefined string ("TRY Feature X")
+      public title: string,
+      public msg: string,
+      public url: string,
+      public type: SuggestionType = SuggestionType.RSS) {
     this.state = SuggestionState.NEW
     this.created = new Date().getTime()
   }

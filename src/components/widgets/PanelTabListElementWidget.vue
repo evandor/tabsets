@@ -138,23 +138,30 @@
         <div class="col-12 q-pr-lg q-mt-none q-pt-none cursor-pointer">
           <div class="text-caption text-grey-5 ellipsis"
                v-if="useUiStore().listDetailLevelGreaterEqual(ListDetailLevel.SOME)">
+
             <span v-if="props.sorting === TabSorting.AGE">
               <q-icon name="arrow_right" size="16px"/>
             </span>
 
-            <template v-if="(props.tab as Tab).monitor">
-              <q-icon
-                  @click.stop="monitoringDialog(props.tab as Tab)"
-                  name="o_change_circle" class="q-mr-xs" color="accent">
-                <q-tooltip class="tooltip-small">This tab is being monitored for changes</q-tooltip>
-              </q-icon>
-              <span>-</span>
-            </template>
+            <q-icon v-if="(props.tab as Tab).monitor"
+                    @click.stop="monitoringDialog(props.tab as Tab)"
+                    name="o_change_circle" class="q-mr-xs" color="accent">
+              <q-tooltip class="tooltip-small">This tab is being monitored for changes</q-tooltip>
+            </q-icon>
 
-            <template v-if="(props.tab as Tab).placeholders">
-              <q-icon name="published_with_changes" class="q-mr-xs" color="accent">
-                <q-tooltip class="tooltip-small">This tab is created by substituting parts of its URL</q-tooltip>
-              </q-icon>
+            <q-icon v-if="suggestion"
+                    @click.stop="showSuggestion()"
+                    name="o_notifications" class="q-mr-xs" :color="suggestion.state === SuggestionState.NOTIFICATION ? 'negative' : 'accent'">
+              <q-tooltip class="tooltip-small" v-if="suggestion.state === SuggestionState.NOTIFICATION">There is a new notification for this tab</q-tooltip>
+              <q-tooltip class="tooltip-small" v-else>There is a notification for this tab</q-tooltip>
+            </q-icon>
+
+            <q-icon v-if="(props.tab as Tab).placeholders"
+                    name="published_with_changes" class="q-mr-xs" color="accent">
+              <q-tooltip class="tooltip-small">This tab is created by substituting parts of its URL</q-tooltip>
+            </q-icon>
+
+            <template v-if="(props.tab as Tab).monitor || suggestion || (props.tab as Tab).placeholders">
               <span>-</span>
             </template>
 
@@ -239,6 +246,8 @@ import {PlaceholdersType} from "src/models/Placeholders";
 import {uid, useQuasar} from "quasar";
 import {TabAndTabsetId} from "src/models/TabAndTabsetId";
 import MonitoringDialog from "components/dialogues/MonitoringDialog.vue";
+import {useSuggestionsStore} from "stores/suggestionsStore";
+import {Suggestion, SuggestionState} from "src/models/Suggestion";
 
 const {inBexMode, isCurrentTab} = useUtils()
 
@@ -265,6 +274,7 @@ const newState = ref(false)
 const groupName = ref<string | undefined>(undefined)
 const groups = ref<Map<string, chrome.tabGroups.TabGroup>>(new Map())
 const placeholders = ref<Object[]>([])
+const suggestion = ref<Suggestion | undefined>(undefined)
 
 onMounted(() => {
   if ((new Date().getTime() - props.tab.created) < 500) {
@@ -299,6 +309,12 @@ watchEffect(() => {
 
 watchEffect(() => {
   groupName.value = props.tab?.groupName
+})
+
+watchEffect(() => {
+  if (props.tab.url) {
+    suggestion.value = useSuggestionsStore().getSuggestionForUrl(props.tab.url)
+  }
 })
 
 watchEffect(() => {
@@ -382,8 +398,8 @@ const matcherTooltip = () => {
 const unsetGroup = () => {
   if (props.tab) {
     props.tab.groupName = undefined
-    useTabsStore().getTab(props.tab.id)
-        .then((res: TabAndTabsetId | undefined) => {
+    const res = useTabsStore().getTabAndTabsetId(props.tab.id)
+        //.then((res: TabAndTabsetId | undefined) => {
           if (res) {
             const tab = res.tab
             const tabsetId = res.tabsetId
@@ -394,7 +410,7 @@ const unsetGroup = () => {
               useTabsetService().saveTabset(ts)
             }
           }
-        })
+       // })
   }
 }
 
@@ -411,8 +427,8 @@ const groupsWithout = (groupName: string): chrome.tabGroups.TabGroup[] =>
 const switchGroup = (group: chrome.tabGroups.TabGroup): void => {
   if (props.tab) {
     props.tab.groupName = group.title
-    useTabsStore().getTab(props.tab.id)
-        .then((res: TabAndTabsetId | undefined) => {
+    const res = useTabsStore().getTabAndTabsetId(props.tab.id)
+       // .then((res: TabAndTabsetId | undefined) => {
           if (res) {
             const tab = res.tab
             const tabsetId = res.tabsetId
@@ -423,7 +439,7 @@ const switchGroup = (group: chrome.tabGroups.TabGroup): void => {
               useTabsetService().saveTabset(ts)
             }
           }
-        })
+       // })
   }
 }
 
@@ -432,6 +448,10 @@ const gotoTab = () => NavigationService.openOrCreateTab(
     props.tab.matcher,
     props.tab.groupName ? [props.tab.groupName] : [])
 
+const showSuggestion = () => {
+  const url = chrome.runtime.getURL('www/index.html') + "#/mainpanel/suggestions/" + suggestion.value?.id
+  NavigationService.openOrCreateTab([url])
+}
 
 const monitoringDialog = (tab: Tab) => {
   console.log("calling dialog with tab", tab)

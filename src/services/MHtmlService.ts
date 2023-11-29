@@ -38,7 +38,7 @@ class MHtmlService {
   }
 
   async deleteMHtml(tabId: string, mhtmlId: string) {
-    const tabAndTabsetId = await useTabsStore().getTab(tabId)
+    const tabAndTabsetId =  useTabsStore().getTabAndTabsetId(tabId)
     if (tabAndTabsetId) {
       // @ts-ignore
       tabAndTabsetId.tab.mhtmls = _.filter(tabAndTabsetId.tab.mhtmls, (e:string) => e !== mhtmlId)

@@ -355,7 +355,7 @@ class ChromeListeners {
       }
 
     } else {
-      console.log(`onUpdated: tab ${tab.id}: pending tab cannot be found in ${tabset.name}`)
+      console.debug(`onUpdated: tab ${tab.id}: pending tab cannot be found in ${tabset.name}`)
       if (tab.url !== undefined) {
 
         const newTab = new Tab(uid(), tab)
@@ -369,7 +369,7 @@ class ChromeListeners {
           newTab.groupName = useGroupsStore().currentGroupForId(tab.groupId)?.title || '???'
         }
 
-        console.log(`onUpdated: tab ${tab.id}: missing tab added for url ${tab.url}`)
+        console.debug(`onUpdated: tab ${tab.id}: missing tab added for url ${tab.url}`)
         tabset.tabs.push(newTab)
       }
     }
@@ -510,7 +510,7 @@ class ChromeListeners {
     if (inIgnoredMessages(request)) {
       return true
     }
-    console.log("%conMessage","color:red", request)
+    //console.log("%conMessage","color:red", request)
     if (request.msg === 'captureThumbnail') {
       const screenShotWindow = useWindowsStore().screenshotWindow
       this.handleCapture(sender, screenShotWindow, sendResponse)

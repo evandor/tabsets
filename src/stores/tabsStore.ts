@@ -182,8 +182,8 @@ export const useTabsStore = defineStore('tabs', {
                 })
             }
         },
-        getTab: (state) => {
-            return async (tabId: string): Promise<TabAndTabsetId | undefined> => {
+        getTabAndTabsetId: (state) => {
+            return (tabId: string): TabAndTabsetId | undefined => {
                 console.log("call to getTab1", tabId)
 
                 for (const [key, value] of state.tabsets) {
@@ -191,10 +191,10 @@ export const useTabsStore = defineStore('tabs', {
                         return t.id === tabId
                     })
                     if (found) {
-                        return Promise.resolve(new TabAndTabsetId(found, value.id))
+                        return new TabAndTabsetId(found, value.id)
                     }
                 }
-                return Promise.resolve(undefined)
+                return undefined
             }
         },
         tabsetFor: (state) => {
@@ -303,8 +303,8 @@ export const useTabsStore = defineStore('tabs', {
             this.currentChromeTabs.set(tab.windowId, tab)
             const MAX_HISTORY_LENGTH = 12
 
-           // console.log("%cchromeTabsHistoryPosition", "color:green;font-style:bold;",
-           //     tab.id, this.chromeTabsHistoryPosition, this.chromeTabsHistory.length, this.chromeTabsHistoryNavigating)
+            // console.log("%cchromeTabsHistoryPosition", "color:green;font-style:bold;",
+            //     tab.id, this.chromeTabsHistoryPosition, this.chromeTabsHistory.length, this.chromeTabsHistoryNavigating)
 
             // tab was activated without using the navigation
             if (tab.id && !this.chromeTabsHistoryNavigating) {
@@ -516,7 +516,7 @@ export const useTabsStore = defineStore('tabs', {
 
         tabHistoryBack() {
             if (this.chromeTabsHistoryPosition > 0) {
-            console.log("called tabHistoryBack with", this.chromeTabsHistoryPosition)
+                console.log("called tabHistoryBack with", this.chromeTabsHistoryPosition)
                 this.chromeTabsHistoryPosition -= 1
                 this.chromeTabsHistoryNavigating = true
             }
@@ -525,7 +525,7 @@ export const useTabsStore = defineStore('tabs', {
 
         tabHistoryForward() {
             if (this.chromeTabsHistoryPosition < this.chromeTabsHistory.length - 1) {
-            console.log("called tabHistoryForward with", this.chromeTabsHistoryPosition,this.chromeTabsHistory.length)
+                console.log("called tabHistoryForward with", this.chromeTabsHistoryPosition, this.chromeTabsHistory.length)
                 this.chromeTabsHistoryPosition += 1
                 this.chromeTabsHistoryNavigating = true
             }

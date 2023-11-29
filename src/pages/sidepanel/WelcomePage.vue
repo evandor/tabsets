@@ -49,9 +49,9 @@
         </q-card-actions>
       </q-card>
     </div>
-    <div class="q-pa-sm row items-start q-gutter-md">
-      <q-btn label="import tabsets" @click="showImportDialog"></q-btn>
-    </div>
+<!--    <div class="q-pa-sm row items-start q-gutter-md">-->
+<!--      <q-btn label="import tabsets" @click="showImportDialog"></q-btn>-->
+<!--    </div>-->
   </div>
 </template>
 

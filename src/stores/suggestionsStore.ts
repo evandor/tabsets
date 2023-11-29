@@ -4,10 +4,7 @@ import {StaticSuggestionIdent, Suggestion, SuggestionState} from "src/models/Sug
 import _ from "lodash";
 import PersistenceService from "src/services/PersistenceService";
 
-// seems like it is a good idea to initialize the stores with the db(s) needed
-//const {db} = useDB()
 let storage: PersistenceService = null as unknown as PersistenceService
-
 
 export const useSuggestionsStore = defineStore('suggestions', () => {
 
@@ -56,7 +53,7 @@ export const useSuggestionsStore = defineStore('suggestions', () => {
         }
     }
 
-    function removeSuggestion(ident: StaticSuggestionIdent) {
+    function removeSuggestion(ident: string) {
         if (storage) {
             storage.removeSuggestion(ident)
                 .then(() => suggestions.value = _.filter(suggestions.value, s => s.id !== ident))
@@ -109,6 +106,14 @@ export const useSuggestionsStore = defineStore('suggestions', () => {
         return (suggestionId: string) => _.find(suggestions.value, s => s.id === suggestionId)
     })
 
+    const getSuggestionForUrl = computed(() => {
+        return (url: string) => {
+            const encodedUrl = btoa(url)
+            console.log("encodedURL", encodedUrl)
+            return _.find(suggestions.value, s => s.id === encodedUrl)
+        }
+    })
+
 
     return {
         init,
@@ -119,7 +124,8 @@ export const useSuggestionsStore = defineStore('suggestions', () => {
         updateSuggestionState,
         removeSuggestion,
         applySuggestion,
-        inactivateSuggestion
+        inactivateSuggestion,
+        getSuggestionForUrl
     }
 
 })

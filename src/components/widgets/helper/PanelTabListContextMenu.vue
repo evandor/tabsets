@@ -137,7 +137,7 @@ const theColor = ref<string | undefined>(undefined)
 async function tabToUse(tab: Tab) {
   let useTab: Tab = tab
   if (tab.placeholders?.templateId) {
-    const tabInfo = await useTabsStore().getTab(tab.placeholders?.templateId)
+    const tabInfo = useTabsStore().getTabAndTabsetId(tab.placeholders?.templateId)
     if (tabInfo) {
       useTab = tabInfo.tab
       console.log("useTab", useTab, tab.placeholders?.templateId)

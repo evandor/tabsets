@@ -4,7 +4,7 @@
   <q-toolbar class="text-primary">
 
     <q-toolbar-title>
-      {{ suggestion?.state === SuggestionState.NOTIFICATION ? 'Notification' : 'Suggestion' }}
+      {{ (suggestion?.state === SuggestionState.NOTIFICATION || suggestion?.url) ? 'Notification' : 'Suggestion' }}
     </q-toolbar-title>
 
   </q-toolbar>
@@ -16,36 +16,36 @@
     <!--    </q-banner>-->
 
     <div class="row items-baseline q-ma-md">
-      <div class="col-3 text-bold">
+      <div class="col-2 text-bold">
         Title
       </div>
-      <div class="col-9">
+      <div class="col">
         {{ suggestion?.title }}
       </div>
     </div>
 
     <div class="row q-mt-none q-pt-none q-ma-md">
-      <div class="col-3 text-bold">
+      <div class="col-2 text-bold">
         &nbsp;
       </div>
-      <div class="col-9 text-caption text-grey">
+      <div class="col text-caption text-grey">
         {{ date.formatDate(suggestion?.created, 'DD.MM.YYYY HH:mm') }}
       </div>
     </div>
 
     <div class="row items-baseline q-ma-md">
-      <div class="col-3 text-bold">
+      <div class="col-2 text-bold">
         Messsage
       </div>
-      <div class="col-9">
+      <div class="col">
         {{ suggestion?.msg }}
       </div>
     </div>
     <div class="row items-baseline q-ma-md" v-if="suggestion?.data['url' as keyof object]">
-      <div class="col-3 text-bold">
+      <div class="col-2 text-bold">
         URL
       </div>
-      <div class="col-9 text-blue cursor-pointer">
+      <div class="col text-blue cursor-pointer">
         <div @click="NavigationService.openOrCreateTab([suggestion?.data['url' as keyof object]])">
           {{ suggestion?.data['url' as keyof object] }}
         </div>
@@ -74,10 +74,68 @@
           {{ suggestion?.data.location }}
         </div>
       </div>
+
+      <div class="row items-baseline q-ma-md">
+        <div class="col-3 text-bold">
+
+        </div>
+        <div class="col-9">
+
+          <template v-if="!decided">
+            <q-btn label="Ignore" class="q-mr-md" size="sm" @click="ignoreSuggestion()">
+              <q-tooltip class="tooltip-small" :delay="500">Ignore this suggestion</q-tooltip>
+            </q-btn>
+            <q-btn label="Apply Suggestion"
+                   size="sm" color="warning" @click="applySuggestion"></q-btn>
+          </template>
+          <template v-else>
+            <q-btn label="Close Window" class="q-mr-md" size="sm" @click="closeWindow()"/>
+          </template>
+        </div>
+      </div>
+
     </template>
 
     <template v-if="suggestion?.type === SuggestionType.CONTENT_CHANGE">
-      <div class="row">
+
+      <div class="row items-baseline q-ma-md">
+        <div class="col-3 text-bold">
+
+        </div>
+        <div class="col-9">
+
+          <template v-if="!decided">
+            <q-btn v-if="isMonitoring()" label="Stop Monitoring" class="q-mr-md" size="sm" @click="stopMonitoring()">
+              <q-tooltip class="tooltip-small" :delay="500">Stop Monitoring this website</q-tooltip>
+            </q-btn>
+            <q-btn label="Reset Monitoring" class="q-mr-md"
+                   size="sm" color="warning" @click="applySuggestion"></q-btn>
+            <q-btn label="Compare with Current" class="q-mr-md"
+                   size="sm" color="warning" @click="createImageToCompare()"></q-btn>
+            <q-btn label="Delete Notification" class="q-mr-md"
+                   size="sm" color="negative" @click="deleteNotification"></q-btn>
+          </template>
+          <template v-else>
+            <q-btn label="Close Window" class="q-mr-md" size="sm" @click="closeWindow()"/>
+          </template>
+        </div>
+      </div>
+
+      <div class="row" v-show="pngs.length === 1">
+        <div class="col-12 q-pr-xs">
+          <q-scroll-area style="height: 630px; width:100%;"
+                         visible
+                         :thumb-style="thumbStyle"
+                         :bar-style="barStyle"
+                         class="col">
+            <div class="row no-wrap">
+              <img id="monitoringStartSingleImg">
+            </div>
+          </q-scroll-area>
+
+        </div>
+      </div>
+      <div class="row" v-show="pngs.length > 1">
         <div class="col-4 q-pr-xs">
           <q-scroll-area style="height: 630px; width:100%;"
                          visible
@@ -91,14 +149,7 @@
             </div>
           </q-scroll-area>
         </div>
-        <div class="col-4 q-pr-xs" v-if="pngs.length === 1">
-          <q-btn label="Click to compare with current website" @click="createImageToCompare()"/>
-          <div class="text-caption q-mt-lg">
-            This will open a new tab, load the current version of the monitored website and
-            create an image which will be compared to the older snapshot.
-          </div>
-        </div>
-        <div class="col-4" v-else>
+        <div class="col-4">
           <q-scroll-area
               visible
               :thumb-style="thumbStyle"
@@ -127,37 +178,24 @@
           </q-scroll-area>
 
 
-
         </div>
       </div>
+
+      <div>
+        <pre>{{ suggestion }}</pre>
+      </div>
+
+
     </template>
 
-    <div class="row items-baseline q-ma-md">
-      <div class="col-3 text-bold">
 
-      </div>
-      <div class="col-9">
-
-        <template v-if="!decided">
-          <q-btn label="Ignore" class="q-mr-md" size="sm" @click="ignoreSuggestion()">
-            <q-tooltip class="tooltip-small" :delay="500">Ignore this suggestion</q-tooltip>
-          </q-btn>
-          <q-btn label="Apply Suggestion"
-                 size="sm" color="warning" @click="applySuggestion"></q-btn>
-        </template>
-        <template v-else>
-          <q-btn label="Close Window" class="q-mr-md" size="sm" @click="closeWindow()"/>
-        </template>
-      </div>
-    </div>
-
-<!--    <template v-if="useSettingsStore().isEnabled('dev')">-->
-<!--      <div class="row" v-for="s in useSuggestionsStore().getSuggestions([-->
-<!--          SuggestionState.NEW, SuggestionState.DECISION_DELAYED, SuggestionState.CHECKED, SuggestionState.IGNORED,-->
-<!--          SuggestionState.NOTIFICATION, SuggestionState.INACTIVE])">-->
-<!--        <pre>{{ s }}</pre>-->
-<!--      </div>-->
-<!--    </template>-->
+    <!--    <template v-if="useSettingsStore().isEnabled('dev')">-->
+    <!--      <div class="row" v-for="s in useSuggestionsStore().getSuggestions([-->
+    <!--          SuggestionState.NEW, SuggestionState.DECISION_DELAYED, SuggestionState.CHECKED, SuggestionState.IGNORED,-->
+    <!--          SuggestionState.NOTIFICATION, SuggestionState.INACTIVE])">-->
+    <!--        <pre>{{ s }}</pre>-->
+    <!--      </div>-->
+    <!--    </template>-->
 
 
   </div>
@@ -175,7 +213,6 @@ import {Suggestion, SuggestionState, SuggestionType} from "src/models/Suggestion
 import {useSuggestionsStore} from "stores/suggestionsStore";
 import {ApplySuggestionCommand} from "src/domain/suggestions/ApplySuggestionCommand";
 import {IgnoreSuggestionCommand} from "src/domain/suggestions/IgnoreSuggestionCommand";
-import {useSettingsStore} from "stores/settingsStore";
 import NavigationService from "src/services/NavigationService";
 import PdfService from "src/services/PdfService";
 import ContentUtils from "src/utils/ContentUtils";
@@ -186,6 +223,11 @@ import pixelmatch from "pixelmatch";
 import {PNG} from "pngjs/browser";
 
 import {Buffer} from 'buffer/'
+import {PNGWithMetadata} from "pngjs";
+import {useTabsStore} from "stores/tabsStore";
+import {useTabsetService} from "src/services/TabsetService2";
+import {UpdateMonitoringCommand} from "src/domain/monitoring/UpdateMonitoringCommand";
+import {MonitoringType} from "src/models/Monitor";
 
 const route = useRoute()
 
@@ -213,6 +255,19 @@ watchEffect(() => {
   }
 })
 
+function createImage(imageUrl: string, selector: string) {
+  const img1: HTMLImageElement | null = document.querySelector(selector)
+  if (img1) {
+    img1.src = imageUrl;
+    img1.onload = function () {
+      var w = img1.width;
+      var h = img1.height;
+      console.log("NEW IMAGE width", w);
+      console.log("NEW IMAGE height: ", h);
+    }
+  }
+}
+
 watchEffect(async () => {
   suggestionId.value = route.params.suggestionId as string
   if (suggestionId.value) {
@@ -227,16 +282,8 @@ watchEffect(async () => {
       var urlCreator = window.URL || window.webkitURL;
       var imageUrl = urlCreator.createObjectURL(pngs.value[0].content);
       console.log("imageUrl", imageUrl)
-      const img1: HTMLImageElement | null = document.querySelector("#monitoringStartImg")
-      if (img1) {
-        img1.src = imageUrl;
-        img1.onload = function () {
-          var w = img1.width;
-          var h = img1.height;
-          console.log("NEW IMAGE width", w);
-          console.log("NEW IMAGE height: ", h);
-        }
-      }
+      createImage(imageUrl, "#monitoringStartSingleImg");
+      createImage(imageUrl, "#monitoringStartImg");
 
       if (pngs.value.length > 1) {
         var imageUrl2 = urlCreator.createObjectURL(pngs.value[1].content);
@@ -265,16 +312,41 @@ watchEffect(async () => {
                   content2.arrayBuffer()
                       .then((buf2: ArrayBuffer) => {
 
-                        const beforeImg = PNG.sync.read(Buffer.from(buf1))
-                        const afterImg = PNG.sync.read(Buffer.from(buf2))
+                        const beforeImg: PNGWithMetadata = PNG.sync.read(Buffer.from(buf1))
+                        let afterImg = PNG.sync.read(Buffer.from(buf2))
 
                         console.log("beforeImg:", beforeImg.width, beforeImg.height)
                         console.log("afterImg: ", afterImg.width, afterImg.height)
-                        //console.log("got buf1", Buffer.from(buf2).length, img2.width * img2.height * 4)
-                        //pixelmatch(img1, img2, diff.data, img2.width, img2.height, {threshold: 0.1});
+
+                        const width = beforeImg.width
+                        const height = beforeImg.height
+
+                        if (afterImg.height > beforeImg.height) { // assuming width is the same
+                          //ctx?.createImageData(width, height);
+                          let newfile = new PNG({width, height});
+                          for (let y = 0; y < newfile.height; y++) {
+                            for (let x = 0; x < newfile.width; x++) {
+                              let idx = (newfile.width * y + x) << 2;
+
+                              let col = 0xff;
+
+                              newfile.data[idx] = col;
+                              newfile.data[idx + 1] = col;
+                              newfile.data[idx + 2] = col;
+                              newfile.data[idx + 3] = 0xff;
+                            }
+                          }
+                          afterImg = newfile
+                              .pack()
+                              //.pipe(fs.createWriteStream(__dirname + "/newfile.png"))
+                              .on("finish", function () {
+                                console.log("Written!");
+                              });
+                          //console.log("r", r)
+                        }
+                        console.log("sizes: ", beforeImg.width, afterImg.width, beforeImg.height, afterImg.height)
+
                         if (beforeImg.width === afterImg.width && beforeImg.height === afterImg.height) {
-                          const width = beforeImg.width
-                          const height = beforeImg.height
                           //const d = new PNG({width, height});
                           const canvas: HTMLCanvasElement | null = document.getElementById("diffCanvas") as HTMLCanvasElement
                           if (canvas) {
@@ -282,12 +354,12 @@ watchEffect(async () => {
                             canvas.width = width
                             const ctx = canvas.getContext("2d");
                             //const imgData = ctx?.createImageData(100, 100);
-                            const d:ImageData | undefined = ctx?.createImageData(width, height);
+                            const d: ImageData | undefined = ctx?.createImageData(width, height);
                             if (d) {
-                              const numDiffPixels = pixelmatch(beforeImg.data, afterImg.data, d.data, img2.width, img2.height, {
+                              const numDiffPixels = pixelmatch(beforeImg.data, afterImg.data, d.data, width, height, {
                                 threshold: 0.1,
                               });
-                              ctx?.putImageData(d,0,0)
+                              ctx?.putImageData(d, 0, 0)
                               console.log("###", numDiffPixels);
                             }
 
@@ -407,4 +479,35 @@ const onScrollThird = ({verticalPosition}: any) => {
   scroll('third', verticalPosition)
 }
 
+const stopMonitoring = () => {
+  const tabId = suggestion.value?.data['tabId' as keyof object]
+  if (tabId) {
+    const res = useTabsStore().getTabAndTabsetId(tabId)
+    if (res) {
+      useCommandExecutor().executeFromUi(new UpdateMonitoringCommand(res.tab, MonitoringType.NONE, false, {}))
+      useTabsetService().saveCurrentTabset()
+    }
+  }
+}
+
+// TODO this needs to become more advanced. Merge MHTML storage with BLOBS
+const deleteNotification = async () => {
+  if (suggestion.value) {
+    console.log("deleting suggestion", suggestion.value)
+    const tabId = suggestion.value.data['tabId' as keyof object]
+    const pngs = await PdfService.getPngsForTab(tabId)
+    pngs.forEach(p => PdfService.deleteBlob(tabId, p.id))
+    useSuggestionsStore().removeSuggestion(suggestion.value?.id)
+  }
+}
+
+const isMonitoring = () => {
+  const tabId = suggestion.value?.data['tabId' as keyof object]
+  if (tabId) {
+    const res = useTabsStore().getTabAndTabsetId(tabId)
+    console.log("restabmonitor", tabId, res?.tab.monitor)
+    return res?.tab?.monitor
+  }
+  return false
+}
 </script>

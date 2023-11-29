@@ -133,13 +133,13 @@ onMounted(() => {
     console.log('screenSelectElement: event = ', e.element);
     if (e.element.name.startsWith("tab-")) {
       const tabId = e.element.name.replace("tab-", "")
-      useTabsStore().getTab(tabId)
-          .then((tabData: TabAndTabsetId | undefined) => {
+      const tabData = useTabsStore().getTabAndTabsetId(tabId)
+       //   .then((tabData: TabAndTabsetId | undefined) => {
             if (tabData) {
               selectedTab.value = tabData.tab
               selectedTabsetId.value = tabData.tabsetId
             }
-          })
+       //   })
       selectedFigure.value = undefined
     } else {
       selectedFigure.value = e.element

@@ -470,7 +470,7 @@ class IndexedDbPersistenceService implements PersistenceService {
     async deleteBlob(tabId: string, elementId: string) {
         let blobsForTab = await this.getBlobsForTab(tabId)
         blobsForTab = _.filter(blobsForTab, b => b.id !== elementId)
-        this.db.put('blobs', blobsForTab, tabId)
+        await this.db.put('blobs', blobsForTab, tabId)
     }
 
     async addSpace(space: Space): Promise<void> {
@@ -673,9 +673,7 @@ class IndexedDbPersistenceService implements PersistenceService {
     }
 
     async addSuggestion(suggestion: Suggestion): Promise<void> {
-        //return
         const suggestions = await this.getSuggestions()
-        // .then((suggestions) => {
         // console.log("%csuggestions from db", "color:red", suggestions)
         const foundExistingInStateNewOrCanceled = _.find(suggestions,
             (s: Suggestion) => s.state === SuggestionState.NEW || s.state === SuggestionState.DECISION_DELAYED)
@@ -689,21 +687,17 @@ class IndexedDbPersistenceService implements PersistenceService {
             return Promise.reject("there's already a suggestion in state NEW, not adding (yet)")
         }
         const found = _.find(suggestions, (s: Suggestion) => s.url === suggestion.url)
-        // console.log("===found", found)
         if (!found) {
             await this.db.add('suggestions', suggestion, suggestion.id)
             return Promise.resolve()
         }
         console.log("suggestion already exists")
         return Promise.reject("suggestion already exists")
-        //  })
-        // .catch((err) => Promise.reject(err))
     }
 
     removeSuggestion(ident: string): Promise<any> {
         return this.db.delete('suggestions', ident)
     }
-
 
     setSuggestionState(suggestionId: string, state: SuggestionState): Promise<Suggestion> {
         console.log("setting suggestion to state", suggestionId, state)

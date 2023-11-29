@@ -98,6 +98,16 @@
       </div>
     </div>
 
+    <template v-if="text.get(feature)?.more">
+      <div class="col-12 q-my-sm">
+        <div class="text-subtitle2">More Info</div>
+      </div>
+
+      <div class="col-12 q-my-md">
+        <div> click <a class="cursor-pointer text-blue-6" @click="NavigationService.openOrCreateTab([text.get(feature)?.more])">here</a></div>
+      </div>
+    </template>
+
     <div class="col-12 q-my-sm">
       <div class="text-subtitle2">Permissions</div>
     </div>
@@ -126,6 +136,7 @@ import {DrawerTabs, useUiStore} from "src/stores/uiStore";
 import OpenRightDrawerWidget from "components/widgets/OpenRightDrawerWidget.vue";
 import Analytics from "src/utils/google-analytics";
 import Command from "src/domain/Command";
+import NavigationService from "src/services/NavigationService";
 
 const route = useRoute();
 const router = useRouter();
@@ -215,8 +226,8 @@ text.set(FeatureIdent.ANALYSE_TABS.toLowerCase(), {
   img: 'analyse.png',
   img_width: '700px',
   description: 'This extension can analyse the tabs you visit, so that the search can be improved significantly. The tab\'s content, ' +
-    'its links and the received http headers are taken into account. ' +
-    'Please note that only tabs that you visit (or revisit) after the activation of this feature are going to be analysed.',
+      'its links and the received http headers are taken into account. ' +
+      'Please note that only tabs that you visit (or revisit) after the activation of this feature are going to be analysed.',
   permissions: ['allOrigins']
 })
 
@@ -324,7 +335,8 @@ text.set(FeatureIdent.TOP10.toLowerCase(), {
 })
 text.set(FeatureIdent.OPEN_TABS.toLowerCase(), {
   name: 'Open Tabs',
-  description: 'Quick access to all your open tabs of the current browsers window',
+  description: 'Quick access to all your open tabs of the current browsers window<br><br>' +
+      'Adds quick navigation to jump back and forth to recently opened tabs.',
   permissions: []
 })
 text.set(FeatureIdent.CATEGORIZATION.toLowerCase(), {
@@ -386,7 +398,11 @@ text.set(FeatureIdent.TAB_GROUPS.toLowerCase(), {
 })
 text.set(FeatureIdent.MONITORING.toLowerCase(), {
   name: 'Monitoring Website Changes',
-  description: 'Check periodically for changes of a website',
+  description: 'Check periodically for changes of a website<br><br>' +
+      'This feature is not reliable, as there are many reasons why a website might change (e.g. if it simply displays a date).' +
+      'But sometimes it can be helpful. Use at your own discretion.',
+  img: 'monitor.png',
+  more: 'https://docs.tabsets.net/website-monitoring',
   permissions: []
 })
 
@@ -437,17 +453,17 @@ const grant = (ident: string) => {
     }
   }
   //TODO the default activeCommand always executes "permissionStore.activateFeature" - so we do it twice
- /* if (appFeature.value && appFeature.value.activateCommand) {
-    useCommandExecutor().execute(appFeature.value.activateCommand)
-        .then((executionResult: ExecutionResult<any>) => {
-          if (executionResult.result) {
-            permissionsStore.activateFeature(ident)
-          }
-        })
-  } else {
-    permissionsStore.activateFeature(ident)
-  }
-*/
+  /* if (appFeature.value && appFeature.value.activateCommand) {
+     useCommandExecutor().execute(appFeature.value.activateCommand)
+         .then((executionResult: ExecutionResult<any>) => {
+           if (executionResult.result) {
+             permissionsStore.activateFeature(ident)
+           }
+         })
+   } else {
+     permissionsStore.activateFeature(ident)
+   }
+ */
 }
 
 const revoke = (ident: string) => {
