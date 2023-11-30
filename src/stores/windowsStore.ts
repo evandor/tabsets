@@ -106,6 +106,7 @@ export const useWindowsStore = defineStore('windows', () => {
         browser.windows.getLastFocused({windowTypes: ['normal']}, (window: browser.windows.Window) => {
             lastFocusedWindow.value = window
         })
+
     }
 
     async function onRemoved(windowId: number) {
