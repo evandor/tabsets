@@ -1,10 +1,7 @@
 import _ from "lodash"
 import {GrantPermissionCommand} from "src/domain/commands/GrantPermissionCommand";
 import {RevokePermissionCommand} from "src/domain/commands/RevokePermissionCommand";
-import {GrantOriginCommand} from "src/domain/commands/GrantOriginCommand";
-import {RevokeOriginCommand} from "src/domain/commands/RevokeOriginCommand";
 import {AppFeature, FeatureIdent, FeatureType} from "src/models/AppFeature"
-
 
 export class AppFeatures {
   features: AppFeature[] = [
@@ -18,9 +15,7 @@ export class AppFeatures {
     //   .setActivateCommands([new GrantPermissionCommand('contextMenus')])
     //   .setDeactivateCommands([new RevokePermissionCommand('contextMenus')]),
 
-    new AppFeature(FeatureIdent.THUMBNAILS, FeatureType.EXPERIMENTAL, 'Thumbnails', 'o_image', ['bex'])
-      .setActivateCommands([new GrantOriginCommand('thumbnails')])
-      .setDeactivateCommands([new RevokeOriginCommand('thumbnails')]),
+    new AppFeature(FeatureIdent.THUMBNAILS, FeatureType.EXPERIMENTAL, 'Thumbnails', 'o_image', ['bex']),
 
     new AppFeature(FeatureIdent.NEWEST_TABS, FeatureType.RECOMMENDED, 'Newest Tabs', 'o_schedule', ['all']),
     new AppFeature(FeatureIdent.TOP10, FeatureType.RECOMMENDED, 'Top 10 Tabs', 'o_workspace_premium', ['all']),

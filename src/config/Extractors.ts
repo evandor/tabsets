@@ -1,9 +1,3 @@
-import _ from "lodash"
-import {GrantPermissionCommand} from "src/domain/commands/GrantPermissionCommand";
-import {RevokePermissionCommand} from "src/domain/commands/RevokePermissionCommand";
-import {GrantOriginCommand} from "src/domain/commands/GrantOriginCommand";
-import {RevokeOriginCommand} from "src/domain/commands/RevokeOriginCommand";
-import {AppFeature, FeatureIdent, FeatureType} from "src/models/AppFeature"
 
 export enum ExtractorType {
   REGEX = "REGEX",
