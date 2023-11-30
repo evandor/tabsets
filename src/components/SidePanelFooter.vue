@@ -260,15 +260,19 @@ const toastBannerClass = () => {
 }
 
 const otherActiveWindows = () => {
-  return _.sortBy(_.map(
-      _.filter(useWindowsStore().currentWindows, (w: chrome.windows.Window) => {
-        return useWindowsStore().currentWindow?.id !== w.id
-      }), w => {
-        return w.id ? {
-          name: useWindowsStore().windowNameFor(w.id) || 'Main',
-          id: w.id
-        } : {name: 'unknown', id: 0}
-      }), o => o.name)
+  return _.filter(
+      _.sortBy(
+          _.map(
+              _.filter(useWindowsStore().currentWindows, (w: chrome.windows.Window) => {
+                return useWindowsStore().currentWindow?.id !== w.id
+              }), w => {
+                return w.id ? {
+                  name: useWindowsStore().windowNameFor(w.id) || 'Main',
+                  id: w.id
+                } : {name: 'unknown', id: 0}
+              }),
+          o => o.name),
+      (e: object) => e['name' as keyof object] !== '%monitoring%')
 }
 
 const openWindow = (windowId: number) =>

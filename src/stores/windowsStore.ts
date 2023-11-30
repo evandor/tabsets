@@ -206,15 +206,27 @@ export const useWindowsStore = defineStore('windows', () => {
             .catch((err) => console.warn("could not delete window " + windowId + " due to: " + err))
     }
 
+    async function removeWindowByTitle(title: string) {
+        storage.getWindows().then((windows) => {
+            windows.forEach(w => {
+                if (w.title === title) {
+                    storage.removeWindow(w.id)
+                        .catch((err) => console.debug("could not delete window " + w.id + " due to: " + err))
+                }
+            })
+        })
+    }
+
     function openThrottledInWindow(urls: string[], windowCreateData: object = {focused: true, width: 1024, height: 800}) {
         console.log("%copenThrottledInWindow...", "color:green")
         const throttleOnePerXSeconds = throttledQueue(1, 1000, true)
         chrome.windows.create(windowCreateData, (window: any) => {
 
             //console.log("%cgot window", "color:green", window.id)
+            useWindowsStore().removeWindowByTitle("%monitoring%")
+            useWindowsStore().upsertWindow(window, "%monitoring%")
 
             useWindowsStore().screenshotWindow = window.id
-            let tabToClose: number | undefined = undefined
 
             const promises: Promise<any>[] = []
             for (const u of urls) {
@@ -226,7 +238,6 @@ export const useWindowsStore = defineStore('windows', () => {
                     const createProperties = {windowId: window.id, url: u}
                     //console.log("createProperties", createProperties)
                     chrome.tabs.create(createProperties, (tab: chrome.tabs.Tab) => {
-                        tabToClose = tab.id
                         closeTabWithTimeout(2000, tab.id)
                     })
                     return closeTabWithTimeout(1000)
@@ -260,6 +271,7 @@ export const useWindowsStore = defineStore('windows', () => {
         screenshotWindow,
         upsertWindow,
         removeWindow,
-        openThrottledInWindow
+        openThrottledInWindow,
+        removeWindowByTitle
     }
 })

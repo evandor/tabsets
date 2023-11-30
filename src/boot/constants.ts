@@ -4,7 +4,7 @@ const INDEX_DB_VERSION = 16
 
 const CLEANUP_PERIOD_IN_MINUTES = 10 // in prod: 10
 const EXPIRE_DATA_PERIOD_IN_MINUTES = 60 // in prod: 60
-const MONITORING_PERIOD_IN_MINUTES = 10 // in prod: 60
+const MONITORING_PERIOD_IN_MINUTES = 1 // in prod: 60
 
 
 const SPECIAL_ID_FOR_NO_GROUP_ASSIGNED = "no_group_assigned_identifier"
