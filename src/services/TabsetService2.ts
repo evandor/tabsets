@@ -26,6 +26,7 @@ import {useUiStore} from "stores/uiStore";
 import {useSuggestionsStore} from "stores/suggestionsStore";
 import {Suggestion, SuggestionState, SuggestionType} from "src/models/Suggestion";
 import {MonitoringType} from "src/models/Monitor";
+import {BlobType} from "src/models/SavedBlob";
 
 let db: PersistenceService = null as unknown as PersistenceService
 
@@ -278,7 +279,8 @@ export function useTabsetService() {
             if (!tabset.type) {
                 tabset.type = TabsetType.DEFAULT
             }
-            console.log("saving tabset", tabset.name)
+            const additionalInfo = _.map(tabset.tabs, t => t.monitor)
+            console.log(`saving tabset '${tabset.name}' with ${tabset.tabs.length} tab(s)`, additionalInfo)
             return db.saveTabset(tabset)
         }
         return Promise.reject("tabset id not set")
@@ -319,17 +321,9 @@ export function useTabsetService() {
         if (!tab || !tab.url) {
             return Promise.resolve('done')
         }
-        console.log("saving text", tab.id)
+        console.log("saving text for", tab.id, tab.url)
         const title = tab.title || ''
         const tabsetIds: string[] = tabsetsFor(tab.url)
-        //console.log("checking candidates", useTabsStore().tabsets.values())
-        const candidates = _.map(
-            _.filter([...useTabsStore().tabsets.values()], (ts: Tabset) =>
-                ts.type === TabsetType.DEFAULT || ts.type === TabsetType.SESSION),
-            (ts: Tabset) => {
-                return {"name": ts.name, "id": ts.id}
-            })
-
 
         db.saveContent(tab, text, metas, title, tabsetIds)
             .catch((err: any) => console.log("err", err))
@@ -344,8 +338,6 @@ export function useTabsetService() {
                 _.forEach(tabset.tabs, (t: Tab) => {
                     //console.log("comparing", t.url, tab.url)
                     if (t.url === tab.url) {
-                        //console.log("checking tab", tab.id)
-                        //console.log("updating meta data in tab", tab.id, metas)
                         if (metas['description' as keyof object]) {
                             t.description = metas['description' as keyof object]
                             // @ts-ignore
@@ -389,12 +381,14 @@ export function useTabsetService() {
                         } else {
                             t.contentHash = ""
                         }
-                        console.log("%ccontenthash set to", "color:blue", t.contentHash, oldContentHash)
                         if (usePermissionsStore().hasFeature(FeatureIdent.MONITORING) &&
                             t.monitor && t.monitor.type === MonitoringType.CONTENT_HASH) {
                             if (oldContentHash && oldContentHash !== '' &&
                                 t.contentHash !== oldContentHash &&
                                 t.contentHash !== '' && t.url) {
+
+                                console.log("%ccontenthash changed for", "color:yellow", t.url)
+
                                 const id = btoa(t.url)
                                 const msg = "Info: Something might have changed in '" + (t.name ? t.name : t.title) + "'."
                                 const suggestion = new Suggestion(id, 'Content Change Detected',
@@ -410,7 +404,7 @@ export function useTabsetService() {
                                                 type: "basic",
                                                 iconUrl: chrome.runtime.getURL("www/favicon.ico"),
                                                 message: msg,
-                                                buttons: [{title: 'show'},{title: 'ignore'}]
+                                                buttons: [{title: 'show'}, {title: 'ignore'}]
                                             }, (callback: any) => {
                                                 //console.log("got callback", callback)
                                             })
@@ -418,27 +412,18 @@ export function useTabsetService() {
                                         }
                                     })
                                     .catch((err) => {
-                                        console.log("Xgot error", err)
+                                        console.debug("got error", err)
                                     })
                             }
                         }
 
-                        savePromises.push(saveTabset(tabset)
-                            .then((res) => {
-                                // @ts-ignore
-                                console.log(`saved tabset with _id: ${tabset._id}, _rev: ${tabset._rev}`)
-                                //tabset._rev = res._rev
-
-                            }))
+                        savePromises.push(saveTabset(tabset))
                     }
                 })
             }
         })
 
         return Promise.all(savePromises)
-            .then((res) => {
-                //console.log("all save promises fulfilled")
-            })
     }
 
     const saveMetaLinksFor = (tab: chrome.tabs.Tab, metaLinks: MetaLink[]) => {
@@ -526,7 +511,7 @@ export function useTabsetService() {
     const saveBlob = (tab: chrome.tabs.Tab | undefined, blob: Blob): Promise<string> => {
         if (tab && tab.url) {
             const id: string = uid()
-            return db.saveBlob(id, tab.url, blob, 'PNG','')
+            return db.saveBlob(id, tab.url, blob, BlobType.PNG, '')
                 .then(() => Promise.resolve(id))
                 .catch(err => Promise.reject(err))
         }

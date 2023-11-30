@@ -27,8 +27,25 @@
       </div>
     </q-toolbar>
 
+    <div class="row">
+      <div class="col">
+        <hr>
+        <div class="q-pa-lg">
+          <div class="q-gutter-md">
+            <q-pagination
+                v-model="current"
+                :max="pngs.length"
+                direction-links/>
+
+
+          </div>
+        </div>
+        <hr>
+      </div>
+    </div>
 
     <img id="monitoringStartImg">
+
 
 
   </q-page>
@@ -53,11 +70,28 @@ const tabId = ref<string>()
 const blobId = ref<string>()
 const title = ref()
 const created = ref('')
+const pngs = ref<SavedBlob[]>([])
 const png = ref<SavedBlob | undefined>(undefined)
+const current = ref(2)
 
 onMounted(() => {
   Analytics.firePageViewEvent('MainPanelPngPage', document.location.href);
 })
+
+function setImage(index: number) {
+  //png.value = _.first(_.filter(pngs.value, (p:SavedBlob) => p.id === blobId.value))
+  png.value = pngs.value[index]
+  if (!png.value) {
+    return
+  }
+  var urlCreator = window.URL || window.webkitURL;
+  var imageUrl = urlCreator.createObjectURL(png.value.content);
+  console.log("imageUrl", imageUrl)
+  const img1: HTMLImageElement | null = document.querySelector("#monitoringStartImg")
+  if (img1) {
+    img1.src = imageUrl;
+  }
+}
 
 watchEffect(async () => {
   tabId.value = route.params.tabId as string
@@ -65,22 +99,16 @@ watchEffect(async () => {
   if (blobId.value && useUiStore().dbReady) {
     // const tabId = suggestion.value['data' as keyof object]['tabId' as keyof object]
     // console.log("got tabId", tabId)
-    const pngs = await PdfService.getPngsForTab(tabId.value)
-    console.log("pngs", pngs)
-    png.value = _.first(_.filter(pngs, (p:SavedBlob) => p.id === blobId.value))
-    if (png.value) {
-      var urlCreator = window.URL || window.webkitURL;
-      var imageUrl = urlCreator.createObjectURL(png.value.content);
-      console.log("imageUrl", imageUrl)
-      const img1:HTMLImageElement | null = document.querySelector("#monitoringStartImg")
-      if (img1) {
-        img1.src = imageUrl;
-      }
-    }
+    pngs.value = await PdfService.getPngsForTab(tabId.value)
+    console.log("pngs", pngs.value)
+      setImage(0);
   }
 })
 
-const openInNewTab = () => MHtmlService.getMHtml(blobId.value)
+watchEffect(() => {
+  console.log("current", current.value)
+  setImage(current.value-1)
+})
 
 
 </script>

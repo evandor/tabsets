@@ -249,7 +249,7 @@ export class LocalStoragePersistenceService implements PersistenceService {
         return Promise.resolve(undefined);
     }
 
-    upsertWindow(window: Window, windowName: string): Promise<void> {
+    upsertWindow(window: Window, windowName: string, screenLabel: string | undefined): Promise<void> {
         return Promise.resolve(undefined);
     }
 

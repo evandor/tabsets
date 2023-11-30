@@ -7,10 +7,12 @@
             <div class="text-h6">Change Monitor</div>
           </q-card-section>
           <q-card-section>
-            <div class="text-body">Activate Monitoring for Changes on this website</div>
+            <div class="text-body">Activate Monitoring for Changes on this website. This might not be accurate in many
+              cases.
+            </div>
           </q-card-section>
 
-          <q-card-section class="q-pt-none" v-if="usePermissionsStore().hasFeature(FeatureIdent.SAVE_TAB) &&
+          <q-card-section class="q-pt-none" v-if="usePermissionsStore().hasFeature(FeatureIdent.SAVE_TAB_AS_PNG) &&
               (!tab.monitor || tab.monitor?.type === MonitoringType.NONE)">
             <div class="q-ma-none q-pa-none">
 
@@ -42,16 +44,19 @@
           </q-card-section>
 
           <q-card-section class="q-pt-none">
-            <div class="q-pa-md q-gutter-sm" v-if="tab.monitor?.type === MonitoringType.CONTENT_HASH">
+            <div class="q-pa-md q-gutter-sm" v-if="tab.placeholders === undefined && tab.monitor?.type === MonitoringType.CONTENT_HASH">
               This website is being monitored
+            </div>
+            <div class="q-pa-md q-gutter-sm text-red" v-if="tab.placeholders">
+              Tabs with Placeholders cannot be monitored for changes, these URLs will be ignored for now.
             </div>
           </q-card-section>
 
-          <q-card-section class="q-pt-none">
-            <div class="q-pa-md q-gutter-sm" v-if="tab.monitor?.type === MonitoringType.CONTENT_HASH">
-              {{ notifications }}
-            </div>
-          </q-card-section>
+          <!--          <q-card-section class="q-pt-none">-->
+          <!--            <div class="q-pa-md q-gutter-sm" v-if="tab.monitor?.type === MonitoringType.CONTENT_HASH">-->
+          <!--              {{ notifications }}-->
+          <!--            </div>-->
+          <!--          </q-card-section>-->
 
           <q-card-actions align="right" class="text-primary">
             <DialogButton label="Cancel" color="accent" v-close-popup/>
@@ -111,26 +116,19 @@ watchEffect(() => {
 })
 
 const setMonitoring = (type: MonitoringType) => {
-  console.log("setMonitoring", type)
   if (type === MonitoringType.CONTENT_HASH && agree.value &&
       usePermissionsStore().hasPermission('pageCapture') &&
-      usePermissionsStore().hasFeature(FeatureIdent.SAVE_TAB)) {
-    // const callback = (mhtmlId: string) => {
-    //   console.log("got mhtml id", mhtmlId)
-    //   useCommandExecutor().executeFromUi(new UpdateMonitoringCommand(props.tab, type, {
-    //     monitoringSnapshot: {mhtmlId: mhtmlId}
-    //   }))
-    // }
+      usePermissionsStore().hasFeature(FeatureIdent.SAVE_TAB_AS_PNG)) {
     useCommandExecutor()
         .execute(snapshot.value ?
             new SavePngCommand(props.tab, "monitoring start") :
             new NoOpCommand())
         .then(() => {
-          useCommandExecutor().executeFromUi(new UpdateMonitoringCommand(props.tab, type, snapshot.value,{}))
+          useCommandExecutor().executeFromUi(new UpdateMonitoringCommand(props.tab, type, snapshot.value, {}))
           useTabsetService().saveCurrentTabset()
         })
         .catch((err) => {
-          useCommandExecutor().executeFromUi(new UpdateMonitoringCommand(props.tab, type, false,{
+          useCommandExecutor().executeFromUi(new UpdateMonitoringCommand(props.tab, type, false, {
             monitoringSnapshotError: err
           }))
         })

@@ -508,7 +508,7 @@ class IndexedDbPersistenceService implements PersistenceService {
     /*** Windows Management ***/
 
     addWindow(window: Window): Promise<any> {
-        //console.debug("%cadding window", "background-color:yellow", window)
+        console.debug("%cadding window", "background-color:yellow", window)
         return this.db.add('windows', window, window.id)
             .catch((err) => {
                 if (!err.toString().indexOf('Key already exists')) {
@@ -531,6 +531,7 @@ class IndexedDbPersistenceService implements PersistenceService {
     }
 
     async removeWindow(windowId: number): Promise<void> {
+        console.log("removing window", windowId)
         return this.db.delete('windows', windowId)
     }
 
@@ -543,23 +544,27 @@ class IndexedDbPersistenceService implements PersistenceService {
             return Promise.reject("could not find window for id " + window.id)
         }
         if (windowFromDb.title) {
+            //console.log("updating window", windowFromDb)
             const asJson = JSON.parse(JSON.stringify(window))
             asJson['title'] = windowFromDb.title
+            asJson['screenLabel'] = windowFromDb.screenLabel
             delete asJson['tabs']
-            //console.log("storing window1", asJson, window.id)
+            //console.log("storing json", asJson, window.id)
             await this.db.put('windows', asJson, window.id)
         } else {
+            console.log("storing window2", window.id)
             await this.db.put('windows', window, window.id)
         }
     }
 
-    async upsertWindow(window: Window, name: string): Promise<void> {
+    async upsertWindow(window: Window, name: string, screenLabel: string | undefined): Promise<void> {
         try {
-            //console.log("about to rename window", name, window)
+            console.log("about to rename window", name, screenLabel, window)
             const asJson = JSON.parse(JSON.stringify(window))
             asJson['title'] = name
+            asJson['screenLabel'] = screenLabel
             delete asJson['tabs']
-            // console.log("storing window", asJson, window.id)
+            console.log("storing window", asJson, window.id)
             await this.db.put('windows', asJson, window.id)
         } catch (err) {
             console.log("error renaming window", err)
@@ -691,7 +696,6 @@ class IndexedDbPersistenceService implements PersistenceService {
             await this.db.add('suggestions', suggestion, suggestion.id)
             return Promise.resolve()
         }
-        console.log("suggestion already exists")
         return Promise.reject("suggestion already exists")
     }
 

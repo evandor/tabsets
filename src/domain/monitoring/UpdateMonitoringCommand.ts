@@ -25,12 +25,14 @@ export class UpdateMonitoringCommand implements Command<any> {
                 //sendMsg('tabset-renamed', {tabsetId: this.tabsetId, newName: this.newName, newColor: this.newColor})
                 return res
             })
-            .then((oldValues: any) => Promise.resolve(
-                new ExecutionResult(
-                    oldValues.oldName,
-                    this.monitoringType === MonitoringType.NONE ?
-                        "Stopped Monitoring" :
-                        this.imageSnapshot ? "Monitoring... creating PNG" : "Started Monitoring"))
+            .then((oldValues: any) => {
+                return Promise.resolve(
+                        new ExecutionResult(
+                            "done",
+                            this.monitoringType === MonitoringType.NONE ?
+                                "Stopped Monitoring" :
+                                this.imageSnapshot ? "Monitoring... creating PNG" : "Started Monitoring"))
+                }
             )
             .catch(err => Promise.reject(err))
 

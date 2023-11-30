@@ -35,15 +35,15 @@
       </template>
 
       <template v-if="usePermissionsStore().hasFeature(FeatureIdent.MONITORING)">
-        <q-item clickable
+        <q-item :clickable="props.tab?.placeholders === undefined || props.tab?.monitor !== undefined"
                 v-close-popup @click.stop="monitoringDialog(props['tab' as keyof object])">
           <q-item-section style="padding-right:0;min-width:25px;max-width: 25px;">
-            <q-icon size="xs" name="o_change_circle" color="info"/>
+            <q-icon size="xs" name="o_change_circle" :color="props.tab?.placeholders !== undefined && props.tab?.monitor === undefined? 'grey' : 'info'"/>
           </q-item-section>
           <q-item-section v-if="props.tab?.monitor">
             Monitoring Changes...
           </q-item-section>
-          <q-item-section v-else>
+          <q-item-section v-else :class="props.tab?.placeholders ? 'text-grey' : 'text-black'">
             Monitor Changes
           </q-item-section>
         </q-item>
@@ -200,7 +200,7 @@ const showTabDetailsMenuEntry = (tab: Tab) =>
 
 const deleteTabLabel = (tab: Tab) =>
     (tab.placeholders && tab.placeholders.type === PlaceholdersType.URL_SUBSTITUTION) ?
-        'Delete substituted Tabs'
+        'Delete all'
         :
         'Delete Tab'
 

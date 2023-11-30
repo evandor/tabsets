@@ -278,6 +278,7 @@ text.set(FeatureIdent.SPACES.toLowerCase(), {
       'levels, but you can assign a tabset to multiple spaces.',
   permissions: []
 })
+// TODO remove (we have windows_management)
 text.set(FeatureIdent.WINDOWS.toLowerCase(), {
   planned: true,
   name: 'Multiple Windows Support',

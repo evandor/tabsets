@@ -94,10 +94,6 @@
 
           <div class="q-ma-none q-pa-none">
 
-            <!--            <div class="q-ma-none" v-if="showAddTabButton(tabset as Tabset, currentChromeTab)">-->
-            <!--              <SidePanelTabInfo :tabsetId="tabset.id"/>-->
-            <!--            </div>-->
-
             <SidePanelPageTabList
                 v-if="tabsetExpanded.get(tabset.id)"
                 :tabsetType="tabset.type"

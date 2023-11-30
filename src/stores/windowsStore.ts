@@ -1,13 +1,10 @@
 import {defineStore} from 'pinia';
-import {ref, watchEffect} from "vue";
+import {ref} from "vue";
 import PersistenceService from "src/services/PersistenceService";
 import {useUtils} from "src/services/Utils";
 import {Window} from "src/models/Window";
 import _ from "lodash"
 import throttledQueue from "throttled-queue";
-import {Tabset} from "src/models/Tabset";
-import {useRoute, useRouter} from "vue-router";
-import {useQuasar} from "quasar";
 
 /**
  * a pinia store for "Windows".
@@ -17,33 +14,29 @@ import {useQuasar} from "quasar";
 
 let storage: PersistenceService = null as unknown as PersistenceService
 
-function dummyPromise(timeout: number, tabToCloseId: number | undefined = undefined): Promise<string> {
+function closeTabWithTimeout(timeout: number, tabToCloseId: number | undefined = undefined): Promise<string> {
     return new Promise((resolve, reject) => {
         setTimeout(() => {
             if (tabToCloseId) {
-                chrome.tabs.remove(tabToCloseId)
-                    .catch((err) => {
-                        console.debug(err)
-                    })
+                chrome.tabs.remove(tabToCloseId).catch((err) => console.debug(err))
             }
             resolve("Success!");
         }, timeout);
     });
 }
 
-
 export const useWindowsStore = defineStore('windows', () => {
 
     const {inBexMode} = useUtils()
 
     /**
-     * the map of all 'ever used' Chrome tab groups, even if they are not currently in use,
+     * the map of all 'ever used' Chrome windows, even if they are not currently in use,
      * using the title as key. //TODO
      */
     const allWindows = ref<Map<number, Window>>(new Map())
 
     /**
-     * the array all actually currently used Chrome tab groups.
+     * the array all actually currently opened Chrome windows.
      */
     const currentWindows = ref<chrome.windows.Window[]>([])
 
@@ -55,12 +48,6 @@ export const useWindowsStore = defineStore('windows', () => {
 
     // screenshot Window
     const screenshotWindow = ref<number>(null as unknown as number)
-
-
-    /**
-     * Map between window name and actual Chrome window
-     */
-    // const windowMap = ref<object>(LocalStorage.getItem("ui.windowMap") || {})
 
     /**
      * Set of all names for windows from all tabsets, initialized when
@@ -75,79 +62,75 @@ export const useWindowsStore = defineStore('windows', () => {
     async function initialize(providedDb: PersistenceService) {
         console.log("initializing windowsStore")
         storage = providedDb
-        init("initialization")
+        setup("initialization")
     }
 
-    // watchEffect(() => {
-    //     //console.log("updating windowMap", windowMap.value)
-    //     LocalStorage.set("ui.windowMap", windowMap.value)
-    // })
-
-    function init(trigger: string = "") {
-        if (inBexMode()) {
-            console.debug("init chrome windows listeners with trigger", trigger)
-            chrome.windows.getAll((windows) => {
-
-                currentWindows.value = windows
-                console.debug("initializing current windows with", currentWindows.value)
-
-                // adding potentially new windows to storage
-                const res: Promise<any>[] = windows.flatMap((window: chrome.windows.Window) => {
-                    return storage.addWindow(new Window(window.id || 0, window, undefined))
-                })
-
-                // setting all (new and older) windows to 'allWindows'
-                Promise.all(res)
-                    .then(() => {
-                        allWindows.value = new Map()
-                        storage.getWindows().then(res => {
-                            res.forEach(r => {
-                                allWindows.value.set(r.id || 0, r)
-                                //console.log("assigned:", r.id)
-                            })
-                            //console.log("%callWindows assigned", "color:green", allWindows.value)
-
-                            chrome.windows.getCurrent({windowTypes: ['normal']}, (window: chrome.windows.Window) => {
-                                currentWindow.value = window
-                                if (currentWindow.value && currentWindow.value.id) {
-                                    //console.log("%c******", "color:blue", currentWindow.value.id, windowNameFor(currentWindow.value.id))
-                                    currentWindowName.value = windowNameFor(currentWindow.value.id)
-                                }
-                            })
-                        })
-
-                    })
-            })
-
-
-            chrome.windows.getLastFocused({windowTypes: ['normal']}, (window: chrome.windows.Window) => {
-                lastFocusedWindow.value = window
-            })
+    function setup(trigger: string = "") {
+        if (!inBexMode()) {
+            return
         }
+        console.debug("init chrome windows listeners with trigger", trigger)
+        chrome.windows.getAll((windows) => {
+
+            currentWindows.value = windows
+            console.debug("initializing current windows with", currentWindows.value)
+
+            // adding potentially new windows to storage
+            const res: Promise<any>[] = windows.flatMap((window: chrome.windows.Window) => {
+                return storage.addWindow(new Window(window.id || 0, window, undefined))
+            })
+
+            // setting all (new and older) windows to 'allWindows'
+            Promise.all(res)
+                .then(() => {
+                    allWindows.value = new Map()
+                    storage.getWindows().then(res => {
+                        res.forEach(r => {
+                            allWindows.value.set(r.id || 0, r)
+                            //console.log("assigned:", r.id)
+                        })
+                        //console.log("%callWindows assigned", "color:green", allWindows.value)
+
+                        chrome.windows.getCurrent({windowTypes: ['normal']}, (window: chrome.windows.Window) => {
+                            currentWindow.value = window
+                            if (currentWindow.value && currentWindow.value.id) {
+                                //console.log("%c******", "color:blue", currentWindow.value.id, windowNameFor(currentWindow.value.id))
+                                currentWindowName.value = windowNameFor(currentWindow.value.id)
+                            }
+                        })
+                    })
+
+                })
+        })
+
+        chrome.windows.getLastFocused({windowTypes: ['normal']}, (window: chrome.windows.Window) => {
+            lastFocusedWindow.value = window
+        })
+
     }
 
     async function onRemoved(windowId: number) {
         // remove only if window does not have a title
         const w = await storage.getWindow(windowId)
-        console.log("on removed", w, windowId)
+        console.debug("on removed", w, windowId)
         if (w && !w.title) {
             removeWindow(windowId)
         }
-        init("onRemove")
+        setup("onRemove")
     }
 
     async function onUpdate(windowId: number) {
         if (windowId >= 0) {
             //console.log("updating window for id", windowId)
             const window = await chrome.windows.get(windowId)
-            //console.log("updating window", window)
+            console.log("updating window", windowId, window)
             await storage.updateWindow(new Window(windowId, window))
         }
     }
 
     function initListeners() {
         if (inBexMode()) {
-            chrome.windows.onCreated.addListener((window: chrome.windows.Window) => init("onCreated"))
+            chrome.windows.onCreated.addListener((window: chrome.windows.Window) => setup("onCreated"))
             chrome.windows.onRemoved.addListener((windowId: number) => onRemoved(windowId))
             chrome.windows.onFocusChanged.addListener((windowId) => onUpdate(windowId))
             chrome.windows.onBoundsChanged.addListener((window: chrome.windows.Window) => onUpdate(window.id || 0))
@@ -214,8 +197,8 @@ export const useWindowsStore = defineStore('windows', () => {
         }
     }
 
-    async function upsertWindow(window: chrome.windows.Window, ident: string) {
-        await storage.upsertWindow(new Window(window.id || 0, window), ident)
+    async function upsertWindow(window: chrome.windows.Window, ident: string, screenLabel: string | undefined = undefined) {
+        await storage.upsertWindow(new Window(window.id || 0, window), ident, screenLabel)
     }
 
     async function removeWindow(windowId: number) {
@@ -225,7 +208,7 @@ export const useWindowsStore = defineStore('windows', () => {
 
     function openThrottledInWindow(urls: string[], windowCreateData: object = {focused: true, width: 1024, height: 800}) {
         console.log("%copenThrottledInWindow...", "color:green")
-        const throttleOnePerXSeconds = throttledQueue(1, 3000, true)
+        const throttleOnePerXSeconds = throttledQueue(1, 1000, true)
         chrome.windows.create(windowCreateData, (window: any) => {
 
             //console.log("%cgot window", "color:green", window.id)
@@ -235,14 +218,18 @@ export const useWindowsStore = defineStore('windows', () => {
 
             const promises: Promise<any>[] = []
             for (const u of urls) {
+                if (u.indexOf("${") >= 0) {
+                    console.debug("not monitoring url due to placeholder(s)", u)
+                    break
+                }
                 const p = throttleOnePerXSeconds(async () => {
                     const createProperties = {windowId: window.id, url: u}
                     //console.log("createProperties", createProperties)
                     chrome.tabs.create(createProperties, (tab: chrome.tabs.Tab) => {
                         tabToClose = tab.id
-                        dummyPromise(3000, tab.id)
+                        closeTabWithTimeout(2000, tab.id)
                     })
-                    return dummyPromise(3000)
+                    return closeTabWithTimeout(1000)
                 })
                 promises.push(p)
             }
@@ -250,6 +237,7 @@ export const useWindowsStore = defineStore('windows', () => {
             Promise.all(promises)
                 .then(() => {
                     setTimeout(() => {
+                        //console.log("setting timeout")
                         chrome.windows.remove(window.id)
                         useWindowsStore().screenshotWindow = null as unknown as number
                     }, 2000)

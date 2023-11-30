@@ -30,7 +30,7 @@ export class AddTabToTabsetCommand implements Command<any> {
         const tabsStore = useTabsStore()
         console.info(`adding tab '${this.tab.id}' to tabset '${this.tabset.id}'`)
         const exists = _.findIndex(this.tabset.tabs, t => t.url === this.tab.url) >= 0
-        console.log("checking 'tab exists' yields", exists)
+        console.debug("checking 'tab exists' yields", exists)
         if (!exists) {
             try {
                 // manage (chrome) Group

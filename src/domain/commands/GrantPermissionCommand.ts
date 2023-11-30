@@ -34,6 +34,7 @@ export class GrantPermissionCommand implements Command<boolean> {
     return usePermissionsStore().grantPermission(this.permission)
       .then((granted: boolean) => {
         if (granted) {
+          console.log("granted permission", this.permission)
           if ("bookmarks" === this.permission) {
             usePermissionsStore().activateFeature('bookmarks')
             useBookmarksStore().loadBookmarks()
@@ -54,6 +55,7 @@ export class GrantPermissionCommand implements Command<boolean> {
             "Permission was added",
             new UndoCommand(this.permission))
         } else {
+          console.log("permission was not granted", this.permission)
           usePermissionsStore().deactivateFeature(this.permission)
           return new ExecutionResult(granted, "Permission was not added")
         }

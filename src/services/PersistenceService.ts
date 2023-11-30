@@ -85,7 +85,7 @@ interface PersistenceService {
   getWindow(windowId: number): Promise<Window | undefined>
   removeWindow(windowId: number): Promise<void>
   updateWindow(window: Window): Promise<void>
-  upsertWindow(window: Window, windowName: string): Promise<void>
+  upsertWindow(window: Window, windowName: string, screenLabel: string | undefined): Promise<void>
 
   clear(name: string):any
 

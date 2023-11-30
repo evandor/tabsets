@@ -110,8 +110,9 @@
             </q-btn>
             <q-btn label="Reset Monitoring" class="q-mr-md"
                    size="sm" color="warning" @click="applySuggestion"></q-btn>
-            <q-btn label="Compare with Current" class="q-mr-md"
-                   size="sm" color="warning" @click="createImageToCompare()"></q-btn>
+            <q-btn v-if="pngs.length === 1"
+                   label="Compare with Current" class="q-mr-md"
+                   size="sm" color="positive" @click="createImageToCompare()"></q-btn>
             <q-btn label="Delete Notification" class="q-mr-md"
                    size="sm" color="negative" @click="deleteNotification"></q-btn>
           </template>
@@ -123,6 +124,7 @@
 
       <div class="row" v-show="pngs.length === 1">
         <div class="col-12 q-pr-xs">
+          Snapshot when Monitoring started<br>
           <q-scroll-area style="height: 630px; width:100%;"
                          visible
                          :thumb-style="thumbStyle"
@@ -181,22 +183,7 @@
         </div>
       </div>
 
-      <div>
-        <pre>{{ suggestion }}</pre>
-      </div>
-
-
     </template>
-
-
-    <!--    <template v-if="useSettingsStore().isEnabled('dev')">-->
-    <!--      <div class="row" v-for="s in useSuggestionsStore().getSuggestions([-->
-    <!--          SuggestionState.NEW, SuggestionState.DECISION_DELAYED, SuggestionState.CHECKED, SuggestionState.IGNORED,-->
-    <!--          SuggestionState.NOTIFICATION, SuggestionState.INACTIVE])">-->
-    <!--        <pre>{{ s }}</pre>-->
-    <!--      </div>-->
-    <!--    </template>-->
-
 
   </div>
 
@@ -228,6 +215,9 @@ import {useTabsStore} from "stores/tabsStore";
 import {useTabsetService} from "src/services/TabsetService2";
 import {UpdateMonitoringCommand} from "src/domain/monitoring/UpdateMonitoringCommand";
 import {MonitoringType} from "src/models/Monitor";
+import {useUtils} from "src/services/Utils";
+
+const {sendMsg} = useUtils()
 
 const route = useRoute()
 
@@ -278,103 +268,103 @@ watchEffect(async () => {
       console.log("got tabId", tabId)
       pngs.value = await PdfService.getPngsForTab(tabId)
       console.log("pngs", pngs.value)
+      if (pngs.value.length > 0) {
+        var urlCreator = window.URL || window.webkitURL;
+        var imageUrl = urlCreator.createObjectURL(pngs.value[0].content);
+        console.log("imageUrl", imageUrl)
+        createImage(imageUrl, "#monitoringStartSingleImg");
+        createImage(imageUrl, "#monitoringStartImg");
 
-      var urlCreator = window.URL || window.webkitURL;
-      var imageUrl = urlCreator.createObjectURL(pngs.value[0].content);
-      console.log("imageUrl", imageUrl)
-      createImage(imageUrl, "#monitoringStartSingleImg");
-      createImage(imageUrl, "#monitoringStartImg");
-
-      if (pngs.value.length > 1) {
-        var imageUrl2 = urlCreator.createObjectURL(pngs.value[1].content);
-        console.log("imageUrl2", imageUrl2)
-        const img2: HTMLImageElement | null = document.querySelector("#monitoringSnapshotImg")
-        if (img2) {
-          img2.src = imageUrl2;
-          img2.onload = function () {
-            var w = img2.width;
-            var h = img2.height;
-            console.log("NEW IMAGE width2", w);
-            console.log("NEW IMAGE height2: ", h);
+        if (pngs.value.length > 1) {
+          var imageUrl2 = urlCreator.createObjectURL(pngs.value[1].content);
+          console.log("imageUrl2", imageUrl2)
+          const img2: HTMLImageElement | null = document.querySelector("#monitoringSnapshotImg")
+          if (img2) {
+            img2.src = imageUrl2;
+            img2.onload = function () {
+              var w = img2.width;
+              var h = img2.height;
+              console.log("NEW IMAGE width2", w);
+              console.log("NEW IMAGE height2: ", h);
 
 
-            // const img1 = img1Context.getImageData(0, 0, width, height);
-            // const img2 = img2Context.getImageData(0, 0, width, height);
-            // const diff = diffContext.createImageData(width, height);
-            //const buf1: Buffer = img1?.get
-            //const myMat: Mat = new Mat(buf, height, width, CV_8UC4);
-            const content1: Blob = pngs.value[0].content as Blob
-            const content2: Blob = pngs.value[1].content as Blob
-            content1.arrayBuffer()
-                .then((buf1: ArrayBuffer) => {
-                  //console.log("got buf1", ArrayBuffer.isView(buf1))
-                  //console.log("got buf1", ArrayBuffer.isView(buf1), buf1.constructor.BYTES_PER_ELEMENT === 1)
-                  content2.arrayBuffer()
-                      .then((buf2: ArrayBuffer) => {
+              // const img1 = img1Context.getImageData(0, 0, width, height);
+              // const img2 = img2Context.getImageData(0, 0, width, height);
+              // const diff = diffContext.createImageData(width, height);
+              //const buf1: Buffer = img1?.get
+              //const myMat: Mat = new Mat(buf, height, width, CV_8UC4);
+              const content1: Blob = pngs.value[0].content as Blob
+              const content2: Blob = pngs.value[1].content as Blob
+              content1.arrayBuffer()
+                  .then((buf1: ArrayBuffer) => {
+                    //console.log("got buf1", ArrayBuffer.isView(buf1))
+                    //console.log("got buf1", ArrayBuffer.isView(buf1), buf1.constructor.BYTES_PER_ELEMENT === 1)
+                    content2.arrayBuffer()
+                        .then((buf2: ArrayBuffer) => {
 
-                        const beforeImg: PNGWithMetadata = PNG.sync.read(Buffer.from(buf1))
-                        let afterImg = PNG.sync.read(Buffer.from(buf2))
+                          const beforeImg: PNGWithMetadata = PNG.sync.read(Buffer.from(buf1))
+                          let afterImg = PNG.sync.read(Buffer.from(buf2))
 
-                        console.log("beforeImg:", beforeImg.width, beforeImg.height)
-                        console.log("afterImg: ", afterImg.width, afterImg.height)
+                          console.log("beforeImg:", beforeImg.width, beforeImg.height)
+                          console.log("afterImg: ", afterImg.width, afterImg.height)
 
-                        const width = beforeImg.width
-                        const height = beforeImg.height
+                          const width = beforeImg.width
+                          const height = beforeImg.height
 
-                        if (afterImg.height > beforeImg.height) { // assuming width is the same
-                          //ctx?.createImageData(width, height);
-                          let newfile = new PNG({width, height});
-                          for (let y = 0; y < newfile.height; y++) {
-                            for (let x = 0; x < newfile.width; x++) {
-                              let idx = (newfile.width * y + x) << 2;
+                          if (afterImg.height > beforeImg.height) { // assuming width is the same
+                            //ctx?.createImageData(width, height);
+                            let newfile = new PNG({width, height});
+                            for (let y = 0; y < newfile.height; y++) {
+                              for (let x = 0; x < newfile.width; x++) {
+                                let idx = (newfile.width * y + x) << 2;
 
-                              let col = 0xff;
+                                let col = 0xff;
 
-                              newfile.data[idx] = col;
-                              newfile.data[idx + 1] = col;
-                              newfile.data[idx + 2] = col;
-                              newfile.data[idx + 3] = 0xff;
+                                newfile.data[idx] = col;
+                                newfile.data[idx + 1] = col;
+                                newfile.data[idx + 2] = col;
+                                newfile.data[idx + 3] = 0xff;
+                              }
+                            }
+                            afterImg = newfile
+                                .pack()
+                                //.pipe(fs.createWriteStream(__dirname + "/newfile.png"))
+                                .on("finish", function () {
+                                  console.log("Written!");
+                                });
+                            //console.log("r", r)
+                          }
+                          console.log("sizes: ", beforeImg.width, afterImg.width, beforeImg.height, afterImg.height)
+
+                          if (beforeImg.width === afterImg.width && beforeImg.height === afterImg.height) {
+                            //const d = new PNG({width, height});
+                            const canvas: HTMLCanvasElement | null = document.getElementById("diffCanvas") as HTMLCanvasElement
+                            if (canvas) {
+                              canvas.height = height
+                              canvas.width = width
+                              const ctx = canvas.getContext("2d");
+                              //const imgData = ctx?.createImageData(100, 100);
+                              const d: ImageData | undefined = ctx?.createImageData(width, height);
+                              if (d) {
+                                const numDiffPixels = pixelmatch(beforeImg.data, afterImg.data, d.data, width, height, {
+                                  threshold: 0.1,
+                                });
+                                ctx?.putImageData(d, 0, 0)
+                                console.log("###", numDiffPixels);
+                              }
+
                             }
                           }
-                          afterImg = newfile
-                              .pack()
-                              //.pipe(fs.createWriteStream(__dirname + "/newfile.png"))
-                              .on("finish", function () {
-                                console.log("Written!");
-                              });
-                          //console.log("r", r)
-                        }
-                        console.log("sizes: ", beforeImg.width, afterImg.width, beforeImg.height, afterImg.height)
 
-                        if (beforeImg.width === afterImg.width && beforeImg.height === afterImg.height) {
-                          //const d = new PNG({width, height});
-                          const canvas: HTMLCanvasElement | null = document.getElementById("diffCanvas") as HTMLCanvasElement
-                          if (canvas) {
-                            canvas.height = height
-                            canvas.width = width
-                            const ctx = canvas.getContext("2d");
-                            //const imgData = ctx?.createImageData(100, 100);
-                            const d: ImageData | undefined = ctx?.createImageData(width, height);
-                            if (d) {
-                              const numDiffPixels = pixelmatch(beforeImg.data, afterImg.data, d.data, width, height, {
-                                threshold: 0.1,
-                              });
-                              ctx?.putImageData(d, 0, 0)
-                              console.log("###", numDiffPixels);
-                            }
-
-                          }
-                        }
-
-                      })
-                })
+                        })
+                  })
 
 
-            //diffContext.putImageData(diff, 0, 0);
+              //diffContext.putImageData(diff, 0, 0);
+            }
           }
         }
       }
-
       return "chrome-extension://pndffocijjfpmphlhkoijmpfckjafdpl/www/index.html#/mainpanel/mhtml/7b961cb4-243f-430a-b28e-0e9421febdc2"
     }
   }
@@ -486,6 +476,8 @@ const stopMonitoring = () => {
     if (res) {
       useCommandExecutor().executeFromUi(new UpdateMonitoringCommand(res.tab, MonitoringType.NONE, false, {}))
       useTabsetService().saveCurrentTabset()
+      const tabsetId = useTabsStore().getTabAndTabsetId(tabId)?.tabsetId
+      sendMsg('reload-tabset', {tabsetId})
     }
   }
 }
@@ -498,6 +490,11 @@ const deleteNotification = async () => {
     const pngs = await PdfService.getPngsForTab(tabId)
     pngs.forEach(p => PdfService.deleteBlob(tabId, p.id))
     useSuggestionsStore().removeSuggestion(suggestion.value?.id)
+        .then(() => {
+          const tabsetId = useTabsStore().getTabAndTabsetId(tabId)?.tabsetId
+          sendMsg('reload-suggestions', {tabsetId})
+          closeWindow()
+        })
   }
 }
 

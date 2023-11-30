@@ -145,8 +145,10 @@
 
             <q-icon v-if="(props.tab as Tab).monitor"
                     @click.stop="monitoringDialog(props.tab as Tab)"
-                    name="o_change_circle" class="q-mr-xs" color="accent">
-              <q-tooltip class="tooltip-small">This tab is being monitored for changes</q-tooltip>
+                    name="o_change_circle" class="q-mr-xs"
+                    :color="(props.tab as Tab).placeholders ? 'negative' : 'accent'">
+              <q-tooltip class="tooltip-small" v-if="!(props.tab as Tab).placeholders">This tab is being monitored for changes</q-tooltip>
+              <q-tooltip class="tooltip-small" v-else>Tabs with placeholders cannot be monitored</q-tooltip>
             </q-icon>
 
             <q-icon v-if="suggestion"
@@ -156,12 +158,18 @@
               <q-tooltip class="tooltip-small" v-else>There is a notification for this tab</q-tooltip>
             </q-icon>
 
+            <q-icon v-if="pngs.length > 0"
+                    @click.stop="openImage()"
+                    name="o_image" class="q-mr-xs" color="accent">
+              <q-tooltip class="tooltip-small">There are snapshot images of this tab</q-tooltip>
+            </q-icon>
+
             <q-icon v-if="(props.tab as Tab).placeholders"
                     name="published_with_changes" class="q-mr-xs" color="accent">
               <q-tooltip class="tooltip-small">This tab is created by substituting parts of its URL</q-tooltip>
             </q-icon>
 
-            <template v-if="(props.tab as Tab).monitor || suggestion || (props.tab as Tab).placeholders">
+            <template v-if="(props.tab as Tab).monitor || suggestion || (props.tab as Tab).placeholders || pngs.length > 0">
               <span>-</span>
             </template>
 
@@ -248,6 +256,7 @@ import {TabAndTabsetId} from "src/models/TabAndTabsetId";
 import MonitoringDialog from "components/dialogues/MonitoringDialog.vue";
 import {useSuggestionsStore} from "stores/suggestionsStore";
 import {Suggestion, SuggestionState} from "src/models/Suggestion";
+import PdfService from "src/services/PdfService";
 
 const {inBexMode, isCurrentTab} = useUtils()
 
@@ -275,6 +284,7 @@ const groupName = ref<string | undefined>(undefined)
 const groups = ref<Map<string, chrome.tabGroups.TabGroup>>(new Map())
 const placeholders = ref<Object[]>([])
 const suggestion = ref<Suggestion | undefined>(undefined)
+const pngs = ref<SavedBlob[]>([])
 
 onMounted(() => {
   if ((new Date().getTime() - props.tab.created) < 500) {
@@ -353,6 +363,13 @@ watchEffect(() => {
         })
       })
     }
+  }
+})
+
+watchEffect(async () => {
+  if (props.tab) {
+    pngs.value = await PdfService.getPngsForTab(props.tab.id)
+    console.log("got", pngs.value, props.tab.id)
   }
 })
 
@@ -460,6 +477,8 @@ const monitoringDialog = (tab: Tab) => {
     componentProps: {tab: tab, note: tab.note}
   })
 }
+
+const openImage = () => window.open(chrome.runtime.getURL('www/index.html#/mainpanel/png/' + props.tab.id + "/" + pngs.value[0].id))
 
 </script>
 

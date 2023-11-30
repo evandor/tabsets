@@ -40,9 +40,9 @@
                icon="o_lightbulb"
                :label="suggestionsLabel()"
                :color="dependingOnStates()"
+               :size="getButtonSize()"
                @click="suggestionDialog()"
-               class="q-ma-none q-pa-xs q-ml-sm q-mt-xs q-pr-md cursor-pointer"
-               size="10px">
+               class="q-ma-none q-pa-xs q-ml-sm q-mt-xs q-pr-md cursor-pointer">
         </q-btn>
 
         <template v-if="!checkToasts() && !transitionGraceTime && !showSuggestionButton">
@@ -141,19 +141,11 @@ const transitionGraceTime = ref(false)
 watchEffect(() => {
   const suggestions = useSuggestionsStore().getSuggestions(
       [SuggestionState.NEW, SuggestionState.DECISION_DELAYED, SuggestionState.NOTIFICATION])
-  console.log("watcheffect for", suggestions)
+  //console.log("watcheffect for", suggestions)
   showSuggestionButton.value =
       doShowSuggestionButton.value ||
       (useUiStore().sidePanelActiveViewIs(SidePanelView.MAIN) &&
           _.findIndex(suggestions, s => {
-            // if (s.state === SuggestionState.APPLIED || s.state === SuggestionState.IGNORED) {
-            //   return false
-            // }
-            // if (!usePermissionsStore().hasFeature(FeatureIdent.RSS)) {
-            //   return (s.state === SuggestionState.NEW)
-            //       && s.type !== SuggestionType.RSS
-            // }
-            console.log("s", s, usePermissionsStore().hasFeature(FeatureIdent.NOTIFICATIONS))
             return s.state === SuggestionState.NEW ||
                 (s.state === SuggestionState.NOTIFICATION && !usePermissionsStore().hasFeature(FeatureIdent.NOTIFICATIONS))
           }) >= 0)
@@ -162,13 +154,6 @@ watchEffect(() => {
       !doShowSuggestionButton.value &&
       useUiStore().sidePanelActiveViewIs(SidePanelView.MAIN) &&
       _.findIndex(suggestions, s => {
-        // if (s.state === SuggestionState.APPLIED || s.state === SuggestionState.IGNORED) {
-        //   return false
-        // }
-        // if (!usePermissionsStore().hasFeature(FeatureIdent.RSS)) {
-        //   return (s.state === SuggestionState.DECISION_DELAYED)
-        //       && s.type !== SuggestionType.RSS
-        // }
         return s.state === SuggestionState.DECISION_DELAYED
       }) >= 0
 })
@@ -201,7 +186,7 @@ const settingsTooltip = () => {
   return "Open Settings of Tabsets " + import.meta.env.PACKAGE_VERSION
 }
 
-const rightButtonClass = () => "q-my-xs q-ml-xs q-px-xs q-mr-none"
+const rightButtonClass = () => "q-my-xs q-px-xs q-mr-none"
 
 const dependingOnStates = () =>
     _.find(useSuggestionsStore().getSuggestions([SuggestionState.NEW, SuggestionState.DECISION_DELAYED]), s => s.state === SuggestionState.NEW) ? 'warning' : 'primary'

@@ -18,6 +18,10 @@
       </q-card-section>
 
       <q-card-section v-if="usePermissionsStore().hasFeature(FeatureIdent.WINDOW_MANAGEMENT)">
+        <div classs="text-caption text-blue" style="font-size:smaller"
+             v-if="windowMgtSelectionEdited">
+          Press 'Enter' to add the new value
+        </div>
         <q-select
             dense
             options-dense
@@ -31,9 +35,10 @@
             :options="windowOptions"
             input-debounce="0"
             @new-value="createWindowOption"
+            @focus="windowMgtSelectionHasFocus = true"
+            @blur="windowMgtSelectionHasFocus = false"
         />
       </q-card-section>
-
 
       <q-card-section v-if="usePermissionsStore().hasFeature(FeatureIdent.COLOR_TAGS)">
         Assign Color (optional)
@@ -62,7 +67,7 @@
 
 <script lang="ts" setup>
 
-import {computed, ref, watchEffect} from "vue";
+import {computed, onMounted, onUnmounted, ref, watchEffect} from "vue";
 import {useDialogPluginComponent} from "quasar";
 import {useTabsStore} from "src/stores/tabsStore";
 import {STRIP_CHARS_IN_USER_INPUT} from "boot/constants";
@@ -72,7 +77,6 @@ import {useCommandExecutor} from "src/services/CommandExecutor";
 import ColorSelector from "components/dialogues/helper/ColorSelector.vue";
 import {usePermissionsStore} from "stores/permissionsStore";
 import {FeatureIdent} from "src/models/AppFeature";
-import {Tabset} from "src/models/Tabset";
 import {useWindowsStore} from "stores/windowsStore";
 
 defineEmits([
@@ -95,12 +99,36 @@ const tabsStore = useTabsStore()
 const newTabsetName = ref(props.tabsetName)
 const newTabsetNameExists = ref(false)
 const hideWarning = ref(false)
+const windowMgtSelectionHasFocus = ref(false)
+const windowMgtSelectionEdited = ref(false)
 const theColor = ref<string | undefined>(props.tabsetColor || undefined)
 const windowModel = ref<string>(props.window || 'current')
 const windowOptions = ref<string[]>([])
 
+// function checkEnter(e: KeyboardEvent) {
+//   console.log("e", e.code)
+//   // if (e.code === "13") {
+//   //   windowMgtSelectionEdited.value = false
+//   // }
+// }
+//
+//
+// onMounted(() => {
+//   window.addEventListener('keypress', checkEnter);
+// })
+//
+// onUnmounted(() => {
+//   window.removeEventListener('keypress', checkEnter);
+// })
+
 watchEffect(() => {
   newTabsetNameExists.value = !!tabsStore.nameExistsInContextTabset(newTabsetName.value);
+})
+
+watchEffect(() => {
+  if (windowMgtSelectionHasFocus.value && !windowModel.value) {
+    windowMgtSelectionEdited.value = true
+  }
 })
 
 watchEffect(() => {
@@ -128,6 +156,9 @@ const newTabsetNameIsValid = computed(() =>
     newTabsetName.value?.length <= 32 && !STRIP_CHARS_IN_USER_INPUT.test(newTabsetName.value))
 
 const disableSubmit = () => {
+  if (usePermissionsStore().hasFeature(FeatureIdent.WINDOW_MANAGEMENT) && windowModel.value?.trim().length === 0) {
+    return true
+  }
   return newTabsetName.value.trim().length === 0 ||
       (newTabsetName.value.trim() === props.tabsetName &&
           windowModel.value?.trim() === props.window &&
