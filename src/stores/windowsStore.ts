@@ -123,7 +123,7 @@ export const useWindowsStore = defineStore('windows', () => {
         if (windowId >= 0) {
             //console.log("updating window for id", windowId)
             const window = await chrome.windows.get(windowId)
-            console.log("updating window", windowId, window)
+            //console.log("updating window", windowId, window)
             await storage.updateWindow(new Window(windowId, window))
         }
     }

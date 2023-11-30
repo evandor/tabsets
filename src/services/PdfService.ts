@@ -38,7 +38,7 @@ class PdfService {
 
     async getPngsForTab(tabId: string) {
         const blobs = await db.getBlobsForTab(tabId)
-        console.log("got blobs", blobs)
+        //console.log("got blobs", blobs)
         return _.filter(blobs, (b: SavedBlob) => b.type === BlobType.PNG)
     }
 

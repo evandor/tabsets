@@ -200,7 +200,7 @@ class NavigationService {
         }
 
         chrome.windows.create(createData, (window) => {
-            console.log("creating window", useWindowIdent, window)
+            //console.log("creating window", useWindowIdent, window)
             if (chrome.runtime.lastError) {
                 // probably out of bounds issues
                 chrome.windows.create({}, (window) => {

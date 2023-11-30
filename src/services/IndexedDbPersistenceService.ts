@@ -508,7 +508,7 @@ class IndexedDbPersistenceService implements PersistenceService {
     /*** Windows Management ***/
 
     addWindow(window: Window): Promise<any> {
-        console.debug("%cadding window", "background-color:yellow", window)
+        //console.debug("%cadding window", "background-color:yellow", window)
         return this.db.add('windows', window, window.id)
             .catch((err) => {
                 if (!err.toString().indexOf('Key already exists')) {

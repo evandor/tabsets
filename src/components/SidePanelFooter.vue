@@ -3,17 +3,18 @@
   <q-footer class="bg-white q-pa-xs q-mt-sm" style="border-top: 1px solid lightgrey">
     <div class="row fit q-mb-xs"
          style="border-bottom: 1px dotted #bfbfbf"
-         v-if="otherActiveWindows().length > 1">
+         v-if="otherActiveWindows().length > 0">
       <div class="col-12 text-black">
+        <q-icon name="o_grid_view" color="blue">
+          <q-tooltip class="tooltip-small">Other Browser Windows</q-tooltip>
+        </q-icon>
         <q-btn v-for="w in otherActiveWindows()" dense
-               :flat="displayFlat(w)"
-               :disable="displayFlat(w)"
-               icon="o_grid_view" size="xs" class="q-ma-sm"
-               text-color="blue"
+               flat
+               size="xs" class="q-ma-sm"
+               text-color="blue-8"
                @click="openWindow(w.id)"
                :label="w.name">
-          <q-tooltip class="tooltip-small" v-if="displayFlat(w)">The currently open window: '{{ w.name }}'</q-tooltip>
-          <q-tooltip class="tooltip-small" v-else>Switch to window '{{ w.name }}'</q-tooltip>
+          <q-tooltip class="tooltip-small">Switch to window '{{ w.name }}'</q-tooltip>
         </q-btn>
       </div>
 
@@ -258,12 +259,10 @@ const toastBannerClass = () => {
   }
 }
 
-const isCurrentWindow = () => !useWindowsStore().currentWindowName || useWindowsStore().currentWindowName === 'current'
-
 const otherActiveWindows = () => {
   return _.sortBy(_.map(
       _.filter(useWindowsStore().currentWindows, (w: chrome.windows.Window) => {
-        return true //useWindowsStore().currentWindow?.id !== w.id
+        return useWindowsStore().currentWindow?.id !== w.id
       }), w => {
         return w.id ? {
           name: useWindowsStore().windowNameFor(w.id) || 'Main',
