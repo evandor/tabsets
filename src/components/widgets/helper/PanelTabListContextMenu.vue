@@ -12,7 +12,7 @@
         </q-item>
       </template>
 
-      <q-separator/>
+      <q-separator inset/>
       <q-item clickable v-close-popup @click.stop="editURL(props['tab' as keyof object])">
         <q-item-section style="padding-right:0;min-width:25px;max-width: 25px;">
           <q-icon size="xs" name="o_edit" color="info"/>
@@ -23,7 +23,6 @@
       </q-item>
 
       <template v-if="props.tabsetType.toString() !== TabsetType.DYNAMIC.toString()">
-        <q-separator/>
         <q-item clickable
                 v-close-popup @click.stop="editNoteDialog(props['tab' as keyof object])">
           <q-item-section style="padding-right:0;min-width:25px;max-width: 25px;">
@@ -35,7 +34,22 @@
         </q-item>
       </template>
 
-<!--      <q-separator/>-->
+      <template v-if="usePermissionsStore().hasFeature(FeatureIdent.MONITORING)">
+        <q-item :clickable="props.tab?.placeholders === undefined || props.tab?.monitor !== undefined"
+                v-close-popup @click.stop="monitoringDialog(props['tab' as keyof object])">
+          <q-item-section style="padding-right:0;min-width:25px;max-width: 25px;">
+            <q-icon size="xs" name="o_change_circle" :color="props.tab?.placeholders !== undefined && props.tab?.monitor === undefined? 'grey' : 'info'"/>
+          </q-item-section>
+          <q-item-section v-if="props.tab?.monitor">
+            Monitoring Changes...
+          </q-item-section>
+          <q-item-section v-else :class="props.tab?.placeholders ? 'text-grey' : 'text-black'">
+            Monitor Changes
+          </q-item-section>
+        </q-item>
+      </template>
+
+<!--      <q-separator inset/>-->
 <!--      <q-item clickable v-close-popup @click.stop="copyToClipboard(props['tab' as keyof object])">-->
 <!--        <q-item-section style="padding-right:0;min-width:25px;max-width: 25px;">-->
 <!--          <q-icon size="xs" name="o_link" color="accent"/>-->
@@ -46,7 +60,7 @@
 <!--      </q-item>-->
 
       <template v-if="usePermissionsStore().hasFeature(FeatureIdent.ADVANCED_TAB_MANAGEMENT)">
-        <q-separator/>
+        <q-separator inset/>
         <q-item clickable v-close-popup @click.stop="assignTab(props['tab' as keyof object])">
           <q-item-section style="padding-right:0;min-width:25px;max-width: 25px;">
             <q-icon size="xs" name="o_tab" color="info"/>
@@ -58,7 +72,7 @@
       </template>
 
       <template v-if="usePermissionsStore().hasFeature(FeatureIdent.COLOR_TAGS)">
-        <q-separator/>
+        <q-separator inset/>
         <q-item clickable v-close-popup @click.stop="setColor(props['tab' as keyof object])">
           <q-item-section style="padding-right:0;min-width:25px;max-width: 25px;">
             <q-icon size="xs" name="o_colorize" color="blue"/>
@@ -71,7 +85,7 @@
         </q-item>
       </template>
 
-      <q-separator/>
+      <q-separator inset/>
       <q-item clickable v-close-popup @click.stop="deleteTab(props['tab' as keyof object])">
         <q-item-section style="padding-right:0;min-width:25px;max-width: 25px;">
           <q-icon size="xs" name="o_delete" color="negative"/>
@@ -89,9 +103,7 @@
 
 import {PropType, ref} from "vue";
 import {useCommandExecutor} from "src/services/CommandExecutor";
-import RestoreTabsetDialog from "components/dialogues/RestoreTabsetDialog.vue";
 import {Notify, useQuasar} from "quasar";
-import {DrawerTabs, useUiStore} from "src/stores/uiStore";
 import {Tab} from "src/models/Tab";
 import {DeleteTabCommand} from "src/domain/tabs/DeleteTabCommand";
 import EditNoteDialog from "components/dialogues/EditNoteDialog.vue";
@@ -108,6 +120,7 @@ import {useTabsStore} from "stores/tabsStore";
 import {PlaceholdersType} from "src/models/Placeholders";
 import ColorSelector from "components/dialogues/helper/ColorSelector.vue";
 import {UpdateTabColorCommand} from "src/domain/tabs/UpdateTabColor";
+import MonitoringDialog from "components/dialogues/MonitoringDialog.vue";
 
 const props = defineProps({
   tab: {type: Object as PropType<Tab>, required: true},
@@ -124,9 +137,9 @@ const theColor = ref<string | undefined>(undefined)
 async function tabToUse(tab: Tab) {
   let useTab: Tab = tab
   if (tab.placeholders?.templateId) {
-    const tabInfo = await useTabsStore().getTab(tab.placeholders?.templateId)
+    const tabInfo = useTabsStore().getTabAndTabsetId(tab.placeholders?.templateId)
     if (tabInfo) {
-      useTab = tabInfo['tab' as keyof object]
+      useTab = tabInfo.tab
       console.log("useTab", useTab, tab.placeholders?.templateId)
     }
   }
@@ -167,6 +180,11 @@ const editNoteDialog = (tab: Tab) => $q.dialog({
   componentProps: {tabId: tab.id, note: tab.note}
 })
 
+const monitoringDialog = (tab: Tab) => $q.dialog({
+  component: MonitoringDialog,
+  componentProps: {tab: tab, note: tab.note}
+})
+
 const showTabDetails = async (tab: Tab) => {
   const useTab: Tab = await tabToUse(tab)
   console.log("showing tab details for", useTab)
@@ -182,7 +200,7 @@ const showTabDetailsMenuEntry = (tab: Tab) =>
 
 const deleteTabLabel = (tab: Tab) =>
     (tab.placeholders && tab.placeholders.type === PlaceholdersType.URL_SUBSTITUTION) ?
-        'Delete substituted Tabs'
+        'Delete all'
         :
         'Delete Tab'
 

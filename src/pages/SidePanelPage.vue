@@ -94,10 +94,6 @@
 
           <div class="q-ma-none q-pa-none">
 
-            <!--            <div class="q-ma-none" v-if="showAddTabButton(tabset as Tabset, currentChromeTab)">-->
-            <!--              <SidePanelTabInfo :tabsetId="tabset.id"/>-->
-            <!--            </div>-->
-
             <SidePanelPageTabList
                 v-if="tabsetExpanded.get(tabset.id)"
                 :tabsetType="tabset.type"
@@ -150,7 +146,6 @@ import {useTabsetService} from "src/services/TabsetService2";
 import {useUiStore} from "src/stores/uiStore";
 import {usePermissionsStore} from "src/stores/permissionsStore";
 import {useSpacesStore} from "src/stores/spacesStore";
-import SidePanelTabInfo from "pages/sidepanel/SidePanelTabInfo.vue";
 import FirstToolbarHelper from "pages/sidepanel/helper/FirstToolbarHelper.vue";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {SelectTabsetCommand} from "src/domain/tabsets/SelectTabset";
@@ -166,6 +161,7 @@ import {useBookmarksStore} from "stores/bookmarksStore";
 import {useSuggestionsStore} from "stores/suggestionsStore";
 import SidePanelPageTabList from "components/layouts/SidePanelPageTabList.vue";
 import {AddTabToTabsetCommand} from "src/domain/tabs/AddTabToTabset";
+import {TabAndTabsetId} from "src/models/TabAndTabsetId";
 
 const {setVerticalScrollPosition} = scroll
 
@@ -375,8 +371,8 @@ watchEffect(() => {
 
 function inIgnoredMessages(message: any) {
   return message.msg === "html2text" ||
-      message.msg === "html2links" ||
-      message.name === "recogito-annotation-created"
+      message.msg === "captureThumbnail" ||
+      message.msg === "html2links"
 }
 
   if (inBexMode()) {
@@ -416,16 +412,16 @@ function inIgnoredMessages(message: any) {
         const tabset = useTabsetService().getTabset(message.data.tabsetId) as Tabset
         if (message.data.noteId) {
           console.log("updating note", message.data.noteId)
-          useTabsStore().getTab(message.data.noteId)
-              .then((res: object | undefined) => {
+          const res = useTabsStore().getTabAndTabsetId(message.data.noteId)
+              //.then((res: TabAndTabsetId | undefined) => {
                 if (res) {
-                  const note = res['tab' as keyof object] as Tab
+                  const note = res.tab
                   note.title = message.data.tab.title
                   note.description = message.data.tab.description
                   note.longDescription = message.data.tab.longDescription
                 }
                 useTabsetService().saveTabset(tabset)
-              })
+          //    })
         } else {
           console.log("adding tab", message.data.tab)
           tabset.tabs.push(message.data.tab)

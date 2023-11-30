@@ -3,17 +3,18 @@
   <q-footer class="bg-white q-pa-xs q-mt-sm" style="border-top: 1px solid lightgrey">
     <div class="row fit q-mb-xs"
          style="border-bottom: 1px dotted #bfbfbf"
-         v-if="otherActiveWindows().length > 1">
+         v-if="otherActiveWindows().length > 0">
       <div class="col-12 text-black">
+        <q-icon name="o_grid_view" color="blue">
+          <q-tooltip class="tooltip-small">Other Browser Windows</q-tooltip>
+        </q-icon>
         <q-btn v-for="w in otherActiveWindows()" dense
-               :flat="displayFlat(w)"
-               :disable="displayFlat(w)"
-               icon="o_grid_view" size="xs" class="q-ma-sm"
-               text-color="blue"
+               flat
+               size="xs" class="q-ma-sm"
+               text-color="blue-8"
                @click="openWindow(w.id)"
                :label="w.name">
-          <q-tooltip class="tooltip-small" v-if="displayFlat(w)">The currently open window: '{{ w.name }}'</q-tooltip>
-          <q-tooltip class="tooltip-small" v-else>Switch to window '{{ w.name }}'</q-tooltip>
+          <q-tooltip class="tooltip-small">Switch to window '{{ w.name }}'</q-tooltip>
         </q-btn>
       </div>
 
@@ -25,7 +26,7 @@
           <q-banner
               v-if="checkToasts()"
               inline-actions dense rounded
-              style="font-size: smaller"
+              style="font-size: smaller;text-align: center"
               :class="toastBannerClass()">
             {{ useUiStore().toasts[0]?.msg }}
             <template v-slot:action v-if="useUiStore().toasts[0]?.action">
@@ -40,9 +41,9 @@
                icon="o_lightbulb"
                :label="suggestionsLabel()"
                :color="dependingOnStates()"
+               :size="getButtonSize()"
                @click="suggestionDialog()"
-               class="q-ma-none q-pa-xs q-ml-sm q-mt-xs q-pr-md cursor-pointer"
-               size="10px">
+               class="q-ma-none q-pa-xs q-ml-sm q-mt-xs q-pr-md cursor-pointer">
         </q-btn>
 
         <template v-if="!checkToasts() && !transitionGraceTime && !showSuggestionButton">
@@ -115,7 +116,7 @@ import {useUtils} from "src/services/Utils";
 import {useWindowsStore} from "src/stores/windowsStore";
 import {useSuggestionsStore} from "stores/suggestionsStore";
 import _ from "lodash";
-import {SuggestionState, SuggestionType} from "src/models/Suggestion";
+import {SuggestionState} from "src/models/Suggestion";
 import SuggestionDialog from "components/dialogues/SuggestionDialog.vue";
 import {TabsetStatus} from "src/models/Tabset";
 import {ToastType} from "src/models/Toast";
@@ -139,34 +140,22 @@ const doShowSuggestionButton = ref(false)
 const transitionGraceTime = ref(false)
 
 watchEffect(() => {
-  const suggestions = useSuggestionsStore().getSuggestions()
-  console.log("watcheffect for", suggestions)
+  const suggestions = useSuggestionsStore().getSuggestions(
+      [SuggestionState.NEW, SuggestionState.DECISION_DELAYED, SuggestionState.NOTIFICATION])
+  //console.log("watcheffect for", suggestions)
   showSuggestionButton.value =
       doShowSuggestionButton.value ||
       (useUiStore().sidePanelActiveViewIs(SidePanelView.MAIN) &&
           _.findIndex(suggestions, s => {
-            if (s.state === SuggestionState.APPLIED || s.state === SuggestionState.IGNORED) {
-              return false
-            }
-            if (!usePermissionsStore().hasFeature(FeatureIdent.RSS)) {
-              return (s.state === SuggestionState.NEW)
-                  && s.type !== SuggestionType.RSS
-            }
-            return s.state === SuggestionState.NEW
+            return s.state === SuggestionState.NEW ||
+                (s.state === SuggestionState.NOTIFICATION && !usePermissionsStore().hasFeature(FeatureIdent.NOTIFICATIONS))
           }) >= 0)
 
   showSuggestionIcon.value =
       !doShowSuggestionButton.value &&
       useUiStore().sidePanelActiveViewIs(SidePanelView.MAIN) &&
       _.findIndex(suggestions, s => {
-        if (s.state === SuggestionState.APPLIED || s.state === SuggestionState.IGNORED) {
-          return false
-        }
-        if (!usePermissionsStore().hasFeature(FeatureIdent.RSS)) {
-          return (s.state === SuggestionState.CANCELED)
-              && s.type !== SuggestionType.RSS
-        }
-        return s.state === SuggestionState.CANCELED
+        return s.state === SuggestionState.DECISION_DELAYED
       }) >= 0
 })
 
@@ -198,22 +187,24 @@ const settingsTooltip = () => {
   return "Open Settings of Tabsets " + import.meta.env.PACKAGE_VERSION
 }
 
-const rightButtonClass = () => "q-my-xs q-ml-xs q-px-xs q-mr-none"
+const rightButtonClass = () => "q-my-xs q-px-xs q-mr-none"
 
 const dependingOnStates = () =>
-    _.find(useSuggestionsStore().getSuggestions(), s => s.state === SuggestionState.NEW) ? 'warning' : 'primary'
+    _.find(useSuggestionsStore().getSuggestions([SuggestionState.NEW, SuggestionState.DECISION_DELAYED]), s => s.state === SuggestionState.NEW) ? 'warning' : 'primary'
 
 const suggestionDialog = () => {
   doShowSuggestionButton.value = false
   $q.dialog({
     component: SuggestionDialog, componentProps: {
-      suggestion: useSuggestionsStore().getSuggestions().at(0),
+      suggestion: useSuggestionsStore()
+          .getSuggestions([SuggestionState.NEW, SuggestionState.DECISION_DELAYED, SuggestionState.NOTIFICATION]).at(0),
       fromPanel: true
     }
   })
 }
 const suggestionsLabel = () => {
-  const suggestions = useSuggestionsStore().getSuggestions()
+  const suggestions = useSuggestionsStore().getSuggestions(
+      [SuggestionState.NEW, SuggestionState.DECISION_DELAYED, SuggestionState.NOTIFICATION])
   return suggestions.length === 1 ?
       suggestions.length + " New Suggestion" :
       suggestions.length + " New Suggestions"
@@ -268,18 +259,20 @@ const toastBannerClass = () => {
   }
 }
 
-const isCurrentWindow = () => !useWindowsStore().currentWindowName || useWindowsStore().currentWindowName === 'current'
-
 const otherActiveWindows = () => {
-  return _.sortBy(_.map(
-      _.filter(useWindowsStore().currentWindows, (w: chrome.windows.Window) => {
-        return true //useWindowsStore().currentWindow?.id !== w.id
-      }), w => {
-        return w.id ? {
-          name: useWindowsStore().windowNameFor(w.id) || 'Main',
-          id: w.id
-        } : {name: 'unknown', id: 0}
-      }), o => o.name)
+  return _.filter(
+      _.sortBy(
+          _.map(
+              _.filter(useWindowsStore().currentWindows, (w: chrome.windows.Window) => {
+                return useWindowsStore().currentWindow?.id !== w.id
+              }), w => {
+                return w.id ? {
+                  name: useWindowsStore().windowNameFor(w.id) || 'Main',
+                  id: w.id
+                } : {name: 'unknown', id: 0}
+              }),
+          o => o.name),
+      (e: object) => e['name' as keyof object] !== '%monitoring%')
 }
 
 const openWindow = (windowId: number) =>

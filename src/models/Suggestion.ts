@@ -4,8 +4,10 @@ export enum SuggestionState {
   NEW = "NEW",
   IGNORED = "IGNORED",
   APPLIED = "APPLIED",
-  CANCELED = "CANCELED",
-  INACTIVE = "INACTIVE"
+  CHECKED = "CHECKED", // we do not know if the suggestion was applied or ignored
+  DECISION_DELAYED = "DECISION_DELAYED",
+  INACTIVE = "INACTIVE",
+  NOTIFICATION = "NOTIFICATION" // this has been sent as chrome notification
 }
 
 
@@ -28,6 +30,7 @@ export class Suggestion {
   public state: SuggestionState;
   public img: string | undefined = undefined;
   public data: object = {}
+  public created : number | undefined = undefined
 
   static staticSuggestions: Suggestion[] = [
     new Suggestion(StaticSuggestionIdent.TRY_TAB_DETAILS_FEATURE.toString(),
@@ -56,8 +59,14 @@ export class Suggestion {
         .setImage('o_schedule')
   ]
 
-  constructor(public id: string, public title: string, public msg: string, public url: string, public type: SuggestionType = SuggestionType.RSS) {
+  constructor(
+      public id: string, // could be random, could be an encoded URL or a predefined string ("TRY Feature X")
+      public title: string,
+      public msg: string,
+      public url: string,
+      public type: SuggestionType = SuggestionType.RSS) {
     this.state = SuggestionState.NEW
+    this.created = new Date().getTime()
   }
 
   setImage(img: string): Suggestion {

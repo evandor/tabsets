@@ -143,6 +143,11 @@ const routes: RouteRecordRaw[] = [
     children: [{ path: '', component: () => import('pages/mainpanel/MainPanelMHtmlPage.vue') }],
   },
   {
+    path: '/mainpanel/png/:tabId/:blobId',
+    component: () => import('layouts/PlainLayout.vue'),
+    children: [{ path: '', component: () => import('pages/mainpanel/MainPanelPngPage.vue') }],
+  },
+  {
     path: '/mainpanel/tab/:id',// TODO combine with Tag page
     component: () => import('layouts/PlainLayout.vue'),
     children: [{ path: '', component: () => import('pages/TabPage.vue') }],
@@ -252,11 +257,11 @@ const routes: RouteRecordRaw[] = [
     component: () => import('layouts/FullPageLayout.vue'),
     children: [{ path: '', component: () => import('pages/SearchResultPage.vue') }],
   },
-  {
-    path: '/annotations/:tabId',
-    component: () => import('layouts/PlainLayout.vue'),
-    children: [{ path: '', component: () => import('pages/annotations/TabAnnotation.vue') }],
-  },
+  // {
+  //   path: '/annotations/:tabId',
+  //   component: () => import('layouts/PlainLayout.vue'),
+  //   children: [{ path: '', component: () => import('pages/annotations/TabAnnotation.vue') }],
+  // },
   {
     path: '/iframe/:tabId',
     component: () => import('layouts/DefaultLayout.vue'),

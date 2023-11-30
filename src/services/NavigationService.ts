@@ -30,42 +30,22 @@ class NavigationService {
         const existingWindow = await useWindowsStore().currentWindowFor(useWindowIdent)
 
         if (useWindowIdent !== 'current') {
-            //console.log("existingWindow", existingWindow)
+            console.log("existingWindow", existingWindow)
             if (!existingWindow) {
 
                 const createData: any = {url: withUrls}
                 if (windowFromDb) {
                     const w = windowFromDb.browserWindow
-                    createData['left' as keyof object] = (w.left || 0) < 0 ? 0 : w.left
-                    createData['top' as keyof object] = (w.top || 0) < 0 ? 0 : w.top
-                    createData['width' as keyof object] = (w.left || -1) < 0 ? 600 : w.width
-                    createData['height' as keyof object] = (w.top || -1) < 0 ? 400 : w.height
+                    createData['left' as keyof object] = w.left//(w.left || 0) < 0 ? 0 : w.left
+                    createData['top' as keyof object] = w.top//(w.top || 0) < 0 ? 0 : w.top
+                    createData['width' as keyof object] = w.width//(w.width || -1) < 0 ? 600 : w.width
+                    createData['height' as keyof object] = w.height//(w.top || -1) < 0 ? 400 : w.height
                     // window does not exist anymore, remove from 'allWindows'
                     await useWindowsStore().removeWindow(windowFromDb.id)
                 }
 
-                // create a new window
-                console.log("opening new window with", createData)
-                chrome.windows.create(createData, (window) => {
-                    //console.log("window", window)
-                    if (window) {
-                        useWindowsStore().assignWindow(useWindowIdent, window.id || 0)
-                        //useWindowsStore().renameWindow(window.id || 0, useWindowIdent)
-                        useWindowsStore().upsertWindow(window, useWindowIdent)
-                        const ctx = this
-                        withUrls.forEach(function (url, i) {
-                            if (groups.length > i) {
-                                const group = groups[i]
-                                if (group && window.id && window.tabs && window.tabs.length > i) {
-                                    console.log("assiging group", group, i)
-                                    ctx.handleGroup(group, window.id, window.tabs[i]);
-                                }
-                            }
-                        })
+                await this.createNewWindow(createData, useWindowIdent, withUrls, groups)
 
-                    }
-                })
-                //useWindowsStore().r
                 return
             }
         }
@@ -90,7 +70,6 @@ class NavigationService {
 
             const useWindowId = existingWindow?.id || chrome.windows.WINDOW_ID_CURRENT
             const queryInfo = {windowId: useWindowId}
-            console.log("using query info ", queryInfo)
 
             // getting all tabs from this window
             chrome.tabs.query(queryInfo, (t: chrome.tabs.Tab[]) => {
@@ -107,7 +86,7 @@ class NavigationService {
                             if (matchCondition) {
                                 if (!found) { // highlight only first hit
                                     found = true
-                                    console.log("found something", r)
+                                    console.debug("found something", r)
                                     chrome.tabs.highlight({tabs: r.index, windowId: useWindowId});
                                     chrome.windows.update(useWindowId, {focused: true})
 
@@ -118,7 +97,7 @@ class NavigationService {
                             }
                         });
                     if (!found) {
-                        console.log("tab not found, creating new one:", url)
+                        console.debug("tab not found, creating new one:", url)
                         chrome.tabs.create({
                             active: true,
                             pinned: false,
@@ -207,6 +186,48 @@ class NavigationService {
                 useTabsStore().chromeTabsHistoryNavigating = false
                 this.openOrCreateTab([url])
             })
+    }
+
+    private async createNewWindow(createData: any, useWindowIdent: string, withUrls: string[], groups: string[]) {
+        console.log("opening new window with", createData)
+        // https://developer.chrome.com/articles/window-management/
+        let screenlabel: string | undefined = undefined
+        if ('getScreenDetails' in window) {
+            // @ts-ignore
+            const screens = await window.getScreenDetails();
+            screenlabel = screens.currentScreen.label
+            console.log("setting screenlabel to", screenlabel)
+        }
+
+        chrome.windows.create(createData, (window) => {
+            //console.log("creating window", useWindowIdent, window)
+            if (chrome.runtime.lastError) {
+                // probably out of bounds issues
+                chrome.windows.create({}, (window) => {
+                    if (window) {
+                        this.createWindow(useWindowIdent, window, screenlabel, withUrls, groups);
+                    }
+                })
+            } else if (window) {
+                this.createWindow(useWindowIdent, window, screenlabel, withUrls, groups);
+            }
+        })
+
+    }
+
+    private createWindow(useWindowIdent: string, window: chrome.windows.Window, screenlabel: string | undefined, withUrls: string[], groups: string[]) {
+        useWindowsStore().assignWindow(useWindowIdent, window.id || 0)
+        useWindowsStore().upsertWindow(window, useWindowIdent, screenlabel)
+        const ctx = this
+        withUrls.forEach(function (url, i) {
+            if (groups.length > i) {
+                const group = groups[i]
+                if (group && window.id && window.tabs && window.tabs.length > i) {
+                    console.log("assiging group", group, i)
+                    ctx.handleGroup(group, window.id, window.tabs[i]);
+                }
+            }
+        })
     }
 }
 

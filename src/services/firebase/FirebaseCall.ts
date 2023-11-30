@@ -32,15 +32,16 @@ export abstract class FirebaseCall<T> {
     }
   }
 
-  static post(path: string, data: object, resType = "json") {
+  static post(path: string, data: object, resType = "json", fullPath = false) {
     console.log("firebase call to ", path)
     return useAuthStore().getToken(api).then((token: string) => {
-      console.log("posting to", `${process.env.BACKEND_URL}${path}`)
+      const urlToUse = fullPath ? path : `${process.env.BACKEND_URL}${path}`
+      console.log("posting to", urlToUse )
       // @ts-ignore
-      return api.post(`${process.env.BACKEND_URL}${path}`, data, {headers: {'AuthToken': token}, responseType: resType})
+      return api.post(urlToUse, data, {headers: {'AuthToken': token}, responseType: resType})
         .catch((err: any) => {
           FirebaseCall.handleError(err)
-          return Promise.reject("user not authenticated")
+          return Promise.reject(err)
         })
     })
   }

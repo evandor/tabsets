@@ -39,7 +39,7 @@ export const usePermissionsStore = defineStore('permissions', () => {
 
     async function load() {
         activeFeatures.value = await storage.getActiveFeatures()
-        console.log("initialized active features with", activeFeatures.value)
+        //console.log("initialized active features with", activeFeatures.value)
         if (process.env.MODE !== 'bex') {
             return
         }

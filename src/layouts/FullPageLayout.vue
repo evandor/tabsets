@@ -70,19 +70,19 @@
         <!--          <q-tooltip class="tooltip" anchor="center right" self="center left" :delay="200">RSS Feeds</q-tooltip>-->
         <!--        </q-tab>-->
 
-        <span v-if="useSuggestionsStore().getSuggestions().length > 0">
+        <span v-if="useSuggestionsStore().getSuggestions([SuggestionState.NEW, SuggestionState.DECISION_DELAYED]).length > 0">
           <q-btn
               flat
               :color="dependingOnStates()"
               name="rss" icon="o_assistant">
             <q-tooltip class="tooltip" anchor="center right" self="center left" :delay="200">You have suggestions
             </q-tooltip>
-            <q-badge :label="useSuggestionsStore().getSuggestions().length"/>
+            <q-badge :label="useSuggestionsStore().getSuggestions([SuggestionState.NEW, SuggestionState.DECISION_DELAYED]).length"/>
           </q-btn>
           <q-menu :offset="[0, 7]">
             <q-list style="min-width: 200px">
               <q-item clickable v-close-popup v-ripple @click="suggestionDialog(s)"
-                      v-for="s in useSuggestionsStore().getSuggestions()">
+                      v-for="s in useSuggestionsStore().getSuggestions([SuggestionState.NEW, SuggestionState.DECISION_DELAYED])">
                 <q-item-section avatar>
                   <q-icon color="primary" :name="s.img ? s.img : 'rss_feed'"/>
                 </q-item-section>
@@ -99,7 +99,19 @@
             :feature="FeatureIdent.SAVE_TAB"
             :drawer="DrawerTabs.SAVED_TABS"
             icon="o_save"
-            tooltip="The List of Urls displayed when you open a new tab in your Browser"/>
+            tooltip="List of MTHML Snapshots"/>
+
+        <ToolbarButton
+            :feature="FeatureIdent.SAVE_TAB_AS_PNG"
+            :drawer="DrawerTabs.SAVED_TABS_AS_PNG"
+            icon="o_image"
+            tooltip="The List of PNGs"/>
+
+        <ToolbarButton
+            :feature="FeatureIdent.SAVE_TAB_AS_PDF"
+            :drawer="DrawerTabs.SAVED_TABS_AS_PDF"
+            icon="o_picture_as_pdf"
+            tooltip="The List of PDFs"/>
 
         <ToolbarButton
             :feature="FeatureIdent.GROUP_BY_DOMAIN"
@@ -236,7 +248,7 @@ const settingsStore = useSettingsStore()
 const spacesStore = useSpacesStore()
 
 const spacesOptions = ref<object[]>([])
-const suggestions = ref<Suggestion[]>(useSuggestionsStore().getSuggestions())
+const suggestions = ref<Suggestion[]>(useSuggestionsStore().getSuggestions([SuggestionState.NEW, SuggestionState.DECISION_DELAYED]))
 const search = ref('')
 
 const {inBexMode} = useUtils()
@@ -250,7 +262,7 @@ $q.loadingBar.setDefaults({
 const settingsClicked = ref(false)
 
 watchEffect(() => {
-  suggestions.value = useSuggestionsStore().getSuggestions()
+  suggestions.value = useSuggestionsStore().getSuggestions([SuggestionState.NEW, SuggestionState.DECISION_DELAYED])
 })
 
 watchEffect(() => {
@@ -323,7 +335,7 @@ const suggestionDialog = (s: Suggestion) => $q.dialog({
 })
 
 const dependingOnStates = () =>
-    _.find(useSuggestionsStore().getSuggestions(), s => s.state === SuggestionState.NEW) ? 'warning' : 'white'
+    _.find(useSuggestionsStore().getSuggestions([SuggestionState.NEW, SuggestionState.DECISION_DELAYED]), s => s.state === SuggestionState.NEW) ? 'warning' : 'white'
 
 const toggleSettings = () => settingsClicked.value = !settingsClicked.value
 

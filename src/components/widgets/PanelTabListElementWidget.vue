@@ -57,10 +57,6 @@
                 v-html="nameOrTitle(props.tab as Tab)"/>
           <span v-else :class="isCurrentTab(props.tab) ? 'text-bold':''">{{ nameOrTitle(props.tab as Tab) }}</span>
 
-          <q-icon v-if="(props.tab as Tab).placeholders"
-                  name="published_with_changes" class="q-ml-sm" color="accent">
-            <q-tooltip class="tooltip-small">This tab is created by substituting parts of its URL</q-tooltip>
-          </q-icon>
         </div>
 
       </div>
@@ -117,7 +113,7 @@
              @mouseleave="hoveredTab = undefined"
              style="max-width:25px;font-size: 12px;color:#bfbfbf">
             <span v-if="hoveredOver(tab.id)">
-              <q-icon name="more_horiz" color="accent" size="16px"/>
+              <q-icon name="more_horiz" color="black" size="16px"/>
             </span>
           <span v-else>
               <q-icon color="primary" size="16px"/>
@@ -131,7 +127,7 @@
 
     </q-item-label>
 
-    <!-- === group and last active === -->
+    <!-- === group, last active & icons === -->
     <q-item-label
         style="width:100%;margin-top:0"
         v-if="props.tab?.url"
@@ -142,9 +138,41 @@
         <div class="col-12 q-pr-lg q-mt-none q-pt-none cursor-pointer">
           <div class="text-caption text-grey-5 ellipsis"
                v-if="useUiStore().listDetailLevelGreaterEqual(ListDetailLevel.SOME)">
+
             <span v-if="props.sorting === TabSorting.AGE">
               <q-icon name="arrow_right" size="16px"/>
-           </span>
+            </span>
+
+            <q-icon v-if="(props.tab as Tab).monitor"
+                    @click.stop="monitoringDialog(props.tab as Tab)"
+                    name="o_change_circle" class="q-mr-xs"
+                    :color="(props.tab as Tab).placeholders ? 'negative' : 'accent'">
+              <q-tooltip class="tooltip-small" v-if="!(props.tab as Tab).placeholders">This tab is being monitored for changes</q-tooltip>
+              <q-tooltip class="tooltip-small" v-else>Tabs with placeholders cannot be monitored</q-tooltip>
+            </q-icon>
+
+            <q-icon v-if="suggestion"
+                    @click.stop="showSuggestion()"
+                    name="o_notifications" class="q-mr-xs" :color="suggestion.state === SuggestionState.NOTIFICATION ? 'negative' : 'accent'">
+              <q-tooltip class="tooltip-small" v-if="suggestion.state === SuggestionState.NOTIFICATION">There is a new notification for this tab</q-tooltip>
+              <q-tooltip class="tooltip-small" v-else>There is a notification for this tab</q-tooltip>
+            </q-icon>
+
+            <q-icon v-if="pngs.length > 0"
+                    @click.stop="openImage()"
+                    name="o_image" class="q-mr-xs" color="accent">
+              <q-tooltip class="tooltip-small">There are snapshot images of this tab</q-tooltip>
+            </q-icon>
+
+            <q-icon v-if="(props.tab as Tab).placeholders"
+                    name="published_with_changes" class="q-mr-xs" color="accent">
+              <q-tooltip class="tooltip-small">This tab is created by substituting parts of its URL</q-tooltip>
+            </q-icon>
+
+            <template v-if="(props.tab as Tab).monitor || suggestion || (props.tab as Tab).placeholders || pngs.length > 0">
+              <span>-</span>
+            </template>
+
             <template v-if="groupName && usePermissionsStore().hasFeature(FeatureIdent.TAB_GROUPS)">
               Group <em>{{ groupName }}</em>
               <q-icon name="arrow_drop_down" class="q-mr-none" size="xs" color="text-grey-5"/>
@@ -170,7 +198,9 @@
               </q-menu>
               -
             </template>
+
             {{ formatDate(props.tab.lastActive) }}
+
           </div>
         </div>
       </div>
@@ -207,7 +237,6 @@ import {onMounted, PropType, ref, watchEffect} from "vue";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {ListDetailLevel, useUiStore} from "src/stores/uiStore";
 import TabFaviconWidget from "components/widgets/TabFaviconWidget.vue";
-import {UpdateTabNameCommand} from "src/domain/tabs/UpdateTabName";
 import {useTabsetService} from "src/services/TabsetService2";
 import ShortUrl from "components/utils/ShortUrl.vue";
 import {useTabsStore} from "src/stores/tabsStore";
@@ -215,7 +244,6 @@ import PanelTabListContextMenu from "components/widgets/helper/PanelTabListConte
 import _ from "lodash";
 import {formatDistance} from "date-fns";
 import {TabsetType} from "src/models/Tabset";
-import {useWindowsStore} from "src/stores/windowsStore";
 import {usePermissionsStore} from "stores/permissionsStore";
 import {FeatureIdent} from "src/models/AppFeature";
 import {useUtils} from "src/services/Utils";
@@ -223,9 +251,14 @@ import {useRouter} from "vue-router";
 import {useGroupsStore} from "stores/groupsStore";
 import {DeleteChromeGroupCommand} from "src/domain/groups/DeleteChromeGroupCommand";
 import {PlaceholdersType} from "src/models/Placeholders";
-import {uid} from "quasar";
+import {uid, useQuasar} from "quasar";
+import {TabAndTabsetId} from "src/models/TabAndTabsetId";
+import MonitoringDialog from "components/dialogues/MonitoringDialog.vue";
+import {useSuggestionsStore} from "stores/suggestionsStore";
+import {Suggestion, SuggestionState} from "src/models/Suggestion";
+import PdfService from "src/services/PdfService";
 
-const {inBexMode} = useUtils()
+const {inBexMode, isCurrentTab} = useUtils()
 
 const props = defineProps({
   tab: {type: Object as PropType<Tab>, required: true},
@@ -238,8 +271,8 @@ const props = defineProps({
   tabsetType: {type: String, default: TabsetType.DEFAULT.toString()}
 })
 
+const $q = useQuasar()
 const cnt = ref(0)
-const tabsStore = useTabsStore()
 const router = useRouter()
 
 const showButtonsProp = ref<boolean>(false)
@@ -250,6 +283,8 @@ const newState = ref(false)
 const groupName = ref<string | undefined>(undefined)
 const groups = ref<Map<string, chrome.tabGroups.TabGroup>>(new Map())
 const placeholders = ref<Object[]>([])
+const suggestion = ref<Suggestion | undefined>(undefined)
+const pngs = ref<SavedBlob[]>([])
 
 onMounted(() => {
   if ((new Date().getTime() - props.tab.created) < 500) {
@@ -284,6 +319,12 @@ watchEffect(() => {
 
 watchEffect(() => {
   groupName.value = props.tab?.groupName
+})
+
+watchEffect(() => {
+  if (props.tab.url) {
+    suggestion.value = useSuggestionsStore().getSuggestionForUrl(props.tab.url)
+  }
 })
 
 watchEffect(() => {
@@ -325,20 +366,19 @@ watchEffect(() => {
   }
 })
 
+watchEffect(async () => {
+  if (props.tab) {
+    pngs.value = await PdfService.getPngsForTab(props.tab.id)
+    console.log("got", pngs.value, props.tab.id)
+  }
+})
+
 const nameOrTitle = (tab: Tab) => tab.name ? tab.name : tab.title
 
 const hoveredOver = (tabsetId: string) => hoveredTab.value === tabsetId
 
 const formatDate = (timestamp: number | undefined) =>
     timestamp ? formatDistance(timestamp, new Date(), {addSuffix: true}) : ""
-
-const isCurrentTab = (tab: Tab) => {
-  if (!inBexMode()) {
-    return false
-  }
-  const windowId = useWindowsStore().currentWindow?.id || 0
-  return (tabsStore.getCurrentChromeTab(windowId) || tabsStore.currentChromeTab)?.url === tab.url
-}
 
 const iconStyle = () => {
   if (isCurrentTab(props.tab)) {
@@ -375,11 +415,11 @@ const matcherTooltip = () => {
 const unsetGroup = () => {
   if (props.tab) {
     props.tab.groupName = undefined
-    useTabsStore().getTab(props.tab.id)
-        .then((res: any) => {
+    const res = useTabsStore().getTabAndTabsetId(props.tab.id)
+        //.then((res: TabAndTabsetId | undefined) => {
           if (res) {
-            const tab = res['tab' as keyof object] as Tab
-            const tabsetId = res['tabsetId' as keyof object]
+            const tab = res.tab
+            const tabsetId = res.tabsetId
             tab.groupName = undefined
             tab.groupId = -1
             const ts = useTabsetService().getTabset(tabsetId)
@@ -387,7 +427,7 @@ const unsetGroup = () => {
               useTabsetService().saveTabset(ts)
             }
           }
-        })
+       // })
   }
 }
 
@@ -404,11 +444,11 @@ const groupsWithout = (groupName: string): chrome.tabGroups.TabGroup[] =>
 const switchGroup = (group: chrome.tabGroups.TabGroup): void => {
   if (props.tab) {
     props.tab.groupName = group.title
-    useTabsStore().getTab(props.tab.id)
-        .then((res: any) => {
+    const res = useTabsStore().getTabAndTabsetId(props.tab.id)
+       // .then((res: TabAndTabsetId | undefined) => {
           if (res) {
-            const tab = res['tab' as keyof object] as Tab
-            const tabsetId = res['tabsetId' as keyof object]
+            const tab = res.tab
+            const tabsetId = res.tabsetId
             tab.groupName = group.title
             tab.groupId = group.id
             const ts = useTabsetService().getTabset(tabsetId)
@@ -416,7 +456,7 @@ const switchGroup = (group: chrome.tabGroups.TabGroup): void => {
               useTabsetService().saveTabset(ts)
             }
           }
-        })
+       // })
   }
 }
 
@@ -425,6 +465,20 @@ const gotoTab = () => NavigationService.openOrCreateTab(
     props.tab.matcher,
     props.tab.groupName ? [props.tab.groupName] : [])
 
+const showSuggestion = () => {
+  const url = chrome.runtime.getURL('www/index.html') + "#/mainpanel/suggestions/" + suggestion.value?.id
+  NavigationService.openOrCreateTab([url])
+}
+
+const monitoringDialog = (tab: Tab) => {
+  console.log("calling dialog with tab", tab)
+  $q.dialog({
+    component: MonitoringDialog,
+    componentProps: {tab: tab, note: tab.note}
+  })
+}
+
+const openImage = () => window.open(chrome.runtime.getURL('www/index.html#/mainpanel/png/' + props.tab.id + "/" + pngs.value[0].id))
 
 </script>
 

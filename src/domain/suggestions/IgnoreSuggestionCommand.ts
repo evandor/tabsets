@@ -1,6 +1,6 @@
 import Command from "src/domain/Command";
 import {ExecutionResult} from "src/domain/ExecutionResult";
-import {Suggestion} from "src/models/Suggestion";
+import {Suggestion, SuggestionState} from "src/models/Suggestion";
 import {useSuggestionsStore} from "stores/suggestionsStore";
 import {useUtils} from "src/services/Utils";
 
@@ -12,7 +12,7 @@ export class IgnoreSuggestionCommand implements Command<any> {
     }
 
     async execute(): Promise<ExecutionResult<any>> {
-        return useSuggestionsStore().ignoreSuggestion(this.suggestion.id)
+        return useSuggestionsStore().updateSuggestionState(this.suggestion.id, SuggestionState.IGNORED)
             .then(() => {
                 sendMsg("reload-suggestions", {})
             })

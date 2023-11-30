@@ -8,6 +8,7 @@ import {StaticSuggestionIdent, Suggestion, SuggestionState} from "src/models/Sug
 import {MetaLink} from "src/models/MetaLink";
 import {Window} from "src/models/Window";
 import {RequestInfo} from "src/models/RequestInfo";
+import {BlobType, SavedBlob} from "src/models/SavedBlob";
 
 interface PersistenceService {
 
@@ -36,13 +37,17 @@ interface PersistenceService {
   saveMetaLinks(url: string, metaLinks: MetaLink[]): Promise<void>
   getLinks(url: string): Promise<object>
   saveLinks(url: string, links: any): Promise<void>
+
   saveMHtml(tab: Tab, mhtml: Blob): Promise<string>
   getMHtml(url: string):Promise<object>
   getMHtmlInline(url: string): Promise<object>
   getMHtmls(): Promise<MHtml[]>
+  deleteMHtml(id: string): Promise<void>
 
-  saveBlob(id: string, url: string, data: Blob, type: string): Promise<any>
-  getBlob(blobId: string): Promise<any>
+  getBlobs(type: BlobType): Promise<any[]>
+  saveBlob(id: string, url: string, data: Blob, type: BlobType, remark: string | undefined): Promise<any>
+  getBlobsForTab(tabId: string): Promise<SavedBlob[]>
+  deleteBlob(tabId: string, elementId: string): void;
 
   saveRequest(url: string, requestInfo: RequestInfo): Promise<void>
 
@@ -61,7 +66,7 @@ interface PersistenceService {
 
   getSuggestions(): Promise<Suggestion[]>
   addSuggestion(suggestion: Suggestion): Promise<any>
-  removeSuggestion(ident: StaticSuggestionIdent): any;
+  removeSuggestion(id: string): any;
   setSuggestionState(id: string, state: SuggestionState): any;
 
   compactDb(): Promise<any>
@@ -80,9 +85,10 @@ interface PersistenceService {
   getWindow(windowId: number): Promise<Window | undefined>
   removeWindow(windowId: number): Promise<void>
   updateWindow(window: Window): Promise<void>
-  upsertWindow(window: Window, windowName: string): Promise<void>
+  upsertWindow(window: Window, windowName: string, screenLabel: string | undefined): Promise<void>
 
   clear(name: string):any
+
 }
 
 export default PersistenceService
