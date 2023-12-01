@@ -9,7 +9,7 @@ export default bexContent((bridge: any) => {
   // @ts-ignore
   if (window.contentScriptAnalysisAlredyCalled) {
     // https://stackoverflow.com/questions/23208134/avoid-dynamically-injecting-the-same-script-multiple-times-when-using-chrome-tab
-    console.debug("stopping execution of tabsets-content-script as it is already setup")
+    //console.debug("stopping execution of tabsets-content-script as it is already setup")
     return
   }
 
