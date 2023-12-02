@@ -46,6 +46,7 @@
             :options="windowOptions"
             input-debounce="0"
             @new-value="createWindowOption"
+            @keydown.enter="enterPressed()"
             @focus="windowMgtSelectionHasFocus = true"
             @blur="windowMgtSelectionHasFocus = false"
         />
@@ -78,7 +79,7 @@
 
 <script lang="ts" setup>
 
-import {computed, PropType, ref, watchEffect} from "vue";
+import {computed, ref, watchEffect} from "vue";
 import {useDialogPluginComponent} from "quasar";
 import {useTabsStore} from "src/stores/tabsStore";
 import {STRIP_CHARS_IN_USER_INPUT} from "boot/constants";
@@ -100,11 +101,11 @@ const props = defineProps({
   tabsetName: {type: String, required: true},
   tabsetColor: {type: String, required: false},
   window: {type: String, required: false},
-  details: {type: Object as PropType<ListDetailLevel>, default: ListDetailLevel.MAXIMAL},
+  details: {type: String, default: ListDetailLevel.MAXIMAL.toString()},
   fromPanel: {type: Boolean, default: false}
 })
 
-const {handleError, handleSuccess} = useNotificationHandler()
+const {handleError} = useNotificationHandler()
 const {dialogRef, onDialogHide, onDialogCancel} = useDialogPluginComponent()
 
 const tabsStore = useTabsStore()
@@ -117,7 +118,7 @@ const windowMgtSelectionEdited = ref(false)
 const theColor = ref<string | undefined>(props.tabsetColor || undefined)
 const windowModel = ref<string>(props.window || 'current')
 const windowOptions = ref<string[]>([])
-const detailOption = ref<ListDetailLevel>(props.details)
+const detailOption = ref<ListDetailLevel>(ListDetailLevel[props.details as keyof typeof ListDetailLevel])
 
 const detailOptions = [
     {label: 'Minimal Details', value: ListDetailLevel.MINIMAL},
@@ -159,7 +160,10 @@ const newTabsetDialogWarning = () => {
 const newTabsetNameIsValid = computed(() =>
     newTabsetName.value?.length <= 32 && !STRIP_CHARS_IN_USER_INPUT.test(newTabsetName.value))
 
-const disableSubmit = () => {
+const enterPressed = () => windowMgtSelectionHasFocus.value = false
+
+
+const disableSubmit = ():boolean => {
   if (usePermissionsStore().hasFeature(FeatureIdent.WINDOW_MANAGEMENT) && windowModel.value?.trim().length === 0) {
     return true
   }
@@ -170,6 +174,7 @@ const disableSubmit = () => {
           detailOption.value === props.details
       )
       || newTabsetDialogWarning() !== ''
+      || windowMgtSelectionHasFocus.value
 }
 
 const createWindowOption = (val: any, done: any) => {

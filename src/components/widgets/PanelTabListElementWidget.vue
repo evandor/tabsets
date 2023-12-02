@@ -370,7 +370,6 @@ watchEffect(() => {
 watchEffect(async () => {
   if (props.tab) {
     pngs.value = await PdfService.getPngsForTab(props.tab.id)
-    console.log("got", pngs.value, props.tab.id)
   }
 })
 

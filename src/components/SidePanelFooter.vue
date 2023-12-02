@@ -277,7 +277,7 @@ const otherActiveWindows = () => {
 
 const openWindow = (windowId: number) =>
     chrome.windows.update(windowId, {drawAttention: true, focused: true},
-        (callback) => console.log("got callback", callback))
+        (callback) => {})
 
 const displayFlat = (w: any): boolean => {
   let currentWindowName = useWindowsStore().currentWindowName || 'Main'

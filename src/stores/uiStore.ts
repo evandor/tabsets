@@ -298,7 +298,7 @@ export const useUiStore = defineStore('ui', () => {
             if (!useUiStore().showDetailsPerTabset) {
                 useLevel = listDetailLevel.value
             }
-            console.log("useLevel", useLevel)
+            //console.log("useLevel", useLevel)
             switch (useLevel) {
                 case ListDetailLevel.MAXIMAL:
                     return true

@@ -443,7 +443,7 @@ class TabsetService {
       tabset.color = trustedColor
       tabset.window = window
       tabset.details = details
-      console.log("saving tabset", tabset)
+      //console.log("saving tabset", tabset)
       return saveTabset(tabset)
         .then(() => Promise.resolve({
           oldName: oldName,
