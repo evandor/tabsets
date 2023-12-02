@@ -50,12 +50,18 @@
 
       <div class="row items-baseline q-ma-md">
         <div class="col-3">
-          Tab Info Detail Level
+          Tab Info Detail Level {{detailLevelPerTabset ? ' (Default)' : ''}}
         </div>
         <div class="col-9">
           <q-radio v-model="detailLevel" :val="ListDetailLevel.MINIMAL" label="Minimal Details"/>
           <q-radio v-model="detailLevel" :val="ListDetailLevel.SOME" label="Some Details"/>
           <q-radio v-model="detailLevel" :val="ListDetailLevel.MAXIMAL" label="All Details"/>
+        </div>
+        <div class="col-3">
+
+        </div>
+        <div class="col-9">
+          <q-checkbox v-model="detailLevelPerTabset" label="Adjust individually per tabset"/>
         </div>
       </div>
 
@@ -383,11 +389,8 @@ import {usePermissionsStore} from "src/stores/permissionsStore";
 import {GrantPermissionCommand} from "src/domain/commands/GrantPermissionCommand";
 import {ExecutionResult} from "src/domain/ExecutionResult";
 import {RevokePermissionCommand} from "src/domain/commands/RevokePermissionCommand";
-import {GrantOriginCommand} from "src/domain/commands/GrantOriginCommand";
-import {RevokeOriginCommand} from "src/domain/commands/RevokeOriginCommand";
 import {FeatureIdent} from "src/models/AppFeature";
 import {useSettingsStore} from "src/stores/settingsStore"
-import {useLogsStore} from "../stores/logsStore";
 import OpenRightDrawerWidget from "components/widgets/OpenRightDrawerWidget.vue";
 import {useUtils} from "src/services/Utils";
 import Analytics from "src/utils/google-analytics";
@@ -395,7 +398,7 @@ import {useGroupsStore} from "../stores/groupsStore";
 import {useSuggestionsStore} from "stores/suggestionsStore";
 import {StaticSuggestionIdent, Suggestion} from "src/models/Suggestion";
 
-const {inBexMode, sendMsg} = useUtils()
+const {sendMsg} = useUtils()
 
 const tabsStore = useTabsStore()
 const featuresStore = useSettingsStore()
@@ -423,6 +426,7 @@ const pageCapturePermissionGranted = ref<boolean | undefined>(usePermissionsStor
 const allUrlsOriginGranted = ref<boolean | undefined>(usePermissionsStore().hasAllOrigins())
 const tab = ref('appearance')
 const fullUrls = ref(localStorage.getItem('ui.fullUrls') || false)
+const detailLevelPerTabset = ref(localStorage.getItem('ui.detailsPerTabset') || false)
 
 const {handleError} = useNotificationHandler()
 
@@ -470,23 +474,6 @@ watch(() => pageCapturePermissionGranted.value, (newValue, oldValue) => {
   }
 })
 
-watch(() => allUrlsOriginGranted.value, (newValue, oldValue) => {
-  if (newValue === oldValue) {
-    return
-  }
-  if (allUrlsOriginGranted.value && !usePermissionsStore().hasAllOrigins()) {
-    useCommandExecutor()
-        .executeFromUi(new GrantOriginCommand("none"))
-        .then((res: ExecutionResult<boolean>) => allUrlsOriginGranted.value = res.result)
-  } else if (!allUrlsOriginGranted.value) {
-    useCommandExecutor()
-        .executeFromUi(new RevokeOriginCommand("all"))
-        .then(() => {
-          // useBookmarksStore().loadBookmarks()
-        })
-  }
-})
-
 watchEffect(() => {
   $q.dark.set(darkMode.value)
   localStorage.set('darkMode', darkMode.value)
@@ -500,6 +487,11 @@ watchEffect(() => {
 watchEffect(() => {
   localStorage.set('ui.fullUrls', fullUrls.value)
   sendMsg('fullUrls-changed', {value: fullUrls.value})
+})
+
+watchEffect(() => {
+  localStorage.set('ui.detailsPerTabset', detailLevelPerTabset.value)
+  sendMsg('detail-level-perTabset-changed', {level: detailLevelPerTabset.value})
 })
 
 watchEffect(() => {

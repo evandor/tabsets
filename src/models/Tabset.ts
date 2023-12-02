@@ -2,6 +2,7 @@ import {Tab} from "src/models/Tab";
 import {Group} from "src/models/Group";
 import {DynamicTabSource} from "src/models/DynamicTabSource";
 import {STRIP_CHARS_IN_USER_INPUT} from "boot/constants";
+import {ListDetailLevel} from "stores/uiStore";
 
 export enum TabsetStatus {
   DEFAULT = "DEFAULT",
@@ -41,6 +42,7 @@ export class Tabset {
   groups: Group[]
   spaces: string[] // got json problems with set<string>
   view: string = 'list'
+  details: ListDetailLevel | undefined = undefined
   sorting: string = 'custom'
   status: TabsetStatus = TabsetStatus.DEFAULT
   type: TabsetType = TabsetType.DEFAULT

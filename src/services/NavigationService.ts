@@ -192,12 +192,12 @@ class NavigationService {
         console.log("opening new window with", createData)
         // https://developer.chrome.com/articles/window-management/
         let screenlabel: string | undefined = undefined
-        if ('getScreenDetails' in window) {
-            // @ts-ignore
-            const screens = await window.getScreenDetails();
-            screenlabel = screens.currentScreen.label
-            console.log("setting screenlabel to", screenlabel)
-        }
+        // if ('getScreenDetails' in window) {
+        //     // @ts-ignore
+        //     const screens = await window.getScreenDetails();
+        //     screenlabel = screens.currentScreen.label
+        //     console.log("setting screenlabel to", screenlabel)
+        // }
 
         chrome.windows.create(createData, (window) => {
             //console.log("creating window", useWindowIdent, window)

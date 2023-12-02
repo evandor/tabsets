@@ -13,7 +13,7 @@
                                :sorting="props.sorting"
                                :show-tabsets="props.showTabsets"
                                :preventDragAndDrop="props.preventDragAndDrop"
-                               :tabsetType="props.tabsetType"
+                               :tabset="props.tabset"
                                :hide-menu="props.hideMenu"/>
 
   </q-item>
@@ -22,7 +22,7 @@
 <script setup lang="ts">
 
 import {Tab, TabSorting} from "src/models/Tab";
-import {TabsetType} from "src/models/Tabset";
+import {Tabset, TabsetType} from "src/models/Tabset";
 import {useUiStore} from "src/stores/uiStore";
 import {PropType} from "vue";
 import PanelTabListElementWidget from "components/widgets/PanelTabListElementWidget.vue";
@@ -34,7 +34,7 @@ const props = defineProps({
   hideMenu: {type: Boolean, default: false},
   sorting: {type: String as PropType<TabSorting>, default: TabSorting.CUSTOM},
   type: {type: String, default: 'sidepanel'},
-  tabsetType: {type: String, default: TabsetType.DEFAULT.toString()},
+  tabset: {type: Object as PropType<Tabset>, required: true},
   showTabsets: {type: Boolean, default: false},
   preventDragAndDrop: {type: Boolean, default: false},
 })

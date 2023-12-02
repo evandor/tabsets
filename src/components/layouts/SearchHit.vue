@@ -2,7 +2,7 @@
 
   <q-item v-ripple class="q-mb-lg">
 
-    <q-item-section v-if="useUiStore().listDetailLevelGreaterEqual(ListDetailLevel.SOME)"
+    <q-item-section v-if="useUiStore().listDetailLevelGreaterEqual(ListDetailLevel.SOME, undefined)"
                     @click.stop="NavigationService.openOrCreateTab([hit.url || '' ])"
                     class="q-mr-sm text-right" style="justify-content:start;width:25px;max-width:25px">
       <div class="bg-grey-3 q-pa-xs" style="border:0 solid grey;border-radius:3px">

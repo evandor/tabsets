@@ -14,7 +14,7 @@
                               :type="props.type"
                               :sorting="props.sorting"
                               :preventDragAndDrop="false"
-                              :tabsetType="props.tabsetType"
+                              :tabset="props.tabset"
                               :show-tabsets="props.showTabsets"
                               :hide-menu="props.hideMenu"/>
     </vue-draggable-next>
@@ -26,7 +26,7 @@
                             :type="props.type"
                             :sorting="props.sorting"
                             :preventDragAndDrop="true"
-                            :tabsetType="props.tabsetType"
+                            :tabset="props.tabset"
                             :show-tabsets="props.showTabsets"
                             :hide-menu="props.hideMenu"/>
   </q-list>
@@ -50,13 +50,12 @@ import {useTabsStore} from "stores/tabsStore";
 import {useTabsetService} from "src/services/TabsetService2";
 
 const props = defineProps({
-  tabsetId: {type: String, required: true},
   hideMenu: {type: Boolean, default: false},
   sorting: {type: String as PropType<TabSorting>, default: TabSorting.CUSTOM},
   type: {type: String, default: 'sidepanel'},
   showTabsets: {type: Boolean, default: false},
   preventDragAndDrop: {type: Boolean, default: false},
-  tabsetType: {type: String, default: TabsetType.DEFAULT.toString()},
+  tabset: {type: Object as PropType<Tabset>, required: true},
 })
 
 const tabs = ref<Tab[]>([])
@@ -76,11 +75,11 @@ const handleDragAndDrop = (event: any) => {
 }
 
 watchEffect(() => {
-  const tabset = useTabsStore().getTabset(props.tabsetId)
+  const tabset = useTabsStore().getTabset(props.tabset.id)
   if (tabset) {
     tabs.value = useTabsetService().tabsToShow(tabset)
   } else {
-    console.warn("could not determine tabset for id", props.tabsetId)
+    console.warn("could not determine tabset for id", props.tabset.id)
     tabs.value = []
   }
 })

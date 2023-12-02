@@ -9,12 +9,23 @@
       </q-card-section>
 
       <q-card-section class="q-pt-none">
-        <div class="text-body">Tabset's name:</div>
         <q-input dense v-model="newTabsetName" autofocus @keydown.enter="updateTabset()"
                  error-message="Please do not use special Characters, maximum length is 32"
                  :error="!newTabsetNameIsValid"
         />
         <div class="text-body2 text-warning">{{ newTabsetDialogWarning() }}</div>
+      </q-card-section>
+
+      <q-card-section v-if="useUiStore().showDetailsPerTabset">
+        <q-select
+            label="Tabset's Detail Level"
+            filled
+            v-model="detailOption"
+            :options="detailOptions"
+            map-options
+            emit-value
+            style="width: 250px"
+        />
       </q-card-section>
 
       <q-card-section v-if="usePermissionsStore().hasFeature(FeatureIdent.WINDOW_MANAGEMENT)">
@@ -67,7 +78,7 @@
 
 <script lang="ts" setup>
 
-import {computed, onMounted, onUnmounted, ref, watchEffect} from "vue";
+import {computed, PropType, ref, watchEffect} from "vue";
 import {useDialogPluginComponent} from "quasar";
 import {useTabsStore} from "src/stores/tabsStore";
 import {STRIP_CHARS_IN_USER_INPUT} from "boot/constants";
@@ -78,6 +89,7 @@ import ColorSelector from "components/dialogues/helper/ColorSelector.vue";
 import {usePermissionsStore} from "stores/permissionsStore";
 import {FeatureIdent} from "src/models/AppFeature";
 import {useWindowsStore} from "stores/windowsStore";
+import {ListDetailLevel, useUiStore} from "stores/uiStore";
 
 defineEmits([
   ...useDialogPluginComponent.emits
@@ -88,6 +100,7 @@ const props = defineProps({
   tabsetName: {type: String, required: true},
   tabsetColor: {type: String, required: false},
   window: {type: String, required: false},
+  details: {type: Object as PropType<ListDetailLevel>, default: ListDetailLevel.MAXIMAL},
   fromPanel: {type: Boolean, default: false}
 })
 
@@ -104,22 +117,13 @@ const windowMgtSelectionEdited = ref(false)
 const theColor = ref<string | undefined>(props.tabsetColor || undefined)
 const windowModel = ref<string>(props.window || 'current')
 const windowOptions = ref<string[]>([])
+const detailOption = ref<ListDetailLevel>(props.details)
 
-// function checkEnter(e: KeyboardEvent) {
-//   console.log("e", e.code)
-//   // if (e.code === "13") {
-//   //   windowMgtSelectionEdited.value = false
-//   // }
-// }
-//
-//
-// onMounted(() => {
-//   window.addEventListener('keypress', checkEnter);
-// })
-//
-// onUnmounted(() => {
-//   window.removeEventListener('keypress', checkEnter);
-// })
+const detailOptions = [
+    {label: 'Minimal Details', value: ListDetailLevel.MINIMAL},
+    {label: 'Some Details', value: ListDetailLevel.SOME},
+    {label: 'All Details', value: ListDetailLevel.MAXIMAL},
+]
 
 watchEffect(() => {
   newTabsetNameExists.value = !!tabsStore.nameExistsInContextTabset(newTabsetName.value);
@@ -145,7 +149,7 @@ watchEffect(() => {
 
 const updateTabset = () =>
     useCommandExecutor().executeFromUi(
-        new RenameTabsetCommand(props.tabsetId, newTabsetName.value, theColor.value, windowModel.value))
+        new RenameTabsetCommand(props.tabsetId, newTabsetName.value, theColor.value, windowModel.value, detailOption.value))
 
 const newTabsetDialogWarning = () => {
   return (!hideWarning.value && newTabsetName.value !== props.tabsetName && tabsStore.nameExistsInContextTabset(newTabsetName.value)) ?
@@ -162,7 +166,9 @@ const disableSubmit = () => {
   return newTabsetName.value.trim().length === 0 ||
       (newTabsetName.value.trim() === props.tabsetName &&
           windowModel.value?.trim() === props.window &&
-          theColor.value?.trim() === props.tabsetColor)
+          theColor.value?.trim() === props.tabsetColor &&
+          detailOption.value === props.details
+      )
       || newTabsetDialogWarning() !== ''
 }
 

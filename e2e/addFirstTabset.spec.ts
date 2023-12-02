@@ -38,7 +38,7 @@ export const test = base.extend<{
 
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
 
-test("add the first tabset", async ({page, extensionId,context}) => {
+test("add the first tabset", async ({page, extensionId, context}) => {
     // test.use({ viewport: { width: 600, height: 900 } });
     const welcomePage = new SidePanelWelcomePageDefinition(page, extensionId);
     await welcomePage.goto()
@@ -57,7 +57,7 @@ test("add the first tabset", async ({page, extensionId,context}) => {
 
 });
 
-test("add tabset with tab", async ({page, extensionId,context}) => {
+test("add tabset with tab", async ({page, extensionId, context}) => {
     // test.use({ viewport: { width: 600, height: 900 } });
     const welcomePage = new SidePanelWelcomePageDefinition(page, extensionId);
     await welcomePage.goto()

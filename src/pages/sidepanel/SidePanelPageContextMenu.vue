@@ -193,11 +193,13 @@ const startTabsetNote = (tabset: Tabset) => {
 const openEditTabsetDialog = (tabset: Tabset) => {
   $q.dialog({
     component: EditTabsetDialog,
+    //TODO switch to tabset: tabset?
     componentProps: {
       tabsetId: tabset.id,
       tabsetName: tabset.name,
       tabsetColor: tabset.color,
       window: tabset.window,
+      details: tabset.details || useUiStore().listDetailLevel,
       fromPanel: true
     }
   })

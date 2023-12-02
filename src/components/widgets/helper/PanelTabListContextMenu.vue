@@ -22,7 +22,7 @@
         </q-item-section>
       </q-item>
 
-      <template v-if="props.tabsetType.toString() !== TabsetType.DYNAMIC.toString()">
+      <template v-if="props.tabset?.type.toString() !== TabsetType.DYNAMIC.toString()">
         <q-item clickable
                 v-close-popup @click.stop="editNoteDialog(props['tab' as keyof object])">
           <q-item-section style="padding-right:0;min-width:25px;max-width: 25px;">
@@ -111,7 +111,7 @@ import {useRouter} from "vue-router";
 import {useSettingsStore} from "stores/settingsStore";
 import {CopyToClipboardCommand} from "src/domain/commands/CopyToClipboard";
 import NavigationService from "src/services/NavigationService";
-import {TabsetType} from "src/models/Tabset";
+import {Tabset, TabsetType} from "src/models/Tabset";
 import {usePermissionsStore} from "stores/permissionsStore";
 import {FeatureIdent} from "src/models/AppFeature";
 import {useBookmarksStore} from "stores/bookmarksStore";
@@ -124,7 +124,7 @@ import MonitoringDialog from "components/dialogues/MonitoringDialog.vue";
 
 const props = defineProps({
   tab: {type: Object as PropType<Tab>, required: true},
-  tabsetType: {type: String, default: TabsetType.DEFAULT.toString()}
+  tabset: {type: Object as PropType<Tabset>, required: true}
 })
 
 const emit = defineEmits(['toggleExpand']);
@@ -190,9 +190,6 @@ const showTabDetails = async (tab: Tab) => {
   console.log("showing tab details for", useTab)
   router.push("/sidepanel/tab/" + useTab.id)
 }
-
-const copyToClipboard = (tab: Tab) =>
-    useCommandExecutor().executeFromUi(new CopyToClipboardCommand(tab.url || 'unknown'))
 
 const showTabDetailsMenuEntry = (tab: Tab) =>
     useSettingsStore().isEnabled('dev')
