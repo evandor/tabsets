@@ -62,7 +62,8 @@
                     name="o_bookmark_add"
                     :class="alreadyInTabset() ? '':'cursor-pointer'"
                     :color="alreadyInTabset() ? 'grey-5': tsBadges.length > 0 ? 'accent':'warning'"
-                    size="xs">
+                    size="xs"
+                    data-testid="saveInTabsetBtn">
                 </q-icon>
                 <span
                     v-if="!alreadyInTabset() && showAddTabButton(tabset as Tabset, currentChromeTab) && tsBadges.length > 0"

@@ -519,7 +519,7 @@ export function useTabsetService() {
     }
 
     const getBlob = (blobId: string): Promise<any> => {
-        return db.getBlob(blobId)
+        return Promise.reject("not implemented")//db.getBlob(blobId)
     }
 
     const saveRequestFor = (url: string, requestInfo: RequestInfo) => {
