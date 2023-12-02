@@ -280,7 +280,7 @@ export function useTabsetService() {
                 tabset.type = TabsetType.DEFAULT
             }
             const additionalInfo = _.map(tabset.tabs, t => t.monitor)
-            console.log(`saving tabset '${tabset.name}' with ${tabset.tabs.length} tab(s)`, additionalInfo)
+            console.log(`saving tabset '${tabset.name}' with ${tabset.tabs.length} tab(s)`)//, additionalInfo)
             return db.saveTabset(tabset)
         }
         return Promise.reject("tabset id not set")

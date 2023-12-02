@@ -1,5 +1,5 @@
 import {defineStore} from 'pinia';
-import {computed, ref, watch} from "vue";
+import {computed, ref, watch, watchEffect} from "vue";
 import {useRoute, useRouter} from "vue-router";
 import {Tab} from "src/models/Tab";
 import _ from "lodash"
@@ -150,6 +150,7 @@ export const useUiStore = defineStore('ui', () => {
 
     const listDetailLevel = ref<ListDetailLevel>(LocalStorage.getItem('ui.detailLevel') || ListDetailLevel.MAXIMAL)
     const showFullUrls = ref<boolean>(LocalStorage.getItem('ui.fullUrls') || false)
+    const showDetailsPerTabset = ref<boolean>(LocalStorage.getItem('ui.detailsPerTabset') || false)
 
     // info Messages
     const hiddenMessages = ref<string[]>(LocalStorage.getItem('ui.hiddenInfoMessages') as unknown as string[] || [])
@@ -181,6 +182,7 @@ export const useUiStore = defineStore('ui', () => {
 
     const toolbarFilter = ref(false)
     const toolbarFilterTerm = ref('')
+    const detailsPerTabset = ref(false)
 
     watch(rightDrawer.value, (val: Object) => {
         LocalStorage.set("ui.rightDrawer", val)
@@ -291,8 +293,13 @@ export const useUiStore = defineStore('ui', () => {
     }
 
     const listDetailLevelGreaterEqual = computed(() => {
-        return (level: ListDetailLevel) => {
-            switch (listDetailLevel.value) {
+        return (level: ListDetailLevel, tabsetDetail: ListDetailLevel | undefined) => {
+            let useLevel = tabsetDetail ? tabsetDetail : listDetailLevel.value
+            if (!useUiStore().showDetailsPerTabset) {
+                useLevel = listDetailLevel.value
+            }
+            console.log("useLevel", useLevel)
+            switch (useLevel) {
                 case ListDetailLevel.MAXIMAL:
                     return true
                 case ListDetailLevel.SOME:
@@ -479,6 +486,7 @@ export const useUiStore = defineStore('ui', () => {
         createErrorToast,
         delayedToastRemoval,
         callUndoActionFromCurrentToast,
-        getButtonSize
+        getButtonSize,
+        showDetailsPerTabset
     }
 })

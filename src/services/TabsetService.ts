@@ -13,6 +13,7 @@ import {useSpacesStore} from "stores/spacesStore";
 import {FirebaseCall} from "src/services/firebase/FirebaseCall";
 import PlaceholderUtils from "src/utils/PlaceholderUtils";
 import {Monitor, MonitoringType} from "src/models/Monitor";
+import {ListDetailLevel} from "stores/uiStore";
 
 const {getTabset, getCurrentTabset, saveTabset, saveCurrentTabset, tabsetsFor, addToTabset} = useTabsetService()
 
@@ -427,7 +428,7 @@ class TabsetService {
    * @param tabsetId
    * @param tabsetName
    */
-  rename(tabsetId: string, tabsetName: string,newColor: string | undefined, window: string = 'current'): Promise<object> {
+  rename(tabsetId: string, tabsetName: string,newColor: string | undefined, window: string = 'current', details: ListDetailLevel): Promise<object> {
     const trustedName = tabsetName.replace(STRIP_CHARS_IN_USER_INPUT, '')
     let trustedColor = newColor ? newColor.replace(STRIP_CHARS_IN_COLOR_INPUT, '') : undefined
     trustedColor = trustedColor && trustedColor.length > 20 ?
@@ -441,6 +442,7 @@ class TabsetService {
       tabset.name = trustedName
       tabset.color = trustedColor
       tabset.window = window
+      tabset.details = details
       console.log("saving tabset", tabset)
       return saveTabset(tabset)
         .then(() => Promise.resolve({

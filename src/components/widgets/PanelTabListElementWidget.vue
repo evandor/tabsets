@@ -1,7 +1,7 @@
 <template>
 
   <!-- left part: icon plus various -->
-  <q-item-section v-if="useUiStore().listDetailLevelGreaterEqual(ListDetailLevel.SOME)"
+  <q-item-section v-if="useUiStore().listDetailLevelGreaterEqual(ListDetailLevel.SOME, props.tabset.details)"
                   @mouseover="hoveredTab = tab.id"
                   @mouseleave="hoveredTab = undefined"
                   class="q-mr-sm text-right" style="justify-content:start;width:25px;max-width:25px">
@@ -64,7 +64,7 @@
 
     <!-- === description === -->
     <q-item-label class="ellipsis-2-lines text-grey-8"
-                  v-if="useUiStore().listDetailLevelGreaterEqual(ListDetailLevel.MAXIMAL)"
+                  v-if="useUiStore().listDetailLevelGreaterEqual(ListDetailLevel.MAXIMAL,props.tabset.details)"
                   @click.stop="gotoTab()">
       {{ props.tab.description }}
     </q-item-label>
@@ -119,7 +119,7 @@
               <q-icon color="primary" size="16px"/>
             </span>
           <PanelTabListContextMenu
-              :tabsetType="props.tabsetType"
+              :tabset="props.tabset"
               :tab="tab" v-if="!props.hideMenu"/>
 
         </div>
@@ -137,7 +137,7 @@
       <div class="row q-ma-none" @click="gotoTab()">
         <div class="col-12 q-pr-lg q-mt-none q-pt-none cursor-pointer">
           <div class="text-caption text-grey-5 ellipsis"
-               v-if="useUiStore().listDetailLevelGreaterEqual(ListDetailLevel.SOME)">
+               v-if="useUiStore().listDetailLevelGreaterEqual(ListDetailLevel.SOME, props.tabset.details)">
 
             <span v-if="props.sorting === TabSorting.AGE">
               <q-icon name="arrow_right" size="16px"/>
@@ -207,7 +207,7 @@
     </q-item-label>
 
     <!-- === note === -->
-    <q-item-label v-if="useUiStore().listDetailLevelGreaterEqual(ListDetailLevel.MAXIMAL) &&
+    <q-item-label v-if="useUiStore().listDetailLevelGreaterEqual(ListDetailLevel.MAXIMAL, props.tabset.details) &&
       props['tab' as keyof object]['note']"
                   class="text-grey-10" text-subtitle1>
       <q-icon color="blue-10" name="edit_note"/>
@@ -243,7 +243,7 @@ import {useTabsStore} from "src/stores/tabsStore";
 import PanelTabListContextMenu from "components/widgets/helper/PanelTabListContextMenu.vue";
 import _ from "lodash";
 import {formatDistance} from "date-fns";
-import {TabsetType} from "src/models/Tabset";
+import {Tabset, TabsetType} from "src/models/Tabset";
 import {usePermissionsStore} from "stores/permissionsStore";
 import {FeatureIdent} from "src/models/AppFeature";
 import {useUtils} from "src/services/Utils";
@@ -257,6 +257,7 @@ import MonitoringDialog from "components/dialogues/MonitoringDialog.vue";
 import {useSuggestionsStore} from "stores/suggestionsStore";
 import {Suggestion, SuggestionState} from "src/models/Suggestion";
 import PdfService from "src/services/PdfService";
+import {SavedBlob} from "src/models/SavedBlob";
 
 const {inBexMode, isCurrentTab} = useUtils()
 
@@ -268,7 +269,7 @@ const props = defineProps({
   sorting: {type: String as PropType<TabSorting>, default: TabSorting.CUSTOM},
   showTabsets: {type: Boolean, default: false},
   preventDragAndDrop: {type: Boolean, default: false},
-  tabsetType: {type: String, default: TabsetType.DEFAULT.toString()}
+  tabset: {type: Object as PropType<Tabset>, required: true}
 })
 
 const $q = useQuasar()
@@ -276,7 +277,7 @@ const cnt = ref(0)
 const router = useRouter()
 
 const showButtonsProp = ref<boolean>(false)
-const imgFromBlob = ref<string>("")
+//const imgFromBlob = ref<string>("")
 const hoveredTab = ref<string | undefined>(undefined)
 const tsBadges = ref<object[]>([])
 const newState = ref(false)
@@ -296,21 +297,21 @@ onMounted(() => {
     }
     setTimeout(() => newState.value = false, 2000)
   }
-  const blobImgPath = props.tab.image
-  if (blobImgPath && blobImgPath.startsWith('blob://')) {
-    useTabsetService().getBlob(blobImgPath.replace("blob://", ""))
-        .then((res) => {
-          let reader = new FileReader();
-          reader.readAsDataURL(res.content);
-          reader.onloadend = function () {
-            const base64data = reader.result;
-            if (base64data) {
-              imgFromBlob.value = base64data.toString()
-            }
-          }
-        })
-        .catch((err) => console.error(err))
-  }
+  // const blobImgPath = props.tab.image
+  // if (blobImgPath && blobImgPath.startsWith('blob://')) {
+  //   useTabsetService().getBlob(blobImgPath.replace("blob://", ""))
+  //       .then((res) => {
+  //         let reader = new FileReader();
+  //         reader.readAsDataURL(res.content);
+  //         reader.onloadend = function () {
+  //           const base64data = reader.result;
+  //           if (base64data) {
+  //             imgFromBlob.value = base64data.toString()
+  //           }
+  //         }
+  //       })
+  //       .catch((err) => console.error(err))
+  // }
 })
 
 watchEffect(() => {

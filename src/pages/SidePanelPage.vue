@@ -96,8 +96,8 @@
 
             <SidePanelPageTabList
                 v-if="tabsetExpanded.get(tabset.id)"
-                :tabsetType="tabset.type"
-                :tabsetId="tabset.id"/>
+                :tabset="tabset as Tabset"
+            />
 
           </div>
         </q-expansion-item>
@@ -161,7 +161,6 @@ import {useBookmarksStore} from "stores/bookmarksStore";
 import {useSuggestionsStore} from "stores/suggestionsStore";
 import SidePanelPageTabList from "components/layouts/SidePanelPageTabList.vue";
 import {AddTabToTabsetCommand} from "src/domain/tabs/AddTabToTabset";
-import {TabAndTabsetId} from "src/models/TabAndTabsetId";
 
 const {setVerticalScrollPosition} = scroll
 
@@ -454,6 +453,9 @@ if ($q.platform.is.chrome) {
       } else if (message.name === "detail-level-changed") {
         console.log("setting list detail level to ", message.data.level)
         useUiStore().setListDetailLevel(message.data.level)
+      } else if (message.name === "detail-level-perTabset-changed") {
+        console.log("setting list detail perTabset level to ", message.data.level)
+        useUiStore().showDetailsPerTabset = message.data.level
       } else if (message.name === "fullUrls-changed") {
         console.log("setting fullUrls to ", message.data.value)
         useUiStore().setShowFullUrls(message.data.value)

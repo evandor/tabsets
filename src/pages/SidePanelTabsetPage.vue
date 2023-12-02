@@ -5,11 +5,10 @@
 
       <SidePanelPageTabList
           v-if="tabset"
-          :tabsetType="tabset.type"
           :sorting="sorting"
           :show-tabsets="true"
           :preventDragAndDrop="preventDragAndDrop(sorting)"
-          :tabsetId="tabset.id"/>
+          :tabset="tabset as Tabset"/>
 
     </div>
 

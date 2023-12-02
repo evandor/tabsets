@@ -50,12 +50,18 @@
 
       <div class="row items-baseline q-ma-md">
         <div class="col-3">
-          Tab Info Detail Level
+          Tab Info Detail Level {{detailLevelPerTabset ? ' (Default)' : ''}}
         </div>
         <div class="col-9">
           <q-radio v-model="detailLevel" :val="ListDetailLevel.MINIMAL" label="Minimal Details"/>
           <q-radio v-model="detailLevel" :val="ListDetailLevel.SOME" label="Some Details"/>
           <q-radio v-model="detailLevel" :val="ListDetailLevel.MAXIMAL" label="All Details"/>
+        </div>
+        <div class="col-3">
+
+        </div>
+        <div class="col-9">
+          <q-checkbox v-model="detailLevelPerTabset" label="Adjust individually per tabset"/>
         </div>
       </div>
 
@@ -420,6 +426,7 @@ const pageCapturePermissionGranted = ref<boolean | undefined>(usePermissionsStor
 const allUrlsOriginGranted = ref<boolean | undefined>(usePermissionsStore().hasAllOrigins())
 const tab = ref('appearance')
 const fullUrls = ref(localStorage.getItem('ui.fullUrls') || false)
+const detailLevelPerTabset = ref(localStorage.getItem('ui.detailsPerTabset') || false)
 
 const {handleError} = useNotificationHandler()
 
@@ -480,6 +487,11 @@ watchEffect(() => {
 watchEffect(() => {
   localStorage.set('ui.fullUrls', fullUrls.value)
   sendMsg('fullUrls-changed', {value: fullUrls.value})
+})
+
+watchEffect(() => {
+  localStorage.set('ui.detailsPerTabset', detailLevelPerTabset.value)
+  sendMsg('detail-level-perTabset-changed', {level: detailLevelPerTabset.value})
 })
 
 watchEffect(() => {
