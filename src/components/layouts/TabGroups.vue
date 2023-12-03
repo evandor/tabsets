@@ -92,6 +92,7 @@
                                     :showIsOpened="false"
                                     :key="props.group + '__' + tab.id"
                                     :tab="tabAsTab(tab)"
+                                    :tabsetId="props.tabsetId"
                                     :highlightUrl="highlightUrl"/>
 
             </q-item>
@@ -135,18 +136,10 @@ const tabsStore = useTabsStore()
 const {saveCurrentTabset} = useTabsetService()
 
 const props = defineProps({
-  tabs: {
-    type: Array as PropType<Array<Tab>>,
-    required: true
-  },
-  group: {
-    type: String,
-    required: true
-  },
-  highlightUrl: {
-    type: String,
-    required: false
-  }
+  tabs: {type: Array as PropType<Array<Tab>>, required: true},
+  tabsetId: {type: String, required: true},
+  group: {type: String, required: true},
+  highlightUrl: {type: String, required: false}
 })
 
 const tabsetGroups = ref<Group[]>(tabsStore.getCurrentTabset?.groups || [])

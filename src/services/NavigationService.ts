@@ -1,4 +1,3 @@
-import {HTMLSelection} from "src/models/Tab";
 import {useNotificationsStore} from "src/stores/notificationsStore";
 import {openURL} from "quasar";
 import {useTabsStore} from "src/stores/tabsStore";
@@ -11,102 +10,112 @@ import {FeatureIdent} from "src/models/AppFeature";
 
 class NavigationService {
 
-    async openOrCreateTab(
-        withUrl: string,
-        matcher: string | undefined = undefined,
-        group: string | undefined = undefined
-    ) {
-        const useWindowIdent = useTabsStore().getCurrentTabset?.window || 'current'
-        console.log(`opening url ${withUrl} in window ${useWindowIdent}, group: ${group}, mode: ${process.env.MODE}`)
+    placeholderPattern = /\${[^}]*}/gm
 
+    async openOrCreateTab(
+        withUrls: string[],
+        matcher: string | undefined = undefined,
+        groups: string[] = [],
+        forceCurrent: boolean = false
+    ) {
+        withUrls.map(u => u.replace(this.placeholderPattern, ""));
+        const useWindowIdent = forceCurrent ?
+            'current' :
+            usePermissionsStore().hasFeature(FeatureIdent.WINDOW_MANAGEMENT) ?
+                useTabsStore().getCurrentTabset?.window || 'current' :
+                'current'
+        console.log(` > opening url ${withUrls} in window: '${useWindowIdent}', groups: '${groups}', mode: '${process.env.MODE}'`)
+
+        const windowFromDb = await useWindowsStore().windowFor(useWindowIdent)
         const existingWindow = await useWindowsStore().currentWindowFor(useWindowIdent)
+
         if (useWindowIdent !== 'current') {
-            console.log("existingWindow", existingWindow)
+            //console.log("existingWindow", existingWindow)
             if (!existingWindow) {
-                const createData: any = {url: withUrl}
-                const windowFromDb = await useWindowsStore().windowFor(useWindowIdent)
+
+                const createData: any = {url: withUrls}
                 if (windowFromDb) {
                     const w = windowFromDb.browserWindow
-                    createData['left' as keyof object] = (w.left || 0) < 0 ? 0 : w.left
-                    createData['top' as keyof object] = (w.top || 0) < 0 ? 0 : w.top
-                    createData['width' as keyof object] = (w.left || -1) < 0 ? 600 : w.width
-                    createData['height' as keyof object] = (w.top || -1) < 0 ? 400 : w.height
+                    createData['left' as keyof object] = w.left//(w.left || 0) < 0 ? 0 : w.left
+                    createData['top' as keyof object] = w.top//(w.top || 0) < 0 ? 0 : w.top
+                    createData['width' as keyof object] = w.width//(w.width || -1) < 0 ? 600 : w.width
+                    createData['height' as keyof object] = w.height//(w.top || -1) < 0 ? 400 : w.height
+                    // window does not exist anymore, remove from 'allWindows'
+                    await useWindowsStore().removeWindow(windowFromDb.id)
                 }
-                // create a new window with a single url
-                console.log("opening new window with", createData)
-                chrome.windows.create(createData, (window) => {
-                    console.log("window", window)
-                    if (window) {
-                        useWindowsStore().assignWindow(useWindowIdent, window.id || 0)
-                        //useWindowsStore().renameWindow(window.id || 0, useWindowIdent)
-                        useWindowsStore().upsertWindow(window, useWindowIdent)
-                        if (window.id && window.tabs && window.tabs.length > 0) {
-                            this.handleGroup(group, window.id, window.tabs[0]);
-                        }
-                    }
-                })
+
+                await this.createNewWindow(createData, useWindowIdent, withUrls, groups)
+
                 return
             }
         }
 
         if (process.env.MODE === "bex") {
-            // get all tabs with this url
-            const tabsForUrl = useTabsStore().tabsForUrl(withUrl) || []
-            tabsForUrl.forEach(t => {
-                if (t.httpInfo) {
-                    t.httpError = ''
-                    t.httpInfo = ''
+            for (const url of withUrls) {
+                // get all tabs with this url
+                const tabsForUrl = useTabsStore().tabsForUrl(url) || []
+                tabsForUrl.forEach(t => {
+                    if (t.httpInfo) {
+                        t.httpError = ''
+                        t.httpInfo = ''
 
-                    const ts = useTabsStore().tabsetFor(t.id)
-                    if (ts) {
-                        //console.log("saving tabset ", ts)
-                        useTabsetService().saveTabset(ts)
+                        const ts = useTabsStore().tabsetFor(t.id)
+                        if (ts) {
+                            //console.log("saving tabset ", ts)
+                            useTabsetService().saveTabset(ts)
+                        }
                     }
-                }
-            })
+                })
+            }
 
-            const useWindowId = existingWindow || chrome.windows.WINDOW_ID_CURRENT
+            const useWindowId = existingWindow?.id || chrome.windows.WINDOW_ID_CURRENT
             const queryInfo = {windowId: useWindowId}
-            console.log("using query info ", queryInfo)
+
+            // getting all tabs from this window
             chrome.tabs.query(queryInfo, (t: chrome.tabs.Tab[]) => {
-                let found = false;
-                t.filter(r => r.url)
-                    .map(r => {
-                        let matchCondition = withUrl === r.url
-                        if (matcher && r.url) {
-                            //console.log("matcher yielded", JsUtils.match(matcher, r.url))
-                            matchCondition = JsUtils.match(matcher, r.url)
-                        }
-                        if (matchCondition) {
-                            if (!found) { // highlight only first hit
-                                found = true
-                                console.log("found something", r)
-                                chrome.tabs.highlight({tabs: r.index, windowId: useWindowId});
-                                chrome.windows.update(useWindowId, {focused: true})
-
-                                this.handleGroup(group, useWindowId, r);
-
+                const ctx = this
+                withUrls.forEach(function (url, i) {
+                    let found = false;
+                    t.filter(r => r.url)
+                        .map(r => {
+                            let matchCondition = url === r.url
+                            if (matcher && r.url) {
+                                //console.log("matcher yielded", JsUtils.match(matcher, r.url))
+                                matchCondition = JsUtils.match(matcher, r.url)
                             }
-                        }
-                    });
-                if (!found) {
-                    console.log("tab not found, creating new one")
-                    chrome.tabs.create({
-                        active: true,
-                        pinned: false,
-                        url: withUrl,
-                        windowId: useWindowId
-                    }, (tab: chrome.tabs.Tab) => {
-                        chrome.windows.update(useWindowId, {focused: true})
+                            if (matchCondition) {
+                                if (!found) { // highlight only first hit
+                                    found = true
+                                    console.debug("found something", r)
+                                    chrome.tabs.highlight({tabs: r.index, windowId: useWindowId});
+                                    chrome.windows.update(useWindowId, {focused: true})
 
-                        this.handleGroup(group, useWindowId, tab);
+                                    if (groups.length > i) {
+                                        ctx.handleGroup(groups[i], useWindowId, r);
+                                    }
+                                }
+                            }
+                        });
+                    if (!found) {
+                        console.debug("tab not found, creating new one:", url)
+                        chrome.tabs.create({
+                            active: true,
+                            pinned: false,
+                            url: url,
+                            windowId: useWindowId
+                        }, (tab: chrome.tabs.Tab) => {
+                            chrome.windows.update(useWindowId, {focused: true})
 
-                    })
+                            if (groups.length > i) {
+                                ctx.handleGroup(groups[i], useWindowId, tab);
+                            }
+                        })
 
-                }
+                    }
+                })
             })
         } else {
-            openURL(withUrl)//, undefined, {target: "_ts"}) - does not work
+            openURL(withUrls[0])
         }
     }
 
@@ -166,7 +175,7 @@ class NavigationService {
         this.openTab(tabId)
             .catch((err) => {
                 useTabsStore().chromeTabsHistoryNavigating = false
-                this.openOrCreateTab(url)
+                this.openOrCreateTab([url])
             })
     }
 
@@ -175,8 +184,50 @@ class NavigationService {
         this.openTab(tabId)
             .catch((err) => {
                 useTabsStore().chromeTabsHistoryNavigating = false
-                this.openOrCreateTab(url)
+                this.openOrCreateTab([url])
             })
+    }
+
+    private async createNewWindow(createData: any, useWindowIdent: string, withUrls: string[], groups: string[]) {
+        console.log("opening new window with", createData)
+        // https://developer.chrome.com/articles/window-management/
+        let screenlabel: string | undefined = undefined
+        // if ('getScreenDetails' in window) {
+        //     // @ts-ignore
+        //     const screens = await window.getScreenDetails();
+        //     screenlabel = screens.currentScreen.label
+        //     console.log("setting screenlabel to", screenlabel)
+        // }
+
+        chrome.windows.create(createData, (window) => {
+            //console.log("creating window", useWindowIdent, window)
+            if (chrome.runtime.lastError) {
+                // probably out of bounds issues
+                chrome.windows.create({}, (window) => {
+                    if (window) {
+                        this.createWindow(useWindowIdent, window, screenlabel, withUrls, groups);
+                    }
+                })
+            } else if (window) {
+                this.createWindow(useWindowIdent, window, screenlabel, withUrls, groups);
+            }
+        })
+
+    }
+
+    private createWindow(useWindowIdent: string, window: chrome.windows.Window, screenlabel: string | undefined, withUrls: string[], groups: string[]) {
+        useWindowsStore().assignWindow(useWindowIdent, window.id || 0)
+        useWindowsStore().upsertWindow(window, useWindowIdent, screenlabel)
+        const ctx = this
+        withUrls.forEach(function (url, i) {
+            if (groups.length > i) {
+                const group = groups[i]
+                if (group && window.id && window.tabs && window.tabs.length > i) {
+                    console.log("assiging group", group, i)
+                    ctx.handleGroup(group, window.id, window.tabs[i]);
+                }
+            }
+        })
     }
 }
 

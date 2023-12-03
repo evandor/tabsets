@@ -5,7 +5,8 @@ export class Window {
   constructor(
       public id: number,
       public browserWindow: chrome.windows.Window,
-      public title: string | undefined = undefined) {
+      public title: string | undefined = undefined,
+      public screenLabel: string | undefined = undefined) {
     this.created = new Date().getTime()
   }
 

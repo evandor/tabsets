@@ -50,12 +50,18 @@
 
       <div class="row items-baseline q-ma-md">
         <div class="col-3">
-          Tab Info Detail Level
+          Tab Info Detail Level {{detailLevelPerTabset ? ' (Default)' : ''}}
         </div>
         <div class="col-9">
           <q-radio v-model="detailLevel" :val="ListDetailLevel.MINIMAL" label="Minimal Details"/>
           <q-radio v-model="detailLevel" :val="ListDetailLevel.SOME" label="Some Details"/>
           <q-radio v-model="detailLevel" :val="ListDetailLevel.MAXIMAL" label="All Details"/>
+        </div>
+        <div class="col-3">
+
+        </div>
+        <div class="col-9">
+          <q-checkbox v-model="detailLevelPerTabset" label="Adjust individually per tabset"/>
         </div>
       </div>
 
@@ -135,6 +141,18 @@
         </div>
       </div>
 
+      <div class="row items-baseline q-ma-md" v-if="devEnabled">
+        <div class="col-3">
+          New Suggestion Simulation
+        </div>
+        <div class="col-3">
+          Simulate that there is a new suggestion to use a (new) feature (refresh sidebar for effects)
+        </div>
+        <div class="col q-ma-xl">
+          <span class="text-blue cursor-pointer" @click="simulateStaticSuggestion()">Simulate</span>
+        </div>
+      </div>
+
     </div>
 
   </div>
@@ -202,14 +220,14 @@
         notifiy you about changes.
       </q-banner>
 
-<!--      <div class="row q-pa-md" v-for="tabset in ignoredUrls()">-->
-<!--        <div class="col-3"><b>{{ tabset.url }}</b></div>-->
-<!--        <div class="col-3"></div>-->
-<!--        <div class="col-1"></div>-->
-<!--        <div class="col-5">-->
-<!--          &lt;!&ndash;          <q-btn label="Un-Archive" @click="unarchive(tabset)"/>&ndash;&gt;-->
-<!--        </div>-->
-<!--      </div>-->
+      <!--      <div class="row q-pa-md" v-for="tabset in ignoredUrls()">-->
+      <!--        <div class="col-3"><b>{{ tabset.url }}</b></div>-->
+      <!--        <div class="col-3"></div>-->
+      <!--        <div class="col-1"></div>-->
+      <!--        <div class="col-5">-->
+      <!--          &lt;!&ndash;          <q-btn label="Un-Archive" @click="unarchive(tabset)"/>&ndash;&gt;-->
+      <!--        </div>-->
+      <!--      </div>-->
     </div>
 
   </div>
@@ -371,24 +389,22 @@ import {usePermissionsStore} from "src/stores/permissionsStore";
 import {GrantPermissionCommand} from "src/domain/commands/GrantPermissionCommand";
 import {ExecutionResult} from "src/domain/ExecutionResult";
 import {RevokePermissionCommand} from "src/domain/commands/RevokePermissionCommand";
-import {GrantOriginCommand} from "src/domain/commands/GrantOriginCommand";
-import {RevokeOriginCommand} from "src/domain/commands/RevokeOriginCommand";
 import {FeatureIdent} from "src/models/AppFeature";
 import {useSettingsStore} from "src/stores/settingsStore"
-import {useLogsStore} from "../stores/logsStore";
 import OpenRightDrawerWidget from "components/widgets/OpenRightDrawerWidget.vue";
 import {useUtils} from "src/services/Utils";
 import Analytics from "src/utils/google-analytics";
 import {useGroupsStore} from "../stores/groupsStore";
+import {useSuggestionsStore} from "stores/suggestionsStore";
+import {StaticSuggestionIdent, Suggestion} from "src/models/Suggestion";
 
-const {inBexMode, sendMsg} = useUtils()
+const {sendMsg} = useUtils()
 
 const tabsStore = useTabsStore()
 const featuresStore = useSettingsStore()
 const searchStore = useSearchStore()
 const settingsStore = useSettingsStore()
 
-const router = useRouter()
 const localStorage = useQuasar().localStorage
 const $q = useQuasar()
 
@@ -410,6 +426,7 @@ const pageCapturePermissionGranted = ref<boolean | undefined>(usePermissionsStor
 const allUrlsOriginGranted = ref<boolean | undefined>(usePermissionsStore().hasAllOrigins())
 const tab = ref('appearance')
 const fullUrls = ref(localStorage.getItem('ui.fullUrls') || false)
+const detailLevelPerTabset = ref(localStorage.getItem('ui.detailsPerTabset') || false)
 
 const {handleError} = useNotificationHandler()
 
@@ -417,6 +434,7 @@ onMounted(() => {
   Analytics.firePageViewEvent('SettingsPage', document.location.href);
 })
 
+let suggestionsCounter = 0
 
 watchEffect(() => permissionsList.value = usePermissionsStore().permissions?.permissions || [])
 
@@ -456,23 +474,6 @@ watch(() => pageCapturePermissionGranted.value, (newValue, oldValue) => {
   }
 })
 
-watch(() => allUrlsOriginGranted.value, (newValue, oldValue) => {
-  if (newValue === oldValue) {
-    return
-  }
-  if (allUrlsOriginGranted.value && !usePermissionsStore().hasAllOrigins()) {
-    useCommandExecutor()
-        .executeFromUi(new GrantOriginCommand("none"))
-        .then((res: ExecutionResult<boolean>) => allUrlsOriginGranted.value = res.result)
-  } else if (!allUrlsOriginGranted.value) {
-    useCommandExecutor()
-        .executeFromUi(new RevokeOriginCommand("all"))
-        .then(() => {
-          // useBookmarksStore().loadBookmarks()
-        })
-  }
-})
-
 watchEffect(() => {
   $q.dark.set(darkMode.value)
   localStorage.set('darkMode', darkMode.value)
@@ -486,6 +487,11 @@ watchEffect(() => {
 watchEffect(() => {
   localStorage.set('ui.fullUrls', fullUrls.value)
   sendMsg('fullUrls-changed', {value: fullUrls.value})
+})
+
+watchEffect(() => {
+  localStorage.set('ui.detailsPerTabset', detailLevelPerTabset.value)
+  sendMsg('detail-level-perTabset-changed', {level: detailLevelPerTabset.value})
 })
 
 watchEffect(() => {
@@ -526,6 +532,15 @@ const restoreHints = () => useUiStore().restoreHints()
 
 const showExportDialog = () => $q.dialog({component: ExportDialog, componentProps: {inSidePanel: true}})
 const showImportDialog = () => $q.dialog({component: ImportDialog, componentProps: {inSidePanel: true}})
+
+const simulateStaticSuggestion = () => {
+  const suggestions: [Suggestion] = [
+    // @ts-ignore
+    Suggestion.getStaticSuggestion(StaticSuggestionIdent.TRY_SPACES_FEATURE),
+    Suggestion.getStaticSuggestion(StaticSuggestionIdent.TRY_BOOKMARKS_FEATURE)
+  ]
+  useSuggestionsStore().addSuggestion(suggestions[suggestionsCounter++ % 2])
+}
 
 </script>
 

@@ -36,7 +36,7 @@
 
       <div class="col-12">
         <div class="text-overline ellipsis text-blue-10 cursor-pointer"
-             @click.stop="NavigationService.openOrCreateTab(tab.url )">
+             @click.stop="NavigationService.openOrCreateTab([tab.url] )">
           {{ tab?.url }}&nbsp;<q-icon name="launch" color="secondary"
                                       class="cursor-pointer"></q-icon>
         </div>
@@ -108,16 +108,41 @@
         <!--          <q-tooltip>Schedule this tab</q-tooltip>-->
         <!--        </q-btn>-->
 
-        <q-btn v-if="usePermissionsStore().hasPermission('pageCapture') &&
-                    usePermissionsStore().hasFeature(FeatureIdent.SAVE_TAB)"
-               @click.stop="saveTab(tab)"
-               flat round color="primary" size="11px" icon="save"
-               :disabled="!isOpen(tab)">
-          <q-tooltip v-if="isOpen(tab)">Save this tab</q-tooltip>
-          <q-tooltip v-else>The tab must be open if you want to save it. Click on the link and come back here to save
-            it.
-          </q-tooltip>
-        </q-btn>
+        <template v-if="usePermissionsStore().hasFeature(FeatureIdent.SAVE_TAB_AS_PNG)">
+          <q-btn
+              @click.stop="savePng(tab)"
+              flat round color="primary" size="11px" icon="image"
+              :disabled="!isOpen(tab)">
+            <q-tooltip v-if="isOpen(tab)">Save this tab as PNG</q-tooltip>
+            <q-tooltip v-else>The tab must be open if you want to save it. Click on the link and come back here to save
+              it.
+            </q-tooltip>
+          </q-btn>
+        </template>
+
+        <template v-if="usePermissionsStore().hasFeature(FeatureIdent.SAVE_TAB_AS_PDF)">
+          <q-btn
+              @click.stop="savePdf(tab)"
+              flat round color="primary" size="11px" icon="o_picture_as_pdf"
+              :disabled="!isOpen(tab)">
+            <q-tooltip v-if="isOpen(tab)">Save this tab as a PDF File</q-tooltip>
+            <q-tooltip v-else>The tab must be open if you want to save it. Click on the link and come back here to save
+              it.
+            </q-tooltip>
+          </q-btn>
+        </template>
+
+        <template v-if="usePermissionsStore().hasFeature(FeatureIdent.SAVE_TAB)">
+          <q-btn
+              @click.stop="saveTab(tab)"
+              flat round color="primary" size="11px" icon="save"
+              :disabled="!isOpen(tab)">
+            <q-tooltip v-if="isOpen(tab)">Save this tab</q-tooltip>
+            <q-tooltip v-else>The tab must be open if you want to save it. Click on the link and come back here to save
+              it.
+            </q-tooltip>
+          </q-btn>
+        </template>
 
 
       </div>
@@ -156,6 +181,28 @@
         <q-card-section>
           <div class="row q-mx-sm q-mt-xs" v-for="mhtml in tab?.mhtmls">
             <MHtmlViewHelper :mhtmlId="mhtml" :tabId="tab?.id || 'unknown'"/>
+          </div>
+        </q-card-section>
+      </q-card>
+    </q-expansion-item>
+
+    <q-expansion-item label="Archived Images"
+                      v-if="usePermissionsStore().hasFeature(FeatureIdent.SAVE_TAB_AS_PNG) && pngs.length > 0">
+      <q-card>
+        <q-card-section>
+          <div class="row q-mx-sm q-mt-xs" v-for="png in pngs">
+            <PngViewHelper :pngId="png.id" :created="png.created" :tabId="tab?.id || 'unknown'"/>
+          </div>
+        </q-card-section>
+      </q-card>
+    </q-expansion-item>
+
+    <q-expansion-item label="Archived PDFs"
+                      v-if="usePermissionsStore().hasFeature(FeatureIdent.SAVE_TAB_AS_PNG) && pdfs.length > 0">
+      <q-card>
+        <q-card-section>
+          <div class="row q-mx-sm q-mt-xs" v-for="pdf in pdfs">
+            <PngViewHelper :pngId="pdf.id" :created="pdf.created" :tabId="tab?.id || 'unknown'"/>
           </div>
         </q-card-section>
       </q-card>
@@ -319,6 +366,12 @@ import {useSettingsStore} from "src/stores/settingsStore"
 import {SelectTabsetCommand} from "src/domain/tabsets/SelectTabset";
 import MHtmlPage from "pages/MHtmlPage.vue";
 import MHtmlViewHelper from "pages/sidepanel/helper/MHtmlViewHelper.vue";
+import {TabAndTabsetId} from "src/models/TabAndTabsetId";
+import PdfService from "src/services/PdfService";
+import {SavedBlob} from "src/models/SavedBlob";
+import PngViewHelper from "pages/sidepanel/helper/PngViewHelper.vue";
+import {SavePngCommand} from "src/domain/tabs/SavePng";
+import {SavePdfCommand} from "src/domain/tabs/SavePdf";
 
 const {inBexMode} = useUtils()
 
@@ -336,6 +389,8 @@ const searchIndex = ref<any>()
 const metaRows = ref<object[]>([])
 const metas = ref({})
 const tab = ref<Tab | undefined>(undefined)
+const pngs = ref<SavedBlob[]>([])
+const pdfs = ref<SavedBlob[]>([])
 
 const {selectTabset} = useTabsetService()
 
@@ -344,13 +399,13 @@ const tags = ref<string[]>([])
 watchEffect(() => {
   const tabId = route.params.tabId as unknown as string
   console.log("tabid", tabId)
-  useTabsStore().getTab(tabId)
-      .then((tabObject: object | undefined) => {
+  const tabObject = useTabsStore().getTabAndTabsetId(tabId)
+      //.then((tabObject: TabAndTabsetId | undefined) => {
         if (tabObject) {
-          tab.value = tabObject['tab' as keyof object] as Tab
+          tab.value = tabObject.tab
           tags.value = tab.value.tags
         }
-      })
+     // })
 
   // const selectedTab = tab.value
   // console.log("selectedTab", selectedTab)
@@ -388,10 +443,14 @@ watchEffect(() => {
             metaRows.value = _.sortBy(metaRows.value, s => s['name' as keyof object])
           }
         })
+    PdfService.getPngsForTab(tab.value.id)
+        .then((blobs: SavedBlob[]) => pngs.value = blobs)
+    PdfService.getPdfsForTab(tab.value.id)
+        .then((blobs: SavedBlob[]) => pdfs.value = blobs)
   }
 })
 
-function isOpen(tab: Tab): boolean {
+function isOpen(tab: Tab | undefined): boolean {
   return TabsetService.isOpen(tab?.url || '')
 }
 
@@ -439,7 +498,7 @@ const formatDate = (timestamp: number | undefined) =>
     timestamp ? formatDistance(timestamp, new Date(), {addSuffix: true}) : ""
 
 const showTabDetails = () =>
-    NavigationService.openOrCreateTab(chrome.runtime.getURL("/www/index.html#/mainpanel/tab/" + tab.value?.id))
+    NavigationService.openOrCreateTab([chrome.runtime.getURL("/www/index.html#/mainpanel/tab/" + tab.value?.id)])
 
 watchEffect(() => {
   const fuseIndex = useSearchStore().getIndex()
@@ -467,7 +526,20 @@ watchEffect(() => {
   }
 })
 
-const saveTab = (tab: Tab) => useCommandExecutor().execute(new SaveTabCommand(useTabsStore().getCurrentTabset, tab))
+const saveTab = (tab: Tab | undefined) =>
+    useCommandExecutor().execute(new SaveTabCommand(useTabsStore().getCurrentTabset, tab))
+
+const savePng = (tab: Tab | undefined) => {
+  if (tab) {
+    useCommandExecutor().execute(new SavePngCommand(tab, "saved by user"))
+  }
+}
+
+const savePdf = (tab: Tab | undefined) => {
+  if (tab) {
+    useCommandExecutor().execute(new SavePdfCommand(tab, "saved by user"))
+  }
+}
 
 const updatedTags = (val: string[]) => {
   if (tab.value) {

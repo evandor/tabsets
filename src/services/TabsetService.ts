@@ -11,7 +11,9 @@ import {useTabsetService} from "src/services/TabsetService2";
 import {useDB} from "src/services/usePersistenceService";
 import {useSpacesStore} from "stores/spacesStore";
 import {FirebaseCall} from "src/services/firebase/FirebaseCall";
-import {Placeholders, PlaceholdersType} from "src/models/Placeholders";
+import PlaceholderUtils from "src/utils/PlaceholderUtils";
+import {Monitor, MonitoringType} from "src/models/Monitor";
+import {ListDetailLevel} from "stores/uiStore";
 
 const {getTabset, getCurrentTabset, saveTabset, saveCurrentTabset, tabsetsFor, addToTabset} = useTabsetService()
 
@@ -25,25 +27,25 @@ class TabsetService {
     this.localStorage = localStorage;
   }
 
-  async restore(tabsetId: string, closeOldTabs: boolean = true) {
-    console.log("restoring from tabset", tabsetId)
-    const tabsStore = useTabsStore()
-    try {
-      tabsStore.deactivateListeners()
-      if (closeOldTabs) {
-        await ChromeApi.closeAllTabs()
-      }
-      const tabset = getTabset(tabsetId)
-      if (tabset) {
-        console.log("found tabset for id", tabsetId)
-        ChromeApi.restore(tabset)
-      }
-    } catch (ex) {
-      console.log("ex", ex)
-    } finally {
-      //tabsStore.activateListeners()
-    }
-  }
+  // async restore(tabsetId: string, closeOldTabs: boolean = true) {
+  //   console.log("restoring from tabset", tabsetId)
+  //   const tabsStore = useTabsStore()
+  //   try {
+  //     tabsStore.deactivateListeners()
+  //     if (closeOldTabs) {
+  //       await ChromeApi.closeAllTabs()
+  //     }
+  //     const tabset = getTabset(tabsetId)
+  //     if (tabset) {
+  //       console.log("found tabset for id", tabsetId)
+  //       ChromeApi.restore(tabset)
+  //     }
+  //   } catch (ex) {
+  //     console.log("ex", ex)
+  //   } finally {
+  //     //tabsStore.activateListeners()
+  //   }
+  // }
 
 
   async saveToCurrentTabset(tab: Tab, useIndex: number | undefined = undefined): Promise<Tabset> {
@@ -59,6 +61,12 @@ class TabsetService {
     return _.filter(tabsStore.tabs, (t: chrome.tabs.Tab) => {
       return t?.url === tabUrl
     }).length > 0
+  }
+
+  chromeTabIdFor(tabUrl: string): number | undefined {
+    const tabsStore = useTabsStore()
+    const candidates = _.filter(tabsStore.tabs, (t: chrome.tabs.Tab) => t?.url === tabUrl)
+    return candidates.length > 0 ? candidates[0].id : undefined
   }
 
   saveAllPendingTabs(onlySelected: boolean = false): Promise<void> {
@@ -176,6 +184,12 @@ class TabsetService {
     return saveCurrentTabset()
   }
 
+  setMonitoring(tab: Tab, monitor: Monitor): Promise<any> {
+    tab.monitor = monitor.type === MonitoringType.NONE ? undefined : monitor
+    //console.log("tab.monitor", tab.monitor)
+    return saveCurrentTabset()
+  }
+
   setColor(tab: Tab, color: string): Promise<any> {
     tab.color = color
     return saveCurrentTabset()
@@ -188,12 +202,7 @@ class TabsetService {
 
   setUrl(tab: Tab, url: string, placeholders: string[] = [], placeholderValues: Map<string,string> = new Map()): Promise<any> {
     tab.url = url
-    var config: {[k: string]: any} = {};
-    for(const p of placeholders) {
-      config[p] = placeholderValues.get(p)
-    }
-    const phs = new Placeholders(PlaceholdersType.URL_SUBSTITUTION, tab.id, config)
-    tab.placeholders = phs
+    tab = PlaceholderUtils.apply(tab, placeholders, placeholderValues)
     return saveCurrentTabset()
   }
 
@@ -369,6 +378,9 @@ class TabsetService {
   }
 
   async trackedTabsCount(): Promise<number> {
+    if (!chrome.tabs) {
+      return Promise.resolve(0)
+    }
     // @ts-ignore
     const result: chrome.tabs.Tab[] = await chrome.tabs.query({})
     let trackedTabs = 0
@@ -416,7 +428,7 @@ class TabsetService {
    * @param tabsetId
    * @param tabsetName
    */
-  rename(tabsetId: string, tabsetName: string,newColor: string | undefined): Promise<object> {
+  rename(tabsetId: string, tabsetName: string,newColor: string | undefined, window: string = 'current', details: ListDetailLevel): Promise<object> {
     const trustedName = tabsetName.replace(STRIP_CHARS_IN_USER_INPUT, '')
     let trustedColor = newColor ? newColor.replace(STRIP_CHARS_IN_COLOR_INPUT, '') : undefined
     trustedColor = trustedColor && trustedColor.length > 20 ?
@@ -429,7 +441,9 @@ class TabsetService {
       const oldColor = tabset.color
       tabset.name = trustedName
       tabset.color = trustedColor
-      console.log("saving tabset", tabset)
+      tabset.window = window
+      tabset.details = details
+      //console.log("saving tabset", tabset)
       return saveTabset(tabset)
         .then(() => Promise.resolve({
           oldName: oldName,

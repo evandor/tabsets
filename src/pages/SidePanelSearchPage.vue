@@ -77,14 +77,14 @@ onMounted(() => {
 
 watchEffect(() => {
   const tabsets = [...tabsStore.tabsets.values()]
-  console.log("tabsets", tabsets)
+  //console.log("tabsets", tabsets)
   tabsetIdents.value = _.map(tabsets, (t: Tabset) => {
     return {
       name: t.name,
       id: t.id
     }
   })
-  console.log("tabsetIdents", tabsetIdents.value)
+  //console.log("tabsetIdents", tabsetIdents.value)
 })
 
 const newSearch = (term: string) => {

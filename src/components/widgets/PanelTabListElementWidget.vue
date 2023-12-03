@@ -1,6 +1,7 @@
 <template>
 
-  <q-item-section v-if="useUiStore().listDetailLevelGreaterEqual(ListDetailLevel.SOME)"
+  <!-- left part: icon plus various -->
+  <q-item-section v-if="useUiStore().listDetailLevelGreaterEqual(ListDetailLevel.SOME, props.tabset.details)"
                   @mouseover="hoveredTab = tab.id"
                   @mouseleave="hoveredTab = undefined"
                   class="q-mr-sm text-right" style="justify-content:start;width:25px;max-width:25px">
@@ -37,49 +38,38 @@
 
   </q-item-section>
 
-  <!-- name, title, description, url && note -->
+  <!-- right part: name, title, description, url && note -->
   <q-item-section class="q-mb-sm"
                   @mouseover="hoveredTab = tab.id"
                   @mouseleave="hoveredTab = undefined">
 
-    <!-- name or title -->
-    <q-item-label>
+    <!-- === name or title === -->
+    <q-item-label @click.stop="gotoTab()">
       <div>
-        <div class="q-pr-sm cursor-pointer ellipsis">
+        <div class="q-pr-lg cursor-pointer ellipsis">
           <span v-if="props.header" class="text-bold">{{ props.header }}<br></span>
           <!--          <span v-if="useTabsStore().getCurrentTabset?.sorting === 'alphabeticalTitle'">-->
           <span v-if="props.sorting === TabSorting.TITLE">
               <q-icon name="arrow_right" size="16px"/>
            </span>
+
           <span v-if="props.tab?.extension === UrlExtension.NOTE"
-                @click.stop="NavigationService.openOrCreateTab(props.tab.url || '',props.tab.matcher,props.tab.groupName )"
                 v-html="nameOrTitle(props.tab as Tab)"/>
-          <span v-else
-                v-html="nameOrTitle(props.tab as Tab)"
-          />
-          <q-icon v-if="(props.tab as Tab).placeholders"
-                  name="published_with_changes" class="q-ml-sm" color="accent">
-            <q-tooltip>This tab is created by substituting parts of its URL</q-tooltip>
-          </q-icon>
-          <q-popup-edit
-              v-if="props.tab?.extension !== UrlExtension.NOTE && !props.tab.placeholders"
-              :model-value="dynamicNameOrTitleModel(tab)" v-slot="scope"
-              @update:model-value="val => setCustomTitle( tab, val)">
-            <q-input v-model="scope.value" dense autofocus counter @keyup.enter="scope.set"/>
-          </q-popup-edit>
+          <span v-else :class="isCurrentTab(props.tab) ? 'text-bold':''">{{ nameOrTitle(props.tab as Tab) }}</span>
+
         </div>
 
       </div>
     </q-item-label>
 
-    <!-- description -->
+    <!-- === description === -->
     <q-item-label class="ellipsis-2-lines text-grey-8"
-                  v-if="useUiStore().listDetailLevelGreaterEqual(ListDetailLevel.MAXIMAL)"
-                  @click.stop="NavigationService.openOrCreateTab(props.tab?.url || '', props.tab?.matcher || '', props.tab?.groupName )">
+                  v-if="useUiStore().listDetailLevelGreaterEqual(ListDetailLevel.MAXIMAL,props.tabset.details)"
+                  @click.stop="gotoTab()">
       {{ props.tab.description }}
     </q-item-label>
 
-    <!-- url -->
+    <!-- === url(s) === -->
     <q-item-label
         style="width:100%"
         v-if="props.tab?.url"
@@ -87,25 +77,35 @@
         @mouseover="showButtonsProp = true"
         @mouseleave="showButtonsProp = false">
       <div class="row q-ma-none">
-        <div class="col-11 q-pr-lg cursor-pointer"
-             @click.stop="NavigationService.openOrCreateTab(props.tab.url,props.tab.matcher,props.tab.groupName )">
+        <div class="col-11 q-pr-lg cursor-pointer" @click="gotoTab()">
            <span v-if="props.sorting === TabSorting.URL">
               <q-icon name="arrow_right" size="16px"/>
            </span>
 
-          <!-- url or note -->
-          <!--          <template v-if="props.tab.extension === UrlExtension.NOTE">-->
-          <!--            <span>open Note</span>-->
-          <!--          </template>-->
           <template v-if="props.tab.extension !== UrlExtension.NOTE">
-            <short-url :url="props.tab.url" :hostname-only="!useUiStore().showFullUrls"/>
+            <short-url @click.stop="gotoTab()"
+                       :url="props.tab.url" :hostname-only="!useUiStore().showFullUrls"/>
             <q-icon v-if="props.tab.matcher && usePermissionsStore().hasFeature(FeatureIdent.ADVANCED_TAB_MANAGEMENT)"
                     @click.stop="openTabAssignmentPage(props.tab)"
                     name="o_settings">
               <q-tooltip class="tooltip">{{ matcherTooltip() }}</q-tooltip>
             </q-icon>
+            <!-- <q-icon class="q-ml-xs" name="open_in_new"/>-->
+            <ul v-if="placeholders.length > 0">
+              <div v-for="placeholder in placeholders">
+                <li>
+                  <short-url
+                      @click.stop="NavigationService.openOrCreateTab(
+                          [placeholder['url' as keyof object]],
+                          props.tab.matcher,
+                          props.tab.groupName ? [props.tab.groupName] : [] )"
+                      :label="placeholder['name' as keyof object]"
+                      :url="placeholder['url' as keyof object]"/>
+                </li>
+              </div>
+            </ul>
           </template>
-          <!-- <q-icon class="q-ml-xs" name="open_in_new"/>-->
+
         </div>
         <div v-if="!props.hideMenu"
              class="col text-right q-mx-sm cursor-pointer"
@@ -113,13 +113,13 @@
              @mouseleave="hoveredTab = undefined"
              style="max-width:25px;font-size: 12px;color:#bfbfbf">
             <span v-if="hoveredOver(tab.id)">
-              <q-icon name="more_horiz" color="accent" size="16px"/>
+              <q-icon name="more_horiz" color="black" size="16px"/>
             </span>
           <span v-else>
               <q-icon color="primary" size="16px"/>
             </span>
           <PanelTabListContextMenu
-              :tabsetType="props.tabsetType"
+              :tabset="props.tabset"
               :tab="tab" v-if="!props.hideMenu"/>
 
         </div>
@@ -127,19 +127,52 @@
 
     </q-item-label>
 
+    <!-- === group, last active & icons === -->
     <q-item-label
         style="width:100%;margin-top:0"
         v-if="props.tab?.url"
         caption class="ellipsis-2-lines text-blue-10"
         @mouseover="showButtonsProp = true"
         @mouseleave="showButtonsProp = false">
-      <div class="row q-ma-none">
+      <div class="row q-ma-none" @click="gotoTab()">
         <div class="col-12 q-pr-lg q-mt-none q-pt-none cursor-pointer">
           <div class="text-caption text-grey-5 ellipsis"
-               v-if="useUiStore().listDetailLevelGreaterEqual(ListDetailLevel.SOME)">
+               v-if="useUiStore().listDetailLevelGreaterEqual(ListDetailLevel.SOME, props.tabset.details)">
+
             <span v-if="props.sorting === TabSorting.AGE">
               <q-icon name="arrow_right" size="16px"/>
-           </span>
+            </span>
+
+            <q-icon v-if="(props.tab as Tab).monitor"
+                    @click.stop="monitoringDialog(props.tab as Tab)"
+                    name="o_change_circle" class="q-mr-xs"
+                    :color="(props.tab as Tab).placeholders ? 'negative' : 'accent'">
+              <q-tooltip class="tooltip-small" v-if="!(props.tab as Tab).placeholders">This tab is being monitored for changes</q-tooltip>
+              <q-tooltip class="tooltip-small" v-else>Tabs with placeholders cannot be monitored</q-tooltip>
+            </q-icon>
+
+            <q-icon v-if="suggestion"
+                    @click.stop="showSuggestion()"
+                    name="o_notifications" class="q-mr-xs" :color="suggestion.state === SuggestionState.NOTIFICATION ? 'negative' : 'accent'">
+              <q-tooltip class="tooltip-small" v-if="suggestion.state === SuggestionState.NOTIFICATION">There is a new notification for this tab</q-tooltip>
+              <q-tooltip class="tooltip-small" v-else>There is a notification for this tab</q-tooltip>
+            </q-icon>
+
+            <q-icon v-if="pngs.length > 0"
+                    @click.stop="openImage()"
+                    name="o_image" class="q-mr-xs" color="accent">
+              <q-tooltip class="tooltip-small">There are snapshot images of this tab</q-tooltip>
+            </q-icon>
+
+            <q-icon v-if="(props.tab as Tab).placeholders"
+                    name="published_with_changes" class="q-mr-xs" color="accent">
+              <q-tooltip class="tooltip-small">This tab is created by substituting parts of its URL</q-tooltip>
+            </q-icon>
+
+            <template v-if="(props.tab as Tab).monitor || suggestion || (props.tab as Tab).placeholders || pngs.length > 0">
+              <span>-</span>
+            </template>
+
             <template v-if="groupName && usePermissionsStore().hasFeature(FeatureIdent.TAB_GROUPS)">
               Group <em>{{ groupName }}</em>
               <q-icon name="arrow_drop_down" class="q-mr-none" size="xs" color="text-grey-5"/>
@@ -157,7 +190,7 @@
                   <q-item clickable style="font-size: smaller" @click="unsetGroup()">
                     Unset Group
                   </q-item>
-                  <q-separator />
+                  <q-separator/>
                   <q-item clickable style="font-size: smaller" @click="removeGroup(groupName)">
                     Remove Group
                   </q-item>
@@ -165,14 +198,16 @@
               </q-menu>
               -
             </template>
+
             {{ formatDate(props.tab.lastActive) }}
+
           </div>
         </div>
       </div>
     </q-item-label>
 
-    <!-- note -->
-    <q-item-label v-if="useUiStore().listDetailLevelGreaterEqual(ListDetailLevel.MAXIMAL) &&
+    <!-- === note === -->
+    <q-item-label v-if="useUiStore().listDetailLevelGreaterEqual(ListDetailLevel.MAXIMAL, props.tabset.details) &&
       props['tab' as keyof object]['note']"
                   class="text-grey-10" text-subtitle1>
       <q-icon color="blue-10" name="edit_note"/>
@@ -202,23 +237,29 @@ import {onMounted, PropType, ref, watchEffect} from "vue";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {ListDetailLevel, useUiStore} from "src/stores/uiStore";
 import TabFaviconWidget from "components/widgets/TabFaviconWidget.vue";
-import {UpdateTabNameCommand} from "src/domain/tabs/UpdateTabName";
 import {useTabsetService} from "src/services/TabsetService2";
 import ShortUrl from "components/utils/ShortUrl.vue";
 import {useTabsStore} from "src/stores/tabsStore";
 import PanelTabListContextMenu from "components/widgets/helper/PanelTabListContextMenu.vue";
 import _ from "lodash";
 import {formatDistance} from "date-fns";
-import {TabsetType} from "src/models/Tabset";
-import {useWindowsStore} from "src/stores/windowsStore";
+import {Tabset, TabsetType} from "src/models/Tabset";
 import {usePermissionsStore} from "stores/permissionsStore";
 import {FeatureIdent} from "src/models/AppFeature";
 import {useUtils} from "src/services/Utils";
 import {useRouter} from "vue-router";
 import {useGroupsStore} from "stores/groupsStore";
 import {DeleteChromeGroupCommand} from "src/domain/groups/DeleteChromeGroupCommand";
+import {PlaceholdersType} from "src/models/Placeholders";
+import {uid, useQuasar} from "quasar";
+import {TabAndTabsetId} from "src/models/TabAndTabsetId";
+import MonitoringDialog from "components/dialogues/MonitoringDialog.vue";
+import {useSuggestionsStore} from "stores/suggestionsStore";
+import {Suggestion, SuggestionState} from "src/models/Suggestion";
+import PdfService from "src/services/PdfService";
+import {SavedBlob} from "src/models/SavedBlob";
 
-const {inBexMode} = useUtils()
+const {inBexMode, isCurrentTab} = useUtils()
 
 const props = defineProps({
   tab: {type: Object as PropType<Tab>, required: true},
@@ -228,20 +269,23 @@ const props = defineProps({
   sorting: {type: String as PropType<TabSorting>, default: TabSorting.CUSTOM},
   showTabsets: {type: Boolean, default: false},
   preventDragAndDrop: {type: Boolean, default: false},
-  tabsetType: {type: String, default: TabsetType.DEFAULT.toString()}
+  tabset: {type: Object as PropType<Tabset>, required: true}
 })
 
+const $q = useQuasar()
 const cnt = ref(0)
-const tabsStore = useTabsStore()
 const router = useRouter()
 
 const showButtonsProp = ref<boolean>(false)
-const imgFromBlob = ref<string>("")
+//const imgFromBlob = ref<string>("")
 const hoveredTab = ref<string | undefined>(undefined)
 const tsBadges = ref<object[]>([])
 const newState = ref(false)
 const groupName = ref<string | undefined>(undefined)
 const groups = ref<Map<string, chrome.tabGroups.TabGroup>>(new Map())
+const placeholders = ref<Object[]>([])
+const suggestion = ref<Suggestion | undefined>(undefined)
+const pngs = ref<SavedBlob[]>([])
 
 onMounted(() => {
   if ((new Date().getTime() - props.tab.created) < 500) {
@@ -253,21 +297,21 @@ onMounted(() => {
     }
     setTimeout(() => newState.value = false, 2000)
   }
-  const blobImgPath = props.tab.image
-  if (blobImgPath && blobImgPath.startsWith('blob://')) {
-    useTabsetService().getBlob(blobImgPath.replace("blob://", ""))
-        .then((res) => {
-          let reader = new FileReader();
-          reader.readAsDataURL(res.content);
-          reader.onloadend = function () {
-            const base64data = reader.result;
-            if (base64data) {
-              imgFromBlob.value = base64data.toString()
-            }
-          }
-        })
-        .catch((err) => console.error(err))
-  }
+  // const blobImgPath = props.tab.image
+  // if (blobImgPath && blobImgPath.startsWith('blob://')) {
+  //   useTabsetService().getBlob(blobImgPath.replace("blob://", ""))
+  //       .then((res) => {
+  //         let reader = new FileReader();
+  //         reader.readAsDataURL(res.content);
+  //         reader.onloadend = function () {
+  //           const base64data = reader.result;
+  //           if (base64data) {
+  //             imgFromBlob.value = base64data.toString()
+  //           }
+  //         }
+  //       })
+  //       .catch((err) => console.error(err))
+  // }
 })
 
 watchEffect(() => {
@@ -276,6 +320,12 @@ watchEffect(() => {
 
 watchEffect(() => {
   groupName.value = props.tab?.groupName
+})
+
+watchEffect(() => {
+  if (props.tab.url) {
+    suggestion.value = useSuggestionsStore().getSuggestionForUrl(props.tab.url)
+  }
 })
 
 watchEffect(() => {
@@ -292,37 +342,49 @@ watchEffect(() => {
   }
 })
 
-const nameOrTitle = (tab: Tab) => {
-  let nameOrTitle = tab.name ? tab.name : tab.title
-  if (usePermissionsStore().hasFeature(FeatureIdent.ANNOTATIONS) && tab.annotations?.length > 0) {
-    nameOrTitle = "(" + tab.annotations.length + ") " + nameOrTitle
+watchEffect(() => {
+  if (props.tab) {
+    const t = props.tab
+    if (t.placeholders && t.placeholders.type === PlaceholdersType.URL_SUBSTITUTION) {
+      const subs = t.placeholders.config
+      Object.entries(subs).forEach(e => {
+        const name = e[0]
+        const val = e[1]
+        val.split(",").forEach((v: string) => {
+          const substitution = v.trim()
+          if (substitution.length > 0) {
+            let useUrl = t.url || ''
+            let useName = t.name || t.title || ''
+            Object.entries(subs).forEach(e1 => {
+              useUrl = useUrl.replaceAll("${" + name + "}", substitution)
+              useName = useName.replaceAll("${" + name + "}", substitution)
+            })
+            placeholders.value.push({url: useUrl, name: substitution})
+          }
+        })
+      })
+    }
   }
-  return nameOrTitle
-}
+})
 
-const dynamicNameOrTitleModel = (tab: Tab) => tab.name ? tab.name : tab.title
+watchEffect(async () => {
+  if (props.tab) {
+    pngs.value = await PdfService.getPngsForTab(props.tab.id)
+  }
+})
 
-const setCustomTitle = (tab: Tab, newValue: string) =>
-    useCommandExecutor().executeFromUi(new UpdateTabNameCommand(tab, newValue))
+const nameOrTitle = (tab: Tab) => tab.name ? tab.name : tab.title
 
 const hoveredOver = (tabsetId: string) => hoveredTab.value === tabsetId
 
 const formatDate = (timestamp: number | undefined) =>
     timestamp ? formatDistance(timestamp, new Date(), {addSuffix: true}) : ""
 
-const isCurrentTab = (tab: Tab) => {
-  if (!inBexMode()) {
-    return false
-  }
-  const windowId = useWindowsStore().currentWindow?.id || 0
-  return (tabsStore.getCurrentChromeTab(windowId) || tabsStore.currentChromeTab)?.url === tab.url
-}
-
 const iconStyle = () => {
   if (isCurrentTab(props.tab)) {
-    return "border:2px solid orange;border-radius:3px"
+    return "border:1px solid #bfbfbf;border-radius:3px"
   } else {
-    return "border:0px solid orange;border-radius:3px"
+    return "border:0px solid white;border-radius:3px"
   }
 }
 
@@ -338,12 +400,12 @@ const openTabset = (badge: any) => {
 }
 
 const openTabAssignmentPage = (tab: Tab) =>
-    NavigationService.openOrCreateTab(chrome.runtime.getURL("/www/index.html#/mainpanel/tabAssignment/" + tab.id))
+    NavigationService.openOrCreateTab([chrome.runtime.getURL("/www/index.html#/mainpanel/tabAssignment/" + tab.id)])
 
 const matcherTooltip = () => {
   const split = props.tab.matcher?.split("|")
   if (split && split.length > 1) {
-    if (split[0] === 'sw') {
+    if (split[0] === 'sw') { // 'sw' = 'startsWith'
       return "This tab will open in any tab with an URL starting with " + split[1]
     }
   }
@@ -353,11 +415,11 @@ const matcherTooltip = () => {
 const unsetGroup = () => {
   if (props.tab) {
     props.tab.groupName = undefined
-    useTabsStore().getTab(props.tab.id)
-        .then((res: any) => {
+    const res = useTabsStore().getTabAndTabsetId(props.tab.id)
+        //.then((res: TabAndTabsetId | undefined) => {
           if (res) {
-            const tab = res['tab' as keyof object] as Tab
-            const tabsetId = res['tabsetId' as keyof object]
+            const tab = res.tab
+            const tabsetId = res.tabsetId
             tab.groupName = undefined
             tab.groupId = -1
             const ts = useTabsetService().getTabset(tabsetId)
@@ -365,7 +427,7 @@ const unsetGroup = () => {
               useTabsetService().saveTabset(ts)
             }
           }
-        })
+       // })
   }
 }
 
@@ -373,7 +435,8 @@ const removeGroup = (groupName: string) => {
   unsetGroup()
   if (props.tab && groupName) {
     useCommandExecutor().executeFromUi(new DeleteChromeGroupCommand(groupName))
-  }}
+  }
+}
 
 const groupsWithout = (groupName: string): chrome.tabGroups.TabGroup[] =>
     _.filter([...groups.value.values()], (g: chrome.tabGroups.TabGroup) => g.title !== groupName)
@@ -381,11 +444,11 @@ const groupsWithout = (groupName: string): chrome.tabGroups.TabGroup[] =>
 const switchGroup = (group: chrome.tabGroups.TabGroup): void => {
   if (props.tab) {
     props.tab.groupName = group.title
-    useTabsStore().getTab(props.tab.id)
-        .then((res: any) => {
+    const res = useTabsStore().getTabAndTabsetId(props.tab.id)
+       // .then((res: TabAndTabsetId | undefined) => {
           if (res) {
-            const tab = res['tab' as keyof object] as Tab
-            const tabsetId = res['tabsetId' as keyof object]
+            const tab = res.tab
+            const tabsetId = res.tabsetId
             tab.groupName = group.title
             tab.groupId = group.id
             const ts = useTabsetService().getTabset(tabsetId)
@@ -393,9 +456,29 @@ const switchGroup = (group: chrome.tabGroups.TabGroup): void => {
               useTabsetService().saveTabset(ts)
             }
           }
-        })
+       // })
   }
 }
+
+const gotoTab = () => NavigationService.openOrCreateTab(
+    [props.tab.url || ''],
+    props.tab.matcher,
+    props.tab.groupName ? [props.tab.groupName] : [])
+
+const showSuggestion = () => {
+  const url = chrome.runtime.getURL('www/index.html') + "#/mainpanel/suggestions/" + suggestion.value?.id
+  NavigationService.openOrCreateTab([url])
+}
+
+const monitoringDialog = (tab: Tab) => {
+  console.log("calling dialog with tab", tab)
+  $q.dialog({
+    component: MonitoringDialog,
+    componentProps: {tab: tab, note: tab.note}
+  })
+}
+
+const openImage = () => window.open(chrome.runtime.getURL('www/index.html#/mainpanel/png/' + props.tab.id + "/" + pngs.value[0].id))
 
 </script>
 

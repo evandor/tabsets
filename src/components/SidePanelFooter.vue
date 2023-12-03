@@ -1,57 +1,56 @@
 <template>
 
   <q-footer class="bg-white q-pa-xs q-mt-sm" style="border-top: 1px solid lightgrey">
+    <div class="row fit q-mb-xs"
+         style="border-bottom: 1px dotted #bfbfbf"
+         v-if="otherActiveWindows().length > 0">
+      <div class="col-12 text-black">
+        <q-icon name="o_grid_view" color="blue">
+          <q-tooltip class="tooltip-small">Other Browser Windows</q-tooltip>
+        </q-icon>
+        <q-btn v-for="w in otherActiveWindows()" dense
+               flat
+               size="xs" class="q-ma-sm"
+               text-color="blue-8"
+               @click="openWindow(w.id)"
+               :label="w.name">
+          <q-tooltip class="tooltip-small">Switch to window '{{ w.name }}'</q-tooltip>
+        </q-btn>
+      </div>
+
+    </div>
     <div class="row fit">
-      <div class="col-8">
+      <div class="col-9">
 
-        <template v-if="showSuggestionButton">
-          <q-btn
-              outline
-              icon="o_lightbulb"
-              :label="suggestionsLabel()"
-              :color="dependingOnStates()"
-              @click="suggestionDialog()"
-              class="q-ma-none q-pa-xs q-ml-sm q-mt-xs q-pr-md cursor-pointer"
-              size="10px">
-          </q-btn>
+        <Transition name="fade" appear>
+          <q-banner
+              v-if="checkToasts()"
+              inline-actions dense rounded
+              style="font-size: smaller;text-align: center"
+              :class="toastBannerClass()">
+            {{ useUiStore().toasts[0]?.msg }}
+            <template v-slot:action v-if="useUiStore().toasts[0]?.action">
+              <q-btn flat label="Undo"
+                     @click="useUiStore().callUndoActionFromCurrentToast()"/>
+            </template>
+          </q-banner>
+        </Transition>
 
-        </template>
+        <q-btn v-if="!checkToasts() && !transitionGraceTime && showSuggestionButton"
+               outline
+               icon="o_lightbulb"
+               :label="suggestionsLabel()"
+               :color="dependingOnStates()"
+               :size="getButtonSize()"
+               @click="suggestionDialog()"
+               class="q-ma-none q-pa-xs q-ml-sm q-mt-xs q-pr-md cursor-pointer">
+        </q-btn>
 
-        <template v-else>
+        <template v-if="!checkToasts() && !transitionGraceTime && !showSuggestionButton">
 
-          <q-btn v-if="showSuggestionIcon"
-                 @click="doShowSuggestionButton = true"
-                 icon="o_lightbulb"
-                 class="q-my-xs q-ml-xs q-px-xs"
-                 flat
-                 color="warning"
-                 size="9px">
-            <q-tooltip class="tooltip">{{ suggestionsLabel() }}</q-tooltip>
-          </q-btn>
-
-          <SidePanelFooterLeftButton
-              :side-panel-view="SidePanelView.TABS_LIST" icon="o_playlist_add"
-              tooltip="All your browser's open tabs"/>
-
-          <SidePanelFooterLeftButton :side-panel-view="SidePanelView.BOOKMARKS" icon="o_bookmark"
-                                     tooltip="Show the Bookmarks Browser"/>
-          <SidePanelFooterLeftButton :side-panel-view="SidePanelView.TAGS_LIST" icon="o_label"
-                                     tooltip="List of all tags sorted by prevalence"/>
-          <SidePanelFooterLeftButton :side-panel-view="SidePanelView.BY_DOMAIN_LIST" icon="o_dns"
-                                     tooltip="List all your tabs URLs by domain"/>
-          <SidePanelFooterLeftButton :side-panel-view="SidePanelView.RSS_LIST" icon="o_rss_feed"
-                                     tooltip="List all your RSS feeds"/>
-          <SidePanelFooterLeftButton :side-panel-view="SidePanelView.NEWEST_TABS_LIST" icon="o_schedule"
-                                     tooltip="Newest Tabs List"/>
-          <SidePanelFooterLeftButton :side-panel-view="SidePanelView.TOP_10_TABS_LIST" icon="o_workspace_premium"
-                                     tooltip="Top 10 Tabs List"/>
-
-          <span class="q-ma-none"
-                v-if="permissionsStore.hasFeature(FeatureIdent.OPENTABS_THRESHOLD) && tabsStore.tabsets?.size > 0">
-            <OpenTabsThresholdWidget :showLabel="false" :in-side-panel="true">
-              <q-tooltip>{{ tabsStore.tabs?.length }} open tabs</q-tooltip>
-            </OpenTabsThresholdWidget>
-          </span>
+          <SidePanelFooterLeftButtons
+              @was-clicked="doShowSuggestionButton = true"
+              :show-suggestion-icon="showSuggestionIcon"/>
 
         </template>
 
@@ -74,7 +73,7 @@
                :class="rightButtonClass()"
                flat
                color="black"
-               size="8px"
+               :size="getButtonSize()"
                @click="openHelpView()">
         </q-btn>
 
@@ -82,7 +81,7 @@
                :class="rightButtonClass()"
                flat
                color="black"
-               size="8px"
+               :size="getButtonSize()"
                @click="openOptionsPage()">
           <q-tooltip class="tooltip" anchor="top left" self="bottom left">{{ settingsTooltip() }}</q-tooltip>
         </q-btn>
@@ -93,7 +92,7 @@
             :class="rightButtonClass()"
             flat
             color="black"
-            size="8px"
+            :size="getButtonSize()"
             @click="openExtensionTab()">
           <q-tooltip class="tooltip">Tabsets as full-page app</q-tooltip>
         </q-btn>
@@ -111,24 +110,22 @@ import {ref, watchEffect} from "vue";
 import {useRouter} from "vue-router";
 import {usePermissionsStore} from "src/stores/permissionsStore";
 import {FeatureIdent} from "src/models/AppFeature";
-import OpenTabsThresholdWidget from "components/widgets/OpenTabsThresholdWidget.vue";
 import NavigationService from "src/services/NavigationService";
-import SidePanelFooterLeftButton from "components/helper/SidePanelFooterLeftButton.vue";
 import {useQuasar} from "quasar";
 import {useUtils} from "src/services/Utils";
 import {useWindowsStore} from "src/stores/windowsStore";
 import {useSuggestionsStore} from "stores/suggestionsStore";
 import _ from "lodash";
-import {SuggestionState, SuggestionType} from "src/models/Suggestion";
+import {SuggestionState} from "src/models/Suggestion";
 import SuggestionDialog from "components/dialogues/SuggestionDialog.vue";
 import {TabsetStatus} from "src/models/Tabset";
+import {ToastType} from "src/models/Toast";
+import SidePanelFooterLeftButtons from "components/helper/SidePanelFooterLeftButtons.vue";
 
 const {inBexMode} = useUtils()
 
 const $q = useQuasar()
 
-const tabsStore = useTabsStore()
-const permissionsStore = usePermissionsStore()
 const router = useRouter()
 const uiStore = useUiStore()
 
@@ -140,36 +137,25 @@ const progressLabel = ref<string | undefined>(undefined)
 const showSuggestionButton = ref(false)
 const showSuggestionIcon = ref(false)
 const doShowSuggestionButton = ref(false)
+const transitionGraceTime = ref(false)
 
 watchEffect(() => {
-  const suggestions = useSuggestionsStore().getSuggestions()
+  const suggestions = useSuggestionsStore().getSuggestions(
+      [SuggestionState.NEW, SuggestionState.DECISION_DELAYED, SuggestionState.NOTIFICATION])
   //console.log("watcheffect for", suggestions)
   showSuggestionButton.value =
       doShowSuggestionButton.value ||
       (useUiStore().sidePanelActiveViewIs(SidePanelView.MAIN) &&
           _.findIndex(suggestions, s => {
-            if (s.state === SuggestionState.APPLIED || s.state === SuggestionState.IGNORED) {
-              return false
-            }
-            if (!usePermissionsStore().hasFeature(FeatureIdent.RSS)) {
-              return (s.state === SuggestionState.NEW)
-                  && s.type !== SuggestionType.RSS
-            }
-            return s.state === SuggestionState.NEW
+            return s.state === SuggestionState.NEW ||
+                (s.state === SuggestionState.NOTIFICATION && !usePermissionsStore().hasFeature(FeatureIdent.NOTIFICATIONS))
           }) >= 0)
 
   showSuggestionIcon.value =
       !doShowSuggestionButton.value &&
       useUiStore().sidePanelActiveViewIs(SidePanelView.MAIN) &&
       _.findIndex(suggestions, s => {
-        if (s.state === SuggestionState.APPLIED || s.state === SuggestionState.IGNORED) {
-          return false
-        }
-        if (!usePermissionsStore().hasFeature(FeatureIdent.RSS)) {
-          return (s.state === SuggestionState.CANCELED)
-              && s.type !== SuggestionType.RSS
-        }
-        return s.state === SuggestionState.CANCELED
+        return s.state === SuggestionState.DECISION_DELAYED
       }) >= 0
 })
 
@@ -195,28 +181,30 @@ watchEffect(() => {
 //const openOptionsPage = () => window.open(chrome.runtime.getURL('www/index.html#/mainpanel/settings'));
 const openOptionsPage = () => window.open('#/mainpanel/settings');
 
-const openExtensionTab = () => NavigationService.openOrCreateTab(chrome.runtime.getURL('www/index.html#/fullpage'))
+const openExtensionTab = () => NavigationService.openOrCreateTab([chrome.runtime.getURL('www/index.html#/fullpage')])
 
 const settingsTooltip = () => {
   return "Open Settings of Tabsets " + import.meta.env.PACKAGE_VERSION
 }
 
-const rightButtonClass = () => "q-my-xs q-ml-xs q-px-xs q-mr-none"
+const rightButtonClass = () => "q-my-xs q-px-xs q-mr-none"
 
 const dependingOnStates = () =>
-    _.find(useSuggestionsStore().getSuggestions(), s => s.state === SuggestionState.NEW) ? 'warning' : 'primary'
+    _.find(useSuggestionsStore().getSuggestions([SuggestionState.NEW, SuggestionState.DECISION_DELAYED]), s => s.state === SuggestionState.NEW) ? 'warning' : 'primary'
 
 const suggestionDialog = () => {
   doShowSuggestionButton.value = false
   $q.dialog({
     component: SuggestionDialog, componentProps: {
-      suggestion: useSuggestionsStore().getSuggestions().at(0),
+      suggestion: useSuggestionsStore()
+          .getSuggestions([SuggestionState.NEW, SuggestionState.DECISION_DELAYED, SuggestionState.NOTIFICATION]).at(0),
       fromPanel: true
     }
   })
 }
 const suggestionsLabel = () => {
-  const suggestions = useSuggestionsStore().getSuggestions()
+  const suggestions = useSuggestionsStore().getSuggestions(
+      [SuggestionState.NEW, SuggestionState.DECISION_DELAYED, SuggestionState.NOTIFICATION])
   return suggestions.length === 1 ?
       suggestions.length + " New Suggestion" :
       suggestions.length + " New Suggestions"
@@ -233,4 +221,83 @@ const openHelpView = () => {
   }
 }
 
+const checkToasts = () => {
+  if (useUiStore().toasts.length > 0) {
+    const useDelay = 3000
+    useUiStore().delayedToastRemoval(useDelay)
+    const oldShowButton = showSuggestionButton.value
+    const oldDoShowButton = doShowSuggestionButton.value
+    transitionGraceTime.value = true
+    showSuggestionButton.value = false
+    doShowSuggestionButton.value = false
+    setTimeout(() => {
+      if (useUiStore().toasts.length === 0) { // only if all toasts are gone
+        transitionGraceTime.value = false
+        showSuggestionButton.value = oldShowButton
+        doShowSuggestionButton.value = oldDoShowButton
+      }
+    }, useDelay + 1100) // must be higher than css value in fade-leave-active
+
+    return true
+  }
+  return false
+}
+
+const getButtonSize = () => useUiStore().getButtonSize('sidePanelFooter')
+
+const toastBannerClass = () => {
+  const defaults = " text-white q-py-none"
+  switch (useUiStore().toasts[0]?.type) {
+    case ToastType.INFO:
+      return "bg-positive" + defaults
+    case ToastType.WARNING:
+      return "bg-warning" + defaults
+    case ToastType.ERROR:
+      return "bg-negative" + defaults
+    default:
+      return "bg-negative" + defaults
+  }
+}
+
+const otherActiveWindows = () => {
+  return _.filter(
+      _.sortBy(
+          _.map(
+              _.filter(useWindowsStore().currentWindows, (w: chrome.windows.Window) => {
+                return useWindowsStore().currentWindow?.id !== w.id
+              }), w => {
+                return w.id ? {
+                  name: useWindowsStore().windowNameFor(w.id) || 'Main',
+                  id: w.id
+                } : {name: 'unknown', id: 0}
+              }),
+          o => o.name),
+      (e: object) => e['name' as keyof object] !== '%monitoring%')
+}
+
+const openWindow = (windowId: number) =>
+    chrome.windows.update(windowId, {drawAttention: true, focused: true},
+        (callback) => {})
+
+const displayFlat = (w: any): boolean => {
+  let currentWindowName = useWindowsStore().currentWindowName || 'Main'
+  //console.log("===", w, currentWindowName)
+  return w.name === currentWindowName
+}
+
 </script>
+
+<style>
+.fade-enter-active {
+  transition: opacity 0.5s ease;
+}
+
+.fade-leave-active {
+  transition: opacity 1.0s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+</style>

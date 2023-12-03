@@ -30,7 +30,7 @@
       <div class="row fit">
         <div class="col-12 cursor-pointer ellipsis">
           <TabFaviconWidget :tab="tab" width="16px" height="16px" class="q-mr-sm"/>
-          <span @click="NavigationService.openOrCreateTab(props.tab.url || '')">{{ shortUrl() }}</span>
+          <span @click="NavigationService.openOrCreateTab([props.tab.url || ''])">{{ shortUrl() }}</span>
         </div>
       </div>
 

@@ -36,7 +36,6 @@ const editorRef = ref<any>(null)
 
 const tab = ref<Tab | undefined>(undefined)
 const tabsetId = ref<string | undefined>(route.query.tsId as string)
-const parentId = ref<string | undefined>(route.query.parent as string)
 const tabset = ref<Tabset | undefined>(undefined)
 const dirty = ref(false)
 

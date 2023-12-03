@@ -1,24 +1,22 @@
 import {Tabset, TabsetStatus, TabsetType} from "src/models/Tabset";
 import {useTabsStore} from "src/stores/tabsStore";
 import _ from "lodash";
-import {HTMLSelection, HTMLSelectionComment, Tab} from "src/models/Tab";
+import {Tab} from "src/models/Tab";
 import {uid} from "quasar";
 import throttledQueue from 'throttled-queue';
-// @ts-ignore
-import {convert} from "html-to-text"
 import {useWindowsStore} from "src/stores/windowsStore";
 import {useTabsetService} from "src/services/TabsetService2";
 import {useSettingsStore} from "src/stores/settingsStore";
 import {usePermissionsStore} from "src/stores/permissionsStore";
 import {MetaLink} from "src/models/MetaLink";
-import {Suggestion, SuggestionType} from "src/models/Suggestion";
+import {Suggestion, SuggestionState, SuggestionType} from "src/models/Suggestion";
 import {useSuggestionsStore} from "src/stores/suggestionsStore";
 import {FeatureIdent} from "src/models/AppFeature";
 import {Extractor, Extractors, ExtractorType} from "src/config/Extractors";
 import {useUtils} from "src/services/Utils";
 import {useGroupsStore} from "stores/groupsStore";
-import {useUiStore} from "stores/uiStore";
 import NavigationService from "src/services/NavigationService";
+import ContentUtils from "src/utils/ContentUtils";
 
 const {
   saveCurrentTabset,
@@ -48,91 +46,71 @@ async function setCurrentTab() {
     }
 }
 
-function annotationScript (tabId: string, annotations: any[]) {
-  console.log("!!! here in annotation script", tabId, annotations)
-
-  const
-    iFrame = document.createElement('iframe'),
-    defaultFrameHeight = '62px'
-
-  iFrame.id = 'bex-app-iframe'
-  iFrame.width = '100%'
- // resetIFrameHeight()
-
-// Assign some styling so it looks seamless
-  Object.assign(iFrame.style, {
-    position: 'fixed',
-    top: '0',
-    right: '0',
-    bottom: '0',
-    left: '0',
-    border: '0',
-    zIndex: '9999999', // Make sure it's on top
-    overflow: 'visible'
-  })
-
-  //const url = document.location.href
-  //console.log(" === url == ", url)
-  //const urlParams = new URLSearchParams(window.location.search);
-  //console.log("got url2", url, tabId)
-  iFrame.src = chrome.runtime.getURL('/www/index.html#/annotations/' + tabId)
-  document.body.prepend(iFrame)
-
-  var l: HTMLLinkElement = document.createElement('link');
-  l.setAttribute("href","https://cdn.jsdelivr.net/npm/@recogito/recogito-js@1.8.2/dist/recogito.min.css")
-  l.setAttribute("rel","stylesheet")
-  document.head.appendChild(l)
-
-  var s = document.createElement('script');
-  s.src = chrome.runtime.getURL('www/js/recogito/recogito.min.js');
-  (document.head || document.documentElement).appendChild(s);
-
-  // var s2 = document.createElement('script');
-  // s2.src = chrome.runtime.getURL('www/js/recogito/recogito.content.js');
-  // document.body.appendChild(s2);
-
-  var s2 = document.createElement('script');
-  s2.dataset.variable = 'some string variable!';
-  s2.dataset.annotations = JSON.stringify(annotations);
-
-  console.log("x1", annotations)
-  console.log("x2",  JSON.stringify(annotations))
-  console.log("x3",  JSON.parse(JSON.stringify(annotations)))
-
-
-
-
-  s2.src = chrome.runtime.getURL('www/js/recogito/recogito.content.js');
-  document.body.appendChild(s2);
-
-  // var s3 = document.createElement('script');
-  // s3.type = 'text/javascript';
-  // var code = 'alert("hello world!");';
-  // try {
-  //   s3.appendChild(document.createTextNode(code));
-  //   document.body.appendChild(s3);
-  // } catch (e) {
-  //   s.text = code;
-  //   document.body.appendChild(s3);
-  // }
-  //document.body.appendChild(s3);
-
-  window.addEventListener(
-    "message",
-    (event) => {
-      if (event.data && event.data.name && event.data.name.startsWith('recogito-')) {
-        console.log("sending", event.data)
-        chrome.runtime.sendMessage(event.data, (callback) => {
-          console.log("xxx callback", callback)
-          if (chrome.runtime.lastError) {
-            console.warn("got runtime error", chrome.runtime.lastError)
-          }
-        })
-      }
-    },
-    false,
-  );
-}
+// function annotationScript (tabId: string, annotations: any[]) {
+//   console.log("!!! here in annotation script", tabId, annotations)
+//
+//   const
+//     iFrame = document.createElement('iframe'),
+//     defaultFrameHeight = '62px'
+//
+//   iFrame.id = 'bex-app-iframe'
+//   iFrame.width = '100%'
+//  // resetIFrameHeight()
+//
+// // Assign some styling so it looks seamless
+// //   Object.assign(iFrame.style, {
+// //     position: 'fixed',
+// //     top: '0',
+// //     right: '0',
+// //     bottom: '0',
+// //     left: '0',
+// //     border: '0',
+// //     zIndex: '9999999', // Make sure it's on top
+// //     overflow: 'visible'
+// //   })
+//
+//   //iFrame.src = chrome.runtime.getURL('/www/index.html#/annotations/' + tabId)
+//   //document.body.prepend(iFrame)
+//
+//   // var l: HTMLLinkElement = document.createElement('link');
+//   // l.setAttribute("href","https://cdn.jsdelivr.net/npm/@recogito/recogito-js@1.8.2/dist/recogito.min.css")
+//   // l.setAttribute("rel","stylesheet")
+//   // document.head.appendChild(l)
+//
+//   // var s = document.createElement('script');
+//   // s.src = chrome.runtime.getURL('www/js/recogito/recogito.min.js');
+//   // (document.head || document.documentElement).appendChild(s);
+//   //
+//   // var s2 = document.createElement('script');
+//   // s2.dataset.variable = 'some string variable!';
+//   // s2.dataset.annotations = JSON.stringify(annotations);
+//   //
+//   // console.log("x1", annotations)
+//   // console.log("x2",  JSON.stringify(annotations))
+//   // console.log("x3",  JSON.parse(JSON.stringify(annotations)))
+//
+//
+//
+//   //
+//   // s2.src = chrome.runtime.getURL('www/js/recogito/recogito.content.js');
+//   // document.body.appendChild(s2);
+//
+//   // window.addEventListener(
+//   //   "message",
+//   //   (event) => {
+//   //     if (event.data && event.data.name && event.data.name.startsWith('recogito-')) {
+//   //       console.log("sending", event.data)
+//   //       chrome.runtime.sendMessage(event.data, (callback) => {
+//   //         console.log("xxx callback", callback)
+//   //         if (chrome.runtime.lastError) {
+//   //           console.warn("got runtime error", chrome.runtime.lastError)
+//   //         }
+//   //       })
+//   //     }
+//   //   },
+//   //   false,
+//   // );
+// }
 
 function inIgnoredMessages(request: any) {
   // TODO name vs. msg!
@@ -151,9 +129,27 @@ function inIgnoredMessages(request: any) {
     request.name === 'fullUrls-changed' ||
     request.name === 'reload-suggestions' ||
     request.name === 'reload-tabset' ||
+    request.name === 'detail-level-perTabset-changed' ||
     request.name === 'detail-level-changed'
     //request.name === 'recogito-annotation-created'
 
+}
+
+function runOnNotificationClick(notificationId: string, buttonIndex: number) {
+  console.log("notification button clicked", notificationId, buttonIndex)
+  const notification = useSuggestionsStore().getSuggestion(notificationId)
+  console.log("found notificastion", notification)
+  if (notification) {
+    switch (buttonIndex) {
+      case 0: // show
+          const url = chrome.runtime.getURL('www/index.html') + "#/mainpanel/suggestions/" + notificationId
+          NavigationService.openOrCreateTab([url])
+          useSuggestionsStore().updateSuggestionState(notificationId, SuggestionState.CHECKED)
+          break;
+      default: // ignore
+            useSuggestionsStore().updateSuggestionState(notificationId, SuggestionState.IGNORED)
+    }
+  }
 }
 
 class ChromeListeners {
@@ -214,6 +210,16 @@ class ChromeListeners {
         }
       });
 
+      if (usePermissionsStore().hasFeature(FeatureIdent.NOTIFICATIONS)) {
+        chrome.notifications.onButtonClicked.addListener(
+            (notificationId, buttonIndex) => {
+              runOnNotificationClick(notificationId, buttonIndex);
+            })
+        chrome.notifications.onClicked.addListener(
+            (notificationId) => {
+              runOnNotificationClick(notificationId, 0);
+            })
+      }
     }
 
   }
@@ -350,7 +356,7 @@ class ChromeListeners {
       }
 
     } else {
-      console.log(`onUpdated: tab ${tab.id}: pending tab cannot be found in ${tabset.name}`)
+      console.debug(`onUpdated: tab ${tab.id}: pending tab cannot be found in ${tabset.name}`)
       if (tab.url !== undefined) {
 
         const newTab = new Tab(uid(), tab)
@@ -364,7 +370,7 @@ class ChromeListeners {
           newTab.groupName = useGroupsStore().currentGroupForId(tab.groupId)?.title || '???'
         }
 
-        console.log(`onUpdated: tab ${tab.id}: missing tab added for url ${tab.url}`)
+        console.debug(`onUpdated: tab ${tab.id}: missing tab added for url ${tab.url}`)
         tabset.tabs.push(newTab)
       }
     }
@@ -382,17 +388,17 @@ class ChromeListeners {
       return
     }
 
-    if (usePermissionsStore().hasFeature(FeatureIdent.ANNOTATIONS)) {
-      const tabForUrl = useTabsStore().tabForUrlInSelectedTabset(tab.url || '')
-      if (tabForUrl) {
-        chrome.scripting.executeScript({
-          target : {tabId : (tab.id || 0)},
-          func : annotationScript,
-          args : [ tabForUrl.id, tabForUrl.annotations ],
-        })
-          .then(() => console.log("injected a function"));
-      }
-    }
+    // if (usePermissionsStore().hasFeature(FeatureIdent.ANNOTATIONS)) {
+    //   const tabForUrl = useTabsStore().tabForUrlInSelectedTabset(tab.url || '')
+    //   if (tabForUrl) {
+    //     chrome.scripting.executeScript({
+    //       target : {tabId : (tab.id || 0)},
+    //       func : annotationScript,
+    //       args : [ tabForUrl.id, tabForUrl.annotations ],
+    //     })
+    //       .then(() => console.log("injected a function"));
+    //   }
+    // }
 
     const scripts: string[] = []
 
@@ -405,7 +411,9 @@ class ChromeListeners {
     if (scripts.length > 0 && tab.id !== null) { // && !this.injectedScripts.get(.chromeTabId)) {
 
       chrome.tabs.get(tab.id, (chromeTab: chrome.tabs.Tab) => {
-        //console.log("got tab", tab)
+        if (chrome.runtime.lastError) {
+          console.warn("got runtime error:" + chrome.runtime.lastError);
+        }
         if (!tab.url?.startsWith("chrome")) {
           scripts.forEach((script: string) => {
             console.debug("executing scripts", tab.id, script)
@@ -452,6 +460,9 @@ class ChromeListeners {
     await setCurrentTab()
 
     chrome.tabs.get(info.tabId, tab => {
+      if (chrome.runtime.lastError) {
+        console.warn("got runtime error:" + chrome.runtime.lastError);
+      }
       const url = tab.url
       _.forEach([...tabsStore.tabsets.keys()], key => {
         const ts = tabsStore.tabsets.get(key)
@@ -500,7 +511,7 @@ class ChromeListeners {
     if (inIgnoredMessages(request)) {
       return true
     }
-    console.log("handling request", request)
+    //console.log("%conMessage","color:red", request)
     if (request.msg === 'captureThumbnail') {
       const screenShotWindow = useWindowsStore().screenshotWindow
       this.handleCapture(sender, screenShotWindow, sendResponse)
@@ -516,9 +527,9 @@ class ChromeListeners {
     //   this.handleMessageWebsiteQuote(request, sender, sendResponse)
     } else if (request.msg === 'websiteImg') {
       this.handleMessageWebsiteImage(request, sender, sendResponse)
-    } else if (request.name === 'recogito-annotation-created') {
-      //this.handleMessageWebsiteImage(request, sender, sendResponse)
-      useTabsetService().handleAnnotationMessage(request)
+    // } else if (request.name === 'recogito-annotation-created') {
+    //   //this.handleMessageWebsiteImage(request, sender, sendResponse)
+    //   useTabsetService().handleAnnotationMessage(request)
     } else {
       console.log("got unknown message", request)
     }
@@ -527,7 +538,7 @@ class ChromeListeners {
 
   private handleHtml2Text(request: any, sender: chrome.runtime.MessageSender, sendResponse: any) {
 
-    console.debug("handleHtml2Text")
+    console.debug("handleHtml2Text", request, sender)
 
     if (sender && sender.url && request.html) {
       try {
@@ -571,35 +582,17 @@ class ChromeListeners {
       }
     }
 
-    const text = convert(request.html, {
-      wordwrap: 130
-    });
-    const text2 = text.replace(/\[[^\]].*/g, '').replaceAll('*', '')
-    const tokens = text2
-      .replaceAll("\\n", " ")
-      .replaceAll("[0-9a-fA-F]{8}\\b-[0-9a-fA-F]{4}\\b-[0-9a-fA-F]{4}\\b-[0-9a-fA-F]{4}\\b-[0-9a-fA-F]{12}", " ")
-      .replaceAll("[\u00AD\u002D\u2011]", ' ')
-      .replaceAll("\n", " ")
-      .replace(/[`~!@#$%^&*()_|+\-=?;:'",.<>»«{}\[\]\\\/]/gi, ' ')
-      .split(" ")
-    let res = ""
-    const tokenSet = new Set()
-    tokens.forEach((t: string) => {
-      if (t.length >= 4 && t.length <= 24) {
-        res += t + " "
-        tokenSet.add(t.toLowerCase())
-      }
-    })
     if (sender.tab) {
+      const tokens = ContentUtils.html2tokens(request.html)
       const tab = new Tab(uid(), sender.tab)
-      saveText(tab, [...tokenSet].join(" "), request.metas)
+      saveText(tab, [...tokens].join(" "), request.metas)
     }
     sendResponse({html2text: 'done'});
   }
 
   private handleHtml2Links(request: any, sender: chrome.runtime.MessageSender, sendResponse: any) {
     if (sender.tab) {
-      console.log("handleHtml2Links")
+      console.debug("handleHtml2Links")
       saveMetaLinksFor(sender.tab, request.links)
       saveLinksFor(sender.tab, request.anchors)
 

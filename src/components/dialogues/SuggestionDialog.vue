@@ -10,7 +10,7 @@
       </q-card-section>
 
       <q-card-actions align="right" class="text-primary">
-        <q-btn label="Cancel" size="sm" v-close-popup @click="cancelSuggestion">
+        <q-btn label="Later" size="sm" v-close-popup @click="delayDecision">
           <q-tooltip class="tooltip-small" :delay="500">Click here to decide later</q-tooltip>
         </q-btn>
         <q-btn label="Ignore" size="sm" color="negative" v-close-popup @click="ignoreSuggestion">
@@ -30,12 +30,11 @@
 
 <script lang="ts" setup>
 
-import {computed, PropType, ref, watchEffect} from "vue";
-import {openURL, useDialogPluginComponent, useQuasar} from "quasar";
+import {PropType} from "vue";
+import {openURL, useDialogPluginComponent} from "quasar";
 import {useRouter} from "vue-router";
-import {useNotificationsStore} from "src/stores/notificationsStore";
 import {useSuggestionsStore} from "src/stores/suggestionsStore";
-import {Suggestion} from "src/models/Suggestion";
+import {Suggestion, SuggestionState, SuggestionType} from "src/models/Suggestion";
 import NavigationService from "src/services/NavigationService";
 
 defineEmits([
@@ -51,18 +50,28 @@ const {dialogRef, onDialogHide, onDialogCancel} = useDialogPluginComponent()
 
 const router = useRouter()
 
-const cancelSuggestion = () => useSuggestionsStore().cancelSuggestion(props.suggestion.id)
-const ignoreSuggestion = () => useSuggestionsStore().ignoreSuggestion(props.suggestion.id)
+const delayDecision = () => useSuggestionsStore().updateSuggestionState(props.suggestion.id, SuggestionState.DECISION_DELAYED)
+const ignoreSuggestion = () => useSuggestionsStore().updateSuggestionState(props.suggestion.id, SuggestionState.IGNORED)
 
 const addSuggestion = () => {
-//useSuggestionsStore()
-// .applySuggestion(props.suggestion.id)
-// .then((res: Suggestion) => {
   const res = props.suggestion
   if (props.fromPanel) {
-    console.log("xxx", res, chrome.runtime.getURL(res.url))
-    //router.push(chrome.runtime.getURL(res.url))
-    NavigationService.openOrCreateTab(chrome.runtime.getURL("/www/index.html#/mainpanel" + res.url))
+    switch (res.type) {
+      case SuggestionType.FEATURE:
+        NavigationService.openOrCreateTab(
+            [chrome.runtime.getURL("/www/index.html#" + props.suggestion.url)],
+            undefined,
+            [],
+            true)
+          useSuggestionsStore().updateSuggestionState(res.id, SuggestionState.CHECKED)
+        break;
+      default:
+        NavigationService.openOrCreateTab(
+            [chrome.runtime.getURL("/www/index.html#/mainpanel/suggestions/" + props.suggestion.id)],
+            undefined,
+            [],
+            true)
+    }
   } else {
     if (res.url.startsWith("/")) {
       router.push(res.url)

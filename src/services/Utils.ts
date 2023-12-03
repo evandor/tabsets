@@ -1,5 +1,8 @@
 import {formatDistance} from "date-fns";
 import sanitizeHtml from "sanitize-html";
+import {Tab} from "src/models/Tab";
+import {useWindowsStore} from "stores/windowsStore";
+import {useTabsStore} from "stores/tabsStore";
 
 export function useUtils() {
 
@@ -57,6 +60,21 @@ export function useUtils() {
             });
         }
     }
+    const isCurrentTab = (tab: Tab) => {
+        if (!inBexMode() && !tab.url) {
+            return false
+        }
+        const windowId = useWindowsStore().currentWindow?.id || 0
+        const currentChromeTab = useTabsStore().getCurrentChromeTab(windowId) || useTabsStore().currentChromeTab
+        if  (currentChromeTab.url === tab.url) {
+            return true
+        }
+        //console.log("checking", currentChromeTab.url, "/" + btoa(tab.url || ''), currentChromeTab.url?.indexOf("/" + btoa(tab.url || '')) )
+        if (currentChromeTab.url && currentChromeTab.url?.indexOf("/" + btoa(tab.url || '')) >= 0) {
+            return true
+        }
+        return false
+    }
 
     return {
         formatDate,
@@ -66,6 +84,7 @@ export function useUtils() {
         modeIs,
         sanitize,
         sanitizeAsText,
-        sendMsg
+        sendMsg,
+        isCurrentTab
     }
 }

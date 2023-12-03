@@ -1,4 +1,5 @@
 import {Placeholders} from "src/models/Placeholders";
+import {Monitor} from "src/models/Monitor";
 
 export enum TabSorting {
   URL = "URL",
@@ -67,7 +68,6 @@ export class Tab {
   note: string
   scheduledFor: number | undefined
   extension: UrlExtension
-  annotations: any[] = []
 
   mhtmls: string[]
 
@@ -81,11 +81,17 @@ export class Tab {
   httpInfo: string = 'undefined'
 
   placeholders: Placeholders | undefined
+  monitor: Monitor | undefined
 
   color: string | undefined = undefined
   matcher: string | undefined = undefined
 
   groupName: string | undefined = undefined
+
+  canvasLeft: number | undefined
+  canvasTop: number | undefined
+  canvasWidth: number | undefined
+  canvasHeight: number | undefined
 
   constructor(public id: string, chromeTab: chrome.tabs.Tab) {
     this.created = new Date().getTime()

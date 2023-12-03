@@ -24,7 +24,7 @@
 
       <div class="col-12">
         <div class="text-overline ellipsis text-blue-10 cursor-pointer"
-             @click.stop="NavigationService.openOrCreateTab(useUiStore().getSelectedTab.url )">
+             @click.stop="NavigationService.openOrCreateTab([useUiStore().getSelectedTab?.url || ''] )">
           {{ useUiStore().getSelectedTab?.url }}&nbsp;<q-icon name="launch" color="secondary"
                                                                          class="cursor-pointer"></q-icon>
         </div>

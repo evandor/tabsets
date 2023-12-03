@@ -21,7 +21,7 @@
           color="primary"
           :label="$q.screen.gt.lg ? 'Open Original Page' : ''"
           class="q-mr-sm"
-          @click="NavigationService.openOrCreateTab(tab?.url || '')">
+          @click="NavigationService.openOrCreateTab([tab?.url || ''])">
           <q-tooltip>Open Original Page</q-tooltip>
         </q-btn>
 
@@ -96,9 +96,9 @@ onMounted(() => {
 
 
 watchEffect(async () => {
-  const res = await useTabsStore().getTab(tabId)
-  if (res && res['tab' as keyof object]) {
-    tab.value = res['tab' as keyof object] as Tab
+  const res = useTabsStore().getTabAndTabsetId(tabId)
+  if (res && res.tab) {
+    tab.value = res.tab
     const response = await fetch(tab.value.url || '')
     const s = await response.text()
     const parser = new DOMParser();

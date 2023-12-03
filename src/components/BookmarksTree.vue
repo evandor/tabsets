@@ -111,7 +111,7 @@ watchEffect(() => {
 watch(() => selected.value, (currentValue, oldValue) => {
   if (currentValue !== oldValue) {
     props.inSidePanel ?
-      NavigationService.openOrCreateTab(chrome.runtime.getURL("/www/index.html#/mainpanel/bookmarks/" + selected.value)) :
+      NavigationService.openOrCreateTab([chrome.runtime.getURL("/www/index.html#/mainpanel/bookmarks/" + selected.value)]) :
       router.push("/bookmarks/" + selected.value)
   }
 })

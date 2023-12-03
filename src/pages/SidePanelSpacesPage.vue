@@ -358,7 +358,7 @@ const addSpace = () => {
 }
 
 const manageSpaces = () =>
-    NavigationService.openOrCreateTab(chrome.runtime.getURL('www/index.html#/mainpanel/spaces'))
+    NavigationService.openOrCreateTab([chrome.runtime.getURL('www/index.html#/mainpanel/spaces')])
 
 const openNewTabsetDialog = (spaceId: string) => {
   $q.dialog({

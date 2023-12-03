@@ -56,7 +56,7 @@
         <div class="col-12">
           <div class="text-overline ellipsis">
             {{ selectedTab?.url }}&nbsp;<q-icon name="launch" color="secondary"
-                                                @click.stop="NavigationService.openOrCreateTab(tab.url )"></q-icon>
+                                                @click.stop="NavigationService.openOrCreateTab([tab.url] )"></q-icon>
           </div>
         </div>
       </div>
@@ -313,7 +313,7 @@
 
   <div v-else-if="tab === 'links'">
     <div class="q-pa-md q-gutter-sm">
-      <q-banner rounded class="bg-grey-1 text-primary">This is a data derived from the tab's html content</q-banner>
+      <q-banner rounded class="bg-grey-1 text-primary">This is data derived from the tab's html content</q-banner>
 
       <q-table
           title="Links"
@@ -335,7 +335,7 @@
           <q-td :props="props">
             <div class="cursor-pointer text-blue-10">
               <span v-if="props.row.link.length > 0 && props.row.link.startsWith('/')"
-                    @click="openLink(selectedTab.url + '/' + props.row.link.substring(1))">
+                    @click="openLink(domain + '/' + props.row.link.substring(1))">
                 {{ props.row.link }}
               </span>
               <span v-else @click="openLink(props.row.link)">{{ props.row.link }}</span>
@@ -397,6 +397,7 @@ import 'vue-json-pretty/lib/styles.css';
 import {useTabsetService} from "src/services/TabsetService2";
 import Analytics from "src/utils/google-analytics";
 import {Tab} from "src/models/Tab";
+import {TabAndTabsetId} from "src/models/TabAndTabsetId";
 
 const tabsStore = useTabsStore()
 const notificationStore = useNotificationsStore()
@@ -408,6 +409,7 @@ const route = useRoute()
 const {formatDate} = useUtils()
 
 const selectedTab = ref<Tab | undefined>(undefined)
+const domain = ref<string | undefined>(undefined)
 const thumbnail = ref('')
 const content = ref('')
 const request = ref({})
@@ -435,15 +437,22 @@ onMounted(() => {
 watchEffect(() => {
   const tabId = route.params.id.toString() || ''
   console.log("got tabId", tabId)
-  useTabsStore().getTab(tabId).then(tabInfo => {
+  const tabInfo = useTabsStore().getTabAndTabsetId(tabId)
+      //.then((tabInfo: TabAndTabsetId | undefined) => {
     if (tabInfo) {
-      console.log("got tab", tabInfo['tab' as keyof object])
+      console.log("got tab", tabInfo.tab)
       //useUiStore().setSelectedTab(tabInfo['tab' as keyof object] as Tab)
-      json.value = JSON.parse(JSON.stringify(tabInfo['tab' as keyof object] as Tab))
-      tags.value = tabInfo['tab' as keyof object]['tags' as keyof object]
-      selectedTab.value = tabInfo['tab' as keyof object] as Tab
+      json.value = JSON.parse(JSON.stringify(tabInfo.tab))
+      tags.value = tabInfo.tab['tags' as keyof object]
+      selectedTab.value = tabInfo.tab
+      try {
+        const url = new URL(selectedTab.value.url || '')
+        domain.value = url.protocol + url.host
+      } catch (err) {
+        domain.value = selectedTab.value.url
+      }
     }
-  })
+ // })
 })
 
 
@@ -608,23 +617,25 @@ const metaDataLabel = () => "Meta Data (" + metaRows.value.length + ")"
 const requestDataLabel = () => "Request Header (" + requestRows.value.length + ")"
 const metaLinksDataLabel = () => "Meta Links (" + metaLinkRows.value.length + ")"
 const linksDataLabel = () => "Links (" + Object.keys(linkRows.value).length + ")"
-const openNameLink = (key: string) => NavigationService.openOrCreateTab("https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/" + key)
+const openNameLink = (key: string) => NavigationService.openOrCreateTab(["https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/" + key])
 const showNameLink = (key: string) => key.indexOf(":") < 0;
 
 const openValueLink = (name: any, value: string) => {
   if ("fb:page_id" === name) {
-    NavigationService.openOrCreateTab("https://www.facebook.com/" + value)
+    NavigationService.openOrCreateTab(["https://www.facebook.com/" + value])
   } else if ("twitter:account_id" === name) {
-    NavigationService.openOrCreateTab("https://twitter.com/i/user/" + value)
+    NavigationService.openOrCreateTab(["https://twitter.com/i/user/" + value])
   }
   return
 }
 const showValueLink = (name: string) => "fb:page_id" === name || "twitter:account_id" === name
 
 const analyseTab = () => {
-  searchStore.reindexTab(selectedTab.value)
-      .then((windowId: number) => {
-      })
+  if (selectedTab.value) {
+    searchStore.reindexTab(selectedTab.value)
+        .then((windowId: number) => {
+        })
+  }
 }
 
 const openLink = (url: string) => openURL(url)

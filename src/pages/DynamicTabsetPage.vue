@@ -111,14 +111,14 @@
           <q-tooltip>Use the canvas freestyle layout to visualize your tabs</q-tooltip>
         </q-btn>
 
-        <q-btn
-          v-if="tabsStore.currentTabsetId !== '' && tabsStore.getTabset(tabsStore.currentTabsetId) && useSettingsStore().isEnabled('newTab')"
-          flat dense icon="o_create_new_folder"
-          color="primary" :label="$q.screen.gt.sm ? 'Set as New Tab Page' : ''"
-          class="q-ml-md q-mr-md"
-          @click="setAsNewTabPage">
-          <q-tooltip>Choose this tabset to be shown whenever you open a new tab in your browser</q-tooltip>
-        </q-btn>
+<!--        <q-btn-->
+<!--          v-if="tabsStore.currentTabsetId !== '' && tabsStore.getTabset(tabsStore.currentTabsetId) && useSettingsStore().isEnabled('newTab')"-->
+<!--          flat dense icon="o_create_new_folder"-->
+<!--          color="primary" :label="$q.screen.gt.sm ? 'Set as New Tab Page' : ''"-->
+<!--          class="q-ml-md q-mr-md"-->
+<!--          @click="setAsNewTabPage">-->
+<!--          <q-tooltip>Choose this tabset to be shown whenever you open a new tab in your browser</q-tooltip>-->
+<!--        </q-btn>-->
 
       </div>
     </div>

@@ -9,7 +9,7 @@ export default bexContent((bridge: any) => {
   // @ts-ignore
   if (window.contentScriptAnalysisAlredyCalled) {
     // https://stackoverflow.com/questions/23208134/avoid-dynamically-injecting-the-same-script-multiple-times-when-using-chrome-tab
-    console.debug("stopping execution of tabsets-content-script as it is already setup")
+    //console.debug("stopping execution of tabsets-content-script as it is already setup")
     return
   }
 
@@ -18,16 +18,15 @@ export default bexContent((bridge: any) => {
   window.contentScriptAnalysisAlredyCalled  = true
 
 
-  // I guess this is never called  TODO remove
-  // chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  //   console.log("tabsets: !!!", request.msg)
-  //   if (request.msg === 'getContent') {
-  //     console.log("tabsets: received message for content", document.documentElement.outerHTML)
-  //     sendResponse({content: document.documentElement.outerHTML});
-  //   }
-  //   sendResponse({content: "unknown request in tabsets-content-scripts: " + request.msg});
-  //   return true
-  // })
+  chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+    console.log("tabsets: !!!", request)
+    if (request === 'getContent') {
+      console.log("tabsets: received message for content", document.documentElement.outerHTML)
+      sendResponse({content: document.documentElement.outerHTML});
+    }
+    sendResponse({content: "unknown request in tabsets-content-scripts: " + request});
+    return true
+  })
 
   function getMetas(document: Document) {
     const result: { [k: string]: string } = {}

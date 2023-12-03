@@ -2,8 +2,8 @@
 
   <q-item v-ripple class="q-mb-lg">
 
-    <q-item-section v-if="useUiStore().listDetailLevelGreaterEqual(ListDetailLevel.SOME)"
-                    @click.stop="NavigationService.openOrCreateTab(hit.url || '' )"
+    <q-item-section v-if="useUiStore().listDetailLevelGreaterEqual(ListDetailLevel.SOME, undefined)"
+                    @click.stop="open(hit)"
                     class="q-mr-sm text-right" style="justify-content:start;width:25px;max-width:25px">
       <div class="bg-grey-3 q-pa-xs" style="border:0 solid grey;border-radius:3px">
 
@@ -12,15 +12,13 @@
             width="16px"
             height="16px"
             :src="getFaviconUrl(hit.id, hit.url, hit.favIconUrl)">
-          <q-tooltip>drag and drop to tabset</q-tooltip>
         </q-img>
 
       </div>
     </q-item-section>
 
     <!-- name, title, description, url && note -->
-    <q-item-section class="q-mb-sm cursor-pointer ellipsis"
-                    @click.stop="NavigationService.openOrCreateTab(hit.url || '' )">
+    <q-item-section class="q-mb-sm cursor-pointer ellipsis" @click.stop="open(hit)">
 
       <!-- name or title -->
 
@@ -36,12 +34,11 @@
       </q-item-label>
 
       <!-- description -->
-      <q-item-label class="ellipsis-2-lines text-grey-8" v-if="isTabsetHit(hit)"
-                    @click.stop="NavigationService.openOrCreateTab(hit.url || '' )">
+      <q-item-label class="ellipsis-2-lines text-grey-8" v-if="isTabsetHit(hit)" @click.stop="open(hit)">
         Tabset
       </q-item-label>
       <q-item-label class="ellipsis-2-lines text-grey-8" v-else
-                    @click.stop="NavigationService.openOrCreateTab(hit.url || '' )">
+                    @click.stop="NavigationService.openOrCreateTab([hit.url || ''] )">
         {{ hit.description }}
       </q-item-label>
 
@@ -51,12 +48,8 @@
                     caption class="ellipsis-2-lines text-blue-10">
         <div class="row q-ma-none">
           <div class="col-10 q-pr-lg cursor-pointer"
-               @click.stop="NavigationService.openOrCreateTab(hit.url )">
+               @click.stop="open(hit)">
             <short-url :url="hit.url" :hostname-only="true"/>
-            <!--            <div class="text-caption text-grey-5">-->
-            <!--              {{ formatDate(hit.lastActive) }}-->
-            <!--            </div>-->
-            <!-- <q-icon class="q-ml-xs" name="open_in_new"/>-->
           </div>
 
         </div>
@@ -65,14 +58,15 @@
 
       <q-item-label>
         <template v-for="badge in tabsetBadges(hit)" v-if="!isTabsetHit(hit)">
-          <q-chip v-if="badge.bookmarkId"
+          <q-chip v-if="badge['bookmarkId' as keyof object]"
                   class="cursor-pointer q-ml-none q-mr-sm" size="9px" clickable icon="o_bookmark" color="warning"
                   @click.stop="openBookmark(badge)">
-            {{ badge.label }}
+            {{ badge['label' as keyof object] }}
           </q-chip>
           <q-chip v-else
-                  class="cursor-pointer q-ml-none q-mr-sm" size="9px" clickable icon="tab" @click="openTabset(badge)">
-            {{ badge.label }}
+                  class="cursor-pointer q-ml-none q-mr-sm" size="9px" clickable icon="tab"
+                  @click="openTabset(badge['tabsetId' as keyof object], badge['encodedUrl' as keyof object])">
+            {{ badge['label' as keyof object] }}
           </q-chip>
         </template>
       </q-item-label>
@@ -96,6 +90,12 @@ import {useSettingsStore} from "src/stores/settingsStore"
 import {useUtils} from "src/services/Utils";
 import {ListDetailLevel, useUiStore} from "stores/uiStore";
 import ShortUrl from "components/utils/ShortUrl.vue";
+import {usePermissionsStore} from "stores/permissionsStore";
+import {FeatureIdent} from "src/models/AppFeature";
+import {useTabsStore} from "stores/tabsStore";
+import {useSpacesStore} from "stores/spacesStore";
+import {useCommandExecutor} from "src/services/CommandExecutor";
+import {SelectTabsetCommand} from "src/domain/tabsets/SelectTabset";
 
 const props = defineProps({
   hit: {type: Hit, required: true},
@@ -126,15 +126,19 @@ const tabsetBadges = (hit: Hit): object[] => {
   return badges;
 }
 
-const openTabset = (badge: any) => {
-  selectTabset(badge.tabsetId)
+const openTabset = (tabsetId: string, encodedUrl: string | undefined = undefined) => {
+  selectTabset(tabsetId)
+  let navigateTo = ""
   // @ts-ignore
   if (!inBexMode() || !chrome.sidePanel) {
-    router.push("/tabsets/" + badge.tabsetId + "?highlight=" + badge.encodedUrl)
+    navigateTo = "/tabsets/" + tabsetId
   } else {
-    // router.push("/sidepanel/spaces/" + badge.tabsetId + "?highlight=" + badge.encodedUrl)
-    router.push("/sidepanel" + "?highlight=" + badge.encodedUrl)
+    navigateTo = "/sidepanel"
   }
+  if (encodedUrl) {
+    navigateTo += "?highlight=" + encodedUrl
+  }
+  router.push(navigateTo)
 }
 
 const openBookmark = (badge: any) => {
@@ -143,7 +147,7 @@ const openBookmark = (badge: any) => {
       .then(parentId => {
         if (props.inSidePanel) {
           const url = chrome.runtime.getURL("www/index.html#/mainpanel/bookmarks/" + parentId + "?highlight=" + badge.bookmarkId)
-          NavigationService.openOrCreateTab(url)
+          NavigationService.openOrCreateTab([url])
         } else {
           router.push("/bookmarks/" + parentId + "?highlight=" + badge.bookmarkId)
         }
@@ -180,6 +184,23 @@ const getFaviconUrl = (hitId: string, url: string, favIconUrl: string | undefine
 }
 
 const isTabsetHit = (hit: Hit) => hit.id.startsWith('tabset|')
+
+const open = (hit: Hit) => {
+  if (hit.id.startsWith("tabset|")) {
+    const tabsetId = hit.tabsets[0]
+    if (usePermissionsStore().hasFeature(FeatureIdent.SPACES)) {
+      const tabset = useTabsetService().getTabset(tabsetId)
+      const spaceId =  (tabset && tabset.spaces.length > 0) ? tabset.spaces[0] : undefined
+      console.log("selecting tabset/space", tabsetId, spaceId)
+      useCommandExecutor().execute(new SelectTabsetCommand(tabsetId, spaceId))
+    } else {
+      useCommandExecutor().execute(new SelectTabsetCommand(tabsetId))
+    }
+    openTabset(tabsetId)
+  } else {
+    NavigationService.openOrCreateTab([hit.url || ''])
+  }
+}
 
 </script>
 

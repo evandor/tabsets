@@ -3,6 +3,7 @@
   <q-page style="padding-top: 50px">
     <!-- list of tabs, assuming here we have at least one tabset -->
     <div class="q-ma-none q-pa-none">
+
       <q-list dense
               class="rounded-borders q-ma-none q-pa-none" :key="tabset.id"
               v-for="(tabset,index) in tabsets">
@@ -53,28 +54,51 @@
             <q-item-section side
                             @mouseover="hoveredTabset = tabset.id"
                             @mouseleave="hoveredTabset = undefined">
-              <q-icon class="cursor-pointer" name="more_horiz" color="accent" size="16px"/>
-              <SidePanelPageContextMenu :tabset="tabset as Tabset"/>
+              <q-item-label>
+                <q-icon
+                    v-if="showAddTabButton(tabset as Tabset, currentChromeTab)"
+                    @click.stop="saveInTabset(tabset.id)"
+                    class="q-mr-none"
+                    name="o_bookmark_add"
+                    :class="alreadyInTabset() ? '':'cursor-pointer'"
+                    :color="alreadyInTabset() ? 'grey-5': tsBadges.length > 0 ? 'accent':'warning'"
+                    size="xs"
+                    data-testid="saveInTabsetBtn">
+                </q-icon>
+                <span
+                    v-if="!alreadyInTabset() && showAddTabButton(tabset as Tabset, currentChromeTab) && tsBadges.length > 0"
+                    style="color: grey;font-size: 7px;position: relative;top:-2px;left:-11px;">{{
+                    tsBadges.length
+                  }}</span>
+                <q-tooltip class="tooltip-small" v-if="alreadyInTabset()">
+                  Tab is already contained in tabset '{{ tabset.name }}'
+                </q-tooltip>
+                <q-tooltip class="tooltip-small" v-else-if="tsBadges.length > 0">
+                  {{ tooltipAlreadyInOtherTabsets(tabset.name) }}
+                </q-tooltip>
+                <q-tooltip class="tooltip-small" v-else>
+                  Add current Tab to '{{ tabset.name }}'
+                </q-tooltip>
+
+              </q-item-label>
             </q-item-section>
 
+            <q-item-section side
+                            @mouseover="hoveredTabset = tabset.id"
+                            @mouseleave="hoveredTabset = undefined">
+              <q-item-label>
+                <q-icon class="cursor-pointer" name="more_horiz" color="accent" size="16px"/>
+                <SidePanelPageContextMenu :tabset="tabset as Tabset"/>
+              </q-item-label>
+            </q-item-section>
           </template>
-
 
           <div class="q-ma-none q-pa-none">
 
-            <div class="q-ma-none" v-if="inBexMode() &&
-              tabset.type !== TabsetType.DYNAMIC &&
-              currentChromeTab &&
-              currentChromeTab.url !== 'chrome://newtab/' &&
-              currentChromeTab.url?.indexOf('/www/index.html#/mainpanel/notes/') < 0 &&
-              currentChromeTab.url !== ''">
-              <SidePanelTabInfo :tabsetId="tabset.id"/>
-            </div>
-
             <SidePanelPageTabList
                 v-if="tabsetExpanded.get(tabset.id)"
-                :tabsetType="tabset.type"
-                :tabsetId="tabset.id"/>
+                :tabset="tabset as Tabset"
+            />
 
           </div>
         </q-expansion-item>
@@ -91,8 +115,8 @@
 
         <template v-slot:title v-if="permissionsStore && permissionsStore.hasFeature(FeatureIdent.SPACES)">
           <div class="text-subtitle1 text-black" @click.stop="router.push('/sidepanel/spaces')">
-            <q-btn flat color="black" no-caps :label="toolbarTitle(tabsets as Tabset[])" />
-            <q-tooltip  :delay="1000" class="tooltip">Click to open List of all Spaces</q-tooltip>
+            <q-btn flat color="black" no-caps :label="toolbarTitle(tabsets as Tabset[])"/>
+            <q-tooltip :delay="1000" class="tooltip">Click to open List of all Spaces</q-tooltip>
           </div>
         </template>
         <template v-slot:title v-else>
@@ -123,7 +147,6 @@ import {useTabsetService} from "src/services/TabsetService2";
 import {useUiStore} from "src/stores/uiStore";
 import {usePermissionsStore} from "src/stores/permissionsStore";
 import {useSpacesStore} from "src/stores/spacesStore";
-import SidePanelTabInfo from "pages/sidepanel/SidePanelTabInfo.vue";
 import FirstToolbarHelper from "pages/sidepanel/helper/FirstToolbarHelper.vue";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {SelectTabsetCommand} from "src/domain/tabsets/SelectTabset";
@@ -138,6 +161,7 @@ import getScrollTarget = scroll.getScrollTarget;
 import {useBookmarksStore} from "stores/bookmarksStore";
 import {useSuggestionsStore} from "stores/suggestionsStore";
 import SidePanelPageTabList from "components/layouts/SidePanelPageTabList.vue";
+import {AddTabToTabsetCommand} from "src/domain/tabs/AddTabToTabset";
 
 const {setVerticalScrollPosition} = scroll
 
@@ -171,6 +195,8 @@ const progress = ref<number | undefined>(undefined)
 const progressLabel = ref<string | undefined>(undefined)
 const selectedTab = ref<Tab | undefined>(undefined)
 const windowName = ref<string | undefined>(undefined)
+const windowId = ref<number | undefined>(undefined)
+const tsBadges = ref<object[]>([])
 
 onMounted(() => {
   window.addEventListener('keypress', checkKeystroke);
@@ -194,13 +220,30 @@ watchEffect(() => {
 })
 
 watchEffect(() => {
-  if ($q.platform.is.chrome) {
-    chrome.windows.getCurrent()
-        .then((currentWindow) => {
-          if (currentWindow && currentWindow.id) {
-            windowName.value = useWindowsStore().windowNameFor(currentWindow.id)
-          }
-        })
+  // if ($q.platform.is.chrome) {
+  //   chrome.windows.getCurrent()
+  //       .then((currentWindow) => {
+  //         if (currentWindow && currentWindow.id) {
+  //           windowName.value = useWindowsStore().windowNameFor(currentWindow.id)
+  //         }
+  //       })
+  // }
+  windowName.value = useWindowsStore().currentWindowName
+})
+
+watchEffect(() => {
+  if (currentChromeTab.value?.url) {
+    const url = currentChromeTab.value.url
+    const tabsetIds = useTabsetService().tabsetsFor(url)
+    tsBadges.value = []
+    //created.value = undefined
+    _.forEach(tabsetIds, tsId => {
+      tsBadges.value.push({
+        label: TabsetService.nameForTabsetId(tsId),
+        tabsetId: tsId,
+        encodedUrl: btoa(url || '')
+      })
+    })
   }
 })
 
@@ -218,7 +261,7 @@ const scrollToElement = (el: any, delay: number) => {
 }
 
 const updateSelectedTabset = (tabsetId: string, open: boolean, index: number | undefined = undefined) => {
-  console.log("updated...", tabsetId, open, Object.keys(tabsetExpanded.value))
+  //console.log("updated...", tabsetId, open, Object.keys(tabsetExpanded.value))
   tabsetExpanded.value.set(tabsetId, open)
   if (open) {
     if (index) {
@@ -328,8 +371,8 @@ watchEffect(() => {
 
 function inIgnoredMessages(message: any) {
   return message.msg === "html2text" ||
-      message.msg === "html2links" ||
-      message.name === "recogito-annotation-created"
+      message.msg === "captureThumbnail" ||
+      message.msg === "html2links"
 }
 
 if ($q.platform.is.chrome) {
@@ -370,16 +413,16 @@ if ($q.platform.is.chrome) {
         const tabset = useTabsetService().getTabset(message.data.tabsetId) as Tabset
         if (message.data.noteId) {
           console.log("updating note", message.data.noteId)
-          useTabsStore().getTab(message.data.noteId)
-              .then((res: object | undefined) => {
+          const res = useTabsStore().getTabAndTabsetId(message.data.noteId)
+              //.then((res: TabAndTabsetId | undefined) => {
                 if (res) {
-                  const note = res['tab' as keyof object] as Tab
+                  const note = res.tab
                   note.title = message.data.tab.title
                   note.description = message.data.tab.description
                   note.longDescription = message.data.tab.longDescription
                 }
                 useTabsetService().saveTabset(tabset)
-              })
+          //    })
         } else {
           console.log("adding tab", message.data.tab)
           tabset.tabs.push(message.data.tab)
@@ -411,6 +454,9 @@ if ($q.platform.is.chrome) {
       } else if (message.name === "detail-level-changed") {
         console.log("setting list detail level to ", message.data.level)
         useUiStore().setListDetailLevel(message.data.level)
+      } else if (message.name === "detail-level-perTabset-changed") {
+        console.log("setting list detail perTabset level to ", message.data.level)
+        useUiStore().showDetailsPerTabset = message.data.level
       } else if (message.name === "fullUrls-changed") {
         console.log("setting fullUrls to ", message.data.value)
         useUiStore().setShowFullUrls(message.data.value)
@@ -527,16 +573,6 @@ const toolbarTitle = (tabsets: Tabset[]) => {
   }
   return text
 }
-const tabsetIcon = (tabset: Tabset) => {
-  let icon = 'perm_identity'
-  if (tabset.status === TabsetStatus.FAVORITE) {
-    icon = 'push_pin'
-  }
-  if (tabset.type === TabsetType.DYNAMIC) {
-    icon = 'o_label'
-  }
-  return icon
-}
 
 const headerStyle = (tabset: Tabset) => {
   const tabsetOpened = _.findIndex([...tabsetExpanded.value.keys()],
@@ -552,6 +588,44 @@ const headerStyle = (tabset: Tabset) => {
     style = style + 'border-left:4px solid #f5f5f5'
   }
   return style
+}
+
+const showAddTabButton = (tabset: Tabset, currentChromeTab: chrome.tabs.Tab) => {
+  return inBexMode() &&
+      tabset.type !== TabsetType.DYNAMIC &&
+      currentChromeTab &&
+      currentChromeTab.url &&
+      currentChromeTab.url !== 'chrome://newtab/' &&
+      currentChromeTab.url.indexOf('/www/index.html#/mainpanel/notes/') < 0 &&
+      currentChromeTab.url !== '' &&
+      tabsStore.currentTabsetId === tabset.id
+  //isCurrentTab()
+}
+
+const saveInTabset = (tabsetId: string) => {
+  if (alreadyInTabset()) {
+    return
+  }
+  const useTS = useTabsetService().getTabset(tabsetId)
+  if (useTS) {
+    useCommandExecutor().execute(new AddTabToTabsetCommand(new Tab(uid(), currentChromeTab.value), useTS))
+  } else {
+    console.warn("expected to find tabsetId", tabsetId)
+  }
+}
+
+const alreadyInTabset = () => {
+  if (currentChromeTab.value?.url && tabsStore.getCurrentTabset) {
+    return useTabsetService().urlExistsInCurrentTabset(currentChromeTab.value.url)
+  }
+  return false
+}
+
+const tooltipAlreadyInOtherTabsets = (tabsetName: string) => {
+  const tabsetList = _.join(_.map(tsBadges.value, (b: any) => b['label'] as keyof object), ", ")
+  return "The current Tab is already contained in " +
+      tsBadges.value.length + " other Tabsets: " + tabsetList + ". Click to add " +
+      "it to '" + tabsetName + "' as well."
 }
 
 </script>

@@ -22,8 +22,11 @@ import {usePermissionsStore} from "stores/permissionsStore";
 import {FeatureIdent} from "src/models/AppFeature";
 import {RequestInfo} from "src/models/RequestInfo";
 import {DynamicTabSourceType} from "src/models/DynamicTabSource";
-import {PlaceholdersType} from "src/models/Placeholders";
 import {useUiStore} from "stores/uiStore";
+import {useSuggestionsStore} from "stores/suggestionsStore";
+import {Suggestion, SuggestionState, SuggestionType} from "src/models/Suggestion";
+import {MonitoringType} from "src/models/Monitor";
+import {BlobType} from "src/models/SavedBlob";
 
 let db: PersistenceService = null as unknown as PersistenceService
 
@@ -34,7 +37,6 @@ export function useTabsetService() {
         console.log("initializing tabsetService2")
         db = providedDb
         await db.loadTabsets()
-        console.log("after db.loadTabsets()")
         if (!doNotInitSearchIndex) {
             useSearchStore().populateFromContent(db.getContents())
             useSearchStore().populateFromTabsets()
@@ -277,7 +279,8 @@ export function useTabsetService() {
             if (!tabset.type) {
                 tabset.type = TabsetType.DEFAULT
             }
-            console.log("saving tabset", tabset.name, tabset)
+            const additionalInfo = _.map(tabset.tabs, t => t.monitor)
+            console.log(`saving tabset '${tabset.name}' with ${tabset.tabs.length} tab(s)`)//, additionalInfo)
             return db.saveTabset(tabset)
         }
         return Promise.reject("tabset id not set")
@@ -318,16 +321,9 @@ export function useTabsetService() {
         if (!tab || !tab.url) {
             return Promise.resolve('done')
         }
+        console.log("saving text for", tab.id, tab.url)
         const title = tab.title || ''
         const tabsetIds: string[] = tabsetsFor(tab.url)
-        //console.log("checking candidates", useTabsStore().tabsets.values())
-        const candidates = _.map(
-            _.filter([...useTabsStore().tabsets.values()], (ts: Tabset) =>
-                ts.type === TabsetType.DEFAULT || ts.type === TabsetType.SESSION),
-            (ts: Tabset) => {
-                return {"name": ts.name, "id": ts.id}
-            })
-
 
         db.saveContent(tab, text, metas, title, tabsetIds)
             .catch((err: any) => console.log("err", err))
@@ -342,7 +338,6 @@ export function useTabsetService() {
                 _.forEach(tabset.tabs, (t: Tab) => {
                     //console.log("comparing", t.url, tab.url)
                     if (t.url === tab.url) {
-                        //console.log("updating meta data in tab", tab.id, metas)
                         if (metas['description' as keyof object]) {
                             t.description = metas['description' as keyof object]
                             // @ts-ignore
@@ -380,35 +375,55 @@ export function useTabsetService() {
                             t.image = image
                         }
 
-                        const oldContent = t.contentHash
+                        const oldContentHash = t.contentHash
                         if (text && text.length > 0) {
                             t.contentHash = uuidv5(text, 'da42d8e8-2afd-446f-b72e-8b437aa03e46')
                         } else {
                             t.contentHash = ""
                         }
-                        if (oldContent && oldContent !== '' && t.contentHash !== '' && t.url) {
-                            // TODO not ready yet (like this)
-                            // useSuggestionsStore().addSuggestion(
-                            //   new Suggestion(uid(), 'Content Change Detected', "Info: Something might have changed in " + t.url + ".",
-                            //     t.url, SuggestionType.CONTENT_CHANGE))
+                        if (usePermissionsStore().hasFeature(FeatureIdent.MONITORING) &&
+                            t.monitor && t.monitor.type === MonitoringType.CONTENT_HASH) {
+                            if (oldContentHash && oldContentHash !== '' &&
+                                t.contentHash !== oldContentHash &&
+                                t.contentHash !== '' && t.url) {
+
+                                console.log("%ccontenthash changed for", "color:yellow", t.url)
+
+                                const id = btoa(t.url)
+                                const msg = "Info: Something might have changed in '" + (t.name ? t.name : t.title) + "'."
+                                const suggestion = new Suggestion(id, 'Content Change Detected',
+                                    msg,
+                                    t.url, SuggestionType.CONTENT_CHANGE)
+                                suggestion.setData({url: t.url, tabId: t.id})
+                                suggestion.state = SuggestionState.NOTIFICATION
+                                useSuggestionsStore().addSuggestion(suggestion)
+                                    .then(() => {
+                                        if (usePermissionsStore().hasFeature(FeatureIdent.NOTIFICATIONS)) {
+                                            chrome.notifications.create(id, {
+                                                title: "Tabset Extension Message",
+                                                type: "basic",
+                                                iconUrl: chrome.runtime.getURL("www/favicon.ico"),
+                                                message: msg,
+                                                buttons: [{title: 'show'}, {title: 'ignore'}]
+                                            }, (callback: any) => {
+                                                //console.log("got callback", callback)
+                                            })
+                                            //useSuggestionsStore().updateSuggestionState(id, SuggestionState.NOTIFICATION)
+                                        }
+                                    })
+                                    .catch((err) => {
+                                        console.debug("got error", err)
+                                    })
+                            }
                         }
 
-                        savePromises.push(saveTabset(tabset)
-                            .then((res) => {
-                                // @ts-ignore
-                                console.log(`saved tabset with _id: ${tabset._id}, _rev: ${tabset._rev}`)
-                                //tabset._rev = res._rev
-
-                            }))
+                        savePromises.push(saveTabset(tabset))
                     }
                 })
             }
         })
 
         return Promise.all(savePromises)
-            .then((res) => {
-                //console.log("all save promises fulfilled")
-            })
     }
 
     const saveMetaLinksFor = (tab: chrome.tabs.Tab, metaLinks: MetaLink[]) => {
@@ -496,7 +511,7 @@ export function useTabsetService() {
     const saveBlob = (tab: chrome.tabs.Tab | undefined, blob: Blob): Promise<string> => {
         if (tab && tab.url) {
             const id: string = uid()
-            return db.saveBlob(id, tab.url, blob, 'PNG')
+            return db.saveBlob(id, tab.url, blob, BlobType.PNG, '')
                 .then(() => Promise.resolve(id))
                 .catch(err => Promise.reject(err))
         }
@@ -504,9 +519,8 @@ export function useTabsetService() {
     }
 
     const getBlob = (blobId: string): Promise<any> => {
-        return db.getBlob(blobId)
+        return Promise.reject("not implemented")//db.getBlob(blobId)
     }
-
 
     const saveRequestFor = (url: string, requestInfo: RequestInfo) => {
         if (url) {
@@ -580,28 +594,28 @@ export function useTabsetService() {
         return false;
     }
 
-    const handleAnnotationMessage = (msg: object) => {
-        console.log("yyy", msg)
-        switch (msg['name' as keyof object]) {
-            case "recogito-annotation-created":
-                const url = msg['url' as keyof object]
-                console.log("url", url)
-                const tab = useTabsStore().tabForUrlInSelectedTabset(url)
-                if (tab) {
-                    // if (!tab.annotations) {
-                    //   tab.annotations = new Map()
-                    // }
-                    console.log("tab.annotations", tab.annotations)
-                    //tab.annotations.set(msg['annotation' as keyof object]['id'], msg['annotation' as keyof object])
-                    tab.annotations.push(msg['annotation' as keyof object])
-                }
-                console.log("got tab", tab)
-                saveCurrentTabset()
-                break
-            default:
-                console.log("unhandled massage", msg)
-        }
-    }
+    // const handleAnnotationMessage = (msg: object) => {
+    //     console.log("yyy", msg)
+    //     switch (msg['name' as keyof object]) {
+    //         case "recogito-annotation-created":
+    //             const url = msg['url' as keyof object]
+    //             console.log("url", url)
+    //             const tab = useTabsStore().tabForUrlInSelectedTabset(url)
+    //             if (tab) {
+    //                 // if (!tab.annotations) {
+    //                 //   tab.annotations = new Map()
+    //                 // }
+    //                 console.log("tab.annotations", tab.annotations)
+    //                 //tab.annotations.set(msg['annotation' as keyof object]['id'], msg['annotation' as keyof object])
+    //                 tab.annotations.push(msg['annotation' as keyof object])
+    //             }
+    //             console.log("got tab", tab)
+    //             saveCurrentTabset()
+    //             break
+    //         default:
+    //             console.log("unhandled massage", msg)
+    //     }
+    // }
 
     const tabsToShow = (tabset: Tabset): Tab[] => {
         if (tabset.type === TabsetType.DYNAMIC &&
@@ -623,37 +637,37 @@ export function useTabsetService() {
         let tabs: Tab[] = tabset.tabs
 
         // Tabs with placeholder
-        let placeholderTabs: Tab[] = []
-        let removeTabIds: string[] = []
-        tabs.forEach((t: Tab) => {
-            if (t.placeholders && t.placeholders.type === PlaceholdersType.URL_SUBSTITUTION) {
-                const subs = t.placeholders.config
-                Object.entries(subs).forEach(e => {
-                    const name = e[0]
-                    const val = e[1]
-                    val.split(",").forEach((v: string) => {
-                        const substitution = v.trim()
-                        if (substitution.length > 0) {
-                            const clonedTab = JSON.parse(JSON.stringify(t));
-                            clonedTab.id = uid()
-                            clonedTab.description = undefined
-                            let useUrl = t.url || ''
-                            let useName = t.name || t.title || ''
-                            Object.entries(subs).forEach(e1 => {
-                                useUrl = useUrl.replaceAll("${" + e1[0] + "}", substitution)
-                                useName = useName.replaceAll("${" + e1[0] + "}", substitution)
-                            })
-                            clonedTab.url = useUrl
-                            clonedTab.name = useName
-                            placeholderTabs.push(clonedTab)
-                            removeTabIds.push(t.id)
-                        }
-                    })
-                })
-            }
-        })
-        tabs = _.filter(tabs, (t: Tab) => removeTabIds.indexOf(t.id) < 0)
-        tabs = tabs.concat(placeholderTabs)
+        // let placeholderTabs: Tab[] = []
+        // let removeTabIds: string[] = []
+        // tabs.forEach((t: Tab) => {
+        //     if (t.placeholders && t.placeholders.type === PlaceholdersType.URL_SUBSTITUTION) {
+        //         const subs = t.placeholders.config
+        //         Object.entries(subs).forEach(e => {
+        //             const name = e[0]
+        //             const val = e[1]
+        //             val.split(",").forEach((v: string) => {
+        //                 const substitution = v.trim()
+        //                 if (substitution.length > 0) {
+        //                     const clonedTab = JSON.parse(JSON.stringify(t));
+        //                     clonedTab.id = uid()
+        //                     clonedTab.description = undefined
+        //                     let useUrl = t.url || ''
+        //                     let useName = t.name || t.title || ''
+        //                     Object.entries(subs).forEach(e1 => {
+        //                         useUrl = useUrl.replaceAll("${" + e1[0] + "}", substitution)
+        //                         useName = useName.replaceAll("${" + e1[0] + "}", substitution)
+        //                     })
+        //                     clonedTab.url = useUrl
+        //                     clonedTab.name = useName
+        //                     placeholderTabs.push(clonedTab)
+        //                     removeTabIds.push(t.id)
+        //                 }
+        //             })
+        //         })
+        //     }
+        // })
+        // tabs = _.filter(tabs, (t: Tab) => removeTabIds.indexOf(t.id) < 0)
+        // tabs = tabs.concat(placeholderTabs)
 
 
         // TODO order??
@@ -667,7 +681,6 @@ export function useTabsetService() {
                 t.description?.indexOf(filter) >= 0
         })
     }
-
 
 
     return {
@@ -700,7 +713,7 @@ export function useTabsetService() {
         saveBlob,
         getBlob,
         reloadTabset,
-        handleAnnotationMessage,
+        //handleAnnotationMessage,
         tabsToShow
     }
 

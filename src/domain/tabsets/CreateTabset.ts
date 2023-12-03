@@ -1,6 +1,5 @@
 import Command from "src/domain/Command";
 import {ExecutionResult} from "src/domain/ExecutionResult";
-import {DeleteTabsetCommand} from "src/domain/tabsets/DeleteTabset";
 import {useTabsetService} from "src/services/TabsetService2";
 import {SaveOrReplaceResult} from "src/models/SaveOrReplaceResult";
 import {useUtils} from "src/services/Utils";
@@ -14,19 +13,7 @@ import {useWindowsStore} from "src/stores/windowsStore";
 import {STRIP_CHARS_IN_USER_INPUT} from "boot/constants";
 import {TabsetType} from "src/models/Tabset";
 
-const {inBexMode, sendMsg} = useUtils()
-
-class UndoCreateTabsetCommand implements Command<object> {
-
-    constructor(public tabsetId: string) {
-    }
-
-    execute(): Promise<ExecutionResult<object>> {
-        return new DeleteTabsetCommand(this.tabsetId).execute()
-            .then(res => Promise.resolve(new ExecutionResult(res, "Tabset was deleted again")))
-    }
-
-}
+const {sendMsg} = useUtils()
 
 export class CreateTabsetCommand implements Command<SaveOrReplaceResult> {
 
@@ -42,7 +29,8 @@ export class CreateTabsetCommand implements Command<SaveOrReplaceResult> {
     async execute(): Promise<ExecutionResult<SaveOrReplaceResult>> {
         try {
             //const trustedWindowName = this.windowToOpen.replace(STRIP_CHARS_IN_USER_INPUT, '')
-            const windowId = this.windowToOpen.replace(STRIP_CHARS_IN_USER_INPUT, '')
+            const windowId = this.windowToOpen ?
+                this.windowToOpen.replace(STRIP_CHARS_IN_USER_INPUT, '') : 'current'
             useWindowsStore().addToWindowSet(windowId)
             const result: SaveOrReplaceResult = await useTabsetService()
                 .saveOrReplaceFromChromeTabs(this.tabsetName, this.tabsToUse, this.merge, windowId, TabsetType.DEFAULT, this.color)
@@ -69,13 +57,8 @@ export class CreateTabsetCommand implements Command<SaveOrReplaceResult> {
                         return res
                     }
                 )
-            let doneMsg = 'Tabset \'' + this.tabsetName + '\' created successfully'
-            if (result['replaced' as keyof object] && result['merged' as keyof object]) {
-                doneMsg = 'Existing Tabset \'' + this.tabsetName + '\' can be updated now'
-            } else if (result['replaced' as keyof object]) {
-                doneMsg = 'Existing Tabset \' ' + this.tabsetName + '\' was overwritten'
-            }
-            return Promise.resolve(new ExecutionResult<SaveOrReplaceResult>(result, doneMsg, new UndoCreateTabsetCommand(result.tabset.id)))
+            let doneMsg = 'Tabset created'
+            return Promise.resolve(new ExecutionResult<SaveOrReplaceResult>(result, doneMsg))
         } catch (err) {
             return Promise.reject(err)
         }

@@ -30,9 +30,10 @@
         </div>
 
         <div class="col-7 text-body2 ellipsis cursor-pointer"
+             :class="isCurrentTab(toTab(chromeTab)) ? 'text-bold' : ''"
              @mouseenter="emitInfo(chromeTab?.url)"
              @mouseout="emitInfo(undefined)"
-             @click="NavigationService.openOrCreateTab(chromeTab?.url || '')">
+             @click="NavigationService.openOrCreateTab([chromeTab?.url || ''])">
           {{ chromeTab?.title }}
           <q-tooltip class="tooltip" v-if="useSettingsStore().isEnabled('dev')">
             {{ chromeTab.id }} / {{ chromeTab.url }}
@@ -77,6 +78,8 @@ const props = defineProps({
 })
 
 const emits = defineEmits(['selectionChanged', 'addedToTabset', 'hasSelectable'])
+
+const {isCurrentTab} = useUtils()
 
 const tabsStore = useTabsStore()
 

@@ -20,7 +20,7 @@ const emits = defineEmits(['wasClicked'])
 const props = defineProps({
   icon: {type: String, required: true},
   label: {type: String, required: true},
-  color: {type: String, default: 'accent'}
+  color: {type: String, default: 'info'}
 })
 
 </script>

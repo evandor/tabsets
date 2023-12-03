@@ -40,7 +40,7 @@
     <q-item-section
       @mouseover="showButtons(props.bookmark.chromeBookmark?.id, true)"
       @mouseleave="showButtons(props.bookmark.chromeBookmark?.id, false)"
-      @click.stop="NavigationService.openOrCreateTab(props.bookmark.chromeBookmark?.url )">
+      @click.stop="NavigationService.openOrCreateTab([props.bookmark.chromeBookmark?.url] )">
 
       <q-item-label>
         <div>{{ props.bookmark.chromeBookmark?.title }}
