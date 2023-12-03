@@ -37,7 +37,7 @@ onMounted(() => {
         if (searchInputRef.value) {
           searchInputRef.value?.focus()
         }
-      }, 200
+      }, 500
   )
 })
 

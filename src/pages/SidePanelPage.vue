@@ -261,7 +261,7 @@ const scrollToElement = (el: any, delay: number) => {
 }
 
 const updateSelectedTabset = (tabsetId: string, open: boolean, index: number | undefined = undefined) => {
-  console.log("updated...", tabsetId, open, Object.keys(tabsetExpanded.value))
+  //console.log("updated...", tabsetId, open, Object.keys(tabsetExpanded.value))
   tabsetExpanded.value.set(tabsetId, open)
   if (open) {
     if (index) {

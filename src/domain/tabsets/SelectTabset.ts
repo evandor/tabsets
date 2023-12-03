@@ -17,7 +17,7 @@ export class SelectTabsetCommand implements Command<Tabset | undefined> {
 
   constructor(
     public tabsetId: string,
-    public spaceId: string | undefined) {
+    public spaceId: string | undefined = undefined) {
   }
 
   // TODO this return the old currentTabset - why? needed?
