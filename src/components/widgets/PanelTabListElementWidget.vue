@@ -77,7 +77,7 @@
         @mouseover="showButtonsProp = true"
         @mouseleave="showButtonsProp = false">
       <div class="row q-ma-none">
-        <div class="col-11 q-pr-lg cursor-pointer">
+        <div class="col-11 q-pr-lg cursor-pointer" @click="gotoTab()">
            <span v-if="props.sorting === TabSorting.URL">
               <q-icon name="arrow_right" size="16px"/>
            </span>
@@ -370,7 +370,6 @@ watchEffect(() => {
 watchEffect(async () => {
   if (props.tab) {
     pngs.value = await PdfService.getPngsForTab(props.tab.id)
-    console.log("got", pngs.value, props.tab.id)
   }
 })
 

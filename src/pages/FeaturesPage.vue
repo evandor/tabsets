@@ -38,7 +38,7 @@
     </div>
     <div class="col text-right q-mr-xl">
       <div v-if="!text.get(feature)?.planned">
-        <q-btn v-if="!hasFeature()"
+        <q-btn v-if="!hasFeature()" color="warning"
                label="Activate Feature" @click="grant(feature)"/>
         <q-btn v-else
                label="Deactivate Feature" @click="revoke(feature)"/>

@@ -30,7 +30,7 @@ class NavigationService {
         const existingWindow = await useWindowsStore().currentWindowFor(useWindowIdent)
 
         if (useWindowIdent !== 'current') {
-            console.log("existingWindow", existingWindow)
+            //console.log("existingWindow", existingWindow)
             if (!existingWindow) {
 
                 const createData: any = {url: withUrls}

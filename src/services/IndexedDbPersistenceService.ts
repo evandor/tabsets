@@ -552,7 +552,6 @@ class IndexedDbPersistenceService implements PersistenceService {
             //console.log("storing json", asJson, window.id)
             await this.db.put('windows', asJson, window.id)
         } else {
-            console.log("storing window2", window.id)
             await this.db.put('windows', window, window.id)
         }
     }
@@ -564,7 +563,7 @@ class IndexedDbPersistenceService implements PersistenceService {
             asJson['title'] = name
             asJson['screenLabel'] = screenLabel
             delete asJson['tabs']
-            console.log("storing window", asJson, window.id)
+            //console.log("storing window", asJson, window.id)
             await this.db.put('windows', asJson, window.id)
         } catch (err) {
             console.log("error renaming window", err)
