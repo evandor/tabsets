@@ -16,6 +16,14 @@ import {useWindowsStore} from "stores/windowsStore";
 import {MonitoringType} from "src/models/Monitor";
 import {Router} from "vue-router";
 
+// @ts-ignore
+import rangy from "rangy/lib/rangy-core.js";
+//import "rangy/lib/rangy-highlighter";
+//import "rangy/lib/rangy-classapplier";
+//import "rangy/lib/rangy-textrange";
+import "rangy/lib/rangy-serializer";
+
+
 function runHousekeeping() {
     //housekeeping()
 
@@ -172,6 +180,12 @@ class ChromeApi {
                                 title: 'Save to current Tabset',
                                 contexts: ['all']
                             })
+                            chrome.contextMenus.create({
+                                id: 'annotate_website',
+                                parentId: 'tabset_extension',
+                                title: 'Annotate',
+                                contexts: ['all']
+                            })
                             //console.log("building context menu from ", tabsStore.tabsets)
                             _.forEach([...tabsStore.tabsets.values()], (ts: Tabset) => {
                                 //console.log("new submenu from", ts.id)
@@ -219,6 +233,11 @@ class ChromeApi {
                     } else if (e.menuItemId === 'save_to_currentTS') {
                         const tabId = tab?.id || 0
                         this.executeAddToTS(tabId, useTabsStore().currentTabsetId)
+                    } else if (e.menuItemId === 'annotate_website') {
+                        console.log("creating annotation", tab)
+                        if (tab && tab.id) {
+                            this.executeAnnotationJS(tab.id)
+                        }
                     } else if (e.menuItemId.toString().startsWith("save_as_tab|")) {
                         //console.log("got", e, e.menuItemId.split("|"))
                         const tabId = tab?.id || 0
@@ -416,6 +435,43 @@ class ChromeApi {
                 files: ['clipping.js']
             });
         });
+    }
+
+    executeAnnotationJS(tabId: number) {
+        // function annotate(greeting: string) {
+        //     console.log("=======", greeting);
+        //
+        //     console.log("tabsets: initializing content script for website annotation")
+        //     let selection = document.getSelection()
+        //     console.log("selection", selection, selection?.toString())
+        //     // @ts-ignore
+        //     if (selection?.rangeCount > 0) {
+        //         const range = selection?.getRangeAt(0)
+        //         console.log("got range", range)
+        //         console.log("got range", rangy.serializeRange(range))
+        //         const msg = {
+        //             msg: 'capture-annotation',
+        //             text: selection?.toString(),
+        //             range: rangy.serializeRange(range)
+        //         }
+        //         console.log("tabsets: sending message", msg)
+        //         chrome.runtime.sendMessage(msg, (callback) => {
+        //             if (chrome.runtime.lastError) {
+        //                 console.warn("got runtime error", chrome.runtime.lastError)
+        //             }
+        //         })
+        //     }
+        //
+        // }
+        //files: ['annotation.js']
+        // @ts-ignore
+        chrome.scripting.executeScript({
+            target: {tabId: tabId},
+            //func: annotate,
+            files: ['annotation.js']
+            //args: ['Hello']
+        });
+
     }
 
     // executeQuoteJS(tabId: number) {

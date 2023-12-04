@@ -406,6 +406,13 @@ text.set(FeatureIdent.MONITORING.toLowerCase(), {
   more: 'https://docs.tabsets.net/website-monitoring',
   permissions: []
 })
+text.set(FeatureIdent.ANNOTATIONS.toLowerCase(), {
+  name: 'Annotate Website',
+  description: 'Hightlight text on a website and create and comment on annotations.',
+  img: 'o_auto_awesome',
+  //more: 'https://docs.tabsets.net/website-monitoring',
+  permissions: []
+})
 
 
 watchEffect(() => {

@@ -67,6 +67,7 @@ export function useUtils() {
         const windowId = useWindowsStore().currentWindow?.id || 0
         const currentChromeTab = useTabsStore().getCurrentChromeTab(windowId) || useTabsStore().currentChromeTab
         if  (currentChromeTab.url === tab.url) {
+            tab.chromeTabId = currentChromeTab.id
             return true
         }
         //console.log("checking", currentChromeTab.url, "/" + btoa(tab.url || ''), currentChromeTab.url?.indexOf("/" + btoa(tab.url || '')) )
