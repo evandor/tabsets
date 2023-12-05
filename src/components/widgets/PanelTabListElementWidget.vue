@@ -169,7 +169,14 @@
               <q-tooltip class="tooltip-small">This tab is created by substituting parts of its URL</q-tooltip>
             </q-icon>
 
-            <template v-if="(props.tab as Tab).monitor || suggestion || (props.tab as Tab).placeholders || pngs.length > 0">
+            <q-icon v-if="(props.tab as Tab).annotations && (props.tab as Tab).annotations.length > 0"
+                    name="feedback" class="q-mr-xs" color="warning">
+              <q-tooltip class="tooltip-small">This tab has annotations</q-tooltip>
+            </q-icon>
+
+            <template v-if="(props.tab as Tab).monitor || suggestion || (props.tab as Tab).placeholders
+                              || (props.tab as Tab).annotations && (props.tab as Tab).annotations.length > 0
+                              || pngs.length > 0">
               <span>-</span>
             </template>
 
@@ -216,6 +223,19 @@
       </div>
     </q-item-label>
 
+    <!-- === annotations === -->
+    <q-item-label v-if="useUiStore().listDetailLevelGreaterEqual(ListDetailLevel.SOME, props.tabset.details) &&
+      (props.tab as Tab).annotations && (props.tab as Tab).annotations.length > 0"
+                  class="text-grey-10" text-subtitle1>
+      <div class="row" v-for="a in (props.tab as Tab).annotations">
+        <div class="col-10" @click="showAnnotation(props.tab as Tab, a)">{{ a.text }}</div>
+        <div class="col-2 text-right">
+          <q-icon name="delete" color="negative" @click="deleteAnnotation(props.tab as Tab, a)"/>
+        </div>
+      </div>
+    </q-item-label>
+
+    <!-- === badges === -->
     <q-item-label v-if="props.showTabsets">
       <template v-for="badge in tsBadges">
         <q-chip clickable @click.stop="openTabset(badge)"
@@ -252,12 +272,14 @@ import {useGroupsStore} from "stores/groupsStore";
 import {DeleteChromeGroupCommand} from "src/domain/groups/DeleteChromeGroupCommand";
 import {PlaceholdersType} from "src/models/Placeholders";
 import {uid, useQuasar} from "quasar";
-import {TabAndTabsetId} from "src/models/TabAndTabsetId";
 import MonitoringDialog from "components/dialogues/MonitoringDialog.vue";
 import {useSuggestionsStore} from "stores/suggestionsStore";
 import {Suggestion, SuggestionState} from "src/models/Suggestion";
 import PdfService from "src/services/PdfService";
 import {SavedBlob} from "src/models/SavedBlob";
+// @ts-ignore
+import rangy from "rangy/lib/rangy-core.js";
+import "rangy/lib/rangy-serializer";
 
 const {inBexMode, isCurrentTab} = useUtils()
 
@@ -479,6 +501,38 @@ const monitoringDialog = (tab: Tab) => {
 }
 
 const openImage = () => window.open(chrome.runtime.getURL('www/index.html#/mainpanel/png/' + props.tab.id + "/" + pngs.value[0].id))
+
+const deleteAnnotation = async (tab: Tab, annotationToDelete:any) => {
+  //console.log("deleting annotatin", tab, annotationToDelete)
+  tab.annotations = _.filter(tab.annotations, a => a.id !== annotationToDelete.id)
+  useTabsetService().saveCurrentTabset()
+}
+
+const showAnnotation = async (tab: Tab, a:any) => {
+  console.log("a!", a, tab.chromeTabId)
+
+ // await $q.bex.send('highlight.content', { selector: '.div' })
+  //$q.notify('Text has been highlighted')
+
+  console.log("a!!", $q.bex)
+  //await $q.bex.send('highlight.annotations', { selector: '.some-class' })
+  //$q.notify('Text has been highlighted')
+  //$q.bex.send('highlight.content', { selector: '.some-class' })
+  console.log("done")
+  const range: string = a['range']
+  chrome.scripting.executeScript({
+    target: {tabId: tab.chromeTabId || 0, allFrames: true},
+    files: ['highlight-annotations.js']
+     //args: [tab.chromeTabId || 0, range],
+    // func: (tabId: number, rangeString: string) => {
+    //   console.log("tabId", tabId, rangeString)
+    //   const range = rangy.deserializeRange(rangeString)
+    // }
+  }, (result: any) => {
+    console.log("result", result)
+    //window.close()
+  });
+}
 
 </script>
 

@@ -16,6 +16,14 @@ import {useWindowsStore} from "stores/windowsStore";
 import {MonitoringType} from "src/models/Monitor";
 import {Router} from "vue-router";
 
+// @ts-ignore
+import rangy from "rangy/lib/rangy-core.js";
+//import "rangy/lib/rangy-highlighter";
+//import "rangy/lib/rangy-classapplier";
+//import "rangy/lib/rangy-textrange";
+import "rangy/lib/rangy-serializer";
+
+
 function runHousekeeping() {
     //housekeeping()
 
@@ -172,6 +180,12 @@ class ChromeApi {
                                 title: 'Save to current Tabset',
                                 contexts: ['all']
                             })
+                            chrome.contextMenus.create({
+                                id: 'annotate_website',
+                                parentId: 'tabset_extension',
+                                title: 'Annotate',
+                                contexts: ['all']
+                            })
                             //console.log("building context menu from ", tabsStore.tabsets)
                             _.forEach([...tabsStore.tabsets.values()], (ts: Tabset) => {
                                 //console.log("new submenu from", ts.id)
@@ -219,6 +233,11 @@ class ChromeApi {
                     } else if (e.menuItemId === 'save_to_currentTS') {
                         const tabId = tab?.id || 0
                         this.executeAddToTS(tabId, useTabsStore().currentTabsetId)
+                    } else if (e.menuItemId === 'annotate_website') {
+                        console.log("creating annotation", tab)
+                        if (tab && tab.id) {
+                            this.executeAnnotationJS(tab.id)
+                        }
                     } else if (e.menuItemId.toString().startsWith("save_as_tab|")) {
                         //console.log("got", e, e.menuItemId.split("|"))
                         const tabId = tab?.id || 0
@@ -415,6 +434,13 @@ class ChromeApi {
                 target: {tabId: tabId},
                 files: ['clipping.js']
             });
+        });
+    }
+
+    executeAnnotationJS(tabId: number) {
+        chrome.scripting.executeScript({
+            target: {tabId: tabId},
+            files: ['annotation.js']
         });
     }
 

@@ -109,6 +109,23 @@ class NavigationService {
                             if (groups.length > i) {
                                 ctx.handleGroup(groups[i], useWindowId, tab);
                             }
+
+                            const tabForUrl = useTabsStore().tabForUrlInSelectedTabset(url || '')
+                            console.log("%chighlighting annotations", "background-color:green",tab.id, url, tabForUrl)
+                            if (tabForUrl) {
+                                // chrome.scripting.executeScript({
+                                //     target: {tabId: tab.id},
+                                //     //files: ['highlight-annotations.js']
+                                //     args: [tabForUrl.annotations],
+                                //     func: (annotations:any) => {
+                                //         console.log("annotations", annotations)
+                                //         const range = rangy.deserializeRange(annotations[0]['range'])
+                                //         console.log("range", range)
+                                //     }
+                                // });
+
+                            }
+
                         })
 
                     }

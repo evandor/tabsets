@@ -1,5 +1,6 @@
 import {Placeholders} from "src/models/Placeholders";
 import {Monitor} from "src/models/Monitor";
+import {uid} from "quasar";
 
 export enum TabSorting {
   URL = "URL",
@@ -29,10 +30,14 @@ export class HTMLSelectionComment {
 }
 
 export class HTMLSelection {
+  private created: number;
+  private id: string;
   constructor(
-    public selection: string = '',
     public text: string = '',
+    public range: string = '',
     public comments: HTMLSelectionComment[] = []) {
+    this.id = uid()
+    this.created = new Date().getTime()
   }
 }
 
@@ -40,7 +45,7 @@ export class Tab {
   created: number
   updated: number
   lastActive: number
-  activatedCount: number
+  activatedCount: numberq
   loadedCount: number
 
   // from chrome tab
@@ -92,6 +97,8 @@ export class Tab {
   canvasTop: number | undefined
   canvasWidth: number | undefined
   canvasHeight: number | undefined
+
+  annotations: HTMLSelection[] = []
 
   constructor(public id: string, chromeTab: chrome.tabs.Tab) {
     this.created = new Date().getTime()

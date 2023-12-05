@@ -237,9 +237,12 @@ module.exports = configure(function (ctx) {
     bex: {
       contentScripts: [
         'content-script',
+        'my-content-script',
         'tabsets-content-script',
         'content-script-thumbnails',
-        'clipping'
+        'clipping',
+        'annotation',
+        'highlight-annotations'
       ],
       css: ['clipping.css']
 
