@@ -89,7 +89,7 @@ function annotationScript(tabId: string, annotations: any[]) {
     s.src = chrome.runtime.getURL('www/js/rangy/rangy.js');
     s.setAttribute("type", 'text/javascript');
     //s.src = "https://cdn.jsdelivr.net/npm/rangy@1.3.1/lib/rangy-core.min.js";
-    (document.head || document.documentElement).appendChild(s);
+    document.body.appendChild(s);
 
     // var s2 = document.createElement('script');
     // //s2.type = "module"
@@ -99,14 +99,20 @@ function annotationScript(tabId: string, annotations: any[]) {
     // s2.defer = true;
     // (document.head || document.documentElement).appendChild(s2);
 
-    var s3 = document.createElement('script');
-    s3.dataset.id = 'tabsets-rangy-annotation-data';
-    s3.dataset.annotations = JSON.stringify(annotations);
-    (document.head || document.documentElement).appendChild(s3);
+    // var s3 = document.createElement('script');
+    // s3.dataset.id = 'tabsets-rangy-annotation-data';
+    // s3.dataset.annotations = JSON.stringify(annotations);
+    // (document.head || document.documentElement).appendChild(s3);
 
-    console.log("x1", Object.values(annotations).length)
+    //console.log("x1", Object.values(annotations).length)
     //console.log("x2", JSON.stringify(annotations))
-    const annos = JSON.parse(JSON.stringify(annotations))
+    // const annos = JSON.parse(JSON.stringify(annotations))
+
+    // var s4 = document.createElement('script');
+    // s4.src = chrome.runtime.getURL('www/js/rangy/rangy-message-api.js');
+    // s4.setAttribute("type", 'text/javascript');
+    // document.body.appendChild(s4);
+
 //
 //
 //
@@ -424,6 +430,9 @@ class ChromeListeners {
 
         if (usePermissionsStore().hasFeature(FeatureIdent.THUMBNAILS)) {
             scripts.push("content-script-thumbnails.js")
+        }
+        if (usePermissionsStore().hasFeature(FeatureIdent.ANNOTATIONS)) {
+            scripts.push("highlight-annotations.js")
         }
         scripts.push("content-script.js")
         //scripts.push("recogito2.js")

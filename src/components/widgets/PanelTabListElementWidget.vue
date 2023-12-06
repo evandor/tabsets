@@ -514,23 +514,17 @@ const showAnnotation = async (tab: Tab, a:any) => {
  // await $q.bex.send('highlight.content', { selector: '.div' })
   //$q.notify('Text has been highlighted')
 
-  console.log("a!!", $q.bex)
-  //await $q.bex.send('highlight.annotations', { selector: '.some-class' })
-  //$q.notify('Text has been highlighted')
-  //$q.bex.send('highlight.content', { selector: '.some-class' })
-  console.log("done")
+  //console.log("a!!", $q.bex)
+  //console.log("done")
   const range: string = a['range']
-  chrome.scripting.executeScript({
-    target: {tabId: tab.chromeTabId || 0, allFrames: true},
-    files: ['highlight-annotations.js']
-     //args: [tab.chromeTabId || 0, range],
-    // func: (tabId: number, rangeString: string) => {
-    //   console.log("tabId", tabId, rangeString)
-    //   const range = rangy.deserializeRange(rangeString)
-    // }
-  }, (result: any) => {
-    console.log("result", result)
-    //window.close()
+  // chrome.scripting.executeScript({
+  //   target: {tabId: tab.chromeTabId || 0, allFrames: true},
+  //   files: ['highlight-annotations.js']
+  // }, (result: any) => {
+  //   console.log("result:", result)
+  // });
+  chrome.tabs.sendMessage(tab.chromeTabId, {action: "highlight-annotation", range: range}, function(response) {
+    console.log("hier, response: ", response)
   });
 }
 

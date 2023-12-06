@@ -29,6 +29,19 @@ export default bexContent((bridge: any) => {
     respond('sent')
   })
 
+
+  chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+    console.log("tabsets: !!!!!", request)
+    if (request === 'getContent') {
+      console.log("tabsets: received message for content", document.documentElement.outerHTML)
+      sendResponse({content: document.documentElement.outerHTML});
+    } else if (request.action === "highlight-annotation") {
+      sendResponse()
+    }
+    sendResponse({content: "unknown request in content-scripts: " + request});
+    return true
+  })
+
   /*const allImgs = document.querySelectorAll('img')
   allImgs.forEach(i => {
     const parent = i.parentElement || document.body

@@ -5,24 +5,18 @@ import rangy from "rangy/lib/rangy-core.js";
 //import "rangy/lib/rangy-highlighter";
 //import "rangy/lib/rangy-classapplier";
 //import "rangy/lib/rangy-textrange";
+//import "rangy/lib/rangy-selectionsaverestore"
 import "rangy/lib/rangy-serializer";
 
 
 export default bexContent((bridge: any) => {
 
-    console.log("tabsets: initializing content script for website annotation", bridge)
+    console.log("tabsets: initializing content script for website annotation")
 
-    // bridge.on('quasar.detect', ({ data, respond }) => {
-    //     console.log("quasar.detect", data)
-    //     // Let's resolve the `send()` call's promise, this way we can await it on the other side then display a notification.
-    //     respond()
-    // })
-    // bridge.on('highlight.content', ({ data, respond }) => {
-    //     console.log("highlight.content", data)
-    //     respond()
-    // })
+    //rangy.init()
+    //rangy.deleteContents()
 
-    let selection = document.getSelection()
+    let selection = rangy.getSelection()
     console.log("selection", selection, selection?.toString())
     // @ts-ignore
     if (selection?.rangeCount > 0) {
@@ -32,7 +26,7 @@ export default bexContent((bridge: any) => {
         const msg = {
             msg: 'capture-annotation',
             text: selection?.toString(),
-            range: rangy.serializeRange(range)
+            range: rangy.serializeRange(range, true)
         }
         console.log("tabsets: sending message", msg)
         chrome.runtime.sendMessage(msg, (callback) => {
@@ -42,5 +36,7 @@ export default bexContent((bridge: any) => {
         })
     }
 
+    var savedSel = rangy.saveSelection();
+    console.log("savedSel", savedSel)
 
 })
