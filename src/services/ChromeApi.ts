@@ -125,6 +125,8 @@ class ChromeApi {
 
         if (usePermissionsStore().hasAllOrigins() && usePermissionsStore().hasFeature(FeatureIdent.ANALYSE_TABS)) {
             this.startWebRequestListener()
+        } else {
+            this.stopWebRequestListener()
         }
     }
 

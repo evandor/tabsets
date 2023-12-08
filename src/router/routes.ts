@@ -257,6 +257,11 @@ const routes: RouteRecordRaw[] = [
     component: () => import('layouts/FullPageLayout.vue'),
     children: [{ path: '', component: () => import('pages/SearchResultPage.vue') }],
   },
+  {
+    path: '/imp/:sharedId',
+    component: () => import('layouts/PlainLayout.vue'),
+    children: [{ path: '', component: () => import('pages/public/ImportPublicTabsetPage.vue') }],
+  },
   // {
   //   path: '/annotations/:tabId',
   //   component: () => import('layouts/PlainLayout.vue'),

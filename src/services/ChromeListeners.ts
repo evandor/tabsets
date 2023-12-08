@@ -569,7 +569,7 @@ class ChromeListeners {
 
     private handleHtml2Text(request: any, sender: chrome.runtime.MessageSender, sendResponse: any) {
 
-        console.debug("handleHtml2Text", request, sender)
+        console.debug("handleHtml2Text", request.html?.length)
 
         if (sender && sender.url && request.html) {
             try {

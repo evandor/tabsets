@@ -579,14 +579,20 @@ class TabsetService {
   }
 
   share(tabsetId: string, sharing: TabsetSharing, sharedId: string | undefined, sharedBy: string | undefined): Promise<TabsetSharing> {
-    console.debug(`sharing ${tabsetId} as ${sharing}`)
+    console.debug(`setting properaty 'sharing' to ${sharing} for  ${tabsetId}`)
     const ts = getTabset(tabsetId)
     if (ts) {
       const oldSharing = ts.sharing
       ts.sharing = sharing
       ts.sharedBy = sharedBy
       if (sharing === TabsetSharing.UNSHARED) {
-        return FirebaseCall.delete("/share/public/" + sharedId)
+        console.log("deleting share for tabset", ts.sharedId)
+        return FirebaseCall.delete("/share/public/" + ts.sharedId)
+          .then(() => {
+            ts.sharedBy = undefined
+            ts.sharedId = undefined
+            saveTabset(ts)
+          })
       } else if (sharedId) {
         return FirebaseCall.put("/share/public/" + sharedId, ts)
           .then((res: any) => {

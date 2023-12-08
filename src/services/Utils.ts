@@ -61,12 +61,13 @@ export function useUtils() {
         }
     }
     const isCurrentTab = (tab: Tab) => {
-        if (!inBexMode() && !tab.url) {
+        if (!inBexMode() || !tab.url) {
             return false
         }
         const windowId = useWindowsStore().currentWindow?.id || 0
         const currentChromeTab = useTabsStore().getCurrentChromeTab(windowId) || useTabsStore().currentChromeTab
-        if  (currentChromeTab.url === tab.url) {
+        //console.log("checking current tab", currentChromeTab.url, tab.url, currentChromeTab.url === tab.url)
+        if (currentChromeTab.url === tab.url) {
             tab.chromeTabId = currentChromeTab.id
             return true
         }

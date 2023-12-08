@@ -45,7 +45,7 @@ export class Tab {
   created: number
   updated: number
   lastActive: number
-  activatedCount: numberq
+  activatedCount: number
   loadedCount: number
 
   // from chrome tab

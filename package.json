@@ -8,10 +8,11 @@
   "scripts": {
     "dev": "quasar dev -m bex",
     "dev spa (only for testing)": "quasar dev -m spa",
-    "dev pwa (only for testing)": "quasar dev -m pwa",
+    "dev pwa": "quasar dev -m pwa",
     "dev stage prod": "stage=production quasar dev -m bex",
     "dev electron": "quasar dev -m electron",
     "build": "quasar build -m bex",
+    "build pwa": "quasar build -m pwa",
     "build electron": "quasar build -m electron",
     "icon": "icongenie generate -i src/assets/icon.png",
     "test": "echo \"See package.json => scripts for available tests.\" && exit 0",
@@ -24,7 +25,8 @@
     "test:e2e": "npx playwright test",
     "test:e2e:showReport": "npx playwright show-report",
     "test:specificTest": "npx playwright test addFirstTabset",
-    "test:specificTest:debug": "npx playwright test addFirstTabset --debug"
+    "test:specificTest:debug": "npx playwright test addFirstTabset --debug",
+    "build pwa & deploy to india032": "quasar build -m pwa && scp -r -P 222 dist/pwa/* carsten@carsten.evandor.de:/home/carsten/tabsets/shared.tabsets.net"
   },
   "dependencies": {
     "@calumk/editorjs-columns": "^0.3.1",

@@ -144,7 +144,7 @@ class IndexedDbPersistenceService implements PersistenceService {
                 if (requestInfo.statusCode.toString().startsWith("30") && requestInfo.headers.length > 0) {
                     const suggestionId = uid()
                     const suggestion = new Suggestion(suggestionId,
-                        "Bookmark URL changed", "A bookmark has changed accoring to the server. Should the bookmark be updated?",
+                        "Tab URL changed", "A tab's URL has changed according to the server. Should the url be updated?",
                         "/suggestions/" + suggestionId,
                         SuggestionType.REDIRECT_HAPPENED_FOR_BOOKMARK)
                     let location = undefined
@@ -679,16 +679,13 @@ class IndexedDbPersistenceService implements PersistenceService {
     async addSuggestion(suggestion: Suggestion): Promise<void> {
         const suggestions = await this.getSuggestions()
         // console.log("%csuggestions from db", "color:red", suggestions)
-        const foundExistingInStateNewOrCanceled = _.find(suggestions,
-            (s: Suggestion) => s.state === SuggestionState.NEW || s.state === SuggestionState.DECISION_DELAYED)
-        if (foundExistingInStateNewOrCanceled && suggestion.state === SuggestionState.NEW) {
-            console.log("found existing in state new or canceled", foundExistingInStateNewOrCanceled)
-            if (foundExistingInStateNewOrCanceled && foundExistingInStateNewOrCanceled.url === suggestion.url) {
-                // foundExistingInStateNewOrCanceled.state = SuggestionState.APPLIED
-                // this.db.put('suggestions', foundExistingInStateNewOrCanceled, foundExistingInStateNewOrCanceled.id)
-                return Promise.reject("TODO: not: updated existing suggestion to 'applied'")
-            }
-            return Promise.reject("there's already a suggestion in state NEW, not adding (yet)")
+        const foundAsNewDelayedOrIgnored = _.find(suggestions,
+            (s: Suggestion) =>
+                s.state === SuggestionState.NEW ||
+                s.state === SuggestionState.IGNORED ||
+                s.state === SuggestionState.DECISION_DELAYED)
+        if (foundAsNewDelayedOrIgnored) { // && suggestion.state === SuggestionState.NEW) {
+            return Promise.reject(`there's already a suggestion in state ${foundAsNewDelayedOrIgnored.state}, not adding (now)`)
         }
         const found = _.find(suggestions, (s: Suggestion) => s.url === suggestion.url)
         if (!found) {

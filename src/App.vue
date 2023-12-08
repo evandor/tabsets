@@ -20,10 +20,4 @@ $q.dark.set($q.localStorage.getItem('darkMode') || false)
 console.log("calling appService init")
 AppService.init()
 
-function doOnTabOpened (url) {
-  console.log('New Browser Tab Openend: ', url)
-}
-
-//$q.bex.on('bex.tab.opened', doOnTabOpened)
-
 </script>

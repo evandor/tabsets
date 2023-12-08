@@ -17,8 +17,7 @@ import {useSettingsStore} from "stores/settingsStore";
 import {useBookmarksStore} from "stores/bookmarksStore";
 import {useWindowsStore} from "src/stores/windowsStore";
 import {useSearchStore} from "stores/searchStore";
-import {RouteLocationNormalizedLoaded, Router, useRoute, useRouter} from "vue-router";
-import {useUtils} from "src/services/Utils";
+import {useRouter} from "vue-router";
 import {useGroupsStore} from "stores/groupsStore";
 import {FeatureIdent} from "src/models/AppFeature";
 
@@ -74,10 +73,10 @@ class AppService {
                                 windowsStore.initialize(useDB(undefined).db)
                                 windowsStore.initListeners()
 
-
-                                // @ts-ignore
-                                if (tabsStore.tabsets.size === 0) {
-                                    console.log("pushing to sidepanel/welcome")
+                                // tabsets not in bex mode means running on "shared.tabsets.net"
+                                // probably running an import ("/imp/:sharedId")
+                                // we do not want to go to the welcome back
+                                if (tabsStore.tabsets.size === 0 && $q.platform.is.bex) {
                                     router.push("/sidepanel/welcome")
                                 }
                             })
