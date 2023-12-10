@@ -81,6 +81,8 @@
           label="Archive"/>
       </template>
 
+      <q-separator inset />
+
       <ContextMenuItem v-if="tabset.sharing === TabsetSharing.UNSHARED || !tabset.sharing"
                        v-close-popup
                        @was-clicked="shareTabsetPubliclyDialog(tabset)"
@@ -88,46 +90,30 @@
                        color="warning"
                        label="Share as link..."/>
 
-      <ContextMenuItem v-else
-        icon="keyboard_arrow_right"
-        label="Sharing...">
-
-        <q-item-section side>
-          <q-icon name="keyboard_arrow_right"/>
-        </q-item-section>
-        <q-menu anchor="top end" self="top start">
-          <q-list>
-            <q-item v-if="tabset.sharing === TabsetSharing.PUBLIC_OUTDATED"
-                    dense clickable v-close-popup @click="shareTabsetPubliclyDialog(tabset, true)">
-              <q-item-section>Republish shared tabset</q-item-section>
-            </q-item>
-            <q-item v-if="tabset.sharing === TabsetSharing.PUBLIC || tabset.sharing === TabsetSharing.PUBLIC_OUTDATED"
-                    @click="openPublicShare(tabset.id)"
-                    clickable v-close-popup>
-              <q-item-section>Open public page</q-item-section>
-            </q-item>
-            <q-item v-if="tabset.sharing === TabsetSharing.PUBLIC || tabset.sharing === TabsetSharing.PUBLIC_OUTDATED"
-                    @click="copyPublicShareToClipboard(tabset.id)"
-                    clickable v-close-popup>
-              <q-item-section>Copy public page link</q-item-section>
-            </q-item>
-            <q-item v-if="tabset.sharing === TabsetSharing.PUBLIC || tabset.sharing === TabsetSharing.PUBLIC_OUTDATED"
-                    clickable v-close-popup
-                    @click="removePublicShare(tabset.id)">
-              <q-item-section>Remove public share</q-item-section>
-            </q-item>
-
-
-          </q-list>
-        </q-menu>
-
+      <ContextMenuItem v-if="tabset.sharing === TabsetSharing.PUBLIC_LINK_OUTDATED"
+                       v-close-popup
+                       @was-clicked="shareTabsetPubliclyDialog(tabset, true)"
+                       icon="ios_share"
+                       color="warning"
+                       label="Republish">
+        <q-tooltip class="tooltip-small">Tabset has changed, republish</q-tooltip>
       </ContextMenuItem>
+
+      <ContextMenuItem v-if="tabset.sharing === TabsetSharing.PUBLIC_LINK || tabset.sharing === TabsetSharing.PUBLIC_LINK_OUTDATED"
+                       v-close-popup
+                       @was-clicked="removePublicShare(tabset.id)"
+                       icon="ios_share"
+                       color="warning"
+                       label="Stop Sharing">
+        <q-tooltip class="tooltip-small">Delete Shared Link</q-tooltip>
+      </ContextMenuItem>
+
+      <q-separator inset />
 
       <ContextMenuItem v-close-popup
                        @was-clicked="useSearchStore().reindexTabset(tabset.id)"
                        icon="o_note"
                        label="Re-Index Search (dev)"/>
-
 
       <q-separator inset/>
 

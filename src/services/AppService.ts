@@ -2,7 +2,7 @@ import {usePermissionsStore} from "stores/permissionsStore";
 import ChromeListeners from "src/services/ChromeListeners";
 import ChromeBookmarkListeners from "src/services/ChromeBookmarkListeners";
 import BookmarksService from "src/services/BookmarksService";
-import {useQuasar} from "quasar";
+import {uid, useQuasar} from "quasar";
 import IndexedDbPersistenceService from "src/services/IndexedDbPersistenceService";
 import {useNotificationsStore} from "stores/notificationsStore";
 import {useDB} from "src/services/usePersistenceService";
@@ -20,79 +20,85 @@ import {useSearchStore} from "stores/searchStore";
 import {useRouter} from "vue-router";
 import {useGroupsStore} from "stores/groupsStore";
 import {FeatureIdent} from "src/models/AppFeature";
+import MqttService from "src/services/mqtt/MqttService";
+import {useMessagesStore} from "src/stores/messagesStore";
 
 class AppService {
 
-    async init() {
+  async init() {
 
-        const spacesStore = useSpacesStore()
-        const tabsStore = useTabsStore()
-        const settingsStore = useSettingsStore()
-        const bookmarksStore = useBookmarksStore()
-        const windowsStore = useWindowsStore()
-        const groupsStore = useGroupsStore()
-        const searchStore = useSearchStore()
-        const router = useRouter()
-        const $q = useQuasar()
+    const spacesStore = useSpacesStore()
+    const tabsStore = useTabsStore()
+    const settingsStore = useSettingsStore()
+    const bookmarksStore = useBookmarksStore()
+    const windowsStore = useWindowsStore()
+    const messagesStore = useMessagesStore()
+    const groupsStore = useGroupsStore()
+    const searchStore = useSearchStore()
+    const router = useRouter()
+    const $q = useQuasar()
 
-        // init of stores and some listeners
-        usePermissionsStore().initialize(useDB(useQuasar()).localDb)
-            .then(() => {
-                ChromeListeners.initListeners()
-                ChromeBookmarkListeners.initListeners()
-                bookmarksStore.init()
-                BookmarksService.init()
-            })
-        settingsStore.initialize(useQuasar().localStorage);
-        tabsStore.initialize(useQuasar().localStorage);
+    MqttService.init()
 
-        searchStore.init()
+    // init of stores and some listeners
+    usePermissionsStore().initialize(useDB(useQuasar()).localDb)
+      .then(() => {
+        ChromeListeners.initListeners()
+        ChromeBookmarkListeners.initListeners()
+        bookmarksStore.init()
+        BookmarksService.init()
+      })
+    settingsStore.initialize(useQuasar().localStorage);
+    tabsStore.initialize(useQuasar().localStorage);
 
-        const localStorage = useQuasar().localStorage
+    searchStore.init()
+
+    const localStorage = useQuasar().localStorage
 
 // init db
-        IndexedDbPersistenceService.init("db")
-            .then(() => {
-                // init services
-                useNotificationsStore().initialize(useDB(undefined).db)
-                useSuggestionsStore().init(useDB(undefined).db)
-                tabsetService.setLocalStorage(localStorage)
-                spacesStore.initialize(useDB(undefined).db)
-                    .then(() => {
-                        useTabsetService().init(useDB(undefined).db, false)
-                            .then(() => {
-                                MHtmlService.init()
-                                //console.log("****", useRoute())
-                                ChromeApi.init(router)
+    IndexedDbPersistenceService.init("db")
+      .then(() => {
+        // init services
+        useNotificationsStore().initialize(useDB(undefined).db)
+        useSuggestionsStore().init(useDB(undefined).db)
+        messagesStore.initialize(useDB(undefined).db)
 
-                                if (usePermissionsStore().hasFeature(FeatureIdent.TAB_GROUPS)) {
-                                    groupsStore.initialize(useDB(undefined).db)
-                                    groupsStore.initListeners()
-                                }
+        tabsetService.setLocalStorage(localStorage)
+        spacesStore.initialize(useDB(undefined).db)
+          .then(() => {
+            useTabsetService().init(useDB(undefined).db, false)
+              .then(() => {
+                MHtmlService.init()
+                ChromeApi.init(router)
 
-                                windowsStore.initialize(useDB(undefined).db)
-                                windowsStore.initListeners()
+                if (usePermissionsStore().hasFeature(FeatureIdent.TAB_GROUPS)) {
+                  groupsStore.initialize(useDB(undefined).db)
+                  groupsStore.initListeners()
+                }
 
-                                // tabsets not in bex mode means running on "shared.tabsets.net"
-                                // probably running an import ("/imp/:sharedId")
-                                // we do not want to go to the welcome back
-                                if (tabsStore.tabsets.size === 0 && $q.platform.is.bex) {
-                                    router.push("/sidepanel/welcome")
-                                }
-                            })
-                    })
-            })
+                windowsStore.initialize(useDB(undefined).db)
+                windowsStore.initListeners()
 
-
-        useNotificationsStore().bookmarksExpanded = $q.localStorage.getItem("bookmarks.expanded") || []
-
-        // @ts-ignore
-        // if (!inBexMode() || (!chrome.sidePanel && chrome.action)) {
-        //   router.push("/start")
-        // }
+                // tabsets not in bex mode means running on "shared.tabsets.net"
+                // probably running an import ("/imp/:sharedId")
+                // we do not want to go to the welcome back
+                if (tabsStore.tabsets.size === 0 && $q.platform.is.bex) {
+                  router.push("/sidepanel/welcome")
+                }
+              })
+          })
+      })
 
 
-    }
+    useNotificationsStore().bookmarksExpanded = $q.localStorage.getItem("bookmarks.expanded") || []
+
+    // @ts-ignore
+    // if (!inBexMode() || (!chrome.sidePanel && chrome.action)) {
+    //   router.push("/start")
+    // }
+
+
+  }
 
 }
 

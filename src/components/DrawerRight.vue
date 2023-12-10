@@ -58,7 +58,6 @@
 
   <div class="row greyBorderTop"></div>
 
-  <!--  <div>{{useUiStore().rightDrawerViewStack}}*</div>-->
 <!--  <UnassignedAndOpenTabs v-if="tab === DrawerTabs.UNASSIGNED_TABS"/>-->
   <OpenTabsView v-if="tab === DrawerTabs.OPEN_TABS"/>
   <BookmarksTree v-else-if="tab === DrawerTabs.BOOKMARKS"/>

@@ -1,6 +1,20 @@
 <template>
 
-  <div class="wrap">
+  <div class="wrap" v-if="!runImport">
+    <div class="text-h4">Shared Tabset</div>
+
+    <div class="text-caption q-ma-lg">
+      'Anonymous' wants to share a tabset named '{{ name }}' with you.<br>
+      Click on "show" to proceed.
+    </div>
+
+    <div class="justify-center items-center q-gutter-md">
+      <q-btn label="Close Window" color="accent" />
+      <q-btn label="Show" color="warning" @click="start()" />
+    </div>
+  </div>
+
+  <div class="wrap" v-else>
     <div class="loading">
       <div class="bounceball q-mr-lg"></div>
       <div class="text">please wait, loading tabset...</div>
@@ -17,17 +31,19 @@ import {uid, useMeta, useQuasar} from "quasar";
 import {Tabset} from "src/models/Tabset";
 import {FirebaseCall} from "src/services/firebase/FirebaseCall";
 import {useTabsetService} from "src/services/TabsetService2";
+import {UserLevel, useUiStore} from "stores/uiStore";
 
 const route = useRoute();
 const router = useRouter();
 
 const $q = useQuasar()
 
-const tabsetId = ref(null as unknown as string)
+const shareId = ref(null as unknown as string)
 const tabset = ref<Tabset>(new Tabset(uid(), "empty", []))
+const runImport = ref(false)
 
 console.log("query", route.query['n'])
-const name = atob(route.query['n'] as string || btoa('unknown'))
+const name = ref<string>(atob(route.query['n'] as string || btoa('unknown')))
 const img = atob(route.query['i'] as string || btoa('https://tabsets.web.app/favicon.ico'))
 
 let waitCounter = 0
@@ -37,7 +53,8 @@ async function setupTabset(importedTS: Tabset) {
 
   try {
     console.log("useTabsetService()", useTabsetService())
-    await useTabsetService().saveTabset(importedTS)
+    const res = await useTabsetService().saveTabset(importedTS)
+    console.log("res", res)
     useTabsetService().selectTabset(importedTS.id)
     useTabsetService().reloadTabset(importedTS.id)
     router.push("/tabsets/" + tabset.value.id)
@@ -48,43 +65,51 @@ async function setupTabset(importedTS: Tabset) {
       router.push("/tabsets")
     }
   }
-
-
-  // if (!useTabsetService() && waitCounter < 10) {
-  //   waitCounter++
-  //   console.log("tabset service not ready yet, retrying ", waitCounter)
-  //   setTimeout(() => {
-  //     setupTabset(importedTS as Tabset)
-  //   }, 1000)
-  // } else if (waitCounter >= 10) {
-  //   router.push("/tabsets/")
-  // } else {
-  //   console.log("useTabsetService()", useTabsetService())
-  //   useTabsetService().saveTabset(importedTS)
-  //   useTabsetService().selectTabset(importedTS.id)
-  //   useTabsetService().reloadTabset(importedTS.id)
-  //   router.push("/tabsets/" + tabset.value.id)
-  // }
 }
 
 onMounted(() => {
   if (!route || !route.params) {
     return
   }
-  tabsetId.value = route?.params.sharedId as string
-  console.log("tabsetId", tabsetId.value, name.value)
-  FirebaseCall.get("/share/public/" + tabsetId.value, false)
+  shareId.value = route?.params.sharedId as string
+
+})
+
+const start = () => {
+  runImport.value = true
+  console.log("shareId", shareId.value, name.value)
+  FirebaseCall.get("/share/public/" + shareId.value, false)
     .then((res: any) => {
       tabset.value = res as Tabset
+
+      const existingUserLevel = useUiStore().userLevel
+      console.log("existinguserlevel", existingUserLevel)
+      if (!existingUserLevel || existingUserLevel === UserLevel.UNKNOWN) {
+        // PWA first time user
+        useUiStore().setUserLevel(UserLevel.PWA_ONLY_USER)
+      }
 
       const exists = useTabsetService().getTabset(tabset.value.id)
       if (!exists) {
         const importedTS = tabset.value //new Tabset(tabset.value.id, tabset.value.name, tabset.value.tabs as Tab[])
+        importedTS.sharedId = shareId.value
+        importedTS.importedAt = new Date().getTime()
         console.log("importedTS", importedTS)
         setupTabset(importedTS as Tabset)
+      } else if (exists.sharedAt < tabset.value.sharedAt) {
+        const updatedTS = tabset.value
+        updatedTS.sharedId = shareId.value
+        updatedTS.importedAt = new Date().getTime()
+        console.log("updatedTS", updatedTS)
+        setupTabset(updatedTS as Tabset)
+      } else {
+        router.push("/tabsets/" + tabset.value.id)
       }
     })
-})
+    .catch((err) => {
+      console.log("got error", err)
+    })
+}
 
 </script>
 

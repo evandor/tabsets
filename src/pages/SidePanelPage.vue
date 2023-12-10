@@ -4,6 +4,10 @@
     <!-- list of tabs, assuming here we have at least one tabset -->
     <div class="q-ma-none q-pa-none">
 
+      <div class="row q-ma-md q-pa-md" v-if="suggestTabsetImport()">
+        <q-btn class="q-px-xl" dense label="import Tabset" color="warning" @click="testShare()" />
+      </div>
+
       <q-list dense
               class="rounded-borders q-ma-none q-pa-none" :key="tabset.id"
               v-for="(tabset,index) in tabsets">
@@ -21,9 +25,10 @@
 
           <template v-slot:header>
             <q-item-section
+              class="q-mt-xs"
               @mouseover="hoveredTabset = tabset.id"
               @mouseleave="hoveredTabset = undefined">
-              <q-item-label :class="tabsStore.currentTabsetId === tabset.id ? 'text-bold' : ''">
+              <q-item-label :class="tabsStore.currentTabsetId === tabset.id ? 'text-bold text-underline' : ''">
                 <q-icon v-if="tabset.status === TabsetStatus.FAVORITE"
                         color="warning"
                         name="push_pin"
@@ -40,7 +45,9 @@
               <q-item-label class="text-caption text-grey-5">
                 {{ tabsetCaption(useTabsetService().tabsToShow(tabset as Tabset), tabset.window) }}
               </q-item-label>
-              <q-item-label v-if="tabset.sharedId">
+              <q-item-label v-if="tabset.sharedId" class="q-mb-xs"
+                            @mouseover="hoveredPublicLink = true"
+                            @mouseleave="hoveredPublicLink = false">
                 <q-icon style="position: relative;top:-2px;left:-2px"
                         name="ios_share" class="q-ma-none q-pa-none q-mr-xs"
                         :color="tabset.sharing.toString().toLowerCase().indexOf('_outdated') >= 0 ? 'warning' : 'primary'">
@@ -50,9 +57,12 @@
                   <q-tooltip v-else class="tooltip">This tabset is shared</q-tooltip>
                 </q-icon>
                 <span class="text-caption cursor-pointer text-grey-7" @click="openPublicShare(tabset.id)">open shared page</span>
-                <q-icon name="content_copy" color="primary"
-                        @click="copyPublicShareToClipboard(tabset.id)"
-                />
+                <q-icon
+                  v-show="hoveredPublicLink"
+                  class="q-ml-sm cursor-pointer"
+                  name="content_copy" color="primary" @click="copyPublicShareToClipboard(tabset.id)">
+                  <q-tooltip class="tooltip-small">Copy the Link to your Clipboard</q-tooltip>
+                </q-icon>
               </q-item-label>
             </q-item-section>
 
@@ -189,6 +199,7 @@ const openTabs = ref<chrome.tabs.Tab[]>([])
 const currentTabset = ref<Tabset | undefined>(undefined)
 const currentChromeTab = ref<chrome.tabs.Tab>(null as unknown as chrome.tabs.Tab)
 const tabsetExpanded = ref<Map<string, boolean>>(new Map())
+const hoveredPublicLink = ref(false)
 
 // https://stackoverflow.com/questions/12710905/how-do-i-dynamically-assign-properties-to-an-object-in-typescript
 interface SelectionObject {
@@ -666,6 +677,27 @@ const copyPublicShareToClipboard = (tabsetId: string) => {
   if (ts && ts.sharedId) {
     const link = getPublicTabsetLink(ts)
     useCommandExecutor().executeFromUi(new CopyToClipboardCommand(link))
+  }
+}
+
+const suggestTabsetImport = () => {
+  const currentTabUrl = useTabsStore().currentChromeTab?.url
+  if (currentTabUrl?.startsWith("https://shared.tabsets.net/#/tabsets/")) {
+    return true
+  }
+  return false
+}
+
+const testShare = () => {
+  const shareData = {
+    title: "MDN",
+    text: "Learn web development on MDN!",
+    url: "https://developer.mozilla.org",
+  };
+  console.log(navigator)
+  if (navigator.canShare) {
+    console.log(navigator.canShare())
+    navigator.share(shareData).then((res) => console.log("res", res)).catch((err) => console.err(err))
   }
 }
 

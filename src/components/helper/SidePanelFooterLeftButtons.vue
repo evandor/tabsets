@@ -11,10 +11,17 @@
   </q-btn>
 
   <SidePanelFooterLeftButton
-      :side-panel-view="SidePanelView.TABS_LIST"
-      :size="buttonSize"
-      icon="o_playlist_add"
-      tooltip="All your browser's open tabs"/>
+    :side-panel-view="SidePanelView.TABS_LIST"
+    :size="buttonSize"
+    icon="o_playlist_add"
+    tooltip="All your browser's open tabs"/>
+
+  <SidePanelFooterLeftButton :side-panel-view="SidePanelView.MESSAGES"
+                             icon="o_chat"
+                             :size="buttonSize"
+                             tooltip="Your messages">
+    <q-badge color="red" floating v-if="unreadMessagesCount > 0">{{ unreadMessagesCount }}</q-badge>
+  </SidePanelFooterLeftButton>
 
   <SidePanelFooterLeftButton :side-panel-view="SidePanelView.BOOKMARKS"
                              icon="bookmark"
@@ -58,6 +65,7 @@ import {useTabsStore} from "stores/tabsStore";
 import {useSuggestionsStore} from "stores/suggestionsStore";
 import {ref, watchEffect} from "vue";
 import {SuggestionState} from "src/models/Suggestion";
+import {useMessagesStore} from "stores/messagesStore";
 
 const props = defineProps({
   showSuggestionIcon: {type: Boolean, required: true}
@@ -69,16 +77,21 @@ const permissionsStore = usePermissionsStore()
 const tabsStore = useTabsStore()
 
 const buttonSize = ref('15px')
+const unreadMessagesCount = ref(0)
 
 watchEffect(() => {
   buttonSize.value = useUiStore().getButtonSize('sidePanelFooter')
 })
 
+watchEffect(() => {
+  useMessagesStore().getMessages().then((msgs) => unreadMessagesCount.value = msgs.length)
+})
+
 const suggestionsLabel = () => {
   const suggestions = useSuggestionsStore().getSuggestions([SuggestionState.NEW, SuggestionState.DECISION_DELAYED])
   return suggestions.length === 1 ?
-      suggestions.length + " New Suggestion" :
-      suggestions.length + " New Suggestions"
+    suggestions.length + " New Suggestion" :
+    suggestions.length + " New Suggestions"
 
 }
 

@@ -61,7 +61,7 @@ const author = ref<string>($q.localStorage.getItem('sharing.author') || '')
 const shareTabset = () => {
   $q.localStorage.set('sharing.author', author.value)
   useCommandExecutor()
-    .executeFromUi(new ShareTabsetCommand(props.tabsetId, props.sharedId, TabsetSharing.PUBLIC, author.value, props.republish))
+    .executeFromUi(new ShareTabsetCommand(props.tabsetId, props.sharedId, TabsetSharing.PUBLIC_LINK, author.value, props.republish))
     .then((res: any) => {
       //useUiStore().sidePanelSetActiveView(SidePanelView.MAIN)
     })

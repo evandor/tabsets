@@ -40,6 +40,7 @@
 
   <!-- right part: name, title, description, url && note -->
   <q-item-section class="q-mb-sm"
+                  :style="isCurrentTab(props.tab) ? 'border-right:2px solid #1565C0' : ''"
                   @mouseover="hoveredTab = tab.id"
                   @mouseleave="hoveredTab = undefined">
 
@@ -55,7 +56,7 @@
 
           <span v-if="props.tab?.extension === UrlExtension.NOTE"
                 v-html="nameOrTitle(props.tab as Tab)"/>
-          <span v-else :class="isCurrentTab(props.tab) ? 'text-bold':''">{{ nameOrTitle(props.tab as Tab) }}</span>
+          <span v-else :class="isCurrentTab(props.tab) ? 'text-bold text-blue-9':''">{{ nameOrTitle(props.tab as Tab) }}</span>
 
         </div>
 
@@ -174,8 +175,13 @@
               <q-tooltip class="tooltip-small">This tab is created by substituting parts of its URL</q-tooltip>
             </q-icon>
 
+            <q-icon v-if="(props.tab as Tab).comments && (props.tab as Tab).comments.length > 0"
+                    name="o_chat" class="q-mr-xs" color="warning" @click.stop="toggleLists('comments')">
+              <q-tooltip class="tooltip-small">This tab has comments</q-tooltip>
+            </q-icon>
+
             <q-icon v-if="(props.tab as Tab).annotations && (props.tab as Tab).annotations.length > 0"
-                    name="feedback" class="q-mr-xs" color="warning" @click.stop="showAnnotationList = !showAnnotationList">
+                    name="feedback" class="q-mr-xs" color="warning" @click.stop="toggleLists('annotations')">
               <q-tooltip class="tooltip-small">This tab has annotations</q-tooltip>
             </q-icon>
 
@@ -225,6 +231,14 @@
       <q-icon color="blue-10" name="edit_note"/>
       <div class="ellipsis-2-lines">
         {{ props['tab']['note'] }}
+      </div>
+    </q-item-label>
+
+    <!-- === comments === -->
+    <q-item-label v-if="showComments()"
+                  class="text-grey-10" text-subtitle1>
+      <div class="row" v-for="c in (props.tab as Tab).comments">
+       {{ c }}
       </div>
     </q-item-label>
 
@@ -348,6 +362,7 @@ const hoveredAnnotation = ref<string | undefined>(undefined)
 const tsBadges = ref<object[]>([])
 const newState = ref(false)
 const showAnnotationList = ref(false)
+const showCommentList = ref(false)
 const groupName = ref<string | undefined>(undefined)
 const groups = ref<Map<string, chrome.tabGroups.TabGroup>>(new Map())
 const placeholders = ref<Object[]>([])
@@ -581,6 +596,27 @@ const showAnnotations = () =>
     showAnnotationList.value &&
     useUiStore().listDetailLevelGreaterEqual(ListDetailLevel.SOME, props.tabset.details) &&
     (props.tab as Tab).annotations && (props.tab as Tab).annotations.length > 0
+
+const showComments = () =>
+    showCommentList.value &&
+    useUiStore().listDetailLevelGreaterEqual(ListDetailLevel.SOME, props.tabset.details) &&
+    (props.tab as Tab).comments && (props.tab as Tab).comments.length > 0
+
+const toggleLists = (ident: string) => {
+  switch (ident) {
+    case 'annotations':
+      showCommentList.value = false
+      showAnnotationList.value = !showAnnotationList.value
+      break
+    case 'comments':
+      showAnnotationList.value = false
+      showCommentList.value = !showCommentList.value
+      break
+    default:
+      console.log("undefined ident for toggle lists", ident)
+      break
+  }
+}
 
 </script>
 
