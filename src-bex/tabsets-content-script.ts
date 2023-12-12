@@ -23,8 +23,6 @@ export default bexContent((bridge: any) => {
     if (request === 'getContent') {
       console.log("tabsets: received message for content", document.documentElement.outerHTML)
       sendResponse({content: document.documentElement.outerHTML});
-    } else if (request.action === "highlight-annotation") {
-      sendResponse()
     }
     sendResponse({content: "unknown request in tabsets-content-scripts: " + request});
     return true

@@ -22,8 +22,8 @@ export enum TabsetType {
 
 export enum TabsetSharing {
   UNSHARED = "UNSHARED",
-  PUBLIC_LINK = "PUBLIC_LINK",
-  PUBLIC_LINK_OUTDATED = "PUBLIC_LINK_OUTDATED",
+  PUBLIC = "PUBLIC",
+  PUBLIC_OUTDATED = "PUBLIC_OUTDATED",
   USER = "USER",
   ROLE = "ROLE"
 }
@@ -49,10 +49,6 @@ export class Tabset {
   sharing: TabsetSharing = TabsetSharing.UNSHARED
   sharedBy: string | undefined = undefined
   sharedId: string | undefined = undefined
-  sharedAt: number | undefined = undefined
-
-  importedAt: number | undefined = undefined
-
   canvas: object | undefined = undefined
 
   page: string | undefined = undefined

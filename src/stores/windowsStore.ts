@@ -5,7 +5,6 @@ import {useUtils} from "src/services/Utils";
 import {Window} from "src/models/Window";
 import _ from "lodash"
 import throttledQueue from "throttled-queue";
-import {useQuasar} from "quasar";
 
 /**
  * a pinia store for "Windows".

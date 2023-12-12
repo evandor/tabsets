@@ -5,18 +5,12 @@ import rangy from "rangy/lib/rangy-core.js";
 //import "rangy/lib/rangy-highlighter";
 //import "rangy/lib/rangy-classapplier";
 //import "rangy/lib/rangy-textrange";
-//import "rangy/lib/rangy-selectionsaverestore"
 import "rangy/lib/rangy-serializer";
 
 
 export default bexContent((bridge: any) => {
-
-    console.log("tabsets: initializing content script for website annotation")
-
-    //rangy.init()
-    //rangy.deleteContents()
-
-    let selection = rangy.getSelection()
+    console.log("tabsets: initializing content script for website annotation", bridge)
+    let selection = document.getSelection()
     console.log("selection", selection, selection?.toString())
     // @ts-ignore
     if (selection?.rangeCount > 0) {
@@ -26,7 +20,7 @@ export default bexContent((bridge: any) => {
         const msg = {
             msg: 'capture-annotation',
             text: selection?.toString(),
-            range: rangy.serializeRange(range, true)
+            range: rangy.serializeRange(range)
         }
         console.log("tabsets: sending message", msg)
         chrome.runtime.sendMessage(msg, (callback) => {
@@ -36,7 +30,5 @@ export default bexContent((bridge: any) => {
         })
     }
 
-    var savedSel = rangy.saveSelection();
-    console.log("savedSel", savedSel)
 
 })

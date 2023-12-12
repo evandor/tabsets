@@ -23,9 +23,6 @@
       </div>
 
       <div class="col-12">
-
-        <div @click="openURL(useUiStore().getSelectedTab?.url || '')">go2</div>
-
         <div class="text-overline ellipsis text-blue-10 cursor-pointer"
              @click.stop="NavigationService.openOrCreateTab([useUiStore().getSelectedTab?.url || ''] )">
           {{ useUiStore().getSelectedTab?.url }}&nbsp;<q-icon name="launch" color="secondary"
@@ -217,7 +214,7 @@ import TabsetService from "src/services/TabsetService";
 import {reactive, ref, watchEffect} from "vue";
 import {usePermissionsStore} from "src/stores/permissionsStore";
 import {useRouter} from "vue-router";
-import {openURL, useQuasar} from "quasar";
+import {useQuasar} from "quasar";
 import {Tab} from "src/models/Tab";
 import {formatDistance} from "date-fns";
 import {useUtils} from "src/services/Utils";

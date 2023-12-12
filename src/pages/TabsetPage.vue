@@ -19,7 +19,7 @@
         <q-toolbar-title>
 
           <template v-if="useUiStore().leftDrawerOpen">
-<!--            <span class="text-dark" v-if="$q.screen.gt.xs">Tabs of </span>-->
+            <span class="text-dark" v-if="$q.screen.gt.xs">Tabs of </span>
             <span
                 class="text-primary text-weight-bold cursor-pointer"
                 @mouseenter="showEditButton = true"
@@ -29,9 +29,6 @@
                                  @update:model-value="val => setNewName(  val)">
                      <q-input v-model="scope.value" dense autofocus counter @keyup.enter="scope.set"/>
                    </q-popup-edit>
-                <span
-                  v-if="tabset.sharedId"
-                  class="text-caption">shared by {{ tabset.sharedBy }}, {{ date.formatDate(tabset.sharedAt, 'DD.MM.YYYY HH:mm') }}</span>
                 </span>
           </template>
           <template v-else>
@@ -63,7 +60,7 @@
           <q-tooltip>Sorting descending or ascending, currently {{ orderDesc }}</q-tooltip>
         </q-btn>
 
-        <q-btn v-if="tabset?.tabs.length > 0 && useUiStore().userLevel === UserLevel.DEFAULT"
+        <q-btn v-if="tabset?.tabs.length > 0"
                @click="setView('grid')"
                style="width:14px"
                class="q-mr-sm" size="8px"
@@ -73,7 +70,7 @@
           <q-tooltip class="tooltip">Use grid layout to visualize your tabs</q-tooltip>
         </q-btn>
 
-        <q-btn v-if="tabset?.tabs.length > 0 && useUiStore().userLevel === UserLevel.DEFAULT"
+        <q-btn v-if="tabset?.tabs.length > 0"
                @click="setView('group')"
                style="width:14px"
                class="q-mr-sm" size="8px"
@@ -84,7 +81,7 @@
         </q-btn>
 
         <!-- default view, no need to show if there is no alternative -->
-        <q-btn v-if="tabset?.tabs.length > 0 && useUiStore().userLevel === UserLevel.DEFAULT"
+        <q-btn v-if="tabset?.tabs.length > 0"
                @click="setView('list')"
                style="width:14px"
                class="q-mr-sm" size="10px"
@@ -129,10 +126,7 @@
         <!--        <q-separator vertical dark inset />-->
         <!--        <span>{{ useUiStore().tabsFilter }}</span>-->
         <q-btn
-            v-if="tabsStore.currentTabsetId !== '' &&
-                  tabsStore.getTabset(tabsStore.currentTabsetId) &&
-                  tabsStore.getCurrentTabset?.tabs?.length > 10 &&
-                  $q.screen.gt.xs"
+            v-if="tabsStore.currentTabsetId !== '' && tabsStore.getTabset(tabsStore.currentTabsetId) && tabsStore.getCurrentTabset?.tabs?.length > 0 && $q.screen.gt.xs"
             flat
             :text-color="useUiStore().tabsFilter ? 'secondary' : 'primary'"
             :disable="tabset?.type === TabsetType.DYNAMIC"
@@ -151,18 +145,19 @@
           </q-tooltip>
         </q-btn>
 
-        <q-icon v-if="tabsStore.currentTabsetId !== '' &&
-          tabset?.type !== TabsetType.DYNAMIC &&
-          tabsStore.getTabset(tabsStore.currentTabsetId)"
-          class="cursor-pointer" size="22px" color="warning"
-          name="add_circle" @click="addUrlDialog">
+        <q-btn v-if="tabsStore.currentTabsetId !== '' && tabsStore.getTabset(tabsStore.currentTabsetId)"
+               data-testid="addUrlDialogBtn"
+               flat
+               :disable="tabset?.type === TabsetType.DYNAMIC"
+               class="cursor-pointer q-ml-xs" size="12px"
+               icon="add" @click="addUrlDialog">
           <q-tooltip
-            class="tooltip"
-            :delay="200"
-            anchor="center left" self="center right">
+              class="tooltip"
+              :delay="200"
+              anchor="center left" self="center right">
             Copy and Paste or create a new Tab inside this tabset
           </q-tooltip>
-        </q-icon>
+        </q-btn>
 
         <OpenRightDrawerWidget/>
       </div>
@@ -195,10 +190,6 @@
         <div class="text-body2">
           Select an existing tabset from the list or create a new tabset.
         </div>
-      </q-banner>
-
-      <q-banner v-else-if="!$q.platform.is.bex && tabset?.tabs.length === 0">
-        Click on the orange plus sign to add new tabs.
       </q-banner>
 
       <q-banner v-else-if="tabset?.tabs.length === 0 && tabset?.type !== TabsetType.DYNAMIC">
@@ -254,22 +245,28 @@ a tab's url starts with one of the urls of this tabset, it will be ignored and n
 <script setup lang="ts">
 import {onMounted, onUpdated, ref, unref, watchEffect} from 'vue'
 import {useRoute, useRouter} from "vue-router";
-import {date, uid, useQuasar} from "quasar";
+import {uid, useQuasar} from "quasar";
+import _ from "lodash"
 import {useTabsStore} from "src/stores/tabsStore";
 import TabsetService from "src/services/TabsetService";
+import {Tab} from "src/models/Tab";
+import RestoreTabsetDialog from "components/dialogues/RestoreTabsetDialog.vue";
 import AddUrlDialog from "components/dialogues/AddUrlDialog.vue";
 import {usePermissionsStore} from "src/stores/permissionsStore";
 import InfoMessageWidget from "components/widgets/InfoMessageWidget.vue";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {RenameTabsetCommand} from "src/domain/tabsets/RenameTabset";
 import {Tabset, TabsetType} from "src/models/Tabset";
+import {StopSessionCommand} from "src/domain/commands/StopSessionCommand";
+import {useUtils} from "src/services/Utils";
 import {FeatureIdent} from "src/models/AppFeature";
 import {ToggleSortingCommand} from "src/domain/tabsets/ToggleSorting";
+import {useSettingsStore} from "src/stores/settingsStore"
 import PageForTabset from "components/layouts/PageForTabset.vue";
 import TabsetPageCards from "pages/TabsetPageCards.vue";
 import OpenRightDrawerWidget from "components/widgets/OpenRightDrawerWidget.vue";
 import JsUtils from "src/utils/JsUtils";
-import {UserLevel, useUiStore} from "src/stores/uiStore";
+import {useUiStore} from "src/stores/uiStore";
 import TabsetsSelectorWidget from "components/widgets/TabsetsSelectorWidget.vue";
 import DynamicTabsetPageCards from "pages/DynamicTabsetPageCards.vue";
 import {useTabsetService} from "src/services/TabsetService2";
@@ -291,7 +288,6 @@ const tab = ref('tabset')
 
 onMounted(() => {
   Analytics.firePageViewEvent('TabsetPage', document.location.href);
-  //setTimeout(() => client.stop(), 5000)
 })
 
 

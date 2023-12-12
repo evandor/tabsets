@@ -32,12 +32,6 @@
 
   <div class="row fit greyBorderTop"></div>
 
-  <InfoMessageWidget
-    :probability="1"
-    ident="searchPage_info"
-    hint="Please note that only pages you've visted with Tabsets already active are contained in the search index."/>
-
-
   <div class="row">
     <div class="col-8 q-ma-md">
       <template v-for="hit in tabsetHits">
@@ -69,7 +63,6 @@ import ReindexDialog from "components/dialogues/ReindexDialog.vue";
 import {usePermissionsStore} from "src/stores/permissionsStore";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {GrantPermissionCommand} from "src/domain/commands/GrantPermissionCommand";
-import InfoMessageWidget from "components/widgets/InfoMessageWidget.vue";
 
 const route = useRoute()
 const tabsStore = useTabsStore()
