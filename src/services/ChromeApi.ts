@@ -139,9 +139,8 @@ class ChromeApi {
         )
     }
 
-    // TODO should be called somewhere, should it not?
     stopWebRequestListener() {
-        console.log("removing WebRequestListener")
+        console.log("removing WebRequestListener if running")
         chrome.webRequest.onHeadersReceived.removeListener(this.onHeadersReceivedListener)
     }
 

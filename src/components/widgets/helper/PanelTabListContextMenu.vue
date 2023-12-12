@@ -24,12 +24,12 @@
 
       <template v-if="props.tabset?.type.toString() !== TabsetType.DYNAMIC.toString()">
         <q-item clickable
-                v-close-popup @click.stop="editNoteDialog(props['tab' as keyof object])">
+                v-close-popup @click.stop="addCommentDialog()">
           <q-item-section style="padding-right:0;min-width:25px;max-width: 25px;">
             <q-icon size="xs" name="o_note" color="info"/>
           </q-item-section>
           <q-item-section>
-            Add / Edit Note
+            Add Comment
           </q-item-section>
         </q-item>
       </template>
@@ -106,7 +106,6 @@ import {useCommandExecutor} from "src/services/CommandExecutor";
 import {Notify, useQuasar} from "quasar";
 import {Tab} from "src/models/Tab";
 import {DeleteTabCommand} from "src/domain/tabs/DeleteTabCommand";
-import EditNoteDialog from "components/dialogues/EditNoteDialog.vue";
 import {useRouter} from "vue-router";
 import {useSettingsStore} from "stores/settingsStore";
 import {CopyToClipboardCommand} from "src/domain/commands/CopyToClipboard";
@@ -121,6 +120,7 @@ import {PlaceholdersType} from "src/models/Placeholders";
 import ColorSelector from "components/dialogues/helper/ColorSelector.vue";
 import {UpdateTabColorCommand} from "src/domain/tabs/UpdateTabColor";
 import MonitoringDialog from "components/dialogues/MonitoringDialog.vue";
+import CommentDialog from "components/dialogues/CommentDialog.vue";
 
 const props = defineProps({
   tab: {type: Object as PropType<Tab>, required: true},
@@ -175,9 +175,9 @@ const deleteTab = async (tabIn: Tab) => {
 }
 
 
-const editNoteDialog = (tab: Tab) => $q.dialog({
-  component: EditNoteDialog,
-  componentProps: {tabId: tab.id, note: tab.note}
+const addCommentDialog = () => $q.dialog({
+  component: CommentDialog,
+  componentProps: {tabId: props.tab.id, sharedId: props.tabset?.sharedId}
 })
 
 const monitoringDialog = (tab: Tab) => $q.dialog({

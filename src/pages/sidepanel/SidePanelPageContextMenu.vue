@@ -81,7 +81,7 @@
           label="Archive"/>
       </template>
 
-      <q-separator inset />
+      <q-separator inset/>
 
       <ContextMenuItem v-if="tabset.sharing === TabsetSharing.UNSHARED || !tabset.sharing"
                        v-close-popup
@@ -99,23 +99,26 @@
         <q-tooltip class="tooltip-small">Tabset has changed, republish</q-tooltip>
       </ContextMenuItem>
 
-      <ContextMenuItem v-if="tabset.sharing === TabsetSharing.PUBLIC_LINK || tabset.sharing === TabsetSharing.PUBLIC_LINK_OUTDATED"
-                       v-close-popup
-                       @was-clicked="removePublicShare(tabset.id)"
-                       icon="ios_share"
-                       color="warning"
-                       label="Stop Sharing">
+      <ContextMenuItem
+        v-if="tabset.sharing === TabsetSharing.PUBLIC_LINK || tabset.sharing === TabsetSharing.PUBLIC_LINK_OUTDATED"
+        v-close-popup
+        @was-clicked="removePublicShare(tabset.id)"
+        icon="ios_share"
+        color="warning"
+        label="Stop Sharing">
         <q-tooltip class="tooltip-small">Delete Shared Link</q-tooltip>
       </ContextMenuItem>
 
-      <q-separator inset />
-
-      <ContextMenuItem v-close-popup
-                       @was-clicked="useSearchStore().reindexTabset(tabset.id)"
-                       icon="o_note"
-                       label="Re-Index Search (dev)"/>
-
       <q-separator inset/>
+
+      <template v-if="useSettingsStore().isEnabled('dev')">
+        <ContextMenuItem v-close-popup
+                         @was-clicked="useSearchStore().reindexTabset(tabset.id)"
+                         icon="o_note"
+                         label="Re-Index Search (dev)"/>
+
+        <q-separator inset/>
+      </template>
 
       <ContextMenuItem v-close-popup
                        @was-clicked="deleteTabsetDialog(tabset as Tabset)"

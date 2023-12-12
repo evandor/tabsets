@@ -5,7 +5,9 @@
         'background-color:white;border: 1px dashed rgba(0, 0, 0, 0.3);border-radius:4px 0px 0px 4px;'">
     <template v-if="open">
       <q-toolbar>
-        <q-toolbar-title>Tabsets</q-toolbar-title>
+        <q-toolbar-title>
+
+          {{ selectedTabset ? selectedTabset.name : "Tabsets" }}</q-toolbar-title>
         <q-icon size="md" name="chevron_right" class="cursor-pointer"
                 @click="closeContentScriptFrame(true)"></q-icon>
       </q-toolbar>
@@ -22,10 +24,11 @@
 
     <template v-if="open">
       <div class="q-ma-md">
-        <hr>
-        sel:{{ selectedTabset?.name }}
-        <hr>
         <q-btn label="add" v-if="!alreadyInTabset()" @click="saveInSelectedTabset()"/>
+        <hr>
+        <q-input v-if="alreadyInTabset()" dense
+                 hint="Add/Publish Comment"
+                 type="textarea" v-model="comment" />
       </div>
     </template>
   </q-page>
@@ -40,12 +43,14 @@ import {useCommandExecutor} from "src/services/CommandExecutor";
 import {AddTabToTabsetCommand} from "src/domain/tabs/AddTabToTabset";
 import {Tab} from "src/models/Tab";
 import {uid} from "quasar";
+import {Tabset} from "src/models/Tabset";
 
 const {sendMsg} = useUtils()
 
 const open = ref(false)
 const currentChromeTab = ref<chrome.tabs.Tab | undefined>(undefined)
 const selectedTabset = ref<Tabset | undefined>(undefined)
+const comment = ref('')
 
 onMounted(() => chrome.tabs.getCurrent().then((t: chrome.tabs.Tab | undefined) => currentChromeTab.value = t))
 

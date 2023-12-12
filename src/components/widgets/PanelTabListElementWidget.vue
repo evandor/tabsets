@@ -179,6 +179,8 @@
                     name="o_chat" class="q-mr-xs" color="warning" @click.stop="toggleLists('comments')">
               <q-tooltip class="tooltip-small">This tab has comments</q-tooltip>
             </q-icon>
+            <span v-if="(props.tab as Tab).comments && (props.tab as Tab).comments.length > 1" class="q-mr-sm">({{(props.tab as Tab).comments.length}})</span>
+
 
             <q-icon v-if="(props.tab as Tab).annotations && (props.tab as Tab).annotations.length > 0"
                     name="feedback" class="q-mr-xs" color="warning" @click.stop="toggleLists('annotations')">
@@ -187,6 +189,7 @@
 
             <template v-if="(props.tab as Tab).monitor || suggestion || (props.tab as Tab).placeholders
                               || (props.tab as Tab).annotations && (props.tab as Tab).annotations.length > 0
+                              || (props.tab as Tab).comments && (props.tab as Tab).comments.length > 0
                               || pngs.length > 0">
               <span>-</span>
             </template>

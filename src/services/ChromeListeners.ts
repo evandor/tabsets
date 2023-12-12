@@ -413,6 +413,10 @@ class ChromeListeners {
             return
         }
 
+        if (tab.url && tab.url.startsWith("https://shared.tabsets.net")) {
+          return
+        }
+
         if (usePermissionsStore().hasFeature(FeatureIdent.ANNOTATIONS)) {
             const tabForUrl = useTabsStore().tabForUrlInSelectedTabset(tab.url || '')
             console.log("about to run annotationScript...", tabForUrl)

@@ -47,12 +47,8 @@ class MqttService {
 
     const ctx = this
     this.client.on('connect', function () {
-      console.log('connected!', ctx.client);
-    });
-
-    this.client.on('connect', function () {
       console.log('connected!');
-    })
+    });
 
     this.client.on('reconnect', function () {
       console.log('reconnected!');
