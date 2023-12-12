@@ -22,11 +22,13 @@ import {useGroupsStore} from "stores/groupsStore";
 import {FeatureIdent} from "src/models/AppFeature";
 import MqttService from "src/services/mqtt/MqttService";
 import {useMessagesStore} from "src/stores/messagesStore";
+import {useAppStore} from "stores/appStore";
 
 class AppService {
 
   async init() {
 
+    const appStore = useAppStore()
     const spacesStore = useSpacesStore()
     const tabsStore = useTabsStore()
     const settingsStore = useSettingsStore()
@@ -38,6 +40,7 @@ class AppService {
     const router = useRouter()
     const $q = useQuasar()
 
+    appStore.init()
     MqttService.init()
 
     // init of stores and some listeners

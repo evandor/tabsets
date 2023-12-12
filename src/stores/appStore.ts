@@ -1,14 +1,6 @@
 import {defineStore} from 'pinia';
-import {computed, ref, watch, watchEffect} from "vue";
-import {useRoute, useRouter} from "vue-router";
-import {Tab} from "src/models/Tab";
-import _ from "lodash"
+import {ref} from "vue";
 import {LocalStorage, uid, useQuasar} from "quasar";
-import {useUtils} from "src/services/Utils";
-import {useTabsStore} from "stores/tabsStore";
-import {FeatureIdent} from "src/models/AppFeature";
-import {usePermissionsStore} from "stores/permissionsStore";
-import {Toast, ToastType} from "src/models/Toast";
 
 export const useAppStore = defineStore('app', () => {
 
@@ -16,9 +8,14 @@ export const useAppStore = defineStore('app', () => {
 
   const installationId = ref<string | undefined>(LocalStorage.getItem(key) as string || undefined)
 
+  function init() {
+    // make sure we have an installation id
+    getInstallationId()
+  }
+
   function getInstallationId() {
     if (installationId.value) {
-      return  installationId.value
+      return installationId.value
     }
     const useId = uid()
     installationId.value = useId
@@ -27,6 +24,7 @@ export const useAppStore = defineStore('app', () => {
   }
 
   return {
+    init,
     getInstallationId
   }
 })
