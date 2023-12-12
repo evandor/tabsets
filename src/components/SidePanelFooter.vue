@@ -111,7 +111,7 @@ import {useRouter} from "vue-router";
 import {usePermissionsStore} from "src/stores/permissionsStore";
 import {FeatureIdent} from "src/models/AppFeature";
 import NavigationService from "src/services/NavigationService";
-import {openURL, useQuasar} from "quasar";
+import {useQuasar} from "quasar";
 import {useUtils} from "src/services/Utils";
 import {useWindowsStore} from "src/stores/windowsStore";
 import {useSuggestionsStore} from "stores/suggestionsStore";
@@ -181,9 +181,7 @@ watchEffect(() => {
 //const openOptionsPage = () => window.open(chrome.runtime.getURL('www/index.html#/mainpanel/settings'));
 const openOptionsPage = () => window.open('#/mainpanel/settings');
 
-const openExtensionTab = () =>
-    //NavigationService.openOrCreateTab([chrome.runtime.getURL('www/index.html#/fullpage')])
-    openURL(chrome.runtime.getURL('www/index.html#/fullpage'))
+const openExtensionTab = () => NavigationService.openOrCreateTab([chrome.runtime.getURL('www/index.html#/fullpage')])
 
 const settingsTooltip = () => {
   return "Open Settings of Tabsets " + import.meta.env.PACKAGE_VERSION

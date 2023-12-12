@@ -99,24 +99,21 @@
   </q-item-section>
 
   <!-- new tab and edit note buttons -->
-  <q-item-section side v-if="!props.tabsetSharedId">
-    <div class="row" v-if="props.showButtons">
+  <q-item-section side v-if="props.showButtons">
+    <div class="row">
       <q-btn flat round :color="props.tab.note ? 'secondary':'primary'" size="11px" icon="edit_note"
              @click.stop="editNoteDialog(tab as Tab)">
         <q-tooltip v-if="props.tab.note">Edit note</q-tooltip>
         <q-tooltip v-else>Add a note to this tab</q-tooltip>
       </q-btn>
-      <q-btn flat round color="red" size="11px" icon="delete_outline" @click.stop="deleteTab(tab as Tab)">
-        <q-tooltip>Delete this tab from this list</q-tooltip>
-      </q-btn>
     </div>
   </q-item-section>
-  <q-item-section side v-else>
-    <div class="row" v-if="props.showButtons">
-      <q-btn flat round :color="props.tab.note ? 'secondary':'primary'" size="11px" icon="comment"
-             @click.stop="commentDialog(tab as Tab)">
-      </q-btn>
-    </div>
+
+  <!-- Delete button -->
+  <q-item-section side v-if="props.showButtons">
+    <q-btn flat round color="red" size="11px" icon="delete_outline" @click.stop="deleteTab(tab as Tab)">
+      <q-tooltip>Delete this tab from this list</q-tooltip>
+    </q-btn>
   </q-item-section>
 
 </template>
@@ -143,15 +140,13 @@ import ShortUrl from "components/utils/ShortUrl.vue";
 import {useTabsStore} from "src/stores/tabsStore";
 import {useRouter} from "vue-router";
 import _ from "lodash";
-import CommentDialog from "components/dialogues/CommentDialog.vue";
 
 const props = defineProps({
   tab: {type: Object as PropType<Tab>, required: true},
   showButtons: {type: Boolean, default: false},
   showIsOpened: {type: Boolean, default: true},
   highlightUrl: {type: String, required: false},
-  tabsetId: {type: String, required: true},
-  tabsetSharedId: {type: String, required: false}
+  tabsetId: {type: String, required: true}
 })
 
 const $q = useQuasar()
@@ -221,11 +216,6 @@ const deleteTab = (tab: Tab) => useCommandExecutor().executeFromUi(new DeleteTab
 const editNoteDialog = (tab: Tab) => $q.dialog({
   component: EditNoteDialog,
   componentProps: {tabId: tab.id, note: tab.note}
-})
-
-const commentDialog = (tab: Tab) => $q.dialog({
-  component: CommentDialog,
-  componentProps: {tabId: tab.id}
 })
 
 const nameOrTitle = (tab: Tab) => {

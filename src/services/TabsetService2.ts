@@ -27,7 +27,6 @@ import {useSuggestionsStore} from "stores/suggestionsStore";
 import {Suggestion, SuggestionState, SuggestionType} from "src/models/Suggestion";
 import {MonitoringType} from "src/models/Monitor";
 import {BlobType} from "src/models/SavedBlob";
-import MqttService from "src/services/mqtt/MqttService";
 
 let db: PersistenceService = null as unknown as PersistenceService
 
@@ -35,7 +34,7 @@ export function useTabsetService() {
 
     const init = async (providedDb: PersistenceService,
                         doNotInitSearchIndex: boolean = false) => {
-        console.log("initializing tabsetService2", providedDb)
+        console.log("initializing tabsetService2")
         db = providedDb
         await db.loadTabsets()
         if (!doNotInitSearchIndex) {
@@ -51,13 +50,6 @@ export function useTabsetService() {
         }
 
         ChromeApi.buildContextMenu()
-
-        useTabsStore().tabsets.forEach(ts => {
-          if (ts.sharedId) {
-            console.log("subscribing to topic ", ts.sharedId)
-            MqttService.subscribe(ts.sharedId)
-          }
-        })
     }
 
     /**

@@ -7,7 +7,6 @@
                group="otherTabs"
                :highlightUrl="highlightUrl"
                :tabsetId="props.tabset?.id"
-               :tabsetSharedId="props.tabset?.sharedId"
                :tabs="currentTabs()"/>
 
       <TabGroups v-else-if="props.tabset?.view === 'group'"

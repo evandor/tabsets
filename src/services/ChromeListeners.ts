@@ -78,41 +78,43 @@ function annotationScript(tabId: string, annotations: any[]) {
 //   //iFrame.src = chrome.runtime.getURL('/www/index.html#/annotations/' + tabId)
 //   //document.body.prepend(iFrame)
 //
-    //var l: HTMLLinkElement = document.createElement('link');
+    var l: HTMLLinkElement = document.createElement('link');
     //l.setAttribute("href","https://cdn.jsdelivr.net/npm/@recogito/recogito-js@1.8.2/dist/recogito.min.css")
-    //l.setAttribute("href", "https://cdn.jsdelivr.net/npm/rangy@1.3.1/lib/rangy-core.min.js")
-    //l.setAttribute("rel", "stylesheet")
+    l.setAttribute("href", "https://cdn.jsdelivr.net/npm/rangy@1.3.1/lib/rangy-core.min.js")
+    l.setAttribute("rel", "stylesheet")
     //document.head.appendChild(l)
 
     var s = document.createElement('script');
     //s.type = "module"
-    s.src = chrome.runtime.getURL('www/js/rangy/rangy.js');
-    s.setAttribute("type", 'text/javascript');
+    s.src = chrome.runtime.getURL('www/js/rangy/rangy-core.min.js');
     //s.src = "https://cdn.jsdelivr.net/npm/rangy@1.3.1/lib/rangy-core.min.js";
-    document.body.appendChild(s);
+    (document.head || document.documentElement).appendChild(s);
 
-    // var s2 = document.createElement('script');
-    // //s2.type = "module"
-    // s2.src = chrome.runtime.getURL('www/js/rangy/rangy-serializer.js');
-    // //s2.src = "https://cdn.jsdelivr.net/npm/rangy@1.3.1/lib/rangy-serializer.min.js";
-    // s2.setAttribute('type', 'text/javascript');
-    // s2.defer = true;
-    // (document.head || document.documentElement).appendChild(s2);
+    var s2 = document.createElement('script');
+    //s2.type = "module"
+    s2.src = chrome.runtime.getURL('www/js/rangy/rangy-serializer.min.js');
+    //s2.src = "https://cdn.jsdelivr.net/npm/rangy@1.3.1/lib/rangy-serializer.min.js";
+    (document.head || document.documentElement).appendChild(s2);
 
-    // var s3 = document.createElement('script');
-    // s3.dataset.id = 'tabsets-rangy-annotation-data';
-    // s3.dataset.annotations = JSON.stringify(annotations);
-    // (document.head || document.documentElement).appendChild(s3);
+    var s2 = document.createElement('script');
+    s2.dataset.variable = 'some string variable!';
+    s2.dataset.annotations = JSON.stringify(annotations);
 
-    //console.log("x1", Object.values(annotations).length)
+    console.log("x1", Object.values(annotations).length)
     //console.log("x2", JSON.stringify(annotations))
-    // const annos = JSON.parse(JSON.stringify(annotations))
+    const annos = JSON.parse(JSON.stringify(annotations))
+    console.log("annos", annos)
 
-    // var s4 = document.createElement('script');
-    // s4.src = chrome.runtime.getURL('www/js/rangy/rangy-message-api.js');
-    // s4.setAttribute("type", 'text/javascript');
-    // document.body.appendChild(s4);
+    setTimeout(() => {
+        //rangy.init();
+        window.getSelection()?.removeAllRanges();
+        Object.values(annotations).forEach((a: object) => {
+            console.log("a", a)
+            //const range = rangy.deserializeRange(a['range' as keyof object])
+            //document.getSelection()?.addRange(range)
+        })
 
+    }, 5000)
 //
 //
 //
@@ -415,8 +417,8 @@ class ChromeListeners {
 
         if (usePermissionsStore().hasFeature(FeatureIdent.ANNOTATIONS)) {
             const tabForUrl = useTabsStore().tabForUrlInSelectedTabset(tab.url || '')
-            console.log("about to run annotationScript...", tabForUrl)
             if (tabForUrl) {
+                console.log("about to run annotationScript...")
                 chrome.scripting.executeScript({
                     target: {tabId: (tab.id || 0)},
                     func: annotationScript,
@@ -430,9 +432,6 @@ class ChromeListeners {
 
         if (usePermissionsStore().hasFeature(FeatureIdent.THUMBNAILS)) {
             scripts.push("content-script-thumbnails.js")
-        }
-        if (usePermissionsStore().hasFeature(FeatureIdent.ANNOTATIONS)) {
-            scripts.push("highlight-annotations.js")
         }
         scripts.push("content-script.js")
         //scripts.push("recogito2.js")
@@ -569,7 +568,7 @@ class ChromeListeners {
 
     private handleHtml2Text(request: any, sender: chrome.runtime.MessageSender, sendResponse: any) {
 
-        console.debug("handleHtml2Text", request.html?.length)
+        console.debug("handleHtml2Text", request, sender)
 
         if (sender && sender.url && request.html) {
             try {

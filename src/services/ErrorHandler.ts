@@ -2,29 +2,19 @@ import {Notify} from 'quasar'
 import {ExecutionResult} from "src/domain/ExecutionResult";
 import {useUiStore} from "stores/uiStore";
 
-export enum NotificationType {
-  NOTIFY = "NOTIFY",
-  TOAST = "TOAST"
-}
-
 export function useNotificationHandler() {
 
-    const handleError = (error: any, type: NotificationType = NotificationType.TOAST) => {
+    const handleError = (error: any) => {
         console.log("got error: ", error ? error.toString() : 'unknown error')
         console.trace()
-        switch (type) {
-          case NotificationType.NOTIFY:
-            Notify.create({
-                position: 'bottom',
-                color: 'red-5',
-                textColor: 'white',
-                icon: 'error',
-                message: error ? error.toString() : 'unknown error'
-            })
-            break;
-          default:
-            useUiStore().createErrorToast(error ? error.toString() : 'unknown error')
-        }
+        // Notify.create({
+        //     position: 'bottom',
+        //     color: 'red-5',
+        //     textColor: 'white',
+        //     icon: 'error',
+        //     message: error ? error.toString() : 'unknown error'
+        // })
+        useUiStore().createErrorToast(error ? error.toString() : 'unknown error')
 
     }
 
@@ -32,7 +22,7 @@ export function useNotificationHandler() {
         useUiStore().createWarningToast(res.message)
     }
 
-    const handleSuccess = (executionResult: ExecutionResult<any>, type: NotificationType = NotificationType.TOAST): ExecutionResult<any> => {
+    const handleSuccess = (executionResult: ExecutionResult<any>): ExecutionResult<any> => {
         const actions: any[] = []
         if (executionResult.undoCommand) {
             actions.push(
@@ -46,17 +36,12 @@ export function useNotificationHandler() {
                 }
             )
         }
-      switch (type) {
-        case NotificationType.NOTIFY:
-          Notify.create({
-              color: 'positive',
-              message: executionResult.message,
-              actions: actions
-          })
-          break;
-        default:
-          useUiStore().createSuccessToast(executionResult.message, actions[0])
-          }
+        // Notify.create({
+        //     color: 'positive',
+        //     message: executionResult.message,
+        //     actions: actions
+        // })
+        useUiStore().createSuccessToast(executionResult.message, actions[0])
         return executionResult
     }
 

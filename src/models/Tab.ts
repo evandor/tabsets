@@ -41,16 +41,6 @@ export class HTMLSelection {
   }
 }
 
-export class TabComment {
-  date: number = 0
-
-  constructor(
-    public author: string = '',
-    public comment: string = '') {
-    this.date = new Date().getTime()
-  }
-}
-
 export class Tab {
   created: number
   updated: number
@@ -80,8 +70,6 @@ export class Tab {
   date: string
   lastModified: string
   author: string
-  // deprecated, will be phased out in 0.5.1
-  // use comments instead
   note: string
   scheduledFor: number | undefined
   extension: UrlExtension
@@ -111,8 +99,6 @@ export class Tab {
   canvasHeight: number | undefined
 
   annotations: HTMLSelection[] = []
-
-  comments: TabComment[] = []
 
   constructor(public id: string, chromeTab: chrome.tabs.Tab) {
     this.created = new Date().getTime()

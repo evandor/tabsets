@@ -5,7 +5,7 @@ import {AppFeature, FeatureIdent, FeatureType} from "src/models/AppFeature"
 
 export class AppFeatures {
   features: AppFeature[] = [
-    new AppFeature(FeatureIdent.HELP, FeatureType.RECOMMENDED, 'Help Pages', 'o_help', ['bex']),
+    new AppFeature(FeatureIdent.HELP, FeatureType.RECOMMENDED, 'Help Pages', 'o_help', ['all']),
 
     new AppFeature(FeatureIdent.BOOKMARKS, FeatureType.OPTIONAL, 'Bookmarks', 'o_bookmarks', ['bex'])
       .setActivateCommands([new GrantPermissionCommand('bookmarks')])
