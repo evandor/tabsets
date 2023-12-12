@@ -44,8 +44,8 @@ export class AddTabToTabsetCommand implements Command<any> {
                 const tabset: Tabset = await useTabsetService().addToTabsetId(this.tabset.id, this.tab, 0)
                 console.log("sharing...")
                 // Sharing
-                if (tabset.sharedId && tabset.sharing === TabsetSharing.PUBLIC) {
-                    tabset.sharing = TabsetSharing.PUBLIC_OUTDATED
+                if (tabset.sharedId && tabset.sharing === TabsetSharing.PUBLIC_LINK) {
+                    tabset.sharing = TabsetSharing.PUBLIC_LINK_OUTDATED
                 }
 
                 // Placeholder Defaults Application

@@ -87,6 +87,9 @@ interface PersistenceService {
   updateWindow(window: Window): Promise<void>
   upsertWindow(window: Window, windowName: string, screenLabel: string | undefined): Promise<void>
 
+  getMessages(): Promise<Message[]>
+  addMessage(msg: Message):void
+
   clear(name: string):any
 
 }

@@ -40,6 +40,7 @@
 
   <!-- right part: name, title, description, url && note -->
   <q-item-section class="q-mb-sm"
+                  :style="isCurrentTab(props.tab) ? 'border-right:2px solid #1565C0' : ''"
                   @mouseover="hoveredTab = tab.id"
                   @mouseleave="hoveredTab = undefined">
 
@@ -55,7 +56,7 @@
 
           <span v-if="props.tab?.extension === UrlExtension.NOTE"
                 v-html="nameOrTitle(props.tab as Tab)"/>
-          <span v-else :class="isCurrentTab(props.tab) ? 'text-bold':''">{{ nameOrTitle(props.tab as Tab) }}</span>
+          <span v-else :class="isCurrentTab(props.tab) ? 'text-bold text-blue-9':''">{{ nameOrTitle(props.tab as Tab) }}</span>
 
         </div>
 
@@ -147,14 +148,19 @@
                     @click.stop="monitoringDialog(props.tab as Tab)"
                     name="o_change_circle" class="q-mr-xs"
                     :color="(props.tab as Tab).placeholders ? 'negative' : 'accent'">
-              <q-tooltip class="tooltip-small" v-if="!(props.tab as Tab).placeholders">This tab is being monitored for changes</q-tooltip>
+              <q-tooltip class="tooltip-small" v-if="!(props.tab as Tab).placeholders">This tab is being monitored for
+                changes
+              </q-tooltip>
               <q-tooltip class="tooltip-small" v-else>Tabs with placeholders cannot be monitored</q-tooltip>
             </q-icon>
 
             <q-icon v-if="suggestion"
                     @click.stop="showSuggestion()"
-                    name="o_notifications" class="q-mr-xs" :color="suggestion.state === SuggestionState.NOTIFICATION ? 'negative' : 'accent'">
-              <q-tooltip class="tooltip-small" v-if="suggestion.state === SuggestionState.NOTIFICATION">There is a new notification for this tab</q-tooltip>
+                    name="o_notifications" class="q-mr-xs"
+                    :color="suggestion.state === SuggestionState.NOTIFICATION ? 'negative' : 'accent'">
+              <q-tooltip class="tooltip-small" v-if="suggestion.state === SuggestionState.NOTIFICATION">There is a new
+                notification for this tab
+              </q-tooltip>
               <q-tooltip class="tooltip-small" v-else>There is a notification for this tab</q-tooltip>
             </q-icon>
 
@@ -169,8 +175,13 @@
               <q-tooltip class="tooltip-small">This tab is created by substituting parts of its URL</q-tooltip>
             </q-icon>
 
+            <q-icon v-if="(props.tab as Tab).comments && (props.tab as Tab).comments.length > 0"
+                    name="o_chat" class="q-mr-xs" color="warning" @click.stop="toggleLists('comments')">
+              <q-tooltip class="tooltip-small">This tab has comments</q-tooltip>
+            </q-icon>
+
             <q-icon v-if="(props.tab as Tab).annotations && (props.tab as Tab).annotations.length > 0"
-                    name="feedback" class="q-mr-xs" color="warning">
+                    name="feedback" class="q-mr-xs" color="warning" @click.stop="toggleLists('annotations')">
               <q-tooltip class="tooltip-small">This tab has annotations</q-tooltip>
             </q-icon>
 
@@ -223,14 +234,60 @@
       </div>
     </q-item-label>
 
-    <!-- === annotations === -->
-    <q-item-label v-if="useUiStore().listDetailLevelGreaterEqual(ListDetailLevel.SOME, props.tabset.details) &&
-      (props.tab as Tab).annotations && (props.tab as Tab).annotations.length > 0"
+    <!-- === comments === -->
+    <q-item-label v-if="showComments()"
                   class="text-grey-10" text-subtitle1>
-      <div class="row" v-for="a in (props.tab as Tab).annotations">
-        <div class="col-10" @click="showAnnotation(props.tab as Tab, a)">{{ a.text }}</div>
-        <div class="col-2 text-right">
-          <q-icon name="delete" color="negative"/>
+      <div class="row" v-for="c in (props.tab as Tab).comments">
+       {{ c }}
+      </div>
+    </q-item-label>
+
+    <!-- === annotations === -->
+    <q-item-label v-if="showAnnotations()"
+                  class="text-grey-10" text-subtitle1>
+      <div class="row" v-for="a in (props.tab as Tab).annotations"
+           @mouseover="hoveredAnnotation = a['id' as keyof object]"
+           @mouseleave="hoveredAnnotation = undefined">
+        <div class="col-10 ellipsis" @click="showAnnotation(props.tab as Tab, a)">{{ a.text }}</div>
+        <div class="col-2 text-right" v-if="hoveredOverAnnotation(a['id' as keyof object])">
+          <q-icon name="delete" color="negative" @click="deleteAnnotation(props.tab as Tab, a)"/>
+        </div>
+        <div class="col-12 q-ml-md" v-if="selectedAnnotation === a">
+          <div v-for="comment in selectedAnnotation.comments">
+            <div class="row">
+              <div class="col-10">
+                {{comment.comment}}
+              </div>
+              <div class="col-2">
+                .
+              </div>
+            </div>
+          </div>
+          <span class="text-blue">
+            {{ label }}
+              <q-popup-edit v-model="newComment" v-slot="scope">
+              <q-input
+                type="textarea"
+                autofocus
+                dense
+                v-model="scope.value"
+                :model-value="scope.value"
+                hint="Add a comment">
+                <template v-slot:after>
+                  <q-btn
+                    flat dense color="negative" icon="cancel"
+                    @click.stop.prevent="scope.cancel"
+                  />
+
+                  <q-btn
+                    flat dense color="positive" icon="check_circle"
+                    @click.stop.prevent="scope.set"
+                    :disable="scope.initialValue === scope.value"
+                  />
+                </template>
+              </q-input>
+            </q-popup-edit>
+          </span>
         </div>
       </div>
     </q-item-label>
@@ -251,7 +308,7 @@
 
 <script setup lang="ts">
 import NavigationService from "src/services/NavigationService";
-import {Tab, TabSorting, UrlExtension} from "src/models/Tab";
+import {HTMLSelection, HTMLSelectionComment, Tab, TabSorting, UrlExtension} from "src/models/Tab";
 import TabsetService from "src/services/TabsetService";
 import {onMounted, PropType, ref, watchEffect} from "vue";
 import {useCommandExecutor} from "src/services/CommandExecutor";
@@ -301,13 +358,19 @@ const router = useRouter()
 const showButtonsProp = ref<boolean>(false)
 //const imgFromBlob = ref<string>("")
 const hoveredTab = ref<string | undefined>(undefined)
+const hoveredAnnotation = ref<string | undefined>(undefined)
 const tsBadges = ref<object[]>([])
 const newState = ref(false)
+const showAnnotationList = ref(false)
+const showCommentList = ref(false)
 const groupName = ref<string | undefined>(undefined)
 const groups = ref<Map<string, chrome.tabGroups.TabGroup>>(new Map())
 const placeholders = ref<Object[]>([])
 const suggestion = ref<Suggestion | undefined>(undefined)
 const pngs = ref<SavedBlob[]>([])
+const selectedAnnotation = ref<HTMLSelection | undefined>(undefined)
+const label = ref("add comment...")
+const newComment = ref("")
 
 onMounted(() => {
   if ((new Date().getTime() - props.tab.created) < 500) {
@@ -336,6 +399,14 @@ onMounted(() => {
   // }
 })
 
+watchEffect (() => {
+  if (selectedAnnotation.value && newComment.value && newComment.value.trim() !== '') {
+    selectedAnnotation.value.comments.push(
+      new HTMLSelectionComment("author", newComment.value)
+    )
+    useTabsetService().saveCurrentTabset()
+  }
+})
 watchEffect(() => {
   groups.value = useGroupsStore().tabGroups
 })
@@ -398,6 +469,7 @@ watchEffect(async () => {
 const nameOrTitle = (tab: Tab) => tab.name ? tab.name : tab.title
 
 const hoveredOver = (tabsetId: string) => hoveredTab.value === tabsetId
+const hoveredOverAnnotation = (annotationId: string) => hoveredAnnotation.value === annotationId
 
 const formatDate = (timestamp: number | undefined) =>
     timestamp ? formatDistance(timestamp, new Date(), {addSuffix: true}) : ""
@@ -438,18 +510,18 @@ const unsetGroup = () => {
   if (props.tab) {
     props.tab.groupName = undefined
     const res = useTabsStore().getTabAndTabsetId(props.tab.id)
-        //.then((res: TabAndTabsetId | undefined) => {
-          if (res) {
-            const tab = res.tab
-            const tabsetId = res.tabsetId
-            tab.groupName = undefined
-            tab.groupId = -1
-            const ts = useTabsetService().getTabset(tabsetId)
-            if (ts) {
-              useTabsetService().saveTabset(ts)
-            }
-          }
-       // })
+    //.then((res: TabAndTabsetId | undefined) => {
+    if (res) {
+      const tab = res.tab
+      const tabsetId = res.tabsetId
+      tab.groupName = undefined
+      tab.groupId = -1
+      const ts = useTabsetService().getTabset(tabsetId)
+      if (ts) {
+        useTabsetService().saveTabset(ts)
+      }
+    }
+    // })
   }
 }
 
@@ -467,18 +539,18 @@ const switchGroup = (group: chrome.tabGroups.TabGroup): void => {
   if (props.tab) {
     props.tab.groupName = group.title
     const res = useTabsStore().getTabAndTabsetId(props.tab.id)
-       // .then((res: TabAndTabsetId | undefined) => {
-          if (res) {
-            const tab = res.tab
-            const tabsetId = res.tabsetId
-            tab.groupName = group.title
-            tab.groupId = group.id
-            const ts = useTabsetService().getTabset(tabsetId)
-            if (ts) {
-              useTabsetService().saveTabset(ts)
-            }
-          }
-       // })
+    // .then((res: TabAndTabsetId | undefined) => {
+    if (res) {
+      const tab = res.tab
+      const tabsetId = res.tabsetId
+      tab.groupName = group.title
+      tab.groupId = group.id
+      const ts = useTabsetService().getTabset(tabsetId)
+      if (ts) {
+        useTabsetService().saveTabset(ts)
+      }
+    }
+    // })
   }
 }
 
@@ -502,21 +574,48 @@ const monitoringDialog = (tab: Tab) => {
 
 const openImage = () => window.open(chrome.runtime.getURL('www/index.html#/mainpanel/png/' + props.tab.id + "/" + pngs.value[0].id))
 
-const showAnnotation = (tab: Tab, a:any) => {
+const deleteAnnotation = async (tab: Tab, annotationToDelete: any) => {
+  //console.log("deleting annotatin", tab, annotationToDelete)
+  tab.annotations = _.filter(tab.annotations, a => a.id !== annotationToDelete.id)
+  useTabsetService().saveCurrentTabset()
+}
+
+const showAnnotation = async (tab: Tab, a: HTMLSelection) => {
+  selectedAnnotation.value = selectedAnnotation.value === a ? undefined : a;
+  if (!isCurrentTab(tab)) {
+    gotoTab()
+  }
   console.log("a!", a, tab.chromeTabId)
   const range: string = a['range']
-  chrome.scripting.executeScript({
-    target: {tabId: tab.chromeTabId || 0, allFrames: true},
-    args: [tab.chromeTabId || 0, range],
-    func: (tabId: number, rangeString: string) => {
-      console.log("tabId", tabId, rangeString)
-      const range = rangy.deserializeRange(rangeString)
-
-    }
-  }, (result: any) => {
-    console.log("result", result)
-    //window.close()
+  chrome.tabs.sendMessage(tab.chromeTabId || 0, {action: "highlight-annotation", range: range}, function (response) {
+    console.log("hier, response: ", response)
   });
+}
+
+const showAnnotations = () =>
+    showAnnotationList.value &&
+    useUiStore().listDetailLevelGreaterEqual(ListDetailLevel.SOME, props.tabset.details) &&
+    (props.tab as Tab).annotations && (props.tab as Tab).annotations.length > 0
+
+const showComments = () =>
+    showCommentList.value &&
+    useUiStore().listDetailLevelGreaterEqual(ListDetailLevel.SOME, props.tabset.details) &&
+    (props.tab as Tab).comments && (props.tab as Tab).comments.length > 0
+
+const toggleLists = (ident: string) => {
+  switch (ident) {
+    case 'annotations':
+      showCommentList.value = false
+      showAnnotationList.value = !showAnnotationList.value
+      break
+    case 'comments':
+      showAnnotationList.value = false
+      showCommentList.value = !showCommentList.value
+      break
+    default:
+      console.log("undefined ident for toggle lists", ident)
+      break
+  }
 }
 
 </script>
