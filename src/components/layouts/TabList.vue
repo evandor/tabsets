@@ -6,49 +6,30 @@
     ident="tablist_dnd"
     hint="You can select the favicon images and drag and drop the entries to reorder the list to your wishes"/>
 
-  <q-list separator>
+  <q-list separator v-if="preventDragAndDrop()">
     <vue-draggable-next
       class="dragArea list-group w-full"
       :list="props.tabs as Array<Tab>"
       :group="{ name: 'tabs', pull: 'clone' }"
       @change="handleDragAndDrop">
 
-      <q-item v-if="props.tabs?.length === 0 &&
-                      inBexMode() &&
-                      useUiStore().rightDrawer.activeTab === DrawerTabs.UNASSIGNED_TABS &&
-                      tabsStore.pendingTabset?.tabs.length > 0">
-        <div class="row fit q-ma-lg q-pa-lg text-subtitle2 text-grey-8">
-          You can drag and drop items from the "Tabs to add" view to add them to this tabset by clicking on the icons
-        </div>
-      </q-item>
+      <TabListHelper
+        :group="group"
+        :tabset-id="tabsetId"
+        :tabs="props.tabs" />
 
-      <q-item
-        clickable
-        v-ripple
-        v-for="(tab,index) in props.tabs"
-        class="q-ma-none q-pa-md"
-        :style="itemStyle(tab)"
-        @click.stop="showDetails(tab)"
-        @mouseover="showButtons(  tab.id,true)"
-        @mouseleave="showButtons( tab.id, false)"
-        @dragstart="startDrag($event, tab)"
-        :key="props.group + '_' + tab.id">
-
-        <TabListElementWidget :showButtons="showButtonsProp.get(tab.id)"
-                              :key="props.group + '__' + tab.id"
-                              :tab="tabAsTab(tab)"
-                              :tabsetId="props.tabsetId"
-                              :tabsetSharedId="props.tabsetSharedId"
-                              :highlightUrl="highlightUrl"/>
-
-      </q-item>
     </vue-draggable-next>
   </q-list>
+
+  <TabListHelper v-else
+    :group="group"
+    :tabset-id="tabsetId"
+    :tabs="props.tabs" />
 
 </template>
 
 <script setup lang="ts">
-import {Tab} from "src/models/Tab";
+import {Tab, TabSorting} from "src/models/Tab";
 import TabsetService from "src/services/TabsetService";
 import {PropType, ref} from "vue";
 import {VueDraggableNext} from 'vue-draggable-next'
@@ -60,25 +41,21 @@ import {CreateTabFromOpenTabsCommand} from "src/domain/commands/CreateTabFromOpe
 import TabListElementWidget from "src/components/widgets/TabListElementWidget.vue";
 import {useUtils} from "src/services/Utils"
 import InfoMessageWidget from "components/widgets/InfoMessageWidget.vue";
+import TabListHelper from "components/layouts/mainpanel/TabListHelper.vue";
+import {useQuasar} from "quasar";
 
-const {inBexMode} = useUtils()
-
+const $q = useQuasar()
 const tabsStore = useTabsStore()
+
 
 const props = defineProps({
   tabs: {type: Array as PropType<Tab[]>, required: true},
   tabsetId: {type: String, required: true},
   group: {type: String, required: true},
   highlightUrl: {type: String, required: false},
-  tabsetSharedId: {type: String, required: false}
+  tabsetSharedId: {type: String, required: false},
+  tabsetSorting: {type: String, required: false}
 })
-
-const thumbnails = ref<Map<string, string>>(new Map())
-const tabAsTab = (tab: Tab): Tab => tab as unknown as Tab
-
-const showButtonsProp = ref<Map<string, boolean>>(new Map())
-
-const showButtons = (tabId: string, show: boolean) => showButtonsProp.value.set(tabId, show)
 
 function adjustIndex(element: any, tabs: Tab[]) {
   //console.log("filtered", tabs)
@@ -131,28 +108,7 @@ const handleDragAndDrop = (event: any) => {
   }
 }
 
-const startDrag = (evt: any, tab: Tab) => {
-  console.debug("start drag", evt, tab)
-  if (evt.dataTransfer) {
-    evt.dataTransfer.dropEffect = 'all'
-    evt.dataTransfer.effectAllowed = 'all'
-    evt.dataTransfer.setData('text/plain', tab.id)
-    useUiStore().draggingTab(tab.id, evt, true)
-  }
-  console.log("evt.dataTransfer.getData('text/plain')", evt.dataTransfer.getData('text/plain'))
-}
-
-const showDetails = (tab: Tab) => {
-  useUiStore().setSelectedTab(tab)
-  useUiStore().rightDrawerSetActiveTab(DrawerTabs.TAB_DETAILS)
-}
-
-const itemStyle = (tab: Tab) => {
-  if (tab.url === props.highlightUrl) {
-    return "border: 1px dotted orange; padding:15px; border-radius:5px"
-  }
-  return "border-bottom: 1px solid #fafafa"
-}
+const preventDragAndDrop = () => $q.platform.is.mobile || props.tabsetSorting !== TabSorting.CUSTOM
 
 </script>
 

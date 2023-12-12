@@ -7,6 +7,7 @@
                group="otherTabs"
                :highlightUrl="highlightUrl"
                :tabsetId="props.tabset?.id"
+               :tabsetSorting="props.tabset?.sorting"
                :tabsetSharedId="props.tabset?.sharedId"
                :tabs="currentTabs()"/>
 
