@@ -31,6 +31,7 @@ class MqttService {
   private client: MqttClient | undefined = undefined
 
   private publisher: number = 0
+  private closedCounter: number = 0
 
   init() {
     console.log("starting mqtt client...")
@@ -45,13 +46,6 @@ class MqttService {
     const ctx = this
     this.client.on('connect', function () {
       console.log('connected!', ctx.client);
-
-     // ctx.client?.subscribe('hello2');
-
-      // ctx.publisher = setInterval(function () {
-      //   console.log("publishing")
-      //   ctx.client.publish('hello2', 'world');
-      // }, 1000);
     });
 
     this.client.on('connect', function () {
@@ -64,6 +58,11 @@ class MqttService {
 
     this.client.on('close', function () {
       console.log('closed!');
+      ctx.closedCounter = ctx.closedCounter + 1
+      if (ctx.closedCounter > 5) {
+        console.log("closing connection due to 10 close events")
+        ctx.client?.end()
+      }
     })
 
     this.client.on('disconnect', function () {
