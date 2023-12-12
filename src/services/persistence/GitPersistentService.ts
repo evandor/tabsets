@@ -18,14 +18,30 @@ import LightningFS from '@isomorphic-git/lightning-fs';
 import http from 'isomorphic-git/http/web'
 import * as git from 'isomorphic-git'
 import {Buffer} from "buffer";
+import {useTabsStore} from "stores/tabsStore";
 
 self.Buffer = Buffer;
+
+async function createDir(...segments: string[]) {
+  console.log("got segmetns", segments)
+  let prefix = ''
+  for (const segment of segments) {
+    try {
+      const path = `${dir}/${prefix}${segment}`
+      console.log("creating fs path", path)
+      prefix += segment + "/"
+      await pfs.mkdir(path)
+    } catch (err) {
+      console.log("dir exists")
+    }
+  }
+}
 
 class GitPersistenceService implements PersistenceService {
   private db: IDBPDatabase = null as unknown as IDBPDatabase
 
   async init(dbName: string) {
-    console.log("initializing git database", dbName)
+    console.log("=== initializing git database ===", dbName)
     this.db = await this.initDatabase(dbName)
     useUiStore().dbReady = true
   }
@@ -61,7 +77,7 @@ class GitPersistenceService implements PersistenceService {
     const log = await git.log({fs, dir})
     console.log("git log", log)
 
-    const status  = await git.status({fs, dir, filepath: 'README.md'})
+    const status = await git.status({fs, dir, filepath: 'README.md'})
     console.log("status", status)
   }
 
@@ -217,7 +233,44 @@ class GitPersistenceService implements PersistenceService {
     return Promise.resolve(undefined);
   }
 
-  loadTabsets(): Promise<void> {
+  async loadTabsets(): Promise<void> {
+    console.log("=== loading tabsets ===")
+    // update from git, then read from fs
+    const tabsets: Tabset[] = []
+    try {
+      const result: string[] = await pfs.readdir(`${dir}/tabsets`)//, (callback: any) => {
+      console.log("callback", result)
+      for (var index in result) {
+        console.log("got ts index", index)
+        const tabsetId = result[index]
+        const tsDataLocation = `${dir}/tabsets/${tabsetId}/tabset.json`
+        console.log("`${dir}/tabsets/${tabsetId}/tabset.json`", `${dir}/tabsets/${tabsetId}/tabset.json`)
+        try {
+          const tsData = await pfs.readFile(tsDataLocation)
+          console.log("tsData", tsData)
+          const ts = JSON.parse(tsData) as Tabset
+          ts.tabs = []
+
+          try {
+            const tabsResult: string[] = await pfs.readdir(`${dir}/tabsets/${tabsetId}/tabs`)
+            for (var tabsIndex in tabsResult) {
+              const tab = JSON.parse(await pfs.readFile(`${dir}/tabsets/${tabsetId}/tabs/${tabsResult[tabsIndex]}`))
+              ts.tabs.push(tab)
+            }
+          } catch (err) {
+            console.warn("err", err)
+          }
+
+          tabsets.push(ts)
+        } catch (err) {console.log("err", err)}
+      }
+    } catch (err) {
+      console.warn("err", err)
+    }
+    for (const t of tabsets) {
+      useTabsStore().addTabset(t)
+    }
+
     return Promise.resolve(undefined);
   }
 
@@ -262,7 +315,48 @@ class GitPersistenceService implements PersistenceService {
     return Promise.resolve(undefined);
   }
 
-  saveTabset(tabset: Tabset): Promise<any> {
+  async saveTabset(tabset: Tabset): Promise<any> {
+    // assuming new
+    const tabsetFilename = `tabsets/${tabset.id}`
+    await createDir("tabsets", tabset.id, "tabs")
+
+    let strippedTabset = JSON.parse(JSON.stringify(tabset));
+    const tabs = strippedTabset.tabs as Tab[]
+    delete strippedTabset['tabs']
+    await pfs.writeFile(`${dir}/tabsets/${tabset.id}/tabset.json`, JSON.stringify(strippedTabset), 'utf8')
+    //await git.status({fs, dir, filepath: 'newfile.txt'})
+    await git.add({fs, dir, filepath: tabsetFilename})
+
+    // add / update tabs
+    for(const t of tabs) {
+      await pfs.writeFile(`${dir}/tabsets/${tabset.id}/tabs/${t.id}`, JSON.stringify(t), 'utf8')
+      //await git.status({fs, dir, filepath: 'newfile.txt'})
+      await git.add({fs, dir, filepath: tabsetFilename + "/tabs"})
+    }
+
+    let sha = await git.commit({
+      fs,
+      dir,
+      message: 'yeah.',
+      author: {
+        name: 'Mr. Test',
+        email: 'mrtest@example.com'
+      }
+    })
+
+    console.log(sha)
+
+    let pushResult = await git.push({
+      fs,
+      http,
+      dir: '/tutorial',
+      remote: 'origin',
+      corsProxy: 'https://cors.isomorphic-git.org',
+      ref: 'main',
+      onAuth: () => ({username: process.env.GITHUB_TOKEN}),
+    })
+    console.log(pushResult)
+
     return Promise.resolve(undefined);
   }
 
