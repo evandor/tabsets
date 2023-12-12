@@ -190,7 +190,7 @@
       <Navigation></Navigation>
     </q-drawer>
 
-    <q-drawer v-if="useUiStore().userLevel === UserLevel.DEFAULT"
+    <q-drawer v-if="useUiStore().userLevel === UserLevel.DEFAULT || useUiStore().userLevel === UserLevel.UNKNOWN"
               v-model="useUiStore().rightDrawerOpen" side="right" bordered
               content-class="column justify-between no-wrap bg-grey-1">
       <DrawerRight/>
@@ -210,10 +210,9 @@
 import {ref, watchEffect} from 'vue';
 import {useMeta, useQuasar} from "quasar";
 import {useTabsStore} from "src/stores/tabsStore";
-import {useRoute, useRouter} from "vue-router";
+import {useRouter} from "vue-router";
 import {useNotificationsStore} from "src/stores/notificationsStore";
 import Navigation from "src/components/Navigation.vue"
-import NavigationService from "src/services/NavigationService"
 import {useSearchStore} from "src/stores/searchStore";
 import _ from "lodash";
 import {useSpacesStore} from "src/stores/spacesStore"
@@ -233,7 +232,6 @@ import SuggestionDialog from "components/dialogues/SuggestionDialog.vue";
 import {useSuggestionsStore} from "src/stores/suggestionsStore";
 import {FeatureIdent} from "src/models/AppFeature";
 import {useSettingsStore} from "src/stores/settingsStore"
-import TabsetsSelectorWidget from "components/widgets/TabsetsSelectorWidget.vue";
 import ToolbarButton from "components/widgets/ToolbarButton.vue";
 
 const $q = useQuasar()

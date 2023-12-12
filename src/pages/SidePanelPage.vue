@@ -490,6 +490,15 @@ if ($q.platform.is.chrome) {
           message.data.tabsetId :
           useTabsetService().getCurrentTabset()?.id
         useTabsetService().reloadTabset(tabsetId)
+      } else if (message.name === "toggle-cs-iframe") {
+        console.log("hier!!")
+        //useUiStore().setContentScriptWidth
+        //chrome.runtime.sendMessage( "xxx")
+        if (message.data.close) {
+          chrome.tabs.sendMessage(message.data.tabId, "cs-iframe-close")
+        } else {
+          chrome.tabs.sendMessage(message.data.tabId, "cs-iframe-open")
+        }
       } else {
         console.log("got unmatched message", message)
       }

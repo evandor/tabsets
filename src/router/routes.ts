@@ -267,6 +267,11 @@ const routes: RouteRecordRaw[] = [
     component: () => import('layouts/PlainLayout.vue'),
     children: [{ path: '', component: () => import('pages/public/ImportPublicTabsetPage.vue') }],
   },
+  {
+    path: '/contentscript',
+    component: () => import('layouts/PlainLayout.vue'),
+    children: [{ path: '', component: () => import('pages/contentscript/ContentScriptPage.vue') }],
+  },
   // {
   //   path: '/annotations/:tabId',
   //   component: () => import('layouts/PlainLayout.vue'),

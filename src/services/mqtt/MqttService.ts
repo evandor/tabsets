@@ -28,30 +28,71 @@ class MqttPayload {
 
 class MqttService {
 
-  private client: MqttClient = null
+  private client: MqttClient | undefined = undefined
 
   private publisher: number = 0
 
   init() {
     console.log("starting mqtt client...")
-    const author = useQuasar().localStorage.getItem("sharing.author") || ''
+    const author = useQuasar().localStorage.getItem("sharing.author") || 'default'
     //this.client =  mqtt.connectAsync("mqtt://test.mosquitto.org")
     //this.client = mqtt.connect("mqtts://public:public@public.cloud.shiftr.io:443", {clientId: 'javascript'})
-    //this.client = mqtt.connect("mqtts://tabsets:3dAkqY8glIIecUBs@tabsets.cloud.shiftr.io:443", {clientId: 'tabsets' + author})
+    //this.client = mqtt.connect("mqtts://tabsets:3dAkqY8glIIecUBs@tabsets.cloud.shiftr.io:443", {clientId: 'tabsets-' + author})
+    this.client = mqtt.connect("mqtts://tabsets-dev:6b1CjPBf502SO6Kx@tabsets-dev.cloud.shiftr.io:443", {clientId: 'tabsets-' + author})
     //this.client = mqtt.connect("mqtts://gpgpaxfd:zH8P4i6hZee4SVCqK_uS6KRcuTnPeRu7@sparrow.rmq.cloudamqp.com:8883", {clientId: 'tabsets' + author})
-    this.client = mqtt.connect("mqtts://demo.flashmq.org", {clientId: 'tabsets' + author})
+    //this.client = mqtt.connect("mqtts://demo.flashmq.org", {clientId: 'tabsets' + author})
 
     const ctx = this
     this.client.on('connect', function () {
       console.log('connected!', ctx.client);
 
-      ctx.client.subscribe('hello2');
+     // ctx.client?.subscribe('hello2');
 
       // ctx.publisher = setInterval(function () {
       //   console.log("publishing")
       //   ctx.client.publish('hello2', 'world');
       // }, 1000);
     });
+
+    this.client.on('connect', function () {
+      console.log('connected!');
+    })
+
+    this.client.on('reconnect', function () {
+      console.log('reconnected!');
+    })
+
+    this.client.on('close', function () {
+      console.log('closed!');
+    })
+
+    this.client.on('disconnect', function () {
+      console.log('disconnected!');
+    })
+
+    this.client.on('close', function () {
+      console.log('closed!');
+    })
+
+    this.client.on('offline', function () {
+      console.log('offline!');
+    })
+
+    this.client.on('error', function () {
+      console.log('error!');
+    })
+
+    this.client.on('end', function () {
+      console.log('ended!');
+    })
+
+    // this.client.on('packetsend', function () {
+    //   console.log('packetsend!');
+    // })
+    //
+    // this.client.on('packetreceive', function () {
+    //   console.log('packetreceive!');
+    // })
 
     this.client.on('message', function (topic, message) {
       const payload: MqttPayload = JSON.parse(message.toString())
@@ -99,16 +140,16 @@ class MqttService {
   stop() {
     console.log("stopping mqtt client", this.publisher)
     clearTimeout(this.publisher)
-    this.client.end()
+    this.client?.end()
   }
 
   subscribe(topic: string) {
-    this.client.subscribe(topic)
+    this.client?.subscribe(topic)
   }
 
   publishTabComment(topic: string, tab: Tab, comment: TabComment) {
     const payload = new MqttPayload('tabComment', tab, comment)
-    this.client.publish(topic, JSON.stringify(payload))
+    this.client?.publish(topic, JSON.stringify(payload))
   }
 }
 

@@ -80,6 +80,8 @@ export class Tab {
   date: string
   lastModified: string
   author: string
+  // deprecated, will be phased out in 0.5.1
+  // use comments instead
   note: string
   scheduledFor: number | undefined
   extension: UrlExtension

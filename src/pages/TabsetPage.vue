@@ -255,11 +255,8 @@ a tab's url starts with one of the urls of this tabset, it will be ignored and n
 import {onMounted, onUpdated, ref, unref, watchEffect} from 'vue'
 import {useRoute, useRouter} from "vue-router";
 import {date, uid, useQuasar} from "quasar";
-import _ from "lodash"
 import {useTabsStore} from "src/stores/tabsStore";
 import TabsetService from "src/services/TabsetService";
-import {Tab} from "src/models/Tab";
-import RestoreTabsetDialog from "components/dialogues/RestoreTabsetDialog.vue";
 import AddUrlDialog from "components/dialogues/AddUrlDialog.vue";
 import {usePermissionsStore} from "src/stores/permissionsStore";
 import InfoMessageWidget from "components/widgets/InfoMessageWidget.vue";
@@ -278,7 +275,6 @@ import DynamicTabsetPageCards from "pages/DynamicTabsetPageCards.vue";
 import {useTabsetService} from "src/services/TabsetService2";
 import Analytics from "src/utils/google-analytics";
 import CanvasForTabset from "components/layouts/CanvasForTabset.vue";
-import {MqttService} from "src/services/mqtt/MqttService";
 
 const route = useRoute();
 const tabsStore = useTabsStore()

@@ -96,7 +96,7 @@ const start = () => {
         importedTS.importedAt = new Date().getTime()
         console.log("importedTS", importedTS)
         setupTabset(importedTS as Tabset)
-      } else if (exists.sharedAt < tabset.value.sharedAt) {
+      } else if (exists && exists.sharedAt && (exists.sharedAt < (tabset.value.sharedAt || 0))) {
         const updatedTS = tabset.value
         updatedTS.sharedId = shareId.value
         updatedTS.importedAt = new Date().getTime()
