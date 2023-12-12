@@ -85,6 +85,7 @@ module.exports = configure(function (ctx) {
         STRIPE_ACCOUNT: process.env.STRIPE_ACCOUNT,
         STRIPE_API_VERSION: process.env.STRIPE_API_VERSION,
         LOCALE: process.env.LOCALE,
+        GITHUB_TOKEN: process.env.GITHUB_TOKEN
       },
       // rawDefine: {}
       // ignorePublicFolder: true,
@@ -237,10 +238,12 @@ module.exports = configure(function (ctx) {
     bex: {
       contentScripts: [
         'content-script',
+        'my-content-script',
         'tabsets-content-script',
         'content-script-thumbnails',
         'clipping',
-        'annotation'
+        'annotation',
+        'highlight-annotations'
       ],
       css: ['clipping.css']
 

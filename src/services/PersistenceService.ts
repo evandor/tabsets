@@ -9,6 +9,7 @@ import {MetaLink} from "src/models/MetaLink";
 import {Window} from "src/models/Window";
 import {RequestInfo} from "src/models/RequestInfo";
 import {BlobType, SavedBlob} from "src/models/SavedBlob";
+import {Message} from "src/models/Message";
 
 interface PersistenceService {
 
@@ -86,6 +87,9 @@ interface PersistenceService {
   removeWindow(windowId: number): Promise<void>
   updateWindow(window: Window): Promise<void>
   upsertWindow(window: Window, windowName: string, screenLabel: string | undefined): Promise<void>
+
+  getMessages(): Promise<Message[]>
+  addMessage(msg: Message):void
 
   clear(name: string):any
 

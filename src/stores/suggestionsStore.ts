@@ -83,7 +83,7 @@ export const useSuggestionsStore = defineStore('suggestions', () => {
     // }
 
     function applySuggestion(id: string): Promise<Suggestion> {
-        console.log("$applied suggestion", "background-color:grey", id)
+        console.log("%capplied suggestion", "background-color:grey", id)
         return storage.setSuggestionState(id, SuggestionState.APPLIED)
             .then((res: any) => {
                 loadSuggestionsFromDb();

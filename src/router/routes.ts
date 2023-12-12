@@ -5,8 +5,8 @@ const routes: RouteRecordRaw[] = [
     path: '/',
     // @ts-ignore
     redirect: (process.env.MODE === 'pwa') ?
-        //'/tabsets' :
-        '/sidepanel' :
+        '/tabsets' : // use case: sharing tabset, opening link, import in PWA for anonymous user
+        //'/sidepanel' : // use case: ???
         // @ts-ignore
         (chrome.sidePanel && chrome.sidePanel.setPanelBehavior) ?
             '/authenticate' :
@@ -96,6 +96,11 @@ const routes: RouteRecordRaw[] = [
     path: '/sidepanel/bookmarks',
     component: () => import('layouts/SidePanelLayout.vue'),
     children: [{ path: '', component: () => import('pages/sidepanel/SidePanelBookmarksPage.vue') }],
+  },
+  {
+    path: '/sidepanel/messages',
+    component: () => import('layouts/SidePanelLayout.vue'),
+    children: [{ path: '', component: () => import('pages/sidepanel/SidePanelMessagesPage.vue') }],
   },
   {
     path: '/sidepanel/top10List',
@@ -256,6 +261,16 @@ const routes: RouteRecordRaw[] = [
     path: '/searchresult',
     component: () => import('layouts/FullPageLayout.vue'),
     children: [{ path: '', component: () => import('pages/SearchResultPage.vue') }],
+  },
+  {
+    path: '/imp/:sharedId',
+    component: () => import('layouts/PlainLayout.vue'),
+    children: [{ path: '', component: () => import('pages/public/ImportPublicTabsetPage.vue') }],
+  },
+  {
+    path: '/contentscript',
+    component: () => import('layouts/PlainLayout.vue'),
+    children: [{ path: '', component: () => import('pages/contentscript/ContentScriptPage.vue') }],
   },
   // {
   //   path: '/annotations/:tabId',

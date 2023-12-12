@@ -12,11 +12,15 @@ export class ShareTabsetCommand implements Command<any> {
     public tabsetId: string,
     public sharedId: string | undefined,
     public sharing: TabsetSharing,
+    public author: string,
     public republish: boolean = false) {
   }
 
   async execute(): Promise<ExecutionResult<any>> {
-    const sharedBy = useAuthStore().user.name
+    //let sharedBy = useAuthStore().user.name
+    //if (!sharedBy) {
+    const sharedBy = this.author
+    //}
     return TabsetService.share(this.tabsetId, this.sharing, this.sharedId, sharedBy || "unknown")
       .then(oldSharing => Promise.resolve(
         new ExecutionResult(
@@ -31,5 +35,5 @@ export class ShareTabsetCommand implements Command<any> {
 }
 
 ShareTabsetCommand.prototype.toString = function cmdToString() {
-  return `ShareTabsetCommand: {tabsetId=${this.tabsetId}}, {sharing=${this.sharing}}`;
+  return `ShareTabsetCommand: {tabsetId=${this.tabsetId}}, {sharing=${this.sharing}, {author=${this.author}}`;
 };

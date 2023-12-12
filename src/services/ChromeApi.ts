@@ -125,6 +125,8 @@ class ChromeApi {
 
         if (usePermissionsStore().hasAllOrigins() && usePermissionsStore().hasFeature(FeatureIdent.ANALYSE_TABS)) {
             this.startWebRequestListener()
+        } else {
+            this.stopWebRequestListener()
         }
     }
 
@@ -438,40 +440,10 @@ class ChromeApi {
     }
 
     executeAnnotationJS(tabId: number) {
-        // function annotate(greeting: string) {
-        //     console.log("=======", greeting);
-        //
-        //     console.log("tabsets: initializing content script for website annotation")
-        //     let selection = document.getSelection()
-        //     console.log("selection", selection, selection?.toString())
-        //     // @ts-ignore
-        //     if (selection?.rangeCount > 0) {
-        //         const range = selection?.getRangeAt(0)
-        //         console.log("got range", range)
-        //         console.log("got range", rangy.serializeRange(range))
-        //         const msg = {
-        //             msg: 'capture-annotation',
-        //             text: selection?.toString(),
-        //             range: rangy.serializeRange(range)
-        //         }
-        //         console.log("tabsets: sending message", msg)
-        //         chrome.runtime.sendMessage(msg, (callback) => {
-        //             if (chrome.runtime.lastError) {
-        //                 console.warn("got runtime error", chrome.runtime.lastError)
-        //             }
-        //         })
-        //     }
-        //
-        // }
-        //files: ['annotation.js']
-        // @ts-ignore
         chrome.scripting.executeScript({
             target: {tabId: tabId},
-            //func: annotate,
             files: ['annotation.js']
-            //args: ['Hello']
         });
-
     }
 
     // executeQuoteJS(tabId: number) {

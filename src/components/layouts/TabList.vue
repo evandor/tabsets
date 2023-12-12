@@ -38,6 +38,7 @@
                               :key="props.group + '__' + tab.id"
                               :tab="tabAsTab(tab)"
                               :tabsetId="props.tabsetId"
+                              :tabsetSharedId="props.tabsetSharedId"
                               :highlightUrl="highlightUrl"/>
 
       </q-item>
@@ -68,8 +69,8 @@ const props = defineProps({
   tabs: {type: Array as PropType<Tab[]>, required: true},
   tabsetId: {type: String, required: true},
   group: {type: String, required: true},
-  highlightUrl: {type: String, required: false
-  }
+  highlightUrl: {type: String, required: false},
+  tabsetSharedId: {type: String, required: false}
 })
 
 const thumbnails = ref<Map<string, string>>(new Map())
