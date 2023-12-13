@@ -155,7 +155,8 @@ function inIgnoredMessages(request: any) {
         request.name === 'reload-suggestions' ||
         request.name === 'reload-tabset' ||
         request.name === 'detail-level-perTabset-changed' ||
-        request.name === 'detail-level-changed'
+        request.name === 'detail-level-changed' ||
+        request.name === 'highlight-annotation'
     //request.name === 'recogito-annotation-created'
 
 }
@@ -278,7 +279,7 @@ class ChromeListeners {
         const tabsStore = useTabsStore()
 
         let foundSession = false
-        _.forEach([...tabsStore.tabsets.values()], (ts: Tabset) => {
+        _.forEach([...tabsStore.tabsets.values()] as Tabset[], (ts: Tabset) => {
             if (ts.type === TabsetType.SESSION) {
                 foundSession = true
                 console.debug("pushing to", ts.id, tab)
@@ -336,7 +337,7 @@ class ChromeListeners {
 
             // handle sessions
             let foundSession = false
-            _.forEach([...tabsStore.tabsets.values()], (ts: Tabset) => {
+            _.forEach([...tabsStore.tabsets.values()] as Tabset[], (ts: Tabset) => {
                 if (ts.type === TabsetType.SESSION) {
                     foundSession = true
                     this.handleUpdate(ts, chromeTab)
@@ -411,6 +412,10 @@ class ChromeListeners {
         }
         if (!tab.id) {
             return
+        }
+
+        if (tab.url && tab.url.startsWith("https://shared.tabsets.net")) {
+          return
         }
 
         if (usePermissionsStore().hasFeature(FeatureIdent.ANNOTATIONS)) {

@@ -51,7 +51,8 @@
 
       <q-card-actions align="right" class="text-primary">
         <q-btn flat label="Cancel" @click="onDialogCancel"/>
-        <q-btn flat label="Publish Comment"
+        <q-btn flat
+               :label="props.sharedId ? 'Publish Comment' : 'Save Comment'"
                v-close-popup
                @click="publishComment()"/>
       </q-card-actions>
@@ -80,10 +81,11 @@ defineEmits([
 ])
 
 const props = defineProps({
-  tabId: {type: String, required: true}
+  tabId: {type: String, required: true},
+  sharedId: {type: String, required: false}
 })
 
-const editor = ref(props.note)
+const editor = ref('')
 
 const {dialogRef, onDialogHide, onDialogCancel} = useDialogPluginComponent()
 
@@ -101,10 +103,6 @@ watchEffect(() => {
   newTabsetNameExists.value = !!tabsStore.nameExistsInContextTabset(newTabsetName.value);
 })
 
-const parseDate = (str: string): Date => {
-  return date.extractDate(str, dateFormat)
-}
-
 const publishComment = () => {
   const tabData = useTabsStore().getTabAndTabsetId(props.tabId)
   if (tabData && tabData.tab) {
@@ -119,25 +117,15 @@ const publishComment = () => {
     if (tabset && tabset.sharedId) {
       MqttService.publishTabComment(tabset.sharedId,tabData.tab, comment)
     }
+    if (tabset) {
+      useTabsetService().saveTabset(tabset)
+    }
   } else {
     $q.notify({
       message: 'There was a problem saving the comment',
       type: 'negative'
     })
   }
-  // TabsetService.saveNote(props.tabId, editor.value, props.schedule ? parseDate(scheduleFor.value) : undefined)
-  //   .then(() => {
-  //     $q.notify({
-  //       message: props.schedule ? 'The tab has been scheduled' : 'The note has been saved',
-  //       type: 'positive'
-  //     })
-  //   })
-  //   .catch(() => {
-  //     $q.notify({
-  //       message: 'There was a problem saving the note',
-  //       type: 'negative'
-  //     })
-  //   })
 }
 
 

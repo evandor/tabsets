@@ -14,7 +14,7 @@ import {FeatureIdent} from "src/models/AppFeature";
 import {RequestInfo} from "src/models/RequestInfo";
 import {useWindowsStore} from "stores/windowsStore";
 import {MonitoringType} from "src/models/Monitor";
-import {Router} from "vue-router";
+import {Router, useRoute} from "vue-router";
 
 // @ts-ignore
 import rangy from "rangy/lib/rangy-core.js";
@@ -139,9 +139,8 @@ class ChromeApi {
         )
     }
 
-    // TODO should be called somewhere, should it not?
     stopWebRequestListener() {
-        console.log("removing WebRequestListener")
+        console.log("removing WebRequestListener if running")
         chrome.webRequest.onHeadersReceived.removeListener(this.onHeadersReceivedListener)
     }
 
@@ -236,7 +235,7 @@ class ChromeApi {
                         const tabId = tab?.id || 0
                         this.executeAddToTS(tabId, useTabsStore().currentTabsetId)
                     } else if (e.menuItemId === 'annotate_website') {
-                        console.log("creating annotation", tab)
+                        console.log("creating annotation JS", tab)
                         if (tab && tab.id) {
                             this.executeAnnotationJS(tab.id)
                         }

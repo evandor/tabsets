@@ -19,11 +19,11 @@
         <q-toolbar-title>
 
           <template v-if="useUiStore().leftDrawerOpen">
-<!--            <span class="text-dark" v-if="$q.screen.gt.xs">Tabs of </span>-->
+            <!--            <span class="text-dark" v-if="$q.screen.gt.xs">Tabs of </span>-->
             <span
-                class="text-primary text-weight-bold cursor-pointer"
-                @mouseenter="showEditButton = true"
-                @mouseout="showEditButton = false">
+              class="text-primary text-weight-bold cursor-pointer"
+              @mouseenter="showEditButton = true"
+              @mouseout="showEditButton = false">
                   {{ tabsStore.currentTabsetName }}
                    <q-popup-edit :model-value="tabset?.name" v-slot="scope"
                                  @update:model-value="val => setNewName(  val)">
@@ -31,8 +31,16 @@
                    </q-popup-edit>
                 <span
                   v-if="tabset.sharedId"
-                  class="text-caption">shared by {{ tabset.sharedBy }}, {{ date.formatDate(tabset.sharedAt, 'DD.MM.YYYY HH:mm') }}</span>
+                  class="text-caption">shared by {{
+                    tabset.sharedBy
+                  }}, {{ date.formatDate(tabset.sharedAt, 'DD.MM.YYYY HH:mm') }}</span>
                 </span>
+            <span v-if="tabset.sharedPath">
+              <q-icon class="q-ml-md cursor-pointer" name="refresh" @click="router.push(tabset.sharedPath)">
+                <q-tooltip class="tooltip-small">Refresh</q-tooltip>
+              </q-icon>
+            </span>
+
           </template>
           <template v-else>
             <TabsetsSelectorWidget/>
@@ -104,49 +112,49 @@
         <!--          <q-tooltip>Use the table layout to visualize your tabs</q-tooltip>-->
         <!--        </q-btn>-->
 
-<!--        <q-btn-->
-<!--            v-if="permissionsStore.hasFeature(FeatureIdent.EXPERIMENTAL_VIEWS) && tabset?.tabs.length > 0"-->
-<!--            @click="setView('canvas')"-->
-<!--            style="width:14px"-->
-<!--            class="q-mr-sm" size="10px"-->
-<!--            :flat="tabset?.view !== 'canvas'"-->
-<!--            :outline="tabset?.view === 'canvas'"-->
-<!--            icon="o_shape_line">-->
-<!--          <q-tooltip>Use the canvas freestyle layout to visualize your tabs</q-tooltip>-->
-<!--        </q-btn>-->
+        <!--        <q-btn-->
+        <!--            v-if="permissionsStore.hasFeature(FeatureIdent.EXPERIMENTAL_VIEWS) && tabset?.tabs.length > 0"-->
+        <!--            @click="setView('canvas')"-->
+        <!--            style="width:14px"-->
+        <!--            class="q-mr-sm" size="10px"-->
+        <!--            :flat="tabset?.view !== 'canvas'"-->
+        <!--            :outline="tabset?.view === 'canvas'"-->
+        <!--            icon="o_shape_line">-->
+        <!--          <q-tooltip>Use the canvas freestyle layout to visualize your tabs</q-tooltip>-->
+        <!--        </q-btn>-->
 
         <q-btn
-            v-if="permissionsStore.hasFeature(FeatureIdent.EXPERIMENTAL_VIEWS) && tabset?.tabs.length > 0"
-            @click="setView('exporter')"
-            style="width:14px"
-            class="q-mr-sm" size="10px"
-            :flat="tabset?.view !== 'exporter'"
-            :outline="tabset?.view === 'exporter'"
-            icon="o_ios_share">
+          v-if="permissionsStore.hasFeature(FeatureIdent.EXPERIMENTAL_VIEWS) && tabset?.tabs.length > 0"
+          @click="setView('exporter')"
+          style="width:14px"
+          class="q-mr-sm" size="10px"
+          :flat="tabset?.view !== 'exporter'"
+          :outline="tabset?.view === 'exporter'"
+          icon="o_ios_share">
           <q-tooltip>Use the exporter layout if you want to copy and paste the urls of this tabset</q-tooltip>
         </q-btn>
 
         <!--        <q-separator vertical dark inset />-->
         <!--        <span>{{ useUiStore().tabsFilter }}</span>-->
         <q-btn
-            v-if="tabsStore.currentTabsetId !== '' &&
+          v-if="tabsStore.currentTabsetId !== '' &&
                   tabsStore.getTabset(tabsStore.currentTabsetId) &&
                   tabsStore.getCurrentTabset?.tabs?.length > 10 &&
                   $q.screen.gt.xs"
-            flat
-            :text-color="useUiStore().tabsFilter ? 'secondary' : 'primary'"
-            :disable="tabset?.type === TabsetType.DYNAMIC"
-            :label="useUiStore().tabsFilter"
-            class="cursor-pointer q-ml-lg" size="12px"
-            icon="o_filter_alt">
+          flat
+          :text-color="useUiStore().tabsFilter ? 'secondary' : 'primary'"
+          :disable="tabset?.type === TabsetType.DYNAMIC"
+          :label="useUiStore().tabsFilter"
+          class="cursor-pointer q-ml-lg" size="12px"
+          icon="o_filter_alt">
           <q-popup-edit :model-value="useUiStore().tabsFilter" v-slot="scope"
                         @update:model-value="val => setFilter(  val)">
             <q-input v-model="scope.value" dense autofocus counter @keyup.enter="scope.set"/>
           </q-popup-edit>
           <q-tooltip
-              class="tooltip"
-              :delay="200"
-              anchor="center left" self="center right">
+            class="tooltip"
+            :delay="200"
+            anchor="center left" self="center right">
             Filter this tabset
           </q-tooltip>
         </q-btn>
@@ -154,8 +162,8 @@
         <q-icon v-if="tabsStore.currentTabsetId !== '' &&
           tabset?.type !== TabsetType.DYNAMIC &&
           tabsStore.getTabset(tabsStore.currentTabsetId)"
-          class="cursor-pointer" size="22px" color="warning"
-          name="add_circle" @click="addUrlDialog">
+                class="cursor-pointer" size="22px" color="warning"
+                name="add_circle" @click="addUrlDialog">
           <q-tooltip
             class="tooltip"
             :delay="200"
@@ -208,34 +216,34 @@
       </q-banner>
 
       <InfoMessageWidget
-          v-if="tabset?.type === TabsetType.DYNAMIC"
-          :probability="1"
-          ident="tabsetPage_dynamicTabset"
-          hint="This is a 'dynamic' Tabset, i.e. it gets its data from some kind of query (e.g. checking for tags in your tabsets) and is readonly for that reason."/>
+        v-if="tabset?.type === TabsetType.DYNAMIC"
+        :probability="1"
+        ident="tabsetPage_dynamicTabset"
+        hint="This is a 'dynamic' Tabset, i.e. it gets its data from some kind of query (e.g. checking for tags in your tabsets) and is readonly for that reason."/>
 
       <InfoMessageWidget
-          v-if="route?.query?.first && route.query.first === 'true' && tabset?.tabs.length > 0"
-          :probability="1"
-          ident="tabsetPage_firstTime"
-          hint="Congrats - you created your first tabset. Your open tabs have been added automatically to get you started with tabsets!"/>
+        v-if="route?.query?.first && route.query.first === 'true' && tabset?.tabs.length > 0"
+        :probability="1"
+        ident="tabsetPage_firstTime"
+        hint="Congrats - you created your first tabset. Your open tabs have been added automatically to get you started with tabsets!"/>
 
       <InfoMessageWidget
-          v-if="tabsetId === 'BACKUP'"
-          :probability="1"
-          ident="tabsetPage_backupTabset"
-          hint="This is a special type of tabset - it's meant for Backups. You can use it as any other tabset, but when you use the feature
+        v-if="tabsetId === 'BACKUP'"
+        :probability="1"
+        ident="tabsetPage_backupTabset"
+        hint="This is a special type of tabset - it's meant for Backups. You can use it as any other tabset, but when you use the feature
  'backup and close current tabs' from the 'open tabs' menu, all tabs will be closed and automatically added to this backup tabset."/>
 
       <InfoMessageWidget
-          v-if="tabsetId === 'IGNORE'"
-          :probability="1"
-          ident="tabsetPage_ignoreTabset"
-          hint="This is a special type of tabset - it's meant for those tabs which you don't want to track. You can add urls and whenever
+        v-if="tabsetId === 'IGNORE'"
+        :probability="1"
+        ident="tabsetPage_ignoreTabset"
+        hint="This is a special type of tabset - it's meant for those tabs which you don't want to track. You can add urls and whenever
 a tab's url starts with one of the urls of this tabset, it will be ignored and not added to the tabs to be added."/>
 
       <DynamicTabsetPageCards
-          v-if="tabset?.type === TabsetType.DYNAMIC"
-          :tabset="tabset as unknown as Tabset"/>
+        v-if="tabset?.type === TabsetType.DYNAMIC"
+        :tabset="tabset as unknown as Tabset"/>
 
       <TabsetPageCards v-else
                        :tabset="tabset as unknown as Tabset"/>
@@ -245,7 +253,7 @@ a tab's url starts with one of the urls of this tabset, it will be ignored and n
       <PageForTabset/>
     </q-tab-panel>
     <q-tab-panel name="canvas">
-      <CanvasForTabset />
+      <CanvasForTabset/>
     </q-tab-panel>
   </q-tab-panels>
 
@@ -254,7 +262,7 @@ a tab's url starts with one of the urls of this tabset, it will be ignored and n
 <script setup lang="ts">
 import {onMounted, onUpdated, ref, unref, watchEffect} from 'vue'
 import {useRoute, useRouter} from "vue-router";
-import {date, uid, useQuasar} from "quasar";
+import {date, openURL, uid, useQuasar} from "quasar";
 import {useTabsStore} from "src/stores/tabsStore";
 import TabsetService from "src/services/TabsetService";
 import AddUrlDialog from "components/dialogues/AddUrlDialog.vue";
@@ -276,7 +284,8 @@ import {useTabsetService} from "src/services/TabsetService2";
 import Analytics from "src/utils/google-analytics";
 import CanvasForTabset from "components/layouts/CanvasForTabset.vue";
 
-const route = useRoute();
+const route = useRoute()
+const router = useRouter()
 const tabsStore = useTabsStore()
 const permissionsStore = usePermissionsStore()
 

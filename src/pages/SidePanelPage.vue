@@ -63,6 +63,12 @@
                   name="content_copy" color="primary" @click="copyPublicShareToClipboard(tabset.id)">
                   <q-tooltip class="tooltip-small">Copy the Link to your Clipboard</q-tooltip>
                 </q-icon>
+<!--                <q-icon-->
+<!--                  v-show="hoveredPublicLink"-->
+<!--                  class="q-ml-sm cursor-pointer"-->
+<!--                  name="open_in_browser" color="primary" @click="openElectronLink(tabset.id)">-->
+<!--                  <q-tooltip class="tooltip-small">Copy the Electron Link to your Clipboard</q-tooltip>-->
+<!--                </q-icon>-->
               </q-item-label>
             </q-item-section>
 
@@ -671,16 +677,19 @@ const openPublicShare = (tabsetId: string) => {
 const getPublicTabsetLink = (ts: Tabset) => {
   let image = "https://tabsets.web.app/favicon.ico"
   if (ts && ts.sharedId) {
-    // ts.tabs.reverse().forEach((t: Tab) => {
-    //   if (t.image) {
-    //     image = t.image
-    //   }
-    // })
     return publictabsetsPath + "#/imp/" + ts.sharedId + "?n=" + btoa(ts.name) //+ "&i=" + btoa(image)
   }
   return image
 }
 
+const openElectronLink = (tabsetId: string) => {
+  const ts = useTabsetService().getTabset(tabsetId)
+  if (ts && ts.sharedId) {
+    const link = "electron-tabsets://#/imp/" + ts.sharedId + "?n=" + btoa(ts.name)
+    openURL(link)
+  }
+
+}
 const copyPublicShareToClipboard = (tabsetId: string) => {
   const ts = useTabsetService().getTabset(tabsetId)
   if (ts && ts.sharedId) {

@@ -42,7 +42,6 @@ const shareId = ref(null as unknown as string)
 const tabset = ref<Tabset>(new Tabset(uid(), "empty", []))
 const runImport = ref(false)
 
-console.log("query", route.query['n'])
 const name = ref<string>(atob(route.query['n'] as string || btoa('unknown')))
 const img = atob(route.query['i'] as string || btoa('https://tabsets.web.app/favicon.ico'))
 
@@ -72,7 +71,6 @@ onMounted(() => {
     return
   }
   shareId.value = route?.params.sharedId as string
-
 })
 
 const start = () => {
@@ -91,17 +89,24 @@ const start = () => {
 
       const exists = useTabsetService().getTabset(tabset.value.id)
       if (!exists) {
+        console.log("shared tabset does not exist yet, creating...")
         const importedTS = tabset.value //new Tabset(tabset.value.id, tabset.value.name, tabset.value.tabs as Tab[])
         importedTS.sharedId = shareId.value
         importedTS.importedAt = new Date().getTime()
+        importedTS.sharedPath = route.fullPath
         console.log("importedTS", importedTS)
         setupTabset(importedTS as Tabset)
-      } else if (exists && exists.sharedAt && (exists.sharedAt < (tabset.value.sharedAt || 0))) {
-        const updatedTS = tabset.value
-        updatedTS.sharedId = shareId.value
-        updatedTS.importedAt = new Date().getTime()
-        console.log("updatedTS", updatedTS)
-        setupTabset(updatedTS as Tabset)
+      } else if (exists) {
+        console.log("...", exists.sharedAt, tabset.value.sharedAt, (exists.sharedAt || 0 - (tabset.value?.sharedAt || 0)))
+        if (exists.sharedAt && (exists.sharedAt < (tabset.value.sharedAt || 0))) {
+          const updatedTS = tabset.value
+          updatedTS.sharedId = shareId.value
+          updatedTS.importedAt = new Date().getTime()
+          console.log("updatedTS", updatedTS)
+          setupTabset(updatedTS as Tabset)
+        } else {
+          router.push("/tabsets/" + tabset.value.id)
+        }
       } else {
         router.push("/tabsets/" + tabset.value.id)
       }

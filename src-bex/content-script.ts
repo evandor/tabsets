@@ -13,12 +13,12 @@ function createIframe() {
     right: "0px",
     top:"80px",
     border: "none",
-    zIndex: "12345",
+    zIndex: "2147483647",
   });
 
   // load that specific page
   iframe.src = chrome.runtime.getURL("/www/index.html#/contentscript");
-  console.log("iframe.src", iframe.src)
+  //console.log("iframe.src", iframe.src)
 
   return iframe;
 }
@@ -32,8 +32,14 @@ export default bexContent((bridge: any) => {
     return
   }
 
-  const csIframe = createIframe()
-  document.body.prepend(csIframe);
+  //console.log("bridge", bridge.url)
+  // chrome.tabs.query( { active: true, lastFocusedWindow: true }).then((tabs: chrome.tabs.Tab[]) => {
+  //   console.log("***", tabs)
+  //   if (tabs && tabs.length > 0 && !tabs[0]?.url?.startsWith("https://shared.tabsets.net/")) {
+      const csIframe = createIframe()
+      document.body.prepend(csIframe);
+  //  }
+  //})
 
   console.log("tabsets: initializing content script")
   // @ts-ignore
@@ -52,7 +58,6 @@ export default bexContent((bridge: any) => {
   })
 
   chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-    console.log("tabsets: !!!!!", request)
     if (request === 'getContent') {
       console.log("tabsets: received message for content", document.documentElement.outerHTML)
       sendResponse({content: document.documentElement.outerHTML});

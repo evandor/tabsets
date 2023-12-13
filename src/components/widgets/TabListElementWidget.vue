@@ -82,9 +82,15 @@
     </q-item-label>
 
     <!-- note -->
-    <q-item-label v-if="props.tab.note" class="text-grey-10" text-subtitle1>
+    <q-item-label v-if="props.tab.comments && props.tab.comments.length > 0" class="text-grey-10" text-subtitle1>
       <q-icon color="blue-10" name="edit_note"/>
-      {{ props.tab.note }}
+      <q-chat-message v-for="m in props.tab.comments"
+        name="me"
+        avatar="https://2.gravatar.com/avatar/55791a126d407f184127092989137e051fe839a0fb4cdf76945f70fd2e389eeb?size=512"
+        :text="[m.comment]"
+        sent
+        stamp="7 minutes ago"
+      />
     </q-item-label>
 
     <!-- tabsets -->

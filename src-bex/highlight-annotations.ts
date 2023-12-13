@@ -11,10 +11,10 @@ export default bexContent((bridge: any) => {
 
     chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         if (request.action === 'highlight-annotation') {
-            console.log("tabsets: got highlight-annotation request with range", request.range)
-            window.getSelection().removeAllRanges();
+            console.log("tabsets: got highlight-annotation request with range", request.range, window.getSelection())
+            window.getSelection()?.removeAllRanges();
             const r: WrappedRange = rangy.deserializeRange(request.range) as WrappedRange
-            document.getSelection().addRange(r.nativeRange)
+            document.getSelection()?.addRange(r.nativeRange)
             sendResponse({content: "hi"});
         }
         sendResponse({content: "unknown request in highlight-annotations: " + request});

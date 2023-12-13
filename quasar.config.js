@@ -221,6 +221,12 @@ module.exports = configure(function (ctx) {
         // appCategoryType: '',
         // osxSign: '',
         // protocol: 'myapp://path',
+        protocols: [
+          {
+            name: 'Electron Tabsets',
+            schemes: ['electron-tabsets']
+          }
+        ]
 
         // Windows only
         // win32metadata: { ... }
