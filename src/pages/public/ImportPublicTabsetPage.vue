@@ -42,8 +42,6 @@ const shareId = ref(null as unknown as string)
 const tabset = ref<Tabset>(new Tabset(uid(), "empty", []))
 const runImport = ref(false)
 
-const importPath = route.fullPath
-
 const name = ref<string>(atob(route.query['n'] as string || btoa('unknown')))
 const img = atob(route.query['i'] as string || btoa('https://tabsets.web.app/favicon.ico'))
 
@@ -81,7 +79,6 @@ const start = () => {
   FirebaseCall.get("/share/public/" + shareId.value, false)
     .then((res: any) => {
       tabset.value = res as Tabset
-      tabset.value.sharedPath = importPath
 
       const existingUserLevel = useUiStore().userLevel
       console.log("existinguserlevel", existingUserLevel)
@@ -96,6 +93,7 @@ const start = () => {
         const importedTS = tabset.value //new Tabset(tabset.value.id, tabset.value.name, tabset.value.tabs as Tab[])
         importedTS.sharedId = shareId.value
         importedTS.importedAt = new Date().getTime()
+        importedTS.sharedPath = route.fullPath
         console.log("importedTS", importedTS)
         setupTabset(importedTS as Tabset)
       } else if (exists) {

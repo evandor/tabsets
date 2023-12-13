@@ -28,8 +28,11 @@ import {Suggestion, SuggestionState, SuggestionType} from "src/models/Suggestion
 import {MonitoringType} from "src/models/Monitor";
 import {BlobType} from "src/models/SavedBlob";
 import MqttService from "src/services/mqtt/MqttService";
+import {useRouter} from "vue-router";
 
 let db: PersistenceService = null as unknown as PersistenceService
+
+let router = useRouter()
 
 export function useTabsetService() {
 
@@ -196,7 +199,7 @@ export function useTabsetService() {
 
     const getTabset = (tabsetId: string): Tabset | undefined => {
         const tabsStore = useTabsStore()
-        return _.find([...tabsStore.tabsets.values()], ts => ts.id === tabsetId)
+        return _.find([...tabsStore.tabsets.values()] as Tabset[], ts => ts.id === tabsetId)
     }
 
     const reloadTabset = async (tabsetId: string) => {
@@ -219,7 +222,7 @@ export function useTabsetService() {
 
     const getCurrentTabset = (): Tabset | undefined => {
         const tabsStore = useTabsStore()
-        return tabsStore.tabsets.get(tabsStore.currentTabsetId)
+        return tabsStore.tabsets.get(tabsStore.currentTabsetId) as Tabset
     }
 
     const resetSelectedTabs = () => {
@@ -336,7 +339,7 @@ export function useTabsetService() {
         db.saveContent(tab, text, metas, title, tabsetIds)
             .catch((err: any) => console.log("err", err))
 
-        const tabsets = [...useTabsStore().tabsets.values()]
+        const tabsets = [...useTabsStore().tabsets.values()] as Tabset[]
 
         const savePromises: Promise<any>[] = []
 

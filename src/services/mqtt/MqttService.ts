@@ -37,13 +37,14 @@ class MqttService {
     console.log("starting mqtt client...")
     const author = useQuasar().localStorage.getItem("sharing.author") || 'default-author'
     const installation = useQuasar().localStorage.getItem("sharing.installation") || 'default-installation'
+    const opts = {clientId: 'ts-' + installation}
     //this.client =  mqtt.connectAsync("mqtt://test.mosquitto.org")
-    //this.client = mqtt.connect("mqtts://public:public@public.cloud.shiftr.io:443", {clientId: 'javascript'})
-    //this.client = mqtt.connect("mqtts://tabsets:3dAkqY8glIIecUBs@tabsets.cloud.shiftr.io:443", {clientId: 'tabsets-' + author})
-    //this.client = mqtt.connect("mqtts://tabsets-dev:6b1CjPBf502SO6Kx@tabsets-dev.cloud.shiftr.io:443", {clientId: 'tabsets-' + author})
-    this.client = mqtt.connect("mqtts://tabsets-test:YtHueGI9AO2Wns7P@tabsets-test.cloud.shiftr.io:443", {clientId: 'ts-' + installation})
-    //this.client = mqtt.connect("mqtts://gpgpaxfd:zH8P4i6hZee4SVCqK_uS6KRcuTnPeRu7@sparrow.rmq.cloudamqp.com:8883", {clientId: 'tabsets' + author})
-    //this.client = mqtt.connect("mqtts://demo.flashmq.org", {clientId: 'tabsets' + author})
+    //this.client = mqtt.connect("mqtts://public:public@public.cloud.shiftr.io:443", opts)
+    this.client = mqtt.connect("mqtts://tabsets:3dAkqY8glIIecUBs@tabsets.cloud.shiftr.io:443", opts)
+    //this.client = mqtt.connect("mqtts://tabsets-dev:6b1CjPBf502SO6Kx@tabsets-dev.cloud.shiftr.io:443", opts)
+    //this.client = mqtt.connect("mqtts://tabsets-test:YtHueGI9AO2Wns7P@tabsets-test.cloud.shiftr.io:443", opts)
+    //this.client = mqtt.connect("mqtts://gpgpaxfd:zH8P4i6hZee4SVCqK_uS6KRcuTnPeRu7@sparrow.rmq.cloudamqp.com:8883", opts)
+    //this.client = mqtt.connect("mqtts://demo.flashmq.org", opts)
 
     const ctx = this
     this.client.on('connect', function () {

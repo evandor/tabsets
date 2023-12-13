@@ -1,12 +1,12 @@
 <template>
 
   <InfoMessageWidget
-    v-if="props.tabs?.length > 1"
+    v-if="!preventDragAndDrop() && props.tabs?.length > 1"
     :probability="0.3"
     ident="tablist_dnd"
     hint="You can select the favicon images and drag and drop the entries to reorder the list to your wishes"/>
 
-  <q-list separator v-if="preventDragAndDrop()">
+  <q-list separator v-if="!preventDragAndDrop()">
     <vue-draggable-next
       class="dragArea list-group w-full"
       :list="props.tabs as Array<Tab>"
@@ -16,6 +16,7 @@
       <TabListHelper
         :group="group"
         :tabset-id="tabsetId"
+        :tabset-shared-id="tabsetSharedId"
         :tabs="props.tabs" />
 
     </vue-draggable-next>
