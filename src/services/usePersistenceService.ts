@@ -2,6 +2,7 @@ import IndexedDbPersistenceService from "src/services/IndexedDbPersistenceServic
 import {QVueGlobals} from "quasar";
 import {LocalStoragePersistenceService} from "src/services/storage/LocalStoragePersistenceService";
 import PersistenceService from "src/services/PersistenceService";
+import GitPersistentService from "src/services/persistence/GitPersistentService";
 
 export function useDB(quasar: QVueGlobals | undefined = undefined) {
 
@@ -10,9 +11,10 @@ export function useDB(quasar: QVueGlobals | undefined = undefined) {
   if (quasar) {
     localDb = new LocalStoragePersistenceService(quasar)
   }
+  var gitDb: PersistenceService = GitPersistentService
 
   return {
-    db,localDb
+    db,localDb,gitDb
   }
 
 }
