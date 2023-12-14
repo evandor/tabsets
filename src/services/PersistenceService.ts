@@ -9,7 +9,6 @@ import {MetaLink} from "src/models/MetaLink";
 import {Window} from "src/models/Window";
 import {RequestInfo} from "src/models/RequestInfo";
 import {BlobType, SavedBlob} from "src/models/SavedBlob";
-import {Message} from "src/models/Message";
 
 interface PersistenceService {
 

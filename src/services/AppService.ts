@@ -23,7 +23,6 @@ import {FeatureIdent} from "src/models/AppFeature";
 import MqttService from "src/services/mqtt/MqttService";
 import {useMessagesStore} from "src/stores/messagesStore";
 import {useAppStore} from "stores/appStore";
-import GitPersistentService from "src/services/persistence/GitPersistentService";
 
 class AppService {
 
@@ -62,7 +61,6 @@ class AppService {
 // init db
     IndexedDbPersistenceService.init("db")
       .then(() => {
-        GitPersistentService.init("db")
         // init services
         useNotificationsStore().initialize(useDB(undefined).db)
         useSuggestionsStore().init(useDB(undefined).db)
@@ -71,7 +69,7 @@ class AppService {
         tabsetService.setLocalStorage(localStorage)
         spacesStore.initialize(useDB(undefined).db)
           .then(() => {
-            useTabsetService().init(useDB(undefined).gitDb, false)
+            useTabsetService().init(useDB(undefined).db, false)
               .then(() => {
                 MHtmlService.init()
                 ChromeApi.init(router)
