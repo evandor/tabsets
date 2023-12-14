@@ -112,7 +112,7 @@ class NavigationService {
                 setTimeout(() => {
                   // check potential redirect
                   chrome.tabs.get(tab.id || 0, (potentiallyChangedTab: chrome.tabs.Tab) => {
-                    if (tab.url !== potentiallyChangedTab.url && potentiallyChangedTab.url?.trim() !== "") {
+                    if (tab.url !== potentiallyChangedTab.url && tab.url?.trim() !== "" && potentiallyChangedTab.url?.trim() !== "") {
                       console.log("tab's URL change during one second, assuming 30x redirect, creating suggestion", tab, potentiallyChangedTab)
                       const suggestionId = uid()
                       const suggestion = new Suggestion(suggestionId,

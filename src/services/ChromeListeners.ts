@@ -90,50 +90,11 @@ function annotationScript(tabId: string, annotations: any[]) {
     //s.src = "https://cdn.jsdelivr.net/npm/rangy@1.3.1/lib/rangy-core.min.js";
     document.body.appendChild(s);
 
-    // var s2 = document.createElement('script');
-    // //s2.type = "module"
-    // s2.src = chrome.runtime.getURL('www/js/rangy/rangy-serializer.js');
-    // //s2.src = "https://cdn.jsdelivr.net/npm/rangy@1.3.1/lib/rangy-serializer.min.js";
-    // s2.setAttribute('type', 'text/javascript');
-    // s2.defer = true;
-    // (document.head || document.documentElement).appendChild(s2);
-
     // var s3 = document.createElement('script');
     // s3.dataset.id = 'tabsets-rangy-annotation-data';
     // s3.dataset.annotations = JSON.stringify(annotations);
     // (document.head || document.documentElement).appendChild(s3);
 
-    //console.log("x1", Object.values(annotations).length)
-    //console.log("x2", JSON.stringify(annotations))
-    // const annos = JSON.parse(JSON.stringify(annotations))
-
-    // var s4 = document.createElement('script');
-    // s4.src = chrome.runtime.getURL('www/js/rangy/rangy-message-api.js');
-    // s4.setAttribute("type", 'text/javascript');
-    // document.body.appendChild(s4);
-
-//
-//
-//
-//   //
-//   // s2.src = chrome.runtime.getURL('www/js/recogito/recogito.content.js');
-//   // document.body.appendChild(s2);
-//
-//   // window.addEventListener(
-//   //   "message",
-//   //   (event) => {
-//   //     if (event.data && event.data.name && event.data.name.startsWith('recogito-')) {
-//   //       console.log("sending", event.data)
-//   //       chrome.runtime.sendMessage(event.data, (callback) => {
-//   //         console.log("xxx callback", callback)
-//   //         if (chrome.runtime.lastError) {
-//   //           console.warn("got runtime error", chrome.runtime.lastError)
-//   //         }
-//   //       })
-//   //     }
-//   //   },
-//   //   false,
-//   // );
 }
 
 function inIgnoredMessages(request: any) {
