@@ -58,8 +58,15 @@ watchEffect(() => selectedTabset.value = useTabsetService().getCurrentTabset())
 
 const closeContentScriptFrame = (close: boolean) => {
   console.log("closeContentScriptFrame...", useTabsetService().getCurrentTabset())
+  if (close) {
+    window.parent.postMessage({height:"40px", width:"30px", top:"80px", right:"0px"}, "*");
+  } else {
+    window.parent.postMessage({height:"440px", width:"220px", top:"75px", right:"5px"}, "*");
+  }
+  console.log("document5", document.parentElement?.style)
+  //console.log("document4", window.document.getElementById('ts-contentscript-iframe'))
   if (currentChromeTab.value) {
-    sendMsg('toggle-cs-iframe', {tabId: currentChromeTab.value.id, close})
+    //sendMsg('toggle-cs-iframe', {tabId: currentChromeTab.value.id, close})
     open.value = !close
   }
 }

@@ -271,31 +271,31 @@
               </div>
             </div>
           </div>
-          <span class="text-blue">
-            {{ label }}
-              <q-popup-edit v-model="newComment" v-slot="scope">
-              <q-input
-                type="textarea"
-                autofocus
-                dense
-                v-model="scope.value"
-                :model-value="scope.value"
-                hint="Add a comment">
-                <template v-slot:after>
-                  <q-btn
-                    flat dense color="negative" icon="cancel"
-                    @click.stop.prevent="scope.cancel"
-                  />
+<!--          <span class="text-blue">-->
+<!--            {{ label }}-->
+<!--              <q-popup-edit v-model="newComment" v-slot="scope">-->
+<!--              <q-input-->
+<!--                type="textarea"-->
+<!--                autofocus-->
+<!--                dense-->
+<!--                v-model="scope.value"-->
+<!--                :model-value="scope.value"-->
+<!--                hint="Add a comment">-->
+<!--                <template v-slot:after>-->
+<!--                  <q-btn-->
+<!--                    flat dense color="negative" icon="cancel"-->
+<!--                    @click.stop.prevent="scope.cancel"-->
+<!--                  />-->
 
-                  <q-btn
-                    flat dense color="positive" icon="check_circle"
-                    @click.stop.prevent="scope.set"
-                    :disable="scope.initialValue === scope.value"
-                  />
-                </template>
-              </q-input>
-            </q-popup-edit>
-          </span>
+<!--                  <q-btn-->
+<!--                    flat dense color="positive" icon="check_circle"-->
+<!--                    @click.stop.prevent="scope.set"-->
+<!--                    :disable="scope.initialValue === scope.value"-->
+<!--                  />-->
+<!--                </template>-->
+<!--              </q-input>-->
+<!--            </q-popup-edit>-->
+<!--          </span>-->
         </div>
       </div>
     </q-item-label>
@@ -593,7 +593,7 @@ const showAnnotation = async (tab: Tab, a: HTMLSelection) => {
   if (!isCurrentTab(tab)) {
     gotoTab()
   }
-  console.log("a!", a, tab.chromeTabId)
+  console.log("showing annotation", a, tab.chromeTabId)
   const range: string = a['range']
   chrome.tabs.sendMessage(tab.chromeTabId || 0, {action: "highlight-annotation", range: range}, function (response) {
     console.log("hier, response: ", response)

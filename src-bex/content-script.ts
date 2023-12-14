@@ -5,13 +5,14 @@ import {bexContent} from 'quasar/wrappers'
 
 function createIframe() {
   const iframe = document.createElement("iframe");
+  iframe.id = "ts-contentscript-iframe"
   iframe.width = "40px";
   iframe.height = "30px";
 
   Object.assign(iframe.style, {
     position: "fixed",
     right: "0px",
-    top:"80px",
+    top: "80px",
     border: "none",
     zIndex: "2147483647",
   });
@@ -32,18 +33,17 @@ export default bexContent((bridge: any) => {
     return
   }
 
-  //console.log("bridge", bridge.url)
-  // chrome.tabs.query( { active: true, lastFocusedWindow: true }).then((tabs: chrome.tabs.Tab[]) => {
-  //   console.log("***", tabs)
-  //   if (tabs && tabs.length > 0 && !tabs[0]?.url?.startsWith("https://shared.tabsets.net/")) {
-      const csIframe = createIframe()
-      document.body.prepend(csIframe);
-  //  }
-  //})
+  const csIframe = createIframe()
+  document.body.append(csIframe);
+
+  const script = document.createElement("script");
+  script.setAttribute("type", 'text/javascript');
+  script.src = chrome.runtime.getURL('www/js/content-script-support.js');
+  document.body.append(script);
 
   console.log("tabsets: initializing content script")
   // @ts-ignore
-  window.contentScriptAlredyCalled  = true
+  window.contentScriptAlredyCalled = true
 
   // @ts-ignore
   bridge.on('websiteImg', ({data, respond}) => {
@@ -63,16 +63,16 @@ export default bexContent((bridge: any) => {
       sendResponse({content: document.documentElement.outerHTML});
     } else if (request.action === "highlight-annotation") {
       sendResponse()
-    } else if (request === 'cs-iframe-close') {
-      csIframe.width = "40px"
-      csIframe.height = "30px"
-      csIframe.style.right = "0px"
-      csIframe.style.top = "80px"
-    } else if (request === 'cs-iframe-open') {
-      csIframe.width = "220px"
-      csIframe.height = "440px"
-      csIframe.style.right = "5px"
-      csIframe.style.top = "75px"
+    // } else if (request === 'cs-iframe-close') {
+    //   csIframe.width = "40px"
+    //   csIframe.height = "30px"
+    //   csIframe.style.right = "0px"
+    //   csIframe.style.top = "80px"
+    // } else if (request === 'cs-iframe-open') {
+    //   csIframe.width = "220px"
+    //   csIframe.height = "440px"
+    //   csIframe.style.right = "5px"
+    //   csIframe.style.top = "75px"
     }
     sendResponse({content: "unknown request in content-scripts: " + request});
     return true

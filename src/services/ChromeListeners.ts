@@ -78,11 +78,10 @@ function annotationScript(tabId: string, annotations: any[]) {
 //   //iFrame.src = chrome.runtime.getURL('/www/index.html#/annotations/' + tabId)
 //   //document.body.prepend(iFrame)
 //
-    //var l: HTMLLinkElement = document.createElement('link');
-    //l.setAttribute("href","https://cdn.jsdelivr.net/npm/@recogito/recogito-js@1.8.2/dist/recogito.min.css")
-    //l.setAttribute("href", "https://cdn.jsdelivr.net/npm/rangy@1.3.1/lib/rangy-core.min.js")
-    //l.setAttribute("rel", "stylesheet")
-    //document.head.appendChild(l)
+    var l: HTMLLinkElement = document.createElement('link');
+    l.setAttribute("href",chrome.runtime.getURL('www/css/ts-content-script.css'))
+    l.setAttribute("rel", "stylesheet")
+    document.head.appendChild(l)
 
     var s = document.createElement('script');
     //s.type = "module"
@@ -156,7 +155,7 @@ function inIgnoredMessages(request: any) {
         request.name === 'reload-tabset' ||
         request.name === 'detail-level-perTabset-changed' ||
         request.name === 'detail-level-changed' ||
-        request.name === 'highlight-annotation'
+        request.action === 'highlight-annotation'
     //request.name === 'recogito-annotation-created'
 
 }
@@ -471,7 +470,7 @@ class ChromeListeners {
     onRemoved(number: number, info: chrome.tabs.TabRemoveInfo) {
         this.eventTriggered()
         const tabsStore = useTabsStore()
-        const currentTabset: Tabset = tabsStore.tabsets.get(tabsStore.currentTabsetId) || new Tabset("", "", [], [])
+        const currentTabset: Tabset = tabsStore.tabsets.get(tabsStore.currentTabsetId) as Tabset || new Tabset("", "", [], [])
         const index = _.findIndex(currentTabset.tabs, t => t.chromeTabId === number);
         if (index >= 0) {
             const updatedTab = currentTabset.tabs.at(index)
@@ -502,7 +501,7 @@ class ChromeListeners {
                 const ts = tabsStore.tabsets.get(key)
                 if (ts && ts.status !== TabsetStatus.DELETED) {
                     // increasing hit count
-                    const hits = _.filter(ts.tabs, (t: Tab) => t.url === url)
+                    const hits = _.filter(ts.tabs, (t: Tab) => t.url === url) as Tab[]
                     let hit = false
                     _.forEach(hits, h => {
                         h.activatedCount = 1 + h.activatedCount
@@ -511,7 +510,7 @@ class ChromeListeners {
                     })
                     if (hit) {
                         console.debug("saving tabset on activated", ts.name)
-                        saveTabset(ts)
+                        saveTabset(ts as Tabset)
                     }
                 }
             })
