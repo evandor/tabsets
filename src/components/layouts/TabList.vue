@@ -17,15 +17,16 @@
         :group="group"
         :tabset-id="tabsetId"
         :tabset-shared-id="tabsetSharedId"
-        :tabs="props.tabs" />
+        :tabs="props.tabs"/>
 
     </vue-draggable-next>
   </q-list>
 
   <TabListHelper v-else
-    :group="group"
-    :tabset-id="tabsetId"
-    :tabs="props.tabs" />
+                 :group="group"
+                 :tabset-id="tabsetId"
+                 :tabset-shared-id="tabsetSharedId"
+                 :tabs="props.tabs"/>
 
 </template>
 

@@ -50,7 +50,7 @@ export class Tabset {
   sharedBy: string | undefined = undefined
   sharedId: string | undefined = undefined
   sharedAt: number | undefined = undefined
-  sharedPath: string | undefined = undefined // e.g. /imp/AlCYSrGGmOnsOnf0htA9?n=c2hvcHBpbmc=
+  sharedPath: string | undefined = undefined // e.g. /pwa/imp/AlCYSrGGmOnsOnf0htA9?n=c2hvcHBpbmc=
 
   importedAt: number | undefined = undefined
 

@@ -5,7 +5,7 @@
     <div class="q-ma-none q-pa-none">
 
       <div class="row q-ma-md q-pa-md" v-if="suggestTabsetImport()">
-        <q-btn class="q-px-xl" dense label="import Tabset" color="warning" @click="testShare()" />
+        <q-btn class="q-px-xl" dense label="import Tabset" color="warning" @click="testShare()"/>
       </div>
 
       <q-list dense
@@ -63,12 +63,12 @@
                   name="content_copy" color="primary" @click="copyPublicShareToClipboard(tabset.id)">
                   <q-tooltip class="tooltip-small">Copy the Link to your Clipboard</q-tooltip>
                 </q-icon>
-<!--                <q-icon-->
-<!--                  v-show="hoveredPublicLink"-->
-<!--                  class="q-ml-sm cursor-pointer"-->
-<!--                  name="open_in_browser" color="primary" @click="openElectronLink(tabset.id)">-->
-<!--                  <q-tooltip class="tooltip-small">Copy the Electron Link to your Clipboard</q-tooltip>-->
-<!--                </q-icon>-->
+                <!--                <q-icon-->
+                <!--                  v-show="hoveredPublicLink"-->
+                <!--                  class="q-ml-sm cursor-pointer"-->
+                <!--                  name="open_in_browser" color="primary" @click="openElectronLink(tabset.id)">-->
+                <!--                  <q-tooltip class="tooltip-small">Copy the Electron Link to your Clipboard</q-tooltip>-->
+                <!--                </q-icon>-->
               </q-item-label>
             </q-item-section>
 
@@ -115,6 +115,12 @@
           </template>
 
           <div class="q-ma-none q-pa-none">
+
+            <template v-if="tabset.page">
+              <SidePanelTabsetPage
+                :tabsetId="tabset.id"
+                :tabsetPage="tabset.page as Object"/>
+            </template>
 
             <SidePanelPageTabList
               v-if="tabsetExpanded.get(tabset.id)"
@@ -185,6 +191,7 @@ import SidePanelPageTabList from "components/layouts/SidePanelPageTabList.vue";
 import {AddTabToTabsetCommand} from "src/domain/tabs/AddTabToTabset";
 import {SuggestionState} from "src/models/Suggestion";
 import {CopyToClipboardCommand} from "src/domain/commands/CopyToClipboard";
+import SidePanelTabsetPage from "pages/sidepanel/SidePanelTabsetPage.vue";
 
 const {setVerticalScrollPosition} = scroll
 
@@ -246,14 +253,11 @@ watchEffect(() => {
 })
 
 watchEffect(() => {
-  // if ($q.platform.is.chrome) {
-  //   chrome.windows.getCurrent()
-  //       .then((currentWindow) => {
-  //         if (currentWindow && currentWindow.id) {
-  //           windowName.value = useWindowsStore().windowNameFor(currentWindow.id)
-  //         }
-  //       })
-  // }
+  console.log("hier11", currentTabset.value?.page)
+})
+
+
+watchEffect(() => {
   windowName.value = useWindowsStore().currentWindowName
 })
 
@@ -342,7 +346,7 @@ watchEffect(() => {
 watchEffect(() => {
   if (useTabsStore().tabsets) {
     //console.log(" >>> change in tabsets...")
-    tabsetNameOptions.value = _.map([...useTabsStore().tabsets.values()], (ts: Tabset) => {
+    tabsetNameOptions.value = _.map([...useTabsStore().tabsets.values()] as Tabset[], (ts: Tabset) => {
       return {
         label: ts.name,
         value: ts.id
@@ -373,7 +377,7 @@ watchEffect(() => {
   if (usePermissionsStore().hasFeature(FeatureIdent.SPACES)) {
     const currentSpace = useSpacesStore().space
     tabsets.value = _.sortBy(
-      _.filter([...tabsStore.tabsets.values()], (ts: Tabset) => {
+      _.filter([...tabsStore.tabsets.values()] as Tabset[], (ts: Tabset) => {
         if (currentSpace) {
           if (ts.spaces.indexOf(currentSpace.id) < 0) {
             return false
@@ -386,7 +390,7 @@ watchEffect(() => {
       getTabsetOrder, ["asc"])
   } else {
     tabsets.value = _.sortBy(
-      _.filter([...tabsStore.tabsets.values()],
+      _.filter([...tabsStore.tabsets.values()] as Tabset[],
         (ts: Tabset) => ts.status !== TabsetStatus.DELETED
           && ts.status !== TabsetStatus.HIDDEN &&
           ts.status !== TabsetStatus.ARCHIVED),
@@ -437,6 +441,7 @@ if ($q.platform.is.chrome) {
       } else if (message.name === "tab-being-dragged") {
         useUiStore().draggingTab(message.data.tabId, null as unknown as any)
       } else if (message.name === "note-changed") {
+        // TODO needed?
         const tabset = useTabsetService().getTabset(message.data.tabsetId) as Tabset
         if (message.data.noteId) {
           console.log("updating note", message.data.noteId)
@@ -496,12 +501,12 @@ if ($q.platform.is.chrome) {
           message.data.tabsetId :
           useTabsetService().getCurrentTabset()?.id
         useTabsetService().reloadTabset(tabsetId)
-      // } else if (message.name === "toggle-cs-iframe") {
-      //   if (message.data.close) {
-      //     chrome.tabs.sendMessage(message.data.tabId, "cs-iframe-close")
-      //   } else {
-      //     chrome.tabs.sendMessage(message.data.tabId, "cs-iframe-open")
-      //   }
+        // } else if (message.name === "toggle-cs-iframe") {
+        //   if (message.data.close) {
+        //     chrome.tabs.sendMessage(message.data.tabId, "cs-iframe-close")
+        //   } else {
+        //     chrome.tabs.sendMessage(message.data.tabId, "cs-iframe-open")
+        //   }
       } else {
         console.log("got unmatched message", message)
       }
@@ -674,7 +679,7 @@ const openPublicShare = (tabsetId: string) => {
 const getPublicTabsetLink = (ts: Tabset) => {
   let image = "https://tabsets.web.app/favicon.ico"
   if (ts && ts.sharedId) {
-    return publictabsetsPath + "#/imp/" + ts.sharedId + "?n=" + btoa(ts.name) //+ "&i=" + btoa(image)
+    return publictabsetsPath + "#/pwa/imp/" + ts.sharedId + "?n=" + btoa(ts.name) + "&a=" + btoa(ts.sharedBy || 'n/a')
   }
   return image
 }
@@ -682,7 +687,7 @@ const getPublicTabsetLink = (ts: Tabset) => {
 const openElectronLink = (tabsetId: string) => {
   const ts = useTabsetService().getTabset(tabsetId)
   if (ts && ts.sharedId) {
-    const link = "electron-tabsets://#/imp/" + ts.sharedId + "?n=" + btoa(ts.name)
+    const link = "electron-tabsets://#/pwa/imp/" + ts.sharedId + "?n=" + btoa(ts.name)
     openURL(link)
   }
 

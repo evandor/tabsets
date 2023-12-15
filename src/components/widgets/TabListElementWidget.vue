@@ -84,12 +84,13 @@
     <!-- note -->
     <q-item-label v-if="props.tab.comments && props.tab.comments.length > 0" class="text-grey-10" text-subtitle1>
       <q-icon color="blue-10" name="edit_note"/>
+<!--        avatar="https://2.gravatar.com/avatar/55791a126d407f184127092989137e051fe839a0fb4cdf76945f70fd2e389eeb?size=512"-->
       <q-chat-message v-for="m in props.tab.comments"
         name="me"
-        avatar="https://2.gravatar.com/avatar/55791a126d407f184127092989137e051fe839a0fb4cdf76945f70fd2e389eeb?size=512"
+        avatar="http://www.gravatar.com/avatar"
         :text="[m.comment]"
         sent
-        stamp="7 minutes ago"
+        :stamp="formatDate(m.date)"
       />
     </q-item-label>
 
@@ -131,18 +132,14 @@
 import NavigationService from "src/services/NavigationService";
 import {Tab} from "src/models/Tab";
 import TabsetService from "src/services/TabsetService";
-import {useNotificationsStore} from "src/stores/notificationsStore";
 import {onMounted, PropType, ref, watchEffect} from "vue";
 import {useUtils} from "src/services/Utils"
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {DeleteTabCommand} from "src/domain/tabs/DeleteTabCommand";
 import EditNoteDialog from "components/dialogues/EditNoteDialog.vue";
-import {useQuasar} from "quasar";
-import {DrawerTabs, useUiStore} from "src/stores/uiStore";
-import {usePermissionsStore} from "src/stores/permissionsStore";
+import {date, useQuasar} from "quasar";
 import TabFaviconWidget from "components/widgets/TabFaviconWidget.vue";
 import {UpdateTabNameCommand} from "src/domain/tabs/UpdateTabName";
-import {FeatureIdent} from "src/models/AppFeature";
 import {CopyToClipboardCommand} from "src/domain/commands/CopyToClipboard";
 import {useTabsetService} from "src/services/TabsetService2";
 import ShortUrl from "components/utils/ShortUrl.vue";
@@ -276,5 +273,7 @@ const open = (tab: Tab) => {
   }
   NavigationService.openOrCreateTab([props.tab?.url || ''])
 }
+
+const formatDate = (d: Number) => date.formatDate(d, 'DD.MM HH:mm')
 
 </script>

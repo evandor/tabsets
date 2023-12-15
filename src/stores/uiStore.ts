@@ -33,7 +33,7 @@ export enum DrawerTabs {
 
 export enum UserLevel {
   UNKNOWN = "UNKNOWN",
-  PWA_ONLY_USER = "PWA_ONLY_USER", // e.g. when you import from a shared tabset the first time
+  //PWA_ONLY_USER = "PWA_ONLY_USER", // e.g. when you import from a shared tabset the first time
   DEFAULT = "DEFAULT"
 }
 
@@ -186,10 +186,6 @@ export const useUiStore = defineStore('ui', () => {
   // system management
   const dbReady = ref<boolean>(false)
 
-  // user level (experience etc)
-  const userLevel = ref<UserLevel>(LocalStorage.getItem('ui.userLevel') || UserLevel.UNKNOWN)
-
-
   const progress = ref<number | undefined>(undefined)
   const progressLabel = ref<string | undefined>(undefined)
 
@@ -218,12 +214,6 @@ export const useUiStore = defineStore('ui', () => {
     (val: object[]) => {
       console.log("val", val)
       LocalStorage.set("ui.newTabUrlList", val)
-    })
-
-  watch(userLevel,
-    (val: UserLevel) => {
-      console.log("userLevel", val)
-      LocalStorage.set("ui.userLevel", val)
     })
 
   const route = useRoute()
@@ -267,11 +257,6 @@ export const useUiStore = defineStore('ui', () => {
 
   function removeNewTabUrl(url: string) {
     newTabUrlList.value = _.filter(newTabUrlList.value, (e: any) => e.url !== url)
-  }
-
-  function setUserLevel(l: UserLevel) {
-    console.log("setting user level to", l)
-    userLevel.value = l
   }
 
   function hideInfoMessage(ident: string) {
@@ -513,8 +498,6 @@ export const useUiStore = defineStore('ui', () => {
     delayedToastRemoval,
     callUndoActionFromCurrentToast,
     getButtonSize,
-    showDetailsPerTabset,
-    userLevel,
-    setUserLevel
+    showDetailsPerTabset
   }
 })
