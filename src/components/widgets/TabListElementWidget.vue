@@ -8,7 +8,7 @@
            style="border:1px dotted white;border-radius:3px"
            :src="props.tab.image" width="70px"/>
     <q-img v-else-if="thumbnail" style="border:1px dotted white;border-radius:3px"
-           :src="thumbnail" width="70px"/>
+           :src="thumbnail" width="140px"/>
     <TabFaviconWidget v-else
                       :tab="props.tab" width="20px" height="20px" style="position: relative;left:30px;top:5px"/>
   </q-item-section>
@@ -21,16 +21,16 @@
     <q-item-label>
       <div>
         <div class="q-pr-lg cursor-pointer">
-<!--          <q-chip v-if="isOpen(props.tab) && props.showIsOpened"-->
-<!--                  class="q-my-none q-py-none q-ml-none q-mr-sm"-->
-<!--                  clickable-->
-<!--                  style="float:left;position: relative;top:3px"-->
-<!--                  @click="NavigationService.openOrCreateTab(props.tab?.url)"-->
-<!--                  size="xs" icon="tab">-->
-<!--            opened-->
-<!--            <q-tooltip class="tooltip">This tab is open in your browser. Click to open the corresponding tab.-->
-<!--            </q-tooltip>-->
-<!--          </q-chip>-->
+          <!--          <q-chip v-if="isOpen(props.tab) && props.showIsOpened"-->
+          <!--                  class="q-my-none q-py-none q-ml-none q-mr-sm"-->
+          <!--                  clickable-->
+          <!--                  style="float:left;position: relative;top:3px"-->
+          <!--                  @click="NavigationService.openOrCreateTab(props.tab?.url)"-->
+          <!--                  size="xs" icon="tab">-->
+          <!--            opened-->
+          <!--            <q-tooltip class="tooltip">This tab is open in your browser. Click to open the corresponding tab.-->
+          <!--            </q-tooltip>-->
+          <!--          </q-chip>-->
           <q-chip v-if="props.tab.isDuplicate"
                   class="q-my-none q-py-none q-ml-none q-mr-sm" color="warning"
                   clickable
@@ -59,10 +59,10 @@
 
     <!-- url -->
     <q-item-label
-        v-if="props.tab.url"
-        caption class="ellipsis-2-lines text-blue-10"
-        @mouseover="showButtonsProp = true"
-        @mouseleave="showButtonsProp = false">
+      v-if="props.tab.url"
+      caption class="ellipsis-2-lines text-blue-10"
+      @mouseover="showButtonsProp = true"
+      @mouseleave="showButtonsProp = false">
       <div class="q-pr-lg cursor-pointer" style="display: inline-block;"
            @click.stop="open(props.tab)">
 
@@ -84,14 +84,13 @@
     <!-- note -->
     <q-item-label v-if="props.tab.comments && props.tab.comments.length > 0" class="text-grey-10" text-subtitle1>
       <q-icon color="blue-10" name="edit_note"/>
-<!--        avatar="https://2.gravatar.com/avatar/55791a126d407f184127092989137e051fe839a0fb4cdf76945f70fd2e389eeb?size=512"-->
+      <!--        avatar="https://2.gravatar.com/avatar/55791a126d407f184127092989137e051fe839a0fb4cdf76945f70fd2e389eeb?size=512"-->
       <q-chat-message v-for="m in props.tab.comments"
-        name="me"
-        avatar="http://www.gravatar.com/avatar"
-        :text="[m.comment]"
-        sent
-        :stamp="formatDate(m.date)"
-      />
+                      :name="m.author"
+                      :avatar="m.avatar"
+                      :text="[m.comment]"
+                      sent
+                      :stamp="formatDate(m.date)"/>
     </q-item-label>
 
     <!-- tabsets -->
@@ -106,7 +105,7 @@
   </q-item-section>
 
   <!-- new tab and edit note buttons -->
-  <q-item-section side v-if="!props.tabsetSharedId">
+  <q-item-section side v-if="!props.simpleUi">
     <div class="row" v-if="props.showButtons">
       <q-btn flat round :color="props.tab.note ? 'secondary':'primary'" size="11px" icon="edit_note"
              @click.stop="editNoteDialog(tab as Tab)">
@@ -137,7 +136,7 @@ import {useUtils} from "src/services/Utils"
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {DeleteTabCommand} from "src/domain/tabs/DeleteTabCommand";
 import EditNoteDialog from "components/dialogues/EditNoteDialog.vue";
-import {date, useQuasar} from "quasar";
+import {date, LocalStorage, useQuasar} from "quasar";
 import TabFaviconWidget from "components/widgets/TabFaviconWidget.vue";
 import {UpdateTabNameCommand} from "src/domain/tabs/UpdateTabName";
 import {CopyToClipboardCommand} from "src/domain/commands/CopyToClipboard";
@@ -154,7 +153,8 @@ const props = defineProps({
   showIsOpened: {type: Boolean, default: true},
   highlightUrl: {type: String, required: false},
   tabsetId: {type: String, required: true},
-  tabsetSharedId: {type: String, required: false}
+  tabsetSharedId: {type: String, required: false},
+  simpleUi: {type: Boolean, default: false}
 })
 
 const $q = useQuasar()
@@ -163,6 +163,7 @@ const showButtonsProp = ref<boolean>(false)
 const thumbnail = ref<string | undefined>(undefined)
 const imgFromBlob = ref<string>("")
 const tsBadges = ref<object[]>([])
+const avatar = ref<string | undefined>(LocalStorage.getItem('sharing.avatar') as string || "http://www.gravatar.com/avatar")
 
 const router = useRouter()
 
@@ -188,17 +189,17 @@ onMounted(() => {
   const blobImgPath = props.tab.image
   if (blobImgPath && blobImgPath.startsWith('blob://')) {
     useTabsetService().getBlob(blobImgPath.replace("blob://", ""))
-        .then((res) => {
-          var reader = new FileReader();
-          reader.readAsDataURL(res.content);
-          reader.onloadend = function () {
-            var base64data = reader.result;
-            if (base64data) {
-              imgFromBlob.value = base64data.toString()
-            }
+      .then((res) => {
+        var reader = new FileReader();
+        reader.readAsDataURL(res.content);
+        reader.onloadend = function () {
+          var base64data = reader.result;
+          if (base64data) {
+            imgFromBlob.value = base64data.toString()
           }
-        })
-        .catch((err) => console.error(err))
+        }
+      })
+      .catch((err) => console.error(err))
   }
 })
 
@@ -241,10 +242,10 @@ const nameOrTitle = (tab: Tab) => {
 const dynamicNameOrTitleModel = (tab: Tab) => tab.name ? tab.name : tab?.title
 
 const setCustomTitle = (tab: Tab, newValue: string) =>
-    useCommandExecutor().executeFromUi(new UpdateTabNameCommand(tab, newValue))
+  useCommandExecutor().executeFromUi(new UpdateTabNameCommand(tab, newValue))
 
 const copyToClipboard = (text: string) =>
-    useCommandExecutor().executeFromUi(new CopyToClipboardCommand(text))
+  useCommandExecutor().executeFromUi(new CopyToClipboardCommand(text))
 
 const thumbnailFor = async (tab: Tab): Promise<object> => {
   return await TabsetService.getThumbnailFor(tab)
@@ -254,15 +255,15 @@ watchEffect(() => {
   if (props.tab) {
     // @ts-ignore
     thumbnailFor(props.tab)
-        .then((tn: object) => {
-          //console.log("tn", tn)
-          if (tn && tn['thumbnail' as keyof object]) {
-            thumbnail.value = tn['thumbnail' as keyof object]
-          }
-        })
-        .catch((err) => {
-          //console.log("could not get thumbnail for ", props.tab)
-        })
+      .then((tn: object) => {
+        //console.log("tn", tn)
+        if (tn && tn['thumbnail' as keyof object]) {
+          thumbnail.value = tn['thumbnail' as keyof object]
+        }
+      })
+      .catch((err) => {
+        //console.log("could not get thumbnail for ", props.tab)
+      })
   }
 })
 

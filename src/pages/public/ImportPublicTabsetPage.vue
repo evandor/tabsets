@@ -82,7 +82,7 @@ onMounted(() => {
     maybeTabset.value = _.first(
       _.filter([...useTabsStore().tabsets.values()] as Tabset[], (ts: Tabset) => ts.sharedId === shareId.value)
     )
-    console.log("%cfound", "color:green", maybeTabset.value)
+    //console.log("%cfound", "color:green", maybeTabset.value)
   }
 })
 
@@ -94,7 +94,7 @@ const start = () => {
       tabset.value = res as Tabset
 
       //const exists = useTabsetService().getTabset(tabset.value.id)
-      if (!maybeTabset) {
+      if (!maybeTabset.value) {
         console.log("shared tabset does not exist yet, creating...")
         const importedTS = tabset.value //new Tabset(tabset.value.id, tabset.value.name, tabset.value.tabs as Tab[])
         importedTS.sharedId = shareId.value
@@ -102,17 +102,17 @@ const start = () => {
         importedTS.sharedPath = route.fullPath
         console.log("importedTS", importedTS)
         setupTabset(importedTS as Tabset)
-      } else if (maybeTabset) {
+      } else if (maybeTabset.value) {
         console.log("...", maybeTabset.value?.sharedAt, tabset.value.sharedAt, (maybeTabset.value?.sharedAt || 0) - (tabset.value?.sharedAt || 0))
-        if (maybeTabset.value?.sharedAt && (maybeTabset.value.sharedAt < (tabset.value.sharedAt || 0))) {
+        //if (maybeTabset.value?.sharedAt && (maybeTabset.value.sharedAt < (tabset.value.sharedAt || 0))) {
           const updatedTS = tabset.value
           updatedTS.sharedId = shareId.value
           updatedTS.importedAt = new Date().getTime()
           console.log("updatedTS", updatedTS)
           setupTabset(updatedTS as Tabset)
-        } else {
-          router.push("/pwa/tabsets/" + tabset.value.id)
-        }
+        // } else {
+        //   router.push("/pwa/tabsets/" + tabset.value.id)
+        // }
       } else {
         router.push("/pwa/tabsets/" + tabset.value.id)
       }

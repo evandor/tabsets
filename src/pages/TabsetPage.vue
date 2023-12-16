@@ -246,7 +246,8 @@ a tab's url starts with one of the urls of this tabset, it will be ignored and n
         :tabset="tabset as unknown as Tabset"/>
 
       <TabsetPageCards v-else
-                       :tabset="tabset as unknown as Tabset"/>
+                       :tabset="tabset as unknown as Tabset"
+                       :simple-ui="false" />
 
     </q-tab-panel>
     <q-tab-panel name="page">

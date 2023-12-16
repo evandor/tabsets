@@ -76,7 +76,7 @@ const saveWork = () => {
 
       console.log("tabset", tabset, tab.value)
       if (tabset.value) {
-        tabset.value.page = outputData // sanitize?
+        tabset.value.page = outputData // TODO sanitize?
         console.log("saving tabset page content", tabset, tabsetId.value)
         // needed to update the content in the side panel
         //sendMsg('note-changed', {tab: tab.value, tabsetId: tabsetId.value, noteId: noteId.value})
@@ -85,6 +85,7 @@ const saveWork = () => {
         // Sharing
         if (tabset.value.sharedId && tabset.value.sharing === TabsetSharing.PUBLIC_LINK) {
           tabset.value.sharing = TabsetSharing.PUBLIC_LINK_OUTDATED
+          tabset.value.sharedAt = new Date().getTime()
         }
 
         useTabsetService().saveTabset(tabset.value as Tabset)

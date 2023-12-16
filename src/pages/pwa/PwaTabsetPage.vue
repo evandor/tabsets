@@ -200,7 +200,7 @@
         <div id="editorjs"/>
       </div>
     </template>
-    <TabsetPageCards :tabset="tabset as unknown as Tabset"/>
+    <TabsetPageCards :tabset="tabset as unknown as Tabset" :simple-ui="false"/>
   </template>
 
 </template>

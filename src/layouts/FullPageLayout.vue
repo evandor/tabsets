@@ -190,11 +190,9 @@
       <Navigation></Navigation>
     </q-drawer>
 
-    <q-drawer v-if="useUiStore().userLevel === UserLevel.DEFAULT || useUiStore().userLevel === UserLevel.UNKNOWN"
-              v-model="useUiStore().rightDrawerOpen" side="right" bordered
+    <q-drawer v-model="useUiStore().rightDrawerOpen" side="right" bordered
               content-class="column justify-between no-wrap bg-grey-1">
       <DrawerRight/>
-
     </q-drawer>
 
     <q-page-container>

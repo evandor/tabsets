@@ -26,7 +26,8 @@
                           :tab="tabAsTab(tab)"
                           :tabsetId="props.tabsetId"
                           :tabsetSharedId="props.tabsetSharedId"
-                          :highlightUrl="highlightUrl"/>
+                          :highlightUrl="highlightUrl"
+                          :simpleUi="props.simpleUi" />
 
   </q-item>
 
@@ -46,7 +47,8 @@ const props = defineProps({
   tabsetId: {type: String, required: true},
   group: {type: String, required: true},
   highlightUrl: {type: String, required: false},
-  tabsetSharedId: {type: String, required: false}
+  tabsetSharedId: {type: String, required: false},
+  simpleUi: {type: Boolean, default: false}
 })
 
 const {inBexMode} = useUtils()

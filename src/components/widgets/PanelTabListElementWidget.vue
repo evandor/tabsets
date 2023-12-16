@@ -247,7 +247,7 @@
                   class="text-grey-10" text-subtitle1>
         <q-chat-message v-for="m in props.tab.comments"
                         name="me"
-                        avatar="http://www.gravatar.com/avatar"
+                        :avatar="avatar"
                         :text="[m.comment]"
                         sent
                         :stamp="formatDate(m.date)"
@@ -340,7 +340,7 @@ import {useRouter} from "vue-router";
 import {useGroupsStore} from "stores/groupsStore";
 import {DeleteChromeGroupCommand} from "src/domain/groups/DeleteChromeGroupCommand";
 import {PlaceholdersType} from "src/models/Placeholders";
-import {uid, useQuasar} from "quasar";
+import {LocalStorage, uid, useQuasar} from "quasar";
 import MonitoringDialog from "components/dialogues/MonitoringDialog.vue";
 import {useSuggestionsStore} from "stores/suggestionsStore";
 import {Suggestion, SuggestionState} from "src/models/Suggestion";
@@ -368,7 +368,6 @@ const cnt = ref(0)
 const router = useRouter()
 
 const showButtonsProp = ref<boolean>(false)
-//const imgFromBlob = ref<string>("")
 const hoveredTab = ref<string | undefined>(undefined)
 const hoveredAnnotation = ref<string | undefined>(undefined)
 const tsBadges = ref<object[]>([])
@@ -383,6 +382,7 @@ const pngs = ref<SavedBlob[]>([])
 const selectedAnnotation = ref<HTMLSelection | undefined>(undefined)
 const label = ref("add comment...")
 const newComment = ref("")
+const avatar = ref<string | undefined>(LocalStorage.getItem('sharing.avatar') as string || "http://www.gravatar.com/avatar")
 
 onMounted(() => {
   if ((new Date().getTime() - props.tab.created) < 500) {

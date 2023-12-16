@@ -198,6 +198,9 @@ export const useUiStore = defineStore('ui', () => {
   // tabset description
   const tabsetDescriptionPanelHights = ref<object>(LocalStorage.getItem('ui.descriptionPanelHeights') as unknown as object || {})
 
+  const sharingAuthor = ref<string | undefined>(LocalStorage.getItem('sharing.author') as unknown as string || undefined)
+  const sharingAvatar = ref<string | undefined>(LocalStorage.getItem('sharing.avatar') as unknown as string || undefined)
+
 
   watch(rightDrawer.value, (val: Object) => {
     LocalStorage.set("ui.rightDrawer", val)
@@ -224,6 +227,19 @@ export const useUiStore = defineStore('ui', () => {
     (val: object) => {
       LocalStorage.set("ui.descriptionPanelHeights", val)
     })
+
+  watch(sharingAuthor,
+    (val: string | undefined) => {
+      console.log("val", val)
+      LocalStorage.set("sharing.author", val)
+    })
+
+  watch(sharingAvatar,
+    (val: string | undefined) => {
+      console.log("val", val)
+      LocalStorage.set("sharing.avatar", val)
+    })
+
 
   const route = useRoute()
   watch(route, (to) => {
@@ -545,6 +561,8 @@ export const useUiStore = defineStore('ui', () => {
     setTabsetDescriptionHeight,
     getTabsetDescriptionHeight,
     setShowTabsetDescription,
-    showTabsetDescription
+    showTabsetDescription,
+    sharingAuthor,
+    sharingAvatar
   }
 })

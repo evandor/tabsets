@@ -49,7 +49,10 @@
                             @mouseover="hoveredPublicLink = true"
                             @mouseleave="hoveredPublicLink = false">
                 <q-icon style="position: relative;top:-2px;left:-2px"
-                        name="ios_share" class="q-ma-none q-pa-none q-mr-xs"
+                        @click="shareTabsetPubliclyDialog(tabset as Tabset, tabset.sharing.toString().toLowerCase().indexOf('_outdated') >= 0)"
+                        name="ios_share"
+                        class="q-ma-none q-pa-none q-mr-xs"
+                        :class="tabset.sharing.toString().toLowerCase().indexOf('_outdated') >= 0 ? 'cursor-pointer' : ''"
                         :color="tabset.sharing.toString().toLowerCase().indexOf('_outdated') >= 0 ? 'warning' : 'primary'">
                   <q-tooltip class="tooltip" v-if="tabset.sharing.toString().toLowerCase().indexOf('_outdated') >= 0">
                     This tabset is shared but has been changed in the meantime. You need to re-publish.
@@ -193,6 +196,7 @@ import {SuggestionState} from "src/models/Suggestion";
 import {CopyToClipboardCommand} from "src/domain/commands/CopyToClipboard";
 import SidePanelTabsetDescriptionPage from "pages/sidepanel/SidePanelTabsetDescriptionPage.vue";
 import {PUBLIC_SHARE_URL} from "boot/constants";
+import ShareTabsetPubliclyDialog from "components/dialogues/ShareTabsetPubliclyDialog.vue";
 
 const {setVerticalScrollPosition} = scroll
 
@@ -720,6 +724,17 @@ const testShare = () => {
   }
 }
 
+const shareTabsetPubliclyDialog = (tabset: Tabset, republish: boolean = false) => {
+  $q.dialog({
+    component: ShareTabsetPubliclyDialog,
+    componentProps: {
+      tabsetId: tabset.id,
+      sharedId: tabset.sharedId,
+      tabsetName: tabset.name,
+      republish: republish
+    }
+  })
+}
 
 </script>
 
