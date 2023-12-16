@@ -249,7 +249,7 @@ let editorJS2: EditorJS = undefined as unknown as EditorJS
 onMounted(() => {
   Analytics.firePageViewEvent('PwaTabsetPage', document.location.href);
 
-  if (!editorJS2) {
+  if (!editorJS2 && tabset.value.page) {
     // @ts-ignore
     editorJS2 = new EditorJS({
       holder: "editorjs",

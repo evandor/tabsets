@@ -9,7 +9,7 @@
     </div>
 
     <div class="text-body1  q-mx-none q-my-lg" v-if="maybeTabset">
-      You already imported this tabset {{maybeTabset.importedAt}}
+      You already imported this tabset {{maybeTabset.importedAt}}, updated at {{date}}
     </div>
 
     <div class="justify-center items-center q-gutter-md">
@@ -48,6 +48,7 @@ const maybeTabset = ref<Tabset | undefined>(undefined)
 
 const author = ref<string>(atob(route.query['a'] as string || btoa('unknown user')))
 const name = ref<string>(atob(route.query['n'] as string || btoa('unknown')))
+const date = ref<number>(route.query['d'] as unknown as number)
 //const img = atob(route.query['i'] as string || btoa('https://tabsets.web.app/favicon.ico'))
 
 let waitCounter = 0
@@ -77,9 +78,11 @@ onMounted(() => {
   }
   shareId.value = route?.params.sharedId as string
   if (shareId.value) {
+    console.log("searching for tabset with shareId", shareId.value)
     maybeTabset.value = _.first(
-      _.filter([...useTabsStore().tabsets.values()] as Tabset[], (ts: Tabset) => ts.sharedId = shareId.value)
+      _.filter([...useTabsStore().tabsets.values()] as Tabset[], (ts: Tabset) => ts.sharedId === shareId.value)
     )
+    console.log("%cfound", "color:green", maybeTabset.value)
   }
 })
 

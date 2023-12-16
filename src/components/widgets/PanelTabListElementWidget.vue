@@ -245,9 +245,13 @@
     <!-- === comments === -->
     <q-item-label v-if="showComments()"
                   class="text-grey-10" text-subtitle1>
-      <div class="row" v-for="c in (props.tab as Tab).comments">
-       {{ c }}
-      </div>
+        <q-chat-message v-for="m in props.tab.comments"
+                        name="me"
+                        avatar="http://www.gravatar.com/avatar"
+                        :text="[m.comment]"
+                        sent
+                        :stamp="formatDate(m.date)"
+        />
     </q-item-label>
 
     <!-- === annotations === -->

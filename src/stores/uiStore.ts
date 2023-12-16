@@ -195,6 +195,10 @@ export const useUiStore = defineStore('ui', () => {
   const toolbarFilterTerm = ref('')
   const detailsPerTabset = ref(false)
 
+  // tabset description
+  const tabsetDescriptionPanelHights = ref<object>(LocalStorage.getItem('ui.descriptionPanelHeights') as unknown as object || {})
+
+
   watch(rightDrawer.value, (val: Object) => {
     LocalStorage.set("ui.rightDrawer", val)
   }, {deep: true})
@@ -214,6 +218,11 @@ export const useUiStore = defineStore('ui', () => {
     (val: object[]) => {
       console.log("val", val)
       LocalStorage.set("ui.newTabUrlList", val)
+    })
+
+  watch(tabsetDescriptionPanelHights.value,
+    (val: object) => {
+      LocalStorage.set("ui.descriptionPanelHeights", val)
     })
 
   const route = useRoute()
@@ -258,6 +267,40 @@ export const useUiStore = defineStore('ui', () => {
   function removeNewTabUrl(url: string) {
     newTabUrlList.value = _.filter(newTabUrlList.value, (e: any) => e.url !== url)
   }
+
+  function setTabsetDescriptionHeight(tabsetId: string, height: number) {
+    console.log("setting height", tabsetId, height)
+
+    if (!tabsetDescriptionPanelHights.value[tabsetId as keyof object]) {
+      // @ts-ignore
+      tabsetDescriptionPanelHights.value[tabsetId as keyof object] = {}
+    }
+    // @ts-ignore
+    tabsetDescriptionPanelHights.value[tabsetId as keyof object]['height'] = height
+  }
+
+  function getTabsetDescriptionHeight(tabsetId: string): number | undefined {
+    // @ts-ignore
+    return tabsetDescriptionPanelHights.value[tabsetId as keyof object] ?
+      tabsetDescriptionPanelHights.value[tabsetId as keyof object]['height']
+      : undefined
+  }
+
+  function setShowTabsetDescription(tabsetId: string, show: boolean): boolean {
+    // @ts-ignore
+    return tabsetDescriptionPanelHights.value[tabsetId as keyof object]['show'] = show
+  }
+
+  function showTabsetDescription(tabsetId: string): boolean {
+    // @ts-ignore
+    const res = tabsetDescriptionPanelHights.value[tabsetId as keyof object]['show'] as boolean | undefined
+    console.log("got res", res)
+    if (res === undefined) {
+      return true
+    }
+    return res
+  }
+
 
   function hideInfoMessage(ident: string) {
     hiddenMessages.value.push(ident)
@@ -498,6 +541,10 @@ export const useUiStore = defineStore('ui', () => {
     delayedToastRemoval,
     callUndoActionFromCurrentToast,
     getButtonSize,
-    showDetailsPerTabset
+    showDetailsPerTabset,
+    setTabsetDescriptionHeight,
+    getTabsetDescriptionHeight,
+    setShowTabsetDescription,
+    showTabsetDescription
   }
 })

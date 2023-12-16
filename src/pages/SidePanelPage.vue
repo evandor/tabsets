@@ -117,9 +117,9 @@
           <div class="q-ma-none q-pa-none">
 
             <template v-if="tabset.page">
-              <SidePanelTabsetPage
+              <SidePanelTabsetDescriptionPage
                 :tabsetId="tabset.id"
-                :tabsetPage="tabset.page as Object"/>
+                :tabsetDesc="tabset.page as Object"/>
             </template>
 
             <SidePanelPageTabList
@@ -191,7 +191,8 @@ import SidePanelPageTabList from "components/layouts/SidePanelPageTabList.vue";
 import {AddTabToTabsetCommand} from "src/domain/tabs/AddTabToTabset";
 import {SuggestionState} from "src/models/Suggestion";
 import {CopyToClipboardCommand} from "src/domain/commands/CopyToClipboard";
-import SidePanelTabsetPage from "pages/sidepanel/SidePanelTabsetPage.vue";
+import SidePanelTabsetDescriptionPage from "pages/sidepanel/SidePanelTabsetDescriptionPage.vue";
+import {PUBLIC_SHARE_URL} from "boot/constants";
 
 const {setVerticalScrollPosition} = scroll
 
@@ -229,8 +230,6 @@ const windowName = ref<string | undefined>(undefined)
 const windowId = ref<number | undefined>(undefined)
 const tsBadges = ref<object[]>([])
 
-const publictabsetsPath = "https://shared.tabsets.net/"
-
 onMounted(() => {
   window.addEventListener('keypress', checkKeystroke);
   if (!useAuthStore().isAuthenticated) {
@@ -253,7 +252,7 @@ watchEffect(() => {
 })
 
 watchEffect(() => {
-  console.log("hier11", currentTabset.value?.page)
+  //console.log("hier11", currentTabset.value?.page)
 })
 
 
@@ -679,7 +678,7 @@ const openPublicShare = (tabsetId: string) => {
 const getPublicTabsetLink = (ts: Tabset) => {
   let image = "https://tabsets.web.app/favicon.ico"
   if (ts && ts.sharedId) {
-    return publictabsetsPath + "#/pwa/imp/" + ts.sharedId + "?n=" + btoa(ts.name) + "&a=" + btoa(ts.sharedBy || 'n/a')
+    return PUBLIC_SHARE_URL + "#/pwa/imp/" + ts.sharedId + "?n=" + btoa(ts.name) + "&a=" + btoa(ts.sharedBy || 'n/a') + "&d=" + ts.sharedAt
   }
   return image
 }

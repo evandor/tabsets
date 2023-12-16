@@ -29,6 +29,8 @@ import {MonitoringType} from "src/models/Monitor";
 import {BlobType} from "src/models/SavedBlob";
 import MqttService from "src/services/mqtt/MqttService";
 import {useRouter} from "vue-router";
+import tabsetService from "src/services/TabsetService";
+import TabsetService from "src/services/TabsetService";
 
 let db: PersistenceService = null as unknown as PersistenceService
 
@@ -250,6 +252,16 @@ export function useTabsetService() {
       console.log("setting next key to", nextKey)
       selectTabset(nextKey)
       return Promise.resolve("ok")
+    }
+    return Promise.reject("could not get tabset for id")
+  }
+
+  const deleteTabsetDescription = (tabsetId: string): Promise<string> => {
+    const tabset = getTabset(tabsetId)
+    if (tabset) {
+      tabset.page = undefined
+      useTabsetService().saveTabset(tabset)
+      return Promise.resolve("done")
     }
     return Promise.reject("could not get tabset for id")
   }
@@ -711,7 +723,8 @@ export function useTabsetService() {
     getBlob,
     reloadTabset,
     //handleAnnotationMessage,
-    tabsToShow
+    tabsToShow,
+    deleteTabsetDescription
   }
 
 }
