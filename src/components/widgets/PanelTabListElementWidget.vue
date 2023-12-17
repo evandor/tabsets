@@ -247,11 +247,18 @@
                   class="text-grey-10" text-subtitle1>
         <q-chat-message v-for="m in props.tab.comments"
                         name="me"
-                        :avatar="avatar"
+                        :avatar="m.avatar || 'http://www.gravatar.com/avatar'"
                         :text="[m.comment]"
-                        sent
+                        :sent="isSender(m)"
+                        :bg-color="isSender(m) ? 'blue':'grey-2'"
+                        :text-color="isSender(m) ? 'white':'black'"
                         :stamp="formatDate(m.date)"
         />
+      <div class="row">
+        <div class="col-12 text-right q-mr-lg text-caption" @click="addCommentDialog()">
+          Reply
+        </div>
+      </div>
     </q-item-label>
 
     <!-- === annotations === -->
@@ -320,7 +327,7 @@
 
 <script setup lang="ts">
 import NavigationService from "src/services/NavigationService";
-import {HTMLSelection, HTMLSelectionComment, Tab, TabSorting, UrlExtension} from "src/models/Tab";
+import {HTMLSelection, HTMLSelectionComment, Tab, TabComment, TabSorting, UrlExtension} from "src/models/Tab";
 import TabsetService from "src/services/TabsetService";
 import {onMounted, PropType, ref, watchEffect} from "vue";
 import {useCommandExecutor} from "src/services/CommandExecutor";
@@ -349,6 +356,7 @@ import {SavedBlob} from "src/models/SavedBlob";
 // @ts-ignore
 import rangy from "rangy/lib/rangy-core.js";
 import "rangy/lib/rangy-serializer";
+import CommentDialog from "components/dialogues/CommentDialog.vue";
 
 const {inBexMode, isCurrentTab} = useUtils()
 
@@ -629,6 +637,14 @@ const toggleLists = (ident: string) => {
       break
   }
 }
+
+const isSender = (m: TabComment) => m.author === useUiStore().sharingAuthor
+
+const addCommentDialog = () => $q.dialog({
+  component: CommentDialog,
+  componentProps: {tabId: props.tab.id, sharedId: props.tabset?.sharedId}
+})
+
 
 </script>
 

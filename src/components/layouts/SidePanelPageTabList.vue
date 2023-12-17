@@ -10,7 +10,7 @@
                         @change="handleDragAndDrop">
 
       <SidePanelTabListHelper v-for="tab in tabs"
-                              :tab="tab"
+                              :tab="tab as Tab"
                               :type="props.type"
                               :sorting="props.sorting"
                               :preventDragAndDrop="false"
@@ -22,7 +22,7 @@
     <!-- no drag & drop on mobile -->
     <SidePanelTabListHelper v-else
                             v-for="tab in tabs"
-                            :tab="tab"
+                            :tab="tab as Tab"
                             :type="props.type"
                             :sorting="props.sorting"
                             :preventDragAndDrop="true"

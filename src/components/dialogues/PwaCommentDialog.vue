@@ -2,10 +2,10 @@
   <q-dialog ref="dialogRef" @hide="onDialogHide">
     <q-card class="q-dialog-plugin">
       <q-card-section>
-        <div class="text-h6">Tab Comment</div>
+        <div class="text-h6">Comment</div>
       </q-card-section>
       <q-card-section>
-        <div class="text-body">Add a comment for this tab</div>
+        <div class="text-body">Publish a comment</div>
       </q-card-section>
 
       <q-card-section class="q-pt-none">
@@ -21,11 +21,22 @@
 
       </q-card-section>
 
+      <q-card-section>
+        <div class="text-body">Author:</div>
+        <q-input v-model="author"
+                 class="q-mb-md q-pb-none"
+                 dense autofocus
+                 type="text"
+                 error-message="Please do not use special Characters, maximum length is 32"/>
+      </q-card-section>
+
+
       <q-card-actions align="right" class="text-primary">
         <q-btn flat label="Cancel" @click="onDialogCancel"/>
         <q-btn flat
-               :label="props.sharedId ? 'Publish Comment' : 'Save Comment'"
+               label="Publish Comment"
                v-close-popup
+               :disable="!author || !editor"
                @click="publishComment()"/>
       </q-card-actions>
 
@@ -40,11 +51,6 @@
 import {ref, watchEffect} from "vue";
 import {date, useDialogPluginComponent, useQuasar} from "quasar";
 import {useTabsStore} from "src/stores/tabsStore";
-import {TabComment} from "src/models/Tab";
-import {useTabsetService} from "src/services/TabsetService2";
-import MqttService from "src/services/mqtt/MqttService";
-import {useUiStore} from "stores/uiStore";
-import {TabsetSharing} from "src/models/Tabset";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {AddCommentCommand} from "src/domain/tabs/AddCommentCommand";
 
@@ -57,25 +63,27 @@ const props = defineProps({
   sharedId: {type: String, required: false}
 })
 
+const $q = useQuasar()
+
 const editor = ref('')
+const author = ref<string>($q.localStorage.getItem('sharing.author') || '')
 
 const {dialogRef, onDialogHide, onDialogCancel} = useDialogPluginComponent()
 
 const tabsStore = useTabsStore()
-const $q = useQuasar()
 
 const dateFormat = "YYYY-MM-DD HH:mm"
 const newTabsetName = ref('')
 const newTabsetNameExists = ref(false)
-const hideWarning = ref(false)
-const scheduleFor = ref(date.formatDate(new Date().getTime(), dateFormat))
 
 watchEffect(() => {
   newTabsetNameExists.value = !!tabsStore.nameExistsInContextTabset(newTabsetName.value);
 })
 
-const publishComment = () => useCommandExecutor().executeFromUi(new AddCommentCommand(props.tabId, editor.value))
-
+const publishComment = () => {
+  $q.localStorage.set('sharing.author', author.value)
+  useCommandExecutor().executeFromUi(new AddCommentCommand(props.tabId, editor.value))
+}
 
 
 </script>

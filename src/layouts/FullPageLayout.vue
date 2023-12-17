@@ -235,7 +235,6 @@ import ToolbarButton from "components/widgets/ToolbarButton.vue";
 const $q = useQuasar()
 const router = useRouter()
 const tabsStore = useTabsStore()
-const searchStore = useSearchStore()
 
 const leftDrawerOpen = ref($q.screen.gt.lg)
 
@@ -246,7 +245,6 @@ const spacesStore = useSpacesStore()
 
 const spacesOptions = ref<object[]>([])
 const suggestions = ref<Suggestion[]>(useSuggestionsStore().getSuggestions([SuggestionState.NEW, SuggestionState.DECISION_DELAYED]))
-const search = ref('')
 
 const {inBexMode} = useUtils()
 

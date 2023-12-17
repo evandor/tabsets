@@ -43,12 +43,14 @@ export class HTMLSelection {
 
 export class TabComment {
   date: number = 0
+  private id: string;
 
   constructor(
     public author: string = '<me>',
     public avatar: string | undefined = undefined,
     public comment: string = '') {
     this.date = new Date().getTime()
+    this.id = uid()
   }
 }
 

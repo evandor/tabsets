@@ -3,153 +3,16 @@
     <q-header elevated class="bg-white text-black">
       <q-toolbar>
 
-        <template v-if="leftDrawerOpen">
-          <q-img
-            class="q-ml-xs q-mr-none cursor-pointer" style="margin-top:-7px"
-            @click="toggleLeftDrawer"
-            src="favicon.ico" height="32px" width="32px">
-            <q-tooltip class="tooltip">Toggle the tabset list view by clicking here</q-tooltip>
-          </q-img>
-          <q-toolbar-title v-if="!usePermissionsStore().hasFeature(FeatureIdent.SPACES)"
-                           @click.stop="goHome()" class="cursor-pointer"
-                           style="min-width:200px" shrink>
-            {{ title() }}
-            <q-tooltip class="tooltip">Reload Tabsets Extension</q-tooltip>
-          </q-toolbar-title>
-          <q-toolbar-title v-else>
-            {{ title() }}
-          </q-toolbar-title>
-        </template>
-        <!-- left drawer closed -->
-        <template v-else>
-          <q-icon
-            class="q-ml-xs q-mr-none cursor-pointer"
-            name="menu" size="18px" @click="toggleLeftDrawer">
-            <q-tooltip class="tooltip">Toggle the tabset list view by clicking here</q-tooltip>
-          </q-icon>
-          <template v-if="usePermissionsStore().hasFeature(FeatureIdent.SPACES)">
-            <SpacesSelectorWidget class="q-mx-md"/>
-          </template>
-        </template>
+        <q-img
+          class="q-ml-xs q-mr-none cursor-pointer" style="margin-top:-7px"
+          src="favicon.ico" height="32px" width="32px"/>
+        <q-toolbar-title>
+          Tabsets
+        </q-toolbar-title>
 
 
         <q-space/>
 
-        <SearchWidget style="position: absolute; left:300px;top:5px;max-width:500px"
-                      v-if="tabsStore.tabsets.size > 1 || useSettingsStore().isEnabled('dev')"/>
-
-        <Transition name="colorized-appear">
-          <div v-if="permissionsStore.hasFeature(FeatureIdent.OPENTABS_THRESHOLD) && tabsStore.tabsets.size > 0">
-            <OpenTabsThresholdWidget/>
-          </div>
-        </Transition>
-
-        <q-btn v-if="settingsStore.isEnabled('stats')"
-               class="q-mr-md" icon="o_query_stats" size="12px" style="min-width:24px" flat
-               @click="router.push('/stats')">
-          <q-tooltip>Check out stats (experimental)</q-tooltip>
-        </q-btn>
-
-        <div v-if="unreadNotifications().length > 0">
-          <q-btn flat icon="o_notifications" class="q-mr-md cursor-pointer">
-            <q-badge floating color="red" rounded/>
-          </q-btn>
-          <q-menu :offset="[0, 7]">
-            <q-list style="min-width: 200px">
-              <q-item>New Notifications:</q-item>
-              <q-item v-for="n in unreadNotifications()"
-                      clickable v-close-popup @click="showNotificationDialog(n.id)">
-                <q-item-section>{{ n.title }}</q-item-section>
-              </q-item>
-            </q-list>
-          </q-menu>
-        </div>
-
-        <!--        <q-tab v-if="rssTabsCount > 0"-->
-        <!--               name="rss" icon="o_rss_feed" @click="tabsClicked(DrawerTabs.RSS)">-->
-        <!--          <q-tooltip class="tooltip" anchor="center right" self="center left" :delay="200">RSS Feeds</q-tooltip>-->
-        <!--        </q-tab>-->
-
-        <span
-          v-if="useSuggestionsStore().getSuggestions([SuggestionState.NEW, SuggestionState.DECISION_DELAYED]).length > 0">
-          <q-btn
-            flat
-            :color="dependingOnStates()"
-            name="rss" icon="o_assistant">
-            <q-tooltip class="tooltip" anchor="center right" self="center left" :delay="200">You have suggestions
-            </q-tooltip>
-            <q-badge
-              :label="useSuggestionsStore().getSuggestions([SuggestionState.NEW, SuggestionState.DECISION_DELAYED]).length"/>
-          </q-btn>
-          <q-menu :offset="[0, 7]">
-            <q-list style="min-width: 200px">
-              <q-item clickable v-close-popup v-ripple @click="suggestionDialog(s)"
-                      v-for="s in useSuggestionsStore().getSuggestions([SuggestionState.NEW, SuggestionState.DECISION_DELAYED])">
-                <q-item-section avatar>
-                  <q-icon color="primary" :name="s.img ? s.img : 'rss_feed'"/>
-                </q-item-section>
-                <q-item-section>
-                  <div>{{ s.title }}</div>
-                  <div class="text-caption">{{ s.msg }}</div>
-                </q-item-section>
-              </q-item>
-            </q-list>
-          </q-menu>
-        </span>
-
-        <ToolbarButton
-          :feature="FeatureIdent.SAVE_TAB"
-          :drawer="DrawerTabs.SAVED_TABS"
-          icon="o_save"
-          tooltip="List of MTHML Snapshots"/>
-
-        <ToolbarButton
-          :feature="FeatureIdent.SAVE_TAB_AS_PNG"
-          :drawer="DrawerTabs.SAVED_TABS_AS_PNG"
-          icon="o_image"
-          tooltip="The List of PNGs"/>
-
-        <ToolbarButton
-          :feature="FeatureIdent.SAVE_TAB_AS_PDF"
-          :drawer="DrawerTabs.SAVED_TABS_AS_PDF"
-          icon="o_picture_as_pdf"
-          tooltip="The List of PDFs"/>
-
-        <ToolbarButton
-          :feature="FeatureIdent.GROUP_BY_DOMAIN"
-          :drawer="DrawerTabs.GROUP_BY_HOST_TABS"
-          icon="o_dns"
-          tooltip="Your tabs grouped by domain"/>
-
-        <ToolbarButton
-          :feature=FeatureIdent.RSS
-          :drawer="DrawerTabs.RSS"
-          icon="o_rss_feed"
-          tooltip="Access to your rss feed"/>
-
-        <ToolbarButton
-          :feature="FeatureIdent.BOOKMARKS"
-          :drawer="DrawerTabs.BOOKMARKS"
-          icon="o_bookmark"
-          tooltip="Access to your bookmarks"/>
-
-        <!--        <ToolbarButton-->
-        <!--            :drawer="DrawerTabs.UNASSIGNED_TABS"-->
-        <!--            icon="o_playlist_add"-->
-        <!--            tooltip="Show add tabs view"-->
-        <!--            :restricted="false"/>-->
-
-        <ToolbarButton
-          :drawer="DrawerTabs.OPEN_TABS"
-          icon="o_playlist_add"
-          tooltip="Show Open Tabs View"
-          :restricted="$q.platform.is.chrome"/>
-
-        <ToolbarButton
-          :drawer="DrawerTabs.TAGS_VIEWER"
-          icon="o_label"
-          tooltip="Show tags viewer"
-          :restricted="$q.platform.is.chrome"/>
 
         <div>
           <q-btn
@@ -161,15 +24,6 @@
           <q-menu :offset="[0, 7]">
             <q-list style="min-width: 200px">
               <q-item clickable @click="router.push('/settings')">Settings</q-item>
-              <q-item clickable @click="tabsClicked(DrawerTabs.FEATURES)" v-close-popup>
-                Activate more Features
-              </q-item>
-              <q-item clickable @click="showImportDialog" v-close-popup>
-                Import Tabsets
-              </q-item>
-              <q-item clickable @click="showExportDialog" v-close-popup>
-                Export Tabsets
-              </q-item>
               <q-item clickable @click="router.push('/about')" v-close-popup>
                 About Tabsets
               </q-item>

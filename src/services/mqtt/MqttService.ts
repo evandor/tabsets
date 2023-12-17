@@ -101,10 +101,7 @@ class MqttService {
       }
       switch (payload.event) {
         case 'tabComment':
-          console.log("===============")
-          console.log(topic + ': ' + payload.toString());
-          console.log("===============")
-
+          console.log("got tabComment message for topic", topic);
           const tabset =
             _.first(
               _.filter(

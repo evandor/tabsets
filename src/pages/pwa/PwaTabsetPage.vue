@@ -200,7 +200,7 @@
         <div id="editorjs"/>
       </div>
     </template>
-    <TabsetPageCards :tabset="tabset as unknown as Tabset" :simple-ui="false"/>
+    <TabsetPageCards :tabset="tabset as unknown as Tabset" :simple-ui="true"/>
   </template>
 
 </template>
@@ -219,7 +219,6 @@ import {RenameTabsetCommand} from "src/domain/tabsets/RenameTabset";
 import {Tabset, TabsetType} from "src/models/Tabset";
 import {FeatureIdent} from "src/models/AppFeature";
 import {ToggleSortingCommand} from "src/domain/tabsets/ToggleSorting";
-import PageForTabset from "components/layouts/PageForTabset.vue";
 import TabsetPageCards from "pages/TabsetPageCards.vue";
 import OpenRightDrawerWidget from "components/widgets/OpenRightDrawerWidget.vue";
 import JsUtils from "src/utils/JsUtils";
@@ -228,7 +227,6 @@ import TabsetsSelectorWidget from "components/widgets/TabsetsSelectorWidget.vue"
 import DynamicTabsetPageCards from "pages/DynamicTabsetPageCards.vue";
 import {useTabsetService} from "src/services/TabsetService2";
 import Analytics from "src/utils/google-analytics";
-import CanvasForTabset from "components/layouts/CanvasForTabset.vue";
 import EditorJS, {OutputData} from "@editorjs/editorjs";
 import EditorJsConfig from "src/utils/EditorJsConfig";
 
@@ -318,7 +316,7 @@ const showSorting = () => tabsStore.getCurrentTabs.length > 10 && $q.screen.gt.x
   border: 0 solid #eee;
   border-radius: 5px;
   padding: 10px;
-  box-shadow: 10px 10px 6px 18px #e8edfa80;
+  /*box-shadow: 10px 10px 6px 18px #e8edfa80;*/
 }
 
 .ce-block__content,
