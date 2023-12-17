@@ -297,11 +297,6 @@ text.set(FeatureIdent.OLD_TABS.toLowerCase(), {
   description: 'Get a list of old tabs to decide which ones to keep.',
   permissions: []
 })
-text.set(FeatureIdent.TABSET_PAGE.toLowerCase(), {
-  name: 'Tabset Page',
-  description: 'Use an editor to add additional information about this tabset',
-  permissions: []
-})
 text.set(FeatureIdent.NOTES.toLowerCase(), {
   name: 'Notes Feature',
   description: 'Add Notes to tabsets',

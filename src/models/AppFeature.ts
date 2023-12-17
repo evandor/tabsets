@@ -25,7 +25,7 @@ export enum FeatureIdent {
   OLD_TABS = "OLD_TABS",
   BACKUP = "BACKUP",
   IGNORE = "IGNORE",
-  TABSET_PAGE = "TABSET_PAGE",
+  //TABSET_PAGE = "TABSET_PAGE", -- default now
   NOTES = "NOTES",
   TAGS = "TAGS",
   SIDE_PANEL = "SIDE_PANEL",

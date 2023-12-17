@@ -245,8 +245,19 @@
     <!-- === comments === -->
     <q-item-label v-if="showComments()"
                   class="text-grey-10" text-subtitle1>
-      <div class="row" v-for="c in (props.tab as Tab).comments">
-       {{ c }}
+        <q-chat-message v-for="m in props.tab.comments"
+                        name="me"
+                        :avatar="m.avatar || 'http://www.gravatar.com/avatar'"
+                        :text="[m.comment]"
+                        :sent="isSender(m)"
+                        :bg-color="isSender(m) ? 'blue':'grey-2'"
+                        :text-color="isSender(m) ? 'white':'black'"
+                        :stamp="formatDate(m.date)"
+        />
+      <div class="row">
+        <div class="col-12 text-right q-mr-lg text-caption" @click="addCommentDialog()">
+          Reply
+        </div>
       </div>
     </q-item-label>
 
@@ -316,7 +327,7 @@
 
 <script setup lang="ts">
 import NavigationService from "src/services/NavigationService";
-import {HTMLSelection, HTMLSelectionComment, Tab, TabSorting, UrlExtension} from "src/models/Tab";
+import {HTMLSelection, HTMLSelectionComment, Tab, TabComment, TabSorting, UrlExtension} from "src/models/Tab";
 import TabsetService from "src/services/TabsetService";
 import {onMounted, PropType, ref, watchEffect} from "vue";
 import {useCommandExecutor} from "src/services/CommandExecutor";
@@ -336,7 +347,7 @@ import {useRouter} from "vue-router";
 import {useGroupsStore} from "stores/groupsStore";
 import {DeleteChromeGroupCommand} from "src/domain/groups/DeleteChromeGroupCommand";
 import {PlaceholdersType} from "src/models/Placeholders";
-import {uid, useQuasar} from "quasar";
+import {LocalStorage, uid, useQuasar} from "quasar";
 import MonitoringDialog from "components/dialogues/MonitoringDialog.vue";
 import {useSuggestionsStore} from "stores/suggestionsStore";
 import {Suggestion, SuggestionState} from "src/models/Suggestion";
@@ -345,6 +356,7 @@ import {SavedBlob} from "src/models/SavedBlob";
 // @ts-ignore
 import rangy from "rangy/lib/rangy-core.js";
 import "rangy/lib/rangy-serializer";
+import CommentDialog from "components/dialogues/CommentDialog.vue";
 
 const {inBexMode, isCurrentTab} = useUtils()
 
@@ -364,7 +376,6 @@ const cnt = ref(0)
 const router = useRouter()
 
 const showButtonsProp = ref<boolean>(false)
-//const imgFromBlob = ref<string>("")
 const hoveredTab = ref<string | undefined>(undefined)
 const hoveredAnnotation = ref<string | undefined>(undefined)
 const tsBadges = ref<object[]>([])
@@ -379,6 +390,7 @@ const pngs = ref<SavedBlob[]>([])
 const selectedAnnotation = ref<HTMLSelection | undefined>(undefined)
 const label = ref("add comment...")
 const newComment = ref("")
+const avatar = ref<string | undefined>(LocalStorage.getItem('sharing.avatar') as string || "http://www.gravatar.com/avatar")
 
 onMounted(() => {
   if ((new Date().getTime() - props.tab.created) < 500) {
@@ -625,6 +637,14 @@ const toggleLists = (ident: string) => {
       break
   }
 }
+
+const isSender = (m: TabComment) => m.author === useUiStore().sharingAuthor
+
+const addCommentDialog = () => $q.dialog({
+  component: CommentDialog,
+  componentProps: {tabId: props.tab.id, sharedId: props.tabset?.sharedId}
+})
+
 
 </script>
 
