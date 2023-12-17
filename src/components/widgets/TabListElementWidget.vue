@@ -4,9 +4,9 @@
     <q-img v-if="props.tab.image && props.tab.image.startsWith('blob://')"
            style="border:3px dotted white;border-radius:3px"
            :src="imgFromBlob" width="70px"/>
-    <q-img v-else-if="props.tab.image"
-           style="border:1px dotted white;border-radius:3px"
-           :src="props.tab.image" width="140px"/>
+    <a v-else-if="props.tab.image" :href="props.tab.url" target="_blank">
+      <q-img style="border:1px dotted white;border-radius:3px" :src="props.tab.image" width="140px"/>
+    </a>
     <q-img v-else-if="thumbnail" style="border:1px dotted white;border-radius:3px"
            :src="thumbnail" width="140px"/>
     <TabFaviconWidget v-else

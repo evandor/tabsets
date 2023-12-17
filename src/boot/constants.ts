@@ -12,8 +12,8 @@ const SPECIAL_ID_FOR_NO_GROUP_ASSIGNED = "no_group_assigned_identifier"
 const STRIP_CHARS_IN_USER_INPUT = /[`@#$%^*=\[\]{};:"\\|<>\/~]/;
 const STRIP_CHARS_IN_COLOR_INPUT = /[`@$%^*=\[\]{};:"\\|<>\/~]/;
 
-const PUBLIC_SHARE_URL = "https://shared.tabsets.net/"
-//const PUBLIC_SHARE_URL = "http://localhost:9200/"
+//const PUBLIC_SHARE_URL = "https://shared.tabsets.net/"
+const PUBLIC_SHARE_URL = "http://localhost:9200/"
 
 export default boot(({}) => {
 })
