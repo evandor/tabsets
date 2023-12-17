@@ -329,15 +329,7 @@
 
 <script setup lang="ts">
 import NavigationService from "src/services/NavigationService";
-import {
-  HTMLSelection,
-  HTMLSelectionComment,
-  Tab,
-  TabComment,
-  TabPreview,
-  TabSorting,
-  UrlExtension
-} from "src/models/Tab";
+import {HTMLSelection, HTMLSelectionComment, Tab, TabComment, TabSorting, UrlExtension} from "src/models/Tab";
 import TabsetService from "src/services/TabsetService";
 import {onMounted, PropType, ref, watchEffect} from "vue";
 import {useCommandExecutor} from "src/services/CommandExecutor";
@@ -357,7 +349,7 @@ import {useRouter} from "vue-router";
 import {useGroupsStore} from "stores/groupsStore";
 import {DeleteChromeGroupCommand} from "src/domain/groups/DeleteChromeGroupCommand";
 import {PlaceholdersType} from "src/models/Placeholders";
-import {LocalStorage, useQuasar} from "quasar";
+import {LocalStorage, uid, useQuasar} from "quasar";
 import MonitoringDialog from "components/dialogues/MonitoringDialog.vue";
 import {useSuggestionsStore} from "stores/suggestionsStore";
 import {Suggestion, SuggestionState} from "src/models/Suggestion";

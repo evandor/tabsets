@@ -23,77 +23,78 @@ const {sendMsg} = useUtils()
 export class AddTabToTabsetCommand implements Command<any> {
 
 
-    constructor(public tab: Tab, public tabset: Tabset) {
-    }
+  constructor(public tab: Tab, public tabset: Tabset) {
+  }
 
-    async execute(): Promise<ExecutionResult<any>> {
-        const tabsStore = useTabsStore()
-        console.info(`adding tab '${this.tab.id}' to tabset '${this.tabset.id}'`)
-        const exists = _.findIndex(this.tabset.tabs, t => t.url === this.tab.url) >= 0
-        console.debug("checking 'tab exists' yields", exists)
-        if (!exists) {
-            try {
-                // manage (chrome) Group
-                console.log("updating tab group for group id", this.tab.groupId)
-                const currentGroup = useGroupsStore().currentGroupForId(this.tab.groupId)
-                this.tab.groupName = currentGroup?.title || undefined
-                if (currentGroup) {
-                    await useGroupsStore().persistGroup(currentGroup)
-                }
-
-                const tabset: Tabset = await useTabsetService().addToTabsetId(this.tabset.id, this.tab, 0)
-                console.log("sharing...")
-                // Sharing
-                if (tabset.sharedId && tabset.sharing === TabsetSharing.PUBLIC_LINK) {
-                    tabset.sharing = TabsetSharing.PUBLIC_LINK_OUTDATED
-                }
-
-                // Placeholder Defaults Application
-                this.tab = PlaceholderUtils.applyForDefaultDomains(this.tab)
-
-                // the tab has been added to the tabset, but not saved yet
-                const content = await TabsetService.getContentFor(this.tab)
-                let res: any = null
-                if (content) {
-                    const res2 = await useTabsetService().saveText(this.tab, content['content' as keyof object], content['metas' as keyof object])
-                    // add to search index
-                    useSearchStore().addToIndex(
-                        uid(), this.tab.name || '',
-                        this.tab.title || '',
-                        this.tab.url || '',
-                        this.tab.description, content['content' as keyof object],
-                        [this.tabset.id],
-                        this.tab.favIconUrl || '')
-                    res = new ExecutionResult("result", "Tab was added",)
-                } else {
-                    const res2 = saveTabset(this.tabset)
-                    useSearchStore().addToIndex(
-                        uid(), this.tab.name || '',
-                        this.tab.title || '',
-                        this.tab.url || '',
-                        this.tab.description, '',
-                        [this.tabset.id],
-                        this.tab.favIconUrl || '')
-                    res = new ExecutionResult(res2, "Tab was added")
-                }
-                sendMsg('tab-added', {tabsetId: tabset.id})
-                return res
-                // })
-                // .catch((err) => Promise.reject("got err " + err))
-                //    })
-            } catch (err) {
-                return Promise.reject("error: " + err)
-            }
-        } else {
-            return Promise.reject("tab already exists in this tabset")
+  async execute(): Promise<ExecutionResult<any>> {
+    const tabsStore = useTabsStore()
+    console.info(`adding tab '${this.tab.id}' to tabset '${this.tabset.id}'`)
+    const exists = _.findIndex(this.tabset.tabs, t => t.url === this.tab.url) >= 0
+    console.debug("checking 'tab exists' yields", exists)
+    if (!exists) {
+      try {
+        // manage (chrome) Group
+        console.log("updating tab group for group id", this.tab.groupId)
+        const currentGroup = useGroupsStore().currentGroupForId(this.tab.groupId)
+        this.tab.groupName = currentGroup?.title || undefined
+        if (currentGroup) {
+          await useGroupsStore().persistGroup(currentGroup)
         }
 
+        const tabset: Tabset = await useTabsetService().addToTabsetId(this.tabset.id, this.tab, 0)
+        console.log("sharing...")
+        // Sharing
+        if (tabset.sharedId && tabset.sharing === TabsetSharing.PUBLIC_LINK) {
+          tabset.sharing = TabsetSharing.PUBLIC_LINK_OUTDATED
+          tabset.sharedAt = new Date().getTime()
+        }
 
+        // Placeholder Defaults Application
+        this.tab = PlaceholderUtils.applyForDefaultDomains(this.tab)
+
+        // the tab has been added to the tabset, but not saved yet
+        const content = await TabsetService.getContentFor(this.tab)
+        let res: any = null
+        if (content) {
+          const res2 = await useTabsetService().saveText(this.tab, content['content' as keyof object], content['metas' as keyof object])
+          // add to search index
+          useSearchStore().addToIndex(
+            uid(), this.tab.name || '',
+            this.tab.title || '',
+            this.tab.url || '',
+            this.tab.description, content['content' as keyof object],
+            [this.tabset.id],
+            this.tab.favIconUrl || '')
+          res = new ExecutionResult("result", "Tab was added",)
+        } else {
+          const res2 = saveTabset(this.tabset)
+          useSearchStore().addToIndex(
+            uid(), this.tab.name || '',
+            this.tab.title || '',
+            this.tab.url || '',
+            this.tab.description, '',
+            [this.tabset.id],
+            this.tab.favIconUrl || '')
+          res = new ExecutionResult(res2, "Tab was added")
+        }
+        sendMsg('tab-added', {tabsetId: tabset.id})
+        return res
+        // })
+        // .catch((err) => Promise.reject("got err " + err))
+        //    })
+      } catch (err) {
+        return Promise.reject("error: " + err)
+      }
+    } else {
+      return Promise.reject("tab already exists in this tabset")
     }
+
+
+  }
 
 
 }
 
 AddTabToTabsetCommand.prototype.toString = function cmdToString() {
-    return `AddTabToTabsetCommand: {tab=${this.tab.toString()}}`;
+  return `AddTabToTabsetCommand: {tab=${this.tab.toString()}}`;
 };

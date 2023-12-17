@@ -13,7 +13,7 @@ import {useSpacesStore} from "stores/spacesStore";
 import {FirebaseCall} from "src/services/firebase/FirebaseCall";
 import PlaceholderUtils from "src/utils/PlaceholderUtils";
 import {Monitor, MonitoringType} from "src/models/Monitor";
-import {ListDetailLevel} from "stores/uiStore";
+import {ListDetailLevel, useUiStore} from "stores/uiStore";
 
 const {getTabset, getCurrentTabset, saveTabset, saveCurrentTabset, tabsetsFor, addToTabset} = useTabsetService()
 
@@ -557,7 +557,7 @@ class TabsetService {
     return Promise.reject("could not change status : " + tabsetId)
   }
 
-  share(tabsetId: string, sharing: TabsetSharing, sharedId: string | undefined, sharedBy: string | undefined): Promise<TabsetSharing> {
+  async share(tabsetId: string, sharing: TabsetSharing, sharedId: string | undefined, sharedBy: string | undefined): Promise<TabsetSharing> {
     console.debug(`setting properaty 'sharing' to ${sharing} for  ${tabsetId}`)
     const ts = getTabset(tabsetId)
     if (ts) {
@@ -565,6 +565,8 @@ class TabsetService {
       ts.sharing = sharing
       ts.sharedBy = sharedBy
       ts.view = "list"
+
+
       if (sharing === TabsetSharing.UNSHARED) {
         console.log("deleting share for tabset", ts.sharedId)
         return FirebaseCall.delete("/share/public/" + ts.sharedId)
@@ -573,7 +575,30 @@ class TabsetService {
             ts.sharedId = undefined
             saveTabset(ts)
           })
-      } else if (sharedId) {
+      }
+
+      console.log("setting author and avatar for comments")
+      for (const tab of ts.tabs) {
+        for (const c of tab.comments) {
+          console.log("found comment", c.author, c)
+          if (c.author === "<me>") {
+            c.author = useUiStore().sharingAuthor || '---'
+            c.avatar = useUiStore().sharingAvatar
+          }
+        }
+      }
+
+      console.log("setting thumbnails as images")
+      for (const tab of ts.tabs) {
+        const thumb = await this.getThumbnailFor(tab)
+        if (thumb) {
+          if (thumb && thumb['thumbnail' as keyof object]) {
+            tab.image = thumb['thumbnail' as keyof object]
+          }
+        }
+      }
+
+      if (sharedId) {
         ts.sharedAt = new Date().getTime()
         return FirebaseCall.put("/share/public/" + sharedId, ts)
           .then((res: any) => {

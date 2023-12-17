@@ -33,7 +33,7 @@ export enum DrawerTabs {
 
 export enum UserLevel {
   UNKNOWN = "UNKNOWN",
-  PWA_ONLY_USER = "PWA_ONLY_USER", // e.g. when you import from a shared tabset the first time
+  //PWA_ONLY_USER = "PWA_ONLY_USER", // e.g. when you import from a shared tabset the first time
   DEFAULT = "DEFAULT"
 }
 
@@ -186,10 +186,6 @@ export const useUiStore = defineStore('ui', () => {
   // system management
   const dbReady = ref<boolean>(false)
 
-  // user level (experience etc)
-  const userLevel = ref<UserLevel>(LocalStorage.getItem('ui.userLevel') || UserLevel.UNKNOWN)
-
-
   const progress = ref<number | undefined>(undefined)
   const progressLabel = ref<string | undefined>(undefined)
 
@@ -198,6 +194,13 @@ export const useUiStore = defineStore('ui', () => {
   const toolbarFilter = ref(false)
   const toolbarFilterTerm = ref('')
   const detailsPerTabset = ref(false)
+
+  // tabset description
+  const tabsetDescriptionPanelHights = ref<object>(LocalStorage.getItem('ui.descriptionPanelHeights') as unknown as object || {})
+
+  const sharingAuthor = ref<string | undefined>(LocalStorage.getItem('sharing.author') as unknown as string || undefined)
+  const sharingAvatar = ref<string | undefined>(LocalStorage.getItem('sharing.avatar') as unknown as string || undefined)
+
 
   watch(rightDrawer.value, (val: Object) => {
     LocalStorage.set("ui.rightDrawer", val)
@@ -220,11 +223,23 @@ export const useUiStore = defineStore('ui', () => {
       LocalStorage.set("ui.newTabUrlList", val)
     })
 
-  watch(userLevel,
-    (val: UserLevel) => {
-      console.log("userLevel", val)
-      LocalStorage.set("ui.userLevel", val)
+  watch(tabsetDescriptionPanelHights.value,
+    (val: object) => {
+      LocalStorage.set("ui.descriptionPanelHeights", val)
     })
+
+  watch(sharingAuthor,
+    (val: string | undefined) => {
+      console.log("val", val)
+      LocalStorage.set("sharing.author", val)
+    })
+
+  watch(sharingAvatar,
+    (val: string | undefined) => {
+      console.log("val", val)
+      LocalStorage.set("sharing.avatar", val)
+    })
+
 
   const route = useRoute()
   watch(route, (to) => {
@@ -269,10 +284,39 @@ export const useUiStore = defineStore('ui', () => {
     newTabUrlList.value = _.filter(newTabUrlList.value, (e: any) => e.url !== url)
   }
 
-  function setUserLevel(l: UserLevel) {
-    console.log("setting user level to", l)
-    userLevel.value = l
+  function setTabsetDescriptionHeight(tabsetId: string, height: number) {
+    console.log("setting height", tabsetId, height)
+
+    if (!tabsetDescriptionPanelHights.value[tabsetId as keyof object]) {
+      // @ts-ignore
+      tabsetDescriptionPanelHights.value[tabsetId as keyof object] = {}
+    }
+    // @ts-ignore
+    tabsetDescriptionPanelHights.value[tabsetId as keyof object]['height'] = height
   }
+
+  function getTabsetDescriptionHeight(tabsetId: string): number | undefined {
+    // @ts-ignore
+    return tabsetDescriptionPanelHights.value[tabsetId as keyof object] ?
+      tabsetDescriptionPanelHights.value[tabsetId as keyof object]['height']
+      : undefined
+  }
+
+  function setShowTabsetDescription(tabsetId: string, show: boolean): boolean {
+    // @ts-ignore
+    return tabsetDescriptionPanelHights.value[tabsetId as keyof object]['show'] = show
+  }
+
+  function showTabsetDescription(tabsetId: string): boolean {
+    // @ts-ignore
+    const res = tabsetDescriptionPanelHights.value[tabsetId as keyof object]['show'] as boolean | undefined
+    console.log("got res", res)
+    if (res === undefined) {
+      return true
+    }
+    return res
+  }
+
 
   function hideInfoMessage(ident: string) {
     hiddenMessages.value.push(ident)
@@ -514,7 +558,11 @@ export const useUiStore = defineStore('ui', () => {
     callUndoActionFromCurrentToast,
     getButtonSize,
     showDetailsPerTabset,
-    userLevel,
-    setUserLevel
+    setTabsetDescriptionHeight,
+    getTabsetDescriptionHeight,
+    setShowTabsetDescription,
+    showTabsetDescription,
+    sharingAuthor,
+    sharingAvatar
   }
 })

@@ -263,9 +263,14 @@ const routes: RouteRecordRaw[] = [
     children: [{ path: '', component: () => import('pages/SearchResultPage.vue') }],
   },
   {
-    path: '/imp/:sharedId',
+    path: '/pwa/imp/:sharedId',
     component: () => import('layouts/PlainLayout.vue'),
     children: [{ path: '', component: () => import('pages/public/ImportPublicTabsetPage.vue') }],
+  },
+  {
+    path: '/pwa/tabsets/:tabsetId',
+    component: () => import('layouts/PwaPageLayout.vue'),
+    children: [{ path: '', component: () => import('pages/pwa/PwaTabsetPage.vue') }],
   },
   {
     path: '/contentscript',

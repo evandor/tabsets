@@ -15,7 +15,7 @@
       <div class="col-xs-12 col-md-6">
         <q-toolbar-title>
           <div class="row justify-start items-baseline">
-            <div class="col-1"><span class="text-dark" v-if="!usePermissionsStore().hasFeature(FeatureIdent.TABSET_PAGE)">Tabs of !</span> <span
+            <div class="col-1"><span class="text-dark">Tabs of !</span> <span
               class="text-primary text-weight-bold cursor-pointer"
               @mouseenter="showEditButton = true"
               @mouseout="showEditButton = false">
