@@ -51,6 +51,11 @@ export class TabComment {
   }
 }
 
+export enum TabPreview {
+  FAVICON= "FAVICON",
+  THUMBNAIL = "THUMBNAIL"
+}
+
 export class Tab {
   created: number
   updated: number
@@ -114,6 +119,8 @@ export class Tab {
 
   comments: TabComment[] = []
 
+  preview: TabPreview = TabPreview.FAVICON
+
   constructor(public id: string, chromeTab: chrome.tabs.Tab) {
     this.created = new Date().getTime()
     this.updated = new Date().getTime()
@@ -145,6 +152,8 @@ export class Tab {
     this.extension = this.determineUrlExtension(chromeTab)
     this.mhtmls = []
     this.contentHash = ''
+
+    this.preview = TabPreview.FAVICON
   }
 
   setHistoryFrom(existingTab: Tab) {
