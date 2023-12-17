@@ -393,9 +393,9 @@ class ChromeListeners {
 
         const scripts: string[] = []
 
-        if (usePermissionsStore().hasFeature(FeatureIdent.THUMBNAILS)) {
+        //if (usePermissionsStore().hasFeature(FeatureIdent.THUMBNAILS)) {
             scripts.push("content-script-thumbnails.js")
-        }
+        //}
         if (usePermissionsStore().hasFeature(FeatureIdent.ANNOTATIONS)) {
             scripts.push("highlight-annotations.js")
         }

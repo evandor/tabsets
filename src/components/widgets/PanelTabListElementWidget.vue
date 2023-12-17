@@ -14,12 +14,14 @@
             <path class="checkmark__check" fill="none" d="M5.64 10.88l2.84 2.88 6.68-6.72"/>
           </svg>
         </div>
-        <div v-else key="oldState">
-          <q-img v-if="props.tab.preview === TabPreview.THUMBNAIL" :src="thumbnail" width="30px"/>
-          <TabFaviconWidget v-else
-              @dblclick="togglePreview()"
-              :preventDragAndDrop="props.preventDragAndDrop"
-              :tab="props.tab" width="20px" height="20px"/>
+        <div v-else key="oldState" class="flex-center">
+          <q-img v-if="props.tab.preview === TabPreview.THUMBNAIL"
+                 @dblclick="togglePreview()"
+                 :src="thumbnail" width="30px"/>
+          <TabFaviconWidget v-else style="margin: auto;display: block;"
+                            @dblclick="togglePreview()"
+                            :preventDragAndDrop="props.preventDragAndDrop"
+                            :tab="props.tab" width="20px" height="20px"/>
         </div>
       </transition>
 
@@ -58,7 +60,9 @@
 
           <span v-if="props.tab?.extension === UrlExtension.NOTE"
                 v-html="nameOrTitle(props.tab as Tab)"/>
-          <span v-else :class="isCurrentTab(props.tab) ? 'text-bold text-blue-9':''">{{ nameOrTitle(props.tab as Tab) }}</span>
+          <span v-else :class="isCurrentTab(props.tab) ? 'text-bold text-blue-9':''">{{
+              nameOrTitle(props.tab as Tab)
+            }}</span>
 
         </div>
 
@@ -74,11 +78,11 @@
 
     <!-- === url(s) === -->
     <q-item-label
-        style="width:100%"
-        v-if="props.tab?.url"
-        caption class="ellipsis-2-lines text-blue-10"
-        @mouseover="showButtonsProp = true"
-        @mouseleave="showButtonsProp = false">
+      style="width:100%"
+      v-if="props.tab?.url"
+      caption class="ellipsis-2-lines text-blue-10"
+      @mouseover="showButtonsProp = true"
+      @mouseleave="showButtonsProp = false">
       <div class="row q-ma-none">
         <div class="col-11 q-pr-lg cursor-pointer" @click="gotoTab()">
            <span v-if="props.sorting === TabSorting.URL">
@@ -98,12 +102,12 @@
               <div v-for="placeholder in placeholders">
                 <li>
                   <short-url
-                      @click.stop="NavigationService.openOrCreateTab(
+                    @click.stop="NavigationService.openOrCreateTab(
                           [placeholder['url' as keyof object]],
                           props.tab.matcher,
                           props.tab.groupName ? [props.tab.groupName] : [] )"
-                      :label="placeholder['name' as keyof object]"
-                      :url="placeholder['url' as keyof object]"/>
+                    :label="placeholder['name' as keyof object]"
+                    :url="placeholder['url' as keyof object]"/>
                 </li>
               </div>
             </ul>
@@ -122,8 +126,8 @@
               <q-icon color="primary" size="16px"/>
             </span>
           <PanelTabListContextMenu
-              :tabset="props.tabset"
-              :tab="tab" v-if="!props.hideMenu"/>
+            :tabset="props.tabset"
+            :tab="tab" v-if="!props.hideMenu"/>
 
         </div>
       </div>
@@ -132,11 +136,11 @@
 
     <!-- === group, last active & icons === -->
     <q-item-label
-        style="width:100%;margin-top:0"
-        v-if="props.tab?.url"
-        caption class="ellipsis-2-lines text-blue-10"
-        @mouseover="showButtonsProp = true"
-        @mouseleave="showButtonsProp = false">
+      style="width:100%;margin-top:0"
+      v-if="props.tab?.url"
+      caption class="ellipsis-2-lines text-blue-10"
+      @mouseover="showButtonsProp = true"
+      @mouseleave="showButtonsProp = false">
       <div class="row q-ma-none" @click="gotoTab()">
         <div class="col-12 q-pr-lg q-mt-none q-pt-none cursor-pointer">
           <div class="text-caption text-grey-5 ellipsis"
@@ -183,7 +187,7 @@
             </q-icon>
             <span v-if="(props.tab as Tab).comments && (props.tab as Tab).comments.length > 1"
                   @click.stop="toggleLists('comments')"
-                  class="q-mr-sm">({{(props.tab as Tab).comments.length}})</span>
+                  class="q-mr-sm">({{ (props.tab as Tab).comments.length }})</span>
 
 
             <q-icon v-if="(props.tab as Tab).annotations && (props.tab as Tab).annotations.length > 0"
@@ -192,7 +196,7 @@
             </q-icon>
             <span v-if="(props.tab as Tab).annotations && (props.tab as Tab).annotations.length > 1"
                   @click.stop="toggleLists('annotations')"
-                  class="q-mr-sm">({{(props.tab as Tab).annotations.length}})</span>
+                  class="q-mr-sm">({{ (props.tab as Tab).annotations.length }})</span>
 
             <template v-if="(props.tab as Tab).monitor || suggestion || (props.tab as Tab).placeholders
                               || (props.tab as Tab).annotations && (props.tab as Tab).annotations.length > 0
@@ -247,15 +251,15 @@
     <!-- === comments === -->
     <q-item-label v-if="showComments()"
                   class="text-grey-10" text-subtitle1>
-        <q-chat-message v-for="m in props.tab.comments"
-                        name="me"
-                        :avatar="m.avatar || 'http://www.gravatar.com/avatar'"
-                        :text="[m.comment]"
-                        :sent="isSender(m)"
-                        :bg-color="isSender(m) ? 'blue':'grey-2'"
-                        :text-color="isSender(m) ? 'white':'black'"
-                        :stamp="formatDate(m.date)"
-        />
+      <q-chat-message v-for="m in props.tab.comments"
+                      name="me"
+                      :avatar="m.avatar || 'http://www.gravatar.com/avatar'"
+                      :text="[m.comment]"
+                      :sent="isSender(m)"
+                      :bg-color="isSender(m) ? 'blue':'grey-2'"
+                      :text-color="isSender(m) ? 'white':'black'"
+                      :stamp="formatDate(m.date)"
+      />
       <div class="row">
         <div class="col-12 text-right q-mr-lg text-caption" @click="addCommentDialog()">
           Reply
@@ -277,38 +281,38 @@
           <div v-for="comment in selectedAnnotation.comments">
             <div class="row">
               <div class="col-10">
-                {{comment.comment}}
+                {{ comment.comment }}
               </div>
               <div class="col-2">
                 .
               </div>
             </div>
           </div>
-<!--          <span class="text-blue">-->
-<!--            {{ label }}-->
-<!--              <q-popup-edit v-model="newComment" v-slot="scope">-->
-<!--              <q-input-->
-<!--                type="textarea"-->
-<!--                autofocus-->
-<!--                dense-->
-<!--                v-model="scope.value"-->
-<!--                :model-value="scope.value"-->
-<!--                hint="Add a comment">-->
-<!--                <template v-slot:after>-->
-<!--                  <q-btn-->
-<!--                    flat dense color="negative" icon="cancel"-->
-<!--                    @click.stop.prevent="scope.cancel"-->
-<!--                  />-->
+          <!--          <span class="text-blue">-->
+          <!--            {{ label }}-->
+          <!--              <q-popup-edit v-model="newComment" v-slot="scope">-->
+          <!--              <q-input-->
+          <!--                type="textarea"-->
+          <!--                autofocus-->
+          <!--                dense-->
+          <!--                v-model="scope.value"-->
+          <!--                :model-value="scope.value"-->
+          <!--                hint="Add a comment">-->
+          <!--                <template v-slot:after>-->
+          <!--                  <q-btn-->
+          <!--                    flat dense color="negative" icon="cancel"-->
+          <!--                    @click.stop.prevent="scope.cancel"-->
+          <!--                  />-->
 
-<!--                  <q-btn-->
-<!--                    flat dense color="positive" icon="check_circle"-->
-<!--                    @click.stop.prevent="scope.set"-->
-<!--                    :disable="scope.initialValue === scope.value"-->
-<!--                  />-->
-<!--                </template>-->
-<!--              </q-input>-->
-<!--            </q-popup-edit>-->
-<!--          </span>-->
+          <!--                  <q-btn-->
+          <!--                    flat dense color="positive" icon="check_circle"-->
+          <!--                    @click.stop.prevent="scope.set"-->
+          <!--                    :disable="scope.initialValue === scope.value"-->
+          <!--                  />-->
+          <!--                </template>-->
+          <!--              </q-input>-->
+          <!--            </q-popup-edit>-->
+          <!--          </span>-->
         </div>
       </div>
     </q-item-label>
@@ -329,7 +333,15 @@
 
 <script setup lang="ts">
 import NavigationService from "src/services/NavigationService";
-import {HTMLSelection, HTMLSelectionComment, Tab, TabComment, TabSorting, UrlExtension} from "src/models/Tab";
+import {
+  HTMLSelection,
+  HTMLSelectionComment,
+  Tab,
+  TabComment,
+  TabPreview,
+  TabSorting,
+  UrlExtension
+} from "src/models/Tab";
 import TabsetService from "src/services/TabsetService";
 import {onMounted, PropType, ref, watchEffect} from "vue";
 import {useCommandExecutor} from "src/services/CommandExecutor";
@@ -349,7 +361,7 @@ import {useRouter} from "vue-router";
 import {useGroupsStore} from "stores/groupsStore";
 import {DeleteChromeGroupCommand} from "src/domain/groups/DeleteChromeGroupCommand";
 import {PlaceholdersType} from "src/models/Placeholders";
-import {LocalStorage, uid, useQuasar} from "quasar";
+import {LocalStorage, useQuasar} from "quasar";
 import MonitoringDialog from "components/dialogues/MonitoringDialog.vue";
 import {useSuggestionsStore} from "stores/suggestionsStore";
 import {Suggestion, SuggestionState} from "src/models/Suggestion";
@@ -427,11 +439,11 @@ const thumbnailFor = async (tab: Tab): Promise<object> => {
 }
 
 watchEffect(() => {
-  if (props.tab) {
+  if (props.tab && props.tab.preview === TabPreview.THUMBNAIL) {
     // @ts-ignore
     thumbnailFor(props.tab)
       .then((tn: object) => {
-        console.log("tn", tn)
+        //console.log("tn", tn)
         if (tn && tn['thumbnail' as keyof object]) {
           thumbnail.value = tn['thumbnail' as keyof object]
         }
@@ -443,7 +455,7 @@ watchEffect(() => {
 })
 
 
-watchEffect (() => {
+watchEffect(() => {
   if (selectedAnnotation.value && newComment.value && newComment.value.trim() !== '') {
     selectedAnnotation.value.comments.push(
       new HTMLSelectionComment("author", newComment.value)
@@ -516,7 +528,7 @@ const hoveredOver = (tabsetId: string) => hoveredTab.value === tabsetId
 const hoveredOverAnnotation = (annotationId: string) => hoveredAnnotation.value === annotationId
 
 const formatDate = (timestamp: number | undefined) =>
-    timestamp ? formatDistance(timestamp, new Date(), {addSuffix: true}) : ""
+  timestamp ? formatDistance(timestamp, new Date(), {addSuffix: true}) : ""
 
 const iconStyle = () => {
   if (isCurrentTab(props.tab)) {
@@ -538,7 +550,7 @@ const openTabset = (badge: any) => {
 }
 
 const openTabAssignmentPage = (tab: Tab) =>
-    NavigationService.openOrCreateTab([chrome.runtime.getURL("/www/index.html#/mainpanel/tabAssignment/" + tab.id)])
+  NavigationService.openOrCreateTab([chrome.runtime.getURL("/www/index.html#/mainpanel/tabAssignment/" + tab.id)])
 
 const matcherTooltip = () => {
   const split = props.tab.matcher?.split("|")
@@ -577,7 +589,7 @@ const removeGroup = (groupName: string) => {
 }
 
 const groupsWithout = (groupName: string): chrome.tabGroups.TabGroup[] =>
-    _.filter([...groups.value.values()], (g: chrome.tabGroups.TabGroup) => g.title !== groupName)
+  _.filter([...groups.value.values()], (g: chrome.tabGroups.TabGroup) => g.title !== groupName)
 
 const switchGroup = (group: chrome.tabGroups.TabGroup): void => {
   if (props.tab) {
@@ -599,9 +611,9 @@ const switchGroup = (group: chrome.tabGroups.TabGroup): void => {
 }
 
 const gotoTab = () => NavigationService.openOrCreateTab(
-    [props.tab.url || ''],
-    props.tab.matcher,
-    props.tab.groupName ? [props.tab.groupName] : [])
+  [props.tab.url || ''],
+  props.tab.matcher,
+  props.tab.groupName ? [props.tab.groupName] : [])
 
 const showSuggestion = () => {
   const url = chrome.runtime.getURL('www/index.html') + "#/mainpanel/suggestions/" + suggestion.value?.id
@@ -637,14 +649,14 @@ const showAnnotation = async (tab: Tab, a: HTMLSelection) => {
 }
 
 const showAnnotations = () =>
-    showAnnotationList.value &&
-    useUiStore().listDetailLevelGreaterEqual(ListDetailLevel.SOME, props.tabset.details) &&
-    (props.tab as Tab).annotations && (props.tab as Tab).annotations.length > 0
+  showAnnotationList.value &&
+  useUiStore().listDetailLevelGreaterEqual(ListDetailLevel.SOME, props.tabset.details) &&
+  (props.tab as Tab).annotations && (props.tab as Tab).annotations.length > 0
 
 const showComments = () =>
-    showCommentList.value &&
-    useUiStore().listDetailLevelGreaterEqual(ListDetailLevel.SOME, props.tabset.details) &&
-    (props.tab as Tab).comments && (props.tab as Tab).comments.length > 0
+  showCommentList.value &&
+  useUiStore().listDetailLevelGreaterEqual(ListDetailLevel.SOME, props.tabset.details) &&
+  (props.tab as Tab).comments && (props.tab as Tab).comments.length > 0
 
 const toggleLists = (ident: string) => {
   switch (ident) {
@@ -671,7 +683,9 @@ const addCommentDialog = () => $q.dialog({
 
 const togglePreview = () => {
   if (props.tab) {
-    props.tab.preview = props.tab.preview === TabPreview.FAVICON ? TabPreview.THUMBNAIL : TabPreview.FAVICON
+    props.tab.preview = (props.tab.preview === undefined || props.tab.preview === TabPreview.FAVICON) ?
+      TabPreview.THUMBNAIL : TabPreview.FAVICON
+    useTabsetService().saveCurrentTabset()
   }
 }
 

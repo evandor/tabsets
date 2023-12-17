@@ -18,7 +18,7 @@ export enum FeatureIdent {
   TOP10 = "TOP10",
   OPEN_TABS = "OPEN_TABS",
   NEWEST_TABS = "NEWEST_TABS",
-  THUMBNAILS = "THUMBNAILS",
+  // THUMBNAILS = "THUMBNAILS", // active by default
   DYNAMIC = "DYNAMIC",
   WINDOWS = "WINDOWS",
   SCHEDULED = "SCHEDULED",

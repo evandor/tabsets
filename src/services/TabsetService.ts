@@ -179,7 +179,7 @@ class TabsetService {
     return saveCurrentTabset()
   }
 
-  setUrl(tab: Tab, url: string, placeholders: string[] = [], placeholderValues: Map<string,string> = new Map()): Promise<any> {
+  setUrl(tab: Tab, url: string, placeholders: string[] = [], placeholderValues: Map<string, string> = new Map()): Promise<any> {
     tab.url = url
     tab = PlaceholderUtils.apply(tab, placeholders, placeholderValues)
     return saveCurrentTabset()
@@ -407,12 +407,12 @@ class TabsetService {
    * @param tabsetId
    * @param tabsetName
    */
-  rename(tabsetId: string, tabsetName: string,newColor: string | undefined, window: string = 'current', details: ListDetailLevel): Promise<object> {
+  rename(tabsetId: string, tabsetName: string, newColor: string | undefined, window: string = 'current', details: ListDetailLevel): Promise<object> {
     const trustedName = tabsetName.replace(STRIP_CHARS_IN_USER_INPUT, '')
     let trustedColor = newColor ? newColor.replace(STRIP_CHARS_IN_COLOR_INPUT, '') : undefined
     trustedColor = trustedColor && trustedColor.length > 20 ?
-        trustedColor?.substring(0,19) :
-        trustedColor
+      trustedColor?.substring(0, 19) :
+      trustedColor
 
     const tabset = getTabset(tabsetId)
     if (tabset) {
@@ -558,7 +558,7 @@ class TabsetService {
   }
 
   async share(tabsetId: string, sharing: TabsetSharing, sharedId: string | undefined, sharedBy: string | undefined): Promise<TabsetSharing> {
-    console.debug(`setting properaty 'sharing' to ${sharing} for  ${tabsetId}`)
+    console.log(`setting property 'sharing' to ${sharing} for  ${tabsetId} with sharingId ${sharedId}`)
     const ts = getTabset(tabsetId)
     if (ts) {
       const oldSharing = ts.sharing
@@ -566,13 +566,13 @@ class TabsetService {
       ts.sharedBy = sharedBy
       ts.view = "list"
 
-
       if (sharing === TabsetSharing.UNSHARED) {
         console.log("deleting share for tabset", ts.sharedId)
         return FirebaseCall.delete("/share/public/" + ts.sharedId)
           .then(() => {
             ts.sharedBy = undefined
             ts.sharedId = undefined
+            console.log("unshared tabset", ts)
             saveTabset(ts)
           })
       }
@@ -610,6 +610,7 @@ class TabsetService {
         ts.sharedAt = new Date().getTime()
         return FirebaseCall.post("/share/public", ts)
           .then((res: any) => {
+            console.log("setting shared id to ", res.data.sharedId)
             ts.sharedId = res.data.sharedId
             return saveTabset(ts)
               .then(() => oldSharing)

@@ -15,20 +15,20 @@
 
 
         <div>
-          <q-btn
-            @click="toggleSettings"
-            flat
-            size="12px"
-            class="q-mr-md" icon="o_settings">
-          </q-btn>
-          <q-menu :offset="[0, 7]">
-            <q-list style="min-width: 200px">
-              <q-item clickable @click="router.push('/settings')">Settings</q-item>
-              <q-item clickable @click="router.push('/about')" v-close-popup>
-                About Tabsets
-              </q-item>
-            </q-list>
-          </q-menu>
+<!--          <q-btn-->
+<!--            @click="toggleSettings"-->
+<!--            flat-->
+<!--            size="12px"-->
+<!--            class="q-mr-md" icon="o_settings">-->
+<!--          </q-btn>-->
+<!--          <q-menu :offset="[0, 7]">-->
+<!--            <q-list style="min-width: 200px">-->
+<!--              <q-item clickable @click="router.push('/settings')">Settings</q-item>-->
+<!--              <q-item clickable @click="router.push('/about')" v-close-popup>-->
+<!--                About Tabsets-->
+<!--              </q-item>-->
+<!--            </q-list>-->
+<!--          </q-menu>-->
         </div>
 
         <div class="cursor-pointer" @click="router.push('/about')" v-if="notificationsStore.updateToVersion !== ''">

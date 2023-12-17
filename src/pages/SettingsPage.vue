@@ -116,7 +116,7 @@
         </div>
       </div>
 
-      <div class="row items-baseline q-ma-md" v-if="usePermissionsStore().hasFeature(FeatureIdent.THUMBNAILS)">
+      <div class="row items-baseline q-ma-md">
         <div class="col-3">
           Thumbnail Quality in %
         </div>
