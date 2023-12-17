@@ -15,7 +15,7 @@ export class AppFeatures {
     //   .setActivateCommands([new GrantPermissionCommand('contextMenus')])
     //   .setDeactivateCommands([new RevokePermissionCommand('contextMenus')]),
 
-    new AppFeature(FeatureIdent.THUMBNAILS, FeatureType.EXPERIMENTAL, 'Thumbnails', 'o_image', ['bex']),
+    //new AppFeature(FeatureIdent.THUMBNAILS, FeatureType.EXPERIMENTAL, 'Thumbnails', 'o_image', ['bex']),
 
     new AppFeature(FeatureIdent.NEWEST_TABS, FeatureType.RECOMMENDED, 'Newest Tabs', 'o_schedule', ['all']),
     new AppFeature(FeatureIdent.TOP10, FeatureType.RECOMMENDED, 'Top 10 Tabs', 'o_workspace_premium', ['all']),

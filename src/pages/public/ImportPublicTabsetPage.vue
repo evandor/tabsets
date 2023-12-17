@@ -1,6 +1,6 @@
 <template>
 
-  <div class="wrap" v-if="!runImport">
+  <div class="wrap" v-if="state === 'runImport'">
     <div class="text-h4">Shared Tabset</div>
 
     <div class="text-body1  q-mx-none q-my-lg">
@@ -13,15 +13,32 @@
     </div>
 
     <div class="justify-center items-center q-gutter-md">
-      <q-btn label="Close Window" color="accent" />
+      <q-btn label="Close Window" color="accent" @click="closeWindow()"/>
       <q-btn :label="maybeTabset ? 'Update':'Show'" color="warning" @click="start()" />
     </div>
   </div>
 
-  <div class="wrap" v-else>
+  <div class="wrap" v-else-if="state === 'importing'">
     <div class="loading">
       <div class="bounceball q-mr-lg"></div>
       <div class="text">please wait, loading tabset...</div>
+    </div>
+  </div>
+
+  <div class="wrap" v-else>
+    <div class="text-h4">Shared Tabset</div>
+
+    <div class="text-body1  q-mx-none q-my-lg">
+      <i>{{author}}</i> wants to share a tabset named <i>{{ name }}</i> with you.<br>
+      Click on "show" (or "update") to proceed.
+    </div>
+
+    <div class="text-body1  q-mx-none q-my-lg">
+      Sorry, this tabset is not available any more.
+    </div>
+
+    <div class="justify-center items-center q-gutter-md">
+      <q-btn label="Close Window" color="accent"  @click="closeWindow()"/>
     </div>
   </div>
 
@@ -43,7 +60,7 @@ const router = useRouter();
 
 const shareId = ref(null as unknown as string)
 const tabset = ref<Tabset>(new Tabset(uid(), "empty", []))
-const runImport = ref(false)
+const state = ref('runImport')
 const maybeTabset = ref<Tabset | undefined>(undefined)
 
 const author = ref<string>(atob(route.query['a'] as string || btoa('unknown user')))
@@ -87,11 +104,16 @@ onMounted(() => {
 })
 
 const start = () => {
-  runImport.value = true
+  state.value = 'runImport'
   console.log("shareId", shareId.value, name.value)
   FirebaseCall.get("/share/public/" + shareId.value, false)
     .then((res: any) => {
       tabset.value = res as Tabset
+      // if (!tabset.value.sharedId) {
+      //   console.log("backend answer", res)
+      //   state.value='notFound'
+      //   return
+      // }
 
       //const exists = useTabsetService().getTabset(tabset.value.id)
       if (!maybeTabset.value) {
@@ -121,6 +143,9 @@ const start = () => {
       console.log("got error", err)
     })
 }
+
+const closeWindow = () => window.close()
+
 
 </script>
 
