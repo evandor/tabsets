@@ -2519,10 +2519,10 @@
     split2 "^4.2.0"
     wait-port "^1.0.4"
 
-"@xenova/transformers@^2.2.0":
-  version "2.10.1"
-  resolved "https://registry.yarnpkg.com/@xenova/transformers/-/transformers-2.10.1.tgz#50eff94fa155f5e6eebc4d49a1e637350e959073"
-  integrity sha512-vUCU3rKEcuH0dSuJzXuESbUPziqh8FvjLVikUh//5SWGcwfdccIfTUhDsS1obbrUTW3ve0CHeJvHnHbk0QTzEA==
+"@xenova/transformers@^2.11.0":
+  version "2.11.0"
+  resolved "https://registry.yarnpkg.com/@xenova/transformers/-/transformers-2.11.0.tgz#db9695240e5880823bee9199f27d7e51e7a09379"
+  integrity sha512-i/oaTbVJI+pbkWiUZydmaGFlSh3167N+gimkIJBlHf150wQWffwGE9dPttLsS9cLlmty95Z1MkVQmibl/j7bSg==
   dependencies:
     onnxruntime-web "1.14.0"
     sharp "^0.32.0"
