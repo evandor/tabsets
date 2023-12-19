@@ -11,3 +11,8 @@ process.env.MODE = "bex"
 
 // @ts-ignore - needed as 'chrome' is undefined in vitest
 global.chrome = undefined
+
+global.CSS = {
+  // @ts-ignore
+  supports: (k, v) => false,
+}
