@@ -48,11 +48,11 @@
           <slot name="iconsRight">
 
             <SidePanelToolbarButton
-                v-if="showToggleSessionIcon()"
-                :color="existingSession ? (tabsStore.getCurrentTabset?.type === TabsetType.SESSION ? 'red':'grey-5') :'black'"
-                :icon="existingSession ? 'o_stop_circle':'o_play_circle'"
-                @click="toggleSessionState"
-                :tooltip="existingSession ? 'Stop Session' : 'Start new Session'"/>
+              v-if="showToggleSessionIcon()"
+              :color="existingSession ? (tabsStore.getCurrentTabset?.type === TabsetType.SESSION ? 'red':'grey-5') :'black'"
+              :icon="existingSession ? 'o_stop_circle':'o_play_circle'"
+              @click="toggleSessionState"
+              :tooltip="existingSession ? 'Stop Session' : 'Start new Session'"/>
 
             <template v-if="showSearchIcon()">
               <SidePanelToolbarButton icon="search"
@@ -66,11 +66,17 @@
             <SidePanelToolbarTabNavigationHelper/>
 
             <SidePanelToolbarButton
-                icon="o_add_circle"
-                :tooltip="newTabsetTooltip()"
-                color="warning"
-                data-testid="addTabsetBtn"
-                @click="openNewTabsetDialog()"/>
+              icon="o_add_circle"
+              :tooltip="newTabsetTooltip()"
+              color="warning"
+              data-testid="addTabsetBtn"
+              @click="openNewTabsetDialog()"/>
+
+            <SidePanelToolbarButton v-if="!useUiStore().networkOnline || !useUiStore().mqttConnected"
+                                    icon="cloud_off"
+                                    :tooltip="!useUiStore().networkOnline ? 'It seems this browser is offline' : 'Sharing comments not possible right now'"
+                                    :color="!useUiStore().networkOnline ? 'negative' :'warning'"
+                                    class="q-ml-sm"/>
 
           </slot>
         </div>
@@ -134,7 +140,7 @@ watchEffect(() => {
 
 watchEffect(() => {
   showFilter.value = useUiStore().sidePanelActiveViewIs(SidePanelView.TABS_LIST) &&
-      useUiStore().toolbarFilter
+    useUiStore().toolbarFilter
 })
 
 if ($q.platform.is.chrome && $q.platform.is.bex) {
@@ -180,24 +186,24 @@ const webClipActive = () => tabsStore.currentChromeTab
 const showSearchIcon = () => tabsStore.tabsets.size > 1
 
 const showToggleSessionIcon = () =>
-    useUiStore().sidePanelActiveViewIs(SidePanelView.MAIN) &&
-    usePermissionsStore().hasFeature(FeatureIdent.SESSIONS) &&
-    !searching.value
+  useUiStore().sidePanelActiveViewIs(SidePanelView.MAIN) &&
+  usePermissionsStore().hasFeature(FeatureIdent.SESSIONS) &&
+  !searching.value
 
 const showCreateClipButton = () =>
-    useUiStore().sidePanelActiveViewIs(SidePanelView.MAIN) &&
-    usePermissionsStore().hasFeature(FeatureIdent.WEBSITE_CLIP) && webClipActive() &&
-    !searching.value
+  useUiStore().sidePanelActiveViewIs(SidePanelView.MAIN) &&
+  usePermissionsStore().hasFeature(FeatureIdent.WEBSITE_CLIP) && webClipActive() &&
+  !searching.value
 
 const showCreateClipButtonInActive = () =>
-    useUiStore().sidePanelActiveViewIs(SidePanelView.MAIN) &&
-    usePermissionsStore().hasFeature(FeatureIdent.WEBSITE_CLIP) && !webClipActive() &&
-    !searching.value
+  useUiStore().sidePanelActiveViewIs(SidePanelView.MAIN) &&
+  usePermissionsStore().hasFeature(FeatureIdent.WEBSITE_CLIP) && !webClipActive() &&
+  !searching.value
 
 const newTabsetTooltip = () =>
-    usePermissionsStore().hasFeature(FeatureIdent.SPACES) ?
-        (useSpacesStore().space ? 'Add new Tabset in this space' : 'Add new unassigned Tabset') :
-        'Add new Tabset'
+  usePermissionsStore().hasFeature(FeatureIdent.SPACES) ?
+    (useSpacesStore().space ? 'Add new Tabset in this space' : 'Add new unassigned Tabset') :
+    'Add new Tabset'
 
 const openNewTabsetDialog = () => {
   $q.dialog({
