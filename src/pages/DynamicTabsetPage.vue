@@ -20,7 +20,7 @@
               @mouseenter="showEditButton = true"
               @mouseout="showEditButton = false">
               {{ tabsStore.currentTabsetName }}
-               <q-popup-edit :model-value="tabsStore.getCurrentTabset.name" v-slot="scope"
+               <q-popup-edit :model-value="tabsStore.getCurrentTabset?.name" v-slot="scope"
                              @update:model-value="val => setNewName(  val)">
                  <q-input v-model="scope.value" dense autofocus counter @keyup.enter="scope.set"/>
                </q-popup-edit>
