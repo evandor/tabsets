@@ -141,6 +141,10 @@ export const useUiStore = defineStore('ui', () => {
   const selectedTag = ref<string | undefined>(undefined)
   const tabsetsExpanded = ref<boolean>(false)
 
+  // online offline
+  const networkOnline = ref (navigator.onLine)
+  const mqttOffline = ref<boolean | undefined>(undefined)
+
   // RightDrawer
   let rightDrawer = ref<RightDrawer>(new RightDrawer())
   //let rightDrawerOpen = ref($q ? $q.screen.gt.md : true)
@@ -563,6 +567,8 @@ export const useUiStore = defineStore('ui', () => {
     setShowTabsetDescription,
     showTabsetDescription,
     sharingAuthor,
-    sharingAvatar
+    sharingAvatar,
+    networkOnline,
+    mqttOffline
   }
 })
