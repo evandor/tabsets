@@ -143,7 +143,7 @@ export const useUiStore = defineStore('ui', () => {
 
   // online offline
   const networkOnline = ref (navigator.onLine)
-  const mqttConnected = ref<boolean | undefined>(false)
+  const mqttOffline = ref<boolean | undefined>(undefined)
 
   // RightDrawer
   let rightDrawer = ref<RightDrawer>(new RightDrawer())
@@ -569,6 +569,6 @@ export const useUiStore = defineStore('ui', () => {
     sharingAuthor,
     sharingAvatar,
     networkOnline,
-    mqttConnected
+    mqttOffline
   }
 })

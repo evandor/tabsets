@@ -41,7 +41,7 @@ class AppService {
     const $q = useQuasar()
 
     appStore.init()
-    MqttService.init()
+    //MqttService.init()
 
     // init of stores and some listeners
     usePermissionsStore().initialize(useDB(useQuasar()).localDb)
