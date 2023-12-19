@@ -1,5 +1,5 @@
 import mqtt, {MqttClient} from "mqtt";
-import {uid, useQuasar} from "quasar";
+import {LocalStorage, uid, useQuasar} from "quasar";
 import {Tab, TabComment} from "src/models/Tab";
 import {useAppStore} from "stores/appStore";
 import {Message} from "src/models/Message";
@@ -8,6 +8,7 @@ import {useTabsStore} from "stores/tabsStore";
 import {Tabset, TabsetSharing} from "src/models/Tabset";
 import _ from "lodash"
 import {useTabsetService} from "src/services/TabsetService2";
+import {useUiStore} from "stores/uiStore";
 
 class MqttPayload {
 
@@ -32,11 +33,16 @@ class MqttService {
 
   private publisher: number = 0
   private closedCounter: number = 0
+  private alreadyInitialized = false
 
   init() {
+    if (this.alreadyInitialized) {
+      return
+    }
+    this.alreadyInitialized = true
     console.log("starting mqtt client...")
-    const author = useQuasar().localStorage.getItem("sharing.author") || 'default-author'
-    const installation = useQuasar().localStorage.getItem("sharing.installation") || 'default-installation'
+    const author = LocalStorage.getItem("sharing.author") || 'default-author'
+    const installation = LocalStorage.getItem("sharing.installation") || 'default-installation'
     const opts = {clientId: 'ts-' + installation}
     //this.client =  mqtt.connectAsync("mqtt://test.mosquitto.org")
     this.client = mqtt.connect("mqtts://public:public@public.cloud.shiftr.io:443", opts)
@@ -50,6 +56,7 @@ class MqttService {
     const ctx = this
     this.client.on('connect', function () {
       console.log('connected!');
+      useUiStore().mqttOffline = false
     });
 
     this.client.on('reconnect', function () {
@@ -61,20 +68,24 @@ class MqttService {
       ctx.closedCounter = ctx.closedCounter + 1
       if (ctx.closedCounter > 5) {
         console.log("closing connection due to 10 close events")
+        useUiStore().mqttOffline = true
         ctx.client?.end()
       }
     })
 
     this.client.on('disconnect', function () {
       console.log('disconnected!');
+      useUiStore().mqttOffline = true
     })
 
     this.client.on('close', function () {
       console.log('closed!');
+      useUiStore().mqttOffline = true
     })
 
     this.client.on('offline', function () {
       console.log('offline!');
+      useUiStore().mqttOffline = true
     })
 
     this.client.on('error', function () {
@@ -83,6 +94,7 @@ class MqttService {
 
     this.client.on('end', function () {
       console.log('ended!');
+      useUiStore().mqttOffline = true
     })
 
     // this.client.on('packetsend', function () {

@@ -187,16 +187,15 @@ import TabsetService from "src/services/TabsetService";
 import Analytics from "src/utils/google-analytics";
 import {useAuthStore} from "stores/auth";
 import {useDB} from "src/services/usePersistenceService";
-import getScrollTarget = scroll.getScrollTarget;
 import {useBookmarksStore} from "stores/bookmarksStore";
 import {useSuggestionsStore} from "stores/suggestionsStore";
 import SidePanelPageTabList from "components/layouts/SidePanelPageTabList.vue";
 import {AddTabToTabsetCommand} from "src/domain/tabs/AddTabToTabset";
-import {SuggestionState} from "src/models/Suggestion";
 import {CopyToClipboardCommand} from "src/domain/commands/CopyToClipboard";
 import SidePanelTabsetDescriptionPage from "pages/sidepanel/SidePanelTabsetDescriptionPage.vue";
 import {PUBLIC_SHARE_URL} from "boot/constants";
 import ShareTabsetPubliclyDialog from "components/dialogues/ShareTabsetPubliclyDialog.vue";
+import getScrollTarget = scroll.getScrollTarget;
 
 const {setVerticalScrollPosition} = scroll
 
@@ -234,8 +233,18 @@ const windowName = ref<string | undefined>(undefined)
 const windowId = ref<number | undefined>(undefined)
 const tsBadges = ref<object[]>([])
 
+function updateOnlineStatus(e: any) {
+  const { type } = e
+  console.log("hier", e, type)
+  useUiStore().networkOnline = type === 'online'
+}
+
 onMounted(() => {
   window.addEventListener('keypress', checkKeystroke);
+
+  window.addEventListener("offline",  (e) => updateOnlineStatus(e));
+  window.addEventListener("online",  (e)  => updateOnlineStatus(e));
+
   if (!useAuthStore().isAuthenticated) {
     router.push("/authenticate")
   } else {
@@ -611,11 +620,7 @@ const toolbarTitle = (tabsets: Tabset[]) => {
       spaceName + ' (' + tabsets.length.toString() + ')' :
       spaceName
   }
-  let text = tabsets.length > 6 ? 'My Tabsets (' + tabsets.length.toString() + ')' : 'My Tabsets'
-  if (windowName.value) {
-    text = text + " [" + windowName.value + "]"
-  }
-  return text
+  return tabsets.length > 6 ? 'My Tabsets (' + tabsets.length.toString() + ')' : 'My Tabsets'
 }
 
 const headerStyle = (tabset: Tabset) => {
