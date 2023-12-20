@@ -25,10 +25,6 @@
               @mouseenter="showEditButton = true"
               @mouseout="showEditButton = false">
                   {{ tabsStore.currentTabsetName }}
-                   <q-popup-edit :model-value="tabset?.name" v-slot="scope"
-                                 @update:model-value="val => setNewName(  val)">
-                     <q-input v-model="scope.value" dense autofocus counter @keyup.enter="scope.set"/>
-                   </q-popup-edit>
                 <span
                   v-if="tabset.sharedId"
                   class="text-caption">shared by {{
@@ -71,36 +67,6 @@
           <q-tooltip>Sorting descending or ascending, currently {{ orderDesc }}</q-tooltip>
         </q-btn>
 
-        <q-btn v-if="tabset?.tabs.length > 0 && useUiStore().userLevel === UserLevel.DEFAULT"
-               @click="setView('grid')"
-               style="width:14px"
-               class="q-mr-sm" size="8px"
-               :flat="tabset?.view !== 'grid'"
-               :outline="tabset?.view === 'grid'"
-               icon="grid_on">
-          <q-tooltip class="tooltip">Use grid layout to visualize your tabs</q-tooltip>
-        </q-btn>
-
-        <q-btn v-if="tabset?.tabs.length > 0 && useUiStore().userLevel === UserLevel.DEFAULT"
-               @click="setView('group')"
-               style="width:14px"
-               class="q-mr-sm" size="8px"
-               :flat="tabset?.view !== 'group'"
-               :outline="tabset?.view === 'group'"
-               icon="view_week">
-          <q-tooltip class="tooltip">Use group layout to visualize your tabs</q-tooltip>
-        </q-btn>
-
-        <!-- default view, no need to show if there is no alternative -->
-        <q-btn v-if="tabset?.tabs.length > 0 && useUiStore().userLevel === UserLevel.DEFAULT"
-               @click="setView('list')"
-               style="width:14px"
-               class="q-mr-sm" size="10px"
-               :flat="tabset?.view !== 'list'"
-               :outline="tabset?.view === 'list'"
-               icon="o_list">
-          <q-tooltip class="tooltip">Use the list layout to visualize your tabs</q-tooltip>
-        </q-btn>
 
         <q-btn
           v-if="permissionsStore.hasFeature(FeatureIdent.EXPERIMENTAL_VIEWS) && tabset?.tabs.length > 0"
@@ -229,6 +195,7 @@ import {useTabsetService} from "src/services/TabsetService2";
 import Analytics from "src/utils/google-analytics";
 import EditorJS, {OutputData} from "@editorjs/editorjs";
 import EditorJsConfig from "src/utils/EditorJsConfig";
+import { useMeta } from 'quasar'
 
 const route = useRoute()
 const router = useRouter()
@@ -243,6 +210,32 @@ const orderDesc = ref(false)
 const showEditButton = ref(false)
 
 let editorJS2: EditorJS = undefined as unknown as EditorJS
+
+const metaData = {
+  // sets document title
+  title: 'Index Page!',
+  // optional; sets final title as "Index Page - My Website", useful for multiple level meta
+  //titleTemplate: (tabset:Tabset) => `${tabset.name} - My Website`,
+
+  // meta tags
+  meta: {
+    description: { name: 'description', content: 'Page 1' },
+    keywords: { name: 'keywords', content: 'Quasar website' },
+    equiv: { 'http-equiv': 'Content-Type', content: 'text/html; charset=UTF-8' },
+    // note: for Open Graph type metadata you will need to use SSR, to ensure page is rendered by the server
+    ogTitle:  {
+      property: 'og:title',
+      content: 'sharing with tabsets'
+    },
+    ogImage: {
+      property: 'og:image',
+      template (tabset: Tabset) {
+        console.log("tabset!!!", tabset)
+        return `${tabset} - My Website`
+      }
+    }
+  }
+}
 
 onMounted(() => {
   Analytics.firePageViewEvent('PwaTabsetPage', document.location.href);
@@ -263,6 +256,25 @@ onMounted(() => {
   }
 })
 
+//useMeta(metaData)
+
+useMeta(() => {
+  return {
+    // whenever "title" from above changes, your meta will automatically update
+    title: tabset.value.tabs.length > 0 ? tabset.value.tabs[0].title : '???',
+    meta: {
+      //description: {name: 'og:title', content: 'Page 1'},
+      ogTitle:  {
+        property: 'og:title',
+        content: 'sharing with tabsets'
+      },
+      ogImage: {
+        property: 'og:image',
+        content: tabset.value.tabs.length > 0 ? tabset.value.tabs[0].image : ''
+      }
+    }
+  }
+})
 
 onUpdated(() => {
   JsUtils.runCssHighlight()

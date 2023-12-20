@@ -35,17 +35,23 @@ class MqttService {
   private closedCounter: number = 0
   private alreadyInitialized = false
 
-  init() {
+  init(mqttUrl: string | undefined = undefined) {
     if (this.alreadyInitialized) {
+      console.log("Mqtt: already initialized")
+      return
+    }
+    if (!mqttUrl) {
+      console.log("Mqtt: no Mqtt Url")
       return
     }
     this.alreadyInitialized = true
-    console.log("starting mqtt client...")
+    useUiStore().mqttOffline = true
+    console.log("Mqtt: Starting  client...", mqttUrl)
     const author = LocalStorage.getItem("sharing.author") || 'default-author'
     const installation = LocalStorage.getItem("sharing.installation") || 'default-installation'
     const opts = {clientId: 'ts-' + installation}
     //this.client =  mqtt.connectAsync("mqtt://test.mosquitto.org")
-    this.client = mqtt.connect("mqtts://public:public@public.cloud.shiftr.io:443", opts)
+    //this.client = mqtt.connect("mqtts://public:public@public.cloud.shiftr.io:443", opts)
     //this.client = mqtt.connect("mqtts://tabsets:3dAkqY8glIIecUBs@tabsets.cloud.shiftr.io:443", opts)
     //this.client = mqtt.connect("mqtts://tabsets-dev:6b1CjPBf502SO6Kx@tabsets-dev.cloud.shiftr.io:443", opts)
     //this.client = mqtt.connect("mqtts://tabsets-test:YtHueGI9AO2Wns7P@tabsets-test.cloud.shiftr.io:443", opts)
@@ -53,67 +59,67 @@ class MqttService {
     //this.client = mqtt.connect("mqtts://gpgpaxfd:zH8P4i6hZee4SVCqK_uS6KRcuTnPeRu7@sparrow.rmq.cloudamqp.com:8883", opts)
     //this.client = mqtt.connect("mqtts://demo.flashmq.org", opts)
 
+    // @ts-ignore
+    this.client = mqtt.connect(mqttUrl, opts)
+
+
     const ctx = this
-    this.client.on('connect', function () {
-      console.log('connected!');
+    this.client?.on('connect', function () {
+      console.log('Mqtt: connected!');
       useUiStore().mqttOffline = false
     });
 
-    this.client.on('reconnect', function () {
-      console.log('reconnected!');
+    this.client?.on('reconnect', function () {
+      console.log('Mqtt: reconnected!');
     })
 
-    this.client.on('close', function () {
-      console.log('closed!');
+    this.client?.on('close', function () {
+      console.log('Mqtt: closed!');
+      useUiStore().mqttOffline = true
       ctx.closedCounter = ctx.closedCounter + 1
       if (ctx.closedCounter > 5) {
-        console.log("closing connection due to 10 close events")
+        console.log("Mqtt: Mqtt: closing connection due to 10 close events")
         useUiStore().mqttOffline = true
         ctx.client?.end()
       }
     })
 
-    this.client.on('disconnect', function () {
-      console.log('disconnected!');
+    this.client?.on('disconnect', function () {
+      console.log('Mqtt: disconnected!');
       useUiStore().mqttOffline = true
     })
 
-    this.client.on('close', function () {
-      console.log('closed!');
+    this.client?.on('offline', function () {
+      console.log('Mqtt: offline!');
       useUiStore().mqttOffline = true
     })
 
-    this.client.on('offline', function () {
-      console.log('offline!');
+    this.client?.on('error', function () {
+      console.log('Mqtt: error!');
+    })
+
+    this.client?.on('end', function () {
+      console.log('Mqtt: ended!');
       useUiStore().mqttOffline = true
     })
 
-    this.client.on('error', function () {
-      console.log('error!');
-    })
-
-    this.client.on('end', function () {
-      console.log('ended!');
-      useUiStore().mqttOffline = true
-    })
-
-    // this.client.on('packetsend', function () {
-    //   console.log('packetsend!');
+    // this.client?.on('packetsend', function () {
+    //   console.log('Mqtt: packetsend!');
     // })
     //
-    // this.client.on('packetreceive', function () {
-    //   console.log('packetreceive!');
+    // this.client?.on('packetreceive', function () {
+    //   console.log('Mqtt: packetreceive!');
     // })
 
-    this.client.on('message', function (topic, message) {
+    this.client?.on('message', function (topic, message) {
       const payload: MqttPayload = JSON.parse(message.toString())
       if (payload.installationId === useAppStore().getInstallationId()) {
-        console.log("not for me...")
+        console.log("Mqtt: Mqtt: not for me...")
         return
       }
       switch (payload.event) {
         case 'tabComment':
-          console.log("got tabComment message for topic", topic);
+          console.log("Mqtt: got tabComment message for topic", topic);
           const tabset =
             _.first(
               _.filter(
@@ -122,10 +128,10 @@ class MqttService {
                 ts.sharing !== TabsetSharing.UNSHARED && ts.sharing !== undefined)
             )
           if (tabset) {
-            console.log("found tabset for message")
+            console.log("Mqtt: found tabset for message")
             const tab = _.first(_.filter(tabset.tabs, (t: Tab) => t.id === payload.tabId))
             if (tab) {
-              console.log("found tab for message", tab.id)
+              console.log("Mqtt: found tab for message", tab.id)
               if (!tab.comments) {
                 tab.comments = []
               }
@@ -135,20 +141,27 @@ class MqttService {
           }
 
           const msg = new Message(payload.id)
-          console.log("adding message", msg)
+          console.log("Mqtt: adding message", msg)
           useMessagesStore().addMessage(msg)
           break;
         default:
-          console.log("got unknown message", payload)
+          console.log("Mqtt: got unknown message", payload)
       }
 
     });
 
   }
 
+  async reset() {
+    console.log("Mqtt: resetting client")
+    this.alreadyInitialized = false
+    await this.client?.endAsync()
+    console.log("Mqtt: resetting client, ended")
+  }
+
 
   stop() {
-    console.log("stopping mqtt client", this.publisher)
+    console.log("Mqtt: stopping mqtt client", this.publisher)
     clearTimeout(this.publisher)
     this.client?.end()
   }

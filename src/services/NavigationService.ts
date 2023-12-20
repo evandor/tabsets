@@ -239,7 +239,7 @@ class NavigationService {
   }
 
   private createWindow(useWindowIdent: string, window: chrome.windows.Window, screenlabel: string | undefined, withUrls: string[], groups: string[]) {
-    useWindowsStore().assignWindow(useWindowIdent, window.id || 0)
+    //useWindowsStore().assignWindow(useWindowIdent, window.id || 0)
     useWindowsStore().upsertWindow(window, useWindowIdent, screenlabel)
     const ctx = this
     withUrls.forEach(function (url, i) {
