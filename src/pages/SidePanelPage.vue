@@ -196,6 +196,7 @@ import SidePanelTabsetDescriptionPage from "pages/sidepanel/SidePanelTabsetDescr
 import {PUBLIC_SHARE_URL} from "boot/constants";
 import ShareTabsetPubliclyDialog from "components/dialogues/ShareTabsetPubliclyDialog.vue";
 import getScrollTarget = scroll.getScrollTarget;
+import MqttService from "src/services/mqtt/MqttService";
 
 const {setVerticalScrollPosition} = scroll
 
@@ -230,8 +231,8 @@ const progress = ref<number | undefined>(undefined)
 const progressLabel = ref<string | undefined>(undefined)
 const selectedTab = ref<Tab | undefined>(undefined)
 const windowName = ref<string | undefined>(undefined)
-const windowId = ref<number | undefined>(undefined)
 const tsBadges = ref<object[]>([])
+const mqttUrl = ref(useUiStore().sharingMqttUrl)
 
 function updateOnlineStatus(e: any) {
   const { type } = e
@@ -519,6 +520,9 @@ if ($q.platform.is.chrome) {
         //   } else {
         //     chrome.tabs.sendMessage(message.data.tabId, "cs-iframe-open")
         //   }
+      } else if (message.name === 'mqtt-url-changed') {
+        console.log("got message 'mqtt-url-changed'", message)
+        MqttService.reset().then(() => MqttService.init(message.data.mqttUrl))
       } else {
         console.log("got unmatched message", message)
       }

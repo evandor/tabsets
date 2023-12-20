@@ -48,7 +48,7 @@
 <script setup lang="ts">
 import {onMounted, ref} from 'vue'
 import {useRoute, useRouter} from "vue-router";
-import {uid} from "quasar";
+import {uid, useMeta} from "quasar";
 import {Tabset} from "src/models/Tabset";
 import {FirebaseCall} from "src/services/firebase/FirebaseCall";
 import {useTabsetService} from "src/services/TabsetService2";
@@ -100,6 +100,24 @@ onMounted(() => {
       _.filter([...useTabsStore().tabsets.values()] as Tabset[], (ts: Tabset) => ts.sharedId === shareId.value)
     )
     //console.log("%cfound", "color:green", maybeTabset.value)
+  }
+})
+
+useMeta(() => {
+  return {
+    // whenever "title" from above changes, your meta will automatically update
+    title: tabset.value.tabs.length > 0 ? tabset.value.tabs[0].title : '???',
+    meta: {
+      //description: {name: 'og:title', content: 'Page 1'},
+      ogTitle:  {
+        property: 'og:title',
+        content: 'sharing with tabsets'
+      }
+      // ogImage: {
+      //   property: 'og:image',
+      //   content: tabset.value.tabs.length > 0 ? tabset.value.tabs[0].image : ''
+      // }
+    }
   }
 })
 

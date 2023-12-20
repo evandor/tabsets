@@ -9,6 +9,7 @@
     "dev": "quasar dev -m bex",
     "dev spa (only for testing)": "quasar dev -m spa",
     "dev pwa": "quasar dev -m pwa",
+    "dev ssr": "quasar dev -m ssr",
     "dev stage prod": "stage=production quasar dev -m bex",
     "dev electron": "quasar dev -m electron",
     "build": "quasar build -m bex",

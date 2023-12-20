@@ -8,7 +8,7 @@ const routes: RouteRecordRaw[] = [
         '/tabsets' : // use case: sharing tabset, opening link, import in PWA for anonymous user
         //'/sidepanel' : // use case: ???
         // @ts-ignore
-        (chrome.sidePanel && chrome.sidePanel.setPanelBehavior) ?
+        (typeof chrome !== 'undefined' && chrome.sidePanel && chrome.sidePanel.setPanelBehavior) ?
             '/authenticate' :
             '/tabsets'
   },

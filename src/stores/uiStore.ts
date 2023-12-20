@@ -204,6 +204,7 @@ export const useUiStore = defineStore('ui', () => {
 
   const sharingAuthor = ref<string | undefined>(LocalStorage.getItem('sharing.author') as unknown as string || undefined)
   const sharingAvatar = ref<string | undefined>(LocalStorage.getItem('sharing.avatar') as unknown as string || undefined)
+  const sharingMqttUrl = ref<string | undefined>(LocalStorage.getItem('sharing.mqttUrl') as unknown as string || undefined)
 
 
   watch(rightDrawer.value, (val: Object) => {
@@ -242,6 +243,12 @@ export const useUiStore = defineStore('ui', () => {
     (val: string | undefined) => {
       console.log("val", val)
       LocalStorage.set("sharing.avatar", val)
+    })
+
+  watch(sharingMqttUrl,
+    (val: string | undefined) => {
+      console.log("val", val)
+      LocalStorage.set("sharing.mqttUrl", val)
     })
 
 
@@ -568,6 +575,7 @@ export const useUiStore = defineStore('ui', () => {
     showTabsetDescription,
     sharingAuthor,
     sharingAvatar,
+    sharingMqttUrl,
     networkOnline,
     mqttOffline
   }

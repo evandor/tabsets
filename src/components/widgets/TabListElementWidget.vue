@@ -282,7 +282,7 @@ const open = (tab: Tab) => {
 
 const formatDate = (d: number) => date.formatDate(d, 'DD.MM HH:mm')
 const isSender = (m: TabComment) => {
-  console.log("comparing", m.author, useUiStore().sharingAuthor)
+  //console.log("comparing", m.author, useUiStore().sharingAuthor)
   return m.author === useUiStore().sharingAuthor
 }
 </script>
