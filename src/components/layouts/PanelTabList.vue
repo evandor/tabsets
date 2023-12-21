@@ -15,6 +15,7 @@
                               :sorting="props.sorting"
                               :preventDragAndDrop="false"
                               :tabsetType="props.tabsetType"
+                              :tabset="props.tabset"
                               :show-tabsets="props.showTabsets"
                               :hide-menu="props.hideMenu"/>
     </vue-draggable-next>
@@ -27,6 +28,7 @@
                             :sorting="props.sorting"
                             :preventDragAndDrop="true"
                             :tabsetType="props.tabsetType"
+                            :tabset="props.tabset"
                             :show-tabsets="props.showTabsets"
                             :hide-menu="props.hideMenu"/>
   </q-list>
@@ -44,7 +46,7 @@ import {PropType} from "vue";
 import {VueDraggableNext} from 'vue-draggable-next'
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {CreateTabFromOpenTabsCommand} from "src/domain/commands/CreateTabFromOpenTabs";
-import {TabsetType} from "src/models/Tabset";
+import {Tabset, TabsetType} from "src/models/Tabset";
 import SidePanelTabListHelper from "components/layouts/sidepanel/SidePanelTabListHelper.vue";
 
 const props = defineProps({
@@ -55,6 +57,7 @@ const props = defineProps({
   showTabsets: {type: Boolean, default: false},
   preventDragAndDrop: {type: Boolean, default: false},
   tabsetType: {type: String, default: TabsetType.DEFAULT.toString()},
+  tabset: {type: Object as PropType<Tabset>, required: false}
 })
 
 const handleDragAndDrop = (event: any) => {

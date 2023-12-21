@@ -53,6 +53,7 @@ import {date, useDialogPluginComponent, useQuasar} from "quasar";
 import {useTabsStore} from "src/stores/tabsStore";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {AddCommentCommand} from "src/domain/tabs/AddCommentCommand";
+import {useUiStore} from "stores/uiStore";
 
 defineEmits([
   ...useDialogPluginComponent.emits
@@ -81,7 +82,8 @@ watchEffect(() => {
 })
 
 const publishComment = () => {
-  $q.localStorage.set('sharing.author', author.value)
+  //$q.localStorage.set('sharing.author', author.value)
+  useUiStore().sharingAuthor = author.value
   useCommandExecutor().executeFromUi(new AddCommentCommand(props.tabId, editor.value))
 }
 

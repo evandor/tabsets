@@ -55,7 +55,7 @@ const props = defineProps({
   type: {type: String, default: 'sidepanel'},
   showTabsets: {type: Boolean, default: false},
   preventDragAndDrop: {type: Boolean, default: false},
-  tabset: {type: Object as PropType<Tabset>, required: true},
+  tabset: {type: Object as PropType<Tabset>, required: false},
 })
 
 const tabs = ref<Tab[]>([])

@@ -4,17 +4,17 @@
     <div class="text-h4">Shared Tabset</div>
 
     <div class="text-body1  q-mx-none q-my-lg">
-      <i>{{author}}</i> wants to share a tabset named <i>{{ name }}</i> with you.<br>
+      <i>{{ author }}</i> wants to share a tabset named <i>{{ name }}</i> with you.<br>
       Click on "show" (or "update") to proceed.
     </div>
 
     <div class="text-body1  q-mx-none q-my-lg" v-if="maybeTabset">
-      You already imported this tabset {{maybeTabset.importedAt}}, updated at {{date}}
+      You already imported this tabset {{ maybeTabset.importedAt }}, updated at {{ date }}
     </div>
 
     <div class="justify-center items-center q-gutter-md">
       <q-btn label="Close Window" color="accent" @click="closeWindow()"/>
-      <q-btn :label="maybeTabset ? 'Update':'Show'" color="warning" @click="start()" />
+      <q-btn :label="maybeTabset ? 'Update':'Show'" color="warning" @click="start()"/>
     </div>
   </div>
 
@@ -29,7 +29,7 @@
     <div class="text-h4">Shared Tabset</div>
 
     <div class="text-body1  q-mx-none q-my-lg">
-      <i>{{author}}</i> wants to share a tabset named <i>{{ name }}</i> with you.<br>
+      <i>{{ author }}</i> wants to share a tabset named <i>{{ name }}</i> with you.<br>
       Click on "show" (or "update") to proceed.
     </div>
 
@@ -38,7 +38,7 @@
     </div>
 
     <div class="justify-center items-center q-gutter-md">
-      <q-btn label="Close Window" color="accent"  @click="closeWindow()"/>
+      <q-btn label="Close Window" color="accent" @click="closeWindow()"/>
     </div>
   </div>
 
@@ -54,6 +54,8 @@ import {FirebaseCall} from "src/services/firebase/FirebaseCall";
 import {useTabsetService} from "src/services/TabsetService2";
 import _ from "lodash"
 import {useTabsStore} from "stores/tabsStore";
+import MqttService from "src/services/mqtt/MqttService";
+import {useUiStore} from "stores/uiStore";
 
 const route = useRoute();
 const router = useRouter();
@@ -82,7 +84,9 @@ async function setupTabset(importedTS: Tabset) {
     router.push("/pwa/tabsets/" + tabset.value.id)
   } catch (err) {
     if (waitCounter++ < 5) {
-      setTimeout(() => {setupTabset(importedTS as Tabset)}, 1000)
+      setTimeout(() => {
+        setupTabset(importedTS as Tabset)
+      }, 1000)
     } else {
       router.push("/pwa/tabsets")
     }
@@ -109,7 +113,7 @@ useMeta(() => {
     title: tabset.value.tabs.length > 0 ? tabset.value.tabs[0].title : '???',
     meta: {
       //description: {name: 'og:title', content: 'Page 1'},
-      ogTitle:  {
+      ogTitle: {
         property: 'og:title',
         content: 'sharing with tabsets'
       }
@@ -124,7 +128,9 @@ useMeta(() => {
 const start = () => {
   state.value = 'runImport'
   console.log("shareId", shareId.value, name.value)
-  FirebaseCall.get("/share/public/" + shareId.value, false)
+  MqttService.subscribe(shareId.value)
+  // cb = cache buster, do not cache
+  FirebaseCall.get("/share/public/" + shareId.value + "?cb=" + new Date().getTime(), false)
     .then((res: any) => {
       tabset.value = res as Tabset
       // if (!tabset.value.sharedId) {
@@ -132,6 +138,11 @@ const start = () => {
       //   state.value='notFound'
       //   return
       // }
+      if (tabset.value.mqttUrl) {
+        console.log("got new mqtt URL", tabset.value.mqttUrl)
+        useUiStore().sharingMqttUrl = tabset.value.mqttUrl
+        MqttService.reset().then(() => MqttService.init(tabset.value.mqttUrl))
+      }
 
       //const exists = useTabsetService().getTabset(tabset.value.id)
       if (!maybeTabset.value) {
@@ -145,11 +156,11 @@ const start = () => {
       } else if (maybeTabset.value) {
         console.log("...", maybeTabset.value?.sharedAt, tabset.value.sharedAt, (maybeTabset.value?.sharedAt || 0) - (tabset.value?.sharedAt || 0))
         //if (maybeTabset.value?.sharedAt && (maybeTabset.value.sharedAt < (tabset.value.sharedAt || 0))) {
-          const updatedTS = tabset.value
-          updatedTS.sharedId = shareId.value
-          updatedTS.importedAt = new Date().getTime()
-          console.log("updatedTS", updatedTS)
-          setupTabset(updatedTS as Tabset)
+        const updatedTS = tabset.value
+        updatedTS.sharedId = shareId.value
+        updatedTS.importedAt = new Date().getTime()
+        console.log("updatedTS", updatedTS)
+        setupTabset(updatedTS as Tabset)
         // } else {
         //   router.push("/pwa/tabsets/" + tabset.value.id)
         // }
@@ -168,7 +179,7 @@ const closeWindow = () => window.close()
 </script>
 
 <style lang="scss">
-@import  url(https://fonts.googleapis.com/css?family=Montserrat);
+@import url(https://fonts.googleapis.com/css?family=Montserrat);
 
 $width: 25px;
 $height: 25px;
@@ -201,6 +212,7 @@ body {
   display: inline-block;
   height: 37px;
   width: $width;
+
   &:before {
     position: absolute;
     content: '';

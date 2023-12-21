@@ -247,8 +247,9 @@ export const useUiStore = defineStore('ui', () => {
 
   watch(sharingMqttUrl,
     (val: string | undefined) => {
-      console.log("val", val)
-      LocalStorage.set("sharing.mqttUrl", val)
+      console.log("change of sharingMqttUrl", val)
+      LocalStorage.set('sharing.mqttUrl', val && val.trim().length > 0 ? val : undefined)
+      //LocalStorage.set("sharing.mqttUrl", val)
     })
 
 

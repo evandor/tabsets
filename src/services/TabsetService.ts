@@ -56,7 +56,7 @@ class TabsetService {
 
     if (currentTabset) {
       _.forEach(
-        tabsStore.pendingTabset.tabs,
+        tabsStore.pendingTabset.tabs as Tab[],
         t => {
           if (t?.chromeTabId) {
             if (!onlySelected || (onlySelected && t.selected)) {
@@ -207,7 +207,7 @@ class TabsetService {
     const tabsStore = useTabsStore()
     const ts = tabsStore.pendingTabset
     if (ts) {
-      return _.filter(ts.tabs, t => t.selected)
+      return _.filter(ts.tabs as Tab[], t => t.selected)
     }
     return []
   }
@@ -557,7 +557,7 @@ class TabsetService {
     return Promise.reject("could not change status : " + tabsetId)
   }
 
-  async share(tabsetId: string, sharing: TabsetSharing, sharedId: string | undefined, sharedBy: string | undefined): Promise<TabsetSharing> {
+  async share(tabsetId: string, sharing: TabsetSharing, sharedId: string | undefined, sharedBy: string | undefined): Promise<TabsetSharing | void> {
     console.log(`setting property 'sharing' to ${sharing} for  ${tabsetId} with sharingId ${sharedId}`)
     const ts = getTabset(tabsetId)
     if (ts) {
@@ -565,6 +565,7 @@ class TabsetService {
       ts.sharing = sharing
       ts.sharedBy = sharedBy
       ts.view = "list"
+      ts.mqttUrl = useUiStore().sharingMqttUrl
 
       if (sharing === TabsetSharing.UNSHARED) {
         console.log("deleting share for tabset", ts.sharedId)

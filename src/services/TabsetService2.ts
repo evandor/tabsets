@@ -34,8 +34,6 @@ import TabsetService from "src/services/TabsetService";
 
 let db: PersistenceService = null as unknown as PersistenceService
 
-let router = useRouter()
-
 export function useTabsetService() {
 
   const init = async (providedDb: PersistenceService,

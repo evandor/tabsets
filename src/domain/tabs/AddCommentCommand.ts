@@ -1,16 +1,9 @@
 import Command from "src/domain/Command";
-import TabsetService from "src/services/TabsetService";
 import {ExecutionResult} from "src/domain/ExecutionResult";
 import {Tab, TabComment} from "src/models/Tab";
-import _ from "lodash";
 import {useTabsStore} from "src/stores/tabsStore";
 import {useTabsetService} from "src/services/TabsetService2";
 import {Tabset, TabsetSharing} from "src/models/Tabset";
-import {useUtils} from "src/services/Utils";
-import {useSearchStore} from "stores/searchStore";
-import {uid, useQuasar} from "quasar";
-import {useGroupsStore} from "stores/groupsStore";
-import PlaceholderUtils from "src/utils/PlaceholderUtils";
 import {useUiStore} from "stores/uiStore";
 import MqttService from "src/services/mqtt/MqttService";
 

@@ -494,6 +494,9 @@ export const useTabsStore = defineStore('tabs', {
 
       if (ts.sharing === TabsetSharing.PUBLIC_LINK || ts.sharing === TabsetSharing.PUBLIC_LINK_OUTDATED) {
         MqttService.init()
+        if (ts.sharedId) {
+          MqttService.subscribe(ts.sharedId)
+        }
       }
 
       this.tabsets.set(ts.id, ts)

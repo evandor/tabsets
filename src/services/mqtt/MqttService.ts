@@ -33,40 +33,32 @@ class MqttService {
 
   private publisher: number = 0
   private closedCounter: number = 0
-  private alreadyInitialized = false
+  private connectionUrl: string | undefined = undefined
+  private topics: Set<string> = new Set()
 
-  init(mqttUrl: string | undefined = undefined) {
-    if (this.alreadyInitialized) {
-      console.log("Mqtt: already initialized")
-      return
-    }
+  init(mqttUrl: string | undefined = useUiStore().sharingMqttUrl) {
     if (!mqttUrl) {
-      console.log("Mqtt: no Mqtt Url")
+      console.log("Mqtt: no url")
       return
     }
-    this.alreadyInitialized = true
+    if (mqttUrl && mqttUrl !== this.connectionUrl) {
+      console.log("Mqtt: initializing with (new) url", mqttUrl)
+      this.connectionUrl = mqttUrl
+    }
     useUiStore().mqttOffline = true
     console.log("Mqtt: Starting  client...", mqttUrl)
-    const author = LocalStorage.getItem("sharing.author") || 'default-author'
     const installation = LocalStorage.getItem("sharing.installation") || 'default-installation'
     const opts = {clientId: 'ts-' + installation}
-    //this.client =  mqtt.connectAsync("mqtt://test.mosquitto.org")
-    //this.client = mqtt.connect("mqtts://public:public@public.cloud.shiftr.io:443", opts)
-    //this.client = mqtt.connect("mqtts://tabsets:3dAkqY8glIIecUBs@tabsets.cloud.shiftr.io:443", opts)
-    //this.client = mqtt.connect("mqtts://tabsets-dev:6b1CjPBf502SO6Kx@tabsets-dev.cloud.shiftr.io:443", opts)
-    //this.client = mqtt.connect("mqtts://tabsets-test:YtHueGI9AO2Wns7P@tabsets-test.cloud.shiftr.io:443", opts)
-    //this.client = mqtt.connect("mqtts://tabsets-prd:EqgBLL7SwABHk13W@tabsets-prd.cloud.shiftr.io:443", opts)
-    //this.client = mqtt.connect("mqtts://gpgpaxfd:zH8P4i6hZee4SVCqK_uS6KRcuTnPeRu7@sparrow.rmq.cloudamqp.com:8883", opts)
-    //this.client = mqtt.connect("mqtts://demo.flashmq.org", opts)
 
     // @ts-ignore
-    this.client = mqtt.connect(mqttUrl, opts)
-
+    this.client = mqtt.connect( this.connectionUrl, opts)
 
     const ctx = this
+
     this.client?.on('connect', function () {
       console.log('Mqtt: connected!');
       useUiStore().mqttOffline = false
+      ctx.subscribeTopics()
     });
 
     this.client?.on('reconnect', function () {
@@ -76,6 +68,7 @@ class MqttService {
     this.client?.on('close', function () {
       console.log('Mqtt: closed!');
       useUiStore().mqttOffline = true
+      ctx.connectionUrl = undefined
       ctx.closedCounter = ctx.closedCounter + 1
       if (ctx.closedCounter > 5) {
         console.log("Mqtt: Mqtt: closing connection due to 10 close events")
@@ -103,23 +96,15 @@ class MqttService {
       useUiStore().mqttOffline = true
     })
 
-    // this.client?.on('packetsend', function () {
-    //   console.log('Mqtt: packetsend!');
-    // })
-    //
-    // this.client?.on('packetreceive', function () {
-    //   console.log('Mqtt: packetreceive!');
-    // })
-
     this.client?.on('message', function (topic, message) {
       const payload: MqttPayload = JSON.parse(message.toString())
       if (payload.installationId === useAppStore().getInstallationId()) {
-        console.log("Mqtt: Mqtt: not for me...")
+        console.log("Mqtt: not for me...", useAppStore().getInstallationId(), payload)
         return
       }
       switch (payload.event) {
         case 'tabComment':
-          console.log("Mqtt: got tabComment message for topic", topic);
+          console.log("Mqtt: got tabComment message for topic", topic, payload);
           const tabset =
             _.first(
               _.filter(
@@ -152,9 +137,16 @@ class MqttService {
 
   }
 
+  subscribeTopics() {
+    for(const t in this.topics) {
+      console.log("Mqtt: subscribing to ", t)
+      this.client?.subscribe(t)
+    }
+  }
+
   async reset() {
     console.log("Mqtt: resetting client")
-    this.alreadyInitialized = false
+    this.connectionUrl = undefined
     await this.client?.endAsync()
     console.log("Mqtt: resetting client, ended")
   }
@@ -163,11 +155,14 @@ class MqttService {
   stop() {
     console.log("Mqtt: stopping mqtt client", this.publisher)
     clearTimeout(this.publisher)
+    this.connectionUrl = undefined
     this.client?.end()
   }
 
   subscribe(topic: string) {
+    console.log("subscribing to topic", topic)
     this.client?.subscribe(topic)
+    this.topics.add(topic)
   }
 
   publishTabComment(topic: string, tab: Tab, comment: TabComment) {

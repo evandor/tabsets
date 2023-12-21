@@ -562,7 +562,7 @@ watchEffect(() => {
 
 watchEffect(() => {
   console.log("setting sharing.mqttUrl to", mqttUrl.value)
-  localStorage.set('sharing.mqttUrl', mqttUrl.value && mqttUrl.value.trim().length > 0 ? mqttUrl.value : undefined)
+  useUiStore().sharingMqttUrl = mqttUrl.value
 })
 
 watchEffect(() => {

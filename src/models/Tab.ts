@@ -43,7 +43,7 @@ export class HTMLSelection {
 
 export class TabComment {
   date: number = 0
-  private id: string;
+  public id: string;
 
   constructor(
     public author: string = '<me>',

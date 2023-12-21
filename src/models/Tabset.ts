@@ -46,11 +46,16 @@ export class Tabset {
   sorting: string = 'custom'
   status: TabsetStatus = TabsetStatus.DEFAULT
   type: TabsetType = TabsetType.DEFAULT
+
+  // sharing
   sharing: TabsetSharing = TabsetSharing.UNSHARED
   sharedBy: string | undefined = undefined
   sharedId: string | undefined = undefined
   sharedAt: number | undefined = undefined
   sharedPath: string | undefined = undefined // e.g. /pwa/imp/AlCYSrGGmOnsOnf0htA9?n=c2hvcHBpbmc=
+
+  // messaging
+  mqttUrl: string | undefined = undefined
 
   importedAt: number | undefined = undefined
 

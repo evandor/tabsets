@@ -1,7 +1,7 @@
 <template>
 
   <!-- left part: icon plus various -->
-  <q-item-section v-if="useUiStore().listDetailLevelGreaterEqual(ListDetailLevel.SOME, props.tabset.details)"
+  <q-item-section v-if="useUiStore().listDetailLevelGreaterEqual(ListDetailLevel.SOME, props.tabset?.details)"
                   @mouseover="hoveredTab = tab.id"
                   @mouseleave="hoveredTab = undefined"
                   class="q-mr-sm text-right" style="justify-content:start;width:30px;max-width:30px">
@@ -71,7 +71,7 @@
 
     <!-- === description === -->
     <q-item-label class="ellipsis-2-lines text-grey-8"
-                  v-if="useUiStore().listDetailLevelGreaterEqual(ListDetailLevel.MAXIMAL,props.tabset.details)"
+                  v-if="useUiStore().listDetailLevelGreaterEqual(ListDetailLevel.MAXIMAL,props.tabset?.details)"
                   @click.stop="gotoTab()">
       {{ props.tab.description }}
     </q-item-label>
@@ -144,7 +144,7 @@
       <div class="row q-ma-none" @click="gotoTab()">
         <div class="col-12 q-pr-lg q-mt-none q-pt-none cursor-pointer">
           <div class="text-caption text-grey-5 ellipsis"
-               v-if="useUiStore().listDetailLevelGreaterEqual(ListDetailLevel.SOME, props.tabset.details)">
+               v-if="useUiStore().listDetailLevelGreaterEqual(ListDetailLevel.SOME, props.tabset?.details)">
 
             <span v-if="props.sorting === TabSorting.AGE">
               <q-icon name="arrow_right" size="16px"/>
@@ -239,30 +239,32 @@
     </q-item-label>
 
     <!-- === note === -->
-    <q-item-label v-if="useUiStore().listDetailLevelGreaterEqual(ListDetailLevel.MAXIMAL, props.tabset.details) &&
-      props['tab' as keyof object]['note']"
-                  class="text-grey-10" text-subtitle1>
-      <q-icon color="blue-10" name="edit_note"/>
-      <div class="ellipsis-2-lines">
-        {{ props['tab']['note'] }}
-      </div>
-    </q-item-label>
+<!--    <q-item-label v-if="useUiStore().listDetailLevelGreaterEqual(ListDetailLevel.MAXIMAL, props.tabset?.details) &&-->
+<!--      props['tab' as keyof object]['note']"-->
+<!--                  class="text-grey-10" text-subtitle1>-->
+<!--      <q-icon color="blue-10" name="edit_note"/>-->
+<!--      <div class="ellipsis-2-lines">-->
+<!--        {{ props['tab']['note'] }}-->
+<!--      </div>-->
+<!--    </q-item-label>-->
 
     <!-- === comments === -->
     <q-item-label v-if="showComments()"
                   class="text-grey-10" text-subtitle1>
       <q-chat-message v-for="m in props.tab.comments"
-                      name="me"
+                      :name="m.author"
+                      @click="selectComment(m.id)"
                       :avatar="m.avatar || 'http://www.gravatar.com/avatar'"
                       :text="[m.comment]"
                       :sent="isSender(m)"
-                      :bg-color="isSender(m) ? 'blue':'grey-2'"
+                      :bg-color="m.id === selectedCommentId ? 'warning' : isSender(m) ? 'blue':'grey-2'"
                       :text-color="isSender(m) ? 'white':'black'"
                       :stamp="formatDate(m.date)"
       />
       <div class="row">
-        <div class="col-12 text-right q-mr-lg text-caption" @click="addCommentDialog()">
-          Reply
+        <div class="col-12 text-right q-mr-lg text-caption">
+          <span v-if="selectedCommentId" @click.stop="deleteSelectedComment()">Delete Comment</span>
+          <span v-else @click="addCommentDialog()">Reply</span>
         </div>
       </div>
     </q-item-label>
@@ -371,6 +373,7 @@ import {SavedBlob} from "src/models/SavedBlob";
 import rangy from "rangy/lib/rangy-core.js";
 import "rangy/lib/rangy-serializer";
 import CommentDialog from "components/dialogues/CommentDialog.vue";
+import {DeleteCommentCommand} from "src/domain/tabs/DeleteCommentCommand";
 
 const {inBexMode, isCurrentTab} = useUtils()
 
@@ -382,7 +385,7 @@ const props = defineProps({
   sorting: {type: String as PropType<TabSorting>, default: TabSorting.CUSTOM},
   showTabsets: {type: Boolean, default: false},
   preventDragAndDrop: {type: Boolean, default: false},
-  tabset: {type: Object as PropType<Tabset>, required: true}
+  tabset: {type: Object as PropType<Tabset>, required: false}
 })
 
 const $q = useQuasar()
@@ -403,9 +406,8 @@ const placeholders = ref<Object[]>([])
 const suggestion = ref<Suggestion | undefined>(undefined)
 const pngs = ref<SavedBlob[]>([])
 const selectedAnnotation = ref<HTMLSelection | undefined>(undefined)
-const label = ref("add comment...")
 const newComment = ref("")
-const avatar = ref<string | undefined>(LocalStorage.getItem('sharing.avatar') as string || "http://www.gravatar.com/avatar")
+const selectedCommentId = ref<string | undefined>(undefined)
 
 onMounted(() => {
   if ((new Date().getTime() - props.tab.created) < 500) {
@@ -650,12 +652,12 @@ const showAnnotation = async (tab: Tab, a: HTMLSelection) => {
 
 const showAnnotations = () =>
   showAnnotationList.value &&
-  useUiStore().listDetailLevelGreaterEqual(ListDetailLevel.SOME, props.tabset.details) &&
+  useUiStore().listDetailLevelGreaterEqual(ListDetailLevel.SOME, props.tabset?.details) &&
   (props.tab as Tab).annotations && (props.tab as Tab).annotations.length > 0
 
 const showComments = () =>
   showCommentList.value &&
-  useUiStore().listDetailLevelGreaterEqual(ListDetailLevel.SOME, props.tabset.details) &&
+  useUiStore().listDetailLevelGreaterEqual(ListDetailLevel.SOME, props.tabset?.details) &&
   (props.tab as Tab).comments && (props.tab as Tab).comments.length > 0
 
 const toggleLists = (ident: string) => {
@@ -686,6 +688,15 @@ const togglePreview = () => {
     props.tab.preview = (props.tab.preview === undefined || props.tab.preview === TabPreview.FAVICON) ?
       TabPreview.THUMBNAIL : TabPreview.FAVICON
     useTabsetService().saveCurrentTabset()
+  }
+}
+
+const selectComment = (commentId: string) => selectedCommentId.value = commentId
+
+const deleteSelectedComment = () => {
+  if (selectedCommentId.value) {
+    useCommandExecutor().executeFromUi(new DeleteCommentCommand(props.tab.id, selectedCommentId.value))
+    selectedCommentId.value = undefined
   }
 }
 
