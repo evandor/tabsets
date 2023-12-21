@@ -3,7 +3,7 @@ import _ from 'lodash'
 import {computed, ref, watch, watchEffect} from "vue";
 import {Space} from "src/models/Space";
 import PersistenceService from "src/services/PersistenceService";
-import {uid} from "quasar";
+import {LocalStorage, uid} from "quasar";
 import throttledQueue from "throttled-queue";
 
 /**
@@ -29,7 +29,7 @@ export const useSpacesStore = defineStore('spaces', () => {
   /**
    * the value for the current space id from the localStorage (or null)
    */
-  const currentFromLocalStorage = localStorage.getItem("currentSpace")
+  const currentFromLocalStorage = LocalStorage.getItem("currentSpace")
 
   /**
    * the (internal) storage for this store to use

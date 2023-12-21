@@ -43,12 +43,20 @@ export class HTMLSelection {
 
 export class TabComment {
   date: number = 0
+  public id: string;
 
   constructor(
-    public author: string = '',
+    public author: string = '<me>',
+    public avatar: string | undefined = undefined,
     public comment: string = '') {
     this.date = new Date().getTime()
+    this.id = uid()
   }
+}
+
+export enum TabPreview {
+  FAVICON= "FAVICON",
+  THUMBNAIL = "THUMBNAIL"
 }
 
 export class Tab {
@@ -114,6 +122,8 @@ export class Tab {
 
   comments: TabComment[] = []
 
+  preview: TabPreview = TabPreview.FAVICON
+
   constructor(public id: string, chromeTab: chrome.tabs.Tab) {
     this.created = new Date().getTime()
     this.updated = new Date().getTime()
@@ -145,6 +155,8 @@ export class Tab {
     this.extension = this.determineUrlExtension(chromeTab)
     this.mhtmls = []
     this.contentHash = ''
+
+    this.preview = TabPreview.FAVICON
   }
 
   setHistoryFrom(existingTab: Tab) {

@@ -1,5 +1,5 @@
 import mqtt, {MqttClient} from "mqtt";
-import {uid, useQuasar} from "quasar";
+import {LocalStorage, uid, useQuasar} from "quasar";
 import {Tab, TabComment} from "src/models/Tab";
 import {useAppStore} from "stores/appStore";
 import {Message} from "src/models/Message";
@@ -8,6 +8,7 @@ import {useTabsStore} from "stores/tabsStore";
 import {Tabset, TabsetSharing} from "src/models/Tabset";
 import _ from "lodash"
 import {useTabsetService} from "src/services/TabsetService2";
+import {useUiStore} from "stores/uiStore";
 
 class MqttPayload {
 
@@ -32,78 +33,78 @@ class MqttService {
 
   private publisher: number = 0
   private closedCounter: number = 0
+  private connectionUrl: string | undefined = undefined
+  private topics: Set<string> = new Set()
 
-  init() {
-    console.log("starting mqtt client...")
-    const author = useQuasar().localStorage.getItem("sharing.author") || 'default-author'
-    const installation = useQuasar().localStorage.getItem("sharing.installation") || 'default-installation'
+  init(mqttUrl: string | undefined = useUiStore().sharingMqttUrl) {
+    if (!mqttUrl) {
+      console.log("Mqtt: no url")
+      return
+    }
+    if (mqttUrl && mqttUrl !== this.connectionUrl) {
+      console.log("Mqtt: initializing with (new) url", mqttUrl)
+      this.connectionUrl = mqttUrl
+    }
+    useUiStore().mqttOffline = true
+    console.log("Mqtt: Starting  client...", mqttUrl)
+    const installation = LocalStorage.getItem("sharing.installation") || 'default-installation'
     const opts = {clientId: 'ts-' + installation}
-    //this.client =  mqtt.connectAsync("mqtt://test.mosquitto.org")
-    //this.client = mqtt.connect("mqtts://public:public@public.cloud.shiftr.io:443", opts)
-    //this.client = mqtt.connect("mqtts://tabsets:3dAkqY8glIIecUBs@tabsets.cloud.shiftr.io:443", opts)
-    this.client = mqtt.connect("mqtts://tabsets-dev:6b1CjPBf502SO6Kx@tabsets-dev.cloud.shiftr.io:443", opts)
-    //this.client = mqtt.connect("mqtts://tabsets-test:YtHueGI9AO2Wns7P@tabsets-test.cloud.shiftr.io:443", opts)
-    //this.client = mqtt.connect("mqtts://gpgpaxfd:zH8P4i6hZee4SVCqK_uS6KRcuTnPeRu7@sparrow.rmq.cloudamqp.com:8883", opts)
-    //this.client = mqtt.connect("mqtts://demo.flashmq.org", opts)
+
+    // @ts-ignore
+    this.client = mqtt.connect( this.connectionUrl, opts)
 
     const ctx = this
-    this.client.on('connect', function () {
-      console.log('connected!');
+
+    this.client?.on('connect', function () {
+      console.log('Mqtt: connected!');
+      useUiStore().mqttOffline = false
+      ctx.subscribeTopics()
     });
 
-    this.client.on('reconnect', function () {
-      console.log('reconnected!');
+    this.client?.on('reconnect', function () {
+      console.log('Mqtt: reconnected!');
     })
 
-    this.client.on('close', function () {
-      console.log('closed!');
+    this.client?.on('close', function () {
+      console.log('Mqtt: closed!');
+      useUiStore().mqttOffline = true
+      ctx.connectionUrl = undefined
       ctx.closedCounter = ctx.closedCounter + 1
       if (ctx.closedCounter > 5) {
-        console.log("closing connection due to 10 close events")
+        console.log("Mqtt: Mqtt: closing connection due to 10 close events")
+        useUiStore().mqttOffline = true
         ctx.client?.end()
       }
     })
 
-    this.client.on('disconnect', function () {
-      console.log('disconnected!');
+    this.client?.on('disconnect', function () {
+      console.log('Mqtt: disconnected!');
+      useUiStore().mqttOffline = true
     })
 
-    this.client.on('close', function () {
-      console.log('closed!');
+    this.client?.on('offline', function () {
+      console.log('Mqtt: offline!');
+      useUiStore().mqttOffline = true
     })
 
-    this.client.on('offline', function () {
-      console.log('offline!');
+    this.client?.on('error', function () {
+      console.log('Mqtt: error!');
     })
 
-    this.client.on('error', function () {
-      console.log('error!');
+    this.client?.on('end', function () {
+      console.log('Mqtt: ended!');
+      useUiStore().mqttOffline = true
     })
 
-    this.client.on('end', function () {
-      console.log('ended!');
-    })
-
-    // this.client.on('packetsend', function () {
-    //   console.log('packetsend!');
-    // })
-    //
-    // this.client.on('packetreceive', function () {
-    //   console.log('packetreceive!');
-    // })
-
-    this.client.on('message', function (topic, message) {
+    this.client?.on('message', function (topic, message) {
       const payload: MqttPayload = JSON.parse(message.toString())
       if (payload.installationId === useAppStore().getInstallationId()) {
-        console.log("not for me...")
+        console.log("Mqtt: not for me...", useAppStore().getInstallationId(), payload)
         return
       }
       switch (payload.event) {
         case 'tabComment':
-          console.log("===============")
-          console.log(topic + ': ' + payload.toString());
-          console.log("===============")
-
+          console.log("Mqtt: got tabComment message for topic", topic, payload);
           const tabset =
             _.first(
               _.filter(
@@ -112,10 +113,10 @@ class MqttService {
                 ts.sharing !== TabsetSharing.UNSHARED && ts.sharing !== undefined)
             )
           if (tabset) {
-            console.log("found tabset for message")
+            console.log("Mqtt: found tabset for message")
             const tab = _.first(_.filter(tabset.tabs, (t: Tab) => t.id === payload.tabId))
             if (tab) {
-              console.log("found tab for message", tab.id)
+              console.log("Mqtt: found tab for message", tab.id)
               if (!tab.comments) {
                 tab.comments = []
               }
@@ -125,26 +126,43 @@ class MqttService {
           }
 
           const msg = new Message(payload.id)
-          console.log("adding message", msg)
+          console.log("Mqtt: adding message", msg)
           useMessagesStore().addMessage(msg)
           break;
         default:
-          console.log("got unknown message", payload)
+          console.log("Mqtt: got unknown message", payload)
       }
 
     });
 
   }
 
+  subscribeTopics() {
+    for(const t in this.topics) {
+      console.log("Mqtt: subscribing to ", t)
+      this.client?.subscribe(t)
+    }
+  }
+
+  async reset() {
+    console.log("Mqtt: resetting client")
+    this.connectionUrl = undefined
+    await this.client?.endAsync()
+    console.log("Mqtt: resetting client, ended")
+  }
+
 
   stop() {
-    console.log("stopping mqtt client", this.publisher)
+    console.log("Mqtt: stopping mqtt client", this.publisher)
     clearTimeout(this.publisher)
+    this.connectionUrl = undefined
     this.client?.end()
   }
 
   subscribe(topic: string) {
+    console.log("subscribing to topic", topic)
     this.client?.subscribe(topic)
+    this.topics.add(topic)
   }
 
   publishTabComment(topic: string, tab: Tab, comment: TabComment) {

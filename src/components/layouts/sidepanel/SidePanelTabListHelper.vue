@@ -34,7 +34,7 @@ const props = defineProps({
   hideMenu: {type: Boolean, default: false},
   sorting: {type: String as PropType<TabSorting>, default: TabSorting.CUSTOM},
   type: {type: String, default: 'sidepanel'},
-  tabset: {type: Object as PropType<Tabset>, required: true},
+  tabset: {type: Object as PropType<Tabset>, required: false},
   showTabsets: {type: Boolean, default: false},
   preventDragAndDrop: {type: Boolean, default: false},
 })

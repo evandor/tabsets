@@ -116,6 +116,7 @@ function inIgnoredMessages(request: any) {
         request.name === 'reload-tabset' ||
         request.name === 'detail-level-perTabset-changed' ||
         request.name === 'detail-level-changed' ||
+        request.name === 'mqtt-url-changed' ||
         request.action === 'highlight-annotation'
     //request.name === 'recogito-annotation-created'
 
@@ -393,9 +394,9 @@ class ChromeListeners {
 
         const scripts: string[] = []
 
-        if (usePermissionsStore().hasFeature(FeatureIdent.THUMBNAILS)) {
+        //if (usePermissionsStore().hasFeature(FeatureIdent.THUMBNAILS)) {
             scripts.push("content-script-thumbnails.js")
-        }
+        //}
         if (usePermissionsStore().hasFeature(FeatureIdent.ANNOTATIONS)) {
             scripts.push("highlight-annotations.js")
         }

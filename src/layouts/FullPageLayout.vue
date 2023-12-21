@@ -190,11 +190,9 @@
       <Navigation></Navigation>
     </q-drawer>
 
-    <q-drawer v-if="useUiStore().userLevel === UserLevel.DEFAULT || useUiStore().userLevel === UserLevel.UNKNOWN"
-              v-model="useUiStore().rightDrawerOpen" side="right" bordered
+    <q-drawer v-model="useUiStore().rightDrawerOpen" side="right" bordered
               content-class="column justify-between no-wrap bg-grey-1">
       <DrawerRight/>
-
     </q-drawer>
 
     <q-page-container>
@@ -237,7 +235,6 @@ import ToolbarButton from "components/widgets/ToolbarButton.vue";
 const $q = useQuasar()
 const router = useRouter()
 const tabsStore = useTabsStore()
-const searchStore = useSearchStore()
 
 const leftDrawerOpen = ref($q.screen.gt.lg)
 
@@ -248,7 +245,6 @@ const spacesStore = useSpacesStore()
 
 const spacesOptions = ref<object[]>([])
 const suggestions = ref<Suggestion[]>(useSuggestionsStore().getSuggestions([SuggestionState.NEW, SuggestionState.DECISION_DELAYED]))
-const search = ref('')
 
 const {inBexMode} = useUtils()
 

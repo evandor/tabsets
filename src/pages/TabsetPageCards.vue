@@ -9,6 +9,7 @@
                :tabsetId="props.tabset?.id"
                :tabsetSorting="props.tabset?.sorting"
                :tabsetSharedId="props.tabset?.sharedId"
+               :simpleUi="props.simpleUi"
                :tabs="currentTabs()"/>
 
       <TabGroups v-else-if="props.tabset?.view === 'group'"
@@ -66,10 +67,8 @@ const orderDesc = ref(false)
 const tabsetId = ref(null as unknown as string)
 
 const props = defineProps({
-  tabset: {
-    type: Object as PropType<Tabset>,
-    required: true
-  }
+  tabset: {type: Object as PropType<Tabset>, required: true},
+  simpleUi: {type: Boolean, default: false}
 })
 
 watchEffect(() => {

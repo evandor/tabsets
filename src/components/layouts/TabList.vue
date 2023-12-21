@@ -17,15 +17,18 @@
         :group="group"
         :tabset-id="tabsetId"
         :tabset-shared-id="tabsetSharedId"
-        :tabs="props.tabs" />
+        :simpleUi="props.simpleUi"
+        :tabs="props.tabs"/>
 
     </vue-draggable-next>
   </q-list>
 
   <TabListHelper v-else
-    :group="group"
-    :tabset-id="tabsetId"
-    :tabs="props.tabs" />
+                 :group="group"
+                 :tabset-id="tabsetId"
+                 :tabset-shared-id="tabsetSharedId"
+                 :simpleUi="props.simpleUi"
+                 :tabs="props.tabs"/>
 
 </template>
 
@@ -55,7 +58,8 @@ const props = defineProps({
   group: {type: String, required: true},
   highlightUrl: {type: String, required: false},
   tabsetSharedId: {type: String, required: false},
-  tabsetSorting: {type: String, required: false}
+  tabsetSorting: {type: String, required: false},
+  simpleUi: {type: Boolean, default: false}
 })
 
 function adjustIndex(element: any, tabs: Tab[]) {

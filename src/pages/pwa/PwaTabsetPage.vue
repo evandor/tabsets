@@ -25,10 +25,6 @@
               @mouseenter="showEditButton = true"
               @mouseout="showEditButton = false">
                   {{ tabsStore.currentTabsetName }}
-                   <q-popup-edit :model-value="tabset?.name" v-slot="scope"
-                                 @update:model-value="val => setNewName(  val)">
-                     <q-input v-model="scope.value" dense autofocus counter @keyup.enter="scope.set"/>
-                   </q-popup-edit>
                 <span
                   v-if="tabset.sharedId"
                   class="text-caption">shared by {{
@@ -71,57 +67,6 @@
           <q-tooltip>Sorting descending or ascending, currently {{ orderDesc }}</q-tooltip>
         </q-btn>
 
-        <q-btn v-if="tabset?.tabs.length > 0 && useUiStore().userLevel === UserLevel.DEFAULT"
-               @click="setView('grid')"
-               style="width:14px"
-               class="q-mr-sm" size="8px"
-               :flat="tabset?.view !== 'grid'"
-               :outline="tabset?.view === 'grid'"
-               icon="grid_on">
-          <q-tooltip class="tooltip">Use grid layout to visualize your tabs</q-tooltip>
-        </q-btn>
-
-        <q-btn v-if="tabset?.tabs.length > 0 && useUiStore().userLevel === UserLevel.DEFAULT"
-               @click="setView('group')"
-               style="width:14px"
-               class="q-mr-sm" size="8px"
-               :flat="tabset?.view !== 'group'"
-               :outline="tabset?.view === 'group'"
-               icon="view_week">
-          <q-tooltip class="tooltip">Use group layout to visualize your tabs</q-tooltip>
-        </q-btn>
-
-        <!-- default view, no need to show if there is no alternative -->
-        <q-btn v-if="tabset?.tabs.length > 0 && useUiStore().userLevel === UserLevel.DEFAULT"
-               @click="setView('list')"
-               style="width:14px"
-               class="q-mr-sm" size="10px"
-               :flat="tabset?.view !== 'list'"
-               :outline="tabset?.view === 'list'"
-               icon="o_list">
-          <q-tooltip class="tooltip">Use the list layout to visualize your tabs</q-tooltip>
-        </q-btn>
-
-        <!--        <q-btn v-if="permissionsStore.hasFeature(FeatureIdent.EXPERIMENTAL_VIEWS) && tabset?.tabs.length > 0"-->
-        <!--               @click="setView('table')"-->
-        <!--               style="width:14px"-->
-        <!--               class="q-mr-xs" size="10px"-->
-        <!--               :flat="tabset?.view !== 'table'"-->
-        <!--               :outline="tabset?.view === 'table'"-->
-        <!--               icon="table_rows">-->
-        <!--          <q-tooltip>Use the table layout to visualize your tabs</q-tooltip>-->
-        <!--        </q-btn>-->
-
-        <!--        <q-btn-->
-        <!--            v-if="permissionsStore.hasFeature(FeatureIdent.EXPERIMENTAL_VIEWS) && tabset?.tabs.length > 0"-->
-        <!--            @click="setView('canvas')"-->
-        <!--            style="width:14px"-->
-        <!--            class="q-mr-sm" size="10px"-->
-        <!--            :flat="tabset?.view !== 'canvas'"-->
-        <!--            :outline="tabset?.view === 'canvas'"-->
-        <!--            icon="o_shape_line">-->
-        <!--          <q-tooltip>Use the canvas freestyle layout to visualize your tabs</q-tooltip>-->
-        <!--        </q-btn>-->
 
         <q-btn
           v-if="permissionsStore.hasFeature(FeatureIdent.EXPERIMENTAL_VIEWS) && tabset?.tabs.length > 0"
@@ -179,84 +124,50 @@
 
   <div class="row fit greyBorderTop"></div>
 
-  <q-tabs
-          v-model="tab"
-          dense
-          class="text-grey q-ma-none q-pa-none"
-          active-color="primary"
-          indicator-color="primary"
-          align="left"
-          narrow-indicator
-  >
-    <q-tab name="tabset" label="Tabs"/>
-    <q-tab name="page" label="Page" :disable="!tabsStore.currentTabsetId"/>
-    <q-tab name="canvas" label="Canvas" :disable="!tabsStore.currentTabsetId"/>
-  </q-tabs>
-
   <!--  <q-separator class="q-mb-md" />-->
 
-  <q-tab-panels v-model="tab" animated>
-    <q-tab-panel class="q-ma-none q-pa-none" name="tabset">
-      <!--  <q-banner rounded class="bg-amber-1 text-black q-ma-md"-->
-      <q-banner rounded class="text-primary q-ma-md" style="border: 1px solid #efefef"
-                v-if="!tabsStore.currentTabsetId && tabsStore.tabsets.size > 0">
-        <div class="text-body2">
-          Select an existing tabset from the list or create a new tabset.
-        </div>
-      </q-banner>
+  <!--  <q-banner rounded class="bg-amber-1 text-black q-ma-md"-->
+  <q-banner rounded class="text-primary q-ma-md" style="border: 1px solid #efefef"
+            v-if="!tabsStore.currentTabsetId && tabsStore.tabsets.size > 0">
+    <div class="text-body2">
+      Select an existing tabset from the list or create a new tabset.
+    </div>
+  </q-banner>
 
-      <q-banner v-else-if="!$q.platform.is.bex && tabset?.tabs.length === 0">
-        Click on the orange plus sign to add new tabs.
-      </q-banner>
+  <q-banner v-else-if="!$q.platform.is.bex && tabset?.tabs.length === 0">
+    Click on the orange plus sign to add new tabs.
+  </q-banner>
 
-      <q-banner v-else-if="tabset?.tabs.length === 0 && tabset?.type !== TabsetType.DYNAMIC">
-        To start adding new tabs to this empty tabset, open new browser tabs and come back to this extension to
-        associate them with a tabset.<br><br>
-        <!--If you want to assign your open tabs straight away, click <span class="cursor-pointer text-blue" @click="addOpenTabs()"><u>here</u></span>.-->
-      </q-banner>
+  <q-banner v-else-if="tabset?.tabs.length === 0 && tabset?.type !== TabsetType.DYNAMIC">
+    To start adding new tabs to this empty tabset, open new browser tabs and come back to this extension to
+    associate them with a tabset.<br><br>
+    <!--If you want to assign your open tabs straight away, click <span class="cursor-pointer text-blue" @click="addOpenTabs()"><u>here</u></span>.-->
+  </q-banner>
 
-      <InfoMessageWidget
-        v-if="tabset?.type === TabsetType.DYNAMIC"
-        :probability="1"
-        ident="tabsetPage_dynamicTabset"
-        hint="This is a 'dynamic' Tabset, i.e. it gets its data from some kind of query (e.g. checking for tags in your tabsets) and is readonly for that reason."/>
+  <InfoMessageWidget
+    v-if="tabset?.type === TabsetType.DYNAMIC"
+    :probability="1"
+    ident="tabsetPage_dynamicTabset"
+    hint="This is a 'dynamic' Tabset, i.e. it gets its data from some kind of query (e.g. checking for tags in your tabsets) and is readonly for that reason."/>
 
-      <InfoMessageWidget
-        v-if="route?.query?.first && route.query.first === 'true' && tabset?.tabs.length > 0"
-        :probability="1"
-        ident="tabsetPage_firstTime"
-        hint="Congrats - you created your first tabset. Your open tabs have been added automatically to get you started with tabsets!"/>
+  <InfoMessageWidget
+    v-if="route?.query?.first && route.query.first === 'true' && tabset?.tabs.length > 0"
+    :probability="1"
+    ident="tabsetPage_firstTime"
+    hint="Congrats - you created your first tabset. Your open tabs have been added automatically to get you started with tabsets!"/>
 
-      <InfoMessageWidget
-        v-if="tabsetId === 'BACKUP'"
-        :probability="1"
-        ident="tabsetPage_backupTabset"
-        hint="This is a special type of tabset - it's meant for Backups. You can use it as any other tabset, but when you use the feature
- 'backup and close current tabs' from the 'open tabs' menu, all tabs will be closed and automatically added to this backup tabset."/>
+  <DynamicTabsetPageCards
+    v-if="tabset?.type === TabsetType.DYNAMIC"
+    :tabset="tabset as unknown as Tabset"/>
 
-      <InfoMessageWidget
-        v-if="tabsetId === 'IGNORE'"
-        :probability="1"
-        ident="tabsetPage_ignoreTabset"
-        hint="This is a special type of tabset - it's meant for those tabs which you don't want to track. You can add urls and whenever
-a tab's url starts with one of the urls of this tabset, it will be ignored and not added to the tabs to be added."/>
-
-      <DynamicTabsetPageCards
-        v-if="tabset?.type === TabsetType.DYNAMIC"
-        :tabset="tabset as unknown as Tabset"/>
-
-      <TabsetPageCards v-else
-                       :tabset="tabset as unknown as Tabset"
-                       :simple-ui="false" />
-
-    </q-tab-panel>
-    <q-tab-panel name="page">
-      <PageForTabset/>
-    </q-tab-panel>
-    <q-tab-panel name="canvas">
-      <CanvasForTabset/>
-    </q-tab-panel>
-  </q-tab-panels>
+  <template v-else>
+    <template v-if="tabset.page">
+      <div class="editorx_body">
+        <div id="editorjs"/>
+      </div>
+    </template>
+    <TabsetPageCards :tabset="tabset as unknown as Tabset" :simple-ui="true"/>
+  </template>
 
 </template>
 
@@ -274,7 +185,6 @@ import {RenameTabsetCommand} from "src/domain/tabsets/RenameTabset";
 import {Tabset, TabsetType} from "src/models/Tabset";
 import {FeatureIdent} from "src/models/AppFeature";
 import {ToggleSortingCommand} from "src/domain/tabsets/ToggleSorting";
-import PageForTabset from "components/layouts/PageForTabset.vue";
 import TabsetPageCards from "pages/TabsetPageCards.vue";
 import OpenRightDrawerWidget from "components/widgets/OpenRightDrawerWidget.vue";
 import JsUtils from "src/utils/JsUtils";
@@ -283,7 +193,9 @@ import TabsetsSelectorWidget from "components/widgets/TabsetsSelectorWidget.vue"
 import DynamicTabsetPageCards from "pages/DynamicTabsetPageCards.vue";
 import {useTabsetService} from "src/services/TabsetService2";
 import Analytics from "src/utils/google-analytics";
-import CanvasForTabset from "components/layouts/CanvasForTabset.vue";
+import EditorJS, {OutputData} from "@editorjs/editorjs";
+import EditorJsConfig from "src/utils/EditorJsConfig";
+import { useMeta } from 'quasar'
 
 const route = useRoute()
 const router = useRouter()
@@ -297,13 +209,72 @@ const tabset = ref<Tabset>(new Tabset(uid(), "empty", []))
 const orderDesc = ref(false)
 const showEditButton = ref(false)
 
-const tab = ref('tabset')
+let editorJS2: EditorJS = undefined as unknown as EditorJS
+
+const metaData = {
+  // sets document title
+  title: 'Index Page!',
+  // optional; sets final title as "Index Page - My Website", useful for multiple level meta
+  //titleTemplate: (tabset:Tabset) => `${tabset.name} - My Website`,
+
+  // meta tags
+  meta: {
+    description: { name: 'description', content: 'Page 1' },
+    keywords: { name: 'keywords', content: 'Quasar website' },
+    equiv: { 'http-equiv': 'Content-Type', content: 'text/html; charset=UTF-8' },
+    // note: for Open Graph type metadata you will need to use SSR, to ensure page is rendered by the server
+    ogTitle:  {
+      property: 'og:title',
+      content: 'sharing with tabsets'
+    },
+    ogImage: {
+      property: 'og:image',
+      template (tabset: Tabset) {
+        console.log("tabset!!!", tabset)
+        return `${tabset} - My Website`
+      }
+    }
+  }
+}
 
 onMounted(() => {
-  Analytics.firePageViewEvent('TabsetPage', document.location.href);
-  //setTimeout(() => client.stop(), 5000)
+  Analytics.firePageViewEvent('PwaTabsetPage', document.location.href);
+
+  if (!editorJS2 && tabset.value.page) {
+    // @ts-ignore
+    editorJS2 = new EditorJS({
+      holder: "editorjs",
+      readOnly: true,
+      minHeight: 1,
+      data: (tabset.value.page || {}) as OutputData,
+      tools: EditorJsConfig.toolsconfig
+    });
+    // if the editor is readonly from the start, I cannot update it when tabset.page changes
+    // setTimeout(() => {
+    //   editorJS2.readOnly.toggle(true)
+    // }, 1000)
+  }
 })
 
+//useMeta(metaData)
+
+useMeta(() => {
+  return {
+    // whenever "title" from above changes, your meta will automatically update
+    title: tabset.value.tabs.length > 0 ? tabset.value.tabs[0].title : '???',
+    meta: {
+      //description: {name: 'og:title', content: 'Page 1'},
+      ogTitle:  {
+        property: 'og:title',
+        content: 'sharing with tabsets'
+      },
+      ogImage: {
+        property: 'og:image',
+        content: tabset.value.tabs.length > 0 ? tabset.value.tabs[0].image : ''
+      }
+    }
+  }
+})
 
 onUpdated(() => {
   JsUtils.runCssHighlight()
@@ -316,7 +287,6 @@ watchEffect(() => {
   tabsetId.value = route?.params.tabsetId as string
   tabset.value = useTabsetService().getTabset(tabsetId.value) || new Tabset(uid(), "empty", [])
   console.log("watch effect in tabsetpage", tabsetId.value)
-  tab.value = route.query['tab'] ? route.query['tab'] as string : 'tabset'
 })
 
 
@@ -341,8 +311,6 @@ const toggleOrder = () => orderDesc.value = !orderDesc.value
 
 const showSorting = () => tabsStore.getCurrentTabs.length > 10 && $q.screen.gt.xs
 
-const GOOGLE_ORIGIN = 'https://www.skysail.io';
-
 </script>
 
 <style>
@@ -352,4 +320,80 @@ const GOOGLE_ORIGIN = 'https://www.skysail.io';
   'GRAD' 0,
   'opsz' 48
 }
+
+.editorx_body {
+  max-width: 1000px;
+  margin-left: 72px;
+  box-sizing: border-box;
+  border: 0 solid #eee;
+  border-radius: 5px;
+  padding: 10px;
+  /*box-shadow: 10px 10px 6px 18px #e8edfa80;*/
+}
+
+.ce-block__content,
+.ce-toolbar__content {
+  max-width: none;
+}
+
+.ce-paragraph {
+  font-size: 16px;
+}
+
+/* editorjsColumns */
+
+.ce-editorjsColumns_col {
+  border: 1px solid #eee;
+  border-radius: 5px;
+  gap: 10px;
+  padding-top: 10px;
+}
+
+.ce-editorjsColumns_col:focus-within {
+  box-shadow: 0 6px 18px #e8edfa80;
+}
+
+@media (max-width: 800px) {
+  .ce-editorjsColumns_wrapper {
+    flex-direction: column;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+}
+
+.ce-inline-toolbar {
+  z-index: 1000
+}
+
+.ce-block__content,
+.ce-toolbar__content {
+  max-width: calc(100% - 50px);
+}
+
+/*   */
+.ce-toolbar__actions {
+  right: calc(100% + 30px);
+  background-color: rgba(255, 255, 255, 0.5);
+  border-radius: 4px;
+}
+
+/* Would be better to remove --narrow mode */
+/* Issue Raised */
+/* // This causes an error which is good i think? */
+.codex-editor--narrow .codex-editor__redactor {
+  margin: 0;
+}
+
+/* Required to prevent clipping */
+.ce-toolbar {
+  z-index: 4;
+}
+
+.codex-editor {
+  /* background:#f00 !important; */
+  z-index: auto !important;
+}
+
+
 </style>

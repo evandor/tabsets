@@ -7,6 +7,11 @@
                        icon="o_note"
                        label="Edit Tabset"/>
 
+      <ContextMenuItem v-close-popup
+                       @was-clicked="openTabsetDescription(tabset)"
+                       icon="o_description"
+                       label="Tabset Description..."/>
+
       <q-separator inset v-if="useTabsStore().tabsets.size > 1"/>
 
       <ContextMenuItem v-close-popup
@@ -183,6 +188,8 @@ const startTabsetNote = (tabset: Tabset) => {
     "#/mainpanel/notes/?tsId=" + tabset.id + "&edit=true"
   NavigationService.openOrCreateTab([url])
 }
+
+const openTabsetDescription = (tabset: Tabset) => openURL(chrome.runtime.getURL("/www/index.html#/tabsets/" + tabset.id + "?tab=page"))
 
 const openEditTabsetDialog = (tabset: Tabset) => {
   $q.dialog({

@@ -2,7 +2,6 @@ import Command from "src/domain/Command";
 import {ExecutionResult} from "src/domain/ExecutionResult";
 import TabsetService from "src/services/TabsetService";
 import {TabsetSharing} from "src/models/Tabset";
-import {useAuthStore} from "stores/auth";
 import {UnShareTabsetCommand} from "src/domain/tabsets/UnShareTabset";
 
 

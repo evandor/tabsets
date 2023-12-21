@@ -212,14 +212,14 @@ text.set(FeatureIdent.RSS.toLowerCase(), {
       'linked rss feeds from your tabsets.',
   permissions: []
 })
-text.set(FeatureIdent.THUMBNAILS.toLowerCase(), {
-  experimental: false,
-  name: 'Thumbnails',
-  img: 'thumbnails.png',
-  description: 'This extension can create thumbnails of the tabs you visit, so that they can presented in an more appealing way. ' +
-      'Please note that only tabs that you visit (or revisit) after the activation of this feature are going to have thumbnails.',
-  permissions: ['thumbnails']
-})
+// text.set(FeatureIdent.THUMBNAILS.toLowerCase(), {
+//   experimental: false,
+//   name: 'Thumbnails',
+//   img: 'thumbnails.png',
+//   description: 'This extension can create thumbnails of the tabs you visit, so that they can presented in an more appealing way. ' +
+//       'Please note that only tabs that you visit (or revisit) after the activation of this feature are going to have thumbnails.',
+//   permissions: ['thumbnails']
+// })
 text.set(FeatureIdent.ANALYSE_TABS.toLowerCase(), {
   experimental: false,
   name: 'Analyse Tabs',
@@ -295,11 +295,6 @@ text.set(FeatureIdent.OLD_TABS.toLowerCase(), {
   planned: true,
   name: 'Old Tabs View',
   description: 'Get a list of old tabs to decide which ones to keep.',
-  permissions: []
-})
-text.set(FeatureIdent.TABSET_PAGE.toLowerCase(), {
-  name: 'Tabset Page',
-  description: 'Use an editor to add additional information about this tabset',
   permissions: []
 })
 text.set(FeatureIdent.NOTES.toLowerCase(), {

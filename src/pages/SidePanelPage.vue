@@ -5,7 +5,7 @@
     <div class="q-ma-none q-pa-none">
 
       <div class="row q-ma-md q-pa-md" v-if="suggestTabsetImport()">
-        <q-btn class="q-px-xl" dense label="import Tabset" color="warning" @click="testShare()" />
+        <q-btn class="q-px-xl" dense label="import Tabset" color="warning" @click="testShare()"/>
       </div>
 
       <q-list dense
@@ -49,7 +49,10 @@
                             @mouseover="hoveredPublicLink = true"
                             @mouseleave="hoveredPublicLink = false">
                 <q-icon style="position: relative;top:-2px;left:-2px"
-                        name="ios_share" class="q-ma-none q-pa-none q-mr-xs"
+                        @click="shareTabsetPubliclyDialog(tabset as Tabset, tabset.sharing.toString().toLowerCase().indexOf('_outdated') >= 0)"
+                        name="ios_share"
+                        class="q-ma-none q-pa-none q-mr-xs"
+                        :class="tabset.sharing.toString().toLowerCase().indexOf('_outdated') >= 0 ? 'cursor-pointer' : ''"
                         :color="tabset.sharing.toString().toLowerCase().indexOf('_outdated') >= 0 ? 'warning' : 'primary'">
                   <q-tooltip class="tooltip" v-if="tabset.sharing.toString().toLowerCase().indexOf('_outdated') >= 0">
                     This tabset is shared but has been changed in the meantime. You need to re-publish.
@@ -63,12 +66,12 @@
                   name="content_copy" color="primary" @click="copyPublicShareToClipboard(tabset.id)">
                   <q-tooltip class="tooltip-small">Copy the Link to your Clipboard</q-tooltip>
                 </q-icon>
-<!--                <q-icon-->
-<!--                  v-show="hoveredPublicLink"-->
-<!--                  class="q-ml-sm cursor-pointer"-->
-<!--                  name="open_in_browser" color="primary" @click="openElectronLink(tabset.id)">-->
-<!--                  <q-tooltip class="tooltip-small">Copy the Electron Link to your Clipboard</q-tooltip>-->
-<!--                </q-icon>-->
+                <!--                <q-icon-->
+                <!--                  v-show="hoveredPublicLink"-->
+                <!--                  class="q-ml-sm cursor-pointer"-->
+                <!--                  name="open_in_browser" color="primary" @click="openElectronLink(tabset.id)">-->
+                <!--                  <q-tooltip class="tooltip-small">Copy the Electron Link to your Clipboard</q-tooltip>-->
+                <!--                </q-icon>-->
               </q-item-label>
             </q-item-section>
 
@@ -115,6 +118,12 @@
           </template>
 
           <div class="q-ma-none q-pa-none">
+
+            <template v-if="tabset.page">
+              <SidePanelTabsetDescriptionPage
+                :tabsetId="tabset.id"
+                :tabsetDesc="tabset.page as Object"/>
+            </template>
 
             <SidePanelPageTabList
               v-if="tabsetExpanded.get(tabset.id)"
@@ -178,13 +187,16 @@ import TabsetService from "src/services/TabsetService";
 import Analytics from "src/utils/google-analytics";
 import {useAuthStore} from "stores/auth";
 import {useDB} from "src/services/usePersistenceService";
-import getScrollTarget = scroll.getScrollTarget;
 import {useBookmarksStore} from "stores/bookmarksStore";
 import {useSuggestionsStore} from "stores/suggestionsStore";
 import SidePanelPageTabList from "components/layouts/SidePanelPageTabList.vue";
 import {AddTabToTabsetCommand} from "src/domain/tabs/AddTabToTabset";
-import {SuggestionState} from "src/models/Suggestion";
 import {CopyToClipboardCommand} from "src/domain/commands/CopyToClipboard";
+import SidePanelTabsetDescriptionPage from "pages/sidepanel/SidePanelTabsetDescriptionPage.vue";
+import {PUBLIC_SHARE_URL} from "boot/constants";
+import ShareTabsetPubliclyDialog from "components/dialogues/ShareTabsetPubliclyDialog.vue";
+import getScrollTarget = scroll.getScrollTarget;
+import MqttService from "src/services/mqtt/MqttService";
 
 const {setVerticalScrollPosition} = scroll
 
@@ -219,13 +231,21 @@ const progress = ref<number | undefined>(undefined)
 const progressLabel = ref<string | undefined>(undefined)
 const selectedTab = ref<Tab | undefined>(undefined)
 const windowName = ref<string | undefined>(undefined)
-const windowId = ref<number | undefined>(undefined)
 const tsBadges = ref<object[]>([])
+const mqttUrl = ref(useUiStore().sharingMqttUrl)
 
-const publictabsetsPath = "https://shared.tabsets.net/"
+function updateOnlineStatus(e: any) {
+  const { type } = e
+  console.log("hier", e, type)
+  useUiStore().networkOnline = type === 'online'
+}
 
 onMounted(() => {
   window.addEventListener('keypress', checkKeystroke);
+
+  window.addEventListener("offline",  (e) => updateOnlineStatus(e));
+  window.addEventListener("online",  (e)  => updateOnlineStatus(e));
+
   if (!useAuthStore().isAuthenticated) {
     router.push("/authenticate")
   } else {
@@ -246,14 +266,11 @@ watchEffect(() => {
 })
 
 watchEffect(() => {
-  // if ($q.platform.is.chrome) {
-  //   chrome.windows.getCurrent()
-  //       .then((currentWindow) => {
-  //         if (currentWindow && currentWindow.id) {
-  //           windowName.value = useWindowsStore().windowNameFor(currentWindow.id)
-  //         }
-  //       })
-  // }
+  //console.log("hier11", currentTabset.value?.page)
+})
+
+
+watchEffect(() => {
   windowName.value = useWindowsStore().currentWindowName
 })
 
@@ -342,7 +359,7 @@ watchEffect(() => {
 watchEffect(() => {
   if (useTabsStore().tabsets) {
     //console.log(" >>> change in tabsets...")
-    tabsetNameOptions.value = _.map([...useTabsStore().tabsets.values()], (ts: Tabset) => {
+    tabsetNameOptions.value = _.map([...useTabsStore().tabsets.values()] as Tabset[], (ts: Tabset) => {
       return {
         label: ts.name,
         value: ts.id
@@ -373,7 +390,7 @@ watchEffect(() => {
   if (usePermissionsStore().hasFeature(FeatureIdent.SPACES)) {
     const currentSpace = useSpacesStore().space
     tabsets.value = _.sortBy(
-      _.filter([...tabsStore.tabsets.values()], (ts: Tabset) => {
+      _.filter([...tabsStore.tabsets.values()] as Tabset[], (ts: Tabset) => {
         if (currentSpace) {
           if (ts.spaces.indexOf(currentSpace.id) < 0) {
             return false
@@ -386,7 +403,7 @@ watchEffect(() => {
       getTabsetOrder, ["asc"])
   } else {
     tabsets.value = _.sortBy(
-      _.filter([...tabsStore.tabsets.values()],
+      _.filter([...tabsStore.tabsets.values()] as Tabset[],
         (ts: Tabset) => ts.status !== TabsetStatus.DELETED
           && ts.status !== TabsetStatus.HIDDEN &&
           ts.status !== TabsetStatus.ARCHIVED),
@@ -437,6 +454,7 @@ if ($q.platform.is.chrome) {
       } else if (message.name === "tab-being-dragged") {
         useUiStore().draggingTab(message.data.tabId, null as unknown as any)
       } else if (message.name === "note-changed") {
+        // TODO needed?
         const tabset = useTabsetService().getTabset(message.data.tabsetId) as Tabset
         if (message.data.noteId) {
           console.log("updating note", message.data.noteId)
@@ -496,12 +514,15 @@ if ($q.platform.is.chrome) {
           message.data.tabsetId :
           useTabsetService().getCurrentTabset()?.id
         useTabsetService().reloadTabset(tabsetId)
-      // } else if (message.name === "toggle-cs-iframe") {
-      //   if (message.data.close) {
-      //     chrome.tabs.sendMessage(message.data.tabId, "cs-iframe-close")
-      //   } else {
-      //     chrome.tabs.sendMessage(message.data.tabId, "cs-iframe-open")
-      //   }
+        // } else if (message.name === "toggle-cs-iframe") {
+        //   if (message.data.close) {
+        //     chrome.tabs.sendMessage(message.data.tabId, "cs-iframe-close")
+        //   } else {
+        //     chrome.tabs.sendMessage(message.data.tabId, "cs-iframe-open")
+        //   }
+      } else if (message.name === 'mqtt-url-changed') {
+        console.log("got message 'mqtt-url-changed'", message)
+        MqttService.reset().then(() => MqttService.init(message.data.mqttUrl))
       } else {
         console.log("got unmatched message", message)
       }
@@ -603,11 +624,7 @@ const toolbarTitle = (tabsets: Tabset[]) => {
       spaceName + ' (' + tabsets.length.toString() + ')' :
       spaceName
   }
-  let text = tabsets.length > 6 ? 'My Tabsets (' + tabsets.length.toString() + ')' : 'My Tabsets'
-  if (windowName.value) {
-    text = text + " [" + windowName.value + "]"
-  }
-  return text
+  return tabsets.length > 6 ? 'My Tabsets (' + tabsets.length.toString() + ')' : 'My Tabsets'
 }
 
 const headerStyle = (tabset: Tabset) => {
@@ -674,7 +691,7 @@ const openPublicShare = (tabsetId: string) => {
 const getPublicTabsetLink = (ts: Tabset) => {
   let image = "https://tabsets.web.app/favicon.ico"
   if (ts && ts.sharedId) {
-    return publictabsetsPath + "#/imp/" + ts.sharedId + "?n=" + btoa(ts.name) //+ "&i=" + btoa(image)
+    return PUBLIC_SHARE_URL + "#/pwa/imp/" + ts.sharedId + "?n=" + btoa(ts.name) + "&a=" + btoa(ts.sharedBy || 'n/a') + "&d=" + ts.sharedAt
   }
   return image
 }
@@ -682,7 +699,7 @@ const getPublicTabsetLink = (ts: Tabset) => {
 const openElectronLink = (tabsetId: string) => {
   const ts = useTabsetService().getTabset(tabsetId)
   if (ts && ts.sharedId) {
-    const link = "electron-tabsets://#/imp/" + ts.sharedId + "?n=" + btoa(ts.name)
+    const link = "electron-tabsets://#/pwa/imp/" + ts.sharedId + "?n=" + btoa(ts.name)
     openURL(link)
   }
 
@@ -716,6 +733,17 @@ const testShare = () => {
   }
 }
 
+const shareTabsetPubliclyDialog = (tabset: Tabset, republish: boolean = false) => {
+  $q.dialog({
+    component: ShareTabsetPubliclyDialog,
+    componentProps: {
+      tabsetId: tabset.id,
+      sharedId: tabset.sharedId,
+      tabsetName: tabset.name,
+      republish: republish
+    }
+  })
+}
 
 </script>
 

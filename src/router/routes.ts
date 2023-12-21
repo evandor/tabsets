@@ -8,7 +8,7 @@ const routes: RouteRecordRaw[] = [
         '/tabsets' : // use case: sharing tabset, opening link, import in PWA for anonymous user
         //'/sidepanel' : // use case: ???
         // @ts-ignore
-        (chrome.sidePanel && chrome.sidePanel.setPanelBehavior) ?
+        (typeof chrome !== 'undefined' && chrome.sidePanel && chrome.sidePanel.setPanelBehavior) ?
             '/authenticate' :
             '/tabsets'
   },
@@ -263,9 +263,14 @@ const routes: RouteRecordRaw[] = [
     children: [{ path: '', component: () => import('pages/SearchResultPage.vue') }],
   },
   {
-    path: '/imp/:sharedId',
+    path: '/pwa/imp/:sharedId',
     component: () => import('layouts/PlainLayout.vue'),
     children: [{ path: '', component: () => import('pages/public/ImportPublicTabsetPage.vue') }],
+  },
+  {
+    path: '/pwa/tabsets/:tabsetId',
+    component: () => import('layouts/PwaPageLayout.vue'),
+    children: [{ path: '', component: () => import('pages/pwa/PwaTabsetPage.vue') }],
   },
   {
     path: '/contentscript',
