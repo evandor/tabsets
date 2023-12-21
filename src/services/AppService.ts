@@ -2,7 +2,7 @@ import {usePermissionsStore} from "stores/permissionsStore";
 import ChromeListeners from "src/services/ChromeListeners";
 import ChromeBookmarkListeners from "src/services/ChromeBookmarkListeners";
 import BookmarksService from "src/services/BookmarksService";
-import {uid, useQuasar} from "quasar";
+import {useQuasar} from "quasar";
 import IndexedDbPersistenceService from "src/services/IndexedDbPersistenceService";
 import {useNotificationsStore} from "stores/notificationsStore";
 import {useDB} from "src/services/usePersistenceService";
@@ -20,9 +20,8 @@ import {useSearchStore} from "stores/searchStore";
 import {useRouter} from "vue-router";
 import {useGroupsStore} from "stores/groupsStore";
 import {FeatureIdent} from "src/models/AppFeature";
-import MqttService from "src/services/mqtt/MqttService";
 import {useMessagesStore} from "src/stores/messagesStore";
-import {useAppStore} from "stores/appStore";
+import {SyncType, useAppStore} from "stores/appStore";
 import GitPersistentService from "src/services/persistence/GitPersistentService";
 
 class AppService {
@@ -59,6 +58,12 @@ class AppService {
 
     const localStorage = useQuasar().localStorage
 
+    // sync features
+    const syncType = localStorage.getItem("sync.type") as SyncType || SyncType.NONE
+    const syncUrl = localStorage.getItem("sync.git.url")
+    const dbOrGitDb = syncType && syncType === SyncType.GIT && syncUrl ? useDB(undefined).gitDb : useDB(undefined).db
+    console.log("checking sync config:", syncType, syncUrl, dbOrGitDb)
+
 // init db
     IndexedDbPersistenceService.init("db")
       .then(() => {
@@ -69,9 +74,9 @@ class AppService {
         messagesStore.initialize(useDB(undefined).db)
 
         tabsetService.setLocalStorage(localStorage)
-        spacesStore.initialize(useDB(undefined).db)
+        spacesStore.initialize(dbOrGitDb)
           .then(() => {
-            useTabsetService().init(useDB(undefined).gitDb, false)
+            useTabsetService().init(dbOrGitDb, false)
               .then(() => {
                 MHtmlService.init()
                 ChromeApi.init(router)

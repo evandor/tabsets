@@ -20,12 +20,12 @@
             no-caps>
       <q-tab name="appearance" label="Appearance"/>
       <q-tab name="sharing" label="Sharing"/>
+      <q-tab name="syncing" label="Syncing"/>
       <q-tab name="thirdparty" label="Third Party Services"/>
       <!--      <q-tab name="ignored" label="Ignored Urls"/>-->
       <q-tab name="archived" label="Archived Tabsets"/>
       <q-tab name="search" label="Search Engine" v-if="devEnabled"/>
       <q-tab name="importExport" label="Import/Export"/>
-      <!--      <q-tab name="logs" label="Log: Errors & Warnings"/>-->
       <q-tab name="internals" label="Internals" v-if="devEnabled"/>
       <q-tab name="featureToggles" label="Feature Toggles"/>
     </q-tabs>
@@ -51,7 +51,7 @@
 
       <div class="row items-baseline q-ma-md">
         <div class="col-3">
-          Tab Info Detail Level {{detailLevelPerTabset ? ' (Default)' : ''}}
+          Tab Info Detail Level {{ detailLevelPerTabset ? ' (Default)' : '' }}
         </div>
         <div class="col-9">
           <q-radio v-model="detailLevel" :val="ListDetailLevel.MINIMAL" label="Minimal Details"/>
@@ -107,11 +107,11 @@
         </div>
         <div class="col q-ma-xl">
           <q-range
-              v-model="settingsStore.thresholds"
-              :step=10
-              marker-labels
-              :min=0
-              :max=100
+            v-model="settingsStore.thresholds"
+            :step=10
+            marker-labels
+            :min=0
+            :max=100
           />
         </div>
       </div>
@@ -161,7 +161,8 @@
   <div v-if="tab === 'sharing'">
 
     <div class="q-pa-md q-gutter-sm">
-      <q-banner rounded class="bg-grey-1 text-primary">On this settings page, you can adjust your sharing experience
+      <q-banner rounded class="bg-grey-1 text-primary" style="border:1px solid orange">On this settings page, you can
+        adjust your sharing experience
       </q-banner>
 
       <div class="row items-baseline q-ma-md q-gutter-lg">
@@ -171,7 +172,7 @@
         <div class="col-7">
           <q-input color="primary" filled v-model="nickname" label="">
             <template v-slot:prepend>
-              <q-icon name="ios_share" />
+              <q-icon name="ios_share"/>
             </template>
           </q-input>
         </div>
@@ -181,9 +182,9 @@
           Avatar
         </div>
         <div class="col-7">
-          <q-input type="url" color="primary" filled v-model="avatar" label="" >
+          <q-input type="url" color="primary" filled v-model="avatar" label="">
             <template v-slot:prepend>
-              <q-icon name="ios_share" />
+              <q-icon name="ios_share"/>
             </template>
           </q-input>
         </div>
@@ -199,9 +200,10 @@
         <div class="col-7">
           <q-input
             @blur="sendMsg('mqtt-url-changed', {mqttUrl})"
-            type="url" color="primary" filled v-model="mqttUrl" hint="e.g. mqtts://public:public@public.cloud.shiftr.io:443">
+            type="url" color="primary" filled v-model="mqttUrl"
+            hint="e.g. mqtts://public:public@public.cloud.shiftr.io:443">
             <template v-slot:prepend>
-              <q-icon name="ios_share" />
+              <q-icon name="ios_share"/>
             </template>
           </q-input>
         </div>
@@ -213,11 +215,169 @@
           Installation ID
         </div>
         <div class="col-7">
-         {{ installationId }}
+          {{ installationId }}
         </div>
         <div class="col">
 
         </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <div v-if="tab === 'syncing'">
+
+    <div class="q-pa-md q-gutter-sm">
+      <q-banner rounded class="bg-grey-1 text-primary" style="border: 1px solid orange">
+        <div class="text-body1">Experimental: Sync your tabsets with git.</div>
+        <div class="text-caption">
+          You need to provide a git repository URL and a personal access token (e.g. for
+          github: <a
+          href="https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens"
+          target="_blank">github example</a>).
+        </div>
+        <div class="text-caption">
+          Initially, the repository should be empty.
+        </div>
+      </q-banner>
+
+      <div class="row items-baseline q-ma-md q-gutter-lg">
+        <div class="col-3">
+          Syncing
+        </div>
+        <div class="col-7">
+          <q-select
+            label="Tabset's Detail Level"
+            filled
+            v-model="tempSyncOption"
+            :options="syncOptions"
+            map-options
+            emit-value
+            style="width: 250px"
+          />
+        </div>
+        <div class="col"></div>
+
+        <template v-if="tempSyncOption === SyncType.GIT">
+
+          <div class="col-3">
+            Git Repository URL
+          </div>
+          <div class="col-7">
+            <q-input type="url" color="primary" filled v-model="gitRepoUrl" label="">
+              <template v-slot:prepend>
+                <q-icon name="sync"/>
+              </template>
+            </q-input>
+          </div>
+          <div class="col text-right"></div>
+
+          <div class="col-3">
+            Git Repository Token
+          </div>
+          <div class="col-7">
+            <q-input type="password" color="primary" filled v-model="gitRepoToken" label=""
+                     hint="needed for write access, for private repositories also for read access">
+              <template v-slot:prepend>
+                <q-icon name="sync"/>
+              </template>
+            </q-input>
+          </div>
+          <div class="col text-right"></div>
+        </template>
+
+        <template v-if="tempSyncOption === SyncType.GIT && gitRepoUrl">
+          <div class="col-3"></div>
+          <div class="col-7">
+            <q-btn
+              label="Test Connection" @click="testGitConnection()"/>
+            <span class="q-ml-md"> {{ gitTestResult }}</span>
+          </div>
+          <div class="col text-right"></div>
+        </template>
+
+        <template v-if="gitTestResult === 'success' && !syncType && tempSyncOption === SyncType.GIT">
+          <div class="col-3"></div>
+          <div class="col-7">
+            <div>You can switch to the git-based sync version of tabsets now if you wish.</div>
+            <div>Please follow these steps:</div>
+            <ul>
+              <li><span class="cursor-pointer text-blue-8" @click="tab = 'importExport'">Export</span> your tabsets
+                first
+              </li>
+              <li>Click on 'Start Syncing' below</li>
+              <li>Restart Tabsets (close and open again)</li>
+              <li>Import your tabsets again</li>
+            </ul>
+          </div>
+          <div class="col text-right"></div>
+        </template>
+
+        <template v-if="syncType === SyncType.GIT && tempSyncOption === SyncType.NONE">
+          <div class="col-3"></div>
+          <div class="col-7">
+            <div>You can stop using the git-based sync version of tabsets if you wish.</div>
+            <div>Please follow these steps:</div>
+            <ul>
+              <li><span class="cursor-pointer text-blue-8" @click="tab = 'importExport'">Export</span> your tabsets
+                first
+              </li>
+              <li>Click on 'Stop Syncing' below</li>
+              <li>Restart Tabsets (close and open again)</li>
+              <li>Import your tabsets again</li>
+            </ul>
+          </div>
+          <div class="col text-right"></div>
+
+          <div class="col-3"></div>
+          <div class="col-7">
+            <q-banner rounded class="bg-grey-1 text-primary" style="border: 1px solid orange">
+              <div class="text-caption text-red">
+                If you do not export your tabsets and import them again you will not have access to the
+                data formerly stored in your git repository.
+              </div>
+            </q-banner>
+          </div>
+          <div class="col"></div>
+
+          <div class="col-3"></div>
+          <div class="col-7">
+            <q-btn label="Stop Syncing" @click="stopGitSyncing()"/>
+          </div>
+          <div class="col text-right"></div>
+        </template>
+
+        <template
+          v-if="tempSyncOption === SyncType.GIT && gitRepoUrl && gitTestResult === 'success'">
+
+          <div class="col-3"></div>
+          <div class="col-7">
+            <q-banner rounded class="bg-grey-1 text-primary" style="border: 1px solid orange">
+              <div class="text-caption text-red">
+                Syncing your data will store your data somewhere else than only locally on your computer. Using a public
+                repository will give public (read) access to your data!
+              </div>
+            </q-banner>
+          </div>
+          <div class="col"></div>
+
+          <div class="col-3"></div>
+          <div class="col-7">
+            <q-btn label="Start Syncing" @click="startGitSyncing()"/>
+          </div>
+          <div class="col text-right"></div>
+        </template>
+
+
+<!--        <div class="col-3"></div>-->
+<!--        <div class="col-7">-->
+<!--          gitTestResult: {{ gitTestResult }}<br>-->
+<!--          syncType: {{ syncType }}<br>-->
+<!--          tempSyncOption: {{ tempSyncOption }}<br>-->
+<!--        </div>-->
+<!--        <div class="col text-right"></div>-->
 
       </div>
 
@@ -383,8 +543,8 @@
         <div class="col-1"></div>
         <div class="col-5">
           <q-btn
-              @click="showExportDialog"
-              flat round dense icon="file_download" color="primary">
+            @click="showExportDialog"
+            flat round dense icon="file_download" color="primary">
             <q-tooltip>Export your tabsets</q-tooltip>
           </q-btn>
         </div>
@@ -396,8 +556,8 @@
         <div class="col-1"></div>
         <div class="col-5">
           <q-btn
-              @click="showImportDialog"
-              flat round dense icon="file_upload" color="primary">
+            @click="showImportDialog"
+            flat round dense icon="file_upload" color="primary">
             <q-tooltip>Import your tabsets backup</q-tooltip>
           </q-btn>
         </div>
@@ -438,9 +598,8 @@
 
 <script setup lang="ts">
 import {useTabsStore} from "src/stores/tabsStore"
-import {useRouter} from "vue-router";
 import {onMounted, ref, watch, watchEffect} from "vue";
-import {useQuasar} from "quasar";
+import {LocalStorage, useQuasar} from "quasar";
 import {useSearchStore} from "src/stores/searchStore";
 import TabsetService from "src/services/TabsetService";
 import ExportDialog from "components/dialogues/ExportDialog.vue";
@@ -465,6 +624,9 @@ import Analytics from "src/utils/google-analytics";
 import {useGroupsStore} from "../stores/groupsStore";
 import {useSuggestionsStore} from "stores/suggestionsStore";
 import {StaticSuggestionIdent, Suggestion} from "src/models/Suggestion";
+import {SyncType} from "stores/appStore";
+import GitPersistentService from "src/services/persistence/GitPersistentService";
+import {useRoute, useRouter} from "vue-router";
 
 const {sendMsg} = useUtils()
 
@@ -475,6 +637,8 @@ const settingsStore = useSettingsStore()
 
 const localStorage = useQuasar().localStorage
 const $q = useQuasar()
+const route = useRoute()
+const router = useRouter()
 
 useUiStore().rightDrawerSetActiveTab(DrawerTabs.FEATURES)
 
@@ -497,9 +661,21 @@ const installationId = ref<string | undefined>(localStorage.getItem('sharing.ins
 const bookmarksPermissionGranted = ref<boolean | undefined>(usePermissionsStore().hasPermission('bookmarks'))
 const pageCapturePermissionGranted = ref<boolean | undefined>(usePermissionsStore().hasPermission('history'))
 const allUrlsOriginGranted = ref<boolean | undefined>(usePermissionsStore().hasAllOrigins())
-const tab = ref('appearance')
 const fullUrls = ref(localStorage.getItem('ui.fullUrls') || false)
 const detailLevelPerTabset = ref(localStorage.getItem('ui.detailsPerTabset') || false)
+
+const gitRepoToken = ref<string>(LocalStorage.getItem('sync.git.token') as string || '')
+const gitRepoUrl = ref<string>(localStorage.getItem('sync.git.url') as string || '')
+const gitTestResult = ref<string | undefined>(undefined)
+const syncType = ref<string | undefined>(undefined)
+const tempSyncOption = ref<SyncType>(localStorage.getItem('sync.type') as SyncType || SyncType.NONE)
+
+const syncOptions = [
+  {label: 'No Syncing', value: SyncType.NONE},
+  {label: 'Syncing via git repository', value: SyncType.GIT}
+]
+
+const tab = ref<string>(route.query['tab'] ? route.query['tab'] as string : 'appearance')
 
 const {handleError} = useNotificationHandler()
 
@@ -521,14 +697,14 @@ watch(() => bookmarksPermissionGranted.value, (newValue, oldValue) => {
   }
   if (bookmarksPermissionGranted.value && !usePermissionsStore().hasPermission('bookmarks')) {
     useCommandExecutor()
-        .executeFromUi(new GrantPermissionCommand("bookmarks"))
-        .then((res: ExecutionResult<boolean>) => bookmarksPermissionGranted.value = res.result)
+      .executeFromUi(new GrantPermissionCommand("bookmarks"))
+      .then((res: ExecutionResult<boolean>) => bookmarksPermissionGranted.value = res.result)
   } else if (!bookmarksPermissionGranted.value) {
     useCommandExecutor()
-        .executeFromUi(new RevokePermissionCommand("bookmarks"))
-        .then(() => {
-          useBookmarksStore().loadBookmarks()
-        })
+      .executeFromUi(new RevokePermissionCommand("bookmarks"))
+      .then(() => {
+        useBookmarksStore().loadBookmarks()
+      })
   }
 })
 
@@ -539,17 +715,30 @@ watch(() => pageCapturePermissionGranted.value, (newValue, oldValue) => {
   }
   if (pageCapturePermissionGranted.value && !usePermissionsStore().hasPermission('pageCapture')) {
     useCommandExecutor()
-        .executeFromUi(new GrantPermissionCommand("pageCapture"))
-        .then((res: ExecutionResult<boolean>) => pageCapturePermissionGranted.value = res.result)
+      .executeFromUi(new GrantPermissionCommand("pageCapture"))
+      .then((res: ExecutionResult<boolean>) => pageCapturePermissionGranted.value = res.result)
   } else if (!pageCapturePermissionGranted.value) {
     useCommandExecutor()
-        .executeFromUi(new RevokePermissionCommand("pageCapture"))
+      .executeFromUi(new RevokePermissionCommand("pageCapture"))
   }
 })
 
 watchEffect(() => {
   $q.dark.set(darkMode.value)
   localStorage.set('darkMode', darkMode.value)
+})
+
+watchEffect(() => {
+  LocalStorage.set('sync.git.url', gitRepoUrl.value)
+})
+
+watchEffect(() => {
+  LocalStorage.set('sync.git.token', gitRepoToken.value)
+})
+
+watchEffect(() => {
+  //localStorage.set('sync.type', tempSyncOption.value)
+  syncType.value = localStorage.getItem('sync.type') as SyncType
 })
 
 watchEffect(() => {
@@ -627,6 +816,23 @@ const simulateStaticSuggestion = () => {
   ]
   useSuggestionsStore().addSuggestion(suggestions[suggestionsCounter++ % 2])
 }
+
+const testGitConnection = async () => {
+  if (gitRepoUrl.value) {
+    console.log("testing git connection with", gitRepoUrl.value, gitRepoToken.value?.substring(0, 5) + "...")
+    const res = await GitPersistentService.testConnection(gitRepoUrl.value)//, gitRepoToken)
+    console.log("got res:", res)
+    gitTestResult.value = res
+  } else {
+    gitTestResult.value = "no repo URL given"
+  }
+}
+
+const startGitSyncing = () => localStorage.set("sync.type", SyncType.GIT)
+const stopGitSyncing = () => localStorage.set("sync.type", SyncType.NONE)
+
+
+//const syncingSetTo = (t: SyncType) => localStorage.getItem('sync.type') as SyncType === SyncType.GIT
 
 </script>
 

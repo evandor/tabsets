@@ -19,11 +19,13 @@ import http from 'isomorphic-git/http/web'
 import * as git from 'isomorphic-git'
 import {Buffer} from "buffer";
 import {useTabsStore} from "stores/tabsStore";
+import {useSpacesStore} from "stores/spacesStore";
+import {LocalStorage, uid} from "quasar";
 
 self.Buffer = Buffer;
 
 async function createDir(...segments: string[]) {
-  console.log("got segmetns", segments)
+  console.log("got segments", segments)
   let prefix = ''
   for (const segment of segments) {
     try {
@@ -37,34 +39,37 @@ async function createDir(...segments: string[]) {
   }
 }
 
-async function push() {
+async function push(dir: string) {
   let pushResult = await git.push({
     fs,
     http,
-    dir: '/tutorial',
+    dir,
     remote: 'origin',
     corsProxy: 'https://cors.isomorphic-git.org',
     ref: 'main',
-    onAuth: () => ({username: process.env.GITHUB_TOKEN}),
+    onAuth: () => ({username: LocalStorage.getItem('sync.git.token') as string || '---'}),
   })
   console.log(pushResult)
 }
 
 class GitPersistenceService implements PersistenceService {
   private db: IDBPDatabase = null as unknown as IDBPDatabase
+  private readonly _dir = "/tabsets";
 
-  async init(dbName: string) {
+  // TODO
+  async init(dbName: string, url: string = 'https://github.com/evandor/tabsets-data.git') {
     console.log("=== initializing git database ===", dbName)
-    this.db = await this.initDatabase(dbName)
+    this.db = await this.initDatabase(dbName, url)
     useUiStore().dbReady = true
   }
 
-  private async initDatabase(dbName: string): Promise<any> {
+
+  private async initDatabase(dbName: string, url: string, dir: string = this._dir): Promise<any> {
     window.fs = new LightningFS('fs')
     console.log("hier!")
     window.pfs = window.fs.promises
     console.debug("about to initialize git")
-    window.dir = '/tutorial'
+    window.dir = dir
     console.log(dir);
     try {
       await pfs.mkdir(dir);
@@ -74,26 +79,56 @@ class GitPersistenceService implements PersistenceService {
 
     await pfs.readdir(dir);
 
-    await git.clone({
-      fs,
-      http,
-      dir,
-      corsProxy: 'https://cors.isomorphic-git.org',
-      url: 'https://github.com/evandor/tabsets-data.git',
-      ref: 'main',
-      singleBranch: true,
-      depth: 10
-    });
+    try {
+      const cloneDef = {
+        fs,
+        http,
+        dir,
+        corsProxy: 'https://cors.isomorphic-git.org',
+        url: url,
+        ref: 'main',
+        singleBranch: true,
+        depth: 10,
+        onAuth: () => ({username: LocalStorage.getItem('sync.git.token') as string || '---'}),
+      }
+      console.log(`about to clone '${url}' into ${dir}`, cloneDef)
+      return await git.clone(cloneDef);
+    } catch (err) {
+      console.log("got error", err)
+      return Promise.reject(err)
+    }
+  }
 
-   // await pfs.readdir(dir);
+  async testConnection(gitRepoUrl: string): Promise<string> { //, gitRepoToken: string) {
+    try {
+      const dir = "/" + uid()
+      try {
+        const r = await this.initDatabase("testdb", gitRepoUrl, dir)
+        console.log("got r", r)
+      } catch (e: any) {
+        console.log("got e", e)
+        return Promise.resolve(e.toString())
+      }
+      await pfs.unlink(dir)
+      console.log("success")
+      return Promise.resolve("success")
+    } catch (err) {
+      return Promise.resolve("got error: " + err)
+    }
 
   }
+
+
+  /**
+   * === Tabsets ========================================
+   */
 
   async loadTabsets(): Promise<void> {
     console.log("=== loading tabsets ===")
     // update from git, then read from fs
     const tabsets: Tabset[] = []
     try {
+      await createDir("tabsets")
       const result: string[] = await pfs.readdir(`${dir}/tabsets`)//, (callback: any) => {
       console.log("callback", result)
       for (var index in result) {
@@ -108,6 +143,7 @@ class GitPersistenceService implements PersistenceService {
           ts.tabs = []
 
           try {
+            await createDir("tabsets", tabsetId, "tabs")
             const tabsResult: string[] = await pfs.readdir(`${dir}/tabsets/${tabsetId}/tabs`)
             for (var tabsIndex in tabsResult) {
               const tab = JSON.parse(await pfs.readFile(`${dir}/tabsets/${tabsetId}/tabs/${tabsResult[tabsIndex]}`))
@@ -118,7 +154,9 @@ class GitPersistenceService implements PersistenceService {
           }
 
           tabsets.push(ts)
-        } catch (err) {console.log("err", err)}
+        } catch (err) {
+          console.log("err", err)
+        }
       }
     } catch (err) {
       console.warn("err", err)
@@ -144,7 +182,7 @@ class GitPersistenceService implements PersistenceService {
     await git.add({fs, dir, filepath: tabsetFilename})
 
     // add / update tabs
-    for(const t of tabs) {
+    for (const t of tabs) {
       await pfs.writeFile(`${dir}/tabsets/${tabset.id}/tabs/${t.id}`, JSON.stringify(t, null, 2), 'utf8')
       //await git.status({fs, dir, filepath: 'newfile.txt'})
       await git.add({fs, dir, filepath: tabsetFilename + "/tabs"})
@@ -161,15 +199,110 @@ class GitPersistenceService implements PersistenceService {
     })
 
     console.log(sha)
-    await push();
+    await push(this._dir);
     return Promise.resolve(undefined);
   }
 
   async deleteTabset(tabsetId: string): Promise<any> {
     await pfs.rmdir(`${dir}/tabsets/${tabset.id}`)
-    await push();
+    await push(this._dir);
     return Promise.resolve(undefined);
   }
+
+  /**
+   * === Spaces ========================================
+   */
+
+  async loadSpaces(): Promise<any> {
+    console.log("=== loading spaces ===")
+    // update from git, then read from fs
+    const spaces: Space[] = []
+    try {
+      const entityName = "space"
+      const entitiesName = "spaces"
+      await createDir(entitiesName)
+      const result: string[] = await pfs.readdir(`${dir}/${entitiesName}`)//, (callback: any) => {
+      console.log("callback", result)
+      for (var index in result) {
+        console.log("got index", index)
+        const entityId = result[index]
+        const tsDataLocation = `${dir}/${entitiesName}/${entityId}/tabset.json`
+        //console.log("`${dir}/tabsets/${tabsetId}/tabset.json`", `${dir}/tabsets/${tabsetId}/${entityName}.json`)
+        try {
+          const tsData = await pfs.readFile(tsDataLocation)
+          console.log("tsData", tsData)
+          const s = JSON.parse(tsData) as Space
+          //ts.tabs = []
+
+          // try {
+          //   await createDir(entitiesName, tabsetId, "tabs")
+          //   const tabsResult: string[] = await pfs.readdir(`${dir}/tabsets/${tabsetId}/tabs`)
+          //   for (var tabsIndex in tabsResult) {
+          //     const tab = JSON.parse(await pfs.readFile(`${dir}/tabsets/${tabsetId}/tabs/${tabsResult[tabsIndex]}`))
+          //     ts.tabs.push(tab)
+          //   }
+          // } catch (err) {
+          //   console.warn("err", err)
+          // }
+
+          spaces.push(s)
+        } catch (err) {
+          console.log("err", err)
+        }
+      }
+    } catch (err) {
+      console.warn("err", err)
+    }
+    for (const s of spaces) {
+      useSpacesStore().addSpace(s)
+    }
+
+    return Promise.resolve(undefined);
+
+  }
+
+  async addSpace(entity: Space): Promise<any> {
+    const entityName = "space"
+    const entitiesName = "spaces"
+
+    // assuming new
+    const tabsetFilename = `${entitiesName}/${entity.id}`
+    //await createDir(entitiesName, entity.id, "tabs")
+
+    let strippedTabset = JSON.parse(JSON.stringify(entity));
+    //const tabs = strippedTabset.tabs as Tab[]
+    //delete strippedTabset['tabs']
+    await createDir(entitiesName, entity.id)
+    await pfs.writeFile(`${dir}/${entitiesName}/${entity.id}/${entityName}.json`,
+      JSON.stringify(strippedTabset, null, 2), 'utf8')
+    //await git.status({fs, dir, filepath: 'newfile.txt'})
+    await git.add({fs, dir, filepath: tabsetFilename})
+
+    let sha = await git.commit({
+      fs,
+      dir,
+      message: 'spaces.',
+      author: {
+        name: 'Mr. Test',
+        email: 'mrtest@example.com'
+      }
+    })
+
+    console.log(sha)
+    await push(this._dir);
+    return Promise.resolve(undefined);
+  }
+
+  async deleteSpace(entityId: string) {
+    await pfs.rmdir(`${dir}/spaces/${entityId}`)
+    await push(this._dir);
+    return Promise.resolve(undefined);
+  }
+
+  /**
+   * === ... ========================================
+   */
+
 
 
   addGroup(group: chrome.tabGroups.TabGroup): Promise<any> {
@@ -180,10 +313,6 @@ class GitPersistenceService implements PersistenceService {
   }
 
   addNotification(notification: Notification): Promise<any> {
-    return Promise.reject(undefined);
-  }
-
-  addSpace(space: Space): Promise<any> {
     return Promise.reject(undefined);
   }
 
@@ -231,9 +360,6 @@ class GitPersistenceService implements PersistenceService {
 
   deleteMHtml(id: string): Promise<void> {
     return Promise.reject(undefined);
-  }
-
-  deleteSpace(spaceId: string): void {
   }
 
   deleteThumbnail(url: string): Promise<void> {
@@ -313,10 +439,6 @@ class GitPersistenceService implements PersistenceService {
   }
 
   loadCategories(): Promise<any> {
-    return Promise.reject(undefined);
-  }
-
-  loadSpaces(): Promise<any> {
     return Promise.reject(undefined);
   }
 
