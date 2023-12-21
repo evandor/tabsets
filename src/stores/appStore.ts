@@ -2,6 +2,11 @@ import {defineStore} from 'pinia';
 import {ref} from "vue";
 import {LocalStorage, uid, useQuasar} from "quasar";
 
+export enum SyncType {
+  NONE = "NONE",
+  GIT = "GIT"
+}
+
 export const useAppStore = defineStore('app', () => {
 
   const key = 'sharing.installation';

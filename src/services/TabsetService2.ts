@@ -38,7 +38,7 @@ export function useTabsetService() {
 
   const init = async (providedDb: PersistenceService,
                       doNotInitSearchIndex: boolean = false) => {
-    console.log("initializing tabsetService2")
+    console.log("initializing tabsetService2", providedDb)
     db = providedDb
     await db.loadTabsets()
     if (!doNotInitSearchIndex) {
