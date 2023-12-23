@@ -60,7 +60,7 @@ class AppService {
 
     // sync features
     const syncType = localStorage.getItem("sync.type") as SyncType || SyncType.NONE
-    const syncUrl = localStorage.getItem("sync.git.url")
+    const syncUrl = localStorage.getItem("sync.git.url") as string | undefined
     const dbOrGitDb = syncType && syncType === SyncType.GIT && syncUrl ? useDB(undefined).gitDb : useDB(undefined).db
     console.log("checking sync config:", syncType, syncUrl, dbOrGitDb)
 
@@ -69,7 +69,7 @@ class AppService {
       .then(() => {
 
         if (syncType && syncType === SyncType.GIT && syncUrl) {
-          GitPersistentService.init("db")
+          GitPersistentService.init(syncUrl)
         }
 
         // init services

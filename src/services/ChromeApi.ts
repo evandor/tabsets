@@ -163,14 +163,15 @@ class ChromeApi {
               //   title: 'Open Tabsets Extension',
               //   contexts: ['all']
               // })
-              //if (usePermissionsStore().hasFeature(FeatureIdent.ANALYSE_TABS)) {
-              console.debug(" > context menu: website_clip")
-              chrome.contextMenus.create({
-                id: 'website_clip',
-                parentId: 'tabset_extension',
-                title: 'Create Website Clip',
-                contexts: ['all']
-              })
+              if (usePermissionsStore().hasFeature(FeatureIdent.WEBSITE_CLIP)) {
+                console.debug(" > context menu: website_clip")
+                chrome.contextMenus.create({
+                  id: 'website_clip',
+                  parentId: 'tabset_extension',
+                  title: 'Create Website Clip',
+                  contexts: ['all']
+                })
+              }
               // chrome.contextMenus.create({
               //   id: 'website_quote',
               //   parentId: 'tabset_extension',

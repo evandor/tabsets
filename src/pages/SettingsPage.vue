@@ -20,7 +20,7 @@
             no-caps>
       <q-tab name="appearance" label="Appearance"/>
       <q-tab name="sharing" label="Sharing"/>
-      <q-tab name="syncing" label="Syncing"/>
+      <q-tab name="syncing" label="Syncing"  v-if="devEnabled"/>
       <q-tab name="thirdparty" label="Third Party Services"/>
       <!--      <q-tab name="ignored" label="Ignored Urls"/>-->
       <q-tab name="archived" label="Archived Tabsets"/>
@@ -249,7 +249,7 @@
         </div>
         <div class="col-7">
           <q-select
-            label="Tabset's Detail Level"
+            label="Tabsets' Sync Settings"
             filled
             v-model="tempSyncOption"
             :options="syncOptions"
@@ -273,6 +273,24 @@
             </q-input>
           </div>
           <div class="col text-right"></div>
+
+<!--          <div class="col-3">-->
+<!--            Store Name-->
+<!--          </div>-->
+<!--          <div class="col-7">-->
+<!--            <q-input type="url" color="primary" filled v-model="gitRepoStore" label=""-->
+<!--                     lazy-rules-->
+<!--                     :rules="[-->
+<!--                       val => !!val || 'Store is required',-->
+<!--                       val => /^[A-Za-z0-9]*$/.test(val) || 'Please use only characters or numbers'-->
+<!--                       ]"-->
+<!--                     hint="a subpath in your git repo to distinguish different sync stores">-->
+<!--              <template v-slot:prepend>-->
+<!--                <q-icon name="sync"/>-->
+<!--              </template>-->
+<!--            </q-input>-->
+<!--          </div>-->
+<!--          <div class="col text-right"></div>-->
 
           <div class="col-3">
             Git Repository Token
@@ -666,6 +684,7 @@ const detailLevelPerTabset = ref(localStorage.getItem('ui.detailsPerTabset') || 
 
 const gitRepoToken = ref<string>(LocalStorage.getItem('sync.git.token') as string || '')
 const gitRepoUrl = ref<string>(localStorage.getItem('sync.git.url') as string || '')
+//const gitRepoStore = ref<string>(localStorage.getItem('sync.git.store') as string || '')
 const gitTestResult = ref<string | undefined>(undefined)
 const syncType = ref<string | undefined>(undefined)
 const tempSyncOption = ref<SyncType>(localStorage.getItem('sync.type') as SyncType || SyncType.NONE)
@@ -735,6 +754,10 @@ watchEffect(() => {
 watchEffect(() => {
   LocalStorage.set('sync.git.token', gitRepoToken.value)
 })
+
+//watchEffect(() => {
+//  LocalStorage.set('sync.git.store', gitRepoStore.value)
+// })
 
 watchEffect(() => {
   //localStorage.set('sync.type', tempSyncOption.value)
