@@ -246,6 +246,7 @@ module.exports = configure(function (ctx) {
         'content-script',
         'my-content-script',
         'tabsets-content-script',
+        'content-script-tab-helper',
         'content-script-thumbnails',
         'clipping',
         'annotation',

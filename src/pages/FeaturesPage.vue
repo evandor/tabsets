@@ -408,6 +408,15 @@ text.set(FeatureIdent.ANNOTATIONS.toLowerCase(), {
   //more: 'https://docs.tabsets.net/website-monitoring',
   permissions: []
 })
+text.set(FeatureIdent.TAB_HELPER.toLowerCase(), {
+  name: 'Tab Helper',
+  description: 'Add a small tag on any website to access tabsets features quickly.<br>' +
+    'You need to restart tabsets if you activate or deactivate this feature.<br>' +
+    'The Tabsets Helper Icon will appear on all pages you open once activated.',
+  img: 'tabhelper.png',
+  //more: 'https://docs.tabsets.net/website-monitoring',
+  permissions: []
+})
 
 
 watchEffect(() => {
