@@ -397,6 +397,9 @@ class ChromeListeners {
         //if (usePermissionsStore().hasFeature(FeatureIdent.THUMBNAILS)) {
             scripts.push("content-script-thumbnails.js")
         //}
+        if (usePermissionsStore().hasFeature(FeatureIdent.TAB_HELPER)) {
+            scripts.push("content-script-tab-helper.js")
+        }
         if (usePermissionsStore().hasFeature(FeatureIdent.ANNOTATIONS)) {
             scripts.push("highlight-annotations.js")
         }

@@ -64,7 +64,8 @@ export class AppFeatures {
     new AppFeature(FeatureIdent.TAB_GROUPS, FeatureType.EXPERIMENTAL, 'Chrome Tab Groups', 'o_view_list', ['chrome_bex'])
         .setActivateCommands([new GrantPermissionCommand('tabGroups')]),
 
-    new AppFeature(FeatureIdent.MONITORING, FeatureType.EXPERIMENTAL, 'Monitor Changes', 'o_change_circle', ['bex'])
+    new AppFeature(FeatureIdent.MONITORING, FeatureType.EXPERIMENTAL, 'Monitor Changes', 'o_change_circle', ['bex']),
+    new AppFeature(FeatureIdent.TAB_HELPER, FeatureType.EXPERIMENTAL, 'Tab Helper', 'o_article', ['bex'])
   ]
 
   getFeature(f: FeatureIdent): AppFeature | undefined {
