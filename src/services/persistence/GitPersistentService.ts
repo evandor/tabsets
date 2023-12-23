@@ -22,7 +22,9 @@ import {useTabsStore} from "stores/tabsStore";
 import {useSpacesStore} from "stores/spacesStore";
 import {LocalStorage, uid} from "quasar";
 
-self.Buffer = Buffer;
+if (typeof self !== 'undefined') {
+  self.Buffer = Buffer;
+}
 
 async function createDir(...segments: string[]) {
   console.log("got segments", segments)

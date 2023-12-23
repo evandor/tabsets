@@ -180,13 +180,13 @@
   <div class="row fit greyBorderTop"></div>
 
   <q-tabs
-          v-model="tab"
-          dense
-          class="text-grey q-ma-none q-pa-none"
-          active-color="primary"
-          indicator-color="primary"
-          align="left"
-          narrow-indicator
+    v-model="tab"
+    dense
+    class="text-grey q-ma-none q-pa-none"
+    active-color="primary"
+    indicator-color="primary"
+    align="left"
+    narrow-indicator
   >
     <q-tab name="tabset" label="Tabs"/>
     <q-tab name="page" label="Page" :disable="!tabsStore.currentTabsetId"/>
@@ -247,7 +247,7 @@ a tab's url starts with one of the urls of this tabset, it will be ignored and n
 
       <TabsetPageCards v-else
                        :tabset="tabset as unknown as Tabset"
-                       :simple-ui="false" />
+                       :simple-ui="false"/>
 
     </q-tab-panel>
     <q-tab-panel name="page">

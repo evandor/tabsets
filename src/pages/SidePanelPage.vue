@@ -152,6 +152,10 @@
         <template v-slot:title v-else>
           <div class="text-subtitle1 text-black">
             {{ toolbarTitle(tabsets as Tabset[]) }}
+            <q-icon v-if="LocalStorage.getItem('sync.type') as SyncType === SyncType.GIT"
+                    class="q-ml-none" name="sync" size="12px">
+              <q-tooltip class="tooltip-small">Tabsets is synced via git</q-tooltip>
+            </q-icon>
           </div>
         </template>
 
@@ -172,7 +176,7 @@ import _ from "lodash"
 import {Tabset, TabsetStatus, TabsetType} from "src/models/Tabset";
 import {useRouter} from "vue-router";
 import {useUtils} from "src/services/Utils";
-import {openURL, scroll, uid, useQuasar} from "quasar";
+import {LocalStorage, openURL, scroll, uid, useQuasar} from "quasar";
 import {useTabsetService} from "src/services/TabsetService2";
 import {useUiStore} from "src/stores/uiStore";
 import {usePermissionsStore} from "src/stores/permissionsStore";
@@ -197,6 +201,7 @@ import {PUBLIC_SHARE_URL} from "boot/constants";
 import ShareTabsetPubliclyDialog from "components/dialogues/ShareTabsetPubliclyDialog.vue";
 import getScrollTarget = scroll.getScrollTarget;
 import MqttService from "src/services/mqtt/MqttService";
+import {SyncType, useAppStore} from "stores/appStore";
 
 const {setVerticalScrollPosition} = scroll
 
@@ -235,7 +240,7 @@ const tsBadges = ref<object[]>([])
 const mqttUrl = ref(useUiStore().sharingMqttUrl)
 
 function updateOnlineStatus(e: any) {
-  const { type } = e
+  const {type} = e
   console.log("hier", e, type)
   useUiStore().networkOnline = type === 'online'
 }
@@ -243,8 +248,8 @@ function updateOnlineStatus(e: any) {
 onMounted(() => {
   window.addEventListener('keypress', checkKeystroke);
 
-  window.addEventListener("offline",  (e) => updateOnlineStatus(e));
-  window.addEventListener("online",  (e)  => updateOnlineStatus(e));
+  window.addEventListener("offline", (e) => updateOnlineStatus(e));
+  window.addEventListener("online", (e) => updateOnlineStatus(e));
 
   if (!useAuthStore().isAuthenticated) {
     router.push("/authenticate")
@@ -691,7 +696,8 @@ const openPublicShare = (tabsetId: string) => {
 const getPublicTabsetLink = (ts: Tabset) => {
   let image = "https://tabsets.web.app/favicon.ico"
   if (ts && ts.sharedId) {
-    return PUBLIC_SHARE_URL + "#/pwa/imp/" + ts.sharedId + "?n=" + btoa(ts.name) + "&a=" + btoa(ts.sharedBy || 'n/a') + "&d=" + ts.sharedAt
+    //return PUBLIC_SHARE_URL + "#/pwa/imp/" + ts.sharedId + "?n=" + btoa(ts.name) + "&a=" + btoa(ts.sharedBy || 'n/a') + "&d=" + ts.sharedAt
+    return "https://us-central1-tabsets-backend-prd.cloudfunctions.net/app/share/preview/" + ts.sharedId + "?n=" + btoa(ts.name) + "&a=" + btoa(ts.sharedBy || 'n/a')
   }
   return image
 }

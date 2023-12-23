@@ -22,6 +22,7 @@ export class AddCommentCommand implements Command<any> {
       if (!tab.comments) {
         tab.comments = []
       }
+      console.log("pushing comment", comment)
       tab.comments.push(comment)
       const tabset = useTabsetService().getTabset(tabData.tabsetId)
       if (tabset && tabset.sharedId) {

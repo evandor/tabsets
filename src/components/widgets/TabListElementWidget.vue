@@ -83,7 +83,8 @@
     </q-item-label>
 
     <!-- comments -->
-    <q-item-label v-if="props.tab.comments && props.tab.comments.length > 0" class="text-grey-10 q-pa-sm" text-subtitle1>
+    <q-item-label v-if="props.tab.comments && props.tab.comments.length > 0" class="text-grey-10 q-pa-sm"
+                  text-subtitle1>
       <!--        avatar="https://2.gravatar.com/avatar/55791a126d407f184127092989137e051fe839a0fb4cdf76945f70fd2e389eeb?size=512"-->
       <q-chat-message v-for="m in props.tab.comments"
                       :name="m.author"
@@ -96,7 +97,8 @@
     </q-item-label>
 
     <!-- tabsets -->
-    <q-item-label class="text-grey-10" text-subtitle1>
+    <q-item-label v-if="!props.simpleUi"
+                  class="text-grey-10" text-subtitle1>
       <q-chip class="cursor-pointer q-ml-none q-mr-sm q-mt-md" size="9px" clickable icon="tab"
               v-for="badge in tsBadges">
         {{ badge['label' as keyof object] }}

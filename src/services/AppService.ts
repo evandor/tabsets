@@ -67,7 +67,11 @@ class AppService {
 // init db
     IndexedDbPersistenceService.init("db")
       .then(() => {
-        GitPersistentService.init("db")
+
+        if (syncType && syncType === SyncType.GIT && syncUrl) {
+          GitPersistentService.init("db")
+        }
+
         // init services
         useNotificationsStore().initialize(useDB(undefined).db)
         useSuggestionsStore().init(useDB(undefined).db)

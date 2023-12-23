@@ -33,7 +33,7 @@ const tabsetId = ref<string | undefined>(route.query.tsId as string)
 const tabset = ref<Tabset | undefined>(undefined)
 const dirty = ref(false)
 
-let savingInterval:NodeJS.Timeout | undefined = undefined
+let savingInterval: NodeJS.Timeout | undefined = undefined
 
 let editorJS2: EditorJS = undefined as unknown as EditorJS
 
