@@ -79,8 +79,12 @@ export const useSpacesStore = defineStore('spaces', () => {
    */
   const nameExists = computed(() => {
     return (searchName: string) => {
-      console.log("searchName", searchName)
-      return _.find([...spaces.value.values()], s => s.label === searchName?.trim())
+      console.log("checking for existence --- ", searchName)
+      return _.find([...spaces.value.values()], s =>
+      {
+        //console.log("comparing", s.label, searchName?.trim(), s.label === searchName?.trim())
+        return s.label === searchName?.trim()
+      })
     }
   })
 
@@ -108,14 +112,17 @@ export const useSpacesStore = defineStore('spaces', () => {
    *
    * @param s
    */
-  function addSpace(s: Space): Promise<any> {
+  function addSpace(s: Space, addToStorage = true): Promise<any> {
     return throttleOne10Millis(async () => {
-      console.log("adding space", s.id, s.label)
+      //console.log("adding space", s.id, s.label)
+      //console.log("spaces:", [...spaces.value.values()].length)
       if (nameExists.value(s.label)) {
         return Promise.reject(`name '${s.label}'does already exist`)
       }
       spaces.value.set(s.id, s)
-      return storage.addSpace(s)
+      if (addToStorage) {
+        return storage.addSpace(s)
+      }
     })
   }
 
