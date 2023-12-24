@@ -164,6 +164,9 @@
               <q-item clickable @click="tabsClicked(DrawerTabs.FEATURES)" v-close-popup>
                 Activate more Features
               </q-item>
+              <q-item clickable v-close-popup>
+                <q-item-section @click="subscribe()">Subscribe to Pro Features</q-item-section>
+              </q-item>
               <q-item clickable @click="showImportDialog" v-close-popup>
                 Import Tabsets
               </q-item>
@@ -231,6 +234,7 @@ import {useSuggestionsStore} from "src/stores/suggestionsStore";
 import {FeatureIdent} from "src/models/AppFeature";
 import {useSettingsStore} from "src/stores/settingsStore"
 import ToolbarButton from "components/widgets/ToolbarButton.vue";
+import {FirebaseCall} from "src/services/firebase/FirebaseCall";
 
 const $q = useQuasar()
 const router = useRouter()
@@ -290,6 +294,14 @@ const goHome = () => router.push("/")
 const toggleLeftDrawer = () => {
   leftDrawerOpen.value = !leftDrawerOpen.value
   useUiStore().toggleLeftDrawer()
+}
+
+const subscribe = async () => {
+  FirebaseCall.post("/stripe/create-checkout-session/tabsets", {})
+    .then((res) => {
+      console.log("res", res)
+      window.location.href = res.data.url
+    })
 }
 
 const installNewVersion = (version: string) => {

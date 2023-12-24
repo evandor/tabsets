@@ -134,7 +134,7 @@ watchEffect(() => {
   //let minHeight = Math.min(20 + blocksCount * 30, 110)
   const fromStore = useUiStore().getTabsetDescriptionHeight(props.tabsetId)
   if (fromStore === undefined) {
-    const blocksCount = props.tabsetDesc ? props.tabsetDesc['blocks' as keyof object].length : 0
+    const blocksCount = props.tabsetDesc ? props.tabsetDesc['blocks' as keyof object]?.length : 0
     let minHeight = Math.min(20 + blocksCount * 30, 110)
     scrollAreaHeight.value = minHeight
     useUiStore().setTabsetDescriptionHeight(props.tabsetId, minHeight)

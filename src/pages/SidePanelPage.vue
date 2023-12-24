@@ -119,10 +119,13 @@
 
           <div class="q-ma-none q-pa-none">
 
-            <template v-if="tabset.page">
+            <template v-if="tabset.page && typeof tabset.page === 'object'">
               <SidePanelTabsetDescriptionPage
                 :tabsetId="tabset.id"
                 :tabsetDesc="tabset.page as Object"/>
+            </template>
+            <template v-if="tabset.page && typeof tabset.page === 'string'">
+              {{ tabset.page }}
             </template>
 
             <SidePanelPageTabList

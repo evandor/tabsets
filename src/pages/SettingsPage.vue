@@ -16,11 +16,13 @@
 
   <div class="justify-start items-start greyBorderTop">
     <q-tabs align="left" class="bg-grey-1"
+            inline-label
             v-model="tab"
             no-caps>
       <q-tab name="appearance" label="Appearance"/>
+      <q-tab name="subscription" label="Subscription" icon="o_shopping_bag"/>
       <q-tab name="sharing" label="Sharing"/>
-      <q-tab name="syncing" label="Syncing"  v-if="devEnabled"/>
+      <q-tab name="syncing" label="Syncing" icon="o_shopping_bag" v-if="LocalStorage.getItem('subscription.id')"/>
       <q-tab name="thirdparty" label="Third Party Services"/>
       <!--      <q-tab name="ignored" label="Ignored Urls"/>-->
       <q-tab name="archived" label="Archived Tabsets"/>
@@ -158,6 +160,53 @@
 
   </div>
 
+  <div v-if="tab === 'subscription'">
+
+    <div class="q-pa-md q-gutter-sm">
+      <q-banner rounded class="bg-grey-1 text-primary" style="border: 1px solid orange">
+        <div class="text-body1">Experimental: Subscribe to Tabsets Pro Features.</div>
+        <div class="text-caption">
+          Some features (currently: syncing via git) need a subscription.<br><br>
+          <span class="text-red">This is not working yet. No fees will be charged.</span>
+        </div>
+      </q-banner>
+    </div>
+
+    <div class="row items-baseline q-ma-md q-gutter-lg">
+      <template v-if="!subscription">
+      <div class="col-3">
+        Subscribe
+      </div>
+      <div class="col-7">
+        <q-btn label="Subscribe" @click="subscribe()" />
+      </div>
+      <div class="col"></div>
+      </template>
+      <template v-else>
+        <div class="col-3">
+          Subscription
+        </div>
+        <div class="col-7">
+          <q-btn label="Test Subscription" @click="testSubscription()" />
+        </div>
+        <div class="col"></div>
+      </template>
+
+      <div class="col-3">
+        Subscription ID
+      </div>
+      <div class="col-7">
+        <q-input type="text" color="primary" filled v-model="subscription" label="">
+          <template v-slot:prepend>
+            <q-icon name="o_shopping_bag"/>
+          </template>
+        </q-input>
+      </div>
+      <div class="col"></div>
+        <a href="https://billing.stripe.com/p/login/6oE00CenQc3R5IQdQQ" target="_blank">Portal</a>
+    </div>
+  </div>
+
   <div v-if="tab === 'sharing'">
 
     <div class="q-pa-md q-gutter-sm">
@@ -274,23 +323,23 @@
           </div>
           <div class="col text-right"></div>
 
-<!--          <div class="col-3">-->
-<!--            Store Name-->
-<!--          </div>-->
-<!--          <div class="col-7">-->
-<!--            <q-input type="url" color="primary" filled v-model="gitRepoStore" label=""-->
-<!--                     lazy-rules-->
-<!--                     :rules="[-->
-<!--                       val => !!val || 'Store is required',-->
-<!--                       val => /^[A-Za-z0-9]*$/.test(val) || 'Please use only characters or numbers'-->
-<!--                       ]"-->
-<!--                     hint="a subpath in your git repo to distinguish different sync stores">-->
-<!--              <template v-slot:prepend>-->
-<!--                <q-icon name="sync"/>-->
-<!--              </template>-->
-<!--            </q-input>-->
-<!--          </div>-->
-<!--          <div class="col text-right"></div>-->
+          <!--          <div class="col-3">-->
+          <!--            Store Name-->
+          <!--          </div>-->
+          <!--          <div class="col-7">-->
+          <!--            <q-input type="url" color="primary" filled v-model="gitRepoStore" label=""-->
+          <!--                     lazy-rules-->
+          <!--                     :rules="[-->
+          <!--                       val => !!val || 'Store is required',-->
+          <!--                       val => /^[A-Za-z0-9]*$/.test(val) || 'Please use only characters or numbers'-->
+          <!--                       ]"-->
+          <!--                     hint="a subpath in your git repo to distinguish different sync stores">-->
+          <!--              <template v-slot:prepend>-->
+          <!--                <q-icon name="sync"/>-->
+          <!--              </template>-->
+          <!--            </q-input>-->
+          <!--          </div>-->
+          <!--          <div class="col text-right"></div>-->
 
           <div class="col-3">
             Git Repository Token
@@ -389,13 +438,13 @@
         </template>
 
 
-<!--        <div class="col-3"></div>-->
-<!--        <div class="col-7">-->
-<!--          gitTestResult: {{ gitTestResult }}<br>-->
-<!--          syncType: {{ syncType }}<br>-->
-<!--          tempSyncOption: {{ tempSyncOption }}<br>-->
-<!--        </div>-->
-<!--        <div class="col text-right"></div>-->
+        <!--        <div class="col-3"></div>-->
+        <!--        <div class="col-7">-->
+        <!--          gitTestResult: {{ gitTestResult }}<br>-->
+        <!--          syncType: {{ syncType }}<br>-->
+        <!--          tempSyncOption: {{ tempSyncOption }}<br>-->
+        <!--        </div>-->
+        <!--        <div class="col text-right"></div>-->
 
       </div>
 
@@ -645,6 +694,7 @@ import {StaticSuggestionIdent, Suggestion} from "src/models/Suggestion";
 import {SyncType} from "stores/appStore";
 import GitPersistentService from "src/services/persistence/GitPersistentService";
 import {useRoute, useRouter} from "vue-router";
+import {FirebaseCall} from "src/services/firebase/FirebaseCall";
 
 const {sendMsg} = useUtils()
 
@@ -693,6 +743,8 @@ const syncOptions = [
   {label: 'No Syncing', value: SyncType.NONE},
   {label: 'Syncing via git repository', value: SyncType.GIT}
 ]
+
+const subscription = ref<string | undefined>(LocalStorage.getItem('subscription.id') as string | undefined)
 
 const tab = ref<string>(route.query['tab'] ? route.query['tab'] as string : 'appearance')
 
@@ -762,6 +814,10 @@ watchEffect(() => {
 watchEffect(() => {
   //localStorage.set('sync.type', tempSyncOption.value)
   syncType.value = localStorage.getItem('sync.type') as SyncType
+})
+
+watchEffect(() => {
+  LocalStorage.set('subscription.id', subscription.value)
 })
 
 watchEffect(() => {
@@ -853,6 +909,25 @@ const testGitConnection = async () => {
 
 const startGitSyncing = () => localStorage.set("sync.type", SyncType.GIT)
 const stopGitSyncing = () => localStorage.set("sync.type", SyncType.NONE)
+
+const subscribe = async () => {
+  const callbackUrl = chrome.runtime.getURL("/www/index.html#/thanks")
+  FirebaseCall.post("/stripe/create-checkout-session/tabsets", {
+    callbackUrl: btoa(callbackUrl)
+  })
+    .then((res) => {
+      console.log("res", res)
+      window.location.href = res.data.url
+    })
+}
+
+const testSubscription = async () => {
+  FirebaseCall.post("/stripe/test-subscription/tabsets", {})
+    .then((res) => {
+      console.log("res", res)
+      window.location.href = res.data.url
+    })
+}
 
 
 //const syncingSetTo = (t: SyncType) => localStorage.getItem('sync.type') as SyncType === SyncType.GIT

@@ -27,16 +27,18 @@ if (typeof self !== 'undefined') {
 }
 
 async function createDir(...segments: string[]) {
-  console.log("got segments", segments)
+  //console.log("got segments", segments)
   let prefix = ''
   for (const segment of segments) {
     try {
       const path = `${dir}/${prefix}${segment}`
-      console.log("creating fs path", path)
+      console.debug("creating fs path", path)
       prefix += segment + "/"
       await pfs.mkdir(path)
-    } catch (err) {
-      console.log("dir exists")
+    } catch (err:any) {
+      if (!err.toString().startsWith("Error: EEXIST")) {
+        console.log(err)
+      }
     }
   }
 }
@@ -59,14 +61,14 @@ class GitPersistenceService implements PersistenceService {
   private readonly _dir = "/tabsets";
 
   // TODO
-  async init(dbName: string, url: string = 'https://github.com/evandor/tabsets-data.git') {
-    console.log("=== initializing git database ===", dbName)
-    this.db = await this.initDatabase(dbName, url)
+  async init( url: string) {
+    console.log("=== initializing git database ===", url)
+    this.db = await this.initDatabase(url)
     useUiStore().dbReady = true
   }
 
 
-  private async initDatabase(dbName: string, url: string, dir: string = this._dir): Promise<any> {
+  private async initDatabase(url: string, dir: string = this._dir): Promise<any> {
     window.fs = new LightningFS('fs')
     console.log("hier!")
     window.pfs = window.fs.promises
@@ -75,8 +77,10 @@ class GitPersistenceService implements PersistenceService {
     console.log(dir);
     try {
       await pfs.mkdir(dir);
-    } catch (err) {
-      console.log("dir exists")
+    } catch (err:any) {
+      if (!err.toString().startsWith("Error: EEXIST")) {
+        console.log(err)
+      }
     }
 
     await pfs.readdir(dir);
@@ -132,15 +136,15 @@ class GitPersistenceService implements PersistenceService {
     try {
       await createDir("tabsets")
       const result: string[] = await pfs.readdir(`${dir}/tabsets`)//, (callback: any) => {
-      console.log("callback", result)
+      //console.log("callback", result)
       for (var index in result) {
-        console.log("got ts index", index)
+        //console.log("got ts index", index)
         const tabsetId = result[index]
         const tsDataLocation = `${dir}/tabsets/${tabsetId}/tabset.json`
-        console.log("`${dir}/tabsets/${tabsetId}/tabset.json`", `${dir}/tabsets/${tabsetId}/tabset.json`)
+        console.debug("tsDataLocation", tsDataLocation)
         try {
           const tsData = await pfs.readFile(tsDataLocation)
-          console.log("tsData", tsData)
+         // console.log("tsData", tsData)
           const ts = JSON.parse(tsData) as Tabset
           ts.tabs = []
 
@@ -224,15 +228,15 @@ class GitPersistenceService implements PersistenceService {
       const entitiesName = "spaces"
       await createDir(entitiesName)
       const result: string[] = await pfs.readdir(`${dir}/${entitiesName}`)//, (callback: any) => {
-      console.log("callback", result)
+      //console.log("callback", result)
       for (var index in result) {
-        console.log("got index", index)
+        //console.log("got index", index)
         const entityId = result[index]
-        const tsDataLocation = `${dir}/${entitiesName}/${entityId}/tabset.json`
-        //console.log("`${dir}/tabsets/${tabsetId}/tabset.json`", `${dir}/tabsets/${tabsetId}/${entityName}.json`)
+        const tsDataLocation = `${dir}/${entitiesName}/${entityId}/space.json`
+        console.debug("tsDataLocation", tsDataLocation)
         try {
           const tsData = await pfs.readFile(tsDataLocation)
-          console.log("tsData", tsData)
+          //console.log("tsData", tsData)
           const s = JSON.parse(tsData) as Space
           //ts.tabs = []
 
@@ -256,7 +260,7 @@ class GitPersistenceService implements PersistenceService {
       console.warn("err", err)
     }
     for (const s of spaces) {
-      useSpacesStore().addSpace(s)
+      useSpacesStore().addSpace(s, false)
     }
 
     return Promise.resolve(undefined);
