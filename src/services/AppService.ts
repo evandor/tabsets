@@ -68,9 +68,8 @@ class AppService {
     IndexedDbPersistenceService.init("db")
       .then(() => {
 
-        if (syncType && syncType === SyncType.GIT && syncUrl) {
-          GitPersistentService.init(syncUrl)
-        }
+        //if (syncType && syncType === SyncType.GIT && syncUrl) {
+        //}
 
         // init services
         useNotificationsStore().initialize(useDB(undefined).db)
@@ -78,29 +77,36 @@ class AppService {
         messagesStore.initialize(useDB(undefined).db)
 
         tabsetService.setLocalStorage(localStorage)
-        spacesStore.initialize(dbOrGitDb)
-          .then(() => {
-            useTabsetService().init(dbOrGitDb, false)
+
+        GitPersistentService.init(syncUrl)
+          .then((gitInitResult:string) => {
+            console.log("gitInitResult", gitInitResult)
+            spacesStore.initialize(dbOrGitDb)
               .then(() => {
-                MHtmlService.init()
-                ChromeApi.init(router)
+                useTabsetService().init(dbOrGitDb, false)
+                  .then(() => {
+                    MHtmlService.init()
+                    ChromeApi.init(router)
 
-                if (usePermissionsStore().hasFeature(FeatureIdent.TAB_GROUPS)) {
-                  groupsStore.initialize(useDB(undefined).db)
-                  groupsStore.initListeners()
-                }
+                    if (usePermissionsStore().hasFeature(FeatureIdent.TAB_GROUPS)) {
+                      groupsStore.initialize(useDB(undefined).db)
+                      groupsStore.initListeners()
+                    }
 
-                windowsStore.initialize(useDB(undefined).db)
-                windowsStore.initListeners()
+                    windowsStore.initialize(useDB(undefined).db)
+                    windowsStore.initListeners()
 
-                // tabsets not in bex mode means running on "shared.tabsets.net"
-                // probably running an import ("/imp/:sharedId")
-                // we do not want to go to the welcome back
-                if (tabsStore.tabsets.size === 0 && $q.platform.is.bex) {
-                  router.push("/sidepanel/welcome")
-                }
+                    // tabsets not in bex mode means running on "shared.tabsets.net"
+                    // probably running an import ("/imp/:sharedId")
+                    // we do not want to go to the welcome back
+                    if (tabsStore.tabsets.size === 0 && $q.platform.is.bex) {
+                      router.push("/sidepanel/welcome")
+                    }
+                  })
               })
+
           })
+
       })
 
 

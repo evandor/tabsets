@@ -1,4 +1,4 @@
-<template>
+1<template>
   <div class="q-ma-none q-pa-md fullimageBackground" @click="selected()">
     <div class="row">
       <div class="row">
@@ -98,7 +98,7 @@ watchEffect(() => {
   // back as soon we know we actually do have some tabsets
   if (useTabsStore().tabsets.size > 0) {
     console.log("routing back! We have tabsets!")
-    // router.back()
+    router.back()
   }
 })
 
