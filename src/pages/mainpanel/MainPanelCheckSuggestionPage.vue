@@ -241,7 +241,7 @@ const barStyle = ref({right: '2px', borderRadius: '9px', backgroundColor: 'white
 let ignoreSource: string | null = null
 
 onMounted(() => {
-  Analytics.firePageViewEvent('MainPanelTabAssignmentPage', document.location.href);
+  Analytics.firePageViewEvent('MainPanelCheckSuggestionPage', document.location.href);
 })
 
 watchEffect(() => {
