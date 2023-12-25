@@ -237,13 +237,14 @@ class GitPersistenceService implements PersistenceService {
     })
 
     console.log(sha)
-    await push(this._dir);
+    //await push(this._dir);
+    await push(`${dir}`);
     return Promise.resolve(undefined);
   }
 
   async deleteTabset(tabsetId: string): Promise<any> {
     await pfs.rmdir(`${dir}/tabsets/${tabset.id}`)
-    await push(this._dir);
+    await push(`${dir}`);
     return Promise.resolve(undefined);
   }
 
@@ -327,13 +328,15 @@ class GitPersistenceService implements PersistenceService {
     })
 
     console.log(sha)
-    await push(this._dir);
+    //await push(this._dir);
+    await push(`${dir}`);
     return Promise.resolve(undefined);
   }
 
   async deleteSpace(entityId: string) {
     await pfs.rmdir(`${dir}/spaces/${entityId}`)
-    await push(this._dir);
+    //await push(this._dir);
+    await push(`${dir}`);
     return Promise.resolve(undefined);
   }
 
