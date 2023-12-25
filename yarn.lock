@@ -6913,10 +6913,10 @@ mqtt-packet@^9.0.0:
     debug "^4.3.4"
     process-nextick-args "^2.0.1"
 
-mqtt@^5.2.0, mqtt@^5.3.3:
-  version "5.3.3"
-  resolved "https://registry.yarnpkg.com/mqtt/-/mqtt-5.3.3.tgz#5b3da7a757f618f5d203bae47a4043fe43488e36"
-  integrity sha512-iy/9I81xnmYxENKL91hdiJ1LOkNYygCE0xCUtLeEo3BjQHraOky5gB/X3aPnvZ2fqlm1C0BhLmVcL6NRJ/U4tA==
+mqtt@^5.2.0, mqtt@^5.3.4:
+  version "5.3.4"
+  resolved "https://registry.yarnpkg.com/mqtt/-/mqtt-5.3.4.tgz#743272714c2e10fc3e51d7b68b5eb1b9f70f340f"
+  integrity sha512-nyhr2bnFtyiv68jV3yfR6eQtGcGs/jr2l3ETKXYc0amttsasXa1KgvETHRNRjfeDt/yc68IqoEjFzKkHpoQUPQ==
   dependencies:
     "@types/readable-stream" "^4.0.5"
     "@types/ws" "^8.5.9"
