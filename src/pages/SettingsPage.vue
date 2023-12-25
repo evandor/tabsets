@@ -315,7 +315,7 @@
             Git Repository URL
           </div>
           <div class="col-7">
-            <q-input type="url" color="primary" filled v-model="gitRepoUrl" label="">
+            <q-input type="url" color="primary" filled v-model="gitRepoUrl" label="" autocomplete="sync-url">
               <template v-slot:prepend>
                 <q-icon name="sync"/>
               </template>
@@ -801,10 +801,12 @@ watchEffect(() => {
 
 watchEffect(() => {
   LocalStorage.set('sync.git.url', gitRepoUrl.value)
+  gitTestResult.value = undefined
 })
 
 watchEffect(() => {
   LocalStorage.set('sync.git.token', gitRepoToken.value)
+  gitTestResult.value = undefined
 })
 
 //watchEffect(() => {

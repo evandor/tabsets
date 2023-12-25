@@ -13,6 +13,7 @@ import {Tabset} from "src/models/Tabset";
 import {Window} from "src/models/Window";
 import {RequestInfo} from "src/models/RequestInfo";
 import {Notification, NotificationStatus} from "src/models/Notification";
+import { md5 } from 'js-md5';
 // @ts-ignore
 import LightningFS from '@isomorphic-git/lightning-fs';
 import http from 'isomorphic-git/http/web'
@@ -61,44 +62,57 @@ class GitPersistenceService implements PersistenceService {
   private readonly _dir = "/tabsets";
 
   // TODO
-  async init( url: string) {
-    console.log("=== initializing git database ===", url)
-    this.db = await this.initDatabase(url)
-    useUiStore().dbReady = true
+  async init( url: string | undefined) {
+    if (url) {
+      console.log("=== initializing git database ===", url)
+      this.db = await this.initDatabase(url)
+      console.log("=== initializing git database: done ===")
+      useUiStore().dbReady = true
+      return Promise.resolve("done")
+    }
+    return Promise.resolve("no url given")
   }
 
 
   private async initDatabase(url: string, dir: string = this._dir): Promise<any> {
     window.fs = new LightningFS('fs')
-    console.log("hier!")
     window.pfs = window.fs.promises
     console.debug("about to initialize git")
-    window.dir = dir
-    console.log(dir);
+    const useDir = dir + "-" + md5(url)
+    window.dir = useDir
+    console.log(useDir);
     try {
-      await pfs.mkdir(dir);
+      await pfs.mkdir(useDir);
     } catch (err:any) {
       if (!err.toString().startsWith("Error: EEXIST")) {
         console.log(err)
       }
     }
 
-    await pfs.readdir(dir);
+    // try to get status
+    let status = await git.status({ fs, dir: useDir, filepath: 'README.md' })
+    console.log(status)
 
     try {
       const cloneDef = {
         fs,
         http,
-        dir,
+        dir: useDir,
         corsProxy: 'https://cors.isomorphic-git.org',
         url: url,
         ref: 'main',
         singleBranch: true,
         depth: 10,
+        //onProgress: (val:any) => (console.log("onProgress", val)),
+        //onMessage: (val:any) => (console.log("onMessage", val)),
+        onAuthSuccess: () => (console.log("auth: success")),
+        onAuthFailure: () => ("auth: failure"),
         onAuth: () => ({username: LocalStorage.getItem('sync.git.token') as string || '---'}),
       }
-      console.log(`about to clone '${url}' into ${dir}`, cloneDef)
-      return await git.clone(cloneDef);
+      console.log(`about to clone '${url}' into ${useDir}`, cloneDef)
+      const cloneRes = await git.clone(cloneDef);
+      console.log("cloning done")
+      return cloneRes
     } catch (err) {
       console.log("got error", err)
       return Promise.reject(err)
@@ -109,13 +123,30 @@ class GitPersistenceService implements PersistenceService {
     try {
       const dir = "/" + uid()
       try {
-        const r = await this.initDatabase("testdb", gitRepoUrl, dir)
-        console.log("got r", r)
+        //const r = await this.initDatabase( gitRepoUrl, dir, true)
+        //console.log("got r", r)
+
+        const remoteInfoDef = {
+          http,
+          corsProxy: "https://cors.isomorphic-git.org",
+          url: gitRepoUrl,
+          onAuthSuccess: () => {
+            console.log("auth: success")
+            return Promise.resolve("success!")
+          },
+          onAuthFailure: () => (console.log("auth: failure")),
+          onAuth: () => ({username: LocalStorage.getItem('sync.git.token') as string || '---'}),
+        }
+        console.log("checking repo", remoteInfoDef)
+
+        let info = await git.getRemoteInfo2(remoteInfoDef);
+        console.log(info);
+
       } catch (e: any) {
         console.log("got e", e)
         return Promise.resolve(e.toString())
       }
-      await pfs.unlink(dir)
+      //await pfs.unlink(dir)
       console.log("success")
       return Promise.resolve("success")
     } catch (err) {
@@ -136,7 +167,7 @@ class GitPersistenceService implements PersistenceService {
     try {
       await createDir("tabsets")
       const result: string[] = await pfs.readdir(`${dir}/tabsets`)//, (callback: any) => {
-      //console.log("callback", result)
+      console.log("callback", result)
       for (var index in result) {
         //console.log("got ts index", index)
         const tabsetId = result[index]
@@ -144,8 +175,9 @@ class GitPersistenceService implements PersistenceService {
         console.debug("tsDataLocation", tsDataLocation)
         try {
           const tsData = await pfs.readFile(tsDataLocation)
-         // console.log("tsData", tsData)
+          //console.log("tsData", tsData)
           const ts = JSON.parse(tsData) as Tabset
+          console.log("ts from git", ts)
           ts.tabs = []
 
           try {
@@ -205,13 +237,14 @@ class GitPersistenceService implements PersistenceService {
     })
 
     console.log(sha)
-    await push(this._dir);
+    //await push(this._dir);
+    await push(`${dir}`);
     return Promise.resolve(undefined);
   }
 
   async deleteTabset(tabsetId: string): Promise<any> {
     await pfs.rmdir(`${dir}/tabsets/${tabset.id}`)
-    await push(this._dir);
+    await push(`${dir}`);
     return Promise.resolve(undefined);
   }
 
@@ -295,13 +328,15 @@ class GitPersistenceService implements PersistenceService {
     })
 
     console.log(sha)
-    await push(this._dir);
+    //await push(this._dir);
+    await push(`${dir}`);
     return Promise.resolve(undefined);
   }
 
   async deleteSpace(entityId: string) {
     await pfs.rmdir(`${dir}/spaces/${entityId}`)
-    await push(this._dir);
+    //await push(this._dir);
+    await push(`${dir}`);
     return Promise.resolve(undefined);
   }
 
