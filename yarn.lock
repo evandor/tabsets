@@ -1331,6 +1331,11 @@
     fast-xml-parser "^4.3.2"
     html-entities "^2.4.0"
 
+"@huggingface/jinja@^0.1.0":
+  version "0.1.2"
+  resolved "https://registry.yarnpkg.com/@huggingface/jinja/-/jinja-0.1.2.tgz#073fa0a68ef481a1806b0186bbafd8013e586fbe"
+  integrity sha512-x5mpbfJt1nKmVep5WNP5VjNsjWApWNj8pPYI+uYMkBWH9bWUJmQmHt2lbf0VCoQd54Oq3XuFEh/UyoVh7rPxmg==
+
 "@idraw/board@^0.3.1":
   version "0.3.1"
   resolved "https://registry.yarnpkg.com/@idraw/board/-/board-0.3.1.tgz#7879815f8ce52a8aa1a3227224c1691648ac6452"
@@ -2534,11 +2539,12 @@
     split2 "^4.2.0"
     wait-port "^1.0.4"
 
-"@xenova/transformers@^2.2.0":
-  version "2.10.1"
-  resolved "https://registry.yarnpkg.com/@xenova/transformers/-/transformers-2.10.1.tgz#50eff94fa155f5e6eebc4d49a1e637350e959073"
-  integrity sha512-vUCU3rKEcuH0dSuJzXuESbUPziqh8FvjLVikUh//5SWGcwfdccIfTUhDsS1obbrUTW3ve0CHeJvHnHbk0QTzEA==
+"@xenova/transformers@^2.12.1":
+  version "2.12.1"
+  resolved "https://registry.yarnpkg.com/@xenova/transformers/-/transformers-2.12.1.tgz#e85a69aea295baa941f5ebcf2f6af4fae0b4c080"
+  integrity sha512-b++KSLKezi9Vic9VPXBc/egE5dTw11fvqCcWRg+AQgS+hLGNc7E/sL6JRNhnZ4NmKW0Sx/2gKs33rYllTC1xKA==
   dependencies:
+    "@huggingface/jinja" "^0.1.0"
     onnxruntime-web "1.14.0"
     sharp "^0.32.0"
   optionalDependencies:
