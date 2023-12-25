@@ -1,6 +1,7 @@
 import {Notify} from 'quasar'
 import {ExecutionResult} from "src/domain/ExecutionResult";
 import {useUiStore} from "stores/uiStore";
+import {Logz} from "src/services/logz/Logz";
 
 export enum NotificationType {
   NOTIFY = "NOTIFY",
@@ -12,7 +13,14 @@ export function useNotificationHandler() {
     const handleError = (error: any, type: NotificationType = NotificationType.TOAST) => {
         console.log("got error: ", error ? error.toString() : 'unknown error')
         console.trace()
-        switch (type) {
+
+      Logz.error({
+        message: "handling error in NotificationHandler",
+        error: error ? error.toString() : 'unknown error',
+        stack: error.stack
+      }).catch((logzError: any) => console.warn("could not send error message to logz"))
+
+      switch (type) {
           case NotificationType.NOTIFY:
             Notify.create({
                 position: 'bottom',

@@ -221,7 +221,7 @@ const metaData = {
   meta: {
     description: { name: 'description', content: 'Page 1' },
     keywords: { name: 'keywords', content: 'Quasar website' },
-    equiv: { 'http-equiv': 'Content-Type', content: 'text/html; charset=UTF-8' },
+   // equiv: { 'http-equiv': 'Content-Type', content: 'text/html; charset=UTF-8' },
     // note: for Open Graph type metadata you will need to use SSR, to ensure page is rendered by the server
     ogTitle:  {
       property: 'og:title',
