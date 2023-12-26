@@ -2,86 +2,88 @@
 
   <q-footer class="bg-white q-pa-xs q-mt-sm" style="border-top: 1px solid lightgrey">
     <div class="row fit q-mb-sm" v-if="showWindowTable">
-      <span class="text-blue">{{ rows }}</span>
-      <q-table
-        flat dense
-        :rows="rows"
-        :columns="columns"
-        row-key="id"
-        hide-bottom
-        binary-state-sort>
-        <template v-slot:body="props">
-          <q-tr :props="props">
-            <q-td key="windowIcon" :props="props">
-              <q-icon name="edit"/>
-            </q-td>
-            <q-td key="name" :props="props">
-              {{ props.row.name }}
-              <q-popup-edit v-model="props.row.name" v-slot="scope">
-                <q-input v-model="scope.value" dense autofocus counter
-                         @update:model-value="val => setWindowName(props.row.id, val)"
-                         @keyup.enter="scope.set"/>
-              </q-popup-edit>
-            </q-td>
-            <q-td key="windowHeight" :props="props">
-              {{ props.row.windowHeight }}
-              <q-popup-edit v-model="props.row.windowHeight" title="Update windowHeight" buttons v-slot="scope">
-                <q-input type="number" v-model="scope.value" dense autofocus/>
-              </q-popup-edit>
-            </q-td>
-            <q-td key="windowWidth" :props="props">
-              {{ props.row.windowWidth }}
-              <q-popup-edit v-model="props.row.windowWidth" title="Update windowWidth" buttons v-slot="scope">
-                <q-input type="number" v-model="scope.value" dense autofocus/>
-              </q-popup-edit>
-            </q-td>
-            <q-td key="windowAction" :props="props">
+      <div class="col-12 text-right">
+        <Transition name="bounceInLeft" appear>
+          <q-table
+            flat dense
+            :rows="rows"
+            :columns="columns"
+            row-key="id"
+            hide-bottom
+            binary-state-sort>
+            <template v-slot:body="props">
+              <q-tr :props="props">
+                <q-td key="windowIcon" :props="props">
+                  <q-icon name="edit"/>
+                </q-td>
+                <q-td key="name" :props="props">
+                  {{ props.row.name }}
+                  <q-popup-edit v-model="props.row.name" v-slot="scope">
+                    <q-input v-model="scope.value" dense autofocus counter
+                             @update:model-value="val => setWindowName(props.row.id, val)"
+                             @keyup.enter="scope.set"/>
+                  </q-popup-edit>
+                </q-td>
+                <!--            <q-td key="windowHeight" :props="props">-->
+                <!--              {{ props.row.windowHeight }}-->
+                <!--              <q-popup-edit v-model="props.row.windowHeight" title="Update windowHeight" buttons v-slot="scope">-->
+                <!--                <q-input type="number" v-model="scope.value" dense autofocus/>-->
+                <!--              </q-popup-edit>-->
+                <!--            </q-td>-->
+                <!--            <q-td key="windowWidth" :props="props">-->
+                <!--              {{ props.row.windowWidth }}-->
+                <!--              <q-popup-edit v-model="props.row.windowWidth" title="Update windowWidth" buttons v-slot="scope">-->
+                <!--                <q-input type="number" v-model="scope.value" dense autofocus/>-->
+                <!--              </q-popup-edit>-->
+                <!--            </q-td>-->
+                <q-td key="windowAction" :props="props">
               <span
                 :class="useWindowsStore().currentWindow?.id === props.row.id ? 'text-grey' : 'text-blue-8 cursor-pointer'"
                 @click="openWindow(props.row.id)">open</span>
-            </q-td>
-          </q-tr>
-        </template>
-      </q-table>
-
-
-    </div>
-    <div class="row fit q-mb-sm"
-         style="border-bottom: 1px dotted #bfbfbf"
-         v-if="otherActiveWindows().length > 0">
-      <div class="col-7 text-black">
-        <q-icon name="o_grid_view" color="blue">
-          <q-tooltip class="tooltip-small">Current Browser Window</q-tooltip>
-        </q-icon>
-        <span class="q-mx-md cursor-pointer text-subtitle2 ellipsis">{{ currentWindowName }}</span>
-        <q-popup-edit :model-value="currentWindowName" v-slot="scope"
-                      @update:model-value="val => setNewName(val)">
-          <q-input v-model="scope.value" dense autofocus counter @keyup.enter="scope.set"/>
-        </q-popup-edit>
-        <q-tooltip class="tooltip-small">Rename window '{{ currentWindowName }}'</q-tooltip>
-
+                </q-td>
+              </q-tr>
+            </template>
+          </q-table>
+        </Transition>
 
       </div>
-      <div class="col text-black text-right">
-        <template v-if="!showWindowTable">
-          <span class="text-black cursor-pointer text-subtitle2">Switch Window</span>
-          <q-menu fit anchor="top middle" self="bottom middle">
-            <q-item clickable dense v-for="w in otherActiveWindows()" @click="openWindow(w.id)" v-close-popup>
-              <q-item-section>{{ w.name }}</q-item-section>
-            </q-item>
-          </q-menu>
-          <q-icon name="edit" class="q-mx-sm cursor-pointer" color="primary" @click="toggleShowWindowTable()">
-            <q-tooltip class="tooltip-small">Edit Window Names</q-tooltip>
-          </q-icon>
-
-        </template>
-        <template v-else>
-          <q-icon name="edit" class="q-mx-sm q-ma-none cursor-pointer" color="primary"
-                  @click="toggleShowWindowTable()"/>
-        </template>
-      </div>
-
     </div>
+    <!--    <div class="row fit q-mb-sm"-->
+    <!--         style="border-bottom: 1px dotted #bfbfbf"-->
+    <!--         v-if="otherActiveWindows().length > 0">-->
+    <!--      <div class="col-7 text-black">-->
+    <!--        <q-icon name="o_grid_view" color="blue">-->
+    <!--          <q-tooltip class="tooltip-small">Current Browser Window</q-tooltip>-->
+    <!--        </q-icon>-->
+    <!--        <span class="q-mx-md cursor-pointer text-subtitle2 ellipsis">{{ currentWindowName }}</span>-->
+    <!--        <q-popup-edit :model-value="currentWindowName" v-slot="scope"-->
+    <!--                      @update:model-value="val => setNewName(val)">-->
+    <!--          <q-input v-model="scope.value" dense autofocus counter @keyup.enter="scope.set"/>-->
+    <!--        </q-popup-edit>-->
+    <!--        <q-tooltip class="tooltip-small">Rename window '{{ currentWindowName }}'</q-tooltip>-->
+
+
+    <!--      </div>-->
+    <!--      <div class="col text-black text-right">-->
+    <!--        <template v-if="!showWindowTable">-->
+    <!--          <span class="text-black cursor-pointer text-subtitle2">Switch Window</span>-->
+    <!--          <q-menu fit anchor="top middle" self="bottom middle">-->
+    <!--            <q-item clickable dense v-for="w in otherActiveWindows()" @click="openWindow(w.id)" v-close-popup>-->
+    <!--              <q-item-section>{{ w.name }}</q-item-section>-->
+    <!--            </q-item>-->
+    <!--          </q-menu>-->
+    <!--          <q-icon name="edit" class="q-mx-sm cursor-pointer" color="primary" @click="toggleShowWindowTable()">-->
+    <!--            <q-tooltip class="tooltip-small">Edit Window Names</q-tooltip>-->
+    <!--          </q-icon>-->
+
+    <!--        </template>-->
+    <!--        <template v-else>-->
+    <!--          <q-icon name="edit" class="q-mx-sm q-ma-none cursor-pointer" color="primary"-->
+    <!--                  @click="toggleShowWindowTable()"/>-->
+    <!--        </template>-->
+    <!--      </div>-->
+
+    <!--    </div>-->
     <div class="row fit">
       <div class="col-9">
 
@@ -149,6 +151,16 @@
           <q-tooltip class="tooltip" anchor="top left" self="bottom left">{{ settingsTooltip() }}</q-tooltip>
         </q-btn>
 
+        <q-btn v-if="useWindowsStore().currentWindows.length > 1"
+               icon="o_grid_view"
+               :class="rightButtonClass()"
+               flat
+               color="black"
+               :size="getButtonSize()"
+               @click="toggleShowWindowTable()">
+          <q-tooltip class="tooltip" anchor="top left" self="bottom left">Manage Windows</q-tooltip>
+        </q-btn>
+
         <q-btn
           v-if="usePermissionsStore().hasFeature(FeatureIdent.STANDALONE_APP)"
           icon="o_open_in_new"
@@ -205,22 +217,25 @@ const showWindowTable = ref(false)
 const currentWindowName = ref('---')
 
 const columns = [
-  {name: 'windowIcon', align: 'center', label: '', field: 'windowIcon', sortable: true},
+  //{name: 'windowIcon', align: 'center', label: '', field: 'windowIcon', sortable: true},
   {
     name: 'name',
     required: true,
-    label: 'Window Name',
+    label: 'Window Name (editable)',
     align: 'left',
-    field: row => row.name,
-    format: val => `${val}`,
-    sortable: true
+    sortable: false
   },
-  {name: 'windowHeight', align: 'center', label: 'Height', field: 'windowHeight'},
-  {name: 'windowWidth', align: 'center', label: 'Height', field: 'windowWidth'},
+  // {name: 'windowHeight', align: 'center', label: 'Height', field: 'windowHeight'},
+  // {name: 'windowWidth', align: 'center', label: 'Height', field: 'windowWidth'},
   {name: 'windowAction', align: 'center', label: 'Action', field: 'windowAction', sortable: false}
 ]
 
 const rows = ref<object[]>([])
+
+watchEffect(() => {
+  console.log("windows!", useWindowsStore().currentWindows)
+  showWindowTable.value = false
+})
 
 watchEffect(() => {
   const suggestions = useSuggestionsStore().getSuggestions(
@@ -395,7 +410,7 @@ const toggleShowWindowTable = () => {
     rows.value = _.map(useWindowsStore().currentWindows as chrome.windows.Window[], (w: chrome.windows.Window) => {
       return {
         id: w.id,
-        name: useWindowsStore().windowNameFor(w.id) || w.id,
+        name: useWindowsStore().windowNameFor(w.id || 0) || w.id,
         windowHeight: w['height' as keyof object],
         windowWidth: w['width' as keyof object],
         windowIcon: "*"

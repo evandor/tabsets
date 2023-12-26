@@ -55,8 +55,7 @@ export class SidePanelView {
   static readonly RSS_LIST = new SidePanelView('rssList', '/sidepanel/rsslist',
     () => usePermissionsStore().hasFeature(FeatureIdent.RSS));
 
-  static readonly NEWEST_TABS_LIST = new SidePanelView('newestList', '/sidepanel/newestList',
-    () => usePermissionsStore().hasFeature(FeatureIdent.NEWEST_TABS));
+  static readonly NEWEST_TABS_LIST = new SidePanelView('newestList', '/sidepanel/newestList');
 
   static readonly TOP_10_TABS_LIST = new SidePanelView('top10List', '/sidepanel/top10List',
     () => usePermissionsStore().hasFeature(FeatureIdent.TOP10));
