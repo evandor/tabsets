@@ -2,7 +2,7 @@ import {usePermissionsStore} from "stores/permissionsStore";
 import ChromeListeners from "src/services/ChromeListeners";
 import ChromeBookmarkListeners from "src/services/ChromeBookmarkListeners";
 import BookmarksService from "src/services/BookmarksService";
-import {useQuasar} from "quasar";
+import {LocalStorage, useQuasar} from "quasar";
 import IndexedDbPersistenceService from "src/services/IndexedDbPersistenceService";
 import {useNotificationsStore} from "stores/notificationsStore";
 import {useDB} from "src/services/usePersistenceService";
@@ -59,8 +59,8 @@ class AppService {
     const localStorage = useQuasar().localStorage
 
     // sync features
-    const syncType = localStorage.getItem("sync.type") as SyncType || SyncType.NONE
-    const syncUrl = localStorage.getItem("sync.git.url") as string | undefined
+    const syncType = LocalStorage.getItem("sync.type") as SyncType || SyncType.NONE
+    const syncUrl = LocalStorage.getItem("sync.git.url") as string | undefined
     const dbOrGitDb = syncType && syncType === SyncType.GIT && syncUrl ? useDB(undefined).gitDb : useDB(undefined).db
     console.log("checking sync config:", syncType, syncUrl, dbOrGitDb)
 

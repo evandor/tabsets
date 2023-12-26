@@ -1,10 +1,55 @@
 <template>
 
   <q-footer class="bg-white q-pa-xs q-mt-sm" style="border-top: 1px solid lightgrey">
+    <div class="row fit q-mb-sm" v-if="showWindowTable">
+      <span class="text-blue">{{ rows }}</span>
+      <q-table
+        flat dense
+        :rows="rows"
+        :columns="columns"
+        row-key="id"
+        hide-bottom
+        binary-state-sort>
+        <template v-slot:body="props">
+          <q-tr :props="props">
+            <q-td key="windowIcon" :props="props">
+              <q-icon name="edit"/>
+            </q-td>
+            <q-td key="name" :props="props">
+              {{ props.row.name }}
+              <q-popup-edit v-model="props.row.name" v-slot="scope">
+                <q-input v-model="scope.value" dense autofocus counter
+                         @update:model-value="val => setWindowName(props.row.id, val)"
+                         @keyup.enter="scope.set"/>
+              </q-popup-edit>
+            </q-td>
+            <q-td key="windowHeight" :props="props">
+              {{ props.row.windowHeight }}
+              <q-popup-edit v-model="props.row.windowHeight" title="Update windowHeight" buttons v-slot="scope">
+                <q-input type="number" v-model="scope.value" dense autofocus/>
+              </q-popup-edit>
+            </q-td>
+            <q-td key="windowWidth" :props="props">
+              {{ props.row.windowWidth }}
+              <q-popup-edit v-model="props.row.windowWidth" title="Update windowWidth" buttons v-slot="scope">
+                <q-input type="number" v-model="scope.value" dense autofocus/>
+              </q-popup-edit>
+            </q-td>
+            <q-td key="windowAction" :props="props">
+              <span
+                :class="useWindowsStore().currentWindow?.id === props.row.id ? 'text-grey' : 'text-blue-8 cursor-pointer'"
+                @click="openWindow(props.row.id)">open</span>
+            </q-td>
+          </q-tr>
+        </template>
+      </q-table>
+
+
+    </div>
     <div class="row fit q-mb-sm"
          style="border-bottom: 1px dotted #bfbfbf"
          v-if="otherActiveWindows().length > 0">
-      <div class="col-8 text-black">
+      <div class="col-7 text-black">
         <q-icon name="o_grid_view" color="blue">
           <q-tooltip class="tooltip-small">Current Browser Window</q-tooltip>
         </q-icon>
@@ -17,13 +62,23 @@
 
 
       </div>
-      <div class="col text-black">
-        <span class="text-black cursor-pointer text-subtitle2 text-right">Switch Window</span>
-        <q-menu fit anchor="top middle" self="bottom middle">
-          <q-item clickable dense v-for="w in otherActiveWindows()" @click="openWindow(w.id)" v-close-popup>
-            <q-item-section>{{ w.name }}</q-item-section>
-          </q-item>
-        </q-menu>
+      <div class="col text-black text-right">
+        <template v-if="!showWindowTable">
+          <span class="text-black cursor-pointer text-subtitle2">Switch Window</span>
+          <q-menu fit anchor="top middle" self="bottom middle">
+            <q-item clickable dense v-for="w in otherActiveWindows()" @click="openWindow(w.id)" v-close-popup>
+              <q-item-section>{{ w.name }}</q-item-section>
+            </q-item>
+          </q-menu>
+          <q-icon name="edit" class="q-mx-sm cursor-pointer" color="primary" @click="toggleShowWindowTable()">
+            <q-tooltip class="tooltip-small">Edit Window Names</q-tooltip>
+          </q-icon>
+
+        </template>
+        <template v-else>
+          <q-icon name="edit" class="q-mx-sm q-ma-none cursor-pointer" color="primary"
+                  @click="toggleShowWindowTable()"/>
+        </template>
       </div>
 
     </div>
@@ -114,7 +169,7 @@
 import {SidePanelView, useUiStore} from "src/stores/uiStore";
 import {useTabsStore} from "src/stores/tabsStore";
 import {Tab} from "src/models/Tab";
-import {ref, watchEffect} from "vue";
+import {ref, watch, watchEffect} from "vue";
 import {useRouter} from "vue-router";
 import {usePermissionsStore} from "src/stores/permissionsStore";
 import {FeatureIdent} from "src/models/AppFeature";
@@ -146,7 +201,26 @@ const showSuggestionButton = ref(false)
 const showSuggestionIcon = ref(false)
 const doShowSuggestionButton = ref(false)
 const transitionGraceTime = ref(false)
+const showWindowTable = ref(false)
 const currentWindowName = ref('---')
+
+const columns = [
+  {name: 'windowIcon', align: 'center', label: '', field: 'windowIcon', sortable: true},
+  {
+    name: 'name',
+    required: true,
+    label: 'Window Name',
+    align: 'left',
+    field: row => row.name,
+    format: val => `${val}`,
+    sortable: true
+  },
+  {name: 'windowHeight', align: 'center', label: 'Height', field: 'windowHeight'},
+  {name: 'windowWidth', align: 'center', label: 'Height', field: 'windowWidth'},
+  {name: 'windowAction', align: 'center', label: 'Action', field: 'windowAction', sortable: false}
+]
+
+const rows = ref<object[]>([])
 
 watchEffect(() => {
   const suggestions = useSuggestionsStore().getSuggestions(
@@ -286,7 +360,7 @@ const otherActiveWindows = () => {
     (e: object) => e['name' as keyof object] !== '%monitoring%')
 }
 
-watchEffect ( () => {
+watchEffect(() => {
   const res = useWindowsStore().currentWindow && useWindowsStore().currentWindow.id ?
     useWindowsStore().windowNameFor(useWindowsStore().currentWindow.id || 0) || 'n/a' :
     'n/a'
@@ -306,10 +380,46 @@ const setNewName = (newName: string) => {
   }
 }
 
-const openWindow = (windowId: number) =>
-  chrome.windows.update(windowId, {drawAttention: true, focused: true},
-    (callback) => {
+const openWindow = (windowId: number) => {
+  if (useWindowsStore().currentWindow?.id !== windowId) {
+    chrome.windows.update(windowId, {drawAttention: true, focused: true},
+      (callback) => {
+      })
+  }
+}
+
+const toggleShowWindowTable = () => {
+  showWindowTable.value = !showWindowTable.value
+  if (showWindowTable.value) {
+
+    rows.value = _.map(useWindowsStore().currentWindows as chrome.windows.Window[], (w: chrome.windows.Window) => {
+      return {
+        id: w.id,
+        name: useWindowsStore().windowNameFor(w.id) || w.id,
+        windowHeight: w['height' as keyof object],
+        windowWidth: w['width' as keyof object],
+        windowIcon: "*"
+      }
     })
+  }
+}
+
+const setWindowName = (id: number, newName: String) => {
+  console.log("herie", id, newName)
+  if (newName && newName.toString().trim().length > 0) {
+    chrome.windows.get(id, (cw) => {
+      console.log("setting window name", id, newName.toString().trim())
+      useWindowsStore().upsertWindow(cw, newName.toString().trim(), "")
+
+      if (useWindowsStore().currentWindow?.id === id) {
+        currentWindowName.value = newName
+        //console.log("setting window name to ", currentWindowName.value)
+        useWindowsStore().currentWindowName = newName
+      }
+    })
+  }
+
+}
 
 </script>
 

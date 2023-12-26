@@ -107,23 +107,23 @@ onMounted(() => {
   }
 })
 
-useMeta(() => {
-  return {
-    // whenever "title" from above changes, your meta will automatically update
-    title: tabset.value.tabs.length > 0 ? tabset.value.tabs[0].title : '???',
-    meta: {
-      //description: {name: 'og:title', content: 'Page 1'},
-      ogTitle: {
-        property: 'og:title',
-        content: 'sharing with tabsets'
-      }
-      // ogImage: {
-      //   property: 'og:image',
-      //   content: tabset.value.tabs.length > 0 ? tabset.value.tabs[0].image : ''
-      // }
-    }
-  }
-})
+// useMeta(() => {
+//   return {
+//     // whenever "title" from above changes, your meta will automatically update
+//     title: tabset.value.tabs.length > 0 ? tabset.value.tabs[0].title : '???',
+//     meta: {
+//       //description: {name: 'og:title', content: 'Page 1'},
+//       ogTitle: {
+//         property: 'og:title',
+//         content: 'sharing with tabsets'
+//       }
+//       // ogImage: {
+//       //   property: 'og:image',
+//       //   content: tabset.value.tabs.length > 0 ? tabset.value.tabs[0].image : ''
+//       // }
+//     }
+//   }
+// })
 
 const start = () => {
   state.value = 'runImport'
