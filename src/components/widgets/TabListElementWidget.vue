@@ -123,7 +123,8 @@
   </q-item-section>
   <q-item-section side v-else>
     <div class="row" v-if="props.showButtons">
-      <q-btn flat round :color="props.tab.note ? 'secondary':'primary'" size="11px" icon="comment"
+      <q-btn v-if="props.tabsetMqttUrl"
+        flat round :color="props.tab.note ? 'secondary':'primary'" size="11px" icon="comment"
              @click.stop="commentDialog(tab as Tab)">
         <q-tooltip class="tooltip-small">Publish a comment</q-tooltip>
       </q-btn>
@@ -161,6 +162,7 @@ const props = defineProps({
   highlightUrl: {type: String, required: false},
   tabsetId: {type: String, required: true},
   tabsetSharedId: {type: String, required: false},
+  tabsetMqttUrl: {type: String, required: false},
   simpleUi: {type: Boolean, default: false}
 })
 

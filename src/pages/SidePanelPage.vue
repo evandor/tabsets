@@ -205,6 +205,8 @@ import ShareTabsetPubliclyDialog from "components/dialogues/ShareTabsetPubliclyD
 import getScrollTarget = scroll.getScrollTarget;
 import MqttService from "src/services/mqtt/MqttService";
 import {SyncType, useAppStore} from "stores/appStore";
+import * as url from "url";
+import {FirebaseCall} from "src/services/firebase/FirebaseCall";
 
 const {setVerticalScrollPosition} = scroll
 
@@ -723,8 +725,12 @@ const copyPublicShareToClipboard = (tabsetId: string) => {
 
 const suggestTabsetImport = () => {
   const currentTabUrl = useTabsStore().currentChromeTab?.url
+  console.log("chekcing", currentTabUrl)
   if (currentTabUrl?.startsWith("https://shared.tabsets.net/#/pwa/tabsets/")) {
-    return true
+    const urlSplit = currentTabUrl.split("/")
+    const tabsetId = urlSplit[urlSplit.length - 1]
+    console.log("tabsetId", tabsetId, useTabsetService().getTabset(tabsetId))
+    return !useTabsetService().getTabset(tabsetId)
   }
   return false
 }
@@ -744,7 +750,16 @@ const testShare = () => {
 
 const importSharedTabset = () => {
   const currentTabUrl = useTabsStore().currentChromeTab?.url
-  console.log("Importing", currentTabUrl)
+  if (currentTabUrl) {
+    console.log("Importing", currentTabUrl)
+    const urlSplit = currentTabUrl.split("/")
+    const tabsetId = urlSplit[urlSplit.length - 1]
+    FirebaseCall.get("/share/public/" + tabsetId + "?cb=" + new Date().getTime(), false)
+      .then((res: any) => {
+        const newTabset = res as Tabset
+        useTabsetService().saveTabset(newTabset)
+      })
+  }
 }
 
 const shareTabsetPubliclyDialog = (tabset: Tabset, republish: boolean = false) => {

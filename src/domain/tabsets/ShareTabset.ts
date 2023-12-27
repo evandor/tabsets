@@ -16,10 +16,7 @@ export class ShareTabsetCommand implements Command<any> {
   }
 
   async execute(): Promise<ExecutionResult<any>> {
-    //let sharedBy = useAuthStore().user.name
-    //if (!sharedBy) {
     const sharedBy = this.author
-    //}
     return TabsetService.share(this.tabsetId, this.sharing, this.sharedId, sharedBy || "unknown")
       .then(oldSharing => Promise.resolve(
         new ExecutionResult(
@@ -29,8 +26,6 @@ export class ShareTabsetCommand implements Command<any> {
       )
       .catch(err => Promise.reject(err))
   }
-
-
 }
 
 ShareTabsetCommand.prototype.toString = function cmdToString() {
