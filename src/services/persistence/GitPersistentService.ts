@@ -12,8 +12,8 @@ import {MetaLink} from "src/models/MetaLink";
 import {Tabset} from "src/models/Tabset";
 import {Window} from "src/models/Window";
 import {RequestInfo} from "src/models/RequestInfo";
-import {Notification, NotificationStatus} from "src/models/Notification";
-import { md5 } from 'js-md5';
+import {Notification} from "src/models/Notification";
+import {md5} from 'js-md5';
 // @ts-ignore
 import LightningFS from '@isomorphic-git/lightning-fs';
 import http from 'isomorphic-git/http/web'
@@ -22,6 +22,7 @@ import {Buffer} from "buffer";
 import {useTabsStore} from "stores/tabsStore";
 import {useSpacesStore} from "stores/spacesStore";
 import {LocalStorage, uid} from "quasar";
+import {SyncType} from "stores/appStore";
 
 if (typeof self !== 'undefined') {
   self.Buffer = Buffer;
@@ -36,7 +37,7 @@ async function createDir(...segments: string[]) {
       console.debug("creating fs path", path)
       prefix += segment + "/"
       await pfs.mkdir(path)
-    } catch (err:any) {
+    } catch (err: any) {
       if (!err.toString().startsWith("Error: EEXIST")) {
         console.log(err)
       }
@@ -62,13 +63,15 @@ class GitPersistenceService implements PersistenceService {
   private readonly _dir = "/tabsets";
 
   // TODO
-  async init( url: string | undefined) {
+  async init(url: string | undefined) {
     if (url) {
-      console.log("=== initializing git database ===", url)
-      this.db = await this.initDatabase(url)
-      console.log("=== initializing git database: done ===")
-      useUiStore().dbReady = true
-      return Promise.resolve("done")
+      if (LocalStorage.getItem("sync.type") as SyncType === SyncType.GIT) {
+        console.log("=== initializing git database ===", url)
+        this.db = await this.initDatabase(url)
+        console.log("=== initializing git database: done ===")
+        useUiStore().dbReady = true
+        return Promise.resolve("done")
+      }
     }
     return Promise.resolve("no url given")
   }
@@ -83,14 +86,14 @@ class GitPersistenceService implements PersistenceService {
     console.log(useDir);
     try {
       await pfs.mkdir(useDir);
-    } catch (err:any) {
+    } catch (err: any) {
       if (!err.toString().startsWith("Error: EEXIST")) {
         console.log(err)
       }
     }
 
     // try to get status
-    let status = await git.status({ fs, dir: useDir, filepath: 'README.md' })
+    let status = await git.status({fs, dir: useDir, filepath: 'README.md'})
     console.log(status)
 
     try {

@@ -129,6 +129,7 @@ class NavigationService {
               if (groups.length > i) {
                 ctx.handleGroup(groups[i], useWindowId, tab);
               }
+
             })
 
           }
@@ -174,6 +175,10 @@ class NavigationService {
 
   openTab(tabId: number) {
     return chrome.tabs.update(tabId, {active: true})
+  }
+
+  async openSingleTab(url: string): Promise<chrome.tabs.Tab> {
+    return await chrome.tabs.create({url: url})
   }
 
   closeChromeTab(tab: chrome.tabs.Tab) {

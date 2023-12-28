@@ -158,8 +158,9 @@ class TabsetService {
     return db.getLinks(url)
   }
 
-  setCustomTitle(tab: Tab, title: string): Promise<any> {
+  setCustomTitle(tab: Tab, title: string, desc: string): Promise<any> {
     tab.name = title
+    tab.longDescription = desc
     return saveCurrentTabset()
   }
 
