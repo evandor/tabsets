@@ -417,6 +417,11 @@ text.set(FeatureIdent.TAB_HELPER.toLowerCase(), {
   //more: 'https://docs.tabsets.net/website-monitoring',
   permissions: []
 })
+text.set(FeatureIdent.AUTO_TAB_SWITCHER.toLowerCase(), {
+  name: 'Auto Tab Switcher',
+  description: 'Switch the Tab\'s URL every x Seconds',
+  permissions: []
+})
 
 
 watchEffect(() => {

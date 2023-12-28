@@ -73,7 +73,7 @@
     <q-item-label class="ellipsis-2-lines text-grey-8"
                   v-if="useUiStore().listDetailLevelGreaterEqual(ListDetailLevel.MAXIMAL,props.tabset?.details)"
                   @click.stop="gotoTab()">
-      {{ props.tab.description }}
+      {{ props.tab.longDescription || props.tab.description }}
     </q-item-label>
 
     <!-- === url(s) === -->

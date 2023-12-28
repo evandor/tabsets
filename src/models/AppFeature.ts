@@ -42,7 +42,8 @@ export enum FeatureIdent {
   ANALYSE_TABS = "ANALYSE_TABS",
   TAB_GROUPS = "TAB_GROUPS",
   MONITORING = "MONITORING",
-  TAB_HELPER = "TAB_HELPER"
+  TAB_HELPER = "TAB_HELPER",
+  AUTO_TAB_SWITCHER = "AUTO_TAB_SWITCHER"
 }
 
 export enum FeatureType {

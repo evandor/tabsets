@@ -32,6 +32,10 @@
           </q-item-section>
           <q-menu anchor="top end" self="top start">
             <q-list>
+              <q-item v-if="usePermissionsStore().hasFeature(FeatureIdent.AUTO_TAB_SWITCHER)"
+                      dense clickable v-close-popup @click="startAutoSwitchingTab(tabset.id)">
+                <q-item-section>switching tab</q-item-section>
+              </q-item>
               <q-item dense clickable v-close-popup @click="restoreInNewWindow(tabset.id)">
                 <q-item-section>new window</q-item-section>
               </q-item>
@@ -150,7 +154,7 @@ import {useSettingsStore} from "stores/settingsStore";
 import {useSearchStore} from "stores/searchStore";
 import NavigationService from "src/services/NavigationService";
 import EditTabsetDialog from "components/dialogues/EditTabsetDialog.vue";
-import {openURL, useQuasar} from "quasar";
+import {LocalStorage, openURL, useQuasar} from "quasar";
 import {useUtils} from "src/services/Utils";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {RestoreTabsetCommand} from "src/domain/tabsets/RestoreTabset";
@@ -208,6 +212,34 @@ const openEditTabsetDialog = (tabset: Tabset) => {
 
 const restoreInNewWindow = (tabsetId: string, windowName: string | undefined = undefined) =>
   useCommandExecutor().execute(new RestoreTabsetCommand(tabsetId, windowName))
+
+const startAutoSwitchingTab = (tabsetId: string) => {
+  const tabset = useTabsetService().getTabset(tabsetId)
+  if (tabset && tabset.tabs?.length > 1 && tabset.tabs[0].url) {
+    const tabs = tabset.tabs
+    let tabIndex = 0
+    NavigationService.openSingleTab(tabset.tabs[tabIndex].url || '')
+      .then(tab => {
+        console.log("tabId", tab)
+        let interval = setInterval(() => {
+          try {
+            const nextTab = tabs[++tabIndex % tabs.length]
+            console.log("updating ", nextTab.url)
+            chrome.tabs.update(tab.id || 0, {url: nextTab.url},
+              cb => {
+                if (chrome.runtime.lastError) {
+                  console.warn("got runtime error", chrome.runtime.lastError)
+                  clearInterval(interval)
+                }
+              })
+          } catch (err) {
+            console.log("got error", err, interval)
+            clearInterval(interval)
+          }
+        }, LocalStorage.getItem("ui.tabSwitcher") as number || 5000)
+      })
+  }
+}
 
 const restoreInGroup = (tabsetId: string, windowName: string | undefined = undefined) =>
   useCommandExecutor().execute(new RestoreTabsetCommand(tabsetId, windowName, false))

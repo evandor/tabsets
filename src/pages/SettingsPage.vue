@@ -86,6 +86,23 @@
         </div>
       </div>
 
+      <div class="row items-baseline q-ma-md" v-if="usePermissionsStore().hasFeature(FeatureIdent.AUTO_TAB_SWITCHER)">
+        <div class="col-3">
+          Tab Switching Time in seconds
+        </div>
+        <div class="col-9">
+          <q-select
+            label="Tab Auto-Switcher Settings"
+            filled
+            v-model="autoSwitcherOption"
+            :options="autoSwitcherOptions"
+            map-options
+            emit-value
+            style="width: 250px"
+          />
+        </div>
+      </div>
+
       <div class="row items-baseline q-ma-md">
         <div class="col-3">
           Restore Info Messages
@@ -748,6 +765,20 @@ const subscription = ref<string | undefined>(LocalStorage.getItem('subscription.
 
 const tab = ref<string>(route.query['tab'] ? route.query['tab'] as string : 'appearance')
 
+const autoSwitcherOption = ref<number>(localStorage.getItem('ui.tabSwitcher') as number || 5000)
+
+const autoSwitcherOptions = [
+  {label: '1 sec.', value: 1000},
+  {label: '2 sec.', value: 2000},
+  {label: '3 sec.', value: 3000},
+  {label: '5 sec.', value: 5000},
+  {label: '10 sec.', value: 10000},
+  {label: '30 sec.', value: 30000},
+  {label: '1 min.', value: 60000},
+  {label: '2 min.', value: 120000},
+  {label: '5 min.', value: 300000}
+]
+
 const {handleError} = useNotificationHandler()
 
 onMounted(() => {
@@ -864,6 +895,10 @@ watchEffect(() => {
 watchEffect(() => {
   // @ts-ignore
   indexSize.value = searchStore?.getIndex().size()
+})
+
+watchEffect(() => {
+  LocalStorage.set("ui.tabSwitcher", autoSwitcherOption.value)
 })
 
 const downloadIndex = () => {

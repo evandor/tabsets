@@ -69,7 +69,9 @@ export class AppFeatures {
         .setActivateCommands([new GrantPermissionCommand('tabGroups')]),
 
     new AppFeature(FeatureIdent.MONITORING, FeatureType.EXPERIMENTAL, 'Monitor Changes', 'o_change_circle', ['bex']),
-    new AppFeature(FeatureIdent.TAB_HELPER, FeatureType.EXPERIMENTAL, 'Tab Helper', 'o_article', ['bex'])
+    new AppFeature(FeatureIdent.TAB_HELPER, FeatureType.EXPERIMENTAL, 'Tab Helper', 'o_article', ['bex']),
+
+    new AppFeature(FeatureIdent.AUTO_TAB_SWITCHER, FeatureType.EXPERIMENTAL, 'Auto Tab Switcher', 'o_switch_left', ['bex'])
   ]
 
   getFeature(f: FeatureIdent): AppFeature | undefined {

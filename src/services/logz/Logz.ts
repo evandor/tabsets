@@ -36,20 +36,24 @@ export abstract class Logz {
     }
     if (process.env.LOGZ_URL) {
 
-      console.log("sending", JSON.stringify(message))
-      const response = await fetch(`${process.env.LOGZ_URL}`, {
-        method: "POST",
-        // mode: "cors", // no-cors, *cors, same-origin
-        // cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
-        // credentials: "same-origin", // include, *same-origin, omit
-        // headers: {
-        //   "Content-Type": "application/json",
-        // },
-        // redirect: "follow", // manual, *follow, error
-        // referrerPolicy: "no-referrer", // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
-        body: JSON.stringify(message), // body data type must match "Content-Type" header
-      });
-      console.log("answer", response)
+      try {
+        console.log("sending", JSON.stringify(message))
+        const response = await fetch(`${process.env.LOGZ_URL}`, {
+          method: "POST",
+          // mode: "cors", // no-cors, *cors, same-origin
+          // cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
+          // credentials: "same-origin", // include, *same-origin, omit
+          // headers: {
+          //   "Content-Type": "application/json",
+          // },
+          // redirect: "follow", // manual, *follow, error
+          // referrerPolicy: "no-referrer", // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
+          body: JSON.stringify(message), // body data type must match "Content-Type" header
+        });
+        console.log("answer", response)
+      } catch (err) {
+        console.warn("dould not send Logz message", JSON.stringify(message))
+      }
     }
     return
 
