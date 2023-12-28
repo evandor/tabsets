@@ -22,7 +22,7 @@
 
 
       <template v-if="tabset.tabs.length > 0 && inBexMode() && (
-          (!tabset.window || tabset.window === 'current') || !usePermissionsStore().hasFeature(FeatureIdent.WINDOW_MANAGEMENT))">
+          (!tabset.window || tabset.window === 'current'))">
         <ContextMenuItem
           icon="open_in_new"
           label="Open all in...">
@@ -45,7 +45,7 @@
 
       </template>
 
-      <template v-if="tabset.tabs.length > 0 && inBexMode() && usePermissionsStore().hasFeature(FeatureIdent.WINDOW_MANAGEMENT) &&
+      <template v-if="tabset.tabs.length > 0 && inBexMode() &&
             tabset.window && tabset.window !== 'current'">
         <ContextMenuItem v-close-popup
                          @was-clicked="restoreInGroup(tabset.id, tabset.window)"

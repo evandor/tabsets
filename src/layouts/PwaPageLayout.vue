@@ -47,11 +47,11 @@
       <Navigation></Navigation>
     </q-drawer>
 
-    <q-drawer v-model="useUiStore().rightDrawerOpen" side="right" bordered
-              content-class="column justify-between no-wrap bg-grey-1">
-      <DrawerRight/>
+<!--    <q-drawer v-model="useUiStore().rightDrawerOpen" side="right" bordered-->
+<!--              content-class="column justify-between no-wrap bg-grey-1">-->
+<!--      <DrawerRight/>-->
 
-    </q-drawer>
+<!--    </q-drawer>-->
 
     <q-page-container>
       <router-view/>

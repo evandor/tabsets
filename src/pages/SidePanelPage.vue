@@ -4,8 +4,8 @@
     <!-- list of tabs, assuming here we have at least one tabset -->
     <div class="q-ma-none q-pa-none">
 
-      <div class="row q-ma-md q-pa-md" v-if="suggestTabsetImport()">
-        <q-btn class="q-px-xl" dense label="import Tabset" color="warning" @click="testShare()"/>
+      <div class="row q-ma-sm q-pa-sm" v-if="suggestTabsetImport()">
+        <q-btn class="q-px-xl" dense label="import Tabset" color="warning" @click="importSharedTabset()"/>
       </div>
 
       <q-list dense
@@ -205,6 +205,8 @@ import ShareTabsetPubliclyDialog from "components/dialogues/ShareTabsetPubliclyD
 import getScrollTarget = scroll.getScrollTarget;
 import MqttService from "src/services/mqtt/MqttService";
 import {SyncType, useAppStore} from "stores/appStore";
+import * as url from "url";
+import {FirebaseCall} from "src/services/firebase/FirebaseCall";
 
 const {setVerticalScrollPosition} = scroll
 
@@ -601,7 +603,7 @@ const tabsetCaption = (tabs: Tab[], window: string) => {
   } else {
     caption = tabs.length + ' tab' + (tabs.length === 1 ? '' : 's') + ' (filtered)'
   }
-  if (window && window !== 'current' && usePermissionsStore().hasFeature(FeatureIdent.WINDOW_MANAGEMENT)) {
+  if (window && window !== 'current') {
     caption = caption + " - opens in: " + window
   }
   return caption
@@ -723,8 +725,12 @@ const copyPublicShareToClipboard = (tabsetId: string) => {
 
 const suggestTabsetImport = () => {
   const currentTabUrl = useTabsStore().currentChromeTab?.url
-  if (currentTabUrl?.startsWith("https://shared.tabsets.net/#/tabsets/")) {
-    return true
+  console.log("chekcing", currentTabUrl)
+  if (currentTabUrl?.startsWith("https://shared.tabsets.net/#/pwa/tabsets/")) {
+    const urlSplit = currentTabUrl.split("/")
+    const tabsetId = urlSplit[urlSplit.length - 1]
+    console.log("tabsetId", tabsetId, useTabsetService().getTabset(tabsetId))
+    return !useTabsetService().getTabset(tabsetId)
   }
   return false
 }
@@ -739,6 +745,20 @@ const testShare = () => {
   if (navigator.canShare) {
     console.log(navigator.canShare())
     navigator.share(shareData).then((res) => console.log("res", res)).catch((err) => console.err(err))
+  }
+}
+
+const importSharedTabset = () => {
+  const currentTabUrl = useTabsStore().currentChromeTab?.url
+  if (currentTabUrl) {
+    console.log("Importing", currentTabUrl)
+    const urlSplit = currentTabUrl.split("/")
+    const tabsetId = urlSplit[urlSplit.length - 1]
+    FirebaseCall.get("/share/public/" + tabsetId + "?cb=" + new Date().getTime(), false)
+      .then((res: any) => {
+        const newTabset = res as Tabset
+        useTabsetService().saveTabset(newTabset)
+      })
   }
 }
 

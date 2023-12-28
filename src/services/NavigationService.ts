@@ -22,10 +22,7 @@ class NavigationService {
   ) {
     withUrls.map(u => u.replace(this.placeholderPattern, ""));
     const useWindowIdent = forceCurrent ?
-      'current' :
-      usePermissionsStore().hasFeature(FeatureIdent.WINDOW_MANAGEMENT) ?
-        useTabsStore().getCurrentTabset?.window || 'current' :
-        'current'
+      'current' : useTabsStore().getCurrentTabset?.window || 'current'
     console.log(` > opening url(s) ${withUrls} in window: '${useWindowIdent}', groups: '${groups}', mode: '${process.env.MODE}'`)
 
     const windowFromDb = await useWindowsStore().windowFor(useWindowIdent)

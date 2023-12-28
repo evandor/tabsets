@@ -317,12 +317,12 @@ text.set(FeatureIdent.STANDALONE_APP.toLowerCase(), {
   description: 'Tabsets as full-page application',
   permissions: []
 })
-text.set(FeatureIdent.NEWEST_TABS.toLowerCase(), {
-  name: 'Newest Tabs',
-  img: 'newest_tabs.png',
-  description: 'Activate a view to get quick access to your 100 newest tabs',
-  permissions: []
-})
+// text.set(FeatureIdent.NEWEST_TABS.toLowerCase(), {
+//   name: 'Newest Tabs',
+//   img: 'newest_tabs.png',
+//   description: 'Activate a view to get quick access to your 100 newest tabs',
+//   permissions: []
+// })
 text.set(FeatureIdent.TOP10.toLowerCase(), {
   name: 'Top 10 Tabs',
   img: 'top10.png',
@@ -367,12 +367,12 @@ text.set(FeatureIdent.ARCHIVE_TABSET.toLowerCase(), {
   permissions: []
 })
 
-text.set(FeatureIdent.WINDOW_MANAGEMENT.toLowerCase(), {
-  name: 'Advanced Window Management',
-  description: 'Work with multiple named Windows and assign them to tabsets so that specific tabsets always ' +
-      'are opened in the same window',
-  permissions: []
-})
+// text.set(FeatureIdent.WINDOW_MANAGEMENT.toLowerCase(), {
+//   name: 'Advanced Window Management',
+//   description: 'Work with multiple named Windows and assign them to tabsets so that specific tabsets always ' +
+//       'are opened in the same window',
+//   permissions: []
+// })
 
 text.set(FeatureIdent.COLOR_TAGS.toLowerCase(), {
   name: 'Color Tags for Tabsets and Tabs',

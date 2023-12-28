@@ -28,7 +28,7 @@
         />
       </q-card-section>
 
-      <q-card-section v-if="usePermissionsStore().hasFeature(FeatureIdent.WINDOW_MANAGEMENT)">
+      <q-card-section>
         <div classs="text-caption text-blue" style="font-size:smaller"
              v-if="windowMgtSelectionEdited">
           Press 'Enter' to add the new value
@@ -164,7 +164,7 @@ const enterPressed = () => windowMgtSelectionHasFocus.value = false
 
 
 const disableSubmit = ():boolean => {
-  if (usePermissionsStore().hasFeature(FeatureIdent.WINDOW_MANAGEMENT) && windowModel.value?.trim().length === 0) {
+  if (windowModel.value?.trim().length === 0) {
     return true
   }
   return newTabsetName.value.trim().length === 0 ||

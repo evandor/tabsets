@@ -124,7 +124,7 @@ import CommentDialog from "components/dialogues/CommentDialog.vue";
 
 const props = defineProps({
   tab: {type: Object as PropType<Tab>, required: true},
-  tabset: {type: Object as PropType<Tabset>, required: true}
+  tabset: {type: Object as PropType<Tabset>, required: false}
 })
 
 const emit = defineEmits(['toggleExpand']);

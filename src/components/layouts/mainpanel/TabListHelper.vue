@@ -26,6 +26,7 @@
                           :tab="tabAsTab(tab)"
                           :tabsetId="props.tabsetId"
                           :tabsetSharedId="props.tabsetSharedId"
+                          :tabsetMqttUrl="props.tabsetMqttUrl"
                           :highlightUrl="highlightUrl"
                           :simpleUi="props.simpleUi" />
 
@@ -48,6 +49,7 @@ const props = defineProps({
   group: {type: String, required: true},
   highlightUrl: {type: String, required: false},
   tabsetSharedId: {type: String, required: false},
+  tabsetMqttUrl: {type: String, required: false},
   simpleUi: {type: Boolean, default: false}
 })
 

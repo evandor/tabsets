@@ -10,13 +10,56 @@
     <q-tooltip class="tooltip">{{ suggestionsLabel() }}</q-tooltip>
   </q-btn>
 
+  <q-btn v-if="useTabsStore().allTabsCount > 0"
+         icon="o_pageview"
+         color="black"
+         class="q-my-xs q-ml-xs q-mr-none q-px-xs"
+         flat>
+    <q-menu>
+      <q-list>
+        <!--        <q-item dense clickable v-close-popup>-->
+        <!--          <q-item-section>new window</q-item-section>-->
+        <!--        </q-item>-->
+        <SidePanelFooterViewMenuItem :side-panel-view="SidePanelView.BY_DOMAIN_LIST"
+                                     label="Tabs By Domain"
+                                     icon="o_dns"
+                                     :size="buttonSize"
+                                     tooltip="List all your tabs URLs by domain"/>
+        <SidePanelFooterViewMenuItem :side-panel-view="SidePanelView.TAGS_LIST"
+                                     icon="o_label"
+                                     label="Tags List"
+                                     :size="buttonSize"
+                                     tooltip="List of all tags sorted by prevalence"/>
+        <SidePanelFooterViewMenuItem :side-panel-view="SidePanelView.NEWEST_TABS_LIST"
+                                     label="Newest Tabs"
+                                     icon="o_schedule"
+                                     :size="buttonSize"
+                                     tooltip="Newest Tabs List"/>
+        <SidePanelFooterViewMenuItem :side-panel-view="SidePanelView.TOP_10_TABS_LIST"
+                                     label="Top 10 Tabs"
+                                     icon="o_workspace_premium"
+                                     :size="buttonSize"
+                                     tooltip="Top 10 Tabs List"/>
+        <SidePanelFooterViewMenuItem :side-panel-view="SidePanelView.MAIN"
+                                     :disable="useUiStore().sidePanelActiveViewIs(SidePanelView.MAIN)"
+                                     label="Default View"
+                                     icon=""
+                                     :size="buttonSize"
+                                     tooltip="Back to Default View"/>
+
+
+      </q-list>
+    </q-menu>
+  </q-btn>
+
   <SidePanelFooterLeftButton
     :side-panel-view="SidePanelView.TABS_LIST"
     :size="buttonSize"
     icon="o_playlist_add"
     tooltip="All your browser's open tabs"/>
 
-  <SidePanelFooterLeftButton :side-panel-view="SidePanelView.MESSAGES"
+  <SidePanelFooterLeftButton v-if="unreadMessagesCount > 0"
+                             :side-panel-view="SidePanelView.MESSAGES"
                              icon="o_chat"
                              :size="buttonSize"
                              tooltip="Your messages">
@@ -27,25 +70,10 @@
                              icon="bookmark"
                              :size="buttonSize"
                              tooltip="Show the Bookmarks Browser"/>
-  <SidePanelFooterLeftButton :side-panel-view="SidePanelView.TAGS_LIST"
-                             icon="o_label"
-                             :size="buttonSize"
-                             tooltip="List of all tags sorted by prevalence"/>
-  <SidePanelFooterLeftButton :side-panel-view="SidePanelView.BY_DOMAIN_LIST"
-                             icon="o_dns"
-                             :size="buttonSize"
-                             tooltip="List all your tabs URLs by domain"/>
+
   <SidePanelFooterLeftButton :side-panel-view="SidePanelView.RSS_LIST"
                              icon="o_rss_feed"
                              tooltip="List all your RSS feeds"/>
-  <SidePanelFooterLeftButton :side-panel-view="SidePanelView.NEWEST_TABS_LIST"
-                             icon="o_schedule"
-                             :size="buttonSize"
-                             tooltip="Newest Tabs List"/>
-  <SidePanelFooterLeftButton :side-panel-view="SidePanelView.TOP_10_TABS_LIST"
-                             icon="o_workspace_premium"
-                             :size="buttonSize"
-                             tooltip="Top 10 Tabs List"/>
 
   <span class="q-ma-none"
         v-if="permissionsStore.hasFeature(FeatureIdent.OPENTABS_THRESHOLD) && tabsStore.tabsets?.size > 0">
@@ -56,7 +84,7 @@
 
 </template>
 <script setup lang="ts">
-import {SidePanelView, useUiStore} from "stores/uiStore";
+import {SidePanel, SidePanelView, useUiStore} from "stores/uiStore";
 import {FeatureIdent} from "src/models/AppFeature";
 import SidePanelFooterLeftButton from "components/helper/SidePanelFooterLeftButton.vue";
 import OpenTabsThresholdWidget from "components/widgets/OpenTabsThresholdWidget.vue";
@@ -66,6 +94,7 @@ import {useSuggestionsStore} from "stores/suggestionsStore";
 import {ref, watchEffect} from "vue";
 import {SuggestionState} from "src/models/Suggestion";
 import {useMessagesStore} from "stores/messagesStore";
+import SidePanelFooterViewMenuItem from "components/helper/SidePanelFooterViewMenuItem.vue";
 
 const props = defineProps({
   showSuggestionIcon: {type: Boolean, required: true}
