@@ -40,6 +40,11 @@
                                      icon="o_workspace_premium"
                                      :size="buttonSize"
                                      tooltip="Top 10 Tabs List"/>
+        <SidePanelFooterViewMenuItem :side-panel-view="SidePanelView.TABS_AS_TREE"
+                                     label="Tabs as Tree"
+                                     icon="o_account_tree"
+                                     :size="buttonSize"
+                                     tooltip="Show a tree view of your tabs"/>
         <SidePanelFooterViewMenuItem :side-panel-view="SidePanelView.MAIN"
                                      :disable="useUiStore().sidePanelActiveViewIs(SidePanelView.MAIN)"
                                      label="Default View"

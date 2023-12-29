@@ -422,6 +422,11 @@ text.set(FeatureIdent.AUTO_TAB_SWITCHER.toLowerCase(), {
   description: 'Switch the Tab\'s URL every x Seconds',
   permissions: []
 })
+text.set(FeatureIdent.TABS_AS_TREE.toLowerCase(), {
+  name: 'Tabs as Tree',
+  description: 'Show a tree view of your tabs',
+  permissions: []
+})
 
 
 watchEffect(() => {
