@@ -43,7 +43,8 @@ export enum FeatureIdent {
   TAB_GROUPS = "TAB_GROUPS",
   MONITORING = "MONITORING",
   TAB_HELPER = "TAB_HELPER",
-  AUTO_TAB_SWITCHER = "AUTO_TAB_SWITCHER"
+  AUTO_TAB_SWITCHER = "AUTO_TAB_SWITCHER",
+  TABS_AS_TREE = "TABS_AS_TREE"
 }
 
 export enum FeatureType {
@@ -53,7 +54,6 @@ export enum FeatureType {
   PLANNED = "PLANNED",
   DISABLED = "DISABLED"
 }
-
 
 export class AppFeature {
 

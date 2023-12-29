@@ -69,7 +69,10 @@ export class SidePanelView {
   static readonly TAGS_VIEWER = new SidePanelView('categorized_tabsets', '/sidepanel/byCategory',
     () => usePermissionsStore().hasFeature(FeatureIdent.TAGS));
 
-  static readonly MESSAGES = new SidePanelView('messages', '/sidepanel/messages');
+  static readonly MESSAGES = new SidePanelView('messages', '/sidepanel/messages')
+
+  static readonly TABS_AS_TREE = new SidePanelView('tabsAsTree', '/sidepanel/tabsAsTree')
+
 
   private constructor(
     public readonly ident: string,
