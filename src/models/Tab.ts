@@ -74,6 +74,9 @@ export class Tab {
   pinned: boolean
   groupId: number
 
+  // from tabsets' columns
+  columnId: string | undefined
+
   isDuplicate: boolean
   history: string[] = []
   selected: boolean = false

@@ -71,7 +71,7 @@
           <q-tooltip>Sorting descending or ascending, currently {{ orderDesc }}</q-tooltip>
         </q-btn>
 
-        <q-btn v-if="tabset?.tabs.length > 0 && useUiStore().userLevel === UserLevel.DEFAULT"
+        <q-btn v-if="tabset?.tabs.length > 0 "
                @click="setView('grid')"
                style="width:14px"
                class="q-mr-sm" size="8px"
@@ -81,7 +81,7 @@
           <q-tooltip class="tooltip">Use grid layout to visualize your tabs</q-tooltip>
         </q-btn>
 
-        <q-btn v-if="tabset?.tabs.length > 0 && useUiStore().userLevel === UserLevel.DEFAULT"
+        <q-btn v-if="tabset?.tabs.length > 0 "
                @click="setView('group')"
                style="width:14px"
                class="q-mr-sm" size="8px"
@@ -92,7 +92,7 @@
         </q-btn>
 
         <!-- default view, no need to show if there is no alternative -->
-        <q-btn v-if="tabset?.tabs.length > 0 && useUiStore().userLevel === UserLevel.DEFAULT"
+        <q-btn v-if="tabset?.tabs.length > 0 "
                @click="setView('list')"
                style="width:14px"
                class="q-mr-sm" size="10px"

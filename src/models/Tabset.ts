@@ -39,7 +39,7 @@ export class Tabset {
   updated: number
   tabs: Tab[]
   dynamicTabs: DynamicTabSource | undefined
-  groups: Group[]
+  columns: Group[]
   spaces: string[] // got json problems with set<string>
   view: string = 'list'
   details: ListDetailLevel | undefined = undefined
@@ -67,7 +67,7 @@ export class Tabset {
   window: string = 'current'
   color: string | undefined = undefined
 
-  constructor(id: string, name: string, tabs: Tab[], groups: Group[] = [], spaces: string[] = []) {
+  constructor(id: string, name: string, tabs: Tab[], columns: Group[] = [], spaces: string[] = []) {
 
     // some guards
     if (!Tabset.newTabsetNameIsValid) {
@@ -83,7 +83,7 @@ export class Tabset {
     this.created = new Date().getTime()
     this.updated = new Date().getTime()
     this.tabs = tabs
-    this.groups = groups
+    this.columns = columns
     this.spaces = spaces
   }
 
