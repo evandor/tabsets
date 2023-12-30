@@ -14,6 +14,7 @@ import {FirebaseCall} from "src/services/firebase/FirebaseCall";
 import PlaceholderUtils from "src/utils/PlaceholderUtils";
 import {Monitor, MonitoringType} from "src/models/Monitor";
 import {ListDetailLevel, useUiStore} from "stores/uiStore";
+import {Group} from "src/models/Group";
 
 const {getTabset, getCurrentTabset, saveTabset, saveCurrentTabset, tabsetsFor, addToTabset} = useTabsetService()
 
@@ -441,11 +442,14 @@ class TabsetService {
     }
   }
 
-  moveTo(tabId: string, newIndex: number) {
-    console.log("moving", tabId, newIndex)
+  moveTo(tabId: string, newIndex: number, column: Group) {
+    console.log("moving", tabId, newIndex, column.id)
     let tabs = useTabsStore().getCurrentTabs
+    //console.log("tabs", tabs)
+    //tabs = _.filter(tabs, (t: Tab) => t.columnId === column.id)
     const oldIndex = _.findIndex(tabs, t => t.id === tabId)
     if (oldIndex >= 0) {
+      console.log("found old index", oldIndex)
       const tab = tabs.splice(oldIndex, 1)[0];
       tabs.splice(newIndex, 0, tab);
 
