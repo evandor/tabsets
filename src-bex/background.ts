@@ -19,14 +19,12 @@ chrome.runtime.onInstalled.addListener((callback) => {
   // getting error: "Service worker registration failed. Status code: 15"
   // Analytics.fireEvent('install-' + callback.reason);
   if (callback.reason !== OnInstalledReason.CHROME_UPDATE) {
-   // if (!navigator.webdriver) {
       chrome.tabs.create({
         active: true,
         url: callback.previousVersion ?
             "https://tabsets.web.app/#/updatedFrom/" +  callback.previousVersion :
             "https://tabsets.web.app/#/installed/"
       })
-   // }
   }
 });
 

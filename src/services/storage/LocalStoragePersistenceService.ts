@@ -11,6 +11,9 @@ import {MetaLink} from "src/models/MetaLink";
 import {RequestInfo} from "src/models/RequestInfo";
 import {Window} from "src/models/Window";
 import {BlobType, SavedBlob} from "src/models/SavedBlob";
+import {Message} from "src/models/Message";
+import {quasar} from "@quasar/vite-plugin";
+import * as console from "console";
 
 export class LocalStoragePersistenceService implements PersistenceService {
 
@@ -259,5 +262,12 @@ export class LocalStoragePersistenceService implements PersistenceService {
 
     deleteBlob(tabId: string, elementId: string): void {
     }
+
+  addMessage(msg: Message): void {
+  }
+
+  getMessages(): Promise<Message[]> {
+    return Promise.resolve([]);
+  }
 
 }
