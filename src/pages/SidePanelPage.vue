@@ -1,4 +1,29 @@
 <template>
+  <VOnboardingWrapper ref="wrapper" :steps="steps">
+    <template #default="{ previous, next, step, exit, isFirst, isLast, index }">
+      <VOnboardingStep>
+        <div class="welcome-tooltip-container">
+          <div class="tooltip">
+            <div class="row">
+              <div class="col-12 q-ma-none q-my-sm">
+                <span class="text-subtitle1" v-if="step.content.title">{{ step.content.title }}</span>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-12 q-ma-none text-caption">
+                <span v-if="step.content.description">{{ step.content.description }}</span>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-12 q-ma-none text-right">
+                <q-btn label="got it" flat dense @click="finish()"/>
+              </div>
+            </div>
+          </div>
+        </div>
+      </VOnboardingStep>
+    </template>
+  </VOnboardingWrapper>
 
   <q-page style="padding-top: 50px">
     <!-- list of tabs, assuming here we have at least one tabset -->
@@ -80,6 +105,7 @@
                             @mouseleave="hoveredTabset = undefined">
               <q-item-label>
                 <q-icon
+                  id="foo"
                   v-if="showAddTabButton(tabset as Tabset, currentChromeTab)"
                   @click.stop="saveInTabset(tabset.id)"
                   class="q-mr-none"
@@ -205,7 +231,7 @@ import ShareTabsetPubliclyDialog from "components/dialogues/ShareTabsetPubliclyD
 import getScrollTarget = scroll.getScrollTarget;
 import MqttService from "src/services/mqtt/MqttService";
 import {SyncType, useAppStore} from "stores/appStore";
-import * as url from "url";
+import {VOnboardingWrapper, VOnboardingStep, useVOnboarding} from 'v-onboarding'
 import {FirebaseCall} from "src/services/firebase/FirebaseCall";
 
 const {setVerticalScrollPosition} = scroll
@@ -242,11 +268,19 @@ const progressLabel = ref<string | undefined>(undefined)
 const selectedTab = ref<Tab | undefined>(undefined)
 const windowName = ref<string | undefined>(undefined)
 const tsBadges = ref<object[]>([])
-const mqttUrl = ref(useUiStore().sharingMqttUrl)
+
+const steps = [
+  {
+    attachTo: {element: '#foo'},
+    content: {title: "Welcome :)", description: "Click here to add the current tab to this tabset"}
+  }
+]
+
+const wrapper = ref(null)
+const {start, goToStep, finish} = useVOnboarding(wrapper)
 
 function updateOnlineStatus(e: any) {
   const {type} = e
-  console.log("hier", e, type)
   useUiStore().networkOnline = type === 'online'
 }
 
@@ -259,6 +293,9 @@ onMounted(() => {
   if (!useAuthStore().isAuthenticated) {
     router.push("/authenticate")
   } else {
+    if (useTabsStore().allTabsCount === 0) {
+      setTimeout(() => start(), 500)
+    }
     Analytics.firePageViewEvent('SidePanelPage', document.location.href);
   }
 })
@@ -793,4 +830,50 @@ const shareTabsetPubliclyDialog = (tabset: Tabset, republish: boolean = false) =
   padding-right: 12px !important;
   margin-bottom: 14px;
 }
+
+.welcome-tooltip-container {
+  position: absolute;
+  top: 30px;
+  right: -50px;
+  width: 140px;
+  display: inline-block
+}
+
+.welcome-tooltip-container .tooltip {
+  z-index: 10000;
+  padding: 0 8px;
+  background: white;
+  color: #333;
+  position: absolute;
+  top: -17px;
+  right: 0;
+  border: 2px solid #FFBF46;
+  border-radius: 8px;
+  font-size: 16px;
+  box-shadow: 3px 3px 3px #ddd;
+  animation: welcome-tooltip-pulse 1s ease-in-out infinite alternate
+}
+
+.welcome-tooltip-container .tooltip p {
+  margin: 15px 0;
+  line-height: 1.5
+}
+
+.welcome-tooltip-container .tooltip * {
+  vertical-align: middle
+}
+
+.welcome-tooltip-container .tooltip::after {
+  content: " ";
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 10px 12.5px 0 12.5px;
+  border-color: #FFBF46 transparent transparent transparent;
+  position: absolute;
+  top: -10px;
+  right: 35px;
+  transform: rotate(180deg)
+}
+
 </style>

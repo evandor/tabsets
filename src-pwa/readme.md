@@ -2,4 +2,4 @@
 
 in /tabsets/shared.tabsets.net
 
-quasar serve -p 3005 -v
+pm2 serve . 3005 -n shared.tabsets.net
