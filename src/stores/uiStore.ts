@@ -10,6 +10,7 @@ import {FeatureIdent} from "src/models/AppFeature";
 import {usePermissionsStore} from "stores/permissionsStore";
 import {Toast, ToastType} from "src/models/Toast";
 import {useMessagesStore} from "stores/messagesStore";
+import {SHARING_AUTHOR_IDENT, SHARING_AVATAR_IDENT, SHARING_MQTT_IDENT} from "boot/constants";
 
 export enum DrawerTabs {
   BOOKMARKS = "bookmarks",
@@ -144,7 +145,7 @@ export const useUiStore = defineStore('ui', () => {
   const tabsetsExpanded = ref<boolean>(false)
 
   // online offline
-  const networkOnline = ref (navigator.onLine)
+  const networkOnline = ref(navigator.onLine)
   const mqttOffline = ref<boolean | undefined>(undefined)
 
   // RightDrawer
@@ -204,10 +205,9 @@ export const useUiStore = defineStore('ui', () => {
   // tabset description
   const tabsetDescriptionPanelHights = ref<object>(LocalStorage.getItem('ui.descriptionPanelHeights') as unknown as object || {})
 
-  const sharingAuthor = ref<string | undefined>(LocalStorage.getItem('sharing.author') as unknown as string || undefined)
-  const sharingAvatar = ref<string | undefined>(LocalStorage.getItem('sharing.avatar') as unknown as string || undefined)
-  const sharingMqttUrl = ref<string | undefined>(LocalStorage.getItem('sharing.mqttUrl') as unknown as string || undefined)
-
+  const sharingAuthor = ref<string>(LocalStorage.getItem(SHARING_AUTHOR_IDENT) as unknown as string || '')
+  const sharingAvatar = ref<string>(LocalStorage.getItem(SHARING_AVATAR_IDENT) as unknown as string || '')
+  const sharingMqttUrl = ref<string>(LocalStorage.getItem(SHARING_MQTT_IDENT) as unknown as string || '')
 
   watch(rightDrawer.value, (val: Object) => {
     LocalStorage.set("ui.rightDrawer", val)
@@ -238,20 +238,21 @@ export const useUiStore = defineStore('ui', () => {
   watch(sharingAuthor,
     (val: string | undefined) => {
       console.log("val", val)
-      LocalStorage.set("sharing.author", val)
+      LocalStorage.set(SHARING_AUTHOR_IDENT, val)
     })
 
   watch(sharingAvatar,
     (val: string | undefined) => {
       console.log("val", val)
-      LocalStorage.set("sharing.avatar", val)
+      LocalStorage.set(SHARING_AVATAR_IDENT, val)
     })
 
   watch(sharingMqttUrl,
     (val: string | undefined) => {
-      console.log("change of sharingMqttUrl", val)
-      LocalStorage.set('sharing.mqttUrl', val && val.trim().length > 0 ? val : undefined)
-      //LocalStorage.set("sharing.mqttUrl", val)
+      //console.log("change of sharingMqttUrl", val)
+      (val && val.trim().length > 0) ?
+        LocalStorage.set(SHARING_MQTT_IDENT, val) :
+        LocalStorage.remove(SHARING_MQTT_IDENT)
     })
 
 

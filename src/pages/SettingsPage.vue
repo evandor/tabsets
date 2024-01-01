@@ -22,10 +22,10 @@
       <q-tab name="appearance" label="Appearance"/>
       <q-tab name="subscription" label="Subscription" icon="o_shopping_bag"/>
       <q-tab name="sharing" label="Sharing"/>
-      <q-tab name="syncing" label="Syncing" icon="o_shopping_bag" v-if="LocalStorage.getItem('subscription.id')"/>
+      <q-tab name="syncing" label="Syncing" icon="o_shopping_bag" v-if="LocalStorage.has(SUBSCRIPTION_ID_IDENT)"/>
       <q-tab name="thirdparty" label="Third Party Services"/>
       <!--      <q-tab name="ignored" label="Ignored Urls"/>-->
-      <q-tab name="archived" label="Archived Tabsets"/>
+      <q-tab name="archived" label="Archived Tabsets" v-if="usePermissionsStore().hasFeature(FeatureIdent.ARCHIVE_TABSET)"/>
       <q-tab name="search" label="Search Engine" v-if="devEnabled"/>
       <q-tab name="importExport" label="Import/Export"/>
       <q-tab name="internals" label="Internals" v-if="devEnabled"/>
@@ -712,6 +712,13 @@ import {SyncType} from "stores/appStore";
 import GitPersistentService from "src/services/persistence/GitPersistentService";
 import {useRoute, useRouter} from "vue-router";
 import {FirebaseCall} from "src/services/firebase/FirebaseCall";
+import {
+  SHARING_AUTHOR_IDENT,
+  SHARING_AVATAR_IDENT,
+  SHARING_INSTALLATION,
+  SHARING_MQTT_IDENT,
+  SUBSCRIPTION_ID_IDENT, SYNC_GIT_TOKEN, SYNC_GIT_URL
+} from "boot/constants";
 
 const {sendMsg} = useUtils()
 
@@ -738,10 +745,10 @@ const permissionsList = ref<string[]>([])
 const darkMode = ref<boolean>(localStorage.getItem('darkMode') || false)
 const detailLevel = ref<ListDetailLevel>(localStorage.getItem('ui.detailLevel') || ListDetailLevel.MAXIMAL)
 
-const nickname = ref<string | undefined>(localStorage.getItem('sharing.author') as string || undefined)
-const avatar = ref<string | undefined>(localStorage.getItem('sharing.avatar') as string || undefined)
-const mqttUrl = ref<string | undefined>(localStorage.getItem('sharing.mqttUrl') as string || undefined)
-const installationId = ref<string | undefined>(localStorage.getItem('sharing.installation') as string || '---')
+const nickname = ref<string>(LocalStorage.getItem(SHARING_AUTHOR_IDENT) || '')
+const avatar = ref<string>(LocalStorage.getItem(SHARING_AVATAR_IDENT) as string || '')
+const mqttUrl = ref<string>(LocalStorage.getItem(SHARING_MQTT_IDENT) as string || '')
+const installationId = ref<string>(localStorage.getItem(SHARING_INSTALLATION) as string || '---')
 
 const bookmarksPermissionGranted = ref<boolean | undefined>(usePermissionsStore().hasPermission('bookmarks'))
 const pageCapturePermissionGranted = ref<boolean | undefined>(usePermissionsStore().hasPermission('history'))
@@ -749,8 +756,8 @@ const allUrlsOriginGranted = ref<boolean | undefined>(usePermissionsStore().hasA
 const fullUrls = ref(localStorage.getItem('ui.fullUrls') || false)
 const detailLevelPerTabset = ref(localStorage.getItem('ui.detailsPerTabset') || false)
 
-const gitRepoToken = ref<string>(LocalStorage.getItem('sync.git.token') as string || '')
-const gitRepoUrl = ref<string>(localStorage.getItem('sync.git.url') as string || '')
+const gitRepoToken = ref<string>(LocalStorage.getItem(SYNC_GIT_TOKEN) as string || '')
+const gitRepoUrl = ref<string>(localStorage.getItem(SYNC_GIT_URL) as string || '')
 //const gitRepoStore = ref<string>(localStorage.getItem('sync.git.store') as string || '')
 const gitTestResult = ref<string | undefined>(undefined)
 const syncType = ref<string | undefined>(undefined)
@@ -761,7 +768,8 @@ const syncOptions = [
   {label: 'Syncing via git repository', value: SyncType.GIT}
 ]
 
-const subscription = ref<string | undefined>(LocalStorage.getItem('subscription.id') as string | undefined)
+
+const subscription = ref<string>(LocalStorage.getItem(SUBSCRIPTION_ID_IDENT) as string || '')
 
 const tab = ref<string>(route.query['tab'] ? route.query['tab'] as string : 'appearance')
 
@@ -831,18 +839,18 @@ watchEffect(() => {
 })
 
 watchEffect(() => {
-  LocalStorage.set('sync.git.url', gitRepoUrl.value)
+  (gitRepoUrl.value && gitRepoUrl.value.trim().length > 0) ?
+    LocalStorage.set(SYNC_GIT_URL, gitRepoUrl.value) :
+    LocalStorage.remove(SYNC_GIT_URL)
   gitTestResult.value = undefined
 })
 
 watchEffect(() => {
-  LocalStorage.set('sync.git.token', gitRepoToken.value)
+  (gitRepoToken.value && gitRepoToken.value.trim().length > 0) ?
+    LocalStorage.set(SYNC_GIT_TOKEN, gitRepoToken.value) :
+    LocalStorage.remove(SYNC_GIT_TOKEN)
   gitTestResult.value = undefined
 })
-
-//watchEffect(() => {
-//  LocalStorage.set('sync.git.store', gitRepoStore.value)
-// })
 
 watchEffect(() => {
   //localStorage.set('sync.type', tempSyncOption.value)
@@ -850,15 +858,21 @@ watchEffect(() => {
 })
 
 watchEffect(() => {
-  LocalStorage.set('subscription.id', subscription.value)
+  (subscription.value && subscription.value.trim().length > 0) ?
+    LocalStorage.set(SUBSCRIPTION_ID_IDENT, subscription.value) :
+    LocalStorage.remove(SUBSCRIPTION_ID_IDENT)
 })
 
 watchEffect(() => {
-  localStorage.set('sharing.author', nickname.value && nickname.value.trim().length > 0 ? nickname.value : undefined)
+  (nickname.value && nickname.value.trim().length > 0) ?
+    LocalStorage.set(SHARING_AUTHOR_IDENT, nickname.value) :
+    LocalStorage.remove(SHARING_AUTHOR_IDENT)
 })
 
 watchEffect(() => {
-  localStorage.set('sharing.avatar', avatar.value && avatar.value.trim().length > 0 ? avatar.value : undefined)
+  (avatar.value && avatar.value.trim().length > 0) ?
+    LocalStorage.set(SHARING_AVATAR_IDENT, avatar.value) :
+    LocalStorage.remove(SHARING_AVATAR_IDENT)
 })
 
 watchEffect(() => {

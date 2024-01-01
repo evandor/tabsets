@@ -140,7 +140,7 @@ class ChromeApi {
   }
 
   stopWebRequestListener() {
-    console.log("removing WebRequestListener if running", chrome.webRequest)
+    console.debug("removing WebRequestListener if running", chrome.webRequest)
     if (chrome.webRequest) {
       chrome.webRequest.onHeadersReceived.removeListener(this.onHeadersReceivedListener)
     }

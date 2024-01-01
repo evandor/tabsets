@@ -9,6 +9,7 @@ import {Tabset, TabsetSharing} from "src/models/Tabset";
 import _ from "lodash"
 import {useTabsetService} from "src/services/TabsetService2";
 import {useUiStore} from "stores/uiStore";
+import {SHARING_INSTALLATION} from "boot/constants";
 
 class MqttPayload {
 
@@ -47,7 +48,7 @@ class MqttService {
     }
     useUiStore().mqttOffline = true
     console.log("Mqtt: Starting  client...", mqttUrl)
-    const installation = LocalStorage.getItem("sharing.installation") || 'default-installation'
+    const installation = LocalStorage.getItem(SHARING_INSTALLATION) || 'default-installation'
     const opts = {clientId: 'ts-' + installation}
 
     // @ts-ignore

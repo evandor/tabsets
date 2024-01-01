@@ -35,11 +35,12 @@
 
 <script lang="ts" setup>
 
-import {useDialogPluginComponent, useQuasar} from 'quasar'
+import {LocalStorage, useDialogPluginComponent, useQuasar} from 'quasar'
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {ShareTabsetCommand} from "src/domain/tabsets/ShareTabset";
 import {TabsetSharing} from "src/models/Tabset";
 import {ref} from "vue";
+import {SHARING_AUTHOR_IDENT} from "boot/constants";
 
 defineEmits([
   ...useDialogPluginComponent.emits
@@ -56,10 +57,10 @@ const props = defineProps({
 
 const {dialogRef, onDialogHide, onDialogCancel} = useDialogPluginComponent()
 
-const author = ref<string>($q.localStorage.getItem('sharing.author') || '')
+const author = ref<string>(LocalStorage.getItem(SHARING_AUTHOR_IDENT) || '')
 
 const shareTabset = () => {
-  $q.localStorage.set('sharing.author', author.value)
+  $q.localStorage.set(SHARING_AUTHOR_IDENT, author.value)
   useCommandExecutor()
     .executeFromUi(new ShareTabsetCommand(props.tabsetId, props.sharedId, TabsetSharing.PUBLIC_LINK, author.value, props.republish))
     .then((res: any) => {

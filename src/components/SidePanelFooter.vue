@@ -233,7 +233,6 @@ const columns = [
 const rows = ref<object[]>([])
 
 watchEffect(() => {
-  console.log("windows!", useWindowsStore().currentWindows)
   showWindowTable.value = false
 })
 
@@ -379,7 +378,6 @@ watchEffect(() => {
   const res = useWindowsStore().currentWindow && useWindowsStore().currentWindow.id ?
     useWindowsStore().windowNameFor(useWindowsStore().currentWindow.id || 0) || 'n/a' :
     'n/a'
-  console.log("window name is", res)
   currentWindowName.value = res
 })
 

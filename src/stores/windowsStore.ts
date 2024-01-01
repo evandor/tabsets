@@ -107,7 +107,7 @@ export const useWindowsStore = defineStore('windows', () => {
                 windowSet.value.add(w.title)
               }
             }
-            console.log("%callWindows assigned", "color:green", allWindows.value, windowSet.value)
+            //console.log("%callWindows assigned", "color:green", allWindows.value, windowSet.value)
 
             chrome.windows.getCurrent({windowTypes: ['normal']}, (window: chrome.windows.Window) => {
               currentWindow.value = window

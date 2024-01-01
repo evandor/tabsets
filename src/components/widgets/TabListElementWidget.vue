@@ -55,7 +55,7 @@
 
     <!-- description -->
     <q-item-label class="ellipsis-2-lines text-grey-8" @click.stop="open(props.tab)">
-      {{ props.tab.description }}
+      {{ props.tab.longDescription || props.tab.description }}
     </q-item-label>
 
     <!-- url -->
@@ -154,6 +154,7 @@ import _ from "lodash";
 import CommentDialog from "components/dialogues/CommentDialog.vue";
 import {useUiStore} from "stores/uiStore";
 import PwaCommentDialog from "components/dialogues/PwaCommentDialog.vue";
+import {SHARING_AVATAR_IDENT} from "boot/constants";
 
 const props = defineProps({
   tab: {type: Object as PropType<Tab>, required: true},
@@ -172,7 +173,7 @@ const showButtonsProp = ref<boolean>(false)
 const thumbnail = ref<string | undefined>(undefined)
 const imgFromBlob = ref<string>("")
 const tsBadges = ref<object[]>([])
-const avatar = ref<string | undefined>(LocalStorage.getItem('sharing.avatar') as string || "http://www.gravatar.com/avatar")
+const avatar = ref<string | undefined>(LocalStorage.getItem(SHARING_AVATAR_IDENT) as string || "http://www.gravatar.com/avatar")
 
 const router = useRouter()
 

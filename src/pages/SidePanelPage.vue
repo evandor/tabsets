@@ -293,9 +293,12 @@ onMounted(() => {
   if (!useAuthStore().isAuthenticated) {
     router.push("/authenticate")
   } else {
-    if (useTabsStore().allTabsCount === 0) {
-      setTimeout(() => start(), 500)
-    }
+    setTimeout(() => {
+        if (useTabsStore().allTabsCount === 0) {
+          start()
+        }
+      }, 1000)
+
     Analytics.firePageViewEvent('SidePanelPage', document.location.href);
   }
 })
@@ -762,7 +765,6 @@ const copyPublicShareToClipboard = (tabsetId: string) => {
 
 const suggestTabsetImport = () => {
   const currentTabUrl = useTabsStore().currentChromeTab?.url
-  console.log("chekcing", currentTabUrl)
   if (currentTabUrl?.startsWith("https://shared.tabsets.net/#/pwa/tabsets/")) {
     const urlSplit = currentTabUrl.split("/")
     const tabsetId = urlSplit[urlSplit.length - 1]
