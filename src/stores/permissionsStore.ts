@@ -122,9 +122,9 @@ export const usePermissionsStore = defineStore('permissions', () => {
                 activeFeatures.value.push(feature)
                 storage.saveActiveFeatures(activeFeatures.value)
 
-                if (FeatureIdent.NEWEST_TABS.toLowerCase() === feature) {
-                    useSuggestionsStore().inactivateSuggestion(Suggestion.getStaticSuggestion(StaticSuggestionIdent.TRY_NEWEST_TABS_FEATURE))
-                }
+                // if (FeatureIdent.NEWEST_TABS.toLowerCase() === feature) {
+                //     useSuggestionsStore().inactivateSuggestion(Suggestion.getStaticSuggestion(StaticSuggestionIdent.TRY_NEWEST_TABS_FEATURE))
+                // }
                 if (FeatureIdent.SPACES.toLowerCase() === feature) {
                     useSuggestionsStore().inactivateSuggestion(Suggestion.getStaticSuggestion(StaticSuggestionIdent.TRY_SPACES_FEATURE))
                 }

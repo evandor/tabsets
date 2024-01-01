@@ -106,5 +106,15 @@ export default bexBackground((bridge, cons/* , allActiveConnections */) => {
   //   console.log('Event receieved, responding...')
   //   respond(data.someKey + ' hey!')
   // })
+  // chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+  //   console.log("sending to bridge")
+  //   bridge.send('highlight.content', { url: tab.url })
+  // })
+
+  bridge.on('quasar.detect', ({ data, respond }) => {
+    console.log("quasar.detect2", data)
+    // Let's resolve the `send()` call's promise, this way we can await it on the other side then display a notification.
+    respond()
+  })
 
 });

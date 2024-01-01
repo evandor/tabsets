@@ -117,7 +117,6 @@ onMounted(() => {
 
 watchEffect(() => {
   tabs.value = useTabsStore().tabs
-  console.log("tabs.value", tabs.value)
   const filterTerm = useUiStore().toolbarFilterTerm.toLowerCase()
   if (filterTerm.length > 0) {
     tabs.value = _.filter(tabs.value, (t: chrome.tabs.Tab) =>

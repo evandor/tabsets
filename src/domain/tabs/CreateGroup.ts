@@ -14,7 +14,7 @@ class UndoCommand implements Command<any> {
   }
 
   execute(): Promise<ExecutionResult<any>> {
-    this.tabset.groups = _.filter(this.tabset.groups, (g: Group) => g.id !== this.groupId)
+    this.tabset.columns = _.filter(this.tabset.columns, (g: Group) => g.id !== this.groupId)
     return useTabsetService().saveTabset(this.tabset)
       .then((res) =>
         Promise.resolve(new ExecutionResult("done", `Group was deleted again`)))
@@ -33,11 +33,14 @@ export class CreateGroupCommand implements Command<any> {
   async execute(): Promise<ExecutionResult<any>> {
     const trustedTitle = this.title.replace(STRIP_CHARS_IN_USER_INPUT, '')
     const group = new Group(uid(), trustedTitle)
-    const existingGroups = this.tabset.groups
+    if (!this.tabset.columns) {
+      this.tabset.columns = []
+    }
+    const existingGroups = this.tabset.columns
     if (existingGroups.find(existingGroup => existingGroup.title === this.title)) {
       return Promise.reject(`Group ${trustedTitle} already exists`)
     }
-    this.tabset.groups.push(group)
+    this.tabset.columns.push(group)
     return useTabsetService().saveTabset(this.tabset)
       .then((res) =>
         Promise.resolve(new ExecutionResult("done", `Group ${trustedTitle} was created`, new UndoCommand(this.tabset, group.id))))

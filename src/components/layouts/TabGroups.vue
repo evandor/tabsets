@@ -44,7 +44,7 @@
 
                 <q-btn v-if="element.id !== SPECIAL_ID_FOR_NO_GROUP_ASSIGNED"
                        flat dense color="negative" icon="delete"
-                       @click.stop.prevent="deleteGroup(element)"/>
+                       @click.stop.prevent="deleteGroup(element as Group)"/>
 
                 <q-btn
                     flat dense color="positive" icon="check_circle"
@@ -63,10 +63,10 @@
         <q-list separator>
           <vue-draggable-next
 
-              :list="tabsFor(element)"
+              :list="tabsFor(element as Group)"
               :group="{ name: 'tabs', pull: 'clone' }"
 
-              @change="handleDragAndDrop($event, element)">
+              @change="handleDragAndDrop($event, element as Group)">
 
             <q-item v-if="props.tabs.length === 0 &&
                       inBexMode() &&
@@ -81,7 +81,7 @@
             <q-item class="q-ma-none q-pa-none"
                     clickable
                     v-ripple
-                    v-for="(tab,index) in tabsFor(element)"
+                    v-for="(tab,index) in tabsFor(element as Group)"
                     @click.stop="showDetails(tab)"
                     @mouseover="showButtons(  tab.id,true)"
                     @mouseleave="showButtons( tab.id, false)"
@@ -142,13 +142,13 @@ const props = defineProps({
   highlightUrl: {type: String, required: false}
 })
 
-const tabsetGroups = ref<Group[]>(tabsStore.getCurrentTabset?.groups || [])
+const tabsetGroups = ref<Group[]>(tabsStore.getCurrentTabset?.columns || [])
 
 watchEffect(() => {
-  //console.log("watching!", tabsStore.getCurrentTabset?.groups)
-  if (tabsStore.getCurrentTabset?.groups) {
-    tabsetGroups.value = tabsStore.getCurrentTabset.groups
-    if (tabsStore.getCurrentTabset.groups.length === 0) {
+  //console.log("watching!", tabsStore.getCurrentTabset?.columns)
+  if (tabsStore.getCurrentTabset?.columns) {
+    tabsetGroups.value = tabsStore.getCurrentTabset.columns || []
+    if (tabsStore.getCurrentTabset.columns.length === 0) {
       tabsetGroups.value.push(new Group(SPECIAL_ID_FOR_NO_GROUP_ASSIGNED, "no group"))
     }
   }
@@ -156,7 +156,6 @@ watchEffect(() => {
 })
 
 
-const thumbnails = ref<Map<string, string>>(new Map())
 const tabAsTab = (tab: Tab): Tab => tab as unknown as Tab
 
 const showButtonsProp = ref<Map<string, boolean>>(new Map())
@@ -215,9 +214,9 @@ const handleDragAndDrop = (event: any, group: Group) => {
   }
   if (added) {
     if (draggedTab.value !== undefined && group.id) {
-      added.element.groupId = group.id
+      added.element.columnId = group.id
       if (group.id === SPECIAL_ID_FOR_NO_GROUP_ASSIGNED) {
-        added.element.groupId = undefined
+        added.element.columnId = undefined
       }
       draggedTab.value = undefined
       useTabsetService().saveCurrentTabset()
@@ -226,9 +225,6 @@ const handleDragAndDrop = (event: any, group: Group) => {
           .executeFromUi(new CreateTabFromOpenTabsCommand(added.element, added.newIndex))
     }
   }
-}
-
-const openOrShowOpenTabs = () => {
 }
 
 const startDrag = (evt: any, tab: Tab) => {
@@ -268,12 +264,13 @@ const deleteGroup = (g: Group) => {
   }
 }
 
-const tabsFor = (group: Group) => {
+const tabsFor = (column: Group) => {
   let res: Tab[] = []
-  if (group.id === SPECIAL_ID_FOR_NO_GROUP_ASSIGNED) {
-    res = _.filter(props.tabs, (t: Tab) => t.groupId === undefined)
+  //console.log("id", column, props.tabs)
+  if (column.id === SPECIAL_ID_FOR_NO_GROUP_ASSIGNED) {
+    res = _.filter(props.tabs, (t: Tab) => !t.columnId)
   } else {
-    res = _.filter(props.tabs, (t: Tab) => t.groupId === group.id)
+    res = _.filter(props.tabs, (t: Tab) => t.columnId === column.id)
   }
   if (res.length === 0) {
     return [new Tab(uid(), ChromeApi.createChromeTabObject('drag & drop here', '', ''))]

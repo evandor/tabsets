@@ -13,8 +13,7 @@
       v-model:expanded="useNotificationsStore().bookmarksExpanded">
       <template v-slot:header-node="prop">
         <q-icon name="o_folder" class="q-mr-sm"/>
-        <span class="cursor-pointer fit no-wrap"
-        >{{ prop.node.label }}</span>
+        <span class="cursor-pointer fit no-wrap">{{ prop.node.label }}</span>
 
         <span class="text-right fit" v-show="mouseHover && prop.node.id === deleteButtonId">
             <q-icon name="delete_outline" color="negative" size="18px" @click.stop="deleteBookmarksFolderDialog">
@@ -82,8 +81,6 @@ import NewTabsetDialog from "components/dialogues/NewTabsetDialog.vue";
 import DeleteBookmarkFolderDialog from "components/dialogues/bookmarks/DeleteBookmarkFolderDialog.vue";
 
 const router = useRouter()
-const tabsStore = useTabsStore()
-const featuresStore = useSettingsStore()
 const bookmarksStore = useBookmarksStore()
 const permissionsStore = usePermissionsStore()
 
@@ -93,8 +90,6 @@ const localStorage = useQuasar().localStorage
 const mouseHover = ref(false)
 const selected = ref('')
 const deleteButtonId = ref('')
-const newTabsetName = ref('')
-const merge = ref(false)
 const bookmarksPermissionGranted = ref<boolean | undefined>(undefined)
 
 const {handleSuccess, handleError} = useNotificationHandler()
@@ -142,8 +137,6 @@ const deleteBookmarksFolderDialog = () => {
 const entered = (b: boolean) => mouseHover.value = b
 
 const grant = (permission: string) => useCommandExecutor().executeFromUi(new GrantPermissionCommand(permission))
-
-
 
 </script>
 

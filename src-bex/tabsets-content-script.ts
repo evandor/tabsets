@@ -19,10 +19,11 @@ export default bexContent((bridge: any) => {
 
 
   chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-    console.log("tabsets: !!!", request)
     if (request === 'getContent') {
       console.log("tabsets: received message for content", document.documentElement.outerHTML)
       sendResponse({content: document.documentElement.outerHTML});
+    } else if (request.action === "highlight-annotation") {
+      sendResponse()
     }
     sendResponse({content: "unknown request in tabsets-content-scripts: " + request});
     return true
