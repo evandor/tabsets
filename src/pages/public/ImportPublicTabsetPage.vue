@@ -93,6 +93,10 @@ async function setupTabset(importedTS: Tabset) {
   }
 }
 
+function paramNotSet(ident: string) {
+  return !route.query[ident] || (route.query[ident] as string).trim().length === 0
+}
+
 onMounted(() => {
   if (!route || !route.params) {
     return
@@ -103,6 +107,10 @@ onMounted(() => {
     maybeTabset.value = _.first(
       _.filter([...useTabsStore().tabsets.values()] as Tabset[], (ts: Tabset) => ts.sharedId === shareId.value)
     )
+    // skip intro ?
+    if (paramNotSet('a') && paramNotSet('n')) {
+      start()
+    }
     //console.log("%cfound", "color:green", maybeTabset.value)
   }
 })
@@ -126,7 +134,7 @@ onMounted(() => {
 // })
 
 const start = () => {
-  state.value = 'runImport'
+  state.value = 'importing'
   console.log("shareId", shareId.value, name.value)
   MqttService.subscribe(shareId.value)
   // cb = cache buster, do not cache

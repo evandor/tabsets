@@ -29,12 +29,23 @@
     <!-- list of tabs, assuming here we have at least one tabset -->
     <div class="q-ma-none q-pa-none">
 
-      <div class="row q-ma-sm q-pa-sm" v-if="suggestTabsetImport()">
-        <q-btn class="q-px-xl" dense label="Import Shared Tabset" color="warning" @click="importSharedTabset()">
-          <q-tooltip class="tooltip-small">The Page in your current tab is a public Tabset which you can import into your own if you want.</q-tooltip>
-        </q-btn>
+      <template v-if="suggestTabsetImport()">
 
-      </div>
+        <InfoMessageWidget
+          :probability="1"
+          ident="sidePanelPage_importTabset">
+          Whenever tabsets detects the <b>current tab to contain a new tabset</b>, it will suggest to import this set.<br>
+          Importing will add the tabset to your existing ones.
+        </InfoMessageWidget>
+
+        <div class="row q-ma-sm q-pa-sm">
+          <q-btn class="q-px-xl" dense label="Import Shared Tabset" color="warning" @click="importSharedTabset()">
+            <q-tooltip class="tooltip-small">The Page in your current tab is a public Tabset which you can import into
+              your own if you want.
+            </q-tooltip>
+          </q-btn>
+        </div>
+      </template>
 
       <q-list dense
               class="rounded-borders q-ma-none q-pa-none" :key="tabset.id"
@@ -235,6 +246,8 @@ import {SyncType} from "stores/appStore";
 import {useVOnboarding, VOnboardingStep, VOnboardingWrapper} from 'v-onboarding'
 import {FirebaseCall} from "src/services/firebase/FirebaseCall";
 import getScrollTarget = scroll.getScrollTarget;
+import InfoMessageWidget from "components/widgets/InfoMessageWidget.vue";
+import {TITLE_IDENT} from "boot/constants";
 
 const {setVerticalScrollPosition} = scroll
 
@@ -296,10 +309,10 @@ onMounted(() => {
     router.push("/authenticate")
   } else {
     setTimeout(() => {
-        if (useTabsStore().allTabsCount === 0) {
-          start()
-        }
-      }, 1000)
+      if (useTabsStore().allTabsCount === 0) {
+        start()
+      }
+    }, 1000)
 
     Analytics.firePageViewEvent('SidePanelPage', document.location.href);
   }
@@ -676,7 +689,8 @@ const toolbarTitle = (tabsets: Tabset[]) => {
       spaceName + ' (' + tabsets.length.toString() + ')' :
       spaceName
   }
-  return tabsets.length > 6 ? 'My Tabsets (' + tabsets.length.toString() + ')' : 'My Tabsets'
+  const title = LocalStorage.getItem(TITLE_IDENT) || 'My Tabsets.'
+  return tabsets.length > 6 ? title + ' (' + tabsets.length.toString() + ')' : title
 }
 
 const headerStyle = (tabset: Tabset) => {

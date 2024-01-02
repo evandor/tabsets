@@ -25,7 +25,8 @@
       <q-tab name="syncing" label="Syncing" icon="o_shopping_bag" v-if="LocalStorage.has(SUBSCRIPTION_ID_IDENT)"/>
       <q-tab name="thirdparty" label="Third Party Services"/>
       <!--      <q-tab name="ignored" label="Ignored Urls"/>-->
-      <q-tab name="archived" label="Archived Tabsets" v-if="usePermissionsStore().hasFeature(FeatureIdent.ARCHIVE_TABSET)"/>
+      <q-tab name="archived" label="Archived Tabsets"
+             v-if="usePermissionsStore().hasFeature(FeatureIdent.ARCHIVE_TABSET)"/>
       <q-tab name="search" label="Search Engine" v-if="devEnabled"/>
       <q-tab name="importExport" label="Import/Export"/>
       <q-tab name="internals" label="Internals" v-if="devEnabled"/>
@@ -40,6 +41,22 @@
       <q-banner rounded class="bg-grey-1 text-primary">On this settings page, you can adjust the general appearance of
         the tabsets extension.
       </q-banner>
+
+      <div class="row items-baseline q-ma-md">
+        <div class="col-3">
+          Title
+        </div>
+        <div class="col-7">
+          <q-input type="text" color="primary" filled v-model="installationTitle" label="">
+            <template v-slot:prepend>
+              <q-icon name="o_edit_note"/>
+            </template>
+          </q-input>
+        </div>
+        <div class="col">
+
+        </div>
+      </div>
 
       <div class="row items-baseline q-ma-md">
         <div class="col-3">
@@ -191,20 +208,20 @@
 
     <div class="row items-baseline q-ma-md q-gutter-lg">
       <template v-if="!subscription">
-      <div class="col-3">
-        Subscribe
-      </div>
-      <div class="col-7">
-        <q-btn label="Subscribe" @click="subscribe()" />
-      </div>
-      <div class="col"></div>
+        <div class="col-3">
+          Subscribe
+        </div>
+        <div class="col-7">
+          <q-btn label="Subscribe" @click="subscribe()"/>
+        </div>
+        <div class="col"></div>
       </template>
       <template v-else>
         <div class="col-3">
           Subscription
         </div>
         <div class="col-7">
-          <q-btn label="Test Subscription" @click="testSubscription()" />
+          <q-btn label="Test Subscription" @click="testSubscription()"/>
         </div>
         <div class="col"></div>
       </template>
@@ -219,8 +236,9 @@
           </template>
         </q-input>
       </div>
-      <div class="col"></div>
+      <div class="col">
         <a href="https://billing.stripe.com/p/login/6oE00CenQc3R5IQdQQ" target="_blank">Portal</a>
+      </div>
     </div>
   </div>
 
@@ -716,8 +734,8 @@ import {
   SHARING_AUTHOR_IDENT,
   SHARING_AVATAR_IDENT,
   SHARING_INSTALLATION,
-  SHARING_MQTT_IDENT,
-  SUBSCRIPTION_ID_IDENT, SYNC_GIT_TOKEN, SYNC_GIT_URL
+  SHARING_MQTT_IDENT, STRIP_CHARS_IN_USER_INPUT,
+  SUBSCRIPTION_ID_IDENT, SYNC_GIT_TOKEN, SYNC_GIT_URL, TITLE_IDENT
 } from "boot/constants";
 
 const {sendMsg} = useUtils()
@@ -770,6 +788,7 @@ const syncOptions = [
 
 
 const subscription = ref<string>(LocalStorage.getItem(SUBSCRIPTION_ID_IDENT) as string || '')
+const installationTitle = ref<string>(LocalStorage.getItem(TITLE_IDENT) as string || 'My Tabsets')
 
 const tab = ref<string>(route.query['tab'] ? route.query['tab'] as string : 'appearance')
 
@@ -864,19 +883,25 @@ watchEffect(() => {
 })
 
 watchEffect(() => {
+  (installationTitle.value && installationTitle.value.trim().length > 0) ?
+    LocalStorage.set(TITLE_IDENT, installationTitle.value.replace(STRIP_CHARS_IN_USER_INPUT, '')) :
+    LocalStorage.remove(TITLE_IDENT)
+})
+
+watchEffect(() => {
   (nickname.value && nickname.value.trim().length > 0) ?
-    LocalStorage.set(SHARING_AUTHOR_IDENT, nickname.value) :
+    LocalStorage.set(SHARING_AUTHOR_IDENT, nickname.value.replace(STRIP_CHARS_IN_USER_INPUT, '')) :
     LocalStorage.remove(SHARING_AUTHOR_IDENT)
 })
 
 watchEffect(() => {
   (avatar.value && avatar.value.trim().length > 0) ?
-    LocalStorage.set(SHARING_AVATAR_IDENT, avatar.value) :
+    LocalStorage.set(SHARING_AVATAR_IDENT, avatar.value.replace(STRIP_CHARS_IN_USER_INPUT, '')) :
     LocalStorage.remove(SHARING_AVATAR_IDENT)
 })
 
 watchEffect(() => {
-  console.log("setting sharing.mqttUrl to", mqttUrl.value)
+  console.log("setting sharing.mqttUrl to", mqttUrl.value.replace(STRIP_CHARS_IN_USER_INPUT, ''))
   useUiStore().sharingMqttUrl = mqttUrl.value
 })
 

@@ -13,10 +13,12 @@ const STRIP_CHARS_IN_USER_INPUT = /[`@#$%^*=\[\]{};:"\\|<>\/~]/;
 const STRIP_CHARS_IN_COLOR_INPUT = /[`@$%^*=\[\]{};:"\\|<>\/~]/;
 
 const PUBLIC_SHARE_URL = "https://shared.tabsets.net/"
-const RELEASE_NOTES_URL = "https://us-central1-tabsets-backend-prd.cloudfunctions.net/app/share/preview/5d2cccf9-83ea-40be-bc84-37b03e38af1d?n=UmVsZWFzZSBOb3RlcyAwLjQuOQ==&a=ZXZhbmRvcg=="
+const RELEASE_NOTES_URL = "https://us-central1-tabsets-backend-prd.cloudfunctions.net/app/share/preview/5d2cccf9-83ea-40be-bc84-37b03e38af1d"
 //const PUBLIC_SHARE_URL = "http://localhost:9200/"
 
 // Local storage Identifiers
+const TITLE_IDENT = 'title';
+
 const SUBSCRIPTION_ID_IDENT = 'subscription.id';
 
 const SHARING_AUTHOR_IDENT = 'sharing.author';
@@ -42,6 +44,7 @@ export {
   SHARING_MQTT_IDENT,
   SHARING_INSTALLATION,
   SYNC_GIT_URL,
-  SYNC_GIT_TOKEN
+  SYNC_GIT_TOKEN,
+  TITLE_IDENT
 }
 

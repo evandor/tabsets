@@ -181,7 +181,7 @@ class GitPersistenceService implements PersistenceService {
           const tsData = await pfs.readFile(tsDataLocation)
           //console.log("tsData", tsData)
           const ts = JSON.parse(tsData) as Tabset
-          console.log("ts from git", ts)
+          //console.log("ts from git", ts)
           ts.tabs = []
 
           try {
