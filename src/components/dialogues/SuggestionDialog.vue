@@ -59,18 +59,28 @@ const addSuggestion = () => {
     switch (res.type) {
       case SuggestionType.FEATURE:
         NavigationService.openOrCreateTab(
-            [chrome.runtime.getURL("/www/index.html#" + props.suggestion.url)],
+          [chrome.runtime.getURL("/www/index.html#" + props.suggestion.url)],
+          undefined,
+          [],
+          true)
+        useSuggestionsStore().updateSuggestionState(res.id, SuggestionState.CHECKED)
+        break;
+      case SuggestionType.URL:
+        if (props.suggestion.url) {
+          NavigationService.openOrCreateTab(
+            [props.suggestion?.url],
             undefined,
             [],
             true)
-          useSuggestionsStore().updateSuggestionState(res.id, SuggestionState.CHECKED)
+          useSuggestionsStore().removeSuggestion(res.id)
+        }
         break;
       default:
         NavigationService.openOrCreateTab(
-            [chrome.runtime.getURL("/www/index.html#/mainpanel/suggestions/" + props.suggestion.id)],
-            undefined,
-            [],
-            true)
+          [chrome.runtime.getURL("/www/index.html#/mainpanel/suggestions/" + props.suggestion.id)],
+          undefined,
+          [],
+          true)
     }
   } else {
     if (res.url.startsWith("/")) {

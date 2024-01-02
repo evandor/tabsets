@@ -4,6 +4,11 @@ import {Notification} from "src/models/Notification"
 import _ from "lodash"
 import {ref} from "vue";
 import PersistenceService from "src/services/PersistenceService";
+import {useUtils} from "src/services/Utils";
+import {useSuggestionsStore} from "stores/suggestionsStore";
+import {StaticSuggestionIdent, Suggestion} from "src/models/Suggestion";
+
+const {inBexMode} = useUtils()
 
 export const useNotificationsStore = defineStore('notifications', () => {
 
@@ -51,6 +56,9 @@ export const useNotificationsStore = defineStore('notifications', () => {
   function updateAvailable(available: boolean, version: string = '') {
     updateToVersion.value = available ? version : '';
     console.log("updateToVersion set to ", updateToVersion.value)
+    if (available && inBexMode()) {
+      useSuggestionsStore().addSuggestion(Suggestion.getStaticSuggestion(StaticSuggestionIdent.RELEASE_NOTES_AVAILABLE))
+    }
   }
 
   function getNotification(notificationId: string): Notification | undefined {

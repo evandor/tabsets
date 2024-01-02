@@ -120,7 +120,9 @@ class ChromeApi {
     )
 
     chrome.runtime.onUpdateAvailable.addListener(
-      (details: any) => NavigationService.updateAvailable(details)
+      (details: any) => {
+        NavigationService.updateAvailable(details)
+      }
     )
 
     if (usePermissionsStore().hasAllOrigins() && usePermissionsStore().hasFeature(FeatureIdent.ANALYSE_TABS)) {

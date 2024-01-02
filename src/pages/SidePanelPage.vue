@@ -30,7 +30,10 @@
     <div class="q-ma-none q-pa-none">
 
       <div class="row q-ma-sm q-pa-sm" v-if="suggestTabsetImport()">
-        <q-btn class="q-px-xl" dense label="import Tabset" color="warning" @click="importSharedTabset()"/>
+        <q-btn class="q-px-xl" dense label="Import Shared Tabset" color="warning" @click="importSharedTabset()">
+          <q-tooltip class="tooltip-small">The Page in your current tab is a public Tabset which you can import into your own if you want.</q-tooltip>
+        </q-btn>
+
       </div>
 
       <q-list dense
@@ -200,9 +203,9 @@
 
 import {onMounted, onUnmounted, ref, watchEffect} from "vue";
 import {useTabsStore} from "src/stores/tabsStore";
-import {Tab} from "src/models/Tab";
+import {Tab, TabPreview} from "src/models/Tab";
 import _ from "lodash"
-import {Tabset, TabsetStatus, TabsetType} from "src/models/Tabset";
+import {Tabset, TabsetSharing, TabsetStatus, TabsetType} from "src/models/Tabset";
 import {useRouter} from "vue-router";
 import {useUtils} from "src/services/Utils";
 import {LocalStorage, openURL, scroll, uid, useQuasar} from "quasar";
@@ -226,13 +229,12 @@ import SidePanelPageTabList from "components/layouts/SidePanelPageTabList.vue";
 import {AddTabToTabsetCommand} from "src/domain/tabs/AddTabToTabset";
 import {CopyToClipboardCommand} from "src/domain/commands/CopyToClipboard";
 import SidePanelTabsetDescriptionPage from "pages/sidepanel/SidePanelTabsetDescriptionPage.vue";
-import {PUBLIC_SHARE_URL} from "boot/constants";
 import ShareTabsetPubliclyDialog from "components/dialogues/ShareTabsetPubliclyDialog.vue";
-import getScrollTarget = scroll.getScrollTarget;
 import MqttService from "src/services/mqtt/MqttService";
-import {SyncType, useAppStore} from "stores/appStore";
-import {VOnboardingWrapper, VOnboardingStep, useVOnboarding} from 'v-onboarding'
+import {SyncType} from "stores/appStore";
+import {useVOnboarding, VOnboardingStep, VOnboardingWrapper} from 'v-onboarding'
 import {FirebaseCall} from "src/services/firebase/FirebaseCall";
+import getScrollTarget = scroll.getScrollTarget;
 
 const {setVerticalScrollPosition} = scroll
 
@@ -796,7 +798,10 @@ const importSharedTabset = () => {
     FirebaseCall.get("/share/public/" + tabsetId + "?cb=" + new Date().getTime(), false)
       .then((res: any) => {
         const newTabset = res as Tabset
+        newTabset.sharing = TabsetSharing.UNSHARED
+        //_.forEach(newTabset.tabs, t => t.preview = TabPreview.THUMBNAIL)
         useTabsetService().saveTabset(newTabset)
+        useTabsetService().reloadTabset(newTabset.id)
       })
   }
 }
