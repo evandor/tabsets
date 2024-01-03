@@ -694,8 +694,8 @@ const toolbarTitle = (tabsets: Tabset[]) => {
 }
 
 const headerStyle = (tabset: Tabset) => {
-  const tabsetOpened = _.findIndex([...tabsetExpanded.value.keys()],
-    (key: string) => (key !== null) && tabsetExpanded.value.get(key)) >= 0
+  const tabsetOpened: boolean = _.findIndex([...tabsetExpanded.value.keys()],
+    (key: string) => (key !== null) && tabsetExpanded.value.get(key) !== undefined) >= 0
   let style = tabsetExpanded.value.get(tabset.id) ?
     'border:0 solid grey;border-top-left-radius:4px;border-top-right-radius:4px;' :
     tabsetOpened ?

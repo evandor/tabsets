@@ -4,7 +4,7 @@ import TabsetService from "src/services/TabsetService";
 import {Group} from "src/models/Group";
 import {uid} from "quasar";
 import {Tabset} from "src/models/Tabset";
-import {STRIP_CHARS_IN_USER_INPUT} from "boot/constants";
+import {SPECIAL_ID_FOR_NO_GROUP_ASSIGNED, STRIP_CHARS_IN_USER_INPUT} from "boot/constants";
 import {useTabsStore} from "src/stores/tabsStore";
 import {useTabsetService} from "src/services/TabsetService2";
 
@@ -33,7 +33,7 @@ export class RenameGroupCommand implements Command<any> {
 
   async execute(): Promise<ExecutionResult<any>> {
     const trustedTitle = this.title.replace(STRIP_CHARS_IN_USER_INPUT, '')
-    const existingGroups = this.tabset.groups
+    const existingGroups = this.tabset.columns || []
     const foundGroup = existingGroups.find(existingGroup => existingGroup.id === this.groupId)
     if (foundGroup) {
       if (existingGroups.find(existingGroup => existingGroup.title === this.title)) {
@@ -44,8 +44,18 @@ export class RenameGroupCommand implements Command<any> {
         .then((res) =>
           Promise.resolve(new ExecutionResult("done", "Group was renamed")))
         .catch(err => Promise.reject("could not rename group"))
+    } else if (this.groupId === SPECIAL_ID_FOR_NO_GROUP_ASSIGNED) {
+      const defaultGroup = new Group(SPECIAL_ID_FOR_NO_GROUP_ASSIGNED, trustedTitle)
+      if (!this.tabset.columns) {
+        this.tabset.columns = []
+      }
+      this.tabset.columns.push(defaultGroup)
+      return useTabsetService().saveTabset(this.tabset)
+        .then((res) =>
+          Promise.resolve(new ExecutionResult("done", "Group was renamed")))
+        .catch(err => Promise.reject("could not rename group"))
     } else {
-      return Promise.reject(`Could not find group ${trustedTitle}`)
+      return Promise.reject(`Could not find group ${this.groupId} to rename to ${trustedTitle}`)
     }
   }
 

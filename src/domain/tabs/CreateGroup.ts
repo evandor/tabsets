@@ -33,9 +33,6 @@ export class CreateGroupCommand implements Command<any> {
   async execute(): Promise<ExecutionResult<any>> {
     const trustedTitle = this.title.replace(STRIP_CHARS_IN_USER_INPUT, '')
     const group = new Group(uid(), trustedTitle)
-    if (!this.tabset.columns) {
-      this.tabset.columns = []
-    }
     const existingGroups = this.tabset.columns
     if (existingGroups.find(existingGroup => existingGroup.title === this.title)) {
       return Promise.reject(`Group ${trustedTitle} already exists`)

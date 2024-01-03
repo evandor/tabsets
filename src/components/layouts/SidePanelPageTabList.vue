@@ -6,14 +6,32 @@
     <template v-if="!props.preventDragAndDrop"
               v-for="column in getColumns()">
 
-      <q-expansion-item v-if="getColumns().length > 1"
-                        :label="column.title"
-                        header-class="text-black">
+      <q-expansion-item v-if="showTabsetWithColumns()"
+                        header-class="q-ma-none q-pa-none q-pl-sm q-pr-md bg-grey-1 text-blue-grey-10"
+
+                        :label="column.title || column.id"
+                        :default-opened="tabsForColumn(column).length === 1"
+                        switch-toggle-side
+                        expand-icon-toggle
+                        dense-toggle>
+
+        <template v-slot:header>
+          <q-item-section
+            class="q-mt-xs">
+            <q-item-label class="text-bold text-underline">
+              {{ column.title }}
+            </q-item-label>
+            <q-item-label class="text-caption text-grey-5">
+              {{ column.id }}
+            </q-item-label>
+          </q-item-section>
+        </template>
+
         <vue-draggable-next
           class="q-ma-none"
           :list="tabsForColumn(column) as Array<IndexedTab>"
           :group="{ name: 'tabs', pull: 'clone' }"
-          @change="event => handleDragAndDrop(event, column)">
+          @change="(event:any) => handleDragAndDrop(event, column)">
 
           <SidePanelTabListHelper v-for="tab in tabsForColumn(column)"
                                   :tab="tab.tab as Tab"
@@ -31,7 +49,7 @@
           class="q-ma-none"
           :list="tabs as Array<Tab>"
           :group="{ name: 'tabs', pull: 'clone' }"
-          @change="event => handleDragAndDrop(event,  column)">
+          @change="(event:any) => handleDragAndDrop(event,  column)">
 
 
           <SidePanelTabListHelper v-for="tab in tabsForColumn(column)"
@@ -75,7 +93,7 @@ import {ref, onMounted, PropType, watchEffect} from "vue";
 import {VueDraggableNext} from 'vue-draggable-next'
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {CreateTabFromOpenTabsCommand} from "src/domain/commands/CreateTabFromOpenTabs";
-import {Tabset, TabsetType} from "src/models/Tabset";
+import {Tabset, TabsetStatus, TabsetType} from "src/models/Tabset";
 import SidePanelTabListHelper from "components/layouts/sidepanel/SidePanelTabListHelper.vue";
 import {useTabsStore} from "stores/tabsStore";
 import {useTabsetService} from "src/services/TabsetService2";
@@ -83,6 +101,7 @@ import {Group} from "src/models/Group";
 import {SPECIAL_ID_FOR_NO_GROUP_ASSIGNED} from "boot/constants";
 import _ from "lodash"
 import {IndexedTab} from "src/models/IndexedTab";
+import SidePanelPageContextMenu from "pages/sidepanel/SidePanelPageContextMenu.vue";
 
 const props = defineProps({
   hideMenu: {type: Boolean, default: false},
@@ -130,21 +149,39 @@ watchEffect(() => {
   }
 })
 
+/**
+ * props.tabset.columns can be []
+ */
 const getColumns = () => {
   if (!props.tabset || !props.tabset.columns || props.tabset.columns.length === 0) {
     return [new Group(SPECIAL_ID_FOR_NO_GROUP_ASSIGNED, '')]
+  }
+  const columnsFromTabs = _.uniq(_.map(props.tabset.tabs, t => t.columnId ? t.columnId : "undefined"))
+  console.log("columnsFromTabs", columnsFromTabs)
+  if (columnsFromTabs.length > props.tabset.columns.length || columnsFromTabs.length === 1 && columnsFromTabs[0] === "undefined") {
+    return props.tabset.columns.concat([new Group(SPECIAL_ID_FOR_NO_GROUP_ASSIGNED, 'tabs w/o group')])
   }
   return props.tabset.columns
 }
 
 const tabsForColumn = (column: Group): IndexedTab[] => {
-  return _.filter(
+  const tfc = _.filter(
     _.map(tabs.value as Tab[], (t: Tab, index: number) => new IndexedTab(index, t)), (it: IndexedTab) => {
       if (column.id === SPECIAL_ID_FOR_NO_GROUP_ASSIGNED) {
         return it.tab.columnId === SPECIAL_ID_FOR_NO_GROUP_ASSIGNED || !it.tab.columnId
       }
       return it.tab.columnId === column.id
     })
+ // console.log("tfc", tfc)
+  return tfc
+}
+
+const showTabsetWithColumns = () => {
+  const cols = getColumns()
+  if (cols.length === 1) {
+    return cols[0].id !== SPECIAL_ID_FOR_NO_GROUP_ASSIGNED
+  }
+  return getColumns().length > 0
 }
 </script>
 
