@@ -6,11 +6,12 @@
     <template v-if="!props.preventDragAndDrop"
               v-for="column in getColumns()">
 
+      <!-- drag & drop and columns -->
       <q-expansion-item v-if="showTabsetWithColumns()"
                         header-class="q-ma-none q-pa-none q-pl-sm q-pr-md bg-grey-1 text-blue-grey-10"
-
+                        v-model="column.open"
+                        @update:model-value="(val:boolean) => columnChanged(column, val)"
                         :label="column.title || column.id"
-                        :default-opened="tabsForColumn(column).length === 1"
                         switch-toggle-side
                         expand-icon-toggle
                         dense-toggle>
@@ -18,11 +19,11 @@
         <template v-slot:header>
           <q-item-section
             class="q-mt-xs">
-            <q-item-label class="text-bold text-underline">
+            <q-item-label class="text-blue-grey-8">
               {{ column.title }}
             </q-item-label>
             <q-item-label class="text-caption text-grey-5">
-              {{ column.id }}
+              {{ tabsForColumn(column).length }} of {{props.tabsCount}} tab{{props.tabsCount === 1 ? '':'s'}}
             </q-item-label>
           </q-item-section>
         </template>
@@ -44,6 +45,8 @@
                                   :hide-menu="props.hideMenu"/>
         </vue-draggable-next>
       </q-expansion-item>
+
+      <!-- drag & drop, but no columns -->
       <template v-else>
         <vue-draggable-next
           class="q-ma-none"
@@ -66,6 +69,7 @@
     </template>
 
     <!-- no drag & drop on mobile -->
+    <!-- TODO columns -->
     <template v-else>
       ***
       <SidePanelTabListHelper
@@ -97,7 +101,7 @@ import {Tabset, TabsetStatus, TabsetType} from "src/models/Tabset";
 import SidePanelTabListHelper from "components/layouts/sidepanel/SidePanelTabListHelper.vue";
 import {useTabsStore} from "stores/tabsStore";
 import {useTabsetService} from "src/services/TabsetService2";
-import {Group} from "src/models/Group";
+import {TabsetColumn} from "src/models/TabsetColumn";
 import {SPECIAL_ID_FOR_NO_GROUP_ASSIGNED} from "boot/constants";
 import _ from "lodash"
 import {IndexedTab} from "src/models/IndexedTab";
@@ -110,11 +114,12 @@ const props = defineProps({
   showTabsets: {type: Boolean, default: false},
   preventDragAndDrop: {type: Boolean, default: false},
   tabset: {type: Object as PropType<Tabset>, required: false},
+  tabsCount: {type: Number, default: -1}
 })
 
 const tabs = ref<Tab[]>([])
 
-const handleDragAndDrop = (event: any, column: Group) => {
+const handleDragAndDrop = (event: any, column: TabsetColumn) => {
   const {moved, added} = event
   console.log("event", event)
   if (moved) {
@@ -154,17 +159,20 @@ watchEffect(() => {
  */
 const getColumns = () => {
   if (!props.tabset || !props.tabset.columns || props.tabset.columns.length === 0) {
-    return [new Group(SPECIAL_ID_FOR_NO_GROUP_ASSIGNED, '')]
+    return [new TabsetColumn(SPECIAL_ID_FOR_NO_GROUP_ASSIGNED, '')]
   }
   const columnsFromTabs = _.uniq(_.map(props.tabset.tabs, t => t.columnId ? t.columnId : "undefined"))
   console.log("columnsFromTabs", columnsFromTabs)
-  if (columnsFromTabs.length > props.tabset.columns.length || columnsFromTabs.length === 1 && columnsFromTabs[0] === "undefined") {
-    return props.tabset.columns.concat([new Group(SPECIAL_ID_FOR_NO_GROUP_ASSIGNED, 'tabs w/o group')])
+  if (columnsFromTabs.length === 1 && columnsFromTabs[0] === "undefined") {
+    return [new TabsetColumn(SPECIAL_ID_FOR_NO_GROUP_ASSIGNED, props.tabset.columns[0].title ? props.tabset.columns[0].title: 'tabs w/o group')]
+  }
+  if (columnsFromTabs.length > props.tabset.columns.length) {
+    return props.tabset.columns.concat([new TabsetColumn(SPECIAL_ID_FOR_NO_GROUP_ASSIGNED, 'tabs w/o group')])
   }
   return props.tabset.columns
 }
 
-const tabsForColumn = (column: Group): IndexedTab[] => {
+const tabsForColumn = (column: TabsetColumn): IndexedTab[] => {
   const tfc = _.filter(
     _.map(tabs.value as Tab[], (t: Tab, index: number) => new IndexedTab(index, t)), (it: IndexedTab) => {
       if (column.id === SPECIAL_ID_FOR_NO_GROUP_ASSIGNED) {
@@ -183,9 +191,23 @@ const showTabsetWithColumns = () => {
   }
   return getColumns().length > 0
 }
+
+const columnChanged = (column: TabsetColumn, val: boolean) => {
+  column.open = val
+  useTabsetService().saveCurrentTabset()
+}
+
 </script>
 
-<style lang="sass" scoped>
-.my-card
-  width: 100%
+<style>
+
+.q-expansion-item--popup > .q-expansion-item__container {
+  border: 0px solid rgba(0, 0, 0, 0.12) !important;
+}
+
+.q-list--separator > .q-item-type + .q-item-type,
+.q-list--separator > .q-virtual-scroll__content > .q-item-type + .q-item-type {
+  border-top: 0px solid rgba(100, 0, 0, 0.12) !important;
+}
+
 </style>

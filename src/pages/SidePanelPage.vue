@@ -170,6 +170,7 @@
 
             <SidePanelPageTabList
               v-if="tabsetExpanded.get(tabset.id)"
+              :tabsCount="useTabsetService().tabsToShow(tabset as Tabset).length"
               :tabset="tabset as Tabset"
             />
 

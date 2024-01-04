@@ -1,7 +1,7 @@
 import Command from "src/domain/Command";
 import {ExecutionResult} from "src/domain/ExecutionResult";
 import TabsetService from "src/services/TabsetService";
-import {Group} from "src/models/Group";
+import {TabsetColumn} from "src/models/TabsetColumn";
 import {uid} from "quasar";
 import {Tabset} from "src/models/Tabset";
 import {SPECIAL_ID_FOR_NO_GROUP_ASSIGNED, STRIP_CHARS_IN_USER_INPUT} from "boot/constants";
@@ -45,7 +45,7 @@ export class RenameGroupCommand implements Command<any> {
           Promise.resolve(new ExecutionResult("done", "Group was renamed")))
         .catch(err => Promise.reject("could not rename group"))
     } else if (this.groupId === SPECIAL_ID_FOR_NO_GROUP_ASSIGNED) {
-      const defaultGroup = new Group(SPECIAL_ID_FOR_NO_GROUP_ASSIGNED, trustedTitle)
+      const defaultGroup = new TabsetColumn(SPECIAL_ID_FOR_NO_GROUP_ASSIGNED, trustedTitle)
       if (!this.tabset.columns) {
         this.tabset.columns = []
       }

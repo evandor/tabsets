@@ -123,7 +123,7 @@ import {usePermissionsStore} from "src/stores/permissionsStore";
 import {FeatureIdent} from "src/models/AppFeature";
 import {CreateGroupCommand} from "src/domain/tabs/CreateGroup";
 import {RenameGroupCommand} from "src/domain/tabs/RenameGroup";
-import {Group} from "src/models/Group";
+import {TabsetColumn} from "src/models/TabsetColumn";
 import {DeleteGroupCommand} from "src/domain/tabs/DeleteGroup";
 import {SPECIAL_ID_FOR_NO_GROUP_ASSIGNED} from "boot/constants"
 import ChromeApi from "src/services/ChromeApi";
@@ -142,7 +142,7 @@ const props = defineProps({
   highlightUrl: {type: String, required: false}
 })
 
-const tabsetGroups = ref<Group[]>( [])
+const tabsetGroups = ref<TabsetColumn[]>( [])
 
 watchEffect(() => {
   console.log("watching!", tabsStore.getCurrentTabset?.columns)
@@ -150,7 +150,7 @@ watchEffect(() => {
   console.log("defaultGorupExists", defaultGroupExists)
   tabsetGroups.value = []
   if (!defaultGroupExists) {
-    tabsetGroups.value = [new Group(SPECIAL_ID_FOR_NO_GROUP_ASSIGNED, "no group")]
+    tabsetGroups.value = [new TabsetColumn(SPECIAL_ID_FOR_NO_GROUP_ASSIGNED, "no group")]
   }
   if (tabsStore.getCurrentTabset?.columns) {
     console.log("tabsetGroups", tabsetGroups.value)
@@ -183,7 +183,7 @@ function adjustIndex(element: any, tabs: Tab[]) {
 
 const log = (evt: any) => console.log(evt)
 
-const handleDragAndDrop = (event: any, group: Group) => {
+const handleDragAndDrop = (event: any, group: TabsetColumn) => {
   console.log("event", event, group)
   const {moved, added} = event
   if (moved) {
@@ -259,7 +259,7 @@ const rename = (groupId: string, newValue: string) => {
   }
 }
 
-const deleteGroup = (g: Group) => {
+const deleteGroup = (g: TabsetColumn) => {
   if (tabsStore?.getCurrentTabset) {
     useCommandExecutor().executeFromUi(new DeleteGroupCommand(tabsStore.getCurrentTabset, g.id))
       .then(() => {
@@ -268,7 +268,7 @@ const deleteGroup = (g: Group) => {
   }
 }
 
-const tabsFor = (column: Group) => {
+const tabsFor = (column: TabsetColumn) => {
   let res: Tab[] = []
   //console.log("id", column, props.tabs)
   if (column.id === SPECIAL_ID_FOR_NO_GROUP_ASSIGNED) {

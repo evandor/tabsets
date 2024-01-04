@@ -1,5 +1,5 @@
 import {Tab} from "src/models/Tab";
-import {Group} from "src/models/Group";
+import {TabsetColumn} from "src/models/TabsetColumn";
 import {DynamicTabSource} from "src/models/DynamicTabSource";
 import {STRIP_CHARS_IN_USER_INPUT} from "boot/constants";
 import {ListDetailLevel} from "stores/uiStore";
@@ -46,7 +46,7 @@ export class Tabset {
   // a tabset's group _can_ contain a group with identifier "SPECIAL_ID_FOR_NO_GROUP_ASSIGNED"
   // TODO handle tabs with columnId set to unknown group
   // was: groups: Group[]
-  columns: Group[] = []
+  columns: TabsetColumn[] = []
 
   spaces: string[] // got json problems with set<string>
   view: string = 'list'
@@ -75,7 +75,7 @@ export class Tabset {
   window: string = 'current'
   color: string | undefined = undefined
 
-  constructor(id: string, name: string, tabs: Tab[], columns: Group[] = [], spaces: string[] = []) {
+  constructor(id: string, name: string, tabs: Tab[], columns: TabsetColumn[] = [], spaces: string[] = []) {
 
     // some guards
     if (!Tabset.newTabsetNameIsValid) {
