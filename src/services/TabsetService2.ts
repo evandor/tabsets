@@ -171,7 +171,7 @@ export function useTabsetService() {
    * @param bms an array of Chrome bookmarks.
    * @param merge if true, the old values and the new ones will be merged.
    */
-  const saveOrReplaceFromBookmarks = async (name: string, bms: chrome.bookmarks.BookmarkTreeNode[], merge: boolean = false): Promise<object> => {
+  const saveOrReplaceFromBookmarks = async (name: string, bms: chrome.bookmarks.BookmarkTreeNode[], merge: boolean = false, dryRun = false): Promise<object> => {
     const tabsStore = useTabsStore()
     const now = new Date().getTime()
     const tabs = _.map(_.filter(bms, bm => bm.url !== undefined), c => {
@@ -185,13 +185,16 @@ export function useTabsetService() {
 
     const result = await tabsStore.updateOrCreateTabset(name, tabs, merge)
     if (result && result.tabset) {
-      await saveTabset(result.tabset)
-      selectTabset(result.tabset.id)
+      if (!dryRun) {
+        await saveTabset(result.tabset)
+        selectTabset(result.tabset.id)
+      }
       return {
         tabsetId: result.tabset.id,
         replaced: result.replaced,
         merged: merge,
-        updated: now
+        updated: now,
+        tabset: result.tabset
       }
     }
     return Promise.reject("could not import from bookmarks")
@@ -466,7 +469,7 @@ export function useTabsetService() {
     let tabset: Tabset | undefined = undefined
     for (let ts of [...useTabsStore().tabsets.values()]) {
       if (_.find(ts.tabs, t => t.id === id)) {
-        tabset = ts
+        tabset = ts as Tabset
       }
     }
     return tabset

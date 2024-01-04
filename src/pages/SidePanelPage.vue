@@ -34,7 +34,8 @@
         <InfoMessageWidget
           :probability="1"
           ident="sidePanelPage_importTabset">
-          Whenever tabsets detects the <b>current tab to contain a new tabset</b>, it will suggest to import this set.<br>
+          Whenever tabsets detects the <b>current tab to contain a new tabset</b>, it will suggest to import this
+          set.<br>
           Importing will add the tabset to your existing ones.
         </InfoMessageWidget>
 
@@ -82,7 +83,9 @@
                 </span>
               </q-item-label>
               <q-item-label class="text-caption text-grey-5">
-                {{ tabsetCaption(useTabsetService().tabsToShow(tabset as Tabset), tabset.window) }}
+                {{
+                  tabsetCaption(useTabsetService().tabsToShow(tabset as Tabset), tabset.window, tabset.folders.length)
+                }}
               </q-item-label>
               <q-item-label v-if="tabset.sharedId" class="q-mb-xs"
                             @mouseover="hoveredPublicLink = true"
@@ -168,10 +171,34 @@
               {{ tabset.page }}
             </template>
 
+            <q-list>
+              <!-- @dragstart="startDrag($event, tab)"-->
+              <q-item v-for="folder in calcFolders(tabset as Tabset)"
+                      clickable
+                      v-ripple
+                      class="q-ma-none q-pa-sm"
+                      style="border-bottom: 2px solid #fafafa;"
+                      @click="selectFolder(tabset as Tabset, folder as Tabset)"
+                      :key="'panelfolderlist_' + folder.id">
+
+                <q-item-section class="q-mr-sm text-right" style="justify-content:start;width:30px;max-width:30px">
+                  <div class="bg-white q-pa-none">
+                    <q-icon name="o_folder" color="warning" size="md"/>
+                  </div>
+                </q-item-section>
+                <q-item-section>
+                  <div class="text-bold">
+                    {{ folder.name }}
+                  </div>
+                </q-item-section>
+
+              </q-item>
+            </q-list>
+
             <SidePanelPageTabList
               v-if="tabsetExpanded.get(tabset.id)"
               :tabsCount="useTabsetService().tabsToShow(tabset as Tabset).length"
-              :tabset="tabset as Tabset"
+              :tabset="tabsetForTabList(tabset as Tabset)"
             />
 
           </div>
@@ -222,7 +249,7 @@ import {useRouter} from "vue-router";
 import {useUtils} from "src/services/Utils";
 import {LocalStorage, openURL, scroll, uid, useQuasar} from "quasar";
 import {useTabsetService} from "src/services/TabsetService2";
-import {useUiStore} from "src/stores/uiStore";
+import {ListDetailLevel, useUiStore} from "src/stores/uiStore";
 import {usePermissionsStore} from "src/stores/permissionsStore";
 import {useSpacesStore} from "src/stores/spacesStore";
 import FirstToolbarHelper from "pages/sidepanel/helper/FirstToolbarHelper.vue";
@@ -249,6 +276,7 @@ import {FirebaseCall} from "src/services/firebase/FirebaseCall";
 import getScrollTarget = scroll.getScrollTarget;
 import InfoMessageWidget from "components/widgets/InfoMessageWidget.vue";
 import {TITLE_IDENT} from "boot/constants";
+import PanelTabListElementWidget from "components/widgets/PanelTabListElementWidget.vue";
 
 const {setVerticalScrollPosition} = scroll
 
@@ -648,7 +676,7 @@ async function handleHeadRequests(selectedTabset: Tabset) {
   useTabsetService().saveTabset(selectedTabset)
 }
 
-const tabsetCaption = (tabs: Tab[], window: string) => {
+const tabsetCaption = (tabs: Tab[], window: string, foldersCount: number) => {
   const filter = useUiStore().tabsFilter
   if (!tabs) {
     return '-'
@@ -658,6 +686,9 @@ const tabsetCaption = (tabs: Tab[], window: string) => {
     caption = tabs.length + ' tab' + (tabs.length === 1 ? '' : 's')
   } else {
     caption = tabs.length + ' tab' + (tabs.length === 1 ? '' : 's') + ' (filtered)'
+  }
+  if (foldersCount > 0) {
+    caption = caption + ", " + foldersCount + " folder" + (foldersCount === 1 ? '' : 's')
   }
   if (window && window !== 'current') {
     caption = caption + " - opens in: " + window
@@ -819,6 +850,47 @@ const importSharedTabset = () => {
         useTabsetService().reloadTabset(newTabset.id)
       })
   }
+}
+
+const selectFolder = (tabset: Tabset, folder: Tabset) => {
+  console.log("selectiong folder", tabset.id, folder.id)
+  tabset.folderActive = folder.id
+  useTabsetService().saveTabset(tabset)
+}
+
+function findActiveFolderRecursively(folders: Tabset[], folderActive: string): Tabset | undefined {
+  for (const f of folders) {
+    if (f.id === folderActive) {
+      console.log("found active folder", f)
+      return f
+    }
+  }
+  for (const f of folders) {
+    return findActiveFolderRecursively(f.folders, folderActive)
+  }
+  return undefined
+}
+
+const calcFolders = (tabset: Tabset): Tabset[] => {
+  if (tabset.folderActive) {
+    const af = findActiveFolderRecursively(tabset.folders, tabset.folderActive)
+    if (af) {
+      return [new Tabset(af.folderParent, "..", [])].concat(af.folders)
+    }
+  }
+  return tabset.folders
+}
+
+
+const tabsetForTabList = (tabset:Tabset) => {
+  if (tabset.folderActive) {
+    const af = findActiveFolderRecursively(tabset.folders, tabset.folderActive)
+    console.log("result af", af)
+    if (af) {
+      return af
+    }
+  }
+  return tabset
 }
 
 const shareTabsetPubliclyDialog = (tabset: Tabset, republish: boolean = false) => {

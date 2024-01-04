@@ -3,6 +3,12 @@ import {ExecutionResult} from "src/domain/ExecutionResult";
 import {useTabsetService} from "src/services/TabsetService2";
 import {DeleteTabsFromTabsetCommand} from "src/domain/commands/DeleteTabsFromTabsetCommand";
 
+export enum OrgLevel {
+  SPACE = "SPACE",
+  TABSET = "TABSET",
+  TABSET_COLUMN = "TABSET_COLUMN"
+
+}
 class UndoCommand implements Command<object> {
 
   constructor(
@@ -24,7 +30,8 @@ export class CreateTabsetFromBookmarksCommand implements Command<object> {
 
   constructor(
     public tabsetName: string,
-    public bmsToUse: chrome.bookmarks.BookmarkTreeNode[]) {
+    public bmsToUse: chrome.bookmarks.BookmarkTreeNode[],
+    public level: OrgLevel = OrgLevel.TABSET) {
   }
 
   async execute(): Promise<ExecutionResult<object>> {

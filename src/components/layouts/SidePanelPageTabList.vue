@@ -48,6 +48,7 @@
 
       <!-- drag & drop, but no columns -->
       <template v-else>
+
         <vue-draggable-next
           class="q-ma-none"
           :list="tabs as Array<Tab>"
@@ -145,11 +146,12 @@ const handleDragAndDrop = (event: any, column: TabsetColumn) => {
 }
 
 watchEffect(() => {
-  const tabset = useTabsStore().getTabset(props.tabset?.id || "")
-  if (tabset) {
-    tabs.value = useTabsetService().tabsToShow(tabset)
+  // TODO why was this done in the first place? Updates from where?
+  //const tabset = useTabsStore().getTabset(props.tabset?.id || "")
+  if (props.tabset) {
+    tabs.value = useTabsetService().tabsToShow(props.tabset)
   } else {
-    console.warn("could not determine tabset for id", props.tabset?.id || "")
+    console.warn("could not determine tabset...")
     tabs.value = []
   }
 })
