@@ -171,29 +171,36 @@
               {{ tabset.page }}
             </template>
 
-            <q-list>
-              <!-- @dragstart="startDrag($event, tab)"-->
-              <q-item v-for="folder in calcFolders(tabset as Tabset)"
-                      clickable
-                      v-ripple
-                      class="q-ma-none q-pa-sm"
-                      style="border-bottom: 2px solid #fafafa;"
-                      @click="selectFolder(tabset as Tabset, folder as Tabset)"
-                      :key="'panelfolderlist_' + folder.id">
+            <vue-draggable-next
+              class="q-ma-none"
+              :list="calcFolders(tabset as Tabset)"
+              :group="{ name: 'folders', pull: 'clone' }"
+              @change="(event:any) => handleDragAndDrop(event)">
 
-                <q-item-section class="q-mr-sm text-right" style="justify-content:start;width:30px;max-width:30px">
-                  <div class="bg-white q-pa-none">
-                    <q-icon name="o_folder" color="warning" size="md"/>
-                  </div>
-                </q-item-section>
-                <q-item-section>
-                  <div class="text-bold">
-                    {{ folder.name }}
-                  </div>
-                </q-item-section>
+              <q-list>
+                <q-item v-for="folder in calcFolders(tabset as Tabset)"
+                        clickable
+                        v-ripple
+                        class="q-ma-none q-pa-sm"
+                        style="border-bottom: 2px solid #fafafa;"
+                        @dragstart="startDrag($event, folder)"
+                        @click="selectFolder(tabset as Tabset, folder as Tabset)"
+                        :key="'panelfolderlist_' + folder.id">
 
-              </q-item>
-            </q-list>
+                  <q-item-section class="q-mr-sm text-right" style="justify-content:start;width:30px;max-width:30px">
+                    <div class="bg-white q-pa-none">
+                      <q-icon name="o_folder" color="warning" size="sm"/>
+                    </div>
+                  </q-item-section>
+                  <q-item-section>
+                    <div class="text-bold">
+                      {{ folder.name }}
+                    </div>
+                  </q-item-section>
+
+                </q-item>
+              </q-list>
+            </vue-draggable-next>
 
             <SidePanelPageTabList
               v-if="tabsetExpanded.get(tabset.id)"
@@ -277,6 +284,8 @@ import getScrollTarget = scroll.getScrollTarget;
 import InfoMessageWidget from "components/widgets/InfoMessageWidget.vue";
 import {TITLE_IDENT} from "boot/constants";
 import PanelTabListElementWidget from "components/widgets/PanelTabListElementWidget.vue";
+import {VueDraggableNext} from "vue-draggable-next";
+import {TabsetColumn} from "src/models/TabsetColumn";
 
 const {setVerticalScrollPosition} = scroll
 
@@ -882,7 +891,7 @@ const calcFolders = (tabset: Tabset): Tabset[] => {
 }
 
 
-const tabsetForTabList = (tabset:Tabset) => {
+const tabsetForTabList = (tabset: Tabset) => {
   if (tabset.folderActive) {
     const af = findActiveFolderRecursively(tabset.folders, tabset.folderActive)
     console.log("result af", af)
@@ -903,6 +912,22 @@ const shareTabsetPubliclyDialog = (tabset: Tabset, republish: boolean = false) =
       republish: republish
     }
   })
+}
+
+const handleDragAndDrop = (event: any) => {
+  const {moved, added} = event
+  console.log("event", event)
+}
+
+const startDrag = (evt: any, folder: Tabset) => {
+  console.log("start drag", evt, folder)
+  // if (evt.dataTransfer) {
+  //   evt.dataTransfer.dropEffect = 'all'
+  //   evt.dataTransfer.effectAllowed = 'all'
+  //   evt.dataTransfer.setData('text/plain', tab.id)
+  //   useUiStore().draggingTab(tab.id, evt)
+  // }
+  //console.log("evt.dataTransfer.getData('text/plain')", evt.dataTransfer.getData('text/plain'))
 }
 
 </script>

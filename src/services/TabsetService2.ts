@@ -282,6 +282,16 @@ export function useTabsetService() {
 
   }
 
+  const rootTabsetFor = (ts: Tabset | undefined):Tabset | undefined => {
+    if (!ts) {
+      return undefined
+    }
+    if (ts.folderParent) {
+      return rootTabsetFor(getTabset(ts.folderParent))
+    }
+    return ts
+  }
+
   const saveTabset = async (tabset: Tabset): Promise<any> => {
     if (tabset.id) {
       tabset.updated = new Date().getTime()
@@ -290,8 +300,11 @@ export function useTabsetService() {
         tabset.type = TabsetType.DEFAULT
       }
       const additionalInfo = _.map(tabset.tabs, t => t.monitor)
-      console.log(`saving tabset '${tabset.name}' with ${tabset.tabs.length} tab(s)`)//, additionalInfo)
-      return db.saveTabset(tabset)
+      const rootTabset = rootTabsetFor(tabset)
+      console.log(`saving (sub-)tabset '${tabset.name}' with ${tabset.tabs.length} tab(s) at id ${rootTabset?.id}`)
+      if (rootTabset) {
+        return db.saveTabset(rootTabset)
+      }
     }
     return Promise.reject("tabset id not set")
   }

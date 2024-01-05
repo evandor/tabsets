@@ -122,7 +122,7 @@ const tabs = ref<Tab[]>([])
 
 const handleDragAndDrop = (event: any, column: TabsetColumn) => {
   const {moved, added} = event
-  console.log("event", event)
+  console.log("event!", event)
   if (moved) {
     console.log(`moved event: '${moved.element.tab.id}' ${moved.oldIndex} -> ${moved.newIndex}`)
     const tabsInColumn = tabsForColumn(column)
