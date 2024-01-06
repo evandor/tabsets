@@ -92,7 +92,7 @@
 
       <q-separator inset/>
 
-      <ContextMenuItem v-if="tabset.sharing === TabsetSharing.UNSHARED || !tabset.sharing"
+      <ContextMenuItem v-if="usePermissionsStore().hasFeature(FeatureIdent.TABSETS_SHARING) && (tabset.sharing === TabsetSharing.UNSHARED || !tabset.sharing)"
                        v-close-popup
                        @was-clicked="shareTabsetPubliclyDialog(tabset)"
                        icon="ios_share"
@@ -118,7 +118,7 @@
         <q-tooltip class="tooltip-small">Delete Shared Link</q-tooltip>
       </ContextMenuItem>
 
-      <q-separator inset/>
+      <q-separator inset v-if="usePermissionsStore().hasFeature(FeatureIdent.TABSETS_SHARING)" />
 
       <template v-if="useSettingsStore().isEnabled('dev')">
         <ContextMenuItem v-close-popup

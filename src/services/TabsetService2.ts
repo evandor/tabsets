@@ -302,7 +302,7 @@ export function useTabsetService() {
       }
       const additionalInfo = _.map(tabset.tabs, t => t.monitor)
       const rootTabset = rootTabsetFor(tabset)
-      console.log(`saving (sub-)tabset '${tabset.name}' with ${tabset.tabs.length} tab(s) at id ${rootTabset?.id}`)
+      console.debug(`saving (sub-)tabset '${tabset.name}' with ${tabset.tabs.length} tab(s) at id ${rootTabset?.id}`)
       if (rootTabset) {
         return db.saveTabset(rootTabset)
       }
@@ -345,7 +345,7 @@ export function useTabsetService() {
     if (!tab || !tab.url) {
       return Promise.resolve('done')
     }
-    console.log("saving text for", tab.id, tab.url)
+    console.debug("saving text for", tab.id, tab.url)
     const title = tab.title || ''
     const tabsetIds: string[] = tabsetsFor(tab.url)
 

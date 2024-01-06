@@ -114,7 +114,9 @@ onMounted(() => {
     });
     // if the editor is readonly from the start, I cannot update it when tabset.page changes
     setTimeout(() => {
-      editorJS2.readOnly.toggle(true)
+      if (editorJS2 && editorJS2.readOnly) {
+        editorJS2.readOnly.toggle(true)
+      }
     }, 1000)
   }
 })

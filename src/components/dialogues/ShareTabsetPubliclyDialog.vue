@@ -11,7 +11,7 @@
         </div>
       </q-card-section>
       <q-card-section>
-        <div class="text-body">Anyone with the link to this shared tabset will be able to see its tabs.</div>
+        <div class="text-body text-warning">Anyone with the link to this shared tabset will be able to see its tabs.</div>
       </q-card-section>
       <q-card-section>
         <div class="text-body">Author:</div>

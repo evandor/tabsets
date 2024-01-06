@@ -432,6 +432,11 @@ text.set(FeatureIdent.TABSET_SUBFOLDER.toLowerCase(), {
   description: 'Use Subfolders in Tabsets. Currently the only way to create subfolders is by importing recursive levels of bookmarks.',
   permissions: []
 })
+text.set(FeatureIdent.TABSETS_SHARING.toLowerCase(), {
+  name: 'Sharing Tabsets',
+  description: 'Share tabsets publicly.',
+  permissions: []
+})
 
 
 watchEffect(() => {

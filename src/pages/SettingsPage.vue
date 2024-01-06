@@ -976,7 +976,7 @@ const testGitConnection = async () => {
   if (gitRepoUrl.value) {
     console.log("testing git connection with", gitRepoUrl.value, gitRepoToken.value?.substring(0, 5) + "...")
     const res = await GitPersistentService.testConnection(gitRepoUrl.value)//, gitRepoToken)
-    console.log("got res:", res)
+    //console.log("got res:", res)
     gitTestResult.value = res
   } else {
     gitTestResult.value = "no repo URL given"
