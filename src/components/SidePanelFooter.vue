@@ -233,7 +233,9 @@ const columns = [
 const rows = ref<object[]>([])
 
 watchEffect(() => {
-  showWindowTable.value = false
+  if (useWindowsStore().currentWindows.length === 1) {
+    showWindowTable.value = false
+  }
 })
 
 watchEffect(() => {

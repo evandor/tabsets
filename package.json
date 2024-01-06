@@ -12,7 +12,7 @@
     "dev ssr": "quasar dev -m ssr",
     "dev stage prod": "stage=production quasar dev -m bex",
     "dev electron": "quasar dev -m electron",
-    "web-ext run": "cd dist/bex && web-ext run",
+    "web-ext run": "cd dist/bex && web-ext run --verbose",
     "web-ext build": "quasar build -m bex &&  zip dist/tabset.src.zip -r src/ src-bex/ package.json && cd dist/bex && web-ext build",
     "build": "quasar build -m bex",
     "build pwa": "quasar build -m pwa",
