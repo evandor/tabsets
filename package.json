@@ -1,6 +1,6 @@
 {
   "name": "tabsets",
-  "version": "0.4.9",
+  "version": "0.4.10",
   "description": "Bookmarks next generation - Tabsets is a browser extension which helps you get your links really organized.",
   "productName": "Tabsets - Manage Tabs and Bookmarks with Ease",
   "author": "evandor <evandor@gmail.com>",
@@ -51,7 +51,7 @@
     "fuse.js": "^7.0.0",
     "html-to-text": "^9.0.4",
     "idb": "^8.0.0",
-    "idraw": "^0.3.1",
+    "idraw": "^0.4.0-beta.6",
     "isomorphic-git": "^1.25.2",
     "js-md5": "^0.8.3",
     "lodash": "^4.17.21",

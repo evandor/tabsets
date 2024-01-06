@@ -1338,33 +1338,30 @@
   resolved "https://registry.yarnpkg.com/@huggingface/jinja/-/jinja-0.1.2.tgz#073fa0a68ef481a1806b0186bbafd8013e586fbe"
   integrity sha512-x5mpbfJt1nKmVep5WNP5VjNsjWApWNj8pPYI+uYMkBWH9bWUJmQmHt2lbf0VCoQd54Oq3XuFEh/UyoVh7rPxmg==
 
-"@idraw/board@^0.3.1":
-  version "0.3.1"
-  resolved "https://registry.yarnpkg.com/@idraw/board/-/board-0.3.1.tgz#7879815f8ce52a8aa1a3227224c1691648ac6452"
-  integrity sha512-nGnnTX5gl3tg4HKBrWBb2L7Xl+cHJyNcBTGf9Q+ysbf4NrHbkDjhSJd5cUGAwaZhQVXKb8ZzAbnTXoln8ynogQ==
-  dependencies:
-    "@idraw/util" "^0.3.1"
+"@idraw/board@^0.4.0-beta.6":
+  version "0.4.0-beta.6"
+  resolved "https://registry.yarnpkg.com/@idraw/board/-/board-0.4.0-beta.6.tgz#0631b6b74d11613cbdaf0104ab0310d01f97298d"
+  integrity sha512-OUnxcaTqperyhTFSKrtpFP3nOjmrkiMx04QnVlsYx106wQVDy9OWf4Qek3n2fOFmPRm7nzlVsqCBWSW4vGHweg==
 
-"@idraw/core@^0.3.1":
-  version "0.3.1"
-  resolved "https://registry.yarnpkg.com/@idraw/core/-/core-0.3.1.tgz#6293434656685284fb888c491c7554fa2925cdd2"
-  integrity sha512-OPSOxiCKZaDMa866CBzvA4Oh7dR+PBqlfb+MjMdXfTkWyOhfgV0oG5iQLnMgQT8iTFlmo3PWfk312lJis4PGqw==
-  dependencies:
-    "@idraw/board" "^0.3.1"
-    "@idraw/renderer" "^0.3.1"
-    "@idraw/util" "^0.3.1"
+"@idraw/core@^0.4.0-beta.6":
+  version "0.4.0-beta.6"
+  resolved "https://registry.yarnpkg.com/@idraw/core/-/core-0.4.0-beta.6.tgz#2fece12288e7d05994a1bedaff804f240e8cb770"
+  integrity sha512-TR/kGt2I6TczVZG6lgpbZMWUrqNRmeDk20+sCukI4UMFwGb9T429qeRGjanO3K4aWDt+nE4Am560HsWfoWFojw==
 
-"@idraw/renderer@^0.3.1":
-  version "0.3.1"
-  resolved "https://registry.yarnpkg.com/@idraw/renderer/-/renderer-0.3.1.tgz#7cf339642c837c77155ede95be3df1b33ade67b7"
-  integrity sha512-/pXoXsEU8pqAa7Vxpy5Q5KLSZ9PIZ9gUw9dKwZBkkk9eQPEVk4pDzlGQ11cM3KGt2GBLLlVZuTJ3m+T9Mtsgww==
-  dependencies:
-    "@idraw/util" "^0.3.1"
+"@idraw/renderer@^0.4.0-beta.6":
+  version "0.4.0-beta.6"
+  resolved "https://registry.yarnpkg.com/@idraw/renderer/-/renderer-0.4.0-beta.6.tgz#741613d2285edd2b64f4668c4dd4ef984b9315f6"
+  integrity sha512-S+1r/jxUQOoawxH7vA9hcVMzsyrwMTR3NLMVk28Dhb4UsmIHEivkCFmGvXDlA/j05qbpnJi8eP2JNJAjUgjGNg==
 
-"@idraw/util@^0.3.1":
-  version "0.3.1"
-  resolved "https://registry.yarnpkg.com/@idraw/util/-/util-0.3.1.tgz#d21c54ed13adab60a8b5c66922b9123f8edcf2e5"
-  integrity sha512-puhOL9BGqssReKTyyn6A8PJcBDIpRe+VkXGACFsH7hnSJ9b8toEPbl4dloaw7ebRKPpyG1JwJGJNQ18VehcRWQ==
+"@idraw/types@^0.4.0-beta.6":
+  version "0.4.0-beta.6"
+  resolved "https://registry.yarnpkg.com/@idraw/types/-/types-0.4.0-beta.6.tgz#44139dd7f40364fa784cc6e3dad369bfdbbb3642"
+  integrity sha512-/M9mr2MABjXMOvBbGGSO+jC5pclivRlGjSXBVQMFnPHsTvs47Kq1qwbEeNrWxGNaW/VQvwtUg2iMPkQyW+jF2g==
+
+"@idraw/util@^0.4.0-beta.6":
+  version "0.4.0-beta.6"
+  resolved "https://registry.yarnpkg.com/@idraw/util/-/util-0.4.0-beta.6.tgz#049b5f7ea5b08570999afd2f1542099bd1a65133"
+  integrity sha512-EWGGArPhkHLLhdCgqyIZsOTNXytDCfxfGYud38SU7haOgA7+fmi1jUaLNOS840wI21p1uBbbPfqv3lz+b4ux8w==
 
 "@intlify/bundle-utils@^3.1.2":
   version "3.4.0"
@@ -3826,12 +3823,17 @@ data-urls@^1.1.0:
     whatwg-mimetype "^2.2.0"
     whatwg-url "^7.0.0"
 
-date-fns@^2.28.0, date-fns@^2.29.3:
+date-fns@^2.28.0:
   version "2.30.0"
   resolved "https://registry.yarnpkg.com/date-fns/-/date-fns-2.30.0.tgz#f367e644839ff57894ec6ac480de40cae4b0f4d0"
   integrity sha512-fnULvOpxnC5/Vg3NCiWelDsLiUc9bRwAPs/+LfTLNvetFCtCTN+yQz15C/fs4AwX1R9K5GLtLfn8QW+dWisaAw==
   dependencies:
     "@babel/runtime" "^7.21.0"
+
+date-fns@^3.1.0:
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/date-fns/-/date-fns-3.1.0.tgz#576df8df93202942aeebd49ecc042218feb40426"
+  integrity sha512-ZO7yefXV/wCWzd3I9haCHmfzlfA3i1a2HHO7ZXjtJrRjXt8FULKJ2Vl8wji3XYF4dQ0ZJ/tokXDZeYlFvgms9Q==
 
 debug@2.6.9, debug@^2.2.0:
   version "2.6.9"
@@ -5717,13 +5719,16 @@ idb@^8.0.0:
   resolved "https://registry.yarnpkg.com/idb/-/idb-8.0.0.tgz#33d7ed894ed36e23bcb542fb701ad579bfaad41f"
   integrity sha512-l//qvlAKGmQO31Qn7xdzagVPPaHTxXx199MhrAFuVBTPqydcPYBWjkrbv4Y0ktB+GmWOiwHl237UUOrLmQxLvw==
 
-idraw@^0.3.1:
-  version "0.3.1"
-  resolved "https://registry.yarnpkg.com/idraw/-/idraw-0.3.1.tgz#c2eb6f2cd7989ca8f0b9c41f9118b726586c4cb7"
-  integrity sha512-R/XVmw2inkM+iVvu1rbctbtY0u0HxZaUZHWY4HUQoOWIj3HmniZNuWgl1BKYzqyIFmccTUexB1nwNphgUu4j5A==
+idraw@^0.4.0-beta.6:
+  version "0.4.0-beta.6"
+  resolved "https://registry.yarnpkg.com/idraw/-/idraw-0.4.0-beta.6.tgz#2a3ddccd8ac00d6ebf964c55a501986fa1089f29"
+  integrity sha512-DoWk7KkPoZwkNrzitYSBiD6FMnL7z1MrSImdggkSfWqzWY2SFY9q4HFKnL36pVzvMa4MOpt5rKh3Pnl7/Q23Mw==
   dependencies:
-    "@idraw/core" "^0.3.1"
-    "@idraw/util" "^0.3.1"
+    "@idraw/board" "^0.4.0-beta.6"
+    "@idraw/core" "^0.4.0-beta.6"
+    "@idraw/renderer" "^0.4.0-beta.6"
+    "@idraw/types" "^0.4.0-beta.6"
+    "@idraw/util" "^0.4.0-beta.6"
 
 ieee754@^1.1.13, ieee754@^1.2.1:
   version "1.2.1"
