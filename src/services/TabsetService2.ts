@@ -676,7 +676,7 @@ export function useTabsetService() {
   const findFolder = (folders: Tabset[], folderId: string): Tabset | undefined => {
     for (const f of folders) {
       if (f.id === folderId) {
-        console.log("found active folder", f)
+        //console.log("found active folder", f)
         return f
       }
     }

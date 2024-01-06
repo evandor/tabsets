@@ -50,7 +50,7 @@ export abstract class Logz {
           // referrerPolicy: "no-referrer", // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
           body: JSON.stringify(message), // body data type must match "Content-Type" header
         });
-        console.log("answer", response)
+        //console.log("answer", response)
       } catch (err) {
         console.warn("dould not send Logz message", JSON.stringify(message))
       }

@@ -75,7 +75,7 @@
                         style="position: relative;top:-2px">
                   <q-tooltip class="tooltip">This tabset is pinned for easier access</q-tooltip>
                 </q-icon>
-                {{ tabsetSectionName(tabset) }}
+                {{ tabsetSectionName(tabset as Tabset) }}
                 <span v-if="tabset.type === TabsetType.DYNAMIC">
                   <q-icon name="o_label" color="warning">
                     <q-tooltip class="tooltip">Dynamic Tabset, listing all tabsets containing this tag</q-tooltip>
@@ -84,7 +84,7 @@
               </q-item-label>
               <q-item-label class="text-caption text-grey-5">
                 {{
-                  tabsetCaption(useTabsetService().tabsToShow(tabset as Tabset), tabset.window, tabset.folders.length)
+                  tabsetCaption(useTabsetService().tabsToShow(tabset as Tabset), tabset.window, tabset.folders?.length)
                 }}
               </q-item-label>
               <q-item-label v-if="tabset.sharedId" class="q-mb-xs"
@@ -682,7 +682,7 @@ async function handleHeadRequests(selectedTabset: Tabset) {
         } catch (err) {
         }
       } catch (error) {
-        console.log('got a Problem: \n', error);
+        console.debug('got a Problem fetching url "' + t.url + '": \n', error)
         //t.httpError = error.toString()
         //return Promise.resolve()
       }
@@ -888,7 +888,7 @@ const calcFolders = (tabset: Tabset): Tabset[] => {
 const tabsetForTabList = (tabset: Tabset) => {
   if (tabset.folderActive) {
     const af = useTabsetService().findFolder(tabset.folders, tabset.folderActive)
-    console.log("result af", af)
+    //console.log("result af", af)
     if (af) {
       return af
     }
@@ -942,7 +942,7 @@ const drop = (evt: any, folder: Tabset) => {
 
 const folderCaption = (folder: Tabset) =>
   (folder.name !== "..") ?
-    folder.tabs.length + " tab" + (folder.tabs.length !== 1 ? 's':'') :
+    folder.tabs.length + " tab" + (folder.tabs.length !== 1 ? 's' : '') :
     ""
 
 const tabsetSectionName = (tabset: Tabset) => {
