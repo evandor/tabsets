@@ -14,7 +14,7 @@ import {FirebaseCall} from "src/services/firebase/FirebaseCall";
 import PlaceholderUtils from "src/utils/PlaceholderUtils";
 import {Monitor, MonitoringType} from "src/models/Monitor";
 import {ListDetailLevel, useUiStore} from "stores/uiStore";
-import {Group} from "src/models/Group";
+import {TabsetColumn} from "src/models/TabsetColumn";
 
 const {getTabset, getCurrentTabset, saveTabset, saveCurrentTabset, tabsetsFor, addToTabset} = useTabsetService()
 
@@ -442,7 +442,7 @@ class TabsetService {
     }
   }
 
-  moveTo(tabId: string, newIndex: number, column: Group) {
+  moveTo(tabId: string, newIndex: number, column: TabsetColumn) {
     console.log("moving", tabId, newIndex, column.id)
     let tabs = useTabsStore().getCurrentTabs
     //console.log("tabs", tabs)

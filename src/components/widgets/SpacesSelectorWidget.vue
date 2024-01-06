@@ -11,21 +11,29 @@
         <q-item disable v-if="spacesOptions.length > 1">
           Switch to space:
         </q-item>
+
         <q-separator v-if="spacesOptions.length > 1"/>
-        <q-item v-for="space in spacesOptions"
+
+        <q-item v-for="space in spacesStore.spaces.values()"
                 :disable="space.id === spacesStore.space?.id"
                 clickable v-close-popup @click="switchSpace(space)">
           <q-item-section>{{ space.label }}</q-item-section>
         </q-item>
+
         <q-separator/>
+
         <q-item clickable v-close-popup @click="switchSpace(null as unknown as Space)">
           <q-item-section>Show unassigned tabs</q-item-section>
         </q-item>
+
         <q-separator/>
+
         <q-item clickable v-close-popup @click="openNewSpaceDialog()">
           <q-item-section>Add Space</q-item-section>
         </q-item>
+
         <q-separator v-if="spacesOptions.length > 0 && !props.fromPanel"/>
+
         <q-item v-if="spacesOptions.length > 0 && !props.fromPanel"
                 clickable v-close-popup @click="router.push('/spaces')">
           <q-item-section>Manage Spaces</q-item-section>
@@ -82,7 +90,7 @@ const openNewSpaceDialog = () => {
 }
 
 const switchSpace = (s: Space) => {
-  console.log("settings space to ", s)
+  console.log("setting space to ", s)
   spacesStore.space = s
 }
 

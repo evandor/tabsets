@@ -36,7 +36,15 @@ class IndexedDbPersistenceService implements PersistenceService {
   async loadTabsets(): Promise<any> {
     const tabsStore = useTabsStore()
     return await this.db.getAll('tabsets')
-      .then((res: any) => res.forEach((r: Tabset) => tabsStore.addTabset(r)))
+      .then((res: any) => res.forEach((r: Tabset) => {
+        // make sure some fields are correctly initialized even for old(er) tabsets
+        if (!r.columns) {
+          r.columns = []
+        }
+        delete r['groups' as keyof object]
+        //console.log("r", ['groups' as keyof object])
+        tabsStore.addTabset(r)
+      }))
   }
 
   async reloadTabset(tabsetId: string) {

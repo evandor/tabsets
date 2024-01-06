@@ -223,6 +223,7 @@ const importBookmarks = () => $q.dialog({
   component: ImportFromBookmarksDialog,
   componentProps: {
     count: nonFolders().length,
+    foldersCount: folders().length,
     inSidePanel: props.inSidePanel
   }
 })

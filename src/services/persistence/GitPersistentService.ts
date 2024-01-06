@@ -181,7 +181,13 @@ class GitPersistenceService implements PersistenceService {
           const tsData = await pfs.readFile(tsDataLocation)
           //console.log("tsData", tsData)
           const ts = JSON.parse(tsData) as Tabset
-          console.log("ts from git", ts)
+
+          // make sure some fields are correcly initialized even for old(er) tabsets
+          // TODO make sure in pouchdb as well
+          if (!ts.columns) {
+            ts.columns = []
+          }
+
           ts.tabs = []
 
           try {

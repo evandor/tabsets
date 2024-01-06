@@ -29,9 +29,24 @@
     <!-- list of tabs, assuming here we have at least one tabset -->
     <div class="q-ma-none q-pa-none">
 
-      <div class="row q-ma-sm q-pa-sm" v-if="suggestTabsetImport()">
-        <q-btn class="q-px-xl" dense label="import Tabset" color="warning" @click="importSharedTabset()"/>
-      </div>
+      <template v-if="suggestTabsetImport()">
+
+        <InfoMessageWidget
+          :probability="1"
+          ident="sidePanelPage_importTabset">
+          Whenever tabsets detects the <b>current tab to contain a new tabset</b>, it will suggest to import this
+          set.<br>
+          Importing will add the tabset to your existing ones.
+        </InfoMessageWidget>
+
+        <div class="row q-ma-sm q-pa-sm">
+          <q-btn class="q-px-xl" dense label="Import Shared Tabset" color="warning" @click="importSharedTabset()">
+            <q-tooltip class="tooltip-small">The Page in your current tab is a public Tabset which you can import into
+              your own if you want.
+            </q-tooltip>
+          </q-btn>
+        </div>
+      </template>
 
       <q-list dense
               class="rounded-borders q-ma-none q-pa-none" :key="tabset.id"
@@ -60,7 +75,7 @@
                         style="position: relative;top:-2px">
                   <q-tooltip class="tooltip">This tabset is pinned for easier access</q-tooltip>
                 </q-icon>
-                {{ tabset.name }}
+                {{ tabsetSectionName(tabset as Tabset) }}
                 <span v-if="tabset.type === TabsetType.DYNAMIC">
                   <q-icon name="o_label" color="warning">
                     <q-tooltip class="tooltip">Dynamic Tabset, listing all tabsets containing this tag</q-tooltip>
@@ -68,7 +83,9 @@
                 </span>
               </q-item-label>
               <q-item-label class="text-caption text-grey-5">
-                {{ tabsetCaption(useTabsetService().tabsToShow(tabset as Tabset), tabset.window) }}
+                {{
+                  tabsetCaption(useTabsetService().tabsToShow(tabset as Tabset), tabset.window, tabset.folders?.length)
+                }}
               </q-item-label>
               <q-item-label v-if="tabset.sharedId" class="q-mb-xs"
                             @mouseover="hoveredPublicLink = true"
@@ -154,9 +171,43 @@
               {{ tabset.page }}
             </template>
 
+            <q-list>
+              <q-item v-for="folder in calcFolders(tabset as Tabset)"
+                      clickable
+                      v-ripple
+                      class="q-ma-none q-pa-sm"
+                      style="border-bottom: 2px solid #fafafa;"
+                      @dragstart="startDrag($event, folder)"
+                      @dragenter="enterDrag($event, folder)"
+                      @dragover="overDrag($event, folder)"
+                      @dragend="endDrag($event, folder)"
+                      @drop="drop($event, folder)"
+                      @click="selectFolder(tabset as Tabset, folder as Tabset)"
+                      :key="'panelfolderlist_' + folder.id">
+
+                <q-item-section class="q-mr-sm text-right" style="justify-content:start;width:30px;max-width:30px">
+                  <div class="bg-white q-pa-none">
+                    <q-icon name="o_folder" color="warning" size="sm"/>
+                  </div>
+                </q-item-section>
+                <q-item-section>
+                  <q-item-label>
+                    <div class="text-bold">
+                      {{ folder.name }}
+                    </div>
+                  </q-item-label>
+                  <q-item-label class="text-caption text-grey-5">
+                    {{ folderCaption(folder) }}
+                  </q-item-label>
+                </q-item-section>
+
+              </q-item>
+            </q-list>
+
             <SidePanelPageTabList
               v-if="tabsetExpanded.get(tabset.id)"
-              :tabset="tabset as Tabset"
+              :tabsCount="useTabsetService().tabsToShow(tabset as Tabset).length"
+              :tabset="tabsetForTabList(tabset as Tabset)"
             />
 
           </div>
@@ -200,14 +251,14 @@
 
 import {onMounted, onUnmounted, ref, watchEffect} from "vue";
 import {useTabsStore} from "src/stores/tabsStore";
-import {Tab} from "src/models/Tab";
+import {Tab, TabPreview} from "src/models/Tab";
 import _ from "lodash"
-import {Tabset, TabsetStatus, TabsetType} from "src/models/Tabset";
+import {Tabset, TabsetSharing, TabsetStatus, TabsetType} from "src/models/Tabset";
 import {useRouter} from "vue-router";
 import {useUtils} from "src/services/Utils";
 import {LocalStorage, openURL, scroll, uid, useQuasar} from "quasar";
 import {useTabsetService} from "src/services/TabsetService2";
-import {useUiStore} from "src/stores/uiStore";
+import {ListDetailLevel, useUiStore} from "src/stores/uiStore";
 import {usePermissionsStore} from "src/stores/permissionsStore";
 import {useSpacesStore} from "src/stores/spacesStore";
 import FirstToolbarHelper from "pages/sidepanel/helper/FirstToolbarHelper.vue";
@@ -226,13 +277,17 @@ import SidePanelPageTabList from "components/layouts/SidePanelPageTabList.vue";
 import {AddTabToTabsetCommand} from "src/domain/tabs/AddTabToTabset";
 import {CopyToClipboardCommand} from "src/domain/commands/CopyToClipboard";
 import SidePanelTabsetDescriptionPage from "pages/sidepanel/SidePanelTabsetDescriptionPage.vue";
-import {PUBLIC_SHARE_URL} from "boot/constants";
 import ShareTabsetPubliclyDialog from "components/dialogues/ShareTabsetPubliclyDialog.vue";
-import getScrollTarget = scroll.getScrollTarget;
 import MqttService from "src/services/mqtt/MqttService";
-import {SyncType, useAppStore} from "stores/appStore";
-import {VOnboardingWrapper, VOnboardingStep, useVOnboarding} from 'v-onboarding'
+import {SyncType} from "stores/appStore";
+import {useVOnboarding, VOnboardingStep, VOnboardingWrapper} from 'v-onboarding'
 import {FirebaseCall} from "src/services/firebase/FirebaseCall";
+import getScrollTarget = scroll.getScrollTarget;
+import InfoMessageWidget from "components/widgets/InfoMessageWidget.vue";
+import {TITLE_IDENT} from "boot/constants";
+import PanelTabListElementWidget from "components/widgets/PanelTabListElementWidget.vue";
+import {VueDraggableNext} from "vue-draggable-next";
+import {TabsetColumn} from "src/models/TabsetColumn";
 
 const {setVerticalScrollPosition} = scroll
 
@@ -259,6 +314,10 @@ const hoveredPublicLink = ref(false)
 interface SelectionObject {
   [key: string]: boolean
 }
+
+window.addEventListener("drop", (event) => {
+  console.log("dropped", event)
+});
 
 const selected_model = ref<SelectionObject>({})
 const hoveredTabset = ref<string | undefined>(undefined)
@@ -294,10 +353,10 @@ onMounted(() => {
     router.push("/authenticate")
   } else {
     setTimeout(() => {
-        if (useTabsStore().allTabsCount === 0) {
-          start()
-        }
-      }, 1000)
+      if (useTabsStore().allTabsCount === 0) {
+        start()
+      }
+    }, 1000)
 
     Analytics.firePageViewEvent('SidePanelPage', document.location.href);
   }
@@ -622,7 +681,7 @@ async function handleHeadRequests(selectedTabset: Tabset) {
         } catch (err) {
         }
       } catch (error) {
-        console.log('got a Problem: \n', error);
+        console.debug('got a Problem fetching url "' + t.url + '": \n', error)
         //t.httpError = error.toString()
         //return Promise.resolve()
       }
@@ -631,7 +690,7 @@ async function handleHeadRequests(selectedTabset: Tabset) {
   useTabsetService().saveTabset(selectedTabset)
 }
 
-const tabsetCaption = (tabs: Tab[], window: string) => {
+const tabsetCaption = (tabs: Tab[], window: string, foldersCount: number) => {
   const filter = useUiStore().tabsFilter
   if (!tabs) {
     return '-'
@@ -641,6 +700,9 @@ const tabsetCaption = (tabs: Tab[], window: string) => {
     caption = tabs.length + ' tab' + (tabs.length === 1 ? '' : 's')
   } else {
     caption = tabs.length + ' tab' + (tabs.length === 1 ? '' : 's') + ' (filtered)'
+  }
+  if (foldersCount > 0) {
+    caption = caption + ", " + foldersCount + " folder" + (foldersCount === 1 ? '' : 's')
   }
   if (window && window !== 'current') {
     caption = caption + " - opens in: " + window
@@ -673,12 +735,13 @@ const toolbarTitle = (tabsets: Tabset[]) => {
       spaceName + ' (' + tabsets.length.toString() + ')' :
       spaceName
   }
-  return tabsets.length > 6 ? 'My Tabsets (' + tabsets.length.toString() + ')' : 'My Tabsets'
+  const title = LocalStorage.getItem(TITLE_IDENT) || 'My Tabsets.'
+  return tabsets.length > 6 ? title + ' (' + tabsets.length.toString() + ')' : title
 }
 
 const headerStyle = (tabset: Tabset) => {
-  const tabsetOpened = _.findIndex([...tabsetExpanded.value.keys()],
-    (key: string) => (key !== null) && tabsetExpanded.value.get(key)) >= 0
+  const tabsetOpened: boolean = _.findIndex([...tabsetExpanded.value.keys()],
+    (key: string) => (key !== null) && tabsetExpanded.value.get(key) !== undefined) >= 0
   let style = tabsetExpanded.value.get(tabset.id) ?
     'border:0 solid grey;border-top-left-radius:4px;border-top-right-radius:4px;' :
     tabsetOpened ?
@@ -795,9 +858,41 @@ const importSharedTabset = () => {
     FirebaseCall.get("/share/public/" + tabsetId + "?cb=" + new Date().getTime(), false)
       .then((res: any) => {
         const newTabset = res as Tabset
+        newTabset.sharing = TabsetSharing.UNSHARED
+        //_.forEach(newTabset.tabs, t => t.preview = TabPreview.THUMBNAIL)
         useTabsetService().saveTabset(newTabset)
+        useTabsetService().reloadTabset(newTabset.id)
       })
   }
+}
+
+const selectFolder = (tabset: Tabset, folder: Tabset) => {
+  console.log("selectiong folder", tabset.id, folder.id)
+  tabset.folderActive = folder.id
+  useTabsetService().saveTabset(tabset)
+}
+
+
+const calcFolders = (tabset: Tabset): Tabset[] => {
+  if (tabset.folderActive) {
+    const af = useTabsetService().findFolder(tabset.folders, tabset.folderActive)
+    if (af && af.folderParent) {
+      return [new Tabset(af.folderParent, "..", [])].concat(af.folders)
+    }
+  }
+  return tabset.folders
+}
+
+
+const tabsetForTabList = (tabset: Tabset) => {
+  if (tabset.folderActive) {
+    const af = useTabsetService().findFolder(tabset.folders, tabset.folderActive)
+    //console.log("result af", af)
+    if (af) {
+      return af
+    }
+  }
+  return tabset
 }
 
 const shareTabsetPubliclyDialog = (tabset: Tabset, republish: boolean = false) => {
@@ -810,6 +905,51 @@ const shareTabsetPubliclyDialog = (tabset: Tabset, republish: boolean = false) =
       republish: republish
     }
   })
+}
+
+const startDrag = (evt: any, folder: Tabset) => {
+  console.log("start dragging", evt, folder)
+  if (evt.dataTransfer) {
+    evt.dataTransfer.dropEffect = 'all'
+    evt.dataTransfer.effectAllowed = 'all'
+    //evt.dataTransfer.setData('text/plain', tab.id)
+    //useUiStore().draggingTab(tab.id, evt)
+  }
+  console.log("evt.dataTransfer.getData('text/plain')", evt.dataTransfer.getData('text/plain'))
+}
+const enterDrag = (evt: any, folder: Tabset) => {
+  //console.log("enter drag", evt, folder)
+}
+const overDrag = (event: any, folder: Tabset) => {
+  //console.log("enter drag", event, folder)
+  event.preventDefault();
+}
+const endDrag = (evt: any, folder: Tabset) => {
+  console.log("end drag", evt, folder)
+}
+const drop = (evt: any, folder: Tabset) => {
+  console.log("drop", evt, folder)
+  const tabToDrag = useUiStore().tabBeingDragged
+  const tabset = useTabsetService().getCurrentTabset()
+  if (tabToDrag && tabset) {
+    console.log("tabToDrag", tabToDrag)
+    const moveToFolderId = folder.id
+    console.log("moveToFolderId", moveToFolderId)
+    useTabsetService().moveTabToFolder(tabset, tabToDrag, moveToFolderId)
+  }
+}
+
+const folderCaption = (folder: Tabset) =>
+  (folder.name !== "..") ?
+    folder.tabs.length + " tab" + (folder.tabs.length !== 1 ? 's' : '') :
+    ""
+
+const tabsetSectionName = (tabset: Tabset) => {
+  if (!tabset.folderActive || tabset.id === tabset.folderActive) {
+    return tabset.name
+  }
+  const activeFolder = useTabsetService().findFolder([tabset], tabset.folderActive)
+  return tabset.name + (activeFolder ? " - " + activeFolder.name : "")
 }
 
 </script>
