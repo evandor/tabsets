@@ -192,6 +192,7 @@ export const useUiStore = defineStore('ui', () => {
 
   // system management
   const dbReady = ref<boolean>(false)
+  const dbSyncing = ref<boolean>(false)
 
   const progress = ref<number | undefined>(undefined)
   const progressLabel = ref<string | undefined>(undefined)
@@ -552,6 +553,7 @@ export const useUiStore = defineStore('ui', () => {
     showFullUrls,
     listDetailLevelGreaterEqual,
     dbReady,
+    dbSyncing,
     sidePanel,
     sidePanelSetActiveView,
     sidePanelIsActive,

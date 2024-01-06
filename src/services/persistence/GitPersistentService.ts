@@ -13,7 +13,7 @@ import {Tabset} from "src/models/Tabset";
 import {Window} from "src/models/Window";
 import {RequestInfo} from "src/models/RequestInfo";
 import {Notification} from "src/models/Notification";
-import {md5} from 'js-md5';
+import {Md5} from 'ts-md5';
 // @ts-ignore
 import LightningFS from '@isomorphic-git/lightning-fs';
 import http from 'isomorphic-git/http/web'
@@ -82,7 +82,7 @@ class GitPersistenceService implements PersistenceService {
     window.fs = new LightningFS('fs')
     window.pfs = window.fs.promises
     console.debug("about to initialize git")
-    const useDir = dir + "-" + md5(url)
+    const useDir = dir + "-" + Md5.hashStr(url)
     window.dir = useDir
     console.log(useDir);
     try {
