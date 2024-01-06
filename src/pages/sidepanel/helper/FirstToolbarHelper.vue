@@ -95,7 +95,6 @@ import {useRouter} from "vue-router";
 import {ref, watchEffect} from "vue";
 import {SidePanelView, useUiStore} from "stores/uiStore";
 import NewTabsetDialog from "components/dialogues/NewTabsetDialog.vue";
-import {useQuasar} from "quasar";
 import {Tabset, TabsetType} from "src/models/Tabset";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import NewSessionDialog from "components/dialogues/NewSessionDialog.vue";
@@ -105,6 +104,7 @@ import SearchWithTransitionHelper from "pages/sidepanel/helper/SearchWithTransit
 import SidePanelToolbarTabNavigationHelper from "pages/sidepanel/helper/SidePanelToolbarTabNavigationHelper.vue";
 import FilterWithTransitionHelper from "pages/sidepanel/helper/FilterWithTransitionHelper.vue";
 import SidePanelToolbarButton from "components/buttons/SidePanelToolbarButton.vue";
+import {useQuasar} from "quasar";
 
 const props = defineProps({
   title: {type: String, default: "My Tabsets"},
@@ -122,6 +122,7 @@ const permissionsStore = usePermissionsStore()
 const searching = ref(false)
 const existingSession = ref(false)
 const showFilter = ref(false)
+const title = ref(props.title)
 
 const toggleSearch = () => {
   searching.value = !searching.value

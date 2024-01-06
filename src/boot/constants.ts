@@ -13,7 +13,21 @@ const STRIP_CHARS_IN_USER_INPUT = /[`@#$%^*=\[\]{};:"\\|<>\/~]/;
 const STRIP_CHARS_IN_COLOR_INPUT = /[`@$%^*=\[\]{};:"\\|<>\/~]/;
 
 const PUBLIC_SHARE_URL = "https://shared.tabsets.net/"
+const RELEASE_NOTES_URL = "https://us-central1-tabsets-backend-prd.cloudfunctions.net/app/share/preview/5d2cccf9-83ea-40be-bc84-37b03e38af1d"
 //const PUBLIC_SHARE_URL = "http://localhost:9200/"
+
+// Local storage Identifiers
+const TITLE_IDENT = 'title';
+
+const SUBSCRIPTION_ID_IDENT = 'subscription.id';
+
+const SHARING_AUTHOR_IDENT = 'sharing.author';
+const SHARING_AVATAR_IDENT = 'sharing.avatar';
+const SHARING_MQTT_IDENT = 'sharing.mqttUrl';
+const SHARING_INSTALLATION = 'sharing.installation'
+
+const SYNC_GIT_URL = "sync.git.url"
+const SYNC_GIT_TOKEN = "sync.git.token"
 
 export default boot(({}) => {
 })
@@ -22,6 +36,15 @@ export {
   INDEX_DB_VERSION,
   CLEANUP_PERIOD_IN_MINUTES, STRIP_CHARS_IN_USER_INPUT, STRIP_CHARS_IN_COLOR_INPUT,
   EXPIRE_DATA_PERIOD_IN_MINUTES, SPECIAL_ID_FOR_NO_GROUP_ASSIGNED,MONITORING_PERIOD_IN_MINUTES,
-  PUBLIC_SHARE_URL
+  PUBLIC_SHARE_URL,
+  RELEASE_NOTES_URL,
+  SUBSCRIPTION_ID_IDENT,
+  SHARING_AUTHOR_IDENT,
+  SHARING_AVATAR_IDENT,
+  SHARING_MQTT_IDENT,
+  SHARING_INSTALLATION,
+  SYNC_GIT_URL,
+  SYNC_GIT_TOKEN,
+  TITLE_IDENT
 }
 

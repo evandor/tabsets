@@ -23,6 +23,7 @@ import {FeatureIdent} from "src/models/AppFeature";
 import {useMessagesStore} from "src/stores/messagesStore";
 import {SyncType, useAppStore} from "stores/appStore";
 import GitPersistentService from "src/services/persistence/GitPersistentService";
+import {SYNC_GIT_URL} from "boot/constants";
 
 class AppService {
 
@@ -60,7 +61,7 @@ class AppService {
 
     // sync features
     const syncType = LocalStorage.getItem("sync.type") as SyncType || SyncType.NONE
-    const syncUrl = LocalStorage.getItem("sync.git.url") as string | undefined
+    const syncUrl = LocalStorage.getItem(SYNC_GIT_URL) as string
     const dbOrGitDb = syncType && syncType === SyncType.GIT && syncUrl ? useDB(undefined).gitDb : useDB(undefined).db
     console.log("checking sync config:", syncType, syncUrl, dbOrGitDb)
 

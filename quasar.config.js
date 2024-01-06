@@ -95,11 +95,11 @@ module.exports = configure(function (ctx) {
 
       // !== MIT
       extendViteConf (viteConf) {
-        //console.log("hier", viteConf)
         if ((ctx.mode.spa || ctx.mode.pwa || ctx.mode.electron) && viteConf && viteConf.mode === "development") {
           // https://dev.to/richardbray/how-to-fix-the-referenceerror-global-is-not-defined-error-in-sveltekitvite-2i49
           viteConf.define.global = {}
         }
+        viteConf.define.__VUE_PROD_HYDRATION_MISMATCH_DETAILS__ = 'false'
       },
       // viteVuePluginOptions: {},
 

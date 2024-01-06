@@ -23,6 +23,7 @@ import {useTabsStore} from "stores/tabsStore";
 import {useSpacesStore} from "stores/spacesStore";
 import {LocalStorage, uid} from "quasar";
 import {SyncType} from "stores/appStore";
+import {SYNC_GIT_TOKEN} from "boot/constants";
 
 if (typeof self !== 'undefined') {
   self.Buffer = Buffer;
@@ -53,7 +54,7 @@ async function push(dir: string) {
     remote: 'origin',
     corsProxy: 'https://cors.isomorphic-git.org',
     ref: 'main',
-    onAuth: () => ({username: LocalStorage.getItem('sync.git.token') as string || '---'}),
+    onAuth: () => ({username: LocalStorage.getItem(SYNC_GIT_TOKEN) as string || '---'}),
   })
   console.log(pushResult)
 }
@@ -110,7 +111,7 @@ class GitPersistenceService implements PersistenceService {
         //onMessage: (val:any) => (console.log("onMessage", val)),
         onAuthSuccess: () => (console.log("auth: success")),
         onAuthFailure: () => ("auth: failure"),
-        onAuth: () => ({username: LocalStorage.getItem('sync.git.token') as string || '---'}),
+        onAuth: () => ({username: LocalStorage.getItem(SYNC_GIT_TOKEN) as string || '---'}),
       }
       console.log(`about to clone '${url}' into ${useDir}`, cloneDef)
       const cloneRes = await git.clone(cloneDef);
@@ -138,7 +139,7 @@ class GitPersistenceService implements PersistenceService {
             return Promise.resolve("success!")
           },
           onAuthFailure: () => (console.log("auth: failure")),
-          onAuth: () => ({username: LocalStorage.getItem('sync.git.token') as string || '---'}),
+          onAuth: () => ({username: LocalStorage.getItem(SYNC_GIT_TOKEN) as string || '---'}),
         }
         console.log("checking repo", remoteInfoDef)
 
@@ -180,7 +181,13 @@ class GitPersistenceService implements PersistenceService {
           const tsData = await pfs.readFile(tsDataLocation)
           //console.log("tsData", tsData)
           const ts = JSON.parse(tsData) as Tabset
-          console.log("ts from git", ts)
+
+          // make sure some fields are correcly initialized even for old(er) tabsets
+          // TODO make sure in pouchdb as well
+          if (!ts.columns) {
+            ts.columns = []
+          }
+
           ts.tabs = []
 
           try {

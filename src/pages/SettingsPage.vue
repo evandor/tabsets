@@ -22,10 +22,11 @@
       <q-tab name="appearance" label="Appearance"/>
       <q-tab name="subscription" label="Subscription" icon="o_shopping_bag"/>
       <q-tab name="sharing" label="Sharing"/>
-      <q-tab name="syncing" label="Syncing" icon="o_shopping_bag" v-if="LocalStorage.getItem('subscription.id')"/>
+      <q-tab name="syncing" label="Syncing" icon="o_shopping_bag" v-if="LocalStorage.has(SUBSCRIPTION_ID_IDENT)"/>
       <q-tab name="thirdparty" label="Third Party Services"/>
       <!--      <q-tab name="ignored" label="Ignored Urls"/>-->
-      <q-tab name="archived" label="Archived Tabsets"/>
+      <q-tab name="archived" label="Archived Tabsets"
+             v-if="usePermissionsStore().hasFeature(FeatureIdent.ARCHIVE_TABSET)"/>
       <q-tab name="search" label="Search Engine" v-if="devEnabled"/>
       <q-tab name="importExport" label="Import/Export"/>
       <q-tab name="internals" label="Internals" v-if="devEnabled"/>
@@ -40,6 +41,22 @@
       <q-banner rounded class="bg-grey-1 text-primary">On this settings page, you can adjust the general appearance of
         the tabsets extension.
       </q-banner>
+
+      <div class="row items-baseline q-ma-md">
+        <div class="col-3">
+          Title
+        </div>
+        <div class="col-7">
+          <q-input type="text" color="primary" filled v-model="installationTitle" label="">
+            <template v-slot:prepend>
+              <q-icon name="o_edit_note"/>
+            </template>
+          </q-input>
+        </div>
+        <div class="col">
+
+        </div>
+      </div>
 
       <div class="row items-baseline q-ma-md">
         <div class="col-3">
@@ -191,20 +208,20 @@
 
     <div class="row items-baseline q-ma-md q-gutter-lg">
       <template v-if="!subscription">
-      <div class="col-3">
-        Subscribe
-      </div>
-      <div class="col-7">
-        <q-btn label="Subscribe" @click="subscribe()" />
-      </div>
-      <div class="col"></div>
+        <div class="col-3">
+          Subscribe
+        </div>
+        <div class="col-7">
+          <q-btn label="Subscribe" @click="subscribe()"/>
+        </div>
+        <div class="col"></div>
       </template>
       <template v-else>
         <div class="col-3">
           Subscription
         </div>
         <div class="col-7">
-          <q-btn label="Test Subscription" @click="testSubscription()" />
+          <q-btn label="Test Subscription" @click="testSubscription()"/>
         </div>
         <div class="col"></div>
       </template>
@@ -219,8 +236,9 @@
           </template>
         </q-input>
       </div>
-      <div class="col"></div>
+      <div class="col">
         <a href="https://billing.stripe.com/p/login/6oE00CenQc3R5IQdQQ" target="_blank">Portal</a>
+      </div>
     </div>
   </div>
 
@@ -712,6 +730,13 @@ import {SyncType} from "stores/appStore";
 import GitPersistentService from "src/services/persistence/GitPersistentService";
 import {useRoute, useRouter} from "vue-router";
 import {FirebaseCall} from "src/services/firebase/FirebaseCall";
+import {
+  SHARING_AUTHOR_IDENT,
+  SHARING_AVATAR_IDENT,
+  SHARING_INSTALLATION,
+  SHARING_MQTT_IDENT, STRIP_CHARS_IN_USER_INPUT,
+  SUBSCRIPTION_ID_IDENT, SYNC_GIT_TOKEN, SYNC_GIT_URL, TITLE_IDENT
+} from "boot/constants";
 
 const {sendMsg} = useUtils()
 
@@ -738,10 +763,10 @@ const permissionsList = ref<string[]>([])
 const darkMode = ref<boolean>(localStorage.getItem('darkMode') || false)
 const detailLevel = ref<ListDetailLevel>(localStorage.getItem('ui.detailLevel') || ListDetailLevel.MAXIMAL)
 
-const nickname = ref<string | undefined>(localStorage.getItem('sharing.author') as string || undefined)
-const avatar = ref<string | undefined>(localStorage.getItem('sharing.avatar') as string || undefined)
-const mqttUrl = ref<string | undefined>(localStorage.getItem('sharing.mqttUrl') as string || undefined)
-const installationId = ref<string | undefined>(localStorage.getItem('sharing.installation') as string || '---')
+const nickname = ref<string>(LocalStorage.getItem(SHARING_AUTHOR_IDENT) || '')
+const avatar = ref<string>(LocalStorage.getItem(SHARING_AVATAR_IDENT) as string || '')
+const mqttUrl = ref<string>(LocalStorage.getItem(SHARING_MQTT_IDENT) as string || '')
+const installationId = ref<string>(localStorage.getItem(SHARING_INSTALLATION) as string || '---')
 
 const bookmarksPermissionGranted = ref<boolean | undefined>(usePermissionsStore().hasPermission('bookmarks'))
 const pageCapturePermissionGranted = ref<boolean | undefined>(usePermissionsStore().hasPermission('history'))
@@ -749,8 +774,8 @@ const allUrlsOriginGranted = ref<boolean | undefined>(usePermissionsStore().hasA
 const fullUrls = ref(localStorage.getItem('ui.fullUrls') || false)
 const detailLevelPerTabset = ref(localStorage.getItem('ui.detailsPerTabset') || false)
 
-const gitRepoToken = ref<string>(LocalStorage.getItem('sync.git.token') as string || '')
-const gitRepoUrl = ref<string>(localStorage.getItem('sync.git.url') as string || '')
+const gitRepoToken = ref<string>(LocalStorage.getItem(SYNC_GIT_TOKEN) as string || '')
+const gitRepoUrl = ref<string>(localStorage.getItem(SYNC_GIT_URL) as string || '')
 //const gitRepoStore = ref<string>(localStorage.getItem('sync.git.store') as string || '')
 const gitTestResult = ref<string | undefined>(undefined)
 const syncType = ref<string | undefined>(undefined)
@@ -761,7 +786,9 @@ const syncOptions = [
   {label: 'Syncing via git repository', value: SyncType.GIT}
 ]
 
-const subscription = ref<string | undefined>(LocalStorage.getItem('subscription.id') as string | undefined)
+
+const subscription = ref<string>(LocalStorage.getItem(SUBSCRIPTION_ID_IDENT) as string || '')
+const installationTitle = ref<string>(LocalStorage.getItem(TITLE_IDENT) as string || 'My Tabsets')
 
 const tab = ref<string>(route.query['tab'] ? route.query['tab'] as string : 'appearance')
 
@@ -831,18 +858,18 @@ watchEffect(() => {
 })
 
 watchEffect(() => {
-  LocalStorage.set('sync.git.url', gitRepoUrl.value)
+  (gitRepoUrl.value && gitRepoUrl.value.trim().length > 0) ?
+    LocalStorage.set(SYNC_GIT_URL, gitRepoUrl.value) :
+    LocalStorage.remove(SYNC_GIT_URL)
   gitTestResult.value = undefined
 })
 
 watchEffect(() => {
-  LocalStorage.set('sync.git.token', gitRepoToken.value)
+  (gitRepoToken.value && gitRepoToken.value.trim().length > 0) ?
+    LocalStorage.set(SYNC_GIT_TOKEN, gitRepoToken.value) :
+    LocalStorage.remove(SYNC_GIT_TOKEN)
   gitTestResult.value = undefined
 })
-
-//watchEffect(() => {
-//  LocalStorage.set('sync.git.store', gitRepoStore.value)
-// })
 
 watchEffect(() => {
   //localStorage.set('sync.type', tempSyncOption.value)
@@ -850,19 +877,31 @@ watchEffect(() => {
 })
 
 watchEffect(() => {
-  LocalStorage.set('subscription.id', subscription.value)
+  (subscription.value && subscription.value.trim().length > 0) ?
+    LocalStorage.set(SUBSCRIPTION_ID_IDENT, subscription.value) :
+    LocalStorage.remove(SUBSCRIPTION_ID_IDENT)
 })
 
 watchEffect(() => {
-  localStorage.set('sharing.author', nickname.value && nickname.value.trim().length > 0 ? nickname.value : undefined)
+  (installationTitle.value && installationTitle.value.trim().length > 0) ?
+    LocalStorage.set(TITLE_IDENT, installationTitle.value.replace(STRIP_CHARS_IN_USER_INPUT, '')) :
+    LocalStorage.remove(TITLE_IDENT)
 })
 
 watchEffect(() => {
-  localStorage.set('sharing.avatar', avatar.value && avatar.value.trim().length > 0 ? avatar.value : undefined)
+  (nickname.value && nickname.value.trim().length > 0) ?
+    LocalStorage.set(SHARING_AUTHOR_IDENT, nickname.value.replace(STRIP_CHARS_IN_USER_INPUT, '')) :
+    LocalStorage.remove(SHARING_AUTHOR_IDENT)
 })
 
 watchEffect(() => {
-  console.log("setting sharing.mqttUrl to", mqttUrl.value)
+  (avatar.value && avatar.value.trim().length > 0) ?
+    LocalStorage.set(SHARING_AVATAR_IDENT, avatar.value.replace(STRIP_CHARS_IN_USER_INPUT, '')) :
+    LocalStorage.remove(SHARING_AVATAR_IDENT)
+})
+
+watchEffect(() => {
+  console.log("setting sharing.mqttUrl to", mqttUrl.value.replace(STRIP_CHARS_IN_USER_INPUT, ''))
   useUiStore().sharingMqttUrl = mqttUrl.value
 })
 
@@ -937,7 +976,7 @@ const testGitConnection = async () => {
   if (gitRepoUrl.value) {
     console.log("testing git connection with", gitRepoUrl.value, gitRepoToken.value?.substring(0, 5) + "...")
     const res = await GitPersistentService.testConnection(gitRepoUrl.value)//, gitRepoToken)
-    console.log("got res:", res)
+    //console.log("got res:", res)
     gitTestResult.value = res
   } else {
     gitTestResult.value = "no repo URL given"

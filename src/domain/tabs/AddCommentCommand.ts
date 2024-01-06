@@ -36,7 +36,7 @@ export class AddCommentCommand implements Command<any> {
         return Promise.reject("could not find tabset")
       }
     } else {
-      return Promise.reject("There was a problem adding your comment")
+      return Promise.reject("There was a problem adding your comment - could not find data for tabId " + this.tabId)
     }
     return Promise.reject("Could not find Tab")
   }

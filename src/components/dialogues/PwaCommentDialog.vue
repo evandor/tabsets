@@ -49,11 +49,12 @@
 <script lang="ts" setup>
 
 import {ref, watchEffect} from "vue";
-import {date, useDialogPluginComponent, useQuasar} from "quasar";
+import {date, LocalStorage, useDialogPluginComponent, useQuasar} from "quasar";
 import {useTabsStore} from "src/stores/tabsStore";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {AddCommentCommand} from "src/domain/tabs/AddCommentCommand";
 import {useUiStore} from "stores/uiStore";
+import {SHARING_AUTHOR_IDENT} from "boot/constants";
 
 defineEmits([
   ...useDialogPluginComponent.emits
@@ -67,7 +68,7 @@ const props = defineProps({
 const $q = useQuasar()
 
 const editor = ref('')
-const author = ref<string>($q.localStorage.getItem('sharing.author') || '')
+const author = ref<string>(LocalStorage.getItem(SHARING_AUTHOR_IDENT) || '')
 
 const {dialogRef, onDialogHide, onDialogCancel} = useDialogPluginComponent()
 

@@ -233,8 +233,9 @@ const columns = [
 const rows = ref<object[]>([])
 
 watchEffect(() => {
-  console.log("windows!", useWindowsStore().currentWindows)
-  showWindowTable.value = false
+  if (useWindowsStore().currentWindows.length === 1) {
+    showWindowTable.value = false
+  }
 })
 
 watchEffect(() => {
@@ -379,15 +380,14 @@ watchEffect(() => {
   const res = useWindowsStore().currentWindow && useWindowsStore().currentWindow.id ?
     useWindowsStore().windowNameFor(useWindowsStore().currentWindow.id || 0) || 'n/a' :
     'n/a'
-  console.log("window name is", res)
   currentWindowName.value = res
 })
 
 const setNewName = (newName: string) => {
-  console.log("setting window name to ", newName)
+  //console.log("setting window name to ", newName)
   if (newName.trim().length > 0) {
     currentWindowName.value = newName
-    console.log("setting window name to ", currentWindowName.value)
+    //console.log("setting window name to ", currentWindowName.value)
     useWindowsStore().currentWindowName = newName
     chrome.windows.getCurrent((w) => {
       useWindowsStore().upsertWindow(w, newName, "")
@@ -423,7 +423,7 @@ const setWindowName = (id: number, newName: String) => {
   console.log("herie", id, newName)
   if (newName && newName.toString().trim().length > 0) {
     chrome.windows.get(id, (cw) => {
-      console.log("setting window name", id, newName.toString().trim())
+      //console.log("setting window name", id, newName.toString().trim())
       useWindowsStore().upsertWindow(cw, newName.toString().trim(), "")
 
       if (useWindowsStore().currentWindow?.id === id) {

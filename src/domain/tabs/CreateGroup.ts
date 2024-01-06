@@ -1,7 +1,7 @@
 import Command from "src/domain/Command";
 import {ExecutionResult} from "src/domain/ExecutionResult";
 import TabsetService from "src/services/TabsetService";
-import {Group} from "src/models/Group";
+import {TabsetColumn} from "src/models/TabsetColumn";
 import {uid} from "quasar";
 import {Tabset} from "src/models/Tabset";
 import {STRIP_CHARS_IN_USER_INPUT} from "boot/constants";
@@ -14,7 +14,7 @@ class UndoCommand implements Command<any> {
   }
 
   execute(): Promise<ExecutionResult<any>> {
-    this.tabset.columns = _.filter(this.tabset.columns, (g: Group) => g.id !== this.groupId)
+    this.tabset.columns = _.filter(this.tabset.columns, (g: TabsetColumn) => g.id !== this.groupId)
     return useTabsetService().saveTabset(this.tabset)
       .then((res) =>
         Promise.resolve(new ExecutionResult("done", `Group was deleted again`)))
@@ -32,10 +32,7 @@ export class CreateGroupCommand implements Command<any> {
 
   async execute(): Promise<ExecutionResult<any>> {
     const trustedTitle = this.title.replace(STRIP_CHARS_IN_USER_INPUT, '')
-    const group = new Group(uid(), trustedTitle)
-    if (!this.tabset.columns) {
-      this.tabset.columns = []
-    }
+    const group = new TabsetColumn(uid(), trustedTitle)
     const existingGroups = this.tabset.columns
     if (existingGroups.find(existingGroup => existingGroup.title === this.title)) {
       return Promise.reject(`Group ${trustedTitle} already exists`)

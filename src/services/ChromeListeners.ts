@@ -729,7 +729,7 @@ class ChromeListeners {
     }
 
     this.throttleOnePerSecond(async () => {
-      console.log("capturing tab...")
+      console.debug("capturing tab...")
       const allUrlsPermission = usePermissionsStore().hasAllOrigins()
       //chrome.permissions.getAll((res) => console.log("res", res))
       if (allUrlsPermission) {

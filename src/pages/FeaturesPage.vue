@@ -427,6 +427,16 @@ text.set(FeatureIdent.TABS_AS_TREE.toLowerCase(), {
   description: 'Show a tree view of your tabs',
   permissions: []
 })
+text.set(FeatureIdent.TABSET_SUBFOLDER.toLowerCase(), {
+  name: 'Subfolders for Tabsets',
+  description: 'Use Subfolders in Tabsets. Currently the only way to create subfolders is by importing recursive levels of bookmarks.',
+  permissions: []
+})
+text.set(FeatureIdent.TABSETS_SHARING.toLowerCase(), {
+  name: 'Sharing Tabsets',
+  description: 'Share tabsets publicly.',
+  permissions: []
+})
 
 
 watchEffect(() => {

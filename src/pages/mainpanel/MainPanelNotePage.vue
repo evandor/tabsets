@@ -138,7 +138,9 @@ watchEffect(async () => {
                 tools: EditorJsConfig.toolsconfig
               });
             } else {
-              editorJS2.readOnly.toggle(!editMode.value)
+              if (editorJS2 && editorJS2.readOnly) {
+                editorJS2.readOnly.toggle(!editMode.value)
+              }
             }
           }
      //   })
