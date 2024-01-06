@@ -31,6 +31,7 @@ import MqttService from "src/services/mqtt/MqttService";
 import {useRouter} from "vue-router";
 import tabsetService from "src/services/TabsetService";
 import TabsetService from "src/services/TabsetService";
+import {TabInFolder} from "src/models/TabInFolder";
 
 let db: PersistenceService = null as unknown as PersistenceService
 
@@ -282,7 +283,7 @@ export function useTabsetService() {
 
   }
 
-  const rootTabsetFor = (ts: Tabset | undefined):Tabset | undefined => {
+  const rootTabsetFor = (ts: Tabset | undefined): Tabset | undefined => {
     if (!ts) {
       return undefined
     }
@@ -672,6 +673,49 @@ export function useTabsetService() {
     })
   }
 
+  const findFolder = (folders: Tabset[], folderId: string): Tabset | undefined => {
+    for (const f of folders) {
+      if (f.id === folderId) {
+        console.log("found active folder", f)
+        return f
+      }
+    }
+    for (const f of folders) {
+      return findFolder(f.folders, folderId)
+    }
+    return undefined
+  }
+
+  const findTabInFolder = (folders: Tabset[], tabId: string): TabInFolder | undefined => {
+    for (const f of folders) {
+      for (const t of f.tabs) {
+        if (t.id === tabId) {
+          return new TabInFolder(t,f)
+        }
+      }
+    }
+    for (const f of folders) {
+      return findTabInFolder(f.folders, tabId)
+    }
+    return undefined
+  }
+
+  // TODO make command
+  const moveTabToFolder = (tabset: Tabset, tabIdToDrag: string, moveToFolderId: string) => {
+    console.log(`moving tab ${tabIdToDrag} to folder ${moveToFolderId} in tabset ${tabset.id}`)
+    const tabWithFolder = findTabInFolder([tabset], tabIdToDrag)
+    console.log("found tabWithFolder", tabWithFolder)
+    const newParentFolder = findFolder([tabset], moveToFolderId)
+    if (newParentFolder && tabWithFolder) {
+      console.log("newParentFolder", newParentFolder)
+      newParentFolder.tabs.push(tabWithFolder.tab)
+      saveTabset(tabset).then(() => {
+        tabWithFolder.folder.tabs = _.filter(tabWithFolder.folder.tabs, t => t.id !== tabIdToDrag)
+        saveTabset(tabset)
+      })
+    }
+  }
+
 
   return {
     init,
@@ -705,7 +749,10 @@ export function useTabsetService() {
     reloadTabset,
     //handleAnnotationMessage,
     tabsToShow,
-    deleteTabsetDescription
+    deleteTabsetDescription,
+    findFolder,
+    findTabInFolder,
+    moveTabToFolder
   }
 
 }

@@ -75,7 +75,7 @@
                         style="position: relative;top:-2px">
                   <q-tooltip class="tooltip">This tabset is pinned for easier access</q-tooltip>
                 </q-icon>
-                {{ tabset.name }}
+                {{ tabsetSectionName(tabset) }}
                 <span v-if="tabset.type === TabsetType.DYNAMIC">
                   <q-icon name="o_label" color="warning">
                     <q-tooltip class="tooltip">Dynamic Tabset, listing all tabsets containing this tag</q-tooltip>
@@ -171,36 +171,38 @@
               {{ tabset.page }}
             </template>
 
-            <vue-draggable-next
-              class="q-ma-none"
-              :list="calcFolders(tabset as Tabset)"
-              :group="{ name: 'folders', pull: 'clone' }"
-              @change="(event:any) => handleDragAndDrop(event)">
+            <q-list>
+              <q-item v-for="folder in calcFolders(tabset as Tabset)"
+                      clickable
+                      v-ripple
+                      class="q-ma-none q-pa-sm"
+                      style="border-bottom: 2px solid #fafafa;"
+                      @dragstart="startDrag($event, folder)"
+                      @dragenter="enterDrag($event, folder)"
+                      @dragover="overDrag($event, folder)"
+                      @dragend="endDrag($event, folder)"
+                      @drop="drop($event, folder)"
+                      @click="selectFolder(tabset as Tabset, folder as Tabset)"
+                      :key="'panelfolderlist_' + folder.id">
 
-              <q-list>
-                <q-item v-for="folder in calcFolders(tabset as Tabset)"
-                        clickable
-                        v-ripple
-                        class="q-ma-none q-pa-sm"
-                        style="border-bottom: 2px solid #fafafa;"
-                        @dragstart="startDrag($event, folder)"
-                        @click="selectFolder(tabset as Tabset, folder as Tabset)"
-                        :key="'panelfolderlist_' + folder.id">
-
-                  <q-item-section class="q-mr-sm text-right" style="justify-content:start;width:30px;max-width:30px">
-                    <div class="bg-white q-pa-none">
-                      <q-icon name="o_folder" color="warning" size="sm"/>
-                    </div>
-                  </q-item-section>
-                  <q-item-section>
+                <q-item-section class="q-mr-sm text-right" style="justify-content:start;width:30px;max-width:30px">
+                  <div class="bg-white q-pa-none">
+                    <q-icon name="o_folder" color="warning" size="sm"/>
+                  </div>
+                </q-item-section>
+                <q-item-section>
+                  <q-item-label>
                     <div class="text-bold">
                       {{ folder.name }}
                     </div>
-                  </q-item-section>
+                  </q-item-label>
+                  <q-item-label class="text-caption text-grey-5">
+                    {{ folderCaption(folder) }}
+                  </q-item-label>
+                </q-item-section>
 
-                </q-item>
-              </q-list>
-            </vue-draggable-next>
+              </q-item>
+            </q-list>
 
             <SidePanelPageTabList
               v-if="tabsetExpanded.get(tabset.id)"
@@ -312,6 +314,10 @@ const hoveredPublicLink = ref(false)
 interface SelectionObject {
   [key: string]: boolean
 }
+
+window.addEventListener("drop", (event) => {
+  console.log("dropped", event)
+});
 
 const selected_model = ref<SelectionObject>({})
 const hoveredTabset = ref<string | undefined>(undefined)
@@ -867,23 +873,11 @@ const selectFolder = (tabset: Tabset, folder: Tabset) => {
   useTabsetService().saveTabset(tabset)
 }
 
-function findActiveFolderRecursively(folders: Tabset[], folderActive: string): Tabset | undefined {
-  for (const f of folders) {
-    if (f.id === folderActive) {
-      console.log("found active folder", f)
-      return f
-    }
-  }
-  for (const f of folders) {
-    return findActiveFolderRecursively(f.folders, folderActive)
-  }
-  return undefined
-}
 
 const calcFolders = (tabset: Tabset): Tabset[] => {
   if (tabset.folderActive) {
-    const af = findActiveFolderRecursively(tabset.folders, tabset.folderActive)
-    if (af) {
+    const af = useTabsetService().findFolder(tabset.folders, tabset.folderActive)
+    if (af && af.folderParent) {
       return [new Tabset(af.folderParent, "..", [])].concat(af.folders)
     }
   }
@@ -893,7 +887,7 @@ const calcFolders = (tabset: Tabset): Tabset[] => {
 
 const tabsetForTabList = (tabset: Tabset) => {
   if (tabset.folderActive) {
-    const af = findActiveFolderRecursively(tabset.folders, tabset.folderActive)
+    const af = useTabsetService().findFolder(tabset.folders, tabset.folderActive)
     console.log("result af", af)
     if (af) {
       return af
@@ -914,20 +908,49 @@ const shareTabsetPubliclyDialog = (tabset: Tabset, republish: boolean = false) =
   })
 }
 
-const handleDragAndDrop = (event: any) => {
-  const {moved, added} = event
-  console.log("event", event)
+const startDrag = (evt: any, folder: Tabset) => {
+  console.log("start dragging", evt, folder)
+  if (evt.dataTransfer) {
+    evt.dataTransfer.dropEffect = 'all'
+    evt.dataTransfer.effectAllowed = 'all'
+    //evt.dataTransfer.setData('text/plain', tab.id)
+    //useUiStore().draggingTab(tab.id, evt)
+  }
+  console.log("evt.dataTransfer.getData('text/plain')", evt.dataTransfer.getData('text/plain'))
+}
+const enterDrag = (evt: any, folder: Tabset) => {
+  //console.log("enter drag", evt, folder)
+}
+const overDrag = (event: any, folder: Tabset) => {
+  //console.log("enter drag", event, folder)
+  event.preventDefault();
+}
+const endDrag = (evt: any, folder: Tabset) => {
+  console.log("end drag", evt, folder)
+}
+const drop = (evt: any, folder: Tabset) => {
+  console.log("drop", evt, folder)
+  const tabToDrag = useUiStore().tabBeingDragged
+  const tabset = useTabsetService().getCurrentTabset()
+  if (tabToDrag && tabset) {
+    console.log("tabToDrag", tabToDrag)
+    const moveToFolderId = folder.id
+    console.log("moveToFolderId", moveToFolderId)
+    useTabsetService().moveTabToFolder(tabset, tabToDrag, moveToFolderId)
+  }
 }
 
-const startDrag = (evt: any, folder: Tabset) => {
-  console.log("start drag", evt, folder)
-  // if (evt.dataTransfer) {
-  //   evt.dataTransfer.dropEffect = 'all'
-  //   evt.dataTransfer.effectAllowed = 'all'
-  //   evt.dataTransfer.setData('text/plain', tab.id)
-  //   useUiStore().draggingTab(tab.id, evt)
-  // }
-  //console.log("evt.dataTransfer.getData('text/plain')", evt.dataTransfer.getData('text/plain'))
+const folderCaption = (folder: Tabset) =>
+  (folder.name !== "..") ?
+    folder.tabs.length + " tab" + (folder.tabs.length !== 1 ? 's':'') :
+    ""
+
+const tabsetSectionName = (tabset: Tabset) => {
+  if (!tabset.folderActive || tabset.id === tabset.folderActive) {
+    return tabset.name
+  }
+  const activeFolder = useTabsetService().findFolder([tabset], tabset.folderActive)
+  return tabset.name + (activeFolder ? " - " + activeFolder.name : "")
 }
 
 </script>

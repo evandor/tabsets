@@ -181,9 +181,9 @@ const tabsForColumn = (column: TabsetColumn): IndexedTab[] => {
       }
       return it.tab.columnId === column.id
     })
-  console.log("tfc", _.map(tfc, e => {
-    return {i: e.index, t: e.tab.id}
-  }))
+  // console.log("tfc", _.map(tfc, e => {
+  //   return {i: e.index, t: e.tab.id}
+  // }))
   return tfc
 }
 

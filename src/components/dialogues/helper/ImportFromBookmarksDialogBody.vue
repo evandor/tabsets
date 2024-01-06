@@ -21,7 +21,7 @@
                        ]"
                    data-testid="newTabsetName"/>
 
-          <template v-if="props.foldersCount > 0">
+          <template v-if="props.foldersCount > 0 && usePermissionsStore().hasFeature(FeatureIdent.TABSET_SUBFOLDER)">
             <q-checkbox
               v-model="recursive" label="Recursively"/>&nbsp;
             <q-icon name="help" color="primary" size="1em">
@@ -67,10 +67,12 @@ import {useTabsStore} from "stores/tabsStore";
 import ChromeApi from "src/services/ChromeApi";
 import {useBookmarksStore} from "stores/bookmarksStore";
 import {useCommandExecutor} from "src/services/CommandExecutor";
-import {CreateTabsetFromBookmarksCommand, OrgLevel} from "src/domain/tabsets/CreateTabsetFromBookmarks";
+import {CreateTabsetFromBookmarksCommand} from "src/domain/tabsets/CreateTabsetFromBookmarks";
 import {Tabset, TABSET_NAME_MAX_LENGTH, TabsetStatus} from "src/models/Tabset";
 import _ from "lodash"
 import {useTabsetService} from "src/services/TabsetService2";
+import {usePermissionsStore} from "stores/permissionsStore";
+import {FeatureIdent} from "src/models/AppFeature";
 
 defineEmits([
   ...useDialogPluginComponent.emits
