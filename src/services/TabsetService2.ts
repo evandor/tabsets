@@ -673,8 +673,9 @@ export function useTabsetService() {
       }
     }
     for (const f of folders) {
-      return findTabInFolder(f.folders, tabId)
-    }
+      if (f.folders) {
+        return findTabInFolder(f.folders, tabId)
+      }    }
     return undefined
   }
 
