@@ -36,7 +36,7 @@
 
 
       <q-list class="q-mt-none greyBorderTop">
-        <NavTabsetsListWidgetNonBex :tabsets="tabsets()"/>
+        <NavTabsetsListWidgetNonBex :tabsets="tabsets()" :space-id="useSpacesStore().space?.id || undefined"/>
       </q-list>
 
       <q-separator v-if="tabsetsWithTypes([TabsetType.SPECIAL]).length > 0"/>

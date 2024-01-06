@@ -1,8 +1,52 @@
 <template>
+  <VOnboardingWrapper ref="wrapper" :steps="steps">
+    <template #default="{ previous, next, step, exit, isFirst, isLast, index }">
+      <VOnboardingStep>
+        <div class="welcome-tooltip-container">
+          <div class="tooltip">
+            <div class="row">
+              <div class="col-12 q-ma-none q-my-sm">
+                <span class="text-subtitle1" v-if="step.content.title">{{ step.content.title }}</span>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-12 q-ma-none text-caption">
+                <span v-if="step.content.description">{{ step.content.description }}</span>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-12 q-ma-none text-right">
+                <q-btn label="got it" flat dense @click="finish()"/>
+              </div>
+            </div>
+          </div>
+        </div>
+      </VOnboardingStep>
+    </template>
+  </VOnboardingWrapper>
 
   <q-page style="padding-top: 50px">
     <!-- list of tabs, assuming here we have at least one tabset -->
     <div class="q-ma-none q-pa-none">
+
+      <template v-if="suggestTabsetImport()">
+
+        <InfoMessageWidget
+          :probability="1"
+          ident="sidePanelPage_importTabset">
+          Whenever tabsets detects the <b>current tab to contain a new tabset</b>, it will suggest to import this
+          set.<br>
+          Importing will add the tabset to your existing ones.
+        </InfoMessageWidget>
+
+        <div class="row q-ma-sm q-pa-sm">
+          <q-btn class="q-px-xl" dense label="Import Shared Tabset" color="warning" @click="importSharedTabset()">
+            <q-tooltip class="tooltip-small">The Page in your current tab is a public Tabset which you can import into
+              your own if you want.
+            </q-tooltip>
+          </q-btn>
+        </div>
+      </template>
 
       <q-list dense
               class="rounded-borders q-ma-none q-pa-none" :key="tabset.id"
@@ -21,25 +65,17 @@
 
           <template v-slot:header>
             <q-item-section
-                @mouseover="hoveredTabset = tabset.id"
-                @mouseleave="hoveredTabset = undefined">
-              <q-item-label :class="tabsStore.currentTabsetId === tabset.id ? 'text-bold' : ''">
+              class="q-mt-xs"
+              @mouseover="hoveredTabset = tabset.id"
+              @mouseleave="hoveredTabset = undefined">
+              <q-item-label :class="tabsStore.currentTabsetId === tabset.id ? 'text-bold text-underline' : ''">
                 <q-icon v-if="tabset.status === TabsetStatus.FAVORITE"
                         color="warning"
                         name="push_pin"
                         style="position: relative;top:-2px">
                   <q-tooltip class="tooltip">This tabset is pinned for easier access</q-tooltip>
                 </q-icon>
-                <q-icon v-if="tabset.sharedId"
-                        :color="tabset.sharing.toString().toLowerCase().indexOf('_outdated') >= 0 ? 'warning' : 'primary'"
-                        name="share"
-                        style="position: relative;top:-2px">
-                  <q-tooltip class="tooltip" v-if="tabset.sharing.toString().toLowerCase().indexOf('_outdated') >= 0">
-                    This tabset is shared but has been changed in the meantime. You need to re-publish.
-                  </q-tooltip>
-                  <q-tooltip v-else class="tooltip">This tabset is shared</q-tooltip>
-                </q-icon>
-                {{ tabset.name }}
+                {{ tabsetSectionName(tabset as Tabset) }}
                 <span v-if="tabset.type === TabsetType.DYNAMIC">
                   <q-icon name="o_label" color="warning">
                     <q-tooltip class="tooltip">Dynamic Tabset, listing all tabsets containing this tag</q-tooltip>
@@ -47,7 +83,37 @@
                 </span>
               </q-item-label>
               <q-item-label class="text-caption text-grey-5">
-                {{ tabsetCaption(useTabsetService().tabsToShow(tabset as Tabset), tabset.window) }}
+                {{
+                  tabsetCaption(useTabsetService().tabsToShow(tabset as Tabset), tabset.window, tabset.folders?.length)
+                }}
+              </q-item-label>
+              <q-item-label v-if="tabset.sharedId" class="q-mb-xs"
+                            @mouseover="hoveredPublicLink = true"
+                            @mouseleave="hoveredPublicLink = false">
+                <q-icon style="position: relative;top:-2px;left:-2px"
+                        @click="shareTabsetPubliclyDialog(tabset as Tabset, tabset.sharing.toString().toLowerCase().indexOf('_outdated') >= 0)"
+                        name="ios_share"
+                        class="q-ma-none q-pa-none q-mr-xs"
+                        :class="tabset.sharing.toString().toLowerCase().indexOf('_outdated') >= 0 ? 'cursor-pointer' : ''"
+                        :color="tabset.sharing.toString().toLowerCase().indexOf('_outdated') >= 0 ? 'warning' : 'primary'">
+                  <q-tooltip class="tooltip" v-if="tabset.sharing.toString().toLowerCase().indexOf('_outdated') >= 0">
+                    This tabset is shared but has been changed in the meantime. You need to re-publish.
+                  </q-tooltip>
+                  <q-tooltip v-else class="tooltip">This tabset is shared</q-tooltip>
+                </q-icon>
+                <span class="text-caption cursor-pointer text-grey-7" @click="openPublicShare(tabset.id)">open shared page</span>
+                <q-icon
+                  v-show="hoveredPublicLink"
+                  class="q-ml-sm cursor-pointer"
+                  name="content_copy" color="primary" @click="copyPublicShareToClipboard(tabset.id)">
+                  <q-tooltip class="tooltip-small">Copy the Link to your Clipboard</q-tooltip>
+                </q-icon>
+                <!--                <q-icon-->
+                <!--                  v-show="hoveredPublicLink"-->
+                <!--                  class="q-ml-sm cursor-pointer"-->
+                <!--                  name="open_in_browser" color="primary" @click="openElectronLink(tabset.id)">-->
+                <!--                  <q-tooltip class="tooltip-small">Copy the Electron Link to your Clipboard</q-tooltip>-->
+                <!--                </q-icon>-->
               </q-item-label>
             </q-item-section>
 
@@ -56,18 +122,19 @@
                             @mouseleave="hoveredTabset = undefined">
               <q-item-label>
                 <q-icon
-                    v-if="showAddTabButton(tabset as Tabset, currentChromeTab)"
-                    @click.stop="saveInTabset(tabset.id)"
-                    class="q-mr-none"
-                    name="o_bookmark_add"
-                    :class="alreadyInTabset() ? '':'cursor-pointer'"
-                    :color="alreadyInTabset() ? 'grey-5': tsBadges.length > 0 ? 'accent':'warning'"
-                    size="xs"
-                    data-testid="saveInTabsetBtn">
+                  id="foo"
+                  v-if="showAddTabButton(tabset as Tabset, currentChromeTab)"
+                  @click.stop="saveInTabset(tabset.id)"
+                  class="q-mr-none"
+                  name="o_bookmark_add"
+                  :class="alreadyInTabset() ? '':'cursor-pointer'"
+                  :color="alreadyInTabset() ? 'grey-5': tsBadges.length > 0 ? 'accent':'warning'"
+                  size="xs"
+                  data-testid="saveInTabsetBtn">
                 </q-icon>
                 <span
-                    v-if="!alreadyInTabset() && showAddTabButton(tabset as Tabset, currentChromeTab) && tsBadges.length > 0"
-                    style="color: grey;font-size: 7px;position: relative;top:-2px;left:-11px;">{{
+                  v-if="!alreadyInTabset() && showAddTabButton(tabset as Tabset, currentChromeTab) && tsBadges.length > 0"
+                  style="color: grey;font-size: 7px;position: relative;top:-2px;left:-11px;">{{
                     tsBadges.length
                   }}</span>
                 <q-tooltip class="tooltip-small" v-if="alreadyInTabset()">
@@ -95,9 +162,52 @@
 
           <div class="q-ma-none q-pa-none">
 
+            <template v-if="tabset.page && typeof tabset.page === 'object'">
+              <SidePanelTabsetDescriptionPage
+                :tabsetId="tabset.id"
+                :tabsetDesc="tabset.page as Object"/>
+            </template>
+            <template v-if="tabset.page && typeof tabset.page === 'string'">
+              {{ tabset.page }}
+            </template>
+
+            <q-list>
+              <q-item v-for="folder in calcFolders(tabset as Tabset)"
+                      clickable
+                      v-ripple
+                      class="q-ma-none q-pa-sm"
+                      style="border-bottom: 2px solid #fafafa;"
+                      @dragstart="startDrag($event, folder)"
+                      @dragenter="enterDrag($event, folder)"
+                      @dragover="overDrag($event, folder)"
+                      @dragend="endDrag($event, folder)"
+                      @drop="drop($event, folder)"
+                      @click="selectFolder(tabset as Tabset, folder as Tabset)"
+                      :key="'panelfolderlist_' + folder.id">
+
+                <q-item-section class="q-mr-sm text-right" style="justify-content:start;width:30px;max-width:30px">
+                  <div class="bg-white q-pa-none">
+                    <q-icon name="o_folder" color="warning" size="sm"/>
+                  </div>
+                </q-item-section>
+                <q-item-section>
+                  <q-item-label>
+                    <div class="text-bold">
+                      {{ folder.name }}
+                    </div>
+                  </q-item-label>
+                  <q-item-label class="text-caption text-grey-5">
+                    {{ folderCaption(folder) }}
+                  </q-item-label>
+                </q-item-section>
+
+              </q-item>
+            </q-list>
+
             <SidePanelPageTabList
-                v-if="tabsetExpanded.get(tabset.id)"
-                :tabset="tabset as Tabset"
+              v-if="tabsetExpanded.get(tabset.id)"
+              :tabsCount="useTabsetService().tabsToShow(tabset as Tabset).length"
+              :tabset="tabsetForTabList(tabset as Tabset)"
             />
 
           </div>
@@ -111,7 +221,7 @@
     <q-page-sticky expand position="top" style="background-color:white">
 
       <FirstToolbarHelper
-          :showSearchBox="showSearchBox">
+        :showSearchBox="showSearchBox">
 
         <template v-slot:title v-if="permissionsStore && permissionsStore.hasFeature(FeatureIdent.SPACES)">
           <div class="text-subtitle1 text-black" @click.stop="router.push('/sidepanel/spaces')">
@@ -122,6 +232,10 @@
         <template v-slot:title v-else>
           <div class="text-subtitle1 text-black">
             {{ toolbarTitle(tabsets as Tabset[]) }}
+            <q-icon v-if="LocalStorage.getItem('sync.type') as SyncType === SyncType.GIT"
+                    class="q-ml-none" name="sync" size="12px">
+              <q-tooltip class="tooltip-small">Tabsets is synced via git</q-tooltip>
+            </q-icon>
           </div>
         </template>
 
@@ -137,14 +251,14 @@
 
 import {onMounted, onUnmounted, ref, watchEffect} from "vue";
 import {useTabsStore} from "src/stores/tabsStore";
-import {Tab} from "src/models/Tab";
+import {Tab, TabPreview} from "src/models/Tab";
 import _ from "lodash"
-import {Tabset, TabsetStatus, TabsetType} from "src/models/Tabset";
+import {Tabset, TabsetSharing, TabsetStatus, TabsetType} from "src/models/Tabset";
 import {useRouter} from "vue-router";
 import {useUtils} from "src/services/Utils";
-import {scroll, uid, useQuasar} from "quasar";
+import {LocalStorage, openURL, scroll, uid, useQuasar} from "quasar";
 import {useTabsetService} from "src/services/TabsetService2";
-import {useUiStore} from "src/stores/uiStore";
+import {ListDetailLevel, useUiStore} from "src/stores/uiStore";
 import {usePermissionsStore} from "src/stores/permissionsStore";
 import {useSpacesStore} from "src/stores/spacesStore";
 import FirstToolbarHelper from "pages/sidepanel/helper/FirstToolbarHelper.vue";
@@ -157,11 +271,23 @@ import TabsetService from "src/services/TabsetService";
 import Analytics from "src/utils/google-analytics";
 import {useAuthStore} from "stores/auth";
 import {useDB} from "src/services/usePersistenceService";
-import getScrollTarget = scroll.getScrollTarget;
 import {useBookmarksStore} from "stores/bookmarksStore";
 import {useSuggestionsStore} from "stores/suggestionsStore";
 import SidePanelPageTabList from "components/layouts/SidePanelPageTabList.vue";
 import {AddTabToTabsetCommand} from "src/domain/tabs/AddTabToTabset";
+import {CopyToClipboardCommand} from "src/domain/commands/CopyToClipboard";
+import SidePanelTabsetDescriptionPage from "pages/sidepanel/SidePanelTabsetDescriptionPage.vue";
+import ShareTabsetPubliclyDialog from "components/dialogues/ShareTabsetPubliclyDialog.vue";
+import MqttService from "src/services/mqtt/MqttService";
+import {SyncType} from "stores/appStore";
+import {useVOnboarding, VOnboardingStep, VOnboardingWrapper} from 'v-onboarding'
+import {FirebaseCall} from "src/services/firebase/FirebaseCall";
+import getScrollTarget = scroll.getScrollTarget;
+import InfoMessageWidget from "components/widgets/InfoMessageWidget.vue";
+import {TITLE_IDENT} from "boot/constants";
+import PanelTabListElementWidget from "components/widgets/PanelTabListElementWidget.vue";
+import {VueDraggableNext} from "vue-draggable-next";
+import {TabsetColumn} from "src/models/TabsetColumn";
 
 const {setVerticalScrollPosition} = scroll
 
@@ -182,11 +308,16 @@ const openTabs = ref<chrome.tabs.Tab[]>([])
 const currentTabset = ref<Tabset | undefined>(undefined)
 const currentChromeTab = ref<chrome.tabs.Tab>(null as unknown as chrome.tabs.Tab)
 const tabsetExpanded = ref<Map<string, boolean>>(new Map())
+const hoveredPublicLink = ref(false)
 
 // https://stackoverflow.com/questions/12710905/how-do-i-dynamically-assign-properties-to-an-object-in-typescript
 interface SelectionObject {
   [key: string]: boolean
 }
+
+window.addEventListener("drop", (event) => {
+  console.log("dropped", event)
+});
 
 const selected_model = ref<SelectionObject>({})
 const hoveredTabset = ref<string | undefined>(undefined)
@@ -195,14 +326,38 @@ const progress = ref<number | undefined>(undefined)
 const progressLabel = ref<string | undefined>(undefined)
 const selectedTab = ref<Tab | undefined>(undefined)
 const windowName = ref<string | undefined>(undefined)
-const windowId = ref<number | undefined>(undefined)
 const tsBadges = ref<object[]>([])
+
+const steps = [
+  {
+    attachTo: {element: '#foo'},
+    content: {title: "Welcome :)", description: "Click here to add the current tab to this tabset"}
+  }
+]
+
+const wrapper = ref(null)
+const {start, goToStep, finish} = useVOnboarding(wrapper)
+
+function updateOnlineStatus(e: any) {
+  const {type} = e
+  useUiStore().networkOnline = type === 'online'
+}
 
 onMounted(() => {
   window.addEventListener('keypress', checkKeystroke);
+
+  window.addEventListener("offline", (e) => updateOnlineStatus(e));
+  window.addEventListener("online", (e) => updateOnlineStatus(e));
+
   if (!useAuthStore().isAuthenticated) {
     router.push("/authenticate")
   } else {
+    setTimeout(() => {
+      if (useTabsStore().allTabsCount === 0) {
+        start()
+      }
+    }, 1000)
+
     Analytics.firePageViewEvent('SidePanelPage', document.location.href);
   }
 })
@@ -220,14 +375,11 @@ watchEffect(() => {
 })
 
 watchEffect(() => {
-  // if ($q.platform.is.chrome) {
-  //   chrome.windows.getCurrent()
-  //       .then((currentWindow) => {
-  //         if (currentWindow && currentWindow.id) {
-  //           windowName.value = useWindowsStore().windowNameFor(currentWindow.id)
-  //         }
-  //       })
-  // }
+  //console.log("hier11", currentTabset.value?.page)
+})
+
+
+watchEffect(() => {
   windowName.value = useWindowsStore().currentWindowName
 })
 
@@ -271,15 +423,15 @@ const updateSelectedTabset = (tabsetId: string, open: boolean, index: number | u
     useUiStore().tabsetsExpanded = true
 
     useCommandExecutor()
-        .execute(new SelectTabsetCommand(tabsetId, useSpacesStore().space?.id))
-        .then(() => {
-          const promises: Promise<any>[] = []
-          //console.log("selecteded tabset > ", tabsetId)
-          const selectedTabset = useTabsStore().getTabset(tabsetId)
-          if (selectedTabset) {
-            handleHeadRequests(selectedTabset)
-          }
-        })
+      .execute(new SelectTabsetCommand(tabsetId, useSpacesStore().space?.id))
+      .then(() => {
+        const promises: Promise<any>[] = []
+        //console.log("selecteded tabset > ", tabsetId)
+        const selectedTabset = useTabsStore().getTabset(tabsetId)
+        if (selectedTabset) {
+          handleHeadRequests(selectedTabset)
+        }
+      })
 
   } else {
     useUiStore().tabsetsExpanded = false
@@ -316,7 +468,7 @@ watchEffect(() => {
 watchEffect(() => {
   if (useTabsStore().tabsets) {
     //console.log(" >>> change in tabsets...")
-    tabsetNameOptions.value = _.map([...useTabsStore().tabsets.values()], (ts: Tabset) => {
+    tabsetNameOptions.value = _.map([...useTabsStore().tabsets.values()] as Tabset[], (ts: Tabset) => {
       return {
         label: ts.name,
         value: ts.id
@@ -334,45 +486,46 @@ watchEffect(() => {
 })
 
 const getTabsetOrder =
-    [
-      function (o: Tabset) {
-        return o.status === TabsetStatus.FAVORITE ? 0 : 1
-      },
-      function (o: Tabset) {
-        return o.name?.toLowerCase()
-      }
-    ]
+  [
+    function (o: Tabset) {
+      return o.status === TabsetStatus.FAVORITE ? 0 : 1
+    },
+    function (o: Tabset) {
+      return o.name?.toLowerCase()
+    }
+  ]
 
 watchEffect(() => {
   if (usePermissionsStore().hasFeature(FeatureIdent.SPACES)) {
     const currentSpace = useSpacesStore().space
     tabsets.value = _.sortBy(
-        _.filter([...tabsStore.tabsets.values()], (ts: Tabset) => {
-          if (currentSpace) {
-            if (ts.spaces.indexOf(currentSpace.id) < 0) {
-              return false
-            }
+      _.filter([...tabsStore.tabsets.values()] as Tabset[], (ts: Tabset) => {
+        if (currentSpace) {
+          if (ts.spaces.indexOf(currentSpace.id) < 0) {
+            return false
           }
-          return ts.status !== TabsetStatus.DELETED &&
-              ts.status !== TabsetStatus.HIDDEN &&
-              ts.status !== TabsetStatus.ARCHIVED
-        }),
-        getTabsetOrder, ["asc"])
+        }
+        return ts.status !== TabsetStatus.DELETED &&
+          ts.status !== TabsetStatus.HIDDEN &&
+          ts.status !== TabsetStatus.ARCHIVED
+      }),
+      getTabsetOrder, ["asc"])
   } else {
     tabsets.value = _.sortBy(
-        _.filter([...tabsStore.tabsets.values()],
-            (ts: Tabset) => ts.status !== TabsetStatus.DELETED
-                && ts.status !== TabsetStatus.HIDDEN &&
-                ts.status !== TabsetStatus.ARCHIVED),
-        getTabsetOrder, ["asc"])
+      _.filter([...tabsStore.tabsets.values()] as Tabset[],
+        (ts: Tabset) => ts.status !== TabsetStatus.DELETED
+          && ts.status !== TabsetStatus.HIDDEN &&
+          ts.status !== TabsetStatus.ARCHIVED),
+      getTabsetOrder, ["asc"])
   }
 })
 
 
 function inIgnoredMessages(message: any) {
   return message.msg === "html2text" ||
-      message.msg === "captureThumbnail" ||
-      message.msg === "html2links"
+    message.msg === "captureThumbnail" ||
+    message.msg === "capture-annotation" ||
+    message.msg === "html2links"
 }
 
 if ($q.platform.is.chrome) {
@@ -396,10 +549,10 @@ if ($q.platform.is.chrome) {
           useTabsetService().reloadTabset("HELP")
         } else if (message.data.feature === 'bookmarks') {
           usePermissionsStore().load()
-              .then(() => {
-                useBookmarksStore().init()
-                useBookmarksStore().loadBookmarks()
-              })
+            .then(() => {
+              useBookmarksStore().init()
+              useBookmarksStore().loadBookmarks()
+            })
         }
       } else if (message.name === "feature-deactivated") {
         usePermissionsStore().removeActivateFeature(message.data.feature)
@@ -410,18 +563,19 @@ if ($q.platform.is.chrome) {
       } else if (message.name === "tab-being-dragged") {
         useUiStore().draggingTab(message.data.tabId, null as unknown as any)
       } else if (message.name === "note-changed") {
+        // TODO needed?
         const tabset = useTabsetService().getTabset(message.data.tabsetId) as Tabset
         if (message.data.noteId) {
           console.log("updating note", message.data.noteId)
           const res = useTabsStore().getTabAndTabsetId(message.data.noteId)
-              //.then((res: TabAndTabsetId | undefined) => {
-                if (res) {
-                  const note = res.tab
-                  note.title = message.data.tab.title
-                  note.description = message.data.tab.description
-                  note.longDescription = message.data.tab.longDescription
-                }
-                useTabsetService().saveTabset(tabset)
+          //.then((res: TabAndTabsetId | undefined) => {
+          if (res) {
+            const note = res.tab
+            note.title = message.data.tab.title
+            note.description = message.data.tab.description
+            note.longDescription = message.data.tab.longDescription
+          }
+          useTabsetService().saveTabset(tabset)
           //    })
         } else {
           console.log("adding tab", message.data.tab)
@@ -465,7 +619,19 @@ if ($q.platform.is.chrome) {
         useSuggestionsStore().loadSuggestionsFromDb()
       } else if (message.name === "reload-tabset") {
         console.log("reload-tabset message received")
-        useTabsetService().reloadTabset(message.data.tabsetId)
+        const tabsetId = message.data.tabsetId ?
+          message.data.tabsetId :
+          useTabsetService().getCurrentTabset()?.id
+        useTabsetService().reloadTabset(tabsetId)
+        // } else if (message.name === "toggle-cs-iframe") {
+        //   if (message.data.close) {
+        //     chrome.tabs.sendMessage(message.data.tabId, "cs-iframe-close")
+        //   } else {
+        //     chrome.tabs.sendMessage(message.data.tabId, "cs-iframe-open")
+        //   }
+      } else if (message.name === 'mqtt-url-changed') {
+        console.log("got message 'mqtt-url-changed'", message)
+        MqttService.reset().then(() => MqttService.init(message.data.mqttUrl))
       } else {
         console.log("got unmatched message", message)
       }
@@ -516,7 +682,7 @@ async function handleHeadRequests(selectedTabset: Tabset) {
         } catch (err) {
         }
       } catch (error) {
-        console.log('got a Problem: \n', error);
+        console.debug('got a Problem fetching url "' + t.url + '": \n', error)
         //t.httpError = error.toString()
         //return Promise.resolve()
       }
@@ -525,7 +691,7 @@ async function handleHeadRequests(selectedTabset: Tabset) {
   useTabsetService().saveTabset(selectedTabset)
 }
 
-const tabsetCaption = (tabs: Tab[], window: string) => {
+const tabsetCaption = (tabs: Tab[], window: string, foldersCount: number) => {
   const filter = useUiStore().tabsFilter
   if (!tabs) {
     return '-'
@@ -536,7 +702,10 @@ const tabsetCaption = (tabs: Tab[], window: string) => {
   } else {
     caption = tabs.length + ' tab' + (tabs.length === 1 ? '' : 's') + ' (filtered)'
   }
-  if (window && window !== 'current' && usePermissionsStore().hasFeature(FeatureIdent.WINDOW_MANAGEMENT)) {
+  if (foldersCount > 0) {
+    caption = caption + ", " + foldersCount + " folder" + (foldersCount === 1 ? '' : 's')
+  }
+  if (window && window !== 'current') {
     caption = caption + " - opens in: " + window
   }
   return caption
@@ -557,31 +726,28 @@ function checkKeystroke(e: KeyboardEvent) {
 }
 
 const showTabset = (tabset: Tabset) => !useUiStore().tabsFilter ?
-    true :
-    (useUiStore().tabsFilter === '' || useTabsetService().tabsToShow(tabset).length > 0)
+  true :
+  (useUiStore().tabsFilter === '' || useTabsetService().tabsToShow(tabset).length > 0)
 
 const toolbarTitle = (tabsets: Tabset[]) => {
   if (usePermissionsStore().hasFeature(FeatureIdent.SPACES)) {
     const spaceName = useSpacesStore().space ? useSpacesStore().space.label : 'no space selected'
     return tabsets.length > 6 ?
-        spaceName + ' (' + tabsets.length.toString() + ')' :
-        spaceName
+      spaceName + ' (' + tabsets.length.toString() + ')' :
+      spaceName
   }
-  let text = tabsets.length > 6 ? 'My Tabsets (' + tabsets.length.toString() + ')' : 'My Tabsets'
-  if (windowName.value) {
-    text = text + " [" + windowName.value + "]"
-  }
-  return text
+  const title = LocalStorage.getItem(TITLE_IDENT) || 'My Tabsets.'
+  return tabsets.length > 6 ? title + ' (' + tabsets.length.toString() + ')' : title
 }
 
 const headerStyle = (tabset: Tabset) => {
-  const tabsetOpened = _.findIndex([...tabsetExpanded.value.keys()],
-      (key: string) => (key !== null) && tabsetExpanded.value.get(key)) >= 0
+  const tabsetOpened: boolean = _.findIndex([...tabsetExpanded.value.keys()],
+    (key: string) => (key !== null) && tabsetExpanded.value.get(key) !== undefined) >= 0
   let style = tabsetExpanded.value.get(tabset.id) ?
-      'border:0 solid grey;border-top-left-radius:4px;border-top-right-radius:4px;' :
-      tabsetOpened ?
-          'border:0 solid grey;border-radius:4px;opacity:30%;' :
-          'border:0 solid grey;border-radius:4px;'
+    'border:0 solid grey;border-top-left-radius:4px;border-top-right-radius:4px;' :
+    tabsetOpened ?
+      'border:0 solid grey;border-radius:4px;opacity:30%;' :
+      'border:0 solid grey;border-radius:4px;'
   if (tabset.color && usePermissionsStore().hasFeature(FeatureIdent.COLOR_TAGS)) {
     style = style + 'border-left:4px solid ' + tabset.color
   } else {
@@ -592,13 +758,13 @@ const headerStyle = (tabset: Tabset) => {
 
 const showAddTabButton = (tabset: Tabset, currentChromeTab: chrome.tabs.Tab) => {
   return inBexMode() &&
-      tabset.type !== TabsetType.DYNAMIC &&
-      currentChromeTab &&
-      currentChromeTab.url &&
-      currentChromeTab.url !== 'chrome://newtab/' &&
-      currentChromeTab.url.indexOf('/www/index.html#/mainpanel/notes/') < 0 &&
-      currentChromeTab.url !== '' &&
-      tabsStore.currentTabsetId === tabset.id
+    tabset.type !== TabsetType.DYNAMIC &&
+    currentChromeTab &&
+    currentChromeTab.url &&
+    currentChromeTab.url !== 'chrome://newtab/' &&
+    currentChromeTab.url.indexOf('/www/index.html#/mainpanel/notes/') < 0 &&
+    currentChromeTab.url !== '' &&
+    tabsStore.currentTabsetId === tabset.id
   //isCurrentTab()
 }
 
@@ -624,8 +790,167 @@ const alreadyInTabset = () => {
 const tooltipAlreadyInOtherTabsets = (tabsetName: string) => {
   const tabsetList = _.join(_.map(tsBadges.value, (b: any) => b['label'] as keyof object), ", ")
   return "The current Tab is already contained in " +
-      tsBadges.value.length + " other Tabsets: " + tabsetList + ". Click to add " +
-      "it to '" + tabsetName + "' as well."
+    tsBadges.value.length + " other Tabsets: " + tabsetList + ". Click to add " +
+    "it to '" + tabsetName + "' as well."
+}
+
+const openPublicShare = (tabsetId: string) => {
+  const ts = useTabsetService().getTabset(tabsetId)
+  if (ts && ts.sharedId) {
+    openURL(getPublicTabsetLink(ts))
+  }
+}
+
+const getPublicTabsetLink = (ts: Tabset) => {
+  let image = "https://tabsets.web.app/favicon.ico"
+  if (ts && ts.sharedId) {
+    //return PUBLIC_SHARE_URL + "#/pwa/imp/" + ts.sharedId + "?n=" + btoa(ts.name) + "&a=" + btoa(ts.sharedBy || 'n/a') + "&d=" + ts.sharedAt
+    return "https://us-central1-tabsets-backend-prd.cloudfunctions.net/app/share/preview/" + ts.sharedId + "?n=" + btoa(ts.name) + "&a=" + btoa(ts.sharedBy || 'n/a')
+  }
+  return image
+}
+
+const openElectronLink = (tabsetId: string) => {
+  const ts = useTabsetService().getTabset(tabsetId)
+  if (ts && ts.sharedId) {
+    const link = "electron-tabsets://#/pwa/imp/" + ts.sharedId + "?n=" + btoa(ts.name)
+    openURL(link)
+  }
+
+}
+const copyPublicShareToClipboard = (tabsetId: string) => {
+  const ts = useTabsetService().getTabset(tabsetId)
+  if (ts && ts.sharedId) {
+    const link = getPublicTabsetLink(ts)
+    useCommandExecutor().executeFromUi(new CopyToClipboardCommand(link))
+  }
+}
+
+const suggestTabsetImport = () => {
+  const currentTabUrl = useTabsStore().currentChromeTab?.url
+  if (currentTabUrl?.startsWith("https://shared.tabsets.net/#/pwa/tabsets/")) {
+    const urlSplit = currentTabUrl.split("/")
+    const tabsetId = urlSplit[urlSplit.length - 1]
+    console.log("tabsetId", tabsetId, useTabsetService().getTabset(tabsetId))
+    return !useTabsetService().getTabset(tabsetId)
+  }
+  return false
+}
+
+const testShare = () => {
+  const shareData = {
+    title: "MDN",
+    text: "Learn web development on MDN!",
+    url: "https://developer.mozilla.org",
+  };
+  console.log(navigator)
+  if (navigator.canShare) {
+    console.log(navigator.canShare())
+    navigator.share(shareData).then((res) => console.log("res", res)).catch((err) => console.err(err))
+  }
+}
+
+const importSharedTabset = () => {
+  const currentTabUrl = useTabsStore().currentChromeTab?.url
+  if (currentTabUrl) {
+    console.log("Importing", currentTabUrl)
+    const urlSplit = currentTabUrl.split("/")
+    const tabsetId = urlSplit[urlSplit.length - 1]
+    FirebaseCall.get("/share/public/" + tabsetId + "?cb=" + new Date().getTime(), false)
+      .then((res: any) => {
+        const newTabset = res as Tabset
+        newTabset.sharing = TabsetSharing.UNSHARED
+        //_.forEach(newTabset.tabs, t => t.preview = TabPreview.THUMBNAIL)
+        useTabsetService().saveTabset(newTabset)
+        useTabsetService().reloadTabset(newTabset.id)
+      })
+  }
+}
+
+const selectFolder = (tabset: Tabset, folder: Tabset) => {
+  console.log("selectiong folder", tabset.id, folder.id)
+  tabset.folderActive = folder.id
+  useTabsetService().saveTabset(tabset)
+}
+
+
+const calcFolders = (tabset: Tabset): Tabset[] => {
+  if (tabset.folderActive) {
+    const af = useTabsetService().findFolder(tabset.folders, tabset.folderActive)
+    if (af && af.folderParent) {
+      return [new Tabset(af.folderParent, "..", [])].concat(af.folders)
+    }
+  }
+  return tabset.folders
+}
+
+
+const tabsetForTabList = (tabset: Tabset) => {
+  if (tabset.folderActive) {
+    const af = useTabsetService().findFolder(tabset.folders, tabset.folderActive)
+    //console.log("result af", af)
+    if (af) {
+      return af
+    }
+  }
+  return tabset
+}
+
+const shareTabsetPubliclyDialog = (tabset: Tabset, republish: boolean = false) => {
+  $q.dialog({
+    component: ShareTabsetPubliclyDialog,
+    componentProps: {
+      tabsetId: tabset.id,
+      sharedId: tabset.sharedId,
+      tabsetName: tabset.name,
+      republish: republish
+    }
+  })
+}
+
+const startDrag = (evt: any, folder: Tabset) => {
+  console.log("start dragging", evt, folder)
+  if (evt.dataTransfer) {
+    evt.dataTransfer.dropEffect = 'all'
+    evt.dataTransfer.effectAllowed = 'all'
+    //evt.dataTransfer.setData('text/plain', tab.id)
+    //useUiStore().draggingTab(tab.id, evt)
+  }
+  console.log("evt.dataTransfer.getData('text/plain')", evt.dataTransfer.getData('text/plain'))
+}
+const enterDrag = (evt: any, folder: Tabset) => {
+  //console.log("enter drag", evt, folder)
+}
+const overDrag = (event: any, folder: Tabset) => {
+  //console.log("enter drag", event, folder)
+  event.preventDefault();
+}
+const endDrag = (evt: any, folder: Tabset) => {
+  console.log("end drag", evt, folder)
+}
+const drop = (evt: any, folder: Tabset) => {
+  console.log("drop", evt, folder)
+  const tabToDrag = useUiStore().tabBeingDragged
+  const tabset = useTabsetService().getCurrentTabset()
+  if (tabToDrag && tabset) {
+    console.log("tabToDrag", tabToDrag)
+    const moveToFolderId = folder.id
+    console.log("moveToFolderId", moveToFolderId)
+    useTabsetService().moveTabToFolder(tabset, tabToDrag, moveToFolderId)
+  }
+}
+
+const folderCaption = (folder: Tabset) =>
+  (folder.name !== "..") ?
+    folder.tabs.length + " tab" + (folder.tabs.length !== 1 ? 's' : '') :
+    ""
+
+const tabsetSectionName = (tabset: Tabset) => {
+  if (!tabset.folderActive || tabset.id === tabset.folderActive) {
+    return tabset.name
+  }
+  const activeFolder = useTabsetService().findFolder([tabset], tabset.folderActive)
+  return tabset.name + (activeFolder ? " - " + activeFolder.name : "")
 }
 
 </script>
@@ -647,4 +972,50 @@ const tooltipAlreadyInOtherTabsets = (tabsetName: string) => {
   padding-right: 12px !important;
   margin-bottom: 14px;
 }
+
+.welcome-tooltip-container {
+  position: absolute;
+  top: 30px;
+  right: -50px;
+  width: 140px;
+  display: inline-block
+}
+
+.welcome-tooltip-container .tooltip {
+  z-index: 10000;
+  padding: 0 8px;
+  background: white;
+  color: #333;
+  position: absolute;
+  top: -17px;
+  right: 0;
+  border: 2px solid #FFBF46;
+  border-radius: 8px;
+  font-size: 16px;
+  box-shadow: 3px 3px 3px #ddd;
+  animation: welcome-tooltip-pulse 1s ease-in-out infinite alternate
+}
+
+.welcome-tooltip-container .tooltip p {
+  margin: 15px 0;
+  line-height: 1.5
+}
+
+.welcome-tooltip-container .tooltip * {
+  vertical-align: middle
+}
+
+.welcome-tooltip-container .tooltip::after {
+  content: " ";
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 10px 12.5px 0 12.5px;
+  border-color: #FFBF46 transparent transparent transparent;
+  position: absolute;
+  top: -10px;
+  right: 35px;
+  transform: rotate(180deg)
+}
+
 </style>

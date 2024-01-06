@@ -15,12 +15,12 @@
       <div class="col-xs-12 col-md-6">
         <q-toolbar-title>
           <div class="row justify-start items-baseline">
-            <div class="col-1"><span class="text-dark" v-if="!usePermissionsStore().hasFeature(FeatureIdent.TABSET_PAGE)">Tabs of !</span> <span
+            <div class="col-1"><span class="text-dark">Tabs of !</span> <span
               class="text-primary text-weight-bold cursor-pointer"
               @mouseenter="showEditButton = true"
               @mouseout="showEditButton = false">
               {{ tabsStore.currentTabsetName }}
-               <q-popup-edit :model-value="tabsStore.getCurrentTabset.name" v-slot="scope"
+               <q-popup-edit :model-value="tabsStore.getCurrentTabset?.name" v-slot="scope"
                              @update:model-value="val => setNewName(  val)">
                  <q-input v-model="scope.value" dense autofocus counter @keyup.enter="scope.set"/>
                </q-popup-edit>

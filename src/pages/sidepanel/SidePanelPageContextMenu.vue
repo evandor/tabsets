@@ -7,6 +7,11 @@
                        icon="o_note"
                        label="Edit Tabset"/>
 
+      <ContextMenuItem v-close-popup
+                       @was-clicked="openTabsetDescription(tabset)"
+                       icon="o_description"
+                       label="Tabset Description..."/>
+
       <q-separator inset v-if="useTabsStore().tabsets.size > 1"/>
 
       <ContextMenuItem v-close-popup
@@ -17,16 +22,20 @@
 
 
       <template v-if="tabset.tabs.length > 0 && inBexMode() && (
-          (!tabset.window || tabset.window === 'current') || !usePermissionsStore().hasFeature(FeatureIdent.WINDOW_MANAGEMENT))">
+          (!tabset.window || tabset.window === 'current'))">
         <ContextMenuItem
-            icon="open_in_new"
-            label="Open all in...">
+          icon="open_in_new"
+          label="Open all in...">
 
           <q-item-section side>
             <q-icon name="keyboard_arrow_right"/>
           </q-item-section>
           <q-menu anchor="top end" self="top start">
             <q-list>
+              <q-item v-if="usePermissionsStore().hasFeature(FeatureIdent.AUTO_TAB_SWITCHER)"
+                      dense clickable v-close-popup @click="startAutoSwitchingTab(tabset.id)">
+                <q-item-section>switching tab</q-item-section>
+              </q-item>
               <q-item dense clickable v-close-popup @click="restoreInNewWindow(tabset.id)">
                 <q-item-section>new window</q-item-section>
               </q-item>
@@ -40,7 +49,7 @@
 
       </template>
 
-      <template v-if="tabset.tabs.length > 0 && inBexMode() && usePermissionsStore().hasFeature(FeatureIdent.WINDOW_MANAGEMENT) &&
+      <template v-if="tabset.tabs.length > 0 && inBexMode() &&
             tabset.window && tabset.window !== 'current'">
         <ContextMenuItem v-close-popup
                          @was-clicked="restoreInGroup(tabset.id, tabset.window)"
@@ -74,68 +83,62 @@
       <template v-if="usePermissionsStore().hasFeature(FeatureIdent.ARCHIVE_TABSET) &&
         tabset.status === TabsetStatus.DEFAULT">
         <ContextMenuItem
-            v-close-popup
-            @was-clicked="archiveTabset(tabset)"
-            icon="o_inventory_2"
-            color="warning"
-            label="Archive"/>
+          v-close-popup
+          @was-clicked="archiveTabset(tabset)"
+          icon="o_inventory_2"
+          color="warning"
+          label="Archive"/>
       </template>
 
+      <q-separator inset/>
+
+      <ContextMenuItem v-if="usePermissionsStore().hasFeature(FeatureIdent.TABSETS_SHARING) && (tabset.sharing === TabsetSharing.UNSHARED || !tabset.sharing)"
+                       v-close-popup
+                       @was-clicked="shareTabsetPubliclyDialog(tabset)"
+                       icon="ios_share"
+                       color="warning"
+                       label="Share as link..."/>
+
+      <ContextMenuItem v-if="tabset.sharing === TabsetSharing.PUBLIC_LINK_OUTDATED"
+                       v-close-popup
+                       @was-clicked="shareTabsetPubliclyDialog(tabset, true)"
+                       icon="ios_share"
+                       color="warning"
+                       label="Republish">
+        <q-tooltip class="tooltip-small">Tabset has changed, republish</q-tooltip>
+      </ContextMenuItem>
+
+      <ContextMenuItem
+        v-if="tabset.sharing === TabsetSharing.PUBLIC_LINK || tabset.sharing === TabsetSharing.PUBLIC_LINK_OUTDATED"
+        v-close-popup
+        @was-clicked="removePublicShare(tabset.id)"
+        icon="ios_share"
+        color="warning"
+        label="Stop Sharing">
+        <q-tooltip class="tooltip-small">Delete Shared Link</q-tooltip>
+      </ContextMenuItem>
+
+      <q-separator inset v-if="usePermissionsStore().hasFeature(FeatureIdent.TABSETS_SHARING)" />
+
       <template v-if="useSettingsStore().isEnabled('dev')">
-        <q-separator inset/>
-        <ContextMenuItem
-            icon="keyboard_arrow_right"
-            label="Sharing... (dev)">
-
-          <q-item-section side>
-            <q-icon name="keyboard_arrow_right"/>
-          </q-item-section>
-          <q-menu anchor="top end" self="top start">
-            <q-list>
-              <q-item v-if="tabset.sharing === TabsetSharing.UNSHARED"
-                      dense clickable v-close-popup @click="shareTabsetPubliclyDialog(tabset)">
-                <q-item-section>Share publicly</q-item-section>
-              </q-item>
-              <q-item v-if="tabset.sharing === TabsetSharing.PUBLIC_OUTDATED"
-                      dense clickable v-close-popup @click="shareTabsetPubliclyDialog(tabset, true)">
-                <q-item-section>Republish shared tabset</q-item-section>
-              </q-item>
-              <q-item v-if="tabset.sharing === TabsetSharing.PUBLIC || tabset.sharing === TabsetSharing.PUBLIC_OUTDATED"
-                      @click="openPublicShare(tabset.id)"
-                      clickable v-close-popup>
-                <q-item-section>Open public page</q-item-section>
-              </q-item>
-              <q-item v-if="tabset.sharing === TabsetSharing.PUBLIC || tabset.sharing === TabsetSharing.PUBLIC_OUTDATED"
-                      @click="copyPublicShareToClipboard(tabset.id)"
-                      clickable v-close-popup>
-                <q-item-section>Copy public page link</q-item-section>
-              </q-item>
-              <q-item v-if="tabset.sharing === TabsetSharing.PUBLIC || tabset.sharing === TabsetSharing.PUBLIC_OUTDATED"
-                      clickable v-close-popup
-                      @click="removePublicShare(tabset.id)">
-                <q-item-section>Remove public share</q-item-section>
-              </q-item>
-
-
-            </q-list>
-          </q-menu>
-
-        </ContextMenuItem>
-
         <ContextMenuItem v-close-popup
                          @was-clicked="useSearchStore().reindexTabset(tabset.id)"
                          icon="o_note"
                          label="Re-Index Search (dev)"/>
+
+        <q-separator inset/>
       </template>
-
-
-      <q-separator inset/>
 
       <ContextMenuItem v-close-popup
                        @was-clicked="deleteTabsetDialog(tabset as Tabset)"
                        icon="o_delete"
                        color="negative"
-                       label="Delete Tabset"/>
+                       :disable="tabset.sharedId !== undefined"
+                       label="Delete Tabset">
+        <q-tooltip class="tooltip-small" v-if="tabset.sharedId !== undefined">
+          Stop sharing first if you want to delete this tabset
+        </q-tooltip>
+      </ContextMenuItem>
 
     </q-list>
   </q-menu>
@@ -151,7 +154,7 @@ import {useSettingsStore} from "stores/settingsStore";
 import {useSearchStore} from "stores/searchStore";
 import NavigationService from "src/services/NavigationService";
 import EditTabsetDialog from "components/dialogues/EditTabsetDialog.vue";
-import {openURL, useQuasar} from "quasar";
+import {LocalStorage, openURL, useQuasar} from "quasar";
 import {useUtils} from "src/services/Utils";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {RestoreTabsetCommand} from "src/domain/tabsets/RestoreTabset";
@@ -185,10 +188,12 @@ const publictabsetsPath = "https://public.tabsets.net/tabsets/"
 
 const startTabsetNote = (tabset: Tabset) => {
   const url = chrome && chrome.runtime && chrome.runtime.getURL ?
-      chrome.runtime.getURL('www/index.html') + "#/mainpanel/notes/?tsId=" + tabset.id + "&edit=true" :
-      "#/mainpanel/notes/?tsId=" + tabset.id + "&edit=true"
+    chrome.runtime.getURL('www/index.html') + "#/mainpanel/notes/?tsId=" + tabset.id + "&edit=true" :
+    "#/mainpanel/notes/?tsId=" + tabset.id + "&edit=true"
   NavigationService.openOrCreateTab([url])
 }
+
+const openTabsetDescription = (tabset: Tabset) => openURL(chrome.runtime.getURL("/www/index.html#/tabsets/" + tabset.id + "?tab=page"))
 
 const openEditTabsetDialog = (tabset: Tabset) => {
   $q.dialog({
@@ -206,19 +211,47 @@ const openEditTabsetDialog = (tabset: Tabset) => {
 }
 
 const restoreInNewWindow = (tabsetId: string, windowName: string | undefined = undefined) =>
-    useCommandExecutor().execute(new RestoreTabsetCommand(tabsetId, windowName))
+  useCommandExecutor().execute(new RestoreTabsetCommand(tabsetId, windowName))
+
+const startAutoSwitchingTab = (tabsetId: string) => {
+  const tabset = useTabsetService().getTabset(tabsetId)
+  if (tabset && tabset.tabs?.length > 1 && tabset.tabs[0].url) {
+    const tabs = tabset.tabs
+    let tabIndex = 0
+    NavigationService.openSingleTab(tabset.tabs[tabIndex].url || '')
+      .then(tab => {
+        console.log("tabId", tab)
+        let interval = setInterval(() => {
+          try {
+            const nextTab = tabs[++tabIndex % tabs.length]
+            console.log("updating ", nextTab.url)
+            chrome.tabs.update(tab.id || 0, {url: nextTab.url},
+              cb => {
+                if (chrome.runtime.lastError) {
+                  console.warn("got runtime error", chrome.runtime.lastError)
+                  clearInterval(interval)
+                }
+              })
+          } catch (err) {
+            console.log("got error", err, interval)
+            clearInterval(interval)
+          }
+        }, LocalStorage.getItem("ui.tabSwitcher") as number || 5000)
+      })
+  }
+}
 
 const restoreInGroup = (tabsetId: string, windowName: string | undefined = undefined) =>
-    useCommandExecutor().execute(new RestoreTabsetCommand(tabsetId, windowName, false))
+  useCommandExecutor().execute(new RestoreTabsetCommand(tabsetId, windowName, false))
 
 const focus = (tabset: Tabset) =>
-    router.push("/sidepanel/tabsets/" + tabset.id)
+  router.push("/sidepanel/tabsets/" + tabset.id)
 
 const pin = (tabset: Tabset) =>
-    useCommandExecutor().executeFromUi(new MarkTabsetAsFavoriteCommand(tabset.id))
+  useCommandExecutor().executeFromUi(new MarkTabsetAsFavoriteCommand(tabset.id))
 
 const unpin = (tabset: Tabset) =>
-    useCommandExecutor().executeFromUi(new MarkTabsetAsDefaultCommand(tabset.id))
+  useCommandExecutor().executeFromUi(new MarkTabsetAsDefaultCommand(tabset.id))
 
 const removePublicShare = (tabsetId: string) => useCommandExecutor().executeFromUi(new UnShareTabsetCommand(tabsetId))
 
@@ -250,7 +283,7 @@ const getPublicTabsetLink = (ts: Tabset) => {
 }
 
 const archiveTabset = (tabset: Tabset) =>
-    useCommandExecutor().executeFromUi(new MarkTabsetAsArchivedCommand(tabset.id))
+  useCommandExecutor().executeFromUi(new MarkTabsetAsArchivedCommand(tabset.id))
 
 const changeWindow = (tabset: Tabset, window: string) => {
   tabset.window = window
@@ -276,12 +309,12 @@ const deleteTabsetDialog = (tabset: Tabset) => {
 }
 
 const deleteTabset = (tabset: Tabset) => useCommandExecutor().executeFromUi(new MarkTabsetDeletedCommand(tabset.id))
-    .then((res: any) => {
-      //if (props.sidePanelMode) {
-      useUiStore().sidePanelSetActiveView(SidePanelView.MAIN)
-      //}
-      return res
-    })
+  .then((res: any) => {
+    //if (props.sidePanelMode) {
+    useUiStore().sidePanelSetActiveView(SidePanelView.MAIN)
+    //}
+    return res
+  })
 
 
 const shareTabsetPubliclyDialog = (tabset: Tabset, republish: boolean = false) => {

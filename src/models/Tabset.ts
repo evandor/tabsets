@@ -1,5 +1,5 @@
 import {Tab} from "src/models/Tab";
-import {Group} from "src/models/Group";
+import {TabsetColumn} from "src/models/TabsetColumn";
 import {DynamicTabSource} from "src/models/DynamicTabSource";
 import {STRIP_CHARS_IN_USER_INPUT} from "boot/constants";
 import {ListDetailLevel} from "stores/uiStore";
@@ -22,8 +22,8 @@ export enum TabsetType {
 
 export enum TabsetSharing {
   UNSHARED = "UNSHARED",
-  PUBLIC = "PUBLIC",
-  PUBLIC_OUTDATED = "PUBLIC_OUTDATED",
+  PUBLIC_LINK = "PUBLIC_LINK",
+  PUBLIC_LINK_OUTDATED = "PUBLIC_LINK_OUTDATED",
   USER = "USER",
   ROLE = "ROLE"
 }
@@ -39,24 +39,46 @@ export class Tabset {
   updated: number
   tabs: Tab[]
   dynamicTabs: DynamicTabSource | undefined
-  groups: Group[]
+
+  folders: Tabset[] = []
+  folderActive: string | undefined = undefined
+  folderParent: string | undefined = undefined
+
+  // additional initialization in "loadTabsets()" for older tabsets.
+  // in the application, we can assume that columns is always set, at least with an empty array
+  // tabs have a columnId field which references a group or which is undefined.
+  // a tabset's group _can_ contain a group with identifier "SPECIAL_ID_FOR_NO_GROUP_ASSIGNED"
+  // was: groups: Group[]
+  columns: TabsetColumn[] = []
+
   spaces: string[] // got json problems with set<string>
   view: string = 'list'
   details: ListDetailLevel | undefined = undefined
   sorting: string = 'custom'
   status: TabsetStatus = TabsetStatus.DEFAULT
   type: TabsetType = TabsetType.DEFAULT
+
+  // sharing
   sharing: TabsetSharing = TabsetSharing.UNSHARED
   sharedBy: string | undefined = undefined
   sharedId: string | undefined = undefined
+  sharedAt: number | undefined = undefined
+  sharedPath: string | undefined = undefined // e.g. /pwa/imp/AlCYSrGGmOnsOnf0htA9?n=c2hvcHBpbmc=
+
+  // messaging
+  mqttUrl: string | undefined = undefined
+
+  importedAt: number | undefined = undefined
+
   canvas: object | undefined = undefined
 
+  // = description
   page: string | undefined = undefined
 
   window: string = 'current'
   color: string | undefined = undefined
 
-  constructor(id: string, name: string, tabs: Tab[], groups: Group[] = [], spaces: string[] = []) {
+  constructor(id: string, name: string, tabs: Tab[], columns: TabsetColumn[] = [], spaces: string[] = []) {
 
     // some guards
     if (!Tabset.newTabsetNameIsValid) {
@@ -72,7 +94,7 @@ export class Tabset {
     this.created = new Date().getTime()
     this.updated = new Date().getTime()
     this.tabs = tabs
-    this.groups = groups
+    this.columns = columns
     this.spaces = spaces
   }
 

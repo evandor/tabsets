@@ -1,5 +1,6 @@
 import {Placeholders} from "src/models/Placeholders";
 import {Monitor} from "src/models/Monitor";
+import {uid} from "quasar";
 
 export enum TabSorting {
   URL = "URL",
@@ -29,11 +30,33 @@ export class HTMLSelectionComment {
 }
 
 export class HTMLSelection {
+  private created: number;
+  private id: string;
   constructor(
-    public selection: string = '',
     public text: string = '',
+    public range: string = '',
     public comments: HTMLSelectionComment[] = []) {
+    this.id = uid()
+    this.created = new Date().getTime()
   }
+}
+
+export class TabComment {
+  date: number = 0
+  public id: string;
+
+  constructor(
+    public author: string = '<me>',
+    public avatar: string | undefined = undefined,
+    public comment: string = '') {
+    this.date = new Date().getTime()
+    this.id = uid()
+  }
+}
+
+export enum TabPreview {
+  FAVICON= "FAVICON",
+  THUMBNAIL = "THUMBNAIL"
 }
 
 export class Tab {
@@ -51,6 +74,9 @@ export class Tab {
   pinned: boolean
   groupId: number
 
+  // from tabsets' columns
+  columnId: string | undefined
+
   isDuplicate: boolean
   history: string[] = []
   selected: boolean = false
@@ -65,6 +91,8 @@ export class Tab {
   date: string
   lastModified: string
   author: string
+  // deprecated, will be phased out in 0.5.1
+  // use comments instead
   note: string
   scheduledFor: number | undefined
   extension: UrlExtension
@@ -92,6 +120,12 @@ export class Tab {
   canvasTop: number | undefined
   canvasWidth: number | undefined
   canvasHeight: number | undefined
+
+  annotations: HTMLSelection[] = []
+
+  comments: TabComment[] = []
+
+  preview: TabPreview = TabPreview.FAVICON
 
   constructor(public id: string, chromeTab: chrome.tabs.Tab) {
     this.created = new Date().getTime()
@@ -124,6 +158,8 @@ export class Tab {
     this.extension = this.determineUrlExtension(chromeTab)
     this.mhtmls = []
     this.contentHash = ''
+
+    this.preview = TabPreview.FAVICON
   }
 
   setHistoryFrom(existingTab: Tab) {

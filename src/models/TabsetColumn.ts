@@ -1,5 +1,4 @@
-
-export class Group {
+export class TabsetColumn {
 
   private created: number;
   private updated: number;
@@ -7,8 +6,7 @@ export class Group {
   constructor(
     public id: string,
     public title: string,
-    // @ts-ignore
-    public chromeGroup: chrome.tabGroups.TabGroup | undefined = undefined) {
+    public open: boolean = false) {
     this.created = new Date().getTime()
     this.updated = new Date().getTime()
   }

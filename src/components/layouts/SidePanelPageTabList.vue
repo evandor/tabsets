@@ -3,32 +3,85 @@
   <q-list separator class="q-ma-none">
 
     <!-- supporting drag & drop when not on mobile -->
-    <vue-draggable-next v-if="!props.preventDragAndDrop"
-                        class="q-ma-none"
-                        :list="tabs as Array<Tab>"
-                        :group="{ name: 'tabs', pull: 'clone' }"
-                        @change="handleDragAndDrop">
+    <template v-if="!props.preventDragAndDrop"
+              v-for="column in getColumns()">
 
-      <SidePanelTabListHelper v-for="tab in tabs"
-                              :tab="tab"
-                              :type="props.type"
-                              :sorting="props.sorting"
-                              :preventDragAndDrop="false"
-                              :tabset="props.tabset"
-                              :show-tabsets="props.showTabsets"
-                              :hide-menu="props.hideMenu"/>
-    </vue-draggable-next>
+      <!-- drag & drop and columns -->
+      <q-expansion-item v-if="showTabsetWithColumns()"
+                        header-class="q-ma-none q-pa-none q-pl-sm q-pr-md bg-grey-1 text-blue-grey-10"
+                        :default-opened="isOpen(column)"
+                        @update:model-value="(val:boolean) => columnChanged(column, val)"
+                        :label="column.title || column.id"
+                        switch-toggle-side
+                        expand-icon-toggle
+                        dense-toggle>
+
+        <template v-slot:header>
+          <q-item-section
+            class="q-mt-xs">
+            <q-item-label class="text-blue-grey-8">
+              {{ column.title }}
+            </q-item-label>
+            <q-item-label class="text-caption text-grey-5">
+              {{ tabsForColumn(column).length }} of {{ props.tabsCount }} tab{{ props.tabsCount === 1 ? '' : 's' }}
+            </q-item-label>
+          </q-item-section>
+        </template>
+
+        <vue-draggable-next
+          class="q-ma-none"
+          :list="tabsForColumn(column) as Array<IndexedTab>"
+          :group="{ name: 'tabs', pull: 'clone' }"
+          @change="(event:any) => handleDragAndDrop(event, column)">
+
+          <SidePanelTabListHelper v-for="tab in tabsForColumn(column)"
+                                  :tab="tab.tab as Tab"
+                                  :index="tab.index"
+                                  :type="props.type"
+                                  :sorting="props.sorting"
+                                  :preventDragAndDrop="false"
+                                  :tabset="props.tabset"
+                                  :show-tabsets="props.showTabsets"
+                                  :hide-menu="props.hideMenu"/>
+        </vue-draggable-next>
+      </q-expansion-item>
+
+      <!-- drag & drop, but no columns -->
+      <template v-else>
+
+        <vue-draggable-next
+          class="q-ma-none"
+          :list="tabsForColumn(column) as Array<IndexedTab>"
+          :group="{ name: 'tabs', pull: 'clone' }"
+          @change="(event:any) => handleDragAndDrop(event,  column)">
+
+          <SidePanelTabListHelper v-for="tab in tabsForColumn(column) as Array<IndexedTab>"
+                                  :tab="tab.tab as Tab"
+                                  :index="tab.index"
+                                  :type="props.type"
+                                  :sorting="props.sorting"
+                                  :preventDragAndDrop="false"
+                                  :tabset="props.tabset"
+                                  :show-tabsets="props.showTabsets"
+                                  :hide-menu="props.hideMenu"/>
+        </vue-draggable-next>
+      </template>
+    </template>
 
     <!-- no drag & drop on mobile -->
-    <SidePanelTabListHelper v-else
-                            v-for="tab in tabs"
-                            :tab="tab"
-                            :type="props.type"
-                            :sorting="props.sorting"
-                            :preventDragAndDrop="true"
-                            :tabset="props.tabset"
-                            :show-tabsets="props.showTabsets"
-                            :hide-menu="props.hideMenu"/>
+    <!-- TODO columns -->
+    <template v-else>
+      ***
+      <SidePanelTabListHelper
+        v-for="tab in tabs"
+        :tab="tab as Tab"
+        :type="props.type"
+        :sorting="props.sorting"
+        :preventDragAndDrop="true"
+        :tabset="props.tabset"
+        :show-tabsets="props.showTabsets"
+        :hide-menu="props.hideMenu"/>
+    </template>
   </q-list>
 
   <audio id="myAudio">
@@ -44,10 +97,15 @@ import {ref, onMounted, PropType, watchEffect} from "vue";
 import {VueDraggableNext} from 'vue-draggable-next'
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {CreateTabFromOpenTabsCommand} from "src/domain/commands/CreateTabFromOpenTabs";
-import {Tabset, TabsetType} from "src/models/Tabset";
+import {Tabset, TabsetStatus, TabsetType} from "src/models/Tabset";
 import SidePanelTabListHelper from "components/layouts/sidepanel/SidePanelTabListHelper.vue";
 import {useTabsStore} from "stores/tabsStore";
 import {useTabsetService} from "src/services/TabsetService2";
+import {TabsetColumn} from "src/models/TabsetColumn";
+import {SPECIAL_ID_FOR_NO_GROUP_ASSIGNED} from "boot/constants";
+import _ from "lodash"
+import {IndexedTab} from "src/models/IndexedTab";
+import SidePanelPageContextMenu from "pages/sidepanel/SidePanelPageContextMenu.vue";
 
 const props = defineProps({
   hideMenu: {type: Boolean, default: false},
@@ -55,38 +113,106 @@ const props = defineProps({
   type: {type: String, default: 'sidepanel'},
   showTabsets: {type: Boolean, default: false},
   preventDragAndDrop: {type: Boolean, default: false},
-  tabset: {type: Object as PropType<Tabset>, required: true},
+  tabset: {type: Object as PropType<Tabset>, required: false},
+  tabsCount: {type: Number, default: -1}
 })
 
 const tabs = ref<Tab[]>([])
 
-const handleDragAndDrop = (event: any) => {
-  console.log("event", event)
+const handleDragAndDrop = (event: any, column: TabsetColumn) => {
   const {moved, added} = event
+  console.log("event!", event)
   if (moved) {
-    console.log('d&d tabs moved', moved.element.id, moved.newIndex)
-    let useIndex = moved.newIndex
-    TabsetService.moveTo(moved.element.id, useIndex)
+    console.log(`moved event: '${moved.element.tab.id}' ${moved.oldIndex} -> ${moved.newIndex}`)
+    const tabsInColumn = tabsForColumn(column)
+    const movedElement: Tab = tabsInColumn[moved.oldIndex].tab
+    const realNewIndex = tabsInColumn[moved.newIndex].index
+    console.log(`             '${movedElement.id}' ${moved.oldIndex} -> ${realNewIndex}`)
+    TabsetService.moveTo(movedElement.id, realNewIndex, column)
   }
   if (added) {
-    useCommandExecutor()
-        .executeFromUi(new CreateTabFromOpenTabsCommand(added.element, added.newIndex))
+    console.log(`added event: '${added.element.tab.id}' ${added.oldIndex} -> ${added.newIndex}, ${column.title || column.id}`)
+    const tabsInColumn = tabsForColumn(column)
+    const movedElement: Tab = added.element.tab
+    const realNewIndex = added.newIndex < tabsInColumn.length ?
+      tabsInColumn[added.newIndex].index : 0
+    console.log(`             '${added.element.tab.id}' ${added.oldIndex} -> ${realNewIndex}`)
+    movedElement.columnId = column.id
+    useTabsetService().saveCurrentTabset()
+    //useCommandExecutor()
+    //  .executeFromUi(new CreateTabFromOpenTabsCommand(added.element, added.newIndex))
   }
 }
 
 watchEffect(() => {
-  const tabset = useTabsStore().getTabset(props.tabset.id)
-  if (tabset) {
-    tabs.value = useTabsetService().tabsToShow(tabset)
+  // TODO why was this done in the first place? Updates from where?
+  //const tabset = useTabsStore().getTabset(props.tabset?.id || "")
+  if (props.tabset) {
+    tabs.value = useTabsetService().tabsToShow(props.tabset)
   } else {
-    console.warn("could not determine tabset for id", props.tabset.id)
+    console.warn("could not determine tabset...")
     tabs.value = []
   }
 })
 
+/**
+ * props.tabset.columns can be []
+ */
+const getColumns = () => {
+  if (!props.tabset || !props.tabset.columns || props.tabset.columns.length === 0) {
+    return [new TabsetColumn(SPECIAL_ID_FOR_NO_GROUP_ASSIGNED, '')]
+  }
+  const columnsFromTabs = _.uniq(_.map(props.tabset.tabs, t => t.columnId ? t.columnId : "undefined"))
+  console.log("columnsFromTabs", columnsFromTabs)
+  if (columnsFromTabs.length === 1 && columnsFromTabs[0] === "undefined") {
+    return [new TabsetColumn(SPECIAL_ID_FOR_NO_GROUP_ASSIGNED, props.tabset.columns[0].title ? props.tabset.columns[0].title : 'tabs w/o group')]
+  }
+  if (columnsFromTabs.length > props.tabset.columns.length) {
+    return props.tabset.columns.concat([new TabsetColumn(SPECIAL_ID_FOR_NO_GROUP_ASSIGNED, 'tabs w/o group')])
+  }
+  return props.tabset.columns
+}
+
+const tabsForColumn = (column: TabsetColumn): IndexedTab[] => {
+  const tfc = _.filter(
+    _.map(tabs.value as Tab[], (t: Tab, index: number) => new IndexedTab(index, t)), (it: IndexedTab) => {
+      if (column.id === SPECIAL_ID_FOR_NO_GROUP_ASSIGNED) {
+        return it.tab.columnId === SPECIAL_ID_FOR_NO_GROUP_ASSIGNED || !it.tab.columnId
+      }
+      return it.tab.columnId === column.id
+    })
+  // console.log("tfc", _.map(tfc, e => {
+  //   return {i: e.index, t: e.tab.id}
+  // }))
+  return tfc
+}
+
+const showTabsetWithColumns = () => {
+  const cols = getColumns()
+  if (cols.length === 1) {
+    return cols[0].id !== SPECIAL_ID_FOR_NO_GROUP_ASSIGNED
+  }
+  return getColumns().length > 0
+}
+
+const columnChanged = (column: TabsetColumn, val: boolean) => {
+  column.open = val
+  useTabsetService().saveCurrentTabset()
+}
+
+const isOpen = (column: TabsetColumn) => column.open
+
 </script>
 
-<style lang="sass" scoped>
-.my-card
-  width: 100%
+<style>
+
+.q-expansion-item--popup > .q-expansion-item__container {
+  border: 0px solid rgba(0, 0, 0, 0.12) !important;
+}
+
+.q-list--separator > .q-item-type + .q-item-type,
+.q-list--separator > .q-virtual-scroll__content > .q-item-type + .q-item-type {
+  border-top: 0px solid rgba(100, 0, 0, 0.12) !important;
+}
+
 </style>

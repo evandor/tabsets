@@ -1,4 +1,5 @@
 import _ from "lodash"
+import {RELEASE_NOTES_URL} from "boot/constants";
 
 export enum SuggestionState {
   NEW = "NEW",
@@ -13,9 +14,11 @@ export enum SuggestionState {
 
 export enum SuggestionType {
   RSS = "RSS",
+  REDIRECT_HAPPENED_FOR_TAB = "REDIRECT_HAPPENED_FOR_TAB",
   REDIRECT_HAPPENED_FOR_BOOKMARK = "REDIRECT_HAPPENED_FOR_BOOKMARK",
   CONTENT_CHANGE = "CONTENT_CHANGE",
-  FEATURE = "FEATURE"
+  FEATURE = "FEATURE",
+  URL = "URL"
 }
 
 export enum StaticSuggestionIdent {
@@ -23,6 +26,7 @@ export enum StaticSuggestionIdent {
   TRY_BOOKMARKS_FEATURE = "TRY_BOOKMARKS_FEATURE",
   TRY_SPACES_FEATURE = "TRY_SPACES_FEATURE",
   TRY_NEWEST_TABS_FEATURE = "TRY_NEWEST_TABS_FEATURE",
+  RELEASE_NOTES_AVAILABLE = "RELEASE_NOTES_AVAILABLE"
 }
 
 export class Suggestion {
@@ -56,6 +60,12 @@ export class Suggestion {
         "Activate a view with your newest tabs",
         "/features/newest_tabs",
         SuggestionType.FEATURE)
+        .setImage('o_schedule'),
+    new Suggestion(StaticSuggestionIdent.RELEASE_NOTES_AVAILABLE,
+        "Version was updated",
+        "Do you want to read the release notes?",
+        RELEASE_NOTES_URL,
+        SuggestionType.URL)
         .setImage('o_schedule')
   ]
 

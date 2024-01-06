@@ -1,6 +1,6 @@
 import Command from "src/domain/Command";
 import {ExecutionResult} from "src/domain/ExecutionResult";
-import {Group} from "src/models/Group";
+import {TabsetColumn} from "src/models/TabsetColumn";
 import {Tabset} from "src/models/Tabset";
 import {useTabsetService} from "src/services/TabsetService2";
 import _ from "lodash"
@@ -29,15 +29,15 @@ export class DeleteGroupCommand implements Command<any> {
   }
 
   async execute(): Promise<ExecutionResult<any>> {
-    const existingGroups = this.tabset.groups
+    const existingGroups = this.tabset.columns
     const foundGroup = existingGroups.find(existingGroup => existingGroup.id === this.groupId)
     if (foundGroup) {
       _.forEach(this.tabset.tabs, (t:Tab) => {
-        if (t.groupId === this.groupId) {
-          t.groupId = undefined
+        if (t.columnId === this.groupId) {
+          t.columnId = undefined
         }
       })
-      this.tabset.groups = _.filter(this.tabset.groups, (g: Group) => g.id !== this.groupId)
+      this.tabset.columns = _.filter(this.tabset.columns, (g: TabsetColumn) => g.id !== this.groupId)
       return useTabsetService().saveTabset(this.tabset)
         .then((res) =>
           Promise.resolve(new ExecutionResult("done", "Group was deleted and its tabs unassigned")))

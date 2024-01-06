@@ -3,10 +3,10 @@
   <div class="q-ma-sm">
 
     <InfoMessageWidget
-        :probability="1"
-        css-class="q-pa-none q-gutter-sm q-mb-md"
-        ident="tabgroups_info"
-        hint="You can create and reorder groups which you can use to assign tabs to by dragging and dropping. Create
+      :probability="1"
+      css-class="q-pa-none q-gutter-sm q-mb-md"
+      ident="tabgroups_info"
+      hint="You can create and reorder groups which you can use to assign tabs to by dragging and dropping. Create
               a new group by clicking on the plus sign."/>
 
     <div class="row q-mb-lg q-mr-lg">
@@ -23,33 +23,33 @@
 
     <div>
       <vue-draggable-next
-          class="row q-gutter-md"
-          :list="tabsetGroups">
+        class="row q-gutter-md"
+        :list="tabsetGroups">
         <div
-            class="col text-bold bg-primary text-white upper-border q-pa-sm" style="cursor: move"
-            v-for="element in tabsetGroups"
-            :key="element.id">
+          class="col text-bold bg-primary text-white upper-border q-pa-sm" style="cursor: move"
+          v-for="element in tabsetGroups"
+          :key="element.id">
           {{ element.title }}
           <q-popup-edit :model-value="element.title" v-slot="scope"
                         @update:model-value="val => rename(element.id, val)">
             <q-input
-                v-model="scope.value" dense autofocus counter @keyup.enter="scope.set"
-                :hint="element.id !== SPECIAL_ID_FOR_NO_GROUP_ASSIGNED ?
+              v-model="scope.value" dense autofocus counter @keyup.enter="scope.set"
+              :hint="element.id !== SPECIAL_ID_FOR_NO_GROUP_ASSIGNED ?
               'Provide the new name of the group or delete it':
               'Provide a new name. This group cannot be deleted'">
               <template v-slot:after>
                 <q-btn
-                    flat dense color="warning" icon="cancel"
-                    @click.stop.prevent="scope.cancel"/>
+                  flat dense color="warning" icon="cancel"
+                  @click.stop.prevent="scope.cancel"/>
 
                 <q-btn v-if="element.id !== SPECIAL_ID_FOR_NO_GROUP_ASSIGNED"
                        flat dense color="negative" icon="delete"
-                       @click.stop.prevent="deleteGroup(element)"/>
+                       @click.stop.prevent="deleteGroup(element as Group)"/>
 
                 <q-btn
-                    flat dense color="positive" icon="check_circle"
-                    @click.stop.prevent="scope.set"
-                    :disable="scope.validate(scope.value) === false || scope.initialValue === scope.value"/>
+                  flat dense color="positive" icon="check_circle"
+                  @click.stop.prevent="scope.set"
+                  :disable="scope.validate(scope.value) === false || scope.initialValue === scope.value"/>
               </template>
             </q-input>
           </q-popup-edit>
@@ -63,10 +63,10 @@
         <q-list separator>
           <vue-draggable-next
 
-              :list="tabsFor(element)"
-              :group="{ name: 'tabs', pull: 'clone' }"
+            :list="tabsFor(element as Group)"
+            :group="{ name: 'tabs', pull: 'clone' }"
 
-              @change="handleDragAndDrop($event, element)">
+            @change="handleDragAndDrop($event, element as Group)">
 
             <q-item v-if="props.tabs.length === 0 &&
                       inBexMode() &&
@@ -81,7 +81,7 @@
             <q-item class="q-ma-none q-pa-none"
                     clickable
                     v-ripple
-                    v-for="(tab,index) in tabsFor(element)"
+                    v-for="(tab,index) in tabsFor(element as Group)"
                     @click.stop="showDetails(tab)"
                     @mouseover="showButtons(  tab.id,true)"
                     @mouseleave="showButtons( tab.id, false)"
@@ -123,7 +123,7 @@ import {usePermissionsStore} from "src/stores/permissionsStore";
 import {FeatureIdent} from "src/models/AppFeature";
 import {CreateGroupCommand} from "src/domain/tabs/CreateGroup";
 import {RenameGroupCommand} from "src/domain/tabs/RenameGroup";
-import {Group} from "src/models/Group";
+import {TabsetColumn} from "src/models/TabsetColumn";
 import {DeleteGroupCommand} from "src/domain/tabs/DeleteGroup";
 import {SPECIAL_ID_FOR_NO_GROUP_ASSIGNED} from "boot/constants"
 import ChromeApi from "src/services/ChromeApi";
@@ -142,21 +142,24 @@ const props = defineProps({
   highlightUrl: {type: String, required: false}
 })
 
-const tabsetGroups = ref<Group[]>(tabsStore.getCurrentTabset?.groups || [])
+const tabsetGroups = ref<TabsetColumn[]>( [])
 
 watchEffect(() => {
-  //console.log("watching!", tabsStore.getCurrentTabset?.groups)
-  if (tabsStore.getCurrentTabset?.groups) {
-    tabsetGroups.value = tabsStore.getCurrentTabset.groups
-    if (tabsStore.getCurrentTabset.groups.length === 0) {
-      tabsetGroups.value.push(new Group(SPECIAL_ID_FOR_NO_GROUP_ASSIGNED, "no group"))
-    }
+  console.log("watching!", tabsStore.getCurrentTabset?.columns)
+  const defaultGroupExists = _.filter(tabsStore.getCurrentTabset?.columns || [], (g: Group) => g.id === SPECIAL_ID_FOR_NO_GROUP_ASSIGNED).length > 0
+  console.log("defaultGorupExists", defaultGroupExists)
+  tabsetGroups.value = []
+  if (!defaultGroupExists) {
+    tabsetGroups.value = [new TabsetColumn(SPECIAL_ID_FOR_NO_GROUP_ASSIGNED, "no group")]
   }
-
+  if (tabsStore.getCurrentTabset?.columns) {
+    console.log("tabsetGroups", tabsetGroups.value)
+    tabsetGroups.value.push(...tabsStore.getCurrentTabset.columns)
+  }
+  console.log("tabsetGroups2", tabsetGroups.value)
 })
 
 
-const thumbnails = ref<Map<string, string>>(new Map())
 const tabAsTab = (tab: Tab): Tab => tab as unknown as Tab
 
 const showButtonsProp = ref<Map<string, boolean>>(new Map())
@@ -180,7 +183,7 @@ function adjustIndex(element: any, tabs: Tab[]) {
 
 const log = (evt: any) => console.log(evt)
 
-const handleDragAndDrop = (event: any, group: Group) => {
+const handleDragAndDrop = (event: any, group: TabsetColumn) => {
   console.log("event", event, group)
   const {moved, added} = event
   if (moved) {
@@ -215,20 +218,17 @@ const handleDragAndDrop = (event: any, group: Group) => {
   }
   if (added) {
     if (draggedTab.value !== undefined && group.id) {
-      added.element.groupId = group.id
+      added.element.columnId = group.id
       if (group.id === SPECIAL_ID_FOR_NO_GROUP_ASSIGNED) {
-        added.element.groupId = undefined
+        added.element.columnId = undefined
       }
       draggedTab.value = undefined
       useTabsetService().saveCurrentTabset()
     } else {
       useCommandExecutor()
-          .executeFromUi(new CreateTabFromOpenTabsCommand(added.element, added.newIndex))
+        .executeFromUi(new CreateTabFromOpenTabsCommand(added.element, added.newIndex))
     }
   }
-}
-
-const openOrShowOpenTabs = () => {
 }
 
 const startDrag = (evt: any, tab: Tab) => {
@@ -259,21 +259,22 @@ const rename = (groupId: string, newValue: string) => {
   }
 }
 
-const deleteGroup = (g: Group) => {
+const deleteGroup = (g: TabsetColumn) => {
   if (tabsStore?.getCurrentTabset) {
     useCommandExecutor().executeFromUi(new DeleteGroupCommand(tabsStore.getCurrentTabset, g.id))
-        .then(() => {
-          tabsetGroups.value = _.filter(tabsetGroups.value, group => group.id !== g.id)
-        })
+      .then(() => {
+        tabsetGroups.value = _.filter(tabsetGroups.value, group => group.id !== g.id)
+      })
   }
 }
 
-const tabsFor = (group: Group) => {
+const tabsFor = (column: TabsetColumn) => {
   let res: Tab[] = []
-  if (group.id === SPECIAL_ID_FOR_NO_GROUP_ASSIGNED) {
-    res = _.filter(props.tabs, (t: Tab) => t.groupId === undefined)
+  //console.log("id", column, props.tabs)
+  if (column.id === SPECIAL_ID_FOR_NO_GROUP_ASSIGNED) {
+    res = _.filter(props.tabs, (t: Tab) => !t.columnId)
   } else {
-    res = _.filter(props.tabs, (t: Tab) => t.groupId === group.id)
+    res = _.filter(props.tabs, (t: Tab) => t.columnId === column.id)
   }
   if (res.length === 0) {
     return [new Tab(uid(), ChromeApi.createChromeTabObject('drag & drop here', '', ''))]

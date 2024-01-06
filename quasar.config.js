@@ -21,7 +21,7 @@ module.exports = configure(function (ctx) {
 
 
     // https://v2.quasar.dev/quasar-cli-vite/prefetch-feature
-    // preFetch: true,
+    //preFetch: true,
 
     // app boot file (/src/boot)
     // --> boot files are part of "main.js"
@@ -84,7 +84,7 @@ module.exports = configure(function (ctx) {
         STRIPE_PUBLISHABLE_KEY: process.env.STRIPE_PUBLISHABLE_KEY,
         STRIPE_ACCOUNT: process.env.STRIPE_ACCOUNT,
         STRIPE_API_VERSION: process.env.STRIPE_API_VERSION,
-        LOCALE: process.env.LOCALE,
+        LOCALE: process.env.LOCALE
       },
       // rawDefine: {}
       // ignorePublicFolder: true,
@@ -94,11 +94,11 @@ module.exports = configure(function (ctx) {
 
       // !== MIT
       extendViteConf (viteConf) {
-        //console.log("hier", viteConf)
         if ((ctx.mode.spa || ctx.mode.pwa || ctx.mode.electron) && viteConf && viteConf.mode === "development") {
           // https://dev.to/richardbray/how-to-fix-the-referenceerror-global-is-not-defined-error-in-sveltekitvite-2i49
           viteConf.define.global = {}
         }
+        viteConf.define.__VUE_PROD_HYDRATION_MISMATCH_DETAILS__ = 'false'
       },
       // viteVuePluginOptions: {},
 
@@ -169,7 +169,7 @@ module.exports = configure(function (ctx) {
       // extendSSRWebserverConf (esbuildConf) {},
       // extendPackageJson (json) {},
 
-      pwa: false,
+      pwa: true,
 
       // manualStoreHydration: true,
       // manualPostHydrationTrigger: true,
@@ -221,6 +221,12 @@ module.exports = configure(function (ctx) {
         // appCategoryType: '',
         // osxSign: '',
         // protocol: 'myapp://path',
+        protocols: [
+          {
+            name: 'Electron Tabsets',
+            schemes: ['electron-tabsets']
+          }
+        ]
 
         // Windows only
         // win32metadata: { ... }
@@ -237,9 +243,13 @@ module.exports = configure(function (ctx) {
     bex: {
       contentScripts: [
         'content-script',
+        'my-content-script',
         'tabsets-content-script',
+        'content-script-tab-helper',
         'content-script-thumbnails',
-        'clipping'
+        'clipping',
+        'annotation',
+        'highlight-annotations'
       ],
       css: ['clipping.css']
 

@@ -1,20 +1,38 @@
 import {Notify} from 'quasar'
 import {ExecutionResult} from "src/domain/ExecutionResult";
 import {useUiStore} from "stores/uiStore";
+import {Logz} from "src/services/logz/Logz";
+
+export enum NotificationType {
+  NOTIFY = "NOTIFY",
+  TOAST = "TOAST"
+}
 
 export function useNotificationHandler() {
 
-    const handleError = (error: any) => {
+    const handleError = (error: any, type: NotificationType = NotificationType.TOAST) => {
         console.log("got error: ", error ? error.toString() : 'unknown error')
         console.trace()
-        // Notify.create({
-        //     position: 'bottom',
-        //     color: 'red-5',
-        //     textColor: 'white',
-        //     icon: 'error',
-        //     message: error ? error.toString() : 'unknown error'
-        // })
-        useUiStore().createErrorToast(error ? error.toString() : 'unknown error')
+
+      Logz.error({
+        message: "handling error in NotificationHandler",
+        error: error ? error.toString() : 'unknown error',
+        stack: error.stack
+      }).catch((logzError: any) => console.warn("could not send error message to logz"))
+
+      switch (type) {
+          case NotificationType.NOTIFY:
+            Notify.create({
+                position: 'bottom',
+                color: 'red-5',
+                textColor: 'white',
+                icon: 'error',
+                message: error ? error.toString() : 'unknown error'
+            })
+            break;
+          default:
+            useUiStore().createErrorToast(error ? error.toString() : 'unknown error')
+        }
 
     }
 
@@ -22,7 +40,7 @@ export function useNotificationHandler() {
         useUiStore().createWarningToast(res.message)
     }
 
-    const handleSuccess = (executionResult: ExecutionResult<any>): ExecutionResult<any> => {
+    const handleSuccess = (executionResult: ExecutionResult<any>, type: NotificationType = NotificationType.TOAST): ExecutionResult<any> => {
         const actions: any[] = []
         if (executionResult.undoCommand) {
             actions.push(
@@ -36,12 +54,17 @@ export function useNotificationHandler() {
                 }
             )
         }
-        // Notify.create({
-        //     color: 'positive',
-        //     message: executionResult.message,
-        //     actions: actions
-        // })
-        useUiStore().createSuccessToast(executionResult.message, actions[0])
+      switch (type) {
+        case NotificationType.NOTIFY:
+          Notify.create({
+              color: 'positive',
+              message: executionResult.message,
+              actions: actions
+          })
+          break;
+        default:
+          useUiStore().createSuccessToast(executionResult.message, actions[0])
+          }
         return executionResult
     }
 

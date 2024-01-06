@@ -212,14 +212,14 @@ text.set(FeatureIdent.RSS.toLowerCase(), {
       'linked rss feeds from your tabsets.',
   permissions: []
 })
-text.set(FeatureIdent.THUMBNAILS.toLowerCase(), {
-  experimental: false,
-  name: 'Thumbnails',
-  img: 'thumbnails.png',
-  description: 'This extension can create thumbnails of the tabs you visit, so that they can presented in an more appealing way. ' +
-      'Please note that only tabs that you visit (or revisit) after the activation of this feature are going to have thumbnails.',
-  permissions: ['thumbnails']
-})
+// text.set(FeatureIdent.THUMBNAILS.toLowerCase(), {
+//   experimental: false,
+//   name: 'Thumbnails',
+//   img: 'thumbnails.png',
+//   description: 'This extension can create thumbnails of the tabs you visit, so that they can presented in an more appealing way. ' +
+//       'Please note that only tabs that you visit (or revisit) after the activation of this feature are going to have thumbnails.',
+//   permissions: ['thumbnails']
+// })
 text.set(FeatureIdent.ANALYSE_TABS.toLowerCase(), {
   experimental: false,
   name: 'Analyse Tabs',
@@ -297,11 +297,6 @@ text.set(FeatureIdent.OLD_TABS.toLowerCase(), {
   description: 'Get a list of old tabs to decide which ones to keep.',
   permissions: []
 })
-text.set(FeatureIdent.TABSET_PAGE.toLowerCase(), {
-  name: 'Tabset Page',
-  description: 'Use an editor to add additional information about this tabset',
-  permissions: []
-})
 text.set(FeatureIdent.NOTES.toLowerCase(), {
   name: 'Notes Feature',
   description: 'Add Notes to tabsets',
@@ -322,12 +317,12 @@ text.set(FeatureIdent.STANDALONE_APP.toLowerCase(), {
   description: 'Tabsets as full-page application',
   permissions: []
 })
-text.set(FeatureIdent.NEWEST_TABS.toLowerCase(), {
-  name: 'Newest Tabs',
-  img: 'newest_tabs.png',
-  description: 'Activate a view to get quick access to your 100 newest tabs',
-  permissions: []
-})
+// text.set(FeatureIdent.NEWEST_TABS.toLowerCase(), {
+//   name: 'Newest Tabs',
+//   img: 'newest_tabs.png',
+//   description: 'Activate a view to get quick access to your 100 newest tabs',
+//   permissions: []
+// })
 text.set(FeatureIdent.TOP10.toLowerCase(), {
   name: 'Top 10 Tabs',
   img: 'top10.png',
@@ -372,12 +367,12 @@ text.set(FeatureIdent.ARCHIVE_TABSET.toLowerCase(), {
   permissions: []
 })
 
-text.set(FeatureIdent.WINDOW_MANAGEMENT.toLowerCase(), {
-  name: 'Advanced Window Management',
-  description: 'Work with multiple named Windows and assign them to tabsets so that specific tabsets always ' +
-      'are opened in the same window',
-  permissions: []
-})
+// text.set(FeatureIdent.WINDOW_MANAGEMENT.toLowerCase(), {
+//   name: 'Advanced Window Management',
+//   description: 'Work with multiple named Windows and assign them to tabsets so that specific tabsets always ' +
+//       'are opened in the same window',
+//   permissions: []
+// })
 
 text.set(FeatureIdent.COLOR_TAGS.toLowerCase(), {
   name: 'Color Tags for Tabsets and Tabs',
@@ -404,6 +399,42 @@ text.set(FeatureIdent.MONITORING.toLowerCase(), {
       'But sometimes it can be helpful. Use at your own discretion.',
   img: 'monitor.png',
   more: 'https://docs.tabsets.net/website-monitoring',
+  permissions: []
+})
+text.set(FeatureIdent.ANNOTATIONS.toLowerCase(), {
+  name: 'Annotate Website',
+  description: 'Hightlight text on a website and create and comment on annotations.',
+  img: 'o_auto_awesome',
+  //more: 'https://docs.tabsets.net/website-monitoring',
+  permissions: []
+})
+text.set(FeatureIdent.TAB_HELPER.toLowerCase(), {
+  name: 'Tab Helper',
+  description: 'Add a small tag on any website to access tabsets features quickly.<br>' +
+    'You need to restart tabsets if you activate or deactivate this feature.<br>' +
+    'The Tabsets Helper Icon will appear on all pages you open once activated.',
+  img: 'tabhelper.png',
+  //more: 'https://docs.tabsets.net/website-monitoring',
+  permissions: []
+})
+text.set(FeatureIdent.AUTO_TAB_SWITCHER.toLowerCase(), {
+  name: 'Auto Tab Switcher',
+  description: 'Switch the Tab\'s URL every x Seconds',
+  permissions: []
+})
+text.set(FeatureIdent.TABS_AS_TREE.toLowerCase(), {
+  name: 'Tabs as Tree',
+  description: 'Show a tree view of your tabs',
+  permissions: []
+})
+text.set(FeatureIdent.TABSET_SUBFOLDER.toLowerCase(), {
+  name: 'Subfolders for Tabsets',
+  description: 'Use Subfolders in Tabsets. Currently the only way to create subfolders is by importing recursive levels of bookmarks.',
+  permissions: []
+})
+text.set(FeatureIdent.TABSETS_SHARING.toLowerCase(), {
+  name: 'Sharing Tabsets',
+  description: 'Share tabsets publicly.',
   permissions: []
 })
 

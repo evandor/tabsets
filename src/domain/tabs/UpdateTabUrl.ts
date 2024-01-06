@@ -29,6 +29,7 @@ export class UpdateTabUrlCommand implements Command<any> {
     public tab: Tab,
     public newUrl: string,
     public newName: string,
+    public newDesc: string,
     public placeholders: string[] = [],
     public placeholderValues: Map<string,string> = new Map(),
     ) {
@@ -36,7 +37,7 @@ export class UpdateTabUrlCommand implements Command<any> {
 
   async execute(): Promise<ExecutionResult<string>> {
     const oldUrl = this.tab.url || '';
-    await TabsetService.setCustomTitle(this.tab, this.newName)
+    await TabsetService.setCustomTitle(this.tab, this.newName, this.newDesc)
     return TabsetService.setUrl(this.tab, this.newUrl, this.placeholders, this.placeholderValues)
       .then(ignored => {
         if (this.tab.url) {

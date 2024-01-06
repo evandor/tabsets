@@ -26,7 +26,7 @@
 
     <div class="row q-ma-none">
       <div class="col-12">
-        <PanelTabList :tabs="groupedTabs"/>
+        <PanelTabList :tabs="groupedTabs as Tab[]" />
       </div>
     </div>
 
@@ -81,7 +81,7 @@ watchEffect(() => {
       _.filter(
         _.flatMap(
           _.filter(
-            _.map([...tabsStore.tabsets.values()],
+            _.map([...tabsStore.tabsets.values()] as Tabset[],
               (ts: Tabset) => ts),
             (ts: Tabset) => ts.status === TabsetStatus.DEFAULT || ts.status === TabsetStatus.FAVORITE),
           (ts: Tabset) => ts.tabs), (t: Tab) => true),

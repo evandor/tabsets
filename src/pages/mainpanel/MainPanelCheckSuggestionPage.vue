@@ -33,8 +33,8 @@
       </div>
     </div>
 
-    <div class="row items-baseline q-ma-md">
-      <div class="col-2 text-bold">
+    <div class="row items-baseline q-mx-md q-my-xs">
+      <div class="col-2 text-caption">
         Messsage
       </div>
       <div class="col">
@@ -42,7 +42,7 @@
       </div>
     </div>
     <div class="row items-baseline q-ma-md" v-if="suggestion?.data['url' as keyof object]">
-      <div class="col-2 text-bold">
+      <div class="col-2 ">
         URL
       </div>
       <div class="col text-blue cursor-pointer">
@@ -52,34 +52,38 @@
       </div>
     </div>
 
-    <template v-if="suggestion?.type?.toUpperCase() === 'REDIRECT_HAPPENED_FOR_BOOKMARK'">
+    <template v-if="suggestion?.type?.toUpperCase() === 'REDIRECT_HAPPENED_FOR_BOOKMARK' ||
+                suggestion?.type?.toUpperCase() === 'REDIRECT_HAPPENED_FOR_TAB'">
 
       <div class="row items-baseline q-ma-md">
-        <div class="col-3 text-bold">
+        <div class="col-2">
           Got Response Code
         </div>
-        <div class="col-9">
-          {{ suggestion?.data.status }}
+        <div class="col">
+          {{ suggestion?.data['status' as keyof object] }}
         </div>
-        <div class="col-3 text-bold">
-          Suggestinng: Replace
+        <div class="col-12 text-bold q-my-lg">
+          Suggestion:
         </div>
-        <div class="col-9">
-          {{ suggestion?.data.url }}
+        <div class="col-2">
+          Replace
         </div>
-        <div class="col-3 text-bold">
+        <div class="col-10">
+          {{ suggestion?.data['url' as keyof object] }}
+        </div>
+        <div class="col-2">
           with
         </div>
-        <div class="col-9">
-          {{ suggestion?.data.location }}
+        <div class="col-10">
+          {{ suggestion?.data['location' as keyof object] }}
         </div>
       </div>
 
       <div class="row items-baseline q-ma-md">
-        <div class="col-3 text-bold">
-
+        <div class="col-2 text-bold">
+          &nbsp;
         </div>
-        <div class="col-9">
+        <div class="col">
 
           <template v-if="!decided">
             <q-btn label="Ignore" class="q-mr-md" size="sm" @click="ignoreSuggestion()">
@@ -99,10 +103,10 @@
     <template v-if="suggestion?.type === SuggestionType.CONTENT_CHANGE">
 
       <div class="row items-baseline q-ma-md">
-        <div class="col-3 text-bold">
+        <div class="col-2 text-bold">
 
         </div>
-        <div class="col-9">
+        <div class="col">
 
           <template v-if="!decided">
             <q-btn v-if="isMonitoring()" label="Stop Monitoring" class="q-mr-md" size="sm" @click="stopMonitoring()">
@@ -153,13 +157,13 @@
         </div>
         <div class="col-4">
           <q-scroll-area
-              visible
-              :thumb-style="thumbStyle"
-              :bar-style="barStyle"
-              style="height: 100%"
-              class="col"
-              ref="secondRef"
-              @scroll="onScrollSecond">
+            visible
+            :thumb-style="thumbStyle"
+            :bar-style="barStyle"
+            style="height: 100%"
+            class="col"
+            ref="secondRef"
+            @scroll="onScrollSecond">
             <div class="row no-wrap">
               <img id="monitoringSnapshotImg">
             </div>
@@ -167,13 +171,13 @@
         </div>
         <div class="col-4">
           <q-scroll-area
-              visible
-              :thumb-style="thumbStyle"
-              :bar-style="barStyle"
-              style="height: 100%"
-              class="col"
-              ref="thirdRef"
-              @scroll="onScrollThird">
+            visible
+            :thumb-style="thumbStyle"
+            :bar-style="barStyle"
+            style="height: 100%"
+            class="col"
+            ref="thirdRef"
+            @scroll="onScrollThird">
             <div class="row no-wrap">
               <canvas id="diffCanvas"/>
             </div>
@@ -216,6 +220,7 @@ import {useTabsetService} from "src/services/TabsetService2";
 import {UpdateMonitoringCommand} from "src/domain/monitoring/UpdateMonitoringCommand";
 import {MonitoringType} from "src/models/Monitor";
 import {useUtils} from "src/services/Utils";
+import {NotificationType} from "src/services/ErrorHandler";
 
 const {sendMsg} = useUtils()
 
@@ -236,7 +241,7 @@ const barStyle = ref({right: '2px', borderRadius: '9px', backgroundColor: 'white
 let ignoreSource: string | null = null
 
 onMounted(() => {
-  Analytics.firePageViewEvent('MainPanelTabAssignmentPage', document.location.href);
+  Analytics.firePageViewEvent('MainPanelCheckSuggestionPage', document.location.href);
 })
 
 watchEffect(() => {
@@ -263,7 +268,7 @@ watchEffect(async () => {
   if (suggestionId.value) {
     suggestion.value = useSuggestionsStore().getSuggestion(suggestionId.value)
     console.log("got suggestion", suggestion.value)
-    if (suggestion.value) {
+    if (suggestion.value && suggestion.type === SuggestionType.CONTENT_CHANGE) {
       const tabId = suggestion.value['data' as keyof object]['tabId' as keyof object]
       console.log("got tabId", tabId)
       pngs.value = await PdfService.getPngsForTab(tabId)
@@ -296,71 +301,69 @@ watchEffect(async () => {
               const content1: Blob = pngs.value[0].content as Blob
               const content2: Blob = pngs.value[1].content as Blob
               content1.arrayBuffer()
-                  .then((buf1: ArrayBuffer) => {
-                    //console.log("got buf1", ArrayBuffer.isView(buf1))
-                    //console.log("got buf1", ArrayBuffer.isView(buf1), buf1.constructor.BYTES_PER_ELEMENT === 1)
-                    content2.arrayBuffer()
-                        .then((buf2: ArrayBuffer) => {
+                .then((buf1: ArrayBuffer) => {
+                  //console.log("got buf1", ArrayBuffer.isView(buf1))
+                  //console.log("got buf1", ArrayBuffer.isView(buf1), buf1.constructor.BYTES_PER_ELEMENT === 1)
+                  content2.arrayBuffer()
+                    .then((buf2: ArrayBuffer) => {
 
-                          const beforeImg: PNGWithMetadata = PNG.sync.read(Buffer.from(buf1))
-                          let afterImg = PNG.sync.read(Buffer.from(buf2))
+                      const beforeImg: PNGWithMetadata = PNG.sync.read(Buffer.from(buf1))
+                      let afterImg = PNG.sync.read(Buffer.from(buf2))
 
-                          console.log("beforeImg:", beforeImg.width, beforeImg.height)
-                          console.log("afterImg: ", afterImg.width, afterImg.height)
+                      console.log("beforeImg:", beforeImg.width, beforeImg.height)
+                      console.log("afterImg: ", afterImg.width, afterImg.height)
 
-                          const width = beforeImg.width
-                          const height = beforeImg.height
+                      const width = beforeImg.width
+                      const height = beforeImg.height
 
-                          if (afterImg.height > beforeImg.height) { // assuming width is the same
-                            //ctx?.createImageData(width, height);
-                            let newfile = new PNG({width, height});
-                            for (let y = 0; y < newfile.height; y++) {
-                              for (let x = 0; x < newfile.width; x++) {
-                                let idx = (newfile.width * y + x) << 2;
+                      if (afterImg.height > beforeImg.height) { // assuming width is the same
+                        //ctx?.createImageData(width, height);
+                        let newfile = new PNG({width, height});
+                        for (let y = 0; y < newfile.height; y++) {
+                          for (let x = 0; x < newfile.width; x++) {
+                            let idx = (newfile.width * y + x) << 2;
 
-                                let col = 0xff;
+                            let col = 0xff;
 
-                                newfile.data[idx] = col;
-                                newfile.data[idx + 1] = col;
-                                newfile.data[idx + 2] = col;
-                                newfile.data[idx + 3] = 0xff;
-                              }
-                            }
-                            afterImg = newfile
-                                .pack()
-                                //.pipe(fs.createWriteStream(__dirname + "/newfile.png"))
-                                .on("finish", function () {
-                                  console.log("Written!");
-                                });
-                            //console.log("r", r)
+                            newfile.data[idx] = col;
+                            newfile.data[idx + 1] = col;
+                            newfile.data[idx + 2] = col;
+                            newfile.data[idx + 3] = 0xff;
                           }
-                          console.log("sizes: ", beforeImg.width, afterImg.width, beforeImg.height, afterImg.height)
+                        }
+                        afterImg = newfile
+                          .pack()
+                          //.pipe(fs.createWriteStream(__dirname + "/newfile.png"))
+                          .on("finish", function () {
+                            console.log("Written!");
+                          });
+                        //console.log("r", r)
+                      }
+                      console.log("sizes: ", beforeImg.width, afterImg.width, beforeImg.height, afterImg.height)
 
-                          if (beforeImg.width === afterImg.width && beforeImg.height === afterImg.height) {
-                            //const d = new PNG({width, height});
-                            const canvas: HTMLCanvasElement | null = document.getElementById("diffCanvas") as HTMLCanvasElement
-                            if (canvas) {
-                              canvas.height = height
-                              canvas.width = width
-                              const ctx = canvas.getContext("2d");
-                              //const imgData = ctx?.createImageData(100, 100);
-                              const d: ImageData | undefined = ctx?.createImageData(width, height);
-                              if (d) {
-                                const numDiffPixels = pixelmatch(beforeImg.data, afterImg.data, d.data, width, height, {
-                                  threshold: 0.1,
-                                });
-                                ctx?.putImageData(d, 0, 0)
-                                console.log("###", numDiffPixels);
-                              }
-
-                            }
+                      if (beforeImg.width === afterImg.width && beforeImg.height === afterImg.height) {
+                        //const d = new PNG({width, height});
+                        const canvas: HTMLCanvasElement | null = document.getElementById("diffCanvas") as HTMLCanvasElement
+                        if (canvas) {
+                          canvas.height = height
+                          canvas.width = width
+                          const ctx = canvas.getContext("2d");
+                          //const imgData = ctx?.createImageData(100, 100);
+                          const d: ImageData | undefined = ctx?.createImageData(width, height);
+                          if (d) {
+                            const numDiffPixels = pixelmatch(beforeImg.data, afterImg.data, d.data, width, height, {
+                              threshold: 0.1,
+                            });
+                            ctx?.putImageData(d, 0, 0)
+                            console.log("###", numDiffPixels);
                           }
 
-                        })
-                  })
+                        }
+                      }
 
+                    })
+                })
 
-              //diffContext.putImageData(diff, 0, 0);
             }
           }
         }
@@ -374,15 +377,16 @@ const closeWindow = () => window.close()
 
 const applySuggestion = () => {
   if (suggestion.value) {
-    useCommandExecutor().executeFromUi(new ApplySuggestionCommand(suggestion.value))
-        .then(() => decided.value = true)
+    useCommandExecutor()
+      .executeFromUi(new ApplySuggestionCommand(suggestion.value), NotificationType.NOTIFY)
+      .then(() => decided.value = true)
   }
 }
 
 const ignoreSuggestion = () => {
   if (suggestion.value) {
     useCommandExecutor().executeFromUi(new IgnoreSuggestionCommand(suggestion.value))
-        .then(() => decided.value = true)
+      .then(() => decided.value = true)
   }
 }
 
@@ -408,25 +412,25 @@ const createImageToCompare = async () => {
 
       if (tempTab && tempTab.id) {
         chrome.tabs.sendMessage(
-            tempTab.id,
-            "getContent",
-            {},
-            (res) => {
-              console.log("getContent returned result with length", res?.content?.length)
-              let html = ContentUtils.setBaseHref(suggestion.value?.url || '', res.content)
-              return PdfService.screenshotFrom(html)
-                  .then((res: any) => {
-                    console.log("res", res, typeof res)
-                    console.log("res2", typeof res.data)
-                    const tab = new Tab(suggestion.value?.data['tabId' as keyof object] || '', tempTab)
-                    PdfService.saveBlob(tab, res.data, 'PNG', 'monitoring snapshot')
-                    setTimeout(() => chrome.tabs.remove(tempTab.id || 0), 2000)
-                  }).catch((err: any) => {
-                    //return handleError(err)
-                    console.log("got error", err)
-                    setTimeout(() => chrome.tabs.remove(tempTab.id || 0), 2000)
-                  })
-            })
+          tempTab.id,
+          "getContent",
+          {},
+          (res) => {
+            console.log("getContent returned result with length", res?.content?.length)
+            let html = ContentUtils.setBaseHref(suggestion.value?.url || '', res.content)
+            return PdfService.screenshotFrom(html)
+              .then((res: any) => {
+                console.log("res", res, typeof res)
+                console.log("res2", typeof res.data)
+                const tab = new Tab(suggestion.value?.data['tabId' as keyof object] || '', tempTab)
+                PdfService.saveBlob(tab, res.data, 'PNG', 'monitoring snapshot')
+                setTimeout(() => chrome.tabs.remove(tempTab.id || 0), 2000)
+              }).catch((err: any) => {
+                //return handleError(err)
+                console.log("got error", err)
+                setTimeout(() => chrome.tabs.remove(tempTab.id || 0), 2000)
+              })
+          })
       }
     }, 2000)
   }
@@ -439,10 +443,10 @@ function scroll(source: any, position: any) {
   }
 
   ignoreSource = source === 'first'
-      ? 'second'
-      : source === 'second' ?
-          'third' :
-          'first'
+    ? 'second'
+    : source === 'second' ?
+      'third' :
+      'first'
 
   if (source === 'first') {
     secondRef.value?.setScrollPosition('vertical', position)
@@ -490,11 +494,11 @@ const deleteNotification = async () => {
     const pngs = await PdfService.getPngsForTab(tabId)
     pngs.forEach(p => PdfService.deleteBlob(tabId, p.id))
     useSuggestionsStore().removeSuggestion(suggestion.value?.id)
-        .then(() => {
-          const tabsetId = useTabsStore().getTabAndTabsetId(tabId)?.tabsetId
-          sendMsg('reload-suggestions', {tabsetId})
-          closeWindow()
-        })
+      .then(() => {
+        const tabsetId = useTabsStore().getTabAndTabsetId(tabId)?.tabsetId
+        sendMsg('reload-suggestions', {tabsetId})
+        closeWindow()
+      })
   }
 }
 

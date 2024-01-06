@@ -31,7 +31,7 @@
           </template>
         </q-card-section>
 
-        <q-card-section v-if="usePermissionsStore().hasFeature(FeatureIdent.WINDOW_MANAGEMENT)">
+        <q-card-section>
           <q-select
               dense
               options-dense

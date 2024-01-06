@@ -31,16 +31,17 @@ import {FeatureIdent} from "src/models/AppFeature";
 
 const props = defineProps({
   tab: {type: Object as PropType<Tab>, required: true},
+  index: {type: Number, required: true},
   hideMenu: {type: Boolean, default: false},
   sorting: {type: String as PropType<TabSorting>, default: TabSorting.CUSTOM},
   type: {type: String, default: 'sidepanel'},
-  tabset: {type: Object as PropType<Tabset>, required: true},
+  tabset: {type: Object as PropType<Tabset>, required: false},
   showTabsets: {type: Boolean, default: false},
   preventDragAndDrop: {type: Boolean, default: false},
 })
 
 const startDrag = (evt: any, tab: Tab) => {
-  console.debug("start drag", evt, tab)
+  console.log("start drag", evt, tab)
   if (evt.dataTransfer) {
     evt.dataTransfer.dropEffect = 'all'
     evt.dataTransfer.effectAllowed = 'all'

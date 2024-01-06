@@ -61,16 +61,18 @@ export function useUtils() {
         }
     }
     const isCurrentTab = (tab: Tab) => {
-        if (!inBexMode() && !tab.url) {
+        if (!inBexMode() || !tab.url) {
             return false
         }
         const windowId = useWindowsStore().currentWindow?.id || 0
         const currentChromeTab = useTabsStore().getCurrentChromeTab(windowId) || useTabsStore().currentChromeTab
-        if  (currentChromeTab.url === tab.url) {
+        //console.log("checking current tab", currentChromeTab.url, tab.url, currentChromeTab.url === tab.url)
+        if (currentChromeTab?.url === tab.url) {
+            tab.chromeTabId = currentChromeTab.id
             return true
         }
         //console.log("checking", currentChromeTab.url, "/" + btoa(tab.url || ''), currentChromeTab.url?.indexOf("/" + btoa(tab.url || '')) )
-        if (currentChromeTab.url && currentChromeTab.url?.indexOf("/" + btoa(tab.url || '')) >= 0) {
+        if (currentChromeTab?.url && currentChromeTab.url?.indexOf("/" + btoa(tab.url || '')) >= 0) {
             return true
         }
         return false

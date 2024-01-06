@@ -5,9 +5,9 @@
 
         <template v-if="leftDrawerOpen">
           <q-img
-              class="q-ml-xs q-mr-none cursor-pointer" style="margin-top:-7px"
-              @click="toggleLeftDrawer"
-              src="favicon.ico" height="32px" width="32px">
+            class="q-ml-xs q-mr-none cursor-pointer" style="margin-top:-7px"
+            @click="toggleLeftDrawer"
+            src="favicon.ico" height="32px" width="32px">
             <q-tooltip class="tooltip">Toggle the tabset list view by clicking here</q-tooltip>
           </q-img>
           <q-toolbar-title v-if="!usePermissionsStore().hasFeature(FeatureIdent.SPACES)"
@@ -23,8 +23,8 @@
         <!-- left drawer closed -->
         <template v-else>
           <q-icon
-              class="q-ml-xs q-mr-none cursor-pointer"
-              name="menu" size="18px" @click="toggleLeftDrawer">
+            class="q-ml-xs q-mr-none cursor-pointer"
+            name="menu" size="18px" @click="toggleLeftDrawer">
             <q-tooltip class="tooltip">Toggle the tabset list view by clicking here</q-tooltip>
           </q-icon>
           <template v-if="usePermissionsStore().hasFeature(FeatureIdent.SPACES)">
@@ -70,14 +70,16 @@
         <!--          <q-tooltip class="tooltip" anchor="center right" self="center left" :delay="200">RSS Feeds</q-tooltip>-->
         <!--        </q-tab>-->
 
-        <span v-if="useSuggestionsStore().getSuggestions([SuggestionState.NEW, SuggestionState.DECISION_DELAYED]).length > 0">
+        <span
+          v-if="useSuggestionsStore().getSuggestions([SuggestionState.NEW, SuggestionState.DECISION_DELAYED]).length > 0">
           <q-btn
-              flat
-              :color="dependingOnStates()"
-              name="rss" icon="o_assistant">
+            flat
+            :color="dependingOnStates()"
+            name="rss" icon="o_assistant">
             <q-tooltip class="tooltip" anchor="center right" self="center left" :delay="200">You have suggestions
             </q-tooltip>
-            <q-badge :label="useSuggestionsStore().getSuggestions([SuggestionState.NEW, SuggestionState.DECISION_DELAYED]).length"/>
+            <q-badge
+              :label="useSuggestionsStore().getSuggestions([SuggestionState.NEW, SuggestionState.DECISION_DELAYED]).length"/>
           </q-btn>
           <q-menu :offset="[0, 7]">
             <q-list style="min-width: 200px">
@@ -96,71 +98,74 @@
         </span>
 
         <ToolbarButton
-            :feature="FeatureIdent.SAVE_TAB"
-            :drawer="DrawerTabs.SAVED_TABS"
-            icon="o_save"
-            tooltip="List of MTHML Snapshots"/>
+          :feature="FeatureIdent.SAVE_TAB"
+          :drawer="DrawerTabs.SAVED_TABS"
+          icon="o_save"
+          tooltip="List of MTHML Snapshots"/>
 
         <ToolbarButton
-            :feature="FeatureIdent.SAVE_TAB_AS_PNG"
-            :drawer="DrawerTabs.SAVED_TABS_AS_PNG"
-            icon="o_image"
-            tooltip="The List of PNGs"/>
+          :feature="FeatureIdent.SAVE_TAB_AS_PNG"
+          :drawer="DrawerTabs.SAVED_TABS_AS_PNG"
+          icon="o_image"
+          tooltip="The List of PNGs"/>
 
         <ToolbarButton
-            :feature="FeatureIdent.SAVE_TAB_AS_PDF"
-            :drawer="DrawerTabs.SAVED_TABS_AS_PDF"
-            icon="o_picture_as_pdf"
-            tooltip="The List of PDFs"/>
+          :feature="FeatureIdent.SAVE_TAB_AS_PDF"
+          :drawer="DrawerTabs.SAVED_TABS_AS_PDF"
+          icon="o_picture_as_pdf"
+          tooltip="The List of PDFs"/>
 
         <ToolbarButton
-            :feature="FeatureIdent.GROUP_BY_DOMAIN"
-            :drawer="DrawerTabs.GROUP_BY_HOST_TABS"
-            icon="o_dns"
-            tooltip="Your tabs grouped by domain"/>
+          :feature="FeatureIdent.GROUP_BY_DOMAIN"
+          :drawer="DrawerTabs.GROUP_BY_HOST_TABS"
+          icon="o_dns"
+          tooltip="Your tabs grouped by domain"/>
 
         <ToolbarButton
-            :feature=FeatureIdent.RSS
-            :drawer="DrawerTabs.RSS"
-            icon="o_rss_feed"
-            tooltip="Access to your rss feed"/>
+          :feature=FeatureIdent.RSS
+          :drawer="DrawerTabs.RSS"
+          icon="o_rss_feed"
+          tooltip="Access to your rss feed"/>
 
         <ToolbarButton
-            :feature="FeatureIdent.BOOKMARKS"
-            :drawer="DrawerTabs.BOOKMARKS"
-            icon="o_bookmark"
-            tooltip="Access to your bookmarks"/>
+          :feature="FeatureIdent.BOOKMARKS"
+          :drawer="DrawerTabs.BOOKMARKS"
+          icon="o_bookmark"
+          tooltip="Access to your bookmarks"/>
 
-<!--        <ToolbarButton-->
-<!--            :drawer="DrawerTabs.UNASSIGNED_TABS"-->
-<!--            icon="o_playlist_add"-->
-<!--            tooltip="Show add tabs view"-->
-<!--            :restricted="false"/>-->
-
-        <ToolbarButton
-            :drawer="DrawerTabs.OPEN_TABS"
-            icon="o_playlist_add"
-            tooltip="Show Open Tabs View"
-            :restricted="false"/>
+        <!--        <ToolbarButton-->
+        <!--            :drawer="DrawerTabs.UNASSIGNED_TABS"-->
+        <!--            icon="o_playlist_add"-->
+        <!--            tooltip="Show add tabs view"-->
+        <!--            :restricted="false"/>-->
 
         <ToolbarButton
-            :drawer="DrawerTabs.TAGS_VIEWER"
-            icon="o_label"
-            tooltip="Show tags viewer"
-            :restricted="false"/>
+          :drawer="DrawerTabs.OPEN_TABS"
+          icon="o_playlist_add"
+          tooltip="Show Open Tabs View"
+          :restricted="$q.platform.is.chrome"/>
+
+        <ToolbarButton
+          :drawer="DrawerTabs.TAGS_VIEWER"
+          icon="o_label"
+          tooltip="Show tags viewer"
+          :restricted="$q.platform.is.chrome"/>
 
         <div>
           <q-btn
-              @click="toggleSettings"
-              flat
-              size="12px"
-              class="q-mr-md" icon="o_settings">
+            @click="toggleSettings"
+            flat
+            size="12px"
+            class="q-mr-md" icon="o_settings">
           </q-btn>
           <q-menu :offset="[0, 7]">
             <q-list style="min-width: 200px">
               <q-item clickable @click="router.push('/settings')">Settings</q-item>
               <q-item clickable @click="tabsClicked(DrawerTabs.FEATURES)" v-close-popup>
                 Activate more Features
+              </q-item>
+              <q-item clickable v-close-popup>
+                <q-item-section @click="subscribe()">Subscribe to Pro Features</q-item-section>
               </q-item>
               <q-item clickable @click="showImportDialog" v-close-popup>
                 Import Tabsets
@@ -177,9 +182,9 @@
 
         <div class="cursor-pointer" @click="router.push('/about')" v-if="notificationsStore.updateToVersion !== ''">
           <q-btn
-              class="text-primary bg-warning"
-              @click="installNewVersion(notificationsStore.updateToVersion)"
-              :label="'New Version ' + notificationsStore.updateToVersion + ' available. Click here to update'"/>
+            class="text-primary bg-warning"
+            @click="installNewVersion(notificationsStore.updateToVersion)"
+            :label="'New Version ' + notificationsStore.updateToVersion + ' available. Click here to update'"/>
         </div>
       </q-toolbar>
     </q-header>
@@ -188,11 +193,9 @@
       <Navigation></Navigation>
     </q-drawer>
 
-    <q-drawer show-if-above
-              v-model="useUiStore().rightDrawerOpen" side="right" bordered
+    <q-drawer v-model="useUiStore().rightDrawerOpen" side="right" bordered
               content-class="column justify-between no-wrap bg-grey-1">
       <DrawerRight/>
-
     </q-drawer>
 
     <q-page-container>
@@ -208,17 +211,16 @@
 import {ref, watchEffect} from 'vue';
 import {useMeta, useQuasar} from "quasar";
 import {useTabsStore} from "src/stores/tabsStore";
-import {useRoute, useRouter} from "vue-router";
+import {useRouter} from "vue-router";
 import {useNotificationsStore} from "src/stores/notificationsStore";
 import Navigation from "src/components/Navigation.vue"
-import NavigationService from "src/services/NavigationService"
 import {useSearchStore} from "src/stores/searchStore";
 import _ from "lodash";
 import {useSpacesStore} from "src/stores/spacesStore"
 import OpenTabsThresholdWidget from 'src/components/widgets/OpenTabsThresholdWidget.vue'
 import SpacesSelectorWidget from 'src/components/widgets/SpacesSelectorWidget.vue'
 import SearchWidget from 'src/components/widgets/SearchWidget.vue'
-import {DrawerTabs, useUiStore} from "src/stores/uiStore";
+import {DrawerTabs, UserLevel, useUiStore} from "src/stores/uiStore";
 import NotificationDialog from "components/dialogues/NotificationDialog.vue"
 import {usePermissionsStore} from "src/stores/permissionsStore";
 import {Notification, NotificationStatus} from "src/models/Notification";
@@ -231,16 +233,14 @@ import SuggestionDialog from "components/dialogues/SuggestionDialog.vue";
 import {useSuggestionsStore} from "src/stores/suggestionsStore";
 import {FeatureIdent} from "src/models/AppFeature";
 import {useSettingsStore} from "src/stores/settingsStore"
-import TabsetsSelectorWidget from "components/widgets/TabsetsSelectorWidget.vue";
 import ToolbarButton from "components/widgets/ToolbarButton.vue";
+import {FirebaseCall} from "src/services/firebase/FirebaseCall";
 
 const $q = useQuasar()
 const router = useRouter()
 const tabsStore = useTabsStore()
-const searchStore = useSearchStore()
 
-const rightDrawerOpen = ref($q.screen.gt.md)
-const leftDrawerOpen = ref($q.screen.gt.md)
+const leftDrawerOpen = ref($q.screen.gt.lg)
 
 const notificationsStore = useNotificationsStore()
 const permissionsStore = usePermissionsStore()
@@ -249,7 +249,6 @@ const spacesStore = useSpacesStore()
 
 const spacesOptions = ref<object[]>([])
 const suggestions = ref<Suggestion[]>(useSuggestionsStore().getSuggestions([SuggestionState.NEW, SuggestionState.DECISION_DELAYED]))
-const search = ref('')
 
 const {inBexMode} = useUtils()
 
@@ -270,8 +269,8 @@ watchEffect(() => {
     const label = spacesStore.spaces.get(key)?.label || 'undef'
     return {id: key, label: label}
   })
-      .concat({id: '', label: '(unassigned)'})
-      .concat({id: '', label: 'create new space'})
+    .concat({id: '', label: '(unassigned)'})
+    .concat({id: '', label: 'create new space'})
 })
 
 //@ts-ignore
@@ -285,14 +284,9 @@ useMeta(() => {
 })
 
 
-function submitSearch() {
-  searchStore.term = search.value
-  router.push("/search")
-}
-
 const title = () => {
   return inBexMode() ? 'Tabsets' : process.env.MODE === 'spa' ?
-      'Tabsets Web' : 'Tabsets'
+    'Tabsets Web' : 'Tabsets'
 }
 
 const goHome = () => router.push("/")
@@ -302,8 +296,12 @@ const toggleLeftDrawer = () => {
   useUiStore().toggleLeftDrawer()
 }
 
-const toggleRightDrawer = () => {
-  rightDrawerOpen.value = !rightDrawerOpen.value
+const subscribe = async () => {
+  FirebaseCall.post("/stripe/create-checkout-session/tabsets", {})
+    .then((res) => {
+      console.log("res", res)
+      window.location.href = res.data.url
+    })
 }
 
 const installNewVersion = (version: string) => {
@@ -335,7 +333,7 @@ const suggestionDialog = (s: Suggestion) => $q.dialog({
 })
 
 const dependingOnStates = () =>
-    _.find(useSuggestionsStore().getSuggestions([SuggestionState.NEW, SuggestionState.DECISION_DELAYED]), s => s.state === SuggestionState.NEW) ? 'warning' : 'white'
+  _.find(useSuggestionsStore().getSuggestions([SuggestionState.NEW, SuggestionState.DECISION_DELAYED]), s => s.state === SuggestionState.NEW) ? 'warning' : 'white'
 
 const toggleSettings = () => settingsClicked.value = !settingsClicked.value
 

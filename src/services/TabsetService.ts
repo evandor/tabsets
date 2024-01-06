@@ -13,7 +13,8 @@ import {useSpacesStore} from "stores/spacesStore";
 import {FirebaseCall} from "src/services/firebase/FirebaseCall";
 import PlaceholderUtils from "src/utils/PlaceholderUtils";
 import {Monitor, MonitoringType} from "src/models/Monitor";
-import {ListDetailLevel} from "stores/uiStore";
+import {ListDetailLevel, useUiStore} from "stores/uiStore";
+import {TabsetColumn} from "src/models/TabsetColumn";
 
 const {getTabset, getCurrentTabset, saveTabset, saveCurrentTabset, tabsetsFor, addToTabset} = useTabsetService()
 
@@ -26,27 +27,6 @@ class TabsetService {
   setLocalStorage(localStorage: any) {
     this.localStorage = localStorage;
   }
-
-  // async restore(tabsetId: string, closeOldTabs: boolean = true) {
-  //   console.log("restoring from tabset", tabsetId)
-  //   const tabsStore = useTabsStore()
-  //   try {
-  //     tabsStore.deactivateListeners()
-  //     if (closeOldTabs) {
-  //       await ChromeApi.closeAllTabs()
-  //     }
-  //     const tabset = getTabset(tabsetId)
-  //     if (tabset) {
-  //       console.log("found tabset for id", tabsetId)
-  //       ChromeApi.restore(tabset)
-  //     }
-  //   } catch (ex) {
-  //     console.log("ex", ex)
-  //   } finally {
-  //     //tabsStore.activateListeners()
-  //   }
-  // }
-
 
   async saveToCurrentTabset(tab: Tab, useIndex: number | undefined = undefined): Promise<Tabset> {
     const currentTs = getCurrentTabset()
@@ -77,7 +57,7 @@ class TabsetService {
 
     if (currentTabset) {
       _.forEach(
-        tabsStore.pendingTabset.tabs,
+        tabsStore.pendingTabset.tabs as Tab[],
         t => {
           if (t?.chromeTabId) {
             if (!onlySelected || (onlySelected && t.selected)) {
@@ -179,8 +159,9 @@ class TabsetService {
     return db.getLinks(url)
   }
 
-  setCustomTitle(tab: Tab, title: string): Promise<any> {
+  setCustomTitle(tab: Tab, title: string, desc: string): Promise<any> {
     tab.name = title
+    tab.longDescription = desc
     return saveCurrentTabset()
   }
 
@@ -200,7 +181,7 @@ class TabsetService {
     return saveCurrentTabset()
   }
 
-  setUrl(tab: Tab, url: string, placeholders: string[] = [], placeholderValues: Map<string,string> = new Map()): Promise<any> {
+  setUrl(tab: Tab, url: string, placeholders: string[] = [], placeholderValues: Map<string, string> = new Map()): Promise<any> {
     tab.url = url
     tab = PlaceholderUtils.apply(tab, placeholders, placeholderValues)
     return saveCurrentTabset()
@@ -228,7 +209,7 @@ class TabsetService {
     const tabsStore = useTabsStore()
     const ts = tabsStore.pendingTabset
     if (ts) {
-      return _.filter(ts.tabs, t => t.selected)
+      return _.filter(ts.tabs as Tab[], t => t.selected)
     }
     return []
   }
@@ -428,12 +409,12 @@ class TabsetService {
    * @param tabsetId
    * @param tabsetName
    */
-  rename(tabsetId: string, tabsetName: string,newColor: string | undefined, window: string = 'current', details: ListDetailLevel): Promise<object> {
+  rename(tabsetId: string, tabsetName: string, newColor: string | undefined, window: string = 'current', details: ListDetailLevel): Promise<object> {
     const trustedName = tabsetName.replace(STRIP_CHARS_IN_USER_INPUT, '')
     let trustedColor = newColor ? newColor.replace(STRIP_CHARS_IN_COLOR_INPUT, '') : undefined
     trustedColor = trustedColor && trustedColor.length > 20 ?
-        trustedColor?.substring(0,19) :
-        trustedColor
+      trustedColor?.substring(0, 19) :
+      trustedColor
 
     const tabset = getTabset(tabsetId)
     if (tabset) {
@@ -461,19 +442,22 @@ class TabsetService {
     }
   }
 
-  moveTo(tabId: string, newIndex: number) {
-    console.log("moving", tabId, newIndex)
+  moveTo(tabId: string, newIndex: number, column: TabsetColumn) {
+    console.log("moving", tabId, newIndex, column.id)
     let tabs = useTabsStore().getCurrentTabs
+    //console.log("tabs", tabs)
+    //tabs = _.filter(tabs, (t: Tab) => t.columnId === column.id)
     const oldIndex = _.findIndex(tabs, t => t.id === tabId)
     if (oldIndex >= 0) {
+      console.log("found old index", oldIndex)
       const tab = tabs.splice(oldIndex, 1)[0];
       tabs.splice(newIndex, 0, tab);
 
       // Sharing
       const currentTs = useTabsStore().getCurrentTabset
       if (currentTs) {
-        if (currentTs.sharedId && currentTs.sharing === TabsetSharing.PUBLIC) {
-          currentTs.sharing = TabsetSharing.PUBLIC_OUTDATED
+        if (currentTs.sharedId && currentTs.sharing === TabsetSharing.PUBLIC_LINK) {
+          currentTs.sharing = TabsetSharing.PUBLIC_LINK_OUTDATED
         }
       }
 
@@ -578,16 +562,50 @@ class TabsetService {
     return Promise.reject("could not change status : " + tabsetId)
   }
 
-  share(tabsetId: string, sharing: TabsetSharing, sharedId: string | undefined, sharedBy: string | undefined): Promise<TabsetSharing> {
-    console.debug(`sharing ${tabsetId} as ${sharing}`)
+  async share(tabsetId: string, sharing: TabsetSharing, sharedId: string | undefined, sharedBy: string | undefined): Promise<TabsetSharing | void> {
+    console.log(`setting property 'sharing' to ${sharing} for  ${tabsetId} with sharingId ${sharedId}`)
     const ts = getTabset(tabsetId)
     if (ts) {
       const oldSharing = ts.sharing
       ts.sharing = sharing
       ts.sharedBy = sharedBy
+      ts.view = "list"
+      ts.mqttUrl = useUiStore().sharingMqttUrl
+
       if (sharing === TabsetSharing.UNSHARED) {
-        return FirebaseCall.delete("/share/public/" + sharedId)
-      } else if (sharedId) {
+        console.log("deleting share for tabset", ts.sharedId)
+        return FirebaseCall.delete("/share/public/" + ts.sharedId)
+          .then(() => {
+            ts.sharedBy = undefined
+            ts.sharedId = undefined
+            console.log("unshared tabset", ts)
+            saveTabset(ts)
+          })
+      }
+
+      console.log("setting author and avatar for comments")
+      for (const tab of ts.tabs) {
+        for (const c of tab.comments) {
+          console.log("found comment", c.author, c)
+          if (c.author === "<me>") {
+            c.author = useUiStore().sharingAuthor || '---'
+            c.avatar = useUiStore().sharingAvatar
+          }
+        }
+      }
+
+      console.log("setting thumbnails as images")
+      for (const tab of ts.tabs) {
+        const thumb = await this.getThumbnailFor(tab)
+        if (thumb) {
+          if (thumb && thumb['thumbnail' as keyof object]) {
+            tab.image = thumb['thumbnail' as keyof object]
+          }
+        }
+      }
+
+      if (sharedId) {
+        ts.sharedAt = new Date().getTime()
         return FirebaseCall.put("/share/public/" + sharedId, ts)
           .then((res: any) => {
             //ts.sharedId = res.data.sharedId
@@ -595,8 +613,10 @@ class TabsetService {
               .then(() => oldSharing)
           })
       } else {
+        ts.sharedAt = new Date().getTime()
         return FirebaseCall.post("/share/public", ts)
           .then((res: any) => {
+            console.log("setting shared id to ", res.data.sharedId)
             ts.sharedId = res.data.sharedId
             return saveTabset(ts)
               .then(() => oldSharing)

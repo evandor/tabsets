@@ -14,32 +14,26 @@
 import 'regenerator-runtime/runtime'
 import {ref, watchEffect} from "vue";
 import {useRoute} from "vue-router";
-import {useQuasar} from "quasar";
 import {useTabsStore} from "src/stores/tabsStore";
 import {Tab} from "src/models/Tab";
 import {useUtils} from "src/services/Utils";
-import {Tabset} from "src/models/Tabset";
+import {Tabset, TabsetSharing} from "src/models/Tabset";
 import EditorJS, {OutputData} from "@editorjs/editorjs";
 
 import EditorJsConfig from "src/utils/EditorJsConfig";
 import {useTabsetService} from "src/services/TabsetService2";
-//import './editorjs/linkTool.css';
 
 const {formatDate, sendMsg, sanitize} = useUtils()
 
-const $q = useQuasar()
 const tabsStore = useTabsStore()
 const route = useRoute()
-
-const editor = ref<any>(tabsStore.getCurrentTabset?.page || '')
-const editorRef = ref<any>(null)
 
 const tab = ref<Tab | undefined>(undefined)
 const tabsetId = ref<string | undefined>(route.query.tsId as string)
 const tabset = ref<Tabset | undefined>(undefined)
 const dirty = ref(false)
 
-let savingInterval:NodeJS.Timeout | undefined = undefined
+let savingInterval: NodeJS.Timeout | undefined = undefined
 
 let editorJS2: EditorJS = undefined as unknown as EditorJS
 
@@ -82,10 +76,18 @@ const saveWork = () => {
 
       console.log("tabset", tabset, tab.value)
       if (tabset.value) {
-        tabset.value.page = outputData // sanitize?
-        console.log("saving note", tabset, tabsetId.value)
-        // needed to update the note in the side panel
+        tabset.value.page = outputData // TODO sanitize?
+        console.log("saving tabset page content", tabset, tabsetId.value)
+        // needed to update the content in the side panel
         //sendMsg('note-changed', {tab: tab.value, tabsetId: tabsetId.value, noteId: noteId.value})
+        sendMsg('reload-tabset', {tabsetId: tabsetId.value})
+
+        // Sharing
+        if (tabset.value.sharedId && tabset.value.sharing === TabsetSharing.PUBLIC_LINK) {
+          tabset.value.sharing = TabsetSharing.PUBLIC_LINK_OUTDATED
+          tabset.value.sharedAt = new Date().getTime()
+        }
+
         useTabsetService().saveTabset(tabset.value as Tabset)
         dirty.value = false
         if (savingInterval) {

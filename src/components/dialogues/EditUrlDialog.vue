@@ -11,6 +11,13 @@
         </div>
       </q-card-section>
 
+      <q-card-section>
+        <div class="text-body">
+          <div class="text-body"><b>Tab Description:</b></div>
+          <q-input type="textarea" autogrow dense v-model="newTabDescription"/>
+        </div>
+      </q-card-section>
+
       <q-card-section class="q-pt-none">
         <div class="text-body"><b>URL:</b></div>
         <q-input type="url"
@@ -76,6 +83,7 @@ const tabsStore = useTabsStore()
 
 const newTabUrl = ref(props.tab.url || '')
 const newTabName = ref(props.tab.name || props.tab.title)
+const newTabDescription = ref(props.tab?.longDescription || props.tab?.description)
 const newTabUrlExists = ref(false)
 const hideWarning = ref(false)
 const placeholders = ref<string[]>([])
@@ -104,13 +112,16 @@ watchEffect(() => {
 })
 
 const updateTab = () =>
-    useCommandExecutor().executeFromUi(new UpdateTabUrlCommand(
-        props.tab, newTabUrl.value, newTabName.value || '', placeholders.value, placeholderValues.value))
+  useCommandExecutor().executeFromUi(new UpdateTabUrlCommand(
+    props.tab, newTabUrl.value,
+    newTabName.value || '',
+    newTabDescription.value || '',
+    placeholders.value, placeholderValues.value))
 
 
 const newTabsetDialogWarning = () => {
   return (!hideWarning.value && newTabUrl.value !== props.tab.name && tabsStore.nameExistsInContextTabset(newTabUrl.value)) ?
-      "Tabset already exists" : ""
+    "Tabset already exists" : ""
 }
 
 const newTabUrlIsValid = computed(() => {

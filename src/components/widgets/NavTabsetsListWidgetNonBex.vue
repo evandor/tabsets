@@ -95,6 +95,7 @@ import TabsetListContextMenu from "components/widgets/helper/TabsetListContextMe
 import {Tab} from "src/models/Tab";
 import {DeleteTabCommand} from "src/domain/tabs/DeleteTabCommand";
 import {useUiStore} from "src/stores/uiStore";
+import {useSpacesStore} from "stores/spacesStore";
 
 const router = useRouter()
 const tabsStore = useTabsStore()
