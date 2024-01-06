@@ -14,7 +14,7 @@ class UndoCommand implements Command<any> {
   }
 
   execute(): Promise<ExecutionResult<any>> {
-    this.tabset.columns = _.filter(this.tabset.columns, (g: Group) => g.id !== this.groupId)
+    this.tabset.columns = _.filter(this.tabset.columns, (g: TabsetColumn) => g.id !== this.groupId)
     return useTabsetService().saveTabset(this.tabset)
       .then((res) =>
         Promise.resolve(new ExecutionResult("done", `Group was deleted again`)))

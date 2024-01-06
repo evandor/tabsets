@@ -618,29 +618,6 @@ export function useTabsetService() {
     return false;
   }
 
-  // const handleAnnotationMessage = (msg: object) => {
-  //     console.log("yyy", msg)
-  //     switch (msg['name' as keyof object]) {
-  //         case "recogito-annotation-created":
-  //             const url = msg['url' as keyof object]
-  //             console.log("url", url)
-  //             const tab = useTabsStore().tabForUrlInSelectedTabset(url)
-  //             if (tab) {
-  //                 // if (!tab.annotations) {
-  //                 //   tab.annotations = new Map()
-  //                 // }
-  //                 console.log("tab.annotations", tab.annotations)
-  //                 //tab.annotations.set(msg['annotation' as keyof object]['id'], msg['annotation' as keyof object])
-  //                 tab.annotations.push(msg['annotation' as keyof object])
-  //             }
-  //             console.log("got tab", tab)
-  //             saveCurrentTabset()
-  //             break
-  //         default:
-  //             console.log("unhandled massage", msg)
-  //     }
-  // }
-
   const tabsToShow = (tabset: Tabset): Tab[] => {
     if (tabset.type === TabsetType.DYNAMIC &&
       tabset.dynamicTabs && tabset.dynamicTabs.type === DynamicTabSourceType.TAG) {
@@ -648,7 +625,8 @@ export function useTabsetService() {
       //console.log("checking", tabset.dynamicTabs)
       const tag = tabset.dynamicTabs?.config['tags' as keyof object][0]
       //console.log("using tag", tag)
-      _.forEach([...useTabsStore().tabsets.values()], (tabset: Tabset) => {
+      const tabsets:Tabset[] = [...useTabsStore().tabsets.values()] as Tabset[]
+      _.forEach(tabsets, (tabset: Tabset) => {
         _.forEach(tabset.tabs, (tab: Tab) => {
           if (tab.tags?.indexOf(tag) >= 0) {
             results.push(tab)

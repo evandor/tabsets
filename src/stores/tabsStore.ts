@@ -110,7 +110,7 @@ export const useTabsStore = defineStore('tabs', {
           _.filter(
             _.flatMap(
               _.filter(
-                _.map([...this.tabsets.values()], (ts: Tabset) => ts),
+                _.map([...this.tabsets.values()] as Tabset[], (ts: Tabset) => ts),
                 (ts: Tabset) => ts.status === TabsetStatus.DEFAULT || ts.status === TabsetStatus.FAVORITE),
               (ts: Tabset) => ts.tabs), (t: Tab) => t.activatedCount > 1),
           (t: Tab) => t.activatedCount, ['desc'])
@@ -126,15 +126,15 @@ export const useTabsStore = defineStore('tabs', {
       return tabset?.name || 'unknown'
     }),
     getCurrentTabs: (state): Tab[] => {
-      return state.tabsets.get(state.currentTabsetId)?.tabs || []
+      return state.tabsets.get(state.currentTabsetId)?.tabs as Tab[] || []
     },
     getCurrentTabset: (state): Tabset | undefined => {
       //console.log("calling getcurrenttabset", state.currentTabsetId)
-      return state.tabsets.get(state.currentTabsetId)
+      return state.tabsets.get(state.currentTabsetId) as Tabset
     },
     getTabset: (state) => {
       return (tabsetId: string): Tabset | undefined => {
-        return state.tabsets.get(tabsetId)
+        return state.tabsets.get(tabsetId) as Tabset
       }
     },
     currentTabsetName: (state): string | undefined => {
@@ -146,14 +146,14 @@ export const useTabsStore = defineStore('tabs', {
     },
 
     tabForUrlInSelectedTabset: (state): (url: string) => Tab | undefined => {
-      const tabs: Tab[] = state.tabsets.get(state.currentTabsetId)?.tabs || []
+      const tabs: Tab[] = state.tabsets.get(state.currentTabsetId)?.tabs as Tab[] || []
       return (url: string) => _.find(tabs, t => t.url === url)
     },
 
     tabsForUrl: (state): (url: string) => Tab[] => {
       return (url: string) => {
         const tabs: Tab[] = []
-        forEach([...state.tabsets.values()], (ts: Tabset) => {
+        forEach([...state.tabsets.values()] as Tabset[], (ts: Tabset) => {
           forEach(ts.tabs, (t: Tab) => {
             if (t.url === url) {
               tabs.push(t)
@@ -174,7 +174,7 @@ export const useTabsStore = defineStore('tabs', {
     existingInTabset: (state) => {
       return (searchName: string, space: Space = null as unknown as Space): Tabset | undefined => {
         const trustedName = searchName.replace(STRIP_CHARS_IN_USER_INPUT, '')
-        return _.find([...state.tabsets.values()], (ts: Tabset) => {
+        return _.find([...state.tabsets.values()] as Tabset[], (ts: Tabset) => {
           if (space === null) {
             return ts.name === trustedName?.trim()
           } else {
@@ -188,7 +188,7 @@ export const useTabsStore = defineStore('tabs', {
       return (tabId: string): TabAndTabsetId | undefined => {
         console.log("call to getTab1", tabId)
         for (const [key, value] of state.tabsets) {
-          const found = useTabsetService().findTabInFolder([value], tabId)
+          const found = useTabsetService().findTabInFolder([value as Tabset], tabId)
           // const found: Tab | undefined = _.find(value.tabs, t => {
           //   return t.id === tabId
           // })
@@ -204,7 +204,7 @@ export const useTabsStore = defineStore('tabs', {
       return (tabId: string): Tabset | undefined => {
         for (const [key, value] of state.tabsets) {
           if (_.find(value.tabs, t => t.id === tabId)) {
-            return value
+            return value as Tabset
           }
         }
         return undefined
@@ -228,7 +228,7 @@ export const useTabsStore = defineStore('tabs', {
     },
     rssTabs: (state) => {
       const res: Tab[] = []
-      _.forEach([...state.tabsets.values()], (ts: Tabset) => {
+      _.forEach([...state.tabsets.values()] as Tabset[], (ts: Tabset) => {
         if (ts.status === TabsetStatus.DEFAULT || ts.status === TabsetStatus.FAVORITE) {
           _.forEach(ts.tabs, (t: Tab) => {
             if (t.extension === UrlExtension.RSS) {
@@ -241,7 +241,7 @@ export const useTabsStore = defineStore('tabs', {
     },
     scheduledTabs: (state) => {
       const res: Tab[] = []
-      _.forEach([...state.tabsets.values()], (ts: Tabset) => {
+      _.forEach([...state.tabsets.values()] as Tabset[], (ts: Tabset) => {
         //if (ts.status === TabsetStatus.DEFAULT || ts.status === TabsetStatus.FAVORITE) {
         _.forEach(ts.tabs, (t: Tab) => {
           if (t.scheduledFor) {
@@ -342,7 +342,7 @@ export const useTabsStore = defineStore('tabs', {
     },
 
     selectCurrentTabset(tabsetId: string): Tabset | undefined {
-      const found = _.find([...this.tabsets.values()], k => {
+      const found = _.find([...this.tabsets.values()] as Tabset[], k => {
         const ts = k || new Tabset("", "", [])
         return ts.id === tabsetId
       })
@@ -359,10 +359,10 @@ export const useTabsStore = defineStore('tabs', {
     removeTab(tabset: Tabset, tabId: string) {
 
       //const currentTabset: Tabset = this.tabsets.get(this.currentTabsetId) || new Tabset("", "", [])
-      tabset.tabs = _.filter(tabset.tabs, (t: Tab) => t.id !== tabId)
+      tabset.tabs = _.filter(tabset.tabs as Tab[], (t: Tab) => t.id !== tabId)
       markDuplicates(tabset)
       if (this.pendingTabset) {
-        this.pendingTabset.tabs = _.filter(this.pendingTabset.tabs, (t: Tab) => t.id !== tabId)
+        this.pendingTabset.tabs = _.filter(this.pendingTabset.tabs as Tab[], (t: Tab) => t.id !== tabId)
       }
     },
 
@@ -375,7 +375,7 @@ export const useTabsStore = defineStore('tabs', {
       color: string | undefined = undefined
     ): Promise<NewOrReplacedTabset> {
 
-      const foundTS: Tabset | undefined = _.find([...this.tabsets.values()], ts => ts.name === tabsetName)
+      const foundTS: Tabset | undefined = _.find([...this.tabsets.values()] as Tabset[], ts => ts.name === tabsetName)
       let ts: Tabset = null as unknown as Tabset
       //const tabsetExtensionTab = await ChromeApi.getCurrentTab()
       const currentSpace = useSpacesStore().space
@@ -417,7 +417,7 @@ export const useTabsStore = defineStore('tabs', {
 
     getOrCreateSpecialTabset(ident: SpecialTabsetIdent, type: TabsetType): Tabset {
       console.log("creating special tabset", ident, type)
-      const foundTS: Tabset | undefined = _.find([...this.tabsets.values()], ts => ts.id === ident.toString())
+      const foundTS: Tabset | undefined = _.find([...this.tabsets.values()] as Tabset[], ts => ts.id === ident.toString())
       let ts: Tabset = null as unknown as Tabset
       if (foundTS) {
         ts = foundTS
