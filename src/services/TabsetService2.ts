@@ -31,6 +31,7 @@ import MqttService from "src/services/mqtt/MqttService";
 import {useRouter} from "vue-router";
 import tabsetService from "src/services/TabsetService";
 import TabsetService from "src/services/TabsetService";
+import {TabInFolder} from "src/models/TabInFolder";
 
 let db: PersistenceService = null as unknown as PersistenceService
 
@@ -171,7 +172,7 @@ export function useTabsetService() {
    * @param bms an array of Chrome bookmarks.
    * @param merge if true, the old values and the new ones will be merged.
    */
-  const saveOrReplaceFromBookmarks = async (name: string, bms: chrome.bookmarks.BookmarkTreeNode[], merge: boolean = false): Promise<object> => {
+  const saveOrReplaceFromBookmarks = async (name: string, bms: chrome.bookmarks.BookmarkTreeNode[], merge: boolean = false, dryRun = false): Promise<object> => {
     const tabsStore = useTabsStore()
     const now = new Date().getTime()
     const tabs = _.map(_.filter(bms, bm => bm.url !== undefined), c => {
@@ -185,13 +186,16 @@ export function useTabsetService() {
 
     const result = await tabsStore.updateOrCreateTabset(name, tabs, merge)
     if (result && result.tabset) {
-      await saveTabset(result.tabset)
-      selectTabset(result.tabset.id)
+      if (!dryRun) {
+        await saveTabset(result.tabset)
+        selectTabset(result.tabset.id)
+      }
       return {
         tabsetId: result.tabset.id,
         replaced: result.replaced,
         merged: merge,
-        updated: now
+        updated: now,
+        tabset: result.tabset
       }
     }
     return Promise.reject("could not import from bookmarks")
@@ -279,6 +283,16 @@ export function useTabsetService() {
 
   }
 
+  const rootTabsetFor = (ts: Tabset | undefined): Tabset | undefined => {
+    if (!ts) {
+      return undefined
+    }
+    if (ts.folderParent) {
+      return rootTabsetFor(getTabset(ts.folderParent))
+    }
+    return ts
+  }
+
   const saveTabset = async (tabset: Tabset): Promise<any> => {
     if (tabset.id) {
       tabset.updated = new Date().getTime()
@@ -287,8 +301,11 @@ export function useTabsetService() {
         tabset.type = TabsetType.DEFAULT
       }
       const additionalInfo = _.map(tabset.tabs, t => t.monitor)
-      console.log(`saving tabset '${tabset.name}' with ${tabset.tabs.length} tab(s)`)//, additionalInfo)
-      return db.saveTabset(tabset)
+      const rootTabset = rootTabsetFor(tabset)
+      console.log(`saving (sub-)tabset '${tabset.name}' with ${tabset.tabs.length} tab(s) at id ${rootTabset?.id}`)
+      if (rootTabset) {
+        return db.saveTabset(rootTabset)
+      }
     }
     return Promise.reject("tabset id not set")
   }
@@ -466,7 +483,7 @@ export function useTabsetService() {
     let tabset: Tabset | undefined = undefined
     for (let ts of [...useTabsStore().tabsets.values()]) {
       if (_.find(ts.tabs, t => t.id === id)) {
-        tabset = ts
+        tabset = ts as Tabset
       }
     }
     return tabset
@@ -656,6 +673,49 @@ export function useTabsetService() {
     })
   }
 
+  const findFolder = (folders: Tabset[], folderId: string): Tabset | undefined => {
+    for (const f of folders) {
+      if (f.id === folderId) {
+        console.log("found active folder", f)
+        return f
+      }
+    }
+    for (const f of folders) {
+      return findFolder(f.folders, folderId)
+    }
+    return undefined
+  }
+
+  const findTabInFolder = (folders: Tabset[], tabId: string): TabInFolder | undefined => {
+    for (const f of folders) {
+      for (const t of f.tabs) {
+        if (t.id === tabId) {
+          return new TabInFolder(t,f)
+        }
+      }
+    }
+    for (const f of folders) {
+      return findTabInFolder(f.folders, tabId)
+    }
+    return undefined
+  }
+
+  // TODO make command
+  const moveTabToFolder = (tabset: Tabset, tabIdToDrag: string, moveToFolderId: string) => {
+    console.log(`moving tab ${tabIdToDrag} to folder ${moveToFolderId} in tabset ${tabset.id}`)
+    const tabWithFolder = findTabInFolder([tabset], tabIdToDrag)
+    console.log("found tabWithFolder", tabWithFolder)
+    const newParentFolder = findFolder([tabset], moveToFolderId)
+    if (newParentFolder && tabWithFolder) {
+      console.log("newParentFolder", newParentFolder)
+      newParentFolder.tabs.push(tabWithFolder.tab)
+      saveTabset(tabset).then(() => {
+        tabWithFolder.folder.tabs = _.filter(tabWithFolder.folder.tabs, t => t.id !== tabIdToDrag)
+        saveTabset(tabset)
+      })
+    }
+  }
+
 
   return {
     init,
@@ -689,7 +749,10 @@ export function useTabsetService() {
     reloadTabset,
     //handleAnnotationMessage,
     tabsToShow,
-    deleteTabsetDescription
+    deleteTabsetDescription,
+    findFolder,
+    findTabInFolder,
+    moveTabToFolder
   }
 
 }

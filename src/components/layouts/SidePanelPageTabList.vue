@@ -121,7 +121,7 @@ const tabs = ref<Tab[]>([])
 
 const handleDragAndDrop = (event: any, column: TabsetColumn) => {
   const {moved, added} = event
-  console.log("event", event)
+  console.log("event!", event)
   if (moved) {
     console.log(`moved event: '${moved.element.tab.id}' ${moved.oldIndex} -> ${moved.newIndex}`)
     const tabsInColumn = tabsForColumn(column)
@@ -145,11 +145,12 @@ const handleDragAndDrop = (event: any, column: TabsetColumn) => {
 }
 
 watchEffect(() => {
-  const tabset = useTabsStore().getTabset(props.tabset?.id || "")
-  if (tabset) {
-    tabs.value = useTabsetService().tabsToShow(tabset)
+  // TODO why was this done in the first place? Updates from where?
+  //const tabset = useTabsStore().getTabset(props.tabset?.id || "")
+  if (props.tabset) {
+    tabs.value = useTabsetService().tabsToShow(props.tabset)
   } else {
-    console.warn("could not determine tabset for id", props.tabset?.id || "")
+    console.warn("could not determine tabset...")
     tabs.value = []
   }
 })
@@ -180,9 +181,9 @@ const tabsForColumn = (column: TabsetColumn): IndexedTab[] => {
       }
       return it.tab.columnId === column.id
     })
-  console.log("tfc", _.map(tfc, e => {
-    return {i: e.index, t: e.tab.id}
-  }))
+  // console.log("tfc", _.map(tfc, e => {
+  //   return {i: e.index, t: e.tab.id}
+  // }))
   return tfc
 }
 

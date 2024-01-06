@@ -581,6 +581,7 @@ export const useUiStore = defineStore('ui', () => {
     sharingAvatar,
     sharingMqttUrl,
     networkOnline,
-    mqttOffline
+    mqttOffline,
+    tabBeingDragged
   }
 })

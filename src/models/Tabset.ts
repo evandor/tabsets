@@ -40,11 +40,14 @@ export class Tabset {
   tabs: Tab[]
   dynamicTabs: DynamicTabSource | undefined
 
+  folders: Tabset[] = []
+  folderActive: string | undefined = undefined
+  folderParent: string | undefined = undefined
+
   // additional initialization in "loadTabsets()" for older tabsets.
   // in the application, we can assume that columns is always set, at least with an empty array
   // tabs have a columnId field which references a group or which is undefined.
   // a tabset's group _can_ contain a group with identifier "SPECIAL_ID_FOR_NO_GROUP_ASSIGNED"
-  // TODO handle tabs with columnId set to unknown group
   // was: groups: Group[]
   columns: TabsetColumn[] = []
 

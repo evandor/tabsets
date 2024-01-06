@@ -183,21 +183,23 @@ export const useTabsStore = defineStore('tabs', {
         })
       }
     },
+
     getTabAndTabsetId: (state) => {
       return (tabId: string): TabAndTabsetId | undefined => {
         console.log("call to getTab1", tabId)
-
         for (const [key, value] of state.tabsets) {
-          const found: Tab | undefined = _.find(value.tabs, t => {
-            return t.id === tabId
-          })
-          if (found) {
-            return new TabAndTabsetId(found, value.id)
+          const found = useTabsetService().findTabInFolder([value], tabId)
+          // const found: Tab | undefined = _.find(value.tabs, t => {
+          //   return t.id === tabId
+          // })
+          if (found && found.tab) {
+            return new TabAndTabsetId(found.tab, value.id)
           }
         }
         return undefined
       }
     },
+
     tabsetFor: (state) => {
       return (tabId: string): Tabset | undefined => {
         for (const [key, value] of state.tabsets) {
