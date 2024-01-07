@@ -23,7 +23,7 @@ import {useTabsStore} from "stores/tabsStore";
 import {useSpacesStore} from "stores/spacesStore";
 import {LocalStorage, uid} from "quasar";
 import {SyncType} from "stores/appStore";
-import {SYNC_GIT_TOKEN} from "boot/constants";
+import {SYNC_GITHUB_TOKEN} from "boot/constants";
 
 if (typeof self !== 'undefined') {
   self.Buffer = Buffer;
@@ -54,7 +54,7 @@ async function push(dir: string) {
     remote: 'origin',
     corsProxy: 'https://cors.isomorphic-git.org',
     ref: 'main',
-    onAuth: () => ({username: LocalStorage.getItem(SYNC_GIT_TOKEN) as string || '---'}),
+    onAuth: () => ({username: LocalStorage.getItem(SYNC_GITHUB_TOKEN) as string || '---'}),
   })
   console.log(pushResult)
 }
@@ -66,7 +66,7 @@ class GitPersistenceService implements PersistenceService {
   // TODO
   async init(url: string | undefined) {
     if (url) {
-      if (LocalStorage.getItem("sync.type") as SyncType === SyncType.GIT) {
+      if (LocalStorage.getItem("sync.type") as SyncType === SyncType.GITHUB) {
         console.log("=== initializing git database ===", url)
         this.db = await this.initDatabase(url)
         console.log("=== initializing git database: done ===")
@@ -111,7 +111,7 @@ class GitPersistenceService implements PersistenceService {
         //onMessage: (val:any) => (console.log("onMessage", val)),
         onAuthSuccess: () => (console.log("auth: success")),
         onAuthFailure: () => ("auth: failure"),
-        onAuth: () => ({username: LocalStorage.getItem(SYNC_GIT_TOKEN) as string || '---'}),
+        onAuth: () => ({username: LocalStorage.getItem(SYNC_GITHUB_TOKEN) as string || '---'}),
       }
       console.log(`about to clone '${url}' into ${useDir}`, cloneDef)
       const cloneRes = await git.clone(cloneDef);
@@ -139,7 +139,7 @@ class GitPersistenceService implements PersistenceService {
             return Promise.resolve("success!")
           },
           onAuthFailure: () => (console.log("auth: failure")),
-          onAuth: () => ({username: LocalStorage.getItem(SYNC_GIT_TOKEN) as string || '---'}),
+          onAuth: () => ({username: LocalStorage.getItem(SYNC_GITHUB_TOKEN) as string || '---'}),
         }
         console.log("checking repo", remoteInfoDef)
 

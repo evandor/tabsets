@@ -5,7 +5,11 @@ import {SHARING_INSTALLATION} from "boot/constants";
 
 export enum SyncType {
   NONE = "NONE",
-  GIT = "GIT"
+  GITHUB = "GITHUB",
+  GITLAB = "GITLAB",
+  COUCHDB = "COUCHDB",
+  MANAGED_GIT = "MANAGED_GIT",
+  MANAGED_COUCHDB = "MANAGED_COUCHDB"
 }
 
 export const useAppStore = defineStore('app', () => {

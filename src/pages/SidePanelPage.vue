@@ -232,7 +232,7 @@
         <template v-slot:title v-else>
           <div class="text-subtitle1 text-black">
             {{ toolbarTitle(tabsets as Tabset[]) }}
-            <q-icon v-if="LocalStorage.getItem('sync.type') as SyncType === SyncType.GIT"
+            <q-icon v-if="LocalStorage.getItem('sync.type') as SyncType === SyncType.GITHUB"
                     class="q-ml-none" name="sync" size="12px">
               <q-tooltip class="tooltip-small">Tabsets is synced via git</q-tooltip>
             </q-icon>
@@ -846,7 +846,7 @@ const testShare = () => {
   console.log(navigator)
   if (navigator.canShare) {
     console.log(navigator.canShare())
-    navigator.share(shareData).then((res) => console.log("res", res)).catch((err) => console.err(err))
+    navigator.share(shareData).then((res) => console.log("res", res)).catch((err) => console.error(err))
   }
 }
 

@@ -22,7 +22,7 @@
       <q-tab name="appearance" label="Appearance"/>
       <q-tab name="subscription" label="Subscription" icon="o_shopping_bag"/>
       <q-tab name="sharing" label="Sharing"/>
-      <q-tab name="syncing" label="Syncing" icon="o_shopping_bag" v-if="LocalStorage.has(SUBSCRIPTION_ID_IDENT)"/>
+      <q-tab name="syncing" label="Syncing" />
       <q-tab name="thirdparty" label="Third Party Services"/>
       <!--      <q-tab name="ignored" label="Ignored Urls"/>-->
       <q-tab name="archived" label="Archived Tabsets"
@@ -312,179 +312,7 @@
   </div>
 
   <div v-if="tab === 'syncing'">
-
-    <div class="q-pa-md q-gutter-sm">
-      <q-banner rounded class="bg-grey-1 text-primary" style="border: 1px solid orange">
-        <div class="text-body1">Experimental: Sync your tabsets with git.</div>
-        <div class="text-caption">
-          You need to provide a git repository URL and a personal access token (e.g. for
-          github: <a
-          href="https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens"
-          target="_blank">github example</a>).
-        </div>
-        <div class="text-caption">
-          Initially, the repository should be empty.
-        </div>
-      </q-banner>
-
-      <div class="row items-baseline q-ma-md q-gutter-lg">
-        <div class="col-3">
-          Syncing
-        </div>
-        <div class="col-7">
-          <q-select
-            label="Tabsets' Sync Settings"
-            filled
-            v-model="tempSyncOption"
-            :options="syncOptions"
-            map-options
-            emit-value
-            style="width: 250px"
-          />
-        </div>
-        <div class="col"></div>
-
-        <template v-if="tempSyncOption === SyncType.GIT">
-
-          <div class="col-3">
-            Git Repository URL
-          </div>
-          <div class="col-7">
-            <q-input type="url" color="primary" filled v-model="gitRepoUrl" label="" autocomplete="sync-url">
-              <template v-slot:prepend>
-                <q-icon name="sync"/>
-              </template>
-            </q-input>
-          </div>
-          <div class="col text-right"></div>
-
-          <!--          <div class="col-3">-->
-          <!--            Store Name-->
-          <!--          </div>-->
-          <!--          <div class="col-7">-->
-          <!--            <q-input type="url" color="primary" filled v-model="gitRepoStore" label=""-->
-          <!--                     lazy-rules-->
-          <!--                     :rules="[-->
-          <!--                       val => !!val || 'Store is required',-->
-          <!--                       val => /^[A-Za-z0-9]*$/.test(val) || 'Please use only characters or numbers'-->
-          <!--                       ]"-->
-          <!--                     hint="a subpath in your git repo to distinguish different sync stores">-->
-          <!--              <template v-slot:prepend>-->
-          <!--                <q-icon name="sync"/>-->
-          <!--              </template>-->
-          <!--            </q-input>-->
-          <!--          </div>-->
-          <!--          <div class="col text-right"></div>-->
-
-          <div class="col-3">
-            Git Repository Token
-          </div>
-          <div class="col-7">
-            <q-input type="password" color="primary" filled v-model="gitRepoToken" label=""
-                     hint="needed for write access, for private repositories also for read access">
-              <template v-slot:prepend>
-                <q-icon name="sync"/>
-              </template>
-            </q-input>
-          </div>
-          <div class="col text-right"></div>
-        </template>
-
-        <template v-if="tempSyncOption === SyncType.GIT && gitRepoUrl">
-          <div class="col-3"></div>
-          <div class="col-7">
-            <q-btn
-              label="Test Connection" @click="testGitConnection()"/>
-            <span class="q-ml-md"> {{ gitTestResult }}</span>
-          </div>
-          <div class="col text-right"></div>
-        </template>
-
-        <template v-if="gitTestResult === 'success' && !syncType && tempSyncOption === SyncType.GIT">
-          <div class="col-3"></div>
-          <div class="col-7">
-            <div>You can switch to the git-based sync version of tabsets now if you wish.</div>
-            <div>Please follow these steps:</div>
-            <ul>
-              <li><span class="cursor-pointer text-blue-8" @click="tab = 'importExport'">Export</span> your tabsets
-                first
-              </li>
-              <li>Click on 'Start Syncing' below</li>
-              <li>Restart Tabsets (close and open again)</li>
-              <li>Import your tabsets again</li>
-            </ul>
-          </div>
-          <div class="col text-right"></div>
-        </template>
-
-        <template v-if="syncType === SyncType.GIT && tempSyncOption === SyncType.NONE">
-          <div class="col-3"></div>
-          <div class="col-7">
-            <div>You can stop using the git-based sync version of tabsets if you wish.</div>
-            <div>Please follow these steps:</div>
-            <ul>
-              <li><span class="cursor-pointer text-blue-8" @click="tab = 'importExport'">Export</span> your tabsets
-                first
-              </li>
-              <li>Click on 'Stop Syncing' below</li>
-              <li>Restart Tabsets (close and open again)</li>
-              <li>Import your tabsets again</li>
-            </ul>
-          </div>
-          <div class="col text-right"></div>
-
-          <div class="col-3"></div>
-          <div class="col-7">
-            <q-banner rounded class="bg-grey-1 text-primary" style="border: 1px solid orange">
-              <div class="text-caption text-red">
-                If you do not export your tabsets and import them again you will not have access to the
-                data formerly stored in your git repository.
-              </div>
-            </q-banner>
-          </div>
-          <div class="col"></div>
-
-          <div class="col-3"></div>
-          <div class="col-7">
-            <q-btn label="Stop Syncing" @click="stopGitSyncing()"/>
-          </div>
-          <div class="col text-right"></div>
-        </template>
-
-        <template
-          v-if="tempSyncOption === SyncType.GIT && gitRepoUrl && gitTestResult === 'success'">
-
-          <div class="col-3"></div>
-          <div class="col-7">
-            <q-banner rounded class="bg-grey-1 text-primary" style="border: 1px solid orange">
-              <div class="text-caption text-red">
-                Syncing your data will store your data somewhere else than only locally on your computer. Using a public
-                repository will give public (read) access to your data!
-              </div>
-            </q-banner>
-          </div>
-          <div class="col"></div>
-
-          <div class="col-3"></div>
-          <div class="col-7">
-            <q-btn label="Start Syncing" @click="startGitSyncing()"/>
-          </div>
-          <div class="col text-right"></div>
-        </template>
-
-
-        <!--        <div class="col-3"></div>-->
-        <!--        <div class="col-7">-->
-        <!--          gitTestResult: {{ gitTestResult }}<br>-->
-        <!--          syncType: {{ syncType }}<br>-->
-        <!--          tempSyncOption: {{ tempSyncOption }}<br>-->
-        <!--        </div>-->
-        <!--        <div class="col text-right"></div>-->
-
-      </div>
-
-    </div>
-
+    <SyncingSettings @was-clicked="e => setTab(e)"/>
   </div>
 
   <div v-if="tab === 'internals'">
@@ -735,8 +563,10 @@ import {
   SHARING_AVATAR_IDENT,
   SHARING_INSTALLATION,
   SHARING_MQTT_IDENT, STRIP_CHARS_IN_USER_INPUT,
-  SUBSCRIPTION_ID_IDENT, SYNC_GIT_TOKEN, SYNC_GIT_URL, TITLE_IDENT
+  SUBSCRIPTION_ID_IDENT, SYNC_GITHUB_TOKEN, SYNC_GITHUB_URL, TITLE_IDENT
 } from "boot/constants";
+import SyncingSettings from "pages/helper/SyncingSettings.vue";
+import {log} from "isomorphic-git";
 
 const {sendMsg} = useUtils()
 
@@ -773,19 +603,6 @@ const pageCapturePermissionGranted = ref<boolean | undefined>(usePermissionsStor
 const allUrlsOriginGranted = ref<boolean | undefined>(usePermissionsStore().hasAllOrigins())
 const fullUrls = ref(localStorage.getItem('ui.fullUrls') || false)
 const detailLevelPerTabset = ref(localStorage.getItem('ui.detailsPerTabset') || false)
-
-const gitRepoToken = ref<string>(LocalStorage.getItem(SYNC_GIT_TOKEN) as string || '')
-const gitRepoUrl = ref<string>(localStorage.getItem(SYNC_GIT_URL) as string || '')
-//const gitRepoStore = ref<string>(localStorage.getItem('sync.git.store') as string || '')
-const gitTestResult = ref<string | undefined>(undefined)
-const syncType = ref<string | undefined>(undefined)
-const tempSyncOption = ref<SyncType>(localStorage.getItem('sync.type') as SyncType || SyncType.NONE)
-
-const syncOptions = [
-  {label: 'No Syncing', value: SyncType.NONE},
-  {label: 'Syncing via git repository', value: SyncType.GIT}
-]
-
 
 const subscription = ref<string>(LocalStorage.getItem(SUBSCRIPTION_ID_IDENT) as string || '')
 const installationTitle = ref<string>(LocalStorage.getItem(TITLE_IDENT) as string || 'My Tabsets')
@@ -855,25 +672,6 @@ watch(() => pageCapturePermissionGranted.value, (newValue, oldValue) => {
 watchEffect(() => {
   $q.dark.set(darkMode.value)
   localStorage.set('darkMode', darkMode.value)
-})
-
-watchEffect(() => {
-  (gitRepoUrl.value && gitRepoUrl.value.trim().length > 0) ?
-    LocalStorage.set(SYNC_GIT_URL, gitRepoUrl.value) :
-    LocalStorage.remove(SYNC_GIT_URL)
-  gitTestResult.value = undefined
-})
-
-watchEffect(() => {
-  (gitRepoToken.value && gitRepoToken.value.trim().length > 0) ?
-    LocalStorage.set(SYNC_GIT_TOKEN, gitRepoToken.value) :
-    LocalStorage.remove(SYNC_GIT_TOKEN)
-  gitTestResult.value = undefined
-})
-
-watchEffect(() => {
-  //localStorage.set('sync.type', tempSyncOption.value)
-  syncType.value = localStorage.getItem('sync.type') as SyncType
 })
 
 watchEffect(() => {
@@ -972,20 +770,6 @@ const simulateStaticSuggestion = () => {
   useSuggestionsStore().addSuggestion(suggestions[suggestionsCounter++ % 2])
 }
 
-const testGitConnection = async () => {
-  if (gitRepoUrl.value) {
-    console.log("testing git connection with", gitRepoUrl.value, gitRepoToken.value?.substring(0, 5) + "...")
-    const res = await GitPersistentService.testConnection(gitRepoUrl.value)//, gitRepoToken)
-    //console.log("got res:", res)
-    gitTestResult.value = res
-  } else {
-    gitTestResult.value = "no repo URL given"
-  }
-}
-
-const startGitSyncing = () => localStorage.set("sync.type", SyncType.GIT)
-const stopGitSyncing = () => localStorage.set("sync.type", SyncType.NONE)
-
 const subscribe = async () => {
   const callbackUrl = chrome.runtime.getURL("/www/index.html#/thanks")
   FirebaseCall.post("/stripe/create-checkout-session/tabsets", {
@@ -1005,8 +789,8 @@ const testSubscription = async () => {
     })
 }
 
+const setTab = (a:any) => tab.value = a['tab' as keyof object]
 
-//const syncingSetTo = (t: SyncType) => localStorage.getItem('sync.type') as SyncType === SyncType.GIT
 
 </script>
 

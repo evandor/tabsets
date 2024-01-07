@@ -26,8 +26,15 @@ const SHARING_AVATAR_IDENT = 'sharing.avatar';
 const SHARING_MQTT_IDENT = 'sharing.mqttUrl';
 const SHARING_INSTALLATION = 'sharing.installation'
 
-const SYNC_GIT_URL = "sync.git.url"
-const SYNC_GIT_TOKEN = "sync.git.token"
+const SYNC_GITLAB_URL = "sync.gitlab.url"
+const SYNC_GITLAB_TOKEN = "sync.gitlab.token"
+
+const SYNC_GITHUB_URL = "sync.github.url"
+const SYNC_GITHUB_TOKEN = "sync.github.token"
+
+const SYNC_COUCHDB_USERNAME = "sync.couchdb.username"
+const SYNC_COUCHDB_PASSWORD = "sync.couchdb.password"
+const SYNC_COUCHDB_URL = "sync.couchdb.url"
 
 export default boot(({}) => {
 })
@@ -43,8 +50,13 @@ export {
   SHARING_AVATAR_IDENT,
   SHARING_MQTT_IDENT,
   SHARING_INSTALLATION,
-  SYNC_GIT_URL,
-  SYNC_GIT_TOKEN,
+  SYNC_GITLAB_URL,
+  SYNC_GITLAB_TOKEN,
+  SYNC_GITHUB_URL,
+  SYNC_GITHUB_TOKEN,
+  SYNC_COUCHDB_USERNAME,
+  SYNC_COUCHDB_PASSWORD,
+  SYNC_COUCHDB_URL,
   TITLE_IDENT
 }
 
