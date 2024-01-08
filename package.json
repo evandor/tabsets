@@ -73,7 +73,7 @@
     "uuid": "^9.0.0",
     "v-onboarding": "^2.6.0",
     "vite-plugin-package-version": "^1.1.0",
-    "vue": "^3.0.0",
+    "vue": "^3.4.5",
     "vue-draggable-next": "^2.1.1",
     "vue-i18n": "^9.6.5",
     "vue-json-pretty": "^2.2.3",
