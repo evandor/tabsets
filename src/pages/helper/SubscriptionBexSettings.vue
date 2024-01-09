@@ -18,6 +18,16 @@
 
   <div class="row items-baseline q-ma-md q-gutter-lg">
 
+    <div class="col-3">
+      Authorize to subscribe or check your subscriptions
+    </div>
+    <div class="col-5">
+      <q-btn label="GitHub" @click="authorizeWith(githubAuthProvider)"/>
+    </div>
+    <div class="col">
+      Authorized as: {{ userCredentials?.user.email || '---' }}
+    </div>
+
     <template v-if="!subscription">
       <div class="col-3">
         Subscribe
@@ -66,11 +76,7 @@ import {FirebaseCall} from "src/services/firebase/FirebaseCall";
 import {getAuth, onAuthStateChanged} from "firebase/auth";
 import {firebaseApp, githubAuthProvider, firestore} from "boot/firebase";
 import {createUserWithEmailAndPassword, signInWithPopup, UserCredential} from "firebase/auth";
-import {useUtils} from "src/services/Utils";
-import {getFirestore} from "firebase/firestore";
 import {collection, setDoc, doc} from "firebase/firestore";
-import userHasClaim from "src/services/stripe/isUserPremium";
-import {createCheckoutSession} from "src/services/stripe/createCheckoutSession";
 
 const subscription = ref<string>(LocalStorage.getItem(SUBSCRIPTION_ID_IDENT) as string || '')
 
@@ -97,5 +103,30 @@ const testSubscription = async () => {
       window.location.href = res.data.url
     })
 }
+
+const authorizeWith = async (githubAuthProvider:any) => {
+  const auth = getAuth(firebaseApp);
+  console.log("auth", auth)
+  //createUserWithEmailAndPassword(auth, "email", "password")
+  const credentials: UserCredential = await signInWithPopup(auth, githubAuthProvider)
+  console.log("userCredentials", credentials)
+  console.log("userCredentials", {...credentials.user})
+  userCredentials.value = credentials
+
+  try {
+    await setDoc(doc(firestore, "users", credentials.user.uid), {
+      uid: credentials.user.uid,
+      email: credentials.user.email,
+      name: credentials.user.displayName,
+      provider: credentials.user.providerData[0].providerId,
+      photoUrl: credentials.user.photoURL
+    });
+    //console.log("Document written with ID: ", docRef.id);
+  } catch (e) {
+    console.error("Error adding document: ", e);
+  }
+
+}
+
 
 </script>

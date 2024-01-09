@@ -10,6 +10,7 @@
         Pro Features will include
         <ul>
           <li>Managed Synchronization</li>
+          <li>PDF Creation</li>
           <li>todo...</li>
         </ul>
       </div>
@@ -22,7 +23,8 @@
       Authorize to subscribe or check your subscriptions
     </div>
     <div class="col-5">
-      <q-btn label="Authorize" @click="authorize()"/>
+      <q-btn label="GitHub" @click="authorizeWith(githubAuthProvider)"/>
+      <q-btn label="GitLab" @click="authorizeWith(githubAuthProvider)"/>
     </div>
     <div class="col">
       Authorized as: {{ userCredentials?.user.email || '---' }}
@@ -124,7 +126,7 @@ const subscribe = async () => {
   }
 }
 
-const authorize = async () => {
+const authorizeWith = async (githubAuthProvider:any) => {
   const auth = getAuth(firebaseApp);
   console.log("auth", auth)
   //createUserWithEmailAndPassword(auth, "email", "password")

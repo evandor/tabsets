@@ -6,7 +6,7 @@ export async function createCheckoutSession(uid: string) {
   //     await setDoc(doc(firestore, "users", credentials.user.uid), {
   const cos = collection(firestore, "users", uid, "checkout_sessions")
   const checkoutSessionRef = await addDoc(cos, {
-    price:"price_1OWMMzCRr6mfm8sfmdhEphQ6",
+    price:"price_1OWd4pCRr6mfm8sfBfcpGMtl",
     success_url: window.location.origin,
     cancel_url: window.location.origin
   })

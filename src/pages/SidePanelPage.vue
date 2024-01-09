@@ -285,9 +285,8 @@ import {FirebaseCall} from "src/services/firebase/FirebaseCall";
 import getScrollTarget = scroll.getScrollTarget;
 import InfoMessageWidget from "components/widgets/InfoMessageWidget.vue";
 import {TITLE_IDENT} from "boot/constants";
-import PanelTabListElementWidget from "components/widgets/PanelTabListElementWidget.vue";
-import {VueDraggableNext} from "vue-draggable-next";
-import {TabsetColumn} from "src/models/TabsetColumn";
+import {collection, getDoc, doc, onSnapshot, setDoc, addDoc} from "firebase/firestore";
+import {firestore} from "boot/firebase";
 
 const {setVerticalScrollPosition} = scroll
 
@@ -360,6 +359,15 @@ onMounted(() => {
 
     Analytics.firePageViewEvent('SidePanelPage', document.location.href);
   }
+
+  // try {
+  //   console.log("fs", firestore)
+  //   getDoc(doc(firestore, "users", "gH7gtDfuq6XPPrdOjcspkuUm6bf2"))
+  //     .then(doc => console.log("doc", doc))
+  // } catch (err) {
+  //   console.log("errror", err)
+  // }
+
 })
 
 onUnmounted(() => {

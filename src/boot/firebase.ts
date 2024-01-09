@@ -10,6 +10,7 @@ import 'firebase/compat/auth';
 import 'firebase/compat/firestore';
 import {getAuth} from "firebase/auth";
 import { getFirestore } from 'firebase/firestore';
+//import { getRemoteConfig } from "firebase/remote-config";
 
 
 const clientCredentials = {
@@ -23,7 +24,7 @@ console.log("initializing firebase")
 const firebaseApp = firebase.initializeApp(clientCredentials)
 const firebaseAuth = getAuth(firebaseApp);
 const firestore = getFirestore(firebaseApp)
-
+//const remoteConfig = getRemoteConfig(app);
 
 //const googleAuthProvider = new firebase.auth.GoogleAuthProvider();
 //const emailAuthProvider = firebase.auth.EmailAuthProvider.PROVIDER_ID;
