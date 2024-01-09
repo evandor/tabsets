@@ -278,7 +278,8 @@ watchEffect(() => {
 })
 
 //const openOptionsPage = () => window.open(chrome.runtime.getURL('www/index.html#/mainpanel/settings'));
-const openOptionsPage = () => window.open('#/mainpanel/settings');
+//const openOptionsPage = () => window.open('#/mainpanel/settings');
+const openOptionsPage = () => NavigationService.openOrCreateTab([chrome.runtime.getURL('www/index.html#/mainpanel/settings')], undefined, [], false, true)
 
 const openExtensionTab = () =>
   //NavigationService.openOrCreateTab([chrome.runtime.getURL('www/index.html#/fullpage')])

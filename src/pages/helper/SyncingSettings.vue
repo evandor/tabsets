@@ -42,8 +42,12 @@
       <div class="col-7 text-caption" v-if="tempSyncOption === SyncType.COUCHDB">
         Sync your tabsets across browsers and computers via a database (not yet supported)
       </div>
-      <div class="col-7 text-caption" v-if="tempSyncOption === SyncType.MANAGED_COUCHDB">
+      <div class="col-7 text-caption" v-if="tempSyncOption === SyncType.MANAGED_COUCHDB || tempSyncOption === SyncType.MANAGED_GIT">
         Use Managed Synchronisation to access your tabsets from anyway using a paid service (not yet supported)
+        <div class="q-mt-md" v-if="subscription === undefined">
+          If you want to use this, create a <span class="cursor-pointer text-blue-8" @click.stop="emits('wasClicked',{tab: 'subscription'})">subscription</span> and
+          come back here.
+        </div>
       </div>
       <div class="col"></div>
 
@@ -163,7 +167,7 @@
         <div class="col-7">
           <q-btn
             label="Test Connection" @click="testGitConnection()"/>
-          <span class="q-ml-md"> {{ gitTestResult }}</span>
+          <span class="q-ml-md"> {{ testResult }}</span>
         </div>
         <div class="col text-right"></div>
       </template>
@@ -173,12 +177,40 @@
         <div class="col-7">
           <q-btn
             label="Test DB Connection" @click="testDbConnection()"/>
-          <span class="q-ml-md"> {{ gitTestResult }}</span>
+          <span class="q-ml-md"> {{ testResult }}</span>
         </div>
         <div class="col text-right"></div>
       </template>
 
-      <template v-if="startSyncMessage()">
+      <template v-if="tempSyncOption === SyncType.MANAGED_GIT">
+        <div class="col-3"></div>
+        <div class="col-7">
+          <q-btn
+            label="Test Subscription" @click="testSubscription()"/>
+          <span class="q-ml-md"> {{ testResult }}</span>
+        </div>
+        <div class="col text-right"></div>
+      </template>
+
+      <template v-if="startSyncMessage(SyncType.GITHUB)">
+        <div class="col-3"></div>
+        <div class="col-7">
+          <div>You can switch to the git-based sync version of tabsets now if you wish.</div>
+          <div>Please follow these steps:</div>
+          <ul>
+            <li><span class="cursor-pointer text-blue-8"
+                      @click.stop="emits('wasClicked',{tab: 'importExport'})">Export</span> your tabsets
+              first (if you want to keep them)
+            </li>
+            <li>Click on 'Start Syncing' below</li>
+            <li>Restart Tabsets (close and open again)</li>
+            <li>Import your tabsets again (if needed)</li>
+          </ul>
+        </div>
+        <div class="col text-right"></div>
+      </template>
+
+      <template v-if="startSyncMessage(SyncType.MANAGED_GIT)">
         <div class="col-3"></div>
         <div class="col-7">
           <div>You can switch to the git-based sync version of tabsets now if you wish.</div>
@@ -232,7 +264,7 @@
       </template>
 
       <template
-        v-if="tempSyncOption !== syncType && gitTestResult === 'success'">
+        v-if="tempSyncOption !== syncType && testResult === 'success'">
 
         <div class="col-3"></div>
         <div class="col-7">
@@ -262,6 +294,7 @@ import {SyncType} from "stores/appStore";
 import {ref, watchEffect} from "vue";
 import {LocalStorage} from "quasar";
 import {
+  SUBSCRIPTION_ID_IDENT,
   SYNC_COUCHDB_PASSWORD,
   SYNC_COUCHDB_URL,
   SYNC_COUCHDB_USERNAME,
@@ -271,6 +304,9 @@ import {
   SYNC_GITLAB_URL
 } from "boot/constants";
 import GitPersistentService from "src/services/persistence/GitPersistentService";
+import {FirebaseCall} from "src/services/firebase/FirebaseCall";
+import {Tabset, TabsetSharing} from "src/models/Tabset";
+import {useTabsetService} from "src/services/TabsetService2";
 
 const emits = defineEmits(['wasClicked'])
 
@@ -287,7 +323,9 @@ const couchdbUsername = ref<string>(LocalStorage.getItem(SYNC_COUCHDB_USERNAME) 
 const couchdbPassword = ref<string>(LocalStorage.getItem(SYNC_COUCHDB_PASSWORD) as string || '')
 const couchdbUrl = ref<string>(LocalStorage.getItem(SYNC_COUCHDB_URL) as string || '')
 
-const gitTestResult = ref<string | undefined>(undefined)
+const subscription = ref<string | undefined>(LocalStorage.getItem(SUBSCRIPTION_ID_IDENT) as string || undefined)
+
+const testResult = ref<string | undefined>(undefined)
 
 
 const syncOptions = [
@@ -295,28 +333,29 @@ const syncOptions = [
   {label: 'Syncing via github repository', value: SyncType.GITHUB},
 //  {label: 'Syncing via gitlab repository', value: SyncType.GITLAB},
   {label: 'Syncing via database', value: SyncType.COUCHDB},
-  {label: 'Managed Synchronisation', value: SyncType.MANAGED_COUCHDB}
+  {label: 'Managed Git Synchronisation', value: SyncType.MANAGED_GIT},
+  {label: 'Managed Database Synchronisation', value: SyncType.MANAGED_COUCHDB}
 ]
 
 function checkAndUpdate(val: string, ident: string) {
-  (val.value && val.value.trim().length > 0) ?
-    LocalStorage.set(ident, val.value) :
+  (val && val.trim().length > 0) ?
+    LocalStorage.set(ident, val) :
     LocalStorage.remove(ident)
-  gitTestResult.value = undefined
+  testResult.value = undefined
 }
 
 watchEffect(() => {
-  checkAndUpdate(githubRepoUrl, SYNC_GITHUB_URL)
+  checkAndUpdate(githubRepoUrl.value, SYNC_GITHUB_URL)
 })
 
 watchEffect(() => {
-  checkAndUpdate(githubRepoToken, SYNC_GITHUB_TOKEN)
+  checkAndUpdate(githubRepoToken.value, SYNC_GITHUB_TOKEN)
 })
 
 watchEffect(() => {
-  checkAndUpdate(couchdbUsername, SYNC_COUCHDB_USERNAME)
-  checkAndUpdate(couchdbPassword, SYNC_COUCHDB_PASSWORD)
-  checkAndUpdate(couchdbUrl, SYNC_COUCHDB_URL)
+  checkAndUpdate(couchdbUsername.value, SYNC_COUCHDB_USERNAME)
+  checkAndUpdate(couchdbPassword.value, SYNC_COUCHDB_PASSWORD)
+  checkAndUpdate(couchdbUrl.value, SYNC_COUCHDB_URL)
 })
 
 watchEffect(() => {
@@ -331,9 +370,9 @@ const testGitConnection = async () => {
   if (url) {
     console.log("testing git connection with", url, token?.substring(0, 5) + "...")
     const res = await GitPersistentService.testConnection(url)//, gitRepoToken)
-    gitTestResult.value = res
+    testResult.value = res
   } else {
-    gitTestResult.value = "no repo URL given"
+    testResult.value = "no repo URL given"
   }
 }
 
@@ -347,20 +386,31 @@ const testDbConnection = async () => {
 
     fetch(couchdbUrl.value, {headers: headers}).then((res) => {
       console.log("res", res)
-      gitTestResult.value = res['ok']
+      testResult.value = res['ok'] as boolean ? 'success' : 'false'
     })
   } else {
-    gitTestResult.value = "no db URL given"
+    testResult.value = "no db URL given"
   }
 }
 
 const startGitSyncing = () => LocalStorage.set("sync.type", tempSyncOption.value)
 const stopGitSyncing = () => LocalStorage.set("sync.type", SyncType.NONE)
 
-const startSyncMessage = () => gitTestResult.value === 'success' &&
+const startSyncMessage = (targetType: SyncType) => testResult.value === 'success' &&
   (!syncType.value || syncType.value === SyncType.NONE) &&
-  tempSyncOption.value === SyncType.GITHUB
+  tempSyncOption.value === targetType
 
 const stopSyncMessage = () => (syncType.value !== tempSyncOption.value) && syncType.value === SyncType.GITHUB && tempSyncOption.value === SyncType.NONE
 
+const testSubscription = () => {
+  console.log("testing subscription", subscription.value)
+  FirebaseCall.get("/share/public/" + tabsetId + "?cb=" + new Date().getTime(), false)
+    .then((res: any) => {
+      const newTabset = res as Tabset
+      newTabset.sharing = TabsetSharing.UNSHARED
+      //_.forEach(newTabset.tabs, t => t.preview = TabPreview.THUMBNAIL)
+      useTabsetService().saveTabset(newTabset)
+      useTabsetService().reloadTabset(newTabset.id)
+    })
+}
 </script>

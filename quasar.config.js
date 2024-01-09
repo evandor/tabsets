@@ -29,6 +29,7 @@ module.exports = configure(function (ctx) {
     boot: [
       //'i18n',
       'constants',
+      'firebase',
       'auth0'
     ],
 
@@ -85,7 +86,11 @@ module.exports = configure(function (ctx) {
         STRIPE_PUBLISHABLE_KEY: process.env.STRIPE_PUBLISHABLE_KEY,
         STRIPE_ACCOUNT: process.env.STRIPE_ACCOUNT,
         STRIPE_API_VERSION: process.env.STRIPE_API_VERSION,
-        LOCALE: process.env.LOCALE
+        LOCALE: process.env.LOCALE,
+        FIREBASE_API_KEY: process.env.FIREBASE_API_KEY,
+        FIREBASE_AUTH_DOMAIN: process.env.FIREBASE_AUTH_DOMAIN,
+        FIREBASE_PROJECT_ID: process.env.FIREBASE_PROJECT_ID,
+        FIREBASE_APP_ID: process.env.FIREBASE_APP_ID
       },
       // rawDefine: {}
       // ignorePublicFolder: true,

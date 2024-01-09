@@ -18,7 +18,8 @@ class NavigationService {
     withUrls: string[],
     matcher: string | undefined = undefined,
     groups: string[] = [],
-    forceCurrent: boolean = false
+    forceCurrent: boolean = false,
+    forceReload: boolean = false
   ) {
     withUrls.map(u => u.replace(this.placeholderPattern, ""));
     const useWindowIdent = forceCurrent ?
@@ -88,6 +89,11 @@ class NavigationService {
                   console.debug("found something", r)
                   chrome.tabs.highlight({tabs: r.index, windowId: useWindowId});
                   chrome.windows.update(useWindowId, {focused: true})
+
+                  if (forceReload && r.id) {
+                    console.debug("forced reload")
+                    chrome.tabs.reload(r.id)
+                  }
 
                   if (groups.length > i) {
                     ctx.handleGroup(groups[i], useWindowId, r);

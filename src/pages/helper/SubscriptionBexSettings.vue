@@ -1,0 +1,101 @@
+<template>
+  <div class="q-pa-md q-gutter-sm">
+    <q-banner rounded class="bg-grey-1 text-primary" style="border: 1px solid orange">
+      <div class="text-body1">Experimental: Subscribe to Tabsets Pro Features.</div>
+      <div class="text-caption">
+        Some features need a subscription.<br><br>
+        <span class="text-red">This is not working yet. No fees will be charged.</span>
+      </div>
+      <div class="caption">
+        Pro Features will include
+        <ul>
+          <li>Managed Synchronization</li>
+          <li>todo...</li>
+        </ul>
+      </div>
+    </q-banner>
+  </div>
+
+  <div class="row items-baseline q-ma-md q-gutter-lg">
+
+    <template v-if="!subscription">
+      <div class="col-3">
+        Subscribe
+      </div>
+      <div class="col-7">
+        <q-btn label="Subscribe" @click="subscribe()"/>
+      </div>
+      <div class="col">{{ claims }}</div>
+      <div class="col-3"></div>
+      <div class="col-7 text-caption">
+        Click here to get redirected to the available plans.
+      </div>
+    </template>
+    <template v-else>
+      <div class="col-3">
+        Subscription (Git Synchronization)
+      </div>
+      <div class="col-7">
+        <q-btn label="Test Subscription" @click="testSubscription()"/>
+      </div>
+      <div class="col"></div>
+    </template>
+
+    <div class="col-3">
+      Subscription ID
+    </div>
+    <div class="col-7">
+      <q-input type="text" color="primary" filled v-model="subscription" label="">
+        <template v-slot:prepend>
+          <q-icon name="o_shopping_bag"/>
+        </template>
+      </q-input>
+    </div>
+    <div class="col" v-if="subscription">
+      <a href="https://billing.stripe.com/p/login/6oE00CenQc3R5IQdQQ" target="_blank">Portal</a>
+    </div>
+  </div>
+</template>
+
+<script lang="ts" setup>
+
+import {ref, watchEffect, onMounted} from "vue";
+import {LocalStorage, openURL} from "quasar";
+import {SUBSCRIPTION_ID_IDENT} from "boot/constants";
+import {FirebaseCall} from "src/services/firebase/FirebaseCall";
+import {getAuth, onAuthStateChanged} from "firebase/auth";
+import {firebaseApp, githubAuthProvider, firestore} from "boot/firebase";
+import {createUserWithEmailAndPassword, signInWithPopup, UserCredential} from "firebase/auth";
+import {useUtils} from "src/services/Utils";
+import {getFirestore} from "firebase/firestore";
+import {collection, setDoc, doc} from "firebase/firestore";
+import userHasClaim from "src/services/stripe/isUserPremium";
+import {createCheckoutSession} from "src/services/stripe/createCheckoutSession";
+
+const subscription = ref<string>(LocalStorage.getItem(SUBSCRIPTION_ID_IDENT) as string || '')
+
+const userCredentials = ref<UserCredential | undefined>(undefined)
+const claims = ref<object | undefined>(undefined)
+
+onMounted(() => {
+  console.log("moutned")
+
+})
+
+watchEffect(() => {
+  (subscription.value && subscription.value.trim().length > 0) ?
+    LocalStorage.set(SUBSCRIPTION_ID_IDENT, subscription.value) :
+    LocalStorage.remove(SUBSCRIPTION_ID_IDENT)
+})
+
+const subscribe = async () => openURL('https://shared.tabsets.net/#/settings?tab=subscription')
+
+const testSubscription = async () => {
+  FirebaseCall.post("/stripe/test-subscription/tabsets", {})
+    .then((res) => {
+      console.log("res", res)
+      window.location.href = res.data.url
+    })
+}
+
+</script>

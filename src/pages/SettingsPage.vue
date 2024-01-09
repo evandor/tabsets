@@ -195,51 +195,8 @@
   </div>
 
   <div v-if="tab === 'subscription'">
-
-    <div class="q-pa-md q-gutter-sm">
-      <q-banner rounded class="bg-grey-1 text-primary" style="border: 1px solid orange">
-        <div class="text-body1">Experimental: Subscribe to Tabsets Pro Features.</div>
-        <div class="text-caption">
-          Some features (currently: syncing via git) need a subscription.<br><br>
-          <span class="text-red">This is not working yet. No fees will be charged.</span>
-        </div>
-      </q-banner>
-    </div>
-
-    <div class="row items-baseline q-ma-md q-gutter-lg">
-      <template v-if="!subscription">
-        <div class="col-3">
-          Subscribe
-        </div>
-        <div class="col-7">
-          <q-btn label="Subscribe" @click="subscribe()"/>
-        </div>
-        <div class="col"></div>
-      </template>
-      <template v-else>
-        <div class="col-3">
-          Subscription
-        </div>
-        <div class="col-7">
-          <q-btn label="Test Subscription" @click="testSubscription()"/>
-        </div>
-        <div class="col"></div>
-      </template>
-
-      <div class="col-3">
-        Subscription ID
-      </div>
-      <div class="col-7">
-        <q-input type="text" color="primary" filled v-model="subscription" label="">
-          <template v-slot:prepend>
-            <q-icon name="o_shopping_bag"/>
-          </template>
-        </q-input>
-      </div>
-      <div class="col">
-        <a href="https://billing.stripe.com/p/login/6oE00CenQc3R5IQdQQ" target="_blank">Portal</a>
-      </div>
-    </div>
+    <SubscriptionBexSettings v-if="inBexMode()" />
+    <SubscriptionSettings v-else />
   </div>
 
   <div v-if="tab === 'sharing'">
@@ -567,8 +524,10 @@ import {
 } from "boot/constants";
 import SyncingSettings from "pages/helper/SyncingSettings.vue";
 import {log} from "isomorphic-git";
+import SubscriptionSettings from "pages/helper/SubscriptionSettings.vue";
+import SubscriptionBexSettings from "pages/helper/SubscriptionBexSettings.vue";
 
-const {sendMsg} = useUtils()
+const {sendMsg, inBexMode} = useUtils()
 
 const tabsStore = useTabsStore()
 const featuresStore = useSettingsStore()
@@ -578,7 +537,7 @@ const settingsStore = useSettingsStore()
 const localStorage = useQuasar().localStorage
 const $q = useQuasar()
 const route = useRoute()
-const router = useRouter()
+
 
 useUiStore().rightDrawerSetActiveTab(DrawerTabs.FEATURES)
 
@@ -604,7 +563,6 @@ const allUrlsOriginGranted = ref<boolean | undefined>(usePermissionsStore().hasA
 const fullUrls = ref(localStorage.getItem('ui.fullUrls') || false)
 const detailLevelPerTabset = ref(localStorage.getItem('ui.detailsPerTabset') || false)
 
-const subscription = ref<string>(LocalStorage.getItem(SUBSCRIPTION_ID_IDENT) as string || '')
 const installationTitle = ref<string>(LocalStorage.getItem(TITLE_IDENT) as string || 'My Tabsets')
 
 const tab = ref<string>(route.query['tab'] ? route.query['tab'] as string : 'appearance')
@@ -672,12 +630,6 @@ watch(() => pageCapturePermissionGranted.value, (newValue, oldValue) => {
 watchEffect(() => {
   $q.dark.set(darkMode.value)
   localStorage.set('darkMode', darkMode.value)
-})
-
-watchEffect(() => {
-  (subscription.value && subscription.value.trim().length > 0) ?
-    LocalStorage.set(SUBSCRIPTION_ID_IDENT, subscription.value) :
-    LocalStorage.remove(SUBSCRIPTION_ID_IDENT)
 })
 
 watchEffect(() => {
@@ -768,25 +720,6 @@ const simulateStaticSuggestion = () => {
     Suggestion.getStaticSuggestion(StaticSuggestionIdent.TRY_BOOKMARKS_FEATURE)
   ]
   useSuggestionsStore().addSuggestion(suggestions[suggestionsCounter++ % 2])
-}
-
-const subscribe = async () => {
-  const callbackUrl = chrome.runtime.getURL("/www/index.html#/thanks")
-  FirebaseCall.post("/stripe/create-checkout-session/tabsets", {
-    callbackUrl: btoa(callbackUrl)
-  })
-    .then((res) => {
-      console.log("res", res)
-      window.location.href = res.data.url
-    })
-}
-
-const testSubscription = async () => {
-  FirebaseCall.post("/stripe/test-subscription/tabsets", {})
-    .then((res) => {
-      console.log("res", res)
-      window.location.href = res.data.url
-    })
 }
 
 const setTab = (a:any) => tab.value = a['tab' as keyof object]
