@@ -46,13 +46,13 @@ async function createDir(...segments: string[]) {
   }
 }
 
-async function push(dir: string) {
+async function push(dir: string, proxy: string) {
   let pushResult = await git.push({
     fs,
     http,
     dir,
     remote: 'origin',
-    corsProxy: 'https://cors.isomorphic-git.org',
+    corsProxy: proxy,
     ref: 'main',
     onAuth: () => ({username: LocalStorage.getItem(SYNC_GITHUB_TOKEN) as string || '---'}),
   })
@@ -62,14 +62,23 @@ async function push(dir: string) {
 class GitPersistenceService implements PersistenceService {
   private db: IDBPDatabase = null as unknown as IDBPDatabase
   private readonly _dir = "/tabsets";
+  private genericCorsProxy =  'https://cors.isomorphic-git.org'
+  private tabsetsCorsProxy =  'https://git.tabsets.net'
 
-  // TODO
-  async init(url: string | undefined) {
+  private useProxy = this.genericCorsProxy
+
+  async init(syncType: SyncType, url: string | undefined) {
     if (url) {
-      if (LocalStorage.getItem("sync.type") as SyncType === SyncType.GITHUB) {
-        console.log("=== initializing git database ===", url)
-        this.db = await this.initDatabase(url)
+      if (syncType === SyncType.GITHUB) {
+        console.log("=== initializing github database ===", url)
+        this.db = await this.initDatabase(url, this.genericCorsProxy)
         console.log("=== initializing git database: done ===")
+        useUiStore().dbReady = true
+        return Promise.resolve("done")
+      } else if (syncType === SyncType.MANAGED_GIT) {
+        console.log("=== initializing managed git ===", url)
+        this.db = await this.initDatabase(url, this.tabsetsCorsProxy)
+        console.log("=== initializing managed git done ===")
         useUiStore().dbReady = true
         return Promise.resolve("done")
       }
@@ -78,13 +87,14 @@ class GitPersistenceService implements PersistenceService {
   }
 
 
-  private async initDatabase(url: string, dir: string = this._dir): Promise<any> {
+  private async initDatabase(url: string, proxy: string, dir: string = this._dir): Promise<any> {
     window.fs = new LightningFS('fs')
     window.pfs = window.fs.promises
     console.debug("about to initialize git")
     const useDir = dir + "-" + Md5.hashStr(url)
     window.dir = useDir
     console.log(useDir);
+    this.useProxy = proxy
     try {
       await pfs.mkdir(useDir);
     } catch (err: any) {
@@ -102,7 +112,8 @@ class GitPersistenceService implements PersistenceService {
         fs,
         http,
         dir: useDir,
-        corsProxy: 'https://cors.isomorphic-git.org',
+        //corsProxy: 'https://cors.isomorphic-git.org',
+        corsProxy: this.useProxy,
         url: url,
         ref: 'main',
         singleBranch: true,
@@ -110,7 +121,18 @@ class GitPersistenceService implements PersistenceService {
         //onProgress: (val:any) => (console.log("onProgress", val)),
         //onMessage: (val:any) => (console.log("onMessage", val)),
         onAuthSuccess: () => (console.log("auth: success")),
-        onAuthFailure: () => ("auth: failure"),
+        onAuthFailure: (url, auth) => {
+          //forgetSavedPassword(url)
+          if (confirm('Access was denied. Try again?')) {
+            auth = {
+              username: prompt('Enter username'),
+              password: prompt('Enter password'),
+            }
+            return auth
+          } else {
+            return { cancel: true }
+          }
+        },
         onAuth: () => ({username: LocalStorage.getItem(SYNC_GITHUB_TOKEN) as string || '---'}),
       }
       console.log(`about to clone '${url}' into ${useDir}`, cloneDef)
@@ -132,7 +154,7 @@ class GitPersistenceService implements PersistenceService {
 
         const remoteInfoDef = {
           http,
-          corsProxy: "https://cors.isomorphic-git.org",
+          corsProxy: this.useProxy,
           url: gitRepoUrl,
           onAuthSuccess: () => {
             console.log("auth: success")
@@ -210,6 +232,7 @@ class GitPersistenceService implements PersistenceService {
       console.warn("err", err)
     }
     for (const t of tabsets) {
+      console.log("adding t", t)
       useTabsStore().addTabset(t)
     }
 
@@ -248,13 +271,13 @@ class GitPersistenceService implements PersistenceService {
 
     console.log(sha)
     //await push(this._dir);
-    await push(`${dir}`);
+    await push(`${dir}`, this.useProxy);
     return Promise.resolve(undefined);
   }
 
   async deleteTabset(tabsetId: string): Promise<any> {
     await pfs.rmdir(`${dir}/tabsets/${tabset.id}`)
-    await push(`${dir}`);
+    await push(`${dir}`, this.useProxy);
     return Promise.resolve(undefined);
   }
 
@@ -339,14 +362,14 @@ class GitPersistenceService implements PersistenceService {
 
     console.log(sha)
     //await push(this._dir);
-    await push(`${dir}`);
+    await push(`${dir}`, this.useProxy);
     return Promise.resolve(undefined);
   }
 
   async deleteSpace(entityId: string) {
     await pfs.rmdir(`${dir}/spaces/${entityId}`)
     //await push(this._dir);
-    await push(`${dir}`);
+    await push(`${dir}`, this.useProxy);
     return Promise.resolve(undefined);
   }
 

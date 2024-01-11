@@ -18,15 +18,15 @@
 
   <div class="row items-baseline q-ma-md q-gutter-lg">
 
-    <div class="col-3">
-      Authorize to subscribe or check your subscriptions
-    </div>
-    <div class="col-5">
-      <q-btn label="GitHub" @click="authorizeWith(githubAuthProvider)"/>
-    </div>
-    <div class="col">
-      Authorized as: {{ userCredentials?.user.email || '---' }}
-    </div>
+<!--    <div class="col-3">-->
+<!--      Authorize to subscribe or check your subscriptions-->
+<!--    </div>-->
+<!--    <div class="col-5">-->
+<!--      <q-btn label="GitHub" @click="authorizeWith(githubAuthProvider)"/>-->
+<!--    </div>-->
+<!--    <div class="col">-->
+<!--      Authorized as: {{ userCredentials?.user.email || '-&#45;&#45;' }}-->
+<!--    </div>-->
 
     <template v-if="!subscription">
       <div class="col-3">
@@ -75,7 +75,7 @@ import {SUBSCRIPTION_ID_IDENT} from "boot/constants";
 import {FirebaseCall} from "src/services/firebase/FirebaseCall";
 import {getAuth, onAuthStateChanged} from "firebase/auth";
 import {firebaseApp, githubAuthProvider, firestore} from "boot/firebase";
-import {createUserWithEmailAndPassword, signInWithPopup, UserCredential} from "firebase/auth";
+import {createUserWithEmailAndPassword, signInWithPopup, signInWithRedirect,signInWithEmailLink,sendSignInLinkToEmail, signInWithCredential, UserCredential} from "firebase/auth";
 import {collection, setDoc, doc} from "firebase/firestore";
 
 const subscription = ref<string>(LocalStorage.getItem(SUBSCRIPTION_ID_IDENT) as string || '')
@@ -108,7 +108,25 @@ const authorizeWith = async (githubAuthProvider:any) => {
   const auth = getAuth(firebaseApp);
   console.log("auth", auth)
   //createUserWithEmailAndPassword(auth, "email", "password")
-  const credentials: UserCredential = await signInWithPopup(auth, githubAuthProvider)
+  //const credentials: UserCredential = await signInWithPopup(auth, githubAuthProvider)
+  const credentials: UserCredential = await signInWithCredential(auth, githubAuthProvider)
+  //const credentials: UserCredential = await signInWithRedirect(auth, githubAuthProvider)
+
+  // const actionCodeSettings = {
+  //   url: 'https://www.example.com/?email=user@example.com',
+  //   iOS: {
+  //     bundleId: 'com.example.ios'
+  //   },
+  //   android: {
+  //     packageName: 'com.example.android',
+  //     installApp: true,
+  //     minimumVersion: '12'
+  //   },
+  //   handleCodeInApp: true
+  // };
+  // await sendSignInLinkToEmail(auth, 'evandor@gmail.com', actionCodeSettings);
+
+  //const credentials: UserCredential = await signInWithEmailLink(auth, "evandor@gmail.com")
   console.log("userCredentials", credentials)
   console.log("userCredentials", {...credentials.user})
   userCredentials.value = credentials

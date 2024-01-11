@@ -1,7 +1,7 @@
 <template>
   <div class="q-pa-md q-gutter-sm">
     <q-banner rounded class="bg-grey-1 text-primary" style="border: 1px solid orange">
-      <div class="text-body1">Experimental: Sync your tabsets with git (or couchdb)</div>
+      <div class="text-body1">Experimental: Synchronize your tabsets across computers and browsers</div>
     </q-banner>
 
     <div class="row items-baseline q-ma-md q-gutter-lg">
@@ -42,10 +42,13 @@
       <div class="col-7 text-caption" v-if="tempSyncOption === SyncType.COUCHDB">
         Sync your tabsets across browsers and computers via a database (not yet supported)
       </div>
-      <div class="col-7 text-caption" v-if="tempSyncOption === SyncType.MANAGED_COUCHDB || tempSyncOption === SyncType.MANAGED_GIT">
-        Use Managed Synchronisation to access your tabsets from anyway using a paid service (not yet supported)
+      <div class="col-7 text-caption"
+           v-if="tempSyncOption === SyncType.MANAGED_COUCHDB || tempSyncOption === SyncType.MANAGED_GIT">
+        Use Managed Synchronisation to access your tabsets from anywhere for a small fee (not yet supported)
         <div class="q-mt-md" v-if="subscription === undefined">
-          If you want to use this, create a <span class="cursor-pointer text-blue-8" @click.stop="emits('wasClicked',{tab: 'subscription'})">subscription</span> and
+          If you want to use this, create a <span class="cursor-pointer text-blue-8"
+                                                  @click.stop="emits('wasClicked',{tab: 'subscription'})">subscription</span>
+          and
           come back here.
         </div>
       </div>
@@ -182,14 +185,17 @@
         <div class="col text-right"></div>
       </template>
 
-      <template v-if="tempSyncOption === SyncType.MANAGED_GIT">
-        <div class="col-3"></div>
+      <template v-if="tempSyncOption === SyncType.MANAGED_GIT && subscription">
+        <div clas="col-3">&nbsp;</div>
+        <div clas="col-7">You have added a subscription; let's try to setup your account</div>
+        <div clas="col">&nbsp;</div>
+
+        <div class="col-3">&nbsp;</div>
         <div class="col-7">
-          <q-btn
-            label="Test Subscription" @click="testSubscription()"/>
+          <q-btn label="Check Setup" @click="checkManagedGitSetup()"/>
           <span class="q-ml-md"> {{ testResult }}</span>
         </div>
-        <div class="col text-right"></div>
+        <div class="col text-right">&nbsp;</div>
       </template>
 
       <template v-if="startSyncMessage(SyncType.GITHUB)">
@@ -301,7 +307,7 @@ import {
   SYNC_GITHUB_TOKEN,
   SYNC_GITHUB_URL,
   SYNC_GITLAB_TOKEN,
-  SYNC_GITLAB_URL
+  SYNC_GITLAB_URL, SYNC_TYPE
 } from "boot/constants";
 import GitPersistentService from "src/services/persistence/GitPersistentService";
 import {FirebaseCall} from "src/services/firebase/FirebaseCall";
@@ -311,7 +317,7 @@ import {useTabsetService} from "src/services/TabsetService2";
 const emits = defineEmits(['wasClicked'])
 
 const syncType = ref<string | undefined>(undefined)
-const tempSyncOption = ref<SyncType>(LocalStorage.getItem('sync.type') as SyncType || SyncType.NONE)
+const tempSyncOption = ref<SyncType>(LocalStorage.getItem(SYNC_TYPE) as SyncType || SyncType.NONE)
 
 const gitlabRepoToken = ref<string>(LocalStorage.getItem(SYNC_GITLAB_TOKEN) as string || '')
 const gitlabRepoUrl = ref<string>(LocalStorage.getItem(SYNC_GITLAB_URL) as string || '')
@@ -332,9 +338,9 @@ const syncOptions = [
   {label: 'No Syncing', value: SyncType.NONE, desc: ""},
   {label: 'Syncing via github repository', value: SyncType.GITHUB},
 //  {label: 'Syncing via gitlab repository', value: SyncType.GITLAB},
-  {label: 'Syncing via database', value: SyncType.COUCHDB},
+//  {label: 'Syncing via database', value: SyncType.COUCHDB},
   {label: 'Managed Git Synchronisation', value: SyncType.MANAGED_GIT},
-  {label: 'Managed Database Synchronisation', value: SyncType.MANAGED_COUCHDB}
+//  {label: 'Managed Database Synchronisation', value: SyncType.MANAGED_COUCHDB}
 ]
 
 function checkAndUpdate(val: string, ident: string) {
@@ -359,7 +365,7 @@ watchEffect(() => {
 })
 
 watchEffect(() => {
-  syncType.value = LocalStorage.getItem('sync.type') as SyncType
+  syncType.value = LocalStorage.getItem(SYNC_TYPE) as SyncType
 })
 
 
@@ -393,8 +399,8 @@ const testDbConnection = async () => {
   }
 }
 
-const startGitSyncing = () => LocalStorage.set("sync.type", tempSyncOption.value)
-const stopGitSyncing = () => LocalStorage.set("sync.type", SyncType.NONE)
+const startGitSyncing = () => LocalStorage.set(SYNC_TYPE, tempSyncOption.value)
+const stopGitSyncing = () => LocalStorage.set(SYNC_TYPE, SyncType.NONE)
 
 const startSyncMessage = (targetType: SyncType) => testResult.value === 'success' &&
   (!syncType.value || syncType.value === SyncType.NONE) &&
@@ -413,4 +419,15 @@ const testSubscription = () => {
       useTabsetService().reloadTabset(newTabset.id)
     })
 }
+
+const checkManagedGitSetup = async () => {
+  try {
+    const response = await FirebaseCall.post("/subscriptions", {"userId": "abc"})
+    console.log("response", response)
+    testResult.value = "success"
+  } catch (err) {
+    console.log("got error", err)
+  }
+}
+
 </script>

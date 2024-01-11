@@ -23,7 +23,7 @@ import {FeatureIdent} from "src/models/AppFeature";
 import {useMessagesStore} from "src/stores/messagesStore";
 import {SyncType, useAppStore} from "stores/appStore";
 import GitPersistentService from "src/services/persistence/GitPersistentService";
-import {SYNC_GITHUB_URL} from "boot/constants";
+import {SYNC_GITHUB_URL, SYNC_TYPE} from "boot/constants";
 
 class AppService {
 
@@ -60,9 +60,9 @@ class AppService {
     const localStorage = useQuasar().localStorage
 
     // sync features
-    const syncType = LocalStorage.getItem("sync.type") as SyncType || SyncType.NONE
+    const syncType = LocalStorage.getItem(SYNC_TYPE) as SyncType || SyncType.NONE
     const syncUrl = LocalStorage.getItem(SYNC_GITHUB_URL) as string
-    const dbOrGitDb = syncType && syncType === SyncType.GITHUB && syncUrl ? useDB(undefined).gitDb : useDB(undefined).db
+    const dbOrGitDb = syncType && (syncType === SyncType.GITHUB || syncType === SyncType.MANAGED_GIT) && syncUrl ? useDB(undefined).gitDb : useDB(undefined).db
     console.log("checking sync config:", syncType, syncUrl, dbOrGitDb)
 
 // init db
@@ -76,7 +76,7 @@ class AppService {
 
         tabsetService.setLocalStorage(localStorage)
 
-        GitPersistentService.init(syncUrl)
+        GitPersistentService.init(syncType, syncUrl)
           .then((gitInitResult:string) => {
             console.log("gitInitResult", gitInitResult)
             spacesStore.initialize(dbOrGitDb)

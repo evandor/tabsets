@@ -232,7 +232,7 @@
         <template v-slot:title v-else>
           <div class="text-subtitle1 text-black">
             {{ toolbarTitle(tabsets as Tabset[]) }}
-            <q-icon v-if="LocalStorage.getItem('sync.type') as SyncType === SyncType.GITHUB"
+            <q-icon v-if="LocalStorage.getItem(SYNC_TYPE) as SyncType === SyncType.GITHUB"
                     class="q-ml-none" name="sync" size="12px">
               <q-tooltip class="tooltip-small">Tabsets is synced via git</q-tooltip>
             </q-icon>
@@ -284,7 +284,7 @@ import {useVOnboarding, VOnboardingStep, VOnboardingWrapper} from 'v-onboarding'
 import {FirebaseCall} from "src/services/firebase/FirebaseCall";
 import getScrollTarget = scroll.getScrollTarget;
 import InfoMessageWidget from "components/widgets/InfoMessageWidget.vue";
-import {TITLE_IDENT} from "boot/constants";
+import {SYNC_TYPE, TITLE_IDENT} from "boot/constants";
 import {collection, getDoc, doc, onSnapshot, setDoc, addDoc} from "firebase/firestore";
 import {firestore} from "boot/firebase";
 

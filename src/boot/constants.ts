@@ -26,6 +26,8 @@ const SHARING_AVATAR_IDENT = 'sharing.avatar';
 const SHARING_MQTT_IDENT = 'sharing.mqttUrl';
 const SHARING_INSTALLATION = 'sharing.installation'
 
+const SYNC_TYPE = "sync.type"
+
 const SYNC_GITLAB_URL = "sync.gitlab.url"
 const SYNC_GITLAB_TOKEN = "sync.gitlab.token"
 
@@ -50,6 +52,7 @@ export {
   SHARING_AVATAR_IDENT,
   SHARING_MQTT_IDENT,
   SHARING_INSTALLATION,
+  SYNC_TYPE,
   SYNC_GITLAB_URL,
   SYNC_GITLAB_TOKEN,
   SYNC_GITHUB_URL,
