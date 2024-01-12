@@ -37,6 +37,7 @@
     "@editorjs/header": "^2.7.0",
     "@extractus/feed-extractor": "^7.0.1",
     "@isomorphic-git/lightning-fs": "^4.6.0",
+    "@logtail/browser": "^0.4.19",
     "@mozilla/readability": "^0.5.0",
     "@quasar/extras": "^1.16.6",
     "@stripe/stripe-js": "^2.2.2",

@@ -30,7 +30,8 @@ module.exports = configure(function (ctx) {
       //'i18n',
       'constants',
       'firebase',
-      'auth0'
+      'auth0',
+      'logtail'
     ],
 
     // https://v2.quasar.dev/quasar-cli-vite/quasar-config-js#css

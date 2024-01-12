@@ -18,6 +18,7 @@ import {useAuthStore} from "stores/auth";
 import {useSettingsStore} from "stores/settingsStore";
 import {Logz} from "src/services/logz/Logz";
 import {EventEmitter} from "events";
+import {logtail} from "boot/logtail";
 
 const tabsStore = useTabsStore()
 const settingsStore = useSettingsStore()
@@ -100,7 +101,9 @@ watchEffect(() => {
 
             const selectedTSId = localStorage.getItem("selectedTabset")
         //  })
-        Logz.info({"message": "user logged in", "username": auth0.user.value?.name})
+        //Logz.info({"message": "user logged in", "username": auth0.user.value?.name})
+
+        logtail.info("user logged in", {"username": auth0.user.value?.name})
       }
 
     }

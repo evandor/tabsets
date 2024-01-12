@@ -234,7 +234,11 @@
             {{ toolbarTitle(tabsets as Tabset[]) }}
             <q-icon v-if="LocalStorage.getItem(SYNC_TYPE) as SyncType === SyncType.GITHUB"
                     class="q-ml-none" name="sync" size="12px">
-              <q-tooltip class="tooltip-small">Tabsets is synced via git</q-tooltip>
+              <q-tooltip class="tooltip-small">Tabsets are being synced</q-tooltip>
+            </q-icon>
+            <q-icon v-if="LocalStorage.getItem(SYNC_TYPE) as SyncType === SyncType.MANAGED_GIT"
+                    class="q-ml-none" name="sync" size="12px">
+              <q-tooltip class="tooltip-small">Tabsets are being synced automatically</q-tooltip>
             </q-icon>
           </div>
         </template>

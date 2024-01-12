@@ -23,7 +23,7 @@ import {useTabsStore} from "stores/tabsStore";
 import {useSpacesStore} from "stores/spacesStore";
 import {LocalStorage, uid} from "quasar";
 import {SyncType} from "stores/appStore";
-import {SYNC_GITHUB_TOKEN} from "boot/constants";
+import {SUBSCRIPTION_ID_IDENT, SYNC_GITHUB_TOKEN, SYNC_GITHUB_URL} from "boot/constants";
 
 if (typeof self !== 'undefined') {
   self.Buffer = Buffer;
@@ -76,8 +76,9 @@ class GitPersistenceService implements PersistenceService {
         useUiStore().dbReady = true
         return Promise.resolve("done")
       } else if (syncType === SyncType.MANAGED_GIT) {
+        const subscription = LocalStorage.getItem(SUBSCRIPTION_ID_IDENT) as string
         console.log("=== initializing managed git ===", url)
-        this.db = await this.initDatabase(url, this.tabsetsCorsProxy)
+        this.db = await this.initDatabase("https://tabsets.git/" + subscription, this.tabsetsCorsProxy)
         console.log("=== initializing managed git done ===")
         useUiStore().dbReady = true
         return Promise.resolve("done")

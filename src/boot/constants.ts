@@ -1,4 +1,5 @@
 import {boot} from 'quasar/wrappers'
+import {Logtail} from "@logtail/browser";
 
 const INDEX_DB_VERSION = 18
 
@@ -38,6 +39,11 @@ const SYNC_COUCHDB_USERNAME = "sync.couchdb.username"
 const SYNC_COUCHDB_PASSWORD = "sync.couchdb.password"
 const SYNC_COUCHDB_URL = "sync.couchdb.url"
 
+
+const logtail = (process.env.MODE === "bex") ?
+  new Logtail("Ht8PY3XGQgqhMyNTcyGyJhXJ") :
+  new Logtail("pNfaHtRmWXGd3TFbsCXMHHbB")
+
 export default boot(({}) => {
 })
 
@@ -60,6 +66,7 @@ export {
   SYNC_COUCHDB_USERNAME,
   SYNC_COUCHDB_PASSWORD,
   SYNC_COUCHDB_URL,
-  TITLE_IDENT
+  TITLE_IDENT,
+  logtail
 }
 
