@@ -5,5 +5,3 @@ HEAD https://www.chefkoch.de/rezepte/1338991238751459/Knusprige-Bratkartoffeln-n
 ### GET2
 HEAD https://www.dkb.de/banking
 
-###
-GET https://tabsets-backend-prd.firebaseapp.com/__/auth/action?apiKey=AIzaSyCO_I9Gi6jB4gUe97C54XK5JLHICDwFTgk&mode=signIn&oobCode=0nv5wKOoB5gjDCSObZCPx6n3h9H6T0wqM0_s70CYX0MAAAGM_hnHgA&continueUrl=chrome-extension://pndffocijjfpmphlhkoijmpfckjafdpl&lang=en

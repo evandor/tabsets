@@ -22,6 +22,7 @@ import {logtail} from "boot/logtail";
 import {getAuth, isSignInWithEmailLink, signInWithEmailLink} from "firebase/auth";
 import {useAppStore} from "stores/appStore";
 import {collection, doc, getDoc, getDocs, getFirestore} from "firebase/firestore";
+import {Account} from "src/models/Account";
 
 const tabsStore = useTabsStore()
 const settingsStore = useSettingsStore()
@@ -62,17 +63,20 @@ if (isSignInWithEmailLink(auth, window.location.href)) {
           const userData = userDoc.data()
           console.log("userData", userData)
 
+          const account = new Account(result.user.uid)
+
+          getDocs(collection(firestore, "users", result.user.uid, "subscriptions"))
+            .then((querySnapshot) => {
+              console.log("querySnapshot", querySnapshot)
+              querySnapshot.forEach((doc) => {
+                console.log(doc.id, " => ", doc.data());
+                //key += doc.id + "|"
+              })
+            })
 
         })
 
-      getDocs(collection(firestore, "users", result.user.uid, "subscriptions"))
-        .then((querySnapshot) => {
-          console.log("querySnapshot", querySnapshot)
-          querySnapshot.forEach((doc) => {
-            console.log(doc.id, " => ", doc.data());
-            //key += doc.id + "|"
-          })
-        })
+
 
       // Additional user info profile not available via:
       // result.additionalUserInfo.profile == null
