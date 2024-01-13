@@ -1,6 +1,24 @@
 <template>
 
   <q-footer class="bg-white q-pa-xs q-mt-sm" style="border-top: 1px solid lightgrey">
+    <div class="row fit q-mb-sm" v-if="showLogin">
+      <div class="col-12 text-right">
+        <Transition name="bounceInLeft" appear>
+
+          <div class="row">
+            <div class="col-7">
+              <q-input outlined type="email" v-model="email" label="Your email address" dense />
+            </div>
+            <div class="col-5">
+              <q-btn label="Sign in" color="primary" @click="signin()"/>
+            </div>
+          </div>
+
+        </Transition>
+
+      </div>
+    </div>
+
     <div class="row fit q-mb-sm" v-if="showWindowTable">
       <div class="col-12 text-right">
         <Transition name="bounceInLeft" appear>
@@ -48,42 +66,7 @@
 
       </div>
     </div>
-    <!--    <div class="row fit q-mb-sm"-->
-    <!--         style="border-bottom: 1px dotted #bfbfbf"-->
-    <!--         v-if="otherActiveWindows().length > 0">-->
-    <!--      <div class="col-7 text-black">-->
-    <!--        <q-icon name="o_grid_view" color="blue">-->
-    <!--          <q-tooltip class="tooltip-small">Current Browser Window</q-tooltip>-->
-    <!--        </q-icon>-->
-    <!--        <span class="q-mx-md cursor-pointer text-subtitle2 ellipsis">{{ currentWindowName }}</span>-->
-    <!--        <q-popup-edit :model-value="currentWindowName" v-slot="scope"-->
-    <!--                      @update:model-value="val => setNewName(val)">-->
-    <!--          <q-input v-model="scope.value" dense autofocus counter @keyup.enter="scope.set"/>-->
-    <!--        </q-popup-edit>-->
-    <!--        <q-tooltip class="tooltip-small">Rename window '{{ currentWindowName }}'</q-tooltip>-->
 
-
-    <!--      </div>-->
-    <!--      <div class="col text-black text-right">-->
-    <!--        <template v-if="!showWindowTable">-->
-    <!--          <span class="text-black cursor-pointer text-subtitle2">Switch Window</span>-->
-    <!--          <q-menu fit anchor="top middle" self="bottom middle">-->
-    <!--            <q-item clickable dense v-for="w in otherActiveWindows()" @click="openWindow(w.id)" v-close-popup>-->
-    <!--              <q-item-section>{{ w.name }}</q-item-section>-->
-    <!--            </q-item>-->
-    <!--          </q-menu>-->
-    <!--          <q-icon name="edit" class="q-mx-sm cursor-pointer" color="primary" @click="toggleShowWindowTable()">-->
-    <!--            <q-tooltip class="tooltip-small">Edit Window Names</q-tooltip>-->
-    <!--          </q-icon>-->
-
-    <!--        </template>-->
-    <!--        <template v-else>-->
-    <!--          <q-icon name="edit" class="q-mx-sm q-ma-none cursor-pointer" color="primary"-->
-    <!--                  @click="toggleShowWindowTable()"/>-->
-    <!--        </template>-->
-    <!--      </div>-->
-
-    <!--    </div>-->
     <div class="row fit">
       <div class="col-9">
 
@@ -172,6 +155,32 @@
           <q-tooltip class="tooltip">Tabsets as full-page app</q-tooltip>
         </q-btn>
 
+        <span class="q-my-xs q-ml-xs q-mr-none cursor-pointer" v-if="authStore.authenticated">
+          <q-avatar size="19px">
+            <q-img :src="authStore.user.photoURL"/>
+          </q-avatar>
+
+          <q-menu :offset="[0, 7]" fit>
+            <q-list dense style="min-width: 150px;min-height:50px">
+<!--              <q-item clickable v-close-popup>-->
+              <!--                <q-item-section @click="subscribe()">Subscribe</q-item-section>-->
+              <!--              </q-item>-->
+              <q-item clickable v-close-popup>
+                <q-item-section @click="logout()">Logout {{ authStore.user?.email }}</q-item-section>
+              </q-item>
+            </q-list>
+
+          </q-menu>
+        </span>
+        <q-btn v-else
+          icon="login"
+          :class="rightButtonClass()"
+          flat
+          color="black"
+          :size="getButtonSize()"
+          @click="toggleShowLogin()">
+        </q-btn>
+
       </div>
     </div>
 
@@ -186,7 +195,7 @@ import {useRouter} from "vue-router";
 import {usePermissionsStore} from "src/stores/permissionsStore";
 import {FeatureIdent} from "src/models/AppFeature";
 import NavigationService from "src/services/NavigationService";
-import {openURL, useQuasar} from "quasar";
+import {LocalStorage, openURL, useQuasar} from "quasar";
 import {useUtils} from "src/services/Utils";
 import {useWindowsStore} from "src/stores/windowsStore";
 import {useSuggestionsStore} from "stores/suggestionsStore";
@@ -196,6 +205,8 @@ import SuggestionDialog from "components/dialogues/SuggestionDialog.vue";
 import {TabsetStatus} from "src/models/Tabset";
 import {ToastType} from "src/models/Toast";
 import SidePanelFooterLeftButtons from "components/helper/SidePanelFooterLeftButtons.vue";
+import { getAuth, sendSignInLinkToEmail } from "firebase/auth";
+import {useAuthStore} from "stores/auth";
 
 const {inBexMode} = useUtils()
 
@@ -203,6 +214,7 @@ const $q = useQuasar()
 
 const router = useRouter()
 const uiStore = useUiStore()
+const authStore = useAuthStore()
 
 const currentChromeTabs = ref<chrome.tabs.Tab[]>([])
 const currentTabs = ref<Tab[]>([])
@@ -214,7 +226,13 @@ const showSuggestionIcon = ref(false)
 const doShowSuggestionButton = ref(false)
 const transitionGraceTime = ref(false)
 const showWindowTable = ref(false)
+const showLogin = ref(false)
 const currentWindowName = ref('---')
+const email = ref(LocalStorage.getItem("emailForSignIn"))
+const loading = ref<boolean>(false)
+const mailSent = ref<boolean>(false)
+
+const {sendMsg} = useUtils()
 
 const columns = [
   //{name: 'windowIcon', align: 'center', label: '', field: 'windowIcon', sortable: true},
@@ -361,40 +379,12 @@ const toastBannerClass = () => {
   }
 }
 
-const otherActiveWindows = () => {
-  return _.filter(
-    _.sortBy(
-      _.map(
-        _.filter(useWindowsStore().currentWindows, (w: chrome.windows.Window) => {
-          return useWindowsStore().currentWindow?.id !== w.id
-        }), w => {
-          return w.id ? {
-            name: useWindowsStore().windowNameFor(w.id) || 'Main',
-            id: w.id
-          } : {name: 'unknown', id: 0}
-        }),
-      o => o.name),
-    (e: object) => e['name' as keyof object] !== '%monitoring%')
-}
-
 watchEffect(() => {
   const res = useWindowsStore().currentWindow && useWindowsStore().currentWindow.id ?
     useWindowsStore().windowNameFor(useWindowsStore().currentWindow.id || 0) || 'n/a' :
     'n/a'
   currentWindowName.value = res
 })
-
-const setNewName = (newName: string) => {
-  //console.log("setting window name to ", newName)
-  if (newName.trim().length > 0) {
-    currentWindowName.value = newName
-    //console.log("setting window name to ", currentWindowName.value)
-    useWindowsStore().currentWindowName = newName
-    chrome.windows.getCurrent((w) => {
-      useWindowsStore().upsertWindow(w, newName, "")
-    })
-  }
-}
 
 const openWindow = (windowId: number) => {
   if (useWindowsStore().currentWindow?.id !== windowId) {
@@ -420,7 +410,15 @@ const toggleShowWindowTable = () => {
   }
 }
 
-const setWindowName = (id: number, newName: String) => {
+const toggleShowLogin = () => {
+  showLogin.value = !showLogin.value
+  if (showLogin.value) {
+
+
+  }
+}
+
+const setWindowName = (id: number, newName: string) => {
   console.log("herie", id, newName)
   if (newName && newName.toString().trim().length > 0) {
     chrome.windows.get(id, (cw) => {
@@ -436,6 +434,66 @@ const setWindowName = (id: number, newName: String) => {
   }
 
 }
+
+
+const actionCodeSettings = {
+  // URL you want to redirect back to. The domain (www.example.com) for this
+  // URL must be in the authorized domains list in the Firebase Console.
+  url: 'http://localhost:9000',
+  //url: location.protocol + "//" + location.host,
+  // This must be true.
+  handleCodeInApp: true,
+  // iOS: {
+  //   bundleId: 'com.example.ios'
+  // },
+  // android: {
+  //   packageName: 'com.example.android',
+  //   installApp: true,
+  //   minimumVersion: '12'
+  // },
+  //dynamicLinkDomain: 'example.page.link'
+};
+
+const signin = () => {
+  loading.value = true
+  const auth = getAuth();
+  console.log("actionCodeSettings", actionCodeSettings)
+  sendSignInLinkToEmail(auth, email.value, actionCodeSettings)
+    .then(() => {
+      console.log("here!")
+      loading.value = false
+      mailSent.value = true
+      window.localStorage.setItem('emailForSignIn', email.value);
+      sendMsg('SET_EMAIL_FOR_SIGN_IN', {"email": email.value})
+      //chrome.runtime.sendMessage({ type: 'SET_EMAIL_FOR_SIGN_IN', email });
+      // ...
+    })
+    .catch((error) => {
+      console.error("error", error)
+      loading.value = false
+      mailSent.value = false
+      const errorCode = error.code;
+      const errorMessage = error.message;
+      // ...
+    });
+}
+
+const logout = () => {
+  console.log("logout!")
+
+  authStore.logout()
+    .then(() => {
+      router.push("/sidepanel")
+    })
+    .catch(() => {
+      //this.handleError(error)
+    })
+    .finally(() => {
+      console.log("cleaning up after logout")
+      //useTabsetService().init(useDB(undefined).db, useDB(undefined).pouchDb)
+    })
+}
+
 
 </script>
 

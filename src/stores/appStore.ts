@@ -16,6 +16,8 @@ export const useAppStore = defineStore('app', () => {
 
   const installationId = ref<string | undefined>(LocalStorage.getItem(SHARING_INSTALLATION) as string || undefined)
 
+  //const user = ref<object | undefined>(undefined)
+
   function init() {
     // make sure we have an installation id
     getInstallationId()

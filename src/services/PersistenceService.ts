@@ -10,6 +10,7 @@ import {Window} from "src/models/Window";
 import {RequestInfo} from "src/models/RequestInfo";
 import {BlobType, SavedBlob} from "src/models/SavedBlob";
 import {Message} from "src/models/Message";
+import {Account} from "src/models/Account";
 
 interface PersistenceService {
 
@@ -90,6 +91,9 @@ interface PersistenceService {
 
   getMessages(): Promise<Message[]>
   addMessage(msg: Message):void
+
+  getAccount(accountId: string): Promise<Account>
+  upsertAccount(account: Account):void
 
   clear(name: string):any
 

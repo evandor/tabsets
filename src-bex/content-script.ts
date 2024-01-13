@@ -29,6 +29,7 @@ export default bexContent((bridge: any) => {
   })
 
   chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+    console.log("tabsets: hier", request)
     if (request === 'getContent') {
       console.log("tabsets: received message for content", document.documentElement.outerHTML)
       sendResponse({content: document.documentElement.outerHTML});
@@ -44,6 +45,11 @@ export default bexContent((bridge: any) => {
     //   csIframe.height = "440px"
     //   csIframe.style.right = "5px"
     //   csIframe.style.top = "75px"
+    }
+    else if (request.type === "SET_EMAIL_FOR_SIGN_IN") {
+      chrome.storage.local.set({ emailForSignIn: request.email });
+      chrome.storage.local.set({ tabext: sender.tab });
+      console.log("SET_EMAIL_FOR_SIGN_IN", request.email);
     }
     sendResponse({content: "unknown request in content-scripts: " + request});
     return true

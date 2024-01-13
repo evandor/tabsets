@@ -1,7 +1,7 @@
 import {boot} from 'quasar/wrappers'
 import {Logtail} from "@logtail/browser";
 
-const INDEX_DB_VERSION = 18
+const INDEX_DB_VERSION = 19
 
 const CLEANUP_PERIOD_IN_MINUTES = 10 // in prod: 10
 const EXPIRE_DATA_PERIOD_IN_MINUTES = 60 // in prod: 60

@@ -23,6 +23,7 @@ import {useSuggestionsStore} from "stores/suggestionsStore";
 import {Window} from "src/models/Window";
 import {BlobType, SavedBlob} from "src/models/SavedBlob";
 import {Message} from "src/models/Message";
+import {Account} from "src/models/Account";
 
 class IndexedDbPersistenceService implements PersistenceService {
   private db: IDBPDatabase = null as unknown as IDBPDatabase
@@ -659,6 +660,10 @@ class IndexedDbPersistenceService implements PersistenceService {
           console.log("creating db messages")
           db.createObjectStore('messages');
         }
+        if (!db.objectStoreNames.contains('accounts')) {
+          console.log("creating db accounts")
+          db.createObjectStore('accounts');
+        }
       },
     });
   }
@@ -751,6 +756,14 @@ class IndexedDbPersistenceService implements PersistenceService {
   saveActiveFeatures(val: string[]): any {
     console.warn("not implemented")
   }
+
+  getAccount(accountId: string): Promise<Account> {
+    return Promise.reject("not implemented")
+  }
+  upsertAccount(account: Account):void {
+    this.db.put('accounts', account, account.id)
+  }
+
 
 }
 

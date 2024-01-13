@@ -210,6 +210,10 @@
               :tabset="tabsetForTabList(tabset as Tabset)"
             />
 
+            {{ windowLocation }}
+            <br>
+            <pre>{{ user }}</pre>
+
           </div>
         </q-expansion-item>
 
@@ -283,7 +287,7 @@ import {CopyToClipboardCommand} from "src/domain/commands/CopyToClipboard";
 import SidePanelTabsetDescriptionPage from "pages/sidepanel/SidePanelTabsetDescriptionPage.vue";
 import ShareTabsetPubliclyDialog from "components/dialogues/ShareTabsetPubliclyDialog.vue";
 import MqttService from "src/services/mqtt/MqttService";
-import {SyncType} from "stores/appStore";
+import {SyncType, useAppStore} from "stores/appStore";
 import {useVOnboarding, VOnboardingStep, VOnboardingWrapper} from 'v-onboarding'
 import {FirebaseCall} from "src/services/firebase/FirebaseCall";
 import getScrollTarget = scroll.getScrollTarget;
@@ -312,6 +316,8 @@ const currentTabset = ref<Tabset | undefined>(undefined)
 const currentChromeTab = ref<chrome.tabs.Tab>(null as unknown as chrome.tabs.Tab)
 const tabsetExpanded = ref<Map<string, boolean>>(new Map())
 const hoveredPublicLink = ref(false)
+const windowLocation = ref('---')
+const user = ref<any>()
 
 // https://stackoverflow.com/questions/12710905/how-do-i-dynamically-assign-properties-to-an-object-in-typescript
 interface SelectionObject {
@@ -352,8 +358,10 @@ onMounted(() => {
   window.addEventListener("offline", (e) => updateOnlineStatus(e));
   window.addEventListener("online", (e) => updateOnlineStatus(e));
 
+  windowLocation.value = window.location.href
+
   if (!useAuthStore().isAuthenticated) {
-    router.push("/authenticate")
+    //router.push("/authenticate")
   } else {
     setTimeout(() => {
       if (useTabsStore().allTabsCount === 0) {
@@ -376,6 +384,38 @@ onMounted(() => {
 
 onUnmounted(() => {
   window.removeEventListener('keypress', checkKeystroke);
+})
+
+watchEffect(() => {
+  const ar = useAuthStore().useAuthRequest
+  if (ar) {
+    console.log(">>>authRequest was set to", ar)
+    //console.log(">>> window.frames", window.parent.frames)
+    console.log(">>> window.frames", window.location.href.indexOf("?"), window.parent.frames[0])
+    //console.log(">>> document.frames", document.frames)
+    //router.push("/sidepanel?" + ar)
+    if (window.location.href.indexOf("?") < 0) {
+      //window.location.href = window.location.href + "?" + ar
+      //const tsIframe = document.getElementById("ts-sidepanel-frame")
+      const tsIframe = window.parent.frames[0]
+      console.log("iframe", tsIframe)
+      if (tsIframe) {
+        //tsIframe.style.background = "green";
+        //tsIframe.location.href="https://www.skysail.io"
+        console.log(">>> new window.location.href", window.location.href + "?" + ar)
+        tsIframe.location.href = window.location.href + "?" + ar
+        tsIframe.location.reload()
+      }
+
+
+      // window.location.replace( window.location.href + "?" + ar)
+    }
+  }
+})
+
+watchEffect(() => {
+  console.log("****", useAuthStore().user)
+  user.value = useAuthStore().user
 })
 
 watchEffect(() => {

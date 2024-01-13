@@ -1,15 +1,15 @@
 import {defineStore} from 'pinia';
 import {Subscription} from "src/models/Subscription";
 import {Auth0VueClient, User} from "@auth0/auth0-vue";
-import {GetTokenSilentlyOptions, GetTokenSilentlyVerboseResponse} from "@auth0/auth0-spa-js";
-import auth0 from "boot/auth0";
+import {useRouter} from "vue-router";
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
-    authenticated: true, // dummy implementation
-    user:  {name: "unknown"},
+    authenticated: false, // dummy implementation
+    user: {name: "unknown"},
     subscription: null as unknown as Subscription,
-    idToken: null as unknown as string
+    idToken: null as unknown as string,
+    authRequest: null as unknown as string
   }),
 
   getters: {
@@ -30,7 +30,13 @@ export const useAuthStore = defineStore('auth', {
         //console.log("got accessToken", accessToken)
         return accessToken
       }
-      return  await this.auth0.getAccessTokenSilently()
+      return await this.auth0.getAccessTokenSilently()
+    },
+    useAuthRequest(): string | null {
+      const val = this.authRequest
+      this.authRequest = null as unknown as string
+      console.log("auth request was nulled")
+      return val
     }
 
 
@@ -64,7 +70,14 @@ export const useAuthStore = defineStore('auth', {
       return Promise.resolve("")
     },
 
+    setAuthRequest(authRequest: string) {
+      console.log("setting auth request to", authRequest)
+      this.authRequest = authRequest
+    },
+
     logout(): Promise<any> {
+      this.authenticated = false
+      this.user = undefined
       console.log("logout", (process.env.MODE === 'bex') ? window.location.origin + "/www/index.html" : window.location.origin)
       return Promise.resolve("")
     }

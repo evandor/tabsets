@@ -23,6 +23,8 @@ import rangy from "rangy/lib/rangy-core.js";
 //import "rangy/lib/rangy-classapplier";
 //import "rangy/lib/rangy-textrange";
 import "rangy/lib/rangy-serializer";
+import {useRoute, useRouter} from "vue-router";
+import {useAuthStore} from "stores/auth";
 
 const {
   saveCurrentTabset,
@@ -35,6 +37,7 @@ const {
 } = useTabsetService()
 
 const {sanitize} = useUtils()
+const router = useRouter()
 
 async function setCurrentTab() {
   const tabs = await chrome.tabs.query({active: true, lastFocusedWindow: true})
@@ -254,6 +257,40 @@ class ChromeListeners {
   }
 
   async onUpdated(number: number, info: chrome.tabs.TabChangeInfo, chromeTab: chrome.tabs.Tab) {
+    if (info.url) {
+      const emailLink = info.url;
+      const urlOrigin = new URL(emailLink).origin;
+      const extensionOrigin = "http://localhost:9000";
+
+      console.log("urlOrigin1", urlOrigin, urlOrigin === extensionOrigin);
+
+      if (urlOrigin === extensionOrigin) {
+        const split = emailLink.split("?")
+        const authRequest = split[1]
+        console.log("authRequest", authRequest, window.location)
+        //const newLocation = window.location + "?" + authRequest
+        //console.log("%cnewLocation", "color:green",newLocation)
+        //window.location.href = newLocation
+        useAuthStore().setAuthRequest(authRequest)
+
+        // // Get email from local storage
+        // //chrome.storage.local.get("emailForSignIn", (data) => {
+        //   //console.log("hier", data)
+        //   const email = "ts1@skysail.io"// data.emailForSignIn;
+        //   // Send a message to the content script with emailLink and email
+        //   chrome.storage.local.get("tabext", (data1) => {
+        //     console.log("****", data1)
+        //     chrome.tabs.sendMessage(data1.tabext.id, {
+        //       type: "emailLink",
+        //       emailLink,
+        //       email,
+        //     });
+        //   });
+        // //});
+      }
+    }
+
+
     if (!useTabsStore().listenersOn) {
       console.debug(`onUpdated:   tab ${number}: >>> listeners off, returning <<<`)
       return
