@@ -2772,10 +2772,10 @@
     split2 "^4.2.0"
     wait-port "^1.0.4"
 
-"@xenova/transformers@^2.12.1":
-  version "2.13.0"
-  resolved "https://registry.yarnpkg.com/@xenova/transformers/-/transformers-2.13.0.tgz#0cd3dda2afe3ba969a6de6d5041c4c718c653fb1"
-  integrity sha512-pKff4jg59n/B4ltdViIIDOZTZJbWeGduY62nkFYuLxnNBFEfVcBr5PBpKPKktDud3yy4+vRk8pZn1S1sSV+8KQ==
+"@xenova/transformers@^2.14.0":
+  version "2.14.0"
+  resolved "https://registry.yarnpkg.com/@xenova/transformers/-/transformers-2.14.0.tgz#6fe128957e64377ca4fca910e77f6092f3f3512a"
+  integrity sha512-rQ3O7SW5EM64b6XFZGx3XQ2cfiroefxUwU9ShfSpEZyhd082GvwNJJKndxgaukse1hZP1JUDoT0DfjDiq4IZiw==
   dependencies:
     "@huggingface/jinja" "^0.1.0"
     onnxruntime-web "1.14.0"
