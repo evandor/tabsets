@@ -50,7 +50,7 @@ export function useTabsetService() {
     // check TODO!
     const selectedTS = localStorage.getItem("selectedTabset")
     if (selectedTS) {
-      console.log("setting selected tabset from storage", selectedTS)
+      console.debug("setting selected tabset from storage", selectedTS)
       useTabsStore().selectCurrentTabset(selectedTS)
     }
 

@@ -7,10 +7,14 @@
 
           <div class="row">
             <div class="col-7">
-              <q-input outlined type="email" v-model="email" label="Your email address" dense />
+              <q-input v-if="!mailSent"
+                       outlined type="email" v-model="email" label="Your email address" dense/>
+              <div class="text-caption text-black" v-else>
+                please check your mail...
+              </div>
             </div>
             <div class="col-5">
-              <q-btn label="Sign in" color="primary" @click="signin()"/>
+              <q-btn label="Sign in" color="primary" :loading="loading" :disable="mailSent" @click="signin()"/>
             </div>
           </div>
 
@@ -68,7 +72,7 @@
     </div>
 
     <div class="row fit">
-      <div class="col-9">
+      <div class="col-8">
 
         <Transition name="fade" appear>
           <q-banner
@@ -155,16 +159,20 @@
           <q-tooltip class="tooltip">Tabsets as full-page app</q-tooltip>
         </q-btn>
 
-        <span class="q-my-xs q-ml-xs q-mr-none cursor-pointer" v-if="authStore.authenticated">
-          <q-avatar size="19px">
+        <span class="q-my-xs q-ml-xs q-mr-none cursor-pointer" v-if="authStore.isAuthenticated()">
+          <q-avatar size="19px" v-if="authStore.user.photoURL">
             <q-img :src="authStore.user.photoURL"/>
+            <q-tooltip class="tooltip-small">You're logged in {{ authStore.user.email }}</q-tooltip>
           </q-avatar>
+          <q-icon v-else name="person">
+            <q-tooltip class="tooltip-small">You're logged in {{ authStore.user.email }}</q-tooltip>
+          </q-icon>
 
           <q-menu :offset="[0, 7]" fit>
             <q-list dense style="min-width: 150px;min-height:50px">
-<!--              <q-item clickable v-close-popup>-->
-              <!--                <q-item-section @click="subscribe()">Subscribe</q-item-section>-->
-              <!--              </q-item>-->
+              <q-item clickable v-close-popup>
+                <q-item-section @click="subscribe()">Subscribe</q-item-section>
+              </q-item>
               <q-item clickable v-close-popup>
                 <q-item-section @click="logout()">Logout {{ authStore.user?.email }}</q-item-section>
               </q-item>
@@ -173,12 +181,12 @@
           </q-menu>
         </span>
         <q-btn v-else
-          icon="login"
-          :class="rightButtonClass()"
-          flat
-          color="black"
-          :size="getButtonSize()"
-          @click="toggleShowLogin()">
+               icon="login"
+               :class="rightButtonClass()"
+               flat
+               color="black"
+               :size="getButtonSize()"
+               @click="toggleShowLogin()">
         </q-btn>
 
       </div>
@@ -205,8 +213,9 @@ import SuggestionDialog from "components/dialogues/SuggestionDialog.vue";
 import {TabsetStatus} from "src/models/Tabset";
 import {ToastType} from "src/models/Toast";
 import SidePanelFooterLeftButtons from "components/helper/SidePanelFooterLeftButtons.vue";
-import { getAuth, sendSignInLinkToEmail } from "firebase/auth";
-import {useAuthStore} from "stores/auth";
+import {getAuth, sendSignInLinkToEmail} from "firebase/auth";
+import {useAuthStore} from "stores/authStore";
+import {EMAIL_LINK_REDIRECT_DOMAIN} from "boot/constants";
 
 const {inBexMode} = useUtils()
 
@@ -410,16 +419,10 @@ const toggleShowWindowTable = () => {
   }
 }
 
-const toggleShowLogin = () => {
-  showLogin.value = !showLogin.value
-  if (showLogin.value) {
+const toggleShowLogin = () => showLogin.value = !showLogin.value
 
-
-  }
-}
 
 const setWindowName = (id: number, newName: string) => {
-  console.log("herie", id, newName)
   if (newName && newName.toString().trim().length > 0) {
     chrome.windows.get(id, (cw) => {
       //console.log("setting window name", id, newName.toString().trim())
@@ -437,21 +440,10 @@ const setWindowName = (id: number, newName: string) => {
 
 
 const actionCodeSettings = {
-  // URL you want to redirect back to. The domain (www.example.com) for this
   // URL must be in the authorized domains list in the Firebase Console.
-  url: 'http://localhost:9000',
-  //url: location.protocol + "//" + location.host,
-  // This must be true.
+  //url: 'http://localhost:9000',
+  url: EMAIL_LINK_REDIRECT_DOMAIN,
   handleCodeInApp: true,
-  // iOS: {
-  //   bundleId: 'com.example.ios'
-  // },
-  // android: {
-  //   packageName: 'com.example.android',
-  //   installApp: true,
-  //   minimumVersion: '12'
-  // },
-  //dynamicLinkDomain: 'example.page.link'
 };
 
 const signin = () => {
@@ -460,21 +452,17 @@ const signin = () => {
   console.log("actionCodeSettings", actionCodeSettings)
   sendSignInLinkToEmail(auth, email.value, actionCodeSettings)
     .then(() => {
-      console.log("here!")
       loading.value = false
       mailSent.value = true
+      setTimeout(() => mailSent.value = false, 3000)
       window.localStorage.setItem('emailForSignIn', email.value);
       sendMsg('SET_EMAIL_FOR_SIGN_IN', {"email": email.value})
-      //chrome.runtime.sendMessage({ type: 'SET_EMAIL_FOR_SIGN_IN', email });
-      // ...
     })
     .catch((error) => {
       console.error("error", error)
+      alert(error)
       loading.value = false
       mailSent.value = false
-      const errorCode = error.code;
-      const errorMessage = error.message;
-      // ...
     });
 }
 
@@ -483,7 +471,7 @@ const logout = () => {
 
   authStore.logout()
     .then(() => {
-      router.push("/sidepanel")
+      router.push("/refresh/sidepanel")
     })
     .catch(() => {
       //this.handleError(error)
@@ -494,6 +482,9 @@ const logout = () => {
     })
 }
 
+const subscribe = () => {
+  router.push("/subscribe")
+}
 
 </script>
 

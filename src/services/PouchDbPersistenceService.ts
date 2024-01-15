@@ -11,7 +11,7 @@ import {LogEntry} from "src/models/LogEntry";
 import {Predicate} from "src/domain/Types";
 import {Notification} from "src/models/Notification";
 import {StaticSuggestionIdent, Suggestion, SuggestionState} from "src/models/Suggestion";
-import {useAuthStore} from "src/stores/auth";
+import {useAuthStore} from "src/stores/authStore";
 import {Buffer} from 'buffer';
 import {api} from "../boot/axios";
 import throttledQueue from "throttled-queue";

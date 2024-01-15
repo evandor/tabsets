@@ -39,6 +39,7 @@ const SYNC_COUCHDB_USERNAME = "sync.couchdb.username"
 const SYNC_COUCHDB_PASSWORD = "sync.couchdb.password"
 const SYNC_COUCHDB_URL = "sync.couchdb.url"
 
+const EMAIL_LINK_REDIRECT_DOMAIN = "https://tabsets.web.app"
 
 const logtail = (process.env.MODE === "bex") ?
   new Logtail("Ht8PY3XGQgqhMyNTcyGyJhXJ") :
@@ -67,6 +68,7 @@ export {
   SYNC_COUCHDB_PASSWORD,
   SYNC_COUCHDB_URL,
   TITLE_IDENT,
+  EMAIL_LINK_REDIRECT_DOMAIN,
   logtail
 }
 

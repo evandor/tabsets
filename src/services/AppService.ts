@@ -24,10 +24,13 @@ import {useMessagesStore} from "src/stores/messagesStore";
 import {SyncType, useAppStore} from "stores/appStore";
 import GitPersistentService from "src/services/persistence/GitPersistentService";
 import {SYNC_GITHUB_URL, SYNC_TYPE} from "boot/constants";
+import {useAuthStore} from "stores/authStore";
 
 class AppService {
 
   async init() {
+
+    console.log("initializing AppService")
 
     const appStore = useAppStore()
     const spacesStore = useSpacesStore()
@@ -42,7 +45,6 @@ class AppService {
     const $q = useQuasar()
 
     appStore.init()
-    //MqttService.init()
 
     // init of stores and some listeners
     usePermissionsStore().initialize(useDB(useQuasar()).localDb)
@@ -63,13 +65,14 @@ class AppService {
     const syncType = LocalStorage.getItem(SYNC_TYPE) as SyncType || SyncType.NONE
     const syncUrl = LocalStorage.getItem(SYNC_GITHUB_URL) as string
     const dbOrGitDb = syncType && (syncType === SyncType.GITHUB || syncType === SyncType.MANAGED_GIT) && syncUrl ? useDB(undefined).gitDb : useDB(undefined).db
-    console.log("checking sync config:", syncType, syncUrl, dbOrGitDb)
+    console.debug("checking sync config:", syncType, syncUrl, dbOrGitDb)
 
 // init db
     IndexedDbPersistenceService.init("db")
       .then(() => {
 
         // init services
+        useAuthStore().initialize(useDB(useQuasar()).db)
         useNotificationsStore().initialize(useDB(undefined).db)
         useSuggestionsStore().init(useDB(undefined).db)
         messagesStore.initialize(useDB(undefined).db)

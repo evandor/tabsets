@@ -12,6 +12,7 @@ import {RequestInfo} from "src/models/RequestInfo";
 import {Window} from "src/models/Window";
 import {BlobType, SavedBlob} from "src/models/SavedBlob";
 import {Message} from "src/models/Message";
+import {Account} from "src/models/Account";
 
 export class LocalStoragePersistenceService implements PersistenceService {
 
@@ -266,6 +267,14 @@ export class LocalStoragePersistenceService implements PersistenceService {
 
   getMessages(): Promise<Message[]> {
     return Promise.resolve([]);
+  }
+
+  getAccount(accountId: string): Promise<Account> {
+    return Promise.reject("not implemented")
+  }
+
+  upsertAccount(account: Account):void {
+    console.warn("not implemented")
   }
 
 }

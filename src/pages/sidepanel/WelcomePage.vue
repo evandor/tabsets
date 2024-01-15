@@ -1,58 +1,72 @@
-1<template>
-  <div class="q-ma-none q-pa-md fullimageBackground" @click="selected()">
-    <div class="row">
+1
+<template>
+  <q-page style="padding-top: 20px">
+
+    <div class="q-ma-none q-pa-md fullimageBackground" @click="selected()">
       <div class="row">
-        <div class="col-12 text-caption">
-          Next Generation Bookmarks Extension
+        <div class="row">
+          <div class="col-12 text-caption">
+            The Art Of Linking
+          </div>
+        </div>
+        <div class="col-12 text-h6 q-mb-md">
+          Welcome to Tabsets
         </div>
       </div>
-      <div class="col-12 text-h6 q-mb-md">
-        Welcome to Tabsets
-      </div>
-    </div>
 
-    <div class="q-pa-sm row items-start q-gutter-md">
-      <q-card class="my-card fit">
-        <q-card-section>
-          <span class="text-subtitle2">Create your first Tabset</span>
-          <br>
-          Provide a name and add tabs later
-        </q-card-section>
-        <!--        <q-card-section class="q-ma-none q-pa-none q-ml-md">-->
-        <!--          <q-icon name="check" color="primary" class="q-mr-xs"/>-->
-        <!--          Create your first tabset:-->
-        <!--        </q-card-section>-->
-        <!--        <q-card-section class="q-ma-none q-pa-none q-ml-md">-->
-        <!--          <q-icon name="check" color="primary" class="q-mr-xs"/>-->
-        <!--          Provide a name...-->
-        <!--        </q-card-section>-->
-        <!--        <q-card-section class="q-ma-none q-pa-none q-ml-md">-->
-        <!--          <q-icon name="check" color="primary" class="q-mr-xs"/>-->
-        <!--          ... and add tabs later-->
-        <!--        </q-card-section>-->
-        <q-card-section class="q-pb-none">
-          <q-input v-model="tabsetName"
-                   dense
-                   autofocus
-                   ref="tabsetNameRef"
-                   error-message="Please do not use special Characters, maximum length is 32"
-                   :error="!newTabsetNameIsValid()"
-                   data-testid="newTabsetName"
-                   @keydown.enter="addFirstTabset()"
-                   label="Tabset name"/>
-        </q-card-section>
-        <q-card-actions align="right" class="q-pr-md q-pb-md q-ma-none">
-          <DialogButton
+      <div class="q-pa-sm row items-start q-gutter-md">
+        <q-card class="my-card fit">
+          <q-card-section>
+            <span class="text-subtitle2">Create your first Tabset</span>
+            <br>
+            Provide a name and add tabs later
+          </q-card-section>
+          <!--        <q-card-section class="q-ma-none q-pa-none q-ml-md">-->
+          <!--          <q-icon name="check" color="primary" class="q-mr-xs"/>-->
+          <!--          Create your first tabset:-->
+          <!--        </q-card-section>-->
+          <!--        <q-card-section class="q-ma-none q-pa-none q-ml-md">-->
+          <!--          <q-icon name="check" color="primary" class="q-mr-xs"/>-->
+          <!--          Provide a name...-->
+          <!--        </q-card-section>-->
+          <!--        <q-card-section class="q-ma-none q-pa-none q-ml-md">-->
+          <!--          <q-icon name="check" color="primary" class="q-mr-xs"/>-->
+          <!--          ... and add tabs later-->
+          <!--        </q-card-section>-->
+          <q-card-section class="q-pb-none">
+            <q-input v-model="tabsetName"
+                     dense
+                     autofocus
+                     ref="tabsetNameRef"
+                     error-message="Please do not use special Characters, maximum length is 32"
+                     :error="!newTabsetNameIsValid()"
+                     data-testid="newTabsetName"
+                     @keydown.enter="addFirstTabset()"
+                     label="Tabset name"/>
+          </q-card-section>
+          <q-card-actions align="right" class="q-pr-md q-pb-md q-ma-none">
+            <DialogButton
               label="Add Tabset"
               @was-clicked="addFirstTabset"
               :disable="tabsetName.trim().length === 0 || !newTabsetNameIsValid()"/>
-        </q-card-actions>
-      </q-card>
+          </q-card-actions>
+        </q-card>
+      </div>
+      <!--    <div class="q-pa-sm row items-start q-gutter-md">-->
+      <!--      <q-btn label="import tabsets" @click="showImportDialog"></q-btn>-->
+      <!--    </div>-->
+
+      <div>
+        {{ windowLocation }}
+        <br>
+        <pre>{{ user }}</pre>
+      </div>
+
     </div>
-<!--    <div class="q-pa-sm row items-start q-gutter-md">-->
-<!--      <q-btn label="import tabsets" @click="showImportDialog"></q-btn>-->
-<!--    </div>-->
-  </div>
+
+
+
+  </q-page>
 </template>
 
 <script lang="ts" setup>
@@ -72,16 +86,41 @@ import Analytics from "src/utils/google-analytics";
 import {nextTick} from 'vue'
 import DialogButton from "components/buttons/DialogButton.vue";
 import ImportDialog from "components/dialogues/ImportDialog.vue";
+import {useAuthStore} from "stores/authStore";
 
 const $q = useQuasar()
 const router = useRouter()
 
 const tabsetName = ref('')
 const tabsetNameRef = ref<HTMLElement>(null as unknown as HTMLInputElement)
+const windowLocation = ref('---')
+const user = ref<any>()
+
 
 onMounted(() => {
   Analytics.firePageViewEvent('WelcomePage', document.location.href);
+  windowLocation.value = window.location.href
 })
+
+watchEffect(() => {
+  const ar = useAuthStore().useAuthRequest
+  if (ar) {
+    console.log(">>> authRequest was set to", ar)
+    console.log(">>> current location", window.location.href)
+    console.log(">>> window.frames", window.location.href.indexOf("?"), window.parent.frames[0])
+    if (window.location.href.indexOf("?") < 0) {
+      //const tsIframe = document.getElementById("ts-sidepanel-frame")
+      const tsIframe = window.parent.frames[0]
+      console.log("iframe", tsIframe)
+      if (tsIframe) {
+        console.log(">>> new window.location.href", window.location.href + "?" + ar)
+        tsIframe.location.href = window.location.href + "?" + ar
+        tsIframe.location.reload()
+      }
+    }
+  }
+})
+
 
 setTimeout(() => {
   console.log("focusing", tabsetNameRef.value)
@@ -104,15 +143,15 @@ watchEffect(() => {
 
 const addFirstTabset = () => {
   useCommandExecutor()
-      .executeFromUi(new CreateTabsetCommand(tabsetName.value, []))
-      .then((res) => {
-        useUiStore().sidePanelSetActiveView(SidePanelView.MAIN)
-        router.push("/sidepanel?first=true")
-      })
+    .executeFromUi(new CreateTabsetCommand(tabsetName.value, []))
+    .then((res) => {
+      useUiStore().sidePanelSetActiveView(SidePanelView.MAIN)
+      router.push("/sidepanel?first=true")
+    })
 }
 
 const newTabsetNameIsValid = () =>
-    tabsetName.value.length <= 32 && !STRIP_CHARS_IN_USER_INPUT.test(tabsetName.value)
+  tabsetName.value.length <= 32 && !STRIP_CHARS_IN_USER_INPUT.test(tabsetName.value)
 
 //https://groups.google.com/a/chromium.org/g/chromium-extensions/c/nb058-YrrWc
 const selected = () => tabsetNameRef.value.focus()

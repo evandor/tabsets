@@ -760,8 +760,12 @@ class IndexedDbPersistenceService implements PersistenceService {
   getAccount(accountId: string): Promise<Account> {
     return Promise.reject("not implemented")
   }
+
   upsertAccount(account: Account):void {
-    this.db.put('accounts', account, account.id)
+    const normalizedAccount = JSON.parse(JSON.stringify(account))
+    console.log("upserting account", account)
+    console.log("upserting account", normalizedAccount)
+    this.db.put('accounts', normalizedAccount, normalizedAccount.id)
   }
 
 

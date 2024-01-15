@@ -5,8 +5,11 @@
       <router-view/>
     </q-page-container>
 
-    <q-footer elevated  v-if="tabsStore.tabsets?.size > 0">
-      <SidePanelFooter />
+    <q-footer elevated v-if="tabsStore.tabsets?.size > 0">
+      <SidePanelFooter/>
+    </q-footer>
+    <q-footer elevated v-else>
+      <SidePanelWelcomeFooter/>
     </q-footer>
 
   </q-layout>
@@ -19,6 +22,7 @@ import {ref, watchEffect} from "vue";
 import SidePanelFooter from "components/SidePanelFooter.vue";
 import {useTabsStore} from "src/stores/tabsStore";
 import {useMeta, useQuasar} from "quasar";
+import SidePanelWelcomeFooter from "components/SidePanelWelcomeFooter.vue";
 
 const tabsStore = useTabsStore()
 
@@ -35,7 +39,6 @@ useMeta(() => {
 
 
 watchEffect(() => location.value = window.location.href.split('/www/')[1] || window.location.href)
-
 
 
 </script>

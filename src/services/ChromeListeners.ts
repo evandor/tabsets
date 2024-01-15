@@ -24,7 +24,8 @@ import rangy from "rangy/lib/rangy-core.js";
 //import "rangy/lib/rangy-textrange";
 import "rangy/lib/rangy-serializer";
 import {useRoute, useRouter} from "vue-router";
-import {useAuthStore} from "stores/auth";
+import {useAuthStore} from "stores/authStore";
+import {EMAIL_LINK_REDIRECT_DOMAIN} from "boot/constants";
 
 const {
   saveCurrentTabset,
@@ -37,7 +38,6 @@ const {
 } = useTabsetService()
 
 const {sanitize} = useUtils()
-const router = useRouter()
 
 async function setCurrentTab() {
   const tabs = await chrome.tabs.query({active: true, lastFocusedWindow: true})
@@ -258,16 +258,10 @@ class ChromeListeners {
 
   async onUpdated(number: number, info: chrome.tabs.TabChangeInfo, chromeTab: chrome.tabs.Tab) {
     if (info.url) {
-      const emailLink = info.url;
-      const urlOrigin = new URL(emailLink).origin;
-      const extensionOrigin = "http://localhost:9000";
-
-      console.log("urlOrigin1", urlOrigin, urlOrigin === extensionOrigin);
-
-      if (urlOrigin === extensionOrigin) {
-        const split = emailLink.split("?")
+      if (this.checkOriginForEmailLink(info.url)) {
+        const split = info.url.split("?")
         const authRequest = split[1]
-        console.log("authRequest", authRequest, window.location)
+        console.log("authRequest received on", window.location.href)
         //const newLocation = window.location + "?" + authRequest
         //console.log("%cnewLocation", "color:green",newLocation)
         //window.location.href = newLocation
@@ -877,6 +871,33 @@ class ChromeListeners {
         )
 
       })
+  }
+
+  private checkOriginForEmailLink(url: string) {
+    try {
+      const theUrl = new URL(url)
+      const urlOrigin = theUrl.origin;
+      //console.log("theURL", theUrl)
+      const res = urlOrigin === EMAIL_LINK_REDIRECT_DOMAIN || urlOrigin === "http://localhost:9000"
+      if (res) {
+        //console.log("checking: origin ok")
+        const params = theUrl.searchParams
+        if (!params.has("apiKey") || !params.has("oobCode") || !params.has("mode")) {
+          //console.log("checking: missing key", params)
+          return false
+        }
+        if (!params.get("apiKey")?.startsWith("AIzaS") || params.get("mode") !== "signIn") {
+          //console.log("checking: wrong key", params.get("apiKey"))
+          //console.log("checking: wrong key", params.get("mode"))
+          return false
+        }
+        console.log("found email authorization link @", url)
+        return true
+      }
+      return false
+    } catch (err) {
+      console.log("could not check url for auth link", url)
+    }
   }
 }
 

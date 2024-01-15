@@ -260,7 +260,7 @@
 import {onMounted, onUnmounted, ref, watchEffect} from "vue";
 import {useTabsStore} from "src/stores/tabsStore";
 import {Tab, TabPreview} from "src/models/Tab";
-import _ from "lodash"
+import _, {result} from "lodash"
 import {Tabset, TabsetSharing, TabsetStatus, TabsetType} from "src/models/Tabset";
 import {useRouter} from "vue-router";
 import {useUtils} from "src/services/Utils";
@@ -277,7 +277,7 @@ import SidePanelPageContextMenu from "pages/sidepanel/SidePanelPageContextMenu.v
 import {useWindowsStore} from "src/stores/windowsStore";
 import TabsetService from "src/services/TabsetService";
 import Analytics from "src/utils/google-analytics";
-import {useAuthStore} from "stores/auth";
+import {useAuthStore} from "stores/authStore";
 import {useDB} from "src/services/usePersistenceService";
 import {useBookmarksStore} from "stores/bookmarksStore";
 import {useSuggestionsStore} from "stores/suggestionsStore";
@@ -293,8 +293,9 @@ import {FirebaseCall} from "src/services/firebase/FirebaseCall";
 import getScrollTarget = scroll.getScrollTarget;
 import InfoMessageWidget from "components/widgets/InfoMessageWidget.vue";
 import {SYNC_TYPE, TITLE_IDENT} from "boot/constants";
-import {collection, getDoc, doc, onSnapshot, setDoc, addDoc} from "firebase/firestore";
+import {collection, getDoc, doc, onSnapshot, setDoc, addDoc, getDocs} from "firebase/firestore";
 import {firestore} from "boot/firebase";
+import {Account} from "src/models/Account";
 
 const {setVerticalScrollPosition} = scroll
 
@@ -389,33 +390,48 @@ onUnmounted(() => {
 watchEffect(() => {
   const ar = useAuthStore().useAuthRequest
   if (ar) {
-    console.log(">>>authRequest was set to", ar)
-    //console.log(">>> window.frames", window.parent.frames)
-    console.log(">>> window.frames", window.location.href.indexOf("?"), window.parent.frames[0])
-    //console.log(">>> document.frames", document.frames)
-    //router.push("/sidepanel?" + ar)
-    if (window.location.href.indexOf("?") < 0) {
-      //window.location.href = window.location.href + "?" + ar
+    console.log(">>> authRequest received...")
+    console.log(">>> current location", window.location.href)
+    const baseLocation = window.location.href.split["?"][0]
+    //if (window.location.href.indexOf("?") < 0) {
       //const tsIframe = document.getElementById("ts-sidepanel-frame")
       const tsIframe = window.parent.frames[0]
       console.log("iframe", tsIframe)
       if (tsIframe) {
-        //tsIframe.style.background = "green";
-        //tsIframe.location.href="https://www.skysail.io"
-        console.log(">>> new window.location.href", window.location.href + "?" + ar)
-        tsIframe.location.href = window.location.href + "?" + ar
+        console.log(">>> new window.location.href", baseLocation + "?" + ar)
+        tsIframe.location.href = baseLocation + "?" + ar
         tsIframe.location.reload()
       }
-
-
-      // window.location.replace( window.location.href + "?" + ar)
-    }
+    //}
   }
 })
 
 watchEffect(() => {
-  console.log("****", useAuthStore().user)
-  user.value = useAuthStore().user
+  if (useAuthStore().user) {
+    console.log("setting user to ", useAuthStore().user?.email)
+    user.value = useAuthStore().user
+
+    getDoc(doc(firestore, "users", user.value.uid))
+      .then(userDoc => {
+        console.log("userDoc", userDoc)
+        const userData = userDoc.data()
+        console.log("userData", userData)
+
+        const account = new Account(user.value.uid, userData)
+
+        getDocs(collection(firestore, "users", user.value.uid, "subscriptions"))
+          .then((querySnapshot) => {
+            console.log("querySnapshot", querySnapshot)
+            querySnapshot.forEach((doc) => {
+              console.log(doc.id, " => ", doc.data());
+              //key += doc.id + "|"
+              account.addSubscription(doc.data())
+            })
+            useAuthStore().upsertAccount(account)
+          })
+
+      })
+  }
 })
 
 watchEffect(() => {
