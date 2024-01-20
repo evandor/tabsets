@@ -159,6 +159,24 @@ export const useWindowsStore = defineStore('windows', () => {
                 currentWindowName.value = windowNameFor(currentWindow.value.id)
               }
             })
+
+            // add context menus for moving to other window
+            if (chrome && chrome.contextMenus) {
+              chrome.windows.getCurrent().then(currentWindow => {
+                for (const window of currentWindows.value) {
+                  //console.log("da!!!",window,useWindowsStore().windowNameFor(window.id))
+                  // TODO this is always the "default" window
+                  if (currentWindow.id !== window.id) {
+                    chrome.contextMenus.create({
+                      id: 'move_to|' + window.id,
+                      parentId: 'move_to_window',
+                      title: '...to window ' + useWindowsStore().windowNameFor(window.id) || window.id,
+                      contexts: ['all']
+                    })
+                  }
+                }
+              })
+            }
           })
 
         })
@@ -211,6 +229,7 @@ export const useWindowsStore = defineStore('windows', () => {
   }
 
   function windowNameFor(id: number) {
+    console.log("windowNameFor", id, allWindows.value)
     return allWindows.value.get(id)?.title
   }
 

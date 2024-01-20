@@ -190,14 +190,16 @@ class ChromeApi {
               })
 
               console.log("context menu", useWindowsStore().currentWindows)
-              useWindowsStore().currentWindows.forEach(w => {
+              const currentWindows = useWindowsStore().currentWindows
+              if (currentWindows.length > 1) {
                 chrome.contextMenus.create({
-                  id: 'move_to_' + w.id,
+                  id: 'move_to_window',
                   parentId: 'tabset_extension',
-                  title: 'Move to window ' + w.id,
+                  title: 'Move current tab...',
                   contexts: ['all']
                 })
-              })
+                // rest of logic in windowsStore
+              }
 
               if (usePermissionsStore().hasFeature(FeatureIdent.ANNOTATIONS)) {
                 console.debug(" > context menu: annotate_website")
@@ -266,6 +268,12 @@ class ChromeApi {
             const tabsetId = e.menuItemId.toString().split("|")[1]
             console.log("got tabsetId", tabsetId, e.menuItemId)
             this.executeAddToTS(tabId, tabsetId)
+          } else if (e.menuItemId.toString().startsWith("move_to|")) {
+            //console.log("got", e, e.menuItemId.split("|"))
+            const tabId = tab?.id || 0
+            const windowId = e.menuItemId.toString().split("|")[1]
+            console.log("got windowId", tabId, windowId)
+            this.executeMoveToWindow(tabId, Number(windowId))
           }
         })
     }
@@ -466,13 +474,23 @@ class ChromeApi {
     });
   }
 
-  // executeQuoteJS(tabId: number) {
-  //   // @ts-ignore
-  //   chrome.scripting.executeScript({
-  //     target: {tabId: tabId},
-  //     files: ['quoting.js']
-  //   });
-  // }
+  async executeMoveToWindow(tabId: number, windowId: number) {
+    try {
+      const tab = await chrome.tabs.get(tabId)
+      const url = tab.url
+      if (!url || !tab.id) {
+        return
+      }
+      console.log("found tab", tab.id, url)
+      const window = await chrome.windows.get(windowId)
+      console.log("found window", window.id)
+      await chrome.tabs.create({windowId: window.id, url: url})
+      await chrome.tabs.remove(tab.id)
+    } catch (err) {
+      console.log("error", err)
+    }
+
+  }
 
   executeAddToTS(tabId: number, tabsetId: string) {
     // @ts-ignore

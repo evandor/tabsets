@@ -18,7 +18,7 @@
               {{ props.row.index }}
             </q-td>
             <q-td key="name" :props="props" :class="props.row.focused ? 'text-bold':''">
-              {{ props.row.name }}
+              {{ props.row.name }} ({{ tabsCount(props.row) }})
               <q-popup-edit v-model="props.row.name" v-slot="scope">
                 <q-input v-model="scope.value" dense autofocus counter
                          @update:model-value="(val:any) => setWindowName(props.row.id, val)"
@@ -219,4 +219,13 @@ const onlyOneWindowPage = (length: number) => length <= 5 && length <= initialPa
 const isFirstRow = (row: any) => tableRef.value.filteredSortedRows.indexOf(row) === 0
 const isLastRow = (row: any, length: number) => tableRef.value.filteredSortedRows.indexOf(row) === (length - 1)
 
+const tabsCount = async (row: any) => {
+  const id = row.id
+  console.log("id", id)
+  const window = await chrome.windows.get(id)
+  if (window) {
+    return window.tabs?.length || 0
+  }
+  return 0
+}
 </script>
