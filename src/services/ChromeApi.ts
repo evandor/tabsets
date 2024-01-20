@@ -152,7 +152,7 @@ class ChromeApi {
     if (process.env.MODE !== 'bex') {
       return
     }
-    console.log("building context menu:")
+    console.log("building context menu:", chrome, chrome.contextMenus)
     const tabsStore = useTabsStore()
     if (chrome && chrome.contextMenus) {
       chrome.contextMenus.removeAll(
@@ -188,6 +188,17 @@ class ChromeApi {
                 title: 'Save to current Tabset',
                 contexts: ['all']
               })
+
+              console.log("context menu", useWindowsStore().currentWindows)
+              useWindowsStore().currentWindows.forEach(w => {
+                chrome.contextMenus.create({
+                  id: 'move_to_' + w.id,
+                  parentId: 'tabset_extension',
+                  title: 'Move to window ' + w.id,
+                  contexts: ['all']
+                })
+              })
+
               if (usePermissionsStore().hasFeature(FeatureIdent.ANNOTATIONS)) {
                 console.debug(" > context menu: annotate_website")
                 chrome.contextMenus.create({

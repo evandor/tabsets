@@ -46,12 +46,13 @@ import {createCheckoutSession} from "src/services/stripe/createCheckoutSession";
 import {LocalStorage} from "quasar";
 import {ref} from "vue";
 import NavigationService from "src/services/NavigationService";
+import {CURRENT_USER_ID} from "boot/constants";
 
 const loading = ref(false)
 
 const checkoutSession = async () => {
   const userIdFromAuth = useAuthStore().user?.uid
-  const userId = userIdFromAuth ? userIdFromAuth : LocalStorage.getItem("current.user.id") as string
+  const userId = userIdFromAuth ? userIdFromAuth : LocalStorage.getItem(CURRENT_USER_ID) as string
   if (userId) {
     try {
       loading.value = true

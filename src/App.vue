@@ -12,7 +12,12 @@ import {useAuthStore} from "stores/authStore";
 import {Logz} from "src/services/logz/Logz";
 import {EventEmitter} from "events";
 import {logtail} from "boot/logtail";
-import {getAuth, isSignInWithEmailLink, signInWithEmailLink, UserCredential} from "firebase/auth";
+import {getAuth, isSignInWithEmailLink, onAuthStateChanged, signInWithEmailLink, UserCredential} from "firebase/auth";
+import {CURRENT_USER_EMAIL} from "boot/constants";
+import {collection, doc, getDoc, getDocs} from "firebase/firestore";
+import {firestore} from "boot/firebase";
+import {Account} from "src/models/Account";
+import GitPersistentService from "src/services/persistence/GitPersistentService";
 
 const $q = useQuasar()
 const auth0 = useAuth0()
@@ -28,11 +33,65 @@ const isAuthenticated = ref(true)
 
 const auth = getAuth();
 
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+    // User is signed in, see docs for a list of available properties
+    // https://firebase.google.com/docs/reference/js/auth.user
+    console.log("onAuthStateChanged: logged in")
+    useAuthStore().setUser(user)
+
+    getDoc(doc(firestore, "users", user.uid))
+      .then(userDoc => {
+        console.log("userDoc", userDoc)
+        const userData = userDoc.data()
+        console.log("userData", userData)
+
+        const account = new Account(user.uid, userData)
+
+        getDocs(collection(firestore, "users", user.uid, "subscriptions"))
+          .then((querySnapshot) => {
+            console.log("querySnapshot", querySnapshot)
+            const products = new Set<string>()
+            querySnapshot.forEach((doc) => {
+              console.log(doc.id, " => ", doc.data());
+              //key += doc.id + "|"
+              const subscriptionData = doc.data()
+              if (subscriptionData.status === "active") {
+                const items = subscriptionData.items
+                for (const i of items) {
+                  console.log("checking item", i)
+                  if (i.plan.product) {
+                    products.add(i.plan.product)
+                  }
+                }
+              }
+              account.setProducts(Array.from(products))
+              // TODO we do not need to store that much
+              //account.addSubscription(subscriptionData)
+            })
+            useAuthStore().upsertAccount(account)
+            useAuthStore().setProducts(Array.from(products))
+
+            //GitPersistentService.init(syncType, syncUrl)
+            //AppService.init()
+
+          })
+
+      })
+
+
+  } else {
+    // User is signed out
+    console.log("onAuthStateChanged: logged out")
+    useAuthStore().setUser(undefined)
+  }
+});
+
 if (isSignInWithEmailLink(auth, window.location.href)) {
 
   console.log("%cfound sign-in-with-email-link location", window.location.href)
 
-  const emailForSignIn = LocalStorage.getItem("emailForSignIn")
+  const emailForSignIn = LocalStorage.getItem(CURRENT_USER_EMAIL)
 
   console.log(">>> isSignInWithEmailLink", emailForSignIn)
   signInWithEmailLink(auth, emailForSignIn, window.location.href)

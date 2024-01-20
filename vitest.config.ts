@@ -16,7 +16,7 @@ export default defineConfig({
       'test/vitest/__tests__/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx,vue}',
     ],
     coverage: {
-      reporter: ['text', 'json-summary', 'json'],
+      reporter: ['text', 'lcov', 'json-summary', 'json'],
     },
     // https://vitest.dev/guide/browser.html
     browser: {

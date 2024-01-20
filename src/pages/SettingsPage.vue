@@ -20,9 +20,10 @@
             v-model="tab"
             no-caps>
       <q-tab name="appearance" label="Appearance"/>
+      <q-tab name="account" label="Account"/>
       <q-tab name="subscription" label="Subscription" icon="o_shopping_bag"/>
-      <q-tab name="sharing" label="Sharing"/>
-      <q-tab name="syncing" label="Syncing" />
+      <q-tab name="sharing" label="Sharing" :class="useAuthStore().userMayAccess(AccessItem.SHARE) ? 'text-black':'text-grey'"/>
+      <q-tab name="syncing" label="Syncing" :class="useAuthStore().userMayAccess(AccessItem.SYNC) ? 'text-black':'text-grey'"/>
       <q-tab name="thirdparty" label="Third Party Services"/>
       <!--      <q-tab name="ignored" label="Ignored Urls"/>-->
       <q-tab name="archived" label="Archived Tabsets"
@@ -30,80 +31,53 @@
       <q-tab name="search" label="Search Engine" v-if="devEnabled"/>
       <q-tab name="importExport" label="Import/Export"/>
       <q-tab name="internals" label="Internals" v-if="devEnabled"/>
-      <q-tab name="featureToggles" label="Feature Toggles"/>
+      <q-tab name="featureToggles" label="Feature Toggles" v-if="useAuthStore().userMayAccess(AccessItem.FEATURE_TOGGLES)"/>
     </q-tabs>
   </div>
 
   <div v-if="tab === 'appearance'">
-
 
     <div class="q-pa-md q-gutter-sm">
       <q-banner rounded class="bg-grey-1 text-primary">On this settings page, you can adjust the general appearance of
         the tabsets extension.
       </q-banner>
 
-      <div class="row items-baseline q-ma-md">
-        <div class="col-3">
-          Title
-        </div>
-        <div class="col-7">
+      <div class="row items-baseline q-ma-md q-gutter-md">
+
+        <InfoLine label="Title">
           <q-input type="text" color="primary" filled v-model="installationTitle" label="">
             <template v-slot:prepend>
               <q-icon name="o_edit_note"/>
             </template>
           </q-input>
-        </div>
-        <div class="col">
+        </InfoLine>
 
-        </div>
-      </div>
-
-      <div class="row items-baseline q-ma-md">
-        <div class="col-3">
-          Dark Mode (experimental)
-        </div>
-        <div class="col-9">
+        <InfoLine label="Dark Mode (experimental)">
           <q-radio v-model="darkMode" :val="true" label="Enabled"/>
           <q-radio v-model="darkMode" :val="false" label="Disabled"/>
-        </div>
-      </div>
+        </InfoLine>
 
-      <div class="row items-baseline q-ma-md">
-        <div class="col-3">
-          Tab Info Detail Level {{ detailLevelPerTabset ? ' (Default)' : '' }}
-        </div>
-        <div class="col-9">
+        <InfoLine :label="'Tab Info Detail Level ' +  (detailLevelPerTabset ? ' (Default)' : '')">
           <q-radio v-model="detailLevel" :val="ListDetailLevel.MINIMAL" label="Minimal Details"/>
           <q-radio v-model="detailLevel" :val="ListDetailLevel.SOME" label="Some Details"/>
           <q-radio v-model="detailLevel" :val="ListDetailLevel.MAXIMAL" label="All Details"/>
-        </div>
-        <div class="col-3">
+        </InfoLine>
 
-        </div>
-        <div class="col-9">
+        <InfoLine label="">
           <q-checkbox v-model="detailLevelPerTabset" label="Adjust individually per tabset"/>
-        </div>
-      </div>
+        </InfoLine>
 
-      <div class="row items-baseline q-ma-md">
-        <div class="col-3">
-          URLs
-        </div>
-        <div class="col-9">
+        <InfoLine label="URLs">
           <q-checkbox v-model="fullUrls" label="Show full URLs in Tab Details"/>
-        </div>
-      </div>
+        </InfoLine>
 
-      <div class="row items-baseline q-ma-md">
-        <div class="col-3">
-          Ignore Browser Extensions as tabs
-        </div>
-        <div class="col-9">
+        <InfoLine label="Ignore Browser Extensions as tabs">
           <q-toggle v-model="ignoreExtensionsEnabled"/>
-        </div>
+        </InfoLine>
+
       </div>
 
-      <div class="row items-baseline q-ma-md" v-if="usePermissionsStore().hasFeature(FeatureIdent.AUTO_TAB_SWITCHER)">
+      <div class="row items-baseline q-ma-md q-gutter-md" v-if="usePermissionsStore().hasFeature(FeatureIdent.AUTO_TAB_SWITCHER)">
         <div class="col-3">
           Tab Switching Time in seconds
         </div>
@@ -120,7 +94,7 @@
         </div>
       </div>
 
-      <div class="row items-baseline q-ma-md">
+      <div class="row items-baseline q-ma-md q-gutter-md">
         <div class="col-3">
           Restore Info Messages
         </div>
@@ -133,7 +107,7 @@
         </div>
       </div>
 
-      <div class="row items-baseline q-ma-md" v-if="usePermissionsStore().hasFeature(FeatureIdent.OPENTABS_THRESHOLD)">
+      <div class="row items-baseline q-ma-md q-gutter-md" v-if="usePermissionsStore().hasFeature(FeatureIdent.OPENTABS_THRESHOLD)">
         <div class="col-3">
           Warning Thresholds
         </div>
@@ -152,7 +126,7 @@
         </div>
       </div>
 
-      <div class="row items-baseline q-ma-md">
+      <div class="row items-baseline q-ma-md q-gutter-md">
         <div class="col-3">
           Thumbnail Quality in %
         </div>
@@ -166,7 +140,7 @@
         </div>
       </div>
 
-      <div class="row items-baseline q-ma-md" v-if="devEnabled">
+      <div class="row items-baseline q-ma-md q-gutter-md" v-if="devEnabled">
         <div class="col-3">
           New Version Simulation
         </div>
@@ -178,7 +152,7 @@
         </div>
       </div>
 
-      <div class="row items-baseline q-ma-md" v-if="devEnabled">
+      <div class="row items-baseline q-ma-md q-gutter-md" v-if="devEnabled">
         <div class="col-3">
           New Suggestion Simulation
         </div>
@@ -194,82 +168,31 @@
 
   </div>
 
+  <div v-if="tab === 'account'">
+    <AccountSettings />
+  </div>
+
   <div v-if="tab === 'subscription'">
-    <SubscriptionBexSettings v-if="inBexMode()" />
-    <SubscriptionSettings v-else />
+    <SubscriptionBexSettings v-if="inBexMode()"/>
+    <SubscriptionSettings v-else/>
   </div>
 
   <div v-if="tab === 'sharing'">
-
     <div class="q-pa-md q-gutter-sm">
-      <q-banner rounded class="bg-grey-1 text-primary" style="border:1px solid orange">On this settings page, you can
-        adjust your sharing experience
+      <SharingSettings />
+      <q-banner rounded class="bg-grey-1 text-primary">
+        To use sharing, you need to have a (free) account.
       </q-banner>
-
-      <div class="row items-baseline q-ma-md q-gutter-lg">
-        <div class="col-3">
-          Nickname
-        </div>
-        <div class="col-7">
-          <q-input color="primary" filled v-model="nickname" label="">
-            <template v-slot:prepend>
-              <q-icon name="ios_share"/>
-            </template>
-          </q-input>
-        </div>
-        <div class="col"></div>
-
-        <div class="col-3">
-          Avatar
-        </div>
-        <div class="col-7">
-          <q-input type="url" color="primary" filled v-model="avatar" label="">
-            <template v-slot:prepend>
-              <q-icon name="ios_share"/>
-            </template>
-          </q-input>
-        </div>
-        <div class="col text-right">
-          <q-avatar>
-            <img :src="avatar">
-          </q-avatar>
-        </div>
-
-        <div class="col-3">
-          Mqtt Connection
-        </div>
-        <div class="col-7">
-          <q-input
-            @blur="sendMsg('mqtt-url-changed', {mqttUrl})"
-            type="url" color="primary" filled v-model="mqttUrl"
-            hint="e.g. mqtts://public:public@public.cloud.shiftr.io:443">
-            <template v-slot:prepend>
-              <q-icon name="ios_share"/>
-            </template>
-          </q-input>
-        </div>
-        <div class="col text-right">
-
-        </div>
-
-        <div class="col-3">
-          Installation ID
-        </div>
-        <div class="col-7">
-          {{ installationId }}
-        </div>
-        <div class="col">
-
-        </div>
-
-      </div>
-
     </div>
-
   </div>
 
   <div v-if="tab === 'syncing'">
-    <SyncingSettings @was-clicked="e => setTab(e)"/>
+    <div class="q-pa-md q-gutter-sm">
+      <SyncingSettings v-if="useAuthStore().userMayAccess(AccessItem.SYNC)" @was-clicked="e => setTab(e)"/>
+      <q-banner v-else rounded class="bg-grey-1 text-primary">
+        To use Syncing, you need to have a account and subscribe to the 'SYNC' Plan.
+      </q-banner>
+    </div>
   </div>
 
   <div v-if="tab === 'internals'">
@@ -454,7 +377,6 @@
 
   </div>
 
-
   <div v-if="tab === 'featureToggles'">
 
     <div class="q-pa-md q-gutter-sm">
@@ -520,12 +442,18 @@ import {
   SHARING_AVATAR_IDENT,
   SHARING_INSTALLATION,
   SHARING_MQTT_IDENT, STRIP_CHARS_IN_USER_INPUT,
-  SUBSCRIPTION_ID_IDENT, SYNC_GITHUB_TOKEN, SYNC_GITHUB_URL, TITLE_IDENT
+  SUBSCRIPTION_ID_IDENT, SYNC_GITHUB_TOKEN, SYNC_GITHUB_URL, TITLE_IDENT, UI_WINDOWS_ITEMS_PER_PAGE
 } from "boot/constants";
 import SyncingSettings from "pages/helper/SyncingSettings.vue";
 import {log} from "isomorphic-git";
 import SubscriptionSettings from "pages/helper/SubscriptionSettings.vue";
 import SubscriptionBexSettings from "pages/helper/SubscriptionBexSettings.vue";
+import {Account} from "src/models/Account";
+import {AccessItem, useAuthStore} from "stores/authStore";
+import SharingSettings from "pages/helper/SharingSettings.vue";
+import AccountSettings from "pages/helper/AccountSettings.vue";
+import InfoItem from "components/views/helper/InfoItem.vue";
+import InfoLine from "pages/helper/InfoLine.vue";
 
 const {sendMsg, inBexMode} = useUtils()
 
@@ -537,7 +465,6 @@ const settingsStore = useSettingsStore()
 const localStorage = useQuasar().localStorage
 const $q = useQuasar()
 const route = useRoute()
-
 
 useUiStore().rightDrawerSetActiveTab(DrawerTabs.FEATURES)
 
@@ -563,6 +490,8 @@ const allUrlsOriginGranted = ref<boolean | undefined>(usePermissionsStore().hasA
 const fullUrls = ref(localStorage.getItem('ui.fullUrls') || false)
 const detailLevelPerTabset = ref(localStorage.getItem('ui.detailsPerTabset') || false)
 
+const account = ref<Account | undefined>(undefined)
+
 const installationTitle = ref<string>(LocalStorage.getItem(TITLE_IDENT) as string || 'My Tabsets')
 
 const tab = ref<string>(route.query['tab'] ? route.query['tab'] as string : 'appearance')
@@ -585,6 +514,7 @@ const {handleError} = useNotificationHandler()
 
 onMounted(() => {
   Analytics.firePageViewEvent('SettingsPage', document.location.href);
+  account.value = useAuthStore().getAccount()
 })
 
 let suggestionsCounter = 0
@@ -722,7 +652,7 @@ const simulateStaticSuggestion = () => {
   useSuggestionsStore().addSuggestion(suggestions[suggestionsCounter++ % 2])
 }
 
-const setTab = (a:any) => tab.value = a['tab' as keyof object]
+const setTab = (a: any) => tab.value = a['tab' as keyof object]
 
 
 </script>

@@ -10,7 +10,12 @@ import {FeatureIdent} from "src/models/AppFeature";
 import {usePermissionsStore} from "stores/permissionsStore";
 import {Toast, ToastType} from "src/models/Toast";
 import {useMessagesStore} from "stores/messagesStore";
-import {SHARING_AUTHOR_IDENT, SHARING_AVATAR_IDENT, SHARING_MQTT_IDENT} from "boot/constants";
+import {
+  SHARING_AUTHOR_IDENT,
+  SHARING_AVATAR_IDENT,
+  SHARING_MQTT_IDENT,
+  UI_WINDOWS_ITEMS_PER_PAGE
+} from "boot/constants";
 
 export enum DrawerTabs {
   BOOKMARKS = "bookmarks",

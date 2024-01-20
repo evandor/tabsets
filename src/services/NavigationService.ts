@@ -222,7 +222,7 @@ class NavigationService {
   private async createNewWindow(createData: any, useWindowIdent: string, withUrls: string[], groups: string[]) {
     console.log("opening new window with", createData)
     // https://developer.chrome.com/articles/window-management/
-    let screenlabel: string | undefined = undefined
+    //let screenlabel: string | undefined = undefined
     // if ('getScreenDetails' in window) {
     //     // @ts-ignore
     //     const screens = await window.getScreenDetails();
@@ -236,19 +236,19 @@ class NavigationService {
         // probably out of bounds issues
         chrome.windows.create({}, (window) => {
           if (window) {
-            this.createWindow(useWindowIdent, window, screenlabel, withUrls, groups);
+            this.createWindow(useWindowIdent, window, 0, withUrls, groups);
           }
         })
       } else if (window) {
-        this.createWindow(useWindowIdent, window, screenlabel, withUrls, groups);
+        this.createWindow(useWindowIdent, window, 0, withUrls, groups);
       }
     })
 
   }
 
-  private createWindow(useWindowIdent: string, window: chrome.windows.Window, screenlabel: string | undefined, withUrls: string[], groups: string[]) {
+  private createWindow(useWindowIdent: string, window: chrome.windows.Window, index:number = 0, withUrls: string[], groups: string[]) {
     //useWindowsStore().assignWindow(useWindowIdent, window.id || 0)
-    useWindowsStore().upsertWindow(window, useWindowIdent, screenlabel)
+    useWindowsStore().upsertWindow(window, useWindowIdent, index)
     const ctx = this
     withUrls.forEach(function (url, i) {
       if (groups.length > i) {

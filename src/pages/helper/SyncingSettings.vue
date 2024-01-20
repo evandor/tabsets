@@ -1,5 +1,4 @@
 <template>
-  <div class="q-pa-md q-gutter-sm">
     <q-banner rounded class="bg-grey-1 text-primary" style="border: 1px solid orange">
       <div class="text-body1">Experimental: Synchronize your tabsets across computers and browsers</div>
     </q-banner>
@@ -292,7 +291,6 @@
 
     </div>
 
-  </div>
 </template>
 
 <script setup lang="ts">

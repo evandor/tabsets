@@ -14,44 +14,6 @@ addEventListener('unhandledrejection', async (event) => {
   //Analytics.fireErrorEvent(event.reason);
 });
 
-// --- https://github.com/younessssssss/firebase-chrome-ext-auth/blob/main/src/background.js start
-// chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-//   console.log("***", message)
-//   if (message.type === "SET_EMAIL_FOR_SIGN_IN") {
-//     chrome.storage.local.set({ emailForSignIn: message.email });
-//     chrome.storage.local.set({ tabext: sender.tab });
-//     console.log("SET_EMAIL_FOR_SIGN_IN", message.email);
-//   }
-// });
-
-// chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
-//   console.log("** wrong here *!", changeInfo)
-//   if (changeInfo.url) {
-//     const emailLink = changeInfo.url;
-//     const urlOrigin = new URL(emailLink).origin;
-//     const extensionOrigin = "http://localhost"; // Replace with your extension's origin
-//
-//     console.log("urlOrigin!!", urlOrigin, urlOrigin === "http://localhost:9000");
-//
-//     if (urlOrigin === "http://localhost:9000") {
-//       // Get email from local storage
-//       //chrome.storage.local.get("emailForSignIn", (data) => {
-//         const email = "ts1@skysail.io" //data.emailForSignIn;
-//         // Send a message to the content script with emailLink and email
-//         chrome.storage.local.get("tabext", (data1) => {
-//           console.log("sending", data1)
-//           chrome.tabs.sendMessage(data1.tabext.id, {
-//             type: "emailLink",
-//             emailLink,
-//             email,
-//           });
-//         });
-//      // });
-//     }
-//   }
-// });
-// --- https://github.com/younessssssss/firebase-chrome-ext-auth/blob/main/src/background.js end
-
 chrome.runtime.onInstalled.addListener((callback) => {
   console.log("ga: fire event install", callback.reason, callback.previousVersion)
   // getting error: "Service worker registration failed. Status code: 15"

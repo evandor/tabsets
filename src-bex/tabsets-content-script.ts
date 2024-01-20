@@ -2,6 +2,7 @@
 // More info: https://quasar.dev/quasar-cli/developing-browser-extensions/content-hooks
 // @ts-ignore
 import {bexContent} from 'quasar/wrappers'
+import {CURRENT_USER_EMAIL} from "boot/constants";
 
 
 export default bexContent((bridge: any) => {
@@ -27,7 +28,7 @@ export default bexContent((bridge: any) => {
       sendResponse()
     }
     else if (request.type === "SET_EMAIL_FOR_SIGN_IN") {
-      chrome.storage.local.set({ emailForSignIn: request.email });
+      chrome.storage.local.set({ CURRENT_USER_EMAIL: request.email });
       chrome.storage.local.set({ tabext: sender.tab });
       console.log("SET_EMAIL_FOR_SIGN_IN", request.email);
     }

@@ -210,9 +210,9 @@
               :tabset="tabsetForTabList(tabset as Tabset)"
             />
 
-            {{ windowLocation }}
+            {{ windowLocation.split('#')[1] }}
             <br>
-            <pre>{{ user }}</pre>
+            <pre>{{ user?.uid }}</pre>
 
           </div>
         </q-expansion-item>
@@ -392,17 +392,19 @@ watchEffect(() => {
   if (ar) {
     console.log(">>> authRequest received...")
     console.log(">>> current location", window.location.href)
-    const baseLocation = window.location.href.split["?"][0]
-    //if (window.location.href.indexOf("?") < 0) {
+    const baseLocation = window.location.href.split("?")[0]
+    if (window.location.href.indexOf("?") < 0) {
       //const tsIframe = document.getElementById("ts-sidepanel-frame")
       const tsIframe = window.parent.frames[0]
       console.log("iframe", tsIframe)
       if (tsIframe) {
         console.log(">>> new window.location.href", baseLocation + "?" + ar)
+
         tsIframe.location.href = baseLocation + "?" + ar
         tsIframe.location.reload()
+        //router.push("/refresh/sidepanel?" + ar)
       }
-    //}
+    }
   }
 })
 
@@ -410,27 +412,6 @@ watchEffect(() => {
   if (useAuthStore().user) {
     console.log("setting user to ", useAuthStore().user?.email)
     user.value = useAuthStore().user
-
-    getDoc(doc(firestore, "users", user.value.uid))
-      .then(userDoc => {
-        console.log("userDoc", userDoc)
-        const userData = userDoc.data()
-        console.log("userData", userData)
-
-        const account = new Account(user.value.uid, userData)
-
-        getDocs(collection(firestore, "users", user.value.uid, "subscriptions"))
-          .then((querySnapshot) => {
-            console.log("querySnapshot", querySnapshot)
-            querySnapshot.forEach((doc) => {
-              console.log(doc.id, " => ", doc.data());
-              //key += doc.id + "|"
-              account.addSubscription(doc.data())
-            })
-            useAuthStore().upsertAccount(account)
-          })
-
-      })
   }
 })
 

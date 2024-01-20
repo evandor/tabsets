@@ -266,21 +266,6 @@ class ChromeListeners {
         //console.log("%cnewLocation", "color:green",newLocation)
         //window.location.href = newLocation
         useAuthStore().setAuthRequest(authRequest)
-
-        // // Get email from local storage
-        // //chrome.storage.local.get("emailForSignIn", (data) => {
-        //   //console.log("hier", data)
-        //   const email = "ts1@skysail.io"// data.emailForSignIn;
-        //   // Send a message to the content script with emailLink and email
-        //   chrome.storage.local.get("tabext", (data1) => {
-        //     console.log("****", data1)
-        //     chrome.tabs.sendMessage(data1.tabext.id, {
-        //       type: "emailLink",
-        //       emailLink,
-        //       email,
-        //     });
-        //   });
-        // //});
       }
     }
 

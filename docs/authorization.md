@@ -8,7 +8,7 @@ const signin = () => {
   sendSignInLinkToEmail(auth, email.value, actionCodeSettings)
     .then(() => {
       ...
-      window.localStorage.setItem('emailForSignIn', email.value);
+      window.localStorage.setItem(CURRENT_USER_EMAIL, email.value);
       sendMsg('SET_EMAIL_FOR_SIGN_IN', {"email": email.value})
     })
 }

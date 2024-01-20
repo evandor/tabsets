@@ -25,6 +25,11 @@ import {SyncType, useAppStore} from "stores/appStore";
 import GitPersistentService from "src/services/persistence/GitPersistentService";
 import {SYNC_GITHUB_URL, SYNC_TYPE} from "boot/constants";
 import {useAuthStore} from "stores/authStore";
+import {getAuth} from "firebase/auth";
+
+function useGitStore(st: SyncType, su: string | undefined) {
+  return st && (st === SyncType.GITHUB || st === SyncType.MANAGED_GIT) && su
+}
 
 class AppService {
 
@@ -64,7 +69,9 @@ class AppService {
     // sync features
     const syncType = LocalStorage.getItem(SYNC_TYPE) as SyncType || SyncType.NONE
     const syncUrl = LocalStorage.getItem(SYNC_GITHUB_URL) as string
-    const dbOrGitDb = syncType && (syncType === SyncType.GITHUB || syncType === SyncType.MANAGED_GIT) && syncUrl ? useDB(undefined).gitDb : useDB(undefined).db
+    const dbOrGitDb = useGitStore(syncType, syncUrl) ?
+      useDB(undefined).gitDb :
+      useDB(undefined).db
     console.debug("checking sync config:", syncType, syncUrl, dbOrGitDb)
 
 // init db
@@ -72,7 +79,7 @@ class AppService {
       .then(() => {
 
         // init services
-        useAuthStore().initialize(useDB(useQuasar()).db)
+        useAuthStore().initialize(useDB(undefined).db)
         useNotificationsStore().initialize(useDB(undefined).db)
         useSuggestionsStore().init(useDB(undefined).db)
         messagesStore.initialize(useDB(undefined).db)
@@ -100,6 +107,7 @@ class AppService {
                     // tabsets not in bex mode means running on "shared.tabsets.net"
                     // probably running an import ("/imp/:sharedId")
                     // we do not want to go to the welcome back
+                    const current = router.currentRoute.value.path
                     if (tabsStore.tabsets.size === 0 && $q.platform.is.bex) {
                       router.push("/sidepanel/welcome")
                     }

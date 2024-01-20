@@ -2,73 +2,45 @@
 
   <q-footer class="bg-white q-pa-xs q-mt-sm" style="border-top: 1px solid lightgrey">
     <div class="row fit q-mb-sm" v-if="showLogin">
-      <div class="col-12 text-right">
-        <Transition name="bounceInLeft" appear>
-
-          <div class="row">
+      <div class="col-12 text-right text-black">
+        <template v-if="!mailSent">
+          <div class="row q-ma-xs">
             <div class="col-7">
-              <q-input v-if="!mailSent"
-                       outlined type="email" v-model="email" label="Your email address" dense/>
-              <div class="text-caption text-black" v-else>
-                please check your mail...
-              </div>
+              <q-input outlined type="email" v-model="email" label="Your email address" dense/>
             </div>
             <div class="col-5">
-              <q-btn label="Sign in" color="primary" :loading="loading" :disable="mailSent" @click="signin()"/>
+              <q-btn :label="password.length > 0 ? 'Sign in':'Send Mail'" color="primary"
+                     style="width:110px"
+                     :loading="password.length === 0 && loading"
+                     :disable="mailSent"
+                     @click="signin(false)"/>
             </div>
+          </div>
+          <div class="row q-ma-xs">
+            <div class="col-7">
+              <q-input outlined type="password" v-model="password" label="Password" dense/>
+            </div>
+            <div class="col-5">
+              <q-btn label="Sign Up" color="bg-primary text-black"
+                     style="width:110px"
+                     :loading="password.length > 0 && loading"
+                     :disable="mailSent || password.length === 0"
+                     @click="signin(true)"/>
+            </div>
+          </div>
+        </template>
+        <Transition name="bounceInLeft" appear v-else>
+          <div class="text-caption text-black">
+            please check your mail...
           </div>
 
         </Transition>
-
       </div>
     </div>
 
     <div class="row fit q-mb-sm" v-if="showWindowTable">
-      <div class="col-12 text-right">
-        <Transition name="bounceInLeft" appear>
-          <q-table
-            flat dense
-            :rows="rows"
-            :columns="columns"
-            row-key="id"
-            hide-bottom
-            binary-state-sort>
-            <template v-slot:body="props">
-              <q-tr :props="props">
-                <q-td key="windowIcon" :props="props">
-                  <q-icon name="edit"/>
-                </q-td>
-                <q-td key="name" :props="props">
-                  {{ props.row.name }}
-                  <q-popup-edit v-model="props.row.name" v-slot="scope">
-                    <q-input v-model="scope.value" dense autofocus counter
-                             @update:model-value="val => setWindowName(props.row.id, val)"
-                             @keyup.enter="scope.set"/>
-                  </q-popup-edit>
-                </q-td>
-                <!--            <q-td key="windowHeight" :props="props">-->
-                <!--              {{ props.row.windowHeight }}-->
-                <!--              <q-popup-edit v-model="props.row.windowHeight" title="Update windowHeight" buttons v-slot="scope">-->
-                <!--                <q-input type="number" v-model="scope.value" dense autofocus/>-->
-                <!--              </q-popup-edit>-->
-                <!--            </q-td>-->
-                <!--            <q-td key="windowWidth" :props="props">-->
-                <!--              {{ props.row.windowWidth }}-->
-                <!--              <q-popup-edit v-model="props.row.windowWidth" title="Update windowWidth" buttons v-slot="scope">-->
-                <!--                <q-input type="number" v-model="scope.value" dense autofocus/>-->
-                <!--              </q-popup-edit>-->
-                <!--            </q-td>-->
-                <q-td key="windowAction" :props="props">
-              <span
-                :class="useWindowsStore().currentWindow?.id === props.row.id ? 'text-grey' : 'text-blue-8 cursor-pointer'"
-                @click="openWindow(props.row.id)">open</span>
-                </q-td>
-              </q-tr>
-            </template>
-          </q-table>
-        </Transition>
-
-      </div>
+      <!-- https://michaelnthiessen.com/force-re-render -->
+      <SidePanelWindowTable :key="randomKey"/>
     </div>
 
     <div class="row fit">
@@ -129,7 +101,7 @@
                @click="openHelpView()">
         </q-btn>
 
-        <q-btn icon="o_settings"
+        <q-btn icon="o_settings" v-if="useTabsStore().tabsets.size > 0"
                :class="rightButtonClass()"
                flat
                color="black"
@@ -160,12 +132,16 @@
         </q-btn>
 
         <span class="q-my-xs q-ml-xs q-mr-none cursor-pointer" v-if="authStore.isAuthenticated()">
-          <q-avatar size="19px" v-if="authStore.user.photoURL">
+          <q-avatar size="18px" v-if="authStore.user?.photoURL">
             <q-img :src="authStore.user.photoURL"/>
-            <q-tooltip class="tooltip-small">You're logged in {{ authStore.user.email }}</q-tooltip>
+            <q-tooltip :delay="2000" anchor="center left" self="center right" class="tooltip-small">You're logged in as {{
+                authStore.user?.email
+              }}</q-tooltip>
           </q-avatar>
-          <q-icon v-else name="person">
-            <q-tooltip class="tooltip-small">You're logged in {{ authStore.user.email }}</q-tooltip>
+          <q-icon v-else name="o_person" size="18px">
+            <q-tooltip :delay="2000" anchor="center left" self="center right" class="tooltip-small">You're logged in as {{
+                authStore.user?.email
+              }}</q-tooltip>
           </q-icon>
 
           <q-menu :offset="[0, 7]" fit>
@@ -174,7 +150,7 @@
                 <q-item-section @click="subscribe()">Subscribe</q-item-section>
               </q-item>
               <q-item clickable v-close-popup>
-                <q-item-section @click="logout()">Logout {{ authStore.user?.email }}</q-item-section>
+                <q-item-section @click="logout()">Logout</q-item-section>
               </q-item>
             </q-list>
 
@@ -184,7 +160,7 @@
                icon="login"
                :class="rightButtonClass()"
                flat
-               color="black"
+               color="blue"
                :size="getButtonSize()"
                @click="toggleShowLogin()">
         </q-btn>
@@ -203,7 +179,7 @@ import {useRouter} from "vue-router";
 import {usePermissionsStore} from "src/stores/permissionsStore";
 import {FeatureIdent} from "src/models/AppFeature";
 import NavigationService from "src/services/NavigationService";
-import {LocalStorage, openURL, useQuasar} from "quasar";
+import {LocalStorage, openURL, uid, useQuasar} from "quasar";
 import {useUtils} from "src/services/Utils";
 import {useWindowsStore} from "src/stores/windowsStore";
 import {useSuggestionsStore} from "stores/suggestionsStore";
@@ -213,9 +189,21 @@ import SuggestionDialog from "components/dialogues/SuggestionDialog.vue";
 import {TabsetStatus} from "src/models/Tabset";
 import {ToastType} from "src/models/Toast";
 import SidePanelFooterLeftButtons from "components/helper/SidePanelFooterLeftButtons.vue";
-import {getAuth, sendSignInLinkToEmail} from "firebase/auth";
+import {
+  createUserWithEmailAndPassword,
+  getAuth,
+  sendSignInLinkToEmail,
+  signInWithEmailAndPassword,
+  UserCredential
+} from "firebase/auth";
 import {useAuthStore} from "stores/authStore";
-import {EMAIL_LINK_REDIRECT_DOMAIN} from "boot/constants";
+import {CURRENT_USER_EMAIL, EMAIL_LINK_REDIRECT_DOMAIN} from "boot/constants";
+import {Account} from "src/models/Account";
+import {NotificationType, useNotificationHandler} from "src/services/ErrorHandler";
+import SidePanelWindowTable from "components/helper/SidePanelWindowTable.vue";
+
+
+const {handleSuccess, handleError} = useNotificationHandler()
 
 const {inBexMode} = useUtils()
 
@@ -236,28 +224,18 @@ const doShowSuggestionButton = ref(false)
 const transitionGraceTime = ref(false)
 const showWindowTable = ref(false)
 const showLogin = ref(false)
-const currentWindowName = ref('---')
-const email = ref(LocalStorage.getItem("emailForSignIn"))
+const email = ref(LocalStorage.getItem(CURRENT_USER_EMAIL) as string)
+const password = ref('')
 const loading = ref<boolean>(false)
 const mailSent = ref<boolean>(false)
+const account = ref<Account | undefined>(undefined)
+const randomKey = ref<string>(uid())
 
 const {sendMsg} = useUtils()
 
-const columns = [
-  //{name: 'windowIcon', align: 'center', label: '', field: 'windowIcon', sortable: true},
-  {
-    name: 'name',
-    required: true,
-    label: 'Window Name (editable)',
-    align: 'left',
-    sortable: false
-  },
-  // {name: 'windowHeight', align: 'center', label: 'Height', field: 'windowHeight'},
-  // {name: 'windowWidth', align: 'center', label: 'Height', field: 'windowWidth'},
-  {name: 'windowAction', align: 'center', label: 'Action', field: 'windowAction', sortable: false}
-]
-
-const rows = ref<object[]>([])
+watchEffect(() => {
+  account.value = authStore.getAccount()
+})
 
 watchEffect(() => {
   if (useWindowsStore().currentWindows.length === 1) {
@@ -388,56 +366,14 @@ const toastBannerClass = () => {
   }
 }
 
-watchEffect(() => {
-  const res = useWindowsStore().currentWindow && useWindowsStore().currentWindow.id ?
-    useWindowsStore().windowNameFor(useWindowsStore().currentWindow.id || 0) || 'n/a' :
-    'n/a'
-  currentWindowName.value = res
-})
-
-const openWindow = (windowId: number) => {
-  if (useWindowsStore().currentWindow?.id !== windowId) {
-    chrome.windows.update(windowId, {drawAttention: true, focused: true},
-      (callback) => {
-      })
-  }
-}
+const toggleShowLogin = () => showLogin.value = !showLogin.value
 
 const toggleShowWindowTable = () => {
   showWindowTable.value = !showWindowTable.value
   if (showWindowTable.value) {
-
-    rows.value = _.map(useWindowsStore().currentWindows as chrome.windows.Window[], (w: chrome.windows.Window) => {
-      return {
-        id: w.id,
-        name: useWindowsStore().windowNameFor(w.id || 0) || w.id,
-        windowHeight: w['height' as keyof object],
-        windowWidth: w['width' as keyof object],
-        windowIcon: "*"
-      }
-    })
+    randomKey.value = uid()
   }
 }
-
-const toggleShowLogin = () => showLogin.value = !showLogin.value
-
-
-const setWindowName = (id: number, newName: string) => {
-  if (newName && newName.toString().trim().length > 0) {
-    chrome.windows.get(id, (cw) => {
-      //console.log("setting window name", id, newName.toString().trim())
-      useWindowsStore().upsertWindow(cw, newName.toString().trim(), "")
-
-      if (useWindowsStore().currentWindow?.id === id) {
-        currentWindowName.value = newName
-        //console.log("setting window name to ", currentWindowName.value)
-        useWindowsStore().currentWindowName = newName
-      }
-    })
-  }
-
-}
-
 
 const actionCodeSettings = {
   // URL must be in the authorized domains list in the Firebase Console.
@@ -446,29 +382,49 @@ const actionCodeSettings = {
   handleCodeInApp: true,
 };
 
-const signin = () => {
+const signin = async (newUser: boolean) => {
   loading.value = true
   const auth = getAuth();
-  console.log("actionCodeSettings", actionCodeSettings)
-  sendSignInLinkToEmail(auth, email.value, actionCodeSettings)
-    .then(() => {
+  if (email.value && password.value) {
+    try {
+      let userCredential: UserCredential = null as unknown as UserCredential
+      if (newUser) {
+        userCredential = await createUserWithEmailAndPassword(auth, email.value, password.value)
+      } else {
+        userCredential = await signInWithEmailAndPassword(auth, email.value, password.value)
+      }
+      const user = userCredential.user;
+      LocalStorage.set(CURRENT_USER_EMAIL, email.value);
+      console.log("user!!!", user)
+      useAuthStore().setUser(user)
       loading.value = false
-      mailSent.value = true
-      setTimeout(() => mailSent.value = false, 3000)
-      window.localStorage.setItem('emailForSignIn', email.value);
-      sendMsg('SET_EMAIL_FOR_SIGN_IN', {"email": email.value})
-    })
-    .catch((error) => {
-      console.error("error", error)
-      alert(error)
+      showLogin.value = false
+    } catch (error) {
+      //console.error("error", error)
+      handleError(error, NotificationType.TOAST)
       loading.value = false
-      mailSent.value = false
-    });
+    }
+  } else {
+
+    console.log("actionCodeSettings", actionCodeSettings)
+    sendSignInLinkToEmail(auth, email.value, actionCodeSettings)
+      .then(() => {
+        loading.value = false
+        mailSent.value = true
+        setTimeout(() => mailSent.value = false, 3000)
+        window.localStorage.setItem(CURRENT_USER_EMAIL, email.value);
+        sendMsg('SET_EMAIL_FOR_SIGN_IN', {"email": email.value})
+      })
+      .catch((error) => {
+        //console.error("error", error)
+        handleError(error, NotificationType.TOAST)
+        loading.value = false
+        mailSent.value = false
+      });
+  }
 }
 
 const logout = () => {
-  console.log("logout!")
-
   authStore.logout()
     .then(() => {
       router.push("/refresh/sidepanel")

@@ -41,6 +41,11 @@ const SYNC_COUCHDB_URL = "sync.couchdb.url"
 
 const EMAIL_LINK_REDIRECT_DOMAIN = "https://tabsets.web.app"
 
+const CURRENT_USER_ID = "current.user.id"
+const CURRENT_USER_EMAIL = "current.user.email"
+
+const UI_WINDOWS_ITEMS_PER_PAGE = 'ui.windows.itemsPerPage'
+
 const logtail = (process.env.MODE === "bex") ?
   new Logtail("Ht8PY3XGQgqhMyNTcyGyJhXJ") :
   new Logtail("pNfaHtRmWXGd3TFbsCXMHHbB")
@@ -69,6 +74,9 @@ export {
   SYNC_COUCHDB_URL,
   TITLE_IDENT,
   EMAIL_LINK_REDIRECT_DOMAIN,
+  CURRENT_USER_ID,
+  CURRENT_USER_EMAIL,
+  UI_WINDOWS_ITEMS_PER_PAGE,
   logtail
 }
 

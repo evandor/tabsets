@@ -9,7 +9,7 @@
       <SidePanelFooter/>
     </q-footer>
     <q-footer elevated v-else>
-      <SidePanelWelcomeFooter/>
+      <SidePanelFooter/>
     </q-footer>
 
   </q-layout>

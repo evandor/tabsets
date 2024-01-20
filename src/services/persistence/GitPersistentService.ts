@@ -194,7 +194,7 @@ class GitPersistenceService implements PersistenceService {
     try {
       await createDir("tabsets")
       const result: string[] = await pfs.readdir(`${dir}/tabsets`)//, (callback: any) => {
-      console.log("callback", result)
+     // console.log("callback", result)
       for (var index in result) {
         //console.log("got ts index", index)
         const tabsetId = result[index]
@@ -233,7 +233,7 @@ class GitPersistenceService implements PersistenceService {
       console.warn("err", err)
     }
     for (const t of tabsets) {
-      console.log("adding t", t)
+      //console.log("adding t", t)
       useTabsStore().addTabset(t)
     }
 
@@ -582,7 +582,7 @@ class GitPersistenceService implements PersistenceService {
     return Promise.reject(undefined);
   }
 
-  upsertWindow(window: Window, windowName: string, screenLabel: string | undefined): Promise<void> {
+  upsertWindow(window: Window): Promise<void> {
     return Promise.reject(undefined);
   }
 

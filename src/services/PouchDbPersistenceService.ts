@@ -526,7 +526,7 @@ class PouchDbPersistenceService implements PersistenceService {
     return Promise.reject("not implemented")
   }
 
-  upsertWindow(window: Window, windowName: string): Promise<void> {
+  upsertWindow(window: Window): Promise<void> {
     return Promise.reject("not implemented")
   }
 

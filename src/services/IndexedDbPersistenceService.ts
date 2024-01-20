@@ -136,7 +136,7 @@ class IndexedDbPersistenceService implements PersistenceService {
         expires: new Date().getTime() + 1000 * 60 * EXPIRE_DATA_PERIOD_IN_MINUTES,
         thumbnail: thumbnail
       }, encodedTabUrl)
-        .then(() => console.log(new Tab(uid(), tab), `saved thumbnail for url ${tab.url}, ${Math.round(thumbnail.length / 1024)}kB`))
+        .then(() => console.debug(new Tab(uid(), tab), `saved thumbnail for url ${tab.url}, ${Math.round(thumbnail.length / 1024)}kB`))
         .catch(err => console.error(new Tab(uid(), tab), err))
     }
     return Promise.reject("no url provided or db not ready")
@@ -518,7 +518,7 @@ class IndexedDbPersistenceService implements PersistenceService {
   /*** Windows Management ***/
 
   addWindow(window: Window): Promise<any> {
-    //console.debug("%cadding window", "background-color:yellow", window)
+    //console.log("%cadding window", "background-color:yellow", window)
     return this.db.add('windows', window, window.id)
       .catch((err) => {
         if (!err.toString().indexOf('Key already exists')) {
@@ -546,6 +546,7 @@ class IndexedDbPersistenceService implements PersistenceService {
   }
 
   async updateWindow(window: Window): Promise<void> {
+    console.log(`updating window #${window.id} => title: '${window.title}', index: ${window.index}`)
     if (!window.id) {
       return Promise.reject("window.id not set")
     }
@@ -553,25 +554,18 @@ class IndexedDbPersistenceService implements PersistenceService {
     if (!windowFromDb) {
       return Promise.reject("could not find window for id " + window.id)
     }
-    if (windowFromDb.title) {
-      //console.log("updating window", windowFromDb)
-      const asJson = JSON.parse(JSON.stringify(window))
-      asJson['title'] = windowFromDb.title
-      asJson['screenLabel'] = windowFromDb.screenLabel
-      delete asJson['tabs']
-      //console.log("storing json", asJson, window.id)
-      await this.db.put('windows', asJson, window.id)
-    } else {
-      await this.db.put('windows', window, window.id)
-    }
+    const asJson = JSON.parse(JSON.stringify(window))
+    asJson['title'] = window.title
+    asJson['index'] = window.index
+    delete asJson['tabs']
+    await this.db.put('windows', asJson, window.id)
   }
 
-  async upsertWindow(window: Window, name: string, screenLabel: string | undefined): Promise<void> {
+  async upsertWindow(window: Window): Promise<void> {
     try {
-      console.log("about to rename window", name, screenLabel, window)
+      console.log(`about to change window #${window.id}: title='${window.title}', index=${window.index}`)
       const asJson = JSON.parse(JSON.stringify(window))
-      asJson['title'] = name
-      asJson['screenLabel'] = screenLabel
+      //asJson['title'] = name
       delete asJson['tabs']
       //console.log("storing window", asJson, window.id)
       await this.db.put('windows', asJson, window.id)
@@ -757,11 +751,11 @@ class IndexedDbPersistenceService implements PersistenceService {
     console.warn("not implemented")
   }
 
-  getAccount(accountId: string): Promise<Account> {
-    return Promise.reject("not implemented")
+  async getAccount(accountId: string): Promise<Account> {
+    return await this.db.get('accounts', accountId)
   }
 
-  upsertAccount(account: Account):void {
+  upsertAccount(account: Account): void {
     const normalizedAccount = JSON.parse(JSON.stringify(account))
     console.log("upserting account", account)
     console.log("upserting account", normalizedAccount)
