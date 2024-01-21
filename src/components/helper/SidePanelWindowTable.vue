@@ -6,6 +6,7 @@
         flat dense
         :rows="rows"
         :columns="columns"
+        :visible-columns="['name','tabsCount','windowAction']"
         row-key="id"
         :pagination="initialPagination"
         :rows-per-page-options=[3,5,7,10,15,20]
@@ -18,7 +19,7 @@
               {{ props.row.index }}
             </q-td>
             <q-td key="name" :props="props" :class="props.row.focused ? 'text-bold':''">
-              {{ props.row.name }} ({{ tabsCount(props.row) }})
+              {{ props.row.name }}
               <q-popup-edit v-model="props.row.name" v-slot="scope">
                 <q-input v-model="scope.value" dense autofocus counter
                          @update:model-value="(val:any) => setWindowName(props.row.id, val)"
@@ -28,6 +29,9 @@
             <q-td key="state" :props="props">
               {{ props.row.state }}
             </q-td>
+            <q-td key="tabsCount" :props="props">
+              {{ props.row.tabsCount }}
+            </q-td>
             <q-td key="windowAction" :props="props">
               <q-icon
                 name="expand_less"
@@ -35,37 +39,30 @@
                 @click="moveWindowUp(props.row)"/>
               <q-icon
                 name="expand_more"
+                class="q-ml-sm"
                 :class="isLastRow(props.row, rows.length) ? 'text-grey' : 'text-blue-8 cursor-pointer'"
                 @click="moveWindowDown(props.row)"/>
-              <span
-                :class="useWindowsStore().currentWindow?.id === props.row.id ? 'text-grey' : 'text-blue-8 cursor-pointer'"
-                @click="openWindow(props.row.id)">
-                    <q-icon name="open_in_new">
-                      <q-tooltip :delay=500 class="tooltip-small">Open this window</q-tooltip>
-                    </q-icon>
-                  </span>
-              <span v-if="props.row.state === 'normal' || props.row.state === 'maximized'"
-                    class="q-ml-md text-orange-8 cursor-pointer"
-                    @click="hideWindow(props.row.id)">
-                    <q-icon name="o_visibility_off">
-                      <q-tooltip :delay=500 class="tooltip-small">Minimize this window</q-tooltip>
-                    </q-icon>
-                  </span>
-              <span v-else-if="props.row.state === 'minimized'"
-                    class="q-ml-md text-orange-8 cursor-pointer"
-                    @click="restoreWindow(props.row.id)">
-                    <q-icon name="o_visibility">
-                      <q-tooltip :delay=500 class="tooltip-small">Restore this window</q-tooltip>
-                    </q-icon>
-                  </span>
-              <span
-                class="q-ml-md"
-                :class="useWindowsStore().currentWindow?.id === props.row.id ? 'text-grey' : 'text-red-8 cursor-pointer'"
-                @click="closeWindow(props.row.id)">
-                    <q-icon name="o_close">
-                      <q-tooltip :delay=500 class="tooltip-small">Close this window</q-tooltip>
-                    </q-icon>
-                  </span>
+              <q-icon name="open_in_new"
+                      class="q-ml-sm"
+                      :class="useWindowsStore().currentWindow?.id === props.row.id ? 'text-grey' : 'text-blue-8 cursor-pointer'"
+                      @click="openWindow(props.row.id)">
+                <q-tooltip :delay=500 class="tooltip-small">Open this window</q-tooltip>
+              </q-icon>
+<!--              <q-icon v-if="props.row.state === 'normal' || props.row.state === 'maximized'" name="o_visibility_off"-->
+<!--                      class="q-ml-sm text-orange-8 cursor-pointer"-->
+<!--                      @click="hideWindow(props.row.id)">-->
+<!--                <q-tooltip :delay=500 class="tooltip-small">Minimize this window</q-tooltip>-->
+<!--              </q-icon>-->
+<!--              <q-icon v-else-if="props.row.state === 'minimized'" name="o_visibility"-->
+<!--                      class="q-ml-sm text-orange-8 cursor-pointer"-->
+<!--                      @click="restoreWindow(props.row.id)">-->
+<!--                <q-tooltip :delay=500 class="tooltip-small">Restore this window</q-tooltip>-->
+<!--              </q-icon>-->
+              <q-icon name="o_close"
+                      class="q-ml-sm text-red-8 cursor-pointer"
+                      @click="closeWindow(props.row.id)">
+                <q-tooltip :delay=500 class="tooltip-small">Close this window</q-tooltip>
+              </q-icon>
             </q-td>
           </q-tr>
         </template>
@@ -85,10 +82,11 @@ import {LocalStorage, QTable} from "quasar";
 import {UI_WINDOWS_ITEMS_PER_PAGE} from "boot/constants";
 
 const columns = [
-  {name: 'index', field: 'index', required: true, label: '#', align: 'left', sortable: false},
+  {name: 'index', field: 'index', label: '#', align: 'left', sortable: false},
   {name: 'name', field: 'name', required: true, label: 'Window Name (editable)', align: 'left', sortable: false},
-  {name: 'state', field: 'state', required: true, label: 'State', align: 'left', sortable: false},
-  {name: 'windowAction', align: 'center', label: 'Action', field: 'windowAction', sortable: false}
+  {name: 'state', field: 'state', label: 'State', align: 'left', sortable: false},
+  {name: 'tabsCount', field: 'tabsCount', required: true, label: '#Tabs', align: 'right', sortable: false},
+  {name: 'windowAction', align: 'center', label: 'Actions', field: 'windowAction', sortable: false}
 ]
 
 const initialPagination = ref<object>({
@@ -171,11 +169,12 @@ const calcWindowRows = () => {
     }
     usedIndices.push(indexToUse)
 
-    //console.log(`setting window ${cw.id} -> #${indexToUse}`)
+    console.log(`setting window ${cw.id} (#${cw.tabs?.length} tabs) -> #${indexToUse}`)
 
     return {
       id: cw.id,
       index: indexToUse,
+      tabsCount: cw.tabs?.length || 0,
       name: useWindowsStore().windowNameFor(cw.id || 0) || cw.id,
       windowHeight: cw['height' as keyof object],
       windowWidth: cw['width' as keyof object],
@@ -188,7 +187,7 @@ const calcWindowRows = () => {
       windowIcon: "*"
     }
   })
-  //useWindowsStore().refreshCurrentWindows()
+
   return result
 }
 
@@ -219,13 +218,4 @@ const onlyOneWindowPage = (length: number) => length <= 5 && length <= initialPa
 const isFirstRow = (row: any) => tableRef.value.filteredSortedRows.indexOf(row) === 0
 const isLastRow = (row: any, length: number) => tableRef.value.filteredSortedRows.indexOf(row) === (length - 1)
 
-const tabsCount = async (row: any) => {
-  const id = row.id
-  console.log("id", id)
-  const window = await chrome.windows.get(id)
-  if (window) {
-    return window.tabs?.length || 0
-  }
-  return 0
-}
 </script>

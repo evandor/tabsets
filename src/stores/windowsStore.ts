@@ -97,7 +97,7 @@ export const useWindowsStore = defineStore('windows', () => {
       return
     }
     console.debug("init chrome windows listeners with trigger", trigger)
-    chrome.windows.getAll((windows) => {
+    chrome.windows.getAll({populate: true},(windows) => {
 
       currentWindows.value = windows
       console.debug("initializing current windows with", currentWindows.value.length)
@@ -170,7 +170,7 @@ export const useWindowsStore = defineStore('windows', () => {
                     chrome.contextMenus.create({
                       id: 'move_to|' + window.id,
                       parentId: 'move_to_window',
-                      title: '...to window ' + useWindowsStore().windowNameFor(window.id) || window.id,
+                      title: '...to window ' + useWindowsStore().windowNameFor(window.id || 0) || window.id?.toString(),
                       contexts: ['all']
                     })
                   }
@@ -229,7 +229,7 @@ export const useWindowsStore = defineStore('windows', () => {
   }
 
   function windowNameFor(id: number) {
-    console.log("windowNameFor", id, allWindows.value)
+    //console.log("windowNameFor", id, allWindows.value)
     return allWindows.value.get(id)?.title
   }
 
@@ -337,7 +337,7 @@ export const useWindowsStore = defineStore('windows', () => {
 
   function refreshCurrentWindows() {
     console.log("refreshCurrentWindows")
-    chrome.windows.getAll((windows) => {
+    chrome.windows.getAll({populate: true}, (windows) => {
       currentWindows.value = windows
     })
   }
