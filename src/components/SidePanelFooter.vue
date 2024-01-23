@@ -2,40 +2,7 @@
 
   <q-footer class="bg-white q-pa-xs q-mt-sm" style="border-top: 1px solid lightgrey">
     <div class="row fit q-mb-sm" v-if="showLogin">
-      <div class="col-12 text-right text-black">
-        <template v-if="!mailSent">
-          <div class="row q-ma-xs">
-            <div class="col-7">
-              <q-input outlined type="email" v-model="email" label="Your email address" dense/>
-            </div>
-            <div class="col-5">
-              <q-btn :label="password.length > 0 ? 'Sign in':'Send Mail'" color="primary"
-                     style="width:110px"
-                     :loading="password.length === 0 && loading"
-                     :disable="mailSent"
-                     @click="signin(false)"/>
-            </div>
-          </div>
-          <div class="row q-ma-xs">
-            <div class="col-7">
-              <q-input outlined type="password" v-model="password" label="Password" dense/>
-            </div>
-            <div class="col-5">
-              <q-btn label="Sign Up" color="bg-primary text-black"
-                     style="width:110px"
-                     :loading="password.length > 0 && loading"
-                     :disable="mailSent || password.length === 0"
-                     @click="signin(true)"/>
-            </div>
-          </div>
-        </template>
-        <Transition name="bounceInLeft" appear v-else>
-          <div class="text-caption text-black">
-            please check your mail...
-          </div>
-
-        </Transition>
-      </div>
+      <SidePanelLoginWidget @hide-login="showLogin = false" />
     </div>
 
     <div class="row fit q-mb-sm" v-if="showWindowTable">
@@ -201,6 +168,7 @@ import {CURRENT_USER_EMAIL, EMAIL_LINK_REDIRECT_DOMAIN} from "boot/constants";
 import {Account} from "src/models/Account";
 import {NotificationType, useNotificationHandler} from "src/services/ErrorHandler";
 import SidePanelWindowTable from "components/helper/SidePanelWindowTable.vue";
+import SidePanelLoginWidget from "components/helper/SidePanelLoginWidget.vue";
 
 
 const {handleSuccess, handleError} = useNotificationHandler()
@@ -224,14 +192,8 @@ const doShowSuggestionButton = ref(false)
 const transitionGraceTime = ref(false)
 const showWindowTable = ref(false)
 const showLogin = ref(false)
-const email = ref(LocalStorage.getItem(CURRENT_USER_EMAIL) as string)
-const password = ref('')
-const loading = ref<boolean>(false)
-const mailSent = ref<boolean>(false)
 const account = ref<Account | undefined>(undefined)
 const randomKey = ref<string>(uid())
-
-const {sendMsg} = useUtils()
 
 watchEffect(() => {
   account.value = authStore.getAccount()
@@ -284,7 +246,7 @@ watchEffect(() => {
 
 //const openOptionsPage = () => window.open(chrome.runtime.getURL('www/index.html#/mainpanel/settings'));
 //const openOptionsPage = () => window.open('#/mainpanel/settings');
-const openOptionsPage = () => NavigationService.openOrCreateTab([chrome.runtime.getURL('www/index.html#/mainpanel/settings')], undefined, [], false, true)
+const openOptionsPage = () => NavigationService.openOrCreateTab([chrome.runtime.getURL('www/index.html#/mainpanel/settings')], undefined, [], true, true)
 
 const openExtensionTab = () =>
   //NavigationService.openOrCreateTab([chrome.runtime.getURL('www/index.html#/fullpage')])
@@ -372,55 +334,6 @@ const toggleShowWindowTable = () => {
   showWindowTable.value = !showWindowTable.value
   if (showWindowTable.value) {
     randomKey.value = uid()
-  }
-}
-
-const actionCodeSettings = {
-  // URL must be in the authorized domains list in the Firebase Console.
-  //url: 'http://localhost:9000',
-  url: EMAIL_LINK_REDIRECT_DOMAIN,
-  handleCodeInApp: true,
-};
-
-const signin = async (newUser: boolean) => {
-  loading.value = true
-  const auth = getAuth();
-  if (email.value && password.value) {
-    try {
-      let userCredential: UserCredential = null as unknown as UserCredential
-      if (newUser) {
-        userCredential = await createUserWithEmailAndPassword(auth, email.value, password.value)
-      } else {
-        userCredential = await signInWithEmailAndPassword(auth, email.value, password.value)
-      }
-      const user = userCredential.user;
-      LocalStorage.set(CURRENT_USER_EMAIL, email.value);
-      console.log("user!!!", user)
-      useAuthStore().setUser(user)
-      loading.value = false
-      showLogin.value = false
-    } catch (error) {
-      //console.error("error", error)
-      handleError(error, NotificationType.TOAST)
-      loading.value = false
-    }
-  } else {
-
-    console.log("actionCodeSettings", actionCodeSettings)
-    sendSignInLinkToEmail(auth, email.value, actionCodeSettings)
-      .then(() => {
-        loading.value = false
-        mailSent.value = true
-        setTimeout(() => mailSent.value = false, 3000)
-        window.localStorage.setItem(CURRENT_USER_EMAIL, email.value);
-        sendMsg('SET_EMAIL_FOR_SIGN_IN', {"email": email.value})
-      })
-      .catch((error) => {
-        //console.error("error", error)
-        handleError(error, NotificationType.TOAST)
-        loading.value = false
-        mailSent.value = false
-      });
   }
 }
 

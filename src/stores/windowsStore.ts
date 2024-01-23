@@ -97,7 +97,7 @@ export const useWindowsStore = defineStore('windows', () => {
       return
     }
     console.debug("init chrome windows listeners with trigger", trigger)
-    chrome.windows.getAll({populate: true},(windows) => {
+    chrome.windows.getAll({populate: true}, (windows) => {
 
       currentWindows.value = windows
       console.debug("initializing current windows with", currentWindows.value.length)
@@ -277,6 +277,9 @@ export const useWindowsStore = defineStore('windows', () => {
   async function upsertWindow(window: chrome.windows.Window, title: string | undefined, index: number = 0) {
     console.log("upserting window", window.id, title, index)
     const tabsetsWindow = new Window(window.id || 0, window, title, index)
+    if (window.id) {
+      allWindows.value.set(window.id, tabsetsWindow)
+    }
     await storage.upsertWindow(tabsetsWindow)
   }
 

@@ -1,5 +1,6 @@
 <template>
 
+  <!-- obsolete ?! -->
   <q-footer class="bg-white q-pa-xs q-mt-sm" style="border-top: 1px solid lightgrey">
 
 

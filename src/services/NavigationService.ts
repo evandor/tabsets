@@ -9,6 +9,7 @@ import {usePermissionsStore} from "stores/permissionsStore";
 import {FeatureIdent} from "src/models/AppFeature";
 import {Suggestion, SuggestionType} from "src/models/Suggestion";
 import {useSuggestionsStore} from "stores/suggestionsStore";
+import TabsetService from "src/services/TabsetService";
 
 class NavigationService {
 
@@ -22,8 +23,7 @@ class NavigationService {
     forceReload: boolean = false
   ) {
     withUrls.map(u => u.replace(this.placeholderPattern, ""));
-    const useWindowIdent = forceCurrent ?
-      'current' : useTabsStore().getCurrentTabset?.window || 'current'
+    const useWindowIdent = this.getUseWindowIdent(forceCurrent, withUrls)
     console.log(` > opening url(s) ${withUrls} in window: '${useWindowIdent}', groups: '${groups}', mode: '${process.env.MODE}'`)
 
     const windowFromDb = await useWindowsStore().windowFor(useWindowIdent)
@@ -146,6 +146,22 @@ class NavigationService {
     }
   }
 
+  private getUseWindowIdent(forceCurrent: boolean, urls: string[]) {
+    if (forceCurrent) {
+      return 'current'
+    } else if (urls.length === 1) {
+      const tabs = useTabsStore().tabsForUrl(urls[0])
+      if (tabs.length === 1) {
+        const tabAndTabsetId = useTabsStore().getTabAndTabsetId(tabs[0].id)
+        if (tabAndTabsetId) {
+          return useTabsetService().getTabset(tabAndTabsetId.tabsetId)?.window || 'current'
+        }
+      }
+      return useTabsStore().getCurrentTabset?.window || 'current';
+    }
+    return useTabsStore().getCurrentTabset?.window || 'current';
+  }
+
   private handleGroup(group: string | undefined, useWindowId: number, r: chrome.tabs.Tab) {
     if (group && usePermissionsStore().hasFeature(FeatureIdent.TAB_GROUPS) && chrome?.tabs?.group) {
       console.log("handling current Group", group)
@@ -246,7 +262,7 @@ class NavigationService {
 
   }
 
-  private createWindow(useWindowIdent: string, window: chrome.windows.Window, index:number = 0, withUrls: string[], groups: string[]) {
+  private createWindow(useWindowIdent: string, window: chrome.windows.Window, index: number = 0, withUrls: string[], groups: string[]) {
     //useWindowsStore().assignWindow(useWindowIdent, window.id || 0)
     useWindowsStore().upsertWindow(window, useWindowIdent, index)
     const ctx = this

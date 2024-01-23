@@ -22,7 +22,7 @@
               {{ props.row.name }}
               <q-popup-edit v-model="props.row.name" v-slot="scope">
                 <q-input v-model="scope.value" dense autofocus counter
-                         @update:model-value="(val:any) => setWindowName(props.row.id, val)"
+                         @update:model-value="(val:any) => setWindowName(props.row, val)"
                          @keyup.enter="scope.set"/>
               </q-popup-edit>
             </q-td>
@@ -169,7 +169,7 @@ const calcWindowRows = () => {
     }
     usedIndices.push(indexToUse)
 
-    console.log(`setting window ${cw.id} (#${cw.tabs?.length} tabs) -> #${indexToUse}`)
+    console.log(`setting window ${cw.id} ['${windowFromStore?.title}'] (#${cw.tabs?.length} tabs) -> #${indexToUse}`)
 
     return {
       id: cw.id,
@@ -192,12 +192,11 @@ const calcWindowRows = () => {
 }
 
 
-const setWindowName = (id: number, newName: string) => {
+const setWindowName = (windowRow: object, newName: string) => {
   if (newName && newName.toString().trim().length > 0) {
+    const id = windowRow['id' as keyof object]
     chrome.windows.get(id, (cw) => {
-      //console.log("setting window name", id, newName.toString().trim())
-      useWindowsStore().upsertWindow(cw, newName.toString().trim(), "")
-
+      useWindowsStore().upsertWindow(cw, newName.toString().trim(), windowRow['index' as keyof object])
       if (useWindowsStore().currentWindow?.id === id) {
         currentWindowName.value = newName
         //console.log("setting window name to ", currentWindowName.value)

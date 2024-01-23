@@ -30,7 +30,7 @@ module.exports = configure(function (ctx) {
       //'i18n',
       'constants',
       'firebase',
-      'auth0',
+     // 'auth0',
       'logtail'
     ],
 

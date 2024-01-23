@@ -56,10 +56,8 @@
       <!--      <q-btn label="import tabsets" @click="showImportDialog"></q-btn>-->
       <!--    </div>-->
 
-      <div>
+      <div v-if="windowLocation !== 'chrome-extension://pndffocijjfpmphlhkoijmpfckjafdpl/www/index.html#/sidepanel/welcome'">
         {{ windowLocation }}
-        <br>
-        <pre>{{ user }}</pre>
       </div>
 
     </div>

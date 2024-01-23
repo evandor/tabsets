@@ -134,12 +134,12 @@ const redirect = ref(true)
 watchEffect(() => {
   // TODO improve
   if (process.env.MODE === 'electron') {
-    console.log("watching auth effect:", isAuthenticated.value, authStore.user?.name, redirect.value)
+    console.log("watching auth effect:", isAuthenticated.value, redirect.value)
     if (redirect.value && isAuthenticated.value && authStore.user?.name) {
 
       redirect.value = false
       if (auth0.user.value) {
-        authStore.setUser(auth0.user.value)
+        //authStore.setUser(auth0.user.value)
       }
       //console.log("setting auth0", auth0)
       //authStore.setAuth0(auth0)
@@ -149,11 +149,11 @@ watchEffect(() => {
           console.log("calling appService init")
           AppService.init()
         })
-      Logz.info({"message": "user logged in (electron)", "username": auth0.user.value?.name})
+     // Logz.info({"message": "user logged in (electron)", "username": auth0.user.value?.name})
 
     }
   } else {
-    console.debug("watching auth effect:", isAuthenticated.value, auth0.user.value?.name, redirect.value)
+    console.debug("watching auth effect:", isAuthenticated.value,  redirect.value)
     // if (redirect.value && isAuthenticated.value && auth0.user.value?.name) {
     if (redirect.value && isAuthenticated.value) {
 
@@ -167,7 +167,7 @@ watchEffect(() => {
       //  })
       //Logz.info({"message": "user logged in", "username": auth0.user.value?.name})
 
-      logtail.info("user logged in", {"username": auth0.user.value?.name})
+      logtail.info("user logged in", {"username": "unknown"})
 
     }
 

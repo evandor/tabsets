@@ -54,7 +54,7 @@ const {handleSuccess, handleError} = useNotificationHandler()
 const tabNodes = ref([])
 
 function createNodes(tabs: object[], level = 0): TreeNode[] {
-  console.log("---creating nodes", tabs.length, level)
+  //console.log("---creating nodes", tabs.length, level)
   const nodes: TreeNode[] = []
 
   const levelIdents = new Map<string, object>()
@@ -62,21 +62,21 @@ function createNodes(tabs: object[], level = 0): TreeNode[] {
     const segments = e['segments' as keyof object] as string[]
     if (segments && segments.length > level) {
       const name = segments[level]
-      console.log("got name", name)
+      //console.log("got name", name)
       levelIdents.set(name, e)
     }
   }
 
   for (const name of _.sortBy([...levelIdents.keys()], k => k)) {
-    console.log("name", name, level)
+    //console.log("name", name, level)
     const t: object = levelIdents.get(name) || {}
     const filteredTabs = _.filter(tabs, t => {
       const segments = t['segments' as keyof object] as string[]
-      console.log("checking", segments.length, level, segments[level], name)
+      //console.log("checking", segments.length, level, segments[level], name)
       return (segments && segments.length > level + 1 && segments[level] === name)
     })
     const children: TreeNode[] = createNodes(filteredTabs, level + 1)
-    console.log("calculated children", children.length)
+   // console.log("calculated children", children.length)
     const newNodeId = uid()
     let url = t['protocol' as keyof object] + "//" + t['hostname' as keyof object]
     for (let i = 1; i <= level; i++) {
@@ -116,6 +116,7 @@ watchEffect(() => {
     }
   }
   const nodes = createNodes(tabs, 0);
+  console.log("nodes", nodes)
   tabNodes.value = JSON.parse(JSON.stringify(nodes))
 })
 

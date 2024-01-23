@@ -179,8 +179,8 @@
 
   <div v-if="tab === 'sharing'">
     <div class="q-pa-md q-gutter-sm">
-      <SharingSettings />
-      <q-banner rounded class="bg-grey-1 text-primary">
+      <SharingSettings v-if="useAuthStore().isAuthenticated()"/>
+      <q-banner v-else rounded class="bg-grey-1 text-primary">
         To use sharing, you need to have a (free) account.
       </q-banner>
     </div>
