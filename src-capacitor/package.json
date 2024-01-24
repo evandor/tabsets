@@ -1,0 +1,13 @@
+{
+  "name": "tabsets",
+  "version": "0.4.10",
+  "description": "Bookmarks next generation - Tabsets is a browser extension which helps you get your links really organized.",
+  "author": "evandor <evandor@gmail.com>",
+  "private": true,
+  "dependencies": {
+    "@capacitor/app": "^5.0.0",
+    "@capacitor/cli": "^5.0.0",
+    "@capacitor/core": "^5.0.0",
+    "@capacitor/ios": "^5.0.0"
+  }
+}
