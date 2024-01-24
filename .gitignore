@@ -13,8 +13,8 @@ node_modules
 /src-cordova/www
 
 # Capacitor related directories and files
-/src-capacitor/www
-/src-capacitor/node_modules
+/src-capacitor2/www
+/src-capacitor2/node_modules
 
 # BEX related directories and files
 /src-bex/www

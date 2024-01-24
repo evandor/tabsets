@@ -3,9 +3,11 @@
 </template>
 
 <script setup lang="ts">
+
+window.global ||= window;
+
 import {LocalStorage, useQuasar} from "quasar";
 import {ref, watchEffect} from "vue";
-import PouchDbPersistenceService from "src/services/PouchDbPersistenceService";
 import AppService from "src/services/AppService";
 import {useAuthStore} from "stores/authStore";
 import {EventEmitter} from "events";

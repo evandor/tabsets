@@ -12,6 +12,8 @@
     "dev ssr": "quasar dev -m ssr",
     "dev stage prod": "stage=production quasar dev -m bex",
     "dev electron": "quasar dev -m electron",
+    "dev capacitor": "quasar dev -m capacitor -T ios",
+    "dev cordova": "quasar dev -m cordova -T ios",
     "build": "quasar build -m bex",
     "build pwa": "quasar build -m pwa",
     "build electron": "quasar build -m electron",

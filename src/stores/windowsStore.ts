@@ -123,21 +123,13 @@ export const useWindowsStore = defineStore('windows', () => {
             sortedStoredWindows.forEach(tabsetWindowFromStorage => {
 
               // index handling
-              console.log("checking", tabsetWindowFromStorage.id, tabsetWindowFromStorage.index)
+              //console.log("checking", tabsetWindowFromStorage.id, tabsetWindowFromStorage.index)
 
               const indexFromDb = tabsetWindowFromStorage.index
               const indicesDiffer = indexFromDb !== index
               let indexToUse = index++
               //console.log("indicesDiffer", indicesDiffer, tabsetWindowFromStorage.id, indexFromDb, indexToUse)
 
-              // if (usedIndices.indexOf(indexToUse) >= 0) {
-              //   const candiate = indexToUse
-              //   indexToUse = 1 + Math.max(...usedIndices)
-              //   console.log(`found used index: ${candiate} -> ${indexToUse}`)
-              //   updateWindowIndex(tabsetWindowFromStorage.id, indexToUse)
-              //     .then(() => console.log("done with updating window", tabsetWindowFromStorage.id, indexToUse))
-              //     .catch((err) => console.error("error when updating window", tabsetWindowFromStorage.id, indexToUse, err))
-              // }
               if (indicesDiffer) {
                 updateWindowIndex(tabsetWindowFromStorage.id, indexToUse)
                   .then(() => console.log("done with updating window", tabsetWindowFromStorage.id, indexToUse))
@@ -210,7 +202,7 @@ export const useWindowsStore = defineStore('windows', () => {
   async function onUpdate(windowId: number) {
     if (windowId >= 0) {
       const windowFromDb = windowForId(windowId)
-      console.log(`updating window #${windowId}: title='${windowFromDb?.title}', index=${windowFromDb?.index}`, windowId, windowFromDb)
+      console.debug(`updating window #${windowId}: title='${windowFromDb?.title}', index=${windowFromDb?.index}`, windowId, windowFromDb)
       if (windowFromDb) {
         const chromeWindow = await chrome.windows.get(windowId)
         await storage.updateWindow(new Window(windowId, chromeWindow, windowFromDb.title, windowFromDb.index))
