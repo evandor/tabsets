@@ -111,32 +111,40 @@ export const useWindowsStore = defineStore('windows', () => {
       Promise.all(res)
         .then(() => {
           allWindows.value = new Map()
-          let index = 10000
-          const usedIndices: number[] = []
+          let index = 0
+          //const usedIndices: number[] = []
 
-          storage.getWindows().then(res => {
-            res.forEach(tabsetWindowFromStorage => {
+          storage.getWindows().then(storedWindows => {
+            const sortedStoredWindows = _.sortBy(storedWindows, "index")
+            console.log("sortedStoredWindwos", sortedStoredWindows)
+            //const reindex = sortedStoredWindows[sortedStoredWindows.length-1].index > sortedStoredWindows.length
+            //console.log("reindexing", reindex)
+
+            sortedStoredWindows.forEach(tabsetWindowFromStorage => {
 
               // index handling
-              //console.log("checking", tabsetWindowFromStorage.id, tabsetWindowFromStorage.index)
+              console.log("checking", tabsetWindowFromStorage.id, tabsetWindowFromStorage.index)
 
               const indexFromDb = tabsetWindowFromStorage.index
-              let indexToUse = tabsetWindowFromStorage.index ? tabsetWindowFromStorage.index : index++
-              if (usedIndices.indexOf(indexToUse) >= 0) {
-                const candiate = indexToUse
-                indexToUse = 1 + Math.max(...usedIndices)
-                console.log(`found used index: ${candiate} -> ${indexToUse}`)
-                updateWindowIndex(tabsetWindowFromStorage.id, indexToUse)
-                  .then(() => console.log("done with updating window", tabsetWindowFromStorage.id, indexToUse))
-                  .catch((err) => console.error("error when updating window", tabsetWindowFromStorage.id, indexToUse, err))
-              }
-              if (!indexFromDb) {
+              const indicesDiffer = indexFromDb !== index
+              let indexToUse = index++
+              console.log("indicesDiffer", indicesDiffer, tabsetWindowFromStorage.id, indexFromDb, indexToUse)
+
+              // if (usedIndices.indexOf(indexToUse) >= 0) {
+              //   const candiate = indexToUse
+              //   indexToUse = 1 + Math.max(...usedIndices)
+              //   console.log(`found used index: ${candiate} -> ${indexToUse}`)
+              //   updateWindowIndex(tabsetWindowFromStorage.id, indexToUse)
+              //     .then(() => console.log("done with updating window", tabsetWindowFromStorage.id, indexToUse))
+              //     .catch((err) => console.error("error when updating window", tabsetWindowFromStorage.id, indexToUse, err))
+              // }
+              if (indicesDiffer) {
                 updateWindowIndex(tabsetWindowFromStorage.id, indexToUse)
                   .then(() => console.log("done with updating window", tabsetWindowFromStorage.id, indexToUse))
                   .catch((err) => console.error("error when updating window", tabsetWindowFromStorage.id, indexToUse, err))
               }
               tabsetWindowFromStorage.index = indexToUse
-              usedIndices.push(indexToUse)
+              //usedIndices.push(indexToUse)
               allWindows.value.set(tabsetWindowFromStorage.id || 0, tabsetWindowFromStorage)
 
               const inCurrentWindows = windows.find(w => w.id === tabsetWindowFromStorage.id) !== undefined
@@ -345,104 +353,68 @@ export const useWindowsStore = defineStore('windows', () => {
     })
   }
 
-  async function moveWindowUp(index: number) {
-    console.log("moving up", index)
+  async function moveWindow(rows: object[], windowIndex: number, oldIndex: number, newIndex: number) {
+    console.log("moving window", windowIndex)
     const theWindows = getSortedWindows(windowForId);
 
     console.log("*** theWindows", theWindows)
 
-    let foundRow = undefined
-    for (let i = 0; i < theWindows.length - 1; i++) {
-      const windowOriginalIndex = index
-      if (theWindows[i + 1].index === windowOriginalIndex) {
-        // i = row before element to move up
-        // i+1 element to move up
-        foundRow = i
+    console.log("moving", windowIndex, oldIndex, newIndex)
+    if (oldIndex >= 0 && rows.length > 0) {
+      console.log("old rows", _.map(rows, r => r.id + ":" + r.index))
 
-        const windowToMoveDown: chrome.windows.Window | undefined = useWindowsStore().currentWindowForId(theWindows[i].cw.id || -1)
-        const windowToMoveUp: chrome.windows.Window | undefined = useWindowsStore().currentWindowForId(theWindows[i + 1].cw.id || -1)
-
-        console.log("windowToMoveDown", windowToMoveDown)
-        console.log("windowToMoveUp", windowToMoveUp)
-
-        const indexToSwitch = theWindows[i].index // element before
-        console.log("found index to switch", indexToSwitch)
-
-        console.log("setting", i, windowOriginalIndex)
-        if (theWindows[i].windowFromStore) {
-          // @ts-ignore
-          theWindows[i].windowFromStore.index = windowOriginalIndex
-        }
-
-        console.log("setting", i + 1, indexToSwitch)
-        if (theWindows[i + 1].windowFromStore) {
-          // @ts-ignore
-          theWindows[i + 1].windowFromStore.index = indexToSwitch
-        }
-
-        if (windowToMoveDown) {
-          console.log("moving down", i)
-          await useWindowsStore().upsertWindow(windowToMoveDown, theWindows[i].windowFromStore?.title, windowOriginalIndex)
-        }
-        if (windowToMoveUp) {
-          await useWindowsStore().upsertWindow(windowToMoveUp, theWindows[i + 1].windowFromStore?.title, indexToSwitch)
-        }
-
+      const newOrder = _.map(rows, r => r.id as number)
+      const startIndex = rows[0]['index' as keyof object]
+      let index = startIndex
+      console.log("newOrder", newOrder, startIndex)
+      for (const r of newOrder) {
+       await updateWindowIndex(r, index++)
       }
-      if (foundRow) {
-        break
-      }
-
-    }
-  }
-
-  async function moveWindowDown(index: number) {
-    console.log("moving down", index)
-    const theWindows = getSortedWindows(windowForId);
-    let foundRow = undefined
-    for (let i = 1; i < theWindows.length; i++) {
-      const windowOriginalIndex = index
-      if (theWindows[i - 1].index === windowOriginalIndex) {
-        // i = row after element to move down, i.e. to move up
-        // i-1 element to move down
-        foundRow = i
-
-        const windowToMoveUp: chrome.windows.Window | undefined = useWindowsStore().currentWindowForId(theWindows[i].cw.id || -1)
-        const windowToMoveDown: chrome.windows.Window | undefined = useWindowsStore().currentWindowForId(theWindows[i - 1].cw.id || -1)
-
-        console.log("windowToMoveDown", windowToMoveDown?.id)
-        console.log("windowToMoveUp", windowToMoveUp?.id)
-
-        const indexToSwitch = theWindows[i].index // element after
-        console.log("found index to switch", indexToSwitch)
-
-        console.log("setting", i, windowOriginalIndex)
-        if (theWindows[i].windowFromStore) {
-          // @ts-ignore
-          theWindows[i].windowFromStore.index = windowOriginalIndex
-        }
-
-        console.log("setting", i - 1, indexToSwitch)
-        if (theWindows[i - 1].windowFromStore) {
-          // @ts-ignore
-          theWindows[i - 1].windowFromStore.index = indexToSwitch
-        }
-
-        if (windowToMoveDown) {
-          console.log("moving down", i)
-          await useWindowsStore().upsertWindow(windowToMoveDown, theWindows[i].windowFromStore?.title, windowOriginalIndex)
-        }
-        if (windowToMoveUp) {
-          await useWindowsStore().upsertWindow(windowToMoveUp, theWindows[i + 1].windowFromStore?.title, indexToSwitch)
-        }
-
-      }
-      if (foundRow) {
-        break
-      }
-
     }
 
+    //let foundRow = undefined
+    // for (let i = 0; i < theWindows.length - 1; i++) {
+    //   const windowOriginalIndex = index
+    //   if (theWindows[i + 1].index === windowOriginalIndex) {
+    //     // i = row before element to move up
+    //     // i+1 element to move up
+    //     foundRow = i
+    //
+    //     const windowToMoveDown: chrome.windows.Window | undefined = useWindowsStore().currentWindowForId(theWindows[i].cw.id || -1)
+    //     const windowToMoveUp: chrome.windows.Window | undefined = useWindowsStore().currentWindowForId(theWindows[i + 1].cw.id || -1)
+    //
+    //     console.log("windowToMoveDown", windowToMoveDown)
+    //     console.log("windowToMoveUp", windowToMoveUp)
+    //
+    //     const indexToSwitch = theWindows[i].index // element before
+    //     console.log("found index to switch", indexToSwitch)
+    //
+    //     console.log("setting", i, windowOriginalIndex)
+    //     if (theWindows[i].windowFromStore) {
+    //       // @ts-ignore
+    //       theWindows[i].windowFromStore.index = windowOriginalIndex
+    //     }
+    //
+    //     console.log("setting", i + 1, indexToSwitch)
+    //     if (theWindows[i + 1].windowFromStore) {
+    //       // @ts-ignore
+    //       theWindows[i + 1].windowFromStore.index = indexToSwitch
+    //     }
+    //
+    //     if (windowToMoveDown) {
+    //       console.log("moving down", i)
+    //       await useWindowsStore().upsertWindow(windowToMoveDown, theWindows[i].windowFromStore?.title, windowOriginalIndex)
+    //     }
+    //     if (windowToMoveUp) {
+    //       await useWindowsStore().upsertWindow(windowToMoveUp, theWindows[i + 1].windowFromStore?.title, indexToSwitch)
+    //     }
+    //
+    //   }
+    //   if (foundRow) {
+    //     break
+    //   }
+    //
+    // }
   }
 
   async function updateWindowIndex(windowId: number, indexToUse: number) {
@@ -450,6 +422,10 @@ export const useWindowsStore = defineStore('windows', () => {
     return storage.getWindow(windowId).then(w => {
       if (w) {
         w.index = indexToUse
+        var allWindow = allWindows.value.get(windowId)
+        if (allWindow) {
+          allWindow.index = indexToUse
+        }
         return storage.updateWindow(w)
       } else {
         return Promise.reject("window for #" + windowId + " not found")
@@ -477,8 +453,6 @@ export const useWindowsStore = defineStore('windows', () => {
     refreshCurrentWindows,
     windowForId,
     currentWindowForId,
-    moveWindowUp,
-    moveWindowDown,
     updateWindowIndex
   }
 })

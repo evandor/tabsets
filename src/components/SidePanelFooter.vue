@@ -7,11 +7,11 @@
 
     <div class="row fit q-mb-sm" v-if="showWindowTable">
       <!-- https://michaelnthiessen.com/force-re-render -->
-      <SidePanelWindowTable :key="randomKey"/>
+      <SidePanelWindowMarkupTable :key="randomKey"/>
     </div>
 
     <div class="row fit">
-      <div class="col-8">
+      <div class="col-7">
 
         <Transition name="fade" appear>
           <q-banner
@@ -169,6 +169,7 @@ import {Account} from "src/models/Account";
 import {NotificationType, useNotificationHandler} from "src/services/ErrorHandler";
 import SidePanelWindowTable from "components/helper/SidePanelWindowTable.vue";
 import SidePanelLoginWidget from "components/helper/SidePanelLoginWidget.vue";
+import SidePanelWindowMarkupTable from "components/helper/SidePanelWindowMarkupTable.vue";
 
 
 const {handleSuccess, handleError} = useNotificationHandler()
