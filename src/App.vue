@@ -4,12 +4,10 @@
 
 <script setup lang="ts">
 import {LocalStorage, useQuasar} from "quasar";
-import {useAuth0, User} from "@auth0/auth0-vue";
 import {ref, watchEffect} from "vue";
 import PouchDbPersistenceService from "src/services/PouchDbPersistenceService";
 import AppService from "src/services/AppService";
 import {useAuthStore} from "stores/authStore";
-import {Logz} from "src/services/logz/Logz";
 import {EventEmitter} from "events";
 import {logtail} from "boot/logtail";
 import {getAuth, isSignInWithEmailLink, onAuthStateChanged, signInWithEmailLink, UserCredential} from "firebase/auth";
@@ -17,10 +15,9 @@ import {CURRENT_USER_EMAIL} from "boot/constants";
 import {collection, doc, getDoc, getDocs} from "firebase/firestore";
 import {firestore} from "boot/firebase";
 import {Account} from "src/models/Account";
-import GitPersistentService from "src/services/persistence/GitPersistentService";
 
 const $q = useQuasar()
-const auth0 = useAuth0()
+//const auth0 = useAuth0()
 const authStore = useAuthStore()
 
 // https://stackoverflow.com/questions/9768444/possible-eventemitter-memory-leak-detected
@@ -133,22 +130,22 @@ const redirect = ref(true)
 
 watchEffect(() => {
   // TODO improve
-  if (process.env.MODE === 'electron') {
+  if (process.env.MODE === 'electronXXX') {
     console.log("watching auth effect:", isAuthenticated.value, redirect.value)
     if (redirect.value && isAuthenticated.value && authStore.user?.name) {
 
       redirect.value = false
-      if (auth0.user.value) {
+      //if (auth0.user.value) {
         //authStore.setUser(auth0.user.value)
-      }
+      //}
       //console.log("setting auth0", auth0)
       //authStore.setAuth0(auth0)
 
-      PouchDbPersistenceService.initRemoteDb()
-        .then(() => {
-          console.log("calling appService init")
-          AppService.init()
-        })
+      // PouchDbPersistenceService.initRemoteDb()
+      //   .then(() => {
+      //     console.log("calling appService init")
+      //     AppService.init()
+      //   })
      // Logz.info({"message": "user logged in (electron)", "username": auth0.user.value?.name})
 
     }

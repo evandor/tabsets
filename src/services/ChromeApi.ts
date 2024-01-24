@@ -57,7 +57,8 @@ function runHousekeeping() {
     })
 
 
-  TabService.checkScheduled()
+  // TODO
+  //TabService.checkScheduled()
 }
 
 
