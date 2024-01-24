@@ -30,7 +30,7 @@ if (typeof self !== 'undefined') {
 }
 
 async function createDir(...segments: string[]) {
-  //console.log("got segments", segments)
+  //log("got segments", segments)
   let prefix = ''
   for (const segment of segments) {
     try {
@@ -40,7 +40,7 @@ async function createDir(...segments: string[]) {
       await pfs.mkdir(path)
     } catch (err: any) {
       if (!err.toString().startsWith("Error: EEXIST")) {
-        console.log(err)
+        log(err)
       }
     }
   }
@@ -56,8 +56,10 @@ async function push(dir: string, proxy: string) {
     ref: 'main',
     onAuth: () => ({username: LocalStorage.getItem(SYNC_GITHUB_TOKEN) as string || '---'}),
   })
-  console.log(pushResult)
+  log(pushResult)
 }
+
+const log = (s: string, ...args) => console.log("%c" + s, "color:#8B4000", ...args)
 
 class GitPersistenceService implements PersistenceService {
   private db: IDBPDatabase = null as unknown as IDBPDatabase
@@ -70,16 +72,16 @@ class GitPersistenceService implements PersistenceService {
   async init(syncType: SyncType, url: string | undefined) {
     if (url) {
       if (syncType === SyncType.GITHUB) {
-        console.log("=== initializing github database ===", url)
+        log("=== initializing github database ===", url)
         this.db = await this.initDatabase(url, this.genericCorsProxy)
-        console.log("=== initializing git database: done ===")
+        log("=== initializing git database: done ===")
         useUiStore().dbReady = true
         return Promise.resolve("done")
       } else if (syncType === SyncType.MANAGED_GIT) {
         const subscription = LocalStorage.getItem(SUBSCRIPTION_ID_IDENT) as string
-        console.log("=== initializing managed git ===", url)
+        log("=== initializing managed git ===", url)
         this.db = await this.initDatabase("https://tabsets.git/" + subscription, this.tabsetsCorsProxy)
-        console.log("=== initializing managed git done ===")
+        log("=== initializing managed git done ===")
         useUiStore().dbReady = true
         return Promise.resolve("done")
       }
@@ -94,19 +96,19 @@ class GitPersistenceService implements PersistenceService {
     console.debug("about to initialize git")
     const useDir = dir + "-" + Md5.hashStr(url)
     window.dir = useDir
-    console.log(useDir);
+    log(useDir);
     this.useProxy = proxy
     try {
       await pfs.mkdir(useDir);
     } catch (err: any) {
       if (!err.toString().startsWith("Error: EEXIST")) {
-        console.log(err)
+        log(err)
       }
     }
 
     // try to get status
     let status = await git.status({fs, dir: useDir, filepath: 'README.md'})
-    console.log(status)
+    log(status)
 
     try {
       const cloneDef = {
@@ -119,9 +121,9 @@ class GitPersistenceService implements PersistenceService {
         ref: 'main',
         singleBranch: true,
         depth: 10,
-        //onProgress: (val:any) => (console.log("onProgress", val)),
-        //onMessage: (val:any) => (console.log("onMessage", val)),
-        onAuthSuccess: () => (console.log("auth: success")),
+        //onProgress: (val:any) => (log("onProgress", val)),
+        //onMessage: (val:any) => (log("onMessage", val)),
+        onAuthSuccess: () => (log("auth: success")),
         onAuthFailure: (url, auth) => {
           //forgetSavedPassword(url)
           if (confirm('Access was denied. Try again?')) {
@@ -136,12 +138,12 @@ class GitPersistenceService implements PersistenceService {
         },
         onAuth: () => ({username: LocalStorage.getItem(SYNC_GITHUB_TOKEN) as string || '---'}),
       }
-      console.log(`about to clone '${url}' into ${useDir}`, cloneDef)
+      log(`about to clone '${url}' into ${useDir}`, cloneDef)
       const cloneRes = await git.clone(cloneDef);
-      console.log("cloning done")
+      log("cloning done")
       return cloneRes
     } catch (err) {
-      console.log("got error", err)
+      log("got error", err)
       return Promise.reject(err)
     }
   }
@@ -151,30 +153,30 @@ class GitPersistenceService implements PersistenceService {
       const dir = "/" + uid()
       try {
         //const r = await this.initDatabase( gitRepoUrl, dir, true)
-        //console.log("got r", r)
+        //log("got r", r)
 
         const remoteInfoDef = {
           http,
           corsProxy: this.useProxy,
           url: gitRepoUrl,
           onAuthSuccess: () => {
-            console.log("auth: success")
+            log("auth: success")
             return Promise.resolve("success!")
           },
-          onAuthFailure: () => (console.log("auth: failure")),
+          onAuthFailure: () => (log("auth: failure")),
           onAuth: () => ({username: LocalStorage.getItem(SYNC_GITHUB_TOKEN) as string || '---'}),
         }
-        console.log("checking repo", remoteInfoDef)
+        log("checking repo", remoteInfoDef)
 
         let info = await git.getRemoteInfo2(remoteInfoDef);
-        console.log(info);
+        log(info);
 
       } catch (e: any) {
-        console.log("got e", e)
+        log("got e", e)
         return Promise.resolve(e.toString())
       }
       //await pfs.unlink(dir)
-      console.log("success")
+      log("success")
       return Promise.resolve("success")
     } catch (err) {
       return Promise.resolve("got error: " + err)
@@ -188,21 +190,21 @@ class GitPersistenceService implements PersistenceService {
    */
 
   async loadTabsets(): Promise<void> {
-    console.log("=== loading tabsets ===")
+    log("=== loading tabsets ===")
     // update from git, then read from fs
     const tabsets: Tabset[] = []
     try {
       await createDir("tabsets")
       const result: string[] = await pfs.readdir(`${dir}/tabsets`)//, (callback: any) => {
-     // console.log("callback", result)
+     // log("callback", result)
       for (var index in result) {
-        //console.log("got ts index", index)
+        //log("got ts index", index)
         const tabsetId = result[index]
         const tsDataLocation = `${dir}/tabsets/${tabsetId}/tabset.json`
         console.debug("tsDataLocation", tsDataLocation)
         try {
           const tsData = await pfs.readFile(tsDataLocation)
-          //console.log("tsData", tsData)
+          //log("tsData", tsData)
           const ts = JSON.parse(tsData) as Tabset
 
           // make sure some fields are correcly initialized even for old(er) tabsets
@@ -226,14 +228,14 @@ class GitPersistenceService implements PersistenceService {
 
           tabsets.push(ts)
         } catch (err) {
-          console.log("err", err)
+          log("err", err)
         }
       }
     } catch (err) {
       console.warn("err", err)
     }
     for (const t of tabsets) {
-      //console.log("adding t", t)
+      //log("adding t", t)
       useTabsStore().addTabset(t)
     }
 
@@ -270,7 +272,7 @@ class GitPersistenceService implements PersistenceService {
       }
     })
 
-    console.log(sha)
+    log(sha)
     //await push(this._dir);
     await push(`${dir}`, this.useProxy);
     return Promise.resolve(undefined);
@@ -287,7 +289,7 @@ class GitPersistenceService implements PersistenceService {
    */
 
   async loadSpaces(): Promise<any> {
-    console.log("=== loading spaces ===")
+    log("=== loading spaces ===")
     // update from git, then read from fs
     const spaces: Space[] = []
     try {
@@ -295,15 +297,15 @@ class GitPersistenceService implements PersistenceService {
       const entitiesName = "spaces"
       await createDir(entitiesName)
       const result: string[] = await pfs.readdir(`${dir}/${entitiesName}`)//, (callback: any) => {
-      //console.log("callback", result)
+      //log("callback", result)
       for (var index in result) {
-        //console.log("got index", index)
+        //log("got index", index)
         const entityId = result[index]
         const tsDataLocation = `${dir}/${entitiesName}/${entityId}/space.json`
         console.debug("tsDataLocation", tsDataLocation)
         try {
           const tsData = await pfs.readFile(tsDataLocation)
-          //console.log("tsData", tsData)
+          //log("tsData", tsData)
           const s = JSON.parse(tsData) as Space
           //ts.tabs = []
 
@@ -320,7 +322,7 @@ class GitPersistenceService implements PersistenceService {
 
           spaces.push(s)
         } catch (err) {
-          console.log("err", err)
+          log("err", err)
         }
       }
     } catch (err) {
@@ -361,7 +363,7 @@ class GitPersistenceService implements PersistenceService {
       }
     })
 
-    console.log(sha)
+    log(sha)
     //await push(this._dir);
     await push(`${dir}`, this.useProxy);
     return Promise.resolve(undefined);

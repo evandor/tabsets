@@ -22,8 +22,10 @@
       <q-tab name="appearance" label="Appearance"/>
       <q-tab name="account" label="Account"/>
       <q-tab name="subscription" label="Subscription" icon="o_shopping_bag"/>
-      <q-tab name="sharing" label="Sharing" :class="useAuthStore().userMayAccess(AccessItem.SHARE) ? 'text-black':'text-grey'"/>
-      <q-tab name="syncing" label="Syncing" :class="useAuthStore().userMayAccess(AccessItem.SYNC) ? 'text-black':'text-grey'"/>
+      <q-tab name="sharing" label="Sharing"
+             :class="useAuthStore().userMayAccess(AccessItem.SHARE) ? 'text-black':'text-grey'"/>
+      <q-tab name="syncing" label="Syncing"
+             :class="useAuthStore().userMayAccess(AccessItem.SYNC) ? 'text-black':'text-grey'"/>
       <q-tab name="thirdparty" label="Third Party Services"/>
       <!--      <q-tab name="ignored" label="Ignored Urls"/>-->
       <q-tab name="archived" label="Archived Tabsets"
@@ -31,7 +33,8 @@
       <q-tab name="search" label="Search Engine" v-if="devEnabled"/>
       <q-tab name="importExport" label="Import/Export"/>
       <q-tab name="internals" label="Internals" v-if="devEnabled"/>
-      <q-tab name="featureToggles" label="Feature Toggles" v-if="useAuthStore().userMayAccess(AccessItem.FEATURE_TOGGLES)"/>
+      <q-tab name="featureToggles" label="Feature Toggles"
+             :class="useAuthStore().userMayAccess(AccessItem.FEATURE_TOGGLES) ? 'text-black':'text-grey'"/>
     </q-tabs>
   </div>
 
@@ -77,7 +80,8 @@
 
       </div>
 
-      <div class="row items-baseline q-ma-md q-gutter-md" v-if="usePermissionsStore().hasFeature(FeatureIdent.AUTO_TAB_SWITCHER)">
+      <div class="row items-baseline q-ma-md q-gutter-md"
+           v-if="usePermissionsStore().hasFeature(FeatureIdent.AUTO_TAB_SWITCHER)">
         <div class="col-3">
           Tab Switching Time in seconds
         </div>
@@ -107,7 +111,8 @@
         </div>
       </div>
 
-      <div class="row items-baseline q-ma-md q-gutter-md" v-if="usePermissionsStore().hasFeature(FeatureIdent.OPENTABS_THRESHOLD)">
+      <div class="row items-baseline q-ma-md q-gutter-md"
+           v-if="usePermissionsStore().hasFeature(FeatureIdent.OPENTABS_THRESHOLD)">
         <div class="col-3">
           Warning Thresholds
         </div>
@@ -169,7 +174,7 @@
   </div>
 
   <div v-if="tab === 'account'">
-    <AccountSettings />
+    <AccountSettings/>
   </div>
 
   <div v-if="tab === 'subscription'">
@@ -381,24 +386,29 @@
 
     <div class="q-pa-md q-gutter-sm">
 
-      <q-banner rounded class="bg-grey-1 text-primary">Switch on experimental features (or off). These feature toggles
-        are meant for developers
-        only as they might break functionality and/or destroy data. Once they are considered 'safe enough', they will be
-        available at the
-        "experimental features" view on the left.
+      <q-banner v-if="!useAuthStore().userMayAccess(AccessItem.FEATURE_TOGGLES)" rounded class="bg-grey-1 text-primary">
+        To use feature toggles, you need to have a (free) account.
       </q-banner>
+      <template v-else>
+        <q-banner rounded class="bg-grey-1 text-primary">Switch on experimental features (or off). These feature toggles
+          are meant for developers
+          only as they might break functionality and/or destroy data. Once they are considered 'safe enough', they will
+          be
+          available at the
+          "experimental features" view on the left.
+        </q-banner>
 
-      <div class="row q-pa-md">
-        <div class="col-3"><b>Developer Mode</b></div>
-        <div class="col-3">activates a couple of experimental features and debug insights. You should only use this
-          if you can live with loosing data.
+        <div class="row q-pa-md">
+          <div class="col-3"><b>Developer Mode</b></div>
+          <div class="col-3">activates a couple of experimental features and debug insights. You should only use this
+            if you can live with loosing data.
+          </div>
+          <div class="col-1"></div>
+          <div class="col-5">
+            <q-toggle v-model="devEnabled"/>
+          </div>
         </div>
-        <div class="col-1"></div>
-        <div class="col-5">
-          <q-toggle v-model="devEnabled"/>
-        </div>
-      </div>
-
+      </template>
     </div>
 
   </div>

@@ -91,6 +91,7 @@ import {getFirestore} from "firebase/firestore";
 import {collection, setDoc, doc, getDocs} from "firebase/firestore";
 import userHasClaim from "src/services/stripe/isUserPremium";
 import {createCheckoutSession} from "src/services/stripe/createCheckoutSession";
+import {useAuthStore} from "stores/authStore";
 
 const {inBexMode} = useUtils()
 
@@ -120,9 +121,9 @@ watchEffect(() => {
 
 
 const subscribe = async () => {
-  if (userCredentials.value) {
-    console.log("xxx", userCredentials.value?.user?.uid)
-    await createCheckoutSession(userCredentials.value.user?.uid || '')
+  if (useAuthStore().isAuthenticated()) {
+    console.log("xxx", useAuthStore().user.uid)
+    await createCheckoutSession(useAuthStore().user.uid)
   }
 }
 

@@ -18,7 +18,8 @@ export enum SuggestionType {
   REDIRECT_HAPPENED_FOR_BOOKMARK = "REDIRECT_HAPPENED_FOR_BOOKMARK",
   CONTENT_CHANGE = "CONTENT_CHANGE",
   FEATURE = "FEATURE",
-  URL = "URL"
+  URL = "URL",
+  RESTART="RESTART"
 }
 
 export enum StaticSuggestionIdent {

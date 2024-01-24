@@ -296,7 +296,7 @@
 <script setup lang="ts">
 import {SyncType} from "stores/appStore";
 import {ref, watchEffect} from "vue";
-import {LocalStorage} from "quasar";
+import {LocalStorage, uid} from "quasar";
 import {
   SUBSCRIPTION_ID_IDENT,
   SYNC_COUCHDB_PASSWORD,
@@ -305,12 +305,15 @@ import {
   SYNC_GITHUB_TOKEN,
   SYNC_GITHUB_URL,
   SYNC_GITLAB_TOKEN,
-  SYNC_GITLAB_URL, SYNC_TYPE
+  SYNC_GITLAB_URL,
+  SYNC_TYPE
 } from "boot/constants";
 import GitPersistentService from "src/services/persistence/GitPersistentService";
 import {FirebaseCall} from "src/services/firebase/FirebaseCall";
 import {Tabset, TabsetSharing} from "src/models/Tabset";
 import {useTabsetService} from "src/services/TabsetService2";
+import {useSuggestionsStore} from "stores/suggestionsStore";
+import {Suggestion, SuggestionType} from "src/models/Suggestion";
 
 const emits = defineEmits(['wasClicked'])
 
@@ -397,8 +400,14 @@ const testDbConnection = async () => {
   }
 }
 
-const startGitSyncing = () => LocalStorage.set(SYNC_TYPE, tempSyncOption.value)
-const stopGitSyncing = () => LocalStorage.set(SYNC_TYPE, SyncType.NONE)
+const startGitSyncing = () => {
+  LocalStorage.set(SYNC_TYPE, tempSyncOption.value)
+  useSuggestionsStore().addSuggestion(new Suggestion(uid(),"Restart Required", "Please restart tabsets by clicking the button","",SuggestionType.RESTART))
+}
+const stopGitSyncing = () => {
+  LocalStorage.set(SYNC_TYPE, SyncType.NONE)
+  useSuggestionsStore().addSuggestion(new Suggestion(uid(),"Restart Required", "Please restart tabsets by clicking the button","",SuggestionType.RESTART))
+}
 
 const startSyncMessage = (targetType: SyncType) => testResult.value === 'success' &&
   (!syncType.value || syncType.value === SyncType.NONE) &&

@@ -34,7 +34,7 @@ onAuthStateChanged(auth, (user) => {
   if (user) {
     // User is signed in, see docs for a list of available properties
     // https://firebase.google.com/docs/reference/js/auth.user
-    console.log("onAuthStateChanged: logged in")
+    console.log("%conAuthStateChanged: logged in", "border:1px solid green")
     useAuthStore().setUser(user)
 
     getDoc(doc(firestore, "users", user.uid))
@@ -79,7 +79,7 @@ onAuthStateChanged(auth, (user) => {
 
   } else {
     // User is signed out
-    console.log("onAuthStateChanged: logged out")
+    console.log("%conAuthStateChanged: logged out", "border:1px solid green")
     useAuthStore().setUser(undefined)
   }
 });

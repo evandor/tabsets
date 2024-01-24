@@ -128,7 +128,7 @@ export const useWindowsStore = defineStore('windows', () => {
               const indexFromDb = tabsetWindowFromStorage.index
               const indicesDiffer = indexFromDb !== index
               let indexToUse = index++
-              console.log("indicesDiffer", indicesDiffer, tabsetWindowFromStorage.id, indexFromDb, indexToUse)
+              //console.log("indicesDiffer", indicesDiffer, tabsetWindowFromStorage.id, indexFromDb, indexToUse)
 
               // if (usedIndices.indexOf(indexToUse) >= 0) {
               //   const candiate = indexToUse
@@ -149,7 +149,7 @@ export const useWindowsStore = defineStore('windows', () => {
 
               const inCurrentWindows = windows.find(w => w.id === tabsetWindowFromStorage.id) !== undefined
 
-              console.log(`assigned window #${tabsetWindowFromStorage.id} (name: ${tabsetWindowFromStorage.title}): ${indexFromDb} -> ${tabsetWindowFromStorage.index}, open: ${inCurrentWindows}`)
+              console.debug(`assigned window #${tabsetWindowFromStorage.id} (name: ${tabsetWindowFromStorage.title}): ${indexFromDb} -> ${tabsetWindowFromStorage.index}, open: ${inCurrentWindows}`)
             })
             for (const id of allWindows.value.keys()) {
               const w = allWindows.value.get(id)
@@ -351,70 +351,6 @@ export const useWindowsStore = defineStore('windows', () => {
     chrome.windows.getAll({populate: true}, (windows) => {
       currentWindows.value = windows
     })
-  }
-
-  async function moveWindow(rows: object[], windowIndex: number, oldIndex: number, newIndex: number) {
-    console.log("moving window", windowIndex)
-    const theWindows = getSortedWindows(windowForId);
-
-    console.log("*** theWindows", theWindows)
-
-    console.log("moving", windowIndex, oldIndex, newIndex)
-    if (oldIndex >= 0 && rows.length > 0) {
-      console.log("old rows", _.map(rows, r => r.id + ":" + r.index))
-
-      const newOrder = _.map(rows, r => r.id as number)
-      const startIndex = rows[0]['index' as keyof object]
-      let index = startIndex
-      console.log("newOrder", newOrder, startIndex)
-      for (const r of newOrder) {
-       await updateWindowIndex(r, index++)
-      }
-    }
-
-    //let foundRow = undefined
-    // for (let i = 0; i < theWindows.length - 1; i++) {
-    //   const windowOriginalIndex = index
-    //   if (theWindows[i + 1].index === windowOriginalIndex) {
-    //     // i = row before element to move up
-    //     // i+1 element to move up
-    //     foundRow = i
-    //
-    //     const windowToMoveDown: chrome.windows.Window | undefined = useWindowsStore().currentWindowForId(theWindows[i].cw.id || -1)
-    //     const windowToMoveUp: chrome.windows.Window | undefined = useWindowsStore().currentWindowForId(theWindows[i + 1].cw.id || -1)
-    //
-    //     console.log("windowToMoveDown", windowToMoveDown)
-    //     console.log("windowToMoveUp", windowToMoveUp)
-    //
-    //     const indexToSwitch = theWindows[i].index // element before
-    //     console.log("found index to switch", indexToSwitch)
-    //
-    //     console.log("setting", i, windowOriginalIndex)
-    //     if (theWindows[i].windowFromStore) {
-    //       // @ts-ignore
-    //       theWindows[i].windowFromStore.index = windowOriginalIndex
-    //     }
-    //
-    //     console.log("setting", i + 1, indexToSwitch)
-    //     if (theWindows[i + 1].windowFromStore) {
-    //       // @ts-ignore
-    //       theWindows[i + 1].windowFromStore.index = indexToSwitch
-    //     }
-    //
-    //     if (windowToMoveDown) {
-    //       console.log("moving down", i)
-    //       await useWindowsStore().upsertWindow(windowToMoveDown, theWindows[i].windowFromStore?.title, windowOriginalIndex)
-    //     }
-    //     if (windowToMoveUp) {
-    //       await useWindowsStore().upsertWindow(windowToMoveUp, theWindows[i + 1].windowFromStore?.title, indexToSwitch)
-    //     }
-    //
-    //   }
-    //   if (foundRow) {
-    //     break
-    //   }
-    //
-    // }
   }
 
   async function updateWindowIndex(windowId: number, indexToUse: number) {

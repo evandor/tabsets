@@ -28,7 +28,9 @@ import {useAuthStore} from "stores/authStore";
 import {getAuth} from "firebase/auth";
 
 function useGitStore(st: SyncType, su: string | undefined) {
-  return st && (st === SyncType.GITHUB || st === SyncType.MANAGED_GIT) && su
+  const isAuthenticated = useAuthStore().isAuthenticated()
+  console.log("isAuthenticated", isAuthenticated)
+  return isAuthenticated && st && (st === SyncType.GITHUB || st === SyncType.MANAGED_GIT) && su
 }
 
 class AppService {

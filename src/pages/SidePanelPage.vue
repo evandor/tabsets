@@ -239,7 +239,7 @@
             {{ toolbarTitle(tabsets as Tabset[]) }}
             <q-icon v-if="LocalStorage.getItem(SYNC_TYPE) as SyncType === SyncType.GITHUB"
                     class="q-ml-none" name="sync" size="12px">
-              <q-tooltip class="tooltip-small">Tabsets are being synced</q-tooltip>
+              <q-tooltip class="tooltip-small">Tabsets synced via {{LocalStorage.getItem(SYNC_GITHUB_URL)}}</q-tooltip>
             </q-icon>
             <q-icon v-if="LocalStorage.getItem(SYNC_TYPE) as SyncType === SyncType.MANAGED_GIT"
                     class="q-ml-none" name="sync" size="12px">
@@ -293,7 +293,7 @@ import {useVOnboarding, VOnboardingStep, VOnboardingWrapper} from 'v-onboarding'
 import {FirebaseCall} from "src/services/firebase/FirebaseCall";
 import getScrollTarget = scroll.getScrollTarget;
 import InfoMessageWidget from "components/widgets/InfoMessageWidget.vue";
-import {SYNC_TYPE, TITLE_IDENT} from "boot/constants";
+import {SYNC_GITHUB_URL, SYNC_TYPE, TITLE_IDENT} from "boot/constants";
 import {collection, getDoc, doc, onSnapshot, setDoc, addDoc, getDocs} from "firebase/firestore";
 import {firestore} from "boot/firebase";
 import {Account} from "src/models/Account";
