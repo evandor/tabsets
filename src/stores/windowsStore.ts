@@ -141,7 +141,7 @@ export const useWindowsStore = defineStore('windows', () => {
 
               const inCurrentWindows = windows.find(w => w.id === tabsetWindowFromStorage.id) !== undefined
 
-              console.debug(`assigned window #${tabsetWindowFromStorage.id} (name: ${tabsetWindowFromStorage.title}): ${indexFromDb} -> ${tabsetWindowFromStorage.index}, open: ${inCurrentWindows}`)
+              //console.debug(`assigned window #${tabsetWindowFromStorage.id} (name: ${tabsetWindowFromStorage.title}): ${indexFromDb} -> ${tabsetWindowFromStorage.index}, open: ${inCurrentWindows}`)
             })
             for (const id of allWindows.value.keys()) {
               const w = allWindows.value.get(id)

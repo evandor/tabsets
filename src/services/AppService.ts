@@ -25,7 +25,7 @@ import {SyncType, useAppStore} from "stores/appStore";
 import GitPersistentService from "src/services/persistence/GitPersistentService";
 import {SYNC_GITHUB_URL, SYNC_TYPE} from "boot/constants";
 import {useAuthStore} from "stores/authStore";
-import {getAuth} from "firebase/auth";
+import PersistenceService from "src/services/PersistenceService";
 
 function useGitStore(st: SyncType, su: string | undefined) {
   const isAuthenticated = useAuthStore().isAuthenticated()
@@ -40,7 +40,6 @@ class AppService {
     console.log("initializing AppService")
 
     const appStore = useAppStore()
-    const spacesStore = useSpacesStore()
     const tabsStore = useTabsStore()
     const settingsStore = useSettingsStore()
     const bookmarksStore = useBookmarksStore()
@@ -76,7 +75,7 @@ class AppService {
       useDB(undefined).db
     console.debug("checking sync config:", syncType, syncUrl, dbOrGitDb)
 
-// init db
+    // init db
     IndexedDbPersistenceService.init("db")
       .then(() => {
 
@@ -88,49 +87,57 @@ class AppService {
 
         tabsetService.setLocalStorage(localStorage)
 
-        GitPersistentService.init(syncType, syncUrl)
-          .then((gitInitResult:string) => {
-            console.log("gitInitResult", gitInitResult)
-            spacesStore.initialize(dbOrGitDb)
-              .then(() => {
-                useTabsetService().init(dbOrGitDb, false)
-                  .then(() => {
-                    MHtmlService.init()
-                    ChromeApi.init(router)
-
-                    if (usePermissionsStore().hasFeature(FeatureIdent.TAB_GROUPS)) {
-                      groupsStore.initialize(useDB(undefined).db)
-                      groupsStore.initListeners()
-                    }
-
-                    windowsStore.initialize(useDB(undefined).db)
-                    windowsStore.initListeners()
-
-                    // tabsets not in bex mode means running on "shared.tabsets.net"
-                    // probably running an import ("/imp/:sharedId")
-                    // we do not want to go to the welcome back
-                    const current = router.currentRoute.value.path
-                    if (tabsStore.tabsets.size === 0 && $q.platform.is.bex) {
-                      router.push("/sidepanel/welcome")
-                    }
-                  })
-              })
-
-          })
+        if (useAuthStore().isAuthenticated()) {
+          console.log("authenticated, initializing git persistence")
+          GitPersistentService.init(syncType, syncUrl)
+            .then((gitInitResult: string) => {
+              console.log("gitInitResult", gitInitResult)
+              this.initCoreSerivces(dbOrGitDb)
+            })
+        } else {
+          console.log("not authenticated, no git persistence")
+          this.initCoreSerivces(dbOrGitDb)
+        }
 
       })
 
 
     useNotificationsStore().bookmarksExpanded = $q.localStorage.getItem("bookmarks.expanded") || []
 
-    // @ts-ignore
-    // if (!inBexMode() || (!chrome.sidePanel && chrome.action)) {
-    //   router.push("/start")
-    // }
+  }
+
+  private async initCoreSerivces(dbOrGitDb: PersistenceService) {
+    const spacesStore = useSpacesStore()
+    const windowsStore = useWindowsStore()
+    const groupsStore = useGroupsStore()
+    const tabsStore = useTabsStore()
+
+    spacesStore.initialize(dbOrGitDb)
+      .then(() => {
+        useTabsetService().init(dbOrGitDb, false)
+          .then(() => {
+            MHtmlService.init()
+            ChromeApi.init(useRouter())
+
+            if (usePermissionsStore().hasFeature(FeatureIdent.TAB_GROUPS)) {
+              groupsStore.initialize(useDB(undefined).db)
+              groupsStore.initListeners()
+            }
+
+            windowsStore.initialize(useDB(undefined).db)
+            windowsStore.initListeners()
+
+            // tabsets not in bex mode means running on "shared.tabsets.net"
+            // probably running an import ("/imp/:sharedId")
+            // we do not want to go to the welcome back
+            if (tabsStore.tabsets.size === 0 && useQuasar().platform.is.bex) {
+              useRouter().push("/sidepanel/welcome")
+            }
+          })
+      })
 
 
   }
-
 }
 
 export default new AppService();

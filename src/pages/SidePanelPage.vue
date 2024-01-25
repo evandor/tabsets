@@ -294,9 +294,6 @@ import {FirebaseCall} from "src/services/firebase/FirebaseCall";
 import getScrollTarget = scroll.getScrollTarget;
 import InfoMessageWidget from "components/widgets/InfoMessageWidget.vue";
 import {SYNC_GITHUB_URL, SYNC_TYPE, TITLE_IDENT} from "boot/constants";
-import {collection, getDoc, doc, onSnapshot, setDoc, addDoc, getDocs} from "firebase/firestore";
-import {firestore} from "boot/firebase";
-import {Account} from "src/models/Account";
 
 const {setVerticalScrollPosition} = scroll
 

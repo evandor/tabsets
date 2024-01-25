@@ -1,6 +1,6 @@
 <template>
 
-  <q-footer class="bg-white q-pa-xs q-mt-sm" style="border-top: 1px solid lightgrey">
+  <q-footer class="bg-white q-pa-xs q-mt-sm" style="border-top: 1px solid lightgrey;" :style="offsetBottom()">
     <div class="row fit q-mb-sm" v-if="showLogin">
       <SidePanelLoginWidget @hide-login="showLogin = false" />
     </div>
@@ -156,21 +156,12 @@ import SuggestionDialog from "components/dialogues/SuggestionDialog.vue";
 import {TabsetStatus} from "src/models/Tabset";
 import {ToastType} from "src/models/Toast";
 import SidePanelFooterLeftButtons from "components/helper/SidePanelFooterLeftButtons.vue";
-import {
-  createUserWithEmailAndPassword,
-  getAuth,
-  sendSignInLinkToEmail,
-  signInWithEmailAndPassword,
-  UserCredential
-} from "firebase/auth";
 import {useAuthStore} from "stores/authStore";
-import {CURRENT_USER_EMAIL, EMAIL_LINK_REDIRECT_DOMAIN} from "boot/constants";
 import {Account} from "src/models/Account";
 import {NotificationType, useNotificationHandler} from "src/services/ErrorHandler";
-import SidePanelWindowTable from "components/helper/SidePanelWindowTable.vue";
 import SidePanelLoginWidget from "components/helper/SidePanelLoginWidget.vue";
 import SidePanelWindowMarkupTable from "components/helper/SidePanelWindowMarkupTable.vue";
-
+import { Browser } from '@capacitor/browser';
 
 const {handleSuccess, handleError} = useNotificationHandler()
 
@@ -247,7 +238,12 @@ watchEffect(() => {
 
 //const openOptionsPage = () => window.open(chrome.runtime.getURL('www/index.html#/mainpanel/settings'));
 //const openOptionsPage = () => window.open('#/mainpanel/settings');
-const openOptionsPage = () => NavigationService.openOrCreateTab([chrome.runtime.getURL('www/index.html#/mainpanel/settings')], undefined, [], true, true)
+const openOptionsPage =  () => {
+  ($q.platform.is.cordova || $q.platform.is.capacitor) ?
+    //Browser.open({ url: 'http://capacitorjs.com/' }).catch((err) => console.log("error", err)) :
+    router.push("/settings") :
+    NavigationService.openOrCreateTab([chrome.runtime.getURL('www/index.html#/mainpanel/settings')], undefined, [], true, true)
+}
 
 const openExtensionTab = () =>
   //NavigationService.openOrCreateTab([chrome.runtime.getURL('www/index.html#/fullpage')])
@@ -352,9 +348,10 @@ const logout = () => {
     })
 }
 
-const subscribe = () => {
-  router.push("/subscribe")
-}
+const subscribe = () => router.push("/subscribe")
+
+const offsetBottom = () => ($q.platform.is.capacitor || $q.platform.is.cordova) ? 'margin-bottom:20px;' : ''
+
 
 </script>
 

@@ -1,5 +1,5 @@
 <template>
-  <q-toolbar class="text-primary q-pa-none q-pl-sm q-pr-xs q-pb-none greyBorderBottom">
+  <q-toolbar class="text-primary q-pa-none q-pl-sm q-pr-xs q-pb-none greyBorderBottom" :style="offsetTop()">
     <q-toolbar-title>
       <div class="row q-ma-none q-pa-none">
 
@@ -216,6 +216,8 @@ const openNewTabsetDialog = () => {
     }
   })
 }
+
+const offsetTop = () => ($q.platform.is.capacitor || $q.platform.is.cordova) ? 'margin-top:40px;' : ''
 
 </script>
 

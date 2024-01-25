@@ -24,6 +24,7 @@ import {useSpacesStore} from "stores/spacesStore";
 import {LocalStorage, uid} from "quasar";
 import {SyncType} from "stores/appStore";
 import {SUBSCRIPTION_ID_IDENT, SYNC_GITHUB_TOKEN, SYNC_GITHUB_URL} from "boot/constants";
+import {useAuthStore} from "stores/authStore";
 
 if (typeof self !== 'undefined') {
   self.Buffer = Buffer;

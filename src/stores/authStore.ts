@@ -83,12 +83,12 @@ export const useAuthStore = defineStore('auth', () => {
 
   const userMayAccess = computed(() => {
     return (item: AccessItem): boolean => {
-      console.log("checking access item", item)
+      //console.log("checking access item", item)
       if (!user.value) {
         console.log("result: no (no user)")
         return false
       }
-      console.log("checking against products", products.value)
+      //console.log("checking against products", products.value)
       switch (item) {
         case AccessItem.SYNC:
           return products.value.indexOf("prod_PLJipUG1Zfw7pC") >= 0
