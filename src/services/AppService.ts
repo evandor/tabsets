@@ -88,10 +88,10 @@ class AppService {
           GitPersistentService.init(syncType, syncUrl)
             .then((gitInitResult: string) => {
               console.log("gitInitResult", gitInitResult)
-              this.initCoreSerivces(dbOrGitDb, this.router)
+              this.initCoreSerivces(quasar, dbOrGitDb, this.router)
             })
         } else {
-          this.initCoreSerivces(dbOrGitDb, this.router)
+          this.initCoreSerivces(quasar, dbOrGitDb, this.router)
         }
 
       })
@@ -119,7 +119,7 @@ class AppService {
     useAuthStore().setAuthRequest(null as unknown as string)
   }
 
-  private async initCoreSerivces(dbOrGitDb: PersistenceService, router: Router) {
+  private async initCoreSerivces(quasar: any, dbOrGitDb: PersistenceService, router: Router) {
     const spacesStore = useSpacesStore()
     const windowsStore = useWindowsStore()
     const groupsStore = useGroupsStore()
@@ -143,8 +143,8 @@ class AppService {
             // tabsets not in bex mode means running on "shared.tabsets.net"
             // probably running an import ("/imp/:sharedId")
             // we do not want to go to the welcome back
-            if (tabsStore.tabsets.size === 0 && useQuasar().platform.is.bex) {
-              useRouter().push("/sidepanel/welcome")
+            if (tabsStore.tabsets.size === 0 && quasar.platform.is.bex) {
+              router.push("/sidepanel/welcome")
             }
           })
       })

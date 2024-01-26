@@ -2,7 +2,7 @@
 
   <q-footer class="bg-white q-pa-xs q-mt-sm" style="border-top: 1px solid lightgrey;" :style="offsetBottom()">
     <div class="row fit q-mb-sm" v-if="showLogin">
-      <SidePanelLoginWidget @hide-login="showLogin = false" />
+      <SidePanelLoginWidget @hide-login="showLogin = false"/>
     </div>
 
     <div class="row fit q-mb-sm" v-if="showWindowTable">
@@ -87,16 +87,27 @@
           <q-tooltip class="tooltip" anchor="top left" self="bottom left">Manage Windows</q-tooltip>
         </q-btn>
 
-        <q-btn
-          v-if="usePermissionsStore().hasFeature(FeatureIdent.STANDALONE_APP)"
-          icon="o_open_in_new"
-          :class="rightButtonClass()"
-          flat
-          color="black"
-          :size="getButtonSize()"
-          @click="openExtensionTab()">
-          <q-tooltip class="tooltip">Tabsets as full-page app</q-tooltip>
-        </q-btn>
+        <span v-if="usePermissionsStore().hasFeature(FeatureIdent.STANDALONE_APP)">
+          <q-icon
+            name="o_open_in_new"
+            :class="rightButtonClass()"
+            class="cursor-pointer"
+            flat
+            color="black"
+            size="20px">
+            <q-tooltip :delay="2000" anchor="center left" self="center right" class="tooltip-small">Alternative Access</q-tooltip>
+          </q-icon>
+          <q-menu :offset="[0, 7]" fit>
+            <q-list dense style="min-width: 200px;min-height:50px">
+              <q-item clickable v-close-popup>
+                <q-item-section @click="openExtensionTab()">Tabsets as full-page app</q-item-section>
+              </q-item>
+              <q-item clickable v-close-popup>
+                <q-item-section @click="NavigationService.openOrCreateTab(['https://shared.tabsets.net'])">Tabsets Online Access</q-item-section>
+              </q-item>
+            </q-list>
+          </q-menu>
+        </span>
 
         <span class="q-my-xs q-ml-xs q-mr-none cursor-pointer" v-if="authStore.isAuthenticated()">
           <q-avatar size="18px" v-if="authStore.user?.photoURL">
@@ -105,7 +116,7 @@
                 authStore.user?.email
               }}</q-tooltip>
           </q-avatar>
-          <q-icon v-else name="o_person" size="18px">
+          <q-icon v-else name="o_person" size="20px">
             <q-tooltip :delay="2000" anchor="center left" self="center right" class="tooltip-small">You're logged in as {{
                 authStore.user?.email
               }}</q-tooltip>
@@ -161,7 +172,7 @@ import {Account} from "src/models/Account";
 import {NotificationType, useNotificationHandler} from "src/services/ErrorHandler";
 import SidePanelLoginWidget from "components/helper/SidePanelLoginWidget.vue";
 import SidePanelWindowMarkupTable from "components/helper/SidePanelWindowMarkupTable.vue";
-import { Browser } from '@capacitor/browser';
+import {Browser} from '@capacitor/browser';
 
 const {handleSuccess, handleError} = useNotificationHandler()
 
@@ -238,7 +249,7 @@ watchEffect(() => {
 
 //const openOptionsPage = () => window.open(chrome.runtime.getURL('www/index.html#/mainpanel/settings'));
 //const openOptionsPage = () => window.open('#/mainpanel/settings');
-const openOptionsPage =  () => {
+const openOptionsPage = () => {
   ($q.platform.is.cordova || $q.platform.is.capacitor) ?
     //Browser.open({ url: 'http://capacitorjs.com/' }).catch((err) => console.log("error", err)) :
     router.push("/settings") :

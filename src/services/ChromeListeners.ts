@@ -120,6 +120,7 @@ function inIgnoredMessages(request: any) {
     request.name === 'detail-level-perTabset-changed' ||
     request.name === 'detail-level-changed' ||
     request.name === 'mqtt-url-changed' ||
+    request.name === 'reload-application' ||
     request.action === 'highlight-annotation'
   //request.name === 'recogito-annotation-created'
 

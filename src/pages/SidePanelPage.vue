@@ -211,7 +211,7 @@
               :tabset="tabsetForTabList(tabset as Tabset)" />
             <!-- the actual tabs: end -->
 
-<!--            {{ windowLocation }}-->
+            {{ windowLocation }}
 <!--            <br>-->
 <!--            <pre>{{ user?.uid }}</pre>-->
 
@@ -678,6 +678,9 @@ if ($q.platform.is.chrome) {
       } else if (message.name === 'mqtt-url-changed') {
         console.log("got message 'mqtt-url-changed'", message)
         MqttService.reset().then(() => MqttService.init(message.data.mqttUrl))
+      } else if (message.name === 'reload-application') {
+        console.log("got message 'reload-application'")
+        AppService.restart("restarted=true")
       } else {
         console.log("got unmatched message", message)
       }

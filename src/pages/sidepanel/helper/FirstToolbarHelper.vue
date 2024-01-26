@@ -122,7 +122,7 @@ const permissionsStore = usePermissionsStore()
 const searching = ref(false)
 const existingSession = ref(false)
 const showFilter = ref(false)
-const title = ref(props.title)
+const windowLocation = ref('')
 
 const toggleSearch = () => {
   searching.value = !searching.value
@@ -132,6 +132,8 @@ const toggleSearch = () => {
     router.push("/sidepanel")
   }
 }
+
+windowLocation.value = window.location.href
 
 watchEffect(() => {
   if (props.showSearchBox && !searching.value) {
