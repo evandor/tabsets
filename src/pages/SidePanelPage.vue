@@ -204,11 +204,16 @@
               </q-item>
             </q-list>
 
+            <!-- the actual tabs -->
             <SidePanelPageTabList
               v-if="tabsetExpanded.get(tabset.id)"
               :tabsCount="useTabsetService().tabsToShow(tabset as Tabset).length"
-              :tabset="tabsetForTabList(tabset as Tabset)"
-            />
+              :tabset="tabsetForTabList(tabset as Tabset)" />
+            <!-- the actual tabs: end -->
+
+            {{ windowLocation }}
+<!--            <br>-->
+<!--            <pre>{{ user?.uid }}</pre>-->
 
           </div>
         </q-expansion-item>
@@ -232,9 +237,13 @@
         <template v-slot:title v-else>
           <div class="text-subtitle1 text-black">
             {{ toolbarTitle(tabsets as Tabset[]) }}
-            <q-icon v-if="LocalStorage.getItem('sync.type') as SyncType === SyncType.GIT"
+            <q-icon v-if="LocalStorage.getItem(SYNC_TYPE) as SyncType === SyncType.GITHUB && useAuthStore().isAuthenticated()"
                     class="q-ml-none" name="sync" size="12px">
-              <q-tooltip class="tooltip-small">Tabsets is synced via git</q-tooltip>
+              <q-tooltip class="tooltip-small">Tabsets synced via {{LocalStorage.getItem(SYNC_GITHUB_URL)}}</q-tooltip>
+            </q-icon>
+            <q-icon v-if="LocalStorage.getItem(SYNC_TYPE) as SyncType === SyncType.MANAGED_GIT"
+                    class="q-ml-none" name="sync" size="12px">
+              <q-tooltip class="tooltip-small">Tabsets are being synced automatically</q-tooltip>
             </q-icon>
           </div>
         </template>
@@ -249,10 +258,10 @@
 
 <script lang="ts" setup>
 
-import {onMounted, onUnmounted, ref, watchEffect} from "vue";
+import {onMounted, onUnmounted, ref, watch, watchEffect} from "vue";
 import {useTabsStore} from "src/stores/tabsStore";
 import {Tab, TabPreview} from "src/models/Tab";
-import _ from "lodash"
+import _, {result} from "lodash"
 import {Tabset, TabsetSharing, TabsetStatus, TabsetType} from "src/models/Tabset";
 import {useRouter} from "vue-router";
 import {useUtils} from "src/services/Utils";
@@ -269,7 +278,7 @@ import SidePanelPageContextMenu from "pages/sidepanel/SidePanelPageContextMenu.v
 import {useWindowsStore} from "src/stores/windowsStore";
 import TabsetService from "src/services/TabsetService";
 import Analytics from "src/utils/google-analytics";
-import {useAuthStore} from "stores/auth";
+import {useAuthStore} from "stores/authStore";
 import {useDB} from "src/services/usePersistenceService";
 import {useBookmarksStore} from "stores/bookmarksStore";
 import {useSuggestionsStore} from "stores/suggestionsStore";
@@ -279,15 +288,13 @@ import {CopyToClipboardCommand} from "src/domain/commands/CopyToClipboard";
 import SidePanelTabsetDescriptionPage from "pages/sidepanel/SidePanelTabsetDescriptionPage.vue";
 import ShareTabsetPubliclyDialog from "components/dialogues/ShareTabsetPubliclyDialog.vue";
 import MqttService from "src/services/mqtt/MqttService";
-import {SyncType} from "stores/appStore";
+import {SyncType, useAppStore} from "stores/appStore";
 import {useVOnboarding, VOnboardingStep, VOnboardingWrapper} from 'v-onboarding'
 import {FirebaseCall} from "src/services/firebase/FirebaseCall";
 import getScrollTarget = scroll.getScrollTarget;
 import InfoMessageWidget from "components/widgets/InfoMessageWidget.vue";
-import {TITLE_IDENT} from "boot/constants";
-import PanelTabListElementWidget from "components/widgets/PanelTabListElementWidget.vue";
-import {VueDraggableNext} from "vue-draggable-next";
-import {TabsetColumn} from "src/models/TabsetColumn";
+import {SYNC_GITHUB_URL, SYNC_TYPE, TITLE_IDENT} from "boot/constants";
+import AppService from "src/services/AppService";
 
 const {setVerticalScrollPosition} = scroll
 
@@ -309,6 +316,8 @@ const currentTabset = ref<Tabset | undefined>(undefined)
 const currentChromeTab = ref<chrome.tabs.Tab>(null as unknown as chrome.tabs.Tab)
 const tabsetExpanded = ref<Map<string, boolean>>(new Map())
 const hoveredPublicLink = ref(false)
+const windowLocation = ref('---')
+const user = ref<any>()
 
 // https://stackoverflow.com/questions/12710905/how-do-i-dynamically-assign-properties-to-an-object-in-typescript
 interface SelectionObject {
@@ -349,8 +358,10 @@ onMounted(() => {
   window.addEventListener("offline", (e) => updateOnlineStatus(e));
   window.addEventListener("online", (e) => updateOnlineStatus(e));
 
+  windowLocation.value = window.location.href
+
   if (!useAuthStore().isAuthenticated) {
-    router.push("/authenticate")
+    //router.push("/authenticate")
   } else {
     setTimeout(() => {
       if (useTabsStore().allTabsCount === 0) {
@@ -360,10 +371,45 @@ onMounted(() => {
 
     Analytics.firePageViewEvent('SidePanelPage', document.location.href);
   }
+
+  // try {
+  //   console.log("fs", firestore)
+  //   getDoc(doc(firestore, "users", "gH7gtDfuq6XPPrdOjcspkuUm6bf2"))
+  //     .then(doc => console.log("doc", doc))
+  // } catch (err) {
+  //   console.log("errror", err)
+  // }
+
 })
 
 onUnmounted(() => {
   window.removeEventListener('keypress', checkKeystroke);
+})
+
+watchEffect(() => {
+  const ar = useAuthStore().useAuthRequest
+  if (ar) {
+    AppService.restart(ar)
+    // console.log(">>> authRequest received @", window.location.href)
+    // const baseLocation = window.location.href.split("?")[0]
+    // if (window.location.href.indexOf("?") < 0) {
+    //   const tsIframe = window.parent.frames[0]
+    //   //console.log("iframe", tsIframe)
+    //   if (tsIframe) {
+    //     console.debug(">>> new window.location.href", baseLocation + "?" + ar)
+    //     tsIframe.location.href = baseLocation + "?" + ar
+    //     tsIframe.location.reload()
+    //   }
+    // }
+    // useAuthStore().setAuthRequest(null as unknown as string)
+  }
+})
+
+watchEffect(() => {
+  if (useAuthStore().user) {
+    console.log("setting user to ", useAuthStore().user?.email)
+    user.value = useAuthStore().user
+  }
 })
 
 watchEffect(() => {
@@ -632,6 +678,9 @@ if ($q.platform.is.chrome) {
       } else if (message.name === 'mqtt-url-changed') {
         console.log("got message 'mqtt-url-changed'", message)
         MqttService.reset().then(() => MqttService.init(message.data.mqttUrl))
+      } else if (message.name === 'reload-application') {
+        console.log("got message 'reload-application'")
+        AppService.restart("restarted=true")
       } else {
         console.log("got unmatched message", message)
       }
@@ -846,7 +895,7 @@ const testShare = () => {
   console.log(navigator)
   if (navigator.canShare) {
     console.log(navigator.canShare())
-    navigator.share(shareData).then((res) => console.log("res", res)).catch((err) => console.err(err))
+    navigator.share(shareData).then((res) => console.log("res", res)).catch((err) => console.error(err))
   }
 }
 

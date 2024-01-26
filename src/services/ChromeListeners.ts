@@ -23,6 +23,9 @@ import rangy from "rangy/lib/rangy-core.js";
 //import "rangy/lib/rangy-classapplier";
 //import "rangy/lib/rangy-textrange";
 import "rangy/lib/rangy-serializer";
+import {useRoute, useRouter} from "vue-router";
+import {useAuthStore} from "stores/authStore";
+import {EMAIL_LINK_REDIRECT_DOMAIN} from "boot/constants";
 
 const {
   saveCurrentTabset,
@@ -117,6 +120,7 @@ function inIgnoredMessages(request: any) {
     request.name === 'detail-level-perTabset-changed' ||
     request.name === 'detail-level-changed' ||
     request.name === 'mqtt-url-changed' ||
+    request.name === 'reload-application' ||
     request.action === 'highlight-annotation'
   //request.name === 'recogito-annotation-created'
 
@@ -254,6 +258,19 @@ class ChromeListeners {
   }
 
   async onUpdated(number: number, info: chrome.tabs.TabChangeInfo, chromeTab: chrome.tabs.Tab) {
+    if (info.url) {
+      if (this.checkOriginForEmailLink(info.url)) {
+        const split = info.url.split("?")
+        const authRequest = split[1]
+        console.log("authRequest received on", window.location.href)
+        //const newLocation = window.location + "?" + authRequest
+        //console.log("%cnewLocation", "color:green",newLocation)
+        //window.location.href = newLocation
+        useAuthStore().setAuthRequest(authRequest)
+      }
+    }
+
+
     if (!useTabsStore().listenersOn) {
       console.debug(`onUpdated:   tab ${number}: >>> listeners off, returning <<<`)
       return
@@ -414,7 +431,7 @@ class ChromeListeners {
         }
         if (!tab.url?.startsWith("chrome")) {
           scripts.forEach((script: string) => {
-            console.debug("executing scripts", tab.id, script)
+            //console.debug("executing scripts", tab.id, script)
 
 
             // @ts-ignore
@@ -840,6 +857,33 @@ class ChromeListeners {
         )
 
       })
+  }
+
+  private checkOriginForEmailLink(url: string) {
+    try {
+      const theUrl = new URL(url)
+      const urlOrigin = theUrl.origin;
+      //console.log("theURL", theUrl)
+      const res = urlOrigin === EMAIL_LINK_REDIRECT_DOMAIN || urlOrigin === "http://localhost:9000"
+      if (res) {
+        //console.log("checking: origin ok")
+        const params = theUrl.searchParams
+        if (!params.has("apiKey") || !params.has("oobCode") || !params.has("mode")) {
+          //console.log("checking: missing key", params)
+          return false
+        }
+        if (!params.get("apiKey")?.startsWith("AIzaS") || params.get("mode") !== "signIn") {
+          //console.log("checking: wrong key", params.get("apiKey"))
+          //console.log("checking: wrong key", params.get("mode"))
+          return false
+        }
+        console.log("%cfound email authorization link @", "border:1px solid green",url)
+        return true
+      }
+      return false
+    } catch (err) {
+      console.log("could not check url for auth link", url)
+    }
   }
 }
 

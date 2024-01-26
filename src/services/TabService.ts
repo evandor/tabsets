@@ -23,8 +23,6 @@ class TabService {
     return Promise.resolve({})
   }
 
-
-
   checkScheduled() {
     const tabs = useTabsStore().scheduledTabs
     const dueTabs: Tab[] = []

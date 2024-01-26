@@ -1,5 +1,5 @@
 <template>
-  <q-toolbar class="text-primary q-pa-none q-pl-sm q-pr-xs q-pb-none greyBorderBottom">
+  <q-toolbar class="text-primary q-pa-none q-pl-sm q-pr-xs q-pb-none greyBorderBottom" :style="offsetTop()">
     <q-toolbar-title>
       <div class="row q-ma-none q-pa-none">
 
@@ -122,7 +122,7 @@ const permissionsStore = usePermissionsStore()
 const searching = ref(false)
 const existingSession = ref(false)
 const showFilter = ref(false)
-const title = ref(props.title)
+const windowLocation = ref('')
 
 const toggleSearch = () => {
   searching.value = !searching.value
@@ -132,6 +132,8 @@ const toggleSearch = () => {
     router.push("/sidepanel")
   }
 }
+
+windowLocation.value = window.location.href
 
 watchEffect(() => {
   if (props.showSearchBox && !searching.value) {
@@ -216,6 +218,8 @@ const openNewTabsetDialog = () => {
     }
   })
 }
+
+const offsetTop = () => ($q.platform.is.capacitor || $q.platform.is.cordova) ? 'margin-top:40px;' : ''
 
 </script>
 

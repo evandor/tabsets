@@ -17,103 +17,137 @@ import {useSettingsStore} from "stores/settingsStore";
 import {useBookmarksStore} from "stores/bookmarksStore";
 import {useWindowsStore} from "src/stores/windowsStore";
 import {useSearchStore} from "stores/searchStore";
-import {useRouter} from "vue-router";
+import {Router, useRouter} from "vue-router";
 import {useGroupsStore} from "stores/groupsStore";
 import {FeatureIdent} from "src/models/AppFeature";
 import {useMessagesStore} from "src/stores/messagesStore";
 import {SyncType, useAppStore} from "stores/appStore";
 import GitPersistentService from "src/services/persistence/GitPersistentService";
-import {SYNC_GIT_URL} from "boot/constants";
+import {SYNC_GITHUB_URL, SYNC_TYPE} from "boot/constants";
+import {useAuthStore} from "stores/authStore";
+import PersistenceService from "src/services/PersistenceService";
+
+function useGitStore(st: SyncType, su: string | undefined) {
+  const isAuthenticated = useAuthStore().isAuthenticated()
+  console.debug("isAuthenticated", isAuthenticated)
+  return isAuthenticated && st && (st === SyncType.GITHUB || st === SyncType.MANAGED_GIT) && su
+}
 
 class AppService {
 
-  async init() {
+  router:Router = null as unknown as Router
+
+  async init(quasar:any, router: Router) {
+
+    console.log("initializing AppService", quasar, router)
 
     const appStore = useAppStore()
-    const spacesStore = useSpacesStore()
     const tabsStore = useTabsStore()
     const settingsStore = useSettingsStore()
     const bookmarksStore = useBookmarksStore()
-    const windowsStore = useWindowsStore()
     const messagesStore = useMessagesStore()
-    const groupsStore = useGroupsStore()
     const searchStore = useSearchStore()
-    const router = useRouter()
-    const $q = useQuasar()
+    this.router = router
 
     appStore.init()
-    //MqttService.init()
 
     // init of stores and some listeners
-    usePermissionsStore().initialize(useDB(useQuasar()).localDb)
+    usePermissionsStore().initialize(useDB(quasar).localDb)
       .then(() => {
         ChromeListeners.initListeners()
         ChromeBookmarkListeners.initListeners()
         bookmarksStore.init()
         BookmarksService.init()
       })
-    settingsStore.initialize(useQuasar().localStorage);
-    tabsStore.initialize(useQuasar().localStorage);
+    settingsStore.initialize(quasar.localStorage);
+    tabsStore.initialize(quasar.localStorage).catch((err) => console.error("***" + err))
 
-    searchStore.init()
-
-    const localStorage = useQuasar().localStorage
+    searchStore.init().catch((err) => console.error(err))
 
     // sync features
-    const syncType = LocalStorage.getItem("sync.type") as SyncType || SyncType.NONE
-    const syncUrl = LocalStorage.getItem(SYNC_GIT_URL) as string
-    const dbOrGitDb = syncType && syncType === SyncType.GIT && syncUrl ? useDB(undefined).gitDb : useDB(undefined).db
-    console.log("checking sync config:", syncType, syncUrl, dbOrGitDb)
+    const syncType = LocalStorage.getItem(SYNC_TYPE) as SyncType || SyncType.NONE
+    const syncUrl = LocalStorage.getItem(SYNC_GITHUB_URL) as string
+    const dbOrGitDb = useGitStore(syncType, syncUrl) ?
+      useDB(undefined).gitDb :
+      useDB(undefined).db
+    console.debug("checking sync config:", syncType, syncUrl, dbOrGitDb)
 
-// init db
+    // init db
     IndexedDbPersistenceService.init("db")
       .then(() => {
 
         // init services
+        useAuthStore().initialize(useDB(undefined).db)
         useNotificationsStore().initialize(useDB(undefined).db)
         useSuggestionsStore().init(useDB(undefined).db)
         messagesStore.initialize(useDB(undefined).db)
 
         tabsetService.setLocalStorage(localStorage)
 
-        GitPersistentService.init(syncUrl)
-          .then((gitInitResult:string) => {
-            console.log("gitInitResult", gitInitResult)
-            spacesStore.initialize(dbOrGitDb)
-              .then(() => {
-                useTabsetService().init(dbOrGitDb, false)
-                  .then(() => {
-                    MHtmlService.init()
-                    ChromeApi.init(router)
-
-                    if (usePermissionsStore().hasFeature(FeatureIdent.TAB_GROUPS)) {
-                      groupsStore.initialize(useDB(undefined).db)
-                      groupsStore.initListeners()
-                    }
-
-                    windowsStore.initialize(useDB(undefined).db)
-                    windowsStore.initListeners()
-
-                    // tabsets not in bex mode means running on "shared.tabsets.net"
-                    // probably running an import ("/imp/:sharedId")
-                    // we do not want to go to the welcome back
-                    if (tabsStore.tabsets.size === 0 && $q.platform.is.bex) {
-                      router.push("/sidepanel/welcome")
-                    }
-                  })
-              })
-
-          })
+        if (useAuthStore().isAuthenticated()) {
+          GitPersistentService.init(syncType, syncUrl)
+            .then((gitInitResult: string) => {
+              console.log("gitInitResult", gitInitResult)
+              this.initCoreSerivces(quasar, dbOrGitDb, this.router)
+            })
+        } else {
+          this.initCoreSerivces(quasar, dbOrGitDb, this.router)
+        }
 
       })
 
 
-    useNotificationsStore().bookmarksExpanded = $q.localStorage.getItem("bookmarks.expanded") || []
+    useNotificationsStore().bookmarksExpanded = quasar.localStorage.getItem("bookmarks.expanded") || []
 
-    // @ts-ignore
-    // if (!inBexMode() || (!chrome.sidePanel && chrome.action)) {
-    //   router.push("/start")
-    // }
+  }
+
+
+  restart(ar: string) {
+    console.log(">>> restarting tabsets", window.location.href, ar)
+    const baseLocation = window.location.href.split("?")[0]
+    console.log(">>> baseLocation", baseLocation)
+    if (window.location.href.indexOf("?") < 0) {
+      const tsIframe = window.parent.frames[0]
+      //console.log("iframe", tsIframe)
+      if (tsIframe) {
+        console.debug(">>> new window.location.href", baseLocation + "?" + ar)
+        tsIframe.location.href = baseLocation + "?" + ar
+        //tsIframe.location.href = "https://www.skysail.io"
+        tsIframe.location.reload()
+      }
+    }
+    useAuthStore().setAuthRequest(null as unknown as string)
+  }
+
+  private async initCoreSerivces(quasar: any, dbOrGitDb: PersistenceService, router: Router) {
+    const spacesStore = useSpacesStore()
+    const windowsStore = useWindowsStore()
+    const groupsStore = useGroupsStore()
+    const tabsStore = useTabsStore()
+
+    spacesStore.initialize(dbOrGitDb)
+      .then(() => {
+        useTabsetService().init(dbOrGitDb, false)
+          .then(() => {
+            MHtmlService.init()
+            ChromeApi.init(router)
+
+            if (usePermissionsStore().hasFeature(FeatureIdent.TAB_GROUPS)) {
+              groupsStore.initialize(useDB(undefined).db)
+              groupsStore.initListeners()
+            }
+
+            windowsStore.initialize(useDB(undefined).db)
+            windowsStore.initListeners()
+
+            // tabsets not in bex mode means running on "shared.tabsets.net"
+            // probably running an import ("/imp/:sharedId")
+            // we do not want to go to the welcome back
+            if (tabsStore.tabsets.size === 0 && quasar.platform.is.bex) {
+              router.push("/sidepanel/welcome")
+            }
+          })
+      })
 
 
   }

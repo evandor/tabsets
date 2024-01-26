@@ -6,7 +6,10 @@
       </div>
 
       <div class="text-h2" style="opacity:.4">
-        Oops. Nothing here...
+        Oops. Nothing here...<br><br>
+      </div>
+      <div class="text-caption" style="opacity:.4">
+        {{ location }}
       </div>
 
       <q-btn
@@ -23,5 +26,10 @@
 </template>
 
 <script setup lang="ts">
+import {useRoute} from "vue-router";
+import {ref} from "vue";
 
+const route = useRoute()
+
+const location = ref(window.location.href)
 </script>

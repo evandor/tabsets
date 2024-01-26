@@ -1,6 +1,6 @@
 import {api} from "boot/axios";
 import axios, {AxiosError} from 'axios';
-import { useAuthStore } from "src/stores/auth";
+import { useAuthStore } from "src/stores/authStore";
 
 export abstract class FirebaseCall<T> {
 

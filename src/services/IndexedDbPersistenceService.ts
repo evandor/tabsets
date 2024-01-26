@@ -23,6 +23,7 @@ import {useSuggestionsStore} from "stores/suggestionsStore";
 import {Window} from "src/models/Window";
 import {BlobType, SavedBlob} from "src/models/SavedBlob";
 import {Message} from "src/models/Message";
+import {Account} from "src/models/Account";
 
 class IndexedDbPersistenceService implements PersistenceService {
   private db: IDBPDatabase = null as unknown as IDBPDatabase
@@ -135,7 +136,7 @@ class IndexedDbPersistenceService implements PersistenceService {
         expires: new Date().getTime() + 1000 * 60 * EXPIRE_DATA_PERIOD_IN_MINUTES,
         thumbnail: thumbnail
       }, encodedTabUrl)
-        .then(() => console.log(new Tab(uid(), tab), `saved thumbnail for url ${tab.url}, ${Math.round(thumbnail.length / 1024)}kB`))
+        .then(() => console.debug(new Tab(uid(), tab), `saved thumbnail for url ${tab.url}, ${Math.round(thumbnail.length / 1024)}kB`))
         .catch(err => console.error(new Tab(uid(), tab), err))
     }
     return Promise.reject("no url provided or db not ready")
@@ -179,7 +180,7 @@ class IndexedDbPersistenceService implements PersistenceService {
       .catch(err => console.log("err", err))
   }
 
-  saveMetaLinks(url: string, metaLinks: MetaLink[]): Promise<void> {
+  saveMetaLinks(url: string, metaLinks: MetaLink[]): Promise<void | IDBValidKey> {
     if (!this.db) {
       console.log("saveMetaLinks: db not ready yet")
     }
@@ -189,11 +190,11 @@ class IndexedDbPersistenceService implements PersistenceService {
       url: url,
       metaLinks
     }, encodedTabUrl)
-      .then(() => console.debug("added meta links"))
+      //.then(() => console.debug("added meta links"))
       .catch(err => console.log("err", err))
   }
 
-  saveLinks(url: string, links: any): Promise<void> {
+  saveLinks(url: string, links: any): Promise<void | IDBValidKey> {
     if (!this.db) {
       console.log("saveLinks: db not ready yet")
     }
@@ -203,7 +204,7 @@ class IndexedDbPersistenceService implements PersistenceService {
       url: url,
       links
     }, encodedTabUrl)
-      .then(() => console.debug("added links"))
+      //.then(() => console.debug("added links"))
       .catch(err => console.log("err", err))
   }
 
@@ -517,7 +518,7 @@ class IndexedDbPersistenceService implements PersistenceService {
   /*** Windows Management ***/
 
   addWindow(window: Window): Promise<any> {
-    //console.debug("%cadding window", "background-color:yellow", window)
+    //console.log("%cadding window", "background-color:yellow", window)
     return this.db.add('windows', window, window.id)
       .catch((err) => {
         if (!err.toString().indexOf('Key already exists')) {
@@ -545,6 +546,7 @@ class IndexedDbPersistenceService implements PersistenceService {
   }
 
   async updateWindow(window: Window): Promise<void> {
+    console.log(`updating window #${window.id} => title: '${window.title}', index: ${window.index}`)
     if (!window.id) {
       return Promise.reject("window.id not set")
     }
@@ -552,25 +554,18 @@ class IndexedDbPersistenceService implements PersistenceService {
     if (!windowFromDb) {
       return Promise.reject("could not find window for id " + window.id)
     }
-    if (windowFromDb.title) {
-      //console.log("updating window", windowFromDb)
-      const asJson = JSON.parse(JSON.stringify(window))
-      asJson['title'] = windowFromDb.title
-      asJson['screenLabel'] = windowFromDb.screenLabel
-      delete asJson['tabs']
-      //console.log("storing json", asJson, window.id)
-      await this.db.put('windows', asJson, window.id)
-    } else {
-      await this.db.put('windows', window, window.id)
-    }
+    const asJson = JSON.parse(JSON.stringify(window))
+    asJson['title'] = window.title
+    asJson['index'] = window.index
+    delete asJson['tabs']
+    await this.db.put('windows', asJson, window.id)
   }
 
-  async upsertWindow(window: Window, name: string, screenLabel: string | undefined): Promise<void> {
+  async upsertWindow(window: Window): Promise<void> {
     try {
-      console.log("about to rename window", name, screenLabel, window)
+      console.log(`about to change window #${window.id}: title='${window.title}', index=${window.index}`)
       const asJson = JSON.parse(JSON.stringify(window))
-      asJson['title'] = name
-      asJson['screenLabel'] = screenLabel
+      //asJson['title'] = name
       delete asJson['tabs']
       //console.log("storing window", asJson, window.id)
       await this.db.put('windows', asJson, window.id)
@@ -659,6 +654,10 @@ class IndexedDbPersistenceService implements PersistenceService {
           console.log("creating db messages")
           db.createObjectStore('messages');
         }
+        if (!db.objectStoreNames.contains('accounts')) {
+          console.log("creating db accounts")
+          db.createObjectStore('accounts');
+        }
       },
     });
   }
@@ -708,6 +707,12 @@ class IndexedDbPersistenceService implements PersistenceService {
         s.state === SuggestionState.IGNORED ||
         s.state === SuggestionState.DECISION_DELAYED)
     if (foundAsNewDelayedOrIgnored) { // && suggestion.state === SuggestionState.NEW) {
+      if (foundAsNewDelayedOrIgnored.state === SuggestionState.IGNORED && suggestion.type === SuggestionType.RESTART) {
+        console.log("setting existing restart suggestion to state NEW again")
+        foundAsNewDelayedOrIgnored.state = SuggestionState.NEW
+        this.db.put('suggestions', foundAsNewDelayedOrIgnored, foundAsNewDelayedOrIgnored.id)
+        return Promise.resolve()
+      }
       return Promise.reject(`there's already a suggestion in state ${foundAsNewDelayedOrIgnored.state}, not adding (now)`)
     }
     const found = _.find(suggestions, (s: Suggestion) => s.url === suggestion.url)
@@ -751,6 +756,18 @@ class IndexedDbPersistenceService implements PersistenceService {
   saveActiveFeatures(val: string[]): any {
     console.warn("not implemented")
   }
+
+  async getAccount(accountId: string): Promise<Account> {
+    return await this.db.get('accounts', accountId)
+  }
+
+  upsertAccount(account: Account): void {
+    const normalizedAccount = JSON.parse(JSON.stringify(account))
+    //console.log("upserting account", account)
+    //console.log("upserting account", normalizedAccount)
+    this.db.put('accounts', normalizedAccount, normalizedAccount.id)
+  }
+
 
 }
 

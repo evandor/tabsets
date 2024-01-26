@@ -1,6 +1,7 @@
 import {boot} from 'quasar/wrappers'
 import {createAuth0} from '@auth0/auth0-vue';
 
+// not active (in quasar.config.js)
 export default boot(({app}) => {
 
     let redirectUrl = window.location.origin + "/www/index.html#/sidepanel"

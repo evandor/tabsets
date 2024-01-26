@@ -437,6 +437,11 @@ text.set(FeatureIdent.TABSETS_SHARING.toLowerCase(), {
   description: 'Share tabsets publicly.',
   permissions: []
 })
+text.set(FeatureIdent.CONTEXT_MENUS.toLowerCase(), {
+  name: 'Tabsets Context Menus on Websites',
+  description: 'Integrate more deeply with Tabsets by using context menus. This might be available automatically when using some other features.',
+  permissions: []
+})
 
 
 watchEffect(() => {

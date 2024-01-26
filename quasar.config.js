@@ -29,7 +29,9 @@ module.exports = configure(function (ctx) {
     boot: [
       //'i18n',
       'constants',
-      'auth0'
+      'firebase',
+     // 'auth0',
+      'logtail'
     ],
 
     // https://v2.quasar.dev/quasar-cli-vite/quasar-config-js#css
@@ -85,7 +87,11 @@ module.exports = configure(function (ctx) {
         STRIPE_PUBLISHABLE_KEY: process.env.STRIPE_PUBLISHABLE_KEY,
         STRIPE_ACCOUNT: process.env.STRIPE_ACCOUNT,
         STRIPE_API_VERSION: process.env.STRIPE_API_VERSION,
-        LOCALE: process.env.LOCALE
+        LOCALE: process.env.LOCALE,
+        FIREBASE_API_KEY: process.env.FIREBASE_API_KEY,
+        FIREBASE_AUTH_DOMAIN: process.env.FIREBASE_AUTH_DOMAIN,
+        FIREBASE_PROJECT_ID: process.env.FIREBASE_PROJECT_ID,
+        FIREBASE_APP_ID: process.env.FIREBASE_APP_ID
       },
       // rawDefine: {}
       // ignorePublicFolder: true,
@@ -95,9 +101,13 @@ module.exports = configure(function (ctx) {
 
       // !== MIT
       extendViteConf (viteConf) {
-        if ((ctx.mode.spa || ctx.mode.pwa || ctx.mode.electron) && viteConf && viteConf.mode === "development") {
+        console.log("******",ctx.mode)
+        //if ((ctx.mode.spa || ctx.mode.pwa || ctx.mode.electron) && viteConf && viteConf.mode === "development") {
+        if (!ctx.mode.bex && !ctx.mode.pwa) {
           // https://dev.to/richardbray/how-to-fix-the-referenceerror-global-is-not-defined-error-in-sveltekitvite-2i49
           viteConf.define.global = {}
+          //https://stackoverflow.com/questions/77061323/error-pouchdb-on-vite-referenceerror-global-is-not-defined
+          //viteConf.define.window.global = window.global
         }
         viteConf.define.__VUE_PROD_HYDRATION_MISMATCH_DETAILS__ = 'false'
       },

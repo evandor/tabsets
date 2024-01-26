@@ -25,6 +25,22 @@ function closeTabWithTimeout(timeout: number, tabToCloseId: number | undefined =
   });
 }
 
+class WindowHolder {
+  constructor(
+    public index: number,
+    public cw: chrome.windows.Window,
+    public windowFromStore: Window | undefined) {
+  }
+}
+
+function getSortedWindows(windowForId: (id: number) => (Window | undefined)) {
+  const theWindows: WindowHolder[] = _.sortBy(_.map(useWindowsStore().currentWindows as chrome.windows.Window[], (cw: chrome.windows.Window) => {
+    const windowFromStore: Window | undefined = windowForId(cw.id || -1)
+    return new WindowHolder(windowFromStore?.index || 0, cw, windowFromStore)
+  }), "index")
+  return theWindows;
+}
+
 export const useWindowsStore = defineStore('windows', () => {
 
   const {inBexMode} = useUtils()
@@ -81,10 +97,10 @@ export const useWindowsStore = defineStore('windows', () => {
       return
     }
     console.debug("init chrome windows listeners with trigger", trigger)
-    chrome.windows.getAll((windows) => {
+    chrome.windows.getAll({populate: true}, (windows) => {
 
       currentWindows.value = windows
-      console.debug("initializing current windows with", currentWindows.value)
+      console.debug("initializing current windows with", currentWindows.value.length)
 
       // adding potentially new windows to storage
       const res: Promise<any>[] = windows.flatMap((window: chrome.windows.Window) => {
@@ -95,10 +111,31 @@ export const useWindowsStore = defineStore('windows', () => {
       Promise.all(res)
         .then(() => {
           allWindows.value = new Map()
-          storage.getWindows().then(res => {
-            res.forEach(r => {
-              allWindows.value.set(r.id || 0, r)
-              //console.log("assigned:", r)
+          let index = 0
+          //const usedIndices: number[] = []
+
+          storage.getWindows().then(storedWindows => {
+            const sortedStoredWindows = _.sortBy(storedWindows, "index")
+
+            sortedStoredWindows.forEach(tabsetWindowFromStorage => {
+
+              // index handling
+              const indexFromDb = tabsetWindowFromStorage.index
+              const indicesDiffer = indexFromDb !== index
+              let indexToUse = index++
+
+              if (indicesDiffer) {
+                updateWindowIndex(tabsetWindowFromStorage.id, indexToUse)
+                  .then(() => console.log("done with updating window", tabsetWindowFromStorage.id, indexToUse))
+                  .catch((err) => console.error("error when updating window", tabsetWindowFromStorage.id, indexToUse, err))
+              }
+              tabsetWindowFromStorage.index = indexToUse
+              //usedIndices.push(indexToUse)
+              allWindows.value.set(tabsetWindowFromStorage.id || 0, tabsetWindowFromStorage)
+
+              const inCurrentWindows = windows.find(w => w.id === tabsetWindowFromStorage.id) !== undefined
+
+              //console.debug(`assigned window #${tabsetWindowFromStorage.id} (name: ${tabsetWindowFromStorage.title}): ${indexFromDb} -> ${tabsetWindowFromStorage.index}, open: ${inCurrentWindows}`)
             })
             for (const id of allWindows.value.keys()) {
               const w = allWindows.value.get(id)
@@ -116,6 +153,24 @@ export const useWindowsStore = defineStore('windows', () => {
                 currentWindowName.value = windowNameFor(currentWindow.value.id)
               }
             })
+
+            // add context menus for moving to other window
+            if (chrome && chrome.contextMenus) {
+              chrome.windows.getCurrent().then(currentWindow => {
+                for (const window of currentWindows.value) {
+                  //console.log("da!!!",window,useWindowsStore().windowNameFor(window.id))
+                  // TODO this is always the "default" window
+                  if (currentWindow.id !== window.id) {
+                    chrome.contextMenus.create({
+                      id: 'move_to|' + window.id,
+                      parentId: 'move_to_window',
+                      title: '...to window ' + useWindowsStore().windowNameFor(window.id || 0) || window.id?.toString(),
+                      contexts: ['all']
+                    })
+                  }
+                }
+              })
+            }
           })
 
         })
@@ -128,17 +183,25 @@ export const useWindowsStore = defineStore('windows', () => {
     const w = await storage.getWindow(windowId)
     console.debug("on removed", w, windowId)
     if (w && !w.title) {
-      removeWindow(windowId)
+      await removeWindow(windowId)
     }
     setup("onRemove")
   }
 
+  /**
+   * we've only listening to onFocusChanged or onBoundsChanged (of active windows),
+   * so title and index should not change!
+   * @param windowId
+   */
   async function onUpdate(windowId: number) {
     if (windowId >= 0) {
-      //console.log("updating window for id", windowId)
-      const window = await chrome.windows.get(windowId)
-      //console.log("updating window", windowId, window)
-      await storage.updateWindow(new Window(windowId, window))
+      const windowFromDb = windowForId(windowId)
+      console.debug(`updating window #${windowId}: title='${windowFromDb?.title}', index=${windowFromDb?.index}`, windowId, windowFromDb)
+      if (windowFromDb) {
+        const chromeWindow = await chrome.windows.get(windowId)
+        await storage.updateWindow(new Window(windowId, chromeWindow, windowFromDb.title, windowFromDb.index))
+        refreshCurrentWindows()
+      }
     }
   }
 
@@ -151,7 +214,16 @@ export const useWindowsStore = defineStore('windows', () => {
     }
   }
 
+  function windowForId(id: number): Window | undefined {
+    return allWindows.value.get(id)
+  }
+
+  function currentWindowForId(id: number): chrome.windows.Window | undefined {
+    return currentWindows.value.find(i => i.id === id)
+  }
+
   function windowNameFor(id: number) {
+    //console.log("windowNameFor", id, allWindows.value)
     return allWindows.value.get(id)?.title
   }
 
@@ -176,15 +248,6 @@ export const useWindowsStore = defineStore('windows', () => {
           return Promise.resolve(undefined)
         }
       }
-      // try {
-      //     const realWindow = await chrome.windows.get(potentialWindowId)
-      //     return Promise.resolve(potentialWindowId)
-      // } catch (err) {
-      //     // @ts-ignore
-      //     //windowMap.value[potentialWindowId as keyof object] = null
-      //     //delete windowMap.value.potentialWindowId
-      //     return Promise.resolve(undefined)
-      // }
     }
     return Promise.resolve(undefined)
   }
@@ -205,8 +268,13 @@ export const useWindowsStore = defineStore('windows', () => {
     }
   }
 
-  async function upsertWindow(window: chrome.windows.Window, ident: string, screenLabel: string | undefined = undefined) {
-    await storage.upsertWindow(new Window(window.id || 0, window), ident, screenLabel)
+  async function upsertWindow(window: chrome.windows.Window, title: string | undefined, index: number = 0) {
+    console.log("upserting window", window.id, title, index)
+    const tabsetsWindow = new Window(window.id || 0, window, title, index)
+    if (window.id) {
+      allWindows.value.set(window.id, tabsetsWindow)
+    }
+    await storage.upsertWindow(tabsetsWindow)
   }
 
   async function removeWindow(windowId: number) {
@@ -264,6 +332,30 @@ export const useWindowsStore = defineStore('windows', () => {
     })
   }
 
+  function refreshCurrentWindows() {
+    console.log("refreshCurrentWindows")
+    chrome.windows.getAll({populate: true}, (windows) => {
+      currentWindows.value = windows
+    })
+  }
+
+  async function updateWindowIndex(windowId: number, indexToUse: number) {
+    console.log("updating window index", windowId, indexToUse)
+    return storage.getWindow(windowId).then(w => {
+      if (w) {
+        w.index = indexToUse
+        var allWindow = allWindows.value.get(windowId)
+        if (allWindow) {
+          allWindow.index = indexToUse
+        }
+        return storage.updateWindow(w)
+      } else {
+        return Promise.reject("window for #" + windowId + " not found")
+      }
+    })
+
+  }
+
   return {
     initialize,
     initListeners,
@@ -279,6 +371,10 @@ export const useWindowsStore = defineStore('windows', () => {
     upsertWindow,
     removeWindow,
     openThrottledInWindow,
-    removeWindowByTitle
+    removeWindowByTitle,
+    refreshCurrentWindows,
+    windowForId,
+    currentWindowForId,
+    updateWindowIndex
   }
 })

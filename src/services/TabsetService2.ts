@@ -41,6 +41,9 @@ export function useTabsetService() {
                       doNotInitSearchIndex: boolean = false) => {
     console.log("initializing tabsetService2", providedDb)
     db = providedDb
+
+    useTabsStore().clearTabsets()
+
     await db.loadTabsets()
     if (!doNotInitSearchIndex) {
       useSearchStore().populateFromContent(db.getContents())
@@ -50,7 +53,7 @@ export function useTabsetService() {
     // check TODO!
     const selectedTS = localStorage.getItem("selectedTabset")
     if (selectedTS) {
-      console.log("setting selected tabset from storage", selectedTS)
+      console.debug("setting selected tabset from storage", selectedTS)
       useTabsStore().selectCurrentTabset(selectedTS)
     }
 
@@ -453,7 +456,7 @@ export function useTabsetService() {
   const saveMetaLinksFor = (tab: chrome.tabs.Tab, metaLinks: MetaLink[]) => {
     if (tab && tab.url) {
       db.saveMetaLinks(tab.url, metaLinks)
-        .then(() => console.debug("added meta links"))
+        //.then(() => console.debug("added meta links"))
         .catch(err => console.log("err", err))
     }
   }
@@ -461,7 +464,7 @@ export function useTabsetService() {
   const saveLinksFor = (tab: chrome.tabs.Tab, links: any) => {
     if (tab && tab.url) {
       db.saveLinks(tab.url, links)
-        .then(() => console.debug("added links"))
+        //.then(() => console.debug("added links"))
         .catch(err => console.log("err", err))
     }
   }

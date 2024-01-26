@@ -1,6 +1,6 @@
 import {defineStore} from 'pinia';
 import _, {forEach} from 'lodash'
-import {LocalStorage, uid} from "quasar";
+import {LocalStorage, uid, useQuasar} from "quasar";
 import {Tabset, TabsetSharing, TabsetStatus, TabsetType} from "src/models/Tabset";
 import {Tab, TabComment, UrlExtension} from "src/models/Tab";
 import ChromeApi from "src/services/ChromeApi";
@@ -260,8 +260,8 @@ export const useTabsStore = defineStore('tabs', {
   },
 
   actions: {
-    async initialize(localStorage: any) {
-      console.debug("initializing tabsStore")
+    async initialize(localStorage: LocalStorage) {
+      console.debug("initializing tabsStore", localStorage)
       this.localStorage = localStorage
 
       if ("bex" === process.env.MODE) {
@@ -542,6 +542,10 @@ export const useTabsStore = defineStore('tabs', {
         this.chromeTabsHistoryNavigating = true
       }
       return this.chromeTabsHistory[this.chromeTabsHistoryPosition]
+    },
+
+    clearTabsets() {
+      this.tabsets = new Map<string, Tabset>()
     }
   }
 });
