@@ -180,7 +180,7 @@ class IndexedDbPersistenceService implements PersistenceService {
       .catch(err => console.log("err", err))
   }
 
-  saveMetaLinks(url: string, metaLinks: MetaLink[]): Promise<void> {
+  saveMetaLinks(url: string, metaLinks: MetaLink[]): Promise<void | IDBValidKey> {
     if (!this.db) {
       console.log("saveMetaLinks: db not ready yet")
     }
@@ -190,11 +190,11 @@ class IndexedDbPersistenceService implements PersistenceService {
       url: url,
       metaLinks
     }, encodedTabUrl)
-      .then(() => console.debug("added meta links"))
+      //.then(() => console.debug("added meta links"))
       .catch(err => console.log("err", err))
   }
 
-  saveLinks(url: string, links: any): Promise<void> {
+  saveLinks(url: string, links: any): Promise<void | IDBValidKey> {
     if (!this.db) {
       console.log("saveLinks: db not ready yet")
     }
@@ -204,7 +204,7 @@ class IndexedDbPersistenceService implements PersistenceService {
       url: url,
       links
     }, encodedTabUrl)
-      .then(() => console.debug("added links"))
+      //.then(() => console.debug("added links"))
       .catch(err => console.log("err", err))
   }
 
@@ -707,6 +707,12 @@ class IndexedDbPersistenceService implements PersistenceService {
         s.state === SuggestionState.IGNORED ||
         s.state === SuggestionState.DECISION_DELAYED)
     if (foundAsNewDelayedOrIgnored) { // && suggestion.state === SuggestionState.NEW) {
+      if (foundAsNewDelayedOrIgnored.state === SuggestionState.IGNORED && suggestion.type === SuggestionType.RESTART) {
+        console.log("setting existing restart suggestion to state NEW again")
+        foundAsNewDelayedOrIgnored.state = SuggestionState.NEW
+        this.db.put('suggestions', foundAsNewDelayedOrIgnored, foundAsNewDelayedOrIgnored.id)
+        return Promise.resolve()
+      }
       return Promise.reject(`there's already a suggestion in state ${foundAsNewDelayedOrIgnored.state}, not adding (now)`)
     }
     const found = _.find(suggestions, (s: Suggestion) => s.url === suggestion.url)
@@ -757,8 +763,8 @@ class IndexedDbPersistenceService implements PersistenceService {
 
   upsertAccount(account: Account): void {
     const normalizedAccount = JSON.parse(JSON.stringify(account))
-    console.log("upserting account", account)
-    console.log("upserting account", normalizedAccount)
+    //console.log("upserting account", account)
+    //console.log("upserting account", normalizedAccount)
     this.db.put('accounts', normalizedAccount, normalizedAccount.id)
   }
 

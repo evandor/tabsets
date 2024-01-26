@@ -313,7 +313,7 @@ import {FirebaseCall} from "src/services/firebase/FirebaseCall";
 import {Tabset, TabsetSharing} from "src/models/Tabset";
 import {useTabsetService} from "src/services/TabsetService2";
 import {useSuggestionsStore} from "stores/suggestionsStore";
-import {Suggestion, SuggestionType} from "src/models/Suggestion";
+import {StaticSuggestionIdent, Suggestion, SuggestionType} from "src/models/Suggestion";
 
 const emits = defineEmits(['wasClicked'])
 
@@ -402,11 +402,11 @@ const testDbConnection = async () => {
 
 const startGitSyncing = () => {
   LocalStorage.set(SYNC_TYPE, tempSyncOption.value)
-  useSuggestionsStore().addSuggestion(new Suggestion(uid(),"Restart Required", "Please restart tabsets by clicking the button","",SuggestionType.RESTART))
+  useSuggestionsStore().addSuggestion(Suggestion.getStaticSuggestion(StaticSuggestionIdent.RESTART_SUGGESTED))
 }
 const stopGitSyncing = () => {
   LocalStorage.set(SYNC_TYPE, SyncType.NONE)
-  useSuggestionsStore().addSuggestion(new Suggestion(uid(),"Restart Required", "Please restart tabsets by clicking the button","",SuggestionType.RESTART))
+  useSuggestionsStore().addSuggestion(Suggestion.getStaticSuggestion(StaticSuggestionIdent.RESTART_SUGGESTED))
 }
 
 const startSyncMessage = (targetType: SyncType) => testResult.value === 'success' &&

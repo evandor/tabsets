@@ -17,7 +17,7 @@ import {useSettingsStore} from "stores/settingsStore";
 import {useBookmarksStore} from "stores/bookmarksStore";
 import {useWindowsStore} from "src/stores/windowsStore";
 import {useSearchStore} from "stores/searchStore";
-import {useRouter} from "vue-router";
+import {Router, useRouter} from "vue-router";
 import {useGroupsStore} from "stores/groupsStore";
 import {FeatureIdent} from "src/models/AppFeature";
 import {useMessagesStore} from "src/stores/messagesStore";
@@ -29,43 +29,40 @@ import PersistenceService from "src/services/PersistenceService";
 
 function useGitStore(st: SyncType, su: string | undefined) {
   const isAuthenticated = useAuthStore().isAuthenticated()
-  console.log("isAuthenticated", isAuthenticated)
+  console.debug("isAuthenticated", isAuthenticated)
   return isAuthenticated && st && (st === SyncType.GITHUB || st === SyncType.MANAGED_GIT) && su
 }
 
 class AppService {
 
-  async init() {
+  router:Router = null as unknown as Router
 
-    console.log("initializing AppService")
+  async init(quasar:any, router: Router) {
+
+    console.log("initializing AppService", quasar, router)
 
     const appStore = useAppStore()
     const tabsStore = useTabsStore()
     const settingsStore = useSettingsStore()
     const bookmarksStore = useBookmarksStore()
-    const windowsStore = useWindowsStore()
     const messagesStore = useMessagesStore()
-    const groupsStore = useGroupsStore()
     const searchStore = useSearchStore()
-    const router = useRouter()
-    const $q = useQuasar()
+    this.router = router
 
     appStore.init()
 
     // init of stores and some listeners
-    usePermissionsStore().initialize(useDB(useQuasar()).localDb)
+    usePermissionsStore().initialize(useDB(quasar).localDb)
       .then(() => {
         ChromeListeners.initListeners()
         ChromeBookmarkListeners.initListeners()
         bookmarksStore.init()
         BookmarksService.init()
       })
-    settingsStore.initialize(useQuasar().localStorage);
-    tabsStore.initialize(useQuasar().localStorage);
+    settingsStore.initialize(quasar.localStorage);
+    tabsStore.initialize(quasar.localStorage).catch((err) => console.error("***" + err))
 
-    searchStore.init()
-
-    const localStorage = useQuasar().localStorage
+    searchStore.init().catch((err) => console.error(err))
 
     // sync features
     const syncType = LocalStorage.getItem(SYNC_TYPE) as SyncType || SyncType.NONE
@@ -88,25 +85,41 @@ class AppService {
         tabsetService.setLocalStorage(localStorage)
 
         if (useAuthStore().isAuthenticated()) {
-          console.log("authenticated, initializing git persistence")
           GitPersistentService.init(syncType, syncUrl)
             .then((gitInitResult: string) => {
               console.log("gitInitResult", gitInitResult)
-              this.initCoreSerivces(dbOrGitDb)
+              this.initCoreSerivces(dbOrGitDb, this.router)
             })
         } else {
-          console.log("not authenticated, no git persistence")
-          this.initCoreSerivces(dbOrGitDb)
+          this.initCoreSerivces(dbOrGitDb, this.router)
         }
 
       })
 
 
-    useNotificationsStore().bookmarksExpanded = $q.localStorage.getItem("bookmarks.expanded") || []
+    useNotificationsStore().bookmarksExpanded = quasar.localStorage.getItem("bookmarks.expanded") || []
 
   }
 
-  private async initCoreSerivces(dbOrGitDb: PersistenceService) {
+
+  restart(ar: string) {
+    console.log(">>> restarting tabsets", window.location.href, ar)
+    const baseLocation = window.location.href.split("?")[0]
+    console.log(">>> baseLocation", baseLocation)
+    if (window.location.href.indexOf("?") < 0) {
+      const tsIframe = window.parent.frames[0]
+      //console.log("iframe", tsIframe)
+      if (tsIframe) {
+        console.debug(">>> new window.location.href", baseLocation + "?" + ar)
+        tsIframe.location.href = baseLocation + "?" + ar
+        //tsIframe.location.href = "https://www.skysail.io"
+        tsIframe.location.reload()
+      }
+    }
+    useAuthStore().setAuthRequest(null as unknown as string)
+  }
+
+  private async initCoreSerivces(dbOrGitDb: PersistenceService, router: Router) {
     const spacesStore = useSpacesStore()
     const windowsStore = useWindowsStore()
     const groupsStore = useGroupsStore()
@@ -117,7 +130,7 @@ class AppService {
         useTabsetService().init(dbOrGitDb, false)
           .then(() => {
             MHtmlService.init()
-            ChromeApi.init(useRouter())
+            ChromeApi.init(router)
 
             if (usePermissionsStore().hasFeature(FeatureIdent.TAB_GROUPS)) {
               groupsStore.initialize(useDB(undefined).db)
@@ -138,6 +151,7 @@ class AppService {
 
 
   }
+
 }
 
 export default new AppService();

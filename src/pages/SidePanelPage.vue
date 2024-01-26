@@ -211,9 +211,9 @@
               :tabset="tabsetForTabList(tabset as Tabset)" />
             <!-- the actual tabs: end -->
 
-            {{ windowLocation.split('#')[1] }}
-            <br>
-            <pre>{{ user?.uid }}</pre>
+<!--            {{ windowLocation }}-->
+<!--            <br>-->
+<!--            <pre>{{ user?.uid }}</pre>-->
 
           </div>
         </q-expansion-item>
@@ -237,7 +237,7 @@
         <template v-slot:title v-else>
           <div class="text-subtitle1 text-black">
             {{ toolbarTitle(tabsets as Tabset[]) }}
-            <q-icon v-if="LocalStorage.getItem(SYNC_TYPE) as SyncType === SyncType.GITHUB"
+            <q-icon v-if="LocalStorage.getItem(SYNC_TYPE) as SyncType === SyncType.GITHUB && useAuthStore().isAuthenticated()"
                     class="q-ml-none" name="sync" size="12px">
               <q-tooltip class="tooltip-small">Tabsets synced via {{LocalStorage.getItem(SYNC_GITHUB_URL)}}</q-tooltip>
             </q-icon>
@@ -258,7 +258,7 @@
 
 <script lang="ts" setup>
 
-import {onMounted, onUnmounted, ref, watchEffect} from "vue";
+import {onMounted, onUnmounted, ref, watch, watchEffect} from "vue";
 import {useTabsStore} from "src/stores/tabsStore";
 import {Tab, TabPreview} from "src/models/Tab";
 import _, {result} from "lodash"
@@ -294,6 +294,7 @@ import {FirebaseCall} from "src/services/firebase/FirebaseCall";
 import getScrollTarget = scroll.getScrollTarget;
 import InfoMessageWidget from "components/widgets/InfoMessageWidget.vue";
 import {SYNC_GITHUB_URL, SYNC_TYPE, TITLE_IDENT} from "boot/constants";
+import AppService from "src/services/AppService";
 
 const {setVerticalScrollPosition} = scroll
 
@@ -388,21 +389,19 @@ onUnmounted(() => {
 watchEffect(() => {
   const ar = useAuthStore().useAuthRequest
   if (ar) {
-    console.log(">>> authRequest received...")
-    console.log(">>> current location", window.location.href)
-    const baseLocation = window.location.href.split("?")[0]
-    if (window.location.href.indexOf("?") < 0) {
-      //const tsIframe = document.getElementById("ts-sidepanel-frame")
-      const tsIframe = window.parent.frames[0]
-      console.log("iframe", tsIframe)
-      if (tsIframe) {
-        console.log(">>> new window.location.href", baseLocation + "?" + ar)
-
-        tsIframe.location.href = baseLocation + "?" + ar
-        tsIframe.location.reload()
-        //router.push("/refresh/sidepanel?" + ar)
-      }
-    }
+    AppService.restart(ar)
+    // console.log(">>> authRequest received @", window.location.href)
+    // const baseLocation = window.location.href.split("?")[0]
+    // if (window.location.href.indexOf("?") < 0) {
+    //   const tsIframe = window.parent.frames[0]
+    //   //console.log("iframe", tsIframe)
+    //   if (tsIframe) {
+    //     console.debug(">>> new window.location.href", baseLocation + "?" + ar)
+    //     tsIframe.location.href = baseLocation + "?" + ar
+    //     tsIframe.location.reload()
+    //   }
+    // }
+    // useAuthStore().setAuthRequest(null as unknown as string)
   }
 })
 

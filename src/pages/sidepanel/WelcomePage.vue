@@ -103,19 +103,18 @@ onMounted(() => {
 watchEffect(() => {
   const ar = useAuthStore().useAuthRequest
   if (ar) {
-    console.log(">>> authRequest was set to", ar)
-    console.log(">>> current location", window.location.href)
-    console.log(">>> window.frames", window.location.href.indexOf("?"), window.parent.frames[0])
+    console.log(">>> authRequest received @", window.location.href)
+    const baseLocation = window.location.href.split("?")[0]
     if (window.location.href.indexOf("?") < 0) {
-      //const tsIframe = document.getElementById("ts-sidepanel-frame")
       const tsIframe = window.parent.frames[0]
-      console.log("iframe", tsIframe)
+      //console.log("iframe", tsIframe)
       if (tsIframe) {
-        console.log(">>> new window.location.href", window.location.href + "?" + ar)
-        tsIframe.location.href = window.location.href + "?" + ar
+        console.debug(">>> new window.location.href", baseLocation + "?" + ar)
+        tsIframe.location.href = baseLocation + "?" + ar
         tsIframe.location.reload()
       }
     }
+    useAuthStore().setAuthRequest(null as unknown as string)
   }
 })
 

@@ -430,7 +430,7 @@ class ChromeListeners {
         }
         if (!tab.url?.startsWith("chrome")) {
           scripts.forEach((script: string) => {
-            console.debug("executing scripts", tab.id, script)
+            //console.debug("executing scripts", tab.id, script)
 
 
             // @ts-ignore
@@ -876,7 +876,7 @@ class ChromeListeners {
           //console.log("checking: wrong key", params.get("mode"))
           return false
         }
-        console.log("found email authorization link @", url)
+        console.log("%cfound email authorization link @", "border:1px solid green",url)
         return true
       }
       return false

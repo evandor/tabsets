@@ -130,7 +130,7 @@ const calcWindowRows = () => {
     // }
     // usedIndices.push(indexToUse)
 
-    console.log(`setting window ${cw.id} ['${windowFromStore?.title}'] (#${cw.tabs?.length} tabs) -> #${windowFromStore?.index}`)
+    console.debug(`setting window ${cw.id} ['${windowFromStore?.title}'] (#${cw.tabs?.length} tabs) -> #${windowFromStore?.index}`)
 
     return {
       id: cw.id,

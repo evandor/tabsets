@@ -76,8 +76,8 @@ export const useAuthStore = defineStore('auth', () => {
 
   const useAuthRequest = computed(() => {
     const val = authRequest.value
-    authRequest.value = null as unknown as string
-    console.log("auth request was nulled")
+   // authRequest.value = null as unknown as string
+   // console.log("auth request was nulled, was ", val)
     return val
   })
 
@@ -108,13 +108,13 @@ export const useAuthStore = defineStore('auth', () => {
     } else {
       LocalStorage.remove(CURRENT_USER_ID)
       authenticated.value = false;
-      user.value = undefined;
+      user.value = null as unknown as User;
       products.value = []
     }
   }
 
   function setAuthRequest(ar: string) {
-    console.log("setting auth request to", authRequest)
+    console.log("setting auth request to", ar)
     authRequest.value = ar
   }
 

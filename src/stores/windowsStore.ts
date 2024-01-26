@@ -116,19 +116,13 @@ export const useWindowsStore = defineStore('windows', () => {
 
           storage.getWindows().then(storedWindows => {
             const sortedStoredWindows = _.sortBy(storedWindows, "index")
-            console.log("sortedStoredWindwos", sortedStoredWindows)
-            //const reindex = sortedStoredWindows[sortedStoredWindows.length-1].index > sortedStoredWindows.length
-            //console.log("reindexing", reindex)
 
             sortedStoredWindows.forEach(tabsetWindowFromStorage => {
 
               // index handling
-              //console.log("checking", tabsetWindowFromStorage.id, tabsetWindowFromStorage.index)
-
               const indexFromDb = tabsetWindowFromStorage.index
               const indicesDiffer = indexFromDb !== index
               let indexToUse = index++
-              //console.log("indicesDiffer", indicesDiffer, tabsetWindowFromStorage.id, indexFromDb, indexToUse)
 
               if (indicesDiffer) {
                 updateWindowIndex(tabsetWindowFromStorage.id, indexToUse)

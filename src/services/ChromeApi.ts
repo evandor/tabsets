@@ -97,7 +97,6 @@ class ChromeApi {
 
   init(router: Router) {
 
-    console.log("router", router)
     if (process.env.MODE !== 'bex') {
       return
     }

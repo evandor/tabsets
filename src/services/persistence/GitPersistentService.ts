@@ -24,7 +24,6 @@ import {useSpacesStore} from "stores/spacesStore";
 import {LocalStorage, uid} from "quasar";
 import {SyncType} from "stores/appStore";
 import {SUBSCRIPTION_ID_IDENT, SYNC_GITHUB_TOKEN, SYNC_GITHUB_URL} from "boot/constants";
-import {useAuthStore} from "stores/authStore";
 
 if (typeof self !== 'undefined') {
   self.Buffer = Buffer;
@@ -35,9 +34,11 @@ async function createDir(...segments: string[]) {
   let prefix = ''
   for (const segment of segments) {
     try {
+      // @ts-ignore
       const path = `${dir}/${prefix}${segment}`
       console.debug("creating fs path", path)
       prefix += segment + "/"
+      // @ts-ignore
       await pfs.mkdir(path)
     } catch (err: any) {
       if (!err.toString().startsWith("Error: EEXIST")) {
@@ -60,7 +61,7 @@ async function push(dir: string, proxy: string) {
   log(pushResult)
 }
 
-const log = (s: string, ...args) => console.log("%c" + s, "color:#8B4000", ...args)
+const log = (s: string, ...args:any[]) => console.log("%c" + s, "color:#8B4000", ...args)
 
 class GitPersistenceService implements PersistenceService {
   private db: IDBPDatabase = null as unknown as IDBPDatabase
@@ -92,14 +93,18 @@ class GitPersistenceService implements PersistenceService {
 
 
   private async initDatabase(url: string, proxy: string, dir: string = this._dir): Promise<any> {
+    // @ts-ignore
     window.fs = new LightningFS('fs')
+    // @ts-ignore
     window.pfs = window.fs.promises
     console.debug("about to initialize git")
     const useDir = dir + "-" + Md5.hashStr(url)
+    // @ts-ignore
     window.dir = useDir
     log(useDir);
     this.useProxy = proxy
     try {
+      // @ts-ignore
       await pfs.mkdir(useDir);
     } catch (err: any) {
       if (!err.toString().startsWith("Error: EEXIST")) {
@@ -125,7 +130,7 @@ class GitPersistenceService implements PersistenceService {
         //onProgress: (val:any) => (log("onProgress", val)),
         //onMessage: (val:any) => (log("onMessage", val)),
         onAuthSuccess: () => (log("auth: success")),
-        onAuthFailure: (url, auth) => {
+        onAuthFailure: (url:any, auth:any) => {
           //forgetSavedPassword(url)
           if (confirm('Access was denied. Try again?')) {
             auth = {
@@ -457,11 +462,11 @@ class GitPersistenceService implements PersistenceService {
   }
 
   getContent(url: string): Promise<object> {
-    return Promise.reject({});
+    return Promise.resolve({});
   }
 
   getContents(): Promise<any[]> {
-    return Promise.reject([]);
+    return Promise.resolve([]);
   }
 
   getGroups(): Promise<chrome.tabGroups.TabGroup[]> {
@@ -587,6 +592,13 @@ class GitPersistenceService implements PersistenceService {
 
   upsertWindow(window: Window): Promise<void> {
     return Promise.reject(undefined);
+  }
+
+  getAccount(accountId: string): Promise<Account> {
+    return Promise.resolve(undefined);
+  }
+
+  upsertAccount(account: Account): void {
   }
 
 }
