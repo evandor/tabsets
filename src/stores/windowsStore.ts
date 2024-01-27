@@ -41,6 +41,19 @@ function getSortedWindows(windowForId: (id: number) => (Window | undefined)) {
   return theWindows;
 }
 
+function urlToHost(bwTab: chrome.tabs.Tab) {
+  const url = bwTab.url
+  if (url) {
+    try {
+      const theURL = new URL(url)
+      return theURL.host
+    } catch (err) {
+      return "?"
+    }
+  }
+  return "?";
+}
+
 export const useWindowsStore = defineStore('windows', () => {
 
   const {inBexMode} = useUtils()
@@ -89,92 +102,92 @@ export const useWindowsStore = defineStore('windows', () => {
   async function initialize(providedDb: PersistenceService) {
     console.log("initializing windowsStore")
     storage = providedDb
-    setup("initialization")
+    await setup("initialization")
   }
 
-  function setup(trigger: string = "") {
+  async function setup(trigger: string = "") {
     if (!inBexMode()) {
       return
     }
     console.debug("init chrome windows listeners with trigger", trigger)
-    chrome.windows.getAll({populate: true}, (windows) => {
+    const browserWindows: chrome.windows.Window[] = await chrome.windows.getAll({populate: true})
 
-      currentWindows.value = windows
-      console.debug("initializing current windows with", currentWindows.value.length)
+    currentWindows.value = browserWindows
+    console.debug("initializing current windows with", currentWindows.value.length)
 
-      // adding potentially new windows to storage
-      const res: Promise<any>[] = windows.flatMap((window: chrome.windows.Window) => {
-        return storage.addWindow(new Window(window.id || 0, window, undefined))
-      })
-
-      // setting all (new and older) windows to 'allWindows'
-      Promise.all(res)
-        .then(() => {
-          allWindows.value = new Map()
-          let index = 0
-          //const usedIndices: number[] = []
-
-          storage.getWindows().then(storedWindows => {
-            const sortedStoredWindows = _.sortBy(storedWindows, "index")
-
-            sortedStoredWindows.forEach(tabsetWindowFromStorage => {
-
-              // index handling
-              const indexFromDb = tabsetWindowFromStorage.index
-              const indicesDiffer = indexFromDb !== index
-              let indexToUse = index++
-
-              if (indicesDiffer) {
-                updateWindowIndex(tabsetWindowFromStorage.id, indexToUse)
-                  .then(() => console.log("done with updating window", tabsetWindowFromStorage.id, indexToUse))
-                  .catch((err) => console.error("error when updating window", tabsetWindowFromStorage.id, indexToUse, err))
-              }
-              tabsetWindowFromStorage.index = indexToUse
-              //usedIndices.push(indexToUse)
-              allWindows.value.set(tabsetWindowFromStorage.id || 0, tabsetWindowFromStorage)
-
-              const inCurrentWindows = windows.find(w => w.id === tabsetWindowFromStorage.id) !== undefined
-
-              //console.debug(`assigned window #${tabsetWindowFromStorage.id} (name: ${tabsetWindowFromStorage.title}): ${indexFromDb} -> ${tabsetWindowFromStorage.index}, open: ${inCurrentWindows}`)
-            })
-            for (const id of allWindows.value.keys()) {
-              const w = allWindows.value.get(id)
-              if (w && w.title) {
-                //console.log("checking", w, )
-                windowSet.value.add(w.title)
-              }
-            }
-            //console.log("%callWindows assigned", "color:green", allWindows.value, windowSet.value)
-
-            chrome.windows.getCurrent({windowTypes: ['normal']}, (window: chrome.windows.Window) => {
-              currentWindow.value = window
-              if (currentWindow.value && currentWindow.value.id) {
-                //console.log("%c******", "color:blue", currentWindow.value.id, windowNameFor(currentWindow.value.id))
-                currentWindowName.value = windowNameFor(currentWindow.value.id)
-              }
-            })
-
-            // add context menus for moving to other window
-            if (chrome && chrome.contextMenus) {
-              chrome.windows.getCurrent().then(currentWindow => {
-                for (const window of currentWindows.value) {
-                  //console.log("da!!!",window,useWindowsStore().windowNameFor(window.id))
-                  // TODO this is always the "default" window
-                  if (currentWindow.id !== window.id) {
-                    chrome.contextMenus.create({
-                      id: 'move_to|' + window.id,
-                      parentId: 'move_to_window',
-                      title: '...to window ' + useWindowsStore().windowNameFor(window.id || 0) || window.id?.toString(),
-                      contexts: ['all']
-                    })
-                  }
-                }
-              })
-            }
-          })
-
-        })
+    // adding potentially new windows to storage
+    const res: Promise<any>[] = browserWindows.flatMap((browserWindow: chrome.windows.Window) => {
+      const hostList = new Set(_.map(browserWindow.tabs, bwTabs => urlToHost(bwTabs)))
+      return storage.addWindow(new Window(browserWindow.id || 0, browserWindow, undefined, 0, hostList))
     })
+
+    // setting all (new and older) windows to 'allWindows'
+    await Promise.all(res)
+    //  .then(() => {
+    allWindows.value = new Map()
+    let index = 0
+    //const usedIndices: number[] = []
+
+    //storage.getWindows().then(storedWindows => {
+    const storedWindows: Window[] = await storage.getWindows()//.then(storedWindows => {
+    const sortedStoredWindows = _.sortBy(storedWindows, "index")
+
+    sortedStoredWindows.forEach(tabsetWindowFromStorage => {
+
+      // index handling
+      const indexFromDb = tabsetWindowFromStorage.index
+      const indicesDiffer = indexFromDb !== index
+      let indexToUse = index++
+
+      if (indicesDiffer) {
+        updateWindowIndex(tabsetWindowFromStorage.id, indexToUse)
+          .then(() => console.log("done with updating window", tabsetWindowFromStorage.id, indexToUse))
+          .catch((err) => console.error("error when updating window", tabsetWindowFromStorage.id, indexToUse, err))
+      }
+      tabsetWindowFromStorage.index = indexToUse
+      //usedIndices.push(indexToUse)
+      allWindows.value.set(tabsetWindowFromStorage.id || 0, tabsetWindowFromStorage)
+
+      const inCurrentWindows = browserWindows.find(w => w.id === tabsetWindowFromStorage.id) !== undefined
+
+      //console.debug(`assigned window #${tabsetWindowFromStorage.id} (name: ${tabsetWindowFromStorage.title}): ${indexFromDb} -> ${tabsetWindowFromStorage.index}, open: ${inCurrentWindows}`)
+    })
+    for (const id of allWindows.value.keys()) {
+      const w = allWindows.value.get(id)
+      if (w && w.title) {
+        //console.log("checking", w, )
+        windowSet.value.add(w.title)
+      }
+    }
+    //console.log("%callWindows assigned", "color:green", allWindows.value, windowSet.value)
+
+    chrome.windows.getCurrent({windowTypes: ['normal']}, (window: chrome.windows.Window) => {
+      currentWindow.value = window
+      if (currentWindow.value && currentWindow.value.id) {
+        //console.log("%c******", "color:blue", currentWindow.value.id, windowNameFor(currentWindow.value.id))
+        currentWindowName.value = windowNameFor(currentWindow.value.id)
+      }
+    })
+
+    // add context menus for moving to other window
+    if (chrome && chrome.contextMenus) {
+      //chrome.windows.getCurrent().then(currentWindow => {
+      const currentWindow: chrome.windows.Window = await chrome.windows.getCurrent()//.then(currentWindow => {
+      for (const window of currentWindows.value) {
+        //console.log("da!!!",window,useWindowsStore().windowNameFor(window.id))
+        // TODO this is always the "default" window
+        if (currentWindow.id !== window.id) {
+          chrome.contextMenus.create({
+            id: 'move_to|' + window.id,
+            parentId: 'move_to_window',
+            title: '...to window ' + useWindowsStore().windowNameFor(window.id || 0) || window.id?.toString(),
+            contexts: ['all']
+          })
+        }
+      }
+      //})
+    }
+
 
   }
 

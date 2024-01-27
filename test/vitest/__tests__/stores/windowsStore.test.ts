@@ -33,16 +33,17 @@ describe('WindowsStore', () => {
         // https://groups.google.com/a/chromium.org/g/chromium-extensions/c/hssoAlvluW8
         const chromeMock = {
             windows: {
-                getAll: vi.fn((callback) => {
+                getAll: vi.fn( (options, callback) => {
                     console.log("mocking chrome.windows.getAll")
-                    callback(currentWindows);
+                    //callback(currentWindows);
+                    return Promise.resolve(currentWindows)
                 }),
                 getCurrent: vi.fn((options, callback) => {
-                    console.log("mocking chrome.windows.getCurrent")
+                    //console.log("mocking chrome.windows.getCurrent")
                     callback(window100)
                 }),
                 getLastFocused: vi.fn((options, callback) => {
-                    console.log("mocking chrome.windows.getLastFocused")
+                    //console.log("mocking chrome.windows.getLastFocused")
                     callback(window100)
                 }),
                 get: vi.fn((windowId, queryOptions, callback) => {

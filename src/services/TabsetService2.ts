@@ -39,7 +39,7 @@ export function useTabsetService() {
 
   const init = async (providedDb: PersistenceService,
                       doNotInitSearchIndex: boolean = false) => {
-    console.log("initializing tabsetService2", providedDb)
+    console.log("initializing tabsetService2")
     db = providedDb
 
     useTabsStore().clearTabsets()

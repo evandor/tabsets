@@ -153,7 +153,7 @@ class ChromeApi {
     if (process.env.MODE !== 'bex') {
       return
     }
-    console.log("building context menu:", chrome, chrome.contextMenus)
+    console.log("building context menu:", chrome, chrome?.contextMenus)
     const tabsStore = useTabsStore()
     if (chrome && chrome.contextMenus) {
       chrome.contextMenus.removeAll(
