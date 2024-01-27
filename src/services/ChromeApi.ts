@@ -422,7 +422,7 @@ class ChromeApi {
     }
   }
 
-  createChromeWindowObject(id: number, top: number, left: number) {
+  createChromeWindowObject(id: number, top: number, left: number, tabs: chrome.tabs.Tab[] = []) {
     return {
       id,
       alwaysOnTop: false,
@@ -433,7 +433,8 @@ class ChromeApi {
       top: top,
       left: left,
       state: 'normal' as chrome.windows.windowStateEnum,
-      type: 'normal' as chrome.windows.windowTypeEnum
+      type: 'normal' as chrome.windows.windowTypeEnum,
+      tabs
     }
   }
 

@@ -25,21 +25,21 @@ function closeTabWithTimeout(timeout: number, tabToCloseId: number | undefined =
   });
 }
 
-class WindowHolder {
-  constructor(
-    public index: number,
-    public cw: chrome.windows.Window,
-    public windowFromStore: Window | undefined) {
-  }
-}
+// class WindowHolder {
+//   constructor(
+//     public index: number,
+//     public cw: chrome.windows.Window,
+//     public windowFromStore: Window | undefined) {
+//   }
+// }
 
-function getSortedWindows(windowForId: (id: number) => (Window | undefined)) {
-  const theWindows: WindowHolder[] = _.sortBy(_.map(useWindowsStore().currentWindows as chrome.windows.Window[], (cw: chrome.windows.Window) => {
-    const windowFromStore: Window | undefined = windowForId(cw.id || -1)
-    return new WindowHolder(windowFromStore?.index || 0, cw, windowFromStore)
-  }), "index")
-  return theWindows;
-}
+// function getSortedWindows(windowForId: (id: number) => (Window | undefined)) {
+//   const theWindows: WindowHolder[] = _.sortBy(_.map(useWindowsStore().currentWindows as chrome.windows.Window[], (cw: chrome.windows.Window) => {
+//     const windowFromStore: Window | undefined = windowForId(cw.id || -1)
+//     return new WindowHolder(windowFromStore?.index || 0, cw, windowFromStore)
+//   }), "index")
+//   return theWindows;
+// }
 
 function urlToHost(bwTab: chrome.tabs.Tab) {
   const url = bwTab.url
@@ -115,23 +115,19 @@ export const useWindowsStore = defineStore('windows', () => {
     currentWindows.value = browserWindows
     console.debug("initializing current windows with", currentWindows.value.length)
 
-    // adding potentially new windows to storage
+    // adding potentially new windows to storage - adding windows will not do anything if the key already exists
     const res: Promise<any>[] = browserWindows.flatMap((browserWindow: chrome.windows.Window) => {
       const hostList = new Set(_.map(browserWindow.tabs, bwTabs => urlToHost(bwTabs)))
       return storage.addWindow(new Window(browserWindow.id || 0, browserWindow, undefined, 0, hostList))
     })
 
-    // setting all (new and older) windows to 'allWindows'
+    // setting all (new and older) windows to 'allWindows':
     await Promise.all(res)
-    //  .then(() => {
     allWindows.value = new Map()
     let index = 0
-    //const usedIndices: number[] = []
 
-    //storage.getWindows().then(storedWindows => {
-    const storedWindows: Window[] = await storage.getWindows()//.then(storedWindows => {
+    const storedWindows: Window[] = await storage.getWindows()
     const sortedStoredWindows = _.sortBy(storedWindows, "index")
-
     sortedStoredWindows.forEach(tabsetWindowFromStorage => {
 
       // index handling
@@ -145,17 +141,14 @@ export const useWindowsStore = defineStore('windows', () => {
           .catch((err) => console.error("error when updating window", tabsetWindowFromStorage.id, indexToUse, err))
       }
       tabsetWindowFromStorage.index = indexToUse
-      //usedIndices.push(indexToUse)
       allWindows.value.set(tabsetWindowFromStorage.id || 0, tabsetWindowFromStorage)
 
-      const inCurrentWindows = browserWindows.find(w => w.id === tabsetWindowFromStorage.id) !== undefined
-
-      //console.debug(`assigned window #${tabsetWindowFromStorage.id} (name: ${tabsetWindowFromStorage.title}): ${indexFromDb} -> ${tabsetWindowFromStorage.index}, open: ${inCurrentWindows}`)
+      // const inCurrentWindows = browserWindows.find(w => w.id === tabsetWindowFromStorage.id) !== undefined
+      // console.debug(`assigned window #${tabsetWindowFromStorage.id} (name: ${tabsetWindowFromStorage.title}): ${indexFromDb} -> ${tabsetWindowFromStorage.index}, open: ${inCurrentWindows}`)
     })
     for (const id of allWindows.value.keys()) {
       const w = allWindows.value.get(id)
       if (w && w.title) {
-        //console.log("checking", w, )
         windowSet.value.add(w.title)
       }
     }
@@ -185,10 +178,7 @@ export const useWindowsStore = defineStore('windows', () => {
           })
         }
       }
-      //})
     }
-
-
   }
 
   async function onRemoved(windowId: number) {
@@ -387,7 +377,6 @@ export const useWindowsStore = defineStore('windows', () => {
     removeWindowByTitle,
     refreshCurrentWindows,
     windowForId,
-    currentWindowForId,
     updateWindowIndex
   }
 })
