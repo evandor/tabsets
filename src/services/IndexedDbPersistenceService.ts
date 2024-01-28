@@ -517,14 +517,41 @@ class IndexedDbPersistenceService implements PersistenceService {
 
   /*** Windows Management ***/
 
-  addWindow(window: Window): Promise<any> {
+  async addWindow(window: Window): Promise<any> {
     //console.log("%cadding window", "background-color:yellow", window)
-    return this.db.add('windows', window, window.id)
-      .catch((err) => {
+    const existingWindowForWindowId = await this.db.get('windows', window.id)
+    if (existingWindowForWindowId) {
+      // not bad, simply resolve
+      return Promise.resolve("Key already exists")
+    }
+    if (!window.title) {
+      // try to find matching window
+      const allWindows: Window[] = await this.db.getAll('windows') as Window[]
+      console.log(`adding window ${window.id} to window list [${_.join(_.map(allWindows, w => w.id), ',')}]`)
+      for (const w of allWindows) {
+        console.log("comparing hostLists", window.hostList, w.hostList, typeof w.hostList)
+        const intersection = new Set([...window.hostList].filter(x => (w.hostList instanceof Set && w.hostList.has(x))));
+        console.log("intersection", intersection)
+        if (intersection.size === window.hostList.size && intersection.size === w.hostList.size) {
+          // reuse existing
+          const useId = window.id
+          const oldId = w.id
+          window = w
+          window.id = useId
+          this.db.delete('windows', oldId)
+          break
+        }
+      }
+    }
+    try {
+      await this.db.add('windows', window, window.id)
+    }
+      //.then((res) => console.log("got res", res))
+      catch(err:any) {
         if (!err.toString().indexOf('Key already exists')) {
           console.log("error adding window", window, err)
         }
-      })
+      }
   }
 
   // updateGroup(group: chrome.tabGroups.TabGroup): Promise<any> {
@@ -537,6 +564,7 @@ class IndexedDbPersistenceService implements PersistenceService {
   }
 
   getWindow(windowId: number): Promise<Window | undefined> {
+    console.log("trying to get window with id", windowId)
     return this.db.get('windows', windowId)
   }
 

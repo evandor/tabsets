@@ -116,19 +116,25 @@ export const useWindowsStore = defineStore('windows', () => {
     console.debug("initializing current windows with", currentWindows.value.length)
 
     // adding potentially new windows to storage - adding windows will not do anything if the key already exists
-    const res: Promise<any>[] = browserWindows.flatMap((browserWindow: chrome.windows.Window) => {
+    // const res: Promise<any>[] = browserWindows.flatMap((browserWindow: chrome.windows.Window) => {
+    //   const hostList = new Set(_.map(browserWindow.tabs, bwTabs => urlToHost(bwTabs)))
+    //   return storage.addWindow(new Window(browserWindow.id || 0, browserWindow, undefined, 0, hostList))
+    // })
+
+    for (const browserWindow of browserWindows) {
       const hostList = new Set(_.map(browserWindow.tabs, bwTabs => urlToHost(bwTabs)))
-      return storage.addWindow(new Window(browserWindow.id || 0, browserWindow, undefined, 0, hostList))
-    })
+      await storage.addWindow(new Window(browserWindow.id || 0, browserWindow, undefined, 0, hostList))
+    }
 
     // setting all (new and older) windows to 'allWindows':
-    await Promise.all(res)
+    //await Promise.all(res)
     allWindows.value = new Map()
     let index = 0
 
     const storedWindows: Window[] = await storage.getWindows()
     const sortedStoredWindows = _.sortBy(storedWindows, "index")
-    sortedStoredWindows.forEach(tabsetWindowFromStorage => {
+    //sortedStoredWindows.forEach(tabsetWindowFromStorage => {
+    for (const tabsetWindowFromStorage of sortedStoredWindows) {
 
       // index handling
       const indexFromDb = tabsetWindowFromStorage.index
@@ -136,16 +142,22 @@ export const useWindowsStore = defineStore('windows', () => {
       let indexToUse = index++
 
       if (indicesDiffer) {
-        updateWindowIndex(tabsetWindowFromStorage.id, indexToUse)
-          .then(() => console.log("done with updating window", tabsetWindowFromStorage.id, indexToUse))
-          .catch((err) => console.error("error when updating window", tabsetWindowFromStorage.id, indexToUse, err))
-      }
-      tabsetWindowFromStorage.index = indexToUse
-      allWindows.value.set(tabsetWindowFromStorage.id || 0, tabsetWindowFromStorage)
+        try {
+          await updateWindowIndex(tabsetWindowFromStorage.id, indexToUse)
+        }
+          //.then(() => console.log("done with updating window", tabsetWindowFromStorage.id, indexToUse))
+        catch (err) {
+          console.error("error when updating window", tabsetWindowFromStorage.id, indexToUse, err)
+        }
+        tabsetWindowFromStorage.index = indexToUse
+        allWindows.value.set(tabsetWindowFromStorage.id || 0, tabsetWindowFromStorage)
 
-      // const inCurrentWindows = browserWindows.find(w => w.id === tabsetWindowFromStorage.id) !== undefined
-      // console.debug(`assigned window #${tabsetWindowFromStorage.id} (name: ${tabsetWindowFromStorage.title}): ${indexFromDb} -> ${tabsetWindowFromStorage.index}, open: ${inCurrentWindows}`)
-    })
+        // const inCurrentWindows = browserWindows.find(w => w.id === tabsetWindowFromStorage.id) !== undefined
+        // console.debug(`assigned window #${tabsetWindowFromStorage.id} (name: ${tabsetWindowFromStorage.title}): ${indexFromDb} -> ${tabsetWindowFromStorage.index}, open: ${inCurrentWindows}`)
+      } else {
+        allWindows.value.set(tabsetWindowFromStorage.id || 0, tabsetWindowFromStorage)
+      }
+    }
     for (const id of allWindows.value.keys()) {
       const w = allWindows.value.get(id)
       if (w && w.title) {
@@ -184,7 +196,7 @@ export const useWindowsStore = defineStore('windows', () => {
   async function onRemoved(windowId: number) {
     // remove only if window does not have a title
     const w = await storage.getWindow(windowId)
-    console.debug("on removed", w, windowId)
+    //console.debug("on removed", w, windowId)
     if (w && !w.title) {
       await removeWindow(windowId)
     }
@@ -199,11 +211,13 @@ export const useWindowsStore = defineStore('windows', () => {
   async function onUpdate(windowId: number) {
     if (windowId >= 0) {
       const windowFromDb = windowForId(windowId)
-      console.debug(`updating window #${windowId}: title='${windowFromDb?.title}', index=${windowFromDb?.index}`, windowId, windowFromDb)
       if (windowFromDb) {
+        console.debug(`updating window #${windowId}: title='${windowFromDb?.title}', index=${windowFromDb?.index}`)
         const chromeWindow = await chrome.windows.get(windowId)
         await storage.updateWindow(new Window(windowId, chromeWindow, windowFromDb.title, windowFromDb.index))
         refreshCurrentWindows()
+      } else {
+        console.log(`could not update window #${windowId}`)
       }
     }
   }
@@ -377,6 +391,7 @@ export const useWindowsStore = defineStore('windows', () => {
     removeWindowByTitle,
     refreshCurrentWindows,
     windowForId,
-    updateWindowIndex
+    updateWindowIndex,
+    allWindows
   }
 })

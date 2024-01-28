@@ -16,17 +16,15 @@ let onCreatedListener = null as unknown as ((window: chrome.windows.Window) => P
 let onRemovedListener = null as unknown as ((windowId: number) => Promise<void>)
 let onFocusChangedListener = null as unknown as ((windowId: number) => Promise<void>)
 
-async function setupMocksAndStores(
-  currentWindows: any[],
-  currentWindow: any,
-  db: PersistenceService
-) {
+let currentWindows: any[]
 
+async function setupMocks(currentWindow: any) {
+  //console.log("setupMocks with current windows", currentWindows)
   // https://groups.google.com/a/chromium.org/g/chromium-extensions/c/hssoAlvluW8
   const chromeMock = {
     windows: {
       getAll: vi.fn((options, callback) => {
-        console.log("mocking chrome.windows.getAll")
+        console.log("mocking chrome.windows.getAll", currentWindows.length)
         //callback(currentWindows);
         return Promise.resolve(currentWindows)
       }),
@@ -57,7 +55,7 @@ async function setupMocksAndStores(
       },
       onFocusChanged: {
         addListener: vi.fn((listener) => {
-          //console.log("mocking chrome.windows.onFocusChanged.addListener", listener)
+          console.log("mocking chrome.windows.onFocusChanged.addListener", listener)
           onFocusChangedListener = listener
         })
       },
@@ -75,7 +73,9 @@ async function setupMocksAndStores(
   };
 
   vi.stubGlobal('chrome', chromeMock);
+}
 
+async function setupStores(db: PersistenceService) {
   await useWindowsStore().initialize(db)
   useWindowsStore().initListeners()
 }
@@ -87,10 +87,10 @@ describe('WindowsStore', () => {
   const tab1 = ChromeApi.createChromeTabObject("skysail", "https://www.skysail.io")
   const tab2 = ChromeApi.createChromeTabObject("tabsets", "https://www.tabsets.net")
 
-  const window100:chrome.windows.Window = ChromeApi.createChromeWindowObject(100, 17, 28, [tab1, tab2])
-  const window200:chrome.windows.Window = ChromeApi.createChromeWindowObject(200, 17, 28, [tab2])
+  const window100: chrome.windows.Window = ChromeApi.createChromeWindowObject(100, 17, 28, [tab1, tab2])
+  const window200: chrome.windows.Window = ChromeApi.createChromeWindowObject(200, 17, 28, [tab2])
 
-  const currentWindows = [window100, window200]
+  //const currentWindows = [window100, window200]
 
   beforeEach(async () => {
     setActivePinia(createPinia())
@@ -106,7 +106,9 @@ describe('WindowsStore', () => {
 
   it('initializing correctly with multiple windows and indices differing', async () => {
 
-    await setupMocksAndStores(currentWindows, window100, db)
+    currentWindows = [window100, window200]
+    await setupMocks(window100)
+    await setupStores(db)
 
     const windows = await db.getWindows()
     expect(windows.length).toBe(2)
@@ -116,18 +118,21 @@ describe('WindowsStore', () => {
     const window = await db.getWindow(100)
     expect(window?.id).toBe(100)
     expect(window?.index).toBe(0)
-    expect(window?.hostList).toStrictEqual(new Set(['www.skysail.io','www.tabsets.net']))
+    expect(window?.hostList).toStrictEqual(new Set(['www.skysail.io', 'www.tabsets.net']))
     expect(useWindowsStore().currentWindow.id).toBe(100)
 
-    const window200 = await db.getWindow(200)
-    expect(window200?.id).toBe(200)
-    expect(window200?.index).toBe(1)
-    expect(window200?.hostList).toStrictEqual(new Set(['www.tabsets.net']))
+    const w200 = await db.getWindow(200)
+    expect(w200?.id).toBe(200)
+    expect(w200?.index).toBe(1)
+    expect(w200?.hostList).toStrictEqual(new Set(['www.tabsets.net']))
 
   })
 
   it('upsertWindow saves new title', async () => {
-    await setupMocksAndStores(currentWindows, window100, db)
+    currentWindows = [window100, window200]
+    await setupMocks(window100)
+    await setupStores(db)
+
     const window = await db.getWindow(100)
     if (window) {
       await useWindowsStore().upsertWindow(window.browserWindow, "theTitle")
@@ -139,7 +144,10 @@ describe('WindowsStore', () => {
   })
 
   it('onRemoved does not remove window with title', async () => {
-    await setupMocksAndStores(currentWindows, window100, db)
+    currentWindows = [window100, window200]
+    await setupMocks(window100)
+    await setupStores(db)
+
     const window = await db.getWindow(100)
     if (window) {
       await useWindowsStore().upsertWindow(window.browserWindow, "theTitle")
@@ -152,16 +160,27 @@ describe('WindowsStore', () => {
   })
 
   it('onFocusChanged updates browserWindow', async () => {
-    await setupMocksAndStores(currentWindows, window100, db)
+    currentWindows = [window100, window200]
+    await setupMocks(window100)
+    await setupStores(db)
+
+    const t = await db.getWindow(100)
+    // console.log("t", t)
+    console.log("t", useWindowsStore().allWindows)
+    console.log("==============")
     await onFocusChangedListener(100)
+    console.log("==============")
+
     const window100FromDb = await db.getWindow(100)
     // 33 is a 'magic number' assigned
     expect(window100FromDb?.browserWindow.left).toBe(33)
   })
 
-  it('onCreate', async () => {
+  it('onCreate yields new window', async () => {
     const window: chrome.windows.Window = ChromeApi.createChromeWindowObject(1000, 0, 0)
-    await setupMocksAndStores(currentWindows.concat(window), window100, db)
+    currentWindows = [window100, window200, window]
+    await setupMocks(window100)
+    await setupStores(db)
     await onCreatedListener(window)
     // await useWindowsStore().persistGroup(ChromeApi.createChromeTabGroupObject(1, "groupName", 'grey' as chrome.tabGroups.ColorEnum))
     //const groups = await  db.getGroups()
@@ -170,6 +189,47 @@ describe('WindowsStore', () => {
     expect(window1000FromDb?.id).toBe(1000)
     expect(window1000FromDb?.browserWindow.left).toBe(0)
     expect(window1000FromDb?.index).toBe(2)
+  })
+
+  it('onCreate keeps existing titles', async () => {
+    currentWindows = [window100, window200]
+    await setupMocks(window100)
+    await setupStores(db)
+
+    const window100FromDb = await db.getWindow(100)
+    if (!window100FromDb) {
+      expect(true).toBeFalsy()
+    }
+    // @ts-ignore
+    await useWindowsStore().upsertWindow(window100FromDb?.browserWindow, "theTitle")
+
+    const window: chrome.windows.Window = ChromeApi.createChromeWindowObject(1000, 0, 0)
+    currentWindows = [window100, window200, window]
+    await setupMocks(window100)
+    await onCreatedListener(window)
+    const updatedWindow100 = await db.getWindow(100)
+    expect(updatedWindow100?.title).toBe("theTitle")
+  })
+
+  it('onCreate reuses existing window when matched', async () => {
+    // const tab1 = ChromeApi.createChromeTabObject("skysail", "https://www.skysail.io")
+    // const tab2 = ChromeApi.createChromeTabObject("tabsets", "https://www.tabsets.net")
+    const windowWithSameTabsAsWindow100: chrome.windows.Window = ChromeApi.createChromeWindowObject(1000, 0, 0, [tab1,tab2])
+    currentWindows = [window100, window200]
+    await setupMocks(window100)
+    await setupStores(db)
+
+    const w100 = await db.getWindow(100)
+    if (w100) {
+      w100.title = "theTitle"
+      await db.updateWindow(w100)
+    }
+
+    console.log("==============")
+    await onCreatedListener(windowWithSameTabsAsWindow100)
+    console.log("==============")
+    const updatedWindow100 = await db.getWindow(100)
+    expect(updatedWindow100?.title).toBe("theTitle")
   })
 
   // it('persists group with changing title', async () => {
