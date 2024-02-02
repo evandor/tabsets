@@ -26,9 +26,51 @@
   </VOnboardingWrapper>
 
   <q-page style="padding-top: 50px">
+
+    <div class="wrap" v-if="useUiStore().appLoading">
+      <div class="loading">
+        <div class="bounceball q-mr-lg"></div>
+        <div class="text">loading tabsets...</div>
+      </div>
+    </div>
+
+    <div class="wrap2" v-if="useAuthStore().isAuthenticated() && useTabsStore().tabsets.size === 0 && !useUiStore().appLoading">
+      <div class="row items-center text-grey-5">how to start?</div>
+      <div style="min-width:300px;border:1px solid #efefef;border-radius:5px">
+        <q-list>
+          <q-item clickable v-ripple>
+            <q-item-section avatar>
+              <SidePanelToolbarButton
+                icon="o_add_circle"
+                color="warning"
+                @click="openNewTabsetDialog()"/>
+            </q-item-section>
+
+            <q-item-section>
+              <q-item-label>New Tabset</q-item-label>
+              <q-item-label caption>Click to create a new tabset</q-item-label>
+            </q-item-section>
+          </q-item>
+
+          <q-item clickable v-ripple>
+            <q-item-section avatar>
+              <SidePanelToolbarButton
+                icon="o_settings"
+                color="black"
+                @click="openOptionsPage()"/>
+            </q-item-section>
+
+            <q-item-section>
+              <q-item-label>Settings</q-item-label>
+              <q-item-label caption>Click here to assign your account</q-item-label>
+            </q-item-section>
+          </q-item>
+        </q-list>
+      </div>
+    </div>
+
     <!-- list of tabs, assuming here we have at least one tabset -->
     <div class="q-ma-none q-pa-none">
-
       <template v-if="suggestTabsetImport()">
 
         <InfoMessageWidget
@@ -208,12 +250,12 @@
             <SidePanelPageTabList
               v-if="tabsetExpanded.get(tabset.id)"
               :tabsCount="useTabsetService().tabsToShow(tabset as Tabset).length"
-              :tabset="tabsetForTabList(tabset as Tabset)" />
+              :tabset="tabsetForTabList(tabset as Tabset)"/>
             <!-- the actual tabs: end -->
 
-            {{ windowLocation }}
-<!--            <br>-->
-<!--            <pre>{{ user?.uid }}</pre>-->
+            <!--            {{ windowLocation }}-->
+            <!--            <br>-->
+            <!--            <pre>{{ user?.uid }}</pre>-->
 
           </div>
         </q-expansion-item>
@@ -237,9 +279,11 @@
         <template v-slot:title v-else>
           <div class="text-subtitle1 text-black">
             {{ toolbarTitle(tabsets as Tabset[]) }}
-            <q-icon v-if="LocalStorage.getItem(SYNC_TYPE) as SyncType === SyncType.GITHUB && useAuthStore().isAuthenticated()"
-                    class="q-ml-none" name="sync" size="12px">
-              <q-tooltip class="tooltip-small">Tabsets synced via {{LocalStorage.getItem(SYNC_GITHUB_URL)}}</q-tooltip>
+            <q-icon
+              v-if="LocalStorage.getItem(SYNC_TYPE) as SyncType === SyncType.GITHUB && useAuthStore().isAuthenticated()"
+              class="q-ml-none" name="sync" size="12px">
+              <q-tooltip class="tooltip-small">Tabsets synced via {{ LocalStorage.getItem(SYNC_GITHUB_URL) }}
+              </q-tooltip>
             </q-icon>
             <q-icon v-if="LocalStorage.getItem(SYNC_TYPE) as SyncType === SyncType.MANAGED_GIT"
                     class="q-ml-none" name="sync" size="12px">
@@ -295,6 +339,7 @@ import getScrollTarget = scroll.getScrollTarget;
 import InfoMessageWidget from "components/widgets/InfoMessageWidget.vue";
 import {SYNC_GITHUB_URL, SYNC_TYPE, TITLE_IDENT} from "boot/constants";
 import AppService from "src/services/AppService";
+import SidePanelToolbarButton from "components/buttons/SidePanelToolbarButton.vue";
 
 const {setVerticalScrollPosition} = scroll
 
@@ -785,7 +830,7 @@ const toolbarTitle = (tabsets: Tabset[]) => {
       spaceName + ' (' + tabsets.length.toString() + ')' :
       spaceName
   }
-  const title = LocalStorage.getItem(TITLE_IDENT) || 'My Tabsets.'
+  const title = LocalStorage.getItem(TITLE_IDENT) || 'My Tabsets'
   return tabsets.length > 6 ? title + ' (' + tabsets.length.toString() + ')' : title
 }
 
@@ -1004,7 +1049,7 @@ const tabsetSectionName = (tabset: Tabset) => {
 
 </script>
 
-<style>
+<style lang="scss">
 
 .v-enter-active,
 .v-leave-active {
@@ -1065,6 +1110,75 @@ const tabsetSectionName = (tabset: Tabset) => {
   top: -10px;
   right: 35px;
   transform: rotate(180deg)
+}
+
+$width: 25px;
+$height: 25px;
+
+$bounce_height: 30px;
+
+body {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+}
+
+.wrap {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.wrap2 {
+  position: absolute;
+  top: 30%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.text {
+  color: #000066;
+  font-size: 24px;
+  display: inline-block;
+  margin-left: 5px;
+}
+
+.bounceball {
+  position: relative;
+  display: inline-block;
+  height: 37px;
+  width: $width;
+
+  &:before {
+    position: absolute;
+    content: '';
+    display: block;
+    top: 0;
+    width: $width;
+    height: $height;
+    border-radius: 50%;
+    background-color: #fbae17;
+    transform-origin: 50%;
+    animation: bounce 500ms alternate infinite ease;
+  }
+}
+
+@keyframes bounce {
+  0% {
+    top: $bounce_height;
+    height: 5px;
+    border-radius: 60px 60px 20px 20px;
+    transform: scaleX(2);
+  }
+  35% {
+    height: $height;
+    border-radius: 50%;
+    transform: scaleX(1);
+  }
+  100% {
+    top: 0;
+  }
 }
 
 </style>

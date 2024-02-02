@@ -72,8 +72,10 @@ export const useSearchStore = defineStore('search', () => {
     fuse.value = new Fuse([], options.value, searchIndex.value)
   }
 
+  // @ts-ignore
   function getIndex(): Fuse.FuseIndex<SearchDoc> {
-    return fuse.value.getIndex()
+    console.log("hier", fuse.value)
+    return fuse.value ? fuse.value.getIndex() : null
   }
 
   function search(term: string, limit: number | undefined = undefined) {
@@ -191,7 +193,7 @@ export const useSearchStore = defineStore('search', () => {
     console.debug("populating search index from tabsets")
     const minimalIndex: SearchDoc[] = []
     //const res = fuse.value.remove((doc) => true)
-    _.forEach([...useTabsStore().tabsets.values()], (tabset: Tabset) => {
+    _.forEach([...useTabsStore().tabsets.values()] as Tabset[], (tabset: Tabset) => {
         tabset.tabs.forEach((tab: Tab) => {
           if (tab.url) {
             if (urlSet.has(tab.url)) {

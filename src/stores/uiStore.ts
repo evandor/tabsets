@@ -148,6 +148,7 @@ export const useUiStore = defineStore('ui', () => {
   const tabsFilter = ref<string | undefined>(undefined)
   const selectedTag = ref<string | undefined>(undefined)
   const tabsetsExpanded = ref<boolean>(false)
+  const appLoading = ref(false)
 
   // online offline
   const networkOnline = ref(navigator.onLine)
@@ -331,7 +332,7 @@ export const useUiStore = defineStore('ui', () => {
   function showTabsetDescription(tabsetId: string): boolean {
     // @ts-ignore
     const res = tabsetDescriptionPanelHights.value[tabsetId as keyof object]['show'] as boolean | undefined
-    console.log("got res", res)
+    //console.log("got res", res)
     if (res === undefined) {
       return true
     }
@@ -589,6 +590,7 @@ export const useUiStore = defineStore('ui', () => {
     sharingMqttUrl,
     networkOnline,
     mqttOffline,
-    tabBeingDragged
+    tabBeingDragged,
+    appLoading
   }
 })

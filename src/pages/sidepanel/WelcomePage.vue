@@ -1,9 +1,8 @@
-1
 <template>
-  <q-page style="padding-top: 20px">
+  <q-page>
 
     <div class="q-ma-none q-pa-md fullimageBackground" @click="selected()">
-      <div class="row">
+      <div class="row q-mt-lg">
         <div class="row">
           <div class="col-12 text-caption">
             The Art Of Linking
@@ -21,18 +20,6 @@
             <br>
             Provide a name and add tabs later
           </q-card-section>
-          <!--        <q-card-section class="q-ma-none q-pa-none q-ml-md">-->
-          <!--          <q-icon name="check" color="primary" class="q-mr-xs"/>-->
-          <!--          Create your first tabset:-->
-          <!--        </q-card-section>-->
-          <!--        <q-card-section class="q-ma-none q-pa-none q-ml-md">-->
-          <!--          <q-icon name="check" color="primary" class="q-mr-xs"/>-->
-          <!--          Provide a name...-->
-          <!--        </q-card-section>-->
-          <!--        <q-card-section class="q-ma-none q-pa-none q-ml-md">-->
-          <!--          <q-icon name="check" color="primary" class="q-mr-xs"/>-->
-          <!--          ... and add tabs later-->
-          <!--        </q-card-section>-->
           <q-card-section class="q-pb-none">
             <q-input v-model="tabsetName"
                      dense
@@ -52,18 +39,7 @@
           </q-card-actions>
         </q-card>
       </div>
-      <!--    <div class="q-pa-sm row items-start q-gutter-md">-->
-      <!--      <q-btn label="import tabsets" @click="showImportDialog"></q-btn>-->
-      <!--    </div>-->
-
-      <div v-if="windowLocation !== 'chrome-extension://pndffocijjfpmphlhkoijmpfckjafdpl/www/index.html#/sidepanel/welcome'">
-        {{ windowLocation }}
-      </div>
-
     </div>
-
-
-
   </q-page>
 </template>
 

@@ -61,7 +61,8 @@ async function push(dir: string, proxy: string) {
   log(pushResult)
 }
 
-const log = (s: string, ...args:any[]) => console.log("%c" + s, "color:#8B4000", ...args)
+const log = (s: string, ...args:any[]) => console.log("%c" + s, "color:blue", ...args)
+const debug = (s: string, ...args:any[]) => console.debug("%c" + s, "color:blue", ...args)
 
 class GitPersistenceService implements PersistenceService {
   private db: IDBPDatabase = null as unknown as IDBPDatabase
@@ -74,16 +75,14 @@ class GitPersistenceService implements PersistenceService {
   async init(syncType: SyncType, url: string | undefined) {
     if (url) {
       if (syncType === SyncType.GITHUB) {
-        log("=== initializing github database ===", url)
+        log("initializing github database", url)
         this.db = await this.initDatabase(url, this.genericCorsProxy)
-        log("=== initializing git database: done ===")
         useUiStore().dbReady = true
         return Promise.resolve("done")
       } else if (syncType === SyncType.MANAGED_GIT) {
         const subscription = LocalStorage.getItem(SUBSCRIPTION_ID_IDENT) as string
-        log("=== initializing managed git ===", url)
+        log("initializing managed git", url)
         this.db = await this.initDatabase("https://tabsets.git/" + subscription, this.tabsetsCorsProxy)
-        log("=== initializing managed git done ===")
         useUiStore().dbReady = true
         return Promise.resolve("done")
       }
@@ -112,11 +111,11 @@ class GitPersistenceService implements PersistenceService {
       }
     }
 
-    // try to get status
-    let status = await git.status({fs, dir: useDir, filepath: 'README.md'})
-    log(status)
-
     try {
+      // try to get status
+      let status = await git.status({fs, dir: useDir, filepath: 'README.md'})
+      log(status)
+
       const cloneDef = {
         fs,
         http,
@@ -158,15 +157,12 @@ class GitPersistenceService implements PersistenceService {
     try {
       const dir = "/" + uid()
       try {
-        //const r = await this.initDatabase( gitRepoUrl, dir, true)
-        //log("got r", r)
-
         const remoteInfoDef = {
           http,
           corsProxy: this.useProxy,
           url: gitRepoUrl,
           onAuthSuccess: () => {
-            log("auth: success")
+            debug("auth: success")
             return Promise.resolve("success!")
           },
           onAuthFailure: () => (log("auth: failure")),
@@ -196,7 +192,6 @@ class GitPersistenceService implements PersistenceService {
    */
 
   async loadTabsets(): Promise<void> {
-    log("=== loading tabsets ===")
     // update from git, then read from fs
     const tabsets: Tabset[] = []
     try {
@@ -295,7 +290,6 @@ class GitPersistenceService implements PersistenceService {
    */
 
   async loadSpaces(): Promise<any> {
-    log("=== loading spaces ===")
     // update from git, then read from fs
     const spaces: Space[] = []
     try {

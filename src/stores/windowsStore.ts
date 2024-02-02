@@ -5,6 +5,9 @@ import {useUtils} from "src/services/Utils";
 import {Window} from "src/models/Window";
 import _ from "lodash"
 import throttledQueue from "throttled-queue";
+import {useTabsStore} from "stores/tabsStore";
+import {Tabset} from "src/models/Tabset";
+import {Tab} from "src/models/Tab";
 
 /**
  * a pinia store for "Windows".
@@ -41,17 +44,13 @@ function closeTabWithTimeout(timeout: number, tabToCloseId: number | undefined =
 //   return theWindows;
 // }
 
-function urlToHost(bwTab: chrome.tabs.Tab) {
-  const url = bwTab.url
-  if (url) {
-    try {
-      const theURL = new URL(url)
-      return theURL.host
-    } catch (err) {
-      return "?"
-    }
+function urlToHost(url: string) {
+  try {
+    const theURL = new URL(url)
+    return theURL.host
+  } catch (err) {
+    return "?"
   }
-  return "?";
 }
 
 export const useWindowsStore = defineStore('windows', () => {
@@ -116,14 +115,10 @@ export const useWindowsStore = defineStore('windows', () => {
     console.debug("initializing current windows with", currentWindows.value.length)
 
     // adding potentially new windows to storage - adding windows will not do anything if the key already exists
-    // const res: Promise<any>[] = browserWindows.flatMap((browserWindow: chrome.windows.Window) => {
-    //   const hostList = new Set(_.map(browserWindow.tabs, bwTabs => urlToHost(bwTabs)))
-    //   return storage.addWindow(new Window(browserWindow.id || 0, browserWindow, undefined, 0, hostList))
-    // })
-
     for (const browserWindow of browserWindows) {
-      const hostList = new Set(_.map(browserWindow.tabs, bwTabs => urlToHost(bwTabs)))
-      await storage.addWindow(new Window(browserWindow.id || 0, browserWindow, undefined, 0, hostList))
+      const hostList = new Set(_.map(browserWindow.tabs, bwTabs => urlToHost(bwTabs.url || '')))
+      const newWindow = new Window(browserWindow.id || 0, browserWindow, undefined, 0, false, hostList)
+      await storage.addWindow(newWindow)
     }
 
     // setting all (new and older) windows to 'allWindows':
@@ -132,6 +127,24 @@ export const useWindowsStore = defineStore('windows', () => {
     let index = 0
 
     const storedWindows: Window[] = await storage.getWindows()
+
+    // adding potentially new windows from 'open in window' logic
+    let i = 0;
+    for (const ts of [...useTabsStore().tabsets.values()] as Tabset[]) {
+      if (ts.window !== "current") {
+        console.log("found tabset with window", ts.window)
+        const found = _.find(storedWindows, (w: Window) => ts.window === w.title)
+        if (!found) {
+          console.log("about to add new window with title", ts.window)
+          const hostList = new Set(_.map(ts.tabs, (tab: Tab) => urlToHost(tab.url || '')))
+          const newWindow = new Window(i++, undefined, ts.window, 0, false, hostList)
+          console.log("adding window", newWindow)
+          storedWindows.push(newWindow)
+          await storage.addWindow(newWindow)
+        }
+      }
+    }
+
     const sortedStoredWindows = _.sortBy(storedWindows, "index")
     //sortedStoredWindows.forEach(tabsetWindowFromStorage => {
     for (const tabsetWindowFromStorage of sortedStoredWindows) {
@@ -294,6 +307,12 @@ export const useWindowsStore = defineStore('windows', () => {
     await storage.upsertWindow(tabsetsWindow)
   }
 
+  async function upsertTabsetWindow(w: Window) {
+    console.log("upserting window", w)
+    //alert(w)
+    await storage.upsertWindow(w)
+  }
+
   async function removeWindow(windowId: number) {
     await storage.removeWindow(windowId)
       .catch((err) => console.warn("could not delete window " + windowId + " due to: " + err))
@@ -350,7 +369,7 @@ export const useWindowsStore = defineStore('windows', () => {
   }
 
   function refreshCurrentWindows() {
-    console.log("refreshCurrentWindows")
+    console.debug("refreshCurrentWindows")
     chrome.windows.getAll({populate: true}, (windows) => {
       currentWindows.value = windows
     })
@@ -392,6 +411,8 @@ export const useWindowsStore = defineStore('windows', () => {
     refreshCurrentWindows,
     windowForId,
     updateWindowIndex,
-    allWindows
+    allWindows,
+    upsertTabsetWindow,
+    currentWindowForId
   }
 })

@@ -5,6 +5,7 @@
 
       <q-markup-table class="q-ma-none" dense flat>
         <tr>
+<!--          <th></th>-->
           <th class="text-left" style="border-bottom: 1px solid #efefef">Window Name (editable)</th>
           <th class="text-right" style="border-bottom: 1px solid #efefef">#Tabs</th>
           <th class="text-right" style="border-bottom: 1px solid #efefef">Actions</th>
@@ -18,7 +19,8 @@
           @change="(event:any) => handleDragAndDrop(event)">
           <tr v-for="row in rows" style="max-height:15px">
 <!--            <td>{{ row['index' as keyof object] }}</td>-->
-            <td class="text-left" :class="row['focused' as keyof object] ? 'text-bold':''" style="cursor:move">
+<!--            <td>{{ row['state' as keyof object] }}</td>-->
+            <td class="text-left" :class="windowNameRowClass(row)" style="cursor:move">
               {{ row['name' as keyof object] }}
               <q-popup-edit v-model="row['name' as keyof object]" v-slot="scope">
                 <q-input v-model="scope.value" dense autofocus counter
@@ -30,13 +32,28 @@
               {{ row['tabsCount' as keyof object] }}
             </td>
             <td>
+              <q-icon v-if="'minimized' !== row['state' as keyof object]"
+                      name="visibility_off"
+                      class="q-ml-sm text-warning cursor-pointer"
+                      size="xs"
+                      @click="minimizeWindow(row['id' as keyof object])">
+                <q-tooltip :delay=500 class="tooltip-small">Hide Window</q-tooltip>
+              </q-icon>
               <q-icon name="open_in_new"
-                      class="q-ml-sm"
+                      class="q-ml-sm cursor-pointer"
+                      size="xs"
                       :class="useWindowsStore().currentWindow?.id === row['id' as keyof object] ? 'text-grey' : 'text-blue-8 cursor-pointer'"
                       @click="openWindow(row['id' as keyof object])">
                 <q-tooltip :delay=500 class="tooltip-small">Open this window</q-tooltip>
               </q-icon>
+              <q-icon name="o_bookmark_add"
+                      size="xs"
+                      class="q-ml-sm text-warning cursor-pointer"
+                      @click="saveAsTabset(row['id' as keyof object], row['name' as keyof object])">
+                <q-tooltip :delay=500 class="tooltip-small">Save as Tabset</q-tooltip>
+              </q-icon>
               <q-icon name="o_close"
+                      size="xs"
                       class="q-ml-sm text-red-8 cursor-pointer"
                       @click="closeWindow(row['id' as keyof object])">
                 <q-tooltip :delay=500 class="tooltip-small">Close this window</q-tooltip>
@@ -58,20 +75,17 @@ import {useWindowsStore} from "stores/windowsStore";
 import {onMounted, ref, watch, watchEffect} from "vue";
 import {Window} from "src/models/Window"
 import _ from "lodash";
-import {LocalStorage, QTable} from "quasar";
+import {LocalStorage, QTable, useQuasar} from "quasar";
 import {VueDraggableNext} from 'vue-draggable-next'
+import NewTabsetDialog from "components/dialogues/NewTabsetDialog.vue";
+import {useSpacesStore} from "stores/spacesStore";
+import {useTabsStore} from "stores/tabsStore";
 
-const columns = [
-  {name: 'index', field: 'index', label: '#', align: 'left', sortable: false},
-  {name: 'name', field: 'name', required: true, label: 'Window Name (editable)', align: 'left', sortable: false},
-  {name: 'state', field: 'state', label: 'State', align: 'left', sortable: false},
-  {name: 'tabsCount', field: 'tabsCount', required: true, label: '#Tabs', align: 'right', sortable: false},
-  {name: 'windowAction', align: 'center', label: 'Actions', field: 'windowAction', sortable: false}
-]
+const $q = useQuasar()
 
 const rows = ref<object[]>([])
 const currentWindowName = ref('---')
-const tableRef = ref<QTable>(null as unknown as QTable)
+
 
 onMounted(() => {
   rows.value = calcWindowRows()
@@ -96,17 +110,21 @@ const openWindow = (windowId: number) => {
       })
   }
 }
-
-const hideWindow = (windowId: number) => {
-  chrome.windows.update(windowId, {state: "minimized"})
-  useWindowsStore().refreshCurrentWindows()
+const saveAsTabset = (windowId: number, name: string) => {
+  $q.dialog({
+    component: NewTabsetDialog,
+    componentProps: {
+      windowId: windowId,
+      spaceId: useSpacesStore().space?.id,
+      name: name,
+      fromPanel: true
+    }
+  })
 }
 
-const restoreWindow = (windowId: number) => {
-  if (useWindowsStore().currentWindow?.id !== windowId) {
-    chrome.windows.update(windowId, {state: "normal"})
-    useWindowsStore().refreshCurrentWindows()
-  }
+const minimizeWindow = (windowId: number) => {
+  chrome.windows.update(windowId, {state: "minimized"})
+  useWindowsStore().refreshCurrentWindows()
 }
 
 const closeWindow = (windowId: number) => {
@@ -115,26 +133,14 @@ const closeWindow = (windowId: number) => {
 }
 
 const calcWindowRows = () => {
-  //let index = 100
-  //const usedIndices: number[] = []
   const result = _.map(useWindowsStore().currentWindows as chrome.windows.Window[], (cw: chrome.windows.Window) => {
-    const windowFromStore: Window | undefined = useWindowsStore().windowForId(cw.id || -1)
-    // if (!windowFromStore || !windowFromStore.index) {
-    //   console.log("found windowfromstore without index", windowFromStore)
-    // }
-    //let indexToUse = windowFromStore && windowFromStore.index ? windowFromStore.index : index++
-    // if (usedIndices.indexOf(indexToUse) >= 0) {
-    //   console.log("found used index", indexToUse, usedIndices)
-    //   indexToUse = 1 + Math.max(...usedIndices)
-    //   useWindowsStore().upsertWindow(cw, windowFromStore?.title, indexToUse)
-    // }
-    // usedIndices.push(indexToUse)
+    const windowFromStore: Window | undefined = useWindowsStore().windowForId(cw.id || -2)
 
     console.debug(`setting window ${cw.id} ['${windowFromStore?.title}'] (#${cw.tabs?.length} tabs) -> #${windowFromStore?.index}`)
 
     return {
       id: cw.id,
-      index: windowFromStore?.index || -1,
+      index: windowFromStore?.index || 0,
       tabsCount: cw.tabs?.length || 0,
       name: useWindowsStore().windowNameFor(cw.id || 0) || cw.id,
       windowHeight: cw['height' as keyof object],
@@ -198,6 +204,12 @@ const handleDragAndDrop = async (event: any) => {
     //useWindowsStore().refreshCurrentWindows()
   }
 }
+
+const windowNameRowClass = (row: any) => row['focused' as keyof object] ?
+  'text-bold':
+  row['state'] === 'minimized' ?
+    'text-grey-5' :
+    ''
 
 </script>
 

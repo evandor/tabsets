@@ -35,6 +35,7 @@ class IndexedDbPersistenceService implements PersistenceService {
   }
 
   async loadTabsets(): Promise<any> {
+    console.log("loading tabsets indexeddb")
     const tabsStore = useTabsStore()
     return await this.db.getAll('tabsets')
       .then((res: any) => res.forEach((r: Tabset) => {
@@ -526,6 +527,7 @@ class IndexedDbPersistenceService implements PersistenceService {
     }
     if (!window.title) {
       // try to find matching window
+      console.log("trying to add new window ", window)
       const allWindows: Window[] = await this.db.getAll('windows') as Window[]
       console.log(`adding window ${window.id} to window list [${_.join(_.map(allWindows, w => w.id), ',')}]`)
       for (const w of allWindows) {
@@ -538,6 +540,7 @@ class IndexedDbPersistenceService implements PersistenceService {
           const oldId = w.id
           window = w
           window.id = useId
+          alert("replacing old window " + oldId + " with " + JSON.stringify(window))
           this.db.delete('windows', oldId)
           break
         }

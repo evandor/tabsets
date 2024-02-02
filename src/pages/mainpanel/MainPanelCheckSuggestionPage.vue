@@ -41,6 +41,7 @@
         {{ suggestion?.msg }}
       </div>
     </div>
+
     <div class="row items-baseline q-ma-md" v-if="suggestion?.data['url' as keyof object]">
       <div class="col-2 ">
         URL
@@ -51,6 +52,15 @@
         </div>
       </div>
     </div>
+
+<!--    <div class="row items-baseline q-ma-md" v-if="suggestion?.type === SuggestionType.RESTART">-->
+<!--      <div class="col-2 ">-->
+
+<!--      </div>-->
+<!--      <div class="col text-blue cursor-pointer">-->
+<!--        <q-btn label="Restart" @click="restart()"/>-->
+<!--      </div>-->
+<!--    </div>-->
 
     <template v-if="suggestion?.type?.toUpperCase() === 'REDIRECT_HAPPENED_FOR_BOOKMARK' ||
                 suggestion?.type?.toUpperCase() === 'REDIRECT_HAPPENED_FOR_TAB'">
@@ -221,6 +231,7 @@ import {UpdateMonitoringCommand} from "src/domain/monitoring/UpdateMonitoringCom
 import {MonitoringType} from "src/models/Monitor";
 import {useUtils} from "src/services/Utils";
 import {NotificationType} from "src/services/ErrorHandler";
+import AppService from "src/services/AppService";
 
 const {sendMsg} = useUtils()
 
@@ -511,4 +522,5 @@ const isMonitoring = () => {
   }
   return false
 }
+
 </script>

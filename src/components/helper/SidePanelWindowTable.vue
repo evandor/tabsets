@@ -157,7 +157,7 @@ const calcWindowRows = () => {
   let index = 100
   const usedIndices: number[] = []
   const result = _.map(useWindowsStore().currentWindows as chrome.windows.Window[], (cw: chrome.windows.Window) => {
-    const windowFromStore: Window | undefined = useWindowsStore().windowForId(cw.id || -1)
+    const windowFromStore: Window | undefined = useWindowsStore().windowForId(cw.id || -3)
     if (!windowFromStore || !windowFromStore.index) {
       console.log("found windowfromstore without index", windowFromStore)
     }

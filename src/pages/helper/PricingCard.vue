@@ -21,7 +21,7 @@
         <div class="text-h5 q-mt-sm q-mb-md text-bold">
           <slot name="price">0 &euro;</slot>
         </div>
-        <div class="text-caption text-grey" style="min-height:140px">
+        <div class="text-caption text-grey" style="min-height:180px">
           <slot name="features" />
         </div>
       </q-card-section>

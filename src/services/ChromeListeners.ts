@@ -213,6 +213,9 @@ class ChromeListeners {
       }
     }
 
+    // https://stackoverflow.com/questions/77089404/chrom-extension-close-event-not-available-on-sidepanel-closure
+    chrome.runtime.connect({ name: 'tabsetsSidepanel' });
+
   }
 
   clearWorking() {

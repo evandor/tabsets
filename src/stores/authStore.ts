@@ -1,18 +1,19 @@
 import {defineStore} from 'pinia';
 import {Subscription} from "src/models/Subscription";
-import {Auth0VueClient} from "@auth0/auth0-vue";
 import {getAuth, signOut, User} from "firebase/auth";
 import {LocalStorage, useQuasar} from "quasar";
-import {useUtils} from "src/services/Utils";
 import PersistenceService from "src/services/PersistenceService";
 import {computed, ref} from "vue";
 import {Account} from "src/models/Account";
 import {CURRENT_USER_ID} from "boot/constants";
+import {collection, doc, getDoc, getDocs} from "firebase/firestore";
+import {firestore} from "boot/firebase";
+import AppService from "src/services/AppService";
 
 export enum AccessItem {
-  SYNC="SYNC",
-  SHARE="SHARE",
-  FEATURE_TOGGLES="FEATURE_TOGGLES"
+  SYNC = "SYNC",
+  SHARE = "SHARE",
+  FEATURE_TOGGLES = "FEATURE_TOGGLES"
 }
 
 export const useAuthStore = defineStore('auth', () => {
@@ -76,8 +77,8 @@ export const useAuthStore = defineStore('auth', () => {
 
   const useAuthRequest = computed(() => {
     const val = authRequest.value
-   // authRequest.value = null as unknown as string
-   // console.log("auth request was nulled, was ", val)
+    // authRequest.value = null as unknown as string
+    // console.log("auth request was nulled, was ", val)
     return val
   })
 
@@ -85,7 +86,7 @@ export const useAuthStore = defineStore('auth', () => {
     return (item: AccessItem): boolean => {
       //console.log("checking access item", item)
       if (!user.value) {
-        console.log("result: no (no user)")
+        //console.log("result: no (no user)")
         return false
       }
       //console.log("checking against products", products.value)
@@ -94,17 +95,41 @@ export const useAuthStore = defineStore('auth', () => {
           return products.value.indexOf("prod_PLJipUG1Zfw7pC") >= 0
         case AccessItem.FEATURE_TOGGLES:
           return true
-        default: return false
+        default:
+          return false
       }
     }
   })
 
   // --- actions ---
-  function setUser(u: User | undefined) {
+  async function setUser(u: User | undefined) {
     if (u) {
       LocalStorage.set(CURRENT_USER_ID, u.uid)
       authenticated.value = true;
       user.value = u;
+
+      const userDoc = await getDoc(doc(firestore, "users", u.uid))
+      const userData = userDoc.data()
+
+      const account = new Account(u.uid, userData)
+
+      const querySnapshot = await getDocs(collection(firestore, "users", u.uid, "subscriptions"))
+      const products = new Set<string>()
+      querySnapshot.forEach((doc) => {
+        //console.log(doc.id, " => ", doc.data());
+        //key += doc.id + "|"
+        const subscriptionData = doc.data()
+        if (subscriptionData.data && subscriptionData.data.metadata) {
+          products.add(subscriptionData.data.metadata.product)
+        }
+        account.setProducts(Array.from(products))
+        console.log("hier", account, products)
+
+      })
+      upsertAccount(account)
+      setProducts(Array.from(products))
+
+
     } else {
       LocalStorage.remove(CURRENT_USER_ID)
       authenticated.value = false;

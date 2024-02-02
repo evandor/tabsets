@@ -623,7 +623,7 @@ watchEffect(() => {
 
 watchEffect(() => {
   // @ts-ignore
-  indexSize.value = searchStore?.getIndex().size()
+  indexSize.value = searchStore?.getIndex()?.size()
 })
 
 watchEffect(() => {

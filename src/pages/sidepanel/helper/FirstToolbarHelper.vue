@@ -43,7 +43,7 @@
         </div>
 
         <!-- spaces or not, here's the icons on the right side -->
-        <div class="col text-subtitle1 text-right q-ma-none q-pa-none q-pr-sm">
+        <div class="col text-subtitle1 text-right q-ma-none q-pa-none q-pr-sm" v-if="!useUiStore().appLoading">
 
           <slot name="iconsRight">
 

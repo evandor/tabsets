@@ -13,6 +13,13 @@
         <q-btn label="Later" size="sm" v-close-popup @click="delayDecision">
           <q-tooltip class="tooltip-small" :delay="500">Click here to decide later</q-tooltip>
         </q-btn>
+        <template v-if="suggestion.type === SuggestionType.RESTART">
+          <q-btn label="Restart" size="sm" color="warning" v-close-popup @click="restart()">
+            <q-tooltip class="tooltip-small" :delay="500">Restart Tabsets</q-tooltip>
+          </q-btn>
+        </template>
+        <template v-else>
+
         <q-btn label="Ignore" size="sm" color="negative" v-close-popup @click="ignoreSuggestion">
           <q-tooltip class="tooltip-small" :delay="500">This suggestion will not show up again</q-tooltip>
         </q-btn>
@@ -20,6 +27,7 @@
           <q-tooltip class="tooltip-small" :delay="500">Get Details about this suggestion and decide what to do
           </q-tooltip>
         </q-btn>
+        </template>
       </q-card-actions>
 
 
@@ -36,6 +44,7 @@ import {useRouter} from "vue-router";
 import {useSuggestionsStore} from "src/stores/suggestionsStore";
 import {Suggestion, SuggestionState, SuggestionType} from "src/models/Suggestion";
 import NavigationService from "src/services/NavigationService";
+import AppService from "src/services/AppService";
 
 defineEmits([
   ...useDialogPluginComponent.emits
@@ -89,6 +98,11 @@ const addSuggestion = () => {
       openURL((res.url))
     }
   }
+}
+
+const restart = () => {
+  useSuggestionsStore().removeSuggestion(props.suggestion.id)
+  AppService.restart("restarted=true")
 }
 
 </script>

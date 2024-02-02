@@ -226,10 +226,12 @@ describe('WindowsStore', () => {
     }
 
     console.log("==============")
-    await onCreatedListener(windowWithSameTabsAsWindow100)
+    currentWindows = [window100, window200, windowWithSameTabsAsWindow100]
+    await onCreatedListener(windowWithSameTabsAsWindow100) // should 'reuse' existing window100
     console.log("==============")
-    const updatedWindow100 = await db.getWindow(100)
-    expect(updatedWindow100?.title).toBe("theTitle")
+    const updatedWindow1000 = await db.getWindow(1000)
+    expect(updatedWindow1000?.title).toBe("theTitle")
+    expect((await db.getWindows()).length).toBe(2)
   })
 
   // it('persists group with changing title', async () => {

@@ -61,7 +61,7 @@ export function useTabsetService() {
 
     useTabsStore().tabsets.forEach(ts => {
       if (ts.sharedId) {
-        console.log("subscribing to topic ", ts.sharedId)
+        //console.log("subscribing to topic ", ts.sharedId)
         MqttService.subscribe(ts.sharedId)
       }
     })
