@@ -101,7 +101,7 @@ class ChromeApi {
       return
     }
 
-    console.debug("initializing ChromeApi")
+    console.debug(" ...initializing ChromeApi")
 
     chrome.alarms.create("housekeeping", {periodInMinutes: CLEANUP_PERIOD_IN_MINUTES})
     chrome.alarms.create("monitoring", {periodInMinutes: MONITORING_PERIOD_IN_MINUTES})
@@ -143,8 +143,8 @@ class ChromeApi {
   }
 
   stopWebRequestListener() {
-    console.debug("removing WebRequestListener if running", chrome.webRequest)
     if (chrome.webRequest) {
+      console.debug("removing WebRequestListener if running", chrome.webRequest)
       chrome.webRequest.onHeadersReceived.removeListener(this.onHeadersReceivedListener)
     }
   }
@@ -153,7 +153,7 @@ class ChromeApi {
     if (process.env.MODE !== 'bex') {
       return
     }
-    console.debug("building context menu")
+    console.debug(" building context menu")
     const tabsStore = useTabsStore()
     if (chrome && chrome.contextMenus) {
       chrome.contextMenus.removeAll(

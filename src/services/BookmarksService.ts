@@ -20,7 +20,7 @@ class BookmarksService {
 
 
   async init() {
-    console.debug("initializing BookmarksService")
+    console.debug(" ...initializing BookmarksService")
     useBookmarksStore().loadBookmarks()
       .then(res => {
         useSearchStore().populateFromBookmarks()

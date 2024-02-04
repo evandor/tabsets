@@ -1,3 +1,4 @@
+import {Tab} from "src/models/Tab";
 
 export class Window {
   created: number
@@ -14,3 +15,7 @@ export class Window {
   }
 
 }
+
+Window.prototype.toString = function tabToString() {
+  return `Window: {id=${this.id}, browserWindow=${this.browserWindow !== undefined}, title=${this.title}, index=${this.index}, open=${this.open}, #hostList=${this.hostList.size}}`;
+};

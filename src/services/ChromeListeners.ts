@@ -37,12 +37,12 @@ const {
   saveThumbnailFor
 } = useTabsetService()
 
-const {sanitize} = useUtils()
+const {sanitize, sendMsg} = useUtils()
 
 async function setCurrentTab() {
   const tabs = await chrome.tabs.query({active: true, lastFocusedWindow: true})
 
-  console.debug("setting current tab", tabs)
+  //console.debug("setting current tab", tabs)
   if (tabs && tabs[0]) {
     useTabsStore().setCurrentChromeTab(tabs[0] as unknown as chrome.tabs.Tab)
   } else {
@@ -121,6 +121,7 @@ function inIgnoredMessages(request: any) {
     request.name === 'detail-level-changed' ||
     request.name === 'mqtt-url-changed' ||
     request.name === 'reload-application' ||
+    request.name === 'window-updated' ||
     request.action === 'highlight-annotation'
   //request.name === 'recogito-annotation-created'
 
@@ -154,7 +155,8 @@ class ChromeListeners {
   async initListeners() {
 
     if (process.env.MODE === 'bex') {
-      console.debug("initializing chrome tab listeners")
+
+      console.debug(" ...initializing chrome tab listeners")
 
       chrome.runtime.setUninstallURL("https://tabsets.web.app/#/uninstall")
 
@@ -244,6 +246,7 @@ class ChromeListeners {
     }
     this.eventTriggered()
     console.debug(`onCreated: tab ${tab.id}: >>> ${tab.pendingUrl}`)
+    sendMsg('window-updated', {})
     const tabsStore = useTabsStore()
 
     let foundSession = false
@@ -454,6 +457,7 @@ class ChromeListeners {
 
   onRemoved(number: number, info: chrome.tabs.TabRemoveInfo) {
     this.eventTriggered()
+    sendMsg('window-updated', {})
     const tabsStore = useTabsStore()
     const currentTabset: Tabset = tabsStore.tabsets.get(tabsStore.currentTabsetId) as Tabset || new Tabset("", "", [], [])
     const index = _.findIndex(currentTabset.tabs, t => t.chromeTabId === number);

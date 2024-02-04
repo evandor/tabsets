@@ -36,10 +36,10 @@ class NavigationService {
         const createData: any = {url: withUrls}
         if (windowFromDb) {
           const w = windowFromDb.browserWindow
-          createData['left' as keyof object] = w.left//(w.left || 0) < 0 ? 0 : w.left
-          createData['top' as keyof object] = w.top//(w.top || 0) < 0 ? 0 : w.top
-          createData['width' as keyof object] = w.width//(w.width || -1) < 0 ? 600 : w.width
-          createData['height' as keyof object] = w.height//(w.top || -1) < 0 ? 400 : w.height
+          createData['left' as keyof object] = w?.left || 50
+          createData['top' as keyof object] = w?.top || 50 //(w.top || 0) < 0 ? 0 : w.top
+          createData['width' as keyof object] = w?.width || 1200 //(w.width || -1) < 0 ? 600 : w.width
+          createData['height' as keyof object] = w?.height || 800 //(w.top || -1) < 0 ? 400 : w.height
           // window does not exist anymore, remove from 'allWindows'
           await useWindowsStore().removeWindow(windowFromDb.id)
         }

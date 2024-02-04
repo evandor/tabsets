@@ -80,13 +80,13 @@
           <q-tooltip class="tooltip" anchor="top left" self="bottom left">{{ settingsTooltip() }}</q-tooltip>
         </q-btn>
 
-        <q-btn v-if="useWindowsStore().currentWindows.length > 1"
-               icon="o_grid_view"
-               :class="rightButtonClass()"
-               flat
-               color="black"
-               :size="getButtonSize()"
-               @click="toggleShowWindowTable()">
+        <q-btn
+          icon="o_grid_view"
+          :class="rightButtonClass()"
+          flat
+          color="black"
+          :size="getButtonSize()"
+          @click="toggleShowWindowTable()">
           <q-tooltip class="tooltip" anchor="top left" self="bottom left">Manage Windows</q-tooltip>
         </q-btn>
 
@@ -98,7 +98,8 @@
             flat
             color="black"
             size="20px">
-            <q-tooltip :delay="2000" anchor="center left" self="center right" class="tooltip-small">Alternative Access</q-tooltip>
+            <q-tooltip :delay="2000" anchor="center left" self="center right"
+                       class="tooltip-small">Alternative Access</q-tooltip>
           </q-icon>
           <q-menu :offset="[0, 7]" fit>
             <q-list dense style="min-width: 200px;min-height:50px">
@@ -130,9 +131,9 @@
               <q-item clickable v-close-popup>
                 <q-item-section @click="gotoStripe()">Subscriptions</q-item-section>
               </q-item>
-<!--              <q-item clickable v-close-popup>-->
-<!--                <q-item-section @click="subscribe()">Subscribe</q-item-section>-->
-<!--              </q-item>-->
+              <!--              <q-item clickable v-close-popup>-->
+              <!--                <q-item-section @click="subscribe()">Subscribe</q-item-section>-->
+              <!--              </q-item>-->
               <q-item clickable v-close-popup>
                 <q-item-section @click="logout()">Logout</q-item-section>
               </q-item>

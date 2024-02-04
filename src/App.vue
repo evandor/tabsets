@@ -14,6 +14,9 @@ import {CURRENT_USER_EMAIL, CURRENT_USER_ID} from "boot/constants";
 import {useSuggestionsStore} from "stores/suggestionsStore";
 import {StaticSuggestionIdent, Suggestion} from "src/models/Suggestion";
 import {useRoute, useRouter} from "vue-router";
+import {collection, doc, getDoc, getDocs} from "firebase/firestore";
+import {firestore} from "boot/firebase";
+import {Account} from "src/models/Account";
 
 const $q = useQuasar()
 const router = useRouter()
@@ -24,12 +27,32 @@ emitter.setMaxListeners(12)
 
 const auth = getAuth();
 
-onAuthStateChanged(auth, (user) => {
+onAuthStateChanged(auth, async (user) => {
   if (user) {
     // User is signed in, see docs for a list of available properties
     // https://firebase.google.com/docs/reference/js/auth.user
     console.log("%conAuthStateChanged: about to log in", "border:1px solid green")
-    AppService.init($q, router, true, user)
+
+
+    // --- if we do this in useAuthStore.setUser(), we cannot properly run vitest any more
+    const userDoc = await getDoc(doc(firestore, "users", user.uid))
+    const userData = userDoc.data()
+    const account = new Account(user.uid, userData)
+    const querySnapshot = await getDocs(collection(firestore, "users", user.uid, "subscriptions"))
+    const products = new Set<string>()
+    querySnapshot.forEach((doc) => {
+      const subscriptionData = doc.data()
+      if (subscriptionData.data && subscriptionData.data.metadata) {
+        products.add(subscriptionData.data.metadata.product)
+      }
+      account.setProducts(Array.from(products))
+      console.log("hier", account, products)
+
+    })
+
+    // --- end of statement
+
+    AppService.init($q, router, true, user, account)
   } else {
     // User is signed out
     console.log("%conAuthStateChanged: logged out", "border:1px solid green")

@@ -4,12 +4,25 @@
     <Transition name="bounceInLeft" appear>
 
       <q-markup-table class="q-ma-none" dense flat>
+        <thead>
         <tr>
-<!--          <th></th>-->
-          <th class="text-left" style="border-bottom: 1px solid #efefef">Window Name (editable)</th>
+          <!--          <th></th>-->
+          <th class="text-left" style="border-bottom: 1px solid #efefef">Window Name</th>
           <th class="text-right" style="border-bottom: 1px solid #efefef">#Tabs</th>
-          <th class="text-right" style="border-bottom: 1px solid #efefef">Actions</th>
+          <th class="text-right q-pr-none" style="border-bottom: 1px solid #efefef;text-align:right;">
+            <!--            <q-select dense options-dense borderless :item-aligned="true" style="width:100%"-->
+            <!--                      v-model="windowsToOpen" :options="windowsToOpenOptions" label="Open..."/>-->
+            <span class="text-grey-8 cursor-pointer"><q-icon name="open_in_new" color="primary" class="q-mr-xs"/>Open Window </span>
+            <q-menu :offset="[0, 7]" fit>
+              <q-list dense>
+                <q-item clickable v-close-popup v-for="w in windowsToOpenOptions">
+                  <q-item-section @click="openNewWindow(w)">{{ w['label' as keyof object] }}</q-item-section>
+                </q-item>
+              </q-list>
+            </q-menu>
+          </th>
         </tr>
+        </thead>
 
         <vue-draggable-next
           class="q-ma-none"
@@ -17,14 +30,19 @@
           :list="rows"
           :group="{ name: 'tabs', pull: 'clone' }"
           @change="(event:any) => handleDragAndDrop(event)">
-          <tr v-for="row in rows" style="max-height:15px">
-<!--            <td>{{ row['index' as keyof object] }}</td>-->
-<!--            <td>{{ row['state' as keyof object] }}</td>-->
+          <tr v-for="row in rows"
+              @mouseover="hoveredWindow = row['id' as keyof object]"
+              @mouseleave="hoveredWindow = undefined"
+              style="max-height:15px">
+            <!--            <td>{{ row['index' as keyof object] }}</td>-->
+            <!--            <td>{{ row['state' as keyof object] }}</td>-->
             <td class="text-left" :class="windowNameRowClass(row)" style="cursor:move">
               {{ row['name' as keyof object] }}
-              <q-popup-edit v-model="row['name' as keyof object]" v-slot="scope">
-                <q-input v-model="scope.value" dense autofocus counter
-                         @update:model-value="(val:any) => setWindowName(row, val)"
+              <q-popup-edit v-model="row['name' as keyof object]"
+                            @save="(val:string, initial:string) => setWindowName(row, val)"
+                            v-slot="scope">
+                <q-input v-model="scope.value"
+                         dense autofocus counter
                          @keyup.enter="scope.set"/>
               </q-popup-edit>
             </td>
@@ -32,32 +50,34 @@
               {{ row['tabsCount' as keyof object] }}
             </td>
             <td>
-              <q-icon v-if="'minimized' !== row['state' as keyof object]"
-                      name="visibility_off"
-                      class="q-ml-sm text-warning cursor-pointer"
-                      size="xs"
-                      @click="minimizeWindow(row['id' as keyof object])">
-                <q-tooltip :delay=500 class="tooltip-small">Hide Window</q-tooltip>
-              </q-icon>
-              <q-icon name="open_in_new"
-                      class="q-ml-sm cursor-pointer"
-                      size="xs"
-                      :class="useWindowsStore().currentWindow?.id === row['id' as keyof object] ? 'text-grey' : 'text-blue-8 cursor-pointer'"
-                      @click="openWindow(row['id' as keyof object])">
-                <q-tooltip :delay=500 class="tooltip-small">Open this window</q-tooltip>
-              </q-icon>
-              <q-icon name="o_bookmark_add"
-                      size="xs"
-                      class="q-ml-sm text-warning cursor-pointer"
-                      @click="saveAsTabset(row['id' as keyof object], row['name' as keyof object])">
-                <q-tooltip :delay=500 class="tooltip-small">Save as Tabset</q-tooltip>
-              </q-icon>
-              <q-icon name="o_close"
-                      size="xs"
-                      class="q-ml-sm text-red-8 cursor-pointer"
-                      @click="closeWindow(row['id' as keyof object])">
-                <q-tooltip :delay=500 class="tooltip-small">Close this window</q-tooltip>
-              </q-icon>
+              <template v-if="hoveredWindow === row['id' as keyof object]">
+                <q-icon v-if="'minimized' !== row['state' as keyof object]"
+                        name="visibility_off"
+                        class="q-ml-sm text-warning cursor-pointer"
+                        @click="minimizeWindow(row['id' as keyof object])">
+                  <q-tooltip :delay=500 class="tooltip-small">Hide Window</q-tooltip>
+                </q-icon>
+                <q-icon name="open_in_new"
+                        class="q-ml-sm cursor-pointer"
+                        :class="useWindowsStore().currentWindow?.id === row['id' as keyof object] ? 'text-grey' : 'text-blue-8 cursor-pointer'"
+                        @click="openWindow(row['id' as keyof object])">
+                  <q-tooltip :delay=500 class="tooltip-small">Open this window</q-tooltip>
+                </q-icon>
+                <q-icon name="o_bookmark_add"
+                        size="xs"
+                        class="q-ml-sm text-warning cursor-pointer"
+                        @click="saveAsTabset(row['id' as keyof object], row['name' as keyof object])">
+                  <q-tooltip :delay=500 class="tooltip-small">Save as Tabset</q-tooltip>
+                </q-icon>
+                <q-icon name="o_close"
+                        class="q-ml-sm text-red-8 cursor-pointer"
+                        @click="closeWindow(row['id' as keyof object])">
+                  <q-tooltip :delay=500 class="tooltip-small">Close this window</q-tooltip>
+                </q-icon>
+              </template>
+              <template v-else>
+                <div style="width:160px;">&nbsp;</div>
+              </template>
             </td>
           </tr>
         </vue-draggable-next>
@@ -75,17 +95,34 @@ import {useWindowsStore} from "stores/windowsStore";
 import {onMounted, ref, watch, watchEffect} from "vue";
 import {Window} from "src/models/Window"
 import _ from "lodash";
-import {LocalStorage, QTable, useQuasar} from "quasar";
+import {LocalStorage, QTable, uid, useQuasar} from "quasar";
 import {VueDraggableNext} from 'vue-draggable-next'
 import NewTabsetDialog from "components/dialogues/NewTabsetDialog.vue";
 import {useSpacesStore} from "stores/spacesStore";
 import {useTabsStore} from "stores/tabsStore";
+import {Tabset} from "src/models/Tabset";
+import {useCommandExecutor} from "src/services/CommandExecutor";
+import {RestoreTabsetCommand} from "src/domain/tabsets/RestoreTabset";
+import NavigationService from "src/services/NavigationService";
+import {useUtils} from "src/services/Utils";
+import {useUiStore} from "stores/uiStore";
+import {usePermissionsStore} from "stores/permissionsStore";
+import {useTabsetService} from "src/services/TabsetService2";
+import {useBookmarksStore} from "stores/bookmarksStore";
+import {useDB} from "src/services/usePersistenceService";
+import TabsetService from "src/services/TabsetService";
+import {useSuggestionsStore} from "stores/suggestionsStore";
+import MqttService from "src/services/mqtt/MqttService";
+import AppService from "src/services/AppService";
 
 const $q = useQuasar()
 
 const rows = ref<object[]>([])
 const currentWindowName = ref('---')
 
+const windowsToOpen = ref<string>('')
+const windowsToOpenOptions = ref<object[]>([])
+const hoveredWindow = ref<number | undefined>(undefined)
 
 onMounted(() => {
   rows.value = calcWindowRows()
@@ -96,12 +133,75 @@ watch(() => useWindowsStore().currentWindows, (newWindows, oldWindows) => {
   rows.value = calcWindowRows()
 })
 
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+ if (message.name === 'window-updated') {
+    console.log("got message 'window-updated'", message)
+    useWindowsStore().setup('got window-updated message')
+      .then(() => rows.value = calcWindowRows())
+    //useUiStore().windowsChanged = message
+  }
+  return true
+})
+
+// watchEffect(() => {
+//   const windowChangedEvent = useUiStore().windowsChanged
+//   if (windowChangedEvent) {
+//     const data = windowChangedEvent['data' as keyof object]
+//     console.log("ui store: windowsChanged", data)
+//
+//     setTimeout(() => {rows.value = calcWindowRows()}, 1000)
+//     // const windowId = data['windowId' as keyof object]
+//     // const title = data['title' as keyof object]
+//     // const index = data['index' as keyof object]
+//     //
+//     // const w = _.find(rows.value, r => r['id' as keyof object] === windowId)
+//     // if (w) {
+//     //   console.log("found w", w)
+//     //   w['title' as keyof object] = title
+//     //   w['index' as keyof object] = index
+//     // }
+//
+//     useUiStore().windowsChanged = undefined
+//   }
+// })
+
+watchEffect(() => {
+  // adding potentially new windows from 'open in window' logic
+  windowsToOpenOptions.value = [{label: ' > open new Window', value: 'newWindow'}]
+  for (const ts of [...useTabsStore().tabsets.values()] as Tabset[]) {
+    if (ts.window !== "current") {
+      const found = _.find(rows.value, (r: object) => ts.window === r['name' as keyof object])
+      if (!found) {
+        console.log("about to add new window with title", ts.window)
+        windowsToOpenOptions.value.push({
+          label: ts.window,
+          value: ts.id
+        })
+      }
+    }
+  }
+})
+
+
 watchEffect(() => {
   const res = useWindowsStore().currentWindow && useWindowsStore().currentWindow.id ?
     useWindowsStore().windowNameFor(useWindowsStore().currentWindow.id || 0) || 'n/a' :
     'n/a'
   currentWindowName.value = res
 })
+
+const openNewWindow = (w: object) => {
+  console.log("windows to open set to ", w)
+  const label = w['label' as keyof object] as string
+  const tsId = w['value' as keyof object] as string
+  if (tsId === 'newWindow') {
+    chrome.windows.create()
+    windowsToOpen.value = ''
+  } else if (label && label.trim() !== '') {
+    useCommandExecutor().execute(new RestoreTabsetCommand(tsId, label, false))
+    windowsToOpen.value = ''
+  }
+}
 
 const openWindow = (windowId: number) => {
   if (useWindowsStore().currentWindow?.id !== windowId) {
@@ -133,6 +233,7 @@ const closeWindow = (windowId: number) => {
 }
 
 const calcWindowRows = () => {
+  console.log("calculating window Rows")
   const result = _.map(useWindowsStore().currentWindows as chrome.windows.Window[], (cw: chrome.windows.Window) => {
     const windowFromStore: Window | undefined = useWindowsStore().windowForId(cw.id || -2)
 
@@ -155,11 +256,12 @@ const calcWindowRows = () => {
     }
   })
 
-  return _.sortBy(result,"index")
+  return _.sortBy(result, "index")
 }
 
 
 const setWindowName = (windowRow: object, newName: string) => {
+  console.log("setWindowName", windowRow, newName)
   if (newName && newName.toString().trim().length > 0) {
     const id = windowRow['id' as keyof object]
     chrome.windows.get(id, (cw) => {
@@ -206,7 +308,7 @@ const handleDragAndDrop = async (event: any) => {
 }
 
 const windowNameRowClass = (row: any) => row['focused' as keyof object] ?
-  'text-bold':
+  'text-bold' :
   row['state'] === 'minimized' ?
     'text-grey-5' :
     ''
@@ -219,4 +321,5 @@ const windowNameRowClass = (row: any) => row['focused' as keyof object] ?
   padding-top: 0;
   padding-bottom: 0
 }
+
 </style>

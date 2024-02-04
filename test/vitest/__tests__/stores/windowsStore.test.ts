@@ -7,6 +7,8 @@ import PersistenceService from "src/services/PersistenceService";
 import {useTabsetService} from "src/services/TabsetService2";
 import {useWindowsStore} from "stores/windowsStore";
 import ChromeApi from "src/services/ChromeApi";
+import {useCommandExecutor} from "src/services/CommandExecutor";
+import {CreateTabsetCommand} from "src/domain/tabsets/CreateTabset";
 
 installQuasarPlugin();
 
@@ -135,7 +137,7 @@ describe('WindowsStore', () => {
 
     const window = await db.getWindow(100)
     if (window) {
-      await useWindowsStore().upsertWindow(window.browserWindow, "theTitle")
+      await useWindowsStore().upsertWindow(window.browserWindow!, "theTitle")
       const updatedWindow = await db.getWindow(100)
       expect(updatedWindow?.title).toBe("theTitle")
     } else {
@@ -150,7 +152,7 @@ describe('WindowsStore', () => {
 
     const window = await db.getWindow(100)
     if (window) {
-      await useWindowsStore().upsertWindow(window.browserWindow, "theTitle")
+      await useWindowsStore().upsertWindow(window.browserWindow!, "theTitle")
       await onRemovedListener(100)
       const window100FromDb = await db.getWindow(100)
       expect(window100FromDb?.id).toBe(100)
@@ -173,7 +175,7 @@ describe('WindowsStore', () => {
 
     const window100FromDb = await db.getWindow(100)
     // 33 is a 'magic number' assigned
-    expect(window100FromDb?.browserWindow.left).toBe(33)
+    expect(window100FromDb?.browserWindow?.left).toBe(33)
   })
 
   it('onCreate yields new window', async () => {
@@ -187,7 +189,7 @@ describe('WindowsStore', () => {
     // expect(groups.length).toBe(1)
     const window1000FromDb = await db.getWindow(1000)
     expect(window1000FromDb?.id).toBe(1000)
-    expect(window1000FromDb?.browserWindow.left).toBe(0)
+    expect(window1000FromDb?.browserWindow?.left).toBe(0)
     expect(window1000FromDb?.index).toBe(2)
   })
 
@@ -234,7 +236,18 @@ describe('WindowsStore', () => {
     expect((await db.getWindows()).length).toBe(2)
   })
 
-  // it('persists group with changing title', async () => {
+  it('tabset with open-in-window setting is added', async () => {
+
+    currentWindows = [window100]
+    await setupMocks(window100)
+    await useCommandExecutor().execute(new CreateTabsetCommand("tsName", [], 'open-in-window'))
+    await setupStores(db)
+
+    const windowsFromDb  = await db.getWindows()
+    expect(windowsFromDb.length).toBe(2)
+  })
+
+    // it('persists group with changing title', async () => {
   //     await useGroupsStore().initialize(db)
   //     await useGroupsStore().persistGroup(ChromeApi.createChromeTabGroupObject(1, "ab", 'grey' as chrome.tabGroups.ColorEnum))
   //     await useGroupsStore().persistGroup(ChromeApi.createChromeTabGroupObject(1, "abc", 'grey' as chrome.tabGroups.ColorEnum))

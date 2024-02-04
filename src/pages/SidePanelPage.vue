@@ -720,6 +720,10 @@ if ($q.platform.is.chrome) {
         //   } else {
         //     chrome.tabs.sendMessage(message.data.tabId, "cs-iframe-open")
         //   }
+      } else if (message.name === 'window-updated') {
+        console.log("got message 'window-updated'!", message)
+        //useWindowsStore().setup('got window-updated message')
+        //useUiStore().windowsChanged = message
       } else if (message.name === 'mqtt-url-changed') {
         console.log("got message 'mqtt-url-changed'", message)
         MqttService.reset().then(() => MqttService.init(message.data.mqttUrl))

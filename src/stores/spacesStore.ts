@@ -43,7 +43,7 @@ export const useSpacesStore = defineStore('spaces', () => {
    * @param ps a persistence storage
    */
   async function initialize(ps: PersistenceService) {
-    console.debug("initializing spacesStore", ps)
+    console.debug(" ...initializing spacesStore", ps)
     storage = ps
     await storage.loadSpaces()
   }

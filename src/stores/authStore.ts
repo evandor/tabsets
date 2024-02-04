@@ -6,9 +6,6 @@ import PersistenceService from "src/services/PersistenceService";
 import {computed, ref} from "vue";
 import {Account} from "src/models/Account";
 import {CURRENT_USER_ID} from "boot/constants";
-import {collection, doc, getDoc, getDocs} from "firebase/firestore";
-import {firestore} from "boot/firebase";
-import AppService from "src/services/AppService";
 
 export enum AccessItem {
   SYNC = "SYNC",
@@ -32,6 +29,7 @@ export const useAuthStore = defineStore('auth', () => {
 
   // --- init ---
   function initialize(ps: PersistenceService) {
+    console.debug(" ...initializing AuthStore")
     storage = ps
 
     // check stored user info
@@ -108,26 +106,7 @@ export const useAuthStore = defineStore('auth', () => {
       authenticated.value = true;
       user.value = u;
 
-      const userDoc = await getDoc(doc(firestore, "users", u.uid))
-      const userData = userDoc.data()
 
-      const account = new Account(u.uid, userData)
-
-      const querySnapshot = await getDocs(collection(firestore, "users", u.uid, "subscriptions"))
-      const products = new Set<string>()
-      querySnapshot.forEach((doc) => {
-        //console.log(doc.id, " => ", doc.data());
-        //key += doc.id + "|"
-        const subscriptionData = doc.data()
-        if (subscriptionData.data && subscriptionData.data.metadata) {
-          products.add(subscriptionData.data.metadata.product)
-        }
-        account.setProducts(Array.from(products))
-        console.log("hier", account, products)
-
-      })
-      upsertAccount(account)
-      setProducts(Array.from(products))
 
 
     } else {

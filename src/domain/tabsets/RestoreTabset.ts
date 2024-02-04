@@ -18,9 +18,7 @@ export class RestoreTabsetCommand implements Command<string> {
 
   async execute(): Promise<ExecutionResult<string>> {
     console.log("restoring from tabset", this.tabsetId)
-    const tabsStore = useTabsStore()
     try {
-      //tabsStore.deactivateListeners()
       const tabset = useTabsetService().getTabset(this.tabsetId)
       if (tabset) {
         console.log("found tabset for id", this.tabsetId)

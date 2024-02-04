@@ -24,18 +24,19 @@ import {Window} from "src/models/Window";
 import {BlobType, SavedBlob} from "src/models/SavedBlob";
 import {Message} from "src/models/Message";
 import {Account} from "src/models/Account";
+import {logtail} from "boot/logtail";
 
 class IndexedDbPersistenceService implements PersistenceService {
   private db: IDBPDatabase = null as unknown as IDBPDatabase
 
   async init(dbName: string) {
-    console.log("initializing indexeddb database", dbName)
+    console.log(" ...initializing indexeddb database", dbName)
     this.db = await this.initDatabase(dbName)
     useUiStore().dbReady = true
   }
 
   async loadTabsets(): Promise<any> {
-    console.log("loading tabsets indexeddb")
+    console.log(" loading tabsets indexeddb")
     const tabsStore = useTabsStore()
     return await this.db.getAll('tabsets')
       .then((res: any) => res.forEach((r: Tabset) => {
@@ -60,7 +61,7 @@ class IndexedDbPersistenceService implements PersistenceService {
   }
 
   async loadSpaces(): Promise<void> {
-    console.debug("loading spaces...")
+    console.debug(" loading spaces...")
     const spacesStore = useSpacesStore()
     const keys: IDBValidKey[] = await this.db.getAllKeys('spaces')
     _.forEach(keys, key => {
@@ -525,9 +526,9 @@ class IndexedDbPersistenceService implements PersistenceService {
       // not bad, simply resolve
       return Promise.resolve("Key already exists")
     }
-    if (!window.title) {
+    //if (!window.title) {
       // try to find matching window
-      console.log("trying to add new window ", window)
+      console.log("trying to add new window ", window.toString())
       const allWindows: Window[] = await this.db.getAll('windows') as Window[]
       console.log(`adding window ${window.id} to window list [${_.join(_.map(allWindows, w => w.id), ',')}]`)
       for (const w of allWindows) {
@@ -540,12 +541,18 @@ class IndexedDbPersistenceService implements PersistenceService {
           const oldId = w.id
           window = w
           window.id = useId
-          alert("replacing old window " + oldId + " with " + JSON.stringify(window))
+          console.warn("replacing old window " + oldId + " with " + JSON.stringify(window))
+
+          // logtail.warn("tabsets started", {
+          //   "mode": process.env.MODE,
+          //   "version": import.meta.env.PACKAGE_VERSION,
+          // })
+
           this.db.delete('windows', oldId)
           break
         }
       }
-    }
+    //}
     try {
       await this.db.add('windows', window, window.id)
     }
@@ -619,7 +626,7 @@ class IndexedDbPersistenceService implements PersistenceService {
   }
 
   private async initDatabase(dbName: string): Promise<IDBPDatabase> {
-    console.debug("about to initialize indexedDB")
+    console.debug(" about to initialize indexedDB")
     return await openDB(dbName, INDEX_DB_VERSION, {
       // upgrading see https://stackoverflow.com/questions/50193906/create-index-on-already-existing-objectstore
       upgrade(db) {

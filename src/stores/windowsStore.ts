@@ -5,9 +5,7 @@ import {useUtils} from "src/services/Utils";
 import {Window} from "src/models/Window";
 import _ from "lodash"
 import throttledQueue from "throttled-queue";
-import {useTabsStore} from "stores/tabsStore";
-import {Tabset} from "src/models/Tabset";
-import {Tab} from "src/models/Tab";
+
 
 /**
  * a pinia store for "Windows".
@@ -28,22 +26,6 @@ function closeTabWithTimeout(timeout: number, tabToCloseId: number | undefined =
   });
 }
 
-// class WindowHolder {
-//   constructor(
-//     public index: number,
-//     public cw: chrome.windows.Window,
-//     public windowFromStore: Window | undefined) {
-//   }
-// }
-
-// function getSortedWindows(windowForId: (id: number) => (Window | undefined)) {
-//   const theWindows: WindowHolder[] = _.sortBy(_.map(useWindowsStore().currentWindows as chrome.windows.Window[], (cw: chrome.windows.Window) => {
-//     const windowFromStore: Window | undefined = windowForId(cw.id || -1)
-//     return new WindowHolder(windowFromStore?.index || 0, cw, windowFromStore)
-//   }), "index")
-//   return theWindows;
-// }
-
 function urlToHost(url: string) {
   try {
     const theURL = new URL(url)
@@ -55,7 +37,7 @@ function urlToHost(url: string) {
 
 export const useWindowsStore = defineStore('windows', () => {
 
-  const {inBexMode} = useUtils()
+  const {inBexMode, sendMsg} = useUtils()
 
   /**
    * the map of all 'ever used' Chrome windows, even if they are not currently in use,
@@ -99,7 +81,7 @@ export const useWindowsStore = defineStore('windows', () => {
    * @param providedDb a persistence storage
    */
   async function initialize(providedDb: PersistenceService) {
-    console.log("initializing windowsStore")
+    console.debug(" ...initializing windowsStore")
     storage = providedDb
     await setup("initialization")
   }
@@ -108,11 +90,11 @@ export const useWindowsStore = defineStore('windows', () => {
     if (!inBexMode()) {
       return
     }
-    console.debug("init chrome windows listeners with trigger", trigger)
+    console.debug(" init chrome windows listeners with trigger", trigger)
     const browserWindows: chrome.windows.Window[] = await chrome.windows.getAll({populate: true})
 
     currentWindows.value = browserWindows
-    console.debug("initializing current windows with", currentWindows.value.length)
+    console.debug(` initializing current windows with ${currentWindows.value.length} window(s)`)
 
     // adding potentially new windows to storage - adding windows will not do anything if the key already exists
     for (const browserWindow of browserWindows) {
@@ -127,23 +109,6 @@ export const useWindowsStore = defineStore('windows', () => {
     let index = 0
 
     const storedWindows: Window[] = await storage.getWindows()
-
-    // adding potentially new windows from 'open in window' logic
-    let i = 0;
-    for (const ts of [...useTabsStore().tabsets.values()] as Tabset[]) {
-      if (ts.window !== "current") {
-        console.log("found tabset with window", ts.window)
-        const found = _.find(storedWindows, (w: Window) => ts.window === w.title)
-        if (!found) {
-          console.log("about to add new window with title", ts.window)
-          const hostList = new Set(_.map(ts.tabs, (tab: Tab) => urlToHost(tab.url || '')))
-          const newWindow = new Window(i++, undefined, ts.window, 0, false, hostList)
-          console.log("adding window", newWindow)
-          storedWindows.push(newWindow)
-          await storage.addWindow(newWindow)
-        }
-      }
-    }
 
     const sortedStoredWindows = _.sortBy(storedWindows, "index")
     //sortedStoredWindows.forEach(tabsetWindowFromStorage => {
@@ -170,6 +135,7 @@ export const useWindowsStore = defineStore('windows', () => {
       } else {
         allWindows.value.set(tabsetWindowFromStorage.id || 0, tabsetWindowFromStorage)
       }
+      console.log("allwindows set to ", allWindows.value)
     }
     for (const id of allWindows.value.keys()) {
       const w = allWindows.value.get(id)
@@ -229,6 +195,7 @@ export const useWindowsStore = defineStore('windows', () => {
         const chromeWindow = await chrome.windows.get(windowId)
         await storage.updateWindow(new Window(windowId, chromeWindow, windowFromDb.title, windowFromDb.index))
         refreshCurrentWindows()
+      //  sendMsg('window-updated', {})
       } else {
         console.log(`could not update window #${windowId}`)
       }
@@ -237,6 +204,7 @@ export const useWindowsStore = defineStore('windows', () => {
 
   function initListeners() {
     if (inBexMode()) {
+      console.debug (" ...initializing windowsStore Listeners")
       chrome.windows.onCreated.addListener(() => setup("onCreated"))
       chrome.windows.onRemoved.addListener((windowId: number) => onRemoved(windowId))
       chrome.windows.onFocusChanged.addListener((windowId) => onUpdate(windowId))
@@ -299,17 +267,17 @@ export const useWindowsStore = defineStore('windows', () => {
   }
 
   async function upsertWindow(window: chrome.windows.Window, title: string | undefined, index: number = 0) {
-    console.log("upserting window", window.id, title, index)
+    //console.log("upserting window", window.id, title, index)
     const tabsetsWindow = new Window(window.id || 0, window, title, index)
     if (window.id) {
       allWindows.value.set(window.id, tabsetsWindow)
     }
     await storage.upsertWindow(tabsetsWindow)
+    sendMsg('window-updated', {})
   }
 
   async function upsertTabsetWindow(w: Window) {
     console.log("upserting window", w)
-    //alert(w)
     await storage.upsertWindow(w)
   }
 
@@ -385,6 +353,7 @@ export const useWindowsStore = defineStore('windows', () => {
           allWindow.index = indexToUse
         }
         return storage.updateWindow(w)
+          .then(() => sendMsg('window-updated', {}))
       } else {
         return Promise.reject("window for #" + windowId + " not found")
       }
@@ -395,6 +364,7 @@ export const useWindowsStore = defineStore('windows', () => {
   return {
     initialize,
     initListeners,
+    setup,
     currentWindows,
     currentWindow,
     currentWindowName,

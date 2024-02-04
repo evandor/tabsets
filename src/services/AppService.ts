@@ -28,13 +28,14 @@ import {useAuthStore} from "stores/authStore";
 import PersistenceService from "src/services/PersistenceService";
 import {useUiStore} from "stores/uiStore";
 import {User} from "firebase/auth";
+import {Account} from "src/models/Account";
 
-const log = (s: string, ...args:any[]) => console.log("%c" + s, "font-weight:bold", ...args)
-const debug = (s: string, ...args:any[]) => console.debug("%c" + s, "font-weight:bold", ...args)
+//const log = (s: string, ...args: any[]) => console.log("%c" + s, "font-weight:bold", ...args)
+//const debug = (s: string, ...args: any[]) => console.debug("%c" + s, "font-weight:bold", ...args)
 
 function useGitStore(st: SyncType, su: string | undefined) {
   const isAuthenticated = useAuthStore().isAuthenticated()
-  debug("isAuthenticated", isAuthenticated)
+  console.debug("%cisAuthenticated", "font-weight:bold", isAuthenticated)
   return isAuthenticated && st && (st === SyncType.GITHUB || st === SyncType.MANAGED_GIT) && su
 }
 
@@ -44,12 +45,12 @@ class AppService {
   router: Router = null as unknown as Router
   initialized = false
 
-  async init(quasar:any, router: Router, forceRestart=false, user: User | undefined = undefined) {
+  async init(quasar: any, router: Router, forceRestart = false, user: User | undefined = undefined, account: Account | undefined = undefined) {
 
-    log(`initializing AppService: first start=${!this.initialized}, quasar set=${quasar !== undefined}, router set=${router !== undefined}`)
+    console.log(`%cinitializing AppService: first start=${!this.initialized}, forceRestart=${forceRestart}, quasar set=${quasar !== undefined}, router set=${router !== undefined}`, "font-weight:bold")
 
     if (this.initialized && !forceRestart) {
-      log("stopping AppService initialization; already initialized and not forcing restart")
+      console.log("%cstopping AppService initialization; already initialized and not forcing restart", "font-weight:bold")
       return Promise.resolve()
     }
 
@@ -86,35 +87,39 @@ class AppService {
     await IndexedDbPersistenceService.init("db")
     //  .then(() => {
 
-        // init services
-        useAuthStore().initialize(useDB(undefined).db)
-        await useAuthStore().setUser(user)
+    // init services
+    useAuthStore().initialize(useDB(undefined).db)
+    await useAuthStore().setUser(user)
+    if (account) {
+      useAuthStore().upsertAccount(account)
+    }
+    //useAuthStore().setProducts(Array.from(products))
 
-        await useNotificationsStore().initialize(useDB(undefined).db)
-        useSuggestionsStore().init(useDB(undefined).db)
-        await messagesStore.initialize(useDB(undefined).db)
+    await useNotificationsStore().initialize(useDB(undefined).db)
+    useSuggestionsStore().init(useDB(undefined).db)
+    await messagesStore.initialize(useDB(undefined).db)
 
-        tabsetService.setLocalStorage(localStorage)
+    tabsetService.setLocalStorage(localStorage)
 
-        if (useAuthStore().isAuthenticated()) {
-          // sync features
-          const syncType = LocalStorage.getItem(SYNC_TYPE) as SyncType || SyncType.NONE
-          const syncUrl = LocalStorage.getItem(SYNC_GITHUB_URL) as string
-          const dbOrGitDb = useGitStore(syncType, syncUrl) ?
-            useDB(undefined).gitDb :
-            useDB(undefined).db
-          debug("checking sync config:", syncType, syncUrl, dbOrGitDb)
+    if (useAuthStore().isAuthenticated()) {
+      // sync features
+      const syncType = LocalStorage.getItem(SYNC_TYPE) as SyncType || SyncType.NONE
+      const syncUrl = LocalStorage.getItem(SYNC_GITHUB_URL) as string
+      const dbOrGitDb = useGitStore(syncType, syncUrl) ?
+        useDB(undefined).gitDb :
+        useDB(undefined).db
+      console.debug("%cchecking sync config:","font-weight:bold", syncType, syncUrl, dbOrGitDb)
 
-          const gitInitResult = await GitPersistentService.init(syncType, syncUrl)
-          //  .then((gitInitResult: string) => {
-              log("gitInitResult", gitInitResult)
-              await this.initCoreSerivces(quasar, dbOrGitDb, this.router)
-         //   })
-        } else {
-          await this.initCoreSerivces(quasar, useDB(undefined).db, this.router)
-        }
+      const gitInitResult = await GitPersistentService.init(syncType, syncUrl)
+      //  .then((gitInitResult: string) => {
+      console.log("%cgitInitResult", "font-weight:bold", gitInitResult)
+      await this.initCoreSerivces(quasar, dbOrGitDb, this.router)
+      //   })
+    } else {
+      await this.initCoreSerivces(quasar, useDB(undefined).db, this.router)
+    }
 
-   //   })
+    //   })
 
 
     useNotificationsStore().bookmarksExpanded = quasar.localStorage.getItem("bookmarks.expanded") || []
@@ -123,14 +128,14 @@ class AppService {
 
 
   restart(ar: string) {
-    log(">>> restarting tabsets", window.location.href, ar)
+    console.log("%c>>> restarting tabsets","font-weight:bold", window.location.href, ar)
     const baseLocation = window.location.href.split("?")[0]
-    log(">>> baseLocation", baseLocation)
+    console.log("%c>>> baseLocation", "font-weight:bold", baseLocation)
     if (window.location.href.indexOf("?") < 0) {
       const tsIframe = window.parent.frames[0]
       //log("iframe", tsIframe)
       if (tsIframe) {
-        debug(">>> new window.location.href", baseLocation + "?" + ar)
+        console.debug("%c>>> new window.location.href","font-weight:bold", baseLocation + "?" + ar)
         tsIframe.location.href = baseLocation + "?" + ar
         //tsIframe.location.href = "https://www.skysail.io"
         tsIframe.location.reload()

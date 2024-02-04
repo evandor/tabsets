@@ -73,6 +73,7 @@ class GitPersistenceService implements PersistenceService {
   private useProxy = this.genericCorsProxy
 
   async init(syncType: SyncType, url: string | undefined) {
+    console.log(" ...initializing GitPersistenceService")
     if (url) {
       if (syncType === SyncType.GITHUB) {
         log("initializing github database", url)
