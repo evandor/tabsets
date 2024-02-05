@@ -81,7 +81,7 @@ if (isSignInWithEmailLink(auth, window.location.href)) {
       logtail.info("found email link redirection")
     })
     .catch((error) => {
-      console.error("error", error)
+      console.error("error in email link redirection", error)
       logtail.error("error in email link redirection", error)
       useSuggestionsStore().addSuggestion(Suggestion.getStaticSuggestion(StaticSuggestionIdent.RESTART_SUGGESTED))
     });

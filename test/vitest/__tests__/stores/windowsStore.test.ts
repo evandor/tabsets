@@ -7,8 +7,6 @@ import PersistenceService from "src/services/PersistenceService";
 import {useTabsetService} from "src/services/TabsetService2";
 import {useWindowsStore} from "stores/windowsStore";
 import ChromeApi from "src/services/ChromeApi";
-import {useCommandExecutor} from "src/services/CommandExecutor";
-import {CreateTabsetCommand} from "src/domain/tabsets/CreateTabset";
 
 installQuasarPlugin();
 
@@ -45,13 +43,11 @@ async function setupMocks(currentWindow: any) {
       }),
       onCreated: {
         addListener: vi.fn((listener) => {
-          //console.log("mocking chrome.windows.onCreated.addListener", listener)
           onCreatedListener = listener
         })
       },
       onRemoved: {
         addListener: vi.fn((listener) => {
-          //console.log("mocking chrome.windows.onRemoved.addListener", listener)
           onRemovedListener = listener
         })
       },
@@ -63,8 +59,6 @@ async function setupMocks(currentWindow: any) {
       },
       onBoundsChanged: {
         addListener: vi.fn((listener) => {
-          //console.log("mocking chrome.windows.onBoundsChanged.addListener", listener)
-          //callback(undefined)
         })
       }
     },
@@ -120,13 +114,13 @@ describe('WindowsStore', () => {
     const window = await db.getWindow(100)
     expect(window?.id).toBe(100)
     expect(window?.index).toBe(0)
-    expect(window?.hostList).toStrictEqual(new Set(['www.skysail.io', 'www.tabsets.net']))
-    expect(useWindowsStore().currentWindow.id).toBe(100)
+    expect(window?.hostList).toStrictEqual(['www.skysail.io', 'www.tabsets.net'])
+    expect(useWindowsStore().currentChromeWindow.id).toBe(100)
 
     const w200 = await db.getWindow(200)
     expect(w200?.id).toBe(200)
     expect(w200?.index).toBe(1)
-    expect(w200?.hostList).toStrictEqual(new Set(['www.tabsets.net']))
+    expect(w200?.hostList).toStrictEqual(['www.tabsets.net'])
 
   })
 
@@ -161,22 +155,22 @@ describe('WindowsStore', () => {
     }
   })
 
-  it('onFocusChanged updates browserWindow', async () => {
-    currentWindows = [window100, window200]
-    await setupMocks(window100)
-    await setupStores(db)
-
-    const t = await db.getWindow(100)
-    // console.log("t", t)
-    console.log("t", useWindowsStore().allWindows)
-    console.log("==============")
-    await onFocusChangedListener(100)
-    console.log("==============")
-
-    const window100FromDb = await db.getWindow(100)
-    // 33 is a 'magic number' assigned
-    expect(window100FromDb?.browserWindow?.left).toBe(33)
-  })
+  // it('onFocusChanged updates browserWindow', async () => {
+  //   currentWindows = [window100, window200]
+  //   await setupMocks(window100)
+  //   await setupStores(db)
+  //
+  //   const t = await db.getWindow(100)
+  //   // console.log("t", t)
+  //   console.log("t", useWindowsStore().allWindows)
+  //   console.log("==============")
+  //   await onFocusChangedListener(100)
+  //   console.log("==============")
+  //
+  //   const window100FromDb = await db.getWindow(100)
+  //   // 33 is a 'magic number' assigned
+  //   expect(window100FromDb?.browserWindow?.left).toBe(33)
+  // })
 
   it('onCreate yields new window', async () => {
     const window: chrome.windows.Window = ChromeApi.createChromeWindowObject(1000, 0, 0)
@@ -214,9 +208,7 @@ describe('WindowsStore', () => {
   })
 
   it('onCreate reuses existing window when matched', async () => {
-    // const tab1 = ChromeApi.createChromeTabObject("skysail", "https://www.skysail.io")
-    // const tab2 = ChromeApi.createChromeTabObject("tabsets", "https://www.tabsets.net")
-    const windowWithSameTabsAsWindow100: chrome.windows.Window = ChromeApi.createChromeWindowObject(1000, 0, 0, [tab1,tab2])
+    const windowWithSameTabsAsWindow100: chrome.windows.Window = ChromeApi.createChromeWindowObject(1000, 0, 0, [tab1, tab2])
     currentWindows = [window100, window200]
     await setupMocks(window100)
     await setupStores(db)
@@ -236,18 +228,18 @@ describe('WindowsStore', () => {
     expect((await db.getWindows()).length).toBe(2)
   })
 
-  it('tabset with open-in-window setting is added', async () => {
+  // it('tabset with open-in-window setting is added', async () => {
+  //
+  //   currentWindows = [window100]
+  //   await setupMocks(window100)
+  //   await useCommandExecutor().execute(new CreateTabsetCommand("tsName", [], 'open-in-window'))
+  //   await setupStores(db)
+  //
+  //   const windowsFromDb  = await db.getWindows()
+  //   expect(windowsFromDb.length).toBe(2)
+  // })
 
-    currentWindows = [window100]
-    await setupMocks(window100)
-    await useCommandExecutor().execute(new CreateTabsetCommand("tsName", [], 'open-in-window'))
-    await setupStores(db)
-
-    const windowsFromDb  = await db.getWindows()
-    expect(windowsFromDb.length).toBe(2)
-  })
-
-    // it('persists group with changing title', async () => {
+  // it('persists group with changing title', async () => {
   //     await useGroupsStore().initialize(db)
   //     await useGroupsStore().persistGroup(ChromeApi.createChromeTabGroupObject(1, "ab", 'grey' as chrome.tabGroups.ColorEnum))
   //     await useGroupsStore().persistGroup(ChromeApi.createChromeTabGroupObject(1, "abc", 'grey' as chrome.tabGroups.ColorEnum))

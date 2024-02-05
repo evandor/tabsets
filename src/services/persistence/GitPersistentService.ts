@@ -72,6 +72,8 @@ class GitPersistenceService implements PersistenceService {
 
   private useProxy = this.genericCorsProxy
 
+  getServiceName(): string { return "GitPersistenceService" }
+
   async init(syncType: SyncType, url: string | undefined) {
     console.log(" ...initializing GitPersistenceService")
     if (url) {

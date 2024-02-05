@@ -546,7 +546,7 @@ watchEffect(() => {
 })
 
 watchEffect(() => {
-  const windowId = useWindowsStore().currentWindow?.id || 0
+  const windowId = useWindowsStore().currentChromeWindow?.id || 0
   currentChromeTab.value = useTabsStore().getCurrentChromeTab(windowId) || useTabsStore().currentChromeTab
 })
 
@@ -616,6 +616,7 @@ function inIgnoredMessages(message: any) {
   return message.msg === "html2text" ||
     message.msg === "captureThumbnail" ||
     message.msg === "capture-annotation" ||
+    message.name === "window-updated" ||
     message.msg === "html2links"
 }
 
@@ -720,10 +721,6 @@ if ($q.platform.is.chrome) {
         //   } else {
         //     chrome.tabs.sendMessage(message.data.tabId, "cs-iframe-open")
         //   }
-      } else if (message.name === 'window-updated') {
-        console.log("got message 'window-updated'!", message)
-        //useWindowsStore().setup('got window-updated message')
-        //useUiStore().windowsChanged = message
       } else if (message.name === 'mqtt-url-changed') {
         console.log("got message 'mqtt-url-changed'", message)
         MqttService.reset().then(() => MqttService.init(message.data.mqttUrl))
@@ -862,6 +859,7 @@ const showAddTabButton = (tabset: Tabset, currentChromeTab: chrome.tabs.Tab) => 
     currentChromeTab.url !== 'chrome://newtab/' &&
     currentChromeTab.url.indexOf('/www/index.html#/mainpanel/notes/') < 0 &&
     currentChromeTab.url !== '' &&
+    currentChromeTab.url.indexOf('https://tabsets.web.app/?apiKey=') < 0 &&
     tabsStore.currentTabsetId === tabset.id
   //isCurrentTab()
 }

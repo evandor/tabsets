@@ -190,8 +190,8 @@ class ChromeApi {
                 contexts: ['all']
               })
 
-              console.log("context menu", useWindowsStore().currentWindows)
-              const currentWindows = useWindowsStore().currentWindows
+              console.log("context menu", useWindowsStore().currentChromeWindows)
+              const currentWindows = useWindowsStore().currentChromeWindows
               if (currentWindows.length > 1) {
                 chrome.contextMenus.create({
                   id: 'move_to_window',

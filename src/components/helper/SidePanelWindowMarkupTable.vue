@@ -1,5 +1,5 @@
 <template>
-  <div class="col-12 text-right">
+  <div class="col-12 text-right bg-grey-1">
 
     <Transition name="bounceInLeft" appear>
 
@@ -36,7 +36,7 @@
               style="max-height:15px">
             <!--            <td>{{ row['index' as keyof object] }}</td>-->
             <!--            <td>{{ row['state' as keyof object] }}</td>-->
-            <td class="text-left" :class="windowNameRowClass(row)" style="cursor:move">
+            <td class="text-left" :class="windowNameRowClass(row)" style="cursor:move" :data-testid="'windowDataColumn_name_' + row['id' as keyof object]">
               {{ row['name' as keyof object] }}
               <q-popup-edit v-model="row['name' as keyof object]"
                             @save="(val:string, initial:string) => setWindowName(row, val)"
@@ -45,8 +45,9 @@
                          dense autofocus counter
                          @keyup.enter="scope.set"/>
               </q-popup-edit>
+              <q-tooltip class="tooltip-small">{{row['hostList' as keyof object]}}</q-tooltip>
             </td>
-            <td>
+            <td :data-testid="'windowDataColumn_tabsCount_' + row['id' as keyof object]">
               {{ row['tabsCount' as keyof object] }}
             </td>
             <td>
@@ -59,7 +60,7 @@
                 </q-icon>
                 <q-icon name="open_in_new"
                         class="q-ml-sm cursor-pointer"
-                        :class="useWindowsStore().currentWindow?.id === row['id' as keyof object] ? 'text-grey' : 'text-blue-8 cursor-pointer'"
+                        :class="useWindowsStore().currentChromeWindow?.id === row['id' as keyof object] ? 'text-grey' : 'text-blue-8 cursor-pointer'"
                         @click="openWindow(row['id' as keyof object])">
                   <q-tooltip :delay=500 class="tooltip-small">Open this window</q-tooltip>
                 </q-icon>
@@ -114,6 +115,9 @@ import TabsetService from "src/services/TabsetService";
 import {useSuggestionsStore} from "stores/suggestionsStore";
 import MqttService from "src/services/mqtt/MqttService";
 import AppService from "src/services/AppService";
+import {useNotificationHandler} from "src/services/ErrorHandler";
+
+const {handleSuccess, handleError} = useNotificationHandler()
 
 const $q = useQuasar()
 
@@ -124,46 +128,41 @@ const windowsToOpen = ref<string>('')
 const windowsToOpenOptions = ref<object[]>([])
 const hoveredWindow = ref<number | undefined>(undefined)
 
-onMounted(() => {
-  rows.value = calcWindowRows()
-})
-
-watch(() => useWindowsStore().currentWindows, (newWindows, oldWindows) => {
-  console.log("windows changed", newWindows, oldWindows)
-  rows.value = calcWindowRows()
-})
-
-chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
- if (message.name === 'window-updated') {
+const windowsUpdatedListener = (message:any, sender:chrome.runtime.MessageSender, sendResponse:any) => {
+  if (message.name === 'window-updated') {
     console.log("got message 'window-updated'", message)
     useWindowsStore().setup('got window-updated message')
       .then(() => rows.value = calcWindowRows())
     //useUiStore().windowsChanged = message
   }
   return true
+}
+
+onMounted(() => {
+  rows.value = calcWindowRows()
 })
 
-// watchEffect(() => {
-//   const windowChangedEvent = useUiStore().windowsChanged
-//   if (windowChangedEvent) {
-//     const data = windowChangedEvent['data' as keyof object]
-//     console.log("ui store: windowsChanged", data)
-//
-//     setTimeout(() => {rows.value = calcWindowRows()}, 1000)
-//     // const windowId = data['windowId' as keyof object]
-//     // const title = data['title' as keyof object]
-//     // const index = data['index' as keyof object]
-//     //
-//     // const w = _.find(rows.value, r => r['id' as keyof object] === windowId)
-//     // if (w) {
-//     //   console.log("found w", w)
-//     //   w['title' as keyof object] = title
-//     //   w['index' as keyof object] = index
-//     // }
-//
-//     useUiStore().windowsChanged = undefined
-//   }
-// })
+watch(() => useWindowsStore().currentChromeWindows, (newWindows, oldWindows) => {
+  console.log("windows changed", newWindows, oldWindows)
+  rows.value = calcWindowRows()
+})
+
+//console.log("====>: chrome.runtime.onMessage.hasListeners(windowsUpdatedListener)", chrome.runtime.onMessage.hasListener(windowsUpdatedListener))
+chrome.runtime.onMessage.addListener(windowsUpdatedListener)
+
+chrome.tabs.onRemoved.addListener((tabId: number, removeInfo: chrome.tabs.TabRemoveInfo) => {
+  console.log ("***here we are", tabId, removeInfo)
+  useWindowsStore().setup('got window-updated message')
+    .then(() => rows.value = calcWindowRows())
+    .catch((err) => handleError(err))
+})
+
+chrome.tabs.onCreated.addListener((tab: chrome.tabs.Tab) => {
+  console.log ("***here we are2", tab)
+  useWindowsStore().setup('got window-updated message')
+    .then(() => rows.value = calcWindowRows())
+    .catch((err) => handleError(err))
+})
 
 watchEffect(() => {
   // adding potentially new windows from 'open in window' logic
@@ -172,7 +171,7 @@ watchEffect(() => {
     if (ts.window !== "current") {
       const found = _.find(rows.value, (r: object) => ts.window === r['name' as keyof object])
       if (!found) {
-        console.log("about to add new window with title", ts.window)
+        //console.debug (" about to add new window with title", ts.window)
         windowsToOpenOptions.value.push({
           label: ts.window,
           value: ts.id
@@ -182,10 +181,9 @@ watchEffect(() => {
   }
 })
 
-
 watchEffect(() => {
-  const res = useWindowsStore().currentWindow && useWindowsStore().currentWindow.id ?
-    useWindowsStore().windowNameFor(useWindowsStore().currentWindow.id || 0) || 'n/a' :
+  const res = useWindowsStore().currentChromeWindow && useWindowsStore().currentChromeWindow.id ?
+    useWindowsStore().windowNameFor(useWindowsStore().currentChromeWindow.id || 0) || 'n/a' :
     'n/a'
   currentWindowName.value = res
 })
@@ -204,7 +202,7 @@ const openNewWindow = (w: object) => {
 }
 
 const openWindow = (windowId: number) => {
-  if (useWindowsStore().currentWindow?.id !== windowId) {
+  if (useWindowsStore().currentChromeWindow?.id !== windowId) {
     chrome.windows.update(windowId, {drawAttention: true, focused: true},
       (callback) => {
       })
@@ -233,11 +231,11 @@ const closeWindow = (windowId: number) => {
 }
 
 const calcWindowRows = () => {
-  console.log("calculating window Rows")
-  const result = _.map(useWindowsStore().currentWindows as chrome.windows.Window[], (cw: chrome.windows.Window) => {
+  //console.log("calculating window Rows")
+  const result = _.map(useWindowsStore().currentChromeWindows as chrome.windows.Window[], (cw: chrome.windows.Window) => {
     const windowFromStore: Window | undefined = useWindowsStore().windowForId(cw.id || -2)
 
-    console.debug(`setting window ${cw.id} ['${windowFromStore?.title}'] (#${cw.tabs?.length} tabs) -> #${windowFromStore?.index}`)
+   // console.debug(`setting window ${cw.id} ['${windowFromStore?.title}'] (#${cw.tabs?.length} tabs, #${windowFromStore?.hostList.size} hosts) -> #${windowFromStore?.index}`)
 
     return {
       id: cw.id,
@@ -252,7 +250,8 @@ const calcWindowRows = () => {
       sessionId: cw.sessionId,
       state: cw.state,
       type: cw.type,
-      windowIcon: "*"
+      windowIcon: "*",
+      hostList: windowFromStore?.hostList
     }
   })
 
@@ -264,9 +263,10 @@ const setWindowName = (windowRow: object, newName: string) => {
   console.log("setWindowName", windowRow, newName)
   if (newName && newName.toString().trim().length > 0) {
     const id = windowRow['id' as keyof object]
-    chrome.windows.get(id, (cw) => {
+    chrome.windows.get(id, {populate: true},  (cw) => {
+      console.log("cw", cw)
       useWindowsStore().upsertWindow(cw, newName.toString().trim(), windowRow['index' as keyof object])
-      if (useWindowsStore().currentWindow?.id === id) {
+      if (useWindowsStore().currentChromeWindow?.id === id) {
         currentWindowName.value = newName
         //console.log("setting window name to ", currentWindowName.value)
         useWindowsStore().currentWindowName = newName

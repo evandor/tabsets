@@ -140,7 +140,7 @@ const createNewTabset = () => {
   console.log("createNewTabset", addAllOpenTabs.value, tabsStore.tabs, windowModel.value)
   let tabsToUse = addAllOpenTabs.value ? tabsStore.tabs : []
   if (props.windowId) {
-    const window:chrome.windows.Window | undefined = useWindowsStore().currentWindowForId(props.windowId)
+    const window:chrome.windows.Window | undefined = useWindowsStore().currentChromeWindow(props.windowId)
     if (window) {
       tabsToUse = window.tabs as chrome.tabs.Tab[]
       windowModel.value = newTabsetName.value

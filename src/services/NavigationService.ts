@@ -9,7 +9,6 @@ import {usePermissionsStore} from "stores/permissionsStore";
 import {FeatureIdent} from "src/models/AppFeature";
 import {Suggestion, SuggestionType} from "src/models/Suggestion";
 import {useSuggestionsStore} from "stores/suggestionsStore";
-import TabsetService from "src/services/TabsetService";
 
 class NavigationService {
 

@@ -82,6 +82,7 @@
 
         <q-btn
           icon="o_grid_view"
+          data-testid="buttonManageWindows"
           :class="rightButtonClass()"
           flat
           color="black"
@@ -159,12 +160,12 @@
 import {SidePanelView, useUiStore} from "src/stores/uiStore";
 import {useTabsStore} from "src/stores/tabsStore";
 import {Tab} from "src/models/Tab";
-import {onMounted, ref, watch, watchEffect} from "vue";
+import {ref, watchEffect} from "vue";
 import {useRouter} from "vue-router";
 import {usePermissionsStore} from "src/stores/permissionsStore";
 import {FeatureIdent} from "src/models/AppFeature";
 import NavigationService from "src/services/NavigationService";
-import {LocalStorage, openURL, uid, useQuasar} from "quasar";
+import {openURL, uid, useQuasar} from "quasar";
 import {useUtils} from "src/services/Utils";
 import {useWindowsStore} from "src/stores/windowsStore";
 import {useSuggestionsStore} from "stores/suggestionsStore";
@@ -176,10 +177,9 @@ import {ToastType} from "src/models/Toast";
 import SidePanelFooterLeftButtons from "components/helper/SidePanelFooterLeftButtons.vue";
 import {useAuthStore} from "stores/authStore";
 import {Account} from "src/models/Account";
-import {NotificationType, useNotificationHandler} from "src/services/ErrorHandler";
+import {useNotificationHandler} from "src/services/ErrorHandler";
 import SidePanelLoginWidget from "components/helper/SidePanelLoginWidget.vue";
 import SidePanelWindowMarkupTable from "components/helper/SidePanelWindowMarkupTable.vue";
-//import {Browser} from '@capacitor/browser';
 import {Window} from "src/models/Window"
 
 const {handleSuccess, handleError} = useNotificationHandler()
@@ -207,7 +207,7 @@ const account = ref<Account | undefined>(undefined)
 const randomKey = ref<string>(uid())
 
 watchEffect(() => {
-  const windowId = useWindowsStore().currentWindow?.id || 0
+  const windowId = useWindowsStore().currentChromeWindow?.id || 0
   if (useWindowsStore().windowForId(windowId)?.open) {
     //console.log("setting showWindowTable to ", useWindowsStore().windowForId(windowId)?.open)
     showWindowTable.value = useWindowsStore().windowForId(windowId)?.open || false
@@ -216,13 +216,6 @@ watchEffect(() => {
 
 watchEffect(() => {
   account.value = authStore.getAccount()
-})
-
-watchEffect(() => {
-  if (useWindowsStore().currentWindows.length === 1) {
-    console.log("setting showWindowTable to false (one window only)")
-    showWindowTable.value = false
-  }
 })
 
 watchEffect(() => {
@@ -255,7 +248,7 @@ watchEffect(() => {
   if (!inBexMode()) {
     return
   }
-  const windowId = useWindowsStore().currentWindow?.id || 0
+  const windowId = useWindowsStore().currentChromeWindow?.id || 0
   currentChromeTab.value = useTabsStore().getCurrentChromeTab(windowId) || useTabsStore().currentChromeTab
 })
 
@@ -360,7 +353,7 @@ const toggleShowWindowTable = () => {
   if (showWindowTable.value) {
     randomKey.value = uid()
   }
-  const windowId = useWindowsStore().currentWindow?.id || 0
+  const windowId = useWindowsStore().currentChromeWindow?.id || 0
   const currentWindow: Window | undefined = useWindowsStore().windowForId(windowId)
   if (currentWindow) {
     currentWindow.open = showWindowTable.value

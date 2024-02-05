@@ -2,7 +2,7 @@ import {usePermissionsStore} from "stores/permissionsStore";
 import ChromeListeners from "src/services/ChromeListeners";
 import ChromeBookmarkListeners from "src/services/ChromeBookmarkListeners";
 import BookmarksService from "src/services/BookmarksService";
-import {LocalStorage, useQuasar} from "quasar";
+import {LocalStorage} from "quasar";
 import IndexedDbPersistenceService from "src/services/IndexedDbPersistenceService";
 import {useNotificationsStore} from "stores/notificationsStore";
 import {useDB} from "src/services/usePersistenceService";
@@ -17,7 +17,7 @@ import {useSettingsStore} from "stores/settingsStore";
 import {useBookmarksStore} from "stores/bookmarksStore";
 import {useWindowsStore} from "src/stores/windowsStore";
 import {useSearchStore} from "stores/searchStore";
-import {Router, useRouter} from "vue-router";
+import {Router} from "vue-router";
 import {useGroupsStore} from "stores/groupsStore";
 import {FeatureIdent} from "src/models/AppFeature";
 import {useMessagesStore} from "src/stores/messagesStore";
@@ -30,15 +30,11 @@ import {useUiStore} from "stores/uiStore";
 import {User} from "firebase/auth";
 import {Account} from "src/models/Account";
 
-//const log = (s: string, ...args: any[]) => console.log("%c" + s, "font-weight:bold", ...args)
-//const debug = (s: string, ...args: any[]) => console.debug("%c" + s, "font-weight:bold", ...args)
-
 function useGitStore(st: SyncType, su: string | undefined) {
   const isAuthenticated = useAuthStore().isAuthenticated()
   console.debug("%cisAuthenticated", "font-weight:bold", isAuthenticated)
   return isAuthenticated && st && (st === SyncType.GITHUB || st === SyncType.MANAGED_GIT) && su
 }
-
 
 class AppService {
 
@@ -52,6 +48,11 @@ class AppService {
     if (this.initialized && !forceRestart) {
       console.log("%cstopping AppService initialization; already initialized and not forcing restart", "font-weight:bold")
       return Promise.resolve()
+    }
+
+    if (this.initialized) {
+      await ChromeListeners.resetListeners()
+      await useWindowsStore().resetListeners()
     }
 
     this.initialized = true
@@ -70,13 +71,11 @@ class AppService {
     appStore.init()
 
     // init of stores and some listeners
-    usePermissionsStore().initialize(useDB(quasar).localDb)
-      .then(() => {
-        ChromeListeners.initListeners()
-        ChromeBookmarkListeners.initListeners()
-        bookmarksStore.init()
-        BookmarksService.init()
-      })
+    await usePermissionsStore().initialize(useDB(quasar).localDb)
+    await ChromeListeners.initListeners()
+    ChromeBookmarkListeners.initListeners()
+    await bookmarksStore.init()
+    await BookmarksService.init()
     settingsStore.initialize(quasar.localStorage);
     tabsStore.initialize(quasar.localStorage).catch((err) => console.error("***" + err))
 
@@ -85,7 +84,6 @@ class AppService {
 
     // init db
     await IndexedDbPersistenceService.init("db")
-    //  .then(() => {
 
     // init services
     useAuthStore().initialize(useDB(undefined).db)
@@ -108,18 +106,14 @@ class AppService {
       const dbOrGitDb = useGitStore(syncType, syncUrl) ?
         useDB(undefined).gitDb :
         useDB(undefined).db
-      console.debug("%cchecking sync config:","font-weight:bold", syncType, syncUrl, dbOrGitDb)
+      console.debug("%cchecking sync config:", "font-weight:bold", syncType, syncUrl, dbOrGitDb)
 
       const gitInitResult = await GitPersistentService.init(syncType, syncUrl)
-      //  .then((gitInitResult: string) => {
       console.log("%cgitInitResult", "font-weight:bold", gitInitResult)
       await this.initCoreSerivces(quasar, dbOrGitDb, this.router)
-      //   })
     } else {
       await this.initCoreSerivces(quasar, useDB(undefined).db, this.router)
     }
-
-    //   })
 
 
     useNotificationsStore().bookmarksExpanded = quasar.localStorage.getItem("bookmarks.expanded") || []
@@ -128,14 +122,14 @@ class AppService {
 
 
   restart(ar: string) {
-    console.log("%c>>> restarting tabsets","font-weight:bold", window.location.href, ar)
+    console.log("%c>>> restarting tabsets", "font-weight:bold", window.location.href, ar)
     const baseLocation = window.location.href.split("?")[0]
     console.log("%c>>> baseLocation", "font-weight:bold", baseLocation)
     if (window.location.href.indexOf("?") < 0) {
       const tsIframe = window.parent.frames[0]
       //log("iframe", tsIframe)
       if (tsIframe) {
-        console.debug("%c>>> new window.location.href","font-weight:bold", baseLocation + "?" + ar)
+        console.debug("%c>>> new window.location.href", "font-weight:bold", baseLocation + "?" + ar)
         tsIframe.location.href = baseLocation + "?" + ar
         //tsIframe.location.href = "https://www.skysail.io"
         tsIframe.location.reload()
@@ -150,31 +144,27 @@ class AppService {
     const groupsStore = useGroupsStore()
     const tabsStore = useTabsStore()
 
-    spacesStore.initialize(dbOrGitDb)
-      .then(() => {
-        useTabsetService().init(dbOrGitDb, false)
-          .then(() => {
-            MHtmlService.init()
-            ChromeApi.init(router)
+    await spacesStore.initialize(dbOrGitDb)
+    await useTabsetService().init(dbOrGitDb, false)
+    await MHtmlService.init()
+    ChromeApi.init(router)
 
-            if (usePermissionsStore().hasFeature(FeatureIdent.TAB_GROUPS)) {
-              groupsStore.initialize(useDB(undefined).db)
-              groupsStore.initListeners()
-            }
+    if (usePermissionsStore().hasFeature(FeatureIdent.TAB_GROUPS)) {
+      await groupsStore.initialize(useDB(undefined).db)
+      groupsStore.initListeners()
+    }
 
-            windowsStore.initialize(useDB(undefined).db)
-            windowsStore.initListeners()
+    await windowsStore.initialize(useDB(undefined).db)
+    windowsStore.initListeners()
 
-            useUiStore().appLoading = false
+    useUiStore().appLoading = false
 
-            // tabsets not in bex mode means running on "shared.tabsets.net"
-            // probably running an import ("/imp/:sharedId")
-            // we do not want to go to the welcome back
-            if (tabsStore.tabsets.size === 0 && quasar.platform.is.bex && !useAuthStore().isAuthenticated()) {
-              router.push("/sidepanel/welcome")
-            }
-          })
-      })
+    // tabsets not in bex mode means running on "shared.tabsets.net"
+    // probably running an import ("/imp/:sharedId")
+    // we do not want to go to the welcome back
+    if (tabsStore.tabsets.size === 0 && quasar.platform.is.bex && !useAuthStore().isAuthenticated()) {
+      await router.push("/sidepanel/welcome")
+    }
 
 
   }
