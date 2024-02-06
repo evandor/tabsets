@@ -245,7 +245,7 @@ class ChromeListeners {
     }
     this.eventTriggered()
     console.debug(`onCreated: tab ${tab.id}: >>> ${tab.pendingUrl}`, tab)
-    sendMsg('window-updated', {})
+    sendMsg('window-updated', {initiated: "ChromeListeners#onCreated"})
     const tabsStore = useTabsStore()
 
     let foundSession = false
@@ -459,7 +459,7 @@ class ChromeListeners {
     console.log("onRemoved tab event: ", number, info)
     //useWindowsStore().refreshCurrentWindows()
     useWindowsStore().refreshTabsetWindow(info.windowId)
-    sendMsg('window-updated', {})
+    sendMsg('window-updated', {initiated: "ChromeListeners#onRemoved"})
   }
 
   onReplaced(n1: number, n2: number) {

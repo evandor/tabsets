@@ -28,7 +28,9 @@ import {Account} from "src/models/Account";
 class IndexedDbPersistenceService implements PersistenceService {
   private db: IDBPDatabase = null as unknown as IDBPDatabase
 
-  getServiceName(): string { return "IndexedDbPersistenceService" }
+  getServiceName(): string {
+    return "IndexedDbPersistenceService"
+  }
 
   async init(dbName: string) {
     console.log(" ...initializing indexeddb database", dbName)
@@ -522,11 +524,24 @@ class IndexedDbPersistenceService implements PersistenceService {
 
   async addWindow(window: Window): Promise<any> {
     console.debug("adding window", `id=${window.id}, index=${window.index}, #hostList=${window.hostList.length}`)
-    const existingWindowForWindowId = await this.db.get('windows', window.id)
+    const existingWindowForWindowId: Window | undefined = await this.db.get('windows', window.id)
     if (existingWindowForWindowId) {
+
+      const mergedWindow = new Window(
+        window.id,
+        window.browserWindow,
+        existingWindowForWindowId.title,
+        window.index,
+        existingWindowForWindowId.open,
+        window.hostList
+      )
+      console.debug(`merging windows to ${mergedWindow.toString()}`)
+      this.db.put('windows', mergedWindow, window.id).catch((err) => console.error("error", err))
+      return Promise.resolve("not added, updated hostList instead")
+
       // not bad, simply resolve
-      console.debug("key already exists")
-      return Promise.resolve("Key already exists")
+      //console.debug("key already exists")
+      //return Promise.resolve("Key already exists")
     }
     //if (!window.title) {
     // try to find matching window

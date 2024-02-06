@@ -45,7 +45,7 @@
                          dense autofocus counter
                          @keyup.enter="scope.set"/>
               </q-popup-edit>
-              <q-tooltip class="tooltip-small">{{row['hostList' as keyof object]}}</q-tooltip>
+
             </td>
             <td :data-testid="'windowDataColumn_tabsCount_' + row['id' as keyof object]">
               {{ row['tabsCount' as keyof object] }}
@@ -77,7 +77,7 @@
                 </q-icon>
               </template>
               <template v-else>
-                <div style="width:160px;">&nbsp;</div>
+                <div style="width:130px;">&nbsp;</div>
               </template>
             </td>
           </tr>
@@ -130,7 +130,7 @@ const hoveredWindow = ref<number | undefined>(undefined)
 
 const windowsUpdatedListener = (message:any, sender:chrome.runtime.MessageSender, sendResponse:any) => {
   if (message.name === 'window-updated') {
-    console.log("got message 'window-updated'", message)
+    console.log("got message 'window-updated'", message.data.initiated, message)
     useWindowsStore().setup('got window-updated message')
       .then(() => rows.value = calcWindowRows())
     //useUiStore().windowsChanged = message
@@ -168,7 +168,7 @@ watchEffect(() => {
   // adding potentially new windows from 'open in window' logic
   windowsToOpenOptions.value = [{label: ' > open new Window', value: 'newWindow'}]
   for (const ts of [...useTabsStore().tabsets.values()] as Tabset[]) {
-    if (ts.window !== "current") {
+    if (ts.window && ts.window !== "current" && ts.window.trim() !== '') {
       const found = _.find(rows.value, (r: object) => ts.window === r['name' as keyof object])
       if (!found) {
         //console.debug (" about to add new window with title", ts.window)

@@ -193,7 +193,6 @@ export const useWindowsStore = defineStore('windows', () => {
         console.log("updated to ", newWindow.toString())
         await storage.updateWindow(newWindow)
         refreshCurrentWindows()
-      //  sendMsg('window-updated', {})
       } else {
         console.log(`could not update window #${windowId}`)
       }
@@ -279,7 +278,7 @@ export const useWindowsStore = defineStore('windows', () => {
       allWindows.value.set(window.id, tabsetsWindow)
     }
     await storage.upsertWindow(tabsetsWindow)
-    sendMsg('window-updated', {})
+    sendMsg('window-updated', {initiated: "WindowsStore#upsertWindow"})
   }
 
   async function upsertTabsetWindow(w: Window) {
@@ -359,7 +358,7 @@ export const useWindowsStore = defineStore('windows', () => {
           allWindow.index = indexToUse
         }
         return storage.updateWindow(w)
-          .then(() => sendMsg('window-updated', {}))
+          //.then(() => sendMsg('window-updated', {initiated: "WindowsStore#updateWindowIndex"}))
       } else {
         return Promise.reject("window for #" + windowId + " not found")
       }
