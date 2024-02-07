@@ -14,7 +14,7 @@
             <!--                      v-model="windowsToOpen" :options="windowsToOpenOptions" label="Open..."/>-->
             <span class="text-grey-8 cursor-pointer"><q-icon name="open_in_new" color="primary" class="q-mr-xs"/>Open Window </span>
             <q-menu :offset="[0, 7]" fit>
-              <q-list dense>
+              <q-list dense style="min-width: 250px">
                 <q-item clickable v-close-popup v-for="w in windowsToOpenOptions">
                   <q-item-section @click="openNewWindow(w)">{{ w['label' as keyof object] }}</q-item-section>
                 </q-item>
@@ -40,16 +40,12 @@
                 @dblclick.stop="openRenameWindowDialog(row['id' as keyof object], row['name' as keyof object], row['index' as keyof object])"
                 @click.prevent.stop="openWindow(row['id' as keyof object])">
               <q-icon v-if="rows.length > 1" name="drag_indicator" class="q-mr-sm" style="cursor:move">
-                <q-tooltip>{{ row['index' as keyof object]}}</q-tooltip>
+                <q-tooltip class="tooltip-small" v-if="useSettingsStore().isEnabled('dev')">{{ row['index' as keyof object]}}</q-tooltip>
               </q-icon>
-              <span class="cursor-pointer" :data-testid="'windowDataColumn_name_' + row['id' as keyof object]">{{ row['name' as keyof object] }}</span>
-              <!--              <q-popup-edit v-model="row['name' as keyof object]"-->
-              <!--                            @save="(val:string, initial:string) => setWindowName(row, val)"-->
-              <!--                            v-slot="scope">-->
-              <!--                <q-input v-model="scope.value"-->
-              <!--                         dense autofocus counter-->
-              <!--                         @keyup.enter="scope.set"/>-->
-              <!--              </q-popup-edit>-->
+              <span class="cursor-pointer" :data-testid="'windowDataColumn_name_' + row['id' as keyof object]">
+                {{ row['name' as keyof object] }}
+                <q-tooltip class="tooltip-small" v-if="useSettingsStore().isEnabled('dev')">{{ row['id' as keyof object]}}</q-tooltip>
+              </span>
 
             </td>
             <td :data-testid="'windowDataColumn_tabsCount_' + row['id' as keyof object]">
@@ -128,6 +124,7 @@ import AppService from "src/services/AppService";
 import {useNotificationHandler} from "src/services/ErrorHandler";
 import ExportDialog from "components/dialogues/ExportDialog.vue";
 import RenameWindowDialog from "components/dialogues/RenameWindowDialog.vue";
+import {useSettingsStore} from "stores/settingsStore";
 
 const {handleError} = useNotificationHandler()
 const {sendMsg} = useUtils()
@@ -144,10 +141,9 @@ const hoveredWindow = ref<number | undefined>(undefined)
 const windowsUpdatedListener = (message: any, sender: chrome.runtime.MessageSender, sendResponse: any) => {
   if (message.name === 'window-updated') {
     console.log("got message 'window-updated'", message.data.initiated, message)
-    // useWindowsStore().setup('got window-updated message')
-    //   .then(() => rows.value = calcWindowRows())
+    useWindowsStore().setup('got window-updated message', true)
+      .then(() => rows.value = calcWindowRows())
     //useUiStore().windowsChanged = message
-    rows.value = calcWindowRows()
   }
   return true
 }

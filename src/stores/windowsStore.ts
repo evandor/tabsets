@@ -81,7 +81,7 @@ export const useWindowsStore = defineStore('windows', () => {
     await setup("initialization")
   }
 
-  async function setup(trigger: string = "") {
+  async function setup(trigger: string = "", keepWindowsFromStorage = false) {
     if (!inBexMode()) {
       return
     }
@@ -91,11 +91,13 @@ export const useWindowsStore = defineStore('windows', () => {
     currentChromeWindows.value = browserWindows
     console.debug(` initializing current chrome windows with ${currentChromeWindows.value.length} window(s)`)
 
-    // adding potentially new windows to storage - adding windows will not do anything if the key already exists
-    for (const browserWindow of browserWindows) {
-      const hostList = calcHostList(browserWindow.tabs || [])
-      const newWindow = new Window(browserWindow.id || 0, browserWindow, undefined, 0, false, hostList)
-      await storage.addWindow(newWindow)
+    if (!keepWindowsFromStorage) {
+      // adding potentially new windows to storage
+      for (const browserWindow of browserWindows) {
+        const hostList = calcHostList(browserWindow.tabs || [])
+        const newWindow = new Window(browserWindow.id || 0, browserWindow, undefined, 0, false, hostList)
+        await storage.addWindow(newWindow)
+      }
     }
 
     // setting all (new and older) windows to 'allWindows':
