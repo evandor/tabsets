@@ -40,11 +40,11 @@
                 @dblclick.stop="openRenameWindowDialog(row['id' as keyof object], row['name' as keyof object], row['index' as keyof object])"
                 @click.prevent.stop="openWindow(row['id' as keyof object])">
               <q-icon v-if="rows.length > 1" name="drag_indicator" class="q-mr-sm" style="cursor:move">
-                <q-tooltip class="tooltip-small" v-if="useSettingsStore().isEnabled('dev')">{{ row['index' as keyof object]}}</q-tooltip>
+<!--                <q-tooltip class="tooltip-small" v-if="useSettingsStore().isEnabled('dev')">{{ row['index' as keyof object]}}</q-tooltip>-->
               </q-icon>
               <span class="cursor-pointer" :data-testid="'windowDataColumn_name_' + row['id' as keyof object]">
                 {{ row['name' as keyof object] }}
-                <q-tooltip class="tooltip-small" v-if="useSettingsStore().isEnabled('dev')">{{ row['id' as keyof object]}}</q-tooltip>
+<!--                <q-tooltip class="tooltip-small" v-if="useSettingsStore().isEnabled('dev')">{{ row['id' as keyof object]}}</q-tooltip>-->
               </span>
 
             </td>
