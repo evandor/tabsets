@@ -153,6 +153,7 @@ class ChromeApi {
     if (process.env.MODE !== 'bex') {
       return
     }
+
     console.debug(" building context menu")
     const tabsStore = useTabsStore()
     if (chrome && chrome.contextMenus) {
