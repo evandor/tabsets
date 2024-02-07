@@ -33,7 +33,6 @@ onAuthStateChanged(auth, async (user) => {
     // https://firebase.google.com/docs/reference/js/auth.user
     console.log("%conAuthStateChanged: about to log in", "border:1px solid green")
 
-
     // --- if we do this in useAuthStore.setUser(), we cannot properly run vitest any more
     const userDoc = await getDoc(doc(firestore, "users", user.uid))
     const userData = userDoc.data()
@@ -49,16 +48,16 @@ onAuthStateChanged(auth, async (user) => {
       console.log("hier", account, products)
 
     })
-
     // --- end of statement
 
-    AppService.init($q, router, true, user, account)
+    await AppService.init($q, router, true, user, account)
+
   } else {
     // User is signed out
     console.log("%conAuthStateChanged: logged out", "border:1px solid green")
-    AppService.init($q, router, true, undefined)
+    await AppService.init($q, router, true, undefined)
     if (!router.currentRoute.value.path.startsWith("/mainpanel")) {
-      router.push("/")
+      await router.push("/")
     }
   }
 });
@@ -96,7 +95,14 @@ if (currentUser) {
   console.log("current user id found, waiting for auto-login")
   // we should be logged in any second
 } else {
-  AppService.init($q, router)
+
+  setTimeout(() => {
+    // triggers, but app should already have been started, no restart enforced
+    console.debug("app start fallback after 2000ms")
+    AppService.init($q, router, false)
+  }, 2000)
+
+
 }
 
 

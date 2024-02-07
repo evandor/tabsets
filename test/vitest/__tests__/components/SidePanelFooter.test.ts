@@ -63,9 +63,14 @@ describe('SidePanelFooter', () => {
             console.log("mocking chrome.windows.onCreated.addListener", tab)
           })
         },
+        onUpdated: {
+          addListener: vi.fn((tabId: number, updateInfo: chrome.tabs.TabChangeInfo) => {
+            console.log("mocking chrome.windows.onUpdated.addListener", tabId)
+          })
+        },
         onRemoved: {
           addListener: vi.fn((tabId: number, removeInfo: chrome.tabs.TabRemoveInfo) => {
-            console.log("mocking chrome.windows.onCreated.addListener", tabId)
+            console.log("mocking chrome.windows.onRemoved.addListener", tabId)
           })
         }
       },

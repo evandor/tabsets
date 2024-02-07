@@ -43,10 +43,10 @@ class AppService {
 
   async init(quasar: any, router: Router, forceRestart = false, user: User | undefined = undefined, account: Account | undefined = undefined) {
 
-    console.log(`%cinitializing AppService: first start=${!this.initialized}, forceRestart=${forceRestart}, quasar set=${quasar !== undefined}, router set=${router !== undefined}`, "font-weight:bold")
+    console.log(`%cinitializing AppService: first start=${!this.initialized}, forceRestart=${forceRestart}, quasar set=${quasar !== undefined}, router set=${router !== undefined}`, forceRestart ? "font-weight:bold" : "")
 
     if (this.initialized && !forceRestart) {
-      console.log("%cstopping AppService initialization; already initialized and not forcing restart", "font-weight:bold")
+      console.debug("stopping AppService initialization; already initialized and not forcing restart")
       return Promise.resolve()
     }
 

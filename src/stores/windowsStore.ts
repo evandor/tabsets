@@ -89,7 +89,7 @@ export const useWindowsStore = defineStore('windows', () => {
     const browserWindows: chrome.windows.Window[] = await chrome.windows.getAll({populate: true})
 
     currentChromeWindows.value = browserWindows
-    console.debug(` initializing current windows with ${currentChromeWindows.value.length} window(s)`)
+    console.debug(` initializing current chrome windows with ${currentChromeWindows.value.length} window(s)`)
 
     // adding potentially new windows to storage - adding windows will not do anything if the key already exists
     for (const browserWindow of browserWindows) {
@@ -178,7 +178,7 @@ export const useWindowsStore = defineStore('windows', () => {
   }
 
   /**
-   * we've only listening to onFocusChanged or onBoundsChanged (of active windows),
+   * we've only listening onBoundsChanged (of active windows),
    * so title and index should not change!
    * @param windowId
    */
@@ -272,7 +272,7 @@ export const useWindowsStore = defineStore('windows', () => {
 
   async function upsertWindow(window: chrome.windows.Window, title: string | undefined, index: number = 0) {
     const hostList = calcHostList(window.tabs || [])
-    console.log(`upserting window: id=${window.id}, title=${title}, index=${index}, #hostList=${hostList.length}`)
+    console.log(`upserting window: id=${window.id}, title=${title}, index=${index}, open=default(false), #hostList=${hostList.length}`)
     const tabsetsWindow = new Window(window.id || 0, window, title, index, false, hostList)
     if (window.id) {
       allWindows.value.set(window.id, tabsetsWindow)
@@ -281,9 +281,9 @@ export const useWindowsStore = defineStore('windows', () => {
     sendMsg('window-updated', {initiated: "WindowsStore#upsertWindow"})
   }
 
-  async function upsertTabsetWindow(w: Window) {
-    console.log("upserting window", w.toString())
-    await storage.upsertWindow(w)
+  async function upsertTabsetWindow(window: Window) {
+    console.debug(`upserting window: id=${window.id}, title=${window.title}, index=${window.index}, open=${window.open}, #hostList=${window.hostList.length}`)
+    await storage.upsertWindow(window)
   }
 
   async function removeWindow(windowId: number) {

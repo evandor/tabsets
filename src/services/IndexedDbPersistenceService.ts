@@ -591,7 +591,7 @@ class IndexedDbPersistenceService implements PersistenceService {
   }
 
   getWindow(windowId: number): Promise<Window | undefined> {
-    console.log("trying to get window with id", windowId)
+    //console.log("trying to get window with id", windowId)
     return this.db.get('windows', windowId)
   }
 
@@ -622,11 +622,9 @@ class IndexedDbPersistenceService implements PersistenceService {
 
   async upsertWindow(window: Window): Promise<void> {
     try {
-      console.log(`about to change window ${window.toString()}`)
+      console.log(`about to change window:  id=${window.id}, title=${window.title}, index=${window.index}, open=${window.open}, #hostList=${window.hostList.length}`)
       const asJson = JSON.parse(JSON.stringify(window))
-      //asJson['title'] = name
       delete asJson['tabs']
-      //console.log("storing window", asJson, window.id)
       await this.db.put('windows', asJson, window.id)
     } catch (err) {
       console.log("error renaming window", err)

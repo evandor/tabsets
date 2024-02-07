@@ -79,17 +79,18 @@ export function useUtils() {
     return false
   }
 
-  function urlToHost(url: string) {
+  function urlToHost(url: string): string {
     try {
       const theURL = new URL(url)
       return theURL.host
     } catch (err) {
-      return "?"
+      return null as unknown as string
     }
   }
 
   const calcHostList = (tabs: chrome.tabs.Tab[]): string[] => {
-    return Array.from(new Set(_.map(tabs, bwTabs => urlToHost(bwTabs.url || ''))))
+    const stringArray = Array.from(new Set(_.map(tabs, bwTabs => urlToHost(bwTabs.url || ''))))
+    return _.filter(stringArray, (e: string | undefined) => e !== null)
   }
 
   return {

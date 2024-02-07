@@ -3,7 +3,7 @@
 
     <Transition name="bounceInLeft" appear>
 
-      <q-markup-table class="q-ma-none" dense flat>
+      <q-markup-table class="q-ma-none bg-grey-2" dense flat>
         <thead>
         <tr>
           <!--          <th></th>-->
@@ -36,15 +36,20 @@
               style="max-height:15px">
             <!--            <td>{{ row['index' as keyof object] }}</td>-->
             <!--            <td>{{ row['state' as keyof object] }}</td>-->
-            <td class="text-left" :class="windowNameRowClass(row)" style="cursor:move" :data-testid="'windowDataColumn_name_' + row['id' as keyof object]">
-              {{ row['name' as keyof object] }}
-              <q-popup-edit v-model="row['name' as keyof object]"
-                            @save="(val:string, initial:string) => setWindowName(row, val)"
-                            v-slot="scope">
-                <q-input v-model="scope.value"
-                         dense autofocus counter
-                         @keyup.enter="scope.set"/>
-              </q-popup-edit>
+            <td class="text-left" :class="windowNameRowClass(row)"
+                @dblclick.stop="openRenameWindowDialog(row['id' as keyof object], row['name' as keyof object], row['index' as keyof object])"
+                @click.prevent.stop="openWindow(row['id' as keyof object])">
+              <q-icon v-if="rows.length > 1" name="drag_indicator" class="q-mr-sm" style="cursor:move">
+                <q-tooltip>{{ row['index' as keyof object]}}</q-tooltip>
+              </q-icon>
+              <span class="cursor-pointer" :data-testid="'windowDataColumn_name_' + row['id' as keyof object]">{{ row['name' as keyof object] }}</span>
+              <!--              <q-popup-edit v-model="row['name' as keyof object]"-->
+              <!--                            @save="(val:string, initial:string) => setWindowName(row, val)"-->
+              <!--                            v-slot="scope">-->
+              <!--                <q-input v-model="scope.value"-->
+              <!--                         dense autofocus counter-->
+              <!--                         @keyup.enter="scope.set"/>-->
+              <!--              </q-popup-edit>-->
 
             </td>
             <td :data-testid="'windowDataColumn_tabsCount_' + row['id' as keyof object]">
@@ -58,11 +63,16 @@
                         @click="minimizeWindow(row['id' as keyof object])">
                   <q-tooltip :delay=500 class="tooltip-small">Hide Window</q-tooltip>
                 </q-icon>
-                <q-icon name="open_in_new"
-                        class="q-ml-sm cursor-pointer"
-                        :class="useWindowsStore().currentChromeWindow?.id === row['id' as keyof object] ? 'text-grey' : 'text-blue-8 cursor-pointer'"
-                        @click="openWindow(row['id' as keyof object])">
-                  <q-tooltip :delay=500 class="tooltip-small">Open this window</q-tooltip>
+                <!--                <q-icon name="open_in_new"-->
+                <!--                        class="q-ml-sm cursor-pointer"-->
+                <!--                        :class="useWindowsStore().currentChromeWindow?.id === row['id' as keyof object] ? 'text-grey' : 'text-blue-8 cursor-pointer'"-->
+                <!--                        @click="openWindow(row['id' as keyof object])">-->
+                <!--                  <q-tooltip :delay=500 class="tooltip-small">Open this window</q-tooltip>-->
+                <!--                </q-icon>-->
+                <q-icon name="edit"
+                        class="q-ml-sm text-blue-8 cursor-pointer"
+                        @click="openRenameWindowDialog(row['id' as keyof object], row['name' as keyof object], row['index' as keyof object])">
+                  <q-tooltip :delay=500 class="tooltip-small">Edit Window Name</q-tooltip>
                 </q-icon>
                 <q-icon name="o_bookmark_add"
                         size="xs"
@@ -77,7 +87,7 @@
                 </q-icon>
               </template>
               <template v-else>
-                <div style="width:130px;">&nbsp;</div>
+                <div>&nbsp;</div>
               </template>
             </td>
           </tr>
@@ -116,8 +126,11 @@ import {useSuggestionsStore} from "stores/suggestionsStore";
 import MqttService from "src/services/mqtt/MqttService";
 import AppService from "src/services/AppService";
 import {useNotificationHandler} from "src/services/ErrorHandler";
+import ExportDialog from "components/dialogues/ExportDialog.vue";
+import RenameWindowDialog from "components/dialogues/RenameWindowDialog.vue";
 
-const {handleSuccess, handleError} = useNotificationHandler()
+const {handleError} = useNotificationHandler()
+const {sendMsg} = useUtils()
 
 const $q = useQuasar()
 
@@ -128,12 +141,13 @@ const windowsToOpen = ref<string>('')
 const windowsToOpenOptions = ref<object[]>([])
 const hoveredWindow = ref<number | undefined>(undefined)
 
-const windowsUpdatedListener = (message:any, sender:chrome.runtime.MessageSender, sendResponse:any) => {
+const windowsUpdatedListener = (message: any, sender: chrome.runtime.MessageSender, sendResponse: any) => {
   if (message.name === 'window-updated') {
     console.log("got message 'window-updated'", message.data.initiated, message)
-    useWindowsStore().setup('got window-updated message')
-      .then(() => rows.value = calcWindowRows())
+    // useWindowsStore().setup('got window-updated message')
+    //   .then(() => rows.value = calcWindowRows())
     //useUiStore().windowsChanged = message
+    rows.value = calcWindowRows()
   }
   return true
 }
@@ -143,7 +157,7 @@ onMounted(() => {
 })
 
 watch(() => useWindowsStore().currentChromeWindows, (newWindows, oldWindows) => {
-  console.log("windows changed", newWindows, oldWindows)
+  //console.log("windows changed", newWindows, oldWindows)
   rows.value = calcWindowRows()
 })
 
@@ -151,14 +165,21 @@ watch(() => useWindowsStore().currentChromeWindows, (newWindows, oldWindows) => 
 chrome.runtime.onMessage.addListener(windowsUpdatedListener)
 
 chrome.tabs.onRemoved.addListener((tabId: number, removeInfo: chrome.tabs.TabRemoveInfo) => {
-  console.log ("***here we are", tabId, removeInfo)
+  //console.log("***here we are", tabId, removeInfo)
   useWindowsStore().setup('got window-updated message')
     .then(() => rows.value = calcWindowRows())
     .catch((err) => handleError(err))
 })
 
 chrome.tabs.onCreated.addListener((tab: chrome.tabs.Tab) => {
-  console.log ("***here we are2", tab)
+  //console.log("***here we are2", tab)
+  // useWindowsStore().setup('got window-updated message')
+  //   .then(() => rows.value = calcWindowRows())
+  //   .catch((err) => handleError(err))
+})
+
+chrome.tabs.onUpdated.addListener((tabId: number, changeInfo: chrome.tabs.TabChangeInfo, tab: chrome.tabs.Tab) => {
+  //console.log("***here we are3", tab)
   useWindowsStore().setup('got window-updated message')
     .then(() => rows.value = calcWindowRows())
     .catch((err) => handleError(err))
@@ -235,13 +256,13 @@ const calcWindowRows = () => {
   const result = _.map(useWindowsStore().currentChromeWindows as chrome.windows.Window[], (cw: chrome.windows.Window) => {
     const windowFromStore: Window | undefined = useWindowsStore().windowForId(cw.id || -2)
 
-   // console.debug(`setting window ${cw.id} ['${windowFromStore?.title}'] (#${cw.tabs?.length} tabs, #${windowFromStore?.hostList.size} hosts) -> #${windowFromStore?.index}`)
+    // console.debug(`setting window ${cw.id} ['${windowFromStore?.title}'] (#${cw.tabs?.length} tabs, #${windowFromStore?.hostList.size} hosts) -> #${windowFromStore?.index}`)
 
     return {
       id: cw.id,
       index: windowFromStore?.index || 0,
       tabsCount: cw.tabs?.length || 0,
-      name: useWindowsStore().windowNameFor(cw.id || 0) || cw.id,
+      name: useWindowsStore().windowNameFor(cw.id || 0) || cw.id!.toString(),
       windowHeight: cw['height' as keyof object],
       windowWidth: cw['width' as keyof object],
       focused: cw.focused,
@@ -258,41 +279,23 @@ const calcWindowRows = () => {
   return _.sortBy(result, "index")
 }
 
-
-const setWindowName = (windowRow: object, newName: string) => {
-  console.log("setWindowName", windowRow, newName)
-  if (newName && newName.toString().trim().length > 0) {
-    const id = windowRow['id' as keyof object]
-    chrome.windows.get(id, {populate: true},  (cw) => {
-      console.log("cw", cw)
-      useWindowsStore().upsertWindow(cw, newName.toString().trim(), windowRow['index' as keyof object])
-      if (useWindowsStore().currentChromeWindow?.id === id) {
-        currentWindowName.value = newName
-        //console.log("setting window name to ", currentWindowName.value)
-        useWindowsStore().currentWindowName = newName
-      }
-    })
-  }
-
-}
-
 const handleDragAndDrop = async (event: any) => {
   const {moved, added} = event
-  console.log("event!", event)
+
   if (moved) {
-    console.log(`moved event: '${moved.element.id}' ${moved.oldIndex} -> ${moved.newIndex}`, rows.value)
+    console.log(`moved event: '${moved.element.id}' ${moved.oldIndex} -> ${moved.newIndex}`, rows.value, event)
     //useWindowsStore().moveWindow(rows.value, moved.element.id, moved.oldIndex, moved.newIndex)
     const windowIndex = moved.element.id
-    console.log("moving window", windowIndex)
+    //console.log("moving window", windowIndex)
     //const theWindows = getSortedWindows(windowForId);
 
     //console.log("*** theWindows", theWindows)
     const oldIndex = moved.oldIndex
     const newIndex = moved.newIndex
 
-    console.log("moving", windowIndex, oldIndex, newIndex)
+    //console.log("moving", windowIndex, oldIndex, newIndex)
     if (oldIndex >= 0 && rows.value.length > 0) {
-      console.log("old rows", _.map(rows.value, r => r['id' as keyof object] + ":" + r['index' as keyof object]))
+      console.log("old rows", _.map(rows.value, r => r['id' as keyof object] + "("+r['name' as keyof object]+"):" + r['index' as keyof object]))
       const newOrder = _.map(rows.value, r => r['id' as keyof object] as number)
       const startIndex = rows.value[0]['index' as keyof object]
       let index = startIndex
@@ -302,16 +305,38 @@ const handleDragAndDrop = async (event: any) => {
       }
     }
     rows.value = calcWindowRows()
+    sendMsg('window-updated', {initiated: "SidePanelWindowMarkupTable#handleDragAndDrop"})
 
     //useWindowsStore().refreshCurrentWindows()
+  } else {
+    console.log("unhandled event!", event)
   }
 }
 
-const windowNameRowClass = (row: any) => row['focused' as keyof object] ?
-  'text-bold' :
-  row['state'] === 'minimized' ?
-    'text-grey-5' :
-    ''
+const openRenameWindowDialog = (windowId: number, currentName: string, index: number) => {
+  $q.dialog({component: RenameWindowDialog, componentProps: {windowId, currentName, index}})
+    .onOk((name: string) => {
+      console.log("hier", name)
+      rows.value = calcWindowRows()
+      // if (useWindowsStore().currentChromeWindow?.id === windowId) {
+      //   useWindowsStore().currentWindowName = name
+      //   //sendMsg('window-updated', {initiated: "RenameWindowDialog#updateWindow"})
+      // }
+    })
+}
+
+const windowNameRowClass = (row: any) => {
+  if (useWindowsStore().currentChromeWindow?.id === row['id' as keyof object]) {
+    return row['focused' as keyof object] ? 'text-bold text-primary' : 'text-bold'
+  }
+  if (row['focused' as keyof object]) {
+    return 'text-primary'
+  }
+  if (row['state'] === 'minimized') {
+    return 'text-grey-5'
+  }
+  return ''
+}
 
 </script>
 
