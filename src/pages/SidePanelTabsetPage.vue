@@ -119,7 +119,7 @@ watchEffect(() => {
 })
 
 watchEffect(() => {
-  const windowId = useWindowsStore().currentWindow?.id || 0
+  const windowId = useWindowsStore().currentChromeWindow?.id || 0
   currentChromeTab.value = useTabsStore().getCurrentChromeTab(windowId) || useTabsStore().currentChromeTab
 })
 

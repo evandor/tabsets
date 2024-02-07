@@ -101,7 +101,7 @@ class ChromeApi {
       return
     }
 
-    console.debug("initializing ChromeApi")
+    console.debug(" ...initializing ChromeApi")
 
     chrome.alarms.create("housekeeping", {periodInMinutes: CLEANUP_PERIOD_IN_MINUTES})
     chrome.alarms.create("monitoring", {periodInMinutes: MONITORING_PERIOD_IN_MINUTES})
@@ -143,8 +143,8 @@ class ChromeApi {
   }
 
   stopWebRequestListener() {
-    console.debug("removing WebRequestListener if running", chrome.webRequest)
     if (chrome.webRequest) {
+      console.debug("removing WebRequestListener if running", chrome.webRequest)
       chrome.webRequest.onHeadersReceived.removeListener(this.onHeadersReceivedListener)
     }
   }
@@ -153,7 +153,8 @@ class ChromeApi {
     if (process.env.MODE !== 'bex') {
       return
     }
-    console.log("building context menu:", chrome)
+
+    console.debug(" building context menu")
     const tabsStore = useTabsStore()
     if (chrome && chrome.contextMenus) {
       chrome.contextMenus.removeAll(
@@ -190,8 +191,8 @@ class ChromeApi {
                 contexts: ['all']
               })
 
-              console.log("context menu", useWindowsStore().currentWindows)
-              const currentWindows = useWindowsStore().currentWindows
+              console.log("context menu", useWindowsStore().currentChromeWindows)
+              const currentWindows = useWindowsStore().currentChromeWindows
               if (currentWindows.length > 1) {
                 chrome.contextMenus.create({
                   id: 'move_to_window',
@@ -422,7 +423,7 @@ class ChromeApi {
     }
   }
 
-  createChromeWindowObject(id: number, top: number, left: number) {
+  createChromeWindowObject(id: number, top: number, left: number, tabs: chrome.tabs.Tab[] = []) {
     return {
       id,
       alwaysOnTop: false,
@@ -433,7 +434,8 @@ class ChromeApi {
       top: top,
       left: left,
       state: 'normal' as chrome.windows.windowStateEnum,
-      type: 'normal' as chrome.windows.windowTypeEnum
+      type: 'normal' as chrome.windows.windowTypeEnum,
+      tabs
     }
   }
 

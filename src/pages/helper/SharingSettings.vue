@@ -49,15 +49,15 @@
 
       </div>
 
-      <div class="col-3">
-        Installation ID
-      </div>
-      <div class="col-7">
-        {{ installationId }}
-      </div>
-      <div class="col">
+<!--      <div class="col-3">-->
+<!--        Installation ID-->
+<!--      </div>-->
+<!--      <div class="col-7">-->
+<!--        {{ installationId }}-->
+<!--      </div>-->
+<!--      <div class="col">-->
 
-      </div>
+<!--      </div>-->
 
     </div>
 

@@ -35,6 +35,8 @@ const throttleOne10Millis = throttledQueue(1, 10, true)
  */
 class PouchDbPersistenceService implements PersistenceService {
 
+  getServiceName(): string { return "PouchDbPersistenceService" }
+
   loadCategories(): Promise<any> {
     console.warn("loading categories... - not implemented")
     return Promise.reject("loadCategories not implemented")

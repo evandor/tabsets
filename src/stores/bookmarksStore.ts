@@ -51,7 +51,7 @@ export const  useBookmarksStore = defineStore('bookmarks', {
 
   actions: {
     init() {
-      console.debug("initializing bookmarkStore")
+      console.debug(" ...initializing bookmarkStore")
       if (process.env.MODE !== 'bex') {
         return Promise.resolve()
       }
@@ -62,8 +62,8 @@ export const  useBookmarksStore = defineStore('bookmarks', {
       this.bookmarksNodes = []
       this.bookmarksLeaves = []
       const accessGranted = usePermissionsStore().hasPermission("bookmarks") && usePermissionsStore().hasFeature(FeatureIdent.BOOKMARKS)
-      console.debug("loading bookmarks", accessGranted)//, (new Error()).stack)
       if (accessGranted) {
+        console.debug(" ...loading bookmarks")//, (new Error()).stack)
         // @ts-ignore
         const bookmarks: object[] = await chrome.bookmarks.search({})//, async (bookmarks) => {
         this.bookmarksLeaves = bookmarks

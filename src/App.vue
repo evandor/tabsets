@@ -4,21 +4,19 @@
 
 <script setup lang="ts">
 
-//window.global ||= window;
-
 import {LocalStorage, useQuasar} from "quasar";
 import AppService from "src/services/AppService";
 import {useAuthStore} from "stores/authStore";
 import {EventEmitter} from "events";
 import {logtail} from "boot/logtail";
 import {getAuth, isSignInWithEmailLink, onAuthStateChanged, signInWithEmailLink, UserCredential} from "firebase/auth";
-import {CURRENT_USER_EMAIL} from "boot/constants";
+import {CURRENT_USER_EMAIL, CURRENT_USER_ID} from "boot/constants";
+import {useSuggestionsStore} from "stores/suggestionsStore";
+import {StaticSuggestionIdent, Suggestion} from "src/models/Suggestion";
+import {useRoute, useRouter} from "vue-router";
 import {collection, doc, getDoc, getDocs} from "firebase/firestore";
 import {firestore} from "boot/firebase";
 import {Account} from "src/models/Account";
-import {useSuggestionsStore} from "stores/suggestionsStore";
-import {StaticSuggestionIdent, Suggestion} from "src/models/Suggestion";
-import {useRouter} from "vue-router";
 
 const $q = useQuasar()
 const router = useRouter()
@@ -29,57 +27,38 @@ emitter.setMaxListeners(12)
 
 const auth = getAuth();
 
-onAuthStateChanged(auth, (user) => {
+onAuthStateChanged(auth, async (user) => {
   if (user) {
     // User is signed in, see docs for a list of available properties
     // https://firebase.google.com/docs/reference/js/auth.user
-    console.log("%conAuthStateChanged: logged in", "border:1px solid green")
-    useAuthStore().setUser(user)
+    console.log("%conAuthStateChanged: about to log in", "border:1px solid green")
 
-    getDoc(doc(firestore, "users", user.uid))
-      .then(userDoc => {
-        //console.log("userDoc", userDoc)
-        const userData = userDoc.data()
-        console.log("userData", userData)
+    // --- if we do this in useAuthStore.setUser(), we cannot properly run vitest any more
+    const userDoc = await getDoc(doc(firestore, "users", user.uid))
+    const userData = userDoc.data()
+    const account = new Account(user.uid, userData)
+    const querySnapshot = await getDocs(collection(firestore, "users", user.uid, "subscriptions"))
+    const products = new Set<string>()
+    querySnapshot.forEach((doc) => {
+      const subscriptionData = doc.data()
+      if (subscriptionData.data && subscriptionData.data.metadata) {
+        products.add(subscriptionData.data.metadata.product)
+      }
+      account.setProducts(Array.from(products))
+      console.log("hier", account, products)
 
-        const account = new Account(user.uid, userData)
+    })
+    // --- end of statement
 
-        getDocs(collection(firestore, "users", user.uid, "subscriptions"))
-          .then((querySnapshot) => {
-            //console.log("querySnapshot", querySnapshot)
-            const products = new Set<string>()
-            querySnapshot.forEach((doc) => {
-              //console.log(doc.id, " => ", doc.data());
-              //key += doc.id + "|"
-              const subscriptionData = doc.data()
-              if (subscriptionData.status === "active") {
-                const items = subscriptionData.items
-                for (const i of items) {
-                  //console.log("checking item", i)
-                  if (i.plan.product) {
-                    products.add(i.plan.product)
-                  }
-                }
-              }
-              account.setProducts(Array.from(products))
-              // TODO we do not need to store that much
-              //account.addSubscription(subscriptionData)
-            })
-            useAuthStore().upsertAccount(account)
-            useAuthStore().setProducts(Array.from(products))
-
-            //AppService.restart("restarted=true")
-            AppService.init($q, router)
-          })
-
-      })
-
+    await AppService.init($q, router, true, user, account)
 
   } else {
     // User is signed out
     console.log("%conAuthStateChanged: logged out", "border:1px solid green")
-    useAuthStore().setUser(undefined)
-    AppService.init($q, router)
+    await AppService.init($q, router, true, undefined)
+    if (!router.currentRoute.value.path.startsWith("/mainpanel")) {
+      await router.push("/")
+    }
   }
 });
 
@@ -101,7 +80,7 @@ if (isSignInWithEmailLink(auth, window.location.href)) {
       logtail.info("found email link redirection")
     })
     .catch((error) => {
-      console.error("error", error)
+      console.error("error in email link redirection", error)
       logtail.error("error in email link redirection", error)
       useSuggestionsStore().addSuggestion(Suggestion.getStaticSuggestion(StaticSuggestionIdent.RESTART_SUGGESTED))
     });
@@ -111,7 +90,21 @@ if (isSignInWithEmailLink(auth, window.location.href)) {
 
 $q.dark.set($q.localStorage.getItem('darkMode') || false)
 
-AppService.init($q, router)
+const currentUser = $q.localStorage.getItem(CURRENT_USER_ID)
+if (currentUser) {
+  console.log("current user id found, waiting for auto-login")
+  // we should be logged in any second
+} else {
+
+  setTimeout(() => {
+    // triggers, but app should already have been started, no restart enforced
+    console.debug("app start fallback after 2000ms")
+    AppService.init($q, router, false)
+  }, 2000)
+
+
+}
+
 
 logtail.info("tabsets started", {
   "mode": process.env.MODE,

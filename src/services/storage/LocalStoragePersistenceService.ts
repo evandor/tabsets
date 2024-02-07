@@ -22,6 +22,8 @@ export class LocalStoragePersistenceService implements PersistenceService {
     this.quasar = quasar
   }
 
+  getServiceName(): string { return "LocalStoragePersistenceService" }
+
   deleteSpace(spaceId: string): void {
     throw new Error("Method not implemented.");
   }

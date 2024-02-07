@@ -33,7 +33,7 @@ export const useSettingsStore = defineStore('settings', () => {
   watch(thumbnailQuality, (val: Object) => localStorage.set("thumbnailQuality", val))
 
   function initialize(localStorage: any) {
-    console.debug("initializing settingsStore")
+    console.debug(" ...initializing settingsStore")
     const fts: string | undefined = localStorage.getItem("settings")
     if (fts) {
       activeToggles.value = _.map(fts.split(","), e => e.trim())

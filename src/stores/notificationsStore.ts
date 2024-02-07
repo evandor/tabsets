@@ -8,7 +8,6 @@ import {useUtils} from "src/services/Utils";
 import {useSuggestionsStore} from "stores/suggestionsStore";
 import {StaticSuggestionIdent, Suggestion} from "src/models/Suggestion";
 
-const {inBexMode} = useUtils()
 
 export const useNotificationsStore = defineStore('notifications', () => {
 
@@ -18,6 +17,9 @@ export const useNotificationsStore = defineStore('notifications', () => {
   const fabHasElementAnimation = ref(false)
   const updateToVersion = ref('')
   const notifications = ref([] as unknown as Notification[])
+
+  const {inBexMode} = useUtils()
+
 
   /**
    * the (internal) storage for this store to use
@@ -30,7 +32,7 @@ export const useNotificationsStore = defineStore('notifications', () => {
    * @param ps a notifications storage
    */
   async function initialize(ps: PersistenceService) {
-    console.debug("initializing notifications", ps)
+    console.debug(" ...initializing notifications")
     storage = ps
     const newNotifications = await storage.getNotifications(true)
     notifications.value = newNotifications

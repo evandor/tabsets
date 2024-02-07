@@ -59,7 +59,10 @@
         </template>
 
       </div>
-      <div class="col text-right text-black">
+      <div class="col text-right text-black" v-if="useUiStore().appLoading">
+        &nbsp;
+      </div>
+      <div v-else class="col text-right text-black">
         <q-btn icon="o_help" v-if="usePermissionsStore().hasFeature(FeatureIdent.HELP)"
                :class="rightButtonClass()"
                flat
@@ -68,7 +71,7 @@
                @click="openHelpView()">
         </q-btn>
 
-        <q-btn icon="o_settings" v-if="useTabsStore().tabsets.size > 0"
+        <q-btn icon="o_settings" v-if="useTabsStore().tabsets.size > 0 || useAuthStore().isAuthenticated()"
                :class="rightButtonClass()"
                flat
                color="black"
@@ -77,13 +80,14 @@
           <q-tooltip class="tooltip" anchor="top left" self="bottom left">{{ settingsTooltip() }}</q-tooltip>
         </q-btn>
 
-        <q-btn v-if="useWindowsStore().currentWindows.length > 1"
-               icon="o_grid_view"
-               :class="rightButtonClass()"
-               flat
-               color="black"
-               :size="getButtonSize()"
-               @click="toggleShowWindowTable()">
+        <q-btn
+          icon="o_grid_view"
+          data-testid="buttonManageWindows"
+          :class="rightButtonClass()"
+          flat
+          color="black"
+          :size="getButtonSize()"
+          @click="toggleShowWindowTable()">
           <q-tooltip class="tooltip" anchor="top left" self="bottom left">Manage Windows</q-tooltip>
         </q-btn>
 
@@ -95,7 +99,8 @@
             flat
             color="black"
             size="20px">
-            <q-tooltip :delay="2000" anchor="center left" self="center right" class="tooltip-small">Alternative Access</q-tooltip>
+            <q-tooltip :delay="2000" anchor="center left" self="center right"
+                       class="tooltip-small">Alternative Access</q-tooltip>
           </q-icon>
           <q-menu :offset="[0, 7]" fit>
             <q-list dense style="min-width: 200px;min-height:50px">
@@ -125,8 +130,11 @@
           <q-menu :offset="[0, 7]" fit>
             <q-list dense style="min-width: 150px;min-height:50px">
               <q-item clickable v-close-popup>
-                <q-item-section @click="subscribe()">Subscribe</q-item-section>
+                <q-item-section @click="gotoStripe()">Subscriptions</q-item-section>
               </q-item>
+              <!--              <q-item clickable v-close-popup>-->
+              <!--                <q-item-section @click="subscribe()">Subscribe</q-item-section>-->
+              <!--              </q-item>-->
               <q-item clickable v-close-popup>
                 <q-item-section @click="logout()">Logout</q-item-section>
               </q-item>
@@ -152,12 +160,12 @@
 import {SidePanelView, useUiStore} from "src/stores/uiStore";
 import {useTabsStore} from "src/stores/tabsStore";
 import {Tab} from "src/models/Tab";
-import {ref, watch, watchEffect} from "vue";
+import {ref, watchEffect} from "vue";
 import {useRouter} from "vue-router";
 import {usePermissionsStore} from "src/stores/permissionsStore";
 import {FeatureIdent} from "src/models/AppFeature";
 import NavigationService from "src/services/NavigationService";
-import {LocalStorage, openURL, uid, useQuasar} from "quasar";
+import {openURL, uid, useQuasar} from "quasar";
 import {useUtils} from "src/services/Utils";
 import {useWindowsStore} from "src/stores/windowsStore";
 import {useSuggestionsStore} from "stores/suggestionsStore";
@@ -169,10 +177,10 @@ import {ToastType} from "src/models/Toast";
 import SidePanelFooterLeftButtons from "components/helper/SidePanelFooterLeftButtons.vue";
 import {useAuthStore} from "stores/authStore";
 import {Account} from "src/models/Account";
-import {NotificationType, useNotificationHandler} from "src/services/ErrorHandler";
+import {useNotificationHandler} from "src/services/ErrorHandler";
 import SidePanelLoginWidget from "components/helper/SidePanelLoginWidget.vue";
 import SidePanelWindowMarkupTable from "components/helper/SidePanelWindowMarkupTable.vue";
-import {Browser} from '@capacitor/browser';
+import {Window} from "src/models/Window"
 
 const {handleSuccess, handleError} = useNotificationHandler()
 
@@ -199,13 +207,15 @@ const account = ref<Account | undefined>(undefined)
 const randomKey = ref<string>(uid())
 
 watchEffect(() => {
-  account.value = authStore.getAccount()
+  const windowId = useWindowsStore().currentChromeWindow?.id || 0
+  if (useWindowsStore().windowForId(windowId)?.open) {
+    //console.log("setting showWindowTable to ", useWindowsStore().windowForId(windowId)?.open)
+    showWindowTable.value = useWindowsStore().windowForId(windowId)?.open || false
+  }
 })
 
 watchEffect(() => {
-  if (useWindowsStore().currentWindows.length === 1) {
-    showWindowTable.value = false
-  }
+  account.value = authStore.getAccount()
 })
 
 watchEffect(() => {
@@ -238,7 +248,7 @@ watchEffect(() => {
   if (!inBexMode()) {
     return
   }
-  const windowId = useWindowsStore().currentWindow?.id || 0
+  const windowId = useWindowsStore().currentChromeWindow?.id || 0
   currentChromeTab.value = useTabsStore().getCurrentChromeTab(windowId) || useTabsStore().currentChromeTab
 })
 
@@ -343,6 +353,12 @@ const toggleShowWindowTable = () => {
   if (showWindowTable.value) {
     randomKey.value = uid()
   }
+  const windowId = useWindowsStore().currentChromeWindow?.id || 0
+  const currentWindow: Window | undefined = useWindowsStore().windowForId(windowId)
+  if (currentWindow) {
+    currentWindow.open = showWindowTable.value
+    useWindowsStore().upsertTabsetWindow(currentWindow)
+  }
 }
 
 const logout = () => {
@@ -363,6 +379,7 @@ const subscribe = () => router.push("/subscribe")
 
 const offsetBottom = () => ($q.platform.is.capacitor || $q.platform.is.cordova) ? 'margin-bottom:20px;' : ''
 
+const gotoStripe = () => openURL("https://billing.stripe.com/p/login/test_5kA9EHf2Da596HuaEE")
 
 </script>
 

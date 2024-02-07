@@ -39,7 +39,7 @@ export function useTabsetService() {
 
   const init = async (providedDb: PersistenceService,
                       doNotInitSearchIndex: boolean = false) => {
-    console.log("initializing tabsetService2", providedDb)
+    console.log(" ...initializing tabsetService2 as", providedDb.getServiceName())
     db = providedDb
 
     useTabsStore().clearTabsets()
@@ -61,7 +61,7 @@ export function useTabsetService() {
 
     useTabsStore().tabsets.forEach(ts => {
       if (ts.sharedId) {
-        console.log("subscribing to topic ", ts.sharedId)
+        //console.log("subscribing to topic ", ts.sharedId)
         MqttService.subscribe(ts.sharedId)
       }
     })

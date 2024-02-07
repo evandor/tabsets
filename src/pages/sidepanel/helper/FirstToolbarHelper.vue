@@ -43,7 +43,7 @@
         </div>
 
         <!-- spaces or not, here's the icons on the right side -->
-        <div class="col text-subtitle1 text-right q-ma-none q-pa-none q-pr-sm">
+        <div class="col text-subtitle1 text-right q-ma-none q-pa-none q-pr-sm" v-if="!useUiStore().appLoading">
 
           <slot name="iconsRight">
 
@@ -171,7 +171,7 @@ const stopSession = () => {
 }
 
 // const createWebsiteClipTooltip = () => {
-//   const windowId = useWindowsStore().currentWindow.id || 0
+//   const windowId = useWindowsStore().currentChromeWindow.id || 0
 //   const currentChromeTab = useTabsStore().getCurrentChromeTab(windowId) || useTabsStore().currentChromeTab
 //   return "Create Website Clip for tab " + currentChromeTab.url
 // }
@@ -179,7 +179,7 @@ const stopSession = () => {
 const webClipActive = () => tabsStore.currentChromeTab
 
 // const createClip = () => {
-//   const windowId = useWindowsStore().currentWindow.id || 0
+//   const windowId = useWindowsStore().currentChromeWindow.id || 0
 //   const currentChromeTab = useTabsStore().getCurrentChromeTab(windowId) || useTabsStore().currentChromeTab
 //   if (currentChromeTab && currentChromeTab.id) {
 //     ChromeApi.executeClippingJS(currentChromeTab.id)

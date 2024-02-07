@@ -14,6 +14,8 @@ import {Account} from "src/models/Account";
 
 interface PersistenceService {
 
+  getServiceName(): string
+
   loadTabsets():Promise<void>
   reloadTabset(tabsetId: string): void
   saveTabset(tabset: Tabset): Promise<any>

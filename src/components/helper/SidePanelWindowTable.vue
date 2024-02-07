@@ -104,20 +104,20 @@ onMounted(() => {
   rows.value = calcWindowRows()
 })
 
-watch(() => useWindowsStore().currentWindows, (newWindows, oldWindows) => {
+watch(() => useWindowsStore().currentChromeWindows, (newWindows, oldWindows) => {
   console.log("windows changed", newWindows, oldWindows)
   rows.value = calcWindowRows()
 })
 
 watchEffect(() => {
   const res = useWindowsStore().currentWindow && useWindowsStore().currentWindow.id ?
-    useWindowsStore().windowNameFor(useWindowsStore().currentWindow.id || 0) || 'n/a' :
+    useWindowsStore().windowNameFor(useWindowsStore().currentChromeWindow.id || 0) || 'n/a' :
     'n/a'
   currentWindowName.value = res
 })
 
 const openWindow = (windowId: number) => {
-  if (useWindowsStore().currentWindow?.id !== windowId) {
+  if (useWindowsStore().currentChromeWindow?.id !== windowId) {
     chrome.windows.update(windowId, {drawAttention: true, focused: true},
       (callback) => {
       })
@@ -142,7 +142,7 @@ const hideWindow = (windowId: number) => {
 }
 
 const restoreWindow = (windowId: number) => {
-  if (useWindowsStore().currentWindow?.id !== windowId) {
+  if (useWindowsStore().currentChromeWindow?.id !== windowId) {
     chrome.windows.update(windowId, {state: "normal"})
     useWindowsStore().refreshCurrentWindows()
   }
@@ -156,8 +156,8 @@ const closeWindow = (windowId: number) => {
 const calcWindowRows = () => {
   let index = 100
   const usedIndices: number[] = []
-  const result = _.map(useWindowsStore().currentWindows as chrome.windows.Window[], (cw: chrome.windows.Window) => {
-    const windowFromStore: Window | undefined = useWindowsStore().windowForId(cw.id || -1)
+  const result = _.map(useWindowsStore().currentChromeWindows as chrome.windows.Window[], (cw: chrome.windows.Window) => {
+    const windowFromStore: Window | undefined = useWindowsStore().windowForId(cw.id || -3)
     if (!windowFromStore || !windowFromStore.index) {
       console.log("found windowfromstore without index", windowFromStore)
     }
@@ -195,9 +195,9 @@ const calcWindowRows = () => {
 const setWindowName = (windowRow: object, newName: string) => {
   if (newName && newName.toString().trim().length > 0) {
     const id = windowRow['id' as keyof object]
-    chrome.windows.get(id, (cw) => {
+    chrome.windows.get(id, {populate: true}, (cw) => {
       useWindowsStore().upsertWindow(cw, newName.toString().trim(), windowRow['index' as keyof object])
-      if (useWindowsStore().currentWindow?.id === id) {
+      if (useWindowsStore().currentChromeWindow?.id === id) {
         currentWindowName.value = newName
         //console.log("setting window name to ", currentWindowName.value)
         useWindowsStore().currentWindowName = newName

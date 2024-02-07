@@ -261,7 +261,7 @@ export const useTabsStore = defineStore('tabs', {
 
   actions: {
     async initialize(localStorage: LocalStorage) {
-      console.debug("initializing tabsStore", localStorage)
+      console.debug(" ...initializing tabsStore")
       this.localStorage = localStorage
 
       if ("bex" === process.env.MODE) {

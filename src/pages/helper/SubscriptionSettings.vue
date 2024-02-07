@@ -27,7 +27,7 @@
       <q-btn label="GitLab" @click="authorizeWith(githubAuthProvider)"/>
     </div>
     <div class="col">
-      Authorized as: {{ userCredentials?.user.email || '---' }}
+      Authorized as: {{ useAuthStore().user?.email || '---' }}
     </div>
 
     <!--    <div class="col-3">-->
@@ -99,11 +99,6 @@ const subscription = ref<string | undefined>()
 
 const userCredentials = ref<UserCredential | undefined>(undefined)
 const claims = ref<object | undefined>(undefined)
-
-onMounted(() => {
-  console.log("moutned")
-
-})
 
 watchEffect(async () => {
   //const user = getAuth().currentUser
