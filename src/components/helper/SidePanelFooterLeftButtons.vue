@@ -12,7 +12,6 @@
 
   <q-btn v-if="useTabsStore().allTabsCount > 0"
          icon="o_view_list"
-         color="black"
          class="q-my-xs q-ml-xs q-mr-none q-px-xs"
          flat>
     <q-menu>

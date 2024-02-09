@@ -27,7 +27,7 @@
     </div>
 
     <!-- place QPageSticky at end of page -->
-    <q-page-sticky expand position="top" style="background-color:white">
+    <q-page-sticky expand position="top">
 
       <FirstToolbarHelper
           :show-search-box="true"

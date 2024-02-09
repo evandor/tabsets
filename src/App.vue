@@ -4,7 +4,7 @@
 
 <script setup lang="ts">
 
-import {LocalStorage, useQuasar} from "quasar";
+import {LocalStorage, setCssVar, useQuasar} from "quasar";
 import AppService from "src/services/AppService";
 import {useAuthStore} from "stores/authStore";
 import {EventEmitter} from "events";
@@ -87,8 +87,20 @@ if (isSignInWithEmailLink(auth, window.location.href)) {
 
 }
 
+const useDarkMode: boolean = $q.localStorage.getItem('darkMode') || false
+$q.dark.set(useDarkMode)
 
-$q.dark.set($q.localStorage.getItem('darkMode') || false)
+if (useDarkMode) {
+  setCssVar('primary', '#D9E8F5');
+  setCssVar('secondary', '#26A69A');
+  setCssVar('accent', '#9C27B0');
+  setCssVar('dark', '#1d1d1d');
+  setCssVar('positive', '#21BA45');
+  setCssVar('negative', '#C10015');
+  setCssVar('info', '#31CCEC');
+  setCssVar('separator', '#AA0099');
+ // setCssVar('warning', 'green');
+}
 
 const currentUser = $q.localStorage.getItem(CURRENT_USER_ID)
 if (currentUser) {

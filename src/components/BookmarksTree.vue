@@ -6,7 +6,6 @@
       v-if="bookmarksPermissionGranted"
       :nodes="bookmarksStore.bookmarksNodes"
       node-key="id"
-      selected-color="dark"
       @mouseenter="entered(true)"
       @mouseleave="entered(false)"
       v-model:selected="selected"
@@ -21,32 +20,8 @@
             </q-icon>
           </span>
 
-
-        <!--        <q-menu :v-model="false" context-menu>-->
-        <!--          <q-list style="min-width: 100px">-->
-        <!--            <q-item clickable v-close-popup>-->
-        <!--              <q-item-section @click="router.push('/bookmarks/' + prop.node.id)">Open</q-item-section>-->
-        <!--            </q-item>-->
-        <!--            <q-item clickable v-close-popup>-->
-        <!--              <q-item-section @click="importFromBookmarks(prop)">Import as tabset</q-item-section>-->
-        <!--            </q-item>-->
-        <!--          </q-list>-->
-        <!--        </q-menu>-->
       </template>
-      <!--      <template v-slot:header-leaf="prop">-->
-      <!--        <q-icon name="o_article" class="q-mr-sm"/>-->
-      <!--        {{ prop.node.label }}/{{ prop.node.menuShowing }}-->
-      <!--        <q-menu :v-model="false" context-menu>-->
-      <!--          <q-list style="min-width: 100px">-->
-      <!--            <q-item clickable v-close-popup>-->
-      <!--              <q-item-section>{{ prop.node.label }}/{{ prop.key }}</q-item-section>-->
-      <!--            </q-item>-->
-      <!--            <q-item clickable v-close-popup>-->
-      <!--              <q-item-section>ID: {{ prop.node.id }}</q-item-section>-->
-      <!--            </q-item>-->
-      <!--          </q-list>-->
-      <!--        </q-menu>-->
-      <!--      </template>-->
+
     </q-tree>
 
     <q-banner class="bg-yellow-1" v-else>
@@ -106,7 +81,8 @@ watchEffect(() => {
 watch(() => selected.value, (currentValue, oldValue) => {
   if (currentValue !== oldValue) {
     props.inSidePanel ?
-      NavigationService.openOrCreateTab([chrome.runtime.getURL("/www/index.html#/mainpanel/bookmarks/" + selected.value)]) :
+      NavigationService.openOrCreateTab(
+        [chrome.runtime.getURL("/www/index.html#/mainpanel/bookmarks/" + selected.value)], undefined, [], true) :
       router.push("/bookmarks/" + selected.value)
   }
 })

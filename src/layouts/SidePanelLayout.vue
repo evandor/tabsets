@@ -5,10 +5,7 @@
       <router-view/>
     </q-page-container>
 
-    <q-footer elevated v-if="tabsStore.tabsets?.size > 0">
-      <SidePanelFooter/>
-    </q-footer>
-    <q-footer elevated v-else>
+    <q-footer elevated>
       <SidePanelFooter/>
     </q-footer>
 

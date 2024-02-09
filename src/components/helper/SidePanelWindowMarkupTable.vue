@@ -1,20 +1,22 @@
 <template>
-  <div class="col-12 text-right bg-grey-1">
+  <div class="col-12 text-right">
 
     <Transition name="bounceInLeft" appear>
 
-      <q-markup-table class="q-ma-none bg-grey-2" dense flat>
+      <q-markup-table class="q-ma-none" dense flat>
         <thead>
         <tr>
           <!--          <th></th>-->
-          <th class="text-left" style="border-bottom: 1px solid #efefef">Window Name</th>
-          <th class="text-right" style="border-bottom: 1px solid #efefef">#Tabs</th>
-          <th class="text-right q-pr-none" style="border-bottom: 1px solid #efefef;text-align:right;">
-            <!--            <q-select dense options-dense borderless :item-aligned="true" style="width:100%"-->
-            <!--                      v-model="windowsToOpen" :options="windowsToOpenOptions" label="Open..."/>-->
-            <span class="text-grey-8 cursor-pointer"><q-icon name="open_in_new" color="primary" class="q-mr-xs"/>Open Window </span>
+          <th class="text-left">Window Name</th>
+          <th class="text-right">#Tabs</th>
+          <th class="text-right q-pr-none">
+            <span class="cursor-pointer"><q-icon name="open_in_new" class="q-mr-xs"/>Open Window </span>
             <q-menu :offset="[0, 7]" fit>
               <q-list dense style="min-width: 250px">
+                <q-item clickable v-close-popup>
+                  <q-item-section @click="openNewWindow({label: ' > open new Window', value: 'newWindow'})">Open new Window</q-item-section>
+                </q-item>
+                <q-separator v-if="windowsToOpenOptions.length > 0" />
                 <q-item clickable v-close-popup v-for="w in windowsToOpenOptions">
                   <q-item-section @click="openNewWindow(w)">{{ w['label' as keyof object] }}</q-item-section>
                 </q-item>
@@ -40,11 +42,11 @@
                 @dblclick.stop="openRenameWindowDialog(row['id' as keyof object], row['name' as keyof object], row['index' as keyof object])"
                 @click.prevent.stop="openWindow(row['id' as keyof object])">
               <q-icon v-if="rows.length > 1" name="drag_indicator" class="q-mr-sm" style="cursor:move">
-<!--                <q-tooltip class="tooltip-small" v-if="useSettingsStore().isEnabled('dev')">{{ row['index' as keyof object]}}</q-tooltip>-->
+                <q-tooltip class="tooltip-small" v-if="devMode">{{ row['index' as keyof object]}}</q-tooltip>
               </q-icon>
               <span class="cursor-pointer" :data-testid="'windowDataColumn_name_' + row['id' as keyof object]">
                 {{ row['name' as keyof object] }}
-<!--                <q-tooltip class="tooltip-small" v-if="useSettingsStore().isEnabled('dev')">{{ row['id' as keyof object]}}</q-tooltip>-->
+                <q-tooltip class="tooltip-small" v-if="devMode">{{ row['id' as keyof object]}}</q-tooltip>
               </span>
 
             </td>
@@ -70,11 +72,19 @@
                         @click="openRenameWindowDialog(row['id' as keyof object], row['name' as keyof object], row['index' as keyof object])">
                   <q-tooltip :delay=500 class="tooltip-small">Edit Window Name</q-tooltip>
                 </q-icon>
-                <q-icon name="o_bookmark_add"
+                <q-icon v-if="!windowIsManaged(row)"
+                  name="o_bookmark_add"
                         size="xs"
                         class="q-ml-sm text-warning cursor-pointer"
                         @click="saveAsTabset(row['id' as keyof object], row['name' as keyof object])">
                   <q-tooltip :delay=500 class="tooltip-small">Save as Tabset</q-tooltip>
+                </q-icon>
+                <q-icon v-else
+                        name="o_bookmark_add"
+                        :disabled="true"
+                        size="xs"
+                        class="q-ml-sm text-grey cursor-pointer">
+                  <q-tooltip :delay=500 class="tooltip-small">Already a tabset</q-tooltip>
                 </q-icon>
                 <q-icon name="o_close"
                         class="q-ml-sm text-red-8 cursor-pointer"
@@ -102,7 +112,7 @@ import {useWindowsStore} from "stores/windowsStore";
 import {onMounted, ref, watch, watchEffect} from "vue";
 import {Window} from "src/models/Window"
 import _ from "lodash";
-import {LocalStorage, QTable, uid, useQuasar} from "quasar";
+import { useQuasar} from "quasar";
 import {VueDraggableNext} from 'vue-draggable-next'
 import NewTabsetDialog from "components/dialogues/NewTabsetDialog.vue";
 import {useSpacesStore} from "stores/spacesStore";
@@ -110,19 +120,8 @@ import {useTabsStore} from "stores/tabsStore";
 import {Tabset} from "src/models/Tabset";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {RestoreTabsetCommand} from "src/domain/tabsets/RestoreTabset";
-import NavigationService from "src/services/NavigationService";
 import {useUtils} from "src/services/Utils";
-import {useUiStore} from "stores/uiStore";
-import {usePermissionsStore} from "stores/permissionsStore";
-import {useTabsetService} from "src/services/TabsetService2";
-import {useBookmarksStore} from "stores/bookmarksStore";
-import {useDB} from "src/services/usePersistenceService";
-import TabsetService from "src/services/TabsetService";
-import {useSuggestionsStore} from "stores/suggestionsStore";
-import MqttService from "src/services/mqtt/MqttService";
-import AppService from "src/services/AppService";
 import {useNotificationHandler} from "src/services/ErrorHandler";
-import ExportDialog from "components/dialogues/ExportDialog.vue";
 import RenameWindowDialog from "components/dialogues/RenameWindowDialog.vue";
 import {useSettingsStore} from "stores/settingsStore";
 
@@ -130,13 +129,16 @@ const {handleError} = useNotificationHandler()
 const {sendMsg} = useUtils()
 
 const $q = useQuasar()
+const settingsStore = useSettingsStore()
 
 const rows = ref<object[]>([])
 const currentWindowName = ref('---')
 
 const windowsToOpen = ref<string>('')
 const windowsToOpenOptions = ref<object[]>([])
+const tabsetsMangedWindows = ref<object[]>([])
 const hoveredWindow = ref<number | undefined>(undefined)
+const devMode = ref<boolean>(settingsStore.isEnabled('dev'))
 
 const windowsUpdatedListener = (message: any, sender: chrome.runtime.MessageSender, sendResponse: any) => {
   if (message.name === 'window-updated') {
@@ -183,16 +185,14 @@ chrome.tabs.onUpdated.addListener((tabId: number, changeInfo: chrome.tabs.TabCha
 
 watchEffect(() => {
   // adding potentially new windows from 'open in window' logic
-  windowsToOpenOptions.value = [{label: ' > open new Window', value: 'newWindow'}]
+  windowsToOpenOptions.value = []
+  tabsetsMangedWindows.value = []
   for (const ts of [...useTabsStore().tabsets.values()] as Tabset[]) {
     if (ts.window && ts.window !== "current" && ts.window.trim() !== '') {
+      tabsetsMangedWindows.value.push({label: ts.window, value: ts.id})
       const found = _.find(rows.value, (r: object) => ts.window === r['name' as keyof object])
       if (!found) {
-        //console.debug (" about to add new window with title", ts.window)
-        windowsToOpenOptions.value.push({
-          label: ts.window,
-          value: ts.id
-        })
+        windowsToOpenOptions.value.push({label: ts.window, value: ts.id})
       }
     }
   }
@@ -332,6 +332,10 @@ const windowNameRowClass = (row: any) => {
     return 'text-grey-5'
   }
   return ''
+}
+
+const windowIsManaged = (row: object) => {
+  return _.find(tabsetsMangedWindows.value, tmw => tmw['label' as keyof object] === row['name' as keyof object]) !== undefined
 }
 
 </script>

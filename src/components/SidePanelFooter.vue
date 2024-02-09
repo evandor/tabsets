@@ -1,6 +1,7 @@
 <template>
 
-  <q-footer class="bg-white q-pa-xs q-mt-sm" style="border-top: 1px solid lightgrey;" :style="offsetBottom()">
+  <q-footer
+    class="q-pa-xs q-mt-sm darkInDarkMode brightInBrightMode" style="border-top: 1px solid lightgrey" :style="offsetBottom()">
     <div class="row fit q-mb-sm" v-if="showLogin">
       <SidePanelLoginWidget @hide-login="showLogin = false"/>
     </div>
@@ -42,31 +43,16 @@
           <SidePanelFooterLeftButtons
             @was-clicked="doShowSuggestionButton = true"
             :show-suggestion-icon="showSuggestionIcon"/>
-
-        </template>
-
-        <template v-if="progress">
-          <q-linear-progress size="20px" :value="progress" color="primary">
-            <div class="absolute-full flex flex-center">
-              <q-badge color="white" text-color="accent" :label="progressLabel"/>
-            </div>
-          </q-linear-progress>
-        </template>
-        <template v-else>
-          <!--          <q-input borderless v-if="!progress && usePermissionsStore().hasFeature(FeatureIdent.NOTES)"-->
-          <!--                   class="q-ma-xs"-->
-          <!--                   style="height:20px;border: 1px dotted lightgray; border-radius: 3px;" v-model="dragTarget"/>-->
         </template>
 
       </div>
-      <div class="col text-right text-black" v-if="useUiStore().appLoading">
+      <div class="col text-right" v-if="useUiStore().appLoading">
         &nbsp;
       </div>
-      <div v-else class="col text-right text-black">
+      <div v-else class="col text-right">
         <q-btn icon="o_help" v-if="usePermissionsStore().hasFeature(FeatureIdent.HELP)"
                :class="rightButtonClass()"
                flat
-               color="black"
                :size="getButtonSize()"
                @click="openHelpView()">
         </q-btn>
@@ -74,7 +60,6 @@
         <q-btn icon="o_settings" v-if="useTabsStore().tabsets.size > 0 || useAuthStore().isAuthenticated()"
                :class="rightButtonClass()"
                flat
-               color="black"
                :size="getButtonSize()"
                @click="openOptionsPage()">
           <q-tooltip class="tooltip" anchor="top left" self="bottom left">{{ settingsTooltip() }}</q-tooltip>
@@ -85,7 +70,6 @@
           data-testid="buttonManageWindows"
           :class="rightButtonClass()"
           flat
-          color="black"
           :size="getButtonSize()"
           @click="toggleShowWindowTable()">
           <q-tooltip class="tooltip" anchor="top left" self="bottom left">Manage Windows</q-tooltip>
@@ -97,7 +81,6 @@
             :class="rightButtonClass()"
             class="cursor-pointer"
             flat
-            color="black"
             size="20px">
             <q-tooltip :delay="2000" anchor="center left" self="center right"
                        class="tooltip-small">Alternative Access</q-tooltip>

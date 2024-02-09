@@ -26,7 +26,7 @@
       </PricingCard>
     </div>
 
-    <q-page-sticky expand position="top" style="background-color:white">
+    <q-page-sticky expand position="top">
 
       <FirstToolbarHelper
         :showSearchBox="false">

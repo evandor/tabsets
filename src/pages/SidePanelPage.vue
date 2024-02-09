@@ -94,7 +94,7 @@
               class="rounded-borders q-ma-none q-pa-none" :key="tabset.id"
               v-for="(tabset,index) in tabsets">
         <q-expansion-item v-if="showTabset(tabset as Tabset)"
-                          header-class="q-ma-none q-pa-none q-pr-md bg-grey-2"
+                          header-class="q-ma-none q-pa-none q-pr-md"
                           :header-style="headerStyle(tabset as Tabset)"
                           group="tabsets"
                           :default-opened="tabsStore.tabsets.size === 1"
@@ -102,8 +102,7 @@
                           expand-icon-toggle
                           dense-toggle
                           v-model="selected_model[tabset.id]"
-                          @update:model-value="val => updateSelectedTabset(tabset.id, val, index)"
-                          expand-separator>
+                          @update:model-value="val => updateSelectedTabset(tabset.id, val, index)">
 
           <template v-slot:header>
             <q-item-section
@@ -265,19 +264,19 @@
     </div>
 
     <!-- place QPageSticky at end of page -->
-    <q-page-sticky expand position="top" style="background-color:white">
+    <q-page-sticky expand position="top" class="darkInDarkMode brightInBrightMode">
 
       <FirstToolbarHelper
         :showSearchBox="showSearchBox">
 
         <template v-slot:title v-if="permissionsStore && permissionsStore.hasFeature(FeatureIdent.SPACES)">
-          <div class="text-subtitle1 text-black" @click.stop="router.push('/sidepanel/spaces')">
-            <q-btn flat color="black" no-caps :label="toolbarTitle(tabsets as Tabset[])"/>
+          <div class="text-subtitle1" @click.stop="router.push('/sidepanel/spaces')">
+            <q-btn flat no-caps :label="toolbarTitle(tabsets as Tabset[])"/>
             <q-tooltip :delay="1000" class="tooltip">Click to open List of all Spaces</q-tooltip>
           </div>
         </template>
         <template v-slot:title v-else>
-          <div class="text-subtitle1 text-black">
+          <div class="text-subtitle1">
             {{ toolbarTitle(tabsets as Tabset[]) }}
             <q-icon
               v-if="LocalStorage.getItem(SYNC_TYPE) as SyncType === SyncType.GITHUB && useAuthStore().isAuthenticated()"
@@ -293,7 +292,6 @@
         </template>
 
       </FirstToolbarHelper>
-      <!--      <SecondToolbarHelper/>-->
 
     </q-page-sticky>
   </q-page>
@@ -417,14 +415,6 @@ onMounted(() => {
     Analytics.firePageViewEvent('SidePanelPage', document.location.href);
   }
 
-  // try {
-  //   console.log("fs", firestore)
-  //   getDoc(doc(firestore, "users", "gH7gtDfuq6XPPrdOjcspkuUm6bf2"))
-  //     .then(doc => console.log("doc", doc))
-  // } catch (err) {
-  //   console.log("errror", err)
-  // }
-
 })
 
 onUnmounted(() => {
@@ -435,18 +425,6 @@ watchEffect(() => {
   const ar = useAuthStore().useAuthRequest
   if (ar) {
     AppService.restart(ar)
-    // console.log(">>> authRequest received @", window.location.href)
-    // const baseLocation = window.location.href.split("?")[0]
-    // if (window.location.href.indexOf("?") < 0) {
-    //   const tsIframe = window.parent.frames[0]
-    //   //console.log("iframe", tsIframe)
-    //   if (tsIframe) {
-    //     console.debug(">>> new window.location.href", baseLocation + "?" + ar)
-    //     tsIframe.location.href = baseLocation + "?" + ar
-    //     tsIframe.location.reload()
-    //   }
-    // }
-    // useAuthStore().setAuthRequest(null as unknown as string)
   }
 })
 
@@ -906,14 +884,6 @@ const getPublicTabsetLink = (ts: Tabset) => {
   return image
 }
 
-const openElectronLink = (tabsetId: string) => {
-  const ts = useTabsetService().getTabset(tabsetId)
-  if (ts && ts.sharedId) {
-    const link = "electron-tabsets://#/pwa/imp/" + ts.sharedId + "?n=" + btoa(ts.name)
-    openURL(link)
-  }
-
-}
 const copyPublicShareToClipboard = (tabsetId: string) => {
   const ts = useTabsetService().getTabset(tabsetId)
   if (ts && ts.sharedId) {

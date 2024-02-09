@@ -1,5 +1,5 @@
 <template>
-  <div class="col-12 text-right text-black">
+  <div class="col-12 text-right">
     <template v-if="!mailSent">
       <div class="row q-ma-xs">
         <div class="col-7">
@@ -19,7 +19,7 @@
           <q-input outlined type="password" v-model="password" label="Password" dense/>
         </div>
         <div class="col-5">
-          <q-btn label="Sign Up" color="bg-primary text-black"
+          <q-btn label="Sign Up"
                  style="width:110px"
                  :loading="password.length > 0 && loading"
                  :disable="mailSent || password.length === 0"
@@ -40,7 +40,7 @@
       </div>
     </template>
     <Transition name="bounceInLeft" appear v-else>
-      <div class="text-caption text-black text-left">
+      <div class="text-caption text-left">
         please check your mail... (and maybe spam folder)<br>
         <span class="text-warning">Make sure to open the link in <b>this</b> window</span>
       </div>

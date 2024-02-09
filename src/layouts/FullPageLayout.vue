@@ -1,7 +1,7 @@
 <template>
   <q-layout view="hHh LpR lFr">
-    <q-header elevated class="bg-white text-black">
-      <q-toolbar>
+    <q-header elevated>
+      <q-toolbar class="">
 
         <template v-if="leftDrawerOpen">
           <q-img
@@ -44,12 +44,6 @@
           </div>
         </Transition>
 
-        <q-btn v-if="settingsStore.isEnabled('stats')"
-               class="q-mr-md" icon="o_query_stats" size="12px" style="min-width:24px" flat
-               @click="router.push('/stats')">
-          <q-tooltip>Check out stats (experimental)</q-tooltip>
-        </q-btn>
-
         <div v-if="unreadNotifications().length > 0">
           <q-btn flat icon="o_notifications" class="q-mr-md cursor-pointer">
             <q-badge floating color="red" rounded/>
@@ -64,11 +58,6 @@
             </q-list>
           </q-menu>
         </div>
-
-        <!--        <q-tab v-if="rssTabsCount > 0"-->
-        <!--               name="rss" icon="o_rss_feed" @click="tabsClicked(DrawerTabs.RSS)">-->
-        <!--          <q-tooltip class="tooltip" anchor="center right" self="center left" :delay="200">RSS Feeds</q-tooltip>-->
-        <!--        </q-tab>-->
 
         <span
           v-if="useSuggestionsStore().getSuggestions([SuggestionState.NEW, SuggestionState.DECISION_DELAYED]).length > 0">

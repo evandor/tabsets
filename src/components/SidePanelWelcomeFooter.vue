@@ -5,7 +5,7 @@
 
 
     <div class="row fit">
-      <div class="col-6 text-black">
+      <div class="col-6">
 
         <div class="q-my-sm q-mx-xs">
           Do more with an account
@@ -17,7 +17,7 @@
 
       </div>
 
-      <div class="col text-right text-black">
+      <div class="col text-right">
 
         <Transition name="fade" appear>
           <q-btn label="sign in or up"

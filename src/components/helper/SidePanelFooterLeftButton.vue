@@ -3,7 +3,7 @@
          :icon="props.icon"
          :class="leftButtonClass()"
          flat
-         :color="isActive() ? 'secondary':'black'"
+         :color="isActive() ? 'secondary':'primary'"
          :size="props.size"
          @click="toggleView()">
     <q-tooltip v-if="props.tooltip"

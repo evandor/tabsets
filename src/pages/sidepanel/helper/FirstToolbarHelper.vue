@@ -15,7 +15,7 @@
           <template v-else>
             <div class="column q-ma-none q-pa-none">
               <!-- @click.stop="router.push('/sidepanel/spaces')" -->
-              <div class="col q-ma-none q-pa-none cursor-pointer text-black text-subtitle1">
+              <div class="col q-ma-none q-pa-none cursor-pointer text-subtitle1">
                 <slot name="title">{{ props.title }}</slot>
               </div>
             </div>
@@ -35,7 +35,7 @@
           <template v-else>
 
             <!-- no spaces && not searching -->
-            <div class="col-12 text-black text-subtitle1">
+            <div class="col-12 text-subtitle1">
               <slot name="title">{{ props.title }}</slot>
             </div>
 
@@ -58,7 +58,6 @@
               <SidePanelToolbarButton icon="search"
                                       id="toggleSearchBtn"
                                       size="11px"
-                                      color="black"
                                       @click="toggleSearch"/>
               <span class="q-ma-none q-pa-none q-mx-sm text-grey-5">|</span>
             </template>

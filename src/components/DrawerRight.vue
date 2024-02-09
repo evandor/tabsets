@@ -5,7 +5,7 @@
       <div class="col-xs-12 col-md-9">
         <q-toolbar-title>
           <div class="row justify-start items-baseline">
-            <div class="col-1 text-black">
+            <div class="col-1">
               {{ drawerLabel() }}
             </div>
           </div>

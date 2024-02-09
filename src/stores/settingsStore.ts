@@ -5,7 +5,7 @@ import {useQuasar} from "quasar";
 
 export const useSettingsStore = defineStore('settings', () => {
 
-  const localStorage= useQuasar().localStorage
+  //const localStorage= useQuasar().localStorage
 
   const activeToggles = ref<string[]>([])
   const thresholds = ref(localStorage.getItem('thresholds') || {
