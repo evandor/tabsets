@@ -87,8 +87,17 @@ if (isSignInWithEmailLink(auth, window.location.href)) {
 
 }
 
-const useDarkMode: boolean = $q.localStorage.getItem('darkMode') || false
-$q.dark.set(useDarkMode)
+const useDarkMode: string = $q.localStorage.getItem('darkMode') || "false" as string
+if (useDarkMode === "true") {
+  console.log("useDarkMode true", typeof useDarkMode, useDarkMode)
+  $q.dark.set(true)
+} else if (useDarkMode === "false") {
+  console.log("useDarkMode false", typeof useDarkMode, useDarkMode)
+  $q.dark.set(false)
+} else {
+  console.log("useDarkMode auto", typeof useDarkMode, useDarkMode)
+  $q.dark.set("auto")
+}
 
 if (useDarkMode) {
   setCssVar('primary', '#D9E8F5');
@@ -99,7 +108,7 @@ if (useDarkMode) {
   setCssVar('negative', '#C10015');
   setCssVar('info', '#31CCEC');
   setCssVar('separator', '#AA0099');
- // setCssVar('warning', 'green');
+  // setCssVar('warning', 'green');
 }
 
 const currentUser = $q.localStorage.getItem(CURRENT_USER_ID)

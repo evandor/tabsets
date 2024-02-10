@@ -11,6 +11,11 @@
       <SidePanelWindowMarkupTable :key="randomKey"/>
     </div>
 
+    <div class="row fit q-mb-sm" v-if="showStatsTable">
+      <!-- https://michaelnthiessen.com/force-re-render -->
+      <SidePanelWindowMarkupTable :key="randomKey"/>
+    </div>
+
     <div class="row fit">
       <div class="col-7">
 
@@ -73,6 +78,15 @@
           :size="getButtonSize()"
           @click="toggleShowWindowTable()">
           <q-tooltip class="tooltip" anchor="top left" self="bottom left">Manage Windows</q-tooltip>
+        </q-btn>
+
+        <q-btn
+          icon="monitoring"
+          :class="rightButtonClass()"
+          flat
+          :size="getButtonSize()"
+          @click="toggleShowStatsTable()">
+          <q-tooltip class="tooltip" anchor="top left" self="bottom left">Show Stats</q-tooltip>
         </q-btn>
 
         <span v-if="usePermissionsStore().hasFeature(FeatureIdent.STANDALONE_APP)">
@@ -185,6 +199,7 @@ const showSuggestionIcon = ref(false)
 const doShowSuggestionButton = ref(false)
 const transitionGraceTime = ref(false)
 const showWindowTable = ref(false)
+const showStatsTable = ref(false)
 const showLogin = ref(false)
 const account = ref<Account | undefined>(undefined)
 const randomKey = ref<string>(uid())
@@ -343,6 +358,8 @@ const toggleShowWindowTable = () => {
     useWindowsStore().upsertTabsetWindow(currentWindow)
   }
 }
+
+const toggleShowStatsTable = () => showStatsTable.value = !showWindowTable.value
 
 const logout = () => {
   authStore.logout()

@@ -1,6 +1,6 @@
 <template>
   <div class="q-pa-md q-gutter-sm">
-    <q-banner rounded class="bg-grey-1 text-primary" style="border: 1px solid orange">
+    <q-banner rounded  style="border: 1px solid orange">
       <div class="text-body1">Experimental: Subscribe to Tabsets Pro Features.</div>
       <div class="text-caption">
         Some features need a subscription.<br><br>

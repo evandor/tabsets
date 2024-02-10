@@ -88,20 +88,14 @@ export const useTabsStore = defineStore('tabs', {
     currentTabsetId: null as unknown as string,
 
     // use listeners? Might make sense to turn them off when restoring old tabset for example
-    listenersOn: true,
+    listenersOn: true
 
-    localStorage: undefined as unknown as LocalStorage
   }),
 
   getters: {
 
     pinnedTabs(state): Tab[] {
       return []
-      // const currentTabset: Tabset = state.tabsets.get(state.currentTabsetId) || new Tabset("", "", [])
-      // return _.filter(currentTabset.tabs, (t: Tab) => {
-      //   //console.log("t", t.chromeTab, t)
-      //   return t?.pinned
-      // })
     },
 
     mostAccessedTabs(state): Tab[] {
@@ -260,9 +254,8 @@ export const useTabsStore = defineStore('tabs', {
   },
 
   actions: {
-    async initialize(localStorage: LocalStorage) {
+    async initialize() {
       console.debug(" ...initializing tabsStore")
-      this.localStorage = localStorage
 
       if ("bex" === process.env.MODE) {
         // --- own tab id ---

@@ -77,7 +77,7 @@ class AppService {
     await bookmarksStore.init()
     await BookmarksService.init()
     settingsStore.initialize(quasar.localStorage);
-    tabsStore.initialize(quasar.localStorage).catch((err) => console.error("***" + err))
+    tabsStore.initialize().catch((err) => console.error("***" + err))
 
     searchStore.init().catch((err) => console.error(err))
 

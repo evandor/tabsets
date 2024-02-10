@@ -11,7 +11,7 @@
 
 
   <div class="q-pa-md q-gutter-sm">
-    <!--    <q-banner rounded class="bg-grey-1 text-primary">-->
+    <!--    <q-banner rounded >-->
     <!--      Suggestions Info text: TODO-->
     <!--    </q-banner>-->
 

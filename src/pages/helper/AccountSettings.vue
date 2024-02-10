@@ -1,7 +1,7 @@
 <template>
 
   <div class="q-pa-md q-gutter-sm">
-    <q-banner rounded class="bg-grey-1 text-primary" style="border:1px solid orange">
+    <q-banner rounded style="border:1px solid orange">
       If you are currently logged in, your account details will be shown here.
     </q-banner>
 

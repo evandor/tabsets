@@ -1,7 +1,7 @@
 <template>
 
 
-  <q-toolbar class="text-primary lightgrey" v-if="tabsStore.tabsets.size > 0">
+  <q-toolbar v-if="tabsStore.tabsets.size > 0">
     <div class="row fit">
       <q-toolbar-title>
         <div class="row justify-start items-baseline">
@@ -15,7 +15,7 @@
   </q-toolbar>
 
   <div class="justify-start items-start greyBorderTop">
-    <q-tabs align="left" class="bg-grey-1"
+    <q-tabs align="left"
             inline-label
             v-model="tab"
             no-caps>
@@ -23,9 +23,9 @@
       <q-tab name="account" label="Account"/>
       <q-tab name="subscription" label="Subscription" icon="o_shopping_bag"/>
       <q-tab name="sharing" label="Sharing"
-             :class="useAuthStore().userMayAccess(AccessItem.SHARE) ? 'text-black':'text-grey'"/>
+             :class="useAuthStore().userMayAccess(AccessItem.SHARE) ? 'text-primary':'text-grey'"/>
       <q-tab name="syncing" label="Syncing"
-             :class="useAuthStore().userMayAccess(AccessItem.SYNC) ? 'text-black':'text-grey'"/>
+             :class="useAuthStore().userMayAccess(AccessItem.SYNC) ? 'text-primary':'text-grey'"/>
       <q-tab name="thirdparty" label="Third Party Services"/>
       <!--      <q-tab name="ignored" label="Ignored Urls"/>-->
       <q-tab name="archived" label="Archived Tabsets"
@@ -34,14 +34,14 @@
       <q-tab name="importExport" label="Import/Export"/>
       <q-tab name="internals" label="Internals" v-if="devEnabled"/>
       <q-tab name="featureToggles" label="Feature Toggles"
-             :class="useAuthStore().userMayAccess(AccessItem.FEATURE_TOGGLES) ? 'text-black':'text-grey'"/>
+             :class="useAuthStore().userMayAccess(AccessItem.FEATURE_TOGGLES) ? 'text-primary':'text-grey'"/>
     </q-tabs>
   </div>
 
   <div v-if="tab === 'appearance'">
 
     <div class="q-pa-md q-gutter-sm">
-      <q-banner rounded class="bg-grey-1 text-primary">On this settings page, you can adjust the general appearance of
+      <q-banner rounded style="border:1px solid orange">On this settings page, you can adjust the general appearance of
         the tabsets extension.
       </q-banner>
 
@@ -56,8 +56,10 @@
         </InfoLine>
 
         <InfoLine label="Dark Mode (experimental)">
-          <q-radio v-model="darkMode" :val="true" label="Enabled"/>
-          <q-radio v-model="darkMode" :val="false" label="Disabled"/>
+          <q-radio v-model="darkMode" val="auto" label="Auto"/>
+          <q-radio v-model="darkMode" val="true" label="Enabled"/>
+          <q-radio v-model="darkMode" val="false" label="Disabled"/>
+          &nbsp;&nbsp;&nbsp;(changing this needs restart)
         </InfoLine>
 
         <InfoLine :label="'Tab Info Detail Level ' +  (detailLevelPerTabset ? ' (Default)' : '')">
@@ -75,7 +77,7 @@
         </InfoLine>
 
         <InfoLine label="Ignore Browser Extensions as tabs">
-          <q-toggle v-model="ignoreExtensionsEnabled"/>
+          <q-toggle v-model="ignoreExtensionsEnabled" @click="updateSettings('extensionsAsTabs', ignoreExtensionsEnabled)"/>
         </InfoLine>
 
       </div>
@@ -185,7 +187,7 @@
   <div v-if="tab === 'sharing'">
     <div class="q-pa-md q-gutter-sm">
       <SharingSettings v-if="useAuthStore().isAuthenticated()"/>
-      <q-banner v-else rounded class="bg-grey-1 text-primary">
+      <q-banner v-else rounded>
         To use sharing, you need to have a (free) account.
       </q-banner>
     </div>
@@ -194,7 +196,7 @@
   <div v-if="tab === 'syncing'">
     <div class="q-pa-md q-gutter-sm">
       <SyncingSettings v-if="useAuthStore().userMayAccess(AccessItem.SYNC)" @was-clicked="e => setTab(e)"/>
-      <q-banner v-else rounded class="bg-grey-1 text-primary">
+      <q-banner v-else rounded style="border:1px solid orange">
         To use Syncing, you need to have a account and subscribe to the 'SYNC' Plan.
       </q-banner>
     </div>
@@ -206,7 +208,7 @@
 
       <div class="text-h6">Permissions</div>
 
-      <q-banner rounded class="bg-grey-1 text-primary">The active permissions for the Tabset Extension</q-banner>
+      <q-banner rounded>The active permissions for the Tabset Extension</q-banner>
 
       <div class="row items-baseline q-ma-md">
         <div class="col-3">
@@ -228,7 +230,7 @@
 
       <div class="text-h6">Groups</div>
 
-      <q-banner rounded class="bg-grey-1 text-primary">All Chrome Groups, active and non-active</q-banner>
+      <q-banner rounded>All Chrome Groups, active and non-active</q-banner>
 
       <div class="row items-baseline q-ma-md">
         <div class="col-3">
@@ -239,7 +241,7 @@
         </div>
       </div>
 
-      <q-banner rounded class="bg-grey-1 text-primary">All active Chrome Groups</q-banner>
+      <q-banner rounded>All active Chrome Groups</q-banner>
 
       <div class="row items-baseline q-ma-md">
         <div class="col-3">
@@ -259,7 +261,7 @@
 
     <div class="q-pa-md q-gutter-sm">
 
-      <q-banner rounded class="bg-grey-1 text-primary">Urls can be ignored so that the tabsets extension will not
+      <q-banner rounded>Urls can be ignored so that the tabsets extension will not
         notifiy you about changes.
       </q-banner>
 
@@ -278,7 +280,7 @@
   <div v-if="tab === 'archived'">
     <div class="q-pa-md q-gutter-sm">
 
-      <q-banner rounded class="bg-grey-1 text-primary">Tabsets can be archived to remove them from direct view. Here's
+      <q-banner rounded style="border:1px solid orange">Tabsets can be archived to remove them from direct view. Here's
         the list of archived tabsets so that
         they can be restored if needed.
       </q-banner>
@@ -298,7 +300,7 @@
 
     <div class="q-pa-md q-gutter-sm">
 
-      <q-banner rounded class="bg-grey-1 text-primary">This Browser Extension tracks your tabsets and provides a
+      <q-banner rounded style="border:1px solid orange">This Browser Extension tracks your tabsets and provides a
         search
         bar to search for keywords.
       </q-banner>
@@ -320,7 +322,7 @@
 
     <div class="q-pa-md q-gutter-sm">
 
-      <q-banner rounded class="bg-grey-1 text-primary">
+      <q-banner rounded style="border:1px solid orange">
         TODO
       </q-banner>
 
@@ -334,7 +336,7 @@
         </div>
         <div class="col-1"></div>
         <div class="col-3">
-          <q-toggle v-model="ddgEnabled"/>
+          <q-toggle v-model="ddgEnabled" @click="updateSettings('noDDG', ddgEnabled)"/>
         </div>
       </div>
 
@@ -346,7 +348,7 @@
 
     <div class="q-pa-md q-gutter-sm">
 
-      <q-banner rounded class="bg-grey-1 text-primary">You can export your data in various formats and re-import them
+      <q-banner rounded style="border:1px solid orange">You can export your data in various formats and re-import them
         from json. Please
         note that it is not guaranteed that older exports can be imported with newer versions of the tabsets
         extension.
@@ -386,11 +388,11 @@
 
     <div class="q-pa-md q-gutter-sm">
 
-      <q-banner v-if="!useAuthStore().userMayAccess(AccessItem.FEATURE_TOGGLES)" rounded class="bg-grey-1 text-primary">
+      <q-banner v-if="!useAuthStore().userMayAccess(AccessItem.FEATURE_TOGGLES)" rounded style="border:1px solid orange">
         To use feature toggles, you need to have a (free) account.
       </q-banner>
       <template v-else>
-        <q-banner rounded class="bg-grey-1 text-primary">Switch on experimental features (or off). These feature toggles
+        <q-banner rounded style="border:1px solid orange">Switch on experimental features (or off). These feature toggles
           are meant for developers
           only as they might break functionality and/or destroy data. Once they are considered 'safe enough', they will
           be
@@ -405,7 +407,7 @@
           </div>
           <div class="col-1"></div>
           <div class="col-5">
-            <q-toggle v-model="devEnabled"/>
+            <q-toggle v-model="devEnabled" @click="updateSettings('dev', devEnabled)"/>
           </div>
         </div>
       </template>
@@ -468,7 +470,6 @@ import InfoLine from "pages/helper/InfoLine.vue";
 const {sendMsg, inBexMode} = useUtils()
 
 const tabsStore = useTabsStore()
-const featuresStore = useSettingsStore()
 const searchStore = useSearchStore()
 const settingsStore = useSettingsStore()
 
@@ -481,17 +482,17 @@ useUiStore().rightDrawerSetActiveTab(DrawerTabs.FEATURES)
 const view = ref('grid')
 const indexSize = ref(0)
 
-const devEnabled = ref<boolean>(featuresStore.isEnabled('dev'))
-const ddgEnabled = ref<boolean>(!featuresStore.isEnabled('noDDG'))
-const ignoreExtensionsEnabled = ref<boolean>(!featuresStore.isEnabled('extensionsAsTabs'))
+const devEnabled = ref<boolean>(settingsStore.isEnabled('dev'))
+const ddgEnabled = ref<boolean>(!settingsStore.isEnabled('noDDG'))
+const ignoreExtensionsEnabled = ref<boolean>(!settingsStore.isEnabled('extensionsAsTabs'))
 const permissionsList = ref<string[]>([])
 
-const darkMode = ref<boolean>(localStorage.getItem('darkMode') || false)
+const darkMode = ref<string>(localStorage.getItem('darkMode') || "false")
 const detailLevel = ref<ListDetailLevel>(localStorage.getItem('ui.detailLevel') || ListDetailLevel.MAXIMAL)
 
-const nickname = ref<string>(LocalStorage.getItem(SHARING_AUTHOR_IDENT) || '')
-const avatar = ref<string>(LocalStorage.getItem(SHARING_AVATAR_IDENT) as string || '')
-const mqttUrl = ref<string>(LocalStorage.getItem(SHARING_MQTT_IDENT) as string || '')
+const nickname = ref<string>(localStorage.getItem(SHARING_AUTHOR_IDENT) || '')
+const avatar = ref<string>(localStorage.getItem(SHARING_AVATAR_IDENT) as string || '')
+const mqttUrl = ref<string>(localStorage.getItem(SHARING_MQTT_IDENT) as string || '')
 const installationId = ref<string>(localStorage.getItem(SHARING_INSTALLATION) as string || '---')
 
 const bookmarksPermissionGranted = ref<boolean | undefined>(usePermissionsStore().hasPermission('bookmarks'))
@@ -502,7 +503,7 @@ const detailLevelPerTabset = ref(localStorage.getItem('ui.detailsPerTabset') || 
 
 const account = ref<Account | undefined>(undefined)
 
-const installationTitle = ref<string>(LocalStorage.getItem(TITLE_IDENT) as string || 'My Tabsets')
+const installationTitle = ref<string>(localStorage.getItem(TITLE_IDENT) as string || 'My Tabsets')
 
 const tab = ref<string>(route.query['tab'] ? route.query['tab'] as string : 'appearance')
 
@@ -529,10 +530,16 @@ onMounted(() => {
 
 let suggestionsCounter = 0
 
+watchEffect(() => {
+  console.log("watching settingsStore.activeToggles...", settingsStore.activeToggles)
+  devEnabled.value = settingsStore.isEnabled('dev')
+  ddgEnabled.value = settingsStore.isEnabled('noDDG')
+  ignoreExtensionsEnabled.value = settingsStore.isEnabled('extensionsAsTabs')
+})
+
 watchEffect(() => permissionsList.value = usePermissionsStore().permissions?.permissions || [])
 
 watchEffect(() => bookmarksPermissionGranted.value = usePermissionsStore().hasPermission('bookmarks'))
-// watchEffect(() => historyPermissionGranted.value = usePermissionsStore().hasPermission('history'))
 watchEffect(() => pageCapturePermissionGranted.value = usePermissionsStore().hasPermission('pageCapture'))
 
 watch(() => bookmarksPermissionGranted.value, (newValue, oldValue) => {
@@ -568,7 +575,18 @@ watch(() => pageCapturePermissionGranted.value, (newValue, oldValue) => {
 })
 
 watchEffect(() => {
-  $q.dark.set(darkMode.value)
+  console.log("***setting dark mode to ", typeof darkMode.value, darkMode.value)
+  switch (darkMode.value) {
+    case "true":
+      $q.dark.set(true)
+      break
+    case "false":
+      $q.dark.set(false)
+      break;
+    default:
+      $q.dark.set("auto")
+  }
+ // $q.dark.set(darkMode.value === "true" ? true : (darkMode.value === 'false' ? false : 'auto'))
   localStorage.set('darkMode', darkMode.value)
 })
 
@@ -611,10 +629,11 @@ watchEffect(() => {
 })
 
 watchEffect(() => {
-  //featuresStore.setFeatureToggle("stats", statsEnabled.value)
-  featuresStore.setFeatureToggle("dev", devEnabled.value)
-  featuresStore.setFeatureToggle("noDDG", !ddgEnabled.value)
-  featuresStore.setFeatureToggle("extensionsAsTabs", !ignoreExtensionsEnabled.value)
+  console.log("activeToggles watcheffect", devEnabled.value)
+  //settingsStore.setFeatureToggle("stats", statsEnabled.value)
+  //settingsStore.setFeatureToggle("dev", devEnabled.value)
+ // settingsStore.setFeatureToggle("noDDG", !ddgEnabled.value)
+ // settingsStore.setFeatureToggle("extensionsAsTabs", !ignoreExtensionsEnabled.value)
 })
 
 watchEffect(() => {
@@ -664,6 +683,10 @@ const simulateStaticSuggestion = () => {
 
 const setTab = (a: any) => tab.value = a['tab' as keyof object]
 
+const updateSettings = (ident: string, val: boolean) => {
+  console.log("settings updated to", ident, val)
+  settingsStore.setFeatureToggle(ident, val)
+}
 
 </script>
 

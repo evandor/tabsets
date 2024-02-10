@@ -1,5 +1,5 @@
 <template>
-    <q-banner rounded class="bg-grey-1 text-primary" style="border: 1px solid orange">
+    <q-banner rounded  style="border: 1px solid orange">
       <div class="text-body1">Experimental: Synchronize your tabsets across computers and browsers</div>
     </q-banner>
 
@@ -252,7 +252,7 @@
 
         <div class="col-3"></div>
         <div class="col-7">
-          <q-banner rounded class="bg-grey-1 text-primary" style="border: 1px solid orange">
+          <q-banner rounded  style="border: 1px solid orange">
             <div class="text-caption text-red">
               If you do not export your tabsets and import them again you will not have access to the
               data formerly stored in your git repository.
@@ -273,7 +273,7 @@
 
         <div class="col-3"></div>
         <div class="col-7">
-          <q-banner rounded class="bg-grey-1 text-primary" style="border: 1px solid orange">
+          <q-banner rounded  style="border: 1px solid orange">
             <div class="text-caption text-red">
               Syncing your data will store your data somewhere else than only locally on your computer. Using a public
               repository will give public (read) access to your data!

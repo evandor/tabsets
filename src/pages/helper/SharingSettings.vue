@@ -1,5 +1,5 @@
 <template>
-    <q-banner rounded class="bg-grey-1 text-primary" style="border:1px solid orange">On this settings page, you can
+    <q-banner rounded  style="border:1px solid orange">On this settings page, you can
       adjust your sharing experience
     </q-banner>
 
