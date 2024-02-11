@@ -405,7 +405,8 @@ const testDbConnection = async () => {
 
 const startGitSyncing = async () => {
   try {
-    const res = await FirebaseCall.post("/users/" + useAuthStore().user.uid, {})
+    const res = await FirebaseCall.patch("/users/" + useAuthStore().user.uid,
+      {sync: {type:tempSyncOption.value, url:githubRepoUrl.value}})
     console.log("res", res)
     LocalStorage.set(SYNC_TYPE, tempSyncOption.value)
     sendMsg('reload-application')

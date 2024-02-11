@@ -1,6 +1,6 @@
 import {api} from "boot/axios";
 import axios, {AxiosError} from 'axios';
-import { useAuthStore } from "src/stores/authStore";
+import {useAuthStore} from "src/stores/authStore";
 
 export abstract class FirebaseCall<T> {
 
@@ -34,16 +34,35 @@ export abstract class FirebaseCall<T> {
 
   static post(path: string, data: object, resType = "json", fullPath = false) {
     console.log("firebase call to ", path)
-    return useAuthStore().getToken(api).then((token: string) => {
-      const urlToUse = fullPath ? path : `${process.env.BACKEND_URL}${path}`
-      console.log("posting to", urlToUse )
-      // @ts-ignore
-      return api.post(urlToUse, data, {headers: {'AuthToken': token}, responseType: resType})
-        .catch((err: any) => {
-          FirebaseCall.handleError(err)
-          return Promise.reject(err)
-        })
-    })
+    useAuthStore().user.getIdToken()
+      .then((idToken) => {
+        //console.log("got idTOken", idToken)
+        const urlToUse = fullPath ? path : `${process.env.BACKEND_URL}${path}`
+        console.log("posting to", urlToUse)
+        // @ts-ignore
+        return api.post(urlToUse, data, {headers: {'AuthToken': idToken}, responseType: resType})
+          .catch((err: any) => {
+            FirebaseCall.handleError(err)
+            return Promise.reject(err)
+          })
+      })
+  }
+
+
+  static patch(path: string, data: object, resType = "json", fullPath = false) {
+    console.log("firebase call to ", path)
+    useAuthStore().user.getIdToken()
+      .then((idToken) => {
+        //console.log("got idTOken", idToken)
+        const urlToUse = fullPath ? path : `${process.env.BACKEND_URL}${path}`
+        console.log("posting to", urlToUse)
+        // @ts-ignore
+        return api.patch(urlToUse, data, {headers: {'AuthToken': idToken}, responseType: resType})
+          .catch((err: any) => {
+            FirebaseCall.handleError(err)
+            return Promise.reject(err)
+          })
+      })
   }
 
   static put(path: string, data: object) {
