@@ -1,0 +1,9 @@
+{
+	"appId": "io.skysail.tabsets",
+	"appName": "Tabsets - Manage Tabs and Bookmarks with Ease",
+	"webDir": "www",
+	"server": {
+		"androidScheme": "https",
+		"url": "http://192.168.178.112:9500"
+	}
+}
