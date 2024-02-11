@@ -45,8 +45,7 @@ onAuthStateChanged(auth, async (user) => {
         products.add(subscriptionData.data.metadata.product)
       }
       account.setProducts(Array.from(products))
-      console.log("hier", account, products)
-
+      //console.log("hier", account, products)
     })
     // --- end of statement
 
@@ -90,18 +89,14 @@ if (isSignInWithEmailLink(auth, window.location.href)) {
 
 const useDarkMode: string = $q.localStorage.getItem('darkMode') || "false" as string
 if (useDarkMode === "true") {
-  console.log("useDarkMode true", typeof useDarkMode, useDarkMode)
   $q.dark.set(true)
 } else if (useDarkMode === "false") {
-  console.log("useDarkMode false", typeof useDarkMode, useDarkMode)
   $q.dark.set(false)
 } else {
-  console.log("useDarkMode auto", typeof useDarkMode, useDarkMode)
   $q.dark.set("auto")
 }
 
 if (useDarkMode === "true") {
-  console.log(" applying dark color scheme")
   setCssVar('primary', '#D9E8F5');
   setCssVar('secondary', '#26A69A');
   setCssVar('accent', '#9C27B0');
