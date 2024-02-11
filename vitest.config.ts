@@ -9,6 +9,7 @@ export default defineConfig({
     environment: 'happy-dom',
     setupFiles: 'test/vitest/setup-file.ts',
     testTimeout: 50000,
+    hookTimeout: 50000,
     include: [
       // Matches vitest tests in any subfolder of 'src' or into 'test/vitest/__tests__'
       // Matches all files with extension 'js', 'jsx', 'ts' and 'tsx'
@@ -16,7 +17,7 @@ export default defineConfig({
       'test/vitest/__tests__/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx,vue}',
     ],
     coverage: {
-      reporter: ['text', 'json-summary', 'json'],
+      reporter: ['text', 'lcov', 'json-summary', 'json'],
     },
     // https://vitest.dev/guide/browser.html
     browser: {

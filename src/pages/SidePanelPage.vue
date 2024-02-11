@@ -26,9 +26,51 @@
   </VOnboardingWrapper>
 
   <q-page style="padding-top: 50px">
+
+    <div class="wrap" v-if="useUiStore().appLoading">
+      <div class="loading">
+        <div class="bounceball q-mr-lg"></div>
+        <div class="text">loading tabsets...</div>
+      </div>
+    </div>
+
+    <div class="wrap2" v-if="useAuthStore().isAuthenticated() && useTabsStore().tabsets.size === 0 && !useUiStore().appLoading">
+      <div class="row items-center text-grey-5">how to start?</div>
+      <div style="min-width:300px;border:1px solid #efefef;border-radius:5px">
+        <q-list>
+          <q-item clickable v-ripple>
+            <q-item-section avatar>
+              <SidePanelToolbarButton
+                icon="o_add_circle"
+                color="warning"
+                @click="openNewTabsetDialog()"/>
+            </q-item-section>
+
+            <q-item-section>
+              <q-item-label>New Tabset</q-item-label>
+              <q-item-label caption>Click to create a new tabset</q-item-label>
+            </q-item-section>
+          </q-item>
+
+          <q-item clickable v-ripple>
+            <q-item-section avatar>
+              <SidePanelToolbarButton
+                icon="o_settings"
+                color="black"
+                @click="openOptionsPage()"/>
+            </q-item-section>
+
+            <q-item-section>
+              <q-item-label>Settings</q-item-label>
+              <q-item-label caption>Click here to assign your account</q-item-label>
+            </q-item-section>
+          </q-item>
+        </q-list>
+      </div>
+    </div>
+
     <!-- list of tabs, assuming here we have at least one tabset -->
     <div class="q-ma-none q-pa-none">
-
       <template v-if="suggestTabsetImport()">
 
         <InfoMessageWidget
@@ -52,7 +94,7 @@
               class="rounded-borders q-ma-none q-pa-none" :key="tabset.id"
               v-for="(tabset,index) in tabsets">
         <q-expansion-item v-if="showTabset(tabset as Tabset)"
-                          header-class="q-ma-none q-pa-none q-pr-md bg-grey-2"
+                          header-class="q-ma-none q-pa-none q-pr-md"
                           :header-style="headerStyle(tabset as Tabset)"
                           group="tabsets"
                           :default-opened="tabsStore.tabsets.size === 1"
@@ -60,8 +102,7 @@
                           expand-icon-toggle
                           dense-toggle
                           v-model="selected_model[tabset.id]"
-                          @update:model-value="val => updateSelectedTabset(tabset.id, val, index)"
-                          expand-separator>
+                          @update:model-value="val => updateSelectedTabset(tabset.id, val, index)">
 
           <template v-slot:header>
             <q-item-section
@@ -204,11 +245,16 @@
               </q-item>
             </q-list>
 
+            <!-- the actual tabs -->
             <SidePanelPageTabList
               v-if="tabsetExpanded.get(tabset.id)"
               :tabsCount="useTabsetService().tabsToShow(tabset as Tabset).length"
-              :tabset="tabsetForTabList(tabset as Tabset)"
-            />
+              :tabset="tabsetForTabList(tabset as Tabset)"/>
+            <!-- the actual tabs: end -->
+
+            <!--            {{ windowLocation }}-->
+            <!--            <br>-->
+            <!--            <pre>{{ user?.uid }}</pre>-->
 
           </div>
         </q-expansion-item>
@@ -218,29 +264,34 @@
     </div>
 
     <!-- place QPageSticky at end of page -->
-    <q-page-sticky expand position="top" style="background-color:white">
+    <q-page-sticky expand position="top" class="darkInDarkMode brightInBrightMode">
 
       <FirstToolbarHelper
         :showSearchBox="showSearchBox">
 
         <template v-slot:title v-if="permissionsStore && permissionsStore.hasFeature(FeatureIdent.SPACES)">
-          <div class="text-subtitle1 text-black" @click.stop="router.push('/sidepanel/spaces')">
-            <q-btn flat color="black" no-caps :label="toolbarTitle(tabsets as Tabset[])"/>
+          <div class="text-subtitle1" @click.stop="router.push('/sidepanel/spaces')">
+            <q-btn flat no-caps :label="toolbarTitle(tabsets as Tabset[])"/>
             <q-tooltip :delay="1000" class="tooltip">Click to open List of all Spaces</q-tooltip>
           </div>
         </template>
         <template v-slot:title v-else>
-          <div class="text-subtitle1 text-black">
+          <div class="text-subtitle1">
             {{ toolbarTitle(tabsets as Tabset[]) }}
-            <q-icon v-if="LocalStorage.getItem('sync.type') as SyncType === SyncType.GIT"
+            <q-icon
+              v-if="LocalStorage.getItem(SYNC_TYPE) as SyncType === SyncType.GITHUB && useAuthStore().isAuthenticated()"
+              class="q-ml-none" name="sync" size="12px">
+              <q-tooltip class="tooltip-small">Tabsets synced via {{ LocalStorage.getItem(SYNC_GITHUB_URL) }}
+              </q-tooltip>
+            </q-icon>
+            <q-icon v-if="LocalStorage.getItem(SYNC_TYPE) as SyncType === SyncType.MANAGED_GIT"
                     class="q-ml-none" name="sync" size="12px">
-              <q-tooltip class="tooltip-small">Tabsets is synced via git</q-tooltip>
+              <q-tooltip class="tooltip-small">Tabsets are being synced automatically</q-tooltip>
             </q-icon>
           </div>
         </template>
 
       </FirstToolbarHelper>
-      <!--      <SecondToolbarHelper/>-->
 
     </q-page-sticky>
   </q-page>
@@ -249,10 +300,10 @@
 
 <script lang="ts" setup>
 
-import {onMounted, onUnmounted, ref, watchEffect} from "vue";
+import {onMounted, onUnmounted, ref, watch, watchEffect} from "vue";
 import {useTabsStore} from "src/stores/tabsStore";
 import {Tab, TabPreview} from "src/models/Tab";
-import _ from "lodash"
+import _, {result} from "lodash"
 import {Tabset, TabsetSharing, TabsetStatus, TabsetType} from "src/models/Tabset";
 import {useRouter} from "vue-router";
 import {useUtils} from "src/services/Utils";
@@ -269,7 +320,7 @@ import SidePanelPageContextMenu from "pages/sidepanel/SidePanelPageContextMenu.v
 import {useWindowsStore} from "src/stores/windowsStore";
 import TabsetService from "src/services/TabsetService";
 import Analytics from "src/utils/google-analytics";
-import {useAuthStore} from "stores/auth";
+import {useAuthStore} from "stores/authStore";
 import {useDB} from "src/services/usePersistenceService";
 import {useBookmarksStore} from "stores/bookmarksStore";
 import {useSuggestionsStore} from "stores/suggestionsStore";
@@ -279,15 +330,14 @@ import {CopyToClipboardCommand} from "src/domain/commands/CopyToClipboard";
 import SidePanelTabsetDescriptionPage from "pages/sidepanel/SidePanelTabsetDescriptionPage.vue";
 import ShareTabsetPubliclyDialog from "components/dialogues/ShareTabsetPubliclyDialog.vue";
 import MqttService from "src/services/mqtt/MqttService";
-import {SyncType} from "stores/appStore";
+import {SyncType, useAppStore} from "stores/appStore";
 import {useVOnboarding, VOnboardingStep, VOnboardingWrapper} from 'v-onboarding'
 import {FirebaseCall} from "src/services/firebase/FirebaseCall";
 import getScrollTarget = scroll.getScrollTarget;
 import InfoMessageWidget from "components/widgets/InfoMessageWidget.vue";
-import {TITLE_IDENT} from "boot/constants";
-import PanelTabListElementWidget from "components/widgets/PanelTabListElementWidget.vue";
-import {VueDraggableNext} from "vue-draggable-next";
-import {TabsetColumn} from "src/models/TabsetColumn";
+import {SYNC_GITHUB_URL, SYNC_TYPE, TITLE_IDENT} from "boot/constants";
+import AppService from "src/services/AppService";
+import SidePanelToolbarButton from "components/buttons/SidePanelToolbarButton.vue";
 
 const {setVerticalScrollPosition} = scroll
 
@@ -309,6 +359,8 @@ const currentTabset = ref<Tabset | undefined>(undefined)
 const currentChromeTab = ref<chrome.tabs.Tab>(null as unknown as chrome.tabs.Tab)
 const tabsetExpanded = ref<Map<string, boolean>>(new Map())
 const hoveredPublicLink = ref(false)
+const windowLocation = ref('---')
+const user = ref<any>()
 
 // https://stackoverflow.com/questions/12710905/how-do-i-dynamically-assign-properties-to-an-object-in-typescript
 interface SelectionObject {
@@ -349,8 +401,10 @@ onMounted(() => {
   window.addEventListener("offline", (e) => updateOnlineStatus(e));
   window.addEventListener("online", (e) => updateOnlineStatus(e));
 
+  windowLocation.value = window.location.href
+
   if (!useAuthStore().isAuthenticated) {
-    router.push("/authenticate")
+    //router.push("/authenticate")
   } else {
     setTimeout(() => {
       if (useTabsStore().allTabsCount === 0) {
@@ -360,10 +414,25 @@ onMounted(() => {
 
     Analytics.firePageViewEvent('SidePanelPage', document.location.href);
   }
+
 })
 
 onUnmounted(() => {
   window.removeEventListener('keypress', checkKeystroke);
+})
+
+watchEffect(() => {
+  const ar = useAuthStore().useAuthRequest
+  if (ar) {
+    AppService.restart(ar)
+  }
+})
+
+watchEffect(() => {
+  if (useAuthStore().user) {
+    console.log("setting user to ", useAuthStore().user?.email)
+    user.value = useAuthStore().user
+  }
 })
 
 watchEffect(() => {
@@ -455,7 +524,7 @@ watchEffect(() => {
 })
 
 watchEffect(() => {
-  const windowId = useWindowsStore().currentWindow?.id || 0
+  const windowId = useWindowsStore().currentChromeWindow?.id || 0
   currentChromeTab.value = useTabsStore().getCurrentChromeTab(windowId) || useTabsStore().currentChromeTab
 })
 
@@ -525,6 +594,7 @@ function inIgnoredMessages(message: any) {
   return message.msg === "html2text" ||
     message.msg === "captureThumbnail" ||
     message.msg === "capture-annotation" ||
+    message.name === "window-updated" ||
     message.msg === "html2links"
 }
 
@@ -631,6 +701,9 @@ function inIgnoredMessages(message: any) {
       } else if (message.name === 'mqtt-url-changed') {
         console.log("got message 'mqtt-url-changed'", message)
         MqttService.reset().then(() => MqttService.init(message.data.mqttUrl))
+      } else if (message.name === 'reload-application') {
+        console.log("got message 'reload-application'")
+        AppService.restart("restarted=true")
       } else {
         console.log("got unmatched message", message)
       }
@@ -735,7 +808,7 @@ const toolbarTitle = (tabsets: Tabset[]) => {
       spaceName + ' (' + tabsets.length.toString() + ')' :
       spaceName
   }
-  const title = LocalStorage.getItem(TITLE_IDENT) || 'My Tabsets.'
+  const title = LocalStorage.getItem(TITLE_IDENT) || 'My Tabsets'
   return tabsets.length > 6 ? title + ' (' + tabsets.length.toString() + ')' : title
 }
 
@@ -763,6 +836,7 @@ const showAddTabButton = (tabset: Tabset, currentChromeTab: chrome.tabs.Tab) => 
     currentChromeTab.url !== 'chrome://newtab/' &&
     currentChromeTab.url.indexOf('/www/index.html#/mainpanel/notes/') < 0 &&
     currentChromeTab.url !== '' &&
+    currentChromeTab.url.indexOf('https://tabsets.web.app/?apiKey=') < 0 &&
     tabsStore.currentTabsetId === tabset.id
   //isCurrentTab()
 }
@@ -809,14 +883,6 @@ const getPublicTabsetLink = (ts: Tabset) => {
   return image
 }
 
-const openElectronLink = (tabsetId: string) => {
-  const ts = useTabsetService().getTabset(tabsetId)
-  if (ts && ts.sharedId) {
-    const link = "electron-tabsets://#/pwa/imp/" + ts.sharedId + "?n=" + btoa(ts.name)
-    openURL(link)
-  }
-
-}
 const copyPublicShareToClipboard = (tabsetId: string) => {
   const ts = useTabsetService().getTabset(tabsetId)
   if (ts && ts.sharedId) {
@@ -845,7 +911,7 @@ const testShare = () => {
   console.log(navigator)
   if (navigator.canShare) {
     console.log(navigator.canShare())
-    navigator.share(shareData).then((res) => console.log("res", res)).catch((err) => console.err(err))
+    navigator.share(shareData).then((res) => console.log("res", res)).catch((err) => console.error(err))
   }
 }
 
@@ -954,7 +1020,7 @@ const tabsetSectionName = (tabset: Tabset) => {
 
 </script>
 
-<style>
+<style lang="scss">
 
 .v-enter-active,
 .v-leave-active {
@@ -1015,6 +1081,75 @@ const tabsetSectionName = (tabset: Tabset) => {
   top: -10px;
   right: 35px;
   transform: rotate(180deg)
+}
+
+$width: 25px;
+$height: 25px;
+
+$bounce_height: 30px;
+
+body {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+}
+
+.wrap {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.wrap2 {
+  position: absolute;
+  top: 30%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.text {
+  color: #000066;
+  font-size: 24px;
+  display: inline-block;
+  margin-left: 5px;
+}
+
+.bounceball {
+  position: relative;
+  display: inline-block;
+  height: 37px;
+  width: $width;
+
+  &:before {
+    position: absolute;
+    content: '';
+    display: block;
+    top: 0;
+    width: $width;
+    height: $height;
+    border-radius: 50%;
+    background-color: #fbae17;
+    transform-origin: 50%;
+    animation: bounce 500ms alternate infinite ease;
+  }
+}
+
+@keyframes bounce {
+  0% {
+    top: $bounce_height;
+    height: 5px;
+    border-radius: 60px 60px 20px 20px;
+    transform: scaleX(2);
+  }
+  35% {
+    height: $height;
+    border-radius: 50%;
+    transform: scaleX(1);
+  }
+  100% {
+    top: 0;
+  }
 }
 
 </style>

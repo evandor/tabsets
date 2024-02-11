@@ -10,7 +10,12 @@ import {FeatureIdent} from "src/models/AppFeature";
 import {usePermissionsStore} from "stores/permissionsStore";
 import {Toast, ToastType} from "src/models/Toast";
 import {useMessagesStore} from "stores/messagesStore";
-import {SHARING_AUTHOR_IDENT, SHARING_AVATAR_IDENT, SHARING_MQTT_IDENT} from "boot/constants";
+import {
+  SHARING_AUTHOR_IDENT,
+  SHARING_AVATAR_IDENT,
+  SHARING_MQTT_IDENT,
+  UI_WINDOWS_ITEMS_PER_PAGE
+} from "boot/constants";
 
 export enum DrawerTabs {
   BOOKMARKS = "bookmarks",
@@ -143,6 +148,8 @@ export const useUiStore = defineStore('ui', () => {
   const tabsFilter = ref<string | undefined>(undefined)
   const selectedTag = ref<string | undefined>(undefined)
   const tabsetsExpanded = ref<boolean>(false)
+  const appLoading = ref(false)
+  //const windowsChanged =ref<object | undefined>(undefined)
 
   // online offline
   const networkOnline = ref(navigator.onLine)
@@ -192,6 +199,7 @@ export const useUiStore = defineStore('ui', () => {
 
   // system management
   const dbReady = ref<boolean>(false)
+  const dbSyncing = ref<boolean>(false)
 
   const progress = ref<number | undefined>(undefined)
   const progressLabel = ref<string | undefined>(undefined)
@@ -325,7 +333,7 @@ export const useUiStore = defineStore('ui', () => {
   function showTabsetDescription(tabsetId: string): boolean {
     // @ts-ignore
     const res = tabsetDescriptionPanelHights.value[tabsetId as keyof object]['show'] as boolean | undefined
-    console.log("got res", res)
+    //console.log("got res", res)
     if (res === undefined) {
       return true
     }
@@ -552,6 +560,7 @@ export const useUiStore = defineStore('ui', () => {
     showFullUrls,
     listDetailLevelGreaterEqual,
     dbReady,
+    dbSyncing,
     sidePanel,
     sidePanelSetActiveView,
     sidePanelIsActive,
@@ -582,6 +591,7 @@ export const useUiStore = defineStore('ui', () => {
     sharingMqttUrl,
     networkOnline,
     mqttOffline,
-    tabBeingDragged
+    tabBeingDragged,
+    appLoading
   }
 })

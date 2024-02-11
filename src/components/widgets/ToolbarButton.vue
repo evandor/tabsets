@@ -1,6 +1,5 @@
 <template>
 
-
   <template v-if="restricted">
     <Transition name="colorized-appear">
       <q-btn v-if="permissionsStore.hasFeature(FeatureIdent[props.feature])"

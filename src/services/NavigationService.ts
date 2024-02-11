@@ -18,11 +18,11 @@ class NavigationService {
     withUrls: string[],
     matcher: string | undefined = undefined,
     groups: string[] = [],
-    forceCurrent: boolean = false
+    forceCurrent: boolean = false,
+    forceReload: boolean = false
   ) {
     withUrls.map(u => u.replace(this.placeholderPattern, ""));
-    const useWindowIdent = forceCurrent ?
-      'current' : useTabsStore().getCurrentTabset?.window || 'current'
+    const useWindowIdent = this.getUseWindowIdent(forceCurrent, withUrls)
     console.log(` > opening url(s) ${withUrls} in window: '${useWindowIdent}', groups: '${groups}', mode: '${process.env.MODE}'`)
 
     const windowFromDb = await useWindowsStore().windowFor(useWindowIdent)
@@ -35,10 +35,10 @@ class NavigationService {
         const createData: any = {url: withUrls}
         if (windowFromDb) {
           const w = windowFromDb.browserWindow
-          createData['left' as keyof object] = w.left//(w.left || 0) < 0 ? 0 : w.left
-          createData['top' as keyof object] = w.top//(w.top || 0) < 0 ? 0 : w.top
-          createData['width' as keyof object] = w.width//(w.width || -1) < 0 ? 600 : w.width
-          createData['height' as keyof object] = w.height//(w.top || -1) < 0 ? 400 : w.height
+          createData['left' as keyof object] = w?.left || 50
+          createData['top' as keyof object] = w?.top || 50 //(w.top || 0) < 0 ? 0 : w.top
+          createData['width' as keyof object] = w?.width || 1200 //(w.width || -1) < 0 ? 600 : w.width
+          createData['height' as keyof object] = w?.height || 800 //(w.top || -1) < 0 ? 400 : w.height
           // window does not exist anymore, remove from 'allWindows'
           await useWindowsStore().removeWindow(windowFromDb.id)
         }
@@ -89,6 +89,11 @@ class NavigationService {
                   chrome.tabs.highlight({tabs: r.index, windowId: useWindowId});
                   chrome.windows.update(useWindowId, {focused: true})
 
+                  if (forceReload && r.id) {
+                    console.debug("forced reload")
+                    chrome.tabs.reload(r.id)
+                  }
+
                   if (groups.length > i) {
                     ctx.handleGroup(groups[i], useWindowId, r);
                   }
@@ -138,6 +143,22 @@ class NavigationService {
     } else {
       openURL(withUrls[0])
     }
+  }
+
+  private getUseWindowIdent(forceCurrent: boolean, urls: string[]) {
+    if (forceCurrent) {
+      return 'current'
+    } else if (urls.length === 1) {
+      const tabs = useTabsStore().tabsForUrl(urls[0])
+      if (tabs.length === 1) {
+        const tabAndTabsetId = useTabsStore().getTabAndTabsetId(tabs[0].id)
+        if (tabAndTabsetId) {
+          return useTabsetService().getTabset(tabAndTabsetId.tabsetId)?.window || 'current'
+        }
+      }
+      return useTabsStore().getCurrentTabset?.window || 'current';
+    }
+    return useTabsStore().getCurrentTabset?.window || 'current';
   }
 
   private handleGroup(group: string | undefined, useWindowId: number, r: chrome.tabs.Tab) {
@@ -216,7 +237,7 @@ class NavigationService {
   private async createNewWindow(createData: any, useWindowIdent: string, withUrls: string[], groups: string[]) {
     console.log("opening new window with", createData)
     // https://developer.chrome.com/articles/window-management/
-    let screenlabel: string | undefined = undefined
+    //let screenlabel: string | undefined = undefined
     // if ('getScreenDetails' in window) {
     //     // @ts-ignore
     //     const screens = await window.getScreenDetails();
@@ -230,19 +251,19 @@ class NavigationService {
         // probably out of bounds issues
         chrome.windows.create({}, (window) => {
           if (window) {
-            this.createWindow(useWindowIdent, window, screenlabel, withUrls, groups);
+            this.createWindow(useWindowIdent, window, 0, withUrls, groups);
           }
         })
       } else if (window) {
-        this.createWindow(useWindowIdent, window, screenlabel, withUrls, groups);
+        this.createWindow(useWindowIdent, window, 0, withUrls, groups);
       }
     })
 
   }
 
-  private createWindow(useWindowIdent: string, window: chrome.windows.Window, screenlabel: string | undefined, withUrls: string[], groups: string[]) {
+  private createWindow(useWindowIdent: string, window: chrome.windows.Window, index: number = 0, withUrls: string[], groups: string[]) {
     //useWindowsStore().assignWindow(useWindowIdent, window.id || 0)
-    useWindowsStore().upsertWindow(window, useWindowIdent, screenlabel)
+    useWindowsStore().upsertWindow(window, useWindowIdent, index)
     const ctx = this
     withUrls.forEach(function (url, i) {
       if (groups.length > i) {

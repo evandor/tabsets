@@ -13,12 +13,12 @@
     </div>
 
     <!-- place QPageSticky at end of page -->
-    <q-page-sticky expand position="top" style="background-color:white">
+    <q-page-sticky expand position="top">
 
       <FirstToolbarHelper>
 
         <template v-slot:title>
-          <div class="text-subtitle1 text-black">
+          <div class="text-subtitle1">
             <SidePanelTabsetsSelectorWidget/>
           </div>
         </template>
@@ -119,7 +119,7 @@ watchEffect(() => {
 })
 
 watchEffect(() => {
-  const windowId = useWindowsStore().currentWindow?.id || 0
+  const windowId = useWindowsStore().currentChromeWindow?.id || 0
   currentChromeTab.value = useTabsStore().getCurrentChromeTab(windowId) || useTabsStore().currentChromeTab
 })
 

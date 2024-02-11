@@ -2,6 +2,7 @@
 // More info: https://quasar.dev/quasar-cli/developing-browser-extensions/content-hooks
 // @ts-ignore
 import {bexContent} from 'quasar/wrappers'
+import {CURRENT_USER_EMAIL} from "boot/constants";
 
 
 export default bexContent((bridge: any) => {
@@ -19,11 +20,17 @@ export default bexContent((bridge: any) => {
 
 
   chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+    console.log("got request!!!", request)
     if (request === 'getContent') {
       console.log("tabsets: received message for content", document.documentElement.outerHTML)
       sendResponse({content: document.documentElement.outerHTML});
     } else if (request.action === "highlight-annotation") {
       sendResponse()
+    }
+    else if (request.type === "SET_EMAIL_FOR_SIGN_IN") {
+      chrome.storage.local.set({ CURRENT_USER_EMAIL: request.email });
+      chrome.storage.local.set({ tabext: sender.tab });
+      console.log("SET_EMAIL_FOR_SIGN_IN", request.email);
     }
     sendResponse({content: "unknown request in tabsets-content-scripts: " + request});
     return true

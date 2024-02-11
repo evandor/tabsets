@@ -57,6 +57,9 @@ export class AppFeatures {
     new AppFeature(FeatureIdent.ANNOTATIONS, FeatureType.EXPERIMENTAL, 'Annotate Websites', 'o_auto_awesome', ['bex'])
       .setActivateCommands([new GrantPermissionCommand('contextMenus')]),
 
+    new AppFeature(FeatureIdent.CONTEXT_MENUS, FeatureType.OPTIONAL, 'Use Tabsets Context Menu', 'o_list', ['all'])
+      .setActivateCommands([new GrantPermissionCommand('contextMenus')]),
+
 
     new AppFeature(FeatureIdent.ARCHIVE_TABSET, FeatureType.OPTIONAL, 'Archive Tabsets', 'o_inventory_2', ['all']),
     //new AppFeature(FeatureIdent.WINDOW_MANAGEMENT, FeatureType.OPTIONAL, 'Window Management', 'o_grid_view', ['all']),

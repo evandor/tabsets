@@ -2,10 +2,9 @@
 
   <div class="cursor-pointer">
     <div
-        class="q-ma-none q-pa-none text-subtitle q-pl-sm cursor-pointer ellipsis"
-        :class="useUiStore().sidePanelActiveViewIs(SidePanelView.MAIN) ? '' : 'text-grey-5'">
+        class="q-ma-none q-pa-none text-subtitle q-pl-sm cursor-pointer ellipsis">
       {{ tabsetLabel() }}
-      <q-icon name="arrow_drop_down" class="q-mr-xs " size="xs" color="primary"/>
+      <q-icon name="arrow_drop_down" class="q-mr-xs " size="xs" />
     </div>
 
     <q-menu :offset="[0,0]">

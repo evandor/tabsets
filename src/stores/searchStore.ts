@@ -66,14 +66,15 @@ export const useSearchStore = defineStore('search', () => {
   var urlSet: Set<string> = new Set()
 
   async function init() {
-    console.debug("(re-)initializing searchStore")
+    console.debug(" ...(re-)initializing searchStore")
     urlSet = new Set()
     searchIndex.value = Fuse.createIndex(options.value.keys, [])
     fuse.value = new Fuse([], options.value, searchIndex.value)
   }
 
+  // @ts-ignore
   function getIndex(): Fuse.FuseIndex<SearchDoc> {
-    return fuse.value.getIndex()
+    return fuse.value ? fuse.value.getIndex() : null
   }
 
   function search(term: string, limit: number | undefined = undefined) {
@@ -188,10 +189,10 @@ export const useSearchStore = defineStore('search', () => {
 
   async function populateFromTabsets() {
     // --- add data from tabs directly, like url and title
-    console.log("populating search index from tabsets")
+    console.debug(" populating search index from tabsets")
     const minimalIndex: SearchDoc[] = []
     //const res = fuse.value.remove((doc) => true)
-    _.forEach([...useTabsStore().tabsets.values()], (tabset: Tabset) => {
+    _.forEach([...useTabsStore().tabsets.values()] as Tabset[], (tabset: Tabset) => {
         tabset.tabs.forEach((tab: Tab) => {
           if (tab.url) {
             if (urlSet.has(tab.url)) {
@@ -219,7 +220,7 @@ export const useSearchStore = defineStore('search', () => {
       }
     )
 
-    console.log(`populating search index from tabsets with ${minimalIndex.length} entries`)
+    console.debug(` populating search index from tabsets with ${minimalIndex.length} entries`)
     minimalIndex.forEach((doc: SearchDoc) => {
       const removed = fuse.value.remove((d) => {
         return d.url === doc.url
@@ -236,7 +237,7 @@ export const useSearchStore = defineStore('search', () => {
   }
   async function populateFromBookmarks() {
     // --- add data from bookmarks directly, like url and title
-    console.log("populating search index from bookmarks")
+    console.debug(" ...populating search index from bookmarks")
     const indexFromBookmarks: SearchDoc[] = []
     _.forEach(useBookmarksStore().bookmarksLeaves, (bookmark: any) => {
         if (bookmark && bookmark.url && !urlSet.has(bookmark.url)) {
@@ -246,7 +247,7 @@ export const useSearchStore = defineStore('search', () => {
         }
       }
     )
-    console.log(`populating search index from bookmarks with ${indexFromBookmarks.length} entries`)
+    console.log(` populating search index from bookmarks with ${indexFromBookmarks.length} entries`)
     indexFromBookmarks.forEach((doc: SearchDoc) => fuse.value.add(doc))
   }
 
@@ -256,7 +257,7 @@ export const useSearchStore = defineStore('search', () => {
    * @param contentPromise
    */
   async function populateFromContent(contentPromise: Promise<any[]>) {
-    console.log("populating search index from content")
+    console.debug(" populating search index from content")
     // --- add data from stored content
     let count = 0
     let countFiltered = 0
@@ -283,7 +284,7 @@ export const useSearchStore = defineStore('search', () => {
         countFiltered++
       }
     })
-    console.log(`populating search index from content with ${count} entries (${overwritten} of which overwritten), ${countFiltered} is/are filtered (not in any tab)`)
+    console.debug(` populating search index from content with ${count} entries (${overwritten} of which overwritten), ${countFiltered} is/are filtered (not in any tab)`)
     stats.value.set("content.count", count)
     stats.value.set("content.overwritten", overwritten)
     stats.value.set("content.filtered", countFiltered)

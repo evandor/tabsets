@@ -19,20 +19,19 @@ chrome.runtime.onInstalled.addListener((callback) => {
   // getting error: "Service worker registration failed. Status code: 15"
   // Analytics.fireEvent('install-' + callback.reason);
   if (callback.reason !== OnInstalledReason.CHROME_UPDATE) {
-   // if (!navigator.webdriver) {
-      chrome.tabs.create({
-        active: true,
-        url: callback.previousVersion ?
-            "https://tabsets.web.app/#/updatedFrom/" +  callback.previousVersion :
-            "https://tabsets.web.app/#/installed/"
-      })
+    chrome.tabs.create({
+      active: true,
+      url: callback.previousVersion ?
+        "https://tabsets.web.app/#/updatedFrom/" + callback.previousVersion :
+        "https://tabsets.web.app/#/installed/"
+    })
    // }
   }
 });
 
 chrome.omnibox.onInputEntered.addListener((text) => {
   const newURL = chrome.runtime.getURL("/www/index.html#/searchresult?t=" + encodeURIComponent(text))
-  chrome.tabs.create({ url: newURL })
+  chrome.tabs.create({url: newURL})
     .catch((err) => console.log("background.js error", err))
 });
 
@@ -90,6 +89,15 @@ chrome.runtime.onStartup.addListener(() => {
   }
 })
 
+chrome.runtime.onConnect.addListener(function (port) {
+  if (port.name === 'tabsetsSidepanel') {
+    //console.log("port3", port)
+    port.onDisconnect.addListener(async () => {
+      //alert('Sidepanel closed.');
+    });
+  }
+});
+
 // Firefox:
 function handleFirefoxBrowserAction () {
   //const panel = browser.runtime.getURL("www/index.html#/sidepanel")
@@ -111,7 +119,7 @@ export default bexBackground((bridge, cons/* , allActiveConnections */) => {
   //   bridge.send('highlight.content', { url: tab.url })
   // })
 
-  bridge.on('quasar.detect', ({ data, respond }) => {
+  bridge.on('quasar.detect', ({data, respond}) => {
     console.log("quasar.detect2", data)
     // Let's resolve the `send()` call's promise, this way we can await it on the other side then display a notification.
     respond()

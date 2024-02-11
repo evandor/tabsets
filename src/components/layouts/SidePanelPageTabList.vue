@@ -95,17 +95,13 @@ import {Tab, TabSorting} from "src/models/Tab";
 import TabsetService from "src/services/TabsetService";
 import {ref, onMounted, PropType, watchEffect} from "vue";
 import {VueDraggableNext} from 'vue-draggable-next'
-import {useCommandExecutor} from "src/services/CommandExecutor";
-import {CreateTabFromOpenTabsCommand} from "src/domain/commands/CreateTabFromOpenTabs";
 import {Tabset, TabsetStatus, TabsetType} from "src/models/Tabset";
 import SidePanelTabListHelper from "components/layouts/sidepanel/SidePanelTabListHelper.vue";
-import {useTabsStore} from "stores/tabsStore";
 import {useTabsetService} from "src/services/TabsetService2";
 import {TabsetColumn} from "src/models/TabsetColumn";
 import {SPECIAL_ID_FOR_NO_GROUP_ASSIGNED} from "boot/constants";
 import _ from "lodash"
 import {IndexedTab} from "src/models/IndexedTab";
-import SidePanelPageContextMenu from "pages/sidepanel/SidePanelPageContextMenu.vue";
 
 const props = defineProps({
   hideMenu: {type: Boolean, default: false},

@@ -1,6 +1,7 @@
 import {boot} from 'quasar/wrappers'
+import {Logtail} from "@logtail/browser";
 
-const INDEX_DB_VERSION = 18
+const INDEX_DB_VERSION = 19
 
 const CLEANUP_PERIOD_IN_MINUTES = 10 // in prod: 10
 const EXPIRE_DATA_PERIOD_IN_MINUTES = 60 // in prod: 60
@@ -26,8 +27,28 @@ const SHARING_AVATAR_IDENT = 'sharing.avatar';
 const SHARING_MQTT_IDENT = 'sharing.mqttUrl';
 const SHARING_INSTALLATION = 'sharing.installation'
 
-const SYNC_GIT_URL = "sync.git.url"
-const SYNC_GIT_TOKEN = "sync.git.token"
+const SYNC_TYPE = "sync.type"
+
+const SYNC_GITLAB_URL = "sync.gitlab.url"
+const SYNC_GITLAB_TOKEN = "sync.gitlab.token"
+
+const SYNC_GITHUB_URL = "sync.github.url"
+const SYNC_GITHUB_TOKEN = "sync.github.token"
+
+const SYNC_COUCHDB_USERNAME = "sync.couchdb.username"
+const SYNC_COUCHDB_PASSWORD = "sync.couchdb.password"
+const SYNC_COUCHDB_URL = "sync.couchdb.url"
+
+const EMAIL_LINK_REDIRECT_DOMAIN = "https://tabsets.web.app"
+
+const CURRENT_USER_ID = "current.user.id"
+const CURRENT_USER_EMAIL = "current.user.email"
+
+const UI_WINDOWS_ITEMS_PER_PAGE = 'ui.windows.itemsPerPage'
+
+const logtail = (process.env.MODE === "bex") ?
+  new Logtail("Ht8PY3XGQgqhMyNTcyGyJhXJ") :
+  new Logtail("pNfaHtRmWXGd3TFbsCXMHHbB")
 
 export default boot(({}) => {
 })
@@ -43,8 +64,19 @@ export {
   SHARING_AVATAR_IDENT,
   SHARING_MQTT_IDENT,
   SHARING_INSTALLATION,
-  SYNC_GIT_URL,
-  SYNC_GIT_TOKEN,
-  TITLE_IDENT
+  SYNC_TYPE,
+  SYNC_GITLAB_URL,
+  SYNC_GITLAB_TOKEN,
+  SYNC_GITHUB_URL,
+  SYNC_GITHUB_TOKEN,
+  SYNC_COUCHDB_USERNAME,
+  SYNC_COUCHDB_PASSWORD,
+  SYNC_COUCHDB_URL,
+  TITLE_IDENT,
+  EMAIL_LINK_REDIRECT_DOMAIN,
+  CURRENT_USER_ID,
+  CURRENT_USER_EMAIL,
+  UI_WINDOWS_ITEMS_PER_PAGE,
+  logtail
 }
 

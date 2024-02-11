@@ -11,7 +11,7 @@ export const useSuggestionsStore = defineStore('suggestions', () => {
     const suggestions = ref<Suggestion[]>([])
 
     function init(providedDb: PersistenceService) {
-        console.debug("initializing SuggestionsService")
+        console.debug(" ...initializing SuggestionsService")
         storage = providedDb
         loadSuggestionsFromDb()
     }

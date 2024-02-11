@@ -74,7 +74,7 @@
         <!--        <q-img src="thumbnail-not-available.png" style="border:1px solid grey;border-radius: 5px;" no-native-menu/>-->
       </div>
       <div class="col-12" v-else>
-        <q-banner rounded class="bg-yellow-1 text-black" style="border:1px solid grey;border-radius: 5px;">
+        <q-banner rounded style="border:1px solid grey;border-radius: 5px;">
           If you want to have thumbnails of your tabs, additional permissions are needed.<br><br>
           Click <span class="cursor-pointer text-blue-6" style="text-decoration: underline"
                       @click="router.push('/features/thumbnails')">here</span> to

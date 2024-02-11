@@ -1,91 +1,22 @@
 <template>
 
-  <q-footer class="bg-white q-pa-xs q-mt-sm" style="border-top: 1px solid lightgrey">
-    <div class="row fit q-mb-sm" v-if="showWindowTable">
-      <div class="col-12 text-right">
-        <Transition name="bounceInLeft" appear>
-          <q-table
-            flat dense
-            :rows="rows"
-            :columns="columns"
-            row-key="id"
-            hide-bottom
-            binary-state-sort>
-            <template v-slot:body="props">
-              <q-tr :props="props">
-                <q-td key="windowIcon" :props="props">
-                  <q-icon name="edit"/>
-                </q-td>
-                <q-td key="name" :props="props">
-                  {{ props.row.name }}
-                  <q-popup-edit v-model="props.row.name" v-slot="scope">
-                    <q-input v-model="scope.value" dense autofocus counter
-                             @update:model-value="val => setWindowName(props.row.id, val)"
-                             @keyup.enter="scope.set"/>
-                  </q-popup-edit>
-                </q-td>
-                <!--            <q-td key="windowHeight" :props="props">-->
-                <!--              {{ props.row.windowHeight }}-->
-                <!--              <q-popup-edit v-model="props.row.windowHeight" title="Update windowHeight" buttons v-slot="scope">-->
-                <!--                <q-input type="number" v-model="scope.value" dense autofocus/>-->
-                <!--              </q-popup-edit>-->
-                <!--            </q-td>-->
-                <!--            <q-td key="windowWidth" :props="props">-->
-                <!--              {{ props.row.windowWidth }}-->
-                <!--              <q-popup-edit v-model="props.row.windowWidth" title="Update windowWidth" buttons v-slot="scope">-->
-                <!--                <q-input type="number" v-model="scope.value" dense autofocus/>-->
-                <!--              </q-popup-edit>-->
-                <!--            </q-td>-->
-                <q-td key="windowAction" :props="props">
-              <span
-                :class="useWindowsStore().currentWindow?.id === props.row.id ? 'text-grey' : 'text-blue-8 cursor-pointer'"
-                @click="openWindow(props.row.id)">open</span>
-                </q-td>
-              </q-tr>
-            </template>
-          </q-table>
-        </Transition>
-
-      </div>
+  <q-footer
+    class="q-pa-xs q-mt-sm darkInDarkMode brightInBrightMode" style="border-top: 1px solid lightgrey" :style="offsetBottom()">
+    <div class="row fit q-mb-sm" v-if="showLogin">
+      <SidePanelLoginWidget @hide-login="showLogin = false"/>
     </div>
-    <!--    <div class="row fit q-mb-sm"-->
-    <!--         style="border-bottom: 1px dotted #bfbfbf"-->
-    <!--         v-if="otherActiveWindows().length > 0">-->
-    <!--      <div class="col-7 text-black">-->
-    <!--        <q-icon name="o_grid_view" color="blue">-->
-    <!--          <q-tooltip class="tooltip-small">Current Browser Window</q-tooltip>-->
-    <!--        </q-icon>-->
-    <!--        <span class="q-mx-md cursor-pointer text-subtitle2 ellipsis">{{ currentWindowName }}</span>-->
-    <!--        <q-popup-edit :model-value="currentWindowName" v-slot="scope"-->
-    <!--                      @update:model-value="val => setNewName(val)">-->
-    <!--          <q-input v-model="scope.value" dense autofocus counter @keyup.enter="scope.set"/>-->
-    <!--        </q-popup-edit>-->
-    <!--        <q-tooltip class="tooltip-small">Rename window '{{ currentWindowName }}'</q-tooltip>-->
 
+    <div class="row fit q-mb-sm" v-if="showWindowTable">
+      <!-- https://michaelnthiessen.com/force-re-render -->
+      <SidePanelWindowMarkupTable :key="randomKey"/>
+    </div>
 
-    <!--      </div>-->
-    <!--      <div class="col text-black text-right">-->
-    <!--        <template v-if="!showWindowTable">-->
-    <!--          <span class="text-black cursor-pointer text-subtitle2">Switch Window</span>-->
-    <!--          <q-menu fit anchor="top middle" self="bottom middle">-->
-    <!--            <q-item clickable dense v-for="w in otherActiveWindows()" @click="openWindow(w.id)" v-close-popup>-->
-    <!--              <q-item-section>{{ w.name }}</q-item-section>-->
-    <!--            </q-item>-->
-    <!--          </q-menu>-->
-    <!--          <q-icon name="edit" class="q-mx-sm cursor-pointer" color="primary" @click="toggleShowWindowTable()">-->
-    <!--            <q-tooltip class="tooltip-small">Edit Window Names</q-tooltip>-->
-    <!--          </q-icon>-->
+    <div class="row fit q-mb-sm" v-if="showStatsTable">
+      <SidePanelStatsMarkupTable :key="randomKey"/>
+    </div>
 
-    <!--        </template>-->
-    <!--        <template v-else>-->
-    <!--          <q-icon name="edit" class="q-mx-sm q-ma-none cursor-pointer" color="primary"-->
-    <!--                  @click="toggleShowWindowTable()"/>-->
-    <!--        </template>-->
-    <!--      </div>-->
-
-    <!--    </div>-->
     <div class="row fit">
-      <div class="col-9">
+      <div class="col-7">
 
         <Transition name="fade" appear>
           <q-banner
@@ -116,60 +47,104 @@
           <SidePanelFooterLeftButtons
             @was-clicked="doShowSuggestionButton = true"
             :show-suggestion-icon="showSuggestionIcon"/>
-
-        </template>
-
-        <template v-if="progress">
-          <q-linear-progress size="20px" :value="progress" color="primary">
-            <div class="absolute-full flex flex-center">
-              <q-badge color="white" text-color="accent" :label="progressLabel"/>
-            </div>
-          </q-linear-progress>
-        </template>
-        <template v-else>
-          <!--          <q-input borderless v-if="!progress && usePermissionsStore().hasFeature(FeatureIdent.NOTES)"-->
-          <!--                   class="q-ma-xs"-->
-          <!--                   style="height:20px;border: 1px dotted lightgray; border-radius: 3px;" v-model="dragTarget"/>-->
         </template>
 
       </div>
-      <div class="col text-right text-black">
+      <div class="col text-right" v-if="useUiStore().appLoading">
+        &nbsp;
+      </div>
+      <div v-else class="col text-right">
         <q-btn icon="o_help" v-if="usePermissionsStore().hasFeature(FeatureIdent.HELP)"
                :class="rightButtonClass()"
                flat
-               color="black"
                :size="getButtonSize()"
                @click="openHelpView()">
         </q-btn>
 
-        <q-btn icon="o_settings"
+        <q-btn icon="o_settings" v-if="useTabsStore().tabsets.size > 0 || useAuthStore().isAuthenticated()"
                :class="rightButtonClass()"
                flat
-               color="black"
                :size="getButtonSize()"
                @click="openOptionsPage()">
           <q-tooltip class="tooltip" anchor="top left" self="bottom left">{{ settingsTooltip() }}</q-tooltip>
         </q-btn>
 
-        <q-btn v-if="useWindowsStore().currentWindows.length > 1"
-               icon="o_grid_view"
-               :class="rightButtonClass()"
-               flat
-               color="black"
-               :size="getButtonSize()"
-               @click="toggleShowWindowTable()">
+        <q-btn
+          icon="o_grid_view"
+          data-testid="buttonManageWindows"
+          :class="rightButtonClass()"
+          flat
+          :size="getButtonSize()"
+          @click="toggleShowWindowTable()">
           <q-tooltip class="tooltip" anchor="top left" self="bottom left">Manage Windows</q-tooltip>
         </q-btn>
 
         <q-btn
-          v-if="usePermissionsStore().hasFeature(FeatureIdent.STANDALONE_APP)"
-          icon="o_open_in_new"
+          icon="show_chart"
           :class="rightButtonClass()"
           flat
-          color="black"
           :size="getButtonSize()"
-          @click="openExtensionTab()">
-          <q-tooltip class="tooltip">Tabsets as full-page app</q-tooltip>
+          @click="toggleShowStatsTable()">
+          <q-tooltip class="tooltip" anchor="top left" self="bottom left">Show Stats</q-tooltip>
+        </q-btn>
+
+        <span v-if="usePermissionsStore().hasFeature(FeatureIdent.STANDALONE_APP)">
+          <q-icon
+            name="o_open_in_new"
+            :class="rightButtonClass()"
+            class="cursor-pointer"
+            flat
+            size="20px">
+            <q-tooltip :delay="2000" anchor="center left" self="center right"
+                       class="tooltip-small">Alternative Access</q-tooltip>
+          </q-icon>
+          <q-menu :offset="[0, 7]" fit>
+            <q-list dense style="min-width: 200px;min-height:50px">
+              <q-item clickable v-close-popup>
+                <q-item-section @click="openExtensionTab()">Tabsets as full-page app</q-item-section>
+              </q-item>
+              <q-item clickable v-close-popup>
+                <q-item-section @click="NavigationService.openOrCreateTab(['https://shared.tabsets.net'])">Tabsets Online Access</q-item-section>
+              </q-item>
+            </q-list>
+          </q-menu>
+        </span>
+
+        <span class="q-my-xs q-ml-xs q-mr-none cursor-pointer" v-if="authStore.isAuthenticated()">
+          <q-avatar size="18px" v-if="authStore.user?.photoURL">
+            <q-img :src="authStore.user.photoURL"/>
+            <q-tooltip :delay="2000" anchor="center left" self="center right" class="tooltip-small">You're logged in as {{
+                authStore.user?.email
+              }}</q-tooltip>
+          </q-avatar>
+          <q-icon v-else name="o_person" size="20px">
+            <q-tooltip :delay="2000" anchor="center left" self="center right" class="tooltip-small">You're logged in as {{
+                authStore.user?.email
+              }}</q-tooltip>
+          </q-icon>
+
+          <q-menu :offset="[0, 7]" fit>
+            <q-list dense style="min-width: 150px;min-height:50px">
+              <q-item clickable v-close-popup>
+                <q-item-section @click="gotoStripe()">Subscriptions</q-item-section>
+              </q-item>
+              <!--              <q-item clickable v-close-popup>-->
+              <!--                <q-item-section @click="subscribe()">Subscribe</q-item-section>-->
+              <!--              </q-item>-->
+              <q-item clickable v-close-popup>
+                <q-item-section @click="logout()">Logout</q-item-section>
+              </q-item>
+            </q-list>
+
+          </q-menu>
+        </span>
+        <q-btn v-else
+               icon="login"
+               :class="rightButtonClass()"
+               flat
+               color="blue"
+               :size="getButtonSize()"
+               @click="toggleShowLogin()">
         </q-btn>
 
       </div>
@@ -181,12 +156,12 @@
 import {SidePanelView, useUiStore} from "src/stores/uiStore";
 import {useTabsStore} from "src/stores/tabsStore";
 import {Tab} from "src/models/Tab";
-import {ref, watch, watchEffect} from "vue";
+import {ref, watchEffect} from "vue";
 import {useRouter} from "vue-router";
 import {usePermissionsStore} from "src/stores/permissionsStore";
 import {FeatureIdent} from "src/models/AppFeature";
 import NavigationService from "src/services/NavigationService";
-import {openURL, useQuasar} from "quasar";
+import {openURL, uid, useQuasar} from "quasar";
 import {useUtils} from "src/services/Utils";
 import {useWindowsStore} from "src/stores/windowsStore";
 import {useSuggestionsStore} from "stores/suggestionsStore";
@@ -196,6 +171,15 @@ import SuggestionDialog from "components/dialogues/SuggestionDialog.vue";
 import {TabsetStatus} from "src/models/Tabset";
 import {ToastType} from "src/models/Toast";
 import SidePanelFooterLeftButtons from "components/helper/SidePanelFooterLeftButtons.vue";
+import {useAuthStore} from "stores/authStore";
+import {Account} from "src/models/Account";
+import {useNotificationHandler} from "src/services/ErrorHandler";
+import SidePanelLoginWidget from "components/helper/SidePanelLoginWidget.vue";
+import SidePanelWindowMarkupTable from "components/helper/SidePanelWindowMarkupTable.vue";
+import SidePanelStatsMarkupTable from "components/helper/SidePanelStatsMarkupTable.vue"
+import {Window} from "src/models/Window"
+
+const {handleSuccess, handleError} = useNotificationHandler()
 
 const {inBexMode} = useUtils()
 
@@ -203,6 +187,7 @@ const $q = useQuasar()
 
 const router = useRouter()
 const uiStore = useUiStore()
+const authStore = useAuthStore()
 
 const currentChromeTabs = ref<chrome.tabs.Tab[]>([])
 const currentTabs = ref<Tab[]>([])
@@ -214,28 +199,21 @@ const showSuggestionIcon = ref(false)
 const doShowSuggestionButton = ref(false)
 const transitionGraceTime = ref(false)
 const showWindowTable = ref(false)
-const currentWindowName = ref('---')
-
-const columns = [
-  //{name: 'windowIcon', align: 'center', label: '', field: 'windowIcon', sortable: true},
-  {
-    name: 'name',
-    required: true,
-    label: 'Window Name (editable)',
-    align: 'left',
-    sortable: false
-  },
-  // {name: 'windowHeight', align: 'center', label: 'Height', field: 'windowHeight'},
-  // {name: 'windowWidth', align: 'center', label: 'Height', field: 'windowWidth'},
-  {name: 'windowAction', align: 'center', label: 'Action', field: 'windowAction', sortable: false}
-]
-
-const rows = ref<object[]>([])
+const showStatsTable = ref(false)
+const showLogin = ref(false)
+const account = ref<Account | undefined>(undefined)
+const randomKey = ref<string>(uid())
 
 watchEffect(() => {
-  if (useWindowsStore().currentWindows.length === 1) {
-    showWindowTable.value = false
+  const windowId = useWindowsStore().currentChromeWindow?.id || 0
+  if (useWindowsStore().windowForId(windowId)?.open) {
+    //console.log("setting showWindowTable to ", useWindowsStore().windowForId(windowId)?.open)
+    showWindowTable.value = useWindowsStore().windowForId(windowId)?.open || false
   }
+})
+
+watchEffect(() => {
+  account.value = authStore.getAccount()
 })
 
 watchEffect(() => {
@@ -268,7 +246,7 @@ watchEffect(() => {
   if (!inBexMode()) {
     return
   }
-  const windowId = useWindowsStore().currentWindow?.id || 0
+  const windowId = useWindowsStore().currentChromeWindow?.id || 0
   currentChromeTab.value = useTabsStore().getCurrentChromeTab(windowId) || useTabsStore().currentChromeTab
 })
 
@@ -278,7 +256,13 @@ watchEffect(() => {
 })
 
 //const openOptionsPage = () => window.open(chrome.runtime.getURL('www/index.html#/mainpanel/settings'));
-const openOptionsPage = () => window.open('#/mainpanel/settings');
+//const openOptionsPage = () => window.open('#/mainpanel/settings');
+const openOptionsPage = () => {
+  ($q.platform.is.cordova || $q.platform.is.capacitor) ?
+    //Browser.open({ url: 'http://capacitorjs.com/' }).catch((err) => console.log("error", err)) :
+    router.push("/settings") :
+    NavigationService.openOrCreateTab([chrome.runtime.getURL('www/index.html#/mainpanel/settings')], undefined, [], true, true)
+}
 
 const openExtensionTab = () =>
   //NavigationService.openOrCreateTab([chrome.runtime.getURL('www/index.html#/fullpage')])
@@ -360,81 +344,45 @@ const toastBannerClass = () => {
   }
 }
 
-const otherActiveWindows = () => {
-  return _.filter(
-    _.sortBy(
-      _.map(
-        _.filter(useWindowsStore().currentWindows, (w: chrome.windows.Window) => {
-          return useWindowsStore().currentWindow?.id !== w.id
-        }), w => {
-          return w.id ? {
-            name: useWindowsStore().windowNameFor(w.id) || 'Main',
-            id: w.id
-          } : {name: 'unknown', id: 0}
-        }),
-      o => o.name),
-    (e: object) => e['name' as keyof object] !== '%monitoring%')
-}
-
-watchEffect(() => {
-  const res = useWindowsStore().currentWindow && useWindowsStore().currentWindow.id ?
-    useWindowsStore().windowNameFor(useWindowsStore().currentWindow.id || 0) || 'n/a' :
-    'n/a'
-  currentWindowName.value = res
-})
-
-const setNewName = (newName: string) => {
-  //console.log("setting window name to ", newName)
-  if (newName.trim().length > 0) {
-    currentWindowName.value = newName
-    //console.log("setting window name to ", currentWindowName.value)
-    useWindowsStore().currentWindowName = newName
-    chrome.windows.getCurrent((w) => {
-      useWindowsStore().upsertWindow(w, newName, "")
-    })
-  }
-}
-
-const openWindow = (windowId: number) => {
-  if (useWindowsStore().currentWindow?.id !== windowId) {
-    chrome.windows.update(windowId, {drawAttention: true, focused: true},
-      (callback) => {
-      })
-  }
-}
+const toggleShowLogin = () => showLogin.value = !showLogin.value
 
 const toggleShowWindowTable = () => {
   showWindowTable.value = !showWindowTable.value
   if (showWindowTable.value) {
-
-    rows.value = _.map(useWindowsStore().currentWindows as chrome.windows.Window[], (w: chrome.windows.Window) => {
-      return {
-        id: w.id,
-        name: useWindowsStore().windowNameFor(w.id || 0) || w.id,
-        windowHeight: w['height' as keyof object],
-        windowWidth: w['width' as keyof object],
-        windowIcon: "*"
-      }
-    })
+    randomKey.value = uid()
+    showStatsTable.value = false
+  }
+  const windowId = useWindowsStore().currentChromeWindow?.id || 0
+  const currentWindow: Window | undefined = useWindowsStore().windowForId(windowId)
+  if (currentWindow) {
+    currentWindow.open = showWindowTable.value
+    useWindowsStore().upsertTabsetWindow(currentWindow)
   }
 }
 
-const setWindowName = (id: number, newName: String) => {
-  console.log("herie", id, newName)
-  if (newName && newName.toString().trim().length > 0) {
-    chrome.windows.get(id, (cw) => {
-      //console.log("setting window name", id, newName.toString().trim())
-      useWindowsStore().upsertWindow(cw, newName.toString().trim(), "")
-
-      if (useWindowsStore().currentWindow?.id === id) {
-        currentWindowName.value = newName
-        //console.log("setting window name to ", currentWindowName.value)
-        useWindowsStore().currentWindowName = newName
-      }
-    })
+const toggleShowStatsTable = () => {
+  showStatsTable.value = !showStatsTable.value
+  if (showWindowTable.value) {
+    showWindowTable.value = false
   }
-
 }
+
+const logout = () => {
+  authStore.logout()
+    .then(() => {
+      router.push("/refresh/sidepanel")
+    })
+    .catch(() => {
+      //this.handleError(error)
+    })
+    .finally(() => {
+      console.log("cleaning up after logout")
+      //useTabsetService().init(useDB(undefined).db, useDB(undefined).pouchDb)
+    })
+}
+
+const offsetBottom = () => ($q.platform.is.capacitor || $q.platform.is.cordova) ? 'margin-bottom:20px;' : ''
+const gotoStripe = () => openURL("https://billing.stripe.com/p/login/test_5kA9EHf2Da596HuaEE")
 
 </script>
 

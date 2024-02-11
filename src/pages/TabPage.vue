@@ -28,7 +28,7 @@
 
   <div v-if="tab === 'tabdata'">
     <div class="q-pa-md q-gutter-sm">
-      <q-banner rounded class="bg-grey-1 text-primary">Tabsets analyses the URLs you track in order to provide you with
+      <q-banner rounded >Tabsets analyses the URLs you track in order to provide you with
         additional features like searching and thumbnails.
         This is the main info about this tab, retrieved when the page was opened in a tab.
       </q-banner>
@@ -186,7 +186,7 @@
   <div v-else-if="tab === 'meta'">
 
     <div class="q-pa-md q-gutter-sm">
-      <q-banner rounded class="bg-grey-1 text-primary">This meta data was derived from the pages provided meta tags.
+      <q-banner rounded >This meta data was derived from the pages provided meta tags.
         This data is collected if the 'analyse tabs' feature is active.
         If this does not work as expected, you might have to refresh or reinstall the tabsets extension.
       </q-banner>
@@ -237,7 +237,7 @@
 
   <div v-else-if="tab === 'request'">
     <div class="q-pa-md q-gutter-sm">
-      <q-banner rounded class="bg-grey-1 text-primary">This is a data derived from the request to the tabs content. This
+      <q-banner rounded >This is a data derived from the request to the tabs content. This
         data is collected if the 'analyse tabs' feature is active.
       </q-banner>
 
@@ -274,7 +274,7 @@
 
   <div v-else-if="tab === 'metalinks'">
     <div class="q-pa-md q-gutter-sm">
-      <q-banner rounded class="bg-grey-1 text-primary">This is a data derived from the tab's content link tags. This
+      <q-banner rounded >This is a data derived from the tab's content link tags. This
         data is collected if the 'analyse tabs' feature is active.
         If this does not work as expected, you might have to refresh or reinstall the tabsets extension.
       </q-banner>
@@ -313,7 +313,7 @@
 
   <div v-else-if="tab === 'links'">
     <div class="q-pa-md q-gutter-sm">
-      <q-banner rounded class="bg-grey-1 text-primary">This is data derived from the tab's html content</q-banner>
+      <q-banner rounded >This is data derived from the tab's html content</q-banner>
 
       <q-table
           title="Links"
@@ -349,13 +349,13 @@
 
   <div v-else-if="tab === 'history'">
     <div class="q-pa-md q-gutter-sm">
-      <q-banner rounded class="bg-grey-1 text-primary">To be done</q-banner>
+      <q-banner rounded >To be done</q-banner>
     </div>
   </div>
 
   <div v-else-if="tab === 'content'">
     <div class="q-pa-md q-gutter-sm">
-      <q-banner rounded class="bg-grey-1 text-primary">This is a text extract derived from the tabs content</q-banner>
+      <q-banner rounded >This is a text extract derived from the tabs content</q-banner>
 
       <div class="col-5">
         Content
@@ -368,7 +368,7 @@
 
   <div v-else-if="tab === 'debug'" v-if="useSettingsStore().isEnabled('dev')">
     <div class="q-pa-md q-gutter-sm">
-      <q-banner rounded class="bg-grey-1 text-primary">The tabs internal representation</q-banner>
+      <q-banner rounded >The tabs internal representation</q-banner>
       <vue-json-pretty style="font-size: 80%" :show-length="true"
                        v-model:data="state.data"
                        :show-double-quotes="true"

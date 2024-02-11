@@ -1,5 +1,5 @@
 <template>
-  <q-toolbar class="text-primary q-pa-none q-pl-sm q-pr-xs q-pb-none greyBorderBottom">
+  <q-toolbar class="text-primary q-pa-none q-pl-sm q-pr-xs q-pb-none greyBorderBottom" :style="offsetTop()">
     <q-toolbar-title>
       <div class="row q-ma-none q-pa-none">
 
@@ -14,8 +14,7 @@
 
           <template v-else>
             <div class="column q-ma-none q-pa-none">
-              <!-- @click.stop="router.push('/sidepanel/spaces')" -->
-              <div class="col q-ma-none q-pa-none cursor-pointer text-black text-subtitle1">
+              <div class="col q-ma-none q-pa-none cursor-pointer text-subtitle1">
                 <slot name="title">{{ props.title }}</slot>
               </div>
             </div>
@@ -35,7 +34,7 @@
           <template v-else>
 
             <!-- no spaces && not searching -->
-            <div class="col-12 text-black text-subtitle1">
+            <div class="col-12 text-subtitle1">
               <slot name="title">{{ props.title }}</slot>
             </div>
 
@@ -43,7 +42,7 @@
         </div>
 
         <!-- spaces or not, here's the icons on the right side -->
-        <div class="col text-subtitle1 text-right q-ma-none q-pa-none q-pr-sm">
+        <div class="col text-subtitle1 text-right q-ma-none q-pa-none q-pr-sm" v-if="!useUiStore().appLoading">
 
           <slot name="iconsRight">
 
@@ -58,7 +57,6 @@
               <SidePanelToolbarButton icon="search"
                                       id="toggleSearchBtn"
                                       size="11px"
-                                      color="black"
                                       @click="toggleSearch"/>
               <span class="q-ma-none q-pa-none q-mx-sm text-grey-5">|</span>
             </template>
@@ -122,7 +120,7 @@ const permissionsStore = usePermissionsStore()
 const searching = ref(false)
 const existingSession = ref(false)
 const showFilter = ref(false)
-const title = ref(props.title)
+const windowLocation = ref('')
 
 const toggleSearch = () => {
   searching.value = !searching.value
@@ -132,6 +130,8 @@ const toggleSearch = () => {
     router.push("/sidepanel")
   }
 }
+
+windowLocation.value = window.location.href
 
 watchEffect(() => {
   if (props.showSearchBox && !searching.value) {
@@ -169,7 +169,7 @@ const stopSession = () => {
 }
 
 // const createWebsiteClipTooltip = () => {
-//   const windowId = useWindowsStore().currentWindow.id || 0
+//   const windowId = useWindowsStore().currentChromeWindow.id || 0
 //   const currentChromeTab = useTabsStore().getCurrentChromeTab(windowId) || useTabsStore().currentChromeTab
 //   return "Create Website Clip for tab " + currentChromeTab.url
 // }
@@ -177,7 +177,7 @@ const stopSession = () => {
 const webClipActive = () => tabsStore.currentChromeTab
 
 // const createClip = () => {
-//   const windowId = useWindowsStore().currentWindow.id || 0
+//   const windowId = useWindowsStore().currentChromeWindow.id || 0
 //   const currentChromeTab = useTabsStore().getCurrentChromeTab(windowId) || useTabsStore().currentChromeTab
 //   if (currentChromeTab && currentChromeTab.id) {
 //     ChromeApi.executeClippingJS(currentChromeTab.id)
@@ -216,6 +216,8 @@ const openNewTabsetDialog = () => {
     }
   })
 }
+
+const offsetTop = () => ($q.platform.is.capacitor || $q.platform.is.cordova) ? 'margin-top:40px;' : ''
 
 </script>
 
