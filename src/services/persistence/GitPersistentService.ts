@@ -135,17 +135,8 @@ class GitPersistenceService implements PersistenceService {
         onAuthSuccess: () => (console.log("auth: success")),
         onAuthFailure: (url: any, auth: any) => {
           console.log("onAuthFailure", url, auth)
-          NavigationService.openSingleTab("chrome-extension://pndffocijjfpmphlhkoijmpfckjafdpl/www/index.html#/mainpanel/settings?tab=syncing&token=failed")
-          //forgetSavedPassword(url)
-          // if (confirm('Access was denied. Try again?')) {
-          //   auth = {
-          //     username: prompt('Enter username'),
-          //     password: prompt('Enter password'),
-          //   }
-          //   return auth
-          // } else {
-          //   return {cancel: true}
-          // }
+          const settingsPath = chrome.runtime.getURL("/www/index.html#/mainpanel/settings")
+          NavigationService.openSingleTab(settingsPath + "?tab=syncing&token=failed")
         },
         onAuth: () => ({username: LocalStorage.getItem(SYNC_GITHUB_TOKEN) as string || '---'}),
       }
