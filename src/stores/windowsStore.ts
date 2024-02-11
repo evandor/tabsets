@@ -32,7 +32,8 @@ export const useWindowsStore = defineStore('windows', () => {
   const onCreatedListener = () => setup("onCreated")
   const onRemovedListener = (windowId: number) => onRemoved(windowId)
   const onBoundsChangedListener = (window: chrome.windows.Window) => onUpdate(window.id || 0)
-  const onFocusChangedListener = (windowId:number) => { /** noop */ }
+  const onFocusChangedListener = (windowId: number) => { /** noop */
+  }
 
   /**
    * the map of all 'ever used' Chrome windows, even if they are not currently in use,
@@ -201,15 +202,16 @@ export const useWindowsStore = defineStore('windows', () => {
     }
   }
 
-    function initListeners() {
+  function initListeners() {
     if (inBexMode() && chrome && browser.windows) {
-      console.debug (" ...initializing windowsStore Listeners")
+      console.debug(" ...initializing windowsStore Listeners")
       browser.windows.onCreated.addListener(onCreatedListener)
       browser.windows.onRemoved.addListener(onRemovedListener)
       browser.windows.onFocusChanged.addListener(onFocusChangedListener)
-      browser.windows.onBoundsChanged.addListener(onBoundsChangedListener)
+      //browser.windows.onUpdate.addListener(onBoundsChangedListener)
+      //browser.windows.onBoundsChanged.addListener(onBoundsChangedListener)
     }
-        }
+  }
 
   async function resetListeners() {
     chrome.windows.onCreated.removeListener(onCreatedListener)
@@ -224,7 +226,7 @@ export const useWindowsStore = defineStore('windows', () => {
 
   function currentWindowForId(id: number): chrome.windows.Window | undefined {
     return currentChromeWindows.value.find(i => i.id === id)
-    }
+  }
 
   function windowNameFor(id: number) {
     //console.log("windowNameFor", id, allWindows.value)
@@ -360,7 +362,7 @@ export const useWindowsStore = defineStore('windows', () => {
           allWindow.index = indexToUse
         }
         return storage.updateWindow(w)
-          //.then(() => sendMsg('window-updated', {initiated: "WindowsStore#updateWindowIndex"}))
+        //.then(() => sendMsg('window-updated', {initiated: "WindowsStore#updateWindowIndex"}))
       } else {
         return Promise.reject("window for #" + windowId + " not found")
       }
