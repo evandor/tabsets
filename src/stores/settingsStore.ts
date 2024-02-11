@@ -9,22 +9,14 @@ export const useSettingsStore = defineStore('settings', () => {
   //let localStorage: LocalStorage = null as unknown as LocalStorage
 
   const activeToggles = ref<string[]>([])
-  const thresholds = ref(localStorage.getItem('thresholds') || {
+  const thresholds = ref( {
     min: 0,
     max: 40
   })
-  const thumbnailQuality = ref(localStorage.getItem('thumbnailQuality') || 25)
+  const thumbnailQuality = ref( 25)
 
   const isEnabled = computed(() => (ident: string) =>
     _.findIndex(activeToggles.value, (e: string) => e === ident) >= 0)
-
-  // watch(
-  //   activeToggles,
-  //   (activeTogglesVal: string[]) => {
-  //     console.log("setting activeToggles to", activeTogglesVal)
-  //     localStorage.set("settings", _.join(activeTogglesVal, ","))
-  //   }, {deep: true}
-  // )
 
   watch(
     thresholds,
@@ -37,12 +29,20 @@ export const useSettingsStore = defineStore('settings', () => {
   watch(thumbnailQuality, (val: Object) => localStorage.set("thumbnailQuality", val))
 
   function initialize(localStorage: any) {
-    console.debug(" ...initializing settingsStore", localStorage, activeToggles.value)
+    console.debug(" ...initializing settingsStore")
     //this.localStorage = localStorage
     const fts: string | undefined = localStorage.getItem("settings")
     if (fts) {
       console.log("determining activeToggles from", fts)
       activeToggles.value = _.map(fts.split(","), e => e.trim())
+    }
+    const ths = localStorage.getItem('thresholds')
+    if (ths) {
+      thresholds.value = ths
+    }
+    const tnq = localStorage.getItem('thumbnailQuality')
+    if (tnq) {
+      thumbnailQuality.value = tnq
     }
   }
 
