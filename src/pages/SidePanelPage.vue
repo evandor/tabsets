@@ -278,16 +278,15 @@
         <template v-slot:title v-else>
           <div class="text-subtitle1">
             {{ toolbarTitle(tabsets as Tabset[]) }}
-            <q-icon
-              v-if="LocalStorage.getItem(SYNC_TYPE) as SyncType === SyncType.GITHUB && useAuthStore().isAuthenticated()"
-              class="q-ml-none" name="sync" size="12px">
-              <q-tooltip class="tooltip-small">Tabsets synced via {{ LocalStorage.getItem(SYNC_GITHUB_URL) }}
-              </q-tooltip>
-            </q-icon>
-            <q-icon v-if="LocalStorage.getItem(SYNC_TYPE) as SyncType === SyncType.MANAGED_GIT"
-                    class="q-ml-none" name="sync" size="12px">
-              <q-tooltip class="tooltip-small">Tabsets are being synced automatically</q-tooltip>
-            </q-icon>
+<!--            <q-icon-->
+<!--              v-if="LocalStorage.getItem(SYNC_TYPE) as SyncType === SyncType.GITHUB && useAuthStore().isAuthenticated()"-->
+<!--              class="q-ml-none" name="sync" size="12px">-->
+<!--              <q-tooltip class="tooltip-small">Tabsets synced via {{ syncSource() }}</q-tooltip>-->
+<!--            </q-icon>-->
+<!--            <q-icon v-if="LocalStorage.getItem(SYNC_TYPE) as SyncType === SyncType.MANAGED_GIT"-->
+<!--                    class="q-ml-none" name="sync" size="12px">-->
+<!--              <q-tooltip class="tooltip-small">Tabsets are being synced automatically</q-tooltip>-->
+<!--            </q-icon>-->
           </div>
         </template>
 
@@ -330,7 +329,7 @@ import {CopyToClipboardCommand} from "src/domain/commands/CopyToClipboard";
 import SidePanelTabsetDescriptionPage from "pages/sidepanel/SidePanelTabsetDescriptionPage.vue";
 import ShareTabsetPubliclyDialog from "components/dialogues/ShareTabsetPubliclyDialog.vue";
 import MqttService from "src/services/mqtt/MqttService";
-import {SyncType, useAppStore} from "stores/appStore";
+import {SyncType} from "stores/appStore";
 import {useVOnboarding, VOnboardingStep, VOnboardingWrapper} from 'v-onboarding'
 import {FirebaseCall} from "src/services/firebase/FirebaseCall";
 import getScrollTarget = scroll.getScrollTarget;
@@ -1018,6 +1017,8 @@ const tabsetSectionName = (tabset: Tabset) => {
   const activeFolder = useTabsetService().findFolder([tabset], tabset.folderActive)
   return tabset.name + (activeFolder ? " - " + activeFolder.name : "")
 }
+
+const syncSource = () => LocalStorage.getItem(SYNC_GITHUB_URL)
 
 </script>
 

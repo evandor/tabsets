@@ -36,7 +36,7 @@ async function createDir(...segments: string[]) {
     try {
       // @ts-ignore
       const path = `${dir}/${prefix}${segment}`
-      console.debug("creating fs path", path)
+      //console.debug("creating fs path", path)
       prefix += segment + "/"
       // @ts-ignore
       await pfs.mkdir(path)
@@ -205,7 +205,7 @@ class GitPersistenceService implements PersistenceService {
         //log("got ts index", index)
         const tabsetId = result[index]
         const tsDataLocation = `${dir}/tabsets/${tabsetId}/tabset.json`
-        console.debug("tsDataLocation", tsDataLocation)
+        //console.debug("tsDataLocation", tsDataLocation)
         try {
           const tsData = await pfs.readFile(tsDataLocation)
           //log("tsData", tsData)

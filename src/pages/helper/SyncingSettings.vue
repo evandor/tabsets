@@ -310,12 +310,13 @@ import {
 } from "boot/constants";
 import GitPersistentService from "src/services/persistence/GitPersistentService";
 import {FirebaseCall} from "src/services/firebase/FirebaseCall";
-import {Tabset, TabsetSharing} from "src/models/Tabset";
-import {useTabsetService} from "src/services/TabsetService2";
-import {useSuggestionsStore} from "stores/suggestionsStore";
-import {StaticSuggestionIdent, Suggestion, SuggestionType} from "src/models/Suggestion";
 import {useUtils} from "src/services/Utils";
+import {useNotificationHandler} from "src/services/ErrorHandler";
+import {ExecutionResult} from "src/domain/ExecutionResult";
+import {useAuthStore} from "stores/authStore";
+
 const {sendMsg} = useUtils()
+const {handleSuccess, handleError} = useNotificationHandler()
 
 const emits = defineEmits(['wasClicked'])
 
@@ -402,9 +403,17 @@ const testDbConnection = async () => {
   }
 }
 
-const startGitSyncing = () => {
-  LocalStorage.set(SYNC_TYPE, tempSyncOption.value)
-  sendMsg('reload-application')
+const startGitSyncing = async () => {
+  try {
+    const res = await FirebaseCall.post("/users/" + useAuthStore().user.uid, {})
+    console.log("res", res)
+    LocalStorage.set(SYNC_TYPE, tempSyncOption.value)
+    sendMsg('reload-application')
+    handleSuccess(new ExecutionResult<string>("done", "done"))
+  } catch (err) {
+    console.error("startGitSyncing Error", err)
+    handleError('could not start syncing')
+  }
   //useSuggestionsStore().addSuggestion(Suggestion.getStaticSuggestion(StaticSuggestionIdent.RESTART_SUGGESTED))
 }
 const stopGitSyncing = () => {
@@ -417,18 +426,6 @@ const startSyncMessage = (targetType: SyncType) => testResult.value === 'success
   tempSyncOption.value === targetType
 
 const stopSyncMessage = () => (syncType.value !== tempSyncOption.value) && syncType.value === SyncType.GITHUB && tempSyncOption.value === SyncType.NONE
-
-// const testSubscription = () => {
-//   console.log("testing subscription", subscription.value)
-//   FirebaseCall.get("/share/public/" + tabsetId + "?cb=" + new Date().getTime(), false)
-//     .then((res: any) => {
-//       const newTabset = res as Tabset
-//       newTabset.sharing = TabsetSharing.UNSHARED
-//       //_.forEach(newTabset.tabs, t => t.preview = TabPreview.THUMBNAIL)
-//       useTabsetService().saveTabset(newTabset)
-//       useTabsetService().reloadTabset(newTabset.id)
-//     })
-// }
 
 const checkManagedGitSetup = async () => {
   try {

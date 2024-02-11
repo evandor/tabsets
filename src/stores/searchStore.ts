@@ -74,7 +74,6 @@ export const useSearchStore = defineStore('search', () => {
 
   // @ts-ignore
   function getIndex(): Fuse.FuseIndex<SearchDoc> {
-    console.log("hier", fuse.value)
     return fuse.value ? fuse.value.getIndex() : null
   }
 
