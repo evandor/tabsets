@@ -525,7 +525,7 @@ onMounted(() => {
 let suggestionsCounter = 0
 
 watchEffect(() => {
-  console.log("watching settingsStore.activeToggles...", settingsStore.activeToggles)
+  //console.log("watching settingsStore.activeToggles...", settingsStore.activeToggles)
   devEnabled.value = settingsStore.isEnabled('dev')
   ddgEnabled.value = settingsStore.isEnabled('noDDG')
   ignoreExtensionsEnabled.value = settingsStore.isEnabled('extensionsAsTabs')
@@ -569,7 +569,7 @@ watch(() => pageCapturePermissionGranted.value, (newValue, oldValue) => {
 })
 
 watchEffect(() => {
-  console.log("***setting dark mode to ", typeof darkMode.value, darkMode.value)
+  //console.log("***setting dark mode to ", typeof darkMode.value, darkMode.value)
   switch (darkMode.value) {
     case "true":
       $q.dark.set(true)
@@ -620,14 +620,6 @@ watchEffect(() => {
 watchEffect(() => {
   localStorage.set('ui.detailsPerTabset', detailLevelPerTabset.value)
   sendMsg('detail-level-perTabset-changed', {level: detailLevelPerTabset.value})
-})
-
-watchEffect(() => {
-  console.log("activeToggles watcheffect", devEnabled.value)
-  //settingsStore.setFeatureToggle("stats", statsEnabled.value)
-  //settingsStore.setFeatureToggle("dev", devEnabled.value)
- // settingsStore.setFeatureToggle("noDDG", !ddgEnabled.value)
- // settingsStore.setFeatureToggle("extensionsAsTabs", !ignoreExtensionsEnabled.value)
 })
 
 watchEffect(() => {

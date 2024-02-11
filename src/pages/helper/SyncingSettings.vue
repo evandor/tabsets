@@ -303,30 +303,28 @@ import {
   SYNC_COUCHDB_URL,
   SYNC_COUCHDB_USERNAME,
   SYNC_GITHUB_TOKEN,
-  SYNC_GITHUB_URL,
-  SYNC_GITLAB_TOKEN,
-  SYNC_GITLAB_URL,
   SYNC_TYPE
 } from "boot/constants";
 import GitPersistentService from "src/services/persistence/GitPersistentService";
 import {FirebaseCall} from "src/services/firebase/FirebaseCall";
-import {Tabset, TabsetSharing} from "src/models/Tabset";
-import {useTabsetService} from "src/services/TabsetService2";
-import {useSuggestionsStore} from "stores/suggestionsStore";
-import {StaticSuggestionIdent, Suggestion, SuggestionType} from "src/models/Suggestion";
 import {useUtils} from "src/services/Utils";
+import {useNotificationHandler} from "src/services/ErrorHandler";
+import {ExecutionResult} from "src/domain/ExecutionResult";
+import {useAuthStore} from "stores/authStore";
+
 const {sendMsg} = useUtils()
+const {handleSuccess, handleError} = useNotificationHandler()
 
 const emits = defineEmits(['wasClicked'])
 
 const syncType = ref<string | undefined>(undefined)
-const tempSyncOption = ref<SyncType>(LocalStorage.getItem(SYNC_TYPE) as SyncType || SyncType.NONE)
+const tempSyncOption = ref<SyncType>(useAuthStore().getAccount()?.userData?.sync?.type  || SyncType.NONE)
 
-const gitlabRepoToken = ref<string>(LocalStorage.getItem(SYNC_GITLAB_TOKEN) as string || '')
-const gitlabRepoUrl = ref<string>(LocalStorage.getItem(SYNC_GITLAB_URL) as string || '')
+// const gitlabRepoToken = ref<string>(LocalStorage.getItem(SYNC_GITLAB_TOKEN) as string || '')
+// const gitlabRepoUrl = ref<string>(LocalStorage.getItem(SYNC_GITLAB_URL) as string || '')
 
 const githubRepoToken = ref<string>(LocalStorage.getItem(SYNC_GITHUB_TOKEN) as string || '')
-const githubRepoUrl = ref<string>(LocalStorage.getItem(SYNC_GITHUB_URL) as string || '')
+const githubRepoUrl = ref<string>(useAuthStore().getAccount()?.userData?.sync?.url || '')
 
 const couchdbUsername = ref<string>(LocalStorage.getItem(SYNC_COUCHDB_USERNAME) as string || '')
 const couchdbPassword = ref<string>(LocalStorage.getItem(SYNC_COUCHDB_PASSWORD) as string || '')
@@ -353,9 +351,9 @@ function checkAndUpdate(val: string, ident: string) {
   testResult.value = undefined
 }
 
-watchEffect(() => {
-  checkAndUpdate(githubRepoUrl.value, SYNC_GITHUB_URL)
-})
+// watchEffect(() => {
+//   checkAndUpdate(githubRepoUrl.value, SYNC_GITHUB_URL)
+// })
 
 watchEffect(() => {
   checkAndUpdate(githubRepoToken.value, SYNC_GITHUB_TOKEN)
@@ -367,9 +365,9 @@ watchEffect(() => {
   checkAndUpdate(couchdbUrl.value, SYNC_COUCHDB_URL)
 })
 
-watchEffect(() => {
-  syncType.value = LocalStorage.getItem(SYNC_TYPE) as SyncType
-})
+// watchEffect(() => {
+//   syncType.value = LocalStorage.getItem(SYNC_TYPE) as SyncType
+// })
 
 
 const testGitConnection = async () => {
@@ -402,9 +400,18 @@ const testDbConnection = async () => {
   }
 }
 
-const startGitSyncing = () => {
-  LocalStorage.set(SYNC_TYPE, tempSyncOption.value)
-  sendMsg('reload-application')
+const startGitSyncing = async () => {
+  try {
+    const res = await FirebaseCall.patch("/users/" + useAuthStore().user.uid,
+      {sync: {type:tempSyncOption.value, url:githubRepoUrl.value}})
+    console.log("res", res)
+    LocalStorage.set(SYNC_TYPE, tempSyncOption.value)
+    sendMsg('reload-application')
+    handleSuccess(new ExecutionResult<string>("done", "done"))
+  } catch (err) {
+    console.error("startGitSyncing Error", err)
+    handleError('could not start syncing')
+  }
   //useSuggestionsStore().addSuggestion(Suggestion.getStaticSuggestion(StaticSuggestionIdent.RESTART_SUGGESTED))
 }
 const stopGitSyncing = () => {
@@ -417,18 +424,6 @@ const startSyncMessage = (targetType: SyncType) => testResult.value === 'success
   tempSyncOption.value === targetType
 
 const stopSyncMessage = () => (syncType.value !== tempSyncOption.value) && syncType.value === SyncType.GITHUB && tempSyncOption.value === SyncType.NONE
-
-// const testSubscription = () => {
-//   console.log("testing subscription", subscription.value)
-//   FirebaseCall.get("/share/public/" + tabsetId + "?cb=" + new Date().getTime(), false)
-//     .then((res: any) => {
-//       const newTabset = res as Tabset
-//       newTabset.sharing = TabsetSharing.UNSHARED
-//       //_.forEach(newTabset.tabs, t => t.preview = TabPreview.THUMBNAIL)
-//       useTabsetService().saveTabset(newTabset)
-//       useTabsetService().reloadTabset(newTabset.id)
-//     })
-// }
 
 const checkManagedGitSetup = async () => {
   try {

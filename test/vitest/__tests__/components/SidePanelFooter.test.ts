@@ -136,7 +136,7 @@ describe('SidePanelFooter', () => {
   })
 
   it('should be mounted', async () => {
-    expect(wrapper.text()).toContain("grid_viewlogin");
+    expect(wrapper.text()).toContain("grid_viewshow_chartlogin");
     expect(wrapper.text()).not.toContain("Open Window");
   });
 

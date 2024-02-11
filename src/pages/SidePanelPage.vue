@@ -278,16 +278,15 @@
         <template v-slot:title v-else>
           <div class="text-subtitle1">
             {{ toolbarTitle(tabsets as Tabset[]) }}
-            <q-icon
-              v-if="LocalStorage.getItem(SYNC_TYPE) as SyncType === SyncType.GITHUB && useAuthStore().isAuthenticated()"
-              class="q-ml-none" name="sync" size="12px">
-              <q-tooltip class="tooltip-small">Tabsets synced via {{ LocalStorage.getItem(SYNC_GITHUB_URL) }}
-              </q-tooltip>
-            </q-icon>
-            <q-icon v-if="LocalStorage.getItem(SYNC_TYPE) as SyncType === SyncType.MANAGED_GIT"
-                    class="q-ml-none" name="sync" size="12px">
-              <q-tooltip class="tooltip-small">Tabsets are being synced automatically</q-tooltip>
-            </q-icon>
+<!--            <q-icon-->
+<!--              v-if="LocalStorage.getItem(SYNC_TYPE) as SyncType === SyncType.GITHUB && useAuthStore().isAuthenticated()"-->
+<!--              class="q-ml-none" name="sync" size="12px">-->
+<!--              <q-tooltip class="tooltip-small">Tabsets synced via {{ syncSource() }}</q-tooltip>-->
+<!--            </q-icon>-->
+<!--            <q-icon v-if="LocalStorage.getItem(SYNC_TYPE) as SyncType === SyncType.MANAGED_GIT"-->
+<!--                    class="q-ml-none" name="sync" size="12px">-->
+<!--              <q-tooltip class="tooltip-small">Tabsets are being synced automatically</q-tooltip>-->
+<!--            </q-icon>-->
           </div>
         </template>
 
@@ -309,7 +308,7 @@ import {useRouter} from "vue-router";
 import {useUtils} from "src/services/Utils";
 import {LocalStorage, openURL, scroll, uid, useQuasar} from "quasar";
 import {useTabsetService} from "src/services/TabsetService2";
-import {ListDetailLevel, useUiStore} from "src/stores/uiStore";
+import {useUiStore} from "src/stores/uiStore";
 import {usePermissionsStore} from "src/stores/permissionsStore";
 import {useSpacesStore} from "src/stores/spacesStore";
 import FirstToolbarHelper from "pages/sidepanel/helper/FirstToolbarHelper.vue";
@@ -330,12 +329,11 @@ import {CopyToClipboardCommand} from "src/domain/commands/CopyToClipboard";
 import SidePanelTabsetDescriptionPage from "pages/sidepanel/SidePanelTabsetDescriptionPage.vue";
 import ShareTabsetPubliclyDialog from "components/dialogues/ShareTabsetPubliclyDialog.vue";
 import MqttService from "src/services/mqtt/MqttService";
-import {SyncType, useAppStore} from "stores/appStore";
 import {useVOnboarding, VOnboardingStep, VOnboardingWrapper} from 'v-onboarding'
 import {FirebaseCall} from "src/services/firebase/FirebaseCall";
 import getScrollTarget = scroll.getScrollTarget;
 import InfoMessageWidget from "components/widgets/InfoMessageWidget.vue";
-import {SYNC_GITHUB_URL, SYNC_TYPE, TITLE_IDENT} from "boot/constants";
+import {SYNC_TYPE, TITLE_IDENT} from "boot/constants";
 import AppService from "src/services/AppService";
 import SidePanelToolbarButton from "components/buttons/SidePanelToolbarButton.vue";
 
@@ -901,19 +899,6 @@ const suggestTabsetImport = () => {
     return !useTabsetService().getTabset(tabsetId)
   }
   return false
-}
-
-const testShare = () => {
-  const shareData = {
-    title: "MDN",
-    text: "Learn web development on MDN!",
-    url: "https://developer.mozilla.org",
-  };
-  console.log(navigator)
-  if (navigator.canShare) {
-    console.log(navigator.canShare())
-    navigator.share(shareData).then((res) => console.log("res", res)).catch((err) => console.error(err))
-  }
 }
 
 const importSharedTabset = () => {

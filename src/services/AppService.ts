@@ -23,7 +23,6 @@ import {FeatureIdent} from "src/models/AppFeature";
 import {useMessagesStore} from "src/stores/messagesStore";
 import {SyncType, useAppStore} from "stores/appStore";
 import GitPersistentService from "src/services/persistence/GitPersistentService";
-import {SYNC_GITHUB_URL, SYNC_TYPE} from "boot/constants";
 import {useAuthStore} from "stores/authStore";
 import PersistenceService from "src/services/PersistenceService";
 import {useUiStore} from "stores/uiStore";
@@ -99,8 +98,8 @@ class AppService {
 
     if (useAuthStore().isAuthenticated()) {
       // sync features
-      const syncType = LocalStorage.getItem(SYNC_TYPE) as SyncType || SyncType.NONE
-      const syncUrl = LocalStorage.getItem(SYNC_GITHUB_URL) as string
+      const syncType = useAuthStore().getAccount()?.userData?.sync?.type || SyncType.NONE
+      const syncUrl = useAuthStore().getAccount()?.userData?.sync?.url
       const dbOrGitDb = useGitStore(syncType, syncUrl) ?
         useDB(undefined).gitDb :
         useDB(undefined).db

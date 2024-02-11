@@ -32,7 +32,6 @@ const SYNC_TYPE = "sync.type"
 const SYNC_GITLAB_URL = "sync.gitlab.url"
 const SYNC_GITLAB_TOKEN = "sync.gitlab.token"
 
-const SYNC_GITHUB_URL = "sync.github.url"
 const SYNC_GITHUB_TOKEN = "sync.github.token"
 
 const SYNC_COUCHDB_USERNAME = "sync.couchdb.username"
@@ -67,7 +66,6 @@ export {
   SYNC_TYPE,
   SYNC_GITLAB_URL,
   SYNC_GITLAB_TOKEN,
-  SYNC_GITHUB_URL,
   SYNC_GITHUB_TOKEN,
   SYNC_COUCHDB_USERNAME,
   SYNC_COUCHDB_PASSWORD,

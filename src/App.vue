@@ -16,7 +16,7 @@ import {StaticSuggestionIdent, Suggestion} from "src/models/Suggestion";
 import {useRoute, useRouter} from "vue-router";
 import {collection, doc, getDoc, getDocs} from "firebase/firestore";
 import {firestore} from "boot/firebase";
-import {Account} from "src/models/Account";
+import {Account, UserData} from "src/models/Account";
 
 const $q = useQuasar()
 const router = useRouter()
@@ -33,10 +33,11 @@ onAuthStateChanged(auth, async (user) => {
     // https://firebase.google.com/docs/reference/js/auth.user
     console.log("%conAuthStateChanged: about to log in", "border:1px solid green")
 
-    // --- if we do this in useAuthStore.setUser(), we cannot properly run vitest any more
+    // --- if we do this in useAuthStore.setUser(), we cannot properly run vitest anymore (!?!)
     const userDoc = await getDoc(doc(firestore, "users", user.uid))
-    const userData = userDoc.data()
+    const userData = userDoc.data() as UserData
     const account = new Account(user.uid, userData)
+    console.log("created account object", account)
     const querySnapshot = await getDocs(collection(firestore, "users", user.uid, "subscriptions"))
     const products = new Set<string>()
     querySnapshot.forEach((doc) => {

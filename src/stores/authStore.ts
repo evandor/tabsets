@@ -80,12 +80,12 @@ export const useAuthStore = defineStore('auth', () => {
 
   const userMayAccess = computed(() => {
     return (item: AccessItem): boolean => {
-      console.log("checking access item", item)
+      //console.log("checking access item", item)
       if (!user.value) {
         console.log("result: no (no user)")
         return false
       }
-      console.log("checking against account", account.value)
+      //console.log("checking against account", account.value)
       switch (item) {
         case AccessItem.SYNC:
           // return products.value.indexOf("prod_PLJipUG1Zfw7pC") >= 0
@@ -97,6 +97,16 @@ export const useAuthStore = defineStore('auth', () => {
       }
     }
   })
+
+  // const getToken = async (api: any): Promise<string> => {
+  //   const token = await this.auth0.getAccessTokenSilently()
+  //   console.log("got token")
+  //   const firebaseToken = await api.get(`${process.env.BACKEND_URL}/firebase`, {
+  //     headers: {'Authorization': `Bearer ${token}`}
+  //   })
+  //   console.log("got firebase token", firebaseToken)
+  //   return Promise.resolve(firebaseToken.data['firebaseToken'])
+  // }
 
   // --- actions ---
   async function setUser(u: User | undefined) {
