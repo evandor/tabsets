@@ -303,9 +303,6 @@ import {
   SYNC_COUCHDB_URL,
   SYNC_COUCHDB_USERNAME,
   SYNC_GITHUB_TOKEN,
-  SYNC_GITHUB_URL,
-  SYNC_GITLAB_TOKEN,
-  SYNC_GITLAB_URL,
   SYNC_TYPE
 } from "boot/constants";
 import GitPersistentService from "src/services/persistence/GitPersistentService";
@@ -321,13 +318,13 @@ const {handleSuccess, handleError} = useNotificationHandler()
 const emits = defineEmits(['wasClicked'])
 
 const syncType = ref<string | undefined>(undefined)
-const tempSyncOption = ref<SyncType>(LocalStorage.getItem(SYNC_TYPE) as SyncType || SyncType.NONE)
+const tempSyncOption = ref<SyncType>(useAuthStore().getAccount()?.userData?.sync?.type  || SyncType.NONE)
 
-const gitlabRepoToken = ref<string>(LocalStorage.getItem(SYNC_GITLAB_TOKEN) as string || '')
-const gitlabRepoUrl = ref<string>(LocalStorage.getItem(SYNC_GITLAB_URL) as string || '')
+// const gitlabRepoToken = ref<string>(LocalStorage.getItem(SYNC_GITLAB_TOKEN) as string || '')
+// const gitlabRepoUrl = ref<string>(LocalStorage.getItem(SYNC_GITLAB_URL) as string || '')
 
 const githubRepoToken = ref<string>(LocalStorage.getItem(SYNC_GITHUB_TOKEN) as string || '')
-const githubRepoUrl = ref<string>(LocalStorage.getItem(SYNC_GITHUB_URL) as string || '')
+const githubRepoUrl = ref<string>(useAuthStore().getAccount()?.userData?.sync?.url || '')
 
 const couchdbUsername = ref<string>(LocalStorage.getItem(SYNC_COUCHDB_USERNAME) as string || '')
 const couchdbPassword = ref<string>(LocalStorage.getItem(SYNC_COUCHDB_PASSWORD) as string || '')
@@ -354,9 +351,9 @@ function checkAndUpdate(val: string, ident: string) {
   testResult.value = undefined
 }
 
-watchEffect(() => {
-  checkAndUpdate(githubRepoUrl.value, SYNC_GITHUB_URL)
-})
+// watchEffect(() => {
+//   checkAndUpdate(githubRepoUrl.value, SYNC_GITHUB_URL)
+// })
 
 watchEffect(() => {
   checkAndUpdate(githubRepoToken.value, SYNC_GITHUB_TOKEN)
@@ -368,9 +365,9 @@ watchEffect(() => {
   checkAndUpdate(couchdbUrl.value, SYNC_COUCHDB_URL)
 })
 
-watchEffect(() => {
-  syncType.value = LocalStorage.getItem(SYNC_TYPE) as SyncType
-})
+// watchEffect(() => {
+//   syncType.value = LocalStorage.getItem(SYNC_TYPE) as SyncType
+// })
 
 
 const testGitConnection = async () => {
