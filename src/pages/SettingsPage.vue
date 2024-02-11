@@ -445,26 +445,21 @@ import Analytics from "src/utils/google-analytics";
 import {useGroupsStore} from "../stores/groupsStore";
 import {useSuggestionsStore} from "stores/suggestionsStore";
 import {StaticSuggestionIdent, Suggestion} from "src/models/Suggestion";
-import {SyncType} from "stores/appStore";
-import GitPersistentService from "src/services/persistence/GitPersistentService";
 import {useRoute, useRouter} from "vue-router";
-import {FirebaseCall} from "src/services/firebase/FirebaseCall";
 import {
   SHARING_AUTHOR_IDENT,
   SHARING_AVATAR_IDENT,
   SHARING_INSTALLATION,
   SHARING_MQTT_IDENT, STRIP_CHARS_IN_USER_INPUT,
-  SUBSCRIPTION_ID_IDENT, SYNC_GITHUB_TOKEN, SYNC_GITHUB_URL, TITLE_IDENT, UI_WINDOWS_ITEMS_PER_PAGE
+  TITLE_IDENT, UI_WINDOWS_ITEMS_PER_PAGE
 } from "boot/constants";
 import SyncingSettings from "pages/helper/SyncingSettings.vue";
-import {log} from "isomorphic-git";
 import SubscriptionSettings from "pages/helper/SubscriptionSettings.vue";
 import SubscriptionBexSettings from "pages/helper/SubscriptionBexSettings.vue";
 import {Account} from "src/models/Account";
 import {AccessItem, useAuthStore} from "stores/authStore";
 import SharingSettings from "pages/helper/SharingSettings.vue";
 import AccountSettings from "pages/helper/AccountSettings.vue";
-import InfoItem from "components/views/helper/InfoItem.vue";
 import InfoLine from "pages/helper/InfoLine.vue";
 
 const {sendMsg, inBexMode} = useUtils()
@@ -497,7 +492,6 @@ const installationId = ref<string>(localStorage.getItem(SHARING_INSTALLATION) as
 
 const bookmarksPermissionGranted = ref<boolean | undefined>(usePermissionsStore().hasPermission('bookmarks'))
 const pageCapturePermissionGranted = ref<boolean | undefined>(usePermissionsStore().hasPermission('history'))
-const allUrlsOriginGranted = ref<boolean | undefined>(usePermissionsStore().hasAllOrigins())
 const fullUrls = ref(localStorage.getItem('ui.fullUrls') || false)
 const detailLevelPerTabset = ref(localStorage.getItem('ui.detailsPerTabset') || false)
 

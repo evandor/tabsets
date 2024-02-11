@@ -88,9 +88,7 @@ class AppService {
     // init services
     useAuthStore().initialize(useDB(undefined).db)
     await useAuthStore().setUser(user)
-    if (account) {
-      useAuthStore().upsertAccount(account)
-    }
+    await useAuthStore().upsertAccount(account)
     //useAuthStore().setProducts(Array.from(products))
 
     await useNotificationsStore().initialize(useDB(undefined).db)

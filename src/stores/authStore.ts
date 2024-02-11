@@ -19,8 +19,6 @@ export const useAuthStore = defineStore('auth', () => {
 
   const authenticated = ref(false)
   const user = ref<User>(null as unknown as User)
-  const subscription = ref<Subscription>(null as unknown as Subscription)
-  const idToken = ref<string>(null as unknown as string)
   const authRequest = ref<string>(null as unknown as string)
   const account = ref<Account | undefined>(undefined)
 
@@ -32,16 +30,16 @@ export const useAuthStore = defineStore('auth', () => {
     console.debug(" ...initializing AuthStore")
     storage = ps
 
-    // check stored user info
-    // const userId = LocalStorage.getItem(CURRENT_USER_ID)
-    // if (userId) {
-    //   console.log("getting account info for user", userId)
-    //   storage.getAccount(userId)
-    //     .then(a => account.value = a)
-    //     .catch((err) => {
-    //       console.warn("could not get account:", err)
-    //     })
-    // }
+    //check stored user info
+    const userId = LocalStorage.getItem(CURRENT_USER_ID) as string
+    if (userId) {
+      console.log("getting account info for user", userId)
+      storage.getAccount(userId)
+        .then(a => account.value = a)
+        .catch((err) => {
+          console.warn("could not get account:", err)
+        })
+    }
   }
 
   // --- getters ---
@@ -82,15 +80,16 @@ export const useAuthStore = defineStore('auth', () => {
 
   const userMayAccess = computed(() => {
     return (item: AccessItem): boolean => {
-      //console.log("checking access item", item)
+      console.log("checking access item", item)
       if (!user.value) {
-        //console.log("result: no (no user)")
+        console.log("result: no (no user)")
         return false
       }
-      //console.log("checking against products", products.value)
+      console.log("checking against account", account.value)
       switch (item) {
         case AccessItem.SYNC:
-          return products.value.indexOf("prod_PLJipUG1Zfw7pC") >= 0
+          // return products.value.indexOf("prod_PLJipUG1Zfw7pC") >= 0
+          return account.value ? account.value.products.indexOf("skysailSync") >= 0 : false
         case AccessItem.FEATURE_TOGGLES:
           return true
         default:
@@ -101,14 +100,11 @@ export const useAuthStore = defineStore('auth', () => {
 
   // --- actions ---
   async function setUser(u: User | undefined) {
+    console.log("setting user to ", u)
     if (u) {
       LocalStorage.set(CURRENT_USER_ID, u.uid)
       authenticated.value = true;
       user.value = u;
-
-
-
-
     } else {
       LocalStorage.remove(CURRENT_USER_ID)
       authenticated.value = false;
@@ -134,8 +130,11 @@ export const useAuthStore = defineStore('auth', () => {
       })
   }
 
-  function upsertAccount(account: Account) {
-    storage.upsertAccount(account)
+  function upsertAccount(acc: Account | undefined) {
+    if (acc) {
+      storage.upsertAccount(acc)
+    }
+    account.value = acc
   }
 
   function setProducts(ps: string[]) {
