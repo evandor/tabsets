@@ -214,10 +214,12 @@ export const useWindowsStore = defineStore('windows', () => {
   }
 
   async function resetListeners() {
-    chrome.windows.onCreated.removeListener(onCreatedListener)
-    chrome.windows.onRemoved.removeListener(onRemovedListener)
-    chrome.windows.onFocusChanged.removeListener(onFocusChangedListener)
-    chrome.windows.onBoundsChanged.removeListener(onBoundsChangedListener)
+    if (inBexMode() && chrome && browser.windows) {
+      browser.windows.onCreated.removeListener(onCreatedListener)
+      browser.windows.onRemoved.removeListener(onRemovedListener)
+      browser.windows.onFocusChanged.removeListener(onFocusChangedListener)
+      //browser.windows.onBoundsChanged.removeListener(onBoundsChangedListener)
+    }
   }
 
   function windowForId(id: number): Window | undefined {
