@@ -112,6 +112,7 @@
               <q-icon name="sync"/>
             </template>
           </q-input>
+          <span v-if="showWrongTokenMessage()" class="text-negative text-caption">Seems like your github token is wrong or missing. Update or switch to "No Syncing"</span>
         </div>
         <div class="col text-right"></div>
       </template>
@@ -311,6 +312,7 @@ import {useUtils} from "src/services/Utils";
 import {useNotificationHandler} from "src/services/ErrorHandler";
 import {ExecutionResult} from "src/domain/ExecutionResult";
 import {useAuthStore} from "stores/authStore";
+import {useRouter} from "vue-router";
 
 const {sendMsg} = useUtils()
 const {handleSuccess, handleError} = useNotificationHandler()
@@ -434,5 +436,7 @@ const checkManagedGitSetup = async () => {
     console.log("got error", err)
   }
 }
+
+const showWrongTokenMessage = () => useRouter().currentRoute.value.query.token === "failed"
 
 </script>

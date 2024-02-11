@@ -82,7 +82,7 @@ export const useAuthStore = defineStore('auth', () => {
     return (item: AccessItem): boolean => {
       //console.log("checking access item", item)
       if (!user.value) {
-        console.log("result: no (no user)")
+        //console.log("result: no (no user)")
         return false
       }
       //console.log("checking against account", account.value)

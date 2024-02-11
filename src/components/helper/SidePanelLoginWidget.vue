@@ -97,7 +97,7 @@ const signin = async (newUser: boolean) => {
       }
       const user = userCredential.user;
       LocalStorage.set(CURRENT_USER_EMAIL, email.value);
-      console.log("user!!!", user)
+      //console.log("user!!!", user)
       useAuthStore().setUser(user)
       loading.value = false
       emits('hideLogin')
