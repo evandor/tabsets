@@ -110,7 +110,7 @@ export const useAuthStore = defineStore('auth', () => {
 
   // --- actions ---
   async function setUser(u: User | undefined) {
-    console.log("setting user to ", u)
+    console.log("setting user to ", u?.uid)
     if (u) {
       LocalStorage.set(CURRENT_USER_ID, u.uid)
       authenticated.value = true;
