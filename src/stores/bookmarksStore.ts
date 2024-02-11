@@ -8,21 +8,27 @@ import {Tabset} from "src/models/Tabset";
 
 function getChildren(
   parent: chrome.bookmarks.BookmarkTreeNode,
+  folderCount: number = 0,
+  bmCount: number = 0,
   predicate: (x: chrome.bookmarks.BookmarkTreeNode) => boolean = x => true,
   level: number = 1): TreeNode[] {
 
   if (parent && parent.children) {
     //let predicate: x: chrome.bookmarks.BookmarkTreeNode => string = (x:chrome.bookmarks.BookmarkTreeNode) => !x.url;
     return _.map(_.filter(parent.children, predicate), c => {
-      const childrenWithoutPredicate = getChildren(c)
-      const children = getChildren(c, predicate)
+      const childrenWithoutPredicate = getChildren(c, bmCount)
+      const children = getChildren(c, folderCount,bmCount, predicate)
+      bmCount += children.length
       return new TreeNode(
         c.id,
         c.title,
         c.url ? c.title : c.title + ' (' + childrenWithoutPredicate.length + ')',
         c.url,
         c.url ? 'o_article' : 'o_folder',
-        children)
+        children,
+        folderCount + 1,
+        bmCount + children.length
+        )
     })
   } else {
     return [];
@@ -37,7 +43,10 @@ export const  useBookmarksStore = defineStore('bookmarks', {
     currentBookmark: null as unknown as Bookmark,
 
     // the bookmarks (nodes and leaves) for the selected parent id
-    bookmarksForFolder: null as unknown as Bookmark[]
+    bookmarksForFolder: null as unknown as Bookmark[],
+
+    bookmarksCount: 0,
+    foldersCount: 0
   }),
 
   getters: {
@@ -73,11 +82,23 @@ export const  useBookmarksStore = defineStore('bookmarks', {
 
         _.forEach(tree[0].children, parent => {
           const children: TreeNode[] = getChildren(parent)
+          for (const c of children) {
+            this.bookmarksCount += c.subNodesCount
+            this.foldersCount += c.subFoldersCount
+          }
+
           const treeNode = new TreeNode(parent.id, parent.title, parent.title, parent.url, 'o_folder', children)
           this.bookmarksTree.push(treeNode)
 
-          const childrenNodes: TreeNode[] = getChildren(parent, x => !x.url)
+          const childrenNodes: TreeNode[] = getChildren(parent, 0,0,x => !x.url)
+          for (const c of childrenNodes) {
+            this.bookmarksCount += c.subNodesCount
+            this.foldersCount += c.subFoldersCount
+          }
           this.bookmarksNodes.push(new TreeNode(parent.id, parent.title, parent.title, parent.url, 'o_folder', childrenNodes))
+
+          this.foldersCount+=1
+
         })
         //console.log("loading bookmarks done")
         return Promise.resolve()

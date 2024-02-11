@@ -57,7 +57,8 @@ onAuthStateChanged(auth, async (user) => {
     console.log("%conAuthStateChanged: logged out", "border:1px solid green")
     await AppService.init($q, router, true, undefined)
     if (!router.currentRoute.value.path.startsWith("/mainpanel")) {
-      await router.push("/")
+      console.log("NOT redirecting to '/'")
+      //await router.push("/")
     }
   }
 });
@@ -99,7 +100,8 @@ if (useDarkMode === "true") {
   $q.dark.set("auto")
 }
 
-if (useDarkMode) {
+if (useDarkMode === "true") {
+  console.log(" applying dark color scheme")
   setCssVar('primary', '#D9E8F5');
   setCssVar('secondary', '#26A69A');
   setCssVar('accent', '#9C27B0');

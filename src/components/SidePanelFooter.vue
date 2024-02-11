@@ -12,8 +12,7 @@
     </div>
 
     <div class="row fit q-mb-sm" v-if="showStatsTable">
-      <!-- https://michaelnthiessen.com/force-re-render -->
-      <SidePanelWindowMarkupTable :key="randomKey"/>
+      <SidePanelStatsMarkupTable :key="randomKey"/>
     </div>
 
     <div class="row fit">
@@ -81,7 +80,7 @@
         </q-btn>
 
         <q-btn
-          icon="monitoring"
+          icon="show_chart"
           :class="rightButtonClass()"
           flat
           :size="getButtonSize()"
@@ -177,6 +176,7 @@ import {Account} from "src/models/Account";
 import {useNotificationHandler} from "src/services/ErrorHandler";
 import SidePanelLoginWidget from "components/helper/SidePanelLoginWidget.vue";
 import SidePanelWindowMarkupTable from "components/helper/SidePanelWindowMarkupTable.vue";
+import SidePanelStatsMarkupTable from "components/helper/SidePanelStatsMarkupTable.vue"
 import {Window} from "src/models/Window"
 
 const {handleSuccess, handleError} = useNotificationHandler()
@@ -350,6 +350,7 @@ const toggleShowWindowTable = () => {
   showWindowTable.value = !showWindowTable.value
   if (showWindowTable.value) {
     randomKey.value = uid()
+    showStatsTable.value = false
   }
   const windowId = useWindowsStore().currentChromeWindow?.id || 0
   const currentWindow: Window | undefined = useWindowsStore().windowForId(windowId)
@@ -359,7 +360,12 @@ const toggleShowWindowTable = () => {
   }
 }
 
-const toggleShowStatsTable = () => showStatsTable.value = !showWindowTable.value
+const toggleShowStatsTable = () => {
+  showStatsTable.value = !showStatsTable.value
+  if (showWindowTable.value) {
+    showWindowTable.value = false
+  }
+}
 
 const logout = () => {
   authStore.logout()
@@ -375,10 +381,7 @@ const logout = () => {
     })
 }
 
-const subscribe = () => router.push("/subscribe")
-
 const offsetBottom = () => ($q.platform.is.capacitor || $q.platform.is.cordova) ? 'margin-bottom:20px;' : ''
-
 const gotoStripe = () => openURL("https://billing.stripe.com/p/login/test_5kA9EHf2Da596HuaEE")
 
 </script>

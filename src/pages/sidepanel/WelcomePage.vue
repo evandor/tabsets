@@ -46,30 +46,22 @@
 <script lang="ts" setup>
 
 import {SidePanelView, useUiStore} from "src/stores/uiStore";
-import {useQuasar} from "quasar";
 import {onMounted, ref, watchEffect} from "vue";
 import {useTabsStore} from "stores/tabsStore";
 import {useRouter} from "vue-router";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {CreateTabsetCommand} from "src/domain/tabsets/CreateTabset";
-import NavigationService from "src/services/NavigationService";
 import {STRIP_CHARS_IN_USER_INPUT} from "boot/constants";
-import {useSpacesStore} from "stores/spacesStore";
-import {TabsetStatus} from "src/models/Tabset";
 import Analytics from "src/utils/google-analytics";
 import {nextTick} from 'vue'
 import DialogButton from "components/buttons/DialogButton.vue";
-import ImportDialog from "components/dialogues/ImportDialog.vue";
 import {useAuthStore} from "stores/authStore";
 
-const $q = useQuasar()
 const router = useRouter()
 
 const tabsetName = ref('')
 const tabsetNameRef = ref<HTMLElement>(null as unknown as HTMLInputElement)
 const windowLocation = ref('---')
-const user = ref<any>()
-
 
 onMounted(() => {
   Analytics.firePageViewEvent('WelcomePage', document.location.href);
@@ -94,16 +86,16 @@ watchEffect(() => {
   }
 })
 
-
-setTimeout(() => {
-  console.log("focusing", tabsetNameRef.value)
-  //document.getElementsByTagName("input")[0].focus()
-  nextTick(() => {
-    window.document.getElementsByTagName("input")[0].focus()
-    tabsetNameRef.value.focus()
-  });
-
-}, 2000)
+//
+// setTimeout(() => {
+//   console.log("focusing", tabsetNameRef.value)
+//   //document.getElementsByTagName("input")[0].focus()
+//   nextTick(() => {
+//     window.document.getElementsByTagName("input")[0].focus()
+//     tabsetNameRef.value.focus()
+//   });
+//
+// }, 2000)
 
 watchEffect(() => {
   // we might have been redirected here too early, redirecting
@@ -128,8 +120,6 @@ const newTabsetNameIsValid = () =>
 
 //https://groups.google.com/a/chromium.org/g/chromium-extensions/c/nb058-YrrWc
 const selected = () => tabsetNameRef.value.focus()
-
-const showImportDialog = () => $q.dialog({component: ImportDialog, componentProps: {inSidePanel: true}})
 
 </script>
 

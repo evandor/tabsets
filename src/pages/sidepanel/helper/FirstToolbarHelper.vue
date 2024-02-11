@@ -14,7 +14,6 @@
 
           <template v-else>
             <div class="column q-ma-none q-pa-none">
-              <!-- @click.stop="router.push('/sidepanel/spaces')" -->
               <div class="col q-ma-none q-pa-none cursor-pointer text-subtitle1">
                 <slot name="title">{{ props.title }}</slot>
               </div>
