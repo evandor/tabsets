@@ -24,6 +24,7 @@ import {useSpacesStore} from "stores/spacesStore";
 import {LocalStorage, uid} from "quasar";
 import {SyncType} from "stores/appStore";
 import {SUBSCRIPTION_ID_IDENT, SYNC_GITHUB_TOKEN} from "boot/constants";
+import NavigationService from "src/services/NavigationService";
 
 if (typeof self !== 'undefined') {
   self.Buffer = Buffer;
@@ -61,9 +62,6 @@ async function push(dir: string, proxy: string) {
   })
   console.log(pushResult)
 }
-
-// const log = (s: string, ...args: any[]) => console.log("%c" + s, "color:blue", ...args)
-// const debug = (s: string, ...args: any[]) => console.debug("%c" + s, "color:blue", ...args)
 
 class GitPersistenceService implements PersistenceService {
   private db: IDBPDatabase = null as unknown as IDBPDatabase
@@ -136,16 +134,18 @@ class GitPersistenceService implements PersistenceService {
         //onMessage: (val:any) => (console.log("onMessage", val)),
         onAuthSuccess: () => (console.log("auth: success")),
         onAuthFailure: (url: any, auth: any) => {
+          console.log("onAuthFailure", url, auth)
+          NavigationService.openSingleTab("chrome-extension://pndffocijjfpmphlhkoijmpfckjafdpl/www/index.html#/mainpanel/settings?tab=syncing&token=failed")
           //forgetSavedPassword(url)
-          if (confirm('Access was denied. Try again?')) {
-            auth = {
-              username: prompt('Enter username'),
-              password: prompt('Enter password'),
-            }
-            return auth
-          } else {
-            return {cancel: true}
-          }
+          // if (confirm('Access was denied. Try again?')) {
+          //   auth = {
+          //     username: prompt('Enter username'),
+          //     password: prompt('Enter password'),
+          //   }
+          //   return auth
+          // } else {
+          //   return {cancel: true}
+          // }
         },
         onAuth: () => ({username: LocalStorage.getItem(SYNC_GITHUB_TOKEN) as string || '---'}),
       }
@@ -168,7 +168,7 @@ class GitPersistenceService implements PersistenceService {
           corsProxy: this.useProxy,
           url: gitRepoUrl,
           onAuthSuccess: () => {
-            debug("auth: success")
+            console.debug("auth: success")
             return Promise.resolve("success!")
           },
           onAuthFailure: () => (console.log("auth: failure")),

@@ -2,7 +2,6 @@ import {usePermissionsStore} from "stores/permissionsStore";
 import ChromeListeners from "src/services/ChromeListeners";
 import ChromeBookmarkListeners from "src/services/ChromeBookmarkListeners";
 import BookmarksService from "src/services/BookmarksService";
-import {LocalStorage} from "quasar";
 import IndexedDbPersistenceService from "src/services/IndexedDbPersistenceService";
 import {useNotificationsStore} from "stores/notificationsStore";
 import {useDB} from "src/services/usePersistenceService";
@@ -100,12 +99,20 @@ class AppService {
       // sync features
       const syncType = useAuthStore().getAccount()?.userData?.sync?.type || SyncType.NONE
       const syncUrl = useAuthStore().getAccount()?.userData?.sync?.url
-      const dbOrGitDb = useGitStore(syncType, syncUrl) ?
+      let dbOrGitDb = useGitStore(syncType, syncUrl) ?
         useDB(undefined).gitDb :
         useDB(undefined).db
+
+      let failedGitLogin = false
+
+      if(router.currentRoute.value.query.token === "failed") {
+        console.log("failed login, falling back to indexedDB")
+        failedGitLogin = true
+      }
+
       console.debug("%cchecking sync config:", "font-weight:bold", syncType, syncUrl, dbOrGitDb)
 
-      const gitInitResult = await GitPersistentService.init(syncType, syncUrl)
+      const gitInitResult = await GitPersistentService.init(syncType, failedGitLogin ? '' : syncUrl)
       console.log("%cgitInitResult", "font-weight:bold", gitInitResult)
       await this.initCoreSerivces(quasar, dbOrGitDb, this.router)
     } else {
