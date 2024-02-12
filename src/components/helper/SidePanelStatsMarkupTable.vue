@@ -12,8 +12,12 @@
                 @click="saveStatsSnapshot()"><q-icon name="save" class="q-mr-xs"/>Save snapshot
           </span>
           <span v-else
-                class="cursor-pointer"><q-icon name="restart_alt" class="q-mr-xs" @click="saveStatsSnapshot()"/>{{ snapshotDate() }}
+                class="cursor-pointer"><q-icon name="restart_alt" class="q-mr-xs cursor-pointer"
+                                               @click="saveStatsSnapshot()"/>{{ snapshotDate() }}
           </span>
+        </th>
+        <th style="max-width:20px">
+          &nbsp;
         </th>
       </tr>
       </thead>
@@ -30,8 +34,23 @@
         <td>
           {{ row['count' as keyof object] }}
         </td>
-        <td>
-          {{ row['snapshot' as keyof object] - row['count' as keyof object] }}
+        <td v-if="row['snapshot' as keyof object]">
+          {{ row['count' as keyof object] - row['snapshot' as keyof object] }}
+        </td>
+        <td v-else>
+          -
+        </td>
+        <td v-if="row['link' as keyof object] && row['count' as keyof object] === 0">
+          <q-icon name="help" size="11px" color="warning" class="cursor-pointer" @click="NavigationService.openSingleTab(row['link' as keyof object])" />
+        </td>
+        <td v-else-if="row['snapshot' as keyof object] && row['count' as keyof object] > row['snapshot' as keyof object]">
+          <q-icon name="north" size="11px" :color="row['name' as keyof object] === 'Open Tabs' ? 'negative' : 'positive'" />
+        </td>
+        <td v-else-if="row['snapshot' as keyof object] && row['count' as keyof object] < row['snapshot' as keyof object]">
+          <q-icon name="south" size="11px" :color="row['name' as keyof object] === 'Open Tabs' ? 'positive' : 'negative'" />
+        </td>
+        <td v-else>
+          <q-icon name="east" size="11px"  />
         </td>
       </tr>
       </tbody>
@@ -49,6 +68,7 @@ import {useSpacesStore} from "stores/spacesStore";
 import {useTabsStore} from "stores/tabsStore";
 import {useSettingsStore} from "stores/settingsStore";
 import {useBookmarksStore} from "stores/bookmarksStore";
+import NavigationService from "src/services/NavigationService";
 
 const localstorage = useQuasar().localStorage
 
@@ -69,6 +89,11 @@ watch(() => useWindowsStore().currentChromeWindows, (newWindows, oldWindows) => 
   rows.value = calcWindowRows()
 })
 
+watch(() => useTabsStore().allTabsCount, (a,b) => {
+  rows.value = calcWindowRows()
+})
+
+
 watchEffect(() => {
   const res = useWindowsStore().currentChromeWindow && useWindowsStore().currentChromeWindow.id ?
     useWindowsStore().windowNameFor(useWindowsStore().currentChromeWindow.id || 0) || 'n/a' :
@@ -76,19 +101,38 @@ watchEffect(() => {
   currentWindowName.value = res
 })
 
+watch(() => useTabsStore().tabsCount, (a, b) => {
+  rows.value = calcWindowRows()
+})
+
+watch(() => useWindowsStore().currentChromeWindows, (a, b) => {
+  rows.value = calcWindowRows()
+})
+
 const calcWindowRows = () => {
   return [
     {name: 'Tabs', count: useTabsStore().allTabsCount, snapshot: getFromSnapshot('Tabs')},
     {name: 'Tabsets', count: useTabsStore().tabsets.size, snapshot: getFromSnapshot('Tabsets')},
     {name: 'Spaces', count: useSpacesStore().spaces.size, snapshot: getFromSnapshot('Spaces')},
-    {name: 'Bookmarks', count: useBookmarksStore().bookmarksCount, snapshot: getFromSnapshot('Bookmarks')},
-    {name: 'Bookmark Folders', count: useBookmarksStore().foldersCount, snapshot: getFromSnapshot('Bookmark Folders')},
-    {name: 'Open Windows', count: useWindowsStore().currentChromeWindows.length, snapshot: getFromSnapshot('Open Windows')},
+    {name: 'Bookmarks', count: useBookmarksStore().bookmarksCount, snapshot: getFromSnapshot('Bookmarks'), link:"https://docs.tabsets.net/bookmarks"},
+    {name: 'Bookmark Folders', count: useBookmarksStore().foldersCount, snapshot: getFromSnapshot('Bookmark Folders'), link:"https://docs.tabsets.net/bookmarks"},
+    {
+      name: 'Open Windows',
+      count: useWindowsStore().currentChromeWindows.length,
+      snapshot: getFromSnapshot('Open Windows'),
+      link: "https://docs.tabsets.net/windows-management"
+    },
     {name: 'Open Tabs', count: useTabsStore().tabs.length, snapshot: getFromSnapshot('Open Tabs')}
   ]
 }
 
-const saveStatsSnapshot = () => localstorage.set("stats", {date: new Date().getTime().toString(), values: calcWindowRows()})
+const saveStatsSnapshot = () => {
+  localstorage.set("stats", {
+    date: new Date().getTime().toString(),
+    values: calcWindowRows()
+  })
+  rows.value = calcWindowRows()
+}
 
 const getFromSnapshot = (ident: string) => {
   if (!statsSnapshot.value) {
@@ -106,9 +150,8 @@ const getFromSnapshot = (ident: string) => {
 }
 
 const snapshotDate = () => {
-  const tstamp = statsSnapshot.value['date' as keyof object]
-  console.log("formatting tstamp", tstamp)
-  return date.formatDate(tstamp, 'DD.MM.YYYY HH:mm')
+  const tstamp: string = statsSnapshot.value['date' as keyof object] as string
+  return date.formatDate(Number(tstamp), 'DD.MM.YY HH:mm')
 }
 
 </script>
