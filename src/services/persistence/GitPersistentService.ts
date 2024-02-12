@@ -26,7 +26,6 @@ import {SyncType} from "stores/appStore";
 import {SUBSCRIPTION_ID_IDENT, SYNC_GITHUB_TOKEN} from "boot/constants";
 import NavigationService from "src/services/NavigationService";
 import {NotificationType, useNotificationHandler} from "src/services/ErrorHandler";
-import {fasUserTimes} from "@quasar/extras/fontawesome-v5";
 import {useAuthStore} from "stores/authStore";
 
 const {handleError} = useNotificationHandler()
@@ -68,6 +67,21 @@ async function push(dir: string, proxy: string) {
   console.log(pushResult)
 }
 
+async function pull(dir: string, proxy: string, author: object) {
+  let pullResult = await git.pull({
+    // @ts-ignore
+    fs,
+    http,
+    dir,
+    remote: 'origin',
+    corsProxy: proxy,
+    ref: 'main',
+    author,
+    onAuth: () => ({username: LocalStorage.getItem(SYNC_GITHUB_TOKEN) as string || '---'}),
+  })
+  console.log(pullResult)
+}
+
 class GitPersistenceService implements PersistenceService {
   private db: IDBPDatabase = null as unknown as IDBPDatabase
   private readonly _dir = "/tabsets";
@@ -75,6 +89,7 @@ class GitPersistenceService implements PersistenceService {
   private tabsetsCorsProxy = 'https://git.tabsets.net'
 
   private useProxy = this.genericCorsProxy
+  private author: { name?: string; email?: string; timestamp?: number; timezoneOffset?: number };
 
   getServiceName(): string {
     return "GitPersistenceService"
@@ -83,6 +98,10 @@ class GitPersistenceService implements PersistenceService {
   async init(syncType: SyncType, url: string | undefined) {
     console.log(" ...initializing GitPersistenceService")
     if (url) {
+      this.author = {
+        name: useAuthStore().user.displayName || useAuthStore().user.email || 'unknown name',
+        email: useAuthStore().user.email || 'unknown@email.address'
+      }
       if (syncType === SyncType.GITHUB) {
         console.log("initializing github database", url)
         this.db = await this.initDatabase(url, this.genericCorsProxy)
@@ -116,7 +135,7 @@ class GitPersistenceService implements PersistenceService {
       await pfs.mkdir(useDir);
     } catch (err: any) {
       if (!err.toString().startsWith("Error: EEXIST")) {
-        log(err)
+        console.log(err)
       }
     }
 
@@ -281,14 +300,13 @@ class GitPersistenceService implements PersistenceService {
       fs,
       dir,
       message: 'saving/updating tabset ' + tabset.name,
-      author: {
-        name: useAuthStore().user.displayName || 'unknown name',
-        email: useAuthStore().user.email || 'unknown@email.address'
-      }
+      author: this.author
     })
 
     console.log(sha)
-    //await push(this._dir);
+    console.log("pulling first")
+    await pull(`${dir}`, this.useProxy, this.author)
+    console.log("now pushing")
     await push(`${dir}`, this.useProxy);
     return Promise.resolve(undefined);
   }
@@ -371,15 +389,15 @@ class GitPersistenceService implements PersistenceService {
     let sha = await git.commit({
       fs,
       dir,
-      message: 'spaces.',
-      author: {
-        name: 'Mr. Test',
-        email: 'mrtest@example.com'
-      }
+      message: 'added/updated space ' + space.name,
+      author: this.author
     })
 
     console.log(sha)
     //await push(this._dir);
+    console.log("pulling first")
+    await pull(`${dir}`, this.useProxy, this.author)
+    console.log("now pushing")
     await push(`${dir}`, this.useProxy);
     return Promise.resolve(undefined);
   }
