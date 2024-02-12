@@ -27,6 +27,7 @@ import {SUBSCRIPTION_ID_IDENT, SYNC_GITHUB_TOKEN} from "boot/constants";
 import NavigationService from "src/services/NavigationService";
 import {NotificationType, useNotificationHandler} from "src/services/ErrorHandler";
 import {fasUserTimes} from "@quasar/extras/fontawesome-v5";
+import {useAuthStore} from "stores/authStore";
 
 const {handleError} = useNotificationHandler()
 
@@ -273,10 +274,10 @@ class GitPersistenceService implements PersistenceService {
     let sha = await git.commit({
       fs,
       dir,
-      message: 'yeah.',
+      message: 'saving/updating tabset ' + tabset.name,
       author: {
-        name: 'Mr. Test',
-        email: 'mrtest@example.com'
+        name: useAuthStore().user.displayName || 'unknown name',
+        email: useAuthStore().user.email || 'unknown@email.address'
       }
     })
 
@@ -309,8 +310,9 @@ class GitPersistenceService implements PersistenceService {
         //log("got index", index)
         const entityId = result[index]
         const tsDataLocation = `${dir}/${entitiesName}/${entityId}/space.json`
-        console.debug("tsDataLocation", tsDataLocation)
+        //console.debug("tsDataLocation", tsDataLocation)
         try {
+          //@ts-ignore
           const tsData = await pfs.readFile(tsDataLocation)
           //log("tsData", tsData)
           const s = JSON.parse(tsData) as Space

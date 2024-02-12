@@ -16,7 +16,7 @@
     </div>
 
     <div class="row fit">
-      <div class="col-7">
+      <div class="col-6">
 
         <Transition name="fade" appear>
           <q-banner
