@@ -15,11 +15,11 @@ export function useNotificationHandler() {
         console.log("got error: ", error ? error.toString() : 'unknown error')
         console.trace()
 
-      Logz.error({
-        message: "handling error in NotificationHandler",
-        error: error ? error.toString() : 'unknown error',
-        stack: error.stack
-      }).catch((logzError: any) => console.warn("could not send error message to logz"))
+      // Logz.error({
+      //   message: "handling error in NotificationHandler",
+      //   error: error ? error.toString() : 'unknown error',
+      //   stack: error.stack
+      // }).catch((logzError: any) => console.warn("could not send error message to logz"))
 
       logtail.error(error ? error.toString() : 'unknown error', error)
 
