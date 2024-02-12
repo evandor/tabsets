@@ -148,7 +148,7 @@ export const useUiStore = defineStore('ui', () => {
   const tabsFilter = ref<string | undefined>(undefined)
   const selectedTag = ref<string | undefined>(undefined)
   const tabsetsExpanded = ref<boolean>(false)
-  const appLoading = ref(false)
+  const appLoading = ref<string | undefined>(undefined)
   //const windowsChanged =ref<object | undefined>(undefined)
 
   // online offline
