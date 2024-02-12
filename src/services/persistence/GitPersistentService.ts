@@ -167,6 +167,11 @@ class GitPersistenceService implements PersistenceService {
       console.log(`about to clone '${url}' into ${useDir}`, cloneDef)
       const cloneRes = await git.clone(cloneDef);
       console.log("cloning done")
+
+      console.log("pulling now")
+      await pull(useDir, this.useProxy, this.author)
+      console.log("pulling done")
+
       return cloneRes
     } catch (err) {
       console.log("got error", err)
