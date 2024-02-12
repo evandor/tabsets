@@ -21,6 +21,25 @@
       </template>
 
     </div>
+
+    <hr>
+
+    <q-banner rounded style="border:1px solid orange">
+      Danger Zone
+    </q-banner>
+
+    <div class="row items-baseline q-ma-md q-gutter-lg">
+
+      <template >
+        <div class="col-12 text-bold">
+          Delete local Data
+        </div>
+
+        <InfoLine label="Tabsets">test</InfoLine>
+
+      </template>
+
+    </div>
   </div>
 
 </template>

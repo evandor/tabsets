@@ -86,11 +86,20 @@
                         class="q-ml-sm text-grey cursor-pointer">
                   <q-tooltip :delay=500 class="tooltip-small">Already a tabset</q-tooltip>
                 </q-icon>
-                <q-icon name="o_close"
+
+                <q-icon v-if="useWindowsStore().currentChromeWindows.length === 1"
+                        name="o_close"
+                        class="q-ml-sm text-red-8"
+                        :disabled="true">
+                  <q-tooltip :delay=500 class="tooltip-small">Last Window cannot be closed</q-tooltip>
+                </q-icon>
+                <q-icon v-else
+                        name="o_close"
                         class="q-ml-sm text-red-8 cursor-pointer"
                         @click="closeWindow(row['id' as keyof object])">
                   <q-tooltip :delay=500 class="tooltip-small">Close this window</q-tooltip>
                 </q-icon>
+
               </template>
               <template v-else>
                 <div>&nbsp;</div>

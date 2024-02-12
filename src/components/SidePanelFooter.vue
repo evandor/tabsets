@@ -32,6 +32,14 @@
           </q-banner>
         </Transition>
 
+        <template v-if="!checkToasts() && useUiStore().progress">
+          <q-linear-progress size="25px" :value="progressValue">
+            <div class="absolute-full flex flex-center">
+              <q-badge :label="progressLabel" />
+            </div>
+          </q-linear-progress>
+        </template>
+
         <q-btn v-if="!checkToasts() && !transitionGraceTime && showSuggestionButton"
                outline
                icon="o_lightbulb"
@@ -193,7 +201,6 @@ const currentChromeTabs = ref<chrome.tabs.Tab[]>([])
 const currentTabs = ref<Tab[]>([])
 const currentChromeTab = ref<chrome.tabs.Tab>(null as unknown as chrome.tabs.Tab)
 const progress = ref<number | undefined>(undefined)
-const progressLabel = ref<string | undefined>(undefined)
 const showSuggestionButton = ref(false)
 const showSuggestionIcon = ref(false)
 const doShowSuggestionButton = ref(false)
@@ -203,6 +210,8 @@ const showStatsTable = ref(false)
 const showLogin = ref(false)
 const account = ref<Account | undefined>(undefined)
 const randomKey = ref<string>(uid())
+const progressValue = ref<number>(0.0)
+const progressLabel = ref<string>('')
 
 watchEffect(() => {
   const windowId = useWindowsStore().currentChromeWindow?.id || 0
@@ -250,9 +259,18 @@ watchEffect(() => {
   currentChromeTab.value = useTabsStore().getCurrentChromeTab(windowId) || useTabsStore().currentChromeTab
 })
 
+// watchEffect(() => {
+//   progress.value = (uiStore.progress || 0.0) / 100.0
+//   progressLabel.value = uiStore.progressLabel + " " + Math.round(100 * progress.value) + "%"
+// })
+
 watchEffect(() => {
-  progress.value = (uiStore.progress || 0.0) / 100.0
-  progressLabel.value = uiStore.progressLabel + " " + Math.round(100 * progress.value) + "%"
+  const uiProgrss = useUiStore().progress
+  if (uiProgrss) {
+    progressValue.value = uiProgrss['val' as keyof object] || 0.0
+    progressLabel.value = uiProgrss['label' as keyof object] || 'no msg'
+    console.log("we are here", progressValue.value)
+  }
 })
 
 //const openOptionsPage = () => window.open(chrome.runtime.getURL('www/index.html#/mainpanel/settings'));

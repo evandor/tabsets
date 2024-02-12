@@ -144,6 +144,8 @@ class GitPersistenceService implements PersistenceService {
       let status = await git.status({fs, dir: useDir, filepath: 'README.md'})
       console.log(status)
 
+      useUiStore().setProgress(0.0, "Cloning...")
+
       const cloneDef = {
         fs,
         http,
@@ -155,7 +157,23 @@ class GitPersistenceService implements PersistenceService {
         singleBranch: true,
         depth: 10,
         //onProgress: (val:any) => (console.log("onProgress", val)),
-        onMessage: (val:any) => (console.log("onMessage", val)),
+        onMessage: (val:any) => {
+          console.log("onMessage", val)
+          // something like "Counting objects:   1% (1/77)"
+          const split = val.split(":")
+          if (split.length === 2) {
+            const msg = split[0]
+            const matches = split[1].matchAll(/.*% \(([\d]+)\/([\d]+)\)/gm)
+            for (const match of matches) {
+              console.log("found desc", Number(match[1]), Number(match[2]))
+              try {
+                const quote = Number(match[1]) / Number(match[2])
+                useUiStore().setProgress(quote, msg)
+              } catch (err) {}
+            }
+
+          }
+        },
         onAuthSuccess: () => (console.log("auth: success")),
         onAuthFailure: (url: any, auth: any) => {
           console.log("onAuthFailure", url, auth)
@@ -172,6 +190,7 @@ class GitPersistenceService implements PersistenceService {
       await pull(useDir, this.useProxy, this.author)
       console.log("pulling done")
 
+      useUiStore().progress = undefined
       return cloneRes
     } catch (err) {
       console.log("got error", err)
@@ -179,8 +198,10 @@ class GitPersistenceService implements PersistenceService {
 
       if (err.toString().indexOf('403') >= 0) {
         const settingsPath = chrome.runtime.getURL("/www/index.html#/mainpanel/settings")
-        NavigationService.openSingleTab(settingsPath + "?tab=syncing&token=failed")
+        await NavigationService.openSingleTab(settingsPath + "?tab=syncing&token=failed")
       }
+
+      useUiStore().progress = undefined
 
       setTimeout(() => {
         useUiStore().appLoading = "falling back to local tabsets"
