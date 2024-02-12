@@ -152,6 +152,12 @@ class GitPersistenceService implements PersistenceService {
     } catch (err) {
       console.log("got error", err)
       handleError("Error in GitPersistenceService#initDatabase: " + err, NotificationType.NOTIFY)
+
+      if (err.toString().indexOf('403') >= 0) {
+        const settingsPath = chrome.runtime.getURL("/www/index.html#/mainpanel/settings")
+        NavigationService.openSingleTab(settingsPath + "?tab=syncing&token=failed")
+      }
+
       setTimeout(() => {
         useUiStore().appLoading = "falling back to local tabsets"
         setTimeout(() => {useUiStore().appLoading = undefined}, 1000)
