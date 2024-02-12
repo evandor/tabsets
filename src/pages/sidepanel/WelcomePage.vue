@@ -127,7 +127,7 @@ const selected = () => tabsetNameRef.value.focus()
 
 
 .fullimageBackground {
-  height: 100vh;
+  height: 100%;
   width: 100%;
   align-items: center;
   justify-content: center;

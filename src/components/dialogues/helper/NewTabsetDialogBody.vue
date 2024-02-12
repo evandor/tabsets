@@ -109,6 +109,7 @@ const theForm = ref<QForm>(null as unknown as QForm)
 const windowModel = ref<string>(null as unknown as string)
 const windowOptions = ref<string[]>([])
 const theColor = ref<string | undefined>(undefined)
+const windowsStore = useWindowsStore()
 
 watchEffect(() => {
   const windows: Set<string> = useWindowsStore().windowSet
@@ -140,7 +141,9 @@ const createNewTabset = () => {
   console.log("createNewTabset", addAllOpenTabs.value, tabsStore.tabs, windowModel.value)
   let tabsToUse = addAllOpenTabs.value ? tabsStore.tabs : []
   if (props.windowId) {
-    const window:chrome.windows.Window | undefined = useWindowsStore().currentChromeWindow(props.windowId)
+    console.log("windowsStore", windowsStore)
+    // TODO ignoring props.windowId !?!
+    const window:chrome.windows.Window | undefined = windowsStore.currentChromeWindow
     if (window) {
       tabsToUse = window.tabs as chrome.tabs.Tab[]
       windowModel.value = newTabsetName.value

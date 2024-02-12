@@ -6,8 +6,8 @@
           <q-input outlined type="email" v-model="email" label="Your email address" dense/>
         </div>
         <div class="col-5">
-          <q-btn :label="(!email || email.length === 0) ? 'Sign in' : (password.length > 0 ? 'Sign in':'Send Link')"
-                 color="primary"
+<!--          <q-btn :label="(!email || email.length === 0) ? 'Sign in' : (password.length > 0 ? 'Sign in':'Send Link')"-->
+          <q-btn label="Sign in"
                  style="width:110px"
                  :loading="password.length === 0 && loading"
                  :disable="mailSent"
@@ -108,25 +108,25 @@ const signin = async (newUser: boolean) => {
     }
   } else {
 
-    console.log("actionCodeSettings", actionCodeSettings)
-    sendSignInLinkToEmail(auth, email.value, actionCodeSettings)
-      .then(() => {
-        loading.value = false
-        mailSent.value = true
-        setTimeout(() => {
-            mailSent.value = false
-            emits('hideLogin')
-          }, 5000
-        )
-        window.localStorage.setItem(CURRENT_USER_EMAIL, email.value);
-        sendMsg('SET_EMAIL_FOR_SIGN_IN', {"email": email.value})
-      })
-      .catch((error) => {
-        //console.error("error", error)
-        handleError(error, NotificationType.TOAST)
-        loading.value = false
-        mailSent.value = false
-      });
+    // console.log("actionCodeSettings", actionCodeSettings)
+    // sendSignInLinkToEmail(auth, email.value, actionCodeSettings)
+    //   .then(() => {
+    //     loading.value = false
+    //     mailSent.value = true
+    //     setTimeout(() => {
+    //         mailSent.value = false
+    //         emits('hideLogin')
+    //       }, 5000
+    //     )
+    //     window.localStorage.setItem(CURRENT_USER_EMAIL, email.value);
+    //     sendMsg('SET_EMAIL_FOR_SIGN_IN', {"email": email.value})
+    //   })
+    //   .catch((error) => {
+    //     //console.error("error", error)
+    //     handleError(error, NotificationType.TOAST)
+    //     loading.value = false
+    //     mailSent.value = false
+    //   });
   }
 }
 

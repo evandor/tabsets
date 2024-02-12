@@ -149,7 +149,7 @@ export const useUiStore = defineStore('ui', () => {
   const selectedTag = ref<string | undefined>(undefined)
   const tabsetsExpanded = ref<boolean>(false)
   const appLoading = ref<string | undefined>(undefined)
-  //const windowsChanged =ref<object | undefined>(undefined)
+  const progress = ref<object | undefined>(undefined)
 
   // online offline
   const networkOnline = ref(navigator.onLine)
@@ -200,9 +200,6 @@ export const useUiStore = defineStore('ui', () => {
   // system management
   const dbReady = ref<boolean>(false)
   const dbSyncing = ref<boolean>(false)
-
-  const progress = ref<number | undefined>(undefined)
-  const progressLabel = ref<string | undefined>(undefined)
 
   const showCurrentTabBox = ref<boolean>(true)
 
@@ -524,6 +521,13 @@ export const useUiStore = defineStore('ui', () => {
     return "19px"
   }
 
+  function setProgress(v: number, label: string) {
+    progress.value = {
+      val: Math.max(0, Math.min(v, 1.0)),
+      label
+    }
+  }
+
   return {
     rightDrawer,
     rightDrawerOpen,
@@ -566,8 +570,6 @@ export const useUiStore = defineStore('ui', () => {
     sidePanelIsActive,
     sidePanelActiveViewIs,
     toggleLeftDrawer,
-    progress,
-    progressLabel,
     tabsetsExpanded,
     hideCurrentTabBox,
     showCurrentTabBox,
@@ -592,6 +594,8 @@ export const useUiStore = defineStore('ui', () => {
     networkOnline,
     mqttOffline,
     tabBeingDragged,
-    appLoading
+    appLoading,
+    progress,
+    setProgress
   }
 })
