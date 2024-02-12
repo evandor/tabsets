@@ -64,7 +64,7 @@ class AppService {
     const uiStore = useUiStore()
     this.router = router
 
-    uiStore.appLoading = true
+    uiStore.appLoading = "loading tabsets..."
 
     appStore.init()
 
@@ -86,8 +86,7 @@ class AppService {
     // init services
     useAuthStore().initialize(useDB(undefined).db)
     await useAuthStore().setUser(user)
-    await useAuthStore().upsertAccount(account)
-    //useAuthStore().setProducts(Array.from(products))
+    useAuthStore().upsertAccount(account)
 
     await useNotificationsStore().initialize(useDB(undefined).db)
     useSuggestionsStore().init(useDB(undefined).db)
@@ -111,6 +110,10 @@ class AppService {
       }
 
       console.debug("%cchecking sync config:", "font-weight:bold", syncType, syncUrl, dbOrGitDb)
+
+      if (syncUrl) {
+        uiStore.appLoading = "syncing tabsets..."
+      }
 
       const gitInitResult = await GitPersistentService.init(syncType, failedGitLogin ? '' : syncUrl)
       console.log("%cgitInitResult", "font-weight:bold", gitInitResult)
@@ -161,7 +164,7 @@ class AppService {
     await windowsStore.initialize(useDB(undefined).db)
     windowsStore.initListeners()
 
-    useUiStore().appLoading = false
+    useUiStore().appLoading = undefined
 
     // tabsets not in bex mode means running on "shared.tabsets.net"
     // probably running an import ("/imp/:sharedId")

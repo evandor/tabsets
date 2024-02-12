@@ -257,6 +257,9 @@ export const useWindowsStore = defineStore('windows', () => {
   }
 
   async function windowFor(title: string): Promise<Window | undefined> {
+    if (!storage) {
+      return undefined
+    }
     const windowsFromDb = await storage.getWindows()
     for (const w of windowsFromDb) {
       if (w['title' as keyof object] === title) {

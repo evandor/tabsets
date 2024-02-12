@@ -30,20 +30,22 @@
     <div class="wrap" v-if="useUiStore().appLoading">
       <div class="loading">
         <div class="bounceball q-mr-lg"></div>
-        <div class="text">loading tabsets...</div>
+        <div class="text">{{ useUiStore().appLoading }}</div>
       </div>
     </div>
 
-    <div class="wrap2" v-if="useAuthStore().isAuthenticated() && useTabsStore().tabsets.size === 0 && !useUiStore().appLoading">
+    <div class="wrap2"
+         v-if="useAuthStore().isAuthenticated() && useTabsStore().tabsets.size === 0 && !useUiStore().appLoading">
       <div class="row items-center text-grey-5">how to start?</div>
       <div style="min-width:300px;border:1px solid #efefef;border-radius:5px">
         <q-list>
           <q-item clickable v-ripple>
             <q-item-section avatar>
-              <SidePanelToolbarButton
-                icon="o_add_circle"
-                color="warning"
-                @click="openNewTabsetDialog()"/>
+              <Transition appear>
+                <SidePanelToolbarButton
+                  icon="o_add_circle"
+                  color="warning"/>
+              </Transition>
             </q-item-section>
 
             <q-item-section>
@@ -55,9 +57,7 @@
           <q-item clickable v-ripple>
             <q-item-section avatar>
               <SidePanelToolbarButton
-                icon="o_settings"
-                color="black"
-                @click="openOptionsPage()"/>
+                icon="o_settings"/>
             </q-item-section>
 
             <q-item-section>
@@ -278,15 +278,15 @@
         <template v-slot:title v-else>
           <div class="text-subtitle1">
             {{ toolbarTitle(tabsets as Tabset[]) }}
-<!--            <q-icon-->
-<!--              v-if="LocalStorage.getItem(SYNC_TYPE) as SyncType === SyncType.GITHUB && useAuthStore().isAuthenticated()"-->
-<!--              class="q-ml-none" name="sync" size="12px">-->
-<!--              <q-tooltip class="tooltip-small">Tabsets synced via {{ syncSource() }}</q-tooltip>-->
-<!--            </q-icon>-->
-<!--            <q-icon v-if="LocalStorage.getItem(SYNC_TYPE) as SyncType === SyncType.MANAGED_GIT"-->
-<!--                    class="q-ml-none" name="sync" size="12px">-->
-<!--              <q-tooltip class="tooltip-small">Tabsets are being synced automatically</q-tooltip>-->
-<!--            </q-icon>-->
+            <!--            <q-icon-->
+            <!--              v-if="LocalStorage.getItem(SYNC_TYPE) as SyncType === SyncType.GITHUB && useAuthStore().isAuthenticated()"-->
+            <!--              class="q-ml-none" name="sync" size="12px">-->
+            <!--              <q-tooltip class="tooltip-small">Tabsets synced via {{ syncSource() }}</q-tooltip>-->
+            <!--            </q-icon>-->
+            <!--            <q-icon v-if="LocalStorage.getItem(SYNC_TYPE) as SyncType === SyncType.MANAGED_GIT"-->
+            <!--                    class="q-ml-none" name="sync" size="12px">-->
+            <!--              <q-tooltip class="tooltip-small">Tabsets are being synced automatically</q-tooltip>-->
+            <!--            </q-icon>-->
           </div>
         </template>
 
@@ -1095,7 +1095,7 @@ body {
 }
 
 .text {
-  color: #000066;
+  //color: #000066;
   font-size: 24px;
   display: inline-block;
   margin-left: 5px;

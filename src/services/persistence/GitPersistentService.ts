@@ -25,6 +25,10 @@ import {LocalStorage, uid} from "quasar";
 import {SyncType} from "stores/appStore";
 import {SUBSCRIPTION_ID_IDENT, SYNC_GITHUB_TOKEN} from "boot/constants";
 import NavigationService from "src/services/NavigationService";
+import {NotificationType, useNotificationHandler} from "src/services/ErrorHandler";
+import {fasUserTimes} from "@quasar/extras/fontawesome-v5";
+
+const {handleError} = useNotificationHandler()
 
 if (typeof self !== 'undefined') {
   self.Buffer = Buffer;
@@ -43,7 +47,7 @@ async function createDir(...segments: string[]) {
       await pfs.mkdir(path)
     } catch (err: any) {
       if (!err.toString().startsWith("Error: EEXIST")) {
-        log(err)
+        console.log(err)
       }
     }
   }
@@ -131,7 +135,7 @@ class GitPersistenceService implements PersistenceService {
         singleBranch: true,
         depth: 10,
         //onProgress: (val:any) => (console.log("onProgress", val)),
-        //onMessage: (val:any) => (console.log("onMessage", val)),
+        onMessage: (val:any) => (console.log("onMessage", val)),
         onAuthSuccess: () => (console.log("auth: success")),
         onAuthFailure: (url: any, auth: any) => {
           console.log("onAuthFailure", url, auth)
@@ -146,6 +150,12 @@ class GitPersistenceService implements PersistenceService {
       return cloneRes
     } catch (err) {
       console.log("got error", err)
+      handleError("Error in GitPersistenceService#initDatabase: " + err, NotificationType.NOTIFY)
+      setTimeout(() => {
+        useUiStore().appLoading = "falling back to local tabsets"
+        setTimeout(() => {useUiStore().appLoading = undefined}, 1000)
+      }, 1000)
+
       return Promise.reject(err)
     }
   }

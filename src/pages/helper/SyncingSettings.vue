@@ -100,7 +100,9 @@
             </template>
           </q-input>
         </div>
-        <div class="col text-right"></div>
+        <div class="col text-right">
+          <q-icon v-if="githubRepoUrl" class="cursor-pointer" name="open_in_new" size="md" @click="NavigationService.openSingleTab(githubRepoUrl)" />
+        </div>
 
         <div class="col-3">
           Github Repository Token
@@ -114,7 +116,9 @@
           </q-input>
           <span v-if="showWrongTokenMessage()" class="text-negative text-caption">Seems like your github token is wrong or missing. Update or switch to "No Syncing"</span>
         </div>
-        <div class="col text-right"></div>
+        <div class="col text-right">
+
+        </div>
       </template>
 
       <template v-if="tempSyncOption === SyncType.COUCHDB">
@@ -313,6 +317,7 @@ import {useNotificationHandler} from "src/services/ErrorHandler";
 import {ExecutionResult} from "src/domain/ExecutionResult";
 import {useAuthStore} from "stores/authStore";
 import {useRouter} from "vue-router";
+import NavigationService from "src/services/NavigationService";
 
 const {sendMsg} = useUtils()
 const {handleSuccess, handleError} = useNotificationHandler()

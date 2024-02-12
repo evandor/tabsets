@@ -2,6 +2,7 @@ import {Notify} from 'quasar'
 import {ExecutionResult} from "src/domain/ExecutionResult";
 import {useUiStore} from "stores/uiStore";
 import {Logz} from "src/services/logz/Logz";
+import {logtail} from "boot/logtail";
 
 export enum NotificationType {
   NOTIFY = "NOTIFY",
@@ -19,6 +20,8 @@ export function useNotificationHandler() {
         error: error ? error.toString() : 'unknown error',
         stack: error.stack
       }).catch((logzError: any) => console.warn("could not send error message to logz"))
+
+      logtail.error(error ? error.toString() : 'unknown error', error)
 
       switch (type) {
           case NotificationType.NOTIFY:
