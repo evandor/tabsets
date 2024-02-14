@@ -195,8 +195,9 @@
                             @mouseover="hoveredTabset = tabset.id"
                             @mouseleave="hoveredTabset = undefined">
               <q-item-label>
-                <q-icon class="cursor-pointer" name="more_horiz" color="accent" size="16px"/>
-                <SidePanelPageContextMenu :tabset="tabset as Tabset" @edit-header-description="toggleEditHeader(tabset as Tabset, index)"/>
+                <q-icon class="cursor-pointer" name="more_horiz" size="16px"/>
+                <SidePanelPageContextMenu :tabset="tabset as Tabset"
+                                          @edit-header-description="toggleEditHeader(tabset as Tabset, index)"/>
               </q-item-label>
             </q-item-section>
           </template>
@@ -223,9 +224,15 @@
                               icon: 'save',
                               label: 'Save',
                               handler: saveTabsetDescription
+                            },
+                             pageNote: {
+                              tip: 'Open page Note',
+                              icon: 'open',
+                              label: 'Open Page Note',
+                              handler: openPageNote
                             }
                           }"
-                                  :toolbar="[
+                          :toolbar="[
                             ['bold', 'italic', 'strike', 'underline'],
                             ['upload', 'save']
                           ]"
@@ -233,9 +240,7 @@
               </div>
             </template>
             <template v-else-if="tabset.headerDescription">
-              <div class="row q-ma-none q-pa-md">
-                {{ tabset.headerDescription }}
-              </div>
+              <div class="row q-ma-sm q-pa-sm text-body2 darkInDarkMode brightInBrightMode" style="border:1px solid #efefef;border-radius:3px;" v-html="tabset.headerDescription"></div>
             </template>
 
             <q-list>
@@ -367,7 +372,7 @@ import {ExecutionResult} from "src/domain/ExecutionResult";
 
 const {setVerticalScrollPosition} = scroll
 
-const {inBexMode} = useUtils()
+const {inBexMode, sanitize} = useUtils()
 
 const $q = useQuasar()
 const router = useRouter()
@@ -1042,18 +1047,21 @@ const toggleEditHeader = (tabset: Tabset, index: number) => {
 }
 
 const saveTabsetDescription = () => {
-  console.log("saving tabste", headerDescription.value, useTabsStore().currentTabsetId)
+  console.log("saving tabset", headerDescription.value, useTabsStore().currentTabsetId)
   const currentTs = useTabsStore().getCurrentTabset
   if (currentTs) {
-    currentTs.headerDescription = headerDescription.value
+    currentTs.headerDescription = sanitize(headerDescription.value)
     useTabsetService().saveCurrentTabset()
     editHeaderDescription.value = false
     headerDescription.value = ''
-    handleSuccess(new ExecutionResult<string>('saved','saved'))
+    handleSuccess(new ExecutionResult<string>('saved', 'saved'))
   } else {
     handleError("could not save description")
   }
 }
+
+const openPageNote = () => openURL(chrome.runtime.getURL("/www/index.html#/tabsets/" + useTabsStore().currentTabsetId + "?tab=page"))
+
 </script>
 
 <style lang="scss">
