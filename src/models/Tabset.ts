@@ -77,6 +77,8 @@ export class Tabset {
   // = description
   page: string | undefined = undefined
 
+  headerDescription: string | undefined = undefined
+
   window: string = 'current'
   color: string | undefined = undefined
 
