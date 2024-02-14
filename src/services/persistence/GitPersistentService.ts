@@ -85,7 +85,8 @@ async function pull(dir: string, proxy: string, author: object) {
 class GitPersistenceService implements PersistenceService {
   private db: IDBPDatabase = null as unknown as IDBPDatabase
   private readonly _dir = "/tabsets";
-  private genericCorsProxy = 'https://cors.isomorphic-git.org'
+  //private genericCorsProxy = 'https://cors.isomorphic-git.org'
+  private genericCorsProxy = 'https://git.tabsets.net'
   private tabsetsCorsProxy = 'https://git.tabsets.net'
 
   private useProxy = this.genericCorsProxy
