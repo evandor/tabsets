@@ -117,7 +117,9 @@ export const useSpacesStore = defineStore('spaces', () => {
       //console.log("adding space", s.id, s.label)
       //console.log("spaces:", [...spaces.value.values()].length)
       if (nameExists.value(s.label)) {
-        return Promise.reject(`name '${s.label}'does already exist`)
+        const msg = `name '${s.label}' does already exist`
+        console.log("issue during adding spaces: ", msg)
+        return Promise.resolve()
       }
       spaces.value.set(s.id, s)
       if (addToStorage) {

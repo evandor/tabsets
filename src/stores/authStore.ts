@@ -26,19 +26,20 @@ export const useAuthStore = defineStore('auth', () => {
 
 
   // --- init ---
-  function initialize(ps: PersistenceService) {
+  async function initialize(ps: PersistenceService) {
     console.debug(" ...initializing AuthStore")
     storage = ps
 
     //check stored user info
     const userId = LocalStorage.getItem(CURRENT_USER_ID) as string
     if (userId) {
-      console.log("getting account info for user", userId)
-      storage.getAccount(userId)
-        .then(a => account.value = a)
-        .catch((err) => {
-          console.warn("could not get account:", err)
-        })
+      try {
+        console.log("getting account info for user", userId)
+        const a: Account = await storage.getAccount(userId)
+        account.value = a
+      } catch (err) {
+        console.warn("could not get account:", err)
+      }
     }
   }
 
@@ -65,7 +66,6 @@ export const useAuthStore = defineStore('auth', () => {
     if (process.env.MODE === 'electron') {
       // @ts-ignore
       const accessToken = await window.electronAPI.getAccessToken();
-      //console.log("got accessToken", accessToken)
       return accessToken
     }
     return "await auth0.getAccessTokenSilently()"
@@ -97,16 +97,6 @@ export const useAuthStore = defineStore('auth', () => {
       }
     }
   })
-
-  // const getToken = async (api: any): Promise<string> => {
-  //   const token = await this.auth0.getAccessTokenSilently()
-  //   console.log("got token")
-  //   const firebaseToken = await api.get(`${process.env.BACKEND_URL}/firebase`, {
-  //     headers: {'Authorization': `Bearer ${token}`}
-  //   })
-  //   console.log("got firebase token", firebaseToken)
-  //   return Promise.resolve(firebaseToken.data['firebaseToken'])
-  // }
 
   // --- actions ---
   async function setUser(u: User | undefined) {

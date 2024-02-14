@@ -50,7 +50,12 @@ onAuthStateChanged(auth, async (user) => {
     })
     // --- end of statement
 
-    await AppService.init($q, router, true, user, account)
+    try {
+      await AppService.init($q, router, true, user, account)
+    } catch (err) {
+      console.log("%ccould not initialize appService due to " + err, "background-color:orangered")
+      return Promise.resolve()
+    }
 
   } else {
     // User is signed out

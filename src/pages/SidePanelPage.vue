@@ -600,11 +600,11 @@ function inIgnoredMessages(message: any) {
     // seems we need to define these listeners here to get the matching messages reliably
     // these messages are created by triggering events in the mainpanel
     browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
+      console.log(" <<< received message", message)
       if (inIgnoredMessages(message)) {
         return true
       }
       if (message.name === 'current-tabset-id-change') {
-        console.log(" >>> got message", message)
         if (message.ignore) {
           return true
         }
@@ -700,7 +700,6 @@ function inIgnoredMessages(message: any) {
         console.log("got message 'mqtt-url-changed'", message)
         MqttService.reset().then(() => MqttService.init(message.data.mqttUrl))
       } else if (message.name === 'reload-application') {
-        console.log("got message 'reload-application'")
         AppService.restart("restarted=true")
       } else {
         console.log("got unmatched message", message)

@@ -22,24 +22,24 @@
 
     </div>
 
-    <hr>
+<!--    <hr>-->
 
-    <q-banner rounded style="border:1px solid orange">
-      Danger Zone
-    </q-banner>
+<!--    <q-banner rounded style="border:1px solid red">-->
+<!--      Danger Zone-->
+<!--    </q-banner>-->
 
-    <div class="row items-baseline q-ma-md q-gutter-lg">
+<!--    <div class="row items-baseline q-ma-md q-mt-xl q-gutter-lg">-->
 
-      <template >
-        <div class="col-12 text-bold">
-          Delete local Data
-        </div>
+<!--        <div class="col-12 text-bold">-->
+<!--          Delete local Data-->
+<!--        </div>-->
 
-        <InfoLine label="Tabsets">test</InfoLine>
+<!--        <InfoLine label="Indexed DB"><q-checkbox v-model="deleteIndexedDb" /></InfoLine>-->
+<!--        <InfoLine label="Synced Data"><q-checkbox v-model="deleteFS" /></InfoLine>-->
+<!--        <InfoLine label="Local Storage"><q-checkbox v-model="deleteLS" /></InfoLine>-->
 
-      </template>
-
-    </div>
+<!--        <InfoLine label=""><q-btn label="delete" :disable="!deleteIndexedDb && !deleteFS && !deleteLS" @click="deleteData()" /></InfoLine>-->
+<!--    </div>-->
   </div>
 
 </template>
@@ -49,15 +49,27 @@
 import {Account} from "src/models/Account";
 import {onMounted, ref} from "vue";
 import {useAuthStore} from "stores/authStore";
-import {date, LocalStorage} from "quasar";
+import {date, LocalStorage, useQuasar} from "quasar";
 import {CURRENT_USER_EMAIL} from "boot/constants";
 import {getAuth, User} from "firebase/auth";
 import InfoLine from "pages/helper/InfoLine.vue";
+import IndexedDbPersistenceService from "src/services/IndexedDbPersistenceService";
+import {useSuggestionsStore} from "stores/suggestionsStore";
+import {StaticSuggestionIdent, Suggestion} from "src/models/Suggestion";
+import {useUtils} from "src/services/Utils";
+
+const {sendMsg} = useUtils()
+
+const localStorage = useQuasar().localStorage
 
 const account = ref<Account | undefined>(undefined)
 const email = ref<string | undefined>(undefined)
 const products = ref<Set<string>>(new Set())
 const user = ref<User | null>(null)
+
+const deleteIndexedDb = ref(false)
+const deleteFS = ref(false)
+const deleteLS = ref(false)
 
 onMounted(() => {
   account.value = useAuthStore().getAccount()
@@ -84,5 +96,27 @@ onMounted(() => {
     }
   }
 })
+
+const deleteData = async () => {
+  if (deleteIndexedDb.value) {
+    console.log("deleting deleteIndexedDb")
+    await IndexedDbPersistenceService.deleteDatabase("db")
+    console.log("deleting deleteIndexedDb done")
+    //await IndexedDbPersistenceService.init("db")
+  }
+  if (deleteFS.value) {
+    console.log("deleting IndexedDB Filesystem")
+    await IndexedDbPersistenceService.deleteDatabase("fs")
+    console.log("deleting IndexedDB Filesystem done")
+  }
+  if (deleteLS.value) {
+    console.log("deleting LocalStorage")
+    localStorage.clear()
+    console.log("deleting LocalStorage done")
+    await useSuggestionsStore().addSuggestion(Suggestion.getStaticSuggestion(StaticSuggestionIdent.RESTART_SUGGESTED))
+  }
+  sendMsg('reload-application')
+
+}
 
 </script>

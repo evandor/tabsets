@@ -84,7 +84,7 @@ class AppService {
     await IndexedDbPersistenceService.init("db")
 
     // init services
-    useAuthStore().initialize(useDB(undefined).db)
+    await useAuthStore().initialize(useDB(undefined).db)
     await useAuthStore().setUser(user)
     useAuthStore().upsertAccount(account)
 
@@ -95,6 +95,7 @@ class AppService {
     tabsetService.setLocalStorage(localStorage)
 
     if (useAuthStore().isAuthenticated()) {
+      console.log("useAuthStore().getAccount()", useAuthStore().getAccount())
       // sync features
       const syncType = useAuthStore().getAccount()?.userData?.sync?.type || SyncType.NONE
       const syncUrl = useAuthStore().getAccount()?.userData?.sync?.url
@@ -109,7 +110,7 @@ class AppService {
         failedGitLogin = true
       }
 
-      console.debug("%cchecking sync config:", "font-weight:bold", syncType, syncUrl, dbOrGitDb)
+      console.debug(`%cchecking sync config: type=${syncType}, url=${syncUrl}, dbOrGitDb=${dbOrGitDb}`, "font-weight:bold")
 
       if (syncUrl) {
         uiStore.appLoading = "syncing tabsets..."
@@ -122,21 +123,21 @@ class AppService {
       await this.initCoreSerivces(quasar, useDB(undefined).db, this.router)
     }
 
-
     useNotificationsStore().bookmarksExpanded = quasar.localStorage.getItem("bookmarks.expanded") || []
 
   }
 
 
   restart(ar: string) {
-    console.log("%c>>> restarting tabsets", "font-weight:bold", window.location.href, ar)
+    console.log("%crestarting tabsets", "font-weight:bold", window.location.href, ar)
     const baseLocation = window.location.href.split("?")[0]
-    console.log("%c>>> baseLocation", "font-weight:bold", baseLocation)
+    console.log("%cbaseLocation", "font-weight:bold", baseLocation)
+    console.log("%cwindow.location.href", "font-weight:bold", window.location.href)
     if (window.location.href.indexOf("?") < 0) {
       const tsIframe = window.parent.frames[0]
       //log("iframe", tsIframe)
       if (tsIframe) {
-        console.debug("%c>>> new window.location.href", "font-weight:bold", baseLocation + "?" + ar)
+        console.debug("%cnew window.location.href", "font-weight:bold", baseLocation + "?" + ar)
         tsIframe.location.href = baseLocation + "?" + ar
         //tsIframe.location.href = "https://www.skysail.io"
         tsIframe.location.reload()
