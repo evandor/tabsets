@@ -1,43 +1,45 @@
 <template>
   <div class="col-12 text-right">
     <template v-if="!mailSent">
-      <div class="row q-ma-xs">
-        <div class="col-7">
-          <q-input outlined type="email" v-model="email" label="Your email address" dense/>
+      <form>
+        <div class="row q-ma-xs">
+          <div class="col-7">
+            <q-input id="username" outlined type="email" v-model="email" label="Your email address" dense/>
+          </div>
+          <div class="col-5">
+            <!--          <q-btn :label="(!email || email.length === 0) ? 'Sign in' : (password.length > 0 ? 'Sign in':'Send Link')"-->
+            <q-btn label="Sign in"
+                   style="width:110px"
+                   :loading="password.length === 0 && loading"
+                   :disable="mailSent"
+                   @click="signin(false)"/>
+          </div>
         </div>
-        <div class="col-5">
-<!--          <q-btn :label="(!email || email.length === 0) ? 'Sign in' : (password.length > 0 ? 'Sign in':'Send Link')"-->
-          <q-btn label="Sign in"
-                 style="width:110px"
-                 :loading="password.length === 0 && loading"
-                 :disable="mailSent"
-                 @click="signin(false)"/>
+        <div class="row q-ma-xs">
+          <div class="col-7">
+            <q-input id="password" outlined type="password" v-model="password" label="Password" dense/>
+          </div>
+          <div class="col-5">
+            <q-btn label="Sign Up"
+                   style="width:110px"
+                   :loading="password.length > 0 && loading"
+                   :disable="mailSent || password.length === 0"
+                   @click="signin(true)"/>
+          </div>
         </div>
-      </div>
-      <div class="row q-ma-xs">
-        <div class="col-7">
-          <q-input outlined type="password" v-model="password" label="Password" dense/>
-        </div>
-        <div class="col-5">
-          <q-btn label="Sign Up"
-                 style="width:110px"
-                 :loading="password.length > 0 && loading"
-                 :disable="mailSent || password.length === 0"
-                 @click="signin(true)"/>
-        </div>
-      </div>
-      <div class="row q-ma-xs q-ml-none">
-        <div class="col-7 q-ml-xs text-body2 text-grey-7 text-left" style="font-size:smaller">
+        <div class="row q-ma-xs q-ml-none">
+          <div class="col-7 q-ml-xs text-body2 text-grey-7 text-left" style="font-size:smaller">
           <span
             v-if="(!email || email.trim().length === 0) && password.length === 0">Or keep using tabsets w/o account</span>
-          <span v-else-if="password.length === 0">We'll send a link to sign in/up</span>
-          <span v-else></span>
-        </div>
-        <div class="col" style="font-size:smaller">
+            <span v-else-if="password.length === 0">We'll send a link to sign in/up</span>
+            <span v-else></span>
+          </div>
+          <div class="col" style="font-size:smaller">
           <span class="q-mr-md cursor-pointer text-blue-5"
                 @click="NavigationService.openSingleTab('https://tabsets.web.app/#/pricing')">What's that?</span>
+          </div>
         </div>
-      </div>
+      </form>
     </template>
     <Transition name="bounceInLeft" appear v-else>
       <div class="text-caption text-left">
@@ -108,6 +110,7 @@ const signin = async (newUser: boolean) => {
     }
   } else {
 
+    // KEEP for now; this is for login with email link
     // console.log("actionCodeSettings", actionCodeSettings)
     // sendSignInLinkToEmail(auth, email.value, actionCodeSettings)
     //   .then(() => {

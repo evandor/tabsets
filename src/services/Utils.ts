@@ -49,7 +49,7 @@ export function useUtils() {
 
   const sendMsg = (msgName: string, data: object = {}) => {
     if (inBexMode() && chrome) {
-      console.log("sending message", {name: msgName, data})
+      console.debug(" >>> sending message", {name: msgName, data})
       chrome.runtime.sendMessage({
         name: msgName, data: data
       }, (callback: any) => {

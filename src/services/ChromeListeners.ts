@@ -527,7 +527,7 @@ class ChromeListeners {
     if (inIgnoredMessages(request)) {
       return true
     }
-    //console.log("%conMessage","color:red", request)
+    console.debug(" <<< got message", request)
     if (request.msg === 'captureThumbnail') {
       const screenShotWindow = useWindowsStore().screenshotWindow
       this.handleCapture(sender, screenShotWindow, sendResponse)

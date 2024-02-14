@@ -12,14 +12,8 @@ export enum NotificationType {
 export function useNotificationHandler() {
 
     const handleError = (error: any, type: NotificationType = NotificationType.TOAST) => {
-        console.log("got error: ", error ? error.toString() : 'unknown error')
+        console.log("showing error message: ", error ? error.toString() : 'unknown error')
         console.trace()
-
-      // Logz.error({
-      //   message: "handling error in NotificationHandler",
-      //   error: error ? error.toString() : 'unknown error',
-      //   stack: error.stack
-      // }).catch((logzError: any) => console.warn("could not send error message to logz"))
 
       logtail.error(error ? error.toString() : 'unknown error', error)
 

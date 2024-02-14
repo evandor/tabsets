@@ -1,4 +1,4 @@
-import {IDBPDatabase, openDB} from "idb";
+import {IDBPDatabase, openDB, deleteDB} from "idb";
 import {useTabsStore} from "src/stores/tabsStore";
 import _ from "lodash";
 import {EXPIRE_DATA_PERIOD_IN_MINUTES, INDEX_DB_VERSION} from "boot/constants";
@@ -36,6 +36,19 @@ class IndexedDbPersistenceService implements PersistenceService {
     console.log(" ...initializing indexeddb database", dbName)
     this.db = await this.initDatabase(dbName)
     useUiStore().dbReady = true
+  }
+
+  async deleteDatabase(dbName: string) {
+    useUiStore().dbReady = false
+    console.warn(" ...deleting indexeddb database", dbName)
+    if (this.db) {
+      await this.db.close()
+    }
+    console.log("db closed, deleting now")
+    deleteDB(dbName, (cb) => {
+      console.log("deleting cb", cb)
+    })
+
   }
 
   async loadTabsets(): Promise<any> {

@@ -89,7 +89,7 @@ export const useWindowsStore = defineStore('windows', () => {
     const browserWindows: chrome.windows.Window[] = await chrome.windows.getAll({populate: true})
 
     currentChromeWindows.value = browserWindows
-    console.debug(` initializing current chrome windows with ${currentChromeWindows.value.length} window(s)`)
+    console.debug(` initializing current chrome windows with ${currentChromeWindows.value?.length} window(s)`)
 
     if (!keepWindowsFromStorage) {
       // adding potentially new windows to storage

@@ -104,9 +104,13 @@ class GitPersistenceService implements PersistenceService {
       }
       if (syncType === SyncType.GITHUB) {
         console.log("initializing github database", url)
-        this.db = await this.initDatabase(url, this.genericCorsProxy)
-        useUiStore().dbReady = true
-        return Promise.resolve("done")
+        try {
+          this.db = await this.initDatabase(url, this.genericCorsProxy)
+          useUiStore().dbReady = true
+          return Promise.resolve("done")
+        } catch(err) {
+          return Promise.reject("initialization of git db failed.")
+        }
       } else if (syncType === SyncType.MANAGED_GIT) {
         const subscription = LocalStorage.getItem(SUBSCRIPTION_ID_IDENT) as string
         console.log("initializing managed git", url)
@@ -158,14 +162,13 @@ class GitPersistenceService implements PersistenceService {
         depth: 10,
         //onProgress: (val:any) => (console.log("onProgress", val)),
         onMessage: (val:any) => {
-          console.log("onMessage", val)
           // something like "Counting objects:   1% (1/77)"
           const split = val.split(":")
           if (split.length === 2) {
             const msg = split[0]
             const matches = split[1].matchAll(/.*% \(([\d]+)\/([\d]+)\)/gm)
             for (const match of matches) {
-              console.log("found desc", Number(match[1]), Number(match[2]))
+              //console.log("found desc", Number(match[1]), Number(match[2]))
               try {
                 const quote = Number(match[1]) / Number(match[2])
                 useUiStore().setProgress(quote, msg)
@@ -194,12 +197,13 @@ class GitPersistenceService implements PersistenceService {
       return cloneRes
     } catch (err) {
       console.log("got error", err)
-      handleError("Error in GitPersistenceService#initDatabase: " + err, NotificationType.NOTIFY)
+      handleError("Could not access git backend, check your Credentials", NotificationType.NOTIFY)
 
-      if (err.toString().indexOf('403') >= 0) {
-        const settingsPath = chrome.runtime.getURL("/www/index.html#/mainpanel/settings")
-        await NavigationService.openSingleTab(settingsPath + "?tab=syncing&token=failed")
-      }
+      // if (err.toString().indexOf('403') >= 0) {
+      //   console.log("redirecting after error")
+      //   const settingsPath = chrome.runtime.getURL("/www/index.html#/mainpanel/settings")
+      //   await NavigationService.openSingleTab(settingsPath + "?tab=syncing&token=failed")
+      // }
 
       useUiStore().progress = undefined
 
@@ -277,22 +281,27 @@ class GitPersistenceService implements PersistenceService {
 
           try {
             await createDir("tabsets", tabsetId, "tabs")
+            // @ts-ignore
             const tabsResult: string[] = await pfs.readdir(`${dir}/tabsets/${tabsetId}/tabs`)
             for (var tabsIndex in tabsResult) {
+              // @ts-ignore
               const tab = JSON.parse(await pfs.readFile(`${dir}/tabsets/${tabsetId}/tabs/${tabsResult[tabsIndex]}`))
               ts.tabs.push(tab)
             }
           } catch (err) {
-            console.warn("err", err)
+            console.log("%cgot error: " + err , "background-color:orangered")
+            return Promise.resolve()
           }
 
           tabsets.push(ts)
         } catch (err) {
-          console.log("err", err)
+          console.log("%cgot error: " + err , "background-color:orangered")
+          return Promise.resolve()
         }
       }
     } catch (err) {
-      console.warn("err", err)
+      console.log("%cgot error: " + err , "background-color:orangered")
+      return Promise.resolve()
     }
     for (const t of tabsets) {
       //log("adding t", t)
@@ -381,12 +390,15 @@ class GitPersistenceService implements PersistenceService {
 
           spaces.push(s)
         } catch (err) {
-          console.log("err", err)
+          console.log("%cgot error: " + err , "background-color:orangered")
+          return Promise.resolve()
         }
       }
     } catch (err) {
-      console.warn("err", err)
+      console.log("%cgot error: " + err , "background-color:orangered")
+      return Promise.resolve()
     }
+    console.log("adding spaces", spaces)
     for (const s of spaces) {
       useSpacesStore().addSpace(s, false)
     }

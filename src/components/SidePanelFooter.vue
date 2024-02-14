@@ -1,9 +1,12 @@
 <template>
 
   <q-footer
-    class="q-pa-xs q-mt-sm darkInDarkMode brightInBrightMode" style="border-top: 1px solid lightgrey" :style="offsetBottom()">
+    class="q-pa-xs q-mt-sm darkInDarkMode brightInBrightMode" style="border-top: 1px solid lightgrey"
+    :style="offsetBottom()">
     <div class="row fit q-mb-sm" v-if="showLogin">
-      <SidePanelLoginWidget @hide-login="showLogin = false"/>
+      <keep-alive>
+        <SidePanelLoginWidget @hide-login="showLogin = false"/>
+      </keep-alive>
     </div>
 
     <div class="row fit q-mb-sm" v-if="showWindowTable">
@@ -35,7 +38,7 @@
         <template v-if="!checkToasts() && useUiStore().progress">
           <q-linear-progress size="25px" :value="progressValue">
             <div class="absolute-full flex flex-center">
-              <q-badge :label="progressLabel" />
+              <q-badge :label="progressLabel"/>
             </div>
           </q-linear-progress>
         </template>
@@ -269,7 +272,7 @@ watchEffect(() => {
   if (uiProgrss) {
     progressValue.value = uiProgrss['val' as keyof object] || 0.0
     progressLabel.value = uiProgrss['label' as keyof object] || 'no msg'
-    console.log("we are here", progressValue.value)
+    //console.log("we are here", progressValue.value)
   }
 })
 
