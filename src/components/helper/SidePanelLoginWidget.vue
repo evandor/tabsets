@@ -4,11 +4,12 @@
       <form>
         <div class="row q-ma-xs">
           <div class="col-7">
-            <q-input id="username" outlined type="email" v-model="email" label="Your email address" dense/>
+            <q-input id="username" outlined type="email" v-model="email" label="Your email address" dense tabindex="1" autofocus/>
           </div>
           <div class="col-5">
             <!--          <q-btn :label="(!email || email.length === 0) ? 'Sign in' : (password.length > 0 ? 'Sign in':'Send Link')"-->
             <q-btn label="Sign in"
+                   tabindex="3"
                    style="width:110px"
                    :loading="password.length === 0 && loading"
                    :disable="mailSent"
@@ -17,10 +18,11 @@
         </div>
         <div class="row q-ma-xs">
           <div class="col-7">
-            <q-input id="password" outlined type="password" v-model="password" label="Password" dense/>
+            <q-input id="password" outlined type="password" v-model="password" label="Password" dense tabindex="2"/>
           </div>
           <div class="col-5">
             <q-btn label="Sign Up"
+                   tabindex="4"
                    style="width:110px"
                    :loading="password.length > 0 && loading"
                    :disable="mailSent || password.length === 0"
