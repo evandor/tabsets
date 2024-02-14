@@ -195,10 +195,6 @@ const startTabsetNote = (tabset: Tabset) => {
   NavigationService.openOrCreateTab([url])
 }
 
-// TODO remember for another use case
-//const openTabsetDescription = (tabset: Tabset) => openURL(chrome.runtime.getURL("/www/index.html#/tabsets/" + tabset.id + "?tab=page"))
-
-
 const openEditTabsetDialog = (tabset: Tabset) => {
   $q.dialog({
     component: EditTabsetDialog,
