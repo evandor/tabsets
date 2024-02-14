@@ -610,7 +610,7 @@ class IndexedDbPersistenceService implements PersistenceService {
   }
 
   async updateWindow(window: Window): Promise<void> {
-    console.debug(`updating window id=${window.id}, title=${window.title}, index=${window.index}, #hostList=${window.hostList.length}`)
+    console.debug(`updating window id=${window.id}, title=${window.title}, index=${window.index}, #hostList=${window.hostList?.length}`)
     if (!window.id) {
       return Promise.reject("window.id not set")
     }
@@ -622,7 +622,7 @@ class IndexedDbPersistenceService implements PersistenceService {
 
     asJson['title'] = window.title
     asJson['index'] = window.index
-    asJson['hostList'] = Array.from(window.hostList)
+    asJson['hostList'] = window.hostList ? Array.from(window.hostList) : []
 
     delete asJson['tabs']
     console.debug("saving window json as ", asJson)
