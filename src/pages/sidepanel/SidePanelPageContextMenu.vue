@@ -8,7 +8,7 @@
                        label="Edit Tabset"/>
 
       <ContextMenuItem v-close-popup
-                       @was-clicked="openTabsetDescription(tabset)"
+                       @was-clicked="emits('editHeaderDescription')"
                        icon="o_description"
                        label="Tabset Description..."/>
 
@@ -184,6 +184,8 @@ const props = defineProps({
   tabset: {type: Object as PropType<Tabset>, required: true}
 })
 
+const emits = defineEmits(['editHeaderDescription'])
+
 const publictabsetsPath = "https://public.tabsets.net/tabsets/"
 
 const startTabsetNote = (tabset: Tabset) => {
@@ -195,9 +197,7 @@ const startTabsetNote = (tabset: Tabset) => {
 
 // TODO remember for another use case
 //const openTabsetDescription = (tabset: Tabset) => openURL(chrome.runtime.getURL("/www/index.html#/tabsets/" + tabset.id + "?tab=page"))
-const openTabsetDescription = (tabset: Tabset) => {
 
-}
 
 const openEditTabsetDialog = (tabset: Tabset) => {
   $q.dialog({

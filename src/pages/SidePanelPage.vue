@@ -196,7 +196,7 @@
                             @mouseleave="hoveredTabset = undefined">
               <q-item-label>
                 <q-icon class="cursor-pointer" name="more_horiz" color="accent" size="16px"/>
-                <SidePanelPageContextMenu :tabset="tabset as Tabset"/>
+                <SidePanelPageContextMenu :tabset="tabset as Tabset" @edit-header-description="toggleEditHeader(tabset as Tabset, index)"/>
               </q-item-label>
             </q-item-section>
           </template>
@@ -210,6 +210,32 @@
             </template>
             <template v-if="tabset.page && typeof tabset.page === 'string'">
               {{ tabset.page }}
+            </template>
+
+            <template v-if="editHeaderDescription">
+              <div class="row q-ma-none q-pa-md">
+                <q-editor style="width:100%"
+                          flat
+                          v-model="headerDescription" min-height="5rem"
+                          :definitions="{
+                            save: {
+                              tip: 'Save your work',
+                              icon: 'save',
+                              label: 'Save',
+                              handler: saveTabsetDescription
+                            }
+                          }"
+                                  :toolbar="[
+                            ['bold', 'italic', 'strike', 'underline'],
+                            ['upload', 'save']
+                          ]"
+                          placeholder="Create a header description for your current tabset"/>
+              </div>
+            </template>
+            <template v-else-if="tabset.headerDescription">
+              <div class="row q-ma-none q-pa-md">
+                {{ tabset.headerDescription }}
+              </div>
             </template>
 
             <q-list>
@@ -336,6 +362,8 @@ import InfoMessageWidget from "components/widgets/InfoMessageWidget.vue";
 import {SYNC_TYPE, TITLE_IDENT} from "boot/constants";
 import AppService from "src/services/AppService";
 import SidePanelToolbarButton from "components/buttons/SidePanelToolbarButton.vue";
+import {useNotificationHandler} from "src/services/ErrorHandler";
+import {ExecutionResult} from "src/domain/ExecutionResult";
 
 const {setVerticalScrollPosition} = scroll
 
@@ -359,6 +387,7 @@ const tabsetExpanded = ref<Map<string, boolean>>(new Map())
 const hoveredPublicLink = ref(false)
 const windowLocation = ref('---')
 const user = ref<any>()
+const headerDescription = ref<string>('')
 
 // https://stackoverflow.com/questions/12710905/how-do-i-dynamically-assign-properties-to-an-object-in-typescript
 interface SelectionObject {
@@ -372,11 +401,10 @@ window.addEventListener("drop", (event) => {
 const selected_model = ref<SelectionObject>({})
 const hoveredTabset = ref<string | undefined>(undefined)
 const tabsets = ref<Tabset[]>([])
-const progress = ref<number | undefined>(undefined)
-const progressLabel = ref<string | undefined>(undefined)
 const selectedTab = ref<Tab | undefined>(undefined)
 const windowName = ref<string | undefined>(undefined)
 const tsBadges = ref<object[]>([])
+const editHeaderDescription = ref<boolean>(false)
 
 const steps = [
   {
@@ -387,6 +415,8 @@ const steps = [
 
 const wrapper = ref(null)
 const {start, goToStep, finish} = useVOnboarding(wrapper)
+
+const {handleSuccess, handleError} = useNotificationHandler()
 
 function updateOnlineStatus(e: any) {
   const {type} = e
@@ -480,7 +510,7 @@ const scrollToElement = (el: any, delay: number) => {
 }
 
 const updateSelectedTabset = (tabsetId: string, open: boolean, index: number | undefined = undefined) => {
-  //console.log("updated...", tabsetId, open, Object.keys(tabsetExpanded.value))
+  console.log("updated...", tabsetId, open, index, Object.keys(tabsetExpanded.value))
   tabsetExpanded.value.set(tabsetId, open)
   if (open) {
     if (index) {
@@ -547,10 +577,10 @@ watchEffect(() => {
   }
 })
 
-watchEffect(() => {
-  progress.value = (uiStore.progress || 0.0) / 100.0
-  progressLabel.value = uiStore.progressLabel + " " + Math.round(100 * progress.value) + "%"
-})
+// watchEffect(() => {
+//   progress.value = (uiStore.progress || 0.0) / 100.0
+//   progressLabel.value = uiStore.progressLabel + " " + Math.round(100 * progress.value) + "%"
+// })
 
 const getTabsetOrder =
   [
@@ -1002,6 +1032,27 @@ const tabsetSectionName = (tabset: Tabset) => {
   return tabset.name + (activeFolder ? " - " + activeFolder.name : "")
 }
 
+const toggleEditHeader = (tabset: Tabset, index: number) => {
+  editHeaderDescription.value = !editHeaderDescription.value
+  if (editHeaderDescription.value) {
+    updateSelectedTabset(tabset.id, true, index)
+    headerDescription.value = tabset.headerDescription || ''
+  }
+}
+
+const saveTabsetDescription = () => {
+  console.log("saving tabste", headerDescription.value, useTabsStore().currentTabsetId)
+  const currentTs = useTabsStore().getCurrentTabset
+  if (currentTs) {
+    currentTs.headerDescription = headerDescription.value
+    useTabsetService().saveCurrentTabset()
+    editHeaderDescription.value = false
+    headerDescription.value = ''
+    handleSuccess(new ExecutionResult<string>('saved','saved'))
+  } else {
+    handleError("could not save description")
+  }
+}
 </script>
 
 <style lang="scss">
