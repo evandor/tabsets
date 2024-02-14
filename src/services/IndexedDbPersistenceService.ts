@@ -562,24 +562,20 @@ class IndexedDbPersistenceService implements PersistenceService {
     const allWindows: Window[] = await this.db.getAll('windows') as Window[]
     console.log(`adding ${window.toString()} to list [${_.join(_.map(allWindows, w => w.id), ',')}]`)
     for (const w of allWindows) {
-      console.log("comparing hostLists", window.hostList, w.hostList, typeof w.hostList)
-      const intersection = new Set([...window.hostList].filter(x => (new Set(w.hostList).has(x))));
-      console.log("intersection", intersection, intersection.size === window.hostList.length, intersection.size === w.hostList.length)
-      if (intersection.size === window.hostList.length && intersection.size === w.hostList.length) {
-        // reuse existing
-        const useId = window.id
-        const oldId = w.id
-        window = w
-        window.id = useId
-        console.warn("replacing old window " + oldId + " with " + window.toString())
-
-        // logtail.warn("tabsets started", {
-        //   "mode": process.env.MODE,
-        //   "version": import.meta.env.PACKAGE_VERSION,
-        // })
-
-        await this.db.delete('windows', oldId)
-        break
+      if (w.hostList) {
+        console.log("comparing hostLists", window.hostList, w.hostList, typeof w.hostList)
+        const intersection = new Set([...window.hostList].filter(x => (new Set(w.hostList).has(x))));
+        console.log("intersection", intersection, intersection.size === window.hostList.length, intersection.size === w.hostList.length)
+        if (intersection.size === window.hostList.length && intersection.size === w.hostList.length) {
+          // reuse existing
+          const useId = window.id
+          const oldId = w.id
+          window = w
+          window.id = useId
+          console.warn("replacing old window " + oldId + " with " + window.toString())
+          await this.db.delete('windows', oldId)
+          break
+        }
       }
     }
     //}
