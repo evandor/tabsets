@@ -9,9 +9,18 @@
   color: black;
 }
 
+.body--light .greyBorderBottom {
+  border-bottom: 1px solid $bordergrey;
+}
+
+
 .body--dark .darkInDarkMode {
   background-color: black;
   color: white;
+}
+
+.body--dark .greyBorderBottom {
+  border-bottom: 1px solid #121212;
 }
 
 .body--dark::-webkit-scrollbar {
@@ -48,10 +57,6 @@
 
 .greyBorderTop {
   border-top: 1px solid $bordergrey;
-}
-
-.greyBorderBottom {
-  border-bottom: 1px solid $bordergrey;
 }
 
 .tooltip {

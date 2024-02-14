@@ -204,14 +204,14 @@
 
           <div class="q-ma-none q-pa-none">
 
-            <template v-if="tabset.page && typeof tabset.page === 'object'">
-              <SidePanelTabsetDescriptionPage
-                :tabsetId="tabset.id"
-                :tabsetDesc="tabset.page as Object"/>
-            </template>
-            <template v-if="tabset.page && typeof tabset.page === 'string'">
-              {{ tabset.page }}
-            </template>
+<!--            <template v-if="tabset.page && typeof tabset.page === 'object'">-->
+<!--              <SidePanelTabsetDescriptionPage-->
+<!--                :tabsetId="tabset.id"-->
+<!--                :tabsetDesc="tabset.page as Object"/>-->
+<!--            </template>-->
+<!--            <template v-if="tabset.page && typeof tabset.page === 'string'">-->
+<!--              {{ tabset.page }}-->
+<!--            </template>-->
 
             <template v-if="editHeaderDescription">
               <div class="row q-ma-none q-pa-md">
@@ -234,7 +234,7 @@
                           }"
                           :toolbar="[
                             ['bold', 'italic', 'strike', 'underline'],
-                            ['upload', 'save']
+                            ['save','pageNote']
                           ]"
                           placeholder="Create a header description for your current tabset"/>
               </div>
@@ -247,8 +247,7 @@
               <q-item v-for="folder in calcFolders(tabset as Tabset)"
                       clickable
                       v-ripple
-                      class="q-ma-none q-pa-sm"
-                      style="border-bottom: 2px solid #fafafa;"
+                      class="q-ma-none q-pa-sm greyBorderBottom"
                       @dragstart="startDrag($event, folder)"
                       @dragenter="enterDrag($event, folder)"
                       @dragover="overDrag($event, folder)"
@@ -258,7 +257,7 @@
                       :key="'panelfolderlist_' + folder.id">
 
                 <q-item-section class="q-mr-sm text-right" style="justify-content:start;width:30px;max-width:30px">
-                  <div class="bg-white q-pa-none">
+                  <div class="q-pa-none">
                     <q-icon name="o_folder" color="warning" size="sm"/>
                   </div>
                 </q-item-section>
@@ -959,6 +958,7 @@ const selectFolder = (tabset: Tabset, folder: Tabset) => {
 
 
 const calcFolders = (tabset: Tabset): Tabset[] => {
+  console.log("calcFolders", tabset)
   if (tabset.folderActive) {
     const af = useTabsetService().findFolder(tabset.folders, tabset.folderActive)
     if (af && af.folderParent) {
