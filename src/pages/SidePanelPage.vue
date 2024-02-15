@@ -959,7 +959,7 @@ const selectFolder = (tabset: Tabset, folder: Tabset) => {
 
 
 const calcFolders = (tabset: Tabset): Tabset[] => {
-  console.log("calcFolders", tabset)
+  //console.log("calcFolders", tabset)
   if (tabset.folderActive) {
     const af = useTabsetService().findFolder(tabset.folders, tabset.folderActive)
     if (af && af.folderParent) {

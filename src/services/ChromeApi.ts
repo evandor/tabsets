@@ -213,15 +213,33 @@ class ChromeApi {
                 })
               }
               console.debug(` > context menu: save_as_tabset for ${tabsStore.tabsets.size} tabset(s)`)
-              _.forEach([...tabsStore.tabsets.values()] as Tabset[], (ts: Tabset) => {
-                //console.log("new submenu from", ts.id)
-                chrome.contextMenus.create({
-                  id: 'save_as_tab|' + ts.id,
-                  parentId: 'tabset_extension',
-                  title: 'Save to Tabset ' + ts.name,
-                  contexts: ['page']
+              const allTabsets = [...tabsStore.tabsets.values()] as Tabset[]
+              if (allTabsets.length > 15) {
+                const result = _(allTabsets)
+                  .groupBy(o => (o.name && o.name.length > 0) ? o.name[0].toUpperCase() : ' ')
+                  .map((tabsets, firstLetter) => ({ firstLetter, tabsets }))
+                  .sortBy(r => r.firstLetter)
+                  .value();
+
+                console.log(result);
+                _.forEach(result, (r) => {
+                  chrome.contextMenus.create({
+                    id: 'save_as_tab_folder|' + r.firstLetter,
+                    parentId: 'tabset_extension',
+                    title: 'Save to Tabset ' + r.firstLetter + '...',
+                    contexts: ['page']
+                  })
+
+                  _.forEach(_.sortBy(r.tabsets, ['name']), (ts: Tabset) => {
+                    this.createSubmenu(ts,'save_as_tab_folder|' + r.firstLetter, ts.name)
+                  })
+
                 })
-              })
+              } else {
+                _.forEach(_.sortBy(allTabsets, ['name']), (ts: Tabset) => {
+                  this.createSubmenu(ts, 'tabset_extension', 'Save to Tabset ' + ts.name)
+                })
+              }
               //chrome.contextMenus.create({id: 'capture_text', parentId: 'tabset_extension', title: 'Save selection as/to Tabset', contexts: ['all']})
 
             })
@@ -282,6 +300,15 @@ class ChromeApi {
 
   }
 
+
+  private createSubmenu(ts: Tabset, parentId: string, title: string) {
+    chrome.contextMenus.create({
+      id: 'save_as_tab|' + ts.id,
+      parentId,
+      title,
+      contexts: ['page']
+    })
+  }
 
   async closeAllTabs() {
     console.log(" --- closing all tabs: start ---")

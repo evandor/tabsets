@@ -109,7 +109,7 @@ class GitPersistenceService implements PersistenceService {
           this.db = await this.initDatabase(url, this.genericCorsProxy)
           useUiStore().dbReady = true
           return Promise.resolve("done")
-        } catch(err) {
+        } catch (err) {
           return Promise.reject("initialization of git db failed.")
         }
       } else if (syncType === SyncType.MANAGED_GIT) {
@@ -162,7 +162,7 @@ class GitPersistenceService implements PersistenceService {
         singleBranch: true,
         depth: 10,
         //onProgress: (val:any) => (console.log("onProgress", val)),
-        onMessage: (val:any) => {
+        onMessage: (val: any) => {
           // something like "Counting objects:   1% (1/77)"
           const split = val.split(":")
           if (split.length === 2) {
@@ -173,7 +173,8 @@ class GitPersistenceService implements PersistenceService {
               try {
                 const quote = Number(match[1]) / Number(match[2])
                 useUiStore().setProgress(quote, msg)
-              } catch (err) {}
+              } catch (err) {
+              }
             }
 
           }
@@ -196,9 +197,13 @@ class GitPersistenceService implements PersistenceService {
 
       useUiStore().progress = undefined
       return cloneRes
-    } catch (err) {
-      console.log("got error", err)
-      handleError("Could not access git backend, check your Credentials", NotificationType.NOTIFY)
+    } catch (err:any) {
+      console.log("got error", err, typeof err)
+      if (err.toString().indexOf('CheckoutConflictError') >= 0) {
+        handleError("Encountered a Sync Conflict", NotificationType.NOTIFY)
+      } else {
+        handleError("Could not access git backend, check your Credentials", NotificationType.NOTIFY)
+      }
 
       // if (err.toString().indexOf('403') >= 0) {
       //   console.log("redirecting after error")
@@ -210,7 +215,9 @@ class GitPersistenceService implements PersistenceService {
 
       setTimeout(() => {
         useUiStore().appLoading = "falling back to local tabsets"
-        setTimeout(() => {useUiStore().appLoading = undefined}, 1000)
+        setTimeout(() => {
+          useUiStore().appLoading = undefined
+        }, 1000)
       }, 1000)
 
       return Promise.reject(err)
@@ -290,18 +297,18 @@ class GitPersistenceService implements PersistenceService {
               ts.tabs.push(tab)
             }
           } catch (err) {
-            console.log("%cgot error: " + err , "background-color:orangered")
+            console.log("%cgot error: " + err, "background-color:orangered")
             return Promise.resolve()
           }
 
           tabsets.push(ts)
         } catch (err) {
-          console.log("%cgot error: " + err , "background-color:orangered")
+          console.log("%cgot error: " + err, "background-color:orangered")
           return Promise.resolve()
         }
       }
     } catch (err) {
-      console.log("%cgot error: " + err , "background-color:orangered")
+      console.log("%cgot error: " + err, "background-color:orangered")
       return Promise.resolve()
     }
     for (const t of tabsets) {
@@ -391,12 +398,12 @@ class GitPersistenceService implements PersistenceService {
 
           spaces.push(s)
         } catch (err) {
-          console.log("%cgot error: " + err , "background-color:orangered")
+          console.log("%cgot error: " + err, "background-color:orangered")
           return Promise.resolve()
         }
       }
     } catch (err) {
-      console.log("%cgot error: " + err , "background-color:orangered")
+      console.log("%cgot error: " + err, "background-color:orangered")
       return Promise.resolve()
     }
     console.log("adding spaces", spaces)
