@@ -37,7 +37,7 @@ function spacesCollection() {
   return collection(FirebaseService.getFirestore(), "users", useAuthStore().user.uid, "spaces")
 }
 
-class FsPersistenceService implements PersistenceService {
+class FirestorePersistenceService implements PersistenceService {
 
   getServiceName(): string {
     return "FirestorePersistenceService"
@@ -47,10 +47,6 @@ class FsPersistenceService implements PersistenceService {
     console.log(" ...initializing GitPersistenceService")
     return Promise.resolve("")
   }
-
-  private async initDatabase(url: string, proxy: string, dir: string = this._dir): Promise<any> {
-  }
-
 
   /**
    * === Tabsets ========================================
@@ -313,4 +309,4 @@ class FsPersistenceService implements PersistenceService {
 
 }
 
-export default new FsPersistenceService()
+export default new FirestorePersistenceService()
