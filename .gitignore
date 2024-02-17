@@ -59,3 +59,5 @@ yarn-error.log*
 /releases/0.3.1/
 /releases/0.3.2/
 /public/cat.png
+/.dev.env
+/.prd.env
