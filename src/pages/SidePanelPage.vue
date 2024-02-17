@@ -839,7 +839,7 @@ const toolbarTitle = (tabsets: Tabset[]) => {
       spaceName + ' (' + tabsets.length.toString() + ')' :
       spaceName
   }
-  const title = LocalStorage.getItem(TITLE_IDENT) || 'My Tabsets'
+  const title = LocalStorage.getItem(TITLE_IDENT) || ('My Tabsets' + stageIdentifier())
   return tabsets.length > 6 ? title + ' (' + tabsets.length.toString() + ')' : title
 }
 
@@ -1060,6 +1060,8 @@ const saveTabsetDescription = () => {
 }
 
 const openPageNote = () => openURL(chrome.runtime.getURL("/www/index.html#/tabsets/" + useTabsStore().currentTabsetId + "?tab=page"))
+
+const stageIdentifier = () => process.env.TABSETS_STAGE !== 'PRD' ? ' (' + process.env.TABSETS_STAGE + ')' : ''
 
 </script>
 

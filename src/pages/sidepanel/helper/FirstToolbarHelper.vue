@@ -64,17 +64,26 @@
             <SidePanelToolbarTabNavigationHelper/>
 
             <SidePanelToolbarButton
+              v-if="showSyncInfo()"
+              icon="sync"
+              tooltip="This account is being synced"
+              color="grey"
+              class="q-ml-sm"/>
+
+            <SidePanelToolbarButton
               icon="o_add_circle"
               :tooltip="newTabsetTooltip()"
               color="warning"
+              class="q-ml-sm"
               data-testid="addTabsetBtn"
               @click="openNewTabsetDialog()"/>
 
-            <SidePanelToolbarButton v-if="!useUiStore().networkOnline || useUiStore().mqttOffline"
-                                    icon="cloud_off"
-                                    :tooltip="!useUiStore().networkOnline ? 'It seems this browser is offline' : 'Sharing comments not possible right now'"
-                                    :color="!useUiStore().networkOnline ? 'negative' :'warning'"
-                                    class="q-ml-sm"/>
+            <SidePanelToolbarButton
+              v-if="!useUiStore().networkOnline || useUiStore().mqttOffline"
+              icon="cloud_off"
+              :tooltip="!useUiStore().networkOnline ? 'It seems this browser is offline' : 'Sharing comments not possible right now'"
+              :color="!useUiStore().networkOnline ? 'negative' :'warning'"
+              class="q-ml-sm"/>
 
           </slot>
         </div>
@@ -103,6 +112,8 @@ import SidePanelToolbarTabNavigationHelper from "pages/sidepanel/helper/SidePane
 import FilterWithTransitionHelper from "pages/sidepanel/helper/FilterWithTransitionHelper.vue";
 import SidePanelToolbarButton from "components/buttons/SidePanelToolbarButton.vue";
 import {useQuasar} from "quasar";
+import {useAuthStore} from "stores/authStore";
+import {SyncType} from "stores/appStore";
 
 const props = defineProps({
   title: {type: String, default: "My Tabsets"},
@@ -215,6 +226,14 @@ const openNewTabsetDialog = () => {
       fromPanel: true
     }
   })
+}
+
+const showSyncInfo = () => {
+  if (!useAuthStore().isAuthenticated()) {
+    return false
+  }
+  const syncType = useAuthStore().getAccount()?.userData?.sync?.type || SyncType.NONE
+  return syncType !== SyncType.NONE
 }
 
 const offsetTop = () => ($q.platform.is.capacitor || $q.platform.is.cordova) ? 'margin-top:40px;' : ''

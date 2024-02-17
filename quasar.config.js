@@ -29,7 +29,8 @@ module.exports = configure(function (ctx) {
     boot: [
       //'i18n',
       'constants',
-      'firebase',
+    //  'firebase',
+     // 'firebaseConnection',
      // 'auth0',
       'logtail'
     ],
@@ -81,17 +82,23 @@ module.exports = configure(function (ctx) {
       env: {
         BUILD_TIMESTAMP: new Date().toISOString().split('T')[0],
         BACKEND_URL: process.env.BACKEND_URL,
+        TABSETS_PWA_URL: process.env.TABSETS_PWA_URL,
+
         LOGZ_URL: process.env.LOGZ_URL,
         COUCHDB_PROTOCOL: process.env.COUCHDB_PROTOCOL,
         COUCHDB_URL: process.env.COUCHDB_URL,
+
         STRIPE_PUBLISHABLE_KEY: process.env.STRIPE_PUBLISHABLE_KEY,
         STRIPE_ACCOUNT: process.env.STRIPE_ACCOUNT,
         STRIPE_API_VERSION: process.env.STRIPE_API_VERSION,
+        STRIPE_SYNC_PRODUCT_LINK: process.env.STRIPE_SYNC_PRODUCT_LINK,
+
         LOCALE: process.env.LOCALE,
         FIREBASE_API_KEY: process.env.FIREBASE_API_KEY,
         FIREBASE_AUTH_DOMAIN: process.env.FIREBASE_AUTH_DOMAIN,
         FIREBASE_PROJECT_ID: process.env.FIREBASE_PROJECT_ID,
-        FIREBASE_APP_ID: process.env.FIREBASE_APP_ID
+        FIREBASE_APP_ID: process.env.FIREBASE_APP_ID,
+        TABSETS_STAGE: process.env.STAGE
       },
       // rawDefine: {}
       // ignorePublicFolder: true,
