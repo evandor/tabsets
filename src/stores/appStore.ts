@@ -5,7 +5,6 @@ import {SHARING_INSTALLATION} from "boot/constants";
 
 export enum SyncType {
   NONE = "NONE",
-  GITHUB = "GITHUB",
   COUCHDB = "COUCHDB",
   FIRESTORE = "FIRESTORE"
 }

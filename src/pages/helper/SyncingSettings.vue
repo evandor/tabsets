@@ -25,15 +25,6 @@
       Your tabset data is only available on your local machine and the current browser. If you want to
       use tabsets on other computers and/or browsers, you need to set up syncing.
     </div>
-    <div class="col-7 text-caption" v-if="tempSyncOption === SyncType.GITHUB">
-      Sync your tabsets across browsers and computers via a <b>github repository</b>.<br>
-      This is suitable if you do not have too many tabsets and performance is not your first concern.<br><br>
-      You need to provide a github repository URL and a personal access token (e.g. for
-      github: <a
-      href="https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens"
-      target="_blank">github example</a>).<br><br>
-      Initially, the repository should be empty. <span class="warning">If you chose a public repository, everybody is able to access your stored tabsets</span>.
-    </div>
     <div class="col-7 text-caption" v-if="tempSyncOption === SyncType.COUCHDB">
       Sync your tabsets across browsers and computers via a database (not yet supported)
     </div>
@@ -42,47 +33,6 @@
     </div>
 
     <div class="col"></div>
-
-    <template v-if="tempSyncOption === SyncType.GITHUB">
-
-      <div class="col-3">
-        Github Repository URL
-      </div>
-      <div class="col-7">
-        <q-input type="url" color="primary" filled v-model="githubRepoUrl"
-                 lazy-rules
-                 :rules="[
-                    (val:string) => !!val || 'Github Repository URL is required',
-                    (val:string) => /^https:\/\/github.com\/.*$/.test(val) || 'Must start with github'
-                    ]"
-                 hint="The repository URL for your github repository"
-                 label="" autocomplete="sync-url">
-          <template v-slot:prepend>
-            <q-icon name="sync"/>
-          </template>
-        </q-input>
-      </div>
-      <div class="col text-right">
-        <q-icon v-if="githubRepoUrl" class="cursor-pointer" name="open_in_new" size="md"
-                @click="NavigationService.openSingleTab(githubRepoUrl)"/>
-      </div>
-
-      <div class="col-3">
-        Github Repository Token
-      </div>
-      <div class="col-7">
-        <q-input type="password" color="primary" filled v-model="githubRepoToken" label=""
-                 hint="needed for write access, for private repositories also for read access">
-          <template v-slot:prepend>
-            <q-icon name="sync"/>
-          </template>
-        </q-input>
-        <span v-if="showWrongTokenMessage()" class="text-negative text-caption">Seems like your github token is wrong or missing. Update or switch to "No Syncing"</span>
-      </div>
-      <div class="col text-right">
-
-      </div>
-    </template>
 
     <template v-if="tempSyncOption === SyncType.COUCHDB">
 
@@ -131,41 +81,12 @@
 
     </template>
 
-    <template v-if="tempSyncOption === SyncType.GITHUB && githubRepoUrl ||
-      (tempSyncOption === SyncType.GITHUB && githubRepoUrl)">
-      <div class="col-3"></div>
-      <div class="col-7">
-        <q-btn
-          label="Test Connection" @click="testGitConnection()"/>
-        <span class="q-ml-md"> {{ testResult }}</span>
-      </div>
-      <div class="col text-right"></div>
-    </template>
-
     <template v-if="tempSyncOption === SyncType.COUCHDB && couchdbUrl">
       <div class="col-3"></div>
       <div class="col-7">
         <q-btn
           label="Test DB Connection" @click="testDbConnection()"/>
         <span class="q-ml-md"> {{ testResult }}</span>
-      </div>
-      <div class="col text-right"></div>
-    </template>
-
-    <template v-if="startSyncMessage(SyncType.GITHUB)">
-      <div class="col-3"></div>
-      <div class="col-7">
-        <div>You can switch to the git-based sync version of tabsets now if you wish.</div>
-        <div>Please follow these steps:</div>
-        <ul>
-          <li><span class="cursor-pointer text-blue-8"
-                    @click.stop="emits('wasClicked',{tab: 'importExport'})">Export</span> your tabsets
-            first (if you want to keep them)
-          </li>
-          <li>Click on 'Start Syncing' below</li>
-          <li>Restart Tabsets (close and open again)</li>
-          <li>Import your tabsets again (if needed)</li>
-        </ul>
       </div>
       <div class="col text-right"></div>
     </template>
@@ -315,7 +236,6 @@ import {
   SYNC_GITHUB_TOKEN,
   SYNC_TYPE
 } from "boot/constants";
-import GitPersistentService from "src/services/persistence/GitPersistentService";
 import {FirebaseCall} from "src/services/firebase/FirebaseCall";
 import {useUtils} from "src/services/Utils";
 import {useNotificationHandler} from "src/services/ErrorHandler";
@@ -349,10 +269,7 @@ const testResult = ref<string | undefined>(undefined)
 const acknowledgment = ref<boolean>(false)
 const publish = ref<boolean>(false)
 
-const syncOptions = useSettingsStore().isEnabled('dev') ? [
-    {label: 'No Syncing', value: SyncType.NONE, desc: ""},
-    {label: 'Syncing', value: SyncType.FIRESTORE, desc: ""},
-    {label: 'Syncing via github repository', value: SyncType.GITHUB}] :
+const syncOptions =
   [
     {label: 'No Syncing', value: SyncType.NONE, desc: ""},
     {label: 'Syncing', value: SyncType.FIRESTORE, desc: ""},
@@ -374,18 +291,6 @@ watchEffect(() => {
   checkAndUpdate(couchdbPassword.value, SYNC_COUCHDB_PASSWORD)
   checkAndUpdate(couchdbUrl.value, SYNC_COUCHDB_URL)
 })
-
-const testGitConnection = async () => {
-  const url = githubRepoUrl.value
-  const token = tempSyncOption.value === SyncType.GITHUB ? githubRepoToken.value : githubRepoToken.value
-  if (url) {
-    console.log("testing git connection with", url, token?.substring(0, 5) + "...")
-    const res = await GitPersistentService.testConnection(url)//, gitRepoToken)
-    testResult.value = res
-  } else {
-    testResult.value = "no repo URL given"
-  }
-}
 
 const testDbConnection = async () => {
   if (couchdbUrl.value) {

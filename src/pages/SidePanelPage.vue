@@ -308,15 +308,6 @@
         <template v-slot:title v-else>
           <div class="text-subtitle1">
             {{ toolbarTitle(tabsets as Tabset[]) }}
-            <!--            <q-icon-->
-            <!--              v-if="LocalStorage.getItem(SYNC_TYPE) as SyncType === SyncType.GITHUB && useAuthStore().isAuthenticated()"-->
-            <!--              class="q-ml-none" name="sync" size="12px">-->
-            <!--              <q-tooltip class="tooltip-small">Tabsets synced via {{ syncSource() }}</q-tooltip>-->
-            <!--            </q-icon>-->
-            <!--            <q-icon v-if="LocalStorage.getItem(SYNC_TYPE) as SyncType === SyncType.MANAGED_GIT"-->
-            <!--                    class="q-ml-none" name="sync" size="12px">-->
-            <!--              <q-tooltip class="tooltip-small">Tabsets are being synced automatically</q-tooltip>-->
-            <!--            </q-icon>-->
           </div>
         </template>
 
