@@ -82,16 +82,14 @@
 import {ref, watchEffect, onMounted} from "vue";
 import {LocalStorage, openURL} from "quasar";
 import {SUBSCRIPTION_ID_IDENT} from "boot/constants";
-import {FirebaseCall} from "src/services/firebase/FirebaseCall";
 import {getAuth, onAuthStateChanged} from "firebase/auth";
-import {firebaseApp, githubAuthProvider, firestore} from "boot/firebase";
-import {createUserWithEmailAndPassword, signInWithPopup, UserCredential} from "firebase/auth";
+import {signInWithPopup, UserCredential} from "firebase/auth";
 import {useUtils} from "src/services/Utils";
-import {getFirestore} from "firebase/firestore";
 import {collection, setDoc, doc, getDocs} from "firebase/firestore";
 import userHasClaim from "src/services/stripe/isUserPremium";
 import {createCheckoutSession} from "src/services/stripe/createCheckoutSession";
 import {useAuthStore} from "stores/authStore";
+import FirebaseService from "src/services/firebase/FirebaseService";
 
 const {inBexMode} = useUtils()
 
@@ -104,7 +102,7 @@ watchEffect(async () => {
   //const user = getAuth().currentUser
   if (userCredentials.value) {
     console.log("user!", userCredentials.value)
-    claims.value = await userHasClaim('githubsync')
+   // claims.value = await userHasClaim('githubsync')
   }
 })
 
@@ -123,7 +121,7 @@ const subscribe = async () => {
 }
 
 const authorizeWith = async (githubAuthProvider:any) => {
-  const auth = getAuth(firebaseApp);
+  const auth = FirebaseService.getAuth()
   console.log("auth", auth)
   //createUserWithEmailAndPassword(auth, "email", "password")
   const credentials: UserCredential = await signInWithPopup(auth, githubAuthProvider)
@@ -132,7 +130,7 @@ const authorizeWith = async (githubAuthProvider:any) => {
   userCredentials.value = credentials
 
   try {
-    await setDoc(doc(firestore, "users", credentials.user.uid), {
+    await setDoc(doc(FirebaseService.getFirestore(), "users", credentials.user.uid), {
       uid: credentials.user.uid,
       email: credentials.user.email,
       name: credentials.user.displayName,
@@ -148,7 +146,8 @@ const authorizeWith = async (githubAuthProvider:any) => {
 
 const getSubscriptionKey = async () => {
   console.log("getting subscription key", claims.value)
-  const querySnapshot = await getDocs(collection(firestore, "users", userCredentials.value.user.uid, "subscriptions"))
+  const firestore = FirebaseService.getFirestore()
+  const querySnapshot = await getDocs(collection(firestore, "users", userCredentials.value?.user.uid, "subscriptions"))
   console.log("querySnapshot", querySnapshot)
   let key = ""
   if (claims.value) {

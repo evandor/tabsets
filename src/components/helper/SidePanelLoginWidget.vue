@@ -105,9 +105,17 @@ const signin = async (newUser: boolean) => {
       useAuthStore().setUser(user)
       loading.value = false
       emits('hideLogin')
-    } catch (error) {
-      //console.error("error", error)
-      handleError(error, NotificationType.TOAST)
+    } catch (error:any) {
+      const errorCode = error.code;
+      const errorMessage = error.message;
+      console.error("error", error, typeof error, errorCode, errorMessage)
+      switch (errorCode) {
+        case "auth/invalid-credential":
+          handleError("Invalid Credentials or No Account", NotificationType.TOAST)
+          break
+        default:
+          handleError(error, NotificationType.TOAST)
+      }
       loading.value = false
     }
   } else {

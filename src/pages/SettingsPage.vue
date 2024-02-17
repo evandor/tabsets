@@ -674,5 +674,7 @@ const updateSettings = (ident: string, val: boolean) => {
   settingsStore.setFeatureToggle(ident, val)
 }
 
+const stageIdentifier = () => process.env.TABSETS_STAGE !== 'PRD' ? '(' + process.env.TABSETS_STAGE + ')' : ''
+
 </script>
 

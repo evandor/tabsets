@@ -2,7 +2,7 @@ import {Tabset, TabsetStatus, TabsetType} from "src/models/Tabset";
 import {useTabsStore} from "src/stores/tabsStore";
 import _ from "lodash";
 import {HTMLSelection, Tab} from "src/models/Tab";
-import {uid} from "quasar";
+import {uid, useQuasar} from "quasar";
 import throttledQueue from 'throttled-queue';
 import {useWindowsStore} from "src/stores/windowsStore";
 import {useTabsetService} from "src/services/TabsetService2";
@@ -31,7 +31,7 @@ const {
   saveThumbnailFor
 } = useTabsetService()
 
-const {sanitize, sendMsg} = useUtils()
+const {sanitize, sendMsg, inBexMode} = useUtils()
 
 async function setCurrentTab() {
   const tabs = await chrome.tabs.query({active: true, lastFocusedWindow: true})
@@ -200,7 +200,9 @@ class ChromeListeners {
     }
 
     // https://stackoverflow.com/questions/77089404/chrom-extension-close-event-not-available-on-sidepanel-closure
-    chrome.runtime.connect({ name: 'tabsetsSidepanel' });
+    if (chrome.runtime && inBexMode()) {
+      chrome.runtime.connect({ name: 'tabsetsSidepanel' });
+    }
 
   }
 

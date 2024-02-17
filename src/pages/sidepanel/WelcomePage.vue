@@ -9,7 +9,7 @@
           </div>
         </div>
         <div class="col-12 text-h6 q-mb-md">
-          Welcome to Tabsets
+          Welcome to Tabsets {{ stageIdentifier() }}
         </div>
       </div>
 
@@ -51,11 +51,12 @@ import {useTabsStore} from "stores/tabsStore";
 import {useRouter} from "vue-router";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {CreateTabsetCommand} from "src/domain/tabsets/CreateTabset";
-import {STRIP_CHARS_IN_USER_INPUT} from "boot/constants";
+import {STRIP_CHARS_IN_USER_INPUT, TITLE_IDENT} from "boot/constants";
 import Analytics from "src/utils/google-analytics";
 import {nextTick} from 'vue'
 import DialogButton from "components/buttons/DialogButton.vue";
 import {useAuthStore} from "stores/authStore";
+import {LocalStorage} from "quasar";
 
 const router = useRouter()
 
@@ -66,6 +67,7 @@ const windowLocation = ref('---')
 onMounted(() => {
   Analytics.firePageViewEvent('WelcomePage', document.location.href);
   windowLocation.value = window.location.href
+  LocalStorage.set(TITLE_IDENT, 'Tabsets' + stageIdentifier())
 })
 
 watchEffect(() => {
@@ -85,17 +87,6 @@ watchEffect(() => {
     useAuthStore().setAuthRequest(null as unknown as string)
   }
 })
-
-//
-// setTimeout(() => {
-//   console.log("focusing", tabsetNameRef.value)
-//   //document.getElementsByTagName("input")[0].focus()
-//   nextTick(() => {
-//     window.document.getElementsByTagName("input")[0].focus()
-//     tabsetNameRef.value.focus()
-//   });
-//
-// }, 2000)
 
 watchEffect(() => {
   // we might have been redirected here too early, redirecting
@@ -120,6 +111,9 @@ const newTabsetNameIsValid = () =>
 
 //https://groups.google.com/a/chromium.org/g/chromium-extensions/c/nb058-YrrWc
 const selected = () => tabsetNameRef.value.focus()
+
+const stageIdentifier = () => process.env.TABSETS_STAGE !== 'PRD' ? ' (' + process.env.TABSETS_STAGE + ')' : ''
+
 
 </script>
 

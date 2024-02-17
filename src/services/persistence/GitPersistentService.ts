@@ -27,6 +27,7 @@ import {SUBSCRIPTION_ID_IDENT, SYNC_GITHUB_TOKEN} from "boot/constants";
 import NavigationService from "src/services/NavigationService";
 import {NotificationType, useNotificationHandler} from "src/services/ErrorHandler";
 import {useAuthStore} from "stores/authStore";
+import {Account} from "src/models/Account";
 
 const {handleError} = useNotificationHandler()
 
