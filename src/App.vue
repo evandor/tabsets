@@ -30,7 +30,6 @@ emitter.setMaxListeners(12)
 
 FirebaseService.init()
 const auth = FirebaseService.getAuth()
-const firestore = FirebaseService.getFirestore()
 
 onAuthStateChanged(auth, async (user) => {
   if (user) {
