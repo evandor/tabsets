@@ -4,8 +4,10 @@ import {getAuth, signOut, User} from "firebase/auth";
 import {LocalStorage, useQuasar} from "quasar";
 import PersistenceService from "src/services/PersistenceService";
 import {computed, ref} from "vue";
-import {Account} from "src/models/Account";
+import {Account, UserData} from "src/models/Account";
 import {CURRENT_USER_ID} from "boot/constants";
+import {collection, doc, getDoc, getDocs} from "firebase/firestore";
+import FirebaseService from "src/services/firebase/FirebaseService";
 
 export enum AccessItem {
   SYNC = "SYNC",
@@ -105,6 +107,23 @@ export const useAuthStore = defineStore('auth', () => {
       LocalStorage.set(CURRENT_USER_ID, u.uid)
       authenticated.value = true;
       user.value = u;
+
+      const userDoc = await getDoc(doc(FirebaseService.getFirestore(), "users", u.uid))
+      const userData = userDoc.data() as UserData
+      const account = new Account(u.uid, userData)
+      console.log("created account object", account)
+      const querySnapshot = await getDocs(collection(FirebaseService.getFirestore(), "users", u.uid, "subscriptions"))
+      const products = new Set<string>()
+      querySnapshot.forEach((doc) => {
+        const subscriptionData = doc.data()
+        if (subscriptionData.data && subscriptionData.data.metadata) {
+          products.add(subscriptionData.data.metadata.product)
+        }
+        account.setProducts(Array.from(products))
+        //console.log("hier", account, products)
+      })
+      useAuthStore().upsertAccount(account)
+
     } else {
       LocalStorage.remove(CURRENT_USER_ID)
       authenticated.value = false;

@@ -21,23 +21,17 @@ import {useGroupsStore} from "stores/groupsStore";
 import {FeatureIdent} from "src/models/AppFeature";
 import {useMessagesStore} from "src/stores/messagesStore";
 import {SyncType, useAppStore} from "stores/appStore";
-import GitPersistentService from "src/services/persistence/GitPersistentService"
 import {useAuthStore} from "stores/authStore";
 import PersistenceService from "src/services/PersistenceService";
 import {useUiStore} from "stores/uiStore";
 import {User} from "firebase/auth";
-import {Account} from "src/models/Account";
-import FsPersistenceService from "src/services/persistence/FsPersistenceService";
+import FsPersistenceService from "src/services/persistence/FirestorePersistenceService";
 
 function dbStoreToUse(st: SyncType, su: string | undefined) {
   const isAuthenticated = useAuthStore().isAuthenticated()
   if (!isAuthenticated) {
     console.debug("%not authenticated", "font-weight:bold")
     return useDB(undefined).db
-  }
-  if (st && (st === SyncType.GITHUB) && su) {
-    console.debug("%csyncType " + st, "font-weight:bold")
-    return useDB(undefined).gitDb
   }
   if (st === SyncType.FIRESTORE) {
     console.debug("%csyncType " + st, "font-weight:bold")
@@ -52,7 +46,7 @@ class AppService {
   router: Router = null as unknown as Router
   initialized = false
 
-  async init(quasar: any, router: Router, forceRestart = false, user: User | undefined = undefined, account: Account | undefined = undefined) {
+  async init(quasar: any, router: Router, forceRestart = false, user: User | undefined = undefined) {
 
     console.log(`%cinitializing AppService: first start=${!this.initialized}, forceRestart=${forceRestart}, quasar set=${quasar !== undefined}, router set=${router !== undefined}`, forceRestart ? "font-weight:bold" : "")
 
@@ -98,7 +92,7 @@ class AppService {
     // init services
     await useAuthStore().initialize(useDB(undefined).db)
     await useAuthStore().setUser(user)
-    useAuthStore().upsertAccount(account)
+    //useAuthStore().upsertAccount(account)
 
     await useNotificationsStore().initialize(useDB(undefined).db)
     useSuggestionsStore().init(useDB(undefined).db)
@@ -126,9 +120,6 @@ class AppService {
       if (syncUrl) {
         uiStore.appLoading = "syncing tabsets..."
       }
-
-      const gitInitResult = await GitPersistentService.init(syncType, failedGitLogin ? '' : syncUrl)
-      console.log("%cgitInitResult", "font-weight:bold", gitInitResult)
 
       await FsPersistenceService.init()
 

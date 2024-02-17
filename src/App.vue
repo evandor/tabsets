@@ -13,7 +13,7 @@ import {getAuth, isSignInWithEmailLink, onAuthStateChanged, signInWithEmailLink,
 import {CURRENT_USER_EMAIL, CURRENT_USER_ID} from "boot/constants";
 import {useSuggestionsStore} from "stores/suggestionsStore";
 import {StaticSuggestionIdent, Suggestion} from "src/models/Suggestion";
-import {useRoute, useRouter} from "vue-router";
+import {useRouter} from "vue-router";
 import {collection, doc, getDoc, getDocs} from "firebase/firestore";
 import {Account, UserData} from "src/models/Account";
 import FirebaseService from "src/services/firebase/FirebaseService";
@@ -28,7 +28,6 @@ const {handleError} = useNotificationHandler()
 const emitter = new EventEmitter()
 emitter.setMaxListeners(12)
 
-
 FirebaseService.init()
 const auth = FirebaseService.getAuth()
 const firestore = FirebaseService.getFirestore()
@@ -39,26 +38,9 @@ onAuthStateChanged(auth, async (user) => {
     // https://firebase.google.com/docs/reference/js/auth.user
     console.log("%conAuthStateChanged: about to log in", "border:1px solid green")
 
-    // --- if we do this in useAuthStore.setUser(), we cannot properly run vitest anymore (!?!)
     // TODO revisit now
     try {
-      const userDoc = await getDoc(doc(firestore, "users", user.uid))
-      const userData = userDoc.data() as UserData
-      const account = new Account(user.uid, userData)
-      console.log("created account object", account)
-      const querySnapshot = await getDocs(collection(firestore, "users", user.uid, "subscriptions"))
-      const products = new Set<string>()
-      querySnapshot.forEach((doc) => {
-        const subscriptionData = doc.data()
-        if (subscriptionData.data && subscriptionData.data.metadata) {
-          products.add(subscriptionData.data.metadata.product)
-        }
-        account.setProducts(Array.from(products))
-        //console.log("hier", account, products)
-      })
-      // --- end of statement
-
-      await AppService.init($q, router, true, user, account)
+      await AppService.init($q, router, true, user)
     } catch (error:any) {
       console.log("%ccould not initialize appService due to " + error, "background-color:orangered")
       console.error("error", error, typeof error, error.code, error.message)
