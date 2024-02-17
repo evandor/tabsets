@@ -115,7 +115,7 @@
                 <q-item-section @click="openExtensionTab()">Tabsets as full-page app</q-item-section>
               </q-item>
               <q-item clickable v-close-popup>
-                <q-item-section @click="NavigationService.openOrCreateTab(['https://shared.tabsets.net'])">Tabsets Online Access</q-item-section>
+                <q-item-section @click="openPwaUrl()">Tabsets Online Access</q-item-section>
               </q-item>
             </q-list>
           </q-menu>
@@ -404,6 +404,7 @@ const logout = () => {
 
 const offsetBottom = () => ($q.platform.is.capacitor || $q.platform.is.cordova) ? 'margin-bottom:20px;' : ''
 const gotoStripe = () => openURL("https://billing.stripe.com/p/login/test_5kA9EHf2Da596HuaEE")
+const openPwaUrl = () => NavigationService.openOrCreateTab([process.env.TABSETS_PWA_URL || 'https://www.skysail.io'])
 
 </script>
 

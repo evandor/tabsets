@@ -68,3 +68,5 @@ yarn-error.log*
 /coverage/
 /docs/vids/
 /Tabsets - Manage Tabs and Bookmarks with Ease/
+/.dev.env
+/.prd.env

@@ -21,17 +21,36 @@ import {useGroupsStore} from "stores/groupsStore";
 import {FeatureIdent} from "src/models/AppFeature";
 import {useMessagesStore} from "src/stores/messagesStore";
 import {SyncType, useAppStore} from "stores/appStore";
-import GitPersistentService from "src/services/persistence/GitPersistentService";
+import GitPersistentService from "src/services/persistence/GitPersistentService"
 import {useAuthStore} from "stores/authStore";
 import PersistenceService from "src/services/PersistenceService";
 import {useUiStore} from "stores/uiStore";
 import {User} from "firebase/auth";
 import {Account} from "src/models/Account";
+import FsPersistenceService from "src/services/persistence/FsPersistenceService";
 
-function useGitStore(st: SyncType, su: string | undefined) {
+// function useGitStore(st: SyncType, su: string | undefined) {
+//   const isAuthenticated = useAuthStore().isAuthenticated()
+//   console.debug("%cisAuthenticated", "font-weight:bold", isAuthenticated)
+//   return isAuthenticated && st && (st === SyncType.GITHUB || st === SyncType.MANAGED_GIT) && su
+// }
+
+function dbStoreToUse(st: SyncType, su: string | undefined) {
   const isAuthenticated = useAuthStore().isAuthenticated()
-  console.debug("%cisAuthenticated", "font-weight:bold", isAuthenticated)
-  return isAuthenticated && st && (st === SyncType.GITHUB || st === SyncType.MANAGED_GIT) && su
+  if (!isAuthenticated) {
+    console.debug("%not authenticated", "font-weight:bold")
+    return useDB(undefined).db
+  }
+  if (st && (st === SyncType.GITHUB || st === SyncType.MANAGED_GIT) && su) {
+    console.debug("%csyncType " + st, "font-weight:bold")
+    return useDB(undefined).gitDb
+  }
+  if (st === SyncType.FIRESTORE) {
+    console.debug("%csyncType " + st, "font-weight:bold")
+    return useDB(undefined).firestore
+  }
+  console.debug("%cfallback, syncType " + st, "font-weight:bold")
+  return useDB(undefined).db
 }
 
 class AppService {
@@ -99,9 +118,11 @@ class AppService {
       // sync features
       const syncType = useAuthStore().getAccount()?.userData?.sync?.type || SyncType.NONE
       const syncUrl = useAuthStore().getAccount()?.userData?.sync?.url
-      let dbOrGitDb = useGitStore(syncType, syncUrl) ?
-        useDB(undefined).gitDb :
-        useDB(undefined).db
+      // let dbOrGitDb = useGitStore(syncType, syncUrl) ?
+      //   useDB(undefined).gitDb :
+      //   useDB(undefined).db
+
+      let persistenceStore = dbStoreToUse(syncType, syncUrl)
 
       let failedGitLogin = false
 
@@ -110,7 +131,7 @@ class AppService {
         failedGitLogin = true
       }
 
-      console.debug(`%cchecking sync config: type=${syncType}, url=${syncUrl}, dbOrGitDb=${dbOrGitDb}`, "font-weight:bold")
+      console.debug(`%cchecking sync config: type=${syncType}, url=${syncUrl}, persistenceStore=${persistenceStore.getServiceName()}`, "font-weight:bold")
 
       if (syncUrl) {
         uiStore.appLoading = "syncing tabsets..."
@@ -118,7 +139,10 @@ class AppService {
 
       const gitInitResult = await GitPersistentService.init(syncType, failedGitLogin ? '' : syncUrl)
       console.log("%cgitInitResult", "font-weight:bold", gitInitResult)
-      await this.initCoreSerivces(quasar, dbOrGitDb, this.router)
+
+      await FsPersistenceService.init()
+
+      await this.initCoreSerivces(quasar, persistenceStore, this.router)
     } else {
       await this.initCoreSerivces(quasar, useDB(undefined).db, this.router)
     }
@@ -146,14 +170,14 @@ class AppService {
     useAuthStore().setAuthRequest(null as unknown as string)
   }
 
-  private async initCoreSerivces(quasar: any, dbOrGitDb: PersistenceService, router: Router) {
+  private async initCoreSerivces(quasar: any, store: PersistenceService, router: Router) {
     const spacesStore = useSpacesStore()
     const windowsStore = useWindowsStore()
     const groupsStore = useGroupsStore()
     const tabsStore = useTabsStore()
 
-    await spacesStore.initialize(dbOrGitDb)
-    await useTabsetService().init(dbOrGitDb, false)
+    await spacesStore.initialize(store)
+    await useTabsetService().init(store, false)
     await MHtmlService.init()
     ChromeApi.init(router)
 

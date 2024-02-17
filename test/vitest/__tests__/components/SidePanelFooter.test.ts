@@ -1,3 +1,5 @@
+vi.mock('src/boot/firebase2.ts')
+
 import {installQuasarPlugin} from '@quasar/quasar-app-extension-testing-unit-vitest';
 import {DOMWrapper, mount, shallowMount, VueWrapper} from '@vue/test-utils';
 import {afterEach, beforeAll, beforeEach, describe, expect, it, vi} from 'vitest';
@@ -17,6 +19,7 @@ async function setupStores(db: PersistenceService) {
   await useWindowsStore().initialize(db)
   useWindowsStore().initListeners()
 }
+
 
 describe('SidePanelFooter', () => {
 

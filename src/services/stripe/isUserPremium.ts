@@ -1,9 +1,10 @@
 import {getAuth} from "firebase/auth";
-import {firebaseApp} from "boot/firebase";
+import FirebaseService from "src/services/firebase/FirebaseService";
+// import {firebaseApp} from "boot/firebase";
 
 export default async function userHasClaim(claim: string): Promise<boolean> {
   console.log("checking claim", claim)
-  const auth = getAuth(firebaseApp);
+  const auth = FirebaseService.getAuth()
   const idToken = auth.currentUser?.getIdToken()
   if (!idToken) {
     console.log("no id token found")

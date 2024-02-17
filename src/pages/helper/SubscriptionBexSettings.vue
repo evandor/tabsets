@@ -188,7 +188,6 @@ import {LocalStorage, openURL} from "quasar";
 import {EMAIL_LINK_REDIRECT_DOMAIN, SUBSCRIPTION_ID_IDENT} from "boot/constants";
 import {FirebaseCall} from "src/services/firebase/FirebaseCall";
 import {getAuth, onAuthStateChanged} from "firebase/auth";
-import {firebaseApp, githubAuthProvider, firestore} from "boot/firebase";
 import {createUserWithEmailAndPassword, signInWithPopup, signInWithRedirect,signInWithEmailLink,sendSignInLinkToEmail, signInWithCredential, UserCredential} from "firebase/auth";
 import {setDoc, doc} from "firebase/firestore";
 import {useAuthStore} from "../../stores/authStore";
@@ -196,6 +195,7 @@ import {NotificationType, useNotificationHandler} from "src/services/ErrorHandle
 import {useRouter} from "vue-router";
 import PricingCard from "pages/helper/PricingCard.vue";
 import PlanFeature from "pages/helper/PlanFeature.vue";
+import FirebaseService from "src/services/firebase/FirebaseService";
 
 const subscription = ref<string>(LocalStorage.getItem(SUBSCRIPTION_ID_IDENT) as string || '')
 
@@ -228,7 +228,7 @@ const testSubscription = async () => {
 }
 
 const authorizeWith = async (githubAuthProvider:any) => {
-  const auth = getAuth(firebaseApp);
+  const auth = FirebaseService.getAuth()
   console.log("auth", auth)
   //createUserWithEmailAndPassword(auth, "email", "password")
   //const credentials: UserCredential = await signInWithPopup(auth, githubAuthProvider)
@@ -255,7 +255,7 @@ const authorizeWith = async (githubAuthProvider:any) => {
   userCredentials.value = credentials
 
   try {
-    await setDoc(doc(firestore, "users", credentials.user.uid), {
+    await setDoc(doc(FirebaseService.getFirestore(), "users", credentials.user.uid), {
       uid: credentials.user.uid,
       email: credentials.user.email,
       name: credentials.user.displayName,
@@ -298,9 +298,7 @@ const verifyEmail = () => {
 
 }
 
-const openPaymentLink = () => {
-  const email = useAuthStore().user?.email || ''
-  openURL('https://buy.stripe.com/test_dR67sT1NC6iq7ew9AA?prefilled_email=' + email)
-}
+const openPaymentLink = () => openURL(process.env.STRIPE_SYNC_PRODUCT_LINK + '?prefilled_email=' + (useAuthStore().user?.email || ''))
+
 
 </script>

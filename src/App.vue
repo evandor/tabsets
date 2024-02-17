@@ -15,17 +15,23 @@ import {useSuggestionsStore} from "stores/suggestionsStore";
 import {StaticSuggestionIdent, Suggestion} from "src/models/Suggestion";
 import {useRoute, useRouter} from "vue-router";
 import {collection, doc, getDoc, getDocs} from "firebase/firestore";
-import {firestore} from "boot/firebase";
 import {Account, UserData} from "src/models/Account";
+import FirebaseService from "src/services/firebase/FirebaseService";
+import {useNotificationHandler} from "src/services/ErrorHandler";
 
 const $q = useQuasar()
 const router = useRouter()
+
+const {handleError} = useNotificationHandler()
 
 // https://stackoverflow.com/questions/9768444/possible-eventemitter-memory-leak-detected
 const emitter = new EventEmitter()
 emitter.setMaxListeners(12)
 
-const auth = getAuth();
+
+FirebaseService.init()
+const auth = FirebaseService.getAuth()
+const firestore = FirebaseService.getFirestore()
 
 onAuthStateChanged(auth, async (user) => {
   if (user) {
@@ -34,26 +40,29 @@ onAuthStateChanged(auth, async (user) => {
     console.log("%conAuthStateChanged: about to log in", "border:1px solid green")
 
     // --- if we do this in useAuthStore.setUser(), we cannot properly run vitest anymore (!?!)
-    const userDoc = await getDoc(doc(firestore, "users", user.uid))
-    const userData = userDoc.data() as UserData
-    const account = new Account(user.uid, userData)
-    console.log("created account object", account)
-    const querySnapshot = await getDocs(collection(firestore, "users", user.uid, "subscriptions"))
-    const products = new Set<string>()
-    querySnapshot.forEach((doc) => {
-      const subscriptionData = doc.data()
-      if (subscriptionData.data && subscriptionData.data.metadata) {
-        products.add(subscriptionData.data.metadata.product)
-      }
-      account.setProducts(Array.from(products))
-      //console.log("hier", account, products)
-    })
-    // --- end of statement
-
+    // TODO revisit now
     try {
+      const userDoc = await getDoc(doc(firestore, "users", user.uid))
+      const userData = userDoc.data() as UserData
+      const account = new Account(user.uid, userData)
+      console.log("created account object", account)
+      const querySnapshot = await getDocs(collection(firestore, "users", user.uid, "subscriptions"))
+      const products = new Set<string>()
+      querySnapshot.forEach((doc) => {
+        const subscriptionData = doc.data()
+        if (subscriptionData.data && subscriptionData.data.metadata) {
+          products.add(subscriptionData.data.metadata.product)
+        }
+        account.setProducts(Array.from(products))
+        //console.log("hier", account, products)
+      })
+      // --- end of statement
+
       await AppService.init($q, router, true, user, account)
-    } catch (err) {
-      console.log("%ccould not initialize appService due to " + err, "background-color:orangered")
+    } catch (error:any) {
+      console.log("%ccould not initialize appService due to " + error, "background-color:orangered")
+      console.error("error", error, typeof error, error.code, error.message)
+      handleError(error.code)
       return Promise.resolve()
     }
 
