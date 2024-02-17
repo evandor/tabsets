@@ -29,19 +29,13 @@ import {User} from "firebase/auth";
 import {Account} from "src/models/Account";
 import FsPersistenceService from "src/services/persistence/FsPersistenceService";
 
-// function useGitStore(st: SyncType, su: string | undefined) {
-//   const isAuthenticated = useAuthStore().isAuthenticated()
-//   console.debug("%cisAuthenticated", "font-weight:bold", isAuthenticated)
-//   return isAuthenticated && st && (st === SyncType.GITHUB || st === SyncType.MANAGED_GIT) && su
-// }
-
 function dbStoreToUse(st: SyncType, su: string | undefined) {
   const isAuthenticated = useAuthStore().isAuthenticated()
   if (!isAuthenticated) {
     console.debug("%not authenticated", "font-weight:bold")
     return useDB(undefined).db
   }
-  if (st && (st === SyncType.GITHUB || st === SyncType.MANAGED_GIT) && su) {
+  if (st && (st === SyncType.GITHUB) && su) {
     console.debug("%csyncType " + st, "font-weight:bold")
     return useDB(undefined).gitDb
   }
@@ -98,7 +92,6 @@ class AppService {
 
     searchStore.init().catch((err) => console.error(err))
 
-
     // init db
     await IndexedDbPersistenceService.init("db")
 
@@ -118,9 +111,6 @@ class AppService {
       // sync features
       const syncType = useAuthStore().getAccount()?.userData?.sync?.type || SyncType.NONE
       const syncUrl = useAuthStore().getAccount()?.userData?.sync?.url
-      // let dbOrGitDb = useGitStore(syncType, syncUrl) ?
-      //   useDB(undefined).gitDb :
-      //   useDB(undefined).db
 
       let persistenceStore = dbStoreToUse(syncType, syncUrl)
 
@@ -191,7 +181,7 @@ class AppService {
 
     useUiStore().appLoading = undefined
 
-    // tabsets not in bex mode means running on "shared.tabsets.net"
+    // tabsets not in bex mode means running on "pwa.tabsets.net"
     // probably running an import ("/imp/:sharedId")
     // we do not want to go to the welcome back
     // console.log("checking for welcome page", tabsStore.tabsets.size === 0, quasar.platform.is.bex, !useAuthStore().isAuthenticated())
