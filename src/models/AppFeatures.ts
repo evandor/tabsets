@@ -5,7 +5,7 @@ import {AppFeature, FeatureIdent, FeatureType} from "src/models/AppFeature"
 
 export class AppFeatures {
   features: AppFeature[] = [
-    new AppFeature(FeatureIdent.HELP, FeatureType.EXPERIMENTAL, 'Help Pages', 'o_help', ['bex']),
+    //new AppFeature(FeatureIdent.HELP, FeatureType.EXPERIMENTAL, 'Help Pages', 'o_help', ['bex']),
 
     new AppFeature(FeatureIdent.BOOKMARKS, FeatureType.OPTIONAL, 'Bookmarks', 'o_bookmarks', ['bex'])
       .setActivateCommands([new GrantPermissionCommand('bookmarks')])
@@ -75,7 +75,7 @@ export class AppFeatures {
     new AppFeature(FeatureIdent.TAB_HELPER, FeatureType.EXPERIMENTAL, 'Tab Helper', 'o_article', ['bex']),
 
     new AppFeature(FeatureIdent.AUTO_TAB_SWITCHER, FeatureType.EXPERIMENTAL, 'Auto Tab Switcher', 'o_switch_left', ['bex']),
-    new AppFeature(FeatureIdent.TABS_AS_TREE, FeatureType.EXPERIMENTAL, 'Tabs in Tree View', 'o_account_tree', ['all']),
+    //new AppFeature(FeatureIdent.TABS_AS_TREE, FeatureType.EXPERIMENTAL, 'Tabs in Tree View', 'o_account_tree', ['all']),
     new AppFeature(FeatureIdent.TABSET_SUBFOLDER, FeatureType.EXPERIMENTAL, 'Subfolder for Tabsets', 'o_folder', ['all']),
     new AppFeature(FeatureIdent.TABSETS_SHARING, FeatureType.EXPERIMENTAL, 'Sharing Tabsets', 'o_ios_share', ['all'])
   ]

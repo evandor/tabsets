@@ -4,19 +4,14 @@
 
 <script setup lang="ts">
 
-import {LocalStorage, setCssVar, useQuasar} from "quasar";
+import {setCssVar, useQuasar} from "quasar";
 import AppService from "src/services/AppService";
-import {useAuthStore} from "stores/authStore";
 import {EventEmitter} from "events";
 import {logtail} from "boot/logtail";
-import {getAuth, isSignInWithEmailLink, onAuthStateChanged, signInWithEmailLink, UserCredential} from "firebase/auth";
-import {CURRENT_USER_EMAIL, CURRENT_USER_ID} from "boot/constants";
-import {useSuggestionsStore} from "stores/suggestionsStore";
-import {StaticSuggestionIdent, Suggestion} from "src/models/Suggestion";
+import {onAuthStateChanged} from "firebase/auth";
+import {CURRENT_USER_ID} from "boot/constants";
 import {useRouter} from "vue-router";
-import {collection, doc, getDoc, getDocs} from "firebase/firestore";
-import {Account, UserData} from "src/models/Account";
-import FirebaseService from "src/services/firebase/FirebaseService";
+import FirebaseServices from "src/services/firebase/FirebaseServices";
 import {useNotificationHandler} from "src/services/ErrorHandler";
 
 const $q = useQuasar()
@@ -28,8 +23,8 @@ const {handleError} = useNotificationHandler()
 const emitter = new EventEmitter()
 emitter.setMaxListeners(12)
 
-FirebaseService.init()
-const auth = FirebaseService.getAuth()
+FirebaseServices.init()
+const auth = FirebaseServices.getAuth()
 
 onAuthStateChanged(auth, async (user) => {
   if (user) {
@@ -58,31 +53,6 @@ onAuthStateChanged(auth, async (user) => {
   }
 });
 
-if (isSignInWithEmailLink(auth, window.location.href)) {
-
-  console.log("%cfound sign-in-with-email-link location", window.location.href)
-
-  const emailForSignIn = LocalStorage.getItem(CURRENT_USER_EMAIL) as string
-
-  console.log(">>> isSignInWithEmailLink", emailForSignIn)
-  signInWithEmailLink(auth, emailForSignIn, window.location.href)
-    .then((result: UserCredential) => {
-      console.log(">>> result", result)
-      //chrome.runtime.sendMessage({ type: 'SET_EMAIL_FOR_SIGN_IN', "email":"email" });
-      useAuthStore().setUser(result.user)
-      //useAuthStore().authenticated = true
-
-
-      logtail.info("found email link redirection")
-    })
-    .catch((error) => {
-      console.error("error in email link redirection", error)
-      logtail.error("error in email link redirection", error)
-      useSuggestionsStore().addSuggestion(Suggestion.getStaticSuggestion(StaticSuggestionIdent.RESTART_SUGGESTED))
-    });
-
-}
-
 const useDarkMode: string = $q.localStorage.getItem('darkMode') || "false" as string
 if (useDarkMode === "true") {
   $q.dark.set(true)
@@ -109,20 +79,14 @@ if (currentUser) {
   console.log("current user id found, waiting for auto-login")
   // we should be logged in any second
 } else {
-
   setTimeout(() => {
     // triggers, but app should already have been started, no restart enforced
     console.debug("app start fallback after 2000ms")
     AppService.init($q, router, false)
   }, 2000)
-
-
 }
 
 
-logtail.info("tabsets started", {
-  "mode": process.env.MODE,
-  "version": import.meta.env.PACKAGE_VERSION,
-})
+logtail.info(`tabsets started: mode=${process.env.MODE}, version=${import.meta.env.PACKAGE_VERSION}`)
 
 </script>

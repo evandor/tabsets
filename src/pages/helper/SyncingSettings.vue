@@ -244,7 +244,7 @@ import {useAuthStore} from "stores/authStore";
 import {useRouter} from "vue-router";
 import NavigationService from "src/services/NavigationService";
 import {doc, updateDoc} from "firebase/firestore";
-import FirebaseService from "src/services/firebase/FirebaseService";
+import FirebaseServices from "src/services/firebase/FirebaseServices";
 import {useSettingsStore} from "stores/settingsStore";
 import {useTabsStore} from "stores/tabsStore";
 import {useTabsetService} from "src/services/TabsetService2";
@@ -325,7 +325,7 @@ const startGitSyncing = async () => {
 
 const updateSyncing = async () => {
   try {
-    await updateDoc(doc(FirebaseService.getFirestore(), "users", useAuthStore().user.uid), {sync: {type: tempSyncOption.value}})
+    await updateDoc(doc(FirebaseServices.getFirestore(), "users", useAuthStore().user.uid), {sync: {type: tempSyncOption.value}})
     LocalStorage.set(SYNC_TYPE, tempSyncOption.value)
     sendMsg('reload-application')
     handleSuccess(new ExecutionResult<string>("done", "done"))

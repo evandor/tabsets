@@ -7,7 +7,7 @@ import {computed, ref} from "vue";
 import {Account, UserData} from "src/models/Account";
 import {CURRENT_USER_ID} from "boot/constants";
 import {collection, doc, getDoc, getDocs} from "firebase/firestore";
-import FirebaseService from "src/services/firebase/FirebaseService";
+import FirebaseServices from "src/services/firebase/FirebaseServices";
 
 export enum AccessItem {
   SYNC = "SYNC",
@@ -108,11 +108,11 @@ export const useAuthStore = defineStore('auth', () => {
       authenticated.value = true;
       user.value = u;
 
-      const userDoc = await getDoc(doc(FirebaseService.getFirestore(), "users", u.uid))
+      const userDoc = await getDoc(doc(FirebaseServices.getFirestore(), "users", u.uid))
       const userData = userDoc.data() as UserData
       const account = new Account(u.uid, userData)
       console.log("created account object", account)
-      const querySnapshot = await getDocs(collection(FirebaseService.getFirestore(), "users", u.uid, "subscriptions"))
+      const querySnapshot = await getDocs(collection(FirebaseServices.getFirestore(), "users", u.uid, "subscriptions"))
       const products = new Set<string>()
       querySnapshot.forEach((doc) => {
         const subscriptionData = doc.data()

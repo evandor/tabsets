@@ -27,7 +27,7 @@
     </div>
 
     <!-- place QPageSticky at end of page -->
-    <q-page-sticky expand position="top">
+    <q-page-sticky expand position="top" class="darkInDarkMode brightInBrightMode">
 
       <FirstToolbarHelper
           :show-search-box="true"

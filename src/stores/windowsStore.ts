@@ -354,7 +354,7 @@ export const useWindowsStore = defineStore('windows', () => {
   }
 
   async function updateWindowIndex(windowId: number, indexToUse: number) {
-    console.log("updating window index", windowId, indexToUse)
+    //console.log("updating window index", windowId, indexToUse)
     return storage.getWindow(windowId).then(w => {
       if (w) {
         w.index = indexToUse

@@ -10,10 +10,16 @@
           <span v-if="!statsSnapshot"
                 class="cursor-pointer"
                 @click="saveStatsSnapshot()"><q-icon name="save" class="q-mr-xs"/>Save snapshot
+            <q-tooltip class="tooltip-small">
+              Store the current numbers for comparison
+            </q-tooltip>
           </span>
-          <span v-else
-                class="cursor-pointer"><q-icon name="restart_alt" class="q-mr-xs cursor-pointer"
-                                               @click="saveStatsSnapshot()"/>{{ snapshotDate() }}
+          <span v-else>
+                <span class="cursor-pointer">
+                  <q-icon name="restart_alt" class="q-mr-xs cursor-pointer" @click="saveStatsSnapshot()">
+                    <q-tooltip class="tooltip-small">Reset Snapshot Counters</q-tooltip>
+                  </q-icon>
+                </span>{{ snapshotDate() }}
           </span>
         </th>
         <th style="max-width:20px">
@@ -23,7 +29,7 @@
       </thead>
 
       <tbody>
-      <tr v-for="row in rows" style="max-height:15px">
+      <tr v-for="row in rows" :key="row['id' as keyof object]" style="max-height:15px">
         <td class="text-left">
             <span class="cursor-pointer" :data-testid="'windowDataColumn_name_' + row['id' as keyof object]">
                 {{ row['name' as keyof object] }}
@@ -82,15 +88,15 @@ const devMode = ref<boolean>(settingsStore.isEnabled('dev'))
 
 onMounted(() => {
   statsSnapshot.value = localstorage.getItem("stats") as object || undefined
-  rows.value = calcWindowRows()
+  rows.value = calcStatsRows()
 })
 
 watch(() => useWindowsStore().currentChromeWindows, (newWindows, oldWindows) => {
-  rows.value = calcWindowRows()
+  rows.value = calcStatsRows()
 })
 
 watch(() => useTabsStore().allTabsCount, (a,b) => {
-  rows.value = calcWindowRows()
+  rows.value = calcStatsRows()
 })
 
 
@@ -102,14 +108,14 @@ watchEffect(() => {
 })
 
 watch(() => useTabsStore().tabsCount, (a, b) => {
-  rows.value = calcWindowRows()
+  rows.value = calcStatsRows()
 })
 
 watch(() => useWindowsStore().currentChromeWindows, (a, b) => {
-  rows.value = calcWindowRows()
+  rows.value = calcStatsRows()
 })
 
-const calcWindowRows = () => {
+const calcStatsRows = () => {
   return [
     {name: 'Tabs', count: useTabsStore().allTabsCount, snapshot: getFromSnapshot('Tabs')},
     {name: 'Tabsets', count: useTabsStore().tabsets.size, snapshot: getFromSnapshot('Tabsets')},
@@ -127,11 +133,13 @@ const calcWindowRows = () => {
 }
 
 const saveStatsSnapshot = () => {
-  localstorage.set("stats", {
+  const newStats = {
     date: new Date().getTime().toString(),
-    values: calcWindowRows()
-  })
-  rows.value = calcWindowRows()
+    values: calcStatsRows()
+  }
+  localstorage.set("stats", newStats)
+  statsSnapshot.value = newStats
+  rows.value = calcStatsRows()
 }
 
 const getFromSnapshot = (ident: string) => {
@@ -150,8 +158,11 @@ const getFromSnapshot = (ident: string) => {
 }
 
 const snapshotDate = () => {
-  const tstamp: string = statsSnapshot.value['date' as keyof object] as string
-  return date.formatDate(Number(tstamp), 'DD.MM.YY HH:mm')
+  if (statsSnapshot.value) {
+    const tstamp: string = statsSnapshot.value['date' as keyof object] as string
+    return date.formatDate(Number(tstamp), 'DD.MM.YY HH:mm')
+  }
+  return "---"
 }
 
 </script>

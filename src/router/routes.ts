@@ -195,11 +195,6 @@ const routes: RouteRecordRaw[] = [
     children: [{path: '', component: () => import('pages/AboutPage.vue')}],
   },
   {
-    path: '/trypro',
-    component: () => import('layouts/DefaultLayout.vue'),
-    children: [{path: '', component: () => import('pages/TryPro.vue')}],
-  },
-  {
     path: '/settings',
     component: () => import('layouts/DefaultLayout.vue'),
     children: [{path: '', component: () => import('pages/SettingsPage.vue')}],

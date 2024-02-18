@@ -565,64 +565,64 @@ class TabsetService {
   async share(tabsetId: string, sharing: TabsetSharing, sharedId: string | undefined, sharedBy: string | undefined): Promise<TabsetSharing | void> {
     console.log(`setting property 'sharing' to ${sharing} for  ${tabsetId} with sharingId ${sharedId}`)
     const ts = getTabset(tabsetId)
-    if (ts) {
-      const oldSharing = ts.sharing
-      ts.sharing = sharing
-      ts.sharedBy = sharedBy
-      ts.view = "list"
-      ts.mqttUrl = useUiStore().sharingMqttUrl
-
-      if (sharing === TabsetSharing.UNSHARED) {
-        console.log("deleting share for tabset", ts.sharedId)
-        return FirebaseCall.delete("/share/public/" + ts.sharedId)
-          .then(() => {
-            ts.sharedBy = undefined
-            ts.sharedId = undefined
-            console.log("unshared tabset", ts)
-            saveTabset(ts)
-          })
-      }
-
-      console.log("setting author and avatar for comments")
-      for (const tab of ts.tabs) {
-        for (const c of tab.comments) {
-          console.log("found comment", c.author, c)
-          if (c.author === "<me>") {
-            c.author = useUiStore().sharingAuthor || '---'
-            c.avatar = useUiStore().sharingAvatar
-          }
-        }
-      }
-
-      console.log("setting thumbnails as images")
-      for (const tab of ts.tabs) {
-        const thumb = await this.getThumbnailFor(tab)
-        if (thumb) {
-          if (thumb && thumb['thumbnail' as keyof object]) {
-            tab.image = thumb['thumbnail' as keyof object]
-          }
-        }
-      }
-
-      if (sharedId) {
-        ts.sharedAt = new Date().getTime()
-        return FirebaseCall.put("/share/public/" + sharedId, ts)
-          .then((res: any) => {
-            //ts.sharedId = res.data.sharedId
-            return saveTabset(ts)
-              .then(() => oldSharing)
-          })
-      } else {
-        ts.sharedAt = new Date().getTime()
-        return FirebaseCall.post("/share/public", ts)
-          .then((res: any) => {
-            console.log("setting shared id to ", res.data.sharedId)
-            ts.sharedId = res.data.sharedId
-            return saveTabset(ts)
-              .then(() => oldSharing)
-          })
-      }
-    }
+    // if (ts) {
+    //   const oldSharing = ts.sharing
+    //   ts.sharing = sharing
+    //   ts.sharedBy = sharedBy
+    //   ts.view = "list"
+    //   ts.mqttUrl = useUiStore().sharingMqttUrl
+    //
+    //   if (sharing === TabsetSharing.UNSHARED) {
+    //     console.log("deleting share for tabset", ts.sharedId)
+    //     return FirebaseCall.delete("/share/public/" + ts.sharedId)
+    //       .then(() => {
+    //         ts.sharedBy = undefined
+    //         ts.sharedId = undefined
+    //         console.log("unshared tabset", ts)
+    //         saveTabset(ts)
+    //       })
+    //   }
+    //
+    //   console.log("setting author and avatar for comments")
+    //   for (const tab of ts.tabs) {
+    //     for (const c of tab.comments) {
+    //       console.log("found comment", c.author, c)
+    //       if (c.author === "<me>") {
+    //         c.author = useUiStore().sharingAuthor || '---'
+    //         c.avatar = useUiStore().sharingAvatar
+    //       }
+    //     }
+    //   }
+    //
+    //   console.log("setting thumbnails as images")
+    //   for (const tab of ts.tabs) {
+    //     const thumb = await this.getThumbnailFor(tab)
+    //     if (thumb) {
+    //       if (thumb && thumb['thumbnail' as keyof object]) {
+    //         tab.image = thumb['thumbnail' as keyof object]
+    //       }
+    //     }
+    //   }
+    //
+    //   if (sharedId) {
+    //     ts.sharedAt = new Date().getTime()
+    //     return FirebaseCall.put("/share/public/" + sharedId, ts)
+    //       .then((res: any) => {
+    //         //ts.sharedId = res.data.sharedId
+    //         return saveTabset(ts)
+    //           .then(() => oldSharing)
+    //       })
+    //   } else {
+    //     ts.sharedAt = new Date().getTime()
+    //     return FirebaseCall.post("/share/public", ts)
+    //       .then((res: any) => {
+    //         console.log("setting shared id to ", res.data.sharedId)
+    //         ts.sharedId = res.data.sharedId
+    //         return saveTabset(ts)
+    //           .then(() => oldSharing)
+    //       })
+    //   }
+    // }
     return Promise.reject("could not change sharing : " + tabsetId)
   }
 

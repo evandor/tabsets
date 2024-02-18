@@ -89,7 +89,7 @@ import {collection, setDoc, doc, getDocs} from "firebase/firestore";
 import userHasClaim from "src/services/stripe/isUserPremium";
 import {createCheckoutSession} from "src/services/stripe/createCheckoutSession";
 import {useAuthStore} from "stores/authStore";
-import FirebaseService from "src/services/firebase/FirebaseService";
+import FirebaseServices from "src/services/firebase/FirebaseServices";
 
 const {inBexMode} = useUtils()
 
@@ -121,7 +121,7 @@ const subscribe = async () => {
 }
 
 const authorizeWith = async (githubAuthProvider:any) => {
-  const auth = FirebaseService.getAuth()
+  const auth = FirebaseServices.getAuth()
   console.log("auth", auth)
   //createUserWithEmailAndPassword(auth, "email", "password")
   const credentials: UserCredential = await signInWithPopup(auth, githubAuthProvider)
@@ -130,7 +130,7 @@ const authorizeWith = async (githubAuthProvider:any) => {
   userCredentials.value = credentials
 
   try {
-    await setDoc(doc(FirebaseService.getFirestore(), "users", credentials.user.uid), {
+    await setDoc(doc(FirebaseServices.getFirestore(), "users", credentials.user.uid), {
       uid: credentials.user.uid,
       email: credentials.user.email,
       name: credentials.user.displayName,
@@ -146,7 +146,7 @@ const authorizeWith = async (githubAuthProvider:any) => {
 
 const getSubscriptionKey = async () => {
   console.log("getting subscription key", claims.value)
-  const firestore = FirebaseService.getFirestore()
+  const firestore = FirebaseServices.getFirestore()
   const querySnapshot = await getDocs(collection(firestore, "users", userCredentials.value?.user.uid, "subscriptions"))
   console.log("querySnapshot", querySnapshot)
   let key = ""

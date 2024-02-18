@@ -19,22 +19,22 @@ import {useAuthStore} from "stores/authStore";
 import {Account} from "src/models/Account";
 import {collection, deleteDoc, doc, getDocs, setDoc} from "firebase/firestore";
 import {useTabsStore} from "stores/tabsStore";
-import FirebaseService from "src/services/firebase/FirebaseService";
+import FirebaseServices from "src/services/firebase/FirebaseServices";
 
 function tabsetDoc(tabsetId: string) {
-  return doc(FirebaseService.getFirestore(), "users", useAuthStore().user.uid, "tabsets", tabsetId)
+  return doc(FirebaseServices.getFirestore(), "users", useAuthStore().user.uid, "tabsets", tabsetId)
 }
 
 function tabsetCollection() {
-  return collection(FirebaseService.getFirestore(), "users", useAuthStore().user.uid, "tabsets")
+  return collection(FirebaseServices.getFirestore(), "users", useAuthStore().user.uid, "tabsets")
 }
 
 function spaceDoc(spaceId: string) {
-  return doc(FirebaseService.getFirestore(), "users", useAuthStore().user.uid, "spaces", spaceId)
+  return doc(FirebaseServices.getFirestore(), "users", useAuthStore().user.uid, "spaces", spaceId)
 }
 
 function spacesCollection() {
-  return collection(FirebaseService.getFirestore(), "users", useAuthStore().user.uid, "spaces")
+  return collection(FirebaseServices.getFirestore(), "users", useAuthStore().user.uid, "spaces")
 }
 
 class FirestorePersistenceService implements PersistenceService {

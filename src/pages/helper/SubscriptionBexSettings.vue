@@ -195,7 +195,7 @@ import {NotificationType, useNotificationHandler} from "src/services/ErrorHandle
 import {useRouter} from "vue-router";
 import PricingCard from "pages/helper/PricingCard.vue";
 import PlanFeature from "pages/helper/PlanFeature.vue";
-import FirebaseService from "src/services/firebase/FirebaseService";
+import FirebaseServices from "src/services/firebase/FirebaseServices";
 
 const subscription = ref<string>(LocalStorage.getItem(SUBSCRIPTION_ID_IDENT) as string || '')
 
