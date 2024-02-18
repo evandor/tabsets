@@ -121,7 +121,7 @@
           </q-menu>
         </span>
 
-        <span class="q-my-xs q-ml-xs q-mr-none cursor-pointer" v-if="authStore.isAuthenticated()">
+        <span class="q-my-xs q-ml-xs q-mr-none cursor-pointer" v-if="authStore.isAuthenticated() && useSettingsStore().isEnabled('dev')">
           <q-avatar size="18px" v-if="authStore.user?.photoURL">
             <q-img :src="authStore.user.photoURL"/>
             <q-tooltip :delay="2000" anchor="center left" self="center right" class="tooltip-small">You're logged in as {{
@@ -149,7 +149,7 @@
 
           </q-menu>
         </span>
-        <q-btn v-else
+        <q-btn v-else-if="useSettingsStore().isEnabled('dev')"
                icon="login"
                :class="rightButtonClass()"
                flat
@@ -189,6 +189,7 @@ import SidePanelLoginWidget from "components/helper/SidePanelLoginWidget.vue";
 import SidePanelWindowMarkupTable from "components/helper/SidePanelWindowMarkupTable.vue";
 import SidePanelStatsMarkupTable from "components/helper/SidePanelStatsMarkupTable.vue"
 import {Window} from "src/models/Window"
+import {useSettingsStore} from "stores/settingsStore";
 
 const {handleSuccess, handleError} = useNotificationHandler()
 

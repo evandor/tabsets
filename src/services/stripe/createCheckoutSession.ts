@@ -1,11 +1,11 @@
 import getStripe from "./initializeStripe"
 import {collection, getDoc, doc, onSnapshot, setDoc, addDoc} from "firebase/firestore";
-import FirebaseService from "src/services/firebase/FirebaseService";
+import FirebaseServices from "src/services/firebase/FirebaseServices";
 //import {firestore} from "boot/firebase";
 
 export async function createCheckoutSession(uid: string) {
   //     await setDoc(doc(firestore, "users", credentials.user.uid), {
-  const cos = collection(FirebaseService.getFirestore(), "users", uid, "checkout_sessions")
+  const cos = collection(FirebaseServices.getFirestore(), "users", uid, "checkout_sessions")
   const checkoutSessionData = {
     price:"price_1OWd4pCRr6mfm8sfBfcpGMtl",
     // success_url: window.location.origin,

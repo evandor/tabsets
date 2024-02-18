@@ -1,6 +1,6 @@
 //import FirebaseService from '../services/firebase/FirebaseService'
 
-import FirebaseService from "src/services/firebase/FirebaseService";
+import FirebaseService from "src/services/firebase/FirebaseServices";
 import {boot} from "quasar/wrappers";
 
 // export default async () => {
