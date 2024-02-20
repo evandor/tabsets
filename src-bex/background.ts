@@ -3,13 +3,13 @@ import OnInstalledReason = chrome.runtime.OnInstalledReason;
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/auth';
 import 'firebase/compat/firestore';
-import {getMessaging, Messaging} from "firebase/messaging/sw";
-import {collection, deleteDoc, getDocs, setDoc, doc, updateDoc, Firestore} from "firebase/firestore";
 import {getToken} from "firebase/messaging";
 import FirebaseServices from "src/services/firebase/FirebaseServices";
 import {useAuthStore} from "stores/authStore";
 import FirestorePersistenceService from "src/services/persistence/FirestorePersistenceService";
 import {uid} from "quasar";
+import { getMessaging } from "firebase/messaging/sw";
+import { onBackgroundMessage } from "firebase/messaging/sw";
 
 // https://stackoverflow.com/questions/49739438/when-and-how-does-a-pwa-update-itself
 const updateTrigger = 10
@@ -162,11 +162,26 @@ chrome.runtime.onConnect.addListener(function (port) {
 //   }
 // });
 
-// onBackgroundMessage(FirebaseServices.getMessaging(), async (payload:any) => {
-//   console.log(`Huzzah! A Message.`, payload);
-//
-//   // Note: you will need to open a notification here or the browser will do it for you.. something, something, security
-// });
+const firebaseApp = firebase.initializeApp({
+  apiKey: process.env.FIREBASE_API_KEY,
+  authDomain: process.env.FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.FIREBASE_PROJECT_ID,
+  appId: process.env.FIREBASE_APP_ID,
+  messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID
+})
+const messaging = getMessaging(firebaseApp)
+
+onBackgroundMessage(messaging, async (payload:any) => {
+  console.log(`Huzzah! A Message.`, payload);
+
+  const notificationTitle = 'Background Message Title';
+  const notificationOptions = {
+    body: 'Background Message body.',
+    icon: '/firebase-logo.png'
+  };
+
+  await self.registration.showNotification(notificationTitle, notificationOptions);
+});
 // onMessage(FirebaseServices.getMessaging(), async (payload:any) => {
 //   console.log(`Huzzah! A Message.`, payload);
 //
@@ -205,7 +220,7 @@ export default bexBackground((bridge, cons/* , allActiveConnections */) => {
   }).then((token) => {
     bridge.send('fcm.token.received', { token: token })
       .then((data) => {
-        console.log('Some response from the other side2', data)
+        console.log('fcm.token.received response', data)
       })
   }).catch((err) => {
     console.log("===>", err)
