@@ -13,7 +13,6 @@ import {CURRENT_USER_ID} from "boot/constants";
 import {useRouter} from "vue-router";
 import FirebaseServices from "src/services/firebase/FirebaseServices";
 import {useNotificationHandler} from "src/services/ErrorHandler";
-import { getMessaging, getToken } from "firebase/messaging";
 import FirestorePersistenceService from "src/services/persistence/FirestorePersistenceService";
 
 const $q = useQuasar()

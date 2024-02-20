@@ -310,7 +310,8 @@ class FirestorePersistenceService implements PersistenceService {
     const user = useAuthStore().user
     if (user) {
       console.log("adding token", token)
-      await updateDoc(doc(FirebaseServices.getFirestore(), "users", user.uid), {"fcmTokens": arrayUnion(token)})
+      // await updateDoc(doc(FirebaseServices.getFirestore(), "users", user.uid), {"fcmTokens": arrayUnion(token)})
+      await updateDoc(doc(FirebaseServices.getFirestore(), "users", user.uid), {"fcmToken": token})
     } else {
       console.log("not updating token, not logged in")
     }

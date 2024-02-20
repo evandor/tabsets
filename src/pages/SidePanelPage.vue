@@ -356,6 +356,7 @@ import {SYNC_TYPE, TITLE_IDENT} from "boot/constants";
 import AppService from "src/services/AppService";
 import {useNotificationHandler} from "src/services/ErrorHandler";
 import {ExecutionResult} from "src/domain/ExecutionResult";
+import { getMessaging, onMessage } from "firebase/messaging";
 
 const {setVerticalScrollPosition} = scroll
 
@@ -424,6 +425,12 @@ onMounted(() => {
 onUnmounted(() => {
   window.removeEventListener('keypress', checkKeystroke);
 })
+
+const messaging = getMessaging();
+
+onMessage(messaging, (payload) => {
+  console.log('**********Message received. ', payload);
+});
 
 watchEffect(() => {
   const ar = useAuthStore().useAuthRequest
