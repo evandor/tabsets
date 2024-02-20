@@ -9,6 +9,7 @@ import {getToken} from "firebase/messaging";
 import FirebaseServices from "src/services/firebase/FirebaseServices";
 import {useAuthStore} from "stores/authStore";
 import FirestorePersistenceService from "src/services/persistence/FirestorePersistenceService";
+import {uid} from "quasar";
 
 // https://stackoverflow.com/questions/49739438/when-and-how-does-a-pwa-update-itself
 const updateTrigger = 10
@@ -121,41 +122,44 @@ chrome.runtime.onConnect.addListener(function (port) {
     });
   }
 });
-console.log("=***=================")
 
-chrome.runtime.onInstalled.addListener(async () => {
-  console.log("---hier Startup---")
-
-  //FirebaseServices.init()
-  // const token = await getToken(getMessaging(), {
-  //   serviceWorkerRegistration: self.registration, // note: we use the sw of ourself to register with
-  // });
-  console.log("---hier2 Startup---")
-  const firebaseApp = firebase.initializeApp({
-    apiKey: process.env.FIREBASE_API_KEY,
-    authDomain: process.env.FIREBASE_AUTH_DOMAIN,
-    projectId: process.env.FIREBASE_PROJECT_ID,
-    appId: process.env.FIREBASE_APP_ID,
-    messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID
-  })
-  console.log("hier")
-  const messaging = getMessaging(firebaseApp)
-
-  console.log("===>", messaging, self)
-  try {
-    const token = await getToken(messaging, {
-      serviceWorkerRegistration: self.registration, // note: we use the sw of ourself to register with
-    });
-    console.log("token", token)
-    //setDoc(doc(FirebaseServices.getFirestore(), "users", useAuthStore().user.uid), {fcmToken: token})
-    //await FirestorePersistenceService.updateUserToken(token)
-    //postMessage({name:"update-fcm-token", token: token})
-  } catch (err) {
-    console.log("got error", err)
-    const permission = await Notification.requestPermission();
-    console.log("permission", permission)
-  }
-});
+// chrome.runtime.onInstalled.addListener(async () => {
+//   console.log("---hier Startup---")
+//
+//   //FirebaseServices.init()
+//   // const token = await getToken(getMessaging(), {
+//   //   serviceWorkerRegistration: self.registration, // note: we use the sw of ourself to register with
+//   // });
+//   console.log("---hier2 Startup---")
+//   const firebaseApp = firebase.initializeApp({
+//     apiKey: process.env.FIREBASE_API_KEY,
+//     authDomain: process.env.FIREBASE_AUTH_DOMAIN,
+//     projectId: process.env.FIREBASE_PROJECT_ID,
+//     appId: process.env.FIREBASE_APP_ID,
+//     messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID
+//   })
+//   console.log("hier")
+//   const messaging = getMessaging(firebaseApp)
+//
+//   console.log("===>", messaging, self)
+//   try {
+//     const token = await getToken(messaging, {
+//       // @ts-ignore
+//       serviceWorkerRegistration: self.registration, // note: we use the sw of ourself to register with
+//     });
+//     console.log("token", token)
+//
+//
+//     //localStorage.setItem('fcmToken', token)
+//     //setDoc(doc(FirebaseServices.getFirestore(), "users", useAuthStore().user.uid), {fcmToken: token})
+//     //await FirestorePersistenceService.updateUserToken(token)
+//     //postMessage({name:"update-fcm-token", token: token})
+//   } catch (err) {
+//     console.log("got error", err)
+//     const permission = await Notification.requestPermission();
+//     console.log("permission", permission)
+//   }
+// });
 
 // onBackgroundMessage(FirebaseServices.getMessaging(), async (payload:any) => {
 //   console.log(`Huzzah! A Message.`, payload);
@@ -169,10 +173,33 @@ chrome.runtime.onInstalled.addListener(async () => {
 // });
 
 export default bexBackground((bridge, cons/* , allActiveConnections */) => {
+  console.log("==== hier =====")
   // bridge.on('some.event', ({data, respond}) => {
   //   console.log('Event receieved, responding...')
   //   respond(data.someKey + ' hey!')
   // })
+
+  const firebaseApp = firebase.initializeApp({
+    apiKey: process.env.FIREBASE_API_KEY,
+    authDomain: process.env.FIREBASE_AUTH_DOMAIN,
+    projectId: process.env.FIREBASE_PROJECT_ID,
+    appId: process.env.FIREBASE_APP_ID,
+    messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID
+  })
+  const messaging = getMessaging(firebaseApp)
+  getToken(messaging, {
+    // @ts-ignore
+    serviceWorkerRegistration: self.registration, // note: we use the sw of ourself to register with
+  }).then((token) => {
+    bridge.send('fcm.token.received', { token: token })
+      .then((data) => {
+        console.log('Some response from the other side2', data)
+      })
+  }).catch((err) => {
+    console.log("===>", err)
+  })
+
+
   // chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
   //   console.log("sending to bridge")
   //   bridge.send('highlight.content', { url: tab.url })

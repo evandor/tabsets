@@ -16,7 +16,7 @@ import {Notification} from "src/models/Notification";
 import {useSpacesStore} from "stores/spacesStore";
 import {useAuthStore} from "stores/authStore";
 import {Account} from "src/models/Account";
-import {collection, deleteDoc, doc, getDocs, setDoc, updateDoc} from "firebase/firestore";
+import {collection, deleteDoc, doc, getDocs, setDoc, updateDoc, arrayUnion} from "firebase/firestore";
 import {useTabsStore} from "stores/tabsStore";
 import FirebaseServices from "src/services/firebase/FirebaseServices";
 
@@ -307,7 +307,13 @@ class FirestorePersistenceService implements PersistenceService {
   }
 
   async updateUserToken(token: string) {
-    await updateDoc(doc(FirebaseServices.getFirestore(), "users", useAuthStore().user.uid), "fcmToken", token)
+    const user = useAuthStore().user
+    if (user) {
+      console.log("adding token", token)
+      await updateDoc(doc(FirebaseServices.getFirestore(), "users", user.uid), {"fcmTokens": arrayUnion(token)})
+    } else {
+      console.log("not updating token, not logged in")
+    }
   }
 }
 

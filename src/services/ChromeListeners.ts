@@ -20,6 +20,10 @@ import ContentUtils from "src/utils/ContentUtils";
 import "rangy/lib/rangy-serializer";
 import {useAuthStore} from "stores/authStore";
 import {EMAIL_LINK_REDIRECT_DOMAIN} from "boot/constants";
+import {getMessaging, Messaging} from "firebase/messaging/sw";
+import {collection, deleteDoc, getDocs, setDoc, doc, updateDoc, Firestore} from "firebase/firestore";
+import {getToken} from "firebase/messaging";
+import firebase from "firebase/compat/app";
 
 const {
   saveCurrentTabset,

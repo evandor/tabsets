@@ -36,7 +36,7 @@ class FirebaseServices {
       messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID
     })
     this.auth = getAuth(this.firebaseApp)
-    console.log("got auth", this.auth)
+    //console.log("got auth", this.auth)
 
     // https://firebase.google.com/docs/firestore/manage-data/enable-offline#web-modular-api
     initializeFirestore(this.firebaseApp, {
@@ -44,10 +44,10 @@ class FirebaseServices {
         persistentLocalCache({tabManager: persistentMultipleTabManager()})
     })
     this.firestore = getFirestore(this.firebaseApp)
-    console.log("got firestore", this.firestore)
+    //console.log("got firestore", this.firestore)
 
     this.messaging = getMessaging(this.firebaseApp)
-    console.log("got messaging", this.messaging)
+    //console.log("got messaging", this.messaging)
 
 
 
@@ -66,18 +66,6 @@ class FirebaseServices {
   }
 
   getMessaging() {
-    // console.log("getMessaging", this.firebaseApp)
-    // if (!this.messaging) {
-    //   this.firebaseApp = firebase.initializeApp({
-    //     apiKey: process.env.FIREBASE_API_KEY,
-    //     authDomain: process.env.FIREBASE_AUTH_DOMAIN,
-    //     projectId: process.env.FIREBASE_PROJECT_ID,
-    //     appId: process.env.FIREBASE_APP_ID,
-    //     messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID
-    //   })
-    //   console.log("hier")
-    //   return getMessaging(this.firebaseApp)
-    // }
     return this.messaging
   }
 

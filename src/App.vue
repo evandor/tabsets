@@ -14,6 +14,7 @@ import {useRouter} from "vue-router";
 import FirebaseServices from "src/services/firebase/FirebaseServices";
 import {useNotificationHandler} from "src/services/ErrorHandler";
 import { getMessaging, getToken } from "firebase/messaging";
+import FirestorePersistenceService from "src/services/persistence/FirestorePersistenceService";
 
 const $q = useQuasar()
 const router = useRouter()
@@ -24,10 +25,14 @@ const {handleError} = useNotificationHandler()
 const emitter = new EventEmitter()
 emitter.setMaxListeners(12)
 
-console.log("****")
 FirebaseServices.init()
-console.log("****")
 const auth = FirebaseServices.getAuth()
+
+$q.bex.on('fcm.token.received', ({data, respond}) => {
+  console.log('Event receieved, responding2...', data)
+  FirestorePersistenceService.updateUserToken(data.token)
+  respond(data.someKey + ' hey!')
+})
 
 onAuthStateChanged(auth, async (user) => {
   if (user) {

@@ -852,6 +852,12 @@ const saveInTabset = (tabsetId: string) => {
   const useTS = useTabsetService().getTabset(tabsetId)
   if (useTS) {
     useCommandExecutor().execute(new AddTabToTabsetCommand(new Tab(uid(), currentChromeTab.value), useTS))
+
+    $q.bex.send('some.event', { someKey: 'aValue' })
+      .then((data) => {
+        console.log('Some response from the other side', data)
+      })
+
   } else {
     console.warn("expected to find tabsetId", tabsetId)
   }
