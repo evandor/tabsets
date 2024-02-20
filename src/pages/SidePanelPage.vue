@@ -347,16 +347,13 @@ import {useSuggestionsStore} from "stores/suggestionsStore";
 import SidePanelPageTabList from "components/layouts/SidePanelPageTabList.vue";
 import {AddTabToTabsetCommand} from "src/domain/tabs/AddTabToTabset";
 import {CopyToClipboardCommand} from "src/domain/commands/CopyToClipboard";
-import SidePanelTabsetDescriptionPage from "pages/sidepanel/SidePanelTabsetDescriptionPage.vue";
 import ShareTabsetPubliclyDialog from "components/dialogues/ShareTabsetPubliclyDialog.vue";
 import MqttService from "src/services/mqtt/MqttService";
-import {useVOnboarding, VOnboardingStep, VOnboardingWrapper} from 'v-onboarding'
 import {FirebaseCall} from "src/services/firebase/FirebaseCall";
 import getScrollTarget = scroll.getScrollTarget;
 import InfoMessageWidget from "components/widgets/InfoMessageWidget.vue";
 import {SYNC_TYPE, TITLE_IDENT} from "boot/constants";
 import AppService from "src/services/AppService";
-import SidePanelToolbarButton from "components/buttons/SidePanelToolbarButton.vue";
 import {useNotificationHandler} from "src/services/ErrorHandler";
 import {ExecutionResult} from "src/domain/ExecutionResult";
 
@@ -401,16 +398,6 @@ const windowName = ref<string | undefined>(undefined)
 const tsBadges = ref<object[]>([])
 const editHeaderDescription = ref<boolean>(false)
 
-const steps = [
-  {
-    attachTo: {element: '#foo'},
-    content: {title: "Welcome :)", description: "Click here to add the current tab to this tabset"}
-  }
-]
-
-const wrapper = ref(null)
-const {start, goToStep, finish} = useVOnboarding(wrapper)
-
 const {handleSuccess, handleError} = useNotificationHandler()
 
 function updateOnlineStatus(e: any) {
@@ -429,12 +416,6 @@ onMounted(() => {
   if (!useAuthStore().isAuthenticated) {
     //router.push("/authenticate")
   } else {
-    setTimeout(() => {
-      if (useTabsStore().allTabsCount === 0) {
-        start()
-      }
-    }, 1000)
-
     Analytics.firePageViewEvent('SidePanelPage', document.location.href);
   }
 

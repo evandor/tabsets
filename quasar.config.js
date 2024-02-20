@@ -82,7 +82,9 @@ module.exports = configure(function (ctx) {
       env: {
         BUILD_TIMESTAMP: new Date().toISOString().split('T')[0],
         BACKEND_URL: process.env.BACKEND_URL,
+
         TABSETS_PWA_URL: process.env.TABSETS_PWA_URL,
+        TABSETS_STAGE: process.env.STAGE,
 
         LOGZ_URL: process.env.LOGZ_URL,
         COUCHDB_PROTOCOL: process.env.COUCHDB_PROTOCOL,
@@ -94,11 +96,13 @@ module.exports = configure(function (ctx) {
         STRIPE_SYNC_PRODUCT_LINK: process.env.STRIPE_SYNC_PRODUCT_LINK,
 
         LOCALE: process.env.LOCALE,
+
         FIREBASE_API_KEY: process.env.FIREBASE_API_KEY,
         FIREBASE_AUTH_DOMAIN: process.env.FIREBASE_AUTH_DOMAIN,
         FIREBASE_PROJECT_ID: process.env.FIREBASE_PROJECT_ID,
         FIREBASE_APP_ID: process.env.FIREBASE_APP_ID,
-        TABSETS_STAGE: process.env.STAGE
+        FIREBASE_MESSAGING_SENDER_ID:process.env.FIREBASE_MESSAGING_SENDER_ID,
+        FIREBASE_MESSAGING_KEY: process.env.FIREBASE_MESSAGING_KEY
       },
       // rawDefine: {}
       // ignorePublicFolder: true,

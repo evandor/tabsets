@@ -1,6 +1,14 @@
 import {bexBackground} from 'quasar/wrappers';
-//import Analytics from "src/utils/google-analytics";
 import OnInstalledReason = chrome.runtime.OnInstalledReason;
+import firebase from 'firebase/compat/app';
+import 'firebase/compat/auth';
+import 'firebase/compat/firestore';
+import {getMessaging, Messaging} from "firebase/messaging/sw";
+import {collection, deleteDoc, getDocs, setDoc, doc, updateDoc, Firestore} from "firebase/firestore";
+import {getToken} from "firebase/messaging";
+import FirebaseServices from "src/services/firebase/FirebaseServices";
+import {useAuthStore} from "stores/authStore";
+import FirestorePersistenceService from "src/services/persistence/FirestorePersistenceService";
 
 // https://stackoverflow.com/questions/49739438/when-and-how-does-a-pwa-update-itself
 const updateTrigger = 10
@@ -8,8 +16,25 @@ const updateTrigger = 10
 // https://developer.chrome.com/docs/extensions/mv3/tut_analytics/
 //console.log("ga: installing google analytics")
 
+// chrome.gcm.register(['77748275803'], (callback) => {
+//  console.log("gcm callback", callback)
+//   chrome.gcm.send(
+//     {
+//       data: {msg: "i am the data"},
+//       destinationId: uid(),
+//       messageId: uid()
+//     },
+//     (callback) => {
+//       console.log("gcm callback send:", callback)
+//     })
+// })
+//
+// chrome.gcm.onMessage.addListener((message) => {
+//   console.log("gcm message", message)
+// })
+
 addEventListener('unhandledrejection', async (event) => {
-  console.log("ga: fire error event")
+  console.log("ga: fire error event", event)
   // getting error: Service worker registration failed. Status code: 15
   //Analytics.fireErrorEvent(event.reason);
 });
@@ -96,6 +121,52 @@ chrome.runtime.onConnect.addListener(function (port) {
     });
   }
 });
+console.log("=***=================")
+
+chrome.runtime.onInstalled.addListener(async () => {
+  console.log("---hier Startup---")
+
+  //FirebaseServices.init()
+  // const token = await getToken(getMessaging(), {
+  //   serviceWorkerRegistration: self.registration, // note: we use the sw of ourself to register with
+  // });
+  console.log("---hier2 Startup---")
+  const firebaseApp = firebase.initializeApp({
+    apiKey: process.env.FIREBASE_API_KEY,
+    authDomain: process.env.FIREBASE_AUTH_DOMAIN,
+    projectId: process.env.FIREBASE_PROJECT_ID,
+    appId: process.env.FIREBASE_APP_ID,
+    messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID
+  })
+  console.log("hier")
+  const messaging = getMessaging(firebaseApp)
+
+  console.log("===>", messaging, self)
+  try {
+    const token = await getToken(messaging, {
+      serviceWorkerRegistration: self.registration, // note: we use the sw of ourself to register with
+    });
+    console.log("token", token)
+    //setDoc(doc(FirebaseServices.getFirestore(), "users", useAuthStore().user.uid), {fcmToken: token})
+    //await FirestorePersistenceService.updateUserToken(token)
+    //postMessage({name:"update-fcm-token", token: token})
+  } catch (err) {
+    console.log("got error", err)
+    const permission = await Notification.requestPermission();
+    console.log("permission", permission)
+  }
+});
+
+// onBackgroundMessage(FirebaseServices.getMessaging(), async (payload:any) => {
+//   console.log(`Huzzah! A Message.`, payload);
+//
+//   // Note: you will need to open a notification here or the browser will do it for you.. something, something, security
+// });
+// onMessage(FirebaseServices.getMessaging(), async (payload:any) => {
+//   console.log(`Huzzah! A Message.`, payload);
+//
+//   // Note: you will need to open a notification here or the browser will do it for you.. something, something, security
+// });
 
 export default bexBackground((bridge, cons/* , allActiveConnections */) => {
   // bridge.on('some.event', ({data, respond}) => {

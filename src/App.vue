@@ -13,6 +13,7 @@ import {CURRENT_USER_ID} from "boot/constants";
 import {useRouter} from "vue-router";
 import FirebaseServices from "src/services/firebase/FirebaseServices";
 import {useNotificationHandler} from "src/services/ErrorHandler";
+import { getMessaging, getToken } from "firebase/messaging";
 
 const $q = useQuasar()
 const router = useRouter()
@@ -23,7 +24,9 @@ const {handleError} = useNotificationHandler()
 const emitter = new EventEmitter()
 emitter.setMaxListeners(12)
 
+console.log("****")
 FirebaseServices.init()
+console.log("****")
 const auth = FirebaseServices.getAuth()
 
 onAuthStateChanged(auth, async (user) => {
@@ -88,5 +91,26 @@ if (currentUser) {
 
 
 logtail.info(`tabsets started: mode=${process.env.MODE}, version=${import.meta.env.PACKAGE_VERSION}`)
+
+Notification.requestPermission().then((permission) => {
+  if (permission === 'granted') {
+    console.log('Notification permission granted.')
+
+    // FirebaseServices.getMessageToken().then((currentToken) => {
+    //   if (currentToken) {
+    //     console.log("===>", currentToken)
+    //   } else {
+    //     console.log('No registration token available. Request permission to generate one.');
+    //   }
+    // }).catch((err) => {
+    //   console.log('An error occurred while retrieving token. ', err);
+    // });
+
+    // const messaging = getMessaging();
+    // // Add the public key generated from the console here.
+    // getToken(messaging, {vapidKey: process.env.FIREBASE_MESSAGING_KEY})
+    //   .then((c:any) => console.log("===>", c))
+  }
+})
 
 </script>

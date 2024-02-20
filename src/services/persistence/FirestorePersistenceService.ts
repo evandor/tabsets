@@ -14,10 +14,9 @@ import {RequestInfo} from "src/models/RequestInfo";
 import {Notification} from "src/models/Notification";
 // @ts-ignore
 import {useSpacesStore} from "stores/spacesStore";
-import {useNotificationHandler} from "src/services/ErrorHandler";
 import {useAuthStore} from "stores/authStore";
 import {Account} from "src/models/Account";
-import {collection, deleteDoc, doc, getDocs, setDoc} from "firebase/firestore";
+import {collection, deleteDoc, doc, getDocs, setDoc, updateDoc} from "firebase/firestore";
 import {useTabsStore} from "stores/tabsStore";
 import FirebaseServices from "src/services/firebase/FirebaseServices";
 
@@ -307,6 +306,9 @@ class FirestorePersistenceService implements PersistenceService {
   upsertAccount(account: Account): void {
   }
 
+  async updateUserToken(token: string) {
+    await updateDoc(doc(FirebaseServices.getFirestore(), "users", useAuthStore().user.uid), "fcmToken", token)
+  }
 }
 
 export default new FirestorePersistenceService()
