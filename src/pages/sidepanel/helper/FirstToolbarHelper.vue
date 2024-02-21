@@ -65,7 +65,7 @@
 
             <SidePanelToolbarButton
               v-if="showSyncInfo()"
-              icon="sync"
+              icon="o_sync_alt"
               tooltip="This account is being synced"
               color="grey"
               class="q-ml-sm"/>

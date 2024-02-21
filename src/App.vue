@@ -4,7 +4,7 @@
 
 <script setup lang="ts">
 
-import {setCssVar, useQuasar} from "quasar";
+import {LocalStorage, setCssVar, useQuasar} from "quasar";
 import AppService from "src/services/AppService";
 import {EventEmitter} from "events";
 import {logtail} from "boot/logtail";
@@ -28,9 +28,34 @@ FirebaseServices.init()
 const auth = FirebaseServices.getAuth()
 
 $q.bex.on('fcm.token.received', ({data, respond}) => {
-  console.log('Event receieved, responding2...', data)
+  console.log('Token received from service worker:', data)
+  LocalStorage.set('app.fcmToken', data.token)
   FirestorePersistenceService.updateUserToken(data.token)
-  respond(data.someKey + ' hey!')
+  respond('thx')
+})
+
+$q.bex.on('fcm.message.received', async ({data, respond}) => {
+  console.log('Message received from service worker:', data)
+
+  if (data.data.msg) {
+    switch(data.data.msg) {
+      case "event.tabset.updated":
+        const lastChange = LocalStorage.getItem("ui.tabsets.lastUpdate") as number || 0;
+        if (new Date().getTime() - lastChange >= 2000) { // event did not happen "just now", probably remotely, therefore updating
+          console.log("reloading spaces and tabsets due to remote event", new Date().getTime() - lastChange, data.data)
+          await FirestorePersistenceService.loadSpaces()
+          await FirestorePersistenceService.loadTabsets()
+        }
+        break
+      default:
+        console.log("unrecognized payload with msg " + data.data.msg)
+    }
+  } else {
+    console.log("unrecognized payload without msg field")
+  }
+
+
+  respond('thx')
 })
 
 onAuthStateChanged(auth, async (user) => {

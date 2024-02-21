@@ -1,5 +1,4 @@
 import PersistenceService from "src/services/PersistenceService";
-import {IDBPDatabase} from "idb";
 import {Message} from "src/models/Message";
 import {Space} from "src/models/Space";
 import {Suggestion, SuggestionState} from "src/models/Suggestion";
@@ -17,8 +16,13 @@ import {useSpacesStore} from "stores/spacesStore";
 import {useAuthStore} from "stores/authStore";
 import {Account} from "src/models/Account";
 import {collection, deleteDoc, doc, getDocs, setDoc, updateDoc, arrayUnion} from "firebase/firestore";
+import {getStorage} from "firebase/storage";
 import {useTabsStore} from "stores/tabsStore";
 import FirebaseServices from "src/services/firebase/FirebaseServices";
+import {LocalStorage, uid} from "quasar";
+import {EXPIRE_DATA_PERIOD_IN_MINUTES} from "boot/constants";
+import {useDB} from "src/services/usePersistenceService";
+import IndexedDbPersistenceService from "src/services/IndexedDbPersistenceService";
 
 function tabsetDoc(tabsetId: string) {
   return doc(FirebaseServices.getFirestore(), "users", useAuthStore().user.uid, "tabsets", tabsetId)
@@ -38,12 +42,15 @@ function spacesCollection() {
 
 class FirestorePersistenceService implements PersistenceService {
 
+  private indexedDB: typeof IndexedDbPersistenceService = null as unknown as typeof IndexedDbPersistenceService
+
   getServiceName(): string {
     return "FirestorePersistenceService"
   }
 
   async init() {
     console.log(" ...initializing GitPersistenceService")
+    this.indexedDB = useDB(undefined).db as typeof IndexedDbPersistenceService
     return Promise.resolve("")
   }
 
@@ -52,6 +59,7 @@ class FirestorePersistenceService implements PersistenceService {
    */
 
   async loadTabsets(): Promise<void> {
+    //console.log("FirestorePersistenceService: loading Tabsets")
     (await getDocs(tabsetCollection())).forEach((doc) => {
       let newItem = doc.data() as Tabset
       newItem.id = doc.id;
@@ -61,6 +69,7 @@ class FirestorePersistenceService implements PersistenceService {
   }
 
   async saveTabset(tabset: Tabset): Promise<any> {
+    LocalStorage.set("ui.tabsets.lastUpdate", new Date().getTime())
     await setDoc(tabsetDoc(tabset.id), JSON.parse(JSON.stringify(tabset)))
   }
 
@@ -73,6 +82,8 @@ class FirestorePersistenceService implements PersistenceService {
    */
 
   async loadSpaces(): Promise<any> {
+    // console.log("FirestorePersistenceService: loading Spaces")
+    LocalStorage.set("ui.spaces.lastUpdate", new Date().getTime());
     (await getDocs(spacesCollection())).forEach((doc) => {
       let newItem = doc.data() as Space
       newItem.id = doc.id;
@@ -273,7 +284,7 @@ class FirestorePersistenceService implements PersistenceService {
   }
 
   saveThumbnail(tab: chrome.tabs.Tab, thumbnail: string): Promise<void> {
-    return Promise.reject(undefined);
+    return this.indexedDB.saveThumbnail(tab, thumbnail)
   }
 
   setSuggestionState(id: string, state: SuggestionState): any {
@@ -288,7 +299,7 @@ class FirestorePersistenceService implements PersistenceService {
   }
 
   updateThumbnail(url: string): Promise<void> {
-    return Promise.reject(undefined);
+    return this.indexedDB.updateThumbnail(url)
   }
 
   updateWindow(window: Window): Promise<void> {
