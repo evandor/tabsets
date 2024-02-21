@@ -33,7 +33,8 @@ const isActive = () => useUiStore().sidePanelIsActive(props.sidePanelView)
 const activateView = (view: SidePanelView) => useUiStore().sidePanelSetActiveView(view)
 
 const showButton = () => props.sidePanelView?.showButton()
-const leftButtonClass = () => "q-my-xs q-ml-xs q-mr-none q-px-xs"
+//const leftButtonClass = () => "q-my-xs q-ml-xs q-mr-none q-px-xs"
+const leftButtonClass = () => "q-my-xs q-px-xs q-mr-none"
 
 const toggleView = () => {
   if (isActive()) {

@@ -40,14 +40,14 @@ class IndexedDbPersistenceService implements PersistenceService {
 
   async deleteDatabase(dbName: string) {
     useUiStore().dbReady = false
-    console.warn(" ...deleting indexeddb database", dbName)
-    if (this.db) {
-      await this.db.close()
-    }
-    console.log("db closed, deleting now")
-    deleteDB(dbName, (cb) => {
-      console.log("deleting cb", cb)
-    })
+    console.warn(" ...deleting indexeddb database: not implemented", dbName)
+    // if (this.db) {
+    //   await this.db.close()
+    // }
+    // console.log("db closed, deleting now")
+    // deleteDB(dbName, (cb) => {
+    //   console.log("deleting cb", cb)
+    // })
 
   }
 

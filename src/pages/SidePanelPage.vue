@@ -34,40 +34,40 @@
       </div>
     </div>
 
-<!--    <div class="wrap2"-->
-<!--         v-if="useAuthStore().isAuthenticated() && useTabsStore().tabsets.size === 0 && !useUiStore().appLoading">-->
-<!--      <div class="row items-center text-grey-5">how to start?</div>-->
-<!--      <div style="min-width:300px;border:1px solid #efefef;border-radius:5px">-->
-<!--        <q-list>-->
-<!--          <q-item clickable v-ripple>-->
-<!--            <q-item-section avatar>-->
-<!--              <Transition appear>-->
-<!--                <SidePanelToolbarButton-->
-<!--                  icon="o_add_circle"-->
-<!--                  color="warning"/>-->
-<!--              </Transition>-->
-<!--            </q-item-section>-->
+    <div class="wrap2"
+         v-if="useAuthStore().isAuthenticated() && useTabsStore().tabsets.size === 0 && !useUiStore().appLoading">
+      <div class="row items-center text-grey-5">how to start?</div>
+      <div style="min-width:300px;border:1px solid #efefef;border-radius:5px">
+        <q-list>
+          <q-item clickable v-ripple>
+            <q-item-section avatar>
+              <Transition appear>
+                <SidePanelToolbarButton
+                  icon="o_add_circle"
+                  color="warning"/>
+              </Transition>
+            </q-item-section>
 
-<!--            <q-item-section>-->
-<!--              <q-item-label>New Tabset</q-item-label>-->
-<!--              <q-item-label caption>Click to create a new tabset</q-item-label>-->
-<!--            </q-item-section>-->
-<!--          </q-item>-->
+            <q-item-section>
+              <q-item-label>New Tabset</q-item-label>
+              <q-item-label caption>Click to create a new tabset</q-item-label>
+            </q-item-section>
+          </q-item>
 
-<!--          <q-item clickable v-ripple>-->
-<!--            <q-item-section avatar>-->
-<!--              <SidePanelToolbarButton-->
-<!--                icon="o_settings"/>-->
-<!--            </q-item-section>-->
+          <q-item clickable v-ripple>
+            <q-item-section avatar>
+              <SidePanelToolbarButton
+                icon="o_settings"/>
+            </q-item-section>
 
-<!--            <q-item-section>-->
-<!--              <q-item-label>Settings</q-item-label>-->
-<!--              <q-item-label caption>Click here to assign your account</q-item-label>-->
-<!--            </q-item-section>-->
-<!--          </q-item>-->
-<!--        </q-list>-->
-<!--      </div>-->
-<!--    </div>-->
+            <q-item-section>
+              <q-item-label>Settings</q-item-label>
+              <q-item-label caption>Click here to assign your account</q-item-label>
+            </q-item-section>
+          </q-item>
+        </q-list>
+      </div>
+    </div>
 
     <!-- list of tabs, assuming here we have at least one tabset -->
     <div class="q-ma-none q-pa-none">
@@ -347,18 +347,16 @@ import {useSuggestionsStore} from "stores/suggestionsStore";
 import SidePanelPageTabList from "components/layouts/SidePanelPageTabList.vue";
 import {AddTabToTabsetCommand} from "src/domain/tabs/AddTabToTabset";
 import {CopyToClipboardCommand} from "src/domain/commands/CopyToClipboard";
-import SidePanelTabsetDescriptionPage from "pages/sidepanel/SidePanelTabsetDescriptionPage.vue";
 import ShareTabsetPubliclyDialog from "components/dialogues/ShareTabsetPubliclyDialog.vue";
 import MqttService from "src/services/mqtt/MqttService";
-import {useVOnboarding, VOnboardingStep, VOnboardingWrapper} from 'v-onboarding'
 import {FirebaseCall} from "src/services/firebase/FirebaseCall";
 import getScrollTarget = scroll.getScrollTarget;
 import InfoMessageWidget from "components/widgets/InfoMessageWidget.vue";
-import {SYNC_TYPE, TITLE_IDENT} from "boot/constants";
+import {TITLE_IDENT} from "boot/constants";
 import AppService from "src/services/AppService";
-import SidePanelToolbarButton from "components/buttons/SidePanelToolbarButton.vue";
 import {useNotificationHandler} from "src/services/ErrorHandler";
 import {ExecutionResult} from "src/domain/ExecutionResult";
+import { getMessaging, onMessage } from "firebase/messaging";
 
 const {setVerticalScrollPosition} = scroll
 
@@ -401,16 +399,6 @@ const windowName = ref<string | undefined>(undefined)
 const tsBadges = ref<object[]>([])
 const editHeaderDescription = ref<boolean>(false)
 
-const steps = [
-  {
-    attachTo: {element: '#foo'},
-    content: {title: "Welcome :)", description: "Click here to add the current tab to this tabset"}
-  }
-]
-
-const wrapper = ref(null)
-const {start, goToStep, finish} = useVOnboarding(wrapper)
-
 const {handleSuccess, handleError} = useNotificationHandler()
 
 function updateOnlineStatus(e: any) {
@@ -429,12 +417,6 @@ onMounted(() => {
   if (!useAuthStore().isAuthenticated) {
     //router.push("/authenticate")
   } else {
-    setTimeout(() => {
-      if (useTabsStore().allTabsCount === 0) {
-        start()
-      }
-    }, 1000)
-
     Analytics.firePageViewEvent('SidePanelPage', document.location.href);
   }
 
@@ -443,6 +425,12 @@ onMounted(() => {
 onUnmounted(() => {
   window.removeEventListener('keypress', checkKeystroke);
 })
+
+const messaging = getMessaging();
+
+onMessage(messaging, (payload) => {
+  console.log('**********Message received. ', payload);
+});
 
 watchEffect(() => {
   const ar = useAuthStore().useAuthRequest
@@ -871,6 +859,12 @@ const saveInTabset = (tabsetId: string) => {
   const useTS = useTabsetService().getTabset(tabsetId)
   if (useTS) {
     useCommandExecutor().execute(new AddTabToTabsetCommand(new Tab(uid(), currentChromeTab.value), useTS))
+
+    $q.bex.send('some.event', { someKey: 'aValue' })
+      .then((data) => {
+        console.log('Some response from the other side', data)
+      })
+
   } else {
     console.warn("expected to find tabsetId", tabsetId)
   }
