@@ -34,40 +34,40 @@
       </div>
     </div>
 
-<!--    <div class="wrap2"-->
-<!--         v-if="useAuthStore().isAuthenticated() && useTabsStore().tabsets.size === 0 && !useUiStore().appLoading">-->
-<!--      <div class="row items-center text-grey-5">how to start?</div>-->
-<!--      <div style="min-width:300px;border:1px solid #efefef;border-radius:5px">-->
-<!--        <q-list>-->
-<!--          <q-item clickable v-ripple>-->
-<!--            <q-item-section avatar>-->
-<!--              <Transition appear>-->
-<!--                <SidePanelToolbarButton-->
-<!--                  icon="o_add_circle"-->
-<!--                  color="warning"/>-->
-<!--              </Transition>-->
-<!--            </q-item-section>-->
+    <div class="wrap2"
+         v-if="useAuthStore().isAuthenticated() && useTabsStore().tabsets.size === 0 && !useUiStore().appLoading">
+      <div class="row items-center text-grey-5">how to start?</div>
+      <div style="min-width:300px;border:1px solid #efefef;border-radius:5px">
+        <q-list>
+          <q-item clickable v-ripple>
+            <q-item-section avatar>
+              <Transition appear>
+                <SidePanelToolbarButton
+                  icon="o_add_circle"
+                  color="warning"/>
+              </Transition>
+            </q-item-section>
 
-<!--            <q-item-section>-->
-<!--              <q-item-label>New Tabset</q-item-label>-->
-<!--              <q-item-label caption>Click to create a new tabset</q-item-label>-->
-<!--            </q-item-section>-->
-<!--          </q-item>-->
+            <q-item-section>
+              <q-item-label>New Tabset</q-item-label>
+              <q-item-label caption>Click to create a new tabset</q-item-label>
+            </q-item-section>
+          </q-item>
 
-<!--          <q-item clickable v-ripple>-->
-<!--            <q-item-section avatar>-->
-<!--              <SidePanelToolbarButton-->
-<!--                icon="o_settings"/>-->
-<!--            </q-item-section>-->
+          <q-item clickable v-ripple>
+            <q-item-section avatar>
+              <SidePanelToolbarButton
+                icon="o_settings"/>
+            </q-item-section>
 
-<!--            <q-item-section>-->
-<!--              <q-item-label>Settings</q-item-label>-->
-<!--              <q-item-label caption>Click here to assign your account</q-item-label>-->
-<!--            </q-item-section>-->
-<!--          </q-item>-->
-<!--        </q-list>-->
-<!--      </div>-->
-<!--    </div>-->
+            <q-item-section>
+              <q-item-label>Settings</q-item-label>
+              <q-item-label caption>Click here to assign your account</q-item-label>
+            </q-item-section>
+          </q-item>
+        </q-list>
+      </div>
+    </div>
 
     <!-- list of tabs, assuming here we have at least one tabset -->
     <div class="q-ma-none q-pa-none">
@@ -352,7 +352,7 @@ import MqttService from "src/services/mqtt/MqttService";
 import {FirebaseCall} from "src/services/firebase/FirebaseCall";
 import getScrollTarget = scroll.getScrollTarget;
 import InfoMessageWidget from "components/widgets/InfoMessageWidget.vue";
-import {SYNC_TYPE, TITLE_IDENT} from "boot/constants";
+import {TITLE_IDENT} from "boot/constants";
 import AppService from "src/services/AppService";
 import {useNotificationHandler} from "src/services/ErrorHandler";
 import {ExecutionResult} from "src/domain/ExecutionResult";
