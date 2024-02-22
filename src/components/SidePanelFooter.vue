@@ -149,7 +149,7 @@
 
           </q-menu>
         </span>
-        <q-btn v-else-if="useSettingsStore().isEnabled('dev')"
+        <q-btn v-else-if="showLoginBtn()"
                icon="login"
                :class="rightButtonClass()"
                flat
@@ -406,7 +406,7 @@ const logout = () => {
 const offsetBottom = () => ($q.platform.is.capacitor || $q.platform.is.cordova) ? 'margin-bottom:20px;' : ''
 const gotoStripe = () => openURL("https://billing.stripe.com/p/login/test_5kA9EHf2Da596HuaEE")
 const openPwaUrl = () => NavigationService.openOrCreateTab([process.env.TABSETS_PWA_URL || 'https://www.skysail.io'])
-
+const showLoginBtn = () => useSettingsStore().isEnabled('dev') && process.env.USE_FIREBASE
 </script>
 
 <style>
