@@ -24,8 +24,9 @@ const {handleError} = useNotificationHandler()
 const emitter = new EventEmitter()
 emitter.setMaxListeners(12)
 
-FirebaseServices.init()
-const auth = FirebaseServices.getAuth()
+if (process.env.USE_FIREBASE) {
+  FirebaseServices.init()
+}
 
 $q.bex.on('fcm.token.received', ({data, respond}) => {
   console.log('Token received from service worker:', data)
@@ -38,7 +39,7 @@ $q.bex.on('fcm.message.received', async ({data, respond}) => {
   console.log('Message received from service worker:', data)
 
   if (data.data.msg) {
-    switch(data.data.msg) {
+    switch (data.data.msg) {
       case "event.tabset.updated":
         const lastChange = LocalStorage.getItem("ui.tabsets.lastUpdate") as number || 0;
         if (new Date().getTime() - lastChange >= 2000) { // event did not happen "just now", probably remotely, therefore updating
@@ -53,37 +54,38 @@ $q.bex.on('fcm.message.received', async ({data, respond}) => {
   } else {
     console.log("unrecognized payload without msg field")
   }
-
-
   respond('thx')
 })
 
-onAuthStateChanged(auth, async (user) => {
-  if (user) {
-    // User is signed in, see docs for a list of available properties
-    // https://firebase.google.com/docs/reference/js/auth.user
-    console.log("%conAuthStateChanged: about to log in", "border:1px solid green")
+if (process.env.USE_FIREBASE) {
+  const auth = FirebaseServices.getAuth()
+  onAuthStateChanged(auth, async (user) => {
+    if (user) {
+      // User is signed in, see docs for a list of available properties
+      // https://firebase.google.com/docs/reference/js/auth.user
+      console.log("%conAuthStateChanged: about to log in", "border:1px solid green")
 
-    // TODO revisit now
-    try {
-      await AppService.init($q, router, true, user)
-    } catch (error:any) {
-      console.log("%ccould not initialize appService due to " + error, "background-color:orangered")
-      console.error("error", error, typeof error, error.code, error.message)
-      handleError(error.code)
-      return Promise.resolve()
-    }
+      // TODO revisit now
+      try {
+        await AppService.init($q, router, true, user)
+      } catch (error: any) {
+        console.log("%ccould not initialize appService due to " + error, "background-color:orangered")
+        console.error("error", error, typeof error, error.code, error.message)
+        handleError(error.code)
+        return Promise.resolve()
+      }
 
-  } else {
-    // User is signed out
-    console.log("%conAuthStateChanged: logged out", "border:1px solid green")
-    await AppService.init($q, router, true, undefined)
-    if (!router.currentRoute.value.path.startsWith("/mainpanel")) {
-      console.log("NOT redirecting to '/'")
-      //await router.push("/")
+    } else {
+      // User is signed out
+      console.log("%conAuthStateChanged: logged out", "border:1px solid green")
+      await AppService.init($q, router, true, undefined)
+      if (!router.currentRoute.value.path.startsWith("/mainpanel")) {
+        console.log("NOT redirecting to '/'")
+        //await router.push("/")
+      }
     }
-  }
-});
+  });
+}
 
 const useDarkMode: string = $q.localStorage.getItem('darkMode') || "false" as string
 if (useDarkMode === "true") {
@@ -107,7 +109,9 @@ if (useDarkMode === "true") {
 }
 
 const currentUser = $q.localStorage.getItem(CURRENT_USER_ID)
-if (currentUser) {
+if (!process.env.USE_FIREBASE) {
+  AppService.init($q, router, false)
+} else if (currentUser) {
   console.log("current user id found, waiting for auto-login")
   // we should be logged in any second
 } else {

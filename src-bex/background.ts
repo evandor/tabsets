@@ -4,12 +4,8 @@ import firebase from 'firebase/compat/app';
 import 'firebase/compat/auth';
 import 'firebase/compat/firestore';
 import {getToken} from "firebase/messaging";
-import { getMessaging } from "firebase/messaging/sw";
-import { onBackgroundMessage } from "firebase/messaging/sw";
-import {useTabsStore} from "stores/tabsStore";
-import {useTabsetService} from "src/services/TabsetService2";
-import FirestorePersistenceService from "src/services/persistence/FirestorePersistenceService";
-import {useQuasar} from "quasar";
+import {getMessaging} from "firebase/messaging/sw";
+import {onBackgroundMessage} from "firebase/messaging/sw";
 
 // https://stackoverflow.com/questions/49739438/when-and-how-does-a-pwa-update-itself
 const updateTrigger = 10
@@ -107,80 +103,52 @@ chrome.runtime.onConnect.addListener(function (port) {
   }
 });
 
-const firebaseApp = firebase.initializeApp({
-  apiKey: process.env.FIREBASE_API_KEY,
-  authDomain: process.env.FIREBASE_AUTH_DOMAIN,
-  projectId: process.env.FIREBASE_PROJECT_ID,
-  appId: process.env.FIREBASE_APP_ID,
-  messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID
-})
-const messaging = getMessaging(firebaseApp)
-
-// onBackgroundMessage(messaging, async (payload:any) => {
-//   console.log(`[service-worker] Received FCM Message with payload`, payload);
-//
-//   const notificationTitle = 'Background Message Title';
-//   const notificationOptions = {
-//     body: 'Background Message body.',
-//     icon: '/firebase-logo.png'
-//   };
-//
-//   await self.registration.showNotification(notificationTitle, notificationOptions);
-// });
-
-// Firefox:
-function handleFirefoxBrowserAction () {
-  //const panel = browser.runtime.getURL("www/index.html#/sidepanel")
-  //browser.sidebarAction.isOpen({})
-  //    .then((sidebarIsOpen: boolean) => {
-  console.log("toggling...")
-  browser.sidebarAction.open()
-}
-browser.browserAction.onClicked.addListener(handleFirefoxBrowserAction);
-// Firefox END
-
 export default bexBackground((bridge, cons/* , allActiveConnections */) => {
-  console.debug("[service-worker] about to obtain cloud messaging token")
 
-  const firebaseApp = firebase.initializeApp({
-    apiKey: process.env.FIREBASE_API_KEY,
-    authDomain: process.env.FIREBASE_AUTH_DOMAIN,
-    projectId: process.env.FIREBASE_PROJECT_ID,
-    appId: process.env.FIREBASE_APP_ID,
-    messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID
-  })
-  const messaging = getMessaging(firebaseApp)
-  getToken(messaging, {
-    // @ts-ignore
-    serviceWorkerRegistration: self.registration, // note: we use the sw of ourself to register with
-  }).then((token) => {
-    bridge.send('fcm.token.received', { token: token })
-      .then((data) => {
-        console.log('[service-worker] fcm.token.received response', data)
-      })
-  }).catch((err) => {
-    console.log("[service-worker] got error:", err)
-  })
+  if (process.env.USE_FIREBASE) {
+    console.debug("[service-worker] about to obtain cloud messaging token")
 
-  onBackgroundMessage(messaging, async (payload:any) => {
-    console.log(`[service-worker] Received FCM Message with payload2`, payload);
+    const firebaseApp = firebase.initializeApp({
+      apiKey: process.env.FIREBASE_API_KEY,
+      authDomain: process.env.FIREBASE_AUTH_DOMAIN,
+      projectId: process.env.FIREBASE_PROJECT_ID,
+      appId: process.env.FIREBASE_APP_ID,
+      messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID
+    })
+    const messaging = getMessaging(firebaseApp)
 
-    bridge.send('fcm.message.received', payload)
-      .then((data) => {
-        console.log('[service-worker] fcm.message.received response', data)
-      })
-      .catch((err) => {
-        console.log('[service-worker] error with fcm.message.received', err)
-      })
+    getToken(messaging, {
+      // @ts-ignore
+      serviceWorkerRegistration: self.registration, // note: we use the sw of ourself to register with
+    }).then((token) => {
+      bridge.send('fcm.token.received', {token: token})
+        .then((data) => {
+          console.log('[service-worker] fcm.token.received response', data)
+        })
+    }).catch((err) => {
+      console.log("[service-worker] got error:", err)
+    })
 
-    const notificationTitle = 'Background Message Title!';
-    const notificationOptions = {
-      body: 'Background Message body.',
-      icon: '/firebase-logo.png'
-    };
+    onBackgroundMessage(messaging, async (payload: any) => {
+      console.log(`[service-worker] Received FCM Message with payload2`, payload);
 
-    // @ts-ignore
-    await self.registration.showNotification(notificationTitle, notificationOptions);
-  })
+      bridge.send('fcm.message.received', payload)
+        .then((data) => {
+          console.log('[service-worker] fcm.message.received response', data)
+        })
+        .catch((err) => {
+          console.log('[service-worker] error with fcm.message.received', err)
+        })
+
+      const notificationTitle = 'Background Message Title!';
+      const notificationOptions = {
+        body: 'Background Message body.',
+        icon: '/firebase-logo.png'
+      };
+
+      // @ts-ignore
+      await self.registration.showNotification(notificationTitle, notificationOptions);
+    })
+  }
 
 });
