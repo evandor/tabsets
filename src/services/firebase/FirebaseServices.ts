@@ -14,8 +14,6 @@ import {getMessaging, Messaging, getToken, onMessage} from "firebase/messaging";
 
 class FirebaseServices {
 
-  private initialized = false
-
   private firebaseApp: firebase.app.App = null as unknown as firebase.app.App
   private auth: Auth = null as unknown as Auth
   private firestore: Firestore = null as unknown as Firestore
@@ -23,12 +21,10 @@ class FirebaseServices {
   private storage: Messaging = null as unknown as Messaging
 
   init() {
-    // if (this.initialized) {
-    //   console.log("FirebaseServices already initialized")
-    //   return
-    // }
-    this.initialized = true
 
+    if (!process.env.USE_FIREBASE) {
+      return
+    }
     console.log("initializing FirebaseServices")
     this.firebaseApp = firebase.initializeApp({
       apiKey: process.env.FIREBASE_API_KEY,
@@ -54,14 +50,10 @@ class FirebaseServices {
 
     this.storage = getStorage(this.firebaseApp)
 
-
-    onMessage(this.messaging, (payload: any) => {
-      console.log(' ===> Message received. ', payload);
-      // ...
-    });
   }
 
   getAuth() {
+    console.log("returning auth", this.auth)
     return this.auth
   }
 

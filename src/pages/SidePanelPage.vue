@@ -1,29 +1,29 @@
 <template>
-<!--  <VOnboardingWrapper ref="wrapper" :steps="steps">-->
-<!--    <template #default="{ previous, next, step, exit, isFirst, isLast, index }">-->
-<!--      <VOnboardingStep>-->
-<!--        <div class="welcome-tooltip-container">-->
-<!--          <div class="tooltip">-->
-<!--            <div class="row">-->
-<!--              <div class="col-12 q-ma-none q-my-sm">-->
-<!--                <span class="text-subtitle1" v-if="step.content.title">{{ step.content.title }}</span>-->
-<!--              </div>-->
-<!--            </div>-->
-<!--            <div class="row">-->
-<!--              <div class="col-12 q-ma-none text-caption">-->
-<!--                <span v-if="step.content.description">{{ step.content.description }}</span>-->
-<!--              </div>-->
-<!--            </div>-->
-<!--            <div class="row">-->
-<!--              <div class="col-12 q-ma-none text-right">-->
-<!--                <q-btn label="got it" flat dense @click="finish()"/>-->
-<!--              </div>-->
-<!--            </div>-->
-<!--          </div>-->
-<!--        </div>-->
-<!--      </VOnboardingStep>-->
-<!--    </template>-->
-<!--  </VOnboardingWrapper>-->
+  <!--  <VOnboardingWrapper ref="wrapper" :steps="steps">-->
+  <!--    <template #default="{ previous, next, step, exit, isFirst, isLast, index }">-->
+  <!--      <VOnboardingStep>-->
+  <!--        <div class="welcome-tooltip-container">-->
+  <!--          <div class="tooltip">-->
+  <!--            <div class="row">-->
+  <!--              <div class="col-12 q-ma-none q-my-sm">-->
+  <!--                <span class="text-subtitle1" v-if="step.content.title">{{ step.content.title }}</span>-->
+  <!--              </div>-->
+  <!--            </div>-->
+  <!--            <div class="row">-->
+  <!--              <div class="col-12 q-ma-none text-caption">-->
+  <!--                <span v-if="step.content.description">{{ step.content.description }}</span>-->
+  <!--              </div>-->
+  <!--            </div>-->
+  <!--            <div class="row">-->
+  <!--              <div class="col-12 q-ma-none text-right">-->
+  <!--                <q-btn label="got it" flat dense @click="finish()"/>-->
+  <!--              </div>-->
+  <!--            </div>-->
+  <!--          </div>-->
+  <!--        </div>-->
+  <!--      </VOnboardingStep>-->
+  <!--    </template>-->
+  <!--  </VOnboardingWrapper>-->
 
   <q-page style="padding-top: 50px">
 
@@ -184,6 +184,14 @@
                 <q-tooltip class="tooltip-small" v-else-if="tsBadges.length > 0">
                   {{ tooltipAlreadyInOtherTabsets(tabset.name) }}
                 </q-tooltip>
+                <q-tooltip v-else-if="useTabsStore().allTabsCount === 0"
+                           transition-show="flip-right"
+                           transition-hide="flip-left"
+                           v-model="showAddCurrentTabTooltip"
+                           class="tooltip-tour"
+                           anchor="bottom right" self="top middle" :offset="[-26, 3 ]">
+                  Click here <q-icon name="keyboard_arrow_up" /> to<br> add the current<br>tab to this tabset
+                </q-tooltip>
                 <q-tooltip class="tooltip-small" v-else>
                   Add current Tab to '{{ tabset.name }}'
                 </q-tooltip>
@@ -204,14 +212,14 @@
 
           <div class="q-ma-none q-pa-none">
 
-<!--            <template v-if="tabset.page && typeof tabset.page === 'object'">-->
-<!--              <SidePanelTabsetDescriptionPage-->
-<!--                :tabsetId="tabset.id"-->
-<!--                :tabsetDesc="tabset.page as Object"/>-->
-<!--            </template>-->
-<!--            <template v-if="tabset.page && typeof tabset.page === 'string'">-->
-<!--              {{ tabset.page }}-->
-<!--            </template>-->
+            <!--            <template v-if="tabset.page && typeof tabset.page === 'object'">-->
+            <!--              <SidePanelTabsetDescriptionPage-->
+            <!--                :tabsetId="tabset.id"-->
+            <!--                :tabsetDesc="tabset.page as Object"/>-->
+            <!--            </template>-->
+            <!--            <template v-if="tabset.page && typeof tabset.page === 'string'">-->
+            <!--              {{ tabset.page }}-->
+            <!--            </template>-->
 
             <template v-if="editHeaderDescription">
               <div class="row q-ma-none q-pa-md">
@@ -240,7 +248,8 @@
               </div>
             </template>
             <template v-else-if="tabset.headerDescription">
-              <div class="row q-ma-sm q-pa-sm text-body2 darkInDarkMode brightInBrightMode" style="border:1px solid #efefef;border-radius:3px;" v-html="tabset.headerDescription"></div>
+              <div class="row q-ma-sm q-pa-sm text-body2 darkInDarkMode brightInBrightMode"
+                   style="border:1px solid #efefef;border-radius:3px;" v-html="tabset.headerDescription"></div>
             </template>
 
             <q-list>
@@ -356,7 +365,8 @@ import {TITLE_IDENT} from "boot/constants";
 import AppService from "src/services/AppService";
 import {useNotificationHandler} from "src/services/ErrorHandler";
 import {ExecutionResult} from "src/domain/ExecutionResult";
-import { getMessaging, onMessage } from "firebase/messaging";
+import {getMessaging, onMessage} from "firebase/messaging";
+import SidePanelToolbarButton from "components/buttons/SidePanelToolbarButton.vue";
 
 const {setVerticalScrollPosition} = scroll
 
@@ -369,6 +379,7 @@ const tabsStore = useTabsStore()
 const permissionsStore = usePermissionsStore()
 const uiStore = useUiStore()
 const showSearchBox = ref(false)
+const showAddCurrentTabTooltip = ref(false)
 
 const currentChromeTabs = ref<chrome.tabs.Tab[]>([])
 const tabsetName = ref<object>(null as unknown as object)
@@ -420,17 +431,18 @@ onMounted(() => {
     Analytics.firePageViewEvent('SidePanelPage', document.location.href);
   }
 
+  if (useTabsStore().allTabsCount === 0) {
+    setTimeout(() => {
+      showAddCurrentTabTooltip.value = true
+      setTimeout(() => showAddCurrentTabTooltip.value = false, 4500)
+    }, 1500)
+  }
+
 })
 
 onUnmounted(() => {
   window.removeEventListener('keypress', checkKeystroke);
 })
-
-const messaging = getMessaging();
-
-onMessage(messaging, (payload) => {
-  console.log('**********Message received. ', payload);
-});
 
 watchEffect(() => {
   const ar = useAuthStore().useAuthRequest
@@ -860,7 +872,7 @@ const saveInTabset = (tabsetId: string) => {
   if (useTS) {
     useCommandExecutor().execute(new AddTabToTabsetCommand(new Tab(uid(), currentChromeTab.value), useTS))
 
-    $q.bex.send('some.event', { someKey: 'aValue' })
+    $q.bex.send('some.event', {someKey: 'aValue'})
       .then((data) => {
         console.log('Some response from the other side', data)
       })

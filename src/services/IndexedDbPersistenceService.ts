@@ -4,7 +4,6 @@ import _ from "lodash";
 import {EXPIRE_DATA_PERIOD_IN_MINUTES, INDEX_DB_VERSION} from "boot/constants";
 import PersistenceService from "src/services/PersistenceService";
 import {Tabset, TabsetStatus} from "src/models/Tabset";
-import mhtml2html from 'mhtml2html';
 import {useSpacesStore} from "src/stores/spacesStore";
 import {Space} from "src/models/Space";
 import {MHtml} from "src/models/MHtml";
@@ -418,8 +417,9 @@ class IndexedDbPersistenceService implements PersistenceService {
     const content: Blob = mhtml.content
 
     const mhtmlString = await content.text()
-    const html = mhtml2html.convert(mhtmlString)//,{ parseDOM: (html:any) => new JSDOM(html)    });
-    const innerHtml = html.window.document.documentElement.innerHTML
+    //const html = mhtml2html.convert(mhtmlString)//,{ parseDOM: (html:any) => new JSDOM(html)    });
+    const html = mhtmlString//,{ parseDOM: (html:any) => new JSDOM(html)    });
+    const innerHtml = mhtmlString//html.window.document.documentElement.innerHTML
     const res = "data:text/html," + innerHtml
 
     const blob2 = content.slice(0, content.size, "multipart/related")
@@ -444,7 +444,8 @@ class IndexedDbPersistenceService implements PersistenceService {
       console.log("mhtml", mhtml)
       const mhtmlString = mhtml.content ? await mhtml.content?.text() : '<h6>sorry, no content found</h6>'
       //console.log("mhtmlString", mhtmlString)
-      const html = mhtmlString ? mhtml2html.convert(mhtmlString) : 'sorry, no content found'
+     // const html = mhtmlString ? mhtml2html.convert(mhtmlString) : 'sorry, no content found'
+      const html = 'sorry, no content found'
       console.log("mhtml3", mhtml)
       const innerHtml = html.window.document.documentElement.innerHTML
       return Promise.resolve({

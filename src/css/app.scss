@@ -75,6 +75,17 @@
   box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.2), 0 4px 5px rgba(0, 0, 0, 0.14), 0 1px 10px rgba(0, 0, 0, 0.12);
 }
 
+.tooltip-tour {
+  background-color: white;
+  color: black;
+  font-size: 12px;
+  margin: 2px;
+  padding: 3px 6px 3px 6px;
+  border: 1px solid orange;
+  border-radius:3px;
+  box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.2), 0 4px 5px rgba(0, 0, 0, 0.14), 0 1px 10px rgba(0, 0, 0, 0.12);
+}
+
 .colorized-appear-enter-active {
   transition: all 2s ease-in;
   transition-delay: 0s;

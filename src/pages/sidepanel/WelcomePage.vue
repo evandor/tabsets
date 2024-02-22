@@ -1,7 +1,7 @@
 <template>
   <q-page>
 
-    <div class="q-ma-none q-pa-md fullimageBackground" @click="selected()">
+    <div class="q-ma-none q-pa-md fullimageBackground fit" @click="selected()" style="border:1px solid red; height:100%">
       <div class="row q-mt-lg">
         <div class="row">
           <div class="col-12 text-caption">
@@ -39,6 +39,18 @@
           </q-card-actions>
         </q-card>
       </div>
+
+      <div class="row q-mt-lg">
+        <div class="row">
+          <div class="col-12 text-caption">
+            The Art Of Linking
+          </div>
+        </div>
+        <div class="col-12 text-h6 q-mb-md">
+          Welcome to Tabsets {{ stageIdentifier() }}
+        </div>
+      </div>
+
     </div>
   </q-page>
 </template>
