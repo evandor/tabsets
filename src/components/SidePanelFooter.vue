@@ -72,8 +72,8 @@
                @click="openHelpView()">
         </q-btn>
 
-        <q-btn icon="o_settings" v-if="useTabsStore().tabsets.size > 0 || useAuthStore().isAuthenticated()"
-               :class="rightButtonClass()"
+        <q-btn icon="o_settings" v-if="showSettingsButton()"
+               :class="{ shake: animateSettingsButton }"
                flat
                :size="getButtonSize()"
                @click="openOptionsPage()">
@@ -168,7 +168,7 @@ import {SidePanelView, useUiStore} from "src/stores/uiStore";
 import {useTabsStore} from "src/stores/tabsStore";
 import {Tab} from "src/models/Tab";
 import {ref, watchEffect} from "vue";
-import {useRouter} from "vue-router";
+import {useRoute, useRouter} from "vue-router";
 import {usePermissionsStore} from "src/stores/permissionsStore";
 import {FeatureIdent} from "src/models/AppFeature";
 import NavigationService from "src/services/NavigationService";
@@ -196,15 +196,14 @@ const {handleSuccess, handleError} = useNotificationHandler()
 const {inBexMode} = useUtils()
 
 const $q = useQuasar()
+const route = useRoute()
 
 const router = useRouter()
-const uiStore = useUiStore()
 const authStore = useAuthStore()
 
 const currentChromeTabs = ref<chrome.tabs.Tab[]>([])
 const currentTabs = ref<Tab[]>([])
 const currentChromeTab = ref<chrome.tabs.Tab>(null as unknown as chrome.tabs.Tab)
-const progress = ref<number | undefined>(undefined)
 const showSuggestionButton = ref(false)
 const showSuggestionIcon = ref(false)
 const doShowSuggestionButton = ref(false)
@@ -216,6 +215,7 @@ const account = ref<Account | undefined>(undefined)
 const randomKey = ref<string>(uid())
 const progressValue = ref<number>(0.0)
 const progressLabel = ref<string>('')
+const animateSettingsButton = ref<string>(false)
 
 watchEffect(() => {
   const windowId = useWindowsStore().currentChromeWindow?.id || 0
@@ -227,6 +227,10 @@ watchEffect(() => {
 
 watchEffect(() => {
   account.value = authStore.getAccount()
+})
+
+watchEffect(() => {
+  animateSettingsButton.value = useUiStore().animateSettingsButton
 })
 
 watchEffect(() => {
@@ -407,6 +411,7 @@ const offsetBottom = () => ($q.platform.is.capacitor || $q.platform.is.cordova) 
 const gotoStripe = () => openURL("https://billing.stripe.com/p/login/test_5kA9EHf2Da596HuaEE")
 const openPwaUrl = () => NavigationService.openOrCreateTab([process.env.TABSETS_PWA_URL || 'https://www.skysail.io'])
 const showLoginBtn = () => useSettingsStore().isEnabled('dev') && process.env.USE_FIREBASE
+const showSettingsButton = () => route.path !== '/sidepanel/welcome' || useAuthStore().isAuthenticated()
 </script>
 
 <style>

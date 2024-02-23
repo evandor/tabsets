@@ -113,18 +113,14 @@ export const usePermissionsStore = defineStore('permissions', () => {
 
   const activateFeature = computed(() => {
     return (feature: string): void => {
-      if (activeFeatures.value.indexOf(feature) < 0) {
+      if (storage && activeFeatures.value.indexOf(feature) < 0) {
         activeFeatures.value.push(feature)
         storage.saveActiveFeatures(activeFeatures.value)
 
-        // if (FeatureIdent.NEWEST_TABS.toLowerCase() === feature) {
-        //     useSuggestionsStore().inactivateSuggestion(Suggestion.getStaticSuggestion(StaticSuggestionIdent.TRY_NEWEST_TABS_FEATURE))
-        // }
         if (FeatureIdent.SPACES.toLowerCase() === feature) {
           useSuggestionsStore().inactivateSuggestion(Suggestion.getStaticSuggestion(StaticSuggestionIdent.TRY_SPACES_FEATURE))
         }
         if (FeatureIdent.BACKUP.toLowerCase() === feature) {
-          //useSuggestionsStore().removeSuggestion(StaticSuggestionIdent.TRY_TAB_DETAILS_FEATURE)
           useCommandExecutor().executeFromUi(new CreateSpecialTabsetCommand(SpecialTabsetIdent.BACKUP, TabsetType.SPECIAL))
         }
         if (FeatureIdent.HELP.toLowerCase() === feature) {
