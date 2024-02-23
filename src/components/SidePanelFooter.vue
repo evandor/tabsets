@@ -73,6 +73,7 @@
         </q-btn>
 
         <q-btn icon="o_settings" v-if="showSettingsButton()"
+               class="q-my-xs q-px-xs q-mr-none"
                :class="{ shake: animateSettingsButton }"
                flat
                :size="getButtonSize()"
