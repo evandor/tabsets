@@ -1,58 +1,76 @@
 <template>
-  <q-page>
+  <q-page-container>
+    <q-page>
 
-    <div class="q-ma-none q-pa-md fullimageBackground fit" @click="selected()" style="border:1px solid red; height:100%">
-      <div class="row q-mt-lg">
-        <div class="row">
-          <div class="col-12 text-caption">
-            The Art Of Linking
+      <div class="q-ma-none q-pa-md fit">
+        <div class="row q-mt-lg">
+          <div class="row">
+            <div class="col-12 text-caption">
+              The Art Of Linking
+            </div>
+          </div>
+          <div class="col-12 text-h6 q-mb-md">
+            Welcome to Tabsets {{ stageIdentifier() }}
           </div>
         </div>
-        <div class="col-12 text-h6 q-mb-md">
-          Welcome to Tabsets {{ stageIdentifier() }}
+
+        <div class="q-pa-sm q-mb-none row items-start q-gutter-md" @click.stop="selected()">
+          <q-card class="my-card fit">
+            <q-card-section>
+              <span class="text-subtitle2">Create your first Tabset</span>
+              <br>
+              Provide a name and add tabs later
+            </q-card-section>
+            <q-card-section class="q-pb-none">
+              <q-input v-model="tabsetName"
+                       dense
+                       autofocus
+                       ref="tabsetNameRef"
+                       error-message="Please do not use special Characters, maximum length is 32"
+                       :error="!newTabsetNameIsValid()"
+                       data-testid="newTabsetName"
+                       @keydown.enter="addFirstTabset()"
+                       label="Tabset name"/>
+            </q-card-section>
+            <q-card-actions align="right" class="q-pr-md q-pb-md q-ma-none">
+              <DialogButton
+                label="Add Tabset"
+                @was-clicked="addFirstTabset"
+                :disable="tabsetName.trim().length === 0 || !newTabsetNameIsValid()"/>
+            </q-card-actions>
+          </q-card>
         </div>
-      </div>
-
-      <div class="q-pa-sm row items-start q-gutter-md">
-        <q-card class="my-card fit">
-          <q-card-section>
-            <span class="text-subtitle2">Create your first Tabset</span>
-            <br>
-            Provide a name and add tabs later
-          </q-card-section>
-          <q-card-section class="q-pb-none">
-            <q-input v-model="tabsetName"
-                     dense
-                     autofocus
-                     ref="tabsetNameRef"
-                     error-message="Please do not use special Characters, maximum length is 32"
-                     :error="!newTabsetNameIsValid()"
-                     data-testid="newTabsetName"
-                     @keydown.enter="addFirstTabset()"
-                     label="Tabset name"/>
-          </q-card-section>
-          <q-card-actions align="right" class="q-pr-md q-pb-md q-ma-none">
-            <DialogButton
-              label="Add Tabset"
-              @was-clicked="addFirstTabset"
-              :disable="tabsetName.trim().length === 0 || !newTabsetNameIsValid()"/>
-          </q-card-actions>
-        </q-card>
-      </div>
-
-      <div class="row q-mt-lg">
-        <div class="row">
-          <div class="col-12 text-caption">
-            The Art Of Linking
+        <div class="row q-mr-sm">
+          <div class="col-12 text-right">
+            <span class="text-grey q-mx-none cursor-pointer" style="font-size:smaller"
+                  @click.stop="clicked('https://tabsets.web.app/#/privacy')">Privacy</span>
+            <span class="q-ma-none q-pa-none q-mx-xs text-grey-5">|</span>
+            <span class="text-grey q-mx-none cursor-pointer" style="font-size:smaller"
+                  @click.stop="clicked('https://tabsets.web.app/#/tos')">Terms of Service</span>
+            <span class="q-ma-none q-pa-none q-mx-xs text-grey-5">|</span>
+            <span class="text-grey q-mx-none cursor-pointer" style="font-size:smaller"
+                  @click.stop="clicked('https://docs.tabsets.net')">Documentation</span>
           </div>
         </div>
-        <div class="col-12 text-h6 q-mb-md">
-          Welcome to Tabsets {{ stageIdentifier() }}
-        </div>
-      </div>
 
-    </div>
-  </q-page>
+        <br><br>
+
+        <div class="row q-mt-lg q-ml-md">
+          <div class="col-12 text-caption q-mb-sm">
+            Optionally
+          </div>
+          <div class="col-12 q-mb-md">
+            <q-checkbox size="xs" v-model="activateBookmarks" class="text-grey" label="Activate Bookmarks Integration"/>
+            <template v-if="firebaseActive()">
+              <q-checkbox
+                size="xs" v-model="login" class="text-grey" label="Login or create Account!"/>
+            </template>
+          </div>
+        </div>
+
+      </div>
+    </q-page>
+  </q-page-container>
 </template>
 
 <script lang="ts" setup>
@@ -65,21 +83,36 @@ import {useCommandExecutor} from "src/services/CommandExecutor";
 import {CreateTabsetCommand} from "src/domain/tabsets/CreateTabset";
 import {STRIP_CHARS_IN_USER_INPUT, TITLE_IDENT} from "boot/constants";
 import Analytics from "src/utils/google-analytics";
-import {nextTick} from 'vue'
 import DialogButton from "components/buttons/DialogButton.vue";
 import {useAuthStore} from "stores/authStore";
-import {LocalStorage} from "quasar";
+import {LocalStorage, openURL} from "quasar";
+import {FeatureIdent} from "src/models/AppFeature";
+import {AppFeatures} from "src/models/AppFeatures";
+import {GrantPermissionCommand} from "src/domain/commands/GrantPermissionCommand";
+import {usePermissionsStore} from "stores/permissionsStore";
 
 const router = useRouter()
 
 const tabsetName = ref('')
 const tabsetNameRef = ref<HTMLElement>(null as unknown as HTMLInputElement)
 const windowLocation = ref('---')
+const activateBookmarks = ref(false)
+const login = ref(false)
 
 onMounted(() => {
   Analytics.firePageViewEvent('WelcomePage', document.location.href);
   windowLocation.value = window.location.href
   LocalStorage.set(TITLE_IDENT, 'Tabsets' + stageIdentifier())
+})
+
+watchEffect(() => {
+  const bmFeature = new AppFeatures().getFeature(FeatureIdent.BOOKMARKS)
+  if (activateBookmarks.value && bmFeature) {
+    useCommandExecutor().execute(new GrantPermissionCommand('bookmarks'))
+  } else if (!activateBookmarks.value && bmFeature) {
+    //useCommandExecutor().execute(new RevokePermissionCommand('bookmarks'))
+    usePermissionsStore().deactivateFeature('bookmarks')
+  }
 })
 
 watchEffect(() => {
@@ -126,29 +159,12 @@ const selected = () => tabsetNameRef.value.focus()
 
 const stageIdentifier = () => process.env.TABSETS_STAGE !== 'PRD' ? ' (' + process.env.TABSETS_STAGE + ')' : ''
 
+const clicked = (url: string) => openURL(url)
+
+const firebaseActive = () => {
+  //console.log("process.env.USE_FIREBASE", process.env.USE_FIREBASE)
+  return process.env.USE_FIREBASE === true
+  //return true
+}
 
 </script>
-
-<style scoped>
-
-
-.fullimageBackground {
-  height: 100%;
-  width: 100%;
-  align-items: center;
-  justify-content: center;
-}
-
-.fullimageBackground::before {
-  background-image: url('src/assets/bg.jpg');
-  background-size: cover;
-  content: "";
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  opacity: 0.3;
-}
-
-</style>

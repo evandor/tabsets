@@ -1,29 +1,4 @@
 <template>
-  <!--  <VOnboardingWrapper ref="wrapper" :steps="steps">-->
-  <!--    <template #default="{ previous, next, step, exit, isFirst, isLast, index }">-->
-  <!--      <VOnboardingStep>-->
-  <!--        <div class="welcome-tooltip-container">-->
-  <!--          <div class="tooltip">-->
-  <!--            <div class="row">-->
-  <!--              <div class="col-12 q-ma-none q-my-sm">-->
-  <!--                <span class="text-subtitle1" v-if="step.content.title">{{ step.content.title }}</span>-->
-  <!--              </div>-->
-  <!--            </div>-->
-  <!--            <div class="row">-->
-  <!--              <div class="col-12 q-ma-none text-caption">-->
-  <!--                <span v-if="step.content.description">{{ step.content.description }}</span>-->
-  <!--              </div>-->
-  <!--            </div>-->
-  <!--            <div class="row">-->
-  <!--              <div class="col-12 q-ma-none text-right">-->
-  <!--                <q-btn label="got it" flat dense @click="finish()"/>-->
-  <!--              </div>-->
-  <!--            </div>-->
-  <!--          </div>-->
-  <!--        </div>-->
-  <!--      </VOnboardingStep>-->
-  <!--    </template>-->
-  <!--  </VOnboardingWrapper>-->
 
   <q-page style="padding-top: 50px">
 
@@ -34,40 +9,40 @@
       </div>
     </div>
 
-    <div class="wrap2"
-         v-if="useAuthStore().isAuthenticated() && useTabsStore().tabsets.size === 0 && !useUiStore().appLoading">
-      <div class="row items-center text-grey-5">how to start?</div>
-      <div style="min-width:300px;border:1px solid #efefef;border-radius:5px">
-        <q-list>
-          <q-item clickable v-ripple>
-            <q-item-section avatar>
-              <Transition appear>
+    <Transition appear>
+      <div class="wrap2"
+           v-if="useTabsStore().tabsets.size === 0 && !useUiStore().appLoading">
+        <div class="row items-center text-grey-5">how to start?</div>
+        <div style="min-width:300px;border:1px solid #efefef;border-radius:5px">
+          <q-list>
+            <q-item clickable @click="useUiStore().startButtonAnimation('newTabset')">
+              <q-item-section avatar>
                 <SidePanelToolbarButton
                   icon="o_add_circle"
                   color="warning"/>
-              </Transition>
-            </q-item-section>
+              </q-item-section>
 
-            <q-item-section>
-              <q-item-label>New Tabset</q-item-label>
-              <q-item-label caption>Click to create a new tabset</q-item-label>
-            </q-item-section>
-          </q-item>
+              <q-item-section>
+                <q-item-label>New Tabset</q-item-label>
+                <q-item-label caption>Click to create a new tabset</q-item-label>
+              </q-item-section>
+            </q-item>
 
-          <q-item clickable v-ripple>
-            <q-item-section avatar>
-              <SidePanelToolbarButton
-                icon="o_settings"/>
-            </q-item-section>
+            <q-item clickable @click="useUiStore().startButtonAnimation('settings')">
+              <q-item-section avatar>
+                <SidePanelToolbarButton
+                  icon="o_settings"/>
+              </q-item-section>
 
-            <q-item-section>
-              <q-item-label>Settings</q-item-label>
-              <q-item-label caption>Click here to assign your account</q-item-label>
-            </q-item-section>
-          </q-item>
-        </q-list>
+              <q-item-section>
+                <q-item-label>Settings</q-item-label>
+                <q-item-label caption>Click here to assign your account</q-item-label>
+              </q-item-section>
+            </q-item>
+          </q-list>
+        </div>
       </div>
-    </div>
+    </Transition>
 
     <!-- list of tabs, assuming here we have at least one tabset -->
     <div class="q-ma-none q-pa-none">
@@ -190,7 +165,9 @@
                            v-model="showAddCurrentTabTooltip"
                            class="tooltip-tour"
                            anchor="bottom right" self="top middle" :offset="[-26, 3 ]">
-                  Click here <q-icon name="keyboard_arrow_up" /> to<br> add the current<br>tab to this tabset
+                  Click here
+                  <q-icon name="keyboard_arrow_up"/>
+                  to<br> add the current<br>tab to this tabset
                 </q-tooltip>
                 <q-tooltip class="tooltip-small" v-else>
                   Add current Tab to '{{ tabset.name }}'

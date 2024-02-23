@@ -67,7 +67,7 @@ export class SidePanelView {
     () => usePermissionsStore().hasFeature(FeatureIdent.TOP10));
 
   static readonly BOOKMARKS = new SidePanelView('bookmarks', '/sidepanel/bookmarks',
-    () => usePermissionsStore().hasFeature(FeatureIdent.BOOKMARKS));
+    () => usePermissionsStore().hasFeature(FeatureIdent.BOOKMARKS) && useRoute()?.path !== "/sidepanel/welcome");
 
   static readonly PUBLIC_TABSETS = new SidePanelView('categorized_tabsets', '/sidepanel/byCategory',
     () => usePermissionsStore().hasFeature(FeatureIdent.BOOKMARKS));
@@ -163,6 +163,8 @@ export const useUiStore = defineStore('ui', () => {
 
   // SidePanel
   let sidePanel = ref<SidePanel>(new SidePanel())
+  const animateNewTabsetButton = ref(false)
+  const animateSettingsButton = ref(false)
 
   const highlightTerm = ref<string | undefined>(undefined)
 
@@ -528,6 +530,21 @@ export const useUiStore = defineStore('ui', () => {
     }
   }
 
+  function startButtonAnimation(name: string) {
+    switch (name) {
+      case 'newTabset':
+        animateNewTabsetButton.value = true
+        setTimeout(() => animateNewTabsetButton.value = false, 2000)
+        break;
+      case 'settings':
+        animateSettingsButton.value = true
+        setTimeout(() => animateSettingsButton.value = false, 2000)
+        break;
+      default:
+        console.log("unrecognized element name", name)
+    }
+  }
+
   return {
     rightDrawer,
     rightDrawerOpen,
@@ -596,6 +613,9 @@ export const useUiStore = defineStore('ui', () => {
     tabBeingDragged,
     appLoading,
     progress,
-    setProgress
+    setProgress,
+    animateNewTabsetButton,
+    animateSettingsButton,
+    startButtonAnimation
   }
 })

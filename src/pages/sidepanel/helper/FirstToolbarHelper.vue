@@ -75,6 +75,7 @@
               :tooltip="newTabsetTooltip()"
               color="warning"
               class="q-ml-sm"
+              :class="{ shake: annimateNewTabsetButton }"
               data-testid="addTabsetBtn"
               @click="openNewTabsetDialog()"/>
 
@@ -132,6 +133,7 @@ const searching = ref(false)
 const existingSession = ref(false)
 const showFilter = ref(false)
 const windowLocation = ref('')
+const annimateNewTabsetButton = ref(false)
 
 const toggleSearch = () => {
   searching.value = !searching.value
@@ -143,6 +145,10 @@ const toggleSearch = () => {
 }
 
 windowLocation.value = window.location.href
+
+watchEffect(() => {
+  annimateNewTabsetButton.value = useUiStore().animateNewTabsetButton
+})
 
 watchEffect(() => {
   if (props.showSearchBox && !searching.value) {
@@ -251,4 +257,5 @@ const offsetTop = () => ($q.platform.is.capacitor || $q.platform.is.cordova) ? '
 .v-leave-to {
   opacity: 0;
 }
+
 </style>
