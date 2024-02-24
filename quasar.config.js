@@ -105,7 +105,8 @@ module.exports = configure(function (ctx) {
         FIREBASE_APP_ID: process.env.FIREBASE_APP_ID,
         FIREBASE_MESSAGING_SENDER_ID:process.env.FIREBASE_MESSAGING_SENDER_ID,
         FIREBASE_MESSAGING_KEY: process.env.FIREBASE_MESSAGING_KEY,
-        FIREBASE_STORAGE_BUCKET: process.env.FIREBASE_STORAGE_BUCKET
+        FIREBASE_STORAGE_BUCKET: process.env.FIREBASE_STORAGE_BUCKET,
+        FIREBASE_DATABASE_URL: process.env.FIREBASE_DATABASE_URL
       },
       // rawDefine: {}
       // ignorePublicFolder: true,

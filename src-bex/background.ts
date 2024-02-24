@@ -109,7 +109,7 @@ export default bexBackground((bridge, cons/* , allActiveConnections */) => {
       projectId: process.env.FIREBASE_PROJECT_ID,
       appId: process.env.FIREBASE_APP_ID,
       messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID,
-      databaseURL: "https://tabsets-dev-default-rtdb.europe-west1.firebasedatabase.app"
+      databaseURL: process.env.FIREBASE_DATABASE_URL
     })
 
     bridge.on('auth.user.login', ({data, respond}) => {
@@ -122,7 +122,9 @@ export default bexBackground((bridge, cons/* , allActiveConnections */) => {
       onValue(starCountRef, (snapshot) => {
         const data = snapshot.val();
         console.log("[service-worker] got change", data)
-        bridge.send('fb.message.received', {msg: 'event.tabset.updated',tstamp: data['tabsetChanged']})
+        if (data && data['tabsetChanged']) {
+          bridge.send('fb.message.received', {msg: 'event.tabset.updated',tstamp: data['tabsetChanged']})
+        }
       })
     })
 
