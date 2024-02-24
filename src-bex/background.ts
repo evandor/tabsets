@@ -129,40 +129,42 @@ export default bexBackground((bridge, cons/* , allActiveConnections */) => {
       })
     })
 
-    const messaging = getMessaging(firebaseApp)
+    // === not using messaging (yet?) ===
 
-    getToken(messaging, {
-      // @ts-ignore
-      serviceWorkerRegistration: self.registration, // note: we use the sw of ourself to register with
-    }).then((token) => {
-      bridge.send('fcm.token.received', {token: token})
-        .then((data) => {
-          console.log('[service-worker] fcm.token.received response', data)
-        })
-    }).catch((err) => {
-      console.log("[service-worker] got error:", err)
-    })
-
-    onBackgroundMessage(messaging, async (payload: any) => {
-      console.log(`[service-worker] Received FCM Message with payload2`, payload);
-
-      bridge.send('fb.message.received', payload)
-        .then((data) => {
-          console.log('[service-worker] fb.message.received response', data)
-        })
-        .catch((err) => {
-          console.log('[service-worker] error with fb.message.received', err)
-        })
-
-      const notificationTitle = 'Background Message Title!';
-      const notificationOptions = {
-        body: 'Background Message body.',
-        icon: '/firebase-logo.png'
-      };
-
-      // @ts-ignore
-      await self.registration.showNotification(notificationTitle, notificationOptions);
-    })
+    // const messaging = getMessaging(firebaseApp)
+    //
+    // getToken(messaging, {
+    //   // @ts-ignore
+    //   serviceWorkerRegistration: self.registration, // note: we use the sw of ourself to register with
+    // }).then((token) => {
+    //   bridge.send('fcm.token.received', {token: token})
+    //     .then((data) => {
+    //       console.log('[service-worker] fcm.token.received response', data)
+    //     })
+    // }).catch((err) => {
+    //   console.log("[service-worker] got error:", err)
+    // })
+    //
+    // onBackgroundMessage(messaging, async (payload: any) => {
+    //   console.log(`[service-worker] Received FCM Message with payload2`, payload);
+    //
+    //   bridge.send('fb.message.received', payload)
+    //     .then((data) => {
+    //       console.log('[service-worker] fb.message.received response', data)
+    //     })
+    //     .catch((err) => {
+    //       console.log('[service-worker] error with fb.message.received', err)
+    //     })
+    //
+    //   const notificationTitle = 'Background Message Title!';
+    //   const notificationOptions = {
+    //     body: 'Background Message body.',
+    //     icon: '/firebase-logo.png'
+    //   };
+    //
+    //   // @ts-ignore
+    //   await self.registration.showNotification(notificationTitle, notificationOptions);
+    // })
   }
 
 });
