@@ -27,10 +27,6 @@ import {useSuggestionsStore} from "stores/suggestionsStore";
 import {Suggestion, SuggestionState, SuggestionType} from "src/models/Suggestion";
 import {MonitoringType} from "src/models/Monitor";
 import {BlobType} from "src/models/SavedBlob";
-import MqttService from "src/services/mqtt/MqttService";
-import {useRouter} from "vue-router";
-import tabsetService from "src/services/TabsetService";
-import TabsetService from "src/services/TabsetService";
 import {TabInFolder} from "src/models/TabInFolder";
 
 let db: PersistenceService = null as unknown as PersistenceService
@@ -62,7 +58,7 @@ export function useTabsetService() {
     useTabsStore().tabsets.forEach(ts => {
       if (ts.sharedId) {
         //console.log("subscribing to topic ", ts.sharedId)
-        MqttService.subscribe(ts.sharedId)
+        //MqttService.subscribe(ts.sharedId)
       }
     })
   }

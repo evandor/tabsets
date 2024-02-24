@@ -334,7 +334,6 @@ import SidePanelPageTabList from "components/layouts/SidePanelPageTabList.vue";
 import {AddTabToTabsetCommand} from "src/domain/tabs/AddTabToTabset";
 import {CopyToClipboardCommand} from "src/domain/commands/CopyToClipboard";
 import ShareTabsetPubliclyDialog from "components/dialogues/ShareTabsetPubliclyDialog.vue";
-import MqttService from "src/services/mqtt/MqttService";
 import {FirebaseCall} from "src/services/firebase/FirebaseCall";
 import getScrollTarget = scroll.getScrollTarget;
 import InfoMessageWidget from "components/widgets/InfoMessageWidget.vue";
@@ -699,9 +698,9 @@ if ($q.platform.is.chrome) {
         //   } else {
         //     chrome.tabs.sendMessage(message.data.tabId, "cs-iframe-open")
         //   }
-      } else if (message.name === 'mqtt-url-changed') {
-        console.log("got message 'mqtt-url-changed'", message)
-        MqttService.reset().then(() => MqttService.init(message.data.mqttUrl))
+      // } else if (message.name === 'mqtt-url-changed') {
+      //   console.log("got message 'mqtt-url-changed'", message)
+      //   MqttService.reset().then(() => MqttService.init(message.data.mqttUrl))
       } else if (message.name === 'reload-application') {
         AppService.restart("restarted=true")
       } else {

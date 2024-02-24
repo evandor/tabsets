@@ -13,8 +13,6 @@ import {useMessagesStore} from "stores/messagesStore";
 import {
   SHARING_AUTHOR_IDENT,
   SHARING_AVATAR_IDENT,
-  SHARING_MQTT_IDENT,
-  UI_WINDOWS_ITEMS_PER_PAGE
 } from "boot/constants";
 
 export enum DrawerTabs {
@@ -153,7 +151,6 @@ export const useUiStore = defineStore('ui', () => {
 
   // online offline
   const networkOnline = ref(navigator.onLine)
-  const mqttOffline = ref<boolean | undefined>(undefined)
 
   // RightDrawer
   let rightDrawer = ref<RightDrawer>(new RightDrawer())
@@ -214,7 +211,6 @@ export const useUiStore = defineStore('ui', () => {
 
   const sharingAuthor = ref<string>(LocalStorage.getItem(SHARING_AUTHOR_IDENT) as unknown as string || '')
   const sharingAvatar = ref<string>(LocalStorage.getItem(SHARING_AVATAR_IDENT) as unknown as string || '')
-  const sharingMqttUrl = ref<string>(LocalStorage.getItem(SHARING_MQTT_IDENT) as unknown as string || '')
 
   watch(rightDrawer.value, (val: Object) => {
     LocalStorage.set("ui.rightDrawer", val)
@@ -253,15 +249,6 @@ export const useUiStore = defineStore('ui', () => {
       console.log("val", val)
       LocalStorage.set(SHARING_AVATAR_IDENT, val)
     })
-
-  watch(sharingMqttUrl,
-    (val: string | undefined) => {
-      //console.log("change of sharingMqttUrl", val)
-      (val && val.trim().length > 0) ?
-        LocalStorage.set(SHARING_MQTT_IDENT, val) :
-        LocalStorage.remove(SHARING_MQTT_IDENT)
-    })
-
 
   const route = useRoute()
   watch(route, (to) => {
@@ -607,9 +594,7 @@ export const useUiStore = defineStore('ui', () => {
     showTabsetDescription,
     sharingAuthor,
     sharingAvatar,
-    sharingMqttUrl,
     networkOnline,
-    mqttOffline,
     tabBeingDragged,
     appLoading,
     progress,

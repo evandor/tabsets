@@ -40,10 +40,6 @@
 import {ref, watchEffect} from "vue";
 import {date, useDialogPluginComponent, useQuasar} from "quasar";
 import {useTabsStore} from "src/stores/tabsStore";
-import {TabComment} from "src/models/Tab";
-import {useTabsetService} from "src/services/TabsetService2";
-import MqttService from "src/services/mqtt/MqttService";
-import {useUiStore} from "stores/uiStore";
 import {TabsetSharing} from "src/models/Tabset";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {AddCommentCommand} from "src/domain/tabs/AddCommentCommand";
@@ -67,8 +63,6 @@ const $q = useQuasar()
 const dateFormat = "YYYY-MM-DD HH:mm"
 const newTabsetName = ref('')
 const newTabsetNameExists = ref(false)
-const hideWarning = ref(false)
-const scheduleFor = ref(date.formatDate(new Date().getTime(), dateFormat))
 
 watchEffect(() => {
   newTabsetNameExists.value = !!tabsStore.nameExistsInContextTabset(newTabsetName.value);

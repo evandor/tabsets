@@ -94,7 +94,6 @@ function inIgnoredMessages(request: any) {
     request.name === 'reload-tabset' ||
     request.name === 'detail-level-perTabset-changed' ||
     request.name === 'detail-level-changed' ||
-    request.name === 'mqtt-url-changed' ||
     request.name === 'reload-application' ||
     request.name === 'window-updated' ||
     request.action === 'highlight-annotation'

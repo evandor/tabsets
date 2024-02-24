@@ -24,13 +24,9 @@ const SUBSCRIPTION_ID_IDENT = 'subscription.id';
 
 const SHARING_AUTHOR_IDENT = 'sharing.author';
 const SHARING_AVATAR_IDENT = 'sharing.avatar';
-const SHARING_MQTT_IDENT = 'sharing.mqttUrl';
 const SHARING_INSTALLATION = 'sharing.installation'
 
 const SYNC_TYPE = "sync.type"
-
-const SYNC_GITLAB_URL = "sync.gitlab.url"
-const SYNC_GITLAB_TOKEN = "sync.gitlab.token"
 
 const SYNC_GITHUB_TOKEN = "sync.github.token"
 
