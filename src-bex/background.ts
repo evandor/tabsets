@@ -112,7 +112,7 @@ export default bexBackground((bridge, cons/* , allActiveConnections */) => {
       projectId: process.env.FIREBASE_PROJECT_ID,
       appId: process.env.FIREBASE_APP_ID,
       messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID,
-      databaseURL: "https://tabsets-dev-default-rtdb.europe-west1.firebasedatabase.app"
+      databaseURL: process.env.FIREBASE_DATABASE_URL
     })
 
     bridge.on('auth.user.login', ({data, respond}) => {
