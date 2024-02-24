@@ -8,12 +8,13 @@ import {LocalStorage, setCssVar, useQuasar} from "quasar";
 import AppService from "src/services/AppService";
 import {EventEmitter} from "events";
 import {logtail} from "boot/logtail";
-import {onAuthStateChanged} from "firebase/auth";
+import {getAuth, onAuthStateChanged} from "firebase/auth";
 import {CURRENT_USER_ID} from "boot/constants";
 import {useRouter} from "vue-router";
 import FirebaseServices from "src/services/firebase/FirebaseServices";
 import {useNotificationHandler} from "src/services/ErrorHandler";
 import FirestorePersistenceService from "src/services/persistence/FirestorePersistenceService";
+import {ref, onValue} from "firebase/database";
 
 const $q = useQuasar()
 const router = useRouter()
@@ -35,21 +36,21 @@ $q.bex.on('fcm.token.received', ({data, respond}) => {
   respond('thx')
 })
 
-$q.bex.on('fcm.message.received', async ({data, respond}) => {
+$q.bex.on('fb.message.received', async ({data, respond}) => {
   console.log('Message received from service worker:', data)
 
-  if (data.data.msg) {
-    switch (data.data.msg) {
+  if (data.msg) {
+    switch (data.msg) {
       case "event.tabset.updated":
         const lastChange = LocalStorage.getItem("ui.tabsets.lastUpdate") as number || 0;
         if (new Date().getTime() - lastChange >= 2000) { // event did not happen "just now", probably remotely, therefore updating
-          console.log("reloading spaces and tabsets due to remote event", new Date().getTime() - lastChange, data.data)
+          console.log("reloading spaces and tabsets due to remote event", new Date().getTime() - lastChange, data)
           await FirestorePersistenceService.loadSpaces()
           await FirestorePersistenceService.loadTabsets()
         }
         break
       default:
-        console.log("unrecognized payload with msg " + data.data.msg)
+        console.log("unrecognized payload with msg " + data.msg)
     }
   } else {
     console.log("unrecognized payload without msg field")
@@ -61,13 +62,12 @@ if (process.env.USE_FIREBASE) {
   const auth = FirebaseServices.getAuth()
   onAuthStateChanged(auth, async (user) => {
     if (user) {
-      // User is signed in, see docs for a list of available properties
-      // https://firebase.google.com/docs/reference/js/auth.user
       console.log("%conAuthStateChanged: about to log in", "border:1px solid green")
 
       // TODO revisit now
       try {
         await AppService.init($q, router, true, user)
+        $q.bex.send('auth.user.login',{userId: user.uid})
       } catch (error: any) {
         console.log("%ccould not initialize appService due to " + error, "background-color:orangered")
         console.error("error", error, typeof error, error.code, error.message)
@@ -85,6 +85,7 @@ if (process.env.USE_FIREBASE) {
       }
     }
   });
+
 }
 
 const useDarkMode: string = $q.localStorage.getItem('darkMode') || "false" as string
