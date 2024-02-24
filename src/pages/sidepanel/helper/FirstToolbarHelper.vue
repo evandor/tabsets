@@ -65,8 +65,9 @@
 
             <SidePanelToolbarButton
               v-if="showSyncInfo()"
-              icon="o_sync_alt"
-              tooltip="This account is being synced"
+              :icon="useUiStore().fcmSupported ? 'o_sync_alt' : 'sync_problem'"
+              :tooltip="useUiStore().fcmSupported ? 'This account is being synced' : 'There is a problem with the synchronization'"
+              @click="syncButtonClicked()"
               color="grey"
               size="12px"
               class="q-ml-sm"/>
@@ -245,6 +246,17 @@ const showSyncInfo = () => {
 
 const offsetTop = () => ($q.platform.is.capacitor || $q.platform.is.cordova) ? 'margin-top:40px;' : ''
 
+const syncButtonClicked = () => {
+  if (!useUiStore().fcmSupported) {
+    console.debug("[service-worker] requesting permission2...")
+    Notification.requestPermission().then((permission) => {
+      console.log("got", permission)
+      if (permission === 'granted') {
+        console.log('Notification permission granted.');
+      }
+    }).catch((err) => console.log("err", err))
+  }
+}
 </script>
 
 <style scoped>

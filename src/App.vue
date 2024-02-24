@@ -14,6 +14,7 @@ import {useRouter} from "vue-router";
 import FirebaseServices from "src/services/firebase/FirebaseServices";
 import {useNotificationHandler} from "src/services/ErrorHandler";
 import FirestorePersistenceService from "src/services/persistence/FirestorePersistenceService";
+import {useUiStore} from "stores/uiStore";
 
 const $q = useQuasar()
 const router = useRouter()
@@ -27,6 +28,12 @@ emitter.setMaxListeners(12)
 if (process.env.USE_FIREBASE) {
   FirebaseServices.init()
 }
+
+$q.bex.on('fcm.not.supported', ({data, respond}) => {
+  console.log('Firebase Cloud messaging currently not supported')
+  useUiStore().fcmSupported = false
+  respond('thx')
+})
 
 $q.bex.on('fcm.token.received', ({data, respond}) => {
   console.log('Token received from service worker:', data)
@@ -124,26 +131,5 @@ if (!process.env.USE_FIREBASE) {
 
 
 logtail.info(`tabsets started: mode=${process.env.MODE}, version=${import.meta.env.PACKAGE_VERSION}`)
-
-Notification.requestPermission().then((permission) => {
-  if (permission === 'granted') {
-    console.log('Notification permission granted.')
-
-    // FirebaseServices.getMessageToken().then((currentToken) => {
-    //   if (currentToken) {
-    //     console.log("===>", currentToken)
-    //   } else {
-    //     console.log('No registration token available. Request permission to generate one.');
-    //   }
-    // }).catch((err) => {
-    //   console.log('An error occurred while retrieving token. ', err);
-    // });
-
-    // const messaging = getMessaging();
-    // // Add the public key generated from the console here.
-    // getToken(messaging, {vapidKey: process.env.FIREBASE_MESSAGING_KEY})
-    //   .then((c:any) => console.log("===>", c))
-  }
-})
 
 </script>

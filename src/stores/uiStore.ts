@@ -216,6 +216,9 @@ export const useUiStore = defineStore('ui', () => {
   const sharingAvatar = ref<string>(LocalStorage.getItem(SHARING_AVATAR_IDENT) as unknown as string || '')
   const sharingMqttUrl = ref<string>(LocalStorage.getItem(SHARING_MQTT_IDENT) as unknown as string || '')
 
+  // firebase cloud messaging
+  const fcmSupported = ref(true)
+
   watch(rightDrawer.value, (val: Object) => {
     LocalStorage.set("ui.rightDrawer", val)
   }, {deep: true})
@@ -616,6 +619,7 @@ export const useUiStore = defineStore('ui', () => {
     setProgress,
     animateNewTabsetButton,
     animateSettingsButton,
-    startButtonAnimation
+    startButtonAnimation,
+    fcmSupported
   }
 })

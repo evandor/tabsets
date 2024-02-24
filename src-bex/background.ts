@@ -5,7 +5,8 @@ import 'firebase/compat/auth';
 import 'firebase/compat/firestore';
 import {getToken} from "firebase/messaging";
 import {getMessaging} from "firebase/messaging/sw";
-import {onBackgroundMessage} from "firebase/messaging/sw";
+import {onBackgroundMessage, isSupported} from "firebase/messaging/sw";
+import {useAuthStore} from "stores/authStore";
 
 // https://stackoverflow.com/questions/49739438/when-and-how-does-a-pwa-update-itself
 const updateTrigger = 10
@@ -30,7 +31,6 @@ chrome.runtime.onInstalled.addListener((callback) => {
         "https://tabsets.web.app/#/updatedFrom/" + callback.previousVersion :
         "https://tabsets.web.app/#/installed/"
     })
-   // }
   }
 });
 
@@ -50,7 +50,7 @@ if (chrome.sidePanel && chrome.sidePanel.setPanelBehavior) {
     .catch((error: any) => console.error(error));
 }
 
-chrome.runtime.onInstalled.addListener((details) => {
+chrome.runtime.onInstalled.addListener( (details) => {
   console.debug("adding onInstalled listener in background.ts", details)
   // @ts-ignore
   if (chrome.action) {
@@ -103,11 +103,10 @@ chrome.runtime.onConnect.addListener(function (port) {
   }
 });
 
-export default bexBackground((bridge, cons/* , allActiveConnections */) => {
+export default bexBackground(async (bridge, cons/* , allActiveConnections */) => {
 
   if (process.env.USE_FIREBASE) {
     console.debug("[service-worker] about to obtain cloud messaging token")
-
     const firebaseApp = firebase.initializeApp({
       apiKey: process.env.FIREBASE_API_KEY,
       authDomain: process.env.FIREBASE_AUTH_DOMAIN,
@@ -115,16 +114,53 @@ export default bexBackground((bridge, cons/* , allActiveConnections */) => {
       appId: process.env.FIREBASE_APP_ID,
       messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID
     })
+    console.debug("[service-worker] firebase app initialized")
+
+    const isSupportedBrowser = await isSupported();
+    if (!isSupportedBrowser) {
+      console.log("[service-worker] messaging is not supported!!")
+      bridge.send('fcm.not.supported', {})
+        .catch((err) => {
+          console.log('[service-worker] got error: ' + err)
+        })
+
+      return
+    }
+
+    console.log("====>")
     const messaging = getMessaging(firebaseApp)
+    // const messaging = (async () => {
+    //   try {
+    //     const isSupportedBrowser = await isSupported();
+    //     if (isSupportedBrowser) {
+    //       return getMessaging(firebaseApp);
+    //     }
+    //     console.log('Firebase not supported this browser...');
+    //     return null;
+    //   } catch (err) {
+    //     console.log(err);
+    //     return null;
+    //   }
+    // })();
+    console.debug("[service-worker] got messaging", await messaging)
 
     getToken(messaging, {
       // @ts-ignore
       serviceWorkerRegistration: self.registration, // note: we use the sw of ourself to register with
     }).then((token) => {
-      bridge.send('fcm.token.received', {token: token})
-        .then((data) => {
-          console.log('[service-worker] fcm.token.received response', data)
-        })
+      if (token) {
+        bridge.send('fcm.token.received', {token: token})
+          .then((data) => {
+            console.log('[service-worker] fcm.token.received response', data)
+          })
+      } else {
+        // console.debug("[service-worker] requesting permission...")
+        // Notification.requestPermission().then((permission) => {
+        //   if (permission === 'granted') {
+        //     console.log('Notification permission granted.');
+        //   }
+        // })
+      }
     }).catch((err) => {
       console.log("[service-worker] got error:", err)
     })

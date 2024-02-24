@@ -45,7 +45,7 @@ class FirebaseServices {
     this.firestore = getFirestore(this.firebaseApp)
     //console.log("got firestore", this.firestore)
 
-    this.messaging = getMessaging(this.firebaseApp)
+    //this.messaging = getMessaging(this.firebaseApp)
     //console.log("got messaging", this.messaging)
 
     this.storage = getStorage(this.firebaseApp)
