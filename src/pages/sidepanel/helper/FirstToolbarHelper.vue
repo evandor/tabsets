@@ -65,9 +65,8 @@
 
             <SidePanelToolbarButton
               v-if="showSyncInfo()"
-              :icon="useUiStore().fcmSupported ? 'o_sync_alt' : 'sync_problem'"
-              :tooltip="useUiStore().fcmSupported ? 'This account is being synced' : 'There is a problem with the synchronization'"
-              @click="syncButtonClicked()"
+              icon="o_sync_alt"
+              tooltip="This account is being synced"
               color="grey"
               size="12px"
               class="q-ml-sm"/>

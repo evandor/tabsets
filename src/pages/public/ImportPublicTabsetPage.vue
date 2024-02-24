@@ -54,7 +54,6 @@ import {FirebaseCall} from "src/services/firebase/FirebaseCall";
 import {useTabsetService} from "src/services/TabsetService2";
 import _ from "lodash"
 import {useTabsStore} from "stores/tabsStore";
-import MqttService from "src/services/mqtt/MqttService";
 import {useUiStore} from "stores/uiStore";
 
 const route = useRoute();
@@ -136,7 +135,7 @@ onMounted(() => {
 const start = () => {
   state.value = 'importing'
   console.log("shareId", shareId.value, name.value)
-  MqttService.subscribe(shareId.value)
+  //MqttService.subscribe(shareId.value)
   // cb = cache buster, do not cache
   FirebaseCall.get("/share/public/" + shareId.value + "?cb=" + new Date().getTime(), false)
     .then((res: any) => {
@@ -149,7 +148,7 @@ const start = () => {
       if (tabset.value.mqttUrl) {
         console.log("got new mqtt URL", tabset.value.mqttUrl)
         useUiStore().sharingMqttUrl = tabset.value.mqttUrl
-        MqttService.reset().then(() => MqttService.init(tabset.value.mqttUrl))
+        //MqttService.reset().then(() => MqttService.init(tabset.value.mqttUrl))
       }
 
       //const exists = useTabsetService().getTabset(tabset.value.id)
@@ -176,7 +175,7 @@ const start = () => {
         router.push("/pwa/tabsets/" + tabset.value.id)
       }
     })
-    .catch((err) => {
+    .catch((err:any) => {
       console.log("got error", err)
     })
 }

@@ -32,22 +32,7 @@
         </q-avatar>
       </div>
 
-      <div class="col-3">
-        Mqtt Connection
-      </div>
-      <div class="col-7">
-        <q-input
-          @blur="sendMsg('mqtt-url-changed', {mqttUrl})"
-          type="url" color="primary" filled v-model="mqttUrl"
-          hint="e.g. mqtts://public:public@public.cloud.shiftr.io:443">
-          <template v-slot:prepend>
-            <q-icon name="ios_share"/>
-          </template>
-        </q-input>
-      </div>
-      <div class="col text-right">
 
-      </div>
 
 <!--      <div class="col-3">-->
 <!--        Installation ID-->

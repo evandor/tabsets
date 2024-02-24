@@ -5,7 +5,6 @@ import {useTabsStore} from "src/stores/tabsStore";
 import {useTabsetService} from "src/services/TabsetService2";
 import {Tabset, TabsetSharing} from "src/models/Tabset";
 import {useUiStore} from "stores/uiStore";
-import MqttService from "src/services/mqtt/MqttService";
 
 export class AddCommentCommand implements Command<any> {
 
@@ -27,7 +26,7 @@ export class AddCommentCommand implements Command<any> {
       const tabset = useTabsetService().getTabset(tabData.tabsetId)
       if (tabset && tabset.sharedId) {
         tabset.sharing = TabsetSharing.PUBLIC_LINK_OUTDATED
-        MqttService.publishTabComment(tabset.sharedId, tabData.tab, comment)
+        //MqttService.publishTabComment(tabset.sharedId, tabData.tab, comment)
       }
       if (tabset) {
         return useTabsetService().saveTabset(tabset)

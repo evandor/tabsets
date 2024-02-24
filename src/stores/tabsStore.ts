@@ -14,7 +14,6 @@ import {Space} from "src/models/Space";
 import {useTabsetService} from "src/services/TabsetService2";
 import {useWindowsStore} from "src/stores/windowsStore";
 import {TabAndTabsetId} from "src/models/TabAndTabsetId";
-import MqttService from "src/services/mqtt/MqttService";
 
 async function queryTabs(): Promise<chrome.tabs.Tab[]> {
   // @ts-ignore
@@ -488,10 +487,10 @@ export const useTabsStore = defineStore('tabs', {
       useWindowsStore().addToWindowSet(ts.window)
 
       if (ts.sharing === TabsetSharing.PUBLIC_LINK || ts.sharing === TabsetSharing.PUBLIC_LINK_OUTDATED) {
-        MqttService.init()
-        if (ts.sharedId) {
-          MqttService.subscribe(ts.sharedId)
-        }
+        // MqttService.init()
+        // if (ts.sharedId) {
+        //   MqttService.subscribe(ts.sharedId)
+        // }
       }
 
       this.tabsets.set(ts.id, ts)

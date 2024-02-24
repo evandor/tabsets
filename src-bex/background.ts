@@ -5,8 +5,8 @@ import 'firebase/compat/auth';
 import 'firebase/compat/firestore';
 import {getToken} from "firebase/messaging";
 import {getMessaging} from "firebase/messaging/sw";
-import {onBackgroundMessage, isSupported} from "firebase/messaging/sw";
-import {useAuthStore} from "stores/authStore";
+import {onBackgroundMessage} from "firebase/messaging/sw";
+import {getDatabase, ref, onValue} from "firebase/database";
 
 // https://stackoverflow.com/questions/49739438/when-and-how-does-a-pwa-update-itself
 const updateTrigger = 10
@@ -50,14 +50,12 @@ if (chrome.sidePanel && chrome.sidePanel.setPanelBehavior) {
     .catch((error: any) => console.error(error));
 }
 
-chrome.runtime.onInstalled.addListener( (details) => {
+chrome.runtime.onInstalled.addListener((details) => {
   console.debug("adding onInstalled listener in background.ts", details)
   // @ts-ignore
   if (chrome.action) {
     // @ts-ignore
     chrome.action.onClicked.addListener((tab) => {
-      // Opens our extension in a new browser window.
-      // Only if a popup isn't defined in the manifest.
       chrome.tabs.create(
         {
           url: chrome.runtime.getURL('www/index.html'),
@@ -96,95 +94,77 @@ chrome.runtime.onStartup.addListener(() => {
 
 chrome.runtime.onConnect.addListener(function (port) {
   if (port.name === 'tabsetsSidepanel') {
-    //console.log("[service-worker] port3", port)
+    //console.log("port3", port)
     port.onDisconnect.addListener(async () => {
       //alert('Sidepanel closed.');
     });
   }
 });
 
-export default bexBackground(async (bridge, cons/* , allActiveConnections */) => {
+export default bexBackground((bridge, cons/* , allActiveConnections */) => {
 
   if (process.env.USE_FIREBASE) {
     console.debug("[service-worker] about to obtain cloud messaging token")
+
     const firebaseApp = firebase.initializeApp({
       apiKey: process.env.FIREBASE_API_KEY,
       authDomain: process.env.FIREBASE_AUTH_DOMAIN,
       projectId: process.env.FIREBASE_PROJECT_ID,
       appId: process.env.FIREBASE_APP_ID,
-      messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID
-    })
-    console.debug("[service-worker] firebase app initialized")
-
-    const isSupportedBrowser = await isSupported();
-    if (!isSupportedBrowser) {
-      console.log("[service-worker] messaging is not supported!!")
-      bridge.send('fcm.not.supported', {})
-        .catch((err) => {
-          console.log('[service-worker] got error: ' + err)
-        })
-
-      return
-    }
-
-    console.log("====>")
-    const messaging = getMessaging(firebaseApp)
-    // const messaging = (async () => {
-    //   try {
-    //     const isSupportedBrowser = await isSupported();
-    //     if (isSupportedBrowser) {
-    //       return getMessaging(firebaseApp);
-    //     }
-    //     console.log('Firebase not supported this browser...');
-    //     return null;
-    //   } catch (err) {
-    //     console.log(err);
-    //     return null;
-    //   }
-    // })();
-    console.debug("[service-worker] got messaging", await messaging)
-
-    getToken(messaging, {
-      // @ts-ignore
-      serviceWorkerRegistration: self.registration, // note: we use the sw of ourself to register with
-    }).then((token) => {
-      if (token) {
-        bridge.send('fcm.token.received', {token: token})
-          .then((data) => {
-            console.log('[service-worker] fcm.token.received response', data)
-          })
-      } else {
-        // console.debug("[service-worker] requesting permission...")
-        // Notification.requestPermission().then((permission) => {
-        //   if (permission === 'granted') {
-        //     console.log('Notification permission granted.');
-        //   }
-        // })
-      }
-    }).catch((err) => {
-      console.log("[service-worker] got error:", err)
+      messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID,
+      databaseURL: "https://tabsets-dev-default-rtdb.europe-west1.firebasedatabase.app"
     })
 
-    onBackgroundMessage(messaging, async (payload: any) => {
-      console.log(`[service-worker] Received FCM Message with payload2`, payload);
-
-      bridge.send('fcm.message.received', payload)
-        .then((data) => {
-          console.log('[service-worker] fcm.message.received response', data)
-        })
-        .catch((err) => {
-          console.log('[service-worker] error with fcm.message.received', err)
-        })
-
-      const notificationTitle = 'Background Message Title!';
-      const notificationOptions = {
-        body: 'Background Message body.',
-        icon: '/firebase-logo.png'
-      };
-
-      // @ts-ignore
-      await self.registration.showNotification(notificationTitle, notificationOptions);
+    bridge.on('auth.user.login', ({data, respond}) => {
+      console.debug("[service-worker] got message 'auth.user.login'", data)
+      const currentUser = data.userId
+      const realtimeDb = getDatabase(firebaseApp)
+      const path = 'users/' + currentUser + '/access'
+      console.log("[service-worker] listening to changes on ", path)
+      const starCountRef = ref(realtimeDb, path);
+      onValue(starCountRef, (snapshot) => {
+        const data = snapshot.val();
+        console.log("[service-worker] got change", data)
+        bridge.send('fb.message.received', {msg: 'event.tabset.updated',tstamp: data['tabsetChanged']})
+      })
     })
+
+    // === not using messaging (yet?) ===
+
+    // const messaging = getMessaging(firebaseApp)
+    //
+    // getToken(messaging, {
+    //   // @ts-ignore
+    //   serviceWorkerRegistration: self.registration, // note: we use the sw of ourself to register with
+    // }).then((token) => {
+    //   bridge.send('fcm.token.received', {token: token})
+    //     .then((data) => {
+    //       console.log('[service-worker] fcm.token.received response', data)
+    //     })
+    // }).catch((err) => {
+    //   console.log("[service-worker] got error:", err)
+    // })
+    //
+    // onBackgroundMessage(messaging, async (payload: any) => {
+    //   console.log(`[service-worker] Received FCM Message with payload2`, payload);
+    //
+    //   bridge.send('fb.message.received', payload)
+    //     .then((data) => {
+    //       console.log('[service-worker] fb.message.received response', data)
+    //     })
+    //     .catch((err) => {
+    //       console.log('[service-worker] error with fb.message.received', err)
+    //     })
+    //
+    //   const notificationTitle = 'Background Message Title!';
+    //   const notificationOptions = {
+    //     body: 'Background Message body.',
+    //     icon: '/firebase-logo.png'
+    //   };
+    //
+    //   // @ts-ignore
+    //   await self.registration.showNotification(notificationTitle, notificationOptions);
+    // })
   }
 
 });

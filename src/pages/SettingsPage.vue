@@ -419,13 +419,13 @@ import Analytics from "src/utils/google-analytics";
 import {useGroupsStore} from "../stores/groupsStore";
 import {useSuggestionsStore} from "stores/suggestionsStore";
 import {StaticSuggestionIdent, Suggestion} from "src/models/Suggestion";
-import {useRoute, useRouter} from "vue-router";
+import {useRoute} from "vue-router";
 import {
   SHARING_AUTHOR_IDENT,
   SHARING_AVATAR_IDENT,
   SHARING_INSTALLATION,
-  SHARING_MQTT_IDENT, STRIP_CHARS_IN_USER_INPUT,
-  TITLE_IDENT, UI_WINDOWS_ITEMS_PER_PAGE
+  STRIP_CHARS_IN_USER_INPUT,
+  TITLE_IDENT
 } from "boot/constants";
 import SyncingSettings from "pages/helper/SyncingSettings.vue";
 import SubscriptionSettings from "pages/helper/SubscriptionSettings.vue";
@@ -461,7 +461,6 @@ const detailLevel = ref<ListDetailLevel>(localStorage.getItem('ui.detailLevel') 
 
 const nickname = ref<string>(localStorage.getItem(SHARING_AUTHOR_IDENT) || '')
 const avatar = ref<string>(localStorage.getItem(SHARING_AVATAR_IDENT) as string || '')
-const mqttUrl = ref<string>(localStorage.getItem(SHARING_MQTT_IDENT) as string || '')
 const installationId = ref<string>(localStorage.getItem(SHARING_INSTALLATION) as string || '---')
 
 const bookmarksPermissionGranted = ref<boolean | undefined>(usePermissionsStore().hasPermission('bookmarks'))
@@ -573,11 +572,6 @@ watchEffect(() => {
   (avatar.value && avatar.value.trim().length > 0) ?
     LocalStorage.set(SHARING_AVATAR_IDENT, avatar.value.replace(STRIP_CHARS_IN_USER_INPUT, '')) :
     LocalStorage.remove(SHARING_AVATAR_IDENT)
-})
-
-watchEffect(() => {
-  console.log("setting sharing.mqttUrl to", mqttUrl.value.replace(STRIP_CHARS_IN_USER_INPUT, ''))
-  useUiStore().sharingMqttUrl = mqttUrl.value
 })
 
 watchEffect(() => {
