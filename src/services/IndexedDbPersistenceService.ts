@@ -444,7 +444,7 @@ class IndexedDbPersistenceService implements PersistenceService {
       console.log("mhtml", mhtml)
       const mhtmlString = mhtml.content ? await mhtml.content?.text() : '<h6>sorry, no content found</h6>'
       //console.log("mhtmlString", mhtmlString)
-     // const html = mhtmlString ? mhtml2html.convert(mhtmlString) : 'sorry, no content found'
+      // const html = mhtmlString ? mhtml2html.convert(mhtmlString) : 'sorry, no content found'
       const html = 'sorry, no content found'
       console.log("mhtml3", mhtml)
       const innerHtml = html.window.document.documentElement.innerHTML
@@ -794,18 +794,15 @@ class IndexedDbPersistenceService implements PersistenceService {
     return this.db.delete('suggestions', ident)
   }
 
-  setSuggestionState(suggestionId: string, state: SuggestionState): Promise<Suggestion> {
+  async setSuggestionState(suggestionId: string, state: SuggestionState): Promise<Suggestion> {
     console.log("setting suggestion to state", suggestionId, state)
-    const objectStore = this.db.transaction('suggestions', 'readwrite').objectStore('suggestions');
-    return objectStore.get(suggestionId)
-      .then((res: Suggestion) => {
-        if (res) {
-          res.state = state
-          objectStore.put(res, suggestionId)
-        }
-        return res
-      })
-      .catch((err) => Promise.reject("error updating suggestion" + err))
+    const s: Suggestion = await this.db.get('suggestions', suggestionId)
+    if (s) {
+      s.state = state
+      await this.db.put('suggestions', s, suggestionId)
+      return Promise.resolve(s)
+    }
+    return Promise.reject("could not update suggestion")
   }
 
   compactDb(): Promise<any> {

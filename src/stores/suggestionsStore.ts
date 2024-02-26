@@ -69,19 +69,6 @@ export const useSuggestionsStore = defineStore('suggestions', () => {
             .then((res: any) => loadSuggestionsFromDb())
     }
 
-    // function delayDecision(id: string): Promise<void> {
-    // }
-    //
-    // function ignoreSuggestion(id: string): Promise<void> {
-    //     return storage.setSuggestionState(id, SuggestionState.IGNORED)
-    //         .then((res: any) => loadSuggestionsFromDb())
-    // }
-    //
-    // function suggestionAsNotification(id: string): Promise<void> {
-    //     return storage.setSuggestionState(id, SuggestionState.NOTIFICATION)
-    //         .then((res: any) => loadSuggestionsFromDb())
-    // }
-
     function applySuggestion(id: string): Promise<Suggestion> {
         console.log("%capplied suggestion", "background-color:grey", id)
         return storage.setSuggestionState(id, SuggestionState.APPLIED)
