@@ -20,7 +20,7 @@ import {getStorage} from "firebase/storage";
 import {useTabsStore} from "stores/tabsStore";
 import FirebaseServices from "src/services/firebase/FirebaseServices";
 import {LocalStorage, uid} from "quasar";
-import {EXPIRE_DATA_PERIOD_IN_MINUTES} from "boot/constants";
+import {APP_INSTALLATION_ID, EXPIRE_DATA_PERIOD_IN_MINUTES} from "boot/constants";
 import {useDB} from "src/services/usePersistenceService";
 import IndexedDbPersistenceService from "src/services/IndexedDbPersistenceService";
 
@@ -43,6 +43,8 @@ function spacesCollection() {
 class FirestorePersistenceService implements PersistenceService {
 
   private indexedDB: typeof IndexedDbPersistenceService = null as unknown as typeof IndexedDbPersistenceService
+
+  private installationId = LocalStorage.getItem(APP_INSTALLATION_ID) as string || '---'
 
   getServiceName(): string {
     return "FirestorePersistenceService"
@@ -69,7 +71,9 @@ class FirestorePersistenceService implements PersistenceService {
   }
 
   async saveTabset(tabset: Tabset): Promise<any> {
-    LocalStorage.set("ui.tabsets.lastUpdate", new Date().getTime())
+    tabset.origin = this.installationId
+    console.log("saving tabset at", new Date().getTime(), this.installationId)
+    //LocalStorage.set("ui.tabsets.lastUpdate", new Date().getTime())
     await setDoc(tabsetDoc(tabset.id), JSON.parse(JSON.stringify(tabset)))
   }
 

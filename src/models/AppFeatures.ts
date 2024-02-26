@@ -50,7 +50,7 @@ export class AppFeatures {
 
     new AppFeature(FeatureIdent.CATEGORIZATION, FeatureType.DISABLED, 'URL Categorization', 'o_auto_awesome', ['bex']),
 
-    new AppFeature(FeatureIdent.NOTIFICATIONS, FeatureType.RECOMMENDED, 'Chrome Notifications', 'o_notifications', ['all'])
+    new AppFeature(FeatureIdent.NOTIFICATIONS, FeatureType.RECOMMENDED, 'Browser Notifications', 'o_notifications', ['all'])
       .setActivateCommands([new GrantPermissionCommand('notifications')])
       .setDeactivateCommands([new RevokePermissionCommand('notifications')]),
 

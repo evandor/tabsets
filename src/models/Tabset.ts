@@ -82,6 +82,9 @@ export class Tabset {
   window: string = 'current'
   color: string | undefined = undefined
 
+  // can be set (to the installtion.id) when saving the tabset in order to omit triggering an update
+  origin: string = ''
+
   constructor(id: string, name: string, tabs: Tab[], columns: TabsetColumn[] = [], spaces: string[] = []) {
 
     // some guards

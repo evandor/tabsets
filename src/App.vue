@@ -9,7 +9,7 @@ import AppService from "src/services/AppService";
 import {EventEmitter} from "events";
 import {logtail} from "boot/logtail";
 import {getAuth, onAuthStateChanged} from "firebase/auth";
-import {CURRENT_USER_ID} from "boot/constants";
+import {APP_INSTALLATION_ID, CURRENT_USER_ID} from "boot/constants";
 import {useRouter} from "vue-router";
 import FirebaseServices from "src/services/firebase/FirebaseServices";
 import {useNotificationHandler} from "src/services/ErrorHandler";
@@ -37,15 +37,15 @@ $q.bex.on('fcm.token.received', ({data, respond}) => {
 })
 
 $q.bex.on('fb.message.received', async ({data, respond}) => {
-  console.log('Message received from service worker:', data)
+  const localInstallationId = LocalStorage.getItem(APP_INSTALLATION_ID) || "";
+  console.log('Message received from service worker:', data, localInstallationId)
 
   if (data.msg) {
     switch (data.msg) {
       case "event.tabset.updated":
-        const lastChange = LocalStorage.getItem("ui.tabsets.lastUpdate") as number || 0;
-        if (new Date().getTime() - lastChange >= 2000) { // event did not happen "just now", probably remotely, therefore updating
-          console.log("reloading spaces and tabsets due to remote event", new Date().getTime() - lastChange, data)
-          await FirestorePersistenceService.loadSpaces()
+        if (localInstallationId !== data.origin) {
+          console.log("reloading tabsets due to remote event", localInstallationId, data)
+          //await FirestorePersistenceService.loadSpaces()
           await FirestorePersistenceService.loadTabsets()
         }
         break
@@ -67,7 +67,7 @@ if (process.env.USE_FIREBASE) {
       // TODO revisit now
       try {
         await AppService.init($q, router, true, user)
-        $q.bex.send('auth.user.login',{userId: user.uid})
+        $q.bex.send('auth.user.login', {userId: user.uid})
       } catch (error: any) {
         console.log("%ccould not initialize appService due to " + error, "background-color:orangered")
         console.error("error", error, typeof error, error.code, error.message)

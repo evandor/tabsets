@@ -9,7 +9,10 @@
       </div>
     </div>
 
-    <Transition appear>
+    <transition
+      appear
+      enter-active-class="animated fadeIn slower delay-5s"
+      leave-active-class="animated fadeOut">
       <div class="wrap2"
            v-if="useTabsStore().tabsets.size === 0 && !useUiStore().appLoading">
         <div class="row items-center text-grey-5">how to start?</div>

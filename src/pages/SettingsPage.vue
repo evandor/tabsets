@@ -423,7 +423,7 @@ import {useRoute} from "vue-router";
 import {
   SHARING_AUTHOR_IDENT,
   SHARING_AVATAR_IDENT,
-  SHARING_INSTALLATION,
+  APP_INSTALLATION_ID,
   STRIP_CHARS_IN_USER_INPUT,
   TITLE_IDENT
 } from "boot/constants";
@@ -461,7 +461,7 @@ const detailLevel = ref<ListDetailLevel>(localStorage.getItem('ui.detailLevel') 
 
 const nickname = ref<string>(localStorage.getItem(SHARING_AUTHOR_IDENT) || '')
 const avatar = ref<string>(localStorage.getItem(SHARING_AVATAR_IDENT) as string || '')
-const installationId = ref<string>(localStorage.getItem(SHARING_INSTALLATION) as string || '---')
+const installationId = ref<string>(localStorage.getItem(APP_INSTALLATION_ID) as string || '---')
 
 const bookmarksPermissionGranted = ref<boolean | undefined>(usePermissionsStore().hasPermission('bookmarks'))
 const pageCapturePermissionGranted = ref<boolean | undefined>(usePermissionsStore().hasPermission('history'))

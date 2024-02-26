@@ -61,6 +61,7 @@
           </div>
           <div class="col-12 q-mb-md">
             <q-checkbox size="xs" v-model="activateBookmarks" class="text-grey" label="Activate Bookmarks Integration"/>
+            <q-checkbox size="xs" v-model="activateNotifications" class="text-grey" label="Activate Notifications"/>
             <template v-if="firebaseActive()">
               <q-checkbox
                 size="xs" v-model="login" class="text-grey" label="Login or create Account!"/>
@@ -97,6 +98,7 @@ const tabsetName = ref('')
 const tabsetNameRef = ref<HTMLElement>(null as unknown as HTMLInputElement)
 const windowLocation = ref('---')
 const activateBookmarks = ref(false)
+const activateNotifications = ref(false)
 const login = ref(false)
 
 onMounted(() => {
@@ -112,6 +114,15 @@ watchEffect(() => {
   } else if (!activateBookmarks.value && bmFeature) {
     //useCommandExecutor().execute(new RevokePermissionCommand('bookmarks'))
     usePermissionsStore().deactivateFeature('bookmarks')
+  }
+})
+
+watchEffect(() => {
+  const feature = new AppFeatures().getFeature(FeatureIdent.NOTIFICATIONS)
+  if (activateNotifications.value && feature) {
+    useCommandExecutor().execute(new GrantPermissionCommand('notifications'))
+  } else if (!activateNotifications.value && feature) {
+    usePermissionsStore().deactivateFeature('notifications')
   }
 })
 
