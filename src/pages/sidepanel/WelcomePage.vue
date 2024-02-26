@@ -127,6 +127,10 @@ watchEffect(() => {
 })
 
 watchEffect(() => {
+  useUiStore().showLoginTable = login.value
+})
+
+watchEffect(() => {
   const ar = useAuthStore().useAuthRequest
   if (ar) {
     console.log(">>> authRequest received @", window.location.href)

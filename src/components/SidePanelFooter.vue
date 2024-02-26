@@ -216,7 +216,7 @@ const account = ref<Account | undefined>(undefined)
 const randomKey = ref<string>(uid())
 const progressValue = ref<number>(0.0)
 const progressLabel = ref<string>('')
-const animateSettingsButton = ref<string>(false)
+const animateSettingsButton = ref<boolean>(false)
 
 watchEffect(() => {
   const windowId = useWindowsStore().currentChromeWindow?.id || 0
@@ -228,6 +228,10 @@ watchEffect(() => {
 
 watchEffect(() => {
   account.value = authStore.getAccount()
+})
+
+watchEffect(() => {
+  showLogin.value = useUiStore().showLoginTable
 })
 
 watchEffect(() => {
