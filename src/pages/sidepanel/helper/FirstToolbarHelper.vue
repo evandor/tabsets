@@ -80,13 +80,6 @@
               data-testid="addTabsetBtn"
               @click="openNewTabsetDialog()"/>
 
-            <SidePanelToolbarButton
-              v-if="!useUiStore().networkOnline || useUiStore().mqttOffline"
-              icon="cloud_off"
-              :tooltip="!useUiStore().networkOnline ? 'It seems this browser is offline' : 'Sharing comments not possible right now'"
-              :color="!useUiStore().networkOnline ? 'negative' :'warning'"
-              class="q-ml-sm"/>
-
           </slot>
         </div>
       </div>
