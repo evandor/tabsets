@@ -173,9 +173,7 @@ const stageIdentifier = () => process.env.TABSETS_STAGE !== 'PRD' ? ' (' + proce
 const clicked = (url: string) => openURL(url)
 
 const firebaseActive = () => {
-  //console.log("process.env.USE_FIREBASE", process.env.USE_FIREBASE)
-  return process.env.USE_FIREBASE === true
-  //return true
+  return process.env.USE_FIREBASE && process.env.USE_FIREBASE.toString() === "true"
 }
 
 </script>
