@@ -64,7 +64,7 @@
             <q-checkbox size="xs" v-model="activateNotifications" class="text-grey" label="Activate Notifications"/>
             <template v-if="firebaseActive()">
               <q-checkbox
-                size="xs" v-model="login" class="text-grey" label="Login or create Account!"/>
+                size="xs" v-model="login" class="text-grey" label="Login or create Account"/>
             </template>
           </div>
         </div>
