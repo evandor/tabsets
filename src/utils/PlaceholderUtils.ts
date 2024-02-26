@@ -19,7 +19,6 @@ class PlaceholderUtils {
 
 
     applyForDefaultDomains(tab: Tab): Tab {
-        console.log("in applyForDefaultDomains", tab)
         const url = tab.url
         if (url) {
             for (const regex of this.defaultPlaceholders.keys()) {

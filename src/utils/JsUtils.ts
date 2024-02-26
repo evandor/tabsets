@@ -74,11 +74,11 @@ class JsUtils {
     //     if (!chrome) {
     //         return Promise.resolve("")
     //     }
-    //     const result = await chrome.storage.local.get('clientId');
+    //     const result = await browser.storage.local.get('clientId');
     //     let clientId = result.clientId;
     //     if (!clientId) {
     //         clientId = self.crypto.randomUUID();
-    //         await chrome.storage.local.set({clientId});
+    //         await browser.storage.local.set({clientId});
     //     }
     //     return clientId;
     // }

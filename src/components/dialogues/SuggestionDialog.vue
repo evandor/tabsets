@@ -10,7 +10,7 @@
       </q-card-section>
 
       <q-card-actions align="right" class="text-primary">
-        <q-btn label="Later" size="sm" v-close-popup @click="delayDecision">
+        <q-btn label="Later" size="sm" v-close-popup @click="delayDecision()">
           <q-tooltip class="tooltip-small" :delay="500">Click here to decide later</q-tooltip>
         </q-btn>
         <template v-if="suggestion.type === SuggestionType.RESTART">
@@ -20,7 +20,7 @@
         </template>
         <template v-else>
 
-        <q-btn label="Ignore" size="sm" color="negative" v-close-popup @click="ignoreSuggestion">
+        <q-btn label="Ignore" size="sm" color="negative" v-close-popup @click="ignoreSuggestion()">
           <q-tooltip class="tooltip-small" :delay="500">This suggestion will not show up again</q-tooltip>
         </q-btn>
         <q-btn label="Check" size="sm" color="warning" v-close-popup @click="addSuggestion">

@@ -3,9 +3,6 @@ import OnInstalledReason = chrome.runtime.OnInstalledReason;
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/auth';
 import 'firebase/compat/firestore';
-import {getToken} from "firebase/messaging";
-import {getMessaging} from "firebase/messaging/sw";
-import {onBackgroundMessage} from "firebase/messaging/sw";
 import {getDatabase, ref, onValue} from "firebase/database";
 
 // https://stackoverflow.com/questions/49739438/when-and-how-does-a-pwa-update-itself
