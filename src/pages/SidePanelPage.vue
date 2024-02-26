@@ -341,7 +341,6 @@ import {TITLE_IDENT} from "boot/constants";
 import AppService from "src/services/AppService";
 import {useNotificationHandler} from "src/services/ErrorHandler";
 import {ExecutionResult} from "src/domain/ExecutionResult";
-import {getMessaging, onMessage} from "firebase/messaging";
 import SidePanelToolbarButton from "components/buttons/SidePanelToolbarButton.vue";
 
 const {setVerticalScrollPosition} = scroll

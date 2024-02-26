@@ -51,6 +51,18 @@
           <!--          <span class="q-ma-none q-pa-none q-mx-sm text-grey-5">|</span>-->
 
           <q-btn
+            v-if="usePermissionsStore().hasFeature(FeatureIdent.NOTES)"
+            @click.stop="startTabsetNote()"
+            class="q-mx-xs q-pa-xs cursor-pointer"
+            icon="o_add_circle"
+            style="max-width:20px"
+            size="10px">
+            <q-tooltip class="tooltip-small">
+              Add Note to '{{ tabset?.name }}'
+            </q-tooltip>
+          </q-btn>
+
+          <q-btn
             @click.stop="saveInTabset()"
             class="q-mx-xs q-pa-xs cursor-pointer"
             icon="o_bookmark_add"
@@ -58,10 +70,10 @@
             :color="alreadyInTabset() ? 'grey-5': 'warning'"
             style="max-width:20px"
             size="10px">
+            <q-tooltip class="tooltip-small">
+              Add current Tab to '{{ tabset?.name }}'
+            </q-tooltip>
           </q-btn>
-          <q-tooltip class="tooltip-small">
-            Add current Tab to '{{ tabset.name }}'
-          </q-tooltip>
 
         </template>
 
@@ -90,6 +102,10 @@ import SidePanelPageTabList from "components/layouts/SidePanelPageTabList.vue";
 import {useTabsetService} from "src/services/TabsetService2";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {AddTabToTabsetCommand} from "src/domain/tabs/AddTabToTabset";
+import {usePermissionsStore} from "stores/permissionsStore";
+import {FeatureIdent} from "src/models/AppFeature";
+import ContextMenuItem from "pages/sidepanel/helper/ContextMenuItem.vue";
+import NavigationService from "src/services/NavigationService";
 
 const {inBexMode} = useUtils()
 
@@ -186,6 +202,13 @@ const saveInTabset = () => {
   } else {
     console.warn("expected to find tabsetId", tabsetId)
   }
+}
+
+const startTabsetNote = () => {
+  const url = chrome && chrome.runtime && chrome.runtime.getURL ?
+    chrome.runtime.getURL('www/index.html') + "#/mainpanel/notes/?tsId=" + tabsetId + "&edit=true" :
+    "#/mainpanel/notes/?tsId=" + tabsetId + "&edit=true"
+  NavigationService.openOrCreateTab([url])
 }
 
 
