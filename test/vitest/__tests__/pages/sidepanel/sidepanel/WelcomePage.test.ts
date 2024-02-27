@@ -1,5 +1,5 @@
 import {installQuasarPlugin} from '@quasar/quasar-app-extension-testing-unit-vitest';
-import {mount} from '@vue/test-utils';
+import {mount, config} from '@vue/test-utils';
 import {beforeEach, describe, expect, vi, it} from 'vitest';
 import {createPinia, setActivePinia} from "pinia";
 import ChromeApi from "src/services/ChromeApi";
@@ -10,6 +10,7 @@ import WelcomePage from "pages/sidepanel/WelcomePage.vue";
 installQuasarPlugin();
 
 vi.mock('vue-router')
+vi.mock("vue-i18n");
 
 describe('WelcomePage', () => {
 
@@ -26,6 +27,10 @@ describe('WelcomePage', () => {
       name,
     },
   })
+
+  vi.mock("vue-i18n", () => ({
+    useI18n: () => ({ t: (key: string) => key === 'welcome_to_tabsets' ? "Welcome to Tabsets" : key }),
+  }));
 
   beforeEach(async () => {
     setActivePinia(createPinia())

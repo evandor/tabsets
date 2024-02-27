@@ -10,14 +10,14 @@
             </div>
           </div>
           <div class="col-12 text-h6 q-mb-md">
-            Welcome to Tabsets {{ stageIdentifier() }}
+            {{ t('welcome_to_tabsets') }} {{ stageIdentifier() }}
           </div>
         </div>
 
         <div class="q-pa-sm q-mb-none row items-start q-gutter-md" @click.stop="selected()">
           <q-card class="my-card fit">
             <q-card-section>
-              <span class="text-subtitle2">Create your first Tabset</span>
+              <span class="text-subtitle2">{{ t('create_your_first_ts')}}</span>
               <br>
               Provide a name and add tabs later
             </q-card-section>
@@ -91,6 +91,7 @@ import {FeatureIdent} from "src/models/AppFeature";
 import {AppFeatures} from "src/models/AppFeatures";
 import {GrantPermissionCommand} from "src/domain/commands/GrantPermissionCommand";
 import {usePermissionsStore} from "stores/permissionsStore";
+import { useI18n } from 'vue-i18n'
 
 const router = useRouter()
 
@@ -100,6 +101,8 @@ const windowLocation = ref('---')
 const activateBookmarks = ref(false)
 const activateNotifications = ref(false)
 const login = ref(false)
+
+const { t } = useI18n({inheritLocale: true,})
 
 onMounted(() => {
   Analytics.firePageViewEvent('WelcomePage', document.location.href);

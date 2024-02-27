@@ -17,6 +17,8 @@ module.exports = configure(function (ctx) {
 
   require('dotenv').config()
 
+  //console.log("======>", path.resolve(__dirname, './src/i18n/**'))
+
   return {
 
 
@@ -27,11 +29,8 @@ module.exports = configure(function (ctx) {
     // --> boot files are part of "main.js"
     // https://v2.quasar.dev/quasar-cli-vite/boot-files
     boot: [
-      //'i18n',
+      'i18n',
       'constants',
-    //  'firebase',
-     // 'firebaseConnection',
-     // 'auth0',
       'logtail'
     ],
 
@@ -129,12 +128,8 @@ module.exports = configure(function (ctx) {
       // viteVuePluginOptions: {},
 
       vitePlugins: [
-        ['@intlify/vite-plugin-vue-i18n', {
-          // if you want to use Vue I18n Legacy API, you need to set `compositionOnly: false`
-          // compositionOnly: false,
-
-          // you need to set i18n resource including paths !
-          include: path.resolve(__dirname, './src/i18n/**')
+        ['@intlify/unplugin-vue-i18n/vite', {
+          include: [path.resolve(__dirname, './src/i18n/**')],
         }],
         ['vite-plugin-package-version' ,{}]
       ]

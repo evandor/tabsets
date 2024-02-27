@@ -33,9 +33,9 @@
       <q-tab name="search" label="Search Engine" v-if="useSettingsStore().isEnabled('dev')"/>
       <q-tab name="importExport" label="Import/Export"/>
       <q-tab name="internals" label="Internals" v-if="useSettingsStore().isEnabled('dev')"/>
-<!--      <q-tab name="featureToggles" label="Feature Toggles"-->
-<!--             :class="useAuthStore().userMayAccess(AccessItem.FEATURE_TOGGLES) ? 'text-primary':'text-grey'"/>-->
-      <q-tab name="featureToggles" label="Feature Toggles" />
+      <!--      <q-tab name="featureToggles" label="Feature Toggles"-->
+      <!--             :class="useAuthStore().userMayAccess(AccessItem.FEATURE_TOGGLES) ? 'text-primary':'text-grey'"/>-->
+      <q-tab name="featureToggles" label="Feature Toggles"/>
     </q-tabs>
   </div>
 
@@ -63,6 +63,23 @@
           &nbsp;&nbsp;&nbsp;(changing this needs restart)
         </InfoLine>
 
+        <div class="col-3">
+          {{ t('language') }} ({{ t('experimental') }})
+        </div>
+        <div class="col-7">
+          <q-select
+            v-model="locale"
+            :options="localeOptions"
+            dense
+            borderless
+            emit-value
+            map-options
+            options-dense
+            style="min-width: 150px"
+          />
+        </div>
+        <div class="col"></div>
+
         <InfoLine :label="'Tab Info Detail Level ' +  (detailLevelPerTabset ? ' (Default)' : '')">
           <q-radio v-model="detailLevel" :val="ListDetailLevel.MINIMAL" label="Minimal Details"/>
           <q-radio v-model="detailLevel" :val="ListDetailLevel.SOME" label="Some Details"/>
@@ -78,7 +95,8 @@
         </InfoLine>
 
         <InfoLine label="Ignore Browser Extensions as tabs">
-          <q-toggle v-model="ignoreExtensionsEnabled" @click="updateSettings('extensionsAsTabs', ignoreExtensionsEnabled)"/>
+          <q-toggle v-model="ignoreExtensionsEnabled"
+                    @click="updateSettings('extensionsAsTabs', ignoreExtensionsEnabled)"/>
         </InfoLine>
 
       </div>
@@ -386,7 +404,7 @@
   </div>
 
   <div v-if="tab === 'featureToggles'">
-      <FeatureToggleSettings />
+    <FeatureToggleSettings/>
   </div>
 
 </template>
@@ -436,6 +454,8 @@ import SharingSettings from "pages/helper/SharingSettings.vue";
 import AccountSettings from "pages/helper/AccountSettings.vue";
 import InfoLine from "pages/helper/InfoLine.vue";
 import FeatureToggleSettings from "pages/helper/FeatureToggleSettings.vue";
+import {useI18n} from "vue-i18n";
+const { t } = useI18n({inheritLocale: true,})
 
 const {sendMsg, inBexMode} = useUtils()
 
@@ -451,6 +471,13 @@ useUiStore().rightDrawerSetActiveTab(DrawerTabs.FEATURES)
 
 const view = ref('grid')
 const indexSize = ref(0)
+
+const {locale} = useI18n({useScope: 'global'})
+const localeOptions = ref([
+  {value: 'en', label: 'English'},
+  {value: 'de', label: 'German'},
+  {value: 'bg', label: 'Bulgarian'}
+])
 
 const ddgEnabled = ref<boolean>(!settingsStore.isEnabled('noDDG'))
 const ignoreExtensionsEnabled = ref<boolean>(!settingsStore.isEnabled('extensionsAsTabs'))
@@ -552,7 +579,7 @@ watchEffect(() => {
     default:
       $q.dark.set("auto")
   }
- // $q.dark.set(darkMode.value === "true" ? true : (darkMode.value === 'false' ? false : 'auto'))
+  // $q.dark.set(darkMode.value === "true" ? true : (darkMode.value === 'false' ? false : 'auto'))
   localStorage.set('darkMode', darkMode.value)
 })
 
