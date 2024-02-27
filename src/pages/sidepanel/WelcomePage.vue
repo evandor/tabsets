@@ -102,7 +102,7 @@ const activateBookmarks = ref(false)
 const activateNotifications = ref(false)
 const login = ref(false)
 
-const { t, locale } = useI18n({inheritLocale: true,})
+const { t } = useI18n({inheritLocale: true,})
 
 onMounted(() => {
   Analytics.firePageViewEvent('WelcomePage', document.location.href);
