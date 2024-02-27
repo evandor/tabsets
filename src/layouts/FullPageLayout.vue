@@ -1,7 +1,7 @@
 <template>
   <q-layout view="hHh LpR lFr">
-    <q-header elevated class="bg-white text-black">
-      <q-toolbar>
+    <q-header elevated>
+      <q-toolbar class="">
 
         <template v-if="leftDrawerOpen">
           <q-img
@@ -44,12 +44,6 @@
           </div>
         </Transition>
 
-        <q-btn v-if="settingsStore.isEnabled('stats')"
-               class="q-mr-md" icon="o_query_stats" size="12px" style="min-width:24px" flat
-               @click="router.push('/stats')">
-          <q-tooltip>Check out stats (experimental)</q-tooltip>
-        </q-btn>
-
         <div v-if="unreadNotifications().length > 0">
           <q-btn flat icon="o_notifications" class="q-mr-md cursor-pointer">
             <q-badge floating color="red" rounded/>
@@ -64,11 +58,6 @@
             </q-list>
           </q-menu>
         </div>
-
-        <!--        <q-tab v-if="rssTabsCount > 0"-->
-        <!--               name="rss" icon="o_rss_feed" @click="tabsClicked(DrawerTabs.RSS)">-->
-        <!--          <q-tooltip class="tooltip" anchor="center right" self="center left" :delay="200">RSS Feeds</q-tooltip>-->
-        <!--        </q-tab>-->
 
         <span
           v-if="useSuggestionsStore().getSuggestions([SuggestionState.NEW, SuggestionState.DECISION_DELAYED]).length > 0">
@@ -160,6 +149,8 @@
           </q-btn>
           <q-menu :offset="[0, 7]">
             <q-list style="min-width: 200px">
+              <q-item v-if="!useAuthStore().isAuthenticated()" clickable @click="router.push('/login')">Login</q-item>
+              <q-item v-else clickable @click="logout()">Logout</q-item>
               <q-item clickable @click="router.push('/settings')">Settings</q-item>
               <q-item clickable @click="tabsClicked(DrawerTabs.FEATURES)" v-close-popup>
                 Activate more Features
@@ -235,6 +226,7 @@ import {FeatureIdent} from "src/models/AppFeature";
 import {useSettingsStore} from "src/stores/settingsStore"
 import ToolbarButton from "components/widgets/ToolbarButton.vue";
 import {FirebaseCall} from "src/services/firebase/FirebaseCall";
+import {useAuthStore} from "stores/authStore";
 
 const $q = useQuasar()
 const router = useRouter()
@@ -337,5 +329,8 @@ const dependingOnStates = () =>
 
 const toggleSettings = () => settingsClicked.value = !settingsClicked.value
 
+const logout = () => {
+  useAuthStore().logout()
+}
 
 </script>

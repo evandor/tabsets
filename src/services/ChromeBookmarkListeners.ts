@@ -17,7 +17,7 @@ class ChromeBookmarkListeners {
       {permissions: ["bookmarks"]},
       (res: boolean) => {
         if (res) {
-          console.log("init chrome bookmark listeners")
+          console.debug(" ...init chrome bookmark listeners")
           chrome.bookmarks.onCreated.addListener(this.onCreatedListener)
           chrome.bookmarks.onMoved.addListener(this.onMovedListener)
           chrome.bookmarks.onRemoved.addListener(this.onRemovedListener)

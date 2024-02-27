@@ -5,15 +5,11 @@
           :disable="props.disable"
           dense clickable v-close-popup>
     <q-item-section avatar>
-      <q-icon :color="isActive() ? 'secondary':'black'" :name="props.icon" size="xs"/>
+      <q-icon :color="isActive() ? 'secondary':'white'" :name="props.icon" size="xs"/>
     </q-item-section>
-
     <q-item-section>{{ props.label }}</q-item-section>
   </q-item>
 
-<!--    <q-tooltip v-if="props.tooltip"-->
-<!--               :delay="700"-->
-<!--               anchor="top middle" self="bottom middle" class="tooltip-small">{{ props.tooltip }}</q-tooltip>-->
 </template>
 
 <script lang="ts" setup>
@@ -37,18 +33,26 @@ const isActive = () => useUiStore().sidePanelIsActive(props.sidePanelView)
 const activateView = (view: SidePanelView) => useUiStore().sidePanelSetActiveView(view)
 
 const showItem = () => props.sidePanelView?.showButton()
-const leftButtonClass = () => "q-my-xs q-ml-xs q-mr-none q-px-xs"
 
 const toggleView = () => {
-  console.log("**", isActive())
   if (isActive()) {
     activateView(SidePanelView.MAIN)
     router.push("/sidepanel")
   } else {
     activateView(props.sidePanelView)
-    router.push("/sidepanel/" + props.sidePanelView)
+    props.sidePanelView === SidePanelView.MAIN ?
+      router.push("/sidepanel") :
+      router.push("/sidepanel/" + props.sidePanelView)
   }
 }
 
 
 </script>
+
+<style scoped>
+.q-item__section--avatar {
+  padding-right:4px !important;
+  min-width:30px !important;
+  margin-bottom:0;
+}
+</style>

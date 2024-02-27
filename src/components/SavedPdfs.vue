@@ -14,7 +14,7 @@
             *
           </div>
           <div class="col-9 text-body2 ellipsis">
-            {{ pdf.title }}
+            {{ pdf['title' as keyof object] }}
           </div>
           <div class="col-1">
 <!--            <q-icon name="close" @click.stop="deleteMHtml(pdf)"/>-->

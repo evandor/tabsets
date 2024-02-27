@@ -55,12 +55,12 @@
             <q-img v-else :src="scope.opt.favIconUrl"/>
           </q-item-section>
           <q-item-section>
-            <q-item-label v-if="scope.opt.id === 'highlight'" class="text-subtitle2 text-black">highlight in page
+            <q-item-label v-if="scope.opt.id === 'highlight'" class="text-subtitle2">highlight in page
             </q-item-label>
-            <q-item-label v-else-if="scope.opt.id.startsWith('tabset|')" class="text-subtitle2 text-black">
+            <q-item-label v-else-if="scope.opt.id.startsWith('tabset|')" class="text-subtitle2">
               {{ tabsetName(scope.opt.id) }}
             </q-item-label>
-            <q-item-label v-else class="text-subtitle2 text-black">{{ scope.opt.title }}</q-item-label>
+            <q-item-label v-else class="text-subtitle2">{{ scope.opt.title }}</q-item-label>
 
             <q-item-label caption class="text-blue-8">{{ scope.opt.url }}</q-item-label>
             <q-rating v-if="scope.opt.id !== 'highlight' && !scope.opt.id.startsWith('tabset|')"

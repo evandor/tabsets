@@ -107,7 +107,7 @@
     </div>
 
     <!-- place QPageSticky at end of page -->
-    <q-page-sticky expand position="top" style="background-color:white">
+    <q-page-sticky expand position="top" class="darkInDarkMode brightInBrightMode">
 
       <FirstToolbarHelper
           @was-clicked="useUiStore().sidePanelSetActiveView(SidePanelView.MAIN)"
@@ -246,7 +246,7 @@ watchEffect(() => {
 
 watchEffect(() => {
   //currentChromeTab.value = useTabsStore().currentChromeTab
-  const windowId = useWindowsStore().currentWindow?.id || 0
+  const windowId = useWindowsStore().currentChromeWindow?.id || 0
   currentChromeTab.value = useTabsStore().getCurrentChromeTab(windowId) || useTabsStore().currentChromeTab
 })
 

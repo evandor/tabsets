@@ -34,6 +34,8 @@ export const TABSET_NAME_MAX_LENGTH = 32;
 export class Tabset {
   id: string
 
+  _id: string | undefined
+  _rev: string | undefined
   name: string
   created: number
   updated: number
@@ -75,8 +77,13 @@ export class Tabset {
   // = description
   page: string | undefined = undefined
 
+  headerDescription: string | undefined = undefined
+
   window: string = 'current'
   color: string | undefined = undefined
+
+  // can be set (to the installtion.id) when saving the tabset in order to omit triggering an update
+  origin: string = ''
 
   constructor(id: string, name: string, tabs: Tab[], columns: TabsetColumn[] = [], spaces: string[] = []) {
 

@@ -27,10 +27,6 @@ import {useSuggestionsStore} from "stores/suggestionsStore";
 import {Suggestion, SuggestionState, SuggestionType} from "src/models/Suggestion";
 import {MonitoringType} from "src/models/Monitor";
 import {BlobType} from "src/models/SavedBlob";
-import MqttService from "src/services/mqtt/MqttService";
-import {useRouter} from "vue-router";
-import tabsetService from "src/services/TabsetService";
-import TabsetService from "src/services/TabsetService";
 import {TabInFolder} from "src/models/TabInFolder";
 
 let db: PersistenceService = null as unknown as PersistenceService
@@ -39,8 +35,11 @@ export function useTabsetService() {
 
   const init = async (providedDb: PersistenceService,
                       doNotInitSearchIndex: boolean = false) => {
-    console.log("initializing tabsetService2", providedDb)
+    console.log(" ...initializing tabsetService2 as", providedDb.getServiceName())
     db = providedDb
+
+    useTabsStore().clearTabsets()
+
     await db.loadTabsets()
     if (!doNotInitSearchIndex) {
       useSearchStore().populateFromContent(db.getContents())
@@ -50,7 +49,7 @@ export function useTabsetService() {
     // check TODO!
     const selectedTS = localStorage.getItem("selectedTabset")
     if (selectedTS) {
-      console.log("setting selected tabset from storage", selectedTS)
+      console.debug("setting selected tabset from storage", selectedTS)
       useTabsStore().selectCurrentTabset(selectedTS)
     }
 
@@ -58,8 +57,8 @@ export function useTabsetService() {
 
     useTabsStore().tabsets.forEach(ts => {
       if (ts.sharedId) {
-        console.log("subscribing to topic ", ts.sharedId)
-        MqttService.subscribe(ts.sharedId)
+        //console.log("subscribing to topic ", ts.sharedId)
+        //MqttService.subscribe(ts.sharedId)
       }
     })
   }
@@ -453,7 +452,7 @@ export function useTabsetService() {
   const saveMetaLinksFor = (tab: chrome.tabs.Tab, metaLinks: MetaLink[]) => {
     if (tab && tab.url) {
       db.saveMetaLinks(tab.url, metaLinks)
-        .then(() => console.debug("added meta links"))
+        //.then(() => console.debug("added meta links"))
         .catch(err => console.log("err", err))
     }
   }
@@ -461,7 +460,7 @@ export function useTabsetService() {
   const saveLinksFor = (tab: chrome.tabs.Tab, links: any) => {
     if (tab && tab.url) {
       db.saveLinks(tab.url, links)
-        .then(() => console.debug("added links"))
+        //.then(() => console.debug("added links"))
         .catch(err => console.log("err", err))
     }
   }
@@ -673,8 +672,9 @@ export function useTabsetService() {
       }
     }
     for (const f of folders) {
-      return findTabInFolder(f.folders, tabId)
-    }
+      if (f.folders) {
+        return findTabInFolder(f.folders, tabId)
+      }    }
     return undefined
   }
 

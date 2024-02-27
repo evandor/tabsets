@@ -10,7 +10,10 @@ import {FeatureIdent} from "src/models/AppFeature";
 import {usePermissionsStore} from "stores/permissionsStore";
 import {Toast, ToastType} from "src/models/Toast";
 import {useMessagesStore} from "stores/messagesStore";
-import {SHARING_AUTHOR_IDENT, SHARING_AVATAR_IDENT, SHARING_MQTT_IDENT} from "boot/constants";
+import {
+  SHARING_AUTHOR_IDENT,
+  SHARING_AVATAR_IDENT,
+} from "boot/constants";
 
 export enum DrawerTabs {
   BOOKMARKS = "bookmarks",
@@ -62,7 +65,7 @@ export class SidePanelView {
     () => usePermissionsStore().hasFeature(FeatureIdent.TOP10));
 
   static readonly BOOKMARKS = new SidePanelView('bookmarks', '/sidepanel/bookmarks',
-    () => usePermissionsStore().hasFeature(FeatureIdent.BOOKMARKS));
+    () => usePermissionsStore().hasFeature(FeatureIdent.BOOKMARKS) && useRoute()?.path !== "/sidepanel/welcome");
 
   static readonly PUBLIC_TABSETS = new SidePanelView('categorized_tabsets', '/sidepanel/byCategory',
     () => usePermissionsStore().hasFeature(FeatureIdent.BOOKMARKS));
@@ -143,10 +146,11 @@ export const useUiStore = defineStore('ui', () => {
   const tabsFilter = ref<string | undefined>(undefined)
   const selectedTag = ref<string | undefined>(undefined)
   const tabsetsExpanded = ref<boolean>(false)
+  const appLoading = ref<string | undefined>(undefined)
+  const progress = ref<object | undefined>(undefined)
 
   // online offline
   const networkOnline = ref(navigator.onLine)
-  const mqttOffline = ref<boolean | undefined>(undefined)
 
   // RightDrawer
   let rightDrawer = ref<RightDrawer>(new RightDrawer())
@@ -156,6 +160,10 @@ export const useUiStore = defineStore('ui', () => {
 
   // SidePanel
   let sidePanel = ref<SidePanel>(new SidePanel())
+  const animateNewTabsetButton = ref(false)
+  const animateSettingsButton = ref(false)
+
+  const showLoginTable = ref(false)
 
   const highlightTerm = ref<string | undefined>(undefined)
 
@@ -192,9 +200,7 @@ export const useUiStore = defineStore('ui', () => {
 
   // system management
   const dbReady = ref<boolean>(false)
-
-  const progress = ref<number | undefined>(undefined)
-  const progressLabel = ref<string | undefined>(undefined)
+  const dbSyncing = ref<boolean>(false)
 
   const showCurrentTabBox = ref<boolean>(true)
 
@@ -207,7 +213,6 @@ export const useUiStore = defineStore('ui', () => {
 
   const sharingAuthor = ref<string>(LocalStorage.getItem(SHARING_AUTHOR_IDENT) as unknown as string || '')
   const sharingAvatar = ref<string>(LocalStorage.getItem(SHARING_AVATAR_IDENT) as unknown as string || '')
-  const sharingMqttUrl = ref<string>(LocalStorage.getItem(SHARING_MQTT_IDENT) as unknown as string || '')
 
   watch(rightDrawer.value, (val: Object) => {
     LocalStorage.set("ui.rightDrawer", val)
@@ -246,15 +251,6 @@ export const useUiStore = defineStore('ui', () => {
       console.log("val", val)
       LocalStorage.set(SHARING_AVATAR_IDENT, val)
     })
-
-  watch(sharingMqttUrl,
-    (val: string | undefined) => {
-      //console.log("change of sharingMqttUrl", val)
-      (val && val.trim().length > 0) ?
-        LocalStorage.set(SHARING_MQTT_IDENT, val) :
-        LocalStorage.remove(SHARING_MQTT_IDENT)
-    })
-
 
   const route = useRoute()
   watch(route, (to) => {
@@ -325,7 +321,7 @@ export const useUiStore = defineStore('ui', () => {
   function showTabsetDescription(tabsetId: string): boolean {
     // @ts-ignore
     const res = tabsetDescriptionPanelHights.value[tabsetId as keyof object]['show'] as boolean | undefined
-    console.log("got res", res)
+    //console.log("got res", res)
     if (res === undefined) {
       return true
     }
@@ -516,6 +512,28 @@ export const useUiStore = defineStore('ui', () => {
     return "19px"
   }
 
+  function setProgress(v: number, label: string) {
+    progress.value = {
+      val: Math.max(0, Math.min(v, 1.0)),
+      label
+    }
+  }
+
+  function startButtonAnimation(name: string) {
+    switch (name) {
+      case 'newTabset':
+        animateNewTabsetButton.value = true
+        setTimeout(() => animateNewTabsetButton.value = false, 2000)
+        break;
+      case 'settings':
+        animateSettingsButton.value = true
+        setTimeout(() => animateSettingsButton.value = false, 2000)
+        break;
+      default:
+        console.log("unrecognized element name", name)
+    }
+  }
+
   return {
     rightDrawer,
     rightDrawerOpen,
@@ -552,13 +570,12 @@ export const useUiStore = defineStore('ui', () => {
     showFullUrls,
     listDetailLevelGreaterEqual,
     dbReady,
+    dbSyncing,
     sidePanel,
     sidePanelSetActiveView,
     sidePanelIsActive,
     sidePanelActiveViewIs,
     toggleLeftDrawer,
-    progress,
-    progressLabel,
     tabsetsExpanded,
     hideCurrentTabBox,
     showCurrentTabBox,
@@ -579,9 +596,14 @@ export const useUiStore = defineStore('ui', () => {
     showTabsetDescription,
     sharingAuthor,
     sharingAvatar,
-    sharingMqttUrl,
     networkOnline,
-    mqttOffline,
-    tabBeingDragged
+    tabBeingDragged,
+    appLoading,
+    progress,
+    setProgress,
+    animateNewTabsetButton,
+    animateSettingsButton,
+    startButtonAnimation,
+    showLoginTable
   }
 })

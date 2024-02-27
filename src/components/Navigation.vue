@@ -2,7 +2,7 @@
   <div class="column" style="height:100%">
     <div class="col">
 
-      <q-toolbar class="text-black">
+      <q-toolbar>
         <div class="row fit">
           <div class="col-xs-12 col-md-6">
             <q-toolbar-title>

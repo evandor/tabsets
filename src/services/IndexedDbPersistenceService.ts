@@ -1,10 +1,9 @@
-import {IDBPDatabase, openDB} from "idb";
+import {IDBPDatabase, openDB, deleteDB} from "idb";
 import {useTabsStore} from "src/stores/tabsStore";
 import _ from "lodash";
 import {EXPIRE_DATA_PERIOD_IN_MINUTES, INDEX_DB_VERSION} from "boot/constants";
 import PersistenceService from "src/services/PersistenceService";
 import {Tabset, TabsetStatus} from "src/models/Tabset";
-import mhtml2html from 'mhtml2html';
 import {useSpacesStore} from "src/stores/spacesStore";
 import {Space} from "src/models/Space";
 import {MHtml} from "src/models/MHtml";
@@ -23,17 +22,36 @@ import {useSuggestionsStore} from "stores/suggestionsStore";
 import {Window} from "src/models/Window";
 import {BlobType, SavedBlob} from "src/models/SavedBlob";
 import {Message} from "src/models/Message";
+import {Account} from "src/models/Account";
 
 class IndexedDbPersistenceService implements PersistenceService {
   private db: IDBPDatabase = null as unknown as IDBPDatabase
 
+  getServiceName(): string {
+    return "IndexedDbPersistenceService"
+  }
+
   async init(dbName: string) {
-    console.log("initializing indexeddb database", dbName)
+    console.log(" ...initializing indexeddb database", dbName)
     this.db = await this.initDatabase(dbName)
     useUiStore().dbReady = true
   }
 
+  async deleteDatabase(dbName: string) {
+    useUiStore().dbReady = false
+    console.warn(" ...deleting indexeddb database: not implemented", dbName)
+    // if (this.db) {
+    //   await this.db.close()
+    // }
+    // console.log("db closed, deleting now")
+    // deleteDB(dbName, (cb) => {
+    //   console.log("deleting cb", cb)
+    // })
+
+  }
+
   async loadTabsets(): Promise<any> {
+    console.log(" loading tabsets indexeddb")
     const tabsStore = useTabsStore()
     return await this.db.getAll('tabsets')
       .then((res: any) => res.forEach((r: Tabset) => {
@@ -58,7 +76,7 @@ class IndexedDbPersistenceService implements PersistenceService {
   }
 
   async loadSpaces(): Promise<void> {
-    console.debug("loading spaces...")
+    console.debug(" loading spaces...")
     const spacesStore = useSpacesStore()
     const keys: IDBValidKey[] = await this.db.getAllKeys('spaces')
     _.forEach(keys, key => {
@@ -135,7 +153,7 @@ class IndexedDbPersistenceService implements PersistenceService {
         expires: new Date().getTime() + 1000 * 60 * EXPIRE_DATA_PERIOD_IN_MINUTES,
         thumbnail: thumbnail
       }, encodedTabUrl)
-        .then(() => console.log(new Tab(uid(), tab), `saved thumbnail for url ${tab.url}, ${Math.round(thumbnail.length / 1024)}kB`))
+        .then(() => console.debug(new Tab(uid(), tab), `saved thumbnail for url ${tab.url}, ${Math.round(thumbnail.length / 1024)}kB`))
         .catch(err => console.error(new Tab(uid(), tab), err))
     }
     return Promise.reject("no url provided or db not ready")
@@ -179,7 +197,7 @@ class IndexedDbPersistenceService implements PersistenceService {
       .catch(err => console.log("err", err))
   }
 
-  saveMetaLinks(url: string, metaLinks: MetaLink[]): Promise<void> {
+  saveMetaLinks(url: string, metaLinks: MetaLink[]): Promise<void | IDBValidKey> {
     if (!this.db) {
       console.log("saveMetaLinks: db not ready yet")
     }
@@ -189,11 +207,11 @@ class IndexedDbPersistenceService implements PersistenceService {
       url: url,
       metaLinks
     }, encodedTabUrl)
-      .then(() => console.debug("added meta links"))
+      //.then(() => console.debug("added meta links"))
       .catch(err => console.log("err", err))
   }
 
-  saveLinks(url: string, links: any): Promise<void> {
+  saveLinks(url: string, links: any): Promise<void | IDBValidKey> {
     if (!this.db) {
       console.log("saveLinks: db not ready yet")
     }
@@ -203,7 +221,7 @@ class IndexedDbPersistenceService implements PersistenceService {
       url: url,
       links
     }, encodedTabUrl)
-      .then(() => console.debug("added links"))
+      //.then(() => console.debug("added links"))
       .catch(err => console.log("err", err))
   }
 
@@ -399,8 +417,9 @@ class IndexedDbPersistenceService implements PersistenceService {
     const content: Blob = mhtml.content
 
     const mhtmlString = await content.text()
-    const html = mhtml2html.convert(mhtmlString)//,{ parseDOM: (html:any) => new JSDOM(html)    });
-    const innerHtml = html.window.document.documentElement.innerHTML
+    //const html = mhtml2html.convert(mhtmlString)//,{ parseDOM: (html:any) => new JSDOM(html)    });
+    const html = mhtmlString//,{ parseDOM: (html:any) => new JSDOM(html)    });
+    const innerHtml = mhtmlString//html.window.document.documentElement.innerHTML
     const res = "data:text/html," + innerHtml
 
     const blob2 = content.slice(0, content.size, "multipart/related")
@@ -425,7 +444,8 @@ class IndexedDbPersistenceService implements PersistenceService {
       console.log("mhtml", mhtml)
       const mhtmlString = mhtml.content ? await mhtml.content?.text() : '<h6>sorry, no content found</h6>'
       //console.log("mhtmlString", mhtmlString)
-      const html = mhtmlString ? mhtml2html.convert(mhtmlString) : 'sorry, no content found'
+     // const html = mhtmlString ? mhtml2html.convert(mhtmlString) : 'sorry, no content found'
+      const html = 'sorry, no content found'
       console.log("mhtml3", mhtml)
       const innerHtml = html.window.document.documentElement.innerHTML
       return Promise.resolve({
@@ -516,14 +536,59 @@ class IndexedDbPersistenceService implements PersistenceService {
 
   /*** Windows Management ***/
 
-  addWindow(window: Window): Promise<any> {
-    //console.debug("%cadding window", "background-color:yellow", window)
-    return this.db.add('windows', window, window.id)
-      .catch((err) => {
-        if (!err.toString().indexOf('Key already exists')) {
-          console.log("error adding window", window, err)
+  async addWindow(window: Window): Promise<any> {
+    console.debug("adding window", `id=${window.id}, index=${window.index}, #hostList=${window.hostList.length}`)
+    const existingWindowForWindowId: Window | undefined = await this.db.get('windows', window.id)
+    if (existingWindowForWindowId) {
+
+      const mergedWindow = new Window(
+        window.id,
+        window.browserWindow,
+        existingWindowForWindowId.title,
+        window.index,
+        existingWindowForWindowId.open,
+        window.hostList
+      )
+      console.debug(`merging windows to ${mergedWindow.toString()}`)
+      this.db.put('windows', mergedWindow, window.id).catch((err) => console.error("error", err))
+      return Promise.resolve("not added, updated hostList instead")
+
+      // not bad, simply resolve
+      //console.debug("key already exists")
+      //return Promise.resolve("Key already exists")
+    }
+    //if (!window.title) {
+    // try to find matching window
+    console.log("trying to add new window ", window.toString())
+    const allWindows: Window[] = await this.db.getAll('windows') as Window[]
+    console.log(`adding ${window.toString()} to list [${_.join(_.map(allWindows, w => w.id), ',')}]`)
+    for (const w of allWindows) {
+      if (w.hostList) {
+        console.log("comparing hostLists", window.hostList, w.hostList, typeof w.hostList)
+        const intersection = new Set([...window.hostList].filter(x => (new Set(w.hostList).has(x))));
+        console.log("intersection", intersection, intersection.size === window.hostList.length, intersection.size === w.hostList.length)
+        if (intersection.size === window.hostList.length && intersection.size === w.hostList.length) {
+          // reuse existing
+          const useId = window.id
+          const oldId = w.id
+          window = w
+          window.id = useId
+          console.warn("replacing old window " + oldId + " with " + window.toString())
+          await this.db.delete('windows', oldId)
+          break
         }
-      })
+      }
+    }
+    //}
+    try {
+      await this.db.add('windows', window, window.id)
+    }
+      //.then((res) => console.log("got res", res))
+    catch (err: any) {
+      if (!err.toString().indexOf('Key already exists')) {
+        console.log("error adding window", window, err)
+      }
+    }
   }
 
   // updateGroup(group: chrome.tabGroups.TabGroup): Promise<any> {
@@ -536,6 +601,7 @@ class IndexedDbPersistenceService implements PersistenceService {
   }
 
   getWindow(windowId: number): Promise<Window | undefined> {
+    //console.log("trying to get window with id", windowId)
     return this.db.get('windows', windowId)
   }
 
@@ -545,6 +611,7 @@ class IndexedDbPersistenceService implements PersistenceService {
   }
 
   async updateWindow(window: Window): Promise<void> {
+    console.debug(`updating window id=${window.id}, title=${window.title}, index=${window.index}, #hostList=${window.hostList?.length}`)
     if (!window.id) {
       return Promise.reject("window.id not set")
     }
@@ -552,27 +619,22 @@ class IndexedDbPersistenceService implements PersistenceService {
     if (!windowFromDb) {
       return Promise.reject("could not find window for id " + window.id)
     }
-    if (windowFromDb.title) {
-      //console.log("updating window", windowFromDb)
-      const asJson = JSON.parse(JSON.stringify(window))
-      asJson['title'] = windowFromDb.title
-      asJson['screenLabel'] = windowFromDb.screenLabel
-      delete asJson['tabs']
-      //console.log("storing json", asJson, window.id)
-      await this.db.put('windows', asJson, window.id)
-    } else {
-      await this.db.put('windows', window, window.id)
-    }
+    const asJson = JSON.parse(JSON.stringify(window))
+
+    asJson['title'] = window.title
+    asJson['index'] = window.index
+    asJson['hostList'] = window.hostList ? Array.from(window.hostList) : []
+
+    delete asJson['tabs']
+    console.debug("saving window json as ", asJson)
+    await this.db.put('windows', asJson, window.id)
   }
 
-  async upsertWindow(window: Window, name: string, screenLabel: string | undefined): Promise<void> {
+  async upsertWindow(window: Window): Promise<void> {
     try {
-      console.log("about to rename window", name, screenLabel, window)
+      console.log(`about to change window:  id=${window.id}, title=${window.title}, index=${window.index}, open=${window.open}, #hostList=${window.hostList.length}`)
       const asJson = JSON.parse(JSON.stringify(window))
-      asJson['title'] = name
-      asJson['screenLabel'] = screenLabel
       delete asJson['tabs']
-      //console.log("storing window", asJson, window.id)
       await this.db.put('windows', asJson, window.id)
     } catch (err) {
       console.log("error renaming window", err)
@@ -590,7 +652,7 @@ class IndexedDbPersistenceService implements PersistenceService {
   }
 
   private async initDatabase(dbName: string): Promise<IDBPDatabase> {
-    console.debug("about to initialize indexedDB")
+    console.debug(" about to initialize indexedDB")
     return await openDB(dbName, INDEX_DB_VERSION, {
       // upgrading see https://stackoverflow.com/questions/50193906/create-index-on-already-existing-objectstore
       upgrade(db) {
@@ -659,6 +721,10 @@ class IndexedDbPersistenceService implements PersistenceService {
           console.log("creating db messages")
           db.createObjectStore('messages');
         }
+        if (!db.objectStoreNames.contains('accounts')) {
+          console.log("creating db accounts")
+          db.createObjectStore('accounts');
+        }
       },
     });
   }
@@ -708,6 +774,12 @@ class IndexedDbPersistenceService implements PersistenceService {
         s.state === SuggestionState.IGNORED ||
         s.state === SuggestionState.DECISION_DELAYED)
     if (foundAsNewDelayedOrIgnored) { // && suggestion.state === SuggestionState.NEW) {
+      if (foundAsNewDelayedOrIgnored.state === SuggestionState.IGNORED && suggestion.type === SuggestionType.RESTART) {
+        console.log("setting existing restart suggestion to state NEW again")
+        foundAsNewDelayedOrIgnored.state = SuggestionState.NEW
+        this.db.put('suggestions', foundAsNewDelayedOrIgnored, foundAsNewDelayedOrIgnored.id)
+        return Promise.resolve()
+      }
       return Promise.reject(`there's already a suggestion in state ${foundAsNewDelayedOrIgnored.state}, not adding (now)`)
     }
     const found = _.find(suggestions, (s: Suggestion) => s.url === suggestion.url)
@@ -722,18 +794,15 @@ class IndexedDbPersistenceService implements PersistenceService {
     return this.db.delete('suggestions', ident)
   }
 
-  setSuggestionState(suggestionId: string, state: SuggestionState): Promise<Suggestion> {
+  async setSuggestionState(suggestionId: string, state: SuggestionState): Promise<Suggestion> {
     console.log("setting suggestion to state", suggestionId, state)
-    const objectStore = this.db.transaction('suggestions', 'readwrite').objectStore('suggestions');
-    return objectStore.get(suggestionId)
-      .then((res: Suggestion) => {
-        if (res) {
-          res.state = state
-          objectStore.put(res, suggestionId)
+    const s: Suggestion = await this.db.get('suggestions', suggestionId)
+    if (s) {
+      s.state = state
+      await this.db.put('suggestions', s, suggestionId)
+      return Promise.resolve(s)
         }
-        return res
-      })
-      .catch((err) => Promise.reject("error updating suggestion" + err))
+    return Promise.reject("could not update suggestion")
   }
 
   compactDb(): Promise<any> {
@@ -751,6 +820,18 @@ class IndexedDbPersistenceService implements PersistenceService {
   saveActiveFeatures(val: string[]): any {
     console.warn("not implemented")
   }
+
+  async getAccount(accountId: string): Promise<Account> {
+    return await this.db.get('accounts', accountId)
+  }
+
+  upsertAccount(account: Account): void {
+    const normalizedAccount = JSON.parse(JSON.stringify(account))
+    //console.log("upserting account", account)
+    //console.log("upserting account", normalizedAccount)
+    this.db.put('accounts', normalizedAccount, normalizedAccount.id)
+  }
+
 
 }
 

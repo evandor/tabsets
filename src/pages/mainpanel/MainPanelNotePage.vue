@@ -163,7 +163,7 @@ watchEffect(async () => {
 
 const saveWork = () => {
 
-  console.log("saving", tabsetId.value)
+  console.log("saving note in tabset", tabsetId.value)
 
   editorJS2.save().then((outputData: any) => {
     console.log("setting original", title.value, sanitize(title.value))
@@ -192,12 +192,12 @@ const saveWork = () => {
 
         // lesson learned: execute code here and send message only to update dependent parts
         const tabset = useTabsetService().getTabset(tabsetId.value) as Tabset
-        console.log("pushing")
-        tabset.tabs.push(newTab)
-        useTabsetService().saveTabset(tabset)
+        console.log("creating new note", newTab)
+        //tabset.tabs.push(newTab)
+        //useTabsetService().saveTabset(tabset)
 
         // needed to update the note in the side panel
-        sendMsg('note-changed', {tab: newTab, tabsetId: tabsetId.value, src: 'MainPenalNoteEditPage'})
+        sendMsg('note-changed', {tab: newTab, tabsetId: tabsetId.value, src: 'MainPanelNoteEditPage'})
         // redirect after save
         router.push("/mainpanel/notes/" + newTabId)
         // chrome.tabs.getCurrent((tab:chrome.tabs.Tab | undefined) => {

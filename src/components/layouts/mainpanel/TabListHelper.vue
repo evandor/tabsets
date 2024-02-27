@@ -26,7 +26,6 @@
                           :tab="tabAsTab(tab)"
                           :tabsetId="props.tabsetId"
                           :tabsetSharedId="props.tabsetSharedId"
-                          :tabsetMqttUrl="props.tabsetMqttUrl"
                           :highlightUrl="highlightUrl"
                           :simpleUi="props.simpleUi" />
 
@@ -49,7 +48,6 @@ const props = defineProps({
   group: {type: String, required: true},
   highlightUrl: {type: String, required: false},
   tabsetSharedId: {type: String, required: false},
-  tabsetMqttUrl: {type: String, required: false},
   simpleUi: {type: Boolean, default: false}
 })
 
@@ -66,7 +64,7 @@ const itemStyle = (tab: Tab) => {
   if (tab.url === props.highlightUrl) {
     return "border: 1px dotted orange; padding:15px; border-radius:5px"
   }
-  return "border-bottom: 1px solid #fafafa"
+  return "border-bottom: 1px solid blue"
 }
 
 const showButtonsProp = ref<Map<string, boolean>>(new Map())

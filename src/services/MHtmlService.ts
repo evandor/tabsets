@@ -13,7 +13,7 @@ class MHtmlService {
    * Init, called when extension is loaded (via App.vue)
    */
   async init() {
-    console.debug("init mhtmlService")
+    console.debug(" ...init mhtmlService")
     //await localDb.init();
   }
 

@@ -131,9 +131,7 @@
   <!--    v-if="!specialView() && tabsStore.currentTabsetId"-->
   <q-expansion-item
     icon="tabs"
-    default-opened
-    header-class="text-black"
-    expand-icon-class="text-black">
+    default-opened>
     <template v-slot:header="{ expanded }">
       <q-item-section>
         <div>

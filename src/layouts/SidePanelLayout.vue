@@ -5,8 +5,8 @@
       <router-view/>
     </q-page-container>
 
-    <q-footer elevated  v-if="tabsStore.tabsets?.size > 0">
-      <SidePanelFooter />
+    <q-footer elevated>
+      <SidePanelFooter/>
     </q-footer>
 
   </q-layout>
@@ -19,6 +19,7 @@ import {ref, watchEffect} from "vue";
 import SidePanelFooter from "components/SidePanelFooter.vue";
 import {useTabsStore} from "src/stores/tabsStore";
 import {useMeta, useQuasar} from "quasar";
+import SidePanelWelcomeFooter from "components/SidePanelWelcomeFooter.vue";
 
 const tabsStore = useTabsStore()
 
@@ -26,7 +27,7 @@ const location = ref('')
 
 
 useMeta(() => {
-  console.debug("using meta...")
+  //console.debug("using meta...")
   return {
     // @ts-ignore
     title: 'Tabsets Extension...' //+ appVersion
@@ -35,7 +36,6 @@ useMeta(() => {
 
 
 watchEffect(() => location.value = window.location.href.split('/www/')[1] || window.location.href)
-
 
 
 </script>

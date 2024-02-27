@@ -15,7 +15,7 @@
       :size="props.inSidePanel ? '16px':'20px'"
       :thickness="0.5"
       :style="thresholdStyle()"
-      :track-color="props.inSidePanel? 'black':'grey-3'"
+      :track-color="props.inSidePanel? 'white':'grey-3'"
       class="q-ml-xs">
     </q-circular-progress>
     <q-tooltip class="tooltip">Open Tabs: {{useTabsStore().tabs.length}} - click to manage</q-tooltip>

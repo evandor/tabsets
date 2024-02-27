@@ -1,16 +1,19 @@
 import {defineStore} from 'pinia';
 import {ref} from "vue";
 import {LocalStorage, uid, useQuasar} from "quasar";
-import {SHARING_INSTALLATION} from "boot/constants";
+import {APP_INSTALLATION_ID} from "boot/constants";
 
 export enum SyncType {
   NONE = "NONE",
-  GIT = "GIT"
+  COUCHDB = "COUCHDB",
+  FIRESTORE = "FIRESTORE"
 }
 
 export const useAppStore = defineStore('app', () => {
 
-  const installationId = ref<string | undefined>(LocalStorage.getItem(SHARING_INSTALLATION) as string || undefined)
+  const installationId = ref<string | undefined>(LocalStorage.getItem(APP_INSTALLATION_ID) as string || undefined)
+
+  //const user = ref<object | undefined>(undefined)
 
   function init() {
     // make sure we have an installation id
@@ -23,7 +26,7 @@ export const useAppStore = defineStore('app', () => {
     }
     const useId = uid()
     installationId.value = useId
-    LocalStorage.set(SHARING_INSTALLATION, useId)
+    LocalStorage.set(APP_INSTALLATION_ID, useId)
     return useId
   }
 

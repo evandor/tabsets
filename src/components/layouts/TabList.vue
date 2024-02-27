@@ -17,7 +17,6 @@
         :group="group"
         :tabset-id="tabsetId"
         :tabset-shared-id="tabsetSharedId"
-        :tabset-mqtt-url="tabsetMqttUrl"
         :simpleUi="props.simpleUi"
         :tabs="props.tabs"/>
 
@@ -28,7 +27,6 @@
                  :group="group"
                  :tabset-id="tabsetId"
                  :tabset-shared-id="tabsetSharedId"
-                 :tabset-mqtt-url="tabsetMqttUrl"
                  :simpleUi="props.simpleUi"
                  :tabs="props.tabs"/>
 

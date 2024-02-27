@@ -63,16 +63,4 @@ watchEffect(async () => {
 
 })
 
-const iFrameStyle = () => "overflow:hidden;height:" + (window.innerHeight - 130) + "px;width:100%;border:0px"
-
 </script>
-
-<style lang="sass" scoped>
-
-.lightgrey
-  background-color: $lightgrey
-
-.greyBorderTop
-  border-top: 1px solid $bordergrey
-
-</style>

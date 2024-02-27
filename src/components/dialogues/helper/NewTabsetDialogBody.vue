@@ -4,7 +4,8 @@
 
       <q-card class="q-dialog-plugin" style="max-width:100%">
         <q-card-section>
-          <div class="text-h6">Add Tabset</div>
+          <div class="text-h6" v-if="props.windowId">Save Windows Tabs as Tabset</div>
+          <div class="text-h6" v-else>Add Tabset</div>
         </q-card-section>
 
         <q-card-section class="q-pt-none">
@@ -20,31 +21,31 @@
                        ]"
                    data-testid="newTabsetName"/>
 
-          <template v-if="inBexMode()">
+          <template v-if="inBexMode() && !props.windowId">
             <q-checkbox
-                data-testid="newTabsetAutoAdd"
-                v-model="addAllOpenTabs" label="Add all open tabs"/>&nbsp;
-            <q-icon
-                name="help" color="primary" size="1em">
+              data-testid="newTabsetAutoAdd"
+              v-model="addAllOpenTabs" label="Add all open tabs"/>&nbsp;
+            <q-icon v-if="!props.windowId"
+                    name="help" color="primary" size="1em">
               <q-tooltip>If you select this option, all currently open tabs will be added to your new tabset</q-tooltip>
             </q-icon>
           </template>
         </q-card-section>
 
-        <q-card-section>
+        <q-card-section v-if="!props.windowId">
           <q-select
-              dense
-              options-dense
-              clearable
-              clear-icon="close"
-              label="Open in Window"
-              filled
-              v-model="windowModel"
-              map-options
-              use-input
-              :options="windowOptions"
-              input-debounce="0"
-              @new-value="createWindowOption"
+                    dense
+                    options-dense
+                    clearable
+                    clear-icon="close"
+                    label="Open in Window"
+                    filled
+                    v-model="windowModel"
+                    map-options
+                    use-input
+                    :options="windowOptions"
+                    input-debounce="0"
+                    @new-value="createWindowOption"
           />
         </q-card-section>
 
@@ -56,7 +57,7 @@
         </q-card-section>
 
         <q-card-actions align="right">
-          <DialogButton label="Cancel" color="accent" v-close-popup/>
+          <DialogButton label="Cancel" color="primary" v-close-popup/>
           <DialogButton label="Add"
                         data-testid="newTabsetNameSubmit"
                         type="submit"
@@ -93,19 +94,22 @@ const {inBexMode} = useUtils()
 
 const props = defineProps({
   spaceId: {type: String, required: false},
+  name: {type: String, default: ""},
+  windowId: {type: Number, required: false},
   fromPanel: {type: Boolean, default: false}
 })
 
 const tabsStore = useTabsStore()
 const router = useRouter()
 
-const newTabsetName = ref('')
+const newTabsetName = ref(props.name)
 const isValid = ref(false)
-const addAllOpenTabs = ref(false)
+const addAllOpenTabs = ref(props.windowId !== undefined)
 const theForm = ref<QForm>(null as unknown as QForm)
-const windowModel = ref<string>(null)
+const windowModel = ref<string>(null as unknown as string)
 const windowOptions = ref<string[]>([])
 const theColor = ref<string | undefined>(undefined)
+const windowsStore = useWindowsStore()
 
 watchEffect(() => {
   const windows: Set<string> = useWindowsStore().windowSet
@@ -122,9 +126,9 @@ watchEffect(() => {
 const checkIsValid = () => {
   if (theForm.value) {
     theForm.value.validate()
-        .then((res) => {
-          isValid.value = res
-        })
+      .then((res) => {
+        isValid.value = res
+      })
   }
 }
 
@@ -135,30 +139,39 @@ const doesNotExistYet = (val: string) => {
 
 const createNewTabset = () => {
   console.log("createNewTabset", addAllOpenTabs.value, tabsStore.tabs, windowModel.value)
-  const tabsToUse = addAllOpenTabs.value ? tabsStore.tabs : []
+  let tabsToUse = addAllOpenTabs.value ? tabsStore.tabs : []
+  if (props.windowId) {
+    console.log("windowsStore", windowsStore)
+    // TODO ignoring props.windowId !?!
+    const window:chrome.windows.Window | undefined = windowsStore.currentChromeWindow
+    if (window) {
+      tabsToUse = window.tabs as chrome.tabs.Tab[]
+      windowModel.value = newTabsetName.value
+    }
+  }
   useCommandExecutor()
-      .executeFromUi(new CreateTabsetCommand(newTabsetName.value, tabsToUse, windowModel.value, theColor.value))
-      .then((res) => {
-        if (props.spaceId) {
-          const ts: Tabset = res.result.tabset
-          ts.spaces.push(props.spaceId)
-          useTabsetService().saveTabset(ts)
+    .executeFromUi(new CreateTabsetCommand(newTabsetName.value, tabsToUse, windowModel.value, theColor.value))
+    .then((res) => {
+      if (props.spaceId) {
+        const ts: Tabset = res.result.tabset
+        ts.spaces.push(props.spaceId)
+        useTabsetService().saveTabset(ts)
+      }
+      if (!addAllOpenTabs.value) {
+        TabsetService.createPendingFromBrowserTabs()
+      } else {
+        if (tabsStore.pendingTabset) {
+          // clear pending tabset - why necessary?
+          tabsStore.pendingTabset.tabs = []
         }
-        if (!addAllOpenTabs.value) {
-          TabsetService.createPendingFromBrowserTabs()
-        } else {
-          if (tabsStore.pendingTabset) {
-            // clear pending tabset - why necessary?
-            tabsStore.pendingTabset.tabs = []
-          }
-        }
-        if (!props.fromPanel) {
-          router.push("/tabsets/" + res.result.tabsetId)
-        } else {
-          useUiStore().sidePanelSetActiveView(SidePanelView.MAIN)
-          router.push("/sidepanel?first=")
-        }
-      })
+      }
+      if (!props.fromPanel) {
+        router.push("/tabsets/" + res.result.tabsetId)
+      } else {
+        useUiStore().sidePanelSetActiveView(SidePanelView.MAIN)
+        router.push("/sidepanel?first=")
+      }
+    })
 }
 
 const createWindowOption = (val: any, done: any) => {

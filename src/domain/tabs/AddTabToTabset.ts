@@ -78,6 +78,7 @@ export class AddTabToTabsetCommand implements Command<any> {
           res = new ExecutionResult(res2, "Tab was added")
         }
         sendMsg('tab-added', {tabsetId: tabset.id})
+
         return res
         // })
         // .catch((err) => Promise.reject("got err " + err))

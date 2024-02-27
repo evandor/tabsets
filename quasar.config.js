@@ -17,6 +17,8 @@ module.exports = configure(function (ctx) {
 
   require('dotenv').config()
 
+  //console.log("======>", path.resolve(__dirname, './src/i18n/**'))
+
   return {
 
 
@@ -27,8 +29,9 @@ module.exports = configure(function (ctx) {
     // --> boot files are part of "main.js"
     // https://v2.quasar.dev/quasar-cli-vite/boot-files
     boot: [
-      //'i18n',
-      'constants'
+      'i18n',
+      'constants',
+      'logtail'
     ],
 
     // https://v2.quasar.dev/quasar-cli-vite/quasar-config-js#css
@@ -78,13 +81,31 @@ module.exports = configure(function (ctx) {
       env: {
         BUILD_TIMESTAMP: new Date().toISOString().split('T')[0],
         BACKEND_URL: process.env.BACKEND_URL,
+
+        TABSETS_PWA_URL: process.env.TABSETS_PWA_URL,
+        TABSETS_STAGE: process.env.STAGE,
+
         LOGZ_URL: process.env.LOGZ_URL,
         COUCHDB_PROTOCOL: process.env.COUCHDB_PROTOCOL,
         COUCHDB_URL: process.env.COUCHDB_URL,
+
         STRIPE_PUBLISHABLE_KEY: process.env.STRIPE_PUBLISHABLE_KEY,
         STRIPE_ACCOUNT: process.env.STRIPE_ACCOUNT,
         STRIPE_API_VERSION: process.env.STRIPE_API_VERSION,
-        LOCALE: process.env.LOCALE
+        STRIPE_SYNC_PRODUCT_LINK: process.env.STRIPE_SYNC_PRODUCT_LINK,
+
+        LOCALE: process.env.LOCALE,
+
+        USE_FIREBASE: process.env.FIREBASE_ACTIVE || false,
+
+        FIREBASE_API_KEY: process.env.FIREBASE_API_KEY,
+        FIREBASE_AUTH_DOMAIN: process.env.FIREBASE_AUTH_DOMAIN,
+        FIREBASE_PROJECT_ID: process.env.FIREBASE_PROJECT_ID,
+        FIREBASE_APP_ID: process.env.FIREBASE_APP_ID,
+        FIREBASE_MESSAGING_SENDER_ID:process.env.FIREBASE_MESSAGING_SENDER_ID,
+        FIREBASE_MESSAGING_KEY: process.env.FIREBASE_MESSAGING_KEY,
+        FIREBASE_STORAGE_BUCKET: process.env.FIREBASE_STORAGE_BUCKET,
+        FIREBASE_DATABASE_URL: process.env.FIREBASE_DATABASE_URL
       },
       // rawDefine: {}
       // ignorePublicFolder: true,
@@ -94,21 +115,21 @@ module.exports = configure(function (ctx) {
 
       // !== MIT
       extendViteConf (viteConf) {
-        if ((ctx.mode.spa || ctx.mode.pwa || ctx.mode.electron) && viteConf && viteConf.mode === "development") {
+        console.log("******",ctx.mode)
+        //if ((ctx.mode.spa || ctx.mode.pwa || ctx.mode.electron) && viteConf && viteConf.mode === "development") {
+        if (!ctx.mode.bex && !ctx.mode.pwa) {
           // https://dev.to/richardbray/how-to-fix-the-referenceerror-global-is-not-defined-error-in-sveltekitvite-2i49
           viteConf.define.global = {}
+          //https://stackoverflow.com/questions/77061323/error-pouchdb-on-vite-referenceerror-global-is-not-defined
+          //viteConf.define.window.global = window.global
         }
         viteConf.define.__VUE_PROD_HYDRATION_MISMATCH_DETAILS__ = 'false'
       },
       // viteVuePluginOptions: {},
 
       vitePlugins: [
-        ['@intlify/vite-plugin-vue-i18n', {
-          // if you want to use Vue I18n Legacy API, you need to set `compositionOnly: false`
-          // compositionOnly: false,
-
-          // you need to set i18n resource including paths !
-          include: path.resolve(__dirname, './src/i18n/**')
+        ['@intlify/unplugin-vue-i18n/vite', {
+          include: [path.resolve(__dirname, './src/i18n/**')],
         }],
         ['vite-plugin-package-version' ,{}]
       ]

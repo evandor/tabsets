@@ -2,7 +2,7 @@
 
   <div class="q-ma-none">
 
-    <q-toolbar class="text-primary lightgrey">
+    <q-toolbar>
       <div class="row fit">
         <q-toolbar-title>
           <div class="row">

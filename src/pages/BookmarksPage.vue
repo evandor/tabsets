@@ -1,12 +1,12 @@
 <template>
 
   <!-- toolbar -->
-  <q-toolbar class="text-primary lightgrey">
+  <q-toolbar>
 
     <q-toolbar-title>
       <div class="row justify-start items-baseline">
         <div class="col-12">
-                <span class="text-primary">
+                <span>
                   <q-breadcrumbs separator=">">
                     <q-breadcrumbs-el v-for="bm in bookmarksForBreadcrumb"
                                       :label="bm.chromeBookmark.title"
@@ -49,8 +49,6 @@
 
   <!-- bookmark folders -->
   <q-expansion-item v-if="folders().length > 0"
-                    header-class="text-black"
-                    expand-icon-class="text-black"
                     expand-separator
                     default-opened>
     <template v-slot:header="{ expanded }">
@@ -80,8 +78,6 @@
 
   <!-- bookmarks  -->
   <q-expansion-item
-      header-class="text-black"
-      expand-icon-class="text-black"
       expand-separator
       default-opened>
     <template v-slot:header="{ expanded }">

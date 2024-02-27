@@ -2,10 +2,9 @@
 
   <div class="cursor-pointer">
     <div
-        class="q-ma-none q-pa-none text-subtitle q-pl-sm cursor-pointer ellipsis"
-        :class="useUiStore().sidePanelActiveViewIs(SidePanelView.MAIN) ? '' : 'text-grey-5'">
+      class="q-ma-none q-pa-none text-subtitle q-pl-sm cursor-pointer ellipsis">
       {{ tabsetLabel() }}
-      <q-icon name="arrow_drop_down" class="q-mr-xs " size="xs" color="primary"/>
+      <q-icon name="arrow_drop_down" class="q-mr-xs " size="xs"/>
     </div>
 
     <q-menu :offset="[0,0]">
@@ -18,24 +17,47 @@
                 v-else-if="!usePermissionsStore().hasFeature(FeatureIdent.SPACES)">
           Switch to other Tabset:
         </q-item>
-        <q-item clickable v-for="ts in allTabsetsButCurrent" @click="switchToTabset(ts as Tabset)">
+        <q-item v-if="allTabsetsButCurrent.length > 10">
+          <q-select
+            filled
+            :model-value="switchTabsetModel"
+            use-input
+            hide-selected
+            fill-input
+            input-debounce="0"
+            :options="switchTabsetOptions"
+            @filter="filterFn"
+            @input-value="setModel"
+            hint="Text autocomplete"
+            style="width: 250px; padding-bottom: 32px">
+            <template v-slot:no-option>
+              <q-item>
+                <q-item-section class="text-grey">
+                  No results
+                </q-item-section>
+              </q-item>
+            </template>
+          </q-select>
+        </q-item>
+        <q-item v-else
+                clickable v-for="ts in allTabsetsButCurrent" @click="switchToTabset(ts as Tabset)">
           {{ ts.name }}
         </q-item>
 
         <template v-if="usePermissionsStore().hasFeature(FeatureIdent.SPACES)">
-          <q-separator />
+          <q-separator/>
           <q-item clickable @click.stop="router.push('/sidepanel/spaces')">
             Switch Space...
           </q-item>
         </template>
 
-        <q-separator />
+        <q-separator/>
         <q-item clickable @click.stop="router.push('/sidepanel')">
           Show all Tabsets
         </q-item>
 
         <template
-            v-if="usePermissionsStore().hasFeature(FeatureIdent.BACKUP) || usePermissionsStore().hasFeature(FeatureIdent.IGNORE)">
+          v-if="usePermissionsStore().hasFeature(FeatureIdent.BACKUP) || usePermissionsStore().hasFeature(FeatureIdent.IGNORE)">
           <q-separator/>
           <q-item disable>
             Special Tabsets
@@ -90,11 +112,31 @@ const $q = useQuasar()
 
 const tabsetsOptions = ref<object[]>([])
 const allTabsetsButCurrent = ref<Tabset[]>([])
+const switchTabsetModel = ref(null)
+const switchTabsetOptions = ref<string[]>([])
 
 watchEffect(() => {
-  allTabsetsButCurrent.value = _.filter([...tabsStore.tabsets.values()],
-      (tabset: Tabset) => tabset.id !== tabsStore.currentTabsetId)
+  allTabsetsButCurrent.value = _.sortBy(_.filter([...tabsStore.tabsets.values()] as Tabset[],
+    (tabset: Tabset) => tabset.id !== tabsStore.currentTabsetId), "name")
 })
+
+const filterFn = (val: any, update: any, abort: any) => {
+  update(() => {
+    const needle = val.toLocaleLowerCase()
+    switchTabsetOptions.value = _.map(allTabsetsButCurrent.value as Tabset[], (ts: Tabset) => ts.name)
+      .filter(v => v.toLocaleLowerCase().indexOf(needle) > -1)
+  })
+}
+
+const setModel = (val: any) => {
+  console.log("setting model", val)
+  const found =_.filter(allTabsetsButCurrent.value as Tabset[], (ts:Tabset) => ts.name === val)
+  if (found && found.length > 0) {
+    console.log("setting model", found)
+    switchTabsetModel.value = val
+    switchToTabset(found[0] as Tabset)
+  }
+}
 
 watchEffect(() => {
   let tabsets = [...tabsStore.tabsets.values()]
@@ -106,17 +148,17 @@ watchEffect(() => {
     }
   }
   tabsetsOptions.value = _.map(_.sortBy(_.filter(tabsets, (ts: Tabset) =>
-          ts.type !== TabsetType.SPECIAL &&
-          ts.status !== TabsetStatus.ARCHIVED &&
-          ts.status !== TabsetStatus.DELETED),
-      [
-        function (o) {
-          return o.status === TabsetStatus.FAVORITE ? 0 : 1
-        },
-        function (o) {
-          return o.name.toLowerCase()
-        }
-      ]), (key) => {
+      ts.type !== TabsetType.SPECIAL &&
+      ts.status !== TabsetStatus.ARCHIVED &&
+      ts.status !== TabsetStatus.DELETED),
+    [
+      function (o) {
+        return o.status === TabsetStatus.FAVORITE ? 0 : 1
+      },
+      function (o) {
+        return o.name.toLowerCase()
+      }
+    ]), (key) => {
     return {id: key.id, label: key.name, type: key.type, count: key.tabs.length}
   })
 })
@@ -157,31 +199,31 @@ const openEditTabsetDialog = () => {
 const switchTabset = (ts: any) => {
   console.log("settings tabset to ", ts)
   useCommandExecutor()
-      .execute(new SelectTabsetCommand(ts.id, useSpacesStore().space?.id))
-      .then((res: ExecutionResult<Tabset | undefined>) => {
-        useUiStore().sidePanelSetActiveView(SidePanelView.MAIN)
-        if (!props.fromPanel) {
-          router.push("/tabsets/" + ts.id)
-        }
-      })
+    .execute(new SelectTabsetCommand(ts.id, useSpacesStore().space?.id))
+    .then((res: ExecutionResult<Tabset | undefined>) => {
+      useUiStore().sidePanelSetActiveView(SidePanelView.MAIN)
+      if (!props.fromPanel) {
+        router.push("/tabsets/" + ts.id)
+      }
+    })
 }
 
 const tabsetsWithTypes = (types: TabsetType[]) => {
   let tabsets = [...tabsStore.tabsets.values()]
   return _.sortBy(
-      _.filter(tabsets, (ts: Tabset) =>
-          types.findIndex(t => ts.type === t && TabsetStatus.DELETED !== ts.status) >= 0),
-      ['name'])
+    _.filter(tabsets, (ts: Tabset) =>
+      types.findIndex(t => ts.type === t && TabsetStatus.DELETED !== ts.status) >= 0),
+    ['name'])
 }
 
 const switchToTabset = (ts: Tabset) => {
   console.log("settings tabset to ", ts)
   useCommandExecutor()
-      .execute(new SelectTabsetCommand(ts.id, useSpacesStore().space?.id))
-      .then((res: ExecutionResult<Tabset | undefined>) => {
-        //useUiStore().sidePanelSetActiveView(SidePanelView.MAIN)
-        router.push("/sidepanel/tabsets/" + ts.id)
-      })
+    .execute(new SelectTabsetCommand(ts.id, useSpacesStore().space?.id))
+    .then((res: ExecutionResult<Tabset | undefined>) => {
+      //useUiStore().sidePanelSetActiveView(SidePanelView.MAIN)
+      router.push("/sidepanel/tabsets/" + ts.id)
+    })
 }
 
 </script>

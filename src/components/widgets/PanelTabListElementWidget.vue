@@ -49,7 +49,7 @@
                   @mouseleave="hoveredTab = undefined">
 
     <!-- === name or title === -->
-    <q-item-label @click.stop="gotoTab()">
+    <q-item-label @click.stop="(evt:PointerEvent) => checkEvent(evt)">
       <div>
         <div class="q-pr-lg cursor-pointer ellipsis">
           <span v-if="props.header" class="text-bold">{{ props.header }}<br></span>
@@ -63,6 +63,12 @@
           <span v-else :class="isCurrentTab(props.tab) ? 'text-bold text-blue-9':''">{{
               nameOrTitle(props.tab as Tab)
             }}</span>
+          <q-popup-edit
+            v-if="popModel && props.tab?.extension !== UrlExtension.NOTE && !props.tab.placeholders"
+            :model-value="nameOrTitle(props.tab as Tab)" v-slot="scope"
+            @update:model-value="val => setCustomTitle( tab, val)">
+            <q-input v-model="scope.value" dense autofocus counter @keyup.enter="scope.set"/>
+          </q-popup-edit>
 
         </div>
 
@@ -70,11 +76,20 @@
     </q-item-label>
 
     <!-- === description === -->
-    <q-item-label class="ellipsis-2-lines text-grey-8"
-                  v-if="useUiStore().listDetailLevelGreaterEqual(ListDetailLevel.MAXIMAL,props.tabset?.details)"
-                  @click.stop="gotoTab()">
-      {{ props.tab.longDescription || props.tab.description }}
-    </q-item-label>
+    <template v-if="props.tab?.extension !== UrlExtension.NOTE">
+      <q-item-label class="ellipsis-2-lines text-grey-8"
+                    v-if="useUiStore().listDetailLevelGreaterEqual(ListDetailLevel.MAXIMAL,props.tabset?.details)"
+                    @click.stop="gotoTab()">
+        {{ props.tab.longDescription || props.tab.description }}
+      </q-item-label>
+    </template>
+    <template else>
+      <q-item-label class="ellipsis-2-lines text-grey-8"
+                    v-if="useUiStore().listDetailLevelGreaterEqual(ListDetailLevel.MAXIMAL,props.tabset?.details)"
+                    @click.stop="gotoTab()">
+        {{ props.tab.description }}
+      </q-item-label>
+    </template>
 
     <!-- === url(s) === -->
     <q-item-label
@@ -241,14 +256,14 @@
     </q-item-label>
 
     <!-- === note === -->
-<!--    <q-item-label v-if="useUiStore().listDetailLevelGreaterEqual(ListDetailLevel.MAXIMAL, props.tabset?.details) &&-->
-<!--      props['tab' as keyof object]['note']"-->
-<!--                  class="text-grey-10" text-subtitle1>-->
-<!--      <q-icon color="blue-10" name="edit_note"/>-->
-<!--      <div class="ellipsis-2-lines">-->
-<!--        {{ props['tab']['note'] }}-->
-<!--      </div>-->
-<!--    </q-item-label>-->
+    <!--    <q-item-label v-if="useUiStore().listDetailLevelGreaterEqual(ListDetailLevel.MAXIMAL, props.tabset?.details) &&-->
+    <!--      props['tab' as keyof object]['note']"-->
+    <!--                  class="text-grey-10" text-subtitle1>-->
+    <!--      <q-icon color="blue-10" name="edit_note"/>-->
+    <!--      <div class="ellipsis-2-lines">-->
+    <!--        {{ props['tab']['note'] }}-->
+    <!--      </div>-->
+    <!--    </q-item-label>-->
 
     <!-- === comments === -->
     <q-item-label v-if="showComments()"
@@ -376,6 +391,7 @@ import rangy from "rangy/lib/rangy-core.js";
 import "rangy/lib/rangy-serializer";
 import CommentDialog from "components/dialogues/CommentDialog.vue";
 import {DeleteCommentCommand} from "src/domain/tabs/DeleteCommentCommand";
+import {UpdateTabNameCommand} from "src/domain/tabs/UpdateTabName";
 
 const {inBexMode, isCurrentTab} = useUtils()
 
@@ -410,6 +426,7 @@ const pngs = ref<SavedBlob[]>([])
 const selectedAnnotation = ref<HTMLSelection | undefined>(undefined)
 const newComment = ref("")
 const selectedCommentId = ref<string | undefined>(undefined)
+const popModel = ref(false)
 
 onMounted(() => {
   if ((new Date().getTime() - props.tab.created) < 500) {
@@ -614,10 +631,20 @@ const switchGroup = (group: chrome.tabGroups.TabGroup): void => {
   }
 }
 
-const gotoTab = () => NavigationService.openOrCreateTab(
-  [props.tab.url || ''],
-  props.tab.matcher,
-  props.tab.groupName ? [props.tab.groupName] : [])
+const checkEvent = async (evt: PointerEvent) => {
+  console.log("got evt", evt, typeof evt)
+  if (evt.detail === 1) {
+    await gotoTab()
+  } else {
+    popModel.value = true
+  }
+}
+
+const gotoTab = () =>
+  NavigationService.openOrCreateTab(
+    [props.tab.url || ''],
+    props.tab.matcher,
+    props.tab.groupName ? [props.tab.groupName] : [])
 
 const showSuggestion = () => {
   const url = chrome.runtime.getURL('www/index.html') + "#/mainpanel/suggestions/" + suggestion.value?.id
@@ -701,6 +728,9 @@ const deleteSelectedComment = () => {
     selectedCommentId.value = undefined
   }
 }
+
+const setCustomTitle = (tab: Tab, newValue: string) =>
+  useCommandExecutor().executeFromUi(new UpdateTabNameCommand(tab, newValue))
 
 </script>
 

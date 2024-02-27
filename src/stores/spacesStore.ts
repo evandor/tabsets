@@ -43,7 +43,7 @@ export const useSpacesStore = defineStore('spaces', () => {
    * @param ps a persistence storage
    */
   async function initialize(ps: PersistenceService) {
-    console.debug("initializing spacesStore", ps)
+    console.debug(" ...initializing spacesStore", ps.getServiceName())
     storage = ps
     await storage.loadSpaces()
   }
@@ -79,7 +79,7 @@ export const useSpacesStore = defineStore('spaces', () => {
    */
   const nameExists = computed(() => {
     return (searchName: string) => {
-      console.log("checking for existence --- ", searchName)
+      //console.log("checking for existence --- ", searchName)
       return _.find([...spaces.value.values()], s =>
       {
         //console.log("comparing", s.label, searchName?.trim(), s.label === searchName?.trim())
@@ -117,7 +117,9 @@ export const useSpacesStore = defineStore('spaces', () => {
       //console.log("adding space", s.id, s.label)
       //console.log("spaces:", [...spaces.value.values()].length)
       if (nameExists.value(s.label)) {
-        return Promise.reject(`name '${s.label}'does already exist`)
+        const msg = `name '${s.label}' does already exist`
+        console.log("issue during adding spaces: ", msg)
+        return Promise.resolve()
       }
       spaces.value.set(s.id, s)
       if (addToStorage) {

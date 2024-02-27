@@ -12,7 +12,7 @@
   <q-form @submit.prevent="setMatcher()" ref="theForm">
 
     <div class="q-pa-md q-gutter-sm">
-      <q-banner rounded class="bg-grey-1 text-primary">
+      <q-banner rounded >
         Sometimes you want to open a page in an existing tab which does not have the exact same URL. Here you can define
         an ant-style matcher to decide about the tab to open the page in.
       </q-banner>

@@ -1,6 +1,6 @@
 import {defineStore} from 'pinia';
 import _, {forEach} from 'lodash'
-import {LocalStorage, uid} from "quasar";
+import {LocalStorage, uid, useQuasar} from "quasar";
 import {Tabset, TabsetSharing, TabsetStatus, TabsetType} from "src/models/Tabset";
 import {Tab, TabComment, UrlExtension} from "src/models/Tab";
 import ChromeApi from "src/services/ChromeApi";
@@ -14,7 +14,6 @@ import {Space} from "src/models/Space";
 import {useTabsetService} from "src/services/TabsetService2";
 import {useWindowsStore} from "src/stores/windowsStore";
 import {TabAndTabsetId} from "src/models/TabAndTabsetId";
-import MqttService from "src/services/mqtt/MqttService";
 
 async function queryTabs(): Promise<chrome.tabs.Tab[]> {
   // @ts-ignore
@@ -88,20 +87,14 @@ export const useTabsStore = defineStore('tabs', {
     currentTabsetId: null as unknown as string,
 
     // use listeners? Might make sense to turn them off when restoring old tabset for example
-    listenersOn: true,
+    listenersOn: true
 
-    localStorage: undefined as unknown as LocalStorage
   }),
 
   getters: {
 
     pinnedTabs(state): Tab[] {
       return []
-      // const currentTabset: Tabset = state.tabsets.get(state.currentTabsetId) || new Tabset("", "", [])
-      // return _.filter(currentTabset.tabs, (t: Tab) => {
-      //   //console.log("t", t.chromeTab, t)
-      //   return t?.pinned
-      // })
     },
 
     mostAccessedTabs(state): Tab[] {
@@ -260,9 +253,8 @@ export const useTabsStore = defineStore('tabs', {
   },
 
   actions: {
-    async initialize(localStorage: any) {
-      console.debug("initializing tabsStore")
-      this.localStorage = localStorage
+    async initialize() {
+      console.debug(" ...initializing tabsStore")
 
       if ("bex" === process.env.MODE) {
         // --- own tab id ---
@@ -495,10 +487,10 @@ export const useTabsStore = defineStore('tabs', {
       useWindowsStore().addToWindowSet(ts.window)
 
       if (ts.sharing === TabsetSharing.PUBLIC_LINK || ts.sharing === TabsetSharing.PUBLIC_LINK_OUTDATED) {
-        MqttService.init()
-        if (ts.sharedId) {
-          MqttService.subscribe(ts.sharedId)
-        }
+        // MqttService.init()
+        // if (ts.sharedId) {
+        //   MqttService.subscribe(ts.sharedId)
+        // }
       }
 
       this.tabsets.set(ts.id, ts)
@@ -542,6 +534,10 @@ export const useTabsStore = defineStore('tabs', {
         this.chromeTabsHistoryNavigating = true
       }
       return this.chromeTabsHistory[this.chromeTabsHistoryPosition]
+    },
+
+    clearTabsets() {
+      this.tabsets = new Map<string, Tabset>()
     }
   }
 });

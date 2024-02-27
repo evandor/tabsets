@@ -1,6 +1,10 @@
 <template>
     <q-dialog ref="dialogRef" @hide="onDialogHide">
-      <NewTabsetDialogBody :space-id="props.spaceId" :from-panel="props.fromPanel"/>
+      <NewTabsetDialogBody
+        :space-id="props.spaceId"
+        :name="props.name"
+        :window-id="props.windowId"
+        :from-panel="props.fromPanel"/>
     </q-dialog>
 </template>
 
@@ -15,6 +19,8 @@ defineEmits([
 
 const props = defineProps({
   spaceId: {type: String, required: false},
+  name: {type: String, default: ""},
+  windowId: {type: Number, required: false},
   fromPanel: {type: Boolean, default: false}
 })
 

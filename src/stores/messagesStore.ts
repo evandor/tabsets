@@ -3,9 +3,7 @@ import {ref} from "vue";
 import PersistenceService from "src/services/PersistenceService";
 import {useUtils} from "src/services/Utils";
 import {Window} from "src/models/Window";
-import _ from "lodash"
-import throttledQueue from "throttled-queue";
-import {useQuasar} from "quasar";
+import {Message} from "src/models/Message"
 
 /**
  * a pinia store for "Messages".
@@ -26,7 +24,7 @@ export const useMessagesStore = defineStore('messages', () => {
    * @param ps a persistence storage
    */
   async function initialize(providedDb: PersistenceService) {
-    console.log("initializing messagesStore")
+    console.debug(" ...initializing messagesStore")
     storage = providedDb
     setup("initialization")
   }
@@ -35,7 +33,6 @@ export const useMessagesStore = defineStore('messages', () => {
     if (!inBexMode()) {
       return
     }
-    console.debug("init messages with trigger", trigger)
     storage.getMessages()
       .then((ms) => messages.value = ms)
   }

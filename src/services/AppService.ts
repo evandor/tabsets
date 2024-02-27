@@ -2,7 +2,6 @@ import {usePermissionsStore} from "stores/permissionsStore";
 import ChromeListeners from "src/services/ChromeListeners";
 import ChromeBookmarkListeners from "src/services/ChromeBookmarkListeners";
 import BookmarksService from "src/services/BookmarksService";
-import {LocalStorage, useQuasar} from "quasar";
 import IndexedDbPersistenceService from "src/services/IndexedDbPersistenceService";
 import {useNotificationsStore} from "stores/notificationsStore";
 import {useDB} from "src/services/usePersistenceService";
@@ -17,103 +16,169 @@ import {useSettingsStore} from "stores/settingsStore";
 import {useBookmarksStore} from "stores/bookmarksStore";
 import {useWindowsStore} from "src/stores/windowsStore";
 import {useSearchStore} from "stores/searchStore";
-import {useRouter} from "vue-router";
+import {Router} from "vue-router";
 import {useGroupsStore} from "stores/groupsStore";
 import {FeatureIdent} from "src/models/AppFeature";
 import {useMessagesStore} from "src/stores/messagesStore";
 import {SyncType, useAppStore} from "stores/appStore";
-import GitPersistentService from "src/services/persistence/GitPersistentService";
-import {SYNC_GIT_URL} from "boot/constants";
+import {useAuthStore} from "stores/authStore";
+import PersistenceService from "src/services/PersistenceService";
+import {useUiStore} from "stores/uiStore";
+import {User} from "firebase/auth";
+import FsPersistenceService from "src/services/persistence/FirestorePersistenceService";
+
+function dbStoreToUse(st: SyncType, su: string | undefined) {
+  const isAuthenticated = useAuthStore().isAuthenticated()
+  if (!isAuthenticated) {
+    console.debug("%not authenticated", "font-weight:bold")
+    return useDB(undefined).db
+  }
+  if (st === SyncType.FIRESTORE) {
+    console.debug("%csyncType " + st, "font-weight:bold")
+    return useDB(undefined).firestore
+  }
+  console.debug("%cfallback, syncType " + st, "font-weight:bold")
+  return useDB(undefined).db
+}
 
 class AppService {
 
-  async init() {
+  router: Router = null as unknown as Router
+  initialized = false
+
+  async init(quasar: any, router: Router, forceRestart = false, user: User | undefined = undefined) {
+
+    console.log(`%cinitializing AppService: first start=${!this.initialized}, forceRestart=${forceRestart}, quasar set=${quasar !== undefined}, router set=${router !== undefined}`, forceRestart ? "font-weight:bold" : "")
+
+    if (this.initialized && !forceRestart) {
+      console.debug("stopping AppService initialization; already initialized and not forcing restart")
+      return Promise.resolve()
+    }
+
+    if (this.initialized) {
+      await ChromeListeners.resetListeners()
+      await useWindowsStore().resetListeners()
+    }
+
+    this.initialized = true
 
     const appStore = useAppStore()
-    const spacesStore = useSpacesStore()
     const tabsStore = useTabsStore()
     const settingsStore = useSettingsStore()
     const bookmarksStore = useBookmarksStore()
-    const windowsStore = useWindowsStore()
     const messagesStore = useMessagesStore()
-    const groupsStore = useGroupsStore()
     const searchStore = useSearchStore()
-    const router = useRouter()
-    const $q = useQuasar()
+    const uiStore = useUiStore()
+    this.router = router
+
+    uiStore.appLoading = "loading tabsets..."
 
     appStore.init()
-    //MqttService.init()
 
     // init of stores and some listeners
-    usePermissionsStore().initialize(useDB(useQuasar()).localDb)
-      .then(() => {
-        ChromeListeners.initListeners()
-        ChromeBookmarkListeners.initListeners()
-        bookmarksStore.init()
-        BookmarksService.init()
-      })
-    settingsStore.initialize(useQuasar().localStorage);
-    tabsStore.initialize(useQuasar().localStorage);
+    await usePermissionsStore().initialize(useDB(quasar).localDb)
+    await ChromeListeners.initListeners()
+    ChromeBookmarkListeners.initListeners()
+    await bookmarksStore.init()
+    await BookmarksService.init()
+    settingsStore.initialize(quasar.localStorage);
+    tabsStore.initialize().catch((err) => console.error("***" + err))
 
-    searchStore.init()
+    searchStore.init().catch((err) => console.error(err))
 
-    const localStorage = useQuasar().localStorage
+    // init db
+    await IndexedDbPersistenceService.init("db")
 
-    // sync features
-    const syncType = LocalStorage.getItem("sync.type") as SyncType || SyncType.NONE
-    const syncUrl = LocalStorage.getItem(SYNC_GIT_URL) as string
-    const dbOrGitDb = syncType && syncType === SyncType.GIT && syncUrl ? useDB(undefined).gitDb : useDB(undefined).db
-    console.log("checking sync config:", syncType, syncUrl, dbOrGitDb)
+    // init services
+    await useAuthStore().initialize(useDB(undefined).db)
+    await useAuthStore().setUser(user)
+    //useAuthStore().upsertAccount(account)
 
-// init db
-    IndexedDbPersistenceService.init("db")
-      .then(() => {
+    await useNotificationsStore().initialize(useDB(undefined).db)
+    useSuggestionsStore().init(useDB(undefined).db)
+    await messagesStore.initialize(useDB(undefined).db)
 
-        // init services
-        useNotificationsStore().initialize(useDB(undefined).db)
-        useSuggestionsStore().init(useDB(undefined).db)
-        messagesStore.initialize(useDB(undefined).db)
+    tabsetService.setLocalStorage(localStorage)
 
-        tabsetService.setLocalStorage(localStorage)
+    if (useAuthStore().isAuthenticated()) {
+      console.log("useAuthStore().getAccount()", useAuthStore().getAccount())
+      // sync features
+      const syncType = useAuthStore().getAccount()?.userData?.sync?.type || SyncType.NONE
+      const syncUrl = useAuthStore().getAccount()?.userData?.sync?.url
 
-        GitPersistentService.init(syncUrl)
-          .then((gitInitResult:string) => {
-            console.log("gitInitResult", gitInitResult)
-            spacesStore.initialize(dbOrGitDb)
-              .then(() => {
-                useTabsetService().init(dbOrGitDb, false)
-                  .then(() => {
-                    MHtmlService.init()
-                    ChromeApi.init(router)
+      let persistenceStore = dbStoreToUse(syncType, syncUrl)
 
-                    if (usePermissionsStore().hasFeature(FeatureIdent.TAB_GROUPS)) {
-                      groupsStore.initialize(useDB(undefined).db)
-                      groupsStore.initListeners()
-                    }
+      let failedGitLogin = false
 
-                    windowsStore.initialize(useDB(undefined).db)
-                    windowsStore.initListeners()
+      if(router.currentRoute.value.query.token === "failed") {
+        console.log("failed login, falling back to indexedDB")
+        failedGitLogin = true
+      }
 
-                    // tabsets not in bex mode means running on "shared.tabsets.net"
-                    // probably running an import ("/imp/:sharedId")
-                    // we do not want to go to the welcome back
-                    if (tabsStore.tabsets.size === 0 && $q.platform.is.bex) {
-                      router.push("/sidepanel/welcome")
-                    }
-                  })
-              })
+      console.debug(`%cchecking sync config: type=${syncType}, url=${syncUrl}, persistenceStore=${persistenceStore.getServiceName()}`, "font-weight:bold")
 
-          })
+      if (syncUrl) {
+        uiStore.appLoading = "syncing tabsets..."
+      }
 
-      })
+      await FsPersistenceService.init()
+
+      await this.initCoreSerivces(quasar, persistenceStore, this.router)
+    } else {
+      await this.initCoreSerivces(quasar, useDB(undefined).db, this.router)
+    }
+
+    useNotificationsStore().bookmarksExpanded = quasar.localStorage.getItem("bookmarks.expanded") || []
+
+  }
 
 
-    useNotificationsStore().bookmarksExpanded = $q.localStorage.getItem("bookmarks.expanded") || []
+  restart(ar: string) {
+    console.log("%crestarting tabsets", "font-weight:bold", window.location.href, ar)
+    const baseLocation = window.location.href.split("?")[0]
+    console.log("%cbaseLocation", "font-weight:bold", baseLocation)
+    console.log("%cwindow.location.href", "font-weight:bold", window.location.href)
+    if (window.location.href.indexOf("?") < 0) {
+      const tsIframe = window.parent.frames[0]
+      //log("iframe", tsIframe)
+      if (tsIframe) {
+        console.debug("%cnew window.location.href", "font-weight:bold", baseLocation + "?" + ar)
+        tsIframe.location.href = baseLocation + "?" + ar
+        //tsIframe.location.href = "https://www.skysail.io"
+        tsIframe.location.reload()
+      }
+    }
+    useAuthStore().setAuthRequest(null as unknown as string)
+  }
 
-    // @ts-ignore
-    // if (!inBexMode() || (!chrome.sidePanel && chrome.action)) {
-    //   router.push("/start")
-    // }
+  private async initCoreSerivces(quasar: any, store: PersistenceService, router: Router) {
+    const spacesStore = useSpacesStore()
+    const windowsStore = useWindowsStore()
+    const groupsStore = useGroupsStore()
+    const tabsStore = useTabsStore()
+
+    await spacesStore.initialize(store)
+    await useTabsetService().init(store, false)
+    await MHtmlService.init()
+    ChromeApi.init(router)
+
+    if (usePermissionsStore().hasFeature(FeatureIdent.TAB_GROUPS)) {
+      await groupsStore.initialize(useDB(undefined).db)
+      groupsStore.initListeners()
+    }
+
+    await windowsStore.initialize(useDB(undefined).db)
+    windowsStore.initListeners()
+
+    useUiStore().appLoading = undefined
+
+    // tabsets not in bex mode means running on "pwa.tabsets.net"
+    // probably running an import ("/imp/:sharedId")
+    // we do not want to go to the welcome back
+    // console.log("checking for welcome page", tabsStore.tabsets.size === 0, quasar.platform.is.bex, !useAuthStore().isAuthenticated())
+    if (tabsStore.tabsets.size === 0 && quasar.platform.is.bex && !useAuthStore().isAuthenticated()) {
+      await router.push("/sidepanel/welcome")
+    }
 
 
   }

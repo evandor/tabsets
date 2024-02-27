@@ -2,7 +2,7 @@ import {Tabset, TabsetStatus, TabsetType} from "src/models/Tabset";
 import {useTabsStore} from "src/stores/tabsStore";
 import _ from "lodash";
 import {HTMLSelection, Tab} from "src/models/Tab";
-import {uid} from "quasar";
+import {uid, useQuasar} from "quasar";
 import throttledQueue from 'throttled-queue';
 import {useWindowsStore} from "src/stores/windowsStore";
 import {useTabsetService} from "src/services/TabsetService2";
@@ -17,12 +17,13 @@ import {useUtils} from "src/services/Utils";
 import {useGroupsStore} from "stores/groupsStore";
 import NavigationService from "src/services/NavigationService";
 import ContentUtils from "src/utils/ContentUtils";
-// @ts-ignore
-import rangy from "rangy/lib/rangy-core.js";
-//import "rangy/lib/rangy-highlighter";
-//import "rangy/lib/rangy-classapplier";
-//import "rangy/lib/rangy-textrange";
 import "rangy/lib/rangy-serializer";
+import {useAuthStore} from "stores/authStore";
+import {EMAIL_LINK_REDIRECT_DOMAIN} from "boot/constants";
+import {getMessaging, Messaging} from "firebase/messaging/sw";
+import {collection, deleteDoc, getDocs, setDoc, doc, updateDoc, Firestore} from "firebase/firestore";
+import {getToken} from "firebase/messaging";
+import firebase from "firebase/compat/app";
 
 const {
   saveCurrentTabset,
@@ -34,12 +35,12 @@ const {
   saveThumbnailFor
 } = useTabsetService()
 
-const {sanitize} = useUtils()
+const {sanitize, sendMsg, inBexMode} = useUtils()
 
 async function setCurrentTab() {
   const tabs = await chrome.tabs.query({active: true, lastFocusedWindow: true})
 
-  console.debug("setting current tab", tabs)
+  //console.debug("setting current tab", tabs)
   if (tabs && tabs[0]) {
     useTabsStore().setCurrentChromeTab(tabs[0] as unknown as chrome.tabs.Tab)
   } else {
@@ -54,30 +55,7 @@ async function setCurrentTab() {
 
 function annotationScript(tabId: string, annotations: any[]) {
   console.log("!!! here in annotation script", tabId, annotations)
-//
-//   const
-//     iFrame = document.createElement('iframe'),
-//     defaultFrameHeight = '62px'
-//
-//   iFrame.id = 'bex-app-iframe'
-//   iFrame.width = '100%'
-//  // resetIFrameHeight()
-//
-// // Assign some styling so it looks seamless
-// //   Object.assign(iFrame.style, {
-// //     position: 'fixed',
-// //     top: '0',
-// //     right: '0',
-// //     bottom: '0',
-// //     left: '0',
-// //     border: '0',
-// //     zIndex: '9999999', // Make sure it's on top
-// //     overflow: 'visible'
-// //   })
-//
-//   //iFrame.src = chrome.runtime.getURL('/www/index.html#/annotations/' + tabId)
-//   //document.body.prepend(iFrame)
-//
+
   var l: HTMLLinkElement = document.createElement('link');
   l.setAttribute("href", chrome.runtime.getURL('www/css/ts-content-script.css'))
   l.setAttribute("rel", "stylesheet")
@@ -116,7 +94,8 @@ function inIgnoredMessages(request: any) {
     request.name === 'reload-tabset' ||
     request.name === 'detail-level-perTabset-changed' ||
     request.name === 'detail-level-changed' ||
-    request.name === 'mqtt-url-changed' ||
+    request.name === 'reload-application' ||
+    request.name === 'window-updated' ||
     request.action === 'highlight-annotation'
   //request.name === 'recogito-annotation-created'
 
@@ -147,27 +126,54 @@ class ChromeListeners {
 
   throttleOnePerSecond = throttledQueue(1, 1000, true)
 
+  private onCreatedListener = (tab: chrome.tabs.Tab) => this.onCreated(tab)
+  private onUpdatedListener = (number: number, info: chrome.tabs.TabChangeInfo, tab: chrome.tabs.Tab) => this.onUpdated(number, info, tab)
+  private onMovedListener = (number: number, info: chrome.tabs.TabMoveInfo) => this.onMoved(number, info)
+  private onRemovedListener = (number: number, info: chrome.tabs.TabRemoveInfo) => this.onRemoved(number, info)
+  private onReplacedListener = (n1: number, n2: number) => this.onReplaced(n1, n2)
+  private onActivatedListener = (info: chrome.tabs.TabActiveInfo) => this.onActivated(info)
+  private onAttachedListener = (number: number, info: chrome.tabs.TabAttachInfo) => this.onAttached(number, info)
+  private onDetachedListener = (number: number, info: chrome.tabs.TabDetachInfo) => this.onDetached(number, info)
+  private onHighlightedListener = (info: chrome.tabs.TabHighlightInfo) => this.onHighlighted(info)
+  private onMessageListener = (request: any, sender: chrome.runtime.MessageSender, sendResponse: any) => this.onMessage(request, sender, sendResponse)
+  private onCommandListener = (command: string) => {
+    switch (command) {
+      case 'tabHistoryBack':
+        NavigationService.backOneTab()
+        break
+      case 'tabHistoryForward':
+        NavigationService.forwardOneTab()
+        break
+      case 'search':
+        break
+      default:
+        console.log(`unknown Command: ${command}`);
+        break
+    }
+  }
+
   async initListeners() {
 
     if (process.env.MODE === 'bex') {
-      console.debug("initializing chrome tab listeners")
+
+      console.debug(" ...initializing chrome tab listeners")
 
       chrome.runtime.setUninstallURL("https://tabsets.web.app/#/uninstall")
 
       await setCurrentTab()
 
-      chrome.tabs.onCreated.addListener((tab: chrome.tabs.Tab) => this.onCreated(tab))
-      chrome.tabs.onUpdated.addListener((number, info, tab) => this.onUpdated(number, info, tab))
-      chrome.tabs.onMoved.addListener((number, info) => this.onMoved(number, info))
-      chrome.tabs.onRemoved.addListener((number, info) => this.onRemoved(number, info))
-      chrome.tabs.onReplaced.addListener((n1, n2) => this.onReplaced(n1, n2))
-      chrome.tabs.onActivated.addListener((info) => this.onActivated(info))
-      chrome.tabs.onAttached.addListener((number, info) => this.onAttached(number, info))
-      chrome.tabs.onDetached.addListener((number, info) => this.onDetached(number, info))
-      chrome.tabs.onHighlighted.addListener((info) => this.onHighlighted(info))
+      chrome.tabs.onCreated.addListener(this.onCreatedListener)
+      chrome.tabs.onUpdated.addListener(this.onUpdatedListener)
+      chrome.tabs.onMoved.addListener(this.onMovedListener)
+      chrome.tabs.onRemoved.addListener(this.onRemovedListener)
+      chrome.tabs.onReplaced.addListener(this.onReplacedListener)
+      chrome.tabs.onActivated.addListener(this.onActivatedListener)
+      chrome.tabs.onAttached.addListener(this.onAttachedListener)
+      chrome.tabs.onDetached.addListener(this.onDetachedListener)
+      chrome.tabs.onHighlighted.addListener(this.onHighlightedListener)
       //chrome.tabs.onZoomChange.addListener((info) => this.onZoomChange(info))
 
-      chrome.runtime.onMessage.addListener((request, sender, sendResponse) => this.onMessage(request, sender, sendResponse))
+      chrome.runtime.onMessage.addListener(this.onMessageListener)
 
       // seems to belong in background.ts
       // chrome.runtime.onInstalled.addListener((callback) => {
@@ -181,22 +187,9 @@ class ChromeListeners {
       //   }
       // });
 
-      chrome.commands.onCommand.addListener((command) => {
-        switch (command) {
-          case 'tabHistoryBack':
-            NavigationService.backOneTab()
-            break
-          case 'tabHistoryForward':
-            NavigationService.forwardOneTab()
-            break
-          case 'search':
-            break
-          default:
-            console.log(`unknown Command: ${command}`);
-            break
-        }
-      });
+      chrome.commands.onCommand.addListener(this.onCommandListener);
 
+      // TODO removed listeners as well?
       if (usePermissionsStore().hasFeature(FeatureIdent.NOTIFICATIONS)) {
         chrome.notifications.onButtonClicked.addListener(
           (notificationId, buttonIndex) => {
@@ -209,6 +202,26 @@ class ChromeListeners {
       }
     }
 
+    // https://stackoverflow.com/questions/77089404/chrom-extension-close-event-not-available-on-sidepanel-closure
+    if (chrome.runtime && inBexMode()) {
+      chrome.runtime.connect({ name: 'tabsetsSidepanel' });
+    }
+
+  }
+
+  async resetListeners() {
+    console.log(" ...resetting listeners (after re-initialization)")
+    chrome.tabs.onCreated.removeListener(this.onCreatedListener)
+    chrome.tabs.onUpdated.removeListener(this.onUpdatedListener)
+    chrome.tabs.onMoved.removeListener(this.onMovedListener)
+    chrome.tabs.onRemoved.removeListener(this.onRemovedListener)
+    chrome.tabs.onReplaced.removeListener(this.onReplacedListener)
+    chrome.tabs.onActivated.removeListener(this.onActivatedListener)
+    chrome.tabs.onAttached.removeListener(this.onAttachedListener)
+    chrome.tabs.onDetached.removeListener(this.onDetachedListener)
+    chrome.tabs.onHighlighted.removeListener(this.onHighlightedListener)
+    chrome.runtime.onMessage.removeListener(this.onMessageListener)
+    chrome.commands.onCommand.removeListener(this.onCommandListener);
   }
 
   clearWorking() {
@@ -236,7 +249,8 @@ class ChromeListeners {
       return
     }
     this.eventTriggered()
-    console.debug(`onCreated: tab ${tab.id}: >>> ${tab.pendingUrl}`)
+    console.debug(`onCreated: tab ${tab.id}: >>> ${tab.pendingUrl}`, tab)
+    sendMsg('window-updated', {initiated: "ChromeListeners#onCreated"})
     const tabsStore = useTabsStore()
 
     let foundSession = false
@@ -254,6 +268,19 @@ class ChromeListeners {
   }
 
   async onUpdated(number: number, info: chrome.tabs.TabChangeInfo, chromeTab: chrome.tabs.Tab) {
+    if (info.url) {
+      if (this.checkOriginForEmailLink(info.url)) {
+        const split = info.url.split("?")
+        const authRequest = split[1]
+        console.log("authRequest received on", window.location.href)
+        //const newLocation = window.location + "?" + authRequest
+        //console.log("%cnewLocation", "color:green",newLocation)
+        //window.location.href = newLocation
+        useAuthStore().setAuthRequest(authRequest)
+      }
+    }
+
+
     if (!useTabsStore().listenersOn) {
       console.debug(`onUpdated:   tab ${number}: >>> listeners off, returning <<<`)
       return
@@ -414,7 +441,7 @@ class ChromeListeners {
         }
         if (!tab.url?.startsWith("chrome")) {
           scripts.forEach((script: string) => {
-            console.debug("executing scripts", tab.id, script)
+            //console.debug("executing scripts", tab.id, script)
 
 
             // @ts-ignore
@@ -434,14 +461,10 @@ class ChromeListeners {
 
   onRemoved(number: number, info: chrome.tabs.TabRemoveInfo) {
     this.eventTriggered()
-    const tabsStore = useTabsStore()
-    const currentTabset: Tabset = tabsStore.tabsets.get(tabsStore.currentTabsetId) as Tabset || new Tabset("", "", [], [])
-    const index = _.findIndex(currentTabset.tabs, t => t.chromeTabId === number);
-    if (index >= 0) {
-      const updatedTab = currentTabset.tabs.at(index)
-      if (updatedTab) {
-      }
-    }
+    console.log("onRemoved tab event: ", number, info)
+    //useWindowsStore().refreshCurrentWindows()
+    useWindowsStore().refreshTabsetWindow(info.windowId)
+    sendMsg('window-updated', {initiated: "ChromeListeners#onRemoved"})
   }
 
   onReplaced(n1: number, n2: number) {
@@ -509,7 +532,7 @@ class ChromeListeners {
     if (inIgnoredMessages(request)) {
       return true
     }
-    //console.log("%conMessage","color:red", request)
+    console.debug(" <<< got message", request)
     if (request.msg === 'captureThumbnail') {
       const screenShotWindow = useWindowsStore().screenshotWindow
       this.handleCapture(sender, screenShotWindow, sendResponse)
@@ -840,6 +863,33 @@ class ChromeListeners {
         )
 
       })
+  }
+
+  private checkOriginForEmailLink(url: string) {
+    try {
+      const theUrl = new URL(url)
+      const urlOrigin = theUrl.origin;
+      //console.log("theURL", theUrl)
+      const res = urlOrigin === EMAIL_LINK_REDIRECT_DOMAIN || urlOrigin === "http://localhost:9000"
+      if (res) {
+        //console.log("checking: origin ok")
+        const params = theUrl.searchParams
+        if (!params.has("apiKey") || !params.has("oobCode") || !params.has("mode")) {
+          //console.log("checking: missing key", params)
+          return false
+        }
+        if (!params.get("apiKey")?.startsWith("AIzaS") || params.get("mode") !== "signIn") {
+          //console.log("checking: wrong key", params.get("apiKey"))
+          //console.log("checking: wrong key", params.get("mode"))
+          return false
+        }
+        console.log("%cfound email authorization link @", "border:1px solid green",url)
+        return true
+      }
+      return false
+    } catch (err) {
+      console.log("could not check url for auth link", url)
+    }
   }
 }
 

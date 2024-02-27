@@ -10,8 +10,11 @@ import {Window} from "src/models/Window";
 import {RequestInfo} from "src/models/RequestInfo";
 import {BlobType, SavedBlob} from "src/models/SavedBlob";
 import {Message} from "src/models/Message";
+import {Account} from "src/models/Account";
 
 interface PersistenceService {
+
+  getServiceName(): string
 
   loadTabsets():Promise<void>
   reloadTabset(tabsetId: string): void
@@ -35,9 +38,9 @@ interface PersistenceService {
   getRequest(url: string): Promise<string>
 
   getMetaLinks(url: string): Promise<object>
-  saveMetaLinks(url: string, metaLinks: MetaLink[]): Promise<void>
+  saveMetaLinks(url: string, metaLinks: MetaLink[]): Promise<void | IDBValidKey>
   getLinks(url: string): Promise<object>
-  saveLinks(url: string, links: any): Promise<void>
+  saveLinks(url: string, links: any): Promise<void | IDBValidKey>
 
   saveMHtml(tab: Tab, mhtml: Blob): Promise<string>
   getMHtml(url: string):Promise<object>
@@ -86,10 +89,13 @@ interface PersistenceService {
   getWindow(windowId: number): Promise<Window | undefined>
   removeWindow(windowId: number): Promise<void>
   updateWindow(window: Window): Promise<void>
-  upsertWindow(window: Window, windowName: string, screenLabel: string | undefined): Promise<void>
+  upsertWindow(window: Window): Promise<void>
 
   getMessages(): Promise<Message[]>
   addMessage(msg: Message):void
+
+  getAccount(accountId: string): Promise<Account>
+  upsertAccount(account: Account):void
 
   clear(name: string):any
 
