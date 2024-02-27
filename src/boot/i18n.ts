@@ -1,15 +1,12 @@
-import { boot } from 'quasar/wrappers';
-import { createI18n } from 'vue-i18n';
+import {createI18n} from 'vue-i18n'
+import messages from '@intlify/unplugin-vue-i18n/messages'
 
-import messages from 'src/i18n';
-
-export default boot(({ app }) => {
+// @ts-ignore
+export default ({app}) => {
   const i18n = createI18n({
-    locale: 'en-US',
-    globalInjection: true,
-    messages,
-  });
-
-  // Set i18n instance on app
-  app.use(i18n);
-});
+    locale: 'en',
+    messages
+  })
+  //console.log("====>", messages)
+  app.use(i18n)
+}

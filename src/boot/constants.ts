@@ -20,11 +20,13 @@ const RELEASE_NOTES_URL = "https://us-central1-tabsets-backend-prd.cloudfunction
 // Local storage Identifiers
 const TITLE_IDENT = 'title';
 
+const APP_INSTALLATION_ID = 'app.installation.id'
+
+
 const SUBSCRIPTION_ID_IDENT = 'subscription.id';
 
 const SHARING_AUTHOR_IDENT = 'sharing.author';
 const SHARING_AVATAR_IDENT = 'sharing.avatar';
-const SHARING_INSTALLATION = 'sharing.installation'
 
 const SYNC_TYPE = "sync.type"
 
@@ -57,11 +59,8 @@ export {
   SUBSCRIPTION_ID_IDENT,
   SHARING_AUTHOR_IDENT,
   SHARING_AVATAR_IDENT,
-  SHARING_MQTT_IDENT,
-  SHARING_INSTALLATION,
+  APP_INSTALLATION_ID,
   SYNC_TYPE,
-  SYNC_GITLAB_URL,
-  SYNC_GITLAB_TOKEN,
   SYNC_GITHUB_TOKEN,
   SYNC_COUCHDB_USERNAME,
   SYNC_COUCHDB_PASSWORD,

@@ -80,13 +80,6 @@
               data-testid="addTabsetBtn"
               @click="openNewTabsetDialog()"/>
 
-            <SidePanelToolbarButton
-              v-if="!useUiStore().networkOnline || useUiStore().mqttOffline"
-              icon="cloud_off"
-              :tooltip="!useUiStore().networkOnline ? 'It seems this browser is offline' : 'Sharing comments not possible right now'"
-              :color="!useUiStore().networkOnline ? 'negative' :'warning'"
-              class="q-ml-sm"/>
-
           </slot>
         </div>
       </div>
@@ -116,6 +109,9 @@ import SidePanelToolbarButton from "components/buttons/SidePanelToolbarButton.vu
 import {useQuasar} from "quasar";
 import {useAuthStore} from "stores/authStore";
 import {SyncType} from "stores/appStore";
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n({useScope: 'global'})
 
 const props = defineProps({
   title: {type: String, default: "My Tabsets"},
@@ -222,7 +218,7 @@ const showCreateClipButtonInActive = () =>
 const newTabsetTooltip = () =>
   usePermissionsStore().hasFeature(FeatureIdent.SPACES) ?
     (useSpacesStore().space ? 'Add new Tabset in this space' : 'Add new unassigned Tabset') :
-    'Add new Tabset'
+    t('add_new_tabset')
 
 const openNewTabsetDialog = () => {
   $q.dialog({

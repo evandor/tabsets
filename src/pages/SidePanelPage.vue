@@ -9,7 +9,10 @@
       </div>
     </div>
 
-    <Transition appear>
+    <transition
+      appear
+      enter-active-class="animated fadeIn slower delay-5s"
+      leave-active-class="animated fadeOut">
       <div class="wrap2"
            v-if="useTabsStore().tabsets.size === 0 && !useUiStore().appLoading">
         <div class="row items-center text-grey-5">how to start?</div>
@@ -341,7 +344,6 @@ import {TITLE_IDENT} from "boot/constants";
 import AppService from "src/services/AppService";
 import {useNotificationHandler} from "src/services/ErrorHandler";
 import {ExecutionResult} from "src/domain/ExecutionResult";
-import {getMessaging, onMessage} from "firebase/messaging";
 import SidePanelToolbarButton from "components/buttons/SidePanelToolbarButton.vue";
 
 const {setVerticalScrollPosition} = scroll
@@ -846,12 +848,6 @@ const saveInTabset = (tabsetId: string) => {
   const useTS = useTabsetService().getTabset(tabsetId)
   if (useTS) {
     useCommandExecutor().execute(new AddTabToTabsetCommand(new Tab(uid(), currentChromeTab.value), useTS))
-
-    $q.bex.send('some.event', {someKey: 'aValue'})
-      .then((data) => {
-        console.log('Some response from the other side', data)
-      })
-
   } else {
     console.warn("expected to find tabsetId", tabsetId)
   }

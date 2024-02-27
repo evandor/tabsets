@@ -76,11 +76,20 @@
     </q-item-label>
 
     <!-- === description === -->
-    <q-item-label class="ellipsis-2-lines text-grey-8"
-                  v-if="useUiStore().listDetailLevelGreaterEqual(ListDetailLevel.MAXIMAL,props.tabset?.details)"
-                  @click.stop="gotoTab()">
-      {{ props.tab.longDescription || props.tab.description }}
-    </q-item-label>
+    <template v-if="props.tab?.extension !== UrlExtension.NOTE">
+      <q-item-label class="ellipsis-2-lines text-grey-8"
+                    v-if="useUiStore().listDetailLevelGreaterEqual(ListDetailLevel.MAXIMAL,props.tabset?.details)"
+                    @click.stop="gotoTab()">
+        {{ props.tab.longDescription || props.tab.description }}
+      </q-item-label>
+    </template>
+    <template else>
+      <q-item-label class="ellipsis-2-lines text-grey-8"
+                    v-if="useUiStore().listDetailLevelGreaterEqual(ListDetailLevel.MAXIMAL,props.tabset?.details)"
+                    @click.stop="gotoTab()">
+        {{ props.tab.description }}
+      </q-item-label>
+    </template>
 
     <!-- === url(s) === -->
     <q-item-label

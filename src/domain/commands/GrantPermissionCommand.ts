@@ -40,13 +40,15 @@ export class GrantPermissionCommand implements Command<boolean> {
             usePermissionsStore().activateFeature('bookmarks')
             useBookmarksStore().loadBookmarks()
               .then(() => {
-               // TabsetService.init()
+                // TabsetService.init()
                 useTabsetService().init(useDB(undefined).db)
                 ChromeBookmarkListeners.initListeners()
               })
             useSuggestionsStore().removeSuggestion(StaticSuggestionIdent.TRY_BOOKMARKS_FEATURE)
 //          } else if ("history" === this.permission) {
 //            usePermissionsStore().activateFeature('history')
+          } else if ("notifications" === this.permission) {
+            usePermissionsStore().activateFeature('notifications')
           } else if ("contextMenus" === this.permission) {
             //usePermissionsStore().grantPermission("notifications")
             ChromeApi.buildContextMenu()

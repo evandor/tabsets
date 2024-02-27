@@ -163,6 +163,8 @@ export const useUiStore = defineStore('ui', () => {
   const animateNewTabsetButton = ref(false)
   const animateSettingsButton = ref(false)
 
+  const showLoginTable = ref(false)
+
   const highlightTerm = ref<string | undefined>(undefined)
 
   const newTabsetEmptyByDefault = ref<boolean>(LocalStorage.getItem('ui.newTabsetEmptyByDefault') as unknown as boolean || false)
@@ -604,6 +606,7 @@ export const useUiStore = defineStore('ui', () => {
     setProgress,
     animateNewTabsetButton,
     animateSettingsButton,
-    startButtonAnimation
+    startButtonAnimation,
+    showLoginTable
   }
 })

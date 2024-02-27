@@ -4,11 +4,11 @@
     <div class="q-ma-none q-pa-none">
 
       <SidePanelPageTabList
-          v-if="tabset"
-          :sorting="sorting"
-          :show-tabsets="true"
-          :preventDragAndDrop="preventDragAndDrop(sorting)"
-          :tabset="tabset as Tabset"/>
+        v-if="tabset"
+        :sorting="sorting"
+        :show-tabsets="true"
+        :preventDragAndDrop="preventDragAndDrop(sorting)"
+        :tabset="tabset as Tabset"/>
 
     </div>
 
@@ -30,7 +30,7 @@
                  @click="toggleOrder()"
                  color="accent"
                  flat
-                 class="q-ma-none q-pa-xs cursor-pointer"
+                 class="q-mx-xs q-pa-xs cursor-pointer"
                  style="max-width:20px"
                  size="10px">
             <q-tooltip class="tooltip" v-if="descending">Descending</q-tooltip>
@@ -38,17 +38,42 @@
           </q-btn>
 
           <q-btn
-              icon="sort"
-              @click="toggleSorting()"
-              color="accent"
-              flat
-              class="q-ma-none q-pa-xs cursor-pointer"
-              style="max-width:20px"
-              size="10px">
+            icon="sort"
+            @click="toggleSorting()"
+            color="accent"
+            flat
+            class="q-mx-xs q-pa-xs cursor-pointer"
+            style="max-width:20px"
+            size="10px">
             <q-tooltip class="tooltip">Toggle Sorting - now: {{ sorting }}</q-tooltip>
           </q-btn>
 
-<!--          <span class="q-ma-none q-pa-none q-mx-sm text-grey-5">|</span>-->
+          <!--          <span class="q-ma-none q-pa-none q-mx-sm text-grey-5">|</span>-->
+
+          <q-btn
+            v-if="usePermissionsStore().hasFeature(FeatureIdent.NOTES)"
+            @click.stop="startTabsetNote()"
+            class="q-mx-xs q-pa-xs cursor-pointer"
+            icon="o_add_circle"
+            style="max-width:20px"
+            size="10px">
+            <q-tooltip class="tooltip-small">
+              Add Note to '{{ tabset?.name }}'
+            </q-tooltip>
+          </q-btn>
+
+          <q-btn
+            @click.stop="saveInTabset()"
+            class="q-mx-xs q-pa-xs cursor-pointer"
+            icon="o_bookmark_add"
+            :class="alreadyInTabset() ? '':'cursor-pointer'"
+            :color="alreadyInTabset() ? 'grey-5': 'warning'"
+            style="max-width:20px"
+            size="10px">
+            <q-tooltip class="tooltip-small">
+              Add current Tab to '{{ tabset?.name }}'
+            </q-tooltip>
+          </q-btn>
 
         </template>
 
@@ -72,8 +97,15 @@ import FirstToolbarHelper from "pages/sidepanel/helper/FirstToolbarHelper.vue";
 import {useWindowsStore} from "src/stores/windowsStore";
 import Analytics from "src/utils/google-analytics";
 import SidePanelTabsetsSelectorWidget from "components/widgets/SidePanelTabsetsSelectorWidget.vue";
-import {useQuasar} from "quasar";
+import {uid, useQuasar} from "quasar";
 import SidePanelPageTabList from "components/layouts/SidePanelPageTabList.vue";
+import {useTabsetService} from "src/services/TabsetService2";
+import {useCommandExecutor} from "src/services/CommandExecutor";
+import {AddTabToTabsetCommand} from "src/domain/tabs/AddTabToTabset";
+import {usePermissionsStore} from "stores/permissionsStore";
+import {FeatureIdent} from "src/models/AppFeature";
+import ContextMenuItem from "pages/sidepanel/helper/ContextMenuItem.vue";
+import NavigationService from "src/services/NavigationService";
 
 const {inBexMode} = useUtils()
 
@@ -151,6 +183,33 @@ const toggleSorting = () => {
 
 const toggleOrder = () => descending.value = !descending.value
 
-const preventDragAndDrop = (sorting:TabSorting) => $q.platform.is.mobile || sorting !== TabSorting.CUSTOM
+const preventDragAndDrop = (sorting: TabSorting) => $q.platform.is.mobile || sorting !== TabSorting.CUSTOM
+
+const alreadyInTabset = () => {
+  if (currentChromeTab.value?.url && useTabsStore().getCurrentTabset) {
+    return useTabsetService().urlExistsInCurrentTabset(currentChromeTab.value.url)
+  }
+  return false
+}
+
+const saveInTabset = () => {
+  if (alreadyInTabset() || !tabsetId.value) {
+    return
+  }
+  const useTS = useTabsetService().getTabset(tabsetId.value)
+  if (useTS) {
+    useCommandExecutor().execute(new AddTabToTabsetCommand(new Tab(uid(), currentChromeTab.value), useTS))
+  } else {
+    console.warn("expected to find tabsetId", tabsetId)
+  }
+}
+
+const startTabsetNote = () => {
+  const url = chrome && chrome.runtime && chrome.runtime.getURL ?
+    chrome.runtime.getURL('www/index.html') + "#/mainpanel/notes/?tsId=" + tabsetId + "&edit=true" :
+    "#/mainpanel/notes/?tsId=" + tabsetId + "&edit=true"
+  NavigationService.openOrCreateTab([url])
+}
+
 
 </script>

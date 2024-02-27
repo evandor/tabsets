@@ -123,7 +123,11 @@ export default bexBackground((bridge, cons/* , allActiveConnections */) => {
         const data = snapshot.val();
         console.log("[service-worker] got change", data)
         if (data && data['tabsetChanged']) {
-          bridge.send('fb.message.received', {msg: 'event.tabset.updated',tstamp: data['tabsetChanged']})
+          bridge.send('fb.message.received', {
+            msg: 'event.tabset.updated',
+            tstamp: data['tabsetChanged'],
+            origin: data['origin']
+          })
         }
       })
     })

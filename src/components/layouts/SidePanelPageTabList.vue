@@ -71,7 +71,6 @@
     <!-- no drag & drop on mobile -->
     <!-- TODO columns -->
     <template v-else>
-      ***
       <SidePanelTabListHelper
         v-for="tab in tabs"
         :tab="tab as Tab"
