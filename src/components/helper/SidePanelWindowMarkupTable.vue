@@ -6,7 +6,7 @@
       <q-markup-table class="q-ma-none" dense flat>
         <thead>
         <tr>
-          <!--          <th></th>-->
+                    <th></th>
           <th class="text-left">Window Name</th>
           <th class="text-right">#Tabs</th>
           <th class="text-right q-pr-none">
@@ -36,7 +36,7 @@
               @mouseover="hoveredWindow = row['id' as keyof object]"
               @mouseleave="hoveredWindow = undefined"
               style="max-height:15px">
-            <!--            <td>{{ row['index' as keyof object] }}</td>-->
+                        <td>{{ row['index' as keyof object] }}</td>
             <!--            <td>{{ row['state' as keyof object] }}</td>-->
             <td class="text-left" :class="windowNameRowClass(row)"
                 @dblclick.stop="openRenameWindowDialog(row['id' as keyof object], row['name' as keyof object], row['index' as keyof object])"
@@ -303,7 +303,7 @@ const handleDragAndDrop = async (event: any) => {
       console.log("old rows", _.map(rows.value, r => r['id' as keyof object] + "("+r['name' as keyof object]+"):" + r['index' as keyof object]))
       const newOrder = _.map(rows.value, r => r['id' as keyof object] as number)
       const startIndex = rows.value[0]['index' as keyof object]
-      let index = startIndex
+      let index = 0//
       console.log("newOrder", newOrder, startIndex)
       for (const r of newOrder) {
         await useWindowsStore().updateWindowIndex(r, index++)
@@ -332,10 +332,10 @@ const openRenameWindowDialog = (windowId: number, currentName: string, index: nu
 
 const windowNameRowClass = (row: any) => {
   if (useWindowsStore().currentChromeWindow?.id === row['id' as keyof object]) {
-    return row['focused' as keyof object] ? 'text-bold text-primary' : 'text-bold'
+    return row['focused' as keyof object] ? 'text-bold text-italic' : 'text-bold'
   }
   if (row['focused' as keyof object]) {
-    return 'text-primary'
+    return 'text-italic'
   }
   if (row['state'] === 'minimized') {
     return 'text-grey-5'

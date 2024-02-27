@@ -545,7 +545,7 @@ class IndexedDbPersistenceService implements PersistenceService {
         window.id,
         window.browserWindow,
         existingWindowForWindowId.title,
-        window.index,
+        existingWindowForWindowId.index,
         existingWindowForWindowId.open,
         window.hostList
       )
@@ -626,7 +626,7 @@ class IndexedDbPersistenceService implements PersistenceService {
     asJson['hostList'] = window.hostList ? Array.from(window.hostList) : []
 
     delete asJson['tabs']
-    console.debug("saving window json as ", asJson)
+    //console.debug("saving window json as ", asJson)
     await this.db.put('windows', asJson, window.id)
   }
 
