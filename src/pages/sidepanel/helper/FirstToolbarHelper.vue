@@ -109,6 +109,9 @@ import SidePanelToolbarButton from "components/buttons/SidePanelToolbarButton.vu
 import {useQuasar} from "quasar";
 import {useAuthStore} from "stores/authStore";
 import {SyncType} from "stores/appStore";
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n({useScope: 'global'})
 
 const props = defineProps({
   title: {type: String, default: "My Tabsets"},
@@ -215,7 +218,7 @@ const showCreateClipButtonInActive = () =>
 const newTabsetTooltip = () =>
   usePermissionsStore().hasFeature(FeatureIdent.SPACES) ?
     (useSpacesStore().space ? 'Add new Tabset in this space' : 'Add new unassigned Tabset') :
-    'Add new Tabset'
+    t('add_new_tabset')
 
 const openNewTabsetDialog = () => {
   $q.dialog({

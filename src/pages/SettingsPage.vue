@@ -455,7 +455,7 @@ import AccountSettings from "pages/helper/AccountSettings.vue";
 import InfoLine from "pages/helper/InfoLine.vue";
 import FeatureToggleSettings from "pages/helper/FeatureToggleSettings.vue";
 import {useI18n} from "vue-i18n";
-const { t } = useI18n({inheritLocale: true,})
+const { t } = useI18n({inheritLocale: true})
 
 const {sendMsg, inBexMode} = useUtils()
 
@@ -473,6 +473,7 @@ const view = ref('grid')
 const indexSize = ref(0)
 
 const {locale} = useI18n({useScope: 'global'})
+
 const localeOptions = ref([
   {value: 'en', label: 'English'},
   {value: 'de', label: 'German'},
