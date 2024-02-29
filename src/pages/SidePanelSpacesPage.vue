@@ -187,8 +187,8 @@ const onMessageListener = async (message: any, sender: any, sendResponse: any) =
   console.log(" <<< received message", message)
   if (message.name === "reload-spaces") {
     const tsId = message.data.changedTabsetId
-    console.log("tsId", tsId)
     await useTabsetService().reloadTabset(tsId)
+    console.log("tsId", tsId)
     sortedSpaces.value = getSortedSpaces()
     tabsetsForSpaces.value = await getTabsetsForSpaces()
     randomKey.value = uid()
@@ -223,7 +223,7 @@ watchEffect(() => {
 
 async function getTabsetsForSpaces() {
   let res: Map<string, Tabset[]> = new Map()
-  console.log("===>", [...useTabsStore().tabsets.values()][0].spaces)
+  //console.log("===>", [...useTabsStore().tabsets.values()][0].spaces)
   _.forEach([...useTabsStore().tabsets.values()] as Tabset[], (ts: Tabset) => {
     if (ts.status !== TabsetStatus.DELETED) {
       _.forEach(ts.spaces, (spaceId: string) => {

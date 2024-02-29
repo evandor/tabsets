@@ -4,6 +4,7 @@ import firebase from 'firebase/compat/app';
 import 'firebase/compat/auth';
 import 'firebase/compat/firestore';
 import {getDatabase, ref, onValue} from "firebase/database";
+import {onBeforeUnmount} from "vue";
 
 // https://stackoverflow.com/questions/49739438/when-and-how-does-a-pwa-update-itself
 const updateTrigger = 10
@@ -98,7 +99,14 @@ chrome.runtime.onConnect.addListener(function (port) {
   }
 });
 
+
 export default bexBackground((bridge, cons/* , allActiveConnections */) => {
+
+  //console.debug("[service-worker] bexBackground", bridge)
+  console.debug("[service-worker] bexBackground", cons)
+  console.debug("[service-worker] bexBackground", Object.keys(cons).length)
+
+  let userAccessRefSubscription: any
 
   if (process.env.USE_FIREBASE) {
     console.debug("[service-worker] about to obtain cloud messaging token")
@@ -112,14 +120,16 @@ export default bexBackground((bridge, cons/* , allActiveConnections */) => {
       databaseURL: process.env.FIREBASE_DATABASE_URL
     })
 
-    bridge.on('auth.user.login', ({data, respond}) => {
+    // @ts-ignore
+    const authUserLoginListener = ({data, respond}) => {
       console.debug("[service-worker] got message 'auth.user.login'", data)
       const currentUser = data.userId
       const realtimeDb = getDatabase(firebaseApp)
       const path = 'users/' + currentUser + '/access'
       console.log("[service-worker] listening to changes on ", path)
-      const starCountRef = ref(realtimeDb, path);
-      onValue(starCountRef, (snapshot) => {
+      const userAccessRef = ref(realtimeDb, path);
+      console.log("[service-worker] userAccessRefSubscription", userAccessRefSubscription)
+      userAccessRefSubscription = onValue(userAccessRef, (snapshot) => {
         const data = snapshot.val();
         console.log("[service-worker] got change", data)
         if (data && data['tabsetChanged']) {
@@ -130,6 +140,19 @@ export default bexBackground((bridge, cons/* , allActiveConnections */) => {
           })
         }
       })
+      console.log("[service-worker] userAccessRefSubscription2", userAccessRefSubscription)
+    }
+
+    console.log("[service-worker] ====>", bridge.listenerCount('auth.user.login'))
+    //bridge.off('auth.user.login', authUserLoginListener)
+
+    if (Object.keys(cons).length < 2) { // don't know how to do this otherwise... we are getting too many listeners
+      bridge.on('auth.user.login', authUserLoginListener)
+    }
+
+    bridge.on('auth.user.logout', ({data, respond}) => {
+      console.log("removing all bridge listeners")
+      bridge.removeAllListeners()
     })
 
     // === not using messaging (yet?) ===

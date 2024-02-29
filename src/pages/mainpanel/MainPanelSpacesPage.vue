@@ -20,7 +20,8 @@
               <q-badge color="blue" :label="props.value"/>
             </template>
             <template v-else>
-              <q-checkbox v-model="checked[props.col.spaceIndex][props.rowIndex]" @click="updateSpaces()"/>
+              <q-checkbox v-model="checked[props.col.spaceIndex][props.rowIndex]"
+                          @click="updateSpaces(props.col.spaceIndex,props.rowIndex)"/>
             </template>
           </q-td>
         </template>
@@ -103,19 +104,12 @@ watchEffect(() => {
 })
 
 watchEffect(() => {
-  console.log("watching effect")
+  console.log("watching effect spaces")
   const spaceArray: boolean[][] = []
   rows.value = []
   spaces.value = [{name: 'tabset', align: 'left', label: 'Tabset', field: 'tabset', sortable: false}]
 
-  _.forEach(sortedTabsets.value as Tabset[], (ts: Tabset) => {
-    rows.value.push({
-      tabset: ts.name,
-    })
-  })
-
   _.forEach(sortedSpaces.value, (space: Space, i: number) => {
-
     spaces.value.push({
       name: space.label,
       align: 'center',
@@ -136,25 +130,45 @@ watchEffect(() => {
   checked.value = spaceArray
 })
 
+watchEffect(() => {
+  console.log("watching effect tabsets")
+  rows.value = []
+  _.forEach(sortedTabsets.value as Tabset[], (ts: Tabset) => {
+    rows.value.push({
+      tabset: ts.name,
+    })
+  })
+})
+
 const initialPagination = {
   rowsPerPage: 10
 }
 
-const updateSpaces = () => {
-  console.log("updated", checked.value)
+const updateSpaces = (spaceIndex: number, tabsetIndex: number) => {
+  console.log("updated", checked.value[spaceIndex][tabsetIndex], spaceIndex, tabsetIndex)
 
-  _.forEach(sortedTabsets.value as Tabset[], (ts: Tabset, tabsetIndex: number) => {
-    const spaces: Array<string> = []
-    _.forEach(sortedSpaces.value, (space: Space, spaceIndex: number) => {
-      if (checked.value[spaceIndex][tabsetIndex]) {
-        spaces.push(space.id)
-      }
-    })
-    ts.spaces = spaces
-    useTabsetService().saveTabset(ts)
+  const tabset: Tabset = sortedTabsets.value[tabsetIndex]
+  const space: Space = sortedSpaces.value[spaceIndex]
+  const set: boolean = checked.value[spaceIndex][tabsetIndex]
 
-    sendMsg('reload-spaces', {changedTabsetId: ts.id})
-  })
+  console.log("set", set)
+  console.log("tabset", tabset, tabset.spaces)
+  console.log("space", space.id, space)
+  if (set) {
+    console.log("pushing", space.id)
+    tabset.spaces.push(space.id)
+  } else {
+    const i = tabset.spaces.indexOf(space.id)
+    console.log("found index", i)
+    if (i >= 0) {
+      tabset.spaces.splice(i, 1)
+    }
+  }
+  console.log("------")
+  console.log("tabset spaces", tabset.spaces)
+
+  useTabsetService().saveTabset(tabset)
+  sendMsg('reload-spaces', {changedTabsetId: tabset.id})
 
 }
 
