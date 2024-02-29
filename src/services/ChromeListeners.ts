@@ -20,10 +20,7 @@ import ContentUtils from "src/utils/ContentUtils";
 import "rangy/lib/rangy-serializer";
 import {useAuthStore} from "stores/authStore";
 import {EMAIL_LINK_REDIRECT_DOMAIN} from "boot/constants";
-import {getMessaging, Messaging} from "firebase/messaging/sw";
 import {collection, deleteDoc, getDocs, setDoc, doc, updateDoc, Firestore} from "firebase/firestore";
-import {getToken} from "firebase/messaging";
-import firebase from "firebase/compat/app";
 
 const {
   saveCurrentTabset,
@@ -92,6 +89,7 @@ function inIgnoredMessages(request: any) {
     request.name === 'fullUrls-changed' ||
     request.name === 'reload-suggestions' ||
     request.name === 'reload-tabset' ||
+    request.name === 'reload-spaces' ||
     request.name === 'detail-level-perTabset-changed' ||
     request.name === 'detail-level-changed' ||
     request.name === 'reload-application' ||

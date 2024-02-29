@@ -1,7 +1,8 @@
 {
   "add_new_tabset": "Neues Tabset erstellen",
+  "create_your_first_ts": "Erstelle Deinen ersten Tabset",
   "experimental": "experimental",
   "language": "Sprache",
-  "create_your_first_ts": "Erstelle Deinen ersten Tabset",
+  "no_space_selected": "Kein Space ausgewählt",
   "welcome_to_tabsets": "Willkommen zu Tabsets"
 }

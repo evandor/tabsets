@@ -92,6 +92,7 @@ import {AppFeatures} from "src/models/AppFeatures";
 import {GrantPermissionCommand} from "src/domain/commands/GrantPermissionCommand";
 import {usePermissionsStore} from "stores/permissionsStore";
 import { useI18n } from 'vue-i18n'
+const { t } = useI18n({inheritLocale: true})
 
 const router = useRouter()
 
@@ -102,7 +103,6 @@ const activateBookmarks = ref(false)
 const activateNotifications = ref(false)
 const login = ref(false)
 
-const { t } = useI18n({inheritLocale: true,})
 
 onMounted(() => {
   Analytics.firePageViewEvent('WelcomePage', document.location.href);

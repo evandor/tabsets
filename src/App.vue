@@ -14,10 +14,11 @@ import {useRouter} from "vue-router";
 import FirebaseServices from "src/services/firebase/FirebaseServices";
 import {useNotificationHandler} from "src/services/ErrorHandler";
 import FirestorePersistenceService from "src/services/persistence/FirestorePersistenceService";
-import {ref, onValue} from "firebase/database";
+import {useUtils} from "src/services/Utils";
 
 const $q = useQuasar()
 const router = useRouter()
+const {inBexMode} = useUtils()
 
 const {handleError} = useNotificationHandler()
 
@@ -29,34 +30,37 @@ if (process.env.USE_FIREBASE) {
   FirebaseServices.init()
 }
 
-$q.bex.on('fcm.token.received', ({data, respond}) => {
-  console.log('Token received from service worker:', data)
-  LocalStorage.set('app.fcmToken', data.token)
-  FirestorePersistenceService.updateUserToken(data.token)
-  respond('thx')
-})
+if (inBexMode()) {
 
-$q.bex.on('fb.message.received', async ({data, respond}) => {
-  const localInstallationId = LocalStorage.getItem(APP_INSTALLATION_ID) || "";
-  console.log('Message received from service worker:', data, localInstallationId)
+  $q.bex.on('fcm.token.received', ({data, respond}) => {
+    console.log('Token received from service worker:', data)
+    LocalStorage.set('app.fcmToken', data.token)
+    FirestorePersistenceService.updateUserToken(data.token)
+    respond('thx')
+  })
 
-  if (data.msg) {
-    switch (data.msg) {
-      case "event.tabset.updated":
-        if (localInstallationId !== data.origin) {
-          console.log("reloading tabsets due to remote event", localInstallationId, data)
-          //await FirestorePersistenceService.loadSpaces()
-          await FirestorePersistenceService.loadTabsets()
-        }
-        break
-      default:
-        console.log("unrecognized payload with msg " + data.msg)
+  $q.bex.on('fb.message.received', async ({data, respond}) => {
+    const localInstallationId = LocalStorage.getItem(APP_INSTALLATION_ID) || "";
+    console.log('Message received from service worker:', data, localInstallationId)
+
+    if (data.msg) {
+      switch (data.msg) {
+        case "event.tabset.updated":
+          if (localInstallationId !== data.origin) {
+            console.log("reloading tabsets due to remote event", localInstallationId, data)
+            //await FirestorePersistenceService.loadSpaces()
+            await FirestorePersistenceService.loadTabsets()
+          }
+          break
+        default:
+          console.log("unrecognized payload with msg " + data.msg)
+      }
+    } else {
+      console.log("unrecognized payload without msg field")
     }
-  } else {
-    console.log("unrecognized payload without msg field")
-  }
-  respond('thx')
-})
+    respond('thx')
+  })
+}
 
 if (process.env.USE_FIREBASE) {
   const auth = FirebaseServices.getAuth()

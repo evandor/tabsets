@@ -345,6 +345,8 @@ import AppService from "src/services/AppService";
 import {useNotificationHandler} from "src/services/ErrorHandler";
 import {ExecutionResult} from "src/domain/ExecutionResult";
 import SidePanelToolbarButton from "components/buttons/SidePanelToolbarButton.vue";
+import { useI18n } from 'vue-i18n'
+const { t } = useI18n({inheritLocale: true})
 
 const {setVerticalScrollPosition} = scroll
 
@@ -595,6 +597,7 @@ function inIgnoredMessages(message: any) {
   return message.msg === "html2text" ||
     message.msg === "captureThumbnail" ||
     message.msg === "capture-annotation" ||
+    message.name === "reload-spaces" ||
     message.name === "window-updated" ||
     message.msg === "html2links"
 }
@@ -604,7 +607,7 @@ if ($q.platform.is.chrome) {
     // seems we need to define these listeners here to get the matching messages reliably
     // these messages are created by triggering events in the mainpanel
     chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-      console.log(" <<< received message", message)
+      //console.log(" <<< received message", message)
       if (inIgnoredMessages(message)) {
         return true
       }
@@ -804,7 +807,7 @@ const showTabset = (tabset: Tabset) => !useUiStore().tabsFilter ?
 
 const toolbarTitle = (tabsets: Tabset[]) => {
   if (usePermissionsStore().hasFeature(FeatureIdent.SPACES)) {
-    const spaceName = useSpacesStore().space ? useSpacesStore().space.label : 'no space selected'
+    const spaceName = useSpacesStore().space ? useSpacesStore().space.label : t('no_space_selected')
     return tabsets.length > 6 ?
       spaceName + ' (' + tabsets.length.toString() + ')' :
       spaceName

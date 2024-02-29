@@ -6,7 +6,7 @@
       <q-markup-table class="q-ma-none" dense flat>
         <thead>
         <tr>
-                    <th></th>
+<!--                    <th></th>-->
           <th class="text-left">Window Name</th>
           <th class="text-right">#Tabs</th>
           <th class="text-right q-pr-none">
@@ -36,7 +36,7 @@
               @mouseover="hoveredWindow = row['id' as keyof object]"
               @mouseleave="hoveredWindow = undefined"
               style="max-height:15px">
-                        <td>{{ row['index' as keyof object] }}</td>
+<!--                        <td>{{ row['index' as keyof object] }}</td>-->
             <!--            <td>{{ row['state' as keyof object] }}</td>-->
             <td class="text-left" :class="windowNameRowClass(row)"
                 @dblclick.stop="openRenameWindowDialog(row['id' as keyof object], row['name' as keyof object], row['index' as keyof object])"
