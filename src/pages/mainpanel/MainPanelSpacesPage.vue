@@ -8,6 +8,9 @@
     <div class="q-pa-md">
       <q-table
         title="Tabsets to Spaces Assignment"
+        no-data-label="loading..."
+        no-results-label="no results (check your filter?)"
+        :pagination="initialPagination"
         :rows="rows"
         :columns="spaces"
         row-key="name">
@@ -24,15 +27,9 @@
       </q-table>
     </div>
 
-<!--    <div class="row q-px-md">-->
-<!--      <div class="col-2" style="border-right: 1px solid grey">Delete Space<br>(will not delete the tabsets)</div>-->
-<!--      <div class="col q-ml-lg" v-for="(space, spaceIndex) in sortedSpaces()">-->
-<!--        <q-checkbox color="negative" v-model="deleteSpace[spaceIndex]"/>-->
-<!--      </div>-->
-<!--    </div>-->
-    <div class="row q-pa-md q-my-lg" >
-      <div class="col-12 q-mb-lg greyBorderTop" >
-       &nbsp;
+    <div class="row q-pa-md q-my-lg">
+      <div class="col-12 q-mb-lg greyBorderTop">
+        &nbsp;
       </div>
 
       <div class="col-3">
@@ -99,7 +96,9 @@ watchEffect(() => {
 })
 
 watchEffect(() => {
-  spaceOptions.value = [{value:'',label:''}].concat(_.map(sortedSpaces.value, (s:Space) => { return {value: s.id, label: s.label}}))
+  spaceOptions.value = [{value: '', label: ''}].concat(_.map(sortedSpaces.value, (s: Space) => {
+    return {value: s.id, label: s.label}
+  }))
   console.log("spaceOptions", spaceOptions.value)
 })
 
@@ -136,6 +135,10 @@ watchEffect(() => {
 
   checked.value = spaceArray
 })
+
+const initialPagination = {
+  rowsPerPage: 10
+}
 
 const updateSpaces = () => {
   console.log("updated", checked.value)
