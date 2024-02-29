@@ -2658,17 +2658,10 @@
   resolved "https://registry.npmjs.org/@types/mime/-/mime-1.3.5.tgz"
   integrity sha512-/pyBZWSLD2n0dcHE3hq8s8ZvcETHtEuF+3E7XVt0Ig2nvsVQXdghHVcEkIWjy9A0wKfTn97a/PSDYohKIlnP/w==
 
-"@types/node@*", "@types/node@>=12.12.47", "@types/node@>=13.7.0", "@types/node@^20.1.0", "@types/node@^20.1.1", "@types/node@^20.4.10":
-  version "20.11.20"
-  resolved "https://registry.npmjs.org/@types/node/-/node-20.11.20.tgz"
-  integrity sha512-7/rR21OS+fq8IyHTgtLkDK949uzsa6n8BkziAKtPVpugIkO6D+/ooXMvzXxDnZrmtXVfjb1bKQafYpb8s89LOg==
-  dependencies:
-    undici-types "~5.26.4"
-
-"@types/node@^18.11.18":
-  version "18.19.18"
-  resolved "https://registry.npmjs.org/@types/node/-/node-18.19.18.tgz"
-  integrity sha512-80CP7B8y4PzZF0GWx15/gVWRrB5y/bIjNI84NK3cmQJu0WZwvmj2WMA5LcofQFVfLqqCSp545+U2LsrVzX36Zg==
+"@types/node@*", "@types/node@>=12.12.47", "@types/node@>=13.7.0", "@types/node@^20.1.0", "@types/node@^20.1.1", "@types/node@^20.4.10", "@types/node@^20.9.0":
+  version "20.11.22"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-20.11.22.tgz#9a192c3d7e7e71fa3a4b15032654f64643815cd6"
+  integrity sha512-/G+IxWxma6V3E+pqK1tSl2Fo1kl41pK1yeCyDsgkF9WlVAme4j5ISYM2zR11bgLFJGLN5sVK40T4RJNuiZbEjA==
   dependencies:
     undici-types "~5.26.4"
 
@@ -4540,13 +4533,13 @@ electron-to-chromium@^1.4.668:
   resolved "https://registry.npmjs.org/electron-to-chromium/-/electron-to-chromium-1.4.681.tgz"
   integrity sha512-1PpuqJUFWoXZ1E54m8bsLPVYwIVCRzvaL+n5cjigGga4z854abDnFRc+cTa2th4S79kyGqya/1xoR7h+Y5G5lg==
 
-electron@^28.1.0:
-  version "28.2.4"
-  resolved "https://registry.npmjs.org/electron/-/electron-28.2.4.tgz"
-  integrity sha512-XrSsqKCmpGwz1pqzmdLhdGonYvatDXor60rBd+TfURMQQRSxyTaSwrds9kV0aab9YRpeYUH6NJDAOwBhQYDDkA==
+electron@^29.1.0:
+  version "29.1.0"
+  resolved "https://registry.yarnpkg.com/electron/-/electron-29.1.0.tgz#37f0e4915226db3c87bc54b187795272bf61fc39"
+  integrity sha512-giJVIm0sWVp+8V1GXrKqKTb+h7no0P3ooYqEd34AD9wMJzGnAeL+usj+R0155/0pdvvP1mgydnA7lcaFA2M9lw==
   dependencies:
     "@electron/get" "^2.0.0"
-    "@types/node" "^18.11.18"
+    "@types/node" "^20.9.0"
     extract-zip "^2.0.1"
 
 elementtree@0.1.7, elementtree@^0.1.7:
