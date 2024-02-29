@@ -45,7 +45,6 @@
           </div>
           <q-card>
             <q-card-section>
-              ***
               <NavTabsetsListWidgetNonBex
                 :tabsets="tabsetsForSpaces.get(space.id) || []"
                 :spaceId="space.id"
@@ -224,23 +223,16 @@ watchEffect(() => {
 
 async function getTabsetsForSpaces() {
   let res: Map<string, Tabset[]> = new Map()
-  //console.log("===>", [...useTabsStore().tabsets.values()])
-  //await IndexedDbPersistenceService.loadTabsets()
   console.log("===>", [...useTabsStore().tabsets.values()][0].spaces)
   _.forEach([...useTabsStore().tabsets.values()] as Tabset[], (ts: Tabset) => {
     if (ts.status !== TabsetStatus.DELETED) {
-      console.log("checking tabset", ts.id)
       _.forEach(ts.spaces, (spaceId: string) => {
-        console.log("  tabset has space", spaceId)
         if (res.has(spaceId)) {
-          console.log("exists already", spaceId)
           const exisitingTabsets: Tabset[] = res.get(spaceId) || []
-          console.log("existings tabsets", exisitingTabsets)
           if (exisitingTabsets.findIndex(t => t.id === ts.id) < 0) {
             res.set(spaceId, (res.get(spaceId) || []).concat([ts]))
           }
         } else {
-          console.log("adding to spaceId", spaceId, ts.id)
           res.set(spaceId, [ts])
         }
       })
@@ -257,9 +249,7 @@ async function getTabsetsForSpaces() {
 }
 
 watchEffect(async () => {
-  let res = await getTabsetsForSpaces();
-  console.log("tabsetsForSpace1", res)
-  tabsetsForSpaces.value = res // useSpacesStore().tabsetsForSpaces()
+  tabsetsForSpaces.value  = await getTabsetsForSpaces();
 })
 
 watchEffect(() => {
@@ -268,14 +258,13 @@ watchEffect(() => {
 })
 
 watchEffect(() => {
-  //currentChromeTab.value = useTabsStore().currentChromeTab
   const windowId = useWindowsStore().currentChromeWindow?.id || 0
   currentChromeTab.value = useTabsStore().getCurrentChromeTab(windowId) || useTabsStore().currentChromeTab
 })
 
 watchEffect(() => {
   if (useTabsStore().tabsets) {
-    tabsetNameOptions.value = _.map([...useTabsStore().tabsets.values()], (ts: Tabset) => {
+    tabsetNameOptions.value = _.map([...useTabsStore().tabsets.values()] as Tabset[], (ts: Tabset) => {
       return {
         label: ts.name,
         value: ts.id
@@ -321,8 +310,11 @@ const addSpace = () => {
   })
 }
 
-const manageSpaces = () =>
-  NavigationService.openOrCreateTab([chrome.runtime.getURL('www/index.html#/mainpanel/spaces')])
+const manageSpaces = () => {
+  ($q.platform.is.cordova || $q.platform.is.capacitor) ?
+    router.push("/spaces") :
+    NavigationService.openOrCreateTab([chrome.runtime.getURL('www/index.html#/mainpanel/spaces')], undefined, [], true, true)
+}
 
 const openNewTabsetDialog = (spaceId: string) => {
   $q.dialog({
@@ -338,15 +330,11 @@ const openNewTabsetDialog = (spaceId: string) => {
 const headerStyle = (space: Space) => {
   let style = //tabsetExpanded.value.get(tabset.id) ?
     'border:0 solid grey;border-top-left-radius:4px;border-top-right-radius:4px;'
-//:
-  //    'border:0 solid grey;border-radius:4px;'
   style = style + 'border-left:4px solid #f5f5f5'
-
   return style
 }
 
 const headerCaption = (spaceId: string) => {
-  console.log("headerCaption", spaceId, tabsetsForSpaces.value.get(spaceId)?.length)
   return (tabsetsForSpaces.value.get(spaceId) || []).length + ' tabset(s)'
 }
 
