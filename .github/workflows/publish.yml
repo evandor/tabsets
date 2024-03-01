@@ -18,7 +18,7 @@ jobs:
       - name: Build
         run: |
           yarn install
-          npm run build
+          npm run "build bex (prd)"
       - name: Upload & release
         uses: mnao305/chrome-extension-upload@v4.0.1
         with:
