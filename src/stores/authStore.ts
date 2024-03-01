@@ -102,7 +102,7 @@ export const useAuthStore = defineStore('auth', () => {
 
   // --- actions ---
   async function setUser(u: User | undefined) {
-    console.log("setting user to ", u?.uid)
+    console.log("setting user id to ", u?.uid)
     if (u) {
       LocalStorage.set(CURRENT_USER_ID, u.uid)
       authenticated.value = true;
@@ -111,7 +111,7 @@ export const useAuthStore = defineStore('auth', () => {
       const userDoc = await getDoc(doc(FirebaseServices.getFirestore(), "users", u.uid))
       const userData = userDoc.data() as UserData
       const account = new Account(u.uid, userData)
-      console.log("created account object", account)
+      console.debug("created account object", account)
       const querySnapshot = await getDocs(collection(FirebaseServices.getFirestore(), "users", u.uid, "subscriptions"))
       const products = new Set<string>()
       querySnapshot.forEach((doc) => {

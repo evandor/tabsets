@@ -5,6 +5,10 @@ import messages from '@intlify/unplugin-vue-i18n/messages'
 export default ({app}) => {
   const i18n = createI18n({
     locale: 'en',
+    fallbackLocale: 'en',
+    // missingWarn: false,
+    // fallbackWarn: false,
+    allowComposition: true,
     messages
   })
   //console.log("====>", messages)

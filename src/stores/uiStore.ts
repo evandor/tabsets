@@ -1,5 +1,5 @@
 import {defineStore} from 'pinia';
-import {computed, ref, watch, watchEffect} from "vue";
+import {computed, ref, watch} from "vue";
 import {useRoute, useRouter} from "vue-router";
 import {Tab} from "src/models/Tab";
 import _ from "lodash"
@@ -9,7 +9,6 @@ import {useTabsStore} from "stores/tabsStore";
 import {FeatureIdent} from "src/models/AppFeature";
 import {usePermissionsStore} from "stores/permissionsStore";
 import {Toast, ToastType} from "src/models/Toast";
-import {useMessagesStore} from "stores/messagesStore";
 import {
   SHARING_AUTHOR_IDENT,
   SHARING_AVATAR_IDENT,
@@ -37,7 +36,6 @@ export enum DrawerTabs {
 
 export enum UserLevel {
   UNKNOWN = "UNKNOWN",
-  //PWA_ONLY_USER = "PWA_ONLY_USER", // e.g. when you import from a shared tabset the first time
   DEFAULT = "DEFAULT"
 }
 
@@ -137,7 +135,6 @@ export class SidePanel {
 
 export const useUiStore = defineStore('ui', () => {
 
-  const $q = useQuasar()
   const router = useRouter()
 
   const {sendMsg} = useUtils()

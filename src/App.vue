@@ -41,7 +41,7 @@ if (inBexMode()) {
 
   $q.bex.on('fb.message.received', async ({data, respond}) => {
     const localInstallationId = LocalStorage.getItem(APP_INSTALLATION_ID) || "";
-    console.log('Message received from service worker:', data, localInstallationId)
+    console.debug('Message received from service worker:', data, localInstallationId)
 
     if (data.msg) {
       switch (data.msg) {
@@ -94,7 +94,7 @@ if (process.env.USE_FIREBASE) {
 
 }
 
-const useDarkMode: string = $q.localStorage.getItem('darkMode') || "false" as string
+const useDarkMode: string = $q.localStorage.getItem('darkMode') || "auto" as string
 if (useDarkMode === "true") {
   $q.dark.set(true)
 } else if (useDarkMode === "false") {

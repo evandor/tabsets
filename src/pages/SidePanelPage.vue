@@ -346,7 +346,7 @@ import {useNotificationHandler} from "src/services/ErrorHandler";
 import {ExecutionResult} from "src/domain/ExecutionResult";
 import SidePanelToolbarButton from "components/buttons/SidePanelToolbarButton.vue";
 import { useI18n } from 'vue-i18n'
-const { t } = useI18n({inheritLocale: true})
+const { t } = useI18n({inheritLocale: true, useScope: "global"})
 
 const {setVerticalScrollPosition} = scroll
 
@@ -433,7 +433,6 @@ watchEffect(() => {
 
 watchEffect(() => {
   if (useAuthStore().user) {
-    console.log("setting user to ", useAuthStore().user?.email)
     user.value = useAuthStore().user
   }
 })

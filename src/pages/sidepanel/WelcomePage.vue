@@ -61,7 +61,9 @@
           </div>
           <div class="col-12 q-mb-md">
             <q-checkbox size="xs" v-model="activateBookmarks" class="text-grey" label="Activate Bookmarks Integration"/>
-            <q-checkbox size="xs" v-model="activateNotifications" class="text-grey" label="Activate Notifications"/>
+            <q-icon class="q-ml-sm cursor-pointer" name="o_help" color="grey"><q-tooltip class="tooltip">Allow access to your bookmarks. Can be added later, too</q-tooltip></q-icon>
+            <q-checkbox size="xs" v-model="activateNotifications" class="text-grey" label="Activate Browser Notifications"/>
+            <q-icon class="q-ml-sm cursor-pointer" name="o_help" color="grey"><q-tooltip class="tooltip">Allow browser notifications for better integration. Can be added later, too</q-tooltip></q-icon>
             <template v-if="firebaseActive()">
               <q-checkbox
                 size="xs" v-model="login" class="text-grey" label="Login or create Account"/>
@@ -92,7 +94,7 @@ import {AppFeatures} from "src/models/AppFeatures";
 import {GrantPermissionCommand} from "src/domain/commands/GrantPermissionCommand";
 import {usePermissionsStore} from "stores/permissionsStore";
 import { useI18n } from 'vue-i18n'
-const { t } = useI18n({inheritLocale: true})
+const { t } = useI18n({inheritLocale: true, useScope: "global"})
 
 const router = useRouter()
 
@@ -110,20 +112,26 @@ onMounted(() => {
   LocalStorage.set(TITLE_IDENT, 'Tabsets' + stageIdentifier())
 })
 
-watchEffect(() => {
+watchEffect(async () => {
   const bmFeature = new AppFeatures().getFeature(FeatureIdent.BOOKMARKS)
   if (activateBookmarks.value && bmFeature) {
-    useCommandExecutor().execute(new GrantPermissionCommand('bookmarks'))
+    const res = await useCommandExecutor().execute(new GrantPermissionCommand('bookmarks'))
+    if (!res.result) {
+      activateBookmarks.value = false
+    }
   } else if (!activateBookmarks.value && bmFeature) {
     //useCommandExecutor().execute(new RevokePermissionCommand('bookmarks'))
     usePermissionsStore().deactivateFeature('bookmarks')
   }
 })
 
-watchEffect(() => {
+watchEffect(async () => {
   const feature = new AppFeatures().getFeature(FeatureIdent.NOTIFICATIONS)
   if (activateNotifications.value && feature) {
-    useCommandExecutor().execute(new GrantPermissionCommand('notifications'))
+    const res = await useCommandExecutor().execute(new GrantPermissionCommand('notifications'))
+    if (!res.result) {
+      activateNotifications.value = false
+    }
   } else if (!activateNotifications.value && feature) {
     usePermissionsStore().deactivateFeature('notifications')
   }

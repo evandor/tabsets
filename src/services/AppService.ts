@@ -101,7 +101,6 @@ class AppService {
     tabsetService.setLocalStorage(localStorage)
 
     if (useAuthStore().isAuthenticated()) {
-      console.log("useAuthStore().getAccount()", useAuthStore().getAccount())
       // sync features
       const syncType = useAuthStore().getAccount()?.userData?.sync?.type || SyncType.NONE
       const syncUrl = useAuthStore().getAccount()?.userData?.sync?.url

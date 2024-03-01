@@ -191,7 +191,7 @@ class ChromeApi {
                 contexts: ['all']
               })
 
-              console.log("context menu", useWindowsStore().currentChromeWindows)
+              //console.log("context menu", useWindowsStore().currentChromeWindows)
               const currentWindows = useWindowsStore().currentChromeWindows
               if (currentWindows.length > 1) {
                 chrome.contextMenus.create({
@@ -221,7 +221,6 @@ class ChromeApi {
                   .sortBy(r => r.firstLetter)
                   .value();
 
-                console.log(result);
                 _.forEach(result, (r) => {
                   chrome.contextMenus.create({
                     id: 'save_as_tab_folder|' + r.firstLetter,
