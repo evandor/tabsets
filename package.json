@@ -16,6 +16,7 @@
     "dev cordova": "quasar dev -m cordova -T ios",
     "build bex (dev)": "mv .env .env.tmp && cp .dev.env .env && quasar build -m bex && mv .env.tmp .env",
     "build bex (prd)": "mv .env .env.tmp && cp .prd.env .env && quasar build -m bex && mv .env.tmp .env",
+    "build bex (publish)": "cp .publish.env .env && quasar build -m bex",
     "build pwa": "quasar build -m pwa",
     "build electron": "quasar build -m electron",
     "build capacitor": "quasar build -m capacitor -T ios",
