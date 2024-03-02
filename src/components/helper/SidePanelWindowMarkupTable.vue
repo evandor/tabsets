@@ -9,7 +9,7 @@
 <!--                    <th></th>-->
           <th class="text-left">Window Name</th>
           <th class="text-right">#Tabs</th>
-          <th class="text-right q-pr-none">
+          <th class="text-right q-pr-none" v-if="windowsToOpenOptions.length > 0">
             <span class="cursor-pointer"><q-icon name="open_in_new" class="q-mr-xs"/>Open Window </span>
             <q-menu :offset="[0, 7]" fit>
               <q-list dense style="min-width: 250px">
@@ -22,6 +22,9 @@
                 </q-item>
               </q-list>
             </q-menu>
+          </th>
+          <th class="text-right q-pr-none" v-else>
+            <span class="cursor-pointer" @click="openNewWindow({label: ' > open new Window', value: 'newWindow'})"><q-icon name="open_in_new" class="q-mr-xs"/>Open Window </span>
           </th>
         </tr>
         </thead>

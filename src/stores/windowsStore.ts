@@ -371,7 +371,7 @@ export const useWindowsStore = defineStore('windows', () => {
 
   async function refreshTabsetWindow(windowId: number) {
     try {
-      console.log("refreshing tabset window", windowId)
+      //console.log("refreshing tabset window", windowId)
       const tabsetWindow = await storage.getWindow(windowId)
       const chromeWindow = await chrome.windows.get(windowId, {populate: true})
       if (tabsetWindow && chromeWindow) {

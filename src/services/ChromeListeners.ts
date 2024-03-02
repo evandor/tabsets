@@ -459,7 +459,7 @@ class ChromeListeners {
 
   onRemoved(number: number, info: chrome.tabs.TabRemoveInfo) {
     this.eventTriggered()
-    console.log("onRemoved tab event: ", number, info)
+    console.debug("onRemoved tab event: ", number, info)
     //useWindowsStore().refreshCurrentWindows()
     useWindowsStore().refreshTabsetWindow(info.windowId)
     sendMsg('window-updated', {initiated: "ChromeListeners#onRemoved"})

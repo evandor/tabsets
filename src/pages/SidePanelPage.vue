@@ -346,7 +346,7 @@ import {useNotificationHandler} from "src/services/ErrorHandler";
 import {ExecutionResult} from "src/domain/ExecutionResult";
 import SidePanelToolbarButton from "components/buttons/SidePanelToolbarButton.vue";
 import { useI18n } from 'vue-i18n'
-const { t } = useI18n({inheritLocale: true, useScope: "global"})
+const { t } = useI18n({locale: navigator.language, useScope: "global"})
 
 const {setVerticalScrollPosition} = scroll
 

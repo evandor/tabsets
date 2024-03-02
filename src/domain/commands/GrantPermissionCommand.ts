@@ -4,14 +4,15 @@ import {usePermissionsStore} from "src/stores/permissionsStore";
 import {RevokePermissionCommand} from "src/domain/commands/RevokePermissionCommand";
 import {useBookmarksStore} from "src/stores/bookmarksStore";
 import ChromeBookmarkListeners from "src/services/ChromeBookmarkListeners";
-//import TabsetService from "src/services/TabsetService";
 import {useSuggestionsStore} from "src/stores/suggestionsStore";
 import {StaticSuggestionIdent} from "src/models/Suggestion";
 import {useTabsetService} from "src/services/TabsetService2";
 import ChromeApi from "src/services/ChromeApi";
 import {useDB} from "src/services/usePersistenceService";
-import {useRouter} from "vue-router";
+import {useUiStore} from "stores/uiStore";
+import {useUtils} from "src/services/Utils";
 
+const {sendMsg} = useUtils()
 
 class UndoCommand implements Command<boolean> {
 
@@ -28,7 +29,7 @@ class UndoCommand implements Command<boolean> {
 
 export class GrantPermissionCommand implements Command<boolean> {
 
-  constructor(public permission: string) {
+  constructor(public permission: string, public reloadApplication = false) {
   }
 
   async execute(): Promise<ExecutionResult<boolean>> {
@@ -45,6 +46,9 @@ export class GrantPermissionCommand implements Command<boolean> {
                 ChromeBookmarkListeners.initListeners()
               })
             useSuggestionsStore().removeSuggestion(StaticSuggestionIdent.TRY_BOOKMARKS_FEATURE)
+            if (this.reloadApplication) {
+              sendMsg('reload-application')
+            }
 //          } else if ("history" === this.permission) {
 //            usePermissionsStore().activateFeature('history')
           } else if ("notifications" === this.permission) {
