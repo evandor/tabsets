@@ -25,9 +25,9 @@
   <div class="row fit greyBorderTop"></div>
 
   <InfoMessageWidget
-      :probability="1"
-      ident="featuresPage_overview"
-      hint="The Tabsets Extension starts simple - you can manage tabs - but it has more to offer. Check out the optional or
+    :probability="1"
+    ident="featuresPage_overview"
+    hint="The Tabsets Extension starts simple - you can manage tabs - but it has more to offer. Check out the optional or
       experimental features described below. Some of the features may require additional browser permissions which you will have to grant."/>
 
   <div class="row q-ma-lg">
@@ -104,7 +104,8 @@
       </div>
 
       <div class="col-12 q-my-md">
-        <div> click <a class="cursor-pointer text-blue-6" @click="NavigationService.openOrCreateTab([text.get(feature)?.more])">here</a></div>
+        <div> click <a class="cursor-pointer text-blue-6"
+                       @click="NavigationService.openOrCreateTab([text.get(feature)?.more])">here</a></div>
       </div>
     </template>
 
@@ -137,6 +138,7 @@ import OpenRightDrawerWidget from "components/widgets/OpenRightDrawerWidget.vue"
 import Analytics from "src/utils/google-analytics";
 import Command from "src/domain/Command";
 import NavigationService from "src/services/NavigationService";
+import {useUtils} from "src/services/Utils";
 
 const route = useRoute();
 const router = useRouter();
@@ -147,8 +149,7 @@ const permissionsStore = usePermissionsStore()
 const uiStore = useUiStore()
 
 const title = ref('')
-const filter = ref('')
-const $q = useQuasar()
+const {sendMsg} = useUtils()
 
 useUiStore().rightDrawerSetActiveTab(DrawerTabs.FEATURES)
 
@@ -165,8 +166,8 @@ onMounted(() => {
 text.set(FeatureIdent.OPENTABS_THRESHOLD.toLowerCase(), {
   name: 'Open Tabs Warning',
   description: 'The Idea behind the tabset extension is to keep your tabs count small - and still deal with all the URLs you need to handle. Tabsets' +
-      ' can help you by tracking your open tabs count and alert you when it gets too big. Furthermore, it offers you ways to reduce your tab count on the fly. This ' +
-      'feature is customizable in the settings.',
+    ' can help you by tracking your open tabs count and alert you when it gets too big. Furthermore, it offers you ways to reduce your tab count on the fly. This ' +
+    'feature is customizable in the settings.',
   img: 'open_tabs_warning.png',
   permissions: []
 })
@@ -174,7 +175,7 @@ text.set(FeatureIdent.BOOKMARKS.toLowerCase(), {
   name: 'Bookmarks',
   img: 'bookmarks.png',
   description: 'The Bookmarks Feature lets you access the browsers bookmarks to view (or delete) them and to turn them into tabsets if you wish. Futhermore, the search will ' +
-      'take the URLs and titles of your bookmarks into account as well.',
+    'take the URLs and titles of your bookmarks into account as well.',
   permissions: ['bookmarks']
 })
 // text.set(FeatureIdent.DETAILS.toLowerCase(), {
@@ -209,7 +210,7 @@ text.set(FeatureIdent.RSS.toLowerCase(), {
   name: 'RSS View',
   img: 'rss.png',
   description: 'The "RSS View" list all your RSS Pages. It is recommended to enable the "analyse Tabs" feature as well to automatically find ' +
-      'linked rss feeds from your tabsets.',
+    'linked rss feeds from your tabsets.',
   permissions: []
 })
 // text.set(FeatureIdent.THUMBNAILS.toLowerCase(), {
@@ -226,8 +227,8 @@ text.set(FeatureIdent.ANALYSE_TABS.toLowerCase(), {
   img: 'analyse.png',
   img_width: '700px',
   description: 'This extension can analyse the tabs you visit, so that the search can be improved significantly. The tab\'s content, ' +
-      'its links and the received http headers are taken into account. ' +
-      'Please note that only tabs that you visit (or revisit) after the activation of this feature are going to be analysed.',
+    'its links and the received http headers are taken into account. ' +
+    'Please note that only tabs that you visit (or revisit) after the activation of this feature are going to be analysed.',
   permissions: ['allOrigins']
 })
 
@@ -241,7 +242,7 @@ text.set(FeatureIdent.DYNAMIC.toLowerCase(), {
   experimental: true,
   name: 'Dynamic Tabsets',
   description: 'The idea is to provide you with tabset data which is defined outside the scope of this extension - e.g. defined by a website like wikipedia. ' +
-      'For now, there is only one example; the wikipedia "List of most visited websites" is added to your tabsets as a readonly tab.',
+    'For now, there is only one example; the wikipedia "List of most visited websites" is added to your tabsets as a readonly tab.',
   permissions: []
 })
 text.set(FeatureIdent.SESSIONS.toLowerCase(), {
@@ -274,8 +275,8 @@ text.set(FeatureIdent.SPACES.toLowerCase(), {
   experimental: true,
   name: 'Spaces',
   description: 'The "Spaces" Feature lets you organize your tabsets in a larger structure, which might become handy ' +
-      'if you start having many tabsets. The main difference to bookmark folders is that there is only two ' +
-      'levels, but you can assign a tabset to multiple spaces.',
+    'if you start having many tabsets. The main difference to bookmark folders is that there is only two ' +
+    'levels, but you can assign a tabset to multiple spaces.',
   permissions: []
 })
 // TODO remove (we have windows_management)
@@ -332,7 +333,7 @@ text.set(FeatureIdent.TOP10.toLowerCase(), {
 text.set(FeatureIdent.OPEN_TABS.toLowerCase(), {
   name: 'Open Tabs',
   description: 'Quick access to all your open tabs of the current browsers window<br><br>' +
-      'Adds quick navigation to jump back and forth to recently opened tabs.',
+    'Adds quick navigation to jump back and forth to recently opened tabs.',
   permissions: []
 })
 text.set(FeatureIdent.CATEGORIZATION.toLowerCase(), {
@@ -395,8 +396,8 @@ text.set(FeatureIdent.TAB_GROUPS.toLowerCase(), {
 text.set(FeatureIdent.MONITORING.toLowerCase(), {
   name: 'Monitoring Website Changes',
   description: 'Check periodically for changes of a website<br><br>' +
-      'This feature is not reliable, as there are many reasons why a website might change (e.g. if it simply displays a date).' +
-      'But sometimes it can be helpful. Use at your own discretion.',
+    'This feature is not reliable, as there are many reasons why a website might change (e.g. if it simply displays a date).' +
+    'But sometimes it can be helpful. Use at your own discretion.',
   img: 'monitor.png',
   more: 'https://docs.tabsets.net/website-monitoring',
   permissions: []
@@ -445,28 +446,28 @@ text.set(FeatureIdent.CONTEXT_MENUS.toLowerCase(), {
 
 
 watchEffect(() => {
-      feature.value = route.params.feature as string
-      const f = feature.value?.toUpperCase() as FeatureIdent
-      if (f) {
-        appFeature.value = new AppFeatures().getFeature(f)
-        if (appFeature.value) {
-          switch (appFeature.value.type) {
-            case FeatureType.EXPERIMENTAL:
-              title.value = "Experimental Feature"
-              break;
-            case FeatureType.RECOMMENDED:
-              title.value = "Recommended Feature"
-              break;
-            case FeatureType.OPTIONAL:
-              title.value = "Optional Feature"
-              break;
-            case FeatureType.PLANNED:
-              title.value = "Planned Feature"
-              break;
-          }
+    feature.value = route.params.feature as string
+    const f = feature.value?.toUpperCase() as FeatureIdent
+    if (f) {
+      appFeature.value = new AppFeatures().getFeature(f)
+      if (appFeature.value) {
+        switch (appFeature.value.type) {
+          case FeatureType.EXPERIMENTAL:
+            title.value = "Experimental Feature"
+            break;
+          case FeatureType.RECOMMENDED:
+            title.value = "Recommended Feature"
+            break;
+          case FeatureType.OPTIONAL:
+            title.value = "Optional Feature"
+            break;
+          case FeatureType.PLANNED:
+            title.value = "Planned Feature"
+            break;
         }
       }
     }
+  }
 )
 
 const hasFeature = () => {
@@ -482,6 +483,9 @@ const grant = (ident: string) => {
       appFeature.value.activateCommands.forEach((c: Command<any>) => {
         useCommandExecutor().execute(c)
       })
+      if (ident === 'bookmarks') {
+        sendMsg('reload-application')
+      }
     } catch (err) {
       Notify.create({
         color: 'negative',
@@ -507,7 +511,7 @@ const revoke = (ident: string) => {
   if (appFeature.value && appFeature.value.deactivateCommand) {
     console.log("revoking1", ident, appFeature.value.deactivateCommand)
     useCommandExecutor().execute(appFeature.value.deactivateCommand)
-        .then(() => permissionsStore.deactivateFeature(ident))
+      .then(() => permissionsStore.deactivateFeature(ident))
   } else {
     console.log("revoking2", ident)
     permissionsStore.deactivateFeature(ident)

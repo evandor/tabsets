@@ -288,7 +288,7 @@ class ChromeApi {
             console.log("got tabsetId", tabsetId, e.menuItemId)
             this.executeAddToTS(tabId, tabsetId)
           } else if (e.menuItemId.toString().startsWith("move_to|")) {
-            console.log("got", e, e.menuItemId.split("|"))
+            console.log("got", e, e.menuItemId.toString().split("|"))
             const tabId = tab?.id || 0
             const windowId = e.menuItemId.toString().split("|")[1]
             console.log("got windowId", tabId, windowId)
