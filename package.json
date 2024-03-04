@@ -94,7 +94,7 @@
     "@editorjs/quote": "^2.5.0",
     "@editorjs/raw": "^2.4.0",
     "@editorjs/table": "^2.2.2",
-    "@playwright/test": "^1.27.1",
+    "@playwright/test": "^1.42.1",
     "@quasar/app-vite": "^1.4.3",
     "@quasar/babel-preset-app": "^2.0.2",
     "@quasar/quasar-app-extension-testing-unit-vitest": "^0.4.0",
