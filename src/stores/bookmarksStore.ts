@@ -4,43 +4,51 @@ import {TreeNode} from "src/models/Tree";
 import {Bookmark} from "src/models/Bookmark";
 import {usePermissionsStore} from "src/stores/permissionsStore";
 import {FeatureIdent} from "src/models/AppFeature";
-import {Tabset} from "src/models/Tabset";
 
-function getChildren(
+function nodesFrom(
   parent: chrome.bookmarks.BookmarkTreeNode,
-  folderCount: number = 0,
-  bmCount: number = 0,
-  predicate: (x: chrome.bookmarks.BookmarkTreeNode) => boolean = x => true,
-  level: number = 1): TreeNode[] {
+  allFoldersCount = 0,
+  allBookmarksCount = 0,
+  level: number = 1): [TreeNode | undefined, TreeNode | undefined, number, number] {
 
-  if (parent && parent.children) {
-    //let predicate: x: chrome.bookmarks.BookmarkTreeNode => string = (x:chrome.bookmarks.BookmarkTreeNode) => !x.url;
-    return _.map(_.filter(parent.children, predicate), c => {
-      const childrenWithoutPredicate = getChildren(c, bmCount)
-      const children = getChildren(c, folderCount,bmCount, predicate)
-      bmCount += children.length
-      return new TreeNode(
-        c.id,
-        c.title,
-        c.url ? c.title : c.title + ' (' + childrenWithoutPredicate.length + ')',
-        c.url,
-        c.url ? 'o_article' : 'o_folder',
-        children,
-        folderCount + 1,
-        bmCount + children.length
-        )
-    })
-  } else {
-    return [];
+  const parentNode = new TreeNode(parent.id, parent.title, parent.title, parent.url, parent.url ? 'o_article' : 'o_folder', [], 0, 0)
+  level++
+  let subNodes: TreeNode[] = []
+  let nonLeafSubNodes: TreeNode[] = []
+  let foldersCount = 0
+  let leavesCount = 0
+  if (parent.children) {
+    for (const c of parent.children) {
+      const [allNodes, nonLeafNodes, fCount, bCount] = nodesFrom(c, allFoldersCount, allBookmarksCount)
+      foldersCount += foldersCount
+      leavesCount += bCount
+      if (allNodes && allNodes.url) {
+        leavesCount++
+      } else {
+        foldersCount++
+      }
+      if (allNodes) {
+        subNodes.push(allNodes)
+      }
+    }
   }
+  parentNode.children = subNodes
+  parentNode.subFoldersCount = foldersCount
+  parentNode.subNodesCount = leavesCount
+ // console.log("+++ added node with", parentNode.title, parentNode.header, parentNode.children, parentNode.url)
+  return [parentNode, parentNode.header === 'node' ? parentNode : undefined, allFoldersCount + foldersCount, allBookmarksCount + leavesCount]
 }
 
-export const  useBookmarksStore = defineStore('bookmarks', {
+export const useBookmarksStore = defineStore('bookmarks', {
   state: () => ({
     bookmarksTree: [] as unknown as object[],
     bookmarksNodes: [] as unknown as object[],
+    nonLeafNodes: [] as unknown as object[],
+    bookmarksNodes2: [] as unknown as object[],
     bookmarksLeaves: [] as unknown as object[],
     currentBookmark: null as unknown as Bookmark,
+    folderCount: 0,
+    bmsCount: 0,
 
     // the bookmarks (nodes and leaves) for the selected parent id
     bookmarksForFolder: null as unknown as Bookmark[],
@@ -52,7 +60,7 @@ export const  useBookmarksStore = defineStore('bookmarks', {
   getters: {
     findBookmarksForUrl: (state) => {
       return async (url: string): Promise<chrome.bookmarks.BookmarkTreeNode[]> => {
-        const res = await chrome.bookmarks.search({url:url})
+        const res = await chrome.bookmarks.search({url: url})
         return res
       }
     }
@@ -69,49 +77,32 @@ export const  useBookmarksStore = defineStore('bookmarks', {
     async loadBookmarks(): Promise<void> {
       this.bookmarksTree = []
       this.bookmarksNodes = []
+      this.bookmarksNodes2 = []
+      this.nonLeafNodes = []
       this.bookmarksLeaves = []
       const accessGranted = usePermissionsStore().hasPermission("bookmarks") && usePermissionsStore().hasFeature(FeatureIdent.BOOKMARKS)
       if (accessGranted) {
         console.debug(" ...loading bookmarks")//, (new Error()).stack)
         // @ts-ignore
-        const bookmarks: object[] = await chrome.bookmarks.search({})//, async (bookmarks) => {
+        const bookmarks: chrome.bookmarks.BookmarkTreeNode[] = await chrome.bookmarks.search({})//, async (bookmarks) => {
         this.bookmarksLeaves = bookmarks
 
         // @ts-ignore
         const tree: chrome.bookmarks.BookmarkTreeNode[] = await chrome.bookmarks.getTree()
 
-        _.forEach(tree[0].children, parent => {
-          const children: TreeNode[] = getChildren(parent)
-          for (const c of children) {
-            this.bookmarksCount += c.subNodesCount
-            this.foldersCount += c.subFoldersCount
-          }
+       //console.log("*** ======= tree", tree)
+        const nodes = nodesFrom(tree[0])
+        //console.log("bookmarksNodes2", nodes)
+        this.bookmarksNodes2 = nodes[0] ? nodes[0].children : []
+        this.nonLeafNodes = nodes[1] ? nodes[1].children : []
+        this.folderCount = nodes[2]
+        this.bmsCount = nodes[3]
 
-          const treeNode = new TreeNode(parent.id, parent.title, parent.title, parent.url, 'o_folder', children)
-          this.bookmarksTree.push(treeNode)
 
-          const childrenNodes: TreeNode[] = getChildren(parent, 0,0,x => !x.url)
-          for (const c of childrenNodes) {
-            this.bookmarksCount += c.subNodesCount
-            this.foldersCount += c.subFoldersCount
-          }
-          this.bookmarksNodes.push(new TreeNode(parent.id, parent.title, parent.title, parent.url, 'o_folder', childrenNodes))
-
-          this.foldersCount+=1
-
-        })
-        //console.log("loading bookmarks done")
         return Promise.resolve()
 
       }
 
-    },
-    async bookmarksLeavesFor(bookmarkId: string): Promise<chrome.bookmarks.BookmarkTreeNode[]> {
-      this.bookmarksLeaves = []
-      // @ts-ignore
-      const res = await chrome.bookmarks.getChildren(bookmarkId)
-      // @ts-ignore
-      return res
     },
     remove(bm: Bookmark) {
       this.bookmarksForFolder = _.filter(this.bookmarksForFolder, (e: Bookmark) => e.id !== bm.id)

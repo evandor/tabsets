@@ -7,20 +7,21 @@
 import {LocalStorage, setCssVar, useQuasar} from "quasar";
 import AppService from "src/services/AppService";
 import {EventEmitter} from "events";
-import {logtail} from "boot/logtail";
-import {getAuth, onAuthStateChanged} from "firebase/auth";
+import {onAuthStateChanged} from "firebase/auth";
 import {APP_INSTALLATION_ID, CURRENT_USER_ID} from "boot/constants";
 import {useRouter} from "vue-router";
 import FirebaseServices from "src/services/firebase/FirebaseServices";
 import {useNotificationHandler} from "src/services/ErrorHandler";
 import FirestorePersistenceService from "src/services/persistence/FirestorePersistenceService";
 import {useUtils} from "src/services/Utils";
+import {useLogger} from "src/services/Logger";
 
 const $q = useQuasar()
 const router = useRouter()
 const {inBexMode} = useUtils()
 
 const {handleError} = useNotificationHandler()
+const {info} = useLogger()
 
 // https://stackoverflow.com/questions/9768444/possible-eventemitter-memory-leak-detected
 const emitter = new EventEmitter()
@@ -130,7 +131,7 @@ if (!process.env.USE_FIREBASE) {
 }
 
 
-logtail.info(`tabsets started: mode=${process.env.MODE}, version=${import.meta.env.PACKAGE_VERSION}`)
+info(`tabsets started: mode=${process.env.MODE}, version=${import.meta.env.PACKAGE_VERSION}`)
 
 // Notification.requestPermission().then((permission) => {
 //   if (permission === 'granted') {

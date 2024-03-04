@@ -59,7 +59,7 @@ export const useNotificationsStore = defineStore('notifications', () => {
     updateToVersion.value = available ? version : '';
     console.log("updateToVersion set to ", updateToVersion.value)
     if (available && inBexMode()) {
-      useSuggestionsStore().addSuggestion(Suggestion.getStaticSuggestion(StaticSuggestionIdent.RELEASE_NOTES_AVAILABLE))
+      //useSuggestionsStore().addSuggestion(Suggestion.getStaticSuggestion(StaticSuggestionIdent.RELEASE_NOTES_AVAILABLE))
     }
   }
 

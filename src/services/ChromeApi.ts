@@ -439,6 +439,19 @@ class ChromeApi {
     }
   }
 
+  createChromeBookmarkTreeNodeObject(title: string, url: string, children: chrome.bookmarks.BookmarkTreeNode[] | undefined = undefined): chrome.bookmarks.BookmarkTreeNode {
+    // index?: number | undefined;
+    // dateAdded?: number | undefined;
+    // dateGroupModified?: number | undefined;
+    // parentId?: string | undefined;
+    return {
+      id: uid(),
+      title,
+      url: url,
+      children
+    }
+  }
+
   createChromeTabGroupObject(id: number, title: string, color: chrome.tabGroups.ColorEnum) {
     return {
       id: id,

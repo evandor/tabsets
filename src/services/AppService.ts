@@ -78,9 +78,11 @@ class AppService {
     // init of stores and some listeners
     await usePermissionsStore().initialize(useDB(quasar).localDb)
     await ChromeListeners.initListeners()
+
     ChromeBookmarkListeners.initListeners()
     await bookmarksStore.init()
     await BookmarksService.init()
+
     settingsStore.initialize(quasar.localStorage);
     tabsStore.initialize().catch((err) => console.error("***" + err))
 

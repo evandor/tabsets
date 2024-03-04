@@ -29,13 +29,16 @@ chrome.runtime.onInstalled.addListener((callback) => {
         "https://tabsets.web.app/#/installed/"
     })
   }
+  if (chrome.runtime.lastError) {
+    console.warn("got runtime error", chrome.runtime.lastError)
+  }
 });
 
-chrome.omnibox.onInputEntered.addListener((text) => {
-  const newURL = chrome.runtime.getURL("/www/index.html#/searchresult?t=" + encodeURIComponent(text))
-  chrome.tabs.create({url: newURL})
-    .catch((err) => console.log("[service-worker] background.js error", err))
-});
+// chrome.omnibox.onInputEntered.addListener((text) => {
+//   const newURL = chrome.runtime.getURL("/www/index.html#/searchresult?t=" + encodeURIComponent(text))
+//   chrome.tabs.create({url: newURL})
+//     .catch((err) => console.log("[service-worker] background.js error", err))
+// });
 
 let modelPromise: any = null
 
@@ -49,6 +52,9 @@ if (chrome.sidePanel && chrome.sidePanel.setPanelBehavior) {
 
 chrome.runtime.onInstalled.addListener((details) => {
   console.debug("adding onInstalled listener in background.ts", details)
+  if (chrome.runtime.lastError) {
+    console.warn("got runtime error", chrome.runtime.lastError)
+  }
   // @ts-ignore
   if (chrome.action) {
     // @ts-ignore

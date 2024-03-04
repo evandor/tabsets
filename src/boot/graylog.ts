@@ -1,31 +1,24 @@
 import {boot} from 'quasar/wrappers'
-import {Logtail} from "@logtail/browser";
-
-const logtail = (process.env.MODE === "bex") ?
-  new Logtail("Ht8PY3XGQgqhMyNTcyGyJhXJ") :
-  new Logtail("pNfaHtRmWXGd3TFbsCXMHHbB")
-
-import { ILogtailLog } from "@logtail/types";
 import {api} from "boot/axios";
 
 const version = import.meta.env.PACKAGE_VERSION
 
-function mapLevel(input:string) {
-  switch (input) {
-    case "debug":
-      return 7
-    case "info":
-      return 5
-    case "warn":
-      return 4
-    case "error":
-      return 3
-    default:
-      return 2
-  }
-}
+// function mapLevel(input:string) {
+//   switch (input) {
+//     case "debug":
+//       return 7
+//     case "info":
+//       return 5
+//     case "warn":
+//       return 4
+//     case "error":
+//       return 3
+//     default:
+//       return 2
+//   }
+// }
 
-async function enrichLogs(log: ILogtailLog): Promise<ILogtailLog> {
+async function log(log: ILogtailLog): Promise<ILogtailLog> {
   const objectToLog = {
     ...log,
     mode: process.env.MODE,
@@ -48,12 +41,11 @@ async function enrichLogs(log: ILogtailLog): Promise<ILogtailLog> {
   return objectToLog;
 }
 
-logtail.use(enrichLogs);
 
 export default boot(({}) => {
 })
 
 export {
-  logtail
+  graylog
 }
 

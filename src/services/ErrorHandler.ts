@@ -1,8 +1,7 @@
 import {Notify} from 'quasar'
 import {ExecutionResult} from "src/domain/ExecutionResult";
 import {useUiStore} from "stores/uiStore";
-import {Logz} from "src/services/logz/Logz";
-import {logtail} from "boot/logtail";
+import {useLogger} from "src/services/Logger";
 
 export enum NotificationType {
   NOTIFY = "NOTIFY",
@@ -11,11 +10,14 @@ export enum NotificationType {
 
 export function useNotificationHandler() {
 
+  const {info,error} = useLogger()
+
     const handleError = (error: any, type: NotificationType = NotificationType.TOAST) => {
         console.log("showing error message: ", error ? error.toString() : 'unknown error')
         console.trace()
 
-      logtail.error(error ? error.toString() : 'unknown error', error)
+      //logtail.error(error ? error.toString() : 'unknown error', error)
+      error(error ? error.toString() : 'unknown error', error)
 
       switch (type) {
           case NotificationType.NOTIFY:

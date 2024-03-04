@@ -2,9 +2,22 @@
 
   <q-list class="q-mt-md">
 
+    <q-input
+      ref="filterRef"
+      filled
+      v-model="filter"
+      label="Search - only filters labels that have also '(*)'"
+    >
+      <template v-slot:append>
+        <q-icon v-if="filter !== ''" name="clear" class="cursor-pointer" @click="resetFilter"/>
+      </template>
+    </q-input>
+
     <q-tree
       v-if="bookmarksPermissionGranted"
-      :nodes="bookmarksStore.bookmarksNodes"
+      :nodes="bookmarksStore.bookmarksNodes2"
+      :filter="filter"
+      :filterMethod="bookmarksFilter"
       node-key="id"
       @mouseenter="entered(true)"
       @mouseleave="entered(false)"
@@ -24,6 +37,7 @@
 
     </q-tree>
 
+
     <q-banner class="bg-yellow-1" v-else>
       No permissions granted.<br><br>
       Click <span class="cursor-pointer text-blue-6" style="text-decoration: underline"
@@ -32,6 +46,8 @@
     </q-banner>
 
   </q-list>
+  <div>Bms: {{ bmsCount }}</div>
+  <div>Folders: {{ foldersCount }}</div>
 
 </template>
 
@@ -54,6 +70,7 @@ import NavigationService from "src/services/NavigationService";
 import {FeatureIdent} from "src/models/AppFeature";
 import NewTabsetDialog from "components/dialogues/NewTabsetDialog.vue";
 import DeleteBookmarkFolderDialog from "components/dialogues/bookmarks/DeleteBookmarkFolderDialog.vue";
+import {TreeNode} from "src/models/Tree";
 
 const router = useRouter()
 const bookmarksStore = useBookmarksStore()
@@ -65,7 +82,11 @@ const localStorage = useQuasar().localStorage
 const mouseHover = ref(false)
 const selected = ref('')
 const deleteButtonId = ref('')
-const bookmarksPermissionGranted = ref<boolean | undefined>(undefined)
+const bookmarksPermissionGranted = ref<boolean>(permissionsStore.hasFeature(FeatureIdent.BOOKMARKS))
+const filter = ref('')
+const filterRef = ref(null)
+const bmsCount = ref(0)
+const foldersCount = ref(0)
 
 const {handleSuccess, handleError} = useNotificationHandler()
 
@@ -74,9 +95,17 @@ const props = defineProps({
 })
 
 watchEffect(() => {
-  bookmarksPermissionGranted.value = permissionsStore.hasFeature(FeatureIdent.BOOKMARKS)
-  useBookmarksStore().loadBookmarks()
+  foldersCount.value = bookmarksStore.foldersCount
+  bmsCount.value = bookmarksStore.bmsCount
 })
+
+// watchEffect(() => {
+//   bookmarksPermissionGranted.value = permissionsStore.hasFeature(FeatureIdent.BOOKMARKS)
+//   if (bookmarksPermissionGranted.value) {
+//     console.log("reloading bookmarks as we got permission")
+//     useBookmarksStore().loadBookmarks()
+//   }
+// })
 
 watch(() => selected.value, (currentValue, oldValue) => {
   if (currentValue !== oldValue) {
@@ -113,6 +142,24 @@ const deleteBookmarksFolderDialog = () => {
 const entered = (b: boolean) => mouseHover.value = b
 
 const grant = (permission: string) => useCommandExecutor().executeFromUi(new GrantPermissionCommand(permission))
+
+const bookmarksFilter = (node: TreeNode, filter: string) => {
+  console.log("filterBm", node.title, node.header, filter)
+  if (node.header === 'leaf') {
+    console.log("returning false")
+    return false
+  }
+  const filt = filter.toLowerCase()
+  console.log("checking node", node.label, node.header)
+  return node.label && node.label.toLowerCase().indexOf(filt) > -1
+}
+
+const resetFilter = () => {
+  filter.value = ''
+  if (filterRef.value) {
+    filterRef.value.focus()
+  }
+}
 
 </script>
 

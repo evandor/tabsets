@@ -49,7 +49,7 @@ export const usePermissionsStore = defineStore('permissions', () => {
 
   const hasPermission = computed(() => {
     return (permission: string): boolean | undefined => {
-      //console.log("query for permission", permission, grantedOptionalPermissions.value.indexOf(permission) >= 0)
+      console.log("query for permission", permission, grantedOptionalPermissions.value)
       return grantedOptionalPermissions.value ? grantedOptionalPermissions.value.indexOf(permission) >= 0 : undefined
     }
   })
