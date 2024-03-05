@@ -156,6 +156,7 @@ const importBookmarks = async () => {
     .executeFromUi(new CreateTabsetFromBookmarksCommand(newTabsetName.value, candidates))
     .then(res => {
       //if (!props.inSidePanel) {
+        sendMsg('reload-tabset', {tabsetId: res.result.tabsetId})
         sendMsg('sidepanel-switch-view', {view: 'main'})
       //}
       return res
@@ -165,9 +166,13 @@ const importBookmarks = async () => {
         console.log("deleting bookmarks", candidates)
         candidates.forEach((c: chrome.bookmarks.BookmarkTreeNode) => chrome.bookmarks.remove(c.id))
       }
-      props.inSidePanel ?
-        router.push("/mainpanel/tabsets/" + tabsStore.currentTabsetId) :
-        router.push("/tabsets/" + tabsStore.currentTabsetId)
+      chrome.tabs.getCurrent().then(current => chrome.tabs.remove(current.id))
+      if (chrome.runtime.lastError) {
+        console.warn("got runtime error", chrome.runtime.lastError)
+      }
+      // props.inSidePanel ?
+      //   router.push("/mainpanel/tabsets/" + tabsStore.currentTabsetId) :
+      //   router.push("/tabsets/" + tabsStore.currentTabsetId)
     })
 
   $q.loadingBar?.stop()
