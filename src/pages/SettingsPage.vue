@@ -455,7 +455,7 @@ import AccountSettings from "pages/helper/AccountSettings.vue";
 import InfoLine from "pages/helper/InfoLine.vue";
 import FeatureToggleSettings from "pages/helper/FeatureToggleSettings.vue";
 import {useI18n} from "vue-i18n";
-const { t } = useI18n({inheritLocale: true})
+const { t } = useI18n()
 
 const {sendMsg, inBexMode} = useUtils()
 

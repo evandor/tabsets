@@ -72,6 +72,7 @@
 
   <SidePanelFooterLeftButton :side-panel-view="SidePanelView.BOOKMARKS"
                              icon="bookmark"
+                             :class="{ shake: animateBookmarksButton }"
                              :size="buttonSize"
                              tooltip="Show the Bookmarks Browser"/>
 
@@ -111,6 +112,7 @@ const tabsStore = useTabsStore()
 
 const buttonSize = ref('15px')
 const unreadMessagesCount = ref(0)
+const animateBookmarksButton = ref(false)
 
 watchEffect(() => {
   buttonSize.value = useUiStore().getButtonSize('sidePanelFooter')
@@ -118,6 +120,10 @@ watchEffect(() => {
 
 watchEffect(() => {
   useMessagesStore().getMessages().then((msgs) => unreadMessagesCount.value = msgs.length)
+})
+
+watchEffect(() => {
+  animateBookmarksButton.value = useUiStore().animateBookmarksButton
 })
 
 const suggestionsLabel = () => {

@@ -177,7 +177,11 @@ class AppService {
     // probably running an import ("/imp/:sharedId")
     // we do not want to go to the welcome back
     // console.log("checking for welcome page", tabsStore.tabsets.size === 0, quasar.platform.is.bex, !useAuthStore().isAuthenticated())
-    if (tabsStore.tabsets.size === 0 && quasar.platform.is.bex && !useAuthStore().isAuthenticated()) {
+    if (tabsStore.tabsets.size === 0 &&
+      quasar.platform.is.bex &&
+      !useAuthStore().isAuthenticated() &&
+      !router.currentRoute.value.path.startsWith("/fullpage") &&
+      !router.currentRoute.value.path.startsWith("/mainpanel")) {
       await router.push("/sidepanel/welcome")
     }
 

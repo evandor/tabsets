@@ -42,6 +42,20 @@
                 <q-item-label caption>Click here to assign your account</q-item-label>
               </q-item-section>
             </q-item>
+
+            <q-item clickable @click="useUiStore().startButtonAnimation('bookmarks')">
+              <q-item-section avatar>
+                <SidePanelToolbarButton
+                  icon="bookmark"
+                  color="primary"/>
+              </q-item-section>
+
+              <q-item-section>
+                <q-item-label>Bookmarks Manager</q-item-label>
+                <q-item-label caption>Click to open the Bookmarks Manager</q-item-label>
+              </q-item-section>
+            </q-item>
+
           </q-list>
         </div>
       </div>

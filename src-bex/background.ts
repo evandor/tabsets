@@ -108,7 +108,7 @@ chrome.runtime.onConnect.addListener(function (port) {
 export default bexBackground((bridge, cons/* , allActiveConnections */) => {
 
   if (process.env.USE_FIREBASE) {
-    console.debug("[service-worker] about to obtain cloud messaging token")
+    //console.debug("[service-worker] about to obtain cloud messaging token")
 
     const firebaseApp = firebase.initializeApp({
       apiKey: process.env.FIREBASE_API_KEY,

@@ -159,6 +159,7 @@ export const useUiStore = defineStore('ui', () => {
   let sidePanel = ref<SidePanel>(new SidePanel())
   const animateNewTabsetButton = ref(false)
   const animateSettingsButton = ref(false)
+  const animateBookmarksButton = ref(false)
 
   const showLoginTable = ref(false)
 
@@ -522,6 +523,10 @@ export const useUiStore = defineStore('ui', () => {
         animateNewTabsetButton.value = true
         setTimeout(() => animateNewTabsetButton.value = false, 2000)
         break;
+      case 'bookmarks':
+        animateBookmarksButton.value = true
+        setTimeout(() => animateBookmarksButton.value = false, 2000)
+        break;
       case 'settings':
         animateSettingsButton.value = true
         setTimeout(() => animateSettingsButton.value = false, 2000)
@@ -600,6 +605,7 @@ export const useUiStore = defineStore('ui', () => {
     setProgress,
     animateNewTabsetButton,
     animateSettingsButton,
+    animateBookmarksButton,
     startButtonAnimation,
     showLoginTable
   }

@@ -38,6 +38,10 @@
                 @was-clicked="addFirstTabset"
                 :disable="tabsetName.trim().length === 0 || !newTabsetNameIsValid()"/>
             </q-card-actions>
+            <q-card-actions align="right" class="q-pr-md q-pb-md q-ma-none">
+              <span class="q-mx-none cursor-pointer text-primary" style="font-size:smaller"
+                    @click.stop="openBookmarksView">or open Bookmark Manager</span>
+            </q-card-actions>
           </q-card>
         </div>
         <div class="row q-mr-sm">
@@ -70,6 +74,13 @@
               <q-tooltip class="tooltip">Allow browser notifications for better integration. Can be added later, too
               </q-tooltip>
             </q-icon>
+
+            <q-checkbox size="xs" v-model="activateFullPageApp" class="text-grey"
+                        :label="t('activate_fullpage_application')"/>
+            <q-icon class="q-ml-sm cursor-pointer" name="o_help" color="grey">
+              <q-tooltip class="tooltip">Tabsets can be additionally run as fullpage app</q-tooltip>
+            </q-icon>
+
             <template v-if="firebaseActive()">
               <q-checkbox
                 size="xs" v-model="login" class="text-grey" label="Login or create Account"/>
@@ -109,6 +120,7 @@ const tabsetNameRef = ref<HTMLElement>(null as unknown as HTMLInputElement)
 const windowLocation = ref('---')
 const activateBookmarks = ref(false)
 const activateNotifications = ref(false)
+const activateFullPageApp = ref(false)
 const login = ref(false)
 
 
@@ -128,6 +140,22 @@ watchEffect(async () => {
   } else if (!activateNotifications.value && feature) {
     usePermissionsStore().deactivateFeature('notifications')
   }
+})
+
+function setFeature(featureIdent: FeatureIdent, val: UnwrapRef<boolean>) {
+  const feature = new AppFeatures().getFeature(featureIdent)
+  console.log("feeature", feature)
+  if (val && feature) {
+    console.log("activating", featureIdent)
+    usePermissionsStore().activateFeature(featureIdent.toLowerCase())
+  } else if (!val && feature) {
+    console.log("deactivateing", featureIdent)
+    usePermissionsStore().deactivateFeature(featureIdent.toLowerCase())
+  }
+}
+
+watchEffect(async () => {
+  setFeature(FeatureIdent.STANDALONE_APP, activateFullPageApp.value)
 })
 
 watchEffect(() => {
@@ -182,6 +210,11 @@ const clicked = (url: string) => openURL(url)
 
 const firebaseActive = () => {
   return process.env.USE_FIREBASE && process.env.USE_FIREBASE.toString() === "true"
+}
+
+const openBookmarksView = () => {
+  useUiStore().sidePanelSetActiveView(SidePanelView.BOOKMARKS)
+  router.push("/sidepanel/" + SidePanelView.BOOKMARKS)
 }
 
 </script>

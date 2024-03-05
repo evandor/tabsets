@@ -121,7 +121,7 @@
             </q-list>
           </q-menu>
         </span>
-        <q-btn v-else
+        <q-btn v-else-if="usePermissionsStore().hasFeature(FeatureIdent.STANDALONE_APP)"
           icon="o_open_in_new"
           :class="rightButtonClass()"
           flat

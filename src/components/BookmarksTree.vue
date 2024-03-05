@@ -33,7 +33,7 @@
       v-model:expanded="useNotificationsStore().bookmarksExpanded">
       <template v-slot:header-node="prop">
         <q-icon name="o_folder" color="warning" class="q-mr-sm"/>
-        <span class="cursor-pointer fit no-wrap ellipsis">{{ prop.node.label }} <span style="font-size:smaller" class="text-grey">({{prop.node.subFoldersCount}}/{{prop.node.subNodesCount}})</span></span>
+        <span class="cursor-pointer fit no-wrap ellipsis">{{ prop.node.label }} <span style="font-size:smaller" class="text-grey">({{prop.node.subFoldersCount}} / {{prop.node.subNodesCount}})</span></span>
 
         <span class="text-right fit" v-show="mouseHover && prop.node.id === deleteButtonId">
             <q-icon name="delete_outline" color="negative" size="18px" @click.stop="deleteBookmarksFolderDialog">
