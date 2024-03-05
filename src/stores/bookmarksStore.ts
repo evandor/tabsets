@@ -9,18 +9,18 @@ function nodesFrom(
   parent: chrome.bookmarks.BookmarkTreeNode,
   allFoldersCount = 0,
   allBookmarksCount = 0,
-  level: number = 1): [TreeNode | undefined, TreeNode | undefined, number, number] {
+  level: number = 1): [TreeNode | undefined, number, number] {
 
   const parentNode = new TreeNode(parent.id, parent.title, parent.title, parent.url, parent.url ? 'o_article' : 'o_folder', [], 0, 0)
+
   level++
   let subNodes: TreeNode[] = []
-  let nonLeafSubNodes: TreeNode[] = []
   let foldersCount = 0
   let leavesCount = 0
   if (parent.children) {
     for (const c of parent.children) {
-      const [allNodes, nonLeafNodes, fCount, bCount] = nodesFrom(c, allFoldersCount, allBookmarksCount)
-      foldersCount += foldersCount
+      const [allNodes, fCount, bCount] = nodesFrom(c, allFoldersCount, allBookmarksCount)
+      foldersCount += fCount
       leavesCount += bCount
       if (allNodes && allNodes.url) {
         leavesCount++
@@ -35,20 +35,40 @@ function nodesFrom(
   parentNode.children = subNodes
   parentNode.subFoldersCount = foldersCount
   parentNode.subNodesCount = leavesCount
- // console.log("+++ added node with", parentNode.title, parentNode.header, parentNode.children, parentNode.url)
-  return [parentNode, parentNode.header === 'node' ? parentNode : undefined, allFoldersCount + foldersCount, allBookmarksCount + leavesCount]
+  parentNode.label = parentNode.label + " (" + parentNode.subFoldersCount + ")"
+  console.log("+++ added node with", parentNode.toString())
+  return [parentNode, allFoldersCount + foldersCount, allBookmarksCount + leavesCount]
+}
+
+function nodesWithoutLeaves(
+  parent: TreeNode,
+): TreeNode | undefined {
+
+  if (parent.header !== 'node') {
+    return undefined
+  }
+  if (parent.children) {
+    const folderChildren: TreeNode[] = []
+    for (const c of parent.children) {
+      const childNodeWithoutLeaves = nodesWithoutLeaves(c)
+      if (childNodeWithoutLeaves) {
+        folderChildren.push(c)
+      }
+    }
+    parent.children = folderChildren
+  }
+
+  return parent
 }
 
 export const useBookmarksStore = defineStore('bookmarks', {
   state: () => ({
     bookmarksTree: [] as unknown as object[],
     bookmarksNodes: [] as unknown as object[],
-    nonLeafNodes: [] as unknown as object[],
-    bookmarksNodes2: [] as unknown as object[],
+    nonLeafNodes: [] as unknown as TreeNode[],
+    bookmarksNodes2: [] as unknown as TreeNode[],
     bookmarksLeaves: [] as unknown as object[],
     currentBookmark: null as unknown as Bookmark,
-    folderCount: 0,
-    bmsCount: 0,
 
     // the bookmarks (nodes and leaves) for the selected parent id
     bookmarksForFolder: null as unknown as Bookmark[],
@@ -90,14 +110,16 @@ export const useBookmarksStore = defineStore('bookmarks', {
         // @ts-ignore
         const tree: chrome.bookmarks.BookmarkTreeNode[] = await chrome.bookmarks.getTree()
 
-       //console.log("*** ======= tree", tree)
+        //console.log("*** ======= tree", tree)
         const nodes = nodesFrom(tree[0])
-        //console.log("bookmarksNodes2", nodes)
-        this.bookmarksNodes2 = nodes[0] ? nodes[0].children : []
-        this.nonLeafNodes = nodes[1] ? nodes[1].children : []
-        this.folderCount = nodes[2]
-        this.bmsCount = nodes[3]
-
+        console.log("bookmarksNodes2", nodes.toString())
+        if (nodes[0]) {
+          this.bookmarksNodes2 = nodes[0].children
+          let copy = (JSON.parse(JSON.stringify(nodes[0])));
+          this.nonLeafNodes = nodesWithoutLeaves(copy)?.children || []
+        }
+        this.foldersCount = nodes[1]
+        this.bookmarksCount = nodes[2]
 
         return Promise.resolve()
 

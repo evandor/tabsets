@@ -1,21 +1,29 @@
 <template>
 
-  <q-list class="q-mt-md">
+  <q-list class="q-mt-none">
 
-    <q-input
-      ref="filterRef"
-      filled
-      v-model="filter"
-      label="Search - only filters labels that have also '(*)'"
-    >
-      <template v-slot:append>
-        <q-icon v-if="filter !== ''" name="clear" class="cursor-pointer" @click="resetFilter"/>
-      </template>
-    </q-input>
+    <div class="row">
+      <div class="col-12 text-right">
+        Show only Folders <q-checkbox v-model="showOnlyFolders" />
+      </div>
+      <div class="col-12 q-mb-md">
+        <q-input
+          dense
+          ref="filterRef"
+          filled
+          v-model="filter"
+          label="Filter Bookmarks">
+          <template v-slot:append>
+            <q-icon v-if="filter !== ''" name="clear" class="cursor-pointer" @click="resetFilter"/>
+          </template>
+        </q-input>
+      </div>
+    </div>
+
 
     <q-tree
       v-if="bookmarksPermissionGranted"
-      :nodes="bookmarksStore.bookmarksNodes2"
+      :nodes="showOnlyFolders ? bookmarksStore.nonLeafNodes : bookmarksStore.bookmarksNodes2"
       :filter="filter"
       :filterMethod="bookmarksFilter"
       node-key="id"
@@ -24,7 +32,7 @@
       v-model:selected="selected"
       v-model:expanded="useNotificationsStore().bookmarksExpanded">
       <template v-slot:header-node="prop">
-        <q-icon name="o_folder" class="q-mr-sm"/>
+        <q-icon name="o_folder" color="warning" class="q-mr-sm"/>
         <span class="cursor-pointer fit no-wrap">{{ prop.node.label }}</span>
 
         <span class="text-right fit" v-show="mouseHover && prop.node.id === deleteButtonId">
@@ -36,14 +44,6 @@
       </template>
 
     </q-tree>
-
-
-    <q-banner class="bg-yellow-1" v-else>
-      No permissions granted.<br><br>
-      Click <span class="cursor-pointer text-blue-6" style="text-decoration: underline"
-                  @click="grant('bookmarks')">here</span> to
-      grant permissions for the tabset extension to access your bookmarks.
-    </q-banner>
 
   </q-list>
   <div>Bms: {{ bmsCount }}</div>
@@ -87,6 +87,8 @@ const filter = ref('')
 const filterRef = ref(null)
 const bmsCount = ref(0)
 const foldersCount = ref(0)
+const showOnlyFolders = ref(false)
+const expandedBookmarks = ref<string[]>([])
 
 const {handleSuccess, handleError} = useNotificationHandler()
 
@@ -96,9 +98,13 @@ const props = defineProps({
 
 watchEffect(() => {
   foldersCount.value = bookmarksStore.foldersCount
-  bmsCount.value = bookmarksStore.bmsCount
+  bmsCount.value = bookmarksStore.bookmarksCount
 })
 
+watchEffect(() => {
+  expandedBookmarks.value = useNotificationsStore().bookmarksExpanded
+  console.log("expanded Bookmarks set to ", expandedBookmarks.value)
+})
 // watchEffect(() => {
 //   bookmarksPermissionGranted.value = permissionsStore.hasFeature(FeatureIdent.BOOKMARKS)
 //   if (bookmarksPermissionGranted.value) {
@@ -141,22 +147,15 @@ const deleteBookmarksFolderDialog = () => {
 
 const entered = (b: boolean) => mouseHover.value = b
 
-const grant = (permission: string) => useCommandExecutor().executeFromUi(new GrantPermissionCommand(permission))
-
 const bookmarksFilter = (node: TreeNode, filter: string) => {
-  console.log("filterBm", node.title, node.header, filter)
-  if (node.header === 'leaf') {
-    console.log("returning false")
-    return false
-  }
   const filt = filter.toLowerCase()
-  console.log("checking node", node.label, node.header)
   return node.label && node.label.toLowerCase().indexOf(filt) > -1
 }
 
 const resetFilter = () => {
   filter.value = ''
   if (filterRef.value) {
+    // @ts-ignore
     filterRef.value.focus()
   }
 }

@@ -439,11 +439,20 @@ class ChromeApi {
     }
   }
 
-  createChromeBookmarkTreeNodeObject(title: string, url: string, children: chrome.bookmarks.BookmarkTreeNode[] | undefined = undefined): chrome.bookmarks.BookmarkTreeNode {
+  createFolderNode(title: string, children: chrome.bookmarks.BookmarkTreeNode[] | undefined = undefined): chrome.bookmarks.BookmarkTreeNode {
     // index?: number | undefined;
     // dateAdded?: number | undefined;
     // dateGroupModified?: number | undefined;
     // parentId?: string | undefined;
+    return {
+      id: uid(),
+      title,
+      url: undefined,
+      children
+    }
+  }
+
+  createBmNode(title: string, url: string, children: chrome.bookmarks.BookmarkTreeNode[] | undefined = undefined): chrome.bookmarks.BookmarkTreeNode {
     return {
       id: uid(),
       title,

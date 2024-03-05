@@ -1,11 +1,11 @@
 <template>
 
-  <q-page padding style="padding-top: 45px">
+  <q-page padding style="padding-top: 34px">
 
     <div class="q-ma-none">
       <div class="q-ma-none">
         <div class="row q-ma-none q-pa-none">
-          <div class="col-12 q-ma-none q-pa-none q-pt-lg">
+          <div class="col-12 q-ma-none q-pa-none q-pt-md">
             <BookmarksTree :in-side-panel="true"/>
           </div>
         </div>
