@@ -12,6 +12,10 @@ installQuasarPlugin();
 
 describe('FirstToolbarHelper', () => {
 
+  vi.mock("vue-i18n", () => ({
+    useI18n: () => ({t: (key: string) => key === 'welcome_to_tabsets' ? "Welcome to Tabsets" : key}),
+  }));
+
   const skysailChromeTab = ChromeApi.createChromeTabObject("title", "https://www.skysail.io", "favicon")
 
   beforeEach(async () => {
@@ -26,10 +30,12 @@ describe('FirstToolbarHelper', () => {
         }
       },
       tabs: {
-        query: vi.fn(() => {})
+        query: vi.fn(() => {
+        })
       },
       runtime: {
-        sendMessage: vi.fn(() => {})
+        sendMessage: vi.fn(() => {
+        })
       }
     };
 

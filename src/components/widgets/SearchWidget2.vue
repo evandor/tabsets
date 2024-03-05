@@ -34,10 +34,10 @@ const highlight = ref<string | undefined>(undefined)
 
 onMounted(() => {
   setTimeout(() => {
-        if (searchInputRef.value) {
-          searchInputRef.value?.focus()
-        }
-      }, 500
+      if (searchInputRef.value) {
+        searchInputRef.value?.focus()
+      }
+    }, 500
   )
 })
 
@@ -53,11 +53,7 @@ const inputPlaceholder = () => {
   if (props.searchHits && props.searchHits > 0) {
     return `Found ${props.searchTerm} ${props.searchHits} time(s)`
   }
-  if (usePermissionsStore().hasFeature(FeatureIdent.BOOKMARKS)) {
-    return "Search all tabs and bookmarks"
-  }
-
-  return "Search all tabs"
+  return "Search all tabs and bookmarks"
 }
 
 </script>

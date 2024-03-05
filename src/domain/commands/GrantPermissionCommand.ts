@@ -4,14 +4,11 @@ import {usePermissionsStore} from "src/stores/permissionsStore";
 import {RevokePermissionCommand} from "src/domain/commands/RevokePermissionCommand";
 import {useBookmarksStore} from "src/stores/bookmarksStore";
 import ChromeBookmarkListeners from "src/services/ChromeBookmarkListeners";
-//import TabsetService from "src/services/TabsetService";
 import {useSuggestionsStore} from "src/stores/suggestionsStore";
 import {StaticSuggestionIdent} from "src/models/Suggestion";
 import {useTabsetService} from "src/services/TabsetService2";
 import ChromeApi from "src/services/ChromeApi";
 import {useDB} from "src/services/usePersistenceService";
-import {useRouter} from "vue-router";
-
 
 class UndoCommand implements Command<boolean> {
 

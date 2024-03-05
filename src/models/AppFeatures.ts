@@ -7,9 +7,9 @@ export class AppFeatures {
   features: AppFeature[] = [
     //new AppFeature(FeatureIdent.HELP, FeatureType.EXPERIMENTAL, 'Help Pages', 'o_help', ['bex']),
 
-    new AppFeature(FeatureIdent.BOOKMARKS, FeatureType.OPTIONAL, 'Bookmarks', 'o_bookmarks', ['bex'])
-      .setActivateCommands([new GrantPermissionCommand('bookmarks')])
-      .setDeactivateCommands([new RevokePermissionCommand('bookmarks')]),
+    // new AppFeature(FeatureIdent.BOOKMARKS, FeatureType.OPTIONAL, 'Bookmarks', 'o_bookmarks', ['bex'])
+    //   .setActivateCommands([new GrantPermissionCommand('bookmarks', true)])
+    //   .setDeactivateCommands([new RevokePermissionCommand('bookmarks')]),
 
     // new AppFeature(FeatureIdent.PAGE_MARKER, FeatureType.EXPERIMENTAL, 'Page Marker', 'o_note', ['bex'])
     //   .setActivateCommands([new GrantPermissionCommand('contextMenus')])

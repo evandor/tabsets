@@ -1,5 +1,4 @@
 import {boot} from 'quasar/wrappers'
-import {Logtail} from "@logtail/browser";
 
 const INDEX_DB_VERSION = 19
 
@@ -43,10 +42,6 @@ const CURRENT_USER_EMAIL = "current.user.email"
 
 const UI_WINDOWS_ITEMS_PER_PAGE = 'ui.windows.itemsPerPage'
 
-const logtail = (process.env.MODE === "bex") ?
-  new Logtail("Ht8PY3XGQgqhMyNTcyGyJhXJ") :
-  new Logtail("pNfaHtRmWXGd3TFbsCXMHHbB")
-
 export default boot(({}) => {
 })
 
@@ -69,7 +64,6 @@ export {
   EMAIL_LINK_REDIRECT_DOMAIN,
   CURRENT_USER_ID,
   CURRENT_USER_EMAIL,
-  UI_WINDOWS_ITEMS_PER_PAGE,
-  logtail
+  UI_WINDOWS_ITEMS_PER_PAGE
 }
 

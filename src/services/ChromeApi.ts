@@ -191,7 +191,7 @@ class ChromeApi {
                 contexts: ['all']
               })
 
-              console.log("context menu", useWindowsStore().currentChromeWindows)
+              //console.log("context menu", useWindowsStore().currentChromeWindows)
               const currentWindows = useWindowsStore().currentChromeWindows
               if (currentWindows.length > 1) {
                 chrome.contextMenus.create({
@@ -221,7 +221,6 @@ class ChromeApi {
                   .sortBy(r => r.firstLetter)
                   .value();
 
-                console.log(result);
                 _.forEach(result, (r) => {
                   chrome.contextMenus.create({
                     id: 'save_as_tab_folder|' + r.firstLetter,
@@ -289,7 +288,7 @@ class ChromeApi {
             console.log("got tabsetId", tabsetId, e.menuItemId)
             this.executeAddToTS(tabId, tabsetId)
           } else if (e.menuItemId.toString().startsWith("move_to|")) {
-            //console.log("got", e, e.menuItemId.split("|"))
+            console.log("got", e, e.menuItemId.toString().split("|"))
             const tabId = tab?.id || 0
             const windowId = e.menuItemId.toString().split("|")[1]
             console.log("got windowId", tabId, windowId)
@@ -437,6 +436,28 @@ class ChromeApi {
       windowId: 0,
       incognito: false,
       selected: false
+    }
+  }
+
+  createFolderNode(title: string, children: chrome.bookmarks.BookmarkTreeNode[] | undefined = undefined): chrome.bookmarks.BookmarkTreeNode {
+    // index?: number | undefined;
+    // dateAdded?: number | undefined;
+    // dateGroupModified?: number | undefined;
+    // parentId?: string | undefined;
+    return {
+      id: uid(),
+      title,
+      url: undefined,
+      children
+    }
+  }
+
+  createBmNode(title: string, url: string, children: chrome.bookmarks.BookmarkTreeNode[] | undefined = undefined): chrome.bookmarks.BookmarkTreeNode {
+    return {
+      id: uid(),
+      title,
+      url: url,
+      children
     }
   }
 

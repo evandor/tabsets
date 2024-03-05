@@ -32,8 +32,7 @@ export const useWindowsStore = defineStore('windows', () => {
   const onCreatedListener = () => setup("onCreated")
   const onRemovedListener = (windowId: number) => onRemoved(windowId)
   const onBoundsChangedListener = (window: chrome.windows.Window) => onUpdate(window.id || 0)
-  const onFocusChangedListener = (windowId: number) => { /** noop */
-  }
+  const onFocusChangedListener = (windowId:number) => { /** noop */ }
 
   /**
    * the map of all 'ever used' Chrome windows, even if they are not currently in use,
@@ -156,7 +155,7 @@ export const useWindowsStore = defineStore('windows', () => {
       //chrome.windows.getCurrent().then(currentWindow => {
       const currentWindow: chrome.windows.Window = await chrome.windows.getCurrent()//.then(currentWindow => {
       for (const window of currentChromeWindows.value) {
-        //console.log("da!!!",window,useWindowsStore().windowNameFor(window.id))
+        //console.log("da!!!",window)
         // TODO this is always the "default" window
         if (currentWindow.id !== window.id) {
           chrome.contextMenus.create({
@@ -376,7 +375,7 @@ export const useWindowsStore = defineStore('windows', () => {
 
   async function refreshTabsetWindow(windowId: number) {
     try {
-      console.log("refreshing tabset window", windowId)
+      //console.log("refreshing tabset window", windowId)
       const tabsetWindow = await storage.getWindow(windowId)
       const chromeWindow = await chrome.windows.get(windowId, {populate: true})
       if (tabsetWindow && chromeWindow) {
@@ -384,7 +383,7 @@ export const useWindowsStore = defineStore('windows', () => {
         await storage.updateWindow(tabsetWindow)
       }
     } catch (err) {
-      console.error("got error", err)
+      console.log("got error", err)
     }
 
   }

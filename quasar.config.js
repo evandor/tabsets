@@ -30,8 +30,7 @@ module.exports = configure(function (ctx) {
     // https://v2.quasar.dev/quasar-cli-vite/boot-files
     boot: [
       'i18n',
-      'constants',
-      'logtail'
+      'constants'
     ],
 
     // https://v2.quasar.dev/quasar-cli-vite/quasar-config-js#css
@@ -115,7 +114,6 @@ module.exports = configure(function (ctx) {
 
       // !== MIT
       extendViteConf (viteConf) {
-        console.log("******",ctx.mode)
         //if ((ctx.mode.spa || ctx.mode.pwa || ctx.mode.electron) && viteConf && viteConf.mode === "development") {
         if (!ctx.mode.bex && !ctx.mode.pwa) {
           // https://dev.to/richardbray/how-to-fix-the-referenceerror-global-is-not-defined-error-in-sveltekitvite-2i49

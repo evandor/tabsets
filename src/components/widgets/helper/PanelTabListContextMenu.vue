@@ -149,7 +149,7 @@ async function tabToUse(tab: Tab) {
 const deleteTab = async (tabIn: Tab) => {
   const useTab = await tabToUse(tabIn)
   useCommandExecutor().executeFromUi(new DeleteTabCommand(useTab))
-  if (useTab && useTab.url && usePermissionsStore().hasFeature(FeatureIdent.BOOKMARKS)) {
+  if (useTab && useTab.url) {
     const res = await useBookmarksStore().findBookmarksForUrl(useTab.url)
     console.log("existing bookmarks", res)
     if (res.length > 0) {

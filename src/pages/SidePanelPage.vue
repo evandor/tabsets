@@ -42,6 +42,20 @@
                 <q-item-label caption>Click here to assign your account</q-item-label>
               </q-item-section>
             </q-item>
+
+            <q-item clickable @click="useUiStore().startButtonAnimation('bookmarks')">
+              <q-item-section avatar>
+                <SidePanelToolbarButton
+                  icon="bookmark"
+                  color="primary"/>
+              </q-item-section>
+
+              <q-item-section>
+                <q-item-label>Bookmarks Manager</q-item-label>
+                <q-item-label caption>Click to open the Bookmarks Manager</q-item-label>
+              </q-item-section>
+            </q-item>
+
           </q-list>
         </div>
       </div>
@@ -345,6 +359,8 @@ import AppService from "src/services/AppService";
 import {useNotificationHandler} from "src/services/ErrorHandler";
 import {ExecutionResult} from "src/domain/ExecutionResult";
 import SidePanelToolbarButton from "components/buttons/SidePanelToolbarButton.vue";
+import { useI18n } from 'vue-i18n'
+const { t } = useI18n({locale: navigator.language, useScope: "global"})
 
 const {setVerticalScrollPosition} = scroll
 
@@ -431,7 +447,6 @@ watchEffect(() => {
 
 watchEffect(() => {
   if (useAuthStore().user) {
-    console.log("setting user to ", useAuthStore().user?.email)
     user.value = useAuthStore().user
   }
 })
@@ -595,15 +610,17 @@ function inIgnoredMessages(message: any) {
   return message.msg === "html2text" ||
     message.msg === "captureThumbnail" ||
     message.msg === "capture-annotation" ||
+    message.name === "reload-spaces" ||
     message.name === "window-updated" ||
     message.msg === "html2links"
 }
 
+if ($q.platform.is.chrome) {
   if (inBexMode()) {
     // seems we need to define these listeners here to get the matching messages reliably
     // these messages are created by triggering events in the mainpanel
     browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
-      console.log(" <<< received message", message)
+      //console.log(" <<< received message", message)
       if (inIgnoredMessages(message)) {
         return true
       }
@@ -709,7 +726,7 @@ function inIgnoredMessages(message: any) {
       }
       return true
     })
-
+  }
 } else {
   //useRouter().push("/start")
 }
@@ -803,7 +820,7 @@ const showTabset = (tabset: Tabset) => !useUiStore().tabsFilter ?
 
 const toolbarTitle = (tabsets: Tabset[]) => {
   if (usePermissionsStore().hasFeature(FeatureIdent.SPACES)) {
-    const spaceName = useSpacesStore().space ? useSpacesStore().space.label : 'no space selected'
+    const spaceName = useSpacesStore().space ? useSpacesStore().space.label : t('no_space_selected')
     return tabsets.length > 6 ?
       spaceName + ' (' + tabsets.length.toString() + ')' :
       spaceName

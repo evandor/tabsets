@@ -11,10 +11,10 @@ export class TreeNode {
     public children: TreeNode[],
     public subFoldersCount = 0,
     public subNodesCount = 0) {
-    // this.header = children.length > 0 ? 'node' : 'leaf'
     this.header = !url ? 'node' : 'leaf'
-
   }
-
-
 }
+
+TreeNode.prototype.toString = function treeNodeToString() {
+  return `TreeNode: {title=${this.title}, url=${this.url}, #children=${this.children.length}, #folders=${this.subFoldersCount}, #nodes=${this.subNodesCount}}`;
+};

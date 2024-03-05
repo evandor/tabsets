@@ -63,12 +63,12 @@ export class Suggestion {
       "/features/newest_tabs",
       SuggestionType.FEATURE)
       .setImage('o_schedule'),
-    new Suggestion(StaticSuggestionIdent.RELEASE_NOTES_AVAILABLE,
-      "Version was updated",
-      "Do you want to read the release notes?",
-      RELEASE_NOTES_URL,
-      SuggestionType.URL)
-      .setImage('o_schedule'),
+    // new Suggestion(StaticSuggestionIdent.RELEASE_NOTES_AVAILABLE,
+    //   "Version was updated",
+    //   "Do you want to read the release notes?",
+    //   RELEASE_NOTES_URL,
+    //   SuggestionType.URL)
+    //   .setImage('o_schedule'),
     new Suggestion(StaticSuggestionIdent.RESTART_SUGGESTED,
       "Restart Required",
       "Please restart tabsets by clicking the button",

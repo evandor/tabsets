@@ -82,9 +82,11 @@ describe('WindowsStore', () => {
 
   const tab1 = ChromeApi.createChromeTabObject("skysail", "https://www.skysail.io")
   const tab2 = ChromeApi.createChromeTabObject("tabsets", "https://www.tabsets.net")
+  const tab3 = ChromeApi.createChromeTabObject("docs", "https://docs.tabsets.net")
 
   const window100: chrome.windows.Window = ChromeApi.createChromeWindowObject(100, 17, 28, [tab1, tab2])
   const window200: chrome.windows.Window = ChromeApi.createChromeWindowObject(200, 17, 28, [tab2])
+  const window300: chrome.windows.Window = ChromeApi.createChromeWindowObject(300, 37, 48, [tab3])
 
   //const currentWindows = [window100, window200]
 
@@ -140,37 +142,20 @@ describe('WindowsStore', () => {
   })
 
   it('onRemoved does not remove window with title', async () => {
-    currentWindows = [window100, window200]
-    await setupMocks(window100)
+    currentWindows = [window300, window200]
+    await setupMocks(window300)
     await setupStores(db)
 
-    const window = await db.getWindow(100)
+    const window = await db.getWindow(300)
     if (window) {
       await useWindowsStore().upsertWindow(window.browserWindow!, "theTitle")
-      await onRemovedListener(100)
-      const window100FromDb = await db.getWindow(100)
-      expect(window100FromDb?.id).toBe(100)
+      await onRemovedListener(300)
+      const window300FromDb = await db.getWindow(300)
+      expect(window300FromDb?.id).toBe(300)
     } else {
       expect(true).toBeFalsy()
     }
   })
-
-  // it('onFocusChanged updates browserWindow', async () => {
-  //   currentWindows = [window100, window200]
-  //   await setupMocks(window100)
-  //   await setupStores(db)
-  //
-  //   const t = await db.getWindow(100)
-  //   // console.log("t", t)
-  //   console.log("t", useWindowsStore().allWindows)
-  //   console.log("==============")
-  //   await onFocusChangedListener(100)
-  //   console.log("==============")
-  //
-  //   const window100FromDb = await db.getWindow(100)
-  //   // 33 is a 'magic number' assigned
-  //   expect(window100FromDb?.browserWindow?.left).toBe(33)
-  // })
 
   it('onCreate yields new window', async () => {
     const window: chrome.windows.Window = ChromeApi.createChromeWindowObject(1000, 0, 0)

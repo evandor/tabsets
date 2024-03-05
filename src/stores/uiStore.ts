@@ -1,5 +1,5 @@
 import {defineStore} from 'pinia';
-import {computed, ref, watch, watchEffect} from "vue";
+import {computed, ref, watch} from "vue";
 import {useRoute, useRouter} from "vue-router";
 import {Tab} from "src/models/Tab";
 import _ from "lodash"
@@ -9,7 +9,6 @@ import {useTabsStore} from "stores/tabsStore";
 import {FeatureIdent} from "src/models/AppFeature";
 import {usePermissionsStore} from "stores/permissionsStore";
 import {Toast, ToastType} from "src/models/Toast";
-import {useMessagesStore} from "stores/messagesStore";
 import {
   SHARING_AUTHOR_IDENT,
   SHARING_AVATAR_IDENT,
@@ -37,7 +36,6 @@ export enum DrawerTabs {
 
 export enum UserLevel {
   UNKNOWN = "UNKNOWN",
-  //PWA_ONLY_USER = "PWA_ONLY_USER", // e.g. when you import from a shared tabset the first time
   DEFAULT = "DEFAULT"
 }
 
@@ -65,10 +63,10 @@ export class SidePanelView {
     () => usePermissionsStore().hasFeature(FeatureIdent.TOP10));
 
   static readonly BOOKMARKS = new SidePanelView('bookmarks', '/sidepanel/bookmarks',
-    () => usePermissionsStore().hasFeature(FeatureIdent.BOOKMARKS) && useRoute()?.path !== "/sidepanel/welcome");
+    () => true) //&& useRoute()?.path !== "/sidepanel/welcome");
 
   static readonly PUBLIC_TABSETS = new SidePanelView('categorized_tabsets', '/sidepanel/byCategory',
-    () => usePermissionsStore().hasFeature(FeatureIdent.BOOKMARKS));
+    () => true);
 
   static readonly TAGS_VIEWER = new SidePanelView('categorized_tabsets', '/sidepanel/byCategory',
     () => usePermissionsStore().hasFeature(FeatureIdent.TAGS));
@@ -137,7 +135,6 @@ export class SidePanel {
 
 export const useUiStore = defineStore('ui', () => {
 
-  const $q = useQuasar()
   const router = useRouter()
 
   const {sendMsg} = useUtils()
@@ -162,6 +159,7 @@ export const useUiStore = defineStore('ui', () => {
   let sidePanel = ref<SidePanel>(new SidePanel())
   const animateNewTabsetButton = ref(false)
   const animateSettingsButton = ref(false)
+  const animateBookmarksButton = ref(false)
 
   const showLoginTable = ref(false)
 
@@ -528,6 +526,10 @@ export const useUiStore = defineStore('ui', () => {
         animateNewTabsetButton.value = true
         setTimeout(() => animateNewTabsetButton.value = false, 2000)
         break;
+      case 'bookmarks':
+        animateBookmarksButton.value = true
+        setTimeout(() => animateBookmarksButton.value = false, 2000)
+        break;
       case 'settings':
         animateSettingsButton.value = true
         setTimeout(() => animateSettingsButton.value = false, 2000)
@@ -606,6 +608,7 @@ export const useUiStore = defineStore('ui', () => {
     setProgress,
     animateNewTabsetButton,
     animateSettingsButton,
+    animateBookmarksButton,
     startButtonAnimation,
     showLoginTable
   }

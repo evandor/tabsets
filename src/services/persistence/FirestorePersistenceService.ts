@@ -11,16 +11,14 @@ import {Tabset} from "src/models/Tabset";
 import {Window} from "src/models/Window";
 import {RequestInfo} from "src/models/RequestInfo";
 import {Notification} from "src/models/Notification";
-// @ts-ignore
 import {useSpacesStore} from "stores/spacesStore";
 import {useAuthStore} from "stores/authStore";
 import {Account} from "src/models/Account";
-import {collection, deleteDoc, doc, getDocs, setDoc, updateDoc, arrayUnion} from "firebase/firestore";
-import {getStorage} from "firebase/storage";
+import {collection, deleteDoc, doc, getDoc, getDocs, setDoc, updateDoc} from "firebase/firestore";
 import {useTabsStore} from "stores/tabsStore";
 import FirebaseServices from "src/services/firebase/FirebaseServices";
-import {LocalStorage, uid} from "quasar";
-import {APP_INSTALLATION_ID, EXPIRE_DATA_PERIOD_IN_MINUTES} from "boot/constants";
+import {LocalStorage} from "quasar";
+import {APP_INSTALLATION_ID} from "boot/constants";
 import {useDB} from "src/services/usePersistenceService";
 import IndexedDbPersistenceService from "src/services/IndexedDbPersistenceService";
 
@@ -72,8 +70,7 @@ class FirestorePersistenceService implements PersistenceService {
 
   async saveTabset(tabset: Tabset): Promise<any> {
     tabset.origin = this.installationId
-    console.log("saving tabset at", new Date().getTime(), this.installationId)
-    //LocalStorage.set("ui.tabsets.lastUpdate", new Date().getTime())
+    console.log(`saving tabset ${tabset.id} in installation ${this.installationId}`)
     await setDoc(tabsetDoc(tabset.id), JSON.parse(JSON.stringify(tabset)))
   }
 
@@ -250,7 +247,14 @@ class FirestorePersistenceService implements PersistenceService {
     return Promise.reject(undefined);
   }
 
-  reloadTabset(tabsetId: string): void {
+  async reloadTabset(tabsetId: string): void {
+    try {
+      const ts = await getDoc(tabsetDoc(tabsetId))
+      console.log("reloaded tabset", ts.data())
+      useTabsStore().tabsets.set(ts.data()['id'], ts.data())
+    } catch (err) {
+      console.warn("could not reload tabset with id", tabsetId, err)
+    }
   }
 
   removeSuggestion(id: string): any {

@@ -17,26 +17,30 @@
         <div class="q-pa-sm q-mb-none row items-start q-gutter-md" @click.stop="selected()">
           <q-card class="my-card fit">
             <q-card-section>
-              <span class="text-subtitle2">{{ t('create_your_first_ts')}}</span>
+              <span class="text-subtitle2">{{ t('create_your_first_ts') }}</span>
               <br>
-              Provide a name and add tabs later
+              {{ t('provide_name_add_later')}}
             </q-card-section>
             <q-card-section class="q-pb-none">
               <q-input v-model="tabsetName"
                        dense
                        autofocus
                        ref="tabsetNameRef"
-                       error-message="Please do not use special Characters, maximum length is 32"
+                       :error-message="t('no_special_chars_and_length')"
                        :error="!newTabsetNameIsValid()"
                        data-testid="newTabsetName"
                        @keydown.enter="addFirstTabset()"
-                       label="Tabset name"/>
+                       :label="t('tabset_name')"/>
             </q-card-section>
             <q-card-actions align="right" class="q-pr-md q-pb-md q-ma-none">
               <DialogButton
-                label="Add Tabset"
+                :label="t('add_tabset')"
                 @was-clicked="addFirstTabset"
                 :disable="tabsetName.trim().length === 0 || !newTabsetNameIsValid()"/>
+            </q-card-actions>
+            <q-card-actions align="right" class="q-pr-md q-pb-md q-ma-none">
+              <span class="q-mx-none cursor-pointer text-primary" style="font-size:smaller"
+                    @click.stop="openBookmarksView">or open Bookmark Manager</span>
             </q-card-actions>
           </q-card>
         </div>
@@ -49,7 +53,7 @@
                   @click.stop="clicked('https://tabsets.web.app/#/tos')">Terms of Service</span>
             <span class="q-ma-none q-pa-none q-mx-xs text-grey-5">|</span>
             <span class="text-grey q-mx-none cursor-pointer" style="font-size:smaller"
-                  @click.stop="clicked('https://docs.tabsets.net')">Documentation</span>
+                  @click.stop="clicked('https://docs.tabsets.net')">{{ t('documentation') }}</span>
           </div>
         </div>
 
@@ -57,11 +61,26 @@
 
         <div class="row q-mt-lg q-ml-md">
           <div class="col-12 text-caption q-mb-sm">
-            Optionally
+            {{ t('optionally') }}
           </div>
           <div class="col-12 q-mb-md">
-            <q-checkbox size="xs" v-model="activateBookmarks" class="text-grey" label="Activate Bookmarks Integration"/>
-            <q-checkbox size="xs" v-model="activateNotifications" class="text-grey" label="Activate Notifications"/>
+<!--            <q-checkbox size="xs" v-model="activateBookmarks" class="text-grey" :label="t('activate_bookmarks_integration')"/>-->
+<!--            <q-icon class="q-ml-sm cursor-pointer" name="o_help" color="grey">-->
+<!--              <q-tooltip class="tooltip">Allow access to your bookmarks. Can be added later, too</q-tooltip>-->
+<!--            </q-icon>-->
+            <q-checkbox size="xs" v-model="activateNotifications" class="text-grey"
+                        :label="t('activate_browser_notifications')"/>
+            <q-icon class="q-ml-sm cursor-pointer" name="o_help" color="grey">
+              <q-tooltip class="tooltip">Allow browser notifications for better integration. Can be added later, too
+              </q-tooltip>
+            </q-icon>
+
+            <q-checkbox size="xs" v-model="activateFullPageApp" class="text-grey"
+                        :label="t('activate_fullpage_application')"/>
+            <q-icon class="q-ml-sm cursor-pointer" name="o_help" color="grey">
+              <q-tooltip class="tooltip">Tabsets can be additionally run as fullpage app</q-tooltip>
+            </q-icon>
+
             <template v-if="firebaseActive()">
               <q-checkbox
                 size="xs" v-model="login" class="text-grey" label="Login or create Account"/>
@@ -91,8 +110,9 @@ import {FeatureIdent} from "src/models/AppFeature";
 import {AppFeatures} from "src/models/AppFeatures";
 import {GrantPermissionCommand} from "src/domain/commands/GrantPermissionCommand";
 import {usePermissionsStore} from "stores/permissionsStore";
-import { useI18n } from 'vue-i18n'
+import {useI18n} from 'vue-i18n'
 
+const {t} = useI18n()
 const router = useRouter()
 
 const tabsetName = ref('')
@@ -100,9 +120,9 @@ const tabsetNameRef = ref<HTMLElement>(null as unknown as HTMLInputElement)
 const windowLocation = ref('---')
 const activateBookmarks = ref(false)
 const activateNotifications = ref(false)
+const activateFullPageApp = ref(false)
 const login = ref(false)
 
-const { t } = useI18n({inheritLocale: true,})
 
 onMounted(() => {
   Analytics.firePageViewEvent('WelcomePage', document.location.href);
@@ -110,23 +130,32 @@ onMounted(() => {
   LocalStorage.set(TITLE_IDENT, 'Tabsets' + stageIdentifier())
 })
 
-watchEffect(() => {
-  const bmFeature = new AppFeatures().getFeature(FeatureIdent.BOOKMARKS)
-  if (activateBookmarks.value && bmFeature) {
-    useCommandExecutor().execute(new GrantPermissionCommand('bookmarks'))
-  } else if (!activateBookmarks.value && bmFeature) {
-    //useCommandExecutor().execute(new RevokePermissionCommand('bookmarks'))
-    usePermissionsStore().deactivateFeature('bookmarks')
-  }
-})
-
-watchEffect(() => {
+watchEffect(async () => {
   const feature = new AppFeatures().getFeature(FeatureIdent.NOTIFICATIONS)
   if (activateNotifications.value && feature) {
-    useCommandExecutor().execute(new GrantPermissionCommand('notifications'))
+    const res = await useCommandExecutor().execute(new GrantPermissionCommand('notifications'))
+    if (!res.result) {
+      activateNotifications.value = false
+    }
   } else if (!activateNotifications.value && feature) {
     usePermissionsStore().deactivateFeature('notifications')
   }
+})
+
+function setFeature(featureIdent: FeatureIdent, val: UnwrapRef<boolean>) {
+  const feature = new AppFeatures().getFeature(featureIdent)
+  console.log("feeature", feature)
+  if (val && feature) {
+    console.log("activating", featureIdent)
+    usePermissionsStore().activateFeature(featureIdent.toLowerCase())
+  } else if (!val && feature) {
+    console.log("deactivateing", featureIdent)
+    usePermissionsStore().deactivateFeature(featureIdent.toLowerCase())
+  }
+}
+
+watchEffect(async () => {
+  setFeature(FeatureIdent.STANDALONE_APP, activateFullPageApp.value)
 })
 
 watchEffect(() => {
@@ -181,6 +210,11 @@ const clicked = (url: string) => openURL(url)
 
 const firebaseActive = () => {
   return process.env.USE_FIREBASE && process.env.USE_FIREBASE.toString() === "true"
+}
+
+const openBookmarksView = () => {
+  useUiStore().sidePanelSetActiveView(SidePanelView.BOOKMARKS)
+  router.push("/sidepanel/" + SidePanelView.BOOKMARKS)
 }
 
 </script>

@@ -93,6 +93,22 @@ export function useUtils() {
     return _.filter(stringArray, (e: string | undefined) => e !== null)
   }
 
+  const favIconFromUrl = (url: string): string => {
+    let theRealUrl
+    try {
+      theRealUrl = new URL(url)
+    } catch (err) {
+      if (!url.startsWith('http')) {
+        url = 'https://' + url
+        try {
+          theRealUrl = new URL(url)
+        } catch (err) {
+        }
+      }
+    }
+    return theRealUrl ? "https://icons.duckduckgo.com/ip3/" + theRealUrl.hostname + ".ico" : 'favicon-unknown-32x32.png'
+  }
+
   return {
     formatDate,
     createDataTestIdentifier,
@@ -103,6 +119,7 @@ export function useUtils() {
     sanitizeAsText,
     sendMsg,
     isCurrentTab,
-    calcHostList
+    calcHostList,
+    favIconFromUrl
   }
 }
