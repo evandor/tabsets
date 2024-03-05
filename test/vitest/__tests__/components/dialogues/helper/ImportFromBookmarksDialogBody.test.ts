@@ -50,6 +50,9 @@ describe('ImportFromBookmarksDialogBody', () => {
                     return [];
                 }),
             },
+            tabs: {
+              getCurrent: vi.fn(() => undefined)
+            },
             runtime: {
                 sendMessage: vi.fn(() => {})
             }

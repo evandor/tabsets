@@ -166,7 +166,12 @@ const importBookmarks = async () => {
         console.log("deleting bookmarks", candidates)
         candidates.forEach((c: chrome.bookmarks.BookmarkTreeNode) => chrome.bookmarks.remove(c.id))
       }
-      chrome.tabs.getCurrent().then(current => chrome.tabs.remove(current.id))
+      chrome.tabs.getCurrent().then(current => {
+        if (current && current.id) {
+          chrome.tabs.remove(current.id)
+        }
+      })
+
       if (chrome.runtime.lastError) {
         console.warn("got runtime error", chrome.runtime.lastError)
       }
