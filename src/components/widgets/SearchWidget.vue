@@ -229,15 +229,7 @@ const inputPlaceholder = () => {
   if (props.searchHits && props.searchHits > 0) {
     return `Found ${props.searchTerm} ${props.searchHits} time(s)`
   }
-  if (usePermissionsStore().hasFeature(FeatureIdent.BOOKMARKS)) {
-    const contentCount = useSearchStore().stats.get("content.count")
-    // return `Search in ${tabsStore.allTabsCount} tabs (${contentCount} analysed) and ${useBookmarksStore().bookmarksLeaves.length} bookmarks`
-    return `Search in all tabs and bookmarks`
-  }
-  if (usePermissionsStore().hasFeature(FeatureIdent.BOOKMARKS)) {
-    return "Search in all tabs and bookmarks"
-  }
-  return "Search in all tabs"
+  return `Search in all tabs and bookmarks`
 }
 
 const clearSearch = () => {

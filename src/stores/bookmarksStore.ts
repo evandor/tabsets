@@ -35,8 +35,6 @@ function nodesFrom(
   parentNode.children = subNodes
   parentNode.subFoldersCount = foldersCount
   parentNode.subNodesCount = leavesCount
-  parentNode.label = parentNode.label + " (" + parentNode.subFoldersCount + ")"
-  console.log("+++ added node with", parentNode.toString())
   return [parentNode, allFoldersCount + foldersCount, allBookmarksCount + leavesCount]
 }
 
@@ -100,8 +98,8 @@ export const useBookmarksStore = defineStore('bookmarks', {
       this.bookmarksNodes2 = []
       this.nonLeafNodes = []
       this.bookmarksLeaves = []
-      const accessGranted = usePermissionsStore().hasPermission("bookmarks") && usePermissionsStore().hasFeature(FeatureIdent.BOOKMARKS)
-      if (accessGranted) {
+      //const accessGranted = usePermissionsStore().hasPermission("bookmarks") && usePermissionsStore().hasFeature(FeatureIdent.BOOKMARKS)
+      //if (accessGranted) {
         console.debug(" ...loading bookmarks")//, (new Error()).stack)
         // @ts-ignore
         const bookmarks: chrome.bookmarks.BookmarkTreeNode[] = await chrome.bookmarks.search({})//, async (bookmarks) => {
@@ -123,7 +121,7 @@ export const useBookmarksStore = defineStore('bookmarks', {
 
         return Promise.resolve()
 
-      }
+     // }
 
     },
     remove(bm: Bookmark) {

@@ -4,7 +4,8 @@
 
     <div class="row">
       <div class="col-12 text-right">
-        Show only Folders <q-checkbox v-model="showOnlyFolders" />
+        Show only Folders
+        <q-checkbox v-model="showOnlyFolders"/>
       </div>
       <div class="col-12 q-mb-md">
         <q-input
@@ -20,7 +21,6 @@
       </div>
     </div>
 
-
     <q-tree
       v-if="bookmarksPermissionGranted"
       :nodes="showOnlyFolders ? bookmarksStore.nonLeafNodes : bookmarksStore.bookmarksNodes2"
@@ -33,7 +33,7 @@
       v-model:expanded="useNotificationsStore().bookmarksExpanded">
       <template v-slot:header-node="prop">
         <q-icon name="o_folder" color="warning" class="q-mr-sm"/>
-        <span class="cursor-pointer fit no-wrap">{{ prop.node.label }}</span>
+        <span class="cursor-pointer fit no-wrap ellipsis">{{ prop.node.label }} <span style="font-size:smaller" class="text-grey">({{prop.node.subFoldersCount}}/{{prop.node.subNodesCount}})</span></span>
 
         <span class="text-right fit" v-show="mouseHover && prop.node.id === deleteButtonId">
             <q-icon name="delete_outline" color="negative" size="18px" @click.stop="deleteBookmarksFolderDialog">
@@ -42,12 +42,25 @@
           </span>
 
       </template>
+      <template v-slot:header-leaf="prop">
+        <q-img v-if="!useSettingsStore().isEnabled('noDDG')"
+               class="rounded-borders q-mr-sm"
+               width="23px"
+               height="23px"
+               :src="favIconFromUrl(prop.node.url)"/>
+        <q-icon v-else name="o_article" class="q-mr-sm"/>
+        <span class="cursor-pointer fit no-wrap ellipsis">{{ prop.node.label }}</span>
+        <span class="text-right fit" v-show="mouseHover && prop.node.id === deleteButtonId">
+            <q-icon name="delete_outline" color="negative" size="18px"
+                    @click.stop="deleteBookmark(prop.node.id)">
+              <q-tooltip>Delete this Bookmark</q-tooltip>
+            </q-icon>
+          </span>
+      </template>
 
     </q-tree>
 
   </q-list>
-  <div>Bms: {{ bmsCount }}</div>
-  <div>Folders: {{ foldersCount }}</div>
 
 </template>
 
@@ -71,10 +84,10 @@ import {FeatureIdent} from "src/models/AppFeature";
 import NewTabsetDialog from "components/dialogues/NewTabsetDialog.vue";
 import DeleteBookmarkFolderDialog from "components/dialogues/bookmarks/DeleteBookmarkFolderDialog.vue";
 import {TreeNode} from "src/models/Tree";
+import {useUtils} from "src/services/Utils";
 
 const router = useRouter()
 const bookmarksStore = useBookmarksStore()
-const permissionsStore = usePermissionsStore()
 
 const $q = useQuasar();
 const localStorage = useQuasar().localStorage
@@ -82,7 +95,7 @@ const localStorage = useQuasar().localStorage
 const mouseHover = ref(false)
 const selected = ref('')
 const deleteButtonId = ref('')
-const bookmarksPermissionGranted = ref<boolean>(permissionsStore.hasFeature(FeatureIdent.BOOKMARKS))
+const bookmarksPermissionGranted = ref<boolean>(true)
 const filter = ref('')
 const filterRef = ref(null)
 const bmsCount = ref(0)
@@ -91,6 +104,7 @@ const showOnlyFolders = ref(false)
 const expandedBookmarks = ref<string[]>([])
 
 const {handleSuccess, handleError} = useNotificationHandler()
+const {favIconFromUrl} = useUtils()
 
 const props = defineProps({
   inSidePanel: {type: Boolean, default: false}
@@ -105,20 +119,19 @@ watchEffect(() => {
   expandedBookmarks.value = useNotificationsStore().bookmarksExpanded
   console.log("expanded Bookmarks set to ", expandedBookmarks.value)
 })
-// watchEffect(() => {
-//   bookmarksPermissionGranted.value = permissionsStore.hasFeature(FeatureIdent.BOOKMARKS)
-//   if (bookmarksPermissionGranted.value) {
-//     console.log("reloading bookmarks as we got permission")
-//     useBookmarksStore().loadBookmarks()
-//   }
-// })
 
-watch(() => selected.value, (currentValue, oldValue) => {
+watch(() => selected.value, async (currentValue, oldValue) => {
   if (currentValue !== oldValue) {
-    props.inSidePanel ?
-      NavigationService.openOrCreateTab(
-        [chrome.runtime.getURL("/www/index.html#/mainpanel/bookmarks/" + selected.value)], undefined, [], true) :
-      router.push("/bookmarks/" + selected.value)
+    // @ts-ignore
+    const result = await chrome.bookmarks.get(currentValue)
+    if (result && result.length > 0 && result[0].url) {
+      NavigationService.openSingleTab(result[0].url)
+    } else {
+      props.inSidePanel ?
+        NavigationService.openOrCreateTab(
+          [chrome.runtime.getURL("/www/index.html#/mainpanel/bookmarks/" + selected.value)], undefined, [], true) :
+        router.push("/bookmarks/" + selected.value)
+    }
   }
 })
 
@@ -158,6 +171,18 @@ const resetFilter = () => {
     // @ts-ignore
     filterRef.value.focus()
   }
+}
+
+const shorten = (str: string, maxLength: number) => {
+  if (str.length > maxLength) {
+    return str.substring(0, maxLength - 3) + "..."
+  }
+  return str
+}
+
+const deleteBookmark = async (id: string) => {
+  console.log("id", id)
+  await chrome.bookmarks.remove(id)
 }
 
 </script>

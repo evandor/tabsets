@@ -63,10 +63,10 @@ export class SidePanelView {
     () => usePermissionsStore().hasFeature(FeatureIdent.TOP10));
 
   static readonly BOOKMARKS = new SidePanelView('bookmarks', '/sidepanel/bookmarks',
-    () => usePermissionsStore().hasFeature(FeatureIdent.BOOKMARKS)) //&& useRoute()?.path !== "/sidepanel/welcome");
+    () => true) //&& useRoute()?.path !== "/sidepanel/welcome");
 
   static readonly PUBLIC_TABSETS = new SidePanelView('categorized_tabsets', '/sidepanel/byCategory',
-    () => usePermissionsStore().hasFeature(FeatureIdent.BOOKMARKS));
+    () => true);
 
   static readonly TAGS_VIEWER = new SidePanelView('categorized_tabsets', '/sidepanel/byCategory',
     () => usePermissionsStore().hasFeature(FeatureIdent.TAGS));

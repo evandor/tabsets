@@ -171,13 +171,13 @@ text.set(FeatureIdent.OPENTABS_THRESHOLD.toLowerCase(), {
   img: 'open_tabs_warning.png',
   permissions: []
 })
-text.set(FeatureIdent.BOOKMARKS.toLowerCase(), {
-  name: 'Bookmarks',
-  img: 'bookmarks.png',
-  description: 'The Bookmarks Feature lets you access the browsers bookmarks to view (or delete) them and to turn them into tabsets if you wish. Futhermore, the search will ' +
-    'take the URLs and titles of your bookmarks into account as well.',
-  permissions: ['bookmarks']
-})
+// text.set(FeatureIdent.BOOKMARKS.toLowerCase(), {
+//   name: 'Bookmarks',
+//   img: 'bookmarks.png',
+//   description: 'The Bookmarks Feature lets you access the browsers bookmarks to view (or delete) them and to turn them into tabsets if you wish. Futhermore, the search will ' +
+//     'take the URLs and titles of your bookmarks into account as well.',
+//   permissions: ['bookmarks']
+// })
 // text.set(FeatureIdent.DETAILS.toLowerCase(), {
 //   name: 'Tab and Tabset Details',
 //   img: 'details.png',

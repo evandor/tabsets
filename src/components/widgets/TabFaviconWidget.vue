@@ -31,7 +31,9 @@
 import {Tab, UrlExtension} from "src/models/Tab";
 import {useSettingsStore} from "src/stores/settingsStore"
 import {PropType} from "vue";
-import {usePermissionsStore} from "../../stores/permissionsStore";
+import {useUtils} from "src/services/Utils";
+
+const {favIconFromUrl} = useUtils()
 
 const props = defineProps({
   tab: {type: Object as PropType<Tab>, required: true},
@@ -48,21 +50,8 @@ const getFaviconUrl = (tab: Tab) => {
   if (tab && tab.favIconUrl) {
     return tab.favIconUrl
   }
-  if (!useSettingsStore().isEnabled('noDDG') && tab) {
-    let theUrl = tab.url || ''
-    let theRealUrl
-    try {
-      theRealUrl = new URL(theUrl)
-    } catch (err) {
-      if (!theUrl.startsWith('http')) {
-        theUrl = 'https://' + theUrl
-        try {
-          theRealUrl = new URL(theUrl)
-        } catch (err) {
-        }
-      }
-    }
-    return theRealUrl ? "https://icons.duckduckgo.com/ip3/" + theRealUrl.hostname + ".ico" : 'favicon-unknown-32x32.png'
+  if (!useSettingsStore().isEnabled('noDDG') && tab && tab.url) {
+    return favIconFromUrl(tab.url)
   }
   return 'favicon-unknown-32x32.png'
 }

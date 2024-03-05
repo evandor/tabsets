@@ -11,14 +11,14 @@
     "activeTab",
     "alarms",
     "scripting",
-    "sidePanel"
+    "sidePanel",
+    "bookmarks"
   ],
   "optional_permissions": [
     "pageCapture",
     "contextMenus",
     "notifications",
     "webRequest",
-    "bookmarks",
     "tabGroups"
   ],
   "host_permissions": [

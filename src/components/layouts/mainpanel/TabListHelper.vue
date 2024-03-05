@@ -64,7 +64,7 @@ const itemStyle = (tab: Tab) => {
   if (tab.url === props.highlightUrl) {
     return "border: 1px dotted orange; padding:15px; border-radius:5px"
   }
-  return "border-bottom: 1px solid blue"
+  return "border-bottom: 1px solid #fafafa"
 }
 
 const showButtonsProp = ref<Map<string, boolean>>(new Map())

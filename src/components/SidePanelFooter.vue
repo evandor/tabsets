@@ -100,7 +100,7 @@
           <q-tooltip class="tooltip" anchor="top left" self="bottom left">Show Stats</q-tooltip>
         </q-btn>
 
-        <span v-if="usePermissionsStore().hasFeature(FeatureIdent.STANDALONE_APP)">
+        <span v-if="usePermissionsStore().hasFeature(FeatureIdent.STANDALONE_APP) && useAuthStore().isAuthenticated()">
           <q-icon
             name="o_open_in_new"
             :class="rightButtonClass()"
@@ -121,6 +121,14 @@
             </q-list>
           </q-menu>
         </span>
+        <q-btn v-else
+          icon="o_open_in_new"
+          :class="rightButtonClass()"
+          flat
+          :size="getButtonSize()"
+          @click="openExtensionTab()">
+          <q-tooltip class="tooltip" anchor="top left" self="bottom left">Tabsets as full-page app</q-tooltip>
+        </q-btn>
 
         <span class="q-my-xs q-ml-xs q-mr-none cursor-pointer" v-if="authStore.isAuthenticated() && useSettingsStore().isEnabled('dev')">
           <q-avatar size="18px" v-if="authStore.user?.photoURL">

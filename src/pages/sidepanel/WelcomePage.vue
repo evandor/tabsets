@@ -60,10 +60,10 @@
             {{ t('optionally') }}
           </div>
           <div class="col-12 q-mb-md">
-            <q-checkbox size="xs" v-model="activateBookmarks" class="text-grey" :label="t('activate_bookmarks_integration')"/>
-            <q-icon class="q-ml-sm cursor-pointer" name="o_help" color="grey">
-              <q-tooltip class="tooltip">Allow access to your bookmarks. Can be added later, too</q-tooltip>
-            </q-icon>
+<!--            <q-checkbox size="xs" v-model="activateBookmarks" class="text-grey" :label="t('activate_bookmarks_integration')"/>-->
+<!--            <q-icon class="q-ml-sm cursor-pointer" name="o_help" color="grey">-->
+<!--              <q-tooltip class="tooltip">Allow access to your bookmarks. Can be added later, too</q-tooltip>-->
+<!--            </q-icon>-->
             <q-checkbox size="xs" v-model="activateNotifications" class="text-grey"
                         :label="t('activate_browser_notifications')"/>
             <q-icon class="q-ml-sm cursor-pointer" name="o_help" color="grey">
@@ -116,19 +116,6 @@ onMounted(() => {
   Analytics.firePageViewEvent('WelcomePage', document.location.href);
   windowLocation.value = window.location.href
   LocalStorage.set(TITLE_IDENT, 'Tabsets' + stageIdentifier())
-})
-
-watchEffect(async () => {
-  const bmFeature = new AppFeatures().getFeature(FeatureIdent.BOOKMARKS)
-  if (activateBookmarks.value && bmFeature) {
-    const res = await useCommandExecutor().execute(new GrantPermissionCommand('bookmarks'))
-    if (!res.result) {
-      activateBookmarks.value = false
-    }
-  } else if (!activateBookmarks.value && bmFeature) {
-    //useCommandExecutor().execute(new RevokePermissionCommand('bookmarks'))
-    usePermissionsStore().deactivateFeature('bookmarks')
-  }
 })
 
 watchEffect(async () => {
