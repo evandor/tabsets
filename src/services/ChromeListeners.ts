@@ -20,7 +20,7 @@ import ContentUtils from "src/utils/ContentUtils";
 import "rangy/lib/rangy-serializer";
 import {useAuthStore} from "stores/authStore";
 import {EMAIL_LINK_REDIRECT_DOMAIN} from "boot/constants";
-import {collection, deleteDoc, getDocs, setDoc, doc, updateDoc, Firestore} from "firebase/firestore";
+import {SidePanelView, useUiStore} from "stores/uiStore";
 
 const {
   saveCurrentTabset,
@@ -202,7 +202,7 @@ class ChromeListeners {
 
     // https://stackoverflow.com/questions/77089404/chrom-extension-close-event-not-available-on-sidepanel-closure
     if (chrome.runtime && inBexMode()) {
-      chrome.runtime.connect({ name: 'tabsetsSidepanel' });
+      chrome.runtime.connect({name: 'tabsetsSidepanel'});
     }
 
   }
@@ -530,7 +530,7 @@ class ChromeListeners {
     if (inIgnoredMessages(request)) {
       return true
     }
-    console.debug(" <<< got message", request)
+    //console.debug(" <<< got message", request)
     if (request.msg === 'captureThumbnail') {
       const screenShotWindow = useWindowsStore().screenshotWindow
       this.handleCapture(sender, screenShotWindow, sendResponse)
@@ -551,6 +551,8 @@ class ChromeListeners {
       // } else if (request.name === 'recogito-annotation-created') {
       //   //this.handleMessageWebsiteImage(request, sender, sendResponse)
       //   useTabsetService().handleAnnotationMessage(request)
+    } else if (request.name === 'sidepanel-switch-view') {
+      useUiStore().sidePanelSetActiveView(SidePanelView.MAIN)
     } else {
       console.log("got unknown message", request)
     }
@@ -881,7 +883,7 @@ class ChromeListeners {
           //console.log("checking: wrong key", params.get("mode"))
           return false
         }
-        console.log("%cfound email authorization link @", "border:1px solid green",url)
+        console.log("%cfound email authorization link @", "border:1px solid green", url)
         return true
       }
       return false

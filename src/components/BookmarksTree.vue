@@ -122,15 +122,22 @@ watchEffect(() => {
 
 watch(() => selected.value, async (currentValue, oldValue) => {
   if (currentValue !== oldValue) {
-    // @ts-ignore
-    const result = await chrome.bookmarks.get(currentValue)
-    if (result && result.length > 0 && result[0].url) {
-      NavigationService.openSingleTab(result[0].url)
-    } else {
-      props.inSidePanel ?
-        NavigationService.openOrCreateTab(
-          [chrome.runtime.getURL("/www/index.html#/mainpanel/bookmarks/" + selected.value)], undefined, [], true) :
-        router.push("/bookmarks/" + selected.value)
+    try {
+      // @ts-ignore
+      const result = await chrome.bookmarks.get(currentValue)
+      if (result && result.length > 0 && result[0].url) {
+        NavigationService.openSingleTab(result[0].url)
+      } else {
+        props.inSidePanel ?
+          NavigationService.openOrCreateTab(
+            [chrome.runtime.getURL("/www/index.html#/mainpanel/bookmarks/" + selected.value)], undefined, [], true) :
+          router.push("/bookmarks/" + selected.value)
+      }
+    } catch (err) {
+      console.log("got error", err)
+      if (chrome.runtime.lastError) {
+        console.warn("got runtime error", chrome.runtime.lastError)
+      }
     }
   }
 })

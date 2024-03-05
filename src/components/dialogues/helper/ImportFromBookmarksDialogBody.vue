@@ -73,6 +73,9 @@ import _ from "lodash"
 import {useTabsetService} from "src/services/TabsetService2";
 import {usePermissionsStore} from "stores/permissionsStore";
 import {FeatureIdent} from "src/models/AppFeature";
+import {useUtils} from "src/services/Utils";
+
+const {sendMsg} = useUtils()
 
 defineEmits([
   ...useDialogPluginComponent.emits
@@ -98,8 +101,6 @@ const isValid = ref(true)
 const deleteBookmarks = ref(false)
 const recursive = ref(false)
 
-const tabNameExists = () => tabsStore.nameExistsInContextTabset(newTabsetName.value)
-
 const newTabsetDialogWarning = () => {
   if (tabsStore.nameExistsInContextTabset(newTabsetName.value)) {
     return "Tabset " + newTabsetName.value + " already exists, items will be merged"
@@ -115,12 +116,6 @@ const checkIsValid = () => {
       })
   }
 }
-
-const doesNotExistYet = (val: string) => {
-  const existsInTabset = tabsStore.existingInTabset(val)
-  return !(existsInTabset && existsInTabset.status !== TabsetStatus.DELETED)
-}
-
 
 async function createTabsetFrom(name: string, bookmarkId: string): Promise<Tabset> {
   //console.log("creating recursively", name, bookmarkId)
@@ -159,6 +154,12 @@ const importBookmarks = async () => {
   const candidates: chrome.bookmarks.BookmarkTreeNode[] = await ChromeApi.childrenFor(bookmarkId.value)
   useCommandExecutor()
     .executeFromUi(new CreateTabsetFromBookmarksCommand(newTabsetName.value, candidates))
+    .then(res => {
+      //if (!props.inSidePanel) {
+        sendMsg('sidepanel-switch-view', {view: 'main'})
+      //}
+      return res
+    })
     .then(res => {
       if (deleteBookmarks.value) {
         console.log("deleting bookmarks", candidates)

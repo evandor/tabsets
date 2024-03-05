@@ -379,7 +379,7 @@ export const useWindowsStore = defineStore('windows', () => {
         await storage.updateWindow(tabsetWindow)
       }
     } catch (err) {
-      console.error("got error", err)
+      console.log("got error", err)
     }
 
   }

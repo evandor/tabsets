@@ -44,9 +44,24 @@ import Analytics from "src/utils/google-analytics";
 import ToolbarButton from "components/buttons/SidePanelToolbarButton.vue";
 import SidePanelToolbarTabNavigationHelper from "pages/sidepanel/helper/SidePanelToolbarTabNavigationHelper.vue";
 import SidePanelToolbarButton from "components/buttons/SidePanelToolbarButton.vue";
+import {useTabsetService} from "src/services/TabsetService2";
+import {uid} from "quasar";
 
 onMounted(() => {
   Analytics.firePageViewEvent('SidePanelBookmarksPage', document.location.href);
 })
+
+const onMessageListener = async (message: any, sender: any, sendResponse: any) => {
+  console.log(" <<< received message", message)
+  if (message.name === "sidepanel-switch-view") {
+    // const tsId = message.data.changedTabsetId
+    // await useTabsetService().reloadTabset(tsId)
+    // console.log("tsId", tsId)
+    // sortedSpaces.value = getSortedSpaces()
+    // tabsetsForSpaces.value = await getTabsetsForSpaces()
+    // randomKey.value = uid()
+    // //console.log("tabsetsForSpace", tabsetsForSpaces.value)
+  }
+}
 
 </script>
