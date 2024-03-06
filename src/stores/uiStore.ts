@@ -110,13 +110,13 @@ export class SidePanel {
 
   constructor(
     public activeView: SidePanelView = SidePanelView.MAIN) {
-    this.relevantViews.push(SidePanelView.TOP_10_TABS_LIST)
+   // this.relevantViews.push(SidePanelView.TOP_10_TABS_LIST)
     this.relevantViews.push(SidePanelView.TAG)
     this.relevantViews.push(SidePanelView.TABS_LIST)
-    this.relevantViews.push(SidePanelView.TAGS_LIST)
+   // this.relevantViews.push(SidePanelView.TAGS_LIST)
     this.relevantViews.push(SidePanelView.BOOKMARKS)
-    this.relevantViews.push(SidePanelView.BY_DOMAIN_LIST)
-    this.relevantViews.push(SidePanelView.NEWEST_TABS_LIST)
+    //this.relevantViews.push(SidePanelView.BY_DOMAIN_LIST)
+    //this.relevantViews.push(SidePanelView.NEWEST_TABS_LIST)
     this.relevantViews.push(SidePanelView.PUBLIC_TABSETS)
     this.relevantViews.push(SidePanelView.RSS_LIST)
     this.relevantViews.push(SidePanelView.TAGS_VIEWER)

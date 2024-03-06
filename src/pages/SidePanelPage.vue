@@ -206,15 +206,6 @@
 
           <div class="q-ma-none q-pa-none">
 
-            <!--            <template v-if="tabset.page && typeof tabset.page === 'object'">-->
-            <!--              <SidePanelTabsetDescriptionPage-->
-            <!--                :tabsetId="tabset.id"-->
-            <!--                :tabsetDesc="tabset.page as Object"/>-->
-            <!--            </template>-->
-            <!--            <template v-if="tabset.page && typeof tabset.page === 'string'">-->
-            <!--              {{ tabset.page }}-->
-            <!--            </template>-->
-
             <template v-if="editHeaderDescription">
               <div class="row q-ma-none q-pa-md">
                 <q-editor style="width:100%"
@@ -285,9 +276,6 @@
               :tabset="tabsetForTabList(tabset as Tabset)"/>
             <!-- the actual tabs: end -->
 
-            <!--            {{ windowLocation }}-->
-            <!--            <br>-->
-            <!--            <pre>{{ user?.uid }}</pre>-->
 
           </div>
         </q-expansion-item>
@@ -710,15 +698,6 @@ if ($q.platform.is.chrome) {
           message.data.tabsetId :
           useTabsetService().getCurrentTabset()?.id
         useTabsetService().reloadTabset(tabsetId)
-        // } else if (message.name === "toggle-cs-iframe") {
-        //   if (message.data.close) {
-        //     chrome.tabs.sendMessage(message.data.tabId, "cs-iframe-close")
-        //   } else {
-        //     chrome.tabs.sendMessage(message.data.tabId, "cs-iframe-open")
-        //   }
-      // } else if (message.name === 'mqtt-url-changed') {
-      //   console.log("got message 'mqtt-url-changed'", message)
-      //   MqttService.reset().then(() => MqttService.init(message.data.mqttUrl))
       } else if (message.name === 'reload-application') {
         AppService.restart("restarted=true")
       } else {

@@ -2,7 +2,7 @@
   "name": "tabsets.net",
   "version": "0.4.10",
   "description": "Use the tabsets.net browser extension to safely keep track all your tabs and links in the Side Panel, locally or in the cloud",
-  "productName": "Tabsets.net - Better than Bookmarks",
+  "productName": "Tabsets.net - Better Bookmarks",
   "author": "evandor <evandor@gmail.com>",
   "private": true,
   "scripts": {
@@ -36,7 +36,6 @@
     "build pwa.dev & deploy to india032": "mv .env .env.tmp && cp .dev.env .env && quasar build -m pwa && scp -r -P 222 dist/pwa/* carsten@carsten.evandor.de:/home/carsten/tabsets/pwa.dev.tabsets.net && mv .env.tmp .env"
   },
   "dependencies": {
-    "@auth0/auth0-vue": "^2.1.0",
     "@calumk/editorjs-columns": "^0.3.1",
     "@codexteam/icons": "^0.3.0",
     "@editorjs/editorjs": "^2.27.2",

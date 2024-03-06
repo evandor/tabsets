@@ -25,7 +25,7 @@ chrome.runtime.onInstalled.addListener((callback) => {
     chrome.tabs.create({
       active: true,
       url: callback.previousVersion ?
-        "https://tabsets.web.app/#/updatedFrom/" + callback.previousVersion :
+        "https://docs.tabsets.net/release-notes" :
         "https://tabsets.web.app/#/installed/"
     })
   }
@@ -147,7 +147,7 @@ export default bexBackground((bridge, cons/* , allActiveConnections */) => {
     }
 
     bridge.on('auth.user.logout', ({data, respond}) => {
-      console.log("removing all bridge listeners")
+      console.debug("removing all bridge listeners")
       bridge.removeAllListeners()
     })
 

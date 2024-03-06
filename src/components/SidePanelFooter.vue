@@ -3,6 +3,7 @@
   <q-footer
     class="q-pa-xs q-mt-sm darkInDarkMode brightInBrightMode" style="border-top: 1px solid lightgrey"
     :style="offsetBottom()">
+
     <div class="row fit q-mb-sm" v-if="showLogin">
       <keep-alive>
         <SidePanelLoginWidget @hide-login="showLogin = false"/>
@@ -57,6 +58,7 @@
 
           <SidePanelFooterLeftButtons
             @was-clicked="doShowSuggestionButton = true"
+            :size="getButtonSize()"
             :show-suggestion-icon="showSuggestionIcon"/>
         </template>
 
