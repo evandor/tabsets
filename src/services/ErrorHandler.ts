@@ -1,8 +1,7 @@
 import {Notify} from 'quasar'
 import {ExecutionResult} from "src/domain/ExecutionResult";
 import {useUiStore} from "stores/uiStore";
-import {Logz} from "src/services/logz/Logz";
-import {logtail} from "boot/logtail";
+import {useLogger} from "src/services/Logger";
 
 export enum NotificationType {
   NOTIFY = "NOTIFY",
@@ -11,61 +10,65 @@ export enum NotificationType {
 
 export function useNotificationHandler() {
 
-    const handleError = (error: any, type: NotificationType = NotificationType.TOAST) => {
-        console.log("showing error message: ", error ? error.toString() : 'unknown error')
-        console.trace()
+  const {info, error} = useLogger()
 
-      logtail.error(error ? error.toString() : 'unknown error', error)
+  const handleError = (error: any, type: NotificationType = NotificationType.TOAST) => {
+    console.log("showing error message: ", error ? error.toString() : 'unknown error')
+    console.trace()
 
-      switch (type) {
-          case NotificationType.NOTIFY:
-            Notify.create({
-                position: 'bottom',
-                color: 'red-5',
-                textColor: 'white',
-                icon: 'error',
-                message: error ? error.toString() : 'unknown error'
-            })
-            break;
-          default:
-            useUiStore().createErrorToast(error ? error.toString() : 'unknown error')
-        }
+    //logtail.error(error ? error.toString() : 'unknown error', error)
+    error(error ? error.toString() : 'unknown error', error)
 
+    switch (type) {
+      case NotificationType.NOTIFY:
+        Notify.create({
+          position: 'bottom',
+          color: 'red-5',
+          textColor: 'white',
+          icon: 'error',
+          message: error ? error.toString() : 'unknown error'
+        })
+        break;
+      default:
+        useUiStore().createErrorToast(error ? error.toString() : 'unknown error')
     }
 
-    const handleWarning = (res: ExecutionResult<any>) => {
-        useUiStore().createWarningToast(res.message)
-    }
+  }
 
-    const handleSuccess = (executionResult: ExecutionResult<any>, type: NotificationType = NotificationType.TOAST): ExecutionResult<any> => {
-        const actions: any[] = []
-        if (executionResult.undoCommand) {
-            actions.push(
-                {
-                    label: 'Undo', color: 'white',
-                    handler: () => {
-                        executionResult.undoCommand?.execute()
-                            .then((res: any) => handleWarning(res))
-                            .catch((err: any) => handleError(err))
-                    }
-                }
-            )
-        }
-      switch (type) {
-        case NotificationType.NOTIFY:
-          Notify.create({
-              color: 'positive',
-              message: executionResult.message,
-              actions: actions
-          })
-          break;
-        default:
-          useUiStore().createSuccessToast(executionResult.message, actions[0])
+  const handleWarning = (res: ExecutionResult<any>) => {
+    useUiStore().createWarningToast(res.message)
+  }
+
+  const handleSuccess = (executionResult: ExecutionResult<any>, type: NotificationType = NotificationType.TOAST): ExecutionResult<any> => {
+    const actions: any[] = []
+    if (executionResult.undoCommand) {
+      actions.push(
+        {
+          label: 'Undo', color: 'white',
+          handler: () => {
+            executionResult.undoCommand?.execute()
+              .then((res: any) => handleWarning(res))
+              .catch((err: any) => handleError(err))
           }
-        return executionResult
+        }
+      )
     }
+    console.log("type set to", type)
+    switch (type) {
+      case NotificationType.NOTIFY:
+        Notify.create({
+          color: 'positive',
+          message: executionResult.message,
+          actions: actions
+        })
+        break;
+      default:
+        useUiStore().createSuccessToast(executionResult.message, actions[0])
+    }
+    return executionResult
+  }
 
-    return {
-        handleError, handleSuccess
-    }
+  return {
+    handleError, handleSuccess
+  }
 }

@@ -3,6 +3,7 @@
   <q-footer
     class="q-pa-xs q-mt-sm darkInDarkMode brightInBrightMode" style="border-top: 1px solid lightgrey"
     :style="offsetBottom()">
+
     <div class="row fit q-mb-sm" v-if="showLogin">
       <keep-alive>
         <SidePanelLoginWidget @hide-login="showLogin = false"/>
@@ -57,6 +58,7 @@
 
           <SidePanelFooterLeftButtons
             @was-clicked="doShowSuggestionButton = true"
+            :size="getButtonSize()"
             :show-suggestion-icon="showSuggestionIcon"/>
         </template>
 
@@ -100,7 +102,7 @@
           <q-tooltip class="tooltip" anchor="top left" self="bottom left">Show Stats</q-tooltip>
         </q-btn>
 
-        <span v-if="usePermissionsStore().hasFeature(FeatureIdent.STANDALONE_APP)">
+        <span v-if="usePermissionsStore().hasFeature(FeatureIdent.STANDALONE_APP) && useAuthStore().isAuthenticated()">
           <q-icon
             name="o_open_in_new"
             :class="rightButtonClass()"
@@ -121,6 +123,14 @@
             </q-list>
           </q-menu>
         </span>
+        <q-btn v-else-if="usePermissionsStore().hasFeature(FeatureIdent.STANDALONE_APP)"
+          icon="o_open_in_new"
+          :class="rightButtonClass()"
+          flat
+          :size="getButtonSize()"
+          @click="openExtensionTab()">
+          <q-tooltip class="tooltip" anchor="top left" self="bottom left">Tabsets as full-page app</q-tooltip>
+        </q-btn>
 
         <span class="q-my-xs q-ml-xs q-mr-none cursor-pointer" v-if="authStore.isAuthenticated() && useSettingsStore().isEnabled('dev')">
           <q-avatar size="18px" v-if="authStore.user?.photoURL">

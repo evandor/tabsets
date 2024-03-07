@@ -16,65 +16,72 @@ installQuasarPlugin();
 
 describe('SidePanelPage', () => {
 
-    const skysailChromeTab = ChromeApi.createChromeTabObject(
-        "title", "https://www.skysail.io/some-subpage", "favicon")
 
-    let db = null as unknown as PersistenceService
-    let wrapper: VueWrapper<any, any> = null as unknown as VueWrapper
+  vi.mock("vue-i18n", () => ({
+    useI18n: () => ({t: (key: string) => key === 'welcome_to_tabsets' ? "Welcome to Tabsets" : key}),
+  }));
 
-    beforeAll(() => {
-        // https://vitest.dev/guide/browser.html
-        // @ts-ignore - needed as 'chrome' is undefined in vitest
-        global.chrome = undefined
-        // global.browser = browser
-        db = useDB(useQuasar()).localDb
-    })
+  const skysailChromeTab = ChromeApi.createChromeTabObject(
+    "title", "https://www.skysail.io/some-subpage", "favicon")
 
-    beforeEach(async () => {
-        setActivePinia(createPinia())
-        await IndexedDbPersistenceService.init("db")
-        db = useDB(undefined).db
-        // await usePermissionsStore().initialize(new LocalStoragePersistenceService(useQuasar()))
-        await useTabsetService().init(db)
+  let db = null as unknown as PersistenceService
+  let wrapper: VueWrapper<any, any> = null as unknown as VueWrapper
 
-        const chromeMock = {
-            commands: {
-                onCommand: {
-                    addListener: vi.fn(() => {
-                        return [];
-                    }),
-                }
-            },
-            tabs: {
-                query: vi.fn(() => {})
-            },
-            runtime: {
-                sendMessage: vi.fn(() => {})
-            }
-        };
+  beforeAll(() => {
+    // https://vitest.dev/guide/browser.html
+    // @ts-ignore - needed as 'chrome' is undefined in vitest
+    global.chrome = undefined
+    // global.browser = browser
+    db = useDB(useQuasar()).localDb
+  })
 
-        vi.stubGlobal('chrome', chromeMock);
+  beforeEach(async () => {
+    setActivePinia(createPinia())
+    await IndexedDbPersistenceService.init("db")
+    db = useDB(undefined).db
+    // await usePermissionsStore().initialize(new LocalStoragePersistenceService(useQuasar()))
+    await useTabsetService().init(db)
 
-        wrapper = mount(SidePanelPage);
+    const chromeMock = {
+      commands: {
+        onCommand: {
+          addListener: vi.fn(() => {
+            return [];
+          }),
+        }
+      },
+      tabs: {
+        query: vi.fn(() => {
+        })
+      },
+      runtime: {
+        sendMessage: vi.fn(() => {
+        })
+      }
+    };
 
-    })
+    vi.stubGlobal('chrome', chromeMock);
 
-    it('should be mounted', async () => {
-        useTabsStore().setCurrentChromeTab(skysailChromeTab)
-        console.log("hier", wrapper.html())
-        expect(wrapper.text()).toContain("My Tabsets");
-        expect(wrapper.text()).not.toContain("search");
-    });
+    wrapper = mount(SidePanelPage);
 
-    it('should show existing tabset', async () => {
-        await new CreateTabsetCommand("existing Tabset", []).execute()
-        useTabsStore().setCurrentChromeTab(skysailChromeTab)
-        const wrapper = mount(SidePanelPage);
-        //console.log("hier", wrapper.html())
-        //console.log("hier2", wrapper.text())
-        expect(wrapper.html()).toContain("existing Tabset");
-        //expect(wrapper.html()).not.toContain("search");
-    });
+  })
+
+  it('should be mounted', async () => {
+    useTabsStore().setCurrentChromeTab(skysailChromeTab)
+    console.log("hier", wrapper.html())
+    expect(wrapper.text()).toContain("My Tabsets");
+    expect(wrapper.text()).not.toContain("search");
+  });
+
+  it('should show existing tabset', async () => {
+    await new CreateTabsetCommand("existing Tabset", []).execute()
+    useTabsStore().setCurrentChromeTab(skysailChromeTab)
+    const wrapper = mount(SidePanelPage);
+    //console.log("hier", wrapper.html())
+    //console.log("hier2", wrapper.text())
+    expect(wrapper.html()).toContain("existing Tabset");
+    //expect(wrapper.html()).not.toContain("search");
+  });
 
 
 });

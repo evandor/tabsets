@@ -399,78 +399,6 @@ class IndexedDbPersistenceService implements PersistenceService {
     }
   }
 
-  async getMHtml(id: string): Promise<any> {
-    console.log("getting mhtml for", id)
-    return this.db.get('mhtml', id)
-  }
-
-  async deleteMHtml(id: string): Promise<void> {
-    return this.db.delete('mhtml', id)
-  }
-
-  async getMHtmlContent(url: string): Promise<any> {
-
-    console.log("getting mhtml for", url)
-    const mhtml = await this.db.get('mhtml', url)
-    //  console.log("got", mhtml.content, typeof mhtml.content)
-
-    const content: Blob = mhtml.content
-
-    const mhtmlString = await content.text()
-    //const html = mhtml2html.convert(mhtmlString)//,{ parseDOM: (html:any) => new JSDOM(html)    });
-    const html = mhtmlString//,{ parseDOM: (html:any) => new JSDOM(html)    });
-    const innerHtml = mhtmlString//html.window.document.documentElement.innerHTML
-    const res = "data:text/html," + innerHtml
-
-    const blob2 = content.slice(0, content.size, "multipart/related")
-
-    const reader = new window.FileReader();
-    reader.readAsDataURL(blob2);
-    reader.onloadend = function () {
-      const win = window.open();
-      if (win) {
-        win.document.write(res + "<br>")
-        win.document.write("<iframe style='width:100%;height:800px' src=" + res + "><\/iframe>");
-      }
-    }
-
-    return Promise.resolve('done')
-  }
-
-  async getMHtmlInline(url: string): Promise<object> {
-    console.log("getMHtmlInline", url, this.db)
-    try {
-      const mhtml = await this.db.get('mhtml', url)
-      console.log("mhtml", mhtml)
-      const mhtmlString = mhtml.content ? await mhtml.content?.text() : '<h6>sorry, no content found</h6>'
-      //console.log("mhtmlString", mhtmlString)
-     // const html = mhtmlString ? mhtml2html.convert(mhtmlString) : 'sorry, no content found'
-      const html = 'sorry, no content found'
-      console.log("mhtml3", mhtml)
-      const innerHtml = html.window.document.documentElement.innerHTML
-      return Promise.resolve({
-        html: innerHtml,
-        title: mhtml.title,
-        created: mhtml.created
-      })
-    } catch (ex) {
-      console.log("problem getting MHtmlInline", ex)
-      return Promise.reject("problem getting MHtmlInline")
-    }
-  }
-
-  getMHtmls(): Promise<MHtml[]> {
-    if (!this.db) { // can happen for some reason
-      return Promise.resolve([])
-    }
-    try {
-      return this.db.getAll('mhtml')
-    } catch (ex) {
-      console.log("got error in getMHtmls", ex)
-      return Promise.reject("got error in getMHtmls")
-    }
-  }
-
   getBlobs(type: BlobType): Promise<any[]> {
     if (!this.db) { // can happen for some reason
       return Promise.resolve([])
@@ -545,7 +473,7 @@ class IndexedDbPersistenceService implements PersistenceService {
         window.id,
         window.browserWindow,
         existingWindowForWindowId.title,
-        window.index,
+        existingWindowForWindowId.index,
         existingWindowForWindowId.open,
         window.hostList
       )
@@ -559,9 +487,8 @@ class IndexedDbPersistenceService implements PersistenceService {
     }
     //if (!window.title) {
     // try to find matching window
-    console.log("trying to add new window ", window.toString())
     const allWindows: Window[] = await this.db.getAll('windows') as Window[]
-    console.log(`adding ${window.toString()} to list [${_.join(_.map(allWindows, w => w.id), ',')}]`)
+    console.debug(`adding ${window.toString()} to list [${_.join(_.map(allWindows, w => w.id), ',')}]`)
     for (const w of allWindows) {
       if (w.hostList) {
         console.log("comparing hostLists", window.hostList, w.hostList, typeof w.hostList)
@@ -626,7 +553,7 @@ class IndexedDbPersistenceService implements PersistenceService {
     asJson['hostList'] = window.hostList ? Array.from(window.hostList) : []
 
     delete asJson['tabs']
-    console.debug("saving window json as ", asJson)
+    //console.debug("saving window json as ", asJson)
     await this.db.put('windows', asJson, window.id)
   }
 

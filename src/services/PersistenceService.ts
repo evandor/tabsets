@@ -42,12 +42,6 @@ interface PersistenceService {
   getLinks(url: string): Promise<object>
   saveLinks(url: string, links: any): Promise<void | IDBValidKey>
 
-  saveMHtml(tab: Tab, mhtml: Blob): Promise<string>
-  getMHtml(url: string):Promise<object>
-  getMHtmlInline(url: string): Promise<object>
-  getMHtmls(): Promise<MHtml[]>
-  deleteMHtml(id: string): Promise<void>
-
   getBlobs(type: BlobType): Promise<any[]>
   saveBlob(id: string, url: string, data: Blob, type: BlobType, remark: string | undefined): Promise<any>
   getBlobsForTab(tabId: string): Promise<SavedBlob[]>

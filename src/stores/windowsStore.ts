@@ -87,7 +87,6 @@ export const useWindowsStore = defineStore('windows', () => {
     }
     console.debug(" init chrome windows listeners with trigger", trigger)
     const browserWindows: chrome.windows.Window[] = await chrome.windows.getAll({populate: true})
-
     currentChromeWindows.value = browserWindows
     console.debug(` initializing current chrome windows with ${currentChromeWindows.value?.length} window(s)`)
 
@@ -155,7 +154,7 @@ export const useWindowsStore = defineStore('windows', () => {
       //chrome.windows.getCurrent().then(currentWindow => {
       const currentWindow: chrome.windows.Window = await chrome.windows.getCurrent()//.then(currentWindow => {
       for (const window of currentChromeWindows.value) {
-        //console.log("da!!!",window,useWindowsStore().windowNameFor(window.id))
+        //console.log("da!!!",window)
         // TODO this is always the "default" window
         if (currentWindow.id !== window.id) {
           chrome.contextMenus.create({
@@ -372,7 +371,7 @@ export const useWindowsStore = defineStore('windows', () => {
 
   async function refreshTabsetWindow(windowId: number) {
     try {
-      console.log("refreshing tabset window", windowId)
+      //console.log("refreshing tabset window", windowId)
       const tabsetWindow = await storage.getWindow(windowId)
       const chromeWindow = await chrome.windows.get(windowId, {populate: true})
       if (tabsetWindow && chromeWindow) {
@@ -380,7 +379,7 @@ export const useWindowsStore = defineStore('windows', () => {
         await storage.updateWindow(tabsetWindow)
       }
     } catch (err) {
-      console.error("got error", err)
+      console.log("got error", err)
     }
 
   }

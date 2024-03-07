@@ -31,11 +31,9 @@
       <tbody>
       <tr v-for="row in rows" :key="row['id' as keyof object]" style="max-height:15px">
         <td class="text-left">
-            <span class="cursor-pointer" :data-testid="'windowDataColumn_name_' + row['id' as keyof object]">
-                {{ row['name' as keyof object] }}
-                <q-tooltip class="tooltip-small" v-if="devMode">{{ row['id' as keyof object] }}</q-tooltip>
-              </span>
-
+          <span :data-testid="'windowDataColumn_name_' + row['id' as keyof object]">
+              {{ row['name' as keyof object] }}
+          </span>
         </td>
         <td>
           {{ row['count' as keyof object] }}
@@ -121,7 +119,7 @@ const calcStatsRows = () => {
     {name: 'Tabsets', count: useTabsStore().tabsets.size, snapshot: getFromSnapshot('Tabsets')},
     {name: 'Spaces', count: useSpacesStore().spaces.size, snapshot: getFromSnapshot('Spaces')},
     {name: 'Bookmarks', count: useBookmarksStore().bookmarksCount, snapshot: getFromSnapshot('Bookmarks'), link:"https://docs.tabsets.net/bookmarks"},
-    {name: 'Bookmark Folders', count: useBookmarksStore().foldersCount, snapshot: getFromSnapshot('Bookmark Folders'), link:"https://docs.tabsets.net/bookmarks"},
+    {name: 'Bookmark Folders', count: useBookmarksStore().foldersCount, snapshot: getFromSnapshot('Bookmark Folders')},
     {
       name: 'Open Windows',
       count: useWindowsStore().currentChromeWindows.length,

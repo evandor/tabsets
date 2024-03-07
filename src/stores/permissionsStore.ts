@@ -1,23 +1,19 @@
-// !== MIT
 import {defineStore} from 'pinia';
-import {computed, ref, watchEffect} from "vue";
-import {Notify, useQuasar} from "quasar";
-import {FeatureIdent, FeatureType} from "src/models/AppFeature";
+import {computed, ref} from "vue";
+import {FeatureIdent} from "src/models/AppFeature";
 import {useSuggestionsStore} from "src/stores/suggestionsStore";
 import {StaticSuggestionIdent, Suggestion} from "src/models/Suggestion";
 import {CreateSpecialTabsetCommand, SpecialTabsetIdent} from "src/domain/tabsets/CreateSpecialTabset";
 import {TabsetType} from "src/models/Tabset";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {AppFeatures} from "src/models/AppFeatures";
-import {useDB} from "src/services/usePersistenceService";
 import {useUtils} from "src/services/Utils";
 import {useTabsetService} from "src/services/TabsetService2";
 import PersistenceService from "src/services/PersistenceService";
-
+import {LocalStorage} from "quasar";
 
 export const usePermissionsStore = defineStore('permissions', () => {
 
-  const $q = useQuasar()
   const {sendMsg} = useUtils()
 
   let storage = null as unknown as PersistenceService
@@ -28,7 +24,7 @@ export const usePermissionsStore = defineStore('permissions', () => {
   const permissions = ref<chrome.permissions.Permissions | undefined>(undefined)
 
   // related to tabsets permissions
-  const activeFeatures = ref<string[]>($q?.localStorage?.getItem('ui.activeFeatures') as string[] || [])
+  const activeFeatures = ref<string[]>(LocalStorage.getItem('ui.activeFeatures') as string[] || [])
 
   async function initialize(ps: PersistenceService) {
     console.debug(" ...initializing PermissionsStore")
@@ -53,7 +49,7 @@ export const usePermissionsStore = defineStore('permissions', () => {
 
   const hasPermission = computed(() => {
     return (permission: string): boolean | undefined => {
-      //console.log("query for permission", permission, grantedOptionalPermissions.value.indexOf(permission) >= 0)
+      console.log("query for permission", permission, grantedOptionalPermissions.value)
       return grantedOptionalPermissions.value ? grantedOptionalPermissions.value.indexOf(permission) >= 0 : undefined
     }
   })

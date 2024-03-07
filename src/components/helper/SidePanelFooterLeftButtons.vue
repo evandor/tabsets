@@ -6,12 +6,13 @@
          class="q-my-xs q-ml-xs q-px-xs"
          flat
          color="warning"
-         size="9px">
+         :size="props.size">
     <q-tooltip class="tooltip">{{ suggestionsLabel() }}</q-tooltip>
   </q-btn>
 
   <q-btn v-if="useTabsStore().allTabsCount > 0"
          icon="o_view_list"
+         :size="props.size"
          class="q-my-xs q-ml-xs q-mr-none q-px-xs"
          flat>
     <q-menu>
@@ -58,25 +59,27 @@
 
   <SidePanelFooterLeftButton
     :side-panel-view="SidePanelView.TABS_LIST"
-    :size="buttonSize"
+    :size="props.size"
     icon="o_playlist_add"
     tooltip="All your browser's open tabs"/>
 
   <SidePanelFooterLeftButton v-if="unreadMessagesCount > 0"
                              :side-panel-view="SidePanelView.MESSAGES"
                              icon="o_chat"
-                             :size="buttonSize"
+                             :size="props.size"
                              tooltip="Your messages">
     <q-badge color="red" floating v-if="unreadMessagesCount > 0">{{ unreadMessagesCount }}</q-badge>
   </SidePanelFooterLeftButton>
 
   <SidePanelFooterLeftButton :side-panel-view="SidePanelView.BOOKMARKS"
                              icon="bookmark"
-                             :size="buttonSize"
+                             :class="{ shake: animateBookmarksButton }"
+                             :size="props.size"
                              tooltip="Show the Bookmarks Browser"/>
 
   <SidePanelFooterLeftButton :side-panel-view="SidePanelView.RSS_LIST"
                              icon="o_rss_feed"
+                             :size="props.size"
                              tooltip="List all your RSS feeds"/>
 
   <span class="q-ma-none"
@@ -101,7 +104,8 @@ import {useMessagesStore} from "stores/messagesStore";
 import SidePanelFooterViewMenuItem from "components/helper/SidePanelFooterViewMenuItem.vue";
 
 const props = defineProps({
-  showSuggestionIcon: {type: Boolean, required: true}
+  showSuggestionIcon: {type: Boolean, required: true},
+  size: {type: String, default: "10px"}
 })
 
 const emits = defineEmits(['wasClicked'])
@@ -111,6 +115,7 @@ const tabsStore = useTabsStore()
 
 const buttonSize = ref('15px')
 const unreadMessagesCount = ref(0)
+const animateBookmarksButton = ref(false)
 
 watchEffect(() => {
   buttonSize.value = useUiStore().getButtonSize('sidePanelFooter')
@@ -118,6 +123,10 @@ watchEffect(() => {
 
 watchEffect(() => {
   useMessagesStore().getMessages().then((msgs) => unreadMessagesCount.value = msgs.length)
+})
+
+watchEffect(() => {
+  animateBookmarksButton.value = useUiStore().animateBookmarksButton
 })
 
 const suggestionsLabel = () => {

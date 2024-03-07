@@ -121,7 +121,7 @@ watchEffect(() => {
 })
 
 watchEffect(() => {
-  bookmarksPermissionGranted.value = permissionsStore.hasFeature(FeatureIdent.BOOKMARKS)
+  bookmarksPermissionGranted.value = true// permissionsStore.hasFeature(FeatureIdent.BOOKMARKS)
   useBookmarksStore().loadBookmarks()
 })
 

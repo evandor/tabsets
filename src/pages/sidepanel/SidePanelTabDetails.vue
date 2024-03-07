@@ -56,7 +56,7 @@
       </div>
     </div>
 
-    <div class="row q-ma-sm" v-if="usePermissionsStore().hasFeature(FeatureIdent.BOOKMARKS)">
+    <div class="row q-ma-sm">
       <div class="col-5 text-caption text-bold">
         In Bookmarks:
       </div>

@@ -1,5 +1,4 @@
 import {boot} from 'quasar/wrappers'
-import {Logtail} from "@logtail/browser";
 
 const INDEX_DB_VERSION = 19
 
@@ -15,7 +14,6 @@ const STRIP_CHARS_IN_COLOR_INPUT = /[`@$%^*=\[\]{};:"\\|<>\/~]/;
 
 const PUBLIC_SHARE_URL = "https://shared.tabsets.net/"
 const RELEASE_NOTES_URL = "https://us-central1-tabsets-backend-prd.cloudfunctions.net/app/share/preview/5d2cccf9-83ea-40be-bc84-37b03e38af1d"
-//const PUBLIC_SHARE_URL = "http://localhost:9200/"
 
 // Local storage Identifiers
 const TITLE_IDENT = 'title';
@@ -43,10 +41,6 @@ const CURRENT_USER_EMAIL = "current.user.email"
 
 const UI_WINDOWS_ITEMS_PER_PAGE = 'ui.windows.itemsPerPage'
 
-const logtail = (process.env.MODE === "bex") ?
-  new Logtail("Ht8PY3XGQgqhMyNTcyGyJhXJ") :
-  new Logtail("pNfaHtRmWXGd3TFbsCXMHHbB")
-
 export default boot(({}) => {
 })
 
@@ -69,7 +63,6 @@ export {
   EMAIL_LINK_REDIRECT_DOMAIN,
   CURRENT_USER_ID,
   CURRENT_USER_EMAIL,
-  UI_WINDOWS_ITEMS_PER_PAGE,
-  logtail
+  UI_WINDOWS_ITEMS_PER_PAGE
 }
 

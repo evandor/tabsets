@@ -2,7 +2,7 @@ import firebase from 'firebase/compat/app';
 import 'firebase/compat/auth';
 import 'firebase/compat/firestore';
 import {getStorage} from "firebase/storage";
-import {getDatabase, Database} from "firebase/database";
+import {getDatabase, Database, ref, onValue} from "firebase/database";
 import {getAuth, Auth} from "firebase/auth";
 import {
   getFirestore,
@@ -79,6 +79,25 @@ class FirebaseServices {
 
   getRealtimeDb() {
     return this.realtimeDb
+  }
+
+  startRealtimeDbListeners(userId: string) {
+    console.debug("startRealtimeListeners start for user", userId)
+    const path = 'users/' + userId + '/access'
+    console.log("listening to changes on ", path)
+    const userAccessRef = ref(this.getRealtimeDb(), path);
+    // this will not work
+    // onValue(userAccessRef, (snapshot) => {
+    //   const data = snapshot.val();
+    //   console.log("got change:", data)
+    //   if (data && data['tabsetChanged']) {
+    //     // bridge.send('fb.message.received', {
+    //     //   msg: 'event.tabset.updated',
+    //     //   tstamp: data['tabsetChanged'],
+    //     //   origin: data['origin']
+    //     // })
+    //   }
+    // })
   }
 }
 

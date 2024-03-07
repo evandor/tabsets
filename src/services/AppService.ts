@@ -78,9 +78,11 @@ class AppService {
     // init of stores and some listeners
     await usePermissionsStore().initialize(useDB(quasar).localDb)
     await ChromeListeners.initListeners()
+
     ChromeBookmarkListeners.initListeners()
     await bookmarksStore.init()
     await BookmarksService.init()
+
     settingsStore.initialize(quasar.localStorage);
     tabsStore.initialize().catch((err) => console.error("***" + err))
 
@@ -101,7 +103,6 @@ class AppService {
     tabsetService.setLocalStorage(localStorage)
 
     if (useAuthStore().isAuthenticated()) {
-      console.log("useAuthStore().getAccount()", useAuthStore().getAccount())
       // sync features
       const syncType = useAuthStore().getAccount()?.userData?.sync?.type || SyncType.NONE
       const syncUrl = useAuthStore().getAccount()?.userData?.sync?.url
@@ -176,7 +177,11 @@ class AppService {
     // probably running an import ("/imp/:sharedId")
     // we do not want to go to the welcome back
     // console.log("checking for welcome page", tabsStore.tabsets.size === 0, quasar.platform.is.bex, !useAuthStore().isAuthenticated())
-    if (tabsStore.tabsets.size === 0 && quasar.platform.is.bex && !useAuthStore().isAuthenticated()) {
+    if (tabsStore.tabsets.size === 0 &&
+      quasar.platform.is.bex &&
+      !useAuthStore().isAuthenticated() &&
+      !router.currentRoute.value.path.startsWith("/fullpage") &&
+      !router.currentRoute.value.path.startsWith("/mainpanel")) {
       await router.push("/sidepanel/welcome")
     }
 

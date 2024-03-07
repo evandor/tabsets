@@ -11,14 +11,14 @@
     "activeTab",
     "alarms",
     "scripting",
-    "sidePanel"
+    "sidePanel",
+    "bookmarks"
   ],
   "optional_permissions": [
     "pageCapture",
     "contextMenus",
     "notifications",
     "webRequest",
-    "bookmarks",
     "tabGroups"
   ],
   "host_permissions": [
@@ -34,7 +34,6 @@
   "content_security_policy": {
     "extension_pages": "script-src 'self' 'wasm-unsafe-eval'"
   },
-  "omnibox": { "keyword": "ts" },
   "commands": {
     "_execute_action": {
       "suggested_key": {

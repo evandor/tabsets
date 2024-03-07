@@ -7,19 +7,21 @@
 import {LocalStorage, setCssVar, useQuasar} from "quasar";
 import AppService from "src/services/AppService";
 import {EventEmitter} from "events";
-import {logtail} from "boot/logtail";
-import {getAuth, onAuthStateChanged} from "firebase/auth";
+import {onAuthStateChanged} from "firebase/auth";
 import {APP_INSTALLATION_ID, CURRENT_USER_ID} from "boot/constants";
 import {useRouter} from "vue-router";
 import FirebaseServices from "src/services/firebase/FirebaseServices";
 import {useNotificationHandler} from "src/services/ErrorHandler";
 import FirestorePersistenceService from "src/services/persistence/FirestorePersistenceService";
-import {ref, onValue} from "firebase/database";
+import {useUtils} from "src/services/Utils";
+import {useLogger} from "src/services/Logger";
 
 const $q = useQuasar()
 const router = useRouter()
+const {inBexMode} = useUtils()
 
 const {handleError} = useNotificationHandler()
+const {info} = useLogger()
 
 // https://stackoverflow.com/questions/9768444/possible-eventemitter-memory-leak-detected
 const emitter = new EventEmitter()
@@ -29,34 +31,37 @@ if (process.env.USE_FIREBASE) {
   FirebaseServices.init()
 }
 
-$q.bex.on('fcm.token.received', ({data, respond}) => {
-  console.log('Token received from service worker:', data)
-  LocalStorage.set('app.fcmToken', data.token)
-  FirestorePersistenceService.updateUserToken(data.token)
-  respond('thx')
-})
+if (inBexMode()) {
 
-$q.bex.on('fb.message.received', async ({data, respond}) => {
-  const localInstallationId = LocalStorage.getItem(APP_INSTALLATION_ID) || "";
-  console.log('Message received from service worker:', data, localInstallationId)
+  $q.bex.on('fcm.token.received', ({data, respond}) => {
+    console.log('Token received from service worker:', data)
+    LocalStorage.set('app.fcmToken', data.token)
+    FirestorePersistenceService.updateUserToken(data.token)
+    respond('thx')
+  })
 
-  if (data.msg) {
-    switch (data.msg) {
-      case "event.tabset.updated":
-        if (localInstallationId !== data.origin) {
-          console.log("reloading tabsets due to remote event", localInstallationId, data)
-          //await FirestorePersistenceService.loadSpaces()
-          await FirestorePersistenceService.loadTabsets()
-        }
-        break
-      default:
-        console.log("unrecognized payload with msg " + data.msg)
+  $q.bex.on('fb.message.received', async ({data, respond}) => {
+    const localInstallationId = LocalStorage.getItem(APP_INSTALLATION_ID) || "";
+    console.debug('Message received from service worker:', data, localInstallationId)
+
+    if (data.msg) {
+      switch (data.msg) {
+        case "event.tabset.updated":
+          if (localInstallationId !== data.origin) {
+            console.log("reloading tabsets due to remote event", localInstallationId, data)
+            //await FirestorePersistenceService.loadSpaces()
+            await FirestorePersistenceService.loadTabsets()
+          }
+          break
+        default:
+          console.log("unrecognized payload with msg " + data.msg)
+      }
+    } else {
+      console.log("unrecognized payload without msg field")
     }
-  } else {
-    console.log("unrecognized payload without msg field")
-  }
-  respond('thx')
-})
+    respond('thx')
+  })
+}
 
 if (process.env.USE_FIREBASE) {
   const auth = FirebaseServices.getAuth()
@@ -68,6 +73,7 @@ if (process.env.USE_FIREBASE) {
       try {
         await AppService.init($q, router, true, user)
         $q.bex.send('auth.user.login', {userId: user.uid})
+        //FirebaseServices.startRealtimeDbListeners(user.uid)
       } catch (error: any) {
         console.log("%ccould not initialize appService due to " + error, "background-color:orangered")
         console.error("error", error, typeof error, error.code, error.message)
@@ -79,6 +85,7 @@ if (process.env.USE_FIREBASE) {
       // User is signed out
       console.log("%conAuthStateChanged: logged out", "border:1px solid green")
       await AppService.init($q, router, true, undefined)
+      $q.bex.send('auth.user.logout', {})
       if (!router.currentRoute.value.path.startsWith("/mainpanel")) {
         console.log("NOT redirecting to '/'")
         //await router.push("/")
@@ -88,7 +95,7 @@ if (process.env.USE_FIREBASE) {
 
 }
 
-const useDarkMode: string = $q.localStorage.getItem('darkMode') || "false" as string
+const useDarkMode: string = $q.localStorage.getItem('darkMode') || "auto" as string
 if (useDarkMode === "true") {
   $q.dark.set(true)
 } else if (useDarkMode === "false") {
@@ -124,7 +131,7 @@ if (!process.env.USE_FIREBASE) {
 }
 
 
-logtail.info(`tabsets started: mode=${process.env.MODE}, version=${import.meta.env.PACKAGE_VERSION}`)
+info(`tabsets started: mode=${process.env.MODE}, version=${import.meta.env.PACKAGE_VERSION}`)
 
 // Notification.requestPermission().then((permission) => {
 //   if (permission === 'granted') {

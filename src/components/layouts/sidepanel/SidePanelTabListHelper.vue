@@ -2,7 +2,7 @@
   <q-item
       clickable
       v-ripple
-      class="q-ma-none q-pa-sm"
+      class="q-ma-none q-px-sm q-pt-xs q-pb-none"
       :style="itemStyle()"
       @dragstart="startDrag($event, tab)"
       :key="'paneltablist_' + tab.id">

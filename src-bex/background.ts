@@ -25,17 +25,20 @@ chrome.runtime.onInstalled.addListener((callback) => {
     chrome.tabs.create({
       active: true,
       url: callback.previousVersion ?
-        "https://tabsets.web.app/#/updatedFrom/" + callback.previousVersion :
+        "https://docs.tabsets.net/release-notes" :
         "https://tabsets.web.app/#/installed/"
     })
   }
+  if (chrome.runtime.lastError) {
+    console.warn("got runtime error", chrome.runtime.lastError)
+  }
 });
 
-chrome.omnibox.onInputEntered.addListener((text) => {
-  const newURL = chrome.runtime.getURL("/www/index.html#/searchresult?t=" + encodeURIComponent(text))
-  chrome.tabs.create({url: newURL})
-    .catch((err) => console.log("[service-worker] background.js error", err))
-});
+// chrome.omnibox.onInputEntered.addListener((text) => {
+//   const newURL = chrome.runtime.getURL("/www/index.html#/searchresult?t=" + encodeURIComponent(text))
+//   chrome.tabs.create({url: newURL})
+//     .catch((err) => console.log("[service-worker] background.js error", err))
+// });
 
 let modelPromise: any = null
 
@@ -49,6 +52,9 @@ if (chrome.sidePanel && chrome.sidePanel.setPanelBehavior) {
 
 chrome.runtime.onInstalled.addListener((details) => {
   console.debug("adding onInstalled listener in background.ts", details)
+  if (chrome.runtime.lastError) {
+    console.warn("got runtime error", chrome.runtime.lastError)
+  }
   // @ts-ignore
   if (chrome.action) {
     // @ts-ignore
@@ -98,10 +104,11 @@ chrome.runtime.onConnect.addListener(function (port) {
   }
 });
 
+
 export default bexBackground((bridge, cons/* , allActiveConnections */) => {
 
   if (process.env.USE_FIREBASE) {
-    console.debug("[service-worker] about to obtain cloud messaging token")
+    //console.debug("[service-worker] about to obtain cloud messaging token")
 
     const firebaseApp = firebase.initializeApp({
       apiKey: process.env.FIREBASE_API_KEY,
@@ -112,16 +119,17 @@ export default bexBackground((bridge, cons/* , allActiveConnections */) => {
       databaseURL: process.env.FIREBASE_DATABASE_URL
     })
 
-    bridge.on('auth.user.login', ({data, respond}) => {
+    // @ts-ignore
+    const authUserLoginListener = ({data, respond}) => {
       console.debug("[service-worker] got message 'auth.user.login'", data)
       const currentUser = data.userId
       const realtimeDb = getDatabase(firebaseApp)
       const path = 'users/' + currentUser + '/access'
       console.log("[service-worker] listening to changes on ", path)
-      const starCountRef = ref(realtimeDb, path);
-      onValue(starCountRef, (snapshot) => {
+      const userAccessRef = ref(realtimeDb, path);
+      onValue(userAccessRef, (snapshot) => {
         const data = snapshot.val();
-        console.log("[service-worker] got change", data)
+        console.debug("[service-worker] got change", data)
         if (data && data['tabsetChanged']) {
           bridge.send('fb.message.received', {
             msg: 'event.tabset.updated',
@@ -130,6 +138,17 @@ export default bexBackground((bridge, cons/* , allActiveConnections */) => {
           })
         }
       })
+    }
+
+    //bridge.off('auth.user.login', authUserLoginListener)
+
+    if (Object.keys(cons).length < 2) { // don't know how to do this otherwise... we are getting too many listeners
+      bridge.on('auth.user.login', authUserLoginListener)
+    }
+
+    bridge.on('auth.user.logout', ({data, respond}) => {
+      console.debug("removing all bridge listeners")
+      bridge.removeAllListeners()
     })
 
     // === not using messaging (yet?) ===

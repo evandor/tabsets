@@ -309,7 +309,7 @@
         <div class="col-3"></div>
         <div class="col-1"></div>
         <div class="col-5">
-          <q-btn label="Un-Archive" @click="unarchive(tabset)"/>
+          <q-btn label="Un-Archive" @click="unarchive(tabset as Tabset)"/>
         </div>
       </div>
     </div>
@@ -455,7 +455,7 @@ import AccountSettings from "pages/helper/AccountSettings.vue";
 import InfoLine from "pages/helper/InfoLine.vue";
 import FeatureToggleSettings from "pages/helper/FeatureToggleSettings.vue";
 import {useI18n} from "vue-i18n";
-const { t } = useI18n({inheritLocale: true})
+const { t } = useI18n()
 
 const {sendMsg, inBexMode} = useUtils()
 
@@ -472,7 +472,7 @@ useUiStore().rightDrawerSetActiveTab(DrawerTabs.FEATURES)
 const view = ref('grid')
 const indexSize = ref(0)
 
-const {locale} = useI18n({useScope: 'global'})
+const { locale } = useI18n({locale: navigator.language, useScope: "global"})
 
 const localeOptions = ref([
   {value: 'en', label: 'English'},
@@ -484,7 +484,7 @@ const ddgEnabled = ref<boolean>(!settingsStore.isEnabled('noDDG'))
 const ignoreExtensionsEnabled = ref<boolean>(!settingsStore.isEnabled('extensionsAsTabs'))
 const permissionsList = ref<string[]>([])
 
-const darkMode = ref<string>(localStorage.getItem('darkMode') || "false")
+const darkMode = ref<string>(localStorage.getItem('darkMode') || "auto")
 const detailLevel = ref<ListDetailLevel>(localStorage.getItem('ui.detailLevel') || ListDetailLevel.MAXIMAL)
 
 const nickname = ref<string>(localStorage.getItem(SHARING_AUTHOR_IDENT) || '')
@@ -642,7 +642,11 @@ const archivedTabsets = () => {
   return _.sortBy(_.filter(tabsets, (ts: Tabset) => ts.status === TabsetStatus.ARCHIVED), ['name'])
 }
 
-const unarchive = (tabset: Tabset) => useCommandExecutor().executeFromUi(new MarkTabsetAsDefaultCommand(tabset.id))
+const unarchive = (tabset: Tabset) =>
+  useCommandExecutor().executeFromUi(new MarkTabsetAsDefaultCommand(tabset.id))
+    .then((res) => {
+      sendMsg('reload-tabset', {tabsetId: tabset.id})
+    })
 
 // const ignoredUrls = () => useTabsStore().ignoredTabset?.tabs
 
