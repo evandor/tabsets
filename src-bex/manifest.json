@@ -11,10 +11,10 @@
     "activeTab",
     "alarms",
     "scripting",
-    "notfications",
     "bookmarks"
   ],
   "optional_permissions": [
+    "notifications",
     "webRequest"
   ],
   "host_permissions": [

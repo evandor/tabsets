@@ -412,7 +412,7 @@ const oldPng = async () => {
 const createImageToCompare = async () => {
   if (suggestion.value?.url) {
     //NavigationService.openOrCreateTab([suggestion.value?.url], undefined, undefined, true)
-    const tempTab = await chrome.tabs.create({
+    const tempTab = await browser.tabs.create({
       active: true,
       pinned: false,
       url: suggestion.value?.url

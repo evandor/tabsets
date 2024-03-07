@@ -123,9 +123,10 @@ class NavigationService {
                         "/suggestions/" + suggestionId,
                         SuggestionType.REDIRECT_HAPPENED_FOR_TAB)
                       suggestion.setData({url, location: potentiallyChangedTab.url})
-                      useSuggestionsStore().addSuggestion(suggestion).catch((err) => {
-                        console.log("got error", err)
-                      })
+                      // TODO keep?
+                      // useSuggestionsStore().addSuggestion(suggestion).catch((err) => {
+                      //   console.log("got error", err)
+                      // })
                     }
                   })
                 }, 1000)
@@ -199,7 +200,7 @@ class NavigationService {
   }
 
   async openSingleTab(url: string): Promise<chrome.tabs.Tab> {
-    return await chrome.tabs.create({url: url})
+    return await browser.tabs.create({url: url})
   }
 
   closeChromeTab(tab: chrome.tabs.Tab) {

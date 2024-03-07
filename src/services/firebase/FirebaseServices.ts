@@ -1,7 +1,7 @@
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/auth';
 import 'firebase/compat/firestore';
-import {getStorage} from "firebase/storage";
+import {getStorage, FirebaseStorage} from "firebase/storage";
 import {getDatabase, Database, ref, onValue} from "firebase/database";
 import {getAuth, Auth} from "firebase/auth";
 import {
@@ -11,19 +11,16 @@ import {
   persistentLocalCache,
   persistentMultipleTabManager
 } from 'firebase/firestore';
-import {getMessaging, Messaging, getToken, onMessage} from "firebase/messaging";
 
 class FirebaseServices {
 
   private firebaseApp: firebase.app.App = null as unknown as firebase.app.App
   private auth: Auth = null as unknown as Auth
   private firestore: Firestore = null as unknown as Firestore
-  private messaging: Messaging = null as unknown as Messaging
-  private storage: Messaging = null as unknown as Messaging
   private realtimeDb: Database = null as unknown as Database
+  private storage: FirebaseStorage = null as unknown as FirebaseStorage
 
   init() {
-
     if (!process.env.USE_FIREBASE) {
       return
     }
@@ -47,9 +44,6 @@ class FirebaseServices {
     this.firestore = getFirestore(this.firebaseApp)
     //console.log("got firestore", this.firestore)
 
-    this.messaging = getMessaging(this.firebaseApp)
-    //console.log("got messaging", this.messaging)
-
     this.storage = getStorage(this.firebaseApp)
 
     this.realtimeDb = getDatabase(this.firebaseApp)
@@ -66,15 +60,11 @@ class FirebaseServices {
   }
 
   getMessaging() {
-    return this.messaging
+    return null //this.messaging
   }
 
   getStorage() {
     return this.storage
-  }
-
-  getMessageToken() {
-    return getToken(this.messaging, {vapidKey: process.env.FIREBASE_MESSAGING_KEY});
   }
 
   getRealtimeDb() {

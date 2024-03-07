@@ -527,7 +527,7 @@ class ChromeApi {
 
   async executeMoveToWindow(tabId: number, windowId: number) {
     try {
-      const tab = await chrome.tabs.get(tabId)
+      const tab = await browser.tabs.get(tabId)
       const url = tab.url
       if (!url || !tab.id) {
         return
@@ -535,8 +535,8 @@ class ChromeApi {
       console.log("found tab", tab.id, url)
       const window = await chrome.windows.get(windowId)
       console.log("found window", window.id)
-      await chrome.tabs.create({windowId: window.id, url: url})
-      await chrome.tabs.remove(tab.id)
+      await browser.tabs.create({windowId: window.id, url: url})
+      await browser.tabs.remove(tab.id)
     } catch (err) {
       console.log("error", err)
     }

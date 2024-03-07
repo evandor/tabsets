@@ -124,7 +124,7 @@ watch(() => selected.value, async (currentValue, oldValue) => {
   if (currentValue !== oldValue) {
     try {
       // @ts-ignore
-      const result = await chrome.bookmarks.get(currentValue)
+      const result = await browser.bookmarks.get(currentValue)
       if (result && result.length > 0 && result[0].url) {
         NavigationService.openSingleTab(result[0].url)
       } else {
@@ -189,7 +189,7 @@ const shorten = (str: string, maxLength: number) => {
 
 const deleteBookmark = async (id: string) => {
   console.log("id", id)
-  await chrome.bookmarks.remove(id)
+  await browser.bookmarks.remove(id)
 }
 
 </script>
