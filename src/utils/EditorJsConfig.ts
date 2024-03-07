@@ -15,8 +15,6 @@ import Checklist from "@editorjs/checklist";
 // @ts-ignore
 import editorjsColumns from "@calumk/editorjs-columns";
 // @ts-ignore
-import editorjsCodeflask from '@calumk/editorjs-codeflask';
-// @ts-ignore
 import Alert from "editorjs-alert";
 // @ts-ignore
 import ColorPlugin from "editorjs-text-color-plugin";
@@ -103,12 +101,6 @@ class EditorJsConfig {
                     }
                 }
             }
-        },
-        code : editorjsCodeflask,
-        raw: RawTool,
-        checklist: {
-            class: Checklist,
-            inlineToolbar: true,
         },
         alert: Alert,
         Color: {
