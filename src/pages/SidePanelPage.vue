@@ -39,7 +39,7 @@
 
               <q-item-section>
                 <q-item-label>Settings</q-item-label>
-                <q-item-label caption>Click here to assign your account</q-item-label>
+                <q-item-label caption>Click here to activate more features</q-item-label>
               </q-item-section>
             </q-item>
 
