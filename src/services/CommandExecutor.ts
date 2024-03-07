@@ -10,7 +10,6 @@ export function useCommandExecutor() {
         console.log(" * executing command", command)
         return command.execute()
             .then((res) => handleSuccess(res, type))
-            //.then(() => logger.debug("command finished"))
             .catch(err => {
                 console.log("error in command", command)
                 handleError(err, type)

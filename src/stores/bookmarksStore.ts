@@ -110,7 +110,7 @@ export const useBookmarksStore = defineStore('bookmarks', {
 
         //console.log("*** ======= tree", tree)
         const nodes = nodesFrom(tree[0])
-        console.log("bookmarksNodes2", nodes.toString())
+        //console.log("bookmarksNodes2", nodes.toString())
         if (nodes[0]) {
           this.bookmarksNodes2 = nodes[0].children
           let copy = (JSON.parse(JSON.stringify(nodes[0])));

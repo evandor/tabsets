@@ -14,7 +14,6 @@ const STRIP_CHARS_IN_COLOR_INPUT = /[`@$%^*=\[\]{};:"\\|<>\/~]/;
 
 const PUBLIC_SHARE_URL = "https://shared.tabsets.net/"
 const RELEASE_NOTES_URL = "https://us-central1-tabsets-backend-prd.cloudfunctions.net/app/share/preview/5d2cccf9-83ea-40be-bc84-37b03e38af1d"
-//const PUBLIC_SHARE_URL = "http://localhost:9200/"
 
 // Local storage Identifiers
 const TITLE_IDENT = 'title';
