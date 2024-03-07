@@ -309,7 +309,7 @@
         <div class="col-3"></div>
         <div class="col-1"></div>
         <div class="col-5">
-          <q-btn label="Un-Archive" @click="unarchive(tabset)"/>
+          <q-btn label="Un-Archive" @click="unarchive(tabset as Tabset)"/>
         </div>
       </div>
     </div>
@@ -642,7 +642,11 @@ const archivedTabsets = () => {
   return _.sortBy(_.filter(tabsets, (ts: Tabset) => ts.status === TabsetStatus.ARCHIVED), ['name'])
 }
 
-const unarchive = (tabset: Tabset) => useCommandExecutor().executeFromUi(new MarkTabsetAsDefaultCommand(tabset.id))
+const unarchive = (tabset: Tabset) =>
+  useCommandExecutor().executeFromUi(new MarkTabsetAsDefaultCommand(tabset.id))
+    .then((res) => {
+      sendMsg('reload-tabset', {tabsetId: tabset.id})
+    })
 
 // const ignoredUrls = () => useTabsStore().ignoredTabset?.tabs
 

@@ -174,6 +174,7 @@ import NewWindowDialog from "components/dialogues/NewWindowDialog.vue";
 import {useRouter} from "vue-router";
 import {MarkTabsetDeletedCommand} from "src/domain/tabsets/MarkTabsetDeleted";
 import {SidePanelView, useUiStore} from "stores/uiStore";
+import {NotificationType} from "src/services/ErrorHandler";
 
 const {inBexMode} = useUtils()
 
@@ -283,7 +284,7 @@ const getPublicTabsetLink = (ts: Tabset) => {
 }
 
 const archiveTabset = (tabset: Tabset) =>
-  useCommandExecutor().executeFromUi(new MarkTabsetAsArchivedCommand(tabset.id))
+  useCommandExecutor().executeFromUi(new MarkTabsetAsArchivedCommand(tabset.id), NotificationType.NOTIFY)
 
 const changeWindow = (tabset: Tabset, window: string) => {
   tabset.window = window
