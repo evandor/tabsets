@@ -1,14 +1,14 @@
 <template>
   <q-btn
-      :type="props.type"
-      padding="xs lg"
-         :disable="props.disable"
-         @click.stop="emits('wasClicked')"
-         align="around"
-         size="0.9rem"
-         data-testid="addTabsetSubmitBtn"
-         :color="props.color"
-         :label="props.label"/>
+    :type="props.type"
+    padding="xs lg"
+    :disable="props.disable"
+    @click="emits('wasClicked')"
+    align="around"
+    size="0.9rem"
+    data-testid="addTabsetSubmitBtn"
+    :color="props.color"
+    :label="props.label"/>
 </template>
 
 <script lang="ts" setup>
