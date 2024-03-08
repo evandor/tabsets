@@ -23,13 +23,24 @@ const {sendMsg} = useUtils()
 export class AddTabToTabsetCommand implements Command<any> {
 
 
-  constructor(public tab: Tab, public tabset: Tabset) {
+  constructor(
+    public tab: Tab,
+    public tabset: Tabset,
+    public activeFolder: string | undefined = undefined) {
   }
 
   async execute(): Promise<ExecutionResult<any>> {
     const tabsStore = useTabsStore()
-    console.info(`adding tab '${this.tab.id}' to tabset '${this.tabset.id}'`)
-    const exists = _.findIndex(this.tabset.tabs, t => t.url === this.tab.url) >= 0
+    console.info(`adding tab '${this.tab.id}' to tabset '${this.tabset.id}', active folder: ${this.activeFolder}`)
+    let tabsetOrFolder = this.tabset
+    if (this.activeFolder) {
+      const folder = useTabsetService().findFolder(this.tabset.folders, this.activeFolder)
+      if (folder) {
+        tabsetOrFolder = folder
+      }
+    }
+
+    const exists = _.findIndex(tabsetOrFolder.tabs, t => t.url === this.tab.url) >= 0
     console.debug("checking 'tab exists' yields", exists)
     if (!exists) {
       try {
@@ -41,10 +52,10 @@ export class AddTabToTabsetCommand implements Command<any> {
           await useGroupsStore().persistGroup(currentGroup)
         }
 
-        const tabset: Tabset = await useTabsetService().addToTabsetId(this.tabset.id, this.tab, 0)
+        const tabset: Tabset = await useTabsetService().addToTabset(tabsetOrFolder, this.tab, 0)
 
         // Sharing
-        if (tabset.sharedId && tabset.sharing === TabsetSharing.PUBLIC_LINK) {
+        if (tabset.sharedId && tabset.sharing === TabsetSharing.PUBLIC_LINK && !this.activeFolder) {
           tabset.sharing = TabsetSharing.PUBLIC_LINK_OUTDATED
           tabset.sharedAt = new Date().getTime()
         }
@@ -77,12 +88,9 @@ export class AddTabToTabsetCommand implements Command<any> {
             this.tab.favIconUrl || '')
           res = new ExecutionResult(res2, "Tab was added")
         }
-        sendMsg('tab-added', {tabsetId: tabset.id})
+        sendMsg('tab-added', {tabsetId: this.tabset.id})
 
         return res
-        // })
-        // .catch((err) => Promise.reject("got err " + err))
-        //    })
       } catch (err) {
         return Promise.reject("error: " + err)
       }

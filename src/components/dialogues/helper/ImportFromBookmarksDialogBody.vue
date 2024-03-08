@@ -148,6 +148,10 @@ const importBookmarks = async () => {
     const tabset = await createTabsetFrom(newTabsetName.value, bookmarkId.value)
     await useTabsetService().saveTabset(tabset)
     $q.loadingBar?.stop()
+
+    sendMsg('reload-tabset', {tabsetId: tabset.id})
+    sendMsg('sidepanel-switch-view', {view: 'main'})
+
     return
   }
 
