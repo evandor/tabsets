@@ -88,9 +88,7 @@
 
 <script lang="ts" setup>
 import {ref, watch, watchEffect} from "vue";
-import SavedTabs from "src/components/SavedTabs.vue"
 import RssTabs from "src/components/RssTabs.vue"
-import TabsetAsSidebar from "src/components/TabsetAsSidebar.vue"
 import {useRoute, useRouter} from "vue-router";
 import {useTabsStore} from "src/stores/tabsStore";
 import {useSettingsStore} from "src/stores/settingsStore";

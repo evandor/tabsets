@@ -97,8 +97,6 @@ export class Tab {
   scheduledFor: number | undefined
   extension: UrlExtension
 
-  mhtmls: string[]
-
   contentHash: string
 
   httpStatus: number = 200

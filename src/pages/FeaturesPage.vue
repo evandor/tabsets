@@ -336,11 +336,11 @@ text.set(FeatureIdent.OPEN_TABS.toLowerCase(), {
     'Adds quick navigation to jump back and forth to recently opened tabs.',
   permissions: []
 })
-text.set(FeatureIdent.CATEGORIZATION.toLowerCase(), {
-  name: 'Tabsets Categorization',
-  description: 'Categorize your tabsets automatically',
-  permissions: []
-})
+// text.set(FeatureIdent.CATEGORIZATION.toLowerCase(), {
+//   name: 'Tabsets Categorization',
+//   description: 'Categorize your tabsets automatically',
+//   permissions: []
+// })
 // text.set(FeatureIdent.PAGE_MARKER.toLowerCase(), {
 //   name: 'Page Marker',
 //   description: 'Highlight parts of a page and add notes',

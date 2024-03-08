@@ -150,11 +150,6 @@ const routes: RouteRecordRaw[] = [
     children: [{path: '', component: () => import('pages/TabsetPage.vue')}],
   },
   {
-    path: '/mainpanel/mhtml/:encodedUrl', // TODO combine with MHtml page
-    component: () => import('layouts/PlainLayout.vue'),
-    children: [{path: '', component: () => import('pages/mainpanel/MainPanelMHtmlPage.vue')}],
-  },
-  {
     path: '/mainpanel/png/:tabId/:blobId',
     component: () => import('layouts/PlainLayout.vue'),
     children: [{path: '', component: () => import('pages/mainpanel/MainPanelPngPage.vue')}],
@@ -228,11 +223,6 @@ const routes: RouteRecordRaw[] = [
     path: '/spaces',
     component: () => import('layouts/DefaultLayout.vue'),
     children: [{path: '', component: () => import('pages/Spaces.vue')}],
-  },
-  {
-    path: '/mhtml/:encodedUrl',
-    component: () => import('layouts/DefaultLayout.vue'),
-    children: [{path: '', component: () => import('pages/MHtmlPage.vue')}],
   },
   {
     path: '/rss/:encodedUrl',
