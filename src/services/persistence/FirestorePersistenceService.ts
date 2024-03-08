@@ -238,11 +238,6 @@ class FirestorePersistenceService implements PersistenceService {
     return Promise.reject([]);
   }
 
-  loadCategories(): Promise<any> {
-    return Promise.reject(undefined);
-  }
-
-
   notificationRead(notificationId: string): Promise<void> {
     return Promise.reject(undefined);
   }
