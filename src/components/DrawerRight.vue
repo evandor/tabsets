@@ -88,22 +88,17 @@
 
 <script lang="ts" setup>
 import {ref, watch, watchEffect} from "vue";
-import SavedTabs from "src/components/SavedTabs.vue"
 import RssTabs from "src/components/RssTabs.vue"
-import TabsetAsSidebar from "src/components/TabsetAsSidebar.vue"
 import {useRoute, useRouter} from "vue-router";
 import {useTabsStore} from "src/stores/tabsStore";
 import {useSettingsStore} from "src/stores/settingsStore";
 import {DrawerTabs, useUiStore} from "src/stores/uiStore";
-import TabsGroupedByHost from "components/TabsGroupedByHost.vue";
 import Features from "components/Features.vue";
-import UnassignedAndOpenTabs from "components/views/UnassignedAndOpenTabs.vue";
 import BookmarksTree from "components/BookmarksTree.vue";
 import TabDetails from "components/views/TabDetails.vue";
 import TabsetHelp from "components/TabsetHelp.vue";
 import TabsetDetails from "components/views/TabsetDetails.vue";
 import TagsListViewer from "components/views/TagsListViewer.vue";
-import SidePanelTagsListViewer from "pages/sidepanel/SidePanelTagsListViewer.vue";
 import TagListViewer from "components/views/TagListViewer.vue";
 import ByDomainList from "components/ByDomainList.vue";
 import OpenTabsView from "components/views/OpenTabsView.vue";

@@ -8,7 +8,6 @@ import {useDB} from "src/services/usePersistenceService";
 import {useSuggestionsStore} from "stores/suggestionsStore";
 import tabsetService from "src/services/TabsetService";
 import {useTabsetService} from "src/services/TabsetService2";
-import MHtmlService from "src/services/MHtmlService";
 import ChromeApi from "src/services/ChromeApi";
 import {useSpacesStore} from "stores/spacesStore";
 import {useTabsStore} from "stores/tabsStore";
@@ -160,7 +159,6 @@ class AppService {
 
     await spacesStore.initialize(store)
     await useTabsetService().init(store, false)
-    await MHtmlService.init()
     ChromeApi.init(router)
 
     if (usePermissionsStore().hasFeature(FeatureIdent.TAB_GROUPS)) {

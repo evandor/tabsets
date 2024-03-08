@@ -4,7 +4,6 @@ import {Space} from "src/models/Space";
 import {Suggestion, SuggestionState} from "src/models/Suggestion";
 import {SearchDoc} from "src/models/SearchDoc";
 import {BlobType, SavedBlob} from "src/models/SavedBlob";
-import {MHtml} from "src/models/MHtml";
 import {Tab} from "src/models/Tab";
 import {MetaLink} from "src/models/MetaLink";
 import {Tabset} from "src/models/Tabset";
@@ -202,10 +201,6 @@ class FirestorePersistenceService implements PersistenceService {
     return Promise.reject({});
   }
 
-  getMHtmls(): Promise<MHtml[]> {
-    return Promise.reject([]);
-  }
-
   getMessages(): Promise<Message[]> {
     return Promise.reject([]);
   }
@@ -242,7 +237,7 @@ class FirestorePersistenceService implements PersistenceService {
     return Promise.reject(undefined);
   }
 
-  async reloadTabset(tabsetId: string): void {
+  async reloadTabset(tabsetId: string): Promise<void> {
     try {
       const ts = await getDoc(tabsetDoc(tabsetId))
       console.log("reloaded tabset", ts.data())

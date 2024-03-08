@@ -21,9 +21,9 @@ export class AppFeatures {
     new AppFeature(FeatureIdent.TOP10, FeatureType.RECOMMENDED, 'Top 10 Tabs', 'o_workspace_premium', ['all']),
     new AppFeature(FeatureIdent.OPEN_TABS, FeatureType.OPTIONAL, 'Open Tabs', 'o_playlist_add', ['bex']),
 
-    new AppFeature(FeatureIdent.SAVE_TAB, FeatureType.EXPERIMENTAL, 'Save Tabs as MHTML', 'o_save', ['bex'])
-      .setActivateCommands([new GrantPermissionCommand('pageCapture')]),
-      //.setDeactivateCommand(new RevokePermissionCommand('pageCapture')),
+    // new AppFeature(FeatureIdent.SAVE_TAB, FeatureType.EXPERIMENTAL, 'Save Tabs as MHTML', 'o_save', ['bex'])
+    //   .setActivateCommands([new GrantPermissionCommand('pageCapture')]),
+    //   //.setDeactivateCommand(new RevokePermissionCommand('pageCapture')),
     new AppFeature(FeatureIdent.SAVE_TAB_AS_PNG, FeatureType.EXPERIMENTAL, 'Save Tab as Image', 'o_image', ['bex'])
       .setActivateCommands([new GrantPermissionCommand('pageCapture')]),
 

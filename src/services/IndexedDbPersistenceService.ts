@@ -6,7 +6,6 @@ import PersistenceService from "src/services/PersistenceService";
 import {Tabset, TabsetStatus} from "src/models/Tabset";
 import {useSpacesStore} from "src/stores/spacesStore";
 import {Space} from "src/models/Space";
-import {MHtml} from "src/models/MHtml";
 import {Tab} from "src/models/Tab";
 import {SearchDoc} from "src/models/SearchDoc";
 import {MetaLink} from "src/models/MetaLink";
