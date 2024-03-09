@@ -684,11 +684,11 @@ if ($q.platform.is.chrome) {
       } else if (message.name === "progress-indicator") {
         if (message.percent) {
           uiStore.progress = message.percent
-          uiStore.progressLabel = message.label
+          // uiStore.progressLabel = message.label
         }
         if (message.status === "done") {
           uiStore.progress = undefined
-          uiStore.progressLabel = undefined
+          // uiStore.progressLabel = undefined
         }
         sendResponse("ui store progress set to " + uiStore.progress)
       } else if (message.name === "detail-level-changed") {

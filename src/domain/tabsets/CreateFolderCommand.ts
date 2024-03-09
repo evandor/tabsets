@@ -1,18 +1,11 @@
 import Command from "src/domain/Command";
 import {ExecutionResult} from "src/domain/ExecutionResult";
 import {useTabsetService} from "src/services/TabsetService2";
-import {SaveOrReplaceResult} from "src/models/SaveOrReplaceResult";
 import {useUtils} from "src/services/Utils";
-import {useTabsStore} from "stores/tabsStore";
-import {usePermissionsStore} from "stores/permissionsStore";
-import {FeatureIdent} from "src/models/AppFeature";
-import {useSuggestionsStore} from "stores/suggestionsStore";
-import {StaticSuggestionIdent, Suggestion} from "src/models/Suggestion";
-import Analytics from "src/utils/google-analytics";
-import {useWindowsStore} from "src/stores/windowsStore";
-import {STRIP_CHARS_IN_USER_INPUT} from "boot/constants";
 import {Tabset, TabsetType} from "src/models/Tabset";
 import {uid} from "quasar";
+import _ from "lodash"
+import {Tab} from "src/models/Tab";
 
 const {sendMsg} = useUtils()
 
@@ -31,7 +24,8 @@ export class CreateFolderCommand implements Command<string> {
     try {
       const tabset = useTabsetService().getTabset(this.tabsetId)!
       if (!this.parentFolder) {
-        const newFolder = new Tabset(uid(), this.folderName, this.tabsToUse)
+        const tabs = _.map(this.tabsToUse, (t: chrome.tabs.Tab) => new Tab(uid(), t))
+        const newFolder = new Tabset(uid(), this.folderName, tabs)
         newFolder.folderParent = tabset.id
         tabset.folders.push(newFolder)
         await useTabsetService().saveTabset(tabset)
