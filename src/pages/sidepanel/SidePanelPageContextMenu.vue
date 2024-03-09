@@ -12,6 +12,17 @@
                        icon="o_description"
                        label="Tabset Description..."/>
 
+      <template v-if="usePermissionsStore().hasFeature(FeatureIdent.TABSET_SUBFOLDER)">
+
+        <q-separator inset />
+
+        <ContextMenuItem v-close-popup
+                         @was-clicked="createSubfolder(tabset)"
+                         icon="o_folder"
+                         label="Create Subfolder"/>
+
+      </template>
+
       <q-separator inset v-if="useTabsStore().tabsets.size > 1"/>
 
       <ContextMenuItem v-close-popup
@@ -175,6 +186,9 @@ import {useRouter} from "vue-router";
 import {MarkTabsetDeletedCommand} from "src/domain/tabsets/MarkTabsetDeleted";
 import {SidePanelView, useUiStore} from "stores/uiStore";
 import {NotificationType} from "src/services/ErrorHandler";
+import NewTabsetDialog from "components/dialogues/NewTabsetDialog.vue";
+import {useSpacesStore} from "stores/spacesStore";
+import NewSubfolderDialog from "components/dialogues/NewSubfolderDialog.vue";
 
 const {inBexMode} = useUtils()
 
@@ -194,6 +208,16 @@ const startTabsetNote = (tabset: Tabset) => {
     chrome.runtime.getURL('www/index.html') + "#/mainpanel/notes/?tsId=" + tabset.id + "&edit=true" :
     "#/mainpanel/notes/?tsId=" + tabset.id + "&edit=true"
   NavigationService.openOrCreateTab([url])
+}
+
+const createSubfolder = (tabset: Tabset) => {
+  $q.dialog({
+    component: NewSubfolderDialog,
+    componentProps: {
+      tabsetId: tabset.id,
+      parentFolder: undefined
+    }
+  })
 }
 
 const openEditTabsetDialog = (tabset: Tabset) => {

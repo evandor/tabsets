@@ -41,7 +41,7 @@
     "@editorjs/editorjs": "^2.27.2",
     "@editorjs/header": "^2.7.0",
     "@extractus/feed-extractor": "^7.0.1",
-    "@intlify/unplugin-vue-i18n": "^2.0.0",
+    "@intlify/unplugin-vue-i18n": "^3.0.0",
     "@mozilla/readability": "^0.5.0",
     "@quasar/extras": "^1.16.6",
     "@stripe/stripe-js": "^3.0.3",

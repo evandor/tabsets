@@ -34,8 +34,6 @@ export const TABSET_NAME_MAX_LENGTH = 32;
 export class Tabset {
   id: string
 
-  _id: string | undefined
-  _rev: string | undefined
   name: string
   created: number
   updated: number
