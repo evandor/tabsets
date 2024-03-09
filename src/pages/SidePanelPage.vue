@@ -281,7 +281,7 @@
             <!-- the actual tabs -->
             <SidePanelPageTabList
               v-if="tabsetExpanded.get(tabset.id)"
-              :indent="calcFolders(tabset as Tabset).length > 0"
+              :indent="calcFolders(tabset as Tabset)?.length > 0"
               :tabsCount="useTabsetService().tabsToShow(tabset as Tabset).length"
               :tabset="tabsetForTabList(tabset as Tabset)"/>
             <!-- the actual tabs: end -->
