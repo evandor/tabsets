@@ -1,12 +1,6 @@
 <template>
   <div class="q-ma-none q-pa-none" style="max-width:300px">
     <q-list dense>
-      <!--      <q-expansion-item v-for="(tabset,index) in tabsets" group="thegroup"-->
-      <!--                        dense-toggle dense hide-expand-icon-->
-      <!--                        :style="activeTabset === tabset.id ? 'background-color: #efefef' : 'background-color:#f9f9f9'"-->
-      <!--                        header-class="q-ma-none q-pa-none q-ml-md q-mb-xs"-->
-      <!--                        :expand-icon="activeTabset === tabset.id ? 'expand_more' : 'none'"-->
-      <!--                        expand-icon-toggle>-->
 
       <q-item v-for="(tabset,index) in tabsets" class="darken-on-hover">
         <q-item-section class="cursor-pointer q-ma-none q-pa-none"
@@ -36,17 +30,9 @@
                           v-if="tabset.type === TabsetType.DYNAMIC">
                     <q-tooltip class="tooltip">The tabs of this tabset have been generated automatically</q-tooltip>
                   </q-icon>
-                  <!--                    <q-icon name="local_library" color="blue-10" class="q-ml-none q-mr-sm"-->
-                  <!--                            style="position:relative;top:-5px;left:-2px;"-->
-                  <!--                            v-if="tabset.type === TabsetType.DYNAMIC">-->
-                  <!--                      <q-tooltip class="tooltip">This tabset is readonly</q-tooltip>-->
-                  <!--                    </q-icon>-->
                   {{ tabset.name }}
                 </div>
               </div>
-
-
-              <!-- !MIT -->
 
             </template>
           </q-item-label>
