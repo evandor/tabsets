@@ -27,11 +27,14 @@ class UndoCommand implements Command<any> {
 
 export class DeleteTabCommand implements Command<Tabset> {
 
-  constructor(public tab: Tab) {
+  constructor(
+    public tab: Tab,
+    public tabset: Tabset | undefined = undefined
+  ) {
   }
 
   async execute(): Promise<ExecutionResult<Tabset>> {
-    return deleteTab(this.tab)
+    return deleteTab(this.tab, this.tabset)
       .then((tabset: Tabset) => {
         // sharing
         if (tabset.sharedId && tabset.sharing === TabsetSharing.PUBLIC_LINK) {

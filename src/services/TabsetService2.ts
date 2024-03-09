@@ -566,8 +566,8 @@ export function useTabsetService() {
   }
 
 
-  const deleteTab = (tab: Tab): Promise<Tabset> => {
-    console.log("deleting tab", tab.id, tab.chromeTabId)
+  const deleteTab = (tab: Tab, tabset: Tabset | undefined = undefined): Promise<Tabset> => {
+    console.log("deleting tab", tab.id, tab.chromeTabId, tabset?.id)
     const tabUrl = tab.url || ''
     if (tabsetsFor(tabUrl).length <= 1) {
       removeThumbnailsFor(tabUrl)
@@ -578,10 +578,8 @@ export function useTabsetService() {
         .then(() => console.debug("deleting content for ", tabUrl))
         .catch(err => console.log("error deleting content", err))
     }
-    const tabset = tabsetFor(tab.id)
     if (tabset) {
       useTabsStore().removeTab(tabset, tab.id)
-      //useNotificationsStore().unsetSelectedTab()
       console.log("deletion: saving tabset", tabset)
       return saveTabset(tabset)
         .then(() => tabset)

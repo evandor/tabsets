@@ -5,7 +5,6 @@ export enum MonitoringType {
 
 export class Monitor {
 
-
     constructor(
         public type: MonitoringType = MonitoringType.NONE,
         public data: object = {}) {

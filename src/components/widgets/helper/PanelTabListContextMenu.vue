@@ -86,7 +86,7 @@
       </template>
 
       <q-separator inset/>
-      <q-item clickable v-close-popup @click.stop="deleteTab(props['tab' as keyof object])">
+      <q-item clickable v-close-popup @click.stop="deleteTab()">
         <q-item-section style="padding-right:0;min-width:25px;max-width: 25px;">
           <q-icon size="xs" name="o_delete" color="negative"/>
         </q-item-section>
@@ -146,9 +146,9 @@ async function tabToUse(tab: Tab) {
   return useTab;
 }
 
-const deleteTab = async (tabIn: Tab) => {
-  const useTab = await tabToUse(tabIn)
-  useCommandExecutor().executeFromUi(new DeleteTabCommand(useTab))
+const deleteTab = async () => {
+  const useTab = await tabToUse(props.tab)
+  useCommandExecutor().executeFromUi(new DeleteTabCommand(useTab, props.tabset))
   if (useTab && useTab.url) {
     const res = await useBookmarksStore().findBookmarksForUrl(useTab.url)
     console.log("existing bookmarks", res)

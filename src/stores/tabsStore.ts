@@ -349,12 +349,13 @@ export const useTabsStore = defineStore('tabs', {
     },
 
     removeTab(tabset: Tabset, tabId: string) {
-
-      //const currentTabset: Tabset = this.tabsets.get(this.currentTabsetId) || new Tabset("", "", [])
       tabset.tabs = _.filter(tabset.tabs as Tab[], (t: Tab) => t.id !== tabId)
       markDuplicates(tabset)
       if (this.pendingTabset) {
         this.pendingTabset.tabs = _.filter(this.pendingTabset.tabs as Tab[], (t: Tab) => t.id !== tabId)
+      }
+      for (const folder of tabset.folders) {
+        this.removeTab(folder, tabId)
       }
     },
 
