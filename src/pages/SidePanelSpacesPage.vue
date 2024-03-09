@@ -239,17 +239,23 @@ async function getTabsetsForSpaces() {
     }
   })
   res.forEach((value: Tabset[], key: string) => {
-    res.set(key, _.sortBy(value, [
-      function (o) {
-        return o.name.toLowerCase()
-      }
-    ]))
+    res.set(key,
+      _.orderBy(value, [
+        function (o) {
+          console.log("o", o.status)
+          return o.status.toString();
+        },
+        function (o) {
+          return o.name.toLowerCase();
+        }
+      ],['desc','asc'] ))
   });
+  console.log("res", res)
   return res;
 }
 
 watchEffect(async () => {
-  tabsetsForSpaces.value  = await getTabsetsForSpaces();
+  tabsetsForSpaces.value = await getTabsetsForSpaces();
 })
 
 watchEffect(() => {
