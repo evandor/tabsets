@@ -84,6 +84,9 @@
             <template v-if="firebaseActive()">
               <q-checkbox
                 size="xs" v-model="login" class="text-grey" label="Login or create Account"/>
+              <q-icon class="q-ml-sm cursor-pointer" name="o_help" color="grey">
+                <q-tooltip class="tooltip">With an Account, you can sync your tabsets across browsers and computers</q-tooltip>
+              </q-icon>
             </template>
           </div>
         </div>

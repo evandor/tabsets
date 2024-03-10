@@ -208,6 +208,7 @@ watchEffect(() => {
       }
     }
   }
+  windowsToOpenOptions.value = _.sortBy(windowsToOpenOptions.value, ["label"])
 })
 
 watchEffect(() => {

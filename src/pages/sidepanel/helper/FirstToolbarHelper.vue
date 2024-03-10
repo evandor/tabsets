@@ -68,7 +68,7 @@
               icon="o_sync_alt"
               tooltip="This account is being synced"
               color="grey"
-              size="12px"
+              size="10px"
               class="q-ml-sm"/>
 
             <SidePanelToolbarButton
