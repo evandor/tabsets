@@ -14,9 +14,8 @@ import PlaceholderUtils from "src/utils/PlaceholderUtils";
 import {Monitor, MonitoringType} from "src/models/Monitor";
 import {ListDetailLevel, useUiStore} from "stores/uiStore";
 import {TabsetColumn} from "src/models/TabsetColumn";
-import {doc, setDoc, updateDoc} from "firebase/firestore";
+import {deleteDoc, doc, Firestore, setDoc} from "firebase/firestore";
 import FirebaseServices from "src/services/firebase/FirebaseServices";
-import {getAuth} from "firebase/auth";
 import {useAuthStore} from "stores/authStore";
 
 const {getTabset, getCurrentTabset, saveTabset, saveCurrentTabset, tabsetsFor, addToTabset} = useTabsetService()
@@ -566,22 +565,28 @@ class TabsetService {
   }
 
   async share(tabsetId: string, sharing: TabsetSharing, sharedId: string | undefined, sharedBy: string | undefined): Promise<TabsetSharing | void> {
-    console.log(`setting property 'sharing' to ${sharing} for  ${tabsetId} with sharingId ${sharedId}`)
+    console.log(`setting property 'sharing' to ${sharing} for tabset  ${tabsetId} with sharedId ${sharedId}`)
     const ts = getTabset(tabsetId)
     if (ts) {
+      const firestore: Firestore = FirebaseServices.getFirestore()
+
       const oldSharing = ts.sharing
       ts.sharing = sharing
       ts.sharedBy = sharedBy
       ts.view = "list"
-      // ts.mqttUrl = useUiStore().sharingMqttUrl
 
       if (sharing === TabsetSharing.UNSHARED) {
         console.log("deleting share for tabset", ts.sharedId)
+        if (sharedId) {
+          await deleteDoc(doc(firestore, "publictabsets", sharedId))
+          ts.sharedBy = undefined
+          ts.sharedById = undefined
+          ts.sharedId = undefined
+          await saveTabset(ts)
+        }
         return
         // return FirebaseCall.delete("/share/public/" + ts.sharedId)
         //   .then(() => {
-        //     ts.sharedBy = undefined
-        //     ts.sharedId = undefined
         //     console.log("unshared tabset", ts)
         //     saveTabset(ts)
         //   })
@@ -612,7 +617,7 @@ class TabsetService {
         if (sharedId) {
           ts.sharedAt = new Date().getTime()
           console.log("updating with ts", ts)
-          await setDoc(doc(FirebaseServices.getFirestore(), "publictabsets", sharedId), JSON.parse(JSON.stringify(ts)))
+          await setDoc(doc(firestore, "publictabsets", sharedId), JSON.parse(JSON.stringify(ts)))
           await saveTabset(ts)
           return
         } else {
@@ -622,7 +627,7 @@ class TabsetService {
           console.log("setting shared id to ", publicId)
           ts.sharedId = publicId
           ts.sharedById = useAuthStore().user.uid
-          await setDoc(doc(FirebaseServices.getFirestore(), "publictabsets", publicId), JSON.parse(JSON.stringify(ts)))
+          await setDoc(doc(firestore, "publictabsets", publicId), JSON.parse(JSON.stringify(ts)))
           await saveTabset(ts)//.then(() => oldSharing)
           return
         }

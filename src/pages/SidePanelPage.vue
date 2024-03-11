@@ -81,6 +81,27 @@
           </q-btn>
         </div>
       </template>
+      <div class="q-mx-md q-mx-sm text-primary text-caption"></div>
+
+      <div class="q-pa-md q-gutter-sm" v-if="showSwitchedToLocalInfo()">
+        <q-banner inline-actions rounded class="text-primary" style="border: 1px solid grey">
+          <div class="row q-pa-xs">
+            <div class="2">
+              <q-icon name="o_lightbulb" color="warning" size="1.3em"/>
+            </div>
+            <div class="col text-right cursor-pointer" @click="ackSwitchToLocal()">x
+              <q-tooltip>close this info message</q-tooltip>
+            </div>
+          </div>
+          <div class="row q-pa-xs">
+            <div class="2"></div>
+            <div class="col text-caption">
+              Showing local tabsets
+              <slot></slot>
+            </div>
+          </div>
+        </q-banner>
+      </div>
 
       <q-list dense
               class="rounded-borders q-ma-none q-pa-none" :key="tabset.id"
@@ -1052,6 +1073,9 @@ const tabsetNameOrChain = (tabset: Tabset) => {
   }
   return tabset.name
 }
+
+const showSwitchedToLocalInfo = () => useUiStore().showSwitchedToLocalInfo
+const ackSwitchToLocal = () => useUiStore().showSwitchedToLocalInfo = false
 
 </script>
 

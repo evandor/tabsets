@@ -122,7 +122,7 @@
       <ContextMenuItem
         v-if="tabset.sharing === TabsetSharing.PUBLIC_LINK || tabset.sharing === TabsetSharing.PUBLIC_LINK_OUTDATED"
         v-close-popup
-        @was-clicked="removePublicShare(tabset.id)"
+        @was-clicked="removePublicShare(tabset.id, tabset.sharedId)"
         icon="ios_share"
         color="warning"
         label="Stop Sharing">
@@ -174,7 +174,7 @@ import {MarkTabsetAsDefaultCommand} from "src/domain/tabsets/MarkTabsetAsDefault
 import DeleteTabsetDialog from "components/dialogues/DeleteTabsetDialog.vue";
 import ContextMenuItem from "pages/sidepanel/helper/ContextMenuItem.vue";
 import {PropType} from "vue";
-import {UnShareTabsetCommand} from "src/domain/tabsets/UnShareTabset";
+import {UnShareTabsetCommand} from "src/domain/tabsets/UnShareTabsetCommand"
 import {useTabsetService} from "src/services/TabsetService2";
 import {Tab} from "src/models/Tab";
 import {CopyToClipboardCommand} from "src/domain/commands/CopyToClipboard";
@@ -278,7 +278,7 @@ const pin = (tabset: Tabset) =>
 const unpin = (tabset: Tabset) =>
   useCommandExecutor().executeFromUi(new MarkTabsetAsDefaultCommand(tabset.id))
 
-const removePublicShare = (tabsetId: string) => useCommandExecutor().executeFromUi(new UnShareTabsetCommand(tabsetId))
+const removePublicShare = (tabsetId: string, sharedId: string) => useCommandExecutor().executeFromUi(new UnShareTabsetCommand(tabsetId, sharedId))
 
 const openPublicShare = (tabsetId: string) => {
   const ts = useTabsetService().getTabset(tabsetId)
