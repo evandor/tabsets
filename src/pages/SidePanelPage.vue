@@ -267,6 +267,7 @@
                 </q-item-section>
 
                 <q-item-section side
+                                v-if="folder.name !== '..'"
                                 @mouseover="hoveredTabset = tabset.id"
                                 @mouseleave="hoveredTabset = undefined">
                   <q-item-label>
@@ -885,7 +886,8 @@ const getPublicTabsetLink = (ts: Tabset) => {
   let image = "https://tabsets.web.app/favicon.ico"
   if (ts && ts.sharedId) {
     //return PUBLIC_SHARE_URL + "#/pwa/imp/" + ts.sharedId + "?n=" + btoa(ts.name) + "&a=" + btoa(ts.sharedBy || 'n/a') + "&d=" + ts.sharedAt
-    return "https://us-central1-tabsets-backend-prd.cloudfunctions.net/app/share/preview/" + ts.sharedId + "?n=" + btoa(ts.name) + "&a=" + btoa(ts.sharedBy || 'n/a')
+    //return "https://us-central1-tabsets-backend-prd.cloudfunctions.net/app/share/preview/" + ts.sharedId + "?n=" + btoa(ts.name) + "&a=" + btoa(ts.sharedBy || 'n/a')
+    return process.env.BACKEND_URL + "/share/preview/" + ts.sharedId + "?n=" + btoa(ts.name) + "&a=" + btoa(ts.sharedBy || 'n/a')
   }
   return image
 }

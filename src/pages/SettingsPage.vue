@@ -487,9 +487,7 @@ const permissionsList = ref<string[]>([])
 const darkMode = ref<string>(localStorage.getItem('darkMode') || "auto")
 const detailLevel = ref<ListDetailLevel>(localStorage.getItem('ui.detailLevel') || ListDetailLevel.MAXIMAL)
 
-const nickname = ref<string>(localStorage.getItem(SHARING_AUTHOR_IDENT) || '')
-const avatar = ref<string>(localStorage.getItem(SHARING_AVATAR_IDENT) as string || '')
-const installationId = ref<string>(localStorage.getItem(APP_INSTALLATION_ID) as string || '---')
+//const installationId = ref<string>(localStorage.getItem(APP_INSTALLATION_ID) as string || '---')
 
 const bookmarksPermissionGranted = ref<boolean | undefined>(usePermissionsStore().hasPermission('bookmarks'))
 const pageCapturePermissionGranted = ref<boolean | undefined>(usePermissionsStore().hasPermission('history'))
@@ -588,18 +586,6 @@ watchEffect(() => {
   (installationTitle.value && installationTitle.value.trim().length > 0) ?
     LocalStorage.set(TITLE_IDENT, installationTitle.value.replace(STRIP_CHARS_IN_USER_INPUT, '')) :
     LocalStorage.remove(TITLE_IDENT)
-})
-
-watchEffect(() => {
-  (nickname.value && nickname.value.trim().length > 0) ?
-    LocalStorage.set(SHARING_AUTHOR_IDENT, nickname.value.replace(STRIP_CHARS_IN_USER_INPUT, '')) :
-    LocalStorage.remove(SHARING_AUTHOR_IDENT)
-})
-
-watchEffect(() => {
-  (avatar.value && avatar.value.trim().length > 0) ?
-    LocalStorage.set(SHARING_AVATAR_IDENT, avatar.value.replace(STRIP_CHARS_IN_USER_INPUT, '')) :
-    LocalStorage.remove(SHARING_AVATAR_IDENT)
 })
 
 watchEffect(() => {

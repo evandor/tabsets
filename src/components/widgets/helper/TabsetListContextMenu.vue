@@ -171,7 +171,7 @@ import _ from "lodash";
 import {useTabsetService} from "src/services/TabsetService2";
 import {openURL, useQuasar} from "quasar";
 import DeleteTabsetDialog from "components/dialogues/DeleteTabsetDialog.vue";
-import {ShareTabsetCommand} from "src/domain/tabsets/ShareTabset";
+import {ShareTabsetCommand} from "src/domain/tabsets/ShareTabsetCommand"
 import {UnShareTabsetCommand} from "src/domain/tabsets/UnShareTabset";
 import {CopyToClipboardCommand} from "src/domain/commands/CopyToClipboard";
 import {StopSessionCommand} from "src/domain/commands/StopSessionCommand";

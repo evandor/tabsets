@@ -92,6 +92,8 @@ export const useAuthStore = defineStore('auth', () => {
         case AccessItem.SYNC:
           // return products.value.indexOf("prod_PLJipUG1Zfw7pC") >= 0
           return account.value ? account.value.products.indexOf("skysailSync") >= 0 : false
+        case AccessItem.SHARE:
+          return account.value !== undefined
         case AccessItem.FEATURE_TOGGLES:
           return true
         default:
