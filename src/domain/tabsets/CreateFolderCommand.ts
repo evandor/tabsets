@@ -27,6 +27,9 @@ export class CreateFolderCommand implements Command<string> {
         const tabs = _.map(this.tabsToUse, (t: chrome.tabs.Tab) => new Tab(uid(), t))
         const newFolder = new Tabset(uid(), this.folderName, tabs)
         newFolder.folderParent = tabset.id
+        if (!tabset.folders) {
+          tabset.folders = []
+        }
         tabset.folders.push(newFolder)
         await useTabsetService().saveTabset(tabset)
         return Promise.resolve(new ExecutionResult<string>("result", 'Folder created'))
@@ -36,6 +39,9 @@ export class CreateFolderCommand implements Command<string> {
       if (parentFolder) {
         const newFolder = new Tabset(uid(), this.folderName, [])
         newFolder.folderParent = tabset.id
+        if (!tabset.folders) {
+          tabset.folders = []
+        }
         parentFolder.folders.push(newFolder)
         await useTabsetService().saveTabset(tabset)
         return Promise.resolve(new ExecutionResult<string>("result", 'Subfolder created'))
