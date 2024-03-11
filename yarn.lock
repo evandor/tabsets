@@ -7790,10 +7790,10 @@ qs@6.11.0:
   dependencies:
     side-channel "^1.0.4"
 
-quasar@^2.14.4:
-  version "2.14.6"
-  resolved "https://registry.yarnpkg.com/quasar/-/quasar-2.14.6.tgz#d48d8c5d2844c286941fc656c59f4d623cceb344"
-  integrity sha512-/mG6TEH4vBHU1CqMXwijlYjwvmPsIGBmz/8NXbV6g1AVCfMXvol1SBQOI19OPfKK/oTMdq43HZbHQEO3WhSowg==
+quasar@^2.14.7:
+  version "2.14.7"
+  resolved "https://registry.yarnpkg.com/quasar/-/quasar-2.14.7.tgz#dac7a16a4275f01b9c4be43948413a92fa10c801"
+  integrity sha512-xp4qpEmiGmXMfImWpA/WSeIHT6RojtxJDHtJcuuJCUmUknaC5UOXsd0aRtQghIQ1WCkx/Fhhg5qmyQuuDx6uEg==
 
 query-selector-shadow-dom@^1.0.0:
   version "1.0.1"
