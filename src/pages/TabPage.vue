@@ -574,13 +574,15 @@ const links = (): object[] => {
 
 watchEffect(() => {
   const fuseIndex = searchStore?.getIndex()
-  keys.value = fuseIndex['keys' as keyof object]
-  keysMap.value = fuseIndex['_keysMap' as keyof object]
-  const res = _.filter(fuseIndex['records' as keyof object], (r: any) => {
-    return selectedTab?.url === r.$[2]?.v
-  })
-  if (res && res.length > 0) {
-    index.value = res[0]
+  if (fuseIndex) {
+    keys.value = fuseIndex['keys' as keyof object] || {}
+    keysMap.value = fuseIndex['_keysMap' as keyof object]
+    const res = _.filter(fuseIndex['records' as keyof object], (r: any) => {
+      return selectedTab?.url === r.$[2]?.v
+    })
+    if (res && res.length > 0) {
+      index.value = res[0]
+    }
   }
 })
 
