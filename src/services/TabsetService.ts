@@ -12,8 +12,11 @@ import {useDB} from "src/services/usePersistenceService";
 import {useSpacesStore} from "stores/spacesStore";
 import PlaceholderUtils from "src/utils/PlaceholderUtils";
 import {Monitor, MonitoringType} from "src/models/Monitor";
-import {ListDetailLevel} from "stores/uiStore";
+import {ListDetailLevel, useUiStore} from "stores/uiStore";
 import {TabsetColumn} from "src/models/TabsetColumn";
+import {deleteDoc, doc, Firestore, setDoc} from "firebase/firestore";
+import FirebaseServices from "src/services/firebase/FirebaseServices";
+import {useAuthStore} from "stores/authStore";
 
 const {getTabset, getCurrentTabset, saveTabset, saveCurrentTabset, tabsetsFor, addToTabset} = useTabsetService()
 
@@ -562,66 +565,76 @@ class TabsetService {
   }
 
   async share(tabsetId: string, sharing: TabsetSharing, sharedId: string | undefined, sharedBy: string | undefined): Promise<TabsetSharing | void> {
-    console.log(`setting property 'sharing' to ${sharing} for  ${tabsetId} with sharingId ${sharedId}`)
+    console.log(`setting property 'sharing' to ${sharing} for tabset  ${tabsetId} with sharedId ${sharedId}`)
     const ts = getTabset(tabsetId)
-    // if (ts) {
-    //   const oldSharing = ts.sharing
-    //   ts.sharing = sharing
-    //   ts.sharedBy = sharedBy
-    //   ts.view = "list"
-    //   ts.mqttUrl = useUiStore().sharingMqttUrl
-    //
-    //   if (sharing === TabsetSharing.UNSHARED) {
-    //     console.log("deleting share for tabset", ts.sharedId)
-    //     return FirebaseCall.delete("/share/public/" + ts.sharedId)
-    //       .then(() => {
-    //         ts.sharedBy = undefined
-    //         ts.sharedId = undefined
-    //         console.log("unshared tabset", ts)
-    //         saveTabset(ts)
-    //       })
-    //   }
-    //
-    //   console.log("setting author and avatar for comments")
-    //   for (const tab of ts.tabs) {
-    //     for (const c of tab.comments) {
-    //       console.log("found comment", c.author, c)
-    //       if (c.author === "<me>") {
-    //         c.author = useUiStore().sharingAuthor || '---'
-    //         c.avatar = useUiStore().sharingAvatar
-    //       }
-    //     }
-    //   }
-    //
-    //   console.log("setting thumbnails as images")
-    //   for (const tab of ts.tabs) {
-    //     const thumb = await this.getThumbnailFor(tab)
-    //     if (thumb) {
-    //       if (thumb && thumb['thumbnail' as keyof object]) {
-    //         tab.image = thumb['thumbnail' as keyof object]
-    //       }
-    //     }
-    //   }
-    //
-    //   if (sharedId) {
-    //     ts.sharedAt = new Date().getTime()
-    //     return FirebaseCall.put("/share/public/" + sharedId, ts)
-    //       .then((res: any) => {
-    //         //ts.sharedId = res.data.sharedId
-    //         return saveTabset(ts)
-    //           .then(() => oldSharing)
-    //       })
-    //   } else {
-    //     ts.sharedAt = new Date().getTime()
-    //     return FirebaseCall.post("/share/public", ts)
-    //       .then((res: any) => {
-    //         console.log("setting shared id to ", res.data.sharedId)
-    //         ts.sharedId = res.data.sharedId
-    //         return saveTabset(ts)
-    //           .then(() => oldSharing)
-    //       })
-    //   }
-    // }
+    if (ts) {
+      const firestore: Firestore = FirebaseServices.getFirestore()
+
+      const oldSharing = ts.sharing
+      ts.sharing = sharing
+      ts.sharedBy = sharedBy
+      ts.view = "list"
+
+      if (sharing === TabsetSharing.UNSHARED) {
+        console.log("deleting share for tabset", ts.sharedId)
+        if (sharedId) {
+          await deleteDoc(doc(firestore, "publictabsets", sharedId))
+          ts.sharedBy = undefined
+          ts.sharedById = undefined
+          ts.sharedId = undefined
+          await saveTabset(ts)
+        }
+        return
+        // return FirebaseCall.delete("/share/public/" + ts.sharedId)
+        //   .then(() => {
+        //     console.log("unshared tabset", ts)
+        //     saveTabset(ts)
+        //   })
+      }
+
+      console.log("setting author and avatar for comments")
+      for (const tab of ts.tabs) {
+        for (const c of tab.comments) {
+          console.log("found comment", c.author, c)
+          if (c.author === "<me>") {
+            c.author = useUiStore().sharingAuthor || '---'
+            c.avatar = useUiStore().sharingAvatar
+          }
+        }
+      }
+
+      console.log("setting thumbnails as images")
+      for (const tab of ts.tabs) {
+        const thumb = await this.getThumbnailFor(tab)
+        if (thumb) {
+          if (thumb && thumb['thumbnail' as keyof object]) {
+            tab.image = thumb['thumbnail' as keyof object]
+          }
+        }
+      }
+
+      try {
+        if (sharedId) {
+          ts.sharedAt = new Date().getTime()
+          console.log("updating with ts", ts)
+          await setDoc(doc(firestore, "publictabsets", sharedId), JSON.parse(JSON.stringify(ts)))
+          await saveTabset(ts)
+          return
+        } else {
+          ts.sharedAt = new Date().getTime()
+
+          const publicId = uid()
+          console.log("setting shared id to ", publicId)
+          ts.sharedId = publicId
+          ts.sharedById = useAuthStore().user.uid
+          await setDoc(doc(firestore, "publictabsets", publicId), JSON.parse(JSON.stringify(ts)))
+          await saveTabset(ts)//.then(() => oldSharing)
+          return
+        }
+      } catch (e) {
+        console.error("Error adding document: ", e);
+      }
+    }
     return Promise.reject("could not change sharing : " + tabsetId)
   }
 

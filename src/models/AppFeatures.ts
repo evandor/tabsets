@@ -77,7 +77,7 @@ export class AppFeatures {
     new AppFeature(FeatureIdent.AUTO_TAB_SWITCHER, FeatureType.EXPERIMENTAL, 'Auto Tab Switcher', 'o_switch_left', ['bex']),
     //new AppFeature(FeatureIdent.TABS_AS_TREE, FeatureType.EXPERIMENTAL, 'Tabs in Tree View', 'o_account_tree', ['all']),
     new AppFeature(FeatureIdent.TABSET_SUBFOLDER, FeatureType.OPTIONAL, 'Subfolder for Tabsets', 'o_folder', ['all']),
-    new AppFeature(FeatureIdent.TABSETS_SHARING, FeatureType.EXPERIMENTAL, 'Sharing Tabsets', 'o_ios_share', ['all'])
+    new AppFeature(FeatureIdent.TABSETS_SHARING, FeatureType.OPTIONAL, 'Sharing Tabsets', 'o_ios_share', ['all'])
   ]
 
   getFeature(f: FeatureIdent): AppFeature | undefined {

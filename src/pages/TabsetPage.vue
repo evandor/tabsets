@@ -189,8 +189,12 @@
     narrow-indicator
   >
     <q-tab name="tabset" label="Tabs"/>
-    <q-tab name="page" label="Page" :disable="!tabsStore.currentTabsetId"/>
-    <q-tab name="canvas" label="Canvas" :disable="!tabsStore.currentTabsetId"/>
+    <q-tab name="page" label="Page"
+           v-if="useAuthStore().isAuthenticated()"
+           :disable="!tabsStore.currentTabsetId"/>
+    <q-tab name="canvas" label="Canvas"
+           v-if="useAuthStore().isAuthenticated()"
+           :disable="!tabsStore.currentTabsetId"/>
   </q-tabs>
 
   <!--  <q-separator class="q-mb-md" />-->
@@ -284,6 +288,7 @@ import DynamicTabsetPageCards from "pages/DynamicTabsetPageCards.vue";
 import {useTabsetService} from "src/services/TabsetService2";
 import Analytics from "src/utils/google-analytics";
 import CanvasForTabset from "components/layouts/CanvasForTabset.vue";
+import {useAuthStore} from "stores/authStore";
 
 const route = useRoute()
 const router = useRouter()

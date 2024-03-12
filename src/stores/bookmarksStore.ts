@@ -2,8 +2,9 @@ import {defineStore} from 'pinia';
 import _ from "lodash";
 import {TreeNode} from "src/models/Tree";
 import {Bookmark} from "src/models/Bookmark";
-import {usePermissionsStore} from "src/stores/permissionsStore";
-import {FeatureIdent} from "src/models/AppFeature";
+import {useUtils} from "src/services/Utils";
+
+const {inBexMode} = useUtils()
 
 function nodesFrom(
   parent: chrome.bookmarks.BookmarkTreeNode,
@@ -99,7 +100,7 @@ export const useBookmarksStore = defineStore('bookmarks', {
       this.nonLeafNodes = []
       this.bookmarksLeaves = []
       //const accessGranted = usePermissionsStore().hasPermission("bookmarks") && usePermissionsStore().hasFeature(FeatureIdent.BOOKMARKS)
-      //if (accessGranted) {
+      if (inBexMode()) {
         console.debug(" ...loading bookmarks")//, (new Error()).stack)
         // @ts-ignore
         const bookmarks: chrome.bookmarks.BookmarkTreeNode[] = await chrome.bookmarks.search({})//, async (bookmarks) => {
@@ -121,7 +122,7 @@ export const useBookmarksStore = defineStore('bookmarks', {
 
         return Promise.resolve()
 
-     // }
+      }
 
     },
     remove(bm: Bookmark) {

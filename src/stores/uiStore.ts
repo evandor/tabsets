@@ -212,6 +212,9 @@ export const useUiStore = defineStore('ui', () => {
   const sharingAuthor = ref<string>(LocalStorage.getItem(SHARING_AUTHOR_IDENT) as unknown as string || '')
   const sharingAvatar = ref<string>(LocalStorage.getItem(SHARING_AVATAR_IDENT) as unknown as string || '')
 
+  // info e.g. when stopping to sync
+  const showSwitchedToLocalInfo = ref<boolean>(false)
+
   watch(rightDrawer.value, (val: Object) => {
     LocalStorage.set("ui.rightDrawer", val)
   }, {deep: true})
@@ -607,6 +610,7 @@ export const useUiStore = defineStore('ui', () => {
     animateSettingsButton,
     animateBookmarksButton,
     startButtonAnimation,
-    showLoginTable
+    showLoginTable,
+    showSwitchedToLocalInfo
   }
 })

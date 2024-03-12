@@ -217,7 +217,7 @@
                               || (props.tab as Tab).annotations && (props.tab as Tab).annotations.length > 0
                               || (props.tab as Tab).comments && (props.tab as Tab).comments.length > 0
                               || pngs.length > 0">
-              <span>-</span>
+              <span> | </span>
             </template>
 
             <template v-if="groupName && usePermissionsStore().hasFeature(FeatureIdent.TAB_GROUPS)">

@@ -81,6 +81,27 @@
           </q-btn>
         </div>
       </template>
+      <div class="q-mx-md q-mx-sm text-primary text-caption"></div>
+
+      <div class="q-pa-md q-gutter-sm" v-if="showSwitchedToLocalInfo()">
+        <q-banner inline-actions rounded class="text-primary" style="border: 1px solid grey">
+          <div class="row q-pa-xs">
+            <div class="2">
+              <q-icon name="o_lightbulb" color="warning" size="1.3em"/>
+            </div>
+            <div class="col text-right cursor-pointer" @click="ackSwitchToLocal()">x
+              <q-tooltip>close this info message</q-tooltip>
+            </div>
+          </div>
+          <div class="row q-pa-xs">
+            <div class="2"></div>
+            <div class="col text-caption">
+              Showing local tabsets
+              <slot></slot>
+            </div>
+          </div>
+        </q-banner>
+      </div>
 
       <q-list dense
               class="rounded-borders q-ma-none q-pa-none" :key="tabset.id"
@@ -267,6 +288,7 @@
                 </q-item-section>
 
                 <q-item-section side
+                                v-if="folder.name !== '..'"
                                 @mouseover="hoveredTabset = tabset.id"
                                 @mouseleave="hoveredTabset = undefined">
                   <q-item-label>
@@ -885,7 +907,8 @@ const getPublicTabsetLink = (ts: Tabset) => {
   let image = "https://tabsets.web.app/favicon.ico"
   if (ts && ts.sharedId) {
     //return PUBLIC_SHARE_URL + "#/pwa/imp/" + ts.sharedId + "?n=" + btoa(ts.name) + "&a=" + btoa(ts.sharedBy || 'n/a') + "&d=" + ts.sharedAt
-    return "https://us-central1-tabsets-backend-prd.cloudfunctions.net/app/share/preview/" + ts.sharedId + "?n=" + btoa(ts.name) + "&a=" + btoa(ts.sharedBy || 'n/a')
+    //return "https://us-central1-tabsets-backend-prd.cloudfunctions.net/app/share/preview/" + ts.sharedId + "?n=" + btoa(ts.name) + "&a=" + btoa(ts.sharedBy || 'n/a')
+    return process.env.BACKEND_URL + "/share/preview/" + ts.sharedId + "?n=" + btoa(ts.name) + "&a=" + btoa(ts.sharedBy || 'n/a')
   }
   return image
 }
@@ -1050,6 +1073,9 @@ const tabsetNameOrChain = (tabset: Tabset) => {
   }
   return tabset.name
 }
+
+const showSwitchedToLocalInfo = () => useUiStore().showSwitchedToLocalInfo
+const ackSwitchToLocal = () => useUiStore().showSwitchedToLocalInfo = false
 
 </script>
 
