@@ -11,6 +11,9 @@ import {useSearchStore} from "stores/searchStore";
 import {uid, useQuasar} from "quasar";
 import {useGroupsStore} from "stores/groupsStore";
 import PlaceholderUtils from "src/utils/PlaceholderUtils";
+import {useAuthStore} from "stores/authStore";
+import {collection, deleteDoc, doc, getDoc, getDocs, setDoc, updateDoc} from "firebase/firestore";
+import FirebaseServices from "src/services/firebase/FirebaseServices";
 
 const {saveTabset} = useTabsetService()
 const {sendMsg} = useUtils()
@@ -53,6 +56,12 @@ export class AddTabToTabsetCommand implements Command<any> {
         }
 
         const tabset: Tabset = await useTabsetService().addToTabset(tabsetOrFolder, this.tab, 0)
+
+        // Analysis
+        if (useAuthStore().isAuthenticated() && this.tab.url?.startsWith("https://")) {
+          const userId = useAuthStore().user.uid
+          setDoc(doc(FirebaseServices.getFirestore(), "users", userId, "queue", uid()),{"event": "new-tab", "url": this.tab.url})
+        }
 
         // Sharing
         if (tabset.sharedId && tabset.sharing === TabsetSharing.PUBLIC_LINK && !this.activeFolder) {

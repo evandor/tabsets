@@ -515,9 +515,11 @@ watchEffect(() => {
 watchEffect(() => {
   if (props.tab) {
     const t = props.tab
+    //console.log("placeholders", t.placeholders)
     if (t.placeholders && t.placeholders.type === PlaceholdersType.URL_SUBSTITUTION) {
       const subs = t.placeholders.config
       Object.entries(subs).forEach(e => {
+        console.log("got e", e)
         const name = e[0]
         const val = e[1]
         val.split(",").forEach((v: string) => {
@@ -535,6 +537,7 @@ watchEffect(() => {
       })
     }
   }
+  //console.log("===>", placeholders.value)
 })
 
 watchEffect(async () => {

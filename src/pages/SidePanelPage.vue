@@ -175,17 +175,29 @@
                             @mouseover="hoveredTabset = tabset.id"
                             @mouseleave="hoveredTabset = undefined">
               <q-item-label>
-                <q-icon
-                  id="foo"
-                  v-if="showAddTabButton(tabset as Tabset, currentChromeTab)"
-                  @click.stop="saveInTabset(tabset.id, tabset.folderActive)"
-                  class="q-mr-none"
-                  name="o_bookmark_add"
-                  :class="alreadyInTabset() ? '':'cursor-pointer'"
-                  :color="alreadyInTabset() ? 'grey-5': tsBadges.length > 0 ? 'accent':'warning'"
-                  size="xs"
-                  data-testid="saveInTabsetBtn">
-                </q-icon>
+<!--                <q-icon-->
+<!--                  id="foo"-->
+<!--                  v-if="showAddTabButton(tabset as Tabset, currentChromeTab)"-->
+<!--                  @click.stop="saveInTabset(tabset.id, tabset.folderActive)"-->
+<!--                  class="q-mr-none"-->
+<!--                  name="o_bookmark_add"-->
+<!--                  :class="alreadyInTabset() ? '':'cursor-pointer'"-->
+<!--                  :color="alreadyInTabset() ? 'grey-5': tsBadges.length > 0 ? 'accent':'warning'"-->
+<!--                  size="xs"-->
+<!--                  data-testid="saveInTabsetBtn">-->
+<!--                </q-icon>-->
+                <q-btn outline
+                       v-if="showAddTabButton(tabset as Tabset, currentChromeTab)"
+                       @click.stop="saveInTabset(tabset.id, tabset.folderActive)"
+                       class="q-ma-none q-px-sm q-py-none"
+                       name="o_bookmark_add"
+                       :class="alreadyInTabset() ? '':'cursor-pointer'"
+                       :color="alreadyInTabset() ? 'grey-5': tsBadges.length > 0 ? 'accent':'warning'"
+                       size="xs"
+                       data-testid="saveInTabsetBtn">
+                  <div>Add Tab</div>
+<!--                  <q-icon right class="q-ma-none q-pa-none" size="2em" name="o_south" />-->
+                </q-btn>
                 <span
                   v-if="!alreadyInTabset() && showAddTabButton(tabset as Tabset, currentChromeTab) && tsBadges.length > 0"
                   style="color: grey;font-size: 7px;position: relative;top:-2px;left:-11px;">{{
@@ -367,7 +379,7 @@ import {useDB} from "src/services/usePersistenceService";
 import {useBookmarksStore} from "stores/bookmarksStore";
 import {useSuggestionsStore} from "stores/suggestionsStore";
 import SidePanelPageTabList from "components/layouts/SidePanelPageTabList.vue";
-import {AddTabToTabsetCommand} from "src/domain/tabs/AddTabToTabset";
+import {AddTabToTabsetCommand} from "src/domain/tabs/AddTabToTabsetCommand"
 import {CopyToClipboardCommand} from "src/domain/commands/CopyToClipboard";
 import ShareTabsetPubliclyDialog from "components/dialogues/ShareTabsetPubliclyDialog.vue";
 import {FirebaseCall} from "src/services/firebase/FirebaseCall";
