@@ -144,6 +144,7 @@ export const useUiStore = defineStore('ui', () => {
   const selectedTag = ref<string | undefined>(undefined)
   const tabsetsExpanded = ref<boolean>(false)
   const appLoading = ref<string | undefined>(undefined)
+  const bookmarksLoading = ref<boolean>(false)
   const progress = ref<object | undefined>(undefined)
 
   // online offline
@@ -604,6 +605,7 @@ export const useUiStore = defineStore('ui', () => {
     networkOnline,
     tabBeingDragged,
     appLoading,
+    bookmarksLoading,
     progress,
     setProgress,
     animateNewTabsetButton,

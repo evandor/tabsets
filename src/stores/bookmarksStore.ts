@@ -3,6 +3,7 @@ import _ from "lodash";
 import {TreeNode} from "src/models/Tree";
 import {Bookmark} from "src/models/Bookmark";
 import {useUtils} from "src/services/Utils";
+import {useUiStore} from "stores/uiStore";
 
 function nodesFrom(
   parent: chrome.bookmarks.BookmarkTreeNode,
@@ -92,6 +93,7 @@ export const useBookmarksStore = defineStore('bookmarks', {
       this.initListeners()
     },
     async loadBookmarks(): Promise<void> {
+      useUiStore().bookmarksLoading = true
       this.bookmarksTree = []
       this.bookmarksNodes = []
       this.bookmarksNodes2 = []
@@ -117,6 +119,7 @@ export const useBookmarksStore = defineStore('bookmarks', {
       this.foldersCount = nodes[1]
       this.bookmarksCount = nodes[2]
 
+      useUiStore().bookmarksLoading = false
       return Promise.resolve()
 
 

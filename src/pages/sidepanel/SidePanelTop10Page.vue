@@ -88,7 +88,7 @@ watchEffect(() => {
   loading.value = true
   setTimeout(() => {
     top10.value = _.orderBy(
-      _.flatMap([...tabsStore.tabsets.values()],
+      _.flatMap([...tabsStore.tabsets.values()] as Tabset[],
         (tabset: Tabset) =>
           _.flatMap(tabset.tabs)),
       (t: Tab) => t.activatedCount, "desc")

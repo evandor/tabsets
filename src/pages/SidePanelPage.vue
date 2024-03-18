@@ -20,9 +20,7 @@
           <q-list>
             <q-item clickable @click="useUiStore().startButtonAnimation('newTabset')">
               <q-item-section avatar>
-                <SidePanelToolbarButton
-                  icon="o_add_circle"
-                  color="warning"/>
+                <q-btn outline label="..." color="primary" size="sm"/>
               </q-item-section>
 
               <q-item-section>

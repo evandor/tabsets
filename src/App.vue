@@ -27,7 +27,7 @@ const {info} = useLogger()
 const emitter = new EventEmitter()
 emitter.setMaxListeners(12)
 
-if (process.env.USE_FIREBASE) {
+if (process.env.USE_FIREBASE == "true") {
   FirebaseServices.init()
 }
 
@@ -63,7 +63,7 @@ if (inBexMode()) {
   })
 }
 
-if (process.env.USE_FIREBASE) {
+if (process.env.USE_FIREBASE == "true") {
   const auth = FirebaseServices.getAuth()
   onAuthStateChanged(auth, async (user) => {
     if (user) {

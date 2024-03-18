@@ -21,8 +21,15 @@
       </div>
     </div>
 
+    <div class="row q-ma-lg fit items-center justify-center" v-if="useUiStore().bookmarksLoading">
+      <q-spinner-dots
+        color="primary"
+        size="2em"
+      />
+    </div>
+
     <q-tree
-      v-if="bookmarksPermissionGranted"
+      v-if="bookmarksPermissionGranted && !useUiStore().bookmarksLoading"
       :nodes="showOnlyFolders ? bookmarksStore.nonLeafNodes : bookmarksStore.bookmarksNodes2"
       :filter="filter"
       :filterMethod="bookmarksFilter"
@@ -85,6 +92,7 @@ import NewTabsetDialog from "components/dialogues/NewTabsetDialog.vue";
 import DeleteBookmarkFolderDialog from "components/dialogues/bookmarks/DeleteBookmarkFolderDialog.vue";
 import {TreeNode} from "src/models/Tree";
 import {useUtils} from "src/services/Utils";
+import {useUiStore} from "stores/uiStore";
 
 const router = useRouter()
 const bookmarksStore = useBookmarksStore()
@@ -92,6 +100,7 @@ const bookmarksStore = useBookmarksStore()
 const $q = useQuasar();
 const localStorage = useQuasar().localStorage
 
+const loading = ref(true)
 const mouseHover = ref(false)
 const selected = ref('')
 const deleteButtonId = ref('')
