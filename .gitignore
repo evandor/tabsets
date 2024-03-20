@@ -61,3 +61,5 @@ yarn-error.log*
 /public/cat.png
 /.dev.env
 /.prd.env
+/.env.tmp
+/.tabsets-backend-prd.env
