@@ -71,3 +71,4 @@ yarn-error.log*
 /.dev.env
 /.prd.env
 /.tabsets-backend-prd.env
+/.env.tmp
