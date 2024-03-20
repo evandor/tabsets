@@ -2,7 +2,7 @@
   <q-item
       clickable
       v-ripple
-      class="q-ma-none q-px-sm q-pt-xs q-pb-none"
+      class="q-ma-none q-px-sm q-pt-xs q-pb-none q-ml-sm"
       :class="props.indent ? 'q-ml-md':''"
       :style="itemStyle()"
       @dragstart="startDrag($event, tab)"

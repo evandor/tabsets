@@ -112,16 +112,15 @@
             @click="manageSpaces()">
             <q-tooltip class="tooltip">Manage Spaces</q-tooltip>
           </q-btn>
-          <q-btn
-            icon="o_add_circle"
-            color="positive"
-            flat
-            class="q-ma-none q-pa-xs cursor-pointer"
-            style="max-width:20px"
-            size="12px"
-            data-testid="addTabsetBtn"
-            @click="addSpace()">
-          </q-btn>
+
+          <q-btn outline
+                 label="New Space"
+                 color="primary"
+                 size="sm"
+                 @click="addSpace()"
+                 class="q-ma-none q-px-sm q-py-none"/>
+
+
         </template>
       </FirstToolbarHelper>
 

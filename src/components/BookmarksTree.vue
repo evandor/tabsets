@@ -40,13 +40,16 @@
       v-model:expanded="useNotificationsStore().bookmarksExpanded">
       <template v-slot:header-node="prop">
         <q-icon name="o_folder" color="warning" class="q-mr-sm"/>
-        <span class="cursor-pointer fit no-wrap ellipsis">{{ prop.node.label }} <span style="font-size:smaller" class="text-grey">({{prop.node.subFoldersCount}} / {{prop.node.subNodesCount}})</span></span>
+        <span class="cursor-pointer fit no-wrap ellipsis">{{ prop.node.label }} <span style="font-size:smaller"
+                                                                                      class="text-grey">({{ prop.node.subFoldersCount }} / {{ prop.node.subNodesCount }})</span></span>
 
-        <span class="text-right fit" v-show="mouseHover && prop.node.id === deleteButtonId">
+        <span class="text-right" v-if="mouseHover && prop.node.id === deleteButtonId" style="width:25px;">
             <q-icon name="delete_outline" color="negative" size="18px" @click.stop="deleteBookmarksFolderDialog">
               <q-tooltip>Delete this folder</q-tooltip>
             </q-icon>
-          </span>
+        </span>
+        <span class="text-right" v-else style="width:25px;">&nbsp;</span>
+
 
       </template>
       <template v-slot:header-leaf="prop">
@@ -57,12 +60,13 @@
                :src="favIconFromUrl(prop.node.url)"/>
         <q-icon v-else name="o_article" class="q-mr-sm"/>
         <span class="cursor-pointer fit no-wrap ellipsis">{{ prop.node.label }}</span>
-        <span class="text-right fit" v-show="mouseHover && prop.node.id === deleteButtonId">
-            <q-icon name="delete_outline" color="negative" size="18px"
-                    @click.stop="deleteBookmark(prop.node.id)">
+        <span class="text-right" v-if="mouseHover && prop.node.id === deleteButtonId" style="width:25px;">
+          <q-icon name="delete_outline" color="negative" size="18px"
+                  @click.stop="deleteBookmark(prop.node.id)">
               <q-tooltip>Delete this Bookmark</q-tooltip>
-            </q-icon>
-          </span>
+          </q-icon>
+        </span>
+        <span class="text-right" v-else style="width:25px;">&nbsp;</span>
       </template>
 
     </q-tree>

@@ -303,7 +303,7 @@ const updateSelectionCount = () => {
 }
 
 const filteredTabs = () => {
-  const noDupliatesTabs = _.filter(tabsStore.pendingTabset?.tabs, (t: Tab) => !t.isDuplicate)
+  const noDupliatesTabs = _.filter(tabsStore.pendingTabset?.tabs, (t: Tab) => true)
   if (filter.value && filter.value.trim() !== '') {
     return _.filter(noDupliatesTabs, (t: Tab) =>
       (t?.url && t?.url.indexOf(filter.value) >= 0) ||

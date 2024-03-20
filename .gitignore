@@ -70,4 +70,5 @@ yarn-error.log*
 /Tabsets - Manage Tabs and Bookmarks with Ease/
 /.dev.env
 /.prd.env
+/.env.tmp
 /.tabsets-backend-prd.env

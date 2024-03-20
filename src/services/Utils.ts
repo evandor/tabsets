@@ -57,6 +57,7 @@ export function useUtils() {
           console.log("got callback", callback)
         }
         if (chrome.runtime.lastError) { /* ignore */
+          console.error(chrome.runtime.lastError)
         }
       });
     }

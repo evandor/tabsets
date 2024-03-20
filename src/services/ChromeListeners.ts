@@ -93,7 +93,7 @@ function inIgnoredMessages(request: any) {
     request.name === 'detail-level-perTabset-changed' ||
     request.name === 'detail-level-changed' ||
     request.name === 'reload-application' ||
-    request.name === 'window-updated' ||
+   // request.name === 'window-updated' ||
     request.action === 'highlight-annotation'
   //request.name === 'recogito-annotation-created'
 
@@ -329,6 +329,9 @@ class ChromeListeners {
           this.handleUpdate(ts, chromeTab)
         }
       })
+
+      // handle windowsStore related pages
+      //sendMsg('window-updated', {initiated: "ChromeListeners#onUpdated"})
     }
   }
 
@@ -530,7 +533,7 @@ class ChromeListeners {
     if (inIgnoredMessages(request)) {
       return true
     }
-    //console.debug(" <<< got message", request)
+    console.debug(" <<< got message in ChromeListeners", request)
     if (request.msg === 'captureThumbnail') {
       const screenShotWindow = useWindowsStore().screenshotWindow
       this.handleCapture(sender, screenShotWindow, sendResponse)

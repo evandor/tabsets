@@ -642,7 +642,7 @@ function inIgnoredMessages(message: any) {
     message.msg === "captureThumbnail" ||
     message.msg === "capture-annotation" ||
     message.name === "reload-spaces" ||
-    message.name === "window-updated" ||
+   // message.name === "window-updated" ||
     message.msg === "html2links"
 }
 
@@ -651,7 +651,7 @@ if ($q.platform.is.chrome) {
     // seems we need to define these listeners here to get the matching messages reliably
     // these messages are created by triggering events in the mainpanel
     chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-      //console.log(" <<< received message", message)
+      console.log(" <<< received message", message)
       if (inIgnoredMessages(message)) {
         return true
       }
