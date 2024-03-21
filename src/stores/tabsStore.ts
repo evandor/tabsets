@@ -32,9 +32,9 @@ function markDuplicates(tabset: Tabset) {
     }
   })
   //console.log("found duplicates", urls, duplicates)
-  _.forEach(tabset.tabs, t => {
-    t.isDuplicate = duplicates.has(t.url || 'undefined');
-  })
+  // _.forEach(tabset.tabs, t => {
+  //   t.isDuplicate = duplicates.has(t.url || 'undefined');
+  // })
 }
 
 export const useTabsStore = defineStore('tabs', {

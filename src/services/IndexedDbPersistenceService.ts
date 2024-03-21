@@ -454,7 +454,7 @@ class IndexedDbPersistenceService implements PersistenceService {
           const oldId = w.id
           window = w
           window.id = useId
-          console.warn("replacing old window " + oldId + " with " + window.toString())
+          console.log("replacing old window " + oldId + " with " + window.toString())
           await this.db.delete('windows', oldId)
           break
         }

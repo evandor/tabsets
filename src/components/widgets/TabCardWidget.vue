@@ -119,11 +119,11 @@ function cardStyle(tab: Tab) {
   }
 
   let background = ''
-  if (tab?.isDuplicate) {
-    background = "background: radial-gradient(circle, #FFFFFF 0%, #FFECB3 100%)"
-  } else if (tab?.url === props.highlightUrl) {
-    background = "background: radial-gradient(circle, #FFBF46 0%, #FFBF46 100%)"
-  }
+  // if (tab?.isDuplicate) {
+  //   background = "background: radial-gradient(circle, #FFFFFF 0%, #FFECB3 100%)"
+  // } else if (tab?.url === props.highlightUrl) {
+  //   background = "background: radial-gradient(circle, #FFBF46 0%, #FFBF46 100%)"
+  // }
   return `${borderColor};${background}`
 }
 

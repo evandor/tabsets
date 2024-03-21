@@ -86,7 +86,6 @@ export class Tab {
   // from tabsets' columns
   columnId: string | undefined
 
-  isDuplicate: boolean
   history: string[] = []
   selected: boolean = false
   name: string | undefined
@@ -150,7 +149,6 @@ export class Tab {
     this.groupName = undefined // to be set from 'outside'
 
     //this.chromeTab = chromeTab
-    this.isDuplicate = false
     this.history = []
     this.name = undefined
     this.description = ''

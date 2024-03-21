@@ -610,9 +610,10 @@ export function useTabsetService() {
   }
   const urlExistsInCurrentTabset = (url: string): boolean => {
     const currentTabset = getCurrentTabset()
+   // console.log("testing exists in current tabset", currentTabset.id, url)
     if (currentTabset) {
       if (_.find(currentTabset.tabs, t => {
-        return (t.matcher && usePermissionsStore().hasFeature(FeatureIdent.ADVANCED_TAB_MANAGEMENT)) ?
+        return (t.matcher) ?
           JsUtils.match(t.matcher, url) :
           t.url === url
       })) {

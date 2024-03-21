@@ -60,9 +60,14 @@ const routes: RouteRecordRaw[] = [
     children: [{path: '', component: () => import('pages/sidepanel/SidePanelTabDetails.vue')}],
   },
   {
+    path: '/sidepanel/bookmarks',
+    component: () => import('layouts/SidePanelLayout.vue'),
+    children: [{path: '', component: () => import('pages/sidepanel/SidePanelBookmarksPage.vue')}],
+  },
+  {
     path: '/sidepanel/tabslist',
     component: () => import('layouts/SidePanelLayout.vue'),
-    children: [{path: '', component: () => import('pages/sidepanel/SidePanelOpenTabsListViewer.vue')}],
+    children: [{path: '', component: () => import('pages/sidepanel/SidePanelOpenTabsPage.vue')}],
   },
   {
     path: '/sidepanel/tagslist',
@@ -93,11 +98,6 @@ const routes: RouteRecordRaw[] = [
     path: '/sidepanel/newestList',
     component: () => import('layouts/SidePanelLayout.vue'),
     children: [{path: '', component: () => import('pages/sidepanel/SidePanelNewestTabsPage.vue')}],
-  },
-  {
-    path: '/sidepanel/bookmarks',
-    component: () => import('layouts/SidePanelLayout.vue'),
-    children: [{path: '', component: () => import('pages/sidepanel/SidePanelBookmarksPage.vue')}],
   },
   {
     path: '/sidepanel/tabsAsTree',
