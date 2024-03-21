@@ -18,7 +18,7 @@
     "build bex (prd)": "mv .env .env.tmp && cp .prd.env .env && quasar build -m bex && mv .env.tmp .env",
     "build bex (publish)": "quasar build -m bex",
     "build pwa": "quasar build -m pwa",
-    "build electron": "mv .env .env.tmp && cp .prd.env .env && quasar build -m electron && mv .env.tmp .env",
+    "build electron (prd)": "mv .env .env.tmp && cp .prd.env .env && quasar build -m electron && mv .env.tmp .env",
     "build capacitor": "quasar build -m capacitor -T ios",
     "icon": "icongenie generate -i src/assets/icon.png",
     "test": "echo \"See package.json => scripts for available tests.\" && exit 0",
