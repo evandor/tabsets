@@ -4,7 +4,7 @@
 
     <div class="row q-mt-xs">
       <div class="col-6 q-mt-sm">
-        <SidePanelTabsetsSelectorWidget/>
+        <SidePanelTabsetsSelectorWidget :use-as-tabsets-switcher="true"/>
       </div>
       <div class="col-6 text-right">
         Current Window only
@@ -32,7 +32,7 @@
 
     <template v-if="currentWindowOnly">
       <div v-for="tab in tabsForCurrentWindow"
-           class="row q-my-none tabBorder"
+           class="q-my-none tabBorder q-mb-xs"
            :style="cardStyle(tab)">
         <OpenTabCard2
           v-on:selectionChanged="tabSelectionChanged"
@@ -52,7 +52,7 @@
                         icon="o_grid_view"
                         :label="w['name' as keyof object]"
                         :caption="w['tabsCount' as keyof object] +  ' tab(s)'">
-        <div class="row q-my-xs tabBorder"
+        <div class="q-my-none tabBorder q-mb-xs"
              v-for="tab in filteredTabs(w['tabs' as keyof object] as chrome.tabs.Tab[])">
           <OpenTabCard2
             v-on:selectionChanged="tabSelectionChanged"
@@ -172,26 +172,16 @@ import {useTabsStore} from "src/stores/tabsStore";
 import {Tabset} from "src/models/Tabset";
 import _ from "lodash";
 import {onMounted, ref, watch, watchEffect} from "vue"
-import OpenTabCard from "components/layouts/OpenTabCard.vue";
-import {VueDraggableNext} from 'vue-draggable-next'
 import TabsetService from "src/services/TabsetService";
 import {useTabsetService} from "src/services/TabsetService2";
-import InfoMessageWidget from "components/widgets/InfoMessageWidget.vue";
-import {useRoute, useRouter} from "vue-router";
 import {useUiStore} from "src/stores/uiStore";
 import Analytics from "src/utils/google-analytics";
-import FirstToolbarHelper from "pages/sidepanel/helper/FirstToolbarHelper.vue";
-import ToolbarButton from "components/buttons/SidePanelToolbarButton.vue";
-import SidePanelToolbarTabNavigationHelper from "pages/sidepanel/helper/SidePanelToolbarTabNavigationHelper.vue";
-import CloseSidePanelViewButton from "components/buttons/CloseSidePanelViewButton.vue";
-import SidePanelToolbarButton from "components/buttons/SidePanelToolbarButton.vue";
 import {useWindowsStore} from "src/stores/windowsStore";
 import {Window} from "src/models/Window";
 import OpenTabCard2 from "components/layouts/OpenTabCard2.vue";
 import SidePanelTabsetsSelectorWidget from "components/widgets/SidePanelTabsetsSelectorWidget.vue";
 
 const tabsStore = useTabsStore()
-const route = useRoute()
 
 const useSelection = ref(false)
 const invert = ref(false)
@@ -213,20 +203,12 @@ onMounted(async () => {
   console.log("*** on mounted", tabsForCurrentWindow.value.length)
 })
 
-const windowsUpdatedListener = async (message: any, sender: chrome.runtime.MessageSender, sendResponse: any) => {
-  console.log("<<<", message)
-  if (message.name === 'window-updated') {
-    console.log("got message 'window-updated'", message.data.initiated, message)
-    await useWindowsStore().setup('got window-updated message', true)
-    rows.value = await calcWindowRows()
-    //useUiStore().windowsChanged = message
-  }
-  return true
-}
-
-console.log("added windowsUpdatedListener")
-chrome.runtime.onMessage.addListener(windowsUpdatedListener)
-
+chrome.windows.onCreated.addListener(async (w: chrome.windows.Window) => rows.value = await calcWindowRows())
+chrome.windows.onRemoved.addListener(async (wId: Number) => rows.value = await calcWindowRows())
+console.log("hasLIsteners", chrome.tabs.onUpdated.hasListeners())
+chrome.tabs.onUpdated.addListener(async (a:any,b:any, c:any) => rows.value = await calcWindowRows())
+chrome.tabs.onCreated.addListener(async (a:any) => rows.value = await calcWindowRows())
+chrome.tabs.onRemoved.addListener(async (a:any,b:any) => rows.value = await calcWindowRows())
 
 const filteredTabs = (tabs: chrome.tabs.Tab[]) => {
   const res = _.filter(tabs, (t: chrome.tabs.Tab) => (t.title || 'unknown title').toLowerCase().indexOf(filter.value) >= 0)
@@ -238,28 +220,6 @@ watchEffect(() => {
   tabsForCurrentWindow.value = filteredTabs(useTabsStore().tabs)
   console.log("*** on watchEffect", tabsForCurrentWindow.value.length)
 })
-// watch(() => useWindowsStore().currentChromeWindows, (a: any, b: any) => {
-//   console.log("change windows")
-//   rows.value = calcWindowRows()
-// })
-
-// const tabsListener = async (tabId: any, info: any) => {
-//   console.log("update or move or create")
-//   rows.value = await calcWindowRows()
-//   return true
-// }
-//
-// chrome.tabs.onMoved.removeListener(tabsListener)
-// chrome.tabs.onCreated.removeListener(tabsListener)
-// chrome.tabs.onRemoved.removeListener(tabsListener)
-
-// chrome.tabs.onMoved.addListener(tabsListener)
-// chrome.tabs.onUpdated.addListener(async (id: number, changeInfo: chrome.tabs.TabChangeInfo, t: chrome.tabs.Tab, ) => {
-//   console.log("***updated tab", t, changeInfo)
-//   rows.value = await calcWindowRows()
-//   tabsForCurrentWindow.value = filteredTabs((useWindowsStore().currentChromeWindow?.tabs || []) as chrome.tabs.Tab[])
-// })
-// chrome.tabs.onRemoved.addListener(tabsListener)
 
 watchEffect(() => {
   tabs.value = useTabsStore().tabs
@@ -355,7 +315,7 @@ const windowShouldBeOpen = (w: object) => {
 
 
 const cardStyle = (tab: chrome.tabs.Tab) => {
-  const height = "32px";
+  const height = "30px";
   let background = ''
   if (hasDuplicate(tab)) {
     background = "background: radial-gradient(circle, #FFFFFF 0%, #FFECB3 100%)"
@@ -365,7 +325,7 @@ const cardStyle = (tab: chrome.tabs.Tab) => {
   } else {
     // emits('hasSelectable', true)
   }
-  return `height: ${height};max-height:${height}; min-height: ${height};position:relative; top:5px;${background}`
+  return `${background}`
 }
 
 const hasDuplicate = (tab: chrome.tabs.Tab) => {
@@ -381,7 +341,9 @@ const hasDuplicate = (tab: chrome.tabs.Tab) => {
 
 const filterHint = () => {
   if (filter.value.trim() === '') {
-    return ''
+    return currentWindowOnly.value ?
+      'window has '+  tabsForCurrentWindow.value.length + ' tab' + (tabsForCurrentWindow.value.length === 1 ? '' : 's') :
+      ''
   }
   return 'found ' + filteredTabsCount.value + ' tab' + (filteredTabsCount.value === 1 ? '' : 's')
 }

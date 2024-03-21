@@ -107,7 +107,7 @@ export function useUtils() {
         }
       }
     }
-    return theRealUrl ? "https://icons.duckduckgo.com/ip3/" + theRealUrl.hostname + ".ico" : 'favicon-unknown-32x32.png'
+    return theRealUrl ? "https://icons.duckduckgo.com/ip3/" + theRealUrl.hostname + ".ico" : ''
   }
 
   return {
