@@ -114,14 +114,22 @@ module.exports = configure(function (ctx) {
 
       // !== MIT
       extendViteConf (viteConf) {
-        //if ((ctx.mode.spa || ctx.mode.pwa || ctx.mode.electron) && viteConf && viteConf.mode === "development") {
-        if (!ctx.mode.bex && !ctx.mode.pwa) {
-          // https://dev.to/richardbray/how-to-fix-the-referenceerror-global-is-not-defined-error-in-sveltekitvite-2i49
-          viteConf.define.global = {}
-          //https://stackoverflow.com/questions/77061323/error-pouchdb-on-vite-referenceerror-global-is-not-defined
-          //viteConf.define.window.global = window.global
-        }
-        viteConf.define.__VUE_PROD_HYDRATION_MISMATCH_DETAILS__ = 'false'
+
+          if ((ctx.mode.spa || ctx.mode.pwa || ctx.mode.electron) && viteConf && viteConf.mode === "development") {
+            // https://dev.to/richardbray/how-to-fix-the-referenceerror-global-is-not-defined-error-in-sveltekitvite-2i49
+            viteConf.define.global = {}
+          }
+          viteConf.define.__VUE_PROD_HYDRATION_MISMATCH_DETAILS__ = 'false'
+
+        // this caused an issue with the electron build
+        // //if ((ctx.mode.spa || ctx.mode.pwa || ctx.mode.electron) && viteConf && viteConf.mode === "development") {
+        // if (!ctx.mode.bex && !ctx.mode.pwa) {
+        //   // https://dev.to/richardbray/how-to-fix-the-referenceerror-global-is-not-defined-error-in-sveltekitvite-2i49
+        //   viteConf.define.global = {}
+        //   //https://stackoverflow.com/questions/77061323/error-pouchdb-on-vite-referenceerror-global-is-not-defined
+        //   //viteConf.define.window.global = window.global
+        // }
+        // viteConf.define.__VUE_PROD_HYDRATION_MISMATCH_DETAILS__ = 'false'
       },
       // viteVuePluginOptions: {},
 
