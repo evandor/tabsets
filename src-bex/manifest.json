@@ -1,5 +1,10 @@
 {
   "manifest_version": 3,
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "{5809ba95-274e-4fd3-a92d-5baf03026290}"
+    }
+  },
   "icons": {
     "16": "icons/icon-16x16.png",
     "48": "icons/icon-48x48.png",

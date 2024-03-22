@@ -173,17 +173,17 @@
                             @mouseover="hoveredTabset = tabset.id"
                             @mouseleave="hoveredTabset = undefined">
               <q-item-label>
-<!--                <q-icon-->
-<!--                  id="foo"-->
-<!--                  v-if="showAddTabButton(tabset as Tabset, currentChromeTab)"-->
-<!--                  @click.stop="saveInTabset(tabset.id, tabset.folderActive)"-->
-<!--                  class="q-mr-none"-->
-<!--                  name="o_bookmark_add"-->
-<!--                  :class="alreadyInTabset() ? '':'cursor-pointer'"-->
-<!--                  :color="alreadyInTabset() ? 'grey-5': tsBadges.length > 0 ? 'accent':'warning'"-->
-<!--                  size="xs"-->
-<!--                  data-testid="saveInTabsetBtn">-->
-<!--                </q-icon>-->
+                <!--                <q-icon-->
+                <!--                  id="foo"-->
+                <!--                  v-if="showAddTabButton(tabset as Tabset, currentChromeTab)"-->
+                <!--                  @click.stop="saveInTabset(tabset.id, tabset.folderActive)"-->
+                <!--                  class="q-mr-none"-->
+                <!--                  name="o_bookmark_add"-->
+                <!--                  :class="alreadyInTabset() ? '':'cursor-pointer'"-->
+                <!--                  :color="alreadyInTabset() ? 'grey-5': tsBadges.length > 0 ? 'accent':'warning'"-->
+                <!--                  size="xs"-->
+                <!--                  data-testid="saveInTabsetBtn">-->
+                <!--                </q-icon>-->
                 <q-btn outline
                        v-if="showAddTabButton(tabset as Tabset, currentChromeTab)"
                        @click.stop="saveInTabset(tabset.id, tabset.folderActive)"
@@ -194,7 +194,7 @@
                        size="xs"
                        data-testid="saveInTabsetBtn">
                   <div>Add Tab</div>
-<!--                  <q-icon right class="q-ma-none q-pa-none" size="2em" name="o_south" />-->
+                  <!--                  <q-icon right class="q-ma-none q-pa-none" size="2em" name="o_south" />-->
                 </q-btn>
                 <span
                   v-if="!alreadyInTabset() && showAddTabButton(tabset as Tabset, currentChromeTab) && tsBadges.length > 0"
@@ -642,115 +642,111 @@ function inIgnoredMessages(message: any) {
     message.msg === "captureThumbnail" ||
     message.msg === "capture-annotation" ||
     message.name === "reload-spaces" ||
-   // message.name === "window-updated" ||
+    // message.name === "window-updated" ||
     message.msg === "html2links"
 }
 
-if ($q.platform.is.chrome) {
-  if (inBexMode()) {
-    // seems we need to define these listeners here to get the matching messages reliably
-    // these messages are created by triggering events in the mainpanel
-    browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
-      console.log(" <<< received message", message)
-      if (inIgnoredMessages(message)) {
+if (inBexMode()) {
+  // seems we need to define these listeners here to get the matching messages reliably
+  // these messages are created by triggering events in the mainpanel
+  browser.runtime.onMessage.addListener((message: any, sender: any, sendResponse: any) => {
+    console.log(" <<< received message", message)
+    if (inIgnoredMessages(message)) {
+      return true
+    }
+    if (message.name === 'current-tabset-id-change') {
+      if (message.ignore) {
         return true
       }
-      if (message.name === 'current-tabset-id-change') {
-        if (message.ignore) {
-          return true
-        }
-        const tsId = message.data.tabsetId
-        useTabsStore().selectCurrentTabset(tsId)
-      } else if (message.name === 'feature-activated') {
-        usePermissionsStore().addActivateFeature(message.data.feature)
-        if (message.data.feature === 'help') {
-          useTabsetService().reloadTabset("HELP")
-        } else if (message.data.feature === 'bookmarks') {
-          usePermissionsStore().load()
-            .then(() => {
-              useBookmarksStore().init()
-              useBookmarksStore().loadBookmarks()
-            })
-        }
-      } else if (message.name === "feature-deactivated") {
-        usePermissionsStore().removeActivateFeature(message.data.feature)
-      } else if (message.name === "tabsets-imported") {
-        useSpacesStore().reload()
-        useTabsetService().init(useDB(undefined).db)
-        // TODO reload
-      } else if (message.name === "tab-being-dragged") {
-        useUiStore().draggingTab(message.data.tabId, null as unknown as any)
-      } else if (message.name === "note-changed") {
-        // TODO needed?
-        const tabset = useTabsetService().getTabset(message.data.tabsetId) as Tabset
-        if (message.data.noteId) {
-          console.log("updating note", message.data.noteId)
-          const res = useTabsStore().getTabAndTabsetId(message.data.noteId)
-          //.then((res: TabAndTabsetId | undefined) => {
-          if (res) {
-            const note = res.tab
-            note.title = message.data.tab.title
-            note.description = message.data.tab.description
-            note.longDescription = message.data.tab.longDescription
-          }
-          useTabsetService().saveTabset(tabset)
-          //    })
-        } else {
-          console.log("adding tab", message.data.tab)
-          tabset.tabs.push(message.data.tab)
-          useTabsetService().saveTabset(tabset)
-        }
-      } else if (message.name === "tab-added") {
-        // hmm - getting this twice...
-        console.log(" > got message '" + message.name + "'", message)
-        useTabsetService().reloadTabset(message.data.tabsetId)
-        //updateSelectedTabset(message.data.tabsetId, true)
-      } else if (message.name === "tab-deleted") {
-        useTabsetService().reloadTabset(message.data.tabsetId)
-      } else if (message.name === "tabset-added") {
-        useTabsetService().reloadTabset(message.data.tabsetId)
-      } else if (message.name === "mark-tabset-deleted") {
-        TabsetService.markAsDeleted(message.data.tabsetId)
-      } else if (message.name === "tabset-renamed") {
-        TabsetService.rename(message.data.tabsetId, message.data.newName, message.data.newColor)
-      } else if (message.name === "progress-indicator") {
-        if (message.percent) {
-          uiStore.progress = message.percent
-          // uiStore.progressLabel = message.label
-        }
-        if (message.status === "done") {
-          uiStore.progress = undefined
-          // uiStore.progressLabel = undefined
-        }
-        sendResponse("ui store progress set to " + uiStore.progress)
-      } else if (message.name === "detail-level-changed") {
-        console.log("setting list detail level to ", message.data.level)
-        useUiStore().setListDetailLevel(message.data.level)
-      } else if (message.name === "detail-level-perTabset-changed") {
-        console.log("setting list detail perTabset level to ", message.data.level)
-        useUiStore().showDetailsPerTabset = message.data.level
-      } else if (message.name === "fullUrls-changed") {
-        console.log("setting fullUrls to ", message.data.value)
-        useUiStore().setShowFullUrls(message.data.value)
-      } else if (message.name === "reload-suggestions") {
-        console.log("reload-suggestions message received")
-        useSuggestionsStore().loadSuggestionsFromDb()
-      } else if (message.name === "reload-tabset") {
-        console.log("reload-tabset message received")
-        const tabsetId = message.data.tabsetId ?
-          message.data.tabsetId :
-          useTabsetService().getCurrentTabset()?.id
-        useTabsetService().reloadTabset(tabsetId)
-      } else if (message.name === 'reload-application') {
-        AppService.restart("restarted=true")
-      } else {
-        console.log("got unmatched message", message)
+      const tsId = message.data.tabsetId
+      useTabsStore().selectCurrentTabset(tsId)
+    } else if (message.name === 'feature-activated') {
+      usePermissionsStore().addActivateFeature(message.data.feature)
+      if (message.data.feature === 'help') {
+        useTabsetService().reloadTabset("HELP")
+      } else if (message.data.feature === 'bookmarks') {
+        usePermissionsStore().load()
+          .then(() => {
+            useBookmarksStore().init()
+            useBookmarksStore().loadBookmarks()
+          })
       }
-      return true
-    })
-  }
-} else {
-  //useRouter().push("/start")
+    } else if (message.name === "feature-deactivated") {
+      usePermissionsStore().removeActivateFeature(message.data.feature)
+    } else if (message.name === "tabsets-imported") {
+      useSpacesStore().reload()
+      useTabsetService().init(useDB(undefined).db)
+      // TODO reload
+    } else if (message.name === "tab-being-dragged") {
+      useUiStore().draggingTab(message.data.tabId, null as unknown as any)
+    } else if (message.name === "note-changed") {
+      // TODO needed?
+      const tabset = useTabsetService().getTabset(message.data.tabsetId) as Tabset
+      if (message.data.noteId) {
+        console.log("updating note", message.data.noteId)
+        const res = useTabsStore().getTabAndTabsetId(message.data.noteId)
+        //.then((res: TabAndTabsetId | undefined) => {
+        if (res) {
+          const note = res.tab
+          note.title = message.data.tab.title
+          note.description = message.data.tab.description
+          note.longDescription = message.data.tab.longDescription
+        }
+        useTabsetService().saveTabset(tabset)
+        //    })
+      } else {
+        console.log("adding tab", message.data.tab)
+        tabset.tabs.push(message.data.tab)
+        useTabsetService().saveTabset(tabset)
+      }
+    } else if (message.name === "tab-added") {
+      // hmm - getting this twice...
+      console.log(" > got message '" + message.name + "'", message)
+      useTabsetService().reloadTabset(message.data.tabsetId)
+      //updateSelectedTabset(message.data.tabsetId, true)
+    } else if (message.name === "tab-deleted") {
+      useTabsetService().reloadTabset(message.data.tabsetId)
+    } else if (message.name === "tabset-added") {
+      useTabsetService().reloadTabset(message.data.tabsetId)
+    } else if (message.name === "mark-tabset-deleted") {
+      TabsetService.markAsDeleted(message.data.tabsetId)
+    } else if (message.name === "tabset-renamed") {
+      TabsetService.rename(message.data.tabsetId, message.data.newName, message.data.newColor)
+    } else if (message.name === "progress-indicator") {
+      if (message.percent) {
+        uiStore.progress = message.percent
+        // uiStore.progressLabel = message.label
+      }
+      if (message.status === "done") {
+        uiStore.progress = undefined
+        // uiStore.progressLabel = undefined
+      }
+      sendResponse("ui store progress set to " + uiStore.progress)
+    } else if (message.name === "detail-level-changed") {
+      console.log("setting list detail level to ", message.data.level)
+      useUiStore().setListDetailLevel(message.data.level)
+    } else if (message.name === "detail-level-perTabset-changed") {
+      console.log("setting list detail perTabset level to ", message.data.level)
+      useUiStore().showDetailsPerTabset = message.data.level
+    } else if (message.name === "fullUrls-changed") {
+      console.log("setting fullUrls to ", message.data.value)
+      useUiStore().setShowFullUrls(message.data.value)
+    } else if (message.name === "reload-suggestions") {
+      console.log("reload-suggestions message received")
+      useSuggestionsStore().loadSuggestionsFromDb()
+    } else if (message.name === "reload-tabset") {
+      console.log("reload-tabset message received")
+      const tabsetId = message.data.tabsetId ?
+        message.data.tabsetId :
+        useTabsetService().getCurrentTabset()?.id
+      useTabsetService().reloadTabset(tabsetId)
+    } else if (message.name === 'reload-application') {
+      AppService.restart("restarted=true")
+    } else {
+      console.log("got unmatched message", message)
+    }
+    return true
+  })
 }
 
 if (inBexMode() && chrome) {
@@ -880,7 +876,7 @@ const showAddTabButton = (tabset: Tabset, currentChromeTab: chrome.tabs.Tab) => 
   //isCurrentTab()
 }
 
-const saveInTabset = (tabsetId: string, activeFolder: string | undefined ) => {
+const saveInTabset = (tabsetId: string, activeFolder: string | undefined) => {
   const useTS: Tabset | undefined = useTabsetService().getTabset(tabsetId)
   if (useTS) {
     // if (alreadyInTabset()) {
