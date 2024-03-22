@@ -11,6 +11,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "translate": "^2.0.2"
+    "translate": "^3.0.0"
   }
 }
