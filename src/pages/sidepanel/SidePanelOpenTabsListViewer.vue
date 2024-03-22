@@ -46,9 +46,9 @@
 
     <template v-else>
       <q-expansion-item v-for="w in rows"
+                        default-opened
                         dense-toggle
                         expand-separator
-                        :v-model="true"
                         icon="o_grid_view"
                         :label="w['name' as keyof object]"
                         :caption="w['tabsCount' as keyof object] +  ' tab(s)'">
@@ -67,103 +67,8 @@
     </template>
 
 
-    <!--    <q-expansion-item v-for="w in rows"-->
-    <!--                      dense-toggle-->
-    <!--                      expand-separator-->
-    <!--                      :v-model="true"-->
-    <!--                      icon="o_grid_view"-->
-    <!--                      :label="w['name' as keyof object]"-->
-    <!--                      :caption="w['tabsCount' as keyof object] +  ' tab(s)'">-->
-
-    <!--      <q-item class="q-ma-none q-pa-none">-->
-    <!--        <vue-draggable-next-->
-    <!--          :class="row"-->
-    <!--          :list="w['tabs' as keyof object]"-->
-    <!--          :group="{ name: 'tabs', pull: 'clone', put: false }"-->
-    <!--          :sort="true">-->
-
-    <!--          <div-->
-    <!--            class="col-12 q-pa-xs items-center justify-center" style="width:100%;cursor: move"-->
-    <!--            v-for="tab in w['tabs' as keyof object] as chrome.tabs.Tab[]"-->
-    <!--            :key="tab.id">-->
-
-    <!--            <OpenTabCard-->
-    <!--              v-on:selectionChanged="tabSelectionChanged"-->
-    <!--              v-on:addedToTabset="tabAddedToTabset"-->
-    <!--              v-on:hasSelectable="hasSelectable"-->
-    <!--              :chromeTab="tab"-->
-    <!--              :windowId="w['id']"-->
-    <!--              :useSelection="useSelection"/>-->
-
-    <!--          </div>-->
-
-    <!--        </vue-draggable-next>-->
-    <!--      </q-item>-->
-    <!--    </q-expansion-item>-->
   </div>
 
-  <!--  <div class="q-ma-none">-->
-
-
-  <!--    <div class="q-ma-none">-->
-  <!--      <div class="row q-ma-none q-pa-none">-->
-  <!--        <div class="col-12 q-ma-none q-pa-none q-pt-lg">-->
-
-  <!--          <InfoMessageWidget-->
-  <!--            v-if="tabsStore.currentTabsetId && tabs.length > 0 && !userCanSelect"-->
-  <!--            :probability="1"-->
-  <!--            css-class="q-pa-sm q-gutter-sm"-->
-  <!--            force-display-->
-  <!--            ident="unassignedAndOpenTabs_userCannotSelect"-->
-  <!--            hint="Tabs with grey background are already contained in the current tabset."/>-->
-
-  <!--          <div v-if="tabsStore.currentTabsetId && tabs.length > 1 && userCanSelect"-->
-  <!--               class="q-ma-none" style="border: 1px dotted grey; border-radius: 3px">-->
-  <!--            <div class="row">-->
-  <!--              <div class="col-6 q-pa-xs">-->
-  <!--                <q-btn flat color="primary" size="11px" icon="keyboard_double_arrow_left"-->
-  <!--                       :label="addLabel()"-->
-  <!--                       @click="saveSelectedTabs()">-->
-  <!--                  <q-tooltip class="tooltip" v-html="addTooltip()"></q-tooltip>-->
-  <!--                </q-btn>-->
-
-  <!--              </div>-->
-  <!--              <div class="col q-pa-xs text-right">-->
-
-  <!--                <q-checkbox v-if="useSelection"-->
-  <!--                            @update:model-value="val => toggleInvert(val)"-->
-  <!--                            rigth-label-->
-  <!--                            class="text-primary text-uppercase q-mr-lg"-->
-  <!--                            style="font-size: 11px"-->
-  <!--                            v-model="invert"-->
-  <!--                            color="primary"-->
-  <!--                            size="30px"-->
-  <!--                            label="invert"-->
-  <!--                            checked-icon="task_alt"-->
-  <!--                            unchecked-icon="check_box_outline_blank"-->
-  <!--                />-->
-
-  <!--                <q-checkbox-->
-  <!--                  left-label-->
-  <!--                  class="text-primary text-uppercase"-->
-  <!--                  style="font-size: 11px"-->
-  <!--                  v-model="useSelection"-->
-  <!--                  color="primary"-->
-  <!--                  size="30px"-->
-  <!--                  :label="checkboxLabel()"-->
-  <!--                  checked-icon="task_alt"-->
-  <!--                  unchecked-icon="check_box_outline_blank"-->
-  <!--                />-->
-  <!--              </div>-->
-  <!--            </div>-->
-  <!--          </div>-->
-
-  <!--        </div>-->
-  <!--      </div>-->
-
-  <!--    </div>-->
-
-  <!--  </div>-->
 
 </template>
 
@@ -206,9 +111,9 @@ onMounted(async () => {
 chrome.windows.onCreated.addListener(async (w: chrome.windows.Window) => rows.value = await calcWindowRows())
 chrome.windows.onRemoved.addListener(async (wId: Number) => rows.value = await calcWindowRows())
 console.log("hasLIsteners", chrome.tabs.onUpdated.hasListeners())
-chrome.tabs.onUpdated.addListener(async (a:any,b:any, c:any) => rows.value = await calcWindowRows())
-chrome.tabs.onCreated.addListener(async (a:any) => rows.value = await calcWindowRows())
-chrome.tabs.onRemoved.addListener(async (a:any,b:any) => rows.value = await calcWindowRows())
+chrome.tabs.onUpdated.addListener(async (a: any, b: any, c: any) => rows.value = await calcWindowRows())
+chrome.tabs.onCreated.addListener(async (a: any) => rows.value = await calcWindowRows())
+chrome.tabs.onRemoved.addListener(async (a: any, b: any) => rows.value = await calcWindowRows())
 
 const filteredTabs = (tabs: chrome.tabs.Tab[]) => {
   const res = _.filter(tabs, (t: chrome.tabs.Tab) => (t.title || 'unknown title').toLowerCase().indexOf(filter.value) >= 0)
@@ -342,7 +247,7 @@ const hasDuplicate = (tab: chrome.tabs.Tab) => {
 const filterHint = () => {
   if (filter.value.trim() === '') {
     return currentWindowOnly.value ?
-      'window has '+  tabsForCurrentWindow.value.length + ' tab' + (tabsForCurrentWindow.value.length === 1 ? '' : 's') :
+      'window has ' + tabsForCurrentWindow.value.length + ' tab' + (tabsForCurrentWindow.value.length === 1 ? '' : 's') :
       ''
   }
   return 'found ' + filteredTabsCount.value + ' tab' + (filteredTabsCount.value === 1 ? '' : 's')

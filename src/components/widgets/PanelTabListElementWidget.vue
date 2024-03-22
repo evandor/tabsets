@@ -247,7 +247,7 @@
             </template>
 
             <span v-if="useUiStore().listDetailLevelGreaterEqual(ListDetailLevel.MAXIMAL, props.tabset?.details)">
-              {{ formatDate(props.tab.lastActive) }}
+              last active: {{ formatDate(props.tab.lastActive) }}
             </span>
 
           </div>
