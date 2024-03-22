@@ -20,9 +20,7 @@
           <q-list>
             <q-item clickable @click="useUiStore().startButtonAnimation('newTabset')">
               <q-item-section avatar>
-                <SidePanelToolbarButton
-                  icon="o_add_circle"
-                  color="warning"/>
+                <q-btn outline label="..." color="primary" size="sm"/>
               </q-item-section>
 
               <q-item-section>
@@ -81,6 +79,27 @@
           </q-btn>
         </div>
       </template>
+      <div class="q-mx-md q-mx-sm text-primary text-caption"></div>
+
+      <div class="q-pa-md q-gutter-sm" v-if="showSwitchedToLocalInfo()">
+        <q-banner inline-actions rounded class="text-primary" style="border: 1px solid grey">
+          <div class="row q-pa-xs">
+            <div class="2">
+              <q-icon name="o_lightbulb" color="warning" size="1.3em"/>
+            </div>
+            <div class="col text-right cursor-pointer" @click="ackSwitchToLocal()">x
+              <q-tooltip>close this info message</q-tooltip>
+            </div>
+          </div>
+          <div class="row q-pa-xs">
+            <div class="2"></div>
+            <div class="col text-caption">
+              Showing local tabsets
+              <slot></slot>
+            </div>
+          </div>
+        </q-banner>
+      </div>
 
       <q-list dense
               class="rounded-borders q-ma-none q-pa-none" :key="tabset.id"
@@ -154,17 +173,29 @@
                             @mouseover="hoveredTabset = tabset.id"
                             @mouseleave="hoveredTabset = undefined">
               <q-item-label>
-                <q-icon
-                  id="foo"
-                  v-if="showAddTabButton(tabset as Tabset, currentChromeTab)"
-                  @click.stop="saveInTabset(tabset.id)"
-                  class="q-mr-none"
-                  name="o_bookmark_add"
-                  :class="alreadyInTabset() ? '':'cursor-pointer'"
-                  :color="alreadyInTabset() ? 'grey-5': tsBadges.length > 0 ? 'accent':'warning'"
-                  size="xs"
-                  data-testid="saveInTabsetBtn">
-                </q-icon>
+<!--                <q-icon-->
+<!--                  id="foo"-->
+<!--                  v-if="showAddTabButton(tabset as Tabset, currentChromeTab)"-->
+<!--                  @click.stop="saveInTabset(tabset.id, tabset.folderActive)"-->
+<!--                  class="q-mr-none"-->
+<!--                  name="o_bookmark_add"-->
+<!--                  :class="alreadyInTabset() ? '':'cursor-pointer'"-->
+<!--                  :color="alreadyInTabset() ? 'grey-5': tsBadges.length > 0 ? 'accent':'warning'"-->
+<!--                  size="xs"-->
+<!--                  data-testid="saveInTabsetBtn">-->
+<!--                </q-icon>-->
+                <q-btn outline
+                       v-if="showAddTabButton(tabset as Tabset, currentChromeTab)"
+                       @click.stop="saveInTabset(tabset.id, tabset.folderActive)"
+                       class="q-ma-none q-px-sm q-py-none"
+                       name="o_bookmark_add"
+                       :class="alreadyInTabset() ? '':'cursor-pointer'"
+                       :color="alreadyInTabset() ? 'grey-5': tsBadges.length > 0 ? 'accent':'warning'"
+                       size="xs"
+                       data-testid="saveInTabsetBtn">
+                  <div>Add Tab</div>
+<!--                  <q-icon right class="q-ma-none q-pa-none" size="2em" name="o_south" />-->
+                </q-btn>
                 <span
                   v-if="!alreadyInTabset() && showAddTabButton(tabset as Tabset, currentChromeTab) && tsBadges.length > 0"
                   style="color: grey;font-size: 7px;position: relative;top:-2px;left:-11px;">{{
@@ -187,7 +218,7 @@
                   to<br> add the current<br>tab to this tabset
                 </q-tooltip>
                 <q-tooltip class="tooltip-small" v-else>
-                  Add current Tab to '{{ tabset.name }}'
+                  Add current Tab to '{{ tabsetNameOrChain(tabset as Tabset) }}'
                 </q-tooltip>
 
               </q-item-label>
@@ -247,15 +278,15 @@
                       @dragover="overDrag($event, folder)"
                       @dragend="endDrag($event, folder)"
                       @drop="drop($event, folder)"
-                      @click="selectFolder(tabset as Tabset, folder as Tabset)"
                       :key="'panelfolderlist_' + folder.id">
 
-                <q-item-section class="q-mr-sm text-right" style="justify-content:start;width:30px;max-width:30px">
-                  <div class="q-pa-none">
+                <q-item-section @click="selectFolder(tabset as Tabset, folder as Tabset)"
+                                class="q-mr-sm text-right" style="justify-content:start;width:45px;max-width:45px">
+                  <div class="q-pa-none q-pl-md">
                     <q-icon name="o_folder" color="warning" size="sm"/>
                   </div>
                 </q-item-section>
-                <q-item-section>
+                <q-item-section @click="selectFolder(tabset as Tabset, folder as Tabset)">
                   <q-item-label>
                     <div class="text-bold">
                       {{ folder.name }}
@@ -266,16 +297,26 @@
                   </q-item-label>
                 </q-item-section>
 
+                <q-item-section side
+                                v-if="folder.name !== '..'"
+                                @mouseover="hoveredTabset = tabset.id"
+                                @mouseleave="hoveredTabset = undefined">
+                  <q-item-label>
+                    <q-icon class="cursor-pointer" name="more_horiz" size="16px"/>
+                    <SidePanelSubfolderContextMenu :tabset="tabset as Tabset" :folder="folder"/>
+                  </q-item-label>
+                </q-item-section>
+
               </q-item>
             </q-list>
 
             <!-- the actual tabs -->
             <SidePanelPageTabList
               v-if="tabsetExpanded.get(tabset.id)"
+              :indent="calcFolders(tabset as Tabset)?.length > 0"
               :tabsCount="useTabsetService().tabsToShow(tabset as Tabset).length"
               :tabset="tabsetForTabList(tabset as Tabset)"/>
             <!-- the actual tabs: end -->
-
 
           </div>
         </q-expansion-item>
@@ -336,7 +377,7 @@ import {useDB} from "src/services/usePersistenceService";
 import {useBookmarksStore} from "stores/bookmarksStore";
 import {useSuggestionsStore} from "stores/suggestionsStore";
 import SidePanelPageTabList from "components/layouts/SidePanelPageTabList.vue";
-import {AddTabToTabsetCommand} from "src/domain/tabs/AddTabToTabset";
+import {AddTabToTabsetCommand} from "src/domain/tabs/AddTabToTabsetCommand"
 import {CopyToClipboardCommand} from "src/domain/commands/CopyToClipboard";
 import ShareTabsetPubliclyDialog from "components/dialogues/ShareTabsetPubliclyDialog.vue";
 import {FirebaseCall} from "src/services/firebase/FirebaseCall";
@@ -347,8 +388,10 @@ import AppService from "src/services/AppService";
 import {useNotificationHandler} from "src/services/ErrorHandler";
 import {ExecutionResult} from "src/domain/ExecutionResult";
 import SidePanelToolbarButton from "components/buttons/SidePanelToolbarButton.vue";
-import { useI18n } from 'vue-i18n'
-const { t } = useI18n({locale: navigator.language, useScope: "global"})
+import {useI18n} from 'vue-i18n'
+import SidePanelSubfolderContextMenu from "pages/sidepanel/SidePanelSubfolderContextMenu.vue";
+
+const {t} = useI18n({locale: navigator.language, useScope: "global"})
 
 const {setVerticalScrollPosition} = scroll
 
@@ -599,7 +642,7 @@ function inIgnoredMessages(message: any) {
     message.msg === "captureThumbnail" ||
     message.msg === "capture-annotation" ||
     message.name === "reload-spaces" ||
-    message.name === "window-updated" ||
+   // message.name === "window-updated" ||
     message.msg === "html2links"
 }
 
@@ -608,7 +651,7 @@ if ($q.platform.is.chrome) {
     // seems we need to define these listeners here to get the matching messages reliably
     // these messages are created by triggering events in the mainpanel
     browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
-      //console.log(" <<< received message", message)
+      console.log(" <<< received message", message)
       if (inIgnoredMessages(message)) {
         return true
       }
@@ -673,11 +716,11 @@ if ($q.platform.is.chrome) {
       } else if (message.name === "progress-indicator") {
         if (message.percent) {
           uiStore.progress = message.percent
-          uiStore.progressLabel = message.label
+          // uiStore.progressLabel = message.label
         }
         if (message.status === "done") {
           uiStore.progress = undefined
-          uiStore.progressLabel = undefined
+          // uiStore.progressLabel = undefined
         }
         sendResponse("ui store progress set to " + uiStore.progress)
       } else if (message.name === "detail-level-changed") {
@@ -837,13 +880,13 @@ const showAddTabButton = (tabset: Tabset, currentChromeTab: chrome.tabs.Tab) => 
   //isCurrentTab()
 }
 
-const saveInTabset = (tabsetId: string) => {
-  if (alreadyInTabset()) {
-    return
-  }
-  const useTS = useTabsetService().getTabset(tabsetId)
+const saveInTabset = (tabsetId: string, activeFolder: string | undefined ) => {
+  const useTS: Tabset | undefined = useTabsetService().getTabset(tabsetId)
   if (useTS) {
-    useCommandExecutor().execute(new AddTabToTabsetCommand(new Tab(uid(), currentChromeTab.value), useTS))
+    // if (alreadyInTabset()) {
+    //   return
+    // }
+    useCommandExecutor().execute(new AddTabToTabsetCommand(new Tab(uid(), currentChromeTab.value), useTS, activeFolder))
   } else {
     console.warn("expected to find tabsetId", tabsetId)
   }
@@ -874,7 +917,8 @@ const getPublicTabsetLink = (ts: Tabset) => {
   let image = "https://tabsets.web.app/favicon.ico"
   if (ts && ts.sharedId) {
     //return PUBLIC_SHARE_URL + "#/pwa/imp/" + ts.sharedId + "?n=" + btoa(ts.name) + "&a=" + btoa(ts.sharedBy || 'n/a') + "&d=" + ts.sharedAt
-    return "https://us-central1-tabsets-backend-prd.cloudfunctions.net/app/share/preview/" + ts.sharedId + "?n=" + btoa(ts.name) + "&a=" + btoa(ts.sharedBy || 'n/a')
+    //return "https://us-central1-tabsets-backend-prd.cloudfunctions.net/app/share/preview/" + ts.sharedId + "?n=" + btoa(ts.name) + "&a=" + btoa(ts.sharedBy || 'n/a')
+    return process.env.BACKEND_URL + "/share/preview/" + ts.sharedId + "?n=" + btoa(ts.name) + "&a=" + btoa(ts.sharedBy || 'n/a')
   }
   return image
 }
@@ -1027,6 +1071,21 @@ const saveTabsetDescription = () => {
 const openPageNote = () => openURL(chrome.runtime.getURL("/www/index.html#/tabsets/" + useTabsStore().currentTabsetId + "?tab=page"))
 
 const stageIdentifier = () => process.env.TABSETS_STAGE !== 'PRD' ? ' (' + process.env.TABSETS_STAGE + ')' : ''
+
+const activeFolderNameFor = (ts: Tabset, activeFolder: string) => {
+  const folder = useTabsetService().findFolder(ts.folders, activeFolder)
+  return folder ? folder.name : ts.name
+}
+
+const tabsetNameOrChain = (tabset: Tabset) => {
+  if (tabset.folderActive) {
+    return activeFolderNameFor(tabset, tabset.folderActive)
+  }
+  return tabset.name
+}
+
+const showSwitchedToLocalInfo = () => useUiStore().showSwitchedToLocalInfo
+const ackSwitchToLocal = () => useUiStore().showSwitchedToLocalInfo = false
 
 </script>
 

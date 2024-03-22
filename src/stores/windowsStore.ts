@@ -142,7 +142,7 @@ export const useWindowsStore = defineStore('windows', () => {
     }
     //console.log("%callWindows assigned", "color:green", allWindows.value, windowSet.value)
 
-    browser.windows.getCurrent({windowTypes: ['normal']}, (window: browser.windows.Window) => {
+    browser.windows.getCurrent({windowTypes: ['normal'], populate: true}, (window: browser.windows.Window) => {
       currentChromeWindow.value = window
       if (currentChromeWindow.value && currentChromeWindow.value.id) {
         //console.log("%c******", "color:blue", currentWindow.value.id, windowNameFor(currentWindow.value.id))
@@ -207,7 +207,6 @@ export const useWindowsStore = defineStore('windows', () => {
       browser.windows.onCreated.addListener(onCreatedListener)
       browser.windows.onRemoved.addListener(onRemovedListener)
       browser.windows.onFocusChanged.addListener(onFocusChangedListener)
-      //browser.windows.onUpdate.addListener(onBoundsChangedListener)
       //browser.windows.onBoundsChanged.addListener(onBoundsChangedListener)
     }
   }
@@ -349,11 +348,9 @@ export const useWindowsStore = defineStore('windows', () => {
     })
   }
 
-  function refreshCurrentWindows() {
+  async function refreshCurrentWindows() {
     console.debug("refreshCurrentWindows")
-    chrome.windows.getAll({populate: true}, (windows) => {
-      currentChromeWindows.value = windows
-    })
+    currentChromeWindows.value = await chrome.windows.getAll({populate: true})
   }
 
   async function updateWindowIndex(windowId: number, indexToUse: number) {

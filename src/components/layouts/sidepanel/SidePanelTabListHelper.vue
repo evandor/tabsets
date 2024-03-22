@@ -2,7 +2,8 @@
   <q-item
       clickable
       v-ripple
-      class="q-ma-none q-px-sm q-pt-xs q-pb-none"
+      class="q-ma-none q-px-sm q-pt-xs q-pb-none q-ml-sm"
+      :class="props.indent ? 'q-ml-md':''"
       :style="itemStyle()"
       @dragstart="startDrag($event, tab)"
       :key="'paneltablist_' + tab.id">
@@ -33,6 +34,7 @@ const props = defineProps({
   tab: {type: Object as PropType<Tab>, required: true},
   index: {type: Number, required: true},
   hideMenu: {type: Boolean, default: false},
+  indent: {type: Boolean, default: false},
   sorting: {type: String as PropType<TabSorting>, default: TabSorting.CUSTOM},
   type: {type: String, default: 'sidepanel'},
   tabset: {type: Object as PropType<Tabset>, required: false},

@@ -267,6 +267,13 @@ export function useTabsetService() {
     return Promise.reject("could not get tabset for id")
   }
 
+  const deleteTabsetFolder = (tabset: Tabset, folder: Tabset): Promise<string> => {
+    removeFolder(tabset, folder.id)
+    tabset.folderActive = undefined
+    useTabsetService().saveTabset(tabset)
+    return Promise.resolve("done")
+  }
+
   const deleteFromTabset = (tabsetId: any, predicate: TabPredicate): Promise<number> => {
     console.log("deleting from tabset")
     const ts = useTabsStore().getTabset(tabsetId)
@@ -559,8 +566,8 @@ export function useTabsetService() {
   }
 
 
-  const deleteTab = (tab: Tab): Promise<Tabset> => {
-    console.log("deleting tab", tab.id, tab.chromeTabId)
+  const deleteTab = (tab: Tab, tabset: Tabset | undefined = undefined): Promise<Tabset> => {
+    console.log("deleting tab", tab.id, tab.chromeTabId, tabset?.id)
     const tabUrl = tab.url || ''
     if (tabsetsFor(tabUrl).length <= 1) {
       removeThumbnailsFor(tabUrl)
@@ -571,10 +578,8 @@ export function useTabsetService() {
         .then(() => console.debug("deleting content for ", tabUrl))
         .catch(err => console.log("error deleting content", err))
     }
-    const tabset = tabsetFor(tab.id)
     if (tabset) {
       useTabsStore().removeTab(tabset, tab.id)
-      //useNotificationsStore().unsetSelectedTab()
       console.log("deletion: saving tabset", tabset)
       return saveTabset(tabset)
         .then(() => tabset)
@@ -605,9 +610,10 @@ export function useTabsetService() {
   }
   const urlExistsInCurrentTabset = (url: string): boolean => {
     const currentTabset = getCurrentTabset()
+   // console.log("testing exists in current tabset", currentTabset.id, url)
     if (currentTabset) {
       if (_.find(currentTabset.tabs, t => {
-        return (t.matcher && usePermissionsStore().hasFeature(FeatureIdent.ADVANCED_TAB_MANAGEMENT)) ?
+        return (t.matcher) ?
           JsUtils.match(t.matcher, url) :
           t.url === url
       })) {
@@ -624,7 +630,7 @@ export function useTabsetService() {
       //console.log("checking", tabset.dynamicTabs)
       const tag = tabset.dynamicTabs?.config['tags' as keyof object][0]
       //console.log("using tag", tag)
-      const tabsets:Tabset[] = [...useTabsStore().tabsets.values()] as Tabset[]
+      const tabsets: Tabset[] = [...useTabsStore().tabsets.values()] as Tabset[]
       _.forEach(tabsets, (tabset: Tabset) => {
         _.forEach(tabset.tabs, (tab: Tab) => {
           if (tab.tags?.indexOf(tag) >= 0) {
@@ -663,18 +669,26 @@ export function useTabsetService() {
     return undefined
   }
 
+  const removeFolder = (root: Tabset, folderId: string): void => {
+    root.folders = _.filter(root.folders, f => f.id !== folderId)
+    for(const f of root.folders) {
+      removeFolder(f, folderId)
+    }
+  }
+
   const findTabInFolder = (folders: Tabset[], tabId: string): TabInFolder | undefined => {
     for (const f of folders) {
       for (const t of f.tabs) {
         if (t.id === tabId) {
-          return new TabInFolder(t,f)
+          return new TabInFolder(t, f)
         }
       }
     }
     for (const f of folders) {
       if (f.folders) {
         return findTabInFolder(f.folders, tabId)
-      }    }
+      }
+    }
     return undefined
   }
 
@@ -730,7 +744,8 @@ export function useTabsetService() {
     deleteTabsetDescription,
     findFolder,
     findTabInFolder,
-    moveTabToFolder
+    moveTabToFolder,
+    deleteTabsetFolder
   }
 
 }

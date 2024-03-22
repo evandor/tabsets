@@ -180,7 +180,7 @@
       <q-card>
         <q-card-section>
           <div class="row q-mx-sm q-mt-xs" v-for="mhtml in tab?.mhtmls">
-            <MHtmlViewHelper :mhtmlId="mhtml" :tabId="tab?.id || 'unknown'"/>
+<!--            <MHtmlViewHelper :mhtmlId="mhtml" :tabId="tab?.id || 'unknown'"/>-->
           </div>
         </q-card-section>
       </q-card>

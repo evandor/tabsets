@@ -112,16 +112,15 @@
             @click="manageSpaces()">
             <q-tooltip class="tooltip">Manage Spaces</q-tooltip>
           </q-btn>
-          <q-btn
-            icon="o_add_circle"
-            color="positive"
-            flat
-            class="q-ma-none q-pa-xs cursor-pointer"
-            style="max-width:20px"
-            size="12px"
-            data-testid="addTabsetBtn"
-            @click="addSpace()">
-          </q-btn>
+
+          <q-btn outline
+                 label="New Space"
+                 color="primary"
+                 size="sm"
+                 @click="addSpace()"
+                 class="q-ma-none q-px-sm q-py-none"/>
+
+
         </template>
       </FirstToolbarHelper>
 
@@ -239,17 +238,23 @@ async function getTabsetsForSpaces() {
     }
   })
   res.forEach((value: Tabset[], key: string) => {
-    res.set(key, _.sortBy(value, [
-      function (o) {
-        return o.name.toLowerCase()
-      }
-    ]))
+    res.set(key,
+      _.orderBy(value, [
+        function (o) {
+          console.log("o", o.status)
+          return o.status.toString();
+        },
+        function (o) {
+          return o.name.toLowerCase();
+        }
+      ],['desc','asc'] ))
   });
+  console.log("res", res)
   return res;
 }
 
 watchEffect(async () => {
-  tabsetsForSpaces.value  = await getTabsetsForSpaces();
+  tabsetsForSpaces.value = await getTabsetsForSpaces();
 })
 
 watchEffect(() => {

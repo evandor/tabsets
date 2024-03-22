@@ -1,13 +1,12 @@
 <template>
 
-  <q-card class="tabBorder" flat
-          :style="cardStyle(chromeTab)">
+  <q-card class="tabBorder" flat :style="cardStyle(chromeTab)">
 
-    <q-card-section class="q-pt-xs cursor-pointer"
+    <q-card-section class="q-pt-xs cursor-pointer q-ma-none"
                     :data-testid="useUtils().createDataTestIdentifier('openTabCard', props.chromeTab.url || '')"
                     style="width:100%;">
 
-      <div class="row items-baseline">
+      <div class="row items-baseline fit" style="border:1px solid red">
         <div class="col-1 q-mr-md q-ml-none">
           <q-icon v-if="showAddToTabsetIcon(chromeTab)" color="primary"
                   name="o_arrow_left" @click="addToCurrentTabset" size="2em">
@@ -74,6 +73,7 @@ import {uid} from "quasar";
 
 const props = defineProps({
   chromeTab: {type: Object as PropType<chrome.tabs.Tab>, required: true},
+  windowId: {type: Number, required: true},
   useSelection: {type: Boolean, default: false}
 })
 
@@ -89,7 +89,7 @@ const closeTab = (tab: chrome.tabs.Tab) => {
 }
 
 const cardStyle = (tab: chrome.tabs.Tab) => {
-  const height = "30px";
+  const height = "28px";
   let background = ''
   // if (tab.isDuplicate) {
   //   background = "background: radial-gradient(circle, #FFFFFF 0%, #FFECB3 100%)"

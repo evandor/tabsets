@@ -2,6 +2,10 @@ import {Bookmark} from "src/models/Bookmark";
 import {useBookmarksStore} from "src/stores/bookmarksStore";
 import {useNotificationsStore} from "src/stores/notificationsStore";
 import {useSearchStore} from "src/stores/searchStore";
+import {useUiStore} from "stores/uiStore";
+import {useUtils} from "src/services/Utils";
+
+const {inBexMode} = useUtils()
 
 async function getParentChain(parentId: string, chain: string[] = []): Promise<string[]> {
   if (!parentId || parentId === "0") {
@@ -18,13 +22,14 @@ async function getParentChain(parentId: string, chain: string[] = []): Promise<s
 
 class BookmarksService {
 
-
   async init() {
     console.debug(" ...initializing BookmarksService")
-    useBookmarksStore().loadBookmarks()
-      .then(res => {
-        useSearchStore().populateFromBookmarks()
-      })
+    if (inBexMode()) {
+      useBookmarksStore().loadBookmarks()
+        .then(res => {
+          useSearchStore().populateFromBookmarks()
+        })
+    }
   }
 
   deleteBookmarksFolder(folderId: string) {

@@ -55,7 +55,7 @@ class FirebaseServices {
     return this.auth
   }
 
-  getFirestore() {
+  getFirestore(): Firestore {
     return this.firestore
   }
 

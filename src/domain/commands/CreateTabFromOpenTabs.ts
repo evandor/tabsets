@@ -51,6 +51,9 @@ export class CreateTabFromOpenTabsCommand implements Command<any> {
     console.log("exists", exists)
 
     if (!exists) {
+      if (!this.tab.tags) {
+        this.tab.tags = []
+      }
       return TabsetService.saveToCurrentTabset(this.tab, useIndex)
         .then((res) => {
           if (this.tab.url) {

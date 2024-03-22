@@ -27,7 +27,7 @@ const {info} = useLogger()
 const emitter = new EventEmitter()
 emitter.setMaxListeners(12)
 
-if (process.env.USE_FIREBASE) {
+if (process.env.USE_FIREBASE == "true") {
   FirebaseServices.init()
 }
 
@@ -63,7 +63,7 @@ if (inBexMode()) {
   })
 }
 
-if (process.env.USE_FIREBASE) {
+if (process.env.USE_FIREBASE == "true") {
   const auth = FirebaseServices.getAuth()
   onAuthStateChanged(auth, async (user) => {
     if (user) {
@@ -72,7 +72,9 @@ if (process.env.USE_FIREBASE) {
       // TODO revisit now
       try {
         await AppService.init($q, router, true, user)
-        $q.bex.send('auth.user.login', {userId: user.uid})
+        if (inBexMode()) {
+          $q.bex.send('auth.user.login', {userId: user.uid})
+        }
         //FirebaseServices.startRealtimeDbListeners(user.uid)
       } catch (error: any) {
         console.log("%ccould not initialize appService due to " + error, "background-color:orangered")
@@ -85,7 +87,9 @@ if (process.env.USE_FIREBASE) {
       // User is signed out
       console.log("%conAuthStateChanged: logged out", "border:1px solid green")
       await AppService.init($q, router, true, undefined)
-      $q.bex.send('auth.user.logout', {})
+      if (inBexMode()) {
+        $q.bex.send('auth.user.logout', {})
+      }
       if (!router.currentRoute.value.path.startsWith("/mainpanel")) {
         console.log("NOT redirecting to '/'")
         //await router.push("/")

@@ -13,7 +13,7 @@
           name="o_note"/>
   <q-img v-else
          class="rounded-borders"
-         style="cursor: move"
+         :style="props.preventDragAndDrop ? '' : 'cursor: move'"
          :width="props.width"
          :height="props.height"
          :src="getFaviconUrl(tab as Tab)">
@@ -45,7 +45,7 @@ const props = defineProps({
 const getFaviconUrl = (tab: Tab) => {
   //const chromeTab = tab?.chromeTab
   if (tab && tab.url?.startsWith("chrome")) {
-    return 'favicon-unknown-32x32.png'
+    return ''
   }
   if (tab && tab.favIconUrl) {
     return tab.favIconUrl
@@ -53,7 +53,7 @@ const getFaviconUrl = (tab: Tab) => {
   if (!useSettingsStore().isEnabled('noDDG') && tab && tab.url) {
     return favIconFromUrl(tab.url)
   }
-  return 'favicon-unknown-32x32.png'
+  return ''
 }
 
 </script>

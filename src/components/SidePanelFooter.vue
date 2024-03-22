@@ -132,7 +132,7 @@
           <q-tooltip class="tooltip" anchor="top left" self="bottom left">Tabsets as full-page app</q-tooltip>
         </q-btn>
 
-        <span class="q-my-xs q-ml-xs q-mr-none cursor-pointer" v-if="authStore.isAuthenticated() && useSettingsStore().isEnabled('dev')">
+        <span class="q-my-xs q-ml-xs q-mr-none cursor-pointer" v-if="authStore.isAuthenticated()">
           <q-avatar size="18px" v-if="authStore.user?.photoURL">
             <q-img :src="authStore.user.photoURL"/>
             <q-tooltip :delay="2000" anchor="center left" self="center right" class="tooltip-small">You're logged in as {{
@@ -147,14 +147,19 @@
 
           <q-menu :offset="[0, 7]" fit>
             <q-list dense style="min-width: 150px;min-height:50px">
-              <q-item clickable v-close-popup>
+              <q-item clickable v-close-popup v-if="useAuthStore().getAccount()?.products">
                 <q-item-section @click="gotoStripe()">Subscriptions</q-item-section>
+              </q-item>
+              <q-item clickable v-close-popup v-else>
+                <q-item-section class="text-grey">Subscriptions</q-item-section>
               </q-item>
               <!--              <q-item clickable v-close-popup>-->
               <!--                <q-item-section @click="subscribe()">Subscribe</q-item-section>-->
               <!--              </q-item>-->
               <q-item clickable v-close-popup>
-                <q-item-section @click="logout()">Logout</q-item-section>
+                <q-item-section class="ellipsis" @click="logout()">Logout {{
+                    authStore.user?.email
+                  }}</q-item-section>
               </q-item>
             </q-list>
 
@@ -425,7 +430,7 @@ const logout = () => {
 const offsetBottom = () => ($q.platform.is.capacitor || $q.platform.is.cordova) ? 'margin-bottom:20px;' : ''
 const gotoStripe = () => openURL("https://billing.stripe.com/p/login/test_5kA9EHf2Da596HuaEE")
 const openPwaUrl = () => NavigationService.openOrCreateTab([process.env.TABSETS_PWA_URL || 'https://www.skysail.io'])
-const showLoginBtn = () => useSettingsStore().isEnabled('dev') && process.env.USE_FIREBASE
+const showLoginBtn = () => process.env.USE_FIREBASE
 const showSettingsButton = () => route?.path !== '/sidepanel/welcome' || useAuthStore().isAuthenticated()
 </script>
 

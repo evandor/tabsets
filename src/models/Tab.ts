@@ -1,6 +1,8 @@
 import {Placeholders} from "src/models/Placeholders";
 import {Monitor} from "src/models/Monitor";
 import {uid} from "quasar";
+import {STRIP_CHARS_IN_USER_INPUT} from "boot/constants";
+import _ from "lodash"
 
 export enum TabSorting {
   URL = "URL",
@@ -51,7 +53,14 @@ export class TabComment {
     public comment: string = '') {
     this.date = new Date().getTime()
     this.id = uid()
+
+    this.comment = this.comment.replace(STRIP_CHARS_IN_USER_INPUT, '')
+    if (!TabComment.commentIsShortEnough) {
+      throw new Error(`Comment is too long (max. 1024 chars)`)
+    }
   }
+
+  static commentIsShortEnough = (val: string) => val ? val.length <= 1024 : true
 }
 
 export enum TabPreview {
@@ -77,7 +86,6 @@ export class Tab {
   // from tabsets' columns
   columnId: string | undefined
 
-  isDuplicate: boolean
   history: string[] = []
   selected: boolean = false
   name: string | undefined
@@ -96,8 +104,6 @@ export class Tab {
   note: string
   scheduledFor: number | undefined
   extension: UrlExtension
-
-  mhtmls: string[]
 
   contentHash: string
 
@@ -143,7 +149,6 @@ export class Tab {
     this.groupName = undefined // to be set from 'outside'
 
     //this.chromeTab = chromeTab
-    this.isDuplicate = false
     this.history = []
     this.name = undefined
     this.description = ''
@@ -156,11 +161,37 @@ export class Tab {
     this.note = ''
     this.scheduledFor = undefined
     this.extension = this.determineUrlExtension(chromeTab)
-    this.mhtmls = []
     this.contentHash = ''
 
     this.preview = TabPreview.FAVICON
+
+    this.tags = _.filter(
+      _.map(this.tags, (t:string) => t.replace(STRIP_CHARS_IN_USER_INPUT, '')),
+      (e:string) => e.trim() !== '')
+
+    if (!Tab.titleIsValid) {
+      throw new Error(`Tab's title '${this.title}' is not valid`)
+    }
+
+    if (!Tab.titleIsShortEnough) {
+      throw new Error(`Tab's title '${this.title}' is too long`)
+    }
+
+    if (!Tab.descIsValid) {
+      throw new Error(`Tab's description '${this.description}' is not valid`)
+    }
+
+    if (!Tab.descIsShortEnough) {
+      throw new Error(`Tab's description is too long`)
+    }
+
   }
+
+  static titleIsValid = (val: string) => !STRIP_CHARS_IN_USER_INPUT.test(val)
+  static descIsValid = (val: string) => !STRIP_CHARS_IN_USER_INPUT.test(val)
+
+  static titleIsShortEnough = (val: string) => val ? val.length <= 512 : true
+  static descIsShortEnough = (val: string) => val ? val.length <= 1024 : true
 
   setHistoryFrom(existingTab: Tab) {
     if (existingTab.history) {
@@ -175,13 +206,6 @@ export class Tab {
       this.history = [] as unknown as string[]
     }
     this.history.push(url)
-  }
-
-  addToMHtmls(id: string) {
-    if (!this.mhtmls) {
-      this.mhtmls = [] as unknown as string[]
-    }
-    this.mhtmls.push(id)
   }
 
   determineUrlExtension(chromeTab: chrome.tabs.Tab): UrlExtension {

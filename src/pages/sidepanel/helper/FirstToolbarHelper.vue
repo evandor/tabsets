@@ -68,17 +68,27 @@
               icon="o_sync_alt"
               tooltip="This account is being synced"
               color="grey"
-              size="12px"
+              size="10px"
               class="q-ml-sm"/>
 
-            <SidePanelToolbarButton
-              icon="o_add_circle"
-              :tooltip="newTabsetTooltip()"
-              color="warning"
-              class="q-ml-sm"
-              :class="{ shake: annimateNewTabsetButton }"
-              data-testid="addTabsetBtn"
-              @click="openNewTabsetDialog()"/>
+<!--            <SidePanelToolbarButton-->
+<!--              icon="o_add_circle"-->
+<!--              :tooltip="newTabsetTooltip()"-->
+<!--              color="warning"-->
+<!--              class="q-ml-sm"-->
+<!--              :class="{ shake: annimateNewTabsetButton }"-->
+<!--              data-testid="addTabsetBtn"-->
+<!--              @click="openNewTabsetDialog()"/>-->
+
+            <q-btn outline
+                   label="New Tabset"
+                   color="primary"
+                   size="sm"
+                   :class="{ shake: annimateNewTabsetButton }"
+                   data-testid="addTabsetBtn"
+                   @click="openNewTabsetDialog()"
+                   class="q-ma-none q-px-sm q-py-none"
+                   name="o_bookmark_add" />
 
           </slot>
         </div>

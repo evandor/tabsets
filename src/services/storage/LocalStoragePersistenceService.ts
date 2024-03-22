@@ -183,10 +183,6 @@ export class LocalStoragePersistenceService implements PersistenceService {
     return Promise.resolve(undefined);
   }
 
-  loadCategories(): Promise<any> {
-    return Promise.resolve(undefined);
-  }
-
   reloadTabset(tabsetId: string): void {
   }
 

@@ -1,142 +1,129 @@
 <template>
 
-  <q-page padding style="padding-top: 45px">
+  <q-list class="q-mt-none">
 
-    <div class="q-ma-none">
-
-
-      <div class="q-ma-none">
-        <div class="row q-ma-none q-pa-none">
-          <div class="col-12 q-ma-none q-pa-none q-pt-lg">
-
-            <InfoMessageWidget
-                v-if="tabsStore.currentTabsetId && tabs.length > 0 && !userCanSelect"
-                :probability="1"
-                css-class="q-pa-sm q-gutter-sm"
-                force-display
-                ident="unassignedAndOpenTabs_userCannotSelect"
-                hint="Tabs with grey background are already contained in the current tabset."/>
-
-            <div v-if="tabsStore.currentTabsetId && tabs.length > 1 && userCanSelect"
-                 class="q-ma-none" style="border: 1px dotted grey; border-radius: 3px">
-              <div class="row">
-                <div class="col-6 q-pa-xs">
-                  <q-btn flat color="primary" size="11px" icon="keyboard_double_arrow_left"
-                         :label="addLabel()"
-                         @click="saveSelectedTabs()">
-                    <q-tooltip class="tooltip" v-html="addTooltip()"></q-tooltip>
-                  </q-btn>
-
-                </div>
-                <div class="col q-pa-xs text-right">
-
-                  <q-checkbox v-if="useSelection"
-                              @update:model-value="val => toggleInvert(val)"
-                              rigth-label
-                              class="text-primary text-uppercase q-mr-lg"
-                              style="font-size: 11px"
-                              v-model="invert"
-                              color="primary"
-                              size="30px"
-                              label="invert"
-                              checked-icon="task_alt"
-                              unchecked-icon="check_box_outline_blank"
-                  />
-
-                  <q-checkbox
-                      left-label
-                      class="text-primary text-uppercase"
-                      style="font-size: 11px"
-                      v-model="useSelection"
-                      color="primary"
-                      size="30px"
-                      :label="checkboxLabel()"
-                      checked-icon="task_alt"
-                      unchecked-icon="check_box_outline_blank"
-                  />
-                </div>
-              </div>
-            </div>
-
-            <vue-draggable-next
-                :list="tabs"
-                :group="{ name: 'tabs', pull: 'clone', put: false }"
-                :sort="true">
-
-              <div
-                  class="col-12 q-pa-xs items-center justify-center" style="width:100%; max-width: 300px;cursor: move"
-                  v-for="tab in tabs"
-                  :key="tab.id">
-
-                <OpenTabCard
-                    v-on:selectionChanged="tabSelectionChanged"
-                    v-on:addedToTabset="tabAddedToTabset"
-                    v-on:hasSelectable="hasSelectable"
-                    :chromeTab="tab"
-                    :useSelection="useSelection"/>
-
-              </div>
-
-            </vue-draggable-next>
-
-
-          </div>
-        </div>
-
+    <div class="row q-mt-xs">
+      <div class="col-6 q-mt-sm">
+        <SidePanelTabsetsSelectorWidget :use-as-tabsets-switcher="true"/>
       </div>
-
+      <div class="col-6 text-right">
+        Current Window only
+        <q-checkbox v-model="currentWindowOnly"/>
+      </div>
+      <div class="col-12 q-mb-xs">
+        <q-input
+          dense
+          autofocus
+          ref="filterRef"
+          filled
+          :hint="filterHint()"
+          v-model="filter"
+          label="Filter Tabs">
+          <template v-slot:append>
+            <q-icon v-if="filter !== ''" name="clear" class="cursor-pointer" @click="resetFilter"/>
+          </template>
+        </q-input>
+      </div>
     </div>
 
-    <!-- place QPageSticky at end of page -->
-    <q-page-sticky expand position="top" class="darkInDarkMode brightInBrightMode">
-      <FirstToolbarHelper title="Open Tabs">
+  </q-list>
 
-        <template v-slot:iconsRight>
-          <template v-if="tabs.length > 1">
-            <SidePanelToolbarButton icon="filter_list" size="11px" @click="useUiStore().toggleToolbarFilter()"/>
-            <span class="q-ma-none q-pa-none q-mx-sm text-grey-5">|</span>
-          </template>
-          <SidePanelToolbarTabNavigationHelper/>
-          <CloseSidePanelViewButton/>
-        </template>
+  <div class="q-pa-none q-ma-none">
 
-      </FirstToolbarHelper>
-    </q-page-sticky>
+    <template v-if="currentWindowOnly">
+      <div v-for="tab in tabsForCurrentWindow"
+           class="q-my-none tabBorder q-mb-xs"
+           :style="cardStyle(tab)">
+        <OpenTabCard2
+          v-on:selectionChanged="tabSelectionChanged"
+          v-on:addedToTabset="tabAddedToTabset"
+          v-on:hasSelectable="hasSelectable"
+          :chromeTab="tab"
+          :windowId="useWindowsStore().currentChromeWindow?.id || 0"
+          :useSelection="useSelection"/>
+      </div>
+    </template>
 
-  </q-page>
+    <template v-else>
+      <q-expansion-item v-for="w in rows"
+                        default-opened
+                        dense-toggle
+                        expand-separator
+                        icon="o_grid_view"
+                        :label="w['name' as keyof object]"
+                        :caption="w['tabsCount' as keyof object] +  ' tab(s)'">
+        <div class="q-my-none tabBorder q-mb-xs"
+             v-for="tab in filteredTabs(w['tabs' as keyof object] as chrome.tabs.Tab[])">
+          <OpenTabCard2
+            v-on:selectionChanged="tabSelectionChanged"
+            v-on:addedToTabset="tabAddedToTabset"
+            v-on:hasSelectable="hasSelectable"
+            :chromeTab="tab"
+            :windowId="w['id' as keyof object]"
+            :useSelection="useSelection"/>
+        </div>
+
+      </q-expansion-item>
+    </template>
+
+
+  </div>
+
 
 </template>
+
 <script setup lang="ts">
 import {useTabsStore} from "src/stores/tabsStore";
 import {Tabset} from "src/models/Tabset";
 import _ from "lodash";
-import {onMounted, ref, watchEffect} from "vue"
-import OpenTabCard from "components/layouts/OpenTabCard.vue";
-import {VueDraggableNext} from 'vue-draggable-next'
+import {onMounted, ref, watch, watchEffect} from "vue"
 import TabsetService from "src/services/TabsetService";
 import {useTabsetService} from "src/services/TabsetService2";
-import InfoMessageWidget from "components/widgets/InfoMessageWidget.vue";
-import {useRoute, useRouter} from "vue-router";
 import {useUiStore} from "src/stores/uiStore";
 import Analytics from "src/utils/google-analytics";
-import FirstToolbarHelper from "pages/sidepanel/helper/FirstToolbarHelper.vue";
-import ToolbarButton from "components/buttons/SidePanelToolbarButton.vue";
-import SidePanelToolbarTabNavigationHelper from "pages/sidepanel/helper/SidePanelToolbarTabNavigationHelper.vue";
-import CloseSidePanelViewButton from "components/buttons/CloseSidePanelViewButton.vue";
-import SidePanelToolbarButton from "components/buttons/SidePanelToolbarButton.vue";
+import {useWindowsStore} from "src/stores/windowsStore";
+import {Window} from "src/models/Window";
+import OpenTabCard2 from "components/layouts/OpenTabCard2.vue";
+import SidePanelTabsetsSelectorWidget from "components/widgets/SidePanelTabsetsSelectorWidget.vue";
 
 const tabsStore = useTabsStore()
-const route = useRoute()
 
 const useSelection = ref(false)
 const invert = ref(false)
 const userCanSelect = ref(false)
+const currentWindowOnly = ref(true)
+const tabsForCurrentWindow = ref<chrome.tabs.Tab[]>([])
 
 const tabSelection = ref<Set<string>>(new Set<string>())
 const tabs = ref<chrome.tabs.Tab[]>([])
+const filter = ref('')
+const filterRef = ref(null)
+const filteredTabsCount = ref(0)
+const rows = ref<object[]>([])
 
-onMounted(() => {
+onMounted(async () => {
   Analytics.firePageViewEvent('SidePanelOpenTabsListViewer', document.location.href);
+  rows.value = await calcWindowRows()
+  tabsForCurrentWindow.value = filteredTabs(useTabsStore().tabs)
+  console.log("*** on mounted", tabsForCurrentWindow.value.length)
+})
+
+chrome.windows.onCreated.addListener(async (w: chrome.windows.Window) => rows.value = await calcWindowRows())
+chrome.windows.onRemoved.addListener(async (wId: Number) => rows.value = await calcWindowRows())
+console.log("hasLIsteners", chrome.tabs.onUpdated.hasListeners())
+chrome.tabs.onUpdated.addListener(async (a: any, b: any, c: any) => rows.value = await calcWindowRows())
+chrome.tabs.onCreated.addListener(async (a: any) => rows.value = await calcWindowRows())
+chrome.tabs.onRemoved.addListener(async (a: any, b: any) => rows.value = await calcWindowRows())
+
+const filteredTabs = (tabs: chrome.tabs.Tab[]) => {
+  const res = _.filter(tabs, (t: chrome.tabs.Tab) => (t.title || 'unknown title').toLowerCase().indexOf(filter.value) >= 0)
+  filteredTabsCount.value = res.length
+  return res
+}
+
+watchEffect(() => {
+  tabsForCurrentWindow.value = filteredTabs(useTabsStore().tabs)
+  console.log("*** on watchEffect", tabsForCurrentWindow.value.length)
 })
 
 watchEffect(() => {
@@ -144,8 +131,8 @@ watchEffect(() => {
   const filterTerm = useUiStore().toolbarFilterTerm.toLowerCase()
   if (filterTerm.length > 0) {
     tabs.value = _.filter(tabs.value, (t: chrome.tabs.Tab) =>
-        !!(t.url && t.url?.indexOf(filterTerm) >= 0 ||
-            (t.title && t.title.toLowerCase()?.indexOf(filterTerm) >= 0)))
+      !!(t.url && t.url?.indexOf(filterTerm) >= 0 ||
+        (t.title && t.title.toLowerCase()?.indexOf(filterTerm) >= 0)))
   }
 })
 
@@ -154,8 +141,8 @@ watchEffect(() => {
 })
 
 const addTooltip = () => useSelection.value ?
-    `Add ${tabSelection.value.size} tab(s) to ${tabsStore.currentTabsetName}` :
-    `Add all tabs to ${tabsStore.currentTabsetName}`
+  `Add ${tabSelection.value.size} tab(s) to ${tabsStore.currentTabsetName}` :
+  `Add all tabs to ${tabsStore.currentTabsetName}`
 
 const addLabel = () => 'add'
 const checkboxLabel = () => useSelection.value ? '' : 'use selection'
@@ -197,5 +184,83 @@ const addOpenTabs = () => {
   }
 }
 
+const resetFilter = () => {
+  filter.value = ''
+  if (filterRef.value) {
+    // @ts-ignore
+    filterRef.value.focus()
+  }
+}
+
+const calcWindowRows = async () => {
+  await useWindowsStore().refreshCurrentWindows()
+  const result = _.map(useWindowsStore().currentChromeWindows as chrome.windows.Window[], (cw: chrome.windows.Window) => {
+    console.log("===>", cw.id)
+    const windowFromStore: Window | undefined = useWindowsStore().windowForId(cw.id || -2)
+
+    return {
+      id: cw.id,
+      index: windowFromStore?.index || 0,
+      tabsCount: cw.tabs?.length || 0,
+      tabs: cw.tabs,
+      name: useWindowsStore().windowNameFor(cw.id || 0) || cw.id!.toString(),
+      focused: cw.focused,
+      state: cw.state,
+      type: cw.type
+    }
+  })
+  console.log("result", result)
+  return result// _.sortBy(result, "index")
+}
+
+const windowShouldBeOpen = (w: object) => {
+  console.log("===", w['id' as keyof object], useWindowsStore().currentChromeWindow?.id, w['id' as keyof object] === useWindowsStore().currentChromeWindow?.id)
+  return w['id' as keyof object] === useWindowsStore().currentChromeWindow?.id
+}
+
+
+const cardStyle = (tab: chrome.tabs.Tab) => {
+  const height = "30px";
+  let background = ''
+  if (hasDuplicate(tab)) {
+    background = "background: radial-gradient(circle, #FFFFFF 0%, #FFECB3 100%)"
+  }
+  if (useTabsetService().urlExistsInCurrentTabset(tab.url || '')) {
+    background = "background: #efefef"
+  } else {
+    // emits('hasSelectable', true)
+  }
+  return `${background}`
+}
+
+const hasDuplicate = (tab: chrome.tabs.Tab) => {
+  const allCurrentTabs: chrome.tabs.Tab[] = (useWindowsStore().currentChromeWindow?.tabs || []) as chrome.tabs.Tab[]
+  //console.log("checking", tab.url, _.map(allCurrentTabs, t => t.url))
+  return _.filter(allCurrentTabs, (t: chrome.tabs.Tab) => {
+    if (tab.url && t.url === tab.url) {
+      return true
+    }
+    return false
+  }).length > 1
+}
+
+const filterHint = () => {
+  if (filter.value.trim() === '') {
+    return currentWindowOnly.value ?
+      'window has ' + tabsForCurrentWindow.value.length + ' tab' + (tabsForCurrentWindow.value.length === 1 ? '' : 's') :
+      ''
+  }
+  return 'found ' + filteredTabsCount.value + ' tab' + (filteredTabsCount.value === 1 ? '' : 's')
+}
+
 </script>
 
+
+<style lang="sass" scoped>
+
+.tabBorder
+  border-radius: 5px 5px 0 0
+  border: 1px solid $lightgrey
+  border-bottom: 0
+
+</style>

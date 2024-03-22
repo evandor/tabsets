@@ -101,7 +101,7 @@ import {uid, useQuasar} from "quasar";
 import SidePanelPageTabList from "components/layouts/SidePanelPageTabList.vue";
 import {useTabsetService} from "src/services/TabsetService2";
 import {useCommandExecutor} from "src/services/CommandExecutor";
-import {AddTabToTabsetCommand} from "src/domain/tabs/AddTabToTabset";
+import {AddTabToTabsetCommand} from "src/domain/tabs/AddTabToTabsetCommand"
 import {usePermissionsStore} from "stores/permissionsStore";
 import {FeatureIdent} from "src/models/AppFeature";
 import ContextMenuItem from "pages/sidepanel/helper/ContextMenuItem.vue";

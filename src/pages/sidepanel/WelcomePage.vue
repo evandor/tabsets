@@ -12,6 +12,10 @@
           <div class="col-12 text-h6 q-mb-md">
             {{ t('welcome_to_tabsets') }} {{ stageIdentifier() }}
           </div>
+<!--          <div class="col-12 text-caption text-primary q-mx-sm q-my-sm">-->
+<!--            {{ t('one_line_about_tabsets1') }}<br>-->
+<!--            {{ t('one_line_about_tabsets2') }}-->
+<!--          </div>-->
         </div>
 
         <div class="q-pa-sm q-mb-none row items-start q-gutter-md" @click.stop="selected()">
@@ -23,6 +27,7 @@
             </q-card-section>
             <q-card-section class="q-pb-none">
               <q-input v-model="tabsetName"
+                       class="input-box"
                        dense
                        autofocus
                        ref="tabsetNameRef"
@@ -84,6 +89,9 @@
             <template v-if="firebaseActive()">
               <q-checkbox
                 size="xs" v-model="login" class="text-grey" label="Login or create Account"/>
+              <q-icon class="q-ml-sm cursor-pointer" name="o_help" color="grey">
+                <q-tooltip class="tooltip">With an Account, you can sync your tabsets across browsers and computers</q-tooltip>
+              </q-icon>
             </template>
           </div>
         </div>
@@ -218,3 +226,11 @@ const openBookmarksView = () => {
 }
 
 </script>
+
+<style scoped>
+:deep(.input-box .q-field__control),
+:deep(.input-box .q-field__marginal) {
+  height: 52px;
+  font-size: 18px;
+}
+</style>

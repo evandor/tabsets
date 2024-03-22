@@ -14,6 +14,11 @@ class NavigationService {
 
   placeholderPattern = /\${[^}]*}/gm
 
+  async openChromeTab(chromeTab: chrome.tabs.Tab) {
+    const window = await chrome.tabs.highlight({windowId: chromeTab.windowId, tabs: chromeTab.index})
+    await chrome.windows.update(window.id, {focused: true})
+  }
+
   async openOrCreateTab(
     withUrls: string[],
     matcher: string | undefined = undefined,

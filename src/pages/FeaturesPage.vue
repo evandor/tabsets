@@ -191,11 +191,6 @@ text.set(FeatureIdent.GROUP_BY_DOMAIN.toLowerCase(), {
   description: 'The "Grouped By Domain" Feature provides a view where you can see all your tabs grouped by Domains. All Domains with at least two matching tabs will be considered.',
   permissions: []
 })
-text.set(FeatureIdent.SAVE_TAB.toLowerCase(), {
-  name: 'Save Tabs',
-  description: 'You can save tabs in a format called MHtml.',
-  permissions: ['pageCapture']
-})
 text.set(FeatureIdent.SAVE_TAB_AS_PNG.toLowerCase(), {
   name: 'Save Tab As Image',
   description: 'You can save tabs as a PNG Image.<br>Creating an image will utilize an external server.',
@@ -336,11 +331,11 @@ text.set(FeatureIdent.OPEN_TABS.toLowerCase(), {
     'Adds quick navigation to jump back and forth to recently opened tabs.',
   permissions: []
 })
-text.set(FeatureIdent.CATEGORIZATION.toLowerCase(), {
-  name: 'Tabsets Categorization',
-  description: 'Categorize your tabsets automatically',
-  permissions: []
-})
+// text.set(FeatureIdent.CATEGORIZATION.toLowerCase(), {
+//   name: 'Tabsets Categorization',
+//   description: 'Categorize your tabsets automatically',
+//   permissions: []
+// })
 // text.set(FeatureIdent.PAGE_MARKER.toLowerCase(), {
 //   name: 'Page Marker',
 //   description: 'Highlight parts of a page and add notes',

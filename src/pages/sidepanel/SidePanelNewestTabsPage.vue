@@ -12,7 +12,7 @@
     <div class="row q-ma-none q-pa-none">
       <div class="col-12 q-ma-none q-pa-none">
 
-        <q-list separator class="q-ma-none">
+        <q-list class="q-ma-none">
           <q-item v-for="tab in newestTabs()"
                   clickable
                   v-ripple
@@ -68,14 +68,14 @@ onMounted(() => {
   Analytics.firePageViewEvent('SidePanelNewestTabsPage', document.location.href);
 })
 
-const newestTabs = () =>
+const newestTabs = ():Tab[] =>
   _.take(_.orderBy(
-    _.flatMap([...tabsStore.tabsets.values()],
+    _.flatMap([...tabsStore.tabsets.values()] as Tabset[],
       (tabset: Tabset) =>
         _.flatMap(tabset.tabs)),
     (t: Tab) => t.created, "desc"), 100)
 
 const formatDate = (timestamp: number | undefined) =>
-  timestamp ? formatDistance(timestamp, new Date(), {addSuffix: true}) : ""
+  timestamp ? formatDistance(timestamp, new Date(), {addSuffix: true}) : "?"
 
 </script>

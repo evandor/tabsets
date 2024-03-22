@@ -1,6 +1,5 @@
 import {Tabset} from "src/models/Tabset";
 import {Space} from "src/models/Space";
-import {MHtml} from "src/models/MHtml";
 import {Tab} from "src/models/Tab";
 import {Notification} from "src/models/Notification";
 import {SearchDoc} from "src/models/SearchDoc";
@@ -54,7 +53,7 @@ interface PersistenceService {
   addSpace(space: Space): Promise<any>
   deleteSpace(spaceId: string): void;
 
-  loadCategories(): Promise<any>
+  //loadCategories(): Promise<any>
 
   cleanUpRequests(): Promise<void>
 

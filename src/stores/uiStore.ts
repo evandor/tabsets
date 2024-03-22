@@ -144,6 +144,7 @@ export const useUiStore = defineStore('ui', () => {
   const selectedTag = ref<string | undefined>(undefined)
   const tabsetsExpanded = ref<boolean>(false)
   const appLoading = ref<string | undefined>(undefined)
+  const bookmarksLoading = ref<boolean>(false)
   const progress = ref<object | undefined>(undefined)
 
   // online offline
@@ -212,8 +213,8 @@ export const useUiStore = defineStore('ui', () => {
   const sharingAuthor = ref<string>(LocalStorage.getItem(SHARING_AUTHOR_IDENT) as unknown as string || '')
   const sharingAvatar = ref<string>(LocalStorage.getItem(SHARING_AVATAR_IDENT) as unknown as string || '')
 
-  // firebase cloud messaging
-  const fcmSupported = ref(true)
+  // info e.g. when stopping to sync
+  const showSwitchedToLocalInfo = ref<boolean>(false)
 
   watch(rightDrawer.value, (val: Object) => {
     LocalStorage.set("ui.rightDrawer", val)
@@ -604,12 +605,14 @@ export const useUiStore = defineStore('ui', () => {
     networkOnline,
     tabBeingDragged,
     appLoading,
+    bookmarksLoading,
     progress,
     setProgress,
     animateNewTabsetButton,
     animateSettingsButton,
     animateBookmarksButton,
     startButtonAnimation,
-    showLoginTable
+    showLoginTable,
+    showSwitchedToLocalInfo
   }
 })

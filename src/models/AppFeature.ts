@@ -5,7 +5,7 @@ import {DeactivateFeatureCommand} from "src/domain/features/DeactivateFeature";
 export enum FeatureIdent {
   //BOOKMARKS = "BOOKMARKS", -- active by default now
   //PAGE_MARKER = "PAGE_MARKER",
-  SAVE_TAB = "SAVE_TAB", // As MHTML
+  // SAVE_TAB = "SAVE_TAB", // As MHTML
   SAVE_TAB_AS_PDF = "SAVE_TAB_AS_PDF", // not active yet
   SAVE_TAB_AS_PNG = "SAVE_TAB_AS_PNG",
   GROUP_BY_DOMAIN = "GROUP_BY_DOMAIN",
@@ -32,7 +32,7 @@ export enum FeatureIdent {
   WEBSITE_CLIP = "WEBSITE_CLIP",
   STANDALONE_APP = "STANDALONE_APP",
   //AI_MODULE = "AI_MODULE",
-  CATEGORIZATION = "CATEGORIZATION",
+  //CATEGORIZATION = "CATEGORIZATION",
   NOTIFICATIONS = "NOTIFICATIONS",
   ANNOTATIONS = "ANNOTATIONS",
   CONTEXT_MENUS = "CONTEXT_MENUS",

@@ -6,7 +6,9 @@
       <div class="q-ma-none">
         <div class="row q-ma-none q-pa-none">
           <div class="col-12 q-ma-none q-pa-none q-pt-md">
-            <BookmarksTree :in-side-panel="true"/>
+
+            <SidePanelOpenTabsListViewer />
+
           </div>
         </div>
       </div>
@@ -14,7 +16,7 @@
 
     <!-- place QPageSticky at end of page -->
     <q-page-sticky expand position="top" class="darkInDarkMode brightInBrightMode">
-      <FirstToolbarHelper title="Bookmarks">
+      <FirstToolbarHelper title="Open Tabs">
 
         <template v-slot:iconsRight>
 
@@ -46,6 +48,7 @@ import SidePanelToolbarTabNavigationHelper from "pages/sidepanel/helper/SidePane
 import SidePanelToolbarButton from "components/buttons/SidePanelToolbarButton.vue";
 import {useTabsetService} from "src/services/TabsetService2";
 import {uid} from "quasar";
+import SidePanelOpenTabsListViewer from "pages/sidepanel/SidePanelOpenTabsListViewer.vue";
 
 onMounted(() => {
   Analytics.firePageViewEvent('SidePanelBookmarksPage', document.location.href);

@@ -38,7 +38,8 @@
         <q-item :clickable="props.tab?.placeholders === undefined || props.tab?.monitor !== undefined"
                 v-close-popup @click.stop="monitoringDialog(props['tab' as keyof object])">
           <q-item-section style="padding-right:0;min-width:25px;max-width: 25px;">
-            <q-icon size="xs" name="o_change_circle" :color="props.tab?.placeholders !== undefined && props.tab?.monitor === undefined? 'grey' : 'info'"/>
+            <q-icon size="xs" name="o_change_circle"
+                    :color="props.tab?.placeholders !== undefined && props.tab?.monitor === undefined? 'grey' : 'info'"/>
           </q-item-section>
           <q-item-section v-if="props.tab?.monitor">
             Monitoring Changes...
@@ -49,15 +50,15 @@
         </q-item>
       </template>
 
-<!--      <q-separator inset/>-->
-<!--      <q-item clickable v-close-popup @click.stop="copyToClipboard(props['tab' as keyof object])">-->
-<!--        <q-item-section style="padding-right:0;min-width:25px;max-width: 25px;">-->
-<!--          <q-icon size="xs" name="o_link" color="accent"/>-->
-<!--        </q-item-section>-->
-<!--        <q-item-section>-->
-<!--          Copy URL to Clipboard-->
-<!--        </q-item-section>-->
-<!--      </q-item>-->
+      <!--      <q-separator inset/>-->
+      <!--      <q-item clickable v-close-popup @click.stop="copyToClipboard(props['tab' as keyof object])">-->
+      <!--        <q-item-section style="padding-right:0;min-width:25px;max-width: 25px;">-->
+      <!--          <q-icon size="xs" name="o_link" color="accent"/>-->
+      <!--        </q-item-section>-->
+      <!--        <q-item-section>-->
+      <!--          Copy URL to Clipboard-->
+      <!--        </q-item-section>-->
+      <!--      </q-item>-->
 
       <template v-if="usePermissionsStore().hasFeature(FeatureIdent.ADVANCED_TAB_MANAGEMENT)">
         <q-separator inset/>
@@ -85,8 +86,20 @@
         </q-item>
       </template>
 
+      <template v-if="useAuthStore().isAuthenticated()">
+        <q-separator inset/>
+        <q-item clickable v-close-popup @click.stop="openSimilar()">
+          <q-item-section style="padding-right:0;min-width:25px;max-width: 25px;">
+            <q-icon size="xs" name="o_equal"/>
+          </q-item-section>
+          <q-item-section>
+            Open similar websites
+          </q-item-section>
+        </q-item>
+      </template>
+
       <q-separator inset/>
-      <q-item clickable v-close-popup @click.stop="deleteTab(props['tab' as keyof object])">
+      <q-item clickable v-close-popup @click.stop="deleteTab()">
         <q-item-section style="padding-right:0;min-width:25px;max-width: 25px;">
           <q-icon size="xs" name="o_delete" color="negative"/>
         </q-item-section>
@@ -108,7 +121,6 @@ import {Tab} from "src/models/Tab";
 import {DeleteTabCommand} from "src/domain/tabs/DeleteTabCommand";
 import {useRouter} from "vue-router";
 import {useSettingsStore} from "stores/settingsStore";
-import {CopyToClipboardCommand} from "src/domain/commands/CopyToClipboard";
 import NavigationService from "src/services/NavigationService";
 import {Tabset, TabsetType} from "src/models/Tabset";
 import {usePermissionsStore} from "stores/permissionsStore";
@@ -121,6 +133,13 @@ import ColorSelector from "components/dialogues/helper/ColorSelector.vue";
 import {UpdateTabColorCommand} from "src/domain/tabs/UpdateTabColor";
 import MonitoringDialog from "components/dialogues/MonitoringDialog.vue";
 import CommentDialog from "components/dialogues/CommentDialog.vue";
+import {api} from "boot/axios";
+import _ from "lodash"
+import {useAuthStore} from "stores/authStore";
+import {NotificationType, useNotificationHandler} from "src/services/ErrorHandler";
+import {ExecutionResult} from "src/domain/ExecutionResult";
+
+const {handleSuccess, handleError} = useNotificationHandler()
 
 const props = defineProps({
   tab: {type: Object as PropType<Tab>, required: true},
@@ -146,9 +165,28 @@ async function tabToUse(tab: Tab) {
   return useTab;
 }
 
-const deleteTab = async (tabIn: Tab) => {
-  const useTab = await tabToUse(tabIn)
-  useCommandExecutor().executeFromUi(new DeleteTabCommand(useTab))
+const openSimilar = async () => {
+  console.log("finding similar websites for", props.tab.url)
+  try {
+    const url = new URL(props.tab.url || '')
+    const hostname = url.hostname
+    const res = await api.post("https://us-central1-tabsets-dev.cloudfunctions.net/app/ra/similar", {"domain": hostname})
+    const data = res.data
+    console.log("res", res, data['similar_sites'])
+    if (data['similar_sites']) {
+      const urls = _.map(data['similar_sites'], u => "https://" + u)
+      NavigationService.openOrCreateTab(urls)
+      handleSuccess(new ExecutionResult("done", "opening " + urls.length + " similar page(s)"))
+    }
+  } catch (err) {
+    console.log("got error", err)
+    handleError("not able to find similar pages", NotificationType.TOAST)
+  }
+}
+
+const deleteTab = async () => {
+  const useTab = await tabToUse(props.tab)
+  useCommandExecutor().executeFromUi(new DeleteTabCommand(useTab, props.tabset))
   if (useTab && useTab.url) {
     const res = await useBookmarksStore().findBookmarksForUrl(useTab.url)
     console.log("existing bookmarks", res)
@@ -157,8 +195,8 @@ const deleteTab = async (tabIn: Tab) => {
         title: res.length === 1 ? 'Found Bookmark with same URL' : 'Found Bookmarks with same URL',
         cancel: true,
         message: res.length === 1 ?
-            'Do you want to delete this bookmark as well?' :
-            'Do you want to delete these ' + res.length + ' bookmarks as well?'
+          'Do you want to delete this bookmark as well?' :
+          'Do you want to delete these ' + res.length + ' bookmarks as well?'
       }).onOk(() => {
         res.forEach(bm => {
           chrome.bookmarks.remove(bm.id)
@@ -192,14 +230,14 @@ const showTabDetails = async (tab: Tab) => {
 }
 
 const showTabDetailsMenuEntry = (tab: Tab) =>
-    useSettingsStore().isEnabled('dev')
+  useSettingsStore().isEnabled('dev')
 //&& !(tab.placeholders?.type === PlaceholdersType.URL_SUBSTITUTION)
 
 const deleteTabLabel = (tab: Tab) =>
-    (tab.placeholders && tab.placeholders.type === PlaceholdersType.URL_SUBSTITUTION) ?
-        'Delete all'
-        :
-        'Delete Tab'
+  (tab.placeholders && tab.placeholders.type === PlaceholdersType.URL_SUBSTITUTION) ?
+    'Delete all'
+    :
+    'Delete Tab'
 
 
 const editURL = async (tab: Tab) => {

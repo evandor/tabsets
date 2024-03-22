@@ -57,6 +57,7 @@
 
           <SidePanelTabListHelper v-for="tab in tabsForColumn(column) as Array<IndexedTab>"
                                   :tab="tab.tab as Tab"
+                                  :indent="props.indent"
                                   :index="tab.index"
                                   :type="props.type"
                                   :sorting="props.sorting"
@@ -107,6 +108,7 @@ const props = defineProps({
   sorting: {type: String as PropType<TabSorting>, default: TabSorting.CUSTOM},
   type: {type: String, default: 'sidepanel'},
   showTabsets: {type: Boolean, default: false},
+  indent: {type: Boolean, default: false},
   preventDragAndDrop: {type: Boolean, default: false},
   tabset: {type: Object as PropType<Tabset>, required: false},
   tabsCount: {type: Number, default: -1}
@@ -176,14 +178,12 @@ const tabsForColumn = (column: TabsetColumn): IndexedTab[] => {
       }
       return it.tab.columnId === column.id
     })
-  // console.log("tfc", _.map(tfc, e => {
-  //   return {i: e.index, t: e.tab.id}
-  // }))
   return tfc
 }
 
 const showTabsetWithColumns = () => {
   const cols = getColumns()
+  //console.log("getcolumns", cols)
   if (cols.length === 1) {
     return cols[0].id !== SPECIAL_ID_FOR_NO_GROUP_ASSIGNED
   }

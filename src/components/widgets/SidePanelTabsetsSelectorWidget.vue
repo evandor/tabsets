@@ -4,6 +4,7 @@
     <div
       class="q-ma-none q-pa-none text-subtitle q-pl-sm cursor-pointer ellipsis">
       {{ tabsetLabel() }}
+      <q-tooltip class="tooltip_small">The currenly selected tabset</q-tooltip>
       <q-icon name="arrow_drop_down" class="q-mr-xs " size="xs"/>
     </div>
 
@@ -40,21 +41,24 @@
           </q-select>
         </q-item>
         <q-item v-else
-                clickable v-for="ts in allTabsetsButCurrent" @click="switchToTabset(ts as Tabset)">
+                clickable v-for="ts in allTabsetsButCurrent"
+                @click="switchToTabset(ts as Tabset)">
           {{ ts.name }}
         </q-item>
 
-        <template v-if="usePermissionsStore().hasFeature(FeatureIdent.SPACES)">
+        <template v-if="usePermissionsStore().hasFeature(FeatureIdent.SPACES) && !useAsTabsetsSwitcher">
           <q-separator/>
           <q-item clickable @click.stop="router.push('/sidepanel/spaces')">
             Switch Space...
           </q-item>
         </template>
 
-        <q-separator/>
-        <q-item clickable @click.stop="router.push('/sidepanel')">
-          Show all Tabsets
-        </q-item>
+        <template v-if="!useAsTabsetsSwitcher">
+          <q-separator/>
+          <q-item clickable @click.stop="router.push('/sidepanel')">
+            Show all Tabsets
+          </q-item>
+        </template>
 
         <template
           v-if="usePermissionsStore().hasFeature(FeatureIdent.BACKUP) || usePermissionsStore().hasFeature(FeatureIdent.IGNORE)">
@@ -68,18 +72,24 @@
           </q-item>
         </template>
 
-        <q-separator/>
-        <q-item clickable v-close-popup @click="openNewTabsetDialog()">
-          <q-item-section>Add new Tabset</q-item-section>
-        </q-item>
+        <template v-if="!useAsTabsetsSwitcher">
+          <q-separator/>
+          <q-item clickable v-close-popup @click="openNewTabsetDialog()">
+            <q-item-section>Add new Tabset</q-item-section>
+          </q-item>
+        </template>
+
         <q-separator/>
         <q-item v-if="tabsStore.currentTabsetName" clickable v-close-popup @click="openEditTabsetDialog()">
           <q-item-section>Edit Tabset Name</q-item-section>
         </q-item>
-        <q-separator/>
-        <q-item v-if="tabsStore.currentTabsetName" clickable v-close-popup @click="deleteTabsetDialog()">
-          <q-item-section>Delete this Tabset...</q-item-section>
-        </q-item>
+
+        <template v-if="!useAsTabsetsSwitcher">
+          <q-separator/>
+          <q-item v-if="tabsStore.currentTabsetName" clickable v-close-popup @click="deleteTabsetDialog()">
+            <q-item-section>Delete this Tabset...</q-item-section>
+          </q-item>
+        </template>
       </q-list>
     </q-menu>
   </div>
@@ -105,6 +115,10 @@ import EditTabsetDialog from "components/dialogues/EditTabsetDialog.vue";
 import DeleteTabsetDialog from "components/dialogues/DeleteTabsetDialog.vue";
 import {SidePanelView, useUiStore} from "stores/uiStore";
 
+const props = defineProps({
+  fromPanel: {type: Boolean, default: true},
+  useAsTabsetsSwitcher: {type: Boolean, default: false}
+})
 const tabsStore = useTabsStore()
 const spacesStore = useSpacesStore()
 const router = useRouter()
@@ -130,7 +144,7 @@ const filterFn = (val: any, update: any, abort: any) => {
 
 const setModel = (val: any) => {
   console.log("setting model", val)
-  const found =_.filter(allTabsetsButCurrent.value as Tabset[], (ts:Tabset) => ts.name === val)
+  const found = _.filter(allTabsetsButCurrent.value as Tabset[], (ts: Tabset) => ts.name === val)
   if (found && found.length > 0) {
     console.log("setting model", found)
     switchTabsetModel.value = val
@@ -222,7 +236,9 @@ const switchToTabset = (ts: Tabset) => {
     .execute(new SelectTabsetCommand(ts.id, useSpacesStore().space?.id))
     .then((res: ExecutionResult<Tabset | undefined>) => {
       //useUiStore().sidePanelSetActiveView(SidePanelView.MAIN)
-      router.push("/sidepanel/tabsets/" + ts.id)
+      if (!props.useAsTabsetsSwitcher) {
+        router.push("/sidepanel/tabsets/" + ts.id)
+      }
     })
 }
 

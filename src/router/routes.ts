@@ -60,9 +60,14 @@ const routes: RouteRecordRaw[] = [
     children: [{path: '', component: () => import('pages/sidepanel/SidePanelTabDetails.vue')}],
   },
   {
+    path: '/sidepanel/bookmarks',
+    component: () => import('layouts/SidePanelLayout.vue'),
+    children: [{path: '', component: () => import('pages/sidepanel/SidePanelBookmarksPage.vue')}],
+  },
+  {
     path: '/sidepanel/tabslist',
     component: () => import('layouts/SidePanelLayout.vue'),
-    children: [{path: '', component: () => import('pages/sidepanel/SidePanelOpenTabsListViewer.vue')}],
+    children: [{path: '', component: () => import('pages/sidepanel/SidePanelOpenTabsPage.vue')}],
   },
   {
     path: '/sidepanel/tagslist',
@@ -93,11 +98,6 @@ const routes: RouteRecordRaw[] = [
     path: '/sidepanel/newestList',
     component: () => import('layouts/SidePanelLayout.vue'),
     children: [{path: '', component: () => import('pages/sidepanel/SidePanelNewestTabsPage.vue')}],
-  },
-  {
-    path: '/sidepanel/bookmarks',
-    component: () => import('layouts/SidePanelLayout.vue'),
-    children: [{path: '', component: () => import('pages/sidepanel/SidePanelBookmarksPage.vue')}],
   },
   {
     path: '/sidepanel/tabsAsTree',
@@ -148,11 +148,6 @@ const routes: RouteRecordRaw[] = [
     path: '/mainpanel/tabsets/:tabsetId', // TODO combine with Tabset page
     component: () => import('layouts/PlainLayout.vue'),
     children: [{path: '', component: () => import('pages/TabsetPage.vue')}],
-  },
-  {
-    path: '/mainpanel/mhtml/:encodedUrl', // TODO combine with MHtml page
-    component: () => import('layouts/PlainLayout.vue'),
-    children: [{path: '', component: () => import('pages/mainpanel/MainPanelMHtmlPage.vue')}],
   },
   {
     path: '/mainpanel/png/:tabId/:blobId',
@@ -228,11 +223,6 @@ const routes: RouteRecordRaw[] = [
     path: '/spaces',
     component: () => import('layouts/DefaultLayout.vue'),
     children: [{path: '', component: () => import('pages/Spaces.vue')}],
-  },
-  {
-    path: '/mhtml/:encodedUrl',
-    component: () => import('layouts/DefaultLayout.vue'),
-    children: [{path: '', component: () => import('pages/MHtmlPage.vue')}],
   },
   {
     path: '/rss/:encodedUrl',

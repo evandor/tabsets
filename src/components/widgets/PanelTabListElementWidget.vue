@@ -217,7 +217,7 @@
                               || (props.tab as Tab).annotations && (props.tab as Tab).annotations.length > 0
                               || (props.tab as Tab).comments && (props.tab as Tab).comments.length > 0
                               || pngs.length > 0">
-              <span>-</span>
+              <span> | </span>
             </template>
 
             <template v-if="groupName && usePermissionsStore().hasFeature(FeatureIdent.TAB_GROUPS)">
@@ -247,7 +247,7 @@
             </template>
 
             <span v-if="useUiStore().listDetailLevelGreaterEqual(ListDetailLevel.MAXIMAL, props.tabset?.details)">
-              {{ formatDate(props.tab.lastActive) }}
+              last active: {{ formatDate(props.tab.lastActive) }}
             </span>
 
           </div>
@@ -515,9 +515,11 @@ watchEffect(() => {
 watchEffect(() => {
   if (props.tab) {
     const t = props.tab
+    //console.log("placeholders", t.placeholders)
     if (t.placeholders && t.placeholders.type === PlaceholdersType.URL_SUBSTITUTION) {
       const subs = t.placeholders.config
       Object.entries(subs).forEach(e => {
+        console.log("got e", e)
         const name = e[0]
         const val = e[1]
         val.split(",").forEach((v: string) => {
@@ -535,6 +537,7 @@ watchEffect(() => {
       })
     }
   }
+  //console.log("===>", placeholders.value)
 })
 
 watchEffect(async () => {

@@ -1,12 +1,5 @@
 <template>
   <div>
-    <!--    <div class="row items-baseline q-mx-md q-pa-none">-->
-    <!--      <div class="col-12 q-mb-md">&nbsp;-->
-    <!--        <q-banner v-if="useUiStore().getSelectedTab?.isDuplicate"-->
-    <!--                  rounded class="bg-amber-1 text-black">This tab has duplicates in this tabset-->
-    <!--        </q-banner>-->
-    <!--      </div>-->
-    <!--    </div>-->
 
     <div class="row items-baseline q-mx-sm q-my-sm">
 
