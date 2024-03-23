@@ -682,7 +682,7 @@ class IndexedDbPersistenceService implements PersistenceService {
       s.state = state
       await this.db.put('suggestions', s, suggestionId)
       return Promise.resolve(s)
-        }
+    }
     return Promise.reject("could not update suggestion")
   }
 

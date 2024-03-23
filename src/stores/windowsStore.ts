@@ -360,7 +360,7 @@ export const useWindowsStore = defineStore('windows', () => {
           allWindow.index = indexToUse
         }
         return storage.updateWindow(w)
-          //.then(() => sendMsg('window-updated', {initiated: "WindowsStore#updateWindowIndex"}))
+        //.then(() => sendMsg('window-updated', {initiated: "WindowsStore#updateWindowIndex"}))
       } else {
         return Promise.reject("window for #" + windowId + " not found")
       }

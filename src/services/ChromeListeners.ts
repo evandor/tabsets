@@ -93,7 +93,7 @@ function inIgnoredMessages(request: any) {
     request.name === 'detail-level-perTabset-changed' ||
     request.name === 'detail-level-changed' ||
     request.name === 'reload-application' ||
-   // request.name === 'window-updated' ||
+    request.name === 'window-updated' ||
     request.action === 'highlight-annotation'
   //request.name === 'recogito-annotation-created'
 
@@ -248,7 +248,7 @@ class ChromeListeners {
     }
     this.eventTriggered()
     console.debug(`onCreated: tab ${tab.id}: >>> ${tab.pendingUrl}`, tab)
-    sendMsg('window-updated', {initiated: "ChromeListeners#onCreated"})
+    //sendMsg('window-updated', {initiated: "ChromeListeners#onCreated"})
     const tabsStore = useTabsStore()
 
     let foundSession = false
@@ -380,7 +380,7 @@ class ChromeListeners {
         if (tab.groupId >= 0) {
           console.log("updating updatedTab group for group id", tab.groupId)
           //newTab.group = useGroupsStore().groupForId(tab.groupId)
-          //const g = await chrome.tabGroups.get(tab.groupId)
+          //const g = await browser.tabGroups.get(tab.groupId)
 
           newTab.groupName = useGroupsStore().currentGroupForId(tab.groupId)?.title || '???'
         }
@@ -465,7 +465,7 @@ class ChromeListeners {
     console.debug("onRemoved tab event: ", number, info)
     //useWindowsStore().refreshCurrentWindows()
     useWindowsStore().refreshTabsetWindow(info.windowId)
-    sendMsg('window-updated', {initiated: "ChromeListeners#onRemoved"})
+    //sendMsg('window-updated', {initiated: "ChromeListeners#onRemoved"})
   }
 
   onReplaced(n1: number, n2: number) {

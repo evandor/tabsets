@@ -18,23 +18,10 @@
           <q-icon v-if="!useUiStore().networkOnline || useUiStore().mqttOffline" name="cloud_off">
             <q-tooltip class="tooltip-small">{{useUiStore().sharingMqttUrl}}: {{ useUiStore().mqttOffline }}</q-tooltip>
           </q-icon>
-<!--          <q-btn-->
-<!--            @click="toggleSettings"-->
-<!--            flat-->
-<!--            size="12px"-->
-<!--            class="q-mr-md" icon="o_settings">-->
-<!--          </q-btn>-->
-<!--          <q-menu :offset="[0, 7]">-->
-<!--            <q-list style="min-width: 200px">-->
-<!--              <q-item clickable @click="router.push('/settings')">Settings</q-item>-->
-<!--              <q-item clickable @click="router.push('/about')" v-close-popup>-->
-<!--                About Tabsets-->
-<!--              </q-item>-->
-<!--            </q-list>-->
-<!--          </q-menu>-->
+
         </div>
 
-        <div class="cursor-pointer" @click="router.push('/about')" v-if="notificationsStore.updateToVersion !== ''">
+        <div class="cursor-pointer" @click="router.push('/')" v-if="notificationsStore.updateToVersion !== ''">
           <q-btn
             class="text-primary bg-warning"
             @click="installNewVersion(notificationsStore.updateToVersion)"

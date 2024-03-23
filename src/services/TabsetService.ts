@@ -2,7 +2,7 @@ import {useTabsStore} from "src/stores/tabsStore";
 import {LocalStorage, uid} from "quasar";
 import ChromeApi from "src/services/ChromeApi";
 import _ from "lodash";
-import {Tab} from "src/models/Tab";
+import {Tab, UrlExtension} from "src/models/Tab";
 import {Tabset, TabsetSharing, TabsetStatus, TabsetType} from "src/models/Tabset";
 import {useSearchStore} from "src/stores/searchStore";
 import {useBookmarksStore} from "src/stores/bookmarksStore";
@@ -183,8 +183,15 @@ class TabsetService {
     return saveCurrentTabset()
   }
 
-  setUrl(tab: Tab, url: string, placeholders: string[] = [], placeholderValues: Map<string, string> = new Map()): Promise<any> {
+  setUrl(
+    tab: Tab,
+    url: string,
+    placeholders: string[] = [],
+    placeholderValues: Map<string, string> = new Map(),
+    extension: UrlExtension = UrlExtension.HTML
+  ): Promise<any> {
     tab.url = url
+    tab.extension = extension,
     tab = PlaceholderUtils.apply(tab, placeholders, placeholderValues)
     return saveCurrentTabset()
   }

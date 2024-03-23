@@ -14,6 +14,8 @@ function log(msg: string, level:number) {
   }
   api.post("http://graylog.tabsets.net:12201/gelf", gelfMessage, {headers: {
       "Content-Type": "application/json"}
+  }).catch((err) => {
+    console.log("error with logging server")
   })
 }
 

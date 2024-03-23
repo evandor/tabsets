@@ -1,7 +1,7 @@
 import Command from "src/domain/Command";
 import {ExecutionResult} from "src/domain/ExecutionResult";
 import TabsetService from "src/services/TabsetService";
-import {Tab} from "src/models/Tab";
+import {Tab, UrlExtension} from "src/models/Tab";
 import {useSearchStore} from "src/stores/searchStore";
 
 class UndoCommand implements Command<any> {
@@ -32,13 +32,14 @@ export class UpdateTabUrlCommand implements Command<any> {
     public newDesc: string,
     public placeholders: string[] = [],
     public placeholderValues: Map<string,string> = new Map(),
+    public extension: UrlExtension = UrlExtension.HTML
     ) {
   }
 
   async execute(): Promise<ExecutionResult<string>> {
     const oldUrl = this.tab.url || '';
     await TabsetService.setCustomTitle(this.tab, this.newName, this.newDesc)
-    return TabsetService.setUrl(this.tab, this.newUrl, this.placeholders, this.placeholderValues)
+    return TabsetService.setUrl(this.tab, this.newUrl, this.placeholders, this.placeholderValues, this.extension)
       .then(ignored => {
         if (this.tab.url) {
           useSearchStore().update(this.tab.url, 'url', this.newUrl)

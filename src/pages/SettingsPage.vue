@@ -388,7 +388,10 @@
 
       <div class="row q-pa-md">
         <div class="col-3"><b>Import</b></div>
-        <div class="col-3">from json</div>
+        <div class="col-3">
+          from json<br>
+          You might need to restart tabsets.
+        </div>
         <div class="col-1"></div>
         <div class="col-5">
           <q-btn
