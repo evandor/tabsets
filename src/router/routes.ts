@@ -105,6 +105,11 @@ const routes: RouteRecordRaw[] = [
     children: [{path: '', component: () => import('pages/sidepanel/SidePanelTabsAsTreePage.vue')}],
   },
   {
+    path: '/sidepanel/entityManager',
+    component: () => import('layouts/SidePanelLayout.vue'),
+    children: [{path: '', component: () => import('pages/sidepanel/SidePanelEntitiesPage.vue')}],
+  },
+  {
     path: '/sidepanel/messages',
     component: () => import('layouts/SidePanelLayout.vue'),
     children: [{path: '', component: () => import('pages/sidepanel/SidePanelMessagesPage.vue')}],

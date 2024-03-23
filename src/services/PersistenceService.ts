@@ -10,6 +10,7 @@ import {RequestInfo} from "src/models/RequestInfo";
 import {BlobType, SavedBlob} from "src/models/SavedBlob";
 import {Message} from "src/models/Message";
 import {Account} from "src/models/Account";
+import {Entity} from "src/models/Entity";
 
 interface PersistenceService {
 
@@ -91,6 +92,8 @@ interface PersistenceService {
   upsertAccount(account: Account):void
 
   clear(name: string):any
+
+  saveEntity(entity: Entity): void;
 
 }
 

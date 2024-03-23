@@ -19,6 +19,7 @@ import {Window} from "src/models/Window";
 import {BlobType, SavedBlob} from "src/models/SavedBlob";
 import {Message} from "src/models/Message";
 import {Account} from "src/models/Account";
+import {Entity} from "src/models/Entity";
 
 class IndexedDbPersistenceService implements PersistenceService {
   private db: IDBPDatabase = null as unknown as IDBPDatabase
@@ -534,7 +535,7 @@ class IndexedDbPersistenceService implements PersistenceService {
 
   private async initDatabase(dbName: string): Promise<IDBPDatabase> {
     console.debug(" about to initialize indexedDB")
-    return await openDB(dbName, INDEX_DB_VERSION, {
+    return await openDB(dbName,   INDEX_DB_VERSION, {
       // upgrading see https://stackoverflow.com/questions/50193906/create-index-on-already-existing-objectstore
       upgrade(db) {
         if (!db.objectStoreNames.contains('tabsets')) {
@@ -605,6 +606,10 @@ class IndexedDbPersistenceService implements PersistenceService {
         if (!db.objectStoreNames.contains('accounts')) {
           console.log("creating db accounts")
           db.createObjectStore('accounts');
+        }
+        if (!db.objectStoreNames.contains('entities')) {
+          console.log("creating db entities")
+          db.createObjectStore('entities');
         }
       },
     });
@@ -711,6 +716,10 @@ class IndexedDbPersistenceService implements PersistenceService {
     //console.log("upserting account", account)
     //console.log("upserting account", normalizedAccount)
     this.db.put('accounts', normalizedAccount, normalizedAccount.id)
+  }
+
+  saveEntity (entity: Entity): void {
+    this.db.put('entities', entity, entity.id)
   }
 
 
