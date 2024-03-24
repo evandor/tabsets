@@ -17,16 +17,13 @@ export function useEntitiesService() {
 
   }
 
-  const createEntity = (name: string) => {
-    const entity = new Entity(uid(), name)
-    db.saveEntity(entity)
-  }
-
-
+  // const createEntity = (name: string) => {
+  //   const entity = new Entity(uid(), name)
+  //   db.saveEntity(entity)
+  // }
 
   return {
-    init,
-    createEntity
+    init
   }
 
 }

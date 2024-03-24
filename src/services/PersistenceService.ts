@@ -93,7 +93,9 @@ interface PersistenceService {
 
   clear(name: string):any
 
-  saveEntity(entity: Entity): void;
+  saveEntity(entity: Entity): void
+  getEntities(): Promise<Entity[]>
+  findEntityById(id: string): Promise<Entity>
 
 }
 

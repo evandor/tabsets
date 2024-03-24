@@ -121,7 +121,7 @@ if (useDarkMode === "true") {
 }
 
 const currentUser = $q.localStorage.getItem(CURRENT_USER_ID)
-if (!process.env.USE_FIREBASE) {
+if (process.env.USE_FIREBASE != "true") {
   AppService.init($q, router, false)
 } else if (currentUser) {
   console.log("current user id found, waiting for auto-login")

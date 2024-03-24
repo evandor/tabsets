@@ -535,7 +535,7 @@ class IndexedDbPersistenceService implements PersistenceService {
 
   private async initDatabase(dbName: string): Promise<IDBPDatabase> {
     console.debug(" about to initialize indexedDB")
-    return await openDB(dbName,   INDEX_DB_VERSION, {
+    return await openDB(dbName, INDEX_DB_VERSION, {
       // upgrading see https://stackoverflow.com/questions/50193906/create-index-on-already-existing-objectstore
       upgrade(db) {
         if (!db.objectStoreNames.contains('tabsets')) {
@@ -718,11 +718,17 @@ class IndexedDbPersistenceService implements PersistenceService {
     this.db.put('accounts', normalizedAccount, normalizedAccount.id)
   }
 
-  saveEntity (entity: Entity): void {
+  saveEntity(entity: Entity): void {
     this.db.put('entities', entity, entity.id)
   }
 
+  async getEntities(): Promise<Entity[]> {
+    return await this.db.getAll('entities')
+  }
 
+  async findEntityById(id: string) {
+    return await this.db.get('entities', id)
+  }
 }
 
 export default new IndexedDbPersistenceService()

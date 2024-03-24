@@ -26,6 +26,7 @@ import {useUiStore} from "stores/uiStore";
 import {User} from "firebase/auth";
 import FsPersistenceService from "src/services/persistence/FirestorePersistenceService";
 import {useEntitiesService} from "src/services/EntityService";
+import {useEntitiesStore} from "stores/entitiesStore";
 
 function dbStoreToUse(st: SyncType, su: string | undefined) {
   const isAuthenticated = useAuthStore().isAuthenticated()
@@ -157,10 +158,12 @@ class AppService {
     const windowsStore = useWindowsStore()
     const groupsStore = useGroupsStore()
     const tabsStore = useTabsStore()
+    const entitiesStore = useEntitiesStore()
 
     await spacesStore.initialize(store)
     await useTabsetService().init(store, false)
 
+    await entitiesStore.initialize(store)
     await useEntitiesService().init(store)
 
     ChromeApi.init(router)
