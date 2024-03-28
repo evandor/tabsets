@@ -89,6 +89,7 @@ class NavigationService {
                 //console.log("matcher yielded", JsUtils.match(matcher, r.url))
                 matchCondition = JsUtils.match(matcher, r.url)
               }
+              // console.log("===>", matchCondition, url, r.url)
               if (matchCondition) {
                 if (!found) { // highlight only first hit
                   found = true

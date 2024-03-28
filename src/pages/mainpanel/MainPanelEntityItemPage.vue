@@ -2,12 +2,17 @@
 
   <q-page>
 
+    <div class="q-ma-md">
 
-    {{ entityId }}
-    Add<br><br>
 
-    <Vueform  ref="form" :schema="schema" :endpoint="submit"></Vueform>
+      {{ entityId }}
+      Add<br><br>
 
+      <Vueform ref="form" :schema="schema" :endpoint="submit" @change="formChange()"></Vueform>
+
+      <h3 class="demo-preview">Sheet 1</h3>
+      <div id="example-basic-multi-sheet-1"></div>
+    </div>
   </q-page>
 
 </template>
@@ -19,44 +24,130 @@ import Analytics from "src/utils/google-analytics";
 import {useRoute} from "vue-router";
 import {useEntitiesStore} from "stores/entitiesStore";
 import {Entity} from "src/models/Entity";
+import _ from "lodash"
+import {uid} from "quasar";
+import {useUtils} from "src/services/Utils";
+import {create, all} from 'mathjs'
+
+const config = {}
+const math = create(all, config)
+
+const {sendMsg} = useUtils()
 
 const route = useRoute()
 
 const form = ref(null)
 const entityId = ref<string | undefined>(undefined)
 const entity = ref<Entity | undefined>(undefined)
+const formdata = ref<object>({})
 const schema = ref({})
+const referencedItems = ref<Map<string, object>>(new Map())
+const calculatedField = ref<Map<string, object>>(new Map())
 
 onMounted(() => {
-  Analytics.firePageViewEvent('MainPanelEntitesPage', document.location.href);
+  Analytics.firePageViewEvent('MainPanelEntitiesPage', document.location.href);
+})
+
+watchEffect(() => {
+  if (useEntitiesStore().updated) {
+    const entities = useEntitiesStore().entities
+    console.log("got entities", entities)
+    for (const entity of entities) {
+      const items = entity.items
+      const valueMap = _.map(items, i => {
+        return {
+          value: i.id,
+          label: i.name
+        }
+      })
+      referencedItems.value.set(entity.id, valueMap)
+    }
+    console.log("refrenceItems", referencedItems.value)
+  }
 })
 
 watchEffect(async () => {
   entityId.value = route.params.entityId.toString() || ''
   if (entityId.value && useEntitiesStore().updated) {
-    console.log("hier", form)
+    console.log("hier", form.value)
     entity.value = await useEntitiesStore().findById(entityId.value)
     if (entity.value) {
+      console.log("entity", entity.value)
+      const scheme = {}
+      for (const f of entity.value.fields) {
+        switch (f.type) {
+          case 'text':
+            scheme[f.name] = {
+              type: 'text',
+              label: f.label,
+              info: f.info
+            }
+            break
+          case 'number':
+            scheme[f.name] = {
+              type: 'text',
+              inputType: 'number',
+              label: f.label,
+              info: f.info
+            }
+            break
+          case 'date':
+            scheme[f.name] = {
+              type: 'date',
+              label: f.label,
+              info: f.info
+            }
+            break
+          case 'reference':
+            scheme[f.name] = {
+              type: 'select',
+              native: false,
+              label: f.label,
+              items: referencedItems.value.get(f.reference),
+              info: f.info
+            }
+            break
+          case 'url':
+            scheme[f.name] = {
+              type: 'text',
+              inputType: 'url',
+              label: f.label,
+              info: f.info
+            }
+            break
+          case 'formula':
+            console.log("===>", f.id)
+            calculatedField.value.set(f.id, calculate(entity.value, f))
+            scheme[f.name] = {
+              type: 'text',
+              readonly: true,
+              label: f.label,
+              info: f.info,
+              submit: false,
+              default: calculatedField.value.get(f.id)
+            }
+            break
+          default:
+            console.log("unknown type", f.type)
+        }
+
+      }
+      scheme['id' as keyof object] = {
+        type: 'hidden'
+      }
+      scheme['submit'] = {
+        type: "button",
+        buttonLabel: "Submit",
+        submits: true,
+        align: "right"
+      }
+
       //let schema = entity.value.schema.trim()//.substring(0,entity.value.schema.trim().length - 1)
       // schema = schema + ',
-      //   submit: {
-      //     type: "button",
-      //     buttonLabel: "Submit",
-      //     submits: true,
-      //     align: "right"
-      //   }
-      // }
+      //   submit:
+      console.log("scheme", referencedItems.value, scheme)
 
-      var jsonStr = entity.value.schema.replace(/(\w+:)|(\w+ :)/g, function(matchedStr) {
-        return '"' + matchedStr.substring(0, matchedStr.length - 1) + '":';
-      });
-      console.log("jsonStr", jsonStr)
-      const obj = JSON.parse(jsonStr);
-      console.log("obj", obj)
-
-
-
-      schema.value = obj
+      schema.value = scheme
     }
     // if (form && form.value) {
     //   form.value.update({ // updates form data
@@ -73,10 +164,52 @@ const submit = async (FormData, form$) => {
   const data = form$.data // form data including conditional data
   const requestData = form$.requestData // form data excluding conditional data
   console.log('xxx', formData, data, requestData, entity.value)
-  if(entity.value) {
+  if (entity.value) {
+    if (!data.id) {
+      data.id = uid()
+    }
     entity.value.items.push(data)
-    await useEntitiesStore().save(entity.value)
+    sendMsg('entity-changed', entity.value)
+    //await useEntitiesStore().save(entity.value)
   }
+}
+
+const calculate = (e: Entity, formula: object) => {
+  console.log("e,formula", e, formula)
+  let rawFormula: string = formula.formula || ''
+  for (const field of e.fields) {
+    if (field.type === "number") {
+      console.log("field", field)
+      console.log("formdata", formdata.value)
+      const fieldName = field.name
+      rawFormula = rawFormula.replaceAll("{" + fieldName + "}", formdata.value[fieldName as keyof object])
+      console.log("rawFormula", rawFormula)
+    }
+  }
+  try {
+    return math.evaluate(rawFormula)
+  } catch (err) {
+    console.log("error", err)
+    return formula.formula
+  }
+}
+
+const formChange = () => {
+  console.log("formChange", form.value?.data)
+  const update = {}
+  if (form.value && form.value.data) {
+    formdata.value = form.value.data
+    for (const formula of _.filter(entity.value.fields, f => f.type === "formula")) {
+      console.log("foudn formula", formula)
+      //  calculatedField.value.set(formula.id, calculate(entity.value, formula))
+      //form.value.data[formula.name] = "***" //calculate(entity.value, formula)
+      update[formula.name] = calculate(entity.value, formula)
+    }
+    console.log("updating form with", update)
+    form.value.update(update)
+
+  }
+  console.log("formChange2", form.value?.data)
 }
 </script>
 

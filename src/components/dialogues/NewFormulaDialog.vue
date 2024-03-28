@@ -3,12 +3,12 @@
 
       <q-card class="q-dialog-plugin" style="max-width:100%">
         <q-card-section>
-          <div class="text-h6">Add Entity</div>
+          <div class="text-h6">Add Formula</div>
         </q-card-section>
 
         <q-card-section class="q-pt-none">
           <div class="text-body">Name:</div>
-          <q-input v-model="newEntityName"
+          <q-input v-model="newFormulaName"
                    class="q-mb-md q-pb-none"
                    dense autofocus
                    data-testid="newEntityName">
@@ -26,7 +26,7 @@
           <DialogButton label="Cancel" color="primary" v-close-popup/>
           <DialogButton label="Add"
                         type="submit"
-                        @click="createNewEntity()"
+                        @click="createNewFormula()"
                         v-close-popup/>
         </q-card-actions>
 
@@ -59,10 +59,10 @@ const props = defineProps({
 
 const {dialogRef, onDialogHide} = useDialogPluginComponent()
 
-const newEntityName = ref(props.name)
+const newFormulaName = ref(props.name)
 
-const createNewEntity = () => {
-  console.log("new entity", newEntityName.value)
-  useCommandExecutor().executeFromUi(new AddEntityCommand(newEntityName.value))
+const createNewFormula = () => {
+  console.log("new formula", newFormulaName.value)
+  useCommandExecutor().executeFromUi(new AddEntityCommand(newFormulaName.value))
 }
 </script>

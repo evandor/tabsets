@@ -104,7 +104,9 @@ export class Tabset {
     this.spaces = spaces
   }
 
-  static newTabsetNameIsValid = (val: string) => !STRIP_CHARS_IN_USER_INPUT.test(val)
+  static newTabsetNameIsValid = (val: string) => {
+    return !STRIP_CHARS_IN_USER_INPUT.test(val)
+  }
 
   static newTabsetNameIsShortEnough = (val: string) => val ? val.length <= TABSET_NAME_MAX_LENGTH : true
 

@@ -3,8 +3,36 @@
   <q-page>
 
     <div class="q-ma-md">
-      {{ entityId }}
+      Entity: {{ entity?.name }}
       <Vueform ref="form" :schema="schema" :endpoint="submit"></Vueform>
+
+      <q-list bordered separator>
+        <q-item clickable v-ripple v-for="(f,idx) in entity?.fields" :key="idx">
+          <q-item-section>
+            <q-item-label>{{ f.label }}</q-item-label>
+            <q-item-label caption>{{ f.id }}</q-item-label>
+          </q-item-section>
+          <q-item-section>
+            <q-item-label>{{ f.type }}</q-item-label>
+          </q-item-section>
+          <q-item-section>
+            <q-item-label>
+              <span class="q-mr-md text-right">
+                <q-checkbox v-model="showInList[idx]" @update:modelValue="(val) => updateShowInList(idx)"/>
+              </span>
+              <span class="q-mr-md text-right">
+                <q-icon name="edit" color="primary" @click="editField(f)"/>
+              </span>
+              <span class="q-mr-md text-right">
+                <q-icon name="delete" color="negative" @click="deleteField(f)"/>
+              </span>
+            </q-item-label>
+          </q-item-section>
+        </q-item>
+      </q-list>
+      <br><br>
+      <Vueform ref="form2" :schema="schema2" :endpoint="submit2"></Vueform>
+
     </div>
   </q-page>
 
@@ -16,24 +44,36 @@ import {onMounted, ref, watchEffect} from "vue";
 import Analytics from "src/utils/google-analytics";
 import {useRoute} from "vue-router";
 import {useEntitiesStore} from "stores/entitiesStore";
-import {Entity} from "src/models/Entity";
+import {Entity, Field} from "src/models/Entity";
+import _ from "lodash"
+import {uid} from "quasar";
+import {useUtils} from "src/services/Utils";
 
+const {sendMsg} = useUtils()
 const route = useRoute()
 
 const form = ref(null)
+const form2 = ref(null)
 const entityId = ref<string | undefined>(undefined)
 const entity = ref<Entity | undefined>(undefined)
+const entitiesAsReference = ref<object[]>([])
+const showInList = ref<boolean[]>([])
+const submitButtonLabel = ref('Add')
 
 onMounted(() => {
   Analytics.firePageViewEvent('MainPanelEntitesPage', document.location.href);
 })
 
+watchEffect(() => {
+  console.log("showInList", showInList.value)
+})
+
 watchEffect(async () => {
   entityId.value = route.params.entityId.toString() || ''
   if (entityId.value && useEntitiesStore().updated) {
-    console.log("hier", form)
+    console.log("hier", form.value)
     entity.value = await useEntitiesStore().findById(entityId.value)
-    if (form && form.value) {
+    if (form && form.value && entity.value) {
       form.value.update({ // updates form data
         desc: entity.value.description,
         scheme: entity.value.schema
@@ -42,16 +82,20 @@ watchEffect(async () => {
   }
 })
 
+watchEffect(() => {
+  entitiesAsReference.value = _.map(useEntitiesStore().entities, (e: Entity) => {
+    return {
+      value: e.id,
+      label: e.name
+    }
+  })
+})
+
 const schema = {
   desc: {
     type: 'text',
     label: 'Description',
     info: 'optional description for the entity'
-  },
-  scheme: {
-    type: 'textarea',
-    label: 'Scheme',
-    rows: 15
   },
   submit: {
     type: 'button',
@@ -61,7 +105,122 @@ const schema = {
   },
 }
 
-const submit = async (FormData, form$) => {
+const schema2 = ref({
+  id: {
+    type: 'hidden'
+  },
+  type: {
+    type: 'select',
+    native: false,
+    label: 'Type',
+    items: [
+      {
+        value: 'text',
+        label: 'Text',
+      },
+      {
+        value: 'number',
+        label: 'Number',
+      },
+      {
+        value: 'url',
+        label: 'URL',
+      },
+      {
+        value: 'date',
+        label: 'Date',
+      },
+      {
+        value: 'reference',
+        label: 'Reference',
+      },
+      {
+        value: 'vueform',
+        label: 'VueForm Native',
+      },
+      {
+        value: 'formula',
+        label: 'Formula',
+      }
+    ],
+    canDeselect: false,
+    canClear: false,
+    default: 'text'
+  },
+  reference: {
+    type: 'select',
+    items: entitiesAsReference,
+    search: true,
+    native: false,
+    label: 'Referenced Entity',
+    inputType: 'search',
+    autocomplete: 'off',
+    conditions: [
+      [
+        'type',
+        'in',
+        [
+          'reference',
+        ],
+      ],
+    ],
+  },
+  vueform: {
+    type: 'textarea',
+    label: 'Vueform',
+    conditions: [
+      [
+        'type',
+        'in',
+        [
+          'vueform',
+        ],
+      ],
+    ]
+  },
+  formula: {
+    type: 'text',
+    label: 'Formula',
+    conditions: [
+      [
+        'type',
+        'in',
+        [
+          'formula',
+        ],
+      ],
+    ]
+  },
+  name: {
+    type: "text",
+    label: "Name",
+    info: "The Field name",
+    rules: [
+      'required'
+    ]
+  },
+  label: {
+    type: "text",
+    label: "Label",
+    info: "The visible label",
+    rules: [
+      'required'
+    ]
+  },
+  info: {
+    type: "text",
+    label: "Info",
+    info: "optional info"
+  },
+  submit: {
+    type: 'button',
+    buttonLabel: submitButtonLabel,
+    submits: true,
+    align: 'right'
+  }
+})
+
+const submit = async (FormData: any, form$: any) => {
   const formData = FormData // FormData instance
   const data = form$.data // form data including conditional data
   const requestData = form$.requestData // form data excluding conditional data
@@ -72,6 +231,43 @@ const submit = async (FormData, form$) => {
     await useEntitiesStore().save(entity.value)
   }
 }
+
+const submit2 = async (FormData: any, form$: any) => {
+  const formData = FormData // FormData instance
+  const data = form$.data // form data including conditional data
+  const requestData = form$.requestData // form data excluding conditional data
+  console.log('yyy', formData, data, requestData, entity.value)
+  if (entity.value) {
+    if (!data.id) {
+      data.id = uid()
+    }
+    entity.value.fields.push(data)
+    sendMsg('entity-changed', entity.value)
+    //await useEntitiesStore().save(entity.value)
+  }
+}
+
+const editField = async (f: object) => {
+  console.log("editing", f)
+  if (form2 && form2.value) {
+    form2.value.update(f)
+    submitButtonLabel.value = 'Update'
+  }
+}
+
+const deleteField = async (f: Field) => {
+  console.log("deleting", f)
+  if (entity.value) {
+    entity.value.fields = _.filter(entity.value.fields, (field: Field) => field.id !== f.id)
+    await useEntitiesStore().save(entity.value)
+  }
+}
+
+const updateShowInList = (index: number) => {
+  console.log("updateShowInList", index, showInList.value)
+  //showInList.value[index] = !showInList.value[index]
+}
+
 </script>
 
 <style>

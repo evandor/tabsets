@@ -6,13 +6,13 @@
       <div class="q-ma-none">
         <div class="row q-ma-none q-pa-none cursor-pointer" v-for="e in entities">
           <div class="col-12 q-ma-none q-pa-none q-pt-lg">
-            {{e.name}}
-            [<span @click="NavigationService.openSingleTab('/www/index.html#/mainpanel/entities/' +  e.id + '/items')">Add</span>]
-            [<span @click="NavigationService.openSingleTab('/www/index.html#/mainpanel/entities/' +  e.id)">Manage</span>]
+            {{ e.name }}
+            [<span @click="openEntityInMainPanel(e.id + '/items')">Add</span>]
+            [<span @click="openEntityInMainPanel(e.id)">Manage</span>]
           </div>
           <div class="col-12">
             <ul>
-              <li v-for="i in e.items">{{i}}</li>
+              <li v-for="i in e.items">{{ i }}</li>
             </ul>
           </div>
         </div>
@@ -30,6 +30,14 @@
                  color="primary"
                  size="sm"
                  @click="openNewEntityDialog()"
+                 class="q-ma-none q-px-sm q-py-none"
+                 name="o_apps"/>
+
+          <q-btn outline
+                 label="New Formula"
+                 color="primary"
+                 size="sm"
+                 @click="openNewFormulaDialog()"
                  class="q-ma-none q-px-sm q-py-none"
                  name="o_apps"/>
 
@@ -51,7 +59,7 @@
 
 import FirstToolbarHelper from "pages/sidepanel/helper/FirstToolbarHelper.vue";
 import {SidePanelView, useUiStore} from "stores/uiStore";
-import {onMounted, ref, watchEffect} from "vue";
+import {onMounted, ref, watch, watchEffect} from "vue";
 import Analytics from "src/utils/google-analytics";
 import SidePanelToolbarButton from "components/buttons/SidePanelToolbarButton.vue";
 import {openURL, useQuasar} from "quasar";
@@ -59,6 +67,8 @@ import NewEntityDialog from "components/dialogues/NewEntityDialog.vue";
 import {Entity} from "src/models/Entity";
 import {useEntitiesStore} from "stores/entitiesStore";
 import NavigationService from "src/services/NavigationService";
+import {timeout} from "workbox-core/_private";
+import NewFormulaDialog from "components/dialogues/NewFormulaDialog.vue";
 
 onMounted(() => {
   Analytics.firePageViewEvent('SidePanelEntityManager', document.location.href);
@@ -68,14 +78,41 @@ const $q = useQuasar()
 
 const entities = ref<Entity[]>([])
 
-watchEffect(() => {
-  entities.value = useEntitiesStore().getEntities
-  console.log("***got entites", entities.value)
+watch(() => {
+}, (oldValue: any, newValue: any) => {
+  console.log("old->new", oldValue, newValue)
 })
+
+watchEffect(() => {
+  if (useEntitiesStore().updated) {
+    entities.value = useEntitiesStore().entities
+    console.log("***got entites", entities.value)
+  }
+})
+
+chrome.runtime.onMessage.addListener((m: any, s: any, response: any) => {
+  if (m.name === 'entity-changed') {
+    useEntitiesStore().save(m.data)
+      .then(() => {
+        entities.value = useEntitiesStore().entities
+        console.log("onMessage: hier", m, entities.value)
+        return true
+      })
+  }
+  return true
+})
+
+const openEntityInMainPanel = (path: string) => NavigationService.openOrCreateTab([chrome.runtime.getURL("/www/index.html#/mainpanel/entities/" + path)], undefined, [], true, true)
 
 const openNewEntityDialog = () => {
   $q.dialog({
     component: NewEntityDialog,
+    componentProps: {}
+  })
+}
+const openNewFormulaDialog = () => {
+  $q.dialog({
+    component: NewFormulaDialog,
     componentProps: {}
   })
 }
