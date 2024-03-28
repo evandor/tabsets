@@ -19,6 +19,7 @@ import {Window} from "src/models/Window";
 import {BlobType, SavedBlob} from "src/models/SavedBlob";
 import {Message} from "src/models/Message";
 import {Account} from "src/models/Account";
+import {Entity} from "src/models/Entity";
 
 class IndexedDbPersistenceService implements PersistenceService {
   private db: IDBPDatabase = null as unknown as IDBPDatabase
@@ -606,6 +607,10 @@ class IndexedDbPersistenceService implements PersistenceService {
           console.log("creating db accounts")
           db.createObjectStore('accounts');
         }
+        if (!db.objectStoreNames.contains('entities')) {
+          console.log("creating db entities")
+          db.createObjectStore('entities');
+        }
       },
     });
   }
@@ -713,7 +718,17 @@ class IndexedDbPersistenceService implements PersistenceService {
     this.db.put('accounts', normalizedAccount, normalizedAccount.id)
   }
 
+  saveEntity(entity: Entity): void {
+    this.db.put('entities', entity, entity.id)
+  }
 
+  async getEntities(): Promise<Entity[]> {
+    return await this.db.getAll('entities')
+  }
+
+  async findEntityById(id: string) {
+    return await this.db.get('entities', id)
+  }
 }
 
 export default new IndexedDbPersistenceService()

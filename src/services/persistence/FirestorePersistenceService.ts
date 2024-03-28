@@ -20,6 +20,7 @@ import {LocalStorage} from "quasar";
 import {APP_INSTALLATION_ID} from "boot/constants";
 import {useDB} from "src/services/usePersistenceService";
 import IndexedDbPersistenceService from "src/services/IndexedDbPersistenceService";
+import {Entity} from "src/models/Entity";
 
 function tabsetDoc(tabsetId: string) {
   return doc(FirebaseServices.getFirestore(), "users", useAuthStore().user.uid, "tabsets", tabsetId)
@@ -324,6 +325,9 @@ class FirestorePersistenceService implements PersistenceService {
     } else {
       console.log("not updating token, not logged in")
     }
+  }
+
+  saveEntity (entity: Entity): void {
   }
 }
 

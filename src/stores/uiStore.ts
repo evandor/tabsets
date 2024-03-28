@@ -75,6 +75,8 @@ export class SidePanelView {
 
   static readonly TABS_AS_TREE = new SidePanelView('tabsAsTree', '/sidepanel/tabsAsTree')
 
+  static readonly ENTITIY_MANAGER = new SidePanelView('entityManager', '/sidepanel/entities')
+
 
   private constructor(
     public readonly ident: string,

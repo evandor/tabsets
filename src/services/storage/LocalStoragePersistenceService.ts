@@ -6,13 +6,13 @@ import {QVueGlobals, useQuasar} from "quasar";
 import {Tabset} from "src/models/Tabset";
 import {Tab} from "src/models/Tab";
 import {Notification} from "src/models/Notification";
-import {MHtml} from "src/models/MHtml";
 import {MetaLink} from "src/models/MetaLink";
 import {RequestInfo} from "src/models/RequestInfo";
 import {Window} from "src/models/Window";
 import {BlobType, SavedBlob} from "src/models/SavedBlob";
 import {Message} from "src/models/Message";
 import {Account} from "src/models/Account";
+import {Entity} from "src/models/Entity";
 
 export class LocalStoragePersistenceService implements PersistenceService {
 
@@ -118,10 +118,6 @@ export class LocalStoragePersistenceService implements PersistenceService {
 
   getMHtmlInline(url: string): Promise<object> {
     return Promise.resolve({});
-  }
-
-  getMHtmls(): Promise<MHtml[]> {
-    return Promise.resolve([]);
   }
 
   getMetaLinks(url: string): Promise<object> {
@@ -273,6 +269,9 @@ export class LocalStoragePersistenceService implements PersistenceService {
 
   upsertAccount(account: Account):void {
     console.warn("not implemented")
+  }
+
+  saveEntity (entity: Entity): void {
   }
 
 }
