@@ -38,7 +38,7 @@
   "dependencies": {
     "@calumk/editorjs-columns": "^0.3.1",
     "@codexteam/icons": "^0.3.0",
-    "@editorjs/editorjs": "^2.27.2",
+    "@editorjs/editorjs": "^2.29.1",
     "@editorjs/header": "^2.7.0",
     "@extractus/feed-extractor": "^7.0.1",
     "@intlify/unplugin-vue-i18n": "^3.0.0",
