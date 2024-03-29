@@ -21,7 +21,7 @@ class FirebaseServices {
   private storage: FirebaseStorage = null as unknown as FirebaseStorage
 
   init() {
-    if (!process.env.USE_FIREBASE) {
+    if (process.env.USE_FIREBASE != "true") {
       return
     }
     console.log("initializing FirebaseServices")

@@ -105,6 +105,11 @@ const routes: RouteRecordRaw[] = [
     children: [{path: '', component: () => import('pages/sidepanel/SidePanelTabsAsTreePage.vue')}],
   },
   {
+    path: '/sidepanel/entityManager',
+    component: () => import('layouts/SidePanelLayout.vue'),
+    children: [{path: '', component: () => import('pages/sidepanel/SidePanelEntitiesPage.vue')}],
+  },
+  {
     path: '/sidepanel/messages',
     component: () => import('layouts/SidePanelLayout.vue'),
     children: [{path: '', component: () => import('pages/sidepanel/SidePanelMessagesPage.vue')}],
@@ -185,11 +190,6 @@ const routes: RouteRecordRaw[] = [
     children: [{path: '', component: () => import('pages/mainpanel/MainPanelReadingModePage.vue')}],
   },
   {
-    path: '/about',
-    component: () => import('layouts/PlainLayout.vue'),
-    children: [{path: '', component: () => import('pages/AboutPage.vue')}],
-  },
-  {
     path: '/settings',
     component: () => import('layouts/DefaultLayout.vue'),
     children: [{path: '', component: () => import('pages/SettingsPage.vue')}],
@@ -245,11 +245,6 @@ const routes: RouteRecordRaw[] = [
     children: [{path: '', component: () => import('pages/FeaturesPage.vue')}],
   },
   {
-    path: '/subscribe',
-    component: () => import('layouts/SidePanelLayout.vue'),
-    children: [{path: '', component: () => import('pages/SubscribePage.vue')}],
-  },
-  {
     path: '/search',
     component: () => import('layouts/FullPageLayout.vue'),
     children: [{path: '', component: () => import('pages/SearchPage.vue')}],
@@ -293,6 +288,21 @@ const routes: RouteRecordRaw[] = [
     path: '/browser/:tabId',
     component: () => import('layouts/FullPageLayout.vue'),
     children: [{path: '', component: () => import('pages/BrowserViewPage.vue')}],
+  },
+  {
+    path: '/mainpanel/entities/:entityId', // editorjs setup cannot toggle between readonly/write mode
+    component: () => import('layouts/PlainLayout.vue'),
+    children: [{path: '', component: () => import('pages/mainpanel/MainPanelEntityPage.vue')}],
+  },
+  {
+    path: '/mainpanel/entities/:entityId/items',
+    component: () => import('layouts/PlainLayout.vue'),
+    children: [{path: '', component: () => import('pages/mainpanel/MainPanelEntityItemPage.vue')}],
+  },
+  {
+    path: '/mainpanel/entities/:entityId',
+    component: () => import('layouts/PlainLayout.vue'),
+    children: [{path: '', component: () => import('pages/mainpanel/MainPanelEntityPage.vue')}],
   },
   {
     path: '/help/:ident',

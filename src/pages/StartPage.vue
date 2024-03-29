@@ -29,7 +29,7 @@ $q.loading.show({
 })
 timer = setTimeout(() => {
   if (tabsStore.tabsets.size === 0) {
-    router.push("/about")
+    router.push("/")
   } else {
     const selectedTS = localStorage.getItem("selectedTabset")
     if (selectedTS) {

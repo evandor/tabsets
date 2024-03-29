@@ -164,14 +164,11 @@
               <q-item clickable @click="showExportDialog" v-close-popup>
                 Export Tabsets
               </q-item>
-              <q-item clickable @click="router.push('/about')" v-close-popup>
-                About Tabsets
-              </q-item>
             </q-list>
           </q-menu>
         </div>
 
-        <div class="cursor-pointer" @click="router.push('/about')" v-if="notificationsStore.updateToVersion !== ''">
+        <div class="cursor-pointer" @click="router.push('/')" v-if="notificationsStore.updateToVersion !== ''">
           <q-btn
             class="text-primary bg-warning"
             @click="installNewVersion(notificationsStore.updateToVersion)"

@@ -20,6 +20,7 @@ import {LocalStorage} from "quasar";
 import {APP_INSTALLATION_ID} from "boot/constants";
 import {useDB} from "src/services/usePersistenceService";
 import IndexedDbPersistenceService from "src/services/IndexedDbPersistenceService";
+import {Entity} from "src/models/Entity";
 
 function tabsetDoc(tabsetId: string) {
   return doc(FirebaseServices.getFirestore(), "users", useAuthStore().user.uid, "tabsets", tabsetId)
@@ -60,6 +61,7 @@ class FirestorePersistenceService implements PersistenceService {
   async loadTabsets(): Promise<void> {
     //console.log("FirestorePersistenceService: loading Tabsets")
     (await getDocs(tabsetCollection())).forEach((doc) => {
+      console.log("found tabset", doc.data())
       let newItem = doc.data() as Tabset
       newItem.id = doc.id;
       useTabsStore().addTabset(newItem)
@@ -324,6 +326,17 @@ class FirestorePersistenceService implements PersistenceService {
     } else {
       console.log("not updating token, not logged in")
     }
+  }
+
+  saveEntity (entity: Entity): void {
+  }
+
+  findEntityById(id: string): Promise<Entity> {
+    return Promise.resolve(new Entity("0","..."));
+  }
+
+  getEntities(): Promise<Entity[]> {
+    return Promise.resolve([]);
   }
 }
 

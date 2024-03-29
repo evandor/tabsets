@@ -451,6 +451,8 @@ watchEffect(() => {
     } catch (err) {
       domain.value = selectedTab.value.url
     }
+  } else {
+    console.log("not found yet...")
   }
   // })
 })

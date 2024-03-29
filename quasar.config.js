@@ -30,7 +30,8 @@ module.exports = configure(function (ctx) {
     // https://v2.quasar.dev/quasar-cli-vite/boot-files
     boot: [
       'i18n',
-      'constants'
+      'constants',
+      'vueform'
     ],
 
     // https://v2.quasar.dev/quasar-cli-vite/quasar-config-js#css
@@ -137,7 +138,28 @@ module.exports = configure(function (ctx) {
         ['@intlify/unplugin-vue-i18n/vite', {
           include: [path.resolve(__dirname, './src/i18n/**')],
         }],
-        ['vite-plugin-package-version' ,{}]
+        ['vite-plugin-package-version' ,{}],
+        {
+          name: 'vueform',
+          async config() {
+            return {
+              optimizeDeps: {
+                include: [
+                  'wnumb',
+                  'nouislider',
+                  'trix',
+                  'lodash',
+                  'axios',
+                ],
+              },
+              server: {
+                watch: {
+                  ignored: [`!**/node_modules/@vueform/**`],
+                },
+              },
+            };
+          },
+        },
       ]
     },
 

@@ -16,7 +16,9 @@ class NavigationService {
 
   async openChromeTab(chromeTab: chrome.tabs.Tab) {
     const window = await chrome.tabs.highlight({windowId: chromeTab.windowId, tabs: chromeTab.index})
-    await chrome.windows.update(window.id, {focused: true})
+    if (typeof window.id === "number") {
+      await chrome.windows.update(window.id, {focused: true})
+    }
   }
 
   async openOrCreateTab(
@@ -87,6 +89,7 @@ class NavigationService {
                 //console.log("matcher yielded", JsUtils.match(matcher, r.url))
                 matchCondition = JsUtils.match(matcher, r.url)
               }
+              // console.log("===>", matchCondition, url, r.url)
               if (matchCondition) {
                 if (!found) { // highlight only first hit
                   found = true

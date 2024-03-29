@@ -93,6 +93,7 @@ function inIgnoredMessages(request: any) {
     request.name === 'detail-level-changed' ||
     request.name === 'reload-application' ||
     request.name === 'window-updated' ||
+    request.name === 'entity-changed' ||
     request.action === 'highlight-annotation'
   //request.name === 'recogito-annotation-created'
 
@@ -200,7 +201,7 @@ class ChromeListeners {
     }
 
     // https://stackoverflow.com/questions/77089404/chrom-extension-close-event-not-available-on-sidepanel-closure
-    if (chrome.runtime && inBexMode()) {
+    if (inBexMode() && chrome && chrome.runtime) {
       chrome.runtime.connect({name: 'tabsetsSidepanel'});
     }
 

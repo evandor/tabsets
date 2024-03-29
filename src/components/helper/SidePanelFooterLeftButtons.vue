@@ -45,13 +45,17 @@
                                      icon="o_account_tree"
                                      :size="buttonSize"
                                      tooltip="Show a tree view of your tabs"/>
+        <SidePanelFooterViewMenuItem :side-panel-view="SidePanelView.ENTITIY_MANAGER"
+                                     label="Entity Manager"
+                                     icon="o_apps"
+                                     :size="buttonSize"
+                                     tooltip="Define your own Entities to manage"/>
         <SidePanelFooterViewMenuItem :side-panel-view="SidePanelView.MAIN"
                                      :disable="useUiStore().sidePanelActiveViewIs(SidePanelView.MAIN)"
                                      label="Default View"
                                      icon=""
                                      :size="buttonSize"
                                      tooltip="Back to Default View"/>
-
 
       </q-list>
     </q-menu>

@@ -217,7 +217,7 @@ const stageIdentifier = () => process.env.TABSETS_STAGE !== 'PRD' ? ' (' + proce
 const clicked = (url: string) => openURL(url)
 
 const firebaseActive = () => {
-  return process.env.USE_FIREBASE && process.env.USE_FIREBASE.toString() === "true"
+  return process.env.USE_FIREBASE && process.env.USE_FIREBASE == "true"
 }
 
 const openBookmarksView = () => {

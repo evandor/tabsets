@@ -99,7 +99,13 @@ if (process.env.USE_FIREBASE == "true") {
 
 }
 
-const useDarkMode: string = $q.localStorage.getItem('darkMode') || "auto" as string
+let useDarkMode: string = $q.localStorage.getItem('darkMode') || "auto" as string
+
+if ($q.platform.is.safari && !$q.platform.is.bex) {
+  console.log("switching dark mode default to false on safari non-bex")
+  useDarkMode = $q.localStorage.getItem('darkMode') || "false" as string
+}
+
 if (useDarkMode === "true") {
   $q.dark.set(true)
 } else if (useDarkMode === "false") {
@@ -121,7 +127,7 @@ if (useDarkMode === "true") {
 }
 
 const currentUser = $q.localStorage.getItem(CURRENT_USER_ID)
-if (!process.env.USE_FIREBASE) {
+if (process.env.USE_FIREBASE != "true") {
   AppService.init($q, router, false)
 } else if (currentUser) {
   console.log("current user id found, waiting for auto-login")
