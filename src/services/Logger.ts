@@ -12,7 +12,7 @@ function log(msg: string, level:number) {
     _version: version,
     _stage: process.env.TABSETS_STAGE
   }
-  // api.post("http://graylog.tabsets.net:12201/gelf", gelfMessage, {headers: {
+  // api.post("http://graylog.backend:12201/gelf", gelfMessage, {headers: {
   //     "Content-Type": "application/json"}
   // }).catch((err) => {
   //   console.log("error with logging server")

@@ -202,7 +202,7 @@ class ChromeListeners {
     }
 
     // https://stackoverflow.com/questions/77089404/chrom-extension-close-event-not-available-on-sidepanel-closure
-    if (chrome.runtime && inBexMode()) {
+    if (inBexMode() && chrome && chrome.runtime) {
       chrome.runtime.connect({name: 'tabsetsSidepanel'});
     }
 

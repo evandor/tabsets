@@ -274,4 +274,12 @@ export class LocalStoragePersistenceService implements PersistenceService {
   saveEntity (entity: Entity): void {
   }
 
+  findEntityById(id: string): Promise<Entity> {
+    return Promise.resolve(new Entity("0","..."));
+  }
+
+  getEntities(): Promise<Entity[]> {
+    return Promise.resolve([]);
+  }
+
 }

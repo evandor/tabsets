@@ -61,6 +61,7 @@ class FirestorePersistenceService implements PersistenceService {
   async loadTabsets(): Promise<void> {
     //console.log("FirestorePersistenceService: loading Tabsets")
     (await getDocs(tabsetCollection())).forEach((doc) => {
+      console.log("found tabset", doc.data())
       let newItem = doc.data() as Tabset
       newItem.id = doc.id;
       useTabsStore().addTabset(newItem)
@@ -328,6 +329,14 @@ class FirestorePersistenceService implements PersistenceService {
   }
 
   saveEntity (entity: Entity): void {
+  }
+
+  findEntityById(id: string): Promise<Entity> {
+    return Promise.resolve(new Entity("0","..."));
+  }
+
+  getEntities(): Promise<Entity[]> {
+    return Promise.resolve([]);
   }
 }
 

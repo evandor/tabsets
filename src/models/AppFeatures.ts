@@ -19,7 +19,7 @@ export class AppFeatures {
 
    // new AppFeature(FeatureIdent.NEWEST_TABS, FeatureType.RECOMMENDED, 'Newest Tabs', 'o_schedule', ['all']),
     new AppFeature(FeatureIdent.TOP10, FeatureType.RECOMMENDED, 'Top 10 Tabs', 'o_workspace_premium', ['all']),
-    new AppFeature(FeatureIdent.OPEN_TABS, FeatureType.OPTIONAL, 'Open Tabs', 'o_playlist_add', ['bex']),
+    new AppFeature(FeatureIdent.OPEN_TABS, FeatureType.RECOMMENDED, 'Open Tabs', 'o_playlist_add', ['bex']),
 
     // new AppFeature(FeatureIdent.SAVE_TAB, FeatureType.EXPERIMENTAL, 'Save Tabs as MHTML', 'o_save', ['bex'])
     //   .setActivateCommands([new GrantPermissionCommand('pageCapture')]),

@@ -34,15 +34,24 @@
 
     <div class="col-7">
       <div class="text-h6">{{ text.get(feature)?.name }}</div>
-      <div>Status: {{ hasFeature() ? 'active' : 'inactive' }}</div>
+      <div>
+        Status: {{ hasFeature() ? 'active' : 'inactive' }}
+        <span v-if="needsAccountAndUserNotLoggedIn()" class="text-warning"> - You need a (free) account to use this feature</span>
+      </div>
     </div>
+
     <div class="col text-right q-mr-xl">
       <div v-if="!text.get(feature)?.planned">
         <q-btn v-if="!hasFeature()" color="warning"
-               label="Activate Feature" @click="grant(feature)"/>
+               label="Activate Feature" @click="grant(feature)" :disable="needsAccountAndUserNotLoggedIn()"/>
         <q-btn v-else
                label="Deactivate Feature" @click="revoke(feature)"/>
       </div>
+    </div>
+
+    <div class="col-12 q-my-lg" v-if="needsAccountAndUserNotLoggedIn()">
+      Click on the login icon in the sidepanel to sign up for an account:<br><br>
+      <q-img src="signup.png" width="100px" />
     </div>
 
     <div class="col-12 q-my-sm">
@@ -94,7 +103,7 @@
 
     <div class="col-12 q-my-md" v-if="text.get(feature)?.img">
       <div>
-        <q-img :src="text.get(feature)?.img" :width="text.get(feature)?.img_width || '250px'"/>
+          <q-img :src="text.get(feature)?.img" :width="text.get(feature)?.img_width || '250px'"/>
       </div>
     </div>
 
@@ -139,6 +148,7 @@ import Analytics from "src/utils/google-analytics";
 import Command from "src/domain/Command";
 import NavigationService from "src/services/NavigationService";
 import {useUtils} from "src/services/Utils";
+import {useAuthStore} from "stores/authStore";
 
 const route = useRoute();
 const router = useRouter();
@@ -431,6 +441,7 @@ text.set(FeatureIdent.TABSET_SUBFOLDER.toLowerCase(), {
 text.set(FeatureIdent.TABSETS_SHARING.toLowerCase(), {
   name: 'Sharing Tabsets',
   description: 'Share tabsets publicly.',
+  needsAccount: true,
   permissions: []
 })
 text.set(FeatureIdent.CONTEXT_MENUS.toLowerCase(), {
@@ -544,6 +555,12 @@ const getDependentFeatures = (rootFeature: string, onlyActive: boolean = false):
 
 const isActive = (f: AppFeature) => usePermissionsStore().hasFeature(f.ident)
 
+const needsAccountAndUserNotLoggedIn = (): boolean => {
+  if (!text.get(feature.value)?.needsAccount) {
+    return false
+  }
+  return !useAuthStore().isAuthenticated()
+}
 
 </script>
 

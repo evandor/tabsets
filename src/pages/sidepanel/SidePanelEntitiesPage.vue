@@ -33,13 +33,13 @@
                  class="q-ma-none q-px-sm q-py-none"
                  name="o_apps"/>
 
-          <q-btn outline
-                 label="New Formula"
-                 color="primary"
-                 size="sm"
-                 @click="openNewFormulaDialog()"
-                 class="q-ma-none q-px-sm q-py-none"
-                 name="o_apps"/>
+<!--          <q-btn outline-->
+<!--                 label="New Formula"-->
+<!--                 color="primary"-->
+<!--                 size="sm"-->
+<!--                 @click="openNewFormulaDialog()"-->
+<!--                 class="q-ma-none q-px-sm q-py-none"-->
+<!--                 name="o_apps"/>-->
 
           <SidePanelToolbarButton
             icon="close"

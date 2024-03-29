@@ -28,7 +28,7 @@ import FsPersistenceService from "src/services/persistence/FirestorePersistenceS
 import {useEntitiesService} from "src/services/EntityService";
 import {useEntitiesStore} from "stores/entitiesStore";
 
-function dbStoreToUse(st: SyncType, su: string | undefined) {
+function dbStoreToUse(st: SyncType) {
   const isAuthenticated = useAuthStore().isAuthenticated()
   if (!isAuthenticated) {
     console.debug("%not authenticated", "font-weight:bold")
@@ -106,9 +106,9 @@ class AppService {
     if (useAuthStore().isAuthenticated()) {
       // sync features
       const syncType = useAuthStore().getAccount()?.userData?.sync?.type || SyncType.NONE
-      const syncUrl = useAuthStore().getAccount()?.userData?.sync?.url
+      // const syncUrl = useAuthStore().getAccount()?.userData?.sync?.url
 
-      let persistenceStore = dbStoreToUse(syncType, syncUrl)
+      let persistenceStore = dbStoreToUse(syncType)
 
       let failedGitLogin = false
 
@@ -117,11 +117,11 @@ class AppService {
         failedGitLogin = true
       }
 
-      console.debug(`%cchecking sync config: type=${syncType}, url=${syncUrl}, persistenceStore=${persistenceStore.getServiceName()}`, "font-weight:bold")
+      console.debug(`%cchecking sync config: type=${syncType}, persistenceStore=${persistenceStore.getServiceName()}`, "font-weight:bold")
 
-      if (syncUrl) {
-        uiStore.appLoading = "syncing tabsets..."
-      }
+      // if (syncUrl) {
+      //   uiStore.appLoading = "syncing tabsets..."
+      // }
 
       await FsPersistenceService.init()
 
