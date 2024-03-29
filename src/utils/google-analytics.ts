@@ -11,7 +11,6 @@ const MEASUREMENT_ID = "G-XBYXVZ86J1";
 const API_SECRET = "1N_ivSMnT2GHqZMcoXJDTw";
 const DEFAULT_ENGAGEMENT_TIME_MSEC = 100;
 
-
 // Duration of inactivity after which a new session is created
 const SESSION_EXPIRATION_IN_MIN = 30;
 

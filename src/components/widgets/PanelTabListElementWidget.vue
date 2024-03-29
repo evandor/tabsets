@@ -392,8 +392,10 @@ import "rangy/lib/rangy-serializer";
 import CommentDialog from "components/dialogues/CommentDialog.vue";
 import {DeleteCommentCommand} from "src/domain/tabs/DeleteCommentCommand";
 import {UpdateTabNameCommand} from "src/domain/tabs/UpdateTabName";
+import {useNotificationHandler} from "src/services/ErrorHandler";
 
 const {inBexMode, isCurrentTab} = useUtils()
+const {handleSuccess, handleError} = useNotificationHandler()
 
 const props = defineProps({
   tab: {type: Object as PropType<Tab>, required: true},
@@ -643,11 +645,19 @@ const checkEvent = async (evt: PointerEvent) => {
   }
 }
 
-const gotoTab = () =>
-  NavigationService.openOrCreateTab(
-    [props.tab.url || ''],
-    props.tab.matcher,
-    props.tab.groupName ? [props.tab.groupName] : [])
+const gotoTab = () => {
+  chrome.tabs.getCurrent()
+    .then((t:chrome.tabs.Tab | undefined) => {
+      if (t && t.url === props.tab.url) {
+        handleSuccess("already opened...")
+      } else {
+        NavigationService.openOrCreateTab(
+          [props.tab.url || ''],
+          props.tab.matcher,
+          props.tab.groupName ? [props.tab.groupName] : [])
+      }
+    })
+}
 
 const showSuggestion = () => {
   const url = chrome.runtime.getURL('www/index.html') + "#/mainpanel/suggestions/" + suggestion.value?.id

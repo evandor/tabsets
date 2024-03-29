@@ -85,7 +85,6 @@ module.exports = configure(function (ctx) {
         TABSETS_PWA_URL: process.env.TABSETS_PWA_URL,
         TABSETS_STAGE: process.env.STAGE,
 
-        LOGZ_URL: process.env.LOGZ_URL,
         COUCHDB_PROTOCOL: process.env.COUCHDB_PROTOCOL,
         COUCHDB_URL: process.env.COUCHDB_URL,
 
