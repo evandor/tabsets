@@ -68,8 +68,8 @@
               icon="o_sync_alt"
               tooltip="This account is being synced"
               color="grey"
-              size="10px"
-              class="q-ml-sm"/>
+              size="9px"
+              class="q-ml-sm q-mr-sm"/>
 
 <!--            <SidePanelToolbarButton-->
 <!--              icon="o_add_circle"-->

@@ -596,11 +596,6 @@ watchEffect(() => {
   }
 })
 
-// watchEffect(() => {
-//   progress.value = (uiStore.progress || 0.0) / 100.0
-//   progressLabel.value = uiStore.progressLabel + " " + Math.round(100 * progress.value) + "%"
-// })
-
 const getTabsetOrder =
   [
     function (o: Tabset) {
