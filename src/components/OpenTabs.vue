@@ -4,13 +4,13 @@
     v-if="tabsStore.currentTabsetId && tabsStore.tabs.length > 0"
     :probability="0.5"
     ident="openTabs_dnd" hint="You can drag and drop open tabs into your current tabset by clicking on the
-          favicon." />
+          favicon."/>
 
   <InfoMessageWidget
     v-if="tabsStore.currentTabsetId && tabsStore.tabs.length > 9"
     :probability="0.7"
     ident="openTabs_darkerBackground" hint="If an open tab has a grey background, it indicates
-    that is is already contained in the current tabset" />
+    that is is already contained in the current tabset"/>
 
   <!--  @end="end"-->
   <vue-draggable-next
@@ -24,7 +24,8 @@
       v-for="tab in unpinnedNoGroup()"
       :key="tab.id">
 
-      <OpenTabCard :tab="tab"/>
+      <OpenTabCard2 :tab="tab"
+                    :windowId="useWindowsStore().currentChromeWindow?.id || 0"/>
 
     </div>
 
@@ -41,6 +42,8 @@ import {useTabsStore} from "src/stores/tabsStore"
 import {VueDraggableNext} from 'vue-draggable-next'
 import {useUiStore} from "src/stores/uiStore";
 import InfoMessageWidget from "components/widgets/InfoMessageWidget.vue";
+import OpenTabCard2 from "components/layouts/OpenTabCard2.vue";
+import {useWindowsStore} from "stores/windowsStore";
 
 const props = defineProps({
   filter: {
@@ -61,10 +64,20 @@ function unpinnedNoGroup(): Tab[] {
       if (props.filter && props.filter.trim().length > 0) {
         const f = props.filter.toLowerCase()
         const chromeTab = t.chromeTab
-        if (chromeTab && .title && .title.toLowerCase().indexOf(f) >= 0) {
+        if (chromeTab && .
+        title &&
+      .
+        title.toLowerCase().indexOf(f) >= 0
+      )
+        {
           return true
         }
-        if (chromeTab && .url && .url.indexOf(f) >= 0) {
+        if (chromeTab && .
+        url &&
+      .
+        url.indexOf(f) >= 0
+      )
+        {
           return true
         }
         if (t.name && t.name.toLowerCase().indexOf(f) >= 0) {
