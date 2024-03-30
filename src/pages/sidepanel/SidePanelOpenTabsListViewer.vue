@@ -105,12 +105,10 @@ onMounted(async () => {
   Analytics.firePageViewEvent('SidePanelOpenTabsListViewer', document.location.href);
   rows.value = await calcWindowRows()
   tabsForCurrentWindow.value = filteredTabs(useTabsStore().tabs)
-  console.log("*** on mounted", tabsForCurrentWindow.value.length)
 })
 
 chrome.windows.onCreated.addListener(async (w: chrome.windows.Window) => rows.value = await calcWindowRows())
 chrome.windows.onRemoved.addListener(async (wId: Number) => rows.value = await calcWindowRows())
-console.log("hasLIsteners", chrome.tabs.onUpdated.hasListeners())
 chrome.tabs.onUpdated.addListener(async (a: any, b: any, c: any) => rows.value = await calcWindowRows())
 chrome.tabs.onCreated.addListener(async (a: any) => rows.value = await calcWindowRows())
 chrome.tabs.onRemoved.addListener(async (a: any, b: any) => rows.value = await calcWindowRows())
@@ -123,7 +121,6 @@ const filteredTabs = (tabs: chrome.tabs.Tab[]) => {
 
 watchEffect(() => {
   tabsForCurrentWindow.value = filteredTabs(useTabsStore().tabs)
-  console.log("*** on watchEffect", tabsForCurrentWindow.value.length)
 })
 
 watchEffect(() => {
@@ -177,7 +174,6 @@ const toggleInvert = (invert: boolean) => {
 
 const addOpenTabs = () => {
   if (process.env.MODE !== 'bex') {
-    console.log("useTabsStore().pendingTabset", useTabsStore().pendingTabset)
     useTabsStore().pendingTabset = new Tabset("dummy", "dummy", [])
   } else {
     TabsetService.createPendingFromBrowserTabs()
@@ -195,7 +191,6 @@ const resetFilter = () => {
 const calcWindowRows = async () => {
   await useWindowsStore().refreshCurrentWindows()
   const result = _.map(useWindowsStore().currentChromeWindows as chrome.windows.Window[], (cw: chrome.windows.Window) => {
-    console.log("===>", cw.id)
     const windowFromStore: Window | undefined = useWindowsStore().windowForId(cw.id || -2)
 
     return {
@@ -209,12 +204,10 @@ const calcWindowRows = async () => {
       type: cw.type
     }
   })
-  console.log("result", result)
   return result// _.sortBy(result, "index")
 }
 
 const windowShouldBeOpen = (w: object) => {
-  console.log("===", w['id' as keyof object], useWindowsStore().currentChromeWindow?.id, w['id' as keyof object] === useWindowsStore().currentChromeWindow?.id)
   return w['id' as keyof object] === useWindowsStore().currentChromeWindow?.id
 }
 
@@ -235,7 +228,6 @@ const cardStyle = (tab: chrome.tabs.Tab) => {
 
 const hasDuplicate = (tab: chrome.tabs.Tab) => {
   const allCurrentTabs: chrome.tabs.Tab[] = (useWindowsStore().currentChromeWindow?.tabs || []) as chrome.tabs.Tab[]
-  //console.log("checking", tab.url, _.map(allCurrentTabs, t => t.url))
   return _.filter(allCurrentTabs, (t: chrome.tabs.Tab) => {
     if (tab.url && t.url === tab.url) {
       return true

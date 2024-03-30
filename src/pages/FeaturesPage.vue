@@ -204,7 +204,8 @@ text.set(FeatureIdent.GROUP_BY_DOMAIN.toLowerCase(), {
 text.set(FeatureIdent.SAVE_TAB_AS_PNG.toLowerCase(), {
   name: 'Save Tab As Image',
   description: 'You can save tabs as a PNG Image.<br>Creating an image will utilize an external server.',
-  permissions: []
+  permissions: [],
+  needsAccount: true
 })
 text.set(FeatureIdent.SAVE_TAB_AS_PDF.toLowerCase(), {
   name: 'Save Tab As PDF',
