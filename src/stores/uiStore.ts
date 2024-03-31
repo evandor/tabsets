@@ -54,6 +54,9 @@ export class SidePanelView {
   static readonly BY_DOMAIN_LIST = new SidePanelView('byDomainList', '/sidepanel/byDomainList',
     () => usePermissionsStore().hasFeature(FeatureIdent.GROUP_BY_DOMAIN));
 
+  static readonly SHARED_TABSETS_LIST = new SidePanelView('sharedTsList', '/sidepanel/sharedTsList',
+    () => usePermissionsStore().hasFeature(FeatureIdent.TABSETS_SHARING));
+
   static readonly RSS_LIST = new SidePanelView('rssList', '/sidepanel/rsslist',
     () => usePermissionsStore().hasFeature(FeatureIdent.RSS));
 

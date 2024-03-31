@@ -354,7 +354,7 @@ export const useTabsStore = defineStore('tabs', {
       if (this.pendingTabset) {
         this.pendingTabset.tabs = _.filter(this.pendingTabset.tabs as Tab[], (t: Tab) => t.id !== tabId)
       }
-      for (const folder of tabset.folders) {
+      for (const folder of tabset.folders || []) {
         this.removeTab(folder, tabId)
       }
     },
