@@ -1,4 +1,4 @@
-name: Sync multiple branches
+name: Sync from chrome-extension to edge and firefox
 on:
   push:
     branches:
