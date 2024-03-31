@@ -54,7 +54,7 @@ export function useNotificationHandler() {
         }
       )
     }
-    console.log("type set to", type)
+
     switch (type) {
       case NotificationType.NOTIFY:
         Notify.create({
