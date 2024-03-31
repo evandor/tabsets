@@ -95,6 +95,11 @@ const routes: RouteRecordRaw[] = [
     children: [{path: '', component: () => import('pages/sidepanel/SidePanelByDomainList.vue')}],
   },
   {
+    path: '/sidepanel/sharedTsList',
+    component: () => import('layouts/SidePanelLayout.vue'),
+    children: [{path: '', component: () => import('pages/sidepanel/SidePanelSharedTsList.vue')}],
+  },
+  {
     path: '/sidepanel/newestList',
     component: () => import('layouts/SidePanelLayout.vue'),
     children: [{path: '', component: () => import('pages/sidepanel/SidePanelNewestTabsPage.vue')}],
