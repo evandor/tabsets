@@ -386,6 +386,7 @@ import {useSuggestionsStore} from "stores/suggestionsStore";
 import {Suggestion, SuggestionState} from "src/models/Suggestion";
 import PdfService from "src/services/PdfService";
 import {SavedBlob} from "src/models/SavedBlob";
+import {ExecutionResult} from "src/domain/ExecutionResult";
 // @ts-ignore
 import rangy from "rangy/lib/rangy-core.js";
 import "rangy/lib/rangy-serializer";
@@ -395,7 +396,7 @@ import {UpdateTabNameCommand} from "src/domain/tabs/UpdateTabName";
 import {useNotificationHandler} from "src/services/ErrorHandler";
 
 const {inBexMode, isCurrentTab} = useUtils()
-const {handleSuccess, handleError} = useNotificationHandler()
+const {handleSuccess} = useNotificationHandler()
 
 const props = defineProps({
   tab: {type: Object as PropType<Tab>, required: true},
@@ -645,19 +646,11 @@ const checkEvent = async (evt: PointerEvent) => {
   }
 }
 
-const gotoTab = () => {
-  chrome.tabs.getCurrent()
-    .then((t:chrome.tabs.Tab | undefined) => {
-      if (t && t.url === props.tab.url) {
-        handleSuccess("already opened...")
-      } else {
-        NavigationService.openOrCreateTab(
-          [props.tab.url || ''],
-          props.tab.matcher,
-          props.tab.groupName ? [props.tab.groupName] : [])
-      }
-    })
-}
+const gotoTab = () =>
+  NavigationService.openOrCreateTab(
+    [props.tab.url || ''],
+    props.tab.matcher,
+    props.tab.groupName ? [props.tab.groupName] : [])
 
 const showSuggestion = () => {
   const url = chrome.runtime.getURL('www/index.html') + "#/mainpanel/suggestions/" + suggestion.value?.id

@@ -34,19 +34,17 @@ export abstract class FirebaseCall<T> {
   //   }
   // }
 
-  static post(path: string, data: object, resType = "json", fullPath = false) {
+  static async post(path: string, data: object, resType = "json", fullPath = false) {
     console.log("firebase call to ", path)
-    useAuthStore().user.getIdToken()
-      .then((idToken) => {
-        //console.log("got idTOken", idToken)
-        const urlToUse = fullPath ? path : `${process.env.BACKEND_URL}${path}`
-        console.log("posting to", urlToUse)
-        // @ts-ignore
-        return api.post(urlToUse, data, {headers: {'AuthToken': idToken}, responseType: resType})
-          .catch((err: any) => {
-            FirebaseCall.handleError(err)
-            return Promise.reject(err)
-          })
+    const idToken = await useAuthStore().user.getIdToken()
+    //console.log("got idTOken", idToken)
+    const urlToUse = fullPath ? path : `${process.env.BACKEND_URL}${path}`
+    console.log("posting to", urlToUse)
+    // @ts-ignore
+    return api.post(urlToUse, data, {headers: {'AuthToken': idToken}, responseType: resType})
+      .catch((err: any) => {
+        FirebaseCall.handleError(err)
+        return Promise.reject(err)
       })
   }
 

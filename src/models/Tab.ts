@@ -165,9 +165,9 @@ export class Tab {
 
     this.preview = TabPreview.FAVICON
 
-    this.tags = _.filter(
+    this.tags = _.uniq(_.filter(
       _.map(this.tags, (t:string) => t.replace(STRIP_CHARS_IN_USER_INPUT, '')),
-      (e:string) => e.trim() !== '')
+      (e:string) => e.trim() !== ''))
 
     if (!Tab.titleIsValid) {
       throw new Error(`Tab's title '${this.title}' is not valid`)

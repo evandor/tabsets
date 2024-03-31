@@ -34,11 +34,11 @@ chrome.runtime.onInstalled.addListener((callback) => {
   }
 });
 
-// chrome.omnibox.onInputEntered.addListener((text) => {
-//   const newURL = chrome.runtime.getURL("/www/index.html#/searchresult?t=" + encodeURIComponent(text))
-//   chrome.tabs.create({url: newURL})
-//     .catch((err) => console.log("[service-worker] background.js error", err))
-// });
+chrome.omnibox.onInputEntered.addListener((text) => {
+  const newURL = chrome.runtime.getURL("/www/index.html#/searchresult?t=" + encodeURIComponent(text))
+  chrome.tabs.create({url: newURL})
+    .catch((err) => console.log("[service-worker] background.js error", err))
+});
 
 let modelPromise: any = null
 

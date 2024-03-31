@@ -63,11 +63,12 @@
                     v-for="tab in tabs"
                     :key="tab.id">
 
-                  <OpenTabCard
+                  <OpenTabCard2
                       v-on:selectionChanged="tabSelectionChanged"
                       v-on:addedToTabset="tabAddedToTabset"
                       v-on:hasSelectable="hasSelectable"
                       :chromeTab="tab"
+                      :windowId="useWindowsStore().currentChromeWindow?.id || 0"
                       :useSelection="useSelection"/>
 
                 </div>
@@ -96,10 +97,8 @@ import InfoMessageWidget from "components/widgets/InfoMessageWidget.vue";
 import {useRoute} from "vue-router";
 import {useUiStore} from "src/stores/uiStore";
 import Analytics from "src/utils/google-analytics";
-import FirstToolbarHelper from "pages/sidepanel/helper/FirstToolbarHelper.vue";
-import SidePanelToolbarTabNavigationHelper from "pages/sidepanel/helper/SidePanelToolbarTabNavigationHelper.vue";
-import CloseSidePanelViewButton from "components/buttons/CloseSidePanelViewButton.vue";
-import SidePanelToolbarButton from "components/buttons/SidePanelToolbarButton.vue";
+import OpenTabCard2 from "components/layouts/OpenTabCard2.vue";
+import {useWindowsStore} from "stores/windowsStore";
 
 const tabsStore = useTabsStore()
 const route = useRoute()

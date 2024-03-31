@@ -20,6 +20,11 @@
         <!--        <q-item dense clickable v-close-popup>-->
         <!--          <q-item-section>new window</q-item-section>-->
         <!--        </q-item>-->
+        <SidePanelFooterViewMenuItem :side-panel-view="SidePanelView.SHARED_TABSETS_LIST"
+                                     label="Shared Tabsets"
+                                     icon="o_share"
+                                     :size="buttonSize"
+                                     tooltip="All your shared tabsets"/>
         <SidePanelFooterViewMenuItem :side-panel-view="SidePanelView.BY_DOMAIN_LIST"
                                      label="Tabs By Domain"
                                      icon="o_dns"

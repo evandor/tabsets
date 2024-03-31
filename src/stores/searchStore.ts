@@ -81,7 +81,7 @@ export const useSearchStore = defineStore('search', () => {
     if (limit) {
       return fuse.value.search(term, {limit})
     }
-    return fuse.value.search(term)
+    return fuse.value ? fuse.value.search(term) : []
   }
 
   function remove(f: any) {

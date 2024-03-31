@@ -9,6 +9,10 @@ import {usePermissionsStore} from "stores/permissionsStore";
 import {FeatureIdent} from "src/models/AppFeature";
 import {Suggestion, SuggestionType} from "src/models/Suggestion";
 import {useSuggestionsStore} from "stores/suggestionsStore";
+import {ExecutionResult} from "src/domain/ExecutionResult";
+import {useNotificationHandler} from "src/services/ErrorHandler";
+
+const {handleSuccess} = useNotificationHandler()
 
 class NavigationService {
 
@@ -94,6 +98,9 @@ class NavigationService {
                 if (!found) { // highlight only first hit
                   found = true
                   console.debug("found something", r)
+                  if (r.active) {
+                    handleSuccess(new ExecutionResult("", "already opened..."))
+                  }
                   chrome.tabs.highlight({tabs: r.index, windowId: useWindowId});
                   chrome.windows.update(useWindowId, {focused: true})
 
