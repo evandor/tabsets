@@ -9,7 +9,7 @@ jobs:
     steps:
       - uses: actions/checkout@master
 
-      - name: Merge development -> staging
+      - name: Merge chrome-extension -> testtargetbranch
         uses: devmasx/merge-branch@master
         with:
           type: now
