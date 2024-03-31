@@ -1,0 +1,18 @@
+name: Sync multiple branches
+on:
+  push:
+    branches:
+      - 'chrome-extension'
+jobs:
+  sync-branch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+
+      - name: Merge chrome-extension -> test
+        uses: devmasx/merge-branch@master
+        with:
+          type: now
+          from_branch: chrome-extension
+          target_branch: testtargetbranch
+          github_token: ${{ secrets.GITHUB_TOKEN }}
