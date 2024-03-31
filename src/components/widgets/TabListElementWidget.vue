@@ -31,14 +31,14 @@
           <!--            <q-tooltip class="tooltip">This tab is open in your browser. Click to open the corresponding tab.-->
           <!--            </q-tooltip>-->
           <!--          </q-chip>-->
-          <q-chip v-if="props.tab.isDuplicate && !props.simpleUi"
-                  class="q-my-none q-py-none q-ml-none q-mr-sm" color="warning"
-                  clickable
-                  style="float:left;position: relative;top:3px"
-                  size="xs" icon="tab">
-            duplicate
-            <q-tooltip class="tooltip">This tab has a duplicate inside this tabset and could be deleted</q-tooltip>
-          </q-chip>
+<!--          <q-chip v-if="props.tab.isDuplicate && !props.simpleUi"-->
+<!--                  class="q-my-none q-py-none q-ml-none q-mr-sm" color="warning"-->
+<!--                  clickable-->
+<!--                  style="float:left;position: relative;top:3px"-->
+<!--                  size="xs" icon="tab">-->
+<!--            duplicate-->
+<!--            <q-tooltip class="tooltip">This tab has a duplicate inside this tabset and could be deleted</q-tooltip>-->
+<!--          </q-chip>-->
           <span v-if="useTabsStore().getCurrentTabset?.sorting === 'alphabeticalTitle'">
             <q-icon name="arrow_right" size="16px"/>
           </span>

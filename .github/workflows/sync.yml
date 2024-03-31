@@ -1,0 +1,26 @@
+name: Sync from chrome-extension to edge and firefox
+on:
+  push:
+    branches:
+      - 'chrome-extension'
+jobs:
+  sync-branch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+
+      - name: Merge chrome-extension -> firefox-extension
+        uses: devmasx/merge-branch@v1.3.1
+        with:
+          type: now
+          from_branch: chrome-extension
+          target_branch: firefox-extension
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Merge chrome-extension -> edge-extension
+        uses: devmasx/merge-branch@v1.3.1
+        with:
+          type: now
+          from_branch: chrome-extension
+          target_branch: edge-extension
+          github_token: ${{ secrets.GITHUB_TOKEN }}

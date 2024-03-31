@@ -12,12 +12,13 @@ export function useNotificationHandler() {
 
   const {info, error} = useLogger()
 
-  const handleError = (error: any, type: NotificationType = NotificationType.TOAST) => {
-    console.log("showing error message: ", error ? error.toString() : 'unknown error')
+  const handleError = (err: any, type: NotificationType = NotificationType.TOAST) => {
+    const errorMsg = err ? err.toString() : 'unknown error'
+    console.log("showing error message: ", errorMsg)
     console.trace()
 
     //logtail.error(error ? error.toString() : 'unknown error', error)
-    error(error ? error.toString() : 'unknown error', error)
+    error(errorMsg /** todo pass actual error */)
 
     switch (type) {
       case NotificationType.NOTIFY:
@@ -26,11 +27,11 @@ export function useNotificationHandler() {
           color: 'red-5',
           textColor: 'white',
           icon: 'error',
-          message: error ? error.toString() : 'unknown error'
+          message: errorMsg
         })
         break;
       default:
-        useUiStore().createErrorToast(error ? error.toString() : 'unknown error')
+        useUiStore().createErrorToast(errorMsg)
     }
 
   }

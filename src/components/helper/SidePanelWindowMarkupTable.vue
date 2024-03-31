@@ -152,14 +152,9 @@ const tabsetsMangedWindows = ref<object[]>([])
 const hoveredWindow = ref<number | undefined>(undefined)
 const devMode = ref<boolean>(settingsStore.isEnabled('dev'))
 
-const windowsUpdatedListener = (message: any, sender: chrome.runtime.MessageSender, sendResponse: any) => {
-  if (message.name === 'window-updated') {
-    console.log("got message 'window-updated'", message.data.initiated, message)
+const updateWindows = () => {
     useWindowsStore().setup('got window-updated message', true)
       .then(() => rows.value = calcWindowRows())
-    //useUiStore().windowsChanged = message
-  }
-  return true
 }
 
 onMounted(() => {
@@ -172,7 +167,10 @@ watch(() => useWindowsStore().currentChromeWindows, (newWindows, oldWindows) => 
 })
 
 //console.log("====>: chrome.runtime.onMessage.hasListeners(windowsUpdatedListener)", chrome.runtime.onMessage.hasListener(windowsUpdatedListener))
-chrome.runtime.onMessage.addListener(windowsUpdatedListener)
+//chrome.runtime.onMessage.addListener(windowsUpdatedListener)
+chrome.windows.onCreated.addListener((w:chrome.windows.Window) => updateWindows())
+chrome.windows.onRemoved.addListener((wId:number) => updateWindows())
+
 
 chrome.tabs.onRemoved.addListener((tabId: number, removeInfo: chrome.tabs.TabRemoveInfo) => {
   //console.log("***here we are", tabId, removeInfo)
@@ -208,6 +206,7 @@ watchEffect(() => {
       }
     }
   }
+  windowsToOpenOptions.value = _.sortBy(windowsToOpenOptions.value, ["label"])
 })
 
 watchEffect(() => {

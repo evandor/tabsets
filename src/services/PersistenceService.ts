@@ -1,6 +1,5 @@
 import {Tabset} from "src/models/Tabset";
 import {Space} from "src/models/Space";
-import {MHtml} from "src/models/MHtml";
 import {Tab} from "src/models/Tab";
 import {Notification} from "src/models/Notification";
 import {SearchDoc} from "src/models/SearchDoc";
@@ -11,6 +10,7 @@ import {RequestInfo} from "src/models/RequestInfo";
 import {BlobType, SavedBlob} from "src/models/SavedBlob";
 import {Message} from "src/models/Message";
 import {Account} from "src/models/Account";
+import {Entity} from "src/models/Entity";
 
 interface PersistenceService {
 
@@ -54,7 +54,7 @@ interface PersistenceService {
   addSpace(space: Space): Promise<any>
   deleteSpace(spaceId: string): void;
 
-  loadCategories(): Promise<any>
+  //loadCategories(): Promise<any>
 
   cleanUpRequests(): Promise<void>
 
@@ -92,6 +92,10 @@ interface PersistenceService {
   upsertAccount(account: Account):void
 
   clear(name: string):any
+
+  saveEntity(entity: Entity): void
+  getEntities(): Promise<Entity[]>
+  findEntityById(id: string): Promise<Entity>
 
 }
 

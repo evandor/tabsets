@@ -54,6 +54,9 @@ export class SidePanelView {
   static readonly BY_DOMAIN_LIST = new SidePanelView('byDomainList', '/sidepanel/byDomainList',
     () => usePermissionsStore().hasFeature(FeatureIdent.GROUP_BY_DOMAIN));
 
+  static readonly SHARED_TABSETS_LIST = new SidePanelView('sharedTsList', '/sidepanel/sharedTsList',
+    () => usePermissionsStore().hasFeature(FeatureIdent.TABSETS_SHARING));
+
   static readonly RSS_LIST = new SidePanelView('rssList', '/sidepanel/rsslist',
     () => usePermissionsStore().hasFeature(FeatureIdent.RSS));
 
@@ -74,6 +77,8 @@ export class SidePanelView {
   static readonly MESSAGES = new SidePanelView('messages', '/sidepanel/messages')
 
   static readonly TABS_AS_TREE = new SidePanelView('tabsAsTree', '/sidepanel/tabsAsTree')
+
+  static readonly ENTITIY_MANAGER = new SidePanelView('entityManager', '/sidepanel/entities')
 
 
   private constructor(
@@ -144,6 +149,7 @@ export const useUiStore = defineStore('ui', () => {
   const selectedTag = ref<string | undefined>(undefined)
   const tabsetsExpanded = ref<boolean>(false)
   const appLoading = ref<string | undefined>(undefined)
+  const bookmarksLoading = ref<boolean>(false)
   const progress = ref<object | undefined>(undefined)
 
   // online offline
@@ -211,6 +217,9 @@ export const useUiStore = defineStore('ui', () => {
 
   const sharingAuthor = ref<string>(LocalStorage.getItem(SHARING_AUTHOR_IDENT) as unknown as string || '')
   const sharingAvatar = ref<string>(LocalStorage.getItem(SHARING_AVATAR_IDENT) as unknown as string || '')
+
+  // info e.g. when stopping to sync
+  const showSwitchedToLocalInfo = ref<boolean>(false)
 
   watch(rightDrawer.value, (val: Object) => {
     LocalStorage.set("ui.rightDrawer", val)
@@ -601,12 +610,14 @@ export const useUiStore = defineStore('ui', () => {
     networkOnline,
     tabBeingDragged,
     appLoading,
+    bookmarksLoading,
     progress,
     setProgress,
     animateNewTabsetButton,
     animateSettingsButton,
     animateBookmarksButton,
     startButtonAnimation,
-    showLoginTable
+    showLoginTable,
+    showSwitchedToLocalInfo
   }
 })

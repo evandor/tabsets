@@ -56,7 +56,11 @@ describe('SidePanelPage', () => {
       },
       runtime: {
         sendMessage: vi.fn(() => {
-        })
+        }),
+        onMessage: {
+          addListener: vi.fn(() => {
+          })
+        }
       }
     };
 

@@ -30,7 +30,8 @@ module.exports = configure(function (ctx) {
     // https://v2.quasar.dev/quasar-cli-vite/boot-files
     boot: [
       'i18n',
-      'constants'
+      'constants',
+      'vueform'
     ],
 
     // https://v2.quasar.dev/quasar-cli-vite/quasar-config-js#css
@@ -43,7 +44,7 @@ module.exports = configure(function (ctx) {
       // 'ionicons-v4',
       // 'mdi-v5',
       // 'fontawesome-v6',
-      // 'eva-icons',
+      'eva-icons',
       // 'themify',
       // 'line-awesome',
       // 'roboto-font-latin-ext', // this or either 'roboto-font', NEVER both!
@@ -84,7 +85,6 @@ module.exports = configure(function (ctx) {
         TABSETS_PWA_URL: process.env.TABSETS_PWA_URL,
         TABSETS_STAGE: process.env.STAGE,
 
-        LOGZ_URL: process.env.LOGZ_URL,
         COUCHDB_PROTOCOL: process.env.COUCHDB_PROTOCOL,
         COUCHDB_URL: process.env.COUCHDB_URL,
 
@@ -114,14 +114,22 @@ module.exports = configure(function (ctx) {
 
       // !== MIT
       extendViteConf (viteConf) {
-        //if ((ctx.mode.spa || ctx.mode.pwa || ctx.mode.electron) && viteConf && viteConf.mode === "development") {
-        if (!ctx.mode.bex && !ctx.mode.pwa) {
-          // https://dev.to/richardbray/how-to-fix-the-referenceerror-global-is-not-defined-error-in-sveltekitvite-2i49
-          viteConf.define.global = {}
-          //https://stackoverflow.com/questions/77061323/error-pouchdb-on-vite-referenceerror-global-is-not-defined
-          //viteConf.define.window.global = window.global
-        }
-        viteConf.define.__VUE_PROD_HYDRATION_MISMATCH_DETAILS__ = 'false'
+
+          if ((ctx.mode.spa || ctx.mode.pwa || ctx.mode.electron) && viteConf && viteConf.mode === "development") {
+            // https://dev.to/richardbray/how-to-fix-the-referenceerror-global-is-not-defined-error-in-sveltekitvite-2i49
+            viteConf.define.global = {}
+          }
+          viteConf.define.__VUE_PROD_HYDRATION_MISMATCH_DETAILS__ = 'false'
+
+        // this caused an issue with the electron build
+        // //if ((ctx.mode.spa || ctx.mode.pwa || ctx.mode.electron) && viteConf && viteConf.mode === "development") {
+        // if (!ctx.mode.bex && !ctx.mode.pwa) {
+        //   // https://dev.to/richardbray/how-to-fix-the-referenceerror-global-is-not-defined-error-in-sveltekitvite-2i49
+        //   viteConf.define.global = {}
+        //   //https://stackoverflow.com/questions/77061323/error-pouchdb-on-vite-referenceerror-global-is-not-defined
+        //   //viteConf.define.window.global = window.global
+        // }
+        // viteConf.define.__VUE_PROD_HYDRATION_MISMATCH_DETAILS__ = 'false'
       },
       // viteVuePluginOptions: {},
 
@@ -129,7 +137,28 @@ module.exports = configure(function (ctx) {
         ['@intlify/unplugin-vue-i18n/vite', {
           include: [path.resolve(__dirname, './src/i18n/**')],
         }],
-        ['vite-plugin-package-version' ,{}]
+        ['vite-plugin-package-version' ,{}],
+        {
+          name: 'vueform',
+          async config() {
+            return {
+              optimizeDeps: {
+                include: [
+                  'wnumb',
+                  'nouislider',
+                  'trix',
+                  'lodash',
+                  'axios',
+                ],
+              },
+              server: {
+                watch: {
+                  ignored: [`!**/node_modules/@vueform/**`],
+                },
+              },
+            };
+          },
+        },
       ]
     },
 
@@ -143,7 +172,7 @@ module.exports = configure(function (ctx) {
     framework: {
       config: {},
 
-      // iconSet: 'material-icons', // Quasar icon set
+      iconSet: 'eva-icons',
       // lang: 'en-US', // Quasar language pack
 
       // For special cases outside of where the auto-import strategy can have an impact

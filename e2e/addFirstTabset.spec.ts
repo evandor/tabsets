@@ -75,18 +75,3 @@ test("add tabset with tab", async ({page, extensionId, context}) => {
   await sidePanelPage.screenshot(page, 'addFirstTabsetWithTab', 'finish.png')
 
 });
-
-// test('test', async ({ page }) => {
-//     await page.goto('http://localhost:9200/');
-//     await page.goto('http://localhost:9200/#/');
-//     await page.goto('http://localhost:9200/#/start');
-//     await page.goto('http://localhost:9200/#/about');
-//     await page.getByTestId('createFirstTabsetBtn').click();
-//     await page.getByTestId('newTabsetName').fill('test');
-//     await page.getByTestId('newTabsetNameSubmit').click();
-//     await page.getByText('menu').click();
-//     await page.getByText('test', { exact: true }).click();
-//     await page.getByTestId('addUrlDialogBtn').click();
-//     await page.getByTestId('add_url_input').fill('skysail.io');
-//     await page.getByTestId('add_url_input').press('Enter');
-// });

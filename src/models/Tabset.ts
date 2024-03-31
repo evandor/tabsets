@@ -34,8 +34,6 @@ export const TABSET_NAME_MAX_LENGTH = 32;
 export class Tabset {
   id: string
 
-  _id: string | undefined
-  _rev: string | undefined
   name: string
   created: number
   updated: number
@@ -63,6 +61,7 @@ export class Tabset {
   // sharing
   sharing: TabsetSharing = TabsetSharing.UNSHARED
   sharedBy: string | undefined = undefined
+  sharedById: string | undefined = undefined
   sharedId: string | undefined = undefined
   sharedAt: number | undefined = undefined
   sharedPath: string | undefined = undefined // e.g. /pwa/imp/AlCYSrGGmOnsOnf0htA9?n=c2hvcHBpbmc=
@@ -105,7 +104,9 @@ export class Tabset {
     this.spaces = spaces
   }
 
-  static newTabsetNameIsValid = (val: string) => !STRIP_CHARS_IN_USER_INPUT.test(val)
+  static newTabsetNameIsValid = (val: string) => {
+    return !STRIP_CHARS_IN_USER_INPUT.test(val)
+  }
 
   static newTabsetNameIsShortEnough = (val: string) => val ? val.length <= TABSET_NAME_MAX_LENGTH : true
 

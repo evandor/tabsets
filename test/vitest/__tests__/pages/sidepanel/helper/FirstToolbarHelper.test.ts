@@ -51,19 +51,5 @@ describe('FirstToolbarHelper', () => {
     expect(wrapper.text()).not.toContain("search");
   });
 
-  // it('should allow toggling of search', async () => {
-  //   await IndexedDbPersistenceService.init("db")
-  //   const wrapper = mount(FirstToolbarHelper);
-  //
-  //   // need at least two tabsets
-  //   await new CreateTabsetCommand("new Tabset A", []).execute()
-  //   await new CreateTabsetCommand("new Tabset B", []).execute()
-  //
-  //   await wrapper.get('#toggleSearchBtn').trigger("click")
-  //
-  //   expect(wrapper.text()).toContain("search");
-  //   expect(wrapper.text()).not.toContain("My Tabsets");
-  // });
-
 
 });

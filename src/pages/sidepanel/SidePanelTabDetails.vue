@@ -108,12 +108,12 @@
         <!--          <q-tooltip>Schedule this tab</q-tooltip>-->
         <!--        </q-btn>-->
 
-        <template v-if="usePermissionsStore().hasFeature(FeatureIdent.SAVE_TAB_AS_PNG)">
+        <template v-if="usePermissionsStore().hasFeature(FeatureIdent.SAVE_TAB_AS_PNG) && useAuthStore().isAuthenticated()">
           <q-btn
-              @click.stop="savePng(tab)"
+              @click.stop="savePng(tab as Tab)"
               flat round color="primary" size="11px" icon="image"
-              :disabled="!isOpen(tab)">
-            <q-tooltip v-if="isOpen(tab)">Save this tab as PNG</q-tooltip>
+              :disabled="!isOpen(tab as Tab)">
+            <q-tooltip v-if="isOpen(tab as Tab)">Save this tab as PNG</q-tooltip>
             <q-tooltip v-else>The tab must be open if you want to save it. Click on the link and come back here to save
               it.
             </q-tooltip>
@@ -174,17 +174,17 @@
       </q-card>
     </q-expansion-item>
 
-    <q-expansion-item label="Archived Snapshots"
-                      v-if="usePermissionsStore().hasFeature(FeatureIdent.SAVE_TAB) && tab?.mhtmls?.length > 0"
-                      :default-opened="true">
-      <q-card>
-        <q-card-section>
-          <div class="row q-mx-sm q-mt-xs" v-for="mhtml in tab?.mhtmls">
-            <MHtmlViewHelper :mhtmlId="mhtml" :tabId="tab?.id || 'unknown'"/>
-          </div>
-        </q-card-section>
-      </q-card>
-    </q-expansion-item>
+<!--    <q-expansion-item label="Archived Snapshots"-->
+<!--                      v-if="usePermissionsStore().hasFeature(FeatureIdent.SAVE_TAB) && tab?.mhtmls?.length > 0"-->
+<!--                      :default-opened="true">-->
+<!--      <q-card>-->
+<!--        <q-card-section>-->
+<!--          <div class="row q-mx-sm q-mt-xs" v-for="mhtml in tab?.mhtmls">-->
+<!--&lt;!&ndash;            <MHtmlViewHelper :mhtmlId="mhtml" :tabId="tab?.id || 'unknown'"/>&ndash;&gt;-->
+<!--          </div>-->
+<!--        </q-card-section>-->
+<!--      </q-card>-->
+<!--    </q-expansion-item>-->
 
     <q-expansion-item label="Archived Images"
                       v-if="usePermissionsStore().hasFeature(FeatureIdent.SAVE_TAB_AS_PNG) && pngs.length > 0">
@@ -372,6 +372,7 @@ import {SavedBlob} from "src/models/SavedBlob";
 import PngViewHelper from "pages/sidepanel/helper/PngViewHelper.vue";
 import {SavePngCommand} from "src/domain/tabs/SavePng";
 import {SavePdfCommand} from "src/domain/tabs/SavePdf";
+import {useAuthStore} from "stores/authStore";
 
 const {inBexMode} = useUtils()
 

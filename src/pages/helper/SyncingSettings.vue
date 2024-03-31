@@ -241,14 +241,10 @@ import {useUtils} from "src/services/Utils";
 import {useNotificationHandler} from "src/services/ErrorHandler";
 import {ExecutionResult} from "src/domain/ExecutionResult";
 import {useAuthStore} from "stores/authStore";
-import {useRouter} from "vue-router";
-import NavigationService from "src/services/NavigationService";
 import {doc, updateDoc} from "firebase/firestore";
 import FirebaseServices from "src/services/firebase/FirebaseServices";
-import {useSettingsStore} from "stores/settingsStore";
 import {useTabsStore} from "stores/tabsStore";
-import {useTabsetService} from "src/services/TabsetService2";
-import TabsetService from "src/services/TabsetService";
+import {useUiStore} from "stores/uiStore";
 
 const {sendMsg} = useUtils()
 const {handleSuccess, handleError} = useNotificationHandler()
@@ -327,6 +323,9 @@ const updateSyncing = async () => {
   try {
     await updateDoc(doc(FirebaseServices.getFirestore(), "users", useAuthStore().user.uid), {sync: {type: tempSyncOption.value}})
     LocalStorage.set(SYNC_TYPE, tempSyncOption.value)
+    if (tempSyncOption.value === SyncType.NONE) {
+      useUiStore().showSwitchedToLocalInfo = true
+    }
     sendMsg('reload-application')
     handleSuccess(new ExecutionResult<string>("done", "done"))
   } catch (err) {
@@ -335,13 +334,7 @@ const updateSyncing = async () => {
   }
 }
 
-const startSyncMessage = (targetType: SyncType) => testResult.value === 'success' &&
-  (!currentSyncType.value || currentSyncType.value === SyncType.NONE) &&
-  tempSyncOption.value === targetType
-
 const stopSyncMessage = () => (currentSyncType.value !== tempSyncOption.value) && currentSyncType.value === SyncType.GITHUB && tempSyncOption.value === SyncType.NONE
 
-
-const showWrongTokenMessage = () => useRouter().currentRoute.value.query.token === "failed"
 
 </script>

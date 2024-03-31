@@ -12,6 +12,17 @@
                        icon="o_description"
                        label="Tabset Description..."/>
 
+      <template v-if="usePermissionsStore().hasFeature(FeatureIdent.TABSET_SUBFOLDER)">
+
+        <q-separator inset />
+
+        <ContextMenuItem v-close-popup
+                         @was-clicked="createSubfolder(tabset)"
+                         icon="o_folder"
+                         label="Create Subfolder"/>
+
+      </template>
+
       <q-separator inset v-if="useTabsStore().tabsets.size > 1"/>
 
       <ContextMenuItem v-close-popup
@@ -111,7 +122,7 @@
       <ContextMenuItem
         v-if="tabset.sharing === TabsetSharing.PUBLIC_LINK || tabset.sharing === TabsetSharing.PUBLIC_LINK_OUTDATED"
         v-close-popup
-        @was-clicked="removePublicShare(tabset.id)"
+        @was-clicked="removePublicShare(tabset.id, tabset.sharedId)"
         icon="ios_share"
         color="warning"
         label="Stop Sharing">
@@ -163,7 +174,7 @@ import {MarkTabsetAsDefaultCommand} from "src/domain/tabsets/MarkTabsetAsDefault
 import DeleteTabsetDialog from "components/dialogues/DeleteTabsetDialog.vue";
 import ContextMenuItem from "pages/sidepanel/helper/ContextMenuItem.vue";
 import {PropType} from "vue";
-import {UnShareTabsetCommand} from "src/domain/tabsets/UnShareTabset";
+import {UnShareTabsetCommand} from "src/domain/tabsets/UnShareTabsetCommand"
 import {useTabsetService} from "src/services/TabsetService2";
 import {Tab} from "src/models/Tab";
 import {CopyToClipboardCommand} from "src/domain/commands/CopyToClipboard";
@@ -175,6 +186,9 @@ import {useRouter} from "vue-router";
 import {MarkTabsetDeletedCommand} from "src/domain/tabsets/MarkTabsetDeleted";
 import {SidePanelView, useUiStore} from "stores/uiStore";
 import {NotificationType} from "src/services/ErrorHandler";
+import NewTabsetDialog from "components/dialogues/NewTabsetDialog.vue";
+import {useSpacesStore} from "stores/spacesStore";
+import NewSubfolderDialog from "components/dialogues/NewSubfolderDialog.vue";
 
 const {inBexMode} = useUtils()
 
@@ -194,6 +208,16 @@ const startTabsetNote = (tabset: Tabset) => {
     chrome.runtime.getURL('www/index.html') + "#/mainpanel/notes/?tsId=" + tabset.id + "&edit=true" :
     "#/mainpanel/notes/?tsId=" + tabset.id + "&edit=true"
   NavigationService.openOrCreateTab([url])
+}
+
+const createSubfolder = (tabset: Tabset) => {
+  $q.dialog({
+    component: NewSubfolderDialog,
+    componentProps: {
+      tabsetId: tabset.id,
+      parentFolder: undefined
+    }
+  })
 }
 
 const openEditTabsetDialog = (tabset: Tabset) => {
@@ -254,7 +278,7 @@ const pin = (tabset: Tabset) =>
 const unpin = (tabset: Tabset) =>
   useCommandExecutor().executeFromUi(new MarkTabsetAsDefaultCommand(tabset.id))
 
-const removePublicShare = (tabsetId: string) => useCommandExecutor().executeFromUi(new UnShareTabsetCommand(tabsetId))
+const removePublicShare = (tabsetId: string, sharedId: string) => useCommandExecutor().executeFromUi(new UnShareTabsetCommand(tabsetId, sharedId))
 
 const openPublicShare = (tabsetId: string) => {
   const ts = useTabsetService().getTabset(tabsetId)

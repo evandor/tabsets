@@ -65,8 +65,7 @@ import {useSpacesStore} from "src/stores/spacesStore";
 import {onMounted, ref, watchEffect} from "vue"
 import _ from "lodash"
 import {Space} from "src/models/Space"
-import {Tabset} from "src/models/Tabset";
-import {useRouter} from "vue-router";
+import {Tabset, TabsetStatus} from "src/models/Tabset";
 import {useTabsetService} from "src/services/TabsetService2";
 import Analytics from "src/utils/google-analytics";
 import {useUtils} from "src/services/Utils";
@@ -134,9 +133,11 @@ watchEffect(() => {
   console.log("watching effect tabsets")
   rows.value = []
   _.forEach(sortedTabsets.value as Tabset[], (ts: Tabset) => {
-    rows.value.push({
-      tabset: ts.name,
-    })
+    if (ts.status !== TabsetStatus.DELETED) {
+      rows.value.push({
+        tabset: ts.name,
+      })
+    }
   })
 })
 

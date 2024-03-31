@@ -9,10 +9,21 @@ import {usePermissionsStore} from "stores/permissionsStore";
 import {FeatureIdent} from "src/models/AppFeature";
 import {Suggestion, SuggestionType} from "src/models/Suggestion";
 import {useSuggestionsStore} from "stores/suggestionsStore";
+import {ExecutionResult} from "src/domain/ExecutionResult";
+import {useNotificationHandler} from "src/services/ErrorHandler";
+
+const {handleSuccess} = useNotificationHandler()
 
 class NavigationService {
 
   placeholderPattern = /\${[^}]*}/gm
+
+  async openChromeTab(chromeTab: chrome.tabs.Tab) {
+    const window = await chrome.tabs.highlight({windowId: chromeTab.windowId, tabs: chromeTab.index})
+    if (typeof window.id === "number") {
+      await chrome.windows.update(window.id, {focused: true})
+    }
+  }
 
   async openOrCreateTab(
     withUrls: string[],
@@ -82,10 +93,14 @@ class NavigationService {
                 //console.log("matcher yielded", JsUtils.match(matcher, r.url))
                 matchCondition = JsUtils.match(matcher, r.url)
               }
+              // console.log("===>", matchCondition, url, r.url)
               if (matchCondition) {
                 if (!found) { // highlight only first hit
                   found = true
                   console.debug("found something", r)
+                  if (r.active) {
+                    handleSuccess(new ExecutionResult("", "already opened..."))
+                  }
                   chrome.tabs.highlight({tabs: r.index, windowId: useWindowId});
                   chrome.windows.update(useWindowId, {focused: true})
 

@@ -5,3 +5,28 @@ HEAD https://www.chefkoch.de/rezepte/1338991238751459/Knusprige-Bratkartoffeln-n
 ### GET2
 HEAD https://www.dkb.de/banking
 
+### Send POST request with json body
+POST https://us-central1-tabsets-dev.cloudfunctions.net/app/hf/categorization
+Content-Type: application/json
+
+{
+}
+
+### Send POST request with json body
+POST https://us-central1-tabsets-dev.cloudfunctions.net/app/hf/classify?text=I%20love%20Transformers.js
+Content-Type: application/json
+
+{
+}
+
+###
+GET https://us-central1-tabsets-dev.cloudfunctions.net/app/share/preview/0d2ec1f2-e829-4652-b9de-eb1bd5df7665?n=cGZsYW56a/xiZWw=&a=Q2Fyc3Rlbg==
+
+###
+GET https://tabsets-dev.web.app/share/preview/0d2ec1f2-e829-4652-b9de-eb1bd5df7665?n=cGZsYW56a/xiZWw=&a=Q2Fyc3Rlbg==
+
+###
+GET https://tabsets-dev.firebaseapp.com/app/share/preview/0d2ec1f2-e829-4652-b9de-eb1bd5df7665?n=cGZsYW56a/xiZWw=&a=Q2Fyc3Rlbg==
+
+###
+GET https://us-central1-tabsets-dev.cloudfunctions.net/app/share/img/0d2ec1f2-e829-4652-b9de-eb1bd5df7665

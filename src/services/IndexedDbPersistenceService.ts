@@ -6,7 +6,6 @@ import PersistenceService from "src/services/PersistenceService";
 import {Tabset, TabsetStatus} from "src/models/Tabset";
 import {useSpacesStore} from "src/stores/spacesStore";
 import {Space} from "src/models/Space";
-import {MHtml} from "src/models/MHtml";
 import {Tab} from "src/models/Tab";
 import {SearchDoc} from "src/models/SearchDoc";
 import {MetaLink} from "src/models/MetaLink";
@@ -14,15 +13,13 @@ import {uid} from "quasar";
 import {Notification, NotificationStatus} from "src/models/Notification";
 import {Suggestion, SuggestionState, SuggestionType} from "src/models/Suggestion";
 import {useUiStore} from "src/stores/uiStore";
-import {useCategoriesStore} from "stores/categoriesStore";
-import {cloudFunctionsApi} from "src/api/cloudfunctionsApi";
-import {Category} from "src/models/Category";
 import {RequestInfo} from "src/models/RequestInfo";
 import {useSuggestionsStore} from "stores/suggestionsStore";
 import {Window} from "src/models/Window";
 import {BlobType, SavedBlob} from "src/models/SavedBlob";
 import {Message} from "src/models/Message";
 import {Account} from "src/models/Account";
+import {Entity} from "src/models/Entity";
 
 class IndexedDbPersistenceService implements PersistenceService {
   private db: IDBPDatabase = null as unknown as IDBPDatabase
@@ -87,21 +84,6 @@ class IndexedDbPersistenceService implements PersistenceService {
         .catch(err => console.log("err", err))
     })
   }
-
-  async loadCategories(): Promise<void> {
-    console.debug("loading categories...")
-    const categoriesStore = useCategoriesStore()
-    const cs: Category[] = await cloudFunctionsApi().getCategories()
-    _.forEach(cs, c => {
-      categoriesStore.putCategory(c)
-      // this.db.get('spaces', key)
-      //   .then((space: Space) => {
-      //     spacesStore.putSpace(space)
-      //   })
-      //   .catch(err => console.log("err", err))
-    })
-  }
-
 
   async saveTabset(tabset: Tabset): Promise<IDBValidKey> {
     return await this.db.put('tabsets', JSON.parse(JSON.stringify(tabset)), tabset.id);
@@ -359,33 +341,6 @@ class IndexedDbPersistenceService implements PersistenceService {
     return this.db.getAll('content')
   }
 
-  /**
-   *
-   * @param tab
-   * @param mhtml
-   * @return the mhtml id of the generated blob
-   */
-  async saveMHtml(tab: Tab, mhtml: Blob): Promise<string> {
-    if (tab.url) {
-      // console.log("TextDecoder('utf-8')", new TextDecoder('utf-8'), typeof mhtml)
-      // console.log("mhtml", mhtml)
-
-      //const mhtmlAsString = await mhtml.text()
-      const mhtmlId = uid()
-      this.db.put('mhtml', {
-        id: mhtmlId,
-        title: tab.name ? tab.name : tab.title,
-        favIconUrl: tab.favIconUrl,
-        url: tab.url,
-        created: new Date().getTime(),
-        content: mhtml
-        //hash: uuidv5(mhtmlAsString, 'da42d8e8-2afd-446f-b72e-8b437aa03e46')
-      }, mhtmlId)
-      return Promise.resolve(mhtmlId)
-    }
-    return Promise.reject("tab.url missing")
-  }
-
   async saveBlob(id: string, url: string, data: Blob, type: BlobType, remark: string | undefined = undefined): Promise<any> {
     //const encodedTabUrl = btoa(tab.url)
     const existing = await this.db.get('blobs', id)
@@ -500,7 +455,7 @@ class IndexedDbPersistenceService implements PersistenceService {
           const oldId = w.id
           window = w
           window.id = useId
-          console.warn("replacing old window " + oldId + " with " + window.toString())
+          console.log("replacing old window " + oldId + " with " + window.toString())
           await this.db.delete('windows', oldId)
           break
         }
@@ -652,6 +607,10 @@ class IndexedDbPersistenceService implements PersistenceService {
           console.log("creating db accounts")
           db.createObjectStore('accounts');
         }
+        if (!db.objectStoreNames.contains('entities')) {
+          console.log("creating db entities")
+          db.createObjectStore('entities');
+        }
       },
     });
   }
@@ -728,7 +687,7 @@ class IndexedDbPersistenceService implements PersistenceService {
       s.state = state
       await this.db.put('suggestions', s, suggestionId)
       return Promise.resolve(s)
-        }
+    }
     return Promise.reject("could not update suggestion")
   }
 
@@ -759,7 +718,17 @@ class IndexedDbPersistenceService implements PersistenceService {
     this.db.put('accounts', normalizedAccount, normalizedAccount.id)
   }
 
+  saveEntity(entity: Entity): void {
+    this.db.put('entities', entity, entity.id)
+  }
 
+  async getEntities(): Promise<Entity[]> {
+    return await this.db.getAll('entities')
+  }
+
+  async findEntityById(id: string) {
+    return await this.db.get('entities', id)
+  }
 }
 
 export default new IndexedDbPersistenceService()

@@ -6,11 +6,13 @@ import {TabsetSharing} from "src/models/Tabset";
 export class UnShareTabsetCommand implements Command<any> {
 
   constructor(
-    public tabsetId: string) {
+    public tabsetId: string,
+    public sharedId: string
+  ) {
   }
 
   async execute(): Promise<ExecutionResult<any>> {
-    return TabsetService.share(this.tabsetId, TabsetSharing.UNSHARED, undefined, undefined)
+    return TabsetService.share(this.tabsetId, TabsetSharing.UNSHARED, this.sharedId, undefined)
       .then(oldSharing => Promise.resolve(
         new ExecutionResult(
           oldSharing,

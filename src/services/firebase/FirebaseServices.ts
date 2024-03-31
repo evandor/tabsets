@@ -24,7 +24,7 @@ class FirebaseServices {
 
   init() {
 
-    if (!process.env.USE_FIREBASE) {
+    if (process.env.USE_FIREBASE != "true") {
       return
     }
     console.log("initializing FirebaseServices")
@@ -61,7 +61,7 @@ class FirebaseServices {
     return this.auth
   }
 
-  getFirestore() {
+  getFirestore(): Firestore {
     return this.firestore
   }
 

@@ -34,11 +34,11 @@ chrome.runtime.onInstalled.addListener((callback) => {
   }
 });
 
-// chrome.omnibox.onInputEntered.addListener((text) => {
-//   const newURL = chrome.runtime.getURL("/www/index.html#/searchresult?t=" + encodeURIComponent(text))
-//   chrome.tabs.create({url: newURL})
-//     .catch((err) => console.log("[service-worker] background.js error", err))
-// });
+chrome.omnibox.onInputEntered.addListener((text) => {
+  const newURL = chrome.runtime.getURL("/www/index.html#/searchresult?t=" + encodeURIComponent(text))
+  chrome.tabs.create({url: newURL})
+    .catch((err) => console.log("[service-worker] background.js error", err))
+});
 
 let modelPromise: any = null
 
@@ -107,7 +107,7 @@ chrome.runtime.onConnect.addListener(function (port) {
 
 export default bexBackground((bridge, cons/* , allActiveConnections */) => {
 
-  if (process.env.USE_FIREBASE) {
+  if (process.env.USE_FIREBASE == "true") {
     //console.debug("[service-worker] about to obtain cloud messaging token")
 
     const firebaseApp = firebase.initializeApp({

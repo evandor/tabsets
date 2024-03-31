@@ -20,6 +20,11 @@
         <!--        <q-item dense clickable v-close-popup>-->
         <!--          <q-item-section>new window</q-item-section>-->
         <!--        </q-item>-->
+        <SidePanelFooterViewMenuItem :side-panel-view="SidePanelView.SHARED_TABSETS_LIST"
+                                     label="Shared Tabsets"
+                                     icon="o_share"
+                                     :size="buttonSize"
+                                     tooltip="All your shared tabsets"/>
         <SidePanelFooterViewMenuItem :side-panel-view="SidePanelView.BY_DOMAIN_LIST"
                                      label="Tabs By Domain"
                                      icon="o_dns"
@@ -45,13 +50,17 @@
                                      icon="o_account_tree"
                                      :size="buttonSize"
                                      tooltip="Show a tree view of your tabs"/>
+        <SidePanelFooterViewMenuItem :side-panel-view="SidePanelView.ENTITIY_MANAGER"
+                                     label="Entity Manager"
+                                     icon="o_apps"
+                                     :size="buttonSize"
+                                     tooltip="Define your own Entities to manage"/>
         <SidePanelFooterViewMenuItem :side-panel-view="SidePanelView.MAIN"
                                      :disable="useUiStore().sidePanelActiveViewIs(SidePanelView.MAIN)"
                                      label="Default View"
                                      icon=""
                                      :size="buttonSize"
                                      tooltip="Back to Default View"/>
-
 
       </q-list>
     </q-menu>
@@ -72,7 +81,7 @@
   </SidePanelFooterLeftButton>
 
   <SidePanelFooterLeftButton :side-panel-view="SidePanelView.BOOKMARKS"
-                             icon="bookmark"
+                             icon="o_bookmark"
                              :class="{ shake: animateBookmarksButton }"
                              :size="props.size"
                              tooltip="Show the Bookmarks Browser"/>

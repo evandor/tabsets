@@ -4,7 +4,6 @@ import {Space} from "src/models/Space";
 import {Suggestion, SuggestionState} from "src/models/Suggestion";
 import {SearchDoc} from "src/models/SearchDoc";
 import {BlobType, SavedBlob} from "src/models/SavedBlob";
-import {MHtml} from "src/models/MHtml";
 import {Tab} from "src/models/Tab";
 import {MetaLink} from "src/models/MetaLink";
 import {Tabset} from "src/models/Tabset";
@@ -21,6 +20,7 @@ import {LocalStorage} from "quasar";
 import {APP_INSTALLATION_ID} from "boot/constants";
 import {useDB} from "src/services/usePersistenceService";
 import IndexedDbPersistenceService from "src/services/IndexedDbPersistenceService";
+import {Entity} from "src/models/Entity";
 
 function tabsetDoc(tabsetId: string) {
   return doc(FirebaseServices.getFirestore(), "users", useAuthStore().user.uid, "tabsets", tabsetId)
@@ -202,10 +202,6 @@ class FirestorePersistenceService implements PersistenceService {
     return Promise.reject({});
   }
 
-  getMHtmls(): Promise<MHtml[]> {
-    return Promise.reject([]);
-  }
-
   getMessages(): Promise<Message[]> {
     return Promise.reject([]);
   }
@@ -238,16 +234,11 @@ class FirestorePersistenceService implements PersistenceService {
     return Promise.reject([]);
   }
 
-  loadCategories(): Promise<any> {
-    return Promise.reject(undefined);
-  }
-
-
   notificationRead(notificationId: string): Promise<void> {
     return Promise.reject(undefined);
   }
 
-  async reloadTabset(tabsetId: string): void {
+  async reloadTabset(tabsetId: string): Promise<void> {
     try {
       const ts = await getDoc(tabsetDoc(tabsetId))
       console.log("reloaded tabset", ts.data())
@@ -334,6 +325,17 @@ class FirestorePersistenceService implements PersistenceService {
     } else {
       console.log("not updating token, not logged in")
     }
+  }
+
+  saveEntity (entity: Entity): void {
+  }
+
+  findEntityById(id: string): Promise<Entity> {
+    return Promise.resolve(new Entity("0","..."));
+  }
+
+  getEntities(): Promise<Entity[]> {
+    return Promise.resolve([]);
   }
 }
 

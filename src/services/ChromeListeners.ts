@@ -94,6 +94,7 @@ function inIgnoredMessages(request: any) {
     request.name === 'detail-level-changed' ||
     request.name === 'reload-application' ||
     request.name === 'window-updated' ||
+    request.name === 'entity-changed' ||
     request.action === 'highlight-annotation'
   //request.name === 'recogito-annotation-created'
 
@@ -201,7 +202,7 @@ class ChromeListeners {
     }
 
     // https://stackoverflow.com/questions/77089404/chrom-extension-close-event-not-available-on-sidepanel-closure
-    if (chrome.runtime && inBexMode()) {
+    if (inBexMode() && chrome && chrome.runtime) {
       chrome.runtime.connect({name: 'tabsetsSidepanel'});
     }
 
@@ -248,7 +249,7 @@ class ChromeListeners {
     }
     this.eventTriggered()
     console.debug(`onCreated: tab ${tab.id}: >>> ${tab.pendingUrl}`, tab)
-    sendMsg('window-updated', {initiated: "ChromeListeners#onCreated"})
+    //sendMsg('window-updated', {initiated: "ChromeListeners#onCreated"})
     const tabsStore = useTabsStore()
 
     let foundSession = false
@@ -329,6 +330,9 @@ class ChromeListeners {
           this.handleUpdate(ts, chromeTab)
         }
       })
+
+      // handle windowsStore related pages
+      //sendMsg('window-updated', {initiated: "ChromeListeners#onUpdated"})
     }
   }
 
@@ -377,7 +381,7 @@ class ChromeListeners {
         if (tab.groupId >= 0) {
           console.log("updating updatedTab group for group id", tab.groupId)
           //newTab.group = useGroupsStore().groupForId(tab.groupId)
-          //const g = await chrome.tabGroups.get(tab.groupId)
+          //const g = await browser.tabGroups.get(tab.groupId)
 
           newTab.groupName = useGroupsStore().currentGroupForId(tab.groupId)?.title || '???'
         }
@@ -462,7 +466,7 @@ class ChromeListeners {
     console.debug("onRemoved tab event: ", number, info)
     //useWindowsStore().refreshCurrentWindows()
     useWindowsStore().refreshTabsetWindow(info.windowId)
-    sendMsg('window-updated', {initiated: "ChromeListeners#onRemoved"})
+    //sendMsg('window-updated', {initiated: "ChromeListeners#onRemoved"})
   }
 
   onReplaced(n1: number, n2: number) {
@@ -530,7 +534,7 @@ class ChromeListeners {
     if (inIgnoredMessages(request)) {
       return true
     }
-    //console.debug(" <<< got message", request)
+    console.debug(" <<< got message in ChromeListeners", request)
     if (request.msg === 'captureThumbnail') {
       const screenShotWindow = useWindowsStore().screenshotWindow
       this.handleCapture(sender, screenShotWindow, sendResponse)

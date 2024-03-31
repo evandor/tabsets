@@ -34,15 +34,24 @@
 
     <div class="col-7">
       <div class="text-h6">{{ text.get(feature)?.name }}</div>
-      <div>Status: {{ hasFeature() ? 'active' : 'inactive' }}</div>
+      <div>
+        Status: {{ hasFeature() ? 'active' : 'inactive' }}
+        <span v-if="needsAccountAndUserNotLoggedIn()" class="text-warning"> - You need a (free) account to use this feature</span>
+      </div>
     </div>
+
     <div class="col text-right q-mr-xl">
       <div v-if="!text.get(feature)?.planned">
         <q-btn v-if="!hasFeature()" color="warning"
-               label="Activate Feature" @click="grant(feature)"/>
+               label="Activate Feature" @click="grant(feature)" :disable="needsAccountAndUserNotLoggedIn()"/>
         <q-btn v-else
                label="Deactivate Feature" @click="revoke(feature)"/>
       </div>
+    </div>
+
+    <div class="col-12 q-my-lg" v-if="needsAccountAndUserNotLoggedIn()">
+      Click on the login icon in the sidepanel to sign up for an account:<br><br>
+      <q-img src="signup.png" width="100px" />
     </div>
 
     <div class="col-12 q-my-sm">
@@ -94,7 +103,7 @@
 
     <div class="col-12 q-my-md" v-if="text.get(feature)?.img">
       <div>
-        <q-img :src="text.get(feature)?.img" :width="text.get(feature)?.img_width || '250px'"/>
+          <q-img :src="text.get(feature)?.img" :width="text.get(feature)?.img_width || '250px'"/>
       </div>
     </div>
 
@@ -139,6 +148,7 @@ import Analytics from "src/utils/google-analytics";
 import Command from "src/domain/Command";
 import NavigationService from "src/services/NavigationService";
 import {useUtils} from "src/services/Utils";
+import {useAuthStore} from "stores/authStore";
 
 const route = useRoute();
 const router = useRouter();
@@ -191,15 +201,11 @@ text.set(FeatureIdent.GROUP_BY_DOMAIN.toLowerCase(), {
   description: 'The "Grouped By Domain" Feature provides a view where you can see all your tabs grouped by Domains. All Domains with at least two matching tabs will be considered.',
   permissions: []
 })
-text.set(FeatureIdent.SAVE_TAB.toLowerCase(), {
-  name: 'Save Tabs',
-  description: 'You can save tabs in a format called MHtml.',
-  permissions: ['pageCapture']
-})
 text.set(FeatureIdent.SAVE_TAB_AS_PNG.toLowerCase(), {
   name: 'Save Tab As Image',
   description: 'You can save tabs as a PNG Image.<br>Creating an image will utilize an external server.',
-  permissions: []
+  permissions: [],
+  needsAccount: true
 })
 text.set(FeatureIdent.SAVE_TAB_AS_PDF.toLowerCase(), {
   name: 'Save Tab As PDF',
@@ -336,11 +342,11 @@ text.set(FeatureIdent.OPEN_TABS.toLowerCase(), {
     'Adds quick navigation to jump back and forth to recently opened tabs.',
   permissions: []
 })
-text.set(FeatureIdent.CATEGORIZATION.toLowerCase(), {
-  name: 'Tabsets Categorization',
-  description: 'Categorize your tabsets automatically',
-  permissions: []
-})
+// text.set(FeatureIdent.CATEGORIZATION.toLowerCase(), {
+//   name: 'Tabsets Categorization',
+//   description: 'Categorize your tabsets automatically',
+//   permissions: []
+// })
 // text.set(FeatureIdent.PAGE_MARKER.toLowerCase(), {
 //   name: 'Page Marker',
 //   description: 'Highlight parts of a page and add notes',
@@ -436,11 +442,17 @@ text.set(FeatureIdent.TABSET_SUBFOLDER.toLowerCase(), {
 text.set(FeatureIdent.TABSETS_SHARING.toLowerCase(), {
   name: 'Sharing Tabsets',
   description: 'Share tabsets publicly.',
+  needsAccount: true,
   permissions: []
 })
 text.set(FeatureIdent.CONTEXT_MENUS.toLowerCase(), {
   name: 'Tabsets Context Menus on Websites',
   description: 'Integrate more deeply with Tabsets by using context menus. This might be available automatically when using some other features.',
+  permissions: []
+})
+text.set(FeatureIdent.ENTITY_MANAGER.toLowerCase(), {
+  name: 'Entitiy Manager',
+  description: 'Define your own entities to manage',
   permissions: []
 })
 
@@ -544,6 +556,12 @@ const getDependentFeatures = (rootFeature: string, onlyActive: boolean = false):
 
 const isActive = (f: AppFeature) => usePermissionsStore().hasFeature(f.ident)
 
+const needsAccountAndUserNotLoggedIn = (): boolean => {
+  if (!text.get(feature.value)?.needsAccount) {
+    return false
+  }
+  return !useAuthStore().isAuthenticated()
+}
 
 </script>
 

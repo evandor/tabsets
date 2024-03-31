@@ -162,7 +162,7 @@ const validUrl = (url: string) => {
 const setMatcher = () => {
   console.log("matcher is ", matcher.value)
   if (tab.value && matcher.value) {
-    useCommandExecutor().execute(new TabAssignmentCommand(tab.value, tabsetId.value || '', "sw|" + matcher.value))
+    useCommandExecutor().execute(new TabAssignmentCommand(tab.value as Tab, tabsetId.value || '', "sw|" + matcher.value))
         .then((res) => {
           setTimeout(() => window.close(), 500)
         })

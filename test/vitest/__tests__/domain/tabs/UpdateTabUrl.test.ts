@@ -3,7 +3,7 @@ import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest';
 import {createPinia, setActivePinia} from "pinia";
 import ChromeApi from "src/services/ChromeApi";
 import IndexedDbPersistenceService from "src/services/IndexedDbPersistenceService";
-import {AddTabToTabsetCommand} from "src/domain/tabs/AddTabToTabset";
+import {AddTabToTabsetCommand} from "src/domain/tabs/AddTabToTabsetCommand"
 import {Tab} from "src/models/Tab";
 import {CreateTabsetCommand} from "src/domain/tabsets/CreateTabset";
 import {useTabsetService} from "src/services/TabsetService2";

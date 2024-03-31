@@ -2,8 +2,8 @@ import {defineStore} from 'pinia';
 import _ from "lodash";
 import {TreeNode} from "src/models/Tree";
 import {Bookmark} from "src/models/Bookmark";
-import {usePermissionsStore} from "src/stores/permissionsStore";
-import {FeatureIdent} from "src/models/AppFeature";
+import {useUtils} from "src/services/Utils";
+import {useUiStore} from "stores/uiStore";
 
 function nodesFrom(
   parent: chrome.bookmarks.BookmarkTreeNode,
@@ -93,35 +93,35 @@ export const useBookmarksStore = defineStore('bookmarks', {
       this.initListeners()
     },
     async loadBookmarks(): Promise<void> {
+      useUiStore().bookmarksLoading = true
       this.bookmarksTree = []
       this.bookmarksNodes = []
       this.bookmarksNodes2 = []
       this.nonLeafNodes = []
       this.bookmarksLeaves = []
       //const accessGranted = usePermissionsStore().hasPermission("bookmarks") && usePermissionsStore().hasFeature(FeatureIdent.BOOKMARKS)
-      //if (accessGranted) {
-        console.debug(" ...loading bookmarks")//, (new Error()).stack)
-        // @ts-ignore
-        const bookmarks: chrome.bookmarks.BookmarkTreeNode[] = await chrome.bookmarks.search({})//, async (bookmarks) => {
-        this.bookmarksLeaves = bookmarks
+      console.debug(" ...loading bookmarks")//, (new Error()).stack)
+      // @ts-ignore
+      const bookmarks: chrome.bookmarks.BookmarkTreeNode[] = await chrome.bookmarks.search({})//, async (bookmarks) => {
+      this.bookmarksLeaves = bookmarks
 
-        // @ts-ignore
-        const tree: chrome.bookmarks.BookmarkTreeNode[] = await chrome.bookmarks.getTree()
+      // @ts-ignore
+      const tree: chrome.bookmarks.BookmarkTreeNode[] = await chrome.bookmarks.getTree()
 
-        //console.log("*** ======= tree", tree)
-        const nodes = nodesFrom(tree[0])
-        //console.log("bookmarksNodes2", nodes.toString())
-        if (nodes[0]) {
-          this.bookmarksNodes2 = nodes[0].children
-          let copy = (JSON.parse(JSON.stringify(nodes[0])));
-          this.nonLeafNodes = nodesWithoutLeaves(copy)?.children || []
-        }
-        this.foldersCount = nodes[1]
-        this.bookmarksCount = nodes[2]
+      //console.log("*** ======= tree", tree)
+      const nodes = nodesFrom(tree[0])
+      //console.log("bookmarksNodes2", nodes.toString())
+      if (nodes[0]) {
+        this.bookmarksNodes2 = nodes[0].children
+        let copy = (JSON.parse(JSON.stringify(nodes[0])));
+        this.nonLeafNodes = nodesWithoutLeaves(copy)?.children || []
+      }
+      this.foldersCount = nodes[1]
+      this.bookmarksCount = nodes[2]
 
-        return Promise.resolve()
+      useUiStore().bookmarksLoading = false
+      return Promise.resolve()
 
-     // }
 
     },
     remove(bm: Bookmark) {

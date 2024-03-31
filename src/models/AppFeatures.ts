@@ -19,11 +19,11 @@ export class AppFeatures {
 
    // new AppFeature(FeatureIdent.NEWEST_TABS, FeatureType.RECOMMENDED, 'Newest Tabs', 'o_schedule', ['all']),
     new AppFeature(FeatureIdent.TOP10, FeatureType.RECOMMENDED, 'Top 10 Tabs', 'o_workspace_premium', ['all']),
-    new AppFeature(FeatureIdent.OPEN_TABS, FeatureType.OPTIONAL, 'Open Tabs', 'o_playlist_add', ['bex']),
+    new AppFeature(FeatureIdent.OPEN_TABS, FeatureType.RECOMMENDED, 'Open Tabs', 'o_playlist_add', ['bex']),
 
-    new AppFeature(FeatureIdent.SAVE_TAB, FeatureType.EXPERIMENTAL, 'Save Tabs as MHTML', 'o_save', ['bex'])
-      .setActivateCommands([new GrantPermissionCommand('pageCapture')]),
-      //.setDeactivateCommand(new RevokePermissionCommand('pageCapture')),
+    // new AppFeature(FeatureIdent.SAVE_TAB, FeatureType.EXPERIMENTAL, 'Save Tabs as MHTML', 'o_save', ['bex'])
+    //   .setActivateCommands([new GrantPermissionCommand('pageCapture')]),
+    //   //.setDeactivateCommand(new RevokePermissionCommand('pageCapture')),
     new AppFeature(FeatureIdent.SAVE_TAB_AS_PNG, FeatureType.EXPERIMENTAL, 'Save Tab as Image', 'o_image', ['bex'])
       .setActivateCommands([new GrantPermissionCommand('pageCapture')]),
 
@@ -48,7 +48,7 @@ export class AppFeatures {
 
     new AppFeature(FeatureIdent.STANDALONE_APP, FeatureType.RECOMMENDED, 'Standalone App', 'o_open_in_new', ['bex']),
 
-    new AppFeature(FeatureIdent.CATEGORIZATION, FeatureType.DISABLED, 'URL Categorization', 'o_auto_awesome', ['bex']),
+    //new AppFeature(FeatureIdent.CATEGORIZATION, FeatureType.DISABLED, 'URL Categorization', 'o_auto_awesome', ['bex']),
 
     new AppFeature(FeatureIdent.NOTIFICATIONS, FeatureType.RECOMMENDED, 'Browser Notifications', 'o_notifications', ['all'])
       .setActivateCommands([new GrantPermissionCommand('notifications')])
@@ -76,8 +76,9 @@ export class AppFeatures {
 
     new AppFeature(FeatureIdent.AUTO_TAB_SWITCHER, FeatureType.EXPERIMENTAL, 'Auto Tab Switcher', 'o_switch_left', ['bex']),
     //new AppFeature(FeatureIdent.TABS_AS_TREE, FeatureType.EXPERIMENTAL, 'Tabs in Tree View', 'o_account_tree', ['all']),
-    new AppFeature(FeatureIdent.TABSET_SUBFOLDER, FeatureType.EXPERIMENTAL, 'Subfolder for Tabsets', 'o_folder', ['all']),
-    new AppFeature(FeatureIdent.TABSETS_SHARING, FeatureType.EXPERIMENTAL, 'Sharing Tabsets', 'o_ios_share', ['all'])
+    new AppFeature(FeatureIdent.TABSET_SUBFOLDER, FeatureType.OPTIONAL, 'Subfolder for Tabsets', 'o_folder', ['all']),
+    new AppFeature(FeatureIdent.TABSETS_SHARING, FeatureType.OPTIONAL, 'Sharing Tabsets', 'o_ios_share', ['all']),
+    new AppFeature(FeatureIdent.ENTITY_MANAGER, FeatureType.EXPERIMENTAL, 'Entity Management', 'o_apps', ['all'])
   ]
 
   getFeature(f: FeatureIdent): AppFeature | undefined {

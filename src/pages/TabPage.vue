@@ -12,7 +12,7 @@
 
 
   <div class="justify-start items-start greyBorderTop">
-    <q-tabs align="left" class="bg-grey-1"
+    <q-tabs align="left"
             v-model="tab"
             no-caps>
       <q-tab name="tabdata" label="Tab Details"/>
@@ -28,17 +28,17 @@
 
   <div v-if="tab === 'tabdata'">
     <div class="q-pa-md q-gutter-sm">
-      <q-banner rounded >Tabsets analyses the URLs you track in order to provide you with
+      <q-banner rounded>Tabsets analyses the URLs you track in order to provide you with
         additional features like searching and thumbnails.
         This is the main info about this tab, retrieved when the page was opened in a tab.
       </q-banner>
       <div class="row items-baseline q-ma-lg">
         <div class="col-2">
           <q-img
-              class="rounded-borders"
-              width="32px"
-              height="32px"
-              :src="selectedTab?.favIconUrl">
+            class="rounded-borders"
+            width="32px"
+            height="32px"
+            :src="selectedTab?.favIconUrl">
             <q-tooltip>
               {{ selectedTab?.favIconUrl }} / {{
                 selectedTab?.chromeTabId
@@ -186,19 +186,19 @@
   <div v-else-if="tab === 'meta'">
 
     <div class="q-pa-md q-gutter-sm">
-      <q-banner rounded >This meta data was derived from the pages provided meta tags.
+      <q-banner rounded>This meta data was derived from the pages provided meta tags.
         This data is collected if the 'analyse tabs' feature is active.
         If this does not work as expected, you might have to refresh or reinstall the tabsets extension.
       </q-banner>
 
       <q-table
-          title="Meta data from the website source"
-          :rows="metaRows"
-          :columns="metaColumns"
-          row-key="name"
-          :pagination="metaInitialPagination"
-          :filter="filter"
-          dense>
+        title="Meta data from the website source"
+        :rows="metaRows"
+        :columns="metaColumns"
+        row-key="name"
+        :pagination="metaInitialPagination"
+        :filter="filter"
+        dense>
 
         <template v-slot:top-right>
           <q-input borderless dense debounce="300" v-model="filter" placeholder="Search">
@@ -237,20 +237,20 @@
 
   <div v-else-if="tab === 'request'">
     <div class="q-pa-md q-gutter-sm">
-      <q-banner rounded >This is a data derived from the request to the tabs content. This
+      <q-banner rounded>This is a data derived from the request to the tabs content. This
         data is collected if the 'analyse tabs' feature is active.
       </q-banner>
 
       Status Code: {{ request['statusCode'] }}<br><br>
 
       <q-table
-          title="Request data"
-          :rows="requestRows"
-          :columns="metaColumns"
-          row-key="name"
-          :pagination="metaInitialPagination"
-          :filter="filterRequest"
-          dense
+        title="Request data"
+        :rows="requestRows"
+        :columns="metaColumns"
+        row-key="name"
+        :pagination="metaInitialPagination"
+        :filter="filterRequest"
+        dense
       >
         <template v-slot:top-right>
           <q-input borderless dense debounce="300" v-model="filterRequest" placeholder="Search">
@@ -274,19 +274,19 @@
 
   <div v-else-if="tab === 'metalinks'">
     <div class="q-pa-md q-gutter-sm">
-      <q-banner rounded >This is a data derived from the tab's content link tags. This
+      <q-banner rounded>This is a data derived from the tab's content link tags. This
         data is collected if the 'analyse tabs' feature is active.
         If this does not work as expected, you might have to refresh or reinstall the tabsets extension.
       </q-banner>
 
       <q-table
-          title="Meta Links"
-          :rows="metaLinkRows"
-          :columns="metaLinkColumns"
-          row-key="name"
-          :pagination="metaInitialPagination"
-          :filter="filterMetaLinks"
-          dense>
+        title="Meta Links"
+        :rows="metaLinkRows"
+        :columns="metaLinkColumns"
+        row-key="name"
+        :pagination="metaInitialPagination"
+        :filter="filterMetaLinks"
+        dense>
         <template v-slot:top-right>
           <q-input borderless dense debounce="300" v-model="filterMetaLinks" placeholder="Search">
             <template v-slot:append>
@@ -313,16 +313,16 @@
 
   <div v-else-if="tab === 'links'">
     <div class="q-pa-md q-gutter-sm">
-      <q-banner rounded >This is data derived from the tab's html content</q-banner>
+      <q-banner rounded>This is data derived from the tab's html content</q-banner>
 
       <q-table
-          title="Links"
-          :rows="links()"
-          :columns="linkColumns"
-          row-key="name"
-          :pagination="metaInitialPagination"
-          :filter="filterMetaLinks"
-          dense>
+        title="Links"
+        :rows="links()"
+        :columns="linkColumns"
+        row-key="name"
+        :pagination="metaInitialPagination"
+        :filter="filterMetaLinks"
+        dense>
         <template v-slot:top-right>
           <q-input borderless dense debounce="300" v-model="filterMetaLinks" placeholder="Search">
             <template v-slot:append>
@@ -349,13 +349,13 @@
 
   <div v-else-if="tab === 'history'">
     <div class="q-pa-md q-gutter-sm">
-      <q-banner rounded >To be done</q-banner>
+      <q-banner rounded>To be done</q-banner>
     </div>
   </div>
 
   <div v-else-if="tab === 'content'">
     <div class="q-pa-md q-gutter-sm">
-      <q-banner rounded >This is a text extract derived from the tabs content</q-banner>
+      <q-banner rounded>This is a text extract derived from the tabs content</q-banner>
 
       <div class="col-5">
         Content
@@ -368,7 +368,7 @@
 
   <div v-else-if="tab === 'debug'" v-if="useSettingsStore().isEnabled('dev')">
     <div class="q-pa-md q-gutter-sm">
-      <q-banner rounded >The tabs internal representation</q-banner>
+      <q-banner rounded>The tabs internal representation</q-banner>
       <vue-json-pretty style="font-size: 80%" :show-length="true"
                        v-model:data="state.data"
                        :show-double-quotes="true"
@@ -438,21 +438,23 @@ watchEffect(() => {
   const tabId = route.params.id.toString() || ''
   console.log("got tabId", tabId)
   const tabInfo = useTabsStore().getTabAndTabsetId(tabId)
-      //.then((tabInfo: TabAndTabsetId | undefined) => {
-    if (tabInfo) {
-      console.log("got tab", tabInfo.tab)
-      //useUiStore().setSelectedTab(tabInfo['tab' as keyof object] as Tab)
-      json.value = JSON.parse(JSON.stringify(tabInfo.tab))
-      tags.value = tabInfo.tab['tags' as keyof object]
-      selectedTab.value = tabInfo.tab
-      try {
-        const url = new URL(selectedTab.value.url || '')
-        domain.value = url.protocol + url.host
-      } catch (err) {
-        domain.value = selectedTab.value.url
-      }
+  //.then((tabInfo: TabAndTabsetId | undefined) => {
+  if (tabInfo) {
+    console.log("got tab", tabInfo.tab)
+    //useUiStore().setSelectedTab(tabInfo['tab' as keyof object] as Tab)
+    json.value = JSON.parse(JSON.stringify(tabInfo.tab))
+    tags.value = tabInfo.tab['tags' as keyof object]
+    selectedTab.value = tabInfo.tab
+    try {
+      const url = new URL(selectedTab.value.url || '')
+      domain.value = url.protocol + url.host
+    } catch (err) {
+      domain.value = selectedTab.value.url
     }
- // })
+  } else {
+    console.log("not found yet...")
+  }
+  // })
 })
 
 
@@ -506,17 +508,18 @@ watchEffect(async () => {
 
   if (selectedTab.value) {
     TabsetService.getThumbnailFor(selectedTab.value)
-        .then(data => {
-          if (data) {
-            thumbnail.value = data.thumbnail
-          }
-        })
+      .then(data => {
+        if (data) {
+          thumbnail.value = data.thumbnail
+        }
+      })
     TabsetService.getContentFor(selectedTab.value)
-        .then(data => {
-          if (data) {
-            content.value = data.content
-            metas.value = data.metas
-            metaRows.value = []
+      .then(data => {
+        if (data) {
+          content.value = data.content
+          metas.value = data.metas
+          metaRows.value = []
+          if (data.metas) {
             _.forEach(Object.keys(data.metas), k => {
               //console.log("k", k, data.metas[k])
               metaRows.value.push({
@@ -525,35 +528,36 @@ watchEffect(async () => {
               })
             })
           }
-        })
+        }
+      })
     TabsetService.getRequestFor(selectedTab.value)
-        .then(data => {
-          if (data) {
-            //console.log("got data", data)
-            request.value = data.requestInfo
+      .then(data => {
+        if (data) {
+          //console.log("got data", data)
+          request.value = data.requestInfo
 
-            _.forEach(data.requestInfo['headers'], h => {
-              requestRows.value.push({
-                name: h.name,
-                value: h.value
-              })
+          _.forEach(data.requestInfo['headers'], h => {
+            requestRows.value.push({
+              name: h.name,
+              value: h.value
             })
-          }
-        })
+          })
+        }
+      })
 
     TabsetService.getMetaLinksFor(selectedTab.value)
-        .then(data => {
-          if (data) {
-            metaLinkRows.value = data.metaLinks
-          }
-        })
+      .then(data => {
+        if (data) {
+          metaLinkRows.value = data.metaLinks
+        }
+      })
 
     TabsetService.getLinksFor(selectedTab.value)
-        .then(data => {
-          if (data) {
-            linkRows.value = data.links
-          }
-        })
+      .then(data => {
+        if (data) {
+          linkRows.value = data.links
+        }
+      })
 
   } else {
     //router.push("/tabset")
@@ -561,26 +565,30 @@ watchEffect(async () => {
 })
 
 const links = (): object[] => {
-  const keys = Object.keys(linkRows.value)
   const result: object[] = []
-  keys.forEach(k => {
-    result.push({
-      link: k,
-      count: linkRows.value[k as keyof object]
+  if (linkRows.value) {
+    const keys = Object.keys(linkRows.value)
+    keys.forEach(k => {
+      result.push({
+        link: k,
+        count: linkRows.value[k as keyof object]
+      })
     })
-  })
+  }
   return result
 }
 
 watchEffect(() => {
   const fuseIndex = searchStore?.getIndex()
-  keys.value = fuseIndex['keys' as keyof object]
-  keysMap.value = fuseIndex['_keysMap' as keyof object]
-  const res = _.filter(fuseIndex['records' as keyof object], (r: any) => {
-    return selectedTab?.url === r.$[2]?.v
-  })
-  if (res && res.length > 0) {
-    index.value = res[0]
+  if (fuseIndex) {
+    keys.value = fuseIndex['keys' as keyof object] || {}
+    keysMap.value = fuseIndex['_keysMap' as keyof object]
+    const res = _.filter(fuseIndex['records' as keyof object], (r: any) => {
+      return selectedTab?.url === r.$[2]?.v
+    })
+    if (res && res.length > 0) {
+      index.value = res[0]
+    }
   }
 })
 
@@ -607,7 +615,7 @@ function getHost(urlAsString: string, shorten: Boolean = true): string {
 
 const getForKey = (key: any) => {
   if ((keysMap.value[key as keyof object] || keysMap.value[key as keyof object] === 0)
-      && index.value['$' as keyof object]) {
+    && index.value['$' as keyof object]) {
     return index.value['$' as keyof object][keysMap.value[key as keyof object]]
   }
   return ""
@@ -616,7 +624,7 @@ const getForKey = (key: any) => {
 const metaDataLabel = () => "Meta Data (" + metaRows.value.length + ")"
 const requestDataLabel = () => "Request Header (" + requestRows.value.length + ")"
 const metaLinksDataLabel = () => "Meta Links (" + metaLinkRows.value.length + ")"
-const linksDataLabel = () => "Links (" + Object.keys(linkRows.value).length + ")"
+const linksDataLabel = () => "Links (" + Object.keys(linkRows.value || []).length + ")"
 const openNameLink = (key: string) => NavigationService.openOrCreateTab(["https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/" + key])
 const showNameLink = (key: string) => key.indexOf(":") < 0;
 
@@ -633,8 +641,8 @@ const showValueLink = (name: string) => "fb:page_id" === name || "twitter:accoun
 const analyseTab = () => {
   if (selectedTab.value) {
     searchStore.reindexTab(selectedTab.value)
-        .then((windowId: number) => {
-        })
+      .then((windowId: number) => {
+      })
   }
 }
 

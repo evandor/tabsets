@@ -51,17 +51,17 @@ onMounted(() => {
   Analytics.firePageViewEvent('SidePanelBookmarksPage', document.location.href);
 })
 
-const onMessageListener = async (message: any, sender: any, sendResponse: any) => {
-  console.log(" <<< received message", message)
-  if (message.name === "sidepanel-switch-view") {
-    // const tsId = message.data.changedTabsetId
-    // await useTabsetService().reloadTabset(tsId)
-    // console.log("tsId", tsId)
-    // sortedSpaces.value = getSortedSpaces()
-    // tabsetsForSpaces.value = await getTabsetsForSpaces()
-    // randomKey.value = uid()
-    // //console.log("tabsetsForSpace", tabsetsForSpaces.value)
-  }
-}
+// const onMessageListener = async (message: any, sender: any, sendResponse: any) => {
+//   console.log(" <<< received message", message)
+//   if (message.name === "sidepanel-switch-view") {
+//     // const tsId = message.data.changedTabsetId
+//     // await useTabsetService().reloadTabset(tsId)
+//     // console.log("tsId", tsId)
+//     // sortedSpaces.value = getSortedSpaces()
+//     // tabsetsForSpaces.value = await getTabsetsForSpaces()
+//     // randomKey.value = uid()
+//     // //console.log("tabsetsForSpace", tabsetsForSpaces.value)
+//   }
+// }
 
 </script>

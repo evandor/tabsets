@@ -41,6 +41,20 @@
                  @update:model-value="val => updatePlaceholder(placeholder, val)"/>
       </q-card-section>
 
+      <template v-if="useSettingsStore().isEnabled('dev')">
+        <q-card-section>
+          <q-select
+            label="Treat tab as"
+            filled
+            v-model="extensionOption"
+            :options="extensionOptions"
+            map-options
+            emit-value
+            style="width: 250px"
+          />
+        </q-card-section>
+      </template>
+
       <q-card-actions align="right">
         <DialogButton label="Cancel" color="accent" v-close-popup/>
         <DialogButton label="Update"
@@ -64,9 +78,12 @@ import {RenameTabsetCommand} from "src/domain/tabsets/RenameTabset";
 import {useNotificationHandler} from "src/services/ErrorHandler";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {SaveTabCommand} from "src/domain/tabs/SaveTab";
-import {Tab} from "src/models/Tab";
+import {Tab, UrlExtension} from "src/models/Tab";
 import {UpdateTabUrlCommand} from "src/domain/tabs/UpdateTabUrl";
 import DialogButton from "components/buttons/DialogButton.vue";
+import {ListDetailLevel, useUiStore} from "stores/uiStore";
+import {usePermissionsStore} from "stores/permissionsStore";
+import {useSettingsStore} from "stores/settingsStore";
 
 defineEmits([
   ...useDialogPluginComponent.emits
@@ -90,6 +107,12 @@ const placeholders = ref<string[]>([])
 const placeholderValues = ref<Map<string, string>>(new Map())
 
 const placeholderReg = /\$\{(.*?)}/gm
+const extensionOption = ref<UrlExtension>(UrlExtension[props.tab.extension as keyof typeof UrlExtension])
+
+const extensionOptions = [
+  {label: 'HTML', value: UrlExtension.HTML},
+  {label: 'RSS', value: UrlExtension.RSS}
+]
 
 watchEffect(() => {
   newTabUrlExists.value = !!tabsStore.nameExistsInContextTabset(newTabUrl.value);
@@ -116,7 +139,10 @@ const updateTab = () =>
     props.tab, newTabUrl.value,
     newTabName.value || '',
     newTabDescription.value || '',
-    placeholders.value, placeholderValues.value))
+    placeholders.value,
+    placeholderValues.value,
+    extensionOption.value
+  ))
 
 
 const newTabsetDialogWarning = () => {

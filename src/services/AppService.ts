@@ -8,7 +8,6 @@ import {useDB} from "src/services/usePersistenceService";
 import {useSuggestionsStore} from "stores/suggestionsStore";
 import tabsetService from "src/services/TabsetService";
 import {useTabsetService} from "src/services/TabsetService2";
-import MHtmlService from "src/services/MHtmlService";
 import ChromeApi from "src/services/ChromeApi";
 import {useSpacesStore} from "stores/spacesStore";
 import {useTabsStore} from "stores/tabsStore";
@@ -26,8 +25,10 @@ import PersistenceService from "src/services/PersistenceService";
 import {useUiStore} from "stores/uiStore";
 import {User} from "firebase/auth";
 import FsPersistenceService from "src/services/persistence/FirestorePersistenceService";
+import {useEntitiesService} from "src/services/EntityService";
+import {useEntitiesStore} from "stores/entitiesStore";
 
-function dbStoreToUse(st: SyncType, su: string | undefined) {
+function dbStoreToUse(st: SyncType) {
   const isAuthenticated = useAuthStore().isAuthenticated()
   if (!isAuthenticated) {
     console.debug("%not authenticated", "font-weight:bold")
@@ -105,9 +106,9 @@ class AppService {
     if (useAuthStore().isAuthenticated()) {
       // sync features
       const syncType = useAuthStore().getAccount()?.userData?.sync?.type || SyncType.NONE
-      const syncUrl = useAuthStore().getAccount()?.userData?.sync?.url
+      // const syncUrl = useAuthStore().getAccount()?.userData?.sync?.url
 
-      let persistenceStore = dbStoreToUse(syncType, syncUrl)
+      let persistenceStore = dbStoreToUse(syncType)
 
       let failedGitLogin = false
 
@@ -116,11 +117,11 @@ class AppService {
         failedGitLogin = true
       }
 
-      console.debug(`%cchecking sync config: type=${syncType}, url=${syncUrl}, persistenceStore=${persistenceStore.getServiceName()}`, "font-weight:bold")
+      console.debug(`%cchecking sync config: type=${syncType}, persistenceStore=${persistenceStore.getServiceName()}`, "font-weight:bold")
 
-      if (syncUrl) {
-        uiStore.appLoading = "syncing tabsets..."
-      }
+      // if (syncUrl) {
+      //   uiStore.appLoading = "syncing tabsets..."
+      // }
 
       await FsPersistenceService.init()
 
@@ -157,10 +158,14 @@ class AppService {
     const windowsStore = useWindowsStore()
     const groupsStore = useGroupsStore()
     const tabsStore = useTabsStore()
+    const entitiesStore = useEntitiesStore()
 
     await spacesStore.initialize(store)
     await useTabsetService().init(store, false)
-    await MHtmlService.init()
+
+    await entitiesStore.initialize(store)
+    await useEntitiesService().init(store)
+
     ChromeApi.init(router)
 
     if (usePermissionsStore().hasFeature(FeatureIdent.TAB_GROUPS)) {
