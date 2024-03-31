@@ -10,7 +10,7 @@ jobs:
       - uses: actions/checkout@master
 
       - name: Merge chrome-extension -> firefox-extension
-        uses: devmasx/merge-branch@master
+        uses: devmasx/merge-branch@1.3.1
         with:
           type: now
           from_branch: chrome-extension
