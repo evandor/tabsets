@@ -108,9 +108,8 @@ onMounted(async () => {
   console.log("*** on mounted", tabsForCurrentWindow.value.length)
 })
 
-chrome.windows.onCreated.addListener(async (w: chrome.windows.Window) => rows.value = await calcWindowRows())
+browser.windows.onCreated.addListener(async (w: browser.windows.Window) => rows.value = await calcWindowRows())
 chrome.windows.onRemoved.addListener(async (wId: Number) => rows.value = await calcWindowRows())
-console.log("hasLIsteners", chrome.tabs.onUpdated.hasListeners())
 chrome.tabs.onUpdated.addListener(async (a: any, b: any, c: any) => rows.value = await calcWindowRows())
 chrome.tabs.onCreated.addListener(async (a: any) => rows.value = await calcWindowRows())
 chrome.tabs.onRemoved.addListener(async (a: any, b: any) => rows.value = await calcWindowRows())
