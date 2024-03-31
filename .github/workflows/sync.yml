@@ -1,4 +1,4 @@
-name: Sync from chrome-extension to edge and firefox
+name: Merge from chrome-extension to edge and firefox
 on:
   push:
     branches:
