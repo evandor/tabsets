@@ -73,7 +73,6 @@
       "description": "Forward to next tab (if available)"
     }
   },
-  "options_page": "www/index.html#/mainpanel/settings",
   "web_accessible_resources": [
     {
       "resources": [
