@@ -1,6 +1,6 @@
 {
   "name": "tabsets.net",
-  "version": "0.4.11",
+  "version": "0.4.12",
   "description": "Use the tabsets.net browser extension to safely keep track all your tabs and links in the Side Panel, locally or in the cloud",
   "productName": "Tabsets.net",
   "author": "evandor <evandor@gmail.com>",
@@ -61,7 +61,6 @@
     "html-to-text": "^9.0.4",
     "idb": "^8.0.0",
     "idraw": "^0.3.1",
-    "jwt-decode": "^4.0.0",
     "keytar": "^7.9.0",
     "lodash": "^4.17.21",
     "mathjs": "^12.4.1",
