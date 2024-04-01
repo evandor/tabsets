@@ -1,8 +1,8 @@
 {
-  "name": "tabsets.net",
-  "version": "0.4.12",
+  "name": "tabsets",
+  "version": "0.4.11",
   "description": "Use the tabsets.net browser extension to safely keep track all your tabs and links in the Side Panel, locally or in the cloud",
-  "productName": "Tabsets.net - Better Bookmarks",
+  "productName": "Tabsets.net",
   "author": "evandor <evandor@gmail.com>",
   "private": true,
   "scripts": {
