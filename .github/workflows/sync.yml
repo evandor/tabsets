@@ -1,4 +1,4 @@
-name: Merge from chrome-extension to edge and firefox
+name: Merge from chrome-extension to firefox, edge and opera
 on:
   push:
     branches:
@@ -23,4 +23,12 @@ jobs:
           type: now
           from_branch: chrome-extension
           target_branch: edge-extension
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Merge chrome-extension -> opera-extension
+        uses: devmasx/merge-branch@v1.3.1
+        with:
+          type: now
+          from_branch: chrome-extension
+          target_branch: opera-extension
           github_token: ${{ secrets.GITHUB_TOKEN }}
