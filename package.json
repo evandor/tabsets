@@ -97,7 +97,7 @@
     "@playwright/test": "^1.27.1",
     "@quasar/app-vite": "^1.8.0",
     "@quasar/babel-preset-app": "^2.0.2",
-    "@quasar/quasar-app-extension-testing-unit-vitest": "^0.4.0",
+    "@quasar/quasar-app-extension-testing-unit-vitest": "^1.0.0",
     "@types/node": "^20.4.10",
     "@types/pixelmatch": "^5.2.6",
     "@types/uuid": "^9.0.1",

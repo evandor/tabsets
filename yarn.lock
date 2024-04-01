@@ -2287,15 +2287,15 @@
   resolved "https://registry.yarnpkg.com/@quasar/extras/-/extras-1.16.11.tgz#84b1efb9097a6e58c3ebfdd5da83ac658056a35c"
   integrity sha512-sbTBHOA+Hi7ah0P6qSm+xfRXqwJ94ct3NKA3Lkq3iNPYuHD7VXbSWtP2eA7Cu9Fd0WjVoPbngf6yFGg46U3IfQ==
 
-"@quasar/quasar-app-extension-testing-unit-vitest@^0.4.0":
-  version "0.4.0"
-  resolved "https://registry.yarnpkg.com/@quasar/quasar-app-extension-testing-unit-vitest/-/quasar-app-extension-testing-unit-vitest-0.4.0.tgz#d5cb651ac2f17154de6f9499f5205c9632490ad2"
-  integrity sha512-eyzdUdmZiCueNS+5nedjMmzdbpCetSrtdGIwW6KplW1dTzRbLiNvYUjpBOxQGmJCgEhWy9zuswJ7MZ/bTql24Q==
+"@quasar/quasar-app-extension-testing-unit-vitest@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@quasar/quasar-app-extension-testing-unit-vitest/-/quasar-app-extension-testing-unit-vitest-1.0.0.tgz#7c3a5603dae4dd10a89e81d06591b438b5b134a1"
+  integrity sha512-nXvwPUyZEnCCUZSjYmwXL6Gl8R4jDtqv7cpMcm2hwxryF7SQlK8FwBtOnjWdN/CEfelFG+UAowz3OHuN+ZoB6A==
   dependencies:
-    happy-dom "^11.0.6"
+    happy-dom "^13.6.2"
     lodash-es "^4.17.21"
     vite-jsconfig-paths "^2.0.1"
-    vite-tsconfig-paths "^4.2.1"
+    vite-tsconfig-paths "^4.3.1"
 
 "@quasar/render-ssr-error@^1.0.3":
   version "1.0.3"
@@ -4238,11 +4238,6 @@ css-value@^0.0.1:
   resolved "https://registry.yarnpkg.com/css-value/-/css-value-0.0.1.tgz#5efd6c2eea5ea1fd6b6ac57ec0427b18452424ea"
   integrity sha512-FUV3xaJ63buRLgHrLQVlVgQnQdR4yqdLGaDu7g8CQcWjInDfM9plBTPI9FRfpahju1UBSaMckeb2/46ApS/V1Q==
 
-css.escape@^1.5.1:
-  version "1.5.1"
-  resolved "https://registry.yarnpkg.com/css.escape/-/css.escape-1.5.1.tgz#42e27d4fa04ae32f931a4b4d4191fa9cddee97cb"
-  integrity sha512-YUifsXXuknHlUsmlgyY0PKzgPOr7/FjCePfHNt0jxm83wHZi44VDMQ7/fGNkjY3/jV1MC+1CmZbaHzugyeRtpg==
-
 csstype@^3.1.3:
   version "3.1.3"
   resolved "https://registry.yarnpkg.com/csstype/-/csstype-3.1.3.tgz#d80ff294d114fb0e6ac500fbf85b60137d7eff81"
@@ -5910,16 +5905,13 @@ grapheme-splitter@^1.0.2:
   resolved "https://registry.yarnpkg.com/grapheme-splitter/-/grapheme-splitter-1.0.4.tgz#9cf3a665c6247479896834af35cf1dbb4400767e"
   integrity sha512-bzh50DW9kTPM00T8y4o8vQg89Di9oLJVLW/KaOGIXJWP/iqCN6WKYkbNOF04vFLJhwcpYUh9ydh/+5vpOqV4YQ==
 
-happy-dom@^11.0.6:
-  version "11.2.0"
-  resolved "https://registry.yarnpkg.com/happy-dom/-/happy-dom-11.2.0.tgz#4b476deb71707bc7c231e6545cd62a81ef2cf689"
-  integrity sha512-z4PshcYIIH6SkymSNRcDFwYUJOENe+FOQDx5BbHgg/wQUgxF5p9I9/BN45Jff34bbhXV8yJgkC5N99eyOzXK3w==
+happy-dom@^13.6.2:
+  version "13.10.1"
+  resolved "https://registry.yarnpkg.com/happy-dom/-/happy-dom-13.10.1.tgz#bfaf147704055e7c2feb4069adc899a838588307"
+  integrity sha512-9GZLEFvQL5EgfJX2zcBgu1nsPUn98JF/EiJnSfQbdxI6YEQGqpd09lXXxOmYonRBIEFz9JlGCOiPflDzgS1p8w==
   dependencies:
-    css.escape "^1.5.1"
     entities "^4.5.0"
-    iconv-lite "^0.6.3"
     webidl-conversions "^7.0.0"
-    whatwg-encoding "^2.0.0"
     whatwg-mimetype "^3.0.0"
 
 has-bigints@^1.0.1, has-bigints@^1.0.2:
@@ -6106,13 +6098,6 @@ iconv-lite@0.4.24, iconv-lite@^0.4.24:
   integrity sha512-v3MXnZAcvnywkTUEZomIActle7RXXeedOR31wwl7VlyoXO4Qi9arvSenNQWne1TcRwhCL1HwLI21bEqdpj8/rA==
   dependencies:
     safer-buffer ">= 2.1.2 < 3"
-
-iconv-lite@0.6.3, iconv-lite@^0.6.3:
-  version "0.6.3"
-  resolved "https://registry.yarnpkg.com/iconv-lite/-/iconv-lite-0.6.3.tgz#a52f80bf38da1952eb5c681790719871a1a72501"
-  integrity sha512-4fCk79wshMdzMp2rH06qWrJE4iolqLhCUH+OiuIgU++RB0+94NlDL81atO7GX55uUKueo0txHNtvEyI6D7WdMw==
-  dependencies:
-    safer-buffer ">= 2.1.2 < 3.0.0"
 
 idb@7.1.1, idb@^7.0.1:
   version "7.1.1"
@@ -8515,7 +8500,7 @@ safe-regex-test@^1.0.3:
     es-errors "^1.3.0"
     is-regex "^1.1.4"
 
-"safer-buffer@>= 2.1.2 < 3", "safer-buffer@>= 2.1.2 < 3.0.0":
+"safer-buffer@>= 2.1.2 < 3":
   version "2.1.2"
   resolved "https://registry.yarnpkg.com/safer-buffer/-/safer-buffer-2.1.2.tgz#44fa161b0187b9549dd84bb91802f9bd8385cd6a"
   integrity sha512-YZo3K82SD7Riyi0E1EQPojLz7kpepnSQI9IyPbHHg1XXXevb5dJI7tpyN2ADxGcQbHG7vcyRHk0cbwqcQriUtg==
@@ -9690,7 +9675,7 @@ vite-plugin-package-version@^1.1.0:
   resolved "https://registry.yarnpkg.com/vite-plugin-package-version/-/vite-plugin-package-version-1.1.0.tgz#7d8088955aa21e4ec93353c98992b3f58c4bf13c"
   integrity sha512-TPoFZXNanzcaKCIrC3e2L/TVRkkRLB6l4RPN/S7KbG7rWfyLcCEGsnXvxn6qR7fyZwXalnnSN/I9d6pSFjHpEA==
 
-vite-tsconfig-paths@^4.2.1:
+vite-tsconfig-paths@^4.3.1:
   version "4.3.2"
   resolved "https://registry.yarnpkg.com/vite-tsconfig-paths/-/vite-tsconfig-paths-4.3.2.tgz#321f02e4b736a90ff62f9086467faf4e2da857a9"
   integrity sha512-0Vd/a6po6Q+86rPlntHye7F31zA2URZMbH8M3saAZ/xR9QoGN/L21bxEGfXdWmFdNkqPpRdxFT7nmNe12e9/uA==
@@ -9926,13 +9911,6 @@ websocket-extensions@>=0.1.1:
   version "0.1.4"
   resolved "https://registry.yarnpkg.com/websocket-extensions/-/websocket-extensions-0.1.4.tgz#7f8473bc839dfd87608adb95d7eb075211578a42"
   integrity sha512-OqedPIGOfsDlo31UNwYbCFMSaO9m9G/0faIHj5/dZFDMFqPTcx6UwqyOy3COEaEOg/9VsGIpdqn62W5KhoKSpg==
-
-whatwg-encoding@^2.0.0:
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/whatwg-encoding/-/whatwg-encoding-2.0.0.tgz#e7635f597fd87020858626805a2729fa7698ac53"
-  integrity sha512-p41ogyeMUrw3jWclHWTQg1k05DSVXPLcVxRTYsXUk+ZooOCZLcoYgPZ/HL/D/N+uQPOtcp1me1WhBEaX02mhWg==
-  dependencies:
-    iconv-lite "0.6.3"
 
 whatwg-mimetype@^3.0.0:
   version "3.0.0"
