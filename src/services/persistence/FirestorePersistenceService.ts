@@ -38,6 +38,14 @@ function spacesCollection() {
   return collection(FirebaseServices.getFirestore(), "users", useAuthStore().user.uid, "spaces")
 }
 
+function entityDoc(entityId: string) {
+  return doc(FirebaseServices.getFirestore(), "users", useAuthStore().user.uid, "entities", entityId)
+}
+
+function entitiesCollection() {
+  return collection(FirebaseServices.getFirestore(), "users", useAuthStore().user.uid, "entities")
+}
+
 class FirestorePersistenceService implements PersistenceService {
 
   private indexedDB: typeof IndexedDbPersistenceService = null as unknown as typeof IndexedDbPersistenceService
@@ -99,6 +107,29 @@ class FirestorePersistenceService implements PersistenceService {
 
   async deleteSpace(entityId: string) {
     await deleteDoc(spaceDoc(entityId))
+  }
+
+  // === Entities ======================================
+
+  saveEntity(entity: Entity) {
+    setDoc(entityDoc(entity.id), JSON.parse(JSON.stringify(entity)))
+  }
+
+  async findEntityById(entityId: string): Promise<Entity> {
+    const ts = await getDoc(entityDoc(entityId))
+    return Promise.resolve(ts.data() as Entity)
+  }
+
+  async getEntities(): Promise<Entity[]> {
+    const entities: Entity[] = []
+    const fromDb = await getDocs(entitiesCollection())
+    fromDb.forEach((doc: any) => {
+      let newItem = doc.data() as Entity
+      newItem.id = doc.id;
+      //useSpacesStore().addSpace(newItem)
+      entities.push(newItem)
+    })
+    return Promise.resolve(entities);
   }
 
   /**
@@ -242,7 +273,7 @@ class FirestorePersistenceService implements PersistenceService {
     try {
       const ts = await getDoc(tabsetDoc(tabsetId))
       console.log("reloaded tabset", ts.data())
-      useTabsStore().tabsets.set(ts.data()['id'], ts.data())
+      useTabsStore().tabsets.set(ts.data()!['id'], ts.data() as Tabset)
     } catch (err) {
       console.warn("could not reload tabset with id", tabsetId, err)
     }
@@ -327,16 +358,6 @@ class FirestorePersistenceService implements PersistenceService {
     }
   }
 
-  saveEntity (entity: Entity): void {
-  }
-
-  findEntityById(id: string): Promise<Entity> {
-    return Promise.resolve(new Entity("0","..."));
-  }
-
-  getEntities(): Promise<Entity[]> {
-    return Promise.resolve([]);
-  }
 }
 
 export default new FirestorePersistenceService()
