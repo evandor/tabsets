@@ -89,6 +89,7 @@ if (process.env.USE_FIREBASE == "true") {
       await AppService.init($q, router, true, undefined)
       if (inBexMode()) {
         $q.bex.send('auth.user.logout', {})
+       // $q.bex.send('auth.login.google', {})
       }
       if (!router.currentRoute.value.path.startsWith("/mainpanel")) {
         console.log("NOT redirecting to '/'")

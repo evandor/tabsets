@@ -108,7 +108,7 @@ chrome.runtime.onConnect.addListener(function (port) {
 export default bexBackground((bridge, cons/* , allActiveConnections */) => {
 
   if (process.env.USE_FIREBASE == "true") {
-    //console.debug("[service-worker] about to obtain cloud messaging token")
+    console.debug("[service-worker] setting up firebase")
 
     const firebaseApp = firebase.initializeApp({
       apiKey: process.env.FIREBASE_API_KEY,
@@ -140,15 +140,112 @@ export default bexBackground((bridge, cons/* , allActiveConnections */) => {
       })
     }
 
+    const OFFSCREEN_DOCUMENT_PATH = '/offscreen.html';
+
+// A global promise to avoid concurrency issues
+    let creatingOffscreenDocument;
+
+// Chrome only allows for a single offscreenDocument. This is a helper function
+// that returns a boolean indicating if a document is already active.
+    async function hasDocument() {
+      // Check all windows controlled by the service worker to see if one
+      // of them is the offscreen document with the given path
+      const matchedClients = await clients.matchAll();
+      return matchedClients.some(
+        (c) => c.url === chrome.runtime.getURL(OFFSCREEN_DOCUMENT_PATH)
+      );
+    }
+
+
+    async function setupOffscreenDocument(path:any) {
+      console.log("===>", path)
+      let creating:any = null
+      // If we do not have a document, we are already setup and can skip
+      if (!(await hasDocument())) {
+        console.log("===> no document")
+        // create offscreen document
+        if (creating) {
+          console.log("===> awaiting")
+          await creating;
+        } else {
+          console.log("===> creating")
+          creating = chrome.offscreen.createDocument({
+            url: path,
+            reasons: [
+              chrome.offscreen.Reason.DOM_SCRAPING
+            ],
+            justification: 'authentication'
+          });
+          await creating;
+          creating = null;
+        }
+      }
+    }
+
+    async function closeOffscreenDocument() {
+      if (!(await hasDocument())) {
+        return;
+      }
+      await chrome.offscreen.closeDocument();
+    }
+
+    function getAuth() {
+      return new Promise(async (resolve, reject) => {
+        const auth = await chrome.runtime.sendMessage({
+          type: 'firebase-auth',
+          target: 'offscreen'
+        });
+        console.log("===>", auth)
+        auth?.name !== 'FirebaseError' ? resolve(auth) : reject(auth);
+      })
+    }
+
+    async function firebaseAuth() {
+      console.log("in firebase auth")
+      await setupOffscreenDocument(OFFSCREEN_DOCUMENT_PATH);
+
+      const auth = await getAuth()
+        .then((auth) => {
+          console.log('User Authenticated', auth);
+          return auth;
+        })
+        .catch(err => {
+          if (err.code === 'auth/operation-not-allowed') {
+            console.error('You must enable an OAuth provider in the Firebase' +
+              ' console in order to use signInWithPopup. This sample' +
+              ' uses Google by default.');
+          } else {
+            console.error(err);
+            return err;
+          }
+        })
+        .finally(closeOffscreenDocument)
+
+      return auth;
+    }
+
     //bridge.off('auth.user.login', authUserLoginListener)
 
     if (Object.keys(cons).length < 2) { // don't know how to do this otherwise... we are getting too many listeners
       bridge.on('auth.user.login', authUserLoginListener)
     }
 
-    bridge.on('auth.user.logout', ({data, respond}) => {
-      console.debug("removing all bridge listeners")
+    bridge.on('auth.user.logout', async ({data, respond}) => {
+      console.debug("removing all bridge listeners!")
+      //await firebaseAuth()
       bridge.removeAllListeners()
+
+      console.debug("adding listener for 'auth.login.google'")
+      bridge.on('auth.login.google', async ({data, respond}) => {
+        console.log("auth.login.google")
+        await firebaseAuth()
+      })
+
+    })
+
+    bridge.on('auth.login.google', async ({data, respond}) => {
+      console.log("auth.login.google")
+      await firebaseAuth()
     })
 
     // === not using messaging (yet?) ===

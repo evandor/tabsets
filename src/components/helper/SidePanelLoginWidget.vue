@@ -2,6 +2,20 @@
   <div class="col-12 text-right">
     <template v-if="!mailSent">
       <form>
+
+        <div class="row q-ma-xs">
+          <div class="col-7">
+
+          </div>
+          <div class="col-5">
+            <!--          <q-btn :label="(!email || email.length === 0) ? 'Sign in' : (password.length > 0 ? 'Sign in':'Send Link')"-->
+            <q-btn label="Google"
+                   tabindex="3"
+                   style="width:110px"
+                   @click="signinWithGoogle()"/>
+          </div>
+        </div>
+
         <div class="row q-ma-xs">
           <div class="col-7">
             <q-input id="username" outlined type="email" v-model="email" label="Your email address" dense tabindex="1" autofocus/>
@@ -57,8 +71,9 @@
 
 import NavigationService from "src/services/NavigationService";
 import {ref} from "vue";
-import {LocalStorage} from "quasar";
+import {LocalStorage, useQuasar} from "quasar";
 import {CURRENT_USER_EMAIL, EMAIL_LINK_REDIRECT_DOMAIN} from "boot/constants";
+import { GoogleAuthProvider } from "firebase/auth";
 import {
   createUserWithEmailAndPassword,
   getAuth,
@@ -68,12 +83,12 @@ import {
 } from "firebase/auth";
 import {useAuthStore} from "stores/authStore";
 import {NotificationType, useNotificationHandler} from "src/services/ErrorHandler";
-import {useUtils} from "src/services/Utils";
 
 const {handleError} = useNotificationHandler()
-const {sendMsg} = useUtils()
 
 const emits = defineEmits(['hideLogin'])
+
+const $q = useQuasar()
 
 const email = ref(LocalStorage.getItem(CURRENT_USER_EMAIL) as string)
 const password = ref('')
@@ -87,6 +102,7 @@ const actionCodeSettings = {
   handleCodeInApp: true,
 };
 
+const googleAuthProvider = new GoogleAuthProvider();
 
 const signin = async (newUser: boolean) => {
   loading.value = true
@@ -141,6 +157,11 @@ const signin = async (newUser: boolean) => {
     //     mailSent.value = false
     //   });
   }
+}
+
+const signinWithGoogle = () => {
+  console.log("sending event 'auth.login.google'", $q.bex)
+  $q.bex.send('auth.login.google', {})
 }
 
 </script>
