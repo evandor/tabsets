@@ -4,73 +4,28 @@
 
     <!-- supporting drag & drop when not on mobile -->
     <template v-if="!props.preventDragAndDrop"
-              v-for="column in getColumns()">
+              v-for="column in getColumns()"> <!-- there's only one (default) column now -->
 
-      <!-- drag & drop and columns -->
-      <q-expansion-item v-if="showTabsetWithColumns()"
-                        header-class="q-ma-none q-pa-none q-pl-sm q-pr-md bg-grey-1 text-blue-grey-10"
-                        :default-opened="isOpen(column)"
-                        @update:model-value="(val:boolean) => columnChanged(column, val)"
-                        :label="column.title || column.id"
-                        switch-toggle-side
-                        expand-icon-toggle
-                        dense-toggle>
+      <vue-draggable-next
+        class="q-ma-none"
+        :list="tabsForColumn() as Array<IndexedTab>"
+        :group="{ name: 'tabs', pull: 'clone' }"
+        @change="(event:any) => handleDragAndDrop(event,  column)">
 
-        <template v-slot:header>
-          <q-item-section
-            class="q-mt-xs">
-            <q-item-label class="text-blue-grey-8">
-              {{ column.title }}
-            </q-item-label>
-            <q-item-label class="text-caption text-grey-5">
-              {{ tabsForColumn(column).length }} of {{ props.tabsCount }} tab{{ props.tabsCount === 1 ? '' : 's' }}
-            </q-item-label>
-          </q-item-section>
-        </template>
-
-        <vue-draggable-next
-          class="q-ma-none"
-          :list="tabsForColumn(column) as Array<IndexedTab>"
-          :group="{ name: 'tabs', pull: 'clone' }"
-          @change="(event:any) => handleDragAndDrop(event, column)">
-
-          <SidePanelTabListHelper v-for="tab in tabsForColumn(column)"
-                                  :tab="tab.tab as Tab"
-                                  :index="tab.index"
-                                  :type="props.type"
-                                  :sorting="props.sorting"
-                                  :preventDragAndDrop="false"
-                                  :tabset="props.tabset"
-                                  :show-tabsets="props.showTabsets"
-                                  :hide-menu="props.hideMenu"/>
-        </vue-draggable-next>
-      </q-expansion-item>
-
-      <!-- drag & drop, but no columns -->
-      <template v-else>
-
-        <vue-draggable-next
-          class="q-ma-none"
-          :list="tabsForColumn(column) as Array<IndexedTab>"
-          :group="{ name: 'tabs', pull: 'clone' }"
-          @change="(event:any) => handleDragAndDrop(event,  column)">
-
-          <SidePanelTabListHelper v-for="tab in tabsForColumn(column) as Array<IndexedTab>"
-                                  :tab="tab.tab as Tab"
-                                  :indent="props.indent"
-                                  :index="tab.index"
-                                  :type="props.type"
-                                  :sorting="props.sorting"
-                                  :preventDragAndDrop="false"
-                                  :tabset="props.tabset"
-                                  :show-tabsets="props.showTabsets"
-                                  :hide-menu="props.hideMenu"/>
-        </vue-draggable-next>
-      </template>
+        <SidePanelTabListHelper v-for="tab in tabsForColumn() as Array<IndexedTab>"
+                                :tab="tab.tab as Tab"
+                                :indent="props.indent"
+                                :index="tab.index"
+                                :type="props.type"
+                                :sorting="props.sorting"
+                                :preventDragAndDrop="false"
+                                :tabset="props.tabset"
+                                :show-tabsets="props.showTabsets"
+                                :hide-menu="props.hideMenu"/>
+      </vue-draggable-next>
     </template>
 
     <!-- no drag & drop on mobile -->
-    <!-- TODO columns -->
     <template v-else>
       <SidePanelTabListHelper
         v-for="tab in tabs"
@@ -121,7 +76,7 @@ const handleDragAndDrop = (event: any, column: TabsetColumn) => {
   console.log("event!", event)
   if (moved) {
     console.log(`moved event: '${moved.element.tab.id}' ${moved.oldIndex} -> ${moved.newIndex}`)
-    const tabsInColumn = tabsForColumn(column)
+    const tabsInColumn = tabsForColumn()
     const movedElement: Tab = tabsInColumn[moved.oldIndex].tab
     const realNewIndex = tabsInColumn[moved.newIndex].index
     console.log(`             '${movedElement.id}' ${moved.oldIndex} -> ${realNewIndex}`)
@@ -129,7 +84,7 @@ const handleDragAndDrop = (event: any, column: TabsetColumn) => {
   }
   if (added) {
     console.log(`added event: '${added.element.tab.id}' ${added.oldIndex} -> ${added.newIndex}, ${column.title || column.id}`)
-    const tabsInColumn = tabsForColumn(column)
+    const tabsInColumn = tabsForColumn()
     const movedElement: Tab = added.element.tab
     const realNewIndex = added.newIndex < tabsInColumn.length ?
       tabsInColumn[added.newIndex].index : 0
@@ -156,46 +111,23 @@ watchEffect(() => {
  * props.tabset.columns can be []
  */
 const getColumns = () => {
-  if (!props.tabset || !props.tabset.columns || props.tabset.columns.length === 0) {
-    return [new TabsetColumn(SPECIAL_ID_FOR_NO_GROUP_ASSIGNED, '')]
-  }
-  const columnsFromTabs = _.uniq(_.map(props.tabset.tabs, t => t.columnId ? t.columnId : "undefined"))
-  console.log("columnsFromTabs", columnsFromTabs)
-  if (columnsFromTabs.length === 1 && columnsFromTabs[0] === "undefined") {
-    return [new TabsetColumn(SPECIAL_ID_FOR_NO_GROUP_ASSIGNED, props.tabset.columns[0].title ? props.tabset.columns[0].title : 'tabs w/o group')]
-  }
-  if (columnsFromTabs.length > props.tabset.columns.length) {
-    return props.tabset.columns.concat([new TabsetColumn(SPECIAL_ID_FOR_NO_GROUP_ASSIGNED, 'tabs w/o group')])
-  }
-  return props.tabset.columns
+  //if (!props.tabset || !props.tabset.columns || props.tabset.columns.length === 0) {
+  return [new TabsetColumn(SPECIAL_ID_FOR_NO_GROUP_ASSIGNED, '')]
+  //}
+  // const columnsFromTabs = _.uniq(_.map(props.tabset.tabs, t => t.columnId ? t.columnId : "undefined"))
+  // console.log("columnsFromTabs", columnsFromTabs)
+  // if (columnsFromTabs.length === 1 && columnsFromTabs[0] === "undefined") {
+  //   return [new TabsetColumn(SPECIAL_ID_FOR_NO_GROUP_ASSIGNED, props.tabset.columns[0].title ? props.tabset.columns[0].title : 'tabs w/o group')]
+  // }
+  // if (columnsFromTabs.length > props.tabset.columns.length) {
+  //   return props.tabset.columns.concat([new TabsetColumn(SPECIAL_ID_FOR_NO_GROUP_ASSIGNED, 'tabs w/o group')])
+  // }
+  // return props.tabset.columns
 }
 
-const tabsForColumn = (column: TabsetColumn): IndexedTab[] => {
-  const tfc = _.filter(
-    _.map(tabs.value as Tab[], (t: Tab, index: number) => new IndexedTab(index, t)), (it: IndexedTab) => {
-      if (column.id === SPECIAL_ID_FOR_NO_GROUP_ASSIGNED) {
-        return it.tab.columnId === SPECIAL_ID_FOR_NO_GROUP_ASSIGNED || !it.tab.columnId
-      }
-      return it.tab.columnId === column.id
-    })
-  return tfc
-}
+const tabsForColumn = (): IndexedTab[] =>
+    _.map(tabs.value as Tab[], (t: Tab, index: number) => new IndexedTab(index, t))
 
-const showTabsetWithColumns = () => {
-  const cols = getColumns()
-  //console.log("getcolumns", cols)
-  if (cols.length === 1) {
-    return cols[0].id !== SPECIAL_ID_FOR_NO_GROUP_ASSIGNED
-  }
-  return getColumns().length > 0
-}
-
-const columnChanged = (column: TabsetColumn, val: boolean) => {
-  column.open = val
-  useTabsetService().saveCurrentTabset()
-}
-
-const isOpen = (column: TabsetColumn) => column.open
 
 </script>
 
