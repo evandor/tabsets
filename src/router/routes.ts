@@ -115,6 +115,11 @@ const routes: RouteRecordRaw[] = [
     children: [{path: '', component: () => import('pages/sidepanel/SidePanelEntitiesPage.vue')}],
   },
   {
+    path: '/sidepanel/apiManager',
+    component: () => import('layouts/SidePanelLayout.vue'),
+    children: [{path: '', component: () => import('pages/sidepanel/SidePanelApisPage.vue')}],
+  },
+  {
     path: '/sidepanel/messages',
     component: () => import('layouts/SidePanelLayout.vue'),
     children: [{path: '', component: () => import('pages/sidepanel/SidePanelMessagesPage.vue')}],
@@ -309,6 +314,23 @@ const routes: RouteRecordRaw[] = [
     component: () => import('layouts/PlainLayout.vue'),
     children: [{path: '', component: () => import('pages/mainpanel/MainPanelEntityPage.vue')}],
   },
+  {
+    path: '/mainpanel/entities/:entityId/items/:itemId',
+    component: () => import('layouts/PlainLayout.vue'),
+    children: [{path: '', component: () => import('pages/mainpanel/MainPanelEntityItemPage.vue')}],
+  },
+
+  {
+    path: '/mainpanel/apis/:apiId', // editorjs setup cannot toggle between readonly/write mode
+    component: () => import('layouts/PlainLayout.vue'),
+    children: [{path: '', component: () => import('pages/mainpanel/MainPanelApiPage.vue')}],
+  },
+  {
+    path: '/mainpanel/apis/:apiId/endpoints',
+    component: () => import('layouts/PlainLayout.vue'),
+    children: [{path: '', component: () => import('pages/mainpanel/MainPanelApiEndpointPage.vue')}],
+  },
+
   {
     path: '/help/:ident',
     component: () => import('layouts/DefaultLayout.vue'),

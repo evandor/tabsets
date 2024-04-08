@@ -4,11 +4,11 @@
 
     <div class="q-ma-none">
       <div class="q-ma-none">
-        <div class="row q-ma-none q-pa-none cursor-pointer" v-for="e in entities">
+        <div class="row q-ma-none q-pa-none cursor-pointer" v-for="e in apis">
           <div class="col-12 q-ma-none q-pa-none q-pt-lg">
             {{ e.name }}
-            [<span @click="openEntityInMainPanel(e.id + '/items')">Add</span>]
-            [<span @click="openEntityInMainPanel(e.id)">Manage</span>]
+            [<span @click="openEndpointInMainPanel(e.id + '/endpoints')">Add</span>]
+            [<span @click="openEndpointInMainPanel(e.id)">Manage</span>]
           </div>
           <div class="col-12">
             <ul>
@@ -23,25 +23,17 @@
 
     <!-- place QPageSticky at end of page -->
     <q-page-sticky expand position="top" class="darkInDarkMode brightInBrightMode">
-      <FirstToolbarHelper title="Entity Manager">
+      <FirstToolbarHelper title="APIs Manager">
 
         <template v-slot:iconsRight>
 
           <q-btn outline
-                 label="New Entity"
+                 label="New API"
                  color="primary"
                  size="sm"
-                 @click="openNewEntityDialog()"
+                 @click="openNewApiDialog()"
                  class="q-ma-none q-px-sm q-py-none"
                  name="o_apps"/>
-
-          <!--          <q-btn outline-->
-          <!--                 label="New Formula"-->
-          <!--                 color="primary"-->
-          <!--                 size="sm"-->
-          <!--                 @click="openNewFormulaDialog()"-->
-          <!--                 class="q-ma-none q-px-sm q-py-none"-->
-          <!--                 name="o_apps"/>-->
 
           <SidePanelToolbarButton
             icon="close"
@@ -65,20 +57,20 @@ import {onMounted, ref, watch, watchEffect} from "vue";
 import Analytics from "src/utils/google-analytics";
 import SidePanelToolbarButton from "components/buttons/SidePanelToolbarButton.vue";
 import {openURL, useQuasar} from "quasar";
-import NewEntityDialog from "components/dialogues/NewEntityDialog.vue";
 import {Entity} from "src/models/Entity";
-import {useEntitiesStore} from "stores/entitiesStore";
 import NavigationService from "src/services/NavigationService";
-import NewFormulaDialog from "components/dialogues/NewFormulaDialog.vue";
 import _ from "lodash"
+import NewApiDialog from "components/dialogues/NewApiDialog.vue";
+import {Api} from "src/models/Api";
+import {useApisStore} from "stores/apisStore";
 
 onMounted(() => {
-  Analytics.firePageViewEvent('SidePanelEntityManager', document.location.href);
+  Analytics.firePageViewEvent('SidePanelApisManager', document.location.href);
 })
 
 const $q = useQuasar()
 
-const entities = ref<Entity[]>([])
+const apis = ref<Api[]>([])
 
 watch(() => {
 }, (oldValue: any, newValue: any) => {
@@ -86,33 +78,32 @@ watch(() => {
 })
 
 watchEffect(() => {
-  if (useEntitiesStore().updated) {
-    entities.value = useEntitiesStore().entities
-    console.log("***got entites", entities.value)
+  if (useApisStore().updated) {
+    apis.value = useApisStore().apis
   }
 })
 
 chrome.runtime.onMessage.addListener((m: any, s: any, response: any) => {
-  if (m.name === 'entity-changed') {
-    useEntitiesStore().save(m.data)
+  if (m.name === 'api-changed') {
+    useApisStore().save(m.data)
       .then(() => {
-        entities.value = useEntitiesStore().entities
-        console.log("onMessage: hier", m, entities.value)
+        apis.value = useApisStore().apis
+        console.log("onMessage: hier", m, apis.value)
         return true
       })
   }
   return true
 })
 
-const openEntityInMainPanel = (path: string) =>
-  NavigationService.openOrCreateTab([chrome.runtime.getURL("/www/index.html#/mainpanel/entities/" + path)], undefined, [], true, true)
+const openEndpointInMainPanel = (path: string) =>
+  NavigationService.openOrCreateTab([chrome.runtime.getURL("/www/index.html#/mainpanel/apis/" + path)], undefined, [], true, true)
 
 const openItemInMainPanel = (entityId: string, itemId: string) =>
-  NavigationService.openOrCreateTab([chrome.runtime.getURL("/www/index.html#/mainpanel/entities/" + entityId + "/items/" + itemId)], undefined, [], true, true)
+  NavigationService.openOrCreateTab([chrome.runtime.getURL("/www/index.html#/mainpanel/apis/" + entityId + "/items/" + itemId)], undefined, [], true, true)
 
-const openNewEntityDialog = () => {
+const openNewApiDialog = () => {
   $q.dialog({
-    component: NewEntityDialog,
+    component: NewApiDialog,
     componentProps: {}
   })
 }
@@ -120,23 +111,9 @@ const openNewEntityDialog = () => {
 const getLineFor = (item: object, e: Entity) => {
   console.log("item, e", item, e)
   if (e.labelField) {
-    // const field = _.find(e.fields, f => f.name === e.labelField)
-    // if (field) {
-    //   switch (field.type) {
-    //     case 'substitute':
-    //
-    //     default:
-    //   }
-    // }
     return item[e.labelField as keyof object]
   }
   return e.name ? item[e.name as keyof object] : item[e.id as keyof object]
 }
 
-const openNewFormulaDialog = () => {
-  $q.dialog({
-    component: NewFormulaDialog,
-    componentProps: {}
-  })
-}
 </script>

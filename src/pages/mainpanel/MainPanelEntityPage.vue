@@ -18,7 +18,8 @@
           <q-item-section>
             <q-item-label>
               <span class="q-mr-md text-right">
-                <q-checkbox v-model="showInList[idx]" @update:modelValue="(val) => updateShowInList(idx)"/>
+<!--                <q-checkbox v-model="showInList[idx]" @update:modelValue="(val) => updateShowInList(idx)"/>-->
+                <q-radio v-model="labelField" :val="f.name" label=""/>
               </span>
               <span class="q-mr-md text-right">
                 <q-icon name="edit" color="primary" @click="editField(f)"/>
@@ -31,7 +32,40 @@
         </q-item>
       </q-list>
       <br><br>
-      <Vueform ref="form2" :schema="schema2" :endpoint="submit2"></Vueform>
+
+      <!--      <Vueform ref="form2" :schema="schema2" :endpoint="submit2"></Vueform>-->
+
+      <Vueform ref="form2" :endpoint="submit2">
+
+        <SelectElement name="type" :native="false" label="Type" :can-deselect="false" :can-clear="false" :default="'text'"
+                       :items="[
+                          {value: 'text',label: 'Text'},
+                          {value: 'number',label: 'Number'},
+                          {value: 'url',label: 'URL'},
+                          {value: 'date',label: 'Date'},
+                          {value: 'reference',label: 'Reference'},
+                          { value: 'vueform', label: 'VueForm Native'},
+                          {value: 'formula',label: 'Formula'},
+                          {value: 'substitute',label: 'Text Substitution'}
+                        ]"/>
+        <SelectElement name="reference" :native="false" label="Referenced Entity"
+                       :conditions="[['type','in',['reference']]]"
+                       :items="entitiesAsReference"/>
+        <TextareaElement name="vueform" label="Vueform"
+                         :conditions="[['type','in',['vueform']]]"/>
+        <TextElement name="formula" label="Formula" placeholder="e.g. {a} * {b}"
+                     :conditions="[['type','in',['formula']]]"/>
+        <TextElement name="substitution" label="Text Substitution" placeholder="{a} ({b})"
+                     :conditions="[['type','in',['substitute']]]"/>
+        <TextElement name="name" label="Name" placeholder="the internal name" :rules="['required']"/>
+        <TextElement name="label" label="Label" placeholder="The label shown in the UI" :rules="['required']"/>
+        <TextElement name="info" label="Info" placeholder=""/>
+
+        <HiddenElement name="id"/>
+
+        <ButtonElement name="submit" submits align="right">{{ submitButtonLabel }}</ButtonElement>
+
+      </Vueform>
 
     </div>
   </q-page>
@@ -40,7 +74,7 @@
 
 <script lang="ts" setup>
 
-import {onMounted, ref, watchEffect} from "vue";
+import {onMounted, ref, watch, watchEffect} from "vue";
 import Analytics from "src/utils/google-analytics";
 import {useRoute} from "vue-router";
 import {useEntitiesStore} from "stores/entitiesStore";
@@ -58,21 +92,26 @@ const entityId = ref<string | undefined>(undefined)
 const entity = ref<Entity | undefined>(undefined)
 const entitiesAsReference = ref<object[]>([])
 const showInList = ref<boolean[]>([])
+const labelField = ref<string | undefined>(undefined)
 const submitButtonLabel = ref('Add')
 
 onMounted(() => {
-  Analytics.firePageViewEvent('MainPanelEntitesPage', document.location.href);
+  Analytics.firePageViewEvent('MainPanelEntitiesPage', document.location.href);
 })
 
-watchEffect(() => {
-  console.log("showInList", showInList.value)
+watch(() => labelField.value, async (currentValue, oldValue) => {
+  console.log("changed labelField", currentValue, oldValue)
+  if (entity.value) {
+    entity.value.labelField = currentValue
+    await useEntitiesStore().save(entity.value)
+  }
 })
 
 watchEffect(async () => {
   entityId.value = route.params.entityId.toString() || ''
   if (entityId.value && useEntitiesStore().updated) {
-    console.log("hier", form.value)
     entity.value = await useEntitiesStore().findById(entityId.value)
+    labelField.value = entity.value?.labelField
     if (form && form.value && entity.value) {
       form.value.update({ // updates form data
         desc: entity.value.description,
@@ -104,121 +143,6 @@ const schema = {
     align: 'right'
   },
 }
-
-const schema2 = ref({
-  id: {
-    type: 'hidden'
-  },
-  type: {
-    type: 'select',
-    native: false,
-    label: 'Type',
-    items: [
-      {
-        value: 'text',
-        label: 'Text',
-      },
-      {
-        value: 'number',
-        label: 'Number',
-      },
-      {
-        value: 'url',
-        label: 'URL',
-      },
-      {
-        value: 'date',
-        label: 'Date',
-      },
-      {
-        value: 'reference',
-        label: 'Reference',
-      },
-      {
-        value: 'vueform',
-        label: 'VueForm Native',
-      },
-      {
-        value: 'formula',
-        label: 'Formula',
-      }
-    ],
-    canDeselect: false,
-    canClear: false,
-    default: 'text'
-  },
-  reference: {
-    type: 'select',
-    items: entitiesAsReference,
-    search: true,
-    native: false,
-    label: 'Referenced Entity',
-    inputType: 'search',
-    autocomplete: 'off',
-    conditions: [
-      [
-        'type',
-        'in',
-        [
-          'reference',
-        ],
-      ],
-    ],
-  },
-  vueform: {
-    type: 'textarea',
-    label: 'Vueform',
-    conditions: [
-      [
-        'type',
-        'in',
-        [
-          'vueform',
-        ],
-      ],
-    ]
-  },
-  formula: {
-    type: 'text',
-    label: 'Formula',
-    conditions: [
-      [
-        'type',
-        'in',
-        [
-          'formula',
-        ],
-      ],
-    ]
-  },
-  name: {
-    type: "text",
-    label: "Name",
-    info: "The Field name",
-    rules: [
-      'required'
-    ]
-  },
-  label: {
-    type: "text",
-    label: "Label",
-    info: "The visible label",
-    rules: [
-      'required'
-    ]
-  },
-  info: {
-    type: "text",
-    label: "Info",
-    info: "optional info"
-  },
-  submit: {
-    type: 'button',
-    buttonLabel: submitButtonLabel,
-    submits: true,
-    align: 'right'
-  }
-})
 
 const submit = async (FormData: any, form$: any) => {
   const formData = FormData // FormData instance

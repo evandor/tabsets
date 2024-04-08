@@ -3,15 +3,96 @@
   <q-page>
 
     <div class="q-ma-md">
-      <div class="text-h6">MainPanelEntityItemPage</div>
+      Api: {{ api?.name }}
+      <Vueform ref="form" :endpoint="submit">
+        <HiddenElement name="id"/>
+        <TextElement
+          name="url"
+          input-type="url"
+          :rules="['nullable','url','required']"
+          placeholder="eg. http(s)://domain.com"
+          :floating="false"
+          label="Base URL"
+        />
 
-      EntityID {{ entityId }}<br>
-      ItemID {{ itemId }}
-      <q-btn v-if="itemId" class="q-ml-md" size="xs" label="Delete" @click="deleteItem()"/>
+        <!-- Common Headers -->
+        <GroupElement class="q-ma-lg q-pa-sm" style="border:1px solid grey"
+                      name="header"
+                      label="Common Headers">
+
+          <GroupElement name="headersContainer" v-for="h in headers">
+            <GroupElement name="headersContainerCol1" :columns="{   container: 4  }">
+              {{ h.name }}
+            </GroupElement>
+            <GroupElement name="headersContainerCol1" :columns="{   container: 5  }">
+              <TextElement :name="h.name" :label="h.label" :default="h.default"/>
+            </GroupElement>
+            <GroupElement name="headersContainerCol2" :columns="{   container: 3  }">
+              <q-btn label="delete"/>
+            </GroupElement>
+          </GroupElement>
+
+          <GroupElement name="container4">
+            <GroupElement name="column1" :columns="{   container: 3,  }">
+              <SelectElement name="newHeaderType"
+                             :items="[{value: 'text',label: 'Text'}]" :search="true" :native="false" label="Select"
+                             input-type="search" autocomplete="off" default="'text'"/>
+            </GroupElement>
+            <GroupElement name="column2" :columns="{     container: 6   }">
+              <TextElement name="newHeaderKey" label="Key"/>
+            </GroupElement>
+            <GroupElement name="column4" :columns="{container: 3}">
+              <ButtonElement name="add" align="right bottom" @click="addHeader()">add header</ButtonElement>
+            </GroupElement>
+          </GroupElement>
+
+        </GroupElement>
+
+        <!-- Common Params -->
+        <GroupElement class="q-ma-lg q-pa-sm" style="border:1px solid grey"
+                      name="params"
+                      label="Common Params">
+
+          <GroupElement name="paramsContainer" v-for="p in params">
+            <GroupElement name="paramsContainerCol1" :columns="{   container: 4  }">
+              {{ p.name }}
+            </GroupElement>
+            <GroupElement name="paramsContainerCol1" :columns="{   container: 5  }">
+              <TextElement :name="p.name" :label="p.label" :default="p.default"/>
+            </GroupElement>
+            <GroupElement name="paramsContainerCol2" :columns="{   container: 3  }">
+              <q-btn label="delete"/>
+            </GroupElement>
+          </GroupElement>
+
+          <GroupElement name="paramsContainer2">
+            <GroupElement name="column1" :columns="{   container: 3,  }">
+              <SelectElement name="newParamsType"
+                             :items="[{value: 'text',label: 'Text'}]" :search="true" :native="false" label="Select"
+                             input-type="search" autocomplete="off" default="'text'"/>
+            </GroupElement>
+            <GroupElement name="column2" :columns="{     container: 6   }">
+              <TextElement name="newParamsKey" label="Key"/>
+            </GroupElement>
+            <GroupElement name="column4" :columns="{container: 3}">
+              <ButtonElement name="add" align="right bottom" @click="addParam()">add param</ButtonElement>
+            </GroupElement>
+          </GroupElement>
+
+        </GroupElement>
 
 
-      <Vueform ref="form" :schema="schema" :endpoint="submit" @change="formChange()"></Vueform>
+        <ButtonElement name="submit" submits align="right">{{ call ? 'run' : 'submit' }}</ButtonElement>
 
+      </Vueform>
+
+    </div>
+
+    <div>
+      <vue-json-pretty v-if="result" style="font-size: 80%" :show-length="true"
+                       v-model:data="state.data"
+                       :show-double-quotes="true"
+      />
     </div>
   </q-page>
 
@@ -19,277 +100,142 @@
 
 <script lang="ts" setup>
 
-import {onMounted, ref, watchEffect} from "vue";
+import {onMounted, reactive, ref, watch, watchEffect} from "vue";
 import Analytics from "src/utils/google-analytics";
 import {useRoute} from "vue-router";
-import {useEntitiesStore} from "stores/entitiesStore";
-import {Entity} from "src/models/Entity";
+import {useApisStore} from "stores/apisStore";
 import _ from "lodash"
 import {uid} from "quasar";
 import {useUtils} from "src/services/Utils";
-import {create, all} from 'mathjs'
-
-const config = {}
-const math = create(all, config)
+import {Api} from "src/models/Api";
+import {axios} from "boot/axios";
+import VueJsonPretty from "vue-json-pretty";
+// TODO check approach for vueform
+import 'vue-json-pretty/lib/styles.css';
 
 const {sendMsg} = useUtils()
-
 const route = useRoute()
 
 const form = ref(null)
-const entityId = ref<string | undefined>(undefined)
-const itemId = ref<string | undefined>(undefined)
-const entity = ref<Entity | undefined>(undefined)
-const formdata = ref<object>({})
-const schema = ref({})
-const referencedItems = ref<Map<string, object>>(new Map())
-const calculatedField = ref<Map<string, object>>(new Map())
+const call = ref(false)
+const apiId = ref<string | undefined>(undefined)
+const api = ref<Api | undefined>(undefined)
+const labelField = ref<string | undefined>(undefined)
+const result = ref(null)
+const headers = ref<object[]>([])
+const params = ref<object[]>([])
+
+const state = reactive({
+  val: JSON.stringify(result),
+  data: result
+})
 
 onMounted(() => {
-  Analytics.firePageViewEvent('MainPanelEntitiesPage', document.location.href);
+  Analytics.firePageViewEvent('MainPanelApiPage', document.location.href);
 })
 
-watchEffect(() => {
-  if (useEntitiesStore().updated) {
-    const entities = useEntitiesStore().entities
-    console.log("got entities", entities)
-    for (const entity of entities) {
-      const items = entity.items
-      const valueMap = _.map(items, i => {
-        console.log("chcking", i)
-        return {
-          value: i.id,
-          label: i[entity.labelField as keyof object] || i.name || i.id
-        }
-      })
-      console.log("setting referencesItems", entity.id, valueMap)
-      referencedItems.value.set(entity.id, valueMap)
-    }
-    console.log("refrenceItems", referencedItems.value)
+watch(() => labelField.value, async (currentValue, oldValue) => {
+  console.log("changed labelField", currentValue, oldValue)
+  if (api.value) {
+    api.value.labelField = currentValue
+    await useApisStore().save(api.value)
   }
 })
-
-entityId.value = route.params.entityId.toString() || undefined
-itemId.value = route.params.itemId?.toString() || undefined
 
 watchEffect(async () => {
-  if (entityId.value && useEntitiesStore().updated) {
-    entity.value = await useEntitiesStore().findById(entityId.value)
-    if (entity.value) {
-      const item: object | undefined = itemId.value ? _.find(entity.value!.items, (i: object) => i['id' as keyof object] === itemId.value) : undefined
-      console.log("hier", item)
-      console.log("entity", entity.value)
-      const scheme: object = {}
-      for (const f of entity.value.fields) {
-        switch (f.type) {
-          case 'text':
-            scheme[f.name] = {
-              type: 'text',
-              label: f.label,
-              info: f.info,
-              default: item ? item[f.name as keyof object] : ''
-            }
-            break
-          case 'number':
-            scheme[f.name] = {
-              type: 'text',
-              inputType: 'number',
-              label: f.label,
-              info: f.info,
-              default: item ? item[f.name as keyof object] : undefined
-            }
-            break
-          case 'date':
-            scheme[f.name] = {
-              type: 'date',
-              label: f.label,
-              info: f.info,
-              default: item ? item[f.name as keyof object] : undefined
-            }
-            break
-          case 'reference':
-            scheme[f.name] = {
-              type: 'select',
-              native: false,
-              label: f.label,
-              items: referencedItems.value.get(f.reference),
-              info: f.info,
-              default: item ? item[f.name as keyof object] : undefined
-            }
-            break
-          case 'url':
-            scheme[f.name] = {
-              type: 'text',
-              inputType: 'url',
-              label: f.label,
-              info: f.info,
-              default: item ? item[f.name as keyof object] : undefined
-            }
-            break
-          case 'formula':
-            calculatedField.value.set(f.id, calculate(entity.value, f))
-            scheme[f.name] = {
-              type: 'text',
-              readonly: true,
-              label: f.label,
-              info: f.info,
-              submit: false,
-              default: calculatedField.value.get(f.id)
-              //value: item ? item[f.name as keyof object] : undefined
-            }
-          case 'substitute':
-            console.log("===>", f.id)
-            calculatedField.value.set(f.id, substitute(entity.value, f.substitution))
-            scheme[f.name] = {
-              type: 'text',
-              readonly: true,
-              label: f.label,
-              info: f.info,
-              submit: false,
-              description: f.substitution,
-              default: f.substitution
-              //value: item ? item[f.name as keyof object] : undefined
-            }
-            break
-          default:
-            console.log("unknown type", f.type)
-        }
-
-      }
-      scheme.id = {
-        type: 'hidden',
-        default: item ? item['id' as keyof object] : undefined
-      }
-      scheme.submit = {
-        type: "button",
-        buttonLabel: itemId ? "Update" : "Submit",
-        submits: true,
-        align: "right"
-      }
-
-      //let schema = entity.value.schema.trim()//.substring(0,entity.value.schema.trim().length - 1)
-      // schema = schema + ',
-      //   submit:
-      console.log("scheme", referencedItems.value, scheme)
-
-      schema.value = scheme
+  apiId.value = route.params.apiId.toString() || ''
+  call.value = route.query.call || false
+  console.log("got apiId", apiId.value, useApisStore().updated)
+  if (apiId.value && useApisStore().updated) {
+    api.value = await useApisStore().findById(apiId.value)
+    labelField.value = api.value?.labelField
+    console.log("hier", form?.value, api.value)
+    if (form && form.value && api.value) {
+      form.value.update({ // updates form data
+        url: api.value.setup.url,
+        method: api.value.setup.method,
+        key: api.value.setup.key,
+        host: api.value.setup.host,
+        query: api.value.setup.query,
+        langugage: api.value.setup.langugage
+      })
     }
-
   }
 })
 
+// watchEffect(() => {
+//   entitiesAsReference.value = _.map(useApisStore().entities, (e: Entity) => {
+//     return {
+//       value: e.id,
+//       label: e.name
+//     }
+//   })
+// })
 
-const submit = async (FormData, form$) => {
+const submit = async (FormData: any, form$: any) => {
+  if (call.value && api.value) {
+    try {
+      const options = {
+        method: 'GET',
+        url: api.value!.setup.url,
+        params: {
+          query: api.value!.setup.query,
+          language: api.value!.setup.language,
+        },
+        headers: {
+          'X-RapidAPI-Key': api.value!.setup.key,
+          'X-RapidAPI-Host': api.value!.setup.host
+        }
+      };
+      console.log("calling axios with options", options)
+      const response = await axios.request(options);
+      console.log(response.data);
+      if (api.value) {
+        if (!api.value.result) {
+          api.value.results = []
+        }
+        api.value.results.push({timestamp: new Date().getTime(), data: response.data})
+        result.value = response.data
+      }
+    } catch (error) {
+      console.error(error);
+    }
+    return
+  }
   const formData = FormData // FormData instance
   const data = form$.data // form data including conditional data
   const requestData = form$.requestData // form data excluding conditional data
-  // console.log('xxx2', data)
-  // console.log('xxx3', requestData)
-  // console.log('xxx4', entity.value)
-  if (entity.value) {
+  console.log('yyy', formData, data, requestData, api.value)
+  if (api.value) {
     if (!data.id) {
       data.id = uid()
-      entity.value.items.push(data)
-    } else {
-      _.remove(entity.value.items, {
-        id: itemId.value
-      });
-      entity.value.items.push(data)
     }
-    sendMsg('entity-changed', entity.value)
-    //await useEntitiesStore().save(entity.value)
-    window.close()
+    delete data['newHeaderKey']
+    delete data['newHeaderType']
+    delete data['newParamsKey']
+    delete data['newParamsType']
+    api.value.setup = data
+    sendMsg('api-changed', api.value)
   }
 }
 
-const calculate = (e: Entity, formula: object) => {
-  console.log("e,formula", e, formula)
-  let rawFormula: string = formula.formula || ''
-  for (const field of e.fields) {
-    if (field.type === "number") {
-      //console.log("field", field)
-      //console.log("formdata", formdata.value)
-      const fieldName = field.name
-      rawFormula = rawFormula.replaceAll("{" + fieldName + "}", formdata.value[fieldName as keyof object])
-      // console.log("rawFormula", rawFormula)
-    }
+const addHeader = () => {
+  if (form.value) {
+    headers.value.push({
+      name: form.value.data.newHeaderKey,
+      default: '',
+    })
   }
-  try {
-    return math.evaluate(rawFormula)
-  } catch (err) {
-    console.log("error", err)
-    return formula.formula
-  }
+  //
 }
-
-const substitute = (e: Entity, substitution: string) => {
-  console.log("e,substitution", substitution)
-  let sub: string = substitution || ''
-  let match = false
-  for (const field of e.fields) {
-
-    const fieldName = field.name
-    switch (field.type) {
-      case "reference":
-        console.log("field", field)
-        console.log("formdata", formdata.value)
-        console.log("xxx", field.reference, referencedItems.value)
-        console.log("xxx",referencedItems.value.get(field.reference)[0])
-        match = true
-        sub = sub.replaceAll("{" + fieldName + "}", referencedItems.value.get(field.reference)[0].label)
-        break
-      default:
-        if (formdata.value[fieldName as keyof object]) {
-          match = true
-          sub = sub.replaceAll("{" + fieldName + "}", formdata.value[fieldName as keyof object])
-        }
-    }
-    console.log("sub", sub)
+const addParam = () => {
+  if (form.value) {
+    params.value.push({
+      name: form.value.data.newParamsKey,
+      default: '',
+    })
   }
-  // try {
-  //   return math.evaluate(rawFormula)
-  // } catch (err) {
-  //   console.log("error", err)
-  //   return formula.formula
-  // }
-  return match ? sub : substitution.substitution
-}
-
-const formChange = () => {
-  //console.log("formChange", form.value?.data)
-  const update = {}
-  if (entity.value && form.value && form.value.data) {
-    formdata.value = form.value.data
-    for (const formula of _.filter(entity.value.fields, f => f.type === "formula")) {
-      console.log("foudn formula", formula)
-      //  calculatedField.value.set(formula.id, calculate(entity.value, formula))
-      //form.value.data[formula.name] = "***" //calculate(entity.value, formula)
-      update[formula.name] = calculate(entity.value, formula)
-    }
-    for (const sub of _.filter(entity.value.fields, f => f.type === "substitute")) {
-      console.log("found substitute", sub)
-      //  calculatedField.value.set(formula.id, calculate(entity.value, formula))
-      //form.value.data[formula.name] = "***" //calculate(entity.value, formula)
-      update[sub.name] = substitute(entity.value, sub)
-    }
-    console.log("updating form with", update)
-    form.value.update(update)
-
-  }
-  //console.log("formChange2", form.value?.data)
-}
-
-const deleteItem = () => {
-  if (entity.value) {
-    console.log("deleting item id", itemId.value)
-    _.remove(entity.value.items, {
-      id: itemId.value
-    });
-    //entity.value.items = removed
-    console.log("got", entity.value)
-    sendMsg('entity-changed', entity.value)
-    window.close()
-  }
+  //
 }
 
 </script>
