@@ -7,13 +7,13 @@
         <div class="row q-ma-none q-pa-none cursor-pointer" v-for="e in apis">
           <div class="col-12 q-ma-none q-pa-none q-pt-lg">
             {{ e.name }}
-            [<span @click="openEndpointInMainPanel(e.id + '/endpoints')">Add</span>]
-            [<span @click="openEndpointInMainPanel(e.id)">Manage</span>]
+            [<span @click="openEndpointInMainPanel(e.id ,'')">Add Endpoint</span>]
+            [<span @click="openApiInMainPanel(e.id)">Manage</span>]
           </div>
           <div class="col-12">
             <ul>
-              <li v-for="i in e.items"
-                  @click="openItemInMainPanel(e.id,i.id)">{{ getLineFor(i, e) }}
+              <li v-for="i in e.endpoints"
+                  @click="openEndpointInMainPanel(e.id,i.id)">{{ i.path }}
               </li>
             </ul>
           </div>
@@ -95,11 +95,11 @@ chrome.runtime.onMessage.addListener((m: any, s: any, response: any) => {
   return true
 })
 
-const openEndpointInMainPanel = (path: string) =>
+const openApiInMainPanel = (path: string) =>
   NavigationService.openOrCreateTab([chrome.runtime.getURL("/www/index.html#/mainpanel/apis/" + path)], undefined, [], true, true)
 
-const openItemInMainPanel = (entityId: string, itemId: string) =>
-  NavigationService.openOrCreateTab([chrome.runtime.getURL("/www/index.html#/mainpanel/apis/" + entityId + "/items/" + itemId)], undefined, [], true, true)
+const openEndpointInMainPanel = (apiId: string, endpointId: string) =>
+  NavigationService.openOrCreateTab([chrome.runtime.getURL("/www/index.html#/mainpanel/apis/" + apiId + "/endpoints/" + endpointId)], undefined, [], true, true)
 
 const openNewApiDialog = () => {
   $q.dialog({

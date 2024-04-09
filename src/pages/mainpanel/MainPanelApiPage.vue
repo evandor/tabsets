@@ -15,20 +15,20 @@
           label="Base URL"
         />
 
+        <ButtonElement align="right">Open Endpoints</ButtonElement>
+
         <!-- Common Headers -->
         <GroupElement class="q-ma-lg q-pa-sm" style="border:1px solid grey"
                       name="header"
                       label="Common Headers">
 
           <GroupElement name="headersContainer" v-for="h in headers">
-            <GroupElement name="headersContainerCol1" :columns="{   container: 4  }">
-              {{ h.name }}
+            <GroupElement name="headersContainerCol1" :columns="{container: 4}">{{ h.name }}</GroupElement>
+            <GroupElement name="headersContainerCol1" :columns="{container: 5}">
+              <TextElement :name="h.id" :label="h.label" :default="h.default"/>
             </GroupElement>
-            <GroupElement name="headersContainerCol1" :columns="{   container: 5  }">
-              <TextElement :name="h.name" :label="h.label" :default="h.default"/>
-            </GroupElement>
-            <GroupElement name="headersContainerCol2" :columns="{   container: 3  }">
-              <q-btn label="delete"/>
+            <GroupElement name="headersContainerCol2" :columns="{container: 3}">
+              <q-btn label="delete" @click="deleteHeader(h.id)"/>
             </GroupElement>
           </GroupElement>
 
@@ -58,7 +58,7 @@
               {{ p.name }}
             </GroupElement>
             <GroupElement name="paramsContainerCol1" :columns="{   container: 5  }">
-              <TextElement :name="p.name" :label="p.label" :default="p.default"/>
+              <TextElement :name="p.id" :label="p.label" :default="p.default"/>
             </GroupElement>
             <GroupElement name="paramsContainerCol2" :columns="{   container: 3  }">
               <q-btn label="delete"/>
@@ -88,19 +88,14 @@
 
     </div>
 
-    <div>
-      <vue-json-pretty v-if="result" style="font-size: 80%" :show-length="true"
-                       v-model:data="state.data"
-                       :show-double-quotes="true"
-      />
-    </div>
+
   </q-page>
 
 </template>
 
 <script lang="ts" setup>
 
-import {onMounted, reactive, ref, watch, watchEffect} from "vue";
+import {onMounted, ref, watch, watchEffect} from "vue";
 import Analytics from "src/utils/google-analytics";
 import {useRoute} from "vue-router";
 import {useApisStore} from "stores/apisStore";
@@ -109,9 +104,6 @@ import {uid} from "quasar";
 import {useUtils} from "src/services/Utils";
 import {Api} from "src/models/Api";
 import {axios} from "boot/axios";
-import VueJsonPretty from "vue-json-pretty";
-// TODO check approach for vueform
-import 'vue-json-pretty/lib/styles.css';
 
 const {sendMsg} = useUtils()
 const route = useRoute()
@@ -125,10 +117,7 @@ const result = ref(null)
 const headers = ref<object[]>([])
 const params = ref<object[]>([])
 
-const state = reactive({
-  val: JSON.stringify(result),
-  data: result
-})
+
 
 onMounted(() => {
   Analytics.firePageViewEvent('MainPanelApiPage', document.location.href);
@@ -158,6 +147,15 @@ watchEffect(async () => {
         host: api.value.setup.host,
         query: api.value.setup.query,
         langugage: api.value.setup.langugage
+      })
+    }
+    if (api.value.setup.headers) {
+      headers.value = _.map(api.value.setup.headers, (h:object) => {
+        return {
+          id: h.id,
+          name: h.name,
+          default: h.default
+        }
       })
     }
   }
@@ -205,7 +203,10 @@ const submit = async (FormData: any, form$: any) => {
   const formData = FormData // FormData instance
   const data = form$.data // form data including conditional data
   const requestData = form$.requestData // form data excluding conditional data
-  console.log('yyy', formData, data, requestData, api.value)
+  // console.log('yyy', formData)
+  console.log('yyy', data)
+  // console.log('yyy', requestData)
+  console.log('yyy', api.value)
   if (api.value) {
     if (!data.id) {
       data.id = uid()
@@ -214,7 +215,20 @@ const submit = async (FormData: any, form$: any) => {
     delete data['newHeaderType']
     delete data['newParamsKey']
     delete data['newParamsType']
+
     api.value.setup = data
+
+    api.value.setup.headers = []
+    for(const h of headers.value) {
+      console.log("header", h)
+      h['default' as keyof object] = data[h.id]
+      api.value.setup.headers.push(h)
+      delete data[h.id]
+    }
+
+    api.value.setup.headers = headers.value
+    api.value.setup.params = params.value
+
     sendMsg('api-changed', api.value)
   }
 }
@@ -222,6 +236,7 @@ const submit = async (FormData: any, form$: any) => {
 const addHeader = () => {
   if (form.value) {
     headers.value.push({
+      id: uid(),
       name: form.value.data.newHeaderKey,
       default: '',
     })
@@ -231,11 +246,16 @@ const addHeader = () => {
 const addParam = () => {
   if (form.value) {
     params.value.push({
+      id: uid(),
       name: form.value.data.newParamsKey,
       default: '',
     })
   }
   //
+}
+
+const deleteHeader = (headerId: string) => {
+  _.remove(headers.value, {id: headerId})
 }
 
 </script>

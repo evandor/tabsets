@@ -330,6 +330,11 @@ const routes: RouteRecordRaw[] = [
     component: () => import('layouts/PlainLayout.vue'),
     children: [{path: '', component: () => import('pages/mainpanel/MainPanelApiEndpointPage.vue')}],
   },
+  {
+    path: '/mainpanel/apis/:apiId/endpoints/:endpointId',
+    component: () => import('layouts/PlainLayout.vue'),
+    children: [{path: '', component: () => import('pages/mainpanel/MainPanelApiEndpointPage.vue')}],
+  },
 
   {
     path: '/help/:ident',

@@ -1,9 +1,41 @@
 <template>
 
-  <q-page>
+  <q-toolbar>
+    <div class="row fit">
+      <q-toolbar-title>
+        <div class="row justify-start items-baseline">
+          <div class="col-10">Entity Management</div>
+          <div class="col-2 text-right">
+
+          </div>
+        </div>
+      </q-toolbar-title>
+    </div>
+  </q-toolbar>
+
+  <div class="q-ma-md">
 
     <div class="q-ma-md">
       Entity: {{ entity?.name }}
+
+      <div class="row">
+        <div class="col-3 q-my-md">Description</div>
+        <div class="col-9 q-my-md">
+          <q-input v-model="description" label="Description"/>
+        </div>
+
+        <div class="col-3 q-my-md">Source</div>
+        <div class="col-9 q-my-md">
+          <q-select v-model="source" :options="sourceOptions"/>
+        </div>
+
+        <div class="col-3 q-my-md"></div>
+        <div class="col-9 q-my-md">
+          <q-btn label="Update / Submit"/>
+        </div>
+
+      </div>
+
       <Vueform ref="form" :schema="schema" :endpoint="submit"></Vueform>
 
       <q-list bordered separator>
@@ -37,7 +69,8 @@
 
       <Vueform ref="form2" :endpoint="submit2">
 
-        <SelectElement name="type" :native="false" label="Type" :can-deselect="false" :can-clear="false" :default="'text'"
+        <SelectElement name="type" :native="false" label="Type" :can-deselect="false" :can-clear="false"
+                       :default="'text'"
                        :items="[
                           {value: 'text',label: 'Text'},
                           {value: 'number',label: 'Number'},
@@ -68,8 +101,7 @@
       </Vueform>
 
     </div>
-  </q-page>
-
+  </div>
 </template>
 
 <script lang="ts" setup>
@@ -82,6 +114,8 @@ import {Entity, Field} from "src/models/Entity";
 import _ from "lodash"
 import {uid} from "quasar";
 import {useUtils} from "src/services/Utils";
+import {ListDetailLevel} from "stores/uiStore";
+import {useApisStore} from "stores/apisStore";
 
 const {sendMsg} = useUtils()
 const route = useRoute()
@@ -94,6 +128,11 @@ const entitiesAsReference = ref<object[]>([])
 const showInList = ref<boolean[]>([])
 const labelField = ref<string | undefined>(undefined)
 const submitButtonLabel = ref('Add')
+const description = ref('')
+const source = ref(null)
+
+const sourceOptions = ref<object[]>([])
+
 
 onMounted(() => {
   Analytics.firePageViewEvent('MainPanelEntitiesPage', document.location.href);
@@ -105,6 +144,20 @@ watch(() => labelField.value, async (currentValue, oldValue) => {
     entity.value.labelField = currentValue
     await useEntitiesStore().save(entity.value)
   }
+})
+
+watchEffect(() => {
+  sourceOptions.value = [{label: 'Manual', value: 'manual'}]
+  const apis = useApisStore().apis
+  for (const a of apis) {
+    for (const e of a.endpoints) {
+      sourceOptions.value.push({
+        label: a.name + " -> " + e.path,
+        value: e.id
+      })
+    }
+  }
+
 })
 
 watchEffect(async () => {
