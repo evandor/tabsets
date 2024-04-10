@@ -33,12 +33,12 @@ jobs:
           echo FIREBASE_DATABASE_URL="${{ secrets.FIREBASE_DATABASE_URL }}" >> .env
           echo FIREBASE_MESSAGING_KEY="${{ secrets.FIREBASE_MESSAGING_KEY }}" >> .env
       - name: Build
-        run: |
-          echo "token ${{ secrets.GH_TOKEN }}"
-          yarn install
-          npm run "build electron (publish)"
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
+        run: |
+          echo "token: ${{ secrets.GH_TOKEN }}"
+          yarn install
+          npm run "build electron (publish)"
 #      - uses: AButler/upload-release-assets@v3.0
 #        with:
 #          files: "dist/electron/Packaged/*;"
