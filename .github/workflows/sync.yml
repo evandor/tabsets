@@ -4,7 +4,7 @@ on:
     branches:
       - 'chrome-extension'
 jobs:
-  sync-branch:
+  sync-branch-firefox:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@master
@@ -17,6 +17,11 @@ jobs:
           target_branch: firefox-extension
           github_token: ${{ secrets.GITHUB_TOKEN }}
 
+  sync-branch-edge:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+
       - name: Merge chrome-extension -> edge-extension
         uses: devmasx/merge-branch@v1.3.1
         with:
@@ -24,6 +29,11 @@ jobs:
           from_branch: chrome-extension
           target_branch: edge-extension
           github_token: ${{ secrets.GITHUB_TOKEN }}
+
+  sync-branch-opera:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
 
       - name: Merge chrome-extension -> opera-extension
         uses: devmasx/merge-branch@v1.3.1
