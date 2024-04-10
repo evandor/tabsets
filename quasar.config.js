@@ -287,7 +287,7 @@ module.exports = configure(function (ctx) {
         publish: {
           'provider': 'github',
           'private': false,
-          'timeout': 240000
+          'timeout': 480000
         }
       }
     },
