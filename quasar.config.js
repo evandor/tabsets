@@ -286,7 +286,8 @@ module.exports = configure(function (ctx) {
         appId: 'tabsets.net',
         publish: {
           'provider': 'github',
-          'private': false
+          'private': false,
+          'timeout': 240000
         }
       }
     },
