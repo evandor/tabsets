@@ -3,7 +3,7 @@ import {Space} from "src/models/Space";
 import {Tab} from "src/models/Tab";
 import {Notification} from "src/models/Notification";
 import {SearchDoc} from "src/models/SearchDoc";
-import {StaticSuggestionIdent, Suggestion, SuggestionState} from "src/models/Suggestion";
+import {Suggestion, SuggestionState} from "src/models/Suggestion";
 import {MetaLink} from "src/models/MetaLink";
 import {Window} from "src/models/Window";
 import {RequestInfo} from "src/models/RequestInfo";
@@ -11,6 +11,7 @@ import {BlobType, SavedBlob} from "src/models/SavedBlob";
 import {Message} from "src/models/Message";
 import {Account} from "src/models/Account";
 import {Entity} from "src/models/Entity";
+import {Api} from "src/models/Api";
 
 interface PersistenceService {
 
@@ -96,6 +97,10 @@ interface PersistenceService {
   saveEntity(entity: Entity): void
   getEntities(): Promise<Entity[]>
   findEntityById(id: string): Promise<Entity>
+
+  saveApi(api: Api): void
+  getApis(): Promise<Api[]>
+  findApiById(id: string): Promise<Api>
 
 }
 

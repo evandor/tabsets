@@ -12,7 +12,9 @@
           </div>
           <div class="col-12">
             <ul>
-              <li v-for="i in e.items">{{ i }}</li>
+              <li v-for="i in e.items"
+                  @click="openItemInMainPanel(e.id,i.id)">{{ getLineFor(i, e) }}
+              </li>
             </ul>
           </div>
         </div>
@@ -33,13 +35,13 @@
                  class="q-ma-none q-px-sm q-py-none"
                  name="o_apps"/>
 
-<!--          <q-btn outline-->
-<!--                 label="New Formula"-->
-<!--                 color="primary"-->
-<!--                 size="sm"-->
-<!--                 @click="openNewFormulaDialog()"-->
-<!--                 class="q-ma-none q-px-sm q-py-none"-->
-<!--                 name="o_apps"/>-->
+          <!--          <q-btn outline-->
+          <!--                 label="New Formula"-->
+          <!--                 color="primary"-->
+          <!--                 size="sm"-->
+          <!--                 @click="openNewFormulaDialog()"-->
+          <!--                 class="q-ma-none q-px-sm q-py-none"-->
+          <!--                 name="o_apps"/>-->
 
           <SidePanelToolbarButton
             icon="close"
@@ -67,8 +69,8 @@ import NewEntityDialog from "components/dialogues/NewEntityDialog.vue";
 import {Entity} from "src/models/Entity";
 import {useEntitiesStore} from "stores/entitiesStore";
 import NavigationService from "src/services/NavigationService";
-import {timeout} from "workbox-core/_private";
 import NewFormulaDialog from "components/dialogues/NewFormulaDialog.vue";
+import _ from "lodash"
 
 onMounted(() => {
   Analytics.firePageViewEvent('SidePanelEntityManager', document.location.href);
@@ -102,7 +104,11 @@ chrome.runtime.onMessage.addListener((m: any, s: any, response: any) => {
   return true
 })
 
-const openEntityInMainPanel = (path: string) => NavigationService.openOrCreateTab([chrome.runtime.getURL("/www/index.html#/mainpanel/entities/" + path)], undefined, [], true, true)
+const openEntityInMainPanel = (path: string) =>
+  NavigationService.openOrCreateTab([chrome.runtime.getURL("/www/index.html#/mainpanel/entities/" + path)], undefined, [], true, true)
+
+const openItemInMainPanel = (entityId: string, itemId: string) =>
+  NavigationService.openOrCreateTab([chrome.runtime.getURL("/www/index.html#/mainpanel/entities/" + entityId + "/items/" + itemId)], undefined, [], true, true)
 
 const openNewEntityDialog = () => {
   $q.dialog({
@@ -110,6 +116,23 @@ const openNewEntityDialog = () => {
     componentProps: {}
   })
 }
+
+const getLineFor = (item: object, e: Entity) => {
+  console.log("item, e", item, e)
+  if (e.labelField) {
+    // const field = _.find(e.fields, f => f.name === e.labelField)
+    // if (field) {
+    //   switch (field.type) {
+    //     case 'substitute':
+    //
+    //     default:
+    //   }
+    // }
+    return item[e.labelField as keyof object]
+  }
+  return e.name ? item[e.name as keyof object] : item[e.id as keyof object]
+}
+
 const openNewFormulaDialog = () => {
   $q.dialog({
     component: NewFormulaDialog,

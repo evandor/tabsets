@@ -78,7 +78,11 @@ export class SidePanelView {
 
   static readonly TABS_AS_TREE = new SidePanelView('tabsAsTree', '/sidepanel/tabsAsTree')
 
-  static readonly ENTITIY_MANAGER = new SidePanelView('entityManager', '/sidepanel/entities')
+  static readonly ENTITY_MANAGER = new SidePanelView('entityManager', '/sidepanel/entities',
+    () => usePermissionsStore().hasFeature(FeatureIdent.ENTITY_MANAGER))
+
+  static readonly API_MANAGER = new SidePanelView('apiManager', '/sidepanel/apis',
+    () => usePermissionsStore().hasFeature(FeatureIdent.API_MANAGER))
 
 
   private constructor(
