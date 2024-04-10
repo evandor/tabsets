@@ -46,9 +46,9 @@ export class GrantPermissionCommand implements Command<boolean> {
 //            usePermissionsStore().activateFeature('history')
           } else if ("notifications" === this.permission) {
             usePermissionsStore().activateFeature('notifications')
-          } else if ("contextMenus" === this.permission) {
-            //usePermissionsStore().grantPermission("notifications")
-            ChromeApi.buildContextMenu()
+          // } else if ("contextMenus" === this.permission) {
+          //   //usePermissionsStore().grantPermission("notifications")
+          //   ChromeApi.buildContextMenu()
           }
           return new ExecutionResult(
             granted,

@@ -159,7 +159,7 @@ class ChromeApi {
     if (chrome && chrome.contextMenus) {
       chrome.contextMenus.removeAll(
         () => {
-          chrome.contextMenus.create({id: 'tabset_extension', title: 'Tabset Extension', contexts: ['all']},
+          chrome.contextMenus.create({id: 'tabset_extension', title: 'Tabsets Extension', contexts: ['page']},
             () => {
               // chrome.contextMenus.create({
               //   id: 'open_tabsets_page',
@@ -187,8 +187,8 @@ class ChromeApi {
               chrome.contextMenus.create({
                 id: 'save_to_currentTS',
                 parentId: 'tabset_extension',
-                title: 'Save to current Tabset',
-                contexts: ['all']
+                title: 'Save to current Tabset (' + useTabsStore().currentTabsetName + ')',
+                contexts: ['page']
               })
 
               //console.log("context menu", useWindowsStore().currentChromeWindows)
@@ -214,10 +214,20 @@ class ChromeApi {
               }
               console.debug(` > context menu: save_as_tabset for ${tabsStore.tabsets.size} tabset(s)`)
               const allTabsets = [...tabsStore.tabsets.values()] as Tabset[]
+
+              if (allTabsets.length > 0) {
+                chrome.contextMenus.create({
+                  id: 'separator',
+                  parentId: 'tabset_extension',
+                  type: 'separator',
+                  contexts: ['page']
+                })
+              }
+
               if (allTabsets.length > 15) {
                 const result = _(allTabsets)
                   .groupBy(o => (o.name && o.name.length > 0) ? o.name[0].toUpperCase() : ' ')
-                  .map((tabsets, firstLetter) => ({ firstLetter, tabsets }))
+                  .map((tabsets, firstLetter) => ({firstLetter, tabsets}))
                   .sortBy(r => r.firstLetter)
                   .value();
 
@@ -230,7 +240,7 @@ class ChromeApi {
                   })
 
                   _.forEach(_.sortBy(r.tabsets, ['name']), (ts: Tabset) => {
-                    this.createSubmenu(ts,'save_as_tab_folder|' + r.firstLetter, ts.name)
+                    this.createSubmenu(ts, 'save_as_tab_folder|' + r.firstLetter, ts.name)
                   })
 
                 })
