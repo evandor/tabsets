@@ -3,15 +3,15 @@
   <q-page>
 
     <div class="q-ma-md">
+      <div class="text-h6">MainPanelEntityItemPage</div>
 
+      EntityID {{ entityId }}<br>
+      ItemID {{ itemId }}
+      <q-btn v-if="itemId" class="q-ml-md" size="xs" label="Delete" @click="deleteItem()"/>
 
-      {{ entityId }}
-      Add<br><br>
 
       <Vueform ref="form" :schema="schema" :endpoint="submit" @change="formChange()"></Vueform>
 
-      <h3 class="demo-preview">Sheet 1</h3>
-      <div id="example-basic-multi-sheet-1"></div>
     </div>
   </q-page>
 
@@ -38,6 +38,7 @@ const route = useRoute()
 
 const form = ref(null)
 const entityId = ref<string | undefined>(undefined)
+const itemId = ref<string | undefined>(undefined)
 const entity = ref<Entity | undefined>(undefined)
 const formdata = ref<object>({})
 const schema = ref({})
@@ -55,32 +56,38 @@ watchEffect(() => {
     for (const entity of entities) {
       const items = entity.items
       const valueMap = _.map(items, i => {
+        console.log("chcking", i)
         return {
           value: i.id,
-          label: i.name
+          label: i[entity.labelField as keyof object] || i.name || i.id
         }
       })
+      console.log("setting referencesItems", entity.id, valueMap)
       referencedItems.value.set(entity.id, valueMap)
     }
     console.log("refrenceItems", referencedItems.value)
   }
 })
 
+entityId.value = route.params.entityId.toString() || undefined
+itemId.value = route.params.itemId?.toString() || undefined
+
 watchEffect(async () => {
-  entityId.value = route.params.entityId.toString() || ''
   if (entityId.value && useEntitiesStore().updated) {
-    console.log("hier", form.value)
     entity.value = await useEntitiesStore().findById(entityId.value)
     if (entity.value) {
+      const item: object | undefined = itemId.value ? _.find(entity.value!.items, (i: object) => i['id' as keyof object] === itemId.value) : undefined
+      console.log("hier", item)
       console.log("entity", entity.value)
-      const scheme = {}
+      const scheme: object = {}
       for (const f of entity.value.fields) {
         switch (f.type) {
           case 'text':
             scheme[f.name] = {
               type: 'text',
               label: f.label,
-              info: f.info
+              info: f.info,
+              default: item ? item[f.name as keyof object] : ''
             }
             break
           case 'number':
@@ -88,14 +95,16 @@ watchEffect(async () => {
               type: 'text',
               inputType: 'number',
               label: f.label,
-              info: f.info
+              info: f.info,
+              default: item ? item[f.name as keyof object] : undefined
             }
             break
           case 'date':
             scheme[f.name] = {
               type: 'date',
               label: f.label,
-              info: f.info
+              info: f.info,
+              default: item ? item[f.name as keyof object] : undefined
             }
             break
           case 'reference':
@@ -104,7 +113,8 @@ watchEffect(async () => {
               native: false,
               label: f.label,
               items: referencedItems.value.get(f.reference),
-              info: f.info
+              info: f.info,
+              default: item ? item[f.name as keyof object] : undefined
             }
             break
           case 'url':
@@ -112,11 +122,11 @@ watchEffect(async () => {
               type: 'text',
               inputType: 'url',
               label: f.label,
-              info: f.info
+              info: f.info,
+              default: item ? item[f.name as keyof object] : undefined
             }
             break
           case 'formula':
-            console.log("===>", f.id)
             calculatedField.value.set(f.id, calculate(entity.value, f))
             scheme[f.name] = {
               type: 'text',
@@ -125,6 +135,20 @@ watchEffect(async () => {
               info: f.info,
               submit: false,
               default: calculatedField.value.get(f.id)
+              //value: item ? item[f.name as keyof object] : undefined
+            }
+          case 'substitute':
+            console.log("===>", f.id)
+            calculatedField.value.set(f.id, substitute(entity.value, f.substitution))
+            scheme[f.name] = {
+              type: 'text',
+              readonly: true,
+              label: f.label,
+              info: f.info,
+              submit: false,
+              description: f.substitution,
+              default: f.substitution
+              //value: item ? item[f.name as keyof object] : undefined
             }
             break
           default:
@@ -132,12 +156,13 @@ watchEffect(async () => {
         }
 
       }
-      scheme['id' as keyof object] = {
-        type: 'hidden'
+      scheme.id = {
+        type: 'hidden',
+        default: item ? item['id' as keyof object] : undefined
       }
-      scheme['submit'] = {
+      scheme.submit = {
         type: "button",
-        buttonLabel: "Submit",
+        buttonLabel: itemId ? "Update" : "Submit",
         submits: true,
         align: "right"
       }
@@ -149,12 +174,7 @@ watchEffect(async () => {
 
       schema.value = scheme
     }
-    // if (form && form.value) {
-    //   form.value.update({ // updates form data
-    //     desc: entity.value.description,
-    //     scheme: entity.value.schema
-    //   })
-    // }
+
   }
 })
 
@@ -163,14 +183,22 @@ const submit = async (FormData, form$) => {
   const formData = FormData // FormData instance
   const data = form$.data // form data including conditional data
   const requestData = form$.requestData // form data excluding conditional data
-  console.log('xxx', formData, data, requestData, entity.value)
+  // console.log('xxx2', data)
+  // console.log('xxx3', requestData)
+  // console.log('xxx4', entity.value)
   if (entity.value) {
     if (!data.id) {
       data.id = uid()
+      entity.value.items.push(data)
+    } else {
+      _.remove(entity.value.items, {
+        id: itemId.value
+      });
+      entity.value.items.push(data)
     }
-    entity.value.items.push(data)
     sendMsg('entity-changed', entity.value)
     //await useEntitiesStore().save(entity.value)
+    window.close()
   }
 }
 
@@ -179,11 +207,11 @@ const calculate = (e: Entity, formula: object) => {
   let rawFormula: string = formula.formula || ''
   for (const field of e.fields) {
     if (field.type === "number") {
-      console.log("field", field)
-      console.log("formdata", formdata.value)
+      //console.log("field", field)
+      //console.log("formdata", formdata.value)
       const fieldName = field.name
       rawFormula = rawFormula.replaceAll("{" + fieldName + "}", formdata.value[fieldName as keyof object])
-      console.log("rawFormula", rawFormula)
+      // console.log("rawFormula", rawFormula)
     }
   }
   try {
@@ -194,10 +222,43 @@ const calculate = (e: Entity, formula: object) => {
   }
 }
 
+const substitute = (e: Entity, substitution: string) => {
+  console.log("e,substitution", substitution)
+  let sub: string = substitution || ''
+  let match = false
+  for (const field of e.fields) {
+
+    const fieldName = field.name
+    switch (field.type) {
+      case "reference":
+        console.log("field", field)
+        console.log("formdata", formdata.value)
+        console.log("xxx", field.reference, referencedItems.value)
+        console.log("xxx",referencedItems.value.get(field.reference)[0])
+        match = true
+        sub = sub.replaceAll("{" + fieldName + "}", referencedItems.value.get(field.reference)[0].label)
+        break
+      default:
+        if (formdata.value[fieldName as keyof object]) {
+          match = true
+          sub = sub.replaceAll("{" + fieldName + "}", formdata.value[fieldName as keyof object])
+        }
+    }
+    console.log("sub", sub)
+  }
+  // try {
+  //   return math.evaluate(rawFormula)
+  // } catch (err) {
+  //   console.log("error", err)
+  //   return formula.formula
+  // }
+  return match ? sub : substitution.substitution
+}
+
 const formChange = () => {
-  console.log("formChange", form.value?.data)
+  //console.log("formChange", form.value?.data)
   const update = {}
-  if (form.value && form.value.data) {
+  if (entity.value && form.value && form.value.data) {
     formdata.value = form.value.data
     for (const formula of _.filter(entity.value.fields, f => f.type === "formula")) {
       console.log("foudn formula", formula)
@@ -205,12 +266,32 @@ const formChange = () => {
       //form.value.data[formula.name] = "***" //calculate(entity.value, formula)
       update[formula.name] = calculate(entity.value, formula)
     }
+    for (const sub of _.filter(entity.value.fields, f => f.type === "substitute")) {
+      console.log("found substitute", sub)
+      //  calculatedField.value.set(formula.id, calculate(entity.value, formula))
+      //form.value.data[formula.name] = "***" //calculate(entity.value, formula)
+      update[sub.name] = substitute(entity.value, sub)
+    }
     console.log("updating form with", update)
     form.value.update(update)
 
   }
-  console.log("formChange2", form.value?.data)
+  //console.log("formChange2", form.value?.data)
 }
+
+const deleteItem = () => {
+  if (entity.value) {
+    console.log("deleting item id", itemId.value)
+    _.remove(entity.value.items, {
+      id: itemId.value
+    });
+    //entity.value.items = removed
+    console.log("got", entity.value)
+    sendMsg('entity-changed', entity.value)
+    window.close()
+  }
+}
+
 </script>
 
 <style>

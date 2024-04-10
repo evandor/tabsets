@@ -20,6 +20,7 @@ import {BlobType, SavedBlob} from "src/models/SavedBlob";
 import {Message} from "src/models/Message";
 import {Account} from "src/models/Account";
 import {Entity} from "src/models/Entity";
+import {Api} from "src/models/Api";
 
 class IndexedDbPersistenceService implements PersistenceService {
   private db: IDBPDatabase = null as unknown as IDBPDatabase
@@ -611,6 +612,10 @@ class IndexedDbPersistenceService implements PersistenceService {
           console.log("creating db entities")
           db.createObjectStore('entities');
         }
+        if (!db.objectStoreNames.contains('apis')) {
+          console.log("creating db apis")
+          db.createObjectStore('apis');
+        }
       },
     });
   }
@@ -728,6 +733,18 @@ class IndexedDbPersistenceService implements PersistenceService {
 
   async findEntityById(id: string) {
     return await this.db.get('entities', id)
+  }
+
+  saveApi(api: Api): void {
+    this.db.put('apis', api, api.id)
+  }
+
+  async getApis(): Promise<Api[]> {
+    return await this.db.getAll('apis')
+  }
+
+  async findApiById(id: string) {
+    return await this.db.get('apis', id)
   }
 }
 
