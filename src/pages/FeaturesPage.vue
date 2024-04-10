@@ -445,11 +445,11 @@ text.set(FeatureIdent.TABSETS_SHARING.toLowerCase(), {
   needsAccount: true,
   permissions: []
 })
-text.set(FeatureIdent.CONTEXT_MENUS.toLowerCase(), {
-  name: 'Tabsets Context Menus on Websites',
-  description: 'Integrate more deeply with Tabsets by using context menus. This might be available automatically when using some other features.',
-  permissions: []
-})
+// text.set(FeatureIdent.CONTEXT_MENUS.toLowerCase(), {
+//   name: 'Tabsets Context Menus on Websites',
+//   description: 'Integrate more deeply with Tabsets by using context menus. This might be available automatically when using some other features.',
+//   permissions: []
+// })
 text.set(FeatureIdent.ENTITY_MANAGER.toLowerCase(), {
   name: 'Entitiy Manager',
   description: 'Define your own entities to manage',

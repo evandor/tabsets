@@ -12,11 +12,11 @@
     "alarms",
     "scripting",
     "sidePanel",
+    "contextMenus",
     "bookmarks"
   ],
   "optional_permissions": [
     "pageCapture",
-    "contextMenus",
     "notifications",
     "webRequest",
     "tabGroups"

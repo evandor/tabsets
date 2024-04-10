@@ -44,7 +44,7 @@ export class AppFeatures {
     new AppFeature(FeatureIdent.NOTES, FeatureType.EXPERIMENTAL, 'Activate Notes', 'o_note', ['all']),
 
     new AppFeature(FeatureIdent.WEBSITE_CLIP, FeatureType.EXPERIMENTAL, 'Create an image clip from a website and store it', 'filter_center_focus', ['bex'])
-      .setActivateCommands([new GrantPermissionCommand('notifications'),new GrantPermissionCommand('contextMenus')]),
+      .setActivateCommands([new GrantPermissionCommand('notifications')]),
 
     new AppFeature(FeatureIdent.STANDALONE_APP, FeatureType.RECOMMENDED, 'Standalone App', 'o_open_in_new', ['bex']),
 
@@ -54,11 +54,11 @@ export class AppFeatures {
       .setActivateCommands([new GrantPermissionCommand('notifications')])
       .setDeactivateCommands([new RevokePermissionCommand('notifications')]),
 
-    new AppFeature(FeatureIdent.ANNOTATIONS, FeatureType.EXPERIMENTAL, 'Annotate Websites', 'o_auto_awesome', ['bex'])
-      .setActivateCommands([new GrantPermissionCommand('contextMenus')]),
+    new AppFeature(FeatureIdent.ANNOTATIONS, FeatureType.EXPERIMENTAL, 'Annotate Websites', 'o_auto_awesome', ['bex']),
+     // .setActivateCommands([new GrantPermissionCommand('contextMenus')]),
 
-    new AppFeature(FeatureIdent.CONTEXT_MENUS, FeatureType.OPTIONAL, 'Use Tabsets Context Menu', 'o_list', ['all'])
-      .setActivateCommands([new GrantPermissionCommand('contextMenus')]),
+//    new AppFeature(FeatureIdent.CONTEXT_MENUS, FeatureType.OPTIONAL, 'Use Tabsets Context Menu', 'o_list', ['all'])
+//      .setActivateCommands([new GrantPermissionCommand('contextMenus')]),
 
 
     new AppFeature(FeatureIdent.ARCHIVE_TABSET, FeatureType.OPTIONAL, 'Archive Tabsets', 'o_inventory_2', ['all']),
