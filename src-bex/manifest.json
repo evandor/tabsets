@@ -16,9 +16,12 @@
     "activeTab",
     "alarms",
     "scripting",
+    "sidePanel",
+    "contextMenus",
     "bookmarks"
   ],
   "optional_permissions": [
+    "pageCapture",
     "notifications",
     "webRequest"
   ],
