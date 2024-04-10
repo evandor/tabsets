@@ -29,14 +29,17 @@
           <q-select v-model="source" :options="sourceOptions"/>
         </div>
 
+        <div class="col-3 q-my-md">JsonPath</div>
+        <div class="col-9 q-my-md">
+          <q-input v-model="jsonPath" label="jsonPath"/>
+        </div>
+
         <div class="col-3 q-my-md"></div>
         <div class="col-9 q-my-md">
-          <q-btn label="Update / Submit"/>
+          <q-btn label="Update / Submit" @click="saveEntity()"/>
         </div>
 
       </div>
-
-      <Vueform ref="form" :schema="schema" :endpoint="submit"></Vueform>
 
       <q-list bordered separator>
         <q-item clickable v-ripple v-for="(f,idx) in entity?.fields" :key="idx">
@@ -129,6 +132,7 @@ const showInList = ref<boolean[]>([])
 const labelField = ref<string | undefined>(undefined)
 const submitButtonLabel = ref('Add')
 const description = ref('')
+const jsonPath = ref('$')
 const source = ref(null)
 
 const sourceOptions = ref<object[]>([])
@@ -243,6 +247,14 @@ const deleteField = async (f: Field) => {
 const updateShowInList = (index: number) => {
   console.log("updateShowInList", index, showInList.value)
   //showInList.value[index] = !showInList.value[index]
+}
+
+const saveEntity = () => {
+  if (entity.value) {
+  entity.value.description = description.value
+  entity.value.source = source.value
+  entity.value.jsonPath = jsonPath.value
+  }
 }
 
 </script>

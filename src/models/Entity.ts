@@ -22,6 +22,8 @@ export class Entity {
   public items: object[] = []
   public fields: Field[] = []
   public labelField: string | undefined = undefined
+  public source: string | undefined
+  public jsonPath: string | undefined
 
   constructor(
     public id: string,
