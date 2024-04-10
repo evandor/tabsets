@@ -2,6 +2,9 @@ name: Build/release Electron
 
 on: push
 
+env:
+  GH_TOKEN: ${{ secrets.GH_TOKEN }}
+
 jobs:
   release:
     runs-on: ${{ matrix.os }}
