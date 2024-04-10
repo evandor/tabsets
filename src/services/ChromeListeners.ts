@@ -94,6 +94,7 @@ function inIgnoredMessages(request: any) {
     request.name === 'reload-application' ||
     request.name === 'window-updated' ||
     request.name === 'entity-changed' ||
+    request.name === 'api-changed' ||
     request.action === 'highlight-annotation'
   //request.name === 'recogito-annotation-created'
 

@@ -8,7 +8,8 @@ export class Field {
     public type: string,
     public label: string,
     public info: string | undefined,
-    public reference: string | undefined
+    public reference: string | undefined,
+    public substitution: string | undefined
   ) {
 
   }
@@ -20,6 +21,9 @@ export class Entity {
   public schema: string = ''
   public items: object[] = []
   public fields: Field[] = []
+  public labelField: string | undefined = undefined
+  public source: string | undefined
+  public jsonPath: string | undefined
 
   constructor(
     public id: string,

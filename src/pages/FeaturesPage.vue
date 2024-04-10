@@ -455,6 +455,11 @@ text.set(FeatureIdent.ENTITY_MANAGER.toLowerCase(), {
   description: 'Define your own entities to manage',
   permissions: []
 })
+text.set(FeatureIdent.API_MANAGER.toLowerCase(), {
+  name: 'API Manager',
+  description: 'Access to APIs',
+  permissions: []
+})
 
 
 watchEffect(() => {
