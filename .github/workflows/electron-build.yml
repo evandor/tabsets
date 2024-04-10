@@ -2,9 +2,6 @@ name: Build/release Electron
 
 on: push
 
-env:
-  GH_TOKEN: ${{ secrets.GH_TOKEN }}
-
 jobs:
   release:
     runs-on: ${{ matrix.os }}
@@ -39,6 +36,8 @@ jobs:
         run: |
           yarn install
           npm run "build electron (publish)"
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
 #      - uses: AButler/upload-release-assets@v3.0
 #        with:
 #          files: "dist/electron/Packaged/*;"
