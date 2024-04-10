@@ -62,6 +62,7 @@
     "html-to-text": "^9.0.4",
     "idb": "^8.0.0",
     "idraw": "^0.3.1",
+    "jsonpath-plus": "^8.1.0",
     "keytar": "^7.9.0",
     "lodash": "^4.17.21",
     "mathjs": "^12.4.1",

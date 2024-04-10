@@ -1,110 +1,96 @@
 <template>
 
-  <q-toolbar>
-    <div class="row fit">
-      <q-toolbar-title>
-        <div class="row justify-start items-baseline">
-          <div class="col-10">Entity Management</div>
-          <div class="col-2 text-right">
-
-          </div>
-        </div>
-      </q-toolbar-title>
-    </div>
-  </q-toolbar>
-
-  <div class="q-ma-md">
+  <q-page>
 
     <div class="q-ma-md">
-      Entity: {{ entity?.name }}
-
-      <div class="row">
-        <div class="col-3 q-my-md">Description</div>
-        <div class="col-9 q-my-md">
-          <q-input v-model="description" label="Description"/>
-        </div>
-
-        <div class="col-3 q-my-md">Source</div>
-        <div class="col-9 q-my-md">
-          <q-select v-model="source" :options="sourceOptions"/>
-        </div>
-
-        <div class="col-3 q-my-md">JsonPath</div>
-        <div class="col-9 q-my-md">
-          <q-input v-model="jsonPath" label="jsonPath"/>
-        </div>
-
-        <div class="col-3 q-my-md"></div>
-        <div class="col-9 q-my-md">
-          <q-btn label="Update / Submit" @click="saveEntity()"/>
-        </div>
-
-      </div>
-
-      <q-list bordered separator>
-        <q-item clickable v-ripple v-for="(f,idx) in entity?.fields" :key="idx">
-          <q-item-section>
-            <q-item-label>{{ f.label }}</q-item-label>
-            <q-item-label caption>{{ f.id }}</q-item-label>
-          </q-item-section>
-          <q-item-section>
-            <q-item-label>{{ f.type }}</q-item-label>
-          </q-item-section>
-          <q-item-section>
-            <q-item-label>
-              <span class="q-mr-md text-right">
-<!--                <q-checkbox v-model="showInList[idx]" @update:modelValue="(val) => updateShowInList(idx)"/>-->
-                <q-radio v-model="labelField" :val="f.name" label=""/>
-              </span>
-              <span class="q-mr-md text-right">
-                <q-icon name="edit" color="primary" @click="editField(f)"/>
-              </span>
-              <span class="q-mr-md text-right">
-                <q-icon name="delete" color="negative" @click="deleteField(f)"/>
-              </span>
-            </q-item-label>
-          </q-item-section>
-        </q-item>
-      </q-list>
-      <br><br>
-
-      <!--      <Vueform ref="form2" :schema="schema2" :endpoint="submit2"></Vueform>-->
-
-      <Vueform ref="form2" :endpoint="submit2">
-
-        <SelectElement name="type" :native="false" label="Type" :can-deselect="false" :can-clear="false"
-                       :default="'text'"
-                       :items="[
-                          {value: 'text',label: 'Text'},
-                          {value: 'number',label: 'Number'},
-                          {value: 'url',label: 'URL'},
-                          {value: 'date',label: 'Date'},
-                          {value: 'reference',label: 'Reference'},
-                          { value: 'vueform', label: 'VueForm Native'},
-                          {value: 'formula',label: 'Formula'},
-                          {value: 'substitute',label: 'Text Substitution'}
-                        ]"/>
-        <SelectElement name="reference" :native="false" label="Referenced Entity"
-                       :conditions="[['type','in',['reference']]]"
-                       :items="entitiesAsReference"/>
-        <TextareaElement name="vueform" label="Vueform"
-                         :conditions="[['type','in',['vueform']]]"/>
-        <TextElement name="formula" label="Formula" placeholder="e.g. {a} * {b}"
-                     :conditions="[['type','in',['formula']]]"/>
-        <TextElement name="substitution" label="Text Substitution" placeholder="{a} ({b})"
-                     :conditions="[['type','in',['substitute']]]"/>
-        <TextElement name="name" label="Name" placeholder="the internal name" :rules="['required']"/>
-        <TextElement name="label" label="Label" placeholder="The label shown in the UI" :rules="['required']"/>
-        <TextElement name="info" label="Info" placeholder=""/>
-
+      Api: {{ api?.name }}
+      <Vueform ref="form" :endpoint="submit">
         <HiddenElement name="id"/>
+        <TextElement
+          name="url"
+          input-type="url"
+          :rules="['nullable','url','required']"
+          placeholder="eg. http(s)://domain.com"
+          :floating="false"
+          label="Base URL"
+        />
 
-        <ButtonElement name="submit" submits align="right">{{ submitButtonLabel }}</ButtonElement>
+        <ButtonElement align="right">Open Endpoints</ButtonElement>
+
+        <!-- Common Headers -->
+        <GroupElement class="q-ma-lg q-pa-sm" style="border:1px solid grey"
+                      name="header"
+                      label="Common Headers">
+
+          <GroupElement name="headersContainer" v-for="h in headers">
+            <GroupElement name="headersContainerCol1" :columns="{container: 4}">{{ h.name }}</GroupElement>
+            <GroupElement name="headersContainerCol1" :columns="{container: 5}">
+              <TextElement :name="h.id" :label="h.label" :default="h.default"/>
+            </GroupElement>
+            <GroupElement name="headersContainerCol2" :columns="{container: 3}">
+              <q-btn label="delete" @click="deleteHeader(h.id)"/>
+            </GroupElement>
+          </GroupElement>
+
+          <GroupElement name="container4">
+            <GroupElement name="column1" :columns="{   container: 3,  }">
+              <SelectElement name="newHeaderType"
+                             :items="[{value: 'text',label: 'Text'}]" :search="true" :native="false" label="Select"
+                             input-type="search" autocomplete="off" default="'text'"/>
+            </GroupElement>
+            <GroupElement name="column2" :columns="{     container: 6   }">
+              <TextElement name="newHeaderKey" label="Key"/>
+            </GroupElement>
+            <GroupElement name="column4" :columns="{container: 3}">
+              <ButtonElement name="add" align="right bottom" @click="addHeader()">add header</ButtonElement>
+            </GroupElement>
+          </GroupElement>
+
+        </GroupElement>
+
+        <!-- Common Params -->
+        <GroupElement class="q-ma-lg q-pa-sm" style="border:1px solid grey"
+                      name="params"
+                      label="Common Params">
+
+          <GroupElement name="paramsContainer" v-for="p in params">
+            <GroupElement name="paramsContainerCol1" :columns="{   container: 4  }">
+              {{ p.name }}
+            </GroupElement>
+            <GroupElement name="paramsContainerCol1" :columns="{   container: 5  }">
+              <TextElement :name="p.id" :label="p.label" :default="p.default"/>
+            </GroupElement>
+            <GroupElement name="paramsContainerCol2" :columns="{   container: 3  }">
+              <q-btn label="delete"/>
+            </GroupElement>
+          </GroupElement>
+
+          <GroupElement name="paramsContainer2">
+            <GroupElement name="column1" :columns="{   container: 3,  }">
+              <SelectElement name="newParamsType"
+                             :items="[{value: 'text',label: 'Text'}]" :search="true" :native="false" label="Select"
+                             input-type="search" autocomplete="off" default="'text'"/>
+            </GroupElement>
+            <GroupElement name="column2" :columns="{     container: 6   }">
+              <TextElement name="newParamsKey" label="Key"/>
+            </GroupElement>
+            <GroupElement name="column4" :columns="{container: 3}">
+              <ButtonElement name="add" align="right bottom" @click="addParam()">add param</ButtonElement>
+            </GroupElement>
+          </GroupElement>
+
+        </GroupElement>
+
+
+        <ButtonElement name="submit" submits align="right">{{ call ? 'run' : 'submit' }}</ButtonElement>
 
       </Vueform>
 
     </div>
-  </div>
+
+
+  </q-page>
+
 </template>
 
 <script lang="ts" setup>
@@ -112,149 +98,164 @@
 import {onMounted, ref, watch, watchEffect} from "vue";
 import Analytics from "src/utils/google-analytics";
 import {useRoute} from "vue-router";
-import {useEntitiesStore} from "stores/entitiesStore";
-import {Entity, Field} from "src/models/Entity";
+import {useApisStore} from "stores/apisStore";
 import _ from "lodash"
 import {uid} from "quasar";
 import {useUtils} from "src/services/Utils";
-import {ListDetailLevel} from "stores/uiStore";
-import {useApisStore} from "stores/apisStore";
+import {Api} from "src/models/Api";
+import {axios} from "boot/axios";
 
 const {sendMsg} = useUtils()
 const route = useRoute()
 
 const form = ref(null)
-const form2 = ref(null)
-const entityId = ref<string | undefined>(undefined)
-const entity = ref<Entity | undefined>(undefined)
-const entitiesAsReference = ref<object[]>([])
-const showInList = ref<boolean[]>([])
+const call = ref(false)
+const apiId = ref<string | undefined>(undefined)
+const api = ref<Api | undefined>(undefined)
 const labelField = ref<string | undefined>(undefined)
-const submitButtonLabel = ref('Add')
-const description = ref('')
-const jsonPath = ref('$')
-const source = ref(null)
+const result = ref(null)
+const headers = ref<object[]>([])
+const params = ref<object[]>([])
 
-const sourceOptions = ref<object[]>([])
 
 
 onMounted(() => {
-  Analytics.firePageViewEvent('MainPanelEntitiesPage', document.location.href);
+  Analytics.firePageViewEvent('MainPanelApiPage', document.location.href);
 })
 
 watch(() => labelField.value, async (currentValue, oldValue) => {
   console.log("changed labelField", currentValue, oldValue)
-  if (entity.value) {
-    entity.value.labelField = currentValue
-    await useEntitiesStore().save(entity.value)
+  if (api.value) {
+    api.value.labelField = currentValue
+    await useApisStore().save(api.value)
   }
-})
-
-watchEffect(() => {
-  sourceOptions.value = [{label: 'Manual', value: 'manual'}]
-  const apis = useApisStore().apis
-  for (const a of apis) {
-    for (const e of a.endpoints) {
-      sourceOptions.value.push({
-        label: a.name + " -> " + e.path,
-        value: e.id
-      })
-    }
-  }
-
 })
 
 watchEffect(async () => {
-  entityId.value = route.params.entityId.toString() || ''
-  if (entityId.value && useEntitiesStore().updated) {
-    entity.value = await useEntitiesStore().findById(entityId.value)
-    labelField.value = entity.value?.labelField
-    if (form && form.value && entity.value) {
+  apiId.value = route.params.apiId.toString() || ''
+  call.value = route.query.call || false
+  console.log("got apiId", apiId.value, useApisStore().updated)
+  if (apiId.value && useApisStore().updated) {
+    api.value = await useApisStore().findById(apiId.value)
+    labelField.value = api.value?.labelField
+    console.log("hier", form?.value, api.value)
+    if (form && form.value && api.value) {
       form.value.update({ // updates form data
-        desc: entity.value.description,
-        scheme: entity.value.schema
+        url: api.value.setup.url,
+        method: api.value.setup.method,
+        key: api.value.setup.key,
+        host: api.value.setup.host,
+        query: api.value.setup.query,
+        langugage: api.value.setup.langugage
+      })
+    }
+    if (api.value.setup.headers) {
+      headers.value = _.map(api.value.setup.headers, (h:object) => {
+        return {
+          id: h.id,
+          name: h.name,
+          default: h.default
+        }
       })
     }
   }
 })
 
-watchEffect(() => {
-  entitiesAsReference.value = _.map(useEntitiesStore().entities, (e: Entity) => {
-    return {
-      value: e.id,
-      label: e.name
-    }
-  })
-})
-
-const schema = {
-  desc: {
-    type: 'text',
-    label: 'Description',
-    info: 'optional description for the entity'
-  },
-  submit: {
-    type: 'button',
-    buttonLabel: 'Submit',
-    submits: true,
-    align: 'right'
-  },
-}
+// watchEffect(() => {
+//   entitiesAsReference.value = _.map(useApisStore().entities, (e: Entity) => {
+//     return {
+//       value: e.id,
+//       label: e.name
+//     }
+//   })
+// })
 
 const submit = async (FormData: any, form$: any) => {
-  const formData = FormData // FormData instance
-  const data = form$.data // form data including conditional data
-  const requestData = form$.requestData // form data excluding conditional data
-  console.log('xxx', formData, data, requestData, entity.value)
-  if (entity.value) {
-    entity.value.description = data.desc
-    entity.value.schema = data.scheme
-    await useEntitiesStore().save(entity.value)
+  if (call.value && api.value) {
+    try {
+      const options = {
+        method: 'GET',
+        url: api.value!.setup.url,
+        params: {
+          query: api.value!.setup.query,
+          language: api.value!.setup.language,
+        },
+        headers: {
+          'X-RapidAPI-Key': api.value!.setup.key,
+          'X-RapidAPI-Host': api.value!.setup.host
+        }
+      };
+      console.log("calling axios with options", options)
+      const response = await axios.request(options);
+      console.log(response.data);
+      if (api.value) {
+        if (!api.value.result) {
+          api.value.results = []
+        }
+        api.value.results.push({timestamp: new Date().getTime(), data: response.data})
+        result.value = response.data
+      }
+    } catch (error) {
+      console.error(error);
+    }
+    return
   }
-}
-
-const submit2 = async (FormData: any, form$: any) => {
   const formData = FormData // FormData instance
   const data = form$.data // form data including conditional data
   const requestData = form$.requestData // form data excluding conditional data
-  console.log('yyy', formData, data, requestData, entity.value)
-  if (entity.value) {
+  // console.log('yyy', formData)
+  console.log('yyy', data)
+  // console.log('yyy', requestData)
+  console.log('yyy', api.value)
+  if (api.value) {
     if (!data.id) {
       data.id = uid()
     }
-    entity.value.fields.push(data)
-    sendMsg('entity-changed', entity.value)
-    //await useEntitiesStore().save(entity.value)
+    delete data['newHeaderKey']
+    delete data['newHeaderType']
+    delete data['newParamsKey']
+    delete data['newParamsType']
+
+    api.value.setup = data
+
+    api.value.setup.headers = []
+    for(const h of headers.value) {
+      console.log("header", h)
+      h['default' as keyof object] = data[h.id]
+      api.value.setup.headers.push(h)
+      delete data[h.id]
+    }
+
+    api.value.setup.headers = headers.value
+    api.value.setup.params = params.value
+
+    sendMsg('api-changed', api.value)
   }
 }
 
-const editField = async (f: object) => {
-  console.log("editing", f)
-  if (form2 && form2.value) {
-    form2.value.update(f)
-    submitButtonLabel.value = 'Update'
+const addHeader = () => {
+  if (form.value) {
+    headers.value.push({
+      id: uid(),
+      name: form.value.data.newHeaderKey,
+      default: '',
+    })
   }
+  //
+}
+const addParam = () => {
+  if (form.value) {
+    params.value.push({
+      id: uid(),
+      name: form.value.data.newParamsKey,
+      default: '',
+    })
+  }
+  //
 }
 
-const deleteField = async (f: Field) => {
-  console.log("deleting", f)
-  if (entity.value) {
-    entity.value.fields = _.filter(entity.value.fields, (field: Field) => field.id !== f.id)
-    await useEntitiesStore().save(entity.value)
-  }
-}
-
-const updateShowInList = (index: number) => {
-  console.log("updateShowInList", index, showInList.value)
-  //showInList.value[index] = !showInList.value[index]
-}
-
-const saveEntity = () => {
-  if (entity.value) {
-  entity.value.description = description.value
-  entity.value.source = source.value
-  entity.value.jsonPath = jsonPath.value
-  }
+const deleteHeader = (headerId: string) => {
+  _.remove(headers.value, {id: headerId})
 }
 
 </script>
