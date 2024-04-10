@@ -34,6 +34,7 @@ jobs:
           echo FIREBASE_MESSAGING_KEY="${{ secrets.FIREBASE_MESSAGING_KEY }}" >> .env
       - name: Build
         run: |
+          echo "token ${{ secrets.GH_TOKEN }}"
           yarn install
           npm run "build electron (publish)"
         env:
