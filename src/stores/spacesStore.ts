@@ -69,8 +69,6 @@ export const useSpacesStore = defineStore('spaces', () => {
         } else {
           localStorage.removeItem("currentSpace")
         }
-        // console.log("setting tabsetid to null")
-        //useTabsStore().currentTabsetId = null as unknown as string
       }, {deep: true}
   )
 

@@ -227,6 +227,7 @@ export function useTabsetService() {
     const tabsStore = useTabsStore()
     resetSelectedTabs()
     tabsStore.currentTabsetId = tabsetId || null as unknown as string;
+    ChromeApi.buildContextMenu()
     if (tabsetId) {
       localStorage.setItem("selectedTabset", tabsetId)
     } else {
