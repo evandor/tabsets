@@ -41,7 +41,6 @@ export class MarkTabsetDeletedCommand implements Command<Tabset> {
           usePermissionsStore().deactivateFeature(FeatureIdent.IGNORE.toLowerCase())
         }
         if (this.tabsetId === useTabsStore().currentTabsetId || useTabsStore().currentTabsetId === null) {
-          // useTabsStore().currentTabsetId = null as unknown as string
           useTabsetService().selectTabset(undefined)
         }
         return tabset
