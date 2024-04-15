@@ -168,7 +168,7 @@ class AppService {
     await entitiesStore.initialize(store)
     // await useEntitiesService().init(store)
 
-    await apisStore.initialize(useDB(undefined).db)
+    await apisStore.initialize(store)
     //await useApisStore().init(store)
 
     ChromeApi.init(router)

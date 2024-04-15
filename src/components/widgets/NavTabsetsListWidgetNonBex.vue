@@ -126,29 +126,7 @@ const onDrop = (evt: DragEvent, tabsetId: string) => {
   }
 }
 
-const deleteDialog = (tabset: Tabset) =>
-  $q.dialog({
-    component: DeleteTabsetDialog,
-    componentProps: {
-      tabsetId: tabset.id,
-      tabsetName: tabset.name
-    }
-  })
-
-
-const open = (tab: Tab) => {
-  console.log("clicked", process.env.MODE, tab.id)
-  if ("electron" === process.env.MODE) {
-    router.push("/browser/" + tab.id)
-  } else if (tab.url) {
-    openURL(tab.url)
-    //router.push("/iframe/" + tabId)
-  }
-}
-
 const hoveredOver = (tabsetId: string) => hoveredTab.value === tabsetId
-
-const deleteTab = (tab: Tab) => useCommandExecutor().executeFromUi(new DeleteTabCommand(tab))
 
 </script>
 

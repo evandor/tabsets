@@ -25,7 +25,7 @@ export class SelectTabsetCommand implements Command<Tabset | undefined> {
     console.debug(this.toString())
     const tabsStore = useTabsStore()
 
-    const currentTabset = tabsStore.tabsets.get(tabsStore.currentTabsetId)
+    const currentTabset = tabsStore.tabsets.get(tabsStore.currentTabsetId) as Tabset | undefined
     if (currentTabset) {
       _.forEach(currentTabset.tabs as Tab[], (t: Tab) => t.selected = false)
     }

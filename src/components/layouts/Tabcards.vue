@@ -13,7 +13,9 @@
       @dragstart="startDrag($event, tab)"
       :key="props.group + '_' + tab.id">
 
-      <TabCardWidget :key="props.group + '__' + tab.id" :tab="tabAsTab(tab)" :highlightUrl="highlightUrl"/>
+      <TabCardWidget :key="props.group + '__' + tab.id"
+                     :tab="tabAsTab(tab)"
+                     :highlightUrl="highlightUrl"/>
 
     </div>
 
@@ -33,11 +35,9 @@ import {useTabsStore} from "src/stores/tabsStore";
 import {useTabsetService} from "src/services/TabsetService2";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {CreateTabFromOpenTabsCommand} from "src/domain/commands/CreateTabFromOpenTabs";
+import {useUiStore} from "stores/uiStore";
 
-const $q = useQuasar()
 const tabsStore = useTabsStore()
-
-const {saveCurrentTabset} = useTabsetService()
 
 const props = defineProps({
   tabs: {
@@ -54,7 +54,6 @@ const props = defineProps({
   }
 })
 
-const thumbnails = ref<Map<string, string>>(new Map())
 const tabAsTab = (tab: Tab): Tab => tab as unknown as Tab
 
 function adjustIndex(element: any, tabs: Tab[]) {

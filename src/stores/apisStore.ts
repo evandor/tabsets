@@ -43,6 +43,12 @@ export const useApisStore = defineStore('apis', () => {
     //sendMsg('Api-changed', {})
   }
 
+  async function deleteApi(apiId: string) {
+    console.log("deleting api", apiId)
+    await storage.deleteEntity(apiId)
+    updated.value = new Date().getTime()
+  }
+
   async function findById(id: string):Promise<Api | undefined> {
     console.log("findbyid", id, storage)
     if (storage) {
@@ -57,7 +63,8 @@ export const useApisStore = defineStore('apis', () => {
     save,
     findById,
     updated,
-    apis: apis
+    apis: apis,
+    deleteApi
   }
 })
 

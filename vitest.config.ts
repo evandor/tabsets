@@ -31,10 +31,7 @@ export default defineConfig({
   plugins: [
     vue({
       template: {
-        transformAssetUrls,
-        compilerOptions: {
-          isCustomElement: (tag) => ['SelectElement','TextareaElement','HiddenElement', 'Vueform', 'ButtonElement'].includes(tag),
-        }
+        transformAssetUrls
       },
     }),
     quasar({

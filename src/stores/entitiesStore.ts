@@ -30,9 +30,11 @@ export const useEntitiesStore = defineStore('entities', () => {
   }
 
   async function createEntity(name: string) {
-    storage.saveEntity(new Entity(uid(), name))
+    const newEntity = new Entity(uid(), name)
+    storage.saveEntity(newEntity)
     entities.value = await storage.getEntities()
     updated.value = new Date().getTime()
+    return Promise.resolve(newEntity)
   }
 
   async function save(e: Entity) {
@@ -45,7 +47,13 @@ export const useEntitiesStore = defineStore('entities', () => {
     //sendMsg('entity-changed', {})
   }
 
-  async function findById(id: string):Promise<Entity | undefined> {
+  async function deleteEntity(entityId: string) {
+    console.log("deleting entity", entityId)
+    await storage.deleteEntity(entityId)
+    updated.value = new Date().getTime()
+  }
+
+  async function findById(id: string): Promise<Entity | undefined> {
     console.log("findbyid", id, storage)
     if (storage) {
       return await storage.findEntityById(id)
@@ -62,7 +70,8 @@ export const useEntitiesStore = defineStore('entities', () => {
     //getEntities,
     findById,
     updated,
-    entities
+    entities,
+    deleteEntity
   }
 })
 
