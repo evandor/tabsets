@@ -7,9 +7,10 @@ export class Field {
     public name: string,
     public type: string,
     public label: string,
-    public info: string | undefined,
-    public reference: string | undefined,
-    public substitution: string | undefined
+    public value: string | number | undefined = undefined,
+    public info: string | undefined = undefined,
+    public reference: string | undefined = undefined,
+    public substitution: string | undefined = undefined
   ) {
 
   }

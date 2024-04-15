@@ -1,7 +1,5 @@
 import Command from "src/domain/Command";
 import {ExecutionResult} from "src/domain/ExecutionResult";
-import {useEntitiesService} from "src/services/EntityService";
-import {useEntitiesStore} from "stores/entitiesStore";
 import {useApisStore} from "stores/apisStore";
 
 export class AddApiCommand implements Command<string> {

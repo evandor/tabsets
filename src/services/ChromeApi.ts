@@ -14,7 +14,7 @@ import {FeatureIdent} from "src/models/AppFeature";
 import {RequestInfo} from "src/models/RequestInfo";
 import {useWindowsStore} from "stores/windowsStore";
 import {MonitoringType} from "src/models/Monitor";
-import {Router, useRoute} from "vue-router";
+import {Router, useRoute, useRouter} from "vue-router";
 
 // @ts-ignore
 import rangy from "rangy/lib/rangy-core.js";
@@ -149,22 +149,28 @@ class ChromeApi {
     }
   }
 
-  buildContextMenu() {
+  buildContextMenu(caller: string) {
     if (process.env.MODE !== 'bex') {
       return
     }
 
-    console.debug(" building context menu")
+    console.log(" building context menu", caller)
     const tabsStore = useTabsStore()
     if (chrome && chrome.contextMenus) {
       chrome.contextMenus.removeAll(
         () => {
-          chrome.contextMenus.create({id: 'tabset_extension', title: 'Tabsets Extension', contexts: ['page']},
+          console.log("creating contextmenu for tabset_extension")
+          chrome.contextMenus.create({
+              id: 'tabset_extension',
+              title: 'Tabsets Extension',
+              documentUrlPatterns: ['https://*/*', 'https://*/'],
+              contexts: ['page']},
             () => {
               // chrome.contextMenus.create({
               //   id: 'open_tabsets_page',
               //   parentId: 'tabset_extension',
               //   title: 'Open Tabsets Extension',
+              // documentUrlPatterns: ['https://*/*', 'https://*/'],
               //   contexts: ['all']
               // })
               if (usePermissionsStore().hasFeature(FeatureIdent.WEBSITE_CLIP)) {
@@ -173,6 +179,7 @@ class ChromeApi {
                   id: 'website_clip',
                   parentId: 'tabset_extension',
                   title: 'Create Website Clip',
+                  documentUrlPatterns: ['https://*/*', 'https://*/'],
                   contexts: ['all']
                 })
               }
@@ -180,6 +187,7 @@ class ChromeApi {
               //   id: 'website_quote',
               //   parentId: 'tabset_extension',
               //   title: 'Create Website Quote',
+              // documentUrlPatterns: ['https://*/*', 'https://*/'],
               //   contexts: ['all']
               // })
               //}
@@ -188,6 +196,7 @@ class ChromeApi {
                 id: 'save_to_currentTS',
                 parentId: 'tabset_extension',
                 title: 'Save to current Tabset (' + useTabsStore().currentTabsetName + ')',
+                documentUrlPatterns: ['https://*/*', 'https://*/'],
                 contexts: ['page']
               })
 
@@ -198,6 +207,7 @@ class ChromeApi {
                   id: 'move_to_window',
                   parentId: 'tabset_extension',
                   title: 'Move current tab...',
+                  documentUrlPatterns: ['https://*/*', 'https://*/'],
                   contexts: ['all']
                 })
                 // rest of logic in windowsStore
@@ -209,6 +219,7 @@ class ChromeApi {
                   id: 'annotate_website',
                   parentId: 'tabset_extension',
                   title: 'Annotate',
+                  documentUrlPatterns: ['https://*/*', 'https://*/'],
                   contexts: ['all']
                 })
               }
@@ -220,6 +231,7 @@ class ChromeApi {
                   id: 'separator',
                   parentId: 'tabset_extension',
                   type: 'separator',
+                  documentUrlPatterns: ['https://*/*', 'https://*/'],
                   contexts: ['page']
                 })
               }
@@ -236,6 +248,7 @@ class ChromeApi {
                     id: 'save_as_tab_folder|' + r.firstLetter,
                     parentId: 'tabset_extension',
                     title: 'Save to Tabset ' + r.firstLetter + '...',
+                    documentUrlPatterns: ['https://*/*', 'https://*/'],
                     contexts: ['page']
                   })
 
@@ -315,6 +328,7 @@ class ChromeApi {
       id: 'save_as_tab|' + ts.id,
       parentId,
       title,
+      documentUrlPatterns: ['https://*/*', 'https://*/'],
       contexts: ['page']
     })
   }

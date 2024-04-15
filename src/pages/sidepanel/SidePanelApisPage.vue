@@ -85,7 +85,7 @@ watchEffect(() => {
 
 chrome.runtime.onMessage.addListener((m: any, s: any, response: any) => {
   if (m.name === 'api-changed') {
-    useApisStore().save(m.data)
+    return useApisStore().save(m.data)
       .then(() => {
         apis.value = useApisStore().apis
         console.log("onMessage: hier", m, apis.value)

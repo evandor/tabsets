@@ -137,7 +137,6 @@
     <div v-if="tab === 'results'">
       {{ endpoint?.results }}
 
-      <form>
         <div>
           <label><b>JSONPath:</b>
             <q-input v-model="jsonPath"/>
@@ -154,7 +153,14 @@
                          v-model:data="jsonPathState.data"
                          :show-double-quotes="true"/>
 
-      </form>
+      <div class="row">
+        <div class="col-8">
+          <q-input v-model="newEntityName" />
+        </div>
+        <div class="col-4">
+          <q-btn label="save as entity" @click="saveAsEntity()"/>
+        </div>
+      </div>
 
     </div>
   </div>
@@ -177,6 +183,11 @@ import VueJsonPretty from "vue-json-pretty";
 import 'vue-json-pretty/lib/styles.css';
 // @ts-ignore
 import {JSONPath} from '../../../node_modules/jsonpath-plus/dist/index-browser-esm.js';
+import {useCommandExecutor} from "src/services/CommandExecutor";
+import {ExecuteApiCommand} from "src/domain/apis/ExecuteApiCommand";
+import {AddEntityCommand} from "src/domain/entites/AddEntityCommand";
+import {useEntitiesStore} from "stores/entitiesStore";
+import {Field} from "src/models/Entity";
 
 const config = {}
 
@@ -192,6 +203,7 @@ const params = ref<ParamDefinition[]>([])
 const endpointUrl = ref('/')
 const errorMsg = ref('')
 const paramKey = ref('')
+const newEntityName = ref('')
 const showAddLine = ref(false)
 const call = ref(false)
 const result = ref(null)
@@ -307,35 +319,62 @@ const createOrUpdateEndpoint = async () => {
     //window.close()
   }
 }
-const execute = async () => {
-  if (api.value) {
-    try {
-      const headers = {}
-      for (const h of api.value.setup!.headers) {
-        headers[h.name as keyof object] = h['default' as keyof object]
-      }
-      const params = {}
-      for (const p of endpoint.value!.params) {
-        params[p.name as keyof object] = p.value
-      }
-      const options = {
-        method: 'GET',
-        url: api.value!.setup!.url + endpoint.value!.path,
-        params: params,
-        headers: headers
-      };
-      console.log("calling axios with options", options)
-      const response = await axios.request(options);
-      console.log(response.data);
-      if (endpoint.value) {
-        endpoint.value.results.push(new ApiResponse(uid(), [], [], response.data))
-        result.value = response.data
-        sendMsg('api-changed', api.value)
-      }
-    } catch (error: any) {
-      errorMsg.value = error.toString()
-      console.error(error);
+
+const saveAsEntity = async () => {
+  //useCommandExecutor().executeFromUi(new AddEntityCommand(newEntityName.value))
+  const newEntity = await useEntitiesStore().createEntity(newEntityName.value)
+  for (const [key, value] of Object.entries(jsonPathApplied.value[0])) {
+    console.log("checking", key, value, typeof value)
+    let type = 'text'
+    switch(typeof value) {
+      case 'number':
+        type = 'number'
+        break
+      default:
+        type  = 'text'
     }
+    const f = new Field(uid(), key, type, key)
+    newEntity.fields.push(f)
+    newEntity.description = "created from api"
+    newEntity.source = "api|" + api.value?.id + "|" + endpoint.value?.id
+    newEntity.jsonPath = jsonPath.value
+  }
+  sendMsg('entity-changed', newEntity)
+}
+
+const execute = async () => {
+  if (api.value && endpoint.value) {
+    const res = await useCommandExecutor().executeFromUi(new ExecuteApiCommand(api.value, endpoint.value))
+    if (res) {
+      endpoint.value.results.push(new ApiResponse(uid(), [], [], res.result.data))
+      result.value = res.result.data
+      sendMsg('api-changed', api.value)
+    }
+    // try {
+    //   const headers = {}
+    //   for (const h of api.value.setup!.headers) {
+    //     headers[h.name as keyof object] = h['default' as keyof object]
+    //   }
+    //   const params = {}
+    //   for (const p of endpoint.value!.params) {
+    //     params[p.name as keyof object] = p.value
+    //   }
+    //   const options = {
+    //     method: 'GET',
+    //     url: api.value!.setup!.url + endpoint.value!.path,
+    //     params: params,
+    //     headers: headers
+    //   };
+    //   console.log("calling axios with options", options)
+    //   const response = await axios.request(options);
+    //   console.log(response.data);
+    //   if (endpoint.value) {
+    //
+    //   }
+    // } catch (error: any) {
+    //   errorMsg.value = error.toString()
+    //   console.error(error);
+    // }
   }
 
 }

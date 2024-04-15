@@ -342,7 +342,7 @@ export const useTabsStore = defineStore('tabs', {
         // console.log("found", found)
         this.currentTabsetId = tabsetId //this.tabsets.get(found) || new Tabset("", "", [])
 
-        ChromeApi.buildContextMenu()
+        //ChromeApi.buildContextMenu("tabsStore")
 
         return found
       } else {

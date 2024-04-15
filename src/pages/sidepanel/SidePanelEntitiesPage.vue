@@ -100,6 +100,10 @@ chrome.runtime.onMessage.addListener((m: any, s: any, response: any) => {
         console.log("onMessage: hier", m, entities.value)
         return true
       })
+  } else if (m.name === 'reload-entities') {
+    entities.value = useEntitiesStore().entities
+    console.log("reloaded entities", entities.value)
+    return true
   }
   return true
 })

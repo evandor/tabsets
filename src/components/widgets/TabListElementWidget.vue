@@ -31,14 +31,14 @@
           <!--            <q-tooltip class="tooltip">This tab is open in your browser. Click to open the corresponding tab.-->
           <!--            </q-tooltip>-->
           <!--          </q-chip>-->
-<!--          <q-chip v-if="props.tab.isDuplicate && !props.simpleUi"-->
-<!--                  class="q-my-none q-py-none q-ml-none q-mr-sm" color="warning"-->
-<!--                  clickable-->
-<!--                  style="float:left;position: relative;top:3px"-->
-<!--                  size="xs" icon="tab">-->
-<!--            duplicate-->
-<!--            <q-tooltip class="tooltip">This tab has a duplicate inside this tabset and could be deleted</q-tooltip>-->
-<!--          </q-chip>-->
+          <!--          <q-chip v-if="props.tab.isDuplicate && !props.simpleUi"-->
+          <!--                  class="q-my-none q-py-none q-ml-none q-mr-sm" color="warning"-->
+          <!--                  clickable-->
+          <!--                  style="float:left;position: relative;top:3px"-->
+          <!--                  size="xs" icon="tab">-->
+          <!--            duplicate-->
+          <!--            <q-tooltip class="tooltip">This tab has a duplicate inside this tabset and could be deleted</q-tooltip>-->
+          <!--          </q-chip>-->
           <span v-if="useTabsStore().getCurrentTabset?.sorting === 'alphabeticalTitle'">
             <q-icon name="arrow_right" size="16px"/>
           </span>
@@ -124,7 +124,7 @@
   <q-item-section side v-else>
     <div class="row" v-if="props.showButtons">
       <q-btn v-if="props.tabsetMqttUrl"
-        flat round :color="props.tab.note ? 'secondary':'primary'" size="11px" icon="comment"
+             flat round :color="props.tab.note ? 'secondary':'primary'" size="11px" icon="comment"
              @click.stop="commentDialog(tab as Tab)">
         <q-tooltip class="tooltip-small">Publish a comment</q-tooltip>
       </q-btn>
@@ -228,9 +228,12 @@ const itemStyle = (tab: Tab) => {
   return `${border};${background}`
 }
 
-const isOpen = (tab: Tab): boolean => TabsetService.isOpen(tab?.url || '')
-
-const deleteTab = (tab: Tab) => useCommandExecutor().executeFromUi(new DeleteTabCommand(tab))
+const deleteTab = (tab: Tab) => {
+  const tabset = useTabsStore().getTabset(props.tabsetId)
+  if (tabset) {
+    return useCommandExecutor().executeFromUi(new DeleteTabCommand(tab, tabset))
+  }
+}
 
 const editNoteDialog = (tab: Tab) => $q.dialog({
   component: EditNoteDialog,

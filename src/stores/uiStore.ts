@@ -152,6 +152,7 @@ export const useUiStore = defineStore('ui', () => {
   const tabsFilter = ref<string | undefined>(undefined)
   const selectedTag = ref<string | undefined>(undefined)
   const tabsetsExpanded = ref<boolean>(false)
+  const syncing = ref<boolean>(false)
   const appLoading = ref<string | undefined>(undefined)
   const bookmarksLoading = ref<boolean>(false)
   const progress = ref<object | undefined>(undefined)
@@ -622,6 +623,7 @@ export const useUiStore = defineStore('ui', () => {
     animateBookmarksButton,
     startButtonAnimation,
     showLoginTable,
-    showSwitchedToLocalInfo
+    showSwitchedToLocalInfo,
+    syncing
   }
 })
