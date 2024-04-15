@@ -25,20 +25,16 @@ export class SelectTabsetCommand implements Command<Tabset | undefined> {
     console.debug(this.toString())
     const tabsStore = useTabsStore()
 
-    const currentTabset = tabsStore.tabsets.get(tabsStore.currentTabsetId)
+    const currentTabset = tabsStore.tabsets.get(tabsStore.currentTabsetId) as Tabset | undefined
     if (currentTabset) {
-      _.forEach(currentTabset.tabs, (t: Tab) => t.selected = false)
+      _.forEach(currentTabset.tabs as Tab[], (t: Tab) => t.selected = false)
     }
     //useNotificationsStore().setSelectedTab(null as unknown as Tab)
 
     useUiStore().clearHighlights()
 
-    //tabsStore.currentTabsetId = this.tabsetId;
     useTabsetService().selectTabset(this.tabsetId)
-    //localStorage.setItem("selectedTabset", this.tabsetId)
-    //if (this.spaceId) {
-      useSpacesStore().setSpace(this.spaceId)
-    //}
+    useSpacesStore().setSpace(this.spaceId)
 
     if (inBexMode()) {
       const data = {

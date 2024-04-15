@@ -53,7 +53,7 @@ export function useTabsetService() {
       useTabsStore().selectCurrentTabset(selectedTS)
     }
 
-    ChromeApi.buildContextMenu()
+    ChromeApi.buildContextMenu("tabsetService2")
 
     useTabsStore().tabsets.forEach(ts => {
       if (ts.sharedId) {
@@ -227,6 +227,7 @@ export function useTabsetService() {
     const tabsStore = useTabsStore()
     resetSelectedTabs()
     tabsStore.currentTabsetId = tabsetId || null as unknown as string;
+    ChromeApi.buildContextMenu("tabsetService 230")
     if (tabsetId) {
       localStorage.setItem("selectedTabset", tabsetId)
     } else {
@@ -566,8 +567,8 @@ export function useTabsetService() {
   }
 
 
-  const deleteTab = (tab: Tab, tabset: Tabset | undefined = undefined): Promise<Tabset> => {
-    console.log("deleting tab", tab.id, tab.chromeTabId, tabset?.id)
+  const deleteTab = (tab: Tab, tabset: Tabset): Promise<Tabset> => {
+    console.log("deleting tab", tab.id, tab.chromeTabId, tabset.id)
     const tabUrl = tab.url || ''
     if (tabsetsFor(tabUrl).length <= 1) {
       removeThumbnailsFor(tabUrl)
@@ -578,14 +579,10 @@ export function useTabsetService() {
         .then(() => console.debug("deleting content for ", tabUrl))
         .catch(err => console.log("error deleting content", err))
     }
-    if (tabset) {
-      useTabsStore().removeTab(tabset, tab.id)
-      console.log("deletion: saving tabset", tabset)
-      return saveTabset(tabset)
-        .then(() => tabset)
-    }
-    return Promise.reject("could not access current tabset")
-
+    useTabsStore().removeTab(tabset, tab.id)
+    console.log("deletion: saving tabset", tabset)
+    return saveTabset(tabset)
+      .then(() => tabset)
   }
 
   const getIfAvailable = (metas: object, key: string): string | undefined => {
@@ -610,7 +607,7 @@ export function useTabsetService() {
   }
   const urlExistsInCurrentTabset = (url: string): boolean => {
     const currentTabset = getCurrentTabset()
-   // console.log("testing exists in current tabset", currentTabset.id, url)
+    // console.log("testing exists in current tabset", currentTabset.id, url)
     if (currentTabset) {
       if (_.find(currentTabset.tabs, t => {
         return (t.matcher) ?
@@ -671,7 +668,7 @@ export function useTabsetService() {
 
   const removeFolder = (root: Tabset, folderId: string): void => {
     root.folders = _.filter(root.folders, f => f.id !== folderId)
-    for(const f of root.folders) {
+    for (const f of root.folders) {
       removeFolder(f, folderId)
     }
   }

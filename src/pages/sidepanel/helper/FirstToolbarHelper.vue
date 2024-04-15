@@ -67,18 +67,18 @@
               v-if="showSyncInfo()"
               icon="o_sync_alt"
               tooltip="This account is being synced"
-              color="grey"
+              :color="useUiStore().syncing ? 'green':'grey'"
               size="9px"
               class="q-ml-sm q-mr-sm"/>
 
-<!--            <SidePanelToolbarButton-->
-<!--              icon="o_add_circle"-->
-<!--              :tooltip="newTabsetTooltip()"-->
-<!--              color="warning"-->
-<!--              class="q-ml-sm"-->
-<!--              :class="{ shake: annimateNewTabsetButton }"-->
-<!--              data-testid="addTabsetBtn"-->
-<!--              @click="openNewTabsetDialog()"/>-->
+            <!--            <SidePanelToolbarButton-->
+            <!--              icon="o_add_circle"-->
+            <!--              :tooltip="newTabsetTooltip()"-->
+            <!--              color="warning"-->
+            <!--              class="q-ml-sm"-->
+            <!--              :class="{ shake: annimateNewTabsetButton }"-->
+            <!--              data-testid="addTabsetBtn"-->
+            <!--              @click="openNewTabsetDialog()"/>-->
 
             <q-btn outline
                    label="New Tabset"
@@ -88,7 +88,7 @@
                    data-testid="addTabsetBtn"
                    @click="openNewTabsetDialog()"
                    class="q-ma-none q-px-sm q-py-none"
-                   name="o_bookmark_add" />
+                   name="o_bookmark_add"/>
 
           </slot>
         </div>
@@ -119,9 +119,9 @@ import SidePanelToolbarButton from "components/buttons/SidePanelToolbarButton.vu
 import {useQuasar} from "quasar";
 import {useAuthStore} from "stores/authStore";
 import {SyncType} from "stores/appStore";
-import { useI18n } from 'vue-i18n'
+import {useI18n} from 'vue-i18n'
 
-const { t } = useI18n({useScope: 'global'})
+const {t} = useI18n({useScope: 'global'})
 
 const props = defineProps({
   title: {type: String, default: "My Tabsets"},
