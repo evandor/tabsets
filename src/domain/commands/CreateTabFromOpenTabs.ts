@@ -9,31 +9,21 @@ import {DeleteTabCommand} from "src/domain/tabs/DeleteTabCommand";
 import {useSearchStore} from "src/stores/searchStore";
 import {uid} from "quasar";
 import {useUiStore} from "src/stores/uiStore";
+import {Tabset} from "src/models/Tabset";
 
 const {saveCurrentTabset} = useTabsetService()
 
 class UndoCommand implements Command<any> {
 
-  constructor(public tab: Tab) {
+  constructor(public tab: Tab, public tabset: Tabset) {
   }
 
   execute(): Promise<ExecutionResult<any>> {
     console.info(this.tab, "execution undo command")
-    return new DeleteTabCommand(this.tab).execute()
+    return new DeleteTabCommand(this.tab, this.tabset).execute()
       .then(res => Promise.resolve(new ExecutionResult(res, "Tab was deleted again")))
   }
 
-}
-
-function adjustIndex(newIndex: number, tabs: Tab[]) {
-  const tabsStore = useTabsStore()
-  if (newIndex === 0) { // first element
-    //console.log(" 0 - searching for ", tabs[0].id)
-    return _.findIndex(tabsStore.getCurrentTabs, t => t.id === tabs[0].id)
-  } else {
-    //console.log(" 1 - searching for ", tabs[element.newIndex - 1].id)
-    return 1 + _.findIndex(tabsStore.getCurrentTabs, t => t.id === tabs[newIndex - 1].id)
-  }
 }
 
 export class CreateTabFromOpenTabsCommand implements Command<any> {
@@ -50,10 +40,13 @@ export class CreateTabFromOpenTabsCommand implements Command<any> {
     let useIndex = this.newIndex
     console.log("exists", exists)
 
+    const currentTabset: Tabset | undefined = useTabsStore().getCurrentTabset
+
     if (!exists) {
       if (!this.tab.tags) {
         this.tab.tags = []
       }
+
       return TabsetService.saveToCurrentTabset(this.tab, useIndex)
         .then((res) => {
           if (this.tab.url) {
@@ -71,19 +64,24 @@ export class CreateTabFromOpenTabsCommand implements Command<any> {
           }
         })
         .then((res) => {
-          return TabsetService.getContentFor(this.tab)
-            .then((content) => {
-              if (content) {
-                return useTabsetService()
-                  .saveText(this.tab, content['content' as keyof object], content['metas' as keyof object])
-                  .then((res) => {
-                    return new ExecutionResult("result", "Tab was added", new UndoCommand(this.tab))
-                  })
-              } else {
-                return saveCurrentTabset()
-                  .then(result => new ExecutionResult(result, "Tab was added", new UndoCommand(this.tab)))
-              }
-            })
+
+          if (currentTabset) {
+            return TabsetService.getContentFor(this.tab)
+              .then((content) => {
+                if (content) {
+                  return useTabsetService()
+                    .saveText(this.tab, content['content' as keyof object], content['metas' as keyof object])
+                    .then((res) => {
+                      return new ExecutionResult("result", "Tab was added", new UndoCommand(this.tab, currentTabset))
+                    })
+                } else {
+                  return saveCurrentTabset()
+                    .then(result => new ExecutionResult(result, "Tab was added", new UndoCommand(this.tab, currentTabset)))
+                }
+              })
+          } else {
+            return Promise.reject("could not determine current tabset")
+          }
         })
     } else {
       const oldIndex = _.findIndex(useTabsStore().getCurrentTabs, t => t.id === this.tab.id)
@@ -95,7 +93,7 @@ export class CreateTabFromOpenTabsCommand implements Command<any> {
         .then(result => new ExecutionResult(
           result,
           "Tab was added",
-          new UndoCommand(this.tab)))
+          new UndoCommand(this.tab, currentTabset || null as unknown as Tabset)))
     }
 
 

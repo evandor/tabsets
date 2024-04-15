@@ -29,7 +29,7 @@ export class DeleteTabCommand implements Command<Tabset> {
 
   constructor(
     public tab: Tab,
-    public tabset: Tabset | undefined = undefined
+    public tabset: Tabset
   ) {
   }
 

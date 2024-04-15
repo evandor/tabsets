@@ -21,6 +21,8 @@ import {APP_INSTALLATION_ID} from "boot/constants";
 import {useDB} from "src/services/usePersistenceService";
 import IndexedDbPersistenceService from "src/services/IndexedDbPersistenceService";
 import {Entity} from "src/models/Entity";
+import {Api} from "src/models/Api";
+import {useUiStore} from "stores/uiStore";
 
 function tabsetDoc(tabsetId: string) {
   return doc(FirebaseServices.getFirestore(), "users", useAuthStore().user.uid, "tabsets", tabsetId)
@@ -46,6 +48,14 @@ function entitiesCollection() {
   return collection(FirebaseServices.getFirestore(), "users", useAuthStore().user.uid, "entities")
 }
 
+function apiDoc(apiId: string) {
+  return doc(FirebaseServices.getFirestore(), "users", useAuthStore().user.uid, "apis", apiId)
+}
+
+function apisCollection() {
+  return collection(FirebaseServices.getFirestore(), "users", useAuthStore().user.uid, "apis")
+}
+
 class FirestorePersistenceService implements PersistenceService {
 
   private indexedDB: typeof IndexedDbPersistenceService = null as unknown as typeof IndexedDbPersistenceService
@@ -67,23 +77,29 @@ class FirestorePersistenceService implements PersistenceService {
    */
 
   async loadTabsets(): Promise<void> {
-    //console.log("FirestorePersistenceService: loading Tabsets")
-    (await getDocs(tabsetCollection())).forEach((doc) => {
+    useUiStore().syncing = true
+    const docs = await getDocs(tabsetCollection())
+    docs.forEach((doc) => {
       let newItem = doc.data() as Tabset
       newItem.id = doc.id;
       useTabsStore().addTabset(newItem)
     })
+    useUiStore().syncing = false
     return Promise.resolve(undefined);
   }
 
   async saveTabset(tabset: Tabset): Promise<any> {
+    useUiStore().syncing = true
     tabset.origin = this.installationId
     console.log(`saving tabset ${tabset.id} in installation ${this.installationId}`)
     await setDoc(tabsetDoc(tabset.id), JSON.parse(JSON.stringify(tabset)))
+    useUiStore().syncing = false
   }
 
   async deleteTabset(tabsetId: string): Promise<any> {
+    useUiStore().syncing = true
     await deleteDoc(tabsetDoc(tabsetId))
+    useUiStore().syncing = false
   }
 
   /**
@@ -91,28 +107,37 @@ class FirestorePersistenceService implements PersistenceService {
    */
 
   async loadSpaces(): Promise<any> {
-    // console.log("FirestorePersistenceService: loading Spaces")
+    useUiStore().syncing = true
     LocalStorage.set("ui.spaces.lastUpdate", new Date().getTime());
     (await getDocs(spacesCollection())).forEach((doc) => {
       let newItem = doc.data() as Space
       newItem.id = doc.id;
       useSpacesStore().addSpace(newItem)
     })
+    useUiStore().syncing = false
     return Promise.resolve(undefined);
   }
 
   async addSpace(entity: Space): Promise<any> {
+    useUiStore().syncing = true
     await setDoc(spaceDoc(entity.id), JSON.parse(JSON.stringify(entity)))
+    useUiStore().syncing = false
   }
 
   async deleteSpace(entityId: string) {
+    useUiStore().syncing = true
     await deleteDoc(spaceDoc(entityId))
+    useUiStore().syncing = false
   }
 
   // === Entities ======================================
 
   saveEntity(entity: Entity) {
     setDoc(entityDoc(entity.id), JSON.parse(JSON.stringify(entity)))
+  }
+
+  async deleteEntity(entityId: string) {
+    await deleteDoc(entityDoc(entityId))
   }
 
   async findEntityById(entityId: string): Promise<Entity> {
@@ -130,6 +155,32 @@ class FirestorePersistenceService implements PersistenceService {
       entities.push(newItem)
     })
     return Promise.resolve(entities);
+  }
+
+  // === APIs ======================================
+
+  async findApiById(apiId: string): Promise<Api> {
+    const ts = await getDoc(apiDoc(apiId))
+    return Promise.resolve(ts.data() as Api)
+  }
+
+  async getApis(): Promise<Api[]> {
+    const apis: Api[] = []
+    const fromDb = await getDocs(apisCollection())
+    fromDb.forEach((doc: any) => {
+      let newItem = doc.data() as Api
+      newItem.id = doc.id;
+      apis.push(newItem)
+    })
+    return Promise.resolve(apis);
+  }
+
+  saveApi(api: Api): void {
+    setDoc(apiDoc(api.id), JSON.parse(JSON.stringify(api)))
+  }
+
+  async deleteApi(apiId: string) {
+    await deleteDoc(apiDoc(apiId))
   }
 
   /**

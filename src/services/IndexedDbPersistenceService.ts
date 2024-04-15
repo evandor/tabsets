@@ -727,6 +727,10 @@ class IndexedDbPersistenceService implements PersistenceService {
     this.db.put('entities', entity, entity.id)
   }
 
+  deleteEntity(entityId: string): Promise<void> {
+    return this.db.delete('entities', entityId)
+  }
+
   async getEntities(): Promise<Entity[]> {
     return await this.db.getAll('entities')
   }
@@ -737,6 +741,10 @@ class IndexedDbPersistenceService implements PersistenceService {
 
   saveApi(api: Api): void {
     this.db.put('apis', api, api.id)
+  }
+
+  deleteApi(apiId: string): Promise<void> {
+    return this.db.delete('apis', apiId)
   }
 
   async getApis(): Promise<Api[]> {
