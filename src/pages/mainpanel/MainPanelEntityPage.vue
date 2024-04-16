@@ -6,7 +6,7 @@
         <div class="row justify-start items-baseline">
           <div class="col-10">Entity Management</div>
           <div class="col-2 text-right">
-            <q-btn label="delete entity" @click="deleteEntity()" />
+            <q-btn label="delete entity" @click="deleteEntity()"/>
           </div>
         </div>
       </q-toolbar-title>
@@ -15,144 +15,179 @@
 
   <div class="q-ma-md">
 
-    <div class="q-ma-md">
+    <fieldset style="border:1px dotted grey; border-radius:5px;background-color:#efefef">
+      <legend style="background-color:#efefef">{{ entity?.name }}: Definition</legend>
+      <div class="row items-center">
 
-      <fieldset style="border:1px dotted grey; border-radius:5px">
-        <legend>{{ entity?.name }}: Definition</legend>
-        <div class="row q-my-md">
-          <div class="col-3 items-center">Description</div>
-          <div class="col-9">
-            <q-input v-model="description" label="Description"/>
-          </div>
-
-          <div class="col-3">Source</div>
-          <div class="col-9">
-            <q-select v-model="source" :options="sourceOptions"/>
-          </div>
-
-          <div class="col-3 q-my-sm">JsonPath</div>
-          <div class="col-9 q-my-sm">
-            <q-input v-model="jsonPath" label="jsonPath"/>
-          </div>
-
-          <div class="col-3 q-my-sm"></div>
-          <div class="col-9 q-my-sm">
-            <q-btn label="Update / Submit" @click="saveEntity()"/>
-          </div>
-
+        <div class="col-2 q-pa-md">
+          Description
         </div>
-      </fieldset>
+        <div class="col-5">
+          <q-input v-model="description" label="Description"/>
+        </div>
+        <div class="col-5 q-pa-md text-grey">
+          Provide a description for this entity
+        </div>
 
-      <br><br>
+        <div class="col-2 q-pa-md">
+          Source
+        </div>
+        <div class="col-5">
+          <q-select v-model="source" :options="sourceOptions"/>
+        </div>
+        <div class="col-5 q-pa-md text-grey">
+          The source for this entity could be an API
+        </div>
 
-      <fieldset style="border:1px dotted grey; border-radius:5px">
-        <legend>{{ entity?.name }}: Defined Fields</legend>
+        <div class="col-2 q-pa-md">
+          JsonPath
+        </div>
+        <div class="col-5">
+          <q-input v-model="jsonPath" label="jsonPath"/>
+        </div>
+        <div class="col-5 q-pa-md text-grey">
+          Select part of the result to be assigned to an entity
+        </div>
 
-        <q-list class="q-my-md" bordered separator>
-          <q-item clickable v-ripple v-for="(f,idx) in entity?.fields" :key="idx">
-            <q-item-section>
-              <q-item-label>{{ f.label }}</q-item-label>
-              <q-item-label caption>{{ f.id }}</q-item-label>
-            </q-item-section>
-            <q-item-section>
-              <q-item-label>{{ f.type }}</q-item-label>
-            </q-item-section>
-            <q-item-section>
-              <q-item-label>
+        <div class="col-2 q-pa-md">
+          App(s)
+        </div>
+        <div class="col-5">
+          <q-select
+            label=""
+            filled
+            v-model="apps"
+            use-input
+            use-chips
+            multiple
+            hide-dropdown-icon
+            input-debounce="0"
+            new-value-mode="add-unique"/>
+        </div>
+        <div class="col-5 q-pa-md text-grey">
+          Entities can be part of apps
+        </div>
+
+      </div>
+      <br>
+    </fieldset>
+
+    <div class="col-3 q-my-sm"></div>
+    <div class="col-9 q-my-sm">
+      <q-btn label="Update / Submit" @click="saveEntity()"/>
+    </div>
+
+    <br><br>
+
+    <fieldset style="border:1px dotted grey; border-radius:5px">
+      <legend>{{ entity?.name }}: Defined Fields</legend>
+
+      <q-list class="q-my-md" bordered separator>
+        <q-item clickable v-ripple v-for="(f,idx) in entity?.fields" :key="idx">
+          <q-item-section>
+            <q-item-label>{{ f.label }}</q-item-label>
+            <q-item-label caption>{{ f.id }}</q-item-label>
+          </q-item-section>
+          <q-item-section>
+            <q-item-label>{{ f.type }}</q-item-label>
+          </q-item-section>
+          <q-item-section>
+            <q-item-label>
               <span class="q-mr-md text-right">
 <!--                <q-checkbox v-model="showInList[idx]" @update:modelValue="(val) => updateShowInList(idx)"/>-->
                 <q-radio v-model="labelField" :val="f.name" label=""/>
               </span>
-                <span class="q-mr-md text-right">
+              <span class="q-mr-md text-right">
                 <q-icon name="edit" color="primary" @click="editField(f)"/>
               </span>
-                <span class="q-mr-md text-right">
+              <span class="q-mr-md text-right">
                 <q-icon name="delete" color="negative" @click="deleteField(f)"/>
               </span>
-              </q-item-label>
-            </q-item-section>
-          </q-item>
-        </q-list>
-      </fieldset>
+            </q-item-label>
+          </q-item-section>
+        </q-item>
+      </q-list>
+    </fieldset>
 
-      <br><br>
+    <br><br>
 
-      <fieldset style="border:1px dotted grey; border-radius:5px">
+    <fieldset style="border:1px dotted grey; border-radius:5px">
 
-        <legend>{{ entity?.name }}: Add Field</legend>
+      <legend>{{ entity?.name }}: Add Field</legend>
 
-        <div class="row q-my-md">
-          <div class="col-3 q-my-sm">Type</div>
-          <div class="col-9 q-my-sm">
-            <q-select v-model="typeModel" :options="[
-                          {value: 'text',label: 'Text'},
-                          {value: 'number',label: 'Number'},
-                          {value: 'url',label: 'URL'},
-                          {value: 'date',label: 'Date'},
-                          {value: 'reference',label: 'Reference'},
-                          { value: 'vueform', label: 'VueForm Native'},
-                          {value: 'formula',label: 'Formula'},
-                          {value: 'substitute',label: 'Text Substitution'}
+      <div class="row q-my-md">
+        <div class="col-3 q-my-sm">Type</div>
+        <div class="col-9 q-my-sm">
+          <q-select v-model="typeModel" :options="[
+                          {value: FieldType.TEXT,label: 'Text'},
+                          {value: FieldType.TEXTAREA,label: 'Text'},
+                          {value: FieldType.EDITOR,label: 'Text'},
+                          {value: FieldType.NUMBER,label: 'Number'},
+                          {value: FieldType.URL,label: 'URL'},
+                          {value: FieldType.DATE,label: 'Date'},
+                          {value: FieldType.REFERENCE,label: 'Reference'},
+                          {value: FieldType.FORMULA,label: 'Formula'},
+                          {value: FieldType.SUBSTITUTION,label: 'Text Substitution'}
                         ]" emit-value map-options label="Type"/>
-          </div>
+        </div>
 
-          <template v-if="typeModel === 'reference'">
-            <div class="col-3 q-my-sm">Reference</div>
-            <div class="col-9 q-my-sm">
-              <q-input v-model="name" label="Name"/>
-            </div>
-          </template>
-
-          <div class="col-3 q-my-sm">Name</div>
+        <template v-if="typeModel === FieldType.REFERENCE">
+          <div class="col-3 q-my-sm">Reference</div>
           <div class="col-9 q-my-sm">
             <q-input v-model="name" label="Name"/>
           </div>
-          <div class="col-3 q-my-sm">Label</div>
-          <div class="col-9 q-my-sm">
-            <q-input v-model="label" label="Label"/>
-          </div>
-          <div class="col-3 q-my-sm">Info</div>
-          <div class="col-9 q-my-sm">
-            <q-input v-model="info" label="Info"/>
-          </div>
+        </template>
+
+        <div class="col-3 q-my-sm">Name</div>
+        <div class="col-9 q-my-sm">
+          <q-input v-model="name" label="Name"/>
         </div>
-      </fieldset>
+        <div class="col-3 q-my-sm">Label</div>
+        <div class="col-9 q-my-sm">
+          <q-input v-model="label" label="Label"/>
+        </div>
+        <div class="col-3 q-my-sm">Info</div>
+        <div class="col-9 q-my-sm">
+          <q-input v-model="info" label="Info"/>
+        </div>
+      </div>
+    </fieldset>
 
-
-<!--      <Vueform ref="form2" :endpoint="submit2">-->
-
-<!--        <SelectElement name="type" :native="false" label="Type" :can-deselect="false" :can-clear="false"-->
-<!--                       :default="'text'"-->
-<!--                       :items="[-->
-<!--                          {value: 'text',label: 'Text'},-->
-<!--                          {value: 'number',label: 'Number'},-->
-<!--                          {value: 'url',label: 'URL'},-->
-<!--                          {value: 'date',label: 'Date'},-->
-<!--                          {value: 'reference',label: 'Reference'},-->
-<!--                          { value: 'vueform', label: 'VueForm Native'},-->
-<!--                          {value: 'formula',label: 'Formula'},-->
-<!--                          {value: 'substitute',label: 'Text Substitution'}-->
-<!--                        ]"/>-->
-<!--        <SelectElement name="reference" :native="false" label="Referenced Entity"-->
-<!--                       :conditions="[['type','in',['reference']]]"-->
-<!--                       :items="entitiesAsReference"/>-->
-<!--        <TextareaElement name="vueform" label="Vueform"-->
-<!--                         :conditions="[['type','in',['vueform']]]"/>-->
-<!--        <TextElement name="formula" label="Formula" placeholder="e.g. {a} * {b}"-->
-<!--                     :conditions="[['type','in',['formula']]]"/>-->
-<!--        <TextElement name="substitution" label="Text Substitution" placeholder="{a} ({b})"-->
-<!--                     :conditions="[['type','in',['substitute']]]"/>-->
-<!--        <TextElement name="name" label="Name" placeholder="the internal name" :rules="['required']"/>-->
-<!--        <TextElement name="label" label="Label" placeholder="The label shown in the UI" :rules="['required']"/>-->
-<!--        <TextElement name="info" label="Info" placeholder=""/>-->
-
-<!--        <HiddenElement name="id"/>-->
-
-<!--        <ButtonElement name="submit" submits align="right">{{ submitButtonLabel }}</ButtonElement>-->
-
-<!--      </Vueform>-->
-
+    <div class="row q-my-md">
+      <div class="col-3 items-center"></div>
+      <div class="col-9">
+        <q-btn :label="submitButtonLabel" @click="addField()"/>
+      </div>
     </div>
+
+
+    <!--      <Vueform ref="form2" :endpoint="submit2">-->
+
+    <!--        <SelectElement name="type" :native="false" label="Type" :can-deselect="false" :can-clear="false"-->
+    <!--                       :default="'text'"-->
+    <!--                       :items="[-->
+    <!--                          {value: 'text',label: 'Text'},-->
+    <!--                          {value: 'number',label: 'Number'},-->
+    <!--                          {value: 'url',label: 'URL'},-->
+    <!--                          {value: 'date',label: 'Date'},-->
+    <!--                          {value: 'reference',label: 'Reference'},-->
+    <!--                          { value: 'vueform', label: 'VueForm Native'},-->
+    <!--                          {value: 'formula',label: 'Formula'},-->
+    <!--                          {value: 'substitute',label: 'Text Substitution'}-->
+    <!--                        ]"/>-->
+    <!--        <SelectElement name="reference" :native="false" label="Referenced Entity"-->
+    <!--                       :conditions="[['type','in',['reference']]]"-->
+    <!--                       :items="entitiesAsReference"/>-->
+    <!--        <TextElement name="formula" label="Formula" placeholder="e.g. {a} * {b}"-->
+    <!--                     :conditions="[['type','in',['formula']]]"/>-->
+    <!--        <TextElement name="substitution" label="Text Substitution" placeholder="{a} ({b})"-->
+    <!--                     :conditions="[['type','in',['substitute']]]"/>-->
+    <!--        <TextElement name="name" label="Name" placeholder="the internal name" :rules="['required']"/>-->
+    <!--        <TextElement name="label" label="Label" placeholder="The label shown in the UI" :rules="['required']"/>-->
+    <!--        <TextElement name="info" label="Info" placeholder=""/>-->
+    <!--        <HiddenElement name="id"/>-->
+    <!--      </Vueform>-->
+
   </div>
 </template>
 
@@ -162,18 +197,16 @@ import {onMounted, ref, watch, watchEffect} from "vue";
 import Analytics from "src/utils/google-analytics";
 import {useRoute} from "vue-router";
 import {useEntitiesStore} from "stores/entitiesStore";
-import {Entity, Field} from "src/models/Entity";
+import {Entity, Field, FieldType} from "src/models/Entity";
 import _ from "lodash"
 import {uid} from "quasar";
 import {useUtils} from "src/services/Utils";
-import {ListDetailLevel} from "stores/uiStore";
 import {useApisStore} from "stores/apisStore";
 
 const {sendMsg} = useUtils()
 const route = useRoute()
 
-const form = ref(null)
-const form2 = ref(null)
+const apps = ref<string[]>([])
 const entityId = ref<string | undefined>(undefined)
 const entity = ref<Entity | undefined>(undefined)
 const entitiesAsReference = ref<object[]>([])
@@ -188,7 +221,7 @@ const source = ref<string>('manual')
 
 const sourceOptions = ref<object[]>([])
 
-const typeModel = ref('Text')
+const typeModel = ref<FieldType>(FieldType.TEXT)
 
 onMounted(() => {
   Analytics.firePageViewEvent('MainPanelEntitiesPage', document.location.href);
@@ -223,13 +256,8 @@ watchEffect(async () => {
     labelField.value = entity.value?.labelField
     description.value = entity.value?.description || ''
     jsonPath.value = entity.value?.jsonPath || ''
+    apps.value = entity.value?.apps || []
     source.value = entity.value?.source || 'manual'
-    if (form && form.value && entity.value) {
-      form.value.update({ // updates form data
-        desc: entity.value.description,
-        scheme: entity.value.schema
-      })
-    }
   }
 })
 
@@ -242,39 +270,35 @@ watchEffect(() => {
   })
 })
 
-const submit = async (FormData: any, form$: any) => {
-  const formData = FormData // FormData instance
-  const data = form$.data // form data including conditional data
-  const requestData = form$.requestData // form data excluding conditional data
-  console.log('xxx', formData, data, requestData, entity.value)
+const addField = () => {
+  console.log("adding field", entity.value)
   if (entity.value) {
-    entity.value.description = data.desc
-    entity.value.schema = data.scheme
-    await useEntitiesStore().save(entity.value)
+    entity.value.fields.push(new Field(uid(), name.value, typeModel.value, label.value, info.value))
+    sendMsg('entity-changed', entity.value)
   }
 }
 
-const submit2 = async (FormData: any, form$: any) => {
-  const formData = FormData // FormData instance
-  const data = form$.data // form data including conditional data
-  const requestData = form$.requestData // form data excluding conditional data
-  console.log('yyy', formData, data, requestData, entity.value)
-  if (entity.value) {
-    if (!data.id) {
-      data.id = uid()
-    }
-    entity.value.fields.push(data)
-    sendMsg('entity-changed', entity.value)
-    //await useEntitiesStore().save(entity.value)
-  }
-}
+// const submit2 = async (FormData: any, form$: any) => {
+//   const formData = FormData // FormData instance
+//   const data = form$.data // form data including conditional data
+//   const requestData = form$.requestData // form data excluding conditional data
+//   console.log('yyy', formData, data, requestData, entity.value)
+//   if (entity.value) {
+//     if (!data.id) {
+//       data.id = uid()
+//     }
+//     entity.value.fields.push(data)
+//     sendMsg('entity-changed', entity.value)
+//     //await useEntitiesStore().save(entity.value)
+//   }
+// }
 
 const editField = async (f: object) => {
   console.log("editing", f)
-  if (form2 && form2.value) {
-    form2.value.update(f)
-    submitButtonLabel.value = 'Update'
-  }
+  // if (form2 && form2.value) {
+  //   form2.value.update(f)
+  //   submitButtonLabel.value = 'Update'
+  // }
 }
 
 const deleteField = async (f: Field) => {
@@ -287,9 +311,11 @@ const deleteField = async (f: Field) => {
 
 const saveEntity = async () => {
   if (entity.value) {
+    console.log("apps.value", apps.value)
     entity.value.description = description.value
     entity.value.source = "api|" + source.value['value' as keyof object]
     entity.value.jsonPath = jsonPath.value
+    entity.value.apps = apps.value
     console.log("saving", entity.value, source.value)
     await useEntitiesStore().save(entity.value)
   }
