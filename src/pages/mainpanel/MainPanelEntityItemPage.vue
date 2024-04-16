@@ -48,6 +48,12 @@
             <q-input v-model="f.value" :label="f.label"/>
           </div>
         </template>
+        <template v-else-if="f.type === FieldType.TEXTAREA">
+          <div class="col-3 items-center">{{ f.label }}</div>
+          <div class="col-9">
+            <q-input type="textarea" v-model="f.value" :label="f.label"/>
+          </div>
+        </template>
         <template v-else>
           <div class="col-3 items-center">{{ f.label }}*</div>
           <div class="col-9">
@@ -76,7 +82,7 @@
 
 import {onMounted, ref, watchEffect} from "vue";
 import Analytics from "src/utils/google-analytics";
-import {useRoute} from "vue-router";
+import {useRoute, useRouter} from "vue-router";
 import {useEntitiesStore} from "stores/entitiesStore";
 import {Entity, Field, FieldType} from "src/models/Entity";
 import _ from "lodash"
@@ -87,6 +93,9 @@ import {useCommandExecutor} from "src/services/CommandExecutor";
 import {ExecuteApiCommand} from "src/domain/apis/ExecuteApiCommand";
 import {useApisStore} from "stores/apisStore";
 import {Api, ApiResponse, Endpoint, ParamDefinition} from "src/models/Api";
+// @ts-ignore
+import {JSONPath} from '../../../node_modules/jsonpath-plus/dist/index-browser-esm.js';
+import {ExecutionResult} from "src/domain/ExecutionResult";
 
 const config = {}
 const math = create(all, config)
@@ -94,6 +103,7 @@ const math = create(all, config)
 const {sendMsg} = useUtils()
 
 const route = useRoute()
+const router = useRouter()
 
 const api = ref<Api | undefined>(undefined)
 const endpoint = ref<Endpoint | undefined>(undefined)
@@ -103,9 +113,6 @@ const entity = ref<Entity | undefined>(undefined)
 const referencedItems = ref<Map<string, object>>(new Map())
 const fields = ref<Field[]>([])
 const inputParams = ref<ParamDefinition[]>([])
-// @ts-ignore
-import {JSONPath} from '../../../node_modules/jsonpath-plus/dist/index-browser-esm.js';
-import {ExecutionResult} from "src/domain/ExecutionResult";
 
 onMounted(() => {
   Analytics.firePageViewEvent('MainPanelEntitiesPage', document.location.href);
@@ -167,18 +174,28 @@ watchEffect(async () => {
 const save = () => {
   if (entity.value) {
     const data: Record<string, any> = {}
-    if (!data.id) {
-      data.id = uid()
-    } else {
-      _.remove(entity.value.items, {
+    data.updated = new Date().getTime()
+    if (itemId.value) {
+      data.id = itemId.value
+      //data.created =
+      const removed = _.remove(entity.value.items as object[], {
         id: itemId.value
       });
+      if (removed && removed[0]) {
+        data.created = removed[0]['created']
+      }
+    } else {
+      data.id = uid()
+      data.created = new Date().getTime()
     }
     for (const f of entity.value.fields) {
       data[f.name] = f.value
     }
     entity.value.items.push(data)
     sendMsg('entity-changed', entity.value)
+    if (!itemId.value) {
+      router.push(`/mainpanel/entities/${entity.value.id}/items/${data.id}`)
+    }
   }
 }
 
