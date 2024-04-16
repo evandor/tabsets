@@ -111,17 +111,20 @@
 
     <br><br>
 
-    <fieldset style="border:1px dotted grey; border-radius:5px">
 
-      <legend>{{ entity?.name }}: Add Field</legend>
+    <form @submit.prevent.stop="addField">
+      <fieldset style="border:1px dotted grey; border-radius:5px">
 
-      <div class="row q-my-md">
-        <div class="col-3 q-my-sm">Type</div>
-        <div class="col-9 q-my-sm">
-          <q-select v-model="typeModel" :options="[
+        <legend>{{ entity?.name }}: Add Field</legend>
+
+        <div class="row q-my-md">
+
+          <div class="col-2 q-pa-md">Type</div>
+          <div class="col-5">
+            <q-select v-model="typeModel" :options="[
                           {value: FieldType.TEXT,label: 'Text'},
-                          {value: FieldType.TEXTAREA,label: 'Text'},
-                          {value: FieldType.EDITOR,label: 'Text'},
+                          {value: FieldType.TEXTAREA,label: 'Textarea'},
+                          {value: FieldType.EDITOR,label: 'Editor'},
                           {value: FieldType.NUMBER,label: 'Number'},
                           {value: FieldType.URL,label: 'URL'},
                           {value: FieldType.DATE,label: 'Date'},
@@ -129,50 +132,62 @@
                           {value: FieldType.FORMULA,label: 'Formula'},
                           {value: FieldType.SUBSTITUTION,label: 'Text Substitution'}
                         ]" emit-value map-options label="Type"/>
-        </div>
-
-        <template v-if="typeModel === FieldType.REFERENCE">
-          <div class="col-3 q-my-sm">Reference</div>
-          <div class="col-9 q-my-sm">
-            <q-input v-model="name" label="Name"/>
           </div>
-        </template>
+          <div class="col-5 q-pa-md text-grey">
+            Choose a type for this field
+          </div>
 
-        <div class="col-3 q-my-sm">Name</div>
-        <div class="col-9 q-my-sm">
-          <q-input v-model="name" label="Name"/>
+          <template v-if="typeModel === FieldType.REFERENCE">
+            <div class="col-2 q-pa-md">Reference</div>
+            <div class="col-5 q-my-sm">
+              <q-input v-model="name" label="Name"/>
+            </div>
+            <div class="col-5 q-pa-md text-grey">
+              Provide a name for this field
+            </div>
+          </template>
+
+          <div class="col-2 q-pa-md">Name (*)</div>
+          <div class="col-5">
+            <q-input v-model="name" label="Name" :rules="[
+              val => !!val || 'Name is required',
+              val => /^[a-zA-Z]+[a-zA-Z0-9]*$/.test(val) || 'please use a valid variable name',
+              val => val !== 'id' && val !== 'created' && val !== 'updated' || 'id, created and updated are reserved fields and will be added automatically'
+            ]"/>
+          </div>
+          <div class="col-5 q-pa-md text-grey">
+            Provide a single word name for this field
+          </div>
+
+          <div class="col-2 q-pa-md">Label</div>
+          <div class="col-5">
+            <q-input v-model="label" label="Label"/>
+          </div>
+          <div class="col-5 q-pa-md text-grey">
+            Provide a name for this field
+          </div>
+
+          <div class="col-2 q-pa-md">Info</div>
+          <div class="col-5">
+            <q-input v-model="info" label="Info"/>
+          </div>
+          <div class="col-5 q-pa-md text-grey">
+            Provide a name for this field
+          </div>
         </div>
-        <div class="col-3 q-my-sm">Label</div>
-        <div class="col-9 q-my-sm">
-          <q-input v-model="label" label="Label"/>
-        </div>
-        <div class="col-3 q-my-sm">Info</div>
-        <div class="col-9 q-my-sm">
-          <q-input v-model="info" label="Info"/>
+      </fieldset>
+
+      <div class="row q-my-md">
+        <div class="col-3 items-center"></div>
+        <div class="col-9">
+          <q-btn :label="submitButtonLabel" type="submit"/>
         </div>
       </div>
-    </fieldset>
-
-    <div class="row q-my-md">
-      <div class="col-3 items-center"></div>
-      <div class="col-9">
-        <q-btn :label="submitButtonLabel" @click="addField()"/>
-      </div>
-    </div>
-
-
-    <!--      <Vueform ref="form2" :endpoint="submit2">-->
+    </form>
 
     <!--        <SelectElement name="type" :native="false" label="Type" :can-deselect="false" :can-clear="false"-->
     <!--                       :default="'text'"-->
     <!--                       :items="[-->
-    <!--                          {value: 'text',label: 'Text'},-->
-    <!--                          {value: 'number',label: 'Number'},-->
-    <!--                          {value: 'url',label: 'URL'},-->
-    <!--                          {value: 'date',label: 'Date'},-->
-    <!--                          {value: 'reference',label: 'Reference'},-->
-    <!--                          { value: 'vueform', label: 'VueForm Native'},-->
-    <!--                          {value: 'formula',label: 'Formula'},-->
     <!--                          {value: 'substitute',label: 'Text Substitution'}-->
     <!--                        ]"/>-->
     <!--        <SelectElement name="reference" :native="false" label="Referenced Entity"-->
@@ -184,9 +199,6 @@
     <!--                     :conditions="[['type','in',['substitute']]]"/>-->
     <!--        <TextElement name="name" label="Name" placeholder="the internal name" :rules="['required']"/>-->
     <!--        <TextElement name="label" label="Label" placeholder="The label shown in the UI" :rules="['required']"/>-->
-    <!--        <TextElement name="info" label="Info" placeholder=""/>-->
-    <!--        <HiddenElement name="id"/>-->
-    <!--      </Vueform>-->
 
   </div>
 </template>
@@ -270,35 +282,19 @@ watchEffect(() => {
   })
 })
 
+watchEffect(() => {
+  console.log ("==>", name.value, label.value)
+  if (name.value && (label.value === '' || name.value.toLowerCase().startsWith(label.value.toLowerCase()))) {
+    label.value = name.value.substring(0,1).toUpperCase() + name.value.substring(1)
+  }
+})
+
 const addField = () => {
   console.log("adding field", entity.value)
   if (entity.value) {
     entity.value.fields.push(new Field(uid(), name.value, typeModel.value, label.value, info.value))
     sendMsg('entity-changed', entity.value)
   }
-}
-
-// const submit2 = async (FormData: any, form$: any) => {
-//   const formData = FormData // FormData instance
-//   const data = form$.data // form data including conditional data
-//   const requestData = form$.requestData // form data excluding conditional data
-//   console.log('yyy', formData, data, requestData, entity.value)
-//   if (entity.value) {
-//     if (!data.id) {
-//       data.id = uid()
-//     }
-//     entity.value.fields.push(data)
-//     sendMsg('entity-changed', entity.value)
-//     //await useEntitiesStore().save(entity.value)
-//   }
-// }
-
-const editField = async (f: object) => {
-  console.log("editing", f)
-  // if (form2 && form2.value) {
-  //   form2.value.update(f)
-  //   submitButtonLabel.value = 'Update'
-  // }
 }
 
 const deleteField = async (f: Field) => {
@@ -328,7 +324,6 @@ const deleteEntity = () => {
     window.close()
   }
 }
-
 
 </script>
 
