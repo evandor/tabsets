@@ -82,7 +82,7 @@ import {useTabsStore} from "src/stores/tabsStore";
 import _ from "lodash"
 import {ref, watch, watchEffect} from "vue";
 import {useQuasar} from "quasar";
-import {useBookmarksStore} from "src/stores/bookmarksStore";
+import {useBookmarksStore} from "src/bookmarks/stores/bookmarksStore";
 import {useNotificationsStore} from "src/stores/notificationsStore";
 import BookmarksService from "src/services/BookmarksService";
 import {usePermissionsStore} from "src/stores/permissionsStore";

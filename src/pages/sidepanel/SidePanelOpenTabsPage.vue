@@ -38,7 +38,7 @@
 
 <script lang="ts" setup>
 
-import BookmarksTree from "components/BookmarksTree.vue";
+import BookmarksTree from "src/bookmarks/components/BookmarksTree.vue";
 import FirstToolbarHelper from "pages/sidepanel/helper/FirstToolbarHelper.vue";
 import {SidePanelView, useUiStore} from "stores/uiStore";
 import {onMounted} from "vue";

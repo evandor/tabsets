@@ -71,7 +71,7 @@ import {date, useQuasar} from "quasar";
 import {useSpacesStore} from "stores/spacesStore";
 import {useTabsStore} from "stores/tabsStore";
 import {useSettingsStore} from "stores/settingsStore";
-import {useBookmarksStore} from "stores/bookmarksStore";
+import {useBookmarksStore} from "src/bookmarks/stores/bookmarksStore";
 import NavigationService from "src/services/NavigationService";
 
 const localstorage = useQuasar().localStorage
