@@ -117,7 +117,6 @@
           tooltip="Access to your rss feed"/>
 
         <ToolbarButton
-          :feature="FeatureIdent.BOOKMARKS"
           :drawer="DrawerTabs.BOOKMARKS"
           icon="o_bookmark"
           tooltip="Access to your bookmarks"/>
