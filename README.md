@@ -20,6 +20,13 @@ Browser Extension to manage tabsets:
 There will be a pro tabsets extension with some advanced features as well.
 
 ## Install the dependencies
+
+make sure you added the submodules: in the root folder, run
+
+```
+git submodule add -b chrome-extension https://github.com/evandor/submodule-bookmarks.git src/bookmarks
+```
+
 ```bash
 yarn install
 ```
