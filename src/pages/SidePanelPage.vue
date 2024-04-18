@@ -151,7 +151,7 @@ import TabsetService from "src/services/TabsetService";
 import Analytics from "src/utils/google-analytics";
 import {useAuthStore} from "stores/authStore";
 import {useDB} from "src/services/usePersistenceService";
-import {useBookmarksStore} from "stores/bookmarksStore";
+import {useBookmarksStore} from "src/bookmarks/stores/bookmarksStore";
 import {useSuggestionsStore} from "stores/suggestionsStore";
 import {FirebaseCall} from "src/services/firebase/FirebaseCall";
 import InfoMessageWidget from "components/widgets/InfoMessageWidget.vue";

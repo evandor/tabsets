@@ -60,7 +60,13 @@
 
 <!--  <UnassignedAndOpenTabs v-if="tab === DrawerTabs.UNASSIGNED_TABS"/>-->
   <OpenTabsView v-if="tab === DrawerTabs.OPEN_TABS"/>
-  <BookmarksTree v-else-if="tab === DrawerTabs.BOOKMARKS"/>
+
+  <BookmarksTree v-else-if="tab === DrawerTabs.BOOKMARKS"
+    :nodes="showOnlyFolders ? useBookmarksStore().nonLeafNodes : useBookmarksStore().bookmarksNodes2"
+    :show-only-folders="showOnlyFolders"
+    @toggle-show-only-folders="toggleShowOnlyFolders()"
+    :in-side-panel="true"/>
+
   <!--      <OpenTabs v-else-if="tab ===  DrawerTabs.OPEN_TABS" :filter="filter"/>-->
   <!--      <UnassignedTabs v-else-if="tab ===  DrawerTabs.UNASSIGNED_TABS" :filter="filter"/>-->
   <ByDomainList v-else-if="tab ===  DrawerTabs.GROUP_BY_HOST_TABS"/>
@@ -94,7 +100,7 @@ import {useTabsStore} from "src/stores/tabsStore";
 import {useSettingsStore} from "src/stores/settingsStore";
 import {DrawerTabs, useUiStore} from "src/stores/uiStore";
 import Features from "components/Features.vue";
-import BookmarksTree from "components/BookmarksTree.vue";
+import BookmarksTree from "src/bookmarks/components/BookmarksTree.vue";
 import TabDetails from "components/views/TabDetails.vue";
 import TabsetHelp from "components/TabsetHelp.vue";
 import TabsetDetails from "components/views/TabsetDetails.vue";
@@ -103,6 +109,7 @@ import TagListViewer from "components/views/TagListViewer.vue";
 import ByDomainList from "components/ByDomainList.vue";
 import OpenTabsView from "components/views/OpenTabsView.vue";
 import SavedPdfs from "components/SavedPdfs.vue";
+import {useBookmarksStore} from "src/bookmarks/stores/bookmarksStore";
 
 const route = useRoute()
 
@@ -114,6 +121,8 @@ const tab = ref<DrawerTabs>(useUiStore().rightDrawer.activeTab)
 const rssTabsCount = ref(0)
 const filter = ref<string>('')
 
+const showOnlyFolders = ref(true)
+
 watchEffect(() => tab.value = useUiStore().rightDrawer.activeTab)
 
 watchEffect(() => {
@@ -121,6 +130,11 @@ watchEffect(() => {
 })
 
 watchEffect(() => rssTabsCount.value = tabsStore.rssTabs?.length)
+
+const toggleShowOnlyFolders = () => {
+  console.log("****")
+  showOnlyFolders.value = !showOnlyFolders.value
+}
 
 
 const drawerLabel = () => {
