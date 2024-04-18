@@ -12,7 +12,7 @@ import ChromeApi from "src/services/ChromeApi";
 import {useSpacesStore} from "stores/spacesStore";
 import {useTabsStore} from "stores/tabsStore";
 import {useSettingsStore} from "stores/settingsStore";
-import {useBookmarksStore} from "stores/bookmarksStore";
+import {useBookmarksStore} from "src/bookmarks/stores/bookmarksStore";
 import {useWindowsStore} from "src/stores/windowsStore";
 import {useSearchStore} from "stores/searchStore";
 import {Router} from "vue-router";

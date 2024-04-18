@@ -6,7 +6,13 @@
       <div class="q-ma-none">
         <div class="row q-ma-none q-pa-none">
           <div class="col-12 q-ma-none q-pa-none q-pt-md">
-            <BookmarksTree :in-side-panel="true"/>
+
+            <BookmarksTree
+              :nodes="showOnlyFolders ? useBookmarksStore().nonLeafNodes : useBookmarksStore().bookmarksNodes2"
+              :show-only-folders="showOnlyFolders"
+              @toggle-show-only-folders="toggleShowOnlyFolders()"
+              :in-side-panel="true"/>
+
           </div>
         </div>
       </div>
@@ -36,20 +42,26 @@
 
 <script lang="ts" setup>
 
-import BookmarksTree from "components/BookmarksTree.vue";
+import BookmarksTree from "src/bookmarks/components/BookmarksTree.vue";
 import FirstToolbarHelper from "pages/sidepanel/helper/FirstToolbarHelper.vue";
 import {SidePanelView, useUiStore} from "stores/uiStore";
-import {onMounted} from "vue";
+import {onMounted, ref} from "vue";
 import Analytics from "src/utils/google-analytics";
-import ToolbarButton from "components/buttons/SidePanelToolbarButton.vue";
 import SidePanelToolbarTabNavigationHelper from "pages/sidepanel/helper/SidePanelToolbarTabNavigationHelper.vue";
 import SidePanelToolbarButton from "components/buttons/SidePanelToolbarButton.vue";
-import {useTabsetService} from "src/services/TabsetService2";
-import {uid} from "quasar";
+import {useBookmarksStore} from "src/bookmarks/stores/bookmarksStore";
+
+const showOnlyFolders = ref(true)
 
 onMounted(() => {
   Analytics.firePageViewEvent('SidePanelBookmarksPage', document.location.href);
 })
+
+const toggleShowOnlyFolders = () => {
+  console.log("****")
+  showOnlyFolders.value = !showOnlyFolders.value
+}
+
 
 // const onMessageListener = async (message: any, sender: any, sendResponse: any) => {
 //   console.log(" <<< received message", message)
