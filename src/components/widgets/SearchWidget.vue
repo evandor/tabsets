@@ -88,7 +88,7 @@ import {useRoute, useRouter} from "vue-router";
 import NavigationService from "src/services/NavigationService";
 import {SearchIndexQuery} from "src/domain/queries/SearchIndexQuery";
 import {useQueryExecutor} from "src/services/QueryExecutor";
-import {useBookmarksStore} from "src/stores/bookmarksStore";
+import {useBookmarksStore} from "src/bookmarks/stores/bookmarksStore";
 import {usePermissionsStore} from "src/stores/permissionsStore";
 import {useUiStore} from "src/stores/uiStore";
 import {FeatureIdent} from "src/models/AppFeature";
