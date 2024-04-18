@@ -2,7 +2,7 @@
 
   <template v-if="restricted">
     <Transition name="colorized-appear">
-      <q-btn v-if="permissionsStore.hasFeature(FeatureIdent[props.feature])"
+      <q-btn v-if="!props.feature || permissionsStore.hasFeature(FeatureIdent[props.feature])"
              :flat="!outlinedIfActive()"
              :outline="outlinedIfActive()"
              name="sidebar" :icon="props.icon" :size="btnSize"
