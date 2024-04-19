@@ -77,11 +77,11 @@
 <script setup lang="ts">
 import {PropType, ref} from "vue";
 import {useUtils} from "src/services/Utils"
-import {Bookmark} from "src/models/Bookmark";
+import {Bookmark} from "src/bookmarks/models/Bookmark";
 import {useRouter} from "vue-router";
 import {date} from "quasar";
 import NavigationService from "src/services/NavigationService";
-import BookmarksService from "src/services/BookmarksService";
+import BookmarksService from "src/bookmarks/services/BookmarksService";
 import {useTabsetService} from "src/services/TabsetService2";
 
 const {formatDate} = useUtils()

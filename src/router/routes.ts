@@ -227,7 +227,7 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/bookmarks/:id',
     component: () => import('layouts/FullPageLayout.vue'),
-    children: [{path: '', component: () => import('pages/BookmarksPage.vue')}],
+    children: [{path: '', component: () => import('src/bookmarks/pages/BookmarksPage.vue')}],
   },
   {
     path: '/spaces',

@@ -32,8 +32,7 @@ import {useNotificationsStore} from "src/stores/notificationsStore";
 import {usePermissionsStore} from "src/stores/permissionsStore";
 import {useNotificationHandler} from "src/services/ErrorHandler";
 import NavigationService from "src/services/NavigationService";
-import {FeatureIdent} from "src/models/AppFeature";
-import DeleteBookmarkFolderDialog from "components/dialogues/bookmarks/DeleteBookmarkFolderDialog.vue";
+import DeleteBookmarkFolderDialog from "src/bookmarks/dialogues/DeleteBookmarkFolderDialog.vue";
 import {TreeNode} from "src/models/Tree";
 import _ from "lodash"
 
