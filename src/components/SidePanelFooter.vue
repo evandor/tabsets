@@ -12,7 +12,7 @@
 
     <div class="row fit q-mb-sm" v-if="showWindowTable">
       <!-- https://michaelnthiessen.com/force-re-render -->
-      <SidePanelWindowMarkupTable :key="randomKey"/>
+      <WindowsMarkupTable :key="randomKey"/>
     </div>
 
     <div class="row fit q-mb-sm" v-if="showStatsTable">
@@ -205,8 +205,9 @@ import {useNotificationHandler} from "src/services/ErrorHandler";
 import SidePanelLoginWidget from "components/helper/SidePanelLoginWidget.vue";
 import SidePanelWindowMarkupTable from "components/helper/SidePanelWindowMarkupTable.vue";
 import SidePanelStatsMarkupTable from "components/helper/SidePanelStatsMarkupTable.vue"
-import {Window} from "src/models/Window"
+import {Window} from "src/windows/models/Window"
 import {useSettingsStore} from "stores/settingsStore";
+import WindowsMarkupTable from "src/windows/components/WindowsMarkupTable.vue";
 
 const {handleSuccess, handleError} = useNotificationHandler()
 

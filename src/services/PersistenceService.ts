@@ -5,7 +5,7 @@ import {Notification} from "src/models/Notification";
 import {SearchDoc} from "src/models/SearchDoc";
 import {Suggestion, SuggestionState} from "src/models/Suggestion";
 import {MetaLink} from "src/models/MetaLink";
-import {Window} from "src/models/Window";
+import {Window} from "src/windows/models/Window";
 import {RequestInfo} from "src/models/RequestInfo";
 import {BlobType, SavedBlob} from "src/models/SavedBlob";
 import {Message} from "src/models/Message";

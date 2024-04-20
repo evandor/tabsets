@@ -181,13 +181,11 @@ import {CopyToClipboardCommand} from "src/domain/commands/CopyToClipboard";
 import ShareTabsetPubliclyDialog from "components/dialogues/ShareTabsetPubliclyDialog.vue";
 import {MarkTabsetAsArchivedCommand} from "src/domain/tabsets/MarkTabsetAsArchived";
 import {useTabsStore} from "stores/tabsStore";
-import NewWindowDialog from "components/dialogues/NewWindowDialog.vue";
+import NewWindowDialog from "src/windows/dialogues/NewWindowDialog.vue";
 import {useRouter} from "vue-router";
 import {MarkTabsetDeletedCommand} from "src/domain/tabsets/MarkTabsetDeleted";
 import {SidePanelView, useUiStore} from "stores/uiStore";
 import {NotificationType} from "src/services/ErrorHandler";
-import NewTabsetDialog from "components/dialogues/NewTabsetDialog.vue";
-import {useSpacesStore} from "stores/spacesStore";
 import NewSubfolderDialog from "components/dialogues/NewSubfolderDialog.vue";
 
 const {inBexMode} = useUtils()
