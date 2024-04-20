@@ -9,7 +9,7 @@ import {FeatureIdent} from "src/models/AppFeature";
 import {useSuggestionsStore} from "stores/suggestionsStore";
 import {StaticSuggestionIdent, Suggestion} from "src/models/Suggestion";
 import Analytics from "src/utils/google-analytics";
-import {useWindowsStore} from "src/stores/windowsStore";
+import {useWindowsStore} from "src/windows/stores/windowsStore";
 import {STRIP_CHARS_IN_USER_INPUT} from "boot/constants";
 import {TabsetType} from "src/models/Tabset";
 

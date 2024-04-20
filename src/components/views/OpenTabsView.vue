@@ -98,7 +98,7 @@ import {useRoute} from "vue-router";
 import {useUiStore} from "src/stores/uiStore";
 import Analytics from "src/utils/google-analytics";
 import OpenTabCard2 from "components/layouts/OpenTabCard2.vue";
-import {useWindowsStore} from "stores/windowsStore";
+import {useWindowsStore} from "src/windows/stores/windowsStore";
 
 const tabsStore = useTabsStore()
 const route = useRoute()

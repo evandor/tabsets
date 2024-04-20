@@ -3,7 +3,7 @@ import {ExecutionResult} from "src/domain/ExecutionResult";
 import TabsetService from "src/services/TabsetService";
 import {useUtils} from "src/services/Utils";
 import {ListDetailLevel} from "stores/uiStore";
-import {useWindowsStore} from "stores/windowsStore";
+import {useWindowsStore} from "src/windows/stores/windowsStore";
 
 const {sendMsg} = useUtils()
 

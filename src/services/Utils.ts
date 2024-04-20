@@ -1,7 +1,7 @@
 import {formatDistance} from "date-fns";
 import sanitizeHtml from "sanitize-html";
 import {Tab} from "src/models/Tab";
-import {useWindowsStore} from "stores/windowsStore";
+import {useWindowsStore} from "src/windows/stores/windowsStore";
 import {useTabsStore} from "stores/tabsStore";
 import _ from "lodash";
 
