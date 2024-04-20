@@ -35,7 +35,7 @@ import {useDialogPluginComponent} from "quasar";
 import {useTabsStore} from "src/stores/tabsStore";
 import {STRIP_CHARS_IN_USER_INPUT} from "boot/constants";
 import {useCommandExecutor} from "src/services/CommandExecutor";
-import {RenameWindowCommand} from "src/domain/tabsets/RenameWindow";
+import {RenameWindowCommand} from "src/windows/commands/RenameWindow";
 import {ExecutionResult} from "src/domain/ExecutionResult";
 import {Tabset} from "src/models/Tabset";
 import {RenameFolderCommand} from "src/domain/tabsets/RenameFolderCommand";
