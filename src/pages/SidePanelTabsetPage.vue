@@ -94,7 +94,7 @@ import {useRoute} from "vue-router";
 import {useUtils} from "src/services/Utils";
 import {useUiStore} from "src/stores/uiStore";
 import FirstToolbarHelper from "pages/sidepanel/helper/FirstToolbarHelper.vue";
-import {useWindowsStore} from "src/stores/windowsStore";
+import {useWindowsStore} from "src/windows/stores/windowsStore";
 import Analytics from "src/utils/google-analytics";
 import SidePanelTabsetsSelectorWidget from "components/widgets/SidePanelTabsetsSelectorWidget.vue";
 import {uid, useQuasar} from "quasar";

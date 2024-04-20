@@ -12,7 +12,7 @@ import {Tab} from "src/models/Tab";
 import {uid} from "quasar";
 import {FeatureIdent} from "src/models/AppFeature";
 import {RequestInfo} from "src/models/RequestInfo";
-import {useWindowsStore} from "stores/windowsStore";
+import {useWindowsStore} from "src/windows/stores/windowsStore";
 import {MonitoringType} from "src/models/Monitor";
 import {Router, useRoute, useRouter} from "vue-router";
 

@@ -43,7 +43,7 @@ import {VueDraggableNext} from 'vue-draggable-next'
 import {useUiStore} from "src/stores/uiStore";
 import InfoMessageWidget from "components/widgets/InfoMessageWidget.vue";
 import OpenTabCard2 from "components/layouts/OpenTabCard2.vue";
-import {useWindowsStore} from "stores/windowsStore";
+import {useWindowsStore} from "src/windows/stores/windowsStore";
 
 const props = defineProps({
   filter: {

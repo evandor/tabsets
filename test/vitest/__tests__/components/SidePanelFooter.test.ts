@@ -11,7 +11,7 @@ import {useDB} from "src/services/usePersistenceService";
 import {useQuasar} from "quasar";
 import IndexedDbPersistenceService from "src/services/IndexedDbPersistenceService";
 import {useTabsetService} from "src/services/TabsetService2";
-import {useWindowsStore} from "stores/windowsStore";
+import {useWindowsStore} from "src/windows/stores/windowsStore";
 
 installQuasarPlugin();
 

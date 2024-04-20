@@ -7,7 +7,7 @@ import {useTabsStore} from "src/stores/tabsStore";
 import {ref} from "vue";
 import {Tab} from "src/models/Tab";
 import throttledQueue from "throttled-queue";
-import {useWindowsStore} from "src/stores/windowsStore";
+import {useWindowsStore} from "src/windows/stores/windowsStore";
 import {useBookmarksStore} from "src/bookmarks/stores/bookmarksStore";
 import {useTabsetService} from "src/services/TabsetService2";
 import {uid} from "quasar";

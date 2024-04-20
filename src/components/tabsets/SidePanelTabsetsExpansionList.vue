@@ -249,7 +249,7 @@ import getScrollTarget = scroll.getScrollTarget;
 
 import {ExecutionResult} from "src/domain/ExecutionResult";
 import {useNotificationHandler} from "src/services/ErrorHandler";
-import {useWindowsStore} from "stores/windowsStore";
+import {useWindowsStore} from "src/windows/stores/windowsStore";
 import TabsetService from "src/services/TabsetService";
 import {FirebaseCall} from "src/services/firebase/FirebaseCall";
 

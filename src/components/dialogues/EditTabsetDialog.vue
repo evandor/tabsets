@@ -89,7 +89,7 @@ import {useCommandExecutor} from "src/services/CommandExecutor";
 import ColorSelector from "components/dialogues/helper/ColorSelector.vue";
 import {usePermissionsStore} from "stores/permissionsStore";
 import {FeatureIdent} from "src/models/AppFeature";
-import {useWindowsStore} from "stores/windowsStore";
+import {useWindowsStore} from "src/windows/stores/windowsStore";
 import {ListDetailLevel, useUiStore} from "stores/uiStore";
 
 defineEmits([

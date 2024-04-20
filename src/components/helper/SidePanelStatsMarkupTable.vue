@@ -65,7 +65,7 @@
 
 <script lang="ts" setup>
 
-import {useWindowsStore} from "stores/windowsStore";
+import {useWindowsStore} from "src/windows/stores/windowsStore";
 import {onMounted, ref, watch, watchEffect} from "vue";
 import {date, useQuasar} from "quasar";
 import {useSpacesStore} from "stores/spacesStore";

@@ -5,7 +5,7 @@ import IndexedDbPersistenceService from "src/services/IndexedDbPersistenceServic
 import {useDB} from "src/services/usePersistenceService";
 import PersistenceService from "src/services/PersistenceService";
 import {useTabsetService} from "src/services/TabsetService2";
-import {useWindowsStore} from "stores/windowsStore";
+import {useWindowsStore} from "src/windows/stores/windowsStore";
 import ChromeApi from "src/services/ChromeApi";
 
 installQuasarPlugin();
