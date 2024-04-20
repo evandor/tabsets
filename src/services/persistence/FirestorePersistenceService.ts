@@ -7,7 +7,7 @@ import {BlobType, SavedBlob} from "src/models/SavedBlob";
 import {Tab} from "src/models/Tab";
 import {MetaLink} from "src/models/MetaLink";
 import {Tabset} from "src/models/Tabset";
-import {Window} from "src/models/Window";
+import {Window} from "src/windows/models/Window";
 import {RequestInfo} from "src/models/RequestInfo";
 import {Notification} from "src/models/Notification";
 import {useSpacesStore} from "stores/spacesStore";
