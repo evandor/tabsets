@@ -15,7 +15,7 @@ import {Suggestion, SuggestionState, SuggestionType} from "src/models/Suggestion
 import {useUiStore} from "src/stores/uiStore";
 import {RequestInfo} from "src/models/RequestInfo";
 import {useSuggestionsStore} from "stores/suggestionsStore";
-import {Window} from "src/models/Window";
+import {Window} from "src/windows/models/Window";
 import {BlobType, SavedBlob} from "src/models/SavedBlob";
 import {Message} from "src/models/Message";
 import {Account} from "src/models/Account";
