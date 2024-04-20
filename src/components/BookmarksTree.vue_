@@ -84,7 +84,7 @@ import {ref, watch, watchEffect} from "vue";
 import {useQuasar} from "quasar";
 import {useBookmarksStore} from "src/bookmarks/stores/bookmarksStore";
 import {useNotificationsStore} from "src/stores/notificationsStore";
-import BookmarksService from "src/services/BookmarksService";
+import BookmarksService from "src/bookmarks/services/BookmarksService";
 import {usePermissionsStore} from "src/stores/permissionsStore";
 import {useNotificationHandler} from "src/services/ErrorHandler";
 import {useCommandExecutor} from "src/services/CommandExecutor";
@@ -93,7 +93,7 @@ import {useSettingsStore} from "src/stores/settingsStore"
 import NavigationService from "src/services/NavigationService";
 import {FeatureIdent} from "src/models/AppFeature";
 import NewTabsetDialog from "components/dialogues/NewTabsetDialog.vue";
-import DeleteBookmarkFolderDialog from "components/dialogues/bookmarks/DeleteBookmarkFolderDialog.vue";
+import DeleteBookmarkFolderDialog from "src/bookmarks/dialogues/bookmarks/DeleteBookmarkFolderDialog.vue";
 import {TreeNode} from "src/models/Tree";
 import {useUtils} from "src/services/Utils";
 import {useUiStore} from "stores/uiStore";
