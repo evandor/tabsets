@@ -74,11 +74,11 @@ async function checkMonitors(router: Router) {
 
   if (monitoredContentHash.length > 0) {
     //console.log("%croute", "color:orange", router, router.currentRoute.value.path)
-    if (router.currentRoute.value.path.startsWith("/sidepanel")) {
-      useWindowsStore().openThrottledInWindow(monitoredContentHash, {focused: false, state: "minimized"})
-    } else {
-      console.debug("not running openThrottledInWindow due to path not starting with /sidepanel", router.currentRoute.value.path)
-    }
+    // if (router.currentRoute.value.path.startsWith("/sidepanel")) {
+    //   useWindowsStore().openThrottledInWindow(monitoredContentHash, {focused: false, state: "minimized"})
+    // } else {
+      console.warn("not running openThrottledInWindow due to path not starting with /sidepanel", router.currentRoute.value.path)
+    // }
   }
 }
 
