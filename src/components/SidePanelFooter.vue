@@ -12,7 +12,16 @@
 
     <div class="row fit q-mb-sm" v-if="showWindowTable">
       <!-- https://michaelnthiessen.com/force-re-render -->
-      <WindowsMarkupTable :key="randomKey"/>
+
+      <WindowsMarkupTable
+        :rows="windowRows"
+        :key="randomKey">
+        <!--          <template :slot="additionalActions" v-for="row in windowRows">-->
+        <!--        <template #additionalActions="{ icon }">-->
+
+        <!--          -->
+        <!--        </template>-->
+      </WindowsMarkupTable>
     </div>
 
     <div class="row fit q-mb-sm" v-if="showStatsTable">
@@ -124,11 +133,11 @@
           </q-menu>
         </span>
         <q-btn v-else-if="usePermissionsStore().hasFeature(FeatureIdent.STANDALONE_APP)"
-          icon="o_open_in_new"
-          :class="rightButtonClass()"
-          flat
-          :size="getButtonSize()"
-          @click="openExtensionTab()">
+               icon="o_open_in_new"
+               :class="rightButtonClass()"
+               flat
+               :size="getButtonSize()"
+               @click="openExtensionTab()">
           <q-tooltip class="tooltip" anchor="top left" self="bottom left">Tabsets as full-page app</q-tooltip>
         </q-btn>
 
@@ -184,7 +193,7 @@
 import {SidePanelView, useUiStore} from "src/stores/uiStore";
 import {useTabsStore} from "src/stores/tabsStore";
 import {Tab} from "src/models/Tab";
-import {ref, watchEffect} from "vue";
+import {onMounted, ref, watch, watchEffect} from "vue";
 import {useRoute, useRouter} from "vue-router";
 import {usePermissionsStore} from "src/stores/permissionsStore";
 import {FeatureIdent} from "src/models/AppFeature";
@@ -196,7 +205,7 @@ import {useSuggestionsStore} from "stores/suggestionsStore";
 import _ from "lodash";
 import {SuggestionState} from "src/models/Suggestion";
 import SuggestionDialog from "components/dialogues/SuggestionDialog.vue";
-import {TabsetStatus} from "src/models/Tabset";
+import {Tabset, TabsetStatus} from "src/models/Tabset";
 import {ToastType} from "src/models/Toast";
 import SidePanelFooterLeftButtons from "components/helper/SidePanelFooterLeftButtons.vue";
 import {useAuthStore} from "stores/authStore";
@@ -208,6 +217,7 @@ import SidePanelStatsMarkupTable from "components/helper/SidePanelStatsMarkupTab
 import {Window} from "src/windows/models/Window"
 import {useSettingsStore} from "stores/settingsStore";
 import WindowsMarkupTable from "src/windows/components/WindowsMarkupTable.vue";
+import {WindowAction, WindowHolder} from "src/windows/models/WindowHolder";
 
 const {handleSuccess, handleError} = useNotificationHandler()
 
@@ -234,6 +244,18 @@ const randomKey = ref<string>(uid())
 const progressValue = ref<number>(0.0)
 const progressLabel = ref<string>('')
 const animateSettingsButton = ref<boolean>(false)
+const windowRows = ref<WindowHolder[]>([])
+const windowsToOpenOptions = ref<object[]>([])
+const tabsetsMangedWindows = ref<object[]>([])
+
+onMounted(() => {
+  windowRows.value = calcWindowRows()
+  console.log("windowRows", windowRows.value)
+})
+
+watchEffect(() => {
+  console.log("====>", windowRows.value)
+})
 
 watchEffect(() => {
   const windowId = useWindowsStore().currentChromeWindow?.id || 0
@@ -301,6 +323,55 @@ watchEffect(() => {
     progressLabel.value = uiProgrss['label' as keyof object] || 'no msg'
     //console.log("we are here", progressValue.value)
   }
+})
+
+
+const updateWindows = () => {
+  useWindowsStore().setup('got window-updated message', true)
+    .then(() => windowRows.value = calcWindowRows())
+}
+
+
+watch(() => useWindowsStore().currentChromeWindows, (newWindows, oldWindows) => {
+  //console.log("windows changed", newWindows, oldWindows)
+  windowRows.value = calcWindowRows()
+})
+
+//console.log("====>: chrome.runtime.onMessage.hasListeners(windowsUpdatedListener)", chrome.runtime.onMessage.hasListener(windowsUpdatedListener))
+//chrome.runtime.onMessage.addListener(windowsUpdatedListener)
+chrome.windows.onCreated.addListener((w: chrome.windows.Window) => updateWindows())
+chrome.windows.onRemoved.addListener((wId: number) => updateWindows())
+
+
+chrome.tabs.onRemoved.addListener((tabId: number, removeInfo: chrome.tabs.TabRemoveInfo) => {
+  //console.log("***here we are", tabId, removeInfo)
+  useWindowsStore().setup('got window-updated message')
+    .then(() => windowRows.value = calcWindowRows())
+    .catch((err) => handleError(err))
+})
+
+
+chrome.tabs.onUpdated.addListener((tabId: number, changeInfo: chrome.tabs.TabChangeInfo, tab: chrome.tabs.Tab) => {
+  //console.log("***here we are3", tab)
+  useWindowsStore().setup('got window-updated message')
+    .then(() => windowRows.value = calcWindowRows())
+    .catch((err) => handleError(err))
+})
+
+watchEffect(() => {
+  // adding potentially new windows from 'open in window' logic
+  windowsToOpenOptions.value = []
+  tabsetsMangedWindows.value = []
+  for (const ts of [...useTabsStore().tabsets.values()] as Tabset[]) {
+    if (ts.window && ts.window !== "current" && ts.window.trim() !== '') {
+      tabsetsMangedWindows.value.push({label: ts.window, value: ts.id})
+      const found = _.find(windowRows.value, (r: object) => ts.window === r['name' as keyof object])
+      if (!found) {
+        windowsToOpenOptions.value.push({label: ts.window, value: ts.id})
+      }
+    }
+  }
+  windowsToOpenOptions.value = _.sortBy(windowsToOpenOptions.value, ["label"])
 })
 
 //const openOptionsPage = () => window.open(chrome.runtime.getURL('www/index.html#/mainpanel/settings'));
@@ -427,6 +498,37 @@ const logout = () => {
       console.log("cleaning up after logout")
       //useTabsetService().init(useDB(undefined).db, useDB(undefined).pouchDb)
     })
+}
+
+const calcWindowRows = (): WindowHolder[] => {
+  const result = _.map(useWindowsStore().currentChromeWindows as chrome.windows.Window[], (cw: chrome.windows.Window) => {
+    const windowFromStore: Window | undefined = useWindowsStore().windowForId(cw.id || -2)
+    const windowName = useWindowsStore().windowNameFor(cw.id || 0) || cw.id!.toString()
+    const additionalActions: WindowAction[] = []
+    if (!windowIsManaged(windowName)) {
+      additionalActions.push(new WindowAction("o_bookmark_add", "text-orange", "Save as Tabset"))
+    } else {
+      additionalActions.push(new WindowAction("o_bookmark_add", "text-grey", "already a tabset", true))
+    }
+
+    return WindowHolder.of(
+      cw,
+      windowFromStore?.index || 0,
+      windowName,
+      windowFromStore?.hostList || [],
+      additionalActions)
+
+    // return {
+    //   windowHeight: cw['height' as keyof object],
+    //   windowWidth: cw['width' as keyof object],
+    //   hostList: windowFromStore?.hostList,
+  })
+
+  return _.sortBy(result, "index")
+}
+
+const windowIsManaged = (windowName: string) => {
+  return _.find(tabsetsMangedWindows.value, tmw => tmw['label' as keyof object] === windowName) !== undefined
 }
 
 const offsetBottom = () => ($q.platform.is.capacitor || $q.platform.is.cordova) ? 'margin-bottom:20px;' : ''
