@@ -15,13 +15,11 @@
 
       <WindowsMarkupTable
         :rows="windowRows"
-        :key="randomKey">
-        <!--          <template :slot="additionalActions" v-for="row in windowRows">-->
-        <!--        <template #additionalActions="{ icon }">-->
+        @was-clicked="e => additionalActionWasClicked(e)"
+        @recalculate-windows="windowRows = calcWindowRows()"
+        :key="randomKey"
+      />
 
-        <!--          -->
-        <!--        </template>-->
-      </WindowsMarkupTable>
     </div>
 
     <div class="row fit q-mb-sm" v-if="showStatsTable">
@@ -218,6 +216,8 @@ import {Window} from "src/windows/models/Window"
 import {useSettingsStore} from "stores/settingsStore";
 import WindowsMarkupTable from "src/windows/components/WindowsMarkupTable.vue";
 import {WindowAction, WindowHolder} from "src/windows/models/WindowHolder";
+import NewTabsetDialog from "components/dialogues/NewTabsetDialog.vue";
+import {useSpacesStore} from "stores/spacesStore";
 
 const {handleSuccess, handleError} = useNotificationHandler()
 
@@ -506,9 +506,9 @@ const calcWindowRows = (): WindowHolder[] => {
     const windowName = useWindowsStore().windowNameFor(cw.id || 0) || cw.id!.toString()
     const additionalActions: WindowAction[] = []
     if (!windowIsManaged(windowName)) {
-      additionalActions.push(new WindowAction("o_bookmark_add", "text-orange", "Save as Tabset"))
+      additionalActions.push(new WindowAction("o_bookmark_add", "saveTabset", "text-orange", "Save as Tabset"))
     } else {
-      additionalActions.push(new WindowAction("o_bookmark_add", "text-grey", "already a tabset", true))
+      additionalActions.push(new WindowAction("o_bookmark_add", undefined, "text-grey", "already a tabset", true))
     }
 
     return WindowHolder.of(
@@ -529,6 +529,24 @@ const calcWindowRows = (): WindowHolder[] => {
 
 const windowIsManaged = (windowName: string) => {
   return _.find(tabsetsMangedWindows.value, tmw => tmw['label' as keyof object] === windowName) !== undefined
+}
+
+const saveAsTabset = (windowId: number, name: string) => {
+  $q.dialog({
+    component: NewTabsetDialog,
+    componentProps: {
+      windowId: windowId,
+      spaceId: useSpacesStore().space?.id,
+      name: name,
+      fromPanel: true
+    }
+  })
+}
+const additionalActionWasClicked = (event: any) => {
+  console.log("§hier", event)
+  if (event.action === 'saveTabset') {
+    saveAsTabset(event.window.id, event.window.name)
+  }
 }
 
 const offsetBottom = () => ($q.platform.is.capacitor || $q.platform.is.cordova) ? 'margin-bottom:20px;' : ''
