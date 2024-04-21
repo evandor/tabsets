@@ -78,13 +78,12 @@ interface PersistenceService {
   getGroups(): Promise<chrome.tabGroups.TabGroup[]>
   deleteGroupByTitle(title: string): Promise<void>
 
-  addWindow(window: Window): Promise<any>
-  //updateWindow(group: chrome.windows.Window): Promise<any>
-  getWindows(): Promise<Window[]>
-  getWindow(windowId: number): Promise<Window | undefined>
-  removeWindow(windowId: number): Promise<void>
-  updateWindow(window: Window): Promise<void>
-  upsertWindow(window: Window): Promise<void>
+  // addWindow(window: Window): Promise<any>
+  // getWindows(): Promise<Window[]>
+  // getWindow(windowId: number): Promise<Window | undefined>
+  // removeWindow(windowId: number): Promise<void>
+  // updateWindow(window: Window): Promise<void>
+  // upsertWindow(window: Window): Promise<void>
 
   getMessages(): Promise<Message[]>
   addMessage(msg: Message):void
