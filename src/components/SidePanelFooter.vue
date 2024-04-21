@@ -14,7 +14,7 @@
       <!-- https://michaelnthiessen.com/force-re-render -->
 
       <WindowsMarkupTable
-        :rows="windowRows"
+        :rows="useWindowsStore().getWindowsForMarkupTable(additionalActions)"
         @was-clicked="e => additionalActionWasClicked(e)"
         @recalculate-windows="windowRows = calcWindowRows()"
         :key="randomKey"
@@ -324,6 +324,16 @@ watchEffect(() => {
     //console.log("we are here", progressValue.value)
   }
 })
+
+const additionalActions = (windowName: string) => {
+  const additionalActions: WindowAction[] = []
+  if (!windowIsManaged(windowName)) {
+    additionalActions.push(new WindowAction("o_bookmark_add", "saveTabset", "text-orange", "Save as Tabset"))
+  } else {
+    additionalActions.push(new WindowAction("o_bookmark_add", undefined, "text-grey", "already a tabset", true))
+  }
+  return additionalActions
+}
 
 
 const updateWindows = () => {
