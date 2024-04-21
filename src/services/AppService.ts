@@ -177,7 +177,7 @@ class AppService {
       groupsStore.initListeners()
     }
 
-    await windowsStore.initialize(useDB(undefined).db)
+    await windowsStore.initialize()
     windowsStore.initListeners()
 
     useUiStore().appLoading = undefined
