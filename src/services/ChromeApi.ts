@@ -164,7 +164,7 @@ class ChromeApi {
               id: 'tabset_extension',
               title: 'Tabsets Extension',
               documentUrlPatterns: ['https://*/*', 'https://*/'],
-              contexts: ['page']},
+              contexts: ['all']},
             () => {
               // chrome.contextMenus.create({
               //   id: 'open_tabsets_page',
@@ -197,7 +197,7 @@ class ChromeApi {
                 parentId: 'tabset_extension',
                 title: 'Save to current Tabset (' + useTabsStore().currentTabsetName + ')',
                 documentUrlPatterns: ['https://*/*', 'https://*/'],
-                contexts: ['page']
+                contexts: ['all']
               })
 
               //console.log("context menu", useWindowsStore().currentChromeWindows)
@@ -232,7 +232,7 @@ class ChromeApi {
                   parentId: 'tabset_extension',
                   type: 'separator',
                   documentUrlPatterns: ['https://*/*', 'https://*/'],
-                  contexts: ['page']
+                  contexts: ['all']
                 })
               }
 
@@ -249,7 +249,7 @@ class ChromeApi {
                     parentId: 'tabset_extension',
                     title: 'Save to Tabset ' + r.firstLetter + '...',
                     documentUrlPatterns: ['https://*/*', 'https://*/'],
-                    contexts: ['page']
+                    contexts: ['all']
                   })
 
                   _.forEach(_.sortBy(r.tabsets, ['name']), (ts: Tabset) => {
@@ -329,7 +329,7 @@ class ChromeApi {
       parentId,
       title,
       documentUrlPatterns: ['https://*/*', 'https://*/'],
-      contexts: ['page']
+      contexts: ['all']
     })
   }
 
