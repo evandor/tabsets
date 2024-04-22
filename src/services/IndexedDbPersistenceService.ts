@@ -4,8 +4,8 @@ import _ from "lodash";
 import {EXPIRE_DATA_PERIOD_IN_MINUTES, INDEX_DB_VERSION} from "boot/constants";
 import PersistenceService from "src/services/PersistenceService";
 import {Tabset, TabsetStatus} from "src/models/Tabset";
-import {useSpacesStore} from "src/stores/spacesStore";
-import {Space} from "src/models/Space";
+import {useSpacesStore} from "src/spaces/stores/spacesStore";
+import {Space} from "src/spaces/models/Space";
 import {Tab} from "src/models/Tab";
 import {SearchDoc} from "src/models/SearchDoc";
 import {MetaLink} from "src/models/MetaLink";
@@ -71,19 +71,6 @@ class IndexedDbPersistenceService implements PersistenceService {
     } else {
       console.warn("could not reload tabset with id", tabsetId)
     }
-  }
-
-  async loadSpaces(): Promise<void> {
-    console.debug(" loading spaces...")
-    const spacesStore = useSpacesStore()
-    const keys: IDBValidKey[] = await this.db.getAllKeys('spaces')
-    _.forEach(keys, key => {
-      this.db.get('spaces', key)
-        .then((space: Space) => {
-          spacesStore.putSpace(space)
-        })
-        .catch(err => console.log("err", err))
-    })
   }
 
   async saveTabset(tabset: Tabset): Promise<IDBValidKey> {
@@ -384,15 +371,6 @@ class IndexedDbPersistenceService implements PersistenceService {
     let blobsForTab = await this.getBlobsForTab(tabId)
     blobsForTab = _.filter(blobsForTab, b => b.id !== elementId)
     await this.db.put('blobs', blobsForTab, tabId)
-  }
-
-  async addSpace(space: Space): Promise<void> {
-    return await this.db.put('spaces', space, space.id)
-      .then(() => Promise.resolve())
-  }
-
-  deleteSpace(spaceId: string): Promise<void> {
-    return this.db.delete('spaces', spaceId)
   }
 
   addGroup(group: chrome.tabGroups.TabGroup): Promise<any> {

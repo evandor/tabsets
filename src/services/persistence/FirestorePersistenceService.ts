@@ -1,6 +1,6 @@
 import PersistenceService from "src/services/PersistenceService";
 import {Message} from "src/models/Message";
-import {Space} from "src/models/Space";
+import {Space} from "src/spaces/models/Space";
 import {Suggestion, SuggestionState} from "src/models/Suggestion";
 import {SearchDoc} from "src/models/SearchDoc";
 import {BlobType, SavedBlob} from "src/models/SavedBlob";
@@ -9,7 +9,7 @@ import {MetaLink} from "src/models/MetaLink";
 import {Tabset} from "src/models/Tabset";
 import {RequestInfo} from "src/models/RequestInfo";
 import {Notification} from "src/models/Notification";
-import {useSpacesStore} from "stores/spacesStore";
+import {useSpacesStore} from "src/spaces/stores/spacesStore";
 import {useAuthStore} from "stores/authStore";
 import {Account} from "src/models/Account";
 import {collection, deleteDoc, doc, getDoc, getDocs, setDoc, updateDoc} from "firebase/firestore";

@@ -58,7 +58,7 @@ import _ from "lodash"
 import {ref} from "vue";
 import {useQuasar} from "quasar";
 import {Tabset, TabsetStatus, TabsetType} from "src/models/Tabset";
-import {useSpacesStore} from "src/stores/spacesStore";
+import {useSpacesStore} from "src/spaces/stores/spacesStore";
 import NewTabsetDialog from "components/dialogues/NewTabsetDialog.vue";
 import {useUiStore} from "src/stores/uiStore";
 import {useNotificationsStore} from "src/stores/notificationsStore";
@@ -67,7 +67,7 @@ import {useUtils} from "src/services/Utils";
 import NavTabsetsListWidgetNonBex from "components/widgets/NavTabsetsListWidgetNonBex.vue";
 import {FeatureIdent} from "src/models/AppFeature";
 import {useSettingsStore} from "src/stores/settingsStore"
-import SpacesSelectorWidget from "components/widgets/SpacesSelectorWidget.vue";
+import SpacesSelectorWidget from "src/spaces/widgets/SpacesSelectorWidget.vue";
 
 const router = useRouter()
 const tabsStore = useTabsStore()
