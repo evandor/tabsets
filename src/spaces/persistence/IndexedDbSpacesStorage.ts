@@ -35,15 +35,17 @@ class IndexedDbSpacesStorage implements SpacesPersistence {
     });
   }
 
-  addSpace(space: Space): Promise<any> {
-    return Promise.resolve(undefined);
+  async addSpace(space: Space): Promise<any> {
+    return await this.db.put(this.STORE_IDENT, space, space.id)
+      .then(() => Promise.resolve())
   }
 
   compactDb(): Promise<any> {
     return Promise.resolve(undefined);
   }
 
-  deleteSpace(spaceId: string): void {
+  async deleteSpace(spaceId: string) {
+    return this.db.delete(this.STORE_IDENT, spaceId)
   }
 
   async loadSpaces(): Promise<any> {

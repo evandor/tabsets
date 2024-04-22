@@ -249,7 +249,7 @@ async function getTabsetsForSpaces() {
         }
       ],['desc','asc'] ))
   });
-  console.log("res", res)
+  // console.log("res", res)
   return res;
 }
 
