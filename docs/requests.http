@@ -12,7 +12,7 @@ Content-Type: application/json
 {
 }
 
-### Send POST request with json body
+### Send POST request with json body ---
 POST https://us-central1-tabsets-dev.cloudfunctions.net/app/hf/classify?text=I%20love%20Transformers.js
 Content-Type: application/json
 
