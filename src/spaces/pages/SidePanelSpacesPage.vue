@@ -133,25 +133,25 @@
 <script lang="ts" setup>
 
 import {onMounted, onUnmounted, ref, watch, watchEffect} from "vue";
-import {useTabsStore} from "src/stores/tabsStore";
+import {useTabsStore} from "stores/tabsStore";
 import _ from "lodash"
 import {Tabset, TabsetStatus, TabsetType} from "src/models/Tabset";
 import {useRouter} from "vue-router";
 import {useUtils} from "src/services/Utils";
 import {uid, useQuasar} from "quasar";
 import NavTabsetsListWidgetNonBex from "components/widgets/NavTabsetsListWidgetNonBex.vue";
-import {usePermissionsStore} from "src/stores/permissionsStore";
+import {usePermissionsStore} from "stores/permissionsStore";
 import {FeatureIdent} from "src/models/AppFeature";
-import {useSpacesStore} from "src/stores/spacesStore";
-import NewSpaceDialog from "components/dialogues/NewSpaceDialog.vue";
+import {useSpacesStore} from "src/spaces/stores/spacesStore";
+import NewSpaceDialog from "src/spaces/dialogues/NewSpaceDialog.vue";
 import NavigationService from "src/services/NavigationService";
 import NewTabsetDialog from "components/dialogues/NewTabsetDialog.vue";
 import {SidePanelView, useUiStore} from "stores/uiStore";
 import InfoMessageWidget from "components/widgets/InfoMessageWidget.vue";
 import FirstToolbarHelper from "pages/sidepanel/helper/FirstToolbarHelper.vue";
-import {useWindowsStore} from "src/stores/windowsStore";
+import {useWindowsStore} from "src/windows/stores/windowsStore";
 import Analytics from "src/utils/google-analytics";
-import {Space} from "src/models/Space";
+import {Space} from "src/spaces/models/Space";
 import SpaceHeader from "pages/sidepanel/helper/SpaceHeader.vue";
 import FirestorePersistenceService from "src/services/persistence/FirestorePersistenceService";
 import IndexedDbPersistenceService from "src/services/IndexedDbPersistenceService";
@@ -249,7 +249,7 @@ async function getTabsetsForSpaces() {
         }
       ],['desc','asc'] ))
   });
-  console.log("res", res)
+  // console.log("res", res)
   return res;
 }
 

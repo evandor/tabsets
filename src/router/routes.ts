@@ -47,7 +47,7 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/sidepanel/spaces',
     component: () => import('layouts/SidePanelLayout.vue'),
-    children: [{path: '', component: () => import('pages/SidePanelSpacesPage.vue')}],
+    children: [{path: '', component: () => import('src/spaces/pages/SidePanelSpacesPage.vue')}],
   },
   {
     path: '/sidepanel/search',
@@ -182,7 +182,7 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/mainpanel/spaces', // TODO combine with Spaces page
     component: () => import('layouts/PlainLayout.vue'),
-    children: [{path: '', component: () => import('pages/mainpanel/MainPanelSpacesPage.vue')}],
+    children: [{path: '', component: () => import('src/spaces/pages/MainPanelSpacesPage.vue')}],
   },
   {
     path: '/mainpanel/bookmarks/:id',
@@ -228,11 +228,6 @@ const routes: RouteRecordRaw[] = [
     path: '/bookmarks/:id',
     component: () => import('layouts/FullPageLayout.vue'),
     children: [{path: '', component: () => import('src/bookmarks/pages/BookmarksPage.vue')}],
-  },
-  {
-    path: '/spaces',
-    component: () => import('layouts/DefaultLayout.vue'),
-    children: [{path: '', component: () => import('pages/Spaces.vue')}],
   },
   {
     path: '/rss/:encodedUrl',

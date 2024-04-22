@@ -57,7 +57,7 @@ import NewTabsetDialog from "components/dialogues/NewTabsetDialog.vue";
 import {usePermissionsStore} from "src/stores/permissionsStore";
 import {FeatureIdent} from "src/models/AppFeature";
 import {Tabset, TabsetStatus, TabsetType} from "src/models/Tabset";
-import {useSpacesStore} from "src/stores/spacesStore";
+import {useSpacesStore} from "src/spaces/stores/spacesStore";
 import {ExecutionResult} from "src/domain/ExecutionResult";
 import EditTabsetDialog from "components/dialogues/EditTabsetDialog.vue";
 import DeleteTabsetDialog from "components/dialogues/DeleteTabsetDialog.vue";

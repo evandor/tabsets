@@ -4,7 +4,7 @@ import _ from "lodash";
 import {HTMLSelection, Tab} from "src/models/Tab";
 import {uid, useQuasar} from "quasar";
 import throttledQueue from 'throttled-queue';
-import {useWindowsStore} from "src/stores/windowsStore";
+import {useWindowsStore} from "src/windows/stores/windowsStore";
 import {useTabsetService} from "src/services/TabsetService2";
 import {useSettingsStore} from "src/stores/settingsStore";
 import {usePermissionsStore} from "src/stores/permissionsStore";

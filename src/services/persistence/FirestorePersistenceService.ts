@@ -1,16 +1,15 @@
 import PersistenceService from "src/services/PersistenceService";
 import {Message} from "src/models/Message";
-import {Space} from "src/models/Space";
+import {Space} from "src/spaces/models/Space";
 import {Suggestion, SuggestionState} from "src/models/Suggestion";
 import {SearchDoc} from "src/models/SearchDoc";
 import {BlobType, SavedBlob} from "src/models/SavedBlob";
 import {Tab} from "src/models/Tab";
 import {MetaLink} from "src/models/MetaLink";
 import {Tabset} from "src/models/Tabset";
-import {Window} from "src/models/Window";
 import {RequestInfo} from "src/models/RequestInfo";
 import {Notification} from "src/models/Notification";
-import {useSpacesStore} from "stores/spacesStore";
+import {useSpacesStore} from "src/spaces/stores/spacesStore";
 import {useAuthStore} from "stores/authStore";
 import {Account} from "src/models/Account";
 import {collection, deleteDoc, doc, getDoc, getDocs, setDoc, updateDoc} from "firebase/firestore";
@@ -202,10 +201,6 @@ class FirestorePersistenceService implements PersistenceService {
     return Promise.reject(undefined);
   }
 
-  addWindow(window: Window): Promise<any> {
-    return Promise.reject(undefined);
-  }
-
   cleanUpContent(): Promise<SearchDoc[]> {
     return Promise.reject([]);
   }
@@ -308,14 +303,6 @@ class FirestorePersistenceService implements PersistenceService {
     return Promise.reject("");
   }
 
-  getWindow(windowId: number): Promise<Window | undefined> {
-    return Promise.reject(undefined);
-  }
-
-  getWindows(): Promise<Window[]> {
-    return Promise.reject([]);
-  }
-
   notificationRead(notificationId: string): Promise<void> {
     return Promise.reject(undefined);
   }
@@ -331,10 +318,6 @@ class FirestorePersistenceService implements PersistenceService {
   }
 
   removeSuggestion(id: string): any {
-  }
-
-  removeWindow(windowId: number): Promise<void> {
-    return Promise.reject(undefined);
   }
 
   saveActiveFeatures(val: string[]): any {
@@ -381,14 +364,6 @@ class FirestorePersistenceService implements PersistenceService {
 
   updateThumbnail(url: string): Promise<void> {
     return this.indexedDB.updateThumbnail(url)
-  }
-
-  updateWindow(window: Window): Promise<void> {
-    return Promise.reject(undefined);
-  }
-
-  upsertWindow(window: Window): Promise<void> {
-    return Promise.reject(undefined);
   }
 
   getAccount(accountId: string): Promise<Account> {

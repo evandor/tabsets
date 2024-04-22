@@ -2,7 +2,7 @@ import {useNotificationsStore} from "src/stores/notificationsStore";
 import {openURL, uid} from "quasar";
 import {useTabsStore} from "src/stores/tabsStore";
 import {useTabsetService} from "src/services/TabsetService2";
-import {useWindowsStore} from "src/stores/windowsStore";
+import {useWindowsStore} from "src/windows/stores/windowsStore";
 import JsUtils from "src/utils/JsUtils";
 import {useGroupsStore} from "stores/groupsStore";
 import {usePermissionsStore} from "stores/permissionsStore";

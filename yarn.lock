@@ -2229,9 +2229,9 @@
     yargs "17.7.2"
 
 "@quasar/app-vite@^1.8.0":
-  version "1.8.1"
-  resolved "https://registry.yarnpkg.com/@quasar/app-vite/-/app-vite-1.8.1.tgz#c18130a47db8ac30650ef045fb5acf129569c150"
-  integrity sha512-sYd7LdvmMgav5yqB9HuahUsuMz4fEB7nO+0MO+QVzd2PJT7iUUlq0uxeiunpRywcnlzJhnkh/ri7FOdnuqq8Zw==
+  version "1.8.2"
+  resolved "https://registry.yarnpkg.com/@quasar/app-vite/-/app-vite-1.8.2.tgz#9c430900bcd612911a2c6611b706a08875c2e647"
+  integrity sha512-8/0xCMkAf4SHHdhvp54jKpq73onKawpPd4kjQZqzZaLlkKfLjrmbNmKuwmGqVptwcgz18FXs66HdSrYilLKv0A==
   dependencies:
     "@quasar/render-ssr-error" "^1.0.3"
     "@quasar/vite-plugin" "^1.3.3"
@@ -7972,10 +7972,10 @@ qs@6.11.0:
   dependencies:
     side-channel "^1.0.4"
 
-quasar@2.15.2:
-  version "2.15.2"
-  resolved "https://registry.yarnpkg.com/quasar/-/quasar-2.15.2.tgz#8c945c87d8723696614a56a17ffcc041d8a26ab6"
-  integrity sha512-euCm5Elo5SfGNRY18HvKAknkBwesoUAFhZ6BxmliiEVHGes53ZcUKnMwZU/XsRhwiC6VQzBBSk/U0iEcdp/NyA==
+quasar@^2.15.2:
+  version "2.15.3"
+  resolved "https://registry.yarnpkg.com/quasar/-/quasar-2.15.3.tgz#49c70f2a404f23d9dec9b8ae925702bc74f7ed86"
+  integrity sha512-+6g6D1t/O95dhuov4b6SwR3asowr01xwV1A2JWh5cVQc1hTmolXzgQNPbrOApLjGX7N1cQ119DWajJ/G8KzXPQ==
 
 query-selector-shadow-dom@^1.0.0:
   version "1.0.1"

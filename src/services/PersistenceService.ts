@@ -1,11 +1,10 @@
 import {Tabset} from "src/models/Tabset";
-import {Space} from "src/models/Space";
 import {Tab} from "src/models/Tab";
 import {Notification} from "src/models/Notification";
 import {SearchDoc} from "src/models/SearchDoc";
 import {Suggestion, SuggestionState} from "src/models/Suggestion";
 import {MetaLink} from "src/models/MetaLink";
-import {Window} from "src/models/Window";
+import {Window} from "src/windows/models/Window";
 import {RequestInfo} from "src/models/RequestInfo";
 import {BlobType, SavedBlob} from "src/models/SavedBlob";
 import {Message} from "src/models/Message";
@@ -50,10 +49,9 @@ interface PersistenceService {
 
   saveRequest(url: string, requestInfo: RequestInfo): Promise<void>
 
-  loadSpaces(): Promise<any>
-
-  addSpace(space: Space): Promise<any>
-  deleteSpace(spaceId: string): void;
+  // loadSpaces(): Promise<any>
+  // addSpace(space: Space): Promise<any>
+  // deleteSpace(spaceId: string): void;
 
   //loadCategories(): Promise<any>
 
@@ -78,13 +76,12 @@ interface PersistenceService {
   getGroups(): Promise<chrome.tabGroups.TabGroup[]>
   deleteGroupByTitle(title: string): Promise<void>
 
-  addWindow(window: Window): Promise<any>
-  //updateWindow(group: chrome.windows.Window): Promise<any>
-  getWindows(): Promise<Window[]>
-  getWindow(windowId: number): Promise<Window | undefined>
-  removeWindow(windowId: number): Promise<void>
-  updateWindow(window: Window): Promise<void>
-  upsertWindow(window: Window): Promise<void>
+  // addWindow(window: Window): Promise<any>
+  // getWindows(): Promise<Window[]>
+  // getWindow(windowId: number): Promise<Window | undefined>
+  // removeWindow(windowId: number): Promise<void>
+  // updateWindow(window: Window): Promise<void>
+  // upsertWindow(window: Window): Promise<void>
 
   getMessages(): Promise<Message[]>
   addMessage(msg: Message):void

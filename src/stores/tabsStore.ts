@@ -5,14 +5,14 @@ import {Tabset, TabsetSharing, TabsetStatus, TabsetType} from "src/models/Tabset
 import {Tab, TabComment, UrlExtension} from "src/models/Tab";
 import ChromeApi from "src/services/ChromeApi";
 import {NewOrReplacedTabset} from "src/models/NewOrReplacedTabset";
-import {useSpacesStore} from "src/stores/spacesStore";
+import {useSpacesStore} from "src/spaces/stores/spacesStore";
 import {SpecialTabsetIdent} from "src/domain/tabsets/CreateSpecialTabset";
 import {usePermissionsStore} from "src/stores/permissionsStore";
 import {FeatureIdent} from "src/models/AppFeature";
 import {STRIP_CHARS_IN_USER_INPUT} from "boot/constants";
-import {Space} from "src/models/Space";
+import {Space} from "src/spaces/models/Space";
 import {useTabsetService} from "src/services/TabsetService2";
-import {useWindowsStore} from "src/stores/windowsStore";
+import {useWindowsStore} from "src/windows/stores/windowsStore";
 import {TabAndTabsetId} from "src/models/TabAndTabsetId";
 
 async function queryTabs(): Promise<chrome.tabs.Tab[]> {

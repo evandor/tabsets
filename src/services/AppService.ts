@@ -9,11 +9,11 @@ import {useSuggestionsStore} from "stores/suggestionsStore";
 import tabsetService from "src/services/TabsetService";
 import {useTabsetService} from "src/services/TabsetService2";
 import ChromeApi from "src/services/ChromeApi";
-import {useSpacesStore} from "stores/spacesStore";
+import {useSpacesStore} from "src/spaces/stores/spacesStore";
 import {useTabsStore} from "stores/tabsStore";
 import {useSettingsStore} from "stores/settingsStore";
 import {useBookmarksStore} from "src/bookmarks/stores/bookmarksStore";
-import {useWindowsStore} from "src/stores/windowsStore";
+import {useWindowsStore} from "src/windows/stores/windowsStore";
 import {useSearchStore} from "stores/searchStore";
 import {Router} from "vue-router";
 import {useGroupsStore} from "stores/groupsStore";
@@ -110,24 +110,17 @@ class AppService {
 
       let persistenceStore = dbStoreToUse(syncType)
 
-      let failedGitLogin = false
-
-      if(router.currentRoute.value.query.token === "failed") {
+      if (router.currentRoute.value.query.token === "failed") {
         console.log("failed login, falling back to indexedDB")
-        failedGitLogin = true
       }
 
       console.debug(`%cchecking sync config: type=${syncType}, persistenceStore=${persistenceStore.getServiceName()}`, "font-weight:bold")
-
-      // if (syncUrl) {
-      //   uiStore.appLoading = "syncing tabsets..."
-      // }
 
       await FsPersistenceService.init()
 
       await this.initCoreSerivces(quasar, persistenceStore, this.router)
     } else {
-      await this.initCoreSerivces(quasar, useDB(undefined).db, this.router)
+      await this.initCoreSerivces(quasar, useDB().db, this.router)
     }
 
     useNotificationsStore().bookmarksExpanded = quasar.localStorage.getItem("bookmarks.expanded") || []
@@ -161,7 +154,8 @@ class AppService {
     const entitiesStore = useEntitiesStore()
     const apisStore = useApisStore()
 
-    await spacesStore.initialize(store)
+    const spacesPersistence = store.getServiceName() === 'FirestorePersistenceService' ? useDB().spacesFirestoreDb : useDB().spacesIndexedDb
+    await spacesStore.initialize(spacesPersistence)
     await useTabsetService().init(store, false)
 
     await entitiesStore.initialize(store)
@@ -177,7 +171,7 @@ class AppService {
       groupsStore.initListeners()
     }
 
-    await windowsStore.initialize(useDB(undefined).db)
+    await windowsStore.initialize()
     windowsStore.initListeners()
 
     useUiStore().appLoading = undefined

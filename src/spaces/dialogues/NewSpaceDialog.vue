@@ -50,7 +50,9 @@ import {useRouter} from "vue-router";
 
 import {useDialogPluginComponent} from 'quasar'
 import {STRIP_CHARS_IN_USER_INPUT} from "boot/constants";
-import {useSpacesStore} from "src/stores/spacesStore";
+import {useSpacesStore} from "src/spaces/stores/spacesStore";
+import {useCommandExecutor} from "src/services/CommandExecutor";
+import {CreateSpaceCommand} from "src/spaces/commands/CreateSpaceCommand";
 
 defineEmits([
   ...useDialogPluginComponent.emits
@@ -79,28 +81,7 @@ watchEffect(() => {
 })
 
 const createNewSpace = () => {
-  hideWarning.value = true
-  useSpacesStore().createSpace(newSpaceName.value)
-    .then(() => {
-      newSpaceName.value = ''
-      let message = 'New Space ' + newSpaceName.value + ' created successfully'
-      hideWarning.value = false
-      if (!props.fromPanel) {
-        router.push("/spaces")
-      }
-      $q.notify({
-        message: message,
-        type: 'positive'
-      })
-    }).catch((ex: any) => {
-    console.error("ex", ex)
-    hideWarning.value = false
-    $q.notify({
-      message: 'There was a problem creating the Space ' + newSpaceName.value,
-      type: 'warning',
-    })
-
-  })
+  useCommandExecutor().executeFromUi(new CreateSpaceCommand(newSpaceName.value))
 }
 
 const newSpaceDialogWarning = () => {

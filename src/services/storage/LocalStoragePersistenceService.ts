@@ -1,5 +1,5 @@
 import PersistenceService from "src/services/PersistenceService";
-import {Space} from "src/models/Space";
+import {Space} from "src/spaces/models/Space";
 import {StaticSuggestionIdent, Suggestion, SuggestionState} from "src/models/Suggestion";
 import {SearchDoc} from "src/models/SearchDoc";
 import {QVueGlobals, useQuasar} from "quasar";
@@ -8,11 +8,11 @@ import {Tab} from "src/models/Tab";
 import {Notification} from "src/models/Notification";
 import {MetaLink} from "src/models/MetaLink";
 import {RequestInfo} from "src/models/RequestInfo";
-import {Window} from "src/models/Window";
 import {BlobType, SavedBlob} from "src/models/SavedBlob";
 import {Message} from "src/models/Message";
 import {Account} from "src/models/Account";
 import {Entity} from "src/models/Entity";
+import {Api} from "src/models/Api";
 
 export class LocalStoragePersistenceService implements PersistenceService {
 
@@ -209,10 +209,6 @@ export class LocalStoragePersistenceService implements PersistenceService {
     return Promise.resolve(undefined);
   }
 
-  addWindow(window: Window): Promise<any> {
-    return Promise.resolve(undefined);
-  }
-
   deleteGroupByTitle(title: string): Promise<void> {
     return Promise.resolve(undefined);
   }
@@ -225,27 +221,7 @@ export class LocalStoragePersistenceService implements PersistenceService {
     return Promise.resolve([]);
   }
 
-  getWindow(windowId: number): Promise<Window | undefined> {
-    return Promise.resolve(undefined);
-  }
-
-  getWindows(): Promise<Window[]> {
-    return Promise.resolve([]);
-  }
-
-  removeWindow(windowId: number): Promise<void> {
-    return Promise.resolve(undefined);
-  }
-
   updateGroup(group: chrome.tabGroups.TabGroup): Promise<any> {
-    return Promise.resolve(undefined);
-  }
-
-  updateWindow(window: Window): Promise<void> {
-    return Promise.resolve(undefined);
-  }
-
-  upsertWindow(window: Window): Promise<void> {
     return Promise.resolve(undefined);
   }
 
@@ -280,6 +256,25 @@ export class LocalStoragePersistenceService implements PersistenceService {
 
   getEntities(): Promise<Entity[]> {
     return Promise.resolve([]);
+  }
+
+  deleteApi(apiId: string): Promise<void> {
+    return Promise.resolve(undefined);
+  }
+
+  deleteEntity(entityId: string): Promise<void> {
+    return Promise.resolve(undefined);
+  }
+
+  findApiById(id: string): Promise<Api> {
+    return Promise.reject("undefined");
+  }
+
+  getApis(): Promise<Api[]> {
+    return Promise.resolve([]);
+  }
+
+  saveApi(api: Api): void {
   }
 
 }

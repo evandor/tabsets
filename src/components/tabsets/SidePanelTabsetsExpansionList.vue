@@ -238,7 +238,7 @@ import {usePermissionsStore} from "stores/permissionsStore";
 import {FeatureIdent} from "src/models/AppFeature";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {SelectTabsetCommand} from "src/domain/tabsets/SelectTabset";
-import {useSpacesStore} from "stores/spacesStore";
+import {useSpacesStore} from "src/spaces/stores/spacesStore";
 import {Tab} from "src/models/Tab";
 import ShareTabsetPubliclyDialog from "components/dialogues/ShareTabsetPubliclyDialog.vue";
 import {openURL, scroll, uid, useQuasar} from "quasar";
@@ -249,7 +249,7 @@ import getScrollTarget = scroll.getScrollTarget;
 
 import {ExecutionResult} from "src/domain/ExecutionResult";
 import {useNotificationHandler} from "src/services/ErrorHandler";
-import {useWindowsStore} from "stores/windowsStore";
+import {useWindowsStore} from "src/windows/stores/windowsStore";
 import TabsetService from "src/services/TabsetService";
 import {FirebaseCall} from "src/services/firebase/FirebaseCall";
 

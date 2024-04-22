@@ -14,11 +14,11 @@
 import {useTabsStore} from "src/stores/tabsStore";
 import {ref, watchEffect} from "vue";
 import {useRouter} from "vue-router";
-import {useSpacesStore} from "src/stores/spacesStore";
-import NewSpaceDialog from "components/dialogues/NewSpaceDialog.vue"
+import {useSpacesStore} from "src/spaces/stores/spacesStore";
+import NewSpaceDialog from "src/spaces/dialogues/NewSpaceDialog.vue"
 import {useQuasar} from "quasar";
 import _ from "lodash";
-import {Space} from "src/models/Space";
+import {Space} from "src/spaces/models/Space";
 import {Tabset} from "src/models/Tabset";
 
 const tabsStore = useTabsStore()

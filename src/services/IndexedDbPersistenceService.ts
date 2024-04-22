@@ -4,8 +4,8 @@ import _ from "lodash";
 import {EXPIRE_DATA_PERIOD_IN_MINUTES, INDEX_DB_VERSION} from "boot/constants";
 import PersistenceService from "src/services/PersistenceService";
 import {Tabset, TabsetStatus} from "src/models/Tabset";
-import {useSpacesStore} from "src/stores/spacesStore";
-import {Space} from "src/models/Space";
+import {useSpacesStore} from "src/spaces/stores/spacesStore";
+import {Space} from "src/spaces/models/Space";
 import {Tab} from "src/models/Tab";
 import {SearchDoc} from "src/models/SearchDoc";
 import {MetaLink} from "src/models/MetaLink";
@@ -15,7 +15,7 @@ import {Suggestion, SuggestionState, SuggestionType} from "src/models/Suggestion
 import {useUiStore} from "src/stores/uiStore";
 import {RequestInfo} from "src/models/RequestInfo";
 import {useSuggestionsStore} from "stores/suggestionsStore";
-import {Window} from "src/models/Window";
+import {Window} from "src/windows/models/Window";
 import {BlobType, SavedBlob} from "src/models/SavedBlob";
 import {Message} from "src/models/Message";
 import {Account} from "src/models/Account";
@@ -71,19 +71,6 @@ class IndexedDbPersistenceService implements PersistenceService {
     } else {
       console.warn("could not reload tabset with id", tabsetId)
     }
-  }
-
-  async loadSpaces(): Promise<void> {
-    console.debug(" loading spaces...")
-    const spacesStore = useSpacesStore()
-    const keys: IDBValidKey[] = await this.db.getAllKeys('spaces')
-    _.forEach(keys, key => {
-      this.db.get('spaces', key)
-        .then((space: Space) => {
-          spacesStore.putSpace(space)
-        })
-        .catch(err => console.log("err", err))
-    })
   }
 
   async saveTabset(tabset: Tabset): Promise<IDBValidKey> {
@@ -386,15 +373,6 @@ class IndexedDbPersistenceService implements PersistenceService {
     await this.db.put('blobs', blobsForTab, tabId)
   }
 
-  async addSpace(space: Space): Promise<void> {
-    return await this.db.put('spaces', space, space.id)
-      .then(() => Promise.resolve())
-  }
-
-  deleteSpace(spaceId: string): Promise<void> {
-    return this.db.delete('spaces', spaceId)
-  }
-
   addGroup(group: chrome.tabGroups.TabGroup): Promise<any> {
     console.debug("adding group", group)
     return this.db.add('groups', group, group.title)
@@ -417,113 +395,6 @@ class IndexedDbPersistenceService implements PersistenceService {
   async deleteGroupByTitle(title: string): Promise<void> {
     return this.db.delete('groups', title)
   }
-
-  /*** Windows Management ***/
-
-  async addWindow(window: Window): Promise<any> {
-    console.debug("adding window", `id=${window.id}, index=${window.index}, #hostList=${window.hostList.length}`)
-    const existingWindowForWindowId: Window | undefined = await this.db.get('windows', window.id)
-    if (existingWindowForWindowId) {
-
-      const mergedWindow = new Window(
-        window.id,
-        window.browserWindow,
-        existingWindowForWindowId.title,
-        existingWindowForWindowId.index,
-        existingWindowForWindowId.open,
-        window.hostList
-      )
-      console.debug(`merging windows to ${mergedWindow.toString()}`)
-      this.db.put('windows', mergedWindow, window.id).catch((err) => console.error("error", err))
-      return Promise.resolve("not added, updated hostList instead")
-
-      // not bad, simply resolve
-      //console.debug("key already exists")
-      //return Promise.resolve("Key already exists")
-    }
-    //if (!window.title) {
-    // try to find matching window
-    const allWindows: Window[] = await this.db.getAll('windows') as Window[]
-    console.debug(`adding ${window.toString()} to list [${_.join(_.map(allWindows, w => w.id), ',')}]`)
-    for (const w of allWindows) {
-      if (w.hostList) {
-        console.log("comparing hostLists", window.hostList, w.hostList, typeof w.hostList)
-        const intersection = new Set([...window.hostList].filter(x => (new Set(w.hostList).has(x))));
-        console.log("intersection", intersection, intersection.size === window.hostList.length, intersection.size === w.hostList.length)
-        if (intersection.size === window.hostList.length && intersection.size === w.hostList.length) {
-          // reuse existing
-          const useId = window.id
-          const oldId = w.id
-          window = w
-          window.id = useId
-          console.log("replacing old window " + oldId + " with " + window.toString())
-          await this.db.delete('windows', oldId)
-          break
-        }
-      }
-    }
-    //}
-    try {
-      await this.db.add('windows', window, window.id)
-    }
-      //.then((res) => console.log("got res", res))
-    catch (err: any) {
-      if (!err.toString().indexOf('Key already exists')) {
-        console.log("error adding window", window, err)
-      }
-    }
-  }
-
-  // updateGroup(group: chrome.tabGroups.TabGroup): Promise<any> {
-  //   console.log("updating group", group)
-  //   return this.db.put('groups', group, group.title)
-  // }
-
-  getWindows(): Promise<Window[]> {
-    return this.db.getAll('windows')
-  }
-
-  getWindow(windowId: number): Promise<Window | undefined> {
-    //console.log("trying to get window with id", windowId)
-    return this.db.get('windows', windowId)
-  }
-
-  async removeWindow(windowId: number): Promise<void> {
-    console.log("removing window", windowId)
-    return this.db.delete('windows', windowId)
-  }
-
-  async updateWindow(window: Window): Promise<void> {
-    console.debug(`updating window id=${window.id}, title=${window.title}, index=${window.index}, #hostList=${window.hostList?.length}`)
-    if (!window.id) {
-      return Promise.reject("window.id not set")
-    }
-    const windowFromDb: Window = await this.db.get('windows', window.id)
-    if (!windowFromDb) {
-      return Promise.reject("could not find window for id " + window.id)
-    }
-    const asJson = JSON.parse(JSON.stringify(window))
-
-    asJson['title'] = window.title
-    asJson['index'] = window.index
-    asJson['hostList'] = window.hostList ? Array.from(window.hostList) : []
-
-    delete asJson['tabs']
-    //console.debug("saving window json as ", asJson)
-    await this.db.put('windows', asJson, window.id)
-  }
-
-  async upsertWindow(window: Window): Promise<void> {
-    try {
-      console.log(`about to change window:  id=${window.id}, title=${window.title}, index=${window.index}, open=${window.open}, #hostList=${window.hostList.length}`)
-      const asJson = JSON.parse(JSON.stringify(window))
-      delete asJson['tabs']
-      await this.db.put('windows', asJson, window.id)
-    } catch (err) {
-      console.log("error renaming window", err)
-    }
-  }
-
   /** messages **/
 
   getMessages(): Promise<Message[]> {
@@ -595,10 +466,6 @@ class IndexedDbPersistenceService implements PersistenceService {
         if (!db.objectStoreNames.contains('groups')) {
           console.log("creating db groups")
           db.createObjectStore('groups');
-        }
-        if (!db.objectStoreNames.contains('windows')) {
-          console.log("creating db windows")
-          db.createObjectStore('windows');
         }
         if (!db.objectStoreNames.contains('messages')) {
           console.log("creating db messages")

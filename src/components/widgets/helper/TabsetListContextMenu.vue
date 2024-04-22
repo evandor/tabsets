@@ -165,8 +165,8 @@ import {MarkTabsetAsFavoriteCommand} from "src/domain/tabsets/MarkTabsetAsFavori
 import {MarkTabsetAsDefaultCommand} from "src/domain/tabsets/MarkTabsetAsDefault";
 import {MarkTabsetAsArchivedCommand} from "src/domain/tabsets/MarkTabsetAsArchived";
 import RestoreTabsetDialog from "components/dialogues/RestoreTabsetDialog.vue";
-import {Space} from "src/models/Space";
-import {useSpacesStore} from "src/stores/spacesStore";
+import {Space} from "src/spaces/models/Space";
+import {useSpacesStore} from "src/spaces/stores/spacesStore";
 import _ from "lodash";
 import {useTabsetService} from "src/services/TabsetService2";
 import {openURL, useQuasar} from "quasar";
