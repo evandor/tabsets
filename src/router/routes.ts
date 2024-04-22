@@ -177,7 +177,7 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/mainpanel/suggestions/:suggestionId',
     component: () => import('layouts/PlainLayout.vue'),
-    children: [{path: '', component: () => import('pages/mainpanel/MainPanelCheckSuggestionPage.vue')}],
+    children: [{path: '', component: () => import('src/suggestions/pages/MainPanelCheckSuggestionPage.vue')}],
   },
   {
     path: '/mainpanel/spaces', // TODO combine with Spaces page

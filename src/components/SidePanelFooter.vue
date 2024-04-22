@@ -202,7 +202,7 @@ import {useWindowsStore} from "src/windows/stores/windowsStore";
 import {useSuggestionsStore} from "src/suggestions/stores/suggestionsStore";
 import _ from "lodash";
 import {SuggestionState} from "src/suggestions/models/Suggestion";
-import SuggestionDialog from "components/dialogues/SuggestionDialog.vue";
+import SuggestionDialog from "src/suggestions/dialogues/SuggestionDialog.vue";
 import {Tabset, TabsetStatus} from "src/models/Tabset";
 import {ToastType} from "src/models/Toast";
 import SidePanelFooterLeftButtons from "components/helper/SidePanelFooterLeftButtons.vue";
