@@ -1,5 +1,5 @@
 import PersistenceService from "src/services/PersistenceService";
-import {Space} from "src/models/Space";
+import {Space} from "src/spaces/models/Space";
 import {StaticSuggestionIdent, Suggestion, SuggestionState} from "src/models/Suggestion";
 import {SearchDoc} from "src/models/SearchDoc";
 import {QVueGlobals, useQuasar} from "quasar";

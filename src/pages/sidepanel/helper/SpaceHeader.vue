@@ -17,7 +17,7 @@
 
 <script lang="ts" setup>
 
-import {useSpacesStore} from "stores/spacesStore";
+import {useSpacesStore} from "src/spaces/stores/spacesStore";
 import {ref, watchEffect} from "vue";
 import {Tabset, TabsetStatus} from "src/models/Tabset";
 

@@ -45,7 +45,7 @@ import {useTabsStore} from "src/stores/tabsStore";
 import {useDialogPluginComponent} from 'quasar'
 import {usePermissionsStore} from "src/stores/permissionsStore";
 import {FeatureIdent} from "src/models/AppFeature";
-import {useSpacesStore} from "stores/spacesStore";
+import {useSpacesStore} from "src/spaces/stores/spacesStore";
 
 defineEmits([
   // REQUIRED; need to specify some events that your

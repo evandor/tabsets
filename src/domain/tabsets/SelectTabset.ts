@@ -6,7 +6,7 @@ import {Tab} from "src/models/Tab";
 import {useUiStore} from "src/stores/uiStore";
 import {useUtils} from "src/services/Utils";
 import {Tabset} from "src/models/Tabset";
-import {useSpacesStore} from "src/stores/spacesStore";
+import {useSpacesStore} from "src/spaces/stores/spacesStore";
 import {useTabsetService} from "src/services/TabsetService2";
 
 const {inBexMode, sendMsg} = useUtils()
