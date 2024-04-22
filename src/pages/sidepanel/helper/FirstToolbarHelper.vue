@@ -101,7 +101,7 @@
 
 import {usePermissionsStore} from "stores/permissionsStore";
 import {FeatureIdent} from "src/models/AppFeature";
-import {useSpacesStore} from "stores/spacesStore";
+import {useSpacesStore} from "src/spaces/stores/spacesStore";
 import {useTabsStore} from "stores/tabsStore";
 import {useRouter} from "vue-router";
 import {ref, watchEffect} from "vue";

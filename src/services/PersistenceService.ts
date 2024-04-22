@@ -1,5 +1,4 @@
 import {Tabset} from "src/models/Tabset";
-import {Space} from "src/models/Space";
 import {Tab} from "src/models/Tab";
 import {Notification} from "src/models/Notification";
 import {SearchDoc} from "src/models/SearchDoc";
@@ -50,10 +49,9 @@ interface PersistenceService {
 
   saveRequest(url: string, requestInfo: RequestInfo): Promise<void>
 
-  loadSpaces(): Promise<any>
-
-  addSpace(space: Space): Promise<any>
-  deleteSpace(spaceId: string): void;
+  // loadSpaces(): Promise<any>
+  // addSpace(space: Space): Promise<any>
+  // deleteSpace(spaceId: string): void;
 
   //loadCategories(): Promise<any>
 

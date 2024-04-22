@@ -217,7 +217,7 @@ import {useSettingsStore} from "stores/settingsStore";
 import WindowsMarkupTable from "src/windows/components/WindowsMarkupTable.vue";
 import {WindowAction, WindowHolder} from "src/windows/models/WindowHolder";
 import NewTabsetDialog from "components/dialogues/NewTabsetDialog.vue";
-import {useSpacesStore} from "stores/spacesStore";
+import {useSpacesStore} from "src/spaces/stores/spacesStore";
 
 const {handleSuccess, handleError} = useNotificationHandler()
 
@@ -251,10 +251,6 @@ const tabsetsMangedWindows = ref<object[]>([])
 onMounted(() => {
   windowRows.value = calcWindowRows()
   console.log("windowRows", windowRows.value.length)
-})
-
-watchEffect(() => {
-  console.log("====>", windowRows.value.length)
 })
 
 watchEffect(() => {
@@ -362,10 +358,12 @@ chrome.tabs.onRemoved.addListener((tabId: number, removeInfo: chrome.tabs.TabRem
 
 
 chrome.tabs.onUpdated.addListener((tabId: number, changeInfo: chrome.tabs.TabChangeInfo, tab: chrome.tabs.Tab) => {
-  //console.log("***here we are3", tab)
   useWindowsStore().setup('got window-updated message')
     .then(() => windowRows.value = calcWindowRows())
-    .catch((err) => handleError(err))
+    .catch((err) => {
+      console.log("could not yet calcWindowRows: " + err)
+      //handleError(err)
+    })
 })
 
 watchEffect(() => {
