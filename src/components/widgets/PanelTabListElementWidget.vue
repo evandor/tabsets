@@ -382,8 +382,8 @@ import {DeleteChromeGroupCommand} from "src/domain/groups/DeleteChromeGroupComma
 import {PlaceholdersType} from "src/models/Placeholders";
 import {LocalStorage, useQuasar} from "quasar";
 import MonitoringDialog from "components/dialogues/MonitoringDialog.vue";
-import {useSuggestionsStore} from "stores/suggestionsStore";
-import {Suggestion, SuggestionState} from "src/models/Suggestion";
+import {useSuggestionsStore} from "src/suggestions/stores/suggestionsStore";
+import {Suggestion, SuggestionState} from "src/suggestions/models/Suggestion";
 import PdfService from "src/services/PdfService";
 import {SavedBlob} from "src/models/SavedBlob";
 import {ExecutionResult} from "src/domain/ExecutionResult";

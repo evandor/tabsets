@@ -2,7 +2,7 @@ import {Tabset} from "src/models/Tabset";
 import {Tab} from "src/models/Tab";
 import {Notification} from "src/models/Notification";
 import {SearchDoc} from "src/models/SearchDoc";
-import {Suggestion, SuggestionState} from "src/models/Suggestion";
+import {Suggestion, SuggestionState} from "src/suggestions/models/Suggestion";
 import {MetaLink} from "src/models/MetaLink";
 import {Window} from "src/windows/models/Window";
 import {RequestInfo} from "src/models/RequestInfo";
@@ -49,22 +49,16 @@ interface PersistenceService {
 
   saveRequest(url: string, requestInfo: RequestInfo): Promise<void>
 
-  // loadSpaces(): Promise<any>
-  // addSpace(space: Space): Promise<any>
-  // deleteSpace(spaceId: string): void;
-
-  //loadCategories(): Promise<any>
-
   cleanUpRequests(): Promise<void>
 
   getNotifications(onlyNew: boolean): Promise<Notification[]>
   addNotification(notification: Notification): Promise<any>
   notificationRead(notificationId: string): Promise<void>
 
-  getSuggestions(): Promise<Suggestion[]>
-  addSuggestion(suggestion: Suggestion): Promise<any>
-  removeSuggestion(id: string): any;
-  setSuggestionState(id: string, state: SuggestionState): any;
+  // getSuggestions(): Promise<Suggestion[]>
+  // addSuggestion(suggestion: Suggestion): Promise<any>
+  // removeSuggestion(id: string): any;
+  // setSuggestionState(id: string, state: SuggestionState): any;
 
   compactDb(): Promise<any>
 

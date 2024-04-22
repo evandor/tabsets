@@ -87,8 +87,8 @@ import DialogButton from "components/buttons/DialogButton.vue";
 import {SavePngCommand} from "src/domain/tabs/SavePng";
 import {useTabsetService} from "src/services/TabsetService2";
 import {NoOpCommand} from "src/domain/commands/NoOpCommand";
-import {Suggestion, SuggestionState} from "src/models/Suggestion";
-import {useSuggestionsStore} from "stores/suggestionsStore";
+import {Suggestion, SuggestionState} from "src/suggestions/models/Suggestion";
+import {useSuggestionsStore} from "src/suggestions/stores/suggestionsStore";
 import _ from "lodash"
 
 defineEmits([

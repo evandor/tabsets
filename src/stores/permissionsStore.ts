@@ -1,8 +1,8 @@
 import {defineStore} from 'pinia';
 import {computed, ref} from "vue";
 import {FeatureIdent} from "src/models/AppFeature";
-import {useSuggestionsStore} from "src/stores/suggestionsStore";
-import {StaticSuggestionIdent, Suggestion} from "src/models/Suggestion";
+import {useSuggestionsStore} from "src/suggestions/stores/suggestionsStore";
+import {StaticSuggestionIdent, Suggestion} from "src/suggestions/models/Suggestion";
 import {CreateSpecialTabsetCommand, SpecialTabsetIdent} from "src/domain/tabsets/CreateSpecialTabset";
 import {TabsetType} from "src/models/Tabset";
 import {useCommandExecutor} from "src/services/CommandExecutor";

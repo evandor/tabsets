@@ -5,9 +5,9 @@ import IndexedDbPersistenceService from "src/services/IndexedDbPersistenceServic
 import {useDB} from "src/services/usePersistenceService";
 import PersistenceService from "src/services/PersistenceService";
 import {useTabsetService} from "src/services/TabsetService2";
-import {useSuggestionsStore} from "stores/suggestionsStore";
+import {useSuggestionsStore} from "src/suggestions/stores/suggestionsStore";
 import ChromeApi from "src/services/ChromeApi";
-import {StaticSuggestionIdent, Suggestion, SuggestionState, SuggestionType} from "src/models/Suggestion";
+import {StaticSuggestionIdent, Suggestion, SuggestionState, SuggestionType} from "src/suggestions/models/Suggestion";
 
 installQuasarPlugin();
 

@@ -54,8 +54,8 @@ import {CURRENT_USER_EMAIL} from "boot/constants";
 import {getAuth, User} from "firebase/auth";
 import InfoLine from "pages/helper/InfoLine.vue";
 import IndexedDbPersistenceService from "src/services/IndexedDbPersistenceService";
-import {useSuggestionsStore} from "stores/suggestionsStore";
-import {StaticSuggestionIdent, Suggestion} from "src/models/Suggestion";
+import {useSuggestionsStore} from "src/suggestions/stores/suggestionsStore";
+import {StaticSuggestionIdent, Suggestion} from "src/suggestions/models/Suggestion";
 import {useUtils} from "src/services/Utils";
 
 const {sendMsg} = useUtils()

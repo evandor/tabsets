@@ -1,8 +1,8 @@
 import Command from "src/domain/Command";
 import {ExecutionResult} from "src/domain/ExecutionResult";
-import {Suggestion, SuggestionState, SuggestionType} from "src/models/Suggestion";
+import {Suggestion, SuggestionState, SuggestionType} from "src/suggestions/models/Suggestion";
 import {useBookmarksStore} from "src/bookmarks/stores/bookmarksStore";
-import {useSuggestionsStore} from "stores/suggestionsStore";
+import {useSuggestionsStore} from "src/suggestions/stores/suggestionsStore";
 import {useUtils} from "src/services/Utils";
 import NavigationService from "src/services/NavigationService";
 import {useTabsStore} from "stores/tabsStore";

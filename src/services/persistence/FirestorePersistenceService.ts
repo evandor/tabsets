@@ -1,7 +1,7 @@
 import PersistenceService from "src/services/PersistenceService";
 import {Message} from "src/models/Message";
 import {Space} from "src/spaces/models/Space";
-import {Suggestion, SuggestionState} from "src/models/Suggestion";
+import {Suggestion, SuggestionState} from "src/suggestions/models/Suggestion";
 import {SearchDoc} from "src/models/SearchDoc";
 import {BlobType, SavedBlob} from "src/models/SavedBlob";
 import {Tab} from "src/models/Tab";
