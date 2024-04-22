@@ -78,7 +78,7 @@
     "vite-plugin-package-version": "^1.1.0",
     "vue": "^3.0.0",
     "vue-draggable-next": "^2.1.1",
-    "vue-i18n": "^9.9.0",
+    "vue-i18n": "^9.13.1",
     "vue-json-pretty": "^2.2.3",
     "vue-konva": "^3.0.2",
     "vue-router": "^4.0.0",
