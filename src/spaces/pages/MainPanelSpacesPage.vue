@@ -60,7 +60,7 @@
 
 <script lang="ts" setup>
 
-import {useTabsStore} from "src/stores/tabsStore";
+import {useTabsStore} from "stores/tabsStore";
 import {useSpacesStore} from "src/spaces/stores/spacesStore";
 import {onMounted, ref, watchEffect} from "vue"
 import _ from "lodash"
