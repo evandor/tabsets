@@ -152,7 +152,7 @@ import Analytics from "src/utils/google-analytics";
 import {useAuthStore} from "stores/authStore";
 import {useDB} from "src/services/usePersistenceService";
 import {useBookmarksStore} from "src/bookmarks/stores/bookmarksStore";
-import {useSuggestionsStore} from "stores/suggestionsStore";
+import {useSuggestionsStore} from "src/suggestions/stores/suggestionsStore";
 import {FirebaseCall} from "src/services/firebase/FirebaseCall";
 import InfoMessageWidget from "components/widgets/InfoMessageWidget.vue";
 import {TITLE_IDENT} from "boot/constants";

@@ -70,9 +70,9 @@ import {useUtils} from "src/services/Utils";
 import DrawerRight from "components/DrawerRight.vue";
 import ExportDialog from "components/dialogues/ExportDialog.vue";
 import ImportDialog from "components/dialogues/ImportDialog.vue";
-import {Suggestion, SuggestionState} from "src/models/Suggestion";
+import {Suggestion, SuggestionState} from "src/suggestions/models/Suggestion";
 import SuggestionDialog from "components/dialogues/SuggestionDialog.vue";
-import {useSuggestionsStore} from "src/stores/suggestionsStore";
+import {useSuggestionsStore} from "src/suggestions/stores/suggestionsStore";
 import {FeatureIdent} from "src/models/AppFeature";
 import {useSettingsStore} from "src/stores/settingsStore"
 import ToolbarButton from "components/widgets/ToolbarButton.vue";
