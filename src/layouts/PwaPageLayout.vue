@@ -60,7 +60,7 @@ import {useSearchStore} from "src/stores/searchStore";
 import _ from "lodash";
 import {useSpacesStore} from "src/spaces/stores/spacesStore"
 import OpenTabsThresholdWidget from 'src/components/widgets/OpenTabsThresholdWidget.vue'
-import SpacesSelectorWidget from 'src/components/widgets/SpacesSelectorWidget.vue'
+import SpacesSelectorWidget from 'src/spaces/widgets/SpacesSelectorWidget.vue'
 import SearchWidget from 'src/components/widgets/SearchWidget.vue'
 import {DrawerTabs, UserLevel, useUiStore} from "src/stores/uiStore";
 import NotificationDialog from "components/dialogues/NotificationDialog.vue"
