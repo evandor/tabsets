@@ -203,7 +203,7 @@ import {useNotificationsStore} from "src/stores/notificationsStore";
 import Navigation from "src/components/Navigation.vue"
 import {useSearchStore} from "src/stores/searchStore";
 import _ from "lodash";
-import {useSpacesStore} from "src/stores/spacesStore"
+import {useSpacesStore} from "src/spaces/stores/spacesStore"
 import OpenTabsThresholdWidget from 'src/components/widgets/OpenTabsThresholdWidget.vue'
 import SpacesSelectorWidget from 'src/components/widgets/SpacesSelectorWidget.vue'
 import SearchWidget from 'src/components/widgets/SearchWidget.vue'

@@ -13,8 +13,8 @@ import {SpecialTabsetIdent} from "src/domain/tabsets/CreateSpecialTabset";
 // @ts-ignore
 import {v5 as uuidv5} from 'uuid';
 import {useSettingsStore} from "src/stores/settingsStore"
-import {Space} from "src/models/Space";
-import {useSpacesStore} from "src/stores/spacesStore";
+import {Space} from "src/spaces/models/Space";
+import {useSpacesStore} from "src/spaces/stores/spacesStore";
 import {SaveOrReplaceResult} from "src/models/SaveOrReplaceResult";
 import PersistenceService from "src/services/PersistenceService";
 import JsUtils from "src/utils/JsUtils";

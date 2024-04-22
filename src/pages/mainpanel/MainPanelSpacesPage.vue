@@ -61,10 +61,10 @@
 <script lang="ts" setup>
 
 import {useTabsStore} from "src/stores/tabsStore";
-import {useSpacesStore} from "src/stores/spacesStore";
+import {useSpacesStore} from "src/spaces/stores/spacesStore";
 import {onMounted, ref, watchEffect} from "vue"
 import _ from "lodash"
-import {Space} from "src/models/Space"
+import {Space} from "src/spaces/models/Space"
 import {Tabset, TabsetStatus} from "src/models/Tabset";
 import {useTabsetService} from "src/services/TabsetService2";
 import Analytics from "src/utils/google-analytics";

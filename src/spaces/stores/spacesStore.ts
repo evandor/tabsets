@@ -1,10 +1,11 @@
 import {defineStore} from 'pinia';
 import _ from 'lodash'
 import {computed, ref, watch, watchEffect} from "vue";
-import {Space} from "src/models/Space";
+import {Space} from "src/spaces/models/Space";
 import PersistenceService from "src/services/PersistenceService";
 import {LocalStorage, uid} from "quasar";
 import throttledQueue from "throttled-queue";
+import SpacesPersistence from "src/spaces/persistence/SpacesPersistence";
 
 /**
  * a pinia store for "Spaces".
@@ -34,7 +35,7 @@ export const useSpacesStore = defineStore('spaces', () => {
   /**
    * the (internal) storage for this store to use
    */
-  let storage: PersistenceService = null as unknown as PersistenceService
+  let storage: SpacesPersistence = null as unknown as SpacesPersistence
 
   const throttleOne10Millis = throttledQueue(1, 10, true)
 
@@ -42,9 +43,10 @@ export const useSpacesStore = defineStore('spaces', () => {
    * initialize store with
    * @param ps a persistence storage
    */
-  async function initialize(ps: PersistenceService) {
+  async function initialize(ps: SpacesPersistence) {
     console.debug(" ...initializing spacesStore", ps.getServiceName())
     storage = ps
+    await storage.init()
     await storage.loadSpaces()
   }
 
@@ -62,14 +64,14 @@ export const useSpacesStore = defineStore('spaces', () => {
    * // https://climbtheladder.com/10-pinia-best-practices/
    */
   watch(
-      space,
-      (spaceVal: Space) => {
-        if (spaceVal && spaceVal['id']) {
-          localStorage.setItem("currentSpace", spaceVal['id'])
-        } else {
-          localStorage.removeItem("currentSpace")
-        }
-      }, {deep: true}
+    space,
+    (spaceVal: Space) => {
+      if (spaceVal && spaceVal['id']) {
+        localStorage.setItem("currentSpace", spaceVal['id'])
+      } else {
+        localStorage.removeItem("currentSpace")
+      }
+    }, {deep: true}
   )
 
   /**
@@ -78,8 +80,7 @@ export const useSpacesStore = defineStore('spaces', () => {
   const nameExists = computed(() => {
     return (searchName: string) => {
       //console.log("checking for existence --- ", searchName)
-      return _.find([...spaces.value.values()], s =>
-      {
+      return _.find([...spaces.value.values()], s => {
         //console.log("comparing", s.label, searchName?.trim(), s.label === searchName?.trim())
         return s.label === searchName?.trim()
       })

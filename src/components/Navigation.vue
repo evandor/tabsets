@@ -58,7 +58,7 @@ import _ from "lodash"
 import {ref} from "vue";
 import {useQuasar} from "quasar";
 import {Tabset, TabsetStatus, TabsetType} from "src/models/Tabset";
-import {useSpacesStore} from "src/stores/spacesStore";
+import {useSpacesStore} from "src/spaces/stores/spacesStore";
 import NewTabsetDialog from "components/dialogues/NewTabsetDialog.vue";
 import {useUiStore} from "src/stores/uiStore";
 import {useNotificationsStore} from "src/stores/notificationsStore";

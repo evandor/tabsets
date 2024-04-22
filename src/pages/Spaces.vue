@@ -55,10 +55,10 @@
 <script lang="ts" setup>
 
 import {useTabsStore} from "src/stores/tabsStore";
-import {useSpacesStore} from "src/stores/spacesStore";
+import {useSpacesStore} from "src/spaces/stores/spacesStore";
 import {ref, watchEffect} from "vue"
 import _ from "lodash"
-import {Space} from "src/models/Space"
+import {Space} from "src/spaces/models/Space"
 import {Tabset} from "src/models/Tabset";
 import TabsetService from "src/services/TabsetService";
 import {useRouter} from "vue-router";
