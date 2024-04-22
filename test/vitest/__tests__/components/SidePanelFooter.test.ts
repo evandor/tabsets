@@ -1,3 +1,5 @@
+import IndexedDbWindowsPersistence from "src/windows/persistence/IndexedDbWindowsPersistence";
+
 vi.mock('src/boot/firebase2.ts')
 
 import {installQuasarPlugin} from '@quasar/quasar-app-extension-testing-unit-vitest';
@@ -15,8 +17,8 @@ import {useWindowsStore} from "src/windows/stores/windowsStore";
 
 installQuasarPlugin();
 
-async function setupStores(db: PersistenceService) {
-  await useWindowsStore().initialize(db)
+async function setupStores() {
+  await useWindowsStore().initialize()
   useWindowsStore().initListeners()
 }
 
@@ -27,6 +29,7 @@ describe('SidePanelFooter', () => {
     "title", "https://www.skysail.io/some-subpage", "favicon")
 
   let db = null as unknown as PersistenceService
+  let windowsDB = IndexedDbWindowsPersistence
   let wrapper: VueWrapper<any, any> = null as unknown as VueWrapper
   let manageWindowsButton: DOMWrapper<Element> = null as unknown as DOMWrapper<Element>
 
@@ -148,7 +151,7 @@ describe('SidePanelFooter', () => {
 
   it('should show window markup table when window management button is clicked', async () => {
     currentWindows = [window100]
-    await setupStores(db)
+    await setupStores()
 
     await manageWindowsButton.trigger('click')
 
@@ -158,7 +161,7 @@ describe('SidePanelFooter', () => {
     const cellWithTabsCountForWindowId100 = wrapper.find('[data-testid=windowDataColumn_tabsCount_100]')
     expect(cellWithTabsCountForWindowId100.text()).toBe("1")
 
-    const windows = await db.getWindows()
+    const windows = await windowsDB.getWindows()
     console.log("windows", windows)
     expect(windows.length).toBe(1)
     expect(windows[0].id).toBe(100)

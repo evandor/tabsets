@@ -5,8 +5,8 @@ import _ from "lodash"
 import {ref} from "vue";
 import PersistenceService from "src/services/PersistenceService";
 import {useUtils} from "src/services/Utils";
-import {useSuggestionsStore} from "stores/suggestionsStore";
-import {StaticSuggestionIdent, Suggestion} from "src/models/Suggestion";
+import {useSuggestionsStore} from "src/suggestions/stores/suggestionsStore";
+import {StaticSuggestionIdent, Suggestion} from "src/suggestions/models/Suggestion";
 
 
 export const useNotificationsStore = defineStore('notifications', () => {
