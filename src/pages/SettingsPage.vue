@@ -438,8 +438,8 @@ import OpenRightDrawerWidget from "components/widgets/OpenRightDrawerWidget.vue"
 import {useUtils} from "src/services/Utils";
 import Analytics from "src/utils/google-analytics";
 import {useGroupsStore} from "../stores/groupsStore";
-import {useSuggestionsStore} from "stores/suggestionsStore";
-import {StaticSuggestionIdent, Suggestion} from "src/models/Suggestion";
+import {useSuggestionsStore} from "src/suggestions/stores/suggestionsStore";
+import {StaticSuggestionIdent, Suggestion} from "src/suggestions/models/Suggestion";
 import {useRoute} from "vue-router";
 import {
   SHARING_AUTHOR_IDENT,

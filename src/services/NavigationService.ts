@@ -7,8 +7,8 @@ import JsUtils from "src/utils/JsUtils";
 import {useGroupsStore} from "stores/groupsStore";
 import {usePermissionsStore} from "stores/permissionsStore";
 import {FeatureIdent} from "src/models/AppFeature";
-import {Suggestion, SuggestionType} from "src/models/Suggestion";
-import {useSuggestionsStore} from "stores/suggestionsStore";
+import {Suggestion, SuggestionType} from "src/suggestions/models/Suggestion";
+import {useSuggestionsStore} from "src/suggestions/stores/suggestionsStore";
 import {ExecutionResult} from "src/domain/ExecutionResult";
 import {useNotificationHandler} from "src/services/ErrorHandler";
 

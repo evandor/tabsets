@@ -112,9 +112,9 @@ import SidePanelFooterLeftButton from "components/helper/SidePanelFooterLeftButt
 import OpenTabsThresholdWidget from "components/widgets/OpenTabsThresholdWidget.vue";
 import {usePermissionsStore} from "stores/permissionsStore";
 import {useTabsStore} from "stores/tabsStore";
-import {useSuggestionsStore} from "stores/suggestionsStore";
+import {useSuggestionsStore} from "src/suggestions/stores/suggestionsStore";
 import {ref, watchEffect} from "vue";
-import {SuggestionState} from "src/models/Suggestion";
+import {SuggestionState} from "src/suggestions/models/Suggestion";
 import {useMessagesStore} from "stores/messagesStore";
 import SidePanelFooterViewMenuItem from "components/helper/SidePanelFooterViewMenuItem.vue";
 

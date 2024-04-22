@@ -11,10 +11,10 @@ import {SearchDoc} from "src/models/SearchDoc";
 import {MetaLink} from "src/models/MetaLink";
 import {uid} from "quasar";
 import {Notification, NotificationStatus} from "src/models/Notification";
-import {Suggestion, SuggestionState, SuggestionType} from "src/models/Suggestion";
+import {Suggestion, SuggestionState, SuggestionType} from "src/suggestions/models/Suggestion";
 import {useUiStore} from "src/stores/uiStore";
 import {RequestInfo} from "src/models/RequestInfo";
-import {useSuggestionsStore} from "stores/suggestionsStore";
+import {useSuggestionsStore} from "src/suggestions/stores/suggestionsStore";
 import {Window} from "src/windows/models/Window";
 import {BlobType, SavedBlob} from "src/models/SavedBlob";
 import {Message} from "src/models/Message";
@@ -517,50 +517,6 @@ class IndexedDbPersistenceService implements PersistenceService {
         res.updated = new Date().getTime()
         objectStore.put(res, notificationId)
       })
-  }
-
-  async getSuggestions(): Promise<Suggestion[]> {
-    return this.db ? this.db.getAll('suggestions') : Promise.resolve([])
-  }
-
-  async addSuggestion(suggestion: Suggestion): Promise<void> {
-    const suggestions = await this.getSuggestions()
-    // console.log("%csuggestions from db", "color:red", suggestions)
-    const foundAsNewDelayedOrIgnored = _.find(suggestions,
-      (s: Suggestion) =>
-        s.state === SuggestionState.NEW ||
-        s.state === SuggestionState.IGNORED ||
-        s.state === SuggestionState.DECISION_DELAYED)
-    if (foundAsNewDelayedOrIgnored) { // && suggestion.state === SuggestionState.NEW) {
-      if (foundAsNewDelayedOrIgnored.state === SuggestionState.IGNORED && suggestion.type === SuggestionType.RESTART) {
-        console.log("setting existing restart suggestion to state NEW again")
-        foundAsNewDelayedOrIgnored.state = SuggestionState.NEW
-        this.db.put('suggestions', foundAsNewDelayedOrIgnored, foundAsNewDelayedOrIgnored.id)
-        return Promise.resolve()
-      }
-      return Promise.reject(`there's already a suggestion in state ${foundAsNewDelayedOrIgnored.state}, not adding (now)`)
-    }
-    const found = _.find(suggestions, (s: Suggestion) => s.url === suggestion.url)
-    if (!found) {
-      await this.db.add('suggestions', suggestion, suggestion.id)
-      return Promise.resolve()
-    }
-    return Promise.reject("suggestion already exists")
-  }
-
-  removeSuggestion(ident: string): Promise<any> {
-    return this.db.delete('suggestions', ident)
-  }
-
-  async setSuggestionState(suggestionId: string, state: SuggestionState): Promise<Suggestion> {
-    console.log("setting suggestion to state", suggestionId, state)
-    const s: Suggestion = await this.db.get('suggestions', suggestionId)
-    if (s) {
-      s.state = state
-      await this.db.put('suggestions', s, suggestionId)
-      return Promise.resolve(s)
-    }
-    return Promise.reject("could not update suggestion")
   }
 
   compactDb(): Promise<any> {
