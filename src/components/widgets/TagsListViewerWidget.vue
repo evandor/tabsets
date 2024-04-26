@@ -61,7 +61,6 @@ import _ from "lodash";
 import {Tabset, TabsetStatus, TabsetType} from "src/models/Tabset";
 import {Tab} from "src/models/Tab";
 import {useCommandExecutor} from "src/services/CommandExecutor";
-import {CreateDynamicTabset} from "src/domain/commands/CreateDynamicTabset";
 
 const emit = defineEmits(['tagSelected']);
 

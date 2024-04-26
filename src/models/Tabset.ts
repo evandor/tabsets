@@ -1,6 +1,5 @@
 import {Tab} from "src/models/Tab";
 import {TabsetColumn} from "src/models/TabsetColumn";
-import {DynamicTabSource} from "src/models/DynamicTabSource";
 import {STRIP_CHARS_IN_USER_INPUT} from "boot/constants";
 import {ListDetailLevel} from "stores/uiStore";
 
@@ -38,7 +37,6 @@ export class Tabset {
   created: number
   updated: number
   tabs: Tab[]
-  dynamicTabs: DynamicTabSource | undefined
 
   folders: Tabset[] = []
   folderActive: string | undefined = undefined
